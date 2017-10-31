@@ -197,3 +197,13 @@ design and implementation of the qt-gui
 
 - email: raffael@libelektra.org
 - github user: [0003088](https://github.com/0003088)
+
+
+## Bernhard Denner
+
+ruby bindings, ruby plugin, build server, Puppet module
+
+- email: bernhard.denner@gmail.com
+- github user: [BernhardDenner](https://github.com/BernhardDenner)
+- devel/test on: Ubuntu and Debian
+
