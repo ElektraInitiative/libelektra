@@ -44,7 +44,7 @@ public:
 	 *
 	 * @see KDB
 	 */
-	int get (KeySet & returned, Key const & parentKey) override;
+	int get (KeySet & returned, Key & parentKey) override;
 
 	/**
 	 * Synchronizes the file with the supplied KeySet.
@@ -67,7 +67,7 @@ public:
 	 * @see KDB
 	 * @throws MergingKDBException
 	 */
-	virtual int synchronize (KeySet & returned, Key const & parentKey, ThreeWayMerge & merger);
+	virtual int synchronize (KeySet & returned, Key & parentKey, ThreeWayMerge & merger);
 
 private:
 	KeySet base;
