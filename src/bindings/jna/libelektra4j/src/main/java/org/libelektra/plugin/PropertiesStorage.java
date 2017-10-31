@@ -23,8 +23,8 @@ public class PropertiesStorage implements Plugin {
 	public int get(final KeySet ks, final Key parentKey) {
 		final String root = "system/elektra/modules/jni";
 		if (parentKey.isBelowOrSame(Key.create(root, Key.KEY_END))) {
-			ks.append(Key.create(root + "/infos/provides", Key.KEY_VALUE, "storage", Key.KEY_END));
-			ks.append(Key.create(root + "/infos/placements", Key.KEY_VALUE, "getstorage setstorage", Key.KEY_END));
+			ks.append(Key.create(root + "/infos/provides", "storage"));
+			ks.append(Key.create(root + "/infos/placements", "getstorage setstorage"));
 			final Key k = ks.lookup(root + "/infos/description");
 			if (!k.isNull()) {
 				// append to description
@@ -40,7 +40,7 @@ public class PropertiesStorage implements Plugin {
 			return -1;
 		}
 		for (final Map.Entry<Object, Object> e : properties.entrySet()) {
-			ks.append(Key.create(parentKey.getName() + "/" + e.getKey(), Key.KEY_VALUE, e.getValue(), Key.KEY_END));
+			ks.append(Key.create(parentKey.getName() + "/" + e.getKey(), e.getValue()));
 		}
 		return 0;
 	}
