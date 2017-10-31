@@ -7,8 +7,8 @@ GHC, cabal and C2HS, which generates the actual bindings out of a metacode and
 will be called during the build automatically.
 
 There are some examples how the bindings can be used in
-[examples](src/bindings/haskell/examples). Furthermore there exists the possibility 
-to write [plugins](src/plugins/haskell/) using the haskell bindings.
+[examples](examples/). Furthermore there exists the possibility 
+to write [plugins](/src/plugins/haskell/) using the haskell bindings.
 
 To build and test it manually call `cabal test` in <build_folder>/src/bindings/haskell.
 Otherwise the bindings will be installed along with elektra if the bindings are included 
