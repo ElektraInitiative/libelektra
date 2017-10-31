@@ -53,6 +53,10 @@ Following signal names are used to notify about changes in the Elektra’s KeySe
 - KeyChanged: a key has been changed
 - KeyDeleted: a key has been deleted
 
+Alternatively, (with the option announce=once) only a single message is send:
+
+- Commit: a key has been added, changed or deleted
+
 ## Usage
 
 The recommended way is to globally mount the plugin:
@@ -62,6 +66,10 @@ The recommended way is to globally mount the plugin:
 Alternatively one can mount the plugin additionally to a storage plugin, e.g.:
 
 	kdb mount file.dump / dump dbus
+
+For openicc one would use (mounts with announce=once):
+
+	kdb mount-openicc
 
 ### Shell
 
