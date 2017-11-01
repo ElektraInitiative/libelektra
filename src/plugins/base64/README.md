@@ -64,7 +64,7 @@ The following example shows how you can use this plugin together with the INI pl
 kdb mount config.ini user/examples/base64 ini base64
 
 # Copy binary data
-kdb cp system/elektra/modules/dump/exports/unserialise user/examples/base64/binary
+kdb cp system/elektra/modules/base64/exports/get user/examples/base64/binary
 
 # Print binary data
 kdb get user/examples/base64/binary
