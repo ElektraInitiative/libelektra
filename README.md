@@ -59,8 +59,7 @@ implemented in C, works cross-platform, and does not need any external dependenc
 ## Contact
 
 Do not hesitate to ask any question on
-[GitHub issue tracker](https://issues.libelektra.org/),
-[Mailing List](https://lists.sourceforge.net/lists/listinfo/registry-list)
+[GitHub issue tracker](https://issues.libelektra.org/)
 or directly to one of the [authors](doc/AUTHORS.md).
 
 
