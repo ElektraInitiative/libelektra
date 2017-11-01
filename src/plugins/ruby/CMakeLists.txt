@@ -5,7 +5,12 @@ if (DEPENDENCY_PHASE)
 	find_package(Ruby)
 	find_swig()
 
-	if (RUBY_FOUND AND SWIG_FOUND)
+	# Disable on GCC 4 and earlier:
+	#	- https://build.libelektra.org/jenkins/job/elektra-gcc47-all
+	#	- https://build.libelektra.org/jenkins/job/elektra-gcc-configure-debian-wheezy
+	set(SUPPORTED_COMPILER NOT (CMAKE_CXX_COMPILER_ID MATCHES "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 5))
+
+	if (RUBY_FOUND AND SWIG_FOUND AND SUPPORTED_COMPILER)
 		include (LibAddMacros)
 
 		add_custom_command (OUTPUT runtime.h
@@ -20,6 +25,8 @@ if (DEPENDENCY_PHASE)
 		set_source_files_properties ("ruby.cpp" PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS}")
 	elseif (NOT RUBY_FOUND)
 		remove_plugin (ruby "ruby not found")
+	elseif (NOT SUPPORTED_COMPILER)
+		remove_plugin (ruby "gcc version too old (gcc -dumpversion < 5.0)")
 	else ()
 		remove_plugin (ruby "swig not found")
 	endif ()
