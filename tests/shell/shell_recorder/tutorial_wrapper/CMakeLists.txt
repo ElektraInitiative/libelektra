@@ -43,13 +43,13 @@ add_plugin_shell_test (yajl)
 # The cause of this seems to be a bug in old versions of `libstdc++`:
 # http://lists.llvm.org/pipermail/cfe-dev/2013-August/031194.html
 set (ASAN_LINUX ENABLE_ASAN AND ${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-if (NOT (ASAN_LINUX AND CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 5))
+if (NOT (${ASAN_LINUX} AND CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 5))
 	add_s_test (tutorial_validation "${CMAKE_SOURCE_DIR}/doc/tutorials/validation.md")
 	add_plugin_shell_test (base64)
 	add_plugin_shell_test (mini)
 	add_plugin_shell_test (tcl)
 	add_plugin_shell_test (yamlcpp)
-endif (NOT (ASAN_LINUX AND CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 5))
+endif (NOT (${ASAN_LINUX} AND CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 5))
 
 # Only works with super user privileges, since it writes to `/etc/hosts`:
 # add_s_test (tutorial_mount "${CMAKE_SOURCE_DIR}/doc/tutorials/mount.md")
