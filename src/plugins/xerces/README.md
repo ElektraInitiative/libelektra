@@ -96,12 +96,7 @@ kdb get user/examples/xercesfile/bar
 #> bar
 
 kdb export user/examples/xercesfile xerces
-#> <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
-#> <xerces>
-#>
-#>   <bar meta="da_ta">bar</bar>foo
-#>
-#> </xerces>
+# STDOUT-REGEX: <bar meta="da_ta">bar</bar>
 
 sudo kdb rm -r user/examples/xercesfile
 sudo kdb umount user/examples/xercesfile
