@@ -80,22 +80,22 @@ XSD transformations, schemas or DTDs are not supported yet.
 ### Mounting, setting a key and exporting
 
 ```sh
-# Backup-and-Restore:/examples/xercesfile
+# Backup-and-Restore:user/examples/xercesfile
 
-sudo kdb mount xerces.xml /examples/xercesfile xerces
+sudo kdb mount xerces.xml user/examples/xercesfile xerces
 
-kdb set /examples/xercesfile foo
-kdb setmeta /examples/xercesfile xerces/rootname xerces
-kdb set /examples/xercesfile/bar bar
-kdb setmeta /examples/xercesfile/bar meta "da_ta"
+kdb set user/examples/xercesfile foo
+kdb setmeta user/examples/xercesfile xerces/rootname xerces
+kdb set user/examples/xercesfile/bar bar
+kdb setmeta user/examples/xercesfile/bar meta "da_ta"
 
-kdb getmeta /examples/xercesfile xerces/rootname
+kdb getmeta user/examples/xercesfile xerces/rootname
 #> xerces
 
-kdb get /examples/xercesfile/bar
+kdb get user/examples/xercesfile/bar
 #> bar
 
-kdb export /examples/xercesfile xerces
+kdb export user/examples/xercesfile xerces
 #> <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
 #> <xerces>
 #>
@@ -103,6 +103,6 @@ kdb export /examples/xercesfile xerces
 #>
 #> </xerces>
 
-sudo kdb rm -r /examples/xercesfile
-sudo kdb umount /examples/xercesfile
+sudo kdb rm -r user/examples/xercesfile
+sudo kdb umount user/examples/xercesfile
 ```
