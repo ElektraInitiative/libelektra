@@ -297,9 +297,7 @@ Plugin * elektraPluginOpen (const char * name, KeySet * modules, KeySet * config
 		}
 	}
 
-#if DEBUG && VERBOSE
-	printf ("Finished loading plugin %s\n", name);
-#endif
+	ELEKTRA_LOG_DEBUG ("Finished loading plugin %s", name);
 	return handle;
 
 err_clup:
