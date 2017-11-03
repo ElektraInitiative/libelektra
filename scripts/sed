@@ -6,6 +6,7 @@ s/Electra/Elektra/g
 
 s/behaviour/behavior/g
 s/generalises/generalizes/g
+s/synchronised/synchronized/g
 
 # ==========
 # = Brands =

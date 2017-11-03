@@ -358,7 +358,7 @@ The resolver writes the file name into the value of the `parentKey`.
 
 - **syncbits**: are some bits that can be set for every backend.
 The algorithm uses the `syncbits` to decide if the key set needs to be
-synchronised.
+synchronized.
 
 Continue reading [with the error handling](error-handling.md).
 
