@@ -26,7 +26,15 @@ For a small demo see here:
 
 ## Other New Features
 
+We added even more functionality, which could not make it to the highlights:
+
+- <<TODO>>
+
 ## Documentation
+
+We improved the documentation in the following ways:
+
+- <<TODO>>
 
 ## Compatibility
 
@@ -36,15 +44,27 @@ compiled against an older 0.8 version of Elektra will continue to work
 
 ## Notes for Maintainer
 
+These notes are of interest for people maintaining packages of Elektra:
+
+- <<TODO>>
+
+## Notes for Elektra's Developers
+
+These notes are of interest for people developing Elektra:
+
+- <<TODO>>
+
 ## Fixes
 
-## Development
+Many problems were resolved with the following fixes:
 
-## Quality
-
-## Other
+- <<TODO>>
 
 ## Outlook
+
+We are currently working on following topics:
+
+- <<TODO>>
 
 ## Get It!
 
