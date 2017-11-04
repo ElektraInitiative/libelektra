@@ -93,7 +93,7 @@ static int elektraLogFile (int level ELEKTRA_UNUSED, const char * function ELEKT
 #endif
 	if (!elektraLoggerFileHandle)
 	{
-		elektraLoggerFileHandle = fopen ("elektra.log", "a");
+		elektraLoggerFileHandle = fopen ("/tmp/elektra.log", "a");
 	}
 	int ret = fprintf (elektraLoggerFileHandle, "%s", msg);
 	fflush (elektraLoggerFileHandle);

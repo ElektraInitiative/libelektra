@@ -578,13 +578,15 @@ int elektraMmapstorageGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		// TODO: fix this
 // 		addr = mmapAddr (fp);
 // 		mappedRegion = elektraMmapstorageMapFile (addr, fp, sbuf.st_size, MAP_SHARED | MAP_FIXED, parentKey, errnosave);
-		//ELEKTRA_LOG_WARNING ("FAILED to read mmap fixed address, NOT IMPLEMENTED");
-		//exit(128);
-		mappedRegion = elektraMmapstorageMapFile ((void *) 0, fp, sbuf.st_size, MAP_PRIVATE, parentKey, errnosave);
+		ELEKTRA_LOG_WARNING ("FAILED to read mmap fixed address, NOT IMPLEMENTED");
+		exit(128);
+		//mappedRegion = elektraMmapstorageMapFile ((void *) 0, fp, sbuf.st_size, MAP_PRIVATE, parentKey, errnosave);
 	}
 	else
 	{
+		ELEKTRA_LOG_WARNING ("MMAP addr to map: %p", (void *) addr);
 		mappedRegion = elektraMmapstorageMapFile (addr, fp, sbuf.st_size, MAP_PRIVATE | MAP_FIXED, parentKey, errnosave);
+		ELEKTRA_LOG_WARNING ("mappedRegion ptr: %p", (void *) mappedRegion);
 	}
 	
 	if (mappedRegion == MAP_FAILED)
