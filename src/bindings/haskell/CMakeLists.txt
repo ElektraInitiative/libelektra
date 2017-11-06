@@ -44,8 +44,13 @@ if (NOT BUILD_STATIC)
 
 	add_custom_command (
 		OUTPUT ${BINDING_HASKELL_NAME}
+		COMMAND ${CABAL_EXECUTABLE} sandbox init
+		COMMAND ${CABAL_EXECUTABLE} install hspec QuickCheck
 		COMMAND ${CABAL_EXECUTABLE} --ipid=libelektra-haskell-${KDB_VERSION} ${CABAL_OPTS} configure
+		 # this only installs to the sandbox so plugins can depend on it
+		 # without breaking the global db through shared sandboxes
 		COMMAND ${CABAL_EXECUTABLE} build
+		COMMAND ${CABAL_EXECUTABLE} install
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 		DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/libelektra-haskell.cabal"
 		"${CMAKE_CURRENT_SOURCE_DIR}/src/Elektra/Key.chs"
@@ -64,8 +69,8 @@ if (NOT BUILD_STATIC)
 	    		"${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/"
 		)
 	endif (BUILD_SHARED OR BUILD_FULL)
-	# build and install it to the cabal db
-	install (CODE "execute_process (COMMAND ${CABAL_EXECUTABLE} install WORKING_DIRECTORY \"${CMAKE_CURRENT_BINARY_DIR}\")")
+	# build and install it to the global db
+	install (CODE "execute_process (COMMAND ${CABAL_EXECUTABLE} --ignore-sandbox install WORKING_DIRECTORY \"${CMAKE_CURRENT_BINARY_DIR}\")")
 
 	if (BUILD_TESTING)
 		# recompile with tests enabled, to get the dependency graph for the static versions correct

@@ -156,22 +156,15 @@ macro (add_haskell_plugin target)
 				DESTINATION "${CMAKE_CURRENT_BINARY_DIR}"
 			)
 
-			# register the bindings for the compilation
-			add_custom_command (
-				OUTPUT "${CMAKE_BINARY_DIR}/src/bindings/haskell/${target}-register"
-				COMMAND ${CABAL_EXECUTABLE} register --inplace
-				COMMAND ${CMAKE_COMMAND} ARGS -E touch "${target}-register"
-				WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/src/bindings/haskell
-				DEPENDS c2hs_haskell
-			)
 			add_custom_command (
 				OUTPUT ${PLUGIN_HASKELL_NAME}
 				# this way it will generate predictable output filenames
 				# and compile the haskell part of this plugin with cabal
+				COMMAND ${CABAL_EXECUTABLE} sandbox init --sandbox "${CMAKE_CURRENT_BINARY_DIR}/../../bindings/haskell/.cabal-sandbox"
 				COMMAND ${CABAL_EXECUTABLE} --ipid=${target} ${CABAL_OPTS} configure
 				COMMAND ${CABAL_EXECUTABLE} build
 				WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-				DEPENDS "${CMAKE_BINARY_DIR}/src/bindings/haskell/${target}-register"
+				DEPENDS c2hs_haskell
 				"${CMAKE_SOURCE_DIR}/src/plugins/haskell/Elektra/Haskell.hs"
 			)
 			add_custom_target (${target} DEPENDS ${PLUGIN_HASKELL_NAME})
