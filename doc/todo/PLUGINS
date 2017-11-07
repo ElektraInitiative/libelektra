@@ -230,6 +230,15 @@ folder:
 	(multi-resolver)
 
 
+## storage ##
+
+add to/remove from array and map support
+	e.g. for ssh PubkeyAcceptedKeyTypes individual options should be added/removed
+	system/../PubkeyAcceptedKeyTypes/ssh-dsa = 0 # off from admin
+	user/../PubkeyAcceptedKeyTypes/ssh-dsa = 1 # user sets on
+	(remove via null keys?)
+
+
 ## library supported ##
 
 xpath plugin:
