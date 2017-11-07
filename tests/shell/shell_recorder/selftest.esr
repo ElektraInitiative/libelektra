@@ -4,7 +4,7 @@ File: config.ini
 DiffType: Ini
 
 RET: 0
-< kdb mount $File $Mountpoint $Storage $MountArgs
+< kdb mount $File $Mountpoint $Storage
 
 DIFF: > key = value
 < kdb set $Mountpoint/key value
