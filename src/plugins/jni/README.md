@@ -11,7 +11,10 @@
 
 Allows you to write plugins in Java.
 
-Needs Java 8 or later. While the plugin internally uses JNI, the Java
+This plugin needs the JNA bindings to work.
+Furthermore, it requires Java 8 or later.
+
+While the plugin internally uses JNI (thus the name), the Java
 binding for your Java plugin may use something different, e.g. JNA.
 The requirements for the Java bindings are:
 
@@ -32,7 +35,13 @@ The Java plugin itself needs to have the following methods:
 
 ### Java prerequisites on Debian 9
 
-openjdk-8 and 9 does not work reliable: jvm crashes without usable backtrace.
+openjdk-8 and 9 do not work reliable: jvm crashes without usable backtrace.
+
+When using non-standard paths, you have to set JAVA_HOME before invoking cmake.
+(For example when you unpack Oracle Java to `/usr/local` or `/opt`.)
+For example:
+
+     JAVA_HOME=/usr/local/jdk-9.0.1
 
 
 
