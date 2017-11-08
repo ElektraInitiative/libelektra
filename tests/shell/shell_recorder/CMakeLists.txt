@@ -38,23 +38,26 @@ if (ENABLE_KDB_TESTING)
 			@ONLY
 		)
 
-	file (GLOB SCRIPT_TESTS "*.esr")
+	set (SCRIPT_TESTS
+		"db_changes.esr"
+		"hosts.esr"
+		"listtest.esr"
+		"profiletest.esr"
+		"script.esr"
+	)
 
-	# Remove tests that will not work with the current configuration
-	list (FIND REMOVED_PLUGINS mini MINI_PLUGIN_INDEX)
-	if (${MINI_PLUGIN_INDEX} GREATER_EQUAL 0)
-		set (FILTERED)
-		foreach (path ${SCRIPT_TESTS})
-			string (REGEX MATCH "selftest.esr$" match ${path})
-			if (NOT match)
-				list (APPEND FILTERED ${path})
-			endif (NOT match)
-		endforeach (path ${SCRIPT_TESTS})
-		set (SCRIPT_TESTS ${FILTERED})
-	endif (${MINI_PLUGIN_INDEX} GREATER_EQUAL 0)
+	# Only add the tests below if they work with the current configuration
+	list (FIND REMOVED_PLUGINS mini PLUGIN_INDEX)
+	if (${PLUGIN_INDEX} EQUAL -1)
+		list (APPEND SCRIPT_TESTS "selftest.esr")
+	endif (${PLUGIN_INDEX} EQUAL -1)
 
-	foreach (file ${SCRIPT_TESTS})
-		get_filename_component (name ${file} NAME)
+	list (FIND REMOVED_PLUGINS ni PLUGIN_INDEX)
+	if (${PLUGIN_INDEX} EQUAL -1)
+		list (APPEND SCRIPT_TESTS "mathcheck.esr")
+	endif (${PLUGIN_INDEX} EQUAL -1)
+
+	foreach (name ${SCRIPT_TESTS})
 		get_filename_component (testname_we ${name} NAME_WE)
 		add_test (
 			testshell_${testname_we}
@@ -63,7 +66,7 @@ if (ENABLE_KDB_TESTING)
 			)
 
 		set_property(TEST testshell_${testname_we} PROPERTY LABELS memleak kdbtests)
-	endforeach (file ${SCRIPT_TESTS})
+	endforeach (name ${SCRIPT_TESTS})
 
 	add_subdirectory (tutorial_wrapper)
 endif (ENABLE_KDB_TESTING)
