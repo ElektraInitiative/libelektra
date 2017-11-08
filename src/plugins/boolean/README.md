@@ -13,6 +13,16 @@
 
 Different configurations might use different values for `TRUE`/`FALSE`. The `boolean` plugin canonicalizes boolean values.
 
+## Example
+
+```sh
+# Mount plugin
+kdb mount config.ecf /examples/boolean dump boolean
+
+# Undo changes
+kdb umount /examples/boolean
+```
+
 ## Configuration
 
 - `on/true` specifies the normalized value for `TRUE`. Default: `1`
