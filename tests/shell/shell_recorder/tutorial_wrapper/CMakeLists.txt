@@ -47,7 +47,11 @@ add_plugin_shell_test (yajl)
 # http://lists.llvm.org/pipermail/cfe-dev/2013-August/031194.html
 set (ASAN_LINUX ENABLE_ASAN AND ${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 if (NOT (${ASAN_LINUX} AND CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 5))
-	add_s_test (tutorial_validation "${CMAKE_SOURCE_DIR}/doc/tutorials/validation.md")
+	list (FIND REMOVED_PLUGINS validation PLUGIN_INDEX_VALIDATION)
+	if (${PLUGIN_INDEX_VALIDATION} EQUAL -1)
+		add_s_test (tutorial_validation "${CMAKE_SOURCE_DIR}/doc/tutorials/validation.md")
+	endif (${PLUGIN_INDEX_VALIDATION} EQUAL -1)
+
 	add_plugin_shell_test (base64)
 	add_plugin_shell_test (mini)
 	add_plugin_shell_test (tcl)
