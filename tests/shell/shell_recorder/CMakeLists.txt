@@ -38,7 +38,21 @@ if (ENABLE_KDB_TESTING)
 			@ONLY
 		)
 
-	file (GLOB SCRIPT_TESTS *.esr)
+	file (GLOB SCRIPT_TESTS "*.esr")
+
+	# Remove tests that will not work with the current configuration
+	list (FIND REMOVED_PLUGINS mini MINI_PLUGIN_INDEX)
+	if (${MINI_PLUGIN_INDEX} GREATER_EQUAL 0)
+		set (FILTERED)
+		foreach (path ${SCRIPT_TESTS})
+			string (REGEX MATCH "selftest.esr$" match ${path})
+			if (NOT match)
+				list (APPEND FILTERED ${path})
+			endif (NOT match)
+		endforeach (path ${SCRIPT_TESTS})
+		set (SCRIPT_TESTS ${FILTERED})
+	endif (${MINI_PLUGIN_INDEX} GREATER_EQUAL 0)
+
 	foreach (file ${SCRIPT_TESTS})
 		get_filename_component (name ${file} NAME)
 		get_filename_component (testname_we ${name} NAME_WE)
