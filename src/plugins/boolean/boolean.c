@@ -307,7 +307,13 @@ int elektraBooleanSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 	// this function is optional
 
 	BoolData * data = elektraPluginGetData (handle);
-	if (!data) return -1;
+	if (!data)
+	{
+		KeySet * config = elektraPluginGetConfig (handle);
+		data = elektraCalloc (sizeof (BoolData));
+		parseConfig (config, data);
+		elektraPluginSetData (handle, data);
+	}
 	const char * trueValue = data->true;
 	const char * falseValue = data->false;
 

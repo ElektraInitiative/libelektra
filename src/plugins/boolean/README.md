@@ -19,7 +19,13 @@ Different configurations might use different values for `TRUE`/`FALSE`. The `boo
 # Mount plugin
 kdb mount config.ecf /examples/boolean dump boolean
 
+# The plugin does not change ordinary values
+kdb set /examples/boolean/key value
+kdb get /examples/boolean/key
+#> value
+
 # Undo changes
+kdb rm -r /examples/boolean
 kdb umount /examples/boolean
 ```
 
