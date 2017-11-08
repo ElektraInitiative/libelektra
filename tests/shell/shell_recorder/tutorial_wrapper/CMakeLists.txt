@@ -20,9 +20,14 @@ if (${PLUGIN_INDEX_INI} EQUAL -1)
 	add_s_test (msr_syntax "${CMAKE_SOURCE_DIR}/tests/shell/shell_recorder/tutorial_wrapper/SyntaxCheck.md")
 endif (${PLUGIN_INDEX_INI} EQUAL -1)
 
+# Only add test below if Spec plugin is available
+list (FIND REMOVED_PLUGINS spec PLUGIN_INDEX_SPEC)
+if (${PLUGIN_INDEX_SPEC} EQUAL -1)
+	add_s_test (kdb-global-umount "${CMAKE_SOURCE_DIR}/doc/help/kdb-global-umount.md")
+endif (${PLUGIN_INDEX_SPEC} EQUAL -1)
+
 add_s_test (tutorial_cascading "${CMAKE_SOURCE_DIR}/doc/tutorials/cascading.md")
 add_s_test (kdb-complete "${CMAKE_SOURCE_DIR}/doc/help/kdb-complete.md")
-add_s_test (kdb-global-umount "${CMAKE_SOURCE_DIR}/doc/help/kdb-global-umount.md")
 add_s_test (kdb-ls "${CMAKE_SOURCE_DIR}/doc/help/kdb-ls.md")
 
 add_plugin_shell_test (blockresolver)
