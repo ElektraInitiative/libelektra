@@ -14,8 +14,11 @@ function (add_plugin_shell_test PLUGIN)
 	endif ()
 endfunction ()
 
-
-add_s_test (msr_syntax "${CMAKE_SOURCE_DIR}/tests/shell/shell_recorder/tutorial_wrapper/SyntaxCheck.md")
+# Only add test below if INI plugin is available
+list (FIND REMOVED_PLUGINS mini PLUGIN_INDEX_INI)
+if (${PLUGIN_INDEX_INI} EQUAL -1)
+	add_s_test (msr_syntax "${CMAKE_SOURCE_DIR}/tests/shell/shell_recorder/tutorial_wrapper/SyntaxCheck.md")
+endif (${PLUGIN_INDEX_INI} EQUAL -1)
 
 add_s_test (tutorial_cascading "${CMAKE_SOURCE_DIR}/doc/tutorials/cascading.md")
 add_s_test (kdb-complete "${CMAKE_SOURCE_DIR}/doc/help/kdb-complete.md")
