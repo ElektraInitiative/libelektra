@@ -11,6 +11,7 @@
 
 #include <kdberrors.h>
 #include <kdbhelper.h>
+#include <kdblogger.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -88,6 +89,7 @@ static int isFalse (const char * value, const char ** falseValues)
 	int retVal = 0;
 	while (*ptr)
 	{
+		ELEKTRA_LOG_DEBUG ("Check if “%s” is equal to %s", value, *ptr);
 		if (!strcasecmp (value, *ptr))
 		{
 			retVal = 1;
@@ -114,15 +116,18 @@ static void normalize (Key * key, Key * parentKey, BoolData * data)
 	if (isTrue (value, trueStrings))
 	{
 		keySetMeta (key, "origvalue", keyString (key));
+		ELEKTRA_LOG_DEBUG ("Convert true value to %s", data->true);
 		keySetString (key, data->true);
 	}
 	else if (isFalse (value, falseStrings))
 	{
 		keySetMeta (key, "origvalue", keyString (key));
+		ELEKTRA_LOG_DEBUG ("Convert false value to %s", data->false);
 		keySetString (key, data->false);
 	}
 	else
 	{
+		ELEKTRA_LOG_DEBUG ("Neither true nor false value");
 		keySetMeta (key, "boolean/invalid", "");
 		switch ((data->invalid & ~(WARNING)))
 		{
@@ -249,7 +254,11 @@ static void parseConfig (KeySet * config, BoolData * data)
 static int isBool (const Key * key)
 {
 	const Key * boolMeta = keyGetMeta (key, "type");
-	if (boolMeta && !strcmp (keyString (boolMeta), "boolean")) return 1;
+	if (boolMeta && !strcmp (keyString (boolMeta), "boolean"))
+	{
+		ELEKTRA_LOG_DEBUG ("Meta key “type” contains “%s”", keyString (boolMeta));
+		return 1;
+	}
 
 	boolMeta = keyGetMeta (key, "check/type");
 	if (boolMeta && !strcmp (keyString (boolMeta), "boolean")) return 1;
@@ -286,7 +295,9 @@ int elektraBooleanGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 	ksRewind (returned);
 	while ((key = ksNext (returned)) != NULL)
 	{
-		if (isBool (key))
+		uint8_t isBoolean = isBool (key);
+		ELEKTRA_LOG_DEBUG ("Key “%s” %s a boolean", keyName (key), isBoolean ? "contains" : "does not contain");
+		if (isBoolean)
 		{
 			normalize (key, parentKey, data);
 		}
@@ -322,7 +333,9 @@ int elektraBooleanSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 	int retVal = 1;
 	while ((key = ksNext (returned)) != NULL)
 	{
-		if (isBool (key))
+		uint8_t isBoolean = isBool (key);
+		ELEKTRA_LOG_DEBUG ("Key “%s” %s a boolean", keyName (key), isBoolean ? "contains" : "does not contain");
+		if (isBoolean)
 		{
 			const Key * nameMeta = keyGetMeta (key, "origvalue");
 			if ((!(!strcmp (keyString (key), trueValue) || !strcmp (keyString (key), falseValue))) ||
