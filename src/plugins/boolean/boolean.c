@@ -254,10 +254,10 @@ static void parseConfig (KeySet * config, BoolData * data)
 static int isBool (const Key * key)
 {
 	const Key * boolMeta = keyGetMeta (key, "type");
-	if (boolMeta && !strcmp (keyString (boolMeta), "boolean"))
+	if (boolMeta)
 	{
-		ELEKTRA_LOG_DEBUG ("Meta key “type” contains “%s”", keyString (boolMeta));
-		return 1;
+		ELEKTRA_LOG_DEBUG ("Meta key “type” contains value “%s”", keyString (boolMeta));
+		return !strcmp (keyString (boolMeta), "boolean");
 	}
 
 	boolMeta = keyGetMeta (key, "check/type");
