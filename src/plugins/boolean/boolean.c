@@ -138,7 +138,7 @@ static void normalize (Key * key, Key * parentKey, BoolData * data)
 						      "Key %s with value %s is not a valid boolean. Defaulting to %s.", keyName (key),
 						      keyString (key), data->true);
 			}
-			keySetMeta (key, "originalvalue", keyString (key));
+			keySetMeta (key, "origvalue", keyString (key));
 			keySetString (key, data->true);
 			break;
 		case FALSE:
