@@ -335,6 +335,7 @@ int elektraBooleanSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 		ELEKTRA_LOG_DEBUG ("Key “%s” %s a boolean", keyName (key), isBoolean ? "contains" : "does not contain");
 		if (isBoolean)
 		{
+			if (!keyGetMeta (key, "origvalue")) normalize (key, parentKey, data);
 			const Key * originalValue = keyGetMeta (key, "origvalue");
 			if (!(!strcmp (keyString (key), trueValue) || !strcmp (keyString (key), falseValue)) ||
 			    (keyGetMeta (key, "boolean/invalid")))
