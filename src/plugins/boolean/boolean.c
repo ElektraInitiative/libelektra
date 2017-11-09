@@ -89,7 +89,6 @@ static int isFalse (const char * value, const char ** falseValues)
 	int retVal = 0;
 	while (*ptr)
 	{
-		ELEKTRA_LOG_DEBUG ("Check if “%s” is equal to %s", value, *ptr);
 		if (!strcasecmp (value, *ptr))
 		{
 			retVal = 1;
@@ -116,13 +115,13 @@ static void normalize (Key * key, Key * parentKey, BoolData * data)
 	if (isTrue (value, trueStrings))
 	{
 		keySetMeta (key, "origvalue", keyString (key));
-		ELEKTRA_LOG_DEBUG ("Convert true value to %s", data->true);
+		ELEKTRA_LOG_DEBUG ("Convert “%s” to “%s”", value, data->true);
 		keySetString (key, data->true);
 	}
 	else if (isFalse (value, falseStrings))
 	{
 		keySetMeta (key, "origvalue", keyString (key));
-		ELEKTRA_LOG_DEBUG ("Convert false value to %s", data->false);
+		ELEKTRA_LOG_DEBUG ("Convert “%s” to “%s”", value, data->false);
 		keySetString (key, data->false);
 	}
 	else
