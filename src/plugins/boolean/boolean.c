@@ -304,11 +304,10 @@ int elektraBooleanGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 	return 1; // success
 }
 
-static void restoreValue (Key * key, const char * origName)
+static void restoreValue (Key * key, const char * origValue)
 {
-	keySetString (key, origName);
+	keySetString (key, origValue);
 	keySetMeta (key, "origvalue", 0);
-	return;
 }
 
 int elektraBooleanSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
@@ -336,16 +335,16 @@ int elektraBooleanSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 		ELEKTRA_LOG_DEBUG ("Key “%s” %s a boolean", keyName (key), isBoolean ? "contains" : "does not contain");
 		if (isBoolean)
 		{
-			const Key * nameMeta = keyGetMeta (key, "origvalue");
-			if ((!(!strcmp (keyString (key), trueValue) || !strcmp (keyString (key), falseValue))) ||
+			const Key * originalValue = keyGetMeta (key, "origvalue");
+			if (!(!strcmp (keyString (key), trueValue) || !strcmp (keyString (key), falseValue)) ||
 			    (keyGetMeta (key, "boolean/invalid")))
 			{
 				keySetMeta (key, "boolean/invalid", 0);
 				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INVALID_BOOL, parentKey, "%s is not a valid boolean value",
-						    keyString (nameMeta));
+						    keyString (originalValue));
 				retVal = -1;
 			}
-			if (nameMeta) restoreValue (key, keyString (nameMeta));
+			if (originalValue) restoreValue (key, keyString (originalValue));
 		}
 	}
 	return retVal; // success
