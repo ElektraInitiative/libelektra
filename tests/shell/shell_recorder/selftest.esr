@@ -21,6 +21,9 @@ STDERR: The command kdb not-a-command is not known
 STDERR: .+not-a-command.+
 < kdb not-a-command 1>/dev/null
 
+STDOUT: Create a new key user/test/\/evil\\\/tripleEscaped\\/doubleEscaped/key/.withADot/..andADoubleDot with string "txt"
+< kdb set $Mountpoint/\\/evil\\\\\\/tripleEscaped\\\\/doubleEscaped/key/.withADot/..andADoubleDot txt
+
 < echo   '[section]' > `kdb file $Mountpoint`
 < printf 'key="multi\nline"' >> `kdb file $Mountpoint`
 
