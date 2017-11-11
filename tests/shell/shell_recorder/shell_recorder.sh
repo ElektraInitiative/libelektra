@@ -40,6 +40,7 @@ execute()
 
 	printf '%s\n' "$command"
 
+	[ -s "$OutFile" ] && printf '\n' >> "$OutFile"
 	printf 'CMD: %s\n' "$command" >> "$OutFile"
 
 	sh -c -f "$command" 2>stderr 1>stdout
@@ -150,8 +151,6 @@ execute()
 			nbError=$(( nbError + 1 ))
 		fi
 	fi
-
-	printf '\n' >> "$OutFile"
 }
 
 tail()
