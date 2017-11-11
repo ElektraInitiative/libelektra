@@ -119,7 +119,8 @@ before_script:
   - >
     [[ "$TRAVIS_OS_NAME" == "linux" ]] && INSTALL_DIR="$PWD/install" || INSTALL_DIR="/usr/local"
   - SYSTEM_DIR="$PWD/kdbsystem"
-  - mkdir build && cd build
+  # it might be partially cached due to the cabal sandbox caching
+  - cd build || mkdir build && cd build
   - >
     [[ $ASAN == ON ]] && CMAKE_OPT=(-DENABLE_ASAN=ON) || CMAKE_OPT=()
   - if [[ $FULL == ON ]]; then CMAKE_OPT+=(-DBUILD_FULL=ON); fi
