@@ -41,7 +41,7 @@ MOUNTCHECK="$EXPORTS/mount.check.dump"
 
 checkFailed()
 {
-	echo "$t did not left $1 config in the same state at is was before!"
+	echo "$t did not leave $1 config in the same state at is was before!"
 	echo "This means the test itself is flawed!"
 	echo "You can inspect the original $1 config in $EXPORTS/$1.export.dump"
 	echo "compared to situation now in $EXPORTS/$1.check.dump"
