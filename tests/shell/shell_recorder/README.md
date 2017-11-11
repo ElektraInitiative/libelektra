@@ -132,3 +132,73 @@ A command starts with `<` followed by kdb or shell commands.
 ## Examples
 
 Please take a look at the examples files (`*.esr`) located inside this folder.
+
+## Replay Tests
+
+If you want to create a test for `kdb` commands, but you do not want to write down the standard output, return value and the other things
+the Shell Recorder compares, then you can use protocol files to create a **replay test**. Start by writing down the commands you want to
+test. In the following example we want to verify the behavior of the command `kdb ls`. We create a file called `ls.esr` containing a
+mountpoint and a list of commands:
+
+```
+Mountpoint: /user/test/ls
+
+< kdb set user/test/ls/level1 'one'
+< kdb ls user/test/ls
+< kdb set user/test/ls/level1/level2 'two'
+< kdb set user/test/ls/the 'roots'
+< kdb ls user/test/ls
+< kdb set user/test/ls/the/next/level
+```
+
+. We then execute the test with the Shell Recorder using the command line switch (`-p`):
+
+```sh
+build/tests/shell/shell_recorder/shell_recorder.sh -p ~/Documents/ls.esr
+```
+
+. The option `-p` tells the Shell Recorder to keep a protocol file even if none of the test fail. The Shell Recorder prints the location of
+the protocol file in it’s output:
+
+```
+…
+📕  Protocol File: /var/folders/hx/flbncdhj4fs87095gzxvnj3h0000gn/T/elektraenv.XXXXXXXXX.MyZLuGKE
+```
+
+
+. If we take a look at the protocol file we see that it contains the the commands from above, together with return values, standard (error)
+output, warnings and error values. For example, the last `kdb set` command produced the following text in the protocol file:
+
+```
+CMD: kdb set user/test/ls/the/next/level
+RET: 0
+STDOUT: Set null value
+```
+
+. We can now take the file `ls.esr` and the protocol file to check if running the test a second time produces the same output:
+
+
+```sh
+mv /var/folders/hx/flbncdhj4fs87095gzxvnj3h0000gn/T/elektraenv.XXXXXXXXX.MyZLuGKE ~/Documents/ls.epf
+build/tests/shell/shell_recorder/shell_recorder.sh -p ~/Documents/ls.esr ~/Documents/ls.epf
+```
+
+. The Shell Recorder then prints the following output if everything went fine:
+
+```
+kdb set user/test/ls/level1 'one'
+kdb ls user
+kdb set user/test/ls/level1/level2 'two'
+kdb set user/test/ls/the 'roots'
+kdb ls user
+kdb set user/test/ls/the/next/level
+=======================================
+Replay test succeeded
+```
+
+.
+
+### Adding Replay Tests
+
+If you want to add a replay test to the test suite of Elektra, you can do so by moving your test file (`filename.esr`) and your protocol
+file (`filename.epf`) to the folder `replay_tests`. The text `filename`  specifies the name of the replay test.
