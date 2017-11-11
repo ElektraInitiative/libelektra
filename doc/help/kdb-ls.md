@@ -37,6 +37,7 @@ This command will list the name of all keys below a given path.
 ## EXAMPLES
 
 ```sh
+# Backup-and-Restore: /sw/elektra/examples
 
 # Create the keys we use for the examples
 kdb set /sw/elektra/examples/kdb-ls/test val1
