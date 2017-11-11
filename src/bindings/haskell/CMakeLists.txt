@@ -45,7 +45,6 @@ if (NOT BUILD_STATIC)
 	add_custom_command (
 		OUTPUT ${BINDING_HASKELL_NAME}
 		COMMAND ${CABAL_EXECUTABLE} sandbox init
-		COMMAND ${CABAL_EXECUTABLE} install hspec QuickCheck
 		COMMAND ${CABAL_EXECUTABLE} --ipid=libelektra-haskell-${KDB_VERSION} ${CABAL_OPTS} configure
 		 # this only installs to the sandbox so plugins can depend on it
 		 # without breaking the global db through shared sandboxes
@@ -85,6 +84,8 @@ if (NOT BUILD_STATIC)
 		)
 		add_custom_command (
 			OUTPUT ${HASKELL_TESTS}
+			# they are getting installed to the sandbox, and they get cached to avoid reinstalling every time
+			COMMAND ${CABAL_EXECUTABLE} install hspec QuickCheck
 			COMMAND ${CABAL_EXECUTABLE} --ipid=libelektra-haskell-${KDB_VERSION} ${CABAL_OPTS} --enable-tests configure
 			COMMAND ${CABAL_EXECUTABLE} build
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}

@@ -161,6 +161,8 @@ macro (add_haskell_plugin target)
 				# this way it will generate predictable output filenames
 				# and compile the haskell part of this plugin with cabal
 				COMMAND ${CABAL_EXECUTABLE} sandbox init --sandbox "${CMAKE_CURRENT_BINARY_DIR}/../../bindings/haskell/.cabal-sandbox"
+				# ensure any further dependencies added by plugin developers get installed to the sandbox
+				COMMAND ${CABAL_EXECUTABLE} install --only-dependencies
 				COMMAND ${CABAL_EXECUTABLE} --ipid=${target} ${CABAL_OPTS} configure
 				COMMAND ${CABAL_EXECUTABLE} build
 				WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}

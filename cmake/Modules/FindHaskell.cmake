@@ -53,16 +53,10 @@ if (GHC-PKG_EXECUTABLE)
 		set (GHC_QUICKCHECK_FOUND 0)
 	endif (GHC_QUICKCHECK_FOUND EQUAL 0)
 
-	if (GHC_HSPEC_FOUND OR NOT BUILD_TESTING)
-	if (GHC_QUICKCHECK_FOUND OR NOT BUILD_TESTING)
-		# all set, have fun with haskell!
-		set (HASKELL_FOUND 1)
-	else (GHC_QUICKCHECK_FOUND OR NOT BUILD_TESTING)
-		set (HASKELL_NOTFOUND_INFO "QuickCheck library not found")
-	endif (GHC_QUICKCHECK_FOUND OR NOT BUILD_TESTING)
-	else (GHC_HSPEC_FOUND OR NOT BUILD_TESTING)
-		set (HASKELL_NOTFOUND_INFO "hspec library not found")
-	endif (GHC_HSPEC_FOUND OR NOT BUILD_TESTING)
+	# By using cabal sandboxes we can install hspec and QuickCheck to the sandbox without
+	# any concerns as they are independent from the global environment. So they are not required.
+	# All set, have fun with haskell!
+	set (HASKELL_FOUND 1)
 
 else (GHC-PKG_EXECUTABLE)
 	set (HASKELL_NOTFOUND_INFO "ghc-pkg not found")
