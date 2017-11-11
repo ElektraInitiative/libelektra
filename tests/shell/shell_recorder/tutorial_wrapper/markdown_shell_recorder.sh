@@ -39,7 +39,8 @@ translate()
 {
 	TMPFILE=$(mktemp)
 	MOUNTPOINT=$(echo "$BUF" | head -n 1)
-	if grep -Eq 'Backup-and-Restore:' <<< "$MOUNTPOINT"; then echo "Mountpoint: $(cut -d ':' -f2 <<< "$MOUNTPOINT")" >> "$TMPFILE"
+	if grep -Eq 'Backup-and-Restore:' <<< "$MOUNTPOINT"; then
+		echo "Mountpoint: $(cut -d ':' -f2 <<< "$MOUNTPOINT" | sed 's/^[[:space:]]*//')" >> "$TMPFILE"
 	else echo 'Mountpoint: /examples' >> "$TMPFILE"
 	fi
 
