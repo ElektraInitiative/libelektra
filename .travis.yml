@@ -1,5 +1,13 @@
 language: cpp
 
+cache:
+  directories:
+    $HOME/.m2
+    $HOME/.cabal
+    $HOME/Library/Haskell
+    $TRAVIS_BUILD_DIR/../build/src/bindings/haskell/.cabal-sandbox
+    $TRAVIS_BUILD_DIR/../build/src/plugins/haskell/.cabal-sandbox
+
 #
 # Define the build matrix
 #
@@ -30,13 +38,6 @@ matrix:
       compiler: gcc
       env: [ FULL=ON ]
 
-    # HASKELL: Only build Haskell binding and plugin
-
-    - os: osx
-      osx_image: xcode9.1
-      compiler: clang
-      env: [ HASKELL=ON ]
-
     - os: osx
       osx_image: xcode9.1
       compiler: gcc
@@ -58,7 +59,7 @@ before_install:
       brew install ninja
     fi
   - |
-    if [[ "$TRAVIS_OS_NAME" == "osx" && "$FAST" != "ON" && "$HASKELL" != "ON" ]]; then
+    if [[ "$TRAVIS_OS_NAME" == "osx" && "$FAST" != "ON" ]]; then
       rvm install 2.3.1
       rvm use 2.3.1
       gem install test-unit --no-document
@@ -75,13 +76,13 @@ before_install:
         brew install xerces-c
       fi
       brew install augeas
+      brew install cabal-install
       brew install checkbashisms
       brew install dbus
       brew install discount
       brew install gobject-introspection
       brew install libgcrypt
       brew install libgit2
-      brew install libuv
       brew install lua
       brew install openssl
       brew install python
@@ -91,14 +92,23 @@ before_install:
       brew install yajl
       pip2 install cheetah # Required by kdb-gen
       export Qt5_DIR=/usr/local/opt/qt5
-    fi
-  - |
-    if [[ "$TRAVIS_OS_NAME" == "osx" && "$HASKELL" == "ON" ]] ; then
+
       brew install cabal-install
       cabal update
-      cabal install happy alex
+      # avoid reinstalls if we already have them cached
+      which happy
+      if [[ "$?" == 1 ]]
+        cabal install happy
+      fi
+      which alex
+      if [[ "$?" == 1 ]]
+        cabal install alex
+      fi
+      which c2hs
+      if [[ "$?" == 1 ]]
+        cabal install c2hs
+      fi
       PATH=$PATH:"$HOME/.cabal/bin"
-      cabal install QuickCheck hspec c2hs
     fi
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
@@ -107,7 +117,6 @@ before_install:
       sudo apt-get install ninja-build
       sudo apt-get install libboost-all-dev
       sudo apt-get install libyaml-cpp-dev
-      sudo apt-get install libuv-dev
     fi
 
 #
@@ -127,7 +136,6 @@ before_script:
     if [[ "$TRAVIS_OS_NAME" == "linux" && "$CC" == "clang" || "$TRAVIS_OS_NAME" == "osx" && "${CC:0:3}" == "gcc" ]]; then
       CMAKE_OPT+=("-DCOMMON_FLAGS=-Werror")
     fi
-  - if [[ $HASKELL == ON ]]; then bindings="haskell"; fi
   - |
     if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
       python2_ver=$(python2 -c 'import sys; print(".".join(map(str, sys.version_info[:2])))') &&                  \
@@ -143,7 +151,7 @@ before_script:
     -GNinja
     -DBUILD_STATIC=OFF
     -DPLUGINS="${plugins:-ALL;-jni}"
-    -DBINDINGS="${bindings}"
+    -DBINDINGS="${bindings:-ALL;haskell}"
     -DENABLE_DEBUG=ON
     -DTOOLS=ALL
     -DINSTALL_SYSTEM_FILES=OFF
@@ -162,9 +170,5 @@ script:
       ninja run_all
     else
       ninja install
-      # Unfortunately the Haskell tests do not work currently:
-      # https://github.com/ElektraInitiative/libelektra/issues/1631
-      if [[ "$HASKELL" != "ON" ]]; then
-        ninja run_all && kdb run_all
-      fi
+      ninja run_all && kdb run_all
     fi
