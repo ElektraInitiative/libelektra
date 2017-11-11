@@ -28,8 +28,7 @@ kdb get /test/x
 kdb get /test/y
 #> y
 kdb export /test ini
-#> x = x
-#> y = y
+# STDOUT-REGEX: (\[\]⏎)?x = x⏎y = y
 kdb ls /test
 kdb rm -r /test
 ```

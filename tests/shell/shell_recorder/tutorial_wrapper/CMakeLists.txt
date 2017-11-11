@@ -14,12 +14,20 @@ function (add_plugin_shell_test PLUGIN)
 	endif ()
 endfunction ()
 
+# Only add test below if INI plugin is available
+list (FIND REMOVED_PLUGINS mini PLUGIN_INDEX_INI)
+if (${PLUGIN_INDEX_INI} EQUAL -1)
+	add_s_test (msr_syntax "${CMAKE_SOURCE_DIR}/tests/shell/shell_recorder/tutorial_wrapper/SyntaxCheck.md")
+endif (${PLUGIN_INDEX_INI} EQUAL -1)
 
-add_s_test (msr_syntax "${CMAKE_SOURCE_DIR}/tests/shell/shell_recorder/tutorial_wrapper/SyntaxCheck.md")
+# Only add test below if Spec plugin is available
+list (FIND REMOVED_PLUGINS spec PLUGIN_INDEX_SPEC)
+if (${PLUGIN_INDEX_SPEC} EQUAL -1)
+	add_s_test (kdb-global-umount "${CMAKE_SOURCE_DIR}/doc/help/kdb-global-umount.md")
+endif (${PLUGIN_INDEX_SPEC} EQUAL -1)
 
 add_s_test (tutorial_cascading "${CMAKE_SOURCE_DIR}/doc/tutorials/cascading.md")
 add_s_test (kdb-complete "${CMAKE_SOURCE_DIR}/doc/help/kdb-complete.md")
-add_s_test (kdb-global-umount "${CMAKE_SOURCE_DIR}/doc/help/kdb-global-umount.md")
 add_s_test (kdb-ls "${CMAKE_SOURCE_DIR}/doc/help/kdb-ls.md")
 
 add_plugin_shell_test (blockresolver)
@@ -44,13 +52,17 @@ add_plugin_shell_test (yajl)
 # The cause of this seems to be a bug in old versions of `libstdc++`:
 # http://lists.llvm.org/pipermail/cfe-dev/2013-August/031194.html
 set (ASAN_LINUX ENABLE_ASAN AND ${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-if (NOT (ASAN_LINUX AND CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 5))
-	add_s_test (tutorial_validation "${CMAKE_SOURCE_DIR}/doc/tutorials/validation.md")
+if (NOT (${ASAN_LINUX} AND CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 5))
+	list (FIND REMOVED_PLUGINS validation PLUGIN_INDEX_VALIDATION)
+	if (${PLUGIN_INDEX_VALIDATION} EQUAL -1)
+		add_s_test (tutorial_validation "${CMAKE_SOURCE_DIR}/doc/tutorials/validation.md")
+	endif (${PLUGIN_INDEX_VALIDATION} EQUAL -1)
+
 	add_plugin_shell_test (base64)
 	add_plugin_shell_test (mini)
 	add_plugin_shell_test (tcl)
 	add_plugin_shell_test (yamlcpp)
-endif (NOT (ASAN_LINUX AND CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 5))
+endif (NOT (${ASAN_LINUX} AND CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 5))
 
 # Only works with super user privileges, since it writes to `/etc/hosts`:
 # add_s_test (tutorial_mount "${CMAKE_SOURCE_DIR}/doc/tutorials/mount.md")

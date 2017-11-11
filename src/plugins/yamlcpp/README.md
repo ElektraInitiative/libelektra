@@ -194,30 +194,30 @@ key with metadata:
 
 ```sh
 # Mount yamlcpp plugin to cascading namespace `/examples/yamlcpp`
-sudo kdb mount config.yaml /examples/yamlcpp yamlcpp
+sudo kdb mount config.yaml user/examples/yamlcpp yamlcpp
 
 # Manually add a key including metadata to the database
-echo "🔑: !elektra/meta [🦄, {comment: Unicorn}]" >  `kdb file /examples/yamlcpp`
-kdb lsmeta /examples/yamlcpp/🔑
+echo "🔑: !elektra/meta [🦄, {comment: Unicorn}]" >  `kdb file user/examples/yamlcpp`
+kdb lsmeta user/examples/yamlcpp/🔑
 #> comment
-kdb getmeta /examples/yamlcpp/🔑 comment
+kdb getmeta user/examples/yamlcpp/🔑 comment
 #> Unicorn
 
 # Add a new key and add some metadata to the new key
-kdb set /examples/yamlcpp/brand new
-kdb setmeta /examples/yamlcpp/brand comment "The Devil And God Are Raging Inside Me"
-kdb setmeta /examples/yamlcpp/brand rationale "Because I Love It"
+kdb set user/examples/yamlcpp/brand new
+kdb setmeta user/examples/yamlcpp/brand comment "The Devil And God Are Raging Inside Me"
+kdb setmeta user/examples/yamlcpp/brand rationale "Because I Love It"
 
 # Retrieve metadata
-kdb lsmeta /examples/yamlcpp/brand
+kdb lsmeta user/examples/yamlcpp/brand
 #> comment
 #> rationale
-kdb getmeta /examples/yamlcpp/brand rationale
+kdb getmeta user/examples/yamlcpp/brand rationale
 #> Because I Love It
 
 # Undo modifications to the key database
-kdb rm -r /examples/yamlcpp
-sudo kdb umount /examples/yamlcpp
+kdb rm -r user/examples/yamlcpp
+sudo kdb umount user/examples/yamlcpp
 ```
 
 We can also invoke additional plugins that use metadata like `type`.

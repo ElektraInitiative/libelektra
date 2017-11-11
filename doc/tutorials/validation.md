@@ -120,9 +120,9 @@ kdb setmeta spec/tutorial/spec/test hello world
 kdb set /tutorial/spec/test value
 #> Using name user/tutorial/spec/test
 #> Create a new key user/tutorial/spec/test with string "value"
-kdb lsmeta spec/tutorial/spec/test
+kdb lsmeta spec/tutorial/spec/test | grep -v '^internal/ini'
 #> hello
-kdb lsmeta /tutorial/spec/test
+kdb lsmeta /tutorial/spec/test | grep -v '^internal/ini'
 #> hello
 kdb getmeta /tutorial/spec/test hello
 #> world
@@ -137,7 +137,7 @@ kdb setmeta "spec/tutorial/spec/_" new metaval
 kdb set /tutorial/spec/test value
 #> Using name user/tutorial/spec/test
 #> Set string to "value"
-kdb lsmeta /tutorial/spec/test
+kdb lsmeta /tutorial/spec/test | grep -v '^internal/ini'
 #> hello
 #> new
 
@@ -163,7 +163,7 @@ kdb set /tutorial/spec/test "not a number"
 ```
 this key has adopted all metadata from the spec namespace:
 ```sh
-kdb lsmeta /tutorial/spec/test
+kdb lsmeta /tutorial/spec/test | grep -v '^internal/ini'
 #> check/validation
 #> check/validation/match
 #> check/validation/message
