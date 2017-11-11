@@ -1,0 +1,25 @@
+CMD: kdb set user/test/ls/level1 'one'
+RET: 0
+STDOUT: Create a new key user/test/ls/level1 with string "one"
+
+CMD: kdb ls user/test/ls
+RET: 0
+STDOUT: user/test/ls/level1
+
+CMD: kdb set user/test/ls/level1/level2 'two'
+RET: 0
+STDOUT: Create a new key user/test/ls/level1/level2 with string "two"
+
+CMD: kdb set user/test/ls/the 'roots'
+RET: 0
+STDOUT: Create a new key user/test/ls/the with string "roots"
+
+CMD: kdb ls user/test/ls
+RET: 0
+STDOUT: user/test/ls/level1
+user/test/ls/level1/level2
+user/test/ls/the
+
+CMD: kdb set user/test/ls/the/next/level
+RET: 0
+STDOUT: Create a new key user/test/ls/the/next/level with null value
