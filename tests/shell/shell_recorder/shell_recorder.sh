@@ -70,7 +70,7 @@ execute()
 	STDERR=$(cat ./stderr)
 
 
-	printf 'STDERR: %s\n' "$STDERR" >> "$OutFile"
+	[ -n "$STDERR" ] && printf 'STDERR: %s\n' "$STDERR" >> "$OutFile"
 	if [ -n "$STDERRCMP" ];
 	then
 		nbTest=$(( nbTest + 1 ))
@@ -88,7 +88,7 @@ execute()
 
 	STDOUT=$(cat ./stdout)
 
-	printf '%s\n' "STDOUT: $STDOUT" >> "$OutFile"
+	[ -n "$STDOUT" ] && printf '%s\n' "STDOUT: $STDOUT" >> "$OutFile"
 	if [ -n "$STDOUTCMP" ];
 	then
 		nbTest=$(( nbTest + 1 ))
@@ -121,7 +121,7 @@ execute()
 
 	WARNINGS=$(printf '%s' "$STDERR" | sed -nE  's/.*Warning (number: |\(#)([0-9]+).*/\2/p' | tr '\n' ',' | sed 's/.$//')
 
-	printf 'WARNINGS: %s\n' "$WARNINGS" >> "$OutFile"
+	[ -n "$WARNINGS" ] && printf 'WARNINGS: %s\n' "$WARNINGS" >> "$OutFile"
 	if [ -n "$WARNINGSCMP" ];
 	then
 		nbTest=$(( nbTest + 1 ))
@@ -139,7 +139,7 @@ execute()
 
 	ERROR=$(printf '%s' "$STDERR" | sed -nE 's/.*error \(#([0-9]+).*/\1/p')
 
-	printf 'ERROR: %s\n' "$ERROR" >> "$OutFile"
+	[ -n "$ERROR" ] && printf 'ERROR: %s\n' "$ERROR" >> "$OutFile"
 	if [ -n "$ERRORCMP" ];
 	then
 		nbTest=$(( nbTest + 1 ))
