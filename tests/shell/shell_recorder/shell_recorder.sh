@@ -21,11 +21,6 @@ execute()
 		exit 1
 	fi
 
-	if [ -z "$DBFile" ];
-	then
-		DBFile=$("$KDBCOMMAND" file "$Mountpoint" 2>/dev/null)
-	fi
-
 	if [ "$BACKUP" -eq '1' ];
 	then
 		if ! "$KDBCOMMAND" export "$Mountpoint" dump > "$TMPFILE" 2>/dev/null;
@@ -43,18 +38,6 @@ execute()
 	                                     -e "s~\$Storage~${Storage}~g"       \
 	                                     -e "s~\$MountArgs~${MountArgs}~g")
 
-	case "$DiffType" in
-	File)
-		rm -f "${DBFile}.1"
-		cp "${DBFile}" "${DBFile}.1" 2>/dev/null
-		;;
-	Ini)
-		"$KDBCOMMAND" export "$Mountpoint" ini > ./previousState 2>/dev/null
-		;;
-	Dump)
-		"$KDBCOMMAND" export "$Mountpoint" dump > ./previousState 2>/dev/null
-		;;
-	esac
 	printf '%s\n' "$command"
 
 	printf 'CMD: %s\n' "$command" >> "$OutFile"
@@ -62,23 +45,6 @@ execute()
 	sh -c -f "$command" 2>stderr 1>stdout
 
 	RETVAL="$?"
-
-	DIFF=
-	case "$DiffType" in
-	File)
-		DIFF=$(diff -N --text "${DBFile}" "${DBFile}.1" 2>/dev/null)
-		;;
-	Ini)
-		"$KDBCOMMAND" export $Mountpoint ini > ./newState 2>/dev/null
-		DIFF=$(diff -N --text ./previousState ./newState 2>/dev/null)
-		rm -f ./newState ./previousState
-		;;
-	Dump)
-		"$KDBCOMMAND" export $Mountpoint dump > ./newState 2>/dev/null
-		DIFF=$(diff -N --text ./previousState ./newState 2>/dev/null)
-		rm -f ./newState ./previousState
-		;;
-	esac
 
 # =======
 # = RET =
@@ -185,22 +151,6 @@ execute()
 		fi
 	fi
 
-# ========
-# = DIFF =
-# ========
-
-	printf '%s\n' "DIFF: $DIFF" >> "$OutFile"
-	if [ -n "$DIFFCMP" ];
-	then
-		nbTest=$(( nbTest + 1 ))
-		if ! printf '%s' "$DIFF" | replace_newline_return | grep -Eq --text "$DIFFCMP";
-		then
-			printf '\nERROR - Changes to %s:\n“%s”\ndo not match\n“%s”\n\n' "$DBFile" "$DIFFCMP" "$DIFF"
-			printf '=== FAILED changes to database file (%s) do not match %s\n' "$DBFile" "$DIFFCMP" >> "$OutFile"
-			nbError=$(( nbError + 1 ))
-		fi
-	fi
-
 	printf '\n' >> "$OutFile"
 }
 
@@ -240,9 +190,6 @@ run_script()
 	MountArgs:)
 		MountArgs=$(tail "$line")
 		;;
-	DiffType:)
-		DiffType=$(second "$line")
-		;;
 	RET:)
 		RETCMP=$(tail "$line")
 		;;
@@ -261,9 +208,6 @@ run_script()
 	STDERR:)
 		STDERRCMP=$(tail "$line")
 		;;
-	DIFF:)
-		DIFFCMP=$(tail "$line")
-		;;
 	\<)
 		OP="$cmd"
 		ARG=$(tail "$line")
@@ -278,7 +222,6 @@ run_script()
 		STDOUTCMP=
 		STDOUTRECMP=
 		STDERRCMP=
-		DIFFCMP=
 	fi
 	done < "$FILE"
 }
@@ -301,7 +244,6 @@ WARNINGSCMP=
 STDOUTCMP=
 STDOUTRECMP=
 STDERRCMP=
-DIFFCMP=
 
 BACKUP=0
 TMPFILE=$(mktempfile_elektra)
@@ -323,7 +265,6 @@ run_script
 
 "$KDBCOMMAND" rm -r "$Mountpoint" 2>/dev/null
 "$KDBCOMMAND" import "$Mountpoint" dump 2>/dev/null < "$TMPFILE"
-rm -rf "${DBFile}.1"
 
 EVAL=0
 

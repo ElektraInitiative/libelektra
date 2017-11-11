@@ -1,12 +1,11 @@
 Storage: mini
 Mountpoint: user/test
 File: config.ini
-DiffType: Ini
 
 RET: 0
 < kdb mount $File $Mountpoint $Storage
 
-DIFF: > key = value
+STDOUT: Create a new key user/test/key with string "value"
 < kdb set $Mountpoint/key value
 
 STDOUT: Set string to "value"
