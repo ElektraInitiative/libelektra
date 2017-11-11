@@ -96,18 +96,9 @@ before_install:
       brew install cabal-install
       cabal update
       # avoid reinstalls if we already have them cached
-      which happy
-      if [[ "$?" == 1 ]]
-        cabal install happy
-      fi
-      which alex
-      if [[ "$?" == 1 ]]
-        cabal install alex
-      fi
-      which c2hs
-      if [[ "$?" == 1 ]]
-        cabal install c2hs
-      fi
+      which happy || cabal install happy
+      which alex || cabal install alex
+      which c2hs || cabal install c2hs
       PATH=$PATH:"$HOME/.cabal/bin"
     fi
   - |
