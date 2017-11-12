@@ -13,7 +13,6 @@ resetGlobals()
 	STDOUT=
 	STDOUTRE=
 	STDERR=
-	DIFF=
 	OUTBUF=
 	MOUNTPOINT=
 }
@@ -24,7 +23,6 @@ writeBlock()
 	[ -n "$RET" ] && echo "RET: $RET" >> "$TMPFILE" || { [ -z "$ERRORS" ] && echo 'RET: 0' >> "$TMPFILE"; }
 	[ -n "$ERRORS" ] && echo "ERRORS: $ERRORS" >> "$TMPFILE"
 	[ -n "$WARNINGS" ] && echo "WARNINGS: $WARNINGS" >> "$TMPFILE"
-	[ -n "$DIFF" ] && echo "DIFF: $DIFF" >> "$TMPFILE"
 	[ -n "$STDERR" ] && echo "STDERR: $STDERR" >> "$TMPFILE"
 	if [ -n "$OUTBUF" ]; then echo "STDOUT: $OUTBUF" >> "$TMPFILE"
 	elif [ -n "$STDOUT" ]; then echo "STDOUT: $STDOUT" >> "$TMPFILE"
@@ -75,9 +73,6 @@ translate()
 					;;
 				WARNINGS)
 					WARNINGS="$arg"
-					;;
-				DIFF)
-					DIFF="$arg"
 					;;
 				*)
 					;;
