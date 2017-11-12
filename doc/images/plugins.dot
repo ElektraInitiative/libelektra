@@ -8,7 +8,10 @@ strict digraph G {
 	blockresolver -> resolver;
 	check [shape=Mdiamond];
 	boolean -> check;
+	storage [shape=Mdiamond];
+	c -> storage;
 	c [shape=Mdiamond];
+	c -> c;
 	filter [shape=Mdiamond];
 	cachefilter -> filter;
 	storage [shape=Mdiamond];
