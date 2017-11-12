@@ -20,11 +20,11 @@ if (ENABLE_KDB_TESTING)
 	if (LENGTH_KDB_COMMAND EQUAL 0)
 		set (INCLUDE_COMMON
 			"${INCLUDE_COMMON_FILE}\n
-			KDBCOMMAND=\"${KDB_COMMAND}\"\n\
-			export PATH=\"`dirname \\\"$KDBCOMMAND\\\"`:$PATH\""
+			KDB=\"${KDB_COMMAND}\"\n\
+			export PATH=\"`dirname \\\"$KDB\\\"`:$PATH\""
 		)
 	else (LENGTH_KDB_COMMAND EQUAL 0)
-		set (INCLUDE_COMMON "${INCLUDE_COMMON_FILE}\nKDBCOMMAND=\"kdb\"")
+		set (INCLUDE_COMMON "${INCLUDE_COMMON_FILE}\nKDB=\"kdb\"")
 	endif (LENGTH_KDB_COMMAND EQUAL 0)
 
 	configure_file (

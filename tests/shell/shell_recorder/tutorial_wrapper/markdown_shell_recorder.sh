@@ -114,7 +114,7 @@ SHELL_RECORDER_ERROR=0
 INBLOCK=0
 IFS=''
 
-MOUNTPOINTS_BACKUP=$("$KDBCOMMAND" mount)
+MOUNTPOINTS_BACKUP=$("$KDB" mount)
 
 while read -r line;
 do
@@ -126,7 +126,7 @@ done <<< "$BLOCKS"
 
 translate
 
-MOUNTPOINTS=$("$KDBCOMMAND" mount)
+MOUNTPOINTS=$("$KDB" mount)
 
 if [ "$MOUNTPOINTS_BACKUP" != "$MOUNTPOINT" ];
 then
@@ -136,7 +136,7 @@ IFS='
 	for line in $TOUMOUNT;
 	do
 		mp=$(sed -n 's/.*with name \(.*\)/\1/p' <<< "$line")
-		"$KDBCOMMAND" umount "$mp"
+		"$KDB" umount "$mp"
 	done
 fi
 

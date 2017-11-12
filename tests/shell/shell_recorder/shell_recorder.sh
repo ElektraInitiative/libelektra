@@ -9,6 +9,7 @@ set -f
 cleanup()
 {
 	rm -f ./stdout ./stderr
+	rm -rf "$EXPORT_DIR"
 }
 
 execute()
@@ -23,13 +24,13 @@ execute()
 
 	if [ "$BACKUP" -eq '1' ];
 	then
-		if ! "$KDBCOMMAND" export "$Mountpoint" dump > "$TMPFILE" 2>/dev/null;
+		if ! "$KDB" export "$Mountpoint" dump > "$TMPFILE" 2>/dev/null;
 		then
 			printf 'ERROR: Failed to backup %s\nStopping test case.\n' "$Mountpoint"
 			exit 1
 		fi
 		BACKUP=0
-		"$KDBCOMMAND" rm -r "$Mountpoint" 2>/dev/null
+		"$KDB" rm -r "$Mountpoint" 2>/dev/null
 	fi
 
 	[ -z "$Storage" ] && Storage="dump"
@@ -273,10 +274,15 @@ fi
 
 BACKUP=1
 
+EXPORT_DIR="$(mktempdir_elektra)"
+export_config "$EXPORT_DIR"
+
 run_script
 
-"$KDBCOMMAND" rm -r "$Mountpoint" 2>/dev/null
-"$KDBCOMMAND" import "$Mountpoint" dump 2>/dev/null < "$TMPFILE"
+"$KDB" rm -r "$Mountpoint" 2>/dev/null
+"$KDB" import "$Mountpoint" dump 2>/dev/null < "$TMPFILE"
+
+export_check "$EXPORT_DIR" 'Test'
 
 EVAL=0
 
