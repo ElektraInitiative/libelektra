@@ -282,7 +282,7 @@ run_script
 "$KDB" rm -r "$Mountpoint" 2>/dev/null
 "$KDB" import "$Mountpoint" dump 2>/dev/null < "$TMPFILE"
 
-export_check "$EXPORT_DIR" 'Test'
+export_check "$EXPORT_DIR" 'Test' 'true'
 
 EVAL=0
 

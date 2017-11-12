@@ -306,6 +306,7 @@ export_check()
 {
 	EXPORTS=$1
 	TESTNAME=$2
+	IMPORTCONFIG=$3
 
 	SPECEXPORT="$EXPORTS/spec.export.dump"
 	SPECCHECK="$EXPORTS/spec.check.dump"
@@ -336,6 +337,23 @@ export_check()
 
 	"$KDB" export system/elektra/mountpoints dump > "$MOUNTCHECK"
 	exit_if_fail "Could not export mount config"
+
+	if [ "$IMPORTCONFIG" = 'true' ]; then
+		"$KDB" import spec dump < "$SPECEXPORT"
+		exit_if_fail "Could not import spec config"
+
+		"$KDB" import dir dump < "$DIREXPORT"
+		exit_if_fail "Could not import dir config"
+
+		"$KDB" import user dump < "$USEREXPORT"
+		exit_if_fail "Could not import user config"
+
+		"$KDB" import system --without-elektra dump < "$SYSTEMEXPORT"
+		exit_if_fail "Could not import system config"
+
+		"$KDB" import system/elektra/mountpoints dump < "$MOUNTEXPORT"
+		exit_if_fail "Could not import mount config"
+	fi
 
 	diff "$SPECEXPORT" "$SPECCHECK"
 	if [ $? != "0" ]
