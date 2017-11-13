@@ -10,6 +10,9 @@
 # VARIABLES
 #
 
+NEWLINE='
+'
+
 # variables to count up errors and tests
 nbError=0
 nbTest=0

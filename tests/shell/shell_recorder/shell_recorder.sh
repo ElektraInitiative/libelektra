@@ -169,10 +169,9 @@ second() {
 
 run_script()
 {
-	while read -r line;
+	while [ -n "$continuation" ] && line="$continuation" && continuation= || read -r line;
 	do
 	OP=
-	ARG=
 	cmd=$(first "$line")
 	case "$cmd" in
 	Mountpoint:)
@@ -210,7 +209,11 @@ run_script()
 		;;
 	\<)
 		OP="$cmd"
-		ARG=$(tail "$line")
+		[ "$ARG" ] && ARG="$ARG$NEWLINE"
+		ARG="$ARG$(tail "$line")"
+		read -r continuation
+		# Check for multiline commands
+		first "$continuation" | grep -q '<' && continue
 		;;
 	esac
 	if [ "$OP" = "<" ];
@@ -222,6 +225,7 @@ run_script()
 		STDOUTCMP=
 		STDOUTRECMP=
 		STDERRCMP=
+		ARG=
 	fi
 	done < "$FILE"
 }
