@@ -29,7 +29,9 @@ writeBlock()
 	elif [ -n "$STDOUTRE" ]; then echo "STDOUT-REGEX: $STDOUTRE" >> "$TMPFILE"
 	fi
 	COMMAND=$(sed s/sudo\ //g <<< "$COMMAND")
-	echo "< $COMMAND" >> "$TMPFILE"
+	while read -r cmd; do
+		printf '< %s\n' "$cmd" >> "$TMPFILE"
+	done <<< "$COMMAND"
 	resetGlobals
 }
 
@@ -87,8 +89,8 @@ translate()
 			while [ "${line: -1}" == '\' ];
 			do
 				read -r line
-				if [ "${line: -1}" == '\' ]; then COMMAND=$(printf '%s\\n%s' "$COMMAND" "${line%?}")
-				else COMMAND=$(printf '%s\\n%s\\n' "$COMMAND" "$line")
+				if [ "${line: -1}" == '\' ]; then COMMAND=$(printf '%s\n%s' "$COMMAND" "${line%?}")
+				else COMMAND=$(printf '%s\n%s\n' "$COMMAND" "$line")
 				fi
 			done
 			continue

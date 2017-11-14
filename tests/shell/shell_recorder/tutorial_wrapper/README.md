@@ -10,7 +10,7 @@ Snippets are shell commands inside a syntax block with additional checks (such a
 
 - Lines not starting with a comment sign (`#`) are treated as (shell) commands. They are  executed by the Shell Recorder.
 - Commands starting with `sudo` will be executed without `sudo`.
-- The Markdown Shell Recorder does not support multiline commands.
+- To extend a command over multiple lines add a backslash (`\`) at the end. Do not add a backlash at the last line of the multiline command.
 
 ### Checks
 
