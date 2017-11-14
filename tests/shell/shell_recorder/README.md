@@ -127,7 +127,32 @@ The Shell Recorder provides the following checks
 
 ## Commands
 
-A command starts with `<` followed by kdb or shell commands.
+A command starts with `<` followed by `kdb` or shell commands.
+
+### Multiline Commands
+
+The Shell Recorder supports multiline commands. Just add an additional line, a `<` characters and continue with your command. For
+example, the following text specifies a multiline command spanning over three lines:
+
+```
+> cat <<EOF
+> The Raging Sun
+> EOF
+```
+
+. To separate commands either add a check (such as `RET:`) or at least one empty line. For example, the following text specifies three
+commands, the last of them being a multiline command:
+
+```
+> echo 'I Knew'
+STDOUT: You
+> echo 'You'
+
+> echo 'Were'
+> echo 'Trouble'
+```
+
+.
 
 ## Examples
 
@@ -144,10 +169,15 @@ mountpoint and a list of commands:
 Mountpoint: /user/test/ls
 
 < kdb set user/test/ls/level1 'one'
+
 < kdb ls user/test/ls
+
 < kdb set user/test/ls/level1/level2 'two'
+
 < kdb set user/test/ls/the 'roots'
+
 < kdb ls user/test/ls
+
 < kdb set user/test/ls/the/next/level
 ```
 
