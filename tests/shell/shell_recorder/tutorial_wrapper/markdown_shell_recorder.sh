@@ -25,7 +25,6 @@ writeBlock()
 	[ -n "$WARNINGS" ] && echo "WARNINGS: $WARNINGS" >> "$TMPFILE"
 	[ -n "$STDERR" ] && echo "STDERR: $STDERR" >> "$TMPFILE"
 	if [ -n "$OUTBUF" ]; then echo "STDOUT: $OUTBUF" >> "$TMPFILE"
-	elif [ -n "$STDOUT" ]; then echo "STDOUT: $STDOUT" >> "$TMPFILE"
 	elif [ -n "$STDOUTRE" ]; then echo "STDOUT-REGEX: $STDOUTRE" >> "$TMPFILE"
 	fi
 	COMMAND=$(sed s/sudo\ //g <<< "$COMMAND")
@@ -60,9 +59,6 @@ translate()
 			case "$cmd" in
 				RET)
 					RET="$arg"
-					;;
-				STDOUT)
-				    	STDOUT="$arg"
 					;;
 				STDOUT-REGEX)
 					STDOUTRE="$arg"

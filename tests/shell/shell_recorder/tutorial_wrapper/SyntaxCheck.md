@@ -8,8 +8,6 @@ kdb set /test/b b
 # RET:0
 # should yield 'a'
 kdb get /test/a
-# STDOUT:a
-kdb get /test/a
 #> a
 kdb get /test/c
 # Expected:

@@ -18,8 +18,6 @@ All check start with a comment sign (`#`).
 
 - `#> text`: The **text** after `#> ` is matched 1:1 against the command output. Multiple `#> ` will be concatenated automatically using `⏎` (the Shell Recorder equivalent of `\n`).
 
-- `# STDOUT: text`: The **text** after this directive is matched 1:1 against the command output. Newlines must be encoded as `⏎`.
-
 - `# RET: regex` This directive compares the return code (exit status) of the command to the value after `# RET:` . If not specified, the exit value is compared to `0`. The Shell Recorder uses **regular expressions** to compare the exit code, so an expression like `1|5` is also valid.
 
 - `# ERROR: csl` Checks if the `kdb` command threw the exit code `csl`. The text `csl` is a **comma separated list** of numbers (e.g. `1`, `2,4`).
