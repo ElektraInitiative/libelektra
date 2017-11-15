@@ -49,6 +49,19 @@ printf 'test\nbla'
 if [ -e `kdb file user` ]; then cat `kdb file user`; fi
 ```
 
+# Here Document Support
+
+```sh
+cat > /tmp/hereout << EOF \
+line 1\
+line 2\
+EOF
+cat /tmp/hereout
+#> line 1
+#> line 2
+rm /tmp/hereout
+```
+
 # Sudo
 
 ```sh
