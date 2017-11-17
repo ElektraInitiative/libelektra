@@ -4,6 +4,44 @@ The Markdown Shell Recorder extracts executable code snippets from Markdown file
 
 Snippets are shell commands inside a syntax block with additional checks (such as exit code, output, errors, etc) encoded as comments. These blocks start with ```` ```sh ````  and end with ```` ``` ````.
 
+## Example
+
+Let us look at a simple example test first:
+
+```sh
+kdb set /examples/markdown/napalm death
+#> Using name user/examples/markdown/napalm
+#> Create a new key user/examples/markdown/napalm with string "death"
+
+kdb rm /examples/markdown/napalm
+
+kdb rm /examples/markdown/babymetal
+# RET: 1
+# STDERR: Did not find the key
+```
+
+. The test above invokes three commands. The first command sets the [cascading key](/doc/tutorials/cascading.md)
+`/examples/markdown/napalm` to the value `death`. The special comment `#> ` below the command specifies the expected output to the standard
+output. This means the Markdown Shell Recorder expects the command
+
+```
+kdb set /examples/markdown/napalm death
+```
+
+to print the text
+
+```
+Using name user/examples/markdown/napalm
+Create a new key user/examples/markdown/napalm with string "death"
+```
+
+to the standard output. The second command in our test (`kdb rm /examples/markdown/napalm`) deletes the key we just created. Although there
+are no special comments below the command, the Markdown Shell Recorder still checks the exit code of the command and reports a failure if
+it is not `0`. If we expect another exit code we can use the special comment `# RET:` to specify the return code. This is what we did after
+the third command, which will fail with exit code `1`, since it tries to delete a non-existing key. The Shell Recorder also checks the
+value the last command prints to the standard error output since, we specified the expected text `Did not find the key` via the special
+comment `# STDERR:`.
+
 ## Syntax
 
 ### Commands
