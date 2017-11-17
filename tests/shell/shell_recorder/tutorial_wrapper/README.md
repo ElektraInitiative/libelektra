@@ -48,7 +48,27 @@ comment `# STDERR:`.
 
 - Lines not starting with a comment sign (`#`) are treated as (shell) commands. They are  executed by the Shell Recorder.
 - Commands starting with `sudo` will be executed without `sudo`.
-- To extend a command over multiple lines add a backslash (`\`) at the end. Do not add a backlash at the last line of the multiline command.
+
+#### Multiline Commands
+
+To extend a command over multiple lines add a backslash (`\`) at the end. Do not add a backlash at the last line of the multiline command.
+The test below shows some examples of multiline commands.
+
+```sh
+echo Babymetal Death | \
+  grep -o Death
+#> Death
+
+cat > /tmp/hereout << EOF \
+line 1\
+line 2\
+EOF
+cat /tmp/hereout
+#> line 1
+#> line 2
+
+rm /tmp/hereout
+```
 
 ### Checks
 
