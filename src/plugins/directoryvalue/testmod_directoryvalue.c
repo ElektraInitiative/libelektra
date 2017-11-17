@@ -15,6 +15,9 @@
 #include <tests_plugin.h>
 
 static void test_basics (void)
+#ifdef __llvm__
+	__attribute__ ((annotate ("oclint:suppress[high ncss method]")))
+#endif
 {
 	printf ("test basics\n");
 
@@ -22,13 +25,13 @@ static void test_basics (void)
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("directoryvalue");
 
-	KeySet * ks = ksNew (0, KS_END);
+	KeySet * keySet = ksNew (0, KS_END);
 
-	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "call to kdbGet was not successful");
-	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "call to kdbSet was not successful");
+	succeed_if (plugin->kdbGet (plugin, keySet, parentKey) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "call to kdbGet was not successful");
+	succeed_if (plugin->kdbSet (plugin, keySet, parentKey) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "call to kdbSet was not successful");
 
 	keyDel (parentKey);
-	ksDel (ks);
+	ksDel (keySet);
 	PLUGIN_CLOSE ();
 }
 
