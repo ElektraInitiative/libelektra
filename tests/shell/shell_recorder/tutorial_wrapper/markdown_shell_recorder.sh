@@ -20,12 +20,12 @@ resetGlobals()
 writeBlock()
 {
 	OUTFILE="$1"
-	[ -n "$RET" ] && echo "RET: $RET" >> "$TMPFILE" || { [ -z "$ERRORS" ] && echo 'RET: 0' >> "$TMPFILE"; }
-	[ -n "$ERRORS" ] && echo "ERRORS: $ERRORS" >> "$TMPFILE"
-	[ -n "$WARNINGS" ] && echo "WARNINGS: $WARNINGS" >> "$TMPFILE"
-	[ -n "$STDERR" ] && echo "STDERR: $STDERR" >> "$TMPFILE"
-	if [ -n "$OUTBUF" ]; then echo "STDOUT: $OUTBUF" >> "$TMPFILE"
-	elif [ -n "$STDOUTRE" ]; then echo "STDOUT-REGEX: $STDOUTRE" >> "$TMPFILE"
+	[ -n "$RET" ] && printf 'RET: %s\n' $RET >> "$TMPFILE" || { [ -z "$ERRORS" ] && printf 'RET: 0\n' >> "$TMPFILE"; }
+	[ -n "$ERRORS" ] && printf 'ERRORS: %s\n' "$ERRORS" >> "$TMPFILE"
+	[ -n "$WARNINGS" ] && printf 'WARNINGS: %s\n' "$WARNINGS" >> "$TMPFILE"
+	[ -n "$STDERR" ] && printf 'STDERR: %s\n' "$STDERR" >> "$TMPFILE"
+	if [ -n "$OUTBUF" ]; then printf 'STDOUT: %s\n' "$OUTBUF" >> "$TMPFILE"
+	elif [ -n "$STDOUTRE" ]; then printf 'STDOUT-REGEX: %s\n' "$STDOUTRE" >> "$TMPFILE"
 	fi
 	COMMAND=$(sed s/sudo\ //g <<< "$COMMAND")
 	while read -r cmd; do
@@ -37,10 +37,11 @@ writeBlock()
 translate()
 {
 	TMPFILE=$(mktemp)
-	MOUNTPOINT=$(echo "$BUF" | head -n 1)
+	MOUNTPOINT=$(printf '%s' "$BUF" | head -n 1)
 	if grep -Eq 'Backup-and-Restore:' <<< "$MOUNTPOINT"; then
-		echo "Mountpoint: $(cut -d ':' -f2 <<< "$MOUNTPOINT" | sed 's/^[[:space:]]*//')" >> "$TMPFILE"
-	else echo 'Mountpoint: /examples' >> "$TMPFILE"
+		printf 'Mountpoint: %s\n' "$(cut -d ':' -f2 <<< "$MOUNTPOINT" | sed 's/^[[:space:]]*//')" >> "$TMPFILE"
+	else
+		printf 'Mountpoint: /examples\n' >> "$TMPFILE"
 	fi
 
 	resetGlobals
@@ -125,7 +126,7 @@ if [ "$MOUNTPOINTS_BACKUP" != "$MOUNTPOINT" ];
 then
 IFS='
 '
-	TOUMOUNT=$(diff <(echo "$MOUNTPOINTS_BACKUP") <(echo "$MOUNTPOINTS") | grep -Eo "^>.*")
+	TOUMOUNT=$(diff <(printf '%s' "$MOUNTPOINTS_BACKUP") <(printf '%s' "$MOUNTPOINTS") | grep -Eo "^>.*")
 	for line in $TOUMOUNT;
 	do
 		mp=$(sed -n 's/.*with name \(.*\)/\1/p' <<< "$line")
