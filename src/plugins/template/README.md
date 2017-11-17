@@ -39,7 +39,21 @@ None.
 
 ## Examples
 
-None.
+```sh
+# Mount template plugin to cascading namespace `/examples/template`
+sudo kdb mount config.file /examples/template template
+
+kdb set /examples/template/key value
+#> Using name user/examples/template/key
+#> Create a new key user/examples/template/key with string "value"
+
+kdb get /examples/template/key
+#> value
+
+# Undo modifications to the key database
+kdb rm -r /examples/template
+sudo kdb umount /examples/template
+```
 
 ## Limitations
 
