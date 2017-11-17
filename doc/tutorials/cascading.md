@@ -160,6 +160,9 @@ kdb rm /overrides/test
 
 kdb rm -r spec/sw/tutorial/
 
+# Remove key automatically created by INI plugin
+if kdb info storage provides | grep -q 'storage/ini'; then kdb rm user/overrides; fi
+
 rm -r .dir/
 rmdir kdbtutorial
 ```
