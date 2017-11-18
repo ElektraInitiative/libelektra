@@ -39,8 +39,8 @@ static void test_contract (void)
 
 int main (int argc, char ** argv)
 {
-	printf ("DIRECTORYVALUE     TESTS\n");
-	printf ("========================\n\n");
+	printf ("Directory Value Tests\n");
+	printf ("=====================\n\n");
 
 	init (argc, argv);
 
