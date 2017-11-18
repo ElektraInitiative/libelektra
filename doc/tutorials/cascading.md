@@ -113,14 +113,14 @@ makes them really powerful.
 
 Consider the following example:
 
-First, we create a target key to demostrate the override link mechanism:
+First, we create a target key to demonstrate the override link mechanism:
 
 ```sh
 sudo kdb set system/overrides/test "hello override"
 #> Create a new key system/overrides/test with string "hello override"
 ```
 
-Override links can be defined by adding them to the `override/#` metadata array key of the correspoding `spec-key`:
+Override links can be defined by adding them to the `override/#` metadata array key of the corresponding `spec-key`:
 
 ```sh
 sudo kdb setmeta spec/sw/tutorial/cascading/#0/current/test override/#0 /overrides/test
@@ -159,6 +159,9 @@ kdb rm -r system/overrides/test
 kdb rm /overrides/test
 
 kdb rm -r spec/sw/tutorial/
+
+# Remove key automatically created by INI plugin
+if kdb info storage provides | grep -q 'storage/ini'; then kdb rm user/overrides; fi
 
 rm -r .dir/
 rmdir kdbtutorial

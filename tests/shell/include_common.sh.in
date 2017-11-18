@@ -10,6 +10,9 @@
 # VARIABLES
 #
 
+NEWLINE='
+'
+
 # variables to count up errors and tests
 nbError=0
 nbTest=0
@@ -249,123 +252,142 @@ replace_newline_return () {
 
 
 
+#
+# EXPORT FUNCTIONS
+#
 
 
+check_failed()
+{
+	EXPORTS=$1
+	TESTNAME=$2
+	CONFIGNAME=$3
 
+	echo "$TESTNAME did not leave $CONFIGNAME config in the same state at is was before!"
+	echo "This means the test itself is flawed!"
+	echo "You can inspect the original $CONFIGNAME config in $EXPORTS/$CONFIGNAME.export.dump"
+	echo "compared to situation now in $EXPORTS/$CONFIGNAME.check.dump"
+	echo
+	echo "Other important recovery files are also in the directory $EXPORTS"
+	echo "Please remove the $EXPORTS directory yourself after you fixed the situation, I cannot do it for you"
+	exit 1
+}
 
+export_config()
+{
+	EXPORTS=$1
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	if [ ! -d "$EXPORTS" ]
+	then
+		echo "Failed to create directory “$EXPORTS”"
+		exit 1
+	fi
+
+	SPECEXPORT="$EXPORTS/spec.export.dump"
+	DIREXPORT="$EXPORTS/dir.export.dump"
+	USEREXPORT="$EXPORTS/user.export.dump"
+	SYSTEMEXPORT="$EXPORTS/system.export.dump"
+	MOUNTEXPORT="$EXPORTS/mount.export.dump"
+
+	"$KDB" export spec dump > "$SPECEXPORT"
+	exit_if_fail "Could not export spec config"
+
+	"$KDB" export dir dump > "$DIREXPORT"
+	exit_if_fail "Could not export dir config"
+
+	"$KDB" export user dump > "$USEREXPORT"
+	exit_if_fail "Could not export user config"
+
+	"$KDB" export system --without-elektra dump > "$SYSTEMEXPORT"
+	exit_if_fail "Could not export system config"
+
+	"$KDB" export system/elektra/mountpoints dump > "$MOUNTEXPORT"
+	exit_if_fail "Could not export mount config"
+}
+
+export_check()
+{
+	EXPORTS=$1
+	TESTNAME=$2
+	IMPORTCONFIG=$3
+
+	SPECEXPORT="$EXPORTS/spec.export.dump"
+	SPECCHECK="$EXPORTS/spec.check.dump"
+
+	DIREXPORT="$EXPORTS/dir.export.dump"
+	DIRCHECK="$EXPORTS/dir.check.dump"
+
+	USEREXPORT="$EXPORTS/user.export.dump"
+	USERCHECK="$EXPORTS/user.check.dump"
+
+	SYSTEMEXPORT="$EXPORTS/system.export.dump"
+	SYSTEMCHECK="$EXPORTS/system.check.dump"
+
+	MOUNTEXPORT="$EXPORTS/mount.export.dump"
+	MOUNTCHECK="$EXPORTS/mount.check.dump"
+
+	"$KDB" export spec dump > "$SPECCHECK"
+	exit_if_fail "Could not export spec config"
+
+	"$KDB" export dir dump > "$DIRCHECK"
+	exit_if_fail "Could not export dir config"
+
+	"$KDB" export user dump > "$USERCHECK"
+	exit_if_fail "Could not export user config"
+
+	"$KDB" export system --without-elektra dump > "$SYSTEMCHECK"
+	exit_if_fail "Could not export system config"
+
+	"$KDB" export system/elektra/mountpoints dump > "$MOUNTCHECK"
+	exit_if_fail "Could not export mount config"
+
+	if [ "$IMPORTCONFIG" = 'true' ]; then
+		"$KDB" import spec dump < "$SPECEXPORT"
+		exit_if_fail "Could not import spec config"
+
+		"$KDB" import dir dump < "$DIREXPORT"
+		exit_if_fail "Could not import dir config"
+
+		"$KDB" import user dump < "$USEREXPORT"
+		exit_if_fail "Could not import user config"
+
+		"$KDB" import system --without-elektra dump < "$SYSTEMEXPORT"
+		exit_if_fail "Could not import system config"
+
+		"$KDB" import system/elektra/mountpoints dump < "$MOUNTEXPORT"
+		exit_if_fail "Could not import mount config"
+	fi
+
+	diff "$SPECEXPORT" "$SPECCHECK"
+	if [ $? != "0" ]
+	then
+		check_failed "$EXPORTS" "$TESTNAME" spec
+	fi
+
+	diff "$DIREXPORT" "$DIRCHECK"
+	if [ $? != "0" ]
+	then
+		check_failed "$EXPORTS" "$TESTNAME" dir
+	fi
+
+	diff "$USEREXPORT" "$USERCHECK"
+	if [ $? != "0" ]
+	then
+		check_failed "$EXPORTS" "$TESTNAME" user
+	fi
+
+	diff "$SYSTEMEXPORT" "$SYSTEMCHECK"
+	if [ $? != "0" ]
+	then
+		check_failed "$EXPORTS" "$TESTNAME" system
+	fi
+
+	diff "$MOUNTEXPORT" "$MOUNTCHECK"
+	if [ $? != "0" ]
+	then
+		check_failed "$EXPORTS" "$TESTNAME" mount
+	fi
+}
 
 
 

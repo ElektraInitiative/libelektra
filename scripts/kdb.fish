@@ -477,7 +477,7 @@ __fish_kdb_add_option '__fish_kdb_subcommand_supports_option_verbose' 'verbose' 
 __fish_kdb_add_option "not __fish_kdb_subcommand; or __fish_kdb_subcommand_supports_common_options" 'version' 'V' 'Print version info'
 
 # --without-elektra -E
-__fish_kdb_add_option '__fish_kdb_subcommand_includes export' 'without-elektra' 'E' 'Omit the `/elektra` directory'
+__fish_kdb_add_option '__fish_kdb_subcommand_includes export import' 'without-elektra' 'E' 'Omit the `/elektra` directory'
 
 # --with-recommends -W
 set -l completion_function '__fish_kdb_subcommand_includes global-mount gmount mount smount spec-mount'

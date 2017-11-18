@@ -47,17 +47,23 @@ The multifile-resolver does so by calling resolver and storage plugins for each 
 rm -rf ~/.config/multitest || $(exit 0)
 mkdir -p ~/.config/multitest || $(exit 0)
 
-echo '[lo]'             >  ~/.config/multitest/lo.ini
-echo 'addr = 127.0.0.1' >> ~/.config/multitest/lo.ini
-echo 'Link encap = Loopback' >> ~/.config/multitest/lo.ini
+cat > ~/.config/multitest/lo.ini << EOF \
+[lo]\
+addr = 127.0.0.1\
+Link encap = Loopback\
+EOF
 
-echo '[eth0]'                >  ~/.config/multitest/lan.ini
-echo 'addr = 192.168.1.216'  >> ~/.config/multitest/lan.ini
-echo 'Link encap = Ethernet' >> ~/.config/multitest/lan.ini
+cat > ~/.config/multitest/lan.ini << EOF \
+[eth0]\
+addr = 192.168.1.216\
+Link encap = Ethernet\
+EOF
 
-echo '[wlan0]'               >  ~/.config/multitest/wlan.ini
-echo 'addr = 192.168.1.125'  >> ~/.config/multitest/wlan.ini
-echo 'Link encap = Ethernet' >> ~/.config/multitest/wlan.ini
+cat > ~/.config/multitest/wlan.ini << EOF \
+[wlan0]\
+addr = 192.168.1.125\
+Link encap = Ethernet\
+EOF
 
 sudo kdb mount -R multifile -c storage="ini",pattern="*.ini",resolver="resolver" multitest user/multi
 
@@ -77,8 +83,10 @@ kdb set user/multi/lan.ini/eth0/addr 10.0.0.2
 kdb get user/multi/lan.ini/eth0/addr
 #> 10.0.0.2
 
-echo '[testsection]' >  ~/.config/multitest/test.ini
-echo 'key = val'     >> ~/.config/multitest/test.ini
+cat > ~/.config/multitest/test.ini << EOF \
+[testsection]\
+key = val\
+EOF
 
 kdb ls user/multi
 #> user/multi/lan.ini/eth0

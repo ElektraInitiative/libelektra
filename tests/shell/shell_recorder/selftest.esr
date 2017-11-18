@@ -1,12 +1,11 @@
 Storage: mini
 Mountpoint: user/test
 File: config.ini
-DiffType: Ini
 
 RET: 0
 < kdb mount $File $Mountpoint $Storage
 
-DIFF: > key = value
+STDOUT: Create a new key user/test/key with string "value"
 < kdb set $Mountpoint/key value
 
 STDOUT: Set string to "value"
@@ -21,8 +20,14 @@ STDERR: The command kdb not-a-command is not known
 STDERR: .+not-a-command.+
 < kdb not-a-command 1>/dev/null
 
-< echo   '[section]' > `kdb file $Mountpoint`
-< printf 'key="multi\nline"' >> `kdb file $Mountpoint`
+STDOUT: Create a new key user/test/\/evil\\\/tripleEscaped\\/doubleEscaped/key/.withADot/..andADoubleDot with string "txt"
+< kdb set $Mountpoint/\\/evil\\\\\\/tripleEscaped\\\\/doubleEscaped/key/.withADot/..andADoubleDot txt
+
+< cat > `kdb file $Mountpoint` <<EOF
+< [section]
+< key="multi
+< line"
+< EOF
 
 STDOUT: [section]⏎key="multi⏎line"
 < cat `kdb file $Mountpoint`
