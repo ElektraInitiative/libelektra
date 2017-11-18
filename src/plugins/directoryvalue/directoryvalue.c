@@ -27,6 +27,11 @@ static KeySet * directoryValueContract (void)
 		      keyNew ("system/elektra/modules/directoryvalue/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 }
 
+// ====================
+// = Plugin Interface =
+// ====================
+
+/** @see elektraDocGet */
 int elektraDirectoryvalueGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/directoryvalue"))
@@ -41,6 +46,7 @@ int elektraDirectoryvalueGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned,
 	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 }
 
+/** @see elektraDocSet */
 int elektraDirectoryvalueSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
 	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
