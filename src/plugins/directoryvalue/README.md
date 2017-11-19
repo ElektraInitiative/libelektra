@@ -108,4 +108,4 @@ sudo kdb umount /examples/directoryvalue
 
 ## Limitations
 
-Currently this plugin does nothing useful.
+Currently this plugin only works in the “set” direction.
