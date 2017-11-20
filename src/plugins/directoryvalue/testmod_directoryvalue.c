@@ -89,6 +89,24 @@ static void test_set (void)
 	CLOSE_PLUGIN ();
 }
 
+static void test_get (void)
+#ifdef __llvm__
+	__attribute__ ((annotate ("oclint:suppress[deep nested block]"), annotate ("oclint:suppress[high ncss method]"),
+			annotate ("oclint:suppress[high npath complexity]"), annotate ("oclint:suppress[high cyclomatic complexity]")))
+#endif
+{
+	printf ("• Test get method\n");
+	INIT_PLUGIN ("user");
+
+	KeySet * keySet = keySetWithoutDirValues ();
+	KeySet * expected = keySetWithDirValues ();
+	succeed_if (plugin->kdbGet (plugin, keySet, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "Unable to open plugin in get direction");
+	compare_keyset (keySet, expected); //! OCLint
+	ksDel (expected);
+
+	CLOSE_PLUGIN ();
+}
+
 int main (int argc, char ** argv)
 {
 	printf ("Directory Value Tests\n");
@@ -98,6 +116,7 @@ int main (int argc, char ** argv)
 
 	test_contract ();
 	test_set ();
+	test_get ();
 
 	print_result ("testmod_directoryvalue");
 

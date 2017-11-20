@@ -105,7 +105,3 @@ sudo kdb mount config.file /examples/directoryvalue directoryvalue
 # Undo changes to the key database
 sudo kdb umount /examples/directoryvalue
 ```
-
-## Limitations
-
-Currently this plugin only works in the “set” direction.
