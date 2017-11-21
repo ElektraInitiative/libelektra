@@ -42,16 +42,16 @@ static KeySet * directoryValueContract (void)
  * @param output This parameter stores the values this function creates.
  * @param key This parameter stores the key this function operates on.
  * @param next This parameter stores the key directly after `key`.
- * @param parent This parameter stores the parent key of `keySet`. This function uses this key to emit error information.
+ * @param error The function uses this key to emit error information.
  *
  * @retval ELEKTRA_PLUGIN_STATUS_NO_UPDATE if everything went fine and the function copied `key` without any modifications to `output`.
  * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if everything went fine and the function converted `key` to a leaf value.
  * @retval ELEKTRA_PLUGIN_STATUS_ERROR if the function was unable to convert `key`.
  */
-static int addDirectoryValue (KeySet * output, Key const * const key, Key const * const next, Key * const parent)
+static int addDirectoryData (KeySet * output, Key const * const key, Key const * const next, Key * const error)
 {
 	ELEKTRA_NOT_NULL (next);
-	ELEKTRA_NOT_NULL (parent);
+	ELEKTRA_NOT_NULL (error);
 	ELEKTRA_NOT_NULL (output);
 
 	if (!key)
@@ -71,7 +71,7 @@ static int addDirectoryValue (KeySet * output, Key const * const key, Key const 
 	Key * dataKey = keyDup (key);
 	if (keyAddBaseName (dataKey, DIRECTORY_POSTFIX) < 0)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_DIRECTORY_VALUE_APPEND, parent, "Could not append directory postfix to “%s”",
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_DIRECTORY_VALUE_APPEND, error, "Could not append directory postfix to “%s”",
 				    keyName (dataKey));
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
@@ -84,21 +84,21 @@ static int addDirectoryValue (KeySet * output, Key const * const key, Key const 
  * @brief Convert the directory value saved in `key` back to a directory key.
  *
  * @param output This parameter stores the key this function converts.
- * @param dirValues The function also stores the converted key in this key set.
+ * @param convertedDirectory The function also stores the converted key in this key set.
  * @param key This parameter stores the current key this function operates on.
  * @param error The function uses this key to emit error information.
  *
- * @pre The parameters `output`, `dirValues`, `key` and `parent` must not be `NULL`.
+ * @pre The parameters `output`, `convertedDirectory`, `key` and `error` must not be `NULL`.
  *
  * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if everything went fine
  * @retval ELEKTRA_PLUGIN_STATUS_ERROR if the function was unable to convert `key`
 **/
-static int convertToDirectoryKey (KeySet * output, KeySet * dirValues, Key * key, Key * parent)
+static int convertToDirectory (KeySet * output, KeySet * convertedDirectory, Key * key, Key * error)
 {
 	ELEKTRA_NOT_NULL (output);
-	ELEKTRA_NOT_NULL (dirValues);
+	ELEKTRA_NOT_NULL (convertedDirectory);
 	ELEKTRA_NOT_NULL (key);
-	ELEKTRA_NOT_NULL (parent);
+	ELEKTRA_NOT_NULL (error);
 
 	size_t directoryKeyLength = elektraStrLen (keyName (key)) - DIRECTORY_POSTFIX_LENGTH - 1;
 
@@ -107,14 +107,14 @@ static int convertToDirectoryKey (KeySet * output, KeySet * dirValues, Key * key
 	if (!directoryName)
 	{
 		errno = errorNumber;
-		ELEKTRA_MALLOC_ERROR (parent, directoryKeyLength);
+		ELEKTRA_MALLOC_ERROR (error, directoryKeyLength);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
 	Key * directoryKey = keyDup (key);
 	keySetName (directoryKey, directoryName);
 	elektraFree (directoryName);
-	ksAppendKey (dirValues, directoryKey);
+	ksAppendKey (convertedDirectory, directoryKey);
 	ksAppendKey (output, directoryKey);
 	keyDel (key);
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
@@ -125,15 +125,15 @@ static int convertToDirectoryKey (KeySet * output, KeySet * dirValues, Key * key
  *
  * - If key contains a directory value (marked by `DIRECTORY_POSTFIX`) it will be converted to a directory key. After that the function
  *   saves the key in `output` and `dirValue`.
- * - If `key` has the same name as the last converted directory value (stored in `dirValues`), then the function deletes the key.
+ * - If `key` has the same name as the last converted directory value (stored in `convertedDirectory`), then the function deletes the key.
  * - If `key` is a non-special key (none of the two cases above apply), then the function just appends the unmodified `key` to `output`.
  *
- * @pre The parameters `output`, `key`, `dirValues` and `parent` must not be `NULL`.
+ * @pre The parameters `output`, `key`, `convertedDirectory` and `error` must not be `NULL`.
  *
  * @param output This parameter stores the key this function converts.
  * @param key This parameter stores the current key this function operates on.
- * @param dirValues This key set stores the last converted directory value, or nothing if this function was already invoked with the
- *                  empty version of the directory key as parameter.
+ * @param convertedDirectory This key set stores the last converted directory value, or nothing if this function was already invoked with
+ *                           the empty version of the directory key as parameter.
  * @param error The function uses this key to emit error information.
  *
  * @retval ELEKTRA_PLUGIN_STATUS_NO_UPDATE if everything went fine and the function copied `key` without any modifications to `output`
@@ -141,7 +141,7 @@ static int convertToDirectoryKey (KeySet * output, KeySet * dirValues, Key * key
  *                                       to output
  * @retval ELEKTRA_PLUGIN_STATUS_ERROR if the function was unable to convert `key`
  */
-static int removeDirectoryValue (KeySet * output, Key * key, KeySet * dirValues, Key * error)
+static int removeDirectoryData (KeySet * output, Key * key, KeySet * convertedDirectory, Key * error)
 {
 	const char * baseName = keyBaseName (key);
 	size_t baseNameLength = keyGetBaseNameSize (key);
@@ -150,23 +150,23 @@ static int removeDirectoryValue (KeySet * output, Key * key, KeySet * dirValues,
 	if (strncmp (baseName, DIRECTORY_POSTFIX, minLengthBase) == 0 && baseNameLength == DIRECTORY_POSTFIX_LENGTH)
 	{
 		ELEKTRA_LOG_DEBUG ("Convert leaf “%s” back to directory key", keyName (key));
-		return convertToDirectoryKey (output, dirValues, key, error);
+		return convertToDirectory (output, convertedDirectory, key, error);
 	}
 
-	ELEKTRA_ASSERT (ksGetSize (dirValues) <= 1, "More than one recent directory key");
+	ELEKTRA_ASSERT (ksGetSize (convertedDirectory) <= 1, "More than one recent directory key");
 
-	Key * dirValue = ksPop (dirValues);
-	if (dirValue && elektraStrCmp (keyName (key), keyName (dirValue)) == 0)
+	Key * directory = ksPop (convertedDirectory);
+	if (directory && elektraStrCmp (keyName (key), keyName (directory)) == 0)
 	{
 		ELEKTRA_LOG_DEBUG ("Found old directory key “%s”", keyName (key));
-		keyDel (dirValue);
+		keyDel (directory);
 		keyDel (key);
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
 	ELEKTRA_LOG_DEBUG ("Append non-special key “%s”", keyName (key));
 	ksAppendKey (output, key);
-	if (dirValue) ksAppendKey (dirValues, dirValue);
+	if (directory) ksAppendKey (convertedDirectory, directory);
 	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 }
 
@@ -187,15 +187,15 @@ int elektraDirectoryvalueGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned,
 	}
 
 	Key * key;
-	KeySet * dirValues = ksNew (0, KS_END);
+	KeySet * convertedDirectory = ksNew (0, KS_END);
 	KeySet * output = ksNew (0, KS_END);
 	int status = 0;
 	while (status >= 0 && (key = ksPop (returned)) != NULL)
 	{
-		status |= removeDirectoryValue (output, key, dirValues, parent);
+		status |= removeDirectoryData (output, key, convertedDirectory, parent);
 	}
 	ksCopy (returned, output);
-	ksDel (dirValues);
+	ksDel (convertedDirectory);
 	ksDel (output);
 
 	return status;
@@ -212,7 +212,7 @@ int elektraDirectoryvalueSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned,
 
 	while (status >= 0 && (next = ksNext (returned)) != NULL)
 	{
-		status |= addDirectoryValue (output, current, next, parent);
+		status |= addDirectoryData (output, current, next, parent);
 		current = next;
 	}
 	// Last key is always a leaf value
