@@ -17,7 +17,7 @@
 /**
  * @brief This function returns a key set containing the contract of this plugin.
  *
- * @return A contract describing the functionality of this plugin.
+ * @return A contract describing the functionality of the plugin.
  */
 static KeySet * directoryValueContract (void)
 {
@@ -83,7 +83,7 @@ static int addDirectoryData (KeySet * output, Key const * const key, Key const *
 /**
  * @brief Convert the directory value saved in `key` back to a directory key.
  *
- * @param output This parameter stores the key this function converts.
+ * @param output The function uses this parameter to store the converted key.
  * @param convertedDirectory The function also stores the converted key in this key set.
  * @param key This parameter stores the current key this function operates on.
  * @param error The function uses this key to emit error information.
@@ -130,10 +130,10 @@ static int convertToDirectory (KeySet * output, KeySet * convertedDirectory, Key
  *
  * @pre The parameters `output`, `key`, `convertedDirectory` and `error` must not be `NULL`.
  *
- * @param output This parameter stores the key this function converts.
+ * @param output The function uses this key set to store the result of the key conversion.
  * @param key This parameter stores the current key this function operates on.
- * @param convertedDirectory This key set stores the last converted directory value, or nothing if this function was already invoked with
- *                           the empty version of the directory key as parameter.
+ * @param convertedDirectory This key set either stores the last converted directory value, or nothing (if this function was already
+ *                           invoked with the empty version of the directory key as parameter).
  * @param error The function uses this key to emit error information.
  *
  * @retval ELEKTRA_PLUGIN_STATUS_NO_UPDATE if everything went fine and the function copied `key` without any modifications to `output`
