@@ -9,6 +9,8 @@
 
 #include <backendparser.hpp>
 
+#include <functional>
+
 #include <string>
 
 #include <keyset.hpp>
