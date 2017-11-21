@@ -1,7 +1,7 @@
 - infos = Information about the yamlcpp plugin is in keys below
 - infos/author = René Schwaiger <sanssecours@me.com>
 - infos/licence = BSD
-- infos/needs = base64
+- infos/needs = base64 directoryvalue
 - infos/provides = storage/yaml
 - infos/recommends =
 - infos/placements = getstorage setstorage
@@ -341,6 +341,59 @@ level 1:
 ```
 
 . However, if we use this approach we are not able to support Elektra’s array type properly.
+
+#### Directory Values
+
+To overcome the limitation described above, the YAML CPP plugin requires the [Directory Value](../directoryvalue/) plugin. This plugin converts the value of a non-leaf node to a leaf node with the name `___dirdata`. For example, let us assume we have the following key set:
+
+```
+directory      = Directory Data
+directory/file = Leaf Data
+```
+
+. The Directory Value plugin will convert the key set in the set (write) direction to
+
+```
+directory            =
+directory/___dirdata = Directory Data
+directory/file       = Leaf Data
+```
+
+. Consequently the YAML plugin will store the key set as
+
+```yaml
+directory:
+  ___dirdata = Directory Data
+  file       = Leaf Data
+```
+
+. A user of the YAML plugin will not notice this feature unless he edits the configuration file by hand, as the following example shows:
+
+```sh
+# Mount YAML CPP plugin at `user/examples/yamlcpp`
+sudo kdb mount test.yaml user/examples/yamlcpp yamlcpp
+
+kdb set user/examples/yamlcpp/directory 'Directory Data'
+kdb setmeta user/examples/yamlcpp/directory comment 'Directory Metadata'
+kdb set user/examples/yamlcpp/directory/file 'Leaf Data'
+
+kdb ls user/examples/yamlcpp/directory
+#> user/examples/yamlcpp/directory
+#> user/examples/yamlcpp/directory/file
+
+kdb get user/examples/yamlcpp/directory
+#> Directory Data
+kdb getmeta user/examples/yamlcpp/directory comment
+#> Directory Metadata
+kdb get user/examples/yamlcpp/directory/file
+#> Leaf Data
+
+# Undo modifications to the database
+kdb rm -r user/examples/yamlcpp
+sudo kdb umount user/examples/yamlcpp
+```
+
+.
 
 ### Other Limitations
 
