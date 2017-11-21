@@ -96,12 +96,30 @@ sudo kdb umount /examples/directoryvalue
 
 .
 
-## Examples
+## Example
 
 ```sh
 # Mount plugin to cascading namespace `/examples/directoryvalue`
 sudo kdb mount config.file /examples/directoryvalue directoryvalue
 
+# Add a directory value
+kdb set /examples/directoryvalue/harold 'Father of SpongeBob SquarePants'
+# Add a leaf value
+kdb set /examples/directoryvalue/harold/spongebob 'I am ready!'
+
+# Since the plugin converts values back in the get direction
+# a user of the database will not notice any changes.
+
+kdb ls /examples/directoryvalue
+#> user/examples/directoryvalue/harold
+#> user/examples/directoryvalue/harold/spongebob
+
+kdb get /examples/directoryvalue/harold
+#> Father of SpongeBob SquarePants
+kdb get /examples/directoryvalue/harold/spongebob
+#> I am ready!
+
 # Undo changes to the key database
+kdb rm -r /examples/directoryvalue
 sudo kdb umount /examples/directoryvalue
 ```
