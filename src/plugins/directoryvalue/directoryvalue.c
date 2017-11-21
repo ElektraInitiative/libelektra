@@ -145,9 +145,9 @@ static int removeDirectoryValue (KeySet * output, Key * key, KeySet * dirValues,
 {
 	const char * baseName = keyBaseName (key);
 	size_t baseNameLength = keyGetBaseNameSize (key);
-	size_t minLengthBase = DIRECTORY_POSTFIX_LENGTH < baseNameLength ? DIRECTORY_POSTFIX_LENGTH : baseNameLength;
+	size_t minLengthBase = (DIRECTORY_POSTFIX_LENGTH < baseNameLength ? DIRECTORY_POSTFIX_LENGTH : baseNameLength) - 1;
 
-	if (baseNameLength == DIRECTORY_POSTFIX_LENGTH && strncmp (baseName, DIRECTORY_POSTFIX, minLengthBase) == 0)
+	if (strncmp (baseName, DIRECTORY_POSTFIX, minLengthBase) == 0 && baseNameLength == DIRECTORY_POSTFIX_LENGTH)
 	{
 		ELEKTRA_LOG_DEBUG ("Convert leaf “%s” back to directory key", keyName (key));
 		return convertToDirectoryKey (output, dirValues, key, error);
