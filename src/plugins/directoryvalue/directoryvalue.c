@@ -75,8 +75,8 @@ static int addDirectoryData (KeySet * output, Key const * const key, Key const *
 				    keyName (dataKey));
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
-	ELEKTRA_ASSERT (ksAppendKey (output, directoryKey) >= 0, "Could not append directory key");
-	ELEKTRA_ASSERT (ksAppendKey (output, dataKey) >= 0, "Could not append data key");
+	ksAppendKey (output, directoryKey);
+	ksAppendKey (output, dataKey);
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
