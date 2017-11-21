@@ -397,6 +397,7 @@ sudo kdb umount user/examples/yamlcpp
 
 ### Other Limitations
 
+- Saving a **single scalar value** directly below the mountpoint does not work
 - Adding and removing keys does remove **comments** inside the configuration file
 - The plugin currently lacks proper **type support** for scalars.
 
