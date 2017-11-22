@@ -44,9 +44,8 @@ kdb get /examples/yamlcpp/🔑
 # Manually add syntactically incorrect data
 echo "some key: @some  value" >> `kdb file /examples/yamlcpp`
 kdb get "/examples/yamlcpp/some key"
-# STDERR: .*Sorry, the error .#10. occurred.*⏎
-#         Description: Parsing failed⏎
-#         .*yaml-cpp: error at line 1, column 11: unknown token.*
+# STDERR: .*yaml-cpp: error at line 2, column 11: unknown token.*
+# ERROR: 10
 # RET: 5
 
 # Overwrite incorrect data
@@ -229,9 +228,8 @@ kdb setmeta /examples/yamlcpp/typetest/number check/type short
 
 kdb set /examples/yamlcpp/typetest/number "One"
 # RET: 5
-# STDERR: .*Sorry, the error .#52. occurred.*⏎
-#         Description: could not type check value of key⏎
-#         .*Reason: The type long failed to match for .*/number with string: One.*
+# STDERR: .*The type short failed to match for .*/number with string: One.*
+# ERROR: 52
 
 kdb get /examples/yamlcpp/typetest/number
 #> 21
