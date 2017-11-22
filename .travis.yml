@@ -96,9 +96,10 @@ before_install:
       brew install cabal-install
       cabal update
       # avoid reinstalls if we already have them cached
-      which happy || cabal install happy
-      which alex || cabal install alex
-      which c2hs || cabal install c2hs
+      # disable everything that slows down compilation times of the dependencies to have reasonable travis build times
+      which happy || cabal install -disable-optimization --disable-documentation --disable-profiling --disable-tests -j happy
+      which alex || cabal install -disable-optimization --disable-documentation --disable-profiling --disable-tests -j alex
+      which c2hs || cabal install -disable-optimization --disable-documentation --disable-profiling --disable-tests -j c2hs
       PATH=$PATH:"$HOME/.cabal/bin"
     fi
   - |
@@ -154,6 +155,7 @@ before_script:
     $TRAVIS_BUILD_DIR
   - export PATH=$PATH:"$INSTALL_DIR/bin"
   - export LD_LIBRARY_PATH="$INSTALL_DIR/lib"
+  - export CTEST_PARALLEL_LEVEL=4
 
 script:
   - ninja
