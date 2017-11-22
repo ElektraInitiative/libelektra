@@ -78,7 +78,7 @@ All check start with a comment sign (`#`).
 
 - `# RET: regex` This directive compares the return code (exit status) of the command to the value after `# RET:` . If not specified, the exit value is compared to `0`. The Shell Recorder uses **regular expressions** to compare the exit code, so an expression like `1|5` is also valid.
 
-- `# ERROR: csl` Checks if the `kdb` command threw the exit code `csl`. The text `csl` is a **comma separated list** of numbers (e.g. `1`, `2,4`).
+- `# ERROR: regex` Checks if the `kdb` command produced error `regex`. The text `regex` is a **regular expression** (e.g. `1|7` will check if the error `1` or the error `7` occurred).
 
 - `# WARNINGS: csl` The Shell Recorder compares this **comma separated list** of numbers to the warnings thrown by a `kdb` command.
 

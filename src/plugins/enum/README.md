@@ -54,7 +54,7 @@ kdb set /examples/enum/value low
 # should fail with error 121
 kdb set /examples/enum/value no
 # RET:5
-# ERRORS:121
+# ERROR:121
 ```
 Or with multi-enums:
 ```sh
@@ -73,7 +73,7 @@ kdb set /examples/enum/multivalue ___small_middle__
 # should fail with error 121
 kdb set /examples/enum/multivalue ___all_small__
 # RET:5
-# ERRORS:121
+# ERROR:121
 
 # cleanup
 kdb rm -r /examples/enum
