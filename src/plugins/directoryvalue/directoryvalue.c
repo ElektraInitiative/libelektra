@@ -59,7 +59,7 @@ static int addDirectoryData (KeySet * output, Key const * const key, Key const *
 		ELEKTRA_LOG_DEBUG ("Key `key` is null");
 		return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 	}
-	if (keyBaseName (next)[0] == '#' || keyIsBelow (key, next) != 1)
+	if (keyBaseName (next)[0] == '#' || keyIsBelow (key, next) != 1 || elektraStrCmp (keyName (key), keyName (error)) == 0)
 	{
 		ELEKTRA_LOG_DEBUG ("Key %s is an array or leaf value", keyName (key));
 		ksAppendKey (output, keyDup (key));
