@@ -113,6 +113,27 @@ kdb file user/examples/yajl/ | xargs cat
 #>     "number": 1337
 #> }
 
+# Add an array
+kdb set user/examples/yajl/piggy/#0 straw
+kdb set user/examples/yajl/piggy/#1 sticks
+kdb set user/examples/yajl/piggy/#2 bricks
+
+# Retrieve an array key
+kdb get user/examples/yajl/piggy/#2
+#> bricks
+
+# Check the format of the configuration file
+kdb file user/examples/yajl | xargs cat
+#> {
+#>     "key": "value",
+#>     "number": 1337,
+#>     "piggy": [
+#>         "straw",
+#>         "sticks",
+#>         "bricks"
+#>     ]
+#> }
+
 # Undo modifications to the database
 kdb rm -r /examples/yajl
 sudo kdb umount /examples/yajl
