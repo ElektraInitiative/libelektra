@@ -149,18 +149,6 @@ kdb ls /examples/yamlcpp
 #> user/examples/yamlcpp/array/#1/🔑
 #> user/examples/yamlcpp/key
 
-# The plugin stores array keys using YAML sequences.
-# Since yaml-cpp stores keys in arbitrary order -
-# either `key` or `array` could be the “first” key -
-# we remove `key` before we retrieve the data. This way
-# we make sure that the output below will always look
-# the same.
-kdb rm /examples/yamlcpp/key
-kdb file /examples/yamlcpp | xargs cat
-#> array:
-#>   - scalar
-#>   - 🔑: 🙈
-
 # Undo modifications to the key database
 kdb rm -r /examples/yamlcpp
 sudo kdb umount /examples/yamlcpp
