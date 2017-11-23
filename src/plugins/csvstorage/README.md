@@ -39,6 +39,65 @@ First line should determine the headers:
 
     kdb mount test.csv /csv csvstorage "delimiter=;,header=colname,columns=2,columns/names,columns/names/#0=col0Name,columns/names/#1=col1Name"
 
+### Usage
+
+The example below shows how you can use this plugin to read and write CSV files.
+
+```sh
+# Mount plugin to cascading namespace `/examples/csv`
+# We use the column names from the first line of the
+# config file as key names
+sudo kdb mount config.csv /examples/csv csvstorage  "header=colname,columns/names/#0=col0Name,columns/names/#1=col1Name"
+
+# Add some data
+printf 'band,album\n'                           >> `kdb file /examples/csv`
+printf 'Converge,All We Love We Leave Behind\n' >> `kdb file /examples/csv`
+printf 'mewithoutYou,Pale Horses\n'             >> `kdb file /examples/csv`
+printf 'Kate Tempest,Everybody Down\n'          >> `kdb file /examples/csv`
+
+kdb ls /examples/csv
+#> user/examples/csv/#0
+#> user/examples/csv/#0/album
+#> user/examples/csv/#0/band
+#> user/examples/csv/#1
+#> user/examples/csv/#1/album
+#> user/examples/csv/#1/band
+#> user/examples/csv/#2
+#> user/examples/csv/#2/album
+#> user/examples/csv/#2/band
+#> user/examples/csv/#3
+#> user/examples/csv/#3/album
+#> user/examples/csv/#3/band
+
+# The first array element contains the column names
+kdb get /examples/csv/#0/band
+#> band
+kdb get /examples/csv/#0/album
+#> album
+
+# Retrieve data from the last entry
+kdb get /examples/csv/#3/album
+#> Everybody Down
+kdb get /examples/csv/#3/band
+#> Kate Tempest
+
+# Change an existing item
+kdb set /examples/csv/#1/album 'You Fail Me'
+# Retrieve the new item
+kdb get /examples/csv/#1/album
+#> You Fail Me
+
+# The configuration file reflects the changes
+kdb file /examples/csv | xargs cat
+#> album,band
+#> You Fail Me,Converge
+#> Pale Horses,mewithoutYou
+#> Everybody Down,Kate Tempest
+
+# Undo changes to the key database
+kdb rm -r /examples/csv
+sudo kdb umount /examples/csv
+```
 
 ## Limitations
 
