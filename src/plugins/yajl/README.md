@@ -2,8 +2,8 @@
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
 - infos/provides = storage/json
-- infos/needs =
-- infos/recommends = rebase directoryvalue comment type
+- infos/needs = directoryvalue
+- infos/recommends = rebase comment type
 - infos/placements = getstorage setstorage
 - infos/status = maintained coverage unittest
 - infos/description = JSON using YAJL
@@ -72,12 +72,11 @@ Arrays are mapped to Elektra’s array convention #0, #1,..
 - Everything is string if not tagged by metakey "type"
   Only valid JSON types can be used in type, otherwise there are some
   fall backs to string but warnings are produced.
-- Values in non-leaves are discarded.
 - Arrays will be normalized (to #0, #1, ..)
 - Comments of various JSON-dialects are discarded.
 
-Because of these potential problems a type checker,
-comments filter and directory value filter are highly recommended.
+Because of these potential problems a type checker
+and comments filter are highly recommended.
 
 ## Usage
 
@@ -113,6 +112,40 @@ kdb file user/examples/yajl/ | xargs cat
 #>     "key": "value",
 #>     "number": 1337
 #> }
+
+# Undo modifications to the database
+kdb rm -r /examples/yajl
+sudo kdb umount /examples/yajl
+```
+
+### Directory Values
+
+The YAJL plugin support values in directory keys via the [Directory Value](../directoryvalue/) plugin.
+
+```sh
+# Mount the plugin to the cascading namespace `/examples/yajl`
+sudo kdb mount config.json /examples/yajl yajl
+
+# Add two directory keys and one leaf key
+kdb set /examples/yajl/roots 'Things Fall Apart'
+kdb set /examples/yajl/roots/bloody 'Radical Face'
+kdb set /examples/yajl/roots/bloody/roots 'No Roots'
+
+kdb ls /examples/yajl
+#> user/examples/yajl
+#> user/examples/yajl/roots
+#> user/examples/yajl/roots/bloody
+#> user/examples/yajl/roots/bloody/roots
+
+# Retrieve directory values
+kdb get /examples/yajl/roots
+#> Things Fall Apart
+kdb get /examples/yajl/roots/bloody
+#> Radical Face
+
+# Retrieve leaf value
+kdb get /examples/yajl/roots/bloody/roots
+#> No Roots
 
 # Undo modifications to the database
 kdb rm -r /examples/yajl
