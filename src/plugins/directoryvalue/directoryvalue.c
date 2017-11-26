@@ -13,6 +13,7 @@
 #include <kdberrors.h>
 #include <kdbhelper.h>
 #include <kdblogger.h>
+#include <stdbool.h>
 
 /**
  * @brief This function returns a key set containing the contract of this plugin.
@@ -31,52 +32,73 @@ static KeySet * directoryValueContract (void)
 }
 
 /**
- * @brief Convert `key` to a leaf value and copy it to `output`.
+ * @brief Split `input` into two key sets, one for directory keys and one for leaf keys.
  *
- * - If `key` is already a leaf value it will not be changed and directly copied to `output`.
- * - If `key` is a directory value the function creates a new leaf value storing the data of the old directory key. The function also
- *   creates another empty node with the name of the directory value in this case. Both of these key will be copied to `output`.
+ * @pre The parameters `input`, `directories`, `leaves` and `parent` must not be `NULL`.
  *
- * @pre The parameters `output`, `next` and `parent` must not be `NULL`.
- *
- * @param output This parameter stores the values this function creates.
- * @param key This parameter stores the key this function operates on.
- * @param next This parameter stores the key directly after `key`.
- * @param error The function uses this key to emit error information.
- *
- * @retval ELEKTRA_PLUGIN_STATUS_NO_UPDATE if everything went fine and the function copied `key` without any modifications to `output`.
- * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if everything went fine and the function converted `key` to a leaf value.
- * @retval ELEKTRA_PLUGIN_STATUS_ERROR if the function was unable to convert `key`.
+ * @param input This parameter contains the key set this function splits.
+ * @param directories The function stores all directory keys (keys with children) in this parameter.
+ * @param leaves The function stores all leaf values in this key set.
+ * @param parent This parameter contains the parent key of `input`.
  */
-static int addDirectoryData (KeySet * output, Key const * const key, Key const * const next, Key * const error)
+static void splitIntoDirectoriesAndLeaves (KeySet * const input, KeySet * directories, KeySet * leaves, Key * parent)
 {
-	ELEKTRA_NOT_NULL (next);
+	ELEKTRA_NOT_NULL (input);
+	ELEKTRA_NOT_NULL (directories);
+	ELEKTRA_NOT_NULL (leaves);
+	ELEKTRA_NOT_NULL (parent);
+
+	ksRewind (input);
+	Key * key = ksNext (input);
+	Key * next;
+
+	while ((next = ksNext (input)) != NULL)
+	{
+		bool isLeaf =
+			keyBaseName (next)[0] == '#' || keyIsBelow (key, next) != 1 || elektraStrCmp (keyName (key), keyName (parent)) == 0;
+		ksAppendKey (isLeaf ? leaves : directories, keyDup (key));
+		key = next;
+	}
+	// Last key is always a leaf value
+	if (key) ksAppendKey (leaves, key);
+}
+
+/**
+ * @brief Convert all keys in `directories` to an empty key and a leaf key containing the data of the old key.
+ *
+ * @pre The parameters `directories` and `error` must not be `NULL`.
+ *
+ * @param directories This parameter contains a set of directory keys this function converts.
+ * @param error The function uses this parameter to emit error information.
+ *
+ * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if everything went fine.
+ * @retval ELEKTRA_PLUGIN_STATUS_ERROR if the function was unable to convert a key.
+ */
+static int convertDirectoriesToLeaves (KeySet * directories, Key * error)
+{
+	ELEKTRA_NOT_NULL (directories);
 	ELEKTRA_NOT_NULL (error);
-	ELEKTRA_NOT_NULL (output);
 
-	if (!key)
-	{
-		ELEKTRA_LOG_DEBUG ("Key `key` is null");
-		return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
-	}
-	if (keyBaseName (next)[0] == '#' || keyIsBelow (key, next) != 1 || elektraStrCmp (keyName (key), keyName (error)) == 0)
-	{
-		ELEKTRA_LOG_DEBUG ("Key %s is an array or leaf value", keyName (key));
-		ksAppendKey (output, keyDup (key));
+	KeySet * result = ksNew (0, KS_END);
+	ksRewind (directories);
+	Key * key;
 
-		return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
-	}
-
-	Key * directoryKey = keyNew (keyName (key), KEY_END);
-	Key * dataKey = keyDup (key);
-	if (keyAddBaseName (dataKey, DIRECTORY_POSTFIX) < 0)
+	while ((key = ksNext (directories)) != NULL)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_DIRECTORY_VALUE_APPEND, error, "Could not append directory postfix to “%s”",
-				    keyName (dataKey));
-		return ELEKTRA_PLUGIN_STATUS_ERROR;
+		Key * directoryKey = keyNew (keyName (key), KEY_END);
+		Key * dataKey = keyDup (key);
+		if (keyAddBaseName (dataKey, DIRECTORY_POSTFIX) < 0)
+		{
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_DIRECTORY_VALUE_APPEND, error, "Could not append directory postfix to “%s”",
+					    keyName (dataKey));
+			return ELEKTRA_PLUGIN_STATUS_ERROR;
+		}
+		ksAppendKey (result, directoryKey);
+		ksAppendKey (result, dataKey);
 	}
-	ksAppendKey (output, directoryKey);
-	ksAppendKey (output, dataKey);
+	ksCopy (directories, result);
+	ksDel (result);
+
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
@@ -204,22 +226,20 @@ int elektraDirectoryvalueGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned,
 /** @see elektraDocSet */
 int elektraDirectoryvalueSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parent)
 {
-	ksRewind (returned);
-	Key * current = NULL;
-	Key * next;
-	int status = 0;
-	KeySet * output = ksNew (0, KS_END);
+	KeySet * leaves = ksNew (0, KS_END);
+	KeySet * directories = ksNew (0, KS_END);
 
-	while (status >= 0 && (next = ksNext (returned)) != NULL)
-	{
-		status |= addDirectoryData (output, current, next, parent);
-		current = next;
-	}
-	// Last key is always a leaf value
-	if (current) ksAppendKey (output, current);
+	int status = ELEKTRA_PLUGIN_STATUS_SUCCESS;
 
-	ksCopy (returned, output);
-	ksDel (output);
+	splitIntoDirectoriesAndLeaves (returned, directories, leaves, parent);
+	if (ksGetSize (directories) < 0) status = ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+	if (convertDirectoriesToLeaves (directories, parent) < 0) status = ELEKTRA_PLUGIN_STATUS_ERROR;
+	ksCopy (returned, directories);
+	ksAppend (returned, leaves);
+
+	ksDel (leaves);
+	ksDel (directories);
+
 	return status;
 }
 
