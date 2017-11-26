@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include <benchmarks.h>
@@ -12,26 +12,26 @@ KDB * kdb;
 Key * key;
 KeySet * large;
 
-void benchmarkOpen ()
+void benchmarkOpen (void)
 {
 	kdb = kdbOpen (key);
 }
 
-void benchmarkInread ()
+void benchmarkInread (void)
 {
 	KeySet * n = ksNew (0, KS_END);
 	kdbGet (kdb, n, key);
 	ksDel (n);
 }
 
-void benchmarkReadin ()
+void benchmarkReadin (void)
 {
 	KeySet * n = ksNew (0, KS_END);
 	kdbGet (kdb, n, key);
 	ksDel (n);
 }
 
-void benchmarkLookupByName ()
+void benchmarkLookupByName (void)
 {
 	int i, j;
 	char name[KEY_NAME_LENGTH + 1];
@@ -48,33 +48,33 @@ void benchmarkLookupByName ()
 	}
 }
 
-void benchmarkReread ()
+void benchmarkReread (void)
 {
 	kdbGet (kdb, large, key);
 }
 
-void benchmarkInwrite ()
+void benchmarkInwrite (void)
 {
 	kdbSet (kdb, large, key);
 }
 
-void benchmarkRewrite ()
+void benchmarkRewrite (void)
 {
 	kdbSet (kdb, large, key);
 }
 
-void benchmarkWriteout ()
+void benchmarkWriteout (void)
 {
 	kdbSet (kdb, large, key);
 }
 
-void benchmarkClose ()
+void benchmarkClose (void)
 {
 	kdbClose (kdb, key);
 }
 
 
-int main ()
+int main (void)
 {
 	key = keyNew (KEY_ROOT, KEY_END);
 

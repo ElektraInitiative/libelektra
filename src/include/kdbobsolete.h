@@ -6,7 +6,7 @@
  * Do not use them the functions are to be removed next major
  * release.
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #ifndef KDBOBSOLETE_H

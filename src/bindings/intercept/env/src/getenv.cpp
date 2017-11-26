@@ -8,7 +8,7 @@
  * 1.) bootstrapping in pre-main phase when no allocation is possible
  * 2.) bootstrapping when elektra modules use getenv()
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 

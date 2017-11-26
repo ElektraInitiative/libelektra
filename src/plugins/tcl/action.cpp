@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include <keyset.hpp>
@@ -51,7 +51,7 @@ void unserialise (istream & in, KeySet & input)
 {
 	namespace qi = boost::spirit::qi;
 
-	using boost::spirit::ascii::space;
+	using boost::spirit::qi::space;
 
 	in.unsetf (std::ios::skipws);
 	boost::spirit::istream_iterator begin (in);

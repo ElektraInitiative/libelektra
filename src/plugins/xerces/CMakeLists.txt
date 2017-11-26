@@ -1,9 +1,8 @@
-
 if (DEPENDENCY_PHASE)
-	find_package(XercesC)
+	find_package(XercesC QUIET)
 
 	if (NOT XercesC_FOUND)
-		remove_plugin (xerces "XercesC library not found")
+		remove_plugin (xerces "XercesC library libxerces-c-dev not found")
 	elseif (XercesC_VERSION VERSION_LESS 3.0.0)
 		remove_plugin (xerces "XercesC library version 3.0.0 or higher required")
 	endif ()
@@ -20,6 +19,8 @@ add_plugin (xerces
 		${XercesC_INCLUDE_DIRS}
 	LINK_LIBRARIES
 		${XercesC_LIBRARIES}
+	LINK_ELEKTRA
+		elektra-meta
 	INSTALL_TEST_DATA
 )
 

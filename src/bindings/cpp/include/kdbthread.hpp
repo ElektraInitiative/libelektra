@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #ifndef ELEKTRA_KDBTHREAD_HPP
@@ -34,7 +34,7 @@ public:
 
 struct LayerAction
 {
-	LayerAction (bool activate_, std::shared_ptr<Layer> layer_) : activate (activate_), layer (std::move (layer_))
+	LayerAction (bool activate_, std::shared_ptr<Layer> const & layer_) : activate (activate_), layer (std::move (layer_))
 	{
 	}
 	bool activate; // false if deactivate

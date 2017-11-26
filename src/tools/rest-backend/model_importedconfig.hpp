@@ -3,7 +3,7 @@
  *
  * @brief model for internal (elektra based) representation of snippet
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #ifndef ELEKTRA_REST_MODEL_IMPORTEDCONFIG_HPP

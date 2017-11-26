@@ -19,6 +19,7 @@ to participate in the global key database Elektra
 provides.
 
 - [Integration of your Application](application-integration.md)
+- [Hello, Elektra](hello-elektra.md)
 - [Plugins Introduction](plugins.md)
 - [Compilation Variants of plugins](compilation-variants.md) (advanced topic)
 - [Python Bindings](python-kdb.md)

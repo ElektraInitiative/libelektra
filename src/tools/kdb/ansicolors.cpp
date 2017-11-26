@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include "ansicolors.hpp"
@@ -91,18 +91,18 @@ std::string getColorEscape (ANSI_COLOR color, ANSI_COLOR_LAYER layer)
 	}
 }
 
-static bool hasColor (int no, std::string c)
+static bool hasColor (int no, std::string const & c)
 {
 	return !(c.compare ("never") == 0 || (c.compare ("auto") == 0 && !isatty (no)));
 }
 
-bool hasErrorColor (std::string c)
+bool hasErrorColor (std::string const & c)
 {
 	static bool has = hasColor (STDERR_FILENO, c);
 	return has;
 }
 
-bool hasStdColor (std::string c)
+bool hasStdColor (std::string const & c)
 {
 	static bool has = hasColor (STDOUT_FILENO, c);
 	return has;

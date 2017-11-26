@@ -3,7 +3,7 @@
  *
  * @brief Tests for mozprefs plugin
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -75,7 +75,7 @@ int main (int argc, char ** argv)
 	test_readPref ("mozprefs/prefs.js");
 	test_writePref ("mozprefs/prefs.js");
 
-	printf ("\ntestmod_mozprefs RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("testmod_mozprefs");
 
 	return nbError;
 }

@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #ifndef MERGEHELPER_HPP_
@@ -18,8 +18,8 @@
 using namespace std;
 using namespace kdb::tools::merging;
 
-kdb::KeySet prependNamespace (kdb::KeySet const & resultKeys, std::string ns);
-kdb::Key prependNamespace (kdb::Key const & root, std::string ns);
+kdb::KeySet prependNamespace (kdb::KeySet const & resultKeys, std::string const & ns);
+kdb::Key prependNamespace (kdb::Key const & root, std::string const & ns);
 void applyMeta (kdb::KeySet & imported, kdb::KeySet const & base);
 
 class MergeHelper

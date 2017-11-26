@@ -3,7 +3,7 @@
  *
  * @brief Source for c plugin
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -28,31 +28,25 @@
  */
 int keyGenerate (const Key * key, FILE * stream, option_t options)
 {
-	size_t s;
-	char * str;
-
-	size_t n;
-	char * nam;
-
-	n = keyGetNameSize (key);
+	size_t n = keyGetNameSize (key);
 	if (n > 1)
 	{
-		nam = (char *)elektraMalloc (n);
+		char * nam = (char *)elektraMalloc (n);
 		if (nam == NULL) return -1;
 		keyGetName (key, nam, n);
 		fprintf (stream, "\tkeyNew (\"%s\"", nam);
 		elektraFree (nam);
 	}
 
-	s = keyGetValueSize (key);
+	size_t s = keyGetValueSize (key);
 	if (s > 1)
 	{
-		str = (char *)elektraMalloc (s);
+		char * str = (char *)elektraMalloc (s);
 		if (str == NULL) return -1;
 		if (keyIsBinary (key))
 		{
 			keyGetBinary (key, str, s);
-			fprintf (stream, ", KEY_SIZE, \"%zu\"", keyGetValueSize (key));
+			fprintf (stream, ", KEY_SIZE, \"%zd\"", keyGetValueSize (key));
 		}
 		else
 		{
@@ -96,7 +90,6 @@ int keyGenerate (const Key * key, FILE * stream, option_t options)
 int ksGenerate (const KeySet * ks, FILE * stream, option_t options)
 {
 	Key * key;
-	size_t s = 0;
 	KeySet * cks = ksDup (ks);
 
 	ksRewind (cks);
@@ -106,8 +99,6 @@ int ksGenerate (const KeySet * ks, FILE * stream, option_t options)
 	{
 		if (options & KDB_O_INACTIVE)
 			if (key && keyIsInactive (key)) continue;
-
-		s++;
 
 		keyGenerate (key, stream, options);
 		fprintf (stream, ",\n");
@@ -151,6 +142,7 @@ int elektraCSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSE
 
 	ksGenerate (returned, fp, 0);
 
+	fclose (fp);
 	return 1; // success
 }
 

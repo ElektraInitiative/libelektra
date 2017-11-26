@@ -81,7 +81,7 @@ module.exports = function (grunt) {
         };
 
         this.handleDynamicSnippets = function (urlset) {
-            var response = request('GET', self.data.dynamic.backend + 'database');
+            var response = request('GET', self.data.dynamic.backend + 'database?sortby=key');
             if (response.statusCode !== 200) {
                 grunt.log.error('Could not reach Backend and could therefore not create sitemap.xml!');
             }

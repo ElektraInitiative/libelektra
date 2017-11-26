@@ -3,12 +3,12 @@
  *
  * @brief Relation between keys.
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include <tests.h>
 
-static void test_keyCmp ()
+static void test_keyCmp (void)
 {
 	printf ("check keyCmp\n");
 
@@ -110,7 +110,7 @@ static void test_keyCmp ()
 	keyDel (k2);
 }
 
-static void test_directbelow ()
+static void test_directbelow (void)
 {
 	printf ("check if direct below\n");
 	Key * k1 = keyNew (0);
@@ -157,7 +157,7 @@ static void test_directbelow ()
 	keyDel (k2);
 }
 
-static void test_below ()
+static void test_below (void)
 {
 	printf ("check if below\n");
 	Key * k1 = keyNew (0);
@@ -197,7 +197,7 @@ static void test_below ()
 	keyDel (k2);
 }
 
-static void test_examples ()
+static void test_examples (void)
 {
 	printf ("check examples\n");
 	Key * key = keyNew (0);
@@ -229,7 +229,7 @@ static void test_examples ()
 	keyDel (check);
 }
 
-static void test_hierarchy ()
+static void test_hierarchy (void)
 {
 	printf ("check hierarchy\n");
 	Key * key = keyNew (0);
@@ -255,7 +255,7 @@ static void test_hierarchy ()
 	keyDel (check);
 }
 
-static void test_null ()
+static void test_null (void)
 {
 	printf ("check invalid keys or null ptr\n");
 	Key * key = keyNew (0);

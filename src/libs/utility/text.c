@@ -1,7 +1,10 @@
 #include <ctype.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include <kdbassert.h>
+#include <kdbhelper.h>
+#include <kdblogger.h>
 
 /**
  * @internal
@@ -50,13 +53,13 @@ char * elektraLskip (char const * const text)
  *      containing the given string must be writeable.
  *
  * @param start A pointer to the start of the string from which trailing
- *		whitespace should be removed
+ *              whitespace should be removed
  * @param end A pointer to a memory location pointing to the last character
- *	      (the one before `'\0'`) of the string this function should
- *	      modify or `NULL`
+ *              (the one before `'\0'`) of the string this function should
+ *              modify or `NULL`
  *
  * @return A pointer to the start of the modified string. This address is
- *	   the same as `start`.
+ *         the same as `start`.
  */
 char * elektraRstrip (char * const start, char ** end)
 {
@@ -87,7 +90,7 @@ char * elektraRstrip (char * const start, char ** end)
  *      containing the given string must be writeable.
  *
  * @param start A pointer to the start of the string from which trailing
- *		whitespace should be removed
+ *              whitespace should be removed
  *
  * @return A pointer to the start of the stripped string.
  */

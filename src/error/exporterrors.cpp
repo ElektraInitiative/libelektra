@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include "parser.hpp"
@@ -33,12 +33,8 @@ ostream & operator<< (ostream & os, parse_t & p)
 	   << "#include <kdb.h>" << endl
 	   << "#include <kdbhelper.h>" << endl
 	   << "#include <kdblogger.h>" << endl
+	   << "#include <kdbmacros.h>" << endl
 	   << "#include <string.h>" << endl
-	   << endl
-	   << "#ifndef STRINGIFY" << endl
-	   << "#define STRINGIFY(x) STRINGIFY2 (x)" << endl
-	   << "#define STRINGIFY2(x) #x" << endl
-	   << "#endif" << endl
 	   << endl
 	   << "#define ELEKTRA_SET_ERROR(number, key, text) ELEKTRA_SET_ERROR_HELPER\\" << endl
 	   << "	(number, key, text, __FILE__, __LINE__)" << endl
@@ -71,7 +67,7 @@ ostream & operator<< (ostream & os, parse_t & p)
 	   << "	(number, key, text, file, line, __VA_ARGS__)" << endl
 	   << endl
 	   << "#define ELEKTRA_SET_ERRORF_HELPER_HELPER(number, key, text, file, line, ...) do {ELEKTRA_LOG (\"Add Error \" "
-	      "STRINGIFY(number) \" : \" text, __VA_ARGS__); elektraSetErrorf ## number\\"
+	      "ELEKTRA_STRINGIFY(number) \" : \" text, __VA_ARGS__); elektraSetErrorf ## number\\"
 	   << endl
 	   << "	(key, text, file, #line,  __VA_ARGS__); } while (0)" << endl
 	   << endl
@@ -83,7 +79,7 @@ ostream & operator<< (ostream & os, parse_t & p)
 	   << "	(number, key, text, file, line, __VA_ARGS__)" << endl
 	   << "" << endl
 	   << "#define ELEKTRA_ADD_WARNINGF_HELPER_HELPER(number, key, text, file, line, ...)  do {ELEKTRA_LOG (\"Add Warning \" "
-	      "STRINGIFY(number) \" : \" text, __VA_ARGS__); elektraAddWarningf ## number\\"
+	      "ELEKTRA_STRINGIFY(number) \" : \" text, __VA_ARGS__); elektraAddWarningf ## number\\"
 	   << endl
 	   << "	(key, text, file, #line, __VA_ARGS__); } while (0)" << endl
 	   << endl

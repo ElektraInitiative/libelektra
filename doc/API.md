@@ -29,13 +29,13 @@ other hand it gives an informal description what methods must and may provide
 to allow an alternative implementation of the API.
 
 The current version (for stable releases) of this document can be found at
-http://doc.libelektra.org/api/current/html
+https://doc.libelektra.org/api/current/html
 
 The latest version (from git master) of this document can be found at
-http://doc.libelektra.org/api/latest/html
+https://doc.libelektra.org/api/latest/html
 
 
-**Important:** On github links to API functions are broken, so it is recommended that you continue
+**Important:** On GitHub links to API functions are broken, so it is recommended that you continue
 reading in one of these links above.
 
 ##  Using the Elektra Library
@@ -45,7 +45,7 @@ A C or C++ source file that wants to use Elektra should include:
 	#include <kdb.h>
 
 To link an executable with the Elektra library, one way is to
-use the @c pkg-config tool:
+use the `pkg-config` tool:
 
 	$ gcc -o application `pkg-config --cflags --libs elektra` application.c
 
@@ -107,7 +107,7 @@ entire [KeySet](@ref ksAppend)
 - [Work with](@ref ksNext) its [internal cursor](@ref ksCurrent)
 - See [class documentation](@ref keyset) for more
 
-[More background information about the classes](/doc/help/elektra-classes.md)
+[More background information about the classes](/doc/dev/classes.md)
 
 ## Namespaces
 
@@ -121,36 +121,42 @@ which appears like a tree on its own.
 See @ref cascading in the documentation of ksLookupByName() on how the selection
 of keys works.
 
-- The `spec` tree\n
-This tree specifies how the lookup should take place and also allows us to
-define defaults or document a key.
-The metadata of a key contains this information:
-	+ `override/#`: use these keys *in favour* of the key itself (note that
-	`#` is the syntax for arrays, e.g. `#0` for the first element,
-	`#10` for the 11th and so on)
-	+ `namespace/#`: instead of using all namespaces in the predefined order,
-	one can specify which namespaces should be searched in which order
-	+ `fallback/#`: when no key was found in any of the (specified) namespaces
-	the `fallback`-keys will be searched
-	+ `default`: this value will be used if nothing else was found
+- The `spec` tree
 
-- The `proc` tree\n
-Is the only read-only tree. The configuration does not stem from the
-[KDB (Key Database)](@ref kdb), but any other source, e.g. command-line arguments or environment.
+   This tree specifies how the lookup should take place and also allows us to
+   define defaults or document a key.
+   The metadata of a key contains this information:
 
-- The `dir` tree\n
-Allows us to have a per-directory overwrite of configuration files, e.g.
-for project specific settings.
+   - `override/#`: use these keys *in favour* of the key itself (note that
+   - `#` is the syntax for arrays, e.g. `#0` for the first element,
+   -`#10` for the 11th and so on)
+   - `namespace/#`: instead of using all namespaces in the predefined order,
+   	one can specify which namespaces should be searched in which order
+   - `fallback/#`: when no key was found in any of the (specified) namespaces
+   	the `fallback`-keys will be searched
+   - `default`: this value will be used if nothing else was found
 
-- The `user` tree\n
-Used to store user-specific configurations, like the personal settings
-of a user to certain programs. The user subtree will always be favoured
-if present (except for security concerns the user subtree may not be considered).
+- The `proc` tree
 
-- The `system` tree\n
-It is provided to store system-wide configuration keys, that is,
-the last fallback for applications but the only resort for
-daemons and system services.
+   Is the only read-only tree. The configuration does not stem from the
+   [KDB (Key Database)](@ref kdb), but any other source, e.g. command-line arguments or environment.
+
+- The `dir` tree
+
+   Allows us to have a per-directory overwrite of configuration files, e.g.
+   for project specific settings.
+
+- The `user` tree
+
+   Used to store user-specific configurations, like the personal settings
+   of a user to certain programs. The user subtree will always be favoured
+   if present (except for security concerns the user subtree may not be considered).
+
+- The `system` tree
+
+   It is provided to store system-wide configuration keys, that is,
+   the last fallback for applications but the only resort for
+   daemons and system services.
 
 Read more about [namespaces](/doc/help/elektra-namespaces.md)
 and a tutorial for [namespaces](/doc/tutorials/namespaces.md).
@@ -192,4 +198,4 @@ Read more about [mounting](/doc/help/elektra-mounting.md)
 
 - See [elektra-glossary(7)](/doc/help/elektra-glossary.md)
 - More information about [elektra-backends(7)](/doc/help/elektra-backends.md)
-- More information about [elektra-plugins-framework(7)](/doc/help/elektra-plugins-framework.md)
+- More information about [plugins-framework](/doc/dev/plugins-framework.md)

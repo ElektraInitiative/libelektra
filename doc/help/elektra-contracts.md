@@ -31,7 +31,7 @@ to every backend, for example, if notification is required.  This implies
 that every backend has to provide a specific additional service that
 will be checked using contracts.  Plugins are also involved in contracts
 with Elektra’s core. This topic will be discussed in
-[elektra-algorithm(7)](elektra-algorithm.md)
+[elektra-algorithm](/doc/dev/algorithm.md)
 in which the algorithm used by Elektra’s core is explained.
 
 ## Assertions
@@ -61,4 +61,4 @@ preconditions and weak postconditions for the plugins.
 ## SEE ALSO
 
 - [CONTRACT.ini](/doc/CONTRACT.ini)
-- [elektra-plugins-ordering(7)](elektra-plugins-ordering.md)
+- [plugins-ordering](/doc/dev/plugins-ordering.md)

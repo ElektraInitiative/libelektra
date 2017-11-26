@@ -3,7 +3,7 @@
  *
  * @brief Source for dpkg plugin
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -89,6 +89,7 @@ static KeySet * readFile (Key * parentKey)
 		ksAppend (result, package);
 		ksDel (package);
 	}
+	fclose (fp);
 	return result;
 }
 int elektraDpkgGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)

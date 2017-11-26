@@ -3,7 +3,7 @@
  *
  * @brief Contains the get direction of the hosts plugin
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -236,10 +236,9 @@ int elektraHostsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	KeySet * comments = ksNew (0, KS_END);
 	size_t order = 1;
 	char * tokenPointer = 0;
-	char * fret = 0;
 	while (1)
 	{
-		fret = fgets (readBuffer, HOSTS_KDB_BUFFER_SIZE, fp);
+		char * fret = fgets (readBuffer, HOSTS_KDB_BUFFER_SIZE, fp);
 
 		if (!fret) break;
 

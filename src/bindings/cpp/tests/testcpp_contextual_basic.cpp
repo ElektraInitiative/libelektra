@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include "kdbconfig.h"
@@ -168,7 +168,7 @@ public:
 class ProfileLayer : public kdb::Layer
 {
 public:
-	ProfileLayer (kdb::String const & profile) : m_profile (profile)
+	explicit ProfileLayer (kdb::String const & profile) : m_profile (profile)
 	{
 	}
 	std::string id () const override
@@ -396,6 +396,54 @@ TYPED_TEST (test_contextual_basic, nestedWithActivate)
 	ASSERT_EQ (ks.lookup ("user/german/%/%/test").getString (), "6");
 
 	c.template deactivate<LanguageGermanLayer> ();
+	ASSERT_EQ (i, 5);
+	ASSERT_EQ (i.getName (), "user/%/%/%/test");
+	ASSERT_EQ (ks.lookup ("user/%/%/%/test").getString (), "5");
+}
+
+
+TYPED_TEST (test_contextual_basic, nestedWithActivateConflicting)
+{
+	using namespace kdb;
+	KeySet ks;
+	TypeParam c = this->context;
+	ASSERT_TRUE (!ks.lookup ("/%/%/%/test"));
+	Value<int, ContextPolicyIs<TypeParam>> i (
+		ks, c, Key ("/%language%/%country%/%dialect%/test", KEY_CASCADING_NAME, KEY_META, "default", s_value, KEY_END));
+	ASSERT_EQ (i, i_value);
+	// The value always needs a connection to a key
+	ASSERT_TRUE (ks.lookup ("/%/%/%/test"));
+	i = 5;
+	ASSERT_EQ (i, 5);
+	ASSERT_EQ (i.getName (), "user/%/%/%/test");
+	ASSERT_EQ (ks.lookup ("user/%/%/%/test").getString (), "5");
+
+	c.template with<CountryGermanyLayer> () ([&]() {
+		i = 7;
+		ASSERT_EQ (i, 7);
+		ASSERT_EQ (i.getName (), "user/%/germany/%/test");
+		ASSERT_EQ (ks.lookup ("user/%/germany/%/test").getString (), "7");
+
+		c.template without<CountryGermanyLayer> () ([&]() {
+			ASSERT_EQ (i, 5);
+			ASSERT_EQ (i.getName (), "user/%/%/%/test");
+			ASSERT_EQ (ks.lookup ("user/%/%/%/test").getString (), "5");
+
+			c.template activate<CountryGermanyLayer> ();
+
+			i = 6;
+			ASSERT_EQ (i, 6);
+			ASSERT_EQ (i.getName (), "user/%/germany/%/test");
+			ASSERT_EQ (ks.lookup ("user/%/germany/%/test").getString (), "6");
+		});
+		// restore activation of layer
+
+		ASSERT_EQ (i, 6);
+		ASSERT_EQ (i.getName (), "user/%/germany/%/test");
+		ASSERT_EQ (ks.lookup ("user/%/germany/%/test").getString (), "6");
+	});
+	// restore deactivation of layer (TODO: good idea in multi-thread setups if layer activation is pulled in? rather not..)
+
 	ASSERT_EQ (i, 5);
 	ASSERT_EQ (i.getName (), "user/%/%/%/test");
 	ASSERT_EQ (ks.lookup ("user/%/%/%/test").getString (), "5");
@@ -673,11 +721,20 @@ TEST (test_contextual_basic, evaluate)
 		ASSERT_EQ (c["country"], "germany");
 		ASSERT_EQ (c["dialect"], "");
 		ASSERT_EQ (c.evaluate ("/%language%/%country%/%dialect%/test"), "/german/germany/%/test");
+		ASSERT_EQ (c.evaluate ("/%language%/%language%/%dialect%/test"), "/german/german/%/test");
+
+		ASSERT_EQ (c.evaluate ("/%language%%country%%dialect%/test"), "/germangermany%/test");
+		ASSERT_EQ (c.evaluate ("/%language%%language%%dialect%/test"), "/germangerman%/test");
 	});
 	ASSERT_EQ (c["language"], "");
 	ASSERT_EQ (c["country"], "");
 	ASSERT_EQ (c["dialect"], "");
 	ASSERT_EQ (c.evaluate ("/%language%/%country%/%dialect%/test"), "/%/%/%/test");
+
+	ASSERT_EQ (c["language"], "");
+	ASSERT_EQ (c["country"], "");
+	ASSERT_EQ (c["dialect"], "");
+	ASSERT_EQ (c.evaluate ("/%language%%country%%dialect%/test"), "/%%%/test");
 
 	KeySet ks;
 	Integer i (ks, c, Key ("/%application%/%version%/%profile%/%thread%/%module%/%manufacturer%/%type%/%family%/%model%/serial_number",
@@ -904,7 +961,7 @@ TEST (test_contextual_basic, operators)
 	ASSERT_EQ (n + n, m);
 	ASSERT_EQ (m, n + n);
 
-	n--;
+	--n;
 	ASSERT_EQ (n, 20);
 
 	ASSERT_EQ (n && n, true);

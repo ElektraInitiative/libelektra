@@ -3,7 +3,7 @@
  *
  * @brief Implementation of backend
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -244,7 +244,7 @@ void Backend::useConfigFile (std::string file)
 			checkFileFunction = reinterpret_cast<checkFilePtr> (elem->getSymbol ("checkfile"));
 			break;
 		}
-		catch (MissingSymbol ms)
+		catch (MissingSymbol const & ms)
 		{
 		}
 	}

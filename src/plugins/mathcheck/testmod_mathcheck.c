@@ -3,7 +3,7 @@
  *
  * @brief Tests for mathcheck plugin
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -46,7 +46,7 @@ static KeySet * create_ks (const char * res, const char * meta)
 		      keyNew ("user/tests/mathcheck/bla/val3", KEY_VALUE, "3", KEY_END), KS_END);
 }
 
-static void test_multiUp ()
+static void test_multiUp (void)
 {
 	Key * parentKey = keyNew ("user/tests/mathcheck", KEY_VALUE, "", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
@@ -146,7 +146,7 @@ int main (int argc, char ** argv)
 
 	test_multiUp ();
 
-	printf ("\ntestmod_mathcheck RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("testmod_mathcheck");
 
 	char buffer[24];
 	elektraFtoA (buffer, sizeof (buffer), (1.5));

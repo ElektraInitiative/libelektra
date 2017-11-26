@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include <iostream>
@@ -123,7 +123,7 @@ void MergeHelper::reportResult (Cmdline const & cl, MergeResult & result, ostrea
 }
 
 
-KeySet prependNamespace (KeySet const & resultKeys, std::string ns)
+KeySet prependNamespace (KeySet const & resultKeys, std::string const & ns)
 {
 	KeySet ret;
 	for (auto const & k : resultKeys)
@@ -133,7 +133,7 @@ KeySet prependNamespace (KeySet const & resultKeys, std::string ns)
 	return ret;
 }
 
-Key prependNamespace (Key const & root, std::string ns)
+Key prependNamespace (Key const & root, std::string const & ns)
 {
 	Key ret = root.dup ();
 	if (ret.isCascading ())

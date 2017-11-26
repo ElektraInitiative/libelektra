@@ -3,7 +3,7 @@
  *
  * @brief configuration file for webpack (used to build the application)
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 var webpack = require('webpack')

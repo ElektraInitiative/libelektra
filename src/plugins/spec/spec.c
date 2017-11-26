@@ -3,7 +3,7 @@
  *
  * @brief Source for spec plugin
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -221,9 +221,9 @@ static void validateWildcardSubs (KeySet * ks, Key * key, Key * specKey)
 		if (keyIsDirectBelow (parent, cur)) ++subCount;
 	}
 	long required = atol (keyString (requiredMeta));
-	char buffer[MAX_CHARS_IN_LONG + 1];
 	if (required != subCount)
 	{
+		char buffer[MAX_CHARS_IN_LONG + 1];
 		snprintf (buffer, sizeof (buffer), "%ld", subCount);
 		keySetMeta (parent, "conflict/invalid/subcount", buffer);
 	}
@@ -652,7 +652,6 @@ static int doGlobbing (Key * parentKey, KeySet * returned, KeySet * specKS, Conf
 {
 	Key * specKey;
 	ksRewind (specKS);
-	Key * cur;
 	int ret = 1;
 	while ((specKey = ksNext (specKS)) != NULL)
 	{
@@ -672,6 +671,7 @@ static int doGlobbing (Key * parentKey, KeySet * returned, KeySet * specKS, Conf
 		}
 		int found = 0;
 		ksRewind (returned);
+		Key * cur;
 		while ((cur = ksNext (returned)) != NULL)
 		{
 			if (keyGetNamespace (cur) == KEY_NS_SPEC) continue;
@@ -729,10 +729,20 @@ static int doGlobbing (Key * parentKey, KeySet * returned, KeySet * specKS, Conf
 		ksRewind (returned);
 		if (!found && dir == GET)
 		{
-			if (keyGetMeta (specKey, "assign/condition")) // hardcoded for now because only assign/conditional currently exists
+			if (keyGetMeta (specKey, "assign/condition")) // hardcoded for now because only "assign/condition" from "assign/*"
+								      // currently exists
 			{
 				Key * newKey = keyNew (strchr (keyName (specKey), '/'), KEY_CASCADING_NAME, KEY_END);
 				keySetMeta (newKey, "assign/condition", keyString (keyGetMeta (specKey, "assign/condition")));
+				ksAppendKey (returned, keyDup (newKey));
+				keyDel (newKey);
+			}
+			else if (keyGetMeta (specKey,
+					     "default")) // hardcoded for now because only "default" from "default/*" currently exists
+			{
+				Key * newKey = keyNew (strchr (keyName (specKey), '/'), KEY_CASCADING_NAME, KEY_VALUE,
+						       keyString (keyGetMeta (specKey, "default")), KEY_END);
+				copyMeta (newKey, specKey, parentKey);
 				ksAppendKey (returned, keyDup (newKey));
 				keyDel (newKey);
 			}
@@ -867,7 +877,7 @@ int elektraSpecGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	ksDel (specKS);
 	elektraFree (ch);
 	ksRewind (returned);
-	return ret; // success
+	return ret;
 }
 
 int elektraSpecSet (Plugin * handle, KeySet * returned, Key * parentKey)
@@ -932,7 +942,7 @@ int elektraSpecSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	elektraFree (ch);
 	ksRewind (returned);
 	elektraPluginSetData (handle, pluginConfig);
-	return ret; // success
+	return ret;
 }
 
 int elektraSpecClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
@@ -949,7 +959,7 @@ Plugin * ELEKTRA_PLUGIN_EXPORT (spec)
 {
 	// clang-format off
 	return elektraPluginExport ("spec",
-            ELEKTRA_PLUGIN_CLOSE, &elektraSpecClose,
+		ELEKTRA_PLUGIN_CLOSE, &elektraSpecClose,
 			ELEKTRA_PLUGIN_GET,	&elektraSpecGet,
 			ELEKTRA_PLUGIN_SET,	&elektraSpecSet,
 			ELEKTRA_PLUGIN_END);

@@ -8,7 +8,7 @@ kdb-find-tools(1) -- The tool for finding tools
 ## DESCRIPTION
 
 If you are looking for a tool, then you have found the right tool to find tools!
-`kdb find-tools` provides a search and list functionality for tools.
+`kdb find-tools` provides search and list functionality for tools.
 
 Just enter `kdb find-tools` to get a list of names, type and short description of all available tools.
 

@@ -3,7 +3,7 @@
  *
  * @brief Methods for plugin programing.
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #ifndef KDBPLUGIN_H
@@ -21,7 +21,9 @@
 #define ELEKTRA_PLUGIN_EXPORT2(module, variant) ELEKTRA_PLUGIN_EXPORT3 (module, variant)
 #define ELEKTRA_PLUGIN_EXPORT3(module, variant) libelektra_##module##_##variant##_LTX_elektraPluginSymbol (void)
 #else
-#define ELEKTRA_PLUGIN_EXPORT(module) libelektra_##module##_LTX_elektraPluginSymbol (void)
+#define ELEKTRA_PLUGIN_EXPORT(module) ELEKTRA_PLUGIN_EXPORT2 (module)
+#define ELEKTRA_PLUGIN_EXPORT2(module) ELEKTRA_PLUGIN_EXPORT3 (module)
+#define ELEKTRA_PLUGIN_EXPORT3(module) libelektra_##module##_LTX_elektraPluginSymbol (void)
 #endif
 #else
 #define ELEKTRA_PLUGIN_EXPORT(module) elektraPluginSymbol (void)
@@ -81,6 +83,16 @@ typedef enum {
 	// clang-format on
 } plugin_t;
 
+/* Status values for plugin functions */
+
+/** An error occurred inside the plugin function */
+#define ELEKTRA_PLUGIN_STATUS_ERROR -1
+
+/** Everything went fine */
+#define ELEKTRA_PLUGIN_STATUS_SUCCESS 1
+
+/** Everything went fine and the function **did not** update the given keyset/configuration */
+#define ELEKTRA_PLUGIN_STATUS_NO_UPDATE 0
 
 #ifdef __cplusplus
 namespace ckdb

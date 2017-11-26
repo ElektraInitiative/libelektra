@@ -3,7 +3,7 @@
  *
  * @brief Applies a MergeConflictStrategy on the metakeys
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -38,7 +38,7 @@ class MetaMergeStrategy : public MergeConflictStrategy
 public:
 	ThreeWayMerge & innerMerger;
 
-	MetaMergeStrategy (ThreeWayMerge & _innerStrategy) : innerMerger (_innerStrategy)
+	explicit MetaMergeStrategy (ThreeWayMerge & _innerStrategy) : innerMerger (_innerStrategy)
 	{
 	}
 

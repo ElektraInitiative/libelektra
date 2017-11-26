@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #ifndef ELEKTRA_KDB_IO_HPP
@@ -39,14 +39,14 @@ inline std::ostream & printError (std::ostream & os, kdb::Key const & error)
 		   << error.getMeta<std::string> ("error/number") << ") occurred ;(" << getErrorColor (ANSI_COLOR::RESET) << std::endl;
 		os << getErrorColor (ANSI_COLOR::BOLD) << "Description: " << getErrorColor (ANSI_COLOR::RESET)
 		   << error.getMeta<std::string> ("error/description") << std::endl;
+		os << getErrorColor (ANSI_COLOR::BOLD) << "Reason: " << getErrorColor (ANSI_COLOR::RESET)
+		   << error.getMeta<std::string> ("error/reason") << std::endl;
 		os << getErrorColor (ANSI_COLOR::BOLD) << "Ingroup: " << getErrorColor (ANSI_COLOR::RESET)
 		   << error.getMeta<std::string> ("error/ingroup") << std::endl;
 		os << getErrorColor (ANSI_COLOR::BOLD) << "Module: " << getErrorColor (ANSI_COLOR::RESET)
 		   << error.getMeta<std::string> ("error/module") << std::endl;
 		os << getErrorColor (ANSI_COLOR::BOLD) << "At: " << getErrorColor (ANSI_COLOR::RESET)
 		   << error.getMeta<std::string> ("error/file") << ":" << error.getMeta<std::string> ("error/line") << std::endl;
-		os << getErrorColor (ANSI_COLOR::BOLD) << "Reason: " << getErrorColor (ANSI_COLOR::RESET)
-		   << error.getMeta<std::string> ("error/reason") << std::endl;
 		os << getErrorColor (ANSI_COLOR::BOLD) << "Mountpoint: " << getErrorColor (ANSI_COLOR::RESET)
 		   << error.getMeta<std::string> ("error/mountpoint") << std::endl;
 		os << getErrorColor (ANSI_COLOR::BOLD) << "Configfile: " << getErrorColor (ANSI_COLOR::RESET)

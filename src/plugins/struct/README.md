@@ -30,7 +30,7 @@ interrelations of keys are called structure checker. They can require that
 various subkeys have to or must not exist. This can happen recursively
 to specify any structure.
 
-The struct plugin implements such a behaviour. It allows enforcement of
+The struct plugin implements such a behavior. It allows enforcement of
 a strong consistency within the keys of one backend.
 
 ## Usage
@@ -80,8 +80,8 @@ case, FStab. The rest of the configuration specifies how entries of
 FStab must look.
 
 The information applied to the keys is given through metadata. This
-metadata is copied to each key during the structure check. If,however,a
-key is missing,the structure check will terminate with a failure. Any
+metadata is copied to each key during the structure check. If, however, a
+key is missing, the structure check will terminate with a failure. Any
 additional key will also lead to an error.
 
 The metadata may be evaluated by subsequent checks. In the situation of

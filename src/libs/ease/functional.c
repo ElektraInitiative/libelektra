@@ -3,7 +3,7 @@
  *
  * @brief Functional helper.
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #define __STDC_FORMAT_MACROS
@@ -45,7 +45,6 @@ int elektraKsFilter (KeySet * result, KeySet * input, int (*filter) (const Key *
 
 	if (!filter) return -1;
 
-	int rc = 0;
 	int ret = 0;
 	Key * current;
 
@@ -53,7 +52,7 @@ int elektraKsFilter (KeySet * result, KeySet * input, int (*filter) (const Key *
 	ksRewind (input);
 	while ((current = ksNext (input)) != 0)
 	{
-		rc = filter (current, argument);
+		int rc = filter (current, argument);
 		if (rc <= -1)
 			return -1;
 		else if (rc > 0)

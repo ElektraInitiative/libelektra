@@ -33,12 +33,12 @@ This command will return the following values as an exit status:
   Show the man page.
 - `-V`, `--version`:
   Print version info.
-- `-p`, `--profile`=<profile>:
+- `-p`, `--profile <profile>`:
   Use a different kdb profile.
+- `-C`, `--color <when>`:
+  Print never/auto(default)/always colored output.
 - `-n`, `--no-newline`:
   Suppress the newline at the end of the output.
-- `-C`, `--color`=[when]:
-  Print never/auto(default)/always colored output.
 
 ## EXAMPLES
 
@@ -52,5 +52,5 @@ To get the value of metakey called `override/#0` stored in the key `spec/example
 
 - How to set metadata: [kdb-setmeta(1)](kdb-setmeta.md)
 - For more about cascading keys see [elektra-cascading(7)](elektra-cascading.md)
-- For general information about metadata see [elektra-metadata(7)](elektra-metadata.md)
+- [elektra-metadata(7)](elektra-metadata.md) for an explanation of the metadata concepts.
 - [elektra-key-names(7)](elektra-key-names.md) for an explanation of key names.

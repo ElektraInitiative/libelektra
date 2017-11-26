@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include <stdlib.h>
@@ -15,7 +15,7 @@
 #include <tests_plugin.h>
 
 // test simple variable passing
-static void test_variable_passing ()
+static void test_variable_passing (void)
 {
 	printf ("Testing simple variable passing...\n");
 
@@ -38,7 +38,7 @@ static void test_variable_passing ()
 }
 
 // test loading lua twice
-static void test_two_scripts ()
+static void test_two_scripts (void)
 {
 	printf ("Testing loading of two active lua plugins...\n");
 
@@ -72,7 +72,7 @@ static void test_two_scripts ()
 }
 
 // simple return value test
-static void test_fail ()
+static void test_fail (void)
 {
 	printf ("Testing return values from lua functions...\n");
 
@@ -96,7 +96,7 @@ static void test_fail ()
 }
 
 // test script with syntax error
-static void test_wrong ()
+static void test_wrong (void)
 {
 	printf ("Testing lua script with syntax error...\n");
 
@@ -134,7 +134,7 @@ int main (int argc, char ** argv)
 	test_fail ();
 	test_wrong ();
 
-	printf ("\ntest_lua RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("test_lua");
 
 	return nbError;
 }

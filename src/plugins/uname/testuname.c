@@ -3,16 +3,16 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include <sys/utsname.h>
 
-int main ()
+int main (void)
 {
 	struct utsname buf;
 
-	int ret = uname (&buf);
+	uname (&buf);
 	(void)buf.sysname;
 	(void)buf.nodename;
 	(void)buf.release;

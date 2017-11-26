@@ -3,21 +3,19 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
+#include <kdbmacros.h>
 #include <stdlib.h>
 
 #ifdef HAVE_KDBCONFIG_H
 #include "kdbconfig.h"
 #endif
 
-#define STRINGIFY(x) STRINGIFY2 (x)
-#define STRINGIFY2(x) #x
-
 #include <tests_plugin.h>
 
-static void init_env ()
+static void init_env (void)
 {
 	setenv ("PYTHONDONTWRITEBYTECODE", "1", 1);
 	setenv ("PYTHONPATH", ".", 1);
@@ -30,7 +28,7 @@ static char * python_file (const char * filename)
 	if (!srcdir_rewrite)
 	{
 		/* no rewrite. just append our plugin name */
-		strcpy (filebuf, STRINGIFY (PYTHON_PLUGIN_NAME));
+		strcpy (filebuf, ELEKTRA_STRINGIFY (PYTHON_PLUGIN_NAME));
 		strcat (strcat (filebuf, "/"), filename);
 		return srcdir_file (filebuf);
 	}
@@ -39,7 +37,7 @@ static char * python_file (const char * filename)
 	*srcdir_rewrite = '\0';
 
 	/* append plugin name and delete last character */
-	strcat (strcat (filebuf, "/"), STRINGIFY (PYTHON_PLUGIN_NAME));
+	strcat (strcat (filebuf, "/"), ELEKTRA_STRINGIFY (PYTHON_PLUGIN_NAME));
 	*(filebuf + strlen (filebuf) - 1) = '\0';
 
 	strcat (strcat (filebuf, "/"), filename);
@@ -47,13 +45,13 @@ static char * python_file (const char * filename)
 }
 
 // test simple variable passing
-static void test_variable_passing ()
+static void test_variable_passing (void)
 {
 	printf ("Testing simple variable passing...\n");
 
 	KeySet * conf = ksNew (1, keyNew ("user/script", KEY_VALUE, python_file ("python_plugin.py"), KEY_END),
 			       keyNew ("user/shutdown", KEY_VALUE, "1", KEY_END), keyNew ("user/print", KEY_END), KS_END);
-	PLUGIN_OPEN (STRINGIFY (PYTHON_PLUGIN_NAME));
+	PLUGIN_OPEN (ELEKTRA_STRINGIFY (PYTHON_PLUGIN_NAME));
 
 	Key * parentKey = keyNew ("user/from_c", KEY_END);
 	KeySet * ks = ksNew (0, KS_END);
@@ -68,7 +66,7 @@ static void test_variable_passing ()
 }
 
 // test loading python twice
-static void test_two_scripts ()
+static void test_two_scripts (void)
 {
 	printf ("Testing loading of two active python plugins...\n");
 
@@ -82,14 +80,14 @@ static void test_two_scripts ()
 				keyNew ("user/shutdown", KEY_VALUE, "1", KEY_END), keyNew ("user/print", KEY_END), KS_END);
 
 	Key * errorKey = keyNew ("", KEY_END);
-	Plugin * plugin = elektraPluginOpen (STRINGIFY (PYTHON_PLUGIN_NAME), modules, conf, errorKey);
+	Plugin * plugin = elektraPluginOpen (ELEKTRA_STRINGIFY (PYTHON_PLUGIN_NAME), modules, conf, errorKey);
 	succeed_if (output_warnings (errorKey), "warnings in kdbOpen");
 	succeed_if (output_error (errorKey), "errors in kdbOpen");
 	exit_if_fail (plugin != NULL, "unable to load python plugin");
 	keyDel (errorKey);
 
 	Key * errorKey2 = keyNew ("", KEY_END);
-	Plugin * plugin2 = elektraPluginOpen (STRINGIFY (PYTHON_PLUGIN_NAME), modules, conf2, errorKey2);
+	Plugin * plugin2 = elektraPluginOpen (ELEKTRA_STRINGIFY (PYTHON_PLUGIN_NAME), modules, conf2, errorKey2);
 	succeed_if (output_warnings (errorKey2), "warnings in kdbOpen");
 	succeed_if (output_error (errorKey2), "errors in kdbOpen");
 	exit_if_fail (plugin2 != NULL, "unable to load python plugin again");
@@ -102,13 +100,13 @@ static void test_two_scripts ()
 }
 
 // simple return value test
-static void test_fail ()
+static void test_fail (void)
 {
 	printf ("Testing return values from python functions...\n");
 
 	KeySet * conf = ksNew (2, keyNew ("user/script", KEY_VALUE, python_file ("python_plugin_fail.py"), KEY_END),
 			       keyNew ("user/shutdown", KEY_VALUE, "1", KEY_END), keyNew ("user/print", KEY_END), KS_END);
-	PLUGIN_OPEN (STRINGIFY (PYTHON_PLUGIN_NAME));
+	PLUGIN_OPEN (ELEKTRA_STRINGIFY (PYTHON_PLUGIN_NAME));
 
 	Key * parentKey = keyNew ("user/tests/from_c", KEY_END);
 	KeySet * ks = ksNew (0, KS_END);
@@ -124,7 +122,7 @@ static void test_fail ()
 }
 
 // test script with wrong class name
-static void test_wrong ()
+static void test_wrong (void)
 {
 	printf ("Testing python script with wrong class name...\n");
 
@@ -135,7 +133,7 @@ static void test_wrong ()
 			       keyNew ("user/shutdown", KEY_VALUE, "1", KEY_END), keyNew ("user/print", KEY_END), KS_END);
 
 	Key * errorKey = keyNew ("", KEY_END);
-	Plugin * plugin = elektraPluginOpen (STRINGIFY (PYTHON_PLUGIN_NAME), modules, conf, errorKey);
+	Plugin * plugin = elektraPluginOpen (ELEKTRA_STRINGIFY (PYTHON_PLUGIN_NAME), modules, conf, errorKey);
 	succeed_if (!output_warnings (errorKey), "we expect some warnings");
 	succeed_if (!output_error (errorKey), "we expect some errors");
 	succeed_if (plugin == NULL, "python plugin shouldn't be loadable");
@@ -175,7 +173,7 @@ int main (int argc, char ** argv)
 	test_fail ();
 	test_wrong ();
 
-	printf ("\ntest_python RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("test_python");
 
 	return nbError;
 }

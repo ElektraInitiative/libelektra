@@ -90,7 +90,7 @@
                         "start_regex": "## Plugins",
                         "stop_regex": "####### UNUSED",
                         "section_regex": "### ([^#]+)",
-                        "entry_regex": "^\\- \\[(.+)\\]\\(([^\\)]+)\\)(.*)"
+                        "entry_regex": "^- \\[([^\\]]+)\\]\\(([^)]+)\\)(.*)"
                     },
                     "name": {
                         "make_pretty": false
@@ -171,7 +171,7 @@
                         "name": "License",
                         "type": "staticfile",
                         "options": {
-                            "path": "doc/LICENSE.md"
+                            "path": "LICENSE.md"
                         }
                     },
                     {
@@ -263,6 +263,24 @@
                     }
                 },
                 "dev-comment": "The readme does already contain nicely formatted decision titles."
+            },
+            {
+                "name": "Developer Docu",
+                "type": "parsereadme",
+                "ref": "devdocu",
+                "options": {
+                    "path": "doc/dev/README.md",
+                    "target_file": [],
+                    "parsing": {
+                        "stop_regex": "####### UNUSED",
+                        "section_regex": "## ([^#]+)",
+                        "entry_regex": "^\\- \\[(.+)\\]\\(([^\\)]+)\\)(.*)"
+                    },
+                    "name": {
+                        "make_pretty": false
+                    }
+                },
+                "dev-comment": "The readme does already contain nicely formatted titles."
             },
             {
                 "name": "Authors",

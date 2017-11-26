@@ -3,12 +3,12 @@
  *
  * @brief Test suite for meta information.
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include <tests.h>
 
-static void test_basic ()
+static void test_basic (void)
 {
 	Key * key;
 	key = keyNew ("user/key_with_meta", KEY_END);
@@ -59,7 +59,7 @@ static void test_basic ()
 	keyDel (key);
 }
 
-static void test_iterate ()
+static void test_iterate (void)
 {
 	Key * key;
 
@@ -86,7 +86,7 @@ static void test_iterate ()
 	keyDel (key);
 }
 
-static void test_size ()
+static void test_size (void)
 {
 	Key * key;
 	char * buffer;
@@ -171,7 +171,7 @@ static void test_size ()
 	keyDel (key);
 }
 
-static void test_dup ()
+static void test_dup (void)
 {
 	Key * key;
 	Key * dup;
@@ -218,7 +218,7 @@ static void l (Key * k)
 	// with the metadata "type" from g_c
 }
 
-static void test_examples ()
+static void test_examples (void)
 {
 	Key * key;
 	key = keyNew (0);
@@ -258,7 +258,7 @@ static void test_examples ()
 	keyDel (g_c);
 }
 
-static void test_copy ()
+static void test_copy (void)
 {
 	printf ("Test key meta copy\n");
 
@@ -380,7 +380,7 @@ static void test_copy ()
 	keyDel (c);
 }
 
-static void test_new ()
+static void test_new (void)
 {
 	Key * key;
 	// clang-format off
@@ -433,7 +433,7 @@ static void test_new ()
 }
 
 
-static void test_copyall ()
+static void test_copyall (void)
 {
 	printf ("Test key meta copy all\n");
 
@@ -530,7 +530,7 @@ static void test_copyall ()
 	keyDel (c);
 }
 
-static void test_type ()
+static void test_type (void)
 {
 	Key * key;
 

@@ -3,7 +3,7 @@
  *
  * @brief Tests for simpleini plugin
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -76,7 +76,7 @@ static void test_formatNotAccepted (const char * format)
 }
 
 
-static void test_readDefaultFormat ()
+static void test_readDefaultFormat (void)
 {
 	const char * expected_keys[] = { "key1", "key2", "key3", "key4" };
 	const char * expected_values[] = { "value1", "value2", "value3", "value4 " };
@@ -89,7 +89,7 @@ static void test_readDefaultFormat ()
 			 4, expected_keys, expected_values);
 }
 
-static void test_readFormat_wo_space ()
+static void test_readFormat_wo_space (void)
 {
 
 	const char * expected_keys[] = { "key1", "key2", "key3", "key4" };
@@ -103,7 +103,7 @@ static void test_readFormat_wo_space ()
 			 4, expected_keys, expected_values);
 }
 
-static void test_readFormat_special1 ()
+static void test_readFormat_special1 (void)
 {
 
 	const char * expected_keys[] = { "key1", "key2", "key3", "key4" };
@@ -135,7 +135,7 @@ int main (int argc, char ** argv)
 	test_formatNotAccepted ("%% %%");
 
 
-	printf ("\ntestmod_simpleini RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("testmod_simpleini");
 
 	return nbError;
 }

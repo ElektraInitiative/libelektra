@@ -3,7 +3,7 @@
  *
  * @brief Headerfile of Struct checker
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -47,7 +47,7 @@ class StructChecker : public Checker
 	kdb::KeySet config;
 
 public:
-	StructChecker (kdb::KeySet config_) : config (config_)
+	explicit StructChecker (kdb::KeySet config_) : config (config_)
 	{
 	}
 

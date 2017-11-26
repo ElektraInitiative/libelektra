@@ -3,14 +3,14 @@
  *
  * @brief Test cases for how to build a backend out of system/elektra/mountpoints/<name>
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include <../../src/libs/elektra/backend.c>
 #include <tests_internal.h>
 
 
-KeySet * set_simple ()
+KeySet * set_simple (void)
 {
 	return ksNew (50, keyNew ("system/elektra/mountpoints/simple", KEY_END),
 
@@ -43,7 +43,7 @@ KeySet * set_simple ()
 		      keyNew ("system/elektra/mountpoints/simple/errorplugins/#1" KDB_DEFAULT_STORAGE, KEY_END), KS_END);
 }
 
-KeySet * set_pluginconf ()
+KeySet * set_pluginconf (void)
 {
 	return ksNew (10, keyNew ("system/anything", KEY_VALUE, "backend", KEY_END), keyNew ("system/more", KEY_END),
 		      keyNew ("system/more/config", KEY_END), keyNew ("system/more/config/below", KEY_END), keyNew ("system/path", KEY_END),
@@ -52,7 +52,7 @@ KeySet * set_pluginconf ()
 		      KS_END);
 }
 
-static void test_simple ()
+static void test_simple (void)
 {
 	printf ("Test simple building of backend\n");
 
@@ -115,7 +115,7 @@ static void test_simple ()
 	ksDel (modules);
 }
 
-static void test_default ()
+static void test_default (void)
 {
 	printf ("Test default " KDB_DEFAULT_STORAGE "\n");
 
@@ -150,7 +150,7 @@ static void test_default ()
 }
 
 
-KeySet * set_backref ()
+KeySet * set_backref (void)
 {
 	return ksNew (
 		50, keyNew ("system/elektra/mountpoints/backref", KEY_END),
@@ -192,7 +192,7 @@ KeySet * set_backref ()
 		KS_END);
 }
 
-static void test_backref ()
+static void test_backref (void)
 {
 	printf ("Test back references\n");
 

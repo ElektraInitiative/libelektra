@@ -48,7 +48,7 @@ The convenience plugin should transform (it might be combined with a plugin that
 
 - most easy to implement
 - allows presence to be true
-- plugins allow us to convert to any other behaviour
+- plugins allow us to convert to any other behavior
 
 ## Implications
 

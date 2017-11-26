@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME, KEY_VALUE, "fcrypt plugin waits for your orders", KEY_END),
@@ -20,3 +20,7 @@ keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME, KEY_VALUE, "fcrypt plugin
 		ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, checkconf), KEY_END),
 #include ELEKTRA_README (fcrypt)
 	keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
+	keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/constants/DEFAULT_TMPDIR", KEY_VALUE, ELEKTRA_FCRYPT_DEFAULT_TMPDIR,
+		KEY_END),
+	keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/config/needs" ELEKTRA_FCRYPT_CONFIG_TMPDIR, KEY_VALUE,
+		ELEKTRA_FCRYPT_DEFAULT_TMPDIR, KEY_END),

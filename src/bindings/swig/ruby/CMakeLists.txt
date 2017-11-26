@@ -11,7 +11,7 @@ find_package(Ruby)
 
 if (NOT RUBY_FOUND)
 	remove_binding(swig_ruby "ruby interpreter or ruby header files not found (package ruby-dev/ruby-devel installed?)")
-elseif (SWIG_VERSION MATCHES "^([12]\\.)|(3\\.0\\.[01234567])")
+elseif (SWIG_VERSION MATCHES "^([12]\\.)|(3\\.0\\.[01234567])$")
 	remove_binding(swig_ruby "found SWIG version (${SWIG_VERSION}) is not suitable. SWIG version >= 3.0.8 required")
 else()
 
@@ -63,11 +63,19 @@ else()
 	set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -DSWIG_TYPE_TABLE=kdb")
 
 	# disable certain compiler warnings for SWIG generated files
-	set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-unused-parameter -Wno-unused-but-set-variable")
+	set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-unused-parameter")
 	set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-sign-compare")
+	set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-dynamic-class-memaccess")
+	if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-unused-but-set-variable")
+	endif (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 
 	# add 'kdb' module
-	swig_add_module (swig-ruby ruby kdb.i)
+	if (CMAKE_VERSION LESS 3.8)
+		swig_add_module (swig-ruby ruby kdb.i)
+	else (CMAKE_VERSION LESS 3.8)
+		swig_add_library (swig-ruby LANGUAGE ruby SOURCES kdb.i TYPE MODULE)
+	endif (CMAKE_VERSION LESS 3.8)
 	# set the compiler settings for the generated file
 	# (has to be done for each module separately)
 	set_source_files_properties (
@@ -76,7 +84,11 @@ else()
 	)
 
 	# add the 'kdbtools' module
-	swig_add_module (swig-ruby-tools ruby kdbtools.i)
+	if (CMAKE_VERSION LESS 3.8)
+		swig_add_module (swig-ruby-tools ruby kdbtools.i)
+	else (CMAKE_VERSION LESS 3.8)
+		swig_add_library (swig-ruby-tools LANGUAGE ruby SOURCES kdbtools.i TYPE MODULE)
+	endif (CMAKE_VERSION LESS 3.8)
 	set_source_files_properties (
 		${swig_generated_sources} PROPERTIES
 		COMPILE_FLAGS "${SWIG_COMPILE_FLAGS}"
@@ -93,7 +105,7 @@ else()
 		OUTPUT_NAME _kdbtools
 		PREFIX ""
 	)
-	
+
 
 	# CMAKE_INSTALL_PREFIX dependent install location
 	# if we hit one of the usual cases (/usr/local or /usr) install the lib

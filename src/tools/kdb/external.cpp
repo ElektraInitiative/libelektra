@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include "kdbconfig.h"
@@ -181,7 +181,12 @@ void runManPage (std::string command, std::string profile)
 	char * const argv[3] = { const_cast<char *> (man), const_cast<char *> (command.c_str ()), nullptr };
 
 	elektraExecve (man, argv);
-	std::cout << "Was not able to execute man-page viewer: \"" << man << '"' << std::endl;
+	std::cout << "Sorry, I was not able to execute the man-page viewer: \"" << man << "\".\n";
+	std::cout << "Try to change /sw/elektra/kdb/#0/" + profile + "/man with full path to man.\n\n";
+	std::cout << "If you did not modify settings related to the man-page viewer,\nplease report the issue at "
+		     "https://issues.libelektra.org/"
+		  << std::endl;
+	exit (1);
 }
 
 #ifndef _WIN32

@@ -3,11 +3,12 @@
  *
  * @brief Tests for range plugin
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
 #include <kdbconfig.h>
+#include <limits.h>
 #include <locale.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -106,7 +107,7 @@ int main (int argc, char ** argv)
 
 	init (argc, argv);
 
-	const char * old_locale = elektraStrDup (setlocale (LC_ALL, NULL));
+	char * old_locale = elektraStrDup (setlocale (LC_ALL, NULL));
 	setlocale (LC_ALL, "C");
 
 	testInt ("5", 1, "1-10");
@@ -178,9 +179,24 @@ int main (int argc, char ** argv)
 	testChar ("g", -1, "a-f");
 	testChar ("c", 1, "a-f");
 
+	// test edge cases
+	char number[256];
+	char range[256];
+	snprintf (number, 256, "%lld", LLONG_MAX);
+	snprintf (range, 256, "%lld - %lld", LLONG_MIN, LLONG_MAX);
+	testInt (number, 1, range);
+	snprintf (number, 256, "%lld", LLONG_MIN);
+	testInt (number, 1, range);
+
+	snprintf (number, 256, "%llu", ULLONG_MAX);
+	snprintf (range, 256, "%llu - %llu", 1ULL, ULLONG_MAX);
+	testUInt (number, 1, range);
+	snprintf (number, 256, "%llu", 1ULL);
+	testUInt (number, 1, range);
+
 	setlocale (LC_ALL, old_locale);
 	elektraFree (old_locale);
-	printf ("\ntestmod_range RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("testmod_range");
 
 	return nbError;
 }

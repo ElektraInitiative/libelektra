@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #compiler-settings
@@ -46,7 +46,7 @@ extern "C"
 {
 #endif
 
-const char *elektraGenHelpText()
+const char *elektraGenHelpText(void)
 {
 	return
 @for $key, $info in $parameters.items()

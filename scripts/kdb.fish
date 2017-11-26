@@ -8,20 +8,6 @@
 # = General =
 # ===========
 
-function __join -d 'Join variables into one variable using a given separator'
-    set -l separator $argv[1]
-    set -l joined ''
-
-    for element in $argv[2..-2]
-        test -n $element
-        and set joined "$joined$element$separator"
-    end
-    test -n $argv[-1]
-    and set joined "$joined$argv[-1]"
-
-    echo $joined
-end
-
 function __includes_options -d 'Check if the values starting at position 3 contain the options specified at position one and two'
     set -l opt_long $argv[1]
     set -l opt_short $argv[2]
@@ -31,7 +17,7 @@ function __includes_options -d 'Check if the values starting at position 3 conta
     set opt_long "--$opt_long"
     test -n $opt_short
     set opt_short "-\w*$opt_short"
-    set -l options (__join '|' $opt_long $opt_short)
+    set -l options (string join -- '|' $opt_long $opt_short)
 
     string match -r -- $options "$input"
 end
@@ -88,7 +74,7 @@ function __fish_kdb__number_arguments_input_left -d 'Return the number of argume
 end
 
 function __fish_kdb_subcommand -d 'Check for and print the current kdb subcommand'
-    set -l input (commandline -op)
+    set -l input (commandline -opc)
 
     test (count $input) -le 1
     and return 1
@@ -176,9 +162,9 @@ function __fish_kdb_subcommand_mount_needs_namespace -d 'Check if the subcommand
     and test (__fish_kdb__number_arguments_input_left) -eq 3
 end
 
-function __fish_kdb_subcommand_mount_needs_storage_plugin -d 'Check if the subcommand mount needs a storage plugin completion'
+function __fish_kdb_subcommand_mount_needs_plugin -d 'Check if the subcommand mount needs a plugin completion'
     __fish_kdb_subcommand_includes mount
-    and test (__fish_kdb__number_arguments_input_left) -eq 4
+    and test (__fish_kdb__number_arguments_input_left) -ge 4
 end
 
 function __fish_kdb_subcommand_needs_storage_plugin -d 'Check if the current subcommand need a storage plugin completion'
@@ -200,7 +186,7 @@ function __fish_kdb_subcommand_remount_needs_namespace -d 'Check if the subcomma
     test $number_arguments -eq 3 -o $number_arguments -eq 4
 end
 
-function __fish_kdb_subcommand_smount_needs_storage_plugin -d 'Check if the subcommand spec-mount needs a storage plugin completion'
+function __fish_kdb_subcommand_smount_needs_plugin -d 'Check if the subcommand spec-mount needs a plugin completion'
     __fish_kdb_subcommand_includes smount spec-mount
     and test (__fish_kdb__number_arguments_input_left) -eq 3
 end
@@ -229,24 +215,23 @@ end
 
 function __fish_kdb_print_namespaces -d 'Print a list of possible namespace completions'
     set -l namespace (commandline -ct)
-    kdb complete --max-depth=1 -- "$namespace" | string match -vr '(dir|proc|spec|user)$'
+    kdb complete --max-depth=1 -- "$namespace"
 end
 
 function __fish_kdb_print_plugins -d 'Print a list of available plugins'
     kdb list
 end
 
+function __fish_kdb_print_non_resolver_plugins -d 'Print a list of non-resolver plugins'
+    kdb list | string match -vr '.*resolver.*' | string match -vr (kdb list resolver | string join '|')
+end
+
 function __fish_kdb_print_resolver_plugins -d 'Print a list of available resolver plugins'
-    kdb list | string match -r '.*resolver.*'
+    kdb list resolver
 end
 
 function __fish_kdb_print_storage_plugins -d 'Print a list of available storage plugins'
-    set -l formats constants crypto_botan crypto_gcrypt crypto_openssl desktop dpkg dump fcrypt hosts line ini json ni passwd regexstore
-    set -l formats $formats simpleini simplespeclang tcl xmltool uname
-    set -l regex '^(?:'(__join '|' $formats)')$'
-    set -l storage_plugins (__fish_kdb_print_plugins | string match -r $regex)
-    set -l storage_plugins $storage_plugins storage
-    printf '%s\n' $storage_plugins
+    kdb list storage
 end
 
 function __fish_kdb_print_subcommands -d 'Print a list of kdb subcommands'
@@ -304,7 +289,7 @@ function __fish_kdb_subcommand_supports_option_color -d 'Check if the current su
 end
 
 function __fish_kdb_subcommand_supports_option_debug -d 'Check if the current subcommand supports the option debug'
-    __fish_kdb_subcommand_includes complete mount remount smount spec-mount
+    __fish_kdb_subcommand_includes complete ls mount remount smount spec-mount
 end
 
 function __fish_kdb_subcommand_supports_option_force -d 'Check if the current subcommand supports the option force'
@@ -384,10 +369,11 @@ complete -c kdb -n '__fish_kdb_subcommand_remount_needs_namespace' -x -a '(__fis
 
 complete -c kdb -n '__fish_kdb_needs_plugin' -x -a '(__fish_kdb_print_plugins)'
 
+complete -c kdb -n '__fish_kdb_subcommand_mount_needs_plugin' -x -a '(__fish_kdb_print_non_resolver_plugins)'
+complete -c kdb -n '__fish_kdb_subcommand_smount_needs_plugin' -x -a '(__fish_kdb_print_non_resolver_plugins)'
+
 complete -c kdb -n '__fish_kdb_subcommand_convert_needs_storage_plugin' -x -a '(__fish_kdb_print_storage_plugins)'
-complete -c kdb -n '__fish_kdb_subcommand_mount_needs_storage_plugin' -x -a '(__fish_kdb_print_storage_plugins)'
 complete -c kdb -n '__fish_kdb_subcommand_needs_storage_plugin' -x -a '(__fish_kdb_print_storage_plugins)'
-complete -c kdb -n '__fish_kdb_subcommand_smount_needs_storage_plugin' -x -a '(__fish_kdb_print_storage_plugins)'
 
 complete -c kdb -n '__fish_kdb_subcommand_fstab_needs_filesystem' -x -a '(__fish_print_filesystems)'
 
@@ -432,14 +418,14 @@ __fish_kdb_add_option '__fish_kdb_subcommand_includes merge mount remount smount
 __fish_kdb_add_option '__fish_kdb_subcommand_includes info' 'load' 'l' 'Load plugin even if system/elektra is available'
 
 # --max-depth -M
-set -l description 'Specify the maximum depth of completion suggestions (unlimited by default, 1 to show only the next level), inclusive'
+set -l description 'Specify the maximum depth (unlimited by default, 1 to show only the next level), exclusive and relative to the name'
 set -l argument_function '__fish_kdb_print_option_depth_arguments most 1'
-__fish_kdb_add_option '__fish_kdb_subcommand_includes complete' 'max-depth' 'M' "$description" "($argument_function)"
+__fish_kdb_add_option '__fish_kdb_subcommand_includes complete ls' 'max-depth' 'M' "$description" "($argument_function)"
 
 # --min-depth -m
-set -l description 'Specify the minimum depth of completion suggestions (0 by default), exclusive'
+set -l description 'Specify the minimum depth (0 by default), inclusive and relative to the name'
 set -l argument_function '__fish_kdb_print_option_depth_arguments least 0'
-__fish_kdb_add_option '__fish_kdb_subcommand_includes complete' 'min-depth' 'm' "$description" "($argument_function)"
+__fish_kdb_add_option '__fish_kdb_subcommand_includes complete ls' 'min-depth' 'm' "$description" "($argument_function)"
 
 # --namespace -N
 set -l description 'Specify the namespace to use for cascading keys'
@@ -491,7 +477,7 @@ __fish_kdb_add_option '__fish_kdb_subcommand_supports_option_verbose' 'verbose' 
 __fish_kdb_add_option "not __fish_kdb_subcommand; or __fish_kdb_subcommand_supports_common_options" 'version' 'V' 'Print version info'
 
 # --without-elektra -E
-__fish_kdb_add_option '__fish_kdb_subcommand_includes export' 'without-elektra' 'E' 'Omit the `/elektra` directory'
+__fish_kdb_add_option '__fish_kdb_subcommand_includes export import' 'without-elektra' 'E' 'Omit the `/elektra` directory'
 
 # --with-recommends -W
 set -l completion_function '__fish_kdb_subcommand_includes global-mount gmount mount smount spec-mount'

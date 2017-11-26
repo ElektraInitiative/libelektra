@@ -1,4 +1,4 @@
-These are minimal examples how to applications
-with elektra outside of elektra.
+This folder contains examples on how to write applications
+using Elektra outside of the Elektra source tree.
 
 [See how to build and run example](tests/shell/check_external.sh)

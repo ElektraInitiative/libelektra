@@ -1,0 +1,9 @@
+hello: world
+forward/slash: value containing spaces
+"double quoted": 'single quoted'
+longish key: >-
+  10-9-8-7
+  everybody’s
+  coming
+  to
+  burn this city

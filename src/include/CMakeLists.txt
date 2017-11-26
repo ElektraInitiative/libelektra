@@ -1,11 +1,26 @@
 include(CheckIncludeFile)
 include(CheckSymbolExists)
 include(CheckTypeSize)
+include(TestBigEndian)
 
 check_symbol_exists(clearenv      "stdlib.h"         HAVE_CLEARENV)
 check_symbol_exists(setenv        "stdlib.h"         HAVE_SETENV)
 check_symbol_exists(futimens      "sys/stat.h"       HAVE_FUTIMENS)
-check_symbol_exists(futimes       "sys/time.h"       HAVE_FUTIMES)
+# look for hsearch_r function family
+list(APPEND CMAKE_REQUIRED_DEFINITIONS -D_GNU_SOURCE)
+check_symbol_exists(hsearch_r      "search.h"       HAVE_HSEARCHR)
+list(REMOVE_ITEM CMAKE_REQUIRED_DEFINITIONS -D_GNU_SOURCE)
+
+if (APPLE)
+	# Work around a bug on macOS where `futimes` can not be located if we specify the compiler switch `-Werror`
+	set (CMAKE_C_FLAGS_OLD ${CMAKE_C_FLAGS})
+	string (REPLACE "-Werror" "" CMAKE_C_FLAGS ${CMAKE_C_FLAGS})
+	check_symbol_exists (futimes "sys/time.h" HAVE_FUTIMES)
+	set (CMAKE_C_FLAGS ${CMAKE_C_FLAGS_OLD})
+else (APPLE)
+	check_symbol_exists (futimes "sys/time.h" HAVE_FUTIMES)
+endif (APPLE)
+
 check_symbol_exists(glob          "glob.h"           HAVE_GLOB)
 check_symbol_exists(clock_gettime "time.h"           HAVE_CLOCK_GETTIME)
 
@@ -36,6 +51,7 @@ set (BUILTIN_PLUGIN_FOLDER
 	"${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER}")
 set (ELEKTRA_DEPRECATED "__attribute__ ((deprecated))")
 set (ELEKTRA_UNUSED "__attribute__ ((unused))")
+set (ELEKTRA_FALLTHROUGH "__attribute__ ((fallthrough))")
 
 set (BUILTIN_SPEC_FOLDER
 	"${CMAKE_INSTALL_PREFIX}/${KDB_DB_SPEC}")
@@ -45,6 +61,8 @@ set (BUILTIN_SPEC_REAL_FOLDER
 if (ENABLE_OPTIMIZATIONS)
 	set (ELEKTRA_ENABLE_OPTIMIZATIONS "1")
 endif (ENABLE_OPTIMIZATIONS)
+
+TEST_BIG_ENDIAN(ELEKTRA_BIG_ENDIAN)
 
 configure_file (
 	"${CMAKE_CURRENT_SOURCE_DIR}/kdb.h.in"
@@ -74,6 +92,7 @@ install (FILES
 	kdbplugin.h
 	kdbprivate.h
 	kdbproposal.h
+	kdbinvoke.h
 	kdbutility.h
 	"${CMAKE_CURRENT_BINARY_DIR}/kdbversion.h"
 	DESTINATION include/${TARGET_INCLUDE_FOLDER})

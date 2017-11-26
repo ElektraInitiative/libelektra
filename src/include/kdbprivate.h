@@ -3,7 +3,7 @@
  *
  * @brief Private declarations.
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #ifndef KDBPRIVATE_H
@@ -238,6 +238,12 @@ struct _KeySet
 	 * Some control and internal flags.
 	 */
 	ksflag_t flags;
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+	/**
+	 * The Order Preserving Minimal Perfect Hash Map.
+	 */
+	Opmphm * opmphm;
+#endif
 };
 
 
@@ -343,7 +349,7 @@ struct _Plugin
 	KeySet * config; /*!< This keyset contains configuration for the plugin.
 	 Direct below system/ there is the configuration supplied for the backend.
 	 Direct below user/ there is the configuration supplied just for the
-	 plugin, which should be of course prefered to the backend configuration.
+	 plugin, which should be of course preferred to the backend configuration.
 	 The keys inside contain information like /path which path should be used
 	 to write configuration to or /host to which host packets should be send.
 	 @see elektraPluginGetConfig() */
@@ -513,6 +519,7 @@ int elektraUnescapeKeyNamePartBegin (const char * source, size_t size, char ** d
 char * elektraUnescapeKeyNamePart (const char * source, size_t size, char * dest);
 
 int elektraValidateKeyName (const char * name, size_t size);
+
 
 /*Internally used for array handling*/
 int elektraArrayValidateName (const Key * key);

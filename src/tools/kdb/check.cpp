@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include <check.hpp>
@@ -24,7 +24,7 @@ CheckCommand::CheckCommand ()
 {
 }
 
-int printProblems (Key k, std::string action, int off)
+int printProblems (Key const & k, std::string const & action, int off)
 {
 	bool wo = k.getMeta<const kdb::Key> ("warnings");
 	bool eo = k.getMeta<const kdb::Key> ("error");

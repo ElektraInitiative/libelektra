@@ -3,7 +3,7 @@
  *
  * @brief Implementation of MergeResult
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -20,16 +20,13 @@ namespace tools
 namespace merging
 {
 
-MergeResult::MergeResult ()
+MergeResult::MergeResult () : resolvedKeys (0)
 {
-	resolvedKeys = 0;
 }
 
 MergeResult::MergeResult (KeySet & _conflictSet, KeySet & _mergedKeys)
+: conflictSet (_conflictSet), mergedKeys (_mergedKeys), resolvedKeys (0)
 {
-	resolvedKeys = 0;
-	conflictSet = _conflictSet;
-	mergedKeys = _mergedKeys;
 }
 
 void MergeResult::addConflict (Key & key, ConflictOperation ourOperation, ConflictOperation theirOperation)

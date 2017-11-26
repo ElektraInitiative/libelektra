@@ -3,7 +3,7 @@
  *
  * @brief Source for date plugin
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -195,8 +195,8 @@ static int combineAndValidateISO (const char * toValidate, const RepStruct * dat
 	if (!strchr (toValidate, 'T')) noT = 1;
 
 	// ISO 8601 5.4.2 Representations other than complete, rule b.
-	// when truncation occures in the date component of a combined date and time
-	// expresssion, it is not necessary to replace the omitted higher order components
+	// when truncation occurs in the date component of a combined date and time
+	// expression, it is not necessary to replace the omitted higher order components
 	// with the hypen [-];
 
 	int toValidateHyphen = countLeadingHyphen (toValidate);
@@ -337,8 +337,7 @@ static int isoStringValidation (const char * date, const char * fmt)
 	}
 	else
 	{
-		int rc = -1;
-		rc = combinedIsoStringValidation (date, (DATETIME | CMPLT));
+		int rc = combinedIsoStringValidation (date, (DATETIME | CMPLT));
 		if (rc != 1) rc = combinedIsoStringValidation (date, (DATETIME | TRCT));
 		return rc;
 	}
@@ -399,7 +398,7 @@ static int rfc822StringValidation (const char * date)
 	return -1;
 }
 
-static int validateDate (Key * key, Key * parentKey)
+static int validateKey (Key * key, Key * parentKey)
 {
 	const Key * standard = keyGetMeta (key, "check/date");
 	const Key * formatStringMeta = keyGetMeta (key, "check/date/format");
@@ -413,6 +412,7 @@ static int validateDate (Key * key, Key * parentKey)
 		if (rc == -1)
 		{
 			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_D_T_FMT, parentKey, "%s doesn't match format string %s", date, formatString);
+			rc = 0;
 		}
 	}
 	else if (!strcasecmp (stdString, "ISO8601"))
@@ -425,11 +425,11 @@ static int validateDate (Key * key, Key * parentKey)
 						    formatString);
 			else
 				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_D_T_FMT, parentKey, "%s is not a valid ISO8601 date", date);
+			rc = 0;
 		}
 		else if (rc == 0)
 		{
 			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_D_T_FMT, parentKey, "syntax error in ISO8601 format string '%s'", formatString);
-			rc = -1;
 		}
 	}
 	else if (!strcasecmp (stdString, "RFC2822"))
@@ -438,6 +438,7 @@ static int validateDate (Key * key, Key * parentKey)
 		if (rc == -1)
 		{
 			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_D_T_FMT, parentKey, "%s doesn't match rfc2822 specification", date);
+			rc = 0;
 		}
 	}
 	else if (!strcasecmp (stdString, "RFC822"))
@@ -446,6 +447,7 @@ static int validateDate (Key * key, Key * parentKey)
 		if (rc == -1)
 		{
 			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_D_T_FMT, parentKey, "%s doesn't match format string %s", date, formatString);
+			rc = 0;
 		}
 	}
 
@@ -462,6 +464,7 @@ int elektraDateGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 			       keyNew ("system/elektra/modules/date/exports", KEY_END),
 			       keyNew ("system/elektra/modules/date/exports/get", KEY_FUNC, elektraDateGet, KEY_END),
 			       keyNew ("system/elektra/modules/date/exports/set", KEY_FUNC, elektraDateSet, KEY_END),
+			       keyNew ("system/elektra/modules/date/exports/validateKey", KEY_FUNC, validateKey, KEY_END),
 #include ELEKTRA_README (date)
 			       keyNew ("system/elektra/modules/date/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
@@ -477,8 +480,8 @@ int elektraDateGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 		const Key * meta = keyGetMeta (cur, "check/date");
 		if (meta)
 		{
-			int r = validateDate (cur, parentKey);
-			if (r == -1)
+			int r = validateKey (cur, parentKey);
+			if (r == 0)
 			{
 				rc = -1;
 			}
@@ -498,8 +501,8 @@ int elektraDateSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 		const Key * meta = keyGetMeta (cur, "check/date");
 		if (meta)
 		{
-			int r = validateDate (cur, parentKey);
-			if (r == -1)
+			int r = validateKey (cur, parentKey);
+			if (r == 0)
 			{
 				rc = -1;
 			}

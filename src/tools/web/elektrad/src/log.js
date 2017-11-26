@@ -7,7 +7,7 @@
  * const { info, error } = makeLog('routes')
  * info('routes loaded!') // displays "elektrad:routes:info routes loaded!"
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 import dude from 'debug-dude'

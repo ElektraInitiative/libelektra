@@ -3,7 +3,7 @@
  *
  * @brief Models a merge conflict
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -25,7 +25,7 @@ namespace merging
 class InvalidConflictOperation : public ToolException
 {
 public:
-	InvalidConflictOperation (std::string message) : ToolException (message){};
+	explicit InvalidConflictOperation (std::string message) : ToolException (message){};
 };
 
 enum ConflictOperation

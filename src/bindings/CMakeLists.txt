@@ -10,6 +10,12 @@ if (FINDEX GREATER -1)
 	add_subdirectory (jna)
 endif()
 
+list (FIND BINDINGS "haskell" FINDEX)
+if (FINDEX GREATER -1)
+	message (STATUS "Include Binding haskell")
+	add_subdirectory (haskell)
+endif()
+
 set (regex "swig_.*")
 list_find (BINDINGS regex found)
 if (found)

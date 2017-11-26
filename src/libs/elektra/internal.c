@@ -3,7 +3,7 @@
  *
  * @brief Internal methods for Elektra.
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #ifdef HAVE_KDBCONFIG_H
@@ -398,6 +398,7 @@ char * elektraVFormat (const char * format, va_list arg_list)
 	if (calculated_length == -1)
 	{
 		va_end (arg_list_adj);
+		elektraFree (buffer);
 		// before Glibc 2.0.6, always -1 is returned
 		// we won't do Glibc job, please upgrade
 		return 0;
@@ -680,7 +681,7 @@ size_t elektraUnescapeKeyName (const char * source, char * dest)
 
 	ELEKTRA_ASSERT (sp != NULL && dp != NULL, "Got null pointer sp: %p dp: %p", (void *)sp, (void *)dp);
 
-	if (*source == '/')
+	if (*sp == '/')
 	{
 		// handling for cascading names
 		*dp = 0;

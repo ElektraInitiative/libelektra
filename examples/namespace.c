@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include <kdbproposal.h>
@@ -47,7 +47,7 @@ case KEY_NS_CASCADING:
 //! [namespace]
 }
 
-void loop ()
+void loop (void)
 {
 //! [loop]
 for (elektraNamespace ns = KEY_NS_FIRST; ns <= KEY_NS_LAST; ++ns)
@@ -58,7 +58,7 @@ for (elektraNamespace ns = KEY_NS_FIRST; ns <= KEY_NS_LAST; ++ns)
 //! [loop]
 }
 
-int main ()
+int main (void)
 {
 	char s[100];
 	fgets (s, 100, stdin);

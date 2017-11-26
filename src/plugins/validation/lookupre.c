@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include "validation.h"
@@ -84,8 +84,6 @@ Key * ksLookupRE (KeySet * ks, const regex_t * regexp)
 {
 	regmatch_t offsets;
 	Key *walker = 0, *end = 0;
-
-	walker = ksCurrent (ks);
 
 	while ((walker = ksNext (ks)) != end)
 	{

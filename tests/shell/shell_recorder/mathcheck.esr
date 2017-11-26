@@ -1,115 +1,123 @@
 Mountpoint: user/tmount/mathcheck
 DiffType: File
-File:
+File: mathcheck.esr
 Storage: mathcheck
 
 # Setup
 
-< mount $File $Mountpoint $Storage
+< kdb mount $File $Mountpoint $Storage ni
 
 # Test ../
 
-< set $Mountpoint/check/test0/points 5.9
-< set $Mountpoint/check/test1/points 4.5
+< kdb set $Mountpoint/check/test0/points 5.9
+< kdb set $Mountpoint/check/test1/points 4.5
 
-< set $Mountpoint/check/gp
+< kdb set $Mountpoint/check/gp
 
-< setmeta $Mountpoint/check/gp check/math ":= + ../test0/points ../test1/points"
+< kdb setmeta $Mountpoint/check/gp check/math ":= + ../test0/points ../test1/points"
 
 STDOUT: 10.4
-< get $Mountpoint/check/gp
+< kdb get $Mountpoint/check/gp
 
 RET: 0
-< rm -r $Mountpoint
+< kdb rm -r $Mountpoint
 
 
 # Test ./
 
-< set $Mountpoint/check/gp/test0/points 5.9
-< set $Mountpoint/check/gp/test1/points 4.5
+< kdb set $Mountpoint/check/gp/test0/points 5.9
+< kdb set $Mountpoint/check/gp/test1/points 4.5
 
-< set $Mountpoint/check/gp
+< kdb set $Mountpoint/check/gp
 
-< setmeta $Mountpoint/check/gp check/math ":= + ./test0/points ./test1/points"
+< kdb setmeta $Mountpoint/check/gp check/math ":= + ./test0/points ./test1/points"
 
 STDOUT: 10.4
-< get $Mountpoint/check/gp
+< kdb get $Mountpoint/check/gp
 
 RET: 0
-< rm -r $Mountpoint
+< kdb rm -r $Mountpoint
 
 # Test @/
 
-< set $Mountpoint/check/test0/points 5.9
-< set $Mountpoint/check/test1/points 4.5
+< kdb set $Mountpoint/check/test0/points 5.9
+< kdb set $Mountpoint/check/test1/points 4.5
 
-< set $Mountpoint/check/gp
+< kdb set $Mountpoint/check/gp
 
-< setmeta $Mountpoint/check/gp check/math ":= + @/check/test0/points @/check/test1/points"
+< kdb setmeta $Mountpoint/check/gp check/math ":= + @/check/test0/points @/check/test1/points"
 
 STDOUT: 10.4
-< get $Mountpoint/check/gp
+< kdb get $Mountpoint/check/gp
 
 RET: 0
-< rm -r $Mountpoint
+< kdb rm -r $Mountpoint
 
 # Test Null sum
 
-< set $Mountpoint/key0 5
+< kdb set $Mountpoint/key0 5
 
-< set $Mountpoint/sum
+< kdb set $Mountpoint/sum
 
-< setmeta $Mountpoint/sum check/math ":= + @/key0 @/key1"
+< kdb setmeta $Mountpoint/sum check/math ":= + @/key0 @/key1"
 
 STDOUT: 5
-< get $Mountpoint/sum
+< kdb get $Mountpoint/sum
 
 RET: 0
-< rm -r $Mountpoint
+< kdb rm -r $Mountpoint
 
 # Test Null sub
 
-< set $Mountpoint/key0 5
+< kdb set $Mountpoint/key0 5
 
-< set $Mountpoint/sub
+< kdb set $Mountpoint/sub
 
-< setmeta $Mountpoint/sub check/math ":= - @/key0 @/key1"
+< kdb setmeta $Mountpoint/sub check/math ":= - @/key0 @/key1"
 
 STDOUT: 5
-< get $Mountpoint/sub
+< kdb get $Mountpoint/sub
 
 RET: 0
-< rm -r $Mountpoint
+< kdb rm -r $Mountpoint
 
 # Test Null mul
 
-< set $Mountpoint/key0 5
+< kdb set $Mountpoint/key0 5
 
-< set $Mountpoint/mul
+< kdb set $Mountpoint/mul
 
-< setmeta $Mountpoint/mul check/math ":= * @/key0 @/key1"
+< kdb setmeta $Mountpoint/mul check/math ":= * @/key0 @/key1"
 
 STDOUT: 5
-< get $Mountpoint/mul
+< kdb get $Mountpoint/mul
 
 RET: 0
-< rm -r $Mountpoint
+< kdb rm -r $Mountpoint
 
 # Test Null div
 
-< set $Mountpoint/key0 5
+< kdb set $Mountpoint/key0 5
 
-< set $Mountpoint/div
+< kdb set $Mountpoint/div
 
-< setmeta $Mountpoint/div check/math ":= / @/key0 @/key1"
+< kdb setmeta $Mountpoint/div check/math ":= / @/key0 @/key1"
 
 STDOUT: 5
-< get $Mountpoint/div
+< kdb get $Mountpoint/div
+
+< kdb set $Mountpoint/check/a 3.1
+< kdb set $Mountpoint/check/b 4.5
+< kdb set $Mountpoint/check/k 7.6
+< kdb setmeta $Mountpoint/check/k check/math "== + ../a ../b"
+
+ERROR: 123
+< kdb set $Mountpoint/check/k 7.7
 
 RET: 0
-< rm -r $Mountpoint
+< kdb rm -r $Mountpoint
 
 
 # Cleanup
 
-< umount $Mountpoint
+< kdb umount $Mountpoint

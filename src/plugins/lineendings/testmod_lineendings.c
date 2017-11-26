@@ -3,7 +3,7 @@
  *
  * @brief Tests for lineendings plugin
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -64,7 +64,7 @@ int main (int argc, char ** argv)
 	testvalid ("lineendings/valid1");
 	testinconsistent ("lineendings/inconsistent");
 	testinvalid ("lineendings/invalid");
-	printf ("\ntestmod_lineendings RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("testmod_lineendings");
 
 	return nbError;
 }

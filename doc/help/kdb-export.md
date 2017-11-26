@@ -25,14 +25,14 @@ The `storage` plugin can be configured at compile-time or changed by the link `l
   Show the man page.
 - `-V`, `--version`:
   Print version info.
-- `-p`, `--profile`=<profile>:
+- `-p`, `--profile <profile>`:
   Use a different kdb profile.
+- `-C`, `--color <when>`:
+  Print never/auto(default)/always colored output.
 - `-E`, `--without-elektra`:
   Omit the `system/elektra` directory.
-- `-c`, `--plugins-config`=<pluginconfig>:
+- `-c`, `--plugins-config <plugins-config>`:
   Add a configuration to the format plugin.
-- `-C`, `--color`=[when]:
-  Print never/auto(default)/always colored output.
 
 ## KDB
 
@@ -56,8 +56,6 @@ To backup a keyset stored in `user/keyset` in the `ini` format to a file called 
 Change default format to `simpleini`:  
 `kdb set /sw/elektra/kdb/#0/current/format simpleini`
 
+## Note
 
-## SEE ALSO
-
-- For an introductions into plugins, read [elektra-plugins-framework(7)](elektra-plugins-framework.md).
 - Only storage plugins can be used for formatting.

@@ -3,7 +3,7 @@
  *
  * @brief header file of spec mount command
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -33,7 +33,7 @@ public:
 
 	virtual std::string getShortOptions () override
 	{
-		return "idRcWvqC";
+		return "vqRcW";
 	}
 
 	virtual std::string getSynopsis () override

@@ -4,7 +4,7 @@
 - infos/provides = tracing
 - infos/needs =
 - infos/placements = pregetstorage postgetstorage presetstorage precommit postcommit prerollback postrollback
-- infos/status = maintained tested nodep configurable
+- infos/status = maintained tested nodep configurable global
 - infos/description = Prints timestamps during execution of backend
 
 ## Introduction

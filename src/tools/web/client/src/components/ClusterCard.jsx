@@ -3,7 +3,7 @@
  *
  * @brief this is the representation of a cluster in the main overview
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 import React from 'react'

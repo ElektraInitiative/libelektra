@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include <kdb.h>
@@ -44,7 +44,7 @@ void o (KeySet * ks)
 }
 //! [Shared Meta All]
 
-int main ()
+int main (void)
 {
 	Key * k = keyNew ("user/key", KEY_END);
 	c = keyNew ("user/copy", KEY_END);

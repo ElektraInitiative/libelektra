@@ -3,7 +3,7 @@
  *
  * @brief Implementation of data types
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -50,6 +50,15 @@ public:
 	bool check (Key k) override
 	{
 		return k.getString ().empty ();
+	}
+};
+
+class CharType : public Type
+{
+public:
+	bool check (Key k) override
+	{
+		return k.getString ().length () == 1;
 	}
 };
 

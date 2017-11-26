@@ -3,7 +3,7 @@
  *
  * @brief A plugin which returns version information.
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 // clang-format off
@@ -19,7 +19,7 @@
 
 #include <kdb.h>
 
-static inline KeySet *elektraVersionKeySet ()
+static inline KeySet *elektraVersionKeySet (void)
 {
 	return ksNew (50, keyNew ("system/elektra/version",
 			KEY_VALUE, "Below are version information of the Elektra Library you are currently using", KEY_END),

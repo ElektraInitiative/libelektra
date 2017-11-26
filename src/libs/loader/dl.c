@@ -3,7 +3,7 @@
  *
  * @brief Loading modules under linux.
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
 
   The name of the module will be libname.
   A .so will be appended.
@@ -50,14 +50,14 @@ int elektraModulesInit (KeySet * modules, Key * error ELEKTRA_UNUSED)
 	return 0;
 }
 
-#ifdef _WIN32
-const char elektraPluginPostfix[] = ".dll";
-#else
-const char elektraPluginPostfix[] = ".so";
-#endif
-
 elektraPluginFactory elektraModulesLoad (KeySet * modules, const char * name, Key * errorKey)
 {
+#ifdef _WIN32
+	static const char elektraPluginPostfix[] = ".dll";
+#else
+	static const char elektraPluginPostfix[] = ".so";
+#endif
+
 	Key * moduleKey = keyNew ("system/elektra/modules", KEY_END);
 	keyAddBaseName (moduleKey, name);
 	Key * lookup = ksLookup (modules, moduleKey, 0);

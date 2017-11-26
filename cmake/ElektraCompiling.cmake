@@ -97,16 +97,17 @@ endif ()
 
 if (ENABLE_ASAN)
 	set (EXTRA_FLAGS "${EXTRA_FLAGS} -fsanitize=undefined -fsanitize=address -fno-omit-frame-pointer")
-	if (NOT APPLE)
+	if (NOT APPLE AND CMAKE_COMPILER_IS_GNUCXX)
 		set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -lubsan")
 	endif ()
 	set (ASAN_LIBRARY "-lasan") #this is needed for GIR to put asan in front
 
 	if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 		set (EXTRA_FLAGS "${EXTRA_FLAGS} -fsanitize=integer")
+		set (EXTRA_FLAGS "${EXTRA_FLAGS} -fsanitize-blacklist=\"${CMAKE_SOURCE_DIR}/tests/sanitizer.blacklist\"")
 	endif ()
 
-	if (CMAKE_COMPILER_IS_GNUCXX)
+	if (CMAKE_COMPILER_IS_GNUCXX AND NOT APPLE)
 		set (CMAKE_SHARED_LINKER_FLAGS "-fsanitize=address ${CMAKE_SHARED_LINKER_FLAGS}")
 		# this is needed because of wrong pthread detection https://gcc.gnu.org/bugzilla/show_bug.cgi?id=69443
 		find_package(Threads)
@@ -127,10 +128,11 @@ set (COMMON_FLAGS "${COMMON_FLAGS} -pedantic -Wno-variadic-macros")
 set (COMMON_FLAGS "${COMMON_FLAGS} -Wall -Wextra")
 set (COMMON_FLAGS "${COMMON_FLAGS} -Wno-overlength-strings")
 set (COMMON_FLAGS "${COMMON_FLAGS} -Wsign-compare -Wfloat-equal")
-set (COMMON_FLAGS "${COMMON_FLAGS} -Wformat-security")
+set (COMMON_FLAGS "${COMMON_FLAGS} -Wformat -Wformat-security")
 set (COMMON_FLAGS "${COMMON_FLAGS} -Wshadow")
 set (COMMON_FLAGS "${COMMON_FLAGS} -Wcomments -Wtrigraphs -Wundef")
 set (COMMON_FLAGS "${COMMON_FLAGS} -Wuninitialized -Winit-self")
+set (C_EXTRA_FLAGS "${C_EXTRA_FLAGS} -Wstrict-prototypes")
 
 # Not every compiler understands -Wmaybe-uninitialized
 check_c_compiler_flag(-Wmaybe-uninitialized HAS_CFLAG_MAYBE_UNINITIALIZED)
@@ -152,7 +154,7 @@ set (CXX_EXTRA_FLAGS "${CXX_EXTRA_FLAGS} -Woverloaded-virtual  -Wsign-promo")
 #
 # Merge all flags
 #
-set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${C_STD} ${EXTRA_FLAGS} ${COMMON_FLAGS} -Wsign-compare -Wfloat-equal -Wformat-security")
+set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${C_STD} ${EXTRA_FLAGS} ${C_EXTRA_FLAGS} ${COMMON_FLAGS} -Wsign-compare -Wfloat-equal")
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX_STD} ${EXTRA_FLAGS} ${CXX_EXTRA_FLAGS} ${COMMON_FLAGS}")
 
 message (STATUS "C flags are ${CMAKE_C_FLAGS}")

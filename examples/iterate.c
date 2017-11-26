@@ -3,7 +3,7 @@
  *
  * @brief some possibilites how to iterate ver a KeySet in an elegant way.
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include <kdb.h>

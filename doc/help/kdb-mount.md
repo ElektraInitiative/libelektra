@@ -49,15 +49,17 @@ Use `kdb file <path>` to determine where the file(s) are.
   Show the man page.
 - `-V`, `--version`:
   Print version info.
-- `-p`, `--profile`=<profile>:
+- `-p`, `--profile <profile>`:
   Use a different kdb profile.
+- `-C`, `--color <when>`:
+  Print never/auto(default)/always colored output.
 - `-d`, `--debug`:
   Give debug information or ask debug questions (in interactive mode).
 - `-q`, `--quiet`:
   Suppress non-error messages.
 - `-i`, `--interactive`:
   Instead of passing all mounting information by parameters ask the user interactively.
-- `-R`, `--resolver`=<name>:
+- `-R`, `--resolver <resolver>`
   Specify the resolver plugin to use if no resolver is given, the default resolver is used.
   See also [below in KDB](#KDB).
 - `-0`, `--null`:
@@ -68,10 +70,8 @@ Use `kdb file <path>` to determine where the file(s) are.
   Suppress the second column.
 - `-3`, `--third`:
   Suppress the third column.
-- `-c`, `--plugins-config`=<config>:
+- `-c`, `--plugins-config <plugins-config>`:
   Add a plugin configuration for all plugins.
-- `-C`, `--color`=[when]:
-  Print never/auto(default)/always colored output.
 - `-W`, `--with-recommends`:
   Also add recommended plugins and warn if they are not available.
 
@@ -119,4 +119,3 @@ To recode and rename a configuration file using Elektra:
 - [kdb-spec-mount(7)](kdb-spec-mount.md).
 - [kdb-umount(7)](kdb-umount.md).
 - [elektra-mounting(7)](elektra-mounting.md).
-- [elektra-plugins-framework(7)](elektra-plugins-framework.md).

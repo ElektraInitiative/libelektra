@@ -8,7 +8,7 @@ and another backend. (For POSIX file systems a similar technique is
 `pathconf()`. It allows the user to query the capabilities of a specific
 mounted file system given by path.)  Capabilities made it possible
 to implement a backend different from the way `filesys` works and let
-the backend still have predictable behaviour.  The user could query a
+the backend still have predictable behavior.  The user could query a
 backend if it was capable of a specific detail of file system semantics.
 
 Capabilities were initially introduced to make backend development easier,

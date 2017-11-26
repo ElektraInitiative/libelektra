@@ -1,5 +1,5 @@
 if (DEPENDENCY_PHASE)
-	find_package(Yajl)
+	find_package(Yajl QUIET)
 
 	set (INCL
 		${YAJL_INCLUDE_DIR}
@@ -7,7 +7,7 @@ if (DEPENDENCY_PHASE)
 	    )
 
 	if (NOT YAJL_FOUND)
-		remove_plugin (yajl "yajl not found")
+		remove_plugin (yajl "yajl (libyajl-dev 1 or 2) not found")
 	endif (NOT YAJL_FOUND)
 endif ()
 

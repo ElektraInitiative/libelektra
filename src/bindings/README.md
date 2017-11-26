@@ -1,6 +1,6 @@
 # Bindings
 
-[Elektra’s API](http://doc.libelektra.org/api/latest/html/) is written in C,
+[Elektra’s API](https://doc.libelektra.org/api/latest/html/) is written in C,
 but many different bindings allow *applications* in different programming languages
 to use Elektra.
 
@@ -24,6 +24,7 @@ List of currently supported bindings (included in `ALL`):
 Experimental bindings (not included in `ALL`):
 
 - [gsettings](gsettings/) GLib bindings (experimental)
+- [haskell](haskell/) Haskell bindings
 
 Deprecated bindings (not included in `ALL`):
 

@@ -42,6 +42,12 @@ and binary (including encoding of null bytes and terminating null?)
 should play together with recode plugins nicely
 
 
+## Plugin nesting
+
+lazy loading of plugins
+
+execute plugin within a separate process
+
 
 
 ## LOGGING ##
@@ -64,10 +70,6 @@ werror plugin:
 
 logging plugin:
 	improve error messages for validation
-
-List plugin:
-	Whitelist (ignore error codes, transform error->warning)
-	lazy loading of plugins (already implemented?)
 
 ## Rework plugins
 
@@ -97,6 +99,12 @@ uname also to set
 other syscalls
 /proc and /sys files
 	e.g. battery
+
+cpu infos:
+	sysconf with _SC_PHYS_PAGES _SC_AVPHYS_PAGES
+
+RAM infos:
+	sysconf with _SC_NPROCESSORS_CONF _SC_NPROCESSORS_ONLN
 
 
 ## logging ##
@@ -220,6 +228,15 @@ filesys:
 folder:
 	make subdirectires folders and individual files
 	(multi-resolver)
+
+
+## storage ##
+
+add to/remove from array and map support
+	e.g. for ssh PubkeyAcceptedKeyTypes individual options should be added/removed
+	system/../PubkeyAcceptedKeyTypes/ssh-dsa = 0 # off from admin
+	user/../PubkeyAcceptedKeyTypes/ssh-dsa = 1 # user sets on
+	(remove via null keys?)
 
 
 ## library supported ##

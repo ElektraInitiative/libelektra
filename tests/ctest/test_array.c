@@ -3,14 +3,14 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include <kdbease.h>
 
 #include "tests.h"
 
-static void test_array ()
+static void test_array (void)
 {
 	printf ("Test array\n");
 
@@ -94,7 +94,7 @@ static void test_array ()
 	keyDel (k);
 }
 
-static void test_noArray ()
+static void test_noArray (void)
 {
 	printf ("Test no array\n");
 	Key * k = keyNew ("user/noarray", KEY_END);
@@ -105,7 +105,7 @@ static void test_noArray ()
 	keyDel (k);
 }
 
-static void test_startArray ()
+static void test_startArray (void)
 {
 	printf ("Test start array\n");
 	Key * k = keyNew ("user/startarray/#", KEY_END);
@@ -118,7 +118,7 @@ static void test_startArray ()
 	keyDel (k);
 }
 
-static void test_getArray ()
+static void test_getArray (void)
 {
 	printf ("Test get array");
 
@@ -141,7 +141,7 @@ static void test_getArray ()
 }
 
 
-static void test_getArrayNext ()
+static void test_getArrayNext (void)
 {
 	printf ("Test get array next");
 
@@ -152,6 +152,7 @@ static void test_getArrayNext ()
 	Key * nextKey = elektraArrayGetNextKey (array);
 	exit_if_fail (array, "The getnext function did not return a proper key");
 	succeed_if (!strcmp (keyName (nextKey), "user/test/array/#2"), "The getnext function did not use the correct keyname");
+	succeed_if (!strcmp (keyString (nextKey), ""), "The getnext function did not return an empty key");
 
 	keyDel (nextKey);
 	ksClear (array);

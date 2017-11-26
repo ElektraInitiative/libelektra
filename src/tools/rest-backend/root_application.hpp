@@ -3,7 +3,7 @@
  *
  * @brief header for cppcms controller implementation managing global resources
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #ifndef ELEKTRA_REST_ROOTAPP_HPP

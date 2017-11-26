@@ -3,7 +3,7 @@
  *
  * @brief header for cryptographic helper functions
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #ifndef ELEKTRA_REST_CRYPTO_HPP

@@ -3,7 +3,7 @@
  *
  * @brief Implementation of PluginDatabase(s)
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -103,7 +103,6 @@ namespace
 bool hasProvides (PluginDatabase const & pd, std::string which)
 {
 	std::vector<std::string> allPlugins = pd.listAllPlugins ();
-	std::map<int, PluginSpec> foundPlugins;
 
 	for (auto const & plugin : allPlugins)
 	{
@@ -300,7 +299,7 @@ PluginSpec ModulesPluginDatabase::lookupProvides (std::string const & which) con
 	}
 	catch (kdb::tools::NoPlugin & e)
 	{
-		throw e;
+		throw;
 	}
 
 	// the largest element of the map contains the best-suited plugin:
@@ -383,7 +382,7 @@ std::vector<PluginSpec> ModulesPluginDatabase::lookupAllProvides (std::string co
 class PluginVariantDatabase::VariantImpl
 {
 public:
-	VariantImpl (const KeySet & conf) : pluginconf (conf)
+	explicit VariantImpl (const KeySet & conf) : pluginconf (conf)
 	{
 	}
 	~VariantImpl ()

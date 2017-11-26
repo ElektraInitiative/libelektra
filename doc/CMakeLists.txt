@@ -42,6 +42,16 @@ if (DOXYGEN_FOUND)
 		set (WITH_LATEX NO)
 	endif (BUILD_PDF)
 
+	if (BUILD_DOCSET)
+		execute_process (COMMAND make ARGS -v RESULT_VARIABLE MAKE_NOT_AVAILABLE OUTPUT_QUIET)
+		if (MAKE_NOT_AVAILABLE)
+			set (WITH_DOCSET NO)
+			message (WARNING "Sorry, since Make is not available I can not build the DocSet.")
+		else (MAKE_NOT_AVAILABLE)
+			set (WITH_DOCSET YES)
+		endif (MAKE_NOT_AVAILABLE)
+	endif (BUILD_DOCSET)
+
 	if (DOXYGEN_DOT_FOUND)
 		set (WITH_DOT YES)
 	else (DOXYGEN_DOT_FOUND)
@@ -62,6 +72,10 @@ if (DOXYGEN_FOUND)
 		"${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile"
 		"${CMAKE_CURRENT_BINARY_DIR}/Doxyfile"
 		@ONLY
+	)
+	file(GENERATE
+		OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
+		INPUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
 	)
 
 	do_doc(html ${OUTPUT_DIRECTORY}/html/ index.html
@@ -97,6 +111,21 @@ if (DOXYGEN_FOUND)
 
 	endif (WITH_LATEX)
 
+	if (WITH_DOCSET)
+		set (DOCSET_PATH ${OUTPUT_DIRECTORY}/html/org.libelektra.docset)
+		add_custom_command (
+			OUTPUT ${DOCSET_PATH}
+			COMMAND make
+			COMMAND ${CMAKE_COMMAND} ARGS
+				-D DOCSET_PATH=${DOCSET_PATH}
+				-D ICON_PATH=${CMAKE_SOURCE_DIR}/doc/images/icon.png
+				-P ${CMAKE_SOURCE_DIR}/cmake/ElektraDocSet.cmake
+			DEPENDS ${OUTPUT_DIRECTORY}/html/index.html markdownlinkconverter
+			WORKING_DIRECTORY ${OUTPUT_DIRECTORY}/html
+		)
+		add_custom_target (docset ALL DEPENDS ${DOCSET_PATH})
+	endif (WITH_DOCSET)
+
 	add_custom_command (
 		OUTPUT ${outputs}
 		COMMAND ${DOXYGEN_EXECUTABLE}
@@ -114,7 +143,6 @@ if (INSTALL_DOCUMENTATION)
 	#code_of_conduct.md
 	#COMPILE.md
 	install (FILES GOALS.md DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER})
-	install (FILES LICENSE.md DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER})
 	install (FILES METADATA.ini DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER})
 	install (FILES SECURITY.md DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER})
 	#TESTING.md

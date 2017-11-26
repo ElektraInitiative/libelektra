@@ -5,19 +5,19 @@
 - infos/provides =
 - infos/recommends =
 - infos/placements = presetstorage postgetstorage
-- infos/status = maintained conformant compatible coverage specific unittest tested libc preview experimental unfinished nodoc
+- infos/status = maintained conformant compatible coverage specific unittest tested libc preview unfinished
 - infos/metadata = check/range check/type
 - infos/description = tests if a value is within a given range
 
 ## Introduction ##
 
-The range plugin checks if a Key value is within a given range.
+The range plugin checks if a `Key`'s value is within a given range.
 
 ## Usage ##
 
-The plugin checks every Key in the Keyset for the Metakey `check/range` which contains either a single range with the syntax `[-]min-[-]max`, or a list of ranges or values separated by `,` and tests if the Key value is within the range(s).
+The plugin checks every `Key` in the `KeySet` for the metakey `check/range` which contains either a single range with the syntax `[-]min-[-]max`, or a list of ranges or values separated by `,` and tests if the `Key`'s value is within the range(s).
 
-`check/type` can be used to specify the datatype. If not specified otherwise the default value is `long long`
+`check/type` can be used to specify the data type. If not specified otherwise the default value is `long long`
 
 Possible values:
 
@@ -65,6 +65,15 @@ kdb set /examples/range/value 11
 # should also fail
 kdb set /examples/range/value "\-1"
 # RET:5
+
+# we can also allow only individual values:
+kdb setmeta /examples/range/value check/range "1,2,4,8"
+
+kdb set /examples/range/value 7
+# RET:5
+
+kdb set /examples/range/value 2
+# RET:0
 
 kdb rm -r /examples/range
 sudo kdb umount /examples/range

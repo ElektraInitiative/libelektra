@@ -3,7 +3,7 @@
  *
  * @brief A strategy which always takes the value from one side
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -29,7 +29,7 @@ class OneSideStrategy : public MergeConflictStrategy
 public:
 	ConflictResolutionSide winningSide;
 
-	OneSideStrategy (ConflictResolutionSide _winningSide) : winningSide (_winningSide)
+	explicit OneSideStrategy (ConflictResolutionSide _winningSide) : winningSide (_winningSide)
 	{
 	}
 

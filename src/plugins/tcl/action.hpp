@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #ifndef ACTION_HPP
@@ -16,6 +16,7 @@
 #include <boost/bind.hpp>
 #include <boost/fusion/include/std_pair.hpp>
 #include <boost/spirit/include/qi.hpp>
+#include <boost/spirit/include/support_standard.hpp>
 
 #include <fstream>
 #include <iostream>
@@ -29,10 +30,10 @@ namespace elektra
 
 
 namespace qi = boost::spirit::qi;
-namespace ascii = boost::spirit::ascii;
+namespace unicode = boost::spirit::standard;
 
 template <typename Iterator>
-struct Action : qi::grammar<Iterator, ascii::space_type>
+struct Action : qi::grammar<Iterator, unicode::space_type>
 {
 	Action (kdb::KeySet & ks) : Action::base_type (query), p (ks)
 	{
@@ -47,9 +48,9 @@ struct Action : qi::grammar<Iterator, ascii::space_type>
 
 	Printer p;
 
-	qi::rule<Iterator, ascii::space_type> query;
-	qi::rule<Iterator, ascii::space_type> pair;
-	qi::rule<Iterator, ascii::space_type> key, val, metakey, metaval;
+	qi::rule<Iterator, unicode::space_type> query;
+	qi::rule<Iterator, unicode::space_type> pair;
+	qi::rule<Iterator, unicode::space_type> key, val, metakey, metaval;
 };
 
 } // namespace elektra

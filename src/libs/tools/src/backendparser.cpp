@@ -3,11 +3,13 @@
  *
  * @brief Tests for the Backend parser class
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
 #include <backendparser.hpp>
+
+#include <functional>
 
 #include <string>
 

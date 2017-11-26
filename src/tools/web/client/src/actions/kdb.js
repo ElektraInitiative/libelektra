@@ -3,7 +3,7 @@
  *
  * @brief Elektra key database (kdb) specific actions, used in the tree view
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 import { thunkCreator, encodePath, parseJSONResponse } from './utils'

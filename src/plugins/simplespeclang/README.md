@@ -41,7 +41,7 @@ Configuration within the specification language:
 First you need to mount the plugin to spec, e.g.:
 
 ```sh
-kdb mount myspec.ssl spec/test simplespeclang
+sudo kdb mount myspec.ssl spec/test simplespeclang
 ```
 
 Then you can write your specification (with default keywords):

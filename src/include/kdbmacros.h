@@ -5,14 +5,17 @@
  *
  * Macros start with ELEKTRA_ and are uppercase.
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 
 #ifndef KDBMACROS_H
 #define KDBMACROS_H
 
+/** Surround a value with double quotes */
 #define ELEKTRA_QUOTE(x) #x
+/** Surround a **macro value** with double quotes */
+#define ELEKTRA_STRINGIFY(x) ELEKTRA_QUOTE (x)
 
 #if defined(__APPLE__)
 #define ELEKTRA_STAT_SECONDS(status) status.st_mtime
@@ -42,6 +45,8 @@
 		else                                                                                                                       \
 			ELEKTRA_SET_ERROR (75, parentKey, strerror (errno));                                                               \
 	} while (0)
+
+#define ELEKTRA_MALLOC_ERROR(key, size) ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_MALLOC, key, "Unable to allocate %zu bytes.", size);
 
 /**
  * @brief Sets error 84 if info != returned

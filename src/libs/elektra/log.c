@@ -6,7 +6,7 @@
  * If you often change the file, you might want to set CMAKE_LINK_DEPENDS_NO_SHARED
  * to avoid relinking everything.
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 // XXX (marks places for configuration)
@@ -64,12 +64,16 @@ static int elektraLogSyslog (int level ELEKTRA_UNUSED, const char * function ELE
 	{
 	case ELEKTRA_LOG_LEVEL_ERROR:
 		vlevel = LOG_ERR;
+		break;
 	case ELEKTRA_LOG_LEVEL_WARNING:
 		vlevel = LOG_WARNING;
+		break;
 	case ELEKTRA_LOG_LEVEL_NOTICE:
 		vlevel = LOG_NOTICE;
+		break;
 	case ELEKTRA_LOG_LEVEL_INFO:
 		vlevel = LOG_INFO;
+		break;
 	case ELEKTRA_LOG_LEVEL_DEBUG:
 		vlevel = LOG_DEBUG;
 	}
@@ -109,7 +113,8 @@ static void replaceChars (char * str)
 			str[lenOfMsg] = '@';
 		else if (str[lenOfMsg] == '\f')
 			str[lenOfMsg] = '@';
-	} while (lenOfMsg--);
+		lenOfMsg--;
+	} while (lenOfMsg);
 	str[last] = '\n';
 }
 
@@ -148,7 +153,9 @@ int elektraVLog (int level ELEKTRA_UNUSED, const char * function ELEKTRA_UNUSED,
 	ret |= elektraLogFile (level, function, file, line, msg);
 #endif
 
+#ifndef NO_FILTER
 end:
+#endif
 	elektraFree (str);
 	elektraFree (msg);
 	return ret;

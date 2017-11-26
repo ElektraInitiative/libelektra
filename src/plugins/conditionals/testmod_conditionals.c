@@ -3,7 +3,7 @@
  *
  * @brief Tests for conditionals plugin
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -14,7 +14,7 @@
 
 #include <tests_plugin.h>
 
-static void test_ifthenelseint ()
+static void test_ifthenelseint (void)
 {
 	Key * parentKey = keyNew ("user/tests/conditionals", KEY_VALUE, "", KEY_END);
 	KeySet * ks = ksNew (5, keyNew ("user/tests/conditionals/totest", KEY_VALUE, "153", KEY_META, "check/condition",
@@ -30,7 +30,7 @@ static void test_ifthenelseint ()
 	keyDel (parentKey);
 	PLUGIN_CLOSE ();
 }
-static void test_ifthenint ()
+static void test_ifthenint (void)
 {
 	Key * parentKey = keyNew ("user/tests/conditionals", KEY_VALUE, "", KEY_END);
 	KeySet * ks = ksNew (5, keyNew ("user/tests/conditionals/totest", KEY_VALUE, "153", KEY_META, "check/condition",
@@ -46,7 +46,7 @@ static void test_ifthenint ()
 	keyDel (parentKey);
 	PLUGIN_CLOSE ();
 }
-static void test_ifthenltint ()
+static void test_ifthenltint (void)
 {
 	Key * parentKey = keyNew ("user/tests/conditionals", KEY_VALUE, "", KEY_END);
 	KeySet * ks = ksNew (5, keyNew ("user/tests/conditionals/totest", KEY_VALUE, "153", KEY_META, "check/condition",
@@ -62,7 +62,7 @@ static void test_ifthenltint ()
 	keyDel (parentKey);
 	PLUGIN_CLOSE ();
 }
-static void test_ifthengtint ()
+static void test_ifthengtint (void)
 {
 	Key * parentKey = keyNew ("user/tests/conditionals", KEY_VALUE, "", KEY_END);
 	KeySet * ks = ksNew (5, keyNew ("user/tests/conditionals/totest", KEY_VALUE, "153", KEY_META, "check/condition",
@@ -79,7 +79,7 @@ static void test_ifthengtint ()
 	PLUGIN_CLOSE ();
 }
 
-static void test_ifthenkey ()
+static void test_ifthenkey (void)
 {
 	Key * parentKey = keyNew ("user/tests/conditionals", KEY_VALUE, "", KEY_END);
 	KeySet * ks = ksNew (5, keyNew ("user/tests/conditionals/totest", KEY_VALUE, "153", KEY_META, "check/condition",
@@ -97,7 +97,7 @@ static void test_ifthenkey ()
 }
 
 
-static void test_emptyisempty ()
+static void test_emptyisempty (void)
 {
 	Key * parentKey = keyNew ("user/tests/conditionals", KEY_VALUE, "", KEY_END);
 	KeySet * ks = ksNew (5, keyNew ("user/tests/conditionals/totest", KEY_VALUE, "", KEY_META, "check/condition",
@@ -115,7 +115,7 @@ static void test_emptyisempty ()
 }
 
 
-static void test_notempty ()
+static void test_notempty (void)
 {
 	Key * parentKey = keyNew ("user/tests/conditionals", KEY_VALUE, "", KEY_END);
 	KeySet * ks = ksNew (5, keyNew ("user/tests/conditionals/totest", KEY_VALUE, "153", KEY_META, "check/condition",
@@ -132,7 +132,7 @@ static void test_notempty ()
 	PLUGIN_CLOSE ();
 }
 
-static void test_ifsetthenval ()
+static void test_ifsetthenval (void)
 {
 	Key * parentKey = keyNew ("user/tests/conditionals", KEY_VALUE, "", KEY_END);
 	KeySet * ks = ksNew (5, keyNew ("user/tests/conditionals/totest", KEY_VALUE, "", KEY_META, "check/condition",
@@ -150,7 +150,7 @@ static void test_ifsetthenval ()
 	keyDel (parentKey);
 	PLUGIN_CLOSE ();
 }
-static void test_ifsetthenkey ()
+static void test_ifsetthenkey (void)
 {
 	Key * parentKey = keyNew ("user/tests/conditionals", KEY_VALUE, "", KEY_END);
 	KeySet * ks = ksNew (5, keyNew ("user/tests/conditionals/totest", KEY_VALUE, "", KEY_META, "check/condition",
@@ -168,7 +168,7 @@ static void test_ifsetthenkey ()
 	keyDel (parentKey);
 	PLUGIN_CLOSE ();
 }
-static void test_assignThen ()
+static void test_assignThen (void)
 {
 	Key * parentKey = keyNew ("user/tests/conditionals", KEY_VALUE, "", KEY_END);
 	KeySet * ks = ksNew (5, keyNew ("user/tests/conditionals/totest", KEY_VALUE, "Hello", KEY_META, "assign/condition",
@@ -184,7 +184,7 @@ static void test_assignThen ()
 	keyDel (parentKey);
 	PLUGIN_CLOSE ();
 }
-static void test_assignThen2 ()
+static void test_assignThen2 (void)
 {
 	Key * parentKey = keyNew ("user/tests/conditionals", KEY_VALUE, "", KEY_END);
 	KeySet * ks = ksNew (5, keyNew ("user/tests/conditionals/totest", KEY_VALUE, "Hello", KEY_META, "assign/condition",
@@ -200,7 +200,7 @@ static void test_assignThen2 ()
 	keyDel (parentKey);
 	PLUGIN_CLOSE ();
 }
-static void test_assignElse ()
+static void test_assignElse (void)
 {
 	Key * parentKey = keyNew ("user/tests/conditionals", KEY_VALUE, "", KEY_END);
 	KeySet * ks = ksNew (5, keyNew ("user/tests/conditionals/totest", KEY_VALUE, "Hello", KEY_META, "assign/condition",
@@ -217,7 +217,7 @@ static void test_assignElse ()
 	PLUGIN_CLOSE ();
 }
 
-static void test_assignKeyThen ()
+static void test_assignKeyThen (void)
 {
 	Key * parentKey = keyNew ("user/tests/conditionals", KEY_VALUE, "", KEY_END);
 	KeySet * ks = ksNew (5, keyNew ("user/tests/conditionals/totest", KEY_VALUE, "Hello", KEY_META, "assign/condition",
@@ -235,7 +235,7 @@ static void test_assignKeyThen ()
 	PLUGIN_CLOSE ();
 }
 
-static void test_assignKeyElse ()
+static void test_assignKeyElse (void)
 {
 	Key * parentKey = keyNew ("user/tests/conditionals", KEY_VALUE, "", KEY_END);
 	KeySet * ks = ksNew (5, keyNew ("user/tests/conditionals/totest", KEY_VALUE, "Hello", KEY_META, "assign/condition",
@@ -253,7 +253,7 @@ static void test_assignKeyElse ()
 	PLUGIN_CLOSE ();
 }
 
-static void test_doesntExistSuccess ()
+static void test_doesntExistSuccess (void)
 {
 	Key * parentKey = keyNew ("user/tests/conditionals", KEY_VALUE, "", KEY_END);
 	KeySet * ks = ksNew (5, keyNew ("user/tests/conditionals/totest", KEY_VALUE, "5", KEY_META, "check/condition",
@@ -272,7 +272,7 @@ static void test_doesntExistSuccess ()
 	PLUGIN_CLOSE ();
 }
 
-static void test_doesntExistFail ()
+static void test_doesntExistFail (void)
 {
 	Key * parentKey = keyNew ("user/tests/conditionals", KEY_VALUE, "", KEY_END);
 	KeySet * ks = ksNew (5, keyNew ("user/tests/conditionals/totest", KEY_VALUE, "5", KEY_META, "check/condition",
@@ -291,7 +291,7 @@ static void test_doesntExistFail ()
 	PLUGIN_CLOSE ();
 }
 
-static void test_nested1Success ()
+static void test_nested1Success (void)
 {
 	Key * parentKey = keyNew ("user/tests/conditionals", KEY_VALUE, "", KEY_END);
 	KeySet * ks =
@@ -311,7 +311,7 @@ static void test_nested1Success ()
 	PLUGIN_CLOSE ();
 }
 
-static void test_nested1Fail ()
+static void test_nested1Fail (void)
 {
 	Key * parentKey = keyNew ("user/tests/conditionals", KEY_VALUE, "", KEY_END);
 	KeySet * ks =
@@ -331,7 +331,7 @@ static void test_nested1Fail ()
 }
 
 
-static void test_nested2Success ()
+static void test_nested2Success (void)
 {
 	Key * parentKey = keyNew ("user/tests/conditionals", KEY_VALUE, "", KEY_END);
 	KeySet * ks = ksNew (5, keyNew ("user/tests/conditionals/totest", KEY_VALUE, "5", KEY_META, "check/condition",
@@ -352,7 +352,7 @@ static void test_nested2Success ()
 	PLUGIN_CLOSE ();
 }
 
-static void test_nested2Fail ()
+static void test_nested2Fail (void)
 {
 	Key * parentKey = keyNew ("user/tests/conditionals", KEY_VALUE, "", KEY_END);
 	KeySet * ks = ksNew (5, keyNew ("user/tests/conditionals/totest", KEY_VALUE, "5", KEY_META, "check/condition",
@@ -372,7 +372,7 @@ static void test_nested2Fail ()
 	PLUGIN_CLOSE ();
 }
 
-static void test_suffix ()
+static void test_suffix (void)
 {
 	Key * parentKey = keyNew ("user/tests/conditionals", KEY_VALUE, "", KEY_END);
 	KeySet * ks = ksNew (5, keyNew ("user/tests/conditionals/totest", KEY_VALUE, "2%", KEY_META, "check/condition",
@@ -390,7 +390,7 @@ static void test_suffix ()
 	PLUGIN_CLOSE ();
 }
 
-static void test_elseWhitespace ()
+static void test_elseWhitespace (void)
 {
 	Key * parentKey = keyNew ("user/tests/conditionals", KEY_VALUE, "", KEY_END);
 	KeySet * ks = ksNew (5, keyNew ("user/tests/conditionals/totest", KEY_VALUE, "2", KEY_META, "check/condition",
@@ -407,7 +407,7 @@ static void test_elseWhitespace ()
 	PLUGIN_CLOSE ();
 }
 
-static void test_elseWhitespace2 ()
+static void test_elseWhitespace2 (void)
 {
 	Key * parentKey = keyNew ("user/tests/conditionals", KEY_VALUE, "", KEY_END);
 	KeySet * ks = ksNew (5, keyNew ("user/tests/conditionals/totest", KEY_VALUE, "2", KEY_META, "check/condition",
@@ -424,7 +424,7 @@ static void test_elseWhitespace2 ()
 	PLUGIN_CLOSE ();
 }
 
-static void test_elseWhitespace3 ()
+static void test_elseWhitespace3 (void)
 {
 	Key * parentKey = keyNew ("user/tests/conditionals", KEY_VALUE, "", KEY_END);
 	KeySet * ks = ksNew (5, keyNew ("user/tests/conditionals/totest", KEY_VALUE, "2", KEY_META, "check/condition",
@@ -441,7 +441,7 @@ static void test_elseWhitespace3 ()
 	PLUGIN_CLOSE ();
 }
 
-static void test_doubleUp ()
+static void test_doubleUp (void)
 {
 	Key * parentKey = keyNew ("user/tests/conditionals", KEY_VALUE, "", KEY_END);
 	KeySet * ks =
@@ -463,7 +463,7 @@ static void test_doubleUp ()
 }
 
 
-static void test_multiCondAny ()
+static void test_multiCondAny (void)
 {
 	Key * parentKey = keyNew ("user/tests/conditionals", KEY_VALUE, "", KEY_END);
 	KeySet * ks = ksNew (5, keyNew ("user/tests/conditionals/compare", KEY_VALUE, "Sun", KEY_END),
@@ -481,7 +481,7 @@ static void test_multiCondAny ()
 	PLUGIN_CLOSE ();
 }
 
-static void test_multiCond2Any ()
+static void test_multiCond2Any (void)
 {
 	Key * parentKey = keyNew ("user/tests/conditionals", KEY_VALUE, "", KEY_END);
 	KeySet * ks = ksNew (5, keyNew ("user/tests/conditionals/compare", KEY_VALUE, "Moon", KEY_END),
@@ -499,7 +499,7 @@ static void test_multiCond2Any ()
 	PLUGIN_CLOSE ();
 }
 
-static void test_multiCondAll ()
+static void test_multiCondAll (void)
 {
 	Key * parentKey = keyNew ("user/tests/conditionals", KEY_VALUE, "", KEY_END);
 	KeySet * ks = ksNew (5, keyNew ("user/tests/conditionals/compare", KEY_VALUE, "Sun", KEY_END),
@@ -517,7 +517,7 @@ static void test_multiCondAll ()
 	PLUGIN_CLOSE ();
 }
 
-static void test_multiCond2All ()
+static void test_multiCond2All (void)
 {
 	Key * parentKey = keyNew ("user/tests/conditionals", KEY_VALUE, "", KEY_END);
 	KeySet * ks = ksNew (5, keyNew ("user/tests/conditionals/compare", KEY_VALUE, "Moon", KEY_END),
@@ -535,7 +535,7 @@ static void test_multiCond2All ()
 	PLUGIN_CLOSE ();
 }
 
-static void test_multiCondNoFail ()
+static void test_multiCondNoFail (void)
 {
 	Key * parentKey = keyNew ("user/tests/conditionals", KEY_VALUE, "", KEY_END);
 	KeySet * ks = ksNew (5, keyNew ("user/tests/conditionals/compare", KEY_VALUE, "Sun", KEY_END),
@@ -553,7 +553,7 @@ static void test_multiCondNoFail ()
 	PLUGIN_CLOSE ();
 }
 
-static void test_multiCond2NoFail ()
+static void test_multiCond2NoFail (void)
 {
 	Key * parentKey = keyNew ("user/tests/conditionals", KEY_VALUE, "", KEY_END);
 	KeySet * ks = ksNew (5, keyNew ("user/tests/conditionals/compare", KEY_VALUE, "Moon", KEY_END),
@@ -570,7 +570,7 @@ static void test_multiCond2NoFail ()
 	keyDel (parentKey);
 	PLUGIN_CLOSE ();
 }
-static void test_multiAssign ()
+static void test_multiAssign (void)
 {
 	Key * parentKey = keyNew ("user/tests/conditionals", KEY_VALUE, "", KEY_END);
 	KeySet * ks = ksNew (5, keyNew ("user/tests/conditionals/totest", KEY_VALUE, "Hello", KEY_META, "assign/condition", "#1", KEY_META,
@@ -589,7 +589,7 @@ static void test_multiAssign ()
 	PLUGIN_CLOSE ();
 }
 
-static void test_multiAssign2 ()
+static void test_multiAssign2 (void)
 {
 	Key * parentKey = keyNew ("user/tests/conditionals", KEY_VALUE, "", KEY_END);
 	KeySet * ks = ksNew (5, keyNew ("user/tests/conditionals/totest", KEY_VALUE, "Bye", KEY_META, "assign/condition", "#1", KEY_META,
@@ -608,7 +608,7 @@ static void test_multiAssign2 ()
 	PLUGIN_CLOSE ();
 }
 
-static void test_multiAssign3 ()
+static void test_multiAssign3 (void)
 {
 	Key * parentKey = keyNew ("user/tests/conditionals", KEY_VALUE, "", KEY_END);
 	KeySet * ks = ksNew (5, keyNew ("user/tests/conditionals/totest", KEY_VALUE, "Bye", KEY_META, "assign/condition", "#1", KEY_META,
@@ -668,7 +668,7 @@ int main (int argc, char ** argv)
 	test_multiCond2NoFail ();
 	test_multiAssign2 ();
 	test_multiAssign3 ();
-	printf ("\ntestmod_conditionals RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("testmod_conditionals");
 
 	return nbError;
 }

@@ -3,7 +3,7 @@
  *
  * @brief container (main overview) specific actions
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 export const ADD_INSTANCE = 'ADD_INSTANCE'

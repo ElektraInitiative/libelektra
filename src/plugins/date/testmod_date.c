@@ -3,7 +3,7 @@
  *
  * @brief Tests for date plugin
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -104,7 +104,7 @@ int main (int argc, char ** argv)
 	testRfc2822 ("01 Mar 2016 01:00:59", -1);
 	setlocale (LC_ALL, old_locale);
 
-	printf ("\ntestmod_date RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("testmod_date");
 
 	return nbError;
 }

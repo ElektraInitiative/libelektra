@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #ifndef ELEKTRA_KDB_EXCEPT_HPP
@@ -28,7 +28,7 @@ namespace kdb
 class KDBException : public Exception
 {
 public:
-	KDBException (Key key) : m_key (key), m_str ()
+	explicit KDBException (Key key) : m_key (key), m_str ()
 	{
 	}
 

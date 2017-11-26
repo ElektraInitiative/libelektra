@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include <tests_internal.h>
@@ -12,7 +12,7 @@
 #include <time.h>
 #endif
 
-static void test_keyRefcounter ()
+static void test_keyRefcounter (void)
 {
 	Key * key = keyNew (0);
 	key->ksReference = 5;
@@ -28,7 +28,7 @@ static void test_keyRefcounter ()
 	keyDel (key);
 }
 
-static void test_keyHelpers ()
+static void test_keyHelpers (void)
 {
 	char * name = "user/abc/defghi/jkl";
 	char * p;
@@ -457,7 +457,7 @@ static void test_keyHelpers ()
 	keyDel (k2);
 }
 
-static void test_keyPlugin ()
+static void test_keyPlugin (void)
 {
 	Plugin * plug = (Plugin *)1222243;
 
@@ -483,7 +483,7 @@ static void test_keyPlugin ()
 	} while (0)
 
 
-static void test_keyNameEscape ()
+static void test_keyNameEscape (void)
 {
 	char buffer[500];
 	char buffer2[500];
@@ -531,7 +531,7 @@ static void test_keyNameEscape ()
 	keyDel (k);
 }
 
-static void test_keyNameUnescape ()
+static void test_keyNameUnescape (void)
 {
 	char buffer[500];
 
@@ -611,7 +611,7 @@ static void test_keyNameUnescape ()
 	*/
 }
 
-static void test_keyCompare ()
+static void test_keyCompare (void)
 {
 	printf ("test keyCompare\n");
 	Key * key1 = keyNew (0);
@@ -659,7 +659,7 @@ static void test_keyCompare ()
 	keyDel (key2);
 }
 
-static void test_keyNewExtensions ()
+static void test_keyNewExtensions (void)
 {
 	printf ("test keyNewExtensions\n");
 
@@ -688,7 +688,7 @@ static void test_keyNewExtensions ()
 	succeed_if (keyDel (key) == 0, "keyDel: Unable to delete key with name + mode");
 }
 
-static void test_owner ()
+static void test_owner (void)
 {
 	printf ("test owner\n");
 
@@ -800,7 +800,7 @@ static void test_owner ()
 	succeed_if (keySetOwner (0, "") == -1, "null pointer");
 }
 
-static void test_keyComment ()
+static void test_keyComment (void)
 {
 	Key * key;
 	char ret[1000];
@@ -893,7 +893,7 @@ static void test_keyComment ()
 	keyDel (key);
 }
 
-static void test_keyOwner ()
+static void test_keyOwner (void)
 {
 	Key * key;
 	char ret[1000];
@@ -986,7 +986,7 @@ static void test_keyDir (void)
 	keyDel (key);
 }
 
-static void test_keyTime ()
+static void test_keyTime (void)
 {
 	Key * key = keyNew (0);
 	time_t now = time (0);
@@ -1121,7 +1121,7 @@ static void test_keyMeta (void)
 	keyDel (key);
 }
 
-static void test_elektraKeySetName ()
+static void test_elektraKeySetName (void)
 {
 	printf ("test elektraKeySetName\n");
 
@@ -1293,7 +1293,7 @@ static void test_elektraKeySetName ()
 	keyDel (key);
 }
 
-static void test_keyLock ()
+static void test_keyLock (void)
 {
 	printf ("Test locking\n");
 
@@ -1346,7 +1346,7 @@ static void test_keyLock ()
 }
 
 
-static void test_keyAddName ()
+static void test_keyAddName (void)
 {
 	Key * k = keyNew ("user", KEY_END);
 	keyAddName (k, "something");
@@ -1499,7 +1499,7 @@ static void test_keyAddName ()
 	keyDel (k);
 }
 
-static void test_keyNeedSync ()
+static void test_keyNeedSync (void)
 {
 	printf ("Test key need sync\n");
 
@@ -1579,7 +1579,7 @@ static void test_keyNeedSync ()
 	keyDel (k);
 }
 
-static void test_keyCopy ()
+static void test_keyCopy (void)
 {
 	printf ("test copy key\n");
 	Key * k = keyNew ("", KEY_END);
@@ -1598,7 +1598,7 @@ static void test_keyCopy ()
 	keyDel (c);
 }
 
-static void test_keyFixedNew ()
+static void test_keyFixedNew (void)
 {
 	printf ("test fixed new\n");
 	Key * k1 = keyNew (0);
@@ -1620,7 +1620,7 @@ static void test_keyFixedNew ()
 	keyDel (k2);
 }
 
-static void test_keyFlags ()
+static void test_keyFlags (void)
 {
 	printf ("Test KEY_FLAGS\n");
 

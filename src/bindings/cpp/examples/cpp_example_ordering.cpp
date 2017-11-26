@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief example how easy it is to put keys in different datastructures
+ * @brief example how easy it is to put keys in different data structures
  *
  * - * They might even have complete other properties than KeySet, e.g. in
  * this case:
@@ -10,7 +10,7 @@
  *
  * It is easy to create any other data structure, with any properties
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include <keyset.hpp>

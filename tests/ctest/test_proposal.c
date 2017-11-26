@@ -3,12 +3,12 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include <tests_internal.h>
 
-static void test_ksPopAtCursor ()
+static void test_ksPopAtCursor (void)
 {
 	KeySet * ks = ksNew (5, keyNew ("user/valid/key1", KEY_END), keyNew ("user/valid/key2", KEY_END),
 			     keyNew ("system/valid/key1", KEY_END), keyNew ("system/valid/key2", KEY_END), KS_END);
@@ -26,7 +26,7 @@ static void test_ksPopAtCursor ()
 	ksDel (ks_c);
 }
 
-static void test_ksToArray ()
+static void test_ksToArray (void)
 {
 	KeySet * ks = ksNew (5, keyNew ("user/test1", KEY_END), keyNew ("user/test2", KEY_END), keyNew ("user/test3", KEY_END), KS_END);
 
@@ -54,7 +54,7 @@ static void test_ksToArray ()
 	ksDel (ks);
 }
 
-static void test_keyAsCascading ()
+static void test_keyAsCascading (void)
 {
 	printf ("test keyAsCascading\n");
 	Key * system = keyNew ("system", KEY_END);
@@ -80,7 +80,7 @@ static void test_keyAsCascading ()
 	keyDel (cascadingKey);
 }
 
-static void test_keyGetLevelsBelow ()
+static void test_keyGetLevelsBelow (void)
 {
 	printf ("test keyGetLevelsBelow\n");
 	Key * parent = keyNew ("system/parent", KEY_END);
@@ -97,7 +97,7 @@ static void test_keyGetLevelsBelow ()
 	keyDel (threeLvl);
 }
 
-static void test_keyRel2 ()
+static void test_keyRel2 (void)
 {
 	printf ("test keyRel2\n");
 
@@ -118,6 +118,9 @@ static void test_keyRel2 ()
 	Key * systemGrandNephew = keyNew ("system/silbling/nephew/grandnephew", KEY_END);
 	Key * userGrandNephew = keyNew ("user/silbling/nephew/grandnephew", KEY_END);
 	Key * cascadingGrandNephew = keyNew ("/silbling/nephew/grandnephew", KEY_CASCADING_NAME, KEY_END);
+	Key * metaParent = keyNew ("meta", KEY_META_NAME, KEY_END);
+	Key * metaChild = keyNew ("meta/child", KEY_META_NAME, KEY_END);
+	Key * metaUnrelated = keyNew ("unrelated", KEY_META_NAME, KEY_END);
 
 	succeed_if (keyRel2 (systemParent, systemChild, ELEKTRA_REL_BELOW_SAME_NS) == 1, "ELEKTRA_REL_BELOW_SAME_NS keyRel2 failed\n");
 	succeed_if (keyRel2 (systemParent, userChild, ELEKTRA_REL_BELOW_SAME_NS) == 0,
@@ -181,6 +184,23 @@ static void test_keyRel2 ()
 	succeed_if (keyRel2 (systemParent, systemChild, ELEKTRA_REL_SILBLING_SAME_NS) == 0,
 		    "ELEKTRA_REL_SILBLINGSAME_NS keyRel2 should have failed\n");
 
+	succeed_if (keyRel2 (metaParent, metaChild, ELEKTRA_REL_BELOW_IGNORE_NS) == 1, "ELEKTRA_REL_BELOW_IGNORE_NS keyRel2 failed\n");
+	succeed_if (keyRel2 (metaUnrelated, metaChild, ELEKTRA_REL_BELOW_IGNORE_NS) == 0,
+		    "ELEKTRA_REL_BELOW_IGNORE_NS keyRel2 should have failed\n");
+	succeed_if (keyRel2 (metaParent, metaUnrelated, ELEKTRA_REL_SILBLING_IGNORE_NS) == 1,
+		    "ELEKTRA_REL_SILBLING_IGNORE_NS keyRel2 failed\n");
+	succeed_if (keyRel2 (metaParent, metaUnrelated, ELEKTRA_REL_BELOW_IGNORE_NS) == 0,
+		    "ELEKTRA_REL_BELOW_IGNORE_NS keyRel2 should have failed\n");
+
+	succeed_if (keyRel2 (metaParent, metaChild, ELEKTRA_REL_BELOW_CASCADING_NS) == 0,
+		    "ELEKTRA_REL_BELOW_CASCADING_NS keyRel2 should have failed\n");
+	succeed_if (keyRel2 (metaUnrelated, metaChild, ELEKTRA_REL_BELOW_CASCADING_NS) == 0,
+		    "ELEKTRA_REL_BELOW_CASCADING_NS keyRel2 should have failed\n");
+	succeed_if (keyRel2 (metaParent, metaUnrelated, ELEKTRA_REL_SILBLING_CASCADING_NS) == 0,
+		    "ELEKTRA_REL_SILBLING_CASCADING_NS keyRel2 should have failed\n");
+	succeed_if (keyRel2 (metaParent, metaUnrelated, ELEKTRA_REL_BELOW_CASCADING_NS) == 0,
+		    "ELEKTRA_REL_BELOW_CASCADING_NS keyRel2 should have failed\n");
+
 	keyDel (systemParent);
 	keyDel (userParent);
 	keyDel (systemChild);
@@ -198,6 +218,9 @@ static void test_keyRel2 ()
 	keyDel (systemGrandNephew);
 	keyDel (userGrandNephew);
 	keyDel (cascadingGrandNephew);
+	keyDel (metaParent);
+	keyDel (metaChild);
+	keyDel (metaUnrelated);
 }
 
 int main (int argc, char ** argv)

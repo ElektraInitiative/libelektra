@@ -3,7 +3,7 @@
  *
  * @brief Array methods.
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #define __STDC_FORMAT_MACROS
@@ -60,7 +60,7 @@ int elektraArrayValidateName (const Key * key)
 			underscores++;
 		}
 
-		for (; isdigit (*current); current++)
+		for (; isdigit ((unsigned char)*current); current++)
 		{
 			digits++;
 		}
@@ -127,7 +127,7 @@ int elektraReadArrayNumber (const char * baseName, kdb_long_long_t * oldIndex)
  *
  * @param key which base name will be incremented
  *
- * @retval -1 on error (e.g. too large array, not validated array)
+ * @retval -1 on error (e.g. array too large, non-valid array)
  * @retval 0 on success
  */
 int elektraArrayIncName (Key * key)
@@ -175,7 +175,7 @@ int elektraArrayIncName (Key * key)
  *
  * Returns true (1) for all keys that are part of the array
  * identified by the supplied array parent. Only the array
- * eleements themself, but no subkeys of them will be filtered
+ * elements themselves, but no subkeys of them will be filtered
  *
  * @pre The supplied argument has to be of type (const Key *)
  * and is the parent of the array to be extracted. For example
@@ -191,28 +191,28 @@ int elektraArrayIncName (Key * key)
 static int arrayFilter (const Key * key, void * argument)
 {
 	const Key * arrayParent = (const Key *)argument;
-
-	return keyIsDirectBelow (arrayParent, key) && elektraArrayValidateName (key);
+	return keyIsDirectBelow (arrayParent, key) && elektraArrayValidateName (key) > 0;
 }
 
 
 /**
- * Return all the array keys below the given arrayparent
- * The arrayparent itself is not returned.
- * For example, if user/config/# is an array,
- * user/config is the array parent.
+ * @brief Return all the array keys below the given array parent
+ *
+ * The array parent itself is not returned.
+ * For example, if `user/config/#` is an array,
+ * `user/config` is the array parent.
  * Only the direct array keys will be returned. This means
- * that for example user/config/#1/key will not be included,
- * but only user/config/#1.
+ * that for example `user/config/#1/key` will not be included,
+ * but only `user/config/#1`.
  *
  * A new keyset will be allocated for the resulting keys.
- * This means that the caller must ksDel the resulting keyset.
+ * This means that the caller must `ksDel` the resulting keyset.
  *
  * @param arrayParent the parent of the array to be returned
- * @param keys the keyset containing the array keys.
+ * @param keys the keyset containing the array keys
  *
- * @return a keyset containing the arraykeys (if any)
- * @retval NULL on NULL pointers
+ * @return a keyset containing the array keys (if any)
+ * @retval NULL on `NULL` pointers
  */
 KeySet * elektraArrayGet (const Key * arrayParent, KeySet * keys)
 {
@@ -251,6 +251,7 @@ Key * elektraArrayGetNextKey (KeySet * arrayKeys)
 
 	ksAppendKey (arrayKeys, last);
 	Key * newKey = keyDup (last);
+	keySetString (newKey, "");
 	int ret = elektraArrayIncName (newKey);
 
 	if (ret == -1)

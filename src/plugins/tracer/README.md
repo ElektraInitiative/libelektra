@@ -31,7 +31,7 @@ no file.
 Ok, same conclusion.
 
     kdb set user/trace_point hello
-    create a new key user/trace_point with string hello
+    create a new key user/trace_point with string "hello"
     tracer: set(0xd34cc0, user/trace_point): user/trace_point 1
     tracer: set(0xd34cc0, user/trace_point): user/trace_point 1
     tracer: set(0xd34cc0, user/trace_point): user/trace_point 1

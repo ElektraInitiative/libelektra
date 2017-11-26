@@ -3,10 +3,11 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 %module kdb
+#pragma SWIG nowarn=317 // Disable warning: Specialization of non-template
 
 %include "stl.i"
 %include "../common.i"

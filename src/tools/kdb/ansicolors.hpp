@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #ifndef ANSI_COLORS_HPP
@@ -43,7 +43,7 @@ enum class ANSI_COLOR_LAYER
  *
  * @return if stderr has colors
  */
-bool hasErrorColor (std::string c = "");
+bool hasErrorColor (std::string const & c = "");
 
 
 /**
@@ -53,7 +53,7 @@ bool hasErrorColor (std::string c = "");
  *
  * @return if stdout has colors
  */
-bool hasStdColor (std::string c = "");
+bool hasStdColor (std::string const & c = "");
 
 /**
  *  getColorEscape returns the ansi escape sequence for the requested color and

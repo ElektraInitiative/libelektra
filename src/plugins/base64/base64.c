@@ -3,26 +3,241 @@
  *
  * @brief filter plugin for the Base64 encoding
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
-#ifndef HAVE_KDBCONFIG
-#include "kdbconfig.h"
-#endif
 #include "base64.h"
 #include <kdb.h>
-#include <kdbassert.h>
 #include <kdberrors.h>
-#include <stdlib.h>
+#include <stdbool.h>
 #include <string.h>
 
 /**
- * @brief establish the Elektra plugin contract and decode all Base64 encoded values back to their original binary form.
- * @retval 1 on success
+ * @brief Unescape a key value starting with two `ELEKTRA_PLUGIN_BASE64_ESCAPE` characters (`@@`).
+ *
+ * @pre The type of the key value must be string.
+ *
+ * @param key This parameter contains the key value this function escapes.
+ * @param parent The function stores information about errors in this parameter.
+ *
+ * @retval -1 if the function was unable to unescape the value of `key`
+ * @retval 0 if the given key was not modified
+ * @retval 1 if the function successfully unescaped `key`
+ */
+static int unescape (Key * key, Key * parent)
+{
+	const char * strVal = keyString (key);
+	const char escapedPrefix[] = ELEKTRA_PLUGIN_BASE64_ESCAPE ELEKTRA_PLUGIN_BASE64_ESCAPE;
+
+	if (strlen (strVal) < 2 || strncmp (strVal, escapedPrefix, 2) != 0) return 0;
+
+	// Discard the first escape character
+	char * unescaped = strdup (&strVal[1]);
+	if (!unescaped)
+	{
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_MALLOC, parent, "Memory allocation failed");
+		return -1;
+	}
+	keySetString (key, unescaped);
+	elektraFree (unescaped);
+	return 1;
+}
+
+/**
+ * @brief Check if the given key should be decoded by the plugin.
+ *
+ * @pre The type of the key value must be string.
+ *
+ * @param key This parameter specifies the key for which this function decides if it should be encoded or not.
+ * @param metaMode This parameter specifies if the plugin uses meta mode or not.
+ *
+ * @retval true if the plugin should decode the given key
+ * @retval false otherwise
+ */
+static bool shouldDecode (Key * key, bool metaMode)
+{
+	if (metaMode)
+	{
+		return keyGetMeta (key, "type") && strcmp (keyValue (keyGetMeta (key, "type")), "binary") == 0;
+	}
+	else
+	{
+		const char * strVal = keyString (key);
+		return strlen (strVal) >= ELEKTRA_PLUGIN_BASE64_PREFIX_LENGTH &&
+		       strncmp (strVal, ELEKTRA_PLUGIN_BASE64_PREFIX, ELEKTRA_PLUGIN_BASE64_PREFIX_LENGTH) == 0;
+	}
+}
+
+/**
+ * @brief Decode a base64 encoded key value and save the result as binary data in the key.
+ *
+ * The conversion only happens if the value of the key has type `string` and
+ *
+ *   1. in escaping mode: the key value starts with `ELEKTRA_PLUGIN_BASE64_PREFIX` (`"@BASE64"`),
+ *   2. in meta mode: the key contains the metakey `type` with the value `binary`
+ *
+ * . If the key value starts with two prefix characters (`@@`) in **escaping mode**, then the function unescapes the value by removing one
+ * of the prefix characters.
+ *
+ * @param key This parameter specifies the key that this function decodes.
+ * @param parent The function stores information about errors/warnings in this parameter.
+ * @param metaMode This parameter specifies if the plugin uses meta mode or not.
+ *
+ * @retval -1 if the function was unable to convert or unescape the value of `key`
+ * @retval 0 if the given key was not modified
+ * @retval 1 if the function successfully modified `key`
+ */
+static int decode (Key * key, Key * parent, bool metaMode)
+{
+	if (!keyIsString (key)) return 0;
+
+	if (!shouldDecode (key, metaMode))
+	{
+		if (metaMode) return 0;
+		return unescape (key, parent);
+	}
+
+	ELEKTRA_LOG_DEBUG ("Decode binary value");
+
+	kdb_octet_t * buffer;
+	size_t bufferLen;
+	const char * strVal = keyString (key);
+	int result = PLUGIN_FUNCTION (base64Decode) (strVal + (metaMode ? 0 : ELEKTRA_PLUGIN_BASE64_PREFIX_LENGTH), &buffer, &bufferLen);
+	if (result == 1)
+	{
+		// Success
+		keySetBinary (key, buffer, bufferLen);
+	}
+	else if (result == -1)
+	{
+		// Decoding error
+		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_BASE64_DECODING, parent, "Not Base64 encoded: %s", strVal);
+	}
+	else if (result == -2)
+	{
+		// Memory error
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_MALLOC, parent, "Memory allocation failed");
+		return -1;
+	}
+
+	elektraFree (buffer);
+	return 1;
+}
+
+/**
+ * @brief Encode a binary key value using base64 encoding and save the result as textual data in the key.
+ *
+ * @param key This parameter specifies the key that this function encodes.
+ * @param parent The function stores information about errors in this parameter.
+ * @param metaMode This parameter specifies if the plugin uses meta mode or not.
+ *
+ * @retval -1 if the function was unable to convert the value of `key`
+ * @retval 0 if no conversion has taken place
+ * @retval 1 if the function successfully converted the value of `key`
+ */
+static int encode (Key * key, Key * parent, bool metaMode)
+{
+	if (!keyIsBinary (key)) return 0;
+
+	char * base64 = PLUGIN_FUNCTION (base64Encode) (keyValue (key), (size_t)keyGetValueSize (key));
+	if (!base64)
+	{
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_MALLOC, parent, "Memory allocation failed");
+		return -1;
+	}
+
+	if (metaMode)
+	{
+		keySetString (key, base64);
+	}
+	else
+	{
+		const size_t newValLen = strlen (base64) + ELEKTRA_PLUGIN_BASE64_PREFIX_LENGTH + 1;
+		char * newVal = elektraMalloc (newValLen);
+		if (!newVal)
+		{
+			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_MALLOC, parent, "Memory allocation failed");
+			elektraFree (base64);
+			return -1;
+		}
+		snprintf (newVal, newValLen, "%s%s", ELEKTRA_PLUGIN_BASE64_PREFIX, base64); //! OCLint (constant conditional operator)
+		keySetString (key, newVal);
+		elektraFree (newVal);
+	}
+
+	elektraFree (base64);
+
+	return 1;
+}
+
+/**
+ * @brief Escape the prefix character `ELEKTRA_PLUGIN_BASE64_PREFIX` (`@`) in a key value by prefixing it with another `@`.
+ *
+ * This function only inserts another prefix character if the type of `key` is string.
+ *
+ * @param key This parameter specifies the key value that this function escapes.
+ * @param parent The function stores information about errors in this parameter.
+ *
+ * @retval -1 if the function was unable to escape the key value
+ * @retval 0 if the function did not change the key value
+ * @retval 1 if the function successfully escaped the value of `key`
+ */
+static int escape (Key * key, Key * parent)
+{
+	if (keyIsString (key) == 0) return 0;
+
+	// escape the prefix character
+	const char * strVal = keyString (key);
+	const size_t strValLen = strlen (strVal);
+	if (strValLen <= 0 || strVal[0] != ELEKTRA_PLUGIN_BASE64_ESCAPE_CHAR) return 0;
+
+	// + 1 for the additional escape character
+	// + 1 for the NULL terminator
+	char * escapedVal = elektraMalloc (strValLen + 2);
+	if (!escapedVal)
+	{
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_MALLOC, parent, "Memory allocation failed");
+		return -1;
+	}
+
+	// add the escape character in front of the original value
+	escapedVal[0] = ELEKTRA_PLUGIN_BASE64_ESCAPE_CHAR;
+	strncpy (&escapedVal[1], strVal, strValLen + 1); //! OCLint (constant conditional operator)
+	keySetString (key, escapedVal);
+	elektraFree (escapedVal);
+	return 1;
+}
+
+/**
+ * @brief Check if the plugin should use meta mode for the base64 conversion.
+ *
+ * @param handle This parameter stores the configuration of the plugin.
+ *
+ * @retval true if the plugin should use meta mode
+ * @retval false if the plugin should use escaping mode
+ */
+static bool useMetaMode (Plugin * handle)
+{
+	KeySet * config = elektraPluginGetConfig (handle);
+	Key * metaMode = ksLookupByName (config, "/binary/meta", 0);
+
+	ELEKTRA_LOG ("Using %s mode", metaMode ? "meta" : "escaping");
+	return metaMode ? true : false;
+}
+
+/**
+ * @brief Establish the Elektra plugin contract and decode all Base64 encoded values back to their original binary form.
+ *
+ * @param handle This parameter stores the configuration of the plugin.
+ * @param keySet This parameter specifies the key set that this function updates.
+ * @param parent The function stores information about errors/warnings in this parameter.
+ *
+ * @retval 1 if any keys were updated
+ * @retval 0 if `keyset` was not modified
  * @retval -1 on failure
  */
-int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, get) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks ELEKTRA_UNUSED, Key * parentKey)
+int PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * keySet, Key * parentKey)
 {
 	// Publish module configuration to Elektra (establish the contract)
 	if (!strcmp (keyName (parentKey), "system/elektra/modules/" ELEKTRA_PLUGIN_NAME))
@@ -30,144 +245,58 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, get) (Plugin * handle ELEKTR
 		KeySet * moduleConfig = ksNew (30,
 #include "contract.h"
 					       KS_END);
-		ksAppend (ks, moduleConfig);
+		ksAppend (keySet, moduleConfig);
 		ksDel (moduleConfig);
 		return 1;
 	}
 
+	bool metaMode = useMetaMode (handle);
+
 	// base64 decoding
-	Key * k;
-
-	const char * prefix = ELEKTRA_PLUGIN_BASE64_PREFIX;
-	const size_t prefixLen = strlen (prefix);
-	const char escapedPrefix[] = ELEKTRA_PLUGIN_BASE64_ESCAPE ELEKTRA_PLUGIN_BASE64_ESCAPE;
-
-	ksRewind (ks);
-	while ((k = ksNext (ks)))
+	Key * key;
+	ksRewind (keySet);
+	int status = 0;
+	while (status >= 0 && (key = ksNext (keySet)))
 	{
-		if (keyIsString (k) == 1)
-		{
-			const char * strVal = keyString (k);
-
-			if (strlen (strVal) >= prefixLen && strncmp (strVal, prefix, prefixLen) == 0)
-			{
-				// Base64 encoding
-				kdb_octet_t * buffer;
-				size_t bufferLen;
-
-				int result = ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, base64Decode) (strVal + prefixLen, &buffer,
-													    &bufferLen);
-				if (result == 1)
-				{
-					// success
-					keySetBinary (k, buffer, bufferLen);
-				}
-				else if (result == -1)
-				{
-					// decoding error
-					ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_BASE64_DECODING, parentKey,
-							      "Not Base64 encoded: %s. Maybe use a different prefix?", strVal);
-				}
-				else if (result == -2)
-				{
-					// memory error
-					ELEKTRA_SET_ERROR (87, parentKey, "Memory allocation failed");
-					return -1;
-				}
-
-				elektraFree (buffer);
-			}
-			else if (strlen (strVal) >= 2 && strncmp (strVal, escapedPrefix, 2) == 0)
-			{
-				// discard the first escape character
-				char * unescaped = strdup (&strVal[1]);
-				if (!unescaped)
-				{
-					ELEKTRA_SET_ERROR (87, parentKey, "Memory allocation failed");
-					return -1;
-				}
-				keySetString (k, unescaped);
-				elektraFree (unescaped);
-			}
-		}
+		status |= decode (key, parentKey, metaMode);
 	}
-	return 1;
+	return status;
 }
 
 /**
  * @brief Encode all binary values using the Base64 encoding scheme.
- * @retval 1 on success
+ *
+ * @param handle This parameter stores the configuration of the plugin.
+ * @param keySet This parameter specifies the key set that this function updates.
+ * @param parent The function stores information about errors in this parameter.
+ *
+ * @retval 1 if any keys were updated
+ * @retval 0 if `keyset` was not modified
  * @retval -1 on failure
  */
-int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, set) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, Key * parentKey)
+int PLUGIN_FUNCTION (set) (Plugin * handle, KeySet * keySet, Key * parentKey)
 {
-	Key * k;
+	Key * key;
 
-	const char * prefix = ELEKTRA_PLUGIN_BASE64_PREFIX;
-	const size_t prefixLen = strlen (prefix);
+	ksRewind (keySet);
 
-	ksRewind (ks);
-	while ((k = ksNext (ks)))
+	bool metaMode = useMetaMode (handle);
+
+	int status = 0;
+	while (status >= 0 && (key = ksNext (keySet)))
 	{
-		// escape the prefix character
-		if (keyIsString (k) == 1)
+		if (!metaMode)
 		{
-			const char * strVal = keyString (k);
-			const size_t strValLen = strlen (strVal);
-			if (strValLen > 0 && strncmp (strVal, ELEKTRA_PLUGIN_BASE64_ESCAPE, 1) == 0)
-			{
-				// + 1 for the additional escape character
-				// + 1 for the NULL terminator
-				char * escapedVal = elektraMalloc (strValLen + 2);
-				if (!escapedVal)
-				{
-					ELEKTRA_SET_ERROR (87, parentKey, "Memory allocation failed");
-					return -1;
-				}
-
-				// add the escape character in front of the original value
-				escapedVal[0] = ELEKTRA_PLUGIN_BASE64_ESCAPE_CHAR;
-				strncpy (&escapedVal[1], strVal, strValLen + 1);
-				keySetString (k, escapedVal);
-				elektraFree (escapedVal);
-			}
+			status |= escape (key, parentKey);
+			if (status < 0) break;
 		}
-
-		// Base 64 encoding
-		if (keyIsBinary (k) == 1)
-		{
-			char * base64 =
-				ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, base64Encode) (keyValue (k), (size_t)keyGetValueSize (k));
-			if (!base64)
-			{
-				ELEKTRA_SET_ERROR (87, parentKey, "Memory allocation failed");
-				return -1;
-			}
-
-			const size_t newValLen = strlen (base64) + prefixLen + 1;
-			char * newVal = elektraMalloc (newValLen);
-			if (!newVal)
-			{
-				ELEKTRA_SET_ERROR (87, parentKey, "Memory allocation failed");
-				elektraFree (base64);
-				return -1;
-			}
-			snprintf (newVal, newValLen, "%s%s", prefix, base64);
-
-			keySetString (k, newVal);
-
-			elektraFree (newVal);
-			elektraFree (base64);
-		}
+		status |= encode (key, parentKey, metaMode);
 	}
-	return 1;
+	return status;
 }
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (base64)
 {
-	// clang-format off
-	return elektraPluginExport(ELEKTRA_PLUGIN_NAME,
-			ELEKTRA_PLUGIN_GET,   &ELEKTRA_PLUGIN_FUNCTION(ELEKTRA_PLUGIN_NAME_C, get),
-			ELEKTRA_PLUGIN_SET,   &ELEKTRA_PLUGIN_FUNCTION(ELEKTRA_PLUGIN_NAME_C, set),
-			ELEKTRA_PLUGIN_END);
+	return elektraPluginExport (ELEKTRA_PLUGIN_NAME, ELEKTRA_PLUGIN_GET, &PLUGIN_FUNCTION (get), ELEKTRA_PLUGIN_SET,
+				    &PLUGIN_FUNCTION (set), ELEKTRA_PLUGIN_END);
 }

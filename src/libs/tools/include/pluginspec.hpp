@@ -3,7 +3,7 @@
  *
  * @brief Interface to specify which plugin is meant
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 

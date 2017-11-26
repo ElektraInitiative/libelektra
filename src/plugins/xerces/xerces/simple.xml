@@ -2,6 +2,8 @@
 <xerces>  value of<!-- Comment inside text --> xerces  
 	<!-- this is an attribute -->
 	<fizz buzz="fizzBuzz" />
+	<fizz />
+	<fizz without="buzz" />
 	<userKey user="key">withValue</userKey>
 	<!-- those need escaping: " ' < > &  -->
 	<späciöl_-keüs1 attr='"' attr2="$%(){}``äüö²[/\'>&quot;&lt;&apos;&amp;">>"&amp;&lt;'</späciöl_-keüs1>

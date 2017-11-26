@@ -24,6 +24,11 @@ install (PROGRAMS upgrade-bootstrap DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
 install (PROGRAMS umount-all DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
+install (PROGRAMS mountpoint-info DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
+install (PROGRAMS mount-list-all-files DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
+install (PROGRAMS check-env-dep DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
+
+
 file(READ "kdb_zsh_completion" CONTENT_OF_ZSH_COMP)
 file(READ "kdb-bash-completion" CONTENT_OF_BASH_COMP)
 configure_file (
@@ -112,6 +117,23 @@ configure_file(
 install (PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/configure-firefox" DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 add_subdirectory (ffconfig)
 
+configure_file(
+	"${CMAKE_CURRENT_SOURCE_DIR}/change-resolver-symlink.in"
+	"${CMAKE_CURRENT_BINARY_DIR}/change-resolver-symlink" @ONLY)
+install (PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/change-resolver-symlink" DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
+
+configure_file(
+	"${CMAKE_CURRENT_SOURCE_DIR}/change-storage-symlink.in"
+	"${CMAKE_CURRENT_BINARY_DIR}/change-storage-symlink" @ONLY)
+install (PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/change-storage-symlink" DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
+
+configure_file(
+	"${CMAKE_CURRENT_SOURCE_DIR}/backup.in"
+	"${CMAKE_CURRENT_BINARY_DIR}/backup" @ONLY)
+install (PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/backup" DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
+install (PROGRAMS stash DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
+install (PROGRAMS restore DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
+
 ADD_CUSTOM_TARGET(source-package
 		COMMAND "${CMAKE_CURRENT_BINARY_DIR}/make-source-package"
 		COMMENT "Make a elektra source package by using git"
@@ -119,3 +141,10 @@ ADD_CUSTOM_TARGET(source-package
 		WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
 		)
 
+configure_file(
+	"${CMAKE_CURRENT_SOURCE_DIR}/randoop/randoop.in"
+	"${CMAKE_CURRENT_BINARY_DIR}/randoop/randoop" @ONLY)
+file(COPY
+	"${CMAKE_CURRENT_SOURCE_DIR}/randoop/randoopClasses.txt"
+    DESTINATION
+    "${CMAKE_CURRENT_BINARY_DIR}/randoop/")

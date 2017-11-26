@@ -4,7 +4,7 @@
 - infos/provides = check
 - infos/needs =
 - infos/recommends = 
-- infos/placements = presetstorage
+- infos/placements = presetstorage postgetstorage
 - infos/status = productive maintained unittest tested nodep libc
 - infos/metadata = check/enum check/enum/# check/enum/multi
 - infos/description = validates values against enum
@@ -36,6 +36,7 @@ For example:
 
 Then the value `middle_small` would validate.
 But `middle_small_small` would fail because every entry might only occur once.
+
 
 ## Example
 ```sh
@@ -78,3 +79,9 @@ kdb set /examples/enum/multivalue ___all_small__
 kdb rm -r /examples/enum
 sudo kdb umount /examples/enum
 ```
+
+## Limitations
+
+You cannot give enum values specific values.
+If you only want to check for numerical values,
+the plugin [range](../range) is better suited.

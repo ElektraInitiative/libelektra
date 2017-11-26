@@ -6,7 +6,7 @@
  * Should be always preferred.
  * Can be used for profiling and tracing.
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #ifndef KDB_HELPER

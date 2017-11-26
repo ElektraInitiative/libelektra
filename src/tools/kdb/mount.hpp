@@ -3,7 +3,7 @@
  *
  * @brief header file of mount command
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -35,7 +35,7 @@ public:
 
 	virtual std::string getShortOptions () override
 	{
-		return "idR0123cqWC";
+		return "dqiR0123cW";
 	}
 
 	virtual std::string getSynopsis () override

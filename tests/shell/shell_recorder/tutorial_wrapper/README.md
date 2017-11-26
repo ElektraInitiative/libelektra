@@ -1,53 +1,93 @@
 # Markdown to Shell Recorder
 
-The purpose of this tool is to extract executable code snippets from markdown files and translate them into a suitable format for the shell_recorder.
+The Markdown Shell Recorder extracts executable code snippets from Markdown files and translate them into a suitable format for [`shell_recorder`](../shell_recorder/README.md).
 
 Snippets are shell commands inside a syntax block with additional checks (such as exit code, output, errors, etc) encoded as comments. These blocks start with ```` ```sh ````  and end with ```` ``` ````.
 
+## Example
 
+Let us look at a simple example test first:
+
+```sh
+kdb set /examples/markdown/napalm death
+#> Using name user/examples/markdown/napalm
+#> Create a new key user/examples/markdown/napalm with string "death"
+
+kdb rm /examples/markdown/napalm
+
+kdb rm /examples/markdown/babymetal
+# RET: 1
+# STDERR: Did not find the key
+```
+
+. The test above invokes three commands. The first command sets the [cascading key](/doc/tutorials/cascading.md)
+`/examples/markdown/napalm` to the value `death`. The special comment `#> ` below the command specifies the expected output to the standard
+output. This means the Markdown Shell Recorder expects the command
+
+```
+kdb set /examples/markdown/napalm death
+```
+
+to print the text
+
+```
+Using name user/examples/markdown/napalm
+Create a new key user/examples/markdown/napalm with string "death"
+```
+
+to the standard output. The second command in our test (`kdb rm /examples/markdown/napalm`) deletes the key we just created. Although there
+are no special comments below the command, the Markdown Shell Recorder still checks the exit code of the command and reports a failure if
+it is not `0`. If we expect another exit code we can use the special comment `# RET:` to specify the return code. This is what we did after
+the third command, which will fail with exit code `1`, since it tries to delete a non-existing key. The Shell Recorder also checks the
+value the last command prints to the standard error output since, we specified the expected text `Did not find the key` via the special
+comment `# STDERR:`.
 
 ## Syntax
 
-* Commands
+### Commands
 
-  lines not starting with a `#` are treated as (shell-)commands and executed by the shell_recorder.
-  `sudo` commands will be executed without `sudo`
-  for multiline commands each line except the last one must end with a `\`
+- Lines not starting with a comment sign (`#`) are treated as (shell) commands. They are  executed by the Shell Recorder.
+- Commands starting with `sudo` will be executed without `sudo`.
 
-* Checks
+#### Multiline Commands
 
-  * `#> STRING`
+To extend a command over multiple lines add a backslash (`\`) at the end. Do not add a backlash at the last line of the multiline command.
+The test below shows some examples of multiline commands.
 
-     `STRING` is matched 1:1 against the command output. multiple `#> ` will be concatenated automatically using `⏎`
+```sh
+echo Babymetal Death | \
+  grep -o Death
+#> Death
 
-   `# CHECK-OPTION:VALUE`   note that there is no spaces in front of or behind the `:`. Spaces after the `:` are treated as part of the value.
+cat > /tmp/hereout << EOF \
+line 1\
+line 2\
+EOF
+cat /tmp/hereout
+#> line 1
+#> line 2
 
-  * `# RET:N`
+rm /tmp/hereout
+```
 
-     compares the return code of the command to N. if not specified, 0 is implied.
+### Checks
 
-  * `# ERROR:N`
+All check start with a comment sign (`#`).
 
-     checks if the error with the code N was thrown
+- `#> text`: The **text** after `#> ` is matched 1:1 against the command output. Multiple `#> ` will be concatenated automatically using `⏎` (the Shell Recorder equivalent of `\n`).
 
-  * `# WARNINGS:REGEX-STRING`
+- `# RET: regex` This directive compares the return code (exit status) of the command to the value after `# RET:` . If not specified, the exit value is compared to `0`. The Shell Recorder uses **regular expressions** to compare the exit code, so an expression like `1|5` is also valid.
 
-     `REGEX-STRING` is matched against a comma-separated list of the warnings thrown by the command using posix-extended regex
+- `# ERROR: csl` Checks if the `kdb` command threw the exit code `csl`. The text `csl` is a **comma separated list** of numbers (e.g. `1`, `2,4`).
 
-  * `# STDOUT:STRING`
+- `# WARNINGS: csl` The Shell Recorder compares this **comma separated list** of numbers to the warnings thrown by a `kdb` command.
 
-     `STRING` is matched 1:1 against the command output. newlines must be encoded as `⏎`
+- `# STDOUT-REGEX: regex` The **regular expression** `regex` is matched against the output of the command. Newlines must be encoded as `⏎`.
 
-  * `# STDOUT-REGEX:REGEX-STRING`
+## Comments
 
-     `REGEX-STRING` is matched agains the output of the command using posix-extended regex. newlines must be encoded as `⏎`
+- All lines starting with `#` that aren’t checks are treated as comments and will be ignored.
 
-* Comments
+## Examples
 
-  all lines starting with `#` that aren't checks are treated as comments and will be ignored
-
-* Empty lines
-
-  will be ignored
-
-
+For examples, please take a look at a the ReadMe of plugins such as [YAMLCPP](/src/plugins/yamlcpp/README). The file [SyntaxCheck.md](SyntaxCheck.md) also contains some examples for the Markdown Shell Recorder syntax.

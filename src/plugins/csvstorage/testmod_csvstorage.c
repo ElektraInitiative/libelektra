@@ -3,7 +3,7 @@
  *
  * @brief Tests for csvstorage plugin
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -186,7 +186,7 @@ int main (int argc, char ** argv)
 	testSetColnames ("csvstorage/valid.csv");
 	testreadwritecomplicated ("csvstorage/complicated.csv");
 	testreadunescapedDQuote ("csvstorage/unescapedQuote.csv");
-	printf ("\ntestmod_csvstorage RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("testmod_csvstorage");
 
 	return nbError;
 }

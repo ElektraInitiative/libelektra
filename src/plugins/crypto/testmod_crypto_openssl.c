@@ -3,7 +3,7 @@
  *
  * @brief test suite for the crypto plugin (OpenSSL compile variant)
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -20,6 +20,6 @@ int main (int argc, char ** argv)
 
 	TEST_SUITE (PLUGIN_NAME);
 
-	printf ("\n" PLUGIN_NAME " RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result (PLUGIN_NAME);
 	return nbError;
 }

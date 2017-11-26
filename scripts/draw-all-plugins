@@ -3,13 +3,16 @@
 SCRIPTS_DIR=$(dirname "$0")
 . "${SCRIPTS_DIR}/include-common"
 
-set -x
+#set -x
 
 OUTPUT=$SOURCE/doc/images/plugins.dot
 
 echo "strict digraph G {" > $OUTPUT
-#echo "	ratio = fill;" >> $OUTPUT
-#echo "	size = \"13,13\";" >> $OUTPUT
+#echo "	ratio = 1.4;" >> $OUTPUT
+#echo "	fontsize = 20;" >> $OUTPUT
+#echo "	ratio = \"compress\";" >> $OUTPUT
+#echo "	size = \"140,100\";" >> $OUTPUT
+## echo "	orientation = \"portrait\";" >> $OUTPUT
 echo "	splines = true;" >> $OUTPUT
 echo
 #echo "	plugin [shape=Mdiamond];" >> $OUTPUT
@@ -28,7 +31,8 @@ do
 				echo "	$i -> $x;" >> $OUTPUT #  [label=\"provides\"];"
 				#echo "	$x -> plugin;" >> $OUTPUT  # [label=\"is a\"];"
 			done
-		#else
+		else
+			echo "	$i [shape=Mdiamond];" >> $OUTPUT  # [label=\"is a\"];"
 			#echo "	$i -> plugin;" >> $OUTPUT  # [label=\"is a\"];"
 		fi
 	fi
@@ -37,4 +41,8 @@ echo "}"  >> $OUTPUT
 
 echo >> $OUTPUT
 
-fdp -Tpng $OUTPUT -o $SOURCE/doc/images/plugins.png
+unflatten $OUTPUT -o ${OUTPUT}.flatten
+rm -f "$SOURCE/doc/images/plugins.pdf"
+fdp -Tps ${OUTPUT}.flatten -o $SOURCE/doc/images/plugins.ps && gs -dDEVICEWIDTHPOINTS=1454 -dDEVICEHEIGHTPOINTS=1012 -dPDFFitPage -sPAPERSIZE=a4 -dFIXEDMEDIA -dSAFER -sDEVICE=pdfwrite -dSubsetFonts=true -dEmbedAllFonts=true -sPAPERSIZE=a4 -dBATCH -dNOPAUSE -f "$SOURCE/doc/images/plugins.ps" -sOutputFile="$SOURCE/doc/images/plugins.pdf"
+#fdp -Tpdf ${OUTPUT}.flatten -o $SOURCE/doc/images/plugins.pdf   # bad fonts
+fdp -Tpng ${OUTPUT}.flatten -o $SOURCE/doc/images/plugins.png

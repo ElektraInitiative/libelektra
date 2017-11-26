@@ -3,18 +3,19 @@
  *
  * @brief Source for boolean plugin
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
 #include "boolean.h"
 
-#include <ctype.h>
 #include <kdberrors.h>
 #include <kdbhelper.h>
+#include <kdblogger.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 
 
 #define DEFAULT_TRUE_VALUE "1"
@@ -66,62 +67,13 @@ int elektraBooleanClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_
 	return 1; // success
 }
 
-static int stricmp (const char * s1, const char * s2)
-{
-
-	if (!(*s1) && !(*s2))
-	{
-		return 0;
-	}
-	else if (!(*s1))
-	{
-		return (-1);
-	}
-	else if (!(*s2))
-	{
-		return 1;
-	}
-	else
-	{
-		char * p1 = (char *)s1;
-		char * p2 = (char *)s2;
-		while (1)
-		{
-			if (!(*p1) && !(*p2))
-			{
-				return 0;
-			}
-			else if (!(*p1))
-			{
-				return (-1);
-			}
-			else if (!(*p2))
-			{
-				return 1;
-			}
-			else
-			{
-				if (toupper (*p1) == toupper (*p2))
-				{
-					++p1;
-					++p2;
-				}
-				else
-				{
-					return (toupper (*p1) - toupper (*p2));
-				}
-			}
-		}
-	}
-}
-
 static int isTrue (const char * value, const char ** trueValues)
 {
 	char ** ptr = (char **)trueValues;
 	int retVal = 0;
 	while (*ptr)
 	{
-		if (!stricmp (value, *ptr))
+		if (!strcasecmp (value, *ptr))
 		{
 			retVal = 1;
 			break;
@@ -137,7 +89,7 @@ static int isFalse (const char * value, const char ** falseValues)
 	int retVal = 0;
 	while (*ptr)
 	{
-		if (!stricmp (value, *ptr))
+		if (!strcasecmp (value, *ptr))
 		{
 			retVal = 1;
 			break;
@@ -163,15 +115,18 @@ static void normalize (Key * key, Key * parentKey, BoolData * data)
 	if (isTrue (value, trueStrings))
 	{
 		keySetMeta (key, "origvalue", keyString (key));
+		ELEKTRA_LOG_DEBUG ("Convert “%s” to “%s”", value, data->true);
 		keySetString (key, data->true);
 	}
 	else if (isFalse (value, falseStrings))
 	{
 		keySetMeta (key, "origvalue", keyString (key));
+		ELEKTRA_LOG_DEBUG ("Convert “%s” to “%s”", value, data->false);
 		keySetString (key, data->false);
 	}
 	else
 	{
+		ELEKTRA_LOG_DEBUG ("Neither true nor false value");
 		keySetMeta (key, "boolean/invalid", "");
 		switch ((data->invalid & ~(WARNING)))
 		{
@@ -182,7 +137,7 @@ static void normalize (Key * key, Key * parentKey, BoolData * data)
 						      "Key %s with value %s is not a valid boolean. Defaulting to %s.", keyName (key),
 						      keyString (key), data->true);
 			}
-			keySetMeta (key, "originalvalue", keyString (key));
+			keySetMeta (key, "origvalue", keyString (key));
 			keySetString (key, data->true);
 			break;
 		case FALSE:
@@ -215,7 +170,6 @@ static void strToArray (Key * key, char *** array)
 	char * localString = strdup (values);
 	char * saveptr = 0;
 	char * token = 0;
-	int index = 0;
 	token = strtok_r (localString, ";", &saveptr);
 	if (!token)
 	{
@@ -224,6 +178,7 @@ static void strToArray (Key * key, char *** array)
 	}
 	else
 	{
+		int index = 0;
 		ptr = token;
 		while (*ptr == ' ')
 			++ptr;
@@ -255,7 +210,7 @@ static void parseConfig (KeySet * config, BoolData * data)
 	}
 	if (invalidKey)
 	{
-		if (!stricmp (keyString (invalidKey), "FALSE"))
+		if (!strcasecmp (keyString (invalidKey), "FALSE"))
 		{
 			data->invalid |= FALSE;
 		}
@@ -266,9 +221,9 @@ static void parseConfig (KeySet * config, BoolData * data)
 	}
 	if (invalidWarningKey)
 	{
-		if (!stricmp (keyString (invalidWarningKey), "TRUE"))
+		if (!strcasecmp (keyString (invalidWarningKey), "TRUE"))
 			data->invalid |= WARNING;
-		else if (!stricmp (keyString (invalidWarningKey), "FALSE"))
+		else if (!strcasecmp (keyString (invalidWarningKey), "FALSE"))
 			data->invalid &= WARNING;
 		else
 			data->invalid |= WARNING;
@@ -293,6 +248,20 @@ static void parseConfig (KeySet * config, BoolData * data)
 	{
 		data->falseValues = NULL;
 	}
+}
+
+static int isBool (const Key * key)
+{
+	const Key * boolMeta = keyGetMeta (key, "type");
+	if (boolMeta)
+	{
+		ELEKTRA_LOG_DEBUG ("Meta key “type” contains value “%s”", keyString (boolMeta));
+		return !strcmp (keyString (boolMeta), "boolean");
+	}
+
+	boolMeta = keyGetMeta (key, "check/type");
+	if (boolMeta && !strcmp (keyString (boolMeta), "boolean")) return 1;
+	return 0;
 }
 
 int elektraBooleanGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
@@ -325,9 +294,9 @@ int elektraBooleanGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 	ksRewind (returned);
 	while ((key = ksNext (returned)) != NULL)
 	{
-		const Key * boolMeta = keyGetMeta (key, "type");
-		if (!boolMeta) continue;
-		if (!strcmp (keyString (boolMeta), "boolean"))
+		uint8_t isBoolean = isBool (key);
+		ELEKTRA_LOG_DEBUG ("Key “%s” %s a boolean", keyName (key), isBoolean ? "contains" : "does not contain");
+		if (isBoolean)
 		{
 			normalize (key, parentKey, data);
 		}
@@ -335,11 +304,10 @@ int elektraBooleanGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 	return 1; // success
 }
 
-static void restoreValue (Key * key, const char * origName)
+static void restoreValue (Key * key, const char * origValue)
 {
-	keySetString (key, origName);
+	keySetString (key, origValue);
 	keySetMeta (key, "origvalue", 0);
-	return;
 }
 
 int elektraBooleanSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
@@ -348,7 +316,13 @@ int elektraBooleanSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 	// this function is optional
 
 	BoolData * data = elektraPluginGetData (handle);
-	if (!data) return -1;
+	if (!data)
+	{
+		KeySet * config = elektraPluginGetConfig (handle);
+		data = elektraCalloc (sizeof (BoolData));
+		parseConfig (config, data);
+		elektraPluginSetData (handle, data);
+	}
 	const char * trueValue = data->true;
 	const char * falseValue = data->false;
 
@@ -357,22 +331,21 @@ int elektraBooleanSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 	int retVal = 1;
 	while ((key = ksNext (returned)) != NULL)
 	{
-		const Key * checkMeta = keyGetMeta (key, "type");
-		if (checkMeta)
+		uint8_t isBoolean = isBool (key);
+		ELEKTRA_LOG_DEBUG ("Key “%s” %s a boolean", keyName (key), isBoolean ? "contains" : "does not contain");
+		if (isBoolean)
 		{
-			if (!strcmp (keyString (checkMeta), "boolean"))
+			if (!keyGetMeta (key, "origvalue")) normalize (key, parentKey, data);
+			const Key * originalValue = keyGetMeta (key, "origvalue");
+			if (!(!strcmp (keyString (key), trueValue) || !strcmp (keyString (key), falseValue)) ||
+			    (keyGetMeta (key, "boolean/invalid")))
 			{
-				const Key * nameMeta = keyGetMeta (key, "origvalue");
-				if ((!(!strcmp (keyString (key), trueValue) || !strcmp (keyString (key), falseValue))) ||
-				    (keyGetMeta (key, "boolean/invalid")))
-				{
-					keySetMeta (key, "boolean/invalid", 0);
-					ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INVALID_BOOL, parentKey, "%s is not a valid boolean value",
-							    keyString (nameMeta));
-					retVal = -1;
-				}
-				if (nameMeta) restoreValue (key, keyString (nameMeta));
+				keySetMeta (key, "boolean/invalid", 0);
+				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INVALID_BOOL, parentKey, "%s is not a valid boolean value",
+						    keyString (originalValue));
+				retVal = -1;
 			}
+			if (originalValue) restoreValue (key, keyString (originalValue));
 		}
 	}
 	return retVal; // success

@@ -1,4 +1,0 @@
-Mountpoint: /tmount
-DiffType: File
-
-< set $Mountpoint/key $RANDOM 

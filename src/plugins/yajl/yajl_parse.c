@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include "yajl.h"
@@ -285,7 +285,7 @@ static void elektraYajlParseSuppressEmpty (KeySet * returned, Key * parentKey)
 	}
 }
 
-static inline KeySet * elektraGetModuleConfig ()
+static inline KeySet * elektraGetModuleConfig (void)
 {
 	return ksNew (30, keyNew ("system/elektra/modules/yajl", KEY_VALUE, "yajl plugin waits for your orders", KEY_END),
 		      keyNew ("system/elektra/modules/yajl/exports", KEY_END),

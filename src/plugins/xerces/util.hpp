@@ -6,7 +6,7 @@
  * Provides unique pointers that act as a bridge between XMLCh and std::string
  * Provides a general XercesPluginException
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #ifndef ELEKTRA_PLUGIN_XERCES_UTIL_H
