@@ -39,14 +39,12 @@ static KeySet * directoryValueContract (void)
  * @param input This parameter contains the key set this function splits.
  * @param directories The function stores all directory keys (keys with children) in this parameter.
  * @param leaves The function stores all leaf values in this key set.
- * @param parent This parameter contains the parent key of `input`.
  */
-static void splitIntoDirectoriesAndLeaves (KeySet * const input, KeySet * directories, KeySet * leaves, Key * parent)
+static void splitIntoDirectoriesAndLeaves (KeySet * const input, KeySet * directories, KeySet * leaves)
 {
 	ELEKTRA_NOT_NULL (input);
 	ELEKTRA_NOT_NULL (directories);
 	ELEKTRA_NOT_NULL (leaves);
-	ELEKTRA_NOT_NULL (parent);
 
 	ksRewind (input);
 	Key * key = ksNext (input);
@@ -54,8 +52,7 @@ static void splitIntoDirectoriesAndLeaves (KeySet * const input, KeySet * direct
 
 	while ((next = ksNext (input)) != NULL)
 	{
-		bool isLeaf =
-			keyBaseName (next)[0] == '#' || keyIsBelow (key, next) != 1 || elektraStrCmp (keyName (key), keyName (parent)) == 0;
+		bool isLeaf = keyBaseName (next)[0] == '#' || keyIsBelow (key, next) != 1;
 		ksAppendKey (isLeaf ? leaves : directories, keyDup (key));
 		key = next;
 	}
@@ -85,15 +82,19 @@ static int convertDirectoriesToLeaves (KeySet * directories, Key * error)
 
 	while ((key = ksNext (directories)) != NULL)
 	{
-		Key * directoryKey = keyNew (keyName (key), KEY_END);
 		Key * dataKey = keyDup (key);
-		if (keyAddBaseName (dataKey, DIRECTORY_POSTFIX) < 0)
+		// Only add extra leaf key for non-empty directory values
+		if ((keyIsBinary (key) && keyGetValueSize (key) > 0) || keyGetValueSize (key) > 1)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_DIRECTORY_VALUE_APPEND, error, "Could not append directory postfix to “%s”",
-					    keyName (dataKey));
-			return ELEKTRA_PLUGIN_STATUS_ERROR;
+			Key * directoryKey = keyNew (keyName (key), KEY_END);
+			if (keyAddBaseName (dataKey, DIRECTORY_POSTFIX) < 0)
+			{
+				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_DIRECTORY_VALUE_APPEND, error,
+						    "Could not append directory postfix to “%s”", keyName (dataKey));
+				return ELEKTRA_PLUGIN_STATUS_ERROR;
+			}
+			ksAppendKey (result, directoryKey);
 		}
-		ksAppendKey (result, directoryKey);
 		ksAppendKey (result, dataKey);
 	}
 	ksCopy (directories, result);
@@ -231,7 +232,7 @@ int elektraDirectoryvalueSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned,
 
 	int status = ELEKTRA_PLUGIN_STATUS_SUCCESS;
 
-	splitIntoDirectoriesAndLeaves (returned, directories, leaves, parent);
+	splitIntoDirectoriesAndLeaves (returned, directories, leaves);
 	if (ksGetSize (directories) < 0) status = ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 	if (convertDirectoriesToLeaves (directories, parent) < 0) status = ELEKTRA_PLUGIN_STATUS_ERROR;
 	ksCopy (returned, directories);
