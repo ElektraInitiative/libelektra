@@ -26,22 +26,6 @@ export const configureInstance = (id) => thunkCreator({
 
 // ~~~
 
-export const CONFIGURE_CLUSTER_REQUEST = 'CONFIGURE_CLUSTER_REQUEST'
-export const CONFIGURE_CLUSTER_SUCCESS = 'CONFIGURE_CLUSTER_SUCCESS'
-export const CONFIGURE_CLUSTER_FAILURE = 'CONFIGURE_CLUSTER_FAILURE'
-
-export const configureCluster = (id) => thunkCreator({
-  id,
-  types: [CONFIGURE_CLUSTER_REQUEST, CONFIGURE_CLUSTER_SUCCESS, CONFIGURE_CLUSTER_FAILURE],
-  promise: fetch(`/clusters/${id}/kdb`, { credentials: 'same-origin' })
-    .then(parseJSONResponse)
-    .then(result => {
-      return { ...result, id }
-    }),
-})
-
-// ~~~
-
 export const RETURN_TO_MAIN = 'RETURN_TO_MAIN'
 
 export const returnToMain = () => {

@@ -11,10 +11,8 @@
 import {
   INSTANCES_FAILURE, INSTANCE_UPDATE_FAILURE, INSTANCE_DELETE_FAILURE,
   CREATE_INSTANCE_FAILURE,
-  CLUSTERS_FAILURE, CLUSTER_UPDATE_FAILURE, CLUSTER_DELETE_FAILURE,
-  CREATE_CLUSTER_FAILURE,
   GET_KEY_FAILURE, SET_KEY_FAILURE,
-  CONFIGURE_INSTANCE_FAILURE, CONFIGURE_CLUSTER_FAILURE,
+  CONFIGURE_INSTANCE_FAILURE,
 } from '../actions'
 
 export default function errorReducer (state = false, action) {
@@ -23,16 +21,11 @@ export default function errorReducer (state = false, action) {
     case INSTANCE_UPDATE_FAILURE:
     case INSTANCE_DELETE_FAILURE:
     case CREATE_INSTANCE_FAILURE:
-    case CLUSTERS_FAILURE:
-    case CLUSTER_UPDATE_FAILURE:
-    case CLUSTER_DELETE_FAILURE:
-    case CREATE_CLUSTER_FAILURE:
     case GET_KEY_FAILURE:
     case SET_KEY_FAILURE:
       return action.error
 
     case CONFIGURE_INSTANCE_FAILURE:
-    case CONFIGURE_CLUSTER_FAILURE:
       if (action.id === 'my') return state
       if (action.error && action.error.message &&
         action.error.message === 'only absolute urls are supported'

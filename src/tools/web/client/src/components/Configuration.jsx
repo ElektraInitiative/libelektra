@@ -14,7 +14,7 @@ import React from 'react'
 import { Card, CardHeader, CardText, CardActions } from 'material-ui/Card'
 import FlatButton from 'material-ui/FlatButton'
 
-import TreeItem from './TreeItem.jsx'
+import TreeView from './TreeView.jsx'
 import CreateKey from './CreateKey.jsx'
 
 // create tree structure from kdb ls result (list of available keys)
@@ -32,113 +32,43 @@ const createTree = (ls) =>
     return partsTree(acc, item.split('/'))
   }, {})
 
-// render tree view from tree object
-const createTreeView =
-  ({ getKey, setKey, deleteKey, kdb }, tree, prefix = '', root = true) => {
-    return Object.keys(tree).map((key) => {
-      const path = prefix ? `${prefix}/${key}` : key
+const parseDataSet = (tree) =>
+  Object.keys(tree).map(key => {
+    return { name: key, children: parseDataSet(tree[key]) }
+  })
 
-      const loadChildren = () =>
-        Object.keys(tree[key]).map(
-          (childKey) => getKey(`${path}/${childKey}`)
-        )
-
-      // only allow deletion of items without subtrees
-      const allowDelete = root ? false : Object.keys(tree[key]).length === 0
-
-      const { value, meta } = (kdb && kdb[path]) || { value: '', meta: {} }
-
-      return (
-          <TreeItem
-            allowDelete={allowDelete}
-            defaultCollapsed={!root}
-            key={path}
-            name={root ? '/' : key + '/'}
-            value={value || ''}
-            metadata={meta || {}}
-            onClick={loadChildren}
-            onChange={(val) => setKey(path, val)}
-            onDelete={() => deleteKey(path)}
-          >
-              {Object.keys(tree[key]).length > 0
-                ? createTreeView(
-                    { getKey, setKey, deleteKey, kdb },
-                    tree[key], path, false
-                  )
-                : null
-              }
-          </TreeItem>
-      )
-    })
-  }
-
-// get configuration of the selected cluster/instance
-const getConfiguration = (instance, cluster) => {
-  if (instance) {
-    return {
-      id: instance.id,
-      name: instance.name,
-      subtitle: instance.host,
-    }
-  } else if (cluster) {
-    const instanceAmt = cluster.instances.length
-    return {
-      id: cluster.id,
-      name: cluster.name,
-      subtitle: `${instanceAmt} instance${instanceAmt !== 1 ? 's' : ''}`,
-    }
-  }
-}
-
-// configuration page
-const Configuration = ({
-  instance, cluster, configuring, kdb, ls,
-  returnToMain,
-  getKey, setKey, deleteKey,
-  getClusterKey, setClusterKey, deleteClusterKey,
-}) => {
-  const { id, name, subtitle } = getConfiguration(instance, cluster)
-
-  const getCorrectKey = (path) =>
-    configuring === 'cluster'
-      ? getClusterKey(id, path)
-      : getKey(id, path)
-
-  const setCorrectKey = (path, val) =>
-    configuring === 'cluster'
-      ? setClusterKey(id, path, val)
-      : setKey(id, path, val)
-
-  const deleteCorrectKey = (path) =>
-    configuring === 'cluster'
-      ? deleteClusterKey(id, path)
-      : deleteKey(id, path)
-
+const parseData = (ls, kdb) => {
   // add new keys from kdb to ls
   if (kdb) {
     Object.keys(kdb).map((path) => {
       if (ls.indexOf(path) === -1) ls.push(path)
+      return null
     })
   }
-
   const tree = createTree(ls)
-  const treeView = createTreeView({
-    kdb,
-    getKey: getCorrectKey,
-    setKey: setCorrectKey,
-    deleteKey: deleteCorrectKey,
-  }, { 'user': (tree && tree.user) || {} }) // only show user/ namespace
+  return parseDataSet(tree)
+}
+
+// configuration page
+const Configuration = ({
+  instance, kdb, ls,
+  returnToMain,
+  getKey, setKey, deleteKey,
+}) => {
+  const { name, host } = instance
+
+  const data = parseData(ls, kdb)
 
   return (
       <Card>
           <CardHeader
-            title={`configuring ${configuring} "${name}"`}
-            subtitle={subtitle}
+            title={`configuring instance "${name}"`}
+            subtitle={host}
           />
           <CardText>
-            {treeView}
+            <TreeView data={data} />
           </CardText>
-          <CreateKey setKey={setCorrectKey} />
+          <CreateKey setKey={setKey} />
           <CardActions>
               <FlatButton
                 label="done"

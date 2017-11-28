@@ -13,19 +13,16 @@ import { bindActionCreators } from 'redux'
 
 import InstanceCard from '../components/InstanceCard.jsx'
 import {
-  updateInstance, deleteInstance, configureInstance, selectInstance,
+  updateInstance, deleteInstance, configureInstance,
 } from '../actions'
 
 const mapStateToProps = (state, { id }) => {
-  return {
-    addingCluster: state.container.addingCluster,
-    checked: state.container.clusterInstances.indexOf(id) > -1,
-  }
+  return {}
 }
 
 const mapDispatchToProps = (dispatch) =>
   bindActionCreators({
-    updateInstance, deleteInstance, configureInstance, selectInstance,
+    updateInstance, deleteInstance, configureInstance,
   }, dispatch)
 
 export default connect(mapStateToProps, mapDispatchToProps)(InstanceCard)

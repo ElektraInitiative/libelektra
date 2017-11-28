@@ -11,24 +11,19 @@ import React from 'react'
 import { Card, CardHeader, CardText } from 'material-ui/Card'
 import FlatButton from 'material-ui/FlatButton'
 import TextField from 'material-ui/TextField'
-import Checkbox from 'material-ui/Checkbox'
 
 export default class InstanceCard extends React.Component {
   render () {
-    const { id, name, host, checked, addingCluster } = this.props
-    const { updateInstance, deleteInstance, configureInstance, selectInstance } = this.props // action creators
-    const title =
-      addingCluster // show checkbox next to title during cluster creation
-      ? <Checkbox label={name} checked={checked} onCheck={() => selectInstance(id)} />
-      : name
+    const { id, name, host } = this.props
+    const { updateInstance, deleteInstance, configureInstance } = this.props // action creators
 
     return (
         <Card style={{ margin: '10px', marginBottom: '25px' }}>
             <CardHeader
-              title={title}
+              title={name}
               subtitle={host}
-              actAsExpander={!addingCluster}
-              showExpandableButton={!addingCluster}
+              actAsExpander={true}
+              showExpandableButton={true}
             />
             <CardText expandable={true}>
                 <TextField

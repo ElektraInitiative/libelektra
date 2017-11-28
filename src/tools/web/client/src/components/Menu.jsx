@@ -3,8 +3,8 @@
  *
  * @brief this is the menu (top bar) of the application
  *
- * it shows the current page and, if on the overview page, it will show buttons
- * to create clusters and instances
+ * it shows the current page and, if on the overview page, it will show a button
+ * to create instances
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
@@ -13,7 +13,6 @@ import React from 'react'
 
 import { Toolbar, ToolbarGroup, ToolbarTitle } from 'material-ui/Toolbar'
 import RaisedButton from 'material-ui/RaisedButton'
-import TextField from 'material-ui/TextField'
 import CircularProgress from 'material-ui/CircularProgress'
 import ContentAddIcon from 'material-ui/svg-icons/content/add'
 import NavigationArrowBack from 'material-ui/svg-icons/navigation/arrow-back'
@@ -56,8 +55,8 @@ export default class Menu extends React.Component {
   }
 
   render () {
-    const { loading, addingCluster, subpage, clusterInstances } = this.props
-    const { addInstance, addCluster, unaddCluster, returnToMain, createCluster } = this.props // action creators
+    const { loading, subpage } = this.props
+    const { addInstance, returnToMain } = this.props // action creators
     const title = (
         <ToolbarGroup>
             {subpage && // show back button on subpages
@@ -74,55 +73,16 @@ export default class Menu extends React.Component {
         </ToolbarGroup>
     )
 
-    const actions =
-      addingCluster
-      ? ( // modify toolbar in cluster creation mode (name field + create button)
-          <ToolbarGroup>
-              <TextField
-                style={{marginTop: '5px', maxWidth: '150px'}}
-                ref="nameField"
-                hintText="cluster name"
-                onChange={(evt) => this.setState({ name: evt.target.value })}
-                value={this.state.name}
-              />
-              <RaisedButton
-                style={{marginRight: '12px'}}
-                label="create cluster"
-                primary={true}
-                onTouchTap={() => {
-                  createCluster({
-                    name: this.refs.nameField.getValue(),
-                    instances: clusterInstances,
-                  })
-                  this.resetValues()
-                }}
-              />
-              <RaisedButton
-                style={{marginLeft: '12px'}}
-                label="cancel"
-                onTouchTap={() => {
-                  unaddCluster()
-                  this.resetValues()
-                }}
-              />
-          </ToolbarGroup>
-      )
-      : ( // otherwise, show the default toolbar (add instance/cluster buttons)
-          <ToolbarGroup>
-              <RaisedButton
-                icon={<ContentAddIcon />}
-                label="instance"
-                primary={true}
-                onTouchTap={addInstance}
-              />
-              <RaisedButton
-                icon={<ContentAddIcon />}
-                label="cluster"
-                primary={true}
-                onTouchTap={addCluster}
-              />
-          </ToolbarGroup>
-      )
+    const actions = (
+        <ToolbarGroup>
+            <RaisedButton
+              icon={<ContentAddIcon />}
+              label="instance"
+              primary={true}
+              onTouchTap={addInstance}
+            />
+        </ToolbarGroup>
+    )
 
     return (
         <Toolbar>

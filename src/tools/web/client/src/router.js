@@ -7,7 +7,7 @@
  */
 
 import {
-  CONFIGURE_INSTANCE_SUCCESS, CONFIGURE_CLUSTER_SUCCESS, RETURN_TO_MAIN,
+  CONFIGURE_INSTANCE_SUCCESS,  RETURN_TO_MAIN,
   DELETE_KEY_REQUEST,
 } from './actions'
 
@@ -20,10 +20,8 @@ export default function routerReducer (
   action
 ) {
   switch (action.type) {
-    case CONFIGURE_CLUSTER_SUCCESS:
-      return { ...action.result, page: PAGE_CONFIGURE, configuring: 'cluster' }
     case CONFIGURE_INSTANCE_SUCCESS:
-      return { ...action.result, page: PAGE_CONFIGURE, configuring: 'instance' }
+      return { ...action.result, page: PAGE_CONFIGURE }
     case RETURN_TO_MAIN:
       return { page: PAGE_MAIN }
     case DELETE_KEY_REQUEST:

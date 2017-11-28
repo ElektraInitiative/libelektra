@@ -27,8 +27,10 @@ export default function keyReducer (state = {}, action) {
   switch (action.type) {
     case GET_KEY_SUCCESS:
       return updateState(state, action.result)
+
     case SET_KEY_REQUEST:
       return updateState(state, action.request)
+
     case DELETE_KEY_REQUEST:
       const { id, path } = action.request
       return {
@@ -42,6 +44,7 @@ export default function keyReducer (state = {}, action) {
           }, {}
         ),
       }
+    
     // TODO: specifically handle failure (show error inline)
     default:
       return state

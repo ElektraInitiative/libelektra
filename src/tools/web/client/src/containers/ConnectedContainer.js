@@ -12,28 +12,9 @@ import { connect } from 'react-redux'
 
 import Container from '../components/Container.jsx'
 
-const inCluster = (clusters, instanceId) =>
-  clusters.reduce(
-    (res, cluster) => {
-      if (!cluster || !cluster.instances) return res
-      return res || cluster.instances.indexOf(instanceId) > -1
-    },
-    false
-  )
-
 const mapStateToProps = (state) => {
-  const clusters = (state && Array.isArray(state.clusters))
-    ? state.clusters
-    : []
   return {
-    instances: (state && Array.isArray(state.instances))
-      ? (clusters.length > 0)
-        ? state.instances.filter(
-          (instance) => !inCluster(clusters, instance.id)
-        )
-        : state.instances
-      : [],
-    clusters: clusters,
+    instances: state.instances,
     status: state.container,
   }
 }
