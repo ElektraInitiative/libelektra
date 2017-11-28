@@ -32,46 +32,28 @@
  */
 int elektraArrayValidateName (const Key * key)
 {
-	if (!key)
-	{
-		return -1;
-	}
+	const char * current;
+	if (!key || !(current = keyBaseName (key)) || *current != '#') return -1;
+	if (!strcmp (current, "#")) return 0;
 
-	const char * current = keyBaseName (key);
+	current++;
+	int underscores = 0;
+	int digits = 0;
 
-	if (!current)
-	{
-		return -1;
-	}
-
-	if (!strcmp (current, "#"))
-	{
-		return 0;
-	}
-
-	if (*current == '#')
+	while (*current == '_')
 	{
 		current++;
-		int underscores = 0;
-		int digits = 0;
-
-		for (; *current == '_'; current++)
-		{
-			underscores++;
-		}
-
-		for (; isdigit ((unsigned char)*current); current++)
-		{
-			digits++;
-		}
-
-		if (underscores != digits - 1) return -1;
-		if (underscores + digits > ELEKTRA_MAX_ARRAY_SIZE - 2)
-		{
-			return -1;
-		}
+		underscores++;
 	}
-	else
+
+	while (isdigit ((unsigned char)*current))
+	{
+		current++;
+		digits++;
+	}
+
+	if (underscores != digits - 1) return -1;
+	if (underscores + digits > ELEKTRA_MAX_ARRAY_SIZE - 2)
 	{
 		return -1;
 	}
