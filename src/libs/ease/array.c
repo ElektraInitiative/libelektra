@@ -123,17 +123,8 @@ int elektraArrayIncName (Key * key)
 		;		     //! OCLint
 
 	kdb_long_long_t oldIndex = 0;
-	if (arrayElement)
-	{
-		if (elektraReadArrayNumber (baseName, &oldIndex) == -1) return -1;
-	}
-	else
-	{
-		// we have a start element
-		oldIndex = -1;
-	}
-
-	kdb_long_long_t newIndex = oldIndex + 1; // we increment by one
+	if (arrayElement && elektraReadArrayNumber (baseName, &oldIndex) == -1) return -1;
+	kdb_long_long_t newIndex = arrayElement ? oldIndex + 1 : 0; // we increment by one or use 0 if the name contains no index yet
 
 	char newName[ELEKTRA_MAX_ARRAY_SIZE];
 
