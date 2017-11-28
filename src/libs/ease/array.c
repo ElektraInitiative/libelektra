@@ -135,6 +135,37 @@ int elektraArrayIncName (Key * key)
 }
 
 /**
+ * @brief Decrement the name of an array key by one.
+ *
+ * The alphabetical order will remain intact. For example,
+ * `user/abc/\#_10` will be changed to `user/abc/\#9`.
+ *
+ * @param This parameter determines the key name this function decrements.
+ *
+ * @retval -1 on error (e.g. new array index too small, non-valid array)
+ * @retval 0 on success
+ */
+int elektraArrayDecName (Key * key)
+{
+	const char * baseName = keyBaseName (key);
+
+	int arrayElement = elektraArrayValidateName (key);
+	if (arrayElement == -1) return -1;
+
+	while (*(++baseName) == '_') // jump over initial `#` and all `_`
+		;		     //! OCLint
+
+	kdb_long_long_t oldIndex = 0;
+	if (elektraReadArrayNumber (baseName, &oldIndex) == -1 || oldIndex == 0) return -1;
+
+	char newName[ELEKTRA_MAX_ARRAY_SIZE];
+	elektraWriteArrayNumber (newName, oldIndex - 1);
+	keySetBaseName (key, newName);
+
+	return 0;
+}
+
+/**
  * @internal
  *
  * Returns true (1) for all keys that are part of the array

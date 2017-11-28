@@ -94,6 +94,27 @@ static void test_array (void)
 	keyDel (k);
 }
 
+static void test_arrayDec (void)
+{
+	printf ("Decrement array indizes\n");
+
+	Key * k = keyNew ("user/array/#0", KEY_END);
+	succeed_if (elektraArrayDecName (k) == -1, "Decrementing array index 0 did not fail");
+	keyDel (k);
+
+	k = keyNew ("user/array/#___1337", KEY_END);
+	succeed_if (elektraArrayDecName (k) == 0, "Unable to decrement array index 1337");
+	succeed_if_same_string (keyName (k), "user/array/#___1336");
+	succeed_if (elektraArrayDecName (k) == 0, "Unable to decrement array index 1336");
+	succeed_if_same_string (keyName (k), "user/array/#___1335");
+	keyDel (k);
+
+	k = keyNew ("user/array/#_________4000000000", KEY_END);
+	succeed_if (elektraArrayDecName (k) == 0, "Unable to decrement array index 4000000000");
+	succeed_if_same_string (keyName (k), "user/array/#_________3999999999");
+	keyDel (k);
+}
+
 static void test_noArray (void)
 {
 	printf ("Test no array\n");
@@ -171,6 +192,7 @@ int main (int argc, char ** argv)
 	init (argc, argv);
 
 	test_array ();
+	test_arrayDec ();
 	test_noArray ();
 	test_startArray ();
 	test_getArray ();
