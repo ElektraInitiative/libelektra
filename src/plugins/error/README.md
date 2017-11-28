@@ -13,7 +13,7 @@
 
 Plugins (should) rarely return an error or warnings, e.g. writing
 the configuration basically only fails on file system problems. Such
-behaviour is difficult to produce for tests.
+behavior is difficult to produce for tests.
 
 This plugin tackles this issue by yielding error/warnings on request.
 

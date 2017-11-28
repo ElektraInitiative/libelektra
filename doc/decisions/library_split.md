@@ -11,7 +11,7 @@ are all linked together to libelektra.org.
 
 ## Constraints
 
-- have a legacy libelektra that is identical to current behaviour
+- have a legacy libelektra that is identical to current behavior
 - full and static libraries remain unchanged
 
 ## Assumptions

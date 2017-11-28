@@ -58,7 +58,7 @@ int main (int argc, char ** argv)
 	test_OpenClose ();
 	test_GetSet ();
 
-	printf ("\ntestmod_semlock RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("testmod_semlock");
 
 	return nbError;
 }

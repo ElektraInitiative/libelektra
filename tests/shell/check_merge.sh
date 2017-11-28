@@ -6,6 +6,10 @@ echo
 
 check_version
 
+if "$KDB" info storage provides 2>/dev/null | grep -q 'storage/ini'; then
+	echo "This test does not work if Elektra uses the INI plugin as default storage"
+	exit 0
+fi
 
 OURS_ROOT=$USER_ROOT/mergetest/ours
 THEIRS_ROOT=$USER_ROOT/mergetest/theirs

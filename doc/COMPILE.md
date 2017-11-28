@@ -11,7 +11,7 @@ Or on RPM based systems (CentOS):
 
 	sudo yum install -y cmake3 gcc-c++
 
-Or on macOS Sierra, most of the build tools can be obtained by installing XCode (from the App Store). Other required tools may be installed using [brew](http://brew.sh/). First install brew as described on their website. Then issue the following command to get cmake to complete the basic requirements:
+Or on macOS Sierra, most of the build tools can be obtained by installing Xcode (from the App Store). Other required tools may be installed using [brew](http://brew.sh/). First install brew as described on their website. Then issue the following command to get cmake to complete the basic requirements:
 
 	brew install cmake
 
@@ -84,7 +84,7 @@ To configure Elektra graphically (with curses) run (`..` belongs to command):
 
     mkdir build && cd build && ccmake ..
 
-and press 'c' to configure the cache (might be necessary multiple times, and once on the first time in case you dont see any settings).
+and press 'c' to configure the cache (might be necessary multiple times, and once on the first time in case you don‘t see any settings).
 After applying the desired settings, press 'g' to generate the make file.
 
 
@@ -106,11 +106,10 @@ Some scripts in the folder of the same name may help you running cmake.
 For supported compilers have a look at the automatic build farm on
 https://build.libelektra.org/
 
-Additionally, gcc 4.6 armhf is tested regularly.
-
 
 |   Compiler        |         Version             |      Target       |
 |-------------------|-----------------------------|-------------------|
+|      gcc          | gcc (Debian 6.3.0-18) 6.3.0 |      amd64        |
 |      gcc          | gcc (Debian 4.7.2-5) 4.7.2  |      i386         |
 |      gcc          | gcc (Debian 4.7.2-5) 4.7.2  |      amd64        |
 |      gcc          | gcc 4.8                     |      amd64        |
@@ -120,6 +119,8 @@ Additionally, gcc 4.6 armhf is tested regularly.
 |      gcc          | 4.6                         |      armhf        |
 |      mingw        | 4.6                         |      i386         |
 |      clang        | version 3.5.0-1~exp1        |x86_64-pc-linux-gnu|
+|      clang        | 3.9.0                       |x86_64-pc-linux-gnu|
+|      clang        | 8.1.0                       |      macOS        |
 |      icc          | 14.0.2 20140120             |x86_64-pc-linux-gnu|
 |      gcc/g++      |                             | openbsd 4.9.3 (*) |
 
@@ -285,9 +286,12 @@ The flag used to specify which tools are compiled is
 but is more limited in its functionality (which does not
 matter, because there are not so many tools).
 
-To add all tools, you can use::
+To add all non-experimental tools, you can use::
 
     -DTOOLS=ALL
+
+> Note that the behavior is different to PLUGINS
+> which includes all PLUGINS if ALL is used.
 
 To add all tools except of race, you can use:
 
@@ -301,9 +305,12 @@ To specify specific tools you can use, e.g.:
 #### Bindings
 
 Bindings are used in the same way as `TOOLS`.
-For example you can use:
+For example, to include all non-experimental bindings you can use:
 
     -DBINDINGS=ALL
+
+> Note that the behavior is different to PLUGINS
+> which includes all PLUGINS if ALL is used.
 
 Note that the same languages are sometimes available over GI and SWIG.
 In this case, the SWIG bindings are preferred.
@@ -333,6 +340,30 @@ To not add such APIs, but only `swig` bindings and `cpp`, you can use:
 `Debug`, `Release` or `RelWithDebInfo`
 See help bar at bottom of ccmake for that option or:
 http://www.cmake.org/Wiki/CMake_Useful_Variables
+
+
+### BUILD_SHARED BUILD_FULL BUILD_STATIC
+
+`BUILD_SHARED` is the typical build you want to have on systems that support `dlopen`.
+It can be used for desktop builds, but also embedded systems as long as they support
+`dlopen`, for example, `BUILD_SHARED` is used on OpenWRT with musl.
+Using `BUILD_SHARED` every plugin is its own shared object.
+
+`BUILD_FULL` links together all parts of Elektra as a single shared `.so` library.
+This is ideal if shared libraries are available, but you want to avoid `dlopen`.
+Some tests only work with `BUILD_FULL`, so you might turn it on to get full
+coverage.
+
+`BUILD_STATIC` also links together all parts but as static `.a` library.
+It is only useful for systems without `dlopen` or if the overhead of
+`dlopen` needs to be avoided.
+
+All three forms of builds can be intermixed freely.
+
+For example, to enable shared and full build, but disable static build,
+one would use:
+
+    cmake -DBUILD_SHARED=ON -DBUILD_FULL=ON -DBUILD_STATIC=OFF ..
 
 #### ELEKTRA_DEBUG_BUILD and ELEKTRA_VERBOSE_BUILD
 

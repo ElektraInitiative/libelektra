@@ -186,7 +186,7 @@ int main (int argc, char ** argv)
 	testSetColnames ("csvstorage/valid.csv");
 	testreadwritecomplicated ("csvstorage/complicated.csv");
 	testreadunescapedDQuote ("csvstorage/unescapedQuote.csv");
-	printf ("\ntestmod_csvstorage RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("testmod_csvstorage");
 
 	return nbError;
 }

@@ -1,0 +1,8 @@
+#!/bin/sh
+
+echo -n "Number commits: "
+git log $1..master | grep "^commit" | wc -l 
+
+git log $1..master | grep "^Author: " | sort | uniq -c
+
+git diff $1..master --stat | tail -1

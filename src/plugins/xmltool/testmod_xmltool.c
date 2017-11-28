@@ -279,7 +279,7 @@ int main (int argc, char ** argv)
 	test_readwrite_hier();
 	*/
 
-	printf ("\ntest_xml RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("test_xml");
 
 	return nbError;
 }

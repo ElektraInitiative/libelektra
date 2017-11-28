@@ -3,7 +3,7 @@
  *
  * @brief Source for mini plugin
  *
- * @copyright BSD License (see LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 

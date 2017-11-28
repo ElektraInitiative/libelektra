@@ -22,11 +22,19 @@ else
 	exit
 fi
 
-if /usr/bin/env python2 -V >& /dev/null
+if /usr/bin/env python2 -V &> /dev/null
 then
 	echo "python available"
 else
 	echo "no python available"
+	exit
+fi
+
+if /usr/bin/env python2 -c 'from Cheetah.Template import Template' 2> /dev/null
+then
+	echo "Cheetah available"
+else
+	echo "Cheetah not available"
 	exit
 fi
 

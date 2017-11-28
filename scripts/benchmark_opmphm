@@ -13,9 +13,9 @@
 # Note: feed exact amount of needed seeds otherwise you get a SIGPIPE
 #
 
-MAX_OPMPHMR_PARTITE=6
-numberOfSeeds=1000000
-seedsFile="benchmark_opmphmSeeds"
+MAX_OPMPHMR_PARTITE=10
+numberOfSeeds=10000000
+seedsFile="benchmark_opmphm_seeds"
 
 if [ ! -f "CMakeCache.txt" ]
 then
@@ -39,7 +39,7 @@ then
 			# set OPMPHMR_PARTITE
 			sed -i "s/\#define OPMPHMR_PARTITE [0-9][0-9]*/\#define OPMPHMR_PARTITE $i/g" ../src/include/kdbopmphm.h
 			make benchmark_opmphm -j8 2> /dev/null > /dev/null
-			bin/benchmark_opmphm < "$seedsFile"
+			bin/benchmark_opmphm "$2" < "$seedsFile"
 		done
 else
 	echo "Usage: $0 [ gseeds | run ]"

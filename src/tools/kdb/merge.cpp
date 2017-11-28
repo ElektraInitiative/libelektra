@@ -86,7 +86,7 @@ int MergeCommand::execute (Cmdline const & cl)
 		}
 		else
 		{
-			std::cerr << discard.size () << " keys exist in merge resultroot, will quit. Use -f to override the keys there."
+			std::cerr << discard.size () << " keys exist in merge resultpath, will quit. Use -f to override the keys there."
 				  << std::endl;
 		}
 	}

@@ -285,7 +285,7 @@ void keyVInit (Key * key, const char * name, va_list va)
 
 			/* flags without an argument */
 			case KEY_FLAGS:
-				flags |= va_arg (va, int);
+				flags |= va_arg (va, int); // FALLTHROUGH
 			case KEY_BINARY:
 			case KEY_LOCK_NAME:
 			case KEY_LOCK_VALUE:

@@ -28,6 +28,7 @@ Please note, this documentation will show C++ types too (e.g. std::string).
 %enddef
 /* docstring for module implemented for swig >= 3.0.18 */
 %module(docstring=DOCSTRING) kdb
+#pragma SWIG nowarn=317 // Disable warning: Specialization of non-template
 
 
 

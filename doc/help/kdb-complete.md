@@ -26,12 +26,14 @@ originates from.
   Show the man page.
 - `-V`, `--version`:
   Print version info.
-- `-p`, `--profile`=<profile>:
+- `-p`, `--profile <profile>`:
   Use a different kdb profile.
-- `-m`, `--min-depth`=<min-depth>:
+- `-C`, `--color <when>`:
+  Print never/auto(default)/always colored output.
+- `-m`, `--min-depth <min-depth>`:
   Specify the minimum depth of completion suggestions (0 by default), exclusive
   and relative to the name to complete.
-- `-M`, `--max-depth`=<max-depth>:
+- `-M`, `--max-depth <max-depth>`:
   Specify the maximum depth of completion suggestions (unlimited by default, 1
   to show only the next level), inclusive and relative to the name to complete.
 - `-v`, `--verbose`:

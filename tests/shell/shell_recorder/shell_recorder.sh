@@ -4,29 +4,13 @@
 
 set -f
 
-FILE=$1
-Mountpoint=
-DBFile=
-Storage=
-MountArgs=
-DiffType=File
-OutFile=$(mktemp -t elektraenv.XXXXXXXXX 2>/dev/null || mktemp -t 'elektraenv')
+# -- Functions -----------------------------------------------------------------------------------------------------------------------------
 
-RETCMP=
-ERRORSCMP=
-WARNINGSCMP=
-STDOUTCMP=
-STDOUTRECMP=
-STDOUTGLOBCMP=
-STDERRCMP=
-DIFFCMP=
-
-BACKUP=0
-TMPFILE=$(mktemp -t elektraenv.XXXXXXXXX 2>/dev/null || mktemp -t 'elektraenv')
-
-# variables to count up errors and tests
-nbError=0
-nbTest=0
+cleanup()
+{
+	rm -f ./stdout ./stderr
+	rm -rf "$EXPORT_DIR"
+}
 
 execute()
 {
@@ -34,307 +18,301 @@ execute()
 
 	if [ -z "$Mountpoint" ];
 	then
-		echo "Error: no mountpoint specified in script"
+		printf 'Error: no mountpoint specified in script\n'
 		exit 1
 	fi
 
-	if [ -z "$DBFile" ];
+	if [ "$BACKUP" -eq '1' ];
 	then
-		DBFile=$("$KDBCOMMAND" file "$Mountpoint" 2>/dev/null)
-	fi
-
-	if [ "$BACKUP" -eq "1" ];
-	then
-		"$KDBCOMMAND" export "$Mountpoint" dump > "$TMPFILE" 2>/dev/null
-		if [ "$?" -ne 0 ];
+		if ! "$KDB" export "$Mountpoint" dump > "$TMPFILE" 2>/dev/null;
 		then
-			echo "ERROR: Failed to backup $Mountpoint\nStopping testcase."
+			printf 'ERROR: Failed to backup %s\nStopping test case.\n' "$Mountpoint"
 			exit 1
 		fi
 		BACKUP=0
-		"$KDBCOMMAND" rm -r "$Mountpoint" 2>/dev/null
+		"$KDB" rm -r "$Mountpoint" 2>/dev/null
 	fi
 
 	[ -z "$Storage" ] && Storage="dump"
-	command=$(echo "$proto" | sed "s~\$Mountpoint~${Mountpoint}~g")
-	command=$(echo "$command" | sed "s~\$File~${DBFile}~g")
-	command=$(echo "$command" | sed "s~\$Storage~${Storage}~g")
-	command=$(echo "$command" | sed "s~\$MountArgs~${MountArgs}~g")
+	command=$(printf '%s' "$proto" | sed -e "s~\$Mountpoint~${Mountpoint}~g" \
+	                                     -e "s~\$File~${DBFile}~g"           \
+	                                     -e "s~\$Storage~${Storage}~g"       \
+	                                     -e "s~\$MountArgs~${MountArgs}~g")
 
-	case "$DiffType" in
-	File)
-		rm "${DBFile}.1" 2>/dev/null
-		cp "${DBFile}" "${DBFile}.1" 2>/dev/null
-		;;
-	Ini)
-		rm ./previousState 2>/dev/null
-		"$KDBCOMMAND" export "$Mountpoint" simpleini > ./previousState 2>/dev/null
-		;;
-	Dump)
-		rm ./previousState 2>/dev/null
-		"$KDBCOMMAND" export "$Mountpoint" dump > ./previousState 2>/dev/null
-		;;
-	esac
+	printf '%s\n' "$command"
 
-	echo "$command"
-
-	printf "%s\n" "CMD: $command" >> "$OutFile"
+	[ -s "$OutFile" ] && printf '\n' >> "$OutFile"
+	printf 'CMD: %s\n' "$command" >> "$OutFile"
 
 	sh -c -f "$command" 2>stderr 1>stdout
 
 	RETVAL="$?"
 
-	printf "%s\n" "RET: $RETVAL" >> "$OutFile"
+# =======
+# = RET =
+# =======
 
-	if [ ! -z "$RETCMP" ];
+	printf 'RET: %s\n' "$RETVAL" >> "$OutFile"
+
+	if [ -n "$RETCMP" ];
 	then
 		nbTest=$(( nbTest + 1 ))
-		echo "$RETVAL" | grep -Ewq $RETCMP
-		if [ "$?" -ne "0" ];
+		if ! printf '%s' "$RETVAL" | grep -Ewq $RETCMP;
 		then
-			printf "Return value “%s” doesn't match “%s”\n" "$RETVAL" "$RETCMP"
-			printf "%s\n" "=== FAILED return value doesn't match expected pattern $RETCMP" >> "$OutFile"
+			printf 'Return value “%s” does not match “%s”\n' "$RETVAL" "$RETCMP"
+			printf '=== FAILED return value does not match expected pattern %s\n' "$RETCMP" >> "$OutFile"
 			nbError=$(( nbError + 1 ))
 		fi
 	fi
 
-	DIFF=
-	case "$DiffType" in
-	File)
-		DIFF=$(diff -N --text "${DBFile}" "${DBFile}.1" 2>/dev/null)
-		;;
-	Ini)
-		"$KDBCOMMAND" export $Mountpoint simpleini > ./newState 2>/dev/null
-		DIFF=$(diff -N --text ./previousState ./newState 2>/dev/null)
-		rm ./newState 2>/dev/null
-		rm ./previousState 2>/dev/null
-		;;
-	Dump)
-		"$KDBCOMMAND" export $Mountpoint dump > ./newState 2>/dev/null
-		DIFF=$(diff -N --text ./previousState ./newState 2>/dev/null)
-		rm ./newState 2>/dev/null
-		rm ./previousState 2>/dev/null
-		;;
-	esac
-
-
+# ==========
+# = STDERR =
+# ==========
 
 	STDERR=$(cat ./stderr)
 
 
-	printf "%s\n" "STDERR: $STDERR" >> "$OutFile"
-	if [ ! -z "$STDERRCMP" ];
+	[ -n "$STDERR" ] && printf 'STDERR: %s\n' "$STDERR" >> "$OutFile"
+	if [ -n "$STDERRCMP" ];
 	then
 		nbTest=$(( nbTest + 1 ))
-		echo "$STDERR" | replace_newline_return | grep -Eq --text "$STDERRCMP"
-		if [ "$?" -ne "0" ];
+		if ! printf '%s' "$STDERR" | replace_newline_return | grep -Eq --text "$STDERRCMP";
 		then
-			printf "\nERROR - STDERR:\n“%s”\ndoesn't match “%s”\n\n" "$STDERR" "$STDERRCMP"
-			printf "%s\n" "=== FAILED stderr doesn't match expected pattern $STDERRCMP" >> "$OutFile"
+			printf '\nERROR - STDERR:\n“%s”\ndoes not match\n“%s”\n\n' "$STDERR" "$STDERRCMP"
+			printf '=== FAILED stderr does not match expected pattern %s\n' "$STDERRCMP" >> "$OutFile"
 			nbError=$(( nbError + 1 ))
 		fi
 	fi
 
-
+# ==========
+# = STDOUT =
+# ==========
 
 	STDOUT=$(cat ./stdout)
 
-	printf "%s\n" "STDOUT: $STDOUT" >> "$OutFile"
-	if [ ! -z "$STDOUTCMP" ];
+	[ -n "$STDOUT" ] && printf '%s\n' "STDOUT: $STDOUT" >> "$OutFile"
+	if [ -n "$STDOUTCMP" ];
 	then
 		nbTest=$(( nbTest + 1 ))
-		printf "%s" "$STDOUT" | replace_newline_return | grep -Eq --text "^${STDOUTCMP}$"
-		if [ "$?" -ne "0" ];
+		if ! printf '%s' "$STDOUT" | replace_newline_return | grep -Fqx --text "$STDOUTCMP";
 		then
-			printf "\nERROR - STDOUT:\n“%s”\ndoesn't match “%s”\n\n" "$STDOUT" "$STDOUTCMP"
-			printf "%s\n" "=== FAILED stdout doesn't match expected pattern $STDOUTCMP" >> "$OutFile"
-			nbError=$(( nbError + 1 ))
-		fi
-	fi
-	if [ ! -z "$STDOUTRECMP" ];
-	then
-		nbTest=$(( nbTest + 1 ))
-		echo "$STDOUT" | replace_newline_return | grep -Eq --text "$STDOUTRECMP"
-		if [ "$?" -ne "0" ];
-		then
-			printf "\nERROR - STDOUT:\n“%s”\ndoesn't match “%s”\n\n" "$STDOUT" "$STDOUTRECMP"
-			printf "%s\n" "=== FAILED stdout doesn't match expected pattern $STDOUTRECMP" >> "$OutFile"
+			printf '\nERROR - STDOUT:\n“%s”\ndoes not match\n“%s”\n\n' "$STDOUT" "$STDOUTCMP"
+			printf '=== FAILED stdout does not match expected pattern %s\n' "$STDOUTCMP" >> "$OutFile"
 			nbError=$(( nbError + 1 ))
 		fi
 	fi
 
-	WARNINGS=$(echo "$STDERR" | sed -nE  "s/Warning number: (\d*)/\1/p" | tr '\n' ',')
+# ================
+# = STDOUT-REGEX =
+# ================
 
-	printf "%s\n" "WARNINGS: $WARNINGS" >> "$OutFile"
-	if [ ! -z "$WARNINGSCMP" ];
+	if [ -n "$STDOUTRECMP" ];
 	then
 		nbTest=$(( nbTest + 1 ))
-		echo "$WARNINGS" | replace_newline_return | grep -Eq --text "($WARNINGSCMP)"
-		if [ "$?" -ne "0" ];
+		if !  printf '%s' "$STDOUT" | replace_newline_return | grep -Eq --text "$STDOUTRECMP";
 		then
-			printf "\nERROR - WARNINGS:\n“%s”\ndoesn't match “%s”\n\n" "$WARNINGS" "$WARNINGSCMP"
-			printf "%s\n" "=== FAILED Warnings don't match expected pattern $WARNINGSCMP" >> "$OutFile"
+			printf '\nERROR - STDOUT:\n“%s”\ndoes not match\n“%s”\n\n' "$STDOUT" "$STDOUTRECMP"
+			printf '=== FAILED stdout does not match expected pattern %s\n' "$STDOUTRECMP" >> "$OutFile"
 			nbError=$(( nbError + 1 ))
 		fi
 	fi
 
+# ============
+# = WARNINGS =
+# ============
 
+	WARNINGS=$(printf '%s' "$STDERR" | sed -nE  's/.*Warning (number: |\(#)([0-9]+).*/\2/p' | tr '\n' ',' | sed 's/.$//')
 
-
-	ERRORS=$(echo "$STDERR" | sed -nE  "s/error \(\#(\d*)/\1/p" | tr '\n' ',')
-
-
-	printf "%s\n" "ERRORS: $ERRORS" >> "$OutFile"
-	if [ ! -z "$ERRORSCMP" ];
+	[ -n "$WARNINGS" ] && printf 'WARNINGS: %s\n' "$WARNINGS" >> "$OutFile"
+	if [ -n "$WARNINGSCMP" ];
 	then
 		nbTest=$(( nbTest + 1 ))
-		echo "$ERRORS" | replace_newline_return | grep -Eq --text "($ERRORSCMP)"
-		if [ "$?" -ne "0" ];
+		if ! printf '%s' "$WARNINGS" | replace_newline_return | grep -Eq --text "$WARNINGSCMP";
 		then
-			printf "\nERROR - ERRORS:\n“%s”\ndoesn't match “%s”\n\n" "$ERRORS" "$ERRORSCMP"
-			printf "%s\n" "=== FAILED Errors don't match expected pattern $ERRORSCMP" >> "$OutFile"
+			printf '\nERROR - WARNINGS:\n“%s”\ndoes not match\n“%s”\n\n' "$WARNINGS" "$WARNINGSCMP"
+			printf '=== FAILED Warnings do not match expected pattern %s\n' "$WARNINGSCMP" >> "$OutFile"
 			nbError=$(( nbError + 1 ))
 		fi
 	fi
 
+# ==========
+# = ERROR =
+# ==========
 
+	ERROR=$(printf '%s' "$STDERR" | sed -nE 's/.*error \(#([0-9]+).*/\1/p')
 
-	printf "%s\n" "DIFF: $DIFF" >> "$OutFile"
-	if [ ! -z "$DIFFCMP" ];
+	[ -n "$ERROR" ] && printf 'ERROR: %s\n' "$ERROR" >> "$OutFile"
+	if [ -n "$ERRORCMP" ];
 	then
 		nbTest=$(( nbTest + 1 ))
-		echo "$DIFF" | replace_newline_return | grep -Eq --text "($DIFFCMP)"
-		if [ "$?" -ne "0" ];
+		if ! printf '%s' "$ERROR" | replace_newline_return | grep -Eq --text "$ERRORCMP";
 		then
-			printf "\nERROR - Changes to %s:\n“%s”\ndon't match “%s”\n\n" "$DBFile" "$DIFFCMP"
-			printf "%s\n" "=== FAILED changes to database file ($DBFile) don't match $DIFFCMP" >> "$OutFile"
+			printf '\nERROR - ERROR:\n“%s”\ndoes not match\n“%s”\n\n' "$ERROR" "$ERRORCMP"
+			printf '=== FAILED Errors do not match expected pattern %s\n' "$ERRORCMP" >> "$OutFile"
 			nbError=$(( nbError + 1 ))
 		fi
 	fi
+}
 
+tail()
+{
+	printf '%s' "$*" | cut -d ' ' -f2-
+}
 
-	echo >> "$OutFile"
+first() {
+	printf '%s' "$*" | cut -d ' ' -f1
+}
+
+second() {
+	printf '%s' "$*" | cut -d ' ' -f2
 }
 
 run_script()
 {
-	while read -r line;
+	while [ -n "$continuation" ] && line="$continuation" && continuation= || read -r line;
 	do
 	OP=
-	ARG=
-	cmd=$(printf "%s" "$line"|cut -d ' ' -f1)
+	cmd=$(first "$line")
 	case "$cmd" in
 	Mountpoint:)
-		Mountpoint=$(echo "$line"|cut -d ' ' -f2)
+		Mountpoint=$(second "$line")
 		;;
 	File:)
-		DBFile=$(echo "$line"|cut -d ' ' -f2)
+		DBFile=$(second "$line")
 		if [ "$DBFile" = "File:" ] || [ -z "$DBFile" ]; then
-			DBFile=$(mktemp -t elektraenv.XXXXXXXXX 2>/dev/null || mktemp -t 'elektraenv')
+			DBFile=$(mktempfile_elektra)
 		fi
 		;;
 	Storage:)
-		Storage=$(echo "$line"|cut -d ' ' -f2)
+		Storage=$(second "$line")
 		;;
 	MountArgs:)
-		MountArgs=$(echo "$line"|cut -d ' ' -f2-)
-		;;
-	Echo:)
-		echo "$line"|cut -d ' ' -f2-
-		;;
-	DiffType:)
-		DiffType=$(echo "$line"|cut -d ' ' -f2)
+		MountArgs=$(tail "$line")
 		;;
 	RET:)
-		RETCMP=$(echo "$line"|cut -d ' ' -f2-)
+		RETCMP=$(tail "$line")
 		;;
-	ERRORS:)
-		ERRORSCMP=$(echo "$line"|cut -d ' ' -f2-)
+	ERROR:)
+		ERRORCMP=$(tail "$line")
 		;;
 	WARNINGS:)
-		WARNINGSCMP=$(echo "$line"|cut -d ' ' -f2-)
+		WARNINGSCMP=$(tail "$line")
 		;;
 	STDOUT:)
-		STDOUTCMP=$(printf "%s" "$line"|cut -d ' ' -f2-)
+		STDOUTCMP=$(tail "$line")
 		;;
 	STDOUT-REGEX:)
-		STDOUTRECMP=$(echo "$line"|cut -d ' ' -f2-)
-		;;
-	STDOUT-GLOB:)
-		STDOUTGLOBCMP=$(echo "$line"|cut -d ' ' -f2-)
+		STDOUTRECMP=$(tail "$line")
 		;;
 	STDERR:)
-		STDERRCMP=$(echo "$line"|cut -d ' ' -f2-)
-		;;
-	DIFF:)
-		DIFFCMP=$(echo "$line"|cut -d ' ' -f2-)
+		STDERRCMP=$(tail "$line")
 		;;
 	\<)
 		OP="$cmd"
-		ARG=$(printf "%s" "$line"|cut -d ' ' -f2-)
+		[ "$ARG" ] && ARG="$ARG$NEWLINE"
+		ARG="$ARG$(tail "$line")"
+		read -r continuation
+		# Check for multiline commands
+		first "$continuation" | grep -q '<' && continue
 		;;
 	esac
 	if [ "$OP" = "<" ];
 	then
 		execute "$ARG"
 		RETCMP=
-		ERRORSCMP=
+		ERRORCMP=
 		WARNINGSCMP=
 		STDOUTCMP=
 		STDOUTRECMP=
-		STDOUTGLOBCMP=
 		STDERRCMP=
-		DIFFCMP=
+		ARG=
 	fi
 	done < "$FILE"
 }
 
-rm ./stdout 2>/dev/null
-rm ./stderr 2>/dev/null
+# -- Main ----------------------------------------------------------------------------------------------------------------------------------
 
-if [ "$#" -lt "1" ] || [ "$#" -gt "2" ];
+trap cleanup EXIT INT QUIT TERM
+
+# Parse optional argument `-p`
+OPTIND=1
+keepProtocol='false'
+while getopts "p" opt; do
+	case "$opt" in
+	p)
+		keepProtocol='true'
+		;;
+	esac
+done
+shift $((OPTIND-1))
+
+FILE=$1
+Mountpoint=
+DBFile=
+Storage=
+MountArgs=
+DiffType=File
+OutFile=$(mktempfile_elektra)
+
+RETCMP=
+ERRORCMP=
+WARNINGSCMP=
+STDOUTCMP=
+STDOUTRECMP=
+STDERRCMP=
+
+BACKUP=0
+TMPFILE=$(mktempfile_elektra)
+
+# variables to count up errors and tests
+nbError=0
+nbTest=0
+
+if [ "$#" -lt '1' ] || [ "$#" -gt '2' ];
 then
-	echo "Usage: ./shell_recorder inputscript [protocol to compare]"
+	printf 'Usage: %s [-p] input_script [protocol to compare]\n\n' "$0"
+	printf '       -p    keep protocol file\n' "$0"
 	rm "$OutFile"
 	exit 0
 fi
 
 BACKUP=1
 
-echo "protocol file: $OutFile"
+EXPORT_DIR="$(mktempdir_elektra)"
+export_config "$EXPORT_DIR"
 
 run_script
 
-"$KDBCOMMAND" rm -r "$Mountpoint" 2>/dev/null
-"$KDBCOMMAND" import "$Mountpoint" dump 2>/dev/null < "$TMPFILE"
-rm "${DBFile}.1" 2>/dev/null
+"$KDB" rm -r "$Mountpoint" 2>/dev/null
+"$KDB" import "$Mountpoint" dump 2>/dev/null < "$TMPFILE"
+
+export_check "$EXPORT_DIR" 'Test' 'true'
 
 EVAL=0
 
-if [ "$#" -eq "1" ];
+if [ "$#" -eq '1' ];
 then
-	printf "%s" "shell_recorder $1 RESULTS: $nbTest test(s) done"
-	echo " $nbError error(s)."
+	printf 'shell_recorder %s RESULTS: %s test(s) done %s error(s).' "$1" "$nbTest" "$nbError"
 	EVAL=$nbError
 fi
 
-if [ "$#" -eq "2" ];
+if [ "$#" -eq '2' ];
 then
 	RESULT=$(diff -N --text "$2" "$OutFile" 2>/dev/null)
-	if [ "$?" -ne "0" ];
+	if [ "$?" -ne '0' ];
 	then
-		printf "%s\n" "=======================================\nReplay test failed, protocols differ"
-		echo "$RESULT"
-		printf "%s\n" "\n\n"
+		printf '=======================================\nReplay test failed, protocols differ\n%s\n\n\n\n' "$RESULT"
 		EVAL=1
-		else
-		printf "%s\n" "=======================================\nReplay test succeeded"
+	else
+		printf '=======================================\nReplay test succeeded\n'
 	fi
 fi
 
-# this should be in temporary files, and/or in a trap exit
-rm ./stdout 2>/dev/null
-rm ./stderr 2>/dev/null
+if [ "$EVAL" -eq 0 ] && [ $keepProtocol == 'false' ]; then
+	rm -f "$OutFile"
+else
+	>&2 printf '\n📕  Protocol File: %s\n' "$OutFile"
+fi
 
 rm "${TMPFILE}"
 exit "$EVAL"

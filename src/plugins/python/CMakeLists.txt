@@ -1,5 +1,5 @@
 if (DEPENDENCY_PHASE)
-	find_package(PythonLibs 3)
+	find_package(PythonLibs 3 QUIET)
 	find_swig()
 
 	if (PYTHONLIBS_FOUND AND SWIG_FOUND)
@@ -10,10 +10,10 @@ if (DEPENDENCY_PHASE)
 		)
 
 		# we call this SWIG_COMPILE_FLAGS because we have the same variable in our swig bindings
-		set (SWIG_COMPILE_FLAGS "-Wno-shadow -Wno-old-style-cast -Wno-unused-variable")
+		set (SWIG_COMPILE_FLAGS "-Wno-shadow -Wno-old-style-cast -Wno-unused-variable -Wno-missing-field-initializers")
 		set_source_files_properties ("python.cpp" PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS}")
 	elseif (NOT PYTHONLIBS_FOUND)
-		remove_plugin (python "python 3 libs not found")
+		remove_plugin (python "python 3 libs (libpython3-dev) not found")
 	else ()
 		remove_plugin (python "swig not found")
 	endif ()

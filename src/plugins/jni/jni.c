@@ -84,11 +84,11 @@ static int call1Arg (Data * data, Key * errorKey, const char * method)
 		return -1;
 	}
 
-	jmethodID mid = (*data->env)->GetMethodID (data->env, data->clsPlugin, method, "(Lelektra/Key;)I");
+	jmethodID mid = (*data->env)->GetMethodID (data->env, data->clsPlugin, method, "(Lorg/libelektra/Key;)I");
 	checkException (data, method, errorKey);
 	if (mid == 0)
 	{
-		ELEKTRA_SET_ERRORF (102, errorKey, "Cannot find elektra/Key in %s", method);
+		ELEKTRA_SET_ERRORF (102, errorKey, "Cannot find org/libelektra/Key in %s", method);
 		return -1;
 	}
 
@@ -125,7 +125,7 @@ static int call2Arg (Data * data, KeySet * ks, Key * errorKey, const char * meth
 		return -1;
 	}
 
-	jmethodID mid = (*data->env)->GetMethodID (data->env, data->clsPlugin, method, "(Lelektra/KeySet;Lelektra/Key;)I");
+	jmethodID mid = (*data->env)->GetMethodID (data->env, data->clsPlugin, method, "(Lorg/libelektra/KeySet;Lorg/libelektra/Key;)I");
 	checkException (data, method, errorKey);
 	if (mid == 0)
 	{
@@ -237,14 +237,14 @@ int elektraJniOpen (Plugin * handle, Key * errorKey)
 		return -1;
 	}
 
-	data->clsKey = (*data->env)->FindClass (data->env, "elektra/Key");
+	data->clsKey = (*data->env)->FindClass (data->env, "org/libelektra/Key");
 	if (data->clsKey == 0)
 	{
 		ELEKTRA_SET_ERROR (102, errorKey, "Cannot find class Key");
 		return -1;
 	}
 
-	data->clsKeySet = (*data->env)->FindClass (data->env, "elektra/KeySet");
+	data->clsKeySet = (*data->env)->FindClass (data->env, "org/libelektra/KeySet");
 	if (data->clsKeySet == 0)
 	{
 		ELEKTRA_SET_ERROR (102, errorKey, "Cannot find class KeySet");
@@ -311,6 +311,11 @@ int elektraJniClose (Plugin * handle, Key * errorKey)
 		return 0;
 	}
 
+	if (!data)
+	{
+		return -1;
+	}
+
 	int ret = call1Arg (data, errorKey, "close");
 
 	(*data->jvm)->DestroyJavaVM (data->jvm);
@@ -342,6 +347,11 @@ int elektraJniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	if (!data || data->module == 1)
 	{
 		return 0;
+	}
+
+	if (!data)
+	{
+		return -1;
 	}
 
 	return call2Arg (data, returned, parentKey, "get");

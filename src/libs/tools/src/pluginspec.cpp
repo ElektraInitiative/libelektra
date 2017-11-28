@@ -31,8 +31,7 @@ namespace tools
  *
  * @see setFullName()
  */
-PluginSpec::PluginSpec (std::string const & pluginName, KeySet pluginConfig)
-: name (pluginName), refname (pluginName), config (pluginConfig)
+PluginSpec::PluginSpec (std::string pluginName, KeySet pluginConfig) : name (pluginName), refname (pluginName), config (pluginConfig)
 {
 	setFullName (pluginName);
 }
@@ -49,7 +48,7 @@ PluginSpec::PluginSpec (std::string const & pluginName, KeySet pluginConfig)
  * @see setName()
  * @see setRefName()
  */
-PluginSpec::PluginSpec (std::string const & pluginName, std::string const & refName, KeySet pluginConfig)
+PluginSpec::PluginSpec (std::string pluginName, std::string refName, KeySet pluginConfig)
 : name (pluginName), refname (refName), config (pluginConfig)
 {
 	validate (pluginName);
@@ -68,7 +67,7 @@ PluginSpec::PluginSpec (std::string const & pluginName, std::string const & refN
  * @see setName()
  * @see setRefName()
  */
-PluginSpec::PluginSpec (std::string const & pluginName, size_t refNumber, KeySet pluginConfig)
+PluginSpec::PluginSpec (std::string pluginName, size_t refNumber, KeySet pluginConfig)
 : name (pluginName), refname (), config (pluginConfig)
 {
 	validate (pluginName);

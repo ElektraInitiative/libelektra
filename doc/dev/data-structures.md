@@ -358,7 +358,7 @@ The resolver writes the file name into the value of the `parentKey`.
 
 - **syncbits**: are some bits that can be set for every backend.
 The algorithm uses the `syncbits` to decide if the key set needs to be
-synchronised.
+synchronized.
 
 Continue reading [with the error handling](error-handling.md).
 
@@ -395,7 +395,7 @@ such a acyclic r-partite hypergraph is 0.
 ### Assignment
 
 The `opmphmAssignment ()` function assigns either your order (set at `OpmphmGraph->edges[i].order`) or a default order.
-The default order is the order of `OpmphmInit->data`. The `defaultOrder` parameter indicates the behaviour.
+The default order is the order of `OpmphmInit->data`. The `defaultOrder` parameter indicates the behavior.
 When the OPMPHM is build with the default order, `OpmphmGraph->edges[i].order` must not be set.
 
 After the build the OpmphmInit and OpmphmGraph should be freed.

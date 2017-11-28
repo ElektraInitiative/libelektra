@@ -10,16 +10,16 @@
 
 ## Introduction
 
-This is a plugin reading and writing json files
+This is a plugin reading and writing JSON files
 using the library [yail](http://lloyd.github.com/yajl/)
 
 The plugin was tested with yajl version 1.0.8-1 from Debian 6
 and yajl version 2.0.4-2 from Debian 7.
 
 Examples of files which are used for testing can be found
-below the folder in "src/plugins/yajl/examples".
+below the folder in "src/plugins/yajl/yajl".
 
-The json grammar can be found [here](http://www.ietf.org/rfc/rfc4627.txt).
+The JSON grammar can be found [here](http://www.ietf.org/rfc/rfc4627.txt).
 
 A validator can be found [here](http://jsonlint.com/).
 
@@ -32,7 +32,7 @@ Has only limited support for metadata.
 
 ## Types
 
-My metadata `type` the used types can be chosen:
+The type of the data is available via the metadata `type`:
 
 - `string`:
   The JSON string type.
@@ -52,7 +52,7 @@ data loss.
 
 ## Special values
 
-In json it is possible to have empty arrays and objects.
+In JSON it is possible to have empty arrays and objects.
 In Elektra this is mapped using the special names
 
     ###empty_array
@@ -70,14 +70,54 @@ Arrays are mapped to Elektra’s array convention #0, #1,..
   the file, but cannot parse it back again. You will error #77,
   invalid bytes in UTF8 string.
 - Everything is string if not tagged by metakey "type"
-  Only valid json types can be used in type, otherwise there are some
+  Only valid JSON types can be used in type, otherwise there are some
   fall backs to string but warnings are produced.
 - Values in non-leaves are discarded.
 - Arrays will be normalized (to #0, #1, ..)
-- Comments of various json-dialects are discarded.
+- Comments of various JSON-dialects are discarded.
 
 Because of these potential problems a type checker,
 comments filter and directory value filter are highly recommended.
+
+## Usage
+
+The following example shows you how you can read and write data using this plugin.
+
+```sh
+# Mount the plugin to the cascading namespace `/examples/yajl`
+sudo kdb mount config.json /examples/yajl yajl
+
+# Manually add a key-value pair to the database
+printf '{ "number": 1337 }' > `kdb file /examples/yajl`
+
+# Retrieve the new value
+kdb get /examples/yajl/number
+#> 1337
+
+# Determine the data type of the value
+kdb getmeta /examples/yajl/number type
+#> double
+
+# Add another key-value pair
+kdb set /examples/yajl/key value
+#> Using name user/examples/yajl/key
+#> Create a new key user/examples/yajl/key with string "value"
+
+# Retrieve the new value
+kdb get /examples/yajl/key
+#> value
+
+# Check the format of the configuration file
+kdb file user/examples/yajl/ | xargs cat
+#> {
+#>     "key": "value",
+#>     "number": 1337
+#> }
+
+# Undo modifications to the database
+kdb rm -r /examples/yajl
+sudo kdb umount /examples/yajl
+```
 
 ## OpenICC Device Config
 

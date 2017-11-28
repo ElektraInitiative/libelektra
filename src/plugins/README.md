@@ -112,7 +112,10 @@ productive use:
 - [mozprefs](mozprefs/) for Mozilla preference files
 - [c](c/) writes Elektra C-structures (`ksNew(.. keyNew(...`)
 - [file](file/) reads and writes a file from/to a single key
-- [camel](camel/) reads and writes a very limited subset of [YAML](http://www.yaml.org)
+- [camel](camel/) reads and writes a very limited subset of [YAML][]
+- [yamlcpp](yamlcpp/) reads and writes data in the [YAML][] format using [yaml-cpp](https://github.com/jbeder/yaml-cpp)
+
+[YAML]: http://www.yaml.org
 
 ### System Information
 
@@ -200,10 +203,11 @@ copied by the `spec` plugin just before):
 
 - [validation](validation/) by using regex
 - [network](network/) by using network APIs
+- [ipaddr](ipaddr/) checks IP addresses using regular expressions
 - [path](path/) by checking files on file system
 - [type](type/) using run-time type checking (CORBA types/)
 - [enum](enum/) compares the keyvalue against a list of valid values
-- [mathcheck](mathcheck/) by mathematical expressions using keysvalues as operands
+- [mathcheck](mathcheck/) by mathematical expressions using key values as operands
 - [conditionals](conditionals/) by using if-then-else like statements
 - [required](required/) rejects non-required keys
 - [date](date/) validates date and time data
@@ -224,8 +228,10 @@ binding during run-time.
 - [jni](jni/) java plugins started by jni, works with jna plugins
 - [python](python/) Python 3 plugins
 - [python2](python2/) Python 2 plugins (deprecated)
+- [ruby](ruby/) Ruby plugins
 - [lua](lua/) Lua plugins
 - [shell](shell/) executes shell commandos
+- [haskell](haskell/) used for linking haskell plugins and is a small example for such plugins itself
 
 ### Others
 

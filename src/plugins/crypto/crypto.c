@@ -482,7 +482,7 @@ int CRYPTO_PLUGIN_FUNCTION (set) (Plugin * handle, KeySet * ks, Key * parentKey)
 }
 
 /**
- * @brief Checks for the existense of the master password, that is used for encryption and decryption.
+ * @brief Checks for the existence of the master password, that is used for encryption and decryption.
  *
  * If the master password can not be found it will be generated randomly.
  * Then it will be encrypted and stored in conf.

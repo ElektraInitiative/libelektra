@@ -227,9 +227,11 @@ ApplicationWindow {
 			}
 
 			close()
+                        appearanceSettingsWindow.raise()
 		}
 		onRejected: {
 			close()
+                        appearanceSettingsWindow.raise()
 		}
 	}
 

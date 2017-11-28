@@ -135,7 +135,7 @@ int main (int argc, char ** argv)
 	test_formatNotAccepted ("%% %%");
 
 
-	printf ("\ntestmod_simpleini RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("testmod_simpleini");
 
 	return nbError;
 }

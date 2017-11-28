@@ -3,7 +3,7 @@
  *
  * @brief Tests for mini plugin
  *
- * @copyright BSD License (see LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -131,7 +131,7 @@ int main (int argc, char ** argv)
 	test_get ();
 	test_set ();
 
-	printf ("\nResults: %d Test%s done — %d error%s.\n", nbTest, nbTest != 1 ? "s" : "", nbError, nbError != 1 ? "s" : "");
+	print_result ("testmod_mini");
 
 	return nbError;
 }

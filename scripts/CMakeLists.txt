@@ -141,3 +141,10 @@ ADD_CUSTOM_TARGET(source-package
 		WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
 		)
 
+configure_file(
+	"${CMAKE_CURRENT_SOURCE_DIR}/randoop/randoop.in"
+	"${CMAKE_CURRENT_BINARY_DIR}/randoop/randoop" @ONLY)
+file(COPY
+	"${CMAKE_CURRENT_SOURCE_DIR}/randoop/randoopClasses.txt"
+    DESTINATION
+    "${CMAKE_CURRENT_BINARY_DIR}/randoop/")

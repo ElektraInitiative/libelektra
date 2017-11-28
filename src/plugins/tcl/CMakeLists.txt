@@ -1,7 +1,7 @@
 if (DEPENDENCY_PHASE)
-	find_package (Boost)
+	find_package (Boost QUIET)
 	if (NOT Boost_FOUND)
-		remove_plugin (tcl "boost not found, but needed for tcl plugin")
+		remove_plugin (tcl "boost not found (please install libboost-dev)")
 	endif ()
 endif ()
 

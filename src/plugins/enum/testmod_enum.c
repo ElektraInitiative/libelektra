@@ -156,7 +156,7 @@ int main (int argc, char ** argv)
 	testArray ();
 	testMultiList ();
 
-	printf ("\ntestmod_enum RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("testmod_enum");
 
 	return nbError;
 }

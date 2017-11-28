@@ -10,7 +10,7 @@ SCRIPTS_DIR=$(dirname "$0")
 
 cd "$SOURCE"
 
-sed --version >& /dev/null
+sed --version &> /dev/null
 if [ $? -eq 0 ]; then
 	# GNU sed
 	script="scripts/sed"
@@ -23,3 +23,4 @@ else
 fi
 
 $(sed "${inplace[@]}" -E -f "$script" `find . -type f -name '*.md' | egrep -v "^./(.git|tests/gtest-1.7.0|scripts/sed|scripts/fix-spelling|doc/images|doc/AUTHORS.md|doc/news)"`)
+$(sed "${inplace[@]}" -E -f "$script" doc/*.ini)

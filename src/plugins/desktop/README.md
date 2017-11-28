@@ -1,5 +1,5 @@
 - infos = Information about the desktop plugin is in keys below
-- infos/author = Name <elektra@libelektra.org>
+- infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
 - infos/needs =
 - infos/provides = storage/info
@@ -31,7 +31,7 @@ Then you can get desktop information via:
 You either get a *lower-case* string (supported desktops see below)
 or no key if no desktop was detected.
 
-## Supported Desktop
+## Supported Desktops
 
 Currently supported desktops are:
 

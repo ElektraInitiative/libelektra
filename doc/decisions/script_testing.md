@@ -2,7 +2,7 @@
 
 ## Issue
 
-Writing portable shell code for testing commandline tools is difficult.
+Writing portable shell code for testing command-line tools is difficult.
 
 ## Constraints
 
@@ -15,7 +15,7 @@ None.
 
 ## Considered Alternatives
 
-* http://pythonpaste.org/scripttest/
+* pythonpaste
  + easy to work with
  - can only trace a single directory (would not work with /etc + ~)
  - extra dependency not in any distro
@@ -43,3 +43,5 @@ Develop shell recorder and tutorial wrapper.
 ## Related decisions
 
 ## Notes
+
+- 12.11.2017: pythonpaste not maintained anymore, site is offline

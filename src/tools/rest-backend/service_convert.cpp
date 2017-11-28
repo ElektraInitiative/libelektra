@@ -398,7 +398,7 @@ std::string ConvertEngine::extractFormatFromProviderList (const std::string & pr
 	{
 		if (boost::starts_with (provider, m_pluginProviderStorage + m_pluginProviderDelim))
 		{
-			format = provider.substr (sizeof (m_pluginProviderStorage));
+			format = provider.substr (m_pluginProviderStorage.length () + 1); // + delimiter length
 			break;
 		}
 	}

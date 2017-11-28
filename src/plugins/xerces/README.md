@@ -4,7 +4,7 @@
 - infos/provides = storage/xml
 - infos/needs =
 - infos/placements = getstorage setstorage
-- infos/status = recommended experimental unittest
+- infos/status = recommended unittest experimental
 - infos/metadata = xerces/rootname
 - infos/description = Storage in the XML format.
 
@@ -71,7 +71,7 @@ The main rules of an XML element name are:
 
 The root key is not allowed to be an array, as this would correspond to multiple
 root elements in XML (see the
-[github issue](https://github.com/ElektraInitiative/libelektra/issues/1451)).
+[GitHub issue](https://github.com/ElektraInitiative/libelektra/issues/1451)).
 
 XSD transformations, schemas or DTDs are not supported yet.
 
@@ -80,29 +80,24 @@ XSD transformations, schemas or DTDs are not supported yet.
 ### Mounting, setting a key and exporting
 
 ```sh
-# Backup-and-Restore:/examples/xercesfile
+# Backup-and-Restore:user/examples/xercesfile
 
-sudo kdb mount xerces.xml /examples/xercesfile xerces
+sudo kdb mount xerces.xml user/examples/xercesfile xerces
 
-kdb set /examples/xercesfile foo
-kdb setmeta /examples/xercesfile xerces/rootname xerces
-kdb set /examples/xercesfile/bar bar
-kdb setmeta /examples/xercesfile/bar meta "da_ta"
+kdb set user/examples/xercesfile foo
+kdb setmeta user/examples/xercesfile xerces/rootname xerces
+kdb set user/examples/xercesfile/bar bar
+kdb setmeta user/examples/xercesfile/bar meta "da_ta"
 
-kdb getmeta /examples/xercesfile xerces/rootname
+kdb getmeta user/examples/xercesfile xerces/rootname
 #> xerces
 
-kdb get /examples/xercesfile/bar
+kdb get user/examples/xercesfile/bar
 #> bar
 
-kdb export /examples/xercesfile xerces
-#> <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
-#> <xerces>
-#>
-#>   <bar meta="da_ta">bar</bar>foo
-#>
-#> </xerces>
+kdb export user/examples/xercesfile xerces
+# STDOUT-REGEX: <bar meta="da_ta">bar</bar>
 
-sudo kdb rm -r /examples/xercesfile
-sudo kdb umount /examples/xercesfile
+sudo kdb rm -r user/examples/xercesfile
+sudo kdb umount user/examples/xercesfile
 ```

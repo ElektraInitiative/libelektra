@@ -325,6 +325,7 @@ static int mapFilesForNamespaces (resolverHandles * p, Key * errorKey)
 				ELEKTRA_PLUGIN_FUNCTION (resolver, freeHandle) (resolved);
 			}
 		}
+	// FALLTHROUGH
 
 	case KEY_NS_DIR:
 		keySetName (testKey, "dir");
@@ -346,6 +347,7 @@ static int mapFilesForNamespaces (resolverHandles * p, Key * errorKey)
 				ELEKTRA_PLUGIN_FUNCTION (resolver, freeHandle) (resolved);
 			}
 		}
+	// FALLTHROUGH
 	case KEY_NS_USER:
 		keySetName (testKey, "user");
 		if (needsMapping (testKey, errorKey))
@@ -366,6 +368,7 @@ static int mapFilesForNamespaces (resolverHandles * p, Key * errorKey)
 				ELEKTRA_PLUGIN_FUNCTION (resolver, freeHandle) (resolved);
 			}
 		}
+	// FALLTHROUGH
 	case KEY_NS_SYSTEM:
 		keySetName (testKey, "system");
 		if (needsMapping (testKey, errorKey))
@@ -386,6 +389,7 @@ static int mapFilesForNamespaces (resolverHandles * p, Key * errorKey)
 				ELEKTRA_PLUGIN_FUNCTION (resolver, freeHandle) (resolved);
 			}
 		}
+	// FALLTHROUGH
 	case KEY_NS_PROC:
 	case KEY_NS_EMPTY:
 	case KEY_NS_NONE:
@@ -506,9 +510,11 @@ int ELEKTRA_PLUGIN_FUNCTION (resolver, get) (Plugin * handle, KeySet * returned,
 	{
 		// no file, so storage has no job
 		errno = errnoSave;
-		pk->mtime.tv_sec = 0;  // no file, so no time
-		pk->mtime.tv_nsec = 0; // no file, so no time
 		pk->isMissing = 1;
+
+		// no file, so no metadata:
+		pk->mtime.tv_sec = 0;
+		pk->mtime.tv_nsec = 0;
 		return 0;
 	}
 	else
@@ -883,23 +889,25 @@ static void elektraModifyFileTime (resolverHandle * pk)
 /* Update timestamp of old file to provoke conflicts in
  * stalling processes that might still wait with the old
  * filedescriptor */
-static void elektraUpdateFileTime (resolverHandle * pk, Key * parentKey)
+static void elektraUpdateFileTime (resolverHandle * pk, int fd, Key * parentKey)
 {
 #ifdef HAVE_FUTIMENS
 	const struct timespec times[2] = { pk->mtime,   // atime
 					   pk->mtime }; // mtime
 
-	if (futimens (pk->fd, times) == -1)
+	if (futimens (fd, times) == -1)
 	{
-		ELEKTRA_ADD_WARNINGF (99, parentKey, "Could not update time stamp of \"%s\", because %s", pk->filename, strerror (errno));
+		ELEKTRA_ADD_WARNINGF (99, parentKey, "Could not update time stamp of \"%s\", because %s",
+				      fd == pk->fd ? pk->filename : pk->tempfile, strerror (errno));
 	}
 #elif defined(HAVE_FUTIMES)
 	const struct timeval times[2] = { { pk->mtime.tv_sec, pk->mtime.tv_nsec / 1000 },   // atime
 					  { pk->mtime.tv_sec, pk->mtime.tv_nsec / 1000 } }; // mtime
 
-	if (futimes (pk->fd, times) == -1)
+	if (futimes (fd, times) == -1)
 	{
-		ELEKTRA_ADD_WARNINGF (99, parentKey, "Could not update time stamp of \"%s\", because %s", pk->filename, strerror (errno));
+		ELEKTRA_ADD_WARNINGF (99, parentKey, "Could not update time stamp of \"%s\", because %s",
+				      fd == pk->fd ? pk->filename : pk->tempfile, strerror (errno));
 	}
 #else
 #warning futimens/futimes not defined
@@ -925,7 +933,8 @@ static int elektraSetCommit (resolverHandle * pk, Key * parentKey)
 	if (fd == -1)
 	{
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_COULD_NOT_OPEN, parentKey,
-				    "Could not open file again for changing properties of file because %s", strerror (errno));
+				    "Could not open file again for changing metadata of file \"%s\", because %s", pk->tempfile,
+				    strerror (errno));
 		ret = -1;
 	}
 
@@ -954,10 +963,7 @@ static int elektraSetCommit (resolverHandle * pk, Key * parentKey)
 		{
 			elektraModifyFileTime (pk);
 			// update file visible in filesystem:
-			int pfd = pk->fd;
-			pk->fd = fd;
-			elektraUpdateFileTime (pk, parentKey);
-			pk->fd = pfd;
+			elektraUpdateFileTime (pk, fd, parentKey);
 
 			/* @post
 			   For timejump backwards or time not changed,
@@ -969,20 +975,29 @@ static int elektraSetCommit (resolverHandle * pk, Key * parentKey)
 		}
 	}
 
-	elektraUpdateFileTime (pk, parentKey);
-
-	// file is present now!
-	pk->isMissing = 0;
+	elektraUpdateFileTime (pk, pk->fd, parentKey);
 
 	if (buf.st_mode != pk->filemode)
 	{
 		// change mode to what it was before
-		fchmod (fd, pk->filemode);
+		if (fchmod (fd, pk->filemode) == -1)
+		{
+			ELEKTRA_ADD_WARNINGF (99, parentKey, "Could not fchmod temporary file \"%s\" from %o to %o, because %s",
+					      pk->tempfile, buf.st_mode, pk->filemode, strerror (errno));
+		}
 	}
-	if (buf.st_uid != pk->uid || buf.st_gid != pk->gid)
+
+	if (!pk->isMissing && (buf.st_uid != pk->uid || buf.st_gid != pk->gid))
 	{
-		fchown (fd, pk->uid, pk->gid);
+		if (fchown (fd, pk->uid, pk->gid) == -1)
+		{
+			ELEKTRA_ADD_WARNINGF (99, parentKey, "Could not fchown temporary file \"%s\" from %d.%d to %d.%d, because %s",
+					      pk->tempfile, buf.st_uid, buf.st_gid, pk->uid, pk->gid, strerror (errno));
+		}
 	}
+
+	// file is present now!
+	pk->isMissing = 0;
 
 	DIR * dirp = opendir (pk->dirname);
 	// checking dirp not needed, fsync will have EBADF

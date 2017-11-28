@@ -66,7 +66,7 @@ public:
 
 	/** Add needed, provided and recommend information */
 	void addInfo (Plugin & plugin);
-	void addPlugin (Plugin & plugin, std::string const & which);
+	void addPlugin (Plugin & plugin, std::string which);
 
 	/** Validate needed, and provided information.
 	 * (Recommended ignored, @see getRecommendedMissing(),
@@ -75,7 +75,7 @@ public:
 	std::vector<std::string> getNeededMissing () const;
 	std::vector<std::string> getRecommendedMissing () const;
 
-	bool checkPlacement (Plugin & plugin, std::string const & which);
+	bool checkPlacement (Plugin & plugin, std::string which);
 	void checkStorage (Plugin & plugin);
 	void checkResolver (Plugin & plugin);
 	void checkOrdering (Plugin & plugin);

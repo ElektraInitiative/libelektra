@@ -249,11 +249,9 @@ static void test_simpletrie (void)
 	succeed_if (plugin->kdbGet != 0, "no get pointer");
 	succeed_if (plugin->kdbSet != 0, "no set pointer");
 
-
 	keyDel (key);
-	elektraModulesClose (modules, 0);
-	ksDel (modules);
 	kdb_del (kdb);
+	ksDel (modules);
 }
 
 

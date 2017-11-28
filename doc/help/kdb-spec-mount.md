@@ -6,7 +6,7 @@ kdb-spec-mount(1) - Mount a spec file to the key database
 `kdb spec-mount [/<mountpoint>] [<plugin> [<config>] [..]]`
 
 - `mountpoint` is where in the key database the new backend should be mounted to.
-  It must be a cascading mount pount, i.e., `mountpoint` must start with `/`.
+  It must be a cascading mountpoint, i.e., `mountpoint` must start with `/`.
 - `plugin` are extra Elektra plugins to be used (next to the one specified in `spec/`).
 - Plugins may be followed by a `,` separated list of `keys=values` pairs which will be used as plugin configuration.
 
@@ -53,20 +53,20 @@ the `spec` plugin is present:
   Show the man page.
 - `-V`, `--version`:
   Print version info.
+- `-p`, `--profile <profile>`:
+  Use a different kdb profile.
+- `-C`, `--color <when>`:
+  Print never/auto(default)/always colored output.
 - `-v`, `--verbose`:
   Explain what is happening.
 - `-q`, `--quiet`:
   Suppress non-error messages.
-- `-p`, `--profile`=<profile>:
-  Use a different kdb profile.
-- `-R`, `--resolver`=<name>:
+- `-R`, `--resolver <resolver>`:
   Specify the resolver plugin to use if no resolver is given, the default resolver is used.
   See also [below in KDB](#KDB).
   Note that the resolver will only added as dependency, but not directly added.
-- `-c`, `--plugins-config`=<config>:
+- `-c`, `--plugins-config <plugins-config>`:
   Add a plugin configuration for all plugins.
-- `-C`, `--color`=[when]:
-  Print never/auto(default)/always colored output.
 - `-W`, `--with-recommends`:
   Also add recommended plugins and warn if they are not available.
 

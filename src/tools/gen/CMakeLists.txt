@@ -26,6 +26,10 @@ if (PYTHON2INTERP_FOUND)
 			\"${CMAKE_CURRENT_SOURCE_DIR}/util/util.cpp\"
 			-o \"${CMAKE_CURRENT_BINARY_DIR}/cpp_util.py\")")
 
+	if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+		set (INSTALL_OPTIONS "--install-layout=deb")
+	endif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+
 	install(CODE "execute_process(COMMAND
 			${PYTHON2_EXECUTABLE} \"${SETUP_PY}\"
 			--no-user-cfg
@@ -34,7 +38,7 @@ if (PYTHON2INTERP_FOUND)
 			--prefix=${CMAKE_INSTALL_PREFIX}
 			--root=\$ENV{DESTDIR}
 			--install-scripts=${CMAKE_INSTALL_PREFIX}/${TARGET_TOOL_EXEC_FOLDER}
-			--install-layout=deb
+			${INSTALL_OPTIONS}
 			)"
 		)
 

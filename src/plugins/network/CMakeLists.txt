@@ -6,4 +6,4 @@ add_plugin (network
 		network.c
 	)
 
-add_plugintest (network)
+add_plugintest (network ../ipaddr/test_ipaddr.h)

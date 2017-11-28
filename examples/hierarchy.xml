@@ -18,9 +18,9 @@
  -->
 
 
-<keyset xmlns="http://elektra.sourceforge.net"
+<keyset xmlns="http://www.libelektra.org"
 		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:schemaLocation="http://elektra.sourceforge.net elektra.xsd"
+		xsi:schemaLocation="http://www.libelektra.org elektra.xsd"
 
 		parent="user/tmp">
 

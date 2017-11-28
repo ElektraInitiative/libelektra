@@ -80,8 +80,8 @@ Now we can also install LibJWT:
 
 - Download the (latest) source from [GitHub](https://github.com/benmcollins/libjwt/releases)
 - Extract the archive: `tar -xjf v1.x.x && cd libjwt-1.x.x` (replace 1.x.x with your version)
-- Configure the build: `mkdir build && cd build && cmake ..`
-- Execute the build and run tests: `make jwt && make jwt_static && make check`
+- Configure the build: `autoreconf -i && ./configure`
+- Execute the build and run tests: `make all && make check`
 
 If you are using Ubuntu, LibJWT can also be installed through a pre-built APT package:
 
@@ -183,7 +183,7 @@ Note that the frontend is not elektrified, only changes within
 The parameters that need to be changed in order for the frontend to work correctly, are:
 
 - `system/sw/elektra/restfrontend/#0/current/backend/root`: set it to the URL where the backend will be reachable, e.g. `http://restapi.libelektra.org/` (with trailing slash!)
-- `system/sw/elektra/restfrontend/#0/current/website/url`: set it to the URL where the frontend will be reachable, e.g. `http://libelektra.org/` (with trailing slash!)
+- `system/sw/elektra/restfrontend/#0/current/website/url`: set it to the URL where the frontend will be reachable, e.g. `https://libelektra.org/` (with trailing slash!)
 
 ## Running the Applications
 

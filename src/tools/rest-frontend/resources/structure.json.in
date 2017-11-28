@@ -90,7 +90,7 @@
                         "start_regex": "## Plugins",
                         "stop_regex": "####### UNUSED",
                         "section_regex": "### ([^#]+)",
-                        "entry_regex": "^\\- \\[(.+)\\]\\(([^\\)]+)\\)(.*)"
+                        "entry_regex": "^- \\[([^\\]]+)\\]\\(([^)]+)\\)(.*)"
                     },
                     "name": {
                         "make_pretty": false

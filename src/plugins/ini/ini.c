@@ -472,7 +472,7 @@ static int iniCommentToMeta (void * vhandle, const char * comment)
 		elektraMetaArrayAdd (handle->collectedComment, "comments", comment);
 	else
 	{
-		// comment is an Electra metakey
+		// comment is an Elektra metakey
 
 		// strip "#@META " from comment
 		char * localCopy = elektraStrDup (comment + 7);

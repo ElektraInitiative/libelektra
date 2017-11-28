@@ -280,6 +280,10 @@ the report is enriched with further information.
 usually used by installing the corresponding plugin for the used IDE, then there is no further
 configuration required.
 
+### Randoop
+
+For using the unit test generator randoop with the jna bindings, see `scripts/randoop/randoop`.
+
 ### Code Coverage
 
 Run:

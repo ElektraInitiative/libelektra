@@ -27,7 +27,7 @@
 #include <string.h>
 #undef NDEBUG
 #include <assert.h>
-
+#include <tests_plugin.h>
 
 #define BEGIN_TEST(x)                                                                                                                      \
 	void x (void)                                                                                                                      \
@@ -456,6 +456,6 @@ int main (int argc, char ** argv)
 	TEST (output_modified);
 	TEST (parse_output);
 
-	printf ("%s: %s\n", argv0, (any_fail ? "ONE OR MORE TESTS FAILED" : "all tests passed"));
+	print_result ("testmod_ni");
 	return any_fail;
 }

@@ -5,7 +5,7 @@ those which are necessary to fulfil the initial tasks).
 A complete list of ideas what could be done can be found in the
 [todo folder](.).
 
-Also see [githubs issues](http://git.libelektra.org/issues)
+Also see [GitHubs issues](https://git.libelektra.org/issues)
 for other activities of the current release.
 
 
@@ -58,7 +58,7 @@ compiler warnings:
 
 consistent type vs. check/type
 different type systems?
-let json use same types (double, boolean, nothing for string)
+let JSON use same types (double, boolean, nothing for string)
 
 type checker plugin redesign: take care of simplicity + working together with others
 	set of types (min, max as 1-20, enums as user-defined types,...), space separated as now

@@ -26,7 +26,7 @@ namespace helper
 class InvalidRebaseException : public ToolException
 {
 public:
-	explicit InvalidRebaseException (std::string const & message) : ToolException (message){};
+	explicit InvalidRebaseException (std::string message) : ToolException (message){};
 };
 
 /**

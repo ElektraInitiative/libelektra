@@ -1,12 +1,6 @@
-#ifndef HAVE_KDBCONFIG
-#include "kdbconfig.h"
-#endif
 #include "base64_functions.h"
-#include <kdb.h>
 #include <kdbassert.h>
 #include <kdberrors.h>
-#include <stdlib.h>
-#include <string.h>
 
 static const char alphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 #define ALPHABET_LENGTH (sizeof (alphabet) - 1)
@@ -19,7 +13,10 @@ static const char padding = '=';
  * @returns an allocated string holding the Base64 encoded input data or NULL if the string can not be allocated. Must be freed by the
  * caller.
  */
-char * ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, base64Encode) (const kdb_octet_t * input, const size_t inputLength)
+char * PLUGIN_FUNCTION (base64Encode) (const kdb_octet_t * input, const size_t inputLength)
+#ifdef __llvm__
+	__attribute__ ((annotate ("oclint:suppress[long method]")))
+#endif
 {
 	size_t encodedLength = 0;
 	if (inputLength % 3 == 0)
@@ -75,17 +72,17 @@ char * ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, base64Encode) (const kdb_
 
 /**
  * @brief lookup Base64 character in the alphabet and return the index.
- * @param c the character to look up
+ * @param character the character to look up
  * @param errorFlag set to 1 in case of error
  * @returns the index in the Base64 alphabet or 0 if the padding character was detected.
  */
-static kdb_octet_t getBase64Index (const char c, int * errorFlag)
+static kdb_octet_t getBase64Index (const char character, int * errorFlag)
 {
-	if (c == padding) return 0;
+	if (character == padding) return 0;
 
 	for (kdb_octet_t i = 0; i < ALPHABET_LENGTH; i++)
 	{
-		if (alphabet[i] == c) return i;
+		if (alphabet[i] == character) return i;
 	}
 	*errorFlag = 1;
 	return 0;
@@ -101,7 +98,11 @@ static kdb_octet_t getBase64Index (const char c, int * errorFlag)
  * @retval -1 if the provided string has not been encoded with Base64
  * @retval -2 if the output buffer allocation failed
  */
-int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, base64Decode) (const char * input, kdb_octet_t ** output, size_t * outputLength)
+int PLUGIN_FUNCTION (base64Decode) (const char * input, kdb_octet_t ** output, size_t * outputLength)
+#ifdef __llvm__
+	__attribute__ ((annotate ("oclint:suppress[high ncss method]"), annotate ("oclint:suppress[high npath complexity]"),
+			annotate ("oclint:suppress[long method]"), annotate ("oclint:suppress[high cyclomatic complexity]")))
+#endif
 {
 	const size_t inputLen = strlen (input);
 	if (inputLen == 0 || (inputLen == 1 && input[0] == '\0'))
@@ -124,16 +125,16 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, base64Decode) (const char * 
 	*output = elektraMalloc (*outputLength);
 	if (!(*output)) return -2;
 
-	size_t i = 0;
+	size_t position = 0;
 	size_t outputIndex = 0;
 
-	for (i = 0; i < inputLen; i += 4)
+	for (position = 0; position < inputLen; position += 4)
 	{
 		int errorFlag = 0;
-		const kdb_octet_t b0 = getBase64Index (input[i], &errorFlag);
-		const kdb_octet_t b1 = getBase64Index (input[i + 1], &errorFlag);
-		const kdb_octet_t b2 = getBase64Index (input[i + 2], &errorFlag);
-		const kdb_octet_t b3 = getBase64Index (input[i + 3], &errorFlag);
+		const kdb_octet_t byte0 = getBase64Index (input[position], &errorFlag);
+		const kdb_octet_t byte1 = getBase64Index (input[position + 1], &errorFlag);
+		const kdb_octet_t byte2 = getBase64Index (input[position + 2], &errorFlag);
+		const kdb_octet_t byte3 = getBase64Index (input[position + 3], &errorFlag);
 
 		if (errorFlag)
 		{
@@ -143,14 +144,14 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, base64Decode) (const char * 
 			return -1;
 		}
 
-		(*output)[outputIndex++] = (b0 << 2) + (b1 >> 4);
-		if (input[i + 2] != padding)
+		(*output)[outputIndex++] = (byte0 << 2) + (byte1 >> 4);
+		if (input[position + 2] != padding)
 		{
-			(*output)[outputIndex++] = (b1 << 4) + (b2 >> 2);
+			(*output)[outputIndex++] = (byte1 << 4) + (byte2 >> 2);
 		}
-		if (input[i + 3] != padding)
+		if (input[position + 3] != padding)
 		{
-			(*output)[outputIndex++] = (b2 << 6) + b3;
+			(*output)[outputIndex++] = (byte2 << 6) + byte3;
 		}
 	}
 	return 1;

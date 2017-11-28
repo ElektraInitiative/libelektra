@@ -9,6 +9,17 @@ kdb-global-umount(1) - Unmount a global plugin from the key database
 
 Unmount a global plugin from the key database.
 
+## OPTIONS
+
+- `-H`, `--help`:
+  Show the man page.
+- `-V`, `--version`:
+  Print version info.
+- `-p`, `--profile <profile>`:
+  Use a different kdb profile.
+- `-C`, `--color <when>`:
+  Print never/auto(default)/always colored output.
+
 ## EXAMPLES
 
 ```sh
@@ -16,7 +27,7 @@ Unmount a global plugin from the key database.
 sudo kdb global-mount tracer
 
 sudo kdb global-mount
-# STDOUT-REGEX: .*tracer\nspec.*
+# STDOUT-REGEX: .*spec⏎tracer.*
 
 sudo kdb global-umount tracer
 
@@ -29,17 +40,6 @@ sudo kdb global-umount spec
 sudo kdb global-mount
 #>
 ```
-
-## OPTIONS
-
-- `-H`, `--help`:
-  Show the man page.
-- `-V`, `--version`:
-  Print version info.
-- `-p`, `--profile`=<profile>:
-  Use a different kdb profile.
-- `-C`, `--color`=[when]:
-  Print never/auto(default)/always colored output.
 
 ## SEE ALSO
 

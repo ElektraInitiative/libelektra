@@ -74,7 +74,7 @@ int main (int argc, char ** argv)
 
 	doTest ();
 
-	printf ("\ntestmod_list RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("testmod_list");
 
 	return nbError;
 }

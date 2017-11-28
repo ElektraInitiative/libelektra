@@ -459,12 +459,12 @@ int opmphmIsEmpty (Opmphm * opmphm)
  * http://burtleburtle.net/bob/c/lookup3.c
  * Original name: hashlitte
  */
+#ifndef ELEKTRA_BIG_ENDIAN
+// little endian
 uint32_t opmphmHashfunction (const void * key, size_t length, uint32_t initval)
 {
 	uint32_t a, b, c;
 	a = b = c = 0xdeadbeef + ((uint32_t)length) + initval;
-#ifndef ELEKTRA_BIG_ENDIAN
-	// little endian
 	const uint32_t * k = (const uint32_t *)key;
 	while (length > 12)
 	{
@@ -528,8 +528,15 @@ uint32_t opmphmHashfunction (const void * key, size_t length, uint32_t initval)
 	case 0:
 		return c;
 	}
+	OPMPHM_HASHFUNCTION_FINAL (a, b, c);
+	return c;
+}
 #else
-	// big endian
+// big endian
+uint32_t opmphmHashfunction (const void * key, size_t length, uint32_t initval)
+{
+	uint32_t a, b, c;
+	a = b = c = 0xdeadbeef + ((uint32_t)length) + initval;
 	const uint8_t * k = (const uint8_t *)key;
 	while (length > 12)
 	{
@@ -590,7 +597,7 @@ uint32_t opmphmHashfunction (const void * key, size_t length, uint32_t initval)
 	case 0:
 		return c;
 	}
-#endif
 	OPMPHM_HASHFUNCTION_FINAL (a, b, c);
 	return c;
 }
+#endif

@@ -56,8 +56,7 @@ int main (int argc, char ** argv)
 
 	test_structure ();
 
-
-	printf ("\ntestmod_uname RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("testmod_uname");
 
 	return nbError;
 }

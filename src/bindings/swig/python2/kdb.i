@@ -7,6 +7,7 @@
  */
 
 %module kdb
+#pragma SWIG nowarn=317 // Disable warning: Specialization of non-template
 
 %include "../python/kdb.i"
 

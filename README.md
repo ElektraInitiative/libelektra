@@ -26,7 +26,7 @@ Elektra consists of three parts:
    hierarchical key database. The building blocks are:
    - language bindings (inclusive high-level interfaces)
    - GenElektra, the code generator for type-safe bindings
-   - plugins for configuration access behaviour and validation
+   - plugins for configuration access behavior and validation
 2. *SpecElektra* is a configuration specification language
    that is easy to use and self-contained in the same key database (i.e.
    written in any of the configuration file formats Elektra supports).
@@ -59,8 +59,7 @@ implemented in C, works cross-platform, and does not need any external dependenc
 ## Contact
 
 Do not hesitate to ask any question on
-[GitHub issue tracker](https://issues.libelektra.org/),
-[Mailing List](https://lists.sourceforge.net/lists/listinfo/registry-list)
+[GitHub issue tracker](https://issues.libelektra.org/)
 or directly to one of the [authors](doc/AUTHORS.md).
 
 
@@ -128,12 +127,12 @@ You can read the documentation for the kdb tool, either
    you can even roll your own plugins to provide exactly the same behavior
    as your application has now.)
 - Make configuration storage more safe: avoid that applications
-  receive wrong or unexpected values that could lead to undefined behaviour.
+  receive wrong or unexpected values that could lead to undefined behavior.
 
 And in terms of quality, we want:
 
 1. Simplicity (make configuration tasks, like access of configuration settings, simple),
-2. Robustness (no undefined behaviour of applications), and
+2. Robustness (no undefined behavior of applications), and
 3. Extensibility (gain control over configuration access)
 
 [Read more about the goals of Elektra](doc/GOALS.md)

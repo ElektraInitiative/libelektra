@@ -8,7 +8,7 @@
   - Syntax of the configuration file(s)
   - Side effects (e.g. logging, vcs commit, notifications)
   - Flexible adoption to specific needs
-  - Adoption of standards (xdg, xml, json)
+  - Adoption of standards (xdg, xml, JSON)
 - Reduce duplication of code (a single parser/generator used by
   everyone accessing a specific part of the configuration).
 
@@ -51,11 +51,11 @@ Special care for simplicity is taken for the users:
 
 Configuration systems today suffer badly from:
 
-- Different behaviour on different systems
+- Different behavior on different systems
 - Weak input validation
 - Faulty transformations from strings to other types
 - No error messages
-- Undefined behaviour
+- Undefined behavior
 - Migration from one version to another
 
 We want to tackle this problem by introducing an abstraction layer where

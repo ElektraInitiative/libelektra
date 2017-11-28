@@ -408,7 +408,7 @@ int main (int argc, char ** argv)
 	test_successfulGetGetGet ();
 	test_successfulSiblingGets ();
 
-	printf ("\ntestmod_cachefilter RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("testmod_cachefilter");
 
 	return nbError;
 }

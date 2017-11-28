@@ -74,7 +74,7 @@ function __fish_kdb__number_arguments_input_left -d 'Return the number of argume
 end
 
 function __fish_kdb_subcommand -d 'Check for and print the current kdb subcommand'
-    set -l input (commandline -op)
+    set -l input (commandline -opc)
 
     test (count $input) -le 1
     and return 1
@@ -164,7 +164,7 @@ end
 
 function __fish_kdb_subcommand_mount_needs_plugin -d 'Check if the subcommand mount needs a plugin completion'
     __fish_kdb_subcommand_includes mount
-    and test (__fish_kdb__number_arguments_input_left) -eq 4
+    and test (__fish_kdb__number_arguments_input_left) -ge 4
 end
 
 function __fish_kdb_subcommand_needs_storage_plugin -d 'Check if the current subcommand need a storage plugin completion'
@@ -215,7 +215,7 @@ end
 
 function __fish_kdb_print_namespaces -d 'Print a list of possible namespace completions'
     set -l namespace (commandline -ct)
-    kdb complete --max-depth=1 -- "$namespace" | string match -vr '(dir|proc|spec|user)$'
+    kdb complete --max-depth=1 -- "$namespace"
 end
 
 function __fish_kdb_print_plugins -d 'Print a list of available plugins'
@@ -477,7 +477,7 @@ __fish_kdb_add_option '__fish_kdb_subcommand_supports_option_verbose' 'verbose' 
 __fish_kdb_add_option "not __fish_kdb_subcommand; or __fish_kdb_subcommand_supports_common_options" 'version' 'V' 'Print version info'
 
 # --without-elektra -E
-__fish_kdb_add_option '__fish_kdb_subcommand_includes export' 'without-elektra' 'E' 'Omit the `/elektra` directory'
+__fish_kdb_add_option '__fish_kdb_subcommand_includes export import' 'without-elektra' 'E' 'Omit the `/elektra` directory'
 
 # --with-recommends -W
 set -l completion_function '__fish_kdb_subcommand_includes global-mount gmount mount smount spec-mount'

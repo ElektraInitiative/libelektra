@@ -4,7 +4,7 @@ elektra-mounting(7) -- mounting
 **Mounting** is the process of integrating a backend that reads and writes
 a specific configuration file into the global key database.
 Mounting allows you to use different configuration files but also
-allows you to change the behaviour of writing/reading keys
+allows you to change the behavior of writing/reading keys
 to/from the global key database. For example, you need to mount if you want to:
 
 - change the syntax of a configuration file,

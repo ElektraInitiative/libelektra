@@ -775,7 +775,7 @@ int main (int argc, char ** argv)
 	elektraModulesClose (modules, 0);
 	ksDel (modules);
 
-	printf ("\ntest_yajl RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("test_yajl");
 
 	return nbError;
 }

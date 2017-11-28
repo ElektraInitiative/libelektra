@@ -20,16 +20,16 @@ Special values are returned upon exit to represent the outcome of a check.
   Show the man page.
 - `-V`, `--version`:
   Print version info.
-- `-p`, `--profile`=<profile>:
+- `-p`, `--profile <profile>`:
   Use a different kdb profile.
+- `-C`, `--color <when>`:
+  Print never/auto(default)/always colored output.
 - `-f`, `--force`:
    The user can also use this tool to perform write tests. Please note that this can result in configuration files being changed!
 - `-v`, `--verbose`:
   Explain what is happening.
-- `-c`, `--plugins-config`=<pluginconfig>:
+- `-c`, `--plugins-config <plugins-config>`:
   Add a plugin configuration in addition to `/module`.
-- `-C`, `--color`=[when]:
-  Print never/auto(default)/always colored output.
 
 
 ## RETURN VALUES
@@ -87,7 +87,7 @@ Return values on plugin checking:
  * 3:
    Plugin has warnings.
 
-Please report any output caused by official plugins to [http://git.libelektra.org/issues](http://git.libelektra.org/issues).
+Please report any output caused by official plugins to [https://git.libelektra.org/issues](https://git.libelektra.org/issues).
 
 Since the error code is a return value, it is not automatically displayed to the shell.
 If the user wants to have the value printed, they must do so manually (by running a command such as `echo $?`).

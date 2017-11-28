@@ -286,7 +286,8 @@ static int runPlugins (KeySet * pluginKS, KeySet * modules, KeySet * plugins, Ke
 			ksDel (realPluginConfig);
 			if (!slave)
 			{
-				goto error;
+				ksDel (configOrig);
+				return -1;
 			}
 			Key * slaveKey = keyNew (name, KEY_BINARY, KEY_SIZE, sizeof (Plugin *), KEY_VALUE, &slave, KEY_END);
 			keySetName (slaveKey, "/");
@@ -295,43 +296,16 @@ static int runPlugins (KeySet * pluginKS, KeySet * modules, KeySet * plugins, Ke
 			keyDel (slaveKey);
 		}
 
-		if (op == GET)
+		if ((op == GET && slave->kdbGet && (slave->kdbGet (slave, returned, parentKey)) == -1) ||
+		    (op == SET && slave->kdbSet && (slave->kdbSet (slave, returned, parentKey)) == -1) ||
+		    (op == ERR && slave->kdbError && (slave->kdbError (slave, returned, parentKey)) == -1))
 		{
-			if (slave->kdbGet)
-			{
-				if ((slave->kdbGet (slave, returned, parentKey)) == -1)
-				{
-					goto error;
-				}
-			}
-		}
-		else if (op == SET)
-		{
-			if (slave->kdbSet)
-			{
-				if ((slave->kdbSet (slave, returned, parentKey)) == -1)
-				{
-					goto error;
-				}
-			}
-		}
-		else if (op == ERR)
-		{
-			if (slave->kdbError)
-			{
-				if ((slave->kdbError (slave, returned, parentKey)) == -1)
-				{
-					goto error;
-				}
-			}
+			ksDel (configOrig);
+			return -1;
 		}
 	}
 	ksDel (configOrig);
 	return 1;
-
-error:
-	ksDel (configOrig);
-	return -1;
 }
 
 int elektraListGet (Plugin * handle, KeySet * returned, Key * parentKey)

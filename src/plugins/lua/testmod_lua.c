@@ -134,7 +134,7 @@ int main (int argc, char ** argv)
 	test_fail ();
 	test_wrong ();
 
-	printf ("\ntest_lua RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("test_lua");
 
 	return nbError;
 }

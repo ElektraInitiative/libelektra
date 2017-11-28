@@ -25,16 +25,16 @@ After the getstorage plugin has read the backend file, the plugin decrypts the b
 
 There are two things to consider when using the `fcrypt` plugin:
 
-1. Decrypted data is visible on the filesystem for a short period of time.
+1. Decrypted data is visible on the file system for a short period of time.
 2. Decrypted data might end up on a hard disk or some other persistent storage.
 
-The plugin directs GPG to write its (decrypted) output to a temporary directoy.
+The plugin directs GPG to write its (decrypted) output to a temporary directory.
 From there on the data can be processed by other plugins.
 After the `get` phase is over, `fcrypt` overwrites the temporary file and unlinks it afterwards.
 However, if the application crashes during `get` the decrypted data may remain in the temporary directory.
 
 If the temporary directory is mounted on a hard disk, GPG writes the decrypted data on that disk.
-Thus we recommend to either mount `/tmp` to a RAM disk or specify another path as temporary direcotry within the plugin configuration
+Thus we recommend to either mount `/tmp` to a RAM disk or specify another path as temporary directory within the plugin configuration
 (see Configuration below).
 
 ## Known Issues
@@ -94,7 +94,7 @@ But you can still access `/t/a` with `kdb get`:
 
 	kdb get /t/a
 
-If you are looking for a more interactive example, have a look at the following ASCIIcast at: 
+If you are looking for a more interactive example, have a look at the following ASCIIcast at:
 
 [https://asciinema.org/a/136021](https://asciinema.org/a/136021)
 

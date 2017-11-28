@@ -65,7 +65,7 @@ addr = 192.168.1.125\
 Link encap = Ethernet\
 EOF
 
-kdb mount -R multifile -c storage="ini",pattern="*.ini",resolver="resolver" multitest user/multi
+sudo kdb mount -R multifile -c storage="ini",pattern="*.ini",resolver="resolver" multitest user/multi
 
 kdb ls user/multi
 #> user/multi/lan.ini/eth0
@@ -106,7 +106,7 @@ kdb rm -r user/multi/test.ini
 stat ~/.config/multifile/test.ini
 # RET:1
 
-kdb umount user/multi
+sudo kdb umount user/multi
 ```
 
 Recursive:
@@ -119,7 +119,7 @@ echo "a1key = a1val" > ~/.config/multitest/a/a1/a12/testa1.file
 echo "a2key = a2val" > ~/.config/multitest/a/a2/a22/testa2.file
 echo "b1key = b1val" > ~/.config/multitest/b/b1/testb1.file
 
-kdb mount -R multifile -c storage="ini",pattern="*.file",recursive=,resolver="resolver" multitest user/multi
+sudo kdb mount -R multifile -c storage="ini",pattern="*.file",recursive=,resolver="resolver" multitest user/multi
 
 kdb ls user/multi
 #> user/multi/a/a1/a12/testa1.file/a1key
@@ -128,7 +128,7 @@ kdb ls user/multi
 
 rm -rf ~/.config/multitest
 
-kdb umount user/multi
+sudo kdb umount user/multi
 ```
 
 ## Limitations

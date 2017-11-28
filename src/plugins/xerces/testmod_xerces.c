@@ -36,6 +36,8 @@ static void test_basics (void)
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 0, "call to kdbSet was not successful");
 	succeed_if (plugin->kdbGet (plugin, ks, invalidKey) == 0, "call to kdbSet was successful though the parentKey is invalid");
 
+	succeed_if (plugin->kdbClose (plugin, parentKey) == 1, "call to kdbClose was not successful");
+
 	keyDel (invalidKey);
 	keyDel (parentKey);
 	ksDel (ks);
@@ -165,7 +167,7 @@ static void test_simple_write (void)
 	printf ("test simple write\n");
 	fflush (stdout);
 
-	Key * parentKey = keyNew ("/sw/elektra/tests/xerces", KEY_VALUE, srcdir_file ("xerces/escaping-gen.xml"), KEY_END);
+	Key * parentKey = keyNew ("/sw/elektra/tests/xerces", KEY_VALUE, elektraFilename (), KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("xerces");
 
@@ -185,17 +187,18 @@ static void test_simple_write (void)
 
 	KeySet * ks = ksNew (5, root, keyNew ("/sw/elektra/tests/xerces/userKey", KEY_VALUE, "withValue", KEY_END), keyWithMeta,
 			     specialKeys, moreSpecialKeys, KS_END);
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) >= 1, "call to kdbSet was not successful");
+	succeed_if (output_error (parentKey), "error in kdbSet");
+	succeed_if (output_warnings (parentKey), "warnings in kdbSet");
 
-	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "call to kdbSet was not successful");
-
-	compare_files (srcdir_file ("xerces/escaping.xml"));
-	// Its also another good deserialization test
-	Key * resultParentKey = keyNew ("/sw/elektra/tests/xerces", KEY_VALUE, srcdir_file ("xerces/escaping.xml"), KEY_END);
+	succeed_if (compare_line_files (srcdir_file ("xerces/escaping.xml"), keyString (parentKey)), "files do not match as expected")
+		// Its also another good deserialization test
+		Key * resultParentKey = keyNew ("/sw/elektra/tests/xerces", KEY_VALUE, srcdir_file ("xerces/escaping.xml"), KEY_END);
 	KeySet * result = ksNew (2, KS_END);
 	succeed_if (plugin->kdbGet (plugin, result, resultParentKey) == 1, "call to kdbGet was not successful");
 	compare_keyset (ks, result);
 
-	elektraUnlink (srcdir_file ("xerces/escaping-gen.xml"));
+	elektraUnlink (keyString (parentKey));
 
 	keyDel (parentKey);
 	ksDel (ks);
@@ -220,10 +223,12 @@ static void test_maven_pom (void)
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "call to kdbGet was not successful");
 
 	// Its also another good deserialization test
-	Key * serializationParentKey = keyNew ("/sw/elektra/tests/xerces", KEY_VALUE, srcdir_file ("xerces/pom-gen.xml"), KEY_END);
-	succeed_if (plugin->kdbSet (plugin, ks, serializationParentKey) == 1, "call to kdbSet was not successful");
+	Key * serializationParentKey = keyNew ("/sw/elektra/tests/xerces", KEY_VALUE, elektraFilename (), KEY_END);
+	succeed_if (plugin->kdbSet (plugin, ks, serializationParentKey) >= 1, "call to kdbSet was not successful");
+	succeed_if (output_error (serializationParentKey), "error in kdbSet");
+	succeed_if (output_warnings (serializationParentKey), "warnings in kdbSet");
 
-	Key * resultParentKey = keyNew ("/sw/elektra/tests/xerces", KEY_VALUE, srcdir_file ("xerces/pom-gen.xml"), KEY_END);
+	Key * resultParentKey = keyNew ("/sw/elektra/tests/xerces", KEY_VALUE, keyString (serializationParentKey), KEY_END);
 	KeySet * result = ksNew (64, KS_END);
 	succeed_if (plugin->kdbGet (plugin, result, resultParentKey) == 1, "call to kdbGet was not successful");
 
@@ -231,7 +236,7 @@ static void test_maven_pom (void)
 
 	compare_keyset (ks, result); // Should be the same
 
-	elektraUnlink (srcdir_file ("xerces/pom-gen.xml"));
+	elektraUnlink (keyString (serializationParentKey));
 
 	keyDel (parentKey);
 	ksDel (ks);
@@ -257,10 +262,12 @@ static void test_jenkins_config (void)
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "call to kdbGet was not successful");
 
 	// Its also another good deserialization test
-	Key * serializationParentKey = keyNew ("/sw/elektra/tests/xerces", KEY_VALUE, srcdir_file ("xerces/jenkins-gen.xml"), KEY_END);
-	succeed_if (plugin->kdbSet (plugin, ks, serializationParentKey) == 1, "call to kdbSet was not successful");
+	Key * serializationParentKey = keyNew ("/sw/elektra/tests/xerces", KEY_VALUE, elektraFilename (), KEY_END);
+	succeed_if (plugin->kdbSet (plugin, ks, serializationParentKey) >= 1, "call to kdbSet was not successful");
+	succeed_if (output_error (serializationParentKey), "error in kdbSet");
+	succeed_if (output_warnings (serializationParentKey), "warnings in kdbSet");
 
-	Key * resultParentKey = keyNew ("/sw/elektra/tests/xerces", KEY_VALUE, srcdir_file ("xerces/jenkins-gen.xml"), KEY_END);
+	Key * resultParentKey = keyNew ("/sw/elektra/tests/xerces", KEY_VALUE, keyString (serializationParentKey), KEY_END);
 	KeySet * result = ksNew (64, KS_END);
 	succeed_if (plugin->kdbGet (plugin, result, resultParentKey) == 1, "call to kdbGet was not successful");
 
@@ -277,7 +284,7 @@ static void test_jenkins_config (void)
 
 	compare_keyset (ks, result); // Should be the same
 
-	elektraUnlink (srcdir_file ("xerces/jenkins-gen.xml"));
+	elektraUnlink (keyString (serializationParentKey));
 
 	keyDel (parentKey);
 	ksDel (ks);
@@ -303,7 +310,7 @@ int main (int argc, char ** argv)
 	test_maven_pom ();
 	test_jenkins_config ();
 
-	printf ("\ntestmod_xerces RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("testmod_xerces");
 
 	return nbError;
 }

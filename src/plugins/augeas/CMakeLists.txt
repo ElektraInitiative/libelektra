@@ -1,10 +1,11 @@
 if (DEPENDENCY_PHASE)
-	find_package (Augeas)
-	find_package (LibXml2)
+	find_package (Augeas QUIET)
+	find_package (LibXml2 QUIET)
 
 	set (LIBAUGEAS_COMPILE_DEFINITIONS LIBAUGEAS_PREFIX="${LIBAUGEAS_PREFIX}")
 
-	if (LIBAUGEAS_FOUND AND LIBXML2_FOUND)
+	if (LIBAUGEAS_FOUND)
+	if (LIBXML2_FOUND)
 		try_compile (HAS_LIBAUGEAS16
 			"${CMAKE_BINARY_DIR}"
 			"${PROJECT_SOURCE_DIR}/src/plugins/augeas/testaugeas.c"
@@ -16,9 +17,12 @@ if (DEPENDENCY_PHASE)
 		if (NOT HAS_LIBAUGEAS16)
 			remove_plugin (augeas "symbols aug_text_store and aug_text_retrieve not found. Make sure you have libaugeas 0.16 or higher. This library version is included in Augeas 1.0 or higher")
 		endif (NOT HAS_LIBAUGEAS16)
-	else (LIBAUGEAS_FOUND AND LIBXML2_FOUND AND)
-		remove_plugin (augeas "augeas not found")
-	endif (LIBAUGEAS_FOUND AND LIBXML2_FOUND )
+	else (LIBXML2_FOUND)
+		remove_plugin (augeas "libxml2 not found")
+	endif ()
+	else (LIBAUGEAS_FOUND)
+		remove_plugin (augeas "libaugeas not found (libaugeas-dev >= 0.16 needed)")
+	endif ()
 endif ()
 
 add_plugin(augeas

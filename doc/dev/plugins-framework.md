@@ -28,7 +28,7 @@ also leave any description out.  In this situation it is unclear what
 the plugin will do.  Such a plugin can add or remove keys, and changes
 values and metadata regardless what other plugins expect.  If only such
 plugins existed there would be chaos.  It would be impossible to determine
-the behaviour of a backend which uses a multiple of such plugins.
+the behavior of a backend which uses a multiple of such plugins.
 
 To avoid this situation, every plugin exports a contract describing how
 the plugin modifies the `KeySet` `returned`.  Most often it is enough
@@ -42,12 +42,12 @@ guaranteed by data structures do not need to be stated in the contract.
 Plugins should not be burdened to check too many postconditions.  Instead,
 plugins focus on their task.  The plugin does not need to check the sync
 flag of keys or if the keys are below the mountpoint. The core already
-guarantees correct behaviour as described
+guarantees correct behavior as described
 in [algorithm](/doc/dev/algorithm.md).
 
 To sum up, contracts give the information how a plugin interacts with
 others.  It describes if, and how, the `KeySet` `returned` is changed.
-Using contracts, we get a predictable behaviour, but still support every
+Using contracts, we get a predictable behavior, but still support every
 kind of plugin.
 
 
@@ -81,22 +81,25 @@ generates this described contract on requests.
 
 For example, the ccode plugin, implements:
 
-	int elektraCcodeGet(Plugin *handle, KeySet *returned, Key *parentKey)
+```c
+int elektraCcodeGet(Plugin *handle, KeySet *returned, Key *parentKey)
+{
+	if (!strcmp (keyName(parentKey), "system/elektra/modules/ccode"))
 	{
-		if (!strcmp (keyName(parentKey), "system/elektra/modules/ccode"))
-		{
-			KeySet *contract = ksNew (30,
-				keyNew ("system/elektra/modules/ccode",
-					KEY_END),
-				keyNew ("system/elektra/modules/ccode/exports",
-					KEY_END),
-				//...
-				KS_END);
-			ksAppend (returned, contract);
-			ksDel (contract);
-			return 1;
-		}
-		// implementation of elektraCcodeGet
+		KeySet *contract = ksNew (30,
+			keyNew ("system/elektra/modules/ccode",
+				KEY_END),
+			keyNew ("system/elektra/modules/ccode/exports",
+				KEY_END),
+			//...
+			KS_END);
+		ksAppend (returned, contract);
+		ksDel (contract);
+		return 1;
+	}
+	// implementation of elektraCcodeGet
+}
+```
 
 We see in the listing above that the plugin generates and returns
 the contract if, and only if, the name of the `parentKey` is
@@ -138,7 +141,7 @@ not in a productive environment.
 But the plugin's implementation is allowed to change without being
 remounted if it is a subtype of the earlier version.  Only in this
 situation it can be a drop-in replacement.  With a good testing framework
-the behaviour can be checked to some extent.
+the behavior can be checked to some extent.
 
 We also see in the listing above that the code responsible for generating
 the contract and the code for the implementation are next to each other.

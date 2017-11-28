@@ -591,7 +591,7 @@ ingroup:plugin
 module:storage
 
 number:99
-description:could not update time of file
+description:could not update metadata of file
 severity:warning
 ingroup:plugin
 module:resolver
@@ -1132,3 +1132,38 @@ severity:error
 ingroup:plugin
 macro:CRYPTO_VERSION
 module:crypto
+
+number:183
+description:Unable to write to file
+severity:error
+ingroup:plugin
+module:yamlcpp
+macro:YAMLCPP_WRITE_FAILED
+
+number:184
+description:Something went wrong while emitting YAML data
+severity:error
+ingroup:plugin
+module:yamlcpp
+macro:YAMLCPP_EMITTER_FAILED
+
+number:185
+description:Failed to retrieve YAML representation
+severity:error
+ingroup:plugin
+module:yamlcpp
+macro:YAMLCPP_REPRESENTATION
+
+number:186
+description:ruby warning
+severity:warning
+ingroup:plugin
+module:ruby
+macro:RUBY_GEN_WARN
+
+number:187
+description:ruby error
+severity:error
+ingroup:plugin
+module:ruby
+macro:RUBY_GEN_ERROR
