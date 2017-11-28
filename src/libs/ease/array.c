@@ -129,17 +129,17 @@ int elektraArrayIncName (Key * key)
 	}
 
 	kdb_long_long_t oldIndex = 0;
-	if (!arrayElement)
-	{
-		// we have a start element
-		oldIndex = -1;
-	}
-	else
+	if (arrayElement)
 	{
 		if (elektraReadArrayNumber (baseName, &oldIndex) == -1)
 		{
 			return -1;
 		}
+	}
+	else
+	{
+		// we have a start element
+		oldIndex = -1;
 	}
 
 	kdb_long_long_t newIndex = oldIndex + 1; // we increment by one
