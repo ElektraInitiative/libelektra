@@ -117,24 +117,15 @@ int elektraArrayIncName (Key * key)
 	const char * baseName = keyBaseName (key);
 
 	int arrayElement = elektraArrayValidateName (key);
-	if (arrayElement == -1)
-	{
-		return -1;
-	}
+	if (arrayElement == -1) return -1;
 
-	++baseName;		 // jump over #
-	while (*baseName == '_') // jump over all _
-	{
-		++baseName;
-	}
+	while (*(++baseName) == '_') // jump over initial `#` and all `_`
+		;		     //! OCLint
 
 	kdb_long_long_t oldIndex = 0;
 	if (arrayElement)
 	{
-		if (elektraReadArrayNumber (baseName, &oldIndex) == -1)
-		{
-			return -1;
-		}
+		if (elektraReadArrayNumber (baseName, &oldIndex) == -1) return -1;
 	}
 	else
 	{
