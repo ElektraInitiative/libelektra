@@ -172,7 +172,7 @@ static parserType * bufferChar (parserType * const parser)
 		{
 			return setErrorMalloc (parser, bufferSize);
 		}
-		strncpy (parser->bufferBase + bufferOffset, line, numberCharsRead + 1);
+		strncpy (parser->bufferBase + bufferOffset, line, numberCharsRead + 1); //! OCLint (constant conditional operator)
 		parser->buffer = parser->bufferBase + bufferOffset;
 		free (line);
 
@@ -439,7 +439,7 @@ static parserType * saveText (parserType * const parser, char ** location)
 	*location = elektraMalloc (length + 1);
 	if (!*location) return setErrorMalloc (parser, length + 1);
 
-	strncpy (*location, parser->match, length);
+	strncpy (*location, parser->match, length); //! OCLint (constant conditional operator)
 	(*location)[length] = '\0';
 
 	return parser;
