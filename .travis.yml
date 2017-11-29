@@ -46,6 +46,13 @@ matrix:
       osx_image: xcode9.1
       compiler: clang
 
+    # HASKELL: Only build Haskell binding and plugin
+
+    - os: osx
+      osx_image: xcode9.1
+      compiler: clang
+      env: [ HASKELL=ON ]
+
     - os: linux
       compiler: gcc
 
@@ -59,7 +66,7 @@ before_install:
       brew install ninja
     fi
   - |
-    if [[ "$TRAVIS_OS_NAME" == "osx" && "$FAST" != "ON" ]]; then
+    if [[ "$TRAVIS_OS_NAME" == "osx" && "$FAST" != "ON" && "$HASKELL" != "ON" ]]; then
       rvm install 2.3.1
       rvm use 2.3.1
       gem install test-unit --no-document
@@ -76,7 +83,6 @@ before_install:
         brew install xerces-c
       fi
       brew install augeas
-      brew install cabal-install
       brew install checkbashisms
       brew install dbus
       brew install discount
@@ -92,14 +98,16 @@ before_install:
       brew install yajl
       pip2 install cheetah # Required by kdb-gen
       export Qt5_DIR=/usr/local/opt/qt5
-
+    fi
+  - |
+    if [[ "$TRAVIS_OS_NAME" == "osx" && "$HASKELL" == "ON" ]] ; then
       brew install cabal-install
       cabal update
       # avoid reinstalls if we already have them cached
       # disable everything that slows down compilation times of the dependencies to have reasonable travis build times
-      which happy || cabal install -disable-optimization --disable-documentation --disable-profiling --disable-tests -j happy
-      which alex || cabal install -disable-optimization --disable-documentation --disable-profiling --disable-tests -j alex
-      which c2hs || cabal install -disable-optimization --disable-documentation --disable-profiling --disable-tests -j c2hs
+      which happy || cabal install happy
+      which alex || cabal install alex
+      which c2hs || cabal install c2hs
       PATH=$PATH:"$HOME/.cabal/bin"
     fi
   - |
@@ -129,6 +137,11 @@ before_script:
     if [[ "$TRAVIS_OS_NAME" == "linux" && "$CC" == "clang" || "$TRAVIS_OS_NAME" == "osx" && "${CC:0:3}" == "gcc" ]]; then
       CMAKE_OPT+=("-DCOMMON_FLAGS=-Werror")
     fi
+  # use a minimal configuration for the haskell bindings to give it enough time to compile dependencies
+  - if [[ $HASKELL == ON ]]; then
+      bindings="cpp;haskell";
+      plugins="resolver_fm_hpu_b;dump;haskell;ini"
+    fi
   - |
     if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
       python2_ver=$(python2 -c 'import sys; print(".".join(map(str, sys.version_info[:2])))') &&                  \
@@ -144,7 +157,7 @@ before_script:
     -GNinja
     -DBUILD_STATIC=OFF
     -DPLUGINS="${plugins:-ALL;-jni}"
-    -DBINDINGS="${bindings:-ALL;haskell}"
+    -DBINDINGS="${bindings:-ALL;}"
     -DENABLE_DEBUG=ON
     -DTOOLS=ALL
     -DINSTALL_SYSTEM_FILES=OFF

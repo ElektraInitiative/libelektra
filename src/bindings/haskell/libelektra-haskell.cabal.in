@@ -17,8 +17,9 @@ library
                    , Elektra.KeySet
                    , Elektra.KDB
                    , Elektra.Plugin
+                   , Elektra.Ease
   build-depends:     base >= 4.7 && < 5
-  includes:          kdb.h, kdbplugin.h
+  includes:          kdb.h, kdbplugin.h, kdbease.h
   include-dirs:      @CABAL_INCLUDE_DIRS@
   extra-lib-dirs:    "@CMAKE_BINARY_DIR@/lib"
   default-language:  Haskell2010

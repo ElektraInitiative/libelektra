@@ -24,7 +24,7 @@ if (NOT BUILD_STATIC)
 		set (BINDING_HASKELL_NAME "${BINDING_HASKELL_NAME}${GHC_DYNAMIC_SUFFIX}${GHC_DYNAMIC_ENDING}")
 		set (CABAL_OPTS "${CABAL_OPTS};--enable-shared")
 		if (BUILD_SHARED)
-			set (ELEKTRA_DEPENDENCY "elektra;elektra-kdb;")
+			set (ELEKTRA_DEPENDENCY "elektra;elektra-kdb;elektra-ease;")
 		elseif (BUILD_FULL)
 			set (ELEKTRA_DEPENDENCY "elektra-full;")
 		endif ()
@@ -47,7 +47,7 @@ if (NOT BUILD_STATIC)
 		COMMAND ${CABAL_EXECUTABLE} sandbox init
 		COMMAND ${CABAL_EXECUTABLE} --ipid=libelektra-haskell-${KDB_VERSION} ${CABAL_OPTS} configure
 		# disable everything that slows down compilation times of the dependencies to have reasonable travis build times
-		COMMAND ${CABAL_EXECUTABLE} install --disable-optimization --disable-documentation --disable-profiling --disable-tests -j --only-dependencies
+		COMMAND ${CABAL_EXECUTABLE} install --only-dependencies
 		 # this only installs to the sandbox so plugins can depend on it
 		 # without breaking the global db through shared sandboxes
 		COMMAND ${CABAL_EXECUTABLE} build
@@ -58,6 +58,7 @@ if (NOT BUILD_STATIC)
 		"${CMAKE_CURRENT_SOURCE_DIR}/src/Elektra/KeySet.chs"
 		"${CMAKE_CURRENT_SOURCE_DIR}/src/Elektra/Plugin.chs"
 		"${CMAKE_CURRENT_SOURCE_DIR}/src/Elektra/KDB.chs"
+		"${CMAKE_CURRENT_SOURCE_DIR}/src/Elektra/Ease.chs"
 		"${CMAKE_CURRENT_SOURCE_DIR}/test/Elektra.hs"
 		"${CMAKE_CURRENT_SOURCE_DIR}/test/ElektraRealWorld.hs"
 		${ELEKTRA_DEPENDENCY}
@@ -88,7 +89,7 @@ if (NOT BUILD_STATIC)
 			OUTPUT ${HASKELL_TESTS}
 			# they are getting installed to the sandbox, and they get cached to avoid reinstalling every time
 			# disable everything that slows down compilation times of the dependencies to have reasonable travis build times
-			COMMAND ${CABAL_EXECUTABLE} install --disable-optimization --disable-documentation --disable-profiling -j --enable-tests --only-dependencies
+			COMMAND ${CABAL_EXECUTABLE} install --enable-tests --only-dependencies
 			COMMAND ${CABAL_EXECUTABLE} --ipid=libelektra-haskell-${KDB_VERSION} ${CABAL_OPTS} --enable-tests configure
 			COMMAND ${CABAL_EXECUTABLE} build
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
@@ -97,6 +98,7 @@ if (NOT BUILD_STATIC)
 			"${CMAKE_CURRENT_SOURCE_DIR}/src/Elektra/KeySet.chs"
 			"${CMAKE_CURRENT_SOURCE_DIR}/src/Elektra/Plugin.chs"
 			"${CMAKE_CURRENT_SOURCE_DIR}/src/Elektra/KDB.chs"
+			"${CMAKE_CURRENT_SOURCE_DIR}/src/Elektra/Ease.chs"
 			"${CMAKE_CURRENT_SOURCE_DIR}/test/Elektra.hs"
 			"${CMAKE_CURRENT_SOURCE_DIR}/test/ElektraRealWorld.hs"
 			${ELEKTRA_DEPENDENCY}
