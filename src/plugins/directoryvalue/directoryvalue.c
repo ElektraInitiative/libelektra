@@ -10,6 +10,7 @@
 #include "directoryvalue.h"
 
 #include <kdbassert.h>
+#include <kdbease.h>
 #include <kdberrors.h>
 #include <kdbhelper.h>
 #include <kdblogger.h>
@@ -32,18 +33,43 @@ static KeySet * directoryValueContract (void)
 }
 
 /**
- * @brief Split `input` into two key sets, one for directory keys and one for leaf keys.
+ * @brief Check if all keys directly below `key` are array entries.
  *
- * @pre The parameters `input`, `directories`, `leaves` and `parent` must not be `NULL`.
+ * @param key This parameter contains the parent key of the array this function checks.
+ * @param keys This parameter contains the key set `key` belongs to.
+ *
+ * @retval true if all keys below `key` are array entries
+ * @retval false otherwise
+ */
+static bool onlyArrayEntriesDirectlyBelow (Key * key, KeySet * keys)
+{
+	KeySet * arrayEntries = elektraArrayGet (key, keys);
+	KeySet * children = ksNew (ksGetSize (keys), KS_END);
+	elektraKsFilter (children, keys, (int (*) (const Key *, void *)) & keyIsDirectBelow, (void *)key);
+
+	bool onlyArrayEntries = ksGetSize (arrayEntries) == ksGetSize (children);
+
+	ksDel (arrayEntries);
+	ksDel (children);
+
+	return onlyArrayEntries;
+}
+
+/**
+ * @brief Split `input` into three key sets, one of them for leaf keys and the remaining ones for directory keys.
+ *
+ * @pre The parameters `input`, `directories`, `leaves` and `arrayParents` must not be `NULL`.
  *
  * @param input This parameter contains the key set this function splits.
- * @param directories The function stores all directory keys (keys with children) in this parameter.
+ * @param directories The function stores all directory keys (keys with children) that are not array parents in this parameter.
+ * @param arrayParents The function stores all array parents in this parameter.
  * @param leaves The function stores all leaf values in this key set.
  */
-static void splitIntoDirectoriesAndLeaves (KeySet * const input, KeySet * directories, KeySet * leaves)
+static void splitIntoDirectoriesAndLeaves (KeySet * const input, KeySet * directories, KeySet * arrayParents, KeySet * leaves)
 {
 	ELEKTRA_NOT_NULL (input);
 	ELEKTRA_NOT_NULL (directories);
+	ELEKTRA_NOT_NULL (arrayParents);
 	ELEKTRA_NOT_NULL (leaves);
 
 	ksRewind (input);
@@ -52,8 +78,15 @@ static void splitIntoDirectoriesAndLeaves (KeySet * const input, KeySet * direct
 
 	while ((next = ksNext (input)) != NULL)
 	{
-		bool isLeaf = keyBaseName (next)[0] == '#' || keyIsBelow (key, next) != 1;
-		ksAppendKey (isLeaf ? leaves : directories, keyDup (key));
+		if (keyIsBelow (key, next))
+		{
+			bool isArrayParent = keyBaseName (next)[0] == '#' && onlyArrayEntriesDirectlyBelow (key, input);
+			ksAppendKey (isArrayParent ? arrayParents : directories, keyDup (key));
+		}
+		else
+		{
+			ksAppendKey (leaves, keyDup (key));
+		}
 		key = next;
 	}
 	// Last key is always a leaf value
@@ -228,18 +261,21 @@ int elektraDirectoryvalueGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned,
 int elektraDirectoryvalueSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parent)
 {
 	KeySet * leaves = ksNew (0, KS_END);
+	KeySet * arrayParents = ksNew (0, KS_END);
 	KeySet * directories = ksNew (0, KS_END);
 
 	int status = ELEKTRA_PLUGIN_STATUS_SUCCESS;
 
-	splitIntoDirectoriesAndLeaves (returned, directories, leaves);
+	splitIntoDirectoriesAndLeaves (returned, directories, arrayParents, leaves);
 	if (ksGetSize (directories) < 0) status = ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 	if (convertDirectoriesToLeaves (directories, parent) < 0) status = ELEKTRA_PLUGIN_STATUS_ERROR;
 	ksCopy (returned, directories);
+	ksAppend (returned, arrayParents);
 	ksAppend (returned, leaves);
 
 	ksDel (leaves);
 	ksDel (directories);
+	ksDel (arrayParents);
 
 	return status;
 }
