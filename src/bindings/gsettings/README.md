@@ -1,6 +1,6 @@
 # elektrasettings
 
- **__Warning__ !!! This lib is unstable and could destroy your Elektra Configuration. Only use in testing environments.**
+ **__Warning__ !!! This binding is unstable and could destroy your Elektra Configuration. Only use in testing environments.**
 
  Implementation of Elektra as GSettingsBackend
 
