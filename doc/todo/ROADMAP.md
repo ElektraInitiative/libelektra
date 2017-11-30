@@ -12,12 +12,9 @@ for other activities of the current release.
 
 
 
-
-# 0.8.20
+# 0.8.22
 
 ## kdb tool
-
-global-umount
 
 kdb set should always validate
 	(no matter how namespace is given)
@@ -41,29 +38,6 @@ update global-mount (not needed at most parts anymore)
 add more traceability
 
 use shell recorder for further README.md
-
-
-## tests
-
-helper function for searching symbol
-
-
-## fixes
-
-compiler warnings:
-	key hash warning
-
-
-## types
-
-consistent type vs. check/type
-different type systems?
-let JSON use same types (double, boolean, nothing for string)
-
-type checker plugin redesign: take care of simplicity + working together with others
-	set of types (min, max as 1-20, enums as user-defined types,...), space separated as now
-	look into haskell type classes
-
 
 
 

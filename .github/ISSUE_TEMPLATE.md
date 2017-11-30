@@ -1,11 +1,12 @@
 Please remove this template if you have
 a question or proposal and do not want
-to report an issue.
+to report a bug.
 
-# Steps to Reproduce the Problem
+## Steps to Reproduce the Problem
 
-Please provide a step by step guide on how to reproduce the problem here. If applicable, please use
-[Markdown Shell Recorder](https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper) syntax:
+Please provide a step by step guide on how to reproduce the problem here. If possible, please use
+[Markdown Shell Recorder](https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper)
+syntax:
 
 ```sh
 kdb set /examples/hello world
@@ -22,19 +23,17 @@ kdb get user/does/not/exist
 kdb rm /examples/hello
 ```
 
-.
-
-# Expected Result
+## Expected Result
 
 Please describe what should happen if you follow the steps described above.
 
-# Actual Result
+## Actual Result
 
 Please describe what actually happened.
 
-# System Information
+## System Information
 
 - Elektra Version: master
 - Versions of other relevant software?
 
-# Further Log Files and Output
+## Further Log Files and Output
