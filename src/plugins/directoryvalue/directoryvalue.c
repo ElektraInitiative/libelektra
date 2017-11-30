@@ -56,20 +56,47 @@ static bool onlyArrayEntriesDirectlyBelow (Key * key, KeySet * keys)
 }
 
 /**
- * @brief Split `input` into three key sets, one of them for leaf keys and the remaining ones for directory keys.
+ * @brief Split `input` into two key sets, one for array keys and one for all other keys.
  *
- * @pre The parameters `input`, `directories`, `leaves` and `arrayParents` must not be `NULL`.
+ * @pre The parameters `input`, `parents`, and `other` must not be `NULL`.
  *
  * @param input This parameter contains the key set this function splits.
- * @param directories The function stores all directory keys (keys with children) that are not array parents in this parameter.
- * @param arrayParents The function stores all array parents in this parameter.
- * @param leaves The function stores all leaf values in this key set.
+ * @param parents The function stores all array parents in this key set.
+ * @param other The function stores all non-array keys in this parameter.
  */
-static void splitIntoDirectoriesAndLeaves (KeySet * const input, KeySet * directories, KeySet * arrayParents, KeySet * leaves)
+static void splitArray (KeySet * input, KeySet * parents, KeySet * other)
+{
+	ELEKTRA_NOT_NULL (input);
+	ELEKTRA_NOT_NULL (parents);
+	ELEKTRA_NOT_NULL (other);
+
+	ksRewind (input);
+	Key * key = ksNext (input);
+	Key * next;
+
+	while ((next = ksNext (input)) != NULL)
+	{
+		bool isArrayParent = keyIsBelow (key, next) && keyBaseName (next)[0] == '#' && onlyArrayEntriesDirectlyBelow (key, input);
+		ksAppendKey (isArrayParent ? parents : other, keyDup (key));
+		key = next;
+	}
+	// Last key can not be an array key
+	if (key) ksAppendKey (other, key);
+}
+
+/**
+ * @brief Split `input` into two key sets, one for directories (keys without children) and one for all other keys.
+ *
+ * @pre The parameters `input`, `directories` and `leaves` must not be `NULL`.
+ *
+ * @param input This parameter contains the key set this function splits.
+ * @param directories The function stores all directories in this key set.
+ * @param leaves The function stores all leaves (keys without children) in this parameter.
+ */
+static void splitDirectories (KeySet * input, KeySet * directories, KeySet * leaves)
 {
 	ELEKTRA_NOT_NULL (input);
 	ELEKTRA_NOT_NULL (directories);
-	ELEKTRA_NOT_NULL (arrayParents);
 	ELEKTRA_NOT_NULL (leaves);
 
 	ksRewind (input);
@@ -78,15 +105,7 @@ static void splitIntoDirectoriesAndLeaves (KeySet * const input, KeySet * direct
 
 	while ((next = ksNext (input)) != NULL)
 	{
-		if (keyIsBelow (key, next))
-		{
-			bool isArrayParent = keyBaseName (next)[0] == '#' && onlyArrayEntriesDirectlyBelow (key, input);
-			ksAppendKey (isArrayParent ? arrayParents : directories, keyDup (key));
-		}
-		else
-		{
-			ksAppendKey (leaves, keyDup (key));
-		}
+		ksAppendKey (keyIsBelow (key, next) ? directories : leaves, keyDup (key));
 		key = next;
 	}
 	// Last key is always a leaf value
@@ -261,21 +280,24 @@ int elektraDirectoryvalueGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned,
 int elektraDirectoryvalueSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parent)
 {
 	KeySet * leaves = ksNew (0, KS_END);
-	KeySet * arrayParents = ksNew (0, KS_END);
+	KeySet * arrays = ksNew (0, KS_END);
 	KeySet * directories = ksNew (0, KS_END);
+	KeySet * withoutArrays = ksNew (0, KS_END);
 
 	int status = ELEKTRA_PLUGIN_STATUS_SUCCESS;
 
-	splitIntoDirectoriesAndLeaves (returned, directories, arrayParents, leaves);
-	if (ksGetSize (directories) < 0) status = ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+	splitArray (returned, arrays, withoutArrays);
+	splitDirectories (withoutArrays, directories, leaves);
+	if (ksGetSize (directories) <= 0) status = ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 	if (convertDirectoriesToLeaves (directories, parent) < 0) status = ELEKTRA_PLUGIN_STATUS_ERROR;
 	ksCopy (returned, directories);
-	ksAppend (returned, arrayParents);
+	ksAppend (returned, arrays);
 	ksAppend (returned, leaves);
 
+	ksDel (withoutArrays);
 	ksDel (leaves);
 	ksDel (directories);
-	ksDel (arrayParents);
+	ksDel (arrays);
 
 	return status;
 }
