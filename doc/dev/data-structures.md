@@ -366,33 +366,57 @@ Continue reading [with the error handling](error-handling.md).
 
 All structs are defined in [opmphm.h](/src/include/kdbopmphm.h).
 
-The OPMPHM is not an ordinary hash map. The OPMPHM inserts all elements at once,
-this process is known as build. The OPMPHM is designed to return an index when looking up
-an element. Those indices must be known when building the OPMPHM.
+The OPMPHM is a randomized hash map of the Las Vegas type, the elements need to be arranged in an array, with arbitrary order.
+The OPMPHM can be understood as index over the elements name, to gain O(1) access to the element.
+The OPMPHM builds such a index for a statical set of elements.
 
-The desired return index, also known as the order is set in `OpmphmGraph->edges[i].order`.
-Where `i` is the i-th element.
+Once the OPMPHM is build, every:
 
-The build consists of three steps.
+ * change of at least one indexed element name
+ * addition of a new element
+ * deletion of a indexed element
 
-### Initialization
+leads to an invalid OPMPHM and forces a rebuild.
+
+The desired index, also known as the order is set in `OpmphmGraph->edges[i].order`.
+Where `i` is the i-th element in your array.
+
+The OPMPHM maps each element to an edge in an random acyclic r-uniform r-partite hypergraph.
+In a r-uniform r-partite hypergraph each edge connects `r` vertices, each vertex in a different component.
+The probability of being acyclic and time until such an acyclic r-uniform r-partite hypergraph is found
+depends on the the following variables:
+
+* `r`: The `r` variable defines the number of components in the random r-uniform r-partite hypergraph.
+       Use the `opmphmOptR (n)` function to get an optimal value for your number of elements (`n`).
+* `c`: The `c` variable defines the number of vertices in each component of the random r-uniform r-partite hypergraph.
+       The number of vertices in one component is defined as `(c * n / r) + 1`, where `n` is the number of elements
+       and `r` is the variable from above.
+       The `c` variable must have a minimal value to ensure a success probability, use the `opmphmMinC (r)` function,
+       with your `r` from above.
+       The ensure a optimal time until success increment the `c` variable with the value from the `opmphmOptC (n)`
+       function, where `n` is the number of elements.
+
+### The Build
+
+#### Initialization
 
 Use `opmphmNew ()` and `opmphmGraphNew (...)` to instantiate the needed structures.
-The function `opmphmGraphNew (...)` takes a parameter `c`, use the `opmphmMinC ()` to ensure
-the the passed value is over the minimum.
+The function `opmphmGraphNew (...)` takes `r` and `c` as parameter. Use the `opmphmOptR (...)`
+function to get your `r` value, use this `r` also to get your `c` value the following way:
+
+`c = opmphmMinC (r) + opmphmOptC (n)`
+
 To initialize the OPMPHM build the `OpmphmInit` must be set with information about your data.
-Set your data array `OpmphmInit->data` and the string extraction function `OpmphmInit->getString`,
+Set your data array `OpmphmInit->data` and the element name extraction function `OpmphmInit->getName`,
 which should extract the string from a single data array entry.
 Provide a good seed in `OpmphmInit->initSeed`, needed in the next step.
 
-### Mapping
+#### Mapping
 
-The function `opmphmMapping` uses your seed (the `OpmphmInit->seed` will be changed) and tries to map your
-elements to edges in a acyclic r-partite hypergraph, this mapping might not succeed, on cycles just call it again.
-When the `c` value from the initialization is lower than the minimum, the probability of finding
-such a acyclic r-partite hypergraph is 0.
+The function `opmphmMapping` uses your seed (the `OpmphmInit->seed` will be changed) and tries to
+construct the random acyclic r-uniform r-partite hypergraph, this might not succeed, on cycles just call it again.
 
-### Assignment
+#### Assignment
 
 The `opmphmAssignment ()` function assigns either your order (set at `OpmphmGraph->edges[i].order`) or a default order.
 The default order is the order of `OpmphmInit->data`. The `defaultOrder` parameter indicates the behavior.
@@ -400,3 +424,7 @@ When the OPMPHM is build with the default order, `OpmphmGraph->edges[i].order` m
 
 After the build the OpmphmInit and OpmphmGraph should be freed.
 The OPMPHM is now ready for constant lookups with the `opmphmLookup ()`.
+
+### The Rebuild
+
+Once build, follow the steps from the build, just omit the `opmphmNew ()` invocation.
