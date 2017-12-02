@@ -7,12 +7,16 @@
  *
  */
 
+// -- Imports ------------------------------------------------------------------------------------------------------------------------------
+
 #include <stdlib.h>
 #include <string.h>
 
 #include <kdbconfig.h>
 
 #include <tests_plugin.h>
+
+// -- Macros -------------------------------------------------------------------------------------------------------------------------------
 
 #define INIT_PLUGIN(parent)                                                                                                                \
 	Key * parentKey = keyNew (parent, KEY_END);                                                                                        \
@@ -23,6 +27,8 @@
 	keyDel (parentKey);                                                                                                                \
 	ksDel (keySet);                                                                                                                    \
 	PLUGIN_CLOSE ()
+
+// -- Functions ----------------------------------------------------------------------------------------------------------------------------
 
 static KeySet * keySetWithDirValues (void)
 {
@@ -62,6 +68,10 @@ static KeySet * keySetWithoutDirValues (void)
 		      KS_END);
 	// clang-format on
 }
+
+// =========
+// = Tests =
+// =========
 
 static void test_contract (void)
 #ifdef __llvm__
@@ -112,6 +122,8 @@ static void test_get (void)
 
 	CLOSE_PLUGIN ();
 }
+
+// -- Main ---------------------------------------------------------------------------------------------------------------------------------
 
 int main (int argc, char ** argv)
 {

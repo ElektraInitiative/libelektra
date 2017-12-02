@@ -7,6 +7,8 @@
  *
  */
 
+// -- Imports ------------------------------------------------------------------------------------------------------------------------------
+
 #include "directoryvalue.h"
 
 #include <kdbassert.h>
@@ -15,6 +17,8 @@
 #include <kdbhelper.h>
 #include <kdblogger.h>
 #include <stdbool.h>
+
+// -- Functions ----------------------------------------------------------------------------------------------------------------------------
 
 /**
  * @brief This function returns a key set containing the contract of this plugin.
