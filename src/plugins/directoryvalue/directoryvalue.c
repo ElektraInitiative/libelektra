@@ -62,16 +62,16 @@ static bool onlyArrayEntriesDirectlyBelow (Key * key, KeySet * keys)
 /**
  * @brief Split `input` into two key sets, one for array keys and one for all other keys.
  *
- * @pre The parameters `input`, `parents`, and `other` must not be `NULL`.
+ * @pre The parameters `input`, `arrays`, and `other` must not be `NULL`.
  *
  * @param input This parameter contains the key set this function splits.
- * @param parents The function stores all array parents in this key set.
+ * @param arrays The function stores all array parents in this key set.
  * @param other The function stores all non-array keys in this parameter.
  */
-static void splitArray (KeySet * input, KeySet * parents, KeySet * other)
+static void splitArray (KeySet * input, KeySet * arrays, KeySet * other)
 {
 	ELEKTRA_NOT_NULL (input);
-	ELEKTRA_NOT_NULL (parents);
+	ELEKTRA_NOT_NULL (arrays);
 	ELEKTRA_NOT_NULL (other);
 
 	ksRewind (input);
@@ -81,7 +81,7 @@ static void splitArray (KeySet * input, KeySet * parents, KeySet * other)
 	while ((next = ksNext (input)) != NULL)
 	{
 		bool isArrayParent = keyIsBelow (key, next) && keyBaseName (next)[0] == '#' && onlyArrayEntriesDirectlyBelow (key, input);
-		ksAppendKey (isArrayParent ? parents : other, keyDup (key));
+		ksAppendKey (isArrayParent ? arrays : other, keyDup (key));
 		key = next;
 	}
 	// Last key can not be an array key
