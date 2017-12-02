@@ -39,6 +39,8 @@ static KeySet * directoryValueContract (void)
 /**
  * @brief Check if all keys directly below `key` are array entries.
  *
+ * @pre The parameters `key`, and `keys` must not be `NULL`.
+ *
  * @param key This parameter contains the parent key of the array this function checks.
  * @param keys This parameter contains the key set `key` belongs to.
  *
@@ -47,6 +49,9 @@ static KeySet * directoryValueContract (void)
  */
 static bool onlyArrayEntriesDirectlyBelow (Key * key, KeySet * keys)
 {
+	ELEKTRA_NOT_NULL (key);
+	ELEKTRA_NOT_NULL (keys);
+
 	KeySet * arrayEntries = elektraArrayGet (key, keys);
 	KeySet * children = ksNew (ksGetSize (keys), KS_END);
 	elektraKsFilter (children, keys, (int (*) (const Key *, void *)) & keyIsDirectBelow, (void *)key);
