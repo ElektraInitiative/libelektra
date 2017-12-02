@@ -35,6 +35,9 @@ static KeySet * keySetWithDirValues (void)
 		      keyNew ("user/mother", KEY_VALUE, "Mother", KEY_END),
 		      keyNew ("user/mother/daughter", KEY_VALUE, "Daughter", KEY_END),
 		      keyNew ("user/mother/son", KEY_VALUE, "Son", KEY_END),
+		      keyNew ("user/characters", KEY_META, "array", "#1", KEY_END),
+		      keyNew ("user/characters/#0", KEY_VALUE, "Rick Sanchez", KEY_END),
+		      keyNew ("user/characters/#1", KEY_VALUE, "Morty Smith", KEY_END),
 		      KS_END);
 	// clang-format on
 }
@@ -53,6 +56,9 @@ static KeySet * keySetWithoutDirValues (void)
 		      keyNew ("user/mother/___dirdata", KEY_VALUE, "Mother", KEY_END),
 		      keyNew ("user/mother/daughter", KEY_VALUE, "Daughter", KEY_END),
 		      keyNew ("user/mother/son", KEY_VALUE, "Son", KEY_END),
+		      keyNew ("user/characters", KEY_META, "array", "#1", KEY_END),
+		      keyNew ("user/characters/#0", KEY_VALUE, "Rick Sanchez", KEY_END),
+		      keyNew ("user/characters/#1", KEY_VALUE, "Morty Smith", KEY_END),
 		      KS_END);
 	// clang-format on
 }
