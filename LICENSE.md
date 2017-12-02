@@ -1,6 +1,6 @@
 # BSD 3-Clause License
 
-Copyright (c) 2017, [ElektraInitiative](/doc/AUTHORS.md)
+Copyright (c) 2017, [Elektra Initiative](/doc/AUTHORS.md)
  Some rights reserved.
 
 
