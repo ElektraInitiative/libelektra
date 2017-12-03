@@ -10,8 +10,8 @@
 #ifndef ELEKTRA_PLUGIN_DINI_H
 #define ELEKTRA_PLUGIN_DINI_H
 
-#include <kdbplugin.h>
 #include <kdbinvoke.h>
+#include <kdbplugin.h>
 
 
 int elektraDiniOpen (Plugin * handle, Key * errorKey);

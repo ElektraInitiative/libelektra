@@ -256,7 +256,7 @@ int elektraInvoke2Args (ElektraInvokeHandle * handle, const char * elektraPlugin
 {
 	if (!handle || !elektraPluginFunctionName) return -2;
 
-	typedef int (*elektra2Args) (KeySet*, Key *);
+	typedef int (*elektra2Args) (KeySet *, Key *);
 	elektra2Args func = *(elektra2Args *)elektraInvokeGetFunction (handle, elektraPluginFunctionName);
 
 	if (!func)
