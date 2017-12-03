@@ -41,6 +41,7 @@ strict digraph G {
 	desktop -> storage;
 	info [shape=Mdiamond];
 	desktop -> info;
+	dini [shape=Mdiamond];
 	doc [shape=Mdiamond];
 	storage [shape=Mdiamond];
 	dpkg -> storage;
