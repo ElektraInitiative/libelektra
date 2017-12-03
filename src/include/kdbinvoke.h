@@ -11,6 +11,7 @@ extern "C" {
 
 typedef struct _ElektraInvokeHandle ElektraInvokeHandle;
 
+ElektraInvokeHandle * elektraInvokeOpen (const char *, KeySet * config);
 ElektraInvokeHandle * elektraInvokeInitialize (const char *);
 
 const void * elektraInvokeGetFunction (ElektraInvokeHandle *, const char *);

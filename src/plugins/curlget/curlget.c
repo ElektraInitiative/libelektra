@@ -82,7 +82,7 @@ typedef struct
 static int elektraResolveFilename (Key * parentKey, ElektraResolveTempfile tmpFile)
 {
 	int rc = 0;
-	void * handle = elektraInvokeInitialize ("resolver");
+	void * handle = elektraInvokeOpen ("resolver", 0);
 	if (!handle)
 	{
 		rc = -1;
