@@ -12,7 +12,7 @@
 #include <kdbhelper.h>
 
 
-int elektraDiniOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
+int elektraDiniOpen (Plugin * handle, Key * errorKey)
 {
 	Dini * dini = elektraMalloc (sizeof (Dini));
 	dini->dump = elektraInvokeOpen ("dump", ksDup (elektraPluginGetConfig (handle)));
@@ -61,6 +61,8 @@ int elektraDiniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 	// get all keys
 	Dini * dini = elektraPluginGetData (handle);
+	keySetName (dini->dumpErrors, keyName (parentKey));
+	keySetString (dini->dumpErrors, keyString (parentKey));
 	if (elektraInvoke2Args (dini->dump, "get", returned, dini->dumpErrors) != -1)
 	{
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
