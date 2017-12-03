@@ -16,6 +16,7 @@ usr/lib/*/elektra4/libelektra-hexcode.so*
 usr/lib/*/elektra4/libelektra-hidden.so*
 usr/lib/*/elektra4/libelektra-hosts.so*
 usr/lib/*/elektra4/libelektra-iconv.so*
+usr/lib/*/elektra4/libelektra-dini.so*
 usr/lib/*/elektra4/libelektra-ini.so*
 usr/lib/*/elektra4/libelektra-journald.so*
 usr/lib/*/elektra4/libelektra-keytometa.so*
