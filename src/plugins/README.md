@@ -74,6 +74,7 @@ files.
 
 Read and write everything a KeySet might contain:
 
+- [dini](dini/) uses by default the ini plugin but has legacy support for dump
 - [dump](dump/) makes a dump of a KeySet in an Elektra-specific format
 
 Read (and write) standard config files:
