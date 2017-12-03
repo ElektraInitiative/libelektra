@@ -1,6 +1,27 @@
 #include <kdbinvoke.h>
+#include <kdbmodule.h>
+#include <kdbprivate.h> // for elektraPluginOpen/Close
 
 #include <stdio.h>
+
+struct _ElektraInvokeHandle
+{
+	Plugin * plugin;
+	KeySet * modules;
+	KeySet * exports;
+};
+
+/**
+ * @defgroup invoke
+ * @brief Functionality to use plugins and invoke functions
+ *
+ * Allows invoking functions of plugins as needed within applications
+ * and plugins outside of the KDB.
+ *
+ * @{
+ *
+ */
+
 
 ElektraInvokeHandle * elektraInvokeInitialize (const char * elektraPluginName)
 {
@@ -8,7 +29,7 @@ ElektraInvokeHandle * elektraInvokeInitialize (const char * elektraPluginName)
 	{
 		return NULL;
 	}
-	ElektraInvokeHandle * handle = elektraCalloc (sizeof (ElektraInvokeHandle));
+	ElektraInvokeHandle * handle = elektraCalloc (sizeof (struct _ElektraInvokeHandle));
 	if (!handle)
 	{
 		return NULL;
@@ -68,6 +89,45 @@ const void * elektraInvokeGetFunction (ElektraInvokeHandle * invokeHandle, const
 	}
 }
 
+KeySet * elektraInvokeGetPluginConfig (ElektraInvokeHandle * handle)
+{
+	return handle->plugin->config;
+}
+
+const char * elektraInvokeGetPluginName (ElektraInvokeHandle * handle)
+{
+	return handle->plugin->name;
+}
+
+void * elektraInvokeGetPluginData (ElektraInvokeHandle * handle)
+{
+	return handle->plugin->data;
+}
+
+KeySet * elektraInvokeGetModules (ElektraInvokeHandle * handle)
+{
+	return handle->modules;
+}
+
+KeySet * elektraInvokeGetExports (ElektraInvokeHandle * handle)
+{
+	return handle->exports;
+}
+
+
+int elektraInvoke2Args (ElektraInvokeHandle * invokeHandle, const char * elektraPluginFunctionName, KeySet * ks, Key * k)
+{
+	typedef int (*elektra2Args) (KeySet*, Key *);
+	elektra2Args func = *(elektra2Args *)elektraInvokeGetFunction (invokeHandle, elektraPluginFunctionName);
+
+	if (!func)
+	{
+		return -2;
+	}
+
+	return func (ks, k);
+}
+
 void elektraInvokeClose (ElektraInvokeHandle * invokeHandle)
 {
 	if (!invokeHandle)
@@ -83,3 +143,7 @@ void elektraInvokeClose (ElektraInvokeHandle * invokeHandle)
 	ksDel (handle->exports);
 	elektraFree (handle);
 }
+
+/**
+ * @}
+ */
