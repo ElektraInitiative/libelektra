@@ -165,93 +165,77 @@ static int convertDirectoriesToLeaves (KeySet * directories, Key * error)
 }
 
 /**
- * @brief Convert the directory value saved in `key` back to a directory key.
+ * @brief Copy directory leaves (marked with `DIRECTORY_POSTFIX`) from `input` to leaves.
  *
- * @param output The function uses this parameter to store the converted key.
- * @param convertedDirectory The function also stores the converted key in this key set.
- * @param key This parameter stores the current key this function operates on.
- * @param error The function uses this key to emit error information.
+ * @pre The parameters `input` and `leaves` must not be `NULL`.
  *
- * @pre The parameters `output`, `convertedDirectory`, `key` and `error` must not be `NULL`.
- *
- * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if everything went fine
- * @retval ELEKTRA_PLUGIN_STATUS_ERROR if the function was unable to convert `key`
-**/
-static int convertToDirectory (KeySet * output, KeySet * convertedDirectory, Key * key, Key * error)
+ * @param input The function searches for directory leaves in this key set.
+ * @param leaves The function copies all directory leaves to this key set.
+ */
+static void splitDirectoryLeaves (KeySet * input, KeySet * const leaves)
 {
-	ELEKTRA_NOT_NULL (output);
-	ELEKTRA_NOT_NULL (convertedDirectory);
-	ELEKTRA_NOT_NULL (key);
-	ELEKTRA_NOT_NULL (error);
+	ELEKTRA_NOT_NULL (input);
+	ELEKTRA_NOT_NULL (leaves);
 
-	size_t directoryKeyLength = elektraStrLen (keyName (key)) - DIRECTORY_POSTFIX_LENGTH - 1;
+	Key * key;
+	KeySet * other = ksNew (0, KS_END);
 
-	int errorNumber = errno;
-	char * directoryName = strndup (keyName (key), directoryKeyLength);
-	if (!directoryName)
+	ksRewind (input);
+	while ((key = ksNext (input)) != NULL)
 	{
-		errno = errorNumber;
-		ELEKTRA_MALLOC_ERROR (error, directoryKeyLength);
-		return ELEKTRA_PLUGIN_STATUS_ERROR;
+		size_t baseNameLength = keyGetBaseNameSize (key);
+		size_t minLengthBase = (DIRECTORY_POSTFIX_LENGTH < baseNameLength ? DIRECTORY_POSTFIX_LENGTH : baseNameLength) - 1;
+		bool isLeaf =
+			strncmp (keyBaseName (key), DIRECTORY_POSTFIX, minLengthBase) == 0 && baseNameLength == DIRECTORY_POSTFIX_LENGTH;
+		ksAppendKey (isLeaf ? leaves : other, keyDup (key));
 	}
-
-	Key * directoryKey = keyDup (key);
-	keySetName (directoryKey, directoryName);
-	elektraFree (directoryName);
-	ksAppendKey (convertedDirectory, directoryKey);
-	ksAppendKey (output, directoryKey);
-	keyDel (key);
-	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+	ksCopy (input, other);
+	ksDel (other);
 }
 
 /**
- * @brief Check `key` for a directory value, modify it and copy it to output.
+ * @brief Remove the directory prefix (`DIRECTORY_POSTFIX`) from all keys in `leaves`.
  *
- * - If key contains a directory value (marked by `DIRECTORY_POSTFIX`) it will be converted to a directory key. After that the function
- *   saves the key in `output` and `dirValue`.
- * - If `key` has the same name as the last converted directory value (stored in `convertedDirectory`), then the function deletes the key.
- * - If `key` is a non-special key (none of the two cases above apply), then the function just appends the unmodified `key` to `output`.
+ * @pre The parameters `leaves` and `error` must not be `NULL`.
+ * @pre The name of all keys in `leaves` must end with `DIRECTORY_POSTFIX`.
  *
- * @pre The parameters `output`, `key`, `convertedDirectory` and `error` must not be `NULL`.
+ * @param leaves This parameter contains a set of directory leaves this function converts.
+ * @param error The function uses this parameter to emit error information.
  *
- * @param output The function uses this key set to store the result of the key conversion.
- * @param key This parameter stores the current key this function operates on.
- * @param convertedDirectory This key set either stores the last converted directory value, or nothing (if this function was already
- *                           invoked with the empty version of the directory key as parameter).
- * @param error The function uses this key to emit error information.
- *
- * @retval ELEKTRA_PLUGIN_STATUS_NO_UPDATE if everything went fine and the function copied `key` without any modifications to `output`
- * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if everything went fine and the function either converted a directory value or did not add `key`
- *                                       to output
- * @retval ELEKTRA_PLUGIN_STATUS_ERROR if the function was unable to convert `key`
+ * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if everything went fine.
+ * @retval ELEKTRA_PLUGIN_STATUS_ERROR if the function was unable to remove the directory prefix.
  */
-static int removeDirectoryData (KeySet * output, Key * key, KeySet * convertedDirectory, Key * error)
+static int convertDirectoryLeaves (KeySet * leaves, Key * error)
 {
-	const char * baseName = keyBaseName (key);
-	size_t baseNameLength = keyGetBaseNameSize (key);
-	size_t minLengthBase = (DIRECTORY_POSTFIX_LENGTH < baseNameLength ? DIRECTORY_POSTFIX_LENGTH : baseNameLength) - 1;
+	ELEKTRA_NOT_NULL (leaves);
+	ELEKTRA_NOT_NULL (error);
 
-	if (strncmp (baseName, DIRECTORY_POSTFIX, minLengthBase) == 0 && baseNameLength == DIRECTORY_POSTFIX_LENGTH)
+	KeySet * result = ksNew (0, KS_END);
+	ksRewind (leaves);
+
+	Key * key;
+	while ((key = ksNext (leaves)) != NULL)
 	{
-		ELEKTRA_LOG_DEBUG ("Convert leaf “%s” back to directory key", keyName (key));
-		return convertToDirectory (output, convertedDirectory, key, error);
+		size_t directoryKeyLength = elektraStrLen (keyName (key)) - DIRECTORY_POSTFIX_LENGTH - 1;
+
+		int errorNumber = errno;
+		char * directoryName = strndup (keyName (key), directoryKeyLength);
+		if (!directoryName)
+		{
+			errno = errorNumber;
+			ELEKTRA_MALLOC_ERROR (error, directoryKeyLength);
+			ksDel (result);
+			return ELEKTRA_PLUGIN_STATUS_ERROR;
+		}
+		Key * directoryKey = keyDup (key);
+		keySetName (directoryKey, directoryName);
+		elektraFree (directoryName);
+		ksAppendKey (result, directoryKey);
 	}
 
-	ELEKTRA_ASSERT (ksGetSize (convertedDirectory) <= 1, "More than one recent directory key");
-
-	Key * directory = ksPop (convertedDirectory);
-	if (directory && elektraStrCmp (keyName (key), keyName (directory)) == 0)
-	{
-		ELEKTRA_LOG_DEBUG ("Found old directory key “%s”", keyName (key));
-		keyDel (directory);
-		keyDel (key);
-		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
-	}
-
-	ELEKTRA_LOG_DEBUG ("Append non-special key “%s”", keyName (key));
-	ksAppendKey (output, key);
-	if (directory) ksAppendKey (convertedDirectory, directory);
-	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+	ksCopy (leaves, result);
+	ksDel (result);
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
 // ====================
@@ -270,18 +254,19 @@ int elektraDirectoryvalueGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned,
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
-	Key * key;
-	KeySet * convertedDirectory = ksNew (0, KS_END);
-	KeySet * output = ksNew (0, KS_END);
-	int status = 0;
-	while (status >= 0 && (key = ksPop (returned)) != NULL)
+	KeySet * leaves = ksNew (0, KS_END);
+	int status = ELEKTRA_PLUGIN_STATUS_SUCCESS;
+	splitDirectoryLeaves (returned, leaves);
+	if (ksGetSize (leaves) <= 0) status = ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+	if (convertDirectoryLeaves (leaves, parent) < 0)
 	{
-		status |= removeDirectoryData (output, key, convertedDirectory, parent);
+		status = ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
-	ksCopy (returned, output);
-	ksDel (convertedDirectory);
-	ksDel (output);
-
+	else
+	{
+		ksAppend (returned, leaves);
+	}
+	ksDel (leaves);
 	return status;
 }
 
