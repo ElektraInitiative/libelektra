@@ -11,17 +11,12 @@
 
 #include <kdbhelper.h>
 
-#include <kdbmodule.h>
-#include <kdbprivate.h> // for elektraPluginOpen/Close+plugin structure
 
-
-int elektraDiniOpen (Plugin * handle, Key * errorKey)
+int elektraDiniOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 {
 	Dini * dini = elektraMalloc (sizeof (Dini));
-	dini->modules = ksNew (24, KS_END);
-	elektraModulesInit (dini->modules, errorKey);
-	dini->dump = elektraPluginOpen("dump", dini->modules, ksDup (elektraPluginGetConfig (handle)), 0); // ignore errors
-	dini->ini = elektraPluginOpen("ini", dini->modules, ksDup (elektraPluginGetConfig (handle)), errorKey);
+	dini->dump = elektraInvokeOpen ("dump", ksDup (elektraPluginGetConfig (handle)));
+	dini->ini = elektraInvokeOpen ("ini", ksDup (elektraPluginGetConfig (handle)));
 
 	dini->dumpErrors = keyNew ("", KEY_END);
 
@@ -30,14 +25,12 @@ int elektraDiniOpen (Plugin * handle, Key * errorKey)
 	return dini->ini ? ELEKTRA_PLUGIN_STATUS_SUCCESS : ELEKTRA_PLUGIN_STATUS_ERROR;
 }
 
-int elektraDiniClose (Plugin * handle, Key * errorKey)
+int elektraDiniClose (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 {
 	Dini * dini = elektraPluginGetData (handle);
 
-	elektraPluginClose (dini->ini, errorKey);
-	elektraPluginClose (dini->dump, errorKey);
-
-	elektraModulesClose (dini->modules, errorKey);
+	elektraInvokeClose (dini->ini);
+	elektraInvokeClose (dini->dump);
 
 	keyDel (dini->dumpErrors);
 
@@ -47,7 +40,7 @@ int elektraDiniClose (Plugin * handle, Key * errorKey)
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
-int elektraDiniGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
+int elektraDiniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
 	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/dini"))
 	{
@@ -58,8 +51,6 @@ int elektraDiniGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 			       keyNew ("system/elektra/modules/dini/exports/close", KEY_FUNC, elektraDiniClose, KEY_END),
 			       keyNew ("system/elektra/modules/dini/exports/get", KEY_FUNC, elektraDiniGet, KEY_END),
 			       keyNew ("system/elektra/modules/dini/exports/set", KEY_FUNC, elektraDiniSet, KEY_END),
-			       keyNew ("system/elektra/modules/dini/exports/error", KEY_FUNC, elektraDiniError, KEY_END),
-			       keyNew ("system/elektra/modules/dini/exports/checkconf", KEY_FUNC, elektraDiniCheckConfig, KEY_END),
 #include ELEKTRA_README (dini)
 			       keyNew ("system/elektra/modules/dini/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
@@ -70,36 +61,19 @@ int elektraDiniGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 
 	// get all keys
 	Dini * dini = elektraPluginGetData (handle);
-	if (dini->dump && dini->dump->kdbGet (handle, returned, dini->dumpErrors) != -1)
+	if (elektraInvoke2Args (dini->dump, "get", returned, dini->dumpErrors) != -1)
 	{
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
-	return dini->ini->kdbGet (handle, returned, parentKey);
+	return elektraInvoke2Args (dini->ini, "get", returned, parentKey);
 }
 
 int elektraDiniSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
 	// set all keys
-	// this function is optional
-
-	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
-}
-
-int elektraDiniError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
-{
-	// handle errors (commit failed)
-	// this function is optional
-
-	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
-}
-
-int elektraDiniCheckConfig (Key * errorKey ELEKTRA_UNUSED, KeySet * conf ELEKTRA_UNUSED)
-{
-	// validate plugin configuration
-	// this function is optional
-
-	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+	Dini * dini = elektraPluginGetData (handle);
+	return elektraInvoke2Args (dini->ini, "set", returned, parentKey);
 }
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (dini)
@@ -110,6 +84,5 @@ Plugin * ELEKTRA_PLUGIN_EXPORT (dini)
 		ELEKTRA_PLUGIN_CLOSE,	&elektraDiniClose,
 		ELEKTRA_PLUGIN_GET,	&elektraDiniGet,
 		ELEKTRA_PLUGIN_SET,	&elektraDiniSet,
-		ELEKTRA_PLUGIN_ERROR,	&elektraDiniError,
 		ELEKTRA_PLUGIN_END);
 }
