@@ -61,7 +61,8 @@ does not match
 “NaNaNaNaNaNaNa”
 
 shell_recorder /Users/rene/Documents/test.esr RESULTS: 2 test(s) done 2 error(s).
-📕  Protocol File: /var/folders/hx/flbncdhj4fs87095gzxvnj3h0000gn/T/elektraenv.XXXXXXXXX.gWyTCr2O
+📕
+Protocol File: /var/folders/hx/flbncdhj4fs87095gzxvnj3h0000gn/T/elektraenv.XXXXXXXXX.gWyTCr2O
 ```
 
 . We see that both checks failed. The protocol file at the end of the output contain the real output and  return value of the command:
@@ -192,7 +193,8 @@ the protocol file in it’s output:
 
 ```
 …
-📕  Protocol File: /var/folders/hx/flbncdhj4fs87095gzxvnj3h0000gn/T/elektraenv.XXXXXXXXX.MyZLuGKE
+📕
+Protocol File: /var/folders/hx/flbncdhj4fs87095gzxvnj3h0000gn/T/elektraenv.XXXXXXXXX.MyZLuGKE
 ```
 
 
