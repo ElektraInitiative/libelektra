@@ -2,7 +2,7 @@
 - infos/author = Markus Raab <markus@libelektra.org>
 - infos/licence = BSD
 - infos/needs =
-- infos/provides =
+- infos/provides = storage/ini
 - infos/recommends =
 - infos/placements =
 - infos/status = recommended productive maintained conformant compatible shelltest tested nodep libc experimental concept
