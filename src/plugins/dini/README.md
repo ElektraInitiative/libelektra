@@ -4,7 +4,7 @@
 - infos/needs =
 - infos/provides = storage/ini
 - infos/recommends =
-- infos/placements =
+- infos/placements = getstorage setstorage
 - infos/status = recommended productive maintained conformant compatible shelltest tested nodep libc experimental concept
 - infos/metadata =
 - infos/description = default INI plugin
