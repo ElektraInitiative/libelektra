@@ -14,6 +14,8 @@
 
 #define DIRECTORY_POSTFIX "___dirdata"
 #define DIRECTORY_POSTFIX_LENGTH (sizeof "___dirdata")
+#define ARRAY_VALUE_PREFIX "___dirdata: "
+#define ARRAY_VALUE_PREFIX_LENGTH (sizeof "___dirdata: ")
 
 int elektraDirectoryvalueGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraDirectoryvalueSet (Plugin * handle, KeySet * ks, Key * parentKey);

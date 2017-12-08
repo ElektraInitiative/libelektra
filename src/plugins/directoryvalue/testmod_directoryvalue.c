@@ -30,10 +30,35 @@
 
 // -- Functions ----------------------------------------------------------------------------------------------------------------------------
 
-static KeySet * keySetWithDirValues (void)
+static KeySet * arrayWithDirValues (void)
 {
 	// clang-format off
 	return ksNew (10,
+      		      keyNew ("user/movies", KEY_VALUE, "🎬", KEY_META, "comment", "🍿", KEY_META, "array", "#2", KEY_END),
+      		      keyNew ("user/movies/#0", KEY_VALUE, "A Silent Voice", KEY_END),
+      		      keyNew ("user/movies/#1", KEY_VALUE, "Me and Earl and the Dying Girl", KEY_END),
+      		      keyNew ("user/movies/#2", KEY_VALUE, "12 Angry Men", KEY_END),
+		      KS_END);
+	// clang-format on
+}
+
+static KeySet * arrayWithoutDirValues (void)
+{
+	// clang-format off
+	return ksNew (10,
+      		      keyNew ("user/movies", KEY_END),
+      		      keyNew ("user/movies/#0", KEY_VALUE, "___dirdata: 🎬", KEY_META, "comment", "🍿", KEY_END),
+      		      keyNew ("user/movies/#1", KEY_VALUE, "A Silent Voice", KEY_END),
+      		      keyNew ("user/movies/#2", KEY_VALUE, "Me and Earl and the Dying Girl", KEY_END),
+      		      keyNew ("user/movies/#3", KEY_VALUE, "12 Angry Men", KEY_END),
+		      KS_END);
+	// clang-format on
+}
+
+static KeySet * keySetWithDirValues (void)
+{
+	// clang-format off
+	return ksNew (20,
 		      keyNew ("user/grandparent", KEY_VALUE, "Grandparent", KEY_END),
 		      keyNew ("user/grandparent/leaf", KEY_VALUE, "Leaf", KEY_END),
 		      keyNew ("user/grandparent/parent", KEY_VALUE, "Parent", KEY_END),
@@ -51,7 +76,7 @@ static KeySet * keySetWithDirValues (void)
 static KeySet * keySetWithoutDirValues (void)
 {
 	// clang-format off
-	return ksNew (10,
+	return ksNew (20,
 		      keyNew ("user/grandparent", KEY_END),
 		      keyNew ("user/grandparent/___dirdata", KEY_VALUE, "Grandparent", KEY_END),
 		      keyNew ("user/grandparent/leaf", KEY_VALUE, "Leaf", KEY_END),
@@ -86,18 +111,16 @@ static void test_contract (void)
 	CLOSE_PLUGIN ();
 }
 
-static void test_set (void)
+static void test_set (char const * const message, KeySet * keySet, KeySet * expected)
 #ifdef __llvm__
 	__attribute__ ((annotate ("oclint:suppress[deep nested block]"), annotate ("oclint:suppress[high ncss method]"),
 			annotate ("oclint:suppress[high npath complexity]"), annotate ("oclint:suppress[high cyclomatic complexity]")))
 #endif
 {
-	printf ("• Test set method\n");
+	printf ("%s\n", message);
 
 	INIT_PLUGIN ("user");
 
-	KeySet * keySet = keySetWithDirValues ();
-	KeySet * expected = keySetWithoutDirValues ();
 	succeed_if (plugin->kdbSet (plugin, keySet, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "Unable to open plugin in set direction");
 	compare_keyset (keySet, expected); //! OCLint
 	ksDel (expected);
@@ -133,7 +156,8 @@ int main (int argc, char ** argv)
 	init (argc, argv);
 
 	test_contract ();
-	test_set ();
+	test_set ("• Test set method", keySetWithDirValues (), keySetWithoutDirValues ());
+	test_set ("• Test set method with array values", arrayWithDirValues (), arrayWithoutDirValues ());
 	test_get ();
 
 	print_result ("testmod_directoryvalue");

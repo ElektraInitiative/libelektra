@@ -141,6 +141,140 @@ static void splitDirectories (KeySet * input, KeySet * directories, KeySet * lea
 }
 
 /**
+ * @brief Increase the index of all keys below a given array parent by one.
+ *
+ * @pre The parameters `array`, `keys` and `errorKey` must not be `NULL`.
+ *
+ * @param array This parameter contains an array parent.
+ * @param keys This key set contains the key set `parent` belongs to.
+ * @param errorKey The function uses this parameter to emit error information.
+ *
+ * @returns The function returns a new key set containing modified versions of the children of `array`, if everything went fine. If there
+ *          was an error, the function returns `NULL` instead.
+ */
+static KeySet * childrenIncreaseIndex (Key * array, KeySet * const keys, Key * errorKey)
+{
+	ELEKTRA_NOT_NULL (array);
+	ELEKTRA_NOT_NULL (keys);
+	ELEKTRA_NOT_NULL (errorKey);
+
+	KeySet * children = elektraArrayGet (array, keys);
+	KeySet * childrenNewIndex = ksNew (0, KS_END);
+	Key * child;
+	bool error = false;
+
+	while (!error && (child = ksPop (children)) != NULL)
+	{
+		Key * key = keyDup (child);
+		keyDel (child);
+		if (elektraArrayIncName (key) < 0)
+		{
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_DIRECTORY_VALUE_ARRAY, errorKey, "Could not increase array index for key “%s”",
+					    keyName (key));
+			error = true;
+		}
+		ksAppendKey (childrenNewIndex, key);
+	}
+	ksDel (children);
+	if (error)
+	{
+		ksDel (childrenNewIndex);
+		return NULL;
+	}
+
+	return childrenNewIndex;
+}
+
+/**
+ * @brief Convert an array parent to an array leaf with index 0.
+ *
+ * @pre The parameters `array` and `error` must not be `NULL`.
+ *
+ * @param array This parameter contains the array parent this function converts.
+ * @param error The function uses this parameter to emit error information.
+ *
+ * @returns The function returns a modified version of `array` on success. If there was an error the function returns `NULL` instead.
+ */
+static Key * arrayKeyToLeaf (Key * array, Key * error)
+{
+	ELEKTRA_NOT_NULL (array);
+	ELEKTRA_NOT_NULL (error);
+
+	Key * leaf = keyDup (array);
+	if (keyAddBaseName (leaf, "#0") < 0)
+	{
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_DIRECTORY_VALUE_ARRAY, error, "Could not append array index 0 to “%s”", keyName (leaf));
+		return NULL;
+	}
+	size_t valueLength = keyGetValueSize (array);
+
+	int errorNumber = errno;
+	char * value = elektraMalloc (ARRAY_VALUE_PREFIX_LENGTH + valueLength);
+	if (!value)
+	{
+		errno = errorNumber;
+		ELEKTRA_MALLOC_ERROR (error, valueLength);
+		return NULL;
+	}
+	strncpy (value, ARRAY_VALUE_PREFIX, ARRAY_VALUE_PREFIX_LENGTH);			 //! OCLint (constant conditional operator)
+	strncpy (value + ARRAY_VALUE_PREFIX_LENGTH - 1, keyString (array), valueLength); //! OCLint (constant conditional operator)
+	keySetString (leaf, value);
+
+	return leaf;
+}
+
+/**
+ * @brief Convert array key sets containing directory information (values in parent) to array key sets without directory information.
+ *
+ * The function creates a new key set and stores the modified array parents and leaves in `arrays`. The function inserts a new array child
+ * at index 0 for every non-empty array key stored in `arrays`.
+ *
+ * @pre The parameters `arrays`, `leaves` and `error` must not be `NULL`.
+ *
+ * @param arrays This parameter contains the array parents for which this function inserts new leaves.
+ * @param leaves This key set stores all array elements of the parents stored in `arrays`.
+ * @param error The function uses this parameter to emit error information.
+ *
+ * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if everything went fine
+ * @retval ELEKTRA_PLUGIN_STATUS_ERROR if the function was unable to convert a key
+ */
+static int convertArraysToLeaves (KeySet * arrays, KeySet * const leaves, Key * error)
+{
+	ELEKTRA_NOT_NULL (arrays);
+	ELEKTRA_NOT_NULL (leaves);
+	ELEKTRA_NOT_NULL (error);
+
+	Key * parent;
+	KeySet * result = ksNew (0, KS_END);
+
+	ksRewind (arrays);
+	while ((parent = ksNext (arrays)) != NULL)
+	{
+		// Ignore empty and binary keys
+		if (keyIsBinary (parent) || keyGetValueSize (parent) <= 1)
+		{
+			ksAppendKey (result, keyDup (parent));
+			continue;
+		}
+		// Increase child index
+		KeySet * children = childrenIncreaseIndex (parent, leaves, error);
+		if (!children) return ELEKTRA_PLUGIN_STATUS_ERROR;
+
+		// Add new key at index 0 with value prefix `___dirdata: `
+		Key * leaf = arrayKeyToLeaf (parent, error);
+		if (!leaf) return ELEKTRA_PLUGIN_STATUS_ERROR;
+		keySetMeta (leaf, "array", 0); // Delete (incorrect) information about last index
+		ksAppendKey (result, leaf);
+		ksAppendKey (result, keyNew (keyName (parent), KS_END));
+		ksAppend (result, children);
+	}
+	ksCopy (arrays, result);
+	ksDel (result);
+
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+}
+
+/**
  * @brief Convert all keys in `directories` to an empty key and a leaf key containing the data of the old key.
  *
  * @pre The parameters `directories` and `error` must not be `NULL`.
@@ -301,11 +435,12 @@ int elektraDirectoryvalueSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned,
 
 	splitArray (returned, arrays, withoutArrays);
 	splitDirectories (withoutArrays, directories, leaves);
-	if (ksGetSize (directories) <= 0) status = ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+	if (ksGetSize (directories) <= 0 && ksGetSize (arrays) <= 0) status = ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 	if (convertDirectoriesToLeaves (directories, parent) < 0) status = ELEKTRA_PLUGIN_STATUS_ERROR;
+	if (convertArraysToLeaves (arrays, withoutArrays, parent) < 0) status = ELEKTRA_PLUGIN_STATUS_ERROR;
 	ksCopy (returned, directories);
-	ksAppend (returned, arrays);
 	ksAppend (returned, leaves);
+	ksAppend (returned, arrays); // Overwrite old array elements (stored in leaves) with new array elements
 
 	ksDel (withoutArrays);
 	ksDel (leaves);
