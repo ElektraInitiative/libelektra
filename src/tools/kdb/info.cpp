@@ -45,6 +45,7 @@ int InfoCommand::execute (Cmdline const & cl)
 
 	if (!cl.load)
 	{
+		KDB kdb;
 		kdb.get (conf, parentKey);
 	}
 

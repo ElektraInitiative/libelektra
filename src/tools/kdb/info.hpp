@@ -16,8 +16,6 @@
 
 class InfoCommand : public Command
 {
-	kdb::KDB kdb;
-
 public:
 	InfoCommand ();
 	~InfoCommand ();
