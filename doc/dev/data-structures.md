@@ -366,9 +366,15 @@ Continue reading [with the error handling](error-handling.md).
 
 All structs are defined in [opmphm.h](/src/include/kdbopmphm.h).
 
-The OPMPHM is a randomized hash map of the Las Vegas type, the elements need to be arranged in an array, with arbitrary order.
-The OPMPHM can be understood as index over the elements name, to gain O(1) access to the element.
-The OPMPHM builds such a index for a statical set of elements.
+The OPMPHM is a randomized hash map of the Las Vegas type, it is not a conventional data structure, because
+it does not take ownership of the elements, it just creates an index to gain O(1) access to the elements.
+
+The OPMPHM represent an arbitrary index over your elements arranged in an array.
+The desired index of an element, also known as the order is set in `OpmphmGraph->edges[i].order`.
+Where `i` is the i-th element in your array.
+Since you can assign arbitrary values as the order, the array of your elements can have gaps and even
+have equal orders for two different elements.
+Those orders must be specified before building the OPMPHM.
 
 Once the OPMPHM is build, every:
 
@@ -377,9 +383,6 @@ Once the OPMPHM is build, every:
  * deletion of a indexed element
 
 leads to an invalid OPMPHM and forces a rebuild.
-
-The desired index, also known as the order is set in `OpmphmGraph->edges[i].order`.
-Where `i` is the i-th element in your array.
 
 The OPMPHM maps each element to an edge in an random acyclic r-uniform r-partite hypergraph.
 In a r-uniform r-partite hypergraph each edge connects `r` vertices, each vertex in a different component.
