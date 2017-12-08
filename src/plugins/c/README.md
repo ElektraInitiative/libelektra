@@ -4,7 +4,7 @@
 - infos/needs = ccode
 - infos/provides = storage/c
 - infos/recommends =
-- infos/placements =
+- infos/placements = getstorage setstorage
 - infos/status = maintained nodep libc writeonly preview nodoc
 - infos/metadata =
 - infos/description = C-struct exports for Elektra

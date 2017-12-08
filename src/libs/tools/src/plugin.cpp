@@ -189,6 +189,12 @@ void Plugin::check (vector<string> & warnings)
 	}
 	else
 	{
+		std::string placements = infos["placements"];
+		if (placements.empty ())
+		{
+			warnings.push_back ("placements are empty");
+		}
+
 		std::vector<std::string> pp;
 		pp.push_back ("prerollback");
 		pp.push_back ("rollback");
@@ -203,7 +209,6 @@ void Plugin::check (vector<string> & warnings)
 		pp.push_back ("precommit");
 		pp.push_back ("commit");
 		pp.push_back ("postcommit");
-		std::string placements = infos["placements"];
 		istringstream is (placements);
 		std::string placement;
 		while (is >> placement)

@@ -4,7 +4,7 @@
 - infos/needs =
 - infos/provides =
 - infos/recommends =
-- infos/placements =
+- infos/placements = prerollback rollback postrollback getresolver pregetstorage getstorage postgetstorage setresolver presetstorage setstorage precommit commit postcommit
 - infos/status = recommended productive maintained reviewed conformant compatible coverage specific unittest shelltest tested nodep libc configurable final preview memleak experimental difficult unfinished old nodoc concept orphan obsolete discouraged -1000000
 - infos/metadata =
 - infos/description = one-line description of template
@@ -26,7 +26,7 @@ plugin name:
 Then update the README.md of your newly created plugin:
 
 - enter your full name+email in `infos/author`
-- make sure `status` and other clauses conform to
+- make sure `status`, `placements`, and other clauses conform to
   descriptions in `doc/CONTRACT.ini`
 - update the one-line description above
 - add your plugin in `src/plugins/README.md`

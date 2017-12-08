@@ -3,7 +3,7 @@
 - infos/licence = BSD
 - infos/provides =
 - infos/needs =
-- infos/placements =
+- infos/placements = getstorage setstorage
 - infos/status = unittest configurable memleak experimental discouraged
 - infos/description = generic Java plugin
 
