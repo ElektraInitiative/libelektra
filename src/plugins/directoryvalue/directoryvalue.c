@@ -174,7 +174,7 @@ static bool onlyArrayEntriesDirectlyBelow (Key * key, KeySet * keys)
  * @param arrays The function stores all array parents in this key set.
  * @param other The function stores all non-array keys in this parameter.
  */
-static void splitArrays (KeySet * input, KeySet * arrays, KeySet * other)
+static void splitArrays (KeySet * const input, KeySet * arrays, KeySet * other)
 {
 	ELEKTRA_NOT_NULL (input);
 	ELEKTRA_NOT_NULL (arrays);
@@ -234,7 +234,7 @@ static void splitDirectories (KeySet * input, KeySet * directories, KeySet * lea
  * @returns The function returns a new key set containing modified versions of the children of `array`, if everything went fine. If there
  *          was an error, the function returns `NULL` instead.
  */
-static KeySet * childrenIncreaseIndex (Key * array, KeySet * const keys, Key * errorKey)
+static KeySet * childrenIncreaseIndex (Key * const array, KeySet * const keys, Key * errorKey)
 {
 	ELEKTRA_NOT_NULL (array);
 	ELEKTRA_NOT_NULL (keys);
