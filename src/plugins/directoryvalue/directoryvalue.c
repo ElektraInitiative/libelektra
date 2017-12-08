@@ -20,6 +20,10 @@
 
 // -- Functions ----------------------------------------------------------------------------------------------------------------------------
 
+// =======
+// = Get =
+// =======
+
 /**
  * @brief This function returns a key set containing the contract of this plugin.
  *
@@ -35,6 +39,84 @@ static KeySet * directoryValueContract (void)
 #include ELEKTRA_README (directoryvalue)
 		      keyNew ("system/elektra/modules/directoryvalue/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 }
+
+/**
+ * @brief Copy directory leaves (marked with `DIRECTORY_POSTFIX`) from `input` to leaves.
+ *
+ * @pre The parameters `input` and `leaves` must not be `NULL`.
+ *
+ * @param input The function searches for directory leaves in this key set.
+ * @param leaves The function copies all directory leaves to this key set.
+ */
+static void splitDirectoryLeaves (KeySet * input, KeySet * const leaves)
+{
+	ELEKTRA_NOT_NULL (input);
+	ELEKTRA_NOT_NULL (leaves);
+
+	Key * key;
+	KeySet * other = ksNew (0, KS_END);
+
+	ksRewind (input);
+	while ((key = ksNext (input)) != NULL)
+	{
+		size_t baseNameLength = keyGetBaseNameSize (key);
+		size_t minLengthBase = (DIRECTORY_POSTFIX_LENGTH < baseNameLength ? DIRECTORY_POSTFIX_LENGTH : baseNameLength) - 1;
+		bool isLeaf =
+			strncmp (keyBaseName (key), DIRECTORY_POSTFIX, minLengthBase) == 0 && baseNameLength == DIRECTORY_POSTFIX_LENGTH;
+		ksAppendKey (isLeaf ? leaves : other, keyDup (key));
+	}
+	ksCopy (input, other);
+	ksDel (other);
+}
+
+/**
+ * @brief Remove the directory prefix (`DIRECTORY_POSTFIX`) from all keys in `leaves`.
+ *
+ * @pre The parameters `leaves` and `error` must not be `NULL`.
+ * @pre The name of all keys in `leaves` must end with `DIRECTORY_POSTFIX`.
+ *
+ * @param leaves This parameter contains a set of directory leaves this function converts.
+ * @param error The function uses this parameter to emit error information.
+ *
+ * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if everything went fine.
+ * @retval ELEKTRA_PLUGIN_STATUS_ERROR if the function was unable to remove the directory prefix.
+ */
+static int convertDirectoryLeaves (KeySet * leaves, Key * error)
+{
+	ELEKTRA_NOT_NULL (leaves);
+	ELEKTRA_NOT_NULL (error);
+
+	KeySet * result = ksNew (0, KS_END);
+	ksRewind (leaves);
+
+	Key * key;
+	while ((key = ksNext (leaves)) != NULL)
+	{
+		size_t directoryKeyLength = elektraStrLen (keyName (key)) - DIRECTORY_POSTFIX_LENGTH - 1;
+
+		int errorNumber = errno;
+		char * directoryName = strndup (keyName (key), directoryKeyLength);
+		if (!directoryName)
+		{
+			errno = errorNumber;
+			ELEKTRA_MALLOC_ERROR (error, directoryKeyLength);
+			ksDel (result);
+			return ELEKTRA_PLUGIN_STATUS_ERROR;
+		}
+		Key * directoryKey = keyDup (key);
+		keySetName (directoryKey, directoryName);
+		elektraFree (directoryName);
+		ksAppendKey (result, directoryKey);
+	}
+
+	ksCopy (leaves, result);
+	ksDel (result);
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+}
+
+// =======
+// = Set =
+// =======
 
 /**
  * @brief Check if `key` is directly below `parent`.
@@ -314,80 +396,6 @@ static int convertDirectoriesToLeaves (KeySet * directories, Key * error)
 	ksCopy (directories, result);
 	ksDel (result);
 
-	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
-}
-
-/**
- * @brief Copy directory leaves (marked with `DIRECTORY_POSTFIX`) from `input` to leaves.
- *
- * @pre The parameters `input` and `leaves` must not be `NULL`.
- *
- * @param input The function searches for directory leaves in this key set.
- * @param leaves The function copies all directory leaves to this key set.
- */
-static void splitDirectoryLeaves (KeySet * input, KeySet * const leaves)
-{
-	ELEKTRA_NOT_NULL (input);
-	ELEKTRA_NOT_NULL (leaves);
-
-	Key * key;
-	KeySet * other = ksNew (0, KS_END);
-
-	ksRewind (input);
-	while ((key = ksNext (input)) != NULL)
-	{
-		size_t baseNameLength = keyGetBaseNameSize (key);
-		size_t minLengthBase = (DIRECTORY_POSTFIX_LENGTH < baseNameLength ? DIRECTORY_POSTFIX_LENGTH : baseNameLength) - 1;
-		bool isLeaf =
-			strncmp (keyBaseName (key), DIRECTORY_POSTFIX, minLengthBase) == 0 && baseNameLength == DIRECTORY_POSTFIX_LENGTH;
-		ksAppendKey (isLeaf ? leaves : other, keyDup (key));
-	}
-	ksCopy (input, other);
-	ksDel (other);
-}
-
-/**
- * @brief Remove the directory prefix (`DIRECTORY_POSTFIX`) from all keys in `leaves`.
- *
- * @pre The parameters `leaves` and `error` must not be `NULL`.
- * @pre The name of all keys in `leaves` must end with `DIRECTORY_POSTFIX`.
- *
- * @param leaves This parameter contains a set of directory leaves this function converts.
- * @param error The function uses this parameter to emit error information.
- *
- * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if everything went fine.
- * @retval ELEKTRA_PLUGIN_STATUS_ERROR if the function was unable to remove the directory prefix.
- */
-static int convertDirectoryLeaves (KeySet * leaves, Key * error)
-{
-	ELEKTRA_NOT_NULL (leaves);
-	ELEKTRA_NOT_NULL (error);
-
-	KeySet * result = ksNew (0, KS_END);
-	ksRewind (leaves);
-
-	Key * key;
-	while ((key = ksNext (leaves)) != NULL)
-	{
-		size_t directoryKeyLength = elektraStrLen (keyName (key)) - DIRECTORY_POSTFIX_LENGTH - 1;
-
-		int errorNumber = errno;
-		char * directoryName = strndup (keyName (key), directoryKeyLength);
-		if (!directoryName)
-		{
-			errno = errorNumber;
-			ELEKTRA_MALLOC_ERROR (error, directoryKeyLength);
-			ksDel (result);
-			return ELEKTRA_PLUGIN_STATUS_ERROR;
-		}
-		Key * directoryKey = keyDup (key);
-		keySetName (directoryKey, directoryName);
-		elektraFree (directoryName);
-		ksAppendKey (result, directoryKey);
-	}
-
-	ksCopy (leaves, result);
-	ksDel (result);
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 

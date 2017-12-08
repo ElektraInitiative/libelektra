@@ -156,9 +156,9 @@ int main (int argc, char ** argv)
 	init (argc, argv);
 
 	test_contract ();
+	test_get ();
 	test_set ("• Test set method", keySetWithDirValues (), keySetWithoutDirValues ());
 	test_set ("• Test set method with array values", arrayWithDirValues (), arrayWithoutDirValues ());
-	test_get ();
 
 	print_result ("testmod_directoryvalue");
 
