@@ -421,14 +421,9 @@ int elektraDirectoryvalueGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned,
 	int status = ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	splitDirectoryLeaves (returned, leaves);
 	if (ksGetSize (leaves) <= 0) status = ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
-	if (convertDirectoryLeaves (leaves, parent) < 0)
-	{
-		status = ELEKTRA_PLUGIN_STATUS_ERROR;
-	}
-	else
-	{
-		ksAppend (returned, leaves);
-	}
+	if (convertDirectoryLeaves (leaves, parent) < 0) status = ELEKTRA_PLUGIN_STATUS_ERROR;
+
+	ksAppend (returned, leaves);
 	ksDel (leaves);
 	return status;
 }
