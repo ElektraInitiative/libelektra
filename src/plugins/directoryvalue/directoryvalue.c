@@ -174,7 +174,7 @@ static bool onlyArrayEntriesDirectlyBelow (Key * key, KeySet * keys)
  * @param arrays The function stores all array parents in this key set.
  * @param other The function stores all non-array keys in this parameter.
  */
-static void splitArray (KeySet * input, KeySet * arrays, KeySet * other)
+static void splitArrays (KeySet * input, KeySet * arrays, KeySet * other)
 {
 	ELEKTRA_NOT_NULL (input);
 	ELEKTRA_NOT_NULL (arrays);
@@ -441,7 +441,7 @@ int elektraDirectoryvalueSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned,
 
 	int status = ELEKTRA_PLUGIN_STATUS_SUCCESS;
 
-	splitArray (returned, arrays, withoutArrays);
+	splitArrays (returned, arrays, withoutArrays);
 	splitDirectories (withoutArrays, directories, leaves);
 	if (ksGetSize (directories) <= 0 && ksGetSize (arrays) <= 0) status = ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 	if (convertDirectoriesToLeaves (directories, parent) < 0) status = ELEKTRA_PLUGIN_STATUS_ERROR;
