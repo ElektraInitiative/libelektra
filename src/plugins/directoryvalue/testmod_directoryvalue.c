@@ -128,17 +128,15 @@ static void test_set (char const * const message, KeySet * keySet, KeySet * expe
 	CLOSE_PLUGIN ();
 }
 
-static void test_get (void)
+static void test_get (char const * const message, KeySet * keySet, KeySet * expected)
 #ifdef __llvm__
 	__attribute__ ((annotate ("oclint:suppress[deep nested block]"), annotate ("oclint:suppress[high ncss method]"),
 			annotate ("oclint:suppress[high npath complexity]"), annotate ("oclint:suppress[high cyclomatic complexity]")))
 #endif
 {
-	printf ("• Test get method\n");
+	printf ("%s\n", message);
 	INIT_PLUGIN ("user");
 
-	KeySet * keySet = keySetWithoutDirValues ();
-	KeySet * expected = keySetWithDirValues ();
 	succeed_if (plugin->kdbGet (plugin, keySet, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "Unable to open plugin in get direction");
 	compare_keyset (keySet, expected); //! OCLint
 	ksDel (expected);
@@ -156,7 +154,7 @@ int main (int argc, char ** argv)
 	init (argc, argv);
 
 	test_contract ();
-	test_get ();
+	test_get ("• Test get method", keySetWithoutDirValues (), keySetWithDirValues ());
 	test_set ("• Test set method", keySetWithDirValues (), keySetWithoutDirValues ());
 	test_set ("• Test set method with array values", arrayWithDirValues (), arrayWithoutDirValues ());
 
