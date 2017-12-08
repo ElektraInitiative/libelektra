@@ -2,18 +2,19 @@
 
 ## Dependencies
 
-For the base system you only need cmake and build-essential (make, gcc,
-some Unix tools):
+For the base system you only need cmake, git, and build-essential
+(make, gcc, and some standard Unix tools; alternatively ninja and
+clang are also supported but not described here):
 
-	sudo apt-get install cmake build-essential
+	sudo apt-get install cmake git build-essential
 
 Or on RPM based systems (CentOS):
 
-	sudo yum install -y cmake3 gcc-c++
+	sudo yum install -y cmake3 git gcc-c++
 
 Or on macOS Sierra, most of the build tools can be obtained by installing Xcode (from the App Store). Other required tools may be installed using [brew](http://brew.sh/). First install brew as described on their website. Then issue the following command to get cmake to complete the basic requirements:
 
-	brew install cmake
+	brew install cmake git
 
 
 ## Quick Guide
@@ -28,7 +29,7 @@ cd libelektra
 mkdir build
 cd build
 cmake ..  # watch output to see if everything needed is included
-ccmake .. # optional: provides a console based GUI to give an overview of the available compilation options and settings
+ccmake .. # optional: overview of the available build settings (needs cmake-curses-gui)
 make -j 5
 make run_nokdbtests  # optional: run tests
 ```
