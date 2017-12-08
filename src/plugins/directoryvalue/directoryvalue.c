@@ -301,6 +301,7 @@ static Key * arrayKeyToLeaf (Key * array, Key * error)
 	strncpy (value, ARRAY_VALUE_PREFIX, ARRAY_VALUE_PREFIX_LENGTH);			 //! OCLint (constant conditional operator)
 	strncpy (value + ARRAY_VALUE_PREFIX_LENGTH - 1, keyString (array), valueLength); //! OCLint (constant conditional operator)
 	keySetString (leaf, value);
+	elektraFree (value);
 
 	return leaf;
 }
@@ -349,6 +350,7 @@ static int convertArraysToLeaves (KeySet * arrays, KeySet * const leaves, Key * 
 		ksAppendKey (result, leaf);
 		ksAppendKey (result, keyNew (keyName (parent), KS_END));
 		ksAppend (result, children);
+		ksDel (children);
 	}
 	ksCopy (arrays, result);
 	ksDel (result);
