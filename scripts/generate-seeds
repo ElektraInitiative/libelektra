@@ -5,11 +5,11 @@
 # @date 08.11.2017
 # @tags benchmark, generator
 
-# generates seeds distributed uniformly from 1 to 2147483647 = ELEKTRARANDMAX
+# generates seeds distributed uniformly from 1 to 2147483646 = ELEKTRARANDMAX - 1
 
 if [ ! "$1" ] || [ ! "$2" ]
 then
 	echo "Usage: $0 <numberOfSeeds> <outfile>"
 fi
 
-R --slave --no-save <<< "options(scipen=999);cat(round(runif($1,1,2147483647)), sep=\"\n\")" > "$2"
+R --slave --no-save <<< "options(scipen=999);cat(round(runif($1,1,2147483646)), sep=\"\n\")" > "$2"

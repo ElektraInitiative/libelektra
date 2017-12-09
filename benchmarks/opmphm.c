@@ -722,7 +722,7 @@ static void benchmarkMappingOpt (void)
  *
  * This benchmark counts the opmphmMapping (...)  invocations until success, for each KeySet size and all seeds.
  * First the KeySets are build, for every KeySet size (n). Then the benchmarking for every KeySet size (n) takes place,
- * the seeds start at 1 and go to 2147483647 = ELEKTRARANDMAX = (2^31)-1.
+ * the seeds start at 1 and go to ELEKTRARANDMAX - 1 = 2147483646.
  * At the end the results are written out in the following format:
  *
  * trials;n_%lucr_%luc_%f;... (each n is unique)
@@ -745,7 +745,7 @@ static void benchmarkMappingAllSeeds (void)
 
 	// seeds limits
 	const int32_t startSeed = 1;
-	const int32_t endSeed = 2147483647; // = ELEKTRARANDMAX;
+	const int32_t endSeed = ELEKTRARANDMAX - 1; // = ELEKTRARANDMAX;
 
 	const size_t maxMappings = 10; // the maximum trials for one opmphmMapping (...) invocation series.
 
