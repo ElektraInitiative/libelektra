@@ -32,7 +32,7 @@ void elektraRand (int32_t * seed)
 {
 	ELEKTRA_ASSERT (seed, "seed is NULL");
 	ELEKTRA_ASSERT (*seed, "seed is 0");
-	ELEKTRA_ASSERT (*seed <= ELEKTRARANDMAX, "seed is equal or bigger than ELEKTRARANDMAX");
+	ELEKTRA_ASSERT (*seed <= ELEKTRARANDMAX, "seed is bigger than ELEKTRARANDMAX");
 	uint32_t lo, hi;
 	lo = 16807 * (int32_t) (*seed & 0xFFFF);
 	hi = 16807 * (int32_t) ((uint32_t)*seed >> 16);
