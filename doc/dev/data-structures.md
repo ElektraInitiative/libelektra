@@ -366,15 +366,15 @@ Continue reading [with the error handling](error-handling.md).
 
 All structs are defined in [opmphm.h](/src/include/kdbopmphm.h).
 
-The OPMPHM is a randomized hash map of the Las Vegas type, it is not a conventional data structure, because
-it does not take ownership of the elements, it just creates an index to gain O(1) access to the elements.
+The OPMPHM is a randomized hash map of the Las Vegas type, that creates an index over the elements,
+to gain O(1) access.
 
 The OPMPHM represent an arbitrary index over your elements arranged in an array.
 The desired index of an element, also known as the order is set in `OpmphmGraph->edges[i].order`.
 Where `i` is the i-th element in your array.
 Since you can assign arbitrary values as the order, the array of your elements can have gaps and even
 have equal orders for two different elements.
-Those orders must be specified before building the OPMPHM.
+Those orders must be specified before inserting all elements in the OPMPHM, also known as build.
 
 Once the OPMPHM is build, every:
 
