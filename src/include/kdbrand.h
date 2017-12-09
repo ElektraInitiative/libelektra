@@ -17,7 +17,7 @@ extern "C" {
 #endif
 
 /*Random*/
-#define ELEKTRARANDMAX 2147483646
+#define ELEKTRARANDMAX 2147483647
 void elektraRand (int32_t * seed);
 
 #ifdef KDBRAND_BENCHMARK
