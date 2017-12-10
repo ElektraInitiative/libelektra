@@ -293,7 +293,7 @@ function __fish_kdb_subcommand_supports_option_debug -d 'Check if the current su
 end
 
 function __fish_kdb_subcommand_supports_option_force -d 'Check if the current subcommand supports the option force'
-    __fish_kdb_subcommand_includes check merge
+    __fish_kdb_subcommand_includes check merge rm
 end
 
 function __fish_kdb_subcommand_supports_option_null -d 'Check if the current subcommand supports binary null termination'
