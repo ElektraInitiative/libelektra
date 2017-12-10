@@ -26,6 +26,8 @@ typedef struct
 	KeySet * modules;
 	ElektraInvokeHandle * dump;
 	ElektraInvokeHandle * ini;
+	KeySet * dumpConfig;
+	KeySet * iniConfig;
 	Key * dumpErrors;
 } Dini;
 
