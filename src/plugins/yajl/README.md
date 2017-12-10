@@ -152,8 +152,16 @@ kdb set /examples/yajl/roots 'Things Fall Apart'
 kdb set /examples/yajl/roots/bloody 'Radical Face'
 kdb set /examples/yajl/roots/bloody/roots 'No Roots'
 
+# Add an array containing two elements
+kdb set /examples/yajl/now ', Now'
+kdb set /examples/yajl/now/#0 'Neighbors'
+kdb set /examples/yajl/now/#1 'Threads'
+
 kdb ls /examples/yajl
 #> user/examples/yajl
+#> user/examples/yajl/now
+#> user/examples/yajl/now/#0
+#> user/examples/yajl/now/#1
 #> user/examples/yajl/roots
 #> user/examples/yajl/roots/bloody
 #> user/examples/yajl/roots/bloody/roots
@@ -167,6 +175,16 @@ kdb get /examples/yajl/roots/bloody
 # Retrieve leaf value
 kdb get /examples/yajl/roots/bloody/roots
 #> No Roots
+
+# Check array
+kdb get /examples/yajl/now
+#> , Now
+kdb getmeta /examples/yajl/now array
+#> #1
+kdb get /examples/yajl/now/#0
+#> Neighbors
+kdb get /examples/yajl/now/#1
+#> Threads
 
 # Undo modifications to the database
 kdb rm -r /examples/yajl
