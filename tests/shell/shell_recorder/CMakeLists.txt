@@ -46,12 +46,7 @@ if (ENABLE_KDB_TESTING)
 		"script.esr"
 	)
 
-	# Only add the tests below if they work with the current configuration
-	list (FIND REMOVED_PLUGINS mini PLUGIN_INDEX)
-	if (${PLUGIN_INDEX} EQUAL -1)
-		list (APPEND SCRIPT_TESTS "selftest.esr")
-	endif (${PLUGIN_INDEX} EQUAL -1)
-
+	# Only add the test below if it works using the current configuration
 	list (FIND REMOVED_PLUGINS ni PLUGIN_INDEX)
 	if (${PLUGIN_INDEX} EQUAL -1)
 		list (APPEND SCRIPT_TESTS "mathcheck.esr")
@@ -73,6 +68,12 @@ if (ENABLE_KDB_TESTING)
 	# http://lists.llvm.org/pipermail/cfe-dev/2013-August/031194.html
 	set (ASAN_LINUX ENABLE_ASAN AND ${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 	if (NOT (${ASAN_LINUX} AND CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 5))
+		# Only add the test below if it works using the current configuration
+		list (FIND REMOVED_PLUGINS mini PLUGIN_INDEX)
+		if (${PLUGIN_INDEX} EQUAL -1)
+			list (APPEND SCRIPT_TESTS "selftest.esr")
+		endif (${PLUGIN_INDEX} EQUAL -1)
+
 		file (GLOB REPLAY_TESTS replay_tests/*.esr)
 		foreach (file ${REPLAY_TESTS})
 			get_filename_component (directory ${file} DIRECTORY)
