@@ -155,6 +155,7 @@ int main (int argc, char ** argv)
 
 	test_contract ();
 	test_get ("• Test get method", keySetWithoutDirValues (), keySetWithDirValues ());
+	test_get ("• Test get method with array values", arrayWithoutDirValues (), arrayWithDirValues ());
 	test_set ("• Test set method", keySetWithDirValues (), keySetWithoutDirValues ());
 	test_set ("• Test set method with array values", arrayWithDirValues (), arrayWithoutDirValues ());
 

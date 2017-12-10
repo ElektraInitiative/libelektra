@@ -70,6 +70,37 @@ static void splitDirectoryLeaves (KeySet * input, KeySet * const leaves)
 }
 
 /**
+ * @brief Split `input` into two key sets, one for array leaf keys (index 0, marked with `ARRAY_VALUE_PREFIX`) and one for all other keys.
+ *
+ * @pre The parameters `input` and `leaves` must not be `NULL`.
+ *
+ * @param input The function removes all array leaves from this key set.
+ * @param leaves The function uses this key set to store all array leaves.
+ */
+static void splitArrayLeaves (KeySet * input, KeySet * const leaves)
+{
+	ELEKTRA_NOT_NULL (input);
+	ELEKTRA_NOT_NULL (leaves);
+
+	Key * key;
+	KeySet * other = ksNew (0, KS_END);
+
+	ksRewind (input);
+	while ((key = ksNext (input)) != NULL)
+	{
+		bool isArrayLeaf = elektraStrCmp (keyBaseName (key), "#0") == 0 && keyIsString (key) && keyGetValueSize (key) > 1 &&
+				   strncmp (keyString (key), ARRAY_VALUE_PREFIX, ARRAY_VALUE_PREFIX_LENGTH - 1) == 0;
+		if (isArrayLeaf)
+		{
+			ELEKTRA_LOG_DEBUG ("Key “%s” is an array leaf", keyName (key));
+		}
+		ksAppendKey (isArrayLeaf ? leaves : other, keyDup (key));
+	}
+	ksCopy (input, other);
+	ksDel (other);
+}
+
+/**
  * @brief Remove the directory prefix (`DIRECTORY_POSTFIX`) from all keys in `leaves`.
  *
  * @pre The parameters `leaves` and `error` must not be `NULL`.
@@ -112,6 +143,114 @@ static int convertDirectoryLeaves (KeySet * leaves, Key * error)
 	ksCopy (leaves, result);
 	ksDel (result);
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+}
+
+/**
+ * @brief Remove the index and directory value prefix (`ARRAY_VALUE_PREFIX`) from all keys in `leaves`.
+ *
+ * @pre The parameters `leaves` and `error` must not be `NULL`.
+ * @pre The name of all keys in `leaves` must end with `#0`.
+ * @pre The values in all keys of leaves must start with `ARRAY_VALUE_PREFIX`.
+ *
+ * @param leaves This parameter contains a set of array leaves this function converts.
+ * @param error The function uses this parameter to emit error information.
+ *
+ * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if everything went fine.
+ * @retval ELEKTRA_PLUGIN_STATUS_ERROR if the function was unable to remove the directory prefix.
+ */
+static int convertArrayLeaves (KeySet * leaves, Key * error)
+{
+	ELEKTRA_NOT_NULL (leaves);
+	ELEKTRA_NOT_NULL (error);
+
+	KeySet * result = ksNew (0, KS_END);
+	ksRewind (leaves);
+
+	Key * key;
+	while ((key = ksNext (leaves)) != NULL)
+	{
+		// Convert array element to array parent
+		size_t directoryKeyLength = elektraStrLen (keyName (key)) - sizeof ("#0");
+		int errorNumber = errno;
+		char * arrayName = strndup (keyName (key), directoryKeyLength);
+		if (!arrayName)
+		{
+			errno = errorNumber;
+			ELEKTRA_MALLOC_ERROR (error, directoryKeyLength);
+			ksDel (result);
+			return ELEKTRA_PLUGIN_STATUS_ERROR;
+		}
+		Key * arrayKey = keyDup (key);
+		keySetName (arrayKey, arrayName);
+		elektraFree (arrayName);
+
+		// Remove value prefix
+		keySetString (arrayKey, keyString (key) + ARRAY_VALUE_PREFIX_LENGTH - 1);
+
+		ELEKTRA_LOG_DEBUG ("Converted array key “%s” contains value “%s”", keyName (arrayKey), keyString (arrayKey));
+
+		ksAppendKey (result, arrayKey);
+	}
+	ksCopy (leaves, result);
+	ksDel (result);
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+}
+
+/**
+ * @brief Update all arrays in `returned`.
+ *
+ * The function pops the first array element in `returned` for every array saved in `arrays`. It also decreases the index of the remaining
+ * array elements, and stores the array parents from `arrays` in `returned`. The function also saves the last index of all modified arrays
+ * in the metadata of the array parent.
+ *
+ * @pre The parameters `returned` and `arrays` must not be `NULL`.
+ *
+ * @param returned This parameter contains the array elements of the parents stored in `arrays`. The function updates this key set according
+ *                 to the description above.
+ * @param arrays This parameter saves the parent of every array in `returned` this function updates.
+ */
+static void updateArrays (KeySet * returned, KeySet * const arrays)
+{
+	KeySet * updatedArrays = ksNew (0, KS_END);
+	KeySet * lastElements = ksNew (0, KS_END);
+	ksRewind (arrays);
+
+	Key * array;
+	while ((array = ksNext (arrays)) != NULL)
+	{
+		Key * updatedArray = keyDup (array);
+		KeySet * elements = elektraArrayGet (updatedArray, returned);
+
+		ksRewind (elements);
+		Key * element;
+		bool last = true;
+		while ((element = ksPop (elements)) != NULL)
+		{
+			Key * updatedElement = keyDup (element);
+			elektraArrayDecName (updatedElement);
+			ksAppendKey (updatedArrays, updatedElement);
+			if (last)
+			{
+				ksAppendKey (lastElements, element);
+				keySetMeta (updatedArray, "array", keyBaseName (updatedElement));
+				ELEKTRA_LOG_DEBUG ("New Last index of array “%s” is “%s”", keyName (array), keyBaseName (updatedElement));
+				ksAppendKey (updatedArrays, updatedArray);
+				last = false;
+			}
+			keyDel (element);
+		}
+		ksDel (elements);
+	}
+
+	ksRewind (lastElements);
+	Key * key;
+	while ((key = ksNext (lastElements)) != NULL)
+	{
+		keyDel (ksLookupByName (returned, keyName (key), KDB_O_POP));
+	}
+	ksAppend (returned, updatedArrays);
+	ksDel (lastElements);
+	ksDel (updatedArrays);
 }
 
 // =======
@@ -417,14 +556,29 @@ int elektraDirectoryvalueGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned,
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
-	KeySet * leaves = ksNew (0, KS_END);
-	int status = ELEKTRA_PLUGIN_STATUS_SUCCESS;
-	splitDirectoryLeaves (returned, leaves);
-	if (ksGetSize (leaves) <= 0) status = ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
-	if (convertDirectoryLeaves (leaves, parent) < 0) status = ELEKTRA_PLUGIN_STATUS_ERROR;
+	KeySet * directoryLeaves = ksNew (0, KS_END);
+	KeySet * arrayLeaves = ksNew (0, KS_END);
 
-	ksAppend (returned, leaves);
-	ksDel (leaves);
+	int status = ELEKTRA_PLUGIN_STATUS_SUCCESS;
+
+	splitDirectoryLeaves (returned, directoryLeaves);
+	splitArrayLeaves (returned, arrayLeaves);
+
+	if (ksGetSize (directoryLeaves) <= 0 && ksGetSize (arrayLeaves) <= 0) status = ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+	if (convertDirectoryLeaves (directoryLeaves, parent) < 0) status = ELEKTRA_PLUGIN_STATUS_ERROR;
+	if (convertArrayLeaves (arrayLeaves, parent) >= 0)
+	{
+		updateArrays (returned, arrayLeaves);
+	}
+	else
+	{
+		status = ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+
+	ksAppend (returned, directoryLeaves);
+
+	ksDel (directoryLeaves);
+	ksDel (arrayLeaves);
 	return status;
 }
 
