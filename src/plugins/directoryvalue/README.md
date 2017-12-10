@@ -143,17 +143,33 @@ kdb set /examples/directoryvalue/harold 'Father of SpongeBob SquarePants'
 # Add a leaf value
 kdb set /examples/directoryvalue/harold/spongebob 'I am ready!'
 
+# Add an array
+kdb set /examples/directoryvalue/patrick Star
+kdb set /examples/directoryvalue/patrick/#0 'Being grown-up is boring. Besides, I don’t get Jazz.'
+
 # Since the plugin converts values back in the get direction
 # a user of the database will not notice any changes.
 
 kdb ls /examples/directoryvalue
 #> user/examples/directoryvalue/harold
 #> user/examples/directoryvalue/harold/spongebob
+#> user/examples/directoryvalue/patrick
+#> user/examples/directoryvalue/patrick/#0
 
 kdb get /examples/directoryvalue/harold
 #> Father of SpongeBob SquarePants
 kdb get /examples/directoryvalue/harold/spongebob
 #> I am ready!
+
+kdb get /examples/directoryvalue/patrick
+#> Star
+kdb get /examples/directoryvalue/patrick/#0
+#> Being grown-up is boring. Besides, I don’t get Jazz.
+
+# Retrieve index of last element in array.
+# This also works if the storage plugin does not store this index.
+kdb getmeta /examples/directoryvalue/patrick array
+#> #0
 
 # Undo changes to the key database
 kdb rm -r /examples/directoryvalue
