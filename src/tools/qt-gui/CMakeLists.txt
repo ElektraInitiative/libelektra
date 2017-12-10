@@ -20,7 +20,7 @@ elseif (NOT DISCOUNT_FOUND)
 else()
 
 if (NOT Qt5Svg_FOUND)
-	message(WARNING "No Qt5 svg module found. Svg icons themes will not be supported.")
+	message(WARNING "No Qt5 svg module found. Svg icons themes will not be supported. (please install libqt5svg5-dev)")
 endif ()
 
 if (NOT Qt5DBus_FOUND)
