@@ -79,6 +79,42 @@ user/mother/son                     = Son
 [`yajl`](../yajl/README.md) or [`yamlcpp`](../yajl/README.md) are only able to save values inside leaf keys. By loading the Directory Value
 plugin these storage plugins are also able to represent directory values properly.
 
+### Array Values
+
+The Directory value plugin also converts array values. Let us take  a look at an example key set:
+
+```
+user/array    = Array Value
+user/array/#0 = Firt Value
+user/array/#1 = Second Value
+user/array/#2 = Third Value
+```
+
+. The plugin **does not** convert this key set into:
+
+```
+user/array            =
+user/array/___dirdata = Array Value
+user/array/#0         = First Value
+user/array/#1         = Second Value
+user/array/#2         = Third Value
+```
+
+, since then `user/array` **would not be an array** any more. Instead the plugin inserts a new element at index 0 with the **value prefix**
+`___dirdata: `:
+
+```
+user/array            =
+user/array/#0         = ___dirdata: Array Value
+user/array/#1         = First Value
+user/array/#2         = Second Value
+user/array/#3         = Third Value
+```
+
+. This way a storage plugin such as YAJL or YAML CPP are still able to store `user/array` as an array.
+
+**Remark:** The plugin only converts array parents that store **string values**.
+
 ## Usage
 
 To mount the plugin use the command:
