@@ -273,70 +273,70 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 	}
 
 
-	try
-	{
-		using namespace kdb;
-		/*XXX: Step 4: use default from KDB, if available.*/
-		KDB kdb;
-		KeySet conf;
-
-		for (int i = 0; i <= 2; ++i)
+	if (profile != "nokdb") try
 		{
-			std::string dirname;
-			switch (i)
+			using namespace kdb;
+			/*XXX: Step 4: use default from KDB, if available.*/
+			KDB kdb;
+			KeySet conf;
+
+			for (int i = 0; i <= 2; ++i)
 			{
-			// prefer later dirnames (will override)
-			case 0:
-				dirname = "/sw/kdb/" + profile + "/";
-				break; // legacy
-			case 1:
-				dirname = "/sw/elektra/kdb/#0/%/";
-				break; // no profile
-			case 2:
-				dirname = "/sw/elektra/kdb/#0/" + profile + "/";
-				break; // current profile
+				std::string dirname;
+				switch (i)
+				{
+				// prefer later dirnames (will override)
+				case 0:
+					dirname = "/sw/kdb/" + profile + "/";
+					break; // legacy
+				case 1:
+					dirname = "/sw/elektra/kdb/#0/%/";
+					break; // no profile
+				case 2:
+					dirname = "/sw/elektra/kdb/#0/" + profile + "/";
+					break; // current profile
+				}
+
+				kdb.get (conf, dirname);
+
+				Key k = conf.lookup (dirname + "resolver");
+				if (k) resolver = k.get<string> ();
+
+				k = conf.lookup (dirname + "format");
+				if (k) format = k.get<string> ();
+
+				k = conf.lookup (dirname + "plugins");
+				if (k) plugins = k.get<string> ();
+
+				k = conf.lookup (dirname + "plugins/global");
+				if (k) globalPlugins = k.get<string> ();
+
+				k = conf.lookup (dirname + "namespace");
+				if (k) ns = k.get<string> ();
+
+				k = conf.lookup (dirname + "verbose");
+				if (k) verbose = k.get<bool> ();
+
+				k = conf.lookup (dirname + "quiet");
+				if (k) quiet = k.get<bool> ();
+
+				k = conf.lookup (dirname + "editor");
+				if (k) editor = k.get<string> ();
+
+				k = conf.lookup (dirname + "recommends");
+				if (k) withRecommends = k.get<bool> ();
+
+				map nks = conf.get<map> (dirname + "bookmarks");
+				bookmarks.insert (nks.begin (), nks.end ());
+
+				k = conf.lookup (dirname + "color");
+				if (k) color = k.get<std::string> ();
 			}
-
-			kdb.get (conf, dirname);
-
-			Key k = conf.lookup (dirname + "resolver");
-			if (k) resolver = k.get<string> ();
-
-			k = conf.lookup (dirname + "format");
-			if (k) format = k.get<string> ();
-
-			k = conf.lookup (dirname + "plugins");
-			if (k) plugins = k.get<string> ();
-
-			k = conf.lookup (dirname + "plugins/global");
-			if (k) globalPlugins = k.get<string> ();
-
-			k = conf.lookup (dirname + "namespace");
-			if (k) ns = k.get<string> ();
-
-			k = conf.lookup (dirname + "verbose");
-			if (k) verbose = k.get<bool> ();
-
-			k = conf.lookup (dirname + "quiet");
-			if (k) quiet = k.get<bool> ();
-
-			k = conf.lookup (dirname + "editor");
-			if (k) editor = k.get<string> ();
-
-			k = conf.lookup (dirname + "recommends");
-			if (k) withRecommends = k.get<bool> ();
-
-			map nks = conf.get<map> (dirname + "bookmarks");
-			bookmarks.insert (nks.begin (), nks.end ());
-
-			k = conf.lookup (dirname + "color");
-			if (k) color = k.get<std::string> ();
 		}
-	}
-	catch (kdb::KDBException const & ce)
-	{
-		std::cerr << "Sorry, I could not fetch my own configuration:\n" << ce.what () << std::endl;
-	}
+		catch (kdb::KDBException const & ce)
+		{
+			std::cerr << "Sorry, I could not fetch my own configuration:\n" << ce.what () << std::endl;
+		}
 
 	// reinit
 	index = 0;
