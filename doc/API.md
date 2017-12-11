@@ -170,7 +170,7 @@ They are reserved for more generic purposes.
 - The keys for your application, called say *myapp*, should be created under
 `/sw/org/myapp/#0/current`
 	+ sw is for software
-	+ org is the organisation. For uniqueness a full reverse url encoded with '/' instead of '.' is useful.
+	+ org is the organization. For uniqueness a full reverse url encoded with '/' instead of '.' is useful.
 	+ `#0` is the major version of the configuration
 	+ current is the default configuration profile.
 	+ That means you just need to kdbGet() `/sw/org/myapp/#0/profile`

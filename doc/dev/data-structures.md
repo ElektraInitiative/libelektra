@@ -28,7 +28,7 @@ lookup, but considerably slower on sorted enumeration.
 An **AVL tree** also serves as a competitor.
 AVL trees are expected to be
 faster for inserting keys at any place, but may be slower for appending
-because of the needed reorganisations.
+because of the needed reorganizations.
 Their disadvantage is that they need to allocate
 a large number of small pieces of memory.
 Further investigations, namely implementation and benchmarks,

@@ -97,8 +97,8 @@ Key *parentKey = keyNew("/sw/org/myapp/#0/current", KEY_END);
 - The first argument of `keyNew` is the name of the key.
  It consists of different parts, `/` is the hierarchy-separator:
   - `sw` is for software
-  - `org` is a URL/organisation name to avoid name clashes with other
-      application names. Use only one part of the URL/organisation,
+  - `org` is a URL/organization name to avoid name clashes with other
+      application names. Use only one part of the URL/organization,
       so e.g. `kde` is enough.
   - `myapp` is the name of the most specific component that has its own
       configuration
