@@ -154,3 +154,25 @@ or if specific jobs should be started:
 
 If you want any configuration changes, please contact
 `Markus Raab <elektra@markus-raab.org>`.
+
+### Run All Tests
+
+Before we merge a pull request we want to make sure, that all of the build jobs mentioned above still work. For this purpose we provide the
+phrase:
+
+```
+jenkins build all please
+```
+
+. If you add this phrase to a comment in your pull request, then Jenkins will run all jobs, except for
+
+- `elektra-git-buildpackage-jessie`,
+- `elektra-git-buildpackage-stretch`, and
+- `elektra-git-buildpackage-wheezy`,
+
+. Since running all test jobs takes a lot of time, please use this phrase only if
+
+- all of the **standard PR jobs** were already **successful**, and
+- you are sure that you **do not want change anything** in your PR anymore
+
+.
