@@ -118,6 +118,7 @@ or if specific jobs should be started:
 * jenkins build [bindings](https://build.libelektra.org/job/elektra-test-bindings/) please
 * jenkins build [clang](https://build.libelektra.org/job/elektra-clang/) please
 * jenkins build [clang-asan](https://build.libelektra.org/job/elektra-clang-asan/) please
+* jenkins build [doc](https://build.libelektra.org/jenkins/job/elektra-doc/) please
 * jenkins build [gcc-asan](https://build.libelektra.org/job/elektra-gcc-asan/) please
 * jenkins build [fast](https://build.libelektra.org/job/elektra-mergerequests-fast/) please
 * jenkins build [gcc](https://build.libelektra.org/job/elektra-gcc/) please
