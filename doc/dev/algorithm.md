@@ -40,7 +40,7 @@ separated from the filtering of the backends for every specific `kdbGet()`
 and `kdbSet()` request.
 
 Afterwards the key hierarchy is static.  Every application using Elektra
-will build up the same key database.  Application specific mountpoints
+will build up the same key database.  Application-specific mountpoints
 are prohibited because changes of mountpoints would destroy the global
 key database.  Elektra could not guarantee that every application
 retrieves the same configuration with the same key names any longer.
@@ -81,7 +81,7 @@ of the key set will be permanently removed.
 The new circumstance yields **idempotent**
 properties for `kdbSet()`.  The same `KeySet` can be applied multiple
 times, but after the first time, the key database will not be changed
-anymore. (Note that `kdbSet()`) actually detects that
+anymore. Note that `kdbSet()` actually detects that
 there are no changes and will do nothing. To actually show the idempotent
 behavior the KeySet has to be regenerated or the key database needs to
 be reopened.
