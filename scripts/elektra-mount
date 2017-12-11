@@ -4,7 +4,7 @@ help()
 {
     echo "Usage: $(basename $0) <file> <elektra-path> <plugins>"
     echo "file:  	    	the file to mount in Elektra"
-    echo "elektra-path:         the path inside Eleketra"
+    echo "elektra-path:         the path inside Elektra"
     echo "plugins: 		the list of plugins for mounting"
     echo "The file is mounted if and only if it has not been mounted yet"
     echo "If the file is mounted successfully or already mounted the script "
