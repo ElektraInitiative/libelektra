@@ -47,7 +47,12 @@ if (ENABLE_KDB_TESTING)
 		"script.esr"
 	)
 
-	# Only add the test below if it works using the current configuration
+	# Only add the tests below if they work using the current configuration
+	list (FIND REMOVED_PLUGINS mini PLUGIN_INDEX)
+	if (${PLUGIN_INDEX} EQUAL -1)
+		list (APPEND SCRIPT_TESTS "selftest.esr")
+	endif (${PLUGIN_INDEX} EQUAL -1)
+
 	list (FIND REMOVED_PLUGINS ni PLUGIN_INDEX)
 	if (${PLUGIN_INDEX} EQUAL -1)
 		list (APPEND SCRIPT_TESTS "mathcheck.esr")
@@ -64,32 +69,20 @@ if (ENABLE_KDB_TESTING)
 		set_property(TEST testshell_${testname_we} PROPERTY LABELS memleak kdbtests)
 	endforeach (name ${SCRIPT_TESTS})
 
-	# The tests below might fail on Linux if ASAN is enabled because of problematic code in `stl_tree.h`
-	# The cause of this seems to be a bug in old versions of `libstdc++`:
-	# http://lists.llvm.org/pipermail/cfe-dev/2013-August/031194.html
-	set (ASAN_LINUX ENABLE_ASAN AND ${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-	if (NOT (${ASAN_LINUX} AND CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 5))
-		# Only add the test below if it works using the current configuration
-		list (FIND REMOVED_PLUGINS mini PLUGIN_INDEX)
-		if (${PLUGIN_INDEX} EQUAL -1)
-			list (APPEND SCRIPT_TESTS "selftest.esr")
-		endif (${PLUGIN_INDEX} EQUAL -1)
-
-		if (ENABLE_REPLAY_TESTS)
-			file (GLOB REPLAY_TESTS replay_tests/*.esr)
-			foreach (file ${REPLAY_TESTS})
-				get_filename_component (directory ${file} DIRECTORY)
-				get_filename_component (name_without_extension ${file} NAME_WE)
-				add_test (
-					testshell_replay_${name_without_extension}
-					"${CMAKE_CURRENT_BINARY_DIR}/shell_recorder.sh"
-					"${file}"
-					"${directory}/${name_without_extension}.epf"
-					)
-				set_property(TEST testshell_replay_${name_without_extension} PROPERTY LABELS memleak kdbtests)
-			endforeach (file ${SCRIPT_TESTS})
-		endif (ENABLE_REPLAY_TESTS)
-	endif (NOT (${ASAN_LINUX} AND CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 5))
+	if (ENABLE_REPLAY_TESTS)
+		file (GLOB REPLAY_TESTS replay_tests/*.esr)
+		foreach (file ${REPLAY_TESTS})
+			get_filename_component (directory ${file} DIRECTORY)
+			get_filename_component (name_without_extension ${file} NAME_WE)
+			add_test (
+				testshell_replay_${name_without_extension}
+				"${CMAKE_CURRENT_BINARY_DIR}/shell_recorder.sh"
+				"${file}"
+				"${directory}/${name_without_extension}.epf"
+				)
+			set_property(TEST testshell_replay_${name_without_extension} PROPERTY LABELS memleak kdbtests)
+		endforeach (file ${SCRIPT_TESTS})
+	endif (ENABLE_REPLAY_TESTS)
 
 	add_subdirectory (tutorial_wrapper)
 endif (ENABLE_KDB_TESTING)
