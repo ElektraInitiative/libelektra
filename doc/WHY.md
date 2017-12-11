@@ -94,11 +94,11 @@ Features that rarely can be found elsewhere (at least in this combination):
 - Allows us to easily create GUIs and web-UIs for the whole configuration
   on the system.
 - Allows you to import/export all parts of the configuration.
-- Syntax independence: you can consistently use your favourite syntax.
+- Syntax independence: you can consistently use your favorite syntax.
 - Configuration Management (such as Puppet) can be used on top of it
   without having to fiddle with specifics of every configuration file.
 - CLI-tool available
-- `kdb editor` allows you to edit any path of Elektra with your favourite
+- `kdb editor` allows you to edit any path of Elektra with your favorite
   syntax (independent of the actual syntax of the configuration files
   that store values of this path).
 - Allows us to also [integrate command-line arguments and environment](/src/bindings/intercept/env)

@@ -222,7 +222,7 @@ needs to store the number of received keys of each backend.
 - Additionally, for every key it is checked if it belongs to this
 backend.  This makes sure that every key comes from a single source
 only as designated by the `Trie`.  In this process, Elektra pops all
-duplicated and overlapping keys in favour of the responsible backend.
+duplicated and overlapping keys in favor of the responsible backend.
 
 The last step is to *merge* all these key sets together.  This step
 changes the configuration visible to the user. After some cleanup the
@@ -397,7 +397,7 @@ before will be lost.
 3. The application can try to merge the key sets to get the best
 result.  If no key is changed on both sides the result is clear, otherwise
 the application has to decide if the own or the other configuration should
-be favoured.  The result of the merged key sets has to be written out with
+be favored.  The result of the merged key sets has to be written out with
 `kdbSet()`.
 4. Merging the key sets can be done with `ksAppend()`.  The source
 parameter is the preferred configuration.  Note that the downside of

@@ -40,7 +40,7 @@ Other features are directly implemented in `ksLookup`.
 When cascading keys (those starting with `/`) are used following features
 are now available (in the metadata of respective `spec`-keys):
 
-- `override/#`: use these keys *in favour* of the key itself (note that
+- `override/#`: use these keys *in favor* of the key itself (note that
     `#` is the syntax for arrays, e.g. `#0` for the first element,
     `#_10` for the 11th and so on)
 - `namespace/#`: instead of using all namespaces in the predefined order,

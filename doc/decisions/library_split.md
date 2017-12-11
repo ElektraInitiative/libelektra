@@ -46,7 +46,7 @@ are all linked together to libelektra.org.
 
 ## Notes
 
-- was discussed in a meeting, all were in favour (or did not say anything)
+- was discussed in a meeting, all were in favor (or did not say anything)
 
 Sizes of libelektra.so
 
