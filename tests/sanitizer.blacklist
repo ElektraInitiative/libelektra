@@ -4,4 +4,4 @@ src:*xerces/*.cpp
 src:*xerces/*.hpp
 # memory leaks reported by asan in botan, no issue according to valgrind
 src:*crypto/botan_operations.cpp
-src:*botan/pbkdf.h
+src:*botan/*.h
