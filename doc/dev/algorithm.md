@@ -264,7 +264,7 @@ has to retrieve settings in the *bootstrapping* process below
 Because of the new way to keep track of removed keys, the internally
 executed `kdbGet()` creates a problem. Without countermeasures even
 the first `kdbGet()` of a user requesting the configuration below
-`system/elektra` fails because the resolver finds out that the
+`system/elektra` fails, because the resolver finds out that the
 configuration is already up to date.  The configuration delivered by the
 user is empty at this point.  As a result, the empty configuration will
 be appointed and returned to the user.
@@ -280,7 +280,7 @@ Not performance, but robust and reliable behavior is the most
 important issue for `kdbSet()`.  The design was chosen so that some
 additional in-memory comparisons are preferred to a suboptimal sequence
 of `syscalls`.  The algorithm makes sure that keys
-are written out only if it is necessary because applications can call
+are written out only if it is necessary, because applications can call
 `kdbSet()` with an unchanged `KeySet`. For the code to decide this,
 performance is important.
 
