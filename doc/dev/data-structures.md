@@ -108,7 +108,7 @@ Instead, we try to reuse sets in the following ways:
   is useful in situations where many operations have to be applied in
   a sequence reducing the given `KeySet` until no
   more keys are left.
-  None of the reference pointers changes in this situation.
+  None of the reference pointers change in this situation.
 
   `ksCut(KeySet *ks, const Key *cutpoint)` works that way.
   All keys below the `cutpoint` are moved from `ks` to the returned key
@@ -252,7 +252,7 @@ When using null pointers and
 range checks, the function is noticeably slower than without.
 With the same amount of checks,
 using an external cursor is not much faster than
-the `ksNext()`.
+`ksNext()`.
 External cursor with checks is in a benchmark
 about 10% faster.
 
