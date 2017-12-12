@@ -6,9 +6,9 @@ parameters in a global, hierarchical key database.
 
 The core is a small library implemented in C. The plugin-based framework fulfills many
 configuration-related tasks to avoid any unnecessary code duplication
-across applications while it still allows the core to stay without any
+across applications while it still allows the core to stay minimal without any
 external dependency. Elektra abstracts from cross-platform-related issues
-with an consistent API, and allows applications to be aware of other
+with a consistent API, and allows applications to be aware of other
 applications' configurations, leveraging easy application integration.
 
 
