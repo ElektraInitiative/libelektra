@@ -1914,7 +1914,7 @@ static int elektraLookupBuildOpmphm (KeySet * ks)
 	}
 	// make init
 	OpmphmInit init;
-	init.getName = opmphmelEktraGetString;
+	init.getName = opmphmElektraGetString;
 	init.data = (void **)ks->array;
 	init.initSeed = elektraRandGetInitSeed ();
 
