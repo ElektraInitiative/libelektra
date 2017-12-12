@@ -6,17 +6,30 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
+// uncomment to use OPENMP and set USE_OPENMP in CMakeLists.txt
+//~ #define USE_OPENMP
+
+#ifdef USE_OPENMP
+// set here you number of threads
+#define NUMBEROFTHREADS 8
+#else
+#define NUMBEROFTHREADS 1
+#endif
+
 #define KDBRAND_BENCHMARK
 #include "../src/libs/elektra/opmphm.c"
 #include "../src/libs/elektra/rand.c"
 #include "benchmarks.h"
+#ifdef USE_OPENMP
+#include <omp.h>
+#endif
 #include <sys/time.h>
 
 int32_t elektraRandBenchmarkInitSeed;
 
 // benchmarks helpers
 static int32_t * getRandomSeed (int32_t * seed);
-static FILE * openOutFileWithRPartitePostfix (const char * name);
+static FILE * openOutFileWithRPartitePostfix (const char * name, uint8_t r);
 static const char * elektraGetString (void * data);
 static size_t getPower (size_t p, size_t q);
 // generate KeySets
@@ -64,6 +77,7 @@ static void benchmarkHashFunctionTime (void)
 		for (size_t s = 0; s < numberOfShapes; ++s)
 		{
 			printf ("now at n: %lu/%lu shape: %lu/%lu\r", i, nCount, s, numberOfShapes);
+			fflush (stdout);
 			int32_t seed;
 			if (getRandomSeed (&seed) != &seed) printExit ("Seed Parsing Error or feed me more seeds");
 			KeySet * ks = generateKeySet (n[i], &seed, &keySetShapes[s]);
@@ -94,7 +108,7 @@ static void benchmarkHashFunctionTime (void)
 	}
 	elektraFree (keySetShapes);
 	// wirte out results
-	FILE * out = openOutFileWithRPartitePostfix ("benchmark_opmphm_hashfunctiontime");
+	FILE * out = openOutFileWithRPartitePostfix ("benchmark_opmphm_hashfunctiontime", 0);
 	if (!out)
 	{
 		printExit ("open out file");
@@ -142,325 +156,6 @@ static void benchmarkHashFunctionTime (void)
  */
 
 /**
- * START ======================= Compares the Opmphm Hash Function vs Hash Function suggested by Fox et al. ========================== START
- *
- * This comparison counts how often the mapping process needs to be done. The benchmark tries different n and c (all c above the minimum c),
- * for one n and c multiple seeds are used.
- *
- * The output format is: n/c;n/c;... (each n and c are unique)
- *
- * This benchmark takes (numberOfShapes * nCount) + (different c * seeds) seeds
- */
-
-/**
- * Benchmark the suggested hash function by
- * An O(n log n) Algorithm for Finding Minimal Perfect Hash Functions
- * Fox et al.
- */
-typedef struct
-{
-	size_t maxLength;
-	int32_t * randomData;
-} FoxHash;
-
-/**
- * @brief Creates the FoxHash
- *
- * Finds the longest Key name in the KeySet and generates with initSeed a random Table, such that there is a random number
- * for each char at every possible position in the string.
- *
- * @param initSeed initialization seed
- * @param ks the KeySet
- *
- * @retval FoxHash * success
- * @retval NULL memory error
- */
-static FoxHash * createFoxHash (int32_t * initSeed, KeySet * ks)
-{
-	ELEKTRA_ASSERT (initSeed, "seed is NULL");
-	ELEKTRA_ASSERT (ks, "KeySet is NULL");
-	FoxHash * out = elektraMalloc (sizeof (FoxHash));
-	if (!out)
-	{
-		return NULL;
-	}
-	// find maximum length
-	out->maxLength = 0;
-	Key * key;
-	ksRewind (ks);
-	while ((key = ksNext (ks)))
-	{
-		if (strlen (keyName (key)) > out->maxLength)
-		{
-			out->maxLength = strlen (keyName (key));
-		}
-	}
-	size_t alphabetLength = strlen (alphabetnumbers) + strlen (alphabetspecial);
-	out->randomData = malloc (sizeof (int32_t) * alphabetLength * out->maxLength);
-	if (!out->randomData)
-	{
-		elektraFree (out);
-		return NULL;
-	}
-	for (size_t i = 0; i < alphabetLength * out->maxLength; ++i)
-	{
-		elektraRand (initSeed);
-		out->randomData[i] = *initSeed;
-	}
-	return out;
-}
-
-/**
- * @brief Destroy the FoxHash
- *
- * Frees all memory.
- *
- * @param f the fox hash
- */
-static void destroyFoxHash (FoxHash * f)
-{
-	ELEKTRA_ASSERT (f, "FoxHash is NULL");
-	elektraFree (f->randomData);
-	elektraFree (f);
-}
-
-/**
- * @brief The FoxHash hash function
- *
- * Searches for every char in key the position of the respective char in the alphabets.
- * The position in the alphabets and the position in the key of a char is used to add up the hash function value.
- *
- * @param f the fox hash
- * @param key a char * to the key
- *
- * @retval int32_t hash function value.
- */
-static int32_t foxHash (FoxHash * f, const void * key)
-{
-	int32_t h = 0;
-	char * c = (char *)key;
-	size_t i = 0;
-	while (*c)
-	{
-		// find index of *c in alphabets
-		size_t pos = 0;
-		char * an = (char *)alphabetnumbers;
-		char * as = (char *)alphabetspecial;
-		while (*an && *c != *an)
-		{
-			++pos;
-			++an;
-		}
-		if (!*an)
-		{
-			// not found in alphabetnumbers
-			pos = strlen (alphabetnumbers);
-			while (*as && *c != *as)
-			{
-				++pos;
-				++as;
-			}
-			ELEKTRA_ASSERT (*as, "char not found");
-		}
-		h += f->randomData[pos * f->maxLength + i];
-		++c;
-		++i;
-	}
-	return h;
-}
-
-static size_t benchmarkHashFunctionVsFox (KeySet * ks, size_t n, double c, int32_t seed, const size_t maxMappingCalls)
-{
-	size_t calls = 0;
-	FoxHash * fHash[OPMPHMR_PARTITE];
-	Opmphm * opmphm = opmphmNew ();
-	if (!opmphm) printExit ("opmphm");
-	OpmphmGraph * graph = opmphmGraphNew (opmphm, n, c);
-	if (!graph) printExit ("graph");
-	int cyclic;
-	do
-	{
-		// init fox hash
-		for (uint8_t r = 0; r < OPMPHMR_PARTITE; ++r)
-		{
-			fHash[r] = createFoxHash (&seed, ks);
-			if (!fHash[r]) printExit ("foxhash");
-		}
-		size_t i = 0;
-		Key * key;
-		ksRewind (ks);
-		while ((key = ksNext (ks)))
-		{
-			for (uint8_t r = 0; r < OPMPHMR_PARTITE; ++r)
-			{
-				// set edge.h[]
-				graph->edges[i].h[r] = foxHash (fHash[r], elektraGetString (key)) % opmphm->componentSize;
-				// add edge to graph
-				// set edge.nextEdge[r]
-				size_t v = r * opmphm->componentSize + graph->edges[i].h[r];
-				graph->edges[i].nextEdge[r] = graph->vertices[v].firstEdge;
-				// set vertex.firstEdge
-				graph->vertices[v].firstEdge = i;
-				// increment degree
-				++graph->vertices[v].degree;
-			}
-			++i;
-		}
-		for (uint8_t r = 0; r < OPMPHMR_PARTITE; ++r)
-		{
-			destroyFoxHash (fHash[r]);
-		}
-		cyclic = hasCycle (opmphm, graph, n);
-		if (cyclic)
-		{
-			memset (graph->vertices, 0, opmphm->componentSize * OPMPHMR_PARTITE * sizeof (OpmphmVertex));
-		}
-		++calls;
-	} while (cyclic && calls < maxMappingCalls);
-	opmphmDel (opmphm);
-	opmphmGraphDel (graph);
-	return calls;
-}
-
-static size_t benchmarkHashFunctionVsOpmphm (KeySet * ks, size_t n, double c, int32_t seed, const size_t maxMappingCalls)
-{
-	size_t calls = 0;
-	Opmphm * opmphm = opmphmNew ();
-	if (!opmphm) printExit ("opmphm");
-	OpmphmGraph * graph = opmphmGraphNew (opmphm, n, c);
-	if (!graph) printExit ("graph");
-	OpmphmInit init;
-	init.getString = elektraGetString;
-	init.data = (void **)ks->array;
-	init.initSeed = seed;
-	int ret;
-	do
-	{
-		ret = opmphmMapping (opmphm, graph, &init, n);
-		++calls;
-	} while (ret && calls < maxMappingCalls);
-	opmphmDel (opmphm);
-	opmphmGraphDel (graph);
-	return calls;
-}
-
-static void benchmarkHashFunctionVs (void)
-{
-	const size_t nCount = 1;
-	const size_t n[] = { 10, 100, 1000, 10000 };
-	const size_t seeds = 11;
-	const size_t cCount = 6;
-	const double c[] = { 0.0, 0.1, 0.2, 0.3, 0.4, 0.5 };
-	const size_t maxMappingCalls = 5;
-	// init results
-	size_t * opmphmResults = elektraMalloc (nCount * numberOfShapes * cCount * seeds * sizeof (size_t));
-	if (!opmphmResults)
-	{
-		printExit ("malloc");
-	}
-	size_t * foxResults = elektraMalloc (nCount * numberOfShapes * cCount * seeds * sizeof (size_t));
-	if (!foxResults)
-	{
-		printExit ("malloc");
-	}
-	// benchmarks
-	KeySetShape * keySetShapes = getKeySetShapes ();
-	for (size_t i = 0; i < nCount; ++i)
-	{
-		for (size_t s = 0; s < numberOfShapes; ++s)
-		{
-			printf ("now at n: %lu/%lu shape: %lu/%lu\r", i, nCount, s, numberOfShapes);
-			int32_t genSeed;
-			if (getRandomSeed (&genSeed) != &genSeed) printExit ("Seed Parsing Error or feed me more seeds");
-			KeySet * ks = generateKeySet (n[i], &genSeed, &keySetShapes[s]);
-			for (size_t cI = 0; cI < cCount; ++cI)
-			{
-				for (size_t sI = 0; sI < seeds; ++sI)
-				{
-					// get seed for run
-					int32_t runSeed = 1;
-					if (getRandomSeed (&runSeed) != &runSeed) printExit ("Seed Parsing Error or feed me more seeds");
-					// opmphm
-					opmphmResults[i * (numberOfShapes * cCount * seeds) + s * (cCount * seeds) + cI * seeds + sI] =
-						benchmarkHashFunctionVsOpmphm (ks, n[i], opmphmMinC () + c[cI], runSeed, maxMappingCalls);
-					// fox
-					foxResults[i * (numberOfShapes * cCount * seeds) + s * (cCount * seeds) + cI * seeds + sI] =
-						benchmarkHashFunctionVsFox (ks, n[i], opmphmMinC () + c[cI], runSeed, maxMappingCalls);
-				}
-			}
-			ksDel (ks);
-		}
-	}
-	elektraFree (keySetShapes);
-	// write out
-	FILE * opmphmOut = openOutFileWithRPartitePostfix ("benchmark_opmphm_hashfunction_opmphm");
-	if (!opmphmOut)
-	{
-		printExit ("open out file");
-	}
-	FILE * foxOut = openOutFileWithRPartitePostfix ("benchmark_opmphm_hashfunction_fox");
-	if (!foxOut)
-	{
-		printExit ("open out file");
-	}
-	// print header
-	for (size_t i = 0; i < nCount; ++i)
-	{
-		for (size_t cI = 0; cI < cCount; ++cI)
-		{
-			if (!cI && !i)
-			{
-				fprintf (opmphmOut, "%lu/%f", n[i], opmphmMinC () + c[cI]);
-				fprintf (foxOut, "%lu/%f", n[i], opmphmMinC () + c[cI]);
-			}
-			else
-			{
-				fprintf (opmphmOut, ";%lu/%f", n[i], opmphmMinC () + c[cI]);
-				fprintf (foxOut, ";%lu/%f", n[i], opmphmMinC () + c[cI]);
-			}
-		}
-	}
-	fprintf (opmphmOut, "\n");
-	fprintf (foxOut, "\n");
-	// print data
-	for (size_t s = 0; s < numberOfShapes; ++s)
-	{
-		for (size_t sI = 0; sI < seeds; ++sI)
-		{
-			for (size_t i = 0; i < nCount; ++i)
-			{
-				for (size_t cI = 0; cI < cCount; ++cI)
-				{
-					if (!cI && !i)
-					{
-						fprintf (opmphmOut, "%lu", opmphmResults[i * (numberOfShapes * cCount * seeds) +
-											 s * (cCount * seeds) + cI * seeds + sI]);
-						fprintf (foxOut, "%lu", foxResults[i * (numberOfShapes * cCount * seeds) +
-										   s * (cCount * seeds) + cI * seeds + sI]);
-					}
-					else
-					{
-						fprintf (opmphmOut, ";%lu", opmphmResults[i * (numberOfShapes * cCount * seeds) +
-											  s * (cCount * seeds) + cI * seeds + sI]);
-						fprintf (foxOut, ";%lu", foxResults[i * (numberOfShapes * cCount * seeds) +
-										    s * (cCount * seeds) + cI * seeds + sI]);
-					}
-				}
-			}
-			fprintf (opmphmOut, "\n");
-			fprintf (foxOut, "\n");
-		}
-	}
-	fclose (opmphmOut);
-	fclose (foxOut);
-	elektraFree (opmphmResults);
-	elektraFree (foxResults);
-}
-/**
- * END ========================= Compares the Opmphm Hash Function vs Hash Function suggested by Fox at al. ============================ END
- */
-
-/**
  * START ======================================================= Mapping ============================================================= START
  *
  * This benchmark counts the opmphmMapping (...)  invocations until success, for each KeySet size (n) and space influencing parameter (c).
@@ -477,13 +172,12 @@ static void benchmarkHashFunctionVs (void)
 
 static void benchmarkMapping (void)
 {
-	const size_t nCount = 11;
-	const size_t n[] = { 10, 20, 40, 80, 160, 320, 640, 1280, 2560, 5120, 10240 }; // 11
-	const size_t cCount = 21;
-	const double c[] = {
-		0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0
-	}; // 21
-	const size_t keySetsPerShape = 125;
+	size_t rUniPar = 3;
+	const size_t nCount = 15;
+	const size_t n[] = { 10, 15, 20, 30, 40, 60, 80, 120, 160, 240, 320, 480, 640, 960, 1280 }; // 15
+	const size_t cCount = 15;
+	const double c[] = { 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5 }; // 15
+	const size_t keySetsPerShape = 20;
 	const size_t numberOfKeySets = nCount * numberOfShapes * keySetsPerShape;
 
 	const size_t numberOfSeeds = 10000;
@@ -520,6 +214,7 @@ static void benchmarkMapping (void)
 	for (size_t nI = 0; nI < nCount; ++nI)
 	{
 		printf ("now at: %lu/%lu\r", nI + 1, nCount);
+		fflush (stdout);
 		for (size_t shapeI = 0; shapeI < numberOfShapes; ++shapeI)
 		{
 			for (size_t ksPshapeI = 0; ksPshapeI < keySetsPerShape; ++ksPshapeI)
@@ -533,61 +228,139 @@ static void benchmarkMapping (void)
 	}
 
 	printf ("\nRun Benchmark:\n");
+
+#ifdef USE_OPENMP
+	omp_set_num_threads (NUMBEROFTHREADS);
+	// lock
+	omp_lock_t writeLock;
+	omp_init_lock (&writeLock);
+#endif
+	// split
+	if (numberOfSeeds % NUMBEROFTHREADS != 0) printExit ("seeds % NUMBEROFTHREADS != 0");
+	size_t partSize = numberOfSeeds / NUMBEROFTHREADS;
+
+	// init threads local results
+	size_t * localResults[NUMBEROFTHREADS];
+	for (size_t i = 0; i < NUMBEROFTHREADS; ++i)
+	{
+		localResults[i] = elektraMalloc (nCount * cCount * maxMappings * sizeof (size_t));
+		if (!localResults[i])
+		{
+			printExit ("malloc");
+		}
+	}
+
 	// for all nCount
 	for (size_t nI = 0; nI < nCount; ++nI)
 	{
 		// and cCount
 		for (size_t cI = 0; cI < cCount; ++cI)
 		{
-			// OPMPHM
-			Opmphm * opmphm = opmphmNew ();
-			if (!opmphm) printExit ("opmphm");
-			OpmphmGraph * graph = opmphmGraphNew (opmphm, n[nI], opmphmMinC () + c[cI]);
-			if (!graph) printExit ("graph");
-			OpmphmInit init;
-			init.getString = elektraGetString;
+			printf ("now at: n = %lu/%lu c = %lu/%lu\r", nI + 1, nCount, cI + 1, cCount);
+			fflush (stdout);
+			// OPMPHM for all threads
+			Opmphm * opmphms[NUMBEROFTHREADS];
+			OpmphmGraph * graphs[NUMBEROFTHREADS];
+			for (size_t i = 0; i < NUMBEROFTHREADS; ++i)
+			{
+				opmphms[i] = opmphmNew ();
+				if (!opmphms[i]) printExit ("opmphm");
+				graphs[i] = opmphmGraphNew (opmphms[i], rUniPar, n[nI], opmphmMinC (rUniPar) + c[cI]);
+				if (!graphs[i]) printExit ("graph");
+			}
 			// OPMPHM
 
 			// go through all KeySets from n
 			for (size_t ksCacheI = 0; ksCacheI < numberOfShapes * keySetsPerShape; ++ksCacheI)
 			{
-				printf ("now at: %lu/%lu\r", nI * (cCount * numberOfShapes * keySetsPerShape) +
-								     cI * (numberOfShapes * keySetsPerShape) + ksCacheI + 1,
-					nCount * cCount * numberOfShapes * keySetsPerShape);
-				// OPMPHM
-				init.data = (void **)(keySetsCache[nI * (numberOfShapes * keySetsPerShape) + ksCacheI]->array);
-				// OPMPHM
-
-				// try each seed
-				for (size_t seedI = 0; seedI < numberOfSeeds; ++seedI)
+				KeySet * ks = keySetsCache[nI * (numberOfShapes * keySetsPerShape) + ksCacheI];
+#ifdef USE_OPENMP
+#pragma omp parallel
+#endif
 				{
-					size_t mappings = 0; // counts mapping invocations
+					size_t threadI = 0;
 					// OPMPHM
-					init.initSeed = seeds[seedI];
-					// fresh OpmphmGraph
-					memset (graph->vertices, 0, opmphm->componentSize * OPMPHMR_PARTITE * sizeof (OpmphmVertex));
-					// do benchmark
-					int ret;
-					do
+					OpmphmInit init;
+					init.getName = elektraGetString;
+					init.data = (void **)(ks->array);
+// OPMPHM
+#ifdef USE_OPENMP
+					threadI = omp_get_thread_num ();
+#endif
+					// reset local result
+					memset (localResults[threadI], 0, nCount * cCount * maxMappings * sizeof (size_t));
+
+					// try each seed part
+					for (size_t seedI = threadI * partSize; seedI < (threadI + 1) * partSize; ++seedI)
 					{
-						ret = opmphmMapping (opmphm, graph, &init, n[nI]);
-						++mappings;
-					} while (ret && mappings < maxMappings);
-					// OPMPHM
-					if (mappings < 1 || mappings > maxMappings)
-					{
-						printExit ("benchmarkSeedRangeMappingCount: mappings out of range");
+						size_t mappings = 0; // counts mapping invocations
+						// OPMPHM
+						init.initSeed = seeds[seedI];
+						// fresh OpmphmGraph
+						opmphmGraphClear (opmphms[threadI], graphs[threadI]);
+						// do benchmark
+						int ret;
+						do
+						{
+							ret = opmphmMapping (opmphms[threadI], graphs[threadI], &init, n[nI]);
+							++mappings;
+						} while (ret && mappings < maxMappings);
+						// OPMPHM
+						if (mappings < 1 || mappings > maxMappings)
+						{
+							printExit ("benchmarkSeedRangeMappingCount: mappings out of range");
+						}
+						// check assignment
+						if (nI < 5 && mappings != maxMappings)
+						{
+							// assign
+							if (opmphmAssignment (opmphms[threadI], graphs[threadI], n[nI], 1))
+							{
+								printExit ("check assignment failed");
+							}
+							for (size_t i = 0; i < n[nI]; ++i)
+							{
+								if (i != opmphmLookup (opmphms[threadI], init.getName (init.data[i])))
+								{
+									printExit ("check assignment failed");
+								}
+							}
+							opmphmClear (opmphms[threadI]);
+						}
+						// save result
+						// shift, because 0 not used
+						--mappings;
+						++localResults[threadI][nI * (cCount * maxMappings) + cI * maxMappings + mappings];
 					}
-					// shift, because 0 not used
-					--mappings;
-					++results[nI * (cCount * maxMappings) + cI * maxMappings + mappings];
+#ifdef USE_OPENMP
+					// write local to global
+					omp_set_lock (&writeLock);
+#endif
+					for (size_t i = 0; i < nCount * cCount * maxMappings; ++i)
+					{
+						results[i] += localResults[threadI][i];
+					}
+#ifdef USE_OPENMP
+					omp_unset_lock (&writeLock);
+#endif
 				}
 			}
-			// OPMPHM
-			opmphmDel (opmphm);
-			opmphmGraphDel (graph);
-			// OPMPHM
+			for (size_t i = 0; i < NUMBEROFTHREADS; ++i)
+			{
+				// OPMPHM
+				opmphmDel (opmphms[i]);
+				opmphmGraphDel (graphs[i]);
+				// OPMPHM
+			}
 		}
+		// end for all nCount
+	}
+#ifdef USE_OPENMP
+	omp_destroy_lock (&writeLock);
+#endif
+	for (size_t i = 0; i < NUMBEROFTHREADS; ++i)
+	{
+		free (localResults[i]);
 	}
 	printf ("\n");
 
@@ -613,7 +386,7 @@ static void benchmarkMapping (void)
 	}
 
 	// write out
-	FILE * out = openOutFileWithRPartitePostfix ("benchmark_opmphm_mapping");
+	FILE * out = openOutFileWithRPartitePostfix ("benchmark_opmphm_mapping", rUniPar);
 	if (!out)
 	{
 		printExit ("open out file");
@@ -624,7 +397,7 @@ static void benchmarkMapping (void)
 	{
 		for (size_t cI = 0; cI < cCount; ++cI)
 		{
-			fprintf (out, ";n_%luc_%f", n[nI], opmphmMinC () + c[cI]);
+			fprintf (out, ";n_%luc_%f", n[nI], opmphmMinC (rUniPar) + c[cI]);
 		}
 	}
 	fprintf (out, "\n");
@@ -656,6 +429,538 @@ static void benchmarkMapping (void)
 
 /**
  * END ========================================================= Mapping =============================================================== END
+ */
+
+/**
+ * START ============================================== Mapping with Optimization ==================================================== START
+ *
+ * This benchmark counts the opmphmMapping (...)  invocations until success, for each KeySet size.
+ * First the KeySets are build, for every KeySet size (n) there are numberOfShapes * keySetsPerShape KeySets.
+ * Then the benchmarking for every KeySet size (n) takes place, with a fixed set of seeds for the opmphmMapping (...) invocations.
+ * At the end the results are written out in the following format:
+ *
+ * trials;n_%lucr_%luc_%f;... (each n is unique)
+ *
+ * The number of needed seeds for this benchmarks is: nCount * numberOfShapes * keySetsPerShape (KeySets generation) + numberOfSeeds (tested
+ * seeds)
+ */
+
+static void benchmarkMappingOpt (void)
+{
+	// create the n array
+	const size_t nCount = 132;
+	size_t controlCount = 0;
+	size_t n[nCount];
+	for (size_t i = 2; i <= 38; ++i)
+	{
+		n[controlCount] = i;
+		++controlCount;
+	}
+	for (size_t i = 39; i <= 239; i = i + 5)
+	{
+		n[controlCount] = i;
+		++controlCount;
+	}
+	n[controlCount] = 240;
+	++controlCount;
+	for (size_t i = 259; i <= 1279; i = i + 20)
+	{
+		n[controlCount] = i;
+		++controlCount;
+	}
+	n[controlCount] = 1280;
+	++controlCount;
+	if (controlCount != nCount)
+	{
+		printExit ("controlCount != nCount");
+	}
+
+	const size_t keySetsPerShape = 70;
+	const size_t numberOfKeySets = nCount * numberOfShapes * keySetsPerShape;
+
+	const size_t numberOfSeeds = 20000;
+	const size_t maxMappings = 10; // the maximum trials for one opmphmMapping (...) invocation series.
+
+	// init seed population, used for opmphmMapping (...) invocation.
+	int32_t * seeds = elektraMalloc (numberOfSeeds * sizeof (int32_t));
+	if (!seeds)
+	{
+		printExit ("malloc");
+	}
+	// get seeds
+	for (size_t i = 0; i < numberOfSeeds; ++i)
+	{
+		if (getRandomSeed (&seeds[i]) != &seeds[i]) printExit ("Seed Parsing Error or feed me more seeds");
+	}
+
+	// init results
+	size_t * results = elektraMalloc (nCount * maxMappings * sizeof (size_t));
+	if (!results)
+	{
+		printExit ("malloc");
+	}
+	memset (results, 0, nCount * maxMappings * sizeof (size_t));
+
+	// Generate all KeySets
+	KeySetShape * keySetShapes = getKeySetShapes ();
+	KeySet ** keySetsCache = elektraMalloc (numberOfKeySets * sizeof (KeySet *));
+	if (!keySetsCache)
+	{
+		printExit ("malloc");
+	}
+	printf ("KeySet Cache Build:\n");
+	for (size_t nI = 0; nI < nCount; ++nI)
+	{
+		printf ("now at: %lu/%lu\r", nI + 1, nCount);
+		fflush (stdout);
+		for (size_t shapeI = 0; shapeI < numberOfShapes; ++shapeI)
+		{
+			for (size_t ksPshapeI = 0; ksPshapeI < keySetsPerShape; ++ksPshapeI)
+			{
+				int32_t genSeed;
+				if (getRandomSeed (&genSeed) != &genSeed) printExit ("Seed Parsing Error or feed me more seeds");
+				keySetsCache[nI * (numberOfShapes * keySetsPerShape) + shapeI * keySetsPerShape + ksPshapeI] =
+					generateKeySet (n[nI], &genSeed, &keySetShapes[shapeI]);
+			}
+		}
+	}
+
+	printf ("\nRun Benchmark:\n");
+
+#ifdef USE_OPENMP
+	omp_set_num_threads (NUMBEROFTHREADS);
+	// lock
+	omp_lock_t writeLock;
+	omp_init_lock (&writeLock);
+#endif
+	// split
+	if (numberOfSeeds % NUMBEROFTHREADS != 0) printExit ("seeds % NUMBEROFTHREADS != 0");
+	size_t partSize = numberOfSeeds / NUMBEROFTHREADS;
+
+	// init threads local results
+	size_t * localResults[NUMBEROFTHREADS];
+	for (size_t i = 0; i < NUMBEROFTHREADS; ++i)
+	{
+		localResults[i] = elektraMalloc (nCount * maxMappings * sizeof (size_t));
+		if (!localResults[i])
+		{
+			printExit ("malloc");
+		}
+	}
+
+	// for all nCount
+	for (size_t nI = 0; nI < nCount; ++nI)
+	{
+		printf ("now at: n = %lu/%lu\r", nI + 1, nCount);
+		fflush (stdout);
+		// OPMPHM for all threads
+		Opmphm * opmphms[NUMBEROFTHREADS];
+		OpmphmGraph * graphs[NUMBEROFTHREADS];
+		for (size_t i = 0; i < NUMBEROFTHREADS; ++i)
+		{
+			opmphms[i] = opmphmNew ();
+			if (!opmphms[i]) printExit ("opmphm");
+			uint8_t r = opmphmOptR (n[nI]);
+			graphs[i] = opmphmGraphNew (opmphms[i], r, n[nI], opmphmMinC (r) + opmphmOptC (n[nI]));
+			if (!graphs[i]) printExit ("graph");
+		}
+		// OPMPHM
+
+		// go through all KeySets from n
+		for (size_t ksCacheI = 0; ksCacheI < numberOfShapes * keySetsPerShape; ++ksCacheI)
+		{
+			KeySet * ks = keySetsCache[nI * (numberOfShapes * keySetsPerShape) + ksCacheI];
+#ifdef USE_OPENMP
+#pragma omp parallel
+#endif
+			{
+				size_t threadI = 0;
+				// OPMPHM
+				OpmphmInit init;
+				init.getName = elektraGetString;
+				init.data = (void **)(ks->array);
+// OPMPHM
+#ifdef USE_OPENMP
+				threadI = omp_get_thread_num ();
+#endif
+				// reset local result
+				memset (localResults[threadI], 0, nCount * maxMappings * sizeof (size_t));
+
+				// try each seed part
+				for (size_t seedI = threadI * partSize; seedI < (threadI + 1) * partSize; ++seedI)
+				{
+					size_t mappings = 0; // counts mapping invocations
+					// OPMPHM
+					init.initSeed = seeds[seedI];
+					// fresh OpmphmGraph
+					opmphmGraphClear (opmphms[threadI], graphs[threadI]);
+					// do benchmark
+					int ret;
+					do
+					{
+						ret = opmphmMapping (opmphms[threadI], graphs[threadI], &init, n[nI]);
+						++mappings;
+					} while (ret && mappings < maxMappings);
+					// OPMPHM
+					if (mappings < 1 || mappings > maxMappings)
+					{
+						printExit ("benchmarkSeedRangeMappingCount: mappings out of range");
+					}
+					// check assignment
+					if (nI < 5 && mappings != maxMappings)
+					{
+						// assign
+						if (opmphmAssignment (opmphms[threadI], graphs[threadI], n[nI], 1))
+						{
+							printExit ("check assignment failed");
+						}
+						for (size_t i = 0; i < n[nI]; ++i)
+						{
+							if (i != opmphmLookup (opmphms[threadI], init.getName (init.data[i])))
+							{
+								printExit ("check assignment failed");
+							}
+						}
+						opmphmClear (opmphms[threadI]);
+					}
+					// save result
+					// shift, because 0 not used
+					--mappings;
+					++localResults[threadI][nI * maxMappings + mappings];
+				}
+#ifdef USE_OPENMP
+				// write local to global
+				omp_set_lock (&writeLock);
+#endif
+				for (size_t i = 0; i < nCount * maxMappings; ++i)
+				{
+					results[i] += localResults[threadI][i];
+				}
+#ifdef USE_OPENMP
+				omp_unset_lock (&writeLock);
+#endif
+			}
+		}
+		for (size_t i = 0; i < NUMBEROFTHREADS; ++i)
+		{
+			// OPMPHM
+			opmphmDel (opmphms[i]);
+			opmphmGraphDel (graphs[i]);
+			// OPMPHM
+		}
+		// end for all nCount
+	}
+#ifdef USE_OPENMP
+	omp_destroy_lock (&writeLock);
+#endif
+	for (size_t i = 0; i < NUMBEROFTHREADS; ++i)
+	{
+		free (localResults[i]);
+	}
+	printf ("\n");
+
+	/*
+	 * results sanity check
+	 *
+	 * each n should have in sum (numberOfShapes * keySetsPerShape) for each KeySet times (numberOfSeeds) seeds trials
+	 */
+	for (size_t nI = 0; nI < nCount; ++nI)
+	{
+		size_t sum = 0;
+		for (size_t mappingI = 0; mappingI < maxMappings; ++mappingI)
+		{
+			sum += results[nI * maxMappings + mappingI];
+		}
+		if (sum != numberOfShapes * keySetsPerShape * numberOfSeeds)
+		{
+			printExit ("benchmarkSeedRangeMappingCount: results sanity check failed");
+		}
+	}
+
+	// write out
+	FILE * out = fopen ("benchmark_opmphm_mapping_opt.csv", "w");
+	if (!out)
+	{
+		printExit ("open out file");
+	}
+	// print header
+	fprintf (out, "trials");
+	for (size_t nI = 0; nI < nCount; ++nI)
+	{
+		fprintf (out, ";n_%lur_%uc_%f", n[nI], opmphmOptR (n[nI]), opmphmMinC (opmphmOptR (n[nI])) + opmphmOptC (n[nI]));
+	}
+	fprintf (out, "\n");
+	// print data
+	for (size_t mappingI = 0; mappingI < maxMappings; ++mappingI)
+	{
+		fprintf (out, "%lu", mappingI + 1); // unshift, because 0 is not a result
+		for (size_t nI = 0; nI < nCount; ++nI)
+		{
+			fprintf (out, ";%lu", results[nI * maxMappings + mappingI]);
+		}
+		fprintf (out, "\n");
+	}
+
+	// cleanup
+	for (size_t i = 0; i < numberOfKeySets; ++i)
+	{
+		ksDel (keySetsCache[i]);
+	}
+	elektraFree (keySetsCache);
+	fclose (out);
+	elektraFree (keySetShapes);
+	elektraFree (seeds);
+	elektraFree (results);
+}
+
+/**
+ * END ================================================ Mapping with Optimization ====================================================== END
+ */
+
+/**
+ * START ================================================== Mapping All Seeds ======================================================== START
+ *
+ * This benchmark counts the opmphmMapping (...)  invocations until success, for each KeySet size and all seeds.
+ * First the KeySets are build, for every KeySet size (n). Then the benchmarking for every KeySet size (n) takes place,
+ * the seeds start at 1 and go to ELEKTRARANDMAX - 1 = 2147483646.
+ * At the end the results are written out in the following format:
+ *
+ * trials;n_%lucr_%luc_%f;... (each n is unique)
+ *
+ * The number of needed seeds for this benchmarks is: nCount (KeySets generation)
+ */
+
+static void benchmarkMappingAllSeeds (void)
+{
+	// create the n array
+	const size_t nCount = 7;
+	size_t n[nCount];
+	n[0] = 9;
+	n[1] = 29;
+	n[2] = 49;
+	n[3] = 69;
+	n[4] = 89;
+	n[5] = 109;
+	n[6] = 129;
+
+	// seeds limits
+	const int32_t startSeed = 1;
+	const int32_t endSeed = ELEKTRARANDMAX - 1; // = ELEKTRARANDMAX;
+
+	const size_t maxMappings = 10; // the maximum trials for one opmphmMapping (...) invocation series.
+
+	// init results
+	size_t * results = elektraMalloc (nCount * maxMappings * sizeof (size_t));
+	if (!results)
+	{
+		printExit ("malloc");
+	}
+	memset (results, 0, nCount * maxMappings * sizeof (size_t));
+
+	// Generate all KeySets
+	KeySetShape * keySetShapes = getKeySetShapes ();
+	KeySet ** keySetsCache = elektraMalloc (nCount * sizeof (KeySet *));
+	if (!keySetsCache)
+	{
+		printExit ("malloc");
+	}
+	for (size_t nI = 0; nI < nCount; ++nI)
+	{
+		int32_t genSeed;
+		if (getRandomSeed (&genSeed) != &genSeed) printExit ("Seed Parsing Error or feed me more seeds");
+		keySetsCache[nI] = generateKeySet (n[nI], &genSeed, &keySetShapes[0]); // shape 0 is shapefConstBinary with 0 parents
+	}
+
+	printf ("\nRun Benchmark:\n");
+
+#ifdef USE_OPENMP
+	omp_set_num_threads (NUMBEROFTHREADS);
+	// lock
+	omp_lock_t writeLock;
+	omp_init_lock (&writeLock);
+#endif
+
+	// split the job
+	int32_t partIntervals[NUMBEROFTHREADS * 2];
+	int32_t onePart = (endSeed - startSeed) / NUMBEROFTHREADS;
+	int32_t iterateIntervals = startSeed;
+	for (size_t i = 0; i < NUMBEROFTHREADS; ++i)
+	{
+		if (i == NUMBEROFTHREADS - 1)
+		{
+			// give last thread the remaining seeds
+			partIntervals[i * 2] = iterateIntervals;
+			partIntervals[(i * 2) + 1] = endSeed;
+		}
+		else
+		{
+			partIntervals[i * 2] = iterateIntervals;
+			partIntervals[(i * 2) + 1] = iterateIntervals + onePart - 1;
+			iterateIntervals += onePart;
+		}
+	}
+
+	// init threads local results
+	size_t * localResults[NUMBEROFTHREADS];
+	for (size_t i = 0; i < NUMBEROFTHREADS; ++i)
+	{
+		localResults[i] = elektraMalloc (nCount * maxMappings * sizeof (size_t));
+		if (!localResults[i])
+		{
+			printExit ("malloc");
+		}
+	}
+
+	// for all nCount
+	for (size_t nI = 0; nI < nCount; ++nI)
+	{
+		// OPMPHM for all threads
+		Opmphm * opmphms[NUMBEROFTHREADS];
+		OpmphmGraph * graphs[NUMBEROFTHREADS];
+		for (size_t i = 0; i < NUMBEROFTHREADS; ++i)
+		{
+			opmphms[i] = opmphmNew ();
+			if (!opmphms[i]) printExit ("opmphm");
+			uint8_t r = opmphmOptR (n[nI]);
+			graphs[i] = opmphmGraphNew (opmphms[i], r, n[nI], opmphmMinC (r) + opmphmOptC (n[nI]));
+			if (!graphs[i]) printExit ("graph");
+		}
+		// OPMPHM
+
+		KeySet * ks = keySetsCache[nI];
+#ifdef USE_OPENMP
+#pragma omp parallel
+#endif
+		{
+			size_t threadI = 0;
+			// OPMPHM
+			OpmphmInit init;
+			init.getName = elektraGetString;
+			init.data = (void **)(ks->array);
+// OPMPHM
+
+#ifdef USE_OPENMP
+			threadI = omp_get_thread_num ();
+#endif
+			// reset local result
+			memset (localResults[threadI], 0, nCount * maxMappings * sizeof (size_t));
+
+			// try each seed part
+			for (int32_t seed = partIntervals[threadI * 2];
+			     partIntervals[threadI * 2] <= seed && seed <= partIntervals[(threadI * 2) + 1]; ++seed)
+			{
+				if (threadI == 0 && (seed % 1000) == 0)
+				{
+					printf ("now at: n = %lu/%lu and seed %i from %i\r", nI + 1, nCount, seed, partIntervals[1]);
+					fflush (stdout);
+				}
+				size_t mappings = 0; // counts mapping invocations
+				// OPMPHM
+				init.initSeed = seed;
+				// fresh OpmphmGraph
+				opmphmGraphClear (opmphms[threadI], graphs[threadI]);
+				// do benchmark
+				int ret;
+				do
+				{
+					ret = opmphmMapping (opmphms[threadI], graphs[threadI], &init, n[nI]);
+					++mappings;
+				} while (ret && mappings < maxMappings);
+				// OPMPHM
+				if (mappings < 1 || mappings > maxMappings)
+				{
+					printExit ("benchmarkSeedRangeMappingCount: mappings out of range");
+				}
+				// save result
+				// shift, because 0 not used
+				--mappings;
+				++localResults[threadI][nI * maxMappings + mappings];
+			}
+#ifdef USE_OPENMP
+			// write local to global
+			omp_set_lock (&writeLock);
+#endif
+			for (size_t i = 0; i < nCount * maxMappings; ++i)
+			{
+				results[i] += localResults[threadI][i];
+			}
+#ifdef USE_OPENMP
+			omp_unset_lock (&writeLock);
+#endif
+		}
+		for (size_t i = 0; i < NUMBEROFTHREADS; ++i)
+		{
+			// OPMPHM
+			opmphmDel (opmphms[i]);
+			opmphmGraphDel (graphs[i]);
+			// OPMPHM
+		}
+		// end for all nCount
+	}
+#ifdef USE_OPENMP
+	omp_destroy_lock (&writeLock);
+#endif
+	for (size_t i = 0; i < NUMBEROFTHREADS; ++i)
+	{
+		free (localResults[i]);
+	}
+	printf ("\n");
+
+	/*
+	 * results sanity check
+	 *
+	 * each n should have in sum endSeed - startSeed + 1 trials
+	 */
+	for (size_t nI = 0; nI < nCount; ++nI)
+	{
+		size_t sum = 0;
+		for (size_t mappingI = 0; mappingI < maxMappings; ++mappingI)
+		{
+			sum += results[nI * maxMappings + mappingI];
+		}
+		if (sum != (size_t)endSeed - startSeed + 1)
+		{
+			printExit ("benchmarkSeedRangeMappingCount: results sanity check failed");
+		}
+	}
+
+	// write out
+	FILE * out = fopen ("benchmark_opmphm_mapping_allSeeds.csv", "w");
+	if (!out)
+	{
+		printExit ("open out file");
+	}
+	// print header
+	fprintf (out, "trials");
+	for (size_t nI = 0; nI < nCount; ++nI)
+	{
+		fprintf (out, ";n_%lur_%uc_%f", n[nI], opmphmOptR (n[nI]), opmphmMinC (opmphmOptR (n[nI])) + opmphmOptC (n[nI]));
+	}
+	fprintf (out, "\n");
+	// print data
+	for (size_t mappingI = 0; mappingI < maxMappings; ++mappingI)
+	{
+		fprintf (out, "%lu", mappingI + 1); // unshift, because 0 is not a result
+		for (size_t nI = 0; nI < nCount; ++nI)
+		{
+			fprintf (out, ";%lu", results[nI * maxMappings + mappingI]);
+		}
+		fprintf (out, "\n");
+	}
+
+	// cleanup
+	for (size_t i = 0; i < nCount; ++i)
+	{
+		ksDel (keySetsCache[i]);
+	}
+	elektraFree (keySetsCache);
+	fclose (out);
+	elektraFree (keySetShapes);
+	elektraFree (results);
+}
+
+/**
+ * END ==================================================== Mapping All Seeds ========================================================== END
  */
 
 /**
@@ -697,24 +1002,28 @@ static void benchmarkPrintAllKeySetShapes (void)
 int main (int argc, char ** argv)
 {
 	// define all benchmarks
-	const size_t benchmarksCount = 4;
+	const size_t benchmarksCount = 5;
 	Benchmark benchmarks[benchmarksCount];
 	// hashfunctiontime
 	char * benchmarkNameHashFunctionTime = "hashfunctiontime";
 	benchmarks[0].name = benchmarkNameHashFunctionTime;
 	benchmarks[0].benchmarkF = benchmarkHashFunctionTime;
-	// hashfunctionvs
-	char * benchmarkNameHashFunctionVs = "hashfunctionvs";
-	benchmarks[1].name = benchmarkNameHashFunctionVs;
-	benchmarks[1].benchmarkF = benchmarkHashFunctionVs;
 	// mapping
 	char * benchmarkNameMapping = "mapping";
-	benchmarks[2].name = benchmarkNameMapping;
-	benchmarks[2].benchmarkF = benchmarkMapping;
+	benchmarks[1].name = benchmarkNameMapping;
+	benchmarks[1].benchmarkF = benchmarkMapping;
+	// mapping_opt
+	char * benchmarkNameMappingOpt = "mapping_opt";
+	benchmarks[2].name = benchmarkNameMappingOpt;
+	benchmarks[2].benchmarkF = benchmarkMappingOpt;
+	// mapping_allseeds
+	char * benchmarkNameMappingAllSeeds = "mapping_allseeds";
+	benchmarks[3].name = benchmarkNameMappingAllSeeds;
+	benchmarks[3].benchmarkF = benchmarkMappingAllSeeds;
 	// printallkeysetshapes
 	char * benchmarkNamePrintAllKeySetShapes = "printallkeysetshapes";
-	benchmarks[3].name = benchmarkNamePrintAllKeySetShapes;
-	benchmarks[3].benchmarkF = benchmarkPrintAllKeySetShapes;
+	benchmarks[4].name = benchmarkNamePrintAllKeySetShapes;
+	benchmarks[4].benchmarkF = benchmarkPrintAllKeySetShapes;
 
 	// run benchmark
 	if (argc == 1)
@@ -729,7 +1038,7 @@ int main (int argc, char ** argv)
 	}
 	for (size_t i = 0; i < benchmarksCount; ++i)
 	{
-		if (!strncmp (benchmarks[i].name, argv[1], strlen (benchmarks[i].name)))
+		if (!strncmp (benchmarks[i].name, argv[1], strlen (argv[1])))
 		{
 			benchmarks[i].benchmarkF ();
 			return EXIT_SUCCESS;
@@ -789,14 +1098,14 @@ static int32_t * getRandomSeed (int32_t * seed)
  * @retval FILE * on success
  * @retval NULL on error
  */
-static FILE * openOutFileWithRPartitePostfix (const char * name)
+static FILE * openOutFileWithRPartitePostfix (const char * name, uint8_t r)
 {
 	const char * const format = "%u.csv";
 	char formatData[strlen (name) + strlen (format) + 1];
 	char filename[strlen (name) + strlen (format) + 1];
 	strcpy (formatData, name);
 	strcpy (&formatData[strlen (name)], format);
-	sprintf (filename, formatData, OPMPHMR_PARTITE);
+	sprintf (filename, formatData, r);
 	FILE * out = fopen (filename, "w");
 	if (!out)
 	{

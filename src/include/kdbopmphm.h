@@ -12,32 +12,18 @@
 #include <stdlib.h>
 
 /**
- * The Order Preserving Minimal Perfect Hash Map (OPMPHM) maps each element to an edge in an r-partite hypergraph.
- * The r-partite hypergraph consist of `OPMPHMR_PARTITE` components, each component has `Opmphm->componentSize` vertices.
- * An edge connects `OPMPHMR_PARTITE` vertices, each one in separate components of the r-partite hypergraph.
- * The number of vertices in one component of the r-partite hypergraph (`Opmphm->componentSize`) is calculated during
- * `opmphmGraphNew ()` the following way:
+ * For usage look in [datastructures.md](/doc/dev/datastructures.md) 
  *
- * ```
- * Opmphm->componentSize = (c * n / OPMPHMR_PARTITE) + 1;
- * ```
- *
- * Note that `c` must have a minimal value in order to generate acyclic r-partite hypergraphs.
- * The minimal value of `c` depends on `OPMPHMR_PARTITE` and is provided by the function `opmphmMinC ()`.
- *
- * The finals size of the opmphm (`Opmphm->graph`) is: `Opmphm->componentSize * OPMPHMR_PARTITE`
  */
 
-#define OPMPHMR_PARTITE 3
-
 /**
- * The r-partite hypergraph
+ * The r-uniform r-partite hypergraph
  */
 typedef struct
 {
-	uint32_t h[OPMPHMR_PARTITE];      /*!< hash function values and index of vertices which the edge connects*/
-	size_t order;			  /*!< desired hash map return value */
-	size_t nextEdge[OPMPHMR_PARTITE]; /*!< index of the next edge in the lists */
+	uint32_t * h;      /*!< array with Opmphm->rUniPar hash function values, representing the index of vertices that the edge connects*/
+	size_t order;      /*!< desired hash map return value */
+	size_t * nextEdge; /*!< arary with Opmphm->rUniPar indices of the next edge in the lists */
 } OpmphmEdge;
 
 typedef struct
@@ -50,7 +36,7 @@ typedef struct
 {
 	OpmphmEdge * edges;      /*!< array of all edges */
 	OpmphmVertex * vertices; /*!< array of all vertices */
-	size_t * removeOrder;    /*!< remove sequence of acyclic r-partite hypergraph */
+	size_t * removeOrder;    /*!< remove sequence of acyclic r-uniform r-partite hypergraph */
 	size_t removeIndex;      /*!< the index used for insertion in removeOrder  */
 } OpmphmGraph;
 
@@ -59,28 +45,36 @@ typedef struct
  */
 typedef struct
 {
-	size_t * graph;					  /*!< array containing the final OPMPHM */
-	size_t size;					  /*!< size of g in bytes */
-	int32_t opmphmHashFunctionSeeds[OPMPHMR_PARTITE]; /*!< the seed for the hash function calls */
-	size_t componentSize;				  /*!< the number of vertices in one part of the r-partite hypergraph */
+	int32_t * hashFunctionSeeds; /*!< arary with Opmphm->rUniPar seeds for the hash function calls */
+	uint8_t rUniPar;	     /*! < number of components in the r-uniform r-partite hypergraph */
+	size_t componentSize;	/*!< the number of vertices in one part of the r-uniform r-partite hypergraph */
+	size_t * graph;		     /*!< array containing the final OPMPHM */
+	size_t size;		     /*!< size of g in bytes */
 } Opmphm;
+
+/**
+ * Functions providing `r` and `c`
+ */
+double opmphmMinC (uint8_t r);
+uint8_t opmphmOptR (size_t n);
+double opmphmOptC (size_t n);
 
 /**
  * Graph functions
  */
-double opmphmMinC (void);
-OpmphmGraph * opmphmGraphNew (Opmphm * opmphm, size_t n, double c);
+OpmphmGraph * opmphmGraphNew (Opmphm * opmphm, uint8_t r, size_t n, double c);
+void opmphmGraphClear (Opmphm * opmphm, OpmphmGraph * graph);
 void opmphmGraphDel (OpmphmGraph * graph);
 
 /**
  * Only needed for Initialisation.
  */
-typedef const char * (*opmphmGetString) (void *);
+typedef const char * (*opmphmGetName) (void *);
 typedef struct
 {
-	opmphmGetString getString; /*!< function pointer used to extract the key name from the data. */
-	void ** data;		   /*!< the data */
-	int32_t initSeed;	  /*!< seed used to determine opmphmHashFunctionSeeds */
+	opmphmGetName getName; /*!< function pointer used to extract the key name from the data. */
+	void ** data;	  /*!< the data */
+	int32_t initSeed;      /*!< seed used to determine opmphmHashFunctionSeeds */
 } OpmphmInit;
 
 /**
@@ -100,7 +94,6 @@ size_t opmphmLookup (Opmphm * opmphm, const void * name);
 Opmphm * opmphmNew (void);
 void opmphmDel (Opmphm * opmphm);
 void opmphmClear (Opmphm * opmphm);
-int opmphmIsEmpty (Opmphm * opmphm);
 
 /**
  * Hash function
