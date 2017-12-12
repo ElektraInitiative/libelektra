@@ -8,6 +8,7 @@
 
 #include "kdbrand.h"
 #include <kdbassert.h>
+#include <time.h>
 
 /**
  * Non cryptographic pseudo random number generator
@@ -53,9 +54,19 @@ void elektraRand (int32_t * seed)
 
 int32_t elektraRandGetInitSeed (void)
 {
+	int32_t initSeed = time (0);
+	// ELEKTRARANDMAX is limit
+	if (initSeed >= ELEKTRARANDMAX)
+	{
+		initSeed = initSeed % ELEKTRARANDMAX;
+	}
+	// 0 not accepted by elektraRand
+	if (!initSeed)
+	{
+		initSeed = 1;
+	}
 #ifdef KDBRAND_BENCHMARK
-	return elektraRandBenchmarkInitSeed;
-#else
-	return 1;
+	initSeed = elektraRandBenchmarkInitSeed;
 #endif
+	return initSeed;
 }

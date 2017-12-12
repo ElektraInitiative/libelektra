@@ -30,6 +30,7 @@
 
 #include "kdbinternal.h"
 #include <kdbassert.h>
+#include <kdbrand.h>
 
 
 #define ELEKTRA_MAX_PREFIX_SIZE sizeof ("namespace/")
@@ -1882,6 +1883,101 @@ static Key * elektraLookupBinarySearch (KeySet * ks, Key const * key, option_t o
 	return 0;
 }
 
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+
+static const char * opmphmElektraGetString (void * data)
+{
+	return keyName ((Key *)data);
+}
+
+static int elektraLookupBuildOpmphm (KeySet * ks)
+{
+	if (!ks->opmphm)
+	{
+		ks->opmphm = opmphmNew ();
+		if (!ks->opmphm)
+		{
+			return -1;
+		}
+	}
+	if (!ks->size) return -1;
+	// alwasy new OPMPHM
+	opmphmClear (ks->opmphm);
+	// make graph
+	uint8_t r = opmphmOptR (ks->size);
+	double c = opmphmMinC (r);
+	c += opmphmOptC (ks->size);
+	OpmphmGraph * graph = opmphmGraphNew (ks->opmphm, r, ks->size, c);
+	if (!graph)
+	{
+		return -1;
+	}
+	// make init
+	OpmphmInit init;
+	init.getName = opmphmelEktraGetString;
+	init.data = (void **)ks->array;
+	init.initSeed = elektraRandGetInitSeed ();
+
+	// mapping
+	size_t mappings = 0; // counts mapping invocations
+	int ret;
+	do
+	{
+		ret = opmphmMapping (ks->opmphm, graph, &init, ks->size);
+		++mappings;
+	} while (ret && mappings < 10);
+	if (ret && mappings == 10)
+	{
+		opmphmGraphDel (graph);
+		return -1;
+	}
+
+	// assign
+	if (opmphmAssignment (ks->opmphm, graph, ks->size, 1))
+	{
+		opmphmGraphDel (graph);
+		return -1;
+	}
+
+	opmphmGraphDel (graph);
+	return 0;
+}
+
+static Key * elektraLookupOpmphmSearch (KeySet * ks, Key const * key, option_t options)
+{
+
+	cursor_t cursor = 0;
+	cursor = ksGetCursor (ks);
+	size_t index = opmphmLookup (ks->opmphm, keyName (key));
+	if (index >= ks->size)
+	{
+		return 0;
+	}
+
+	Key * found = ks->array[index];
+
+	if (!strcmp (keyName (found), keyName (key)))
+	{
+		cursor = index;
+		if (options & KDB_O_POP)
+		{
+			return elektraKsPopAtCursor (ks, cursor);
+		}
+		else
+		{
+			ksSetCursor (ks, cursor);
+			return found;
+		}
+	}
+	else
+	{
+		ksSetCursor (ks, cursor);
+		return 0;
+	}
+}
+
+#endif
+
 /**
  * @brief Process Callback + maps to correct binary/hashmap search
  *
@@ -1895,8 +1991,40 @@ static Key * elektraLookupSearch (KeySet * ks, Key * key, option_t options)
 		void * v;
 	} conversation;
 
-	Key * found = elektraLookupBinarySearch (ks, key, options);
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 
+	// OPMPHM always on
+	options |= KDB_O_OPMPHM;
+
+	// flags not compatible with OPMPHM
+	if (((options & KDB_O_WITHOWNER) || (options & KDB_O_NOCASE)) && (options & KDB_O_OPMPHM))
+	{
+		// remove OPMPHM
+		options ^= KDB_O_OPMPHM;
+	}
+
+	Key * found = 0;
+
+	if (options & KDB_O_OPMPHM)
+	{
+		// alwasy new OPMPHM
+		if (elektraLookupBuildOpmphm (ks))
+		{
+			found = elektraLookupBinarySearch (ks, key, options);
+		}
+		else
+		{
+			// when OPMPHM build fails use binary search as backup
+			found = elektraLookupOpmphmSearch (ks, key, options);
+		}
+	}
+	else
+	{
+		found = elektraLookupBinarySearch (ks, key, options);
+	}
+#else
+	Key * found = elektraLookupBinarySearch (ks, key, options);
+#endif
 	Key * ret = found;
 
 	if (keyGetMeta (key, "callback"))
