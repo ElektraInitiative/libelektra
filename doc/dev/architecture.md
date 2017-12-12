@@ -129,7 +129,7 @@ modules independently from the operating system.  This API also hides the
 fact that modules must be loaded dynamically if they are not available
 statically.
 
-Plugins are usually realised with modules.  Modules and libraries are
+Plugins are usually realized with modules.  Modules and libraries are
 technically the same in most systems. (One exception is macOS.)
 After the module is loaded, the special function plugin factory
 is searched for.  This function returns a new plugin.  With the plugin

@@ -218,7 +218,7 @@ his or her own purposes.
 To change the internal cursor, it is
 sufficient to iterate
 over the `KeySet` and stop at the wanted key.
-With this technique, we can, for example, realise
+With this technique, we can, for example, realize
 lookup by value, by specific metadata and by
 parts of the name.
 Without an additional index, it is not possible that
