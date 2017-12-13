@@ -83,6 +83,9 @@ Many problems were resolved with the following fixes:
 
 We are currently working on following topics:
 
+- The Order Preserving Minimal Perfect Hash Map is ready to extend the ksLookup. The implementation of the randomized Las Vegas hash map
+  algorithm is in a final stage and the heuristic functions that ensure time and space optimality are backed up by benchmarks.
+  The next release will include it!
 - <<TODO>>
 
 ## Get It!
