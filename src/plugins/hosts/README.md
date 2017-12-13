@@ -86,10 +86,10 @@ kdb get /examples/hosts/ipv6/localhost
 # Should both fail with error 51 and return 5
 kdb set /examples/hosts/ipv4/localhost ::1
 # RET:5
-# ERRORS:51
+# ERROR:51
 kdb set /examples/hosts/ipv6/localhost 127.0.0.1
 # RET:5
-# ERRORS:51
+# ERROR:51
 
 # cleanup
 kdb rm -r /examples/hosts

@@ -32,46 +32,28 @@
  */
 int elektraArrayValidateName (const Key * key)
 {
-	if (!key)
-	{
-		return -1;
-	}
+	const char * current;
+	if (!key || !(current = keyBaseName (key)) || *current != '#') return -1;
+	if (!strcmp (current, "#")) return 0;
 
-	const char * current = keyBaseName (key);
+	current++;
+	int underscores = 0;
+	int digits = 0;
 
-	if (!current)
-	{
-		return -1;
-	}
-
-	if (!strcmp (current, "#"))
-	{
-		return 0;
-	}
-
-	if (*current == '#')
+	while (*current == '_')
 	{
 		current++;
-		int underscores = 0;
-		int digits = 0;
-
-		for (; *current == '_'; current++)
-		{
-			underscores++;
-		}
-
-		for (; isdigit ((unsigned char)*current); current++)
-		{
-			digits++;
-		}
-
-		if (underscores != digits - 1) return -1;
-		if (underscores + digits > ELEKTRA_MAX_ARRAY_SIZE - 2)
-		{
-			return -1;
-		}
+		underscores++;
 	}
-	else
+
+	while (isdigit ((unsigned char)*current))
+	{
+		current++;
+		digits++;
+	}
+
+	if (underscores != digits - 1) return -1;
+	if (underscores + digits > ELEKTRA_MAX_ARRAY_SIZE - 2)
 	{
 		return -1;
 	}
@@ -135,36 +117,49 @@ int elektraArrayIncName (Key * key)
 	const char * baseName = keyBaseName (key);
 
 	int arrayElement = elektraArrayValidateName (key);
-	if (arrayElement == -1)
-	{
-		return -1;
-	}
+	if (arrayElement == -1) return -1;
 
-	++baseName;		 // jump over #
-	while (*baseName == '_') // jump over all _
-	{
-		++baseName;
-	}
+	while (*(++baseName) == '_') // jump over initial `#` and all `_`
+		;		     //! OCLint
 
 	kdb_long_long_t oldIndex = 0;
-	if (!arrayElement)
-	{
-		// we have a start element
-		oldIndex = -1;
-	}
-	else
-	{
-		if (elektraReadArrayNumber (baseName, &oldIndex) == -1)
-		{
-			return -1;
-		}
-	}
-
-	kdb_long_long_t newIndex = oldIndex + 1; // we increment by one
+	if (arrayElement && elektraReadArrayNumber (baseName, &oldIndex) == -1) return -1;
+	kdb_long_long_t newIndex = arrayElement ? oldIndex + 1 : 0; // we increment by one or use 0 if the name contains no index yet
 
 	char newName[ELEKTRA_MAX_ARRAY_SIZE];
 
 	elektraWriteArrayNumber (newName, newIndex);
+	keySetBaseName (key, newName);
+
+	return 0;
+}
+
+/**
+ * @brief Decrement the name of an array key by one.
+ *
+ * The alphabetical order will remain intact. For example,
+ * `user/abc/\#_10` will be changed to `user/abc/\#9`.
+ *
+ * @param This parameter determines the key name this function decrements.
+ *
+ * @retval -1 on error (e.g. new array index too small, non-valid array)
+ * @retval 0 on success
+ */
+int elektraArrayDecName (Key * key)
+{
+	const char * baseName = keyBaseName (key);
+
+	int arrayElement = elektraArrayValidateName (key);
+	if (arrayElement == -1) return -1;
+
+	while (*(++baseName) == '_') // jump over initial `#` and all `_`
+		;		     //! OCLint
+
+	kdb_long_long_t oldIndex = 0;
+	if (elektraReadArrayNumber (baseName, &oldIndex) == -1 || oldIndex == 0) return -1;
+
+	char newName[ELEKTRA_MAX_ARRAY_SIZE];
+	elektraWriteArrayNumber (newName, oldIndex - 1);
 	keySetBaseName (key, newName);
 
 	return 0;

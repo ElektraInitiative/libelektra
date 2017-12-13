@@ -29,13 +29,13 @@ For a small demo see here:
 
 ## Highlights
 
-- <<HIGHLIGHT1>>
+- New plugin: [`directoryvalue`](https://www.libelektra.org/plugins/directoryvalue)
 - <<HIGHLIGHT2>>
 - <<HIGHLIGHT3>>
 
+### New Plugins
 
-### <<HIGHLIGHT1>>
-
+- The [Directory Value plugin](https://www.libelektra.org/plugins/directoryvalue) supports storage plugins such as [YAJL](https://www.libelektra.org/plugins/yajl) and [YAML CPP ](https://www.libelektra.org/plugins/yamlcpp). It adds extra leaf values for directories (keys with children) that store the data of their parents. This way plugins that normally are only able to store values in leaf keys are able to support arbitrary key sets.
 
 ### <<HIGHLIGHT2>>
 

@@ -8,7 +8,7 @@ resetGlobals()
 {
 	COMMAND=
 	RET=
-	ERRORS=
+	ERROR=
 	WARNINGS=
 	STDOUT=
 	STDOUTRE=
@@ -20,8 +20,8 @@ resetGlobals()
 writeBlock()
 {
 	OUTFILE="$1"
-	[ -n "$RET" ] && printf 'RET: %s\n' $RET >> "$TMPFILE" || { [ -z "$ERRORS" ] && printf 'RET: 0\n' >> "$TMPFILE"; }
-	[ -n "$ERRORS" ] && printf 'ERRORS: %s\n' "$ERRORS" >> "$TMPFILE"
+	[ -n "$RET" ] && printf 'RET: %s\n' $RET >> "$TMPFILE" || { [ -z "$ERROR" ] && printf 'RET: 0\n' >> "$TMPFILE"; }
+	[ -n "$ERROR" ] && printf 'ERROR: %s\n' "$ERROR" >> "$TMPFILE"
 	[ -n "$WARNINGS" ] && printf 'WARNINGS: %s\n' "$WARNINGS" >> "$TMPFILE"
 	[ -n "$STDERR" ] && printf 'STDERR: %s\n' "$STDERR" >> "$TMPFILE"
 	if [ -n "$OUTBUF" ]; then printf 'STDOUT: %s\n' "$OUTBUF" >> "$TMPFILE"
@@ -67,8 +67,8 @@ translate()
 				STDERR)
 					STDERR="$arg"
 					;;
-				ERRORS)
-					ERRORS="$arg"
+				ERROR)
+					ERROR="$arg"
 					;;
 				WARNINGS)
 					WARNINGS="$arg"

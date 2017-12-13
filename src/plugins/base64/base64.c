@@ -57,16 +57,11 @@ static int unescape (Key * key, Key * parent)
  */
 static bool shouldDecode (Key * key, bool metaMode)
 {
-	if (metaMode)
-	{
-		return keyGetMeta (key, "type") && strcmp (keyValue (keyGetMeta (key, "type")), "binary") == 0;
-	}
-	else
-	{
-		const char * strVal = keyString (key);
-		return strlen (strVal) >= ELEKTRA_PLUGIN_BASE64_PREFIX_LENGTH &&
-		       strncmp (strVal, ELEKTRA_PLUGIN_BASE64_PREFIX, ELEKTRA_PLUGIN_BASE64_PREFIX_LENGTH) == 0;
-	}
+	if (metaMode) return keyGetMeta (key, "type") && strcmp (keyValue (keyGetMeta (key, "type")), "binary") == 0;
+
+	const char * strVal = keyString (key);
+	return strlen (strVal) >= ELEKTRA_PLUGIN_BASE64_PREFIX_LENGTH &&
+	       strncmp (strVal, ELEKTRA_PLUGIN_BASE64_PREFIX, ELEKTRA_PLUGIN_BASE64_PREFIX_LENGTH) == 0;
 }
 
 /**

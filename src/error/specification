@@ -1167,3 +1167,17 @@ severity:error
 ingroup:plugin
 module:ruby
 macro:RUBY_GEN_ERROR
+
+number:188
+description:Unable to append directory prefix
+severity:error
+ingroup:plugin
+module:directoryvalue
+macro:DIRECTORY_VALUE_APPEND
+
+number:189
+description:Unable to insert array value
+severity:error
+ingroup:plugin
+module:directoryvalue
+macro:DIRECTORY_VALUE_ARRAY

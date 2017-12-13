@@ -140,6 +140,27 @@ kdb rm -r user/examples/ini
 sudo kdb umount user/examples/ini
 ```
 
+## Directory Values
+
+By default the INI plugin does not store values in a directory key, if you create a leaf node below the directory key first.
+
+```sh
+sudo kdb mount config.ini /examples/ini ini
+
+kdb set /examples/ini/aimee/man 'Deathly'
+kdb file /examples/ini | xargs cat
+#> [aimee]
+#> man = Deathly
+kdb set /examples/ini/aimee 'Save Me'
+kdb get /examples/ini/aimee/man
+#> Deathly
+kdb get /examples/ini/aimee # 😭
+#>
+
+kdb rm -r /examples/ini
+sudo kdb umount /examples/ini
+```
+
 ## Sections
 
 The ini plugin supports 3 different sectioning modes (via `section=`):

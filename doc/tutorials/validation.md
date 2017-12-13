@@ -46,10 +46,8 @@ The most direct way to validate keys is
 sudo kdb mount validation.dump user/tutorial/together dump validation
 kdb vset user/tutorial/together/test 123 "[1-9][0-9]*" "Not a number"
 kdb set user/tutorial/together/test abc
-# STDERR: The command kdb set failed while accessing the key database .*⏎
-#         Sorry, the error .#42. occurred ;(⏎
-#         Description: key value failed to validate⏎
-#         .*Reason: Not a number.*
+# STDERR: The command kdb set failed while accessing the key database .*
+# ERROR:  42
 # RET:5
 ```
 
@@ -241,9 +239,8 @@ loads the validation plugin.
 ```sh
 kdb set /tutorial/links/url "invalid url"
 #> Using name user/tutorial/links/url
-# STDERR: .*Sorry, the error.*#42.*occurred.*⏎
-#         Description: Key Value failed to validate⏎
-#         .*Reason: not a valid URL.*
+# STDERR: .*key value failed to validate.*not a valid URL.*
+# ERROR:  42
 # RET:    5
 ```
 
