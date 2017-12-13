@@ -46,7 +46,7 @@ The most direct way to validate keys is
 sudo kdb mount validation.dump user/tutorial/together dump validation
 kdb vset user/tutorial/together/test 123 "[1-9][0-9]*" "Not a number"
 kdb set user/tutorial/together/test abc
-# STDERR: The command kdb set failed while accessing the key database .*
+# STDERR: The command kdb.* set failed while accessing the key database .*
 # ERROR:  42
 # RET:5
 ```
