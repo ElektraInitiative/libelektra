@@ -503,43 +503,45 @@ endmacro()
 
 
 function (generate_manpage NAME)
-	cmake_parse_arguments (ARG
-		"" # optional keywords
-		"SECTION;FILENAME" # one value keywords
-		"" # multi value keywords
-		${ARGN}
-	)
-
-	if (ARG_SECTION)
-		set(SECTION ${ARG_SECTION})
-	else ()
-		set(SECTION 1)
-	endif ()
-
-	if (ARG_FILENAME)
-		set(MDFILE ${ARG_FILENAME})
-	else ()
-		set(MDFILE ${CMAKE_CURRENT_SOURCE_DIR}/${NAME}.md)
-	endif ()
-
-	set(OUTFILE ${CMAKE_SOURCE_DIR}/doc/man/${NAME}.${SECTION})
-
-	if (RONN_LOC)
-		add_custom_command(
-			OUTPUT ${OUTFILE}
-			DEPENDS ${MDFILE}
-			COMMAND export RUBYOPT="-Eutf-8" && ${RONN_LOC} ARGS -r --pipe ${MDFILE} > ${OUTFILE}
+	if (BUILD_DOCUMENTATION)
+		cmake_parse_arguments (ARG
+			"" # optional keywords
+			"SECTION;FILENAME" # one value keywords
+			"" # multi value keywords
+			${ARGN}
 		)
-		add_custom_target(man-${NAME} ALL DEPENDS ${OUTFILE})
-		add_dependencies(man man-${NAME})
-	endif (RONN_LOC)
 
-	if (INSTALL_DOCUMENTATION)
-		install(
-			FILES ${OUTFILE}
-			DESTINATION share/man/man${SECTION}
+		if (ARG_SECTION)
+			set(SECTION ${ARG_SECTION})
+		else ()
+			set(SECTION 1)
+		endif ()
+
+		if (ARG_FILENAME)
+			set(MDFILE ${ARG_FILENAME})
+		else ()
+			set(MDFILE ${CMAKE_CURRENT_SOURCE_DIR}/${NAME}.md)
+		endif ()
+
+		set(OUTFILE ${CMAKE_SOURCE_DIR}/doc/man/${NAME}.${SECTION})
+
+		if (RONN_LOC)
+			add_custom_command(
+				OUTPUT ${OUTFILE}
+				DEPENDS ${MDFILE}
+				COMMAND export RUBYOPT="-Eutf-8" && ${RONN_LOC} ARGS -r --pipe ${MDFILE} > ${OUTFILE}
 			)
-	endif ()
+			add_custom_target(man-${NAME} ALL DEPENDS ${OUTFILE})
+			add_dependencies(man man-${NAME})
+		endif (RONN_LOC)
+
+		if (INSTALL_DOCUMENTATION)
+			install(
+				FILES ${OUTFILE}
+				DESTINATION share/man/man${SECTION}
+				)
+		endif ()
+	endif (BUILD_DOCUMENTATION)
 endfunction ()
 
 
