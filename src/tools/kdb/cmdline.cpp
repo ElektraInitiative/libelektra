@@ -273,7 +273,9 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 	}
 
 
-	if (profile != "nokdb") try
+	if (profile != "nokdb")
+	{
+		try
 		{
 			using namespace kdb;
 			/*XXX: Step 4: use default from KDB, if available.*/
@@ -337,6 +339,7 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 		{
 			std::cerr << "Sorry, I could not fetch my own configuration:\n" << ce.what () << std::endl;
 		}
+	}
 
 	// reinit
 	index = 0;
