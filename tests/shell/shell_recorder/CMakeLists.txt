@@ -2,12 +2,12 @@ if (ENABLE_KDB_TESTING)
 	# set kdb command
 	SET(USE_CMAKE_KDB_COMMAND "")
 	if (BUILD_SHARED)
-		set (KDB_COMMAND "${CMAKE_BINARY_DIR}/bin/kdb")
+		set (KDB_COMMAND "kdb")
 		set (ENABLE_REPLAY_TESTS TRUE)
 	elseif (BUILD_FULL)
-		set (KDB_COMMAND "${CMAKE_BINARY_DIR}/bin/kdb-full")
+		set (KDB_COMMAND "kdb-full")
 	elseif (BUILD_STATIC)
-		set (KDB_COMMAND "${CMAKE_BINARY_DIR}/bin/kdb-static")
+		set (KDB_COMMAND "kdb-static")
 	else()
 		message(SEND_ERROR "no kdb tool found, please enable BUILD_FULL, BUILD_STATIC or BUILD_SHARED")
 	endif ()
@@ -22,7 +22,7 @@ if (ENABLE_KDB_TESTING)
 		set (INCLUDE_COMMON
 			"${INCLUDE_COMMON_FILE}\n
 			KDB=\"${KDB_COMMAND}\"\n\
-			export PATH=\"`dirname \\\"$KDB\\\"`:$PATH\""
+			export PATH=\"${CMAKE_BINARY_DIR}/bin\":$PATH"
 		)
 	else (LENGTH_KDB_COMMAND EQUAL 0)
 		set (INCLUDE_COMMON "${INCLUDE_COMMON_FILE}\nKDB=\"kdb\"")

@@ -34,7 +34,7 @@ execute()
 	fi
 
 	[ -z "$Storage" ] && Storage="dump"
-	command=$(printf '%s' "$proto" | sed -e "s~kdb\ ~$KDB_BINARY ~g" \
+	command=$(printf '%s' "$proto" | sed -e "s~kdb\ ~$KDB ~g" \
 					     -e "s~\$Mountpoint~${Mountpoint}~g" \
 	                                     -e "s~\$File~${DBFile}~g"           \
 	                                     -e "s~\$Storage~${Storage}~g"       \
@@ -264,7 +264,6 @@ STDERRCMP=
 
 BACKUP=0
 TMPFILE=$(mktempfile_elektra)
-KDB_BINARY=$(basename "$KDB")
 
 # variables to count up errors and tests
 nbError=0
