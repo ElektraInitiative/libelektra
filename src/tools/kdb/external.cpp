@@ -142,37 +142,40 @@ void runManPage (std::string command, std::string profile)
 	const char * man = "/usr/bin/man";
 	using namespace kdb;
 	Key k = nullptr;
-	try
+	if (profile != "nokdb")
 	{
-		KDB kdb;
-		KeySet conf;
-		std::string dirname;
-		for (int i = 0; i <= 2; ++i)
+		try
 		{
-			switch (i)
+			KDB kdb;
+			KeySet conf;
+			std::string dirname;
+			for (int i = 0; i <= 2; ++i)
 			{
-			case 0:
-				dirname = "/sw/elektra/kdb/#0/" + profile + "/";
-				break;
-			case 1:
-				dirname = "/sw/elektra/kdb/#0/%/";
-				break;
-			case 2:
-				dirname = "/sw/kdb/" + profile + "/";
-				break; // legacy
-			}
-			kdb.get (conf, dirname);
-			if (!k) // first one wins, because we do not reassign
-			{
-				k = conf.lookup (dirname + "man");
+				switch (i)
+				{
+				case 0:
+					dirname = "/sw/elektra/kdb/#0/" + profile + "/";
+					break;
+				case 1:
+					dirname = "/sw/elektra/kdb/#0/%/";
+					break;
+				case 2:
+					dirname = "/sw/kdb/" + profile + "/";
+					break; // legacy
+				}
+				kdb.get (conf, dirname);
+				if (!k) // first one wins, because we do not reassign
+				{
+					k = conf.lookup (dirname + "man");
+				}
 			}
 		}
-	}
-	catch (kdb::KDBException const & ce)
-	{
-		std::cerr << "There is a severe problem with your installation!\n"
-			  << "kdbOpen() failed with the info:" << std::endl
-			  << ce.what () << std::endl;
+		catch (kdb::KDBException const & ce)
+		{
+			std::cerr << "There is a severe problem with your installation!\n"
+				  << "kdbOpen() failed with the info:" << std::endl
+				  << ce.what () << std::endl;
+		}
 	}
 	if (k)
 	{
