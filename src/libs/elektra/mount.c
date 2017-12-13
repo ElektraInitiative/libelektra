@@ -38,7 +38,7 @@
  *
  * The config will be deleted within this function.
  *
- * @notemountDefault is not allowed to be executed before
+ * @note mountDefault is not allowed to be executed before
  *
  * @param kdb the handle to work with
  * @param modules the current list of loaded modules
