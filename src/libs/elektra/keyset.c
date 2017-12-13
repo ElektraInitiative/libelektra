@@ -2022,6 +2022,9 @@ static Key * elektraLookupSearch (KeySet * ks, Key * key, option_t options)
 	{
 		found = elektraLookupBinarySearch (ks, key, options);
 	}
+
+	// OPMPHM needs to be removed due to callback stuff
+	options ^= KDB_O_OPMPHM;
 #else
 	Key * found = elektraLookupBinarySearch (ks, key, options);
 #endif

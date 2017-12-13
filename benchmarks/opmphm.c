@@ -449,8 +449,8 @@ static void benchmarkMappingOpt (void)
 {
 	// create the n array
 	const size_t nCount = 132;
+	size_t n[132]; // nCount
 	size_t controlCount = 0;
-	size_t n[nCount];
 	for (size_t i = 2; i <= 38; ++i)
 	{
 		n[controlCount] = i;
@@ -734,7 +734,7 @@ static void benchmarkMappingAllSeeds (void)
 {
 	// create the n array
 	const size_t nCount = 7;
-	size_t n[nCount];
+	size_t n[7]; // nCount
 	n[0] = 9;
 	n[1] = 29;
 	n[2] = 49;
@@ -1003,7 +1003,7 @@ int main (int argc, char ** argv)
 {
 	// define all benchmarks
 	const size_t benchmarksCount = 5;
-	Benchmark benchmarks[benchmarksCount];
+	Benchmark benchmarks[5]; // benchmarksCount
 	// hashfunctiontime
 	char * benchmarkNameHashFunctionTime = "hashfunctiontime";
 	benchmarks[0].name = benchmarkNameHashFunctionTime;
