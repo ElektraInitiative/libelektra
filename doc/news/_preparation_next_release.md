@@ -119,7 +119,16 @@ We added even more functionality, which could not make it to the highlights:
 
 - `kdb rm` now supports `-f` to ignore non-existing keys
 - `%` passed as profile name will disable to read from any profile
-- <<TODO>>
+
+### Libease
+
+- The new function `elektraArrayDecName`:
+
+  ```c
+  int elektraArrayDecName (Key * key);
+  ```
+
+   decreases the index of an array element by one. It can be used to reverse the effect of `elektraArrayIncName`.
 
 ## Documentation
 
