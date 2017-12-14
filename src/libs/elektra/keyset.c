@@ -2517,7 +2517,11 @@ int ksClose (KeySet * ks)
 	ks->size = 0;
 
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
-	if (ks->opmphm) opmphmDel (ks->opmphm);
+	if (ks->opmphm)
+	{
+		opmphmDel (ks->opmphm);
+		ks->opmphm = NULL;
+	}
 #endif
 
 	return 0;

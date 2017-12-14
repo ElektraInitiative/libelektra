@@ -422,6 +422,11 @@ OpmphmGraph * opmphmGraphNew (Opmphm * opmphm, uint8_t r, size_t n, double c)
 	// lazy create
 	if (r != opmphm->rUniPar)
 	{
+		// free if here
+		if (opmphm->rUniPar)
+		{
+			elektraFree (opmphm->hashFunctionSeeds);
+		}
 		opmphm->hashFunctionSeeds = elektraMalloc (r * sizeof (int32_t));
 		if (!opmphm->hashFunctionSeeds)
 		{
