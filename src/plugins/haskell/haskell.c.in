@@ -65,7 +65,7 @@ int elektraHaskellClose (Plugin * handle, Key * errorKey)
 	// hs_exit ();
 	if (!--started)
 	{
-		rts_done();
+		rts_done ();
 	}
 	return ret;
 }

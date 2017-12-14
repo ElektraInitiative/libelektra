@@ -44,7 +44,7 @@ if (NOT BUILD_STATIC)
 
 	add_custom_command (
 		OUTPUT ${BINDING_HASKELL_NAME}
-		COMMAND ${CABAL_EXECUTABLE} sandbox init
+		COMMAND ${CABAL_EXECUTABLE} sandbox init --sandbox ${CMAKE_BINARY_DIR}/.cabal-sandbox
 		COMMAND ${CABAL_EXECUTABLE} --ipid=libelektra-haskell-${KDB_VERSION} ${CABAL_OPTS} configure
 		# disable everything that slows down compilation times of the dependencies to have reasonable travis build times
 		COMMAND ${CABAL_EXECUTABLE} install --only-dependencies

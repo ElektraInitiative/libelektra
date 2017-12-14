@@ -10,11 +10,18 @@ include (LibAddBinding)
 # MODULES:
 #  the name of the haskell modules to be compiled
 #  by default it assumes there is a single module called Elektra.<pluginName>
+# NO_SHARED_SANDBOX:
+#  By default all haskell plugins and the bindings are compiled in a shared sandbox to
+#  peed up compilation times by only compiling commonly-used libraries once. Set this 
+#  flag to use an independent sandbox instead in case there are e.g. library version conflicts
+# SANDBOX_ADD_SOURCES:
+#  additional source paths which should be added to the cabal sandbox
+#  required if the build should depend on haskell libraries not available on hackage
 macro (add_haskell_plugin target)
 	cmake_parse_arguments (ARG
-		"" # optional keywords
+		"NO_SHARED_SANDBOX" # optional keywords
 		"MODULE" # one value keywords
-		"MODULES" # multi value keywords
+		"MODULES;SANDBOX_ADD_SOURCES" # multi value keywords
 		${ARGN}
 	)
 
@@ -156,12 +163,16 @@ macro (add_haskell_plugin target)
 				DESTINATION "${CMAKE_CURRENT_BINARY_DIR}"
 			)
 
+			if (NOT ARG_NO_SHARED_SANDBOX)
+				set (SHARED_SANDBOX "--sandbox;\"${CMAKE_BINARY_DIR}/.cabal-sandbox\"")
+			endif (NOT ARG_NO_SHARED_SANDBOX)
+
 			add_custom_command (
 				OUTPUT ${PLUGIN_HASKELL_NAME}
 				# this way it will generate predictable output filenames
 				# and compile the haskell part of this plugin with cabal
-				COMMAND ${CABAL_EXECUTABLE} sandbox init
-				COMMAND ${CABAL_EXECUTABLE} sandbox add-source "${CMAKE_CURRENT_BINARY_DIR}/../../bindings/haskell/"
+				COMMAND ${CABAL_EXECUTABLE} sandbox init ${SHARED_SANDBOX}
+				COMMAND ${CABAL_EXECUTABLE} sandbox add-source "${CMAKE_CURRENT_BINARY_DIR}/../../bindings/haskell/" ${ARG_SANDBOX_ADD_SOURCES}
 				# ensure any further dependencies added by plugin developers get installed to the sandbox
 				COMMAND ${CABAL_EXECUTABLE} install --only-dependencies
 				COMMAND ${CABAL_EXECUTABLE} --ipid=${target} ${CABAL_OPTS} configure
