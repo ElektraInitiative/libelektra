@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief Tests for haskelltemplate plugin
+ * @brief Tests for IO UV binding
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
@@ -11,11 +11,11 @@
 #include <stdlib.h>
 
 #include <kdbio.h>
+#include <tests.h>
+
 #include <uv.h>
 
-#include "io_uv.h"
-
-#include <tests.h>
+#include "kdbio_uv.h"
 
 static ElektraIoInterface * createBinding (void)
 {

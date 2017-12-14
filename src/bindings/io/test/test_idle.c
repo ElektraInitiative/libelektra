@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief Tests for haskelltemplate plugin
+ * @brief Tests for IO bindings
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
@@ -45,19 +45,20 @@ static void testIdleBasicsCallback (ElektraIoIdleOperation * idleOp ELEKTRA_UNUS
 
 static void testIdleBasics (ElektraIoTestSuiteCreateBinding createBinding)
 {
-	ElektraIoIdleOperation * idleOp = elektraIoTestSuiteUtilNewIdleOperation ();
-	idleOp->enabled = 0;
-	idleOp->callback = testIdleBasicsCallback;
+	ElektraIoIdleOperation * idleOp = elektraIoNewIdleOperation (0, testIdleBasicsCallback, NULL);
 
 	ElektraIoInterface * binding = createBinding ();
-	succeed_if (binding->addIdle (binding, idleOp) == 0, "addIdle did not return 0");
-	succeed_if (idleOp->binding == binding, "binding was not set");
+	succeed_if (elektraIoBindingAddIdle (binding, idleOp) == 0, "addIdle did not return 0");
+	succeed_if (elektraIoBindingAddIdle (binding, idleOp) == -1, "addIdle: should not be able to reassign operation to a binding");
 
-	idleOp->enabled = 1;
-	succeed_if (binding->updateIdle (idleOp) == 0, "updateIdle did not return 0");
+	elektraIoIdleSetEnabled (idleOp, 1);
+	succeed_if (elektraIoBindingUpdateIdle (idleOp) == 0, "updateIdle did not return 0");
 
-	succeed_if (binding->removeIdle (idleOp) == 0, "removeIdle did not return 0");
-	binding->cleanup (binding);
+	succeed_if (elektraIoBindingRemoveIdle (idleOp) == 0, "removeIdle did not return 0");
+
+	succeed_if (elektraIoBindingAddIdle (binding, idleOp) == 0, "addIdle: should be able to assign operation after removal");
+	succeed_if (elektraIoBindingRemoveIdle (idleOp) == 0, "removeIdle did not return 0");
+	elektraIoBindingCleanup (binding);
 	elektraFree (idleOp);
 }
 
@@ -71,12 +72,10 @@ static void testIdleShouldCallbackImmediatelyProbe (ElektraIoIdleOperation * idl
 static void testIdleShouldCallbackImmediately (ElektraIoTestSuiteCreateBinding createBinding, ElektraIoTestSuiteStart start,
 					       ElektraIoTestSuiteStop stop)
 {
-	ElektraIoIdleOperation * idleOp = elektraIoTestSuiteUtilNewIdleOperation ();
-	idleOp->enabled = 1;
-	idleOp->callback = testIdleShouldCallbackImmediatelyProbe;
+	ElektraIoIdleOperation * idleOp = elektraIoNewIdleOperation (1, testIdleShouldCallbackImmediatelyProbe, NULL);
 
 	ElektraIoInterface * binding = createBinding ();
-	binding->addIdle (binding, idleOp);
+	elektraIoBindingAddIdle (binding, idleOp);
 
 	testStop = stop;
 	testCallbackCalled = 0;
@@ -96,8 +95,8 @@ static void testIdleShouldCallbackImmediately (ElektraIoTestSuiteCreateBinding c
 	}
 	succeed_if (deviation <= IDLE_DIFF_ERROR_THRESHOLD, "idle timing not within error threshold");
 
-	binding->removeIdle (idleOp);
-	binding->cleanup (binding);
+	elektraIoBindingRemoveIdle (idleOp);
+	elektraIoBindingCleanup (binding);
 	elektraFree (idleOp);
 }
 
@@ -108,8 +107,8 @@ static void testIdleShouldUpdateEnabledControl (ElektraIoIdleOperation * idleOp 
 	// Disable probe operation on first run
 	if (testUpdateEnabledControlCalled == IDLE_TEST_CONTROL_TIMES - 1)
 	{
-		testUpdateEnabledIdleProbe->enabled = 0;
-		testUpdateEnabledBinding->updateIdle (testUpdateEnabledIdleProbe);
+		elektraIoIdleSetEnabled (testUpdateEnabledIdleProbe, 0);
+		elektraIoBindingUpdateIdle (testUpdateEnabledIdleProbe);
 	}
 
 	if (testUpdateEnabledControlCalled == 0 || testUpdateEnabledProbeCalled > 1)
@@ -126,17 +125,13 @@ static void testIdleShouldUpdateEnabledProbe (ElektraIoIdleOperation * idleOp EL
 static void testIdleShouldUpdateEnabled (ElektraIoTestSuiteCreateBinding createBinding, ElektraIoTestSuiteStart start,
 					 ElektraIoTestSuiteStop stop)
 {
-	ElektraIoIdleOperation * idleControl = elektraIoTestSuiteUtilNewIdleOperation ();
-	idleControl->enabled = 1;
-	idleControl->callback = testIdleShouldUpdateEnabledControl;
+	ElektraIoIdleOperation * idleControl = elektraIoNewIdleOperation (1, testIdleShouldUpdateEnabledControl, NULL);
 
-	ElektraIoIdleOperation * idleProbe = elektraIoTestSuiteUtilNewIdleOperation ();
-	idleProbe->enabled = 1;
-	idleProbe->callback = testIdleShouldUpdateEnabledProbe;
+	ElektraIoIdleOperation * idleProbe = elektraIoNewIdleOperation (1, testIdleShouldUpdateEnabledProbe, NULL);
 
 	ElektraIoInterface * binding = createBinding ();
-	binding->addIdle (binding, idleControl);
-	binding->addIdle (binding, idleProbe);
+	elektraIoBindingAddIdle (binding, idleControl);
+	elektraIoBindingAddIdle (binding, idleProbe);
 
 	testStop = stop;
 	testUpdateEnabledControlCalled = IDLE_TEST_CONTROL_TIMES;
@@ -149,9 +144,9 @@ static void testIdleShouldUpdateEnabled (ElektraIoTestSuiteCreateBinding createB
 	succeed_if (testUpdateEnabledProbeCalled == 1, "idle callback was not disabled");
 	succeed_if (testUpdateEnabledControlCalled == 0, "idle control callback was not called required amount of times");
 
-	binding->removeIdle (idleControl);
-	binding->removeIdle (idleProbe);
-	binding->cleanup (binding);
+	elektraIoBindingRemoveIdle (idleControl);
+	elektraIoBindingRemoveIdle (idleProbe);
+	elektraIoBindingCleanup (binding);
 	elektraFree (idleControl);
 	elektraFree (idleProbe);
 }
@@ -163,7 +158,7 @@ static void testIdleShouldRemoveControl (ElektraIoIdleOperation * idleOp ELEKTRA
 	// Remove probe operation on first run
 	if (testRemoveControlCalled == IDLE_TEST_CONTROL_TIMES - 1)
 	{
-		testRemoveBinding->removeIdle (testRemoveIdleProbe);
+		elektraIoBindingRemoveIdle (testRemoveIdleProbe);
 	}
 
 	if (testRemoveControlCalled == 0 || testRemoveProbeCalled > 1)
@@ -179,17 +174,13 @@ static void testIdleShouldRemoveProbe (ElektraIoIdleOperation * idleOp ELEKTRA_U
 
 static void testIdleShouldRemove (ElektraIoTestSuiteCreateBinding createBinding, ElektraIoTestSuiteStart start, ElektraIoTestSuiteStop stop)
 {
-	ElektraIoIdleOperation * idleControl = elektraIoTestSuiteUtilNewIdleOperation ();
-	idleControl->enabled = 1;
-	idleControl->callback = testIdleShouldRemoveControl;
+	ElektraIoIdleOperation * idleControl = elektraIoNewIdleOperation (1, testIdleShouldRemoveControl, NULL);
 
-	ElektraIoIdleOperation * idleProbe = elektraIoTestSuiteUtilNewIdleOperation ();
-	idleProbe->enabled = 1;
-	idleProbe->callback = testIdleShouldRemoveProbe;
+	ElektraIoIdleOperation * idleProbe = elektraIoNewIdleOperation (1, testIdleShouldRemoveProbe, NULL);
 
 	ElektraIoInterface * binding = createBinding ();
-	binding->addIdle (binding, idleControl);
-	binding->addIdle (binding, idleProbe);
+	elektraIoBindingAddIdle (binding, idleControl);
+	elektraIoBindingAddIdle (binding, idleProbe);
 
 	testStop = stop;
 	testRemoveControlCalled = IDLE_TEST_CONTROL_TIMES;
@@ -203,12 +194,12 @@ static void testIdleShouldRemove (ElektraIoTestSuiteCreateBinding createBinding,
 
 	succeed_if (testRemoveControlCalled == 0, "idle control callback was not called required amount of times");
 
-	binding->removeIdle (idleControl);
+	elektraIoBindingRemoveIdle (idleControl);
 	if (testRemoveProbeCalled != 1)
 	{
-		binding->removeIdle (idleProbe);
+		elektraIoBindingRemoveIdle (idleProbe);
 	}
-	binding->cleanup (binding);
+	elektraIoBindingCleanup (binding);
 	elektraFree (idleControl);
 	elektraFree (idleProbe);
 }

@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief Tests for haskelltemplate plugin
+ * @brief Tests for IO bindings
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
@@ -62,20 +62,20 @@ static void testTimerBasicsCallback (ElektraIoTimerOperation * timerOp ELEKTRA_U
 
 static void testTimerBasics (ElektraIoTestSuiteCreateBinding createBinding)
 {
-	ElektraIoTimerOperation * timerOp = elektraIoTestSuiteUtilNewTimerOperation ();
-	timerOp->interval = 100;
-	timerOp->enabled = 0;
-	timerOp->callback = testTimerBasicsCallback;
+	ElektraIoTimerOperation * timerOp = elektraIoNewTimerOperation (TIMER_TEST_INTERVAL, 0, testTimerBasicsCallback, NULL);
 
 	ElektraIoInterface * binding = createBinding ();
-	succeed_if (binding->addTimer (binding, timerOp) == 0, "addTimer did not return 0");
-	succeed_if (timerOp->binding == binding, "binding was not set");
+	succeed_if (elektraIoBindingAddTimer (binding, timerOp) == 0, "addTimer did not return 0");
+	succeed_if (elektraIoBindingAddTimer (binding, timerOp) == -1, "addTimer: should not be able to reassign operation to a binding");
 
-	timerOp->enabled = 1;
-	succeed_if (binding->updateTimer (timerOp) == 0, "updateTimer did not return 0");
+	elektraIoTimerSetEnabled (timerOp, 1);
+	succeed_if (elektraIoBindingUpdateTimer (timerOp) == 0, "updateTimer did not return 0");
 
-	succeed_if (binding->removeTimer (timerOp) == 0, "removeTimer did not return 0");
-	binding->cleanup (binding);
+	succeed_if (elektraIoBindingRemoveTimer (timerOp) == 0, "removeTimer did not return 0");
+
+	succeed_if (elektraIoBindingAddTimer (binding, timerOp) == 0, "addTimer: should be able to assign operation after removal");
+	succeed_if (elektraIoBindingRemoveTimer (timerOp) == 0, "removeTimer did not return 0");
+	elektraIoBindingCleanup (binding);
 	elektraFree (timerOp);
 }
 
@@ -89,13 +89,10 @@ static void testTimerShouldCallbackOnceElapsed (ElektraIoTimerOperation * timerO
 static void testTimerShouldCallbackOnce (ElektraIoTestSuiteCreateBinding createBinding, ElektraIoTestSuiteStart start,
 					 ElektraIoTestSuiteStop stop)
 {
-	ElektraIoTimerOperation * timerOp = elektraIoTestSuiteUtilNewTimerOperation ();
-	timerOp->interval = TIMER_TEST_INTERVAL;
-	timerOp->enabled = 1;
-	timerOp->callback = testTimerShouldCallbackOnceElapsed;
+	ElektraIoTimerOperation * timerOp = elektraIoNewTimerOperation (TIMER_TEST_INTERVAL, 1, testTimerShouldCallbackOnceElapsed, NULL);
 
 	ElektraIoInterface * binding = createBinding ();
-	binding->addTimer (binding, timerOp);
+	elektraIoBindingAddTimer (binding, timerOp);
 
 	testStop = stop;
 	testCallbackOnceCalled = 0;
@@ -115,8 +112,8 @@ static void testTimerShouldCallbackOnce (ElektraIoTestSuiteCreateBinding createB
 	}
 	succeed_if (deviation <= TIMER_DIFF_ERROR_THRESHOLD, "timer interval not within error threshold");
 
-	binding->removeTimer (timerOp);
-	binding->cleanup (binding);
+	elektraIoBindingRemoveTimer (timerOp);
+	elektraIoBindingCleanup (binding);
 	elektraFree (timerOp);
 }
 
@@ -134,13 +131,11 @@ static void testTimerShouldCallbackAtIntervalsCallback (ElektraIoTimerOperation 
 static void testTimerShouldCallbackAtIntervals (ElektraIoTestSuiteCreateBinding createBinding, ElektraIoTestSuiteStart start,
 						ElektraIoTestSuiteStop stop)
 {
-	ElektraIoTimerOperation * timerOp = elektraIoTestSuiteUtilNewTimerOperation ();
-	timerOp->interval = TIMER_TEST_INTERVAL;
-	timerOp->enabled = 1;
-	timerOp->callback = testTimerShouldCallbackAtIntervalsCallback;
+	ElektraIoTimerOperation * timerOp =
+		elektraIoNewTimerOperation (TIMER_TEST_INTERVAL, 1, testTimerShouldCallbackAtIntervalsCallback, NULL);
 
 	ElektraIoInterface * binding = createBinding ();
-	binding->addTimer (binding, timerOp);
+	elektraIoBindingAddTimer (binding, timerOp);
 
 	testCallbackAtIntervalsCounter = TIMER_TEST_TIMES;
 	testStop = stop;
@@ -167,8 +162,8 @@ static void testTimerShouldCallbackAtIntervals (ElektraIoTestSuiteCreateBinding 
 		lastTime = testCallbackAtIntervalsTimeCalled[i];
 	}
 
-	binding->removeTimer (timerOp);
-	binding->cleanup (binding);
+	elektraIoBindingRemoveTimer (timerOp);
+	elektraIoBindingCleanup (binding);
 	elektraFree (timerOp);
 }
 
@@ -179,8 +174,8 @@ static void testTimerShouldChangeEnabledControl (ElektraIoTimerOperation * timer
 	// Disable probe timer on first run
 	if (testUpdateEnabledControlCalled == TIMER_CHANGE_TIMES - 1)
 	{
-		testUpdateEnabledTimerProbe->enabled = 0;
-		testUpdateEnabledBinding->updateTimer (testUpdateEnabledTimerProbe);
+		elektraIoTimerSetEnabled (testUpdateEnabledTimerProbe, 0);
+		elektraIoBindingUpdateTimer (testUpdateEnabledTimerProbe);
 	}
 
 	if (testUpdateEnabledControlCalled == 0 || testUpdateEnabledProbeCalled > 1)
@@ -197,19 +192,14 @@ static void testTimerShouldChangeEnabledProbe (ElektraIoTimerOperation * timerOp
 static void testTimerShouldChangeEnabled (ElektraIoTestSuiteCreateBinding createBinding, ElektraIoTestSuiteStart start,
 					  ElektraIoTestSuiteStop stop)
 {
-	ElektraIoTimerOperation * timerControl = elektraIoTestSuiteUtilNewTimerOperation ();
-	timerControl->interval = TIMER_CHANGE_CONTROL_INTERVAL;
-	timerControl->enabled = 1;
-	timerControl->callback = testTimerShouldChangeEnabledControl;
+	ElektraIoTimerOperation * timerControl =
+		elektraIoNewTimerOperation (TIMER_CHANGE_CONTROL_INTERVAL, 1, testTimerShouldChangeEnabledControl, NULL);
 
-	ElektraIoTimerOperation * timerProbe = elektraIoTestSuiteUtilNewTimerOperation ();
-	timerProbe->interval = TIMER_TEST_INTERVAL;
-	timerProbe->enabled = 1;
-	timerProbe->callback = testTimerShouldChangeEnabledProbe;
+	ElektraIoTimerOperation * timerProbe = elektraIoNewTimerOperation (TIMER_TEST_INTERVAL, 1, testTimerShouldChangeEnabledProbe, NULL);
 
 	ElektraIoInterface * binding = createBinding ();
-	binding->addTimer (binding, timerControl);
-	binding->addTimer (binding, timerProbe);
+	elektraIoBindingAddTimer (binding, timerControl);
+	elektraIoBindingAddTimer (binding, timerProbe);
 
 	testStop = stop;
 	testUpdateEnabledControlCalled = TIMER_CHANGE_TIMES;
@@ -222,9 +212,9 @@ static void testTimerShouldChangeEnabled (ElektraIoTestSuiteCreateBinding create
 	succeed_if (testUpdateEnabledProbeCalled == 0, "timer callback was not disabled");
 	succeed_if (testUpdateEnabledControlCalled == 0, "timout control callback was not called required amount of times");
 
-	binding->removeTimer (timerControl);
-	binding->removeTimer (timerProbe);
-	binding->cleanup (binding);
+	elektraIoBindingRemoveTimer (timerControl);
+	elektraIoBindingRemoveTimer (timerProbe);
+	elektraIoBindingCleanup (binding);
 	elektraFree (timerControl);
 	elektraFree (timerProbe);
 }
@@ -236,8 +226,8 @@ static void testTimerShouldChangeIntervalControl (ElektraIoTimerOperation * time
 	// Change probe interval on first run, before probe was run
 	if (testUpdateIntervalControlCalled == 1)
 	{
-		testUpdateIntervalTimerProbe->interval = TIMER_CHANGE_SECOND_INTERVAL;
-		testUpdateIntervalBinding->updateTimer (testUpdateIntervalTimerProbe);
+		elektraIoTimerSetInterval (testUpdateIntervalTimerProbe, TIMER_CHANGE_SECOND_INTERVAL);
+		elektraIoBindingUpdateTimer (testUpdateIntervalTimerProbe);
 	}
 
 	if (testUpdateIntervalProbeCalled > TIMER_CHANGE_PROBE_TIMES)
@@ -258,20 +248,16 @@ static void testTimerShouldChangeInterval (ElektraIoTestSuiteCreateBinding creat
 					   ElektraIoTestSuiteStop stop)
 {
 	// Control timer will change interval
-	ElektraIoTimerOperation * timerControl = elektraIoTestSuiteUtilNewTimerOperation ();
-	timerControl->interval = TIMER_CHANGE_CONTROL_INTERVAL;
-	timerControl->enabled = 1;
-	timerControl->callback = testTimerShouldChangeIntervalControl;
+	ElektraIoTimerOperation * timerControl =
+		elektraIoNewTimerOperation (TIMER_CHANGE_CONTROL_INTERVAL, 1, testTimerShouldChangeIntervalControl, NULL);
 
 	// Probe will just count and measure time
-	ElektraIoTimerOperation * timerProbe = elektraIoTestSuiteUtilNewTimerOperation ();
-	timerProbe->interval = TIMER_TEST_INTERVAL;
-	timerProbe->enabled = 1;
-	timerProbe->callback = testTimerShouldChangeIntervalProbe;
+	ElektraIoTimerOperation * timerProbe =
+		elektraIoNewTimerOperation (TIMER_TEST_INTERVAL, 1, testTimerShouldChangeIntervalProbe, NULL);
 
 	ElektraIoInterface * binding = createBinding ();
-	binding->addTimer (binding, timerControl);
-	binding->addTimer (binding, timerProbe);
+	elektraIoBindingAddTimer (binding, timerControl);
+	elektraIoBindingAddTimer (binding, timerProbe);
 
 	testStop = stop;
 	testUpdateIntervalControlCalled = 0;
@@ -295,9 +281,9 @@ static void testTimerShouldChangeInterval (ElektraIoTestSuiteCreateBinding creat
 	}
 	succeed_if (deviation <= TIMER_DIFF_ERROR_THRESHOLD, "timer interval not within threshold");
 
-	binding->removeTimer (timerControl);
-	binding->removeTimer (timerProbe);
-	binding->cleanup (binding);
+	elektraIoBindingRemoveTimer (timerControl);
+	elektraIoBindingRemoveTimer (timerProbe);
+	elektraIoBindingCleanup (binding);
 	elektraFree (timerControl);
 	elektraFree (timerProbe);
 }
@@ -309,7 +295,7 @@ static void testTimerShouldRemoveControl (ElektraIoTimerOperation * idleInfo ELE
 	// Disable probe timer on first run
 	if (testRemoveControlCalled == TIMER_CHANGE_TIMES - 1)
 	{
-		testRemoveBinding->removeTimer (testRemoveTimerProbe);
+		elektraIoBindingRemoveTimer (testRemoveTimerProbe);
 	}
 
 	if (testRemoveControlCalled == 0 || testRemoveProbeCalled > 1)
@@ -326,19 +312,14 @@ static void testTimerShouldRemoveProbe (ElektraIoTimerOperation * idleInfo ELEKT
 static void testTimerShouldRemove (ElektraIoTestSuiteCreateBinding createBinding, ElektraIoTestSuiteStart start,
 				   ElektraIoTestSuiteStop stop)
 {
-	ElektraIoTimerOperation * timerControl = elektraIoTestSuiteUtilNewTimerOperation ();
-	timerControl->interval = TIMER_CHANGE_CONTROL_INTERVAL;
-	timerControl->enabled = 1;
-	timerControl->callback = testTimerShouldRemoveControl;
+	ElektraIoTimerOperation * timerControl =
+		elektraIoNewTimerOperation (TIMER_CHANGE_CONTROL_INTERVAL, 1, testTimerShouldRemoveControl, NULL);
 
-	ElektraIoTimerOperation * timerProbe = elektraIoTestSuiteUtilNewTimerOperation ();
-	timerProbe->interval = TIMER_TEST_INTERVAL;
-	timerProbe->enabled = 1;
-	timerProbe->callback = testTimerShouldRemoveProbe;
+	ElektraIoTimerOperation * timerProbe = elektraIoNewTimerOperation (TIMER_TEST_INTERVAL, 1, testTimerShouldRemoveProbe, NULL);
 
 	ElektraIoInterface * binding = createBinding ();
-	binding->addTimer (binding, timerControl);
-	binding->addTimer (binding, timerProbe);
+	elektraIoBindingAddTimer (binding, timerControl);
+	elektraIoBindingAddTimer (binding, timerProbe);
 
 	testStop = stop;
 	testRemoveControlCalled = TIMER_CHANGE_TIMES;
@@ -351,12 +332,12 @@ static void testTimerShouldRemove (ElektraIoTestSuiteCreateBinding createBinding
 	succeed_if (testRemoveProbeCalled == 0, "timer callback was not removed");
 	succeed_if (testRemoveControlCalled == 0, "timout control callback was not called required amount of times");
 
-	binding->removeTimer (timerControl);
+	elektraIoBindingRemoveTimer (timerControl);
 	if (testRemoveProbeCalled != 0)
 	{
-		binding->removeTimer (timerProbe);
+		elektraIoBindingRemoveTimer (timerProbe);
 	}
-	binding->cleanup (binding);
+	elektraIoBindingCleanup (binding);
 	elektraFree (timerControl);
 	elektraFree (timerProbe);
 }

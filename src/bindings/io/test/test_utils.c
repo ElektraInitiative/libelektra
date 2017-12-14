@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief Tests for haskelltemplate plugin
+ * @brief Tests for IO bindings
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
@@ -47,61 +47,4 @@ long elektraIoTestSuiteUtilGetTimeDifference (struct timespec start, struct time
 	diff.tv_nsec = stop.tv_nsec - start.tv_nsec;
 
 	return (long)(diff.tv_sec * 1000 + round (diff.tv_nsec / 1.0e6));
-}
-
-/**
- * Create timer operation.
- * Free after usage.
- *
- * @return  empty timer operation structure
- */
-ElektraIoTimerOperation * elektraIoTestSuiteUtilNewTimerOperation (void)
-{
-	ElektraIoTimerOperation * timerOp = elektraMalloc (sizeof (*timerOp));
-	if (!timerOp)
-	{
-		exit_if_fail (0, "malloc failed");
-		return NULL;
-	}
-	memset (timerOp, 0, sizeof (*timerOp));
-
-	return timerOp;
-}
-
-/**
- * Create idle operation.
- * Free after usage.
- *
- * @return  empty idle operation structure
- */
-ElektraIoIdleOperation * elektraIoTestSuiteUtilNewIdleOperation (void)
-{
-	ElektraIoIdleOperation * idleOp = elektraMalloc (sizeof (*idleOp));
-	if (!idleOp)
-	{
-		exit_if_fail (0, "malloc failed");
-		return NULL;
-	}
-	memset (idleOp, 0, sizeof (*idleOp));
-
-	return idleOp;
-}
-
-/**
- * Create fd operation.
- * Free after usage.
- *
- * @return  empty fd operation structure
- */
-ElektraIoFdOperation * elektraIoTestSuiteUtilNewFdOperation (void)
-{
-	ElektraIoFdOperation * fdOp = elektraMalloc (sizeof (*fdOp));
-	if (!fdOp)
-	{
-		exit_if_fail (0, "malloc failed");
-		return NULL;
-	}
-	memset (fdOp, 0, sizeof (*fdOp));
-
-	return fdOp;
 }

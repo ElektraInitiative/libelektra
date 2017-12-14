@@ -1,10 +1,11 @@
 /**
  * @file
  *
- * @brief Tests for haskelltemplate plugin
+ * @brief Tests for IO bindings
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
+ * See test_fd.c for why `pipe()` is used.
  */
 
 #include <stdio.h>
@@ -23,6 +24,10 @@
 
 #define MIX_BUFFER_TESTDATA "T"
 #define MIX_BUFFER_TESTDATA_LENGTH 1
+
+// Indices for array returned by pipe()
+#define MIX_READ_END 0
+#define MIX_WRITE_END 1
 
 ElektraIoTestSuiteStop testStop;
 
@@ -53,18 +58,13 @@ static void testMixIdleShouldNotStarveTimerIdle (ElektraIoIdleOperation * timerO
 static void testMixIdleShouldNotStarveTimer (ElektraIoTestSuiteCreateBinding createBinding, ElektraIoTestSuiteStart start,
 					     ElektraIoTestSuiteStop stop)
 {
-	ElektraIoTimerOperation * timerOp = elektraIoTestSuiteUtilNewTimerOperation ();
-	timerOp->interval = MIX_TIMER_INTERVAL;
-	timerOp->enabled = 1;
-	timerOp->callback = testMixIdleShouldNotStarveTimerTimer;
+	ElektraIoTimerOperation * timerOp = elektraIoNewTimerOperation (MIX_TIMER_INTERVAL, 1, testMixIdleShouldNotStarveTimerTimer, NULL);
 
-	ElektraIoIdleOperation * idleOp = elektraIoTestSuiteUtilNewIdleOperation ();
-	idleOp->enabled = 1;
-	idleOp->callback = testMixIdleShouldNotStarveTimerIdle;
+	ElektraIoIdleOperation * idleOp = elektraIoNewIdleOperation (1, testMixIdleShouldNotStarveTimerIdle, NULL);
 
 	ElektraIoInterface * binding = createBinding ();
-	binding->addTimer (binding, timerOp);
-	binding->addIdle (binding, idleOp);
+	elektraIoBindingAddTimer (binding, timerOp);
+	elektraIoBindingAddIdle (binding, idleOp);
 
 	testStop = stop;
 	testIdleNotStarveTimerTimerCalled = 0;
@@ -86,9 +86,9 @@ static void testMixIdleShouldNotStarveTimer (ElektraIoTestSuiteCreateBinding cre
 	}
 	succeed_if (deviation <= MIX_DIFF_ERROR_THRESHOLD, "timer interval not within error threshold");
 
-	binding->removeTimer (timerOp);
-	binding->removeIdle (idleOp);
-	binding->cleanup (binding);
+	elektraIoBindingRemoveTimer (timerOp);
+	elektraIoBindingRemoveIdle (idleOp);
+	elektraIoBindingCleanup (binding);
 	elektraFree (timerOp);
 	elektraFree (idleOp);
 }
@@ -137,25 +137,18 @@ static void testMixIdleShouldNotStarveFd (ElektraIoTestSuiteCreateBinding create
 		return;
 	}
 
-	ElektraIoTimerOperation * timerOp = elektraIoTestSuiteUtilNewTimerOperation ();
-	timerOp->interval = MIX_TIMER_INTERVAL;
-	timerOp->enabled = 1;
-	timerOp->callback = testMixIdleShouldNotStarveFdControl;
+	ElektraIoTimerOperation * timerOp = elektraIoNewTimerOperation (MIX_TIMER_INTERVAL, 1, testMixIdleShouldNotStarveFdControl, NULL);
 
-	ElektraIoFdOperation * fdOp = elektraIoTestSuiteUtilNewFdOperation ();
-	fdOp->fd = fds[0];
-	fdOp->flags = ELEKTRA_IO_READABLE; // gets changed by control timer
-	fdOp->enabled = 1;
-	fdOp->callback = testMixIdleShouldNotStarveFdFd;
+	ElektraIoFdOperation * fdOp = elektraIoNewFdOperation (fds[MIX_READ_END],
+							       ELEKTRA_IO_READABLE, // gets changed by control timer
+							       1, testMixIdleShouldNotStarveFdFd, NULL);
 
-	ElektraIoIdleOperation * idleOp = elektraIoTestSuiteUtilNewIdleOperation ();
-	idleOp->enabled = 1;
-	idleOp->callback = testMixIdleShouldNotStarveFdIdle;
+	ElektraIoIdleOperation * idleOp = elektraIoNewIdleOperation (1, testMixIdleShouldNotStarveFdIdle, NULL);
 
 	ElektraIoInterface * binding = createBinding ();
-	binding->addFd (binding, fdOp);
-	binding->addTimer (binding, timerOp);
-	binding->addIdle (binding, idleOp);
+	elektraIoBindingAddFd (binding, fdOp);
+	elektraIoBindingAddTimer (binding, timerOp);
+	elektraIoBindingAddIdle (binding, idleOp);
 
 	testIdleNotStarveFdWriteFd = fds[1];
 	testIdleNotStarveFdStep = 0;
@@ -168,10 +161,10 @@ static void testMixIdleShouldNotStarveFd (ElektraIoTestSuiteCreateBinding create
 	succeed_if (testIdleNotStarveFdFdCalled, "fd callback was not called");
 	succeed_if (testIdleNotStarveFdIdleCalled, "idle callback was not called");
 
-	binding->removeFd (fdOp);
-	binding->removeTimer (timerOp);
-	binding->removeIdle (idleOp);
-	binding->cleanup (binding);
+	elektraIoBindingRemoveFd (fdOp);
+	elektraIoBindingRemoveTimer (timerOp);
+	elektraIoBindingRemoveIdle (idleOp);
+	elektraIoBindingCleanup (binding);
 	elektraFree (fdOp);
 	elektraFree (timerOp);
 	elektraFree (idleOp);

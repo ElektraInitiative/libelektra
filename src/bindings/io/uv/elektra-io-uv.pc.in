@@ -8,7 +8,7 @@ templatedir=${prefix}/@TARGET_TEMPLATE_FOLDER@
 
 Name: libelektra-io-uv
 Description: Elektra IO binding using uv
-Requires: libuv
+Requires: libuv elektra-io
 Version: @KDB_VERSION@
 Libs: -L${libdir} -l@IO_UV_LIBRARY@
 Cflags: -I${includedir}

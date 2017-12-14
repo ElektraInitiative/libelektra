@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief Tests for haskelltemplate plugin
+ * @brief Tests for IO bindings
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
@@ -15,6 +15,7 @@
 
 #include "test.h"
 #include <kdbio.h>
+#include <kdbioprivate.h>
 
 static void test_timing (void)
 {

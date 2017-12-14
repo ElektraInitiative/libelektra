@@ -10,8 +10,6 @@ elseif(NOT LIBUV_FOUND)
 else()
 	message(STATUS "Include Binding io_uv")
 
-	set (CMAKE_DEBUG_TARGET_PROPERTIES INCLUDE_DIRECTORIES COMPILE_DEFINITIONS)
-
 	set (BINDING_VARIANT uv)
 
 	## Build library
@@ -24,14 +22,14 @@ else()
 	add_headers (ELEKTRA_HEADERS)
 	set (SOURCES ${IO_UV_SRC_FILES} ${IO_UV_HDR_FILES} ${ELEKTRA_HEADERS})
 
-	set (IO_UV_LIBRARY libelektra-io-${BINDING_VARIANT})
+	set (IO_UV_LIBRARY elektra-io-${BINDING_VARIANT})
 
 	add_library (${IO_UV_LIBRARY} SHARED ${SOURCES})
 	target_include_directories (${IO_UV_LIBRARY} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 	target_include_directories (${IO_UV_LIBRARY} SYSTEM PUBLIC ${LIBUV_INCLUDE_DIRS})
 
 	target_compile_options (${IO_UV_LIBRARY} PUBLIC ${LIBUV_CFLAGS_OTHER})
-	target_link_elektra(${IO_UV_LIBRARY} ${LIBUV_LDFLAGS})
+	target_link_elektra(${IO_UV_LIBRARY} elektra-io ${LIBUV_LDFLAGS})
 
 	if (LIBUV_VERSION VERSION_LESS "1.0")
 		set_target_properties (${IO_UV_LIBRARY} PROPERTIES APPEND PROPERTY COMPILE_DEFINITIONS "HAVE_LIBUV0")
@@ -50,7 +48,7 @@ else()
 	)
 
 	configure_file (
-		"${CMAKE_CURRENT_SOURCE_DIR}/libelektra-io-uv.pc.in"
+		"${CMAKE_CURRENT_SOURCE_DIR}/${IO_UV_LIBRARY}.pc.in"
 		"${CMAKE_CURRENT_BINARY_DIR}/${IO_UV_LIBRARY}.pc"
 		@ONLY
 	)
@@ -74,7 +72,7 @@ else()
 
 	target_include_directories (${testexename} PUBLIC "${CMAKE_SOURCE_DIR}/tests/cframework")
 
-	target_link_elektra(${testexename} elektra-kdb elektra-plugin ${IO_UV_LIBRARY} m)
+	target_link_elektra(${testexename} elektra-kdb elektra-plugin elektra-io ${IO_UV_LIBRARY} m)
 
 	if (LIBUV_VERSION VERSION_LESS "1.0")
 		set_target_properties (${testexename} PROPERTIES APPEND PROPERTY COMPILE_DEFINITIONS "HAVE_LIBUV0")

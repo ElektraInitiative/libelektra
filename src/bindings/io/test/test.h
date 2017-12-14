@@ -15,12 +15,6 @@ unsigned int elektraIoTestSuiteUtilGetCurrentTime (struct timespec * ts);
 
 long elektraIoTestSuiteUtilGetTimeDifference (struct timespec start, struct timespec stop);
 
-ElektraIoTimerOperation * elektraIoTestSuiteUtilNewTimerOperation (void);
-
-ElektraIoIdleOperation * elektraIoTestSuiteUtilNewIdleOperation (void);
-
-ElektraIoFdOperation * elektraIoTestSuiteUtilNewFdOperation (void);
-
 void elektraIoTestSuiteIdle (ElektraIoTestSuiteCreateBinding createBinding, ElektraIoTestSuiteStart start, ElektraIoTestSuiteStop stop);
 
 void elektraIoTestSuiteTimer (ElektraIoTestSuiteCreateBinding createBinding, ElektraIoTestSuiteStart start, ElektraIoTestSuiteStop stop);
