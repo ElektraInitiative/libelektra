@@ -63,6 +63,12 @@ size_t opmphmLookup (Opmphm * opmphm, const void * name)
  * @retval 0 on success
  * @retval -1 on memory error
  */
+// In this function is a controlled integer overflow. This function will be refactored before time benchmarks, for now ignore it!
+#if defined(__has_feature)
+#if __has_feature(address_sanitizer)
+__attribute__((no_sanitize("integer")))
+#endif
+#endif
 int opmphmAssignment (Opmphm * opmphm, OpmphmGraph * graph, size_t n, int defaultOrder)
 {
 	ELEKTRA_NOT_NULL (opmphm);
@@ -134,7 +140,7 @@ int opmphmAssignment (Opmphm * opmphm, OpmphmGraph * graph, size_t n, int defaul
 				}
 				if (diff < 0)
 				{
-					diff += opmphm->componentSize * opmphm->rUniPar;
+					diff += opmphm->componentSize * opmphm->rUniPar; // controlled integer overflow, here!!
 				}
 				opmphm->graph[v] = diff;
 				isAssigned[v] = 1;
@@ -565,7 +571,14 @@ void opmphmClear (Opmphm * opmphm)
  */
 #ifndef ELEKTRA_BIG_ENDIAN
 // little endian
-uint32_t opmphmHashfunction (const void * key, size_t length, uint32_t initval)
+// sanitize a hash function is silly, so ignore it!
+#if defined(__has_feature)
+#if __has_feature(address_sanitizer)
+__attribute__ ((no_sanitize ("integer", "undefined")))
+#endif
+#endif
+uint32_t
+opmphmHashfunction (const void * key, size_t length, uint32_t initval)
 {
 	uint32_t a, b, c;
 	a = b = c = 0xdeadbeef + ((uint32_t)length) + initval;
@@ -637,7 +650,14 @@ uint32_t opmphmHashfunction (const void * key, size_t length, uint32_t initval)
 }
 #else
 // big endian
-uint32_t opmphmHashfunction (const void * key, size_t length, uint32_t initval)
+// sanitize a hash function is silly, so ignore it!
+#if defined(__has_feature)
+#if __has_feature(address_sanitizer)
+__attribute__ ((no_sanitize ("integer", "undefined")))
+#endif
+#endif
+uint32_t
+opmphmHashfunction (const void * key, size_t length, uint32_t initval)
 {
 	uint32_t a, b, c;
 	a = b = c = 0xdeadbeef + ((uint32_t)length) + initval;
