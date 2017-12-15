@@ -358,6 +358,14 @@ int ksDel (KeySet * ks)
 	if (!ks) return -1;
 
 	rc = ksClose (ks);
+
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+	if (ks->opmphm)
+	{
+		opmphmDel (ks->opmphm);
+	}
+#endif
+
 	elektraFree (ks);
 
 	return rc;
@@ -389,10 +397,6 @@ int ksClear (KeySet * ks)
 		return -1;
 	}
 	ks->alloc = KEYSET_SIZE;
-
-#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
-	ks->opmphm = opmphmNew ();
-#endif
 
 	return 0;
 }
@@ -1885,7 +1889,7 @@ static Key * elektraLookupBinarySearch (KeySet * ks, Key const * key, option_t o
 
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 
-static const char * opmphmElektraGetString (void * data)
+static const char * elektraOpmphmGetString (void * data)
 {
 	return keyName ((Key *)data);
 }
@@ -1900,7 +1904,6 @@ static int elektraLookupBuildOpmphm (KeySet * ks)
 			return -1;
 		}
 	}
-	if (!ks->size) return -1;
 	// alwasy new OPMPHM
 	opmphmClear (ks->opmphm);
 	// make graph
@@ -1914,7 +1917,7 @@ static int elektraLookupBuildOpmphm (KeySet * ks)
 	}
 	// make init
 	OpmphmInit init;
-	init.getName = opmphmElektraGetString;
+	init.getName = elektraOpmphmGetString;
 	init.data = (void **)ks->array;
 	init.initSeed = elektraRandGetInitSeed ();
 
@@ -1985,6 +1988,7 @@ static Key * elektraLookupOpmphmSearch (KeySet * ks, Key const * key, option_t o
  */
 static Key * elektraLookupSearch (KeySet * ks, Key * key, option_t options)
 {
+	if (!ks->size) return 0;
 	typedef Key * (*callback_t) (KeySet * ks, Key * key, Key * found, option_t options);
 	union {
 		callback_t f;
@@ -2007,16 +2011,22 @@ static Key * elektraLookupSearch (KeySet * ks, Key * key, option_t options)
 
 	if (options & KDB_O_OPMPHM)
 	{
-		// alwasy new OPMPHM
+		//~ if (!opmphmIsBuild (ks->opmphm))
+		//~ {
 		if (elektraLookupBuildOpmphm (ks))
 		{
+			// when OPMPHM build fails use binary search as backup
 			found = elektraLookupBinarySearch (ks, key, options);
 		}
 		else
 		{
-			// when OPMPHM build fails use binary search as backup
 			found = elektraLookupOpmphmSearch (ks, key, options);
 		}
+		//~ }
+		//~ else
+		//~ {
+		//~ found = elektraLookupOpmphmSearch (ks, key, options);
+		//~ }
 	}
 	else
 	{
@@ -2515,14 +2525,6 @@ int ksClose (KeySet * ks)
 	ks->alloc = 0;
 
 	ks->size = 0;
-
-#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
-	if (ks->opmphm)
-	{
-		opmphmDel (ks->opmphm);
-		ks->opmphm = NULL;
-	}
-#endif
 
 	return 0;
 }
