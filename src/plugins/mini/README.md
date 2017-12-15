@@ -5,7 +5,7 @@
 - infos/provides = storage/ini
 - infos/recommends =
 - infos/placements = getstorage setstorage
-- infos/status = maintained shelltest unittest nodep experimental limited
+- infos/status = maintained shelltest unittest nodep limited
 - infos/metadata =
 - infos/description = A minimal plugin for simple INI files
 

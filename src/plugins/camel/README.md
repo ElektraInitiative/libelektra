@@ -5,7 +5,7 @@
 - infos/provides = storage/camel
 - infos/recommends =
 - infos/placements = getstorage setstorage
-- infos/status = maintained shelltest unittest preview experimental unfinished concept discouraged
+- infos/status = maintained shelltest unittest preview unfinished concept discouraged
 - infos/metadata =
 - infos/description = A very basic plugin that reads and writes a very small subset of YAML
 

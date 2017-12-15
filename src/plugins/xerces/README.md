@@ -4,7 +4,7 @@
 - infos/provides = storage/xml
 - infos/needs =
 - infos/placements = getstorage setstorage
-- infos/status = recommended unittest experimental
+- infos/status = recommended unittest
 - infos/metadata = xerces/rootname
 - infos/description = Storage in the XML format.
 
