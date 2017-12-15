@@ -34,7 +34,8 @@ execute()
 	fi
 
 	[ -z "$Storage" ] && Storage="dump"
-	command=$(printf '%s' "$proto" | sed -e "s~\$Mountpoint~${Mountpoint}~g" \
+	command=$(printf '%s' "$proto" | sed -e "s~kdb\ ~$KDB ~g" \
+					     -e "s~\$Mountpoint~${Mountpoint}~g" \
 	                                     -e "s~\$File~${DBFile}~g"           \
 	                                     -e "s~\$Storage~${Storage}~g"       \
 	                                     -e "s~\$MountArgs~${MountArgs}~g")

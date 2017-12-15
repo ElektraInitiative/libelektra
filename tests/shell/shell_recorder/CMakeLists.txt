@@ -2,11 +2,12 @@ if (ENABLE_KDB_TESTING)
 	# set kdb command
 	SET(USE_CMAKE_KDB_COMMAND "")
 	if (BUILD_SHARED)
-		set (KDB_COMMAND "${CMAKE_BINARY_DIR}/bin/kdb")
+		set (KDB_COMMAND "kdb")
+		set (ENABLE_REPLAY_TESTS TRUE)
 	elseif (BUILD_FULL)
-		set (KDB_COMMAND "${CMAKE_BINARY_DIR}/bin/kdb-full")
+		set (KDB_COMMAND "kdb-full")
 	elseif (BUILD_STATIC)
-		set (KDB_COMMAND "${CMAKE_BINARY_DIR}/bin/kdb-static")
+		set (KDB_COMMAND "kdb-static")
 	else()
 		message(SEND_ERROR "no kdb tool found, please enable BUILD_FULL, BUILD_STATIC or BUILD_SHARED")
 	endif ()
@@ -21,7 +22,7 @@ if (ENABLE_KDB_TESTING)
 		set (INCLUDE_COMMON
 			"${INCLUDE_COMMON_FILE}\n
 			KDB=\"${KDB_COMMAND}\"\n\
-			export PATH=\"`dirname \\\"$KDB\\\"`:$PATH\""
+			export PATH=\"${CMAKE_BINARY_DIR}/bin\":$PATH"
 		)
 	else (LENGTH_KDB_COMMAND EQUAL 0)
 		set (INCLUDE_COMMON "${INCLUDE_COMMON_FILE}\nKDB=\"kdb\"")
@@ -74,18 +75,20 @@ if (ENABLE_KDB_TESTING)
 			list (APPEND SCRIPT_TESTS "selftest.esr")
 		endif (${PLUGIN_INDEX} EQUAL -1)
 
-		file (GLOB REPLAY_TESTS replay_tests/*.esr)
-		foreach (file ${REPLAY_TESTS})
-			get_filename_component (directory ${file} DIRECTORY)
-			get_filename_component (name_without_extension ${file} NAME_WE)
-			add_test (
-				testshell_replay_${name_without_extension}
-				"${CMAKE_CURRENT_BINARY_DIR}/shell_recorder.sh"
-				"${file}"
-				"${directory}/${name_without_extension}.epf"
-				)
-			set_property(TEST testshell_replay_${name_without_extension} PROPERTY LABELS memleak kdbtests)
-		endforeach (file ${SCRIPT_TESTS})
+		if (ENABLE_REPLAY_TESTS)
+			file (GLOB REPLAY_TESTS replay_tests/*.esr)
+			foreach (file ${REPLAY_TESTS})
+				get_filename_component (directory ${file} DIRECTORY)
+				get_filename_component (name_without_extension ${file} NAME_WE)
+				add_test (
+					testshell_replay_${name_without_extension}
+					"${CMAKE_CURRENT_BINARY_DIR}/shell_recorder.sh"
+					"${file}"
+					"${directory}/${name_without_extension}.epf"
+					)
+				set_property(TEST testshell_replay_${name_without_extension} PROPERTY LABELS memleak kdbtests)
+			endforeach (file ${SCRIPT_TESTS})
+		endif (ENABLE_REPLAY_TESTS)
 	endif (NOT (${ASAN_LINUX} AND CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 5))
 
 	add_subdirectory (tutorial_wrapper)
