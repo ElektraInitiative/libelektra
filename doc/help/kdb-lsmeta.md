@@ -9,8 +9,8 @@ Where `key name` is the name of the key.
 
 ## DESCRIPTION
 
-This command prints the names of all metakeys associated with the key named `key name`.  
-If no metakeys are associated with the given key, nothing will be printed.  
+This command prints the names of all metakeys associated with the key named `key name`.<br>
+If no metakeys are associated with the given key, nothing will be printed.<br>
 
 ## OPTIONS
 
@@ -30,7 +30,7 @@ If no metakeys are associated with the given key, nothing will be printed.
 
 ## EXAMPLE
 
-To see which metakeys are associated with a key:  
+To see which metakeys are associated with a key:<br>
 `kdb lsmeta /example/key`
 
 ## SEE ALSO

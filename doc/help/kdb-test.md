@@ -3,18 +3,18 @@ kdb-test(1) -- Run test(s) on the key database
 
 ## SYNOPSIS
 
-`kdb test <path> [<test-name> ...]`  
+`kdb test <path> [<test-name> ...]`<br>
 
 Where `path` is the path the user wishes to perform the test under.
-The option `test-name` argument is used to specify which test(s) to run. To run multiple tests, each should be named with a trailing space.  
-If no `test-name` is provided, all the tests will be run.  
+The option `test-name` argument is used to specify which test(s) to run. To run multiple tests, each should be named with a trailing space.<br>
+If no `test-name` is provided, all the tests will be run.<br>
 
 ## DESCRIPTION
 
-This command is used to run part or all of the key database test suite.  
-These tests allow one to user to verify that a backend is capable of storing and retrieving all kinds of configuration keys and values.  
+This command is used to run part or all of the key database test suite.<br>
+These tests allow one to user to verify that a backend is capable of storing and retrieving all kinds of configuration keys and values.<br>
 
-The following tests are available: basic string umlauts binary naming meta  
+The following tests are available: basic string umlauts binary naming meta<br>
 
 ## OPTIONS
 
@@ -29,11 +29,11 @@ The following tests are available: basic string umlauts binary naming meta
 
 ## EXAMPLES
 
-To run all tests below the `user/example/tests` key:  
-`kdb test user/example/tests`  
+To run all tests below the `user/example/tests` key:<br>
+`kdb test user/example/tests`<br>
 
-To run the `binary` and `naming` tests:  
-`kdb test user/example/tests binary naming`  
+To run the `binary` and `naming` tests:<br>
+`kdb test user/example/tests binary naming`<br>
 
 ## SEE ALSO
 
