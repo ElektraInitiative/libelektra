@@ -130,7 +130,7 @@ def parseContract ():
 	return enum
 
 def checkTags (tags, enum):
-	if not tags: 
+	if not tags:
 		return
 	for k in tags:
 		if not k in enum:
@@ -162,7 +162,7 @@ def main():
 
 	pluginsBase = os.path.join('src', 'plugins')
 
-	if (args.plugins):	
+	if (args.plugins):
 		plugins = args.plugins
 	else:
 		plugins = os.listdir(pluginsBase)
