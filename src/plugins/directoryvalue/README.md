@@ -5,7 +5,7 @@
 - infos/provides =
 - infos/recommends =
 - infos/placements = postgetstorage presetstorage
-- infos/status = maintained nodep preview
+- infos/status = maintained unittest nodep preview
 - infos/metadata =
 - infos/description = This plugin converts directory values to leaf values
 
