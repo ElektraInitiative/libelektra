@@ -39,11 +39,23 @@ You have some options to avoid running them as root:
    run `ctest` without tests that have the label `kdbtests`:
    `ctest --output-on-failure -LE kdbtests`
    (which is also what `make run_nokdbtests` does)
-2. To give your user the permissions to the relevant paths, i.e. (once as root):
+2. To give your user the permissions to the relevant paths execute the lines
+   below once as root.
+
+   **Warning: Changing permissions on the wrong paths can be harmful! Please make
+   sure that the paths are correct.**
+   In doubt make sure that you have a backup of the affected directories.
+
+   First load the required information and verify the paths:
    ```
    kdb mount-info
-   chown -R `whoami` `kdb get system/info/constants/cmake/CMAKE_INSTALL_PREFIX`/`kdb get system/info/constants/cmake/KDB_DB_SPEC`
-   chown -R `whoami` `kdb get system/info/constants/cmake/KDB_DB_SYSTEM`
+   echo `kdb sget system/info/elektra/constants/cmake/CMAKE_INSTALL_PREFIX .`/`kdb sget system/info/elektra/constants/cmake/KDB_DB_SPEC .`
+   echo `kdb sget system/info/elektra/constants/cmake/KDB_DB_SYSTEM .`
+   ```
+   Then change the permissions:
+   ```
+   chown -R `whoami` `kdb sget system/info/elektra/constants/cmake/CMAKE_INSTALL_PREFIX .`/`kdb get system/info/constants/cmake/KDB_DB_SPEC .`
+   chown -R `whoami` `kdb sget system/info/elektra/constants/cmake/KDB_DB_SYSTEM .`
    ```
    After that all test cases should run successfully as described above.
 3. Compile Elektra so that system paths are not actual system paths, e.g. to write everything into
