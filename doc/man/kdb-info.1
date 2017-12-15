@@ -9,11 +9,15 @@
 .SH "SYNOPSIS"
 \fBkdb info <plugin> [<clause name>]\fR
 .
+.br
+.
 .P
 Where \fBplugin\fR is the plugin in which the user would like to know information about\.
 .
 .br
 The optional \fBclause name\fR argument can be used to just print information from a certain clause\.
+.
+.br
 .
 .SH "DESCRIPTION"
 This command will print out all the information about an Elektra plugin except it\'s configuration\.
@@ -27,14 +31,21 @@ Information about a plugin will be read from \fBsystem/elektra/modules/\fR\. If 
 .br
 If a user wishes to load the information directly from the plugin, they can force that by using the \fB\-l\fR option\.
 .
+.br
+.
 .SH "RETURN VALUES"
 This command returns the following exit statuses:
+.
+.br
 .
 .TP
 0:
 .
 .br
 The command was successful\.
+.
+.br
+
 
 .
 .TP
@@ -42,6 +53,9 @@ The command was successful\.
 .
 .br
 A \fBclause name\fR was specified but not found\.
+.
+.br
+
 
 .
 .SH "OPTIONS"
@@ -76,14 +90,21 @@ To print all the information about the \fBdump\fR plugin:
 .br
 \fBkdb info dump\fR
 .
+.br
+.
 .P
 To print out the license of the \fBresolver\fR plugin directly by forcing it to load:
 .
 .br
 \fBkdb info \-l resolver licence\fR
 .
+.br
+.
 .P
 To print out the author of the \fBline\fR plugin:
 .
 .br
 \fBkdb info line author\fR
+.
+.br
+
