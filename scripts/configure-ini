@@ -10,5 +10,5 @@ cmake	-DSWIG_EXECUTABLE=/usr/bin/swig3.0 \
 	-DKDB_DEFAULT_STORAGE="ini" \
 	-DPLUGINS="ALL" \
 	-DTOOLS="ALL" \
-	-DBINDINGS="ALL" \
+	-DBINDINGS="STABLE" \
 	$*

@@ -9,7 +9,7 @@ in the respective programming languages, but you additionally need an
 [Interpreter Plugin](/src/plugins/README.md). Nevertheless, bindings
 can be immediately used in applications without plugins.
 
-List of currently supported bindings (included in `ALL`):
+List of currently supported bindings (included in `STABLE`):
 
 - [cpp](cpp/) C++11 bindings (included per default)
 - [jna](jna/) A full java binding using JNA
@@ -21,12 +21,13 @@ List of currently supported bindings (included in `ALL`):
 - [intercept_env](intercept/env/) Intercepts calls to environment (e.g. getenv())
 - [intercept_fs](intercept/fs/) Intercepts file system calls to configuration files (experimental)
 
-Experimental bindings (not included in `ALL`):
+Experimental bindings (included in `EXPERIMENTAL`):
 
 - [gsettings](gsettings/) GLib bindings (experimental)
 - [haskell](haskell/) Haskell bindings
+- [io_uv](io/uv/) I/O bindings for uv
 
-Deprecated bindings (not included in `ALL`):
+Deprecated bindings (included in `DEPRECATED`):
 
 - [gi_python](gi/python/) GObject Introspection binding with Python specific overrides (deprecated)
 - [gi_lua](gi/lua/) GObject Introspection binding with Lua specific overrides (deprecated)

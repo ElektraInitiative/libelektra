@@ -4,7 +4,7 @@
 - infos =
 - infos/author = Thomas Wahringer <waht@libelektra.org>
 - infos/licence = BSD
-- infos/status = experimental
+- infos/status = experimental io
 - infos/description = IO-Binding for libuv
 
 ## Requirements

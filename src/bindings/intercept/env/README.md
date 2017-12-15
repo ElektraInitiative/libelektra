@@ -1,5 +1,6 @@
 - infos = Information about elektrify getenv below
 - infos/author = Markus Raab <elektra@libelektra.org>
+- infos/status = stable intercept
 - infos/description =
 
 kdb-elektrify-getenv(1) -- elektrify the environment of applications

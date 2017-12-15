@@ -1,3 +1,5 @@
+include (LibAddBinding)
+
 if (DEPENDENCY_PHASE)
 	find_package(PythonLibs 3 QUIET)
 	find_swig()
@@ -37,8 +39,13 @@ add_plugin(python
 if (ADDTESTING_PHASE)
 	if (ENABLE_BROKEN_TESTS)
 	# bindings are required for tests
+<<<<<<< HEAD
 	list (FIND BINDINGS "swig_python" FINDEX)
 	if (BUILD_TESTING AND FINDEX GREATER -1)
+=======
+	check_binding_was_added ("swig_python" BINDING_WAS_ADDED)
+	if (BUILD_TESTING AND BINDING_WAS_ADDED)
+>>>>>>> cmake: BINDINGS overhaul
 		# test environment clears env so setting PYTHONPATH is no option
 		# we workaround this by changing the current directory to our bindings
 		# output directory + our test adds the current directory to pythons sys.path
@@ -52,7 +59,7 @@ if (ADDTESTING_PHASE)
 			install (DIRECTORY python DESTINATION ${TARGET_TEST_DATA_FOLDER})
 		endif ()
 	else ()
-		message (WARNING "swig_python bindings are required for testing, test deactivated")
+		message (WARNING "BUILD_STATIC or BUILD_FULL and swig_python bindings are required for testing, test deactivated")
 	endif ()
 	endif (ENABLE_BROKEN_TESTS)
 endif ()

@@ -54,3 +54,6 @@ manager does not include c2hs, or `cabal update && cabal install hspec QuickChec
   	- keyGetBaseName behaves like keyBaseName
   	- keyUnescapedName returns a String, the null separators are written with \0
 - BUILD_STATIC is currently not compatible with the haskell bindings
+
+## Infos
+- infos/status = experimental

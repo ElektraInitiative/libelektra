@@ -76,3 +76,6 @@ iterators, too.
 [Contextual Values](include/contextual.hpp) allow a key to be used as
 native variables, see [here how they can be
 generated](/src/tools/gen).
+
+## Infos
+- infos/status = nodep default stable

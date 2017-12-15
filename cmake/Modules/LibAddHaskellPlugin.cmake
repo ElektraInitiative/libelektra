@@ -1,4 +1,5 @@
 include (LibAddMacros)
+include (LibAddBinding)
 
 # Allows one to add plugins written in haskell, setting up the include paths and
 # libraries automatically.
@@ -29,8 +30,8 @@ macro (add_haskell_plugin target)
 
 		 # set by find_program
 		if (HASKELL_FOUND)
-		list (FIND BINDINGS "haskell" FINDEX)
-		if (FINDEX GREATER -1)
+		check_binding_included ("haskell" BINDING_WAS_INCLUDED)
+		if (BINDING_WAS_INCLUDED)
 
 			# needed for HsFFI.h
 			execute_process (
@@ -175,7 +176,7 @@ macro (add_haskell_plugin target)
 			)
 			add_custom_target (${target} DEPENDS ${PLUGIN_HASKELL_NAME})
 			if (BUILD_SHARED OR BUILD_FULL)
-				add_custom_command(TARGET ${target} POST_BUILD 
+				add_custom_command(TARGET ${target} POST_BUILD
 			    	COMMAND ${CMAKE_COMMAND} -E copy
 			    		"${PLUGIN_HASKELL_NAME}"
 	    				"${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/"
@@ -195,9 +196,9 @@ macro (add_haskell_plugin target)
 				remove_plugin (${target} "GHC_RTS_LIB not found")
 			endif (GHC_RTS_LIB)
 
-		else (FINDEX GREATER -1)
+		else (BINDING_WAS_INCLUDED)
 			remove_plugin (${target} "haskell bindings are not included in the cmake configuration")
-		endif (FINDEX GREATER -1)
+		endif (BINDING_WAS_INCLUDED)
 		else (HASKELL_FOUND)
 			remove_plugin (${target} ${HASKELL_NOTFOUND_INFO})
 		endif (HASKELL_FOUND)

@@ -181,3 +181,5 @@ too.
 The bindings where tested with Ruby >= 2.1.0, lower version might work but are
 not tested.
 
+## Infos
+- infos/status = swig stable

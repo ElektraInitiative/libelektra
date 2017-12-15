@@ -1,3 +1,5 @@
+include (LibAddBinding)
+
 if (DEPENDENCY_PHASE)
 	if (APPLE)
 		set (CMAKE_FIND_FRAMEWORK "LAST")
@@ -47,8 +49,8 @@ add_plugin(ruby
 
 # if (ADDTESTING_PHASE)
 # 	# bindings are required for tests
-# 	list (FIND BINDINGS "swig_python" FINDEX)
-# 	if (NOT BUILD_SHARED AND BUILD_TESTING AND FINDEX GREATER -1)
+# 	check_binding_was_added ("swig_python" BINDING_WAS_ADDED)
+# 	if (NOT BUILD_SHARED AND BUILD_TESTING AND BINDING_WAS_ADDED)
 # 		# test environment clears env so setting PYTHONPATH is no option
 # 		# we workaround this by changing the current directory to our bindings
 # 		# output directory + our test adds the current directory to pythons sys.path

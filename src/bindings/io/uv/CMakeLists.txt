@@ -6,7 +6,7 @@ pkg_check_modules (LIBUV QUIET libuv)
 if (${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
 	remove_binding(io_uv "cannot be built on Windows")
 elseif(NOT LIBUV_FOUND)
-	remove_binding(io_uv "libuv not found")
+	remove_binding (io_uv "libuv not found")
 else()
 	message(STATUS "Include Binding io_uv")
 

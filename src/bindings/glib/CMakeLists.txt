@@ -5,7 +5,7 @@ if (CMAKE_MAJOR_VERSION EQUAL 2 AND CMAKE_MINOR_VERSION EQUAL 8)
 		# needed for PRIVATE and PUBLIC flags in target_link_libraries
 		# also in tests subdirectory
 		# see also https://cmake.org/cmake/help/v3.0/policy/CMP0023.html
-		remove_binding(jna "cmake 2.8.12 needed for glib")
+		remove_binding (glib "cmake 2.8.12 needed for glib")
 		return()
 	endif()
 endif()
@@ -14,8 +14,6 @@ find_package (PkgConfig)
 pkg_check_modules (GOBJECT gobject-2.0>=2.36)
 
 if (NOT GOBJECT_FOUND)
-	set (REGEX "gi_.*")
-	list_filter(BINDINGS REGEX)
 	remove_binding (glib "No gobject found using pkg-config, also remove gi bindings because they depend on it")
 	remove_binding (gsettings "Because they depend on glib.")
 else()

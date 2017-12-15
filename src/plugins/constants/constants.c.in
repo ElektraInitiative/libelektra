@@ -84,12 +84,6 @@ static void elektraAddConstants (KeySet * ks, Key * parentKey)
 
 
 	key = keyDup (parentKey);
-	keyAddName (key, "cmake/IOBINDINGS");
-	keySetString (key, "@IOBINDINGS@");
-	ksAppendKey (ks, key);
-
-
-	key = keyDup (parentKey);
 	keyAddName (key, "cmake/KDB_DB_SYSTEM");
 	keySetString (key, "@KDB_DB_SYSTEM@");
 	ksAppendKey (ks, key);
@@ -139,7 +133,7 @@ static void elektraAddConstants (KeySet * ks, Key * parentKey)
 
 	key = keyDup (parentKey);
 	keyAddName (key, "cmake/BINDINGS");
-	keySetString (key, "@BINDINGS@");
+	keySetString (key, "@ADDED_BINDINGS@");
 	ksAppendKey (ks, key);
 
 

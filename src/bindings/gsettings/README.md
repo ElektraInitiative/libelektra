@@ -117,3 +117,6 @@ G_MESSAGES_DEBUG=ElektraSettings GSETTINGS_BACKEND=elektra gedit
 ```
 
 an application can still request a different backend then elektra with `g_settings_new_with_backend ()`
+
+## Infos
+- infos/status = experimental
