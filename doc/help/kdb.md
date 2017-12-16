@@ -76,7 +76,7 @@ For example, to permanently change verbosity one can use:
 
 Profiles allow users to change many/all configuration options of a tool
 at once. It influences from where the KDB entries are read.
-For example if you use:  
+For example if you use:<br>
 	`kdb export -p admin system`
 
 It will read its format configuration from `/sw/elektra/kdb/#0/admin/format`.
@@ -88,13 +88,15 @@ be chosen automatically according to the current user or current working directo
 Sometimes it is useful to start with default options, for example it is not
 possible to invert the `-q` option.
 In such situations one can simply select a non-existing profile, then `-q`
-works as usual:  
+works as usual:<br>
 	`kdb mount -p nonexist -q /abc dir/abc`
 
 There are two special profiles:
 
-- `%` is a fallback profile. It does not need to be selected and will be used if a key cannot be found in the main profile.
-- `nokdb` disables reading from `KDB`. Then only command-line arguments are used.
+- `%`:
+  Is a fallback profile. It does not need to be selected and will be used if a key cannot be found in the main profile.
+- `nokdb`:
+  Disables reading from `KDB`. Then only command-line arguments are used.
 
 ## BOOKMARKS
 
