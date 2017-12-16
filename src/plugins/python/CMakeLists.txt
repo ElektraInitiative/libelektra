@@ -35,6 +35,7 @@ add_plugin(python
 )
 
 if (ADDTESTING_PHASE)
+	if (ENABLE_BROKEN_TESTS)
 	# bindings are required for tests
 	list (FIND BINDINGS "swig_python" FINDEX)
 	if (BUILD_TESTING AND FINDEX GREATER -1)
@@ -53,4 +54,5 @@ if (ADDTESTING_PHASE)
 	else ()
 		message (WARNING "swig_python bindings are required for testing, test deactivated")
 	endif ()
+	endif (ENABLE_BROKEN_TESTS)
 endif ()
