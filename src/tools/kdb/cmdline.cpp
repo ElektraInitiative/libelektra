@@ -273,7 +273,7 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 	}
 
 
-	if (profile != "nokdb")
+	if (profile != "%")
 	{
 		try
 		{
