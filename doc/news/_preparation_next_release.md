@@ -47,6 +47,8 @@ For a small demo see here:
 
 We added even more functionality, which could not make it to the highlights:
 
+- fcrypt is now considered stable. It is no longer tagged as `experimental`.
+  For a short demo see here: [![asciicast](https://asciinema.org/a/153014.png)](https://asciinema.org/a/153014)
 - <<TODO>>
 
 ## Documentation
