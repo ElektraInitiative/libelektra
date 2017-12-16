@@ -64,15 +64,15 @@ The \fBkdb\fR utility reads its own configuration from three sources within the 
 /sw/kdb/\fBprofile\fR/ (for legacy configuration)
 .
 .IP "2." 4
-/sw/elektra/kdb/#0/%/ (for empty profile)
+/sw/elektra/kdb/#0/%/ (for empty profile, \fB%\fR in Elektra is used to represent a emptiness)
 .
 .IP "3." 4
-/sw/elektra/kdb/#0/\fBprofile\fR/ (for current profile)
+/sw/elektra/kdb/#0/\fBprofile\fR/ (for current profile, if no \fB\-p\fR or \fB\-\-profile\fR is given, \fBcurrent\fR will be used)
 .
 .IP "" 0
 .
 .P
-The last source where a configuration value is found, wins\.
+Here the last source where a configuration value is found, wins\.
 .
 .P
 For example, to permanently change verbosity one can use:
@@ -85,8 +85,22 @@ Be verbose for every tool\.
 \fBkdb set /sw/elektra/kdb/#0/current/quiet 1\fR
 Be quiet for every tool\.
 .
+.P
+If \fB%\fR is passed to \fB\-p\fR or \fB\-\-profile\fR, the KDB will not be consulted for configuration and only the command\-line arguments are used\.
+.
 .SH "PROFILES"
-Profiles allow users to change many/all configuration options of a tool at once\. It influences from where the KDB entries are read\. For example if you use:
+Profiles allow users to change many/all configuration settings of a tool at once\. It influences from where the KDB entries are read\. Without a \fB\-p\fR or \fB\-\-profile\fR argument following profiles are used (in the order of preference):
+.
+.TP
+\fBcurrent\fR
+Is the profile to be used only if no \fB\-p\fR argument was used\.
+.
+.TP
+\fB%\fR
+Is the fallback profile\. It will be used if keys cannot be found in the main profile\.
+.
+.P
+For example if you use:
 .
 .br
 \fBkdb export \-p admin system\fR
@@ -104,15 +118,19 @@ Sometimes it is useful to start with default options, for example it is not poss
 \fBkdb mount \-p nonexist \-q /abc dir/abc\fR
 .
 .P
-There are two special profiles:
+If \fB%\fR is used as profile name for \fB\-p\fR, the \fBkdb\fR tools disables reading from \fBKDB\fR for their own configuration settings\. Then, they only use command\-line arguments\.
 .
-.TP
-\fB%\fR
-Is a fallback profile\. It does not need to be selected and will be used if a key cannot be found in the main profile\.
+.P
+To explicitly state the default behavior, we use:
 .
-.TP
-\fBnokdb\fR
-Disables reading from \fBKDB\fR\. Then only command\-line arguments are used\.
+.br
+\fB\-p current\fR
+.
+.P
+To state that we do not want to read any configuration settings for \fBkdb\fR from KDB, we use:
+.
+.br
+\fB\-p %\fR
 .
 .SH "BOOKMARKS"
 Elektra recommends to use rather long paths \fI/doc/tutorials/application\-integration\.md\fR because it ensures flexibility in the future (e\.g\. to use profiles and have a compatible path for new major versions of configuration)\.

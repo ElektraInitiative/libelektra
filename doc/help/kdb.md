@@ -59,10 +59,13 @@ The `kdb` utility reads its own configuration from three sources
 within the KDB (key database):
 
 1. /sw/kdb/**profile**/ (for legacy configuration)
-2. /sw/elektra/kdb/#0/%/ (for empty profile)
-3. /sw/elektra/kdb/#0/**profile**/ (for current profile)
+2. /sw/elektra/kdb/#0/%/ (for empty profile, `%` in Elektra
+   is used to represent a emptiness)
+3. /sw/elektra/kdb/#0/**profile**/ (for current profile,
+   if no `-p` or `--profile` is given, `current` will be
+   used)
 
-The last source where a configuration value is found, wins.
+Here the last source where a configuration value is found, wins.
 
 For example, to permanently change verbosity one can use:
 
@@ -72,10 +75,22 @@ For example, to permanently change verbosity one can use:
 - `kdb set /sw/elektra/kdb/#0/current/quiet 1`:
   Be quiet for every tool.
 
+If `%` is passed to
+`-p` or `--profile`, the KDB will not be consulted for configuration and
+only the command-line arguments are used.
+
 ## PROFILES
 
-Profiles allow users to change many/all configuration options of a tool
+Profiles allow users to change many/all configuration settings of a tool
 at once. It influences from where the KDB entries are read.
+Without a `-p` or `--profile` argument following profiles are used
+(in the order of preference):
+
+- `current`:
+  Is the profile to be used only if no `-p` argument was used.
+- `%`:
+  Is the fallback profile. It will be used if keys cannot be found in the main profile.
+
 For example if you use:<br>
 	`kdb export -p admin system`
 
@@ -91,12 +106,18 @@ In such situations one can simply select a non-existing profile, then `-q`
 works as usual:<br>
 	`kdb mount -p nonexist -q /abc dir/abc`
 
-There are two special profiles:
+If `%` is used as profile name for `-p`, the `kdb` tools disables reading from `KDB`
+for their own configuration settings. Then, they only use command-line arguments.
 
-- `%`:
-  Is a fallback profile. It does not need to be selected and will be used if a key cannot be found in the main profile.
-- `nokdb`:
-  Disables reading from `KDB`. Then only command-line arguments are used.
+To explicitly state the default behavior, we use:<br>
+	`-p current`
+
+To state that we do not want to read any configuration settings for `kdb`
+from KDB, we use:<br>
+	`-p %`
+
+> Note that KDB will still be used to perform the actions you want to perform
+> with the `kdb` tool.
 
 ## BOOKMARKS
 
