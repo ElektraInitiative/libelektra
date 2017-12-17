@@ -26,7 +26,7 @@ For a small demo see here:
 
 [![asciicast](https://asciinema.org/a/cantr04assr4jkv8v34uz9b8r.png)](https://asciinema.org/a/cantr04assr4jkv8v34uz9b8r)
 
-For this release we also have a demo showing Elektra's cryptographic abilities:
+For this release Peter Nirschl prepared a demo showing Elektra's cryptographic abilities:
 
 ![asciicast](https://asciinema.org/a/153014.png)](https://asciinema.org/a/153014)
 
@@ -47,7 +47,8 @@ Elektra in the main track of [Fosdem 2018](https://fosdem.org/2018).
 
 See you in Brussels at 3 and 4 February 2018!
 
-Elektra will also be present in [Config Management Camp](http://cfgmgmtcamp.eu/).
+Elektra will also be present in the [Config Management Camp](http://cfgmgmtcamp.eu/)
+directly afterwards Fosdem in Gent.
 
 ### CC-licenced book about vision of Elektra published
 
@@ -57,7 +58,7 @@ I am proud to release a book describing:
 - the current state, and
 - the long-term visions of Elektra.
 
-The Fosdem talk will cover these highlights.
+The Fosdem talk will cover some highlights from the book.
 
 The LaTeX sources are available [here](https://github.com/ElektraInitiative/book)
 and the compiled book can be downloaded from [here](https://github.com/ElektraInitiative/book/raw/master/book/book.pdf).
@@ -81,6 +82,22 @@ Elektra's internal dump format.
 
 As preparation work we implemented the `dini` plugin which transparently
 converts all `dump` files to `ini` files on any write attempts.
+Furthermore, we fixed most of the INI bugs which blocked INI to be the
+default storage.
+
+Due to this progress we will likely switch to INI as default starting
+from the next release. If you want to, you can switch now by compiling
+Elektra with:<br>
+`-DKDB_DEFAULT_STORAGE=dini`
+
+Or simply switch for your installation with:<br>
+`sudo kdb change-default-storage dini`
+
+If you are already using `ini` as default, changing to `dini` will:
+
+- also add support for binary values
+- add some overhead because `dini` always checks if a file has the `dump`
+  format unless the `dump` plugin is not installed.
 
 ## Other New Features
 
@@ -92,6 +109,10 @@ We added even more functionality, which could not make it to the highlights:
 
 We improved the documentation in the following ways:
 
+- We renamed our beginner friendly issues to "good first issue" as recommended
+  by GitHub.
+- In many parts we already switched to American spelling.
+- Some updates in the `jni` docu about Java in stretch.
 - <<TODO>>
 
 ## Compatibility
@@ -110,12 +131,14 @@ These notes are of interest for people maintaining packages of Elektra:
 
 These notes are of interest for people developing Elektra:
 
+- At some more places we switched to use the logger, thanks to René Schwaiger
 - <<TODO>>
 
 ## Fixes
 
 Many problems were resolved with the following fixes:
 
+- René Schwaiger repaired the plugin `boolean`:
 - <<TODO>>
 
 ## Outlook
@@ -125,6 +148,7 @@ We are currently working on following topics:
 - The Order Preserving Minimal Perfect Hash Map is ready to extend the ksLookup. The implementation of the randomized Las Vegas hash map
   algorithm is in a final stage and the heuristic functions that ensure time and space optimality are backed up by benchmarks.
   The next release will include it!
+- As mentioned in the highlights we will switch to INI (using `dini`) as default storage format.
 - <<TODO>>
 
 ## Get It!
