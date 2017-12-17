@@ -45,6 +45,13 @@ For this release Peter Nirschl prepared a demo showing Elektra's cryptographic a
 We are happy to announce that there will be a talk about
 Elektra in the main track of [Fosdem 2018](https://fosdem.org/2018).
 
+Details:
+
+- Day: Saturday 2018-02-03
+- Start time: 15:00:00
+- Duration: 50 min
+- Room: K.1.105 (La Fontaine)
+
 See you in Brussels at 3 and 4 February 2018!
 
 Elektra will also be present in the [Config Management Camp](http://cfgmgmtcamp.eu/)
@@ -54,11 +61,16 @@ directly afterwards Fosdem in Gent.
 
 I am proud to release a book describing:
 
-- the last 13 years of Elektra (focus on last 4 years),
-- the current state, and
-- the long-term visions of Elektra.
+- the last 13 years of Elektra (focus on last 4 years with
+  the questionnaire survey and code analysis),
+- the current state of Elektra, and
+- the long-term goals of Elektra (context-aware configuration).
 
 The Fosdem talk will cover some highlights from the book.
+
+A huge thanks to everyone involved in the questionnaire survey,
+without you we would not have been able to collect all the
+requirements for configuration access.
 
 The LaTeX sources are available [here](https://github.com/ElektraInitiative/book)
 and the compiled book can be downloaded from [here](https://github.com/ElektraInitiative/book/raw/master/book/book.pdf).
@@ -74,6 +86,8 @@ TODO: https://book.libelektra.org
 The plugin `fcrypt` is now considered stable. It is no longer tagged as `experimental`.
 
 For a short demo see here: [![asciicast](https://asciinema.org/a/153014.png)](https://asciinema.org/a/153014)
+
+Thanks to Peter Nirschl for this great work!
 
 ### Switch to INI
 
@@ -103,6 +117,8 @@ If you are already using `ini` as default, changing to `dini` will:
 
 We added even more functionality, which could not make it to the highlights:
 
+- `kdb rm` now supports `-f` to ignore non-existing keys
+- `%` passed as profile name will disable to read from any profile
 - <<TODO>>
 
 ## Documentation
@@ -113,6 +129,11 @@ We improved the documentation in the following ways:
   by GitHub.
 - In many parts we already switched to American spelling.
 - Some updates in the `jni` docu about Java in stretch.
+- Fixed many spelling mistakes
+  thanks to René Schwaiger
+- Improve notes about testing
+  thanks to Thomas Wahringer
+- qt-gui: give hints which package to install
 - <<TODO>>
 
 ## Compatibility
@@ -121,24 +142,67 @@ As always, the ABI and API of kdb.h is fully compatible, i.e. programs
 compiled against an older 0.8 version of Elektra will continue to work
 (ABI) and you will be able to recompile programs without errors (API).
 
+- added `elektraArrayDecName` and `elektraArrayValidateName` <<TODO>> in libease
+
 ## Notes for Maintainer
 
 These notes are of interest for people maintaining packages of Elektra:
 
-- <<TODO>>
+- <<TODO which files added/removed>>
+- <<TODO which plugins are now non-experimental>>
+- intercept-fs is now marked more clearly as experimental
 
 ## Notes for Elektra's Developers
 
 These notes are of interest for people developing Elektra:
 
+- From now on release notes are written as part of PRs
+- Elektra Initiative is spelled as two words
 - At some more places we switched to use the logger, thanks to René Schwaiger
+- Shell Recorder got many improvements, see below.
+  Please use it.
+- The plugin's template now adds all placements within backends by default
+  (must be removed accordingly).
+- We now warn if plugins do not have any placement.
+- Please prefer -log and -debug builds
+- The build server now understands `jenkins build all please`
+  thanks to René Schwaiger
 - <<TODO>>
+
+## Testing
+
+- AFL unveiled some crashes in INI code
+- fix OCLint problems, thanks to René Schwaiger
+- fix ASAN problems, thanks to René Schwaiger
+- disabled non-working tests
+- Shell recorder
+- <<TODO shell recorder changes?>>
+
+## Refactoring
+
+- Simplify `elektraArrayValidateName`, thanks to René Schwaiger
 
 ## Fixes
 
 Many problems were resolved with the following fixes:
 
+- fix use of dbus_connection_unref(NULL) API
+  thanks to Kai-Uwe Behrmann
+- Properly include headers for std::bind
+  thanks to Nick Sarnie
+- qt-gui: assure active focus on appearence selection window
+  thanks to Raffael Pancheri
 - René Schwaiger repaired the plugin `boolean`:
+ - wrong metadata was used
+ - plugin configuration was missing
+ - documentation was missing
+ - logging code was added
+- René Schwaiger repaired many problems different build agents had
+- `kdb info -l` does not open `KDB` anymore.
+- change-resolver-symlink and change-storage-symlink now correctly use
+  @TARGET_PLUGIN_FOLDER@
+- date plugin will be removed on attempts to compile it with gcc 4.7, thanks to René Schwaiger 
+- C plugin: storage/c metadata added
 - <<TODO>>
 
 ## Outlook
