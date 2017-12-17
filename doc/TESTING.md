@@ -177,9 +177,24 @@ See [here](/tests/shell/shell_recorder/tutorial_wrapper/README.md).
 
 ### Fuzz Testing
 
-Copy some import files to `testcase_dir` and run:
+We assume that your current working directory is a newly created
+build directory.  First compile Elektra with afl
+(~e is source-dir of Elektra):
 
-    /usr/src/afl/afl-1.46b/./afl-fuzz -i testcase_dir -o findings_dir bin/kdb import user/tests
+    ~e/scripts/configure-debian -DCMAKE_C_COMPILER=/usr/src/afl/afl-2.52b/afl-gcc -DCMAKE_CXX_COMPILER=/usr/src/afl/afl-2.52b/afl-g++ ~e
+
+Copy some import files to `testcase_dir`, for example:
+
+    mkdir -p testcase_dir
+    cp ~e/src/plugins/ini/ini/* testcase_dir
+
+Fewer files is better. Then run, for example:
+
+    LD_LIBRARY_PATH=`pwd`/lib /usr/src/afl/afl-2.52b/afl-fuzz -i testcase_dir -o findings_dir bin/kdb import user/tests ini
+
+Check if something is happening with:
+
+    watch kdb export user/tests
 
 ### ASAN
 
