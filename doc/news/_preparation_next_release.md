@@ -26,29 +26,66 @@ For a small demo see here:
 
 [![asciicast](https://asciinema.org/a/cantr04assr4jkv8v34uz9b8r.png)](https://asciinema.org/a/cantr04assr4jkv8v34uz9b8r)
 
+For this release we also have a demo showing Elektra's cryptographic abilities:
+
+![asciicast](https://asciinema.org/a/153014.png)](https://asciinema.org/a/153014)
+
 
 ## Highlights
 
-- New plugin: [`directoryvalue`](https://www.libelektra.org/plugins/directoryvalue)
-- <<HIGHLIGHT2>>
-- <<HIGHLIGHT3>>
+- Fosdem Talk about Elektra in Main Track
+- CC-licensed book about vision of Elektra published
+- Maturing of plugins
+- Elektra with encryption: 
+  ![asciicast](https://asciinema.org/a/153014.png)](https://asciinema.org/a/153014)
+- Preparation for switch to INI as default storage
 
-### New Plugins
+### Fosdem Talk about Elektra in Main Track
 
-- The [Directory Value plugin](https://www.libelektra.org/plugins/directoryvalue) supports storage plugins such as [YAJL](https://www.libelektra.org/plugins/yajl) and [YAML CPP ](https://www.libelektra.org/plugins/yamlcpp). It adds extra leaf values for directories (keys with children) that store the data of their parents. This way plugins that normally are only able to store values in leaf keys are able to support arbitrary key sets.
+We are happy to announce that there will be a talk about
+Elektra in the main track of [Fosdem 2018](https://fosdem.org/2018).
 
-### <<HIGHLIGHT2>>
+See you in Brussels at 3 and 4 February 2018!
 
+Elektra will also be present in [Config Management Camp](http://cfgmgmtcamp.eu/).
 
-### <<HIGHLIGHT2>>
+### CC-licenced book about vision of Elektra published
 
+I am proud to release a book describing:
+
+- the last 13 years of Elektra (focus on last 4 years),
+- the current state, and
+- the long-term visions of Elektra.
+
+The Fosdem talk will cover these highlights.
+
+The LaTeX sources are available [here](https://github.com/ElektraInitiative/book)
+and the compiled book can be downloaded from [here](https://github.com/ElektraInitiative/book/raw/master/book/book.pdf).
+
+TODO: https://book.libelektra.org
+
+### Maturing of plugins
+
+- The new [Directory Value plugin](https://www.libelektra.org/plugins/directoryvalue) supports storage plugins such as [YAJL](https://www.libelektra.org/plugins/yajl) and [YAML CPP ](https://www.libelektra.org/plugins/yamlcpp). It adds extra leaf values for directories (keys with children) that store the data of their parents. This way plugins that normally are only able to store values in leaf keys are able to support arbitrary key sets.
+
+### Elektra with encryption
+
+The plugin `fcrypt` is now considered stable. It is no longer tagged as `experimental`.
+
+For a short demo see here: [![asciicast](https://asciinema.org/a/153014.png)](https://asciinema.org/a/153014)
+
+### Switch to INI
+
+We plan to switch to INI as default storage instead of the infamous
+Elektra's internal dump format.
+
+As preparation work we implemented the `dini` plugin which transparently
+converts all `dump` files to `ini` files on any write attempts.
 
 ## Other New Features
 
 We added even more functionality, which could not make it to the highlights:
 
-- fcrypt is now considered stable. It is no longer tagged as `experimental`.
-  For a short demo see here: [![asciicast](https://asciinema.org/a/153014.png)](https://asciinema.org/a/153014)
 - <<TODO>>
 
 ## Documentation
