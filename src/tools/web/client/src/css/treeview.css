@@ -16,8 +16,19 @@
   min-height: 48px;
   opacity: 0.8;
   transition: opacity 0.2s;
+  cursor: pointer;
 }
 .ExplorerView ul > li:hover {
+  opacity: 1;
+}
+.ExplorerView ul > li a .actions > button {
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.ExplorerView ul > li a:hover .actions > button {
+  opacity: 0.5;
+}
+.ExplorerView ul > li a .actions > button:hover {
   opacity: 1;
 }
 .ExplorerView ul > li:before {
