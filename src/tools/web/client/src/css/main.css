@@ -27,3 +27,8 @@ body {
     display: none;
   }
 }
+
+input {
+  outline-color: #00BCD4;
+  transition: outline 0.1s;
+}

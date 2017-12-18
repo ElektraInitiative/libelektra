@@ -14,6 +14,11 @@
 }
 .ExplorerView ul > li {
   min-height: 22px;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+.ExplorerView ul > li:hover {
+  opacity: 1;
 }
 .ExplorerView ul > li:before {
   display: block;
@@ -25,11 +30,13 @@
   background-repeat: no-repeat;
   mask: url('/item.svg') no-repeat;
   margin-top: 7px;
+  transition: background-color 0.2s;
 }
-.ExplorerView ul > li > span.item {}
+.ExplorerView ul > li > span.item {
+  transition: color 0.2s;
+}
 .ExplorerView > input[type="search"] {
   border: 0;
-  background-color: rgb(255, 255, 255);
   box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 6px, rgba(0, 0, 0, 0.12) 0px 1px 4px;
   margin-bottom: 8px;
   padding: 16px;
@@ -38,6 +45,7 @@
   font-size: 14px;
   background: url('/search.svg') no-repeat;
   background-position: 16px center;
+  background-color: #FAFAFA;
 }
 
 /* Root list */
