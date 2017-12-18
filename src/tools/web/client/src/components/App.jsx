@@ -12,47 +12,36 @@
 import React from 'react'
 
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
+import { BrowserRouter as Router, Route } from 'react-router-dom'
 
-import ConnectedMenu from '../containers/ConnectedMenu'
-import ConnectedContainer from '../containers/ConnectedContainer'
-import ConnectedConfiguration from '../containers/ConnectedConfiguration'
-import ConnectedErrorSnackbar from '../containers/ConnectedErrorSnackbar'
+import Menu from '../containers/ConnectedMenu'
+import ErrorSnackbar from '../containers/ConnectedErrorSnackbar'
+import Home from '../containers/ConnectedHomePage'
+import Configuration from '../containers/ConnectedConfigurationPage'
 
-import { PAGE_MAIN, PAGE_CONFIGURE } from '../router'
-
-// mini router that displays the confiugration/main page
-const displayPage = ({ page, ...instance }) => {
-  switch (page) {
-    case PAGE_CONFIGURE:
-      return <ConnectedConfiguration {...instance} />
-    default:
-    case PAGE_MAIN:
-      return <ConnectedContainer />
-  }
-}
-
-// get name of the current page for the breadcrumb
-const getSubpageName = ({ page, id }) => {
-  switch (page) {
-    case PAGE_CONFIGURE:
-      return `instance #${id}`
-
-    default:
-    case PAGE_MAIN:
-      return false
+const getSubpage = ({ match }) => {
+  const { path } = match
+  if (path.startsWith('/instances')) {
+    return 'configuring instance'
   }
 }
 
 // wrap app with the MuiThemeProvider (required for material-ui)
-const App = (props) =>
+const App = () =>
+  <Router>
     <MuiThemeProvider>
         <div>
-            <ConnectedMenu subpage={getSubpageName(props)} />
-            <div style={{padding: '50px'}}>
-                {displayPage(props)}
+            <Route
+              path="/"
+              render={props => <Menu {...props} subpage={getSubpage(props)} />}
+            />
+            <div style={{ padding: 50 }}>
+                <Route exact path="/" component={Home} />
+                <Route path="/instances/:id" component={Configuration} />
             </div>
-            <ConnectedErrorSnackbar />
+            <ErrorSnackbar />
         </div>
     </MuiThemeProvider>
+  </Router>
 
 export default App

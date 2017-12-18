@@ -12,7 +12,7 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 
 import Menu from '../components/Menu.jsx'
-import { addInstance, returnToMain } from '../actions'
+import { addInstance } from '../actions'
 
 const mapStateToProps = (state) => {
   return {
@@ -21,6 +21,6 @@ const mapStateToProps = (state) => {
 }
 
 const mapDispatchToProps = (dispatch) =>
-  bindActionCreators({ addInstance, returnToMain }, dispatch)
+  bindActionCreators({ addInstance }, dispatch)
 
 export default connect(mapStateToProps, mapDispatchToProps)(Menu)

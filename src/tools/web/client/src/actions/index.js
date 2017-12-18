@@ -9,4 +9,3 @@
 export * from './instances'
 export * from './container'
 export * from './kdb'
-export * from './router'

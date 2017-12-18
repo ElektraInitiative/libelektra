@@ -14,8 +14,8 @@ import injectTapEventPlugin from 'react-tap-event-plugin'
 import { Provider } from 'react-redux'
 
 import configureStore from './store'
-import { configureInstance, fetchInstances } from './actions'
-import ConnectedApp from './containers/ConnectedApp'
+import { fetchInstances } from './actions'
+import App from './components/App.jsx'
 
 import './css/main.css'
 
@@ -28,13 +28,12 @@ injectTapEventPlugin()
 const store = configureStore()
 
 // fetch instances when the app is loaded
-store.dispatch(configureInstance('my')) // single instance mode
 store.dispatch(fetchInstances())
 
 // load and render the app
 ReactDOM.render(
   <Provider store={store}>
-    <ConnectedApp />
+    <App />
   </Provider>,
   document.getElementById('root')
 )

@@ -11,8 +11,8 @@
 
 import React from 'react'
 
-import ConnectedInstanceCard from '../containers/ConnectedInstanceCard'
-import ConnectedCreateInstanceCard from '../containers/ConnectedCreateInstanceCard'
+import ConnectedInstanceCard from '../../containers/ConnectedInstanceCard'
+import ConnectedCreateInstanceCard from '../../containers/ConnectedCreateInstanceCard'
 
 const containerStyle = {
   display: 'flex',
@@ -24,7 +24,7 @@ const cellStyle = {
   flex: 1,
 }
 
-const Container = ({ instances, status }) =>
+const Home = ({ instances, status }) =>
     <div style={containerStyle}>
         {instances && instances.map(instance =>
           <div key={instance.id} style={cellStyle}>
@@ -42,4 +42,4 @@ const Container = ({ instances, status }) =>
         }
     </div>
 
-export default Container
+export default Home

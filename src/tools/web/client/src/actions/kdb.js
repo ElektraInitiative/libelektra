@@ -10,6 +10,22 @@ import { thunkCreator, encodePath, parseJSONResponse } from './utils'
 
 // ~~~
 
+export const GET_KDB_REQUEST = 'GET_KDB_REQUEST'
+export const GET_KDB_SUCCESS = 'GET_KDB_SUCCESS'
+export const GET_KDB_FAILURE = 'GET_KDB_FAILURE'
+
+export const getKdb = (id) => thunkCreator({
+  id,
+  types: [GET_KDB_REQUEST, GET_KDB_SUCCESS, GET_KDB_FAILURE],
+  promise: fetch(`/instances/${id}/kdb`, { credentials: 'same-origin' })
+    .then(parseJSONResponse)
+    .then(result => {
+      return { ...result, id }
+    }),
+})
+
+// ~~~
+
 export const GET_KEY_REQUEST = 'GET_KEY_REQUEST'
 export const GET_KEY_SUCCESS = 'GET_KEY_SUCCESS'
 export const GET_KEY_FAILURE = 'GET_KEY_FAILURE'

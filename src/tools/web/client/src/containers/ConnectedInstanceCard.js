@@ -13,7 +13,7 @@ import { bindActionCreators } from 'redux'
 
 import InstanceCard from '../components/InstanceCard.jsx'
 import {
-  updateInstance, deleteInstance, configureInstance,
+  updateInstance, deleteInstance,
 } from '../actions'
 
 const mapStateToProps = (state, { id }) => {
@@ -22,7 +22,7 @@ const mapStateToProps = (state, { id }) => {
 
 const mapDispatchToProps = (dispatch) =>
   bindActionCreators({
-    updateInstance, deleteInstance, configureInstance,
+    updateInstance, deleteInstance,
   }, dispatch)
 
 export default connect(mapStateToProps, mapDispatchToProps)(InstanceCard)

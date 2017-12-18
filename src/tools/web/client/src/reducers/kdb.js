@@ -6,7 +6,9 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-import { GET_KEY_SUCCESS, SET_KEY_REQUEST, DELETE_KEY_REQUEST } from '../actions'
+import {
+  GET_KEY_SUCCESS, SET_KEY_REQUEST, DELETE_KEY_REQUEST,
+} from '../actions'
 
 const updateState = (state, { id, path, value, meta }) => {
   const updatedPart = {
@@ -44,7 +46,7 @@ export default function keyReducer (state = {}, action) {
           }, {}
         ),
       }
-    
+
     // TODO: specifically handle failure (show error inline)
     default:
       return state

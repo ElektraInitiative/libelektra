@@ -17,6 +17,7 @@ import CircularProgress from 'material-ui/CircularProgress'
 import ContentAddIcon from 'material-ui/svg-icons/content/add'
 import NavigationArrowBack from 'material-ui/svg-icons/navigation/arrow-back'
 import NavigationChevronRight from 'material-ui/svg-icons/navigation/chevron-right'
+import { Link } from 'react-router-dom'
 
 const HEADER_MARGIN = '16px 10px 0 -10px'
 
@@ -56,20 +57,23 @@ export default class Menu extends React.Component {
 
   render () {
     const { loading, subpage } = this.props
-    const { addInstance, returnToMain } = this.props // action creators
+    const { addInstance } = this.props // action creators
     const title = (
         <ToolbarGroup>
+          <div style={{ display: 'flex' }}>
             {subpage && // show back button on subpages
-              <NavigationArrowBack style={navigationArrowStyle} onTouchTap={returnToMain} />}
-            <ToolbarTitle
-              style={{fontFamily: 'Roboto'}}
-              text="elektra-web"
-              onTouchTap={returnToMain}
-            />
+              <Link style={{ textDecoration: 'none' }} to="/"><NavigationArrowBack style={navigationArrowStyle} /></Link>}
+            <Link style={{ textDecoration: 'none' }} to="/">
+              <ToolbarTitle
+                style={{ fontFamily: 'Roboto-Light', fontSize: 22, letterSpacing: 0.79, color: 'rgba(0,0,0,0.40)' }}
+                text="elektra-web"
+              />
+            </Link>
             {subpage && // show breadcrumb on subpages
               <Breadcrumb name={subpage} />}
             {loading && // show spinner while waiting for responses
               <CircularProgress style={{margin: '3px -15px'}} size={0.5} />}
+          </div>
         </ToolbarGroup>
     )
 

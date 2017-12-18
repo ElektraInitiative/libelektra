@@ -12,7 +12,6 @@ import {
   INSTANCES_FAILURE, INSTANCE_UPDATE_FAILURE, INSTANCE_DELETE_FAILURE,
   CREATE_INSTANCE_FAILURE,
   GET_KEY_FAILURE, SET_KEY_FAILURE,
-  CONFIGURE_INSTANCE_FAILURE,
 } from '../actions'
 
 export default function errorReducer (state = false, action) {
@@ -24,16 +23,6 @@ export default function errorReducer (state = false, action) {
     case GET_KEY_FAILURE:
     case SET_KEY_FAILURE:
       return action.error
-
-    case CONFIGURE_INSTANCE_FAILURE:
-      if (action.id === 'my') return state
-      if (action.error && action.error.message &&
-        action.error.message === 'only absolute urls are supported'
-      ) {
-        return { ...action.error, message: 'invalid url specified as host' }
-      } else {
-        return action.error
-      }
 
     default:
       return state

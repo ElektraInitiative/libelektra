@@ -11,11 +11,12 @@ import React from 'react'
 import { Card, CardHeader, CardText } from 'material-ui/Card'
 import FlatButton from 'material-ui/FlatButton'
 import TextField from 'material-ui/TextField'
+import { Link } from 'react-router-dom'
 
 export default class InstanceCard extends React.Component {
   render () {
     const { id, name, host } = this.props
-    const { updateInstance, deleteInstance, configureInstance } = this.props // action creators
+    const { updateInstance, deleteInstance } = this.props // action creators
 
     return (
         <Card style={{ margin: '10px', marginBottom: '25px' }}>
@@ -50,10 +51,9 @@ export default class InstanceCard extends React.Component {
                       host: this.refs.hostField.getValue(),
                     })}
                   />
-                  <FlatButton
-                    label="configure"
-                    onTouchTap={() => configureInstance(id)}
-                  />
+                  <Link to={'/instances/' + id}>
+                      <FlatButton label="configure" />
+                  </Link>
                   <FlatButton
                     label="delete"
                     secondary={true}
