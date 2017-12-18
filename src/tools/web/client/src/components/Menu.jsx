@@ -58,6 +58,7 @@ export default class Menu extends React.Component {
   render () {
     const { loading, subpage } = this.props
     const { addInstance } = this.props // action creators
+    console.log('subpage', subpage)
     const title = (
         <ToolbarGroup>
           <div style={{ display: 'flex' }}>

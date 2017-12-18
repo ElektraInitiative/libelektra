@@ -20,8 +20,8 @@ import Home from '../containers/ConnectedHomePage'
 import Configuration from '../containers/ConnectedConfigurationPage'
 
 const getSubpage = ({ match }) => {
-  const { path } = match
-  if (path.startsWith('/instances')) {
+  const { path } = match && match.params
+  if (path.startsWith('instances')) {
     return 'configuring instance'
   }
 }
@@ -31,10 +31,10 @@ const App = () =>
   <Router>
     <MuiThemeProvider>
         <div>
-            <Route
-              path="/"
-              render={props => <Menu {...props} subpage={getSubpage(props)} />}
-            />
+            <Route exact path="/" component={Menu} />
+            <Route path="/:path" render={props =>
+                <Menu subpage={getSubpage(props)} />
+            } />
             <div style={{ padding: 50 }}>
                 <Route exact path="/" component={Home} />
                 <Route path="/instances/:id" component={Configuration} />
