@@ -21,28 +21,33 @@ export default class InstanceCard extends React.Component {
     return (
         <Card style={{ margin: '10px', marginBottom: '25px' }}>
             <CardHeader
-              title={name}
+              title={
+                  <span style={{ fontSize: 24, lineHeight: '30px' }}>{name}</span>
+              }
               subtitle={host}
               actAsExpander={true}
               showExpandableButton={true}
             />
             <CardText expandable={true}>
-                <TextField
-                  ref="nameField"
-                  floatingLabelText="name"
-                  floatingLabelFixed={true}
-                  hintText="my webserver"
-                  defaultValue={name}
-                />
-                {' '}
-                <TextField
-                  ref="hostField"
-                  floatingLabelText="host"
-                  floatingLabelFixed={true}
-                  hintText="http://127.0.0.1:33333"
-                  defaultValue={host}
-                />
-                <div style={{ marginTop: '25px' }}>
+                <div style={{ display: 'block' }}>
+                  <TextField
+                    ref="nameField"
+                    floatingLabelText="name"
+                    floatingLabelFixed={true}
+                    hintText="my webserver"
+                    defaultValue={name}
+                  />
+                </div>
+                <div style={{ display: 'block', marginTop: 8 }}>
+                  <TextField
+                    ref="hostField"
+                    floatingLabelText="host"
+                    floatingLabelFixed={true}
+                    hintText="http://127.0.0.1:33333"
+                    defaultValue={host}
+                  />
+                </div>
+                <div style={{ marginTop: 32 }}>
                   <FlatButton
                     label="save"
                     primary={true}

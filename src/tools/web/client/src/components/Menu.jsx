@@ -56,9 +56,9 @@ export default class Menu extends React.Component {
   }
 
   render () {
-    const { loading, subpage } = this.props
+    const { loading, subpage, status } = this.props
     const { addInstance } = this.props // action creators
-    console.log('subpage', subpage)
+    console.log('loading', loading)
     const title = (
         <ToolbarGroup>
           <div style={{ display: 'flex' }}>
@@ -73,7 +73,7 @@ export default class Menu extends React.Component {
             {subpage && // show breadcrumb on subpages
               <Breadcrumb name={subpage} />}
             {loading && // show spinner while waiting for responses
-              <CircularProgress style={{margin: '3px -15px'}} size={0.5} />}
+              <CircularProgress style={{ marginTop: 12, opacity: 0.7 }} size={32} />}
           </div>
         </ToolbarGroup>
     )
@@ -85,6 +85,7 @@ export default class Menu extends React.Component {
               label="instance"
               primary={true}
               onTouchTap={addInstance}
+              disabled={status && status.addingInstance}
             />
         </ToolbarGroup>
     )
