@@ -25,15 +25,15 @@ const renderValue = ({ value, meta }) => {
 }
 
 const TreeItem = ({ data, item, inputs }) => {
-  console.log('item', { data, item, inputs })
+  // console.log('item', { data, item, inputs })
   return (data && data.value)
     ? (
-        <span>
+        <a>
             <b>{item.name + ': '}</b>
             <span style={{ marginLeft: 6 }}>{renderValue(data)}</span>
-        </span>
+        </a>
       )
-    : <b>{item.name}</b>
+    : <a><b>{item.name}</b></a>
 }
 
 export default TreeItem

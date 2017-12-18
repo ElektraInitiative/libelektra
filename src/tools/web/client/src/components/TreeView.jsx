@@ -37,9 +37,10 @@ export default class TreeView extends React.Component {
     }
   }
 
-  handleUpdate (model) {
-    // TODO: implement this
-    this.setState({ model })
+  handleUpdate (newModel) {
+    // library updates `this.state.model` already
+    this.setState({ model: newModel })
+    // TODO: send diff to kdb
   }
 
   renderItem (item, inputs) {
