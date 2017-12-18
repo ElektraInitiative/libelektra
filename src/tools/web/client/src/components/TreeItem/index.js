@@ -7,12 +7,33 @@
  */
 
 import React from 'react'
-import PropTypes from 'prop-types'
+
+import TextField from 'material-ui/TextField'
 
 // TODO: render various input fields here
-const TreeItem = ({ data, item, inputs }) =>
-  (data && data.value)
-    ? item.name + ': ' + data.value
-    : item.name
+const renderValue = ({ value, meta }) => {
+  if (meta && meta.hasOwnProperty('check/type')) {
+    switch (meta['check/type']) {
+      // TODO
+    }
+  }
+
+  // fallback
+  return (
+    <TextField value={value} />
+  )
+}
+
+const TreeItem = ({ data, item, inputs }) => {
+  console.log('item', { data, item, inputs })
+  return (data && data.value)
+    ? (
+        <span>
+            <b>{item.name + ': '}</b>
+            <span style={{ marginLeft: 6 }}>{renderValue(data)}</span>
+        </span>
+      )
+    : <b>{item.name}</b>
+}
 
 export default TreeItem
