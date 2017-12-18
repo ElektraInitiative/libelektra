@@ -36,10 +36,13 @@ const parseDataSet = (tree, path) =>
     const newPath = path
       ? path + '/' + key
       : key
+    const children = parseDataSet(tree[key], newPath)
     return {
       name: key,
       path: newPath,
-      children: parseDataSet(tree[key], newPath),
+      children: (Array.isArray(children) && children.length > 0)
+        ? children
+        : false,
     }
   })
 

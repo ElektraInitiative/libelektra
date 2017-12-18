@@ -10,6 +10,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { ExplorerView } from '@bosket/react'
 
+import '../css/treeview.css'
+
 export default class TreeView extends React.Component {
   constructor (props, ...args) {
     super(props, ...args)
@@ -21,15 +23,14 @@ export default class TreeView extends React.Component {
   }
 
   handleSelect (newSelection, item, ancestors, neighbours) {
-    if (newSelection.includes(item)) {
+    this.setState({ selection: newSelection })
+    if (Array.isArray(item.children)) {
       const { getKey, instanceId } = this.props
       getKey(instanceId, item.path)
       Promise.all(
         item.children.map(
           child => getKey(instanceId, child.path)
         )
-      ).then(
-        () => this.setState({ selection: newSelection })
       )
     }
   }
@@ -49,12 +50,16 @@ export default class TreeView extends React.Component {
 
   render () {
     const { selection, model } = this.state
+    const strategies = {
+      click: [ "select", "toggle-fold" ],
+    }
     return (
       <ExplorerView
         model={model}
         category="children"
         name="name"
         selection={selection}
+        strategies={strategies}
         updateModel={this.handleUpdate}
         onSelect={this.handleSelect}
         display={this.renderItem}
