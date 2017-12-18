@@ -76,12 +76,16 @@ export default class Configuration extends Component {
     const { name, host } = instance
     const data = parseData(ls)
 
+    const title = (
+        <span style={{ fontSize: 24, lineHeight: '50px' }}>
+            <b>{name}</b>
+            <span style={{ fontFamily: 'Roboto Light' }}>{' instance'}</span>
+        </span>
+    )
+
     return (
-        <Card>
-            <CardHeader
-              title={`configuring instance "${name}"`}
-              subtitle={host}
-            />
+        <Card style={{ padding: '8px 16px' }}>
+            <CardHeader title={title} subtitle={host} />
             <CardText>
                 {data
                   ? <TreeView instanceId={id} data={data} />
@@ -90,7 +94,7 @@ export default class Configuration extends Component {
             </CardText>
             <CardActions>
                 <Link to="/" style={{ textDecoration: 'none' }}>
-                    <FlatButton label="done" />
+                    <FlatButton primary label="done" />
                 </Link>
             </CardActions>
         </Card>

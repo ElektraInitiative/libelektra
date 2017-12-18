@@ -65,7 +65,7 @@ export default class Menu extends React.Component {
               <Link style={{ textDecoration: 'none' }} to="/"><NavigationArrowBack style={navigationArrowStyle} /></Link>}
             <Link style={{ textDecoration: 'none' }} to="/">
               <ToolbarTitle
-                style={{ fontFamily: 'Roboto-Light', fontSize: 22, letterSpacing: 0.79, color: 'rgba(0,0,0,0.40)' }}
+                style={{ fontFamily: 'Roboto Light', fontSize: 22, letterSpacing: 0.79, color: 'rgba(0,0,0,0.40)' }}
                 text="elektra-web"
               />
             </Link>
