@@ -3,8 +3,7 @@
  *
  * @brief this is the configuration page
  *
- * it renders the interactive tree view and the CreateKey component to be able
- * to create new keys in the Elektra key database
+ * it renders the interactive tree view
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
@@ -15,8 +14,7 @@ import { Card, CardHeader, CardText, CardActions } from 'material-ui/Card'
 import FlatButton from 'material-ui/FlatButton'
 import { Link } from 'react-router-dom'
 
-import TreeView from '../TreeView.jsx'
-import CreateKey from '../CreateKey.jsx'
+import TreeView from '../../containers/ConnectedTreeView'
 
 // create tree structure from kdb ls result (list of available keys)
 const partsTree = (acc, parts) => {
@@ -33,21 +31,20 @@ const createTree = (ls) =>
     return partsTree(acc, item.split('/'))
   }, {})
 
-const parseDataSet = (tree) =>
+const parseDataSet = (tree, path) =>
   Object.keys(tree).map(key => {
-    return { name: key, children: parseDataSet(tree[key]) }
+    const newPath = path
+      ? path + '/' + key
+      : key
+    return {
+      name: key,
+      path: newPath,
+      children: parseDataSet(tree[key], newPath),
+    }
   })
 
 const parseData = (ls, kdb) => {
   if (!Array.isArray(ls)) return
-
-  // add new keys from kdb to ls
-  if (kdb) {
-    Object.keys(kdb).map((path) => {
-      if (ls.indexOf(path) === -1) ls.push(path)
-      return null
-    })
-  }
   const tree = createTree(ls)
   return parseDataSet(tree)
 }
@@ -63,8 +60,7 @@ export default class Configuration extends Component {
 
   render () {
     const {
-      instance, kdb, ls,
-      getKey, setKey, deleteKey,
+      instance, ls, match,
     } = this.props
 
     if (!instance) return (
@@ -73,9 +69,9 @@ export default class Configuration extends Component {
         </Card>
     )
 
+    const { id } = match && match.params
     const { name, host } = instance
-
-    const data = parseData(ls, kdb)
+    const data = parseData(ls)
 
     return (
         <Card>
@@ -85,11 +81,10 @@ export default class Configuration extends Component {
             />
             <CardText>
                 {data
-                  ? <TreeView data={data} />
+                  ? <TreeView instanceId={id} data={data} />
                   : 'loading configuration data...'
                 }
             </CardText>
-            <CreateKey setKey={setKey} />
             <CardActions>
                 <Link to="/" style={{ textDecoration: 'none' }}>
                     <FlatButton label="done" />

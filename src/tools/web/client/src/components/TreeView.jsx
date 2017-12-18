@@ -11,15 +11,27 @@ import PropTypes from 'prop-types'
 import { ExplorerView } from '@bosket/react'
 
 export default class TreeView extends React.Component {
-  constructor (...args) {
-    super(...args)
-    this.state = { selection: [], model: false }
+  constructor (props, ...args) {
+    super(props, ...args)
+    const { data } = props
+    this.state = { selection: [], model: data }
     this.handleSelect = this.handleSelect.bind(this)
     this.handleUpdate = this.handleUpdate.bind(this)
+    this.renderItem = this.renderItem.bind(this)
   }
 
   handleSelect (newSelection, item, ancestors, neighbours) {
-    this.setState({ selection: newSelection })
+    if (newSelection.includes(item)) {
+      const { getKey, instanceId } = this.props
+      getKey(instanceId, item.path)
+      Promise.all(
+        item.children.map(
+          child => getKey(instanceId, child.path)
+        )
+      ).then(
+        () => this.setState({ selection: newSelection })
+      )
+    }
   }
 
   handleUpdate (model) {
@@ -27,17 +39,25 @@ export default class TreeView extends React.Component {
     this.setState({ model })
   }
 
+  renderItem (item, inputs) {
+    const { kdb } = this.props
+    const data = kdb && kdb[item.path]
+    return (data && data.value)
+      ? item.name + ': ' + data.value
+      : item.name
+  }
+
   render () {
-    const { data } = this.props
     const { selection, model } = this.state
     return (
       <ExplorerView
-        model={model || data}
+        model={model}
         category="children"
         name="name"
         selection={selection}
         updateModel={this.handleUpdate}
         onSelect={this.handleSelect}
+        display={this.renderItem}
       />
     )
   }

@@ -20,7 +20,6 @@ const mapStateToProps = (state, { match }) => {
   const { id } = match && match.params
   return {
     instance: state.instances.find(instance => instance.id === id),
-    kdb: state.kdb && state.kdb[id],
     ls: state.ls,
   }
 }
