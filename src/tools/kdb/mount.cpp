@@ -101,6 +101,13 @@ void MountCommand::buildBackend (Cmdline const & cl)
 		throw invalid_argument (mp + " is not a valid mountpoint");
 	}
 
+	if (cl.force)
+	{
+		Key cutKey (Backends::mountpointsPath, KEY_END);
+		cutKey.addBaseName (mpk.getName ());
+		mountConf.cut (cutKey);
+	}
+
 	backend.setMountpoint (mpk, mountConf);
 
 	backend.setBackendConfig (cl.getPluginsConfig ("system/"));

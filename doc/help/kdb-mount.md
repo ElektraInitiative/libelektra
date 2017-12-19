@@ -74,6 +74,8 @@ Use `kdb file <path>` to determine where the file(s) are.
   Add a plugin configuration for all plugins.
 - `-W`, `--with-recommends`:
   Also add recommended plugins and warn if they are not available.
+- `-f`, `--force`:
+  Unmount before mounting: Does not fail on already existing mountpoints.
 
 
 
