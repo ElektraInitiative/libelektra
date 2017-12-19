@@ -16,6 +16,7 @@ import { BrowserRouter as Router, Route } from 'react-router-dom'
 
 import Menu from '../containers/ConnectedMenu'
 import ErrorSnackbar from '../containers/ConnectedErrorSnackbar'
+import NotificationSnackbar from '../containers/ConnectedNotificationSnackbar'
 import Home from '../containers/ConnectedHomePage'
 import Configuration from '../containers/ConnectedConfigurationPage'
 
@@ -39,6 +40,7 @@ const App = () =>
                 <Route exact path="/" component={Home} />
                 <Route path="/instances/:id" component={Configuration} />
             </div>
+            <NotificationSnackbar />
             <ErrorSnackbar />
         </div>
     </MuiThemeProvider>

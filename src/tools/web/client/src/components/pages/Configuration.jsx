@@ -77,10 +77,9 @@ export default class Configuration extends Component {
     const data = parseData(ls)
 
     const title = (
-        <span style={{ fontSize: 24, lineHeight: '50px' }}>
-            <b>{name}</b>
-            <span style={{ fontFamily: 'Roboto Light' }}>{' instance'}</span>
-        </span>
+        <h1>
+            <b>{name}</b>{' instance'}
+        </h1>
     )
 
     return (

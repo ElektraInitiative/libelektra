@@ -15,6 +15,7 @@ import containerReducer from './container'
 import keyReducer from './kdb'
 import pathReducer from './ls'
 import errorReducer from './error'
+import notificationReducer from './notification'
 
 export default combineReducers({
   idle: idleReducer,
@@ -23,4 +24,5 @@ export default combineReducers({
   kdb: keyReducer,
   ls: pathReducer,
   error: errorReducer,
+  notification: notificationReducer,
 })

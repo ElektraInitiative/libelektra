@@ -3,7 +3,7 @@
  *
  * @brief handle errors that happened in actions
  *
- * they will be shown in a small notification at the bottom of the UI
+ * they will be shown in a small snackbar at the bottom of the UI
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */

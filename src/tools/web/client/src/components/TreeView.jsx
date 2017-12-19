@@ -10,7 +10,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { ExplorerView } from '@bosket/react'
 
-import TreeItem from './TreeItem'
+import TreeItem from '../containers/ConnectedTreeItem'
 
 import '../css/treeview.css'
 
@@ -44,9 +44,16 @@ export default class TreeView extends React.Component {
   }
 
   renderItem (item, inputs) {
-    const { kdb } = this.props
+    const { kdb, instanceId } = this.props
     const data = kdb && kdb[item.path]
-    return <TreeItem data={data} item={item} inputs={inputs} />
+    return (
+        <TreeItem
+          data={data}
+          item={item}
+          inputs={inputs}
+          instanceId={instanceId}
+        />
+    )
   }
 
   render () {
