@@ -492,7 +492,7 @@ OpmphmGraph * opmphmGraphNew (Opmphm * opmphm, uint8_t r, size_t n, double c)
  * @param opmphm the OPMPHM
  * @param graph the OpmphmGraph
  */
-void opmphmGraphClear (Opmphm * opmphm, OpmphmGraph * graph)
+void opmphmGraphClear (const Opmphm * opmphm, OpmphmGraph * graph)
 {
 	ELEKTRA_NOT_NULL (opmphm);
 	ELEKTRA_ASSERT (opmphm->rUniPar > 0 && opmphm->componentSize > 0, "passed opmphm is uninitialized");
@@ -534,6 +534,79 @@ Opmphm * opmphmNew (void)
 }
 
 /**
+ * @brief Copies OPMPHM from source to destination.
+ *
+ * Clears the dest and copies memory and values from source.
+ *
+ * @param dest the OPMPHM destination
+ * @param source the OPMPHM source
+ *
+ * @retval 0 on success
+ * @retval -1 on memory error
+ */
+int opmphmCopy (Opmphm * dest, const Opmphm * source)
+{
+	ELEKTRA_NOT_NULL (dest);
+	ELEKTRA_NOT_NULL (source);
+	// reset dest
+	opmphmClear (dest);
+	if (dest->rUniPar)
+	{
+		elektraFree (dest->hashFunctionSeeds);
+		dest->rUniPar = 0;
+	}
+	dest->componentSize = 0;
+
+	// copy mem
+	if (source->rUniPar)
+	{
+		dest->hashFunctionSeeds = elektraMalloc (source->rUniPar * sizeof (int32_t));
+		if (!dest->hashFunctionSeeds)
+		{
+			return -1;
+		}
+		memcpy (dest->hashFunctionSeeds, source->hashFunctionSeeds, source->rUniPar * sizeof (int32_t));
+	}
+	if (source->size)
+	{
+		dest->graph = elektraMalloc (source->size);
+		if (!dest->graph)
+		{
+			elektraFree (dest->hashFunctionSeeds);
+			return -1;
+		}
+		memcpy (dest->graph, source->graph, source->size);
+	}
+
+	// copy values
+	dest->componentSize = source->componentSize;
+	dest->rUniPar = source->rUniPar;
+	dest->size = source->size;
+	return 0;
+}
+
+/**
+ * @brief OPMPHM is build.
+ *
+ * @param opmphm the OPMPHM
+ *
+ * @retval 0 on false
+ * @retval -1 on true
+ */
+int opmphmIsBuild (const Opmphm * opmphm)
+{
+	ELEKTRA_NOT_NULL (opmphm);
+	if (opmphm->size)
+	{
+		return -1;
+	}
+	else
+	{
+		return 0;
+	}
+}
+
+/**
  * @brief Deletes the OPMPHM.
  *
  * Clears and frees all memory in Opmphm.
@@ -561,7 +634,7 @@ void opmphmDel (Opmphm * opmphm)
 void opmphmClear (Opmphm * opmphm)
 {
 	ELEKTRA_NOT_NULL (opmphm);
-	if (opmphm->size)
+	if (opmphmIsBuild (opmphm))
 	{
 		elektraFree (opmphm->graph);
 		opmphm->size = 0;

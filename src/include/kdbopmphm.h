@@ -63,7 +63,7 @@ double opmphmOptC (size_t n);
  * Graph functions
  */
 OpmphmGraph * opmphmGraphNew (Opmphm * opmphm, uint8_t r, size_t n, double c);
-void opmphmGraphClear (Opmphm * opmphm, OpmphmGraph * graph);
+void opmphmGraphClear (const Opmphm * opmphm, OpmphmGraph * graph);
 void opmphmGraphDel (OpmphmGraph * graph);
 
 /**
@@ -93,6 +93,8 @@ size_t opmphmLookup (Opmphm * opmphm, const void * name);
  */
 Opmphm * opmphmNew (void);
 void opmphmDel (Opmphm * opmphm);
+int opmphmIsBuild (const Opmphm * opmphm);
+int opmphmCopy (Opmphm * dest, const Opmphm * source);
 void opmphmClear (Opmphm * opmphm);
 
 /**
