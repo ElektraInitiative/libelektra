@@ -17,6 +17,7 @@ import Dialog from 'material-ui/Dialog'
 import FlatButton from 'material-ui/FlatButton'
 
 import SimpleTextField from './SimpleTextField.jsx'
+import RadioButtons from './RadioButtons.jsx'
 
 export default class TreeItem extends Component {
   constructor (...args) {
@@ -79,12 +80,25 @@ export default class TreeItem extends Component {
       })
   }
 
+  renderSpecialValue = ({ value, meta }) => {
+    if (meta.hasOwnProperty('check/enum')) {
+      try {
+        const options = JSON.parse(meta['check/enum'].replace(/\'/g, '"'))
+        return (
+            <RadioButtons value={value} meta={meta} options={options} onChange={this.handleEdit} />
+        )
+      } catch (err) {
+        console.error('invalid enum type:', meta['check/enum'])
+        return false
+      }
+    }
+  }
+
   // TODO: render various input fields here
   renderValue = ({ value, meta }) => {
-    if (meta && meta.hasOwnProperty('check/type')) {
-      switch (meta['check/type']) {
-        // TODO
-      }
+    if (meta) {
+      const special = this.renderSpecialValue({ value, meta })
+      if (special) return special
     }
 
     // fallback
