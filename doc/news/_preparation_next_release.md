@@ -1,6 +1,7 @@
-# 0.8.<<VERSION>> Release
+# 0.8.21 Release
 
-This release did not happen yet.
+> !!! This release did not happen yet.
+
 Please update this file within PRs accordingly.
 For non-trivial changes, you can choose to be
 part of the highlighted changes. Please make
@@ -12,7 +13,7 @@ syntax: ", thanks to <myname>".
 
 <<`scripts/generate-news-entry`>>
 
-We are proud to release Elektra 0.8.<<VERSION>>.
+We are proud to release Elektra 0.8.21.
 
 <<`scripts/git-release-stats 0.8.VERSION`>>
 
@@ -22,30 +23,20 @@ Elektra serves as a universal and secure framework to access
 configuration settings in a global, hierarchical key database.
 For more information, visit [https://libelektra.org](https://libelektra.org).
 
-For a small demo see here:
-
-[![asciicast](https://asciinema.org/a/cantr04assr4jkv8v34uz9b8r.png)](https://asciinema.org/a/cantr04assr4jkv8v34uz9b8r)
-
-For this release Peter Nirschl prepared a demo showing Elektra's cryptographic abilities:
-
-![asciicast](https://asciinema.org/a/153014.png)](https://asciinema.org/a/153014)
 
 
 ## Highlights
 
-- Fosdem Talk about Elektra in Main Track
-- CC-licensed book about vision of Elektra published
+- Fosdem Talk about Elektra
+- CC-licensed book about Elektra published
 - Maturing of plugins
-- Elektra with encryption: 
-  ![asciicast](https://asciinema.org/a/153014.png)](https://asciinema.org/a/153014)
+- Elektra with encryption:
 - Preparation for switch to INI as default storage
 
 ### Fosdem Talk about Elektra in Main Track
 
 We are happy to announce that there will be a talk about
-Elektra in the main track of [Fosdem 2018](https://fosdem.org/2018).
-
-Details:
+Elektra in one of the main tracks of [Fosdem 2018](https://fosdem.org/2018):
 
 - Day: Saturday 2018-02-03
 - Start time: 15:00:00
@@ -54,7 +45,7 @@ Details:
 
 See you in Brussels at 3 and 4 February 2018!
 
-Elektra will also be present in the [Config Management Camp](http://cfgmgmtcamp.eu/)
+I will also be present in the [Config Management Camp](http://cfgmgmtcamp.eu/)
 directly afterwards Fosdem in Gent.
 
 ### CC-licenced book about vision of Elektra published
@@ -70,7 +61,7 @@ The Fosdem talk will cover some highlights from the book.
 
 A huge thanks to everyone involved in the questionnaire survey,
 without you we would not have been able to collect all the
-requirements for configuration access.
+information that led to the requirements for Elektra.
 
 The LaTeX sources are available [here](https://github.com/ElektraInitiative/book)
 and the compiled book can be downloaded from [here](https://github.com/ElektraInitiative/book/raw/master/book/book.pdf).
@@ -80,12 +71,21 @@ TODO: https://book.libelektra.org
 ### Maturing of plugins
 
 - The new [Directory Value plugin](https://www.libelektra.org/plugins/directoryvalue) supports storage plugins such as [YAJL](https://www.libelektra.org/plugins/yajl) and [YAML CPP ](https://www.libelektra.org/plugins/yamlcpp). It adds extra leaf values for directories (keys with children) that store the data of their parents. This way plugins that normally are only able to store values in leaf keys are able to support arbitrary key sets.
+- The [yamlcpp plugin](https://www.libelektra.org/plugins/yamlcpp) TODO
+- The [camel plugin](https://www.libelektra.org/plugins/camel)  TODO
+- The [mini plugin](https://www.libelektra.org/plugins/mini)  TODO
+- The [xerces plugin](https://www.libelektra.org/plugins/xerces)  TODO
+- boolean? TODO (is currently described below)
+- The [crypto plugin](https://www.libelektra.org/plugins/crypto) and [fcrypt plugin](https://www.libelektra.org/plugins/fcrypt) are described below.
 
 ### Elektra with encryption
 
-The plugin `fcrypt` is now considered stable. It is no longer tagged as `experimental`.
+The plugins `fcrypt` and `crypto` are now considered stable. They are no longer tagged as `experimental`.
+While `crypto` encrypts individual values within configuration files, `fcrypt` encrypts and/or signs the whole configuration file.
 
-For a short demo see here: [![asciicast](https://asciinema.org/a/153014.png)](https://asciinema.org/a/153014)
+For this release Peter Nirschl prepared a demo showing Elektra's cryptographic abilities:
+
+![asciicast](https://asciinema.org/a/153014.png)](https://asciinema.org/a/153014)
 
 Thanks to Peter Nirschl for this great work!
 
@@ -109,7 +109,7 @@ Or simply switch for your installation with:<br>
 
 If you are already using `ini` as default, changing to `dini` will:
 
-- also add support for binary values
+- also add support for binary values (TODO)
 - add some overhead because `dini` always checks if a file has the `dump`
   format unless the `dump` plugin is not installed.
 
@@ -166,7 +166,8 @@ These notes are of interest for people developing Elektra:
 - We now warn if plugins do not have any placement.
 - Please prefer -log and -debug builds
 - The build server now understands `jenkins build all please`
-  thanks to René Schwaiger
+  thanks to René Schwaiger.
+  Please use it careful, it puts our [build server](https://build.libelektra.org/) under heavy load.
 - <<TODO>>
 
 ## Testing
@@ -193,14 +194,14 @@ Many problems were resolved with the following fixes:
 - qt-gui: assure active focus on appearence selection window
   thanks to Raffael Pancheri
 - René Schwaiger repaired the plugin `boolean`:
- - wrong metadata was used
- - plugin configuration was missing
- - documentation was missing
- - logging code was added
+  - wrong metadata was used
+  - plugin configuration was missing
+  - documentation was missing
+  - logging code was added
 - René Schwaiger repaired many problems different build agents had
 - `kdb info -l` does not open `KDB` anymore.
-- change-resolver-symlink and change-storage-symlink now correctly use
-  @TARGET_PLUGIN_FOLDER@
+- `change-resolver-symlink` and `change-storage-symlink` now correctly use
+  `@TARGET_PLUGIN_FOLDER@`
 - date plugin will be removed on attempts to compile it with gcc 4.7, thanks to René Schwaiger 
 - C plugin: storage/c metadata added
 - <<TODO>>
@@ -217,20 +218,20 @@ We are currently working on following topics:
 
 ## Get It!
 
-You can download the release from [here](https://www.libelektra.org/ftp/elektra/releases/elektra-0.8.<<VERSION>>.tar.gz)
-or [GitHub](https://github.com/ElektraInitiative/ftp/blob/master/releases/elektra-0.8.<<VERSION>>.tar.gz?raw=true)
+You can download the release from [here](https://www.libelektra.org/ftp/elektra/releases/elektra-0.8.21.tar.gz)
+or [GitHub](https://github.com/ElektraInitiative/ftp/blob/master/releases/elektra-0.8.21.tar.gz?raw=true)
 
 
-The [hashsums are:](https://github.com/ElektraInitiative/ftp/blob/master/releases/elektra-0.8.<<VERSION>>.tar.gz.hashsum?raw=true)
+The [hashsums are:](https://github.com/ElektraInitiative/ftp/blob/master/releases/elektra-0.8.21.tar.gz.hashsum?raw=true)
 
 <<`scripts/generate-hashsums`>>
 
 The release tarball is also available signed by me using GnuPG from
-[here](https://www.libelektra.org/ftp/elektra/releases/elektra-0.8.<<VERSION>>.tar.gz.gpg) or
-[GitHub](https://github.com/ElektraInitiative/ftp/blob/master/releases//elektra-0.8.<<VERSION>>.tar.gz.gpg?raw=true)
+[here](https://www.libelektra.org/ftp/elektra/releases/elektra-0.8.21.tar.gz.gpg) or
+[GitHub](https://github.com/ElektraInitiative/ftp/blob/master/releases//elektra-0.8.21.tar.gz.gpg?raw=true)
 
-Already built API-Docu can be found [online](https://doc.libelektra.org/api/0.8.<<VERSION>>/html/)
-or [GitHub](https://github.com/ElektraInitiative/doc/tree/master/api/0.8.<<VERSION>>).
+Already built API-Docu can be found [online](https://doc.libelektra.org/api/0.8.21/html/)
+or [GitHub](https://github.com/ElektraInitiative/doc/tree/master/api/0.8.21).
 
 
 ## Stay tuned!
@@ -243,7 +244,7 @@ For any questions and comments, please contact the
 issue tracker [on GitHub](http://issues.libelektra.org)
 or me by email using elektra@markus-raab.org.
 
-[Permalink to this NEWS entry](https://doc.libelektra.org/news/0.8.<<VERSION>>-release)
+[Permalink to this NEWS entry](https://doc.libelektra.org/news/0.8.21-release)
 
 For more information, see [https://libelektra.org](https://libelektra.org)
 
