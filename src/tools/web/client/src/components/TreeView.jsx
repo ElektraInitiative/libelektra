@@ -17,8 +17,7 @@ import '../css/treeview.css'
 export default class TreeView extends React.Component {
   constructor (props, ...args) {
     super(props, ...args)
-    const { data } = props
-    this.state = { selection: [], model: data }
+    this.state = { selection: [] }
     this.handleSelect = this.handleSelect.bind(this)
     this.handleUpdate = this.handleUpdate.bind(this)
     this.renderItem = this.renderItem.bind(this)
@@ -39,7 +38,7 @@ export default class TreeView extends React.Component {
 
   handleUpdate (newModel) {
     // library updates `this.state.model` already
-    this.setState({ model: newModel })
+    // this.setState({ model: newModel })
     // TODO: send diff to kdb
   }
 
@@ -57,13 +56,14 @@ export default class TreeView extends React.Component {
   }
 
   render () {
-    const { selection, model } = this.state
+    const { data } = this.props
+    const { selection } = this.state
     const strategies = {
       click: [ "select", "toggle-fold" ],
     }
     return (
       <ExplorerView
-        model={model}
+        model={data}
         category="children"
         name="name"
         selection={selection}
@@ -74,8 +74,4 @@ export default class TreeView extends React.Component {
       />
     )
   }
-}
-
-TreeView.propTypes = {
-  data: PropTypes.arrayOf(PropTypes.object),
 }
