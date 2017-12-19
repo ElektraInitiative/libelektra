@@ -10,10 +10,13 @@ import React, { Component } from 'react'
 
 import TextField from 'material-ui/TextField'
 import IconButton from 'material-ui/IconButton'
+import ActionDone from 'material-ui/svg-icons/action/done'
 import ActionDelete from 'material-ui/svg-icons/action/delete'
 import ContentAdd from 'material-ui/svg-icons/content/add'
 import Dialog from 'material-ui/Dialog'
 import FlatButton from 'material-ui/FlatButton'
+
+import SimpleTextField from './SimpleTextField.jsx'
 
 export default class TreeItem extends Component {
   constructor (...args) {
@@ -23,6 +26,8 @@ export default class TreeItem extends Component {
       deleteDialog: false,
       addKeyName: '',
       addKeyValue: '',
+      saved: false,
+      savedTimeout: false,
     }
   }
 
@@ -58,6 +63,22 @@ export default class TreeItem extends Component {
     this.handleCloseAdd()
   }
 
+  handleEdit = (value) => {
+    const { savedTimeout } = this.state
+    const { instanceId, setKey, sendNotification, item } = this.props
+    const { path } = item
+    setKey(instanceId, path, value)
+      .then(() => {
+        if (savedTimeout) clearTimeout(savedTimeout)
+        this.setState({
+          saved: true,
+          savedTimeout: setTimeout(() => {
+            this.setState({ saved: false })
+          }, 1500),
+        })
+      })
+  }
+
   // TODO: render various input fields here
   renderValue = ({ value, meta }) => {
     if (meta && meta.hasOwnProperty('check/type')) {
@@ -68,7 +89,7 @@ export default class TreeItem extends Component {
 
     // fallback
     return (
-      <TextField value={value} />
+      <SimpleTextField value={value} meta={meta} onChange={this.handleEdit} />
     )
   }
 
@@ -185,9 +206,27 @@ export default class TreeItem extends Component {
         </IconButton>
     )
 
+    const savedIconBaseStyle = {
+      width: 16,
+      height: 16,
+      paddingTop: 1,
+      paddingLeft: 4,
+      color: '#00BCD4',
+      transition: 'opacity 0.5s',
+    }
+    const savedIconActiveStyle = this.state.saved
+      ? { opacity: 1 }
+      : { opacity: 0 }
+    const savedIconStyle = { ...savedIconBaseStyle, ...savedIconActiveStyle }
+
     return (
         <a style={{ display: 'flex', alignItems: 'center' }}>
-            {main} <span className="actions">{addAction} {deleteAction}</span>
+            {main}
+            <span className="actions">
+                <ActionDone className="savedIcon" style={savedIconStyle} />
+                {addAction}
+                {deleteAction}
+            </span>
             {this.renderAddDialog(item)}
             {this.renderDeleteDialog(item)}
         </a>
