@@ -26,6 +26,7 @@ export default class SimpleTextField extends Component {
       <TextField
         value={val}
         errorText={this.state.error}
+        hintText={meta && meta.description}
         onChange={(evt) => {
           if (this.state.timeout) clearTimeout(this.state.timeout)
           const currentValue = evt.target.value
