@@ -21,6 +21,8 @@ export default class TreeItem extends Component {
     this.state = {
       addDialog: false,
       deleteDialog: false,
+      addKeyName: '',
+      addKeyValue: '',
     }
   }
 
@@ -29,7 +31,7 @@ export default class TreeItem extends Component {
   }
 
   handleCloseAdd = () => {
-    this.setState({ addDialog: false })
+    this.setState({ addDialog: false, addKeyName: '', addKeyValue: '' })
   }
 
   handleOpenDelete = () => {
@@ -47,8 +49,13 @@ export default class TreeItem extends Component {
     this.handleCloseDelete()
   }
 
-  handleAdd = () => {
-    // TODO
+  handleAdd = (path) => {
+    const { instanceId, setKey, sendNotification } = this.props
+    const { addKeyName, addKeyValue } = this.state
+    const fullPath = path + '/' + addKeyName
+    setKey(instanceId, fullPath, addKeyValue)
+      .then(() => sendNotification('successfully created key: ' + fullPath))
+    this.handleCloseAdd()
   }
 
   // TODO: render various input fields here
@@ -65,8 +72,49 @@ export default class TreeItem extends Component {
     )
   }
 
-  renderAddDialog = () => {
-    return // TODO
+  renderAddDialog = ({ path }) => {
+    const { addDialog } = this.state
+    const actions = [
+      <FlatButton
+        label="Cancel"
+        onTouchTap={this.handleCloseAdd}
+      />,
+      <FlatButton
+        label="Create"
+        primary={true}
+        onTouchTap={() => this.handleAdd(path)}
+      />,
+    ]
+    return (
+        <Dialog
+          actions={actions}
+          modal={false}
+          open={addDialog}
+          onRequestClose={this.handleCloseAdd}
+        >
+            <h1>Creating new key at <b>{path}</b></h1>
+            <div style={{ display: 'block' }}>
+                <TextField
+                  ref="nameField"
+                  floatingLabelText="name"
+                  floatingLabelFixed={true}
+                  hintText="e.g. keyName"
+                  onChange={(evt) => this.setState({ addKeyName: evt.target.value })}
+                  value={this.state.addKeyName}
+                />
+            </div>
+            <div style={{ display: 'block', marginTop: 8 }}>
+                <TextField
+                  ref="valueField"
+                  floatingLabelText="value"
+                  floatingLabelFixed={true}
+                  hintText="e.g. hello world"
+                  onChange={(evt) => this.setState({ addKeyValue: evt.target.value })}
+                  value={this.state.addKeyValue}
+                />
+            </div>
+        </Dialog>
+    )
   }
 
   renderDeleteDialog = ({ path }) => {
@@ -79,7 +127,7 @@ export default class TreeItem extends Component {
       <FlatButton
         label="Delete"
         secondary={true}
-        onClick={() => this.handleDelete(path)}
+        onTouchTap={() => this.handleDelete(path)}
       />,
     ]
     return (
