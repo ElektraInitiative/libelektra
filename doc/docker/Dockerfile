@@ -1,10 +1,11 @@
-FROM ubuntu:xenial
+FROM ubuntu:artful
 
 ARG SWIGVERSION="3.0.11"
 
 RUN apt-get -qq update && apt-get -qq -y install \
 	curl \
 	build-essential \
+	clang-5.0 clang-3.8 \
 	autotools-dev \
 	automake \
 	cmake \
@@ -26,19 +27,10 @@ RUN apt-get -qq update && apt-get -qq -y install \
 	libdbus-1-dev \
 	libpcre3-dev \
 	libpcre++-dev \
+	libglib2.0-dev \
+	swig3.0 \
 	checkinstall \
 && gem install ronn \
 && rm -rf /var/lib/apt/lists/*
-
-# install Swig 3
-RUN cd /tmp \
-&& curl -fsS "https://codeload.github.com/swig/swig/tar.gz/rel-${SWIGVERSION}" \
-| tar xz \
-&& cd "swig-rel-${SWIGVERSION}" \
-&& ./autogen.sh \
-&& ./configure \
-&& make \
-&& make install \
-&& rm -rf "/tmp/swig-rel-${SWIGVERSION}"
 
 COPY buildelektra.sh /bin/buildelektra
