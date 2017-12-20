@@ -18,20 +18,37 @@ import '../css/treeview.css'
 export default class TreeView extends React.Component {
   constructor (props, ...args) {
     super(props, ...args)
-    this.state = { selection: [] }
+    this.state = { selection: [], unfolded: [] }
+  }
+
+  refresh = () => {
+    const { data, getKey, instanceId } = this.props
+    const { unfolded } = this.state
+    const user = data.find(d => d.path === 'user')
+    const allUnfolded = [ user, ...unfolded ]
+    return Promise.all(
+      allUnfolded.map(this.refreshItem)
+    )
+  }
+
+  refreshItem = (item) => {
+    const { getKey, instanceId } = this.props
+    const mainPromise = getKey(instanceId, item.path)
+    if (Array.isArray(item.children)) {
+      return Promise.all([
+        mainPromise,
+        ...item.children.map(
+          child => getKey(instanceId, child.path)
+        ),
+      ])
+    } else {
+      return mainPromise
+    }
   }
 
   handleSelect = (newSelection, item, ancestors, neighbours) => {
+    this.refreshItem(item)
     this.setState({ selection: newSelection })
-    if (Array.isArray(item.children)) {
-      const { getKey, instanceId } = this.props
-      getKey(instanceId, item.path)
-      Promise.all(
-        item.children.map(
-          child => getKey(instanceId, child.path)
-        )
-      )
-    }
   }
 
   handleDrop = (target, evt, inputs) => {
@@ -57,21 +74,37 @@ export default class TreeView extends React.Component {
     )
   }
 
+  waitForData = () => {
+    const { data } = this.props
+    const user = Array.isArray(data) && data.find(d => d.path === 'user')
+    if (!user) {
+      this.timeout = setTimeout(this.waitForData, 100)
+    } else {
+      this.refreshItem(user)
+    }
+  }
+
+  componentDidMount () {
+    this.waitForData()
+  }
+
   render () {
     const { data } = this.props
     const { selection } = this.state
+    const tree = this
     const strategies = {
       click: [ "select", function (item) {
-        const newUnfolded = this.state.get().unfolded.filter(p => p !== item.path)
+        const newUnfolded = this.state.get().unfolded.filter(i => i.path !== item.path)
         if (newUnfolded.length === this.state.get().unfolded.length) {
-          newUnfolded.push(item.path)
+          newUnfolded.push(item)
         }
         this.state.set({ unfolded: newUnfolded })
+        tree.setState({ unfolded: newUnfolded })
       } ],
       fold: [ function (item) {
         return (item && item.path === 'user')
           ? false // always unfold `user`
-          : !array(this.state.get().unfolded).contains(item.path)
+          : !this.state.get().unfolded.find(i => i.path === item.path)
       } ]
     }
     return (

@@ -42,3 +42,12 @@ h1 {
 h1 b {
   font-family: 'Roboto';
 }
+
+.refreshIcon {
+  opacity: 0.5;
+  transition: opacity 0.2s;
+}
+
+.refreshIcon:hover {
+  opacity: 1;
+}

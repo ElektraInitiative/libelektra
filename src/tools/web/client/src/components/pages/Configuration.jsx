@@ -12,6 +12,8 @@ import React, { Component } from 'react'
 
 import { Card, CardHeader, CardText, CardActions } from 'material-ui/Card'
 import FlatButton from 'material-ui/FlatButton'
+import IconButton from 'material-ui/IconButton'
+import NavigationRefresh from 'material-ui/svg-icons/navigation/refresh'
 import { Link } from 'react-router-dom'
 
 import TreeView from '../../containers/ConnectedTreeView'
@@ -61,6 +63,17 @@ export default class Configuration extends Component {
     getKdb(id)
   }
 
+  refresh = () => {
+    const { getKdb, match, sendNotification } = this.props
+    const { id } = match && match.params
+    sendNotification('refreshing configuration data...')
+    getKdb(id)
+      .then(() => {
+        if (this.tree) return this.tree.refresh()
+      })
+      .then(() => sendNotification('configuration data refreshed!'))
+  }
+
   render () {
     const {
       instance, ls, match,
@@ -79,6 +92,14 @@ export default class Configuration extends Component {
     const title = (
         <h1>
             <b>{name}</b>{' instance'}
+            <IconButton
+              className="refreshIcon"
+              style={{ width: 28, height: 28 }}
+              iconStyle={{ width: 16, height: 16 }}
+              onClick={this.refresh}
+            >
+                <NavigationRefresh />
+            </IconButton>
         </h1>
     )
 
@@ -87,7 +108,11 @@ export default class Configuration extends Component {
             <CardHeader title={title} subtitle={host} />
             <CardText>
                 {data
-                  ? <TreeView instanceId={id} data={data} />
+                  ? <TreeView
+                      treeRef={t => { this.tree = t }}
+                      instanceId={id}
+                      data={data}
+                    />
                   : 'loading configuration data...'
                 }
             </CardText>

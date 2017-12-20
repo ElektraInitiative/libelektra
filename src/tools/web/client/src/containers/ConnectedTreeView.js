@@ -14,8 +14,8 @@ import { bindActionCreators } from 'redux'
 import TreeView from '../components/TreeView.jsx'
 import { getKey, moveKey } from '../actions'
 
-const mapStateToProps = (state, { instanceId }) => {
-  return { kdb: state.kdb && state.kdb[instanceId] }
+const mapStateToProps = (state, { instanceId, treeRef }) => {
+  return { kdb: state.kdb && state.kdb[instanceId], ref: treeRef }
 }
 
 const mapDispatchToProps = (dispatch) =>

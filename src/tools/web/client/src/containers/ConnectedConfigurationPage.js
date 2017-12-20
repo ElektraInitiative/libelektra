@@ -13,7 +13,7 @@ import { bindActionCreators } from 'redux'
 
 import Configuration from '../components/pages/Configuration.jsx'
 import {
-  getKdb, getKey, setKey, deleteKey,
+  getKdb, getKey, setKey, deleteKey, sendNotification,
 } from '../actions'
 
 const mapStateToProps = (state, { match }) => {
@@ -30,6 +30,7 @@ const mapDispatchToProps = (dispatch) =>
     getKey,
     setKey,
     deleteKey,
+    sendNotification,
   }, dispatch)
 
 export default connect(mapStateToProps, mapDispatchToProps)(Configuration)
