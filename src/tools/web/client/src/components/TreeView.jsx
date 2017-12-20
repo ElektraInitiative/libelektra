@@ -85,6 +85,11 @@ export default class TreeView extends React.Component {
         updateModel={this.handleUpdate}
         onSelect={this.handleSelect}
         display={this.renderItem}
+        transition={{
+          transitionName: 'ExplorerViewTransition',
+          transitionEnterTimeout: 200,
+          transitionLeaveTimeout: 200,
+        }}
       />
     )
   }

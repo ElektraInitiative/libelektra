@@ -119,3 +119,23 @@
 .ExplorerView li.dragover > span.item {}
 .ExplorerView li.nodrop {}
 .ExplorerView li.nodrop > span.item {}
+
+/* init/destroy transitions */
+.ExplorerViewTransition-enter {
+  transition: all .2s ease-in-out;
+  opacity: 0;
+  transform-origin: left top;
+  transform: translateX(-20px) scale(0);
+}
+.ExplorerViewTransition-enter-active {
+  opacity: 1;
+  transform: translateX(0px) scale(1);
+}
+.ExplorerViewTransition-leave {
+  transition: all .2s ease-in-out;
+  transform-origin: left top;
+}
+.ExplorerViewTransition-leave-active {
+  opacity: 0;
+  transform: translateX(-20px) scale(0);
+}
