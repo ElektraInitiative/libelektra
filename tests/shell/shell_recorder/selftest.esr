@@ -14,7 +14,7 @@ STDOUT: Set string to "value"
 STDOUT-REGEX: .*value.
 < kdb set $Mountpoint/key value
 
-STDERR: The command kdb not-a-command is not known
+STDERR: The command kdb.* not-a-command is not known
 < kdb not-a-command 1>/dev/null
 
 STDERR: .+not-a-command.+
