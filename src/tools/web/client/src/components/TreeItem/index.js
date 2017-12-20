@@ -18,6 +18,7 @@ import FlatButton from 'material-ui/FlatButton'
 
 import SimpleTextField from './SimpleTextField.jsx'
 import RadioButtons from './RadioButtons.jsx'
+import ToggleButton from './ToggleButton.jsx'
 
 export default class TreeItem extends Component {
   constructor (...args) {
@@ -90,6 +91,15 @@ export default class TreeItem extends Component {
       } catch (err) {
         console.error('invalid enum type:', meta['check/enum'])
         return false
+      }
+    }
+
+    if (meta.hasOwnProperty('check/type')) {
+      if (meta['check/type'] === 'boolean') {
+        console.log('bool', value)
+        return (
+            <ToggleButton value={value} meta={meta} onChange={this.handleEdit} />
+        )
       }
     }
   }
@@ -191,7 +201,7 @@ export default class TreeItem extends Component {
 
     // TODO: allow editing value of nested items
     const main =
-      (data && data.value && !(item.children && item.children.length > 0))
+      (data && !(item.children && item.children.length > 0))
         ? (
             <span>
                 <b style={titleStyle}>{item.name + ': '}</b>

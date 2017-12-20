@@ -12,8 +12,12 @@ import {
 
 const updateState = (state, { id, path, value, meta }) => {
   const updatedPart = {
-    value: value || (state[id] && state[id][path] && state[id][path].value),
-    meta: meta || (state[id] && state[id][path] && state[id][path].meta),
+    value: typeof value !== 'undefined'
+      ? value
+      : (state[id] && state[id][path] && state[id][path].value),
+    meta: typeof meta !== 'undefined'
+      ? meta
+      : (state[id] && state[id][path] && state[id][path].meta),
   }
   return {
     ...state,
