@@ -7,7 +7,7 @@
  */
 
 import {
-  GET_KEY_SUCCESS, SET_KEY_REQUEST, DELETE_KEY_REQUEST,
+  GET_KEY_SUCCESS, SET_KEY_REQUEST, DELETE_KEY_REQUEST, MOVE_KEY_SUCCESS,
 } from '../actions'
 
 const updateState = (state, { id, path, value, meta }) => {
@@ -37,7 +37,7 @@ export default function keyReducer (state = {}, action) {
     case SET_KEY_REQUEST:
       return updateState(state, action.request)
 
-    case DELETE_KEY_REQUEST:
+    case DELETE_KEY_REQUEST: {
       const { id, path } = action.request
       return {
         ...state,
@@ -50,6 +50,27 @@ export default function keyReducer (state = {}, action) {
           }, {}
         ),
       }
+    }
+
+    case MOVE_KEY_SUCCESS: {
+      const { id, from, to } = action && action.request
+      const fromData = state[id][from]
+      return {
+        ...state,
+        [id]: state[id] && Object.keys(state[id]).reduce(
+          (res, key) => {
+            if (key !== from) { // exclude `from` key
+              if (key === to) { // move data to `to` key
+                res[key] = fromData
+              } else { // otherwise, copy from state
+                res[key] = state[id][key]
+              }
+            }
+            return res
+          }, {}
+        ),
+      }
+    }
 
     // TODO: specifically handle failure (show error inline)
     default:

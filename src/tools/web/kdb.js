@@ -172,6 +172,10 @@ const get = (path) =>
 const set = (path, value) =>
   safeExec(escapeValues`kdb set ${path} ${value}`)
 
+// move value from given `path` to `destination`
+const mv = (path, destination) =>
+  safeExec(escapeValues`kdb mv ${path} ${destination}`)
+
 // remove value at given `path`
 const rm = (path) =>
   safeExec(escapeValues`kdb rm ${path}`)
@@ -233,6 +237,6 @@ const getAndLs = (path) =>
 
 // export kdb functions as `kdb` object
 module.exports = {
-  version, ls, get, getAndLs, set, rm, export: _export, import: _import,
+  version, ls, get, getAndLs, set, mv, rm, export: _export, import: _import,
   getmeta, lsmeta, getAllMeta,
 }

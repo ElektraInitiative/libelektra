@@ -83,3 +83,25 @@ export const deleteKey = (id, path) => thunkCreator({
     }
   ).then(parseJSONResponse),
 })
+
+// ~~~
+
+export const MOVE_KEY_REQUEST = 'MOVE_KEY_REQUEST'
+export const MOVE_KEY_SUCCESS = 'MOVE_KEY_SUCCESS'
+export const MOVE_KEY_FAILURE = 'MOVE_KEY_FAILURE'
+
+export const moveKey = (id, from, to) => thunkCreator({
+  request: { id, from, to },
+  types: [MOVE_KEY_REQUEST, MOVE_KEY_SUCCESS, MOVE_KEY_FAILURE],
+  promise: fetch(
+    `/instances/${id}/kdbMv/${encodePath(from)}`,
+    {
+      credentials: 'same-origin',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'text/plain',
+      },
+      body: to,
+    }
+  ),
+})

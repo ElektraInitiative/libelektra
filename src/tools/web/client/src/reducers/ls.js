@@ -8,7 +8,7 @@
  */
 
 import {
-  GET_KDB_SUCCESS, DELETE_KEY_SUCCESS, SET_KEY_SUCCESS,
+  GET_KDB_SUCCESS, DELETE_KEY_SUCCESS, SET_KEY_SUCCESS, MOVE_KEY_SUCCESS,
 } from '../actions'
 
 // controls the state of the paths available in the kdb
@@ -31,6 +31,16 @@ export default function pathReducer (state = [], action) {
       return state.includes(path)
         ? state
         : [ ...state, path ]
+    }
+
+    case MOVE_KEY_SUCCESS: {
+      const { from, to } = action && action.request
+      // remove `from` path
+      const newState = state.filter(p => p !== from)
+      // add `to` path
+      return newState.includes(to)
+        ? newState
+        : [ ...newState, to ]
     }
 
     default:

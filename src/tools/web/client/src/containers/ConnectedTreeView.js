@@ -12,13 +12,13 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 
 import TreeView from '../components/TreeView.jsx'
-import { getKey } from '../actions'
+import { getKey, moveKey } from '../actions'
 
 const mapStateToProps = (state, { instanceId }) => {
   return { kdb: state.kdb && state.kdb[instanceId] }
 }
 
 const mapDispatchToProps = (dispatch) =>
-  bindActionCreators({ getKey }, dispatch)
+  bindActionCreators({ getKey, moveKey }, dispatch)
 
 export default connect(mapStateToProps, mapDispatchToProps)(TreeView)

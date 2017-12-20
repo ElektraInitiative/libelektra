@@ -18,12 +18,9 @@ export default class TreeView extends React.Component {
   constructor (props, ...args) {
     super(props, ...args)
     this.state = { selection: [] }
-    this.handleSelect = this.handleSelect.bind(this)
-    this.handleUpdate = this.handleUpdate.bind(this)
-    this.renderItem = this.renderItem.bind(this)
   }
 
-  handleSelect (newSelection, item, ancestors, neighbours) {
+  handleSelect = (newSelection, item, ancestors, neighbours) => {
     this.setState({ selection: newSelection })
     if (Array.isArray(item.children)) {
       const { getKey, instanceId } = this.props
@@ -36,13 +33,17 @@ export default class TreeView extends React.Component {
     }
   }
 
-  handleUpdate (newModel) {
-    // library updates `this.state.model` already
-    // this.setState({ model: newModel })
-    // TODO: send diff to kdb
+  handleDrop = (target, evt, inputs) => {
+    const { instanceId, moveKey } = this.props
+    const { selection } = inputs
+
+    const moveOps = selection.map(
+      sel => moveKey(instanceId, sel.path, target.path + '/' + sel.name)
+    )
+    this.setState({ selection: [] })
   }
 
-  renderItem (item, inputs) {
+  renderItem = (item, inputs) => {
     const { kdb, instanceId } = this.props
     const data = kdb && kdb[item.path]
     return (
@@ -63,6 +64,7 @@ export default class TreeView extends React.Component {
     }
     return (
       <ExplorerView
+        dragndrop={{ drop: this.handleDrop }}
         model={data}
         category="children"
         name="name"

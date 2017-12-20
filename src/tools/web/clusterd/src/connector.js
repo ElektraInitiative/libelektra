@@ -44,4 +44,18 @@ const rm = (host, path) =>
       return { status: res.status }
     })
 
-export default { version, get, set, rm }
+const mv = (host, path, destination) =>
+  fetch(`${host}/kdbMv/${encodePath(path)}`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'text/plain',
+      },
+      body: destination,
+    }
+  )
+    .then(res => {
+      return { status: res.status }
+    })
+
+export default { version, get, set, rm, mv }
