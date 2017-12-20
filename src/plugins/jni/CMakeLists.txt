@@ -51,13 +51,8 @@ if (ADDTESTING_PHASE)
 	check_binding_was_added ("jna" BINDING_WAS_ADDED)
 	find_program (MAVEN_EXECUTABLE mvn)
 
-<<<<<<< HEAD
-	if (ENABLE_BROKEN_TESTS)
-	if (BUILD_TESTING AND FINDEX GREATER -1 AND MAVEN_EXECUTABLE)
-=======
 	if (ENABLE_BROKEN_TESTS)
 	if (BUILD_TESTING AND BINDING_WAS_ADDED AND MAVEN_EXECUTABLE)
->>>>>>> cmake: BINDINGS overhaul
 		add_plugintest(jni MEMLEAK)
 		include_directories (${CMAKE_CURRENT_BINARY_DIR})
 

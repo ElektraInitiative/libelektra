@@ -59,9 +59,9 @@ void main (void)
 	uv_run (loop, UV_RUN_DEFAULT);
 
 	// Cleanup before exit
+	elektraNotificationClose (kdb);
 	elektraIoBindingCleanup (binding);
 	uv_loop_close (loop);
-	free (loop);
 }
 
 ```

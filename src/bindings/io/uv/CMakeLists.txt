@@ -84,4 +84,6 @@ else()
 		COMMAND "${CMAKE_BINARY_DIR}/bin/${testexename}" "${CMAKE_CURRENT_SOURCE_DIR}"
 		WORKING_DIRECTORY "${WORKING_DIRECTORY}"
 	)
+
+	add_subdirectory (example)
 endif()

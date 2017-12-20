@@ -38,13 +38,8 @@ add_plugin (lua
 if (ADDTESTING_PHASE)
 	if (NOT APPLE) # TODO: ENABLE_BROKEN_TESTS
 	# bindings are required for tests
-<<<<<<< HEAD
-	list (FIND BINDINGS "swig_lua" FINDEX)
-	if (BUILD_TESTING AND FINDEX GREATER -1)
-=======
 	check_binding_was_added ("swig_lua" BINDING_WAS_ADDED)
 	if (BUILD_TESTING AND BINDING_WAS_ADDED)
->>>>>>> cmake: BINDINGS overhaul
 		# test environment clears env so setting LUA_CPATH is no option
 		# we workaround this by changing the current directory to our bindings
 		# output directory + per default lua loads modules from current directory
