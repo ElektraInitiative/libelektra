@@ -52,8 +52,15 @@ export default class TreeItem extends Component {
   }
 
   handleDelete = (path) => {
-    const { instanceId, deleteKey, sendNotification } = this.props
+    const { instanceId, item, deleteKey, sendNotification } = this.props
     deleteKey(instanceId, path)
+      .then(() => {
+        if (Array.isArray(item.children) && item.children.length > 0) {
+          return Promise.all(item.children.map(
+            child => deleteKey(instanceId, child.path)
+          ))
+        }
+      })
       .then(() => sendNotification('successfully deleted key: ' + path))
     this.handleCloseDelete()
   }
@@ -164,6 +171,7 @@ export default class TreeItem extends Component {
   }
 
   renderDeleteDialog = ({ path }) => {
+    const { item } = this.props
     const { deleteDialog } = this.state
     const actions = [
       <FlatButton
@@ -176,6 +184,10 @@ export default class TreeItem extends Component {
         onTouchTap={() => this.handleDelete(path)}
       />,
     ]
+    const additionalText =
+      (Array.isArray(item.children) && item.children.length > 0)
+        ? ', including all its sub-keys?'
+        : '?'
     return (
         <Dialog
           actions={actions}
@@ -185,8 +197,8 @@ export default class TreeItem extends Component {
         >
             <h1>Delete key <b>{path}</b>?</h1>
             <p>
-                Are you sure you want to delete the "<b>{path}</b>" key,
-                including all its sub-keys?
+                Are you sure you want to delete
+                the "<b>{path}</b>" key{additionalText}
             </p>
         </Dialog>
     )
