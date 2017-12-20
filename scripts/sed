@@ -5,7 +5,10 @@ s/Electra/Elektra/g
 # ==============================
 
 s/behaviour/behavior/g
+s/favour/favor/g
 s/generalises/generalizes/g
+s/organisation/organization/g
+s/realise/realize/g
 s/synchronised/synchronized/g
 
 # ==========

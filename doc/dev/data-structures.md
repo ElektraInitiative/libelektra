@@ -28,7 +28,7 @@ lookup, but considerably slower on sorted enumeration.
 An **AVL tree** also serves as a competitor.
 AVL trees are expected to be
 faster for inserting keys at any place, but may be slower for appending
-because of the needed reorganisations.
+because of the needed reorganizations.
 Their disadvantage is that they need to allocate
 a large number of small pieces of memory.
 Further investigations, namely implementation and benchmarks,
@@ -108,7 +108,7 @@ Instead, we try to reuse sets in the following ways:
   is useful in situations where many operations have to be applied in
   a sequence reducing the given `KeySet` until no
   more keys are left.
-  None of the reference pointers changes in this situation.
+  None of the reference pointers change in this situation.
 
   `ksCut(KeySet *ks, const Key *cutpoint)` works that way.
   All keys below the `cutpoint` are moved from `ks` to the returned key
@@ -218,7 +218,7 @@ his or her own purposes.
 To change the internal cursor, it is
 sufficient to iterate
 over the `KeySet` and stop at the wanted key.
-With this technique, we can, for example, realise
+With this technique, we can, for example, realize
 lookup by value, by specific metadata and by
 parts of the name.
 Without an additional index, it is not possible that
@@ -252,7 +252,7 @@ When using null pointers and
 range checks, the function is noticeably slower than without.
 With the same amount of checks,
 using an external cursor is not much faster than
-the `ksNext()`.
+`ksNext()`.
 External cursor with checks is in a benchmark
 about 10% faster.
 

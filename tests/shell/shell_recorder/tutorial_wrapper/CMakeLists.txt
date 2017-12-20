@@ -41,7 +41,6 @@ add_plugin_shell_test (conditionals)
 add_plugin_shell_test (directoryvalue)
 add_plugin_shell_test (enum)
 add_plugin_shell_test (hosts)
-add_plugin_shell_test (ini)
 add_plugin_shell_test (ipaddr)
 add_plugin_shell_test (line)
 add_plugin_shell_test (mathcheck)
@@ -52,9 +51,11 @@ add_plugin_shell_test (type)
 add_plugin_shell_test (xerces)
 add_plugin_shell_test (yajl)
 
-# The tests below might fail on Linux if ASAN is enabled because of problematic code in `stl_tree.h`
+# Most of the tests below might fail on Linux if ASAN is enabled because of problematic code in `stl_tree.h`
 # The cause of this seems to be a bug in old versions of `libstdc++`:
 # http://lists.llvm.org/pipermail/cfe-dev/2013-August/031194.html
+#
+# The INI test fails because of a function call through a pointer of incorrect type
 set (ASAN_LINUX ENABLE_ASAN AND ${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 if (NOT (${ASAN_LINUX} AND CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 5))
 	list (FIND REMOVED_PLUGINS validation PLUGIN_INDEX_VALIDATION)
@@ -67,6 +68,8 @@ if (NOT (${ASAN_LINUX} AND CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_C
 	add_plugin_shell_test (mini)
 	add_plugin_shell_test (tcl)
 	add_plugin_shell_test (yamlcpp)
+
+	add_plugin_shell_test (ini)
 endif (NOT (${ASAN_LINUX} AND CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 5))
 
 # Only works with super user privileges, since it writes to `/etc/hosts`:

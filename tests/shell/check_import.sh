@@ -53,13 +53,8 @@ do
 	test "x`"$KDB" ls $ROOT`" = "xuser/tests/script"
 	succeed_if "key name not correct one_value"
 
-	if [ "x$PLUGIN" != "xyajl" ]
-	then
-		#TODO: yajl currently cannot hold values within
-		#directories, do not hardcode that
-		test "`"$KDB" get $ROOT`" = root
-		succeed_if "root value not correct"
-	fi
+	test "`"$KDB" get $ROOT`" = root
+	succeed_if "root value not correct"
 
 	"$KDB" export $ROOT $PLUGIN > $FILE
 	succeed_if "Could not run kdb export"

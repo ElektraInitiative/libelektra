@@ -18,7 +18,7 @@ Note that when using the `-r` flag, `source` as well as all of the keys below it
 
 ## RETURN VALUES
 
-This command will return the following values as an exit status:  
+This command will return the following values as an exit status:<br>
 * 0:
   No errors.
 - 1-10:
@@ -48,14 +48,14 @@ This command will return the following values as an exit status:
 
 ## EXAMPLES
 
-To copy multiple keys:  
+To copy multiple keys:<br>
 `kdb cp -r user/example1 user/example2`
 
-To copy a single key:  
+To copy a single key:<br>
 `kdb cp user/example/key1 user/example/key2`
 
-To copy keys below an existing key:  
-`kdb cp -r user/example user/example/key1`  
+To copy keys below an existing key:<br>
+`kdb cp -r user/example user/example/key1`<br>
 Note that in this example, all keys in the example directory will be copied below `key1` EXCEPT `key1`.
 
 

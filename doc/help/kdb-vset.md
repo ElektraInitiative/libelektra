@@ -32,10 +32,10 @@ Note: In order for this command to work, the `validation` plugin must be mounted
 
 ## EXAMPLES
 
-To mount the necessary validation plugin use:  
+To mount the necessary validation plugin use:<br>
 `kdb mount validation.ini /validation ini validation`
 
-To set the `user/validation/key` key to the value `a` and validate that any future sets must match the regular expression `a+`:  
+To set the `user/validation/key` key to the value `a` and validate that any future sets must match the regular expression `a+`:<br>
 `kdb vset user/validation/key a a+ "The value of this key must only consist of one more of the letter a"`
 
 ## SEE ALSO

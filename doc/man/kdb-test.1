@@ -9,11 +9,15 @@
 .SH "SYNOPSIS"
 \fBkdb test <path> [<test\-name> \.\.\.]\fR
 .
+.br
+.
 .P
 Where \fBpath\fR is the path the user wishes to perform the test under\. The option \fBtest\-name\fR argument is used to specify which test(s) to run\. To run multiple tests, each should be named with a trailing space\.
 .
 .br
 If no \fBtest\-name\fR is provided, all the tests will be run\.
+.
+.br
 .
 .SH "DESCRIPTION"
 This command is used to run part or all of the key database test suite\.
@@ -21,8 +25,12 @@ This command is used to run part or all of the key database test suite\.
 .br
 These tests allow one to user to verify that a backend is capable of storing and retrieving all kinds of configuration keys and values\.
 .
+.br
+.
 .P
 The following tests are available: basic string umlauts binary naming meta
+.
+.br
 .
 .SH "OPTIONS"
 .
@@ -48,11 +56,15 @@ To run all tests below the \fBuser/example/tests\fR key:
 .br
 \fBkdb test user/example/tests\fR
 .
+.br
+.
 .P
 To run the \fBbinary\fR and \fBnaming\fR tests:
 .
 .br
 \fBkdb test user/example/tests binary naming\fR
+.
+.br
 .
 .SH "SEE ALSO"
 .

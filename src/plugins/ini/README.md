@@ -3,7 +3,7 @@
 - infos/licence = BSD
 - infos/needs =
 - infos/provides = storage/ini
-- infos/recommends =
+- infos/recommends = binary
 - infos/placements = getstorage setstorage
 - infos/status = maintained unittest shelltest nodep libc configurable 1000
 - infos/metadata = order
@@ -159,6 +159,37 @@ kdb get /examples/ini/aimee # 😭
 
 kdb rm -r /examples/ini
 sudo kdb umount /examples/ini
+```
+
+## Binary Data
+
+By default the INI plugin does not support binary data. You can use the [Base64 plugin](../base64/) to remove this limitation.
+
+```sh
+# Mount INI and recommended plugin Base64
+sudo kdb mount --with-recommends config.ini user/examples/ini ini
+
+# Add empty binary value
+printf 'nothing = "@BASE64"\n' > `kdb file user/examples/ini`
+# Copy binary data
+kdb cp system/elektra/modules/ini/exports/get user/examples/ini/binary
+# Add textual data
+kdb set user/examples/ini/text 'Na na na na na na na na na na na na na na na na Batman!'
+
+# Print empty binary value
+kdb get user/examples/ini/nothing
+#>
+
+# Print binary data
+kdb get user/examples/ini/binary
+# STDOUT-REGEX: ^(\\x[0-9a-f]{1,2})+$
+
+# Print textual data
+kdb get user/examples/ini/text
+#> Na na na na na na na na na na na na na na na na Batman!
+
+kdb rm -r user/examples/ini
+sudo kdb umount user/examples/ini
 ```
 
 ## Sections

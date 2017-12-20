@@ -3,7 +3,7 @@ kdb-getmeta(1) -- Get the value of a metakey stored in the key database
 
 ## SYNOPSIS
 
-`kdb getmeta <key name> <metaname>`  
+`kdb getmeta <key name> <metaname>`<br>
 
 Where `key name` is the name of the key and
 `metaname` is the name of the metakey the user would like to access.
@@ -18,7 +18,7 @@ Make sure to use the namespace `spec`, if you want metadata from there.
 
 ## RETURN VALUES
 
-This command will return the following values as an exit status:  
+This command will return the following values as an exit status:<br>
 * 0:
   No errors.
 * 1:
@@ -42,10 +42,10 @@ This command will return the following values as an exit status:
 
 ## EXAMPLES
 
-To get the value of a metakey called `description` stored in the key `spec/example/key`:  
+To get the value of a metakey called `description` stored in the key `spec/example/key`:<br>
 `kdb getmeta spec/example/key description`
 
-To get the value of metakey called `override/#0` stored in the key `spec/example/dir/key`:  
+To get the value of metakey called `override/#0` stored in the key `spec/example/dir/key`:<br>
 `kdb getmeta spec/example/dir/key "override/#0"`
 
 ## SEE ALSO

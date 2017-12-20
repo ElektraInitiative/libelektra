@@ -5,7 +5,7 @@
 - infos/provides =
 - infos/recommends =
 - infos/placements = postgetstorage presetstorage
-- infos/status = maintained nodep preview
+- infos/status = maintained unittest nodep preview
 - infos/metadata =
 - infos/description = This plugin converts directory values to leaf values
 
@@ -175,3 +175,12 @@ kdb getmeta /examples/directoryvalue/patrick array
 kdb rm -r /examples/directoryvalue
 sudo kdb umount /examples/directoryvalue
 ```
+
+# Limitations
+
+**Escaping** is currently **not possible**. If you use the Directory Value plugin you can not
+
+- use the name `___dirdata` as the last part of a normal key,
+- use `___dirdata: ` at the beginning of a normal value in the first array element
+
+!

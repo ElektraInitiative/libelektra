@@ -127,7 +127,7 @@ of keys works.
    define defaults or document a key.
    The metadata of a key contains this information:
 
-   - `override/#`: use these keys *in favour* of the key itself (note that
+   - `override/#`: use these keys *in favor* of the key itself (note that
    - `#` is the syntax for arrays, e.g. `#0` for the first element,
    -`#10` for the 11th and so on)
    - `namespace/#`: instead of using all namespaces in the predefined order,
@@ -149,7 +149,7 @@ of keys works.
 - The `user` tree
 
    Used to store user-specific configurations, like the personal settings
-   of a user to certain programs. The user subtree will always be favoured
+   of a user to certain programs. The user subtree will always be favored
    if present (except for security concerns the user subtree may not be considered).
 
 - The `system` tree
@@ -170,7 +170,7 @@ They are reserved for more generic purposes.
 - The keys for your application, called say *myapp*, should be created under
 `/sw/org/myapp/#0/current`
 	+ sw is for software
-	+ org is the organisation. For uniqueness a full reverse url encoded with '/' instead of '.' is useful.
+	+ org is the organization. For uniqueness a full reverse url encoded with '/' instead of '.' is useful.
 	+ `#0` is the major version of the configuration
 	+ current is the default configuration profile.
 	+ That means you just need to kdbGet() `/sw/org/myapp/#0/profile`

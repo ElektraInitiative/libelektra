@@ -743,7 +743,7 @@ int elektraCamelGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 }
 
 /** @see elektraDocSet */
-int elektraCamelSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraCamelSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 	ELEKTRA_LOG ("Write configuration data");
 	int errorNumber = errno;

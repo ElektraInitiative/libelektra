@@ -25,7 +25,7 @@ described in this tutorial, e.g.:
 
 1. `kdb qt-gui`: graphical user interface
 
-2. `kdb editor`: starts up your favourite text editor and
+2. `kdb editor`: starts up your favorite text editor and
     allows you to edit configuration in any syntax.
     (generalization of `visudo`)
 

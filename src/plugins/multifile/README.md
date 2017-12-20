@@ -5,7 +5,7 @@
 - infos/provides = resolver storage
 - infos/recommends =
 - infos/placements = getresolver setresolver commit rollback getstorage setstorage
-- infos/status = maintained conformant compatible specific shelltest tested configurable
+- infos/status = maintained conformant compatible specific shelltest tested nodep configurable
 - infos/metadata =
 - infos/description = mounts multiple files within a directory
 

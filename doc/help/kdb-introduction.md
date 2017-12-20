@@ -7,20 +7,20 @@ command-line.  In this manual we give an overview of the tool suite
 of individual commands.  Most commands are independent and some commands
 are sharing an executable. Some commands are written as external scripts.
 
-The included commands can be listed via:  
+The included commands can be listed via:<br>
 `kdb`
 
-External commands can be listed via:  
+External commands can be listed via:<br>
 `kdb list-tools`.
 
 Only a few commands are enough for daily use.
-We can retrieve a key by:  
+We can retrieve a key by:<br>
 `kdb get user/key`
 
-We store a key permanently with a value given by:  
+We store a key permanently with a value given by:<br>
 `kdb set user/key value`
 
-We list all available keys arranged below a key by:  
+We list all available keys arranged below a key by:<br>
 `kdb ls user/key`
 
 

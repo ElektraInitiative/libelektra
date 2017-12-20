@@ -31,7 +31,7 @@ def hookNodoc (pluginName, pluginDir, tags):
 			tags.append (tag)
 	else:
 		if (tag in tags):
-			print ("AUTO: remove "+ tag +" to "+ pluginName)
+			print ("AUTO: remove "+ tag +" from "+ pluginName)
 			tags.remove (tag)
 	md.close ()
 
@@ -44,7 +44,7 @@ def hookNodep (pluginName, pluginDir, tags):
 		if (p.match(txt_line)):
 			here = True
 			if (tag in tags):
-				print ("AUTO: remove "+ tag +" to "+ pluginName)
+				print ("AUTO: remove "+ tag +" from "+ pluginName)
 				tags.remove (tag)
 				break
 	txt.close ()
@@ -67,7 +67,7 @@ def hookUnittest (pluginName, pluginDir, tags):
 	txt.close ()
 	if not here and tag in tags:
 		tags.remove (tag)
-		print ("AUTO: remove "+ tag +" to "+ pluginName)
+		print ("AUTO: remove "+ tag +" from "+ pluginName)
 
 def hookMemleak (pluginName, pluginDir, tags):
 	tag = "memleak"
@@ -84,7 +84,7 @@ def hookMemleak (pluginName, pluginDir, tags):
 	txt.close ()
 	if not here and tag in tags:
 		tags.remove (tag)
-		print ("AUTO: remove "+ tag +" to "+ pluginName)
+		print ("AUTO: remove "+ tag +" from "+ pluginName)
 
 def hookConfigurable (pluginName, pluginDir, tags):
 	sources = getSources (pluginDir)
@@ -103,7 +103,7 @@ def hookConfigurable (pluginName, pluginDir, tags):
 		sf.close ()
 	if not here and tag in tags:
 		tags.remove (tag)
-		print ("AUTO: remove "+ tag +" to "+ pluginName)
+		print ("AUTO: remove "+ tag +" from "+ pluginName)
 
 # parse CONTRACT.ini and return as dict tag:order
 def parseContract ():
@@ -130,7 +130,7 @@ def parseContract ():
 	return enum
 
 def checkTags (tags, enum):
-	if not tags: 
+	if not tags:
 		return
 	for k in tags:
 		if not k in enum:
@@ -162,7 +162,7 @@ def main():
 
 	pluginsBase = os.path.join('src', 'plugins')
 
-	if (args.plugins):	
+	if (args.plugins):
 		plugins = args.plugins
 	else:
 		plugins = os.listdir(pluginsBase)

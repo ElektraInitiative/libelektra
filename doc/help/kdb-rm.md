@@ -29,13 +29,13 @@ This command removes key(s) from the Key database.
 
 ## EXAMPLES
 
-To remove multiple keys:  
+To remove multiple keys:<br>
 `kdb rm -r user/example`
 
-To remove a single key:  
+To remove a single key:<br>
 `kdb rm user/example/key1`
 
-To not fail when key is missing:  
+To not fail when key is missing:<br>
 `kdb rm -f user/maybe/missing`
 
 ## SEE ALSO
