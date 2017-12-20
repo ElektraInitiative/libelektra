@@ -33,7 +33,8 @@ export default class TreeItem extends Component {
     }
   }
 
-  handleOpenAdd = () => {
+  handleOpenAdd = (e) => {
+    e.stopPropagation()
     this.setState({ addDialog: true })
   }
 
@@ -41,7 +42,8 @@ export default class TreeItem extends Component {
     this.setState({ addDialog: false, addKeyName: '', addKeyValue: '' })
   }
 
-  handleOpenDelete = () => {
+  handleOpenDelete = (e) => {
+    e.stopPropagation()
     this.setState({ deleteDialog: true })
   }
 
@@ -96,7 +98,6 @@ export default class TreeItem extends Component {
 
     if (meta.hasOwnProperty('check/type')) {
       if (meta['check/type'] === 'boolean') {
-        console.log('bool', value)
         return (
             <ToggleButton value={value} meta={meta} onChange={this.handleEdit} />
         )
@@ -214,7 +215,7 @@ export default class TreeItem extends Component {
         <IconButton
           style={{ width: 16, height: 16, paddingTop: '1px' }}
           iconStyle={{ width: 14, height: 14 }}
-          onTouchTap={this.handleOpenAdd}
+          onClick={this.handleOpenAdd}
         >
             <ContentAdd />
         </IconButton>
@@ -224,7 +225,7 @@ export default class TreeItem extends Component {
         <IconButton
           style={{ width: 16, height: 16, paddingTop: '1px' }}
           iconStyle={{ width: 14, height: 14 }}
-          onTouchTap={this.handleOpenDelete}
+          onClick={this.handleOpenDelete}
         >
             <ActionDelete />
         </IconButton>

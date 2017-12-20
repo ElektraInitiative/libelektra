@@ -9,6 +9,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { ExplorerView } from '@bosket/react'
+import { array } from '@bosket/tools'
 
 import TreeItem from '../containers/ConnectedTreeItem'
 
@@ -60,7 +61,18 @@ export default class TreeView extends React.Component {
     const { data } = this.props
     const { selection } = this.state
     const strategies = {
-      click: [ "select", "toggle-fold" ],
+      click: [ "select", function (item) {
+        const newUnfolded = this.state.get().unfolded.filter(p => p !== item.path)
+        if (newUnfolded.length === this.state.get().unfolded.length) {
+          newUnfolded.push(item.path)
+        }
+        this.state.set({ unfolded: newUnfolded })
+      } ],
+      fold: [ function (item) {
+        return (item && item.path === 'user')
+          ? false // always unfold `user`
+          : !array(this.state.get().unfolded).contains(item.path)
+      } ]
     }
     return (
       <ExplorerView
