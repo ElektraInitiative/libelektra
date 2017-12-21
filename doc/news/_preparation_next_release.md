@@ -48,7 +48,7 @@ See you in Brussels at 3 and 4 February 2018!
 I will also be present in the [Config Management Camp](http://cfgmgmtcamp.eu/)
 directly afterwards Fosdem in Gent.
 
-### CC-licenced book about vision of Elektra published
+### CC-licenced Book About Vision of Elektra Published
 
 I am proud to release a book describing:
 
@@ -68,7 +68,7 @@ and the compiled book can be downloaded from [here](https://github.com/ElektraIn
 
 TODO: https://book.libelektra.org
 
-### Maturing of plugins
+### Maturing of Plugins
 
 - The new [Directory Value plugin](https://www.libelektra.org/plugins/directoryvalue) supports storage plugins such as [YAJL](https://www.libelektra.org/plugins/yajl) and [YAML CPP ](https://www.libelektra.org/plugins/yamlcpp). It adds extra leaf values for directories (keys with children) that store the data of their parents. This way plugins that normally are only able to store values in leaf keys are able to support arbitrary key sets.
 - The [yamlcpp plugin](https://www.libelektra.org/plugins/yamlcpp) TODO
@@ -78,7 +78,7 @@ TODO: https://book.libelektra.org
 - boolean? TODO (is currently described below)
 - The [crypto plugin](https://www.libelektra.org/plugins/crypto) and [fcrypt plugin](https://www.libelektra.org/plugins/fcrypt) are described below.
 
-### Elektra with encryption
+### Elektra With Encryption
 
 The plugins `fcrypt` and `crypto` are now considered stable. They are no longer tagged as `experimental`.
 While `crypto` encrypts individual values within configuration files, `fcrypt` encrypts and/or signs the whole configuration file.
@@ -91,16 +91,15 @@ Thanks to Peter Nirschl for this great work!
 
 ### Switch to INI
 
-We plan to switch to INI as default storage instead of the infamous
-Elektra's internal dump format.
+We plan to use INI as default storage instead of Elektra's infamous internal dump format.
 
 As preparation work we implemented the `dini` plugin which transparently
-converts all `dump` files to `ini` files on any write attempts.
+converts all `dump` files to `ini` files on any write attempt.
 Furthermore, we fixed most of the INI bugs which blocked INI to be the
 default storage.
 
 Due to this progress we will likely switch to INI as default starting
-from the next release. If you want to, you can switch now by compiling
+with the next release. If you want to, you can switch now by compiling
 Elektra with:<br>
 `-DKDB_DEFAULT_STORAGE=dini`
 
@@ -110,15 +109,15 @@ Or simply switch for your installation with:<br>
 If you are already using `ini` as default, changing to `dini` will:
 
 - also add support for binary values (TODO)
-- add some overhead because `dini` always checks if a file has the `dump`
-  format unless the `dump` plugin is not installed.
+- add some overhead because `dini` always checks if a file uses the `dump`
+  format, unless the `dump` plugin is not installed.
 
 ## Other New Features
 
 We added even more functionality, which could not make it to the highlights:
 
 - `kdb rm` now supports `-f` to ignore non-existing keys
-- `%` passed as profile name will disable to read from any profile
+- use `%` as profile name to disable reading from any profile
 
 ### Libease
 
@@ -136,11 +135,11 @@ We improved the documentation in the following ways:
 
 - We renamed our beginner friendly issues to "good first issue" as recommended
   by GitHub.
-- In many parts we already switched to American spelling.
-- Some updates in the `jni` docu about Java in stretch.
+- In many parts of the documentation we already switched to American spelling.
+- We extended the ReadMe of the `jni` plugin. The ReadMe now also contains information about the Java prerequisites of the `jni` plugin on Debian Stretch.
 - Fixed many spelling mistakes
   thanks to René Schwaiger
-- Improve notes about testing
+- Improved notes about testing
   thanks to Thomas Wahringer
 - qt-gui: give hints which package to install
 - <<TODO>>
@@ -174,9 +173,9 @@ These notes are of interest for people developing Elektra:
   (must be removed accordingly).
 - We now warn if plugins do not have any placement.
 - Please prefer -log and -debug builds
-- The build server now understands `jenkins build all please`
+- The build server now understands the build phrase `jenkins build all please`
   thanks to René Schwaiger.
-  Please use it careful, it puts our [build server](https://build.libelektra.org/) under heavy load.
+  Please use it carefully, since it puts our [build server](https://build.libelektra.org/) under heavy load.
 - <<TODO>>
 
 ## Testing
@@ -196,13 +195,13 @@ These notes are of interest for people developing Elektra:
 
 Many problems were resolved with the following fixes:
 
-- fix use of dbus_connection_unref(NULL) API
+- fix use of `dbus_connection_unref(NULL)` API
   thanks to Kai-Uwe Behrmann
-- Properly include headers for std::bind
+- Properly include headers for `std::bind`
   thanks to Nick Sarnie
-- qt-gui: assure active focus on appearence selection window
+- qt-gui: assure active focus on appearance selection window
   thanks to Raffael Pancheri
-- René Schwaiger repaired the plugin `boolean`:
+- René Schwaiger repaired the `boolean` plugin:
   - wrong metadata was used
   - plugin configuration was missing
   - documentation was missing
@@ -211,17 +210,17 @@ Many problems were resolved with the following fixes:
 - `kdb info -l` does not open `KDB` anymore.
 - `change-resolver-symlink` and `change-storage-symlink` now correctly use
   `@TARGET_PLUGIN_FOLDER@`
-- date plugin will be removed on attempts to compile it with gcc 4.7, thanks to René Schwaiger 
+- date plugin will be removed on attempts to compile it with gcc 4.7, thanks to René Schwaiger
 - C plugin: storage/c metadata added
 - <<TODO>>
 
 ## Outlook
 
-We are currently working on following topics:
+We are currently working on the following topics:
 
-- The Order Preserving Minimal Perfect Hash Map is ready to extend the ksLookup. The implementation of the randomized Las Vegas hash map
+- The Order Preserving Minimal Perfect Hash Map (OPMPHM) is ready to extend `ksLookup`. The implementation of the randomized Las Vegas hash map
   algorithm is in a final stage and the heuristic functions that ensure time and space optimality are backed up by benchmarks.
-  The next release will include it!
+  The next release will include the OPMPHM!
 - As mentioned in the highlights we will switch to INI (using `dini`) as default storage format.
 - <<TODO>>
 
