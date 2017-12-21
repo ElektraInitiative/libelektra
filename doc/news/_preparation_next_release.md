@@ -211,7 +211,7 @@ Many problems were resolved with the following fixes:
 - `kdb info -l` does not open `KDB` anymore.
 - `change-resolver-symlink` and `change-storage-symlink` now correctly use
   `@TARGET_PLUGIN_FOLDER@`
-- date plugin will be removed on attempts to compile it with gcc 4.7, thanks to René Schwaiger 
+- date plugin will be removed on attempts to compile it with gcc 4.7, thanks to René Schwaiger
 - C plugin: storage/c metadata added
 - <<TODO>>
 
