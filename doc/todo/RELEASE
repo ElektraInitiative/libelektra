@@ -18,11 +18,6 @@ Following shell expansions are used in this document:
 - Check transitions in plugin status: especially from/to experimental
 - Check if Elektra builds, installs and works on freshly installed OS
 
-TODO: Fix remotes of ftp+api repos
-
-TODO: redo release process
-
-
 == Testing ==
 
 - fuzz checker
@@ -45,9 +40,11 @@ TODO: redo release process
 == Increment Version Number ==
 
 Increment version numbers in
-- CMakeLists.txt
 
+- CMakeLists.txt
+- ~e/scripts/build-debian-package
 - Change VERSION variable in build-server
+
 
 export VERSION=`kdb get system/elektra/version/constants/KDB_VERSION`
 export DVERSION=$VERSION-1
