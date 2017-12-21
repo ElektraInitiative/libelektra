@@ -10,8 +10,10 @@ for highlighted items.
 Please add your name to every contribution
 syntax: ", thanks to <myname>".
 
-
-<<`scripts/generate-news-entry`>>
+- guid: ea3ade20-0a27-4c4b-a922-6b29462a1fc5
+- author: Markus Raab
+- pubDate: Thu, 21 Dec 2017 21:17:38 +0100
+- shortDesc:
 
 We are proud to release Elektra 0.8.21.
 
@@ -98,7 +100,7 @@ Thanks to Peter Nirschl for this great work!
 
 ### Switch to INI
 
-We plan to use INI as default storage instead of Elektra's infamous internal dump format.
+We plan to switch to INI as default storage instead of Elektra's infamous internal dump format.
 
 As preparation work we implemented the `dini` plugin which transparently
 converts all `dump` files to `ini` files on any write attempt.
@@ -115,9 +117,11 @@ Or simply switch for your installation with:<br>
 
 If you are already using `ini` as default, changing to `dini` will:
 
-- also add support for binary values (TODO)
 - add some overhead because `dini` always checks if a file uses the `dump`
   format, unless the `dump` plugin is not installed.
+- add support for binary values using the `binary` plugin
+
+> NOTE: INI was not completely ready for 0.8.21 thus we kept `dump` as default.
 
 ## Other New Features
 
