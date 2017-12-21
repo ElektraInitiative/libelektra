@@ -192,6 +192,7 @@ These notes are of interest for people developing Elektra:
 - Elektra's [Dockerfile](https://master.libelektra.org/doc/docker/Dockerfile) improved, thanks to Thomas Wahringer
 - Add more Explanations how to do Fuzz Testing
 - Started documenting disabled tests in [doc/todo/TESTING](https://master.libelektra.org/doc/todo/TESTING)
+- You now can use `tests/icheck.suppression` to disable already checked API changes.
 
 ## Testing
 
