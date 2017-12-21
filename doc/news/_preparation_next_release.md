@@ -195,9 +195,9 @@ These notes are of interest for people developing Elektra:
 
 Many problems were resolved with the following fixes:
 
-- fix use of dbus_connection_unref(NULL) API
+- fix use of `dbus_connection_unref(NULL)` API
   thanks to Kai-Uwe Behrmann
-- Properly include headers for std::bind
+- Properly include headers for `std::bind`
   thanks to Nick Sarnie
 - qt-gui: assure active focus on appearance selection window
   thanks to Raffael Pancheri
