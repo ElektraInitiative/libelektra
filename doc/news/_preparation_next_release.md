@@ -162,6 +162,7 @@ compiled against an older 0.8 version of Elektra will continue to work
 (ABI) and you will be able to recompile programs without errors (API).
 
 - added `elektraArrayDecName` and `elektraArrayValidateName` in libease
+- fixed `xmlns` and `xsi:schemaLocation` to be `https://www.libelektra.org`
 
 ## Notes for Maintainer
 
@@ -189,6 +190,8 @@ These notes are of interest for people developing Elektra:
   Please use it carefully, since it puts our [build server](https://build.libelektra.org/) under heavy load.
 - Markdown Shell Recorder Syntax recommended when reporting bugs.
 - Elektra's [Dockerfile](https://master.libelektra.org/doc/docker/Dockerfile) improved, thanks to Thomas Wahringer
+- Add more Explanations how to do Fuzz Testing
+- Started documenting disabled tests in [doc/todo/TESTING](https://master.libelektra.org/doc/todo/TESTING)
 
 ## Testing
 
@@ -225,13 +228,14 @@ Many problems were resolved with the following fixes:
   `@TARGET_PLUGIN_FOLDER@`
 - date plugin will be removed on attempts to compile it with gcc 4.7, thanks to René Schwaiger
 - C plugin: storage/c metadata added
+- fix disabling documentation in CMake, thanks to Kurt Micheli
 - <<TODO>>
 
 ## Outlook
 
 The Order Preserving Minimal Perfect Hash Map (OPMPHM) is ready to extend `ksLookup`. The implementation of the randomized Las Vegas hash map
 algorithm is in a final stage and the heuristic functions that ensure time and space optimality are backed up by benchmarks.
-The next release will include the OPMPHM!
+Thanks to Kurt Micheli, the next release will include the OPMPHM!
 
 ## Get It!
 
