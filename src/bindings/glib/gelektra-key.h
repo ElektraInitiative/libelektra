@@ -110,7 +110,7 @@ void * gelektra_key_gi_getbinary (const GElektraKey * key, gssize * data_size);
 const void * gelektra_key_getvalue (const GElektraKey * key);
 gssize gelektra_key_getvaluesize (const GElektraKey * key);
 
-typedef void (*gelektra_func_t) ();
+typedef void (*gelektra_func_t) (void);
 gelektra_func_t gelektra_key_getfunc (const GElektraKey * key);
 
 /* metadata */
