@@ -31,7 +31,7 @@
 .ExplorerView ul > li a .actions > button:hover {
   opacity: 1;
 }
-.ExplorerView ul > li:before {
+.ExplorerView ul > li.category .opener {
   display: block;
   float: left;
   content: "";
@@ -39,12 +39,26 @@
   width: 2em;
   background-position: center;
   background-repeat: no-repeat;
-  mask: url('/item.svg') no-repeat;
-  margin-top: 24px;
-  transition: background-color 0.2s;
+  mask: url('/folded.svg') no-repeat;
+  background-color: #000000;
+  transition: all 0.2s;
+}
+.ExplorerView ul li:not(.category) > span.item:before {
+  display: block;
+  float: left;
+  content: "";
+  min-height: 48px;
+  height: 100%;
+  width: 2em;
+  background-position: 3px center;
+  background-repeat: no-repeat;
+  background-image: url('/item.svg');
 }
 .ExplorerView ul > li > span.item {
   transition: color 0.2s;
+}
+.ExplorerView ul > li:not(.category) > span.item > a {
+  min-height: 48px;
 }
 .ExplorerView > input[type="search"] {
   border: 0;
@@ -68,11 +82,8 @@
 
 /* Selected */
 .ExplorerView ul li.selected {}
-.ExplorerView ul li.selected:before {
+.ExplorerView ul li.selected > span.item > .opener {
   background-color: #00BCD4;
-}
-.ExplorerView ul li:not(.selected):before {
-  background-color: #000000;
 }
 .ExplorerView ul li.selected > span.item {
   color: #00BCD4;
@@ -82,19 +93,21 @@
 .ExplorerView ul li.category {}
 .ExplorerView ul li.category > span.item {}
 /* Folded */
-.ExplorerView ul li.category.folded:before {
-  mask: url('/folded.svg') no-repeat;
-  margin-top: 2px;
+.ExplorerView ul li.category.folded > span.item > .opener {
+  margin-top: 3px;
 }
 .ExplorerView ul li.category.folded {}
 .ExplorerView ul li.category.folded > span.item {}
 /* Unfolded */
-.ExplorerView ul li.category:not(.folded):before {
-  mask: url('/unfolded.svg') no-repeat;
-  margin-top: 5px;
+.ExplorerView ul li.category:not(.folded) > span.item > .opener {
+  width: 1em;
+  height: 25px;
+  margin-left: -10px;
+  margin-right: 25px;
+  transform: rotate(90deg);
 }
 .ExplorerView ul li.category:not(.folded) {
-  margin-bottom: 8px;
+  margin-bottom: 16px;
 }
 .ExplorerView ul li.category:not(.folded) > span.item {}
 /* Opener */

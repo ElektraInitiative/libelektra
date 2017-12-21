@@ -4,8 +4,8 @@
   "proxy": "http://localhost:33334",
   "dependencies": {
     "@bosket/core": "^0.4.1",
-    "@bosket/react": "^0.4.1",
     "@bosket/tools": "^0.4.1",
+    "bosket-react-fork": "^0.4.3",
     "concurrently": "^3.5.1",
     "material-ui": "^0.19.4",
     "react": "^16.1.1",
