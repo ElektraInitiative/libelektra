@@ -30,7 +30,7 @@ For more information, visit [https://libelektra.org](https://libelektra.org).
 - Fosdem Talk about Elektra
 - CC-licensed book about Elektra published
 - Maturing of plugins
-- Elektra with encryption:
+- Elektra with encryption
 - Preparation for switch to INI as default storage
 
 ### Fosdem Talk about Elektra in Main Track
@@ -85,7 +85,7 @@ While `crypto` encrypts individual values within configuration files, `fcrypt` e
 
 For this release Peter Nirschl prepared a demo showing Elektra's cryptographic abilities:
 
-![asciicast](https://asciinema.org/a/153014.png)](https://asciinema.org/a/153014)
+[![asciicast](https://asciinema.org/a/153014.png)](https://asciinema.org/a/153014)
 
 Thanks to Peter Nirschl for this great work!
 

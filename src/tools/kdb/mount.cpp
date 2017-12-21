@@ -14,6 +14,8 @@
 #include <cmdline.hpp>
 #include <mount.hpp>
 
+#include <keysetio.hpp>
+
 #include <fstream>
 #include <iostream>
 #include <iterator>
@@ -101,6 +103,15 @@ void MountCommand::buildBackend (Cmdline const & cl)
 		throw invalid_argument (mp + " is not a valid mountpoint");
 	}
 
+	KeySet dupMountConf = mountConf.dup ();
+
+	if (cl.force || cl.strategy != "preserve")
+	{
+		Key cutKey (Backends::mountpointsPath, KEY_END);
+		cutKey.addBaseName (mpk.getName ());
+		mountConf.cut (cutKey);
+	}
+
 	backend.setMountpoint (mpk, mountConf);
 
 	backend.setBackendConfig (cl.getPluginsConfig ("system/"));
@@ -161,6 +172,29 @@ void MountCommand::buildBackend (Cmdline const & cl)
 	// Call it a day
 	outputMissingRecommends (backend.resolveNeeds (cl.withRecommends));
 	backend.serialize (mountConf);
+
+	if (cl.strategy == "unchanged" && cl.debug)
+	{
+		cout << "The new configuration is:" << endl;
+		std::cout << mountConf;
+		std::cout << "------------------------" << std::endl;
+		cout << "The configuration originally was:" << endl;
+		std::cout << dupMountConf;
+	}
+
+	if (!cl.force && (cl.strategy == "unchanged" && mountConf != dupMountConf))
+	{
+		// throw error because it is not unchanged
+		try
+		{
+			backend.setMountpoint (mpk, dupMountConf);
+		}
+		catch (MountpointAlreadyInUseException const & e)
+		{
+			throw MountpointAlreadyInUseException (
+				std::string ("Requested unchanged mountpoint but mount would lead to changes\n") + e.what ());
+		}
+	}
 }
 
 void MountCommand::readPluginConfig (KeySet & pluginConfig)

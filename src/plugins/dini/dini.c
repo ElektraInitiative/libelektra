@@ -20,6 +20,7 @@ int elektraDiniOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 	dini->iniConfig = ksDup (elektraPluginGetConfig (handle));
 	dini->dump = elektraInvokeOpen ("dump", dini->dumpConfig);
 	dini->ini = elektraInvokeOpen ("ini", dini->iniConfig);
+	dini->bin = elektraInvokeOpen ("binary", dini->iniConfig);
 
 	dini->dumpErrors = keyNew ("", KEY_END);
 
@@ -32,6 +33,7 @@ int elektraDiniClose (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 {
 	Dini * dini = elektraPluginGetData (handle);
 
+	elektraInvokeClose (dini->bin);
 	elektraInvokeClose (dini->ini);
 	elektraInvokeClose (dini->dump);
 
@@ -73,14 +75,26 @@ int elektraDiniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
-	return elektraInvoke2Args (dini->ini, "get", returned, parentKey);
+	int ret = elektraInvoke2Args (dini->ini, "get", returned, parentKey);
+	if (dini->bin)
+	{
+		ret |= elektraInvoke2Args (dini->bin, "get", returned, parentKey); // postgetstorage
+	}
+	return ret;
 }
 
 int elektraDiniSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
 	// set all keys
 	Dini * dini = elektraPluginGetData (handle);
-	return elektraInvoke2Args (dini->ini, "set", returned, parentKey);
+
+	int ret = 0;
+	if (dini->bin)
+	{
+		elektraInvoke2Args (dini->bin, "set", returned, parentKey); // presetstorage
+	}
+	ret |= elektraInvoke2Args (dini->ini, "set", returned, parentKey);
+	return ret;
 }
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (dini)
