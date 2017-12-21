@@ -48,7 +48,7 @@ See you in Brussels at 3 and 4 February 2018!
 I will also be present in the [Config Management Camp](http://cfgmgmtcamp.eu/)
 directly afterwards Fosdem in Gent.
 
-### CC-licenced book about vision of Elektra published
+### CC-licenced Book About Vision of Elektra Published
 
 I am proud to release a book describing:
 
@@ -68,7 +68,7 @@ and the compiled book can be downloaded from [here](https://github.com/ElektraIn
 
 TODO: https://book.libelektra.org
 
-### Maturing of plugins
+### Maturing of Plugins
 
 - The new [Directory Value plugin](https://www.libelektra.org/plugins/directoryvalue) supports storage plugins such as [YAJL](https://www.libelektra.org/plugins/yajl) and [YAML CPP ](https://www.libelektra.org/plugins/yamlcpp). It adds extra leaf values for directories (keys with children) that store the data of their parents. This way plugins that normally are only able to store values in leaf keys are able to support arbitrary key sets.
 - The [yamlcpp plugin](https://www.libelektra.org/plugins/yamlcpp) TODO
@@ -78,7 +78,7 @@ TODO: https://book.libelektra.org
 - boolean? TODO (is currently described below)
 - The [crypto plugin](https://www.libelektra.org/plugins/crypto) and [fcrypt plugin](https://www.libelektra.org/plugins/fcrypt) are described below.
 
-### Elektra with encryption
+### Elektra With Encryption
 
 The plugins `fcrypt` and `crypto` are now considered stable. They are no longer tagged as `experimental`.
 While `crypto` encrypts individual values within configuration files, `fcrypt` encrypts and/or signs the whole configuration file.
