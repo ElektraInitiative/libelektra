@@ -1,6 +1,6 @@
 # Trying out Elektra with Docker
 
-This Dockerfile builds a dockerimage based on ubuntu:xenial including all requirements to build Elektra.
+This Dockerfile builds a dockerimage based on ubuntu:artful including all requirements to build Elektra.
 
 If [Docker](https://www.docker.com/) is available on your machine change to the directory containing the file you are currently reading and build the image with
 ```sh
