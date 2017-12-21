@@ -43,10 +43,17 @@ Elektra in one of the main tracks of [Fosdem 2018](https://fosdem.org/2018):
 - Duration: 50 min
 - Room: K.1.105 (La Fontaine)
 
+And a second talk in the Config Management DevRoom:
+
+- Day: Sunday 2018-02-04
+- Start time: 30:00
+- Duration: 25min
+- Room: UA2.114 (Baudoux)
+
 See you in Brussels at 3 and 4 February 2018!
 
 I will also be present in the [Config Management Camp](http://cfgmgmtcamp.eu/)
-directly afterwards Fosdem in Gent.
+directly after Fosdem in Gent.
 
 ### CC-licenced Book About Vision of Elektra Published
 
