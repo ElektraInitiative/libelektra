@@ -199,7 +199,7 @@ Many problems were resolved with the following fixes:
   thanks to Kai-Uwe Behrmann
 - Properly include headers for std::bind
   thanks to Nick Sarnie
-- qt-gui: assure active focus on appearence selection window
+- qt-gui: assure active focus on appearance selection window
   thanks to Raffael Pancheri
 - René Schwaiger repaired the `boolean` plugin:
   - wrong metadata was used
