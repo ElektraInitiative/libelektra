@@ -1,23 +1,12 @@
 # 0.8.21 Release
 
-> !!! This release did not happen yet.
-
-Please update this file within PRs accordingly.
-For non-trivial changes, you can choose to be
-part of the highlighted changes. Please make
-sure to add some short tutorial or how-to-use
-for highlighted items.
-Please add your name to every contribution
-syntax: ", thanks to <myname>".
-
-- guid: ea3ade20-0a27-4c4b-a922-6b29462a1fc5
-- author: Markus Raab
-- pubDate: Thu, 21 Dec 2017 21:17:38 +0100
-- shortDesc:
-
 We are proud to release Elektra 0.8.21.
 
-<<`scripts/git-release-stats 0.8.VERSION`>>
+- guid: 7f5de1b1-6086-47a6-9922-cac08c898ae7
+- author: Markus Raab
+- pubDate: Fri, 22 Dec 2017 09:24:02 +0100
+- shortDesc:
+
 
 ## What is Elektra?
 
@@ -29,7 +18,10 @@ For more information, visit [https://libelektra.org](https://libelektra.org).
 
 ## Highlights
 
-- Fosdem Talk about Elektra
+In this release 8 authors created 307 commits and we changed 217 files (5227 insertions, 1914 deletions).
+The highlights of the release are:
+
+- Fosdem Talk about Elektra accepted
 - CC-licensed book about Elektra published
 - Maturing of plugins
 - Elektra with encryption
@@ -258,7 +250,11 @@ or [GitHub](https://github.com/ElektraInitiative/ftp/blob/master/releases/elektr
 
 The [hashsums are:](https://github.com/ElektraInitiative/ftp/blob/master/releases/elektra-0.8.21.tar.gz.hashsum?raw=true)
 
-<<`scripts/generate-hashsums`>>
+- name: elektra-0.8.21.tar.gz
+- size: 4712043
+- md5sum: d627a01a0249fde46e80042c848d4521
+- sha1: a7659a7bb1b2388d03cdf0084160de612e5c4511
+- sha256: 51892570f18d1667d0da4d0908a091e41b41c20db9835765677109a3d150cd26
 
 The release tarball is also available signed by me using GnuPG from
 [here](https://www.libelektra.org/ftp/elektra/releases/elektra-0.8.21.tar.gz.gpg) or
