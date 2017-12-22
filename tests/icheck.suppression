@@ -1,0 +1,6 @@
+// Before you add a function here, please follow the steps laid out in `doc/todo/API`
+// To ignore a function just add the function definition as regex here.
+// For example, to ignore the function `int elektraArrayDecName(Key * key)` you can use
+// the following entry: elektraArrayDecName
+elektraArrayDecName
+elektraArrayValidateName

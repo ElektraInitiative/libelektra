@@ -81,22 +81,25 @@ generates this described contract on requests.
 
 For example, the ccode plugin, implements:
 
-	int elektraCcodeGet(Plugin *handle, KeySet *returned, Key *parentKey)
+```c
+int elektraCcodeGet(Plugin *handle, KeySet *returned, Key *parentKey)
+{
+	if (!strcmp (keyName(parentKey), "system/elektra/modules/ccode"))
 	{
-		if (!strcmp (keyName(parentKey), "system/elektra/modules/ccode"))
-		{
-			KeySet *contract = ksNew (30,
-				keyNew ("system/elektra/modules/ccode",
-					KEY_END),
-				keyNew ("system/elektra/modules/ccode/exports",
-					KEY_END),
-				//...
-				KS_END);
-			ksAppend (returned, contract);
-			ksDel (contract);
-			return 1;
-		}
-		// implementation of elektraCcodeGet
+		KeySet *contract = ksNew (30,
+			keyNew ("system/elektra/modules/ccode",
+				KEY_END),
+			keyNew ("system/elektra/modules/ccode/exports",
+				KEY_END),
+			//...
+			KS_END);
+		ksAppend (returned, contract);
+		ksDel (contract);
+		return 1;
+	}
+	// implementation of elektraCcodeGet
+}
+```
 
 We see in the listing above that the plugin generates and returns
 the contract if, and only if, the name of the `parentKey` is

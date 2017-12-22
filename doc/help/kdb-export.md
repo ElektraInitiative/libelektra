@@ -3,19 +3,19 @@ kdb-export(1) -- Export keys from the key database
 
 ## SYNOPSIS
 
-`kdb export <source> [<format>]`  
+`kdb export <source> [<format>]`<br>
 
 ## DESCRIPTION
 
-This command allows a user to export keys from the key database.  
-Keys are exported to `stdout` in whichever format is specified.  
-This command can also be used to view full key(s) including their values.  
+This command allows a user to export keys from the key database.<br>
+Keys are exported to `stdout` in whichever format is specified.<br>
+This command can also be used to view full key(s) including their values.<br>
 
 ## USAGE
 
-Where `source` is the path of the key(s) you want to export.  
-Additionally, the user can specify a format to use by passing it as the option argument `format`.  
-The `format` attribute relies on Elektra’s plugin system to export the keys in the desired format.The user can view all plugins available for use by running the kdb-list(1) command. To learn about any plugin, the user can simply use the kdb-info(1) command.  
+Where `source` is the path of the key(s) you want to export.
+Additionally, the user can specify a format to use by passing it as the option argument `format`.<br>
+The `format` attribute relies on Elektra’s plugin system to export the keys in the desired format.The user can view all plugins available for use by running the kdb-list(1) command. To learn about any plugin, the user can simply use the kdb-info(1) command.<br>
 The `storage` plugin can be configured at compile-time or changed by the link `libelektra-storage.so`.
 
 
@@ -41,19 +41,19 @@ The `storage` plugin can be configured at compile-time or changed by the link `l
 
 ## EXAMPLES
 
-To view your full key database in Elektra’s `storage` format:  
-`kdb export /`  
+To view your full key database in Elektra’s `storage` format:<br>
+`kdb export /`<br>
 
-To backup your full key database in Elektra’s `storage` format to a file called `full-backup.ecf`:  
-`kdb export / > full-backup.ecf`  
+To backup your full key database in Elektra’s `storage` format to a file called `full-backup.ecf`:<br>
+`kdb export / > full-backup.ecf`<br>
 
-To view a keyset stored in `user/keyset` in the XML format:  
-`kdb export user/keyset xmltool`  
+To view a keyset stored in `user/keyset` in the XML format:<br>
+`kdb export user/keyset xmltool`<br>
 
-To backup a keyset stored in `user/keyset` in the `ini` format to a file called `keyset.ini`:  
-`kdb export user/keyset ini > keyset.ini`  
+To backup a keyset stored in `user/keyset` in the `ini` format to a file called `keyset.ini`:<br>
+`kdb export user/keyset ini > keyset.ini`<br>
 
-Change default format to `simpleini`:  
+Change default format to `simpleini`:<br>
 `kdb set /sw/elektra/kdb/#0/current/format simpleini`
 
 ## Note

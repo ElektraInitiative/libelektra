@@ -231,7 +231,7 @@ if ((buffer = elektraMalloc (length)) == 0) {
  *
  * @param size the requested size
  *
- * This function is compatible to ANSI-C elektraMalloc
+ * This function is compatible to ANSI-C malloc
  * @see elektraFree
  * @see elektraCalloc
  */

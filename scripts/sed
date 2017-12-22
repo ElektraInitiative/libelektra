@@ -5,7 +5,11 @@ s/Electra/Elektra/g
 # ==============================
 
 s/behaviour/behavior/g
+s/favour/favor/g
 s/generalises/generalizes/g
+s/organisation/organization/g
+s/realise/realize/g
+s/synchronised/synchronized/g
 
 # ==========
 # = Brands =
@@ -18,7 +22,7 @@ s/([^.`])git[hH]ub([^.][^\w])/\1GitHub\2/g
 
 s/\<[Ll]ibreoffice/LibreOffice/g
 
-s/\<mark[Dd]own\>/Markdown/g
+s/([^/])\<mark[Dd]own\>/\1Markdown/g
 
 s/\<unix|UNIX/Unix/g
 s/\<XCode\>/Xcode/g

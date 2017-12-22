@@ -1,4 +1,4 @@
-- infos = Information about dump plugin is in keys below
+- infos = Information about the dump plugin is in keys below
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
 - infos/needs =

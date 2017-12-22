@@ -9,21 +9,35 @@
 .SH "SYNOPSIS"
 \fBkdb merge [options] ourpath theirpath basepath resultpath\fR
 .
+.br
+.
 .TP
 ourpath
 Path to the keyset to serve as \fBours\fR
+.
+.br
+
 .
 .TP
 theirpath
 path to the keyset to serve as \fBtheirs\fR
 .
+.br
+
+.
 .TP
 basepath
 path to the \fBbase\fR keyset
 .
+.br
+
+.
 .TP
 resultpath
 path without keys where the merged keyset will be saved
+.
+.br
+
 .
 .SH "DESCRIPTION"
 Does a three\-way merge between keysets\.
@@ -34,6 +48,8 @@ On success the resulting keyset will be saved to mergepath\.
 .br
 On unresolved conflicts nothing will be changed\.
 .
+.br
+.
 .SH "THREE\-WAY MERGE"
 The \fBkdb merge\fR command uses a three\-way merge by default\.
 .
@@ -43,9 +59,14 @@ A three\-way merge is when three versions of a file (or in this case, KeySet) ar
 .br
 These three versions of the KeySet are:
 .
+.br
+.
 .TP
 \fBbase\fR
 The \fBbase\fR KeySet is the original version of the KeySet\.
+.
+.br
+
 .
 .TP
 \fBours\fR
@@ -54,6 +75,9 @@ The \fBours\fR KeySet represents the user\'s current version of the KeySet\.
 .br
 This KeySet differs from \fBbase\fR for every key you changed\.
 .
+.br
+
+.
 .TP
 \fBtheirs\fR
 The \fBtheirs\fR KeySet usually represents the default version of a KeySet (usually the package maintainer\'s version)\.
@@ -61,8 +85,13 @@ The \fBtheirs\fR KeySet usually represents the default version of a KeySet (usua
 .br
 This KeySet differs from \fBbase\fR for every key someone has changed\.
 .
+.br
+
+.
 .P
 The three\-way merge works by comparing the \fBours\fR KeySet and the \fBtheirs\fR KeySet to the \fBbase\fR KeySet\. By looking for differences in these KeySets, a new KeySet called \fBresult\fR is created that represents a merge of these KeySets\.
+.
+.br
 .
 .SH "CONFLICTS"
 Conflicts occur when a Key has a different value in all three KeySets\.
@@ -104,17 +133,23 @@ To complete a simple merge of three KeySets:
 .br
 \fBkdb merge user/ours user/theirs user/base user/result\fR
 .
+.br
+.
 .P
 To complete a merge whilst using the \fBours\fR version of the KeySet to resolve conflicts:
 .
 .br
 \fBkdb merge \-s ours user/ours user/theirs user/base user/result\fR
 .
+.br
+.
 .P
 To complete a three\-way merge and overwrite all current keys in the \fBresultpath\fR:
 .
 .br
 \fBkdb merge \-s cut user/ours user/theirs user/base user/result\fR
+.
+.br
 .
 .SH "SEE ALSO"
 .

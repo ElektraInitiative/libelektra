@@ -43,7 +43,7 @@ allow corrupted configuration settings to reach your application.
 
 As an application developer you get instant access to various configuration formats and the ability
 to fallback to default configuration settings without having to deal with this on your own. As an system administrator
-you can choose your favourite configuration format and _mount_ this configuration for the application.
+you can choose your favorite configuration format and _mount_ this configuration for the application.
 _Mounting_ enables easy application integration as any application using Elektra can access any _mounted_
 configuration. You can even _mount_ `/etc` files such as `hosts` or `fstab`, so that there is no need to
 configure the same values twice in different files.
@@ -59,8 +59,7 @@ implemented in C, works cross-platform, and does not need any external dependenc
 ## Contact
 
 Do not hesitate to ask any question on
-[GitHub issue tracker](https://issues.libelektra.org/),
-[Mailing List](https://lists.sourceforge.net/lists/listinfo/registry-list)
+[GitHub issue tracker](https://issues.libelektra.org/)
 or directly to one of the [authors](doc/AUTHORS.md).
 
 

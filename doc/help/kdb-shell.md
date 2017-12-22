@@ -7,8 +7,8 @@ kdb-shell(1) -- Start a kdb shell instance
 
 ## DESCRIPTION
 
-This command is used to start an instance of the kdb shell.  
-The kdb shell allows for a user to interactively view, edit, or otherwise work with the key database.  
+This command is used to start an instance of the kdb shell.<br>
+The kdb shell allows for a user to interactively view, edit, or otherwise work with the key database.<br>
 
 ## SHELL COMMANDS
 

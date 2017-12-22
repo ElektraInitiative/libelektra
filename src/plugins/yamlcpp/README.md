@@ -1,11 +1,11 @@
 - infos = Information about the yamlcpp plugin is in keys below
 - infos/author = René Schwaiger <sanssecours@me.com>
 - infos/licence = BSD
-- infos/needs = base64
+- infos/needs = base64 directoryvalue
 - infos/provides = storage/yaml
 - infos/recommends =
 - infos/placements = getstorage setstorage
-- infos/status = maintained preview experimental unfinished concept discouraged
+- infos/status = maintained unittest preview unfinished concept discouraged
 - infos/metadata =
 - infos/description = This storage plugin reads and writes data in the YAML format
 
@@ -44,9 +44,8 @@ kdb get /examples/yamlcpp/🔑
 # Manually add syntactically incorrect data
 echo "some key: @some  value" >> `kdb file /examples/yamlcpp`
 kdb get "/examples/yamlcpp/some key"
-# STDERR: .*Sorry, the error .#10. occurred.*⏎
-#         Description: Parsing failed⏎
-#         .*yaml-cpp: error at line 1, column 11: unknown token.*
+# STDERR: .*yaml-cpp: error at line 2, column 11: unknown token.*
+# ERROR: 10
 # RET: 5
 
 # Overwrite incorrect data
@@ -194,30 +193,30 @@ key with metadata:
 
 ```sh
 # Mount yamlcpp plugin to cascading namespace `/examples/yamlcpp`
-sudo kdb mount config.yaml /examples/yamlcpp yamlcpp
+sudo kdb mount config.yaml user/examples/yamlcpp yamlcpp
 
 # Manually add a key including metadata to the database
-echo "🔑: !elektra/meta [🦄, {comment: Unicorn}]" >  `kdb file /examples/yamlcpp`
-kdb lsmeta /examples/yamlcpp/🔑
+echo "🔑: !elektra/meta [🦄, {comment: Unicorn}]" >  `kdb file user/examples/yamlcpp`
+kdb lsmeta user/examples/yamlcpp/🔑
 #> comment
-kdb getmeta /examples/yamlcpp/🔑 comment
+kdb getmeta user/examples/yamlcpp/🔑 comment
 #> Unicorn
 
 # Add a new key and add some metadata to the new key
-kdb set /examples/yamlcpp/brand new
-kdb setmeta /examples/yamlcpp/brand comment "The Devil And God Are Raging Inside Me"
-kdb setmeta /examples/yamlcpp/brand rationale "Because I Love It"
+kdb set user/examples/yamlcpp/brand new
+kdb setmeta user/examples/yamlcpp/brand comment "The Devil And God Are Raging Inside Me"
+kdb setmeta user/examples/yamlcpp/brand rationale "Because I Love It"
 
 # Retrieve metadata
-kdb lsmeta /examples/yamlcpp/brand
+kdb lsmeta user/examples/yamlcpp/brand
 #> comment
 #> rationale
-kdb getmeta /examples/yamlcpp/brand rationale
+kdb getmeta user/examples/yamlcpp/brand rationale
 #> Because I Love It
 
 # Undo modifications to the key database
-kdb rm -r /examples/yamlcpp
-sudo kdb umount /examples/yamlcpp
+kdb rm -r user/examples/yamlcpp
+sudo kdb umount user/examples/yamlcpp
 ```
 
 We can also invoke additional plugins that use metadata like `type`.
@@ -229,9 +228,8 @@ kdb setmeta /examples/yamlcpp/typetest/number check/type short
 
 kdb set /examples/yamlcpp/typetest/number "One"
 # RET: 5
-# STDERR: .*Sorry, the error .#52. occurred.*⏎
-#         Description: could not type check value of key⏎
-#         .*Reason: The type long failed to match for .*/number with string: One.*
+# STDERR: .*The type short failed to match for .*/number with string: One.*
+# ERROR: 52
 
 kdb get /examples/yamlcpp/typetest/number
 #> 21
@@ -262,7 +260,7 @@ kdb get /examples/binary/bin
 # or
 #     printf (kdb get /examples/binary/bin) # fish
 # should work too.
-ruby -e "print ARGV[0].split('\x')[1..-1].map {|byte| byte.to_i(16).chr }.join" `kdb get /examples/binary/bin`
+ruby -e "print ARGV[0].split('\x')[1..-1].map { |byte| byte.to_i(16).chr }.join" `kdb get /examples/binary/bin`
 #> hi
 
 # Add a string value to the database
@@ -342,9 +340,63 @@ level 1:
 
 . However, if we use this approach we are not able to support Elektra’s array type properly.
 
+#### Directory Values
+
+To overcome the limitation described above, the YAML CPP plugin requires the [Directory Value](../directoryvalue/) plugin. This plugin converts the value of a non-leaf node to a leaf node with the name `___dirdata`. For example, let us assume we have the following key set:
+
+```
+directory      = Directory Data
+directory/file = Leaf Data
+```
+
+. The Directory Value plugin will convert the key set in the set (write) direction to
+
+```
+directory            =
+directory/___dirdata = Directory Data
+directory/file       = Leaf Data
+```
+
+. Consequently the YAML plugin will store the key set as
+
+```yaml
+directory:
+  ___dirdata = Directory Data
+  file       = Leaf Data
+```
+
+. A user of the YAML plugin will not notice this feature unless he edits the configuration file by hand, as the following example shows:
+
+```sh
+# Mount YAML CPP plugin at `user/examples/yamlcpp`
+sudo kdb mount test.yaml user/examples/yamlcpp yamlcpp
+
+kdb set user/examples/yamlcpp/directory 'Directory Data'
+kdb setmeta user/examples/yamlcpp/directory comment 'Directory Metadata'
+kdb set user/examples/yamlcpp/directory/file 'Leaf Data'
+
+kdb ls user/examples/yamlcpp/directory
+#> user/examples/yamlcpp/directory
+#> user/examples/yamlcpp/directory/file
+
+kdb get user/examples/yamlcpp/directory
+#> Directory Data
+kdb getmeta user/examples/yamlcpp/directory comment
+#> Directory Metadata
+kdb get user/examples/yamlcpp/directory/file
+#> Leaf Data
+
+# Undo modifications to the database
+kdb rm -r user/examples/yamlcpp
+sudo kdb umount user/examples/yamlcpp
+```
+
+.
+
 ### Other Limitations
 
+- Saving a **single scalar value** directly below the mountpoint does not work
 - Adding and removing keys does remove **comments** inside the configuration file
-- The plugin currently lacks proper **type support** for scalars. For example, YAML CPP saves binary keys directly as string. Ideally the plugin should [base64](https://en.wikipedia.org/wiki/Base64)-encode binary data and then save the result using the tag `tag:yaml.org,2002:binary` (shorthand: `!!binary`).
+- The plugin currently lacks proper **type support** for scalars.
 
 [yaml-cpp]: https://github.com/jbeder/yaml-cpp

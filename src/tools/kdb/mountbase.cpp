@@ -69,15 +69,7 @@ void MountBaseCommand::getMountpoint (Cmdline const & cl)
 	{
 		if (cur.getBaseName () == "mountpoint")
 		{
-			if (cur.getString ().at (0) == '/')
-			{
-				mountpoints.push_back (Key ("user" + cur.getString (), KEY_END).getName ());
-				mountpoints.push_back (Key ("system" + cur.getString (), KEY_END).getName ());
-			}
-			else
-			{
-				mountpoints.push_back (cur.getString ());
-			}
+			mountpoints.push_back (cur.getString ());
 		};
 	}
 

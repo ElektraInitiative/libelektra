@@ -61,7 +61,8 @@ does not match
 “NaNaNaNaNaNaNa”
 
 shell_recorder /Users/rene/Documents/test.esr RESULTS: 2 test(s) done 2 error(s).
-📕  Protocol File: /var/folders/hx/flbncdhj4fs87095gzxvnj3h0000gn/T/elektraenv.XXXXXXXXX.gWyTCr2O
+📕
+Protocol File: /var/folders/hx/flbncdhj4fs87095gzxvnj3h0000gn/T/elektraenv.XXXXXXXXX.gWyTCr2O
 ```
 
 . We see that both checks failed. The protocol file at the end of the output contain the real output and  return value of the command:
@@ -84,20 +85,6 @@ You can use the global values below at the start of Shell Recorder test. The bas
 
 This is the only configuration variable that has to be set. It is used to determine where the `shell_recorder` should look for changes.
 e.g. `Mountpoint: user/test` tells `shell_recorder` that you will be working under `user/test`.
-
-### DiffType
-
-Use either `Dump` or `Ini` to tell the Shell Recorder to
-
-1. export the keys below `Mountpoint` using the Dump or INI format,
-2. and diff the changes with the last recorded output.
-
-If you use the option `File`, then Shell Recorder does a diff on the configuration file mounted to `Mountpoint`.
-
-### File
-
-Tells `shell_recorder` what file it should use for diffs.
-If `File` is present but empty a fresh database file will be provided for every run.
 
 ## Checks
 
@@ -138,12 +125,112 @@ The Shell Recorder provides the following checks
 * `RET:` The Shell Recorder compares this **regular expression** with the return code (exit status) of the command.
 * `WARNINGS:` This **comma separated list** of numbers is compared with the warnings thrown by a `kdb` command.
 * `ERROR:` The Shell Recorder compares this number to the error thrown by a `kdb` command.
-* `DIFF:` This **regular expression** is compared with the output of a `diff` command. The input for the `diff` command is the last and current state of the key database. The directive `DiffType` specifies if the the Shell Recorder compares the file of the storage plugin (`File`) directly, or if it uses the INI (`Ini`) or Dump (`Dump`) format.
 
 ## Commands
 
-A command starts with `<` followed by kdb or shell commands.
+A command starts with `<` followed by `kdb` or shell commands.
+
+### Multiline Commands
+
+The Shell Recorder supports multiline commands. Just add an additional line, a `<` characters and continue with your command. For
+example, the following text specifies a multiline command spanning over three lines:
+
+```
+> cat <<EOF
+> The Raging Sun
+> EOF
+```
+
+. To separate commands either add a check (such as `RET:`) or at least one empty line. For example, the following text specifies three
+commands, the last of them being a multiline command:
+
+```
+> echo 'I Knew'
+STDOUT: You
+> echo 'You'
+
+> echo 'Were'
+> echo 'Trouble'
+```
+
+.
 
 ## Examples
 
 Please take a look at the examples files (`*.esr`) located inside this folder.
+
+## Replay Tests
+
+If you want to create a test for `kdb` commands, but you do not want to write down the standard output, return value and the other things
+the Shell Recorder compares, then you can use protocol files to create a **replay test**. Start by writing down the commands you want to
+test. In the following example we want to verify the behavior of the command `kdb ls`. We create a file called `ls.esr` containing a
+mountpoint and a list of commands:
+
+```
+Mountpoint: /user/test/ls
+
+< kdb set user/test/ls/level1 'one'
+
+< kdb ls user/test/ls
+
+< kdb set user/test/ls/level1/level2 'two'
+
+< kdb set user/test/ls/the 'roots'
+
+< kdb ls user/test/ls
+
+< kdb set user/test/ls/the/next/level
+```
+
+. We then execute the test with the Shell Recorder using the command line switch (`-p`):
+
+```sh
+build/tests/shell/shell_recorder/shell_recorder.sh -p ~/Documents/ls.esr
+```
+
+. The option `-p` tells the Shell Recorder to keep a protocol file even if none of the test fail. The Shell Recorder prints the location of
+the protocol file in it’s output:
+
+```
+…
+📕
+Protocol File: /var/folders/hx/flbncdhj4fs87095gzxvnj3h0000gn/T/elektraenv.XXXXXXXXX.MyZLuGKE
+```
+
+
+. If we take a look at the protocol file we see that it contains the the commands from above, together with return values, standard (error)
+output, warnings and error values. For example, the last `kdb set` command produced the following text in the protocol file:
+
+```
+CMD: kdb set user/test/ls/the/next/level
+RET: 0
+STDOUT: Set null value
+```
+
+. We can now take the file `ls.esr` and the protocol file to check if running the test a second time produces the same output:
+
+
+```sh
+mv /var/folders/hx/flbncdhj4fs87095gzxvnj3h0000gn/T/elektraenv.XXXXXXXXX.MyZLuGKE ~/Documents/ls.epf
+build/tests/shell/shell_recorder/shell_recorder.sh -p ~/Documents/ls.esr ~/Documents/ls.epf
+```
+
+. The Shell Recorder then prints the following output if everything went fine:
+
+```
+kdb set user/test/ls/level1 'one'
+kdb ls user
+kdb set user/test/ls/level1/level2 'two'
+kdb set user/test/ls/the 'roots'
+kdb ls user
+kdb set user/test/ls/the/next/level
+=======================================
+Replay test succeeded
+```
+
+.
+
+### Adding Replay Tests
+
+If you want to add a replay test to the test suite of Elektra, you can do so by moving your test file (`filename.esr`) and your protocol
+file (`filename.epf`) to the folder `replay_tests`. The text `filename`  specifies the name of the replay test.

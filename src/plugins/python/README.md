@@ -3,7 +3,7 @@
 - infos/licence = BSD
 - infos/provides =
 - infos/needs =
-- infos/placements =
+- infos/placements = getstorage setstorage
 - infos/status = maintained unittest configurable memleak
 - infos/description = proxy that calls other plugins (scripts) written in python
 

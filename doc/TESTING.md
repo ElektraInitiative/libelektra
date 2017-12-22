@@ -39,11 +39,23 @@ You have some options to avoid running them as root:
    run `ctest` without tests that have the label `kdbtests`:
    `ctest --output-on-failure -LE kdbtests`
    (which is also what `make run_nokdbtests` does)
-2. To give your user the permissions to the relevant paths, i.e. (once as root):
+2. To give your user the permissions to the relevant paths execute the lines
+   below once as root.
+
+   **Warning: Changing permissions on the wrong paths can be harmful! Please make
+   sure that the paths are correct.**
+   In doubt make sure that you have a backup of the affected directories.
+
+   First load the required information and verify the paths:
    ```
    kdb mount-info
-   chown -R `whoami` `kdb get system/info/constants/cmake/CMAKE_INSTALL_PREFIX`/`kdb get system/info/constants/cmake/KDB_DB_SPEC`
-   chown -R `whoami` `kdb get system/info/constants/cmake/KDB_DB_SYSTEM`
+   echo `kdb sget system/info/elektra/constants/cmake/CMAKE_INSTALL_PREFIX .`/`kdb sget system/info/elektra/constants/cmake/KDB_DB_SPEC .`
+   echo `kdb sget system/info/elektra/constants/cmake/KDB_DB_SYSTEM .`
+   ```
+   Then change the permissions:
+   ```
+   chown -R `whoami` `kdb sget system/info/elektra/constants/cmake/CMAKE_INSTALL_PREFIX .`/`kdb get system/info/constants/cmake/KDB_DB_SPEC .`
+   chown -R `whoami` `kdb sget system/info/elektra/constants/cmake/KDB_DB_SYSTEM .`
    ```
    After that all test cases should run successfully as described above.
 3. Compile Elektra so that system paths are not actual system paths, e.g. to write everything into
@@ -165,9 +177,24 @@ See [here](/tests/shell/shell_recorder/tutorial_wrapper/README.md).
 
 ### Fuzz Testing
 
-Copy some import files to `testcase_dir` and run:
+We assume that your current working directory is a newly created
+build directory.  First compile Elektra with afl
+(~e is source-dir of Elektra):
 
-    /usr/src/afl/afl-1.46b/./afl-fuzz -i testcase_dir -o findings_dir bin/kdb import user/tests
+    ~e/scripts/configure-debian -DCMAKE_C_COMPILER=/usr/src/afl/afl-2.52b/afl-gcc -DCMAKE_CXX_COMPILER=/usr/src/afl/afl-2.52b/afl-g++ ~e
+
+Copy some import files to `testcase_dir`, for example:
+
+    mkdir -p testcase_dir
+    cp ~e/src/plugins/ini/ini/* testcase_dir
+
+Fewer files is better. Then run, for example:
+
+    LD_LIBRARY_PATH=`pwd`/lib /usr/src/afl/afl-2.52b/afl-fuzz -i testcase_dir -o findings_dir bin/kdb import user/tests ini
+
+Check if something is happening with:
+
+    watch kdb export user/tests
 
 ### ASAN
 

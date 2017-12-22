@@ -9,6 +9,8 @@
 .SH "SYNOPSIS"
 \fBkdb mount [<path> <mountpoint>] [<plugin> [<config>] [\.\.]]\fR
 .
+.br
+.
 .IP "\(bu" 4
 Where \fBpath\fR is the path to the file the user wants to mount\. See \fBkdb info resolver\fR for details what an absolute and relative path means\. See also IMPORTANT below\.
 .
@@ -84,6 +86,9 @@ For cascading mountpoints (starting with \fB/\fR) a mountpoint for the namespace
 .
 .IP "\(bu" 4
 \fB\-W\fR, \fB\-\-with\-recommends\fR: Also add recommended plugins and warn if they are not available\.
+.
+.IP "\(bu" 4
+\fB\-f\fR, \fB\-\-force\fR: Unmount before mounting: Does not fail on already existing mountpoints\.
 .
 .IP "" 0
 .

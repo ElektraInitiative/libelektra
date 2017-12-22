@@ -74,17 +74,17 @@ files.
 
 Read and write everything a KeySet might contain:
 
+- [dini](dini/) uses by default the ini plugin but has legacy support for dump
+- [ini](ini/) supports a range of INI file formats.
 - [dump](dump/) makes a dump of a KeySet in an Elektra-specific format
 
 Read (and write) standard config files:
 
-- [augeas](augeas/) parses and generates many different configuration
+- [augeas](augeas/) reads/writes many different configuration
   files using the augeas library
-- [hosts](hosts/) read/write hosts files
-- [line](line/) reads any file line by line
-- [ini](ini/) parses INI files based on
-    [inih](http://code.google.com/p/inih/).
-- [yajl](yajl/) uses JSON.
+- [hosts](hosts/) reads/writes hosts files
+- [line](line/) reads/writes any file line by line
+- [yajl](yajl/) reads/writes JSON.
 
 Using semi-structured data for config files, mainly suitable for
 spec-namespace (put a focus on having nice syntax for metadata):
@@ -156,6 +156,7 @@ Rewrite unwanted characters with different techniques:
 
 Transformations:
 
+- [directoryvalue](directoryvalue/) converts directory values to leaf values
 - [keytometa](keytometa/) transforms keys to metadata
 - [rename](rename/) renames keys according to different rules
 - [boolean](boolean/) canonicalizes boolean keys
@@ -207,7 +208,7 @@ copied by the `spec` plugin just before):
 - [path](path/) by checking files on file system
 - [type](type/) using run-time type checking (CORBA types/)
 - [enum](enum/) compares the keyvalue against a list of valid values
-- [mathcheck](mathcheck/) by mathematical expressions using keysvalues as operands
+- [mathcheck](mathcheck/) by mathematical expressions using key values as operands
 - [conditionals](conditionals/) by using if-then-else like statements
 - [required](required/) rejects non-required keys
 - [date](date/) validates date and time data

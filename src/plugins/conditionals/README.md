@@ -78,7 +78,7 @@ kdb setmeta user/examples/conditionals/key check/condition "(../hkey == 'hello')
 # will fail
 kdb setmeta user/examples/conditionals/key check/condition "(../hkey == 'hello') ? (../fkey == '5.0')"
 # RET:5
-# ERRORS:135
+# ERROR:135
 ```
 
 Assignment example:
@@ -117,7 +117,7 @@ kdb export /examples/conditionals ini
 #> sub/key = false
 #> #@META check/condition = (./ == 'val1') ? (../sub/key == 'true')
 #> key1 = val1
-# ERRORS:135
+# ERROR:135
 # Error (#135) occurred!
 # Description: Validation failed
 # Ingroup: plugin

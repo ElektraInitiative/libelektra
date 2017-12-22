@@ -40,7 +40,7 @@ separated from the filtering of the backends for every specific `kdbGet()`
 and `kdbSet()` request.
 
 Afterwards the key hierarchy is static.  Every application using Elektra
-will build up the same key database.  Application specific mountpoints
+will build up the same key database.  Application-specific mountpoints
 are prohibited because changes of mountpoints would destroy the global
 key database.  Elektra could not guarantee that every application
 retrieves the same configuration with the same key names any longer.
@@ -81,7 +81,7 @@ of the key set will be permanently removed.
 The new circumstance yields **idempotent**
 properties for `kdbSet()`.  The same `KeySet` can be applied multiple
 times, but after the first time, the key database will not be changed
-anymore. (Note that `kdbSet()`) actually detects that
+anymore. Note that `kdbSet()` actually detects that
 there are no changes and will do nothing. To actually show the idempotent
 behavior the KeySet has to be regenerated or the key database needs to
 be reopened.
@@ -222,7 +222,7 @@ needs to store the number of received keys of each backend.
 - Additionally, for every key it is checked if it belongs to this
 backend.  This makes sure that every key comes from a single source
 only as designated by the `Trie`.  In this process, Elektra pops all
-duplicated and overlapping keys in favour of the responsible backend.
+duplicated and overlapping keys in favor of the responsible backend.
 
 The last step is to *merge* all these key sets together.  This step
 changes the configuration visible to the user. After some cleanup the
@@ -264,7 +264,7 @@ has to retrieve settings in the *bootstrapping* process below
 Because of the new way to keep track of removed keys, the internally
 executed `kdbGet()` creates a problem. Without countermeasures even
 the first `kdbGet()` of a user requesting the configuration below
-`system/elektra` fails because the resolver finds out that the
+`system/elektra` fails, because the resolver finds out that the
 configuration is already up to date.  The configuration delivered by the
 user is empty at this point.  As a result, the empty configuration will
 be appointed and returned to the user.
@@ -280,7 +280,7 @@ Not performance, but robust and reliable behavior is the most
 important issue for `kdbSet()`.  The design was chosen so that some
 additional in-memory comparisons are preferred to a suboptimal sequence
 of `syscalls`.  The algorithm makes sure that keys
-are written out only if it is necessary because applications can call
+are written out only if it is necessary, because applications can call
 `kdbSet()` with an unchanged `KeySet`. For the code to decide this,
 performance is important.
 
@@ -397,7 +397,7 @@ before will be lost.
 3. The application can try to merge the key sets to get the best
 result.  If no key is changed on both sides the result is clear, otherwise
 the application has to decide if the own or the other configuration should
-be favoured.  The result of the merged key sets has to be written out with
+be favored.  The result of the merged key sets has to be written out with
 `kdbSet()`.
 4. Merging the key sets can be done with `ksAppend()`.  The source
 parameter is the preferred configuration.  Note that the downside of

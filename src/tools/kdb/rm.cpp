@@ -36,7 +36,7 @@ int RemoveCommand::execute (Cmdline const & cl)
 		if (!f)
 		{
 			cerr << "Did not find the key" << endl;
-			return 1;
+			return cl.force ? 0 : 1;
 		}
 	}
 	else
@@ -47,7 +47,7 @@ int RemoveCommand::execute (Cmdline const & cl)
 		if (ks.size () == 0)
 		{
 			cerr << "Did not find any key" << endl;
-			return 1;
+			return cl.force ? 0 : 1;
 		}
 	}
 

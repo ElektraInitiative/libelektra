@@ -4,6 +4,11 @@ but should be decided until 1.0
 
 == API Changes ==
 
+Avoid anything starting with _
+	_KDB, _KeySet, _Key typedefs
+
+remove elektraInvokeInitialize compatibility layer
+
 ksClear/keyClear weg (da mit *Copy(,0) ersetzbar)
 	meta handling should be the same
 

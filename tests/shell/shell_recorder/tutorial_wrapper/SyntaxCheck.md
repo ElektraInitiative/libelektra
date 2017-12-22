@@ -8,8 +8,6 @@ kdb set /test/b b
 # RET:0
 # should yield 'a'
 kdb get /test/a
-# STDOUT:a
-kdb get /test/a
 #> a
 kdb get /test/c
 # Expected:
@@ -28,8 +26,7 @@ kdb get /test/x
 kdb get /test/y
 #> y
 kdb export /test ini
-#> x = x
-#> y = y
+# STDOUT-REGEX: (\[\]⏎)?x = x⏎y = y
 kdb ls /test
 kdb rm -r /test
 ```

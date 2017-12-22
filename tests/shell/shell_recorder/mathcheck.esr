@@ -5,7 +5,7 @@ Storage: mathcheck
 
 # Setup
 
-< kdb mount $File $Mountpoint $Storage
+< kdb mount $File $Mountpoint $Storage ni
 
 # Test ../
 

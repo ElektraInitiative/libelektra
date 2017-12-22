@@ -250,7 +250,7 @@ This is one of the reasons why Elektra promotes this [naming convention](/doc/he
 > `/<type>/<org>/<name>/<version>/<profile>`
 
 > - **type** can be `sw` (software), `hw` (hardware) or `elektra` (for internal configuration)
-> - **org** is an URL/organisation name. E.g. `kde`
+> - **org** is an URL/organization name. E.g. `kde`
 > - **name** the name of the component that has this configuration
 > - **version** is the major version number. E.g. If you version is 6.3.8 than this would be `#6`
 > - **profile** is the name of the profile to be used. E.g.: `production`, `development`, `testing`, ...

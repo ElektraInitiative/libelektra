@@ -43,7 +43,7 @@ int main (int argc, char * argv[])
 	translator.load (QString (":/qml/i18n/lang_") + locale + QString (".qm"));
 	app.installTranslator (&translator);
 
-	app.setOrganizationName ("ElektraInitiative");
+	app.setOrganizationName ("Elektra Initiative");
 	app.setOrganizationDomain ("libelektra.org");
 	app.setApplicationName ("org.libelektra.elektra-qt-editor");
 

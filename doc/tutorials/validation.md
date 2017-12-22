@@ -25,7 +25,7 @@ described in this tutorial, e.g.:
 
 1. `kdb qt-gui`: graphical user interface
 
-2. `kdb editor`: starts up your favourite text editor and
+2. `kdb editor`: starts up your favorite text editor and
     allows you to edit configuration in any syntax.
     (generalization of `visudo`)
 
@@ -46,10 +46,8 @@ The most direct way to validate keys is
 sudo kdb mount validation.dump user/tutorial/together dump validation
 kdb vset user/tutorial/together/test 123 "[1-9][0-9]*" "Not a number"
 kdb set user/tutorial/together/test abc
-# STDERR: The command kdb set failed while accessing the key database .*⏎
-#         Sorry, the error .#42. occurred ;(⏎
-#         Description: key value failed to validate⏎
-#         .*Reason: Not a number.*
+# STDERR: The command kdb.* set failed while accessing the key database .*
+# ERROR:  42
 # RET:5
 ```
 
@@ -120,9 +118,9 @@ kdb setmeta spec/tutorial/spec/test hello world
 kdb set /tutorial/spec/test value
 #> Using name user/tutorial/spec/test
 #> Create a new key user/tutorial/spec/test with string "value"
-kdb lsmeta spec/tutorial/spec/test
+kdb lsmeta spec/tutorial/spec/test | grep -v '^internal/ini'
 #> hello
-kdb lsmeta /tutorial/spec/test
+kdb lsmeta /tutorial/spec/test | grep -v '^internal/ini'
 #> hello
 kdb getmeta /tutorial/spec/test hello
 #> world
@@ -137,7 +135,7 @@ kdb setmeta "spec/tutorial/spec/_" new metaval
 kdb set /tutorial/spec/test value
 #> Using name user/tutorial/spec/test
 #> Set string to "value"
-kdb lsmeta /tutorial/spec/test
+kdb lsmeta /tutorial/spec/test | grep -v '^internal/ini'
 #> hello
 #> new
 
@@ -163,7 +161,7 @@ kdb set /tutorial/spec/test "not a number"
 ```
 this key has adopted all metadata from the spec namespace:
 ```sh
-kdb lsmeta /tutorial/spec/test
+kdb lsmeta /tutorial/spec/test | grep -v '^internal/ini'
 #> check/validation
 #> check/validation/match
 #> check/validation/message
@@ -213,20 +211,17 @@ Let us create an example _Specfile_ in the dump format, which supports metadata
 the human readable [ni format](/src/plugins/ni/README.md) by using `kdb import`):
 ```sh
 sudo kdb mount tutorial.dump spec/tutorial dump
-
-mkdir /tmp/elekra
-echo '[]                                        ' >  /tmp/elekra/import.ini
-echo 'mountpoint = tutorial.dump                ' >> /tmp/elekra/import.ini
-echo 'infos/plugins = dump validation           ' >> /tmp/elekra/import.ini
-echo '                                          ' >> /tmp/elekra/import.ini
-echo '[/links/_]                                ' >> /tmp/elekra/import.ini
-echo 'check/validation = https?://.*\..*        ' >> /tmp/elekra/import.ini
-echo 'check/validation/match = LINE             ' >> /tmp/elekra/import.ini
-echo 'check/validation/message = not a valid URL' >> /tmp/elekra/import.ini
-echo 'description = A link to some website      ' >> /tmp/elekra/import.ini
-cat /tmp/elekra/import.ini | kdb import spec/tutorial ni
-rm -r /tmp/elekra
-
+cat << HERE | kdb import spec/tutorial ni  \
+[]                                         \
+ mountpoint = tutorial.dump                \
+ infos/plugins = dump validation           \
+                                           \
+[/links/_]                                 \
+check/validation = https?://.*\..*         \
+check/validation/match = LINE              \
+check/validation/message = not a valid URL \
+description = A link to some website       \
+HERE
 kdb lsmeta spec/tutorial
 #> infos/plugins
 #> mountpoint
@@ -244,9 +239,8 @@ loads the validation plugin.
 ```sh
 kdb set /tutorial/links/url "invalid url"
 #> Using name user/tutorial/links/url
-# STDERR: .*Sorry, the error.*#42.*occurred.*⏎
-#         Description: Key Value failed to validate⏎
-#         .*Reason: not a valid URL.*
+# STDERR: .*key value failed to validate.*not a valid URL.*
+# ERROR:  42
 # RET:    5
 ```
 

@@ -31,13 +31,13 @@ The best plugins will be the last in the list.
 
 ## EXAMPLES
 
-To get a sorted list of all available plugins with their status:  
+To get a sorted list of all available plugins with their status:<br>
 `kdb list -v`
 
-To get a sorted list of all storage plugins:  
+To get a sorted list of all storage plugins:<br>
 `kdb list storage`
 
-To get a sorted list of all plugins that provide `ini` with their status:  
+To get a sorted list of all plugins that provide `ini` with their status:<br>
 `kdb list -v ini`
 
 ## SEE ALSO

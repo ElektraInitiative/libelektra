@@ -9,6 +9,8 @@
 .SH "SYNOPSIS"
 \fBkdb export <source> [<format>]\fR
 .
+.br
+.
 .SH "DESCRIPTION"
 This command allows a user to export keys from the key database\.
 .
@@ -18,11 +20,10 @@ Keys are exported to \fBstdout\fR in whichever format is specified\.
 .br
 This command can also be used to view full key(s) including their values\.
 .
-.SH "USAGE"
-Where \fBsource\fR is the path of the key(s) you want to export\.
-.
 .br
-Additionally, the user can specify a format to use by passing it as the option argument \fBformat\fR\.
+.
+.SH "USAGE"
+Where \fBsource\fR is the path of the key(s) you want to export\. Additionally, the user can specify a format to use by passing it as the option argument \fBformat\fR\.
 .
 .br
 The \fBformat\fR attribute relies on Elektra’s plugin system to export the keys in the desired format\.The user can view all plugins available for use by running the kdb\-list(1) command\. To learn about any plugin, the user can simply use the kdb\-info(1) command\.
@@ -69,11 +70,15 @@ To view your full key database in Elektra’s \fBstorage\fR format:
 .br
 \fBkdb export /\fR
 .
+.br
+.
 .P
 To backup your full key database in Elektra’s \fBstorage\fR format to a file called \fBfull\-backup\.ecf\fR:
 .
 .br
 \fBkdb export / > full\-backup\.ecf\fR
+.
+.br
 .
 .P
 To view a keyset stored in \fBuser/keyset\fR in the XML format:
@@ -81,11 +86,15 @@ To view a keyset stored in \fBuser/keyset\fR in the XML format:
 .br
 \fBkdb export user/keyset xmltool\fR
 .
+.br
+.
 .P
 To backup a keyset stored in \fBuser/keyset\fR in the \fBini\fR format to a file called \fBkeyset\.ini\fR:
 .
 .br
 \fBkdb export user/keyset ini > keyset\.ini\fR
+.
+.br
 .
 .P
 Change default format to \fBsimpleini\fR:

@@ -156,6 +156,7 @@ int elektraJniOpen (Plugin * handle, Key * errorKey)
 	Data * data = elektraMalloc (sizeof (Data));
 	data->module = 0;
 	data->printException = 0;
+	elektraPluginSetData (handle, data);
 
 	KeySet * config = elektraPluginGetConfig (handle);
 	Key * k = ksLookupByName (config, "/module", 0);
@@ -294,12 +295,7 @@ int elektraJniOpen (Plugin * handle, Key * errorKey)
 		return -1;
 	}
 
-	int ret = call2Arg (data, config, errorKey, "open");
-	if (ret != -1)
-	{
-		elektraPluginSetData (handle, data);
-	}
-	return ret;
+	return call2Arg (data, config, errorKey, "open");
 }
 
 int elektraJniClose (Plugin * handle, Key * errorKey)
@@ -309,11 +305,6 @@ int elektraJniClose (Plugin * handle, Key * errorKey)
 	if (!data || data->module == 1)
 	{
 		return 0;
-	}
-
-	if (!data)
-	{
-		return -1;
 	}
 
 	int ret = call1Arg (data, errorKey, "close");
@@ -347,11 +338,6 @@ int elektraJniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	if (!data || data->module == 1)
 	{
 		return 0;
-	}
-
-	if (!data)
-	{
-		return -1;
 	}
 
 	return call2Arg (data, returned, parentKey, "get");

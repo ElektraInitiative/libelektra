@@ -35,9 +35,10 @@ add_plugin(python
 )
 
 if (ADDTESTING_PHASE)
+	if (ENABLE_BROKEN_TESTS)
 	# bindings are required for tests
 	list (FIND BINDINGS "swig_python" FINDEX)
-	if (NOT BUILD_SHARED AND BUILD_TESTING AND FINDEX GREATER -1)
+	if (BUILD_TESTING AND FINDEX GREATER -1)
 		# test environment clears env so setting PYTHONPATH is no option
 		# we workaround this by changing the current directory to our bindings
 		# output directory + our test adds the current directory to pythons sys.path
@@ -53,4 +54,5 @@ if (ADDTESTING_PHASE)
 	else ()
 		message (WARNING "swig_python bindings are required for testing, test deactivated")
 	endif ()
+	endif (ENABLE_BROKEN_TESTS)
 endif ()

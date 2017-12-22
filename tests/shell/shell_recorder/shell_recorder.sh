@@ -9,6 +9,7 @@ set -f
 cleanup()
 {
 	rm -f ./stdout ./stderr
+	rm -rf "$EXPORT_DIR"
 }
 
 execute()
@@ -21,64 +22,32 @@ execute()
 		exit 1
 	fi
 
-	if [ -z "$DBFile" ];
-	then
-		DBFile=$("$KDBCOMMAND" file "$Mountpoint" 2>/dev/null)
-	fi
-
 	if [ "$BACKUP" -eq '1' ];
 	then
-		if ! "$KDBCOMMAND" export "$Mountpoint" dump > "$TMPFILE" 2>/dev/null;
+		if ! "$KDB" export "$Mountpoint" dump > "$TMPFILE" 2>/dev/null;
 		then
 			printf 'ERROR: Failed to backup %s\nStopping test case.\n' "$Mountpoint"
 			exit 1
 		fi
 		BACKUP=0
-		"$KDBCOMMAND" rm -r "$Mountpoint" 2>/dev/null
+		"$KDB" rm -r "$Mountpoint" 2>/dev/null
 	fi
 
 	[ -z "$Storage" ] && Storage="dump"
-	command=$(printf '%s' "$proto" | sed -e "s~\$Mountpoint~${Mountpoint}~g" \
+	command=$(printf '%s' "$proto" | sed -e "s~kdb\ ~$KDB ~g" \
+					     -e "s~\$Mountpoint~${Mountpoint}~g" \
 	                                     -e "s~\$File~${DBFile}~g"           \
 	                                     -e "s~\$Storage~${Storage}~g"       \
 	                                     -e "s~\$MountArgs~${MountArgs}~g")
 
-	case "$DiffType" in
-	File)
-		rm -f "${DBFile}.1"
-		cp "${DBFile}" "${DBFile}.1" 2>/dev/null
-		;;
-	Ini)
-		"$KDBCOMMAND" export "$Mountpoint" ini > ./previousState 2>/dev/null
-		;;
-	Dump)
-		"$KDBCOMMAND" export "$Mountpoint" dump > ./previousState 2>/dev/null
-		;;
-	esac
 	printf '%s\n' "$command"
 
+	[ -s "$OutFile" ] && printf '\n' >> "$OutFile"
 	printf 'CMD: %s\n' "$command" >> "$OutFile"
 
 	sh -c -f "$command" 2>stderr 1>stdout
 
 	RETVAL="$?"
-
-	DIFF=
-	case "$DiffType" in
-	File)
-		DIFF=$(diff -N --text "${DBFile}" "${DBFile}.1" 2>/dev/null)
-		;;
-	Ini)
-		"$KDBCOMMAND" export $Mountpoint ini > ./newState 2>/dev/null
-		DIFF=$(diff -N --text ./previousState ./newState 2>/dev/null)
-		rm -f ./newState ./previousState
-		;;
-	Dump)
-		"$KDBCOMMAND" export $Mountpoint dump > ./newState 2>/dev/null
-		DIFF=$(diff -N --text ./previousState ./newState 2>/dev/null)
-		rm -f ./newState ./previousState
-		;;
-	esac
 
 # =======
 # = RET =
@@ -104,7 +73,7 @@ execute()
 	STDERR=$(cat ./stderr)
 
 
-	printf 'STDERR: %s\n' "$STDERR" >> "$OutFile"
+	[ -n "$STDERR" ] && printf 'STDERR: %s\n' "$STDERR" >> "$OutFile"
 	if [ -n "$STDERRCMP" ];
 	then
 		nbTest=$(( nbTest + 1 ))
@@ -122,7 +91,7 @@ execute()
 
 	STDOUT=$(cat ./stdout)
 
-	printf '%s\n' "STDOUT: $STDOUT" >> "$OutFile"
+	[ -n "$STDOUT" ] && printf '%s\n' "STDOUT: $STDOUT" >> "$OutFile"
 	if [ -n "$STDOUTCMP" ];
 	then
 		nbTest=$(( nbTest + 1 ))
@@ -155,7 +124,7 @@ execute()
 
 	WARNINGS=$(printf '%s' "$STDERR" | sed -nE  's/.*Warning (number: |\(#)([0-9]+).*/\2/p' | tr '\n' ',' | sed 's/.$//')
 
-	printf 'WARNINGS: %s\n' "$WARNINGS" >> "$OutFile"
+	[ -n "$WARNINGS" ] && printf 'WARNINGS: %s\n' "$WARNINGS" >> "$OutFile"
 	if [ -n "$WARNINGSCMP" ];
 	then
 		nbTest=$(( nbTest + 1 ))
@@ -173,7 +142,7 @@ execute()
 
 	ERROR=$(printf '%s' "$STDERR" | sed -nE 's/.*error \(#([0-9]+).*/\1/p')
 
-	printf 'ERROR: %s\n' "$ERROR" >> "$OutFile"
+	[ -n "$ERROR" ] && printf 'ERROR: %s\n' "$ERROR" >> "$OutFile"
 	if [ -n "$ERRORCMP" ];
 	then
 		nbTest=$(( nbTest + 1 ))
@@ -184,24 +153,6 @@ execute()
 			nbError=$(( nbError + 1 ))
 		fi
 	fi
-
-# ========
-# = DIFF =
-# ========
-
-	printf '%s\n' "DIFF: $DIFF" >> "$OutFile"
-	if [ -n "$DIFFCMP" ];
-	then
-		nbTest=$(( nbTest + 1 ))
-		if ! printf '%s' "$DIFF" | replace_newline_return | grep -Eq --text "$DIFFCMP";
-		then
-			printf '\nERROR - Changes to %s:\n“%s”\ndo not match\n“%s”\n\n' "$DBFile" "$DIFFCMP" "$DIFF"
-			printf '=== FAILED changes to database file (%s) do not match %s\n' "$DBFile" "$DIFFCMP" >> "$OutFile"
-			nbError=$(( nbError + 1 ))
-		fi
-	fi
-
-	printf '\n' >> "$OutFile"
 }
 
 tail()
@@ -219,10 +170,9 @@ second() {
 
 run_script()
 {
-	while read -r line;
+	while [ -n "$continuation" ] && line="$continuation" && continuation= || read -r line;
 	do
 	OP=
-	ARG=
 	cmd=$(first "$line")
 	case "$cmd" in
 	Mountpoint:)
@@ -239,9 +189,6 @@ run_script()
 		;;
 	MountArgs:)
 		MountArgs=$(tail "$line")
-		;;
-	DiffType:)
-		DiffType=$(second "$line")
 		;;
 	RET:)
 		RETCMP=$(tail "$line")
@@ -261,12 +208,13 @@ run_script()
 	STDERR:)
 		STDERRCMP=$(tail "$line")
 		;;
-	DIFF:)
-		DIFFCMP=$(tail "$line")
-		;;
 	\<)
 		OP="$cmd"
-		ARG=$(tail "$line")
+		[ "$ARG" ] && ARG="$ARG$NEWLINE"
+		ARG="$ARG$(tail "$line")"
+		read -r continuation
+		# Check for multiline commands
+		first "$continuation" | grep -q '<' && continue
 		;;
 	esac
 	if [ "$OP" = "<" ];
@@ -278,7 +226,7 @@ run_script()
 		STDOUTCMP=
 		STDOUTRECMP=
 		STDERRCMP=
-		DIFFCMP=
+		ARG=
 	fi
 	done < "$FILE"
 }
@@ -286,6 +234,18 @@ run_script()
 # -- Main ----------------------------------------------------------------------------------------------------------------------------------
 
 trap cleanup EXIT INT QUIT TERM
+
+# Parse optional argument `-p`
+OPTIND=1
+keepProtocol='false'
+while getopts "p" opt; do
+	case "$opt" in
+	p)
+		keepProtocol='true'
+		;;
+	esac
+done
+shift $((OPTIND-1))
 
 FILE=$1
 Mountpoint=
@@ -301,7 +261,6 @@ WARNINGSCMP=
 STDOUTCMP=
 STDOUTRECMP=
 STDERRCMP=
-DIFFCMP=
 
 BACKUP=0
 TMPFILE=$(mktempfile_elektra)
@@ -312,18 +271,27 @@ nbTest=0
 
 if [ "$#" -lt '1' ] || [ "$#" -gt '2' ];
 then
-	printf 'Usage: %s input_script [protocol to compare]\n' "$0"
+	printf 'Usage: %s [-p] input_script [protocol to compare]\n\n' "$0"
+	printf '       -p    keep protocol file\n' "$0"
 	rm "$OutFile"
 	exit 0
 fi
 
 BACKUP=1
 
+EXPORT_DIR="$(mktempdir_elektra)"
+export_config "$EXPORT_DIR"
+
 run_script
 
-"$KDBCOMMAND" rm -r "$Mountpoint" 2>/dev/null
-"$KDBCOMMAND" import "$Mountpoint" dump 2>/dev/null < "$TMPFILE"
-rm -rf "${DBFile}.1"
+"$KDB" rm -r "$Mountpoint" 2>/dev/null
+"$KDB" import "$Mountpoint" dump 2>/dev/null < "$TMPFILE"
+
+# We disable the cleanup procedure temporarily, since we still need the exported configuration,
+# if the tests changed the configuration permanently.
+trap - EXIT
+export_check "$EXPORT_DIR" 'Test' 'true'
+trap cleanup EXIT
 
 EVAL=0
 
@@ -345,10 +313,10 @@ then
 	fi
 fi
 
-if [ "$EVAL" -eq 0 ]; then
+if [ "$EVAL" -eq 0 ] && [ $keepProtocol == 'false' ]; then
 	rm -f "$OutFile"
 else
-	>&2 printf '\n📕  Protocol File: %s\n' "$OutFile"
+	>&2 printf '\n📕\nProtocol File: %s\n' "$OutFile"
 fi
 
 rm "${TMPFILE}"

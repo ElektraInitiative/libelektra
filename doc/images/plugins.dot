@@ -8,7 +8,10 @@ strict digraph G {
 	blockresolver -> resolver;
 	check [shape=Mdiamond];
 	boolean -> check;
+	storage [shape=Mdiamond];
+	c -> storage;
 	c [shape=Mdiamond];
+	c -> c;
 	filter [shape=Mdiamond];
 	cachefilter -> filter;
 	storage [shape=Mdiamond];
@@ -38,6 +41,7 @@ strict digraph G {
 	desktop -> storage;
 	info [shape=Mdiamond];
 	desktop -> info;
+	dini [shape=Mdiamond];
 	doc [shape=Mdiamond];
 	storage [shape=Mdiamond];
 	dpkg -> storage;

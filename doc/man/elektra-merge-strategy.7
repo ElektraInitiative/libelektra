@@ -32,23 +32,23 @@ The three\-way merge works by comparing the \fBours\fR KeySet and the \fBtheirs\
 .SH "STRATEGIES"
 Currently the following strategies exist:
 .
-.TP
-preserve
-Automerge only those keys where just one side deviates from base (default)\.
+.IP "\(bu" 4
+preserve: Automerge only those keys where just one side deviates from base (default)\.
 .
-.TP
-ours
-Whenever a conflict exists, use our version\.
+.IP "\(bu" 4
+ours: Whenever a conflict exists, use our version\.
 .
-.TP
-theirs
-Whenever a conflict exists, use their version\.
+.IP "\(bu" 4
+theirs: Whenever a conflict exists, use their version\.
 .
-.TP
-cut
-Removes existing keys below the resultpath and replaces them with the merged keyset\.
+.IP "\(bu" 4
+cut: Removes existing keys below the resultpath and replaces them with the merged keyset\.
 .
-.TP
-import
-Preserves existing keys in the resultpath if they do not exist in the merged keyset\. If the key does exist in the merged keyset, it will be overwritten\. (avoid using it)
+.IP "\(bu" 4
+unchanged: (EXPERIMENTAL, only for kdb\-mount) Do not fail if the operation does not change anything\.
+.
+.IP "\(bu" 4
+import: (DEPRECATED, avoid using it) Preserves existing keys in the resultpath if they do not exist in the merged keyset\. If the key does exist in the merged keyset, it will be overwritten\.
+.
+.IP "" 0
 

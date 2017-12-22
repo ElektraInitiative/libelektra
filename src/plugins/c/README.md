@@ -2,9 +2,9 @@
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
 - infos/needs = ccode
-- infos/provides =
+- infos/provides = storage/c
 - infos/recommends =
-- infos/placements =
+- infos/placements = getstorage setstorage
 - infos/status = maintained nodep libc writeonly preview nodoc
 - infos/metadata =
 - infos/description = C-struct exports for Elektra
