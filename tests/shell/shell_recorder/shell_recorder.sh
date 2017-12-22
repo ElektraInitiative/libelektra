@@ -287,7 +287,11 @@ run_script
 "$KDB" rm -r "$Mountpoint" 2>/dev/null
 "$KDB" import "$Mountpoint" dump 2>/dev/null < "$TMPFILE"
 
+# We disable the cleanup procedure temporarily, since we still need the exported configuration,
+# if the tests changed the configuration permanently.
+trap - EXIT
 export_check "$EXPORT_DIR" 'Test' 'true'
+trap cleanup EXIT
 
 EVAL=0
 
