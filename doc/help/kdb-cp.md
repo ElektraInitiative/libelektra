@@ -18,12 +18,13 @@ Note that when using the `-r` flag, `source` as well as all of the keys below it
 
 ## RETURN VALUES
 
-This command will return the following values as an exit status:<br>
-* 0:
+This command will return the following values as an exit status:
+
+- 0:
   No errors.
 - 1-10:
   standard exit codes, see [kdb(1)](kdb.md)
-* 11:
+- 11:
   Would override a key (pass `-f` to force)
 
 ## OPTIONS
