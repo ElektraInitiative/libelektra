@@ -122,6 +122,7 @@ If you are already using `ini` as default, changing to `dini` will:
 - add support for binary values using the `binary` plugin
 
 > NOTE: INI was not completely ready for 0.8.21 thus we kept `dump` as default.
+> `dini` is currently an experimental plugin.
 
 ## Other New Features
 
@@ -146,14 +147,18 @@ We improved the documentation in the following ways:
 
 - We renamed our beginner friendly issues to "good first issue" as recommended
   by GitHub.
-- In many parts of the documentation we already switched to American spelling.
+- In many parts of the documentation we already switched to American spelling
+  thanks to René Schwaiger
+- Added more [automatic spelling](https://master.libelektra.org/scripts/sed)
+  thanks to René Schwaiger
 - We extended the ReadMe of the `jni` plugin. The ReadMe now also contains information about the Java prerequisites of the `jni` plugin on Debian Stretch.
 - Fixed many spelling mistakes
   thanks to René Schwaiger
 - Improved notes about testing
   thanks to Thomas Wahringer
 - qt-gui: give hints which package to install
-- <<TODO>>
+- The  build phrases `jenkins build all please` and `jenkins build doc please` were [documented](https://master.libelektra.org/doc/GIT.md)
+  thanks to René Schwaiger
 
 ## Compatibility
 
@@ -161,8 +166,13 @@ As always, the ABI and API of kdb.h is fully compatible, i.e. programs
 compiled against an older 0.8 version of Elektra will continue to work
 (ABI) and you will be able to recompile programs without errors (API).
 
+All unit tests of 0.8.20 run successfully with Elektra 0.8.21.
+There are, however, some additions and changes in rarely used interfaces:
+
 - added `elektraArrayDecName` and `elektraArrayValidateName` in libease
+- fixed `kdbinvoke.h` interface: make structure private and complete API
 - fixed `xmlns` and `xsi:schemaLocation` to be `https://www.libelektra.org`
+- the private header file `kdbopmphm.h` got nearly rewritten
 
 ## Notes for Maintainer
 
@@ -193,6 +203,8 @@ These notes are of interest for people developing Elektra:
 - Add more Explanations how to do Fuzz Testing
 - Started documenting disabled tests in [doc/todo/TESTING](https://master.libelektra.org/doc/todo/TESTING)
 - You now can use `tests/icheck.suppression` to disable already checked API changes.
+- (Hopefully) the last sourceforge references were removed and a redirection page was added,
+  thanks to @the-Arioch for reporting.
 
 ## Testing
 
