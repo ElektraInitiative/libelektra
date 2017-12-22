@@ -38,6 +38,7 @@ add_plugin_shell_test (csvstorage)
 add_plugin_shell_test (cachefilter)
 add_plugin_shell_test (camel)
 add_plugin_shell_test (conditionals)
+add_plugin_shell_test (dini)
 add_plugin_shell_test (directoryvalue)
 add_plugin_shell_test (enum)
 add_plugin_shell_test (hosts)
@@ -50,27 +51,24 @@ add_plugin_shell_test (range)
 add_plugin_shell_test (type)
 add_plugin_shell_test (xerces)
 add_plugin_shell_test (yajl)
+add_plugin_shell_test (yamlcpp)
 
-# Most of the tests below might fail on Linux if ASAN is enabled because of problematic code in `stl_tree.h`
-# The cause of this seems to be a bug in old versions of `libstdc++`:
-# http://lists.llvm.org/pipermail/cfe-dev/2013-August/031194.html
-#
-# The INI test fails because of a function call through a pointer of incorrect type
+# The tests below might fail on Linux if ASAN is enabled
+# The problem might be related to a call of a function via a pointer of incorrect type
+# See also: https://github.com/ElektraInitiative/libelektra/pull/1728
 set (ASAN_LINUX ENABLE_ASAN AND ${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-if (NOT (${ASAN_LINUX} AND CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 5))
+if (NOT (${ASAN_LINUX} AND CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4))
+	# Only add test below if Validation plugin is available
 	list (FIND REMOVED_PLUGINS validation PLUGIN_INDEX_VALIDATION)
 	if (${PLUGIN_INDEX_VALIDATION} EQUAL -1)
 		add_s_test (tutorial_validation "${CMAKE_SOURCE_DIR}/doc/tutorials/validation.md")
 	endif (${PLUGIN_INDEX_VALIDATION} EQUAL -1)
 
 	add_plugin_shell_test (base64)
-	add_plugin_shell_test (dini)
+	add_plugin_shell_test (ini)
 	add_plugin_shell_test (mini)
 	add_plugin_shell_test (tcl)
-	add_plugin_shell_test (yamlcpp)
-
-	add_plugin_shell_test (ini)
-endif (NOT (${ASAN_LINUX} AND CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 5))
+endif (NOT (${ASAN_LINUX} AND CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4))
 
 # Only works with super user privileges, since it writes to `/etc/hosts`:
 # add_s_test (tutorial_mount "${CMAKE_SOURCE_DIR}/doc/tutorials/mount.md")

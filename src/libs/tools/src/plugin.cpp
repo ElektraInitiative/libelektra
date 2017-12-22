@@ -94,6 +94,13 @@ void Plugin::uninit ()
 }
 
 void Plugin::loadInfo ()
+#if defined(__clang__)
+	// We disable the undefined behavior sanitizer here, because otherwise the last line in this function produces the following error:
+	// `runtime error: call to function (unknown) through pointer to incorrect function type`.
+	// - See also: https://github.com/ElektraInitiative/libelektra/pull/1728
+	// - TODO: Fix the undefined behavior
+	__attribute__ ((no_sanitize ("undefined")))
+#endif
 {
 	Key infoKey ("system/elektra/modules", KEY_END);
 	infoKey.addBaseName (spec.getName ());
@@ -385,6 +392,10 @@ int Plugin::close (kdb::Key & errorKey)
 }
 
 int Plugin::get (kdb::KeySet & ks, kdb::Key & parentKey)
+#if defined(__clang__)
+	// See `Plugin::loadInfo`
+	__attribute__ ((no_sanitize ("undefined")))
+#endif
 {
 	if (!plugin->kdbGet)
 	{
@@ -395,6 +406,10 @@ int Plugin::get (kdb::KeySet & ks, kdb::Key & parentKey)
 }
 
 int Plugin::set (kdb::KeySet & ks, kdb::Key & parentKey)
+#if defined(__clang__)
+	// See `Plugin::loadInfo`
+	__attribute__ ((no_sanitize ("undefined")))
+#endif
 {
 	if (!plugin->kdbSet)
 	{
