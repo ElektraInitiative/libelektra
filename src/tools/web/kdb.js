@@ -178,7 +178,7 @@ const mv = (path, destination) =>
 
 // remove value at given `path`
 const rm = (path) =>
-  safeExec(escapeValues`kdb rm ${path}`)
+  safeExec(escapeValues`kdb rm -r ${path}`)
 
 // list meta values at given `path`
 const lsmeta = (path) =>

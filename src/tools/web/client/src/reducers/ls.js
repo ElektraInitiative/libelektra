@@ -23,7 +23,7 @@ export default function pathReducer (state = [], action) {
 
     case DELETE_KEY_SUCCESS: {
       const { path } = action && action.request
-      return state.filter(p => p !== path)
+      return state.filter(p => (p !== path) && !p.startsWith(path + '/'))
     }
 
     case SET_KEY_SUCCESS: {

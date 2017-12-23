@@ -37,6 +37,7 @@ export default function keyReducer (state = {}, action) {
     case SET_KEY_REQUEST:
       return updateState(state, action.request)
 
+    // TODO: recursively delete keys here? is this needed? we refresh on expand anyway
     case DELETE_KEY_REQUEST: {
       const { id, path } = action.request
       return {
