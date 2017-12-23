@@ -14,7 +14,7 @@ const RadioButtons = ({ value, meta, options, onChange }) => (
     <RadioButtonGroup
       defaultSelected={value}
       onChange={(evt, value) => onChange(value)}
-      style={{ display: 'inline-block' }}
+      style={{ display: 'inline-block', position: 'relative', top: 7, marginTop: -11 }}
     >
         {options.map(option =>
             <RadioButton

@@ -29,7 +29,7 @@ export default class ToggleButton extends React.Component {
           label={meta && meta.description}
           checked={this.state.checked}
           onCheck={this.handleCheck}
-          style={{ display: 'inline-block', width: 'auto' }}
+          style={{ display: 'inline-block', width: 'auto', position: 'relative', top: 6, marginTop: -11 }}
         />
     )
   }

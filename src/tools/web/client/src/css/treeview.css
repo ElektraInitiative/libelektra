@@ -120,12 +120,6 @@
 .ExplorerView li.category.loading {}
 .ExplorerView li.category.loading > span.item {}
 
-/* Animations on component creation / destruction */
-.ExplorerViewTransition-enter {}
-.ExplorerViewTransition-enter-active {}
-.ExplorerViewTransition-leave {}
-.ExplorerViewTransition-leave-active {}
-
 /* Drag'n'drop */
 .ExplorerView ul.dragover {}
 .ExplorerView li.dragover {}
@@ -133,7 +127,7 @@
 .ExplorerView li.nodrop {}
 .ExplorerView li.nodrop > span.item {}
 
-/* init/destroy transitions */
+/* Animations on component creation / destruction */
 .ExplorerViewTransition-enter {
   transition: all .2s ease-in-out;
   opacity: 0;
