@@ -79,11 +79,16 @@ export default class Configuration extends Component {
       instance, ls, match,
     } = this.props
 
-    if (!instance) return (
-        <Card>
-            <CardHeader title="loading instance..." />
-        </Card>
-    )
+    if (!instance) {
+      const title = (
+          <h1><b>404</b> instance not found</h1>
+      )
+      return (
+          <Card>
+              <CardHeader title={title} />
+          </Card>
+      )
+    }
 
     const { id } = match && match.params
     const { name, host } = instance
