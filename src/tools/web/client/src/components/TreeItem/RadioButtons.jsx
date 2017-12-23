@@ -10,8 +10,9 @@ import React from 'react'
 
 import { RadioButton, RadioButtonGroup } from 'material-ui/RadioButton'
 
-const RadioButtons = ({ value, meta, options, onChange }) => (
+const RadioButtons = ({ id, value, meta, options, onChange }) => (
     <RadioButtonGroup
+      id={id}
       defaultSelected={value}
       onChange={(evt, value) => onChange(value)}
       style={{ display: 'inline-block', position: 'relative', top: 7, marginTop: -11 }}

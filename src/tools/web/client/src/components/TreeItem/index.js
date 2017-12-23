@@ -90,12 +90,12 @@ export default class TreeItem extends Component {
       })
   }
 
-  renderSpecialValue = ({ value, meta }) => {
+  renderSpecialValue = (id, { value, meta }) => {
     if (meta.hasOwnProperty('check/enum')) {
       try {
         const options = JSON.parse(meta['check/enum'].replace(/\'/g, '"'))
         return (
-            <RadioButtons value={value} meta={meta} options={options} onChange={this.handleEdit} />
+            <RadioButtons id={id} value={value} meta={meta} options={options} onChange={this.handleEdit} />
         )
       } catch (err) {
         console.error('invalid enum type:', meta['check/enum'])
@@ -106,22 +106,21 @@ export default class TreeItem extends Component {
     if (meta.hasOwnProperty('check/type')) {
       if (meta['check/type'] === 'boolean') {
         return (
-            <ToggleButton value={value} meta={meta} onChange={this.handleEdit} />
+            <ToggleButton id={id} value={value} meta={meta} onChange={this.handleEdit} />
         )
       }
     }
   }
 
-  // TODO: render various input fields here
-  renderValue = ({ value, meta }) => {
+  renderValue = (id, { value, meta }) => {
     if (meta) {
-      const special = this.renderSpecialValue({ value, meta })
+      const special = this.renderSpecialValue(id, { value, meta })
       if (special) return special
     }
 
     // fallback
     return (
-      <SimpleTextField value={value} meta={meta} onChange={this.handleEdit} />
+      <SimpleTextField id={id} value={value} meta={meta} onChange={this.handleEdit} />
     )
   }
 
@@ -218,7 +217,7 @@ export default class TreeItem extends Component {
         ? (
             <span>
                 <b style={titleStyle}>{item.name + ': '}</b>
-                <span style={{ marginLeft: 6 }}>{this.renderValue(data)}</span>
+                <span style={{ marginLeft: 6 }}>{this.renderValue(item.path, data)}</span>
             </span>
           )
         : <b style={titleStyle}>{item.name}</b>

@@ -23,9 +23,10 @@ export default class ToggleButton extends React.Component {
   }
 
   render () {
-    const { value, meta } = this.props
+    const { id, value, meta } = this.props
     return (
         <Checkbox
+          id={id}
           label={meta && meta.description}
           checked={this.state.checked}
           onCheck={this.handleCheck}

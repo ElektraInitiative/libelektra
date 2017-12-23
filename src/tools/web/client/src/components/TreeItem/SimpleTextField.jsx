@@ -19,11 +19,12 @@ export default class SimpleTextField extends Component {
   }
 
   render () {
-    const { value, meta, onChange } = this.props
+    const { id, value, meta, onChange } = this.props
     const val = this.state.value === false ? value : this.state.value
 
     return (
       <TextField
+        id={id}
         value={val}
         errorText={this.state.error}
         hintText={meta && meta.description}
