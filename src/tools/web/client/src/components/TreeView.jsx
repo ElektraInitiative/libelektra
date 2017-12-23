@@ -99,6 +99,23 @@ export default class TreeView extends React.Component {
     this.waitForData()
   }
 
+  handleSearch = input => item => {
+    // check name and path first
+    const regex = new RegExp(`.*${input}.*`, "gi")
+    if (item.name.match(regex) || item.path.match(regex)) {
+      return true
+    }
+
+    // if available, check data too
+    const { kdb } = this.props
+    const data = kdb && kdb[item.path]
+    if (data && data.value && data.value.match(regex)) {
+      return true
+    }
+
+    return false
+  }
+
   render () {
     const { data } = this.props
     const { selection } = this.state
@@ -124,6 +141,7 @@ export default class TreeView extends React.Component {
         model={data}
         category="children"
         name="name"
+        search={this.handleSearch}
         selection={selection}
         strategies={strategies}
         updateModel={this.handleUpdate}
