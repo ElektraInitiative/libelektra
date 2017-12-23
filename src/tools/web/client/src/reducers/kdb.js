@@ -8,6 +8,7 @@
 
 import {
   GET_KEY_SUCCESS, SET_KEY_REQUEST, DELETE_KEY_REQUEST, MOVE_KEY_SUCCESS,
+  SET_META_REQUEST,
 } from '../actions'
 
 const updateState = (state, { id, path, value, meta }) => {
@@ -36,6 +37,11 @@ export default function keyReducer (state = {}, action) {
 
     case SET_KEY_REQUEST:
       return updateState(state, action.request)
+
+    case SET_META_REQUEST:
+      const { id, path, key, value } = action.request
+      const { meta } = state[id] && state[id][path]
+      return updateState(state, { id, path, meta: { ...meta, [key]: value } })
 
     // TODO: recursively delete keys here? is this needed? we refresh on expand anyway
     case DELETE_KEY_REQUEST: {

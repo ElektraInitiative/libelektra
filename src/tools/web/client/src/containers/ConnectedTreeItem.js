@@ -12,13 +12,13 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 
 import TreeItem from '../components/TreeItem'
-import { setKey, deleteKey, sendNotification } from '../actions'
+import { setKey, deleteKey, sendNotification, setMetaKey } from '../actions'
 
 const mapStateToProps = (state) => {
   return {}
 }
 
 const mapDispatchToProps = (dispatch) =>
-  bindActionCreators({ setKey, deleteKey, sendNotification }, dispatch)
+  bindActionCreators({ setKey, deleteKey, sendNotification, setMetaKey }, dispatch)
 
 export default connect(mapStateToProps, mapDispatchToProps)(TreeItem)

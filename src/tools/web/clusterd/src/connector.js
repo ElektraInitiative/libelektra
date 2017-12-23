@@ -58,4 +58,18 @@ const mv = (host, path, destination) =>
       return { status: res.status }
     })
 
-export default { version, get, set, rm, mv }
+const setmeta = (host, path, key, value) =>
+  fetch(`${host}/kdbMeta/${encodePath(path)}`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ key, value }),
+    }
+  )
+    .then(res => {
+      return { status: res.status }
+    })
+
+export default { version, get, set, rm, mv, setmeta }

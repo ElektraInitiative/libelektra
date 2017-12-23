@@ -105,3 +105,25 @@ export const moveKey = (id, from, to) => thunkCreator({
     }
   ),
 })
+
+// ~~~
+
+export const SET_META_REQUEST = 'SET_META_REQUEST'
+export const SET_META_SUCCESS = 'SET_META_SUCCESS'
+export const SET_META_FAILURE = 'SET_META_FAILURE'
+
+export const setMetaKey = (id, path, key, value) => thunkCreator({
+  request: { id, path, key, value },
+  types: [SET_META_REQUEST, SET_META_SUCCESS, SET_META_FAILURE],
+  promise: fetch(
+    `/instances/${id}/kdbMeta/${encodePath(path)}`,
+    {
+      credentials: 'same-origin',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ key, value }),
+    }
+  ),
+})

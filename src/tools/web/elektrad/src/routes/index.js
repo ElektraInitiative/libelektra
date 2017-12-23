@@ -49,4 +49,10 @@ export default function initRoutes (app) {
       .then(() => res.status(204).send())
       .catch(err => errorResponse(res, err))
   )
+
+  app.post('/kdbMeta/*', (req, res) =>
+    kdb.setmeta(req.params[0], req.body.key, req.body.value)
+      .then(() => res.status(204).send())
+      .catch(err => errorResponse(res, err))
+  )
 }

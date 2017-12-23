@@ -112,4 +112,11 @@ export default function initInstanceRoutes (app) {
       .then(() => res.status(204).send())
       .catch(err => errorResponse(res, err))
   )
+
+  app.post('/instances/:id/kdbMeta/*', (req, res) =>
+    getInstance(req.params.id)
+      .then(instance => remoteKdb.setmeta(instance.host, req.params[0], req.body.key, req.body.value))
+      .then(() => res.status(204).send())
+      .catch(err => errorResponse(res, err))
+  )
 }

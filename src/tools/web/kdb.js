@@ -189,6 +189,10 @@ const lsmeta = (path) =>
 const getmeta = (path, meta) =>
   safeExec(escapeValues`kdb getmeta ${path} ${meta}`)
 
+// set meta value at given `path`
+const setmeta = (path, meta, value) =>
+  safeExec(escapeValues`kdb setmeta ${path} ${meta} ${value}`)
+
 // get all metavalues for given `path`
 const getAllMeta = (path) =>
   lsmeta(path)
@@ -238,5 +242,5 @@ const getAndLs = (path) =>
 // export kdb functions as `kdb` object
 module.exports = {
   version, ls, get, getAndLs, set, mv, rm, export: _export, import: _import,
-  getmeta, lsmeta, getAllMeta,
+  getmeta, setmeta, lsmeta, getAllMeta,
 }
