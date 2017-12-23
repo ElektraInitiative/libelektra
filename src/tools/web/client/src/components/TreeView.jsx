@@ -7,9 +7,7 @@
  */
 
 import React from 'react'
-import PropTypes from 'prop-types'
 import { ExplorerView } from 'bosket-react-fork'
-import { array } from '@bosket/tools'
 
 import TreeItem from '../containers/ConnectedTreeItem'
 
@@ -29,7 +27,7 @@ export default class TreeView extends React.Component {
   }
 
   refresh = () => {
-    const { data, getKey, instanceId } = this.props
+    const { data } = this.props
     const { unfolded } = this.state
     const user = data.find(d => d.path === 'user')
     const allUnfolded = [ user, ...unfolded ]
@@ -66,7 +64,7 @@ export default class TreeView extends React.Component {
     const { instanceId, moveKey } = this.props
     const { selection } = inputs
 
-    const moveOps = selection.map(
+    selection.map(
       sel => moveKey(instanceId, sel.path, target.path + '/' + sel.name)
     )
     this.setState({ selection: [] })

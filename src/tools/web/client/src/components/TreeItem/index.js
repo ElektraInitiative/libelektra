@@ -76,7 +76,7 @@ export default class TreeItem extends Component {
 
   handleEdit = (value) => {
     const { savedTimeout } = this.state
-    const { instanceId, setKey, sendNotification, item } = this.props
+    const { instanceId, setKey, item } = this.props
     const { path } = item
     setKey(instanceId, path, value)
       .then(() => {
@@ -93,7 +93,7 @@ export default class TreeItem extends Component {
   renderSpecialValue = (id, { value, meta }) => {
     if (meta.hasOwnProperty('check/enum')) {
       try {
-        const options = JSON.parse(meta['check/enum'].replace(/\'/g, '"'))
+        const options = JSON.parse(meta['check/enum'].replace(/'/g, '"'))
         return (
             <RadioButtons id={id} value={value} meta={meta} options={options} onChange={this.handleEdit} />
         )
@@ -204,8 +204,7 @@ export default class TreeItem extends Component {
   }
 
   render () {
-    const { data, item, inputs } = this.props
-    const { addDialog, deleteDialog } = this.state
+    const { data, item } = this.props
 
     // console.log('item', { data, item, inputs })
 
