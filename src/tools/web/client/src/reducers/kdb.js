@@ -52,6 +52,7 @@ export default function keyReducer (state = {}, action) {
       }
     }
 
+    // TODO: recursively move keys here? is this needed? we refresh on expand anyway
     case MOVE_KEY_SUCCESS: {
       const { id, from, to } = action && action.request
       const fromData = state[id][from]

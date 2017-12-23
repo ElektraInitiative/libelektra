@@ -174,7 +174,7 @@ const set = (path, value) =>
 
 // move value from given `path` to `destination`
 const mv = (path, destination) =>
-  safeExec(escapeValues`kdb mv ${path} ${destination}`)
+  safeExec(escapeValues`kdb mv -r ${path} ${destination}`)
 
 // remove value at given `path`
 const rm = (path) =>

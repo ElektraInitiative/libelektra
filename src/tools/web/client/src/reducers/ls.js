@@ -35,12 +35,13 @@ export default function pathReducer (state = [], action) {
 
     case MOVE_KEY_SUCCESS: {
       const { from, to } = action && action.request
-      // remove `from` path
-      const newState = state.filter(p => p !== from)
-      // add `to` path
-      return newState.includes(to)
-        ? newState
-        : [ ...newState, to ]
+      const newState = state.filter(p => (p !== from) && !p.startsWith(from + '/'))
+      const newChildren = state.filter(p => p.startsWith(from + '/'))
+        .map(p => {
+          const name = p.split('/').pop()
+          return to + '/' + name
+        })
+      return [ ...newState, to, ...newChildren ]
     }
 
     default:

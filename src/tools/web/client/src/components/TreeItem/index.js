@@ -214,7 +214,7 @@ export default class TreeItem extends Component {
     const main =
       (data && !(item.children && item.children.length > 0))
         ? (
-            <span>
+            <span style={{ display: 'flex', alignItems: 'center' }}>
                 <b style={titleStyle}>{item.name + ': '}</b>
                 <span style={{ marginLeft: 6 }}>{this.renderValue(item.path, data)}</span>
             </span>
