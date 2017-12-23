@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "KDB\-CP" "1" "October 2017" "" ""
+.TH "KDB\-CP" "1" "December 2017" "" ""
 .
 .SH "NAME"
 \fBkdb\-cp\fR \- Copy keys within the key database
@@ -18,8 +18,17 @@ Where \fBsource\fR is the path of the key(s) you want to copy and \fBdest\fR is 
 .SH "RETURN VALUES"
 This command will return the following values as an exit status:
 .
-.br
-* 0: No errors\. \- 1\-10: standard exit codes, see kdb(1) \fIkdb\.md\fR * 11: Would override a key (pass \fB\-f\fR to force)
+.TP
+0
+No errors\.
+.
+.TP
+1\-10
+standard exit codes, see kdb(1) \fIkdb\.md\fR
+.
+.TP
+11
+Would override a key (pass \fB\-f\fR to force)
 .
 .SH "OPTIONS"
 .
