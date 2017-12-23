@@ -206,8 +206,6 @@ export default class TreeItem extends Component {
   render () {
     const { data, item } = this.props
 
-    // console.log('item', { data, item, inputs })
-
     const titleStyle = { marginTop: -3 }
 
     // TODO: allow editing value of nested items
@@ -254,13 +252,17 @@ export default class TreeItem extends Component {
       : { opacity: 0 }
     const savedIconStyle = { ...savedIconBaseStyle, ...savedIconActiveStyle }
 
+    const rootLevel = (item && item.path)
+      ? !item.path.includes('/')
+      : false
+
     return (
         <a style={{ display: 'flex', alignItems: 'center' }}>
             {main}
             <span className="actions">
                 <ActionDone className="savedIcon" style={savedIconStyle} />
                 {addAction}
-                {deleteAction}
+                {rootLevel ? null : deleteAction}
             </span>
             {this.renderAddDialog(item)}
             {this.renderDeleteDialog(item)}
