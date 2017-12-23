@@ -127,3 +127,25 @@ export const setMetaKey = (id, path, key, value) => thunkCreator({
     }
   ),
 })
+
+// ~~~
+
+export const DELETE_META_REQUEST = 'DELETE_META_REQUEST'
+export const DELETE_META_SUCCESS = 'DELETE_META_SUCCESS'
+export const DELETE_META_FAILURE = 'DELETE_META_FAILURE'
+
+export const deleteMetaKey = (id, path, key) => thunkCreator({
+  request: { id, path, key },
+  types: [DELETE_META_REQUEST, DELETE_META_SUCCESS, DELETE_META_FAILURE],
+  promise: fetch(
+    `/instances/${id}/kdbMeta/${encodePath(path)}`,
+    {
+      credentials: 'same-origin',
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ key }),
+    }
+  ),
+})

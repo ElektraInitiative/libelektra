@@ -72,4 +72,18 @@ const setmeta = (host, path, key, value) =>
       return { status: res.status }
     })
 
-export default { version, get, set, rm, mv, setmeta }
+const rmmeta = (host, path, key) =>
+  fetch(`${host}/kdbMeta/${encodePath(path)}`,
+    {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ key }),
+    }
+  )
+    .then(res => {
+      return { status: res.status }
+    })
+
+export default { version, get, set, rm, mv, setmeta, rmmeta }

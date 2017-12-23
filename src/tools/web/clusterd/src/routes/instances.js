@@ -113,10 +113,17 @@ export default function initInstanceRoutes (app) {
       .catch(err => errorResponse(res, err))
   )
 
-  app.post('/instances/:id/kdbMeta/*', (req, res) =>
-    getInstance(req.params.id)
-      .then(instance => remoteKdb.setmeta(instance.host, req.params[0], req.body.key, req.body.value))
-      .then(() => res.status(204).send())
-      .catch(err => errorResponse(res, err))
-  )
+  app.route('/instances/:id/kdbMeta/*')
+    .post((req, res) =>
+      getInstance(req.params.id)
+        .then(instance => remoteKdb.setmeta(instance.host, req.params[0], req.body.key, req.body.value))
+        .then(() => res.status(204).send())
+        .catch(err => errorResponse(res, err))
+    )
+    .delete((req, res) =>
+      getInstance(req.params.id)
+        .then(instance => remoteKdb.rmmeta(instance.host, req.params[0], req.body.key))
+        .then(() => res.status(204).send())
+        .catch(err => errorResponse(res, err))
+    )
 }

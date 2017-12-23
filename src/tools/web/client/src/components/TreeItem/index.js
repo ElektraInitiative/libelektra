@@ -83,19 +83,18 @@ export default class TreeItem extends Component {
   }
 
   renderSpecialValue = (id, { value, meta }) => {
-    if (meta.hasOwnProperty('check/enum')) {
+    if (meta['check/enum']) {
       try {
         const options = JSON.parse(meta['check/enum'].replace(/'/g, '"'))
         return (
             <RadioButtons id={id} value={value} meta={meta} options={options} onChange={this.handleEdit} />
         )
       } catch (err) {
-        console.error('invalid enum type:', meta['check/enum'])
-        return false
+        console.warning('invalid enum type:', meta['check/enum'])
       }
     }
 
-    if (meta.hasOwnProperty('check/type')) {
+    if (meta['check/type']) {
       if (meta['check/type'] === 'boolean') {
         return (
             <ToggleButton id={id} value={value} meta={meta} onChange={this.handleEdit} />
@@ -117,7 +116,7 @@ export default class TreeItem extends Component {
   }
 
   render () {
-    const { data, item, instanceId, setMetaKey } = this.props
+    const { data, item, instanceId, setMetaKey, deleteMetaKey } = this.props
 
     const rootLevel = (item && item.path)
       ? !item.path.includes('/')
@@ -155,8 +154,10 @@ export default class TreeItem extends Component {
             <SettingsDialog
               item={item}
               meta={data && data.meta}
+              data={data && data.value}
               open={this.state.dialogs.settings}
               setMeta={(key, value) => setMetaKey(instanceId, item.path, key, value)}
+              deleteMeta={key => deleteMetaKey(instanceId, item.path, key)}
               onClose={this.handleClose('settings')}
             />
             <RemoveDialog

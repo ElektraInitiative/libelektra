@@ -10,7 +10,7 @@ import React from 'react'
 
 import ActionDone from 'material-ui/svg-icons/action/done'
 
-const SavedIcon = ({ saved }) => {
+const SavedIcon = ({ saved, style }) => {
   const savedIconBaseStyle = {
     width: 16,
     height: 16,
@@ -24,7 +24,7 @@ const SavedIcon = ({ saved }) => {
     ? { opacity: 1 }
     : { opacity: 0 }
 
-  const savedIconStyle = { ...savedIconBaseStyle, ...savedIconActiveStyle }
+  const savedIconStyle = { ...savedIconBaseStyle, ...savedIconActiveStyle, ...style }
 
   return (
       <ActionDone className="savedIcon" style={savedIconStyle} />

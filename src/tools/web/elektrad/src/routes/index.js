@@ -50,9 +50,15 @@ export default function initRoutes (app) {
       .catch(err => errorResponse(res, err))
   )
 
-  app.post('/kdbMeta/*', (req, res) =>
-    kdb.setmeta(req.params[0], req.body.key, req.body.value)
-      .then(() => res.status(204).send())
-      .catch(err => errorResponse(res, err))
-  )
+  app.route('/kdbMeta/*')
+    .post((req, res) =>
+      kdb.setmeta(req.params[0], req.body.key, req.body.value)
+        .then(() => res.status(204).send())
+        .catch(err => errorResponse(res, err))
+    )
+    .delete((req, res) =>
+      kdb.rmmeta(req.params[0], req.body.key)
+        .then(() => res.status(204).send())
+        .catch(err => errorResponse(res, err))
+    )
 }

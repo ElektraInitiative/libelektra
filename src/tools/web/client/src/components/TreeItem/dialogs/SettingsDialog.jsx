@@ -11,26 +11,40 @@ import React, { Component } from 'react'
 import Dialog from 'material-ui/Dialog'
 import FlatButton from 'material-ui/FlatButton'
 import TextField from 'material-ui/TextField'
+import SelectField from 'material-ui/SelectField'
+import MenuItem from 'material-ui/MenuItem'
 
 import SavedIcon from '../SavedIcon.jsx'
 
 export default class SettingsDialog extends Component {
-  constructor (props, ...args) {
-    super(props, ...args)
-    const { meta } = props
-    this.state = {
-      description: { value: (meta && meta.description) ? meta.description : '' }
-    }
+  constructor (...args) {
+    super(...args)
+    this.state = {}
   }
 
-  handleEdit = key => evt => {
+  handleEdit = key => (evt, i, val) => {
+    const isEnum = key === 'check/type' && val === 'enum'
+
+    const { meta, data, setMeta } = this.props
+    // changing from enum
+    if (key === 'check/type' && !isEnum && meta && meta['check/enum']) {
+      const { deleteMeta } = this.props
+      deleteMeta('check/enum')
+    }
+
+    // changing to enum
+    if (key === 'check/type' && isEnum) {
+      setMeta('check/enum', this.getMeta('check/enum', '[\'' + data + '\']'))
+    }
+
     // set value of field
-    const { value } = evt.target
-    this.setState({ [key]: { ...this.state[key], value } })
+    const value = isEnum
+      ? 'string' // special case: enum is also a string
+      : (val || evt.target.value)
+    this.setState({ [key]: { ...this.state[key], value: isEnum ? 'enum' : value } })
 
     // persist value to kdb and show notification
-    const { setMeta } = this.props
-    const { timeout } = this.state[key]
+    const { timeout } = this.state[key] || {}
     setMeta(key, value)
       .then(() => {
         if (timeout) clearTimeout(timeout)
@@ -44,10 +58,42 @@ export default class SettingsDialog extends Component {
       })
   }
 
+  getMeta (key, fallback) {
+    const stateVal = this.state[key] && this.state[key].value
+
+    const { meta } = this.props
+    const val = meta // meta exists
+      ? ((key === 'check/type') && meta['check/enum']) // is enum?
+        ? 'enum'
+        : meta[key] // is not enum
+      : false // does not exist
+
+    return stateVal || val || fallback
+  }
+
+  getSaved (key) {
+    return this.state[key] && this.state[key].saved
+  }
+
+  renderEnum () {
+    return (
+        <div style={{ display: 'block', marginTop: 8 }}>
+            <TextField
+              floatingLabelText="enum"
+              floatingLabelFixed={true}
+              hintText="e.g. ['option1','option2']"
+              onChange={this.handleEdit('check/enum')}
+              value={this.getMeta('check/enum', '')}
+            />
+            <SavedIcon saved={this.getSaved('check/enum')} />
+            <p>should be formatted like this: <code>['option1','option2']</code></p>
+        </div>
+    )
+  }
+
   render () {
-    const { item, meta, open, onClose } = this.props
+    const { item, open, onClose } = this.props
     const { path } = item
-    console.log('meta', meta)
 
     const actions = [
       <FlatButton
@@ -65,14 +111,36 @@ export default class SettingsDialog extends Component {
           onRequestClose={onClose}
         >
             <h1>Settings for <b>{path}</b></h1>
-            <TextField
-              floatingLabelText="description"
-              floatingLabelFixed={true}
-              hintText="placeholder for the text field"
-              onChange={this.handleEdit('description')}
-              value={this.state.description.value}
-            />
-            <SavedIcon saved={this.state.description && this.state.description.saved} />
+            <div style={{ display: 'block' }}>
+                <TextField
+                  floatingLabelText="description"
+                  floatingLabelFixed={true}
+                  hintText="describe the field"
+                  onChange={this.handleEdit('description')}
+                  value={this.getMeta('description', '')}
+                />
+                <SavedIcon saved={this.getSaved('description')} />
+            </div>
+            <div style={{ display: 'block', marginTop: 8 }}>
+                <SelectField
+                  floatingLabelText="type"
+                  floatingLabelFixed={true}
+                  value={this.getMeta('check/type', 'string')}
+                  onChange={this.handleEdit('check/type')}
+                >
+                    <MenuItem value="string" primaryText="Text (string)" />
+                    <MenuItem value="boolean" primaryText="Checkbox (boolean)" />
+                    <MenuItem value="enum" primaryText="Radio (enum)" />
+                    <MenuItem value="short" primaryText="Number (short)" />
+                    <MenuItem value="unsigned_short" primaryText="Positive Number (unsigned_short)" />
+                    <MenuItem value="long" primaryText="Number (long)" />
+                    <MenuItem value="unsigned_long" primaryText="Positive Number (unsigned_long)" />
+                    <MenuItem value="long_long" primaryText="Number (long_long)" />
+                    <MenuItem value="unsigned_long_long" primaryText="Positive Number (unsigned_long_long)" />
+                </SelectField>
+                <SavedIcon saved={this.getSaved('check/type')} style={{ paddingBottom: 16 }} />
+            </div>
+            {this.getMeta('check/enum', false) ? this.renderEnum() : null}
         </Dialog>
     )
   }
