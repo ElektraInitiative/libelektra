@@ -19,7 +19,7 @@ import remoteKdb from '../connector'
 
 const makeMyInstance = (host) => {
   if (!host) return false
-  return { host, id: 'my', name: 'My Instance' }
+  return { host, id: 'my', name: 'My' }
 }
 
 const getInstance = (id) =>

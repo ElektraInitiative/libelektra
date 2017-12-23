@@ -33,7 +33,7 @@ store.dispatch(fetchInstances())
 // load and render the app
 ReactDOM.render(
   <Provider store={store}>
-    <App />
+    <App store={store} />
   </Provider>,
   document.getElementById('root')
 )

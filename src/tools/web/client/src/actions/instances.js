@@ -22,6 +22,18 @@ export const fetchInstances = () => thunkCreator({
 
 // ~~~
 
+export const INSTANCE_REQUEST = 'INSTANCE_REQUEST'
+export const INSTANCE_SUCCESS = 'INSTANCE_SUCCESS'
+export const INSTANCE_FAILURE = 'INSTANCE_FAILURE'
+
+export const fetchInstance = (id) => thunkCreator({
+  types: [INSTANCE_REQUEST, INSTANCE_SUCCESS, INSTANCE_FAILURE],
+  promise: fetch(`/instances/${id}`, { credentials: 'same-origin' })
+    .then(parseJSONResponse),
+})
+
+// ~~~
+
 export const INSTANCE_UPDATE_REQUEST = 'INSTANCE_UPDATE_REQUEST'
 export const INSTANCE_UPDATE_SUCCESS = 'INSTANCE_UPDATE_SUCCESS'
 export const INSTANCE_UPDATE_FAILURE = 'INSTANCE_UPDATE_FAILURE'

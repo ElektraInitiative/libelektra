@@ -36,6 +36,7 @@ export default class InstanceCard extends React.Component {
                     floatingLabelFixed={true}
                     hintText="my webserver"
                     defaultValue={name}
+                    disabled={id === 'my'}
                   />
                 </div>
                 <div style={{ display: 'block', marginTop: 8 }}>
@@ -45,6 +46,7 @@ export default class InstanceCard extends React.Component {
                     floatingLabelFixed={true}
                     hintText="http://127.0.0.1:33333"
                     defaultValue={host}
+                    disabled={id === 'my'}
                   />
                 </div>
                 <div style={{ marginTop: 32 }}>
@@ -55,6 +57,7 @@ export default class InstanceCard extends React.Component {
                       name: this.refs.nameField.getValue(),
                       host: this.refs.hostField.getValue(),
                     })}
+                    disabled={id === 'my'}
                   />
                   <Link to={'/instances/' + id}>
                       <FlatButton label="configure" />
@@ -63,6 +66,7 @@ export default class InstanceCard extends React.Component {
                     label="delete"
                     secondary={true}
                     onTouchTap={() => deleteInstance(id)}
+                    disabled={id === 'my'}
                   />
                 </div>
             </CardText>

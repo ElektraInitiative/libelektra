@@ -12,8 +12,9 @@
 import React from 'react'
 
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
-import { BrowserRouter as Router, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Route, withRouter } from 'react-router-dom'
 
+import { fetchInstance } from '../actions'
 import Menu from '../containers/ConnectedMenu'
 import ErrorSnackbar from '../containers/ConnectedErrorSnackbar'
 import NotificationSnackbar from '../containers/ConnectedNotificationSnackbar'
@@ -27,10 +28,22 @@ const getSubpage = ({ match }) => {
   }
 }
 
-// wrap app with the MuiThemeProvider (required for material-ui)
-const App = () =>
-  <Router>
-    <MuiThemeProvider>
+class App extends React.Component {
+  componentWillMount () {
+    const { store, history } = this.props
+    // single instance mode
+    store.dispatch(fetchInstance('my'))
+      .then(instance => {
+        if (!instance || instance.error) {
+          console.log('single instance mode: %coff', 'font-weight: bold')
+        } else {
+          history.push('/instances/my')
+        }
+      })
+  }
+
+  render () {
+    return (
         <div>
             <Route exact path="/" component={Menu} />
             <Route path="/:path" render={props =>
@@ -43,7 +56,20 @@ const App = () =>
             <NotificationSnackbar />
             <ErrorSnackbar />
         </div>
-    </MuiThemeProvider>
-  </Router>
+    )
+  }
+}
 
-export default App
+// this injects the `history` property into our App component
+const RoutedApp = withRouter(App)
+
+// wrap app with the Router and MuiThemeProvider (required for material-ui)
+const WrappedApp = ({ store }) => (
+    <Router>
+        <MuiThemeProvider>
+            <RoutedApp store={store} />
+        </MuiThemeProvider>
+    </Router>
+)
+
+export default WrappedApp
