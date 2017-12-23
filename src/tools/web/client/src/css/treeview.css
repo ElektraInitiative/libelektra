@@ -37,8 +37,6 @@
   content: "";
   height: 1em;
   width: 2em;
-  background-position: center;
-  background-repeat: no-repeat;
   mask: url('/folded.svg') no-repeat;
   background-color: #000000;
   transition: all 0.2s;
@@ -46,13 +44,15 @@
 .ExplorerView ul li:not(.category) > span.item:before {
   display: block;
   float: left;
-  content: "";
+  content: "•";
   min-height: 48px;
   height: 100%;
   width: 2em;
-  background-position: 3px center;
-  background-repeat: no-repeat;
-  background-image: url('/item.svg');
+  color: #000000;
+  transition: color 0.2s;
+  position: relative;
+  top: 16px;
+  left: 2px;
 }
 .ExplorerView ul > li > span.item {
   transition: color 0.2s;
@@ -86,6 +86,9 @@
   background-color: #00BCD4;
 }
 .ExplorerView ul li.selected > span.item {
+  color: #00BCD4;
+}
+.ExplorerView ul li.selected:not(.category) > span.item:before {
   color: #00BCD4;
 }
 
