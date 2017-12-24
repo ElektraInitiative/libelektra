@@ -216,7 +216,7 @@ set (KDB_DB_INIT "elektra.ecf" CACHE STRING
 		"This configuration file will be used for bootstrapping."
 		)
 
-set (KDB_DEFAULT_STORAGE "dump" CACHE STRING
+set (KDB_DEFAULT_STORAGE "dini" CACHE STRING
 	"This storage plugin will be used initially (as default and for bootstrapping).")
 
 if (KDB_DEFAULT_STORAGE STREQUAL "storage")
