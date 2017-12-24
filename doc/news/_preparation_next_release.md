@@ -34,9 +34,19 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.8.
 
 ## Highlights
 
-- <<HIGHLIGHT1>>
+- New Logo
 - <<HIGHLIGHT2>>
 - <<HIGHLIGHT3>>
+
+
+### New Logo
+
+We are proud to present our new Logo.
+It has a new shape and cooler colors.
+
+<img src="https://cdn.rawgit.com/ElektraInitiative/libelektra/master/doc/images/circle.svg" alt="Elektra" width="150" />
+
+Thanks to <<TODO>>
 
 
 ### <<HIGHLIGHT1>>
