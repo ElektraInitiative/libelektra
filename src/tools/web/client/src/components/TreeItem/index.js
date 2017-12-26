@@ -90,7 +90,7 @@ export default class TreeItem extends Component {
             <RadioButtons id={id} value={value} meta={meta} options={options} onChange={this.handleEdit} />
         )
       } catch (err) {
-        console.warning('invalid enum type:', meta['check/enum'])
+        console.warn('invalid enum type:', meta['check/enum'])
       }
     }
 

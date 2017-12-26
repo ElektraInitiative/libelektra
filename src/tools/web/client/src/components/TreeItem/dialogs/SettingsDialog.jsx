@@ -15,6 +15,7 @@ import SelectField from 'material-ui/SelectField'
 import MenuItem from 'material-ui/MenuItem'
 
 import SavedIcon from '../SavedIcon.jsx'
+import EnumSubDialog from './EnumSubDialog.jsx'
 
 export default class SettingsDialog extends Component {
   constructor (...args) {
@@ -22,7 +23,7 @@ export default class SettingsDialog extends Component {
     this.state = {}
   }
 
-  handleEdit = key => (evt, i, val) => {
+  handleEdit = key => (evt, _, val) => {
     const isEnum = key === 'check/type' && val === 'enum'
 
     const { meta, data, setMeta } = this.props
@@ -77,17 +78,11 @@ export default class SettingsDialog extends Component {
 
   renderEnum () {
     return (
-        <div style={{ display: 'block', marginTop: 8 }}>
-            <TextField
-              floatingLabelText="enum"
-              floatingLabelFixed={true}
-              hintText="e.g. ['option1','option2']"
-              onChange={this.handleEdit('check/enum')}
-              value={this.getMeta('check/enum', '')}
-            />
-            <SavedIcon saved={this.getSaved('check/enum')} />
-            <p>should be formatted like this: <code>['option1','option2']</code></p>
-        </div>
+        <EnumSubDialog
+          onChange={this.handleEdit('check/enum')}
+          value={this.getMeta('check/enum', '')}
+          saved={this.getSaved('check/enum')}
+        />
     )
   }
 

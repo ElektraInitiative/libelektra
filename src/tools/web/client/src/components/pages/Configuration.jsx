@@ -33,25 +33,30 @@ const createTree = (ls) =>
     return partsTree(acc, item.split('/'))
   }, {})
 
-const parseDataSet = (tree, path) =>
-  Object.keys(tree).map(key => {
+const parseDataSet = (getKey, instanceId, tree, path) => {
+  return Object.keys(tree).map(key => {
     const newPath = path
       ? path + '/' + key
       : key
-    const children = parseDataSet(tree[key], newPath)
+    const children = parseDataSet(getKey, instanceId, tree[key], newPath)
     return {
       name: key,
       path: newPath,
       children: (Array.isArray(children) && children.length > 0)
-        ? children
-        : false,
+        ? () => {
+          return new Promise(resolve => {
+            children.map(child => getKey(instanceId, child.path))
+            resolve(children)
+          })
+        } : false,
     }
   })
+}
 
-const parseData = (ls, kdb) => {
+const parseData = (getKey, instanceId, ls, kdb) => {
   if (!Array.isArray(ls)) return
   const tree = createTree(ls)
-  return parseDataSet(tree)
+  return parseDataSet(getKey, instanceId, tree)
 }
 
 // configuration page
@@ -76,7 +81,7 @@ export default class Configuration extends Component {
 
   render () {
     const {
-      instance, ls, match,
+      instance, ls, match, getKey,
     } = this.props
 
     if (!instance) {
@@ -92,7 +97,7 @@ export default class Configuration extends Component {
 
     const { id } = match && match.params
     const { name, host } = instance
-    const data = parseData(ls)
+    const data = parseData(getKey, id, ls)
 
     const title = (
         <h1>
