@@ -19,8 +19,10 @@
     "redux-promises": "^1.0.0"
   },
   "scripts": {
-    "start": "concurrently \"react-scripts start\" \"npm run server\"",
-    "server": "cd ../clusterd && npm run start:dev",
+    "start": "npm run server",
+    "server": "cd ../clusterd && npm start",
+    "start:dev": "concurrently \"react-scripts start\" \"npm run server:dev\"",
+    "server:dev": "cd ../clusterd && npm run start:dev",
     "build": "react-scripts build",
     "eject": "react-scripts eject"
   }
