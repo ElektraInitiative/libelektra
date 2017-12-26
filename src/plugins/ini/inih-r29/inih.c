@@ -9,6 +9,7 @@ http://code.google.com/p/inih/
 
 #include "inih.h"
 #include <ctype.h>
+#include <kdblogger.h>
 #include <regex.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -116,6 +117,8 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 
 	line = (char *)malloc (INI_MAX_LINE);
 
+	ELEKTRA_LOG_DEBUG ("Allocated memory for line");
+
 	if (!line)
 	{
 		return -2;
@@ -125,6 +128,7 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 	while (fgets (line, INI_MAX_LINE, file) != NULL)
 	{
 		lineno++;
+		ELEKTRA_LOG_DEBUG ("Read line %d with content “%s”", lineno, line);
 
 		start = line;
 #if INI_ALLOW_BOM
@@ -219,10 +223,11 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 		}
 		else
 		{
-			// is a key
+			ELEKTRA_LOG_DEBUG ("Line contains a key");
 
 			char * ptr = start;
 			unsigned int assign = 0;
+			ELEKTRA_LOG_DEBUG ("Search for delimiter “%c”", delim);
 			while (*ptr)
 			{
 				if (*ptr == delim)
@@ -234,10 +239,12 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 
 			if (assign == 1)
 			{
+				ELEKTRA_LOG_DEBUG ("Found exactly one delimiter");
 				name = start;
 				end = strchr (start, delim);
 				if (*name == '"')
 				{
+					ELEKTRA_LOG_DEBUG ("Name starts with double quote character");
 					if (*(end - 2) == '"')
 					{
 						*(end - 2) = '\0';
@@ -271,6 +278,7 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 							}
 						}
 						name = prev_name;
+						ELEKTRA_LOG_DEBUG ("Name of key is “%s”", name);
 					}
 				}
 				if (*end != delim)
