@@ -126,7 +126,7 @@ export default class TreeItem extends Component {
 
     return (
         <a style={{ display: 'flex', alignItems: 'center' }}>
-            {(data && !(item.children && item.children.length > 0))
+            {(data && !item.children)
               ? (
                   <span style={{ display: 'flex', alignItems: 'center', height: 48 }}>
                       <b style={titleStyle}>{item.name + ': '}</b>
