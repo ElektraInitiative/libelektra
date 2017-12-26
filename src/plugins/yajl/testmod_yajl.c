@@ -21,7 +21,7 @@
 #include <tests_internal.h>
 
 // clang-format off
-KeySet *getEmptyKeys()
+KeySet *getEmptyKeys(void)
 {
 	return ksNew(1,
 			keyNew("user/tests/yajl",
@@ -30,7 +30,7 @@ KeySet *getEmptyKeys()
 			);
 }
 
-KeySet *getNullKeys()
+KeySet *getNullKeys(void)
 {
 	Key *k1, *k2;
 	KeySet *ks = ksNew(10,
@@ -51,7 +51,7 @@ KeySet *getNullKeys()
 	return ks;
 }
 
-KeySet *getBelowKeys()
+KeySet *getBelowKeys(void)
 {
 	KeySet *ks = ksNew(10,
 			keyNew("user/tests/yajl",
@@ -84,7 +84,7 @@ KeySet *getBelowKeys()
 }
 
 /*
-KeySet *getBelowKeys()
+KeySet *getBelowKeys(void)
 {
 	KeySet *ks = ksNew(10,
 			keyNew("user/tests/yajl",
@@ -111,7 +111,7 @@ KeySet *getBelowKeys()
 }
 */
 
-KeySet *getBooleanKeys()
+KeySet *getBooleanKeys(void)
 {
 	KeySet *ks = ksNew(10,
 			keyNew("user/tests/yajl",
@@ -131,7 +131,7 @@ KeySet *getBooleanKeys()
 	return ks;
 }
 
-KeySet *getNumberKeys()
+KeySet *getNumberKeys(void)
 {
 	KeySet *ks = ksNew(10,
 			keyNew("user/tests/yajl",
@@ -154,7 +154,7 @@ KeySet *getNumberKeys()
 	return ks;
 }
 
-KeySet *getStringKeys()
+KeySet *getStringKeys(void)
 {
 	KeySet *ks = ksNew(10,
 			keyNew("user/tests/yajl",
@@ -174,7 +174,7 @@ KeySet *getStringKeys()
 	return ks;
 }
 
-KeySet *getMapKeys ()
+KeySet *getMapKeys (void)
 {
 	KeySet *ks = ksNew(10,
 			keyNew("user/tests/yajl",
@@ -215,7 +215,7 @@ KeySet *getMapKeys ()
 	return ks;
 }
 
-KeySet *getArrayKeys()
+KeySet *getArrayKeys(void)
 {
 	KeySet *ks = ksNew(30,
 			keyNew("user/tests/yajl",
@@ -287,7 +287,7 @@ KeySet *getArrayKeys()
 	return ks;
 }
 
-KeySet *getOpenICCKeys()
+KeySet *getOpenICCKeys(void)
 {
 	KeySet *ks = ksNew(60,
 			keyNew("user/tests/yajl",
@@ -438,7 +438,7 @@ keyNew("user/tests/yajl/org/freedesktop/openicc/device/monitor/#1/EDID_date",
 	return ks;
 }
 
-KeySet *getSomeBelowKeys()
+KeySet *getSomeBelowKeys(void)
 {
 	return ksNew(10,
 			keyNew("user/some/path/below",
@@ -542,7 +542,7 @@ void test_readWrite (const char * fileName, KeySet * conf)
 // TODO: make nicer and put to test framework
 #define succeed_if_equal(x, y) succeed_if (!strcmp (x, y), x)
 
-void test_nextNotBelow ()
+void test_nextNotBelow (void)
 {
 	printf ("Test next not below\n");
 
@@ -593,7 +593,7 @@ void test_nextNotBelow ()
 	ksDel (ks);
 }
 
-void test_reverseLevel ()
+void test_reverseLevel (void)
 {
 	Key * k = keyNew ("user/abc/defghi/jkl", KEY_END);
 	int level = 0;
@@ -663,7 +663,7 @@ void test_reverseLevel ()
 	keyDel (k);
 }
 
-void test_countLevel ()
+void test_countLevel (void)
 {
 	Key * k = keyNew ("user///", KEY_END);
 	succeed_if (elektraKeyCountLevel (k) == 1, "count level wrong");
@@ -697,7 +697,7 @@ void test_countLevel ()
 	keyDel (k2);
 }
 
-void test_writing ()
+void test_writing (void)
 {
 	KeySet * conf = ksNew (0, KS_END);
 	Key * parentKey = keyNew ("user/tests/yajl", KEY_VALUE, "/proc/self/fd/1", KEY_END);
@@ -775,7 +775,7 @@ int main (int argc, char ** argv)
 	elektraModulesClose (modules, 0);
 	ksDel (modules);
 
-	printf ("\ntest_yajl RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("test_yajl");
 
 	return nbError;
 }

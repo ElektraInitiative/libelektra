@@ -75,11 +75,7 @@ Thus please use following techniques (in order of preference):
 
    `ELEKTRA_LOG ("formatted text to be printed according log filters", ...)`
 
-   There are four log levels (ERROR is reserved for aborts within `ELEKTRA_ASSERT`):
-   - ELEKTRA_LOG_WARNING, something critical that should be shown to the user (e.g. API misuse), see #ELEKTRA_LOG_LEVEL_WARNING
-   - ELEKTRA_LOG_NOTICE, something important developers are likely interested in, see #ELEKTRA_LOG_LEVEL_NOTICE
-   - ELEKTRA_LOG, standard level gives information what the code is doing without flooding the log, see #ELEKTRA_LOG_LEVEL_INFO
-   - ELEKTRA_LOG_DEBUG, for less important logs, see #ELEKTRA_LOG_LEVEL_DEBUG
+   Read [HERE](/doc/dev/logging.md) for how to enable the logger.
 
 4. Otherwise comment within source with `//` or with `/**/` for multi-line
    comments.
@@ -132,6 +128,7 @@ So do not give this responsibility out of hands entirely.
  * Use `const` as much as possible.
  * Use `static` methods if they should not be externally visible.
  * C-Files have extension `.c`, Header files `.h`.
+ * Use internal functions: prefer to use elektraMalloc, elektraFree.
 
 **Example:** [src/libs/elektra/kdb.c](/src/libs/elektra/kdb.c)
 
@@ -163,7 +160,7 @@ So do not give this responsibility out of hands entirely.
 `doxygen` is used to document the API and to build the html and pdf output.
 We also support the import of Markdown pages. Doxygen 1.8.8 or later
 is required for this feature (Anyways you can find the
-[API Doc](http://doc.libelektra.org/api/latest/html/) online).
+[API Doc](https://doc.libelektra.org/api/latest/html/) online).
 Links between Markdown files will be converted with the
 [Markdown Link Converter](/doc/markdownlinkconverter/README.md).
 **Markdown pages are used in the pdf, therefore watch which characters you use and
@@ -193,7 +190,7 @@ Note:
 
 - `@` `file` has *no* parameters.
 - `@` `brief` should contain a short statement about the content of the file and is needed
-  so that your file gets listed at http://doc.libelektra.org/api/latest/html/files.html
+  so that your file gets listed at https://doc.libelektra.org/api/latest/html/files.html
 
 The duplication of the filename, author and date is not needed, because
 this information is tracked using git and [doc/AUTHORS.md](AUTHORS.md) already.

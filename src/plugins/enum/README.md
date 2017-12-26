@@ -3,8 +3,8 @@
 - infos/licence = BSD
 - infos/provides = check
 - infos/needs =
-- infos/recommends = 
-- infos/placements = presetstorage
+- infos/recommends =
+- infos/placements = presetstorage postgetstorage
 - infos/status = productive maintained unittest tested nodep libc
 - infos/metadata = check/enum check/enum/# check/enum/multi
 - infos/description = validates values against enum
@@ -16,7 +16,7 @@ The enum plugin checks string values of Keys by comparing it against a list of v
 ## Usage
 
 The plugin checks every Key in the Keyset for the Metakey `check/enum` containing a list
-with the syntax `'string1', 'string2', 'string3', ..., 'stringN'` and compares each 
+with the syntax `'string1', 'string2', 'string3', ..., 'stringN'` and compares each
 value with the string value of the Key. If no match is found an error is returned.
 
 Alternatively, if `check/enum` starts with `#`, a meta array `check/enum` is used.
@@ -28,7 +28,7 @@ For example:
     check/enum/#2 = large
     check/enum/#3 = huge
 
-Furthermore `check/enum/multi` may contain a separator character, that separates 
+Furthermore `check/enum/multi` may contain a separator character, that separates
 multiple allowed occurrences.
 For example:
 
@@ -36,6 +36,7 @@ For example:
 
 Then the value `middle_small` would validate.
 But `middle_small_small` would fail because every entry might only occur once.
+
 
 ## Example
 ```sh
@@ -53,7 +54,7 @@ kdb set /examples/enum/value low
 # should fail with error 121
 kdb set /examples/enum/value no
 # RET:5
-# ERRORS:121
+# ERROR:121
 ```
 Or with multi-enums:
 ```sh
@@ -72,7 +73,7 @@ kdb set /examples/enum/multivalue ___small_middle__
 # should fail with error 121
 kdb set /examples/enum/multivalue ___all_small__
 # RET:5
-# ERRORS:121
+# ERROR:121
 
 # cleanup
 kdb rm -r /examples/enum

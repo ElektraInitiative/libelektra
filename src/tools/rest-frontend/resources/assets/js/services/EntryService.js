@@ -72,9 +72,9 @@ module.exports = function (Logger, $http, $q, config) {
             deferred.reject('Invalid key');
         } else {
             var url = config.backend.root + 'database/' + key;
-            $http.get(url).success(function (data) {
-                deferred.resolve(data);
-            }).error(function (data) {
+            $http.get(url).then(function (response) {
+                deferred.resolve(response.data);
+            }, function (response) {
                 deferred.reject('Error loading data');
             });
         }
@@ -94,11 +94,11 @@ module.exports = function (Logger, $http, $q, config) {
             Logger.info('Loading entries');
             $http.get(config.backend.root + 'database', {
                 params: params
-            }).success(function (data) {
-                service.cache.search.entries = data;
+            }).then(function (response) {
+                service.cache.search.entries = response.data;
                 service.cache.search.params = params;
                 deferred.resolve(service.cache.search.entries);
-            }).error(function (data) {
+            }, function (response) {
                 deferred.reject('Error loading data');
             });
         } else {
@@ -133,25 +133,25 @@ module.exports = function (Logger, $http, $q, config) {
         } else {
             $http.get(config.backend.root + 'conversion/formats', {
                 // custom options
-            }).success(function (data) {
+            }).then(function (response) {
                 var plugins = [];
                 var foundPlugin;
                 config.website.formats.preferred.forEach(function (plugin) {
-                    foundPlugin = data.find(function (elem) {
+                    foundPlugin = response.data.find(function (elem) {
                         return elem.plugin.name === plugin;
                     });
                     if (typeof foundPlugin !== 'undefined') {
                         plugins.push(foundPlugin);
                     }
                 });
-                data = data.filter(function (elem) {
+                response.data = response.data.filter(function (elem) {
                     return plugins.indexOf(elem) < 0;
                 });
-                plugins.push.apply(plugins, data);
+                plugins.push.apply(plugins, response.data);
                 service.cache.formats = plugins;
                 deferred.resolve(service.cache.formats);
-            }).error(function (data) {
-                deferred.reject(data);
+            }, function (response) {
+                deferred.reject(response.data);
             });
         }
 
@@ -170,9 +170,9 @@ module.exports = function (Logger, $http, $q, config) {
         } else {
             $http.get(config.backend.root + 'database', {
                 // custom options
-            }).success(function (data) {
-                if (data.elements > 0 && typeof data.entries !== 'undefined') {
-                    data.entries.forEach(function (entry) {
+            }).then(function (response) {
+                if (response.data.elements > 0 && typeof response.data.entries !== 'undefined') {
+                    response.data.entries.forEach(function (entry) {
                         if (service.cache.typeaheads.data.organizations.indexOf(entry.key.organization) === -1) {
                             service.cache.typeaheads.data.organizations.push(entry.key.organization);
                         }
@@ -193,8 +193,8 @@ module.exports = function (Logger, $http, $q, config) {
                 }
                 service.cache.typeaheads.cache = true;
                 deferred.resolve(service.cache.typeaheads.data);
-            }).error(function (data) {
-                deferred.reject(data);
+            }, function (response) {
+                deferred.reject(response.data);
             });
         }
 

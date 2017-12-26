@@ -3,27 +3,27 @@ kdb-info(1) -- Print information about an Elektra plugin
 
 ## SYNOPSIS
 
-`kdb info <plugin> [<clause name>]`  
+`kdb info <plugin> [<clause name>]`<br>
 
-Where `plugin` is the plugin in which the user would like to know information about.  
-The optional `clause name` argument can be used to just print information from a certain clause.  
+Where `plugin` is the plugin in which the user would like to know information about.<br>
+The optional `clause name` argument can be used to just print information from a certain clause.<br>
 
 ## DESCRIPTION
 
-This command will print out all the information about an Elektra plugin except it's configuration.  
-This command will also print out any functions that are exported by the plugin.  
-Information about a plugin will be read from `system/elektra/modules/`. If the information could not be located there, such as when a plugin is not mounted, the module will be loaded dynamically and then the information will be requested directly from the plugin.  
-If a user wishes to load the information directly from the plugin, they can force that by using the `-l` option.  
+This command will print out all the information about an Elektra plugin except it's configuration.<br>
+This command will also print out any functions that are exported by the plugin.<br>
+Information about a plugin will be read from `system/elektra/modules/`. If the information could not be located there, such as when a plugin is not mounted, the module will be loaded dynamically and then the information will be requested directly from the plugin.<br>
+If a user wishes to load the information directly from the plugin, they can force that by using the `-l` option.<br>
 
 ## RETURN VALUES
 
-This command returns the following exit statuses:  
+This command returns the following exit statuses:<br>
 
-* 0:  
-  The command was successful.  
+* 0:<br>
+  The command was successful.<br>
 
-* 1:  
-  A `clause name` was specified but not found.  
+* 1:<br>
+  A `clause name` was specified but not found.<br>
 
 ## OPTIONS
 
@@ -31,23 +31,23 @@ This command returns the following exit statuses:
   Show the man page.
 - `-V`, `--version`:
   Print version info.
-- `-p`, `--profile`=<profile>:
+- `-p`, `--profile <profile>`:
   Use a different kdb profile.
+- `-C`, `--color <when>`:
+  Print never/auto(default)/always colored output.
 - `-l`, `--load`:
   Load plugin even if system/elektra is available.
-- `-c`, `--plugins-config`:
+- `-c`, `--plugins-config <plugins-config>`:
   Add a plugin configuration.
-- `-C`, `--color`=[when]:
-  Print never/auto(default)/always colored output.
 
 ## EXAMPLES
 
-To print all the information about the `dump` plugin:  
-`kdb info dump`  
+To print all the information about the `dump` plugin:<br>
+`kdb info dump`<br>
 
-To print out the license of the `resolver` plugin directly by forcing it to load:  
-`kdb info -l resolver licence`  
+To print out the license of the `resolver` plugin directly by forcing it to load:<br>
+`kdb info -l resolver licence`<br>
 
-To print out the author of the `line` plugin:  
-`kdb info line author`  
+To print out the author of the `line` plugin:<br>
+`kdb info line author`<br>
 

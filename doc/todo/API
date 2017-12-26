@@ -1,9 +1,19 @@
-On potential changes of the API/ABI, please check following list:
+On potential changes of the API/ABI as detected by
+[`elektra-icheck`](https://build.libelektra.org/jenkins/job/elektra-icheck),
+please check following list:
 
 - Must have been in kdbproposal.h in the previous release
+  or is part of a non-core library (like libease, libmeta,...)
 - Full Doxygen docu (all parameters, brief, long, examples)
 - Full Testcoverage
-- Still ABI/API compatible
-- All Bindings written
-- TODO add what needs to be done for symbol versioning
+- Still ABI/API forward-compatible
+  (It is okay to break backward-compatible to add new symbols)
+- All Bindings written/work (only if bindings exist for the module)
+- Change is mentioned in the release notes
+
+
+
+TODO (additional points for the future?)
+
 - #ifdef for ELEKTRA_API present?
+- add what needs to be done for symbol versioning

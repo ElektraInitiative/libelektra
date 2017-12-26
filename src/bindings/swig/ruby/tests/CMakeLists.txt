@@ -1,4 +1,7 @@
-file (GLOB TESTS testruby_*.rb)
+if (NOT (APPLE AND ENABLE_ASAN))
+	file (GLOB TESTS testruby_*.rb)
+endif (NOT (APPLE AND ENABLE_ASAN))
+
 foreach (file ${TESTS})
 	get_filename_component (name ${file} NAME_WE)
 	add_test (
@@ -21,8 +24,10 @@ foreach (file ${TESTS})
 
 endforeach (file ${TESTS})
 
-# special label for kdb
-set_property (
-	TEST "testruby_kdb"
-	APPEND PROPERTY LABELS kdbtests
-)
+if (NOT (APPLE AND ENABLE_ASAN))
+	# special label for kdb
+	set_property (
+		TEST "testruby_kdb"
+		APPEND PROPERTY LABELS kdbtests
+	)
+endif (NOT (APPLE AND ENABLE_ASAN))

@@ -22,12 +22,12 @@
 #include <testmod_jni.h>
 #include <tests_plugin.h>
 
-static void test_helloWorld ()
+static void test_helloWorld (void)
 {
 	Key * parentKey = keyNew ("user/tests/jni", KEY_VALUE, "", KEY_END);
 	KeySet * conf =
 		ksNew (20, keyNew ("system/classpath", KEY_VALUE, CLASSPATH, KEY_END), keyNew ("system/print", KEY_VALUE, "ON", KEY_END),
-		       keyNew ("system/classname", KEY_VALUE, "elektra/plugin/Return", KEY_END), KS_END);
+		       keyNew ("system/classname", KEY_VALUE, "org/libelektra/plugin/Return", KEY_END), KS_END);
 	PLUGIN_OPEN ("jni");
 
 	KeySet * ks = ksNew (20, KS_END);
@@ -52,7 +52,7 @@ int main (int argc, char ** argv)
 
 	test_helloWorld ();
 
-	printf ("\ntest_jni RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("test_jni");
 
 	return nbError;
 }

@@ -55,7 +55,7 @@ public class KDB implements AutoCloseable {
 	 */
 	@Override
 	public void close() {
-		final Key k = Key.create("", Key.KEY_END);
+		final Key k = Key.create("");
 		close(k);
 	}
 

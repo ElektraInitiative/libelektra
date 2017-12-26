@@ -32,46 +32,28 @@
  */
 int elektraArrayValidateName (const Key * key)
 {
-	if (!key)
-	{
-		return -1;
-	}
+	const char * current;
+	if (!key || !(current = keyBaseName (key)) || *current != '#') return -1;
+	if (!strcmp (current, "#")) return 0;
 
-	const char * current = keyBaseName (key);
+	current++;
+	int underscores = 0;
+	int digits = 0;
 
-	if (!current)
-	{
-		return -1;
-	}
-
-	if (!strcmp (current, "#"))
-	{
-		return 0;
-	}
-
-	if (*current == '#')
+	while (*current == '_')
 	{
 		current++;
-		int underscores = 0;
-		int digits = 0;
-
-		for (; *current == '_'; current++)
-		{
-			underscores++;
-		}
-
-		for (; isdigit (*current); current++)
-		{
-			digits++;
-		}
-
-		if (underscores != digits - 1) return -1;
-		if (underscores + digits > ELEKTRA_MAX_ARRAY_SIZE - 2)
-		{
-			return -1;
-		}
+		underscores++;
 	}
-	else
+
+	while (isdigit ((unsigned char)*current))
+	{
+		current++;
+		digits++;
+	}
+
+	if (underscores != digits - 1) return -1;
+	if (underscores + digits > ELEKTRA_MAX_ARRAY_SIZE - 2)
 	{
 		return -1;
 	}
@@ -127,7 +109,7 @@ int elektraReadArrayNumber (const char * baseName, kdb_long_long_t * oldIndex)
  *
  * @param key which base name will be incremented
  *
- * @retval -1 on error (e.g. too large array, not validated array)
+ * @retval -1 on error (e.g. array too large, non-valid array)
  * @retval 0 on success
  */
 int elektraArrayIncName (Key * key)
@@ -135,32 +117,14 @@ int elektraArrayIncName (Key * key)
 	const char * baseName = keyBaseName (key);
 
 	int arrayElement = elektraArrayValidateName (key);
-	if (arrayElement == -1)
-	{
-		return -1;
-	}
+	if (arrayElement == -1) return -1;
 
-	++baseName;		 // jump over #
-	while (*baseName == '_') // jump over all _
-	{
-		++baseName;
-	}
+	while (*(++baseName) == '_') // jump over initial `#` and all `_`
+		;		     //! OCLint
 
 	kdb_long_long_t oldIndex = 0;
-	if (!arrayElement)
-	{
-		// we have a start element
-		oldIndex = -1;
-	}
-	else
-	{
-		if (elektraReadArrayNumber (baseName, &oldIndex) == -1)
-		{
-			return -1;
-		}
-	}
-
-	kdb_long_long_t newIndex = oldIndex + 1; // we increment by one
+	if (arrayElement && elektraReadArrayNumber (baseName, &oldIndex) == -1) return -1;
+	kdb_long_long_t newIndex = arrayElement ? oldIndex + 1 : 0; // we increment by one or use 0 if the name contains no index yet
 
 	char newName[ELEKTRA_MAX_ARRAY_SIZE];
 
@@ -171,11 +135,42 @@ int elektraArrayIncName (Key * key)
 }
 
 /**
+ * @brief Decrement the name of an array key by one.
+ *
+ * The alphabetical order will remain intact. For example,
+ * `user/abc/\#_10` will be changed to `user/abc/\#9`.
+ *
+ * @param This parameter determines the key name this function decrements.
+ *
+ * @retval -1 on error (e.g. new array index too small, non-valid array)
+ * @retval 0 on success
+ */
+int elektraArrayDecName (Key * key)
+{
+	const char * baseName = keyBaseName (key);
+
+	int arrayElement = elektraArrayValidateName (key);
+	if (arrayElement == -1) return -1;
+
+	while (*(++baseName) == '_') // jump over initial `#` and all `_`
+		;		     //! OCLint
+
+	kdb_long_long_t oldIndex = 0;
+	if (elektraReadArrayNumber (baseName, &oldIndex) == -1 || oldIndex == 0) return -1;
+
+	char newName[ELEKTRA_MAX_ARRAY_SIZE];
+	elektraWriteArrayNumber (newName, oldIndex - 1);
+	keySetBaseName (key, newName);
+
+	return 0;
+}
+
+/**
  * @internal
  *
  * Returns true (1) for all keys that are part of the array
  * identified by the supplied array parent. Only the array
- * elements themself, but no subkeys of them will be filtered
+ * elements themselves, but no subkeys of them will be filtered
  *
  * @pre The supplied argument has to be of type (const Key *)
  * and is the parent of the array to be extracted. For example
@@ -196,22 +191,23 @@ static int arrayFilter (const Key * key, void * argument)
 
 
 /**
- * Return all the array keys below the given arrayparent
- * The arrayparent itself is not returned.
- * For example, if user/config/# is an array,
- * user/config is the array parent.
+ * @brief Return all the array keys below the given array parent
+ *
+ * The array parent itself is not returned.
+ * For example, if `user/config/#` is an array,
+ * `user/config` is the array parent.
  * Only the direct array keys will be returned. This means
- * that for example user/config/#1/key will not be included,
- * but only user/config/#1.
+ * that for example `user/config/#1/key` will not be included,
+ * but only `user/config/#1`.
  *
  * A new keyset will be allocated for the resulting keys.
- * This means that the caller must ksDel the resulting keyset.
+ * This means that the caller must `ksDel` the resulting keyset.
  *
  * @param arrayParent the parent of the array to be returned
- * @param keys the keyset containing the array keys.
+ * @param keys the keyset containing the array keys
  *
- * @return a keyset containing the arraykeys (if any)
- * @retval NULL on NULL pointers
+ * @return a keyset containing the array keys (if any)
+ * @retval NULL on `NULL` pointers
  */
 KeySet * elektraArrayGet (const Key * arrayParent, KeySet * keys)
 {
@@ -250,6 +246,7 @@ Key * elektraArrayGetNextKey (KeySet * arrayKeys)
 
 	ksAppendKey (arrayKeys, last);
 	Key * newKey = keyDup (last);
+	keySetString (newKey, "");
 	int ret = elektraArrayIncName (newKey);
 
 	if (ret == -1)

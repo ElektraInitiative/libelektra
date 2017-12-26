@@ -26,7 +26,7 @@ int elektraNoresolverCheckFile (const char * filename)
 	return 1;
 }
 
-static KeySet * elektraNoresolverModules ()
+static KeySet * elektraNoresolverModules (void)
 {
 	return ksNew (
 		50, keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "", KEY_VALUE,

@@ -1,5 +1,5 @@
 if (DEPENDENCY_PHASE)
-	find_package(PythonLibs 3)
+	find_package(PythonLibs 3 QUIET)
 	find_swig()
 
 	if (PYTHONLIBS_FOUND AND SWIG_FOUND)
@@ -10,10 +10,10 @@ if (DEPENDENCY_PHASE)
 		)
 
 		# we call this SWIG_COMPILE_FLAGS because we have the same variable in our swig bindings
-		set (SWIG_COMPILE_FLAGS "-Wno-shadow -Wno-old-style-cast -Wno-unused-variable")
+		set (SWIG_COMPILE_FLAGS "-Wno-shadow -Wno-old-style-cast -Wno-unused-variable -Wno-missing-field-initializers")
 		set_source_files_properties ("python.cpp" PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS}")
 	elseif (NOT PYTHONLIBS_FOUND)
-		remove_plugin (python "python 3 libs not found")
+		remove_plugin (python "python 3 libs (libpython3-dev) not found")
 	else ()
 		remove_plugin (python "swig not found")
 	endif ()
@@ -35,9 +35,10 @@ add_plugin(python
 )
 
 if (ADDTESTING_PHASE)
+	if (ENABLE_BROKEN_TESTS)
 	# bindings are required for tests
 	list (FIND BINDINGS "swig_python" FINDEX)
-	if (NOT BUILD_SHARED AND BUILD_TESTING AND FINDEX GREATER -1)
+	if (BUILD_TESTING AND FINDEX GREATER -1)
 		# test environment clears env so setting PYTHONPATH is no option
 		# we workaround this by changing the current directory to our bindings
 		# output directory + our test adds the current directory to pythons sys.path
@@ -53,4 +54,5 @@ if (ADDTESTING_PHASE)
 	else ()
 		message (WARNING "swig_python bindings are required for testing, test deactivated")
 	endif ()
+	endif (ENABLE_BROKEN_TESTS)
 endif ()

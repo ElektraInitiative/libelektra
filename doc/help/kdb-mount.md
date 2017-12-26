@@ -3,7 +3,7 @@ kdb-mount(1) - Mount a file to the key database
 
 ## SYNOPSIS
 
-`kdb mount [<path> <mountpoint>] [<plugin> [<config>] [..]]`  
+`kdb mount [<path> <mountpoint>] [<plugin> [<config>] [..]]`<br>
 
 - Where `path` is the path to the file the user wants to mount.
   See `kdb info resolver` for details what an absolute and relative path means.
@@ -49,15 +49,17 @@ Use `kdb file <path>` to determine where the file(s) are.
   Show the man page.
 - `-V`, `--version`:
   Print version info.
-- `-p`, `--profile`=<profile>:
+- `-p`, `--profile <profile>`:
   Use a different kdb profile.
+- `-C`, `--color <when>`:
+  Print never/auto(default)/always colored output.
 - `-d`, `--debug`:
   Give debug information or ask debug questions (in interactive mode).
 - `-q`, `--quiet`:
   Suppress non-error messages.
 - `-i`, `--interactive`:
   Instead of passing all mounting information by parameters ask the user interactively.
-- `-R`, `--resolver`=<name>:
+- `-R`, `--resolver <resolver>`
   Specify the resolver plugin to use if no resolver is given, the default resolver is used.
   See also [below in KDB](#KDB).
 - `-0`, `--null`:
@@ -68,12 +70,12 @@ Use `kdb file <path>` to determine where the file(s) are.
   Suppress the second column.
 - `-3`, `--third`:
   Suppress the third column.
-- `-c`, `--plugins-config`=<config>:
+- `-c`, `--plugins-config <plugins-config>`:
   Add a plugin configuration for all plugins.
-- `-C`, `--color`=[when]:
-  Print never/auto(default)/always colored output.
 - `-W`, `--with-recommends`:
   Also add recommended plugins and warn if they are not available.
+- `-f`, `--force`:
+  Unmount before mounting: Does not fail on already existing mountpoints.
 
 
 
@@ -95,22 +97,22 @@ Use `kdb file <path>` to determine where the file(s) are.
 
 ## EXAMPLES
 
-To list the currently mounted backends:  
+To list the currently mounted backends:<br>
 `kdb mount`
 
-To mount a system configuration file using the ini format:  
+To mount a system configuration file using the ini format:<br>
 `kdb mount /etc/configuration.ini system/example ini`
 
-Print a null-terminated output of paths and backend names:  
+Print a null-terminated output of paths and backend names:<br>
 `kdb mount -02 | xargs -0n 2 echo`
 
-To mount the /etc/file system file with two plugins with a respective configuration option each:  
+To mount the /etc/file system file with two plugins with a respective configuration option each:<br>
 `kdb mount /etc/file system/file plugin1 plugin1config=config1 plugin2 plugin2config=config2`
 
-To mount the /etc/file system file with two plugins and setting both to be verbose:  
+To mount the /etc/file system file with two plugins and setting both to be verbose:<br>
 `kdb mount -c verbose=1 /etc/file system/file plugin1 plugin2`
 
-To recode and rename a configuration file using Elektra:  
+To recode and rename a configuration file using Elektra:<br>
 `kdb mount recode.txt dir/recode ni rename cut=path iconv to=utf8,from=latin1`
 
 ## SEE ALSO
@@ -119,4 +121,3 @@ To recode and rename a configuration file using Elektra:
 - [kdb-spec-mount(7)](kdb-spec-mount.md).
 - [kdb-umount(7)](kdb-umount.md).
 - [elektra-mounting(7)](elektra-mounting.md).
-- [elektra-plugins-framework(7)](elektra-plugins-framework.md).

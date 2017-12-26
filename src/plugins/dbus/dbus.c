@@ -79,18 +79,27 @@ int elektraDbusSet (Plugin * handle, KeySet * returned, Key * parentKey)
 		}
 	}
 
-	if (!strncmp (keyName (parentKey), "user", 4))
+	if (!strncmp (keyString (ksLookupByName (elektraPluginGetConfig (handle), "/announce", 0)), "once", 4))
 	{
-		announceKeys (addedKeys, "KeyAdded", DBUS_BUS_SESSION);
-		announceKeys (changedKeys, "KeyChanged", DBUS_BUS_SESSION);
-		announceKeys (removedKeys, "KeyDeleted", DBUS_BUS_SESSION);
+		if (!strncmp (keyName (parentKey), "user", 4)) elektraDbusSendMessage (DBUS_BUS_SESSION, keyName (parentKey), "Commit");
+		if (!strncmp (keyName (parentKey), "system", 6)) elektraDbusSendMessage (DBUS_BUS_SYSTEM, keyName (parentKey), "Commit");
 	}
-	else if (!strncmp (keyName (parentKey), "system", 6))
+	else
 	{
-		announceKeys (addedKeys, "KeyAdded", DBUS_BUS_SYSTEM);
-		announceKeys (changedKeys, "KeyChanged", DBUS_BUS_SYSTEM);
-		announceKeys (removedKeys, "KeyDeleted", DBUS_BUS_SYSTEM);
+		if (!strncmp (keyName (parentKey), "user", 4))
+		{
+			announceKeys (addedKeys, "KeyAdded", DBUS_BUS_SESSION);
+			announceKeys (changedKeys, "KeyChanged", DBUS_BUS_SESSION);
+			announceKeys (removedKeys, "KeyDeleted", DBUS_BUS_SESSION);
+		}
+		else if (!strncmp (keyName (parentKey), "system", 6))
+		{
+			announceKeys (addedKeys, "KeyAdded", DBUS_BUS_SYSTEM);
+			announceKeys (changedKeys, "KeyChanged", DBUS_BUS_SYSTEM);
+			announceKeys (removedKeys, "KeyDeleted", DBUS_BUS_SYSTEM);
+		}
 	}
+
 
 	ksDel (oldKeys);
 	ksDel (addedKeys);

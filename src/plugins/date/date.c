@@ -195,8 +195,8 @@ static int combineAndValidateISO (const char * toValidate, const RepStruct * dat
 	if (!strchr (toValidate, 'T')) noT = 1;
 
 	// ISO 8601 5.4.2 Representations other than complete, rule b.
-	// when truncation occures in the date component of a combined date and time
-	// expresssion, it is not necessary to replace the omitted higher order components
+	// when truncation occurs in the date component of a combined date and time
+	// expression, it is not necessary to replace the omitted higher order components
 	// with the hypen [-];
 
 	int toValidateHyphen = countLeadingHyphen (toValidate);
@@ -337,8 +337,7 @@ static int isoStringValidation (const char * date, const char * fmt)
 	}
 	else
 	{
-		int rc = -1;
-		rc = combinedIsoStringValidation (date, (DATETIME | CMPLT));
+		int rc = combinedIsoStringValidation (date, (DATETIME | CMPLT));
 		if (rc != 1) rc = combinedIsoStringValidation (date, (DATETIME | TRCT));
 		return rc;
 	}

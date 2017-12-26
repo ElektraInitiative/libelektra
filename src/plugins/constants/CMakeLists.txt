@@ -1,6 +1,8 @@
 include (LibAddMacros)
 
 if (DEPENDENCY_PHASE)
+	string (REPLACE "\"" "\\\"" C_FLAGS_ESCAPED ${CMAKE_C_FLAGS})
+	string (REPLACE "\"" "\\\"" CXX_FLAGS_ESCAPED ${CMAKE_CXX_FLAGS})
 	configure_file (constants.c.in ${CMAKE_CURRENT_BINARY_DIR}/constants.c)
 endif ()
 

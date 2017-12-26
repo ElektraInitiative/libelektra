@@ -39,6 +39,126 @@ First line should determine the headers:
 
     kdb mount test.csv /csv csvstorage "delimiter=;,header=colname,columns=2,columns/names,columns/names/#0=col0Name,columns/names/#1=col1Name"
 
+### Usage
+
+The example below shows how you can use this plugin to read and write CSV files.
+
+```sh
+# Mount plugin to cascading namespace `/examples/csv`
+# We use the column names from the first line of the
+# config file as key names
+sudo kdb mount config.csv /examples/csv csvstorage  "header=colname,columns/names/#0=col0Name,columns/names/#1=col1Name"
+
+# Add some data
+printf 'band,album\n'                           >> `kdb file /examples/csv`
+printf 'Converge,All We Love We Leave Behind\n' >> `kdb file /examples/csv`
+printf 'mewithoutYou,Pale Horses\n'             >> `kdb file /examples/csv`
+printf 'Kate Tempest,Everybody Down\n'          >> `kdb file /examples/csv`
+
+kdb ls /examples/csv
+#> user/examples/csv/#0
+#> user/examples/csv/#0/album
+#> user/examples/csv/#0/band
+#> user/examples/csv/#1
+#> user/examples/csv/#1/album
+#> user/examples/csv/#1/band
+#> user/examples/csv/#2
+#> user/examples/csv/#2/album
+#> user/examples/csv/#2/band
+#> user/examples/csv/#3
+#> user/examples/csv/#3/album
+#> user/examples/csv/#3/band
+
+# The first array element contains the column names
+kdb get /examples/csv/#0/band
+#> band
+kdb get /examples/csv/#0/album
+#> album
+
+# Retrieve data from the last entry
+kdb get /examples/csv/#3/album
+#> Everybody Down
+kdb get /examples/csv/#3/band
+#> Kate Tempest
+
+# Change an existing item
+kdb set /examples/csv/#1/album 'You Fail Me'
+# Retrieve the new item
+kdb get /examples/csv/#1/album
+#> You Fail Me
+
+# The plugin stores the index of the last column
+# in all of the parent keys.
+kdb get user/examples/csv/#0
+#> #1
+kdb get user/examples/csv/#1
+#> #1
+kdb get user/examples/csv/#2
+#> #1
+kdb get user/examples/csv/#3
+#> #1
+
+# The configuration file reflects the changes
+kdb file /examples/csv | xargs cat
+#> album,band
+#> You Fail Me,Converge
+#> Pale Horses,mewithoutYou
+#> Everybody Down,Kate Tempest
+
+# Undo changes to the key database
+kdb rm -r /examples/csv
+sudo kdb umount /examples/csv
+```
+
+# Directory Values
+
+By default the `csvstorage` plugin saves the name of the last column in each parent key. If you want to store a different value, you can do
+so using the [Directory Value](../directoryvalue/) plugin.
+
+```sh
+# Mount plugin together with `directoryvalue` to cascading namespace `/examples/csv`
+kdb mount config.csv /examples/csv csvstorage directoryvalue
+
+# Add some data
+printf 'Schindler’s List,1993,8.9\n'       >> `kdb file /examples/csv`
+printf 'Léon: The Professional,1994,8.5\n' >> `kdb file /examples/csv`
+
+# Retrieve data
+kdb ls /examples/csv
+#> user/examples/csv/#0
+#> user/examples/csv/#0/#0
+#> user/examples/csv/#0/#1
+#> user/examples/csv/#0/#2
+#> user/examples/csv/#1
+#> user/examples/csv/#1/#0
+#> user/examples/csv/#1/#1
+#> user/examples/csv/#1/#2
+
+kdb get user/examples/csv/#0/#0
+#> Schindler’s List
+kdb get user/examples/csv/#1/#2
+#> 8.5
+
+# The plugin stores the index of the last column in the parent keys
+kdb get user/examples/csv/#0
+#> #2
+kdb get user/examples/csv/#1
+#> #2
+
+# Since we use the Directory Value plugin we can also change the data in a parent key
+kdb set user/examples/csv/#0 'Movie – Year – Rating'
+kdb set user/examples/csv/#1 'It’s a Me.'
+
+# Retrieve data stored in parent keys
+kdb get user/examples/csv/#0
+#> Movie – Year – Rating
+kdb get user/examples/csv/#1
+#> It’s a Me.
+
+# Undo changes to the key database
+kdb rm -r /examples/csv
+sudo kdb umount /examples/csv
+```
 
 ## Limitations
 

@@ -328,7 +328,7 @@ static CondResult evalCondition (const Key * curKey, const char * leftSide, Comp
 		if (ret == 0 && !strcmp (leftSide, "'1'")) result = TRUE;
 		break;
 	case OR:
-		if (!strcmp (leftSide, "'1'") || !strcmp (rightSide, "'1'")) result = TRUE;
+		if (!strcmp (leftSide, "'1'") || (rightSide && !strcmp (rightSide, "'1'"))) result = TRUE;
 		break;
 	default:
 		result = ERROR;
@@ -449,10 +449,9 @@ static CondResult parseSingleCondition (const Key * key, const char * condition,
 		--ptr;
 		++endPos;
 	}
-	char * leftSide = NULL;
-	char * rightSide = NULL;
 	int len = opStr - condition - endPos - startPos + 2;
-	leftSide = elektraMalloc (len);
+	char * leftSide = elektraMalloc (len);
+	char * rightSide = NULL;
 	strncpy (leftSide, condition + startPos, len - 2);
 	leftSide[len - 2] = '\0';
 	startPos = 0;
@@ -664,14 +663,11 @@ static CondResult parseConditionString (const Key * meta, const Key * suffixList
 		ksDel (ks);
 		return ERROR;
 	}
-	char * condition = NULL;
+	int startPos = m[1].rm_so;
+	int endPos = m[1].rm_eo;
+	char * condition = elektraMalloc (endPos - startPos + 1);
 	char * thenexpr = NULL;
 	char * elseexpr = NULL;
-	int startPos;
-	int endPos;
-	startPos = m[1].rm_so;
-	endPos = m[1].rm_eo;
-	condition = elektraMalloc (endPos - startPos + 1);
 	strncpy (condition, conditionString + startPos, endPos - startPos);
 	condition[endPos - startPos] = '\0';
 	nomatch = regexec (&regex2, conditionString, subMatches, m, 0);

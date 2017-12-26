@@ -10,7 +10,7 @@
 #include <glib-object.h>
 #include <tests.h>
 
-static void test_ctor ()
+static void test_ctor (void)
 {
 	GElektraKey * key;
 
@@ -80,7 +80,7 @@ static void test_ctor ()
 static GElektraKey * g_key = NULL;
 static GElektraKey * g_bkey = NULL;
 
-static void create_global_keys ()
+static void create_global_keys (void)
 {
 	g_key = gelektra_key_new ("user/key", GELEKTRA_KEY_VALUE, "value", GELEKTRA_KEY_OWNER, "myowner", GELEKTRA_KEY_COMMENT, "mycomment",
 				  GELEKTRA_KEY_UID, "123", GELEKTRA_KEY_GID, 456, GELEKTRA_KEY_MODE, 0644, GELEKTRA_KEY_ATIME, 123,
@@ -96,7 +96,7 @@ static void create_global_keys ()
 	succeed_if (gelektra_key_getref (g_bkey) == 1, "refcount should be 1");
 }
 
-static void test_props ()
+static void test_props (void)
 {
 	gchar *name, *basename, *fullname;
 	g_object_get (g_key, "name", &name, "basename", &basename, "fullname", &fullname, NULL);
@@ -116,7 +116,7 @@ static void test_props ()
 	g_object_unref (key);
 }
 
-static void test_basic ()
+static void test_basic (void)
 {
 	GElektraKey * key;
 
@@ -143,7 +143,7 @@ static void test_basic ()
 	g_object_unref (key);
 }
 
-static void test_operators ()
+static void test_operators (void)
 {
 	succeed_if (!gelektra_key_equal (g_key, g_bkey), "keys shouldn't be equal");
 	succeed_if (gelektra_key_cmp (g_key, g_bkey) != 0, "keys shouldn't be equal");
@@ -154,7 +154,7 @@ static void test_operators ()
 	g_object_unref (key);
 }
 
-static void test_name_manipulation ()
+static void test_name_manipulation (void)
 {
 	// TODO gelektra_key_addbasename
 	succeed_if (gelektra_key_getnamesize (g_key) == sizeof ("user/key"), "wrong size");
@@ -163,7 +163,7 @@ static void test_name_manipulation ()
 }
 
 
-static void test_value_operations ()
+static void test_value_operations (void)
 {
 	gchar * data;
 	void * bdata;
@@ -202,7 +202,7 @@ static void test_value_operations ()
 	g_free (bdata);
 }
 
-static void test_meta_data ()
+static void test_meta_data (void)
 {
 	GElektraKey *meta, *key;
 
@@ -248,7 +248,7 @@ static void test_meta_data ()
 	g_object_unref (key);
 }
 
-static void test_validating ()
+static void test_validating (void)
 {
 	succeed_if (!gelektra_key_isnull (g_key), "key is null");
 	succeed_if (gelektra_key_isvalid (g_key), "key is not valid");
@@ -271,7 +271,7 @@ static void test_validating ()
 	g_object_unref (key);
 }
 
-static void destroy_global_keys ()
+static void destroy_global_keys (void)
 {
 	g_object_unref (g_key);
 	g_object_unref (g_bkey);

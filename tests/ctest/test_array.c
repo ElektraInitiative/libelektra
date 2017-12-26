@@ -10,7 +10,7 @@
 
 #include "tests.h"
 
-static void test_array ()
+static void test_array (void)
 {
 	printf ("Test array\n");
 
@@ -94,7 +94,28 @@ static void test_array ()
 	keyDel (k);
 }
 
-static void test_noArray ()
+static void test_arrayDec (void)
+{
+	printf ("Decrement array indizes\n");
+
+	Key * k = keyNew ("user/array/#0", KEY_END);
+	succeed_if (elektraArrayDecName (k) == -1, "Decrementing array index 0 did not fail");
+	keyDel (k);
+
+	k = keyNew ("user/array/#___1337", KEY_END);
+	succeed_if (elektraArrayDecName (k) == 0, "Unable to decrement array index 1337");
+	succeed_if_same_string (keyName (k), "user/array/#___1336");
+	succeed_if (elektraArrayDecName (k) == 0, "Unable to decrement array index 1336");
+	succeed_if_same_string (keyName (k), "user/array/#___1335");
+	keyDel (k);
+
+	k = keyNew ("user/array/#_________4000000000", KEY_END);
+	succeed_if (elektraArrayDecName (k) == 0, "Unable to decrement array index 4000000000");
+	succeed_if_same_string (keyName (k), "user/array/#_________3999999999");
+	keyDel (k);
+}
+
+static void test_noArray (void)
 {
 	printf ("Test no array\n");
 	Key * k = keyNew ("user/noarray", KEY_END);
@@ -105,7 +126,7 @@ static void test_noArray ()
 	keyDel (k);
 }
 
-static void test_startArray ()
+static void test_startArray (void)
 {
 	printf ("Test start array\n");
 	Key * k = keyNew ("user/startarray/#", KEY_END);
@@ -118,7 +139,7 @@ static void test_startArray ()
 	keyDel (k);
 }
 
-static void test_getArray ()
+static void test_getArray (void)
 {
 	printf ("Test get array");
 
@@ -141,7 +162,7 @@ static void test_getArray ()
 }
 
 
-static void test_getArrayNext ()
+static void test_getArrayNext (void)
 {
 	printf ("Test get array next");
 
@@ -152,6 +173,7 @@ static void test_getArrayNext ()
 	Key * nextKey = elektraArrayGetNextKey (array);
 	exit_if_fail (array, "The getnext function did not return a proper key");
 	succeed_if (!strcmp (keyName (nextKey), "user/test/array/#2"), "The getnext function did not use the correct keyname");
+	succeed_if (!strcmp (keyString (nextKey), ""), "The getnext function did not return an empty key");
 
 	keyDel (nextKey);
 	ksClear (array);
@@ -170,6 +192,7 @@ int main (int argc, char ** argv)
 	init (argc, argv);
 
 	test_array ();
+	test_arrayDec ();
 	test_noArray ();
 	test_startArray ();
 	test_getArray ();

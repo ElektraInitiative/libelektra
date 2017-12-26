@@ -11,9 +11,9 @@
 int main (void)
 {
 
-	char * line;
+	char * line = 0;
 	size_t len = 0;
-	FILE * fp;
+	FILE * fp = 0;
 	getline (&line, &len, fp);
 	return 0;
 }

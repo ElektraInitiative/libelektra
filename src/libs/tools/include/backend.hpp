@@ -133,7 +133,7 @@ class BackendFactory
 	std::string which;
 
 public:
-	BackendFactory (std::string whichBackend) : which (whichBackend)
+	explicit BackendFactory (std::string whichBackend) : which (whichBackend)
 	{
 	}
 
@@ -192,12 +192,6 @@ public:
  */
 class ImportExportBackend : public PluginAdder
 {
-	Modules modules;
-
-	/**
-	 * @brief A list of plugins for each ordering
-	 */
-	std::unordered_map<std::string, std::deque<std::shared_ptr<Plugin>>> plugins;
 
 public:
 	ImportExportBackend ()

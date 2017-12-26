@@ -40,9 +40,9 @@
  * Initialize everything with zero, except: sizes with -1
  * and refcounter with 1
  *
- * @return 
+ * @return
  */
-static Backend * elektraBackendAllocate ()
+static Backend * elektraBackendAllocate (void)
 {
 	Backend * backend = elektraCalloc (sizeof (struct _Backend));
 
@@ -426,17 +426,14 @@ int backendUpdateSize (Backend * backend, Key * parent, int size)
 		return -1;
 	}
 
-#if DEBUG && VERBOSE
-	printf ("user: %zd\n", backend->usersize);
-	printf ("system: %zd\n", backend->systemsize);
-#endif
+	ELEKTRA_LOG_DEBUG ("user: %zd", backend->usersize);
+	ELEKTRA_LOG_DEBUG ("system: %zd", backend->systemsize);
 
 	return 0;
 }
 
 int backendClose (Backend * backend, Key * errorKey)
 {
-	int ret = 0;
 	int errorOccurred = 0;
 
 	if (!backend) return -1;
@@ -452,7 +449,7 @@ int backendClose (Backend * backend, Key * errorKey)
 
 	for (int i = 0; i < NR_OF_PLUGINS; ++i)
 	{
-		ret = elektraPluginClose (backend->setplugins[i], errorKey);
+		int ret = elektraPluginClose (backend->setplugins[i], errorKey);
 		if (ret == -1) ++errorOccurred;
 
 		ret = elektraPluginClose (backend->getplugins[i], errorKey);

@@ -8,7 +8,7 @@ instances and clusters of instances (multiple instances at once).
 
 ## Installation
 
- * first, install [libelektra](http://libelektra.org/) with the [`yajl` plugin](http://tree.libelektra.org/src/plugins/yajl/)
+ * first, install [libelektra](https://libelektra.org/) with the [`yajl` plugin](https://master.libelektra.org/src/plugins/yajl/)
  * now run `npm install`
 
 
@@ -43,4 +43,4 @@ mode, start the client via `npm run start:dev`, it will also start `clusterd`.
 ## API
 
  - API documentation: http://docs.clusterd.apiary.io/
- - API blueprint: [clusterd.apib](http://tree.libelektra.org/doc/api_blueprints/clusterd.apib)
+ - API blueprint: [clusterd.apib](https://master.libelektra.org/doc/api_blueprints/clusterd.apib)

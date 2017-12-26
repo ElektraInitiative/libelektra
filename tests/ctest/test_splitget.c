@@ -34,7 +34,7 @@ KeySet * simple_cascading (void)
 }
 
 
-KeySet * set_realworld ()
+KeySet * set_realworld (void)
 {
 	return ksNew (50, keyNew ("system/elektra/mountpoints", KEY_END), keyNew ("system/elektra/mountpoints/root", KEY_END),
 		      keyNew ("system/elektra/mountpoints/root/mountpoint", KEY_VALUE, "/", KEY_END),
@@ -53,7 +53,7 @@ KeySet * set_realworld ()
 }
 
 
-static void test_simple ()
+static void test_simple (void)
 {
 	printf ("Test simple trie\n");
 
@@ -100,10 +100,13 @@ static void test_simple ()
 	succeed_if (split->size == 2, "not correct size after appointing");
 
 	succeed_if (split->handles[0] != -0, "no backend");
-	succeed_if (split->handles[0]->specsize == -1, "spec size wrong");
-	succeed_if (split->handles[0]->usersize == -1, "user size wrong");
-	succeed_if (split->handles[0]->systemsize == -1, "system size wrong");
-	succeed_if (split->handles[0]->dirsize == -1, "dir size wrong");
+	if (split->handles[0] != -0)
+	{
+		succeed_if (split->handles[0]->specsize == -1, "spec size wrong");
+		succeed_if (split->handles[0]->usersize == -1, "user size wrong");
+		succeed_if (split->handles[0]->systemsize == -1, "system size wrong");
+		succeed_if (split->handles[0]->dirsize == -1, "dir size wrong");
+	}
 
 	succeed_if (split->handles[1] == -0, "backend at bypass?");
 
@@ -124,7 +127,7 @@ static void test_simple ()
 }
 
 
-static void test_cascading ()
+static void test_cascading (void)
 {
 	// TODO: test not fully done
 	printf ("Test simple cascading\n");
@@ -169,17 +172,20 @@ static void test_cascading ()
 	succeed_if (split->handles[0] == backend, "should be user backend");
 
 	keySetName (parentKey, "user/cascading/simple/below");
-	backend = trieLookup (handle->trie, parentKey);
+	/*backend = */ trieLookup (handle->trie, parentKey);
 	// succeed_if (split->handles[1] == backend, "should be cascading backend");
 
 	succeed_if (splitAppoint (split, handle, ks) == 1, "could not appoint keys");
 	succeed_if (split->size == 2, "not correct size after appointing");
 
 	succeed_if (split->handles[0] != -0, "no backend");
-	succeed_if (split->handles[0]->specsize == -1, "spec size wrong");
-	succeed_if (split->handles[0]->usersize == -1, "user size wrong");
-	succeed_if (split->handles[0]->systemsize == -1, "system size wrong");
-	succeed_if (split->handles[0]->dirsize == -1, "dir size wrong");
+	if (split->handles[0] != -0)
+	{
+		succeed_if (split->handles[0]->specsize == -1, "spec size wrong");
+		succeed_if (split->handles[0]->usersize == -1, "user size wrong");
+		succeed_if (split->handles[0]->systemsize == -1, "system size wrong");
+		succeed_if (split->handles[0]->dirsize == -1, "dir size wrong");
+	}
 
 	succeed_if (split->handles[1] == -0, "backend at bypass?");
 
@@ -201,7 +207,7 @@ static void test_cascading ()
 }
 
 
-static void test_get ()
+static void test_get (void)
 {
 	printf ("Test basic get\n");
 	KDB * handle = elektraCalloc (sizeof (struct _KDB));
@@ -230,10 +236,13 @@ static void test_get ()
 
 	succeed_if (split->size == 2, "not correct size after appointing");
 	succeed_if (split->handles[0] != -0, "no backend");
-	succeed_if (split->handles[0]->specsize == -1, "spec size wrong");
-	succeed_if (split->handles[0]->usersize == -1, "user size wrong");
-	succeed_if (split->handles[0]->systemsize == -1, "system size wrong");
-	succeed_if (split->handles[0]->dirsize == -1, "dir size wrong");
+	if (split->handles[0] != -0)
+	{
+		succeed_if (split->handles[0]->specsize == -1, "spec size wrong");
+		succeed_if (split->handles[0]->usersize == -1, "user size wrong");
+		succeed_if (split->handles[0]->systemsize == -1, "system size wrong");
+		succeed_if (split->handles[0]->dirsize == -1, "dir size wrong");
+	}
 	succeed_if (split->handles[1] == -0, "backend at bypass?");
 
 	split->syncbits[0] = 3; /* Simulate a kdbGet() */
@@ -242,10 +251,13 @@ static void test_get ()
 	succeed_if (output_warnings (parentKey), "warning(s) found");
 	succeed_if (split->size == 2, "not correct size after get");
 	succeed_if (split->handles[0] != -0, "no backend");
-	succeed_if (split->handles[0]->specsize == -1, "spec size wrong");
-	succeed_if (split->handles[0]->usersize == 3, "user size wrong");
-	succeed_if (split->handles[0]->systemsize == -1, "system size wrong");
-	succeed_if (split->handles[0]->dirsize == -1, "dir size wrong");
+	if (split->handles[0] != -0)
+	{
+		succeed_if (split->handles[0]->specsize == -1, "spec size wrong");
+		succeed_if (split->handles[0]->usersize == 3, "user size wrong");
+		succeed_if (split->handles[0]->systemsize == -1, "system size wrong");
+		succeed_if (split->handles[0]->dirsize == -1, "dir size wrong");
+	}
 
 	succeed_if (split->size == 2, "there is an empty keset");
 	succeed_if (ksGetSize (split->keysets[0]) == 3, "wrong size");
@@ -293,7 +305,7 @@ static void test_get ()
 	ksDel (modules);
 }
 
-static void test_limit ()
+static void test_limit (void)
 {
 	printf ("Test limit\n");
 	KDB * handle = elektraCalloc (sizeof (struct _KDB));
@@ -370,7 +382,7 @@ static void test_limit ()
 }
 
 
-static void test_nobackend ()
+static void test_nobackend (void)
 {
 	printf ("Test keys without backends in split\n");
 
@@ -427,7 +439,7 @@ static void test_nobackend ()
 }
 
 
-static void test_sizes ()
+static void test_sizes (void)
 {
 	printf ("Test sizes\n");
 	KDB * handle = elektraCalloc (sizeof (struct _KDB));
@@ -519,7 +531,7 @@ static void test_sizes ()
 }
 
 
-static void test_triesizes ()
+static void test_triesizes (void)
 {
 	printf ("Test sizes in backends with trie\n");
 
@@ -615,7 +627,7 @@ static void test_triesizes ()
 }
 
 
-static void test_merge ()
+static void test_merge (void)
 {
 	printf ("Test sizes in backends with trie\n");
 
@@ -707,7 +719,7 @@ static void test_merge ()
 }
 
 
-static void test_realworld ()
+static void test_realworld (void)
 {
 	printf ("Test real world example\n");
 

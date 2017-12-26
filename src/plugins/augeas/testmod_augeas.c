@@ -319,7 +319,7 @@ int main (int argc, char ** argv)
 	test_hostLensFormatting ("augeas/hosts-formatting");
 	test_order ("augeas/hosts-big");
 
-	printf ("\ntest_augeas RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("test_augeas");
 
 	return nbError;
 }

@@ -25,7 +25,7 @@ and maybe give a description for them (we use ini syntax in this document):
 [mykey]
 
 [folder/anotherkey]
-description = set this key if you want another behaviour
+description = set this key if you want another behavior
 ```
 
 So Keys in `spec` allow us to specify which keys are read by the application.
@@ -40,7 +40,7 @@ Other features are directly implemented in `ksLookup`.
 When cascading keys (those starting with `/`) are used following features
 are now available (in the metadata of respective `spec`-keys):
 
-- `override/#`: use these keys *in favour* of the key itself (note that
+- `override/#`: use these keys *in favor* of the key itself (note that
     `#` is the syntax for arrays, e.g. `#0` for the first element,
     `#_10` for the 11th and so on)
 - `namespace/#`: instead of using all namespaces in the predefined order,
@@ -117,4 +117,3 @@ infos/recommends = hexcode
 
 - [elektra-namespaces(7)](elektra-namespaces.md)
 - [elektra-cascading(7)](elektra-cascading.md)
-- [elektra-plugins-ordering(7)](elektra-plugins-ordering.md)

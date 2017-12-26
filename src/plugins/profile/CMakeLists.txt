@@ -6,5 +6,4 @@ add_plugin (profile
 		profile.c
 	LINK_ELEKTRA
 		elektra-ease
-	ADD_TEST
 	)

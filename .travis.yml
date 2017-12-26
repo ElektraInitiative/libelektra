@@ -1,42 +1,111 @@
-notifications:
-  email: travis@libelektra-org
-
-language: generic
+language: cpp
 
 #
 # Define the build matrix
 #
 matrix:
   include:
+
+    # FAST: Do not install any dependencies
+
     - os: osx
-      osx_image: xcode8.3
+      osx_image: xcode9.1
+      compiler: clang
+      env: [ FAST=ON ]
+
+    # ASAN: Enable AddressSanitizer
+
     - os: osx
-      osx_image: xcode7.3
+      osx_image: xcode9.1
+      compiler: clang
+      env: [ ASAN=ON ]
+
+    - os: linux
+      compiler: clang
+      env: [ ASAN=ON ]
+
+    # FULL: Build full version of Elektra (BUILD_FULL=ON)
+
+    - os: linux
+      compiler: gcc
+      env: [ FULL=ON ]
+
+    # HASKELL: Only build Haskell binding and plugin
+
     - os: osx
-      osx_image: xcode6.4
+      osx_image: xcode9.1
+      compiler: clang
+      env: [ HASKELL=ON ]
+
+    - os: osx
+      osx_image: xcode9.1
+      compiler: gcc
+
+    - os: osx
+      osx_image: xcode9.1
+      compiler: clang
+
+    - os: linux
+      compiler: gcc
+
+    - os: linux
+      compiler: clang
 
 before_install:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-      rvm list;
-      rvm install 2.3.1;
-      rvm use 2.3.1;
-      gem install test-unit --no-document;
-      brew install ninja;
-      brew install swig;
-      brew install gobject-introspection;
-      brew install python3;
-      brew install python;
-      brew install lua;
-      brew install yajl;
-      brew install augeas;
-      brew install dbus;
-      brew install qt;
-      brew install discount;
-      brew install openssl botan libgcrypt;
-      brew install libgit2;
-      brew install xerces-c;
-      export Qt5_DIR=/usr/local/opt/qt5;
-      brew config;
+  - |
+    if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+      brew update
+      brew install ninja
+    fi
+  - |
+    if [[ "$TRAVIS_OS_NAME" == "osx" && "$FAST" != "ON" && "$HASKELL" != "ON" ]]; then
+      rvm install 2.3.1
+      rvm use 2.3.1
+      gem install test-unit --no-document
+      if [[ "$CC" == "gcc" ]]; then
+        brew install gcc
+        brew link --overwrite gcc
+        export CC=gcc-7
+        export CXX=g++-7
+      else
+        # Linking the Homebrew versions of Botan and yaml-cpp using `gcc` fails on macOS
+        brew install botan
+        brew install yaml-cpp
+        # Unfortunately Xerces 3.2 causes multiple problems if we translate Elektra with GCC on macOS
+        brew install xerces-c
+      fi
+      brew install augeas
+      brew install checkbashisms
+      brew install dbus
+      brew install discount
+      brew install gobject-introspection
+      brew install libgcrypt
+      brew install libgit2
+      brew install lua
+      brew install openssl
+      brew install python
+      brew install python3
+      brew install qt
+      brew install swig
+      brew install yajl
+      pip2 install cheetah # Required by kdb-gen
+      export Qt5_DIR=/usr/local/opt/qt5
+    fi
+  - |
+    if [[ "$TRAVIS_OS_NAME" == "osx" && "$HASKELL" == "ON" ]] ; then
+      brew install cabal-install
+      cabal update
+      cabal install happy alex
+      PATH=$PATH:"$HOME/.cabal/bin"
+      cabal install QuickCheck hspec c2hs
+    fi
+  - |
+    if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+      sudo apt-get -qq update
+      sudo apt-get install clang-format-3.8
+      sudo apt-get install ninja-build
+      sudo apt-get install libboost-all-dev
+      sudo apt-get install libyaml-cpp-dev
     fi
 
 #
@@ -45,24 +114,56 @@ before_install:
 #
 before_script:
   - cd $TRAVIS_BUILD_DIR/..
+  - >
+    [[ "$TRAVIS_OS_NAME" == "linux" ]] && INSTALL_DIR="$PWD/install" || INSTALL_DIR="/usr/local"
+  - SYSTEM_DIR="$PWD/kdbsystem"
   - mkdir build && cd build
-  - CMAKE_OPT=()
-  - echo $PATH
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-      python2_ver=$(python2 -c 'import sys; print(".".join(map(str, sys.version_info[:2])))') &&
-      CMAKE_OPT+=("-DPYTHON2_INCLUDE_DIR:PATH=$(python2-config --prefix)/include/python${python2_ver}") &&
-      CMAKE_OPT+=("-DPYTHON2_LIBRARY:FILEPATH=$(python2-config --prefix)/lib/libpython${python2_ver}.dylib") &&
-      python3_ver=$(python3 -c 'import sys; print(".".join(map(str, sys.version_info[:2])))') &&
-      CMAKE_OPT+=("-DPYTHON_INCLUDE_DIR:PATH=$(python3-config --prefix)/include/python${python3_ver}m") &&
-      CMAKE_OPT+=("-DPYTHON_LIBRARY:FILEPATH=$(python3-config --prefix)/lib/libpython${python3_ver}.dylib");
-      plugins="ALL;-jni";
-      if [[ $(uname -r | cut -d "." -f 1) == 15 ]]; then plugins="${plugins};-CRYPTO"; fi;
-      ln -s /usr/local/opt/openssl/include/openssl/ /usr/local/include/openssl;
+  - >
+    [[ $ASAN == ON ]] && CMAKE_OPT=(-DENABLE_ASAN=ON) || CMAKE_OPT=()
+  - if [[ $FULL == ON ]]; then CMAKE_OPT+=(-DBUILD_FULL=ON); fi
+  - |
+    if [[ "$TRAVIS_OS_NAME" == "linux" && "$CC" == "clang" || "$TRAVIS_OS_NAME" == "osx" && "${CC:0:3}" == "gcc" ]]; then
+      CMAKE_OPT+=("-DCOMMON_FLAGS=-Werror")
     fi
-  - cmake -GNinja -DBUILD_STATIC=OFF -DPLUGINS="${plugins:-ALL}" -DBINDINGS=ALL -DTOOLS=ALL -DCMAKE_INSTALL_PREFIX=$TRAVIS_BUILD_DIR/../install -DKDB_DB_SYSTEM=$TRAVIS_BUILD_DIR/../kdbsystem ${CMAKE_OPT[@]} $TRAVIS_BUILD_DIR
+  - if [[ $HASKELL == ON ]]; then bindings="ALL;haskell"; fi
+  - |
+    if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+      python2_ver=$(python2 -c 'import sys; print(".".join(map(str, sys.version_info[:2])))') &&                  \
+        CMAKE_OPT+=("-DPYTHON2_INCLUDE_DIR:PATH=$(python2-config --prefix)/include/python${python2_ver}") &&      \
+        CMAKE_OPT+=("-DPYTHON2_LIBRARY:FILEPATH=$(python2-config --prefix)/lib/libpython${python2_ver}.dylib") && \
+        python3_ver=$(python3 -c 'import sys; print(".".join(map(str, sys.version_info[:2])))') &&                \
+        CMAKE_OPT+=("-DPYTHON_INCLUDE_DIR:PATH=$(python3-config --prefix)/include/python${python3_ver}m") &&      \
+        CMAKE_OPT+=("-DPYTHON_LIBRARY:FILEPATH=$(python3-config --prefix)/lib/libpython${python3_ver}.dylib")
+      ln -s /usr/local/opt/openssl/include/openssl/ /usr/local/include/openssl
+    fi
+  - >
+    cmake
+    -GNinja
+    -DBUILD_STATIC=OFF
+    -DPLUGINS="${plugins:-ALL;-jni}"
+    -DBINDINGS="${bindings:-ALL}"
+    -DENABLE_DEBUG=ON
+    -DTOOLS=ALL
+    -DINSTALL_SYSTEM_FILES=OFF
+    -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+    -DCMAKE_INSTALL_PREFIX="$INSTALL_DIR"
+    -DKDB_DB_SYSTEM="$SYSTEM_DIR"
+    ${CMAKE_OPT[@]}
+    $TRAVIS_BUILD_DIR
+  - export PATH=$PATH:"$INSTALL_DIR/bin"
+  - export LD_LIBRARY_PATH="$INSTALL_DIR/lib"
 
 script:
   - ninja
-  - ninja run_all
-  - ninja install
-  - ninja run_all
+  - |
+    if [[ "$FAST" == "ON" || "$ASAN" = "ON" ]]; then
+      ninja run_all
+    else
+      ninja install
+      # Unfortunately the Haskell tests do not work currently:
+      # https://github.com/ElektraInitiative/libelektra/issues/1631
+      if [[ "$HASKELL" != "ON" ]]; then
+        ninja run_all
+        kdb run_all
+      fi
+    fi

@@ -224,4 +224,22 @@ TEST (test_iter, const_iterator)
 	ASSERT_EQ (it->getName (), "user/key4/2") << "name wrong";
 	ASSERT_EQ ((*it).getName (), "user/key4/2") << "name wrong";
 	it--;
+
+	ASSERT_EQ (it->getName (), "user/key4/1") << "name wrong";
+	ASSERT_EQ ((*it).getName (), "user/key4/1") << "name wrong";
+	++it;
+	ASSERT_EQ (it->getName (), "user/key4/2") << "name wrong";
+	ASSERT_EQ ((*it).getName (), "user/key4/2") << "name wrong";
+	++it;
+	ASSERT_EQ (it->getName (), "user/key4/3") << "name wrong";
+	ASSERT_EQ ((*it).getName (), "user/key4/3") << "name wrong";
+	++it;
+	ASSERT_EQ (it, ks4.end ()) << "not at end";
+	--it;
+	ASSERT_EQ (it->getName (), "user/key4/3") << "name wrong";
+	ASSERT_EQ ((*it).getName (), "user/key4/3") << "name wrong";
+	--it;
+	ASSERT_EQ (it->getName (), "user/key4/2") << "name wrong";
+	ASSERT_EQ ((*it).getName (), "user/key4/2") << "name wrong";
+	--it;
 }

@@ -21,7 +21,7 @@ Trie * test_insert (Trie * trie, char * name, char * value)
 }
 
 
-static void test_minimaltrie ()
+static void test_minimaltrie (void)
 {
 	printf ("Test minimal trie\n");
 
@@ -55,7 +55,7 @@ KeySet * simple_config (void)
 		      keyNew ("system/elektra/mountpoints/simple/mountpoint", KEY_VALUE, "user/tests/simple", KEY_END), KS_END);
 }
 
-static void test_simple ()
+static void test_simple (void)
 {
 	printf ("Test simple trie\n");
 
@@ -72,21 +72,20 @@ static void test_simple ()
 	keySetName (searchKey, "user/tests/simple");
 	backend = trieLookup (trie, searchKey);
 	succeed_if (backend, "there should be a backend");
-	compare_key (backend->mountpoint, mp);
-
+	if (backend) compare_key (backend->mountpoint, mp);
 
 	keySetName (searchKey, "user/tests/simple/below");
 	Backend * b2 = trieLookup (trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend == b2, "should be same backend");
-	compare_key (b2->mountpoint, mp);
+	if (b2) compare_key (b2->mountpoint, mp);
 
 
 	keySetName (searchKey, "user/tests/simple/deep/below");
 	b2 = trieLookup (trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend == b2, "should be same backend");
-	compare_key (b2->mountpoint, mp);
+	if (b2) compare_key (b2->mountpoint, mp);
 
 	trieClose (trie, 0);
 	keyDel (mp);
@@ -107,7 +106,7 @@ static void collect_mountpoints (Trie * trie, KeySet * mountpoints)
 	}
 }
 
-static void test_iterate ()
+static void test_iterate (void)
 {
 	printf ("Test iterate trie\n");
 
@@ -125,7 +124,7 @@ static void test_iterate ()
 	keySetName (searchKey, "user/tests/hosts");
 	backend = trieLookup (trie, searchKey);
 	succeed_if (backend, "there should be a backend");
-	compare_key (backend->mountpoint, mp);
+	if (backend) compare_key (backend->mountpoint, mp);
 	// printf ("backend: %p\n", (void*)backend);
 
 
@@ -133,7 +132,7 @@ static void test_iterate ()
 	Backend * b2 = trieLookup (trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend == b2, "should be same backend");
-	compare_key (b2->mountpoint, mp);
+	if (b2) compare_key (b2->mountpoint, mp);
 	// printf ("b2: %p\n", (void*)b2);
 
 
@@ -141,7 +140,7 @@ static void test_iterate ()
 	b2 = trieLookup (trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend == b2, "should be same backend");
-	compare_key (b2->mountpoint, mp);
+	if (b2) compare_key (b2->mountpoint, mp);
 
 
 	Key * mp2 = keyNew ("user/tests/hosts/below", KEY_VALUE, "below", KEY_END);
@@ -149,16 +148,16 @@ static void test_iterate ()
 	Backend * b3 = trieLookup (trie, searchKey);
 	succeed_if (b3, "there should be a backend");
 	succeed_if (backend != b3, "should be different backend");
-	compare_key (b3->mountpoint, mp2);
+	if (b3) compare_key (b3->mountpoint, mp2);
 	backend = b3;
 	// printf ("b3: %p\n", (void*)b3);
 
 
 	keySetName (searchKey, "user/tests/hosts/below/other/deep/below");
-	b2 = trieLookup (trie, searchKey);
+	b3 = trieLookup (trie, searchKey);
 	succeed_if (b3, "there should be a backend");
 	succeed_if (backend == b3, "should be same backend");
-	compare_key (b3->mountpoint, mp2);
+	if (b3) compare_key (b3->mountpoint, mp2);
 
 	KeySet * mps = ksNew (0, KS_END);
 	collect_mountpoints (trie, mps);
@@ -176,7 +175,7 @@ static void test_iterate ()
 	keyDel (searchKey);
 }
 
-static void test_reviterate ()
+static void test_reviterate (void)
 {
 	printf ("Test reviterate trie\n");
 
@@ -194,7 +193,7 @@ static void test_reviterate ()
 	keySetName (searchKey, "user/tests/hosts");
 	backend = trieLookup (trie, searchKey);
 	succeed_if (backend, "there should be a backend");
-	compare_key (backend->mountpoint, mp);
+	if (backend) compare_key (backend->mountpoint, mp);
 	// printf ("backend: %p\n", (void*)backend);
 
 
@@ -202,7 +201,7 @@ static void test_reviterate ()
 	Backend * b2 = trieLookup (trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend == b2, "should be same backend");
-	compare_key (b2->mountpoint, mp);
+	if (b2) compare_key (b2->mountpoint, mp);
 	// printf ("b2: %p\n", (void*)b2);
 
 
@@ -210,7 +209,7 @@ static void test_reviterate ()
 	b2 = trieLookup (trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend == b2, "should be same backend");
-	compare_key (b2->mountpoint, mp);
+	if (b2) compare_key (b2->mountpoint, mp);
 
 
 	Key * mp2 = keyNew ("user/tests/hosts/below", KEY_VALUE, "below", KEY_END);
@@ -218,16 +217,16 @@ static void test_reviterate ()
 	Backend * b3 = trieLookup (trie, searchKey);
 	succeed_if (b3, "there should be a backend");
 	succeed_if (backend != b3, "should be different backend");
-	compare_key (b3->mountpoint, mp2);
+	if (b3) compare_key (b3->mountpoint, mp2);
 	backend = b3;
 	// printf ("b3: %p\n", (void*)b3);
 
 
 	keySetName (searchKey, "user/tests/hosts/below/other/deep/below");
 	b2 = trieLookup (trie, searchKey);
-	succeed_if (b3, "there should be a backend");
-	succeed_if (backend == b3, "should be same backend");
-	compare_key (b3->mountpoint, mp2);
+	succeed_if (b2, "there should be a backend");
+	succeed_if (backend == b2, "should be same backend");
+	if (b2) compare_key (b2->mountpoint, mp2);
 
 	KeySet * mps = ksNew (0, KS_END);
 	collect_mountpoints (trie, mps);
@@ -273,7 +272,7 @@ KeySet * set_mountpoints (void)
 		      keyNew ("system/tests/hosts/below", KEY_VALUE, "sysbelow", KEY_END), KS_END);
 }
 
-static void test_moreiterate ()
+static void test_moreiterate (void)
 {
 	printf ("Test moreiterate trie\n");
 
@@ -315,48 +314,46 @@ static void test_moreiterate ()
 	keySetName (searchKey, "user/tests/hosts/below");
 	Backend * b3 = trieLookup (trie, searchKey);
 	succeed_if (b3, "there should be a backend");
-	compare_key (b3->mountpoint, ksLookupByName (mps, "user/tests/hosts/below", 0));
-	backend = b3;
+	if (b3) compare_key (b3->mountpoint, ksLookupByName (mps, "user/tests/hosts/below", 0));
 	// printf ("b3: %p\n", (void*)b3);
 
 
 	keySetName (searchKey, "user/tests/hosts/below/other/deep/below");
-	b2 = trieLookup (trie, searchKey);
-	succeed_if (b3, "there should be a backend");
-	compare_key (b3->mountpoint, ksLookupByName (mps, "user/tests/hosts/below", 0));
+	backend = trieLookup (trie, searchKey);
+	succeed_if (backend, "there should be a backend");
+	if (backend) compare_key (backend->mountpoint, ksLookupByName (mps, "user/tests/hosts/below", 0));
 
 	keySetName (searchKey, "system");
 	backend = trieLookup (trie, searchKey);
 	succeed_if (backend, "there should be a backend");
-	compare_key (backend->mountpoint, ksLookupByName (mps, "system", 0));
+	if (backend) compare_key (backend->mountpoint, ksLookupByName (mps, "system", 0));
 	// printf ("backend: %p\n", (void*)backend);
 
 
 	keySetName (searchKey, "system/tests/hosts/other/below");
 	b2 = trieLookup (trie, searchKey);
 	succeed_if (b2, "there should be a backend");
-	compare_key (b2->mountpoint, ksLookupByName (mps, "system/tests/hosts", 0));
+	if (b2) compare_key (b2->mountpoint, ksLookupByName (mps, "system/tests/hosts", 0));
 	// printf ("b2: %p\n", (void*)b2);
 
 
 	keySetName (searchKey, "system/tests/hosts/other/deep/below");
 	b2 = trieLookup (trie, searchKey);
 	succeed_if (b2, "there should be a backend");
-	compare_key (b2->mountpoint, ksLookupByName (mps, "system/tests/hosts", 0));
+	if (b2) compare_key (b2->mountpoint, ksLookupByName (mps, "system/tests/hosts", 0));
 
 
 	keySetName (searchKey, "system/tests/hosts/below");
 	b3 = trieLookup (trie, searchKey);
 	succeed_if (b3, "there should be a backend");
-	compare_key (b3->mountpoint, ksLookupByName (mps, "system/tests/hosts/below", 0));
-	backend = b3;
+	if (b3) compare_key (b3->mountpoint, ksLookupByName (mps, "system/tests/hosts/below", 0));
 	// printf ("b3: %p\n", (void*)b3);
 
 
 	keySetName (searchKey, "system/tests/hosts/below/other/deep/below");
 	b2 = trieLookup (trie, searchKey);
-	succeed_if (b3, "there should be a backend");
-	compare_key (b3->mountpoint, ksLookupByName (mps, "system/tests/hosts/below", 0));
+	succeed_if (b2, "there should be a backend");
+	if (b2) compare_key (b2->mountpoint, ksLookupByName (mps, "system/tests/hosts/below", 0));
 
 	KeySet * mps_cmp = ksNew (0, KS_END);
 	collect_mountpoints (trie, mps_cmp);
@@ -370,7 +367,7 @@ static void test_moreiterate ()
 	keyDel (searchKey);
 }
 
-static void test_revmoreiterate ()
+static void test_revmoreiterate (void)
 {
 	printf ("Test revmoreiterate trie\n");
 
@@ -441,68 +438,66 @@ static void test_revmoreiterate ()
 		keySetName (searchKey, "user");
 		Backend * backend = trieLookup (trie, searchKey);
 		succeed_if (backend, "there should be a backend");
-		compare_key (backend->mountpoint, ksLookupByName (mps, "user", 0));
+		if (backend) compare_key (backend->mountpoint, ksLookupByName (mps, "user", 0));
 		// printf ("backend: %p\n", (void*)backend);
 
 
 		keySetName (searchKey, "user/tests/hosts/other/below");
 		Backend * b2 = trieLookup (trie, searchKey);
 		succeed_if (b2, "there should be a backend");
-		compare_key (b2->mountpoint, ksLookupByName (mps, "user/tests/hosts", 0));
+		if (b2) compare_key (b2->mountpoint, ksLookupByName (mps, "user/tests/hosts", 0));
 		// printf ("b2: %p\n", (void*)b2);
 
 
 		keySetName (searchKey, "user/tests/hosts/other/deep/below");
 		b2 = trieLookup (trie, searchKey);
 		succeed_if (b2, "there should be a backend");
-		compare_key (b2->mountpoint, ksLookupByName (mps, "user/tests/hosts", 0));
+		if (b2) compare_key (b2->mountpoint, ksLookupByName (mps, "user/tests/hosts", 0));
 
 
 		keySetName (searchKey, "user/tests/hosts/below");
 		Backend * b3 = trieLookup (trie, searchKey);
 		succeed_if (b3, "there should be a backend");
-		compare_key (b3->mountpoint, ksLookupByName (mps, "user/tests/hosts/below", 0));
-		backend = b3;
+		if (b3) compare_key (b3->mountpoint, ksLookupByName (mps, "user/tests/hosts/below", 0));
 		// printf ("b3: %p\n", (void*)b3);
 
 
 		keySetName (searchKey, "user/tests/hosts/below/other/deep/below");
-		b2 = trieLookup (trie, searchKey);
-		succeed_if (b3, "there should be a backend");
-		compare_key (b3->mountpoint, ksLookupByName (mps, "user/tests/hosts/below", 0));
+		backend = trieLookup (trie, searchKey);
+		succeed_if (backend, "there should be a backend");
+		if (backend) compare_key (backend->mountpoint, ksLookupByName (mps, "user/tests/hosts/below", 0));
 
 		keySetName (searchKey, "system");
 		backend = trieLookup (trie, searchKey);
 		succeed_if (backend, "there should be a backend");
-		compare_key (backend->mountpoint, ksLookupByName (mps, "system", 0));
+		if (backend) compare_key (backend->mountpoint, ksLookupByName (mps, "system", 0));
 		// printf ("backend: %p\n", (void*)backend);
 
 
 		keySetName (searchKey, "system/tests/hosts/other/below");
 		b2 = trieLookup (trie, searchKey);
 		succeed_if (b2, "there should be a backend");
-		compare_key (b2->mountpoint, ksLookupByName (mps, "system/tests/hosts", 0));
+		if (b2) compare_key (b2->mountpoint, ksLookupByName (mps, "system/tests/hosts", 0));
 		// printf ("b2: %p\n", (void*)b2);
 
 
 		keySetName (searchKey, "system/tests/hosts/other/deep/below");
 		b2 = trieLookup (trie, searchKey);
 		succeed_if (b2, "there should be a backend");
-		compare_key (b2->mountpoint, ksLookupByName (mps, "system/tests/hosts", 0));
+		if (b2) compare_key (b2->mountpoint, ksLookupByName (mps, "system/tests/hosts", 0));
 
 
 		keySetName (searchKey, "system/tests/hosts/below");
 		b3 = trieLookup (trie, searchKey);
 		succeed_if (b3, "there should be a backend");
-		compare_key (b3->mountpoint, ksLookupByName (mps, "system/tests/hosts/below", 0));
-		backend = b3;
+		if (b3) compare_key (b3->mountpoint, ksLookupByName (mps, "system/tests/hosts/below", 0));
 		// printf ("b3: %p\n", (void*)b3);
 
 
 		keySetName (searchKey, "system/tests/hosts/below/other/deep/below");
 		b2 = trieLookup (trie, searchKey);
-		succeed_if (b3, "there should be a backend");
-		compare_key (b3->mountpoint, ksLookupByName (mps, "system/tests/hosts/below", 0));
+		succeed_if (b2, "there should be a backend");
+		if (b2) compare_key (b2->mountpoint, ksLookupByName (mps, "system/tests/hosts/below", 0));
 
 		/*
 		printf ("---------\n");
@@ -524,7 +519,7 @@ static void test_revmoreiterate ()
 }
 
 
-static void test_umlauts ()
+static void test_umlauts (void)
 {
 	printf ("Test umlauts trie\n");
 
@@ -544,7 +539,7 @@ static void test_umlauts ()
 	keySetName (searchKey, "user/umlauts/test");
 	backend = trieLookup (trie, searchKey);
 	succeed_if (backend, "there should be a backend");
-	compare_key (backend->mountpoint, mp);
+	if (backend) compare_key (backend->mountpoint, mp);
 
 
 	keySetName (searchKey, "user/umlauts#test");
@@ -553,7 +548,7 @@ static void test_umlauts ()
 	Backend * b2 = trieLookup (trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend != b2, "should be other backend");
-	compare_key (b2->mountpoint, mp);
+	if (b2) compare_key (b2->mountpoint, mp);
 
 
 	keySetName (searchKey, "user/umlauts test");
@@ -562,7 +557,7 @@ static void test_umlauts ()
 	b2 = trieLookup (trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend != b2, "should be other backend");
-	compare_key (b2->mountpoint, mp);
+	if (b2) compare_key (b2->mountpoint, mp);
 
 	keySetName (searchKey, "user/umlauts\200test");
 	keySetName (mp, "user/umlauts\200test");
@@ -570,7 +565,7 @@ static void test_umlauts ()
 	b2 = trieLookup (trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend != b2, "should be other backend");
-	compare_key (b2->mountpoint, mp);
+	if (b2) compare_key (b2->mountpoint, mp);
 
 	// output_trie(trie);
 
@@ -579,7 +574,7 @@ static void test_umlauts ()
 	keyDel (searchKey);
 }
 
-static void test_endings ()
+static void test_endings (void)
 {
 	printf ("Test endings trie\n");
 
@@ -626,7 +621,7 @@ static void test_endings ()
 		keySetName (searchKey, "user/endings");
 		backend = trieLookup (trie, searchKey);
 		succeed_if (backend, "there should be a backend");
-		compare_key (backend->mountpoint, mp);
+		if (backend) compare_key (backend->mountpoint, mp);
 
 
 		keySetName (searchKey, "user/endings#");
@@ -635,7 +630,7 @@ static void test_endings ()
 		Backend * b2 = trieLookup (trie, searchKey);
 		succeed_if (b2, "there should be a backend");
 		succeed_if (backend != b2, "should be other backend");
-		compare_key (b2->mountpoint, mp);
+		if (b2) compare_key (b2->mountpoint, mp);
 
 
 		keySetName (searchKey, "user/endings/_");
@@ -644,7 +639,7 @@ static void test_endings ()
 		b2 = trieLookup (trie, searchKey);
 		succeed_if (b2, "there should be a backend");
 		succeed_if (backend == b2, "should be the same backend");
-		compare_key (b2->mountpoint, mp);
+		if (b2) compare_key (b2->mountpoint, mp);
 
 
 		keySetName (searchKey, "user/endings/X");
@@ -653,7 +648,7 @@ static void test_endings ()
 		b2 = trieLookup (trie, searchKey);
 		succeed_if (b2, "there should be a backend");
 		succeed_if (backend == b2, "should be the same backend");
-		compare_key (b2->mountpoint, mp);
+		if (b2) compare_key (b2->mountpoint, mp);
 
 
 		keySetName (searchKey, "user/endings_");
@@ -677,7 +672,7 @@ static void test_endings ()
 		b2 = trieLookup (trie, searchKey);
 		succeed_if (b2, "there should be a backend");
 		succeed_if (backend != b2, "should be other backend");
-		compare_key (b2->mountpoint, mp);
+		if (b2) compare_key (b2->mountpoint, mp);
 
 		keySetName (searchKey, "user/endings\200");
 		keySetName (mp, "user/endings\200");
@@ -685,7 +680,7 @@ static void test_endings ()
 		b2 = trieLookup (trie, searchKey);
 		succeed_if (b2, "there should be a backend");
 		succeed_if (backend != b2, "should be other backend");
-		compare_key (b2->mountpoint, mp);
+		if (b2) compare_key (b2->mountpoint, mp);
 
 		// output_trie(trie);
 
@@ -695,7 +690,7 @@ static void test_endings ()
 	}
 }
 
-static void test_root ()
+static void test_root (void)
 {
 	printf ("Test trie with root\n");
 
@@ -709,28 +704,28 @@ static void test_root ()
 	Key * rmp = keyNew ("", KEY_VALUE, "root", KEY_END);
 	Backend * backend = trieLookup (trie, searchKey);
 	succeed_if (backend, "there should be the root backend");
-	compare_key (backend->mountpoint, rmp);
+	if (backend) compare_key (backend->mountpoint, rmp);
 
 
 	Key * mp = keyNew ("user/tests/simple", KEY_VALUE, "simple", KEY_END);
 	keySetName (searchKey, "user/tests/simple");
 	backend = trieLookup (trie, searchKey);
 	succeed_if (backend, "there should be a backend");
-	compare_key (backend->mountpoint, mp);
+	if (backend) compare_key (backend->mountpoint, mp);
 
 
 	keySetName (searchKey, "user/tests/simple/below");
 	Backend * b2 = trieLookup (trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend == b2, "should be same backend");
-	compare_key (b2->mountpoint, mp);
+	if (b2) compare_key (b2->mountpoint, mp);
 
 
 	keySetName (searchKey, "user/tests/simple/deep/below");
 	b2 = trieLookup (trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend == b2, "should be same backend");
-	compare_key (b2->mountpoint, mp);
+	if (b2) compare_key (b2->mountpoint, mp);
 
 	// output_trie(trie);
 
@@ -740,7 +735,7 @@ static void test_root ()
 	keyDel (searchKey);
 }
 
-static void test_double ()
+static void test_double (void)
 {
 	printf ("Test double insertion\n");
 
@@ -772,7 +767,7 @@ static void test_double ()
 	trieClose (trie, 0);
 }
 
-static void test_emptyvalues ()
+static void test_emptyvalues (void)
 {
 	printf ("Test empty values in trie\n");
 

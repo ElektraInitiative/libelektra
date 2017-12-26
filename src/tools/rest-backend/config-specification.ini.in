@@ -152,7 +152,7 @@ description = User application objects are generally cached in special pool for 
 [@config_default_profile@/cppcms/service/disable_xpowered_by]
 check/type = boolean
 description = By default CppCMS sends X-Powered-By: CppCMS/X.Y.Z handler in response, this can be disabled by setting this parameter to true.
-default = false
+default = 0
 
 [@config_default_profile@/cppcms/service/output_buffer_size]
 check/type = long
@@ -162,7 +162,7 @@ default = 16384
 [@config_default_profile@/cppcms/service/generate_http_headers]
 check/type = boolean
 description = Send the HTTP headers in response rather then CGI ones. Useful for broken SCGI connectors like isapi_scgi.
-default = false
+default = 0
 
 [@config_default_profile@/cppcms/security/content_length_limit]
 check/type = long
@@ -186,12 +186,12 @@ description = The location of temporary upload files. By default they are saved 
 [@config_default_profile@/cppcms/security/display_error_message]
 check/type = boolean
 description = When the exception is thrown by user application and this parameter set to true its message what() would be displayed in 500 Internal Server error page, it is useful for debugging. However it should never be used in production environment.
-default = false
+default = 0
 
 [@config_default_profile@/cppcms/daemon/enable]
 check/type = boolean
 description = Create daemon process - fork off and become session leader.
-default = true
+default = 1
 
 [@config_default_profile@/cppcms/daemon/lock]
 check/type = string

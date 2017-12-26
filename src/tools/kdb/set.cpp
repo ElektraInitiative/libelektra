@@ -70,7 +70,7 @@ int SetCommand::execute (Cmdline const & cl)
 		key = Key (name, KEY_END);
 		if (!nullValue)
 		{
-			toprint << " with string " << value << endl;
+			toprint << " with string \"" << value << '"' << endl;
 			key.setString (value);
 		}
 		else
@@ -89,7 +89,7 @@ int SetCommand::execute (Cmdline const & cl)
 	{
 		if (!nullValue)
 		{
-			toprint << "Set string to " << value << endl;
+			toprint << "Set string to \"" << value << '"' << endl;
 			key.setString (value);
 		}
 		else

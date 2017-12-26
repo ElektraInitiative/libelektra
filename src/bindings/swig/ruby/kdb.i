@@ -8,7 +8,7 @@
 
 %feature("autodoc", "3");
 
-%define CPPDOCURL "http://doc.libelektra.org/api/current/html" %enddef
+%define CPPDOCURL "https://doc.libelektra.org/api/current/html" %enddef
 
 %define DOCSTRING
 "This module is a SWIG generated binding for KDB (https://www.libelektra.org),
@@ -28,6 +28,7 @@ Please note, this documentation will show C++ types too (e.g. std::string).
 %enddef
 /* docstring for module implemented for swig >= 3.0.18 */
 %module(docstring=DOCSTRING) kdb
+#pragma SWIG nowarn=317 // Disable warning: Specialization of non-template
 
 
 

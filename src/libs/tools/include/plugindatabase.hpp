@@ -34,9 +34,11 @@ protected:
 	typedef void (*func_t) ();
 
 public:
+	/* TODO: reintroduce with next API break
 	virtual ~PluginDatabase ()
 	{
 	}
+	*/
 
 	/**
 	 * @brief list all plugins
@@ -194,7 +196,7 @@ public:
 	 * 
 	 * @param conf keyset containing keys from system/elektra/plugins
 	 */
-	PluginVariantDatabase (const KeySet & conf);
+	explicit PluginVariantDatabase (const KeySet & conf);
 	~PluginVariantDatabase ();
 
 	std::vector<std::string> listAllPlugins () const;

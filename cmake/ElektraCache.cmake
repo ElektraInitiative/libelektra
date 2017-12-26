@@ -261,6 +261,7 @@ option (BUILD_DOCUMENTATION "Build the documentation (API, man pages)" ON)
 if (BUILD_DOCUMENTATION)
 	option (INSTALL_DOCUMENTATION "Install the documentation (API, man pages)" ON)
 	option (BUILD_PDF "Build the documentation also in PDF form" OFF)
+	option (BUILD_DOCSET "Generate a DocSet usable in applications such as Xcode, Dash and Zeal" OFF)
 else (BUILD_DOCUMENTATION)
 	#install documentation makes no sense if it is not build
 	#(even though the option would not harm)
@@ -300,7 +301,7 @@ endif ()
 
 option (INSTALL_BUILD_TOOLS "Install build tools for cross-compilation" OFF)
 
-option (ENABLE_OPTIMIZATIONS "Turn on optimizations that trade memory for speed" ON)
+option (ENABLE_OPTIMIZATIONS "Turn on optimizations that trade memory for speed" OFF)
 
 
 #
@@ -453,22 +454,35 @@ set(DISCLAMER "
 
 
 MARK_AS_ADVANCED(FORCE
-	# might be relevant to users:
+	# might be relevant to a few users:
 	GTEST_ROOT
 	COVERAGE_PREFIX
-	Boost_DIR
+	CMAKE_PIC_FLAGS
+	CMAKE_STATIC_FLAGS
 
-	# are kind of internal:
-	SWIG_DIR SWIG_EXECUTABLE SWIG_VERSION
+	SWIG_EXECUTABLE
+	MAVEN_EXECUTABLE
+	NPM_EXECUTABLE
+	RONN_LOC
+
+	Boost_DIR
+	BOTAN_INCLUDE_DIRS
+	LIBGCRYPT_INCLUDE_DIR
+	XercesC_DIR
+	OPENSSL_INCLUDE_DIR
+	LUA_EXECUTABLE
+
+	# others are internal (not to be changed by users):
+	SWIG_DIR
+	SWIG_VERSION
 	gtest_build_samples gtest_build_tests gtest_disable_pthreads
 	gtest_force_shared_crt BUILD_SHARED_LIBS
 
-	ADDED_DIRECTORIES
-	ADDED_PLUGINS
-	REMOVED_PLUGINS
+	BOOST_THREAD_LIBRARY
+
+	ADDED_DIRECTORIES ADDED_PLUGINS REMOVED_PLUGINS
 
 	LIBGCRYPTCONFIG_EXECUTABLE
-	RONN_LOC
 
 	jna
 
@@ -480,4 +494,6 @@ MARK_AS_ADVANCED(FORCE
 	Qt5Test_DIR
 	Qt5Widgets_DIR
 	Qt5_DIR
+	Qt5DBus_DIR
+	Qt5Svg_DIR
 	)

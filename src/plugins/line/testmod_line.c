@@ -20,7 +20,7 @@
 
 #include <tests_plugin.h>
 
-void test_readline ()
+void test_readline (void)
 {
 
 	char * filename = srcdir_file ("line/linetest");
@@ -58,7 +58,7 @@ int main (int argc, char ** argv)
 
 	test_readline ();
 
-	printf ("\ntest_line RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("test_line");
 
 	return nbError;
 }

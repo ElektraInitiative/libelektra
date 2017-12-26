@@ -83,7 +83,7 @@ kdb ls /examples/line
 
 kdb set /examples/line/#1 huhu
 #> Using name user/examples/line/#1
-#> Set string to huhu
+#> Set string to "huhu"
 
 kdb export /examples/line line
 #> something

@@ -40,16 +40,16 @@ The user should specify the format that the current configuration or keys are in
   Show the man page.
 - `-V`, `--version`:
   Print version info.
-- `-p`, `--profile`=<profile>:
+- `-p`, `--profile <profile>`:
   Use a different kdb profile.
-- `s`, `--strategy <name>`:
+- `-C`, `--color <when>`:
+  Print never/auto(default)/always colored output.
+- `-s`, `--strategy <name>`:
   Specify which strategy should be used to resolve conflicts.
 - `-v`, `--verbose`:
   Explain what is happening.
 - `-e`, `--editor <editor>`:
   Which editor to use.
-- `-C`, `--color`=[when]:
-  Print never/auto(default)/always colored output.
 - `-N`, `--namespace`=<ns>:
   Specify the namespace to use when writing cascading keys (`validation` strategy only).
   See [below in KDB](#KDB).

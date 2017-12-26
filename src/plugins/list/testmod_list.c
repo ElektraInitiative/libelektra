@@ -14,7 +14,7 @@
 
 #include <tests_plugin.h>
 
-static void doTest ()
+static void doTest (void)
 {
 	KeySet * ks = ksNew (5, keyNew ("user/tests/list/to/be/cut/key1", KEY_END), keyNew ("user/tests/list/to/be/cut/key2", KEY_END),
 			     keyNew ("user/tests/list/to/be/cut/meta1", KEY_END),
@@ -74,7 +74,7 @@ int main (int argc, char ** argv)
 
 	doTest ();
 
-	printf ("\ntestmod_list RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("testmod_list");
 
 	return nbError;
 }

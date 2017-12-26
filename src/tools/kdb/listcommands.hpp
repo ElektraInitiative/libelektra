@@ -20,7 +20,7 @@ public:
 
 	virtual std::string getShortOptions () override
 	{
-		return "0vC";
+		return "0v";
 	}
 
 	virtual std::string getSynopsis () override

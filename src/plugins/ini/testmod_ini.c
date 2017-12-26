@@ -251,7 +251,7 @@ static void test_multilineIniWrite (char * fileName)
 
 	PLUGIN_CLOSE ();
 }
-static void test_multilineIniInvalidConfigWrite ()
+static void test_multilineIniInvalidConfigWrite (void)
 {
 	Key * parentKey = keyNew ("user/tests/ini-multiline-write", KEY_VALUE, elektraFilename (), KEY_END);
 	KeySet * conf = ksNew (30, keyNew ("system/multiline", KEY_VALUE, "0", KEY_END),
@@ -608,7 +608,7 @@ int main (int argc, char ** argv)
 	test_commentDefaultChar ("ini/commentini");
 	test_readCommentMeta ("ini/testCommentMeta.ini");
 	test_writeMeta ("ini/writeCommentMeta.ini");
-	printf ("\ntest_ini RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("test_ini");
 
 	return nbError;
 }

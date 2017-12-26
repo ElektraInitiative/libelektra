@@ -14,7 +14,7 @@
 
 #include <tests_plugin.h>
 
-void test_read ()
+void test_read (void)
 {
 	Key * parentKey = keyNew ("user/tests/passwd-read", KEY_VALUE, srcdir_file ("passwd/passwd_in"), KEY_END);
 	KeySet * conf = ksNew (10, keyNew ("system/index", KEY_VALUE, "name", KEY_END), KS_END);
@@ -29,7 +29,7 @@ void test_read ()
 	PLUGIN_CLOSE ();
 }
 
-void test_write ()
+void test_write (void)
 {
 	Key * parentKey = keyNew ("user/tests/passwd-write", KEY_VALUE, elektraFilename (), KEY_END);
 	KeySet * conf = ksNew (30, keyNew ("system/index", KEY_VALUE, "name", KEY_END), KS_END);
@@ -48,7 +48,7 @@ void test_write ()
 	PLUGIN_CLOSE ();
 }
 
-void test_read_write ()
+void test_read_write (void)
 {
 	Key * parentKeyRead = keyNew ("user/tests/passwd-write", KEY_VALUE, srcdir_file ("passwd/passwd_in"), KEY_END);
 	Key * parentKeyWrite = keyNew ("user/tests/passwd-write", KEY_VALUE, elektraFilename (), KEY_END);
@@ -81,7 +81,7 @@ int main (int argc, char ** argv)
 	test_read_write ();
 #endif
 
-	printf ("\ntestmod_passwd RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("testmod_passwd");
 
 	return nbError;
 }

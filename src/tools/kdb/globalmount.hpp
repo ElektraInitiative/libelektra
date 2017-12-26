@@ -34,7 +34,7 @@ public:
 
 	virtual std::string getShortOptions () override
 	{
-		return "WC"; // TODO: c not implemented
+		return "W"; // TODO: c not implemented
 	}
 
 	virtual std::string getSynopsis () override

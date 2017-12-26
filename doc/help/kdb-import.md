@@ -40,17 +40,17 @@ The other strategies are implemented by the merge framework and are documented i
   Show the man page.
 - `-V`, `--version`:
   Print version info.
-- `-p`, `--profile`=<profile>:
+- `-p`, `--profile <profile>`:
   Use a different kdb profile.
+- `-C`, `--color <when>`:
+  Print never/auto(default)/always colored output.
 - `-s`, `--strategy <name>`:
   Specify which strategy should be used to resolve conflicts.
 - `-v`, `--verbose`:
   Explain what is happening.
 - `-c`, `--plugins-config`:
   Add a configuration to the format plugin.
-- `-C`, `--color`=[when]:
-  Print never/auto(default)/always colored output.
-- `-N`, `--namespace`=<ns>:
+- `-N`, `--namespace <namespace>`:
   Specify the namespace to use when writing cascading keys (`validate` strategy only).
   See [below in KDB](#KDB).
 

@@ -1,0 +1,44 @@
+#!/bin/sh
+
+WORKINGDIR="@CMAKE_INSTALL_PREFIX@/lib@LIB_SUFFIX@/@TARGET_PLUGIN_FOLDER@/"
+
+if [ -z "$KDB" ];
+then
+    KDB=kdb
+fi
+
+if [ "$#" -ne 1 ];
+then
+	echo "Usage: $KDB change-resolver-symlink resolver"
+	exit 1
+fi
+
+RESOLVER="$1"
+
+if [ "$RESOLVER" = "resolver" ];
+then
+	echo "new default resolver plugin must be a specific resolver"
+	exit 1
+fi
+
+INFO="$($KDB info "$RESOLVER" 2>/dev/null)"
+
+if [ "$?" -ne 0 ];
+then
+	echo "$RESOLVER is not a valid plugin"
+	exit 1
+fi
+
+INFO="$(echo "$INFO" | tail -n 6 2>/dev/null)"
+
+echo "$INFO" | grep -q "provides: resolver" 2> /dev/null
+
+if [ "$?" -ne 0 ];
+then
+	echo "$RESOLVER is not a valid resolver"
+	exit 1
+else
+	unlink "${WORKINGDIR}/libelektra-resolver.so" > /dev/null 2>&1
+	ln -srL "${WORKINGDIR}/libelektra-${RESOLVER}.so" "${WORKINGDIR}libelektra-resolver.so" > /dev/null 2>&1
+fi
+exit 0

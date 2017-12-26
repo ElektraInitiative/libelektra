@@ -38,7 +38,7 @@ public:
 
 	virtual std::string getShortOptions () override
 	{
-		return "C";
+		return "";
 	}
 
 	virtual std::string getSynopsis () override

@@ -22,6 +22,23 @@ CpCommand::CpCommand ()
 {
 }
 
+namespace
+{
+void copySingleKey (Cmdline const & cl, Key const & rk, KeySet & tmpConf, KeySet & newConf)
+{
+	if (cl.force)
+	{
+		tmpConf.lookup (rk, KDB_O_POP);
+	}
+	else if (tmpConf.lookup (rk))
+	{
+		throw CommandAbortException (
+			std::string ("Copy will have no effect, because " + rk.getName () + " already exists").c_str (), 11);
+	}
+	newConf.append (rk);
+}
+}
+
 int CpCommand::execute (Cmdline const & cl)
 {
 	if (cl.arguments.size () != 2)
@@ -62,11 +79,7 @@ int CpCommand::execute (Cmdline const & cl)
 		while ((k = oldConf.next ()))
 		{
 			Key rk = rename_key (k, sourceName, newDirName, cl.verbose);
-			if (tmpConf.lookup (rk))
-			{
-				std::cerr << "Coping of " << rk.getName () << " will have no effect (already exists)" << endl;
-			}
-			newConf.append (rk);
+			copySingleKey (cl, rk, tmpConf, newConf);
 		}
 	}
 	else
@@ -74,11 +87,7 @@ int CpCommand::execute (Cmdline const & cl)
 		// just copy one key
 		Key k = oldConf.next ();
 		Key rk = rename_key (k, sourceName, newDirName, cl.verbose);
-		if (tmpConf.lookup (rk))
-		{
-			std::cerr << "Copy will have no effect, because " << rk.getName () << " already exists" << endl;
-		}
-		newConf.append (rk);
+		copySingleKey (cl, rk, tmpConf, newConf);
 	}
 
 	newConf.append (tmpConf); // these are unrelated keys

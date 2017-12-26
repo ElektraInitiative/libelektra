@@ -7,8 +7,8 @@ kdb-shell(1) -- Start a kdb shell instance
 
 ## DESCRIPTION
 
-This command is used to start an instance of the kdb shell.  
-The kdb shell allows for a user to interactively view, edit, or otherwise work with the key database.  
+This command is used to start an instance of the kdb shell.<br>
+The kdb shell allows for a user to interactively view, edit, or otherwise work with the key database.<br>
 
 ## SHELL COMMANDS
 
@@ -37,9 +37,9 @@ The kdb shell offers a number of commands to interact with the key database.
   Show the man page.
 - `-V`, `--version`:
   Print version info.
-- `-p`, `--profile`=<profile>:
+- `-p`, `--profile <profile>`:
   Use a different kdb profile.
-- `-C`, `--color`=[when]:
+- `-C`, `--color <when>`:
   Print never/auto(default)/always colored output.
 
 ## EXAMPLES
@@ -49,5 +49,5 @@ To execute commands from a textfile, you can use:
 
 ## SEE ALSO
 
-To learn more about these commands and how they work, refer to the [Elektra API Documentation](http://doc.libelektra.org/api/current/html).
+To learn more about these commands and how they work, refer to the [Elektra API Documentation](https://doc.libelektra.org/api/current/html).
 

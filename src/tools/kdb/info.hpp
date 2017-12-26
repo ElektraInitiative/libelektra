@@ -16,15 +16,13 @@
 
 class InfoCommand : public Command
 {
-	kdb::KDB kdb;
-
 public:
 	InfoCommand ();
 	~InfoCommand ();
 
 	virtual std::string getShortOptions () override
 	{
-		return "lcC";
+		return "lc";
 	}
 
 	virtual std::string getSynopsis () override

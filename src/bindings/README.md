@@ -1,6 +1,6 @@
 # Bindings
 
-[Elektra’s API](http://doc.libelektra.org/api/latest/html/) is written in C,
+[Elektra’s API](https://doc.libelektra.org/api/latest/html/) is written in C,
 but many different bindings allow *applications* in different programming languages
 to use Elektra.
 
@@ -18,12 +18,13 @@ List of currently supported bindings (included in `ALL`):
 - [swig_python](swig/python/) Python 3 SWIG bindings
 - [swig_python2](swig/python2/) Python 2 SWIG bindings
 - [swig_ruby](swig/ruby/) Ruby bindings
-- [intercept_fs](intercept/fs/) Intercepts file system calls to configuration files
 - [intercept_env](intercept/env/) Intercepts calls to environment (e.g. getenv())
+- [intercept_fs](intercept/fs/) Intercepts file system calls to configuration files (experimental)
 
 Experimental bindings (not included in `ALL`):
 
 - [gsettings](gsettings/) GLib bindings (experimental)
+- [haskell](haskell/) Haskell bindings
 
 Deprecated bindings (not included in `ALL`):
 

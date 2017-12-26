@@ -28,12 +28,12 @@ Use `kdb file system/elektra/globalplugins` to find out where exactly it will wr
   Show the man page.
 - `-V`, `--version`:
   Print version info.
-- `-p`, `--profile`=<profile>:
+- `-p`, `--profile <profile>`:
   Use a different kdb profile.
+- `-C`, `--color <when>`:
+  Print never/auto(default)/always colored output.
 - `-W`, `--with-recommends`:
   Also add recommended plugins and warn if they are not available.
-- `-C`, `--color`=[when]:
-  Print never/auto(default)/always colored output.
 
 
 
@@ -59,4 +59,3 @@ For every change of KDB, write to syslog and notify by dbus:
 - [elektra-glossary(7)](elektra-glossary.md).
 - [kdb-umount(7)](kdb-umount.md).
 - [elektra-mounting(7)](elektra-mounting.md).
-- [elektra-plugins-framework(7)](elektra-plugins-framework.md).

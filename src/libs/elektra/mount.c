@@ -38,7 +38,7 @@
  *
  * The config will be deleted within this function.
  *
- * @notemountDefault is not allowed to be executed before
+ * @note mountDefault is not allowed to be executed before
  *
  * @param kdb the handle to work with
  * @param modules the current list of loaded modules
@@ -309,7 +309,7 @@ Plugin * elektraMountGlobalsLoadPlugin (KeySet * referencePlugins, Key * cur, Ke
 	return plugin;
 }
 
-KeySet * elektraDefaultGlobalConfig ()
+KeySet * elektraDefaultGlobalConfig (void)
 {
 	return ksNew (
 		18, keyNew ("system/elektra/globalplugins", KEY_VALUE, "", KEY_END),

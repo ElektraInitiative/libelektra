@@ -6,7 +6,7 @@ This page is the first point for anyone interested in contributing to Elektra!
 ## How can I get started?
 
 We prepared
-[beginner friendly tasks](https://github.com/ElektraInitiative/libelektra/issues?q=is%3Aissue+is%3Aopen+label%3A%22beginner+friendly%22)
+[good first issues](https://github.com/ElektraInitiative/libelektra/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
 for you.
 
 - We encourage you to improve documentation.

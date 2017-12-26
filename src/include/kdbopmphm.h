@@ -1,57 +1,99 @@
+/**
+ * @file
+ *
+ * @brief Defines for the Order Preserving Minimal Perfect Hash Map.
+ *
+ * @copyright BSD License (see doc/COPYING or https://www.libelektra.org)
+ */
 #ifndef OPMPHM_H
 #define OPMPHM_H
 
-#include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
 
 /**
- * The Order Preserving Minimal Perfect Hash Map (OPMPHM) first maps each key name to a k-tuple, k is stored in OPMPHMTUPLE.
- * Each element of the k-tuples is in the range 0 to width. The width (abbreviated with w) determines how many keys can fit in the OPMPHM.
- * w^OPMPHMTUPLE is the maximum number of keys that fit in. w is set dynamically to the minimum value that:
- *
- * w^OPMPHMTUPLE > opmphmRatio * n
- *
- * opmphmRatio should never be less than 1.
+ * For usage look in [datastructures.md](/doc/dev/datastructures.md) 
  *
  */
-#define OPMPHMTUPLE 7
-extern double opmphmRatio;
-
 
 /**
- * Saves a k-tuple in h[] and tells the OPMPHM the return value of each element, only needed during build.
+ * The r-uniform r-partite hypergraph
  */
 typedef struct
 {
-	size_t h[OPMPHMTUPLE]; /*!< the k-tuple filled by the OPMPHM with the hash function values */
-	size_t order;	  /*!< the desired return value */
-} OpmphmOrder;
+	uint32_t * h;      /*!< array with Opmphm->rUniPar hash function values, representing the index of vertices that the edge connects*/
+	size_t order;      /*!< desired hash map return value */
+	size_t * nextEdge; /*!< arary with Opmphm->rUniPar indices of the next edge in the lists */
+} OpmphmEdge;
+
+typedef struct
+{
+	size_t firstEdge; /*!< first edge in the list of edges of a vertex */
+	size_t degree;    /*!< length of the list */
+} OpmphmVertex;
+
+typedef struct
+{
+	OpmphmEdge * edges;      /*!< array of all edges */
+	OpmphmVertex * vertices; /*!< array of all vertices */
+	size_t * removeOrder;    /*!< remove sequence of acyclic r-uniform r-partite hypergraph */
+	size_t removeIndex;      /*!< the index used for insertion in removeOrder  */
+} OpmphmGraph;
+
+/**
+ * The opmphm
+ */
+typedef struct
+{
+	int32_t * hashFunctionSeeds; /*!< arary with Opmphm->rUniPar seeds for the hash function calls */
+	uint8_t rUniPar;	     /*! < number of components in the r-uniform r-partite hypergraph */
+	size_t componentSize;	/*!< the number of vertices in one part of the r-uniform r-partite hypergraph */
+	size_t * graph;		     /*!< array containing the final OPMPHM */
+	size_t size;		     /*!< size of g in bytes */
+} Opmphm;
+
+/**
+ * Functions providing `r` and `c`
+ */
+double opmphmMinC (uint8_t r);
+uint8_t opmphmOptR (size_t n);
+double opmphmOptC (size_t n);
+
+/**
+ * Graph functions
+ */
+OpmphmGraph * opmphmGraphNew (Opmphm * opmphm, uint8_t r, size_t n, double c);
+void opmphmGraphClear (Opmphm * opmphm, OpmphmGraph * graph);
+void opmphmGraphDel (OpmphmGraph * graph);
 
 /**
  * Only needed for Initialisation.
  */
-typedef const char * (*opmphmGetString) (void *);
+typedef const char * (*opmphmGetName) (void *);
 typedef struct
 {
-	opmphmGetString getString; /*!< Function pointer used to extract the key name from the data. */
-	void ** data;		   /*!< The data */
-	uint32_t initSeed;	 /*!< seed for random actions */
+	opmphmGetName getName; /*!< function pointer used to extract the key name from the data. */
+	void ** data;	  /*!< the data */
+	int32_t initSeed;      /*!< seed used to determine opmphmHashFunctionSeeds */
 } OpmphmInit;
 
+/**
+ * Build functions
+ */
+int opmphmMapping (Opmphm * opmphm, OpmphmGraph * graph, OpmphmInit * init, size_t n);
+int opmphmAssignment (Opmphm * opmphm, OpmphmGraph * graph, size_t n, int defaultOrder);
 
 /**
- * Opmphm represents the final OPMPHM.
- * This struct is needed for the lookup, during the lookup the key name gets hashed OPMPHMTUPLE times
- * with different seeds from opmphmHashFunctionSeeds.
+ * Lookup functions
  */
-typedef struct
-{
-	uint32_t opmphmHashFunctionSeeds[OPMPHMTUPLE]; /*!< the seeds for the tree hash function calls */
-} Opmphm;
+size_t opmphmLookup (Opmphm * opmphm, const void * name);
 
-// build functions
-OpmphmOrder ** opmphmInit (Opmphm * opmphm, OpmphmInit * init, OpmphmOrder * order, size_t n);
+/**
+ * Basic functions
+ */
+Opmphm * opmphmNew (void);
+void opmphmDel (Opmphm * opmphm);
+void opmphmClear (Opmphm * opmphm);
 
 /**
  * Hash function
@@ -101,81 +143,5 @@ OpmphmOrder ** opmphmInit (Opmphm * opmphm, OpmphmInit * init, OpmphmOrder * ord
 		b += a;                                                                                                                    \
 	}
 uint32_t opmphmHashfunction (const void * key, size_t length, uint32_t initval);
-
-/* Random */
-
-uint32_t opmphmRandom (unsigned int * seedp);
-
-/**
-* @defgroup datastructs Private Datastructures
-* @brief Private Datastructures
-*
-* These datastructures can be used within Elektra’s ecosystem.
-*
-* The requirements are described in doc/help/elektra-data-structures.md.
-*/
-
-
-/**
- *
- * @defgroup vstack Vstack
- * @ingroup datastructs
- *
- * The Vstack structure.
- *
- * A stack implementation with dynamical memory allocation.
- * The space gets doubled if full and reduced by half if used only a quarter of it,
- * but not less than minSize.
- */
-
-typedef struct
-{
-	size_t minSize; /*!< the minimal size of the stack > */
-	size_t size;    /*!< The maximal size of the stack */
-	void ** data;   /*!< The data array */
-	void ** head;   /*!< The stack pointer, which gets incremented or decremented after each push or pop. */
-} Vstack;
-
-Vstack * elektraVstackInit (size_t minSize);
-int elektraVstackPush (Vstack * stack, void * data);
-void * elektraVstackPop (Vstack * stack);
-int elektraVstackIsEmpty (const Vstack * stack);
-void elektraVstackDel (Vstack * stack);
-int elektraVstackClear (Vstack * stack);
-
-
-typedef int (*VheapComp) (void *, void *);
-/**
- *
- * @defgroup vheap Vheap
- * @ingroup datastructs
- *
- * The Vheap structure.
- *
- * A heap is a Data structure which keeps the data ordered.
- * Elements can only be retrieved in this order! Insertions and retrieves need log (n).
- *
- * This implementation allocates memory dynamically.
- * The space gets doubled if full and reduced by half if used only a quarter of it,
- * but not less than minSize.
- *
- * To construct a max heap the comparison function VheapComp (a, b), must return
- * 1 on a > b and 0 otherwise. For a min heap 1 on a < b and 0 otherwise.
- */
-typedef struct
-{
-	size_t minSize; /*!< the minimal size of the heap > */
-	size_t size;    /*!< The size of the heap */
-	size_t count;   /*!< The current number of elements in the heap */
-	VheapComp comp; /*!< The comparison function */
-	void ** data;   /*!< The data array */
-} Vheap;
-
-Vheap * elektraVheapInit (VheapComp comp, size_t minSize);
-void elektraVheapDel (Vheap * vheap);
-int elektraVheapClear (Vheap * vheap);
-int elektraVheapIsEmpty (const Vheap * vheap);
-int elektraVheapInsert (Vheap * vheap, void * data);
-void * elektraVheapRemove (Vheap * vheap);
 
 #endif

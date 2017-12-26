@@ -7,12 +7,6 @@
  *
  */
 
-#include <kdb.h>
-#include <kdbinternal.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <tests_internal.h>
 #include <tests_plugin.h>
 
 #include "base64.h"
@@ -23,12 +17,15 @@ static const char * decoded[] = { "", "f", "fo", "foo", "foob", "fooba", "foobar
 static const char * encoded[] = { "", "Zg==", "Zm8=", "Zm9v", "Zm9vYg==", "Zm9vYmE=", "Zm9vYmFy" };
 static const size_t testcaseCounter = sizeof (decoded) / sizeof (const char *);
 
-static inline KeySet * newPluginConfiguration ()
+static inline KeySet * newPluginConfiguration (void)
 {
 	return ksNew (0, KS_END);
 }
 
-static void test_init ()
+static void test_init (void)
+#ifdef __llvm__
+	__attribute__ ((annotate ("oclint:suppress[high ncss method]")))
+#endif
 {
 	Plugin * plugin = NULL;
 	Key * parentKey = keyNew ("system", KEY_END);
@@ -40,7 +37,7 @@ static void test_init ()
 	succeed_if (plugin != 0, "failed to open the plugin");
 	if (plugin)
 	{
-		succeed_if (!strcmp (plugin->name, ELEKTRA_PLUGIN_NAME), "got wrong name");
+		succeed_if (strcmp (plugin->name, ELEKTRA_PLUGIN_NAME) == 0, "got wrong name");
 
 		KeySet * config = elektraPluginGetConfig (plugin);
 		succeed_if (config != 0, "there should be a config");
@@ -56,32 +53,39 @@ static void test_init ()
 	keyDel (parentKey);
 }
 
-static inline char testcase2char (size_t i)
+static inline char testcase2char (size_t offset)
 {
-	return '0' + i + 1;
+	return '0' + offset + 1;
 }
 
-static void test_base64_encoding ()
+static void test_base64_encoding (void)
+#ifdef __llvm__
+	__attribute__ ((annotate ("oclint:suppress[deep nested block]")))
+#endif
 {
 	char errorAlloc[] = "Encoding #.: Memory allocation failed";
 	char errorMismatch[] = "Encoding #.: returned unexpected result";
 
-	for (size_t i = 0; i < testcaseCounter; i++)
+	for (size_t charOffset = 0; charOffset < testcaseCounter; charOffset++)
 	{
-		errorAlloc[10] = testcase2char (i);
-		errorMismatch[10] = testcase2char (i);
+		errorAlloc[10] = testcase2char (charOffset);
+		errorMismatch[10] = testcase2char (charOffset);
 
-		char * e = ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, base64Encode) ((kdb_octet_t *)decoded[i], strlen (decoded[i]));
-		succeed_if (e, errorAlloc);
-		if (e)
+		char * encodedText = PLUGIN_FUNCTION (base64Encode) ((kdb_octet_t *)decoded[charOffset], strlen (decoded[charOffset]));
+		succeed_if (encodedText, errorAlloc);
+		if (encodedText)
 		{
-			succeed_if (strcmp (e, encoded[i]) == 0, errorMismatch);
-			elektraFree (e);
+			succeed_if (strcmp (encodedText, encoded[charOffset]) == 0, errorMismatch);
+			elektraFree (encodedText);
 		}
 	}
 }
 
-static void test_base64_decoding ()
+static void test_base64_decoding (void)
+#ifdef __llvm__
+	__attribute__ ((annotate ("oclint:suppress[deep nested block]"), annotate ("oclint:suppress[high npath complexity]"),
+			annotate ("oclint:suppress[high ncss method]"), annotate ("oclint:suppress[high cyclomatic complexity]")))
+#endif
 {
 	char errorFail[] = "Decoding #.: operation failed";
 	char errorMismatch[] = "Decoding #.: returned unexpected result vector";
@@ -91,8 +95,7 @@ static void test_base64_decoding ()
 	size_t bufferLen = 0;
 
 	// first test case is a little special because we expect NULL on success here
-	succeed_if (ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, base64Decode) (encoded[0], &buffer, &bufferLen) == 1,
-		    "decoding of test vector 1 failed");
+	succeed_if (PLUGIN_FUNCTION (base64Decode) (encoded[0], &buffer, &bufferLen) == 1, "decoding of test vector 1 failed");
 	succeed_if (buffer == NULL, "decoding of test vector 1 returned unexpected result vector");
 	succeed_if (bufferLen == 0, "decoding of test vector 1 returned unexpected result length");
 	if (buffer)
@@ -106,8 +109,7 @@ static void test_base64_decoding ()
 		errorFail[10] = testcase2char (i);
 		errorLength[10] = testcase2char (i);
 
-		succeed_if (ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, base64Decode) (encoded[i], &buffer, &bufferLen) == 1,
-			    errorFail);
+		succeed_if (PLUGIN_FUNCTION (base64Decode) (encoded[i], &buffer, &bufferLen) == 1, errorFail);
 		if (buffer)
 		{
 			succeed_if (bufferLen == strlen (decoded[i]), errorLength);
@@ -121,7 +123,12 @@ static void test_base64_decoding ()
 	}
 }
 
-static void test_base64_plugin_regular ()
+static void test_base64_plugin_regular (void)
+#ifdef __llvm__
+	__attribute__ ((annotate ("oclint:suppress[deep nested block]"), annotate ("oclint:suppress[high ncss method]"),
+			annotate ("oclint:suppress[high npath complexity]"), annotate ("oclint:suppress[long method]"),
+			annotate ("oclint:suppress[high cyclomatic complexity]")))
+#endif
 {
 	Plugin * plugin = NULL;
 	Key * parentKey = keyNew ("system", KEY_END);
@@ -133,7 +140,7 @@ static void test_base64_plugin_regular ()
 	succeed_if (plugin, "failed to open plugin handle");
 	if (plugin)
 	{
-		Key * k;
+		Key * key;
 		const kdb_octet_t sampleValue[] = { 0x31, 0x32, 0x33 };
 
 		KeySet * data = ksNew (4, keyNew ("/t/k1", KEY_VALUE, "Hello World", KEY_END),
@@ -144,71 +151,71 @@ static void test_base64_plugin_regular ()
 		// test encoding
 		succeed_if (plugin->kdbSet (plugin, data, parentKey) == 1, "kdb set failed");
 
-		k = ksLookupByName (data, "/t/k1", 0);
-		succeed_if (k, "lost key in data KeySet");
-		if (k)
+		key = ksLookupByName (data, "/t/k1", 0);
+		succeed_if (key, "lost key in data KeySet");
+		if (key)
 		{
-			succeed_if (strcmp (keyString (k), "Hello World") == 0, "changed string value that does not require encoding");
+			succeed_if (strcmp (keyString (key), "Hello World") == 0, "changed string value that does not require encoding");
 		}
 
-		k = ksLookupByName (data, "/t/k2", 0);
-		succeed_if (k, "lost key in data KeySet");
-		if (k)
+		key = ksLookupByName (data, "/t/k2", 0);
+		succeed_if (key, "lost key in data KeySet");
+		if (key)
 		{
-			succeed_if (strcmp (keyString (k), ELEKTRA_PLUGIN_BASE64_PREFIX "MTIz") == 0,
+			succeed_if (strcmp (keyString (key), ELEKTRA_PLUGIN_BASE64_PREFIX "MTIz") == 0,
 				    "encoding binary key failed during kdb set");
 		}
 
-		k = ksLookupByName (data, "/t/k3", 0);
-		succeed_if (k, "lost key in data KeySet");
-		if (k)
+		key = ksLookupByName (data, "/t/k3", 0);
+		succeed_if (key, "lost key in data KeySet");
+		if (key)
 		{
-			succeed_if (strcmp (keyString (k), ELEKTRA_PLUGIN_BASE64_PREFIX "") == 0,
+			succeed_if (strcmp (keyString (key), ELEKTRA_PLUGIN_BASE64_PREFIX "") == 0,
 				    "encoding NULL-key failed during kdb set");
 		}
 
-		k = ksLookupByName (data, "/t/k4", 0);
-		succeed_if (k, "lost key in data KeySet");
-		if (k)
+		key = ksLookupByName (data, "/t/k4", 0);
+		succeed_if (key, "lost key in data KeySet");
+		if (key)
 		{
-			succeed_if (strcmp (keyString (k), ELEKTRA_PLUGIN_BASE64_ESCAPE ELEKTRA_PLUGIN_BASE64_PREFIX) == 0,
+			succeed_if (strcmp (keyString (key), ELEKTRA_PLUGIN_BASE64_ESCAPE ELEKTRA_PLUGIN_BASE64_PREFIX) == 0,
 				    "encoding string starting with prefix " ELEKTRA_PLUGIN_BASE64_ESCAPE " failed during kdb set");
 		}
 
 		// test decoding
 		succeed_if (plugin->kdbGet (plugin, data, parentKey) == 1, "kdb get (pregetstorage) failed");
 
-		k = ksLookupByName (data, "/t/k1", 0);
-		succeed_if (k, "lost key in data KeySet");
-		if (k)
+		key = ksLookupByName (data, "/t/k1", 0);
+		succeed_if (key, "lost key in data KeySet");
+		if (key)
 		{
-			succeed_if (strcmp (keyString (k), "Hello World") == 0, "changed string value that does not require decoding");
+			succeed_if (strcmp (keyString (key), "Hello World") == 0, "changed string value that does not require decoding");
 		}
 
-		k = ksLookupByName (data, "/t/k2", 0);
-		succeed_if (k, "lost key in data KeySet");
-		if (k)
+		key = ksLookupByName (data, "/t/k2", 0);
+		succeed_if (key, "lost key in data KeySet");
+		if (key)
 		{
-			succeed_if (keyGetValueSize (k) == sizeof (sampleValue), "decoding binary key failed during kdb get");
-			if (keyGetValueSize (k) == sizeof (sampleValue))
+			succeed_if (keyGetValueSize (key) == sizeof (sampleValue), "decoding binary key failed during kdb get");
+			if (keyGetValueSize (key) == sizeof (sampleValue))
 			{
-				succeed_if (memcmp (sampleValue, keyValue (k), sizeof (sampleValue)) == 0,
+				succeed_if (memcmp (sampleValue, keyValue (key), sizeof (sampleValue)) == 0,
 					    "decoding binary key failed during kdb get");
 			}
 		}
 
-		k = ksLookupByName (data, "/t/k3", 0);
-		succeed_if (k, "lost key in data KeySet");
-		if (k)
+		key = ksLookupByName (data, "/t/k3", 0);
+		succeed_if (key, "lost key in data KeySet");
+		if (key)
 		{
-			succeed_if (keyGetValueSize (k) <= 0, "decoding NULL-key failed during kdb get");
+			succeed_if (keyGetValueSize (key) <= 0, "decoding NULL-key failed during kdb get");
 		}
 
-		k = ksLookupByName (data, "/t/k4", 0);
-		succeed_if (k, "lost key in data KeySet");
-		if (k)
+		key = ksLookupByName (data, "/t/k4", 0);
+		succeed_if (key, "lost key in data KeySet");
+		if (key)
 		{
-			succeed_if (strcmp (keyString (k), ELEKTRA_PLUGIN_BASE64_PREFIX) == 0,
+			succeed_if (strcmp (keyString (key), ELEKTRA_PLUGIN_BASE64_PREFIX) == 0,
 				    "decoding string starting with prefix " ELEKTRA_PLUGIN_BASE64_ESCAPE " failed during kdb get");
 		}
 
@@ -221,7 +228,10 @@ static void test_base64_plugin_regular ()
 	keyDel (parentKey);
 }
 
-static void test_base64_plugin_decoding_error ()
+static void test_base64_plugin_decoding_error (void)
+#ifdef __llvm__
+	__attribute__ ((annotate ("oclint:suppress[deep nested block]"), annotate ("oclint:suppress[high ncss method]")))
+#endif
 {
 	Plugin * plugin = NULL;
 	Key * parentKey = keyNew ("system", KEY_END);
@@ -233,17 +243,17 @@ static void test_base64_plugin_decoding_error ()
 	succeed_if (plugin, "failed to open plugin handle");
 	if (plugin)
 	{
-		Key * k;
+		Key * key;
 		KeySet * data = ksNew (1, keyNew ("/t/k1", KEY_VALUE, ELEKTRA_PLUGIN_BASE64_PREFIX "_$..", KEY_END), KS_END);
 
 		// test failing decoding
 		succeed_if (plugin->kdbGet (plugin, data, parentKey) == 1, "kdb get failed");
 
-		k = ksLookupByName (data, "/t/k1", 0);
-		succeed_if (k, "lost key in data KeySet");
-		if (k)
+		key = ksLookupByName (data, "/t/k1", 0);
+		succeed_if (key, "lost key in data KeySet");
+		if (key)
 		{
-			succeed_if (strcmp (keyString (k), ELEKTRA_PLUGIN_BASE64_PREFIX "_$..") == 0,
+			succeed_if (strcmp (keyString (key), ELEKTRA_PLUGIN_BASE64_PREFIX "_$..") == 0,
 				    "decoded string value that should have failed");
 		}
 
@@ -272,6 +282,6 @@ int main (int argc, char ** argv)
 	test_base64_plugin_regular ();
 	test_base64_plugin_decoding_error ();
 
-	printf ("\n" ELEKTRA_PLUGIN_NAME " RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result (ELEKTRA_PLUGIN_NAME);
 	return nbError;
 }

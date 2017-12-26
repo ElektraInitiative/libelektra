@@ -3,7 +3,7 @@
 - infos/licence = BSD
 - infos/provides =
 - infos/needs =
-- infos/placements =
+- infos/placements = getstorage setstorage
 - infos/status = maintained unittest configurable global memleak
 - infos/description = proxy that calls other plugins (scripts) written in lua
 
@@ -24,7 +24,7 @@ script. The mount command would look like
 if the **ini** plugin should be used for storage and the lua plugin only serves to invoke the
 filter script.
 
-For a Lua script that serves as (json) storage plugin itself, one could also use
+For a Lua script that serves as (JSON) storage plugin itself, one could also use
 
     kdb mount file.json /lua lua script=/path/to/json_plugin.lua
 

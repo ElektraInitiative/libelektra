@@ -160,10 +160,10 @@ sudo kdb mount /.git/config dir/git ini multiline=0
 
 As git uses the `ini` format for its configuration we use the [ini plugin](/src/plugins/ini/README.md).
 You can pass parameters to plugins during the mount process. This is what
-we did with `multiline=0`. Git intends the entries in its configuration
-files and the default behaviour of the `ini` plugin is to interpret these indented
+we did with `multiline=0`. Git intents the entries in its configuration
+files and the default behavior of the `ini` plugin is to interpret these indented
 entries as values that span multiple lines. The passed parameter disables
-this behaviour and makes the ini-plugin compatible with git configuration.
+this behavior and makes the ini-plugin compatible with git configuration.
 
 Now let us see how smoothly the ini plugin sets and gets the git configuration.
 
@@ -186,7 +186,7 @@ git config --get user.email
 #### Meta Data
 
 Elektra is able to store [metadata](/doc/help/elektra-metadata.md) of keys, provided the format of the file that holds the configuration supports this feature.
-The ini plugin doesn't support this feature, but the [ni](/src/plugins/ni/README.md) and the [dump](/src/plugins/dump/README.md) plugin do.
+The ini plugin does support this feature, and so does the [ni](/src/plugins/ni/README.md) and the [dump](/src/plugins/dump/README.md) plugin among others.
 
 > Actually the ini plugin creates some metadata on its own. This metadata contains information about the ordering of keys or comments, if a key has some.
 > But unlike the ni and the dump plugin we can't store arbitrary metadata with the ini plugin.
@@ -201,7 +201,7 @@ kdb mount example.ni user/example ni enum
 
 # ... and set a value for the demonstration
 kdb set user/example/enumtest/fruit apple
-#> Create a new key user/example/enumtest/fruit with string apple
+#> Create a new key user/example/enumtest/fruit with string "apple"
 ```
 
 By entering `kdb info enum` in the commandline, we can find out how to use this plugin.
@@ -250,7 +250,7 @@ This is one of the reasons why Elektra promotes this [naming convention](/doc/he
 > `/<type>/<org>/<name>/<version>/<profile>`
 
 > - **type** can be `sw` (software), `hw` (hardware) or `elektra` (for internal configuration)
-> - **org** is an URL/organisation name. E.g. `kde`
+> - **org** is an URL/organization name. E.g. `kde`
 > - **name** the name of the component that has this configuration
 > - **version** is the major version number. E.g. If you version is 6.3.8 than this would be `#6`
 > - **profile** is the name of the profile to be used. E.g.: `production`, `development`, `testing`, ...

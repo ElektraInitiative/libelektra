@@ -15,37 +15,36 @@ Following shell expansions are used in this document:
 - make sure no TODO is in this file (resolve them first!)
 - Simplify release!
 - Scripts for strace, version, run tests!
-- Shell recorder in examples!
 - Check transitions in plugin status: especially from/to experimental
 - Check if Elektra builds, installs and works on freshly installed OS
-
-TODO: Fix remotes of ftp+api repos
-
-TODO: redo release process
-
-TODO: update contracts using update-infos-status
-      check if meta data info is up-to-date (both in contract+METADATA.ini)
-      + if mountable
-
-TODO: regenerate dot of plugins
 
 == Testing ==
 
 - fuzz checker
-- fix memleaks
-- run on filesystem to small (buildserver!)
+- memleaks
+- ASAN
 
 
 
 
 = Tasks before Release =
 
+== Updates ==
+
+- Update doc/COMPILE.md to reflect actually tested setups
+- Update/run ~e/scripts/build-debian-package
+- Update contracts using update-infos-status
+- Shell recorder of release notes/highlights of release
+- regenerate dot of plugins
+
 == Increment Version Number ==
 
 Increment version numbers in
-- CMakeLists.txt
 
+- CMakeLists.txt
+- ~e/scripts/build-debian-package
 - Change VERSION variable in build-server
+
 
 export VERSION=`kdb get system/elektra/version/constants/KDB_VERSION`
 export DVERSION=$VERSION-1
@@ -78,8 +77,8 @@ Make an empty builddirectory:
 Try to move as much as possible from this manual checks to build-server!
 
 Before release is done, following must be checked:
-- Everything blue on http://community.markus-raab.org:8080/
-- Not many warnings on community.markus-raab.org:8080/view/compiler%20warnings/
+- Everything blue on https://build.libelektra.org/
+- Not many warnings on https://build.libelektra.org/view/compiler%20warnings/
 
 If version numbers are correct in
 - CMakeLists.txt
@@ -106,8 +105,8 @@ Check if there are really >=135 or >=95 tests
 
 - Check library
 
-  ls -l /usr/lib/libelektra.so.$VERSION > ~elektra/$VERSION/size
-  readelf -a /usr/lib/libelektra.so.$VERSION > ~elektra/$VERSION/version
+  ls -l /usr/lib/x86_64-linux-gnu/libelektra-core.so.$VERSION  > ~elektra/$VERSION/size
+  readelf -a /usr/lib/x86_64-linux-gnu/libelektra-core.so > ~elektra/$VERSION/readelf-core
 
 
 Check if [doc/todo/API] is fulfilled
@@ -126,7 +125,7 @@ commands below work for copy&paste:
 
 == Tag the version ==
 
- git tag --sign -f $VERSION -m "Release $VERSION"
+ git tag --sign $VERSION -m "Release $VERSION"
 
 
 == Prepare Source Package ==
@@ -138,11 +137,12 @@ Check if tar is reproduceable + sign it:
  gpg --sign elektra-$VERSION.tar.gz
 
 Unpack + compile (with all available plugins) + test those sources:
- tar xvzf elektra-$VERSION.tar.gz && mkdir build
- cd ~build/build && ~e/scripts/configure-debian ../elektra-$VERSION && make -j5 && make run_all && make run_memcheck
+ tar xvzf elektra-$VERSION.tar.gz && mkdir builder
+ cd ~build/builder && ~e/scripts/configure-debian ../elektra-$VERSION && make -j5 && make run_all && make run_memcheck
 
 Now copy the packages to ftp:
  cp ~build/elektra-$VERSION.tar.gz* ~elektra-ftp/releases
+ cp ~elektra-ftp/releases/elektra-$VERSION.tar.gz ~elektra/$VERSION/
 
 
 == Debian Package ==
@@ -162,42 +162,42 @@ UNRELEASED -> unstable
 Fix debian/ + document in NEWS what maintainer need to consider, then build the package:
  cp ~elektra-ftp/releases/elektra-$VERSION.tar.gz ~elektra/elektra_$VERSION.orig.tar.gz
  gpg -u0B2F0DDC --sign `mktemp` # so that the step afterwards won't abort
- git-buildpackage -rfakeroot -k0B2F0DDC -sa
+ gbp buildpackage -rfakeroot -k0B2F0DDC -sa
 
 Now move and install:
- cd ~elektra && mkdir deb/$DVERSION
- mv elektra_$DVERSION* deb/$DVERSION && mv *.deb deb/$DVERSION && mv elektra_$VERSION.orig.tar.gz deb/$DVERSION/
- sudo dpkg -i deb/$DVERSION/*`dpkg-architecture -qDEB_BUILD_ARCH`.deb
+ cd ~elektra && mkdir -p ~elektra/$VERSION/debian/$DVERSION
+ mv elektra_$DVERSION* *$DVERSION*.deb elektra_$VERSION.orig.tar.gz ~elektra/$VERSION/debian/$DVERSION/
+ sudo dpkg -i ~elektra/$VERSION/debian/$DVERSION/*`dpkg-architecture -qDEB_BUILD_ARCH`.deb
 
 
 Run some basic commands, at least:
- kdb --version > deb/$DVERSION/version
+ kdb --version | tee ~elektra/$VERSION/version
  kdb qt-gui
 
 Strace what tools are doing:
 
- strace -o deb/$DVERSION/mount.strace kdb mount file.ecf user/release_test
- strace -o deb/$DVERSION/file.strace kdb file user/release_test/b
- strace -o deb/$DVERSION/set.strace kdb set user/release_test/b
- strace -o deb/$DVERSION/get.strace kdb get user/release_test/b
- strace -o deb/$DVERSION/rm.strace kdb rm user/release_test/b
- strace -o deb/$DVERSION/umount.strace kdb umount user/release_test
+ strace -o ~elektra/$VERSION/mount.strace kdb mount file.ecf user/release_test
+ strace -o ~elektra/$VERSION/file.strace kdb file user/release_test/b
+ strace -o ~elektra/$VERSION/set.strace kdb set user/release_test/b
+ strace -o ~elektra/$VERSION/get.strace kdb get user/release_test/b
+ strace -o ~elektra/$VERSION/rm.strace kdb rm user/release_test/b
+ strace -o ~elektra/$VERSION/umount.strace kdb umount user/release_test
 
 Run tests:
 
- kdb run_all > deb/$DVERSION/run_all 2>&1
- KDB=kdb-static kdb-static run_all > deb/$DVERSION/run_all_static 2>&1
- KDB=kdb-full kdb-full run_all > deb/$DVERSION/run_all_full 2>&1
+ kdb run_all | tee ~elektra/$VERSION/run_all 2>&1
+ KDB=kdb-static kdb-static run_all | tee ~elektra/$VERSION/run_all_static 2>&1
+ KDB=kdb-full kdb-full run_all | tee ~elektra/$VERSION/run_all_full 2>&1
 
 Install libelektra-test of the previous version and run again:
 
- CHECK_VERSION=NO kdb run_all > deb/$DVERSION/run_all_abi 2>&1
+ CHECK_VERSION=NO kdb run_all > ~elektra/$VERSION/run_all_abi 2>&1
 
 
 == Test external tools ==
 
 
-Check if tools based on elektra still do:
+Check if tools based on Elektra still do:
  dq
 
 Run unit-tests in-source again (because some use installed Elektra):
@@ -235,7 +235,9 @@ Symlink current to latest version and add everything:
 
 == Debian Package ==
 
- cd ~elektra/deb/$DVERSION && reprepro --ignore=wrongdistribution include wheezy elektra_${DVERSION}_`dpkg-architecture -qDEB_BUILD_ARCH`.changes && update-reprepro
+ cd ~elektra/$VERSION/debian/$DVERSION && reprepro --ignore=wrongdistribution include wheezy elektra_${DVERSION}_`dpkg-architecture -qDEB_BUILD_ARCH`.changes && update-reprepro
+
+ TODO: automate
 
 == Commit source package ==
 
@@ -255,6 +257,11 @@ Push elektra-ftp:
 
 Push elektra-doc to github:
  cd ~elektra-doc && git push && git push github
+
+
+== prep for next release ==
+
+cd ~e && cp doc/todo/NEWS.md doc/news/_preparation_next_release.md
 
 
 == Announce ==

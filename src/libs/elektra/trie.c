@@ -37,9 +37,6 @@ static Backend * elektraTriePrefixLookup (Trie * trie, const char * name);
 
 /**
  * @brief The Trie structure
- * @defgroup trie Trie
- * @ingroup datastructs
- *
  */
 
 /**
@@ -114,7 +111,6 @@ int trieClose (Trie * trie, Key * errorKey)
  */
 Trie * trieInsert (Trie * trie, const char * name, Backend * value)
 {
-	char * p;
 	unsigned char idx;
 
 	if (name == 0)
@@ -149,6 +145,7 @@ Trie * trieInsert (Trie * trie, const char * name, Backend * value)
 
 	if (trie->text[idx])
 	{
+		char * p;
 		/* there exists an entry with the same first character */
 		if ((p = elektraTrieStartsWith (name, trie->text[idx])) == 0)
 		{

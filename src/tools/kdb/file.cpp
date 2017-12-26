@@ -10,6 +10,7 @@
 
 #include <cmdline.hpp>
 #include <kdb.hpp>
+#include <kdblogger.h>
 
 #include <iostream>
 
@@ -36,7 +37,15 @@ int FileCommand::execute (Cmdline const & cl)
 		throw invalid_argument (cl.arguments[0] + " is not a valid keyname");
 	}
 
-	kdb.get (conf, x);
+	try
+	{
+		kdb.get (conf, x);
+	}
+	catch (KDBException const & exception)
+	{
+		// The command should return the filename even if the config file contains syntax errors
+		ELEKTRA_LOG_WARNING ("Get returned with an exception: %s", exception.what ());
+	}
 	cout << x.getString ();
 
 	if (!cl.noNewline)

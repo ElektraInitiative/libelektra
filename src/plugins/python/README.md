@@ -3,7 +3,7 @@
 - infos/licence = BSD
 - infos/provides =
 - infos/needs =
-- infos/placements =
+- infos/placements = getstorage setstorage
 - infos/status = maintained unittest configurable memleak
 - infos/description = proxy that calls other plugins (scripts) written in python
 
@@ -24,7 +24,7 @@ python script. The mount command would look like
 if the **ini** plugin should be used for storage and the python plugin only serves to invoke the
 filter script.
 
-For a Python script that serves as (json) storage plugin itself, one could also use
+For a Python script that serves as (JSON) storage plugin itself, one could also use
 
     kdb mount file.json /python python script=/path/to/json_plugin.py
 

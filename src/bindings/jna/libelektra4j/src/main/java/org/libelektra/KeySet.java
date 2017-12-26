@@ -1,5 +1,6 @@
 package org.libelektra;
 
+import java.util.Arrays;
 import java.util.Iterator;
 
 import com.sun.jna.Pointer;
@@ -34,7 +35,7 @@ public class KeySet implements java.lang.Iterable<Key> {
 	 * @param p
 	 *            Pointer to another KeySet in long format
 	 */
-	public KeySet(final long p) {
+	protected KeySet(final long p) {
 		ks = new Pointer(p);
 	}
 
@@ -44,7 +45,7 @@ public class KeySet implements java.lang.Iterable<Key> {
 	 * @param p
 	 *            Pointer to another KeySet
 	 */
-	public KeySet(final Pointer p) {
+	protected KeySet(final Pointer p) {
 		ks = p;
 	}
 
@@ -58,14 +59,37 @@ public class KeySet implements java.lang.Iterable<Key> {
 	 *            new Key(...), new Key(...), existing_key_reference, KeySet.KS_END
 	 * @return New key set with the given initial data
 	 */
-	public static KeySet create(final int alloc, final Object... args) {
-		for (int i = 0; i < args.length - 1; ++i) {
+	protected static KeySet create(final int alloc, final Object... args) {
+		int i = 0;
+		for (i = 0; i < args.length; ++i) {
 			if (args[i] instanceof Key) {
 				final Key k = (Key) args[i];
 				args[i] = k.get();
 			}
 		}
+		if (args.length > 0 && args[i - 1] != KeySet.KS_END) {
+			final Object[] sanitized = Arrays.copyOf(args, args.length + 1);
+			sanitized[i] = KeySet.KS_END;
+			return new KeySet(Elektra.INSTANCE.ksNew(alloc < sanitized.length ? alloc + 1 : sanitized.length, sanitized));
+		}
 		return new KeySet(Elektra.INSTANCE.ksNew(alloc, args));
+	}
+
+	/**
+	 * Basic constructor for key set
+	 *
+	 * @param alloc
+	 *            Length of key set (key count) to be allocated
+	 * @param args
+	 *            List of initial keys for the key set.
+	 * @return New key set with the given initial data
+	 */
+	public static KeySet create(final int alloc, final Key... args) {
+		if (args == null)
+			return create(alloc);
+		final Object[] keys = Arrays.copyOf(args, args.length + 1, Object[].class);
+		keys[args.length] = KS_END;
+		return create(alloc, keys);
 	}
 
 	/**
@@ -137,6 +161,8 @@ public class KeySet implements java.lang.Iterable<Key> {
 	 * @return 1 in case of success, 0 if source was NULL and dest (this) was cleared successfully, -1 in case of an error (null pointer)
 	 */
 	public int copy(final KeySet other) {
+		if (other == null)
+			return -1;
 		return Elektra.INSTANCE.ksCopy(get(), other.get());
 	}
 
@@ -159,13 +185,16 @@ public class KeySet implements java.lang.Iterable<Key> {
 	}
 
 	/**
-	 * Helper function to append key to key set
+	 * Helper function to append key to key set. Does nothing if null is provided.
 	 *
 	 * @param k
 	 *            Key to append
-	 * @return Index of key in key set; starting from 1
+	 * @return Index of key in key set; starting from 1, -1 if null was provided
 	 */
 	public int append(final Key k) {
+		if (k == null) {
+			return -1;
+		}
 		return Elektra.INSTANCE.ksAppendKey(get(), k.get());
 	}
 
@@ -174,9 +203,13 @@ public class KeySet implements java.lang.Iterable<Key> {
 	 *
 	 * @param ks
 	 *            Key set to append
-	 * @return Highest new index of key in key set; starting from 1
+	 * @return Highest new index of key in key set; starting from 1, -1 if null was provided
 	 */
 	public int append(final KeySet ks) {
+		if (ks == null) {
+			return -1;
+		}
+
 		int result = -1;
 		final Iterator<Key> iter = ks.iterator();
 		while (iter.hasNext()) {
@@ -190,9 +223,11 @@ public class KeySet implements java.lang.Iterable<Key> {
 	 *
 	 * @param cutpoint
 	 *            Key that is used as cutting point
-	 * @return New KeySet containing all keys until the cutting point
+	 * @return New KeySet containing all keys until the cutting point, this if null was provided
 	 */
 	public KeySet cut(final Key cutpoint) {
+		if (cutpoint == null)
+			return this;
 		return new KeySet(Elektra.INSTANCE.ksCut(get(), cutpoint.get()));
 	}
 
@@ -291,6 +326,9 @@ public class KeySet implements java.lang.Iterable<Key> {
 	 * @return Key if search successful, null otherwise
 	 */
 	public Key lookup(final Key find, final int options) {
+		if (find == null) {
+			return null;
+		}
 		return new Key(Elektra.INSTANCE.ksLookup(ks, find.get(), options));
 	}
 
@@ -302,6 +340,9 @@ public class KeySet implements java.lang.Iterable<Key> {
 	 * @return Key if search successful, null otherwise
 	 */
 	public Key lookup(final Key find) {
+		if (find == null) {
+			return null;
+		}
 		return new Key(Elektra.INSTANCE.ksLookup(ks, find.get(), 0));
 	}
 

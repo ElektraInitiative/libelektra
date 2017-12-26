@@ -15,14 +15,15 @@ if (DEPENDENCY_PHASE)
 	    set (CURLGET_LIBRARY_DIRS ${CURL_LIBRARIES} ${OPENSSL_LIBRARIES})
 	endif ()
 endif ()
-		
+
 add_plugin (curlget
 	SOURCES
 		curlget.h
 		curlget.c
+	LINK_ELEKTRA
+		elektra-invoke
 	INCLUDE_DIRECTORIES 
 		${CURLGET_INCLUDE_DIRS}
 	LINK_LIBRARIES
 		${CURLGET_LIBRARY_DIRS}
-	ADD_TEST
 	)

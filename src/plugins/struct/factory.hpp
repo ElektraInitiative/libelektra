@@ -45,7 +45,7 @@ class StructInstancer : public Instancer
 	kdb::KeySet config;
 
 public:
-	StructInstancer (kdb::KeySet config_) : config (config_)
+	explicit StructInstancer (kdb::KeySet config_) : config (config_)
 	{
 	}
 
@@ -60,7 +60,7 @@ class Factory
 	std::map<std::string, Instancer *> m_factory;
 
 public:
-	Factory (kdb::KeySet config) : m_factory ()
+	explicit Factory (kdb::KeySet config) : m_factory ()
 	{
 		config.rewind ();
 		kdb::Key root = config.next ();

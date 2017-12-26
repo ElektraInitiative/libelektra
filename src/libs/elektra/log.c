@@ -64,12 +64,16 @@ static int elektraLogSyslog (int level ELEKTRA_UNUSED, const char * function ELE
 	{
 	case ELEKTRA_LOG_LEVEL_ERROR:
 		vlevel = LOG_ERR;
+		break;
 	case ELEKTRA_LOG_LEVEL_WARNING:
 		vlevel = LOG_WARNING;
+		break;
 	case ELEKTRA_LOG_LEVEL_NOTICE:
 		vlevel = LOG_NOTICE;
+		break;
 	case ELEKTRA_LOG_LEVEL_INFO:
 		vlevel = LOG_INFO;
+		break;
 	case ELEKTRA_LOG_LEVEL_DEBUG:
 		vlevel = LOG_DEBUG;
 	}

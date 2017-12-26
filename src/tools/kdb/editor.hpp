@@ -10,7 +10,6 @@ using namespace std;
 class EditorCommand : public Command
 {
 	std::string filename;
-	int fd;
 
 public:
 	EditorCommand ();
@@ -21,7 +20,7 @@ public:
 
 	virtual std::string getShortOptions ()
 	{
-		return "esvCN";
+		return "siveN";
 	}
 
 	virtual std::string getSynopsis ()

@@ -8,7 +8,7 @@
 
 #include <tests_internal.h>
 
-static void test_keyNamespace ()
+static void test_keyNamespace (void)
 {
 	Key * key;
 

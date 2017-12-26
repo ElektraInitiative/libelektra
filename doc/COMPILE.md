@@ -2,23 +2,50 @@
 
 ## Dependencies
 
-For the base system you only need cmake and build-essential (make, gcc,
-some Unix tools):
+For the base system you only need cmake, git, and build-essential
+(make, gcc, and some standard Unix tools; alternatively ninja and
+clang are also supported but not described here):
 
-	sudo apt-get install cmake build-essential
+	sudo apt-get install cmake git build-essential
 
 Or on RPM based systems (CentOS):
 
-	sudo yum install -y cmake3 gcc-c++
+	sudo yum install -y cmake3 git gcc-c++
 
-Or on macOS Sierra, most of the build tools can be obtained by installing XCode (from the App Store). Other required tools may be installed using [brew](http://brew.sh/). First install brew as described on their website. Then issue the following command to get cmake to complete the basic requirements:
+Or on macOS Sierra, most of the build tools can be obtained by installing Xcode (from the App Store). Other required tools may be installed using [brew](http://brew.sh/). First install brew as described on their website. Then issue the following command to get cmake to complete the basic requirements:
 
-	brew install cmake
+	brew install cmake git
 
-## Optional Dependencies
 
-Note: You do not need to install the dependencies listed here.
-But then some of the functionality gets disabled automatically.
+## Quick Guide
+
+Run the following commands to compile Elektra with non-experimental
+parts where your system happens to fulfil the dependences (continue
+reading the rest of the document for details about these steps):
+
+```
+git clone https://github.com/ElektraInitiative/libelektra.git
+cd libelektra
+mkdir build
+cd build
+cmake ..  # watch output to see if everything needed is included
+ccmake .. # optional: overview of the available build settings (needs cmake-curses-gui)
+make -j 5
+make run_nokdbtests  # optional: run tests
+```
+
+The last line only runs tests not writing into your system.
+See [TESTING](/doc/TESTING.md) for how to run more tests.
+Afterwards you can use `sudo make install && sudo ldconfig` to install Elektra.
+See [INSTALL](/doc/INSTALL.md) for more information about
+installation of self-compiled Elektra (such as how to uninstall it).
+
+
+## Optional Dependences
+
+> Note: You do not need to install the dependencies listed here.
+> If they are not available, some of the functionality gets disabled automatically.
+> The core of Elektra never depends on other libraries.
 
 To build documentation you need doxygen (we recommend 1.8.8+), graphviz and [ronn](https://github.com/rtomayko/ronn/blob/master/INSTALLING#files):
 
@@ -58,7 +85,7 @@ To configure Elektra graphically (with curses) run (`..` belongs to command):
 
     mkdir build && cd build && ccmake ..
 
-and press 'c' to configure the cache (might be necessary multiple times, and once on the first time in case you dont see any settings).
+and press 'c' to configure the cache (might be necessary multiple times, and once on the first time in case you don‘t see any settings).
 After applying the desired settings, press 'g' to generate the make file.
 
 
@@ -80,11 +107,10 @@ Some scripts in the folder of the same name may help you running cmake.
 For supported compilers have a look at the automatic build farm on
 https://build.libelektra.org/
 
-Additionally, gcc 4.6 armhf is tested regularly.
-
 
 |   Compiler        |         Version             |      Target       |
 |-------------------|-----------------------------|-------------------|
+|      gcc          | gcc (Debian 6.3.0-18) 6.3.0 |      amd64        |
 |      gcc          | gcc (Debian 4.7.2-5) 4.7.2  |      i386         |
 |      gcc          | gcc (Debian 4.7.2-5) 4.7.2  |      amd64        |
 |      gcc          | gcc 4.8                     |      amd64        |
@@ -94,6 +120,8 @@ Additionally, gcc 4.6 armhf is tested regularly.
 |      gcc          | 4.6                         |      armhf        |
 |      mingw        | 4.6                         |      i386         |
 |      clang        | version 3.5.0-1~exp1        |x86_64-pc-linux-gnu|
+|      clang        | 3.9.0                       |x86_64-pc-linux-gnu|
+|      clang        | 8.1.0                       |      macOS        |
 |      icc          | 14.0.2 20140120             |x86_64-pc-linux-gnu|
 |      gcc/g++      |                             | openbsd 4.9.3 (*) |
 
@@ -120,7 +148,7 @@ Some options, i.e. `PLUGINS`, `BINDINGS` and `TOOLS` are either:
    (note that shells typically need `;` to be escaped)
 - a special uppercase element that gets replaced by a list of elements, that are:
   - `ALL` to include all elements (except elements with unfulfilled dependencies)
-  - `NODE` to include all elements without dependencies
+  - `NODEP` to include all elements without dependencies
 - elements prefixed with a minus symbol (`-`) to exclude an element
 
 Examples for this are especially in the subsection `PLUGINS` below, but they work in the
@@ -131,8 +159,8 @@ same fashion for `BINDINGS` and `TOOLS`.
 Read about available plugins [here](/src/plugins/).
 
 Because the core of elektra is minimal, plugins are needed to
-actually read and write to configuration files (storage plugins),
-commit the changes (resolver plugin, also takes care about how
+actually read and write to configuration files (_storage plugins_),
+commit the changes (_resolver plugins_, also takes care about how
 the configuration files are named) and also do many other
 tasks related to configuration.
 
@@ -158,12 +186,13 @@ To add also experimental plugins, you can use:
 
     -DPLUGINS=ALL
 
-Note that plugins get dropped when dependencies are not satisfied.
+> Note that plugins get dropped automatically if dependences are not satisfied.
+
 To add all plugins except some plugins you can use:
 
     -DPLUGINS="ALL;-plugin1;-plugin2"
 
-E.g. if you want all plugins except the jni plugin you would use:
+For example, if you want all plugins except the jni plugin you would use:
 
     -DPLUGINS="ALL;-jni"
 
@@ -173,7 +202,8 @@ To add all plugins not having additional dependencies
     -DPLUGINS=NODEP
 
 Note, that every `infos/provides` and `infos/status` field written uppercase can
-be used to select plugins that way.  You also can combine any of these fields
+be used to select plugins that way (see README of [individual plugins](/src/plugins)).
+You also can combine any of these fields
 and add/remove other plugins to/from it, e.g. to include all plugins without deps,
 that provide storage (except `yajl`) and are maintained, but not include all plugins
 that are experimental, you would use:
@@ -186,7 +216,8 @@ The inclusion is determined by following preferences:
 2. if the plugin is explicit included with `plugin`
 3. if the plugin is excluded via a category `-CATEGORY`
 4. if the plugin is included via a category `CATEGORY`
-5. the plugin is excluded if it is not mentioned at all
+5. plugins are excluded if they are not mentioned at all
+   (neither by category nor by name)
 
 Note, that changing `PLUGINS` will not modify the defaults used
 after Elektra was installed.  For this endeavour you need to change:
@@ -237,7 +268,7 @@ The system flags are (the order matters!):
 - note: if a path that begins with a slash (`/`) is chosen, the system flags are irrelevant
   and the path is taken as-is.
 
-E.g. one may use:
+For example, one may use:
 
     -DPLUGINS="resolver_lm_uhpb_b"
 
@@ -256,9 +287,12 @@ The flag used to specify which tools are compiled is
 but is more limited in its functionality (which does not
 matter, because there are not so many tools).
 
-To add all tools, you can use::
+To add all non-experimental tools, you can use::
 
     -DTOOLS=ALL
+
+> Note that the behavior is different to PLUGINS
+> which includes all PLUGINS if ALL is used.
 
 To add all tools except of race, you can use:
 
@@ -272,9 +306,12 @@ To specify specific tools you can use, e.g.:
 #### Bindings
 
 Bindings are used in the same way as `TOOLS`.
-For example you can use:
+For example, to include all non-experimental bindings you can use:
 
     -DBINDINGS=ALL
+
+> Note that the behavior is different to PLUGINS
+> which includes all PLUGINS if ALL is used.
 
 Note that the same languages are sometimes available over GI and SWIG.
 In this case, the SWIG bindings are preferred.
@@ -305,6 +342,30 @@ To not add such APIs, but only `swig` bindings and `cpp`, you can use:
 See help bar at bottom of ccmake for that option or:
 http://www.cmake.org/Wiki/CMake_Useful_Variables
 
+
+### BUILD_SHARED BUILD_FULL BUILD_STATIC
+
+`BUILD_SHARED` is the typical build you want to have on systems that support `dlopen`.
+It can be used for desktop builds, but also embedded systems as long as they support
+`dlopen`, for example, `BUILD_SHARED` is used on OpenWRT with musl.
+Using `BUILD_SHARED` every plugin is its own shared object.
+
+`BUILD_FULL` links together all parts of Elektra as a single shared `.so` library.
+This is ideal if shared libraries are available, but you want to avoid `dlopen`.
+Some tests only work with `BUILD_FULL`, so you might turn it on to get full
+coverage.
+
+`BUILD_STATIC` also links together all parts but as static `.a` library.
+It is only useful for systems without `dlopen` or if the overhead of
+`dlopen` needs to be avoided.
+
+All three forms of builds can be intermixed freely.
+
+For example, to enable shared and full build, but disable static build,
+one would use:
+
+    cmake -DBUILD_SHARED=ON -DBUILD_FULL=ON -DBUILD_STATIC=OFF ..
+
 #### ELEKTRA_DEBUG_BUILD and ELEKTRA_VERBOSE_BUILD
 
 Only needed by Elektra developers.
@@ -318,9 +379,11 @@ Build documentation with doxygen (API) and ronn (man pages).
 #### Developer Options
 
 As developer you should enable `ENABLE_DEBUG` and `ENABLE_LOGGER`.
-(By default they should be invisible!)
+By default no logging will take place, see [CODING](/doc/CODING.md)
+for information about logging.
 
-Then continue reading [testing](/doc/TESTING.md) for further options.
+Then continue reading [testing](/doc/TESTING.md) for options about
+testing.
 
 #### CMAKE_INSTALL_PREFIX
 

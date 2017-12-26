@@ -148,7 +148,6 @@ int kdbbUTF8Engine (Plugin * handle, int direction, char ** string, size_t * inp
 int elektraIconvGet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
 	Key * cur;
-	const Key * meta;
 
 	ksRewind (returned);
 
@@ -188,7 +187,7 @@ int elektraIconvGet (Plugin * handle, KeySet * returned, Key * parentKey)
 			keySetString (cur, convertedData);
 			elektraFree (convertedData);
 		}
-		meta = keyGetMeta (cur, "comment");
+		const Key * meta = keyGetMeta (cur, "comment");
 		if (meta)
 		{
 			/* String or similar type of value */
@@ -215,7 +214,6 @@ int elektraIconvGet (Plugin * handle, KeySet * returned, Key * parentKey)
 int elektraIconvSet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
 	Key * cur;
-	const Key * meta;
 
 	if (!kdbbNeedsUTF8Conversion (handle)) return 0;
 
@@ -242,7 +240,7 @@ int elektraIconvSet (Plugin * handle, KeySet * returned, Key * parentKey)
 			keySetString (cur, convertedData);
 			elektraFree (convertedData);
 		}
-		meta = keyGetMeta (cur, "comment");
+		const Key * meta = keyGetMeta (cur, "comment");
 		if (meta)
 		{
 			/* String or similar type of value */

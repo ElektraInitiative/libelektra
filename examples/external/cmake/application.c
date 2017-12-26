@@ -10,7 +10,7 @@
 
 #include <stdio.h>
 
-int main ()
+int main (void)
 {
 	KeySet * myConfig = ksNew (0, KS_END);
 	Key * key = keyNew ("system/test/myapp", KEY_END);

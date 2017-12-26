@@ -14,8 +14,6 @@ The plugins are:
 
 ![Overview Plugins](/doc/images/plugins.png)
 
-For background information see [elektra-plugins-framework(7)](/doc/help/elektra-plugins-framework.md).
-
 ### C-Interface
 
 All plugins implement the same interface:
@@ -47,15 +45,15 @@ All plugins implement the same interface:
 ## See also
 
 For an easy introduction, see [this tutorial how to write a storage plugin](/doc/tutorials/plugins.md).
-For more background information of the [plugins framework, continue here](/doc/help/elektra-plugins-framework.md).
-Otherwise, you can visit the [the API documentation](http://doc.libelektra.org/api/current/html/group__plugin.html).
+For more background information of the [plugins framework, continue here](/doc/dev/plugins-framework.md).
+Otherwise, you can visit the [the API documentation](https://doc.libelektra.org/api/current/html/group__plugin.html).
 
 ## Plugins
 
 ### Resolver
 
 Before configuration is actually written, the file name needs to be
-determined (will be automatically added by kdb mount):
+determined (resolvers will be automatically added by kdb mount):
 
 - [resolver](resolver/) uses advanced POSIX APIs to handle conflicts gracefully
 - [wresolver](wresolver/) minimalistic resolver for non-POSIX systems
@@ -67,7 +65,7 @@ harddisc (recommended to add at every kdb mount):
 - [blockresolver](blockresolver/) resolves tagged blocks inside config files
 - [multifile](multifile/)
 
-- [sync](sync/) uses POSIX APIs to sync configuration file with harddisc
+- [sync](sync/) uses POSIX APIs to sync configuration files with the hard disk
 
 ### Storage
 
@@ -76,17 +74,17 @@ files.
 
 Read and write everything a KeySet might contain:
 
+- [dini](dini/) uses by default the ini plugin but has legacy support for dump
+- [ini](ini/) supports a range of INI file formats.
 - [dump](dump/) makes a dump of a KeySet in an Elektra-specific format
 
 Read (and write) standard config files:
 
-- [augeas](augeas/) parses and generates many different configuration
+- [augeas](augeas/) reads/writes many different configuration
   files using the augeas library
-- [hosts](hosts/) read/write hosts files
-- [line](line/) reads any file line by line
-- [ini](ini/) parses INI files based on
-    [inih](http://code.google.com/p/inih/).
-- [yajl](yajl/) uses JSON.
+- [hosts](hosts/) reads/writes hosts files
+- [line](line/) reads/writes any file line by line
+- [yajl](yajl/) reads/writes JSON.
 
 Using semi-structured data for config files, mainly suitable for
 spec-namespace (put a focus on having nice syntax for metadata):
@@ -114,6 +112,10 @@ productive use:
 - [mozprefs](mozprefs/) for Mozilla preference files
 - [c](c/) writes Elektra C-structures (`ksNew(.. keyNew(...`)
 - [file](file/) reads and writes a file from/to a single key
+- [camel](camel/) reads and writes a very limited subset of [YAML][]
+- [yamlcpp](yamlcpp/) reads and writes data in the [YAML][] format using [yaml-cpp](https://github.com/jbeder/yaml-cpp)
+
+[YAML]: http://www.yaml.org
 
 ### System Information
 
@@ -154,6 +156,7 @@ Rewrite unwanted characters with different techniques:
 
 Transformations:
 
+- [directoryvalue](directoryvalue/) converts directory values to leaf values
 - [keytometa](keytometa/) transforms keys to metadata
 - [rename](rename/) renames keys according to different rules
 - [boolean](boolean/) canonicalizes boolean keys
@@ -162,7 +165,7 @@ Doing other stuff:
 
 - [crypto](crypto/) encrypts / decrypts confidential values
 - [fcrypt](fcrypt/) encrypts / decrypts entire backend files
-- [iconv](iconv/) make sure the configuration will have correct
+- [iconv](iconv/) makes sure the configuration will have correct
   character encoding
 - [hidden](hidden/) hides keys whose names start with a `.`.
 - [null](null/) takes care of null values and other binary specialities
@@ -171,38 +174,41 @@ Doing other stuff:
 
 Log/Send out all changes to configuration to:
 
-- [dbus](dbus/)
-- [journald](journald/)
-- [syslog](syslog/)
+- [dbus](dbus/) sends notifications for every change via dbus
+- [syslog](syslog/) logs key database changes to syslog
+- [journald](journald/) logs key database changes to journald
 - [logchange](logchange/) prints the change of every key on the console
 
 ### Debug
 
 Trace everything that happens within KDB:
 
-- [timeofday](timeofday/) print timestamps
-- [tracer](tracer/)
-- [counter](counter/) count and print how often plugin is used
+- [timeofday](timeofday/) prints timestamps
+- [tracer](tracer/) traces all calls
+- [counter](counter/) count and print how often a plugin is used
 
 ### Checker
 
 Copies metadata to keys:
 
-- [glob](glob/) using globbing techniques
+- [spec](spec/) copies metadata from spec namespace (the
+  standard way)
+- [glob](glob/) using globbing techniques (needed by some plugins)
 - [struct](struct/) using a defined structure (may also reject
   configuration not conforming to that structure)
-- [spec](spec/) copies metadata from spec namespace
+
 Plugins that check if values are valid based on metadata (typically
-copied by another plugin just before):
+copied by the `spec` plugin just before):
 
 **Value Validation**
 
 - [validation](validation/) by using regex
 - [network](network/) by using network APIs
+- [ipaddr](ipaddr/) checks IP addresses using regular expressions
 - [path](path/) by checking files on file system
 - [type](type/) using run-time type checking (CORBA types/)
 - [enum](enum/) compares the keyvalue against a list of valid values
-- [mathcheck](mathcheck/) by mathematical expressions using keysvalues as operands
+- [mathcheck](mathcheck/) by mathematical expressions using key values as operands
 - [conditionals](conditionals/) by using if-then-else like statements
 - [required](required/) rejects non-required keys
 - [date](date/) validates date and time data
@@ -223,8 +229,10 @@ binding during run-time.
 - [jni](jni/) java plugins started by jni, works with jna plugins
 - [python](python/) Python 3 plugins
 - [python2](python2/) Python 2 plugins (deprecated)
+- [ruby](ruby/) Ruby plugins
 - [lua](lua/) Lua plugins
 - [shell](shell/) executes shell commandos
+- [haskell](haskell/) used for linking haskell plugins and is a small example for such plugins itself
 
 ### Others
 

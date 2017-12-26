@@ -5,7 +5,7 @@
 - infos/provides =
 - infos/recommends =
 - infos/placements = getresolver setresolver commit rollback
-- infos/status = unittest configurable readonly preview unfinished nodoc
+- infos/status = configurable readonly preview unfinished nodoc
 - infos/metadata =
 - infos/description = mount remote config files via curl
 
@@ -97,14 +97,14 @@ The `curlget` plugin is a resolver using libcurl to upload and download files fr
 
 ```sh
 rm /tmp/curltest.ini || $(exit 0)
-kdb mount -R curlget -c url/get="http://127.0.0.1:8000/curltest.ini",url/put="http://127.0.0.1:8000",user="thomas",password="pass",upload/method="POST",upload/postfield="file" /tmp/curltest.ini system/curl ini
+sudo kdb mount -R curlget -c url/get="http://127.0.0.1:8000/curltest.ini",url/put="http://127.0.0.1:8000",user="thomas",password="pass",upload/method="POST",upload/postfield="file" /tmp/curltest.ini system/curl ini
 kdb ls system/curl
 #> system/curl/section1
 #> system/curl/section1/key1
 stat /tmp/curltest.ini
 # RET:0
 kdb set system/curl/section1/key2 val2
-kdb umount system/curl
+sudo kdb umount system/curl
 stat /tmp/curltest.ini
 # RET:0
 cat /tmp/curltest.ini
@@ -112,7 +112,7 @@ cat /tmp/curltest.ini
 #> key1 = val1
 #> key2 = val2
 rm /tmp/curltest.ini || $(exit 0)
-kdb mount -R curlget -c url/put="http://127.0.0.1:8000",user="thomas",password="pass",upload/method="POST",upload/postfield="file" "http://127.0.0.1:8000/curltest.ini" system/curl ini
+sudo kdb mount -R curlget -c url/put="http://127.0.0.1:8000",user="thomas",password="pass",upload/method="POST",upload/postfield="file" "http://127.0.0.1:8000/curltest.ini" system/curl ini
 kdb ls system/curl
 #> system/curl/section1
 #> system/curl/section1/key1
@@ -124,7 +124,7 @@ kdb ls system/curl
 # RET:5
 mv /tmp/httproot/curltest.ini_moved /tmp/httproot/curltest.ini
 kdb rm system/curl/section1/key2
-kdb umount system/curl
+sudo kdb umount system/curl
 cat /tmp/httproot/curltest.ini
 #> [section1]
 #> key1 = val1

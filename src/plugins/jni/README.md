@@ -3,23 +3,26 @@
 - infos/licence = BSD
 - infos/provides =
 - infos/needs =
-- infos/placements =
-- infos/status = maintained unittest configurable memleak experimental -500
-- infos/description = generic java plugin
+- infos/placements = getstorage setstorage
+- infos/status = unittest configurable memleak experimental discouraged
+- infos/description = generic Java plugin
 
 ## Introduction
 
-Allows you to write plugins in java.
+Allows you to write plugins in Java.
 
-Needs Java 8 or later. While the plugin internally uses JNI, the Java
-binding for your java-plugin may use something different, e.g. JNA.
-The requirements for the java bindings are:
+This plugin needs the JNA bindings to work.
+Furthermore, it requires Java 8 or later.
+
+While the plugin internally uses JNI (thus the name), the Java
+binding for your Java plugin may use something different, e.g. JNA.
+The requirements for the Java bindings are:
 
 - needs to have the classes `elektra/Key` and `elektra/KeySet` with
  - a constructor that takes a C-Pointer as long (J)
  - a method "release" that gives up ownership (set internal pointer to NULL)
 
-The java plugin itself needs to have the following methods:
+The Java plugin itself needs to have the following methods:
 
 - constructor without arguments (i.e. default constructor)
 - open with argument `elektra/KeySet` (the plugin's conf) and `elektra/Key`
@@ -30,7 +33,20 @@ The java plugin itself needs to have the following methods:
 
 ## Installation
 
-### Java prerequisites on Linux (Debian)
+### Java prerequisites on Debian 9
+
+openjdk-8 and 9 do not work reliable: jvm crashes without usable backtrace.
+
+When using non-standard paths, you have to set JAVA_HOME before invoking cmake.
+(For example when you unpack Oracle Java to `/usr/local` or `/opt`.)
+For example:
+
+     JAVA_HOME=/usr/local/jdk-9.0.1
+
+
+
+### Java prerequisites on Debian 8
+
 Please install java8 as package, e.g.
 [for debian](http://www.webupd8.org/2014/03/how-to-install-oracle-java-8-in-debian.html)
 and then let cmake actually find jdk8:
@@ -113,7 +129,7 @@ Or if `.jar` is already installed:
 
 Additionally, the java implementation can request any other additional
 configuration, read about it below in the section (specific java plugin).
-If you are reading this page on github, you won't see it, because the
+If you are reading this page on GitHub, you won't see it, because the
 plugins dynamically append text after the end of this page.
 
 ## Development
@@ -130,12 +146,12 @@ Also explained
 
 ## Issues
 
-(Argumentation for -500 in status)
+Argumentation for discouraged:
 
-- In Debian Wheezy you cannot use openjdk:
-  you get a linker error because of some missing private SUN symbols.
-  Maybe just the cmake mechanism to find java is broken.
+- You cannot use the plugin with openjdk:
+  You get a linker error because of some missing private SUN symbols.
+  In Debian9 it crashes with openjdk8/9.
 - Only a single java plugin can be loaded
-- when this plugin is enabled, valgrind detects memory problems even if
+- When this plugin is enabled, valgrind detects memory problems even if
   the plugin is not mounted.
 

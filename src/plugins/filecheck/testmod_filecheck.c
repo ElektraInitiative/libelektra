@@ -143,7 +143,7 @@ int main (int argc, char ** argv)
 	testEncoding ("filecheck/utf.txt", 1, 1);
 	testEncoding ("filecheck/iso.txt", 1, (-1));
 
-	printf ("\ntestmod_filecheck RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("testmod_filecheck");
 
 	return nbError;
 }

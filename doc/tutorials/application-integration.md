@@ -4,21 +4,21 @@ In Elektra different forms of application integrations are possible:
 
 1. A lightweight integration where configuration files are
    integrated in a global key database.
-   This will not be discussed here, if you are interested about this
+   This will not be discussed here, if you are interested
    [please continue reading about mounting](/doc/tutorials/mount.md)
 2. Integration techniques without modifying the applications.
-   This will also not be discussed here, if you are interested read
+   This will also not be discussed here, if you are interested please read:
    - [Intercept Environment](/src/bindings/intercept/env/README.md)
    - [Intercept File System](/src/bindings/intercept/fs/README.md)
 3. Integration where applications directly use Elektra to read and
    store settings.
 
-In this tutorial we will discuss (3).
-
-For full integration patch the application to directly access Elektra’s 
+In this tutorial we will discuss (3), i.e., how to
+extend an application to directly access Elektra’s
 key database.
+
 When the application is fully integrated in Elektra’s ecosystem
-those benefits arise:
+following benefits arise:
 
 - Benefits that shared libraries have, e.g.
   - All applications profit from fixes, optimization and new features
@@ -97,8 +97,8 @@ Key *parentKey = keyNew("/sw/org/myapp/#0/current", KEY_END);
 - The first argument of `keyNew` is the name of the key.
  It consists of different parts, `/` is the hierarchy-separator:
   - `sw` is for software
-  - `org` is a URL/organisation name to avoid name clashes with other
-      application names. Use only one part of the URL/organisation,
+  - `org` is a URL/organization name to avoid name clashes with other
+      application names. Use only one part of the URL/organization,
       so e.g. `kde` is enough.
   - `myapp` is the name of the most specific component that has its own
       configuration
@@ -112,7 +112,7 @@ Key *parentKey = keyNew("/sw/org/myapp/#0/current", KEY_END);
 
 The key name is standardized to make it easier to locate configuration.
 
-- [Read more about key-functions in API doc.](http://doc.libelektra.org/api/current/html/group__key.html)
+- [Read more about key-functions in API doc.](https://doc.libelektra.org/api/current/html/group__key.html)
 - [Read more about key names here.](/doc/help/elektra-key-names.md)
 
 

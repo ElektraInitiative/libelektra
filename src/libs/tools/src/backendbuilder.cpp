@@ -102,7 +102,6 @@ void BackendBuilder::sort ()
 			dep.addBaseName (ps.getRefName ());
 		}
 		deps.append (dep);
-		std::string v = to_string (i);
 		dep.set<size_t> (i);
 		dep.setMeta<size_t> ("order", i);
 		++i;
@@ -441,7 +440,7 @@ void BackendBuilder::addPlugin (PluginSpec const & plugin)
 	checkConfPtr checkConfFunction = reinterpret_cast<checkConfPtr> (pluginDatabase->getSymbol (newPlugin, "checkconf"));
 	if (checkConfFunction)
 	{
-		ckdb::Key * errorKey = ckdb::keyNew (0);
+		ckdb::Key * errorKey = ckdb::keyNew (nullptr);
 
 		// merge plugin config and backend config together
 		ckdb::KeySet * pluginConfig = newPlugin.getConfig ().dup ();

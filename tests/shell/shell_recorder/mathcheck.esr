@@ -5,7 +5,7 @@ Storage: mathcheck
 
 # Setup
 
-< kdb mount $File $Mountpoint $Storage
+< kdb mount $File $Mountpoint $Storage ni
 
 # Test ../
 
@@ -105,6 +105,14 @@ RET: 0
 
 STDOUT: 5
 < kdb get $Mountpoint/div
+
+< kdb set $Mountpoint/check/a 3.1
+< kdb set $Mountpoint/check/b 4.5
+< kdb set $Mountpoint/check/k 7.6
+< kdb setmeta $Mountpoint/check/k check/math "== + ../a ../b"
+
+ERROR: 123
+< kdb set $Mountpoint/check/k 7.7
 
 RET: 0
 < kdb rm -r $Mountpoint

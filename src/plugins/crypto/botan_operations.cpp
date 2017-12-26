@@ -9,10 +9,12 @@
 
 #include <botan/auto_rng.h>
 #include <botan/filters.h>
+#include <botan/hmac.h>
 #include <botan/init.h>
 #include <botan/lookup.h>
 #include <botan/pbkdf2.h>
 #include <botan/pipe.h>
+#include <botan/sha2_32.h>
 #include <botan/symkey.h>
 #include <kdbplugin.h>
 #include <memory>
@@ -70,8 +72,8 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * masterK
 		const kdb_unsigned_long_t iterations = CRYPTO_PLUGIN_FUNCTION (getIterationCount) (errorKey, config);
 
 		// generate/derive the cryptographic key and the IV
-		unique_ptr<PBKDF> pbkdf = unique_ptr<PBKDF> (get_pbkdf ("PBKDF2(SHA-256)"));
-		OctetString derived = pbkdf->derive_key (
+		PKCS5_PBKDF2 pbkdf (new HMAC (new SHA_256));
+		OctetString derived = pbkdf.derive_key (
 			requiredKeyBytes, std::string (reinterpret_cast<const char *> (keyValue (masterKey)), keyGetValueSize (masterKey)),
 			salt, sizeof (salt), iterations);
 
@@ -121,8 +123,8 @@ static int getKeyIvForDecryption (KeySet * config, Key * errorKey, Key * masterK
 	try
 	{
 		// derive the cryptographic key and the IV
-		unique_ptr<PBKDF> pbkdf = unique_ptr<PBKDF> (get_pbkdf ("PBKDF2(SHA-256)"));
-		OctetString derived = pbkdf->derive_key (
+		PKCS5_PBKDF2 pbkdf (new HMAC (new SHA_256));
+		OctetString derived = pbkdf.derive_key (
 			requiredKeyBytes, std::string (reinterpret_cast<const char *> (keyValue (masterKey)), keyGetValueSize (masterKey)),
 			saltBuffer, saltBufferLen, iterations);
 
@@ -214,13 +216,20 @@ int elektraCryptoBotanEncrypt (KeySet * pluginConfig, Key * k, Key * errorKey, K
 		const size_t msgLength = encryptor.remaining ();
 		if (msgLength > 0)
 		{
-			auto buffer = unique_ptr<byte[]>{ new byte[msgLength + sizeof (kdb_unsigned_long_t) + saltLen] };
+			auto buffer = unique_ptr<byte[]>{
+				new byte[msgLength + ELEKTRA_CRYPTO_MAGIC_NUMBER_LEN + sizeof (kdb_unsigned_long_t) + saltLen]
+			};
+			size_t bufferIndex = 0;
 
-			memcpy (&buffer[0], &saltLen, sizeof (kdb_unsigned_long_t));
-			memcpy (&buffer[sizeof (kdb_unsigned_long_t)], salt, saltLen);
+			memcpy (&buffer[bufferIndex], ELEKTRA_CRYPTO_MAGIC_NUMBER, ELEKTRA_CRYPTO_MAGIC_NUMBER_LEN);
+			bufferIndex += ELEKTRA_CRYPTO_MAGIC_NUMBER_LEN;
+			memcpy (&buffer[bufferIndex], &saltLen, sizeof (kdb_unsigned_long_t));
+			bufferIndex += sizeof (kdb_unsigned_long_t);
+			memcpy (&buffer[bufferIndex], salt, saltLen);
+			bufferIndex += saltLen;
 
-			const size_t buffered = encryptor.read (&buffer[sizeof (kdb_unsigned_long_t) + saltLen], msgLength);
-			keySetBinary (k, &buffer[0], buffered + sizeof (kdb_unsigned_long_t) + saltLen);
+			const size_t buffered = encryptor.read (&buffer[bufferIndex], msgLength);
+			keySetBinary (k, &buffer[0], buffered + bufferIndex);
 		}
 	}
 	catch (std::exception & e)
@@ -253,8 +262,8 @@ int elektraCryptoBotanDecrypt (KeySet * pluginConfig, Key * k, Key * errorKey, K
 	saltLen += sizeof (kdb_unsigned_long_t);
 
 	// set payload pointer
-	const byte * payload = reinterpret_cast<const byte *> (keyValue (k)) + saltLen;
-	const size_t payloadLen = keyGetValueSize (k) - saltLen;
+	const byte * payload = reinterpret_cast<const byte *> (keyValue (k)) + saltLen + ELEKTRA_CRYPTO_MAGIC_NUMBER_LEN;
+	const size_t payloadLen = keyGetValueSize (k) - saltLen - ELEKTRA_CRYPTO_MAGIC_NUMBER_LEN;
 
 	try
 	{
@@ -268,7 +277,11 @@ int elektraCryptoBotanDecrypt (KeySet * pluginConfig, Key * k, Key * errorKey, K
 		if (decryptor.remaining () > 0)
 		{
 			// decode the "header" flags
-			decryptor.read (static_cast<byte *> (&flags), sizeof (kdb_octet_t));
+			const size_t flagLength = decryptor.read (static_cast<byte *> (&flags), sizeof (kdb_octet_t));
+			if (flagLength != sizeof (kdb_octet_t))
+			{
+				throw std::length_error ("Failed to restore the original data type of the value.");
+			}
 		}
 
 		const size_t msgLength = decryptor.remaining ();

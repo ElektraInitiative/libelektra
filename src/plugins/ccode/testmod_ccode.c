@@ -22,7 +22,7 @@
 
 #include <tests_internal.h>
 
-CCodeData * get_data ()
+CCodeData * get_data (void)
 {
 	CCodeData * d = calloc (1, sizeof (CCodeData));
 	d->escape = '\\';
@@ -47,7 +47,7 @@ const char encoded_string[] = "a\\wvalue\\nwith\\e\\s\\r\\wand\\w\\b\\witself";
 const char other_encoded_string[] = "a%wvalue%nwith%e%s%r%wand%w%b%witself";
 const char decoded_string[] = "a value\nwith=;# and \\ itself";
 
-void test_encode ()
+void test_encode (void)
 {
 	printf ("test encode\n");
 
@@ -63,7 +63,7 @@ void test_encode ()
 	keyDel (test);
 }
 
-void test_decode ()
+void test_decode (void)
 {
 	printf ("test decode\n");
 
@@ -97,7 +97,7 @@ void check_reversibility (const char * msg)
 	keyDel (encode);
 }
 
-void test_reversibility ()
+void test_reversibility (void)
 {
 	printf ("test reversibility\n");
 
@@ -114,7 +114,7 @@ void test_reversibility ()
 	check_reversibility ("\n\\");
 }
 
-void test_decodeescape ()
+void test_decodeescape (void)
 {
 	printf ("test decode escape\n");
 
@@ -132,7 +132,7 @@ void test_decodeescape ()
 	keyDel (test);
 }
 
-void test_config ()
+void test_config (void)
 {
 	printf ("test with config\n");
 
@@ -163,7 +163,7 @@ void test_config ()
 	elektraFree (p);
 }
 
-void test_otherescape ()
+void test_otherescape (void)
 {
 	printf ("test with config with other escape\n");
 
@@ -210,7 +210,7 @@ int main (int argc, char ** argv)
 	test_config ();
 	test_otherescape ();
 
-	printf ("\ntest_backendhelpers RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("testmod_ccode");
 
 	return nbError;
 }

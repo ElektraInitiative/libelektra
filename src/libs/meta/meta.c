@@ -561,7 +561,7 @@ cleanup:
  * but the gid of the the key, has full access.
  *
  * 0007 decides about the world permissions. This is taken into
- * account when neighter the uid nor the gid matches. So that
+ * account when neither the uid nor the gid matches. So that
  * example would allow everyone with a different uid and gid
  * of that key gains full access.
  *
@@ -936,20 +936,31 @@ void elektraMetaArrayAdd (Key * key, const char * metaName, const char * value)
 	keySetMeta (key, metaName, keyBaseName (arrayKey));
 	keyDel (arrayKey);
 }
+
 /**
- * creates a KeySet from a MetaKey array.
- * e.g.
- * elektraMetaArrayToKS(keyNew ("/a", KEY_VALUE, "b, c",
- * 	KEY_META, "dep", "#1", KEY_META, "dep/#0", "/b", KEY_META, "dep/#1", "/c", KEY_END), "dep");
- * returns a KeySet containing the keys "dep/#0" with value "/b" and "dep/#1" with value "/c"
- * If no MetaKey array is found, null is returned.
- * The returned KeySet must be free'd with ksDel
+ * Create a `KeySet` from a metakey array.
+ *
+ * For example, the following function call
+ *
+ * @code
+elektraMetaArrayToKS(
+        keyNew ("/a", KEY_VALUE, "b, c",
+                KEY_META, "dep",    "#1",
+                KEY_META, "dep/#0", "/b",
+                KEY_META, "dep/#1", "/c", KEY_END),
+        "dep");
+ * @endcode
+ *
+ * returns a `KeySet` containing the keys `"dep/#0"` with value `"/b"` and
+ * `"dep/#1"` with value `"/c"`.
+ *
+ * If no meta key array is found, null is returned.
+ * The returned `KeySet` must be freed with `ksDel`
  *
  * @returns a keyset containing all the metakeys of the metakey array
  * @param key the key containing the metakey array
  * @param metaName the name of the metakey array parent
  */
-
 KeySet * elektraMetaArrayToKS (Key * key, const char * metaName)
 {
 	const Key * meta = keyGetMeta (key, metaName);
@@ -1211,7 +1222,6 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 		adjMatrix[j].isResolved = 0;
 		adjMatrix[j].deps = elektraCalloc (sizeof (unsigned long) * size);
 	}
-	i = 0;
 	kdb_octet_t hasOrder = 0;
 	if (keyGetMeta (localArray[0], "order")) hasOrder = 1;
 	unsigned int unresolved = 0;
@@ -1221,7 +1231,6 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 		KeySet * deps = elektraMetaArrayToKS (cur, "dep");
 		keyDel (ksLookupByName (deps, "dep", KDB_O_POP));
 		Key * tmpDep;
-		int gotUnresolved = 0;
 		switch (ksGetSize (deps))
 		{
 		case -1:
@@ -1250,8 +1259,10 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 			}
 			// if not, fallthrough to normal dependency handling
 		}
+		// FALLTHROUGH
 		default:
 		{
+			int gotUnresolved = 0;
 			while ((tmpDep = ksNext (deps)) != NULL)
 			{
 				if (!isValidKeyName (keyString (tmpDep)))
@@ -1268,7 +1279,7 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 				}
 				else if (i == j)
 				{
-					// reflexiv depencency, do nothing
+					// reflexiv dependency, do nothing
 				}
 				else
 				{
@@ -1290,7 +1301,7 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 			{
 				adjMatrix[j].isResolved = 0;
 				++unresolved;
-				// cound unresolved dependencies
+				// count unresolved dependencies
 				depCount += gotUnresolved;
 			}
 			ksDel (deps);
@@ -1319,10 +1330,10 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 		retVal = 0;
 		goto TopSortCleanup;
 	}
-	int found = 1;
 
 	if (unresolved)
 	{
+		int found = 1;
 		// we have unresolved dependencies
 		for (int j = 0; j < size + 1; ++j)
 		{
@@ -1392,7 +1403,7 @@ TopSortCleanup:
 
 /**
  * returns the metakey array as a string separated by delim
- * 
+ *
  * @param key the key containing the metakey array
  * @param metaName the name of the metakey array parent
  * @param delim delimiter for the records in the returned string

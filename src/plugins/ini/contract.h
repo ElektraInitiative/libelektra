@@ -10,7 +10,7 @@
 #define CONTRACT_H_
 
 
-static inline KeySet * getPluginContract ()
+static inline KeySet * getPluginContract (void)
 {
 	// clang-formater off
 	return ksNew (30, keyNew ("system/elektra/modules/ini", KEY_VALUE, "Ini plugin waits for your orders", KEY_END),

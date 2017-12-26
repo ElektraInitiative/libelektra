@@ -150,7 +150,7 @@ endmacro(find_swig)
 #
 # Parameters:
 #
-# 1. util        [in] : the utility fo search for. Must be added using
+# 1. util        [in] : the utility to search for. Must be added using
 #                       add_executable first.
 # 2. EXE_SYM_LOC [out]: a name for a variable where the program to be executed
 #                       is written to.
@@ -186,7 +186,7 @@ function(find_util util output_loc output_arg)
 			find_program (${util}_EXE_LOC ${util})
 		endif ()
 	else (CMAKE_CROSSCOMPILING)
-		get_target_property (${util}_EXE_LOC ${util} LOCATION)
+		set(${util}_EXE_LOC $<TARGET_FILE:${util}>)
 	endif (CMAKE_CROSSCOMPILING)
 	set (${output_loc} ${${util}_EXE_LOC} PARENT_SCOPE)
 	set (${output_arg} ${ARG_LOC} PARENT_SCOPE)
@@ -503,45 +503,45 @@ endmacro()
 
 
 function (generate_manpage NAME)
-if (BUILD_DOCUMENTATION AND RONN_LOC) # disable function when RONN_LOC is not set
-
-	cmake_parse_arguments (ARG
-		"" # optional keywords
-		"SECTION;FILENAME" # one value keywords
-		"" # multi value keywords
-		${ARGN}
-	)
-
-	if (ARG_SECTION)
-		set(SECTION ${ARG_SECTION})
-	else ()
-		set(SECTION 1)
-	endif ()
-
-	if (ARG_FILENAME)
-		set(MDFILE ${ARG_FILENAME})
-	else ()
-		set(MDFILE ${CMAKE_CURRENT_SOURCE_DIR}/${NAME}.md)
-	endif ()
-
-	set(OUTFILE ${CMAKE_CURRENT_BINARY_DIR}/${NAME}.${SECTION})
-
-	add_custom_command(
-		OUTPUT ${OUTFILE}
-		DEPENDS ${MDFILE}
-		COMMAND export RUBYOPT="-Eutf-8" && ${RONN_LOC}
-		ARGS -r --pipe ${MDFILE} > ${OUTFILE}
+	if (BUILD_DOCUMENTATION)
+		cmake_parse_arguments (ARG
+			"" # optional keywords
+			"SECTION;FILENAME" # one value keywords
+			"" # multi value keywords
+			${ARGN}
 		)
-	add_custom_target(man-${NAME} ALL DEPENDS ${OUTFILE})
-	add_dependencies(man man-${NAME})
 
-	if (INSTALL_DOCUMENTATION)
-		install(
-			FILES ${OUTFILE}
-			DESTINATION share/man/man${SECTION}
+		if (ARG_SECTION)
+			set(SECTION ${ARG_SECTION})
+		else ()
+			set(SECTION 1)
+		endif ()
+
+		if (ARG_FILENAME)
+			set(MDFILE ${ARG_FILENAME})
+		else ()
+			set(MDFILE ${CMAKE_CURRENT_SOURCE_DIR}/${NAME}.md)
+		endif ()
+
+		set(OUTFILE ${CMAKE_SOURCE_DIR}/doc/man/${NAME}.${SECTION})
+
+		if (RONN_LOC)
+			add_custom_command(
+				OUTPUT ${OUTFILE}
+				DEPENDS ${MDFILE}
+				COMMAND export RUBYOPT="-Eutf-8" && ${RONN_LOC} ARGS -r --pipe ${MDFILE} > ${OUTFILE}
 			)
-	endif ()
-endif (BUILD_DOCUMENTATION AND RONN_LOC)
+			add_custom_target(man-${NAME} ALL DEPENDS ${OUTFILE})
+			add_dependencies(man man-${NAME})
+		endif (RONN_LOC)
+
+		if (INSTALL_DOCUMENTATION)
+			install(
+				FILES ${OUTFILE}
+				DESTINATION share/man/man${SECTION}
+				)
+		endif ()
+	endif (BUILD_DOCUMENTATION)
 endfunction ()
 
 

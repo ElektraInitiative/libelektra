@@ -6,5 +6,6 @@ add_plugin (enum
 		enum.c
 	LINK_ELEKTRA
 		elektra-meta
+		elektra-utility
 	ADD_TEST
 	)

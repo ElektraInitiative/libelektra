@@ -1,6 +1,6 @@
 if (DEPENDENCY_PHASE)
 	set (LUA_REQUIRED_VERSION 5.1)
-	find_package(Lua ${LUA_REQUIRED_VERSION})
+	find_package(Lua ${LUA_REQUIRED_VERSION} QUIET)
 	find_swig()
 
 	if (LUA_FOUND AND SWIG_FOUND)
@@ -14,7 +14,7 @@ if (DEPENDENCY_PHASE)
 		set (SWIG_COMPILE_FLAGS "-Wno-shadow -Wno-old-style-cast -Wno-unused-variable")
 		set_source_files_properties (lua.cpp PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS}")
 	elseif (NOT LUA_FOUND)
-		remove_plugin (lua "Lua libs >= ${LUA_REQUIRED_VERSION} not found")
+		remove_plugin (lua "Lua libs (>= liblua${LUA_REQUIRED_VERSION}-dev) not found")
 	else ()
 		remove_plugin (lua "swig not found")
 	endif ()
@@ -34,9 +34,10 @@ add_plugin (lua
 )
 
 if (ADDTESTING_PHASE)
+	if (NOT APPLE) # TODO: ENABLE_BROKEN_TESTS
 	# bindings are required for tests
 	list (FIND BINDINGS "swig_lua" FINDEX)
-	if (NOT BUILD_SHARED AND BUILD_TESTING AND FINDEX GREATER -1)
+	if (BUILD_TESTING AND FINDEX GREATER -1)
 		# test environment clears env so setting LUA_CPATH is no option
 		# we workaround this by changing the current directory to our bindings
 		# output directory + per default lua loads modules from current directory
@@ -49,4 +50,5 @@ if (ADDTESTING_PHASE)
 	else ()
 		message (WARNING "swig_lua bindings are required for testing, test deactivated")
 	endif ()
+	endif (NOT APPLE)
 endif ()

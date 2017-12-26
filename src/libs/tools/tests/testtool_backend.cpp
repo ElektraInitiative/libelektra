@@ -46,10 +46,10 @@ void outputGTest (kdb::KeySet tocheck, std::string name)
 	tocheck.rewind ();
 	while (tocheck.next ())
 	{
-		std::cout << name << ".next();" << std::endl;
-		std::cout << "EXPECT_EQ(" << name << ".current().getName(), \"" << makeLiteralString (tocheck.current ().getName ())
+		std::cout << name << ".next ();" << std::endl;
+		std::cout << "EXPECT_EQ (" << name << ".current ().getName (), \"" << makeLiteralString (tocheck.current ().getName ())
 			  << "\") << \"name of element in keyset wrong\";" << std::endl;
-		std::cout << "EXPECT_EQ(" << name << ".current().getString(), \"" << makeLiteralString (tocheck.current ().getString ())
+		std::cout << "EXPECT_EQ (" << name << ".current ().getString (), \"" << makeLiteralString (tocheck.current ().getString ())
 			  << "\") << \"string of element in keyset wrong\";" << std::endl;
 	}
 }
@@ -78,7 +78,7 @@ TEST (Backend, SimpleBackend)
 	KeySet mountConfig;
 	b.serialize (mountConfig);
 
-	// outputGTest(mountConfig, "mountConfig");
+	// outputGTest (mountConfig, "mountConfig");
 
 	mountConfig.rewind ();
 	mountConfig.next ();
@@ -88,6 +88,10 @@ TEST (Backend, SimpleBackend)
 	mountConfig.next ();
 	EXPECT_EQ (mountConfig.current ().getName (), "system/elektra/mountpoints/\\//config") << "name of element in keyset wrong";
 	EXPECT_EQ (mountConfig.current ().getString (), "") << "string of element in keyset wrong";
+	mountConfig.next ();
+	EXPECT_EQ (mountConfig.current ().getName (), "system/elektra/mountpoints/\\//config/fcrypt/textmode")
+		<< "name of element in keyset wrong";
+	EXPECT_EQ (mountConfig.current ().getString (), "0") << "string of element in keyset wrong";
 	mountConfig.next ();
 	EXPECT_EQ (mountConfig.current ().getName (), "system/elektra/mountpoints/\\//config/path") << "name of element in keyset wrong";
 	EXPECT_EQ (mountConfig.current ().getString (), "abc") << "string of element in keyset wrong";
@@ -142,7 +146,7 @@ TEST (Backend, CrazyName)
 	KeySet mountConfig;
 	b.serialize (mountConfig);
 
-	// outputGTest(mountConfig, "mountConfig");
+	// outputGTest (mountConfig, "mountConfig");
 
 	mountConfig.rewind ();
 	mountConfig.next ();
@@ -154,6 +158,10 @@ TEST (Backend, CrazyName)
 	EXPECT_EQ (mountConfig.current ().getName (), "system/elektra/mountpoints/\\/crazy\\/a..__.b\\/._.\\/._c__d/config")
 		<< "name of element in keyset wrong";
 	EXPECT_EQ (mountConfig.current ().getString (), "") << "string of element in keyset wrong";
+	mountConfig.next ();
+	EXPECT_EQ (mountConfig.current ().getName (), "system/elektra/mountpoints/\\/crazy\\/a..__.b\\/._.\\/._c__d/config/fcrypt/textmode")
+		<< "name of element in keyset wrong";
+	EXPECT_EQ (mountConfig.current ().getString (), "0") << "string of element in keyset wrong";
 	mountConfig.next ();
 	EXPECT_EQ (mountConfig.current ().getName (), "system/elektra/mountpoints/\\/crazy\\/a..__.b\\/._.\\/._c__d/config/path")
 		<< "name of element in keyset wrong";
@@ -224,7 +232,7 @@ TEST (Backend, SimpleBackendWithConf)
 	KeySet mountConfig;
 	b.serialize (mountConfig);
 
-	// outputGTest(mountConfig, "mountConfig");
+	// outputGTest (mountConfig, "mountConfig");
 
 	mountConfig.rewind ();
 	mountConfig.next ();
@@ -235,6 +243,10 @@ TEST (Backend, SimpleBackendWithConf)
 	EXPECT_EQ (mountConfig.current ().getName (), "system/elektra/mountpoints/user\\/somewhere/config")
 		<< "name of element in keyset wrong";
 	EXPECT_EQ (mountConfig.current ().getString (), "") << "string of element in keyset wrong";
+	mountConfig.next ();
+	EXPECT_EQ (mountConfig.current ().getName (), "system/elektra/mountpoints/user\\/somewhere/config/fcrypt/textmode")
+		<< "name of element in keyset wrong";
+	EXPECT_EQ (mountConfig.current ().getString (), "0") << "string of element in keyset wrong";
 	mountConfig.next ();
 	EXPECT_EQ (mountConfig.current ().getName (), "system/elektra/mountpoints/user\\/somewhere/config/globalConf")
 		<< "name of element in keyset wrong";
@@ -350,7 +362,7 @@ TEST (Backend, SimpleBackendWithNeededConf)
 	KeySet mountConfig;
 	b.serialize (mountConfig);
 
-	// outputGTest(mountConfig, "mountConfig");
+	// outputGTest (mountConfig, "mountConfig");
 
 	mountConfig.rewind ();
 	mountConfig.next ();
@@ -501,7 +513,7 @@ TEST (Backend, SimpleBackendWithUnderscore)
 	KeySet mountConfig;
 	b.serialize (mountConfig);
 
-	// outputGTest(mountConfig, "mountConfig");
+	// outputGTest (mountConfig, "mountConfig");
 
 	mountConfig.rewind ();
 	mountConfig.next ();
@@ -512,6 +524,10 @@ TEST (Backend, SimpleBackendWithUnderscore)
 	EXPECT_EQ (mountConfig.current ().getName (), "system/elektra/mountpoints/user\\/somewhere/config")
 		<< "name of element in keyset wrong";
 	EXPECT_EQ (mountConfig.current ().getString (), "") << "string of element in keyset wrong";
+	mountConfig.next ();
+	EXPECT_EQ (mountConfig.current ().getName (), "system/elektra/mountpoints/user\\/somewhere/config/fcrypt/textmode")
+		<< "name of element in keyset wrong";
+	EXPECT_EQ (mountConfig.current ().getString (), "0") << "string of element in keyset wrong";
 	mountConfig.next ();
 	EXPECT_EQ (mountConfig.current ().getName (), "system/elektra/mountpoints/user\\/somewhere/config/global/conf")
 		<< "name of element in keyset wrong";

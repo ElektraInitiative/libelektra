@@ -64,7 +64,7 @@ int main (int argc, char ** argv)
 	testvalid ("lineendings/valid1");
 	testinconsistent ("lineendings/inconsistent");
 	testinvalid ("lineendings/invalid");
-	printf ("\ntestmod_lineendings RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("testmod_lineendings");
 
 	return nbError;
 }

@@ -9,6 +9,7 @@
 #include "resolver.h"
 
 #include <kdbassert.h>
+#include <kdbhelper.h> // elektraStrDup
 #include <kdbproposal.h>
 
 #include "kdbos.h"
@@ -301,48 +302,94 @@ static int mapFilesForNamespaces (resolverHandles * p, Key * errorKey)
 	// switch is only present to forget no namespace and to get
 	// a warning whenever a new namespace is present.
 	// In fact its linear code executed:
+	ElektraResolved * resolved = NULL;
 	switch (KEY_NS_SPEC)
 	{
 	case KEY_NS_SPEC:
 		keySetName (testKey, "spec");
-		if (needsMapping (testKey, errorKey) && ELEKTRA_PLUGIN_FUNCTION (resolver, filename) (testKey, &p->spec, errorKey) == -1)
+		if (needsMapping (testKey, errorKey))
 		{
-			resolverClose (p);
-			keyDel (testKey);
-			ELEKTRA_SET_ERROR (35, errorKey, "Could not resolve spec key");
-			return -1;
+			if ((resolved = ELEKTRA_PLUGIN_FUNCTION (resolver, filename) (KEY_NS_SPEC, (p->spec).path,
+										      ELEKTRA_RESOLVER_TEMPFILE_SAMEDIR, errorKey)) == NULL)
+			{
+				resolverClose (p);
+				keyDel (testKey);
+				ELEKTRA_SET_ERROR (35, errorKey, "Could not resolve spec key");
+				return -1;
+			}
+			else
+			{
+				p->spec.tempfile = elektraStrDup (resolved->tmpFile);
+				p->spec.filename = elektraStrDup (resolved->fullPath);
+				p->spec.dirname = elektraStrDup (resolved->dirname);
+				ELEKTRA_PLUGIN_FUNCTION (resolver, freeHandle) (resolved);
+			}
 		}
+	// FALLTHROUGH
 
 	case KEY_NS_DIR:
 		keySetName (testKey, "dir");
-		if (needsMapping (testKey, errorKey) && ELEKTRA_PLUGIN_FUNCTION (resolver, filename) (testKey, &p->dir, errorKey) == -1)
+		if (needsMapping (testKey, errorKey))
 		{
-			resolverClose (p);
-			keyDel (testKey);
-			ELEKTRA_SET_ERROR (35, errorKey, "Could not resolve dir key");
-			return -1;
+			if ((resolved = ELEKTRA_PLUGIN_FUNCTION (resolver, filename) (KEY_NS_DIR, (p->dir).path,
+										      ELEKTRA_RESOLVER_TEMPFILE_SAMEDIR, errorKey)) == NULL)
+			{
+				resolverClose (p);
+				keyDel (testKey);
+				ELEKTRA_SET_ERROR (35, errorKey, "Could not resolve dir key");
+				return -1;
+			}
+			else
+			{
+				p->dir.tempfile = elektraStrDup (resolved->tmpFile);
+				p->dir.filename = elektraStrDup (resolved->fullPath);
+				p->dir.dirname = elektraStrDup (resolved->dirname);
+				ELEKTRA_PLUGIN_FUNCTION (resolver, freeHandle) (resolved);
+			}
 		}
-
+	// FALLTHROUGH
 	case KEY_NS_USER:
 		keySetName (testKey, "user");
-		if (needsMapping (testKey, errorKey) && ELEKTRA_PLUGIN_FUNCTION (resolver, filename) (testKey, &p->user, errorKey) == -1)
+		if (needsMapping (testKey, errorKey))
 		{
-			resolverClose (p);
-			keyDel (testKey);
-			ELEKTRA_SET_ERRORF (35, errorKey, "Could not resolve user key with conf %s", ELEKTRA_VARIANT_USER);
-			return -1;
+			if ((resolved = ELEKTRA_PLUGIN_FUNCTION (resolver, filename) (KEY_NS_USER, (p->user).path,
+										      ELEKTRA_RESOLVER_TEMPFILE_SAMEDIR, errorKey)) == NULL)
+			{
+				resolverClose (p);
+				keyDel (testKey);
+				ELEKTRA_SET_ERRORF (35, errorKey, "Could not resolve user key with conf %s", ELEKTRA_VARIANT_USER);
+				return -1;
+			}
+			else
+			{
+				p->user.tempfile = elektraStrDup (resolved->tmpFile);
+				p->user.filename = elektraStrDup (resolved->fullPath);
+				p->user.dirname = elektraStrDup (resolved->dirname);
+				ELEKTRA_PLUGIN_FUNCTION (resolver, freeHandle) (resolved);
+			}
 		}
-
+	// FALLTHROUGH
 	case KEY_NS_SYSTEM:
 		keySetName (testKey, "system");
-		if (needsMapping (testKey, errorKey) && ELEKTRA_PLUGIN_FUNCTION (resolver, filename) (testKey, &p->system, errorKey) == -1)
+		if (needsMapping (testKey, errorKey))
 		{
-			resolverClose (p);
-			keyDel (testKey);
-			ELEKTRA_SET_ERRORF (35, errorKey, "Could not resolve system key with conf %s", ELEKTRA_VARIANT_SYSTEM);
-			return -1;
+			if ((resolved = ELEKTRA_PLUGIN_FUNCTION (resolver, filename) (KEY_NS_SYSTEM, (p->system).path,
+										      ELEKTRA_RESOLVER_TEMPFILE_SAMEDIR, errorKey)) == NULL)
+			{
+				resolverClose (p);
+				keyDel (testKey);
+				ELEKTRA_SET_ERRORF (35, errorKey, "Could not resolve system key with conf %s", ELEKTRA_VARIANT_SYSTEM);
+				return -1;
+			}
+			else
+			{
+				p->system.tempfile = elektraStrDup (resolved->tmpFile);
+				p->system.filename = elektraStrDup (resolved->fullPath);
+				p->system.dirname = elektraStrDup (resolved->dirname);
+				ELEKTRA_PLUGIN_FUNCTION (resolver, freeHandle) (resolved);
+			}
 		}
-
+	// FALLTHROUGH
 	case KEY_NS_PROC:
 	case KEY_NS_EMPTY:
 	case KEY_NS_NONE:
@@ -463,9 +510,11 @@ int ELEKTRA_PLUGIN_FUNCTION (resolver, get) (Plugin * handle, KeySet * returned,
 	{
 		// no file, so storage has no job
 		errno = errnoSave;
-		pk->mtime.tv_sec = 0;  // no file, so no time
-		pk->mtime.tv_nsec = 0; // no file, so no time
 		pk->isMissing = 1;
+
+		// no file, so no metadata:
+		pk->mtime.tv_sec = 0;
+		pk->mtime.tv_nsec = 0;
 		return 0;
 	}
 	else
@@ -840,23 +889,25 @@ static void elektraModifyFileTime (resolverHandle * pk)
 /* Update timestamp of old file to provoke conflicts in
  * stalling processes that might still wait with the old
  * filedescriptor */
-static void elektraUpdateFileTime (resolverHandle * pk, Key * parentKey)
+static void elektraUpdateFileTime (resolverHandle * pk, int fd, Key * parentKey)
 {
 #ifdef HAVE_FUTIMENS
 	const struct timespec times[2] = { pk->mtime,   // atime
 					   pk->mtime }; // mtime
 
-	if (futimens (pk->fd, times) == -1)
+	if (futimens (fd, times) == -1)
 	{
-		ELEKTRA_ADD_WARNINGF (99, parentKey, "Could not update time stamp of \"%s\", because %s", pk->filename, strerror (errno));
+		ELEKTRA_ADD_WARNINGF (99, parentKey, "Could not update time stamp of \"%s\", because %s",
+				      fd == pk->fd ? pk->filename : pk->tempfile, strerror (errno));
 	}
 #elif defined(HAVE_FUTIMES)
 	const struct timeval times[2] = { { pk->mtime.tv_sec, pk->mtime.tv_nsec / 1000 },   // atime
 					  { pk->mtime.tv_sec, pk->mtime.tv_nsec / 1000 } }; // mtime
 
-	if (futimes (pk->fd, times) == -1)
+	if (futimes (fd, times) == -1)
 	{
-		ELEKTRA_ADD_WARNINGF (99, parentKey, "Could not update time stamp of \"%s\", because %s", pk->filename, strerror (errno));
+		ELEKTRA_ADD_WARNINGF (99, parentKey, "Could not update time stamp of \"%s\", because %s",
+				      fd == pk->fd ? pk->filename : pk->tempfile, strerror (errno));
 	}
 #else
 #warning futimens/futimes not defined
@@ -882,7 +933,8 @@ static int elektraSetCommit (resolverHandle * pk, Key * parentKey)
 	if (fd == -1)
 	{
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_COULD_NOT_OPEN, parentKey,
-				    "Could not open file again for changing properties of file because %s", strerror (errno));
+				    "Could not open file again for changing metadata of file \"%s\", because %s", pk->tempfile,
+				    strerror (errno));
 		ret = -1;
 	}
 
@@ -911,10 +963,7 @@ static int elektraSetCommit (resolverHandle * pk, Key * parentKey)
 		{
 			elektraModifyFileTime (pk);
 			// update file visible in filesystem:
-			int pfd = pk->fd;
-			pk->fd = fd;
-			elektraUpdateFileTime (pk, parentKey);
-			pk->fd = pfd;
+			elektraUpdateFileTime (pk, fd, parentKey);
 
 			/* @post
 			   For timejump backwards or time not changed,
@@ -926,20 +975,29 @@ static int elektraSetCommit (resolverHandle * pk, Key * parentKey)
 		}
 	}
 
-	elektraUpdateFileTime (pk, parentKey);
-
-	// file is present now!
-	pk->isMissing = 0;
+	elektraUpdateFileTime (pk, pk->fd, parentKey);
 
 	if (buf.st_mode != pk->filemode)
 	{
 		// change mode to what it was before
-		fchmod (fd, pk->filemode);
+		if (fchmod (fd, pk->filemode) == -1)
+		{
+			ELEKTRA_ADD_WARNINGF (99, parentKey, "Could not fchmod temporary file \"%s\" from %o to %o, because %s",
+					      pk->tempfile, buf.st_mode, pk->filemode, strerror (errno));
+		}
 	}
-	if (buf.st_uid != pk->uid || buf.st_gid != pk->gid)
+
+	if (!pk->isMissing && (buf.st_uid != pk->uid || buf.st_gid != pk->gid))
 	{
-		fchown (fd, pk->uid, pk->gid);
+		if (fchown (fd, pk->uid, pk->gid) == -1)
+		{
+			ELEKTRA_ADD_WARNINGF (99, parentKey, "Could not fchown temporary file \"%s\" from %d.%d to %d.%d, because %s",
+					      pk->tempfile, buf.st_uid, buf.st_gid, pk->uid, pk->gid, strerror (errno));
+		}
 	}
+
+	// file is present now!
+	pk->isMissing = 0;
 
 	DIR * dirp = opendir (pk->dirname);
 	// checking dirp not needed, fsync will have EBADF
@@ -1076,12 +1134,12 @@ int ELEKTRA_PLUGIN_FUNCTION (resolver, error) (Plugin * handle, KeySet * r ELEKT
 Plugin * ELEKTRA_PLUGIN_EXPORT (resolver)
 {
 	// clang-format off
-	return elektraPluginExport(ELEKTRA_PLUGIN_NAME,
-		ELEKTRA_PLUGIN_OPEN,	&ELEKTRA_PLUGIN_FUNCTION(resolver, open),
-		ELEKTRA_PLUGIN_CLOSE,	&ELEKTRA_PLUGIN_FUNCTION(resolver, close),
-		ELEKTRA_PLUGIN_GET,	&ELEKTRA_PLUGIN_FUNCTION(resolver, get),
-		ELEKTRA_PLUGIN_SET,	&ELEKTRA_PLUGIN_FUNCTION(resolver, set),
-		ELEKTRA_PLUGIN_ERROR,	&ELEKTRA_PLUGIN_FUNCTION(resolver, error),
-		ELEKTRA_PLUGIN_END);
+    return elektraPluginExport(ELEKTRA_PLUGIN_NAME,
+            ELEKTRA_PLUGIN_OPEN,	&ELEKTRA_PLUGIN_FUNCTION(resolver, open),
+            ELEKTRA_PLUGIN_CLOSE,	&ELEKTRA_PLUGIN_FUNCTION(resolver, close),
+            ELEKTRA_PLUGIN_GET,	&ELEKTRA_PLUGIN_FUNCTION(resolver, get),
+            ELEKTRA_PLUGIN_SET,	&ELEKTRA_PLUGIN_FUNCTION(resolver, set),
+            ELEKTRA_PLUGIN_ERROR,	&ELEKTRA_PLUGIN_FUNCTION(resolver, error),
+            ELEKTRA_PLUGIN_END);
 }
 

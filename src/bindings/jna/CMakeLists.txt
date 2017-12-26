@@ -1,5 +1,14 @@
 find_program (MAVEN_EXECUTABLE mvn)
+find_package (Java)
 
+if (Java_JAVAC_EXECUTABLE)
+# the version schemes are different on the jdks
+# on osx/oracle jdk its called java 9.0.1
+# osx/oracle jdk 8 is called java 1.8.x
+# on ubuntu/open jdk its called java 1.9.0
+# therefore this workaround should work in all cases
+# as 9.x.x > 1.8 and 1.8.x > 1.8 and 1.9.x > 1.8
+if ((${Java_VERSION} VERSION_GREATER "1.8.0") OR (${Java_VERSION} VERSION_EQUAL "1.8.0"))
 if (MAVEN_EXECUTABLE) # set by find_program
 	file (
 		MAKE_DIRECTORY libelektra4j
@@ -27,11 +36,13 @@ if (MAVEN_EXECUTABLE) # set by find_program
 	)
 
 	# compile it and build the jar
-	add_custom_target (
-		jna ALL
+	add_custom_command (
+		OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/libelektra4j/target/libelektra4j-${KDB_VERSION}.jar"
 		COMMAND ${MAVEN_EXECUTABLE} -q -B -DskipTests=true package
 		WORKING_DIRECTORY libelektra4j
+		DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/libelektra4j/pom.xml"
 	)
+	add_custom_target(jna ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/libelektra4j/target/libelektra4j-${KDB_VERSION}.jar")
 
 	install (
 		FILES
@@ -49,22 +60,35 @@ if (MAVEN_EXECUTABLE) # set by find_program
 		set (MAVEN_TEST_ENV "env-test")
 	endif ()
 
-	add_test (
-		NAME testjna_maven
-		COMMAND ${MAVEN_EXECUTABLE} -q -B -e -P ${MAVEN_TEST_ENV} test
-		WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/libelektra4j"
-	)
 
-	set_property (
-		TEST testjna_maven
-		PROPERTY ENVIRONMENT
-			"LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib"
-	)
+	if (NOT ENABLE_ASAN)
+		add_test (
+			NAME testjna_maven
+			COMMAND ${MAVEN_EXECUTABLE} -q -B -e -P ${MAVEN_TEST_ENV} test
+			WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/libelektra4j"
+		)
 
-	set_property (
-		TEST testjna_maven
-		PROPERTY LABELS bindings
-	)
+		set_property (
+			TEST testjna_maven
+			PROPERTY ENVIRONMENT
+				"LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib"
+		)
+
+		set_property (
+			TEST testjna_maven
+			PROPERTY LABELS bindings memleak
+		)
+	endif (NOT ENABLE_ASAN)
 else (MAVEN_EXECUTABLE)
 	remove_binding (jna "Maven Executable not found, but required to build the jna bindings")
 endif (MAVEN_EXECUTABLE)
+else ((${Java_VERSION} VERSION_GREATER "1.8.0") OR (${Java_VERSION} VERSION_EQUAL "1.8.0"))
+	remove_binding (jna "At least Java 8 is required, but ${Java_VERSION_STRING} was found")
+endif ((${Java_VERSION} VERSION_GREATER "1.8.0") OR (${Java_VERSION} VERSION_EQUAL "1.8.0"))
+else (Java_JAVAC_EXECUTABLE)
+	remove_binding (jna "javac (java compiler) not found, which is only included in a jdk")
+endif (Java_JAVAC_EXECUTABLE)
+
+mark_as_advanced (
+	MAVEN_EXECUTABLE
+)

@@ -22,9 +22,9 @@ public class KDBTest {
 
 	@Before
 	public void initializeSingleTest() {
-		key = Key.create(KEY_1_NAME, Key.KEY_VALUE, KEY_1_VALUE, Key.KEY_END);
-		key2 = Key.create(KEY_2_NAME, Key.KEY_VALUE, KEY_2_VALUE, Key.KEY_END);
-		parentKey = Key.create(PARENT_KEY_NAME, Key.KEY_END);
+		key = Key.create(KEY_1_NAME, KEY_1_VALUE);
+		key2 = Key.create(KEY_2_NAME, KEY_2_VALUE);
+		parentKey = Key.create(PARENT_KEY_NAME);
 	}
 
 	/*

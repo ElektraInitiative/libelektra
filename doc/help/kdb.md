@@ -6,18 +6,19 @@ parameters in a global, hierarchical key database.
 
 The core is a small library implemented in C. The plugin-based framework fulfills many
 configuration-related tasks to avoid any unnecessary code duplication
-across applications while it still allows the core to stay without any
+across applications while it still allows the core to stay minimal without any
 external dependency. Elektra abstracts from cross-platform-related issues
-with an consistent API, and allows applications to be aware of other
+with a consistent API, and allows applications to be aware of other
 applications' configurations, leveraging easy application integration.
+
 
 ## OVERVIEW
 
 The man pages can also be viewed online at:
-http://doc.libelektra.org/api/current/html/pages.html
+https://doc.libelektra.org/api/current/html/pages.html
 
 And the page you are currently reading at:
-http://doc.libelektra.org/api/current/html/md_doc_help_kdb.html
+https://doc.libelektra.org/api/current/html/md_doc_help_kdb.html
 
 Concepts are in man page section 7 and are prefixed with `elektra-`.
 You should start reading [elektra-introduction(7)](elektra-introduction.md).
@@ -29,6 +30,7 @@ Documentation of plugins is available using the
 [kdb-info(1)](kdb-info.md) tool.
 Run `kdb list` for a list of plugins.
 
+
 ## BASIC OPTIONS
 
 Every core-tool has the following options:
@@ -37,8 +39,10 @@ Every core-tool has the following options:
   Show the man page.
 - `-V`, `--version`:
   Print version info.
-- `-p`, `--profile`=<profile>:
+- `-p`, `--profile <profile>`:
   Use a different kdb profile, see below.
+- `-C`, `--color <when>`:
+  Print never/auto(default)/always colored output.
 
 ## COMMON OPTIONS
 
@@ -48,8 +52,6 @@ Most tools have the following options:
   Explain what is happening.
 - `-q`, `--quiet`:
   Suppress non-error messages.
-- `-C`, `--color`=[when]:
-  Print never/auto(default)/always colored output.
 
 ## KDB
 
@@ -57,10 +59,13 @@ The `kdb` utility reads its own configuration from three sources
 within the KDB (key database):
 
 1. /sw/kdb/**profile**/ (for legacy configuration)
-2. /sw/elektra/kdb/#0/%/ (for empty profile)
-3. /sw/elektra/kdb/#0/**profile**/ (for current profile)
+2. /sw/elektra/kdb/#0/%/ (for empty profile, `%` in Elektra
+   is used to represent a emptiness)
+3. /sw/elektra/kdb/#0/**profile**/ (for current profile,
+   if no `-p` or `--profile` is given, `current` will be
+   used)
 
-The last source where a configuration value is found, wins.
+Here the last source where a configuration value is found, wins.
 
 For example, to permanently change verbosity one can use:
 
@@ -70,11 +75,23 @@ For example, to permanently change verbosity one can use:
 - `kdb set /sw/elektra/kdb/#0/current/quiet 1`:
   Be quiet for every tool.
 
+If `%` is passed to
+`-p` or `--profile`, the KDB will not be consulted for configuration and
+only the command-line arguments are used.
+
 ## PROFILES
 
-Profiles allow users to change many/all configuration options of a tool
+Profiles allow users to change many/all configuration settings of a tool
 at once. It influences from where the KDB entries are read.
-For example if you use:
+Without a `-p` or `--profile` argument following profiles are used
+(in the order of preference):
+
+- `current`:
+  Is the profile to be used only if no `-p` argument was used.
+- `%`:
+  Is the fallback profile. It will be used if keys cannot be found in the main profile.
+
+For example if you use:<br>
 	`kdb export -p admin system`
 
 It will read its format configuration from `/sw/elektra/kdb/#0/admin/format`.
@@ -86,8 +103,21 @@ be chosen automatically according to the current user or current working directo
 Sometimes it is useful to start with default options, for example it is not
 possible to invert the `-q` option.
 In such situations one can simply select a non-existing profile, then `-q`
-works as usual:
+works as usual:<br>
 	`kdb mount -p nonexist -q /abc dir/abc`
+
+If `%` is used as profile name for `-p`, the `kdb` tools disables reading from `KDB`
+for their own configuration settings. Then, they only use command-line arguments.
+
+To explicitly state the default behavior, we use:<br>
+	`-p current`
+
+To state that we do not want to read any configuration settings for `kdb`
+from KDB, we use:<br>
+	`-p %`
+
+> Note that KDB will still be used to perform the actions you want to perform
+> with the `kdb` tool.
 
 ## BOOKMARKS
 
@@ -129,28 +159,22 @@ You are able to use:
 - 2:
   Invalid arguments passed.
 - 3:
-  Command terminated unsuccessfully.
+  Command terminated unsuccessfully without specifying error code.
 - 4:
   Unknown command.
 - 5:
   KDB Error, could not read/write from/to KDB.
-- 7-8:
+- 6:
+  Reserved error code.
+- 7:
   Unknown errors, wrong exceptions thrown.
-- 9-10:
+- 8-10:
   Reserved error codes.
-
-## OPTIONS
-
-Commonly used options for all programs:
-
-- `-H`, `--help`:
-   Show the man page.
-- `-V`, `--version`:
-   Print version info.
-- `-p <profile>`, `--profile <profile>`:
-   Use a different profile instead of current.
+- 11-20:
+  Command-specific error codes. See man page of specific command.
 
 ## SEE ALSO
 
 - [elektra-introduction(7)](elektra-introduction.md)
 - [kdb-introduction(1)](kdb-introduction.md)
+- Get a [big picture about Elektra](/doc/BIGPICTURE.md)

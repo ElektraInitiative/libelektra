@@ -11,7 +11,7 @@
 
 // clang-format off
 
-int main ()
+int main (void)
 {
 {
 //! [Simple]

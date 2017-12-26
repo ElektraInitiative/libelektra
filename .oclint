@@ -1,3 +1,8 @@
 rule-configurations:
   - key: LONG_LINE
     value: 140
+disable-rules:
+  - GotoStatement
+max-priority-1: 0
+max-priority-2: 0
+max-priority-3: 0

@@ -7,6 +7,7 @@
  */
 
 #include <kdbconfig.h>
+#include <kdbmacros.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -15,17 +16,17 @@ extern "C" {
 
 void elektraAbort (const char * expression, const char * function, const char * file, const int line, const char * msg, ...)
 #ifdef __GNUC__
-	__attribute__ ((format (printf, 5, 6)))
+	__attribute__ ((format (printf, 5, 6))) __attribute__ ((__noreturn__))
+#else
+#ifdef __clang_analyzer__
+	// For scan-build / clang analyzer to detect our assertions abort
+	__attribute__ ((analyzer_noreturn))
+#endif
 #endif
 	;
 
 #ifdef __cplusplus
 }
-#endif
-
-#ifndef STRINGIFY
-#define STRINGIFY(x) STRINGIFY2 (x)
-#define STRINGIFY2(x) #x
 #endif
 
 #ifdef ELEKTRA_BMC
@@ -34,8 +35,9 @@ void elektraAbort (const char * expression, const char * function, const char * 
 #define ELEKTRA_ASSERT(EXPR, ...) assert (EXPR)
 #else
 #if DEBUG
-#define ELEKTRA_ASSERT(EXPR, ...) ((EXPR)) ? (void)(0) : elektraAbort (STRINGIFY (EXPR), __func__, __FILE__, __LINE__, __VA_ARGS__)
+#define ELEKTRA_ASSERT(EXPR, ...) ((EXPR)) ? (void)(0) : elektraAbort (ELEKTRA_STRINGIFY (EXPR), __func__, __FILE__, __LINE__, __VA_ARGS__)
 #else
 #define ELEKTRA_ASSERT(EXPR, ...)
 #endif
+#define ELEKTRA_NOT_NULL(argument) ELEKTRA_ASSERT (argument, "The variable `" #argument "` contains `NULL`.")
 #endif

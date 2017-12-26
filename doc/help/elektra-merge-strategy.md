@@ -40,7 +40,9 @@ Currently the following strategies exist:
  * cut:
    Removes existing keys below the resultpath and replaces them with the merged keyset.
 
- * import:
+ * unchanged: (EXPERIMENTAL, only for kdb-mount)
+   Do not fail if the operation does not change anything.
+
+ * import: (DEPRECATED, avoid using it)
    Preserves existing keys in the resultpath if they do not exist in the merged keyset.
    If the key does exist in the merged keyset, it will be overwritten.
-   (avoid using it)

@@ -17,9 +17,9 @@ This command removes a metakey of a key from the Key database.
   Show the man page.
 - `-V`, `--version`:
   Print version info.
-- `-p`, `--profile`=<profile>:
+- `-p`, `--profile <profile>`:
   Use a different kdb profile.
-- `-C`, `--color`=[when]:
+- `-C`, `--color <when>`:
   Print never/auto(default)/always colored output.
 
 ## EXAMPLES
@@ -29,4 +29,5 @@ To remove metakey `metakey` of a key:
 
 ## SEE ALSO
 
+- [elektra-metadata(7)](elektra-metadata.md) for an explanation of the metadata concepts.
 - [elektra-key-names(7)](elektra-key-names.md) for an explanation of key names.

@@ -13,11 +13,33 @@
 
 Different configurations might use different values for `TRUE`/`FALSE`. The `boolean` plugin canonicalizes boolean values.
 
+## Example
+
+```sh
+# Mount plugin
+kdb mount config.ecf user/examples/boolean dump boolean
+
+# By default the plugin uses `1` (true) and `0` (false) to represent boolean values
+kdb set user/examples/boolean/truthiness false
+kdb setmeta user/examples/boolean/truthiness type boolean
+kdb get user/examples/boolean/truthiness
+#> 0
+
+# The plugin does not change ordinary values
+kdb set user/examples/boolean/key value
+kdb get user/examples/boolean/key
+#> value
+
+# Undo changes
+kdb rm -r user/examples/boolean
+kdb umount user/examples/boolean
+```
+
 ## Configuration
 
 - `on/true` specifies the normalized value for `TRUE`. Default: `1`
 - `on/false` specifies the normalized value for `FALSE`. Default: `0`
-- `on/invalid` specifies the normalized value for keys that don't containe a valid boolean value. Values: `TRUE`, `FALSE`. Default: `TRUE`.
-- `on/invalid/warning` specifies if the plugin will yield a warning when a invalid value is found during kdbGet. Values: `TRUE`, `FALSE`. `Default: `TRUE`
-- `true` specifies a (case insensitive) list of valid `TRUE`-values. The values have to be separated by a `;`. Default: `TRUE; 1; ON; ENABLE; ENABLED; YES` 
+- `on/invalid` specifies the normalized value for keys that don't contain a valid boolean value. Values: `TRUE`, `FALSE`. Default: `TRUE`.
+- `on/invalid/warning` specifies if the plugin will yield a warning when a invalid value is found during kdbGet. Values: `TRUE`, `FALSE`. Default: `TRUE`
+- `true` specifies a (case insensitive) list of valid `TRUE`-values. The values have to be separated by a `;`. Default: `TRUE; 1; ON; ENABLE; ENABLED; YES`
 - `false` specifies a (case insensitive) list of valid `FALSE`-values. The values have to be separated by a `;`. Default: `FALSE; 0; OFF; DISABLE; DISABLED; NO; NOT`

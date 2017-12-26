@@ -111,10 +111,10 @@ void Backend::setMountpoint (Key mountpoint, KeySet mountConf)
 			alreadyUsedMountpoints.push_back (Key ("user" + name, KEY_END).getName ());
 			alreadyUsedMountpoints.push_back (Key ("system" + name, KEY_END).getName ());
 		}
-		else
-		{
-			alreadyUsedMountpoints.push_back (name);
-		}
+
+		// always add name itself, too
+		alreadyUsedMountpoints.push_back (name);
+
 		namesAsString += name;
 		namesAsString += " ";
 	}
@@ -142,6 +142,11 @@ void Backend::setMountpoint (Key mountpoint, KeySet mountConf)
 	// STEP 3: check for name match
 	if (smp == "/")
 	{
+		if (std::find (alreadyUsedMountpoints.begin (), alreadyUsedMountpoints.end (), "/") != alreadyUsedMountpoints.end ())
+		{
+			throw MountpointAlreadyInUseException (
+				"Root mountpoint not possible, because the root mountpoint already exists.\n");
+		}
 		Key specmp ("spec", KEY_END);
 		if (std::find (alreadyUsedMountpoints.begin (), alreadyUsedMountpoints.end (), specmp.getName ()) !=
 		    alreadyUsedMountpoints.end ())
@@ -169,6 +174,11 @@ void Backend::setMountpoint (Key mountpoint, KeySet mountConf)
 	}
 	else if (smp.at (0) == '/')
 	{
+		if (std::find (alreadyUsedMountpoints.begin (), alreadyUsedMountpoints.end (), smp) != alreadyUsedMountpoints.end ())
+		{
+			throw MountpointAlreadyInUseException ("Cascading mountpoint " + smp +
+							       " not possible, because cascading mountpoint " + smp + " already exists.\n");
+		}
 		Key dkmp ("dir" + smp, KEY_END);
 		if (std::find (alreadyUsedMountpoints.begin (), alreadyUsedMountpoints.end (), dkmp.getName ()) !=
 		    alreadyUsedMountpoints.end ())
@@ -244,7 +254,7 @@ void Backend::useConfigFile (std::string file)
 			checkFileFunction = reinterpret_cast<checkFilePtr> (elem->getSymbol ("checkfile"));
 			break;
 		}
-		catch (MissingSymbol ms)
+		catch (MissingSymbol const & ms)
 		{
 		}
 	}

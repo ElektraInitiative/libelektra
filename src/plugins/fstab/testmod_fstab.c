@@ -104,7 +104,7 @@ int main (int argc, char ** argv)
 	test_readfstab ("fstab/fstab");
 	test_writefstab ("fstab/fstab-write");
 
-	printf ("\ntestmod_fstab RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("testmod_fstab");
 
 	return nbError;
 }

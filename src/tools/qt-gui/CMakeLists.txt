@@ -2,6 +2,11 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(DISCOUNT_FIND_QUIETLY ON)
 
+# Disable warnings about policies in Qt’s CMake code
+if (POLICY CMP0053)
+	cmake_policy(SET CMP0053 OLD)
+endif ()
+
 set(QCOMPONENTS Core Quick Gui Qml Widgets Test)
 find_package(Qt5 COMPONENTS ${QCOMPONENTS})
 find_package(Qt5 OPTIONAL_COMPONENTS Svg QUIET)
@@ -15,7 +20,7 @@ elseif (NOT DISCOUNT_FOUND)
 else()
 
 if (NOT Qt5Svg_FOUND)
-	message(WARNING "No Qt5 svg module found. Svg icons themes will not be supported.")
+	message(WARNING "No Qt5 svg module found. Svg icons themes will not be supported. (please install libqt5svg5-dev)")
 endif ()
 
 if (NOT Qt5DBus_FOUND)

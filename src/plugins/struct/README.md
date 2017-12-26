@@ -30,7 +30,7 @@ interrelations of keys are called structure checker. They can require that
 various subkeys have to or must not exist. This can happen recursively
 to specify any structure.
 
-The struct plugin implements such a behaviour. It allows enforcement of
+The struct plugin implements such a behavior. It allows enforcement of
 a strong consistency within the keys of one backend.
 
 ## Usage

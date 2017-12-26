@@ -29,7 +29,7 @@ class MergingKDB : public KDB
 {
 public:
 	MergingKDB ();
-	MergingKDB (KDB & kdb);
+	explicit MergingKDB (KDB & kdb);
 	virtual ~MergingKDB () throw ();
 
 	/**

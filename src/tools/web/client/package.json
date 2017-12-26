@@ -1,7 +1,15 @@
 {
   "name": "@elektra-web/client",
   "version": "1.1.0",
+  "description": "a web interface for elektra",
+  "keywords": [
+    "elektra",
+    "elektra-web",
+    "client"
+  ],
   "proxy": "http://localhost:33334",
+  "homepage": "https://git.libelektra.org/blob/master/src/tools/web/",
+  "license": "BSD",
   "dependencies": {
     "@bosket/core": "^0.4.1",
     "@bosket/tools": "^0.4.1",

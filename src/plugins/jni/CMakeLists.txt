@@ -47,17 +47,31 @@ add_plugin(jni
 
 if (ADDTESTING_PHASE)
 	list (FIND BINDINGS "jna" FINDEX)
-	if (BUILD_TESTING AND FINDEX GREATER -1)
-		set (libelektra_jar ${CMAKE_BINARY_DIR}/src/bindings/jna/libelektra.jar)
+	find_program (MAVEN_EXECUTABLE mvn)
 
-		configure_file (
-			"${CMAKE_CURRENT_SOURCE_DIR}/testmod_jni.h.in"
-			"${CMAKE_CURRENT_BINARY_DIR}/testmod_jni.h"
-			)
-
-		include_directories (${CMAKE_CURRENT_BINARY_DIR})
+	if (ENABLE_BROKEN_TESTS)
+	if (BUILD_TESTING AND FINDEX GREATER -1 AND MAVEN_EXECUTABLE)
 		add_plugintest(jni MEMLEAK)
+		include_directories (${CMAKE_CURRENT_BINARY_DIR})
+
+		# Generate header file
+		set (LIBELEKTRA4J_PATH ${CMAKE_BINARY_DIR}/src/bindings/jna/libelektra4j)
+		add_custom_command (
+			COMMAND ${MAVEN_EXECUTABLE} ARGS dependency:build-classpath -q -Dmdep.outputFile=classpath.txt
+			COMMAND ${CMAKE_COMMAND} ARGS
+				-D SOURCE_PATH=${CMAKE_CURRENT_SOURCE_DIR}
+				-D DESTINATION_PATH=${CMAKE_CURRENT_BINARY_DIR}
+				-D LIBELEKTRA4J_PATH=${LIBELEKTRA4J_PATH}
+				-D KDB_VERSION=${KDB_VERSION}
+				-P ${CMAKE_SOURCE_DIR}/cmake/ElektraClasspath.cmake
+			OUTPUT "${LIBELEKTRA4J_PATH}/classpath.txt" "${CMAKE_CURRENT_BINARY_DIR}/testmod_jni.h"
+			WORKING_DIRECTORY ${LIBELEKTRA4J_PATH}
+			DEPENDS "${LIBELEKTRA4J_PATH}/pom.xml"
+		)
+		add_custom_target (jni_header DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/testmod_jni.h")
+		add_dependencies (testmod_jni jni_header)
 	else ()
 		message (WARNING "jna bindings are required for testing, test deactivated")
 	endif ()
+	endif (ENABLE_BROKEN_TESTS)
 endif ()

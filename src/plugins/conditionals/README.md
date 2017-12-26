@@ -51,7 +51,7 @@ Keynames are all either relative to to-be-tested key (starting with `./` or `../
 
 ### Multiple Statements
 
-It's also possible to test multiple conditions using `check/condition/{any,all,none}` as a meta array. Where `any` means that at least one statement has to evaluate to true, `all` that all statements have to evaluate to true, and `none` that no statement is allowed to evalutate to false (default).
+It's also possible to test multiple conditions using `check/condition/{any,all,none}` as a meta array. Where `any` means that at least one statement has to evaluate to true, `all` that all statements have to evaluate to true, and `none` that no statement is allowed to evaluate to false (default).
 For multiple assign statements use `assign/condition` as a meta array. The first `assign/condition/#` statement that evaluates to true will be assigned and the rest ignored.
 
 
@@ -78,7 +78,7 @@ kdb setmeta user/examples/conditionals/key check/condition "(../hkey == 'hello')
 # will fail
 kdb setmeta user/examples/conditionals/key check/condition "(../hkey == 'hello') ? (../fkey == '5.0')"
 # RET:5
-# ERRORS:135
+# ERROR:135
 ```
 
 Assignment example:
@@ -117,7 +117,7 @@ kdb export /examples/conditionals ini
 #> sub/key = false
 #> #@META check/condition = (./ == 'val1') ? (../sub/key == 'true')
 #> key1 = val1
-# ERRORS:135
+# ERROR:135
 # Error (#135) occurred!
 # Description: Validation failed
 # Ingroup: plugin
@@ -137,7 +137,8 @@ kdb export /examples/conditionals ini
 
 # cleanup
 kdb rm -r /examples/conditionals
-kdb rm -r system/elektra/globalplugins
 sudo kdb umount /examples/conditionals/sub
 sudo kdb umount /examples/conditionals
+
+sudo kdb global-umount conditionals
 ```

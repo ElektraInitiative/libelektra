@@ -25,14 +25,14 @@ that is the place where you usually want to set metadata.
   Show the man page.
 - `-V`, `--version`:
   Print version info.
-- `-p`, `--profile`=<profile>:
+- `-p`, `--profile <profile>`:
   Use a different kdb profile.
+- `-C`, `--color <when>`:
+  Print never/auto(default)/always colored output.
 - `-v`, `--verbose`:
   Explain what is happening.
 - `-q`, `--quiet`:
   Suppress non-error messages.
-- `-C`, `--color`=[when]:
-  Print never/auto(default)/always colored output.
 
 ## KDB
 
@@ -69,5 +69,5 @@ To remove it:
 ## SEE ALSO
 
 - How to get metadata: [kdb-getmeta(1)](kdb-getmeta.md)
-- [elektra-metadata(7)](elektra-metadata.md)
+- [elektra-metadata(7)](elektra-metadata.md) for an explanation of the metadata concepts.
 - [elektra-key-names(7)](elektra-key-names.md) for an explanation of key names.

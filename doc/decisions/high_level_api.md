@@ -141,6 +141,58 @@ All spec keys together are part of the KeySet that is automatically applied
 on failures in lower-level calls when using:
 `elektraOpenOrgApplication()` where `OrgApplication` is the org and application name.
 
+## Enum
+
+In the specification:
+
+```
+[server/serverScreen]
+check/enum/#0=off
+check/enum/#1=on
+check/enum/#2=blank
+```
+
+The code generator emits:
+
+```
+typedef enum
+{
+	ELEKTRA_ENUM_SERVER_SERVERSCREEN_OFF = 0,
+	ELEKTRA_ENUM_SERVER_SERVERSCREEN_ON = 1,
+	ELEKTRA_ENUM_SERVER_SERVERSCREEN_BLANK = 2,
+} ElektraEnumScreen;
+```
+
+Which can be used as:
+
+```
+ElektraEnumScreen elektraGetEnum(...);
+```
+
+```
+[server]
+define/type/serverscreenstatus
+define/type/serverscreenstatus/check/enum/#0=off
+define/type/serverscreenstatus/check/enum/#1=on
+define/type/serverscreenstatus/check/enum/#2=blank
+```
+
+Then we can define:
+
+```
+[server/serverScreen]
+type = serverscreenstatus
+```
+
+```
+typedef enum
+{
+	ELEKTRA_ENUM_SERVER_SERVERSCREEN_OFF = 0,
+	ELEKTRA_ENUM_SERVER_SERVERSCREEN_ON = 1,
+	ELEKTRA_ENUM_SERVER_SERVERSCREEN_BLANK = 2,
+} ElektraEnumScreenStatus;
+```
+
 ## Extensions
 
 (not needed for lcdproc)

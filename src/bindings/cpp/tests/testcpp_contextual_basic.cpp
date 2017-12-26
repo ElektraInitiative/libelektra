@@ -168,7 +168,7 @@ public:
 class ProfileLayer : public kdb::Layer
 {
 public:
-	ProfileLayer (kdb::String const & profile) : m_profile (profile)
+	explicit ProfileLayer (kdb::String const & profile) : m_profile (profile)
 	{
 	}
 	std::string id () const override
@@ -721,11 +721,20 @@ TEST (test_contextual_basic, evaluate)
 		ASSERT_EQ (c["country"], "germany");
 		ASSERT_EQ (c["dialect"], "");
 		ASSERT_EQ (c.evaluate ("/%language%/%country%/%dialect%/test"), "/german/germany/%/test");
+		ASSERT_EQ (c.evaluate ("/%language%/%language%/%dialect%/test"), "/german/german/%/test");
+
+		ASSERT_EQ (c.evaluate ("/%language%%country%%dialect%/test"), "/germangermany%/test");
+		ASSERT_EQ (c.evaluate ("/%language%%language%%dialect%/test"), "/germangerman%/test");
 	});
 	ASSERT_EQ (c["language"], "");
 	ASSERT_EQ (c["country"], "");
 	ASSERT_EQ (c["dialect"], "");
 	ASSERT_EQ (c.evaluate ("/%language%/%country%/%dialect%/test"), "/%/%/%/test");
+
+	ASSERT_EQ (c["language"], "");
+	ASSERT_EQ (c["country"], "");
+	ASSERT_EQ (c["dialect"], "");
+	ASSERT_EQ (c.evaluate ("/%language%%country%%dialect%/test"), "/%%%/test");
 
 	KeySet ks;
 	Integer i (ks, c, Key ("/%application%/%version%/%profile%/%thread%/%module%/%manufacturer%/%type%/%family%/%model%/serial_number",
@@ -952,7 +961,7 @@ TEST (test_contextual_basic, operators)
 	ASSERT_EQ (n + n, m);
 	ASSERT_EQ (m, n + n);
 
-	n--;
+	--n;
 	ASSERT_EQ (n, 20);
 
 	ASSERT_EQ (n && n, true);

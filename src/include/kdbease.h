@@ -9,8 +9,12 @@ namespace ckdb
 extern "C" {
 #endif
 
-int elektraArrayIncName (Key * key);
 int elektraKsFilter (KeySet * result, KeySet * input, int (*filter) (const Key * k, void * argument), void * argument);
+
+int elektraArrayIncName (Key * key);
+int elektraArrayDecName (Key * key);
+
+int elektraArrayValidateName (const Key * key);
 
 const char * elektraKeyGetRelativeName (Key const * cur, Key const * parentKey);
 

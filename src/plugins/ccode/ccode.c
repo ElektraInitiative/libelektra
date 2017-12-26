@@ -79,7 +79,6 @@ int elektraCcodeOpen (Plugin * handle, Key * key ELEKTRA_UNUSED)
 
 	Key * root = ksLookupByName (config, "/chars", 0);
 
-	Key * cur = 0;
 	if (!root)
 	{
 		/* Some default config */
@@ -108,6 +107,7 @@ int elektraCcodeOpen (Plugin * handle, Key * key ELEKTRA_UNUSED)
 	}
 	else
 	{
+		Key * cur = 0;
 		while ((cur = ksNext (config)) != 0)
 		{
 			/* ignore all keys not direct below */

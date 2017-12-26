@@ -34,7 +34,7 @@ public:
 
 struct LayerAction
 {
-	LayerAction (bool activate_, std::shared_ptr<Layer> layer_) : activate (activate_), layer (std::move (layer_))
+	LayerAction (bool activate_, std::shared_ptr<Layer> const & layer_) : activate (activate_), layer (std::move (layer_))
 	{
 	}
 	bool activate; // false if deactivate

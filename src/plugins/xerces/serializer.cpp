@@ -108,7 +108,7 @@ void appendKey (DOMDocument & doc, KeySet const & ks, Key const & parentKey, str
 		name++;
 	}
 
-	if (name == key.end ()) throw new XercesPluginException ("Key " + key.getFullName () + " is not under " + parentKey.getFullName ());
+	if (name == key.end ()) throw XercesPluginException ("Key " + key.getFullName () + " is not under " + parentKey.getFullName ());
 
 	// restore original root element name if present
 	const auto rootPos = name;
@@ -116,7 +116,7 @@ void appendKey (DOMDocument & doc, KeySet const & ks, Key const & parentKey, str
 	// Now create the path
 	Key currentPathKey = parentKey.dup ();
 	string actualName;
-	DOMElement * child;
+	DOMElement * child = nullptr;
 	for (; name != key.end (); name++)
 	{
 		actualName = !originalRootName.empty () && name == rootPos ? originalRootName : (*name);
@@ -135,7 +135,7 @@ void appendKey (DOMDocument & doc, KeySet const & ks, Key const & parentKey, str
 	}
 
 	// Now we are at the key's insertion point and the last key name part, the loop has already set all our elements
-	key2xml (doc, *child, actualName, key);
+	if (child) key2xml (doc, *child, actualName, key);
 }
 
 void ks2dom (DOMDocument & doc, Key const & parentKey, KeySet const & ks)

@@ -89,7 +89,7 @@ void node2key (DOMNode const * n, Key const & parent, KeySet const & ks, Key & c
 
 	if (!ks.size ())
 	{ // we map the parent key to the xml root element
-		// preserve the original name if its different
+		// preserve the original name if it is different
 		auto parentName = parent.rbegin ();
 		if (parentName != parent.rend () && (*parentName) != keyName)
 		{
@@ -177,7 +177,9 @@ void dom2keyset (DOMNode const * n, Key const & parent, KeySet & ks, map<Key, bo
 				ks.append (current);
 			}
 			else
+			{
 				ELEKTRA_LOG_DEBUG ("skipping %s", current.getFullName ().c_str ());
+			}
 		}
 		// the first level cannot have more children so its enough to check that here
 		analyzeMultipleElements (n, current, arrays);

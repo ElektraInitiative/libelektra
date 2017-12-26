@@ -5,7 +5,7 @@
 - infos/provides = storage/ini
 - infos/recommends =
 - infos/placements = getstorage setstorage
-- infos/status = experimental limited maintained nodep shelltest unittest
+- infos/status = maintained shelltest unittest nodep limited
 - infos/metadata =
 - infos/description = A minimal plugin for simple INI files
 
@@ -24,15 +24,15 @@ The following example shows basic usage of the `mini` plugin.
 
 ```sh
 # Mount mini plugin to cascading namespace `/examples/mini`
-kdb mount mini.ini /examples/mini mini
+sudo kdb mount mini.ini /examples/mini mini
 
 # Add two key value pairs to the database
 kdb set /examples/mini/key value
 #> Using name user/examples/mini/key
-#> Create a new key user/examples/mini/key with string value
+#> Create a new key user/examples/mini/key with string "value"
 kdb set /examples/mini/mi/mi/mr beaker
 #> Using name user/examples/mini/mi/mi/mr
-#> Create a new key user/examples/mini/mi/mi/mr with string beaker
+#> Create a new key user/examples/mini/mi/mi/mr with string "beaker"
 
 # Export our current configuration
 kdb export /examples/mini mini
@@ -56,7 +56,7 @@ kdb get "/examples/mini/🔑"
 
 # Undo modifications to the key database
 kdb rm -r /examples/mini
-kdb umount /examples/mini
+sudo kdb umount /examples/mini
 ```
 
 ### Escaping
@@ -66,15 +66,15 @@ As with most configuration file formats, some characters carry special meaning. 
 1. the `=` sign, which separates keys from values and
 2. `#` and `;`, the characters that denote a comment.
 
-In case of **key values** you do not need to care about the special meaning of these characters most of the time, since the plugin handles escaping and unescaping of them for you. Since mINI use the backslash character (`\`) to escape values, the backspace character will be escaped too (`\\`). The following example shows the escaping behaviour.
+In case of **key values** you do not need to care about the special meaning of these characters most of the time, since the plugin handles escaping and unescaping of them for you. Since mINI use the backslash character (`\`) to escape values, the backspace character will be escaped too (`\\`). The following example shows the escaping behavior.
 
 ```sh
-kdb mount mini.ini /examples/mini mini
+sudo kdb mount mini.ini /examples/mini mini
 
 # Store a value containing special characters
 kdb set /examples/mini/key ';#=\'
 #> Using name user/examples/mini/key
-#> Create a new key user/examples/mini/key with string ;#=\
+#> Create a new key user/examples/mini/key with string ";#=\"
 
 # The actual file contains escaped version of the characters
 kdb file /examples/mini | xargs cat
@@ -96,17 +96,17 @@ kdb get /examples/mini/foreground
 
 # Undo modifications to the key database
 kdb rm -r /examples/mini
-kdb umount /examples/mini
+sudo kdb umount /examples/mini
 ```
 
-In the case of **key names** you **must not use any of the characters mentioned above** (`;`, `#` and `=`) at all. Otherwise the behaviour of the plugin will be **undefined**.
+In the case of **key names** you **must not use any of the characters mentioned above** (`;`, `#` and `=`) at all. Otherwise the behavior of the plugin will be **undefined**.
 
 ## Limitations
 
-This plugin only supports simple key-value based properties files without sections. mINI also does not support meta data. If you want a more feature complete plugin, then please take a look at the [ini plugin](../ini/). The example below shows some of the limitations of the plugin.
+This plugin only supports simple key-value based properties files without sections. mINI also does not support metadata. If you want a more feature complete plugin, then please take a look at the [ini plugin](../ini/). The example below shows some of the limitations of the plugin.
 
 ```sh
-kdb mount mini.ini /examples/mini mini
+sudo kdb mount mini.ini /examples/mini mini
 
 # The plugin does not support sections or multi-line values
 echo   '[section]'         >> `kdb file /examples/mini`
@@ -123,7 +123,7 @@ cat stderr.txt | grep 'Reason:' | sed 's/^[[:space:]]*//'
 #> Reason: Line 1: “[section]” is not a valid key value pair
 #> Reason: Line 3: “line"” is not a valid key value pair
 
-# Unlike the `ini` and `ni` plugin, mINI does not support meta data.
+# Unlike the `ini` and `ni` plugin, mINI does not support metadata.
 kdb lsmeta /examples/mini
 # RET: 1
 
@@ -132,7 +132,8 @@ kdb lsmeta /examples/mini
 kdb get /examples/mini/key
 #> "multi
 
-# Undo modifications to the key database
+# Undo modifications
+rm stderr.txt
 kdb rm -r /examples/mini
-kdb umount /examples/mini
+sudo kdb umount /examples/mini
 ```

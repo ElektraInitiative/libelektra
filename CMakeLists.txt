@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 2.8.8)
+cmake_minimum_required (VERSION 3.0)
 
 # allows us to override platform specific variables
 set(CMAKE_USER_MAKE_RULES_OVERRIDE "${CMAKE_SOURCE_DIR}/cmake/Platform.cmake")
@@ -7,24 +7,10 @@ project (Elektra)
 
 #fix macOS RPATH issues
 set(CMAKE_MACOSX_RPATH 1)
+SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 
 #additional modules for loading libraries
 set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
-
-#fix policy stuff
-if (POLICY CMP0026)
-	cmake_policy(SET CMP0026 OLD) # reinvestigate at 2.8.11 or later
-endif()
-if (POLICY CMP0043)
-	cmake_policy(SET CMP0043 OLD) # to have consistent behavior for pre 2.8.10
-	#also reinvestigate when they do not need to be supported anymore
-endif()
-if (POLICY CMP0046)
-	cmake_policy(SET CMP0046 OLD) # new behaviour seems stupid, of course
-	# dependency is not yet available if it's generated later?
-endif()
-
-
 
 #needed by ifs below
 include (cmake/ElektraCache.cmake)
@@ -69,7 +55,7 @@ set (REVERSE_DOMAIN org.libelektra)
 
 set (KDB_VERSION_MAJOR 0)
 set (KDB_VERSION_MINOR 8)
-set (KDB_VERSION_MICRO 19)
+set (KDB_VERSION_MICRO 21)
 
 set (KDB_VERSION "${KDB_VERSION_MAJOR}.${KDB_VERSION_MINOR}.${KDB_VERSION_MICRO}")
 message (STATUS "You are building Elektra ${KDB_VERSION}")

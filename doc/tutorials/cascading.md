@@ -4,7 +4,7 @@ This tutorial assumes that you are already familiar with [namespaces](/doc/tutor
 
 When Elektra looks up a _cascading key_ (i.e. key names without a namespace and a leading slash `/`, the namespaces are searched in the following order:
 
- * [spec](https://github.com/ElektraInitiative/libelektra/blob/master/doc/help/elektra-namespaces.md#spec) (contains metadata, e.g. to modify elektra lookup behaviour)
+ * [spec](https://github.com/ElektraInitiative/libelektra/blob/master/doc/help/elektra-namespaces.md#spec) (contains metadata, e.g. to modify elektra lookup behavior)
  * [proc](https://github.com/ElektraInitiative/libelektra/blob/master/doc/help/elektra-namespaces.md#proc) (process-related information)
  * [dir](https://github.com/ElektraInitiative/libelektra/blob/master/doc/help/elektra-namespaces.md#dir) (directory-related information, e.g. `.git` or `.htaccess`)
  * [user](https://github.com/ElektraInitiative/libelektra/blob/master/doc/help/elektra-namespaces.md#user) (user configuration)
@@ -29,7 +29,7 @@ kdb get /sw/tutorial/cascading/#0/current/test
 
 # Now add the key ...
 sudo kdb set system/sw/tutorial/cascading/#0/current/test "hello world"
-#> Create a new key system/sw/tutorial/cascading/#0/current/test with string hello world
+#> Create a new key system/sw/tutorial/cascading/#0/current/test with string "hello world"
 
 # ... and verify that it exists
 kdb get /sw/tutorial/cascading/#0/current/test
@@ -42,7 +42,7 @@ A user may now want to override the configuration in **system**, so he/she sets 
 
 ```sh
 kdb set user/sw/tutorial/cascading/#0/current/test "hello galaxy"
-#> Create a new key user/sw/tutorial/cascading/#0/current/test with string hello galaxy
+#> Create a new key user/sw/tutorial/cascading/#0/current/test with string "hello galaxy"
 
 # This key masks the key in the system namespace
 kdb get /sw/tutorial/cascading/#0/current/test
@@ -60,12 +60,13 @@ As **dir** precedes the **user** namespace, configuration in **dir** can overwri
 
 ```sh
 # create and change to a new directory ...
-mkdir -p kdbtutorial
+mkdir kdbtutorial
 cd kdbtutorial
 
 # ... and create a key in this directories dir-namespace
+# By default this data will be saved in the directory `.dir`.
 kdb set dir/sw/tutorial/cascading/#0/current/test "hello universe"
-#> Create a new key dir/sw/tutorial/cascading/#0/current/test with string hello universe
+#> Create a new key dir/sw/tutorial/cascading/#0/current/test with string "hello universe"
 
 # This key masks the key in the system namespace
 kdb get /sw/tutorial/cascading/#0/current/test
@@ -92,10 +93,10 @@ The **spec** namespace is used to store metadata about keys and therefore Elektr
 The `spec` namespace is special as it can completely change how the cascading
 lookup works.
 
-During a cascading lookup for a specific key, the default Elektra behaviour can be changed by a corresponding `spec-key`, i.e. a key in the **spec** namespace **with the same name**.
+During a cascading lookup for a specific key, the default Elektra behavior can be changed by a corresponding `spec-key`, i.e. a key in the **spec** namespace **with the same name**.
 
 For example, the metadata `override/#0` of the respective `spec-key`
-can be specified to use a different key in favor of the key itself. This way, we can implement a redirect or symlink like behaviour and therefore even
+can be specified to use a different key in favor of the key itself. This way, we can implement a redirect or symlink like behavior and therefore even
 config from current folder (`dir` namespace) can be overwritten.
 
 The cascading lookup will consider the following **metadata keys** of `spec-key`:
@@ -112,14 +113,14 @@ makes them really powerful.
 
 Consider the following example:
 
-First, we create a target key to demostrate the override link mechanism:
+First, we create a target key to demonstrate the override link mechanism:
 
 ```sh
 sudo kdb set system/overrides/test "hello override"
-#> Create a new key system/overrides/test with string hello override
+#> Create a new key system/overrides/test with string "hello override"
 ```
 
-Override links can be defined by adding them to the `override/#` metadata array key of the correspoding `spec-key`:
+Override links can be defined by adding them to the `override/#` metadata array key of the corresponding `spec-key`:
 
 ```sh
 sudo kdb setmeta spec/sw/tutorial/cascading/#0/current/test override/#0 /overrides/test
@@ -137,7 +138,7 @@ As we used a cascading key for our override link (`/overrides/test`) we can use 
 ```sh
 kdb set /overrides/test "hello user"
 #> Using name user/overrides/test
-#> Create a new key user/overrides/test with string hello user
+#> Create a new key user/overrides/test with string "hello user"
 kdb get /sw/tutorial/cascading/#0/current/test
 #> hello user
 ```
@@ -158,4 +159,10 @@ kdb rm -r system/overrides/test
 kdb rm /overrides/test
 
 kdb rm -r spec/sw/tutorial/
+
+# Remove key automatically created by dini/INI plugin
+kdb rm -f user/overrides
+
+rm -r .dir/
+rmdir kdbtutorial
 ```

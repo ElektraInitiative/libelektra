@@ -3,7 +3,7 @@
  *
  * @brief Source for mini plugin
  *
- * @copyright BSD License (see LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -31,7 +31,7 @@
  *
  * @return A contract describing the functionality of this plugin.
  */
-static inline KeySet * elektraMiniContract ()
+static inline KeySet * elektraMiniContract (void)
 {
 	return ksNew (30, keyNew ("system/elektra/modules/mini", KEY_VALUE, "mini plugin waits for your orders", KEY_END),
 		      keyNew ("system/elektra/modules/mini/exports", KEY_END),
@@ -62,7 +62,7 @@ static inline KeySet * elektraMiniContract ()
  */
 static inline char * stripComment (char * line)
 {
-	ELEKTRA_ASSERT (line != NULL, "The Parameter `line` contains `NULL` instead of a valid string.");
+	ELEKTRA_NOT_NULL (line);
 
 	char * current = line;
 	char * before = NULL;
@@ -91,7 +91,7 @@ static inline char * stripComment (char * line)
  */
 static inline char * findUnescapedEquals (char * text)
 {
-	ELEKTRA_ASSERT (text != NULL, "The Parameter `text` contains `NULL` instead of a valid string.");
+	ELEKTRA_NOT_NULL (text);
 
 	char * equals = text;
 	char * before = NULL;
@@ -125,9 +125,9 @@ static inline char * findUnescapedEquals (char * text)
  */
 static inline void parseLine (char * line, size_t lineNumber, KeySet * keySet, Key * parentKey)
 {
-	ELEKTRA_ASSERT (line != NULL, "The Parameter `line` contains `NULL` instead of a valid string.");
-	ELEKTRA_ASSERT (keySet != NULL, "The Parameter `keySet` contains `NULL` instead of a valid key set.");
-	ELEKTRA_ASSERT (parentKey != NULL, "The Parameter `parentKey` contains `NULL` instead of a valid key.");
+	ELEKTRA_NOT_NULL (line);
+	ELEKTRA_NOT_NULL (keySet);
+	ELEKTRA_NOT_NULL (parentKey);
 
 	char * pair = elektraStrip (stripComment (line));
 
@@ -175,9 +175,9 @@ static inline void parseLine (char * line, size_t lineNumber, KeySet * keySet, K
  */
 static int parseINI (FILE * file, KeySet * keySet, Key * parentKey)
 {
-	ELEKTRA_ASSERT (file != NULL, "The Parameter `file` contains `NULL` instead of a valid file handle.");
-	ELEKTRA_ASSERT (keySet != NULL, "The Parameter `keySet` contains `NULL` instead of a valid key set.");
-	ELEKTRA_ASSERT (parentKey != NULL, "The Parameter `parentKey` contains `NULL` instead of a valid key.");
+	ELEKTRA_NOT_NULL (file);
+	ELEKTRA_NOT_NULL (keySet);
+	ELEKTRA_NOT_NULL (parentKey);
 
 	char * line = NULL;
 	size_t capacity = 0;
@@ -204,34 +204,6 @@ static int parseINI (FILE * file, KeySet * keySet, Key * parentKey)
 }
 
 /**
- * @brief Close a given file handle opened for reading
- *
- * @pre The parameters `file`, and `parentKey` must not be `NULL`.
- *
- * @param file The file handle this function should close
- * @param errorNumber A saved value for `errno` this function should restore
- *                    if it was unable to close `file`
- * @param parentKey A key that is used by this function to store error
- *                  information if the function was unable to close `file`
- *
- * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if `file` was closed successfully
- * @retval ELEKTRA_PLUGIN_STATUS_ERROR if the function was unable to close `file`
- */
-static inline int closeFileRead (FILE * file, int errorNumber, Key * parentKey)
-{
-	ELEKTRA_ASSERT (file != NULL, "The Parameter `file` contains `NULL` instead of a valid file handle.");
-	ELEKTRA_ASSERT (parentKey != NULL, "The Parameter `parentKey` contains `NULL` instead of a valid key.");
-
-	if (fclose (file) != 0)
-	{
-		ELEKTRA_SET_ERROR_GET (parentKey);
-		errno = errorNumber;
-		return ELEKTRA_PLUGIN_STATUS_ERROR;
-	}
-	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
-}
-
-/**
  * @brief Parse a file containing key value pairs in an INI like format and
  *        store the obtained key value pairs in a given key set.
  *
@@ -247,25 +219,21 @@ static inline int closeFileRead (FILE * file, int errorNumber, Key * parentKey)
  */
 static int parseFile (KeySet * returned, Key * parentKey)
 {
-	ELEKTRA_ASSERT (returned != NULL, "The Parameter `returned` contains `NULL` instead of a valid key set.");
-	ELEKTRA_ASSERT (parentKey != NULL, "The Parameter `parentKey` contains `NULL` instead of a valid key.");
+	ELEKTRA_NOT_NULL (returned);
+	ELEKTRA_NOT_NULL (parentKey);
 
 	ELEKTRA_LOG ("Read configuration data");
 	int errorNumber = errno;
 	FILE * source = fopen (keyString (parentKey), "r");
 
-	if (!source)
+	if (!source || (parseINI (source, returned, parentKey) < 0) | (fclose (source) != 0)) //! OCLint
 	{
-		ELEKTRA_LOG_WARNING ("Could not open file “%s” for reading: %s", keyString (parentKey), strerror (errno));
 		ELEKTRA_SET_ERROR_GET (parentKey);
 		errno = errorNumber;
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
-	int statusParse = parseINI (source, returned, parentKey);
-	int statusClose = closeFileRead (source, errorNumber, parentKey);
-
-	return statusParse == ELEKTRA_PLUGIN_STATUS_SUCCESS ? statusClose : statusParse;
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
 /**
@@ -286,7 +254,7 @@ static int parseFile (KeySet * returned, Key * parentKey)
  */
 static inline int checkWrite (int status, int errorNumber, Key * parentKey)
 {
-	ELEKTRA_ASSERT (parentKey != NULL, "The Parameter `parentKey` contains `NULL` instead of a valid key.");
+	ELEKTRA_NOT_NULL (parentKey);
 
 	if (status < 0)
 	{
@@ -314,9 +282,9 @@ static inline int checkWrite (int status, int errorNumber, Key * parentKey)
  */
 static inline int writeFile (FILE * file, KeySet * keySet, Key * parentKey)
 {
-	ELEKTRA_ASSERT (file != NULL, "The Parameter `file` contains `NULL` instead of a valid file handle.");
-	ELEKTRA_ASSERT (keySet != NULL, "The Parameter `keySet` contains `NULL` instead of a valid key set.");
-	ELEKTRA_ASSERT (parentKey != NULL, "The Parameter `parentKey` contains `NULL` instead of a valid key.");
+	ELEKTRA_NOT_NULL (file);
+	ELEKTRA_NOT_NULL (keySet);
+	ELEKTRA_NOT_NULL (parentKey);
 
 	int status = 0;
 	int errorNumber = errno;
@@ -329,35 +297,6 @@ static inline int writeFile (FILE * file, KeySet * keySet, Key * parentKey)
 		status = fprintf (file, "%s=%s\n", name, keyString (key));
 	}
 	return checkWrite (status, errorNumber, parentKey);
-}
-
-/**
- * @brief Close a given file handle opened for writing
- *
- * @pre The parameters `file`, and `parentKey` must not be `NULL`.
- *
- * @param file The file handle this function should close
- * @param errorNumber A saved value for `errno` this function should restore
- *                    if it was unable to close `file`
- * @param parentKey A key that is used by this function to store error
- *                  information if the function was unable to close `file`
- *
- * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if `file` was closed successfully
- * @retval ELEKTRA_PLUGIN_STATUS_ERROR if the function was unable to close `file`
- */
-
-static inline int closeFileWrite (FILE * file, int errorNumber, Key * parentKey)
-{
-	ELEKTRA_ASSERT (file != NULL, "The Parameter `file` contains `NULL` instead of a valid file handle.");
-	ELEKTRA_ASSERT (parentKey != NULL, "The Parameter `parentKey` contains `NULL` instead of a valid key.");
-
-	if (fclose (file) != 0)
-	{
-		ELEKTRA_SET_ERROR_SET (parentKey);
-		errno = errorNumber;
-		return ELEKTRA_PLUGIN_STATUS_ERROR;
-	}
-	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
 // ====================
@@ -387,16 +326,13 @@ int elektraMiniSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	int errorNumber = errno;
 	FILE * destination = fopen (keyString (parentKey), "w");
 
-	if (!destination)
+	if (!destination || (writeFile (destination, returned, parentKey) < 0) | (fclose (destination) == EOF)) //! OCLint
 	{
-		ELEKTRA_LOG_WARNING ("Could not open file “%s” for writing: %s", keyString (parentKey), strerror (errno));
-		ELEKTRA_SET_ERROR_GET (parentKey);
+		ELEKTRA_SET_ERROR_SET (parentKey);
 		errno = errorNumber;
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
-	int statusWrite = writeFile (destination, returned, parentKey);
-	int statusClose = closeFileWrite (destination, errorNumber, parentKey);
-	return statusWrite == ELEKTRA_PLUGIN_STATUS_SUCCESS ? statusClose : statusWrite;
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (mini)

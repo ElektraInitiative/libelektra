@@ -46,7 +46,7 @@ kdb get user/typetest/key
 #> a
 
 kdb rm user/typetest/key
-kdb umount user/typetest
+sudo kdb umount user/typetest
 ```
 
 

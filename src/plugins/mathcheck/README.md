@@ -4,7 +4,7 @@
 - infos/provides = check
 - infos/needs =
 - infos/placements = presetstorage
-- infos/status = maintained unittest nodep discouraged shelltest
+- infos/status = maintained unittest shelltest nodep discouraged
 - infos/metadata = check/math
 - infos/description = validates a set of keys through a mathematical expression
 
@@ -39,8 +39,8 @@ kdb setmeta user/examples/mathcheck/k check/math "== + ../a ../b"
 # should fail
 kdb set /examples/mathcheck/k 7.7
 # RET:5
-# ERRORS:123
-# Set string to 7.7
+# ERROR:123
+# Set string to "7.7"
 # The command set failed while accessing the key database with the info:
 # Error (#123) occurred!
 # Description: invalid value

@@ -81,7 +81,7 @@ int natcmp (const char * str1, const char * str2)
 }
 
 
-int main ()
+int main (void)
 {
 	long long nrIterations = 100000000;
 	const char str1[] = "some string to be compared with/some\\/more with a long common part, and only a bit different";
