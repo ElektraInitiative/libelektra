@@ -8,10 +8,12 @@ sudo kdb mount config_crash_test.ini user/examples/ini ini
 
 for file in $(find -E src/plugins/ini/crash_test -regex '.*crash[0-9]{3}.ini$'); do \
 	cp -f "$file" "$(kdb file user/examples/ini)"                                     \
-	kdb ls user/examples/ini &> /dev/null                                             \
-	if [ "$?" -ne 5 ]; then echo 'Unexpected return value'; fi                        \
+	# Check if the file causes a crash of the INI plugin                              \
+	kdb ls user/examples/ini 2>&1 | grep 'SIG'                                        \
 	rm "$(kdb file user/examples/ini 2> /dev/null)"                                   \
-done
+done                                                                                \
+echo 'OK'
+#> OK
 
 sudo kdb umount user/examples/ini
 ```
