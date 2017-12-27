@@ -245,19 +245,17 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 				if (*name == '"')
 				{
 					ELEKTRA_LOG_DEBUG ("Name starts with double quote character");
+					++name;
 					if (*(end - 2) == '"')
 					{
 						*(end - 2) = '\0';
-						++name;
 					}
 					else if (*(end - 1) == '"')
 					{
 						*(end - 1) = '\0';
-						++name;
 					}
 					else
 					{
-						++name;
 						strncpy0 (prev_name, name, sizeof (prev_name));
 						while (fgets (line, INI_MAX_LINE, file))
 						{
