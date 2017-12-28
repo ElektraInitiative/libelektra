@@ -171,9 +171,10 @@ macro (add_haskell_plugin target)
 				DESTINATION "${CMAKE_CURRENT_BINARY_DIR}"
 			)
 
-			set (SANDBOX_ADD_SOURCES "${ARG_SANDBOX_ADD_SOURCES};../../bindings/haskell/")
+			set (SANDBOX_ADD_SOURCES "${ARG_SANDBOX_ADD_SOURCES};")
 			if (NOT ARG_NO_SHARED_SANDBOX)
 				set (SHARED_SANDBOX "--sandbox;${CMAKE_BINARY_DIR}/.cabal-sandbox")
+				set (SANDBOX_ADD_SOURCES "${ARG_SANDBOX_ADD_SOURCES};../../bindings/haskell/")
 			endif (NOT ARG_NO_SHARED_SANDBOX)
 
 			execute_process (COMMAND ${CABAL_EXECUTABLE} sandbox init ${SHARED_SANDBOX}
@@ -201,6 +202,8 @@ macro (add_haskell_plugin target)
 			add_custom_command (
 				OUTPUT ${PLUGIN_HASKELL_NAME}
 				# ensure any further dependencies added by plugin developers get installed to the sandbox
+				# TODO sometimes race conditions may occur, find a way to serialize this
+				# see https://github.com/haskell/cabal/issues/2220
 				COMMAND ${CABAL_EXECUTABLE} install --only-dependencies
 				COMMAND ${CABAL_EXECUTABLE} ${CABAL_OPTS} configure
 				COMMAND ${CABAL_EXECUTABLE} build
@@ -258,12 +261,23 @@ macro (add_haskell_plugin target)
 		set_target_properties (elektra-${target}
 			PROPERTIES 
 			INSTALL_RPATH "${CMAKE_INSTALL_RPATH};${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/elektra/haskell")
+		# the rpath for the dependencies while we are still in the build tree
+		add_custom_command (TARGET elektra-${target} POST_BUILD
+			COMMAND ${CMAKE_INSTALL_NAME_TOOL} -add_rpath \"${CMAKE_CURRENT_BINARY_DIR}/haskell\" \"$<TARGET_FILE:elektra-${target}>\" 
+			COMMENT "Adding build-tree rpath for @{target}"
+		)
+		# remove the rpath again after installing - cmake will add the actual rpath
+		install (CODE "execute_process (COMMAND ${CMAKE_INSTALL_NAME_TOOL} -delete_rpath 
+			\"${CMAKE_CURRENT_BINARY_DIR}/haskell\" 
+			\"${CMAKE_INSTALL_PREFIX}/lib${lib}/elektra/libelektra-${target}.so\"
+			OUTPUT_QUIET)"
+		)
 	endif (DEPENDENCY_PHASE AND (BUILD_SHARED OR BUILD_FULL))
 	if (ADDTESTING_PHASE AND BUILD_TESTING AND (BUILD_SHARED OR BUILD_FULL))
 		set_target_properties (testmod_${target}
 			PROPERTIES 
 			INSTALL_RPATH "${CMAKE_INSTALL_RPATH};${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/elektra/haskell")
-		# guide the tests to our haskell libraries
+		# guide the tests to our haskell libraries in a way it also works with the scripts
 		set_property (TEST testmod_${target} PROPERTY ENVIRONMENT
 			"LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}/haskell")
 	endif (ADDTESTING_PHASE AND BUILD_TESTING AND (BUILD_SHARED OR BUILD_FULL))

@@ -123,8 +123,8 @@ Plugin * ELEKTRA_PLUGIN_EXPORT (@PLUGIN_NAME@)
 	return elektraPluginExport ("@PLUGIN_NAME@",
 		ELEKTRA_PLUGIN_OPEN,	&elektraHaskellOpen,
 		ELEKTRA_PLUGIN_CLOSE,	&elektraHaskellClose,
-		ELEKTRA_PLUGIN_GET,	&elektraHaskellGet,
-		ELEKTRA_PLUGIN_SET,	&elektraHaskellSet,
+		ELEKTRA_PLUGIN_GET,		&elektraHaskellGet,
+		ELEKTRA_PLUGIN_SET,		&elektraHaskellSet,
 		ELEKTRA_PLUGIN_ERROR,	&elektraHaskellError,
 		ELEKTRA_PLUGIN_END);
 }

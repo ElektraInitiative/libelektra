@@ -1,6 +1,6 @@
 module Elektra.Ease (
-	ArrayValidateNameResult (..),
-	arrayValidateName, arrayIncName, arrayGetNextKey, arrayGet,
+  ArrayValidateNameResult (..),
+  arrayValidateName, arrayIncName, arrayGetNextKey, arrayGet,
   keyGetRelativeName
   ) where
 

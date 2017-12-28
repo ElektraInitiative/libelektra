@@ -5,8 +5,7 @@ cache:
     $HOME/.m2
     $HOME/.cabal
     $HOME/Library/Haskell
-    $TRAVIS_BUILD_DIR/../build/src/bindings/haskell/.cabal-sandbox
-    $TRAVIS_BUILD_DIR/../build/src/plugins/haskell/.cabal-sandbox
+    $TRAVIS_BUILD_DIR/../build/.cabal-sandbox
 
 #
 # Define the build matrix
@@ -139,7 +138,7 @@ before_script:
     fi
   # use a minimal configuration for the haskell bindings to give it enough time to compile dependencies
   - if [[ $HASKELL == ON ]]; then bindings="cpp;haskell"; fi
-  - if [[ $HASKELL == ON ]]; then plugins="resolver_fm_hpu_b;dump;haskell;ini;sync;error;list;ipaddr;hosts"; fi  
+  - if [[ $HASKELL == ON ]]; then plugins="resolver_fm_hpu_b;dump;haskell;ini;sync;error;list;ipaddr;hosts;spec"; fi  
   - |
     if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
       python2_ver=$(python2 -c 'import sys; print(".".join(map(str, sys.version_info[:2])))') &&                  \

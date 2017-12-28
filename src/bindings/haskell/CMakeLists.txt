@@ -55,20 +55,16 @@ if (NOT BUILD_STATIC)
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} OUTPUT_QUIET)
 	add_custom_command (
 		OUTPUT ${BINDING_HASKELL_NAME}
-		COMMAND ${CABAL_EXECUTABLE} install --only-dependencies
+		# COMMAND ${CABAL_EXECUTABLE} install --only-dependencies
 		COMMAND ${CABAL_EXECUTABLE} ${CABAL_OPTS} configure
-		 # this only installs to the sandbox so plugins can depend on it
-		 # without breaking the global db through shared sandboxes
 		COMMAND ${CABAL_EXECUTABLE} build
-		# COMMAND ${CABAL_EXECUTABLE} install
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 		DEPENDS ${BINDING_HASKELL_DEPENDENCIES} ${ELEKTRA_DEPENDENCY}
 	)
 	add_custom_target (c2hs_haskell ALL DEPENDS "${BINDING_HASKELL_NAME}")
 	if (BUILD_SHARED OR BUILD_FULL)
-		# install (FILES "${BINDING_HASKELL_NAME}" DESTINATION lib${LIB_SUFFIX})
 		# build and install it to the global db
-		# install (CODE "execute_process (COMMAND ${CABAL_EXECUTABLE} --ignore-sandbox install WORKING_DIRECTORY \"${CMAKE_CURRENT_BINARY_DIR}\")")
+		install (CODE "execute_process (COMMAND ${CABAL_EXECUTABLE} --ignore-sandbox install WORKING_DIRECTORY \"${CMAKE_CURRENT_BINARY_DIR}\")")
 	endif (BUILD_SHARED OR BUILD_FULL)
 
 	if (BUILD_TESTING)
@@ -86,7 +82,7 @@ if (NOT BUILD_STATIC)
 			OUTPUT ${HASKELL_TESTS}
 			# they are getting installed to the sandbox, and they get cached to avoid reinstalling every time
 			# disable everything that slows down compilation times of the dependencies to have reasonable travis build times
-			COMMAND ${CABAL_EXECUTABLE} install --enable-tests --only-dependencies
+			# COMMAND ${CABAL_EXECUTABLE} install --enable-tests --only-dependencies
 			COMMAND ${CABAL_EXECUTABLE} ${CABAL_OPTS} --enable-tests configure
 			COMMAND ${CABAL_EXECUTABLE} build
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
