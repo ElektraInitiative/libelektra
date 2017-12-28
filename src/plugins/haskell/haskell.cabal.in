@@ -1,6 +1,6 @@
 name:                haskell
 version:             0.1.0.0
--- synopsis:
+synopsis:            Base for developing haskell plugins
 description:         Base for developing haskell plugins
 homepage:            https://www.libelektra.org
 license:             BSD3
@@ -8,8 +8,10 @@ author:              e1528532
 maintainer:          e1528532@libelektra.org
 copyright:           libelektra.org
 category:            plugin
-build-type:          Simple
+build-type:          Custom
 cabal-version:       >=1.10
+
+@CABAL_CUSTOM_SETUP@
 
 library
   hs-source-dirs:    "@CMAKE_CURRENT_SOURCE_DIR@"
@@ -18,7 +20,7 @@ library
                    , libelektra-haskell
   default-language:  Haskell2010
   other-extensions:  ForeignFunctionInterface
-  ghc-options:       -fPIC
+  ghc-options:       
 
 source-repository head
   type:     git

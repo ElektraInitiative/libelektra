@@ -1,5 +1,4 @@
 include (LibAddMacros)
-include (LibAddBinding)
 
 # Allows one to add plugins written in haskell, setting up the include paths and
 # libraries automatically.
@@ -17,11 +16,15 @@ include (LibAddBinding)
 # SANDBOX_ADD_SOURCES:
 #  additional source paths which should be added to the cabal sandbox
 #  required if the build should depend on haskell libraries not available on hackage
+# ADDITIONAL_SOURCES:
+#  in case your plugin depends on other files than *.hs and *.lhs haskell files and the default
+#  cabal file and c test file and setup file, you can specify them here
+# 
 macro (add_haskell_plugin target)
 	cmake_parse_arguments (ARG
 		"NO_SHARED_SANDBOX" # optional keywords
 		"MODULE" # one value keywords
-		"MODULES;SANDBOX_ADD_SOURCES" # multi value keywords
+		"MODULES;SANDBOX_ADD_SOURCES;ADDITIONAL_SOURCES" # multi value keywords
 		${ARGN}
 	)
 
@@ -37,14 +40,10 @@ macro (add_haskell_plugin target)
 
 		 # set by find_program
 		if (HASKELL_FOUND)
-		check_binding_included ("haskell" BINDING_WAS_INCLUDED SILENT)
-		if (BINDING_WAS_INCLUDED)
+		list (FIND BINDINGS "haskell" FINDEX)
+		if (FINDEX GREATER -1)
 
 			# needed for HsFFI.h
-			execute_process (
-				COMMAND ${GHC_EXECUTABLE} --numeric-version
-				OUTPUT_VARIABLE GHC_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE
-			)
 			execute_process (
 				COMMAND ${GHC_EXECUTABLE} --print-libdir
 				OUTPUT_VARIABLE GHC_LIB_DIR OUTPUT_STRIP_TRAILING_WHITESPACE
@@ -112,16 +111,15 @@ macro (add_haskell_plugin target)
 			if (GHC_GMP_LIB)
 			if (GHC_PRIM_LIB)
 
-			set (PLUGIN_HASKELL_NAME "${CMAKE_CURRENT_BINARY_DIR}/dist/build/libHS${target}${GHC_DYNAMIC_SUFFIX}${GHC_DYNAMIC_ENDING}")
+			set (PLUGIN_HASKELL_NAME "${CMAKE_CURRENT_BINARY_DIR}/libHS${target}${GHC_DYNAMIC_SUFFIX}${GHC_DYNAMIC_ENDING}")
 
 			set (GHC_LIBS
-				${PLUGIN_HASKELL_NAME}
-				"${CMAKE_BINARY_DIR}/src/bindings/haskell/dist/build/libHSlibelektra-haskell-${KDB_VERSION}${GHC_DYNAMIC_SUFFIX}${GHC_DYNAMIC_ENDING}"
 				${GHC_RTS_LIB}
 				${GHC_BASE_LIB}
 				${GHC_GMP_LIB}
 				gmp
 				${GHC_PRIM_LIB}
+				${PLUGIN_HASKELL_NAME}
 			)
 
 			# GHC's structure differs between OSX and Linux
@@ -162,32 +160,62 @@ macro (add_haskell_plugin target)
 				COPY "${CMAKE_CURRENT_SOURCE_DIR}/README.md"
 				DESTINATION "${CMAKE_CURRENT_BINARY_DIR}"
 			)
+			# same for the setup logic, depending on wheter a custom one exists
+			# use the default suitable for almost everything
+			set (CABAL_CUSTOM_SETUP_FILE "${CMAKE_CURRENT_SOURCE_DIR}/Setup.hs")
+			if (NOT EXISTS ${CABAL_CUSTOM_SETUP_FILE})
+				set (CABAL_CUSTOM_SETUP_FILE "${CMAKE_SOURCE_DIR}/src/plugins/haskell/Setup.hs")
+			endif (NOT EXISTS ${CABAL_CUSTOM_SETUP_FILE})
+			file (
+				COPY ${CABAL_CUSTOM_SETUP_FILE}
+				DESTINATION "${CMAKE_CURRENT_BINARY_DIR}"
+			)
 
+			set (SANDBOX_ADD_SOURCES "${ARG_SANDBOX_ADD_SOURCES};../../bindings/haskell/")
 			if (NOT ARG_NO_SHARED_SANDBOX)
-				set (SHARED_SANDBOX "--sandbox;\"${CMAKE_BINARY_DIR}/.cabal-sandbox\"")
+				set (SHARED_SANDBOX "--sandbox;${CMAKE_BINARY_DIR}/.cabal-sandbox")
 			endif (NOT ARG_NO_SHARED_SANDBOX)
+
+			execute_process (COMMAND ${CABAL_EXECUTABLE} sandbox init ${SHARED_SANDBOX}
+				WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} OUTPUT_QUIET)
+			if (SANDBOX_ADD_SOURCES)
+				foreach (SANDBOX_ADD_SOURCE ${SANDBOX_ADD_SOURCES})
+					execute_process (COMMAND ${CABAL_EXECUTABLE} sandbox add-source "${SANDBOX_ADD_SOURCE}"
+						WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+				endforeach()
+			endif (SANDBOX_ADD_SOURCES)
+
+			# Grab potential haskell source files
+			file (GLOB_RECURSE PLUGIN_SOURCE_FILES
+				"${CMAKE_CURRENT_SOURCE_DIR}/*.hs"
+				"${CMAKE_CURRENT_SOURCE_DIR}/*.lhs"
+			)
+			set (PLUGIN_SOURCE_FILES
+				"${PLUGIN_SOURCE_FILES}"
+				"${CMAKE_CURRENT_SOURCE_DIR}/${target}.cabal.in"
+				"${CMAKE_CURRENT_SOURCE_DIR}/testmod_${target}.c"
+				"${CMAKE_SOURCE_DIR}/src/plugins/haskell/Setup.hs"
+				"${ARG_ADDITIONAL_SOURCES}"
+			)
 
 			add_custom_command (
 				OUTPUT ${PLUGIN_HASKELL_NAME}
-				# this way it will generate predictable output filenames
-				# and compile the haskell part of this plugin with cabal
-				COMMAND ${CABAL_EXECUTABLE} sandbox init ${SHARED_SANDBOX}
-				COMMAND ${CABAL_EXECUTABLE} sandbox add-source "${CMAKE_CURRENT_BINARY_DIR}/../../bindings/haskell/" ${ARG_SANDBOX_ADD_SOURCES}
 				# ensure any further dependencies added by plugin developers get installed to the sandbox
 				COMMAND ${CABAL_EXECUTABLE} install --only-dependencies
-				COMMAND ${CABAL_EXECUTABLE} --ipid=${target} ${CABAL_OPTS} configure
+				COMMAND ${CABAL_EXECUTABLE} ${CABAL_OPTS} configure
 				COMMAND ${CABAL_EXECUTABLE} build
 				WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 				DEPENDS c2hs_haskell
-				"${CMAKE_SOURCE_DIR}/src/plugins/haskell/Elektra/Haskell.hs"
+				"${CMAKE_SOURCE_DIR}/src/plugins/haskell/haskell.c.in"
+				"${CMAKE_SOURCE_DIR}/src/plugins/haskell/haskell.h.in"
+				"${CMAKE_SOURCE_DIR}/src/plugins/haskell/Setup.hs"
+				${PLUGIN_SOURCE_FILES}
 			)
-			add_custom_target (${target} DEPENDS ${PLUGIN_HASKELL_NAME})
+			add_custom_target (${target} ALL DEPENDS ${PLUGIN_HASKELL_NAME})
+			
 			if (BUILD_SHARED OR BUILD_FULL)
-				add_custom_command(TARGET ${target} POST_BUILD
-			    	COMMAND ${CMAKE_COMMAND} -E copy
-			    		"${PLUGIN_HASKELL_NAME}"
-	    				"${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/"
-				)
+				install (DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/haskell"
+					DESTINATION "lib${LIB_SUFFIX}/elektra/")
 			endif (BUILD_SHARED OR BUILD_FULL)
 
 			else (GHC_PRIM_LIB)
@@ -203,9 +231,9 @@ macro (add_haskell_plugin target)
 				remove_plugin (${target} "GHC_RTS_LIB not found")
 			endif (GHC_RTS_LIB)
 
-		else (BINDING_WAS_INCLUDED)
+		else (FINDEX GREATER -1)
 			remove_plugin (${target} "haskell bindings are not included in the cmake configuration")
-		endif (BINDING_WAS_INCLUDED)
+		endif (FINDEX GREATER -1)
 		else (HASKELL_FOUND)
 			remove_plugin (${target} ${HASKELL_NOTFOUND_INFO})
 		endif (HASKELL_FOUND)
@@ -215,7 +243,7 @@ macro (add_haskell_plugin target)
 	# the actual haskell plugin gets linked in dynamically as a library
 	add_plugin (${target}
 		SOURCES
-			${CMAKE_SOURCE_DIR}/src/plugins/haskell/haskell.h
+			${CMAKE_CURRENT_BINARY_DIR}/haskell.h
 			${CMAKE_CURRENT_BINARY_DIR}/haskell.c
 		INCLUDE_DIRECTORIES
 			${GHC_INCLUDE_DIRS}
@@ -225,9 +253,20 @@ macro (add_haskell_plugin target)
 			${target} c2hs_haskell
 		ADD_TEST
 	)
-	if (ADDTESTING_PHASE AND BUILD_TESTING)
-		set_property (TEST testmod_${target} PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
-	endif (ADDTESTING_PHASE AND BUILD_TESTING)
+
+	if (DEPENDENCY_PHASE AND (BUILD_SHARED OR BUILD_FULL))
+		set_target_properties (elektra-${target}
+			PROPERTIES 
+			INSTALL_RPATH "${CMAKE_INSTALL_RPATH};${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/elektra/haskell")
+	endif (DEPENDENCY_PHASE AND (BUILD_SHARED OR BUILD_FULL))
+	if (ADDTESTING_PHASE AND BUILD_TESTING AND (BUILD_SHARED OR BUILD_FULL))
+		set_target_properties (testmod_${target}
+			PROPERTIES 
+			INSTALL_RPATH "${CMAKE_INSTALL_RPATH};${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/elektra/haskell")
+		# guide the tests to our haskell libraries
+		set_property (TEST testmod_${target} PROPERTY ENVIRONMENT
+			"LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}/haskell")
+	endif (ADDTESTING_PHASE AND BUILD_TESTING AND (BUILD_SHARED OR BUILD_FULL))
 
 	mark_as_advanced (
 		GHC_FFI_LIB

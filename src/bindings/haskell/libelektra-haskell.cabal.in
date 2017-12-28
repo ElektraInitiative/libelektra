@@ -1,6 +1,6 @@
 name:                libelektra-haskell
 version:             @KDB_VERSION@
--- synopsis:
+synopsis:            Haskell bindings for libelektra
 description:         Haskell bindings for libelektra
 homepage:            https://www.libelektra.org
 license:             BSD3
@@ -8,8 +8,10 @@ author:              e1528532
 maintainer:          e1528532@libelektra.org
 copyright:           libelektra.org
 category:            binding
-build-type:          Simple
+build-type:          Custom
 cabal-version:       >=1.10
+
+@CABAL_CUSTOM_SETUP@
 
 library
   hs-source-dirs:    "@CMAKE_CURRENT_SOURCE_DIR@/src"
