@@ -1,10 +1,21 @@
-module Elektra.Key (Key (..), Namespace (..), withKey, ElektraKeyVarargs (KeyMetaName, KeyBinary, KeyComment, KeyOwner),
-    keyNew, keyNewWithValue, keyNewWithFlagsAndValue, keyDup, keyCopy, keyClear, keyIncRef, keyDecRef, keyGetRef,
-    keyName, keyGetNameSize, keyUnescapedName, keyGetUnescapedNameSize, keySetName, keyGetFullNameSize, keyGetFullName,
-    keyAddName,  keyBaseName, keyGetBaseName, keyGetBaseNameSize, keyAddBaseName, keySetBaseName, keyDeleteBaseName, keyGetNamespace,
-    keyString, keyGetValueSize, keySetString, keySet,
-    keyRewindMeta, keyNextMeta, keyCurrentMeta, keyCopyMeta, keyCopyAllMeta, keyGetMeta, keySetMeta, keyListMeta,
-    keyCmp, keyNeedSync, keyIsBelow, keyIsDirectBelow, keyRel, keyIsInactive, keyIsBinary, keyIsString, keyPtrNull, ifKey) where
+module Elektra.Key (
+  Key (..), Namespace (..), ElektraKeyVarargs (KeyMetaName, KeyBinary, KeyComment, KeyOwner),
+  keyNew, keyNewWithValue, keyNewWithFlagsAndValue,
+  keyDup, keyCopy, keyClear,
+  keyIncRef, keyDecRef, keyGetRef,
+  keyName, keyGetNameSize, keySetName, keyAddName, 
+  keyUnescapedName, keyGetUnescapedNameSize,
+  keyGetFullNameSize, keyGetFullName,
+  keyBaseName, keyGetBaseName, keyGetBaseNameSize, keyAddBaseName, keySetBaseName, keyDeleteBaseName,
+  keyGetNamespace,
+  keyString, keyGetValueSize, keySetString, keySet,
+  keyRewindMeta, keyNextMeta, keyCurrentMeta,
+  keyCopyMeta, keyCopyAllMeta, keyGetMeta, keySetMeta, keyListMeta,
+  keyCmp, keyNeedSync, 
+  keyIsBelow, keyIsDirectBelow, 
+  keyRel, keyIsInactive, keyIsBinary, keyIsString, keyPtrNull, 
+  ifKey, withKey
+  ) where
 
 #include <kdb.h>
 import Foreign.Marshal.Alloc (allocaBytes)
@@ -63,7 +74,9 @@ keyNewWithFlagsAndValue name flags value = do
 {#fun unsafe variadic keyNew[keyswitch_t, const char *, keyswitch_t]
   as keyNewRawWithValue {`String', `ElektraKeyVarargs', `String', `ElektraKeyVarargs'} -> `Key' #}
 {#fun unsafe variadic keyNew[keyswitch_t, keyswitch_t, keyswitch_t, const char *, keyswitch_t]
-  as keyNewRawWithFlagsAndValue {`String', `ElektraKeyVarargs', `ElektraKeyVarargs', `ElektraKeyVarargs', `String', `ElektraKeyVarargs'} -> `Key' #}
+  as keyNewRawWithFlagsAndValue 
+    {`String', `ElektraKeyVarargs', `ElektraKeyVarargs', `ElektraKeyVarargs', `String', `ElektraKeyVarargs'} 
+    -> `Key' #}
 keyDup :: Key -> IO Key
 keyDup key = do
   dup <- keyDupRaw key

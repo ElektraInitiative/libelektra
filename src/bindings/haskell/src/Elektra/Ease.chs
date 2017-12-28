@@ -1,4 +1,8 @@
-module Elektra.Ease (ArrayValidateNameResult (..), keyGetRelativeName, arrayValidateName, arrayIncName, arrayGet, arrayGetNextKey) where
+module Elektra.Ease (
+	ArrayValidateNameResult (..),
+	arrayValidateName, arrayIncName, arrayGetNextKey, arrayGet,
+  keyGetRelativeName
+  ) where
 
 #include <kdbease.h>
 
@@ -11,6 +15,7 @@ module Elektra.Ease (ArrayValidateNameResult (..), keyGetRelativeName, arrayVali
 
 data ArrayValidateNameResult = Invalid | Start | Element deriving (Show, Eq, Enum)
 
+arrayValidateName :: Key -> IO (ArrayValidateNameResult)
 arrayValidateName = fmap parseResult . elektraArrayValidateName
   where
     parseResult 0 = Start

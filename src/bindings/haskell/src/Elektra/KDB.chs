@@ -13,10 +13,10 @@ module Elektra.KDB (kdbOpen, kdbGet, kdbSet) where
 
 kdbOpen :: Key -> (KDB -> IO a) -> IO a
 kdbOpen parentKey actions = do
-    kdb <- kdbOpenRaw parentKey
-    res <- actions kdb
-    kdbClose kdb parentKey
-    return res
+  kdb <- kdbOpenRaw parentKey
+  res <- actions kdb
+  kdbClose kdb parentKey
+  return res
 {#fun unsafe kdbOpen as kdbOpenRaw {`Key'} -> `KDB' #}
 {#fun unsafe kdbClose {`KDB', `Key'} -> `Int' #}
 {#fun unsafe kdbGet {`KDB', `KeySet', `Key'} -> `Int' #}

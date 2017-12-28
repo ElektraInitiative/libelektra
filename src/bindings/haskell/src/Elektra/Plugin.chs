@@ -1,7 +1,11 @@
-module Elektra.Plugin (Plugin, elektraPluginGetConfig, elektraPluginSetData, elektraPluginGetData,
-    elektraPluginOpenWith, elektraPluginCloseWith, elektraPluginGetWith, elektraPluginSetWith,
-    elektraPluginErrorWith, elektraPluginCheckConfigWith,
-    PluginStatus (..)) where
+module Elektra.Plugin (
+  Plugin, PluginStatus (..),
+  elektraPluginGetConfig, 
+  elektraPluginSetData, elektraPluginGetData,
+  elektraPluginOpenWith, elektraPluginCloseWith, 
+  elektraPluginGetWith, elektraPluginSetWith,
+  elektraPluginErrorWith, elektraPluginCheckConfigWith
+  ) where
 
 {#import Elektra.Key#}
 {#import Elektra.KeySet#}
@@ -19,14 +23,14 @@ import Control.Monad (join, liftM, liftM2, liftM3)
 
 data PluginStatus = Error | NoUpdate | Success deriving (Show, Eq)
 instance Enum PluginStatus where
-    fromEnum Error = -1
-    fromEnum NoUpdate = 0
-    fromEnum Success = 1
+  fromEnum Error = -1
+  fromEnum NoUpdate = 0
+  fromEnum Success = 1
 
-    toEnum (-1) = Error
-    toEnum 0 = NoUpdate
-    toEnum 1 = Success
-    toEnum unmatched = error ("PluginStatus.toEnum: Cannot match " ++ show unmatched)
+  toEnum (-1) = Error
+  toEnum 0 = NoUpdate
+  toEnum 1 = Success
+  toEnum unmatched = error ("PluginStatus.toEnum: Cannot match " ++ show unmatched)
 
 -- ***
 -- PLUGIN METHODS
@@ -57,12 +61,15 @@ elektraPluginErrorWith :: (Plugin -> KeySet -> Key -> IO PluginStatus) -> Ptr Pl
 elektraPluginErrorWith = elektraPlugin3
 
 elektraPluginCheckConfigWith :: (Key -> KeySet -> IO PluginStatus) -> Ptr Key -> Ptr KeySet -> IO Int
-elektraPluginCheckConfigWith f k ks = liftM fromEnum $ join $ liftM2 f (liftM Key $ newForeignPtr_ k) (liftM KeySet $ newForeignPtr_ ks)
+elektraPluginCheckConfigWith f k ks = liftM fromEnum $ join $ 
+  liftM2 f (liftM Key $ newForeignPtr_ k) (liftM KeySet $ newForeignPtr_ ks)
 
 -- shared parameter conversation
 
 elektraPlugin2 :: (Plugin -> Key -> IO PluginStatus) -> Ptr Plugin -> Ptr Key -> IO Int
-elektraPlugin2 f p k = liftM fromEnum $ join $ liftM2 f (liftM Plugin $ newForeignPtr_ p) (liftM Key $ newForeignPtr_ k)
+elektraPlugin2 f p k = liftM fromEnum $ join $ 
+  liftM2 f (liftM Plugin $ newForeignPtr_ p) (liftM Key $ newForeignPtr_ k)
 
 elektraPlugin3 :: (Plugin -> KeySet -> Key -> IO PluginStatus) -> Ptr Plugin -> Ptr KeySet -> Ptr Key -> IO Int
-elektraPlugin3 f p ks k = liftM fromEnum $ join $ liftM3 f (liftM Plugin $ newForeignPtr_ p) (liftM KeySet $ newForeignPtr_ ks) (liftM Key $ newForeignPtr_ k)
+elektraPlugin3 f p ks k = liftM fromEnum $ join $ 
+  liftM3 f (liftM Plugin $ newForeignPtr_ p) (liftM KeySet $ newForeignPtr_ ks) (liftM Key $ newForeignPtr_ k)
