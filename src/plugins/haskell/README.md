@@ -4,7 +4,7 @@
 - infos/needs = 
 - infos/provides = 
 - infos/recommends =
-- infos/placements =
+- infos/placements = getstorage setstorage
 - infos/status = maintained experimental
 - infos/metadata =
 - infos/description = base for haskell plugins
