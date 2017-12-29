@@ -92,7 +92,7 @@ These notes are of interest for people developing Elektra:
 
 Many problems were resolved with the following fixes:
 
-- <<TODO>>
+- We fixed [internal inconsistency](https://github.com/ElektraInitiative/libelektra/pull/1761) in the CMake code of the [Augeas plugin](https://www.libelektra.org/plugins/augeas)
 
 ## Outlook
 
