@@ -1263,9 +1263,12 @@ static int iniWriteKeySet (FILE * fh, Key * parentKey, KeySet * returned, IniPlu
 				}
 				else
 				{
-					if (removeSectionKey) keyDel (sectionKey);
+					if (removeSectionKey)
+					{
+						keyDel (sectionKey);
+						removeSectionKey = 0;
+					}
 					sectionKey = parentKey;
-					removeSectionKey = 0;
 					fprintf (fh, "[]\n");
 				}
 			}
