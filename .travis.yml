@@ -104,10 +104,10 @@ before_install:
       cabal update
       # avoid reinstalls if we already have them cached
       # disable everything that slows down compilation times of the dependencies to have reasonable travis build times
+      PATH=$PATH:"$HOME/.cabal/bin"
       which happy || cabal install happy
       which alex || cabal install alex
       which c2hs || cabal install c2hs
-      PATH=$PATH:"$HOME/.cabal/bin"
     fi
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
@@ -138,7 +138,8 @@ before_script:
     fi
   # use a minimal configuration for the haskell bindings to give it enough time to compile dependencies
   - if [[ $HASKELL == ON ]]; then bindings="cpp;haskell"; fi
-  - if [[ $HASKELL == ON ]]; then plugins="resolver_fm_hpu_b;dump;haskell;ini;sync;error;spec;list;network;profile;glob;tracer;timeofday"; fi  
+  - if [[ $HASKELL == ON ]]; then plugins="resolver_fm_hpu_b;dump;haskell;ini;sync;error;spec;list;network;profile;glob;tracer;timeofday;binary;base64"; fi  
+  - if [[ $HASKELL == ON ]]; then tools="kdb"; fi  
   - |
     if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
       python2_ver=$(python2 -c 'import sys; print(".".join(map(str, sys.version_info[:2])))') &&                  \
@@ -156,7 +157,7 @@ before_script:
     -DPLUGINS="${plugins:-ALL;-jni}"
     -DBINDINGS="${bindings:-ALL;}"
     -DENABLE_DEBUG=ON
-    -DTOOLS=ALL
+    -DTOOLS="${tools:-ALL;}"
     -DINSTALL_SYSTEM_FILES=OFF
     -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
     -DCMAKE_INSTALL_PREFIX="$INSTALL_DIR"
