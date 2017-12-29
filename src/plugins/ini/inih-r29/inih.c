@@ -169,6 +169,7 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 		}
 		else if (isSection (line))
 		{
+			ELEKTRA_LOG_DEBUG ("Line contains a section");
 			end = line + (strlen (line) - 1);
 			while (end > start)
 			{
@@ -181,6 +182,21 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 				*end = '\0';
 				strncpy0 (section, start, sizeof (section));
 				*prev_name = '\0';
+				ELEKTRA_LOG_DEBUG ("Found section “%s”", section);
+
+				size_t numberBackslashes = 0;
+				for (char * endSection = section + strlen (section) - 1; endSection >= section && *endSection == '\\';
+				     endSection--)
+				{
+					numberBackslashes++;
+				}
+				if (numberBackslashes % 2 != 0)
+				{
+					ELEKTRA_LOG_WARNING ("Found uneven number of backlashes at end of section");
+					error = lineno;
+					break;
+				}
+
 				if (!config->sectionHandler (user, section) && !error) error = lineno;
 			}
 			else
