@@ -1,3 +1,9 @@
+- infos =
+- infos/author = Bernhard Denner <bernhard.denner@gmail.com>
+- infos/status = maintained
+- infos/provides = swig
+- infos/description =
+
 # Ruby bindings
 
 This module is a SWIG generated Ruby binding for Elektra Core API - KDB
@@ -180,6 +186,3 @@ too.
 
 The bindings where tested with Ruby >= 2.1.0, lower version might work but are
 not tested.
-
-## Infos
-- infos/status = swig stable

@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief Tests for IO bindings
+ * @brief Tests for I/O bindings
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
@@ -16,6 +16,7 @@
 
 #include <kdbhelper.h>
 #include <kdbio.h>
+#include <kdbiotest.h>
 
 /**
  * Get current time.

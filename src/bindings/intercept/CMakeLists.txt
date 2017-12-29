@@ -1,11 +1,9 @@
-try_add_binding ("intercept_fs" IS_INCLUDED SUBDIRECTORY "fs")
+check_binding_included ("intercept_fs" IS_INCLUDED SUBDIRECTORY "intercept/fs")
 if (IS_INCLUDED)
-	message (STATUS "Include Binding intercept_fs")
 	add_subdirectory (fs)
 endif ()
 
-try_add_binding ("intercept_env" IS_INCLUDED SUBDIRECTORY "env")
+check_binding_included ("intercept_env" IS_INCLUDED SUBDIRECTORY "intercept/env")
 if (IS_INCLUDED)
-	message (STATUS "Include Binding intercept_env")
 	add_subdirectory (env)
 endif ()

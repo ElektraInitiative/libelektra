@@ -1,11 +1,11 @@
-# IO-Binding for libuv
-
-## Infos
 - infos =
 - infos/author = Thomas Wahringer <waht@libelektra.org>
 - infos/licence = BSD
-- infos/status = experimental io
-- infos/description = IO-Binding for libuv
+- infos/status = experimental maintained
+- infos/provides = io
+- infos/description =
+
+# I/O binding for libuv
 
 ## Requirements
 
@@ -19,15 +19,15 @@ simply use `pkg-config --cflags --libs elektra-io-uv`.
 
 ### ElektraIoInterface * elektraIoUvNew (uv_loop_t * loop)
 
-Create and initialize a new IO binding.
+Create and initialize a new I/O binding.
 
 *Parameters*
 
-- loop Loop to use for IO operations
+- loop Loop to use for I/O operations
 
 *Returns*
 
-Populated IO interface
+Populated I/O interface
 
 ## Example
 

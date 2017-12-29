@@ -278,30 +278,6 @@ macro (remove_plugin name reason)
 endmacro (remove_plugin)
 
 
-macro (remove_binding name reason)
-	cmake_parse_arguments (ARG
-		"REMOVE_NOT_NECESSARY" # optional keywords
-		"" # one value keywords
-		"" # multi value keywords
-		${ARGN}
-	)
-
-	if (NOT ${reason} STREQUAL "silent")
-		message (STATUS "Exclude Binding ${name} because ${reason}")
-	endif ()
-	if (NOT ARG_REMOVE_NOT_NECESSARY)
-		set (TMP ${ADDED_BINDINGS})
-		list (REMOVE_ITEM TMP ${name})
-		set (ADDED_BINDINGS ${TMP} CACHE STRING ${ADDED_BINDINGS_DOC} FORCE)
-	else ()
-		list (FIND ADDED_BINDINGS "${name}" FOUND_NAME)
-		if (FOUND_NAME GREATER -1)
-			message (WARNING "Internal inconsistency: REMOVE_NOT_NECESSARY given but ${name} is present in bindings!")
-		endif ()
-	endif ()
-endmacro (remove_binding)
-
-
 macro (remove_tool name reason)
 	set (TMP ${TOOLS})
 	message (STATUS "Exclude tool ${name} because ${reason}")

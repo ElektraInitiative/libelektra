@@ -1,13 +1,19 @@
 include (LibAddMacros)
 
-try_add_binding ("gi_python" IS_PYTHON_INCLUDED SUBDIRECTORY "python")
-try_add_binding ("gi_lua" IS_LUA_INCLUDED SUBDIRECTORY "lua")
+check_binding_included ("gi_python" IS_PYTHON_INCLUDED SUBDIRECTORY "gi/python")
+check_binding_included ("gi_lua" IS_LUA_INCLUDED SUBDIRECTORY "gi/lua")
 
 if (IS_PYTHON_INCLUDED OR IS_LUA_INCLUDED)
 
 	find_package (GObjectIntrospection 1.38)
 
 	if (INTROSPECTION_FOUND)
+		# make sure glib bindings are built
+		check_binding_was_added ("glib" IS_GLIB_INCLUDED)
+		if (NOT IS_GLIB_INCLUDED)
+			add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/../glib ${CMAKE_CURRENT_BINARY_DIR}/../glib)
+		endif ()
+
 		add_headers (NOT_USED)
 
 		set (GIR_NS      "GElektra")
@@ -25,7 +31,7 @@ if (IS_PYTHON_INCLUDED OR IS_LUA_INCLUDED)
 		get_directory_property (incdirs INCLUDE_DIRECTORIES)
 		string (REPLACE ";" ";-I" GIR_INCDIRS "${incdirs}")
 
-		add_custom_command(
+		add_custom_command (
 			OUTPUT ${GIR_FILE}
 			COMMAND ${DISABLE_LSAN}
 				${INTROSPECTION_SCANNER}
@@ -46,7 +52,7 @@ if (IS_PYTHON_INCLUDED OR IS_LUA_INCLUDED)
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 		)
 
-		add_custom_command(
+		add_custom_command (
 			OUTPUT ${GIR_TYPELIB}
 			COMMAND ${INTROSPECTION_COMPILER}
 				--output=${GIR_TYPELIB}
@@ -55,13 +61,13 @@ if (IS_PYTHON_INCLUDED OR IS_LUA_INCLUDED)
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 		)
 
-		add_custom_target(gir ALL DEPENDS ${GIR_FILE} ${GIR_TYPELIB})
-		add_dependencies(gir ${GELEKTRA_LIBRARY})
+		add_custom_target (gir ALL DEPENDS ${GIR_FILE} ${GIR_TYPELIB})
+		add_dependencies (gir ${GELEKTRA_LIBRARY})
 
 		if (INSTALL_SYSTEM_FILES)
 			install (FILES ${CMAKE_CURRENT_BINARY_DIR}/${GIR_FILE} DESTINATION ${INTROSPECTION_GIRDIR})
 			install (FILES ${CMAKE_CURRENT_BINARY_DIR}/${GIR_TYPELIB} DESTINATION ${INTROSPECTION_TYPELIBDIR})
-		endif()
+		endif ()
 
 		if (IS_PYTHON_INCLUDED)
 			add_subdirectory (python)
@@ -72,10 +78,10 @@ if (IS_PYTHON_INCLUDED OR IS_LUA_INCLUDED)
 		endif ()
 	else ()
 		if (IS_PYTHON_INCLUDED)
-			remove_binding(gi_python "g-ir-scanner/g-ir-compiler not found. Please install GObject Introspection")
+			exclude_binding (gi_python "g-ir-scanner/g-ir-compiler not found. Please install GObject Introspection")
 		endif ()
 		if (IS_LUA_INCLUDED)
-			remove_binding(gi_lua "g-ir-scanner/g-ir-compiler not found. Please install GObject Introspection")
+			exclude_binding (gi_lua "g-ir-scanner/g-ir-compiler not found. Please install GObject Introspection")
 		endif ()
 	endif ()
 endif ()

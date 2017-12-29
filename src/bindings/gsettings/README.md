@@ -1,3 +1,9 @@
+- infos =
+- infos/author = Gabriel Rauter <rauter.gabriel@gmail.com>
+- infos/status = experimental
+- infos/provides =
+- infos/description =
+
 # elektrasettings
 
  **__Warning__ !!! This binding is unstable and could destroy your Elektra Configuration. Only use in testing environments.**
@@ -117,6 +123,3 @@ G_MESSAGES_DEBUG=ElektraSettings GSETTINGS_BACKEND=elektra gedit
 ```
 
 an application can still request a different backend then elektra with `g_settings_new_with_backend ()`
-
-## Infos
-- infos/status = experimental

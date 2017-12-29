@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief Tests for IO bindings
+ * @brief Tests for I/O bindings
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
@@ -16,6 +16,7 @@
 #include "test.h"
 #include <kdbio.h>
 #include <kdbioprivate.h>
+#include <kdbiotest.h>
 
 static void test_timing (void)
 {
@@ -43,16 +44,16 @@ static void test_basics (ElektraIoInterface * wrapper)
 
 	succeed_if (wrapper->cleanup != NULL, "cleanup is null");
 
-	succeed_if (wrapper->cleanup (wrapper) == 0, "cleanup did not return 0");
+	succeed_if (wrapper->cleanup (wrapper), "cleanup did not succeed");
 }
 
 /**
- * Test all functions and requirements of the IO-Binding returned by createBinding.
+ * Test all functions and requirements of the I/O binding returned by createBinding.
  * Requires the following operations: Idle, Timer, Fd
  *
  * @param createBinding binding creation function
- * @param start         starts IO operations
- * @param stop          stops IO operations
+ * @param start         starts I/O operations
+ * @param stop          stops I/O operations
  */
 void elektraIoTestSuite (ElektraIoTestSuiteCreateBinding createBinding, ElektraIoTestSuiteStart start, ElektraIoTestSuiteStop stop)
 {

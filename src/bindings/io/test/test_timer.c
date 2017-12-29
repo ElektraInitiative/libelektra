@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief Tests for IO bindings
+ * @brief Tests for I/O bindings
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
@@ -16,6 +16,7 @@
 
 #include "test.h"
 #include <kdbio.h>
+#include <kdbiotest.h>
 
 #define TIMER_TEST_INTERVAL 50
 #define TIMER_TEST_TIMES 3
@@ -65,16 +66,16 @@ static void testTimerBasics (ElektraIoTestSuiteCreateBinding createBinding)
 	ElektraIoTimerOperation * timerOp = elektraIoNewTimerOperation (TIMER_TEST_INTERVAL, 0, testTimerBasicsCallback, NULL);
 
 	ElektraIoInterface * binding = createBinding ();
-	succeed_if (elektraIoBindingAddTimer (binding, timerOp) == 0, "addTimer did not return 0");
-	succeed_if (elektraIoBindingAddTimer (binding, timerOp) == -1, "addTimer: should not be able to reassign operation to a binding");
+	succeed_if (elektraIoBindingAddTimer (binding, timerOp), "addTimer did not succeed");
+	succeed_if (elektraIoBindingAddTimer (binding, timerOp) == 0, "addTimer: should not be able to reassign operation to a binding");
 
 	elektraIoTimerSetEnabled (timerOp, 1);
-	succeed_if (elektraIoBindingUpdateTimer (timerOp) == 0, "updateTimer did not return 0");
+	succeed_if (elektraIoBindingUpdateTimer (timerOp), "updateTimer did not succeed");
 
-	succeed_if (elektraIoBindingRemoveTimer (timerOp) == 0, "removeTimer did not return 0");
+	succeed_if (elektraIoBindingRemoveTimer (timerOp), "removeTimer did not succeed");
 
-	succeed_if (elektraIoBindingAddTimer (binding, timerOp) == 0, "addTimer: should be able to assign operation after removal");
-	succeed_if (elektraIoBindingRemoveTimer (timerOp) == 0, "removeTimer did not return 0");
+	succeed_if (elektraIoBindingAddTimer (binding, timerOp), "addTimer: should be able to assign operation after removal");
+	succeed_if (elektraIoBindingRemoveTimer (timerOp), "removeTimer did not succeed");
 	elektraIoBindingCleanup (binding);
 	elektraFree (timerOp);
 }
@@ -343,12 +344,12 @@ static void testTimerShouldRemove (ElektraIoTestSuiteCreateBinding createBinding
 }
 
 /**
- * Test timer functions of the IO-Binding returned by createBinding.
+ * Test timer functions of the I/O binding returned by createBinding.
  * Requires the following operations: Timer
  *
  * @param createBinding binding creation function
- * @param start         starts IO operations
- * @param stop          stops IO operations
+ * @param start         starts I/O operations
+ * @param stop          stops I/O operations
  */
 void elektraIoTestSuiteTimer (ElektraIoTestSuiteCreateBinding createBinding, ElektraIoTestSuiteStart start, ElektraIoTestSuiteStop stop)
 {

@@ -9,28 +9,40 @@ in the respective programming languages, but you additionally need an
 [Interpreter Plugin](/src/plugins/README.md). Nevertheless, bindings
 can be immediately used in applications without plugins.
 
-List of currently supported bindings (included in `STABLE`):
+List of currently supported bindings (use `ALL;-EXPERIMENTAL;-DEPRECATED`):
 
 - [cpp](cpp/) C++11 bindings (included per default)
-- [jna](jna/) A full java binding using JNA
 - [glib](glib/) GLib bindings
+- [intercept_env](intercept/env/) Intercepts calls to environment (e.g. getenv())
 - [swig_lua](swig/lua/) Lua SWIG bindings
 - [swig_python](swig/python/) Python 3 SWIG bindings
 - [swig_python2](swig/python2/) Python 2 SWIG bindings
 - [swig_ruby](swig/ruby/) Ruby bindings
-- [intercept_env](intercept/env/) Intercepts calls to environment (e.g. getenv())
-- [intercept_fs](intercept/fs/) Intercepts file system calls to configuration files (experimental)
 
 Experimental bindings (included in `EXPERIMENTAL`):
 
 - [gsettings](gsettings/) GLib bindings (experimental)
 - [haskell](haskell/) Haskell bindings
-- [io_uv](io/uv/) I/O bindings for uv
+- [intercept_fs](intercept/fs/) Intercepts file system calls to configuration files (experimental)
+- [io_uv](io/uv/) I/O bindings for uv (experimental)
+- [jna](jna/) A full java binding using JNA
 
 Deprecated bindings (included in `DEPRECATED`):
 
-- [gi_python](gi/python/) GObject Introspection binding with Python specific overrides (deprecated)
 - [gi_lua](gi/lua/) GObject Introspection binding with Lua specific overrides (deprecated)
+- [gi_python](gi/python/) GObject Introspection binding with Python specific overrides (deprecated)
+
+# I/O Bindings
+
+I/O bindings add support for asynchronous I/O to Elektra.
+The build all available I/O bindings use `-DBINDINGS="IO"` when configuring `cmake`.
+
+For more information please check out the
+[notification tutorial](https://github.com/ElektraInitiative/libelektra/tree/master/doc/tutorials/notifications.md)
+or the
+[API documentation](https://doc.libelektra.org/api/current/html/group__kdbio.html).
+The [doc](io/doc/) directory contains an example binding for a fictive
+asynchronous I/O management library.
 
 ## SEE ALSO
 

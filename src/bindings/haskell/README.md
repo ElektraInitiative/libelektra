@@ -1,3 +1,9 @@
+- infos =
+- infos/author = Armin Wurzinger <e1528532@student.tuwien.ac.at>
+- infos/status = experimental maintained
+- infos/provides =
+- infos/description =
+
 # Haskell Bindings
 A full haskell binding using c2hs.
 
@@ -54,6 +60,3 @@ manager does not include c2hs, or `cabal update && cabal install hspec QuickChec
   	- keyGetBaseName behaves like keyBaseName
   	- keyUnescapedName returns a String, the null separators are written with \0
 - BUILD_STATIC is currently not compatible with the haskell bindings
-
-## Infos
-- infos/status = experimental

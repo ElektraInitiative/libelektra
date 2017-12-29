@@ -11,6 +11,11 @@
 #include <kdbio.h>
 #include <uv.h>
 
+/**
+ * Create and initialize a new I/O binding.
+ * @param  loop Loop to use for I/O operations
+ * @return      Populated I/O interface
+ */
 ElektraIoInterface * elektraIoUvNew (uv_loop_t * loop);
 
 #endif

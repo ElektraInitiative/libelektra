@@ -7,7 +7,7 @@ tool_execdir=${prefix}/@TARGET_TOOL_EXEC_FOLDER@
 templatedir=${prefix}/@TARGET_TEMPLATE_FOLDER@
 
 Name: libelektra-io-doc
-Description: Example Elektra IO binding for documentation purposes
+Description: Example Elektra I/O binding for documentation purposes
 Requires: elektra-io
 Version: @KDB_VERSION@
 Libs: -L${libdir}

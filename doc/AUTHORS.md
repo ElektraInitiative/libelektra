@@ -207,3 +207,10 @@ ruby bindings, ruby plugin, build server, Puppet module
 - github user: [BernhardDenner](https://github.com/BernhardDenner)
 - devel/test on: Ubuntu and Debian
 
+## Thomas Wahringer
+
+notification system, I/O bindings
+
+- email: waht@libelektra.org
+- github user: [waht](https://github.com/waht)
+- devel/test on: Debian

@@ -1,22 +1,23 @@
 include (${SWIG_USE_FILE})
-include(LibAddMacros)
+include (LibAddMacros)
 
 #set (PythonInterp_FIND_VERSION_EXACT ON)
 find_package (PythonInterp 3)
 find_package (PythonLibs 3)
 
 if (NOT PYTHONINTERP_FOUND)
-	remove_binding(swig_python "python3 interpreter not found")
+	exclude_binding (swig_python "python3 interpreter not found")
 elseif (NOT PYTHONLIBS_FOUND)
-	remove_binding(swig_python "python3 libs not found")
+	exclude_binding (swig_python "python3 libs not found")
 elseif (PYTHONLIBS_VERSION_STRING MATCHES "^2\\.[0-9]+")
-	remove_binding(swig_python "python3 is for python 3 only and not ${PYTHONLIBS_VERSION_STRING}")
-else()
-	message(STATUS "Include Binding swig_python")
+	exclude_binding (swig_python "python3 is for python 3 only and not ${PYTHONLIBS_VERSION_STRING}")
+else ()
+	add_binding (swig_python)
+	
 	if (${SWIG_VERSION} MATCHES "^2\\.")
-		message(WARNING "Python bindings might crash if generated with SWIG 2."
+		message (WARNING "Python bindings might crash if generated with SWIG 2."
 				" Please upgrade to SWIG 3 or later.")
-	endif()
+	endif ()
 
 	add_headers (HDR_FILES)
 	add_cppheaders (HDR_FILES)
@@ -61,4 +62,4 @@ else()
 	include_directories (${CMAKE_SOURCE_DIR}/src/swig/)
 
 	add_subdirectory (tests)
-endif()
+endif ()

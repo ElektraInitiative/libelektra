@@ -3,8 +3,7 @@
 ## Preface
 
 **The features described in this document are experimental or not implemented
-yet. This document contains a preview of how developers would use the
-notification feature**
+yet.**
 
 This document explains how notifications are implemented in Elektra and how
 they can be used by application developers.
@@ -19,9 +18,12 @@ A wrapper for notifications provides the API for receiving and handling
 notifications.
 A wrapper for I/O operations allows asynchronous notification processing by
 compatible plugins.
-The I/O-wrapper consists of an *interface* used by transport plugins and a
-*binding* which implements the actual I/O management functions for a specific
+The I/O wrapper consists of an *interface* used by transport plugins and
+multiple implementations of that interface called *I/O bindings*.
+A I/O binding implements the actual I/O management functions for a specific
 I/O management library.
+Applications typically use one I/O binding but can also use none or multiple
+I/O bindings.
 
 Transport plugins exchange notifications via different protocols like D-Bus,
 Redis and ZeroMQ.
@@ -54,24 +56,24 @@ transport.
 kdb mount file.ini system/example ini dbussend dbusreceive
 ```
 
-## How to integrate an I/O-binding and send notifications asynchronously
+## How to integrate an I/O binding and send notifications asynchronously
 
 Developers do not need to change their programs in order to start sending
 notifications.
-However without the integration of an I/O-binding notifications are sent
+However without the integration of an I/O binding notifications are sent
 synchronously which will block normal program execution.
 For programs without time constraints (e.g. CLI programs) this may not be
 important, but for GUIs or network services this will have negative impact.
 
 Since many different I/O management libraries exist (e.g. libuv, glib or libev)
 the transport plugins use the I/O-interface for their I/O tasks.
-Each I/O management library needs its own I/O-binding.
-Developers can also create their own I/O-binding for the I/O management library
+Each I/O management library needs its own I/O binding.
+Developers can also create their own I/O binding for the I/O management library
 of their choice.
 This is described in the last section.
 
-Each I/O-binding has its own initialization function that creates a new
-I/O-binding and connects it to the I/O management library.
+Each I/O binding has its own initialization function that creates a new
+I/O binding and connects it to the I/O management library.
 For this tutorial we will assume that libuv is used.
 For details on how to use a specific binding please look at the bindings'
 README.md in `src/bindings/io/<binding>`.
@@ -105,7 +107,6 @@ void main (void)
 	// Cleanup
 	elektraIoBindingCleanup (binding);
 	uv_loop_close (loop);
-	free (loop);
 }
 
 void someFunction (void)
@@ -119,96 +120,110 @@ void someFunction (void)
 ## How to receive notifications
 
 We extend the example from the previous section where we already created our
-I/O-binding and initialized the notification-wrapper.
+I/O binding and initialized the notification-wrapper.
 In order to handle change notifications a developer can either register a
 variable or a callback.
 
 ### Register a variable
 
 Values of registered variables are automatically updated when the value of the
-assigned Key has changed.
-In the following example we will register a integer variable:
+assigned key has changed.
+In the following example we will register an integer variable:
 
 ```C
 KDB * repo;
 
-//  ... initialization of KDB and I/O-binding
+//  ... initialization of KDB and I/O binding
 
-Key * someKey = keyNew ("/sw/someprogram/v1/someKey", KEY_END);
+Key * someKey = keyNew ("/sw/myorg/myprogram/#1/current/somekey", KEY_END);
 int someKeyValue;
 
 elektraNotificationRegisterInt (repo, &someKeyValue, someKey);
 
 // repeatedly print variable
 while (1) {
-	sleep(2);
-
 	KeySet * ks = ksNew (10, KS_END);
 	kdbGet (repo, ks, someKey);
-	Key * k = ksLookupByName (ks, "/sw/someprogram/v1/someKey", 0);
+	Key * k = ksLookupByName (ks, "/sw/myorg/myprogram/#1/current/somekey", 0);
 	if (k != 0)
 	{
 		printf ("value is %s\n", keyString (k));
 	}
+
+	sleep(2);
 }
 ```
 
-The variable `someKeyValue` will be automatically updated if the Key in the
+The variable `someKeyValue` will be automatically updated if the key in the
 program above is changed by another program (e.g. by using the `kdb` CLI
 command).
 
 ### Callbacks
 
-Registering a variable is suitable for programs where the Key's value is simply
+Registering a variable is suitable for programs where the key's value is simply
 displayed or used repeatedly (e.g. by a timer or in a loop).
-When the program's initialization depends on the value of the Key (e.g. the
+If an initialization code needs to be redone after configuration changes (e.g. a
 value sets the number of worker threads) updating a registered variable will
 not suffice.
 For these situations a callback should be used.
 
 The following snippet shows how a callback can be used if the value of the
-changed Key needs further processing.
+changed key needs further processing.
 
 ```C
-void myCallback (Key * changedKey)
+#include <signal.h>
+#include <stdio.h>
+#include <string.h>
+
+// from https://en.wikipedia.org/wiki/ANSI_escape_code#Colors
+#define ANSI_COLOR_RED			"\x1b[31m"
+#define ANSI_COLOR_GREEN		"\x1b[32m"
+
+void setTerminalColor (Key * someKey)
 {
-	// do something
+	char* value = keyString (someKey);
+
+	if (strcmp (value, "red") == 0)
+	{
+		printf (ANSI_COLOR_RED);
+	}
+	if (strcmp (value, "green") == 0)
+	{
+		printf (ANSI_COLOR_GREEN);
+	}
 }
 
 int main ()
 {
 	KDB * repo;
 
-	// ... initialization of KDB and I/O-binding
+	// ... initialization of KDB and I/O binding
 
-	Key * someKey = keyNew ("/sw/someprogram/v1/someKey", KEY_END);
+	Key * someKey = keyNew ("/sw/myorg/myprogram/#1/current/somekey", KEY_END);
 
-	elektraNotificationRegisterCallback(repo, &myCallback, someKey);
+	// Retrieve key from kdb
+	KeySet * ks = ksNew (10, KS_END);
+	kdbGet (repo, ks, someKey);
+	Key * key = ksLookupByName (ks, "/sw/myorg/myprogram/#1/current/somekey", 0);
 
-	// ...
+	// Initialization
+	setTerminalColor (key);
+
+	// Re-Initialize on key changes
+	elektraNotificationRegisterCallback(repo, &setTerminalColor, someKey);
+
+	// ... start loop, etc.
 }
 ```
 
-## How to create your own I/O-binding
+## How to create your own I/O Binding
 
 Developers can create their own bindings if the I/O management library of their
-choice is not supported by an existing I/O-binding.
+choice is not supported by an existing I/O binding.
 
-To create a binding the I/O-interface's functions pointers need to be passed to
-`elektraIoNewBinding`.
-The interface is independent from I/O management libraries and notification
-transport plugins.
-
-For details on see the
-[example "doc" binding](https://github.com/ElektraInitiative/libelektra/blob/master/src/bindings/io/doc/)
-or the [API documentation](https://doc.libelektra.org/api/current/html/kdbio_8h.html).
-Existing I/O-bindings provide a good inspiration on how to implement a custom
+For details on see the [example "doc" binding](/src/bindings/io/doc/) or the
+[API documentation](https://doc.libelektra.org/api/current/html/group__kdbio.html).
+Existing I/O bindings provide a good inspiration on how to implement a custom
 binding.
 Since a binding is generic and not application specific it is much appreciated
-if you contribute your I/O-binding back to the Elektra project.
-
-Elektra provides a test suite for I/O-bindings in order to make sure that
-transport plugins will work with all bindings.
-To run the test suite you need to execute `elektraIoTestSuite` and provide the
-necessary callbacks for creating a new binding, starting and stopping
-asynchronous processing.
+if you contribute your I/O binding back to the Elektra project.

@@ -305,10 +305,11 @@ To specify specific tools you can use, e.g.:
 
 #### Bindings
 
-Bindings are used in a similar way as `PLUGINS`.
-For example, to build ALL bindings and exclude experimental bindings you can use:
+Bindings are used in a like as `PLUGINS`.
+For example, to build all maintainted bindings and exclude experimental bindings
+you can use:
 
-    -DBINDINGS=ALL;-EXPERIMENTAL
+    -DBINDINGS=MAINTAINED;-EXPERIMENTAL
 
 Note that the same languages are sometimes available over GI and SWIG.
 In this case, the SWIG bindings are preferred.
@@ -332,12 +333,8 @@ To not add such APIs, but only `swig` bindings and `cpp`, you can use:
 
     -DBINDINGS="SWIG;cpp"
 
-Other available categories of bindings are:
-
-    - `DEFAULT` to build default bindings
-		- `STABLE` to build all stable bindings (without experimental and deprecated
-		  ones)
-		- `DEPRECATED` can be used to exclude deprecated bindings
+For a list of available bindings see
+[binding's README.md](/src/bindings/README.md).
 
 #### CMAKE_BUILD_TYPE
 

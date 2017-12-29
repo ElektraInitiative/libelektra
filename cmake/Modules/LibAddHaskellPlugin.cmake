@@ -30,7 +30,7 @@ macro (add_haskell_plugin target)
 
 		 # set by find_program
 		if (HASKELL_FOUND)
-		check_binding_included ("haskell" BINDING_WAS_INCLUDED)
+		check_binding_included ("haskell" BINDING_WAS_INCLUDED SILENT)
 		if (BINDING_WAS_INCLUDED)
 
 			# needed for HsFFI.h
@@ -131,7 +131,7 @@ macro (add_haskell_plugin target)
 					remove_plugin (${target} "GHC_FFI_LIB not found")
 				endif (GHC_FFI_LIB)
 			endif (APPLE)
-			
+
 			# configure include paths
 			configure_file (
 				"${CMAKE_CURRENT_SOURCE_DIR}/${target}.cabal.in"

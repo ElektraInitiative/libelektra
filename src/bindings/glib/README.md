@@ -1,8 +1,11 @@
+- infos =
+- infos/author = Manuel Mausz <manuel-elektra@mausz.at>
+- infos/status =
+- infos/provides = gi
+- infos/description =
+
 # glib
 
 Provides glib bindings for Elektra.
 
 Are used by gsettings and GI bindings.
-
-## Infos
-- infos/status = stable gi

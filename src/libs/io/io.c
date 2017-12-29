@@ -7,8 +7,6 @@
  *
  */
 
-#include <string.h>
-
 #include <kdbhelper.h>
 #include <kdbio.h>
 #include <kdbioprivate.h>
@@ -81,8 +79,8 @@ ElektraIoInterface * elektraIoNewBinding (ElektraIoBindingAddFd * addFd, Elektra
 		ELEKTRA_LOG_WARNING ("elektraMalloc failed");
 		return NULL;
 	}
-	memset (binding, 0, sizeof (*binding));
 
+	binding->data = NULL;
 	binding->addFd = addFd;
 	binding->updateFd = updateFd;
 	binding->removeFd = removeFd;
@@ -102,20 +100,24 @@ int elektraIoBindingAddFd (ElektraIoInterface * binding, ElektraIoFdOperation * 
 	if (binding == NULL)
 	{
 		ELEKTRA_LOG_WARNING ("binding cannot be NULL");
-		return -1;
+		return 0;
 	}
 	if (fdOp == NULL)
 	{
 		ELEKTRA_LOG_WARNING ("fdOp cannot be NULL");
-		return -1;
+		return 0;
 	}
 	if (fdOp->binding != NULL)
 	{
 		ELEKTRA_LOG_WARNING ("operation cannot be assigned to multiple bindings");
-		return -1;
+		return 0;
 	}
-	fdOp->binding = binding;
-	return binding->addFd (binding, fdOp);
+	int result = binding->addFd (binding, fdOp);
+	if (result)
+	{
+		fdOp->binding = binding;
+	}
+	return result;
 }
 
 int elektraIoBindingUpdateFd (ElektraIoFdOperation * fdOp)
@@ -123,7 +125,7 @@ int elektraIoBindingUpdateFd (ElektraIoFdOperation * fdOp)
 	if (fdOp == NULL)
 	{
 		ELEKTRA_LOG_WARNING ("fdOp cannot be NULL");
-		return -1;
+		return 0;
 	}
 	return fdOp->binding->updateFd (fdOp);
 }
@@ -133,10 +135,13 @@ int elektraIoBindingRemoveFd (ElektraIoFdOperation * fdOp)
 	if (fdOp == NULL)
 	{
 		ELEKTRA_LOG_WARNING ("fdOp cannot be NULL");
-		return -1;
+		return 0;
 	}
 	int result = fdOp->binding->removeFd (fdOp);
-	fdOp->binding = NULL;
+	if (result)
+	{
+		fdOp->binding = NULL;
+	}
 	return result;
 }
 
@@ -145,20 +150,24 @@ int elektraIoBindingAddTimer (ElektraIoInterface * binding, ElektraIoTimerOperat
 	if (binding == NULL)
 	{
 		ELEKTRA_LOG_WARNING ("binding cannot be NULL");
-		return -1;
+		return 0;
 	}
 	if (timerOp == NULL)
 	{
 		ELEKTRA_LOG_WARNING ("timerOp cannot be NULL");
-		return -1;
+		return 0;
 	}
 	if (timerOp->binding != NULL)
 	{
 		ELEKTRA_LOG_WARNING ("operation cannot be assigned to multiple bindings");
-		return -1;
+		return 0;
 	}
-	timerOp->binding = binding;
-	return binding->addTimer (binding, timerOp);
+	int result = binding->addTimer (binding, timerOp);
+	if (result)
+	{
+		timerOp->binding = binding;
+	}
+	return result;
 }
 
 int elektraIoBindingUpdateTimer (ElektraIoTimerOperation * timerOp)
@@ -166,7 +175,7 @@ int elektraIoBindingUpdateTimer (ElektraIoTimerOperation * timerOp)
 	if (timerOp == NULL)
 	{
 		ELEKTRA_LOG_WARNING ("timerOp cannot be NULL");
-		return -1;
+		return 0;
 	}
 	return timerOp->binding->updateTimer (timerOp);
 }
@@ -176,10 +185,13 @@ int elektraIoBindingRemoveTimer (ElektraIoTimerOperation * timerOp)
 	if (timerOp == NULL)
 	{
 		ELEKTRA_LOG_WARNING ("timerOp cannot be NULL");
-		return -1;
+		return 0;
 	}
 	int result = timerOp->binding->removeTimer (timerOp);
-	timerOp->binding = NULL;
+	if (result)
+	{
+		timerOp->binding = NULL;
+	}
 	return result;
 }
 
@@ -188,20 +200,24 @@ int elektraIoBindingAddIdle (ElektraIoInterface * binding, ElektraIoIdleOperatio
 	if (binding == NULL)
 	{
 		ELEKTRA_LOG_WARNING ("binding cannot be NULL");
-		return -1;
+		return 0;
 	}
 	if (idleOp == NULL)
 	{
 		ELEKTRA_LOG_WARNING ("idleOp cannot be NULL");
-		return -1;
+		return 0;
 	}
 	if (idleOp->binding != NULL)
 	{
 		ELEKTRA_LOG_WARNING ("operation cannot be assigned to multiple bindings");
-		return -1;
+		return 0;
 	}
-	idleOp->binding = binding;
-	return binding->addIdle (binding, idleOp);
+	int result = binding->addIdle (binding, idleOp);
+	if (result)
+	{
+		idleOp->binding = binding;
+	}
+	return result;
 }
 
 int elektraIoBindingUpdateIdle (ElektraIoIdleOperation * idleOp)
@@ -209,7 +225,7 @@ int elektraIoBindingUpdateIdle (ElektraIoIdleOperation * idleOp)
 	if (idleOp == NULL)
 	{
 		ELEKTRA_LOG_WARNING ("idleOp cannot be NULL");
-		return -1;
+		return 0;
 	}
 	return idleOp->binding->updateIdle (idleOp);
 }
@@ -219,10 +235,13 @@ int elektraIoBindingRemoveIdle (ElektraIoIdleOperation * idleOp)
 	if (idleOp == NULL)
 	{
 		ELEKTRA_LOG_WARNING ("idleOp cannot be NULL");
-		return -1;
+		return 0;
 	}
 	int result = idleOp->binding->removeIdle (idleOp);
-	idleOp->binding = NULL;
+	if (result)
+	{
+		idleOp->binding = NULL;
+	}
 	return result;
 }
 
@@ -231,7 +250,7 @@ int elektraIoBindingCleanup (ElektraIoInterface * binding)
 	if (binding == NULL)
 	{
 		ELEKTRA_LOG_WARNING ("binding cannot be NULL");
-		return -1;
+		return 0;
 	}
 	return binding->cleanup (binding);
 }
@@ -252,11 +271,11 @@ int elektraIoBindingSetData (ElektraIoInterface * binding, void * data)
 	if (binding == NULL)
 	{
 		ELEKTRA_LOG_WARNING ("operation was NULL");
-		return -1;
+		return 0;
 	}
 
 	binding->data = data;
-	return 0;
+	return 1;
 }
 
 
@@ -278,13 +297,14 @@ ElektraIoFdOperation * elektraIoNewFdOperation (int fd, int flags, int enabled, 
 		ELEKTRA_LOG_WARNING ("elektraMalloc failed");
 		return NULL;
 	}
-	memset (fdOp, 0, sizeof (*fdOp));
 
 	fdOp->fd = fd;
 	fdOp->flags = flags;
 	fdOp->enabled = enabled;
 	fdOp->callback = callback;
 	fdOp->privateData = privateData;
+	fdOp->binding = NULL;
+	fdOp->bindingData = NULL;
 
 	return fdOp;
 }
@@ -304,12 +324,13 @@ ElektraIoTimerOperation * elektraIoNewTimerOperation (unsigned int interval, int
 		ELEKTRA_LOG_WARNING ("elektraMalloc failed");
 		return NULL;
 	}
-	memset (timerOp, 0, sizeof (*timerOp));
 
 	timerOp->interval = interval;
 	timerOp->enabled = enabled;
 	timerOp->callback = callback;
 	timerOp->privateData = privateData;
+	timerOp->binding = NULL;
+	timerOp->bindingData = NULL;
 
 	return timerOp;
 }
@@ -328,11 +349,12 @@ ElektraIoIdleOperation * elektraIoNewIdleOperation (int enabled, ElektraIoIdleCa
 		ELEKTRA_LOG_WARNING ("elektraMalloc failed");
 		return NULL;
 	}
-	memset (idleOp, 0, sizeof (*idleOp));
 
 	idleOp->enabled = enabled;
 	idleOp->callback = callback;
 	idleOp->privateData = privateData;
+	idleOp->binding = NULL;
+	idleOp->bindingData = NULL;
 
 	return idleOp;
 }
@@ -347,23 +369,11 @@ int elektraIoFdSetEnabled (ElektraIoFdOperation * fdOp, int enabled)
 	if (fdOp == NULL)
 	{
 		ELEKTRA_LOG_WARNING ("operation was NULL");
-		return 1;
+		return 0;
 	}
 
 	fdOp->enabled = enabled;
-	return 0;
-}
-
-int elektraIoFdSetFd (ElektraIoFdOperation * fdOp, int fd)
-{
-	if (fdOp == NULL)
-	{
-		ELEKTRA_LOG_WARNING ("operation was NULL");
-		return 1;
-	}
-
-	fdOp->fd = fd;
-	return 0;
+	return 1;
 }
 
 int elektraIoFdSetFlags (ElektraIoFdOperation * fdOp, int flags)
@@ -371,11 +381,11 @@ int elektraIoFdSetFlags (ElektraIoFdOperation * fdOp, int flags)
 	if (fdOp == NULL)
 	{
 		ELEKTRA_LOG_WARNING ("operation was NULL");
-		return 1;
+		return 0;
 	}
 
-	fdOp->flags = flags;
-	return 0;
+	fdOp->flags = flags; // TODO check if flags are valid
+	return 1;
 }
 
 int elektraIoTimerSetEnabled (ElektraIoTimerOperation * timerOp, int enabled)
@@ -383,11 +393,11 @@ int elektraIoTimerSetEnabled (ElektraIoTimerOperation * timerOp, int enabled)
 	if (timerOp == NULL)
 	{
 		ELEKTRA_LOG_WARNING ("operation was NULL");
-		return 1;
+		return 0;
 	}
 
 	timerOp->enabled = enabled;
-	return 0;
+	return 1;
 }
 
 int elektraIoTimerSetInterval (ElektraIoTimerOperation * timerOp, unsigned int interval)
@@ -395,11 +405,11 @@ int elektraIoTimerSetInterval (ElektraIoTimerOperation * timerOp, unsigned int i
 	if (timerOp == NULL)
 	{
 		ELEKTRA_LOG_WARNING ("operation was NULL");
-		return 1;
+		return 0;
 	}
 
 	timerOp->interval = interval;
-	return 0;
+	return 1;
 }
 
 int elektraIoIdleSetEnabled (ElektraIoIdleOperation * idleOp, int enabled)
@@ -407,11 +417,11 @@ int elektraIoIdleSetEnabled (ElektraIoIdleOperation * idleOp, int enabled)
 	if (idleOp == NULL)
 	{
 		ELEKTRA_LOG_WARNING ("operation was NULL");
-		return 1;
+		return 0;
 	}
 
 	idleOp->enabled = enabled;
-	return 0;
+	return 1;
 }
 
 // ################################
@@ -423,7 +433,7 @@ int elektraIoFdGetFd (ElektraIoFdOperation * fdOp)
 	if (fdOp == NULL)
 	{
 		ELEKTRA_LOG_WARNING ("operation was NULL");
-		return -1;
+		return 0;
 	}
 
 	return fdOp->fd;
@@ -445,11 +455,11 @@ int elektraIoFdSetBindingData (ElektraIoFdOperation * fdOp, void * data)
 	if (fdOp == NULL)
 	{
 		ELEKTRA_LOG_WARNING ("operation was NULL");
-		return -1;
+		return 0;
 	}
 
 	fdOp->bindingData = data;
-	return 0;
+	return 1;
 }
 
 void * elektraIoFdGetBindingData (ElektraIoFdOperation * fdOp)
@@ -479,7 +489,7 @@ int elektraIoFdGetFlags (ElektraIoFdOperation * fdOp)
 	if (fdOp == NULL)
 	{
 		ELEKTRA_LOG_WARNING ("operation was NULL");
-		return -1;
+		return 0;
 	}
 
 	return fdOp->flags;
@@ -501,11 +511,11 @@ int elektraIoTimerSetBindingData (ElektraIoTimerOperation * timerOp, void * data
 	if (timerOp == NULL)
 	{
 		ELEKTRA_LOG_WARNING ("operation was NULL");
-		return -1;
+		return 0;
 	}
 
 	timerOp->bindingData = data;
-	return 0;
+	return 1;
 }
 
 void * elektraIoTimerGetBindingData (ElektraIoTimerOperation * timerOp)
@@ -568,11 +578,11 @@ int elektraIoIdleSetBindingData (ElektraIoIdleOperation * idleOp, void * data)
 	if (idleOp == NULL)
 	{
 		ELEKTRA_LOG_WARNING ("operation was NULL");
-		return -1;
+		return 0;
 	}
 
 	idleOp->bindingData = data;
-	return 0;
+	return 1;
 }
 
 void * elektraIoIdleGetBindingData (ElektraIoIdleOperation * idleOp)

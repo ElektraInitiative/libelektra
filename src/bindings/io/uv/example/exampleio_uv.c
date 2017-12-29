@@ -1,11 +1,11 @@
 /**
  * @file
  *
- * @brief Example program for io_uv binding
+ * @brief Example program for io_uv binding.
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
- * This program uses two operations:
+ * This program uses two I/O operations:
  * - The "input" operation is a file descriptor watcher that waits for
  *   STDIN_FILENO (stdin) to become readable.
  *   Since input is buffered, this typically happends when the user enters some
@@ -13,26 +13,29 @@
  * - The "output" operation is a timer that prints the last read data every
  *   second.
  */
-#include <assert.h>
-#include <errno.h>
-#include <stdio.h>
-#include <string.h>
-#include <unistd.h>
+#include <errno.h>  // error handling
+#include <stdio.h>  // printf
+#include <string.h> // memset & memcpy
+#include <unistd.h> // file descriptor numbers (STDIN_FILENO)
 
-#include <kdb.h>
-#include <kdbhelper.h>
-#include <kdbio.h>
-#include <kdbio_uv.h>
+#include <kdbassert.h> // assertions (ELEKTRA_NOT_NULL)
+#include <kdbhelper.h> // malloc & free
+#include <kdbio.h>     // I/O binding functions (elektraIo*)
+#include <kdbio_uv.h>  // I/O binding constructor for uv (elektraIoUvNew)
 
-#include <uv.h>
+#include <uv.h> // uv functions
 
 #define BUFFER_LENGTH 255
 #define ONE_SECOND 1000
-#define MIN(a, b) (((a) < (b)) ? (a) : (b))
 
 ElektraIoInterface * binding;
 ElektraIoFdOperation * input;
 ElektraIoTimerOperation * output;
+
+int min (int a, int b)
+{
+	return (a > b) ? b : a;
+}
 
 void stopLoop (void)
 {
@@ -51,14 +54,14 @@ void readText (ElektraIoFdOperation * fdOp, int flags ELEKTRA_UNUSED)
 	printf ("input: file descriptor became readable\n");
 
 	char * lastInput = elektraIoFdGetData (fdOp);
-	assert (lastInput != NULL);
+	ELEKTRA_NOT_NULL (lastInput);
 
 	char buffer[BUFFER_LENGTH];
 	int bytesRead = read (elektraIoFdGetFd (fdOp), &buffer, BUFFER_LENGTH);
 	if (bytesRead != -1)
 	{
 		// make sure there is a null terminator in buffer
-		buffer[MIN (BUFFER_LENGTH - 1, bytesRead + 1)] = 0;
+		buffer[min (BUFFER_LENGTH - 1, bytesRead + 1)] = 0;
 		// remove newline from string
 		buffer[strcspn (buffer, "\r\n")] = 0;
 		// copy to lastInput
@@ -78,7 +81,7 @@ void readText (ElektraIoFdOperation * fdOp, int flags ELEKTRA_UNUSED)
 void printText (ElektraIoTimerOperation * timerOp)
 {
 	char * lastInput = elektraIoTimerGetData (timerOp);
-	assert (lastInput != NULL);
+	ELEKTRA_NOT_NULL (lastInput);
 
 	if (strcmp (lastInput, "exit") == 0)
 	{
@@ -90,6 +93,10 @@ void printText (ElektraIoTimerOperation * timerOp)
 		if (strlen (lastInput) > 0)
 		{
 			printf ("timer: last text was \"%s\"\n", lastInput);
+		}
+		else
+		{
+			printf ("timer: text is empty\n");
 		}
 	}
 }
@@ -122,8 +129,7 @@ int main (void)
 
 #ifdef HAVE_LIBUV1
 	uv_loop_close (loop);
-#endif
-#ifdef HAVE_LIBUV0
+#elif HAVE_LIBUV0
 	uv_loop_delete (loop);
 #endif
 

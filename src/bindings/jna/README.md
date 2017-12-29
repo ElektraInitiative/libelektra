@@ -1,3 +1,11 @@
+- infos =
+- infos/author = Markus Raab <elektra@libelektra.org>
+- infos/status = experimental maintained
+- infos/provides =
+- infos/description =
+
+# JNA
+
 A full java binding using JNA. This binding requires Elektra to be installed on
 the system to work.
 
@@ -125,6 +133,3 @@ if you run all tests on a build (the target is called testjna_maven).
 - error/warning fixed to a special number, no generator for any
   error/warning
 - no java iterator for metadata
-
-## Infos
-- infos/status = stable

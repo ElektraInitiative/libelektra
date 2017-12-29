@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief Tests for IO bindings
+ * @brief Tests for I/O bindings
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
@@ -17,6 +17,7 @@
 
 #include "test.h"
 #include <kdbio.h>
+#include <kdbiotest.h>
 
 #define MIX_TIMER_INTERVAL 50
 #define MIX_DIFF_WARNING_THRESHOLD 5
@@ -173,12 +174,12 @@ static void testMixIdleShouldNotStarveFd (ElektraIoTestSuiteCreateBinding create
 }
 
 /**
- * Test mixed requirements of the IO-Binding returned by createBinding.
+ * Test mixed requirements of the I/O binding returned by createBinding.
  * Requires the following operations: Fd, Timer, Idle
  *
  * @param createBinding binding creation function
- * @param start         starts IO operations
- * @param stop          stops IO operations
+ * @param start         starts I/O operations
+ * @param stop          stops I/O operations
  */
 void elektraIoTestSuiteMix (ElektraIoTestSuiteCreateBinding createBinding, ElektraIoTestSuiteStart start, ElektraIoTestSuiteStop stop)
 {

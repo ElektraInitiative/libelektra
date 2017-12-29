@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief Tests for IO bindings
+ * @brief Tests for I/O bindings
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
@@ -19,6 +19,7 @@
 
 #include "test.h"
 #include <kdbio.h>
+#include <kdbiotest.h>
 
 #define FD_CONTROL_INTERVAL 50
 
@@ -67,16 +68,16 @@ static void testFdBasics (ElektraIoTestSuiteCreateBinding createBinding)
 	ElektraIoFdOperation * fdOp = elektraIoNewFdOperation (fds[FD_READ_END], ELEKTRA_IO_WRITABLE, 0, testFdBasicsCallback, NULL);
 
 	ElektraIoInterface * binding = createBinding ();
-	succeed_if (elektraIoBindingAddFd (binding, fdOp) == 0, "addFd did not return 0");
-	succeed_if (elektraIoBindingAddFd (binding, fdOp) == -1, "addFd: should not be able to reassign operation to a binding");
+	succeed_if (elektraIoBindingAddFd (binding, fdOp), "addFd did not succeed");
+	succeed_if (elektraIoBindingAddFd (binding, fdOp) == 0, "addFd: should not be able to reassign operation to a binding");
 
 	elektraIoFdSetEnabled (fdOp, 1);
-	succeed_if (elektraIoBindingUpdateFd (fdOp) == 0, "updateFd did not return 0");
+	succeed_if (elektraIoBindingUpdateFd (fdOp), "updateFd did not succeed");
 
-	succeed_if (elektraIoBindingRemoveFd (fdOp) == 0, "removeFd did not return 0");
+	succeed_if (elektraIoBindingRemoveFd (fdOp), "removeFd did not succeed");
 
-	succeed_if (elektraIoBindingAddFd (binding, fdOp) == 0, "addFd: should be able to assign operation after removal");
-	succeed_if (elektraIoBindingRemoveFd (fdOp) == 0, "removeTimer did not return 0");
+	succeed_if (elektraIoBindingAddFd (binding, fdOp), "addFd: should be able to assign operation after removal");
+	succeed_if (elektraIoBindingRemoveFd (fdOp), "removeTimer did not succeed");
 	elektraIoBindingCleanup (binding);
 	elektraFree (fdOp);
 }
@@ -371,12 +372,12 @@ static void testFdShouldRemove (ElektraIoTestSuiteCreateBinding createBinding, E
 }
 
 /**
- * Test fd functions of the IO-Binding returned by createBinding.
+ * Test fd functions of the I/O binding returned by createBinding.
  * Requires the following operations: Fd, Timer
  *
  * @param createBinding binding creation function
- * @param start         starts IO operations
- * @param stop          stops IO operations
+ * @param start         starts I/O operations
+ * @param stop          stops I/O operations
  */
 void elektraIoTestSuiteFd (ElektraIoTestSuiteCreateBinding createBinding, ElektraIoTestSuiteStart start, ElektraIoTestSuiteStop stop)
 {

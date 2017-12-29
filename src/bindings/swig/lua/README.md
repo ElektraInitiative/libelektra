@@ -1,3 +1,9 @@
+- infos = Information about elektrify getenv below
+- infos/author = Manuel Mausz <manuel-elektra@mausz.at>
+- infos/status =
+- infos/provides = swig
+- infos/description =
+
 # Lua
 
 Lua bindings for Elektra.
@@ -12,6 +18,3 @@ Please make sure to set `TARGET_LUA_CMOD_FOLDER` and `TARGET_LUA_LMOD_FOLDER` if
 Note that cmake does *not* automatically rebuild SWIG bindings
 when header files are changed. Remove the build directory
 in that case.
-
-## Infos
-- infos/status = swig stable

@@ -1,9 +1,9 @@
-try_add_binding ("io_uv" IS_INCLUDED SUBDIRECTORY "uv")
+check_binding_included ("io_uv" IS_INCLUDED SUBDIRECTORY "io/uv")
 if (IS_INCLUDED)
 	add_subdirectory (uv)
 endif ()
 
-#try_add_binding ("io_doc" IS_INCLUDED SUBDIRECTORY "doc")
+#check_binding_included ("io_doc" IS_INCLUDED SUBDIRECTORY "io/doc")
 #if (IS_INCLUDED)
 #	add_subdirectory (doc)
 #endif ()

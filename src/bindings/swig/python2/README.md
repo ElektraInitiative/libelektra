@@ -1,3 +1,9 @@
+- infos =
+- infos/author = Manuel Mausz <manuel-elektra@mausz.at>
+- infos/status =
+- infos/provides = swig
+- infos/description =
+
 # Python2
 
 Python2 bindings for Elektra.
@@ -26,6 +32,3 @@ because of its dependency to cheetah.
 Note that cmake does *not* automatically rebuild SWIG bindings
 when header files are changed. Remove the build directory
 in that case.
-
-## Infos
-- infos/status = swig stable

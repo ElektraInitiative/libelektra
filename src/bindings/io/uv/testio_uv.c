@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief Tests for IO UV binding
+ * @brief Tests for I/O UV binding
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
@@ -11,6 +11,7 @@
 #include <stdlib.h>
 
 #include <kdbio.h>
+#include <kdbiotest.h>
 #include <tests.h>
 
 #include <uv.h>
@@ -36,7 +37,7 @@ int main (int argc, char ** argv)
 {
 	init (argc, argv);
 
-	elektraIoTestSuite (&createBinding, &startLoop, &stopLoop);
+	elektraIoTestSuite (createBinding, startLoop, stopLoop);
 
 	// Run loop once to fire handle closed callbacks and free memory
 	// see http://docs.libuv.org/en/v1.x/handle.html#c.uv_close
@@ -44,8 +45,7 @@ int main (int argc, char ** argv)
 	uv_run (loop, UV_RUN_ONCE);
 #ifdef HAVE_LIBUV1
 	uv_loop_close (loop);
-#endif
-#ifdef HAVE_LIBUV0
+#elif HAVE_LIBUV0
 	uv_loop_delete (loop);
 #endif
 

@@ -7,7 +7,7 @@ tool_execdir=${prefix}/@TARGET_TOOL_EXEC_FOLDER@
 templatedir=${prefix}/@TARGET_TEMPLATE_FOLDER@
 
 Name: libelektra-io
-Description: Elektra IO interface
+Description: Elektra I/O interface
 Requires:
 Version: @KDB_VERSION@
 Libs: -L${libdir} -l@LIBRARY_NAME@

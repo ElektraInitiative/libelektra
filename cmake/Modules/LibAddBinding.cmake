@@ -1,11 +1,16 @@
 include(LibAddMacros)
 
-# - adds a binding if it is included in BINDINGS and not exluded.
-#   If the binding is exluded the reason is printed along with the binding name.
-#   This is function is intended to be used in a CMakeLists.txt in the directory
-#   above or within the actual binding directory.
+# - Adds a binding if it is included in BINDINGS and not exluded by name or
+#   category (infos/status or infos/provides from it's README.md).
 #
-# try_add_binding (BINDING_NAME OUTVARIABLE)
+#   If the binding is exluded the reason is printed along with the binding name.
+#
+#   This is function can be used anywhere since the base directory is fixed to
+#   the bindings source directory. However if the binding uses subdirectories
+#   (like swig, gi or io) you need to supply the correct SUBDIRECTORY option
+#   (see examples).
+#
+# check_binding_included (BINDING_NAME OUTVARIABLE)
 #
 # BINDING_NAME:
 #   name of the binding
@@ -20,12 +25,12 @@ include(LibAddMacros)
 # Default for SUBDIRECTORY is BINDING_NAME
 #
 # Example:
-#   try_add_binding ("swig_python" IS_INCLUDED SUBDIRECTORY "python")
+#   check_binding_included ("swig_python" IS_INCLUDED SUBDIRECTORY "swig/python")
 #   if (IS_INCLUDED)
 #     add_subdirectory (python)
 #   endif ()
 #
-function (try_add_binding BINDING_NAME OUTVARIABLE)
+function (check_binding_included BINDING_NAME OUTVARIABLE)
 	cmake_parse_arguments (ARG
 		"SILENT" # optional keywords
 		"" # one value keywords
@@ -33,33 +38,39 @@ function (try_add_binding BINDING_NAME OUTVARIABLE)
 		${ARGN}
 	)
 
-	check_item_is_excluded (IS_EXCLUDED BINDINGS ${BINDING_NAME} SUBDIRECTORY ${BINDING_NAME} ${ARGN})
+	check_item_is_excluded (
+		IS_EXCLUDED
+		BINDINGS
+		${BINDING_NAME}
+		SUBDIRECTORY ${BINDING_NAME}
+		BASEDIRECTORY "${CMAKE_SOURCE_DIR}/src/bindings"
+ 		ENABLE_PROVIDES
+		${ARGN}
+	)
 	if (IS_EXCLUDED)
 		if (ARG_SILENT)
 			# make sure that the exclusion message is not printed
 			set (IS_EXCLUDED "silent")
 		endif ()
-		remove_binding (${BINDING_NAME} ${IS_EXCLUDED} REMOVE_NOT_NECESSARY)
-		set (${OUTVARIABLE} "" PARENT_SCOPE)
+		exclude_binding (${BINDING_NAME} ${IS_EXCLUDED})
+		set (${OUTVARIABLE} "NO" PARENT_SCOPE)
 	else ()
-		add_binding_manual (${BINDING_NAME})
 		set (${OUTVARIABLE} "YES" PARENT_SCOPE)
 	endif ()
-endfunction (try_add_binding)
+endfunction (check_binding_included)
 
-# - add a binding to list of bindings that will be built.
-#   Can be used if a binding depends on another binding and you want to
-#   silently include it rather than display an error.
+#- Add a binding to list of bindings that will be built and print corresponding
+#  message.
 #
-# add_binding_manual (BINDING_NAME)
+#  add_binding (BINDING_NAME)
 #
-# BINDING_NAME:
-#   name of the binding
+#  BINDING_NAME:
+#    name of the binding
 #
-# Example:
-#   add_binding_manual ("anynameyouwant")
+#  example:
+#    add_binding ("anynameyouwant")
 #
-function (add_binding_manual BINDING_NAME)
+function (add_binding BINDING_NAME)
 	if (ADDED_BINDINGS)
 		set (TMP "${ADDED_BINDINGS};${BINDING_NAME}")
 		list (SORT TMP)
@@ -68,43 +79,54 @@ function (add_binding_manual BINDING_NAME)
 	else ()
 		set (ADDED_BINDINGS "${BINDING_NAME}" CACHE STRING "${ADDED_BINDINGS_DOC}" FORCE)
 	endif ()
-endfunction (add_binding_manual)
 
-# - check if a binding is included in the BINDINGS list given by the user.
-#   If it is included it is not guaranteed that the binding will be built
-#   (dependencies can be missing, etc.)
-#   This is function can be used anywhere since the base directory is fixed to
-#   the bindings directory. However if the binding uses subdirectories
-#   (like swig, gi or io) you need to supply the correct SUBDIRECTORY option
-#   (see examples).
+	message (STATUS "Include Binding ${BINDING_NAME}")
+endfunction (add_binding)
+
+#- Remove a binding from the global cache
 #
-# check_binding_included (BINDING_NAME OUTVARIABLE)
+#  exclude_binding (name reason)
 #
-# BINDING_NAME:
-#   name of the binding
+#  name
+#    binding name
 #
-# OUTVARIABLE:
-#   variable that is set to true if binding was added
+#  reason
+#    reason for exclusion
 #
-# Additional options are passed to check_item_is_excluded ().
-# Default for SUBDIRECTORY is BINDING_NAME
+#  REMOVE
+#    (optional) remove already added with add_binding.
+#    Consistency check: If not given it is made sure that the binding is not on
+#    the list.
 #
-# Example:
-#   check_binding_included ("swig_python" IS_INCLUDED SUBDIRECTORY "swig/python")
-#   if (IS_INCLUDED)
-#     add_subdirectory (python)
-#   endif ()
+# example:
+#  exclude_binding (fstab "mntent is missing")
 #
-function (check_binding_included BINDING_NAME OUTVARIABLE)
-	check_item_is_excluded (IS_EXCLUDED BINDINGS ${BINDING_NAME} SUBDIRECTORY ${BINDING_NAME} BASEDIRECTORY "${CMAKE_SOURCE_DIR}/src/bindings" ${ARGN})
-	if (IS_EXCLUDED)
-		set (${OUTVARIABLE} "" PARENT_SCOPE)
-	else ()
-		set (${OUTVARIABLE} "YES" PARENT_SCOPE)
+function (exclude_binding name reason)
+	cmake_parse_arguments (ARG
+		"REMOVE" # optional keywords
+		"" # one value keywords
+		"" # multi value keywords
+		${ARGN}
+	)
+
+	if (NOT ${reason} STREQUAL "silent")
+		message (STATUS "Exclude Binding ${name} because ${reason}")
 	endif ()
-endfunction (check_binding_included)
+	if (ARG_REMOVE)
+		if (ADDED_BINDINGS)
+			set (TMP ${ADDED_BINDINGS})
+			list (REMOVE_ITEM TMP ${name})
+			set (ADDED_BINDINGS ${TMP} CACHE STRING ${ADDED_BINDINGS_DOC} FORCE)
+		endif ()
+	else ()
+		list (FIND ADDED_BINDINGS "${name}" FOUND_NAME)
+		if (FOUND_NAME GREATER -1)
+			message (WARNING "Internal inconsistency: REMOVE_NOT_NECESSARY given but ${name} is present in bindings!")
+		endif ()
+	endif ()
+endfunction (exclude_binding)
 
-# - check if a binding will be built.
+# - Check if a binding will be built.
 #   Can only be used run after bindins have been processed (e.g. in
 #   ADDTESTING_PHASE of plugins)
 #   This is function can be used anywhere.
@@ -128,7 +150,7 @@ function (check_binding_was_added BINDING_NAME OUTVARIABLE)
 	if (FINDEX GREATER -1)
 		set (${OUTVARIABLE} "YES" PARENT_SCOPE)
 	else ()
-		set (${OUTVARIABLE} "" PARENT_SCOPE)
+		set (${OUTVARIABLE} "NO" PARENT_SCOPE)
 	endif ()
 endfunction (check_binding_was_added)
 
@@ -171,7 +193,7 @@ function (check_item_is_excluded OUTVARIABLE LIST ITEM_NAME)
 		"" # multi value keywords
 		${ARGN}
 	)
-	set (${OUTVARIABLE} "" PARENT_SCOPE)
+	set (${OUTVARIABLE} "NO" PARENT_SCOPE)
 
 	list (FIND ${LIST} "-${ITEM_NAME}" FOUND_EXCLUDE_NAME)
 	if (FOUND_EXCLUDE_NAME GREATER -1)

@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief Tests for IO bindings
+ * @brief Tests for I/O bindings
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
@@ -16,6 +16,7 @@
 
 #include "test.h"
 #include <kdbio.h>
+#include <kdbiotest.h>
 
 #define IDLE_TEST_INTERVAL 1
 #define IDLE_TEST_CONTROL_TIMES 2
@@ -48,16 +49,16 @@ static void testIdleBasics (ElektraIoTestSuiteCreateBinding createBinding)
 	ElektraIoIdleOperation * idleOp = elektraIoNewIdleOperation (0, testIdleBasicsCallback, NULL);
 
 	ElektraIoInterface * binding = createBinding ();
-	succeed_if (elektraIoBindingAddIdle (binding, idleOp) == 0, "addIdle did not return 0");
-	succeed_if (elektraIoBindingAddIdle (binding, idleOp) == -1, "addIdle: should not be able to reassign operation to a binding");
+	succeed_if (elektraIoBindingAddIdle (binding, idleOp), "addIdle did not succeed");
+	succeed_if (elektraIoBindingAddIdle (binding, idleOp) == 0, "addIdle: should not be able to reassign operation to a binding");
 
 	elektraIoIdleSetEnabled (idleOp, 1);
-	succeed_if (elektraIoBindingUpdateIdle (idleOp) == 0, "updateIdle did not return 0");
+	succeed_if (elektraIoBindingUpdateIdle (idleOp), "updateIdle did not succeed");
 
-	succeed_if (elektraIoBindingRemoveIdle (idleOp) == 0, "removeIdle did not return 0");
+	succeed_if (elektraIoBindingRemoveIdle (idleOp), "removeIdle did not succeed");
 
-	succeed_if (elektraIoBindingAddIdle (binding, idleOp) == 0, "addIdle: should be able to assign operation after removal");
-	succeed_if (elektraIoBindingRemoveIdle (idleOp) == 0, "removeIdle did not return 0");
+	succeed_if (elektraIoBindingAddIdle (binding, idleOp), "addIdle: should be able to assign operation after removal");
+	succeed_if (elektraIoBindingRemoveIdle (idleOp), "removeIdle did not succeed");
 	elektraIoBindingCleanup (binding);
 	elektraFree (idleOp);
 }
@@ -206,12 +207,12 @@ static void testIdleShouldRemove (ElektraIoTestSuiteCreateBinding createBinding,
 
 
 /**
- * Test idle functions of the IO-Binding returned by createBinding.
+ * Test idle functions of the I/O binding returned by createBinding.
  * Requires the following operations: Idle
  *
  * @param createBinding binding creation function
- * @param start         starts IO operations
- * @param stop          stops IO operations
+ * @param start         starts I/O operations
+ * @param stop          stops I/O operations
  */
 void elektraIoTestSuiteIdle (ElektraIoTestSuiteCreateBinding createBinding, ElektraIoTestSuiteStart start, ElektraIoTestSuiteStop stop)
 {

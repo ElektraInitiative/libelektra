@@ -1,24 +1,24 @@
 /**
  * @file
  *
- * @brief IO UV binding
+ * @brief I/O UV binding
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
-#include <assert.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include <uv.h>
 
+#include <kdbassert.h>
 #include <kdbhelper.h>
 #include <kdbio.h>
 #include <kdblogger.h>
 
 /**
  * Container for required additional information for
- * IO binding operations & libuv Handles
+ * I/O binding operations & libuv Handles
  */
 typedef struct UvBindingData
 {
@@ -35,8 +35,8 @@ typedef struct UvBindingData
 } UvBindingData;
 
 /**
- * Convert IO flags to libuv event bit mask
- * @param  flags IO flags bit mask
+ * Convert I/O flags to libuv event bit mask
+ * @param  flags I/O flags bit mask
  * @return       libuv events bit mask
  */
 static int flagsToEvents (int flags)
@@ -54,9 +54,9 @@ static int flagsToEvents (int flags)
 }
 
 /**
- * Convert libuv event bit mask to IO flags
+ * Convert libuv event bit mask to I/O flags
  * @param  events libuv events bit mask
- * @return        IO flags bit mask
+ * @return        I/O flags bit mask
  */
 static int eventsToFlags (int events)
 {
@@ -93,7 +93,7 @@ static UvBindingData * newBindingData (void)
  */
 static void ioUvBindingHandleClosedCallback (uv_handle_t * handle)
 {
-	assert (handle->data != NULL);
+	ELEKTRA_NOT_NULL (handle->data);
 	UvBindingData * bindingData = (UvBindingData *)handle->data;
 
 	elektraFree (bindingData);
@@ -114,7 +114,7 @@ static void ioUvBindingFdCallback (uv_poll_t * handle, int status, int events)
 		return;
 	}
 
-	assert (handle->data != NULL);
+	ELEKTRA_NOT_NULL (handle->data);
 	UvBindingData * bindingData = (UvBindingData *)handle->data;
 	ElektraIoFdOperation * fdOp = (ElektraIoFdOperation *)bindingData->operation.fd;
 
@@ -129,12 +129,11 @@ static void ioUvBindingFdCallback (uv_poll_t * handle, int status, int events)
  */
 #ifdef HAVE_LIBUV0
 static void ioUvBindingTimerCallback (uv_timer_t * handle, int unknown ELEKTRA_UNUSED)
-#endif
-#ifdef HAVE_LIBUV1
-	static void ioUvBindingTimerCallback (uv_timer_t * handle)
+#elif HAVE_LIBUV1
+static void ioUvBindingTimerCallback (uv_timer_t * handle)
 #endif
 {
-	assert (handle->data != NULL);
+	ELEKTRA_NOT_NULL (handle->data);
 	UvBindingData * bindingData = (UvBindingData *)handle->data;
 	ElektraIoTimerOperation * timerOp = (ElektraIoTimerOperation *)bindingData->operation.timer;
 
@@ -149,12 +148,11 @@ static void ioUvBindingTimerCallback (uv_timer_t * handle, int unknown ELEKTRA_U
  */
 #ifdef HAVE_LIBUV0
 static void ioUvBindingIdleCallback (uv_idle_t * handle, int unknown ELEKTRA_UNUSED)
-#endif
-#ifdef HAVE_LIBUV1
-	static void ioUvBindingIdleCallback (uv_idle_t * handle)
+#elif HAVE_LIBUV1
+static void ioUvBindingIdleCallback (uv_idle_t * handle)
 #endif
 {
-	assert (handle->data != NULL);
+	ELEKTRA_NOT_NULL (handle->data);
 	UvBindingData * bindingData = (UvBindingData *)handle->data;
 	ElektraIoIdleOperation * idleOp = (ElektraIoIdleOperation *)bindingData->operation.idle;
 
@@ -162,12 +160,12 @@ static void ioUvBindingIdleCallback (uv_idle_t * handle, int unknown ELEKTRA_UNU
 }
 
 /**
- * Update information about a file descriptor watched by IO-Binding.
- * @see kdbio.h ElektraIoInterface::updateFd
+ * Update information about a file descriptor watched by I/O binding.
+ * @see kdbio.h ::ElektraIoBindingUpdateFd
  */
 static int ioUvBindingUpdateFd (ElektraIoFdOperation * fdOp)
 {
-	assert (elektraIoFdGetBindingData (fdOp) != NULL);
+	ELEKTRA_NOT_NULL (elektraIoFdGetBindingData (fdOp));
 	UvBindingData * bindingData = (UvBindingData *)elektraIoFdGetBindingData (fdOp);
 	if (elektraIoFdIsEnabled (fdOp))
 	{
@@ -177,22 +175,22 @@ static int ioUvBindingUpdateFd (ElektraIoFdOperation * fdOp)
 	{
 		uv_poll_stop (&bindingData->handle.fd);
 	}
-	return 0;
+	return 1;
 }
 
 /**
- * Add file descriptor to IO-Binding
- * @see kdbio.h ElektraIoInterface::addFd
+ * Add file descriptor to I/O binding
+ * @see kdbio.h ::ElektraIoBindingAddFd
  */
 static int ioUvBindingAddFd (ElektraIoInterface * binding, ElektraIoFdOperation * fdOp)
 {
 	UvBindingData * bindingData = newBindingData ();
 	if (bindingData == NULL)
 	{
-		return -1;
+		return 0;
 	}
 	uv_loop_t * loop = (uv_loop_t *)elektraIoBindingGetData (binding);
-	assert (loop != NULL);
+	ELEKTRA_NOT_NULL (loop);
 
 	elektraIoFdSetBindingData (fdOp, bindingData);
 	bindingData->operation.fd = fdOp;
@@ -201,7 +199,7 @@ static int ioUvBindingAddFd (ElektraIoInterface * binding, ElektraIoFdOperation 
 	if (uv_poll_init (loop, &bindingData->handle.fd, elektraIoFdGetFd (fdOp)) != 0)
 	{
 		ELEKTRA_LOG_WARNING ("could not initialize poll");
-		return -1;
+		return 0;
 	}
 
 	// Start polling if enabled
@@ -210,29 +208,29 @@ static int ioUvBindingAddFd (ElektraIoInterface * binding, ElektraIoFdOperation 
 		ioUvBindingUpdateFd (fdOp);
 	}
 
-	return 0;
+	return 1;
 }
 
 /**
- * Remove file descriptor from IO-Binding.
- * @see kdbio.h ElektraIoInterface::removeFd
+ * Remove file descriptor from I/O binding.
+ * @see kdbio.h ::ElektraIoBindingRemoveFd
  */
 static int ioUvBindingRemoveFd (ElektraIoFdOperation * fdOp)
 {
-	assert (elektraIoFdGetBindingData (fdOp) != NULL);
+	ELEKTRA_NOT_NULL (elektraIoFdGetBindingData (fdOp));
 	UvBindingData * bindingData = (UvBindingData *)elektraIoFdGetBindingData (fdOp);
 	uv_poll_stop (&bindingData->handle.fd);
 	uv_close ((uv_handle_t *)&bindingData->handle.fd, ioUvBindingHandleClosedCallback);
-	return 0;
+	return 1;
 }
 
 /**
- * Update timer in IO-Binding.
- * @see kdbio.h ElektraIoInterface::removeFd
+ * Update timer in I/O binding.
+ * @see kdbio.h ::ElektraIoBindingUpdateTimer
  */
 static int ioUvBindingUpdateTimer (ElektraIoTimerOperation * timerOp)
 {
-	assert (elektraIoTimerGetBindingData (timerOp) != NULL);
+	ELEKTRA_NOT_NULL (elektraIoTimerGetBindingData (timerOp));
 	UvBindingData * bindingData = (UvBindingData *)elektraIoTimerGetBindingData (timerOp);
 	if (elektraIoTimerIsEnabled (timerOp))
 	{
@@ -243,22 +241,22 @@ static int ioUvBindingUpdateTimer (ElektraIoTimerOperation * timerOp)
 	{
 		uv_timer_stop (&bindingData->handle.timer);
 	}
-	return 0;
+	return 1;
 }
 
 /**
- * Add timer for IO-Binding.
- * @see kdbio.h ElektraIoInterface::addTimer
+ * Add timer for I/O binding.
+ * @see kdbio.h ::ElektraIoBindingAddTimer
  */
 static int ioUvBindingAddTimer (ElektraIoInterface * binding, ElektraIoTimerOperation * timerOp)
 {
 	UvBindingData * bindingData = newBindingData ();
 	if (bindingData == NULL)
 	{
-		return -1;
+		return 0;
 	}
 	uv_loop_t * loop = (uv_loop_t *)elektraIoBindingGetData (binding);
-	assert (loop != NULL);
+	ELEKTRA_NOT_NULL (loop);
 
 	elektraIoTimerSetBindingData (timerOp, bindingData);
 	bindingData->operation.timer = timerOp;
@@ -269,7 +267,7 @@ static int ioUvBindingAddTimer (ElektraIoInterface * binding, ElektraIoTimerOper
 	if (ret != 0)
 	{
 		ELEKTRA_LOG_WARNING ("could not initialize timer");
-		return -1;
+		return 0;
 	}
 
 	// Start timer if enabled
@@ -278,29 +276,29 @@ static int ioUvBindingAddTimer (ElektraIoInterface * binding, ElektraIoTimerOper
 		ioUvBindingUpdateTimer (timerOp);
 	}
 
-	return 0;
+	return 1;
 }
 
 /**
- * Remove timer from IO-Binding
- * @see kdbio.h ElektraIoInterface::removeTimer
+ * Remove timer from I/O binding
+ * @see kdbio.h ::ElektraIoBindingRemoveTimer
  */
 static int ioUvBindingRemoveTimer (ElektraIoTimerOperation * timerOp)
 {
-	assert (elektraIoTimerGetBindingData (timerOp) != NULL);
+	ELEKTRA_NOT_NULL (elektraIoTimerGetBindingData (timerOp));
 	UvBindingData * bindingData = (UvBindingData *)elektraIoTimerGetBindingData (timerOp);
 	uv_timer_stop (&bindingData->handle.timer);
 	uv_close ((uv_handle_t *)&bindingData->handle.timer, ioUvBindingHandleClosedCallback);
-	return 0;
+	return 1;
 }
 
 /**
- * Update idle operation in IO-Binding
- * @see kdbio.h ElektraIoInterface::updateIdle
+ * Update idle operation in I/O binding
+ * @see kdbio.h ::ElektraIoBindingUpdateIdle
  */
 static int ioUvBindingUpdateIdle (ElektraIoIdleOperation * idleOp)
 {
-	assert (elektraIoIdleGetBindingData (idleOp) != NULL);
+	ELEKTRA_NOT_NULL (elektraIoIdleGetBindingData (idleOp));
 	UvBindingData * bindingData = (UvBindingData *)elektraIoIdleGetBindingData (idleOp);
 	if (elektraIoIdleIsEnabled (idleOp))
 	{
@@ -310,22 +308,22 @@ static int ioUvBindingUpdateIdle (ElektraIoIdleOperation * idleOp)
 	{
 		uv_idle_stop (&bindingData->handle.idle);
 	}
-	return 0;
+	return 1;
 }
 
 /**
- * Add idle operation to IO-Binding
- * @see kdbio.h ElektraIoInterface::addIdle
+ * Add idle operation to I/O binding
+ * @see kdbio.h ::ElektraIoBindingAddIdle
  */
 static int ioUvBindingAddIdle (ElektraIoInterface * binding, ElektraIoIdleOperation * idleOp)
 {
 	UvBindingData * bindingData = newBindingData ();
 	if (bindingData == NULL)
 	{
-		return -1;
+		return 0;
 	}
 	uv_loop_t * loop = (uv_loop_t *)elektraIoBindingGetData (binding);
-	assert (loop != NULL);
+	ELEKTRA_NOT_NULL (loop);
 
 	elektraIoIdleSetBindingData (idleOp, bindingData);
 	bindingData->operation.idle = idleOp;
@@ -336,7 +334,7 @@ static int ioUvBindingAddIdle (ElektraIoInterface * binding, ElektraIoIdleOperat
 	if (ret != 0)
 	{
 		ELEKTRA_LOG_WARNING ("could not initialize idle");
-		return -1;
+		return 0;
 	}
 
 	// Add idle to loop if enabled
@@ -345,38 +343,38 @@ static int ioUvBindingAddIdle (ElektraIoInterface * binding, ElektraIoIdleOperat
 		ioUvBindingUpdateIdle (idleOp);
 	}
 
-	return 0;
+	return 1;
 }
 
 /**
- * Remove idle operation from IO-Binding
- * @see kdbio.h ElektraIoInterface::removeIdle
+ * Remove idle operation from I/O binding
+ * @see kdbio.h ::ElektraIoBindingRemoveIdle
  */
 static int ioUvBindingRemoveIdle (ElektraIoIdleOperation * idleOp)
 {
-	assert (elektraIoIdleGetBindingData (idleOp) != NULL);
+	ELEKTRA_NOT_NULL (elektraIoIdleGetBindingData (idleOp));
 	UvBindingData * bindingData = (UvBindingData *)elektraIoIdleGetBindingData (idleOp);
 	uv_idle_stop (&bindingData->handle.idle);
 	uv_close ((uv_handle_t *)&bindingData->handle.idle, ioUvBindingHandleClosedCallback);
-	return 0;
+	return 1;
 }
 
 /**
  * Cleanup
- * @param  binding IO-Binding
- * @see kdbio.h ElektraIoInterface::cleanup
+ * @param  binding I/O binding
+ * @see kdbio.h ::ElektraIoBindingCleanup
  */
 static int ioUvBindingCleanup (ElektraIoInterface * binding)
 {
-	assert (binding != NULL);
+	ELEKTRA_NOT_NULL (binding);
 	elektraFree (binding);
-	return 0;
+	return 1;
 }
 
 /**
- * Create and initialize a new IO binding.
- * @param  loop Loop to use for IO operations
- * @return      Populated IO interface
+ * Create and initialize a new I/O binding.
+ * @param  loop Loop to use for I/O operations
+ * @return      Populated I/O interface
  */
 ElektraIoInterface * elektraIoUvNew (uv_loop_t * loop)
 {
@@ -385,7 +383,7 @@ ElektraIoInterface * elektraIoUvNew (uv_loop_t * loop)
 		ELEKTRA_LOG_WARNING ("loop was NULL");
 		return NULL;
 	}
-	// Initialize io interface
+	// Initialize I/O interface
 	ElektraIoInterface * binding = elektraIoNewBinding (
 		// file descriptors
 		ioUvBindingAddFd, ioUvBindingUpdateFd, ioUvBindingRemoveFd,

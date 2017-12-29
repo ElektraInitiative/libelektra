@@ -1,4 +1,4 @@
-set(LUA_MODULEPATH "${CMAKE_SWIG_OUTDIR}")
+set (LUA_MODULEPATH "${CMAKE_SWIG_OUTDIR}")
 
 macro (do_lua_test source)
 	get_filename_component (name ${source} NAME)

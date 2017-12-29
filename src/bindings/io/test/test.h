@@ -9,6 +9,7 @@
 #define KDB_IOWRAPPER_TESTSUITE_H_
 
 #include <kdbio.h>
+#include <kdbiotest.h>
 #include <time.h>
 
 unsigned int elektraIoTestSuiteUtilGetCurrentTime (struct timespec * ts);

@@ -1,12 +1,12 @@
 include (${SWIG_USE_FILE})
-include(LibAddMacros)
+include (LibAddMacros)
 
 find_package (Lua 5.1)
 
 if (NOT LUA_FOUND)
-	remove_binding(swig_lua "Lua libs >= 5.2 not found")
-else()
-	message(STATUS "Include Binding swig_lua")
+	exclude_binding (swig_lua "Lua libs >= 5.2 not found")
+else ()
+	add_binding (siwg_lua)
 
 	add_headers (HDR_FILES)
 	add_cppheaders (HDR_FILES)
@@ -43,4 +43,4 @@ else()
 	else ()
 		message (WARNING "Lua interpreter does not match Lua libraries version, needed for SWIG Lua bindings tests. Tests will not be executed.")
 	endif ()
-endif()
+endif ()
