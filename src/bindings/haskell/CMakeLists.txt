@@ -82,7 +82,7 @@ if (NOT BUILD_STATIC)
 			OUTPUT ${HASKELL_TESTS}
 			# they are getting installed to the sandbox, and they get cached to avoid reinstalling every time
 			# disable everything that slows down compilation times of the dependencies to have reasonable travis build times
-			# COMMAND ${CABAL_EXECUTABLE} install --enable-tests --only-dependencies
+			COMMAND ${CABAL_EXECUTABLE} install --enable-tests --only-dependencies
 			COMMAND ${CABAL_EXECUTABLE} ${CABAL_OPTS} --enable-tests configure
 			COMMAND ${CABAL_EXECUTABLE} build
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
@@ -101,24 +101,38 @@ if (NOT BUILD_STATIC)
 				PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 		endif (INSTALL_TESTING)
 
-		add_test (testhaskell_basic "${CMAKE_CURRENT_BINARY_DIR}/dist/build/testhaskell_basic/testhaskell_basic")
-		set_property (TEST testhaskell_basic PROPERTY LABELS bindings)
-		set_property (TEST testhaskell_basic PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
+		add_test (testhaskell_basic
+			"${CMAKE_CURRENT_BINARY_DIR}/dist/build/testhaskell_basic/testhaskell_basic")
+		set_property (TEST testhaskell_basic
+			PROPERTY LABELS bindings)
+		set_property (TEST testhaskell_basic
+			PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
 
-		add_test (testhaskell_basic_optimized "${CMAKE_CURRENT_BINARY_DIR}/dist/build/testhaskell_basic_optimized/testhaskell_basic_optimized")
-		set_property (TEST testhaskell_basic_optimized PROPERTY LABELS bindings)
-		set_property (TEST testhaskell_basic_optimized PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
+		add_test (testhaskell_basic_optimized
+			"${CMAKE_CURRENT_BINARY_DIR}/dist/build/testhaskell_basic_optimized/testhaskell_basic_optimized")
+		set_property (TEST testhaskell_basic_optimized
+			PROPERTY LABELS bindings)
+		set_property (TEST testhaskell_basic_optimized
+			PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
 
 		if (ENABLE_KDB_TESTING)
-			add_test (testhaskell_realworld "${CMAKE_CURRENT_BINARY_DIR}/dist/build/testhaskell_realworld/testhaskell_realworld")
-			set_property (TEST testhaskell_realworld PROPERTY LABELS bindings)
-			set_property (TEST testhaskell_realworld APPEND PROPERTY LABELS kdbtests)
-			set_property (TEST testhaskell_realworld PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
+			add_test (testhaskell_realworld
+				"${CMAKE_CURRENT_BINARY_DIR}/dist/build/testhaskell_realworld/testhaskell_realworld")
+			set_property (TEST testhaskell_realworld
+				PROPERTY LABELS bindings)
+			set_property (TEST testhaskell_realworld 
+				APPEND PROPERTY LABELS kdbtests)
+			set_property (TEST testhaskell_realworld 
+				PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
 
-			add_test (testhaskell_realworld_optimized "${CMAKE_CURRENT_BINARY_DIR}/dist/build/testhaskell_realworld_optimized/testhaskell_realworld_optimized")
-			set_property (TEST testhaskell_realworld_optimized PROPERTY LABELS bindings)
-			set_property (TEST testhaskell_realworld_optimized APPEND PROPERTY LABELS kdbtests)
-			set_property (TEST testhaskell_realworld_optimized PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
+			add_test (testhaskell_realworld_optimized
+				"${CMAKE_CURRENT_BINARY_DIR}/dist/build/testhaskell_realworld_optimized/testhaskell_realworld_optimized")
+			set_property (TEST testhaskell_realworld_optimized 
+				PROPERTY LABELS bindings)
+			set_property (TEST testhaskell_realworld_optimized 
+				APPEND PROPERTY LABELS kdbtests)
+			set_property (TEST testhaskell_realworld_optimized 
+				PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
 		endif (ENABLE_KDB_TESTING)
 	endif (BUILD_TESTING)
 else (NOT BUILD_STATIC)

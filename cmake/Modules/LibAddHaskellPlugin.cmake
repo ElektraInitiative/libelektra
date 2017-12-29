@@ -256,14 +256,15 @@ macro (add_haskell_plugin target)
 			${target} c2hs_haskell
 		ADD_TEST
 	)
-
+	if (TARGET elektra-${target})
 	if (DEPENDENCY_PHASE AND (BUILD_SHARED OR BUILD_FULL))
 		set_target_properties (elektra-${target}
 			PROPERTIES 
 			INSTALL_RPATH "${CMAKE_INSTALL_RPATH};${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/elektra/haskell")
 		# the rpath for the dependencies while we are still in the build tree
 		add_custom_command (TARGET elektra-${target} POST_BUILD
-			COMMAND ${CMAKE_INSTALL_NAME_TOOL} -add_rpath \"${CMAKE_CURRENT_BINARY_DIR}/haskell\" \"$<TARGET_FILE:elektra-${target}>\" 
+			COMMAND ${CMAKE_INSTALL_NAME_TOOL} -add_rpath
+				\"${CMAKE_CURRENT_BINARY_DIR}/haskell\" \"$<TARGET_FILE:elektra-${target}>\" 
 			COMMENT "Adding build-tree rpath for @{target}"
 		)
 		# remove the rpath again after installing - cmake will add the actual rpath
@@ -281,6 +282,7 @@ macro (add_haskell_plugin target)
 		set_property (TEST testmod_${target} PROPERTY ENVIRONMENT
 			"LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}/haskell")
 	endif (ADDTESTING_PHASE AND BUILD_TESTING AND (BUILD_SHARED OR BUILD_FULL))
+	endif (TARGET elektra-${target})
 
 	mark_as_advanced (
 		GHC_FFI_LIB
