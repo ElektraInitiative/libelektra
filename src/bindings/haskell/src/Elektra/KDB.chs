@@ -1,4 +1,13 @@
-module Elektra.KDB (kdbOpen, kdbGet, kdbSet) where
+--
+-- @file
+--
+-- @brief KDB Haskell bindings
+--
+-- @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+-- 
+module Elektra.KDB (
+	kdbOpen, kdbGet, kdbSet
+) where
 
 {#import Elektra.Key#}
 {#import Elektra.KeySet#}

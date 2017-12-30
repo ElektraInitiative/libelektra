@@ -1,3 +1,10 @@
+--
+-- @file
+--
+-- @brief Plugin Haskell bindings
+--
+-- @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+-- 
 module Elektra.Plugin (
   Plugin, PluginStatus (..),
   elektraPluginGetConfig, 
@@ -5,7 +12,7 @@ module Elektra.Plugin (
   elektraPluginOpenWith, elektraPluginCloseWith, 
   elektraPluginGetWith, elektraPluginSetWith,
   elektraPluginErrorWith, elektraPluginCheckConfigWith
-  ) where
+) where
 
 {#import Elektra.Key#}
 {#import Elektra.KeySet#}
@@ -23,13 +30,13 @@ import Control.Monad (join, liftM, liftM2, liftM3)
 
 data PluginStatus = Error | NoUpdate | Success deriving (Show, Eq)
 instance Enum PluginStatus where
-  fromEnum Error = -1
+  fromEnum Error    = -1
   fromEnum NoUpdate = 0
-  fromEnum Success = 1
+  fromEnum Success  = 1
 
   toEnum (-1) = Error
-  toEnum 0 = NoUpdate
-  toEnum 1 = Success
+  toEnum 0    = NoUpdate
+  toEnum 1    = Success
   toEnum unmatched = error ("PluginStatus.toEnum: Cannot match " ++ show unmatched)
 
 -- ***

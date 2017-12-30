@@ -1,3 +1,10 @@
+--
+-- @file
+--
+-- @brief Minimum Haskell plugin example
+--
+-- @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+-- 
 module Elektra.Haskell where
 
 import Elektra.Key

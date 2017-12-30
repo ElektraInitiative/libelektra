@@ -1,3 +1,10 @@
+--
+-- @file
+--
+-- @brief Key and KeySet Haskell binding tests
+--
+-- @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+-- 
 module Main (main) where
 
 import Elektra.Key

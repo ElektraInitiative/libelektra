@@ -1,3 +1,10 @@
+--
+-- @file
+--
+-- @brief KeySet Haskell bindings
+--
+-- @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+-- 
 module Elektra.KeySet (
   KeySet (..), LookupOptions (..), ElektraCursor,
   withKeySet, 
@@ -7,7 +14,7 @@ module Elektra.KeySet (
   ksRewind, ksNext, ksCurrent, ksHead, ksTail, ksList,
   ksGetCursor, ksSetCursor, ksAtCursor,
   ksLookup, ksLookupO, ksLookupByName, ksLookupByNameO
-  ) where
+) where
 
 {#import Elektra.Key#}
 import Control.Monad (liftM, liftM2)

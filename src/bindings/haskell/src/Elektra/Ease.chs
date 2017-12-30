@@ -1,8 +1,15 @@
+--
+-- @file
+--
+-- @brief LibEase Haskell bindings
+--
+-- @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+-- 
 module Elektra.Ease (
   ArrayValidateNameResult (..),
   arrayValidateName, arrayIncName, arrayGetNextKey, arrayGet,
   keyGetRelativeName
-  ) where
+) where
 
 #include <kdbease.h>
 

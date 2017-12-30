@@ -1,3 +1,10 @@
+--
+-- @file
+--
+-- @brief Key Haskell bindings
+--
+-- @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+-- 
 module Elektra.Key (
   Key (..), Namespace (..), ElektraKeyVarargs (KeyMetaName, KeyBinary, KeyComment, KeyOwner),
   keyNew, keyNewWithValue, keyNewWithFlagsAndValue,
@@ -15,7 +22,7 @@ module Elektra.Key (
   keyIsBelow, keyIsDirectBelow, 
   keyRel, keyIsInactive, keyIsBinary, keyIsString, keyPtrNull, 
   ifKey, withKey
-  ) where
+) where
 
 #include <kdb.h>
 import Foreign.Marshal.Alloc (allocaBytes)
