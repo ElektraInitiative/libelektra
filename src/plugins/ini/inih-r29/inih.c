@@ -289,7 +289,17 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 					ELEKTRA_LOG_DEBUG ("Search for delimiter in “%s”", end);
 					ptr = lskip (end + 1);
 					end = strchr (ptr, delim);
-					if (*end == delim) *end = '\0';
+					if (end && *end == delim)
+					{
+						*end = '\0';
+						ELEKTRA_LOG_DEBUG ("Found delimiter – New name is “%s”", end);
+					}
+					else
+					{
+						ELEKTRA_LOG_WARNING ("Unable to find delimiter");
+						error = lineno;
+						break;
+					}
 				}
 				else
 				{
