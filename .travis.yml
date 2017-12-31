@@ -163,7 +163,6 @@ script:
       # Unfortunately the Haskell tests do not work currently:
       # https://github.com/ElektraInitiative/libelektra/issues/1631
       if [[ "$HASKELL" != "ON" ]]; then
-        ninja run_all
-        kdb run_all
+        ninja run_all && kdb run_all
       fi
     fi
