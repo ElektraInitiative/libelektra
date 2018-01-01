@@ -1263,6 +1263,11 @@ static int iniWriteKeySet (FILE * fh, Key * parentKey, KeySet * returned, IniPlu
 				}
 				else
 				{
+					if (removeSectionKey)
+					{
+						keyDel (sectionKey);
+						removeSectionKey = 0;
+					}
 					sectionKey = parentKey;
 					fprintf (fh, "[]\n");
 				}
@@ -1279,7 +1284,6 @@ static int iniWriteKeySet (FILE * fh, Key * parentKey, KeySet * returned, IniPlu
 						sectionKey = keyNew (keyString (parentMeta), KEY_END);
 						if (!keyIsBelow (oldSectionKey, sectionKey))
 						{
-							removeSectionKey = 1;
 							if (keyIsBelow (parentKey, sectionKey))
 							{
 								char * name = getIniName (parentKey, sectionKey);
@@ -1310,11 +1314,21 @@ static int iniWriteKeySet (FILE * fh, Key * parentKey, KeySet * returned, IniPlu
 								else
 									fprintf (fh, "[]\n");
 							}
+
+							if (removeSectionKey)
+							{
+								// remove previous sectionKey
+								keyDel (oldSectionKey);
+							}
+
+							// mark allocated sectionKey to be freed later
+							removeSectionKey = 1;
 						}
 						else
 						{
 							keyDel (sectionKey);
 							sectionKey = oldSectionKey;
+							removeSectionKey = 0;
 						}
 					}
 				}

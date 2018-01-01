@@ -35,6 +35,7 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.8.
 ## Highlights
 
 - New Logo
+- INI as new default configuration file format
 - <<HIGHLIGHT2>>
 - <<HIGHLIGHT3>>
 
@@ -47,6 +48,14 @@ It has a new shape and cooler colors.
 <img src="https://cdn.rawgit.com/ElektraInitiative/libelektra/master/doc/images/logo/logo_color.svg" alt="Elektra" width="150" />
 
 Thanks to <<TODO>>
+
+### INI as new Default Configuration File Format
+
+As promised in the [previous release notes](https://www.libelektra.org/news/0.8.21-release.html) we switched to INI as default format.
+The migration will be smoothly: The `dini` plugin makes sure that old dump files are still being read.
+Only when writing out configuration files, configuration files are converted to INI.
+
+TODO: write a bit about INI syntax+short guide
 
 
 ### <<HIGHLIGHT1>>
@@ -80,6 +89,7 @@ compiled against an older 0.8 version of Elektra will continue to work
 
 These notes are of interest for people maintaining packages of Elektra:
 
+- `dini` is no longer experimental.
 - <<TODO>>
 
 ## Notes for Elektra's Developers
