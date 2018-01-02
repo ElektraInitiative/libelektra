@@ -9,6 +9,7 @@ s/favour/favor/g
 s/generalises/generalizes/g
 s/organisation/organization/g
 s/realise/realize/g
+s/synchronisation/synchronization/g
 s/synchronised/synchronized/g
 
 # ==========
