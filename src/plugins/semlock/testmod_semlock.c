@@ -54,7 +54,7 @@ int main (int argc, char ** argv)
 	printf ("==================\n\n");
 
 	init (argc, argv);
-	
+
 	// check if /dev/shm is a mounted tempfs
 	if (system ("mount | grep /dev/shm | grep -q tmpfs"))
 	{
