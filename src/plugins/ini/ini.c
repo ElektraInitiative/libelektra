@@ -718,6 +718,8 @@ int elektraIniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		errno = errnosave;
 		return -1;
 	}
+	ELEKTRA_LOG_DEBUG ("Opened file %s for reading", keyString (parentKey));
+
 	KeySet * append = ksNew (0, KS_END);
 	CallbackHandle cbHandle;
 	cbHandle.parentKey = parentKey;
@@ -743,7 +745,9 @@ int elektraIniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	cbHandle.array = pluginConfig->array;
 	cbHandle.mergeSections = pluginConfig->mergeSections;
 	cbHandle.pluginConfig = pluginConfig;
+	ELEKTRA_LOG_DEBUG ("Try to parse file");
 	int ret = ini_parse_file (fh, &iniConfig, &cbHandle);
+	ELEKTRA_LOG_DEBUG ("Parsed file");
 	if (cbHandle.collectedComment)
 	{
 		pluginConfig->lastComments = keyDup (cbHandle.collectedComment);

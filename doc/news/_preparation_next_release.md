@@ -98,11 +98,16 @@ These notes are of interest for people developing Elektra:
 
 - <<TODO>>
 
+## Testing
+
+- We added a crash test for the INI plugin that feeds the plugin with problematic input data we determined using [AFL](http://lcamtuf.coredump.cx/afl)
+
 ## Fixes
 
 Many problems were resolved with the following fixes:
 
 - We fixed [internal inconsistency](https://github.com/ElektraInitiative/libelektra/pull/1761) in the CMake code of the [Augeas plugin](https://www.libelektra.org/plugins/augeas)
+-  We fixed various small bugs that could potentially cause the INI plugin to crash
 
 ## Outlook
 

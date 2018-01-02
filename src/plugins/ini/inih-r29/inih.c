@@ -9,6 +9,7 @@ http://code.google.com/p/inih/
 
 #include "inih.h"
 #include <ctype.h>
+#include <kdblogger.h>
 #include <regex.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -116,6 +117,8 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 
 	line = (char *)malloc (INI_MAX_LINE);
 
+	ELEKTRA_LOG_DEBUG ("Allocated memory for line");
+
 	if (!line)
 	{
 		return -2;
@@ -125,6 +128,7 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 	while (fgets (line, INI_MAX_LINE, file) != NULL)
 	{
 		lineno++;
+		ELEKTRA_LOG_DEBUG ("Read line %d with content “%s”", lineno, line);
 
 		start = line;
 #if INI_ALLOW_BOM
@@ -165,6 +169,7 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 		}
 		else if (isSection (line))
 		{
+			ELEKTRA_LOG_DEBUG ("Line contains a section");
 			end = line + (strlen (line) - 1);
 			while (end > start)
 			{
@@ -177,6 +182,21 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 				*end = '\0';
 				strncpy0 (section, start, sizeof (section));
 				*prev_name = '\0';
+				ELEKTRA_LOG_DEBUG ("Found section “%s”", section);
+
+				size_t numberBackslashes = 0;
+				for (char * endSection = section + strlen (section) - 1; endSection >= section && *endSection == '\\';
+				     endSection--)
+				{
+					numberBackslashes++;
+				}
+				if (numberBackslashes % 2 != 0)
+				{
+					ELEKTRA_LOG_WARNING ("Found uneven number of backlashes at end of section");
+					error = lineno;
+					break;
+				}
+
 				if (!config->sectionHandler (user, section) && !error) error = lineno;
 			}
 			else
@@ -219,10 +239,11 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 		}
 		else
 		{
-			// is a key
+			ELEKTRA_LOG_DEBUG ("Line contains a key");
 
 			char * ptr = start;
 			unsigned int assign = 0;
+			ELEKTRA_LOG_DEBUG ("Search for delimiter “%c”", delim);
 			while (*ptr)
 			{
 				if (*ptr == delim)
@@ -234,31 +255,34 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 
 			if (assign == 1)
 			{
+				ELEKTRA_LOG_DEBUG ("Found exactly one delimiter");
 				name = start;
 				end = strchr (start, delim);
 				if (*name == '"')
 				{
+					ELEKTRA_LOG_DEBUG ("Name starts with double quote character");
+					++name;
 					if (*(end - 2) == '"')
 					{
 						*(end - 2) = '\0';
-						++name;
 					}
 					else if (*(end - 1) == '"')
 					{
 						*(end - 1) = '\0';
-						++name;
 					}
 					else
 					{
-						++name;
+						ELEKTRA_LOG_DEBUG ("Did not find closing double quote characters in current line");
 						strncpy0 (prev_name, name, sizeof (prev_name));
 						while (fgets (line, INI_MAX_LINE, file))
 						{
+							ELEKTRA_LOG_DEBUG ("Read continuation line with content “%s”", line);
 							end = line + (strlen (line) - 1);
 							while (end > line && *end != '"')
 								--end;
 							if (*end == '"')
 							{
+								ELEKTRA_LOG_DEBUG ("Found closing double quote character");
 								*(end++) = '\0';
 								strncpy0 (prev_name + strlen (prev_name), line,
 									  sizeof (prev_name) - strlen (prev_name));
@@ -266,18 +290,32 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 							}
 							else
 							{
+								ELEKTRA_LOG_DEBUG ("Found name continuation");
 								strncpy (prev_name + strlen (prev_name), line,
 									 sizeof (prev_name) - strlen (prev_name));
 							}
+							ELEKTRA_LOG_DEBUG ("New extended name is “%s”", prev_name);
 						}
 						name = prev_name;
+						ELEKTRA_LOG_DEBUG ("Name of key is “%s”", name);
 					}
 				}
 				if (*end != delim)
 				{
+					ELEKTRA_LOG_DEBUG ("Search for delimiter in “%s”", end);
 					ptr = lskip (end + 1);
 					end = strchr (ptr, delim);
-					if (*end == delim) *end = '\0';
+					if (end && *end == delim)
+					{
+						*end = '\0';
+						ELEKTRA_LOG_DEBUG ("Found delimiter – New name is “%s”", end);
+					}
+					else
+					{
+						ELEKTRA_LOG_WARNING ("Unable to find delimiter");
+						error = lineno;
+						break;
+					}
 				}
 				else
 				{
@@ -303,8 +341,10 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 			}
 			else if (assign == 0)
 			{
+				ELEKTRA_LOG_DEBUG ("Found no delimiter");
 				if (*start == '"')
 				{
+					ELEKTRA_LOG_DEBUG ("Found initial double quote character");
 					++start;
 					end = line + (strlen (line) - 1);
 					while (end > start && *end != '"')
@@ -316,14 +356,17 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 					}
 					else
 					{
+						ELEKTRA_LOG_DEBUG ("Did not find closing double quote character");
 						strncpy0 (prev_name, start, sizeof (prev_name));
 						while (fgets (line, INI_MAX_LINE, file))
 						{
 							end = line + (strlen (line) - 1);
+							ELEKTRA_LOG_DEBUG ("Read continuation line with content “%s”", line);
 							while (end > line && *end != '"')
 								--end;
 							if (*end == '"')
 							{
+								ELEKTRA_LOG_DEBUG ("Found closing double quote character");
 								*end = '\0';
 								strncpy0 (prev_name + strlen (prev_name), line,
 									  sizeof (prev_name) - strlen (prev_name));
@@ -331,9 +374,11 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 							}
 							else
 							{
+								ELEKTRA_LOG_DEBUG ("Found name continuation");
 								strncpy (prev_name + strlen (prev_name), line,
 									 sizeof (prev_name) - strlen (prev_name));
 							}
+							ELEKTRA_LOG_DEBUG ("New extended name is “%s”", prev_name);
 						}
 						name = prev_name;
 						ptr = end + 1;
@@ -377,6 +422,7 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 			}
 			else
 			{
+				ELEKTRA_LOG_DEBUG ("Found multiple delimiters");
 				ptr = start + 1;
 				while (*ptr)
 				{
@@ -388,6 +434,7 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 				}
 				if (*ptr)
 				{
+					ELEKTRA_LOG_DEBUG ("Found double quote character");
 					char tmpDel[4] = { ' ', delim, ' ', '\0' };
 					end = strstr (ptr, tmpDel);
 					name = NULL;
@@ -448,15 +495,18 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 				}
 				else
 				{
+					ELEKTRA_LOG_DEBUG ("Found no double quote character");
 					rstrip (start);
 					name = start;
 					end = strchr (start, delim);
 					if (!end)
 					{
+						ELEKTRA_LOG_DEBUG ("Found no delimiter");
 						value = NULL;
 					}
 					else
 					{
+						ELEKTRA_LOG_DEBUG ("Found delimiter");
 						if (*end == delim) *end = '\0';
 						rstrip (end - 1);
 						value = lskip (end + 1);

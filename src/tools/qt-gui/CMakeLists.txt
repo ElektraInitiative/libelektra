@@ -56,6 +56,7 @@ add_toolheaders (qt-gui_HDRS)
 file(GLOB qt-gui_SRCS "src/*.cpp" "src/markdownconverter/*.cpp" "src/markdownconverter/template/*.cpp")
 
 set(qt-gui_RSCS	resources.qrc)
+set_property (SOURCE qrc_resources.cpp PROPERTY SKIP_AUTOMOC ON)
 
 qt5_add_resources(RSCS ${qt-gui_RSCS})
 

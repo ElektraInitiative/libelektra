@@ -192,6 +192,44 @@ kdb rm -r user/examples/ini
 sudo kdb umount user/examples/ini
 ```
 
+## Metadata
+
+The INI plugin also supports metadata.
+
+```sh
+sudo kdb mount config.ini user/examples/ini ini
+
+# Add a new key and some metadata
+kdb set user/examples/ini/brand new
+kdb setmeta user/examples/ini/brand description "The Devil And God Are Raging Inside Me"
+kdb setmeta user/examples/ini/brand rationale "Because I Love It"
+
+# The plugin stores metadata as comments inside the INI file
+kdb file /examples/ini | xargs cat
+#> #@META description = The Devil And God Are Raging Inside Me
+#> #@META rationale = Because I Love It
+#> brand = new
+
+# Retrieve metadata
+kdb lsmeta user/examples/ini/brand | grep --invert-match 'internal'
+# rationale
+# description
+
+kdb getmeta user/examples/ini/brand description
+#> The Devil And God Are Raging Inside Me
+kdb getmeta user/examples/ini/brand rationale
+#> Because I Love It
+
+# The plugin ignores some metadata such as `comment`!
+kdb setmeta user/examples/ini/brand comment "Where Art Thou?"
+kdb getmeta user/examples/ini/brand comment
+# STDERR: Metakey not found
+# RET: 2
+
+kdb rm -r user/examples/ini
+sudo kdb umount user/examples/ini
+```
+
 ## Sections
 
 The ini plugin supports 3 different sectioning modes (via `section=`):
