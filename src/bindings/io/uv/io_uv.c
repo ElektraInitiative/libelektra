@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief I/O UV binding
+ * @brief I/O UV binding.
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *

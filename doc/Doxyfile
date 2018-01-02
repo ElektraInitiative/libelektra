@@ -769,7 +769,7 @@ INPUT                  = "@PROJECT_SOURCE_DIR@/src/libs" \
                          "@PROJECT_SOURCE_DIR@/src/include" \
                          "@PROJECT_SOURCE_DIR@/src/bindings/cpp/include" \
                          "@PROJECT_SOURCE_DIR@/src/bindings/jna/libelektra4j/src" \
-                         "@PROJECT_SOURCE_DIR@/src/bindings/io/doc/io_doc.c" \
+                         "@PROJECT_SOURCE_DIR@/src/bindings/io/doc" \
                          "@PROJECT_SOURCE_DIR@/src/plugins" \
                          "@PROJECT_SOURCE_DIR@/src/plugins/doc/doc.h" \
                          "@PROJECT_SOURCE_DIR@/doc" \

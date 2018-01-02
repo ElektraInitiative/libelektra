@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief Tests for I/O UV binding
+ * @brief Tests for I/O UV binding.
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *

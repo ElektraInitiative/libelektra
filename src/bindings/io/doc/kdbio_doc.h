@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief
+ * @brief Declarations for the doc I/O binding.
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */

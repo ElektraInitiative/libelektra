@@ -2,7 +2,7 @@
  * @file
  * @ingroup kdbio
  *
- * @brief I/O example binding
+ * @brief I/O example binding.
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *

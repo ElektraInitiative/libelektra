@@ -36,6 +36,7 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.8.
 
 - New Logo
 - INI as new default configuration file format
+- Bindings for Asynchronous I/O
 - <<HIGHLIGHT2>>
 - <<HIGHLIGHT3>>
 
@@ -58,7 +59,25 @@ Only when writing out configuration files, configuration files are converted to 
 TODO: write a bit about INI syntax+short guide
 
 
-### <<HIGHLIGHT1>>
+### Bindings for Asynchronous I/O
+
+New bindings for asynchronous I/O called "I/O bindings" have been added.
+These bindings allow Elektra's plugins and other parts to perform
+asynchronous operations.
+
+I/O bindings are opt-in for application developers.
+New features of Elektra that take advantage of I/O bindings will have fallbacks
+where viable.
+These fallbacks will use synchronous I/O thus keeping the status quo.
+For example we plan to add a notification system that facilitates I/O bindings.
+Plugins that send notifications will have synchronous fallbacks while receiving
+plugins are asynchronous only.
+
+For more details see the preview tutorial
+[doc/tutorials/notifications.md](https://github.com/ElektraInitiative/libelektra/tree/master/doc/tutorials/notifications.md)
+
+This release includes an experimental I/O binding for [uv](http://libuv.org/).
+The interface for I/O bindings is currently experimental.
 
 
 ### <<HIGHLIGHT2>>
@@ -85,12 +104,26 @@ As always, the ABI and API of kdb.h is fully compatible, i.e. programs
 compiled against an older 0.8 version of Elektra will continue to work
 (ABI) and you will be able to recompile programs without errors (API).
 
+Futhermore:
+
+- Added public headerfiles `kdbio.h`, `kdbiotest.h`.
+- Added private headerfiles `kdbioprivate.h`.
+
 ## Notes for Maintainer
 
 These notes are of interest for people maintaining packages of Elektra:
 
 - `dini` is no longer experimental.
+- BINDINGS syntax is now similar to PLUGINS.
+  By default now all MAINTAINED bindings except EXPERIMENTAL and DEPRECATED are included.
+  For more details see
+  [/doc/COMPILE.md](https://github.com/ElektraInitiative/libelektra/tree/master/doc/COMPILE.md).
 - <<TODO>>
+
+The following files are new:
+
+- Libs: `libelektra-io.so`, `libelektra-io-uv.so`
+- <TOPIC>: <FILELIST>
 
 ## Notes for Elektra's Developers
 
@@ -149,5 +182,3 @@ For more information, see [https://libelektra.org](https://libelektra.org)
 
 Best regards,
 [Elektra Initiative](https://www.libelektra.org/developers/authors)
-
-
