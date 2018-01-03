@@ -47,7 +47,7 @@ It has a new shape and cooler colors.
 
 <img src="https://cdn.rawgit.com/ElektraInitiative/libelektra/master/doc/images/logo/logo_color.svg" alt="Elektra" width="150" />
 
-Thanks to <<TODO>>
+Thanks to Philipp Frei
 
 ### INI as new Default Configuration File Format
 
