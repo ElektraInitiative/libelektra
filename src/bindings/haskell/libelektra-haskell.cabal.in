@@ -9,7 +9,7 @@ maintainer:          e1528532@libelektra.org
 copyright:           libelektra.org
 category:            binding
 build-type:          Custom
-cabal-version:       >=1.10
+cabal-version:       >=1.24
 
 @CABAL_CUSTOM_SETUP@
 

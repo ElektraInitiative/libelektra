@@ -79,14 +79,14 @@ if (GHC-PKG_EXECUTABLE)
 	set (CABAL_DYNLIB_PATH "${CABAL_LOCATION}/lib/${GHC_DYNAMIC_LIBRARY_DIR}")
 
 	# dependencies for the default cmake Setup.hs
-	set (CABAL_CUSTOM_TARGET
+	set (CABAL_CUSTOM_SETUP
 "custom-setup
   setup-depends:
-    Cabal      >= 2.0  && < 2.1,
-    containers >= 0.5  && < 0.6,
+    Cabal      >= 1.24 && < 2.1,
+    containers >= 0.4  && < 0.6,
     base       >= 4.7  && < 5  ,
-    directory  >= 1.2  && < 1.4,
-    process    >= 1.6  && < 1.7,
+    directory  >= 1.1  && < 1.4,
+    process    >= 1.2  && < 1.7,
     filepath   >= 1.3  && < 1.5")
 
 	# By using cabal sandboxes we can install hspec and QuickCheck to the sandbox without

@@ -50,12 +50,13 @@ if (NOT BUILD_STATIC)
 		"${CMAKE_CURRENT_SOURCE_DIR}/test/ElektraRealWorld.hs"
 		"${CMAKE_SOURCE_DIR}/src/plugins/haskell/Setup.hs"
 	)
-
+	file (WRITE "${CMAKE_CURRENT_BINARY_DIR}/cabalOptionalDependencies.cmake"
+		"execute_process (COMMAND ${CABAL_EXECUTABLE} install --only-dependencies)")
 	execute_process (COMMAND ${CABAL_EXECUTABLE} sandbox init --sandbox ${CMAKE_BINARY_DIR}/.cabal-sandbox 
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} OUTPUT_QUIET)
 	add_custom_command (
 		OUTPUT ${BINDING_HASKELL_NAME}
-		# COMMAND ${CABAL_EXECUTABLE} install --only-dependencies
+		COMMAND ${CMAKE_COMMAND} -P "${CMAKE_CURRENT_BINARY_DIR}/cabalOptionalDependencies.cmake"
 		COMMAND ${CABAL_EXECUTABLE} ${CABAL_OPTS} configure
 		COMMAND ${CABAL_EXECUTABLE} build
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
@@ -78,11 +79,12 @@ if (NOT BUILD_STATIC)
 			"${CMAKE_CURRENT_BINARY_DIR}/dist/build/testhaskell_realworld/testhaskell_realworld"
 			"${CMAKE_CURRENT_BINARY_DIR}/dist/build/testhaskell_realworld_optimized/testhaskell_realworld_optimized"
 		)
+		file (WRITE "${CMAKE_CURRENT_BINARY_DIR}/cabalOptionalDependencies.cmake"
+			"execute_process (COMMAND ${CABAL_EXECUTABLE} install --enable-tests --only-dependencies)")
 		add_custom_command (
 			OUTPUT ${HASKELL_TESTS}
-			# they are getting installed to the sandbox, and they get cached to avoid reinstalling every time
-			# disable everything that slows down compilation times of the dependencies to have reasonable travis build times
-			COMMAND ${CABAL_EXECUTABLE} install --enable-tests --only-dependencies
+			# everything is getting installed to the sandbox, and gets cached to avoid reinstalling every time
+			COMMAND ${CMAKE_COMMAND} -P "${CMAKE_CURRENT_BINARY_DIR}/cabalOptionalDependencies.cmake"
 			COMMAND ${CABAL_EXECUTABLE} ${CABAL_OPTS} --enable-tests configure
 			COMMAND ${CABAL_EXECUTABLE} build
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}

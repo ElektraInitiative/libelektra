@@ -20,18 +20,23 @@ import System.Exit          (exitFailure)
 import System.Process       (readProcess)
 import System.Directory     (createDirectoryIfMissing)
 
-import qualified Data.Set                              as S
-import qualified Distribution.Simple.Compiler          as C
-import qualified Distribution.Simple.Setup             as C
-import qualified Distribution.Types.LocalBuildInfo     as C
-import qualified Distribution.Types.PackageDescription as C
-import qualified Distribution.Package                  as C
-import qualified Distribution.Simple.LocalBuildInfo    as C
-import qualified Distribution.Simple.PackageIndex      as C
-import qualified Distribution.Text                     as C
-import qualified Distribution.Simple.Program           as C
-import qualified Distribution.Verbosity                as V
-import qualified Distribution.InstalledPackageInfo     as IPI
+import qualified Data.Set                                   as S
+import qualified Distribution.Simple.Compiler               as C
+import qualified Distribution.Simple.Setup                  as C
+#if MIN_VERSION_Cabal(2,0,0)      
+import qualified Distribution.Types.LocalBuildInfo          as C
+import qualified Distribution.Types.ComponentLocalBuildInfo as C
+import qualified Distribution.Types.PackageDescription      as C
+#else     
+import qualified Distribution.PackageDescription            as C
+import qualified Distribution.Simple.LocalBuildInfo         as C
+#endif      
+import qualified Distribution.Package                       as C
+import qualified Distribution.Simple.PackageIndex           as C
+import qualified Distribution.Text                          as C
+import qualified Distribution.Simple.Program                as C
+import qualified Distribution.Verbosity                     as V
+import qualified Distribution.InstalledPackageInfo          as IPI
 
 #if MIN_VERSION_Cabal(1,24,0)
 type PackageIndex a = C.PackageIndex IPI.InstalledPackageInfo
@@ -110,9 +115,16 @@ findTransitiveDependencies pkgIdx initial = go S.empty (S.toList initial)
       | otherwise        = maybe (go set qs) (go (S.insert q set) . (++ qs) . IPI.depends)
                          $ C.lookupUnitId pkgIdx q
 
+getComponents :: C.LocalBuildInfo -> [C.ComponentLocalBuildInfo]
+#if MIN_VERSION_Cabal(2,0,0)
+getComponents = toList . C.componentGraph
+#else
+getComponents = map (\(_, clbi, _) -> clbi) . C.componentsConfigs
+#endif
+
 getDependencyInstalledPackageIds :: C.LocalBuildInfo -> Set C.UnitId
 getDependencyInstalledPackageIds lbi = findTransitiveDependencies (C.installedPkgs lbi) $
-  S.fromList [ ipId | componentLbi <- toList (C.componentGraph lbi)
+  S.fromList [ ipId | componentLbi <- getComponents lbi
                     , (ipId, _)    <- C.componentPackageDeps componentLbi]
 
 getDependencyInstalledPackageInfos :: C.LocalBuildInfo -> [InstalledPackageInfo]
@@ -125,7 +137,11 @@ showLibrary lbi ipi = fromJust (getLibraryDir lbi ipi) ++ "/libHS" ++ getLibrary
 getLibraryDir :: C.LocalBuildInfo -> InstalledPackageInfo -> Maybe String
 getLibraryDir lbi ipi = listToMaybe $ case buildType lbi of
   Static  -> filter (getLibraryName ipi `isSuffixOf`) $ IPI.libraryDirs ipi
+  #if MIN_VERSION_Cabal(1,24,1)
   Dynamic -> IPI.libraryDynDirs ipi
+  #else
+  Dynamic -> IPI.libraryDirs ipi
+  #endif
 
 getLibraryName :: InstalledPackageInfo -> String
 getLibraryName = C.display . IPI.installedUnitId
