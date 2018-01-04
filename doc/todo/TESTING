@@ -76,6 +76,10 @@ trailingslashes in TMPDIR?
 - using kdb shell
 - using kdb mount spec
 
+## bindings
+
+- swig_ruby excluded due to failing tests (see #1770)
+
 
 == ABI compatibility tests ==
 
