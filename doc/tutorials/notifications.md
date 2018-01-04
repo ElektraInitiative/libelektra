@@ -39,7 +39,7 @@ feeds back configuration changes from within the application.
 When a configuration key is changed Elektra can generate change notifications
 that allow applications to process those changes.
 Developers can choose whether and how they want to receive and handle those
-notifications but not whether notifications are sent.
+notifications but not whether notifications are sent or which transport is used.
 How notifications are sent is specified in the *notification configuration* by
 the system operator.
 
@@ -66,7 +66,7 @@ For programs without time constraints (e.g. CLI programs) this may not be
 important, but for GUIs or network services this will have negative impact.
 
 Since many different I/O management libraries exist (e.g. libuv, glib or libev)
-the transport plugins use the I/O-interface for their I/O tasks.
+the transport plugins use the I/O interface for their I/O operations.
 Each I/O management library needs its own I/O binding.
 Developers can also create their own I/O binding for the I/O management library
 of their choice.
@@ -135,26 +135,20 @@ KDB * repo;
 
 //  ... initialization of KDB and I/O binding
 
-Key * someKey = keyNew ("/sw/myorg/myprogram/#1/current/somekey", KEY_END);
-int someKeyValue;
+Key * key = keyNew ("/sw/myorg/myprogram/#1/current/value", KEY_END);
+int keyValue;
 
-elektraNotificationRegisterInt (repo, &someKeyValue, someKey);
+elektraNotificationRegisterInt (repo, &keyValue, key);
 
 // repeatedly print variable
 while (1) {
-	KeySet * ks = ksNew (10, KS_END);
-	kdbGet (repo, ks, someKey);
-	Key * k = ksLookupByName (ks, "/sw/myorg/myprogram/#1/current/somekey", 0);
-	if (k != 0)
-	{
-		printf ("value is %s\n", keyString (k));
-	}
+	printf ("value is %d\n", keyValue);
 
 	sleep(2);
 }
 ```
 
-The variable `someKeyValue` will be automatically updated if the key in the
+The variable `keyValue` will be automatically updated if the key in the
 program above is changed by another program (e.g. by using the `kdb` CLI
 command).
 
@@ -179,9 +173,9 @@ changed key needs further processing.
 #define ANSI_COLOR_RED			"\x1b[31m"
 #define ANSI_COLOR_GREEN		"\x1b[32m"
 
-void setTerminalColor (Key * someKey)
+void setTerminalColor (Key * color)
 {
-	char* value = keyString (someKey);
+	char* value = keyString (color);
 
 	if (strcmp (value, "red") == 0)
 	{
@@ -199,18 +193,18 @@ int main ()
 
 	// ... initialization of KDB and I/O binding
 
-	Key * someKey = keyNew ("/sw/myorg/myprogram/#1/current/somekey", KEY_END);
+	Key * color = keyNew ("/sw/myorg/myprogram/#1/current/color", KEY_END);
 
 	// Retrieve key from kdb
 	KeySet * ks = ksNew (10, KS_END);
-	kdbGet (repo, ks, someKey);
-	Key * key = ksLookupByName (ks, "/sw/myorg/myprogram/#1/current/somekey", 0);
+	kdbGet (repo, ks, color);
+	Key * key = ksLookupByName (ks, "/sw/myorg/myprogram/#1/current/color", 0);
 
 	// Initialization
 	setTerminalColor (key);
 
 	// Re-Initialize on key changes
-	elektraNotificationRegisterCallback(repo, &setTerminalColor, someKey);
+	elektraNotificationRegisterCallback(repo, &setTerminalColor, color);
 
 	// ... start loop, etc.
 }

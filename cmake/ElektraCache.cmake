@@ -37,7 +37,8 @@ set (ADDED_DIRECTORIES "" CACHE STRING ${PLUGINS_DOC} FORCE)
 
 set (BINDINGS_DOC "Which bindings should be added? ALL for all available, DEFAULT for minimal set, see doc/COMPILE.md.")
 
-set(BINDINGS "MAINTAINED;-EXPERIMENTAL;-DEPRECATED" CACHE STRING ${BINDINGS_DOC})
+# TODO include swig_ruby when issue #1770 is resolved (also in scripts/configure-*)
+set(BINDINGS "MAINTAINED;-EXPERIMENTAL;-DEPRECATED;-swig_ruby" CACHE STRING ${BINDINGS_DOC})
 
 set (INFO_BINDINGS_DOC "only for informational purposes. Modify BINDINGS to change the list.")
 set (ADDED_BINDINGS_DOC "List of bindings already added, ${INFO_BINDINGS_DOC}")

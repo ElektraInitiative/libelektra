@@ -13,7 +13,7 @@
 
 ## Usage
 
-Use the `elektraIoUvNew` function to get a new binding.
+Use the `elektraIoUvNew` function to get a new I/O binding instance.
 Make sure to build your application with `elektra-io-uv`, `elektra-io` and `uv` or
 simply use `pkg-config --cflags --libs elektra-io-uv`.
 

@@ -60,6 +60,7 @@
  * For brevity only file descriptor operation variants are listed here.
  * Variants for timer and idle operations are called `elektraIoTimer*` and
  * `elektraIoIdle*`.
+ * All `elektraIo*` utility functions are provided by the `elektra-io` library.
  *
  * File desciptor watch operations have the following additional properties:
  * - fd (elektraIoFdGetFd();set by elektraIoNewFdOperation()) file descriptor
@@ -169,6 +170,13 @@
  *
  * At least you need to free the pointer returned from
  * elektraIoNewBinding() in your I/O binding's entry point.
+ *
+ * @par Linking
+ *
+ * Make sure to link against the `elektra-io` library for the `elektraIo*`
+ * utility functions that create bindings or operations and allow access to
+ * their fields.
+ * This library is available via `pkg-config`.
  *
  * @par Testing
  *
