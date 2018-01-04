@@ -54,10 +54,13 @@ To build Debian Packages from the source you might want to use:
 
 ## macOS
 
-A tap for [Homebrew](http://brew.sh) is available [here](http://github.com/ElektraInitiative/homebrew-elektra). To install Elektra using this tap just use the two shell commands listed below.
+You can install Elektra using [Homebrew](http://brew.sh) via the shell command:
 
-	brew tap ElektraInitiative/homebrew-elektra
-	brew install elektra
+```sh
+brew install elektra
+```
+
+. We also provide a tap containing a more elaborate formula [here](http://github.com/ElektraInitiative/homebrew-elektra).
 
 ## Generic
 
