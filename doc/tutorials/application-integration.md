@@ -281,4 +281,4 @@ integration.
 
 ## SEE ALSO
 
-- [for advanced techniques e.g. transformations](https://www.libelektra.org/ftp/papers/kps2015sharing.pdf)
+- [for advanced techniques e.g. transformations](https://www.libelektra.org/ftp/elektra/publications/raab2015sharing.pdf)
