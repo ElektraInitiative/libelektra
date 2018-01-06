@@ -99,6 +99,7 @@ Then one of the admins (sorted by activity):
 - @sanssecours
 - @markus2330
 - @beku
+- @BernhardDenner
 - @fberlakovich
 - @manuelm
 
@@ -150,6 +151,7 @@ After being added to whitelist you can trigger buildjobs by saying:
 * jenkins build [homepage](https://build.libelektra.org/job/elektra-homepage/) please
 * jenkins build [gcc-configure-debian-stretch-minimal](https://build.libelektra.org/job/elektra-gcc-configure-debian-stretch-minimal/) please
 * jenkins build [gcc-configure-debian-jessie-minimal](https://build.libelektra.org/job/elektra-gcc-configure-debian-jessie-minimal/) please
+* jenkins build [docker](https://build.libelektra.org/job/test-docker/) please
 
 ### Run All Tests
 
