@@ -5,20 +5,19 @@
 
 For the following Linux Distributions 0.8 packages are available:
 
- - [Fedora](https://admin.fedoraproject.org/pkgdb/package/elektra/)
- - [Gentoo](http://packages.gentoo.org/package/app-admin/elektra)
  - [Arch Linux](https://aur.archlinux.org/packages/elektra/)
- - [Debian](https://packages.debian.org/de/jessie/libelektra4)
- - [Ubuntu](https://launchpad.net/ubuntu/+source/elektra)
  - [Openwrt](https://github.com/openwrt/packages/tree/master/libs/elektra)
  - [OpenSuse](https://software.opensuse.org/package/elektra)
- - [PLDLinux](http://sophie.zarb.org/rpms/763d9e52beefaa15b1363d11d836b65c)
- - [LEDE](https://lede-project.org/packages/pkgdata/libelektra-core?s[]=elektra)
+ - [Debian](https://packages.debian.org/de/jessie/libelektra4)
+ - [Ubuntu](https://launchpad.net/ubuntu/+source/elektra)
+ - [Gentoo](http://packages.gentoo.org/package/app-admin/elektra)
  - [Linux Mint](https://community.linuxmint.com/software/view/elektra-bin)
+ - [ALT Linux](https://pkgs.org/download/elektra)
 
-Available, but not up-to-date (Version 0.7):
+Available, but not up-to-date:
 
  - [Mageia](http://svnweb.mageia.org/packages/updates/1/elektra/)
+ - [Fedora](https://admin.fedoraproject.org/pkgdb/package/elektra/)
 
 For [OpenSUSE, CentOS, Fedora, RHEL and SLE](https://build.opensuse.org/package/show/home:bekun:devel/elektra)
 Kai-Uwe Behrmann kindly provides packages [for download](http://software.opensuse.org/download.html?project=home%3Abekun%3Adevel&package=libelektra4).
