@@ -305,13 +305,11 @@ To specify specific tools you can use, e.g.:
 
 #### Bindings
 
-Bindings are used in the same way as `TOOLS`.
-For example, to include all non-experimental bindings you can use:
+Bindings are used in a like as `PLUGINS`.
+For example, to build all maintainted bindings and exclude experimental bindings
+you can use:
 
-    -DBINDINGS=ALL
-
-> Note that the behavior is different to PLUGINS
-> which includes all PLUGINS if ALL is used.
+    -DBINDINGS=MAINTAINED;-EXPERIMENTAL
 
 Note that the same languages are sometimes available over GI and SWIG.
 In this case, the SWIG bindings are preferred.
@@ -321,20 +319,22 @@ The SWIG executable may be specified with:
 
 If this option is not used, cmake will find the first occurrence of
 `swig` in your environment's path.
-Even with `ALL` GI bindings (deprecated) and gsettings (experimental) are not included.
-To include them, use:
+To build GI bindings (deprecated) and gsettings (experimental) use:
 
-    -DBINDINGS="ALL;GI;gsettings"
+    -DBINDINGS="GI;gsettings"
 
 Some bindings provide different APIs (and not a different language), e.g:
 
 - `gsettings`
 - `INTERCEPT` with `intercept_fs` and `intercept_env`
+- `IO` with `io_uv`
 
 To not add such APIs, but only `swig` bindings and `cpp`, you can use:
 
     -DBINDINGS="SWIG;cpp"
 
+For a list of available bindings see
+[binding's README.md](/src/bindings/README.md).
 
 #### CMAKE_BUILD_TYPE
 

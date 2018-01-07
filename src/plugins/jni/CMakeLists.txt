@@ -1,4 +1,6 @@
 include (LibAddMacros)
+include (LibAddBinding)
+
 if (DEPENDENCY_PHASE)
 	if (APPLE)
 		execute_process (COMMAND "/usr/libexec/java_home" OUTPUT_VARIABLE JAVA_HOME)
@@ -46,11 +48,11 @@ add_plugin(jni
 	)
 
 if (ADDTESTING_PHASE)
-	list (FIND BINDINGS "jna" FINDEX)
+	check_binding_was_added ("jna" BINDING_WAS_ADDED)
 	find_program (MAVEN_EXECUTABLE mvn)
 
 	if (ENABLE_BROKEN_TESTS)
-	if (BUILD_TESTING AND FINDEX GREATER -1 AND MAVEN_EXECUTABLE)
+	if (BUILD_TESTING AND BINDING_WAS_ADDED AND MAVEN_EXECUTABLE)
 		add_plugintest(jni MEMLEAK)
 		include_directories (${CMAKE_CURRENT_BINARY_DIR})
 

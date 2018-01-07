@@ -1,3 +1,9 @@
+- infos =
+- infos/author = Armin Wurzinger <e1528532@student.tuwien.ac.at>
+- infos/status = experimental maintained
+- infos/provides =
+- infos/description =
+
 # Haskell Bindings
 A full haskell binding using c2hs.
 

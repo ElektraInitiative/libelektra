@@ -10,6 +10,8 @@ if (Java_JAVAC_EXECUTABLE)
 # as 9.x.x > 1.8 and 1.8.x > 1.8 and 1.9.x > 1.8
 if ((${Java_VERSION} VERSION_GREATER "1.8.0") OR (${Java_VERSION} VERSION_EQUAL "1.8.0"))
 if (MAVEN_EXECUTABLE) # set by find_program
+	add_binding (jna)
+
 	file (
 		MAKE_DIRECTORY libelektra4j
 	)
@@ -42,7 +44,7 @@ if (MAVEN_EXECUTABLE) # set by find_program
 		WORKING_DIRECTORY libelektra4j
 		DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/libelektra4j/pom.xml"
 	)
-	add_custom_target(jna ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/libelektra4j/target/libelektra4j-${KDB_VERSION}.jar")
+	add_custom_target (jna ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/libelektra4j/target/libelektra4j-${KDB_VERSION}.jar")
 
 	install (
 		FILES
@@ -80,13 +82,13 @@ if (MAVEN_EXECUTABLE) # set by find_program
 		)
 	endif (NOT ENABLE_ASAN)
 else (MAVEN_EXECUTABLE)
-	remove_binding (jna "Maven Executable not found, but required to build the jna bindings")
+	exclude_binding (jna "Maven Executable not found, but required to build the jna bindings")
 endif (MAVEN_EXECUTABLE)
 else ((${Java_VERSION} VERSION_GREATER "1.8.0") OR (${Java_VERSION} VERSION_EQUAL "1.8.0"))
-	remove_binding (jna "At least Java 8 is required, but ${Java_VERSION_STRING} was found")
+	exclude_binding (jna "At least Java 8 is required, but ${Java_VERSION_STRING} was found")
 endif ((${Java_VERSION} VERSION_GREATER "1.8.0") OR (${Java_VERSION} VERSION_EQUAL "1.8.0"))
 else (Java_JAVAC_EXECUTABLE)
-	remove_binding (jna "javac (java compiler) not found, which is only included in a jdk")
+	exclude_binding (jna "javac (java compiler) not found, which is only included in a jdk")
 endif (Java_JAVAC_EXECUTABLE)
 
 mark_as_advanced (

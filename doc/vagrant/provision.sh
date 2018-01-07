@@ -27,6 +27,7 @@ apt-get -qq update && apt-get -qq -y install \
     libdbus-1-dev \
     libpcre3-dev \
     libpcre++-dev \
+    libuv1-dev \
     checkinstall \
 && rm -rf /var/lib/apt/lists/* \
 && apt-get clean

@@ -1,0 +1,14 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+exec_prefix=${prefix}/bin
+libdir=${prefix}/lib@LIB_SUFFIX@
+includedir=${prefix}/include/@TARGET_INCLUDE_FOLDER@
+plugindir=${prefix}/lib@LIB_SUFFIX@/@TARGET_PLUGIN_FOLDER@
+tool_execdir=${prefix}/@TARGET_TOOL_EXEC_FOLDER@
+templatedir=${prefix}/@TARGET_TEMPLATE_FOLDER@
+
+Name: libelektra-io-uv
+Description: Elektra I/O binding using uv
+Requires: libuv elektra-io
+Version: @KDB_VERSION@
+Libs: -L${libdir} -l@IO_UV_LIBRARY@
+Cflags: -I${includedir}

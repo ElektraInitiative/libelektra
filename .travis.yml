@@ -81,6 +81,7 @@ before_install:
       brew install gobject-introspection
       brew install libgcrypt
       brew install libgit2
+      brew install libuv
       brew install lua
       brew install openssl
       brew install python
@@ -106,6 +107,7 @@ before_install:
       sudo apt-get install ninja-build
       sudo apt-get install libboost-all-dev
       sudo apt-get install libyaml-cpp-dev
+      sudo apt-get install libuv-dev
     fi
 
 #
@@ -125,7 +127,7 @@ before_script:
     if [[ "$TRAVIS_OS_NAME" == "linux" && "$CC" == "clang" || "$TRAVIS_OS_NAME" == "osx" && "${CC:0:3}" == "gcc" ]]; then
       CMAKE_OPT+=("-DCOMMON_FLAGS=-Werror")
     fi
-  - if [[ $HASKELL == ON ]]; then bindings="ALL;haskell"; fi
+  - if [[ $HASKELL == ON ]]; then bindings="haskell"; fi
   - |
     if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
       python2_ver=$(python2 -c 'import sys; print(".".join(map(str, sys.version_info[:2])))') &&                  \
@@ -141,7 +143,7 @@ before_script:
     -GNinja
     -DBUILD_STATIC=OFF
     -DPLUGINS="${plugins:-ALL;-jni}"
-    -DBINDINGS="${bindings:-ALL}"
+    -DBINDINGS="${bindings}"
     -DENABLE_DEBUG=ON
     -DTOOLS=ALL
     -DINSTALL_SYSTEM_FILES=OFF

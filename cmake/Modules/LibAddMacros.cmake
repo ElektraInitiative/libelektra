@@ -278,14 +278,6 @@ macro (remove_plugin name reason)
 endmacro (remove_plugin)
 
 
-macro (remove_binding name reason)
-	set (TMP ${BINDINGS})
-	message (STATUS "Exclude Binding ${name} because ${reason}")
-	list (REMOVE_ITEM TMP ${name})
-	set (BINDINGS ${TMP} CACHE STRING ${BINDINGS_DOC} FORCE)
-endmacro (remove_binding)
-
-
 macro (remove_tool name reason)
 	set (TMP ${TOOLS})
 	message (STATUS "Exclude tool ${name} because ${reason}")

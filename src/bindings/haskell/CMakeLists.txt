@@ -1,7 +1,9 @@
 find_package (Haskell)
 
-if (HASKELL_FOUND) 
+if (HASKELL_FOUND)
 if (NOT BUILD_STATIC)
+
+	add_binding (haskell)
 
 	set (CABAL_INCLUDE_DIRS "\"${CMAKE_SOURCE_DIR}/src/include\", \"${CMAKE_BINARY_DIR}/src/include\"")
 
@@ -32,7 +34,7 @@ if (NOT BUILD_STATIC)
 		set (ELEKTRA_DEPENDENCY "elektra-static;")
 	endif ()
 	string (REPLACE ";" " " CABAL_ELEKTRA_DEPENDENCY "${ELEKTRA_DEPENDENCY}")
-	
+
 	# configure include paths
 	configure_file (
 		"${CMAKE_CURRENT_SOURCE_DIR}/libelektra-haskell.cabal.in"
@@ -56,7 +58,7 @@ if (NOT BUILD_STATIC)
 	)
 	add_custom_target (c2hs_haskell ALL DEPENDS "${BINDING_HASKELL_NAME}")
 	if (BUILD_SHARED OR BUILD_FULL)
-		add_custom_command(TARGET c2hs_haskell POST_BUILD
+		add_custom_command (TARGET c2hs_haskell POST_BUILD
 	    	COMMAND ${CMAKE_COMMAND} -E copy
 	    		"${BINDING_HASKELL_NAME}"
 	    		"${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/"
@@ -70,7 +72,7 @@ if (NOT BUILD_STATIC)
 		# the tests need the elektra library already built - while for the haskell plugins it doesn't matter
 		# as a static build depends on the plugins but not on the bindings, this is the way we can resolve the
 		# circular dependency by treating the tests separately
-		set (HASKELL_TESTS 
+		set (HASKELL_TESTS
 			"${CMAKE_CURRENT_BINARY_DIR}/dist/build/testhaskell_basic/testhaskell_basic"
 			"${CMAKE_CURRENT_BINARY_DIR}/dist/build/testhaskell_basic_optimized/testhaskell_basic_optimized"
 			"${CMAKE_CURRENT_BINARY_DIR}/dist/build/testhaskell_realworld/testhaskell_realworld"
@@ -127,8 +129,8 @@ if (NOT BUILD_STATIC)
 		endif (ENABLE_KDB_TESTING)
 	endif (BUILD_TESTING)
 else (NOT BUILD_STATIC)
-	remove_binding (haskell "BUILD_STATIC is currently not compatible with the haskell bindings")
+	exclude_binding (haskell "BUILD_STATIC is currently not compatible with the haskell bindings")
 endif (NOT BUILD_STATIC)
 else (HASKELL_FOUND)
-	remove_binding (haskell ${HASKELL_NOTFOUND_INFO})
+	exclude_binding (haskell ${HASKELL_NOTFOUND_INFO})
 endif (HASKELL_FOUND)

@@ -1,21 +1,36 @@
 set (SWIG_COMPILE_FLAGS "-Wno-shadow -Wno-old-style-cast -Wno-unused-variable")
 
-list (FIND BINDINGS "swig_python2" FINDEX)
-if (FINDEX GREATER -1)
+find_swig ()
+if (NOT SWIG_FOUND)
+	exclude_binding (swig "neither swig2/3 found. Please install swig3.0 and set -DSWIG_EXECUTABLE=")
+	return ()
+endif ()
+
+check_binding_included ("swig_python2" IS_INCLUDED SUBDIRECTORY "swig/python2")
+if (IS_INCLUDED)
 	add_subdirectory (python2)
 endif ()
 
-list (FIND BINDINGS "swig_python" FINDEX)
-if (FINDEX GREATER -1)
+check_binding_included ("swig_python" IS_INCLUDED SUBDIRECTORY "swig/python")
+if (IS_INCLUDED)
 	add_subdirectory (python)
+else ()
+	# rename swig_python3 to swig_python - TODO remove sometime in the future
+	check_binding_included ("swig_python3" IS_INCLUDED SUBDIRECTORY "swig/python" SILENT)
+	if (IS_INCLUDED)
+		exclude_binding ("swig_python3" "swig_python3 has been renamed to swig_python")
+		add_subdirectory (python)
+	endif ()
 endif ()
 
-list (FIND BINDINGS "swig_lua" FINDEX)
-if (FINDEX GREATER -1)
+
+
+check_binding_included ("swig_lua" IS_INCLUDED SUBDIRECTORY "swig/lua")
+if (IS_INCLUDED)
 	add_subdirectory (lua)
 endif ()
 
-list (FIND BINDINGS "swig_ruby" FINDEX)
-if (FINDEX GREATER -1)
+check_binding_included ("swig_ruby" IS_INCLUDED SUBDIRECTORY "swig/ruby")
+if (IS_INCLUDED)
 	add_subdirectory (ruby)
 endif ()

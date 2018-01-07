@@ -1,3 +1,9 @@
+- infos =
+- infos/author = Manuel Mausz <manuel-elektra@mausz.at>
+- infos/status =
+- infos/provides = swig
+- infos/description =
+
 # Python
 
 Python bindings for Elektra.
@@ -21,4 +27,3 @@ debian wheezy needs:
 Note that cmake does *not* automatically rebuild SWIG bindings
 when header files are changed. Remove the build directory
 in that case.
-

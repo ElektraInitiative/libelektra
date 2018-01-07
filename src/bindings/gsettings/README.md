@@ -1,3 +1,9 @@
+- infos =
+- infos/author = Gabriel Rauter <rauter.gabriel@gmail.com>
+- infos/status = experimental
+- infos/provides =
+- infos/description =
+
 # elektrasettings
 
  **__Warning__ !!! This binding is unstable and could destroy your Elektra Configuration. Only use in testing environments.**

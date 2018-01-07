@@ -133,7 +133,7 @@ static void elektraAddConstants (KeySet * ks, Key * parentKey)
 
 	key = keyDup (parentKey);
 	keyAddName (key, "cmake/BINDINGS");
-	keySetString (key, "@BINDINGS@");
+	keySetString (key, "@ADDED_BINDINGS@");
 	ksAppendKey (ks, key);
 
 
@@ -376,4 +376,3 @@ Plugin * ELEKTRA_PLUGIN_EXPORT (constants)
 		ELEKTRA_PLUGIN_SET,	&elektraConstantsSet,
 		ELEKTRA_PLUGIN_END);
 }
-
