@@ -354,7 +354,7 @@ bool CompleteCommand::filterCascading (string const & argument, pair<Key, pair<i
 {
 	// For a cascading key completion, ignore the preceding namespace
 	const string test = current.first.getFullName ();
-	int cascadationOffset = test.find ("/");
+	size_t cascadationOffset = test.find ("/");
 	if (cascadationOffset == string::npos)
 	{
 		cascadationOffset = 0;
