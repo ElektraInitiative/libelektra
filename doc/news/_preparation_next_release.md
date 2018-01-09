@@ -118,6 +118,8 @@ These notes are of interest for people maintaining packages of Elektra:
   By default now all MAINTAINED bindings except EXPERIMENTAL and DEPRECATED are included.
   For more details see
   [/doc/COMPILE.md](https://github.com/ElektraInitiative/libelektra/tree/master/doc/COMPILE.md).
+  To include both intercept bindings, you now need to write `INTERCEPT`, to only include getenv
+  interception `intercept_env`. `intercept` alone does not work anymore.
 - <<TODO>>
 
 The following files are new:
