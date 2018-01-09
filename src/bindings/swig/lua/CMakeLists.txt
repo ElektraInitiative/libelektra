@@ -6,7 +6,7 @@ find_package (Lua 5.1)
 if (NOT LUA_FOUND)
 	exclude_binding (swig_lua "Lua libs >= 5.2 not found")
 else ()
-	add_binding (siwg_lua)
+	add_binding (swig_lua)
 
 	add_headers (HDR_FILES)
 	add_cppheaders (HDR_FILES)
