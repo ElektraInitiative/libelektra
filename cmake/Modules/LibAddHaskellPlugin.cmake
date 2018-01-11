@@ -243,6 +243,8 @@ macro (add_haskell_plugin target)
 			${GHC_INCLUDE_DIRS}
 		LINK_LIBRARIES
 			${GHC_LIBS}
+		LINK_ELEKTRA
+			elektra-pluginprocess
 		DEPENDS
 			${target} c2hs_haskell
 		ADD_TEST

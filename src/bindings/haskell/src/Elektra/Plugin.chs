@@ -11,7 +11,7 @@ module Elektra.Plugin (
   elektraPluginSetData, elektraPluginGetData,
   elektraPluginOpenWith, elektraPluginCloseWith, 
   elektraPluginGetWith, elektraPluginSetWith,
-  elektraPluginErrorWith, elektraPluginCheckConfigWith
+  elektraPluginErrorWith
 ) where
 
 {#import Elektra.Key#}
@@ -66,10 +66,6 @@ elektraPluginSetWith = elektraPlugin3
 
 elektraPluginErrorWith :: (Plugin -> KeySet -> Key -> IO PluginStatus) -> Ptr Plugin -> Ptr KeySet -> Ptr Key -> IO Int
 elektraPluginErrorWith = elektraPlugin3
-
-elektraPluginCheckConfigWith :: (Key -> KeySet -> IO PluginStatus) -> Ptr Key -> Ptr KeySet -> IO Int
-elektraPluginCheckConfigWith f k ks = liftM fromEnum $ join $ 
-  liftM2 f (liftM Key $ newForeignPtr_ k) (liftM KeySet $ newForeignPtr_ ks)
 
 -- shared parameter conversation
 
