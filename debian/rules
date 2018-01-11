@@ -6,7 +6,7 @@
 # Which plugins and tools should be built
 ELEKTRA_PLUGINS='ALL;mozprefs;multifile;-gitresolver;-jni;-ruby;-haskell'
 ELEKTRA_TOOLS='ALL'
-ELEKTRA_BINDINGS='cpp;swig_lua;swig_python;swig_python2;intercept_env'
+ELEKTRA_BINDINGS='cpp;swig_lua;swig_python;swig_python2;INTERCEPT'
 
 #workaround for hardening flags
 CPPFLAGS:=$(shell dpkg-buildflags --get CPPFLAGS)
