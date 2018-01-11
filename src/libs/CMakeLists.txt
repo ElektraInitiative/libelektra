@@ -12,6 +12,8 @@ add_subdirectory (meta)
 
 add_subdirectory (plugin)
 
+add_subdirectory (pluginprocess)
+
 add_subdirectory (utility)
 
 add_subdirectory (io)

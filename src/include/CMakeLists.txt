@@ -90,6 +90,7 @@ install (FILES
 	kdbmodule.h
 	kdbos.h
 	kdbplugin.h
+	kdbpluginprocess.h
 	kdbprivate.h
 	kdbproposal.h
 	kdbinvoke.h
