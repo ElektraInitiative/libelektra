@@ -7,21 +7,20 @@
 #ifdef __cplusplus
 namespace ckdb
 {
-extern "C"
-{
+extern "C" {
 #endif
 
-	typedef struct _ElektraPluginProcess ElektraPluginProcess;
+typedef struct _ElektraPluginProcess ElektraPluginProcess;
 
-	ElektraPluginProcess * elektraPluginProcessInit (Plugin *, Key *);
-	void elektraPluginProcessStart (Plugin *, ElektraPluginProcess *);
+ElektraPluginProcess * elektraPluginProcessInit (Plugin *, Key *);
+void elektraPluginProcessStart (Plugin *, ElektraPluginProcess *);
 
-	int elektraPluginProcessOpen (ElektraPluginProcess *, Key *);
+int elektraPluginProcessOpen (ElektraPluginProcess *, Key *);
 
-	int elektraPluginProcessIsParent (const ElektraPluginProcess *);
-	int elektraPluginProcessSend (const ElektraPluginProcess *, plugin_t, KeySet *, Key *);
+int elektraPluginProcessIsParent (const ElektraPluginProcess *);
+int elektraPluginProcessSend (const ElektraPluginProcess *, plugin_t, KeySet *, Key *);
 
-	int elektraPluginProcessClose (ElektraPluginProcess *);
+int elektraPluginProcessClose (ElektraPluginProcess *);
 
 #ifdef __cplusplus
 }
