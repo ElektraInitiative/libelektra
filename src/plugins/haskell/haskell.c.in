@@ -43,7 +43,7 @@ int elektraHaskellOpen (Plugin * handle, Key * errorKey)
 	ElektraPluginProcess * pp = elektraPluginGetData (handle);
 	if (pp == NULL)
 	{
-		if ((pp = elektraPluginProcessInit (handle, errorKey)) == NULL) return ELEKTRA_PLUGIN_STATUS_ERROR;
+		if ((pp = elektraPluginProcessInit (errorKey)) == NULL) return ELEKTRA_PLUGIN_STATUS_ERROR;
 		elektraPluginSetData (handle, pp);
 		if (!elektraPluginProcessIsParent (pp)) elektraPluginProcessStart (handle, pp);
 	}
