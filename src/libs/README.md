@@ -26,6 +26,15 @@ Applications and plugins can choose to not link against it if they want to stay 
 
 **[libplugin](plugin/)** contains `elektraPlugin*` symbols and plugins should link against it.
 
+### Libpluginprocess
+
+    libelektra-pluginprocess.so
+
+**[libpluginprocess](pluginprocess/)** contains functions aiding in executing plugins in a separate
+process and communicating with those child processes. This is useful for plugins which cause memory
+leaks to be isolated in an own process. Furthermore this is useful for runtimes or libraries that
+cannot be reinitialized in the same process after they have been used.
+
 ### Libproposal
 
     libelektra-proposal.so
