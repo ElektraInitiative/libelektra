@@ -51,21 +51,21 @@ if (NOT BUILD_STATIC)
 		"${CMAKE_SOURCE_DIR}/src/plugins/haskell/Setup.hs"
 	)
 	file (WRITE "${CMAKE_CURRENT_BINARY_DIR}/cabalOptionalDependencies.cmake"
-		"execute_process (COMMAND ${CABAL_EXECUTABLE} install --only-dependencies)")
-	execute_process (COMMAND ${CABAL_EXECUTABLE} sandbox init --sandbox ${CMAKE_BINARY_DIR}/.cabal-sandbox 
+		"execute_process (COMMAND ${CABAL_EXECUTABLE} install --only-dependencies -v0)")
+	execute_process (COMMAND ${CABAL_EXECUTABLE} sandbox init --sandbox ${CMAKE_BINARY_DIR}/.cabal-sandbox -v0
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} OUTPUT_QUIET)
 	add_custom_command (
 		OUTPUT ${BINDING_HASKELL_NAME}
 		COMMAND ${CMAKE_COMMAND} -P "${CMAKE_CURRENT_BINARY_DIR}/cabalOptionalDependencies.cmake"
-		COMMAND ${CABAL_EXECUTABLE} ${CABAL_OPTS} configure
-		COMMAND ${CABAL_EXECUTABLE} build
+		COMMAND ${CABAL_EXECUTABLE} ${CABAL_OPTS} configure -v0
+		COMMAND ${CABAL_EXECUTABLE} build -v0
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 		DEPENDS ${BINDING_HASKELL_DEPENDENCIES} ${ELEKTRA_DEPENDENCY}
 	)
 	add_custom_target (c2hs_haskell ALL DEPENDS "${BINDING_HASKELL_NAME}")
 	if (BUILD_SHARED OR BUILD_FULL)
 		# build and install it to the global db
-		install (CODE "execute_process (COMMAND ${CABAL_EXECUTABLE} --ignore-sandbox install WORKING_DIRECTORY \"${CMAKE_CURRENT_BINARY_DIR}\")")
+		install (CODE "execute_process (COMMAND ${CABAL_EXECUTABLE} --ignore-sandbox install -v0 WORKING_DIRECTORY \"${CMAKE_CURRENT_BINARY_DIR}\")")
 	endif (BUILD_SHARED OR BUILD_FULL)
 
 	if (BUILD_TESTING)
@@ -80,13 +80,13 @@ if (NOT BUILD_STATIC)
 			"${CMAKE_CURRENT_BINARY_DIR}/dist/build/testhaskell_realworld_optimized/testhaskell_realworld_optimized"
 		)
 		file (WRITE "${CMAKE_CURRENT_BINARY_DIR}/cabalOptionalDependencies.cmake"
-			"execute_process (COMMAND ${CABAL_EXECUTABLE} install --enable-tests --only-dependencies)")
+			"execute_process (COMMAND ${CABAL_EXECUTABLE} install --enable-tests --only-dependencies -v0)")
 		add_custom_command (
 			OUTPUT ${HASKELL_TESTS}
 			# everything is getting installed to the sandbox, and gets cached to avoid reinstalling every time
 			COMMAND ${CMAKE_COMMAND} -P "${CMAKE_CURRENT_BINARY_DIR}/cabalOptionalDependencies.cmake"
-			COMMAND ${CABAL_EXECUTABLE} ${CABAL_OPTS} --enable-tests configure
-			COMMAND ${CABAL_EXECUTABLE} build
+			COMMAND ${CABAL_EXECUTABLE} ${CABAL_OPTS} --enable-tests configure -v0
+			COMMAND ${CABAL_EXECUTABLE} build -v0
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 			DEPENDS ${BINDING_HASKELL_DEPENDENCIES} ${ELEKTRA_DEPENDENCY} c2hs_haskell
 		)
