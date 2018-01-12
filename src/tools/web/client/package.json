@@ -27,6 +27,7 @@
     "redux-promises": "^1.0.0"
   },
   "scripts": {
+    "postinstall": "npm install --prefix ../clusterd",
     "start": "npm run server",
     "server": "cd ../clusterd && npm start",
     "start:dev": "concurrently \"react-scripts start\" \"npm run server:dev\"",
