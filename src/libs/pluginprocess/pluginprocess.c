@@ -17,6 +17,7 @@
 #include <kdbprivate.h>
 
 #include <errno.h>
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -70,7 +71,6 @@ void elektraPluginProcessStart (Plugin * handle, ElektraPluginProcess * pp)
 	Key * resultPipeKey = keyNew ("/pluginprocess/resultPipe", KEY_VALUE, pp->resultPipe, KEY_END);
 	KeySet * keySet = ksNew (0, KS_END);
 	int counter = 0;
-	plugin_t command = ELEKTRA_PLUGIN_END;
 
 	do
 	{
@@ -78,19 +78,19 @@ void elektraPluginProcessStart (Plugin * handle, ElektraPluginProcess * pp)
 		elektraInvoke2Args (pp->dump, "get", keySet, commandPipeKey);
 		ELEKTRA_LOG_DEBUG ("C: We received a KeySet with %zd keys in it", ksGetSize (keySet));
 		Key * commandKey = ksLookupByName (keySet, "/pluginprocess/command", KDB_O_POP);
+		Key * originalNameKey = ksLookupByName (keySet, "/pluginprocess/original", KDB_O_POP);
+		Key * originalKey = ksLookupByName (keySet, keyString (originalNameKey), KDB_O_NONE);
+		int result = ELEKTRA_PLUGIN_STATUS_ERROR;
+
 		char * endPtr;
 		// We'll always write some int value into it, so this should be fine
 		int prevErrno = errno;
 		errno = 0;
-		command = (int)strtol (keyString (commandKey), &endPtr, 10);
-
-		Key * originalNameKey = ksLookupByName (keySet, "/pluginprocess/original", KDB_O_POP);
-		Key * originalKey = ksLookupByName (keySet, keyString (originalNameKey), KDB_O_NONE);
-
-		int result = ELEKTRA_PLUGIN_STATUS_ERROR;
+		long command = strtol (keyString (commandKey), &endPtr, 10);
 		if (*endPtr == '\0' && errno != ERANGE)
 		{
 			ELEKTRA_LOG ("C: We want to execute the command with the value %d now", command);
+			// Its hard to figure out the enum size in a portable way but for this comparison it should be ok
 			switch (command)
 			{
 			case ELEKTRA_PLUGIN_OPEN:
@@ -193,10 +193,20 @@ int elektraPluginProcessSend (const ElektraPluginProcess * pp, plugin_t command,
 	// Bring everything back in order by removing our process-related keys
 	Key * originalDeserializedKey = ksLookupByName (keySet, keyName (key), KDB_O_POP);
 	Key * resultKey = ksLookupByName (keySet, "/pluginprocess/result", KDB_O_POP);
+
+	// Parse the result value
 	char * endPtr;
 	int prevErrno = errno;
 	errno = 0;
-	int result = (int)strtol (keyString (resultKey), &endPtr, 10);
+	long lresult = strtol (keyString (resultKey), &endPtr, 10);
+	if (*endPtr != '\0' || errno == ERANGE || lresult > INT_MAX || lresult < INT_MIN)
+	{
+		ELEKTRA_SET_ERRORF (191, originalKey, "Received invalid return code or no KeySet: %s", keyString (resultKey));
+		errno = prevErrno;
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+	errno = prevErrno;
+
 	// Copy everything back into the actual keysets
 	keyCopy (key, originalDeserializedKey);
 	ksCopy (originalKeySet, keySet);
@@ -205,18 +215,10 @@ int elektraPluginProcessSend (const ElektraPluginProcess * pp, plugin_t command,
 	keyDel (commandPipeKey);
 	keyDel (resultPipeKey);
 	keyDel (originalDeserializedKey);
+	keyDel (resultKey);
 	ksDel (keySet);
 
-	if (*endPtr != '\0' || errno == ERANGE)
-	{
-		ELEKTRA_ADD_WARNINGF (191, originalKey, "Received invalid return code or no KeySet: %s", keyString (resultKey));
-		keyDel (resultKey);
-		return ELEKTRA_PLUGIN_STATUS_ERROR;
-	}
-	keyDel (resultKey);
-	errno = prevErrno;
-
-	return result;
+	return lresult; // Safe now, we had a bound check before, and plugins should return values in the int range
 }
 
 /** Check if a given plugin process is the parent or the child process
