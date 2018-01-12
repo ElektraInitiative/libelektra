@@ -31,9 +31,14 @@ Applications and plugins can choose to not link against it if they want to stay 
     libelektra-pluginprocess.so
 
 **[libpluginprocess](pluginprocess/)** contains functions aiding in executing plugins in a separate
-process and communicating with those child processes. This is useful for plugins which cause memory
-leaks to be isolated in an own process. Furthermore this is useful for runtimes or libraries that
-cannot be reinitialized in the same process after they have been used.
+process and communicating with those child processes. This child process is forked from Elektra's 
+main process each time such plugin is used and gets closed again afterwards. It uses a simple
+communication protocol based on a KeySet that gets serialized through a pipe via the dump plugin to 
+orchestrate the processes.
+
+This is useful for plugins which cause memory leaks to be isolated in an own process. Furthermore 
+this is useful for runtimes or libraries that cannot be reinitialized in the same process after they 
+have been used.
 
 ### Libproposal
 
