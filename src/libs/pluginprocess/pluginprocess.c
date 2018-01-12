@@ -264,9 +264,9 @@ static char * getPipename (Key * errorKey, char * suffix)
 {
 	int pipenameSize;
 	char * pipename;
-	pipenameSize = snprintf (NULL, 0, "/tmp/libelektra-process-%s-XXXXXX", suffix);
+	pipenameSize = snprintf (NULL, 0, "/tmp/libelektra-pluginprocess-%s-XXXXXX", suffix);
 	pipename = elektraMalloc (pipenameSize + 1);
-	pipenameSize = snprintf (pipename, pipenameSize + 1, "/tmp/libelektra-process-%s-XXXXXX", suffix);
+	pipenameSize = snprintf (pipename, pipenameSize + 1, "/tmp/libelektra-pluginprocess-%s-XXXXXX", suffix);
 
 	int prevErrno = errno;
 	if (mktemp (pipename) == NULL || errno == ENOTDIR || errno == EINVAL)
