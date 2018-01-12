@@ -231,7 +231,7 @@ int elektraPluginProcessIsParent (const ElektraPluginProcess * pp)
 	return pp->pid;
 }
 
-static int elektraPluginProcessFork (Plugin * handle, Key * errorKey, ElektraPluginProcess * pp)
+static int elektraPluginProcessFork (ElektraPluginProcess * pp, Key * errorKey)
 {
 	// Prepare a named pipe so the dump plugin can serialize to it
 	// Create one pipe per plugin instance / handle
@@ -255,7 +255,7 @@ static int elektraPluginProcessFork (Plugin * handle, Key * errorKey, ElektraPlu
 	}
 
 	pp->pid = pid;
-	ELEKTRA_LOG_DEBUG ("The pluginprocess handle is %p with the pid %d", (void *)handle, pid);
+	ELEKTRA_LOG_DEBUG ("The pluginprocess is set using the pipes %s and %s with the pid %d", pp->commandPipe, pp->resultPipe, pid);
 	return 0;
 }
 
@@ -313,7 +313,7 @@ ElektraPluginProcess * elektraPluginProcessInit (Plugin * handle, Key * errorKey
 	pp->counter = 0;
 	if (pp->commandPipe && pp->resultPipe && pp->dump)
 	{
-		if (elektraPluginProcessFork (handle, errorKey, pp) < 0)
+		if (elektraPluginProcessFork (pp, errorKey) < 0)
 		{
 			cleanupPluginData (pp);
 			return NULL;
