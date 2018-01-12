@@ -260,13 +260,23 @@ static int elektraPluginProcessFork (ElektraPluginProcess * pp, Key * errorKey)
 	return 0;
 }
 
-static char * getPipename (Plugin * handle, char * suffix)
+static char * getPipename (Key * errorKey, char * suffix)
 {
 	int pipenameSize;
 	char * pipename;
-	pipenameSize = snprintf (NULL, 0, "/tmp/libelektra-process-%p-%s", (void *)handle, suffix);
+	pipenameSize = snprintf (NULL, 0, "/tmp/libelektra-process-%s-XXXXXX", suffix);
 	pipename = elektraMalloc (pipenameSize + 1);
-	pipenameSize = snprintf (pipename, pipenameSize + 1, "/tmp/libelektra-process-%p-%s", (void *)handle, suffix);
+	pipenameSize = snprintf (pipename, pipenameSize + 1, "/tmp/libelektra-process-%s-XXXXXX", suffix);
+
+	int prevErrno = errno;
+	if (mktemp (pipename) == NULL || errno == ENOTDIR || errno == EINVAL)
+	{
+		ELEKTRA_SET_ERRORF (190, errorKey, "Failed to generate a temporary pipename, mktemp returned errno %d", errno);
+		elektraFree (pipename);
+		errno = prevErrno;
+		return NULL;
+	}
+	errno = prevErrno;
 	return pipename;
 }
 
@@ -303,13 +313,24 @@ int elektraPluginOpen (Plugin * handle, Key * errorKey)
  * @retval a pointer to the information
  * @ingroup processplugin
  **/
-ElektraPluginProcess * elektraPluginProcessInit (Plugin * handle, Key * errorKey)
+ElektraPluginProcess * elektraPluginProcessInit (Key * errorKey)
 {
 	// First time initialization
 	ElektraPluginProcess * pp;
 	pp = elektraMalloc (sizeof (ElektraPluginProcess));
-	pp->commandPipe = getPipename (handle, "command");
-	pp->resultPipe = getPipename (handle, "result");
+	pp->commandPipe = getPipename (errorKey, "command");
+	if (pp->commandPipe == NULL)
+	{
+		elektraFree (pp);
+		return NULL;
+	}
+	pp->resultPipe = getPipename (errorKey, "result");
+	if (pp->resultPipe == NULL)
+	{
+		elektraFree (pp->commandPipe);
+		elektraFree (pp);
+		return NULL;
+	}
 	pp->dump = elektraInvokeOpen ("dump", 0);
 	pp->counter = 0;
 	if (pp->commandPipe && pp->resultPipe && pp->dump)

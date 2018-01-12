@@ -12,7 +12,7 @@ extern "C" {
 
 typedef struct _ElektraPluginProcess ElektraPluginProcess;
 
-ElektraPluginProcess * elektraPluginProcessInit (Plugin *, Key *);
+ElektraPluginProcess * elektraPluginProcessInit (Key *);
 void elektraPluginProcessStart (Plugin *, ElektraPluginProcess *);
 
 int elektraPluginProcessOpen (ElektraPluginProcess *, Key *);
