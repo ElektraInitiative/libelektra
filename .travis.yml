@@ -5,7 +5,7 @@ cache:
     $HOME/.m2
     $HOME/.cabal
     $HOME/Library/Haskell
-    $TRAVIS_BUILD_DIR/.cabal-sandbox
+    $TRAVIS_BUILD_DIR/../build/.cabal-sandbox
 
 #
 # Define the build matrix
