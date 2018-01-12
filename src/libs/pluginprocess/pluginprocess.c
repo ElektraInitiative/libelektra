@@ -10,17 +10,15 @@
  */
 
 #include "kdbpluginprocess.h"
-#include <kdbinvoke.h>
-// To access the plugin function pointers
 #include <kdberrors.h>
+#include <kdbinvoke.h>
 #include <kdblogger.h>
-#include <kdbprivate.h>
+#include <kdbprivate.h> // To access the plugin function pointers
 
 #include <errno.h>
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -67,16 +65,17 @@ static char * intToStr (int i)
  **/
 void elektraPluginProcessStart (Plugin * handle, ElektraPluginProcess * pp)
 {
-	Key * commandPipeKey = keyNew ("/pluginprocess/commandPipe", KEY_VALUE, pp->commandPipe, KEY_END);
-	Key * resultPipeKey = keyNew ("/pluginprocess/resultPipe", KEY_VALUE, pp->resultPipe, KEY_END);
+	Key * commandPipeKey = keyNew ("/pluginprocess/pipe/command", KEY_VALUE, pp->commandPipe, KEY_END);
+	Key * resultPipeKey = keyNew ("/pluginprocess/pipe/result", KEY_VALUE, pp->resultPipe, KEY_END);
 	KeySet * keySet = ksNew (0, KS_END);
 	int counter = 0;
 
 	do
 	{
-		ELEKTRA_LOG_DEBUG ("C: Wait for a KeySet");
+		ELEKTRA_LOG_DEBUG ("Child: Wait for a KeySet");
 		elektraInvoke2Args (pp->dump, "get", keySet, commandPipeKey);
-		ELEKTRA_LOG_DEBUG ("C: We received a KeySet with %zd keys in it", ksGetSize (keySet));
+		ELEKTRA_LOG_DEBUG ("Child: We received a KeySet with %zd keys in it", ksGetSize (keySet));
+
 		Key * commandKey = ksLookupByName (keySet, "/pluginprocess/command", KDB_O_POP);
 		Key * originalNameKey = ksLookupByName (keySet, "/pluginprocess/original", KDB_O_POP);
 		Key * originalKey = ksLookupByName (keySet, keyString (originalNameKey), KDB_O_NONE);
@@ -89,7 +88,7 @@ void elektraPluginProcessStart (Plugin * handle, ElektraPluginProcess * pp)
 		long command = strtol (keyString (commandKey), &endPtr, 10);
 		if (*endPtr == '\0' && errno != ERANGE)
 		{
-			ELEKTRA_LOG ("C: We want to execute the command with the value %d now", command);
+			ELEKTRA_LOG ("Child: We want to execute the command with the value %ld now", command);
 			// Its hard to figure out the enum size in a portable way but for this comparison it should be ok
 			switch (command)
 			{
@@ -113,27 +112,27 @@ void elektraPluginProcessStart (Plugin * handle, ElektraPluginProcess * pp)
 			default:
 				result = ELEKTRA_PLUGIN_STATUS_ERROR;
 			}
-			ELEKTRA_LOG_DEBUG ("C: Command executed with return value %d", result);
+			ELEKTRA_LOG_DEBUG ("Child: Command executed with return value %d", result);
 		}
 		else
 		{
-			ELEKTRA_LOG_DEBUG ("C: Unrecognized command %s", keyString (commandKey));
-			ELEKTRA_ADD_WARNINGF (191, originalKey, "Received invalid command code or no KeySet: %s", keyString (commandKey));
+			ELEKTRA_LOG_DEBUG ("Child: Unrecognized command %s", keyString (commandKey));
+			ELEKTRA_SET_ERRORF (191, originalKey, "Received invalid command code or no KeySet: %s", keyString (commandKey));
 		}
 		errno = prevErrno;
 		char * resultStr = intToStr (result);
 		ksAppendKey (keySet, keyNew ("/pluginprocess/result", KEY_VALUE, resultStr, KEY_END));
 		elektraFree (resultStr);
 
-		ELEKTRA_LOG_DEBUG ("C: Writing the resulting KeySet back to the parent");
+		ELEKTRA_LOG_DEBUG ("Child: Writing the resulting KeySet back to the parent");
 		elektraInvoke2Args (pp->dump, "set", keySet, resultPipeKey);
 		keyDel (commandKey);
 		keyDel (originalNameKey);
-		ELEKTRA_LOG ("C: Command handled, startup counter is at %d", counter);
+		ELEKTRA_LOG ("Child: Command handled, startup counter is at %d", counter);
 	} while (counter);
 
 	// Final Cleanup
-	ELEKTRA_LOG_DEBUG ("C: All done, exiting the child process now");
+	ELEKTRA_LOG_DEBUG ("Child: All done, exiting the child process now");
 	keyDel (commandPipeKey);
 	keyDel (resultPipeKey);
 	ksDel (keySet);
@@ -181,14 +180,14 @@ int elektraPluginProcessSend (const ElektraPluginProcess * pp, plugin_t command,
 	Key * originalKey = keyNew ("/pluginprocess/original", KEY_VALUE, keyName (key), KEY_END);
 	ksAppendKey (keySet, originalKey);
 
-	// Serialize, currently statically use dini our default format, this already writes everything out to the pipe
-	Key * commandPipeKey = keyNew ("/pluginprocess/commandPipe", KEY_VALUE, pp->commandPipe, KEY_END);
-	Key * resultPipeKey = keyNew ("/pluginprocess/resultPipe", KEY_VALUE, pp->resultPipe, KEY_END);
-	ELEKTRA_LOG ("P: We send %zd keys through the pipe now to issue command %d it", ksGetSize (keySet), command);
+	// Serialize, currently statically use dump as our default format, this already writes everything out to the pipe
+	Key * commandPipeKey = keyNew ("/pluginprocess/pipe/command", KEY_VALUE, pp->commandPipe, KEY_END);
+	Key * resultPipeKey = keyNew ("/pluginprocess/pipe/result", KEY_VALUE, pp->resultPipe, KEY_END);
+	ELEKTRA_LOG ("Parent: We send %zd keys through the pipe now to issue command %d it", ksGetSize (keySet), command);
 	elektraInvoke2Args (pp->dump, "set", keySet, commandPipeKey);
-	ELEKTRA_LOG_DEBUG ("P: Waiting for the result now");
+	ELEKTRA_LOG_DEBUG ("Parent: Waiting for the result now");
 	elektraInvoke2Args (pp->dump, "get", keySet, resultPipeKey);
-	ELEKTRA_LOG ("P: We received %zd keys in return", ksGetSize (keySet));
+	ELEKTRA_LOG ("Parent: We received %zd keys in return", ksGetSize (keySet));
 
 	// Bring everything back in order by removing our process-related keys
 	Key * originalDeserializedKey = ksLookupByName (keySet, keyName (key), KDB_O_POP);

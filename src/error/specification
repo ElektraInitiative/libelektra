@@ -1190,8 +1190,8 @@ module:pluginprocess
 macro:PLUGIN_PROCESS_INITIALIZATION
 
 number:191
-description:An issue happened while executing a pluginprocess command for a plugin
-severity:warning
+description:Failed to communicate with the child process
+severity:error
 ingroup:plugin
 module:pluginprocess
 macro:PLUGIN_PROCESS_COMMAND
