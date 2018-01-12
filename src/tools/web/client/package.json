@@ -8,7 +8,6 @@
     "client"
   ],
   "proxy": "http://localhost:33334",
-  "homepage": "https://git.libelektra.org/blob/master/src/tools/web/",
   "license": "BSD",
   "dependencies": {
     "@bosket/core": "^0.4.1",
