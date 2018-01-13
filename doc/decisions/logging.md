@@ -26,6 +26,9 @@ and unusable. Thus there is an urge for this decision.
 
 ## Considered Alternatives
 
+- log similar to the warnings/error system work, discarded because
+  of the run-time overhead and no use case why end users should see
+  log statements.
 - C++ logging library (boost, apache,..), discarded because C++
   should not be in core
 - libraries needed static initializing: problematic, logging should
