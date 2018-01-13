@@ -90,7 +90,9 @@ The interface for I/O bindings is currently experimental.
 
 We added even more functionality, which could not make it to the highlights:
 
-- <<TODO>>
+- Elektra is now part of the official [Homebrew repository](http://formulae.brew.sh/formula/elektra). We still provide a
+  [tap](http://github.com/ElektraInitiative/homebrew-elektra), if you want to install Elektra together with plugins or bindings that require
+  additional libraries.
 
 ## Documentation
 
