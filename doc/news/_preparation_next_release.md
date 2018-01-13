@@ -104,7 +104,7 @@ As always, the ABI and API of kdb.h is fully compatible, i.e. programs
 compiled against an older 0.8 version of Elektra will continue to work
 (ABI) and you will be able to recompile programs without errors (API).
 
-Futhermore:
+Furthermore:
 
 - Added public headerfiles `kdbio.h`, `kdbiotest.h`.
 - Added private headerfiles `kdbioprivate.h`.
