@@ -6,13 +6,13 @@
 For the following Linux Distributions 0.8 packages are available:
 
  - [Arch Linux](https://aur.archlinux.org/packages/elektra/)
+ - [Homebrew](http://formulae.brew.sh/formula/elektra)
  - [Openwrt](https://github.com/openwrt/packages/tree/master/libs/elektra)
  - [OpenSuse](https://software.opensuse.org/package/elektra)
  - [Debian](https://packages.debian.org/de/jessie/libelektra4)
  - [Ubuntu](https://launchpad.net/ubuntu/+source/elektra)
  - [Gentoo](http://packages.gentoo.org/package/app-admin/elektra)
  - [Linux Mint](https://community.linuxmint.com/software/view/elektra-bin)
- - [ALT Linux](https://pkgs.org/download/elektra)
 
 Available, but not up-to-date:
 
