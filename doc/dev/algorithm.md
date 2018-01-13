@@ -331,7 +331,7 @@ process involves no file operations.
 
 ### Duplicated Key Sets
 
-If some backends need synchronisation, the algorithm continues by
+If some backends need synchronization, the algorithm continues by
 filtering out all backends in the `Split` object that do not have changes.
 At this point, the `Split` object has a list of backends with their
 respective key sets.

@@ -36,7 +36,7 @@ the init backend will be mounted there.
 
 ## SUMMARY
 
-To summarise, this approach delivers a good out-of-the-box experience
+To summarize, this approach delivers a good out-of-the-box experience
 capable of storing configuration. For special use cases, applications
 and administrators can mount specific backends anywhere except at, and
 below, `system/elektra`.  On `kdbOpen()`, the system

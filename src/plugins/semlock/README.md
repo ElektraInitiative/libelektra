@@ -12,7 +12,7 @@
 This global semlock plugin introduces a read lock while `GET` and a read/write lock
 while `SET`.
 
-A semaphore is used for the synchronisation and the implemented algorithm favors the writer,
+A semaphore is used for the synchronization and the implemented algorithm favors the writer,
 because updates should be propagated soon as possible.
 
 The algorithm is described [here](https://en.wikipedia.org/wiki/Readers%E2%80%93writers_problem#Second_readers-writers_problem).

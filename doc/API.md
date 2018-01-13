@@ -182,7 +182,7 @@ Read more about [key names](/doc/help/elektra-key-names.md)
 ## Backend Overview
 
 The core of Elektra does not store configuration itself to the
-harddisk. Instead this work is delegated to backends.
+hard disk. Instead this work is delegated to backends.
 
 If you want to develop a backend, you should already have some experience
 with Elektra from the user point of view. You should be familiar with

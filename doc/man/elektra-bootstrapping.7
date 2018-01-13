@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "ELEKTRA\-BOOTSTRAPPING" "7" "October 2017" "" ""
+.TH "ELEKTRA\-BOOTSTRAPPING" "7" "January 2018" "" ""
 .
 .SH "NAME"
 \fBelektra\-bootstrapping\fR \- default backend
@@ -22,7 +22,7 @@ Thus for full and static build variants an exchange at run\-time is not possible
 The \fBinit backend\fR is guaranteed to stay mounted at \fBsystem/elektra\fR where the configuration for Elektra itself is stored\. After mounting all backends, Elektra checks if \fBsystem/elektra\fR still resides at the default backend\. If not, the init backend will be mounted there\.
 .
 .SH "SUMMARY"
-To summarise, this approach delivers a good out\-of\-the\-box experience capable of storing configuration\. For special use cases, applications and administrators can mount specific backends anywhere except at, and below, \fBsystem/elektra\fR\. On \fBkdbOpen()\fR, the system bootstraps itself starting with the init backend\.
+To summarize, this approach delivers a good out\-of\-the\-box experience capable of storing configuration\. For special use cases, applications and administrators can mount specific backends anywhere except at, and below, \fBsystem/elektra\fR\. On \fBkdbOpen()\fR, the system bootstraps itself starting with the init backend\.
 .
 .P
 The default backend consists of a default storage plugin and default resolver plugin\. The default resolver has no specific requirements, but the default storage plugin must be able to handle full Elektra semantics\. The backend is mounted to root (\fB/\fR), so any keys can be stored in it\. The implementation of the core guarantees that user and system keys always stay separated\.

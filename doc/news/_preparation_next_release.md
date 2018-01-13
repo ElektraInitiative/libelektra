@@ -90,7 +90,9 @@ The interface for I/O bindings is currently experimental.
 
 We added even more functionality, which could not make it to the highlights:
 
-- <<TODO>>
+- Elektra is now part of the official [Homebrew repository](http://formulae.brew.sh/formula/elektra). We still provide a
+  [tap](http://github.com/ElektraInitiative/homebrew-elektra), if you want to install Elektra together with plugins or bindings that require
+  additional libraries.
 
 ## Documentation
 
@@ -104,7 +106,7 @@ As always, the ABI and API of kdb.h is fully compatible, i.e. programs
 compiled against an older 0.8 version of Elektra will continue to work
 (ABI) and you will be able to recompile programs without errors (API).
 
-Futhermore:
+Furthermore:
 
 - Added public headerfiles `kdbio.h`, `kdbiotest.h`.
 - Added private headerfiles `kdbioprivate.h`.
