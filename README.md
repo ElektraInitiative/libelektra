@@ -19,6 +19,12 @@ applications' configurations, leveraging easy application integration.
 
 ## Overview
 
+Elektra provides benefits for:
+
+1. *Application Developers* by making it easier to access configuration settings in a modular, reliable, and extensible way.
+2. *System Administrators* by making it possible to access configuration settings in the same way applications access them.
+3. *Everyone* by making application integration and context-aware configuration a reality.
+
 Elektra consists of three parts:
 
 1. *LibElektra* is a modular configuration access toolkit to
