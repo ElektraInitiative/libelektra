@@ -36,21 +36,24 @@ You can also read the [FOSDEM interview](https://fosdem.org/2018/interviews/mark
 
 ## Highlights
 
-- New Logo
+- New Logo and Website Theme
 - INI as new default configuration file format
 - Bindings for Asynchronous I/O
 - Plugin Processes
 - <<HIGHLIGHT3>>
 
 
-### New Logo
+### New Logo and Website Theme
 
-We are proud to present our new Logo.
+We are proud to present our new logo.
 It has a new shape and cooler colors.
 
 <img src="https://cdn.rawgit.com/ElektraInitiative/libelektra/master/doc/images/logo/logo_color.svg" alt="Elektra" width="150" />
 
 Thanks to Philipp Frei
+
+We also gave the website a new look. It has the colors from the logo, new
+fonts for better readability and the start page structure was improved.
 
 ### INI as new Default Configuration File Format
 

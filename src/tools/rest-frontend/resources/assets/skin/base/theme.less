@@ -2,7 +2,7 @@
 // ----------------------------
 
 @import "colors.less";
-
+@import "../bootstrap/variables.less";
 
 // Markup
 // ----------------------------
@@ -16,15 +16,16 @@ body {
     font-family: Helvetica;
 }
 
-nav.navbar img.navbar-brand-logo {
-    display: inline-block;
-    float: left;
-    margin: 10px 15px 10px 10px;
-    width: 35px;
+nav.navbar img.navbar-brand.navbar-brand-logo {
+    margin: 0;
+    padding: 8px;
 }
 
 nav.navbar-second {
     min-height: 40px;
+    border: none;
+    border-bottom: 2px solid @logo-yellow;
+    border-radius: 0;
 }
 
 nav.navbar-second > div.container-fluid > ul > li > a {
@@ -156,6 +157,29 @@ div.home h3 {
     padding-bottom: 0px;
 }
 
+div.home hr {
+    border-top: 2px solid @logo-green;
+
+    &.hr-blue {
+      border-color: @logo-blue;
+    }
+
+    &.hr-yellow {
+      border-color: @logo-yellow;
+    }
+
+    &.hr-mt-0 {
+      margin-top: 0;
+    }
+    &.hr-mb-0 {
+      margin-bottom: 0;
+    }
+}
+
+div.home .key-container {
+  background-color: #f0f0f0;
+}
+
 div.home div.media {
     margin-top: 0px;
 }
@@ -175,7 +199,6 @@ ul.pagination > li {
 }
 
 div.docu.markdown {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
     line-height: 1.5em;
     font-size: 1em;
 }

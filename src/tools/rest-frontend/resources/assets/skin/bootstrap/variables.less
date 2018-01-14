@@ -8,18 +8,29 @@ yellow #dfa809
 green #3f8f2f
 */
 
+@logo-blue: #233688;
+@logo-yellow: #dfa809;
+@logo-green: #3f8f2f;
+
 @text-color: #282828;
 
-@brand-primary: #233688;
-@brand-success: #3f8f2f;
+@brand-primary: @logo-blue;
+@brand-success: @logo-green;
 @brand-info:    #36a7d1;
-@brand-warning: #dfa809;
+@brand-warning: @logo-yellow;
 @brand-danger:  #dd2a2a;
 
 @border-radius-base: 3px;
 
 @input-border-focus: @brand-primary;
 
-// use green for hyperlinks and active components (e.g. list-groups)
-@link-color: #3f8f2f;
+// use logo-green for hyperlinks and active components (e.g. list-groups)
+@link-color: @logo-green;
 @component-active-bg: @link-color;
+
+// use logo-green for pagination
+@pagination-active-bg:     @logo-green;
+@pagination-active-border: @logo-green;
+
+@headings-font-family:  "Libre Franklin", "Helvetica Neue", Helvetica, Arial, sans-serif;
+@font-family-sans-serif: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
