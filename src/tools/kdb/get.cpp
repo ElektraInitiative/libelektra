@@ -164,9 +164,9 @@ int GetCommand::execute (Cmdline const & cl)
 		{
 			cout << std::hex;
 			const uint8_t * data = static_cast<const uint8_t *> (k.getValue ());
-			for (auto byte = 0; byte < k.getBinarySize (); byte++)
+			for (auto position = 0; position < k.getBinarySize (); position++)
 			{
-				cout << "\\x" << unsigned(data[byte]);
+				cout << "\\x" << unsigned(data[position]);
 			}
 			cout << std::dec;
 		}
