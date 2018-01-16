@@ -20,28 +20,6 @@ struct _ElektraInvokeHandle
 };
 
 /**
- * Structure for deferred calls
- * @internal
- */
-typedef struct _ElektraDeferredCall
-{
-	char * name;
-	KeySet * parameters;
-	struct _ElektraDeferredCall * next;
-} _ElektraDeferredCall;
-
-/**
- * Structure for internal plugin state
- * @internal
- */
-struct _ElektraDeferredCallList
-{
-	_ElektraDeferredCall * head;
-	_ElektraDeferredCall * last;
-};
-
-
-/**
  * @defgroup invoke
  * @brief Functionality to use plugins and invoke functions
  *
@@ -219,7 +197,7 @@ KeySet * elektraInvokeGetPluginConfig (ElektraInvokeHandle * handle)
  *
  * @pre handle must be as returned from elektraInvokeOpen()
  *
- * @return the name of the plugin
+ * @return the name of the plugin 
  */
 const char * elektraInvokeGetPluginName (ElektraInvokeHandle * handle)
 {
@@ -294,14 +272,16 @@ int elektraInvoke2Args (ElektraInvokeHandle * handle, const char * elektraPlugin
 {
 	if (!handle || !elektraPluginFunctionName) return -2;
 
-	typedef int (*elektra2Args) (Plugin *, KeySet *, Key *);
-	elektra2Args func = *(elektra2Args *) elektraInvokeGetFunction (handle, elektraPluginFunctionName);
+	// If we cast this right away it will hang if the function is not
+	const void * uncastedFunc = elektraInvokeGetFunction (handle, elektraPluginFunctionName);
 
-	if (!func)
+	if (!uncastedFunc)
 	{
 		return -2;
 	}
 
+	typedef int (*elektra2Args) (Plugin *, KeySet *, Key *);
+	elektra2Args func = *(elektra2Args *) uncastedFunc;
 	return func (handle->plugin, ks, k);
 }
 
@@ -338,6 +318,7 @@ void elektraInvokeClose (ElektraInvokeHandle * handle, Key * errorKey)
 }
 
 /**
+<<<<<<< HEAD
  * Invokes a deferable function on an invoke handle.
  * If the function is exported by the plugin it is directly invoked,
  * if the plugin supports deferring calls, the call is deferred.
