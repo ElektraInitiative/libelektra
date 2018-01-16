@@ -88,6 +88,7 @@ before_install:
       brew install gobject-introspection
       brew install libgcrypt
       brew install libgit2
+      brew install libuv
       brew install lua
       brew install openssl
       brew install python
@@ -116,6 +117,7 @@ before_install:
       sudo apt-get install ninja-build
       sudo apt-get install libboost-all-dev
       sudo apt-get install libyaml-cpp-dev
+      sudo apt-get install libuv-dev
     fi
 
 #
