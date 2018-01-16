@@ -9,6 +9,9 @@ and unusable. Thus there is an urge for this decision.
 
 ## Constraints
 
+- this decision is irrelevant for plugins and bindings that are not
+  written in C/C++. In any case, however, logging must be disabled
+  by default.
 - should completely compile away with ELEKTRA_LOGGING=OFF
 - should support minimalistic, compile-time filtering
   (per modules and verbosity level?) and some sinks (stderr, syslog
