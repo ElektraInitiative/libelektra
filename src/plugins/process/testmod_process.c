@@ -28,6 +28,11 @@ static void test_basics (void)
 
 	succeed_if (plugin->kdbOpen (plugin, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbOpen was not successful");
 
+	Key * contractKey = keyNew ("system/elektra/modules/process", KEY_END);
+	KeySet * contractSet = ksNew (0, KS_END);
+
+	succeed_if (plugin->kdbGet (plugin, contractSet, contractKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet for the contract was not successful");
+
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "call to kdbGet was not successful");
 
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "call to kdbSet was not successful");
@@ -36,6 +41,8 @@ static void test_basics (void)
 
 	succeed_if (plugin->kdbClose (plugin, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbClose was not successful");
 
+	keyDel (contractKey);
+	ksDel (contractSet);
 	keyDel (parentKey);
 	ksDel (ks);
 	PLUGIN_CLOSE ();
