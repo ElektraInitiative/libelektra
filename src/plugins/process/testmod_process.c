@@ -20,7 +20,7 @@ static void test_basics (void)
 
 	Key * parentKey = keyNew ("user/tests/process", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
-	Key * pluginKey = keyNew ("/plugin", KEY_VALUE, "dump", KEY_END);
+	Key * pluginKey = keyNew ("/plugin", KEY_VALUE, "base64", KEY_END);
 	ksAppendKey (conf, pluginKey);
 	PLUGIN_OPEN ("process");
 
