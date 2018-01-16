@@ -157,7 +157,7 @@ before_script:
     -GNinja
     -DBUILD_STATIC=OFF
     -DPLUGINS="${plugins:-ALL;-jni}"
-    -DBINDINGS="${bindings:-ALL;}"
+    -DBINDINGS="${bindings}"
     -DENABLE_DEBUG=ON
     -DTOOLS="${tools:-ALL;}"
     -DINSTALL_SYSTEM_FILES=OFF
