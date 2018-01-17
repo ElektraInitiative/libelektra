@@ -53,6 +53,23 @@ set (ELEKTRA_DEPRECATED "__attribute__ ((deprecated))")
 set (ELEKTRA_UNUSED "__attribute__ ((unused))")
 set (ELEKTRA_FALLTHROUGH "__attribute__ ((fallthrough))")
 
+# set ELEKTRA_NO_SANATIZE_*
+if (ENABLE_ASAN)
+	if (CMAKE_C_COMPILER_ID MATCHES "Clang")
+		# clang section
+		set (ELEKTRA_NO_SANITIZE_INTEGER "__attribute__ ((no_sanitize (\"integer\")))")
+		set (ELEKTRA_NO_SANITIZE_UNDEFINED "__attribute__ ((no_sanitize (\"undefined\")))")
+	else (CMAKE_C_COMPILER_ID MATCHES "Clang")
+		# others section
+		set (ELEKTRA_NO_SANITIZE_INTEGER "")
+		set (ELEKTRA_NO_SANITIZE_UNDEFINED "__attribute__ ((no_sanitize_undefined))")
+	endif (CMAKE_C_COMPILER_ID MATCHES "Clang")
+else (ENABLE_ASAN)
+	set (ELEKTRA_NO_SANITIZE_INTEGER "")
+	set (ELEKTRA_NO_SANITIZE_UNDEFINED "")
+endif(ENABLE_ASAN)
+
+
 set (BUILTIN_SPEC_FOLDER
 	"${CMAKE_INSTALL_PREFIX}/${KDB_DB_SPEC}")
 set (BUILTIN_SPEC_REAL_FOLDER

@@ -75,6 +75,10 @@
 /** Declares an API as deprecated. */
 #define ELEKTRA_DEPRECATED       @ELEKTRA_DEPRECATED@
 
+/** Declares non sanitize for asan. */
+#define ELEKTRA_NO_SANITIZE_INTEGER	@ELEKTRA_NO_SANITIZE_INTEGER@
+#define ELEKTRA_NO_SANITIZE_UNDEFINED	@ELEKTRA_NO_SANITIZE_UNDEFINED@
+
 /** Where plugins are installed */
 #define BUILTIN_PLUGIN_FOLDER    "@BUILTIN_PLUGIN_FOLDER@"
 
