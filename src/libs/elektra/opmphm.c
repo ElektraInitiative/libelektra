@@ -21,11 +21,12 @@ static int hasCycle (Opmphm * opmphm, OpmphmGraph * graph, size_t n);
  * @brief Looks up a element in the OPMPHM.
  *
  * @param opmphm the OPMPHM
+ * @param n the number of elements
  * @param name the name of the element
  *
  * @retval size_t the order of the element.
  */
-size_t opmphmLookup (Opmphm * opmphm, const void * name)
+size_t opmphmLookup (Opmphm * opmphm, size_t n, const void * name)
 {
 	ELEKTRA_NOT_NULL (opmphm);
 	ELEKTRA_ASSERT (opmphm->rUniPar > 0 && opmphm->componentSize > 0, "passed opmphm is uninitialized");
@@ -44,7 +45,7 @@ size_t opmphmLookup (Opmphm * opmphm, const void * name)
 #endif
 		ret += opmphm->graph[r * opmphm->componentSize + hash];
 	}
-	return ret % (opmphm->componentSize * opmphm->rUniPar);
+	return ret % n;
 }
 
 /**
@@ -63,12 +64,6 @@ size_t opmphmLookup (Opmphm * opmphm, const void * name)
  * @retval 0 on success
  * @retval -1 on memory error
  */
-// In this function is a controlled integer overflow. This function will be refactored before time benchmarks, for now ignore it!
-#if defined(__has_feature)
-#if __has_feature(address_sanitizer)
-__attribute__((no_sanitize("integer")))
-#endif
-#endif
 int opmphmAssignment (Opmphm * opmphm, OpmphmGraph * graph, size_t n, int defaultOrder)
 {
 	ELEKTRA_NOT_NULL (opmphm);
@@ -90,12 +85,14 @@ int opmphmAssignment (Opmphm * opmphm, OpmphmGraph * graph, size_t n, int defaul
 		opmphmClear (opmphm);
 		return -1;
 	}
-	for (ssize_t i = n - 1; i >= 0; --i)
+	size_t i = n;
+	do
 	{
+		--i;
 		// assign edge e
 		// find out how many vertices are assigned and what is the sum of the values
 		uint8_t notAssignedCount = 0;
-		ssize_t assignedValue = 0;
+		size_t assignedValue = 0;
 		size_t e = graph->removeOrder[i];
 		for (uint8_t r = 0; r < opmphm->rUniPar; ++r)
 		{
@@ -128,25 +125,31 @@ int opmphmAssignment (Opmphm * opmphm, OpmphmGraph * graph, size_t n, int defaul
 			size_t v = r * opmphm->componentSize + graph->edges[e].h[r];
 			if (!isAssigned[v])
 			{
-				ssize_t diff;
+				size_t order;
 				if (defaultOrder)
 				{
-					diff = ((ssize_t)e - assignedValue) % (ssize_t) (opmphm->componentSize * opmphm->rUniPar);
+					order = e;
 				}
 				else
 				{
-					diff = ((ssize_t)graph->edges[e].order - assignedValue) %
-					       (ssize_t) (opmphm->componentSize * opmphm->rUniPar);
+					order = graph->edges[e].order;
 				}
-				if (diff < 0)
+				if (assignedValue >= n)
 				{
-					diff += opmphm->componentSize * opmphm->rUniPar; // controlled integer overflow, here!!
+					assignedValue = assignedValue % n;
 				}
-				opmphm->graph[v] = diff;
+				if (assignedValue <= order)
+				{
+					opmphm->graph[v] = order - assignedValue;
+				}
+				else
+				{
+					opmphm->graph[v] = n - assignedValue + order;
+				}
 				isAssigned[v] = 1;
 			}
 		}
-	}
+	} while (i);
 	elektraFree (isAssigned);
 	return 0;
 }
@@ -650,13 +653,9 @@ void opmphmClear (Opmphm * opmphm)
 #ifndef ELEKTRA_BIG_ENDIAN
 // little endian
 // sanitize a hash function is silly, so ignore it!
-#if defined(__has_feature)
-#if __has_feature(address_sanitizer)
-__attribute__ ((no_sanitize ("integer", "undefined")))
-#endif
-#endif
-uint32_t
-opmphmHashfunction (const void * key, size_t length, uint32_t initval)
+ELEKTRA_NO_SANITIZE_UNDEFINED
+ELEKTRA_NO_SANITIZE_INTEGER
+uint32_t opmphmHashfunction (const void * key, size_t length, uint32_t initval)
 {
 	uint32_t a, b, c;
 	a = b = c = 0xdeadbeef + ((uint32_t)length) + initval;
@@ -729,13 +728,9 @@ opmphmHashfunction (const void * key, size_t length, uint32_t initval)
 #else
 // big endian
 // sanitize a hash function is silly, so ignore it!
-#if defined(__has_feature)
-#if __has_feature(address_sanitizer)
-__attribute__ ((no_sanitize ("integer", "undefined")))
-#endif
-#endif
-uint32_t
-opmphmHashfunction (const void * key, size_t length, uint32_t initval)
+ELEKTRA_NO_SANITIZE_UNDEFINED
+ELEKTRA_NO_SANITIZE_INTEGER
+uint32_t opmphmHashfunction (const void * key, size_t length, uint32_t initval)
 {
 	uint32_t a, b, c;
 	a = b = c = 0xdeadbeef + ((uint32_t)length) + initval;
