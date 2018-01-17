@@ -2004,7 +2004,7 @@ static Key * elektraLookupOpmphmSearch (KeySet * ks, Key const * key, option_t o
 
 	cursor_t cursor = 0;
 	cursor = ksGetCursor (ks);
-	size_t index = opmphmLookup (ks->opmphm, keyName (key));
+	size_t index = opmphmLookup (ks->opmphm, ks->size, keyName (key));
 	if (index >= ks->size)
 	{
 		return 0;
@@ -2048,8 +2048,9 @@ static Key * elektraLookupSearch (KeySet * ks, Key * key, option_t options)
 		void * v;
 	} conversation;
 
-#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+	Key * found = 0;
 
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 	// OPMPHM always on
 	options |= KDB_O_OPMPHM;
 
@@ -2059,8 +2060,6 @@ static Key * elektraLookupSearch (KeySet * ks, Key * key, option_t options)
 		// remove OPMPHM
 		options ^= KDB_O_OPMPHM;
 	}
-
-	Key * found = 0;
 
 	if (options & KDB_O_OPMPHM)
 	{
@@ -2085,14 +2084,8 @@ static Key * elektraLookupSearch (KeySet * ks, Key * key, option_t options)
 	{
 		found = elektraLookupBinarySearch (ks, key, options);
 	}
-
-	// OPMPHM needs to be removed due to callback stuff
-	if (options & KDB_O_OPMPHM)
-	{
-		options ^= KDB_O_OPMPHM;
-	}
 #else
-	Key * found = elektraLookupBinarySearch (ks, key, options);
+	found = elektraLookupBinarySearch (ks, key, options);
 #endif
 	Key * ret = found;
 
