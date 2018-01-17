@@ -296,7 +296,7 @@ static void test_acyclicDefaultOrder (void)
 			exit_if_fail (opmphmAssignment (opmphm, graph, n, 1) == 0, "opmphmAssignment");
 			for (size_t i = 0; i < n; ++i)
 			{
-				succeed_if (opmphmLookup (opmphm, graph->edges[i].h) == i, "lookup");
+				succeed_if (opmphmLookup (opmphm, n, graph->edges[i].h) == i, "lookup");
 			}
 			// cleanup
 			opmphmDel (opmphm);
@@ -356,7 +356,7 @@ static void test_acyclicReverseOrder (void)
 			exit_if_fail (opmphmAssignment (opmphm, graph, n, 0) == 0, "opmphmAssignment");
 			for (size_t i = 0; i < n; ++i)
 			{
-				succeed_if (opmphmLookup (opmphm, graph->edges[i].h) == n - 1 - i, "lookup");
+				succeed_if (opmphmLookup (opmphm, n, graph->edges[i].h) == n - 1 - i, "lookup");
 			}
 			// cleanup
 			opmphmDel (opmphm);

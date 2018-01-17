@@ -86,7 +86,7 @@ int opmphmAssignment (Opmphm * opmphm, OpmphmGraph * graph, size_t n, int defaul
 /**
  * Lookup functions
  */
-size_t opmphmLookup (Opmphm * opmphm, const void * name);
+size_t opmphmLookup (Opmphm * opmphm, size_t n, const void * name);
 
 /**
  * Basic functions

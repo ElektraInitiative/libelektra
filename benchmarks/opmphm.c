@@ -320,7 +320,8 @@ static void benchmarkMapping (void)
 							}
 							for (size_t i = 0; i < n[nI]; ++i)
 							{
-								if (i != opmphmLookup (opmphms[threadI], init.getName (init.data[i])))
+								if (i !=
+								    opmphmLookup (opmphms[threadI], n[nI], init.getName (init.data[i])))
 								{
 									printExit ("check assignment failed");
 								}
@@ -616,7 +617,7 @@ static void benchmarkMappingOpt (void)
 						}
 						for (size_t i = 0; i < n[nI]; ++i)
 						{
-							if (i != opmphmLookup (opmphms[threadI], init.getName (init.data[i])))
+							if (i != opmphmLookup (opmphms[threadI], n[nI], init.getName (init.data[i])))
 							{
 								printExit ("check assignment failed");
 							}
