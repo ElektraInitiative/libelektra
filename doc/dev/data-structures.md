@@ -364,19 +364,21 @@ Continue reading [with the error handling](error-handling.md).
 
 ## Order Preserving Minimal Perfect Hash Map (aka OPMPHM)
 
-All structs are defined in [opmphm.h](/src/include/kdbopmphm.h).
-
-The OPMPHM is a randomized hash map of the Las Vegas type, that creates an index over the elements,
+The OPMPHM is a non dynamic randomized hash map of the Las Vegas type, that creates an index over the elements,
 to gain O(1) access.
 
-The OPMPHM represent an arbitrary index over your elements arranged in an array.
-The desired index of an element, also known as the order is set in `OpmphmGraph->edges[i].order`.
-Where `i` is the i-th element in your array.
-Since you can assign arbitrary values as the order, the array of your elements can have gaps and even
-have equal orders for two different elements.
-Those orders must be specified before inserting all elements in the OPMPHM, also known as build.
+The elements must be arranged in an array and each element must have a unique name, to identify the elements.
+The source can be found in [kdbopmphm.h](/src/include/kdbopmphm.h) and [opmphm.c](/src/libs/elektra/opmphm.c)
+and works also outside of Elektra.
 
-Once the OPMPHM is build, every:
+The OPMPHM does not store any buckets, your array of elements are the buckets and the OPMPHM represent an arbitrary
+index over those. The desired index of an element, also known as the order, is set in `OpmphmGraph->edges[i].order`,
+where `i` is the i-th element in your array. When the orders should represent the array indices, the default order
+can be applied during the assignment step. When the orders are not the default order, `OpmphmGraph->edges[i].order`
+should be set before the assignment step.
+
+The OPMPHM is non dynamic, there are no insert and delete operations. The OPMPHM gets build for a static set of
+elements, once the OPMPHM is build, every:
 
  * change of at least one indexed element name
  * addition of a new element
@@ -422,8 +424,7 @@ construct the random acyclic r-uniform r-partite hypergraph, this might not succ
 #### Assignment
 
 The `opmphmAssignment ()` function assigns either your order (set at `OpmphmGraph->edges[i].order`) or a default order.
-The default order is the order of `OpmphmInit->data`. The `defaultOrder` parameter indicates the behavior.
-When the OPMPHM is build with the default order, `OpmphmGraph->edges[i].order` must not be set.
+The `defaultOrder` parameter indicates the behavior.
 
 After the build the OpmphmInit and OpmphmGraph should be freed.
 The OPMPHM is now ready for constant lookups with the `opmphmLookup ()`.
