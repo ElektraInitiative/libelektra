@@ -26,6 +26,10 @@ main = hspec $
     ksAfter <- ksNew 1
     kdbOpen parent $ \kdbAfter -> do
       _ <- kdbGet kdbAfter ksAfter parent
-      ksLookupByName ksAfter haskellPersisted >>= keyName >>= (`shouldBe` haskellPersisted)
+      keyAfter <- ksLookupByNameO ksAfter haskellPersisted KdbOPop
+      keyName keyAfter >>= (`shouldBe` haskellPersisted)
+      -- Now set the kdb to the initial state again with the key popped
+      _ <- kdbSet kdbAfter ksAfter parent
+      return ()
   where
     haskellPersisted = "user/tests/testhaskell_cabal/haskellPersisted"
