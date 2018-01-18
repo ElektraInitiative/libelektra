@@ -1,7 +1,7 @@
 - infos = Information about the process plugin is in keys below
 - infos/author = Armin Wurzinger <e1528532@libelektra.org>
 - infos/licence = BSD
-- infos/needs =
+- infos/needs = dump
 - infos/provides =
 - infos/recommends =
 - infos/placements = prerollback rollback postrollback getresolver pregetstorage getstorage postgetstorage setresolver presetstorage setstorage precommit commit postcommit
@@ -18,12 +18,11 @@ process.
 
 ## Usage
 
-To use this plugin, simply mount a file with the process plugin and specify the
-plugin that should be proxied with the key `process=`.
+Mount this plugin and specify the plugin configuration parameter `plugin` to a plugin that exists on the system. The proxied plugin will then be executed in a separate process and this plugin handles the communication between the processes.
 
 ## Dependencies
 
-None.
+The `pluginprocess` library, which is only available on POSIX environments currently.
 
 ## Examples
 
@@ -45,4 +44,4 @@ sudo kdb umount /tests/process
 
 ## Limitations
 
-None.
+This plugin cannot act as a proxy for itself to prevent loops.
