@@ -16,7 +16,7 @@
 #define USE_STDERR_SINK
 #define USE_SYSLOG_SINK
 // #define USE_FILE_SINK
-// #define NO_FILTER
+#define NO_FILTER
 
 
 #define _GNU_SOURCE /* For asprintf */

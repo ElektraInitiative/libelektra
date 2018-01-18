@@ -18,9 +18,13 @@ static void test_basics (void)
 {
 	printf ("test basics\n");
 
-	Key * parentKey = keyNew ("user/tests/process", KEY_END);
+	const char * tmpFile = elektraFilename ();
+
+	Key * parentKey = keyNew ("user/tests/process", KEY_VALUE, tmpFile, KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
-	Key * pluginKey = keyNew ("/plugin", KEY_VALUE, "base64", KEY_END);
+	// We can safely assume dump exists as without it the processplugin wouldn't work
+	// We don't test any other plugin here since we can't make any guarantees about their existence
+	Key * pluginKey = keyNew ("/plugin", KEY_VALUE, "dump", KEY_END);
 	ksAppendKey (conf, pluginKey);
 	PLUGIN_OPEN ("process");
 
@@ -31,11 +35,12 @@ static void test_basics (void)
 	Key * contractKey = keyNew ("system/elektra/modules/process", KEY_END);
 	KeySet * contractSet = ksNew (0, KS_END);
 
-	succeed_if (plugin->kdbGet (plugin, contractSet, contractKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet for the contract was not successful");
+	succeed_if (plugin->kdbGet (plugin, contractSet, contractKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS,
+		    "call to kdbGet for the contract was not successful");
 
-	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "call to kdbGet was not successful");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
 
-	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "call to kdbSet was not successful");
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
 
 	succeed_if (plugin->kdbError (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbError was not successful");
 
@@ -46,8 +51,49 @@ static void test_basics (void)
 	keyDel (parentKey);
 	ksDel (ks);
 	PLUGIN_CLOSE ();
+	elektraUnlink (tmpFile);
 }
 
+static void test_no_plugin_key (void)
+{
+	printf ("test no plugin key \n");
+
+	Key * parentKey = keyNew ("user/tests/process", KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	// No plugin key, should fail
+	KeySet * modules = ksNew (0, KS_END);
+	elektraModulesInit (modules, 0);
+	Key * errorKey = keyNew ("", KEY_END);
+	Plugin * plugin = elektraPluginOpen ("process", modules, conf, errorKey);
+	succeed_if (!output_warnings (errorKey), "no warnings in kdbOpen for plugin process");
+	succeed_if (!output_error (errorKey), "no error in kdbOpen for plugin process");
+	keyDel (errorKey);
+	exit_if_fail (plugin == 0, "could open process plugin");
+
+	keyDel (parentKey);
+}
+
+static void test_invalid_plugin_key (void)
+{
+	printf ("test invalid plugin key\n");
+
+	Key * parentKey = keyNew ("user/tests/process", KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	Key * pluginKey = keyNew ("/plugin", KEY_VALUE, "non_existent_plugin", KEY_END);
+	ksAppendKey (conf, pluginKey);
+
+	// Non-existent plugin, should fail
+	KeySet * modules = ksNew (0, KS_END);
+	elektraModulesInit (modules, 0);
+	Key * errorKey = keyNew ("", KEY_END);
+	Plugin * plugin = elektraPluginOpen ("process", modules, conf, errorKey);
+	succeed_if (!output_warnings (errorKey), "no warnings in kdbOpen for plugin process");
+	succeed_if (!output_error (errorKey), "no error in kdbOpen for plugin process");
+	keyDel (errorKey);
+	exit_if_fail (plugin == 0, "could open process plugin");
+
+	keyDel (parentKey);
+}
 
 int main (int argc, char ** argv)
 {
@@ -57,6 +103,8 @@ int main (int argc, char ** argv)
 	init (argc, argv);
 
 	test_basics ();
+	test_no_plugin_key ();
+	test_invalid_plugin_key ();
 
 	print_result ("testmod_process");
 
