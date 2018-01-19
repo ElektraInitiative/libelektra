@@ -49,6 +49,10 @@ do
 		# exclude due to issue 1781
 		continue
 		;;
+	"process")
+		# does not work without an existing plugin to proxy
+		continue
+		;;
 	esac
 
 	# The following checks fail on an ASAN enabled build
