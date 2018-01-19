@@ -11,14 +11,16 @@
 
 ## Introduction
 
-This plugin utilizes the pluginprocess library in order to execute arbitrary other
-plugins in an own process, acting as a proxy itself. Therefore it is not required 
-to explicitly change a plugin's implementation if it shall be executed in an own
-process.
+The process plugin uses the `pluginprocess` library in order to execute other plugins inside an own process. 
+This is useful for plugins which cause memory leaks to be isolated in an own process. Furthermore 
+this is useful for runtimes or libraries that cannot be reinitialized in the same process after they 
+have been used.
 
 ## Usage
 
-Mount this plugin and specify the plugin configuration parameter `plugin` to a plugin that exists on the system. The proxied plugin will then be executed in a separate process and this plugin handles the communication between the processes.
+Mount this plugin and specify the plugin configuration parameter `plugin` to a plugin that exists on 
+the system. The proxied plugin will then be executed in a separate process and this plugin handles 
+the communication between the processes.
 
 ## Dependencies
 
