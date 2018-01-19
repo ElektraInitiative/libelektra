@@ -548,7 +548,7 @@ extern "C" pid_t fork ()
 
 Key * elektraContextEvaluation (ELEKTRA_UNUSED KeySet * ks, ELEKTRA_UNUSED Key * key, Key * found, option_t option)
 {
-	if (found && !strncmp (keyName (found), "spec/", 5) && (option & KDB_O_CALLBACK))
+	if (found && !strncmp (keyName (found), "spec/", 5) && option == KDB_O_CALLBACK)
 	{
 		const Key * meta = keyGetMeta (found, "context");
 		if (meta)
