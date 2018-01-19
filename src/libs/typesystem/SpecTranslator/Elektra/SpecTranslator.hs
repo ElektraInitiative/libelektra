@@ -44,7 +44,8 @@ translateSpecifications ts ks = mkModule $ translatedTypes ++ translatedTypeDefi
     translatedTypes           = concatMap translateType ts
     translateTypeParameters   = concatMap (translateTypeDefinitions . baseType) . typeParameters
     translatedTypeDefinitions = nub $ concatMap translateTypeParameters typeDefinitions
-    translatedKeyDefinitions  = concatMap (translateKey functions) resolvedFunctions
+    filteredKeyDefinitions    = filter (not . null . path) resolvedFunctions
+    translatedKeyDefinitions  = concatMap (translateKey functions) filteredKeyDefinitions
 
 extract :: FunctionMap -> KeySpecification -> (KeySpecification, FunctionExchangeMap)
 extract fm ks = (ks { functionCandidates = functionCandidates ks \\ targetingOther }
