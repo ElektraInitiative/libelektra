@@ -31,6 +31,8 @@ library
                    , hint
                    , directory
                    , temporary
+                   , text
+                   , simple-logger
   default-language:  Haskell2010
   other-extensions:  ForeignFunctionInterface
   ghc-options:       -fPIC

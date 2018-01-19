@@ -1,6 +1,6 @@
-{-# LANGUAGE TypeFamilies, UndecidableInstances,
+{-# LANGUAGE TypeFamilies, UndecidableInstances, OverloadedStrings,
   ExistentialQuantification, TypeInType, GADTs, TypeOperators #-}
-module Elektra.Typechecker where
+module Elektra.Typechecker () where
 
 import Elektra.Key
 import Elektra.KeySet
@@ -9,32 +9,32 @@ import Elektra.SpecTranslator
 import Elektra.SpecParser
 
 import Control.Monad                (mapM_)
+import Control.Logger.Simple
 import Text.PrettyPrint
 import Language.Haskell.Exts.Pretty
 import Language.Haskell.Interpreter
 import Data.List                    (intercalate, isPrefixOf)
-import Control.Monad                (mapM_)
 import System.IO.Temp               (writeTempFile)
 import System.Directory             (removeFile)
-
 import Foreign.Ptr
 
+import qualified Data.Text as T
+
 typecheck :: KeySet -> Key -> IO ()
-typecheck ks k = do
-  putStepLn "Parse Specifications now."
+typecheck ks k = withGlobalLogging (LogConfig Nothing True) $ do
+  logDebug "Parse Specifications now."
 
   typeSpecs <- parseTypeSpecifications ks
-  putStrLn $ "Got " ++ show (length typeSpecs) ++ " function specifications"
-  mapM_ print typeSpecs
-  putEmptyLn
+  logDebugT $ "Got " ++ show (length typeSpecs) ++ " function specifications"
+  mapM_ (logDebugT . show) typeSpecs
 
   keySpecs <- parseKeySpecifications ks
-  putStrLn $ "Got " ++ show (length keySpecs) ++ " key specifications"
-  mapM_ print keySpecs
+  logDebugT $ "Got " ++ show (length keySpecs) ++ " key specifications"
+  mapM_ (logDebugT . show) keySpecs
 
   putStepLn "Done Parsing all Specifications, now translate them."
   let rendered = renderStyle style {lineLength = 320} $ prettyPrim $ translateSpecifications typeSpecs keySpecs
-  putStrLn rendered
+  logDebugT rendered
   
   putStepLn "Done Translating all Specifications."
   specFile <- writeTempFile "/tmp/" "testSpecification.hs" rendered
@@ -44,11 +44,10 @@ typecheck ks k = do
     Left err -> do
       -- TODO use error code
       _ <- keySetMeta k "specElektra/typeError" (errorString err)
-      putStrLn $ errorString err
+      logDebugT $ errorString err
     Right () -> return ()
   where
-    putStepLn s = putEmptyLn >> putStrLn s >> putEmptyLn
-    putEmptyLn = putStrLn ""
+    putStepLn s = logDebugT $ "\n" ++ s ++ "\n"
 
 keyInterpreter :: FilePath -> InterpreterT IO ()
 keyInterpreter specFile = do
@@ -71,7 +70,10 @@ errorString (WontCompile es) = intercalate "\n" (header : map unbox es)
 errorString e = show e
 
 say :: String -> Interpreter ()
-say = liftIO . putStrLn
+say = liftIO . logDebugT
+
+logDebugT :: MonadIO m => String -> m ()
+logDebugT = logDebug . T.pack
 
 elektraTypecheckerOpen :: Plugin -> Key -> IO PluginStatus
 elektraTypecheckerOpen _ _ = return Success
