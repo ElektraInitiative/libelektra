@@ -303,7 +303,7 @@ int elektraInvoke2Args (ElektraInvokeHandle * handle, const char * elektraPlugin
 	}
 
 	typedef int (*elektra2Args) (Plugin *, KeySet *, Key *);
-	elektra2Args func = *(elektra2Args *) uncastedFunc;
+	elektra2Args func = *(elektra2Args *)uncastedFunc;
 	return func (handle->plugin, ks, k);
 }
 
