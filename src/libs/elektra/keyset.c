@@ -2051,6 +2051,7 @@ static Key * elektraLookupSearch (KeySet * ks, Key * key, option_t options)
 	Key * found = 0;
 
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+	int opmphmOptionIsSet = 0;
 	// OPMPHM always on
 	options |= KDB_O_OPMPHM;
 
@@ -2063,6 +2064,7 @@ static Key * elektraLookupSearch (KeySet * ks, Key * key, option_t options)
 
 	if (options & KDB_O_OPMPHM)
 	{
+		opmphmOptionIsSet = 1;
 		if (!ks->opmphm || !opmphmIsBuild (ks->opmphm))
 		{
 			if (elektraLookupBuildOpmphm (ks))
@@ -2084,6 +2086,11 @@ static Key * elektraLookupSearch (KeySet * ks, Key * key, option_t options)
 	{
 		found = elektraLookupBinarySearch (ks, key, options);
 	}
+	// OPMPHM needs to be removed due to callback stuff
+	if (opmphmOptionIsSet)
+	{
+		options ^= KDB_O_OPMPHM;
+	}
 #else
 	found = elektraLookupBinarySearch (ks, key, options);
 #endif
@@ -2099,6 +2106,13 @@ static Key * elektraLookupSearch (KeySet * ks, Key * key, option_t options)
 			}
 		}
 	}
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+	// callback done add KDB_O_OPMPHM
+	if (opmphmOptionIsSet)
+	{
+		options ^= KDB_O_OPMPHM;
+	}
+#endif
 
 	return ret;
 }
