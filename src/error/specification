@@ -1195,3 +1195,10 @@ severity:error
 ingroup:plugin
 module:pluginprocess
 macro:PLUGIN_PROCESS_COMMAND
+
+number:192
+description:The mounted specification failed the typecheck
+severity:warning
+ingroup:plugin
+module:typechecker
+macro:PLUGIN_TYPECHECKER

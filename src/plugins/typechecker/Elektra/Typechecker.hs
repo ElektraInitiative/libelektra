@@ -7,6 +7,7 @@ import Elektra.KeySet
 import Elektra.Plugin
 import Elektra.SpecTranslator
 import Elektra.SpecParser
+import Elektra.Errors
 
 import Control.Monad                (mapM_)
 import Control.Logger.Simple
@@ -49,9 +50,9 @@ typecheck ks k =
   removeFile specFile
   case r of
     Left err -> do
-      -- TODO use error code
-      _ <- keySetMeta k "specElektra/typeError" (errorString err)
-      logDebugT $ errorString err
+      let errStr = errorString err
+      triggerWarnings 192 k errStr
+      logDebugT errStr
     Right () -> return ()
   where
     putStepLn s = logDebugT $ "\n" ++ s ++ "\n"
