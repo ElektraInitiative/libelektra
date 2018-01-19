@@ -59,9 +59,7 @@ typecheck ks k =
 
 keyInterpreter :: FilePath -> InterpreterT IO ()
 keyInterpreter specFile = do
-  -- this way we don't need to have it installed in the system
-  -- TODO make this more portable or configurable
-  loadModules ["/Users/admin/git/libelektra/src/libs/typesystem/SpecElektra/Elektra/specElektra.hs", specFile]
+  loadModules ["@CMAKE_INSTALL_PREFIX@/@KDB_DB_SPEC@/specElektra.hs", specFile]
   say "Loaded our rendered specification, now we can infer the stuff in it."
   setTopLevelModules ["TestSpecification"]
   getModuleExports "TestSpecification" >>= mapM_ showTypes . filter isFun . filter (not . isPrefixOf "specElektraRawKey" . name)
