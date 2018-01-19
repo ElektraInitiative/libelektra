@@ -1,5 +1,5 @@
 {-# LANGUAGE TypeFamilies, UndecidableInstances, OverloadedStrings,
-  ExistentialQuantification, TypeInType, GADTs, TypeOperators #-}
+  ExistentialQuantification, TypeInType, GADTs, TypeOperators, CPP #-}
 module Elektra.Typechecker () where
 
 import Elektra.Key
@@ -21,7 +21,14 @@ import Foreign.Ptr
 import qualified Data.Text as T
 
 typecheck :: KeySet -> Key -> IO ()
-typecheck ks k = withGlobalLogging (LogConfig Nothing True) $ do
+typecheck ks k =
+  #ifdef ENABLE_LOGGER_ON
+  withGlobalLogging (LogConfig Nothing True)
+  #else
+  withGlobalLogging (LogConfig Nothing False)
+  #endif
+  $ do
+
   logDebug "Parse Specifications now."
 
   typeSpecs <- parseTypeSpecifications ks

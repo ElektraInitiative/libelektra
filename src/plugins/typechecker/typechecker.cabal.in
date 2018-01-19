@@ -22,6 +22,7 @@ library
                    , UndecidableInstances
                    , ExistentialQuantification
                    , GADTs
+                   , CPP
   build-depends:     base >= 4.7 && < 5
                    , libelektra-haskell
                    , SpecElektra
@@ -33,9 +34,9 @@ library
                    , temporary
                    , text
                    , simple-logger
+  cpp-options:       -DENABLE_LOGGER_@ENABLE_LOGGER@
   default-language:  Haskell2010
   other-extensions:  ForeignFunctionInterface
-  ghc-options:       -fPIC
   
 source-repository head
   type:     git
