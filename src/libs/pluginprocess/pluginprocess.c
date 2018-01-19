@@ -92,21 +92,21 @@ void elektraPluginProcessStart (Plugin * handle, ElektraPluginProcess * pp)
 			// Its hard to figure out the enum size in a portable way but for this comparison it should be ok
 			switch (command)
 			{
-			case ELEKTRA_PLUGIN_OPEN:
+			case ELEKTRA_PLUGINPROCESS_OPEN:
 				counter++;
 				result = handle->kdbOpen (handle, originalKey);
 				break;
-			case ELEKTRA_PLUGIN_CLOSE:
+			case ELEKTRA_PLUGINPROCESS_CLOSE:
 				counter--;
 				result = handle->kdbClose (handle, originalKey);
 				break;
-			case ELEKTRA_PLUGIN_GET:
+			case ELEKTRA_PLUGINPROCESS_GET:
 				result = handle->kdbGet (handle, keySet, originalKey);
 				break;
-			case ELEKTRA_PLUGIN_SET:
+			case ELEKTRA_PLUGINPROCESS_SET:
 				result = handle->kdbSet (handle, keySet, originalKey);
 				break;
-			case ELEKTRA_PLUGIN_ERROR:
+			case ELEKTRA_PLUGINPROCESS_ERROR:
 				result = handle->kdbError (handle, keySet, originalKey);
 				break;
 			default:
@@ -145,9 +145,9 @@ void elektraPluginProcessStart (Plugin * handle, ElektraPluginProcess * pp)
  *
  * This will wrap all the required information to execute the given
  * command in a keyset and send it over to the child process. Then
- * it waits for the child process's answer and copies the result 
+ * it waits for the child process's answer and copies the result
  * back into the original plugin keyset and plugin key.
- * 
+ *
  * Typically called like
  * @code
 int elektraPluginSet (Plugin * handle, KeySet * returned, Key * parentKey)
@@ -169,7 +169,7 @@ int elektraPluginSet (Plugin * handle, KeySet * returned, Key * parentKey)
  * @see elektraPluginProcessIsParent for checking if we are in the parent or child process
  * @ingroup processplugin
  **/
-int elektraPluginProcessSend (const ElektraPluginProcess * pp, plugin_t command, KeySet * originalKeySet, Key * key)
+int elektraPluginProcessSend (const ElektraPluginProcess * pp, pluginprocess_t command, KeySet * originalKeySet, Key * key)
 {
 	// Some plugin functions don't use keysets, but we need one for our
 	// simple communication protocol, so create a temporary one
@@ -288,7 +288,7 @@ static char * getPipename (Key * errorKey, char * suffix)
  * Also the resulting process information has to be stored for the plugin.
  * In order to allow users to handle custom plugin data this will not
  * automatically call elektraPluginSetData.
- * 
+ *
  * Typically called in a plugin's open function like (assuming no custom plugin data):
  * @code
 int elektraPluginOpen (Plugin * handle, Key * errorKey)
@@ -352,9 +352,9 @@ ElektraPluginProcess * elektraPluginProcessInit (Key * errorKey)
 
 /** Call a plugin's open function in a child process
  *
- * This will increase the internal counter how often open/close has been called, 
+ * This will increase the internal counter how often open/close has been called,
  * so the opened pipes and forks will not be closed too early.
- * 
+ *
  * @param pp the data structure containing the plugin's process information
  * @param errorKey a key where error messages will be set
  * @retval the return value of the plugin's open function
@@ -364,12 +364,12 @@ ElektraPluginProcess * elektraPluginProcessInit (Key * errorKey)
 int elektraPluginProcessOpen (ElektraPluginProcess * pp, Key * errorKey)
 {
 	pp->counter = pp->counter + 1;
-	return elektraPluginProcessSend (pp, ELEKTRA_PLUGIN_OPEN, NULL, errorKey);
+	return elektraPluginProcessSend (pp, ELEKTRA_PLUGINPROCESS_OPEN, NULL, errorKey);
 }
 
 /** Cleanup a plugin process
  *
- * This will decrease the internal counter how often open/close has been called, 
+ * This will decrease the internal counter how often open/close has been called,
  * closing opened pipes when the counter reaches 0. This will not delete the
  * plugin data associated with the handle as it may contain other data out of
  * the scope of this library, so this has to be done manually like
@@ -385,8 +385,8 @@ int elektraPluginClose (Plugin * handle, Key * errorKey)
 
 	// actual plugin functionality to be executed in a child process
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
-}	
- * @endcode 
+}
+ * @endcode
  *
  * @param pp the data structure containing the plugin's process information
  * @retval 1 if the data structure got cleaned up
