@@ -1,13 +1,13 @@
-- infos = Information about the haskell plugin is in keys below
+- infos = Information about the typechecker plugin is in keys below
 - infos/author = e1528532 <e1528532@libelektra.org>
 - infos/licence = BSD
-- infos/needs =
-- infos/provides =
+- infos/needs = 
+- infos/provides = typechecker
 - infos/recommends =
 - infos/placements = postgetstorage presetstorage
 - infos/status = maintained experimental global
 - infos/metadata =
-- infos/description = base for haskell plugins
+- infos/description = a plugin which typechecks configuration specifications
 
 ## Introduction
 
@@ -16,20 +16,25 @@ a mounted specification.
 
 ## Usage
 
-This plugin on its own provides a minimalistic implementation to test
-the basic functionality, but acts as a base for developing further haskell plugins.
+To see its functionality there will be a test specification installed into 
+`/usr/local/share/elektra/specifications/simpleTestSpecification.ini`. This
+path may vary slightly depending on the build configuration. The file can be
+typechecked by mounting it along with the typechecker plugin by calling
 
-Use the cmake command add_haskell_plugin which can used by including LibAddHaskellPlugin.
-This command will take care about the proper linking of your haskell plugin. Furthermore it 
-uses the c wrapper provided by this plugin so this doesn't have to be done again.
+`kdb mount simpleTestSpecification.ini spec/examples ini typechecker`
+
+This test specification has no errors by default and will thus report nothing,
+but if you alter it you can experiment with the typechecker. If Elektra is compiled
+with the ENABLE_LOGGER flag, it will log the inferred types in all cases so the
+type behavior can be observed when getting/setting a key in a specification.
 
 ## Dependencies
 
-* Elektra Haskell bindings installed
 * ghc, tested with 8.1.2, may work with older versions as well
 * ghc-pkg, usually bundled with ghc
 * cabal, the haskell build system, usually bundled with ghc
 
 ## Limitations
 
-None.
+Very experimental. Typechecking currently only happens when getting or setting
+a key in a mounted specification. Errors are currently very raw and haskell-focused.
