@@ -48,6 +48,8 @@ int main (int argc, char ** argv)
 	init (argc, argv);
 
 	test_basics ();
+	// Test again to check loading/unloading the haskell plugin works
+	test_basics ();
 
 	print_result ("testmod_haskell");
 

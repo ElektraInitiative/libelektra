@@ -1,5 +1,12 @@
 language: cpp
 
+cache:
+  directories:
+    $HOME/.m2
+    $HOME/.cabal
+    $HOME/Library/Haskell
+    $TRAVIS_BUILD_DIR/../build/.cabal-sandbox
+
 #
 # Define the build matrix
 #
@@ -30,13 +37,6 @@ matrix:
       compiler: gcc
       env: [ FULL=ON ]
 
-    # HASKELL: Only build Haskell binding and plugin
-
-    - os: osx
-      osx_image: xcode9.1
-      compiler: clang
-      env: [ HASKELL=ON ]
-
     - os: osx
       osx_image: xcode9.1
       compiler: gcc
@@ -44,6 +44,13 @@ matrix:
     - os: osx
       osx_image: xcode9.1
       compiler: clang
+
+    # HASKELL: Only build Haskell binding and plugin
+
+    - os: osx
+      osx_image: xcode9.1
+      compiler: clang
+      env: [ HASKELL=ON ]
 
     - os: linux
       compiler: gcc
@@ -96,9 +103,12 @@ before_install:
     if [[ "$TRAVIS_OS_NAME" == "osx" && "$HASKELL" == "ON" ]] ; then
       brew install cabal-install
       cabal update
-      cabal install happy alex
+      # avoid reinstalls if we already have them cached
+      # disable everything that slows down compilation times of the dependencies to have reasonable travis build times
       PATH=$PATH:"$HOME/.cabal/bin"
-      cabal install QuickCheck hspec c2hs
+      which happy || cabal install happy
+      which alex || cabal install alex
+      which c2hs || cabal install c2hs
     fi
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
@@ -119,7 +129,8 @@ before_script:
   - >
     [[ "$TRAVIS_OS_NAME" == "linux" ]] && INSTALL_DIR="$PWD/install" || INSTALL_DIR="/usr/local"
   - SYSTEM_DIR="$PWD/kdbsystem"
-  - mkdir build && cd build
+  # gets created due to sandbox caching automatically
+  - cd build
   - >
     [[ $ASAN == ON ]] && CMAKE_OPT=(-DENABLE_ASAN=ON) || CMAKE_OPT=()
   - if [[ $FULL == ON ]]; then CMAKE_OPT+=(-DBUILD_FULL=ON); fi
@@ -127,7 +138,10 @@ before_script:
     if [[ "$TRAVIS_OS_NAME" == "linux" && "$CC" == "clang" || "$TRAVIS_OS_NAME" == "osx" && "${CC:0:3}" == "gcc" ]]; then
       CMAKE_OPT+=("-DCOMMON_FLAGS=-Werror")
     fi
+  # use a minimal configuration for the haskell bindings to give it enough time to compile dependencies
   - if [[ $HASKELL == ON ]]; then bindings="haskell"; fi
+  - if [[ $HASKELL == ON ]]; then plugins="resolver_fm_hpu_b;dump;ini;dini;sync;error;hosts;list;glob;profile;spec;network;tracer;timeofday;base64;haskell"; fi  
+  - if [[ $HASKELL == ON ]]; then tools="kdb"; fi  
   - |
     if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
       python2_ver=$(python2 -c 'import sys; print(".".join(map(str, sys.version_info[:2])))') &&                  \
@@ -145,7 +159,7 @@ before_script:
     -DPLUGINS="${plugins:-ALL;-jni}"
     -DBINDINGS="${bindings}"
     -DENABLE_DEBUG=ON
-    -DTOOLS=ALL
+    -DTOOLS="${tools:-ALL;}"
     -DINSTALL_SYSTEM_FILES=OFF
     -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
     -DCMAKE_INSTALL_PREFIX="$INSTALL_DIR"
@@ -162,9 +176,5 @@ script:
       ninja run_all
     else
       ninja install
-      # Unfortunately the Haskell tests do not work currently:
-      # https://github.com/ElektraInitiative/libelektra/issues/1631
-      if [[ "$HASKELL" != "ON" ]]; then
-        ninja run_all && kdb run_all
-      fi
+      ninja run_all && kdb run_all
     fi

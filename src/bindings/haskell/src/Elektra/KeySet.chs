@@ -1,6 +1,20 @@
-module Elektra.KeySet (KeySet (..), LookupOptions (..), withKeySet, ElektraCursor, ksNew, ksDup, ksCopy, ksDel, ksGetSize, ksNeedSync,
-    ksAppendKey, ksAppend, ksCut, ksPop, ksRewind, ksNext, ksCurrent, ksHead, ksTail, ksList,
-    ksGetCursor, ksSetCursor, ksAtCursor, ksLookup, ksLookupO, ksLookupByName, ksLookupByNameO) where
+--
+-- @file
+--
+-- @brief KeySet Haskell bindings
+--
+-- @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+-- 
+module Elektra.KeySet (
+  KeySet (..), LookupOptions (..), ElektraCursor,
+  withKeySet, 
+  ksNew, ksDup, ksCopy, ksDel,
+  ksGetSize, ksNeedSync,
+  ksAppendKey, ksAppend, ksCut, ksPop, 
+  ksRewind, ksNext, ksCurrent, ksHead, ksTail, ksList,
+  ksGetCursor, ksSetCursor, ksAtCursor,
+  ksLookup, ksLookupO, ksLookupByName, ksLookupByNameO
+) where
 
 {#import Elektra.Key#}
 import Control.Monad (liftM, liftM2)
@@ -69,12 +83,12 @@ ksLookupByName ks k = ksLookupByNameO ks k KdbONone
 {#fun unsafe ksLookupByName as ksLookupByNameO {`KeySet', `String', `LookupOptions'} -> `Key' #}
 ksList :: KeySet -> IO [Key]
 ksList ks = ksRewind ks >> list []
-    where
-        list res = do
-            cur <- ksNext ks
-            isNull <- keyPtrNull cur
-            if isNull then return res else liftM (cur :) (list res)
-            
+  where
+    list res = do
+      cur <- ksNext ks
+      isNull <- keyPtrNull cur
+      if isNull then return res else liftM (cur :) (list res)
+
 -- ***
 -- COMMON HASKELL TYPE CLASSES
 -- unsafePerformIO should be ok here, as we use ksDup to "hide" the side effect of ksRewind

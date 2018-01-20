@@ -12,14 +12,42 @@
 #include "@PLUGIN_NAME_CAPITALIZED@_stub.h"
 #include "haskell.h"
 
+// Just to ignore the warnings from RTS.h, once the GHC bug mentioned below is
+// fixed we don't need this anymore, hs_exit is included in the stub.
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wflexible-array-extensions"
+#pragma clang diagnostic ignored "-Wundef"
+#endif
+#ifdef __GCC__
+#pragma gcc diagnostic push
+#pragma gcc diagnostic ignored "-Wflexible-array-extensions"
+#pragma gcc diagnostic ignored "-Wundef"
+#endif
+
+#include "Rts.h"
+
+#ifdef __GCC__
+#pragma gcc diagnostic pop
+#endif
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+
 #include <kdbhelper.h>
+
+static int started = 0;
 
 int elektraHaskellOpen (Plugin * handle, Key * errorKey)
 {
 	static char *argv[] = { "@PLUGIN_NAME@", 0 }, **argvPtr = argv;
 	static int argc = 1;
 	// Startup the haskell runtime with some dummy args
-	hs_init (&argc, &argvPtr);
+	if (!started)
+	{
+		hs_init (&argc, &argvPtr);
+		started++;
+	}
 	return hs_elektraHaskellOpen (handle, errorKey);
 }
 
@@ -27,7 +55,18 @@ int elektraHaskellClose (Plugin * handle, Key * errorKey)
 {
 	int ret = hs_elektraHaskellClose (handle, errorKey);
 	// Shutdown the haskell runtime
-	hs_exit ();
+	// Due to an unfortunate bug within GHC's ffi implementation we cannot
+	// restart the runtime if it got closed once during elektra's runtime.
+	// This usecase can happen though especially with dynamic plugins.
+	// As a temporary workaround we leave it open for now and just call a cleanup function
+	// to minimize resource usage while its not needed, as we can't guarantee we
+	// will never load it again without restarting elektra as a whole
+	// https://downloads.haskell.org/~ghc/8.2.2/docs/html/users_guide/bugs.html#infelicities-ffi
+	// hs_exit ();
+	if (!--started)
+	{
+		rts_done ();
+	}
 	return ret;
 }
 
@@ -84,8 +123,8 @@ Plugin * ELEKTRA_PLUGIN_EXPORT (@PLUGIN_NAME@)
 	return elektraPluginExport ("@PLUGIN_NAME@",
 		ELEKTRA_PLUGIN_OPEN,	&elektraHaskellOpen,
 		ELEKTRA_PLUGIN_CLOSE,	&elektraHaskellClose,
-		ELEKTRA_PLUGIN_GET,	&elektraHaskellGet,
-		ELEKTRA_PLUGIN_SET,	&elektraHaskellSet,
+		ELEKTRA_PLUGIN_GET,		&elektraHaskellGet,
+		ELEKTRA_PLUGIN_SET,		&elektraHaskellSet,
 		ELEKTRA_PLUGIN_ERROR,	&elektraHaskellError,
 		ELEKTRA_PLUGIN_END);
 }

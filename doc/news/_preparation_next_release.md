@@ -93,6 +93,8 @@ We added even more functionality, which could not make it to the highlights:
 - Elektra is now part of the official [Homebrew repository](http://formulae.brew.sh/formula/elektra). We still provide a
   [tap](http://github.com/ElektraInitiative/homebrew-elektra), if you want to install Elektra together with plugins or bindings that require
   additional libraries.
+- The building and linking of the haskell bindings and haskell plugins has been 
+[greatly improved](https://github.com/ElektraInitiative/libelektra/pull/1698).
 
 ## Documentation
 
