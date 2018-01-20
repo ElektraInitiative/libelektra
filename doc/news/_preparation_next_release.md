@@ -37,7 +37,7 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.8.
 - New Logo
 - INI as new default configuration file format
 - Bindings for Asynchronous I/O
-- <<HIGHLIGHT2>>
+- Plugin Processes
 - <<HIGHLIGHT3>>
 
 
@@ -80,8 +80,18 @@ This release includes an experimental I/O binding for [uv](http://libuv.org/).
 The interface for I/O bindings is currently experimental.
 
 
-### <<HIGHLIGHT2>>
+### Plugin Processes
 
+A new library called [pluginprocess](https://github.com/ElektraInitiative/libelektra/tree/master/src/libs/pluginprocess) 
+has been added. This library contains functions that aid in executing plugins in
+a separate process. This child process is forked from Elektra's main process 
+each time such plugin is used and gets closed again afterwards. It uses a simple
+communication protocol based on a KeySet that gets serialized through a pipe via
+the dump plugin to orchestrate the processes.
+
+Such a behavior this is useful for plugins which cause memory leaks to be 
+isolated in an own process. Furthermore this is useful for runtimes or libraries 
+that cannot be reinitialized in the same process after they have been used.
 
 ### <<HIGHLIGHT2>>
 
