@@ -17,16 +17,15 @@ extern "C" {
  * allow this library to possibly be extended to further commands in
  * the future
  */
-typedef enum
-{
-// clang-format off
+typedef enum {
+	// clang-format off
 ELEKTRA_PLUGINPROCESS_OPEN=1,		/*!< Call the plugin's open function */
 ELEKTRA_PLUGINPROCESS_CLOSE=1<<1,	/*!< Call the plugin's close function */
 ELEKTRA_PLUGINPROCESS_GET=1<<2,		/*!< Call the plugin's get function */
 ELEKTRA_PLUGINPROCESS_SET=1<<3,		/*!< Call the plugin's set function */
 ELEKTRA_PLUGINPROCESS_ERROR=1<<4,	/*!< Call the plugin's error function */
 ELEKTRA_PLUGINPROCESS_END=0			/*!< End of arguments */
-// clang-format on
+	// clang-format on
 } pluginprocess_t;
 
 typedef struct _ElektraPluginProcess ElektraPluginProcess;
