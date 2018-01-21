@@ -62,7 +62,7 @@ int elektraHaskellClose (Plugin * handle, Key * errorKey)
 	ElektraPluginProcess * pp = elektraPluginGetData (handle);
 	if (elektraPluginProcessIsParent (pp))
 	{
-		int result = elektraPluginProcessSend (pp, ELEKTRA_PLUGIN_CLOSE, NULL, errorKey);
+		int result = elektraPluginProcessSend (pp, ELEKTRA_PLUGINPROCESS_CLOSE, NULL, errorKey);
 		if (elektraPluginProcessClose (pp)) elektraPluginSetData (handle, NULL);
 		return result;
 	}
@@ -103,7 +103,7 @@ int elektraHaskellGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	}
 
 	ElektraPluginProcess * pp = elektraPluginGetData (handle);
-	if (elektraPluginProcessIsParent (pp)) return elektraPluginProcessSend (pp, ELEKTRA_PLUGIN_GET, returned, parentKey);
+	if (elektraPluginProcessIsParent (pp)) return elektraPluginProcessSend (pp, ELEKTRA_PLUGINPROCESS_GET, returned, parentKey);
 
 	return hs_elektraHaskellGet (handle, returned, parentKey);
 }
@@ -111,7 +111,7 @@ int elektraHaskellGet (Plugin * handle, KeySet * returned, Key * parentKey)
 int elektraHaskellSet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
 	ElektraPluginProcess * pp = elektraPluginGetData (handle);
-	if (elektraPluginProcessIsParent (pp)) return elektraPluginProcessSend (pp, ELEKTRA_PLUGIN_SET, returned, parentKey);
+	if (elektraPluginProcessIsParent (pp)) return elektraPluginProcessSend (pp, ELEKTRA_PLUGINPROCESS_SET, returned, parentKey);
 
 	return hs_elektraHaskellSet (handle, returned, parentKey);
 }
@@ -119,7 +119,7 @@ int elektraHaskellSet (Plugin * handle, KeySet * returned, Key * parentKey)
 int elektraHaskellError (Plugin * handle, KeySet * returned, Key * parentKey)
 {
 	ElektraPluginProcess * pp = elektraPluginGetData (handle);
-	if (elektraPluginProcessIsParent (pp)) return elektraPluginProcessSend (pp, ELEKTRA_PLUGIN_ERROR, returned, parentKey);
+	if (elektraPluginProcessIsParent (pp)) return elektraPluginProcessSend (pp, ELEKTRA_PLUGINPROCESS_ERROR, returned, parentKey);
 
 	return hs_elektraHaskellError (handle, returned, parentKey);
 }
