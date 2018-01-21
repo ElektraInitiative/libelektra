@@ -52,6 +52,7 @@ static void cleanup (Plugin * handle, Process * process, Key * errorKey)
 	if (process->plugin) elektraInvokeClose (process->plugin, errorKey);
 	keyDel (process->pluginName);
 	ksDel (process->pluginConfig);
+	elektraFree (process);
 	elektraPluginSetData (handle, NULL);
 }
 
