@@ -56,29 +56,29 @@ elektraHaskellPluginPostBuildHook :: Args -> C.BuildFlags -> C.PackageDescriptio
 elektraHaskellPluginPostBuildHook _ flags pd lbi = do
   logV "Preparing the Haskell dependencies.."
   isVerbose $ libraries >>= mapM_ putStrLn
-  let ln = C.lookupProgram (C.simpleProgram "ln") $ C.withPrograms lbi
-  let maybeMainLink = fmap mainLink ln
+  let ln               = C.lookupProgram (C.simpleProgram "ln") $ C.withPrograms lbi
+  let maybeMainLink    = fmap mainLink ln
   let maybeMainDepLink = fmap mainDepLink ln
-  let maybeDepLink = fmap depLink ln
-  let maybeDepLinks = fmap (`fmap` dependencies) maybeDepLink
-  let maybeLink = liftA2 (:) (Just $ createDirectoryIfMissing True "haskell")
-                $ liftA2 (:) maybeMainDepLink
-                $ liftA2 (:) maybeMainLink maybeDepLinks
+  let maybeDepLink     = fmap depLink ln
+  let maybeDepLinks    = fmap (`fmap` dependencies) maybeDepLink
+  let maybeLink        = liftA2 (:) (Just $ createDirectoryIfMissing True "haskell")
+                       $ liftA2 (:) maybeMainDepLink
+                       $ liftA2 (:) maybeMainLink maybeDepLinks
   maybe linkFailure (\l -> sequence_ l >> logV "Finished generating the post-build output..") maybeLink
   -- let maybeLibtool = fmap packWithLibtool $ C.lookupProgram (C.simpleProgram "libtool") $ C.withPrograms lbi
   -- let maybeAr = fmap packWithAr $ C.lookupProgram (C.simpleProgram "ar") $ C.withPrograms lbi
   -- maybe packFailure (>> logV "Finished packing all the haskell dependencies..") (maybeLibtool <|> maybeAr)
   where
-    verbosity = C.fromFlagOrDefault V.normal $ C.buildVerbosity flags
-    isVerbose = when (verbosity >= V.verbose)
-    logV = isVerbose . putStrLn
+    verbosity   = C.fromFlagOrDefault V.normal $ C.buildVerbosity flags
+    isVerbose   = when (verbosity >= V.verbose)
+    logV        = isVerbose . putStrLn
     failure str = hPutStrLn stderr str >> exitFailure
     packFailure = failure "Failed to locate libtool and ar, no program to pack the dependencies"
     linkFailure = failure "Failed to locate ln"
     libraryName = "lib" ++ C.getHSLibraryName (C.localUnitId lbi) ++ suffix lbi
     libraryPath = C.buildDir lbi ++ "/" ++ libraryName
-    libraries = sequence $ (return libraryPath :) $ map (showLibrary lbi) dependencies
-    dependencies = filter (not . isGlobalLibrary) $ getDependencyInstalledPackageInfos lbi
+    libraries   = sequence $ (return libraryPath :) $ map (showLibrary lbi) dependencies
+    dependencies       = filter (not . isGlobalLibrary) $ getDependencyInstalledPackageInfos lbi
     createMRIScript sl = ("create " ++ libraryName) : fmap ("addlib " ++) sl ++ ["save", "end"]
     packWithAr ar = do
       logV "packing with ar"
@@ -91,12 +91,17 @@ elektraHaskellPluginPostBuildHook _ flags pd lbi = do
     mainLink ln = let filename = "libHS" ++ (C.unPackageName . C.packageName . C.package) pd ++ suffix lbi in 
       logV "linking main library" >>
       readProcess (C.programPath ln) ["-f", libraryPath, filename] "" >>= logV
-    mainDepLink ln = logV "linking main library for libraries" >>
-      readProcess (C.programPath ln) ["-f", libraryPath, "haskell/" ++ libraryName] "" >>= logV
+    mainDepLink ln = do
+      logV "linking main library for libraries"
+      let readProcessFn = \prfx -> readProcess (C.programPath ln) ["-f", libraryPath, prfx ++ "/" ++ libraryName] "" >>= logV
+      readProcessFn "."
+      readProcessFn "haskell"
     depLink ln lib = do
       l <- showLibrary lbi lib
       logV ("linking library " ++ l)
-      readProcess (C.programPath ln) ["-f", l, "haskell/libHS" ++ getLibraryName lib ++ suffix lbi] "" >>= logV
+      let readProcessFn = \prfx -> readProcess (C.programPath ln) ["-f", l, prfx ++ "/libHS" ++ getLibraryName lib ++ suffix lbi] "" >>= logV
+      readProcessFn "."
+      readProcessFn "haskell"
 
 -- The globally installed ghc libs which we don't want to link statically
 -- We only want to link external dependencies grabbed via hackage, not those

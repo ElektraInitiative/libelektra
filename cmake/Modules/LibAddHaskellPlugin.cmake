@@ -75,36 +75,40 @@ macro (add_haskell_plugin target)
 			# so we must feed it with the ghc library paths manually
 			# inspired by https://github.com/jarrett/cpphs/blob/master/Makefile
 			# use HSrts_thr for the threaded version of the rts
+			set (GHC_RTS_PATH "${GHC_LIB_DIR}/rts")
 			find_library (
 				GHC_RTS_LIB "HSrts${GHC_DYNAMIC_SUFFIX}"
-				PATHS "${GHC_LIB_DIR}/rts"
+				PATHS ${GHC_RTS_PATH}
 			)
 
 			execute_process (
 				COMMAND ${GHC-PKG_EXECUTABLE} latest base
 				OUTPUT_VARIABLE GHC_BASE_NAME OUTPUT_STRIP_TRAILING_WHITESPACE
 			)
+			set (GHC_BASE_PATH "${GHC_LIB_DIR}/${GHC_BASE_NAME}")
 			find_library (
 				GHC_BASE_LIB "HS${GHC_BASE_NAME}${GHC_DYNAMIC_SUFFIX}"
-				PATHS "${GHC_LIB_DIR}/${GHC_BASE_NAME}"
+				PATHS ${GHC_BASE_PATH}
 			)
 
 			execute_process (
 				COMMAND ${GHC-PKG_EXECUTABLE} latest integer-gmp
 				OUTPUT_VARIABLE GHC_GMP_NAME OUTPUT_STRIP_TRAILING_WHITESPACE
 			)
+			set (GHC_GMP_PATH "${GHC_LIB_DIR}/${GHC_GMP_NAME}")
 			find_library (
 				GHC_GMP_LIB "HS${GHC_GMP_NAME}${GHC_DYNAMIC_SUFFIX}"
-				PATHS "${GHC_LIB_DIR}/${GHC_GMP_NAME}"
+				PATHS ${GHC_GMP_PATH}
 			)
 
 			execute_process (
 				COMMAND ${GHC-PKG_EXECUTABLE} latest ghc-prim
 				OUTPUT_VARIABLE GHC_PRIM_NAME OUTPUT_STRIP_TRAILING_WHITESPACE
 			)
+			set (GHC_PRIM_PATH "${GHC_LIB_DIR}/${GHC_PRIM_NAME}")
 			find_library (
 				GHC_PRIM_LIB "HS${GHC_PRIM_NAME}${GHC_DYNAMIC_SUFFIX}"
-				PATHS "${GHC_LIB_DIR}/${GHC_PRIM_NAME}"
+				PATHS ${GHC_PRIM_PATH}
 			)
 
 			if (GHC_RTS_LIB)
@@ -213,6 +217,14 @@ macro (add_haskell_plugin target)
 				install (DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/haskell" 
 					DESTINATION "lib${LIB_SUFFIX}/elektra/")
 			endif (BUILD_SHARED OR BUILD_FULL)
+			
+			set (HASKELL_RPATH 
+				"${GHC_RTS_PATH}"
+				"${GHC_BASE_PATH}"
+				"${GHC_PRIM_PATH}"
+				"${GHC_GMP_PATH}"
+				"${CMAKE_INSTALL_RPATH}"
+				"${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/elektra/haskell")
 
 			else (GHC_PRIM_LIB)
 				remove_plugin (${target} "GHC_PRIM_LIB not found")
@@ -257,27 +269,14 @@ macro (add_haskell_plugin target)
 	if (TARGET elektra-${target})
 	if (DEPENDENCY_PHASE AND (BUILD_SHARED OR BUILD_FULL))
 		set_target_properties (elektra-${target}
-			PROPERTIES 
-			INSTALL_RPATH "${CMAKE_INSTALL_RPATH};${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/elektra/haskell")
-		# the rpath for the dependencies while we are still in the build tree
-		add_custom_command (TARGET elektra-${target} POST_BUILD
-			COMMAND ${CMAKE_INSTALL_NAME_TOOL} -add_rpath
-				\"${CMAKE_CURRENT_BINARY_DIR}/haskell\" \"$<TARGET_FILE:elektra-${target}>\"
-		)
-		# remove the rpath again after installing - cmake will add the actual rpath
-		install (CODE "execute_process (COMMAND ${CMAKE_INSTALL_NAME_TOOL} -delete_rpath 
-			\"${CMAKE_CURRENT_BINARY_DIR}/haskell\" 
-			\"${CMAKE_INSTALL_PREFIX}/lib${lib}/elektra/libelektra-${target}.so\" 
-			OUTPUT_QUIET)"
-		)
+			PROPERTIES
+			INSTALL_RPATH "${HASKELL_RPATH}")
 	endif (DEPENDENCY_PHASE AND (BUILD_SHARED OR BUILD_FULL))
 	if (ADDTESTING_PHASE AND BUILD_TESTING AND (BUILD_SHARED OR BUILD_FULL))
+		get_target_property (HASKELL_RPATH elektra-${target} INSTALL_RPATH)
 		set_target_properties (testmod_${target}
-			PROPERTIES 
-			INSTALL_RPATH "${CMAKE_INSTALL_RPATH};${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/elektra/haskell")
-		# guide the tests to our haskell libraries in a way it also works with the scripts
-		set_property (TEST testmod_${target} PROPERTY ENVIRONMENT 
-			"LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}/haskell")
+			PROPERTIES
+			INSTALL_RPATH "${HASKELL_RPATH}")
 	endif (ADDTESTING_PHASE AND BUILD_TESTING AND (BUILD_SHARED OR BUILD_FULL))
 	endif (TARGET elektra-${target})
 
@@ -343,8 +342,12 @@ macro (configure_haskell_sandbox)
 			)
 		endforeach (SANDBOX_ADD_SOURCE ${ARG_SANDBOX_ADD_SOURCES})
 	endif (ARG_SANDBOX_ADD_SOURCES)
+
+	if (BUILD_SHARED OR BUILD_FULL)
+		set (CABAL_OPTS "--enable-shared")
+	endif (BUILD_SHARED OR BUILD_FULL)
 	file (WRITE "${CMAKE_CURRENT_BINARY_DIR}/cabalOptionalDependencies.cmake" 
-		"execute_process (COMMAND ${CABAL_EXECUTABLE} install --only-dependencies -v0)")
+		"execute_process (COMMAND ${CABAL_EXECUTABLE} ${CABAL_OPTS} install -v0)")
 	add_custom_command (OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/cabal.sandbox.config"
 		# ensure any further dependencies added by plugin developers get installed to the sandbox
 		COMMAND ${CMAKE_COMMAND} -P "${CMAKE_CURRENT_BINARY_DIR}/cabalOptionalDependencies.cmake"
