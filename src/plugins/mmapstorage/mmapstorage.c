@@ -664,7 +664,7 @@ int elektraMmapstorageSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 	}
 	
 	elektraMmapstorageWrite (mappedRegion, returned, &mmapHeader, &dynArray);
-	//msync ((void *) mappedRegion, mmapHeader.mmapSize, MS_SYNC);
+	msync ((void *) mappedRegion, mmapHeader.mmapSize, MS_SYNC);
 	ksClose (returned);
 	
 	// all data is written, further changes need to be copy-on-write
