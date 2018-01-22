@@ -9,16 +9,16 @@ module Main (main) where
 
 import Distribution.Simple
 import Distribution.InstalledPackageInfo (InstalledPackageInfo)
-import Control.Monad        (forM_, when)
+import Control.Monad        (mapM_, when, filterM, sequence)
 import Control.Applicative  (liftA2)
 import Data.Foldable        (toList)
-import Data.Maybe           (fromJust, listToMaybe, mapMaybe)
+import Data.Maybe           (mapMaybe)
 import Data.Set             (Set)
-import Data.List            (isSuffixOf, isInfixOf)
+import Data.List            (isInfixOf, intercalate)
 import System.IO            (hPutStrLn, stderr)
 import System.Exit          (exitFailure)
 import System.Process       (readProcess)
-import System.Directory     (createDirectoryIfMissing)
+import System.Directory     (createDirectoryIfMissing, doesFileExist)
 
 import qualified Data.Set                                   as S
 import qualified Distribution.Simple.Compiler               as C
@@ -35,6 +35,7 @@ import qualified Distribution.Package                       as C
 import qualified Distribution.Simple.PackageIndex           as C
 import qualified Distribution.Text                          as C
 import qualified Distribution.Simple.Program                as C
+import qualified Distribution.System                        as C
 import qualified Distribution.Verbosity                     as V
 import qualified Distribution.InstalledPackageInfo          as IPI
 
@@ -54,7 +55,7 @@ main = defaultMainWithHooks (simpleUserHooks { hookedPrograms = [C.simpleProgram
 elektraHaskellPluginPostBuildHook :: Args -> C.BuildFlags -> C.PackageDescription -> C.LocalBuildInfo -> IO ()
 elektraHaskellPluginPostBuildHook _ flags pd lbi = do
   logV "Preparing the Haskell dependencies.."
-  isVerbose $ forM_ libraries putStrLn
+  isVerbose $ libraries >>= mapM_ putStrLn
   let ln = C.lookupProgram (C.simpleProgram "ln") $ C.withPrograms lbi
   let maybeMainLink = fmap mainLink ln
   let maybeMainDepLink = fmap mainDepLink ln
@@ -76,21 +77,26 @@ elektraHaskellPluginPostBuildHook _ flags pd lbi = do
     linkFailure = failure "Failed to locate ln"
     libraryName = "lib" ++ C.getHSLibraryName (C.localUnitId lbi) ++ suffix lbi
     libraryPath = C.buildDir lbi ++ "/" ++ libraryName
-    libraries = (libraryPath :) $ map (showLibrary lbi) dependencies
+    libraries = sequence $ (return libraryPath :) $ map (showLibrary lbi) dependencies
     dependencies = filter (not . isGlobalLibrary) $ getDependencyInstalledPackageInfos lbi
     createMRIScript sl = ("create " ++ libraryName) : fmap ("addlib " ++) sl ++ ["save", "end"]
-    packWithAr ar = logV "packing with ar" >>
-      readProcess (C.programPath ar) ["-M"] (unlines $ createMRIScript libraries) >>= logV
-    packWithLibtool lt = logV "packing with libtool" >>
-      readProcess (C.programPath lt) ("-static" : "-o" : libraryName : libraries) "" >>= logV
+    packWithAr ar = do
+      logV "packing with ar"
+      ls <- libraries
+      readProcess (C.programPath ar) ["-M"] (unlines $ createMRIScript ls) >>= logV
+    packWithLibtool lt = do
+      logV "packing with libtool"
+      ls <- libraries
+      readProcess (C.programPath lt) ("-static" : "-o" : libraryName : ls) "" >>= logV
     mainLink ln = let filename = "libHS" ++ (C.unPackageName . C.packageName . C.package) pd ++ suffix lbi in 
       logV "linking main library" >>
       readProcess (C.programPath ln) ["-f", libraryPath, filename] "" >>= logV
     mainDepLink ln = logV "linking main library for libraries" >>
       readProcess (C.programPath ln) ["-f", libraryPath, "haskell/" ++ libraryName] "" >>= logV
-    depLink ln lib = logV ("linking library " ++ showLibrary lbi lib) >>
-      readProcess (C.programPath ln) ["-f", showLibrary lbi lib, "haskell/libHS" ++ getLibraryName lib ++ suffix lbi] ""
-      >>= logV
+    depLink ln lib = do
+      l <- showLibrary lbi lib
+      logV ("linking library " ++ l)
+      readProcess (C.programPath ln) ["-f", l, "haskell/libHS" ++ getLibraryName lib ++ suffix lbi] "" >>= logV
 
 -- The globally installed ghc libs which we don't want to link statically
 -- We only want to link external dependencies grabbed via hackage, not those
@@ -131,17 +137,31 @@ getDependencyInstalledPackageInfos :: C.LocalBuildInfo -> [InstalledPackageInfo]
 getDependencyInstalledPackageInfos lbi = mapMaybe (C.lookupUnitId $ C.installedPkgs lbi)
                                        $ S.toList (getDependencyInstalledPackageIds lbi)
 
-showLibrary :: C.LocalBuildInfo -> InstalledPackageInfo -> String
-showLibrary lbi ipi = fromJust (getLibraryDir lbi ipi) ++ "/libHS" ++ getLibraryName ipi ++ suffix lbi
+-- As its a bit complicated to determine the exact path because depending on the OS
+-- there seem to be different possibilities, we simply construct all possible filenames
+-- and check which one exists
+showLibrary :: C.LocalBuildInfo -> InstalledPackageInfo -> IO FilePath
+showLibrary lbi ipi = fmap head $ filterM doesFileExist $ getLibraryNamePossibilities lbi ipi
 
-getLibraryDir :: C.LocalBuildInfo -> InstalledPackageInfo -> Maybe String
-getLibraryDir lbi ipi = listToMaybe $ case buildType lbi of
-  Static  -> filter (getLibraryName ipi `isSuffixOf`) $ IPI.libraryDirs ipi
-  #if MIN_VERSION_Cabal(1,24,1)
-  Dynamic -> IPI.libraryDynDirs ipi
-  #else
-  Dynamic -> IPI.libraryDirs ipi
-  #endif
+getLibraryNamePossibilities :: C.LocalBuildInfo -> InstalledPackageInfo -> [FilePath]
+getLibraryNamePossibilities lbi ipi = dynamicLibraryNames ++ staticLibraryNames
+  where
+    dynamicLibraryNames = map (++ "/libHS" ++ getLibraryName ipi ++ suffix lbi) $ getLibraryDirs ipi
+    staticLibraryNames  = let showStaticName sp = '/' : intercalate "/" (init sp) ++ "/libHS" ++ last sp ++ suffix lbi
+                          in  map (showStaticName . splitPath) $ getLibraryDirs ipi
+
+splitPath :: FilePath -> [String]
+splitPath s = case dropWhile (== '/') s of
+                "" -> []
+                s' -> w : splitPath s''
+                      where (w, s'') = break (== '/') s'
+
+getLibraryDirs :: InstalledPackageInfo -> [FilePath]
+#if MIN_VERSION_Cabal(1,24,1)
+getLibraryDirs ipi = IPI.libraryDirs ipi ++ IPI.libraryDynDirs ipi
+#else
+getLibraryDirs = IPI.libraryDirs
+#endif
 
 getLibraryName :: InstalledPackageInfo -> String
 getLibraryName = C.display . IPI.installedUnitId
@@ -152,4 +172,9 @@ buildType lbi = if C.withSharedLib lbi then Dynamic else Static
 suffix ::  C.LocalBuildInfo -> String
 suffix lbi = case buildType lbi of
   Static  -> ".a"
-  Dynamic -> '-' : filter (/= '-') (C.showCompilerId $ C.compiler lbi) ++ ".dylib"
+  Dynamic -> '-' : filter (/= '-') (C.showCompilerId $ C.compiler lbi) ++ dynamicSuffix lbi
+
+dynamicSuffix :: C.LocalBuildInfo -> String
+dynamicSuffix lbi = case C.hostPlatform lbi of
+                    (C.Platform _ C.OSX) -> ".dylib"
+                    _                    -> ".so" 
