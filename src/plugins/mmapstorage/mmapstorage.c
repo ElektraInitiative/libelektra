@@ -19,6 +19,7 @@
 //#include <fcntl.h>	// open()
 #include <errno.h>
 #include <stdio.h>	// fopen()
+#include <stdlib.h>	// exit()
 #include <unistd.h>	// close(), ftruncate()
 #include <sys/mman.h>	// mmap()
 #include <sys/stat.h>	// stat()
@@ -192,9 +193,9 @@ static int findOrInsert (Key * key, DynArray * dynArray)
 	{
 		// doubling the array size to keep reallocations logarithmic
 		size_t oldAllocSize = dynArray->alloc;
-		Key ** new = calloc (2 * oldAllocSize, sizeof (Key *));
+		Key ** new = elektraCalloc ((2 * oldAllocSize) * sizeof (Key *));
 		memcpy (new, dynArray->keyArray, dynArray->size * sizeof (Key *));
-		free (dynArray->keyArray);
+		elektraFree (dynArray->keyArray);
 		dynArray->keyArray = new;
 		dynArray->alloc = 2 * oldAllocSize;
 	}
@@ -229,7 +230,7 @@ static size_t find (Key * key, DynArray * dynArray)
 			return m; // found
 	}
 	
-	assert (0);
+	return -1;
 }
 
 
@@ -290,7 +291,11 @@ static void writeKeySet (MmapHeader * mmapHeader, KeySet * keySet, KeySet * dest
 	ELEKTRA_LOG_WARNING ("metaKsPtr: %p", (void *) metaKsPtr);
 	
 	// allocate space in DynArray to remember the addresses of meta keys
-	dynArray->mappedKeyArray = calloc (dynArray->size, sizeof (Key *));
+	if (dynArray->size > 0)
+	{
+		dynArray->mappedKeyArray = elektraCalloc (dynArray->size * sizeof (Key *));
+	}
+
 
 	// first write the meta keys into place
 	ELEKTRA_LOG_WARNING ("writing META keys");
@@ -511,6 +516,11 @@ static void * mmapAddr (FILE * fp)
 	return 0;
 }
 
+static void fixPointers()
+{
+
+}
+
 int elektraMmapstorageOpen (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
 {
 	// plugin initialization logic
@@ -579,7 +589,7 @@ int elektraMmapstorageGet (Plugin * handle, KeySet * returned, Key * parentKey)
 // 		addr = mmapAddr (fp);
 // 		mappedRegion = elektraMmapstorageMapFile (addr, fp, sbuf.st_size, MAP_SHARED | MAP_FIXED, parentKey, errnosave);
 		ELEKTRA_LOG_WARNING ("FAILED to read mmap fixed address, NOT IMPLEMENTED");
-		exit(128);
+		assert (0);
 		//mappedRegion = elektraMmapstorageMapFile ((void *) 0, fp, sbuf.st_size, MAP_PRIVATE, parentKey, errnosave);
 	}
 	else
@@ -628,7 +638,7 @@ int elektraMmapstorageSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 	}
 	
 	DynArray dynArray;
-	dynArray.keyArray = calloc (1, sizeof (Key *));
+	dynArray.keyArray = elektraCalloc (sizeof (Key *));
 	dynArray.mappedKeyArray = 0;
 	dynArray.size = 0;
 	dynArray.alloc = 1;
@@ -658,8 +668,8 @@ int elektraMmapstorageSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 	ksClose (returned);
 	
 	// all data is written, further changes need to be copy-on-write
-	mappedRegion = elektraMmapstorageMapFile ((void *) mappedRegion, fp, mmapHeader.mmapSize, MAP_PRIVATE | MAP_FIXED, parentKey, 
-errnosave);
+	mappedRegion = elektraMmapstorageMapFile ((void *) mappedRegion, fp, mmapHeader.mmapSize,
+						  MAP_PRIVATE | MAP_FIXED, parentKey, errnosave);
 	ELEKTRA_LOG_WARNING ("mappedRegion ptr: %p", (void *) mappedRegion);
 	if (mappedRegion == MAP_FAILED)
 	{

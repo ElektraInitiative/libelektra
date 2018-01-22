@@ -157,7 +157,7 @@ static void test_mmap_empty_after_clear (const char * tmpFile)
 	PLUGIN_CLOSE ();
 }
 
-static void test_mmapMeta (const char * tmpFile)
+static void test_mmap_meta (const char * tmpFile)
 {
 	Key * parentKey = keyNew("user/tests/mmapstorage", KEY_VALUE, tmpFile, KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
@@ -180,7 +180,7 @@ static void test_mmapMeta (const char * tmpFile)
 	PLUGIN_CLOSE ();
 }
 
-static void test_mmapMeta_reRead (const char * tmpFile)
+static void test_mmap_meta_reread (const char * tmpFile)
 {
 	Key * parentKey = keyNew("user/tests/mmapstorage", KEY_VALUE, tmpFile, KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
@@ -194,6 +194,42 @@ static void test_mmapMeta_reRead (const char * tmpFile)
 
 	ksDel (expected);
 	keyDel (parentKey);
+	ksDel (ks);
+	PLUGIN_CLOSE ();
+}
+
+static void test_mmap_metacopy (const char * tmpFile)
+{
+	Key * parentKey = keyNew("user/tests/mmapstorage", KEY_VALUE, tmpFile, KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("mmapstorage");
+	KeySet * ks = metaTestKeySet ();
+
+	Key * shareMeta = keyNew (0);
+	keySetMeta (shareMeta, "sharedmeta", "shared meta key test");
+
+	Key * current;
+	ksRewind (ks);
+	while ((current = ksNext (ks)) != 0)
+	{
+		keyCopyMeta (current, shareMeta, "sharedmeta");
+	}
+	KeySet * expected = ksDeepDup (ks);
+
+
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+
+	KeySet * returned = ksNew (0, KS_END);
+	succeed_if (plugin->kdbGet (plugin, returned, parentKey) == 1, "kdbGet was not successful");
+
+
+	compare_keyset(expected, returned);
+
+	ksDel (expected);
+	ksDel (returned);
+
+	keyDel (parentKey);
+	keyDel (shareMeta);
 	ksDel (ks);
 	PLUGIN_CLOSE ();
 }
@@ -299,11 +335,10 @@ int main (int argc, char ** argv)
 
 	test_mmap_empty_after_clear (tmpFile);
 	
-	test_mmapMeta (tmpFile);
-	test_mmapMeta_reRead (tmpFile);
+	test_mmap_meta (tmpFile);
+	test_mmap_meta_reread (tmpFile);
 
-
-	// TODO: test keyCopyMeta
+	test_mmap_metacopy (tmpFile);
 
 
 	printf ("\ntestmod_mmapstorage RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
