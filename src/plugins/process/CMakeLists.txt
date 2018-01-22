@@ -1,5 +1,8 @@
 include (LibAddMacros)
 
+find_package (Pluginprocess)
+
+if (PLUGINPROCESS_FOUND)
 add_plugin (process
 	SOURCES
 		process.h
@@ -12,3 +15,6 @@ add_plugin (process
 		elektra-pluginprocess
 		elektra-invoke
 	)
+else (PLUGINPROCESS_FOUND)
+	message ("${PLUGINPROCESS_NOTFOUND_INFO}, excluding pluginprocess library, thus excluding the process plugin")
+endif(PLUGINPROCESS_FOUND)
