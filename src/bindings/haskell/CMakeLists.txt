@@ -6,7 +6,6 @@ if (NOT BUILD_STATIC)
 	set (CABAL_INCLUDE_DIRS "\"${CMAKE_SOURCE_DIR}/src/include\", \"${CMAKE_BINARY_DIR}/src/include\"")
 
 	set (BINDING_HASKELL_NAME "${CMAKE_CURRENT_BINARY_DIR}/libHSlibelektra-haskell")
-	set (CABAL_OPTS "--prefix=${CMAKE_INSTALL_PREFIX}")
 	if (BUILD_SHARED OR BUILD_FULL)
 		set (GHC_DYNAMIC_SUFFIX "-ghc${GHC_VERSION}")
 		if (APPLE)
@@ -15,7 +14,7 @@ if (NOT BUILD_STATIC)
 			set (GHC_DYNAMIC_ENDING ".so")
 		endif (APPLE)
 		set (BINDING_HASKELL_NAME "${BINDING_HASKELL_NAME}${GHC_DYNAMIC_SUFFIX}${GHC_DYNAMIC_ENDING}")
-		set (CABAL_OPTS "${CABAL_OPTS};--enable-shared")
+		set (CABAL_OPTS "--enable-shared")
 		if (BUILD_SHARED)
 			set (ELEKTRA_DEPENDENCY "elektra;elektra-kdb;elektra-ease;")
 		elseif (BUILD_FULL)
@@ -23,7 +22,7 @@ if (NOT BUILD_STATIC)
 		endif ()
 	elseif (BUILD_STATIC)
 		set (BINDING_HASKELL_NAME "${BINDING_HASKELL_NAME}.a")
-		set (CABAL_OPTS "${CABAL_OPTS};--disable-shared")
+		set (CABAL_OPTS "--disable-shared")
 		set (ELEKTRA_DEPENDENCY "elektra-static;")
 	endif ()
 	string (REPLACE ";" " " CABAL_ELEKTRA_DEPENDENCY "${ELEKTRA_DEPENDENCY}")
@@ -51,7 +50,7 @@ if (NOT BUILD_STATIC)
 		"${CMAKE_SOURCE_DIR}/src/plugins/haskell/Setup.hs"
 	)
 	file (WRITE "${CMAKE_CURRENT_BINARY_DIR}/cabalOptionalDependencies.cmake"
-		"execute_process (COMMAND ${CABAL_EXECUTABLE} install --only-dependencies -v0)")
+		"execute_process (COMMAND ${CABAL_EXECUTABLE} ${CABAL_OPTS} install --only-dependencies -v0)")
 	execute_process (COMMAND ${CABAL_EXECUTABLE} sandbox init --sandbox ${CMAKE_BINARY_DIR}/.cabal-sandbox -v0
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} OUTPUT_QUIET)
 	add_custom_command (
@@ -80,7 +79,7 @@ if (NOT BUILD_STATIC)
 			"${CMAKE_CURRENT_BINARY_DIR}/dist/build/testhaskell_realworld_optimized/testhaskell_realworld_optimized"
 		)
 		file (WRITE "${CMAKE_CURRENT_BINARY_DIR}/cabalOptionalDependencies.cmake"
-			"execute_process (COMMAND ${CABAL_EXECUTABLE} install --enable-tests --only-dependencies -v0)")
+			"execute_process (COMMAND ${CABAL_EXECUTABLE} ${CABAL_OPTS} install --enable-tests --only-dependencies -v0)")
 		add_custom_command (
 			OUTPUT ${HASKELL_TESTS}
 			# everything is getting installed to the sandbox, and gets cached to avoid reinstalling every time
