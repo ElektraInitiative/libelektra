@@ -2052,9 +2052,6 @@ static Key * elektraLookupSearch (KeySet * ks, Key * key, option_t options)
 
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 	int opmphmOptionIsSet = 0;
-	// OPMPHM always on
-	options |= KDB_O_OPMPHM;
-
 	// flags not compatible with OPMPHM
 	if (((options & KDB_O_WITHOWNER) || (options & KDB_O_NOCASE)) && (options & KDB_O_OPMPHM))
 	{
@@ -2230,6 +2227,11 @@ Key * ksLookup (KeySet * ks, Key * key, option_t options)
 
 	const char * name = key->key;
 	if (!name) return 0;
+
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+	// OPMPHM always on
+	options |= KDB_O_OPMPHM;
+#endif
 
 	Key * ret = 0;
 	const int mask = ~KDB_O_DEL & ~KDB_O_CREATE;
