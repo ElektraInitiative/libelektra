@@ -36,8 +36,10 @@ macro (add_haskell_plugin target)
 
 	if (DEPENDENCY_PHASE)
 		find_package (Haskell)
+		find_package (Pluginprocess)
 
-		 # set by find_program
+		# set by find_program
+		if (PLUGINPROCESS_FOUND) 
 		if (HASKELL_FOUND)
 		list (FIND BINDINGS "haskell" FINDEX)
 		if (FINDEX GREATER -1)
@@ -231,6 +233,9 @@ macro (add_haskell_plugin target)
 		else (HASKELL_FOUND)
 			remove_plugin (${target} ${HASKELL_NOTFOUND_INFO})
 		endif (HASKELL_FOUND)
+		else (PLUGINPROCESS_FOUND)
+			remove_plugin (${target} "${PLUGINPROCESS_NOTFOUND_INFO}, but required for haskell plugins")
+		endif (PLUGINPROCESS_FOUND)
 	endif (DEPENDENCY_PHASE)
 
 	# compile our c wrapper which takes care of invoking the haskell runtime
@@ -243,6 +248,8 @@ macro (add_haskell_plugin target)
 			${GHC_INCLUDE_DIRS}
 		LINK_LIBRARIES
 			${GHC_LIBS}
+		LINK_ELEKTRA
+			elektra-pluginprocess
 		DEPENDS
 			${target} c2hs_haskell
 		ADD_TEST

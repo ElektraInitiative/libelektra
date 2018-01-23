@@ -32,13 +32,8 @@ elektraHaskellError :: Plugin -> KeySet -> Key -> IO PluginStatus
 elektraHaskellError p ks k = keySetMeta k "/plugins/haskell" "elektraHaskellError" >> return Success
 hs_elektraHaskellError = elektraPluginErrorWith elektraHaskellError
 
-elektraHaskellCheckConfig :: Key -> KeySet -> IO PluginStatus
-elektraHaskellCheckConfig k ks = keySetMeta k "/plugins/haskell" "elektraHaskellCheckConfig" >> return Success
-hs_elektraHaskellCheckConfig = elektraPluginCheckConfigWith elektraHaskellCheckConfig
-
 foreign export ccall hs_elektraHaskellOpen :: Ptr Plugin -> Ptr Key -> IO Int
 foreign export ccall hs_elektraHaskellClose :: Ptr Plugin -> Ptr Key -> IO Int
 foreign export ccall hs_elektraHaskellGet :: Ptr Plugin -> Ptr KeySet -> Ptr Key -> IO Int
 foreign export ccall hs_elektraHaskellSet :: Ptr Plugin -> Ptr KeySet -> Ptr Key -> IO Int
 foreign export ccall hs_elektraHaskellError :: Ptr Plugin -> Ptr KeySet -> Ptr Key -> IO Int
-foreign export ccall hs_elektraHaskellCheckConfig :: Ptr Key -> Ptr KeySet -> IO Int
