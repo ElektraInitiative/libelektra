@@ -50,7 +50,7 @@
         "grunt-contrib-watch": "latest",
         "grunt-preprocess": "latest",
         "highlight.js": "^9.7.0",
-        "jquery": "^2.2.4",
+        "jquery": "^3.3.1",
         "jshint-stylish": "latest",
         "ng-tags-input": "^3.1.1",
         "pace-progress": "^1.0.2",
