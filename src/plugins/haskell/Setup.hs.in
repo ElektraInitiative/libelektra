@@ -9,9 +9,9 @@ module Main (main) where
 
 import Distribution.Simple
 import Distribution.InstalledPackageInfo (InstalledPackageInfo)
-import Control.Monad        (mapM_, when, filterM, sequence)
+import Control.Monad        (mapM_, when, filterM, sequence, unless)
 import Control.Applicative  (liftA2)
-import Data.Foldable        (toList)
+import Data.Foldable        (toList, traverse_)
 import Data.Maybe           (mapMaybe)
 import Data.Set             (Set)
 import Data.List            (isInfixOf, intercalate)
@@ -55,7 +55,7 @@ main = defaultMainWithHooks (simpleUserHooks { hookedPrograms = [C.simpleProgram
 elektraHaskellPluginPostBuildHook :: Args -> C.BuildFlags -> C.PackageDescription -> C.LocalBuildInfo -> IO ()
 elektraHaskellPluginPostBuildHook _ flags pd lbi = do
   logV "Preparing the Haskell dependencies.."
-  isVerbose $ libraries >>= mapM_ putStrLn
+  libraries >>= mapM_ logV
   let ln               = C.lookupProgram (C.simpleProgram "ln") $ C.withPrograms lbi
   let maybeMainLink    = fmap mainLink ln
   let maybeMainDepLink = fmap mainDepLink ln
@@ -93,14 +93,16 @@ elektraHaskellPluginPostBuildHook _ flags pd lbi = do
       readProcess (C.programPath ln) ["-f", libraryPath, filename] "" >>= logV
     mainDepLink ln = do
       logV "linking main library for libraries"
-      let readProcessFn = \prfx -> readProcess (C.programPath ln) ["-f", libraryPath, prfx ++ "/" ++ libraryName] "" >>= logV
-      readProcessFn "."
+      let readProcessFn prfx = readProcess (C.programPath ln) ["-f", libraryPath, prfx ++ "/" ++ libraryName] "" >>= logV
+      readProcessFn "@CMAKE_LIBRARY_OUTPUT_DIRECTORY@"
       readProcessFn "haskell"
     depLink ln lib = do
       l <- showLibrary lbi lib
       logV ("linking library " ++ l)
-      let readProcessFn = \prfx -> readProcess (C.programPath ln) ["-f", l, prfx ++ "/libHS" ++ getLibraryName lib ++ suffix lbi] "" >>= logV
-      readProcessFn "."
+      let name prfx = prfx ++ "/libHS" ++ getLibraryName lib ++ suffix lbi
+      let readProcessFn name = readProcess (C.programPath ln) ["-f", l, name] "" >>= logV
+      let cmakeName = name "@CMAKE_LIBRARY_OUTPUT_DIRECTORY@"
+      unless (cmakeName == l) $ readProcessFn cmakeName
       readProcessFn "haskell"
 
 -- The globally installed ghc libs which we don't want to link statically

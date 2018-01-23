@@ -167,13 +167,14 @@ macro (add_haskell_plugin target)
 			)
 			# same for the setup logic, depending on wheter a custom one exists
 			# use the default suitable for almost everything
-			set (CABAL_CUSTOM_SETUP_FILE "${CMAKE_CURRENT_SOURCE_DIR}/Setup.hs")
+			set (CABAL_CUSTOM_SETUP_FILE "${CMAKE_CURRENT_SOURCE_DIR}/Setup.hs.in")
 			if (NOT EXISTS ${CABAL_CUSTOM_SETUP_FILE})
-				set (CABAL_CUSTOM_SETUP_FILE "${CMAKE_SOURCE_DIR}/src/plugins/haskell/Setup.hs")
+				set (CABAL_CUSTOM_SETUP_FILE "${CMAKE_SOURCE_DIR}/src/plugins/haskell/Setup.hs.in")
 			endif (NOT EXISTS ${CABAL_CUSTOM_SETUP_FILE})
-			file (
-				COPY ${CABAL_CUSTOM_SETUP_FILE}
-				DESTINATION "${CMAKE_CURRENT_BINARY_DIR}"
+			configure_file (
+				${CABAL_CUSTOM_SETUP_FILE}
+				"${CMAKE_CURRENT_BINARY_DIR}/Setup.hs"
+				@ONLY
 			)
 
 			set (SANDBOX_ADD_SOURCES "${ARG_SANDBOX_ADD_SOURCES};")
@@ -197,7 +198,7 @@ macro (add_haskell_plugin target)
 				"${PLUGIN_SOURCE_FILES}"
 				"${CMAKE_CURRENT_SOURCE_DIR}/${target}.cabal.in"
 				"${CMAKE_CURRENT_SOURCE_DIR}/testmod_${target}.c"
-				"${CMAKE_SOURCE_DIR}/src/plugins/haskell/Setup.hs"
+				"${CMAKE_SOURCE_DIR}/src/plugins/haskell/Setup.hs.in"
 				"${ARG_ADDITIONAL_SOURCES}"
 			)
 
@@ -207,7 +208,6 @@ macro (add_haskell_plugin target)
 				COMMAND ${CABAL_EXECUTABLE} build -v0
 				WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} 
 				DEPENDS c2hs_haskell
-				"${CMAKE_SOURCE_DIR}/src/plugins/haskell/Setup.hs" 
 				${PLUGIN_SOURCE_FILES}
 				${HASKELL_ADD_SOURCES_TARGET}
 			)

@@ -34,9 +34,10 @@ if (NOT BUILD_STATIC)
 		@ONLY
 	)
 	# Use the post-build logic to glue the bindings together with cmake as its done for plugins		
-	file (
-		COPY "${CMAKE_SOURCE_DIR}/src/plugins/haskell/Setup.hs"
-		DESTINATION "${CMAKE_CURRENT_BINARY_DIR}"
+	configure_file (
+		"${CMAKE_SOURCE_DIR}/src/plugins/haskell/Setup.hs.in"
+		"${CMAKE_CURRENT_BINARY_DIR}/Setup.hs"
+		@ONLY
 	)
 	set (BINDING_HASKELL_DEPENDENCIES
 		"${CMAKE_CURRENT_SOURCE_DIR}/libelektra-haskell.cabal.in"
@@ -47,7 +48,7 @@ if (NOT BUILD_STATIC)
 		"${CMAKE_CURRENT_SOURCE_DIR}/src/Elektra/Ease.chs"
 		"${CMAKE_CURRENT_SOURCE_DIR}/test/Elektra.hs"
 		"${CMAKE_CURRENT_SOURCE_DIR}/test/ElektraRealWorld.hs"
-		"${CMAKE_SOURCE_DIR}/src/plugins/haskell/Setup.hs"
+		"${CMAKE_SOURCE_DIR}/src/plugins/haskell/Setup.hs.in"
 	)
 	file (WRITE "${CMAKE_CURRENT_BINARY_DIR}/cabalOptionalDependencies.cmake"
 		"execute_process (COMMAND ${CABAL_EXECUTABLE} ${CABAL_OPTS} install --only-dependencies -v0)")
