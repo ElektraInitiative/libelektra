@@ -25,6 +25,7 @@
 
 struct _ElektraPluginProcess
 {
+	char * pipeDirectory;
 	char * commandPipe;
 	char * resultPipe;
 	int pid;
@@ -34,11 +35,13 @@ struct _ElektraPluginProcess
 
 static void cleanupPluginData (ElektraPluginProcess * pp)
 {
-	elektraInvokeClose (pp->dump);
-	if (pp->pid) unlink (pp->commandPipe);
+	if (pp->dump) elektraInvokeClose (pp->dump);
+	if (pp->pid && pp->commandPipe) unlink (pp->commandPipe);
 	elektraFree (pp->commandPipe);
-	if (pp->pid) unlink (pp->resultPipe);
+	if (pp->pid && pp->resultPipe) unlink (pp->resultPipe);
 	elektraFree (pp->resultPipe);
+	if (pp->pid && pp->pipeDirectory) rmdir (pp->pipeDirectory);
+	elektraFree (pp->pipeDirectory);
 	elektraFree (pp);
 }
 
@@ -260,23 +263,29 @@ static int elektraPluginProcessFork (ElektraPluginProcess * pp, Key * errorKey)
 	return 0;
 }
 
-static char * getPipename (Key * errorKey, char * suffix)
+static char * makePipeDirectory (Key * errorKey)
 {
-	int pipenameSize;
-	char * pipename;
-	pipenameSize = snprintf (NULL, 0, "/tmp/libelektra-pluginprocess-%s-XXXXXX", suffix);
-	pipename = elektraMalloc (pipenameSize + 1);
-	pipenameSize = snprintf (pipename, pipenameSize + 1, "/tmp/libelektra-pluginprocess-%s-XXXXXX", suffix);
+	const char directoryNameTemplate[] = "/tmp/libelektra-pluginprocess-XXXXXX";
+	char * directoryName = elektraMalloc (sizeof (directoryNameTemplate));
+	strcpy (directoryName, directoryNameTemplate);
 
 	int prevErrno = errno;
-	if (mktemp (pipename) == NULL || errno == ENOTDIR || errno == EINVAL)
+	if (mkdtemp (directoryName) == NULL || errno == ENOTDIR || errno == EINVAL)
 	{
-		ELEKTRA_SET_ERRORF (190, errorKey, "Failed to generate a temporary pipename, mktemp returned errno %d", errno);
-		elektraFree (pipename);
+		ELEKTRA_SET_ERRORF (190, errorKey, "Failed to generate a temporary directory, mkdtemp returned errno %d", errno);
+		elektraFree (directoryName);
 		errno = prevErrno;
 		return NULL;
 	}
 	errno = prevErrno;
+	return directoryName;
+}
+
+static char * getPipename (const char * directoryName, const char * suffix)
+{
+	char * pipename = elektraMalloc (strlen (directoryName) + strlen (suffix) + 1);
+	strncpy (pipename, directoryName, strlen (directoryName));
+	strncpy (pipename + strlen (directoryName), suffix, strlen (suffix) + 1);
 	return pipename;
 }
 
@@ -318,22 +327,13 @@ ElektraPluginProcess * elektraPluginProcessInit (Key * errorKey)
 	// First time initialization
 	ElektraPluginProcess * pp;
 	pp = elektraMalloc (sizeof (ElektraPluginProcess));
-	pp->commandPipe = getPipename (errorKey, "command");
-	if (pp->commandPipe == NULL)
-	{
-		elektraFree (pp);
-		return NULL;
-	}
-	pp->resultPipe = getPipename (errorKey, "result");
-	if (pp->resultPipe == NULL)
-	{
-		elektraFree (pp->commandPipe);
-		elektraFree (pp);
-		return NULL;
-	}
+	pp->pipeDirectory = makePipeDirectory (errorKey);
+	pp->commandPipe = getPipename (pp->pipeDirectory, "/command");
+	pp->resultPipe = getPipename (pp->pipeDirectory, "/result");
 	pp->dump = elektraInvokeOpen ("dump", 0);
 	pp->counter = 0;
-	if (pp->commandPipe && pp->resultPipe && pp->dump)
+
+	if (pp->pipeDirectory && pp->commandPipe && pp->resultPipe && pp->dump)
 	{
 		if (elektraPluginProcessFork (pp, errorKey) < 0)
 		{
