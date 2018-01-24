@@ -347,7 +347,7 @@ macro (configure_haskell_sandbox)
 		set (CABAL_OPTS "--enable-shared")
 	endif (BUILD_SHARED OR BUILD_FULL)
 	file (WRITE "${CMAKE_CURRENT_BINARY_DIR}/cabalOptionalDependencies.cmake" 
-		"execute_process (COMMAND ${CABAL_EXECUTABLE} ${CABAL_OPTS} install -v0)")
+		"execute_process (COMMAND ${CABAL_EXECUTABLE} ${CABAL_OPTS} install --only-dependencies -v0)")
 	add_custom_command (OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/cabal.sandbox.config"
 		# ensure any further dependencies added by plugin developers get installed to the sandbox
 		COMMAND ${CMAKE_COMMAND} -P "${CMAKE_CURRENT_BINARY_DIR}/cabalOptionalDependencies.cmake"
