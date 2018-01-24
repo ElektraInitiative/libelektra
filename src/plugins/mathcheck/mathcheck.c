@@ -381,7 +381,9 @@ int elektraMathcheckSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 	{
 		const Key * meta = keyGetMeta (cur, "check/math");
 		if (!meta) continue;
+		ELEKTRA_LOG_DEBUG ("Check key “%s” with value “%s”", keyName (cur), keyString (meta));
 		result = parsePrefixString (keyString (meta), cur, ksDup (returned), parentKey);
+		ELEKTRA_LOG_DEBUG ("Result: “%f”", result.value);
 		char val1[MAX_CHARS_DOUBLE];
 		char val2[MAX_CHARS_DOUBLE];
 		strncpy (val1, keyString (cur), sizeof (val1));
@@ -440,6 +442,7 @@ int elektraMathcheckSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 		}
 		else if (result.op == SET)
 		{
+			ELEKTRA_LOG_DEBUG ("Set value of “%s” to “%s”", keyName (cur), val2);
 			keySetString (cur, val2);
 		}
 	}
