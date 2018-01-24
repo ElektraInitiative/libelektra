@@ -436,11 +436,7 @@ static int iniKeyToElektraKey (void * vhandle, const char * section, const char 
 
 static short isSectionKey (Key * key)
 {
-	if (!key) return 0;
-	if (keyGetMeta (key, "internal/ini/section"))
-		return 1;
-	else
-		return 0;
+	return key && keyGetMeta (key, "internal/ini/section");
 }
 
 static int iniSectionToElektraKey (void * vhandle, const char * section)
