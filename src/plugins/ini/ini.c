@@ -1274,15 +1274,33 @@ static int iniWriteKeySet (FILE * fh, Key * parentKey, KeySet * returned, IniPlu
 			}
 			else if (!keyGetMeta (cur, "internal/ini/section"))
 			{
-				if (config->sectionHandling != NONE)
+				// handle possible section conflicts
+				const Key * parentMeta = keyGetMeta (cur, "internal/ini/parent");
+				if (parentMeta && !keyIsBelow (sectionKey, cur))
 				{
-					// handle possible section conflicts
-					const Key * parentMeta = keyGetMeta (cur, "internal/ini/parent");
-					if (parentMeta && !keyIsBelow (sectionKey, cur))
+					Key * oldSectionKey = sectionKey;
+					sectionKey = keyNew (keyString (parentMeta), KEY_END);
+					if (!keyIsBelow (oldSectionKey, sectionKey))
 					{
-						Key * oldSectionKey = sectionKey;
-						sectionKey = keyNew (keyString (parentMeta), KEY_END);
-						if (!keyIsBelow (oldSectionKey, sectionKey))
+						if (keyIsBelow (parentKey, sectionKey))
+						{
+							char * name = getIniName (parentKey, sectionKey);
+							fprintf (fh, "[%s]\n", name);
+							elektraFree (name);
+						}
+						else if (!strcmp (keyName (parentKey), "/") && !strcmp (keyString (parentMeta), "/"))
+						{
+							fprintf (fh, "[]\n");
+						}
+						else if (!strcmp (keyName (parentKey), "/"))
+						{
+							fprintf (fh, "[%s]\n", keyString (parentMeta));
+						}
+						else if (!strcmp (keyName (sectionKey), keyName (parentKey)))
+						{
+							fprintf (fh, "[]\n");
+						}
+						else if (keyGetNamespace (sectionKey) != keyGetNamespace (oldSectionKey))
 						{
 							if (keyIsBelow (parentKey, sectionKey))
 							{
@@ -1290,46 +1308,24 @@ static int iniWriteKeySet (FILE * fh, Key * parentKey, KeySet * returned, IniPlu
 								fprintf (fh, "[%s]\n", name);
 								elektraFree (name);
 							}
-							else if (!strcmp (keyName (parentKey), "/") &&
-								 !strcmp (keyString (parentMeta), "/"))
-							{
+							else
 								fprintf (fh, "[]\n");
-							}
-							else if (!strcmp (keyName (parentKey), "/"))
-							{
-								fprintf (fh, "[%s]\n", keyString (parentMeta));
-							}
-							else if (!strcmp (keyName (sectionKey), keyName (parentKey)))
-							{
-								fprintf (fh, "[]\n");
-							}
-							else if (keyGetNamespace (sectionKey) != keyGetNamespace (oldSectionKey))
-							{
-								if (keyIsBelow (parentKey, sectionKey))
-								{
-									char * name = getIniName (parentKey, sectionKey);
-									fprintf (fh, "[%s]\n", name);
-									elektraFree (name);
-								}
-								else
-									fprintf (fh, "[]\n");
-							}
-
-							if (removeSectionKey)
-							{
-								// remove previous sectionKey
-								keyDel (oldSectionKey);
-							}
-
-							// mark allocated sectionKey to be freed later
-							removeSectionKey = 1;
 						}
-						else
+
+						if (removeSectionKey)
 						{
-							keyDel (sectionKey);
-							sectionKey = oldSectionKey;
-							removeSectionKey = 0;
+							// remove previous sectionKey
+							keyDel (oldSectionKey);
 						}
+
+						// mark allocated sectionKey to be freed later
+						removeSectionKey = 1;
+					}
+					else
+					{
+						keyDel (sectionKey);
+						sectionKey = oldSectionKey;
+						removeSectionKey = 0;
 					}
 				}
 				if (keyGetMeta (cur, "internal/ini/array") && config->array)
