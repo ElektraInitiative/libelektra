@@ -1272,7 +1272,7 @@ static int iniWriteKeySet (FILE * fh, Key * parentKey, KeySet * returned, IniPlu
 					fprintf (fh, "[]\n");
 				}
 			}
-			else if (!keyGetMeta (cur, "internal/ini/section"))
+			else
 			{
 				// handle possible section conflicts
 				const Key * parentMeta = keyGetMeta (cur, "internal/ini/parent");
