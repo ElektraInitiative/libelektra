@@ -1253,7 +1253,7 @@ static int iniWriteKeySet (FILE * fh, Key * parentKey, KeySet * returned, IniPlu
 		}
 		else
 		{
-			if (isSectionKey (cur))
+			if (isSectionKey (cur) && keyGetValueSize (cur) <= 1)
 			{
 				if (keyIsBelow (parentKey, cur))
 				{

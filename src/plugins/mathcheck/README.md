@@ -29,7 +29,7 @@ Full example:
 ```sh
 # Backup-and-Restore:/examples/mathcheck
 
-sudo kdb mount mathcheck.dump /examples/mathcheck dump mathcheck
+sudo kdb mount mathcheck.dump /examples/mathcheck mathcheck
 
 kdb set /examples/mathcheck/a 3.1
 kdb set /examples/mathcheck/b 4.5
