@@ -235,7 +235,7 @@ sudo kdb umount user/examples/ini
 The ini plugin supports 3 different sectioning modes (via `section=`):
 
 - `NONE` sections wont be printed as `[Section]` but as part of the key name `section/key`
-- `NULL` only binary keys will be printed as `[Section]`
+- `NULL` only empty keys will be printed as `[Section]`
 - `ALWAYS` sections will be created automatically. This is the default setting:
 
 ```sh
