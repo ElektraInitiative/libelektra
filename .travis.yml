@@ -139,9 +139,12 @@ before_script:
       CMAKE_OPT+=("-DCOMMON_FLAGS=-Werror")
     fi
   # use a minimal configuration for the haskell bindings to give it enough time to compile dependencies
-  - if [[ $HASKELL == ON ]]; then bindings="haskell"; fi
-  - if [[ $HASKELL == ON ]]; then plugins="resolver_fm_hpu_b;dump;ini;dini;sync;error;hosts;list;glob;profile;spec;network;tracer;timeofday;base64;haskell"; fi  
-  - if [[ $HASKELL == ON ]]; then tools="kdb"; fi  
+  - |
+    if [[ $HASKELL == ON ]]; then
+      bindings="haskell"
+      plugins="resolver_fm_hpu_b;dump;ini;dini;sync;error;hosts;list;glob;profile;spec;network;tracer;timeofday;base64;haskell"
+      tools="kdb"
+    fi
   - |
     if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
       python2_ver=$(python2 -c 'import sys; print(".".join(map(str, sys.version_info[:2])))') &&                  \
