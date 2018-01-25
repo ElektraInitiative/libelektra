@@ -10,6 +10,7 @@
 #ifndef ELEKTRA_PLUGIN_INTERNALNOTIFICATION_H
 #define ELEKTRA_PLUGIN_INTERNALNOTIFICATION_H
 
+#include <kdbnotification.h>
 #include <kdbplugin.h>
 
 
@@ -17,8 +18,8 @@ int elektraInternalnotificationGet (Plugin * handle, KeySet * ks, Key * parentKe
 int elektraInternalnotificationSet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraInternalnotificationClose (Plugin * handle, Key * errorKey);
 int elektraInternalnotificationOpen (Plugin * handle, Key * errorKey);
-
-int elektraInternalnotificationRegisterInt (Plugin * handle, int * variable, Key * key);
+typedef int (*ElektraInternalnotificationRegisterInt) (Plugin * handle, Key * key, int * variable);
+typedef int (*ElektraInternalnotificationRegisterCallback) (Plugin * handle, Key * key, ElektraNotificationChangeCallback callback);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (internalnotification);
 

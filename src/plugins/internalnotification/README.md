@@ -19,11 +19,11 @@ Until the wrapper (see [TODOs](#todos)) is finished it may be used as global plu
 
 ## Exported Methods ##
 
-This plugin exports the function `int elektraInternalnotificationRegisterInt (Plugin * handle, int * variable, Key * key)`.
+This plugin exports the function `int elektraInternalnotificationRegisterInt (Plugin * handle, Key * key, int * variable)`.
 If the given key is contained in a KeySet on a kdbGet or kdbSet operation, its value is
 converted from string to integer and the registered variable is updated with the current value.
 This also works if the registered key is a cascading key.
-The function address is exported as `system/elektra/modules/internalnotification/exports/elektraInternalnotificationRegisterInt`.
+The function address is exported as `system/elektra/modules/internalnotification/exports/registerInt`.
 The plugin handle required for this plugin is exported as `system/elektra/modules/internalnotification/exports/handle`.
 Please note that the plugin API may change as this plugin is experimental.
 

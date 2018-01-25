@@ -16,16 +16,16 @@
 #include <tests_plugin.h>
 
 
-static int internalnotificationRegisterInt (Plugin * plugin, int * variable, Key * key)
+static int internalnotificationRegisterInt (Plugin * plugin, Key * key, int * variable)
 {
-	typedef int (*elektraInternalnotificationRegisterIntCallback) (Plugin * handle, int * variable, Key * key);
+	typedef int (*elektraInternalnotificationRegisterIntCallback) (Plugin * handle, Key * key, int * variable);
 
 	static size_t address = 0;
 
 	if (address == 0)
 	{
 		char * NOTIFICATION_BASE = "system/elektra/modules/internalnotification";
-		char * EXPORTED_FUNCTION = "system/elektra/modules/internalnotification/exports/elektraInternalnotificationRegisterInt";
+		char * EXPORTED_FUNCTION = "system/elektra/modules/internalnotification/exports/registerInt";
 		Key * parentKey = keyNew (NOTIFICATION_BASE, KEY_END);
 
 		KeySet * conf = ksNew (20, KS_END);
@@ -65,7 +65,7 @@ static int internalnotificationRegisterInt (Plugin * plugin, int * variable, Key
 	}
 
 	// Register key with plugin
-	return ((elektraInternalnotificationRegisterIntCallback)address) (plugin, variable, key);
+	return ((elektraInternalnotificationRegisterIntCallback)address) (plugin, key, variable);
 }
 
 static int digits (long long number)
@@ -99,7 +99,7 @@ static char * convertLongLongToString (long long number)
 	return buffer;
 }
 
-static void test_basics ()
+static void test_basics (void)
 {
 	printf ("test basics\n");
 
@@ -122,7 +122,7 @@ static void test_basics ()
 	PLUGIN_CLOSE ();
 }
 
-static void test_updateOnKdbGet ()
+static void test_updateOnKdbGet (void)
 {
 	printf ("test update on kdbGet\n");
 
@@ -133,7 +133,7 @@ static void test_updateOnKdbGet ()
 	Key * valueKey = keyNew ("user/test/internalnotification/value", KEY_END);
 
 	int value = 0;
-	succeed_if (internalnotificationRegisterInt (plugin, &value, valueKey) == 1,
+	succeed_if (internalnotificationRegisterInt (plugin, valueKey, &value) == 1,
 		    "call to elektraInternalnotificationRegisterInt was not successful");
 
 	keySetString (valueKey, "42");
@@ -150,7 +150,7 @@ static void test_updateOnKdbGet ()
 	PLUGIN_CLOSE ();
 }
 
-static void test_updateOnKdbSet ()
+static void test_updateOnKdbSet (void)
 {
 	printf ("test update on kdbSet\n");
 
@@ -161,7 +161,7 @@ static void test_updateOnKdbSet ()
 	Key * valueKey = keyNew ("user/test/internalnotification/value", KEY_END);
 
 	int value = 0;
-	succeed_if (internalnotificationRegisterInt (plugin, &value, valueKey) == 1,
+	succeed_if (internalnotificationRegisterInt (plugin, valueKey, &value) == 1,
 		    "call to elektraInternalnotificationRegisterInt was not successful");
 
 	keySetString (valueKey, "42");
@@ -178,7 +178,7 @@ static void test_updateOnKdbSet ()
 	PLUGIN_CLOSE ();
 }
 
-static void test_updateWithCascadingKey ()
+static void test_updateWithCascadingKey (void)
 {
 	printf ("test update with cascading key registered\n");
 
@@ -189,7 +189,7 @@ static void test_updateWithCascadingKey ()
 	Key * registeredKey = keyNew ("/test/internalnotification/value", KEY_END);
 
 	int value = 0;
-	succeed_if (internalnotificationRegisterInt (plugin, &value, registeredKey) == 1,
+	succeed_if (internalnotificationRegisterInt (plugin, registeredKey, &value) == 1,
 		    "call to elektraInternalnotificationRegisterInt was not successful");
 
 	Key * valueKey = keyNew ("user/test/internalnotification/value", KEY_END);
@@ -208,7 +208,7 @@ static void test_updateWithCascadingKey ()
 	PLUGIN_CLOSE ();
 }
 
-static void test_noUpdateWithInvalidValue ()
+static void test_noUpdateWithInvalidValue (void)
 {
 	printf ("test no update with invalid value\n");
 
@@ -219,7 +219,7 @@ static void test_noUpdateWithInvalidValue ()
 	Key * valueKey = keyNew ("user/test/internalnotification/value", KEY_END);
 
 	int value = 123;
-	succeed_if (internalnotificationRegisterInt (plugin, &value, valueKey) == 1,
+	succeed_if (internalnotificationRegisterInt (plugin, valueKey, &value) == 1,
 		    "call to elektraInternalnotificationRegisterInt was not successful");
 
 	keySetString (valueKey, "42abcd");
@@ -236,7 +236,7 @@ static void test_noUpdateWithInvalidValue ()
 	PLUGIN_CLOSE ();
 }
 
-static void test_updateWithValueNotYetExceedingIntMax ()
+static void test_updateWithValueNotYetExceedingIntMax (void)
 {
 	printf ("test update with value = INT_MAX\n");
 
@@ -247,7 +247,7 @@ static void test_updateWithValueNotYetExceedingIntMax ()
 	Key * valueKey = keyNew ("user/test/internalnotification/value", KEY_END);
 
 	int value = 123;
-	succeed_if (internalnotificationRegisterInt (plugin, &value, valueKey) == 1,
+	succeed_if (internalnotificationRegisterInt (plugin, valueKey, &value) == 1,
 		    "call to elektraInternalnotificationRegisterInt was not successful");
 
 	int exceedsInt = INT_MAX;
@@ -267,7 +267,7 @@ static void test_updateWithValueNotYetExceedingIntMax ()
 	PLUGIN_CLOSE ();
 }
 
-static void test_noUpdateWithValueExceedingIntMax ()
+static void test_noUpdateWithValueExceedingIntMax (void)
 {
 	printf ("test no update with value that exceeds INT_MAX\n");
 
@@ -278,7 +278,7 @@ static void test_noUpdateWithValueExceedingIntMax ()
 	Key * valueKey = keyNew ("user/test/internalnotification/value", KEY_END);
 
 	int value = 123;
-	succeed_if (internalnotificationRegisterInt (plugin, &value, valueKey) == 1,
+	succeed_if (internalnotificationRegisterInt (plugin, valueKey, &value) == 1,
 		    "call to elektraInternalnotificationRegisterInt was not successful");
 
 	long long exceedsInt = (long long)INT_MAX + 1;
@@ -299,7 +299,7 @@ static void test_noUpdateWithValueExceedingIntMax ()
 }
 
 
-static void test_updateWithValueNotYetExceedingIntMin ()
+static void test_updateWithValueNotYetExceedingIntMin (void)
 {
 	printf ("test update with value = INT_MIN\n");
 
@@ -310,7 +310,7 @@ static void test_updateWithValueNotYetExceedingIntMin ()
 	Key * valueKey = keyNew ("user/test/internalnotification/value", KEY_END);
 
 	int value = 123;
-	succeed_if (internalnotificationRegisterInt (plugin, &value, valueKey) == 1,
+	succeed_if (internalnotificationRegisterInt (plugin, valueKey, &value) == 1,
 		    "call to elektraInternalnotificationRegisterInt was not successful");
 
 	int exceedsInt = INT_MIN;
@@ -330,7 +330,7 @@ static void test_updateWithValueNotYetExceedingIntMin ()
 	PLUGIN_CLOSE ();
 }
 
-static void test_noUpdateWithValueExceedingIntMin ()
+static void test_noUpdateWithValueExceedingIntMin (void)
 {
 	printf ("test no update with value that exceeds INT_MIN\n");
 
@@ -341,7 +341,7 @@ static void test_noUpdateWithValueExceedingIntMin ()
 	Key * valueKey = keyNew ("user/test/internalnotification/value", KEY_END);
 
 	int value = 123;
-	succeed_if (internalnotificationRegisterInt (plugin, &value, valueKey) == 1,
+	succeed_if (internalnotificationRegisterInt (plugin, valueKey, &value) == 1,
 		    "call to elektraInternalnotificationRegisterInt was not successful");
 
 	long long exceedsInt = (long long)INT_MIN - 1;

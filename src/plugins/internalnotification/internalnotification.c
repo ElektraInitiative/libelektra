@@ -16,6 +16,11 @@
 #include <kdbhelper.h>
 #include <kdblogger.h>
 
+typedef enum {
+	TYPE_INT = 1 << 0,
+	TYPE_CALLBACK = 1 << 1,
+} KeyRegistrationType;
+
 /**
  * Structure for registered key variable pairs
  * @internal
@@ -23,7 +28,11 @@
 struct _KeyRegistration
 {
 	char * name;
-	int * variable;
+	KeyRegistrationType type;
+	union {
+		int * variable;
+		ElektraNotificationChangeCallback callback;
+	} ref;
 	struct _KeyRegistration * next;
 };
 typedef struct _KeyRegistration KeyRegistration;
@@ -88,27 +97,125 @@ static void elektraInternalnotificationUpdateRegisteredKeys (PluginState * plugi
 		Key * key = ksLookupByName (keySet, registeredKey->name, 0);
 		if (key != 0)
 		{
-			ELEKTRA_LOG ("found registeredKey=%s; updating variable=%p with string value \"%s\"", registeredKey->name,
-				     (void *)registeredKey->variable, keyString (key));
+			switch (registeredKey->type)
+			{
+			case TYPE_INT:
+				ELEKTRA_LOG ("found registeredKey=%s; updating variable=%p with string value \"%s\"", registeredKey->name,
+					     (void *)registeredKey->ref.variable, keyString (key));
 
-			// Convert string value to long
-			char * end;
-			errno = 0;
-			long int value = strtol (keyString (key), &end, 10);
-			// Update variable if conversion was successful and did not exceed integer range
-			if (*end == 0 && errno == 0 && value <= INT_MAX && value >= INT_MIN)
-			{
-				*(registeredKey->variable) = value;
-			}
-			else
-			{
-				ELEKTRA_LOG ("conversion failed! keyString=\"%s\" *end=%c, errno=%d, value=%ld", keyString (key), *end,
-					     errno, value);
+				// Convert string value to long
+				char * end;
+				errno = 0;
+				long int value = strtol (keyString (key), &end, 10);
+				// Update variable if conversion was successful and did not exceed integer range
+				if (*end == 0 && errno == 0 && value <= INT_MAX && value >= INT_MIN)
+				{
+					*(registeredKey->ref.variable) = value;
+				}
+				else
+				{
+					ELEKTRA_LOG ("conversion failed! keyString=\"%s\" *end=%c, errno=%d, value=%ld", keyString (key),
+						     *end, errno, value);
+				}
+				break;
+			case TYPE_CALLBACK:
+				ELEKTRA_LOG ("found registeredKey=%s; invoking callback", registeredKey->name);
+				ElektraNotificationChangeCallback callback =
+					*(ElektraNotificationChangeCallback)registeredKey->ref.callback;
+				callback (key);
+				break;
 			}
 		}
 
 		registeredKey = registeredKey->next;
 	}
+}
+
+
+/**
+ * Subscribe for automatic updates to a given integer variable when the given
+ * key value has changed.
+ *
+ * @param  handle   plugin handle
+ * @param  variable integer variable
+ * @param  key      key to watch for changes
+ *
+ * @retval 1 on success
+ * @retval 0 on failure
+ */
+int elektraInternalnotificationRegisterInt (Plugin * handle, Key * key, int * variable)
+{
+	PluginState * pluginState = elektraPluginGetData (handle);
+	ELEKTRA_ASSERT (pluginState != NULL, "plugin state was not initialized properly");
+
+	KeyRegistration * registeredKey = elektraInternalnotificationAddNewRegistration (pluginState);
+	if (registeredKey == NULL)
+	{
+		return 0;
+	}
+
+	// Copy key name
+	size_t nameBufferSize = keyGetNameSize (key);
+	char * nameBuffer = elektraMalloc (nameBufferSize);
+	if (nameBuffer == NULL)
+	{
+		return 0;
+	}
+	ssize_t result = keyGetName (key, nameBuffer, nameBufferSize);
+	if (result == 1 || result == -1)
+	{
+		return 0;
+	}
+
+	// Save key registration
+	registeredKey->name = nameBuffer;
+	registeredKey->type = TYPE_INT;
+	registeredKey->ref.variable = variable;
+
+	return 1;
+}
+
+/**
+ * Subscribe for updates via callback when a given key value is changed.
+ * key value has changed.
+ *
+ * @param  handle   plugin handle
+ * @param  key      key to watch for changes
+ * @param  callback callback function
+ *
+ * @retval 1 on success
+ * @retval 0 on failure
+ */
+int elektraInternalnotificationRegisterCallback (Plugin * handle, Key * key, ElektraNotificationChangeCallback callback)
+{
+	PluginState * pluginState = elektraPluginGetData (handle);
+	ELEKTRA_ASSERT (pluginState != NULL, "plugin state was not initialized properly");
+
+	KeyRegistration * registeredKey = elektraInternalnotificationAddNewRegistration (pluginState);
+	if (registeredKey == NULL)
+	{
+		return 0;
+	}
+
+	// Copy key name
+	size_t nameBufferSize = keyGetNameSize (key);
+	char * nameBuffer = elektraMalloc (nameBufferSize);
+	if (nameBuffer == NULL)
+	{
+		return 0;
+	}
+	ssize_t result = keyGetName (key, nameBuffer, nameBufferSize);
+	if (result == 1 || result == -1)
+	{
+		return 0;
+	}
+
+	// Save key registration
+	registeredKey->name = nameBuffer;
+	registeredKey->type = TYPE_CALLBACK;
+	registeredKey->ref.callback = callback;
+
+	return 1;
 }
 
 /**
@@ -124,7 +231,7 @@ static void elektraInternalnotificationUpdateRegisteredKeys (PluginState * plugi
  */
 int elektraInternalnotificationGet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
-	ELEKTRA_LOG_DEBUG ("keyName=%s", keyName (parentKey));
+	ELEKTRA_LOG_DEBUG ("%p: keyName=%s", (void *)handle, keyName (parentKey));
 
 	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/internalnotification"))
 	{
@@ -142,8 +249,10 @@ int elektraInternalnotificationGet (Plugin * handle, KeySet * returned, Key * pa
 				KEY_END),
 
 			// Export registerInt function and required plugin handle
-			keyNew ("system/elektra/modules/internalnotification/exports/elektraInternalnotificationRegisterInt", KEY_FUNC,
+			keyNew ("system/elektra/modules/internalnotification/exports/registerInt", KEY_FUNC,
 				elektraInternalnotificationRegisterInt, KEY_END),
+			keyNew ("system/elektra/modules/internalnotification/exports/registerCallback", KEY_FUNC,
+				elektraInternalnotificationRegisterCallback, KEY_END),
 			keyNew ("system/elektra/modules/internalnotification/exports/handle", KEY_BINARY, KEY_SIZE, sizeof handle,
 				KEY_VALUE, &handle, KEY_END),
 
@@ -200,15 +309,14 @@ int elektraInternalnotificationSet (Plugin * handle, KeySet * returned, Key * pa
  */
 int elektraInternalnotificationOpen (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 {
+	ELEKTRA_LOG_DEBUG ("%p: open: hello from internalnotification!", (void *)handle);
+
 	PluginState * pluginState = elektraPluginGetData (handle);
 	if (pluginState == NULL)
 	{
 		pluginState = elektraMalloc (sizeof *pluginState);
 		if (pluginState == NULL)
 		{
-#if PLUGIN_INTERNALNOTIFICATION_VERBOSE
-			fprintf (stderr, "elektraInternalnotificationOpen elektraMalloc failed!\n");
-#endif
 			return -1;
 		}
 		elektraPluginSetData (handle, pluginState);
@@ -252,50 +360,6 @@ int elektraInternalnotificationClose (Plugin * handle, Key * parentKey ELEKTRA_U
 		elektraFree (pluginState);
 		elektraPluginSetData (handle, NULL);
 	}
-
-	return 1;
-}
-
-/**
- * Subscribe for automatic updates to a given integer variable when the given
- * key value has changed.
- *
- * @param  handle   plugin handle
- * @param  variable integer variable
- * @param  key      key to watch for changes
- *
- * @retval 1 on success
- * @retval -1 on failure
- */
-int elektraInternalnotificationRegisterInt (Plugin * handle, int * variable, Key * key)
-{
-	ELEKTRA_LOG_DEBUG ("variable=%p, keyName=%s", (void *)variable, keyName (key));
-
-	PluginState * pluginState = elektraPluginGetData (handle);
-	ELEKTRA_ASSERT (pluginState != NULL, "plugin state was not initialized properly");
-
-	KeyRegistration * registeredKey = elektraInternalnotificationAddNewRegistration (pluginState);
-	if (registeredKey == NULL)
-	{
-		return -1;
-	}
-
-	// Copy key name
-	size_t nameBufferSize = keyGetNameSize (key);
-	char * nameBuffer = elektraMalloc (nameBufferSize);
-	if (nameBuffer == NULL)
-	{
-		return -1;
-	}
-	ssize_t result = keyGetName (key, nameBuffer, nameBufferSize);
-	if (result == 1 || result == -1)
-	{
-		return -1;
-	}
-
-	// Save key registration
-	registeredKey->name = nameBuffer;
-	registeredKey->variable = variable;
 
 	return 1;
 }
