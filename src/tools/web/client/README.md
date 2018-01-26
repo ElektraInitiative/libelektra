@@ -5,22 +5,35 @@ The client for elektra-web, built using
 accesses the API that [`clusterd`](../clusterd/) provides.
 
 
+## Installation
+
+ * first, install [libelektra](http://libelektra.org/) with the [`yajl` plugin](http://tree.libelektra.org/src/plugins/yajl/)
+ * now run `npm install`
+
+
 ## Running
 
-The elektra-web client is served by `clusterd`, please check
-[the `clusterd` README](../clusterd/README.md) for information on how to run it.
+Start the client in **production** mode via:
+
+```
+npm start
+```
+
+Alternatively, you can use **development** mode:
+
+```
+npm run start:dev
+```
 
 
 ## Features
 
 **Implemented:**
 
- - manage ([`elektrad`](../elektrad/)) instances and clusters
- - configure instances and clusters with a simple tree view
+ - manage ([`elektrad`](../elektrad/)) instances
+ - configure instances with a simple tree view
  - creating, setting, removing keys
-
-**In development:**
-
- - use elektra metadata
- - improved tree view with dynamic fields
- - [undo/redo](https://github.com/omnidan/redux-undo)
+ - uses elektra metadata to display dynamic fields
+ - editing of metadata
+ - drag & drop to move keys
+ - search to filter keys

@@ -4,7 +4,7 @@
  * @brief this is the main component of the application
  *
  * it renders the overview page or the configuration page, depending on the
- * router state. it also renders the DevTools sidebar in development mode.
+ * router state.
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
@@ -12,77 +12,64 @@
 import React from 'react'
 
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
+import { BrowserRouter as Router, Route, withRouter } from 'react-router-dom'
 
-import ConnectedMenu from '../containers/ConnectedMenu'
-import ConnectedContainer from '../containers/ConnectedContainer'
-import ConnectedConfiguration from '../containers/ConnectedConfiguration'
-import ConnectedErrorSnackbar from '../containers/ConnectedErrorSnackbar'
+import { fetchInstance } from '../actions'
+import Menu from '../containers/ConnectedMenu'
+import ErrorSnackbar from '../containers/ConnectedErrorSnackbar'
+import NotificationSnackbar from '../containers/ConnectedNotificationSnackbar'
+import Home from '../containers/ConnectedHomePage'
+import Configuration from '../containers/ConnectedConfigurationPage'
 
-import DevTools from '../containers/DevTools'
-import Paper from 'material-ui/Paper'
-
-import { PAGE_MAIN, PAGE_CONFIGURE } from '../router'
-
-// mini router that displays the confiugration/main page
-const displayPage = ({ page, ...instance }) => {
-  switch (page) {
-    case PAGE_CONFIGURE:
-      return <ConnectedConfiguration {...instance} />
-    default:
-    case PAGE_MAIN:
-      return <ConnectedContainer />
+const getSubpage = ({ match }) => {
+  const { path } = match && match.params
+  if (path.startsWith('instances')) {
+    return 'configuring instance'
   }
 }
 
-// get name of the current page for the breadcrumb
-const getSubpageName = ({ page, configuring, id }) => {
-  switch (page) {
-    case PAGE_CONFIGURE:
-      return `${configuring} #${id}`
-    default:
-    case PAGE_MAIN:
-      return false
+class App extends React.Component {
+  componentWillMount () {
+    const { store, history } = this.props
+    // single instance mode
+    store.dispatch(fetchInstance('my'))
+      .then(instance => {
+        if (!instance || instance.error) {
+          console.log('single instance mode: %coff', 'font-weight: bold')
+        } else {
+          history.push('/instances/my')
+        }
+      })
+  }
+
+  render () {
+    return (
+        <div>
+            <Route exact path="/" component={Menu} />
+            <Route path="/:path" render={props =>
+                <Menu subpage={getSubpage(props)} />
+            } />
+            <div style={{ padding: 50 }}>
+                <Route exact path="/" component={Home} />
+                <Route path="/instances/:id" component={Configuration} />
+            </div>
+            <NotificationSnackbar />
+            <ErrorSnackbar />
+        </div>
+    )
   }
 }
 
-// this is the main application
-const MainApp = (props) =>
-    <div>
-        <ConnectedMenu subpage={getSubpageName(props)} />
-        <div style={{padding: '50px'}}>
-            {displayPage(props)}
-        </div>
-        <ConnectedErrorSnackbar />
-    </div>
+// this injects the `history` property into our App component
+const RoutedApp = withRouter(App)
 
-// this is the main application wrapped inside devtools (for development mode)
-const DevApp = (props) =>
-    <div>
-        <div style={{display: 'inline-block', width: '80%'}}>
-            <MainApp {...props} />
-        </div>
-        <Paper style={{
-          display: 'inline-block',
-          width: '20%',
-          height: '100vh',
-          position: 'absolute',
-          top: 0,
-        }}>
-            <DevTools />
-        </Paper>
-    </div>
+// wrap app with the Router and MuiThemeProvider (required for material-ui)
+const WrappedApp = ({ store }) => (
+    <Router>
+        <MuiThemeProvider>
+            <RoutedApp store={store} />
+        </MuiThemeProvider>
+    </Router>
+)
 
-// show only MainApp in production mode,
-// and DevApp (MainApp with devtools) in development mode
-const AppContainer = (props) =>
-  process.env.NODE_ENV === 'production'
-    ? <MainApp {...props} />
-    : <DevApp {...props} />
-
-// wrap app container with the MuiThemeProvider (required for material-ui)
-const App = (props) =>
-    <MuiThemeProvider>
-        <AppContainer {...props} />
-    </MuiThemeProvider>
-
-export default App
+export default WrappedApp

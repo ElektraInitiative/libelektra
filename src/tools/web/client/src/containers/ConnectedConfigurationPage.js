@@ -11,31 +11,26 @@
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 
-import Configuration from '../components/Configuration.jsx'
+import Configuration from '../components/pages/Configuration.jsx'
 import {
-  returnToMain,
-  getKey, setKey, deleteKey,
-  getClusterKey, setClusterKey, deleteClusterKey,
+  getKdb, getKey, setKey, deleteKey, sendNotification,
 } from '../actions'
 
-const mapStateToProps = (state) => {
+const mapStateToProps = (state, { match }) => {
+  const { id } = match && match.params
   return {
-    instance: state.instances.filter(instance => instance.id === state.router.id)[0],
-    cluster: state.clusters.filter(cluster => cluster.id === state.router.id)[0],
-    kdb: state.kdb && state.kdb[state.router.id],
-    configuring: state.router.configuring,
+    instance: state.instances.find(instance => instance.id === id),
+    ls: state.ls,
   }
 }
 
 const mapDispatchToProps = (dispatch) =>
   bindActionCreators({
-    returnToMain,
+    getKdb,
     getKey,
     setKey,
     deleteKey,
-    getClusterKey,
-    setClusterKey,
-    deleteClusterKey,
+    sendNotification,
   }, dispatch)
 
 export default connect(mapStateToProps, mapDispatchToProps)(Configuration)

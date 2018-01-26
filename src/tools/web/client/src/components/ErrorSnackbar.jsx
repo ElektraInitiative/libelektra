@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief shows errors in a small notification on the bottom of the UI
+ * @brief shows errors in a small snackbar on the bottom of the UI
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */

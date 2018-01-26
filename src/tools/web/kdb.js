@@ -132,7 +132,7 @@ const escapeValues = (template, ...values) =>
     (source: @krit0n - https://github.com/ElektraInitiative/libelektra/pull/983#discussion_r83965059)
     */
     let val = values[i - 1].replace(/((\\\\)*)(\\(")|("))/g, '$1\\$4$5')
-    if (typeof val === 'string') val = `'${val}'`
+    if (typeof val === 'string') val = `"${val}"`
     return acc + val + part
   })
 
@@ -172,9 +172,13 @@ const get = (path) =>
 const set = (path, value) =>
   safeExec(escapeValues`kdb set ${path} ${value}`)
 
+// move value from given `path` to `destination`
+const mv = (path, destination) =>
+  safeExec(escapeValues`kdb mv -r ${path} ${destination}`)
+
 // remove value at given `path`
 const rm = (path) =>
-  safeExec(escapeValues`kdb rm ${path}`)
+  safeExec(escapeValues`kdb rm -r ${path}`)
 
 // list meta values at given `path`
 const lsmeta = (path) =>
@@ -184,6 +188,14 @@ const lsmeta = (path) =>
 // get meta value from given `path`
 const getmeta = (path, meta) =>
   safeExec(escapeValues`kdb getmeta ${path} ${meta}`)
+
+// set meta value at given `path`
+const setmeta = (path, meta, value) =>
+  safeExec(escapeValues`kdb setmeta ${path} ${meta} ${value}`)
+
+// remove meta value at given `path`
+const rmmeta = (path, meta) =>
+  safeExec(escapeValues`kdb rmmeta ${path} ${meta}`)
 
 // get all metavalues for given `path`
 const getAllMeta = (path) =>
@@ -233,6 +245,6 @@ const getAndLs = (path) =>
 
 // export kdb functions as `kdb` object
 module.exports = {
-  version, ls, get, getAndLs, set, rm, export: _export, import: _import,
-  getmeta, lsmeta, getAllMeta,
+  version, ls, get, getAndLs, set, mv, rm, export: _export, import: _import,
+  getmeta, setmeta, rmmeta, lsmeta, getAllMeta,
 }

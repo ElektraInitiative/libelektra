@@ -43,4 +43,22 @@ export default function initRoutes (app) {
         .then(output => successResponse(res, output))
         .catch(err => errorResponse(res, err))
     )
+
+  app.post('/kdbMv/*', (req, res) =>
+    kdb.mv(req.params[0], req.body)
+      .then(() => res.status(204).send())
+      .catch(err => errorResponse(res, err))
+  )
+
+  app.route('/kdbMeta/*')
+    .post((req, res) =>
+      kdb.setmeta(req.params[0], req.body.key, req.body.value)
+        .then(() => res.status(204).send())
+        .catch(err => errorResponse(res, err))
+    )
+    .delete((req, res) =>
+      kdb.rmmeta(req.params[0], req.body.key)
+        .then(() => res.status(204).send())
+        .catch(err => errorResponse(res, err))
+    )
 }

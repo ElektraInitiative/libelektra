@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief connect the App component to redux
+ * @brief connect the NotificationSnackbar component to redux
  *
  * by mapping redux state and action creators to its properties
  *
@@ -10,14 +10,14 @@
 
 import { connect } from 'react-redux'
 
-import App from '../components/App.jsx'
+import NotificationSnackbar from '../components/NotificationSnackbar.jsx'
 
 const mapStateToProps = (state) => {
-  return state.router
+  return { message: state.notification }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {}
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(App)
+export default connect(mapStateToProps, mapDispatchToProps)(NotificationSnackbar)

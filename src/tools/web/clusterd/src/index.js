@@ -33,7 +33,7 @@ getVersions()
           initApp(port => info(`\`-> running on http://localhost:${port}`))
         })
         .catch((err) => {
-          if (err.message.indexOf('Was not able to load such a plugin!')) {
+          if (err.message.includes('Was not able to load such a plugin!')) {
             error(`missing dependencies`)
             error(`the yajl plugin is not installed for libelektra`)
             process.exit(1)

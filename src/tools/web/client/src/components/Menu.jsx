@@ -3,8 +3,8 @@
  *
  * @brief this is the menu (top bar) of the application
  *
- * it shows the current page and, if on the overview page, it will show buttons
- * to create clusters and instances
+ * it shows the current page and, if on the overview page, it will show a button
+ * to create instances
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
@@ -13,11 +13,11 @@ import React from 'react'
 
 import { Toolbar, ToolbarGroup, ToolbarTitle } from 'material-ui/Toolbar'
 import RaisedButton from 'material-ui/RaisedButton'
-import TextField from 'material-ui/TextField'
 import CircularProgress from 'material-ui/CircularProgress'
 import ContentAddIcon from 'material-ui/svg-icons/content/add'
 import NavigationArrowBack from 'material-ui/svg-icons/navigation/arrow-back'
 import NavigationChevronRight from 'material-ui/svg-icons/navigation/chevron-right'
+import { Link } from 'react-router-dom'
 
 const HEADER_MARGIN = '16px 10px 0 -10px'
 
@@ -56,73 +56,38 @@ export default class Menu extends React.Component {
   }
 
   render () {
-    const { loading, addingCluster, subpage, clusterInstances } = this.props
-    const { addInstance, addCluster, unaddCluster, returnToMain, createCluster } = this.props // action creators
+    const { loading, subpage, status } = this.props
+    const { addInstance } = this.props // action creators
     const title = (
         <ToolbarGroup>
+          <div style={{ display: 'flex' }}>
             {subpage && // show back button on subpages
-              <NavigationArrowBack style={navigationArrowStyle} onTouchTap={returnToMain} />}
-            <ToolbarTitle
-              style={{fontFamily: 'Roboto'}}
-              text="elektra-web"
-              onTouchTap={returnToMain}
-            />
+              <Link style={{ textDecoration: 'none' }} to="/"><NavigationArrowBack style={navigationArrowStyle} /></Link>}
+            <Link style={{ textDecoration: 'none' }} to="/">
+              <ToolbarTitle
+                style={{ fontFamily: 'Roboto Light', fontSize: 22, letterSpacing: 0.79, color: 'rgba(0,0,0,0.40)' }}
+                text="elektra-web"
+              />
+            </Link>
             {subpage && // show breadcrumb on subpages
               <Breadcrumb name={subpage} />}
             {loading && // show spinner while waiting for responses
-              <CircularProgress style={{margin: '3px -15px'}} size={0.5} />}
+              <CircularProgress style={{ marginTop: 12, opacity: 0.7 }} size={32} />}
+          </div>
         </ToolbarGroup>
     )
 
-    const actions =
-      addingCluster
-      ? ( // modify toolbar in cluster creation mode (name field + create button)
-          <ToolbarGroup>
-              <TextField
-                style={{marginTop: '5px', maxWidth: '150px'}}
-                ref="nameField"
-                hintText="cluster name"
-                onChange={(evt) => this.setState({ name: evt.target.value })}
-                value={this.state.name}
-              />
-              <RaisedButton
-                style={{marginRight: '12px'}}
-                label="create cluster"
-                primary={true}
-                onTouchTap={() => {
-                  createCluster({
-                    name: this.refs.nameField.getValue(),
-                    instances: clusterInstances,
-                  })
-                  this.resetValues()
-                }}
-              />
-              <RaisedButton
-                style={{marginLeft: '12px'}}
-                label="cancel"
-                onTouchTap={() => {
-                  unaddCluster()
-                  this.resetValues()
-                }}
-              />
-          </ToolbarGroup>
-      )
-      : ( // otherwise, show the default toolbar (add instance/cluster buttons)
-          <ToolbarGroup>
-              <RaisedButton
-                icon={<ContentAddIcon />}
-                label="instance"
-                primary={true}
-                onTouchTap={addInstance}
-              />
-              <RaisedButton
-                icon={<ContentAddIcon />}
-                label="cluster"
-                primary={true}
-                onTouchTap={addCluster}
-              />
-          </ToolbarGroup>
-      )
+    const actions = (
+        <ToolbarGroup>
+            <RaisedButton
+              icon={<ContentAddIcon />}
+              label="instance"
+              primary={true}
+              onTouchTap={addInstance}
+              disabled={status && status.addingInstance}
+            />
+        </ToolbarGroup>
+    )
 
     return (
         <Toolbar>
