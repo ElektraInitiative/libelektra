@@ -1,36 +1,32 @@
-// overrides of @brand-primary & @brand-success will be put here
-
-/*
-logo colors
-
-cobalt blue #233688
-yellow #dfa809
-green #3f8f2f
-*/
-
+// logo colors
 @logo-blue: #233688;
 @logo-yellow: #dfa809;
 @logo-green: #3f8f2f;
 
 @text-color: #282828;
 
-@brand-primary: @logo-blue;
+// use green for both primary and success color
+// use .btn-logo-blue for a blue button
+@brand-primary: @logo-green;
 @brand-success: @logo-green;
 @brand-info:    #36a7d1;
 @brand-warning: @logo-yellow;
-@brand-danger:  #dd2a2a;
+@brand-danger:  #b20c0c;
 
 @border-radius-base: 3px;
-
 @input-border-focus: @brand-primary;
 
-// use logo-green for hyperlinks and active components (e.g. list-groups)
-@link-color: @logo-green;
-@component-active-bg: @link-color;
+@headings-font-family:  "Libre Franklin_Webfont", "Helvetica Neue", Helvetica, Arial, sans-serif;
+@font-family-sans-serif: Lato_Webfont, "Helvetica Neue", Helvetica, Arial, sans-serif;
 
-// use logo-green for pagination
-@pagination-active-bg:     @logo-green;
-@pagination-active-border: @logo-green;
+@btn-logo-blue-color:  #fff;
+@btn-logo-blue-bg:     @logo-blue;
+@btn-logo-blue-border: darken(@btn-logo-blue-bg, 5%);
 
-@headings-font-family:  "Libre Franklin", "Helvetica Neue", Helvetica, Arial, sans-serif;
-@font-family-sans-serif: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
+@btn-logo-green-color:  #fff;
+@btn-logo-green-bg:     @logo-green;
+@btn-logo-green-border: darken(@btn-logo-green-bg, 5%);
+
+@btn-logo-yellow-color:  #fff;
+@btn-logo-yellow-bg:     @logo-yellow;
+@btn-logo-yellow-border: darken(@btn-logo-yellow-bg, 5%);

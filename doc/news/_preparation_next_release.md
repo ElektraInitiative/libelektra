@@ -52,8 +52,11 @@ It has a new shape and cooler colors.
 
 Thanks to Philipp Frei
 
-We also gave the website a new look. It has the colors from the logo, new
-fonts for better readability and the start page structure was improved.
+We also gave the website a new look. It has the colors from the logo and new
+fonts ([Lato](https://fonts.google.com/specimen/Lato) and
+[Libre Franklin](https://fonts.google.com/specimen/Libre+Franklin)) that improve
+readability and add to a unique look. The restructured start page contributes to
+the new look as well.
 
 ### INI as new Default Configuration File Format
 

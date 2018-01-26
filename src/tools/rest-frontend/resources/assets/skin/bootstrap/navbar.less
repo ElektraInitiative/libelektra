@@ -1,12 +1,22 @@
- .navbar-default {
+.navbar-default {
   background-image: none;
   box-shadow: none;
   
+  &.navbar-second {
+    background-color: inherit;
+  }
+
   .navbar-nav>.active>a,
   .navbar-nav>.open>a {
     background-image: none;
     box-shadow: none;
   }
- }
- 
- 
+
+  .navbar-nav>.active>a,
+  .navbar-nav>.active>a:focus,
+  .navbar-nav>.active>a:hover, {
+    color: #fff;
+    background-color: @logo-yellow;
+    text-shadow: none;
+  }
+}
