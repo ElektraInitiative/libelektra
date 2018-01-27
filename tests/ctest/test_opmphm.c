@@ -116,11 +116,11 @@ static void test_cyclicMultipleEdges (void)
 			exit_if_fail (opmphm, "opmphmNew");
 			OpmphmGraph * graph = opmphmGraphNew (opmphm, rUniPar, n, 1);
 			exit_if_fail (graph, "opmphmGraphNew");
-			OpmphmInit init;
+			OpmphmInit opmphmInit;
 			// dummy data
-			init.getName = test_opmphm_getName;
-			init.initSeed = (int32_t)1;
-			init.data = (void **)1;
+			opmphmInit.getName = test_opmphm_getName;
+			opmphmInit.initSeed = (int32_t)1;
+			opmphmInit.data = (void **)1;
 			// fill
 			for (size_t i = 0; i < n; ++i)
 			{
@@ -130,7 +130,7 @@ static void test_cyclicMultipleEdges (void)
 				}
 			}
 			// check
-			succeed_if (opmphmMapping (opmphm, graph, &init, n), "graph with cycles marked as acyclic");
+			succeed_if (opmphmMapping (opmphm, graph, &opmphmInit, n), "graph with cycles marked as acyclic");
 			// cleanup
 			opmphmDel (opmphm);
 			opmphmGraphDel (graph);
@@ -155,11 +155,11 @@ static void test_cyclicCountUpEdges (void)
 			exit_if_fail (opmphm, "opmphmNew");
 			OpmphmGraph * graph = opmphmGraphNew (opmphm, rUniPar, n, 1);
 			exit_if_fail (graph, "opmphmGraphNew");
-			OpmphmInit init;
+			OpmphmInit opmphmInit;
 			// dummy data
-			init.getName = test_opmphm_getName;
-			init.initSeed = (int32_t)1;
-			init.data = (void **)1;
+			opmphmInit.getName = test_opmphm_getName;
+			opmphmInit.initSeed = (int32_t)1;
+			opmphmInit.data = (void **)1;
 			// fill
 			uint32_t data[rUniPar];
 			for (uint8_t r = 0; r < rUniPar; ++r)
@@ -181,7 +181,7 @@ static void test_cyclicCountUpEdges (void)
 				} while (data[r] == 0);
 			}
 			// check
-			succeed_if (opmphmMapping (opmphm, graph, &init, n), "graph with cycles marked as acyclic");
+			succeed_if (opmphmMapping (opmphm, graph, &opmphmInit, n), "graph with cycles marked as acyclic");
 			// cleanup
 			opmphmDel (opmphm);
 			opmphmGraphDel (graph);
@@ -206,11 +206,11 @@ static void test_cyclicCountDownEdges (void)
 			exit_if_fail (opmphm, "opmphmNew");
 			OpmphmGraph * graph = opmphmGraphNew (opmphm, rUniPar, n, 1);
 			exit_if_fail (graph, "opmphmGraphNew");
-			OpmphmInit init;
+			OpmphmInit opmphmInit;
 			// dummy data
-			init.getName = test_opmphm_getName;
-			init.initSeed = (int32_t)1;
-			init.data = (void **)1;
+			opmphmInit.getName = test_opmphm_getName;
+			opmphmInit.initSeed = (int32_t)1;
+			opmphmInit.data = (void **)1;
 			// fill
 			int32_t data[rUniPar];
 			for (uint8_t r = 0; r < rUniPar; ++r)
@@ -236,7 +236,7 @@ static void test_cyclicCountDownEdges (void)
 				} while (data[r] == (int32_t)componentSize - 1);
 			}
 			// check
-			succeed_if (opmphmMapping (opmphm, graph, &init, n), "graph with cycles marked as acyclic");
+			succeed_if (opmphmMapping (opmphm, graph, &opmphmInit, n), "graph with cycles marked as acyclic");
 			// cleanup
 			opmphmDel (opmphm);
 			opmphmGraphDel (graph);
@@ -265,11 +265,11 @@ static void test_acyclicDefaultOrder (void)
 			exit_if_fail (opmphm, "opmphmNew");
 			OpmphmGraph * graph = opmphmGraphNew (opmphm, rUniPar, n, rUniPar);
 			exit_if_fail (graph, "opmphmGraphNew");
-			OpmphmInit init;
+			OpmphmInit opmphmInit;
 			// dummy data
-			init.getName = test_opmphm_getName;
-			init.initSeed = (int32_t)1;
-			init.data = (void **)1;
+			opmphmInit.getName = test_opmphm_getName;
+			opmphmInit.initSeed = (int32_t)1;
+			opmphmInit.data = (void **)1;
 			// fill
 			for (size_t i = 0; i < n; ++i)
 			{
@@ -286,13 +286,13 @@ static void test_acyclicDefaultOrder (void)
 				graph->edges[n - 1].h[r] = graph->edges[0].h[r];
 			}
 			// check
-			succeed_if (opmphmMapping (opmphm, graph, &init, n), "graph with cycles marked as acyclic");
+			succeed_if (opmphmMapping (opmphm, graph, &opmphmInit, n), "graph with cycles marked as acyclic");
 			// restore last element
 			for (uint8_t r = 0; r < rUniPar; ++r)
 			{
 				graph->edges[n - 1].h[r] = data[r];
 			}
-			succeed_if (!opmphmMapping (opmphm, graph, &init, n), "acyclic graph marked as cyclic");
+			succeed_if (!opmphmMapping (opmphm, graph, &opmphmInit, n), "acyclic graph marked as cyclic");
 			exit_if_fail (opmphmAssignment (opmphm, graph, n, 1) == 0, "opmphmAssignment");
 			for (size_t i = 0; i < n; ++i)
 			{
@@ -324,11 +324,11 @@ static void test_acyclicReverseOrder (void)
 			exit_if_fail (opmphm, "opmphmNew");
 			OpmphmGraph * graph = opmphmGraphNew (opmphm, rUniPar, n, rUniPar);
 			exit_if_fail (graph, "opmphmGraphNew");
-			OpmphmInit init;
+			OpmphmInit opmphmInit;
 			// dummy data
-			init.getName = test_opmphm_getName;
-			init.initSeed = (int32_t)1;
-			init.data = (void **)1;
+			opmphmInit.getName = test_opmphm_getName;
+			opmphmInit.initSeed = (int32_t)1;
+			opmphmInit.data = (void **)1;
 			// fill
 			for (size_t i = 0; i < n; ++i)
 			{
@@ -346,13 +346,13 @@ static void test_acyclicReverseOrder (void)
 				graph->edges[n - 1].h[r] = graph->edges[0].h[r];
 			}
 			// check
-			succeed_if (opmphmMapping (opmphm, graph, &init, n), "graph with cycles marked as acyclic");
+			succeed_if (opmphmMapping (opmphm, graph, &opmphmInit, n), "graph with cycles marked as acyclic");
 			// restore last element
 			for (uint8_t r = 0; r < rUniPar; ++r)
 			{
 				graph->edges[n - 1].h[r] = data[r];
 			}
-			succeed_if (!opmphmMapping (opmphm, graph, &init, n), "acyclic graph marked as cyclic");
+			succeed_if (!opmphmMapping (opmphm, graph, &opmphmInit, n), "acyclic graph marked as cyclic");
 			exit_if_fail (opmphmAssignment (opmphm, graph, n, 0) == 0, "opmphmAssignment");
 			for (size_t i = 0; i < n; ++i)
 			{
