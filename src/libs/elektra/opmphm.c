@@ -52,7 +52,7 @@ size_t opmphmLookup (Opmphm * opmphm, size_t n, const void * name)
  * @brief Assigns the vertices of the r-uniform r-partite hypergraph.
  *
  * Allocs the memory for the final OPMPHM `Opmphm->graph`.
- * Uses the remove sequence `OpmphmGraph->removeOrder`, generated during cycle check, to assign
+ * Uses the remove sequence `OpmphmGraph->removeSequence`, generated during cycle check, to assign
  * each vertex. Either with `OpmphmEdge->order` or the default order, default is the order
  * of `OpmphmInit->data`.
  *
@@ -93,10 +93,10 @@ int opmphmAssignment (Opmphm * opmphm, OpmphmGraph * graph, size_t n, int defaul
 		// find out how many vertices are assigned and what is the sum of the values
 		uint8_t notAssignedCount = 0;
 		size_t assignedValue = 0;
-		size_t e = graph->removeOrder[i];
+		size_t e = graph->removeSequence[i];
 		for (uint8_t r = 0; r < opmphm->rUniPar; ++r)
 		{
-			size_t v = r * opmphm->componentSize + graph->edges[e].h[r];
+			size_t v = r * opmphm->componentSize + graph->edges[e].vertices[r];
 			if (!isAssigned[v])
 			{
 				++notAssignedCount;
@@ -111,7 +111,7 @@ int opmphmAssignment (Opmphm * opmphm, OpmphmGraph * graph, size_t n, int defaul
 		uint8_t r = 0;
 		while (notAssignedCount > 1)
 		{
-			size_t v = r * opmphm->componentSize + graph->edges[e].h[r];
+			size_t v = r * opmphm->componentSize + graph->edges[e].vertices[r];
 			if (!isAssigned[v])
 			{
 				isAssigned[v] = 1;
@@ -122,7 +122,7 @@ int opmphmAssignment (Opmphm * opmphm, OpmphmGraph * graph, size_t n, int defaul
 		// give the last the desired order
 		for (; r < opmphm->rUniPar; ++r)
 		{
-			size_t v = r * opmphm->componentSize + graph->edges[e].h[r];
+			size_t v = r * opmphm->componentSize + graph->edges[e].vertices[r];
 			if (!isAssigned[v])
 			{
 				size_t order;
@@ -193,12 +193,12 @@ int opmphmMapping (Opmphm * opmphm, OpmphmGraph * graph, OpmphmInit * init, size
 		{
 #ifndef OPMPHM_TEST
 			// set edge.h[]
-			graph->edges[i].h[r] =
+			graph->edges[i].vertices[r] =
 				opmphmHashfunction (name, strlen (name), opmphm->hashFunctionSeeds[r]) % opmphm->componentSize;
 #endif
 			// add edge to graph
 			// set edge.nextEdge[r]
-			size_t v = r * opmphm->componentSize + graph->edges[i].h[r];
+			size_t v = r * opmphm->componentSize + graph->edges[i].vertices[r];
 			graph->edges[i].nextEdge[r] = graph->vertices[v].firstEdge;
 			// set vertex.firstEdge
 			graph->vertices[v].firstEdge = i;
@@ -222,7 +222,7 @@ int opmphmMapping (Opmphm * opmphm, OpmphmGraph * graph, OpmphmInit * init, size
  * @brief Recursive function used by hasCycle
  *
  * `v` is a degree 1 vertex with edge `e`. The edge `e` will be removed completely from the graph and
- * inserted in the `OpmphmGraph->removeOrder`.
+ * inserted in the `OpmphmGraph->removeSequence`.
  * For all vertices connected through `e` with degree 1 the function will be called again.
  *
  * @param opmphm the OPMPHM
@@ -232,14 +232,14 @@ int opmphmMapping (Opmphm * opmphm, OpmphmGraph * graph, OpmphmInit * init, size
 static void peel_off (Opmphm * opmphm, OpmphmGraph * graph, size_t v)
 {
 	size_t e = graph->vertices[v].firstEdge;
-	// add it to graph->removeOrder
-	graph->removeOrder[graph->removeIndex] = e;
+	// add it to graph->removeSequence
+	graph->removeSequence[graph->removeIndex] = e;
 	++graph->removeIndex;
 	// remove edge e from graph
 	for (uint8_t r = 0; r < opmphm->rUniPar; ++r)
 	{
 		// w is adjacent to v through e
-		size_t w = r * opmphm->componentSize + graph->edges[e].h[r];
+		size_t w = r * opmphm->componentSize + graph->edges[e].vertices[r];
 		// remove e from w
 		size_t * j = &(graph->vertices[w].firstEdge);
 		for (; *j != e; j = &(graph->edges[*j].nextEdge[r]))
@@ -251,7 +251,7 @@ static void peel_off (Opmphm * opmphm, OpmphmGraph * graph, size_t v)
 	// all vertices adjacent to v through e
 	for (uint8_t r = 0; r < opmphm->rUniPar; ++r)
 	{
-		size_t w = r * opmphm->componentSize + graph->edges[e].h[r];
+		size_t w = r * opmphm->componentSize + graph->edges[e].vertices[r];
 		// if degree 1, go on
 		if (graph->vertices[w].degree == 1)
 		{
@@ -264,7 +264,7 @@ static void peel_off (Opmphm * opmphm, OpmphmGraph * graph, size_t v)
  * @brief Checks if a OpmphmGraph is Acyclic
  *
  * Removes edges that have a degree 1 vertex, until the graph is empty.
- * The sequence of removed edges will be saved in `OpmphmGraph->removeOrder`.
+ * The sequence of removed edges will be saved in `OpmphmGraph->removeSequence`.
  * The passed OpmphmGraph is will be destroyed.
  *
  * @param opmphm the OPMPHM
@@ -451,36 +451,36 @@ OpmphmGraph * opmphmGraphNew (Opmphm * opmphm, uint8_t r, size_t n, double c)
 		elektraFree (graph);
 		return NULL;
 	}
-	uint32_t * hs = elektraMalloc (n * opmphm->rUniPar * sizeof (uint32_t));
-	if (!hs)
+	uint32_t * vertices = elektraMalloc (n * opmphm->rUniPar * sizeof (uint32_t));
+	if (!vertices)
 	{
 		elektraFree (graph->edges);
 		elektraFree (graph);
 		return NULL;
 	}
-	size_t * removeOrderNextEdge = elektraMalloc ((n + n * opmphm->rUniPar) * sizeof (size_t));
-	if (!removeOrderNextEdge)
+	size_t * removeSequenceNextEdge = elektraMalloc ((n + n * opmphm->rUniPar) * sizeof (size_t));
+	if (!removeSequenceNextEdge)
 	{
 		elektraFree (graph->edges);
 		elektraFree (graph);
-		elektraFree (hs);
+		elektraFree (vertices);
 		return NULL;
 	}
 	// split hs for graph->edges[].h
-	// split removeOrderNextEdge for graph->edges[].nextEdge and graph->removeOrder
-	graph->removeOrder = &removeOrderNextEdge[n * opmphm->rUniPar];
+	// split removeSequenceNextEdge for graph->edges[].nextEdge and graph->removeSequence
+	graph->removeSequence = &removeSequenceNextEdge[n * opmphm->rUniPar];
 	for (size_t i = 0; i < n; ++i)
 	{
-		graph->edges[i].h = &hs[i * opmphm->rUniPar];
-		graph->edges[i].nextEdge = &removeOrderNextEdge[i * opmphm->rUniPar];
+		graph->edges[i].vertices = &vertices[i * opmphm->rUniPar];
+		graph->edges[i].nextEdge = &removeSequenceNextEdge[i * opmphm->rUniPar];
 	}
 	graph->vertices = elektraCalloc (componentSize * opmphm->rUniPar * sizeof (OpmphmVertex));
 	if (!graph->vertices)
 	{
 		elektraFree (graph->edges);
 		elektraFree (graph);
-		elektraFree (hs);
-		elektraFree (removeOrderNextEdge);
+		elektraFree (vertices);
+		elektraFree (removeSequenceNextEdge);
 		return NULL;
 	}
 	opmphm->componentSize = componentSize;
@@ -511,7 +511,7 @@ void opmphmGraphClear (const Opmphm * opmphm, OpmphmGraph * graph)
 void opmphmGraphDel (OpmphmGraph * graph)
 {
 	ELEKTRA_NOT_NULL (graph);
-	elektraFree (graph->edges[0].h);
+	elektraFree (graph->edges[0].vertices);
 	elektraFree (graph->edges[0].nextEdge);
 	elektraFree (graph->edges);
 	elektraFree (graph->vertices);

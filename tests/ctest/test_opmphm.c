@@ -49,24 +49,24 @@ static void test_opmphmGraphNew (void)
 				opmphm->hashFunctionSeeds[r] = 0;
 				succeed_if (opmphm->hashFunctionSeeds[r] == 0, "check access opmphm->hashFunctionSeeds");
 			}
-			// check access OpmphmEdge->h ,OpmphmEdge->nextEdge and graph->removeOrder
+			// check access OpmphmEdge->vertices ,OpmphmEdge->nextEdge and graph->removeSequence
 			for (size_t i = 0; i < n; ++i)
 			{
 				for (uint8_t r = 0; r < rUniPar; ++r)
 				{
-					graph->edges[i].h[r] = i * r;
+					graph->edges[i].vertices[r] = i * r;
 					graph->edges[i].nextEdge[r] = i * r;
 				}
-				graph->removeOrder[i] = i;
+				graph->removeSequence[i] = i;
 			}
 			for (size_t i = 0; i < n; ++i)
 			{
 				for (uint8_t r = 0; r < rUniPar; ++r)
 				{
-					succeed_if (graph->edges[i].h[r] == i * r, "check access OpmphmEdge->h");
+					succeed_if (graph->edges[i].vertices[r] == i * r, "check access OpmphmEdge->vertices");
 					succeed_if (graph->edges[i].nextEdge[r] == i * r, "check access OpmphmEdge->nextEdge");
 				}
-				succeed_if (graph->removeOrder[i] == i, "check access graph->removeOrder");
+				succeed_if (graph->removeSequence[i] == i, "check access graph->removeSequence");
 			}
 			// check vertices initialization
 			for (size_t i = 0; i < componentSize * rUniPar; ++i)
@@ -126,7 +126,7 @@ static void test_cyclicMultipleEdges (void)
 			{
 				for (uint8_t r = 0; r < rUniPar; ++r)
 				{
-					graph->edges[i].h[r] = i % componentSize;
+					graph->edges[i].vertices[r] = i % componentSize;
 				}
 			}
 			// check
@@ -170,7 +170,7 @@ static void test_cyclicCountUpEdges (void)
 			{
 				for (uint8_t r = 0; r < rUniPar; ++r)
 				{
-					graph->edges[i].h[r] = data[r];
+					graph->edges[i].vertices[r] = data[r];
 				}
 				// count up data
 				uint8_t r = rUniPar;
@@ -221,7 +221,7 @@ static void test_cyclicCountDownEdges (void)
 			{
 				for (uint8_t r = 0; r < rUniPar; ++r)
 				{
-					graph->edges[i].h[r] = data[r];
+					graph->edges[i].vertices[r] = data[r];
 				}
 				// count down data
 				uint8_t r = rUniPar;
@@ -275,28 +275,28 @@ static void test_acyclicDefaultOrder (void)
 			{
 				for (uint8_t r = 0; r < rUniPar; ++r)
 				{
-					graph->edges[i].h[r] = (i + r) % componentSize;
+					graph->edges[i].vertices[r] = (i + r) % componentSize;
 				}
 			}
 			// save element last and create multiple edge
 			int32_t data[rUniPar];
 			for (uint8_t r = 0; r < rUniPar; ++r)
 			{
-				data[r] = graph->edges[n - 1].h[r];
-				graph->edges[n - 1].h[r] = graph->edges[0].h[r];
+				data[r] = graph->edges[n - 1].vertices[r];
+				graph->edges[n - 1].vertices[r] = graph->edges[0].vertices[r];
 			}
 			// check
 			succeed_if (opmphmMapping (opmphm, graph, &opmphmInit, n), "graph with cycles marked as acyclic");
 			// restore last element
 			for (uint8_t r = 0; r < rUniPar; ++r)
 			{
-				graph->edges[n - 1].h[r] = data[r];
+				graph->edges[n - 1].vertices[r] = data[r];
 			}
 			succeed_if (!opmphmMapping (opmphm, graph, &opmphmInit, n), "acyclic graph marked as cyclic");
 			exit_if_fail (opmphmAssignment (opmphm, graph, n, 1) == 0, "opmphmAssignment");
 			for (size_t i = 0; i < n; ++i)
 			{
-				succeed_if (opmphmLookup (opmphm, n, graph->edges[i].h) == i, "lookup");
+				succeed_if (opmphmLookup (opmphm, n, graph->edges[i].vertices) == i, "lookup");
 			}
 			// cleanup
 			opmphmDel (opmphm);
@@ -334,7 +334,7 @@ static void test_acyclicReverseOrder (void)
 			{
 				for (uint8_t r = 0; r < rUniPar; ++r)
 				{
-					graph->edges[i].h[r] = (i + r) % componentSize;
+					graph->edges[i].vertices[r] = (i + r) % componentSize;
 				}
 				graph->edges[i].order = n - 1 - i;
 			}
@@ -342,21 +342,21 @@ static void test_acyclicReverseOrder (void)
 			int32_t data[rUniPar];
 			for (uint8_t r = 0; r < rUniPar; ++r)
 			{
-				data[r] = graph->edges[n - 1].h[r];
-				graph->edges[n - 1].h[r] = graph->edges[0].h[r];
+				data[r] = graph->edges[n - 1].vertices[r];
+				graph->edges[n - 1].vertices[r] = graph->edges[0].vertices[r];
 			}
 			// check
 			succeed_if (opmphmMapping (opmphm, graph, &opmphmInit, n), "graph with cycles marked as acyclic");
 			// restore last element
 			for (uint8_t r = 0; r < rUniPar; ++r)
 			{
-				graph->edges[n - 1].h[r] = data[r];
+				graph->edges[n - 1].vertices[r] = data[r];
 			}
 			succeed_if (!opmphmMapping (opmphm, graph, &opmphmInit, n), "acyclic graph marked as cyclic");
 			exit_if_fail (opmphmAssignment (opmphm, graph, n, 0) == 0, "opmphmAssignment");
 			for (size_t i = 0; i < n; ++i)
 			{
-				succeed_if (opmphmLookup (opmphm, n, graph->edges[i].h) == n - 1 - i, "lookup");
+				succeed_if (opmphmLookup (opmphm, n, graph->edges[i].vertices) == n - 1 - i, "lookup");
 			}
 			// cleanup
 			opmphmDel (opmphm);

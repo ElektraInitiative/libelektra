@@ -21,9 +21,9 @@
  */
 typedef struct
 {
-	uint32_t * h;      /*!< array with Opmphm->rUniPar hash function values, representing the index of vertices that the edge connects*/
-	size_t order;      /*!< desired hash map return value */
-	size_t * nextEdge; /*!< arary with Opmphm->rUniPar indices of the next edge in the lists */
+	size_t order;	/*!< desired hash map return value */
+	size_t * nextEdge;   /*!< arary with Opmphm->rUniPar indices of the next edge in the lists */
+	uint32_t * vertices; /*!< array with Opmphm->rUniPar indices of vertices that the edge connects */
 } OpmphmEdge;
 
 typedef struct
@@ -36,8 +36,8 @@ typedef struct
 {
 	OpmphmEdge * edges;      /*!< array of all edges */
 	OpmphmVertex * vertices; /*!< array of all vertices */
-	size_t * removeOrder;    /*!< remove sequence of acyclic r-uniform r-partite hypergraph */
-	size_t removeIndex;      /*!< the index used for insertion in removeOrder  */
+	size_t * removeSequence; /*!< remove sequence of acyclic r-uniform r-partite hypergraph */
+	size_t removeIndex;      /*!< the index used for insertion in removeSequence */
 } OpmphmGraph;
 
 /**
