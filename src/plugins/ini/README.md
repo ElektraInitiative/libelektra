@@ -140,27 +140,6 @@ kdb rm -r user/examples/ini
 sudo kdb umount user/examples/ini
 ```
 
-## Directory Values
-
-By default the INI plugin does not store values in a directory key, if you create a leaf node below the directory key first.
-
-```sh
-sudo kdb mount config.ini /examples/ini ini
-
-kdb set /examples/ini/aimee/man 'Deathly'
-kdb file /examples/ini | xargs cat
-#> [aimee]
-#> man = Deathly
-kdb set /examples/ini/aimee 'Save Me'
-kdb get /examples/ini/aimee/man
-#> Deathly
-kdb get /examples/ini/aimee # 😭
-#>
-
-kdb rm -r /examples/ini
-sudo kdb umount /examples/ini
-```
-
 ## Binary Data
 
 By default the INI plugin does not support binary data. You can use the [Base64 plugin](../base64/) to remove this limitation.
@@ -235,7 +214,7 @@ sudo kdb umount user/examples/ini
 The ini plugin supports 3 different sectioning modes (via `section=`):
 
 - `NONE` sections wont be printed as `[Section]` but as part of the key name `section/key`
-- `NULL` only binary keys will be printed as `[Section]`
+- `NULL` only empty keys will be printed as `[Section]`
 - `ALWAYS` sections will be created automatically. This is the default setting:
 
 ```sh

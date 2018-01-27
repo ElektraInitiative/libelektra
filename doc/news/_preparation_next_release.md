@@ -82,15 +82,15 @@ The interface for I/O bindings is currently experimental.
 
 ### Plugin Processes
 
-A new library called [pluginprocess](https://github.com/ElektraInitiative/libelektra/tree/master/src/libs/pluginprocess) 
+A new library called [pluginprocess](https://github.com/ElektraInitiative/libelektra/tree/master/src/libs/pluginprocess)
 has been added. This library contains functions that aid in executing plugins in
-a separate process. This child process is forked from Elektra's main process 
+a separate process. This child process is forked from Elektra's main process
 each time such plugin is used and gets closed again afterwards. It uses a simple
 communication protocol based on a KeySet that gets serialized through a pipe via
 the dump plugin to orchestrate the processes.
 
-Such a behavior this is useful for plugins which cause memory leaks to be 
-isolated in an own process. Furthermore this is useful for runtimes or libraries 
+Such a behavior this is useful for plugins which cause memory leaks to be
+isolated in an own process. Furthermore this is useful for runtimes or libraries
 that cannot be reinitialized in the same process after they have been used.
 
 ### <<HIGHLIGHT2>>
@@ -103,7 +103,7 @@ We added even more functionality, which could not make it to the highlights:
 - Elektra is now part of the official [Homebrew repository](http://formulae.brew.sh/formula/elektra). We still provide a
   [tap](http://github.com/ElektraInitiative/homebrew-elektra), if you want to install Elektra together with plugins or bindings that require
   additional libraries.
-- The building and linking of the haskell bindings and haskell plugins has been 
+- The building and linking of the haskell bindings and haskell plugins has been
 [greatly improved](https://github.com/ElektraInitiative/libelektra/pull/1698).
 
 ## Documentation
@@ -157,6 +157,7 @@ Many problems were resolved with the following fixes:
 
 - We fixed [internal inconsistency](https://github.com/ElektraInitiative/libelektra/pull/1761) in the CMake code of the [Augeas plugin](https://www.libelektra.org/plugins/augeas)
 -  We fixed various small bugs that could potentially cause the INI plugin to crash
+- The INI plugin now [converts a section to a normal key-value pair](https://github.com/ElektraInitiative/libelektra/issues/1793) if you store a value inside it. This has the advantage that you will not [lose data unexpectedly anymore](https://github.com/ElektraInitiative/libelektra/issues/1697).
 
 ## Outlook
 
