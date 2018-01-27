@@ -30,6 +30,8 @@ For a small demo see here:
 
 You can also read the news [on our website](https://www.libelektra.org/news/0.8.<<VERSION>>-release)
 
+You can also read the [FOSDEM interview](https://fosdem.org/2018/interviews/markus-raab/) given recently.
+
 
 
 ## Highlights
