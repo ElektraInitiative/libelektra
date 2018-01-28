@@ -28,7 +28,7 @@ do
 		continue
 		;;
 	"semlock")
-		# exclude due to issue #1781
+		# exclude due to issue 1781
 		continue
 		;;
 	esac
