@@ -23,6 +23,9 @@ kdb get user/does/not/exist
 kdb rm /examples/hello
 ```
 
+If your key database (KDB) might influence the outcome, please use `kdb stash`
+to temporarily have an empty KDB. (Restore instructions are printed.)
+
 ## Expected Result
 
 Please describe what should happen if you follow the steps described above.
