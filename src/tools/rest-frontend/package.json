@@ -36,6 +36,7 @@
         "bootstrap": "^3.3.7",
         "connect-modrewrite": "^0.9.0",
         "fs-extra": "^0.30.0",
+        "font-awesome": "^4.7.0",
         "grunt": "latest",
         "grunt-browserify": "^5.0.0",
         "grunt-cli": "latest",

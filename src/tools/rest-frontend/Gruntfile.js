@@ -176,6 +176,16 @@ module.exports = function (grunt) {
                         expand: true
                     }
                 ]
+            },
+            fonts: {
+                files: [
+                    {
+                        expand: true,
+                        cwd: 'node_modules/font-awesome/fonts/',
+                        src: '*',
+                        dest: 'public/assets/fonts/font-awesome/',
+                    }
+                ]
             }
         },
         preprocess: {
