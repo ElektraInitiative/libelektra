@@ -27,6 +27,10 @@ do
 		# output on open/close
 		continue
 		;;
+	"semlock")
+		# output on open/close
+		continue
+		;;
 	esac
 
 	> $FILE
