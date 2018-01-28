@@ -28,7 +28,7 @@ do
 		continue
 		;;
 	"semlock")
-		# output on open/close
+		# exclude due to issue #1781
 		continue
 		;;
 	esac
