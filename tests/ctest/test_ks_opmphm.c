@@ -20,7 +20,7 @@ void test_Copy (void)
 				     keyNew ("/i", KEY_END), keyNew ("/j", KEY_END), KS_END);
 
 		// trigger build
-		Key * found = ksLookupByName (ks, "/a", 0);
+		Key * found = ksLookupByName (ks, "/a", KDB_O_OPMPHM);
 		succeed_if (found, "key found");
 
 		exit_if_fail (ks->opmphm, "build opmphm");
@@ -38,7 +38,7 @@ void test_Copy (void)
 		ksRewind (copy);
 		while ((iter = ksNext (copy)))
 		{
-			Key * f = ksLookup (copy, iter, 0);
+			Key * f = ksLookup (copy, iter, KDB_O_OPMPHM);
 			succeed_if (f, "key found");
 		}
 
@@ -53,7 +53,7 @@ void test_Copy (void)
 				     keyNew ("/i", KEY_END), keyNew ("/j", KEY_END), KS_END);
 
 		// trigger build
-		Key * found = ksLookupByName (ks, "/a", 0);
+		Key * found = ksLookupByName (ks, "/a", KDB_O_OPMPHM);
 		succeed_if (found, "key found");
 
 		exit_if_fail (ks->opmphm, "build opmphm");
@@ -71,7 +71,7 @@ void test_Copy (void)
 		ksRewind (copy);
 		while ((iter = ksNext (copy)))
 		{
-			Key * f = ksLookup (copy, iter, 0);
+			Key * f = ksLookup (copy, iter, KDB_O_OPMPHM);
 			succeed_if (f, "key found");
 		}
 
@@ -86,7 +86,7 @@ void test_Copy (void)
 				     keyNew ("/i", KEY_END), keyNew ("/j", KEY_END), KS_END);
 
 		// trigger build
-		Key * found = ksLookupByName (ks, "/a", 0);
+		Key * found = ksLookupByName (ks, "/a", KDB_O_OPMPHM);
 		succeed_if (found, "key found");
 
 		exit_if_fail (ks->opmphm, "build opmphm");
@@ -104,7 +104,7 @@ void test_Copy (void)
 		ksRewind (copy);
 		while ((iter = ksNext (copy)))
 		{
-			Key * f = ksLookup (copy, iter, 0);
+			Key * f = ksLookup (copy, iter, KDB_O_OPMPHM);
 			succeed_if (f, "key found");
 		}
 
@@ -139,7 +139,7 @@ void test_Invalidate (void)
 				     keyNew ("/i", KEY_END), keyNew ("/j", KEY_END), KS_END);
 
 		// trigger build
-		Key * found = ksLookupByName (ks, "/a", 0);
+		Key * found = ksLookupByName (ks, "/a", KDB_O_OPMPHM);
 		succeed_if (found, "key found");
 
 		exit_if_fail (ks->opmphm, "build opmphm");
@@ -160,7 +160,7 @@ void test_Invalidate (void)
 				     keyNew ("/i", KEY_END), keyNew ("/j", KEY_END), KS_END);
 
 		// trigger build
-		Key * found = ksLookupByName (ks, "/a", 0);
+		Key * found = ksLookupByName (ks, "/a", KDB_O_OPMPHM);
 		succeed_if (found, "key found");
 
 		exit_if_fail (ks->opmphm, "build opmphm");
@@ -197,7 +197,7 @@ void test_Invalidate (void)
 			       keyNew ("/e", KEY_END), keyNew ("/f", KEY_END), keyNew ("/k", KEY_END), KS_END);
 
 		// trigger build
-		Key * found = ksLookupByName (ks, "/a", 0);
+		Key * found = ksLookupByName (ks, "/a", KDB_O_OPMPHM);
 		succeed_if (found, "key found");
 
 		exit_if_fail (ks->opmphm, "build opmphm");
@@ -225,7 +225,7 @@ void test_Invalidate (void)
 				     keyNew ("/i", KEY_END), keyNew ("/j", KEY_END), KS_END);
 
 		// trigger build
-		Key * found = ksLookupByName (ks, "/a", 0);
+		Key * found = ksLookupByName (ks, "/a", KDB_O_OPMPHM);
 		succeed_if (found, "key found");
 
 		exit_if_fail (ks->opmphm, "build opmphm");
@@ -246,7 +246,7 @@ void test_Invalidate (void)
 				     keyNew ("/i", KEY_END), keyNew ("/j", KEY_END), KS_END);
 
 		// trigger build
-		Key * found = ksLookupByName (ks, "/a", 0);
+		Key * found = ksLookupByName (ks, "/a", KDB_O_OPMPHM);
 		succeed_if (found, "key found");
 
 		exit_if_fail (ks->opmphm, "build opmphm");
@@ -271,7 +271,7 @@ void test_Invalidate (void)
 				     keyNew ("/i", KEY_END), keyNew ("/j", KEY_END), KS_END);
 
 		// trigger build
-		Key * found = ksLookupByName (ks, "/a", 0);
+		Key * found = ksLookupByName (ks, "/a", KDB_O_OPMPHM);
 		succeed_if (found, "key found");
 
 		exit_if_fail (ks->opmphm, "build opmphm");
