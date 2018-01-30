@@ -70,7 +70,7 @@ static void test_no_plugin_key (void)
 
 	keyDel (errorKey);
 	keyDel (parentKey);
-	exit_if_fail (plugin == 0, "could open process plugin");
+	succeed_if (plugin == 0, "could open process plugin");
 	PLUGIN_CLOSE ();
 }
 
@@ -93,7 +93,7 @@ static void test_invalid_plugin_key (void)
 
 	keyDel (errorKey);
 	keyDel (parentKey);
-	exit_if_fail (plugin == 0, "could open process plugin");
+	succeed_if (plugin == 0, "could open process plugin");
 	PLUGIN_CLOSE ();
 }
 
