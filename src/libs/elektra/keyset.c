@@ -48,7 +48,7 @@
 static void elektraOpmphmInvalidate (KeySet * ks)
 {
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
-	if (ks->opmphm) opmphmClear (ks->opmphm);
+	if (ks && ks->opmphm) opmphmClear (ks->opmphm);
 #endif
 }
 
@@ -65,6 +65,10 @@ static void elektraOpmphmInvalidate (KeySet * ks)
 static void elektraOpmphmCopy (KeySet * dest, const KeySet * source)
 {
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+	if (!source || !dest)
+	{
+		return;
+	}
 	// nothing to copy
 	if (!source->opmphm || !opmphmIsBuild (source->opmphm))
 	{
@@ -2585,6 +2589,8 @@ int ksClose (KeySet * ks)
 	ks->alloc = 0;
 
 	ks->size = 0;
+
+	elektraOpmphmInvalidate (ks);
 
 	return 0;
 }
