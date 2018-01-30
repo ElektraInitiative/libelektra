@@ -135,7 +135,7 @@ before_script:
     [[ $ASAN == ON ]] && CMAKE_OPT=(-DENABLE_ASAN=ON) || CMAKE_OPT=()
   - if [[ $FULL == ON ]]; then CMAKE_OPT+=(-DBUILD_FULL=ON); fi
   - |
-    if [[ "$TRAVIS_OS_NAME" == "linux" && "$CC" == "clang" || "$TRAVIS_OS_NAME" == "osx" && "${CC:0:3}" == "gcc" ]]; then
+    if [[ "$TRAVIS_OS_NAME" == "linux" && "$CC" == "clang" || "$TRAVIS_OS_NAME" == "osx" ]]; then
       CMAKE_OPT+=("-DCOMMON_FLAGS=-Werror")
     fi
   # use a minimal configuration for the haskell bindings to give it enough time to compile dependencies
