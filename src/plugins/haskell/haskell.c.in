@@ -63,7 +63,7 @@ int elektraHaskellClose (Plugin * handle, Key * errorKey)
 	if (elektraPluginProcessIsParent (pp))
 	{
 		int result = elektraPluginProcessSend (pp, ELEKTRA_PLUGINPROCESS_CLOSE, NULL, errorKey);
-		if (elektraPluginProcessClose (pp)) elektraPluginSetData (handle, NULL);
+		if (elektraPluginProcessClose (pp, errorKey)) elektraPluginSetData (handle, NULL);
 		return result;
 	}
 

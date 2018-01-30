@@ -40,13 +40,13 @@ struct _ElektraInvokeHandle
 /**
  * @deprecated Do not use.
  *
- * Use `elektraInvokeOpen (name, 0)` instead.
+ * Use `elektraInvokeOpen (name, 0, 0)` instead.
  *
  * @see elektraInvokeOpen()
  */
 ElektraInvokeHandle * elektraInvokeInitialize (const char * elektraPluginName)
 {
-	return elektraInvokeOpen (elektraPluginName, 0);
+	return elektraInvokeOpen (elektraPluginName, 0, 0);
 }
 
 /**
