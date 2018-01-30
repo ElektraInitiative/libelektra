@@ -59,7 +59,7 @@ if (ENABLE_ASAN)
 		# clang section
 		set (ELEKTRA_NO_SANITIZE_INTEGER "__attribute__ ((no_sanitize (\"integer\")))")
 		set (ELEKTRA_NO_SANITIZE_UNDEFINED "__attribute__ ((no_sanitize (\"undefined\")))")
-	else (CMAKE_C_COMPILER_ID MATCHES "Clang")
+	elseif (CMAKE_C_COMPILER_ID MATCHES "GNU")
 		# others section
 		set (ELEKTRA_NO_SANITIZE_INTEGER "")
 		set (ELEKTRA_NO_SANITIZE_UNDEFINED "__attribute__ ((no_sanitize_undefined))")

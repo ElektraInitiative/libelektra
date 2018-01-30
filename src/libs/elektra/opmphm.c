@@ -630,6 +630,7 @@ void opmphmDel (Opmphm * opmphm)
 /**
  * @brief Clears the OPMPHM.
  *
+ * The OPMPHM must be successfully created with `opmphmNew ()`.
  * Clears and frees all internal memory of Opmphm, but not `Opmphm->hashFunctionSeeds` and the Opmphm instance.
  *
  * @param opmphm the OPMPHM

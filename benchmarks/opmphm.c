@@ -170,6 +170,27 @@ static void benchmarkHashFunctionTime (void)
  * seeds)
  */
 
+static void benchmarkMappingCheckOpmphm (Opmphm * opmphm, OpmphmGraph * graph, size_t n, OpmphmInit * init, size_t mappings,
+					 size_t maxMappings)
+{
+	if (n < 5 && mappings != maxMappings)
+	{
+		// assign
+		if (opmphmAssignment (opmphm, graph, n, 1))
+		{
+			printExit ("check assignment failed");
+		}
+		for (size_t i = 0; i < n; ++i)
+		{
+			if (i != opmphmLookup (opmphm, n, init->getName (init->data[i])))
+			{
+				printExit ("check assignment failed");
+			}
+		}
+		opmphmClear (opmphm);
+	}
+}
+
 static void benchmarkMapping (void)
 {
 	size_t rUniPar = 3;
@@ -310,24 +331,9 @@ static void benchmarkMapping (void)
 						{
 							printExit ("benchmarkSeedRangeMappingCount: mappings out of range");
 						}
-						// check assignment
-						if (nI < 5 && mappings != maxMappings)
-						{
-							// assign
-							if (opmphmAssignment (opmphms[threadI], graphs[threadI], n[nI], 1))
-							{
-								printExit ("check assignment failed");
-							}
-							for (size_t i = 0; i < n[nI]; ++i)
-							{
-								if (i !=
-								    opmphmLookup (opmphms[threadI], n[nI], init.getName (init.data[i])))
-								{
-									printExit ("check assignment failed");
-								}
-							}
-							opmphmClear (opmphms[threadI]);
-						}
+						// check opmphm
+						benchmarkMappingCheckOpmphm (opmphms[threadI], graphs[threadI], n[nI], &init, mappings,
+									     maxMappings);
 						// save result
 						// shift, because 0 not used
 						--mappings;

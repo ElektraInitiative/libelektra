@@ -65,7 +65,7 @@ static void elektraOpmphmInvalidate (KeySet * ks)
 static void elektraOpmphmCopy (KeySet * dest, const KeySet * source)
 {
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
-	// noting to copy
+	// nothing to copy
 	if (!source->opmphm || !opmphmIsBuild (source->opmphm))
 	{
 		return;

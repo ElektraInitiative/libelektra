@@ -287,6 +287,29 @@ void test_Invalidate (void)
 		ksDel (ks);
 		keyDel (popKey);
 	}
+	// elektraKsPopAtCursor
+	{
+		KeySet * ks = ksNew (10, keyNew ("/a", KEY_END), keyNew ("/b", KEY_END), keyNew ("/c", KEY_END), keyNew ("/d", KEY_END),
+				     keyNew ("/e", KEY_END), keyNew ("/f", KEY_END), keyNew ("/g", KEY_END), keyNew ("/h", KEY_END),
+				     keyNew ("/i", KEY_END), keyNew ("/j", KEY_END), KS_END);
+
+		// trigger build
+		Key * found = ksLookupByName (ks, "/a", KDB_O_OPMPHM);
+		succeed_if (found, "key found");
+
+		exit_if_fail (ks->opmphm, "build opmphm");
+		succeed_if (opmphmIsBuild (ks->opmphm), "build opmphm");
+
+		Key * popKey = elektraKsPopAtCursor (ks, 1);
+		succeed_if (popKey, "invalidate");
+
+		exit_if_fail (ks->opmphm, "build opmphm");
+		succeed_if (!opmphmIsBuild (ks->opmphm), "empty opmphm");
+
+		// cleanup
+		ksDel (ks);
+		keyDel (popKey);
+	}
 }
 
 int main (int argc, char ** argv)

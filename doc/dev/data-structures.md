@@ -364,12 +364,12 @@ Continue reading [with the error handling](error-handling.md).
 
 ## Order Preserving Minimal Perfect Hash Map (aka OPMPHM)
 
-The OPMPHM is a non dynamic randomized hash map of the Las Vegas type, that creates an index over the elements,
+The OPMPHM is a non-dynamic randomized hash map of the Las Vegas type, that creates an index over the elements,
 to gain O(1) access.
 
 The elements must be arranged in an array and each element must have a unique name, to identify the elements.
 The source can be found in [kdbopmphm.h](/src/include/kdbopmphm.h) and [opmphm.c](/src/libs/elektra/opmphm.c)
-and works also outside of Elektra.
+and also works outside of Elektra.
 
 The OPMPHM does not store any buckets, your array of elements are the buckets and the OPMPHM represent an arbitrary
 index over those. The desired index of an element, also known as the order, is set in `OpmphmGraph->edges[i].order`,
@@ -377,7 +377,7 @@ where `i` is the i-th element in your array. When the orders should represent th
 can be applied during the assignment step. When the orders are not the default order, `OpmphmGraph->edges[i].order`
 should be set before the assignment step.
 
-The OPMPHM is non dynamic, there are no insert and delete operations. The OPMPHM gets build for a static set of
+Because the OPMPHM is non-dynamic, there are no insert and delete operations. The OPMPHM gets build for a static set of
 elements, once the OPMPHM is build, every:
 
  * change of at least one indexed element name
