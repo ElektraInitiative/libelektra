@@ -1,0 +1,13 @@
+/**
+ * Bootstrap theme overrides for forms
+ *
+ * @copyright Elektra Initiative (see AUTHORS.md or https://www.libelektra.org)
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
+
+// Add blue glow when input is focused
+.form-control.focus-logo-blue:focus {
+	@border-rgba: rgba(red(@logo-blue), green(@logo-blue), blue(@logo-blue), .6);
+	border-color: @logo-blue;
+	.box-shadow(~"inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px @{border-rgba}");
+}

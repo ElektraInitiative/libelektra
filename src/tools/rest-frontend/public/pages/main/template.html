@@ -2,21 +2,20 @@
     <nav class="navbar navbar-default navbar-static-top">
         <div class="container">
             <div class="navbar-header col-md-3">
-                <img alt="{{ 'APP.GLOBAL.TITLE' | translate}}"
-                     src="assets/img/logo.svg"
-                     class="navbar-brand-logo"
-                     ui-sref="main.home"/>
-                <a class="navbar-brand" ui-sref="main.home">
-                    {{ 'APP.GLOBAL.TITLE' | translate }}
+                <a ui-sref="main.home">
+                  <img alt="{{ 'APP.GLOBAL.TITLE' | translate}}"
+                  src="assets/img/logo.svg"
+                  class="navbar-brand-logo navbar-brand"
+                  ui-sref="main.home"/>
                 </a>
             </div>
             <div class="navbar-left col-md-6" style="text-align:center;margin-top:10px;">
                 <div class="input-group" ng-hide="$state.includes('main.entries.search')">
-                    <input type="text" class="form-control"
+                    <input type="text" class="form-control focus-logo-blue"
                            placeholder="{{ 'APP.ENTRIES.SEARCH.SEARCHBOX.PLACEHOLDER' | translate }}"
                            ng-model="$rootScope.entriesSearchString" on-key-enter="ctrl.goSearch()">
                     <span class="input-group-btn">
-                        <button class="btn btn-primary" type="button"
+                        <button class="btn btn-logo-blue" type="button"
                                 ng-click="ctrl.goSearch()"
                                 title="{{ 'APP.ENTRIES.SEARCH.SEARCHBOX.BUTTON.SUBMIT' | translate }}">
                             <i class="fa fa-search"></i>
@@ -119,8 +118,9 @@
                 &diams;
             </span>
             <span>
-                <a href="news/feed.rss" type="application/atom+xml" target="_self">
-                    <img src="assets/img/rss-feed-14x14.png" />
+                <a href="news/feed.rss" type="application/atom+xml" target="_self"
+                   class="label label-warning rss-icon">
+                    <i class="fa fa-rss"></i>
                 </a>
             </span>
             <span class="md-ml-10 md-mr-10">
@@ -137,7 +137,7 @@
             <span date-now="yyyy"></span>
             <a href="/devgettingstarted/license">&copy;</a>
             <a href="/developers/authors">Elektra Initiative</a>
-            <a class="scroll-to-top text-info" ng-click="ctrl.scrollToTop()"
+            <a class="scroll-to-top" ng-click="ctrl.scrollToTop()"
                title="{{ 'APP.GLOBAL.FOOTER.LINK.TITLE.SCROLLTOTOP' | translate }}">
                 <i class="fa fa-arrow-up"></i>
             </a>

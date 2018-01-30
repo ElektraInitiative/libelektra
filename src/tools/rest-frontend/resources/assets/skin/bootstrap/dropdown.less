@@ -1,10 +1,12 @@
 /**
- * Website theme settings
+ * Bootstrap theme overrides for dropdowns
  *
  * @copyright Elektra Initiative (see AUTHORS.md or https://www.libelektra.org)
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-// Define base file path
-// ----------------------------
-@base-path:	 "../../base";
+.dropdown-menu>li>a {
+	&:focus, &:hover {
+		background-image: none;
+	}
+}

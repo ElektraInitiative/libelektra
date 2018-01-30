@@ -1,0 +1,38 @@
+/**
+ * Bootstrap theme overrides for buttons
+ *
+ * @copyright Elektra Initiative (see AUTHORS.md or https://www.libelektra.org)
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
+
+@import "node_modules/bootstrap/less/mixins/buttons.less";
+
+.btn {
+	box-shadow: none;
+	background-image: none;
+}
+
+.btn:focus, .btn:active:focus, .btn.active:focus {
+	outline: 0 none;
+}
+
+.btn:active, .btn.active {
+	box-shadow: none;
+}
+
+.btn-logo-blue {
+	.button-variant (@btn-logo-blue-color, @btn-logo-blue-bg, @btn-logo-blue-border);
+}
+.btn-logo-green {
+	.button-variant (@btn-logo-green-color, @btn-logo-green-bg, @btn-logo-green-border);
+}
+.btn-logo-yellow {
+	.button-variant (@btn-logo-yellow-color, @btn-logo-yellow-bg, @btn-logo-yellow-border);
+}
+.btn {
+	&.disabled,
+	&[disabled],
+	fieldset[disabled] & {
+		.opacity (.75);
+	}
+}

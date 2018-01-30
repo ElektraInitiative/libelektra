@@ -1,0 +1,29 @@
+/**
+ * Bootstrap theme overrides for navbars
+ *
+ * @copyright Elektra Initiative (see AUTHORS.md or https://www.libelektra.org)
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
+
+.navbar-default {
+	background-image: none;
+	box-shadow: none;
+
+	&.navbar-second {
+		background-color: inherit;
+	}
+
+	.navbar-nav>.active>a,
+	.navbar-nav>.open>a {
+		background-image: none;
+		box-shadow: none;
+	}
+
+	.navbar-nav>.active>a,
+	.navbar-nav>.active>a:focus,
+	.navbar-nav>.active>a:hover, {
+		color: #fff;
+		background-color: @logo-yellow;
+		text-shadow: none;
+	}
+}
