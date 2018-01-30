@@ -154,7 +154,7 @@ License: BSD-3-clause-inih
 
 Files: src/plugins/ni/nickel-1.1.0/*
 Copyright: 2008 Charles Lindsay <charles@chaoslizard.org>
-License: BSD-3-clause-nickel
+License: Zlib
  This software is provided 'as-is', without any express or implied
  warranty. In no event will the authors be held liable for any damages
  arising from the use of this software.
@@ -182,6 +182,34 @@ License: public-domain
  .
  You can use this free for any purpose.  It's in the public domain.
  It has no warranty.
+
+Files: src/tools/rest-frontend/resources/assets/skin/base/util/space.less
+Copyright: 2015 Ömer Aslanbakan
+License: MIT
+
+Files: src/tools/rest-frontend/public/assets/fonts/lato/*
+Copyright: 2010-2014 by tyPoland Lukasz Dziedzic (team@latofonts.com) with Reserved Font Name "Lato"
+License: OFL-1.1
+
+Files: src/tools/rest-frontend/public/assets/fonts/libre-franklin/*
+Copyright: 2015 Impallari Type (www.impallari.com)
+License: OFL-1.1
+
+Files: src/tools/rest-frontend/public/assets/fonts/font-awesome/*
+Copyright: 2016 Dave Gandy <dave@fontawesome.io>
+License: OFL-1.1
+
+Files: src/tools/rest-frontend/public/vendor/asciinema/asciinema-player.*
+Copyright: 2011-2016 Marcin Kulik
+License: Apache-2.0
+
+Files: src/tools/rest-frontend/resources/assets/skin/base/fonts/font-awesome/*
+Copyright: 2016 Dave Gandy <dave@fontawesome.io>
+License: MIT
+
+Files: src/tools/qt-gui/src/markdownconverter/*
+Copyright: 2013 Christian Loose
+License: BSD-3-Clause
 
 Files: tests/gtest-1.7.0/*
 Copyright: 2003, 2005-2009 Google Inc.
