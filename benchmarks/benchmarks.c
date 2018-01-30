@@ -435,8 +435,8 @@ static KsTreeVertex * recGenerateKsTree (KsTreeVertex * parent, const size_t siz
  */
 static void recGenerateKeySet (KeySet * ks, Key * key, KsTreeVertex * vertex)
 {
-	const size_t asd = 5;
-	char asd_test [asd];
+	static const size_t asd = 5;
+	char asd_test[asd];
 	// add name to key
 	if (keyAddBaseName (key, vertex->name) < 0)
 	{
