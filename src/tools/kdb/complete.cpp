@@ -359,7 +359,8 @@ bool CompleteCommand::filterCascading (string const & argument, pair<Key, pair<i
 	{
 		cascadationOffset = 0;
 	}
-	return argument.size () <= test.size () - cascadationOffset && equal (argument.begin (), argument.end (), test.begin () + cascadationOffset);
+	return argument.size () <= test.size () - cascadationOffset &&
+	       equal (argument.begin (), argument.end (), test.begin () + cascadationOffset);
 }
 
 bool CompleteCommand::filterName (string const & argument, pair<Key, pair<int, int>> const & current)
