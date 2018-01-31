@@ -39,8 +39,8 @@ inline std::ostream & printError (std::ostream & os, kdb::Key const & error)
 		   << error.getMeta<std::string> ("error/number") << ") occurred ;(" << getErrorColor (ANSI_COLOR::RESET) << std::endl;
 		os << getErrorColor (ANSI_COLOR::BOLD) << "Description: " << getErrorColor (ANSI_COLOR::RESET)
 		   << error.getMeta<std::string> ("error/description") << std::endl;
-		os << getErrorColor (ANSI_COLOR::BOLD) << "Reason: " << getErrorColor (ANSI_COLOR::RESET)
-		   << error.getMeta<std::string> ("error/reason") << std::endl;
+		os << getErrorColor (ANSI_COLOR::BOLD) << "Reason: " << getErrorColor (ANSI_COLOR::YELLOW)
+		   << error.getMeta<std::string> ("error/reason") << getErrorColor (ANSI_COLOR::RESET) << std::endl;
 		os << getErrorColor (ANSI_COLOR::BOLD) << "Ingroup: " << getErrorColor (ANSI_COLOR::RESET)
 		   << error.getMeta<std::string> ("error/ingroup") << std::endl;
 		os << getErrorColor (ANSI_COLOR::BOLD) << "Module: " << getErrorColor (ANSI_COLOR::RESET)
