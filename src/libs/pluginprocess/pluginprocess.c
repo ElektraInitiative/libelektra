@@ -33,9 +33,9 @@ struct _ElektraPluginProcess
 	ElektraInvokeHandle * dump;
 };
 
-static void cleanupPluginData (ElektraPluginProcess * pp)
+static void cleanupPluginData (ElektraPluginProcess * pp, Key * errorKey)
 {
-	if (pp->dump) elektraInvokeClose (pp->dump);
+	if (pp->dump) elektraInvokeClose (pp->dump, errorKey);
 	if (pp->pid && pp->commandPipe) unlink (pp->commandPipe);
 	elektraFree (pp->commandPipe);
 	if (pp->pid && pp->resultPipe) unlink (pp->resultPipe);
@@ -139,7 +139,7 @@ void elektraPluginProcessStart (Plugin * handle, ElektraPluginProcess * pp)
 	keyDel (commandPipeKey);
 	keyDel (resultPipeKey);
 	ksDel (keySet);
-	cleanupPluginData (pp);
+	cleanupPluginData (pp, 0);
 	// All done, exit the child process
 	_Exit (EXIT_SUCCESS);
 }
@@ -330,20 +330,20 @@ ElektraPluginProcess * elektraPluginProcessInit (Key * errorKey)
 	pp->pipeDirectory = makePipeDirectory (errorKey);
 	pp->commandPipe = getPipename (pp->pipeDirectory, "/command");
 	pp->resultPipe = getPipename (pp->pipeDirectory, "/result");
-	pp->dump = elektraInvokeOpen ("dump", 0);
+	pp->dump = elektraInvokeOpen ("dump", 0, errorKey);
 	pp->counter = 0;
 
 	if (pp->pipeDirectory && pp->commandPipe && pp->resultPipe && pp->dump)
 	{
 		if (elektraPluginProcessFork (pp, errorKey) < 0)
 		{
-			cleanupPluginData (pp);
+			cleanupPluginData (pp, errorKey);
 			return NULL;
 		}
 	}
 	else
 	{
-		cleanupPluginData (pp);
+		cleanupPluginData (pp, errorKey);
 		ELEKTRA_SET_ERROR (190, errorKey, "Failed to initialize the pipenames and the dump plugin");
 		return NULL;
 	}
@@ -379,7 +379,7 @@ int elektraPluginClose (Plugin * handle, Key * errorKey)
 	ElektraPluginProcess * pp = elektraPluginGetData (handle);
 	if (elektraPluginProcessIsParent (pp)) {
 		int result = elektraPluginProcessSend (pp, ELEKTRA_PLUGIN_CLOSE, NULL, errorKey);
-		if (elektraPluginProcessClose (pp)) elektraPluginSetData (handle, NULL);
+		if (elektraPluginProcessClose (pp, errorKey)) elektraPluginSetData (handle, NULL);
 		return result;
 	}
 
@@ -393,9 +393,9 @@ int elektraPluginClose (Plugin * handle, Key * errorKey)
  * @retval 0 if the data structure is still used
  * @ingroup processplugin
  **/
-int elektraPluginProcessClose (ElektraPluginProcess * pp)
+int elektraPluginProcessClose (ElektraPluginProcess * pp, Key * errorKey)
 {
 	pp->counter = pp->counter - 1;
-	if (!pp->counter) cleanupPluginData (pp);
+	if (!pp->counter) cleanupPluginData (pp, errorKey);
 	return pp->counter <= 0;
 }

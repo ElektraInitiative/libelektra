@@ -38,7 +38,7 @@ int elektraPluginProcessOpen (ElektraPluginProcess *, Key *);
 int elektraPluginProcessIsParent (const ElektraPluginProcess *);
 int elektraPluginProcessSend (const ElektraPluginProcess *, pluginprocess_t, KeySet *, Key *);
 
-int elektraPluginProcessClose (ElektraPluginProcess *);
+int elektraPluginProcessClose (ElektraPluginProcess *, Key *);
 
 #ifdef __cplusplus
 }
