@@ -456,7 +456,11 @@ static void benchmarkMappingOpt (void)
 {
 	// create the n array
 	const size_t nCount = 132;
-	size_t n[132]; // nCount
+	size_t * n = elektraMalloc (nCount * sizeof(size_t));
+	if (!n)
+	{
+		printExit ("malloc");
+	}
 	size_t controlCount = 0;
 	for (size_t i = 2; i <= 38; ++i)
 	{
@@ -713,6 +717,7 @@ static void benchmarkMappingOpt (void)
 	{
 		ksDel (keySetsCache[i]);
 	}
+	elektraFree (n);
 	elektraFree (keySetsCache);
 	fclose (out);
 	elektraFree (keySetShapes);
@@ -741,7 +746,11 @@ static void benchmarkMappingAllSeeds (void)
 {
 	// create the n array
 	const size_t nCount = 7;
-	size_t n[7]; // nCount
+	size_t * n = elektraMalloc (nCount * sizeof(size_t));
+	if (!n)
+	{
+		printExit ("malloc");
+	}
 	n[0] = 9;
 	n[1] = 29;
 	n[2] = 49;
@@ -960,6 +969,7 @@ static void benchmarkMappingAllSeeds (void)
 	{
 		ksDel (keySetsCache[i]);
 	}
+	elektraFree (n);
 	elektraFree (keySetsCache);
 	fclose (out);
 	elektraFree (keySetShapes);
@@ -1010,7 +1020,11 @@ int main (int argc, char ** argv)
 {
 	// define all benchmarks
 	const size_t benchmarksCount = 5;
-	Benchmark benchmarks[5]; // benchmarksCount
+	Benchmark * benchmarks = elektraMalloc (benchmarksCount * sizeof(Benchmark));
+	if (!benchmarks)
+	{
+		printExit ("malloc");
+	}
 	// hashfunctiontime
 	char * benchmarkNameHashFunctionTime = "hashfunctiontime";
 	benchmarks[0].name = benchmarkNameHashFunctionTime;
@@ -1041,6 +1055,7 @@ int main (int argc, char ** argv)
 		{
 			fprintf (stderr, "* %s\n", benchmarks[i].name);
 		}
+		elektraFree (benchmarks);
 		return EXIT_FAILURE;
 	}
 	for (size_t i = 0; i < benchmarksCount; ++i)
@@ -1048,6 +1063,7 @@ int main (int argc, char ** argv)
 		if (!strncmp (benchmarks[i].name, argv[1], strlen (argv[1])))
 		{
 			benchmarks[i].benchmarkF ();
+			elektraFree (benchmarks);
 			return EXIT_SUCCESS;
 		}
 	}
@@ -1057,6 +1073,7 @@ int main (int argc, char ** argv)
 	{
 		fprintf (stderr, "* %s\n", benchmarks[i].name);
 	}
+	elektraFree (benchmarks);
 	return EXIT_FAILURE;
 }
 

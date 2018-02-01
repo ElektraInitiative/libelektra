@@ -11,7 +11,8 @@
 #include <time.h>
 
 /**
- * Non cryptographic pseudo random number generator
+ * @brief Non cryptographic pseudo random number generator
+ *
  * By Ray Gardner
  * www8.cs.umu.se/~isak/snippets/rg_rand.c
  *
@@ -52,6 +53,16 @@ void elektraRand (int32_t * seed)
 	*seed = (int32_t)lo;
 }
 
+/**
+ * @brief Random initial seed generator
+ *
+ * Generates a random initial seed for the `elektraRand (...)` function.
+ * Two invocations in the same second return the same random initial seed, due to
+ * the usage of `time (0)`.
+ *
+ * @retval random initial seed
+ *
+ */
 int32_t elektraRandGetInitSeed (void)
 {
 	int32_t initSeed = time (0);
