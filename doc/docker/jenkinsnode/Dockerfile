@@ -1,27 +1,13 @@
 FROM debian:stretch
 
-ARG SWIGVERSION="3.0.11"
-
 # install dependencies
 RUN apt-get update && apt-get -y upgrade
 RUN apt-get -y install \
-  apt-utils \
-  curl \
   build-essential \
   clang \
-  autotools-dev \
-  automake \
   cmake \
-  pkg-config \
-  doxygen \
-  graphviz \
-  bison \
   ruby-dev \
   python-dev \
-  python3-dev \
-  libpython3-dev \
-  liblua5.3-dev \
-  tclcl-dev \
   libaugeas-dev \
   libyajl-dev \
   libgit2-dev \
@@ -31,14 +17,10 @@ RUN apt-get -y install \
   libpcre3-dev \
   libpcre++-dev \
   libglib2.0-dev \
-  swig \
-  libyaml-cpp-dev \
-  libuv1-dev \
   libxerces-c-dev \
-  checkinstall \
+  libyaml-cpp-dev \
+  swig \
   valgrind \
-  devscripts \
-  dh-exec \
   libmarkdown2-dev \
   discount \
   dh-lua \
@@ -48,7 +30,6 @@ RUN apt-get -y install \
   ruby-ronn \
   libgcrypt20-dev \
   libbotan1.10-dev \
-  swig3.0 \
   libsystemd-dev \
   openjdk-8-jdk-headless \
   ghc \
@@ -62,9 +43,10 @@ RUN apt-get -y install \
   git \
   libcurl4-gnutls-dev
 RUN cabal update && \
-  gem install ronn && \
   apt-get clean && \
   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# TODO use elektra for the configuration steps below
 
 # setup the ssh server
 RUN sed --in-place 's/^\(PermitRootLogin\|UsePAM\|UseDNS\)/#\1/' /etc/ssh/sshd_config && \
@@ -81,7 +63,7 @@ RUN echo "\n\n\n\n\nY" | adduser --quiet --disabled-password jenkins && \
   mkdir /home/jenkins/.m2/ && \
   chown -R jenkins:jenkins /home/jenkins/.m2/ && \
   mkdir /home/jenkins/libelektra && \
-  echo "[user]\nname = Jenkins Buildbot\nemail = <your-email>" >> /home/jenkins/.gitconfig
+  echo "[user]\nname = Jenkins Buildbot\nemail = bot@libelektra.org" >> /home/jenkins/.gitconfig
 
 # setup the run- utilities
 COPY run-make /usr/local/bin/run-make

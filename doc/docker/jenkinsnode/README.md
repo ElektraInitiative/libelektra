@@ -7,13 +7,13 @@ jenkins to connect to the container and execute commands on top of that.
 
 Before building the image, you may want to adjust the password for jenkins to 
 something more secure, so adjust the line `echo "jenkins:<password>" | chpasswd && \`
-in the Dockerfile. Next adjust the line 
-`echo "[user]\nname = Jenkins Buildbot\nemail = <your-email>" >> /home/jenkins/.gitconfig`
-and insert your git settings.
+in the Dockerfile.
 
 Optionally you can modify the file `run_make` if you want to
 increase the number of jobs for the make command on the build container. You can
-also modify `run_ionice` to adjust the build process' priority.
+also modify `run_ionice` to adjust the build process' priority, which is set to
+idle by default in order to keep the host system responsive. In case you want to
+disable that, change the line `ionice -c 3 nice $*` in `run_ionice` to simply `$*`.
 
 Now build the image with the following command:
 
