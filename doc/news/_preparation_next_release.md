@@ -113,7 +113,9 @@ We added even more functionality, which could not make it to the highlights:
   additional libraries.
 - The building and linking of the haskell bindings and haskell plugins has been
 [greatly improved](https://github.com/ElektraInitiative/libelektra/pull/1698).
-- The invoke library can now [report errors](https://github.com/ElektraInitiative/libelektra/pull/1801) upon opening/closing a plugin. 
+- The invoke library can now [report errors](https://github.com/ElektraInitiative/libelektra/pull/1801) upon opening/closing a plugin.
+- The [YAML CPP plugin](https://www.libelektra.org/plugins/yamlcpp) does not require [Boost](http://www.boost.org) anymore, if you
+  installed [yaml-cpp 0.6](https://github.com/jbeder/yaml-cpp/releases/tag/yaml-cpp-0.6.0).
 
 ## Documentation
 
