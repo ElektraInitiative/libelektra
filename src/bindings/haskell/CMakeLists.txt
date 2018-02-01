@@ -79,12 +79,12 @@ if (NOT BUILD_STATIC)
 			"${CMAKE_CURRENT_BINARY_DIR}/dist/build/testhaskell_realworld/testhaskell_realworld"
 			"${CMAKE_CURRENT_BINARY_DIR}/dist/build/testhaskell_realworld_optimized/testhaskell_realworld_optimized"
 		)
-		file (WRITE "${CMAKE_CURRENT_BINARY_DIR}/cabalOptionalDependencies.cmake"
+		file (WRITE "${CMAKE_CURRENT_BINARY_DIR}/cabalOptionalTestDependencies.cmake"
 			"execute_process (COMMAND ${CABAL_EXECUTABLE} ${CABAL_OPTS} install --enable-tests --only-dependencies -v0)")
 		add_custom_command (
 			OUTPUT ${HASKELL_TESTS}
 			# everything is getting installed to the sandbox, and gets cached to avoid reinstalling every time
-			COMMAND ${CMAKE_COMMAND} -P "${CMAKE_CURRENT_BINARY_DIR}/cabalOptionalDependencies.cmake"
+			COMMAND ${CMAKE_COMMAND} -P "${CMAKE_CURRENT_BINARY_DIR}/cabalOptionalTestDependencies.cmake"
 			COMMAND ${CABAL_EXECUTABLE} ${CABAL_OPTS} --enable-tests configure -v0
 			COMMAND ${CABAL_EXECUTABLE} build -v0
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
