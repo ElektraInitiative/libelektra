@@ -15,16 +15,10 @@ check_distribution()
 	echo "  Check distribution of $1 and $2"
 	MOUNTPOINT1="$1"
 	MOUNTPOINT2="$2"
-	FILE1="/tmp/file1"
-	FILE2="/tmp/file2"
+	FILE1=`mktemp /tmp/file1XXXXXX`
+	FILE2=`mktemp /tmp/file2XXXXXX`
 	VALUE1="value111111"
 	VALUE2="value222222"
-
-	[ ! -e $FILE1 ]
-	exit_if_fail $FILE1 already exists
-
-	[ ! -e $FILE2 ]
-	exit_if_fail $FILE2 already exists
 
 	"$KDB" mount $FILE1 $MOUNTPOINT1 $KDB_DEFAULT_STORAGE 1>/dev/null
 	succeed_if "could not mount 1: $FILE1 at $MOUNTPOINT1"
