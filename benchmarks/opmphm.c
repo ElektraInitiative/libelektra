@@ -456,7 +456,7 @@ static void benchmarkMappingOpt (void)
 {
 	// create the n array
 	const size_t nCount = 132;
-	size_t * n = elektraMalloc (nCount * sizeof(size_t));
+	size_t * n = elektraMalloc (nCount * sizeof (size_t));
 	if (!n)
 	{
 		printExit ("malloc");
@@ -746,7 +746,7 @@ static void benchmarkMappingAllSeeds (void)
 {
 	// create the n array
 	const size_t nCount = 7;
-	size_t * n = elektraMalloc (nCount * sizeof(size_t));
+	size_t * n = elektraMalloc (nCount * sizeof (size_t));
 	if (!n)
 	{
 		printExit ("malloc");
@@ -1020,7 +1020,7 @@ int main (int argc, char ** argv)
 {
 	// define all benchmarks
 	const size_t benchmarksCount = 5;
-	Benchmark * benchmarks = elektraMalloc (benchmarksCount * sizeof(Benchmark));
+	Benchmark * benchmarks = elektraMalloc (benchmarksCount * sizeof (Benchmark));
 	if (!benchmarks)
 	{
 		printExit ("malloc");
