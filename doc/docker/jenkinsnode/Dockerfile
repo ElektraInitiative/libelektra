@@ -42,8 +42,7 @@ RUN apt-get -y install \
   maven \
   git \
   libcurl4-gnutls-dev
-RUN cabal update && \
-  apt-get clean && \
+RUN apt-get clean && \
   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # TODO use elektra for the configuration steps below
@@ -64,6 +63,11 @@ RUN echo "\n\n\n\n\nY" | adduser --quiet --disabled-password jenkins && \
   chown -R jenkins:jenkins /home/jenkins/.m2/ && \
   mkdir /home/jenkins/libelektra && \
   echo "[user]\nname = Jenkins Buildbot\nemail = bot@libelektra.org" >> /home/jenkins/.gitconfig
+
+# setup cabal for the jenkins user, then go back to root
+USER jenkins
+RUN cabal update
+USER root
 
 # setup the run- utilities
 COPY run-make /usr/local/bin/run-make
