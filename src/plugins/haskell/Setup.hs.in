@@ -3,6 +3,9 @@
 -- so they can be statically linked afterwards in order to provide
 -- easy-to-package haskell plugins for elektra 
 --
+-- Furthermore it works around the issue that extra-include-dirs doesn't
+-- work properly on old cabal version
+--
 {-# LANGUAGE CPP #-}
 
 module Main (main) where
@@ -14,30 +17,34 @@ import Control.Applicative  (liftA2)
 import Data.Foldable        (toList, traverse_)
 import Data.Maybe           (mapMaybe)
 import Data.Set             (Set)
-import Data.List            (isInfixOf, intercalate)
+import Data.List            (isInfixOf, intercalate, nub)
 import System.IO            (hPutStrLn, stderr)
 import System.Exit          (exitFailure)
 import System.Process       (readProcess)
 import System.Directory     (createDirectoryIfMissing, doesFileExist)
 
-import qualified Data.Set                                   as S
-import qualified Distribution.Simple.Compiler               as C
-import qualified Distribution.Simple.Setup                  as C
-#if MIN_VERSION_Cabal(2,0,0)      
-import qualified Distribution.Types.LocalBuildInfo          as C
-import qualified Distribution.Types.ComponentLocalBuildInfo as C
-import qualified Distribution.Types.PackageDescription      as C
-#else     
-import qualified Distribution.PackageDescription            as C
-import qualified Distribution.Simple.LocalBuildInfo         as C
-#endif      
-import qualified Distribution.Package                       as C
-import qualified Distribution.Simple.PackageIndex           as C
-import qualified Distribution.Text                          as C
-import qualified Distribution.Simple.Program                as C
-import qualified Distribution.System                        as C
-import qualified Distribution.Verbosity                     as V
-import qualified Distribution.InstalledPackageInfo          as IPI
+import qualified Data.Set                                     as S
+import qualified Distribution.Simple.Compiler                 as C
+import qualified Distribution.Simple.Setup                    as C
+#if MIN_VERSION_Cabal(2,0,0)
+import qualified Distribution.Types.LocalBuildInfo            as C
+import qualified Distribution.Types.ComponentLocalBuildInfo   as C
+import qualified Distribution.Types.PackageDescription        as C
+import qualified Distribution.Types.HookedBuildInfo           as C
+import qualified Distribution.Types.GenericPackageDescription as C
+import qualified Distribution.Types.Library                   as C
+import qualified Distribution.Types.BuildInfo                 as C
+#else
+import qualified Distribution.PackageDescription              as C
+import qualified Distribution.Simple.LocalBuildInfo           as C
+#endif
+import qualified Distribution.Package                         as C
+import qualified Distribution.Simple.PackageIndex             as C
+import qualified Distribution.Text                            as C
+import qualified Distribution.Simple.Program                  as C
+import qualified Distribution.System                          as C
+import qualified Distribution.Verbosity                       as V
+import qualified Distribution.InstalledPackageInfo            as IPI
 
 #if MIN_VERSION_Cabal(1,24,0)
 type PackageIndex a = C.PackageIndex IPI.InstalledPackageInfo
@@ -49,8 +56,26 @@ type PackageIndex a = C.PackageIndex
 data Build = Static | Dynamic
 
 main :: IO ()
-main = defaultMainWithHooks (simpleUserHooks { hookedPrograms = [C.simpleProgram "libtool", C.simpleProgram "ln"],
-                                               postBuild = elektraHaskellPluginPostBuildHook})
+main = defaultMainWithHooks (simpleUserHooks { hookedPrograms = [C.simpleProgram "libtool", C.simpleProgram "ln"]
+                                             ,  confHook = elektraHaskellPluginConfHook
+                                             ,  postBuild = elektraHaskellPluginPostBuildHook})
+
+elektraHaskellPluginConfHook :: (C.GenericPackageDescription, C.HookedBuildInfo) -> C.ConfigFlags -> IO C.LocalBuildInfo
+elektraHaskellPluginConfHook (description, buildInfo) flags = do
+  localBuildInfo <- confHook simpleUserHooks (description, buildInfo) flags
+  let packageDescription = C.localPkgDescr localBuildInfo
+      library            = C.library packageDescription
+      libraryBuildInfo   = fmap C.libBuildInfo library
+  return localBuildInfo {
+    C.localPkgDescr = packageDescription {
+      C.library = fmap (\l -> l {
+        C.libBuildInfo = maybe C.emptyBuildInfo (\lbi -> lbi {
+          C.includeDirs  = nub $ [@CABAL_INCLUDE_DIRS@]  ++ C.includeDirs  lbi,
+          C.extraLibDirs = nub $ "@CMAKE_BINARY_DIR@/lib" : C.extraLibDirs lbi
+        }) libraryBuildInfo
+      }) library
+    }
+  }
 
 elektraHaskellPluginPostBuildHook :: Args -> C.BuildFlags -> C.PackageDescription -> C.LocalBuildInfo -> IO ()
 elektraHaskellPluginPostBuildHook _ flags pd lbi = do
