@@ -5,7 +5,7 @@
 - infos/provides = 
 - infos/recommends =
 - infos/placements = getstorage setstorage
-- infos/status = maintained experimental
+- infos/status = maintained experimental memleak
 - infos/metadata =
 - infos/description = base for haskell plugins
 
@@ -48,3 +48,7 @@ configuration.
 ## Limitations
 
 Currently the Haskell plugin support only executes tests written in C and not directly in Haskell.
+
+## Other
+
+The memleak is most likely a false positive due to the forked child process which exits afterwards.
