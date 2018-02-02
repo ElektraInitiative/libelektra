@@ -85,17 +85,17 @@ ElektraInvokeHandle * elektraInvokeOpen (const char * elektraPluginName, KeySet 
 		config = ksDup (config);
 	}
 
-	if (!errorKey)
+	int errorKeyMissing = !errorKey;
+	if (errorKeyMissing)
 	{
 		errorKey = keyNew (0, KEY_END);
 	}
-	else
-	{
-		keyIncRef (errorKey);
-	}
 
 	Plugin * plugin = elektraPluginOpen (elektraPluginName, modules, config, errorKey);
-	keyDel (errorKey);
+	if (errorKeyMissing)
+	{
+		keyDel (errorKey);
+	}
 	if (!plugin)
 	{
 		elektraModulesClose (modules, NULL);
@@ -291,16 +291,16 @@ void elektraInvokeClose (ElektraInvokeHandle * handle, Key * errorKey)
 	{
 		return;
 	}
-	if (!errorKey)
+	int errorKeyMissing = !errorKey;
+	if (errorKeyMissing)
 	{
 		errorKey = keyNew (0, KEY_END);
 	}
-	else
-	{
-		keyIncRef (errorKey);
-	}
 	elektraPluginClose (handle->plugin, errorKey);
-	keyDel (errorKey);
+	if (errorKeyMissing)
+	{
+		keyDel (errorKey);
+	}
 	elektraModulesClose (handle->modules, NULL);
 	ksDel (handle->modules);
 	ksDel (handle->exports);
