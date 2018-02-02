@@ -54,15 +54,13 @@ if (NOT BUILD_STATIC)
 		"${CMAKE_CURRENT_SOURCE_DIR}/test/ElektraRealWorld.hs"
 		"${CMAKE_SOURCE_DIR}/src/plugins/haskell/Setup.hs.in"
 	)
-	file (WRITE "${CMAKE_CURRENT_BINARY_DIR}/cabalOptionalDependencies.cmake"
-		"execute_process (COMMAND ${CABAL_EXECUTABLE} install ${CABAL_OPTS} --only-dependencies -v0)")
 	execute_process (COMMAND ${CABAL_EXECUTABLE} sandbox init --sandbox ${CMAKE_BINARY_DIR}/.cabal-sandbox -v0
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} OUTPUT_QUIET)
 
 	string (REPLACE " " ";" CABAL_OPTS_SANITIZED ${CABAL_OPTS})
 	add_custom_command (
 		OUTPUT ${BINDING_HASKELL_NAME}
-		COMMAND ${CMAKE_COMMAND} -P "${CMAKE_CURRENT_BINARY_DIR}/cabalOptionalDependencies.cmake"
+		COMMAND ${CABAL_EXECUTABLE} install ${CABAL_OPTS_SANITIZED} --only-dependencies -v0 || 0
 		COMMAND ${CABAL_EXECUTABLE} configure ${CABAL_OPTS_SANITIZED} -v0
 		COMMAND ${CABAL_EXECUTABLE} build -v0
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
