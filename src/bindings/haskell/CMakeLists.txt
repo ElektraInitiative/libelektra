@@ -26,10 +26,6 @@ if (NOT BUILD_STATIC)
 		set (ELEKTRA_DEPENDENCY "elektra-static;")
 	endif ()
 	string (REPLACE ";" " " CABAL_ELEKTRA_DEPENDENCY "${ELEKTRA_DEPENDENCY}")
-
-	if (BUILD_TESTING)
-		set (CABAL_OPTS "${CABAL_OPTS};--enable-tests")
-	endif (BUILD_TESTING)
 	
 	# configure include paths
 	configure_file (
@@ -85,6 +81,8 @@ if (NOT BUILD_STATIC)
 		)
 		add_custom_command (
 			OUTPUT ${HASKELL_TESTS}
+			COMMAND ${CABAL_EXECUTABLE} install ${CABAL_OPTS} --enable-tests --only-dependencies -v0 || true
+			COMMAND ${CABAL_EXECUTABLE} configure ${CABAL_OPTS} --enable-tests -v0
 			COMMAND ${CABAL_EXECUTABLE} build -v0
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 			DEPENDS ${BINDING_HASKELL_DEPENDENCIES} ${ELEKTRA_DEPENDENCY} c2hs_haskell
