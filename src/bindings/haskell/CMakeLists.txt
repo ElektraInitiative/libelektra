@@ -26,6 +26,10 @@ if (NOT BUILD_STATIC)
 		set (ELEKTRA_DEPENDENCY "elektra-static;")
 	endif ()
 	string (REPLACE ";" " " CABAL_ELEKTRA_DEPENDENCY "${ELEKTRA_DEPENDENCY}")
+
+	if (BUILD_TESTING)
+		set (CABAL_OPTS "${CABAL_OPTS} --enable-tests")
+	endif (BUILD_TESTING)
 	
 	# configure include paths
 	configure_file (
@@ -51,13 +55,15 @@ if (NOT BUILD_STATIC)
 		"${CMAKE_SOURCE_DIR}/src/plugins/haskell/Setup.hs.in"
 	)
 	file (WRITE "${CMAKE_CURRENT_BINARY_DIR}/cabalOptionalDependencies.cmake"
-		"execute_process (COMMAND ${CABAL_EXECUTABLE} ${CABAL_OPTS} install --only-dependencies -v0)")
+		"execute_process (COMMAND ${CABAL_EXECUTABLE} install ${CABAL_OPTS} --only-dependencies -v0)")
 	execute_process (COMMAND ${CABAL_EXECUTABLE} sandbox init --sandbox ${CMAKE_BINARY_DIR}/.cabal-sandbox -v0
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} OUTPUT_QUIET)
+
+	string (REPLACE " " ";" CABAL_OPTS_SANITIZED ${CABAL_OPTS})
 	add_custom_command (
 		OUTPUT ${BINDING_HASKELL_NAME}
 		COMMAND ${CMAKE_COMMAND} -P "${CMAKE_CURRENT_BINARY_DIR}/cabalOptionalDependencies.cmake"
-		COMMAND ${CABAL_EXECUTABLE} ${CABAL_OPTS} configure -v0
+		COMMAND ${CABAL_EXECUTABLE} configure ${CABAL_OPTS_SANITIZED} -v0
 		COMMAND ${CABAL_EXECUTABLE} build -v0
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 		DEPENDS ${BINDING_HASKELL_DEPENDENCIES} ${ELEKTRA_DEPENDENCY}
@@ -79,13 +85,8 @@ if (NOT BUILD_STATIC)
 			"${CMAKE_CURRENT_BINARY_DIR}/dist/build/testhaskell_realworld/testhaskell_realworld"
 			"${CMAKE_CURRENT_BINARY_DIR}/dist/build/testhaskell_realworld_optimized/testhaskell_realworld_optimized"
 		)
-		file (WRITE "${CMAKE_CURRENT_BINARY_DIR}/cabalOptionalTestDependencies.cmake"
-			"execute_process (COMMAND ${CABAL_EXECUTABLE} ${CABAL_OPTS} install --enable-tests --only-dependencies -v0)")
 		add_custom_command (
 			OUTPUT ${HASKELL_TESTS}
-			# everything is getting installed to the sandbox, and gets cached to avoid reinstalling every time
-			COMMAND ${CMAKE_COMMAND} -P "${CMAKE_CURRENT_BINARY_DIR}/cabalOptionalTestDependencies.cmake"
-			COMMAND ${CABAL_EXECUTABLE} ${CABAL_OPTS} --enable-tests configure -v0
 			COMMAND ${CABAL_EXECUTABLE} build -v0
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 			DEPENDS ${BINDING_HASKELL_DEPENDENCIES} ${ELEKTRA_DEPENDENCY} c2hs_haskell
