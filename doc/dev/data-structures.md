@@ -384,15 +384,15 @@ elements, once the OPMPHM is build, every:
  * addition of a new element
  * deletion of a indexed element
 
-leads to an invalid OPMPHM and forces a rebuild.
+leads to an invalid OPMPHM and forces a rebuild. A build consists of two steps the mapping step and the assignment step.
 
-The OPMPHM maps each element to an edge in an random acyclic r-uniform r-partite hypergraph.
+During the mapping step the OPMPHM maps each element to an edge in an random acyclic r-uniform r-partite hypergraph.
 In a r-uniform r-partite hypergraph each edge connects `r` vertices, each vertex in a different component.
-The probability of being acyclic and time until such an acyclic r-uniform r-partite hypergraph is found
-depends on the the following variables:
+The probability of being acyclic and the number of mapping step invocations depends on the the following variables:
 
 * `r`: The `r` variable defines the number of components in the random r-uniform r-partite hypergraph.
        Use the `opmphmOptR (n)` function to get an optimal value for your number of elements (`n`).
+
 * `c`: The `c` variable defines the number of vertices in each component of the random r-uniform r-partite hypergraph.
        The number of vertices in one component is defined as `(c * n / r) + 1`, where `n` is the number of elements
        and `r` is the variable from above.
@@ -400,6 +400,12 @@ depends on the the following variables:
        with your `r` from above.
        The ensure a optimal time until success increment the `c` variable with the value from the `opmphmOptC (n)`
        function, where `n` is the number of elements.
+
+* `initSeed`: The initial seed set in `OpmphmInit->initSeed`.
+
+`opmphmOptR (n)` and `opmphmOptC (n)` are heuristic functions constructed through benchmarks. Optimal is only one
+mapping step invocation in 99.5% of the observed cases. The benchmarks took arbitrary uniform distributed initial seeds
+and the heuristic functions are made to work with almost every seed.
 
 ### The Build
 
