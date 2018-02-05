@@ -24,7 +24,7 @@ endmacro (do_benchmark)
 do_benchmark (large)
 do_benchmark (cmp)
 do_benchmark (createkeys)
-# exclude mingw
+# exclude the OPMPHM benchmarks from mingw
 if (ENABLE_OPTIMIZATIONS AND NOT WIN32)
 	# set USE_OPENMP here and define it in opmphm.c
 	set (USE_OPENMP 0)

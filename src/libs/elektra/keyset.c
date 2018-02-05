@@ -2056,7 +2056,7 @@ static Key * elektraLookupSearch (KeySet * ks, Key * key, option_t options)
 
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 	int opmphmOptionIsSet = 0;
-	// flags not compatible with OPMPHM
+	// KDB_O_WITHOWNER and KDB_O_NOCASE flags are not compatible with OPMPHM
 	if (((options & KDB_O_WITHOWNER) || (options & KDB_O_NOCASE)) && (options & KDB_O_OPMPHM))
 	{
 		// remove OPMPHM
