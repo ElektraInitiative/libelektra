@@ -485,10 +485,10 @@ static int keyCompareByName (const void * p1, const void * p2)
 	size_t const nameSize1 = key1->keyUSize;
 	size_t const nameSize2 = key2->keyUSize;
 	int ret = 0;
-// 	ELEKTRA_LOG_WARNING ("name1 ptr: %p", (void *) name1);
-// 	ELEKTRA_LOG_WARNING ("name1 size: %zu", nameSize1);
-// 	ELEKTRA_LOG_WARNING ("name2 ptr: %p", (void *) name2);
-// 	ELEKTRA_LOG_WARNING ("name2 size: %zu", nameSize2);
+	// 	ELEKTRA_LOG_WARNING ("name1 ptr: %p", (void *) name1);
+	// 	ELEKTRA_LOG_WARNING ("name1 size: %zu", nameSize1);
+	// 	ELEKTRA_LOG_WARNING ("name2 ptr: %p", (void *) name2);
+	// 	ELEKTRA_LOG_WARNING ("name2 size: %zu", nameSize2);
 	if (nameSize1 == nameSize2)
 	{
 		ret = memcmp (name1, name2, nameSize2);
@@ -963,9 +963,8 @@ ssize_t ksAppend (KeySet * ks, const KeySet * toAppend)
 	/* Do only one resize in advance */
 	for (toAlloc = ks->alloc; ks->size + toAppend->size >= toAlloc; toAlloc *= 2)
 		;
-	
-	if (ksResize (ks, toAlloc - 1) == -1)
-		exit (EXIT_FAILURE);
+
+	if (ksResize (ks, toAlloc - 1) == -1) exit (EXIT_FAILURE);
 
 	/* TODO: here is lots of room for optimizations */
 	for (size_t i = 0; i < toAppend->size; ++i)
@@ -2540,7 +2539,7 @@ int ksResize (KeySet * ks, size_t alloc)
 		else
 			return 0;
 	}
-	
+
 	int inMmap = test_bit (ks->flags, KS_FLAG_MMAP) == KS_FLAG_MMAP;
 
 	if ((ks->array == NULL) || inMmap)
@@ -2556,14 +2555,8 @@ int ksResize (KeySet * ks, size_t alloc)
 		}
 	}
 	ks->alloc = alloc;
-<<<<<<< HEAD
-
 
 	if (elektraRealloc ((void **) &ks->array, sizeof (struct _Key *) * ks->alloc) == -1)
-=======
-	
-	if (elektraRealloc ((void **)&ks->array, sizeof (struct _Key *) * ks->alloc) == -1)
->>>>>>> mmapstorage: fix ksResize for mapped keysets
 	{
 		elektraFree (ks->array);
 		ks->array = 0;
@@ -2635,9 +2628,8 @@ int ksInit (KeySet * ks)
 int ksClose (KeySet * ks)
 {
 	Key * k;
-	
-	if (test_bit(ks->flags, KS_FLAG_MMAP) == KS_FLAG_MMAP)
-		return 0;
+
+	if (test_bit (ks->flags, KS_FLAG_MMAP) == KS_FLAG_MMAP) return 0;
 
 	ksRewind (ks);
 	while ((k = ksNext (ks)) != 0)
