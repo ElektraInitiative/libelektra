@@ -1,8 +1,8 @@
 - infos = Information about the haskell plugin is in keys below
 - infos/author = e1528532 <e1528532@libelektra.org>
 - infos/licence = BSD
-- infos/needs = 
-- infos/provides = 
+- infos/needs =
+- infos/provides =
 - infos/recommends =
 - infos/placements = getstorage setstorage
 - infos/status = maintained experimental memleak
@@ -11,13 +11,13 @@
 
 ## Introduction
 
-A plugin which takes care about initializing the haskell runtime. 
+A plugin which takes care about initializing the haskell run-time.
 
 ## Usage
 
 This plugin on its own provides a minimalistic implementation to test
 the basic functionality, but acts as a base for developing further haskell plugins.
-To be precise, the following files are required and should use the following 
+To be precise, the following files are required and should use the following
 naming scheme, with `<PLUGIN_NAME>` being the name of this plugin (`haskell` in this case):
 
 - CMakeLists.txt which includes and calls the LibAddHaskellPlugin macro
@@ -30,12 +30,12 @@ naming scheme, with `<PLUGIN_NAME>` being the name of this plugin (`haskell` in 
 - `testmod_<PLUGIN_NAME>.c` which includes the tests for the plugin
 
 Use the cmake command add_haskell_plugin which can used by including LibAddHaskellPlugin.
-This command will take care about the proper linking of your haskell plugin. Furthermore it 
+This command will take care about the proper linking of your haskell plugin. Furthermore it
 uses the c wrapper provided by this plugin so this doesn't have to be done again.
 
 By default plugins get built in a cabal sandbox shared with all other Haskell plugins-
-and the Haskell bindings to speed up compilation by compiling commonly used dependencies 
-just once. Dependencies are automatically resolved according to the cabal build 
+and the Haskell bindings to speed up compilation by compiling commonly used dependencies
+just once. Dependencies are automatically resolved according to the cabal build
 configuration.
 
 ## Dependencies
