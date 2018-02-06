@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # main script for guided preference setup used by configure-firefox
 
 prefType=

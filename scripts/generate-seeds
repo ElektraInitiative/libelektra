@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # @author Kurt Micheli <kurt.micheli@libelektra.org>
 # @brief generate uniformly distributed seeds with R

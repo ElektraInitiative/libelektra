@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # @author Markus Raab <elektra@markus-raab.org>
 # @brief Fix spelling error in most files

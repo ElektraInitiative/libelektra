@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # guided setup for proxy preferences used by configure-firefox
 
