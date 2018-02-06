@@ -29,7 +29,7 @@ naming scheme, with `<PLUGIN_NAME>` being the name of this plugin (`haskell` in 
     used
 - `testmod_<PLUGIN_NAME>.c` which includes the tests for the plugin
 
-Use the cmake command add_haskell_plugin which can used by including LibAddHaskellPlugin.
+Use the cmake command add_haskell_plugin which can be used by including LibAddHaskellPlugin.
 This command will take care about the proper linking of your haskell plugin. Furthermore it
 uses the c wrapper provided by this plugin so this doesn't have to be done again.
 
@@ -47,7 +47,7 @@ configuration.
 
 ## Limitations
 
-Currently the Haskell plugin support only executes tests written in C and not directly in Haskell.
+Currently the Haskell plugin only executes tests written in C and not directly in Haskell.
 
 ## Other
 
