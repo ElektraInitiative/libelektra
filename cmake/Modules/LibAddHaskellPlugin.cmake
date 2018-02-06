@@ -276,7 +276,8 @@ macro (add_haskell_plugin target)
 		get_target_property (HASKELL_RPATH elektra-${target} INSTALL_RPATH)
 		set_target_properties (testmod_${target}
 			PROPERTIES
-			INSTALL_RPATH "${HASKELL_RPATH}")
+			INSTALL_RPATH "${HASKELL_RPATH}"
+			LABELS memleak)
 	endif (ADDTESTING_PHASE AND BUILD_TESTING AND (BUILD_SHARED OR BUILD_FULL))
 	endif (TARGET elektra-${target})
 
