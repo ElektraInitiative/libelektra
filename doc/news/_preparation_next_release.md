@@ -135,6 +135,10 @@ Furthermore:
 - Added public headerfiles `kdbio.h`, `kdbiotest.h`.
 - Added private headerfiles `kdbioprivate.h`.
 
+## Portability
+
+- Fix bash shebang of bash scripts, thanks to Jakub Jirutka
+
 ## Notes for Maintainer
 
 These notes are of interest for people maintaining packages of Elektra:
