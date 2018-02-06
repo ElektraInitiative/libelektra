@@ -264,8 +264,8 @@ macro (add_haskell_plugin target)
 			elektra-pluginprocess
 		DEPENDS
 			${target} c2hs_haskell
-		ADD_TEST
 	)
+	add_plugintest (${target} MEMLEAK)
 	if (TARGET elektra-${target})
 	if (DEPENDENCY_PHASE AND (BUILD_SHARED OR BUILD_FULL))
 		set_target_properties (elektra-${target}
@@ -276,8 +276,7 @@ macro (add_haskell_plugin target)
 		get_target_property (HASKELL_RPATH elektra-${target} INSTALL_RPATH)
 		set_target_properties (testmod_${target}
 			PROPERTIES
-			INSTALL_RPATH "${HASKELL_RPATH}"
-			LABELS memleak)
+			INSTALL_RPATH "${HASKELL_RPATH}")
 	endif (ADDTESTING_PHASE AND BUILD_TESTING AND (BUILD_SHARED OR BUILD_FULL))
 	endif (TARGET elektra-${target})
 

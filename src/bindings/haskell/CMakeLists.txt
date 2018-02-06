@@ -105,12 +105,16 @@ if (NOT BUILD_STATIC)
 		set_property (TEST testhaskell_basic
 			PROPERTY LABELS bindings)
 		set_property (TEST testhaskell_basic
+			APPEND PROPERTY LABELS memleak)
+		set_property (TEST testhaskell_basic
 			PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
 
 		add_test (testhaskell_basic_optimized
 			"${CMAKE_CURRENT_BINARY_DIR}/dist/build/testhaskell_basic_optimized/testhaskell_basic_optimized")
 		set_property (TEST testhaskell_basic_optimized
 			PROPERTY LABELS bindings)
+		set_property (TEST testhaskell_basic_optimized
+			APPEND PROPERTY LABELS memleak)
 		set_property (TEST testhaskell_basic_optimized
 			PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
 
@@ -122,6 +126,8 @@ if (NOT BUILD_STATIC)
 			set_property (TEST testhaskell_realworld 
 				APPEND PROPERTY LABELS kdbtests)
 			set_property (TEST testhaskell_realworld 
+				APPEND PROPERTY LABELS memleak)
+			set_property (TEST testhaskell_realworld 
 				PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
 
 			add_test (testhaskell_realworld_optimized
@@ -130,6 +136,8 @@ if (NOT BUILD_STATIC)
 				PROPERTY LABELS bindings)
 			set_property (TEST testhaskell_realworld_optimized 
 				APPEND PROPERTY LABELS kdbtests)
+			set_property (TEST testhaskell_realworld_optimized 
+				APPEND PROPERTY LABELS memleak)
 			set_property (TEST testhaskell_realworld_optimized 
 				PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
 		endif (ENABLE_KDB_TESTING)
