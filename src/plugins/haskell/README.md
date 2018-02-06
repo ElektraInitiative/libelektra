@@ -11,7 +11,7 @@
 
 ## Introduction
 
-A plugin which takes care about initializing the haskell run-time. 
+A plugin which takes care about initializing the haskell runtime. 
 
 ## Usage
 
@@ -51,4 +51,5 @@ Currently the Haskell plugin support only executes tests written in C and not di
 
 ## Other
 
-The memleak is most likely a false positive due to the forked child process which exits afterwards.
+Unfortunately the haskell runtime itself leaks some memory, but as haskell plugins are generally
+executed in an isolated process it should not matter too much.
