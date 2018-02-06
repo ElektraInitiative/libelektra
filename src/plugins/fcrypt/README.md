@@ -43,7 +43,7 @@ If you encounter the following error at `kdb mount`:
 
 	The command kdb mount terminated unsuccessfully with the info:
 	Too many plugins!
-	The plugin sync can't be positioned to position precommit anymore.
+	The plugin sync can't be positioned at position precommit anymore.
 	Try to reduce the number of plugins!
 
 	Failed because precommit with 7 is larger than 6
