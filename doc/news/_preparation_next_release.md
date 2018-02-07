@@ -155,6 +155,7 @@ Furthermore:
 ## Portability
 
 - Fix bash shebang of bash scripts, thanks to Jakub Jirutka
+- Remove unportable unneeded asm, thanks to Timo Teräs and Jakub Jirutka
 
 ## Notes for Maintainer
 
