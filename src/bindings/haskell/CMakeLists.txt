@@ -6,7 +6,6 @@ if (NOT BUILD_STATIC)
 	set (CABAL_INCLUDE_DIRS "\"${CMAKE_SOURCE_DIR}/src/include\", \"${CMAKE_BINARY_DIR}/src/include\"")
 
 	set (BINDING_HASKELL_NAME "${CMAKE_CURRENT_BINARY_DIR}/libHSlibelektra-haskell")
-	set (CABAL_OPTS "--prefix=${CMAKE_INSTALL_PREFIX}")
 	if (BUILD_SHARED OR BUILD_FULL)
 		set (GHC_DYNAMIC_SUFFIX "-ghc${GHC_VERSION}")
 		if (APPLE)
@@ -15,7 +14,7 @@ if (NOT BUILD_STATIC)
 			set (GHC_DYNAMIC_ENDING ".so")
 		endif (APPLE)
 		set (BINDING_HASKELL_NAME "${BINDING_HASKELL_NAME}${GHC_DYNAMIC_SUFFIX}${GHC_DYNAMIC_ENDING}")
-		set (CABAL_OPTS "${CABAL_OPTS};--enable-shared")
+		set (CABAL_OPTS "--enable-shared")
 		if (BUILD_SHARED)
 			set (ELEKTRA_DEPENDENCY "elektra;elektra-kdb;elektra-ease;")
 		elseif (BUILD_FULL)
@@ -23,7 +22,7 @@ if (NOT BUILD_STATIC)
 		endif ()
 	elseif (BUILD_STATIC)
 		set (BINDING_HASKELL_NAME "${BINDING_HASKELL_NAME}.a")
-		set (CABAL_OPTS "${CABAL_OPTS};--disable-shared")
+		set (CABAL_OPTS "--disable-shared")
 		set (ELEKTRA_DEPENDENCY "elektra-static;")
 	endif ()
 	string (REPLACE ";" " " CABAL_ELEKTRA_DEPENDENCY "${ELEKTRA_DEPENDENCY}")
@@ -35,9 +34,10 @@ if (NOT BUILD_STATIC)
 		@ONLY
 	)
 	# Use the post-build logic to glue the bindings together with cmake as its done for plugins		
-	file (
-		COPY "${CMAKE_SOURCE_DIR}/src/plugins/haskell/Setup.hs"
-		DESTINATION "${CMAKE_CURRENT_BINARY_DIR}"
+	configure_file (
+		"${CMAKE_SOURCE_DIR}/src/plugins/haskell/Setup.hs.in"
+		"${CMAKE_CURRENT_BINARY_DIR}/Setup.hs"
+		@ONLY
 	)
 	set (BINDING_HASKELL_DEPENDENCIES
 		"${CMAKE_CURRENT_SOURCE_DIR}/libelektra-haskell.cabal.in"
@@ -48,16 +48,16 @@ if (NOT BUILD_STATIC)
 		"${CMAKE_CURRENT_SOURCE_DIR}/src/Elektra/Ease.chs"
 		"${CMAKE_CURRENT_SOURCE_DIR}/test/Elektra.hs"
 		"${CMAKE_CURRENT_SOURCE_DIR}/test/ElektraRealWorld.hs"
-		"${CMAKE_SOURCE_DIR}/src/plugins/haskell/Setup.hs"
+		"${CMAKE_SOURCE_DIR}/src/plugins/haskell/Setup.hs.in"
 	)
-	file (WRITE "${CMAKE_CURRENT_BINARY_DIR}/cabalOptionalDependencies.cmake"
-		"execute_process (COMMAND ${CABAL_EXECUTABLE} install --only-dependencies -v0)")
 	execute_process (COMMAND ${CABAL_EXECUTABLE} sandbox init --sandbox ${CMAKE_BINARY_DIR}/.cabal-sandbox -v0
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} OUTPUT_QUIET)
+
 	add_custom_command (
 		OUTPUT ${BINDING_HASKELL_NAME}
-		COMMAND ${CMAKE_COMMAND} -P "${CMAKE_CURRENT_BINARY_DIR}/cabalOptionalDependencies.cmake"
-		COMMAND ${CABAL_EXECUTABLE} ${CABAL_OPTS} configure -v0
+		COMMAND ${CABAL_EXECUTABLE} update -v0
+		COMMAND ${CABAL_EXECUTABLE} install ${CABAL_OPTS} --only-dependencies -v0 || true
+		COMMAND ${CABAL_EXECUTABLE} configure ${CABAL_OPTS} -v0
 		COMMAND ${CABAL_EXECUTABLE} build -v0
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 		DEPENDS ${BINDING_HASKELL_DEPENDENCIES} ${ELEKTRA_DEPENDENCY}
@@ -79,13 +79,10 @@ if (NOT BUILD_STATIC)
 			"${CMAKE_CURRENT_BINARY_DIR}/dist/build/testhaskell_realworld/testhaskell_realworld"
 			"${CMAKE_CURRENT_BINARY_DIR}/dist/build/testhaskell_realworld_optimized/testhaskell_realworld_optimized"
 		)
-		file (WRITE "${CMAKE_CURRENT_BINARY_DIR}/cabalOptionalDependencies.cmake"
-			"execute_process (COMMAND ${CABAL_EXECUTABLE} install --enable-tests --only-dependencies -v0)")
 		add_custom_command (
 			OUTPUT ${HASKELL_TESTS}
-			# everything is getting installed to the sandbox, and gets cached to avoid reinstalling every time
-			COMMAND ${CMAKE_COMMAND} -P "${CMAKE_CURRENT_BINARY_DIR}/cabalOptionalDependencies.cmake"
-			COMMAND ${CABAL_EXECUTABLE} ${CABAL_OPTS} --enable-tests configure -v0
+			COMMAND ${CABAL_EXECUTABLE} install ${CABAL_OPTS} --enable-tests --only-dependencies -v0 || true
+			COMMAND ${CABAL_EXECUTABLE} configure ${CABAL_OPTS} --enable-tests -v0
 			COMMAND ${CABAL_EXECUTABLE} build -v0
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 			DEPENDS ${BINDING_HASKELL_DEPENDENCIES} ${ELEKTRA_DEPENDENCY} c2hs_haskell
@@ -108,12 +105,16 @@ if (NOT BUILD_STATIC)
 		set_property (TEST testhaskell_basic
 			PROPERTY LABELS bindings)
 		set_property (TEST testhaskell_basic
+			APPEND PROPERTY LABELS memleak)
+		set_property (TEST testhaskell_basic
 			PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
 
 		add_test (testhaskell_basic_optimized
 			"${CMAKE_CURRENT_BINARY_DIR}/dist/build/testhaskell_basic_optimized/testhaskell_basic_optimized")
 		set_property (TEST testhaskell_basic_optimized
 			PROPERTY LABELS bindings)
+		set_property (TEST testhaskell_basic_optimized
+			APPEND PROPERTY LABELS memleak)
 		set_property (TEST testhaskell_basic_optimized
 			PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
 
@@ -125,6 +126,8 @@ if (NOT BUILD_STATIC)
 			set_property (TEST testhaskell_realworld 
 				APPEND PROPERTY LABELS kdbtests)
 			set_property (TEST testhaskell_realworld 
+				APPEND PROPERTY LABELS memleak)
+			set_property (TEST testhaskell_realworld 
 				PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
 
 			add_test (testhaskell_realworld_optimized
@@ -133,6 +136,8 @@ if (NOT BUILD_STATIC)
 				PROPERTY LABELS bindings)
 			set_property (TEST testhaskell_realworld_optimized 
 				APPEND PROPERTY LABELS kdbtests)
+			set_property (TEST testhaskell_realworld_optimized 
+				APPEND PROPERTY LABELS memleak)
 			set_property (TEST testhaskell_realworld_optimized 
 				PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
 		endif (ENABLE_KDB_TESTING)

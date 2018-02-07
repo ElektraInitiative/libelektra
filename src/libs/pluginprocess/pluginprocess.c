@@ -180,6 +180,7 @@ int elektraPluginProcessSend (const ElektraPluginProcess * pp, pluginprocess_t c
 	ksAppendKey (keySet, keyDup (key));
 	char * commandStr = intToStr (command);
 	ksAppendKey (keySet, keyNew ("/pluginprocess/command", KEY_VALUE, commandStr, KEY_END));
+	elektraFree (commandStr);
 	Key * originalKey = keyNew ("/pluginprocess/original", KEY_VALUE, keyName (key), KEY_END);
 	ksAppendKey (keySet, originalKey);
 
@@ -396,6 +397,7 @@ int elektraPluginClose (Plugin * handle, Key * errorKey)
 int elektraPluginProcessClose (ElektraPluginProcess * pp, Key * errorKey)
 {
 	pp->counter = pp->counter - 1;
-	if (!pp->counter) cleanupPluginData (pp, errorKey);
-	return pp->counter <= 0;
+	int done = pp->counter <= 0;
+	if (done) cleanupPluginData (pp, errorKey);
+	return done;
 }

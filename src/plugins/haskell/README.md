@@ -5,13 +5,13 @@
 - infos/provides = 
 - infos/recommends =
 - infos/placements = getstorage setstorage
-- infos/status = maintained experimental
+- infos/status = maintained experimental memleak
 - infos/metadata =
 - infos/description = base for haskell plugins
 
 ## Introduction
 
-A plugin which takes care about initializing the haskell run-time. 
+A plugin which takes care about initializing the haskell runtime. 
 
 ## Usage
 
@@ -48,3 +48,8 @@ configuration.
 ## Limitations
 
 Currently the Haskell plugin support only executes tests written in C and not directly in Haskell.
+
+## Other
+
+Unfortunately the haskell runtime itself leaks some memory, but as haskell plugins are generally
+executed in an isolated process it should not matter too much.

@@ -12,28 +12,6 @@
 #include "@PLUGIN_NAME_CAPITALIZED@_stub.h"
 #include "haskell.h"
 
-// Just to ignore the warnings from RTS.h, once the GHC bug mentioned below is
-// fixed we don't need this anymore, hs_exit is included in the stub.
-#ifdef __clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wflexible-array-extensions"
-#pragma clang diagnostic ignored "-Wundef"
-#endif
-#ifdef __GCC__
-#pragma gcc diagnostic push
-#pragma gcc diagnostic ignored "-Wflexible-array-extensions"
-#pragma gcc diagnostic ignored "-Wundef"
-#endif
-
-#include "Rts.h"
-
-#ifdef __GCC__
-#pragma gcc diagnostic pop
-#endif
-#ifdef __clang__
-#pragma clang diagnostic pop
-#endif
-
 #include <kdbhelper.h>
 #include <kdbpluginprocess.h>
 #include <stdio.h>

@@ -189,8 +189,10 @@ These notes are of interest for people developing Elektra:
 Many problems were resolved with the following fixes:
 
 - We fixed [internal inconsistency](https://github.com/ElektraInitiative/libelektra/pull/1761) in the CMake code of the [Augeas plugin](https://www.libelektra.org/plugins/augeas)
--  We fixed various small bugs that could potentially cause the INI plugin to crash
+- We fixed various small bugs that could potentially cause the INI plugin to crash
 - The INI plugin now [converts a section to a normal key-value pair](https://github.com/ElektraInitiative/libelektra/issues/1793) if you store a value inside it. This has the advantage that you will not [lose data unexpectedly anymore](https://github.com/ElektraInitiative/libelektra/issues/1697).
+- We fixed the [haskell bindings and plugins on Debian Stretch](https://github.com/ElektraInitiative/libelektra/pull/1787)
+  and added a [new build server job](https://build.libelektra.org/job/elektra-haskell/) to test that in the future.
 
 ## Outlook
 
