@@ -339,12 +339,6 @@ static void checkTopOrder3 (Key ** array)
 	succeed_if_top (2, "/c");
 	succeed_if_top (3, "/a");
 }
-uint64_t rdtsc (void)
-{
-	unsigned int lo, hi;
-	__asm__ __volatile__("rdtsc" : "=a"(lo), "=d"(hi));
-	return ((uint64_t)hi << 32) | lo;
-}
 static void test_top (void)
 {
 	KeySet * test0 = ksNew (10, keyNew ("/a", KEY_VALUE, "whatever", KEY_END), KS_END);
