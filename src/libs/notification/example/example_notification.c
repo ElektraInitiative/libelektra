@@ -60,7 +60,7 @@ void debugKeySet (KeySet * ks)
 	return;
 }
 
-int main (int argc, char ** argv)
+int main (void)
 {
 	KeySet * config = ksNew (20, KS_END);
 
@@ -93,7 +93,7 @@ int main (int argc, char ** argv)
 	result = elektraNotificationRegisterCallback (kdb, colorKey, &setTerminalColor);
 	if (!result)
 	{
-		printf ("could not register callback. abortin!");
+		printf ("could not register callback. aborting!");
 		return -1;
 	}
 

@@ -5,88 +5,57 @@
 - infos/provides =
 - infos/recommends =
 - infos/placements = postgetstorage postcommit
-- infos/status = global libc unittest concept unfinished experimental nodoc
+- infos/status = global libc unittest concept unfinished experimental
 - infos/metadata =
 - infos/description = Plugin for internal notification
 
-## Usage ##
+## Usage
 
-Allows applications to automatically update registered variables when the value of a specified key has changed.
-Support for callbacks that fire when a specified key has changed is planned.
+Allows applications to automatically update registered variables when the value
+of a specified key has changed.
 
-Until the wrapper (see [TODOs](#todos)) is finished it may be used as global plugin:
-`$ sudo kdb global-mount internalnotification`
+It is recommended to use the notification wrapper (see
+[notification tutorial](https://www.libelektra.org/tutorials/notifications)) instead of this plugin
+directly.
+The wrapper has a simple API and decouples applications from the actual plugin.
 
-## Exported Methods ##
+## Exported Methods
 
-This plugin exports the function `int elektraInternalnotificationRegisterInt (Plugin * handle, Key * key, int * variable)`.
-If the given key is contained in a KeySet on a kdbGet or kdbSet operation, its value is
-converted from string to integer and the registered variable is updated with the current value.
-This also works if the registered key is a cascading key.
-The function address is exported as `system/elektra/modules/internalnotification/exports/registerInt`.
-The plugin handle required for this plugin is exported as `system/elektra/modules/internalnotification/exports/handle`.
-Please note that the plugin API may change as this plugin is experimental.
+This plugin exports the following functions. The functions addresses are
+exported below `system/elektra/modules/internalnotification/exports/`.
 
-## Usage ##
-Until the wrapper (see [TODOs](#todos)) is finished `elektraInternalnotificationRegisterInt` requires the plugin handle as first parameter.
-This handle is normally only used internally, but exported by the plugin as `system/elektra/modules/internalnotification/exports/handle`.
-The following snippet extracts the handle and the address of `elektraInternalnotificationRegisterInt` and provides a convenient function for
-registering integer variables: `int internalnotificationRegisterInt (KDB * kdb, int * variable, Key * key)`.
+All functions have a similar signature:
 
 ```C
-int internalnotificationRegisterInt (KDB * kdb, int * variable, Key * key)
-{
-	typedef int (*elektraInternalnotificationRegisterIntCallback) (void * handle, int * variable, Key * key);
-
-	static size_t address = 0;
-	static size_t handle;
-
-	if (address == 0)
-	{
-		char * NOTIFICATION_BASE = "system/elektra/modules/internalnotification";
-		char * EXPORTED_FUNCTION =
-			"system/elektra/modules/internalnotification/"
-			"exports/elektraInternalnotificationRegisterInt";
-		char * EXPORTED_HANDLE = "system/elektra/modules/internalnotification/exports/handle";
-		Key * parentKey = keyNew (NOTIFICATION_BASE, KEY_END);
-
-		KeySet * conf = ksNew (20, KS_END);
-		kdbGet (kdb, conf, parentKey);
-
-		Key * keyFunction = ksLookupByName (conf, EXPORTED_FUNCTION, 0);
-		if (keyFunction == 0 || !keyIsBinary (keyFunction))
-		{
-			// Key value is not binary
-			return -1;
-		}
-		address = *(size_t *)keyValue (keyFunction);
-		if (address == 0)
-		{
-			return -1;
-		}
-
-		Key * keyHandle = ksLookupByName (conf, EXPORTED_HANDLE, 0);
-		if (keyHandle == 0 || !keyIsBinary (keyHandle))
-		{
-			// Key value is not binary
-			return -1;
-		}
-		handle = *(size_t *)keyValue (keyHandle);
-		if (handle == 0)
-		{
-			return -1;
-		}
-	}
-
-	// Call function
-	return ((elektraInternalnotificationRegisterIntCallback)address) ((void *)handle, variable, key);
-}
+int registerX (Plugin * handle, Key * key, ...);
 ```
 
-## TODOs ##
+If the given `key` is contained in a KeySet on a kdbGet or kdbSet operation a
+action according to the function's description is executed.
+Cascading keys as `key` names are also supported.
 
-- [ ] Create wrapper that mounts the plugin as global plugin (e.g. `elektraInternalnotificationInit(KDB * kdb)`) and eases usage of the register function (allow `KDB` handle to be passed e.g. `elektraInternalnotificationRegisterInt(KDB * kdb, int * variable, Key * key)`)
-- [ ] Allow different data types for key values:
-  - [x] integer: conversion from string value including range check
-  - [ ] string: Just update string value
-  - [ ] callback: Accept a callback (+ refactor plugin to use callbacks internally for integer and string types)
+*Parameters*
+
+- *handle* The internal plugin `handle` is exported as  		 	
+    `system/elektra/modules/internalnotification/exports/handle`.
+- *key* Key to watch for changes.
+
+Please note that the plugin API may change as this plugin is experimental.
+
+### int registerInt (Plugin * handle, Key * key, int * variable)
+
+The key's value is converted to integer and the registered variable is updated
+with the new value.
+
+*Additional Parameters*
+
+- *variable* Pointer to the variable
+
+### int registerCallback (Plugin * handle, Key * key, ElektraNotificationChangeCallback callback)
+
+When the key changes the callback is called with the new key.
+
+*Additional Parameters*
+
+- *callback* Callback function with the signature
+    `void (*ElektraNotificationChangeCallback) (Key * key)`.

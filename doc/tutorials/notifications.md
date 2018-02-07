@@ -5,6 +5,16 @@
 **The features described in this document are experimental or not implemented
 yet.**
 
+Development state:
+
+ - [x] internalnotification plugin (support for int and callback)
+ - [x] notification wrapper (support for int and callback)
+ - [ ] transport plugin zeromq
+ - [ ] transport plugin dbus
+ - [ ] transport plugin redis
+ - [ ] internalnotification plugin & notfication wrapper (support for Elektra's basic types)
+
+
 This document explains how notifications are implemented in Elektra and how
 they can be used by application developers.
 
@@ -135,10 +145,15 @@ KDB * repo;
 
 //  ... initialization of KDB and I/O binding
 
-Key * key = keyNew ("/sw/myorg/myprogram/#1/current/value", KEY_END);
+Key * key = keyNew ("/sw/myorg/myprogram/#0/current/value", KEY_END);
 int keyValue;
 
-elektraNotificationRegisterInt (repo, &keyValue, key);
+int result = elektraNotificationRegisterInt (repo, key, &keyValue);
+if (!result)
+{
+	printf ("could not register variable!\n");
+	return;
+}
 
 // repeatedly print variable
 while (1) {
@@ -148,9 +163,11 @@ while (1) {
 }
 ```
 
-The variable `keyValue` will be automatically updated if the key in the
-program above is changed by another program (e.g. by using the `kdb` CLI
-command).
+After calling `elektraNotificationRegisterInt` the variable `keyValue` will be
+automatically updated if the key in the program above is changed by another
+program (e.g. by using the `kdb` CLI command).
+For automatic updates to work transport plugins have to be in place either at
+a mountpoint above the configuration or mounted globally.
 
 ### Callbacks
 
@@ -175,7 +192,7 @@ changed key needs further processing.
 
 void setTerminalColor (Key * color)
 {
-	char* value = keyString (color);
+	char * value = keyString (color);
 
 	if (strcmp (value, "red") == 0)
 	{
@@ -187,24 +204,30 @@ void setTerminalColor (Key * color)
 	}
 }
 
-int main ()
+int main (void)
 {
 	KDB * repo;
 
 	// ... initialization of KDB and I/O binding
 
-	Key * color = keyNew ("/sw/myorg/myprogram/#1/current/color", KEY_END);
+	Key * configBase = keyNew ("/sw/myorg/myprogram/#0/current", KEY_END);
+	Key * color = keyNew ("/sw/myorg/myprogram/#0/current/color", KEY_END);
 
 	// Retrieve key from kdb
 	KeySet * ks = ksNew (10, KS_END);
-	kdbGet (repo, ks, color);
-	Key * key = ksLookupByName (ks, "/sw/myorg/myprogram/#1/current/color", 0);
-
-	// Initialization
-	setTerminalColor (key);
+	kdbGet (repo, ks, configBase);
+	Key * key = ksLookup (ks, color, 0);
+	if (key) {
+		// Initialization
+		setTerminalColor (key);
+	}
 
 	// Re-Initialize on key changes
-	elektraNotificationRegisterCallback(repo, &setTerminalColor, color);
+	int result = elektraNotificationRegisterCallback(repo, color, &setTerminalColor);
+	if (!result) {
+		printf ("could not register callback!\n");
+		return -1;
+	}
 
 	// ... start loop, etc.
 }

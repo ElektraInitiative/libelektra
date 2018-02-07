@@ -55,7 +55,15 @@ static void debugKeySet (KeySet * ks)
 	return;
 }
 
-static const size_t * getPluginFunction (Plugin * plugin, const char * name)
+/**
+ * @internal
+ * Retrieves a function exported by a plugin.
+ *
+ * @param  plugin Plugin handle
+ * @param  name   Function name
+ * @return        Pointer to function
+ */
+static size_t getPluginFunction (Plugin * plugin, const char * name)
 {
 	KeySet * exports = ksNew (0, KS_END);
 	Key * pk = keyNew ("system/elektra/modules", KEY_END);
@@ -64,11 +72,27 @@ static const size_t * getPluginFunction (Plugin * plugin, const char * name)
 	ksRewind (exports);
 	keyAddBaseName (pk, "exports");
 	keyAddBaseName (pk, name);
-	const size_t * func = keyValue (ksLookup (exports, pk, 0));
-	if (!func)
+	Key * keyFunction = ksLookup (exports, pk, 0);
+
+	size_t * buffer;
+	size_t bufferSize = keyGetValueSize (keyFunction);
+	buffer = elektraMalloc (bufferSize);
+	if (buffer)
 	{
-		ELEKTRA_LOG_WARNING ("could not get function \"%s\" from plugin \"%s\"", name, plugin->name);
+		int result = keyGetBinary (keyFunction, buffer, bufferSize);
+		if (result == -1 || buffer == NULL)
+		{
+			ELEKTRA_LOG_WARNING ("could not get function \"%s\" from plugin \"%s\"", name, plugin->name);
+			return 0;
+		}
 	}
+
+	size_t func = *buffer;
+
+	elektraFree (buffer);
+	ksDel (exports);
+	keyDel (pk);
+
 	return func;
 }
 
@@ -246,7 +270,7 @@ static char * placementToListPositionType (char * placement)
 
 /**
  * @internal
- * Load notification plugin.
+ * Load plugin by name.
  *
  * Uses module cache from KDB handle.
  * The plugin only needs to be closed after use.
@@ -254,22 +278,57 @@ static char * placementToListPositionType (char * placement)
  * @param  kdb KDB handle
  * @return     Plugin handle or NULL on error
  */
-static Plugin * loadNotificationPlugin (KDB * kdb)
+static Plugin * loadPlugin (KDB * kdb, char * name)
 {
 	// Load required plugin
 	Key * errorKey = keyNew (0);
 	KeySet * moduleCache = kdb->modules; // use kdb module cache
-	Plugin * plugin = elektraPluginOpen ("internalnotification", moduleCache, NULL, errorKey);
+	Plugin * plugin = elektraPluginOpen (name, moduleCache, NULL, errorKey);
 
 	int hasError = keyGetMeta (errorKey, "error") != NULL;
+	keyDel (errorKey);
+
 	if (!plugin || hasError)
 	{
 		ELEKTRA_LOG_WARNING ("elektraPluginOpen failed!\n");
 		return NULL;
 	}
-	keyDel (errorKey);
 
 	return plugin;
+}
+
+/**
+ * @internal
+ * Unload plugin given by plugin handle.
+ *
+ * @return     Plugin handle or NULL on error
+ */
+
+/**
+ * @internal
+ * Unload plugin by plugin handle.
+ *
+ * @param  plugin Plugin handle
+ * @retval 0 on error
+ * @retval 1 on success
+ */
+static int unloadPlugin (Plugin * plugin)
+{
+	Key * errorKey = keyNew (0);
+	int result = elektraPluginClose (plugin, errorKey);
+
+	int hasError = keyGetMeta (errorKey, "error") != NULL;
+	keyDel (errorKey);
+
+	if (!result || hasError)
+	{
+		ELEKTRA_LOG_WARNING ("elektraPluginClose failed result=%d", result);
+		return 0;
+	}
+	else
+	{
+		return 1;
+	}
 }
 
 /**
@@ -307,6 +366,16 @@ static char * getPluginPlacementList (Plugin * plugin)
 	return placementList;
 }
 
+/**
+ * @internal
+ * Add plugin at placement to list plugin configuration and apply it.
+ *
+ * @param  list      List plugin
+ * @param  plugin    Plugin to add
+ * @param  placement Placement name
+ * @retval 0 on error
+ * @retval 0 on success
+ */
 static int listAddPlugin (Plugin * list, Plugin * plugin, char * placement)
 {
 	KeySet * newConfig = ksDup (list->config);
@@ -344,6 +413,144 @@ static int listAddPlugin (Plugin * list, Plugin * plugin, char * placement)
 	ksAppendKey (newConfig, pluginPlacements);
 
 	ksDel (array);
+	ksDel (list->config);
+
+	// Apply new configuration
+	list->config = newConfig;
+	list->kdbOpen (list, NULL);
+
+	return 1;
+}
+
+/**
+ * @internal
+ * Create a new key with a different root or common name.
+ *
+ * Does not modify `key`. The new key needs to be freed after usage.
+ *
+ * Preconditions: The key name starts with `source`.
+ *
+ * Example:
+ * ```
+ * Key * source = keyNew("user/plugins/foo/placements/get", KEY_END);
+ * Key * dest = renameKey ("user/plugins/foo", "user/plugins/bar", source);
+ * succeed_if_same_string (keyName(dest), "user/plugins/bar/placements/get");
+ * ```
+ *
+ *
+ * @param  source Part of the key name to replace
+ * @param  dest   Replaces `source`
+ * @param  key    key
+ * @return        key with new name
+ */
+static Key * renameKey (const char * source, const char * dest, Key * key)
+{
+	const char * name = keyName (key);
+	char * baseKeyNames = strndup (name + strlen (source), strlen (name));
+
+	Key * moved = keyDup (key);
+	keySetName (moved, dest);
+	keyAddName (moved, baseKeyNames);
+
+	elektraFree (baseKeyNames);
+
+	return moved;
+}
+
+/**
+ * @internal
+ * Recursively move all keys in keyset below source to dest.
+ *
+ * Modifies the keyset.
+ *
+ * Example:
+ * ```
+ * moveKeysRecursive("user/plugins/#0", "user/plugins/#1", config);
+ * ```
+ *
+ * @param source Root part to replace
+ * @param dest   Destination for keys
+ * @param keyset keyset
+ */
+static void moveKeysRecursive (const char * source, const char * dest, KeySet * keyset)
+{
+	Key * sourceBaseKey = keyNew (source, KEY_END);
+	KeySet * newKeys = ksNew (0, KS_END);
+
+	// Rename keys in keyset
+	Key * sourceKey;
+	ksRewind (keyset);
+	while ((sourceKey = ksNext (keyset)) != NULL)
+	{
+		// Rename all keys below sourceKey
+		if (!keyIsBelowOrSame (sourceBaseKey, sourceKey)) continue;
+		Key * destKey = renameKey (source, dest, sourceKey);
+		ksAppendKey (newKeys, destKey);
+	}
+
+	// Remove source keys from keyset
+	KeySet * cut = ksCut (keyset, sourceBaseKey);
+	ksDel (cut);
+
+	ksAppend (keyset, newKeys);
+	ksDel (newKeys);
+
+	keyDel (sourceBaseKey);
+}
+
+/**
+ * @internal
+ * Remove plugin at all placements from list plugin configuration and apply it.
+ *
+ * @param  list   List plugin
+ * @param  plugin Plugin to remove
+ * @retval 0 on error
+ * @retval 1 on success
+ */
+static int listRemovePlugin (Plugin * list, Plugin * plugin)
+{
+	KeySet * newConfig = ksDup (list->config);
+
+	Key * configBase = keyNew ("user/plugins", KEY_END);
+	KeySet * array = elektraArrayGet (configBase, newConfig);
+
+	// Find the plugin with our handle
+	Key * current;
+	ksRewind (array);
+	while ((current = ksNext (array)) != NULL)
+	{
+		Key * handleLookup = keyDup (current);
+		keyAddBaseName (handleLookup, "handle");
+		Key * handle = ksLookup (newConfig, handleLookup, 0);
+		keyDel (handleLookup);
+
+		if (handle)
+		{
+			Plugin * handleValue = (*(Plugin **)keyValue (handle));
+			if (handleValue == plugin)
+			{
+				// Remove plugin configuration
+				KeySet * cut = ksCut (newConfig, current);
+				ksDel (cut);
+			}
+		}
+	}
+	ksDel (array);
+
+	// Renumber array items
+	KeySet * sourceArray = elektraArrayGet (configBase, newConfig);
+	Key * renumberBase = keyNew ("user/plugins/#", KEY_END);
+	ksRewind (sourceArray);
+	while ((current = ksNext (sourceArray)) != NULL)
+	{
+		// Create new array item base name e.g. "user/plugins/#0"
+		elektraArrayIncName (renumberBase);
+		moveKeysRecursive (keyName (current), keyName (renumberBase), newConfig);
+	}
+
+	keyDel (configBase);
+	keyDel (renumberBase);
+	ksDel (sourceArray);
 	ksDel (list->config);
 
 	// Apply new configuration
@@ -393,11 +600,11 @@ static int mountGlobalPlugin (KDB * kdb, Plugin * plugin)
 			// Add plugin to list plugin
 			if (strcmp (pluginAtPlacement->name, "list") == 0)
 			{
-				ELEKTRA_LOG_DEBUG ("required position %s/maxonce already taken by list plugin, adding plugin", placement);
+				ELEKTRA_LOG_DEBUG ("required position %s/maxonce taken by list plugin, adding plugin", placement);
 				int result = listAddPlugin (pluginAtPlacement, plugin, placement);
 				if (!result)
 				{
-					ELEKTRA_LOG_WARNING ("could not add plugin to list plugin");
+					ELEKTRA_LOG_WARNING ("could not add plugin to list plugin at position %s/maxonce", placement);
 					elektraFree (placementList);
 					return 0;
 				}
@@ -405,8 +612,73 @@ static int mountGlobalPlugin (KDB * kdb, Plugin * plugin)
 			else
 			{
 				// TODO manually add list module here, everything needed is stored in system/elektra/globalplugins
-				ELEKTRA_LOG_WARNING ("required position postgetstorage/maxonce already taken by plugin %s, aborting!",
+				ELEKTRA_LOG_WARNING ("required position %s/maxonce taken by plugin %s, skipping!", placement,
 						     pluginAtPlacement->name);
+			}
+		}
+
+		// Process next placement in list
+		placement = strtok (NULL, " ");
+	}
+
+	elektraFree (placementList);
+
+	return 1;
+}
+
+/**
+ * @internal
+ * Unmount global plugin at run-time.
+ *
+ * Removes a plugin at all placements.
+ * Undos `mountGlobalPlugin()`.
+ *
+ * @param  kdb    KDB handle
+ * @param  plugin Plugin handle
+ * @retval 0 on errors
+ * @retval 1 on success
+ */
+int unmountGlobalPlugin (KDB * kdb, Plugin * plugin)
+{
+	char * placementList = getPluginPlacementList (plugin);
+
+	// Parse plament list (contains placements from README.md seperated by whitespace)
+	char * placement = strtok (placementList, " ");
+	while (placement != NULL)
+	{
+		// Convert placement name to internal index
+		int placementIndex = placementToPosition (placement);
+		if (placementIndex == -1)
+		{
+			elektraFree (placementList);
+			return 0;
+		}
+
+		if (kdb->globalPlugins[placementIndex][MAXONCE] == plugin)
+		{
+			// Remove from direct placement as global plugin
+			kdb->globalPlugins[placementIndex][MAXONCE] = NULL;
+		}
+		else
+		{
+			Plugin * pluginAtPlacement = kdb->globalPlugins[placementIndex][MAXONCE];
+			// Add plugin to list plugin
+			if (strcmp (pluginAtPlacement->name, "list") == 0)
+			{
+				ELEKTRA_LOG_DEBUG ("required position %s/maxonce taken by list plugin, removing plugin", placement);
+				int result = listRemovePlugin (pluginAtPlacement, plugin);
+				if (!result)
+				{
+					ELEKTRA_LOG_WARNING ("could not remove plugin from list plugin at position %s/maxonce", placement);
+					elektraFree (placementList);
+					return 0;
+				}
+				// TODO remove manually added list module here, if implemnted in mountGlobalPlugin
+			}
+			else
+			{
+				ELEKTRA_LOG_WARNING ("required position %s/maxonce taken by plugin %s, should be either list or plugin!",
+						     placement, pluginAtPlacement->name);
 			}
 		}
 
@@ -421,10 +693,15 @@ static int mountGlobalPlugin (KDB * kdb, Plugin * plugin)
 
 int elektraNotificationOpen (KDB * kdb, ElektraIoInterface * ioBinding)
 {
+	// Allow open only once
+	if (kdb->notificationPlugin)
+	{
+		return 0;
+	}
 	// Store I/O interface in kdb
 	elektraSetIoBinding (kdb, ioBinding);
 
-	Plugin * notificationPlugin = loadNotificationPlugin (kdb);
+	Plugin * notificationPlugin = loadPlugin (kdb, "internalnotification");
 	if (!notificationPlugin)
 	{
 		return 0;
@@ -446,22 +723,34 @@ int elektraNotificationOpen (KDB * kdb, ElektraIoInterface * ioBinding)
 
 int elektraNotificationClose (KDB * kdb)
 {
-	// Remove the I/O binding from kdb
-	elektraSetIoBinding (kdb, NULL);
-
-	// Unload the notification plugin
-	Key * errorKey = keyNew (0);
-	int result = elektraPluginClose (kdb->notificationPlugin, errorKey);
-	int hasError = keyGetMeta (errorKey, "error") != NULL;
-	if (!result || hasError)
-	{
-		ELEKTRA_LOG_WARNING ("elektraPluginClose failed result=%d", result);
-		return 1;
-	}
-	else
+	if (!kdb->notificationPlugin)
 	{
 		return 0;
 	}
+
+	// Remove the I/O binding from kdb
+	elektraSetIoBinding (kdb, NULL);
+
+	Plugin * notificationPlugin = kdb->notificationPlugin;
+
+	// Unmount the plugin
+	int result = unmountGlobalPlugin (kdb, notificationPlugin);
+	if (!result)
+	{
+		ELEKTRA_LOG_WARNING ("unmountGlobalPlugin failed");
+		return 0;
+	}
+
+	// Unload the notification plugin
+	result = unloadPlugin (notificationPlugin);
+	if (!result)
+	{
+		ELEKTRA_LOG_WARNING ("elektraPluginClose failed result=%d", result);
+		return 0;
+	}
+
+	kdb->notificationPlugin = NULL;
+	return 1;
 }
 
 static Plugin * getNotificationPlugin (KDB * kdb)
@@ -488,14 +777,14 @@ int elektraNotificationRegisterInt (KDB * kdb, Key * key, int * variable)
 	}
 
 	// Get register function from plugin
-	const size_t * func = getPluginFunction (notificationPlugin, "registerInt");
+	size_t func = getPluginFunction (notificationPlugin, "registerInt");
 	if (!func)
 	{
 		return 0;
 	}
 
 	// Call register function
-	ElektraInternalnotificationRegisterInt registerFunc = (ElektraInternalnotificationRegisterInt) (*func);
+	ElektraInternalnotificationRegisterInt registerFunc = (ElektraInternalnotificationRegisterInt)func;
 	return registerFunc (notificationPlugin, key, variable);
 }
 
@@ -509,13 +798,13 @@ int elektraNotificationRegisterCallback (KDB * kdb, Key * key, ElektraNotificati
 	}
 
 	// Get register function from plugin
-	const size_t * func = getPluginFunction (notificationPlugin, "registerCallback");
+	size_t func = getPluginFunction (notificationPlugin, "registerCallback");
 	if (!func)
 	{
 		return 0;
 	}
 
 	// Call register function
-	ElektraInternalnotificationRegisterCallback registerFunc = (ElektraInternalnotificationRegisterCallback) (*func);
+	ElektraInternalnotificationRegisterCallback registerFunc = (ElektraInternalnotificationRegisterCallback)func;
 	return registerFunc (notificationPlugin, key, callback);
 }
