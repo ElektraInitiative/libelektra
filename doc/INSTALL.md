@@ -13,6 +13,7 @@ For the following Linux distributions and package managers 0.8 packages are avai
  - [Gentoo](http://packages.gentoo.org/package/app-admin/elektra)
  - [Linux Mint](https://community.linuxmint.com/software/view/elektra-bin)
  - [LinuxBrew](https://github.com/Linuxbrew/homebrew-core/blob/master/Formula/elektra.rb)
+ - [Alpine Linux](https://pkgs.alpinelinux.org/package/edge/testing/x86_64/elektra)
 
 Available, but not up-to-date:
 
