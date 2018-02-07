@@ -45,7 +45,7 @@
  *
  * @param ks the KeySet
  */
-static void elektraOpmphmInvalidate (KeySet * ks)
+static void elektraOpmphmInvalidate (KeySet * ks ELEKTRA_UNUSED)
 {
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 	if (ks && ks->opmphm) opmphmClear (ks->opmphm);
@@ -62,7 +62,7 @@ static void elektraOpmphmInvalidate (KeySet * ks)
  * @param dest the destination KeySet
  * @param source the source KeySet
  */
-static void elektraOpmphmCopy (KeySet * dest, const KeySet * source)
+static void elektraOpmphmCopy (KeySet * dest ELEKTRA_UNUSED, const KeySet * source ELEKTRA_UNUSED)
 {
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 	if (!source || !dest)
