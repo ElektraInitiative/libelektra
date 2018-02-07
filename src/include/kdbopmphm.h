@@ -21,9 +21,9 @@
  */
 typedef struct
 {
-	uint32_t * h;      /*!< array with Opmphm->rUniPar hash function values, representing the index of vertices that the edge connects*/
-	size_t order;      /*!< desired hash map return value */
-	size_t * nextEdge; /*!< arary with Opmphm->rUniPar indices of the next edge in the lists */
+	size_t order;	/*!< desired hash map return value */
+	size_t * nextEdge;   /*!< arary with Opmphm->rUniPar indices of the next edge in the lists */
+	uint32_t * vertices; /*!< array with Opmphm->rUniPar indices of vertices that the edge connects */
 } OpmphmEdge;
 
 typedef struct
@@ -36,8 +36,8 @@ typedef struct
 {
 	OpmphmEdge * edges;      /*!< array of all edges */
 	OpmphmVertex * vertices; /*!< array of all vertices */
-	size_t * removeOrder;    /*!< remove sequence of acyclic r-uniform r-partite hypergraph */
-	size_t removeIndex;      /*!< the index used for insertion in removeOrder  */
+	size_t * removeSequence; /*!< remove sequence of acyclic r-uniform r-partite hypergraph */
+	size_t removeIndex;      /*!< the index used for insertion in removeSequence */
 } OpmphmGraph;
 
 /**
@@ -63,7 +63,7 @@ double opmphmOptC (size_t n);
  * Graph functions
  */
 OpmphmGraph * opmphmGraphNew (Opmphm * opmphm, uint8_t r, size_t n, double c);
-void opmphmGraphClear (Opmphm * opmphm, OpmphmGraph * graph);
+void opmphmGraphClear (const Opmphm * opmphm, OpmphmGraph * graph);
 void opmphmGraphDel (OpmphmGraph * graph);
 
 /**
@@ -86,13 +86,15 @@ int opmphmAssignment (Opmphm * opmphm, OpmphmGraph * graph, size_t n, int defaul
 /**
  * Lookup functions
  */
-size_t opmphmLookup (Opmphm * opmphm, const void * name);
+size_t opmphmLookup (Opmphm * opmphm, size_t n, const void * name);
 
 /**
  * Basic functions
  */
 Opmphm * opmphmNew (void);
 void opmphmDel (Opmphm * opmphm);
+int opmphmIsBuild (const Opmphm * opmphm);
+int opmphmCopy (Opmphm * dest, const Opmphm * source);
 void opmphmClear (Opmphm * opmphm);
 
 /**

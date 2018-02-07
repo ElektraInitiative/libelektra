@@ -210,7 +210,7 @@ endif ()
 
 option (INSTALL_BUILD_TOOLS "Install build tools for cross-compilation" OFF)
 
-option (ENABLE_OPTIMIZATIONS "Turn on optimizations that trade memory for speed" OFF)
+option (ENABLE_OPTIMIZATIONS "Turn on optimizations that trade memory for speed" ON)
 
 
 #

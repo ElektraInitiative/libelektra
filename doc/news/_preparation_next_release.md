@@ -40,7 +40,8 @@ You can also read the [FOSDEM interview](https://fosdem.org/2018/interviews/mark
 - INI as new default configuration file format
 - Bindings for Asynchronous I/O
 - Plugin Processes
-- <<HIGHLIGHT3>>
+- Lookup with the Order Preserving Minimal Perfect Hash Map
+- <<HIGHLIGHT6>>
 
 
 ### New Logo and Website Theme
@@ -101,7 +102,23 @@ Such a behavior this is useful for plugins which cause memory leaks to be
 isolated in an own process. Furthermore this is useful for runtimes or libraries
 that cannot be reinitialized in the same process after they have been used.
 
-### <<HIGHLIGHT2>>
+### Lookup with the Order Preserving Minimal Perfect Hash Map
+
+The `ksLookup (...)` has a new search algorithm, that acts as an alternative to the
+binary search. The Order Preserving Minimal Perfect Hash Map (OPMPHM) is a non-dynamic,
+randomized hash map and is very effective for mostly static configurations.
+The OPMPHM can be enabled for a search by passing the in [kdbproposal.h](https://github.com/ElektraInitiative/libelektra/blob/master/src/include/kdbproposal.h)
+defined option `KDB_O_OPMPHM` to the lookup.
+Be aware that if the KeySet changes often using the OPMPHM might not be a good
+idea, read more about the [OPMPHM](https://github.com/ElektraInitiative/libelektra/blob/master/doc/dev/data-structures.md#order-preserving-minimal-perfect-hash-map-aka-opmphm).
+
+
+
+When you are not sure if the OPMPHM will speed up you searches, wait for the next release,
+that one will include a hybrid search algorithm that combines the best properties of
+both search algorithms.
+
+### <<HIGHLIGHT6>>
 
 
 ## Other New Features

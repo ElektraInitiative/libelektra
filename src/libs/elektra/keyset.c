@@ -30,11 +30,60 @@
 
 #include "kdbinternal.h"
 #include <kdbassert.h>
+#include <kdbrand.h>
 
 
 #define ELEKTRA_MAX_PREFIX_SIZE sizeof ("namespace/")
 #define ELEKTRA_MAX_NAMESPACE_SIZE sizeof ("system")
 
+/**
+ * @internal
+ *
+ * @brief KeySets OPMPHM cleaner.
+ *
+ * Should be invoked by every function changing a Key name in a KeySet.
+ *
+ * @param ks the KeySet
+ */
+static void elektraOpmphmInvalidate (KeySet * ks)
+{
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+	if (ks && ks->opmphm) opmphmClear (ks->opmphm);
+#endif
+}
+
+/**
+ * @internal
+ *
+ * @brief KeySets OPMPHM copy.
+ *
+ * Should be invoked by every function making a copy of a KeySet.
+ *
+ * @param dest the destination KeySet
+ * @param source the source KeySet
+ */
+static void elektraOpmphmCopy (KeySet * dest, const KeySet * source)
+{
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+	if (!source || !dest)
+	{
+		return;
+	}
+	// nothing to copy
+	if (!source->opmphm || !opmphmIsBuild (source->opmphm))
+	{
+		return;
+	}
+	if (!dest->opmphm)
+	{
+		dest->opmphm = opmphmNew ();
+	}
+	if (dest->opmphm)
+	{
+		opmphmCopy (dest->opmphm, source->opmphm);
+	}
+#endif
+}
 
 /** @class doxygenFlatCopy
  *
@@ -234,6 +283,7 @@ KeySet * ksDup (const KeySet * source)
 
 	KeySet * keyset = ksNew (size, KS_END);
 	ksAppend (keyset, source);
+	elektraOpmphmCopy (keyset, source);
 	return keyset;
 }
 
@@ -278,6 +328,7 @@ KeySet * ksDeepDup (const KeySet * source)
 		}
 	}
 
+	elektraOpmphmCopy (keyset, source);
 	return keyset;
 }
 
@@ -333,6 +384,7 @@ int ksCopy (KeySet * dest, const KeySet * source)
 	ksAppend (dest, source);
 	ksSetCursor (dest, ksGetCursor (source));
 
+	elektraOpmphmCopy (dest, source);
 	return 1;
 }
 
@@ -357,6 +409,14 @@ int ksDel (KeySet * ks)
 	if (!ks) return -1;
 
 	rc = ksClose (ks);
+
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+	if (ks->opmphm)
+	{
+		opmphmDel (ks->opmphm);
+	}
+#endif
+
 	elektraFree (ks);
 
 	return rc;
@@ -389,10 +449,7 @@ int ksClear (KeySet * ks)
 	}
 	ks->alloc = KEYSET_SIZE;
 
-#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
-	ks->opmphm = opmphmNew ();
-#endif
-
+	elektraOpmphmInvalidate (ks);
 	return 0;
 }
 
@@ -852,6 +909,7 @@ ssize_t ksAppendKey (KeySet * ks, Key * toAppend)
 			ks->array[insertpos] = toAppend;
 			ksSetCursor (ks, insertpos);
 		}
+		elektraOpmphmInvalidate (ks);
 	}
 
 	return ks->size;
@@ -933,6 +991,8 @@ ssize_t ksCopyInternal (KeySet * ks, size_t to, size_t from)
 
 	ks->array[ks->size] = 0;
 
+	if (ret) elektraOpmphmInvalidate (ks);
+
 	return ret;
 }
 
@@ -1007,6 +1067,8 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 	char * name = cutpoint->key;
 	if (!name) return 0;
 	// if (strcmp(name, "")) return 0;
+
+	elektraOpmphmInvalidate (ks);
 
 	if (name[0] == '/')
 	{
@@ -1192,6 +1254,8 @@ Key * ksPop (KeySet * ks)
 	ks->flags |= KS_FLAG_SYNC;
 
 	if (ks->size == 0) return 0;
+
+	elektraOpmphmInvalidate (ks);
 
 	--ks->size;
 	if (ks->size + 1 < ks->alloc / 2) ksResize (ks, ks->alloc / 2 - 1);
@@ -1882,6 +1946,98 @@ static Key * elektraLookupBinarySearch (KeySet * ks, Key const * key, option_t o
 	return 0;
 }
 
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+
+static const char * elektraOpmphmGetString (void * data)
+{
+	return keyName ((Key *)data);
+}
+
+static int elektraLookupBuildOpmphm (KeySet * ks)
+{
+	if (!ks->opmphm)
+	{
+		ks->opmphm = opmphmNew ();
+		if (!ks->opmphm)
+		{
+			return -1;
+		}
+	}
+	// make graph
+	uint8_t r = opmphmOptR (ks->size);
+	double c = opmphmMinC (r);
+	c += opmphmOptC (ks->size);
+	OpmphmGraph * graph = opmphmGraphNew (ks->opmphm, r, ks->size, c);
+	if (!graph)
+	{
+		return -1;
+	}
+	// make init
+	OpmphmInit init;
+	init.getName = elektraOpmphmGetString;
+	init.data = (void **)ks->array;
+	init.initSeed = elektraRandGetInitSeed ();
+
+	// mapping
+	size_t mappings = 0; // counts mapping invocations
+	int ret;
+	do
+	{
+		ret = opmphmMapping (ks->opmphm, graph, &init, ks->size);
+		++mappings;
+	} while (ret && mappings < 10);
+	if (ret && mappings == 10)
+	{
+		opmphmGraphDel (graph);
+		return -1;
+	}
+
+	// assign
+	if (opmphmAssignment (ks->opmphm, graph, ks->size, 1))
+	{
+		opmphmGraphDel (graph);
+		return -1;
+	}
+
+	opmphmGraphDel (graph);
+	return 0;
+}
+
+static Key * elektraLookupOpmphmSearch (KeySet * ks, Key const * key, option_t options)
+{
+
+	cursor_t cursor = 0;
+	cursor = ksGetCursor (ks);
+	size_t index = opmphmLookup (ks->opmphm, ks->size, keyName (key));
+	if (index >= ks->size)
+	{
+		return 0;
+	}
+
+	Key * found = ks->array[index];
+
+	if (!strcmp (keyName (found), keyName (key)))
+	{
+		cursor = index;
+		if (options & KDB_O_POP)
+		{
+			return elektraKsPopAtCursor (ks, cursor);
+		}
+		else
+		{
+			ksSetCursor (ks, cursor);
+			return found;
+		}
+	}
+	else
+	{
+		ksSetCursor (ks, cursor);
+		return 0;
+	}
+}
+
+#endif
+
 /**
  * @brief Process Callback + maps to correct binary/hashmap search
  *
@@ -1889,14 +2045,56 @@ static Key * elektraLookupBinarySearch (KeySet * ks, Key const * key, option_t o
  */
 static Key * elektraLookupSearch (KeySet * ks, Key * key, option_t options)
 {
+	if (!ks->size) return 0;
 	typedef Key * (*callback_t) (KeySet * ks, Key * key, Key * found, option_t options);
 	union {
 		callback_t f;
 		void * v;
 	} conversation;
 
-	Key * found = elektraLookupBinarySearch (ks, key, options);
+	Key * found = 0;
 
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+	int opmphmOptionIsSet = 0;
+	// KDB_O_WITHOWNER and KDB_O_NOCASE flags are not compatible with OPMPHM
+	if (((options & KDB_O_WITHOWNER) || (options & KDB_O_NOCASE)) && (options & KDB_O_OPMPHM))
+	{
+		// remove OPMPHM
+		options ^= KDB_O_OPMPHM;
+	}
+
+	if (options & KDB_O_OPMPHM)
+	{
+		opmphmOptionIsSet = 1;
+		if (!ks->opmphm || !opmphmIsBuild (ks->opmphm))
+		{
+			if (elektraLookupBuildOpmphm (ks))
+			{
+				// when OPMPHM build fails use binary search as backup
+				found = elektraLookupBinarySearch (ks, key, options);
+			}
+			else
+			{
+				found = elektraLookupOpmphmSearch (ks, key, options);
+			}
+		}
+		else
+		{
+			found = elektraLookupOpmphmSearch (ks, key, options);
+		}
+	}
+	else
+	{
+		found = elektraLookupBinarySearch (ks, key, options);
+	}
+	// OPMPHM needs to be removed due to callback stuff
+	if (opmphmOptionIsSet)
+	{
+		options ^= KDB_O_OPMPHM;
+	}
+#else
+	found = elektraLookupBinarySearch (ks, key, options);
+#endif
 	Key * ret = found;
 
 	if (keyGetMeta (key, "callback"))
@@ -1909,6 +2107,13 @@ static Key * elektraLookupSearch (KeySet * ks, Key * key, option_t options)
 			}
 		}
 	}
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+	// callback done add KDB_O_OPMPHM
+	if (opmphmOptionIsSet)
+	{
+		options ^= KDB_O_OPMPHM;
+	}
+#endif
 
 	return ret;
 }
@@ -2353,7 +2558,7 @@ int ksInit (KeySet * ks)
 	ksRewind (ks);
 
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
-	ks->opmphm = opmphmNew ();
+	ks->opmphm = NULL;
 #endif
 
 	return 0;
@@ -2385,9 +2590,7 @@ int ksClose (KeySet * ks)
 
 	ks->size = 0;
 
-#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
-	if (ks->opmphm) opmphmDel (ks->opmphm);
-#endif
+	elektraOpmphmInvalidate (ks);
 
 	return 0;
 }
