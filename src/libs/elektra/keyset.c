@@ -35,7 +35,6 @@
 #include <kdblogger.h>
 
 
-
 #define ELEKTRA_MAX_PREFIX_SIZE sizeof ("namespace/")
 #define ELEKTRA_MAX_NAMESPACE_SIZE sizeof ("system")
 
