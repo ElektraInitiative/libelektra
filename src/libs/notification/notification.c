@@ -7,17 +7,17 @@
  *
  */
 
-#include "../../plugins/internalnotification/internalnotification.h"
 #include <kdbassert.h>
 #include <kdbease.h>
 #include <kdbinternal.h>
 #include <kdbioprivate.h>
 #include <kdblogger.h>
 #include <kdbnotification.h>
+#include <kdbnotificationplugin.h>
 
 #include <stdio.h>
 
-// TODO perhaps move to libs/elektra/io?
+// TODO better to move this to libs/elektra/io and keep I/O seperate
 /**
  * Set I/O binding for asynchronous I/O operations for KDB instance.
  *
@@ -40,19 +40,6 @@ ElektraIoInterface * elektraGetIoBinding (KDB * kdb)
 {
 	ELEKTRA_NOT_NULL (kdb);
 	return kdb->ioBinding;
-}
-
-
-static void debugKeySet (KeySet * ks)
-{
-	Key * cur;
-	ksRewind (ks);
-	while ((cur = ksNext (ks)) != NULL)
-	{
-		printf ("debugKeySet %s = %s\n", keyName (cur), keyString (cur));
-	}
-
-	return;
 }
 
 /**
@@ -753,6 +740,13 @@ int elektraNotificationClose (KDB * kdb)
 	return 1;
 }
 
+/**
+ * @internal
+ * Get notification plugin from kdb.
+ *
+ * @param  kdb KDB handle
+ * @return     Notification plugin handle or NULL if not present
+ */
 static Plugin * getNotificationPlugin (KDB * kdb)
 {
 	if (kdb->notificationPlugin)
@@ -763,7 +757,7 @@ static Plugin * getNotificationPlugin (KDB * kdb)
 	{
 		ELEKTRA_LOG_WARNING (
 			"notificationPlugin not set. use elektraNotificationOpen before calling other elektraNotification-functions");
-		return 0;
+		return NULL;
 	}
 }
 
@@ -784,7 +778,7 @@ int elektraNotificationRegisterInt (KDB * kdb, Key * key, int * variable)
 	}
 
 	// Call register function
-	ElektraInternalnotificationRegisterInt registerFunc = (ElektraInternalnotificationRegisterInt)func;
+	ElektraNotificationPluginRegisterInt registerFunc = (ElektraNotificationPluginRegisterInt)func;
 	return registerFunc (notificationPlugin, key, variable);
 }
 
@@ -805,6 +799,6 @@ int elektraNotificationRegisterCallback (KDB * kdb, Key * key, ElektraNotificati
 	}
 
 	// Call register function
-	ElektraInternalnotificationRegisterCallback registerFunc = (ElektraInternalnotificationRegisterCallback)func;
+	ElektraNotificationPluginRegisterCallback registerFunc = (ElektraNotificationPluginRegisterCallback)func;
 	return registerFunc (notificationPlugin, key, callback);
 }

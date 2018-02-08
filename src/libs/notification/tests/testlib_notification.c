@@ -14,12 +14,15 @@
 #include <kdbnotification.h>
 #include <tests.h>
 
+int callback_called;
 
 void test_openclose (void)
 {
+	printf ("test open & close\n");
+
 	Key * key = keyNew ("/sw/tests/testlib_notification", KEY_END);
 	KDB * kdb = kdbOpen (key);
-	succeed_if (kdb, "opening kdb failed");
+	exit_if_fail (kdb, "opening kdb failed");
 
 	succeed_if (!elektraNotificationClose (kdb), "could close notification system without open");
 
@@ -37,6 +40,8 @@ void test_openclose (void)
 
 void test_registerInt (void)
 {
+	printf ("test elektraNotificationRegisterInt\n");
+
 	Key * key = keyNew ("system/elektra/version/constants", KEY_END);
 	Key * valueKey = keyNew ("system/elektra/version/constants/KDB_VERSION_MAJOR", KEY_END);
 
@@ -65,6 +70,41 @@ void test_registerInt (void)
 	keyDel (valueKey);
 }
 
+void testCallback (Key * key ELEKTRA_UNUSED)
+{
+	callback_called = 1;
+}
+
+void test_registerCallback (void)
+{
+	printf ("test elektraNotificationRegisterCallback\n");
+
+	Key * key = keyNew ("system/elektra/version/constants", KEY_END);
+	Key * valueKey = keyNew ("system/elektra/version/constants/KDB_VERSION_MAJOR", KEY_END);
+	callback_called = 0;
+
+	KDB * kdb = kdbOpen (key);
+
+	succeed_if (elektraNotificationRegisterCallback (kdb, valueKey, testCallback) == 0, "register should fail before open");
+
+	elektraNotificationOpen (kdb, NULL);
+
+	succeed_if (elektraNotificationRegisterCallback (kdb, valueKey, testCallback), "register failed");
+
+	// call kdbGet; value gets automatically updated
+	KeySet * config = ksNew (0, KS_END);
+	succeed_if (kdbGet (kdb, config, key), "kdbGet failed");
+
+	succeed_if (callback_called, "callback was not called");
+
+	// cleanup
+	ksDel (config);
+	elektraNotificationClose (kdb);
+	kdbClose (kdb, key);
+	keyDel (key);
+	keyDel (valueKey);
+}
+
 int main (int argc, char ** argv)
 {
 	init (argc, argv);
@@ -76,7 +116,7 @@ int main (int argc, char ** argv)
 	test_registerInt ();
 
 	// Test elektraNotificationRegisterCallback
-	// Test elektraNotificationClose
+	test_registerCallback ();
 
 	print_result ("libnotification");
 

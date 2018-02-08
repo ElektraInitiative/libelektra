@@ -84,13 +84,16 @@ static KeyRegistration * elektraInternalnotificationAddNewRegistration (PluginSt
  * Updates all KeyRegistrations according to data from the given KeySet
  * @internal
  *
- * @param pluginState		internal plugin data structure
- * @param keySet 				key set retrieved from hooks
- *                   		(e.g. elektraInternalnotificationGet or elektraInternalnotificationSet)
+ * @param plugin    internal plugin handle
+ * @param keySet    key set retrieved from hooks
+ *                  e.g. elektraInternalnotificationGet or elektraInternalnotificationSet)
  *
  */
-static void elektraInternalnotificationUpdateRegisteredKeys (PluginState * pluginState, KeySet * keySet)
+void elektraInternalnotificationUpdateRegisteredKeys (Plugin * plugin, KeySet * keySet)
 {
+	PluginState * pluginState = elektraPluginGetData (plugin);
+	ELEKTRA_ASSERT (pluginState != NULL, "plugin state was not initialized properly");
+
 	KeyRegistration * registeredKey = pluginState->head;
 	while (registeredKey != NULL)
 	{
@@ -136,6 +139,9 @@ static void elektraInternalnotificationUpdateRegisteredKeys (PluginState * plugi
  * Subscribe for automatic updates to a given integer variable when the given
  * key value has changed.
  *
+ * Implementation of ElektraNotificationPluginRegisterInt()
+ * @see kdbnotificationplugin.h
+ *
  * @param  handle   plugin handle
  * @param  variable integer variable
  * @param  key      key to watch for changes
@@ -178,6 +184,9 @@ int elektraInternalnotificationRegisterInt (Plugin * handle, Key * key, int * va
 /**
  * Subscribe for updates via callback when a given key value is changed.
  * key value has changed.
+ *
+ * Implementation of ElektraNotificationPluginRegisterCallback()
+ * @see kdbnotificationplugin.h
  *
  * @param  handle   plugin handle
  * @param  key      key to watch for changes
@@ -265,11 +274,7 @@ int elektraInternalnotificationGet (Plugin * handle, KeySet * returned, Key * pa
 		return 1;
 	}
 
-
-	PluginState * pluginState = elektraPluginGetData (handle);
-	ELEKTRA_ASSERT (pluginState != NULL, "plugin state was not initialized properly");
-
-	elektraInternalnotificationUpdateRegisteredKeys (pluginState, returned);
+	elektraInternalnotificationUpdateRegisteredKeys (handle, returned);
 
 	return 1;
 }
@@ -289,10 +294,7 @@ int elektraInternalnotificationSet (Plugin * handle, KeySet * returned, Key * pa
 {
 	ELEKTRA_LOG_DEBUG ("keyName=%s", keyName (parentKey));
 
-	PluginState * pluginState = elektraPluginGetData (handle);
-	ELEKTRA_ASSERT (pluginState != NULL, "plugin state was not initialized properly");
-
-	elektraInternalnotificationUpdateRegisteredKeys (pluginState, returned);
+	elektraInternalnotificationUpdateRegisteredKeys (handle, returned);
 
 	return 1;
 }
