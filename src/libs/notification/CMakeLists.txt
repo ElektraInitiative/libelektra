@@ -1,27 +1,35 @@
-set (SOURCES
-  "${CMAKE_CURRENT_SOURCE_DIR}/notification.c"
-)
+include (LibAddPlugin)
 
-set (LIBRARY_NAME elektra-notification)
+list (FIND ADDED_PLUGINS "internalnotification" FOUND_NAME)
+if (FOUND_NAME EQUAL -1)
+  message (STATUS "Exclude Library notification because internalnotification plugin excluded")
+else ()
+  set (SOURCES
+    "${CMAKE_CURRENT_SOURCE_DIR}/notification.c"
+  )
 
-add_lib (notification
-  SOURCES ${SOURCES}
-  LINK_ELEKTRA elektra-kdb elektra-ease
-)
+  set (LIBRARY_NAME elektra-notification)
 
-configure_file (
-  "${CMAKE_CURRENT_SOURCE_DIR}/${LIBRARY_NAME}.pc.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/${LIBRARY_NAME}.pc"
-  @ONLY
-)
+  add_lib (notification
+    SOURCES ${SOURCES}
+    LINK_ELEKTRA elektra-kdb elektra-ease
+  )
 
-install (
-  FILES "${CMAKE_CURRENT_BINARY_DIR}/${LIBRARY_NAME}.pc"
-  DESTINATION lib${LIB_SUFFIX}/${TARGET_PKGCONFIG_FOLDER}
-)
+  configure_file (
+    "${CMAKE_CURRENT_SOURCE_DIR}/${LIBRARY_NAME}.pc.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/${LIBRARY_NAME}.pc"
+    @ONLY
+  )
 
-add_subdirectory (example)
+  install (
+    FILES "${CMAKE_CURRENT_BINARY_DIR}/${LIBRARY_NAME}.pc"
+    DESTINATION lib${LIB_SUFFIX}/${TARGET_PKGCONFIG_FOLDER}
+  )
 
-if (ENABLE_TESTING)
-	add_subdirectory (tests)
-endif(ENABLE_TESTING)
+  add_subdirectory (example)
+
+  if (ENABLE_TESTING)
+  	add_subdirectory (tests)
+  endif (ENABLE_TESTING)
+
+endif ()
