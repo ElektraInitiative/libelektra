@@ -20,6 +20,7 @@
 #include <errno.h>
 #include <stdio.h>     // fopen()
 //#include <stdlib.h>    // exit()
+#include <limits.h>    // SSIZE_MAX
 #include <sys/mman.h>  // mmap()
 #include <sys/stat.h>  // stat()
 #include <sys/types.h> // ftruncate ()
@@ -416,13 +417,15 @@ static void writeKeySet (MmapHeader * mmapHeader, KeySet * keySet, KeySet * dest
 				mappedMetaKey = dynArray->mappedKeyArray[find ((Key *)metaKey, dynArray)];
 				ELEKTRA_LOG_WARNING ("mappedMetaKey: %p", (void *)mappedMetaKey);
 				newMeta->array[metaKeyIndex] = mappedMetaKey;
-				++(mappedMetaKey->ksReference);
+				if (mappedMetaKey->ksReference < SSIZE_MAX)
+					++(mappedMetaKey->ksReference);
 				++metaKeyIndex;
 			}
 			newMeta->array[oldMeta->size] = 0;
 			newMeta->alloc = oldMeta->alloc;
 			newMeta->size = oldMeta->size;
-			ksRewind (newMeta);
+			newMeta->cursor = 0;
+			newMeta->current = 0;
 			metaKsPtr += (newMeta->alloc) * SIZEOF_KEY_PTR;
 		}
 		ELEKTRA_LOG_WARNING ("INSERT META INTO REAL KEY, HERE IS THE META KS:");
@@ -456,7 +459,8 @@ static void writeKeySet (MmapHeader * mmapHeader, KeySet * keySet, KeySet * dest
 	ksPtr->array[keySet->size] = 0;
 	ksPtr->alloc = keySet->alloc;
 	ksPtr->size = keySet->size;
-	ksRewind (ksPtr);
+	ksPtr->cursor = 0;
+	ksPtr->current = 0;
 	// m_output_keyset (ksPtr);
 }
 
@@ -474,10 +478,13 @@ static void elektraMmapstorageWrite (char * mappedRegion, KeySet * keySet, MmapH
 	if (keySet->size < 1)
 	{
 		// TODO: review mpranj
+		char * ksArrayPtr = (((char *)ksPtr) + SIZEOF_KEYSET);
+
 		memcpy (ksPtr, keySet, SIZEOF_KEYSET);
 		ksPtr->flags = keySet->flags | KS_FLAG_MMAP;
-		ksPtr->array = 0;
-		ksPtr->alloc = 0;
+		ksPtr->array = (Key **)ksArrayPtr;
+		ksPtr->array[0] = 0;
+		ksPtr->alloc = keySet->alloc;
 		ksPtr->size = 0;
 		ksPtr->cursor = 0;
 		ksPtr->current = 0;
@@ -613,12 +620,12 @@ int elektraMmapstorageGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	// ksClear (returned);
 	mmapToKeySet (mappedRegion, returned);
 
-	ksRewind (returned);
-	Key * cur;
-	while ((cur = ksNext (returned)) != 0)
-	{
-		keyIncRef (cur);
-	}
+// 	ksRewind (returned);
+// 	Key * cur;
+// 	while ((cur = ksNext (returned)) != 0)
+// 	{
+// 		keyIncRef (cur);
+// 	}
 	// m_output_keyset (returned);
 
 	fclose (fp);
