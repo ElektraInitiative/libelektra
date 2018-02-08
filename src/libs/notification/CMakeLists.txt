@@ -1,5 +1,5 @@
 set (SOURCES
-  notification.c
+  "${CMAKE_CURRENT_SOURCE_DIR}/notification.c"
 )
 
 set (LIBRARY_NAME elektra-notification)

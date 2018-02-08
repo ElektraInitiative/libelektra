@@ -103,8 +103,8 @@ void elektraInternalnotificationUpdateRegisteredKeys (Plugin * plugin, KeySet * 
 			switch (registeredKey->type)
 			{
 			case TYPE_INT:
-				ELEKTRA_LOG ("found registeredKey=%s; updating variable=%p with string value \"%s\"", registeredKey->name,
-					     (void *)registeredKey->ref.variable, keyString (key));
+				ELEKTRA_LOG_DEBUG ("found registeredKey=%s; updating variable=%p with string value \"%s\"",
+						   registeredKey->name, (void *)registeredKey->ref.variable, keyString (key));
 
 				// Convert string value to long
 				char * end;
@@ -117,12 +117,12 @@ void elektraInternalnotificationUpdateRegisteredKeys (Plugin * plugin, KeySet * 
 				}
 				else
 				{
-					ELEKTRA_LOG ("conversion failed! keyString=\"%s\" *end=%c, errno=%d, value=%ld", keyString (key),
-						     *end, errno, value);
+					ELEKTRA_LOG_WARNING ("conversion failed! keyString=\"%s\" *end=%c, errno=%d, value=%ld",
+							     keyString (key), *end, errno, value);
 				}
 				break;
 			case TYPE_CALLBACK:
-				ELEKTRA_LOG ("found registeredKey=%s; invoking callback", registeredKey->name);
+				ELEKTRA_LOG_DEBUG ("found registeredKey=%s; invoking callback", registeredKey->name);
 				ElektraNotificationChangeCallback callback =
 					*(ElektraNotificationChangeCallback)registeredKey->ref.callback;
 				callback (key);
@@ -240,8 +240,6 @@ int elektraInternalnotificationRegisterCallback (Plugin * handle, Key * key, Ele
  */
 int elektraInternalnotificationGet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
-	ELEKTRA_LOG_DEBUG ("%p: keyName=%s", (void *)handle, keyName (parentKey));
-
 	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/internalnotification"))
 	{
 		KeySet * contract = ksNew (
@@ -290,10 +288,8 @@ int elektraInternalnotificationGet (Plugin * handle, KeySet * returned, Key * pa
  * @retval 1 on success
  * @retval -1 on failure
  */
-int elektraInternalnotificationSet (Plugin * handle, KeySet * returned, Key * parentKey)
+int elektraInternalnotificationSet (Plugin * handle, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
 {
-	ELEKTRA_LOG_DEBUG ("keyName=%s", keyName (parentKey));
-
 	elektraInternalnotificationUpdateRegisteredKeys (handle, returned);
 
 	return 1;
@@ -311,8 +307,6 @@ int elektraInternalnotificationSet (Plugin * handle, KeySet * returned, Key * pa
  */
 int elektraInternalnotificationOpen (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 {
-	ELEKTRA_LOG_DEBUG ("%p: open: hello from internalnotification!", (void *)handle);
-
 	PluginState * pluginState = elektraPluginGetData (handle);
 	if (pluginState == NULL)
 	{
