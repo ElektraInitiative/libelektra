@@ -19,7 +19,7 @@
 #include <assert.h>
 #include <errno.h>
 #include <stdio.h>     // fopen()
-#include <stdlib.h>    // exit()
+//#include <stdlib.h>    // exit()
 #include <sys/mman.h>  // mmap()
 #include <sys/stat.h>  // stat()
 #include <sys/types.h> // ftruncate ()
@@ -587,6 +587,7 @@ int elektraMmapstorageGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	{
 		// no address was set: config file was corrupt
 		// TODO: check which error to set here
+		ELEKTRA_LOG ("FAIL MMAP ADDR is NULL");
 		ELEKTRA_SET_ERROR_GET (parentKey);
 		errno = errnosave;
 		fclose (fp);

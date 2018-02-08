@@ -128,6 +128,30 @@ static void test_mmap_get_after_reopen (const char * tmpFile)
 	PLUGIN_CLOSE ();
 }
 
+static void test_mmap_ks_copy (const char * tmpFile)
+{
+	Key * parentKey = keyNew ("user/tests/mmapstorage", KEY_VALUE, tmpFile, KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("mmapstorage");
+	KeySet * returned = ksNew (0, KS_END);
+
+	succeed_if (plugin->kdbGet (plugin, returned, parentKey) == 1, "kdbGet was not successful");
+
+	KeySet * expected = simpleTestKeySet ();
+	compare_keyset (expected, returned);
+
+	KeySet * copiedKs = ksNew (0, KS_END);
+	ksCopy (copiedKs, returned);
+	compare_keyset (expected, copiedKs);
+
+	ksDel (copiedKs);
+	ksDel (expected);
+	ksDel (returned);
+
+	keyDel (parentKey);
+	PLUGIN_CLOSE ();
+}
+
 static void test_mmap_empty_after_clear (const char * tmpFile)
 {
 	Key * parentKey = keyNew ("user/tests/mmapstorage", KEY_VALUE, tmpFile, KEY_END);
@@ -218,6 +242,34 @@ static void test_mmap_metacopy (const char * tmpFile)
 	keyDel (parentKey);
 	keyDel (shareMeta);
 	ksDel (ks);
+	PLUGIN_CLOSE ();
+}
+
+static void test_mmap_ks_copy_with_meta (const char * tmpFile)
+{
+	Key * parentKey = keyNew ("user/tests/mmapstorage", KEY_VALUE, tmpFile, KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("mmapstorage");
+	KeySet * ks = metaTestKeySet ();
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+	ksDel (ks);
+
+	KeySet * returned = ksNew (0, KS_END);
+
+	succeed_if (plugin->kdbGet (plugin, returned, parentKey) == 1, "kdbGet was not successful");
+
+	KeySet * expected = metaTestKeySet ();
+	compare_keyset (expected, returned);
+
+	KeySet * copiedKs = ksNew (0, KS_END);
+	ksCopy (copiedKs, returned);
+	compare_keyset (expected, copiedKs);
+
+	ksDel (copiedKs);
+	ksDel (expected);
+	ksDel (returned);
+
+	keyDel (parentKey);
 	PLUGIN_CLOSE ();
 }
 
@@ -317,6 +369,7 @@ int main (int argc, char ** argv)
 
 	test_mmap_set_get (tmpFile);
 	test_mmap_get_after_reopen (tmpFile);
+	test_mmap_ks_copy (tmpFile);
 
 	clearStorage (tmpFile);
 
@@ -326,6 +379,9 @@ int main (int argc, char ** argv)
 	test_mmap_meta_reread (tmpFile);
 
 	test_mmap_metacopy (tmpFile);
+
+	clearStorage (tmpFile);
+	test_mmap_ks_copy_with_meta (tmpFile);
 
 
 	printf ("\ntestmod_mmapstorage RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
