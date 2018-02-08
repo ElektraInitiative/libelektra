@@ -13,7 +13,7 @@ elseif (PYTHONLIBS_VERSION_STRING MATCHES "^2\\.[0-9]+")
 	exclude_binding (swig_python "python3 is for python 3 only and not ${PYTHONLIBS_VERSION_STRING}")
 else ()
 	add_binding (swig_python)
-	
+
 	if (${SWIG_VERSION} MATCHES "^2\\.")
 		message (WARNING "Python bindings might crash if generated with SWIG 2."
 				" Please upgrade to SWIG 3 or later.")
