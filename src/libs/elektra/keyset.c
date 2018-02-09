@@ -425,7 +425,7 @@ int ksDel (KeySet * ks)
 	}
 #endif
 
-	if ((ks->flags & KS_FLAG_MMAP) != KS_FLAG_MMAP)
+	if (!((ks->flags & KS_FLAG_MMAP) == KS_FLAG_MMAP))
 	{
 		elektraFree (ks);
 	}
@@ -484,10 +484,7 @@ static int keyCompareByName (const void * p1, const void * p2)
 	size_t const nameSize1 = key1->keyUSize;
 	size_t const nameSize2 = key2->keyUSize;
 	int ret = 0;
-	// 	ELEKTRA_LOG_WARNING ("name1 ptr: %p", (void *) name1);
-	// 	ELEKTRA_LOG_WARNING ("name1 size: %zu", nameSize1);
-	// 	ELEKTRA_LOG_WARNING ("name2 ptr: %p", (void *) name2);
-	// 	ELEKTRA_LOG_WARNING ("name2 size: %zu", nameSize2);
+
 	if (nameSize1 == nameSize2)
 	{
 		ret = memcmp (name1, name2, nameSize2);
@@ -2628,8 +2625,6 @@ int ksClose (KeySet * ks)
 {
 	Key * k;
 
-	if (test_bit (ks->flags, KS_FLAG_MMAP) == KS_FLAG_MMAP) return 0;
-
 	ksRewind (ks);
 	while ((k = ksNext (ks)) != 0)
 	{
@@ -2638,7 +2633,8 @@ int ksClose (KeySet * ks)
 		keyDel (k);
 	}
 
-	if (ks->array) elektraFree (ks->array);
+	int inMmap = test_bit (ks->flags, KS_FLAG_MMAP) == KS_FLAG_MMAP;
+	if (ks->array && !inMmap) elektraFree (ks->array);
 	ks->array = 0;
 	ks->alloc = 0;
 

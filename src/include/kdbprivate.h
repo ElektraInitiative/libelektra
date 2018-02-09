@@ -125,9 +125,9 @@ typedef enum {
 			 will lead to an error.
 			 Needed for metakeys.*/
 	KEY_FLAG_MMAP = 1 << 4	/*!<
- 			 Key lies inside a mmap region.
- 			 This flag is set once a Key has been moved to a mapped region.
- 			 It prevents erroneous free() calls on these keys. */
+			 Key lies inside a mmap region.
+			 This flag is set once a Key has been moved to a mapped region.
+			 It prevents erroneous free() calls on these keys. */
 } keyflag_t;
 
 
@@ -145,7 +145,6 @@ typedef enum {
 		 If keys were popped from the Keyset
 		 this flag will be set, so that the backend will sync
 		 the keys to database.*/
-
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 	,KS_FLAG_NAME_CHANGE = 1 << 1 /*!<
 		 The OPMPHM needs to be rebuild.
