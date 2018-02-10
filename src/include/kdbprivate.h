@@ -124,7 +124,15 @@ typedef enum {
 			 to be changed. All attempts to change the value
 			 will lead to an error.
 			 Needed for metakeys.*/
-	KEY_FLAG_MMAP = 1 << 4	/*!<
+	KEY_FLAG_MMAP_STRUCT = 1 << 4,	/*!<
+			 Key lies inside a mmap region.
+			 This flag is set once a Key has been moved to a mapped region.
+			 It prevents erroneous free() calls on these keys. */
+	KEY_FLAG_MMAP_KEY = 1 << 5,	/*!<
+			 Key lies inside a mmap region.
+			 This flag is set once a Key has been moved to a mapped region.
+			 It prevents erroneous free() calls on these keys. */
+	KEY_FLAG_MMAP_DATA = 1 << 6	/*!<
 			 Key lies inside a mmap region.
 			 This flag is set once a Key has been moved to a mapped region.
 			 It prevents erroneous free() calls on these keys. */

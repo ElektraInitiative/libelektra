@@ -995,6 +995,9 @@ ssize_t ksCopyInternal (KeySet * ks, size_t to, size_t from)
 	ELEKTRA_ASSERT (length >= 0, "length %zu too small", length);
 	ELEKTRA_ASSERT (ks->size >= to, "ks->size %zu smaller than %zu", ks->size, to);
 
+	// TODO: check how to handle this
+	// ELEKTRA_ASSERT (test_bit (ks->flags, KS_FLAG_MMAP_ARRAY) == KS_FLAG_MMAP_ARRAY, "ksCopyInternal mmap fail");
+
 	ks->size = ssize + sizediff;
 
 	if (length != 0)

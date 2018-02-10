@@ -474,7 +474,7 @@ int keyDel (Key * key)
 		return key->ksReference;
 	}
 
-	int keyInMmap = test_bit (key->flags, KEY_FLAG_MMAP) == KEY_FLAG_MMAP;
+	int keyInMmap = test_bit (key->flags, KEY_FLAG_MMAP_STRUCT) == KEY_FLAG_MMAP_STRUCT;
 	//m_output_key(key);
 	rc = keyClear (key);
 
@@ -526,7 +526,7 @@ int keyClear (Key * key)
 
 	ref = key->ksReference;
 
-	int keyInMmap = test_bit (key->flags, KEY_FLAG_MMAP) == KEY_FLAG_MMAP;
+	int keyInMmap = test_bit (key->flags, KEY_FLAG_MMAP_STRUCT) == KEY_FLAG_MMAP_STRUCT;
 
 	if (key->key && !keyInMmap) elektraFree (key->key);
 	if (key->data.v && !keyInMmap) elektraFree (key->data.v);
@@ -534,6 +534,7 @@ int keyClear (Key * key)
 
 	keyInit (key);
 
+	if (keyInMmap) key->flags |= KEY_FLAG_MMAP_STRUCT;
 
 	/* Set reference properties */
 	key->ksReference = ref;

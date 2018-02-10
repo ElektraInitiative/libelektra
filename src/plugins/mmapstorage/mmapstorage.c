@@ -339,7 +339,7 @@ static void writeKeySet (MmapHeader * mmapHeader, KeySet * keySet, KeySet * dest
 
 		// move Key itself
 		// memcpy (mmapMetaKey, curMeta, SIZEOF_KEY);
-		mmapMetaKey->flags = KEY_FLAG_MMAP;
+		mmapMetaKey->flags = KEY_FLAG_MMAP_STRUCT | KEY_FLAG_MMAP_KEY | KEY_FLAG_MMAP_DATA;
 		mmapMetaKey->key = metaKeyNamePtr;
 		mmapMetaKey->data.v = metaKeyValuePtr;
 		mmapMetaKey->meta = 0;
@@ -431,7 +431,7 @@ static void writeKeySet (MmapHeader * mmapHeader, KeySet * keySet, KeySet * dest
 
 		// move Key itself
 		// memcpy (mmapKey, cur, SIZEOF_KEY);
-		mmapKey->flags = KEY_FLAG_MMAP;
+		mmapKey->flags = KEY_FLAG_MMAP_STRUCT | KEY_FLAG_MMAP_KEY | KEY_FLAG_MMAP_DATA;
 		mmapKey->key = keyNamePtr;
 		mmapKey->keySize = cur->keySize;
 		mmapKey->keyUSize = cur->keyUSize;
