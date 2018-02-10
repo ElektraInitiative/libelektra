@@ -88,6 +88,31 @@ static void m_output_keyset (KeySet * ks)
 	ELEKTRA_LOG_WARNING ("-------------------> output keyset done");
 }
 
+static void test_mmap_get_set (const char * tmpFile)
+{
+	Key * parentKey = keyNew ("user/tests/mmapstorage", KEY_VALUE, tmpFile, KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("mmapstorage");
+	KeySet * ks = ksNew (0, KS_END);
+
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
+	KeySet * toAppend = simpleTestKeySet ();
+	ksAppend (ks, toAppend);
+	ksDel (toAppend);
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+	ksClear (ks);
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
+
+	KeySet * expected = simpleTestKeySet ();
+	compare_keyset (expected, ks);
+	compare_keyset (ks, expected);
+
+	ksDel (expected);
+	keyDel (parentKey);
+	ksDel (ks);
+	PLUGIN_CLOSE ();
+}
+
 static void test_mmap_set_get (const char * tmpFile)
 {
 	Key * parentKey = keyNew ("user/tests/mmapstorage", KEY_VALUE, tmpFile, KEY_END);
@@ -366,6 +391,9 @@ int main (int argc, char ** argv)
 	// testMetaPreAnything();
 
 	const char * tmpFile = elektraFilename ();
+
+	test_mmap_get_set (tmpFile);
+	clearStorage (tmpFile);
 
 	test_mmap_set_get (tmpFile);
 	test_mmap_get_after_reopen (tmpFile);

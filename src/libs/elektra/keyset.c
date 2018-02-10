@@ -960,7 +960,7 @@ ssize_t ksAppend (KeySet * ks, const KeySet * toAppend)
 	for (toAlloc = ks->alloc; ks->size + toAppend->size >= toAlloc; toAlloc *= 2)
 		;
 
-	if (ksResize (ks, toAlloc - 1) == -1) exit (EXIT_FAILURE);
+	ksResize (ks, toAlloc - 1);
 
 	/* TODO: here is lots of room for optimizations */
 	for (size_t i = 0; i < toAppend->size; ++i)
