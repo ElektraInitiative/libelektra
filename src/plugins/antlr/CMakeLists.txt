@@ -1,5 +1,14 @@
 include (LibAddMacros)
 
+if (DEPENDENCY_PHASE)
+	set (ANTLR4CPP_JAR_LOCATION "/usr/local/opt/antlr/antlr-4.7.1-complete.jar")
+	include (ExternalAntlr4Cpp)
+
+	find_library (ANTLR_PLUGIN_LIBRARY_DIRS antlr4-runtime ${ANTLR4CPP_LIBS})
+	set (ANTLR_PLUGIN_INCLUDE_DIRS "${ANTLR4CPP_INCLUDE_DIRS}")
+	set (ANTLR_PLUGIN_LIBRARY_DIRS "${ANTLR_PLUGIN_LIBRARY_DIRS}")
+endif (DEPENDENCY_PHASE)
+
 add_plugin (antlr
 	CPP
 	SOURCES
@@ -7,4 +16,8 @@ add_plugin (antlr
 		antlr.cpp
 	ADD_TEST
 	TEST_README
+	INCLUDE_DIRECTORIES
+		${ANTLR_PLUGIN_INCLUDE_DIRS}
+	LINK_LIBRARIES
+		${ANTLR_PLUGIN_LIBRARY_DIRS}
 	)
