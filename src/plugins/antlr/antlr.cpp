@@ -7,9 +7,13 @@
  *
  */
 
-#include "antlr.h"
+#include "antlr.hpp"
 
 #include <kdbhelper.h>
+
+using namespace ckdb;
+
+extern "C" {
 
 int elektraAntlrGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
@@ -40,3 +44,5 @@ Plugin * ELEKTRA_PLUGIN_EXPORT (antlr)
 	return elektraPluginExport ("antlr", ELEKTRA_PLUGIN_GET, &elektraAntlrGet, ELEKTRA_PLUGIN_SET, &elektraAntlrSet,
 				    ELEKTRA_PLUGIN_END);
 }
+
+} // end extern "C"

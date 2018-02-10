@@ -1,9 +1,10 @@
 include (LibAddMacros)
 
 add_plugin (antlr
+	CPP
 	SOURCES
-		antlr.h
-		antlr.c
+		antlr.hpp
+		antlr.cpp
 	ADD_TEST
 	TEST_README
 	)
