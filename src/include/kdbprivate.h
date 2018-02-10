@@ -152,9 +152,17 @@ typedef enum {
 		 sets this flag.*/
 #endif
 	,KS_FLAG_MMAP = 1 << 2	/*!<
- 			 KeySet lies inside a mmap region.
- 			 This flag is set once a KeySet has been moved to a mapped region.
- 			 It prevents erroneous free() calls on these KeySets. */
+		 KeySet lies inside a mmap region.
+		 This flag is set once a KeySet has been moved to a mapped region.
+		 It prevents erroneous free() calls on these KeySets. */
+	,KS_FLAG_MMAP_STRUCT = 1 << 3	/*!<
+		 KeySet struct lies inside a mmap region.
+		 This flag is set once a KeySet has been moved to a mapped region.
+		 It prevents erroneous free() calls on these KeySets. */
+	,KS_FLAG_MMAP_ARRAY = 1 << 4	/*!<
+		 Array of the KeySet lies inside a mmap region.
+		 This flag is set for KeySets where the array is mmap'ed but the KeySet is not.
+		 It prevents erroneous free() calls on these arrays. */
 } ksflag_t;
 
 

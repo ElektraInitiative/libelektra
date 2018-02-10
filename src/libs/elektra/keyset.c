@@ -425,7 +425,7 @@ int ksDel (KeySet * ks)
 	}
 #endif
 
-	if (!((ks->flags & KS_FLAG_MMAP) == KS_FLAG_MMAP))
+	if (test_bit (ks->flags, KS_FLAG_MMAP_STRUCT) != KS_FLAG_MMAP_STRUCT)
 	{
 		elektraFree (ks);
 	}
@@ -2536,14 +2536,14 @@ int ksResize (KeySet * ks, size_t alloc)
 			return 0;
 	}
 
-	int inMmap = test_bit (ks->flags, KS_FLAG_MMAP) == KS_FLAG_MMAP;
+	int arrayInMmap = test_bit (ks->flags, KS_FLAG_MMAP_ARRAY) == KS_FLAG_MMAP_ARRAY;
 
-	if ((ks->array == NULL) || inMmap)
+	if ((ks->array == NULL) || arrayInMmap)
 	{ /* Not allocated up to now */
 		ks->alloc = alloc;
 		ks->size = 0;
 		ks->array = elektraMalloc (sizeof (struct _Key *) * ks->alloc);
-		clear_bit (ks->flags, KS_FLAG_MMAP);
+		clear_bit (ks->flags, KS_FLAG_MMAP_ARRAY);
 		if (!ks->array)
 		{
 			/*errno = KDB_ERR_NOMEM;*/
@@ -2633,8 +2633,18 @@ int ksClose (KeySet * ks)
 		keyDel (k);
 	}
 
-	int inMmap = test_bit (ks->flags, KS_FLAG_MMAP) == KS_FLAG_MMAP;
-	if (ks->array && !inMmap) elektraFree (ks->array);
+	int arrayInMmap = test_bit (ks->flags, KS_FLAG_MMAP_ARRAY) == KS_FLAG_MMAP_ARRAY;
+	if (ks->array && !arrayInMmap)
+	{
+		elektraFree (ks->array);
+	}
+	else
+	{
+		// if the KeySet is in an mmap region, multiple references to the same memory might exist
+		// this prevents further iterations from other copies
+		ks->array[0] = 0;
+		clear_bit (ks->flags, KS_FLAG_MMAP_ARRAY);
+	}
 	ks->array = 0;
 	ks->alloc = 0;
 

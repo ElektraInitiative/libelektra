@@ -401,7 +401,7 @@ static void writeKeySet (MmapHeader * mmapHeader, KeySet * keySet, KeySet * dest
 			// memcpy (newMeta, oldMeta, sizeof (KeySet));
 			metaKsPtr += sizeof (KeySet);
 
-			newMeta->flags = KS_FLAG_MMAP;
+			newMeta->flags = KS_FLAG_MMAP_STRUCT | KS_FLAG_MMAP_ARRAY;
 			newMeta->array = (Key **)(metaKsPtr);
 
 			keyRewindMeta (cur);
@@ -451,7 +451,7 @@ static void writeKeySet (MmapHeader * mmapHeader, KeySet * keySet, KeySet * dest
 	}
 
 	// memcpy (ksPtr, keySet, SIZEOF_KEYSET);
-	ksPtr->flags = KS_FLAG_MMAP;
+	ksPtr->flags = KS_FLAG_MMAP_STRUCT | KS_FLAG_MMAP_ARRAY;
 	ksPtr->array = (Key **)ksArrayPtr;
 	ksPtr->array[keySet->size] = 0;
 	ksPtr->alloc = keySet->alloc;
@@ -468,7 +468,7 @@ static void mmapWrite (char * mappedRegion, KeySet * keySet, MmapHeader * mmapHe
 	//		* memcpy () to continuous region and then fwrite () only once
 	//		* use mmap to write to temp file and msync () after all data is written, then rename file
 	mmapHeader->mmapAddr = mappedRegion;
-	memset (mappedRegion, 0, mmapHeader->mmapSize);
+	//memset (mappedRegion, 0, mmapHeader->mmapSize);
 	memcpy (mappedRegion, mmapHeader, SIZEOF_MMAPHEADER);
 
 	KeySet * ksPtr = (KeySet *)(mappedRegion + SIZEOF_MMAPHEADER);
@@ -477,7 +477,7 @@ static void mmapWrite (char * mappedRegion, KeySet * keySet, MmapHeader * mmapHe
 	{
 		// TODO: review mpranj
 		char * ksArrayPtr = (((char *)ksPtr) + SIZEOF_KEYSET);
-		ksPtr->flags = KS_FLAG_MMAP;
+		ksPtr->flags = KS_FLAG_MMAP_STRUCT | KS_FLAG_MMAP_ARRAY;
 		ksPtr->array = (Key **)ksArrayPtr;
 		ksPtr->array[0] = 0;
 		ksPtr->alloc = keySet->alloc;
@@ -498,7 +498,8 @@ static void mmapToKeySet (char * mappedRegion, KeySet * returned)
 	returned->alloc = keySet->alloc;
 	returned->cursor = 0;
 	returned->current = 0;
-	returned->flags = KS_FLAG_MMAP;
+	// to be able to free() the returned KeySet, just set the array flag here
+	returned->flags = KS_FLAG_MMAP_ARRAY;
 }
 
 static int readMmapHeader(FILE * fp, MmapHeader * mmapHeader)
@@ -685,19 +686,20 @@ int elektraMmapstorageSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 		fclose (fp);
 		return -1;
 	}
-	ksClose (returned);
+	munmap (mappedRegion, mmapHeader.mmapSize);
+	//ksClose (returned);
 
 	// all data is written, further changes need to be copy-on-write
-	mappedRegion = mmapMapFile ((void *)mappedRegion, fp, mmapHeader.mmapSize, MAP_PRIVATE | MAP_FIXED, parentKey, errnosave);
-	ELEKTRA_LOG_WARNING ("mappedRegion ptr: %p", (void *)mappedRegion);
-	if (mappedRegion == MAP_FAILED)
-	{
-		fclose (fp);
-		ELEKTRA_LOG ("could not remap to MAP_PRIVATE");
-		return -1;
-	}
+// 	mappedRegion = mmapMapFile ((void *)mappedRegion, fp, mmapHeader.mmapSize, MAP_PRIVATE | MAP_FIXED, parentKey, errnosave);
+// 	ELEKTRA_LOG_WARNING ("mappedRegion ptr: %p", (void *)mappedRegion);
+// 	if (mappedRegion == MAP_FAILED)
+// 	{
+// 		fclose (fp);
+// 		ELEKTRA_LOG ("could not remap to MAP_PRIVATE");
+// 		return -1;
+// 	}
 
-	mmapToKeySet (mappedRegion, returned);
+	//mmapToKeySet (mappedRegion, returned);
 	// m_output_keyset (returned);
 
 

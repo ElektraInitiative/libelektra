@@ -475,7 +475,7 @@ int keyDel (Key * key)
 	}
 
 	int keyInMmap = test_bit (key->flags, KEY_FLAG_MMAP) == KEY_FLAG_MMAP;
-	m_output_key(key);
+	//m_output_key(key);
 	rc = keyClear (key);
 
 	if (!keyInMmap)
