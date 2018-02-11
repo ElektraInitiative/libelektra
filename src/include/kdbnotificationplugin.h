@@ -1,7 +1,9 @@
 /**
  * @file
+ * @ingroup kdbnotification
  *
- * @brief Elektra-Notification structures and declarations for plugins.
+ * @brief Elektra-Notification structures and declarations for developing
+ * notification plugins.
  *
  * Only used by elektra-notification library and notification plugins (e.g.
  * internalnotification).

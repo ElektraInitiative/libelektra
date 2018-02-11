@@ -32,8 +32,9 @@ The name of the plugin to load.
 
 `plugins/#/handle`
 
-Internal handle of already loaded plugin. Useful when loading plugins at run-time
-with `elektraPluginOpen()`. Do not set permanently (e.g. with `kdb set`).
+Internal handle of already loaded plugin. Useful when loading plugins at
+run-time with `elektraPluginOpen()`. Do not set permanently (e.g. with
+`kdb set`).
 
 `plugins/#/placements/set`
 

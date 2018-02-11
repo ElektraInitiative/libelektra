@@ -2,6 +2,8 @@
  * @file
  *
  * @brief Elektra-I/O structures for I/O bindings, plugins and applications
+ * 
+ * @ingroup kdbio
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */

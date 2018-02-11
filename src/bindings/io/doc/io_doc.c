@@ -1,6 +1,5 @@
 /**
  * @file
- * @ingroup kdbio
  *
  * @brief I/O example binding.
  *
@@ -15,7 +14,7 @@
 /**
  * @defgroup kdbio I/O Bindings
  *
- * @brief Asynchronous I/O with Elektra
+ * @par Asynchronous I/O with Elektra
  *
  * This page contains useful details for creating I/O bindings and using the
  * operations provided by these bindings.

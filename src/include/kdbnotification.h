@@ -1,7 +1,37 @@
 /**
  * @file
  *
- * @brief Elektra-Notification structures and declarations
+ * @brief Elektra-Notification structures and declarations for
+ * application developers
+ * 
+ * @ingroup kdbnotification
+ *
+ * @defgroup kdbnotification Notification
+ *
+ * @par Global Mounting
+ *
+ * elektraNotificationOpen() loads and mounts the
+ * <a href="https://www.libelektra.org/plugins/internalnotification">internalnotification plugin</a>
+ * globally at run-time.
+ * The key database is not altered permanently.
+ * elektraNotificationClose() reverts the mounting.
+ *
+ * The internalnotification plugin is mounted at its defined positions
+ * (see
+ * <a href="https://www.libelektra.org/plugins/internalnotification">its plugin docs</a>).
+ *
+ * - If no plugin is mounted at a desired position it is simply mounted.
+ * - In the default configuration or when mounting a plugin globally using
+ *   `kdb global-mount` the
+ *   <a href="https://www.libelektra.org/plugins/list">list plugin</a> is
+ *   mounted at all positions.
+ *   This plugin allows to mount multiple plugins at a position.
+ *   If this plugin is present at a position the internalnotification plugin is
+ *   added to the list plugin's configuration at run-time.
+ * - If another plugin is mounted at a desired position the configuration is
+ *   considered broken and mounting is aborted.
+ *   The list plugin requires to be mounted at all positions in order to keep
+ *   track of the current position and call plugins accordingly.
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */

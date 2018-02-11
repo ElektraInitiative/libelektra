@@ -262,15 +262,17 @@ static char * placementToListPositionType (char * placement)
  * Uses module cache from KDB handle.
  * The plugin only needs to be closed after use.
  *
- * @param  kdb KDB handle
+ * @param  kdb    KDB handle
+ * @param  name   Plugin name
+ * @param  config Plugin configuration
  * @return     Plugin handle or NULL on error
  */
-static Plugin * loadPlugin (KDB * kdb, char * name)
+static Plugin * loadPlugin (KDB * kdb, char * name, KeySet * config)
 {
 	// Load required plugin
 	Key * errorKey = keyNew (0);
 	KeySet * moduleCache = kdb->modules; // use kdb module cache
-	Plugin * plugin = elektraPluginOpen (name, moduleCache, NULL, errorKey);
+	Plugin * plugin = elektraPluginOpen (name, moduleCache, config, errorKey);
 
 	int hasError = keyGetMeta (errorKey, "error") != NULL;
 	keyDel (errorKey);
@@ -598,9 +600,15 @@ static int mountGlobalPlugin (KDB * kdb, Plugin * plugin)
 			}
 			else
 			{
-				// TODO manually add list module here, everything needed is stored in system/elektra/globalplugins
-				ELEKTRA_LOG_WARNING ("required position %s/maxonce taken by plugin %s, skipping!", placement,
+				printf ("mountGlobalPlugin: required position %s/maxonce taken by plugin %s, skipping!\n", placement,
+					pluginAtPlacement->name);
+				// cannot manually add list module here as configuration is broken.
+				// the list module needs to be mounted in every position to keep track
+				// of the current position
+				ELEKTRA_LOG_WARNING ("required position %s/maxonce taken by plugin %s, aborting!", placement,
 						     pluginAtPlacement->name);
+				elektraFree (placementList);
+				return 0;
 			}
 		}
 
@@ -688,7 +696,7 @@ int elektraNotificationOpen (KDB * kdb, ElektraIoInterface * ioBinding)
 	// Store I/O interface in kdb
 	elektraSetIoBinding (kdb, ioBinding);
 
-	Plugin * notificationPlugin = loadPlugin (kdb, "internalnotification");
+	Plugin * notificationPlugin = loadPlugin (kdb, "internalnotification", NULL);
 	if (!notificationPlugin)
 	{
 		return 0;

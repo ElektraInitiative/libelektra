@@ -24,10 +24,11 @@ Elektra's notification feature consists of several components.
 While sending and receiving notifications is implemented by plugins,
 applications use APIs provided by wrappers in order to use different plugins.
 
-A wrapper for notifications provides the API for receiving and handling
-notifications.
-A wrapper for I/O operations allows asynchronous notification processing by
-compatible plugins.
+A
+[wrapper for notifications](https://doc.libelektra.org/api/current/html/group__kdbnotification.html)
+provides the API for receiving and handling notifications.
+A [wrapper for I/O operations](https://doc.libelektra.org/api/current/html/group__kdbio.html)
+allows asynchronous notification processing by compatible plugins.
 The I/O wrapper consists of an *interface* used by transport plugins and
 multiple implementations of that interface called *I/O bindings*.
 A I/O binding implements the actual I/O management functions for a specific
