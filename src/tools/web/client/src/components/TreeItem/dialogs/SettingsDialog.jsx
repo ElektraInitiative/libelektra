@@ -116,6 +116,16 @@ export default class SettingsDialog extends Component {
                 />
                 <SavedIcon saved={this.getSaved('description')} />
             </div>
+            <div style={{ display: 'block' }}>
+                <TextField
+                  floatingLabelText="example"
+                  floatingLabelFixed={true}
+                  hintText="provide an example"
+                  onChange={this.handleEdit('example')}
+                  value={this.getMeta('example', '')}
+                />
+                <SavedIcon saved={this.getSaved('example')} />
+            </div>
             <div style={{ display: 'block', marginTop: 8 }}>
                 <SelectField
                   floatingLabelText="type"

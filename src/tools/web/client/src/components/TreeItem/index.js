@@ -124,6 +124,9 @@ export default class TreeItem extends Component {
 
     const titleStyle = { marginTop: -3 }
 
+    const meta = data && data.meta
+    const isCheckbox = meta && meta['check/type'] && meta['check/type'] === 'boolean'
+
     return (
         <a style={{ display: 'flex', alignItems: 'center' }}>
             {(data && !item.children)
@@ -144,6 +147,9 @@ export default class TreeItem extends Component {
                 {!rootLevel &&
                   <ActionButton icon={<ActionDelete />} onClick={this.handleOpen('remove')} />
                 }
+                <i>
+                  {!isCheckbox && meta && meta.description}
+                </i>
             </span>
             <AddDialog
               item={item}

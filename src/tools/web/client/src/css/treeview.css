@@ -21,11 +21,16 @@
 .ExplorerView ul > li:hover {
   opacity: 1;
 }
-.ExplorerView ul > li a .actions > button {
+.ExplorerView ul > li a .actions > button,
+.ExplorerView ul > li a .actions > i {
   opacity: 0;
   transition: opacity 0.2s;
 }
-.ExplorerView ul > li a:hover .actions > button {
+.ExplorerView ul > li a .actions > i {
+  margin-left: 1.5em;
+}
+.ExplorerView ul > li a:hover .actions > button,
+.ExplorerView ul > li a:hover .actions > i {
   opacity: 0.5;
 }
 .ExplorerView ul > li a .actions > button:hover {
