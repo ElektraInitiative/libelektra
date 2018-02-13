@@ -8,7 +8,7 @@
 
 import {
   GET_KEY_SUCCESS, SET_KEY_REQUEST, DELETE_KEY_REQUEST, MOVE_KEY_SUCCESS,
-  SET_META_REQUEST, DELETE_META_REQUEST,
+  SET_META_REQUEST, DELETE_META_REQUEST, COPY_KEY_REQUEST,
 } from '../actions'
 
 const updateState = (state, { id, path, value, meta }) => {
@@ -37,6 +37,13 @@ export default function keyReducer (state = {}, action) {
 
     case SET_KEY_REQUEST:
       return updateState(state, action.request)
+
+    // TODO: recursively copy keys here? is this needed? we refresh on expand anyway
+    case COPY_KEY_REQUEST: {
+      const { id, from, to } = action && action.request
+      const fromData = state[id] && state[id][from]
+      return updateState(state, { ...fromData, id, path: to })
+    }
 
     case SET_META_REQUEST: {
       const { id, path, key, value } = action.request
@@ -70,7 +77,7 @@ export default function keyReducer (state = {}, action) {
     // TODO: recursively move keys here? is this needed? we refresh on expand anyway
     case MOVE_KEY_SUCCESS: {
       const { id, from, to } = action && action.request
-      const fromData = state[id][from]
+      const fromData = state[id] && state[id][from]
       return {
         ...state,
         [id]: state[id] && Object.keys(state[id]).reduce(

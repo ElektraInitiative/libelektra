@@ -11,6 +11,7 @@ import React, { Component } from 'react'
 import ActionDelete from 'material-ui/svg-icons/action/delete'
 import ActionBuild from 'material-ui/svg-icons/action/build'
 import ContentAdd from 'material-ui/svg-icons/content/add'
+import ContentCopy from 'material-ui/svg-icons/content/content-copy'
 
 import ActionButton from './ActionButton.jsx'
 import SavedIcon from './SavedIcon.jsx'
@@ -20,6 +21,7 @@ import ToggleButton from './fields/ToggleButton.jsx'
 import AddDialog from './dialogs/AddDialog.jsx'
 import SettingsDialog from './dialogs/SettingsDialog.jsx'
 import RemoveDialog from './dialogs/RemoveDialog.jsx'
+import DuplicateDialog from './dialogs/DuplicateDialog.jsx'
 
 export default class TreeItem extends Component {
   constructor (...args) {
@@ -62,8 +64,16 @@ export default class TreeItem extends Component {
   handleAdd = (path, addKeyName, addKeyValue) => {
     const { instanceId, setKey, sendNotification } = this.props
     const fullPath = path + '/' + addKeyName
-    setKey(instanceId, fullPath, addKeyValue)
-      .then(() => sendNotification('successfully created key: ' + fullPath))
+    setKey(instanceId, fullPath, addKeyValue).then(() =>
+      sendNotification('successfully created key: ' + fullPath)
+    )
+  }
+
+  handleDuplicate = (from, to) => {
+    const { instanceId, copyKey, sendNotification } = this.props
+    copyKey(instanceId, from, to).then(() =>
+      sendNotification('successfully duplicated key: ' + from + ' -> ' + to)
+    )
   }
 
   handleEdit = (value) => {
@@ -140,12 +150,15 @@ export default class TreeItem extends Component {
             }
             <span className="actions">
                 <SavedIcon saved={this.state.saved} />
-                <ActionButton icon={<ContentAdd />} onClick={this.handleOpen('add')} />
+                <ActionButton icon={<ContentAdd />} onClick={this.handleOpen('add')} tooltip="create sub-key" />
                 {!rootLevel &&
-                  <ActionButton icon={<ActionBuild />} onClick={this.handleOpen('settings')} size={13} />
+                  <ActionButton icon={<ContentCopy />} onClick={this.handleOpen('duplicate')} tooltip="duplicate key" />
                 }
                 {!rootLevel &&
-                  <ActionButton icon={<ActionDelete />} onClick={this.handleOpen('remove')} />
+                  <ActionButton icon={<ActionBuild />} onClick={this.handleOpen('settings')} size={13} tooltip="configure metadata" />
+                }
+                {!rootLevel &&
+                  <ActionButton icon={<ActionDelete />} onClick={this.handleOpen('remove')} tooltip="delete key" />
                 }
                 <i>
                   {!isCheckbox && meta && meta.description}
@@ -156,6 +169,12 @@ export default class TreeItem extends Component {
               open={this.state.dialogs.add}
               onAdd={this.handleAdd}
               onClose={this.handleClose('add')}
+            />
+            <DuplicateDialog
+              item={item}
+              open={this.state.dialogs.duplicate}
+              onDuplicate={this.handleDuplicate}
+              onClose={this.handleClose('duplicate')}
             />
             <SettingsDialog
               item={item}

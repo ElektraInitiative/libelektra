@@ -58,6 +58,20 @@ const mv = (host, path, destination) =>
       return { status: res.status }
     })
 
+const cp = (host, path, destination) =>
+  fetch(`${host}/kdbCp/${encodePath(path)}`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'text/plain',
+      },
+      body: destination,
+    }
+  )
+    .then(res => {
+      return { status: res.status }
+    })
+
 const setmeta = (host, path, key, value) =>
   fetch(`${host}/kdbMeta/${encodePath(path)}`,
     {
@@ -86,4 +100,4 @@ const rmmeta = (host, path, key) =>
       return { status: res.status }
     })
 
-export default { version, get, set, rm, mv, setmeta, rmmeta }
+export default { version, get, set, rm, mv, cp, setmeta, rmmeta }

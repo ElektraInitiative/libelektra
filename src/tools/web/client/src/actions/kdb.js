@@ -108,6 +108,28 @@ export const moveKey = (id, from, to) => thunkCreator({
 
 // ~~~
 
+export const COPY_KEY_REQUEST = 'COPY_KEY_REQUEST'
+export const COPY_KEY_SUCCESS = 'COPY_KEY_SUCCESS'
+export const COPY_KEY_FAILURE = 'COPY_KEY_FAILURE'
+
+export const copyKey = (id, from, to) => thunkCreator({
+  request: { id, from, to },
+  types: [COPY_KEY_REQUEST, COPY_KEY_SUCCESS, COPY_KEY_FAILURE],
+  promise: fetch(
+    `/instances/${id}/kdbCp/${encodePath(from)}`,
+    {
+      credentials: 'same-origin',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'text/plain',
+      },
+      body: to,
+    }
+  ),
+})
+
+// ~~~
+
 export const SET_META_REQUEST = 'SET_META_REQUEST'
 export const SET_META_SUCCESS = 'SET_META_SUCCESS'
 export const SET_META_FAILURE = 'SET_META_FAILURE'

@@ -107,6 +107,7 @@ export default class Configuration extends Component {
               style={{ width: 28, height: 28 }}
               iconStyle={{ width: 16, height: 16 }}
               onClick={this.refresh}
+              tooltip="refresh"
             >
                 <NavigationRefresh />
             </IconButton>
