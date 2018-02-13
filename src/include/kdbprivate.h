@@ -474,10 +474,6 @@ int elektraProcessPlugins (Plugin ** plugins, KeySet * modules, KeySet * referen
 Plugin * elektraPluginMissing (void);
 Plugin * elektraPluginVersion (void);
 
-/*I/O handling*/
-void elektraSetIoBinding (KDB * kdb, ElektraIoInterface * ioBinding);
-ElektraIoInterface * elektraGetIoBinding (KDB * kdb);
-
 /*Trie handling*/
 int trieClose (Trie * trie, Key * errorKey);
 Backend * trieLookup (Trie * trie, const Key * key);

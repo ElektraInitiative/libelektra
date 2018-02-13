@@ -3,10 +3,24 @@
  *
  * @brief Elektra-Notification structures and declarations for
  * application developers
- * 
- * @ingroup kdbnotification
  *
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+ *
+ * @ingroup kdbnotification
+ */
+
+#ifndef KDB_NOTIFICATION_H_
+#define KDB_NOTIFICATION_H_
+
+#include "kdb.h"
+
+/**
  * @defgroup kdbnotification Notification
+ *
+ * @brief Notification feature
+ *
+ * For an introduction to notifications please see the
+ * <a href="doc_tutorials_notifications_md.html">Notification Tutorial</a>.
  *
  * @par Global Mounting
  *
@@ -33,13 +47,13 @@
  *   The list plugin requires to be mounted at all positions in order to keep
  *   track of the current position and call plugins accordingly.
  *
- * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
-#ifndef KDB_NOTIFICATION_H_
-#define KDB_NOTIFICATION_H_
 
-#include "kdb.h"
-#include "kdbio.h"
+#ifdef __cplusplus
+namespace ckdb
+{
+extern "C" {
+#endif
 
 /**
  * Initialize the notification system for the given
@@ -48,11 +62,10 @@
  * May only be called once for a KDB instance. Subsequent calls return 0.
  *
  * @param  kdb         KDB instance
- * @param  ioBinding   I/O binding
  * @retval 1 on success
  * @retval 0 on error
  */
-int elektraNotificationOpen (KDB * kdb, ElektraIoInterface * ioBinding);
+int elektraNotificationOpen (KDB * kdb);
 
 /**
  * Stop the notification system for the given KDB instance.
@@ -97,5 +110,11 @@ typedef void (*ElektraNotificationChangeCallback) (Key * key);
  * @retval 0 on failure
  */
 int elektraNotificationRegisterCallback (KDB * kdb, Key * key, ElektraNotificationChangeCallback callback);
+
+
+#ifdef __cplusplus
+}
+}
+#endif
 
 #endif

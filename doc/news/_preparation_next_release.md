@@ -38,7 +38,7 @@ You can also read the [FOSDEM interview](https://fosdem.org/2018/interviews/mark
 
 - New Logo and Website Theme
 - INI as new default configuration file format
-- Bindings for Asynchronous I/O
+- Notifications API and Bindings for Asynchronous I/O
 - Plugin Processes
 - Lookup with the Order Preserving Minimal Perfect Hash Map
 - <<HIGHLIGHT6>>
@@ -68,25 +68,42 @@ Only when writing out configuration files, configuration files are converted to 
 TODO: write a bit about INI syntax+short guide
 
 
-### Bindings for Asynchronous I/O
+### Notification API and Bindings for Asynchronous I/O
 
-New bindings for asynchronous I/O called "I/O bindings" have been added.
+This release contains an experimental implementation of Elektra's notification
+feature.
+This feature enables applications to get updates when configuration is
+changed at run-time.
+For more details see the preview tutorial at
+[doc/tutorials/notifications.md](https://github.com/ElektraInitiative/libelektra/tree/master/doc/tutorials/notifications.md)
+
+The
+[Notification API](https://doc.libelektra.org/api/current/html/kdbnotification_8h.html)
+is implemented by a new library called `elektra-notification`.
+To use the library you need the new internalnotification plugin.
+Since the plugin is experimental it needs to be enabled when building Elektra
+from source (e.g. by passing
+`-DPLUGINS="ALL;-EXPERIMENTAL;internalnotification"` to `cmake`).
+
+New bindings for asynchronous I/O called "I/O bindings" also have been added.
 These bindings allow Elektra's plugins and other parts to perform
 asynchronous operations.
-
 I/O bindings are opt-in for application developers.
 New features of Elektra that take advantage of I/O bindings will have fallbacks
 where viable.
 These fallbacks will use synchronous I/O thus keeping the status quo.
-For example we plan to add a notification system that facilitates I/O bindings.
-Plugins that send notifications will have synchronous fallbacks while receiving
-plugins are asynchronous only.
-
-For more details see the preview tutorial
-[doc/tutorials/notifications.md](https://github.com/ElektraInitiative/libelektra/tree/master/doc/tutorials/notifications.md)
 
 This release includes an experimental I/O binding for [uv](http://libuv.org/).
-The interface for I/O bindings is currently experimental.
+The interface for I/O bindings is currently experimental and might change in the
+future.
+
+Elektra's notification feature is not complete yet.
+So called "transport plugins" will be responsible for sending and receiving
+notifications using different protocols or libraries (like ZeroMQ, D-Bus or
+Redis).
+These plugins will make use of the new I/O bindings.
+We plan to introduce the first transport plugins with the next release of
+Elektra.
 
 
 ### Plugin Processes
@@ -149,8 +166,8 @@ compiled against an older 0.8 version of Elektra will continue to work
 
 Furthermore:
 
-- Added public headerfiles `kdbio.h`, `kdbiotest.h`.
-- Added private headerfiles `kdbioprivate.h`.
+- Added public headerfiles `kdbnotification.h`, `kdbio.h`, `kdbiotest.h`.
+- Added private headerfiles `kdbnotificationplugin.h`, `kdbioprivate.h`.
 
 ## Portability
 
@@ -172,7 +189,7 @@ These notes are of interest for people maintaining packages of Elektra:
 
 The following files are new:
 
-- Libs: `libelektra-io.so`, `libelektra-io-uv.so`
+- Libs: `libelektra-notification.so`, `libelektra-io.so`, `libelektra-io-uv.so`
 - <TOPIC>: <FILELIST>
 
 ## Notes for Elektra's Developers

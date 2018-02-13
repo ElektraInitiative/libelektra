@@ -26,11 +26,11 @@ void test_openclose (void)
 
 	succeed_if (!elektraNotificationClose (kdb), "could close notification system without open");
 
-	succeed_if (elektraNotificationOpen (kdb, NULL), "could not open notification system");
-	succeed_if (!elektraNotificationOpen (kdb, NULL), "could open notification system twice");
+	succeed_if (elektraNotificationOpen (kdb), "could not open notification system");
+	succeed_if (!elektraNotificationOpen (kdb), "could open notification system twice");
 
 	succeed_if (elektraNotificationClose (kdb), "could not close notification system");
-	succeed_if (elektraNotificationOpen (kdb, NULL), "could not re-open notification system");
+	succeed_if (elektraNotificationOpen (kdb), "could not re-open notification system");
 
 	// cleanup
 	succeed_if (elektraNotificationClose (kdb), "could not close notification system");
@@ -52,7 +52,7 @@ void test_registerInt (void)
 
 	succeed_if (elektraNotificationRegisterInt (kdb, valueKey, &value) == 0, "register should fail before open");
 
-	elektraNotificationOpen (kdb, NULL);
+	elektraNotificationOpen (kdb);
 
 	succeed_if (elektraNotificationRegisterInt (kdb, valueKey, &value), "register failed");
 
@@ -87,7 +87,7 @@ void test_registerCallback (void)
 
 	succeed_if (elektraNotificationRegisterCallback (kdb, valueKey, testCallback) == 0, "register should fail before open");
 
-	elektraNotificationOpen (kdb, NULL);
+	elektraNotificationOpen (kdb);
 
 	succeed_if (elektraNotificationRegisterCallback (kdb, valueKey, testCallback), "register failed");
 

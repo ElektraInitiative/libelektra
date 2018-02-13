@@ -17,31 +17,6 @@
 
 #include <stdio.h>
 
-// TODO better to move this to libs/elektra/io and keep I/O seperate
-/**
- * Set I/O binding for asynchronous I/O operations for KDB instance.
- *
- * @param  kdb       KDB instance
- * @param  ioBinding I/O binding
- */
-void elektraSetIoBinding (KDB * kdb, ElektraIoInterface * ioBinding)
-{
-	kdb->ioBinding = ioBinding;
-}
-
-/**
- * Get I/O binding for asynchronous I/O operations for KDB instance.
- * Returns NULL if no I/O binding was set.
- *
- * @param  kdb KDB instance
- * @return I/O binding or NULL
- */
-ElektraIoInterface * elektraGetIoBinding (KDB * kdb)
-{
-	ELEKTRA_NOT_NULL (kdb);
-	return kdb->ioBinding;
-}
-
 /**
  * @internal
  * Retrieves a function exported by a plugin.
@@ -686,15 +661,13 @@ int unmountGlobalPlugin (KDB * kdb, Plugin * plugin)
 	return 1;
 }
 
-int elektraNotificationOpen (KDB * kdb, ElektraIoInterface * ioBinding)
+int elektraNotificationOpen (KDB * kdb)
 {
 	// Allow open only once
 	if (kdb->notificationPlugin)
 	{
 		return 0;
 	}
-	// Store I/O interface in kdb
-	elektraSetIoBinding (kdb, ioBinding);
 
 	Plugin * notificationPlugin = loadPlugin (kdb, "internalnotification", NULL);
 	if (!notificationPlugin)
@@ -722,9 +695,6 @@ int elektraNotificationClose (KDB * kdb)
 	{
 		return 0;
 	}
-
-	// Remove the I/O binding from kdb
-	elektraSetIoBinding (kdb, NULL);
 
 	Plugin * notificationPlugin = kdb->notificationPlugin;
 

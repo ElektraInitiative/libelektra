@@ -5,7 +5,7 @@
 - infos/provides =
 - infos/recommends =
 - infos/placements = postgetstorage postcommit
-- infos/status = global libc unittest concept unfinished
+- infos/status = global libc unittest concept unfinished experimental
 - infos/metadata =
 - infos/description = Plugin for internal notification
 

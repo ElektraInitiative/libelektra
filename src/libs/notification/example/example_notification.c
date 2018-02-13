@@ -73,7 +73,7 @@ int main (void)
 		return -1;
 	}
 
-	int result = elektraNotificationOpen (kdb, NULL);
+	int result = elektraNotificationOpen (kdb);
 	if (!result)
 	{
 		printf ("could init notification. aborting\n");

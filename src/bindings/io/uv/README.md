@@ -36,7 +36,6 @@ Populated I/O interface
 #include <elektra/kdb.h>
 #include <elektra/kdbio.h>
 #include <elektra/kdbio_uv.h>
-#include <elektra/kdbnotification.h>
 
 #include <uv.h>
 
@@ -52,14 +51,13 @@ void main (void)
 	// Initialize I/O binding tied to event loop
 	ElektraIoInterface * binding = elektraIoUvNew (loop);
 
-	// Initialize notification wrapper
-	elektraNotificationOpen (kdb, binding);
+	// Set I/O binding
+	elektraIoSetBinding (kdb, binding);
 
 	// Start the event loop
 	uv_run (loop, UV_RUN_DEFAULT);
 
 	// Cleanup before exit
-	elektraNotificationClose (kdb);
 	elektraIoBindingCleanup (binding);
 	uv_loop_close (loop);
 }

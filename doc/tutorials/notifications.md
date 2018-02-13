@@ -109,14 +109,18 @@ void main (void)
 	// Initialize I/O binding tied to event loop
 	ElektraIoInterface * binding = elektraIoUvNew (loop);
 
+  // Use I/O binding for our kdb instance
+  elektraIoSetBinding (kdb, binding);
+
 	// Initialize notification wrapper
-	elektraNotificationOpen (kdb, binding);
+	elektraNotificationOpen (kdb);
 
 	// Start the event loop
 	uv_run (loop, UV_RUN_DEFAULT);
 
 	// Cleanup
-	elektraIoBindingCleanup (binding);
+  elektraNotificationClose (kdb);
+  elektraIoBindingCleanup (binding);
 	uv_loop_close (loop);
 }
 
@@ -209,7 +213,7 @@ int main (void)
 {
 	KDB * repo;
 
-	// ... initialization of KDB and I/O binding
+	// ... initialization of KDB, I/O binding and notifications
 
 	Key * configBase = keyNew ("/sw/myorg/myprogram/#0/current", KEY_END);
 	Key * color = keyNew ("/sw/myorg/myprogram/#0/current/color", KEY_END);
