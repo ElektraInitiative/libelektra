@@ -343,7 +343,7 @@ static void test_intNoUpdateWithValueExceedingIntMin (void)
 	PLUGIN_CLOSE ();
 }
 
-static void test_callbackCalledWithKey_callback (Key * key)
+static void test_callback (Key * key)
 {
 	callback_called = 1;
 	callback_keyValue = (char *)keyValue (key);
@@ -361,14 +361,40 @@ static void test_callbackCalledWithKey (void)
 	Key * valueKey = keyNew ("user/test/internalnotification/value", KEY_VALUE, value, KEY_END);
 	KeySet * ks = ksNew (1, valueKey, KS_END);
 
-	succeed_if (internalnotificationRegisterCallback (plugin, valueKey, test_callbackCalledWithKey_callback) == 1,
+	succeed_if (internalnotificationRegisterCallback (plugin, valueKey, test_callback) == 1,
 		    "call to elektraInternalnotificationRegisterCallback was not successful");
 
 	elektraInternalnotificationUpdateRegisteredKeys (plugin, ks);
 
-	succeed_if (callback_called, "registered value was updated");
+	succeed_if (callback_called, "registered value was not updated");
 	succeed_if_same_string (callback_keyName, keyName (valueKey));
 	succeed_if_same_string (callback_keyValue, value);
+
+	ksDel (ks);
+	PLUGIN_CLOSE ();
+}
+
+static void test_callbackCalledWithChangeDetection (void)
+{
+	printf ("test callback is not called when key has not changed\n");
+
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("internalnotification");
+
+	char * value = "foobaroo!";
+	Key * valueKey = keyNew ("user/test/internalnotification/value", KEY_VALUE, value, KEY_END);
+	KeySet * ks = ksNew (1, valueKey, KS_END);
+
+	succeed_if (internalnotificationRegisterCallback (plugin, valueKey, test_callback) == 1,
+		    "call to elektraInternalnotificationRegisterCallback was not successful");
+
+	elektraInternalnotificationUpdateRegisteredKeys (plugin, ks);
+
+	succeed_if (callback_called, "registered value was not updated");
+
+	callback_called = 0;
+	elektraInternalnotificationUpdateRegisteredKeys (plugin, ks);
+	succeed_if (callback_called == 0, "registered value was updated but value has not changed");
 
 	ksDel (ks);
 	PLUGIN_CLOSE ();
@@ -395,6 +421,7 @@ int main (int argc, char ** argv)
 
 	printf ("\nregisterCallback\n----------------\n");
 	test_callbackCalledWithKey ();
+	test_callbackCalledWithChangeDetection ();
 
 	printf ("\ntestmod_internalnotification RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

@@ -29,6 +29,7 @@ struct _KeyRegistration
 {
 	char * name;
 	KeyRegistrationType type;
+	char * lastValue;
 	union {
 		int * variable;
 		ElektraNotificationChangeCallback callback;
@@ -58,7 +59,7 @@ typedef struct _PluginState PluginState;
  */
 static KeyRegistration * elektraInternalnotificationAddNewRegistration (PluginState * pluginState)
 {
-	KeyRegistration * item = elektraMalloc (sizeof *item);
+	KeyRegistration * item = elektraCalloc (sizeof *item);
 	if (item == NULL)
 	{
 		return NULL;
@@ -98,8 +99,42 @@ void elektraInternalnotificationUpdateRegisteredKeys (Plugin * plugin, KeySet * 
 	while (registeredKey != NULL)
 	{
 		Key * key = ksLookupByName (keySet, registeredKey->name, 0);
-		if (key != 0)
+		if (key == NULL)
 		{
+			continue;
+		}
+
+		// Detect changes for string keys
+		int changed = 0;
+		if (!keyIsString (key))
+		{
+			// always notify for binary keys
+			changed = 1;
+		}
+		else
+		{
+			const char * currentValue = keyString (key);
+			changed = registeredKey->lastValue == NULL || strcmp (currentValue, registeredKey->lastValue) != 0;
+
+			if (changed)
+			{
+				// Save last value
+				char * buffer = elektraStrDup (currentValue);
+				if (buffer)
+				{
+					if (registeredKey->lastValue != NULL)
+					{
+						// Free previous value
+						elektraFree (registeredKey->lastValue);
+					}
+					registeredKey->lastValue = buffer;
+				}
+			}
+		}
+
+		if (changed)
+		{
+			// Perform actions depending on type
 			switch (registeredKey->type)
 			{
 			case TYPE_INT:
@@ -347,6 +382,10 @@ int elektraInternalnotificationClose (Plugin * handle, Key * parentKey ELEKTRA_U
 		{
 			next = current->next;
 			elektraFree (current->name);
+			if (current->lastValue != NULL)
+			{
+				elektraFree (current->lastValue);
+			}
 			elektraFree (current);
 
 			current = next;

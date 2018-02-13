@@ -7,13 +7,15 @@
  *
  */
 
-#include <kdbassert.h>
-#include <kdbhelper.h>
+#include <kdb.h>
 #include <kdbnotification.h>
 
 #include <signal.h>
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
+
+static volatile int keepRunning = 0;
 
 // from https://en.wikipedia.org/wiki/ANSI_escape_code#Colors
 #define ANSI_COLOR_RESET "\x1b[0m"
@@ -24,6 +26,7 @@
 void setTerminalColor (Key * color)
 {
 	const char * value = keyString (color);
+	printf ("Callback called. Changing color to %s\n", value);
 
 	if (strcmp (value, "red") == 0)
 	{
@@ -49,24 +52,38 @@ void resetTerminalColor (void)
 	printf (ANSI_COLOR_RESET "\n");
 }
 
-void debugKeySet (KeySet * ks)
+void printKeyValue (KeySet * ks, Key * search, char * messageNotSet)
 {
-	Key * cur;
-	ksRewind (ks);
-	while ((cur = ksNext (ks)) != NULL)
+	Key * found = ksLookup (ks, search, 0);
+	printf ("Key \"%s\"", keyName (search));
+	if (!found)
 	{
-		printf ("debugKeySet %s = %s\n", keyName (cur), keyString (cur));
+		printf (" not set. %s", messageNotSet);
 	}
-	return;
+	else
+	{
+		printf (" has value \"%s\"", keyString (found));
+	}
+	printf ("\n");
+}
+
+void onSIGINT (int signal)
+{
+	if (signal == SIGINT)
+	{
+		keepRunning = 1;
+	}
 }
 
 int main (void)
 {
+	// Cleanup on SIGINT
+	signal (SIGINT, onSIGINT);
+
 	KeySet * config = ksNew (20, KS_END);
 
 	Key * key = keyNew ("/sw/tests/example_notification/#0/current", KEY_END);
 	KDB * kdb = kdbOpen (key);
-	ELEKTRA_NOT_NULL (kdb);
 	if (kdb == NULL)
 	{
 		printf ("could not open KDB. aborting\n");
@@ -81,25 +98,47 @@ int main (void)
 	}
 
 	int value = 0;
-	Key * valueKey = keyNew ("/sw/tests/example_notification/#0/current/value", KEY_END);
-	result = elektraNotificationRegisterInt (kdb, valueKey, &value);
+	Key * intKeyToWatch = keyNew ("/sw/tests/example_notification/#0/current/value", KEY_END);
+	result = elektraNotificationRegisterInt (kdb, intKeyToWatch, &value);
 	if (!result)
 	{
 		printf ("could not register variable. aborting\n");
 		return -1;
 	}
 
-	Key * colorKey = keyNew ("/sw/tests/example_notification/#0/current/color", KEY_END);
-	result = elektraNotificationRegisterCallback (kdb, colorKey, &setTerminalColor);
+	Key * callbackKeyToWatch = keyNew ("/sw/tests/example_notification/#0/current/color", KEY_END);
+	result = elektraNotificationRegisterCallback (kdb, callbackKeyToWatch, &setTerminalColor);
 	if (!result)
 	{
 		printf ("could not register callback. aborting!");
 		return -1;
 	}
 
-	kdbGet (kdb, config, key);
-	debugKeySet (config);
+	printf ("Press Ctl+C to exit.\n\n");
 
-	printf ("Heyo! My value is %d\n", value);
+	// repeatedly call kdbGet and print variables
+	while (!keepRunning)
+	{
+		// After this kdbGet the integer variable is updated and the callback was called.
+		// TODO remove polling or make it optional when "transport plugins" are available
+		kdbGet (kdb, config, key);
+
+		// Print values
+		printf ("My integer value is %d\n", value);
+		printKeyValue (config, intKeyToWatch, "Try setting it to any integer value!");
+		printKeyValue (config, callbackKeyToWatch, "Try setting it to \"red\", \"green\" or \"blue\"!");
+		printf ("\n");
+
+		sleep (2);
+	}
+
+	// Cleanup
 	resetTerminalColor ();
+	elektraNotificationClose (kdb);
+	kdbClose (kdb, key);
+	ksDel (config);
+	keyDel (intKeyToWatch);
+	keyDel (callbackKeyToWatch);
+	keyDel (key);
+	printf ("cleanup done!\n");
 }
