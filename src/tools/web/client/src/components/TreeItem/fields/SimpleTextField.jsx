@@ -23,28 +23,30 @@ export default class SimpleTextField extends Component {
     const val = this.state.value === false ? value : this.state.value
 
     return (
-      <TextField
-        id={id}
-        value={val}
-        errorText={this.state.error}
-        hintText={meta && meta.example}
-        onChange={(evt) => {
-          if (this.state.timeout) clearTimeout(this.state.timeout)
-          const currentValue = evt.target.value
-          this.setState({
-            value: currentValue,
-            timeout: setTimeout(() => {
-              const validationError = validateType(meta, currentValue)
-              if (validationError) {
-                return this.setState({ error: validationError })
-              } else {
-                this.setState({ error: false })
-              }
-              onChange(currentValue)
-            }, 500),
-          })
-        }}
-      />
+      <div draggable="true" onDragStart={e => e.preventDefault()}>
+        <TextField
+          id={id}
+          value={val}
+          errorText={this.state.error}
+          hintText={meta && meta.example}
+          onChange={(evt) => {
+            if (this.state.timeout) clearTimeout(this.state.timeout)
+            const currentValue = evt.target.value
+            this.setState({
+              value: currentValue,
+              timeout: setTimeout(() => {
+                const validationError = validateType(meta, currentValue)
+                if (validationError) {
+                  return this.setState({ error: validationError })
+                } else {
+                  this.setState({ error: false })
+                }
+                onChange(currentValue)
+              }, 500),
+            })
+          }}
+        />
+      </div>
     )
   }
 }
