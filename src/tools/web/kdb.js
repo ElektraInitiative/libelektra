@@ -170,7 +170,7 @@ const get = (path) =>
 
 // set value at given `path`
 const set = (path, value) =>
-  safeExec(escapeValues`kdb set ${path} ${value}`)
+  safeExec(escapeValues`kdb set ${path} -- ${value}`)
 
 // move value from given `path` to `destination`
 const mv = (path, destination) =>
