@@ -114,9 +114,9 @@ parseTypeSpecification :: Key -> IO TypeSpecification
 parseTypeSpecification k = do
   pName <- specPrefixKey >>= keyGetRelativeName k
   pVar  <- parsePathVariable <$> keyString k
-  pType <- ifKey (keyGetMeta k "specElektra/type") (fmap parseTypeParameters . keyString) (return [])
+  pType <- ifKey (keyGetMeta k "elektra/spec/type") (fmap parseTypeParameters . keyString) (return [])
   pImpl <- let parseImpl = fmap (Just . map T.unpack . T.splitOn (T.pack "\\n") . T.pack) . keyString in
-           ifKey (keyGetMeta k "specElektra/impl") parseImpl (return Nothing)
+           ifKey (keyGetMeta k "elektra/spec/impl") parseImpl (return Nothing)
   return $ TypeSpecification pName pVar pType pImpl
   where
     parseTypeParameters      = fmap (translate . splitOn "::") . splitOn "->"
