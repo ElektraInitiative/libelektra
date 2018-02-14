@@ -63,20 +63,11 @@ keyPtrNull (Key ptr) = withForeignPtr ptr (return . (== nullPtr))
 -- as we use haskell's reference counting here, increase the number by one
 -- so it gets deleted properly when haskell calls the finalizer
 keyNew :: String -> IO Key
-keyNew name = do
-  key <- keyNewRaw name KeyEnd
-  keyIncRef key
-  return key
+keyNew name = keyNewRaw name KeyEnd
 keyNewWithValue :: String -> String -> IO Key
-keyNewWithValue name value = do
-  key <- keyNewRawWithValue name KeyValue value KeyEnd
-  keyIncRef key
-  return key
+keyNewWithValue name value = keyNewRawWithValue name KeyValue value KeyEnd
 keyNewWithFlagsAndValue :: String -> ElektraKeyVarargs -> String -> IO Key
-keyNewWithFlagsAndValue name flags value = do
-  key <- keyNewRawWithFlagsAndValue name KeyFlags flags KeyValue value KeyEnd
-  keyIncRef key
-  return key
+keyNewWithFlagsAndValue name flags value = keyNewRawWithFlagsAndValue name KeyFlags flags KeyValue value KeyEnd
 {#fun unsafe variadic keyNew[keyswitch_t] as keyNewRaw {`String', `ElektraKeyVarargs'} -> `Key' #}
 {#fun unsafe variadic keyNew[keyswitch_t, const char *, keyswitch_t]
   as keyNewRawWithValue {`String', `ElektraKeyVarargs', `String', `ElektraKeyVarargs'} -> `Key' #}
@@ -84,12 +75,7 @@ keyNewWithFlagsAndValue name flags value = do
   as keyNewRawWithFlagsAndValue 
     {`String', `ElektraKeyVarargs', `ElektraKeyVarargs', `ElektraKeyVarargs', `String', `ElektraKeyVarargs'} 
     -> `Key' #}
-keyDup :: Key -> IO Key
-keyDup key = do
-  dup <- keyDupRaw key
-  keyIncRef dup
-  return dup
-{#fun unsafe keyDup as keyDupRaw {`Key'} -> `Key' #}
+{#fun unsafe keyDup {`Key'} -> `Key' #}
 {#fun unsafe keyCopy {`Key', `Key'} -> `Int' #}
 {#fun unsafe keyClear {`Key'} -> `Int' #}
 {#fun unsafe keyIncRef {`Key'} -> `Int' #}
@@ -154,11 +140,17 @@ keySet key = keySetString key . show
 -- ***
 
 {#fun unsafe keyRewindMeta {`Key'} -> `Int' #}
-{#fun unsafe keyNextMeta {`Key'} -> `Key' #}
-{#fun unsafe keyCurrentMeta {`Key'} -> `Key' #}
+keyNextMeta :: Key -> IO Key
+keyNextMeta = incRef . keyNextMetaRaw
+{#fun unsafe keyNextMeta as keyNextMetaRaw {`Key'} -> `Key' #}
+keyCurrentMeta :: Key -> IO Key
+keyCurrentMeta = incRef . keyCurrentMetaRaw
+{#fun unsafe keyCurrentMeta as keyCurrentMetaRaw {`Key'} -> `Key' #}
 {#fun unsafe keyCopyMeta {`Key', `Key', `String'} -> `Int' #}
 {#fun unsafe keyCopyAllMeta {`Key', `Key'} -> `Int' #}
-{#fun unsafe keyGetMeta {`Key', `String'} -> `Key' #}
+keyGetMeta :: Key -> String -> IO Key
+keyGetMeta k = incRef . keyGetMetaRaw k
+{#fun unsafe keyGetMeta as keyGetMetaRaw {`Key', `String'} -> `Key' #}
 {#fun unsafe keySetMeta {`Key', `String', `String'} -> `Int' #}
 keyListMeta :: Key -> IO [Key]
 keyListMeta key = keyRewindMeta key >> listMeta []
@@ -166,7 +158,7 @@ keyListMeta key = keyRewindMeta key >> listMeta []
     listMeta res = do
       cur <- keyNextMeta key
       isNull <- keyPtrNull cur
-      if isNull then return res else keyIncRef cur >> liftM (cur :) (listMeta res)
+      if isNull then return res else liftM (cur :) (listMeta res)
 
 -- ***
 -- KEY TESTING METHODS
@@ -199,6 +191,12 @@ instance Eq Key where
 -- ***
 -- ADDITIONAL HELPERS USEFUL IN HASKELL
 -- ***
+
+-- Haskell always calls keyDel whenever we get a Key from the FFI
+-- So for some functions (metadata) we have to increase the reference counter
+-- to avoid deleting the metadata still associated with a key
+incRef :: IO Key -> IO Key
+incRef k = ifKey (k) (\i -> keyIncRef i >> return i) k
 
 ifKey :: IO Key -> (Key -> IO a) -> IO a -> IO a
 ifKey k t f = do
