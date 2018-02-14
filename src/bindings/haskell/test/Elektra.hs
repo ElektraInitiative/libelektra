@@ -52,6 +52,11 @@ main = hspec $ do
       join $ liftM2 shouldBe (ksGetSize ks) (ksGetSize ks2)
       _ <- ksPop ks
       join $ liftM2 shouldNotBe (ksGetSize ks) (ksGetSize ks2)
+    it "can list it successfully" $ do
+      key <- keyNew name
+      ks <- ksNew 1
+      _ <- ksAppendKey ks key
+      ksList ks >>= (`shouldBe` [key])
   where
     name = "/tests/testhaskell_cabal"
     otherName = "/tests/testhaskell_cabal/other"
