@@ -1,7 +1,9 @@
 include (LibAddMacros)
 
 find_package (Pluginprocess)
+plugin_check_if_included ("dump")
 
+if (NOT NOT_INCLUDED)
 if (PLUGINPROCESS_FOUND)
 add_plugin (process
 	SOURCES
@@ -17,4 +19,7 @@ add_plugin (process
 	)
 else (PLUGINPROCESS_FOUND)
 	message ("${PLUGINPROCESS_NOTFOUND_INFO}, excluding pluginprocess library, thus excluding the process plugin")
-endif(PLUGINPROCESS_FOUND)
+endif (PLUGINPROCESS_FOUND)
+else (NOT NOT_INCLUDED)
+	message ("dump plugin not found (${NOT_INCLUDED}), excluding the process plugin")
+endif (NOT NOT_INCLUDED)
