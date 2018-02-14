@@ -91,7 +91,7 @@ type family TypeFinalizer (a :: BaseType) :: BaseType where
   TypeFinalizer ('TyLft a b c)    = ('TyLft a b (TypeFinalizer c))
   TypeFinalizer a                 = a
 
--- meaing of the rules from top to bottom:
+-- meaning of the rules from top to bottom:
   -- We can't assign anything to out types
   -- If the second one has no information yet, we ignore it and stick to the current one
   -- The first type has absolutely no information yet, so it will use the type of the second
