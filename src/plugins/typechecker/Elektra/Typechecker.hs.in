@@ -22,14 +22,7 @@ import Foreign.Ptr
 import qualified Data.Text as T
 
 typecheck :: KeySet -> Key -> IO ()
-typecheck ks k =
-  #ifdef ENABLE_LOGGER_ON
-  withGlobalLogging (LogConfig Nothing True)
-  #else
-  withGlobalLogging (LogConfig Nothing False)
-  #endif
-  $ do
-
+typecheck ks k = withGlobalLogging (LogConfig Nothing ("@ENABLE_LOGGER@" == "ON")) $ do
   logDebug "Parse Specifications now."
 
   typeSpecs <- parseTypeSpecifications ks
@@ -59,7 +52,7 @@ typecheck ks k =
 
 keyInterpreter :: FilePath -> InterpreterT IO ()
 keyInterpreter specFile = do
-  loadModules ["@CMAKE_INSTALL_PREFIX@/@KDB_DB_SPEC@/specElektra.hs", specFile]
+  loadModules ["@CMAKE_INSTALL_PREFIX@/@KDB_DB_SPEC@/SpecElektra.hs", specFile]
   say "Loaded our rendered specification, now we can infer the stuff in it."
   setTopLevelModules ["TestSpecification"]
   getModuleExports "TestSpecification" >>= mapM_ showTypes . filter isFun . filter (not . isPrefixOf "specElektraRawKey" . name)

@@ -54,7 +54,7 @@ extract fm ks = (ks { functionCandidates = functionCandidates ks \\ targetingOth
     targetingOther = filter targetsOther $ functionCandidates ks
     reroute (f, _) = (f, path ks)
     targetsOther   = maybe False (not . isSelf . typePathVariable . last . typeParameters) 
-                   . (M.!?) fm . functionBaseName . fst
+                   . flip M.lookup fm . functionBaseName . fst
     isSelf Self    = True
     isSelf _       = False
 
@@ -65,7 +65,7 @@ mkModule = Module ()
   [LanguagePragma () [name "DataKinds", name "TypeOperators", name "NoImplicitPrelude",
                       name "AllowAmbiguousTypes", name "GADTs"]]
   [ImportDecl {importAnn = (),
-               importModule = ModuleName () "SpecElektra",
+               importModule = ModuleName () "Elektra.SpecElektra",
                importQualified = False, importSrc = False, importSafe = False,
                importPkg = Nothing, importAs = Nothing, importSpecs = Nothing}
   ,ImportDecl {importAnn = (),
