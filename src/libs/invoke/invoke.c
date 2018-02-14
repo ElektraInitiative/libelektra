@@ -294,7 +294,7 @@ int elektraInvoke2Args (ElektraInvokeHandle * handle, const char * elektraPlugin
 {
 	if (!handle || !elektraPluginFunctionName) return -2;
 
-	// If we cast this right away it will hang if the function is not
+	// If we cast this right away it will hang if the function is not exported by the plugin
 	const void * uncastedFunc = elektraInvokeGetFunction (handle, elektraPluginFunctionName);
 
 	if (!uncastedFunc)

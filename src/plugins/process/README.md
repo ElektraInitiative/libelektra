@@ -1,7 +1,7 @@
 - infos = Information about the process plugin is in keys below
 - infos/author = Armin Wurzinger <e1528532@libelektra.org>
 - infos/licence = BSD
-- infos/needs = dump
+- infos/needs =
 - infos/provides =
 - infos/recommends =
 - infos/placements = prerollback rollback postrollback getresolver pregetstorage getstorage postgetstorage setresolver presetstorage setstorage precommit commit postcommit
