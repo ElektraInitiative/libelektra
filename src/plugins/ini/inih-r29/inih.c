@@ -9,6 +9,7 @@ http://code.google.com/p/inih/
 
 #include "inih.h"
 #include <ctype.h>
+#include <kdbassert.h>
 #include <kdblogger.h>
 #include <regex.h>
 #include <stdio.h>
@@ -63,19 +64,6 @@ static char * strncpy0 (char * dest, const char * src, size_t size)
 	strncpy (dest, src, size);
 	dest[size - 1] = '\0';
 	return dest;
-}
-
-static char * strrstr (const char * haystack, const char * needle)
-{
-	char * prev = NULL;
-	char * next = NULL;
-	char * ptr = (char *)haystack;
-	while ((next = strstr (ptr, needle)) != NULL)
-	{
-		prev = next;
-		ptr = next + 1;
-	}
-	return prev;
 }
 
 static int isContinuation (const char * line, const struct IniConfig * config)
@@ -435,6 +423,7 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 					char tmpDel[4] = { ' ', delim, ' ', '\0' };
 					end = strstr (ptr, tmpDel);
 					name = NULL;
+					ELEKTRA_ASSERT (*ptr == delim, "Variable `*ptr` does not contain delimiter!");
 					if (end)
 					{
 						// keyname == "=" or " = " where '=' is the delimiter
@@ -452,7 +441,7 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 							*(ptr - 2) = '\0';
 						name = ptr;
 					}
-					else if (*ptr == delim)
+					else
 					{
 						*ptr = '\0';
 						rstrip (start);
@@ -461,14 +450,6 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 							*(ptr - 1) = '\0';
 						else if (*(ptr - 2) == '"')
 							*(ptr - 2) = '\0';
-						name = start;
-					}
-					else
-					{
-						end = strrstr (start + 1, tmpDel);
-						*end = '\0';
-						ptr = end + 2;
-						rstrip (start);
 						name = start;
 					}
 					value = ptr + 1;
