@@ -468,7 +468,7 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 					}
 					else
 					{
-						if (!end) end = strrstr (start + 1, tmpDel);
+						end = strrstr (start + 1, tmpDel);
 						*end = '\0';
 						ptr = end + 2;
 						rstrip (start);
