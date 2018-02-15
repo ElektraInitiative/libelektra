@@ -419,7 +419,7 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 				}
 				if (*ptr)
 				{
-					ELEKTRA_LOG_DEBUG ("Found double quote character");
+					ELEKTRA_LOG_DEBUG ("Found double quote character around delimiter");
 					char tmpDel[4] = { ' ', delim, ' ', '\0' };
 					end = strstr (ptr, tmpDel);
 					name = NULL;
@@ -473,7 +473,7 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 				}
 				else
 				{
-					ELEKTRA_LOG_DEBUG ("Found no double quote character");
+					ELEKTRA_LOG_DEBUG ("Found no double quote character around delimiter");
 					rstrip (start);
 					name = start;
 					end = strchr (start, delim);
