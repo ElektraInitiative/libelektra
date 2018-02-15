@@ -93,7 +93,9 @@ before_install:
       brew install openssl
       brew install python
       brew install python3
-      brew install qt
+      # Since Qt 5.10.1 GCC is unable to compile the Qt-GUI under macOS printing the following error message:
+      #   'init_priority' attribute is not supported on this platform
+      brew install qt@5.5
       brew install swig
       brew install yajl
       pip2 install cheetah # Required by kdb-gen
