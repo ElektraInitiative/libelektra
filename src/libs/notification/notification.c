@@ -643,7 +643,6 @@ int unmountGlobalPlugin (KDB * kdb, Plugin * plugin)
 					elektraFree (placementList);
 					return 0;
 				}
-				// TODO remove manually added list module here, if implemnted in mountGlobalPlugin
 			}
 			else
 			{
