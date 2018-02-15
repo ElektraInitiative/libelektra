@@ -424,12 +424,9 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 			{
 				ELEKTRA_LOG_DEBUG ("Found multiple delimiters");
 				ptr = start + 1;
-				while (*ptr)
+				while (*ptr && (*ptr != delim ||
+						(*(ptr + 1) != '"' && *(ptr + 2) != '"' && *(ptr - 1) != '"' && *(ptr - 2) != '"')))
 				{
-					if (*ptr == delim)
-					{
-						if (*(ptr + 1) == '"' || *(ptr + 2) == '"' || *(ptr - 1) == '"' || *(ptr - 2) == '"') break;
-					}
 					++ptr;
 				}
 				if (*ptr)
