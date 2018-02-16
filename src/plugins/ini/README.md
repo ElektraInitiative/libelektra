@@ -297,3 +297,24 @@ kdb rm -r /examples/ini
 sudo kdb umount /examples/ini
 ```
 
+## Special Characters
+
+The INI plugin also supports values and keys containing delimiter characters (`=`) properly.
+
+```sh
+sudo kdb mount test.ini user/examples/ini ini
+
+printf '[section1]\n'    >  `kdb file user/examples/ini`
+printf 'hello = world\n' >> `kdb file user/examples/ini`
+
+kdb get user/examples/ini/section1/hello
+#> world
+
+kdb set user/examples/ini/section1/x=x 'a + b = b + a'
+kdb get user/examples/ini/section1/x=x
+#> a + b = b + a
+
+# Undo modifications
+kdb rm -r user/examples/ini
+sudo kdb umount user/examples/ini
+```

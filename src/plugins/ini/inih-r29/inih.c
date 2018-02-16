@@ -411,92 +411,72 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 			else
 			{
 				ELEKTRA_LOG_DEBUG ("Found multiple delimiters");
-				ptr = start + 1;
-				while (*ptr && (*ptr != delim ||
-						(*(ptr + 1) != '"' && *(ptr + 2) != '"' && *(ptr - 1) != '"' && *(ptr - 2) != '"')))
-				{
-					++ptr;
-				}
-				if (*ptr)
-				{
-					ELEKTRA_LOG_DEBUG ("Found double quote character around delimiter");
-					char tmpDel[4] = { ' ', delim, ' ', '\0' };
-					end = strstr (ptr, tmpDel);
-					name = NULL;
-					ELEKTRA_ASSERT (*ptr == delim, "Variable `*ptr` does not contain delimiter!");
-					if (end)
-					{
-						// keyname == "=" or " = " where '=' is the delimiter
-						if (*(ptr + 1) == '"')
-						{
-							*(ptr + 1) = '\0';
-						}
-						else if (*(ptr + 2) == '"')
-						{
-							*(ptr + 2) = '\0';
-						}
-						if (*(ptr - 1) == '"')
-							*(ptr - 1) = '\0';
-						else if (*(ptr - 2) == '"')
-							*(ptr - 2) = '\0';
-						name = ptr;
-					}
-					else
-					{
-						*ptr = '\0';
-						rstrip (start);
-						if (*start == '"') ++start;
-						if (*(ptr - 1) == '"')
-							*(ptr - 1) = '\0';
-						else if (*(ptr - 2) == '"')
-							*(ptr - 2) = '\0';
-						name = start;
-					}
-					value = ptr + 1;
 
-					end = find_char_or_comment (value, '\0');
-					if (*end == ';') *end = '\0';
-					rstrip (value);
-					if (*value == '"' || *(value + 1) == '"')
+				end = start + 1;
+				if (*start == '"')
+				{
+					/* Quoted Name:
+						- The name has to end with a double quote
+						- We do not allow any double quotes inside the name
+					 */
+					name = start + 1;
+					while (*end && *end != '"')
 					{
-						if (*value == '"')
-							*(value++) = '\0';
-						else if (*(value + 1) == '"')
-						{
-							*(value + 1) = '\0';
-							value += 2;
-						}
-						while ((*end != '"') && !isprint (*end) && end > value)
-							--end;
-						if (*end == '"') *end = '\0';
+						end++;
 					}
+					if (!*end)
+					{
+						error = lineno;
+						break;
+					}
+					*end = '\0';
+
+					value = end + 1;
+					value = lskip (value);
+					if (!*value || *value != delim)
+					{
+						error = lineno;
+						break;
+					}
+					value++;
 				}
 				else
 				{
-					ELEKTRA_LOG_DEBUG ("Found no double quote character around delimiter");
-					rstrip (start);
+					/* Unquoted Name:
+						- The name can not contain a delimiter unless it is the very first character
+						- Trailing whitespace is removed from the name
+					 */
 					name = start;
-					end = strchr (start, delim);
+					while (*end && *end != delim)
+					{
+						end++;
+					}
 					if (!end)
 					{
-						ELEKTRA_LOG_DEBUG ("Found no delimiter");
-						value = NULL;
+						error = lineno;
+						break;
 					}
-					else
+					*end = '\0';
+					start = rstrip (start);
+					value = end + 1;
+				}
+				value = lskip (value);
+
+				end = find_char_or_comment (value, '\0');
+				if (*end == ';') *end = '\0';
+				rstrip (value);
+				if (*value == '"' || *(value + 1) == '"')
+				{
+					if (*value == '"')
+						*(value++) = '\0';
+					else if (*(value + 1) == '"')
 					{
-						ELEKTRA_LOG_DEBUG ("Found delimiter");
-						if (*end == delim) *end = '\0';
-						rstrip (end - 1);
-						value = lskip (end + 1);
-						rstrip (value);
-						if (*value == '"')
-						{
-							*(value++) = '\0';
-							while ((*end != '"') && !isprint (*end) && end > value)
-								--end;
-							if (*end == '"') *end = '\0';
-						}
+						*(value + 1) = '\0';
+						value += 2;
 					}
+					while ((*end != '"') && !isprint (*end) && end > value)
+						--end;
+					if (*end == '"') *end = '\0';
 				}
 				strncpy0 (prev_name, name, sizeof (prev_name));
 
