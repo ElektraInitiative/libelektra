@@ -18,12 +18,12 @@ typedef struct _mmapHeader MmapHeader;
 
 struct _mmapHeader
 {
-	size_t mmapMagicNumber;	/**<Magic number for consistency check */
+	size_t mmapMagicNumber; /**<Magic number for consistency check */
 	size_t mmapSize;	/**<Size of the complete mapping in bytes */
 	size_t dataSize;	/**<Size of the data block in bytes: dynamic properties like key name, value, etc. */
 	size_t numKeys;		/**<Number of keys in the KeySet */
-	size_t numMetaKeys;	/**<Number of unique meta-keys (i.e. not counting shallow copies) */
-	size_t numMetaKeySets;	/**<Number of meta KeySets */
+	size_t numMetaKeys;     /**<Number of unique meta-keys (i.e. not counting shallow copies) */
+	size_t numMetaKeySets;  /**<Number of meta KeySets */
 	char * mmapAddr;	/**<Base pointer to mapped region (points to the start of this struct) */
 };
 
@@ -46,9 +46,6 @@ int elektraMmapstorageOpen (Plugin * handle, Key * errorKey);
 int elektraMmapstorageClose (Plugin * handle, Key * errorKey);
 int elektraMmapstorageGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraMmapstorageSet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraMmapstorageError (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraMmapstorageCheckConfig (Key * errorKey, KeySet * conf);
-
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (mmapstorage);
 

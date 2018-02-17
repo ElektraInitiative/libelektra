@@ -18,13 +18,13 @@
 //#include <fcntl.h>	// open()
 #include <assert.h>
 #include <errno.h>
-#include <stdio.h>     // fopen(), fileno()
+#include <stdio.h> // fopen(), fileno()
 //#include <stdlib.h>    // exit()
 #include <limits.h>    // SSIZE_MAX
 #include <sys/mman.h>  // mmap()
 #include <sys/stat.h>  // stat()
-#include <unistd.h>    // close(), ftruncate()
 #include <sys/types.h> // ftruncate ()
+#include <unistd.h>    // close(), ftruncate()
 
 
 #define SIZEOF_KEY (sizeof (Key))
@@ -104,10 +104,8 @@ static FILE * mmapOpenFile (Key * parentKey, const char * mode, int errnosave)
 
 	if ((fp = fopen (keyString (parentKey), mode)) == 0)
 	{
-		ELEKTRA_SET_ERROR_GET (parentKey);
 		ELEKTRA_LOG_WARNING ("error opening file %s", keyString (parentKey));
 		ELEKTRA_LOG_WARNING ("strerror: %s", strerror (errno));
-		errno = errnosave;
 	}
 	return fp;
 }
@@ -120,11 +118,9 @@ static int mmapTruncateFile (FILE * fp, size_t mmapsize, Key * parentKey, int er
 	int fd = fileno (fp);
 	if ((ftruncate (fd, mmapsize)) == -1)
 	{
-		ELEKTRA_SET_ERROR_GET (parentKey);
 		ELEKTRA_LOG_WARNING ("error truncating file %s", keyString (parentKey));
 		ELEKTRA_LOG_WARNING ("mmapsize: %zu", mmapsize);
 		ELEKTRA_LOG_WARNING ("strerror: %s", strerror (errno));
-		errno = errnosave;
 		return -1;
 	}
 	return 1;
@@ -136,10 +132,8 @@ static int mmapStat (struct stat * sbuf, Key * parentKey, int errnosave)
 
 	if (stat (keyString (parentKey), sbuf) == -1)
 	{
-		ELEKTRA_SET_ERROR_GET (parentKey);
 		ELEKTRA_LOG_WARNING ("error on stat() for file %s", keyString (parentKey));
 		ELEKTRA_LOG_WARNING ("strerror: %s", strerror (errno));
-		errno = errnosave;
 		return -1;
 	}
 	return 1;
@@ -153,11 +147,9 @@ static char * mmapMapFile (void * addr, FILE * fp, size_t mmapSize, int mapOpts,
 	char * mappedRegion = mmap (addr, mmapSize, PROT_READ | PROT_WRITE, mapOpts, fd, 0);
 	if (mappedRegion == MAP_FAILED)
 	{
-		ELEKTRA_SET_ERROR_GET (parentKey);
 		ELEKTRA_LOG_WARNING ("error mapping file %s", keyString (parentKey));
 		ELEKTRA_LOG_WARNING ("mmapSize: %zu", mmapSize);
 		ELEKTRA_LOG_WARNING ("strerror: %s", strerror (errno));
-		errno = errnosave;
 		return MAP_FAILED;
 	}
 	return mappedRegion;
@@ -414,8 +406,7 @@ static void writeKeySet (MmapHeader * mmapHeader, KeySet * keySet, KeySet * dest
 				mappedMetaKey = dynArray->mappedKeyArray[find ((Key *)metaKey, dynArray)];
 				ELEKTRA_LOG_WARNING ("mappedMetaKey: %p", (void *)mappedMetaKey);
 				newMeta->array[metaKeyIndex] = mappedMetaKey;
-				if (mappedMetaKey->ksReference < SSIZE_MAX)
-					++(mappedMetaKey->ksReference);
+				if (mappedMetaKey->ksReference < SSIZE_MAX) ++(mappedMetaKey->ksReference);
 				++metaKeyIndex;
 			}
 			newMeta->array[oldMeta->size] = 0;
@@ -468,7 +459,7 @@ static void mmapWrite (char * mappedRegion, KeySet * keySet, MmapHeader * mmapHe
 	//		* memcpy () to continuous region and then fwrite () only once
 	//		* use mmap to write to temp file and msync () after all data is written, then rename file
 	mmapHeader->mmapAddr = mappedRegion;
-	//memset (mappedRegion, 0, mmapHeader->mmapSize);
+	// memset (mappedRegion, 0, mmapHeader->mmapSize);
 	memcpy (mappedRegion, mmapHeader, SIZEOF_MMAPHEADER);
 
 	KeySet * ksPtr = (KeySet *)(mappedRegion + SIZEOF_MMAPHEADER);
@@ -502,7 +493,7 @@ static void mmapToKeySet (char * mappedRegion, KeySet * returned)
 	returned->flags = KS_FLAG_MMAP_ARRAY;
 }
 
-static int readMmapHeader(FILE * fp, MmapHeader * mmapHeader)
+static int readMmapHeader (FILE * fp, MmapHeader * mmapHeader)
 {
 	memset (mmapHeader, 0, SIZEOF_MMAPHEADER * (sizeof (char)));
 	fread (mmapHeader, SIZEOF_MMAPHEADER, (sizeof (char)), fp);
@@ -518,25 +509,25 @@ static void updatePointers (MmapHeader * mmapHeader, char * dest)
 	ptrdiff_t ptrDiff = dest - source; // TODO: might be problematic if larger than PTRDIFF_MAX
 
 	KeySet * ksPtr = (KeySet *)(dest + SIZEOF_MMAPHEADER);
-// 	char * ksArrayPtr = (((char *)ksPtr) + SIZEOF_KEYSET);
-// 	char * keyPtr = (ksArrayPtr + ((keySet->alloc) * SIZEOF_KEY_PTR));
-// 	char * dataPtr = (keyPtr + (keySet->size * SIZEOF_KEY));
-// 	char * metaPtr = (dataPtr + (mmapHeader->dataSize));
-// 	char * metaKsPtr = (metaPtr + (dynArray->size * sizeof (Key)));
+	// 	char * ksArrayPtr = (((char *)ksPtr) + SIZEOF_KEYSET);
+	// 	char * keyPtr = (ksArrayPtr + ((keySet->alloc) * SIZEOF_KEY_PTR));
+	// 	char * dataPtr = (keyPtr + (keySet->size * SIZEOF_KEY));
+	// 	char * metaPtr = (dataPtr + (mmapHeader->dataSize));
+	// 	char * metaKsPtr = (metaPtr + (dynArray->size * sizeof (Key)));
 
-	ksPtr->array = ksPtr->array+ptrDiff;
+	ksPtr->array = ksPtr->array + ptrDiff;
 	for (size_t i = 0; i < ksPtr->size; ++i)
 	{
-		ksPtr->array[i] = (Key *)(((char *)ksPtr->array[i])+ptrDiff);
+		ksPtr->array[i] = (Key *)(((char *)ksPtr->array[i]) + ptrDiff);
 	}
 
-	ksRewind(ksPtr);
+	ksRewind (ksPtr);
 	Key * cur;
 	while ((cur = ksNext (ksPtr)) != 0)
 	{
-		cur->data.v = (void *)(((char *)cur->data.v)+ptrDiff);
-		cur->key = cur->key+ptrDiff;
-		cur->meta = (KeySet *)(((char *)cur->meta)+ptrDiff);
+		cur->data.v = (void *)(((char *)cur->data.v) + ptrDiff);
+		cur->key = cur->key + ptrDiff;
+		cur->meta = (KeySet *)(((char *)cur->meta) + ptrDiff);
 	}
 }
 
@@ -570,8 +561,6 @@ int elektraMmapstorageGet (Plugin * handle, KeySet * returned, Key * parentKey)
 			keyNew ("system/elektra/modules/mmapstorage/exports/close", KEY_FUNC, elektraMmapstorageClose, KEY_END),
 			keyNew ("system/elektra/modules/mmapstorage/exports/get", KEY_FUNC, elektraMmapstorageGet, KEY_END),
 			keyNew ("system/elektra/modules/mmapstorage/exports/set", KEY_FUNC, elektraMmapstorageSet, KEY_END),
-			keyNew ("system/elektra/modules/mmapstorage/exports/error", KEY_FUNC, elektraMmapstorageError, KEY_END),
-			keyNew ("system/elektra/modules/mmapstorage/exports/checkconf", KEY_FUNC, elektraMmapstorageCheckConfig, KEY_END),
 #include ELEKTRA_README (mmapstorage)
 			keyNew ("system/elektra/modules/mmapstorage/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
@@ -586,20 +575,25 @@ int elektraMmapstorageGet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 	if ((fp = mmapOpenFile (parentKey, "r+", errnosave)) == 0)
 	{
-		return -1;
+		ELEKTRA_SET_ERROR_GET (parentKey);
+		errno = errnosave;
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
 	struct stat sbuf;
 	if (mmapStat (&sbuf, parentKey, errnosave) != 1)
 	{
+		ELEKTRA_SET_ERROR_GET (parentKey);
+		errno = errnosave;
 		fclose (fp);
-		return -1;
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
 	if (sbuf.st_size == 0)
 	{
+		// empty mmap file
 		fclose (fp);
-		return 1;
+		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
 	MmapHeader mmapHeader;
@@ -611,7 +605,7 @@ int elektraMmapstorageGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		ELEKTRA_SET_ERROR_GET (parentKey);
 		errno = errnosave;
 		fclose (fp);
-		return -1;
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
 	char * mappedRegion = MAP_FAILED;
@@ -621,9 +615,11 @@ int elektraMmapstorageGet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 	if (mappedRegion == MAP_FAILED)
 	{
+		ELEKTRA_SET_ERROR_GET (parentKey);
+		errno = errnosave;
 		fclose (fp);
 		ELEKTRA_LOG ("mappedRegion == MAP_FAILED");
-		return -1;
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 	ELEKTRA_LOG_WARNING ("mappedRegion size: %zu", sbuf.st_size);
 	ELEKTRA_LOG_WARNING ("mappedRegion ptr: %p", (void *)mappedRegion);
@@ -647,7 +643,9 @@ int elektraMmapstorageSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 
 	if ((fp = mmapOpenFile (parentKey, "w+", errnosave)) == 0)
 	{
-		return -1;
+		ELEKTRA_SET_ERROR_SET (parentKey);
+		errno = errnosave;
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
 	DynArray dynArray;
@@ -665,16 +663,18 @@ int elektraMmapstorageSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 	if (mmapTruncateFile (fp, mmapHeader.mmapSize, parentKey, errnosave) != 1)
 	{
 		fclose (fp);
-		return -1;
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
 	char * mappedRegion = mmapMapFile ((void *)0, fp, mmapHeader.mmapSize, MAP_SHARED, parentKey, errnosave);
 	ELEKTRA_LOG_WARNING ("mappedRegion ptr: %p", (void *)mappedRegion);
 	if (mappedRegion == MAP_FAILED)
 	{
+		ELEKTRA_SET_ERROR_SET (parentKey);
+		errno = errnosave;
 		fclose (fp);
 		ELEKTRA_LOG ("mappedRegion == MAP_FAILED");
-		return -1;
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
 	mmapWrite (mappedRegion, returned, &mmapHeader, &dynArray);
@@ -684,22 +684,22 @@ int elektraMmapstorageSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 		ELEKTRA_SET_ERROR_SET (parentKey);
 		errno = errnosave;
 		fclose (fp);
-		return -1;
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 	munmap (mappedRegion, mmapHeader.mmapSize);
-	//ksClose (returned);
+	// ksClose (returned);
 
 	// all data is written, further changes need to be copy-on-write
-// 	mappedRegion = mmapMapFile ((void *)mappedRegion, fp, mmapHeader.mmapSize, MAP_PRIVATE | MAP_FIXED, parentKey, errnosave);
-// 	ELEKTRA_LOG_WARNING ("mappedRegion ptr: %p", (void *)mappedRegion);
-// 	if (mappedRegion == MAP_FAILED)
-// 	{
-// 		fclose (fp);
-// 		ELEKTRA_LOG ("could not remap to MAP_PRIVATE");
-// 		return -1;
-// 	}
+	// 	mappedRegion = mmapMapFile ((void *)mappedRegion, fp, mmapHeader.mmapSize, MAP_PRIVATE | MAP_FIXED, parentKey, errnosave);
+	// 	ELEKTRA_LOG_WARNING ("mappedRegion ptr: %p", (void *)mappedRegion);
+	// 	if (mappedRegion == MAP_FAILED)
+	// 	{
+	// 		fclose (fp);
+	// 		ELEKTRA_LOG ("could not remap to MAP_PRIVATE");
+	// 		return -1;
+	// 	}
 
-	//mmapToKeySet (mappedRegion, returned);
+	// mmapToKeySet (mappedRegion, returned);
 	// m_output_keyset (returned);
 
 
@@ -707,22 +707,6 @@ int elektraMmapstorageSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 	if (dynArray.mappedKeyArray) elektraFree (dynArray.mappedKeyArray);
 	fclose (fp);
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
-}
-
-int elektraMmapstorageError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
-{
-	// handle errors (commit failed)
-	// this function is optional
-
-	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
-}
-
-int elektraMmapstorageCheckConfig (Key * errorKey ELEKTRA_UNUSED, KeySet * conf ELEKTRA_UNUSED)
-{
-	// validate plugin configuration
-	// this function is optional
-
-	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 }
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (mmapstorage)
@@ -733,6 +717,5 @@ Plugin * ELEKTRA_PLUGIN_EXPORT (mmapstorage)
 		ELEKTRA_PLUGIN_CLOSE,	&elektraMmapstorageClose,
 		ELEKTRA_PLUGIN_GET,	&elektraMmapstorageGet,
 		ELEKTRA_PLUGIN_SET,	&elektraMmapstorageSet,
-		ELEKTRA_PLUGIN_ERROR,	&elektraMmapstorageError,
 		ELEKTRA_PLUGIN_END);
 }
