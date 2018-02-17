@@ -16,14 +16,14 @@ matrix:
     # FAST: Do not install any dependencies
 
     - os: osx
-      osx_image: xcode9.1
+      osx_image: xcode9.2
       compiler: clang
       env: [ FAST=ON ]
 
     # ASAN: Enable AddressSanitizer
 
     - os: osx
-      osx_image: xcode9.1
+      osx_image: xcode9.2
       compiler: clang
       env: [ ASAN=ON ]
 
@@ -38,17 +38,17 @@ matrix:
       env: [ FULL=ON ]
 
     - os: osx
-      osx_image: xcode9.1
+      osx_image: xcode9.2
       compiler: gcc
 
     - os: osx
-      osx_image: xcode9.1
+      osx_image: xcode9.2
       compiler: clang
 
     # HASKELL: Only build Haskell binding and plugin
 
     - os: osx
-      osx_image: xcode9.1
+      osx_image: xcode9.2
       compiler: clang
       env: [ HASKELL=ON ]
 
