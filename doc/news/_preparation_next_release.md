@@ -125,7 +125,7 @@ each time such plugin is used and gets closed again afterwards. It uses a simple
 communication protocol based on a KeySet that gets serialized through a pipe via
 the dump plugin to orchestrate the processes.
 
-Such a behavior this is useful for plugins which cause memory leaks to be
+Such a behavior is useful for plugins which cause memory leaks to be
 isolated in an own process. Furthermore this is useful for runtimes or libraries
 that cannot be reinitialized in the same process after they have been used.
 
