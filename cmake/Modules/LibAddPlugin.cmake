@@ -377,9 +377,7 @@ function (add_plugin PLUGIN_SHORT_NAME)
 			)
 	endif ()
 
-	# needs cmake 3.0:
-	#set_property(TARGET ${PLUGIN_OBJS}
-	#	PROPERTY CMAKE_POSITION_INDEPENDENT_CODE ON)
+	set_property (TARGET ${PLUGIN_OBJS} PROPERTY CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 	if (BUILD_SHARED)
 		add_library (${PLUGIN_NAME} MODULE ${ARG_SOURCES})

@@ -58,7 +58,7 @@ Kdb::Plugin.define :somename do
   end
 
   # the close method is currently not supported, since this will crash the
-  # Ruby-VM if this method should be called during the VM.finializaion !!!
+  # Ruby-VM if this method should be called during the VM.finalization !!!
   #def close(errorKey)
   #
   #end
