@@ -363,6 +363,8 @@ int keyCopy (Key * dest, const Key * source)
 	char * destKey = dest->key;
 	void * destData = dest->data.c;
 	KeySet * destMeta = dest->meta;
+	int destKeyInMmap = test_bit (dest->flags, KEY_FLAG_MMAP_KEY) == KEY_FLAG_MMAP_KEY;
+	int destDataInMmap = test_bit (dest->flags, KEY_FLAG_MMAP_DATA) == KEY_FLAG_MMAP_DATA;
 
 	// duplicate dynamic properties
 	if (source->key)
@@ -404,8 +406,8 @@ int keyCopy (Key * dest, const Key * source)
 	dest->dataSize = source->dataSize;
 
 	// free old resources of destination
-	elektraFree (destKey);
-	elektraFree (destData);
+	if (!destKeyInMmap) elektraFree (destKey);
+	if (!destDataInMmap) elektraFree (destData);
 	ksDel (destMeta);
 
 	return 1;
@@ -526,15 +528,17 @@ int keyClear (Key * key)
 
 	ref = key->ksReference;
 
-	int keyInMmap = test_bit (key->flags, KEY_FLAG_MMAP_STRUCT) == KEY_FLAG_MMAP_STRUCT;
+	int keyStructInMmap = test_bit (key->flags, KEY_FLAG_MMAP_STRUCT) == KEY_FLAG_MMAP_STRUCT;
+	int keyNameInMmap = test_bit (key->flags, KEY_FLAG_MMAP_KEY) == KEY_FLAG_MMAP_KEY;
+	int dataInMmap = test_bit (key->flags, KEY_FLAG_MMAP_DATA) == KEY_FLAG_MMAP_DATA;
 
-	if (key->key && !keyInMmap) elektraFree (key->key);
-	if (key->data.v && !keyInMmap) elektraFree (key->data.v);
+	if (key->key && !keyNameInMmap) elektraFree (key->key);
+	if (key->data.v && !dataInMmap) elektraFree (key->data.v);
 	if (key->meta) ksDel (key->meta);
 
 	keyInit (key);
 
-	if (keyInMmap) key->flags |= KEY_FLAG_MMAP_STRUCT;
+	if (keyStructInMmap) key->flags |= KEY_FLAG_MMAP_STRUCT;
 
 	/* Set reference properties */
 	key->ksReference = ref;

@@ -995,9 +995,6 @@ ssize_t ksCopyInternal (KeySet * ks, size_t to, size_t from)
 	ELEKTRA_ASSERT (length >= 0, "length %zu too small", length);
 	ELEKTRA_ASSERT (ks->size >= to, "ks->size %zu smaller than %zu", ks->size, to);
 
-	// TODO: check how to handle this
-	// ELEKTRA_ASSERT (test_bit (ks->flags, KS_FLAG_MMAP_ARRAY) == KS_FLAG_MMAP_ARRAY, "ksCopyInternal mmap fail");
-
 	ks->size = ssize + sizediff;
 
 	if (length != 0)
@@ -2539,9 +2536,12 @@ int ksResize (KeySet * ks, size_t alloc)
 			return 0;
 	}
 
-	if (test_bit (ks->flags, KS_FLAG_MMAP_ARRAY) == KS_FLAG_MMAP_ARRAY)
+	if (ks->array != NULL && (test_bit (ks->flags, KS_FLAG_MMAP_ARRAY) == KS_FLAG_MMAP_ARRAY))
 	{
-		ks->array = NULL;
+		// need to move the ks->array out of mmap
+		Key ** new = elektraMalloc (sizeof (struct _Key *) * ks->alloc);
+		elektraMemcpy (new, ks->array, ks->size + 1); // copy including ending NULL
+		ks->array = new;
 		clear_bit (ks->flags, KS_FLAG_MMAP_ARRAY);
 	}
 
@@ -2646,9 +2646,7 @@ int ksClose (KeySet * ks)
 	}
 	else
 	{
-		// if the KeySet is in an mmap region, multiple references to the same memory might exist
-		// this prevents further iterations from other copies
-		ks->array[0] = 0;
+		ks->array = NULL;
 		clear_bit (ks->flags, KS_FLAG_MMAP_ARRAY);
 	}
 	ks->array = 0;
