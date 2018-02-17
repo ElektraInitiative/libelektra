@@ -29,7 +29,7 @@ static KeySet * simpleTestKeySet ()
 static KeySet * metaTestKeySet ()
 {
 	return ksNew (10, keyNew ("user/tests/mmapstorage", KEY_VALUE, "root key", KEY_META, "a",
-			      "b aksdjfh aksjdhf aklsjdhf aksljdhf aklsjdhf aksljdhf ", KEY_END),
+				  "b aksdjfh aksjdhf aklsjdhf aksljdhf aklsjdhf aksljdhf ", KEY_END),
 		      keyNew ("user/tests/mmapstorage/a", KEY_VALUE, "a value", KEY_META, "ab",
 			      "cd oiahsdkfhga sdjkfhgsuzdgf kashgdf aszgdf uashdf ", KEY_END),
 		      keyNew ("user/tests/mmapstorage/b", KEY_VALUE, "b value", KEY_META, "longer val",
