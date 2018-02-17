@@ -209,8 +209,15 @@ These notes are of interest for people maintaining packages of Elektra:
 
 The following files are new:
 
-- Libs: `libelektra-notification.so`, `libelektra-io.so`, `libelektra-io-uv.so`
-- <TOPIC>: <FILELIST>
+- Libs: `libelektra-notification.so`, `libelektra-io.so`, `libelektra-io-uv.so`, `libelektra-pluginprocess.so`
+- Headers: `kdbgetenv.h`, `kdbio.h`, `kdbpluginprocess.h`
+- Plugins: `base64/Base64.pdf`
+- Binaries: `getenv`, `test_context`, `test_fork`, `test_getenv`, `test_ks_opmphm`, `test_opmphm`
+- Other: `elektra-io.pc`
+
+The following files were removed:
+
+- Tests: `testmod_semlock`
 
 ## Notes for Elektra's Developers
 
