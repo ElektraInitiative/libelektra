@@ -10,7 +10,7 @@ if (DEPENDENCY_PHASE)
 
 	# Plugin variant: crypto_gcrypt
 	set (plugin crypto_gcrypt)
-	find_package (LibGcrypt)
+	find_package (LibGcrypt QUIET)
 	if (NOT LIBGCRYPT_FOUND)
 		remove_plugin ( ${plugin} "libgcrypt development files not found")
 	endif ()
