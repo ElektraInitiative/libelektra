@@ -231,6 +231,7 @@ if (elektraRealloc ((void **) & buffer, new_length) < 0) {
  */
 int elektraRealloc (void ** buffer, size_t size)
 {
+	ELEKTRA_LOG ("doing a realloc, does mmap fail here?");
 	ELEKTRA_ASSERT (size, "Size to allocate is zero (implementation defined behavior)");
 	void * ptr;
 	void * svr = *buffer;

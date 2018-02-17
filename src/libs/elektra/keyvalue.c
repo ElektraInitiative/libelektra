@@ -28,7 +28,7 @@
 #endif
 
 #include "kdbprivate.h"
-
+#include <kdblogger.h>
 
 /**
  * @defgroup keyvalue Value Manipulation Methods
@@ -508,13 +508,15 @@ ssize_t keySetRaw (Key * key, const void * newBinary, size_t dataSize)
 {
 	if (!key) return -1;
 	if (key->flags & KEY_FLAG_RO_VALUE) return -1;
+	int dataInMmap = test_bit (key->flags, KEY_FLAG_MMAP_DATA) == KEY_FLAG_MMAP_DATA;
 
 	if (!dataSize || !newBinary)
 	{
 		if (key->data.v)
 		{
-			elektraFree (key->data.v);
+			if (!dataInMmap) elektraFree (key->data.v);
 			key->data.v = NULL;
+			clear_bit (key->flags, KEY_FLAG_MMAP_DATA);
 		}
 		key->dataSize = 0;
 		set_bit (key->flags, KEY_FLAG_SYNC);
@@ -526,6 +528,13 @@ ssize_t keySetRaw (Key * key, const void * newBinary, size_t dataSize)
 	if (key->data.v)
 	{
 		char * previous = key->data.v;
+
+		if (dataInMmap)
+		{
+			clear_bit (key->flags, KEY_FLAG_MMAP_DATA);
+			key->data.v = NULL; // trigger realloc to be a malloc
+		}
+
 		if (-1 == elektraRealloc ((void **) &key->data.v, key->dataSize)) return -1;
 		if (previous == key->data.v)
 		{

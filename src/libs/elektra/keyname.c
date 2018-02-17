@@ -420,7 +420,8 @@ static void elektraHandleUserName (Key * key, const char * newName)
 
 static void elektraRemoveKeyName (Key * key)
 {
-	if (key->key) elektraFree (key->key);
+	int keyNameInMmap = test_bit (key->flags, KEY_FLAG_MMAP_KEY) == KEY_FLAG_MMAP_KEY;
+	if (key->key && !keyNameInMmap) elektraFree (key->key);
 	key->key = 0;
 	key->keySize = 0;
 	key->keyUSize = 0;
@@ -854,7 +855,14 @@ ssize_t keyAddBaseName (Key * key, const char * baseName)
 		key->keySize += len + 1;
 	}
 
+	if (test_bit (key->flags, KEY_FLAG_MMAP_KEY) == KEY_FLAG_MMAP_KEY)
+	{
+		// key was in mmap region, clear flag and trigger malloc instead of realloc
+		key->key = 0;
+		clear_bit (key->flags, KEY_FLAG_MMAP_KEY);
+	}
 	elektraRealloc ((void **) &key->key, key->keySize * 2);
+
 	if (!key->key)
 	{
 		elektraFree (escaped);
@@ -962,7 +970,17 @@ ssize_t keyAddName (Key * key, const char * newName)
 
 	const size_t origSize = key->keySize;
 	const size_t newSize = origSize + nameSize;
+<<<<<<< HEAD
 	elektraRealloc ((void **) &key->key, newSize * 2);
+=======
+	if (test_bit (key->flags, KEY_FLAG_MMAP_KEY) == KEY_FLAG_MMAP_KEY)
+	{
+		// key was in mmap region, clear flag and trigger malloc instead of realloc
+		key->key = 0;
+		clear_bit (key->flags, KEY_FLAG_MMAP_KEY);
+	}
+	elektraRealloc ((void **)&key->key, newSize * 2);
+>>>>>>> mmapstorage: fix some realloc problems
 	if (!key->key) return -1;
 
 	size_t size = 0;
@@ -1098,7 +1116,17 @@ ssize_t keySetBaseName (Key * key, const char * baseName)
 	elektraEscapeKeyNamePart (baseName, escaped);
 	size_t sizeEscaped = elektraStrLen (escaped);
 
+<<<<<<< HEAD
 	elektraRealloc ((void **) &key->key, (key->keySize + sizeEscaped) * 2);
+=======
+	if (test_bit (key->flags, KEY_FLAG_MMAP_KEY) == KEY_FLAG_MMAP_KEY)
+	{
+		// key was in mmap region, clear flag and trigger malloc instead of realloc
+		key->key = 0;
+		clear_bit (key->flags, KEY_FLAG_MMAP_KEY);
+	}
+	elektraRealloc ((void **)&key->key, (key->keySize + sizeEscaped) * 2);
+>>>>>>> mmapstorage: fix some realloc problems
 	if (!key->key)
 	{
 		elektraFree (escaped);

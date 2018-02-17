@@ -2539,14 +2539,17 @@ int ksResize (KeySet * ks, size_t alloc)
 			return 0;
 	}
 
-	int arrayInMmap = test_bit (ks->flags, KS_FLAG_MMAP_ARRAY) == KS_FLAG_MMAP_ARRAY;
+	if (test_bit (ks->flags, KS_FLAG_MMAP_ARRAY) == KS_FLAG_MMAP_ARRAY)
+	{
+		ks->array = NULL;
+		clear_bit (ks->flags, KS_FLAG_MMAP_ARRAY);
+	}
 
-	if ((ks->array == NULL) || arrayInMmap)
+	if (ks->array == NULL)
 	{ /* Not allocated up to now */
 		ks->alloc = alloc;
 		ks->size = 0;
 		ks->array = elektraMalloc (sizeof (struct _Key *) * ks->alloc);
-		clear_bit (ks->flags, KS_FLAG_MMAP_ARRAY);
 		if (!ks->array)
 		{
 			/*errno = KDB_ERR_NOMEM;*/
