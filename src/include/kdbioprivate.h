@@ -10,6 +10,12 @@
 
 #include "kdbio.h"
 
+#ifdef __cplusplus
+namespace ckdb
+{
+extern "C" {
+#endif
+
 /**
  * Information about a file descriptor watched by I/O binding
  */
@@ -199,5 +205,10 @@ typedef struct _ElektraIoInterface
 	int (*cleanup) (ElektraIoInterface * binding);
 
 } _ElektraIoInterface;
+
+#ifdef __cplusplus
+}
+}
+#endif
 
 #endif

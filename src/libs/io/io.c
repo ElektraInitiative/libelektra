@@ -11,6 +11,17 @@
 #include <kdbio.h>
 #include <kdbioprivate.h>
 #include <kdblogger.h>
+#include <kdbprivate.h>
+
+void elektraIoSetBinding (KDB * kdb, ElektraIoInterface * ioBinding)
+{
+	kdb->ioBinding = ioBinding;
+}
+
+ElektraIoInterface * elektraIoGetBinding (KDB * kdb)
+{
+	return kdb->ioBinding;
+}
 
 // ################################
 // # Binding accessors

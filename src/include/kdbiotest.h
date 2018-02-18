@@ -1,5 +1,6 @@
 /**
  * @file
+ * @ingroup kdbio
  *
  * @brief Elektra-I/O functions and declarations for the I/O binding test suite
  *

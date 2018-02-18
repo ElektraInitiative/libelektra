@@ -13,6 +13,7 @@
 #include <kdbconfig.h>
 #include <kdbextension.h>
 #include <kdbhelper.h>
+#include <kdbio.h>
 #include <kdbmacros.h>
 #include <kdbplugin.h>
 #include <kdbproposal.h>
@@ -280,6 +281,10 @@ struct _KDB
 	Backend * initBackend; /*!< The init backend for bootstrapping.*/
 
 	Plugin * globalPlugins[NR_GLOBAL_POSITIONS][NR_GLOBAL_SUBPOSITIONS];
+
+	ElektraIoInterface * ioBinding; /*!< binding for asynchronous I/O operations.*/
+
+	Plugin * notificationPlugin; /*!< reference to global plugin for notifications.*/
 };
 
 

@@ -1,21 +1,21 @@
 /**
  * @file
- * @ingroup kdbio
  *
  * @brief I/O example binding.
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
- * All functions except the I/O binding entry point (elektraIoDocNew()) would normally be
- * static but for documentation purposes they are not.
- *
+ * All functions except the I/O binding entry point (elektraIoDocNew()) would
+ * normally be static but for documentation purposes they are not.
  */
 
 
 /**
  * @defgroup kdbio I/O Bindings
  *
- * @brief Asynchronous I/O with Elektra
+ * @brief Asynchronous I/O feature
+ *
+ * @par Asynchronous I/O with Elektra
  *
  * This page contains useful details for creating I/O bindings and using the
  * operations provided by these bindings.

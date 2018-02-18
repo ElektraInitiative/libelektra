@@ -5,6 +5,16 @@
 **The features described in this document are experimental or not implemented
 yet.**
 
+Development state:
+
+ - [x] internalnotification plugin (support for int and callback)
+ - [x] notification wrapper (support for int and callback)
+ - [ ] transport plugin zeromq
+ - [ ] transport plugin dbus
+ - [ ] transport plugin redis
+ - [ ] internalnotification plugin & notfication wrapper (support for Elektra's basic types)
+
+
 This document explains how notifications are implemented in Elektra and how
 they can be used by application developers.
 
@@ -14,10 +24,11 @@ Elektra's notification feature consists of several components.
 While sending and receiving notifications is implemented by plugins,
 applications use APIs provided by wrappers in order to use different plugins.
 
-A wrapper for notifications provides the API for receiving and handling
-notifications.
-A wrapper for I/O operations allows asynchronous notification processing by
-compatible plugins.
+A
+[wrapper for notifications](https://doc.libelektra.org/api/current/html/group__kdbnotification.html)
+provides the API for receiving and handling notifications.
+A [wrapper for I/O operations](https://doc.libelektra.org/api/current/html/group__kdbio.html)
+allows asynchronous notification processing by compatible plugins.
 The I/O wrapper consists of an *interface* used by transport plugins and
 multiple implementations of that interface called *I/O bindings*.
 A I/O binding implements the actual I/O management functions for a specific
@@ -98,14 +109,18 @@ void main (void)
 	// Initialize I/O binding tied to event loop
 	ElektraIoInterface * binding = elektraIoUvNew (loop);
 
+  // Use I/O binding for our kdb instance
+  elektraIoSetBinding (kdb, binding);
+
 	// Initialize notification wrapper
-	elektraNotificationOpen (kdb, binding);
+	elektraNotificationOpen (kdb);
 
 	// Start the event loop
 	uv_run (loop, UV_RUN_DEFAULT);
 
 	// Cleanup
-	elektraIoBindingCleanup (binding);
+  elektraNotificationClose (kdb);
+  elektraIoBindingCleanup (binding);
 	uv_loop_close (loop);
 }
 
@@ -135,10 +150,15 @@ KDB * repo;
 
 //  ... initialization of KDB and I/O binding
 
-Key * key = keyNew ("/sw/myorg/myprogram/#1/current/value", KEY_END);
+Key * key = keyNew ("/sw/myorg/myprogram/#0/current/value", KEY_END);
 int keyValue;
 
-elektraNotificationRegisterInt (repo, &keyValue, key);
+int result = elektraNotificationRegisterInt (repo, key, &keyValue);
+if (!result)
+{
+	printf ("could not register variable!\n");
+	return;
+}
 
 // repeatedly print variable
 while (1) {
@@ -148,9 +168,11 @@ while (1) {
 }
 ```
 
-The variable `keyValue` will be automatically updated if the key in the
-program above is changed by another program (e.g. by using the `kdb` CLI
-command).
+After calling `elektraNotificationRegisterInt` the variable `keyValue` will be
+automatically updated if the key in the program above is changed by another
+program (e.g. by using the `kdb` CLI command).
+For automatic updates to work transport plugins have to be in place either at
+a mountpoint above the configuration or mounted globally.
 
 ### Callbacks
 
@@ -175,7 +197,7 @@ changed key needs further processing.
 
 void setTerminalColor (Key * color)
 {
-	char* value = keyString (color);
+	char * value = keyString (color);
 
 	if (strcmp (value, "red") == 0)
 	{
@@ -187,24 +209,30 @@ void setTerminalColor (Key * color)
 	}
 }
 
-int main ()
+int main (void)
 {
 	KDB * repo;
 
-	// ... initialization of KDB and I/O binding
+	// ... initialization of KDB, I/O binding and notifications
 
-	Key * color = keyNew ("/sw/myorg/myprogram/#1/current/color", KEY_END);
+	Key * configBase = keyNew ("/sw/myorg/myprogram/#0/current", KEY_END);
+	Key * color = keyNew ("/sw/myorg/myprogram/#0/current/color", KEY_END);
 
 	// Retrieve key from kdb
 	KeySet * ks = ksNew (10, KS_END);
-	kdbGet (repo, ks, color);
-	Key * key = ksLookupByName (ks, "/sw/myorg/myprogram/#1/current/color", 0);
-
-	// Initialization
-	setTerminalColor (key);
+	kdbGet (repo, ks, configBase);
+	Key * key = ksLookup (ks, color, 0);
+	if (key) {
+		// Initialization
+		setTerminalColor (key);
+	}
 
 	// Re-Initialize on key changes
-	elektraNotificationRegisterCallback(repo, &setTerminalColor, color);
+	int result = elektraNotificationRegisterCallback(repo, color, &setTerminalColor);
+	if (!result) {
+		printf ("could not register callback!\n");
+		return -1;
+	}
 
 	// ... start loop, etc.
 }

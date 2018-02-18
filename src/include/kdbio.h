@@ -3,10 +3,20 @@
  *
  * @brief Elektra-I/O structures for I/O bindings, plugins and applications
  *
+ * @ingroup kdbio
+ *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 #ifndef KDB_IO_H_
 #define KDB_IO_H_
+
+#include "kdb.h"
+
+#ifdef __cplusplus
+namespace ckdb
+{
+extern "C" {
+#endif
 
 /** I/O binding handle */
 typedef struct _ElektraIoInterface ElektraIoInterface;
@@ -559,5 +569,27 @@ void * elektraIoIdleGetData (ElektraIoIdleOperation * idleOp);
  * @return          callback
  */
 ElektraIoIdleCallback elektraIoIdleGetCallback (ElektraIoIdleOperation * idleOp);
+
+/**
+ * Set I/O binding for asynchronous I/O operations for KDB instance.
+ *
+ * @param  kdb       KDB instance
+ * @param  ioBinding I/O binding
+ */
+void elektraIoSetBinding (KDB * kdb, ElektraIoInterface * ioBinding);
+
+/**
+ * Get I/O binding for asynchronous I/O operations for KDB instance.
+ * Returns NULL if no I/O binding was set.
+ *
+ * @param  kdb KDB instance
+ * @return I/O binding or NULL
+ */
+ElektraIoInterface * elektraIoGetBinding (KDB * kdb);
+
+#ifdef __cplusplus
+}
+}
+#endif
 
 #endif
