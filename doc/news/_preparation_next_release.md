@@ -32,6 +32,9 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.8.
 
 You can also read the [FOSDEM interview](https://fosdem.org/2018/interviews/markus-raab/) given recently.
 
+Elektra is now an official part of [Homebrew](http://formulae.brew.sh/formula/elektra) and
+[Alpine Linux](https://pkgs.alpinelinux.org/package/edge/testing/x86_64/elektra).
+
 
 
 ## Highlights
@@ -58,6 +61,13 @@ fonts ([Lato](https://fonts.google.com/specimen/Lato) and
 [Libre Franklin](https://fonts.google.com/specimen/Libre+Franklin)) that improve
 readability and add to a unique look. The restructured start page contributes to
 the new look as well.
+
+We also updated asciinema-player to 2.6.0.
+
+Thanks to Thomas Wahringer.
+
+We also fixed security issues due to an old version of jquery,
+thanks to Marvin Mall.
 
 ### INI as new Default Configuration File Format
 
@@ -142,21 +152,29 @@ both search algorithms.
 
 We added even more functionality, which could not make it to the highlights:
 
+- The Web UI was greatly improved, thanks to Daniel Bugl
 - Elektra is now part of the official [Homebrew repository](http://formulae.brew.sh/formula/elektra). We still provide a
   [tap](http://github.com/ElektraInitiative/homebrew-elektra), if you want to install Elektra together with plugins or bindings that require
   additional libraries.
 - The building and linking of the haskell bindings and haskell plugins has been
 [greatly improved](https://github.com/ElektraInitiative/libelektra/pull/1698).
-- The invoke library can now [report errors](https://github.com/ElektraInitiative/libelektra/pull/1801) upon opening/closing a plugin.
+- The invoke library can now [report errors](https://github.com/ElektraInitiative/libelektra/pull/1801) upon opening/closing a plugin,
+  thanks to Armin Wurzinger.
 - The [YAML CPP plugin](https://www.libelektra.org/plugins/yamlcpp) does not require [Boost](http://www.boost.org) anymore, if you
   installed [yaml-cpp 0.6](https://github.com/jbeder/yaml-cpp/releases/tag/yaml-cpp-0.6.0).
+- Improved colored output in `kdb` tool.
 
 ## Documentation
 
 We improved the documentation in the following ways:
 
 - We've [documented how you can setup a build node for Jenkins using a docker container](https://github.com/ElektraInitiative/libelektra/tree/master/doc/docker/jenkinsnode/README.md)
-  We also provide an example Dockerfile based on Debian Stretch for that purpose.
+  We also provide an example Dockerfile based on Debian Stretch for that purpose,
+  thanks to Armin Wurzinger.
+- Document how `rlwrap` might be used for `kdb shell`
+- Fixed docu in `hosts` plugin.
+- Greatly improved the license documentation in `debian/copyright`
+  in the `debian` branch, thanks to Thomas Wahringer.
 
 ## Compatibility
 
@@ -173,6 +191,7 @@ Furthermore:
 
 - Fix bash shebang of bash scripts, thanks to Jakub Jirutka
 - Remove unportable unneeded asm, thanks to Timo Teräs and Jakub Jirutka
+- Fixed syntax in shell recorder, thanks to René Schwaiger
 
 ## Notes for Maintainer
 
@@ -185,6 +204,7 @@ These notes are of interest for people maintaining packages of Elektra:
   [/doc/COMPILE.md](https://github.com/ElektraInitiative/libelektra/tree/master/doc/COMPILE.md).
   To include both intercept bindings, you now need to write `INTERCEPT`, to only include getenv
   interception `intercept_env`. `intercept` alone does not work anymore.
+- CMake: `BINDINGS` now behaves like `PLUGINS`
 - <<TODO>>
 
 The following files are new:
@@ -196,7 +216,13 @@ The following files are new:
 
 These notes are of interest for people developing Elektra:
 
-- <<TODO>>
+- Build Agent v2 was added to speed up `jenkins build all please`,
+  thanks to Armin Wurzinger.
+- Travis maintenance (Qt 5 and other problems),
+  thanks to René Schwaiger.
+- `BINDINGS` was greatly improved and the CMake functions were simplified.
+   Bindings now also have a `README.md` with meta data.
+   A big thanks to Thomas Wahringer.
 
 ## Testing
 
