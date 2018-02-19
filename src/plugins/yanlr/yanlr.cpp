@@ -18,8 +18,22 @@ using namespace ckdb;
 using namespace antlr;
 using namespace antlr4;
 
-extern "C" {
+/**
+ * @brief This function returns a key set containing the contract of this plugin.
+ *
+ * @return A contract describing the functionality of this plugin.
+ */
+static KeySet * contractYanlr (void)
+{
+	return ksNew (30, keyNew ("system/elektra/modules/yanlr", KEY_VALUE, "yanlr plugin waits for your orders", KEY_END),
+		      keyNew ("system/elektra/modules/yanlr/exports", KEY_END),
+		      keyNew ("system/elektra/modules/yanlr/exports/get", KEY_FUNC, elektraYanlrGet, KEY_END),
+		      keyNew ("system/elektra/modules/yanlr/exports/set", KEY_FUNC, elektraYanlrSet, KEY_END),
+#include ELEKTRA_README (yanlr)
+		      keyNew ("system/elektra/modules/yanlr/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+}
 
+extern "C" {
 // ====================
 // = Plugin Interface =
 // ====================
@@ -29,13 +43,7 @@ int elektraYanlrGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 {
 	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/yanlr"))
 	{
-		KeySet * contract =
-			ksNew (30, keyNew ("system/elektra/modules/yanlr", KEY_VALUE, "yanlr plugin waits for your orders", KEY_END),
-			       keyNew ("system/elektra/modules/yanlr/exports", KEY_END),
-			       keyNew ("system/elektra/modules/yanlr/exports/get", KEY_FUNC, elektraYanlrGet, KEY_END),
-			       keyNew ("system/elektra/modules/yanlr/exports/set", KEY_FUNC, elektraYanlrSet, KEY_END),
-#include ELEKTRA_README (yanlr)
-			       keyNew ("system/elektra/modules/yanlr/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+		KeySet * contract = contractYanlr ();
 		ksAppend (returned, contract);
 		ksDel (contract);
 
