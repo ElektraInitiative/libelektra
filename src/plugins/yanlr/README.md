@@ -1,4 +1,4 @@
-- infos = Information about the antlr plugin is in keys below
+- infos = Information about the yanlr plugin is in keys below
 - infos/author = René Schwaiger <sanssecours@me.com>
 - infos/licence = BSD
 - infos/needs =
@@ -9,16 +9,16 @@
 - infos/metadata =
 - infos/description = This plugin shows how you can use ANTLR to generate a storage plugin
 
-# ANTLR
+# Yan LR
 
 ## Example
 
 ```sh
-# Mount plugin to cascading namespace `/examples/antlr`
-sudo kdb mount config.file /examples/antlr antlr
+# Mount plugin to cascading namespace `/examples/yanlr`
+sudo kdb mount config.file /examples/yanlr yanlr
 
 # Undo modifications to the key database
-sudo kdb umount /examples/antlr
+sudo kdb umount /examples/yanlr
 ```
 
 ## Limitations

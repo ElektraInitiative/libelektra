@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief Tests for antlr plugin
+ * @brief Tests for yanlr plugin
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
@@ -21,9 +21,9 @@ static void test_basics (void)
 {
 	printf ("• Test basic functionality\n");
 
-	Key * parentKey = keyNew ("user/tests/antlr", KEY_END);
+	Key * parentKey = keyNew ("user/tests/yanlr", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
-	PLUGIN_OPEN ("antlr");
+	PLUGIN_OPEN ("yanlr");
 
 	KeySet * keySet = ksNew (0, KS_END);
 
@@ -37,14 +37,14 @@ static void test_basics (void)
 
 int main (int argc, char ** argv)
 {
-	printf ("🐜 ANTLR     TESTS\n");
+	printf ("🐜 YANLR     TESTS\n");
 	printf ("===================\n\n");
 
 	init (argc, argv);
 
 	test_basics ();
 
-	print_result ("testmod_antlr");
+	print_result ("testmod_yanlr");
 
 	return nbError;
 }

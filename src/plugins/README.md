@@ -106,7 +106,7 @@ productive use:
 
 - [typechecker](typechecker/) type checks a configuration specification
 - [regexdispatcher](regexdispatcher/) generates regex representations of specification keywords
-- [antlr](antlr/) for languages suitable for an LL(*) parser engine
+- [yanlr](yanlr/) for languages suitable for an LL(*) parser engine
 - [fstab](fstab/) for fstab files.
 - [regexstore](regexstore/)
 - [csvstorage](csvstorage/) for csv files
