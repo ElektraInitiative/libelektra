@@ -168,7 +168,7 @@ We added even more functionality, which could not make it to the highlights:
 
 We improved the documentation in the following ways:
 
-- We've [documented how you can setup a build node for Jenkins using a docker container](https://github.com/ElektraInitiative/libelektra/tree/master/doc/docker/jenkinsnode/README.md)
+- We've [documented how you can setup a build node for Jenkins using a Docker container](https://github.com/ElektraInitiative/libelektra/tree/master/doc/docker/jenkinsnode/README.md)
   We also provide an example Dockerfile based on Debian Stretch for that purpose,
   thanks to Armin Wurzinger.
 - Document how `rlwrap` might be used for `kdb shell`
