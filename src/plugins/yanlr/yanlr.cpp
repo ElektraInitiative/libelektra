@@ -20,6 +20,11 @@ using namespace antlr4;
 
 extern "C" {
 
+// ====================
+// = Plugin Interface =
+// ====================
+
+/** @see elektraDocGet */
 int elektraYanlrGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/yanlr"))
@@ -39,6 +44,7 @@ int elektraYanlrGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 }
 
+/** @see elektraDocSet */
 int elektraYanlrSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
 	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
