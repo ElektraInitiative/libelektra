@@ -1,7 +1,9 @@
 grammar YAML;
 
-ids : id*;
-id : ID;
+mappings : mapping+;
+mapping : key ':' value;
+key : WORD;
+value : WORD;
 
-ID : [a-zA-Z]+;
+WORD : [a-zA-Z]+;
 WS : [ \t\r\n]+ -> skip;
