@@ -523,7 +523,7 @@ static int readMmapHeader (FILE * fp, MmapHeader * mmapHeader)
 static void updatePointers (MmapHeader * mmapHeader, char * dest)
 {
 	char * source = mmapHeader->mmapAddr;
-	ptrdiff_t ptrDiff = ((char *)dest - (char *)source); // TODO: might be problematic if larger than PTRDIFF_MAX
+	ssize_t ptrDiff = ((char)dest - (char)source); // TODO: might be problematic if larger than PTRDIFF_MAX
 
 	// KeySet * ks = (KeySet *)(dest + SIZEOF_MMAPHEADER);
 	
@@ -540,7 +540,7 @@ static void updatePointers (MmapHeader * mmapHeader, char * dest)
 		
 		for (size_t j = 0; j < ks->size; ++j)
 		{
-			ks->array[j] = (Key *)((char *)ks->array[j] + ptrDiff);
+			ks->array[j] = (Key *)((char *)(ks->array[j]) + ptrDiff);
 		}
 	}
 	
@@ -549,9 +549,9 @@ static void updatePointers (MmapHeader * mmapHeader, char * dest)
 	{
 		key = (Key *)keyPtr;
 		keyPtr += SIZEOF_KEY;
-		key->data.v = (void *)((char *)key->data.v + ptrDiff);
-		key->key = ((char *)key->key + ptrDiff);
-		key->meta = (KeySet *)((char *)key->meta + ptrDiff);
+		key->data.v = (void *)((char *)(key->data.v) + ptrDiff);
+		key->key = ((char *)(key->key) + ptrDiff);
+		key->meta = (KeySet *)((char *)(key->meta) + ptrDiff);
 	}
 	
 	// 	char * ksArrayPtr = (((char *)ksPtr) + SIZEOF_KEYSET);
@@ -655,7 +655,7 @@ int elektraMmapstorageGet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 	char * mappedRegion = MAP_FAILED;
 	ELEKTRA_LOG_WARNING ("MMAP addr to map: %p", (void *)mmapHeader.mmapAddr);
-	mappedRegion = mmapMapFile ((void *)0, fp, sbuf.st_size, MAP_PRIVATE, parentKey, errnosave);
+	mappedRegion = mmapMapFile (mmapHeader.mmapAddr, fp, sbuf.st_size, MAP_PRIVATE | MAP_FIXED, parentKey, errnosave);
 	ELEKTRA_LOG_WARNING ("mappedRegion ptr: %p", (void *)mappedRegion);
 
 	if (mappedRegion == MAP_FAILED)
@@ -673,13 +673,13 @@ int elektraMmapstorageGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	updatePointers (&mmapHeader, mappedRegion);
 	mmapToKeySet (mappedRegion, returned);
 
-	// KeySet * new = ksDeepDup (returned);
-	// returned->array = new->array;
-	// returned->size = new->size;
-	// returned->alloc = new->alloc;
-	// returned->cursor = 0;
-	// returned->current = 0;
-	// returned->flags = 0;
+	KeySet * new = ksDeepDup (returned);
+	returned->array = new->array;
+	returned->size = new->size;
+	returned->alloc = new->alloc;
+	returned->cursor = 0;
+	returned->current = 0;
+	returned->flags = 0;
 
 	// m_output_keyset (returned);
 
