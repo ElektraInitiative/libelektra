@@ -194,10 +194,7 @@ int keyNameIsSystem (const char * name)
  */
 int keyInit (Key * key)
 {
-	int keyInMmap = test_bit (key->flags, KEY_FLAG_MMAP_STRUCT) == KEY_FLAG_MMAP_STRUCT;
 	memset (key, 0, sizeof (struct _Key));
-
-	if (keyInMmap) set_bit (key->flags, KEY_FLAG_MMAP_STRUCT);
 
 	return 0;
 }

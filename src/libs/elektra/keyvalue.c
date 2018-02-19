@@ -532,10 +532,16 @@ ssize_t keySetRaw (Key * key, const void * newBinary, size_t dataSize)
 		if (dataInMmap)
 		{
 			clear_bit (key->flags, KEY_FLAG_MMAP_DATA);
-			key->data.v = NULL; // trigger realloc to be a malloc
+			key->data.v = elektraMalloc (key->dataSize);
+			if (key->data.v == NULL) return -1;
+		}
+		else
+		{
+			if (-1 == elektraRealloc ((void **)&key->data.v, key->dataSize)) return -1;
 		}
 
 		if (-1 == elektraRealloc ((void **) &key->data.v, key->dataSize)) return -1;
+
 		if (previous == key->data.v)
 		{
 			// In case the regions overlap, use memmove to stay safe

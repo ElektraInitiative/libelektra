@@ -2550,6 +2550,7 @@ int ksResize (KeySet * ks, size_t alloc)
 		ks->alloc = alloc;
 		ks->size = 0;
 		ks->array = elektraMalloc (sizeof (struct _Key *) * ks->alloc);
+		clear_bit (ks->flags, KS_FLAG_MMAP_ARRAY);
 		if (!ks->array)
 		{
 			/*errno = KDB_ERR_NOMEM;*/

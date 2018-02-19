@@ -503,7 +503,9 @@ ssize_t keySetMeta (Key * key, const char * metaName, const char * newMetaString
 			return -1;
 		}
 
-		if (toSet->data.v && !(test_bit (toSet->flags, KEY_FLAG_MMAP_DATA) == KEY_FLAG_MMAP_DATA)) elektraFree (toSet->data.v);
+		int keyDataInMmap = test_bit (toSet->flags, KEY_FLAG_MMAP_DATA) == KEY_FLAG_MMAP_DATA;
+		if (toSet->data.v && !keyDataInMmap) elektraFree (toSet->data.v);
+		if (keyDataInMmap) clear_bit (toSet->flags, KEY_FLAG_MMAP_DATA);
 		toSet->data.c = metaStringDup;
 		toSet->dataSize = metaStringSize;
 	}

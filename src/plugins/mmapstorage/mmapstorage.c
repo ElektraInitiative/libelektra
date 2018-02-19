@@ -573,7 +573,7 @@ int elektraMmapstorageGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	int errnosave = errno;
 	FILE * fp;
 
-	if ((fp = mmapOpenFile (parentKey, "r+", errnosave)) == 0)
+	if ((fp = mmapOpenFile (parentKey, "r", errnosave)) == 0)
 	{
 		ELEKTRA_SET_ERROR_GET (parentKey);
 		errno = errnosave;
@@ -626,6 +626,14 @@ int elektraMmapstorageGet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 	ksClose (returned);
 	mmapToKeySet (mappedRegion, returned);
+
+	// KeySet * new = ksDeepDup (returned);
+	// returned->array = new->array;
+	// returned->size = new->size;
+	// returned->alloc = new->alloc;
+	// returned->cursor = 0;
+	// returned->current = 0;
+	// returned->flags = 0;
 
 	// m_output_keyset (returned);
 
