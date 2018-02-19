@@ -104,6 +104,10 @@ int elektraProcessOpen (Plugin * handle, Key * errorKey)
 	// elektraInvokeOpen will call the plugin's open function, this has to happen in the other process
 	if (process->plugin == NULL && validPluginName (process->pluginName, errorKey))
 	{
+		if (elektraProcessCheckConfig (errorKey, elektraPluginGetConfig (handle)) == ELEKTRA_PLUGIN_STATUS_ERROR)
+		{
+			return ELEKTRA_PLUGIN_STATUS_ERROR;
+		}
 		process->plugin = elektraInvokeOpen (keyString (process->pluginName), process->pluginConfig, errorKey);
 		if (!process->plugin)
 		{
