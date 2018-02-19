@@ -8,10 +8,15 @@
  */
 
 #include "antlr.hpp"
+#include "TestLexer.h"
+#include "TestParser.h"
+#include "antlr4-runtime.h"
 
 #include <kdbhelper.h>
 
 using namespace ckdb;
+using namespace antlr;
+using namespace antlr4;
 
 extern "C" {
 
@@ -28,6 +33,13 @@ int elektraAntlrGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 			       keyNew ("system/elektra/modules/antlr/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
+
+		ANTLRInputStream input (u8"hello world");
+		TestLexer lexer (&input);
+		CommonTokenStream tokens (&lexer);
+		TestParser parser (&tokens);
+		tree::ParseTree * tree = parser.ids ();
+		std::cout << tree->toStringTree (&parser) << std::endl << std::endl;
 
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
