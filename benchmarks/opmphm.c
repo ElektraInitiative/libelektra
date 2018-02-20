@@ -6,6 +6,9 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
+// ==== DEFINE SECTION ====
+#define _GNU_SOURCE
+#define KDBRAND_BENCHMARK // allows the seed injection into Elektra
 // uncomment to use OPENMP and set USE_OPENMP in CMakeLists.txt
 //~ #define USE_OPENMP
 
@@ -16,13 +19,18 @@
 #define NUMBEROFTHREADS 1
 #endif
 
-#define KDBRAND_BENCHMARK
-#include "../src/libs/elektra/opmphm.c"
-#include "../src/libs/elektra/rand.c"
+// ==== INCLUDE SECTION ====
 #include "benchmarks.h"
+#ifdef HAVE_HSEARCHR
+#include <search.h>
+#endif
+
 #ifdef USE_OPENMP
 #include <omp.h>
 #endif
+
+#include "../src/libs/elektra/opmphm.c"
+#include "../src/libs/elektra/rand.c"
 #include <sys/time.h>
 
 int32_t elektraRandBenchmarkInitSeed;
@@ -32,6 +40,7 @@ static int32_t * getRandomSeed (int32_t * seed);
 static FILE * openOutFileWithRPartitePostfix (const char * name, uint8_t r);
 static const char * elektraGetString (void * data);
 static size_t getPower (size_t p, size_t q);
+static int cmpInteger (const void * a, const void * b);
 // generate KeySets
 static KeySetShape * getKeySetShapes (void);
 const size_t numberOfShapes = 8;
@@ -981,6 +990,787 @@ static void benchmarkMappingAllSeeds (void)
  */
 
 /**
+ * START ================================================== OPMPHM Build Time ======================================================== START
+ *
+ * This benchmark measures the time of the OPMPHM build.
+ * Uses all KeySet shapes, for all n (KeySet size) a fixed set of seeds is used to build the OPMPHM.
+ * For one n (KeySet size) ksPerN KeySets are used.
+ * The results are written out in the following format:
+ *
+ * n;ks;time
+ *
+ * The number of needed seeds for this benchmarks is: numberOfShapes * ( numberOfSeeds + nCount * ksPerN )
+ */
+
+/**
+ * @brief Measures the OPMPHM build numberOfRepeats time and returns median
+ *
+ * @param ks the KeySet
+ * @param repeats array to store repeated measurements
+ * @param numberOfRepeats fields in repeats
+ *
+ * @retval median time
+ */
+static size_t benchmarkOPMPHMBuildTimeMeasure (KeySet * ks, size_t * repeats, size_t numberOfRepeats)
+{
+	for (size_t repeatsI = 0; repeatsI < numberOfRepeats; ++repeatsI)
+	{
+		// preparation for measurement
+		struct timeval start;
+		struct timeval end;
+		Key * keySearchFor = ks->array[0]; // just some key
+		Key * keyFound;
+		// fresh OPMPHM
+		if (ks->opmphm)
+		{
+			opmphmDel (ks->opmphm);
+			ks->opmphm = NULL;
+		}
+
+		// START MEASUREMENT
+		__asm__("");
+		gettimeofday (&start, 0);
+		__asm__("");
+
+		keyFound = ksLookup (ks, keySearchFor, KDB_O_OPMPHM | KDB_O_NOCASCADING);
+
+		__asm__("");
+		gettimeofday (&end, 0);
+		__asm__("");
+		// END MEASUREMENT
+
+		// save result
+		repeats[repeatsI] = (end.tv_sec - start.tv_sec) * 1000000 + (end.tv_usec - start.tv_usec);
+
+		// sanity check
+		if (!ks->opmphm || !opmphmIsBuild (ks->opmphm))
+		{
+			printExit ("Sanity Check Failed: OPMPHM not used");
+		}
+		if (keyFound != keySearchFor)
+		{
+			printExit ("Sanity Check Failed: found wrong Key");
+		}
+	}
+	// sort repeats
+	qsort (repeats, numberOfRepeats, sizeof (size_t), cmpInteger);
+	return repeats[numberOfRepeats / 2]; // take median
+}
+
+void benchmarkOPMPHMBuildTime (void)
+{
+	const size_t startN = 50;
+	const size_t stepN = 500;
+	const size_t endN = 20000;
+	const size_t ksPerN = 5;
+	const size_t numberOfSeeds = 51;
+	const size_t numberOfRepeats = 7;
+
+	// check config
+	if (startN >= endN || startN == 0)
+	{
+		printExit ("startN >= endN || startN == 0");
+	}
+	if (numberOfRepeats % 2 == 0)
+	{
+		printExit ("numberOfRepeats is even");
+	}
+	if (numberOfSeeds % 2 == 0)
+	{
+		printExit ("numberOfSeeds is even");
+	}
+	if (ksPerN % 2 == 0)
+	{
+		printExit ("ksPerN is even");
+	}
+
+	// calculate counts
+	size_t nCount = 0;
+	for (size_t nI = startN; nI <= endN; nI += stepN)
+	{
+		++nCount;
+	}
+
+	// memory allocation and initialization
+	// init seeds for mapping step in ksLookup (...)
+	int32_t * seeds = elektraMalloc (numberOfSeeds * sizeof (int32_t));
+	if (!seeds)
+	{
+		printExit ("malloc");
+	}
+	// init results
+	size_t * results = elektraMalloc (nCount * ksPerN * numberOfSeeds * sizeof (size_t));
+	if (!results)
+	{
+		printExit ("malloc");
+	}
+	// init repeats
+	size_t * repeats = elektraMalloc (numberOfRepeats * sizeof (size_t));
+	if (!repeats)
+	{
+		printExit ("malloc");
+	}
+	// init KeySetStorage
+	KeySet ** keySetStorage = elektraMalloc (ksPerN * sizeof (KeySet *));
+	if (!keySetStorage)
+	{
+		printExit ("malloc");
+	}
+
+	// get KeySet shapes
+	KeySetShape * keySetShapes = getKeySetShapes ();
+
+	printf ("Run Benchmark:\n");
+
+	// for all KeySet shapes
+	for (size_t shapeI = 0; shapeI < numberOfShapes; ++shapeI)
+	{
+		// get seeds for mapping step in ksLookup (...)
+		for (size_t i = 0; i < numberOfSeeds; ++i)
+		{
+			if (getRandomSeed (&seeds[i]) != &seeds[i]) printExit ("Seed Parsing Error or feed me more seeds");
+		}
+
+		KeySetShape * usedKeySetShape = &keySetShapes[shapeI];
+
+		// for all Ns
+		for (size_t nI = startN; nI <= endN; nI += stepN)
+		{
+			printf ("now at: shape = %zu/%zu n = %zu/%zu\r", shapeI + 1, numberOfShapes, nI, endN);
+			fflush (stdout);
+
+			// generate KeySets
+			int32_t genSeed;
+			for (size_t ksI = 0; ksI < ksPerN; ++ksI)
+			{
+				if (getRandomSeed (&genSeed) != &genSeed) printExit ("Seed Parsing Error or feed me more seeds");
+				keySetStorage[ksI] = generateKeySet (nI, &genSeed, usedKeySetShape);
+			}
+
+			// for all seeds
+			for (size_t seedI = 0; seedI < numberOfSeeds; ++seedI)
+			{
+				// set seed to return by elektraRandGetInitSeed () in the lookup
+				elektraRandBenchmarkInitSeed = seeds[seedI];
+
+				// for all KeySets in the storage
+				for (size_t ksI = 0; ksI < ksPerN; ++ksI)
+				{
+					// measure
+					size_t res = benchmarkOPMPHMBuildTimeMeasure (keySetStorage[ksI], repeats, numberOfRepeats);
+
+					// store res
+					results[((nI - startN) / stepN) * ksPerN * numberOfSeeds + ksI * numberOfSeeds + seedI] = res;
+				}
+			}
+
+			// free ks
+			for (size_t ksI = 0; ksI < ksPerN; ++ksI)
+			{
+				ksDel (keySetStorage[ksI]);
+			}
+		}
+
+		// write out
+		FILE * out = openOutFileWithRPartitePostfix ("benchmark_opmphm_build_time", shapeI);
+		if (!out)
+		{
+			printExit ("open out file");
+		}
+		// print header
+		fprintf (out, "n;ks;time\n");
+		// print data
+		for (size_t nI = startN; nI <= endN; nI += stepN)
+		{
+			for (size_t ksI = 0; ksI < ksPerN; ++ksI)
+			{
+				for (size_t seedI = 0; seedI < numberOfSeeds; ++seedI)
+				{
+					fprintf (out, "%zu;%zu;%zu\n", nI, ksI,
+						 results[((nI - startN) / stepN) * ksPerN * numberOfSeeds + ksI * numberOfSeeds + seedI]);
+				}
+			}
+		}
+
+		fclose (out);
+	}
+	printf ("\n");
+
+	elektraFree (repeats);
+	elektraFree (keySetStorage);
+	elektraFree (keySetShapes);
+	elektraFree (results);
+	elektraFree (seeds);
+}
+
+/**
+ * END ==================================================== OPMPHM Build Time ========================================================== END
+ */
+
+/**
+ * START ================================================== OPMPHM Search Time ======================================================= START
+ *
+ * This benchmark measures the time of the OPMPHM search.
+ * Uses all KeySet shapes, for one n (KeySet size) ksPerN KeySets are used.
+ * Each measurement done with one KeySet is repeated numberOfRepeats time and summarized with the median.
+ * For one n (KeySet size) the ksPerN results are also summarized with the median.
+ * The results are written out in the following format:
+ *
+ * n;search_1;search_2;...;search_(numberOfSearches)
+ *
+ * The number of needed seeds for this benchmarks is: numberOfShapes * nCount * ksPerN * (1  + searchesCount )
+ */
+
+/**
+ * @brief Measures the OPMPHM search time, for searches random Keys, repeats the measurement numberOfRepeats time and returns the media.
+ *
+ * The OPMPHM build will be triggerd if KDB_OPMPHM is set!
+ *
+ * @param ks the KeySet
+ * @param searches the number of searches to make
+ * @param searchSeed the random seed used to determine the Keys to search
+ * @param option the options passed to the ksLookup (...)
+ * @param repeats array to store repeated measurements
+ * @param numberOfRepeats fields in repeats
+ *
+ * @retval median time
+ */
+static size_t benchmarkSearchTimeMeasure (KeySet * ks, size_t searches, int32_t searchSeed, option_t option, size_t * repeats,
+					  size_t numberOfRepeats)
+{
+	if (option & KDB_O_OPMPHM)
+	{
+		// trigger OPMPHM build if not build
+		if (!ks->opmphm || !opmphmIsBuild (ks->opmphm))
+		{
+			// set seed to return by elektraRandGetInitSeed () in the lookup
+			elektraRandBenchmarkInitSeed = searchSeed;
+			(void) ksLookup (ks, ks->array[0], KDB_O_OPMPHM | KDB_O_NOCASCADING);
+			if (!ks->opmphm || !opmphmIsBuild (ks->opmphm))
+			{
+				printExit ("trigger OPMPHM build");
+			}
+		}
+	}
+	for (size_t repeatsI = 0; repeatsI < numberOfRepeats; ++repeatsI)
+	{
+		// sanity checks
+		if (option & KDB_O_OPMPHM)
+		{
+			if (!ks->opmphm || !opmphmIsBuild (ks->opmphm))
+			{
+				printExit ("Sanity Check Failed: OPMPHM not here");
+			}
+		}
+		else
+		{
+			if (ks->opmphm)
+			{
+				printExit ("Sanity Check Failed: OPMPHM here");
+			}
+		}
+
+		// preparation for measurement
+		struct timeval start;
+		struct timeval end;
+		Key * keyFound;
+		int32_t actualSearchSeed = searchSeed;
+
+		// START MEASUREMENT
+		__asm__("");
+		gettimeofday (&start, 0);
+		__asm__("");
+
+		for (size_t s = 1; s <= searches; ++s)
+		{
+			keyFound = ksLookup (ks, ks->array[actualSearchSeed % ks->size], option);
+			if (!keyFound || keyFound != ks->array[actualSearchSeed % ks->size])
+			{
+				printExit ("Sanity Check Failed: found wrong Key");
+			}
+			elektraRand (&actualSearchSeed);
+		}
+
+		__asm__("");
+		gettimeofday (&end, 0);
+		__asm__("");
+		// END MEASUREMENT
+
+		// sanity checks
+		if (option & KDB_O_OPMPHM)
+		{
+			if (!ks->opmphm || !opmphmIsBuild (ks->opmphm))
+			{
+				printExit ("Sanity Check Failed: OPMPHM not here");
+			}
+		}
+		else
+		{
+			if (ks->opmphm)
+			{
+				printExit ("Sanity Check Failed: OPMPHM here");
+			}
+		}
+
+		// save result
+		repeats[repeatsI] = (end.tv_sec - start.tv_sec) * 1000000 + (end.tv_usec - start.tv_usec);
+	}
+	// sort repeats
+	qsort (repeats, numberOfRepeats, sizeof (size_t), cmpInteger);
+	return repeats[numberOfRepeats / 2]; // take median
+}
+
+/**
+ * @brief Common part of search time benchmarks, used by benchmarkOPMPHMSearchTime and benchmarkBinarySearchTime.
+ *
+ * @param outFileName the output file name
+ * @param option the option to pass to the ksLookup (...)
+ */
+static void benchmarkSearchTime (char * outFileName, option_t option)
+{
+	const size_t startN = 50;
+	const size_t stepN = 500;
+	const size_t endN = 20000;
+	const size_t ksPerN = 3;
+	const size_t numberOfRepeats = 7;
+	const size_t startSearches = 500;
+	const size_t stepSearches = 500;
+	const size_t endSearches = 32000;
+
+	// check config
+	if (startN >= endN || startN == 0)
+	{
+		printExit ("startN >= endN || startN == 0");
+	}
+	if (numberOfRepeats % 2 == 0)
+	{
+		printExit ("numberOfRepeats is even");
+	}
+	if (ksPerN % 2 == 0)
+	{
+		printExit ("ksPerN is even");
+	}
+
+	// calculate counts
+	size_t nCount = 0;
+	for (size_t nI = startN; nI <= endN; nI += stepN)
+	{
+		++nCount;
+	}
+	size_t searchesCount = 0;
+	for (size_t searchesI = startSearches; searchesI <= endSearches; searchesI += stepSearches)
+	{
+		++searchesCount;
+	}
+
+	// memory allocation and initialization
+	// init results
+	size_t * results = elektraMalloc (nCount * searchesCount * sizeof (size_t));
+	if (!results)
+	{
+		printExit ("malloc");
+	}
+	// init repeats
+	size_t * repeats = elektraMalloc (numberOfRepeats * sizeof (size_t));
+	if (!repeats)
+	{
+		printExit ("malloc");
+	}
+	// init partialResult
+	size_t * partialResult = elektraMalloc (ksPerN * searchesCount * sizeof (size_t));
+	if (!partialResult)
+	{
+		printExit ("malloc");
+	}
+	// init KeySetStorage
+	KeySet ** keySetStorage = elektraMalloc (ksPerN * sizeof (KeySet *));
+	if (!keySetStorage)
+	{
+		printExit ("malloc");
+	}
+
+	// get KeySet shapes
+	KeySetShape * keySetShapes = getKeySetShapes ();
+
+	printf ("Run Benchmark:\n");
+
+	// for all KeySet shapes
+	for (size_t shapeI = 0; shapeI < numberOfShapes; ++shapeI)
+	{
+		KeySetShape * usedKeySetShape = &keySetShapes[shapeI];
+
+		// for all Ns
+		for (size_t nI = startN; nI <= endN; nI += stepN)
+		{
+			printf ("now at: shape = %zu/%zu n = %zu/%zu\r", shapeI + 1, numberOfShapes, nI, endN);
+			fflush (stdout);
+
+			// generate KeySets
+			int32_t genSeed;
+			for (size_t ksI = 0; ksI < ksPerN; ++ksI)
+			{
+				if (getRandomSeed (&genSeed) != &genSeed) printExit ("Seed Parsing Error or feed me more seeds");
+				keySetStorage[ksI] = generateKeySet (nI, &genSeed, usedKeySetShape);
+			}
+
+			// for all number of searches
+			for (size_t searchesI = startSearches; searchesI <= endSearches; searchesI += stepSearches)
+			{
+				int32_t searchSeed = 1;
+				if (getRandomSeed (&searchSeed) != &searchSeed) printExit ("Seed Parsing Error or feed me more seeds");
+
+				// for all KeySets in the storage
+				for (size_t ksI = 0; ksI < ksPerN; ++ksI)
+				{
+					// measure
+					size_t res = benchmarkSearchTimeMeasure (keySetStorage[ksI], searchesI, searchSeed, option, repeats,
+										 numberOfRepeats);
+					// save partial result to summarize it with median
+					partialResult[((searchesI - startSearches) / stepSearches) * ksPerN + ksI] = res;
+				}
+			}
+			// sort partialResult and take median as final result
+			for (size_t searchesI = 0; searchesI < searchesCount; ++searchesI)
+			{
+				qsort (&partialResult[searchesI * ksPerN], ksPerN, sizeof (size_t), cmpInteger);
+				results[((nI - startN) / stepN) * searchesCount + searchesI] =
+					partialResult[searchesI * ksPerN + (ksPerN / 2)];
+			}
+
+			// free ks
+			for (size_t ksI = 0; ksI < ksPerN; ++ksI)
+			{
+				ksDel (keySetStorage[ksI]);
+			}
+		}
+
+		// write out
+		FILE * out = openOutFileWithRPartitePostfix (outFileName, shapeI);
+		if (!out)
+		{
+			printExit ("open out file");
+		}
+		// print header
+		fprintf (out, "n");
+		for (size_t searchesI = startSearches; searchesI <= endSearches; searchesI += stepSearches)
+		{
+			fprintf (out, ";search_%zu", searchesI);
+		}
+		fprintf (out, "\n");
+		// print data
+		for (size_t nI = startN; nI <= endN; nI += stepN)
+		{
+			fprintf (out, "%zu", nI);
+			for (size_t searchesI = startSearches; searchesI <= endSearches; searchesI += stepSearches)
+			{
+				fprintf (out, ";%zu",
+					 results[((nI - startN) / stepN) * searchesCount + ((searchesI - startSearches) / stepSearches)]);
+			}
+			fprintf (out, "\n");
+		}
+
+		fclose (out);
+	}
+	printf ("\n");
+
+	elektraFree (repeats);
+	elektraFree (partialResult);
+	elektraFree (keySetStorage);
+	elektraFree (keySetShapes);
+	elektraFree (results);
+}
+
+void benchmarkOPMPHMSearchTime (void)
+{
+	benchmarkSearchTime ("benchmark_opmphm_search_time", KDB_O_OPMPHM | KDB_O_NOCASCADING);
+}
+
+/**
+ * END ==================================================== OPMPHM Search Time ========================================================= END
+ */
+
+/**
+ * START ================================================= Binary search Time ======================================================== START
+ *
+ * This benchmark measures the time of the binary search.
+ * Uses all KeySet shapes, for one n (KeySet size) ksPerN KeySets are used.
+ * Each measurement done with one KeySet is repeated numberOfRepeats time and summarized with the median.
+ * For one n (KeySet size) the ksPerN results are also summarized with the median.
+ * The results are written out in the following format:
+ *
+ * n;search_1;search_2;...;search_(numberOfSearches)
+ *
+ * The number of needed seeds for this benchmarks is: numberOfShapes * nCount * ksPerN * (1  + searchesCount )
+ */
+
+static void benchmarkBinarySearchTime (void)
+{
+	benchmarkSearchTime ("benchmark_binary_search_time", KDB_O_NOCASCADING);
+}
+
+/**
+ * END =================================================== Binary search Time ========================================================== END
+ */
+
+/**
+ * START ================================================= hsearch Build Time ======================================================== START
+ *
+ * This benchmark measures the time of the hsearch build.
+ * For one n (KeySet size) ksPerN KeySets are used, with different loads.
+ * This benchmark has a 10 strike policy, when 10 time the measured time is over 10000 the next KeySet shape is handled.
+ * The results are written out in the following format:
+ *
+ * n;ks;load;time
+ *
+ * The number of needed seeds for this benchmarks is: numberOfShapesUsed * nCount * ksPerN
+ */
+
+// where does hsearch stores the strings??? no out of mem but speed loosing
+
+// clang-format off
+// format bug
+#ifdef HAVE_HSEARCHR
+// clang-format on
+
+/**
+ * @brief Measures the hsearch build numberOfRepeats time and returns median
+ *
+ * @param ks the KeySet
+ * @param nI the KeySet size
+ * @param load the load
+ * @param repeats array to store repeated measurements
+ * @param numberOfRepeats fields in repeats
+ *
+ * @retval median time
+ */
+static size_t benchmarkHsearchBuildTimeMeasure (KeySet * ks, size_t nI, double load, size_t * repeats, size_t numberOfRepeats)
+{
+	for (size_t repeatsI = 0; repeatsI < numberOfRepeats; ++repeatsI)
+	{
+		// preparation for measurement
+		struct timeval start;
+		struct timeval end;
+		Key * key;
+		ksRewind (ks);
+		ENTRY e;
+		ENTRY * ep;
+		// fresh htab
+		struct hsearch_data * htab = elektraCalloc (sizeof (struct hsearch_data));
+		if (!htab)
+		{
+			printExit ("calloc");
+		}
+
+		// START MEASUREMENT
+		__asm__("");
+		gettimeofday (&start, 0);
+		__asm__("");
+
+		if (!hcreate_r (nI / load, htab))
+		{
+			printExit ("hcreate_r");
+		}
+
+		while ((key = ksNext (ks)))
+		{
+			e.key = (char *) keyName (key);
+			e.data = key;
+			if (!hsearch_r (e, ENTER, &ep, htab))
+			{
+				printExit ("hsearch_r");
+			}
+		}
+
+		__asm__("");
+		gettimeofday (&end, 0);
+		__asm__("");
+		// END MEASUREMENT
+
+		// save result
+		repeats[repeatsI] = (end.tv_sec - start.tv_sec) * 1000000 + (end.tv_usec - start.tv_usec);
+
+		// sanity check
+		ksRewind (ks);
+		while ((key = ksNext (ks)))
+		{
+			e.key = (char *) keyName (key);
+			if (!hsearch_r (e, FIND, &ep, htab))
+			{
+				printExit ("Sanity Check Failed: hsearch can not find element");
+			}
+		}
+
+		hdestroy_r (htab);
+		elektraFree (htab);
+	}
+	// sort repeats
+	qsort (repeats, numberOfRepeats, sizeof (size_t), cmpInteger);
+	return repeats[numberOfRepeats / 2]; // take median
+}
+
+void benchmarkHsearchBuildTime (void)
+{
+	const size_t startN = 50;
+	const size_t stepN = 500;
+	const size_t endN = 20000;
+	const size_t ksPerN = 5;
+	const size_t numberOfRepeats = 7;
+	const size_t maxStrikes = 10;
+	const size_t strikeLimit = 10000;
+	const size_t numberOfLoads = 4;
+	double * loads = malloc (sizeof (double) * numberOfLoads);
+	if (!loads)
+	{
+		printExit ("malloc");
+	}
+	loads[0] = 1;
+	loads[1] = 0.75;
+	loads[2] = 0.5;
+	loads[3] = 0.25;
+
+	// check config
+	if (startN >= endN || startN == 0)
+	{
+		printExit ("startN >= endN || startN == 0");
+	}
+	if (numberOfRepeats % 2 == 0)
+	{
+		printExit ("numberOfRepeats is even");
+	}
+	if (ksPerN % 2 == 0)
+	{
+		printExit ("ksPerN is even");
+	}
+
+	// calculate counts
+	size_t nCount = 0;
+	for (size_t nI = startN; nI <= endN; nI += stepN)
+	{
+		++nCount;
+	}
+
+	// memory allocation and initialization
+	// init results
+	size_t * results = elektraMalloc (nCount * ksPerN * numberOfLoads * sizeof (size_t));
+	if (!results)
+	{
+		printExit ("malloc");
+	}
+	// init repeats
+	size_t * repeats = elektraMalloc (numberOfRepeats * sizeof (size_t));
+	if (!repeats)
+	{
+		printExit ("malloc");
+	}
+	// init KeySetStorage
+	KeySet ** keySetStorage = elektraMalloc (ksPerN * sizeof (KeySet *));
+	if (!keySetStorage)
+	{
+		printExit ("malloc");
+	}
+
+	// get KeySet shapes
+	KeySetShape * keySetShapes = getKeySetShapes ();
+
+	printf ("Run Benchmark:\n");
+
+	// for all KeySet shapes
+	for (size_t shapeI = 0; shapeI < numberOfShapes; ++shapeI)
+	{
+		KeySetShape * usedKeySetShape = &keySetShapes[shapeI];
+		size_t strikes = 0;
+
+		// for all Ns
+		for (size_t nI = startN; nI <= endN; nI += stepN)
+		{
+			printf ("now at: shape = %zu/%zu n = %zu/%zu\r", shapeI + 1, numberOfShapes, nI, endN);
+			fflush (stdout);
+
+			// generate KeySets
+			int32_t genSeed;
+			for (size_t ksI = 0; ksI < ksPerN; ++ksI)
+			{
+				if (getRandomSeed (&genSeed) != &genSeed) printExit ("Seed Parsing Error or feed me more seeds");
+				keySetStorage[ksI] = generateKeySet (nI, &genSeed, usedKeySetShape);
+			}
+
+			// for all loads
+			for (size_t loadI = 0; loadI < numberOfLoads; ++loadI)
+			{
+				// for all KeySets in the storage
+				for (size_t ksI = 0; ksI < ksPerN; ++ksI)
+				{
+					// measure
+					size_t res = benchmarkHsearchBuildTimeMeasure (keySetStorage[ksI], nI, loads[loadI], repeats,
+										       numberOfRepeats);
+					// strike policy
+					if (res > strikeLimit)
+					{
+						++strikes;
+						if (strikes >= maxStrikes)
+						{
+							ksI = ksPerN;
+							loadI = numberOfLoads;
+							nI = endN + 1;
+							printf ("shape %zu is out!\n", shapeI);
+						}
+					}
+					else
+					{
+						strikes = 0;
+						// save only non strike values
+						results[((nI - startN) / stepN) * ksPerN * numberOfLoads + ksI * numberOfLoads + loadI] =
+							res;
+					}
+				}
+			}
+
+			// free ks
+			for (size_t ksI = 0; ksI < ksPerN; ++ksI)
+			{
+				ksDel (keySetStorage[ksI]);
+			}
+		}
+
+		// write out
+		FILE * out = openOutFileWithRPartitePostfix ("benchmark_hsearch_build_time", shapeI);
+		if (!out)
+		{
+			printExit ("open out file");
+		}
+		// print header
+		fprintf (out, "n;ks;load;time\n");
+		// print data
+		for (size_t nI = startN; nI <= endN; nI += stepN)
+		{
+			for (size_t ksI = 0; ksI < ksPerN; ++ksI)
+			{
+				for (size_t loadI = 0; loadI < numberOfLoads; ++loadI)
+				{
+					fprintf (out, "%zu;%zu;%f;%zu\n", nI, ksI, loads[loadI],
+						 results[((nI - startN) / stepN) * ksPerN * numberOfLoads + ksI * numberOfLoads + loadI]);
+				}
+			}
+		}
+
+		fclose (out);
+	}
+	printf ("\n");
+
+	elektraFree (repeats);
+	elektraFree (keySetStorage);
+	elektraFree (loads);
+	elektraFree (keySetShapes);
+	elektraFree (results);
+}
+
+#endif
+
+/**
+ * END =================================================== hsearch Build Time ========================================================== END
+ */
+
+/**
  * START ================================================= Prints all KeySetShapes =================================================== START
  */
 
@@ -1019,12 +1809,17 @@ static void benchmarkPrintAllKeySetShapes (void)
 int main (int argc, char ** argv)
 {
 	// define all benchmarks
-	const size_t benchmarksCount = 5;
+	size_t benchmarksCount = 8;
+#ifdef HAVE_HSEARCHR
+	// hsearchbuildtime
+	++benchmarksCount;
+#endif
 	Benchmark * benchmarks = elektraMalloc (benchmarksCount * sizeof (Benchmark));
 	if (!benchmarks)
 	{
 		printExit ("malloc");
 	}
+
 	// hashfunctiontime
 	char * benchmarkNameHashFunctionTime = "hashfunctiontime";
 	benchmarks[0].name = benchmarkNameHashFunctionTime;
@@ -1045,6 +1840,22 @@ int main (int argc, char ** argv)
 	char * benchmarkNamePrintAllKeySetShapes = "printallkeysetshapes";
 	benchmarks[4].name = benchmarkNamePrintAllKeySetShapes;
 	benchmarks[4].benchmarkF = benchmarkPrintAllKeySetShapes;
+	// opmphmbuildtime
+	char * benchmarkNameOpmphmBuildTime = "opmphmbuildtime";
+	benchmarks[5].name = benchmarkNameOpmphmBuildTime;
+	benchmarks[5].benchmarkF = benchmarkOPMPHMBuildTime;
+	// opmphmsearchtime
+	char * benchmarkNameOpmphmSearchTime = "opmphmsearchtime";
+	benchmarks[6].name = benchmarkNameOpmphmSearchTime;
+	benchmarks[6].benchmarkF = benchmarkOPMPHMSearchTime;
+	// binarysearchtime
+	char * benchmarkNameBinarySearchTime = "binarysearchtime";
+	benchmarks[7].name = benchmarkNameBinarySearchTime;
+	benchmarks[7].benchmarkF = benchmarkBinarySearchTime;
+	// hsearchbuildtime
+	char * benchmarkNameHsearchBuildTime = "hsearchbuildtime";
+	benchmarks[benchmarksCount - 1].name = benchmarkNameHsearchBuildTime;
+	benchmarks[benchmarksCount - 1].benchmarkF = benchmarkHsearchBuildTime;
 
 	// run benchmark
 	if (argc == 1)
@@ -1159,6 +1970,29 @@ static size_t getPower (size_t p, size_t q)
 		result *= p;
 	}
 	return result;
+}
+
+/**
+ * @brief Compares two integer.
+ *
+ * @param a first integer
+ * @param b second integer
+ *
+ */
+static int cmpInteger (const void * a, const void * b)
+{
+	if (*(size_t *) a < *(size_t *) b)
+	{
+		return -1;
+	}
+	else if (*(size_t *) a > *(size_t *) b)
+	{
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
 }
 
 /**
