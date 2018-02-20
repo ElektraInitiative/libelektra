@@ -125,7 +125,7 @@ each time such plugin is used and gets closed again afterwards. It uses a simple
 communication protocol based on a KeySet that gets serialized through a pipe via
 the dump plugin to orchestrate the processes.
 
-Such a behavior this is useful for plugins which cause memory leaks to be
+Such a behavior is useful for plugins which cause memory leaks to be
 isolated in an own process. Furthermore this is useful for runtimes or libraries
 that cannot be reinitialized in the same process after they have been used.
 
@@ -168,7 +168,7 @@ We added even more functionality, which could not make it to the highlights:
 
 We improved the documentation in the following ways:
 
-- We've [documented how you can setup a build node for Jenkins using a docker container](https://github.com/ElektraInitiative/libelektra/tree/master/doc/docker/jenkinsnode/README.md)
+- We've [documented how you can setup a build node for Jenkins using a Docker container](https://github.com/ElektraInitiative/libelektra/tree/master/doc/docker/jenkinsnode/README.md)
   We also provide an example Dockerfile based on Debian Stretch for that purpose,
   thanks to Armin Wurzinger.
 - Document how `rlwrap` might be used for `kdb shell`
@@ -198,19 +198,25 @@ Furthermore:
 These notes are of interest for people maintaining packages of Elektra:
 
 - `dini` is no longer experimental.
-- BINDINGS syntax is now similar to PLUGINS.
+- CMake: `BINDINGS` now behaves like `PLUGINS`
   By default now all MAINTAINED bindings except EXPERIMENTAL and DEPRECATED are included.
   For more details see
   [/doc/COMPILE.md](https://github.com/ElektraInitiative/libelektra/tree/master/doc/COMPILE.md).
   To include both intercept bindings, you now need to write `INTERCEPT`, to only include getenv
   interception `intercept_env`. `intercept` alone does not work anymore.
-- CMake: `BINDINGS` now behaves like `PLUGINS`
 - <<TODO>>
 
 The following files are new:
 
-- Libs: `libelektra-notification.so`, `libelektra-io.so`, `libelektra-io-uv.so`
-- <TOPIC>: <FILELIST>
+- Libs: `libelektra-notification.so`, `libelektra-io.so`, `libelektra-io-uv.so`, `libelektra-pluginprocess.so`
+- Headers: `kdbgetenv.h`, `kdbio.h`, `kdbpluginprocess.h`
+- Plugins: `base64/Base64.pdf`
+- Binaries: `getenv`, `test_context`, `test_fork`, `test_getenv`, `test_ks_opmphm`, `test_opmphm`
+- Other: `elektra-io.pc`
+
+The following files were removed:
+
+- Tests: `testmod_semlock`
 
 ## Notes for Elektra's Developers
 
@@ -235,6 +241,7 @@ Many problems were resolved with the following fixes:
 - We fixed [internal inconsistency](https://github.com/ElektraInitiative/libelektra/pull/1761) in the CMake code of the [Augeas plugin](https://www.libelektra.org/plugins/augeas)
 - We fixed various small bugs that could potentially cause the INI plugin to crash
 - The INI plugin now [converts a section to a normal key-value pair](https://github.com/ElektraInitiative/libelektra/issues/1793) if you store a value inside it. This has the advantage that you will not [lose data unexpectedly anymore](https://github.com/ElektraInitiative/libelektra/issues/1697).
+- The [INI plugin](https://www.libelektra.org/plugins/ini) should now read most key-value pairs containing delimiter characters (`=`) properly.
 - We fixed the [haskell bindings and plugins on Debian Stretch](https://github.com/ElektraInitiative/libelektra/pull/1787)
   and added a [new build server job](https://build.libelektra.org/job/elektra-haskell/) to test that in the future.
 

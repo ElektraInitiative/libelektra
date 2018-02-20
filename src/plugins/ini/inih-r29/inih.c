@@ -9,6 +9,7 @@ http://code.google.com/p/inih/
 
 #include "inih.h"
 #include <ctype.h>
+#include <kdbassert.h>
 #include <kdblogger.h>
 #include <regex.h>
 #include <stdio.h>
@@ -63,19 +64,6 @@ static char * strncpy0 (char * dest, const char * src, size_t size)
 	strncpy (dest, src, size);
 	dest[size - 1] = '\0';
 	return dest;
-}
-
-static char * strrstr (const char * haystack, const char * needle)
-{
-	char * prev = NULL;
-	char * next = NULL;
-	char * ptr = (char *)haystack;
-	while ((next = strstr (ptr, needle)) != NULL)
-	{
-		prev = next;
-		ptr = next + 1;
-	}
-	return prev;
 }
 
 static int isContinuation (const char * line, const struct IniConfig * config)
@@ -423,102 +411,72 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 			else
 			{
 				ELEKTRA_LOG_DEBUG ("Found multiple delimiters");
-				ptr = start + 1;
-				while (*ptr)
-				{
-					if (*ptr == delim)
-					{
-						if (*(ptr + 1) == '"' || *(ptr + 2) == '"' || *(ptr - 1) == '"' || *(ptr - 2) == '"') break;
-					}
-					++ptr;
-				}
-				if (*ptr)
-				{
-					ELEKTRA_LOG_DEBUG ("Found double quote character");
-					char tmpDel[4] = { ' ', delim, ' ', '\0' };
-					end = strstr (ptr, tmpDel);
-					name = NULL;
-					if (end)
-					{
-						// keyname == "=" or " = " where '=' is the delimiter
-						if (*(ptr + 1) == '"')
-						{
-							*(ptr + 1) = '\0';
-						}
-						else if (*(ptr + 2) == '"')
-						{
-							*(ptr + 2) = '\0';
-						}
-						if (*(ptr - 1) == '"')
-							*(ptr - 1) = '\0';
-						else if (*(ptr - 2) == '"')
-							*(ptr - 2) = '\0';
-						name = ptr;
-					}
-					else if (*ptr == delim)
-					{
-						*ptr = '\0';
-						rstrip (start);
-						if (*start == '"') ++start;
-						if (*(ptr - 1) == '"')
-							*(ptr - 1) = '\0';
-						else if (*(ptr - 2) == '"')
-							*(ptr - 2) = '\0';
-						name = start;
-					}
-					else
-					{
-						if (!end) end = strrstr (start + 1, tmpDel);
-						*end = '\0';
-						ptr = end + 2;
-						rstrip (start);
-						name = start;
-					}
-					value = ptr + 1;
 
-					end = find_char_or_comment (value, '\0');
-					if (*end == ';') *end = '\0';
-					rstrip (value);
-					if (*value == '"' || *(value + 1) == '"')
+				end = start + 1;
+				if (*start == '"')
+				{
+					/* Quoted Name:
+						- The name has to end with a double quote
+						- We do not allow any double quotes inside the name
+					 */
+					name = start + 1;
+					while (*end && *end != '"')
 					{
-						if (*value == '"')
-							*(value++) = '\0';
-						else if (*(value + 1) == '"')
-						{
-							*(value + 1) = '\0';
-							value += 2;
-						}
-						while ((*end != '"') && !isprint (*end) && end > value)
-							--end;
-						if (*end == '"') *end = '\0';
+						end++;
 					}
+					if (!*end)
+					{
+						error = lineno;
+						break;
+					}
+					*end = '\0';
+
+					value = end + 1;
+					value = lskip (value);
+					if (!*value || *value != delim)
+					{
+						error = lineno;
+						break;
+					}
+					value++;
 				}
 				else
 				{
-					ELEKTRA_LOG_DEBUG ("Found no double quote character");
-					rstrip (start);
+					/* Unquoted Name:
+						- The name can not contain a delimiter unless it is the very first character
+						- Trailing whitespace is removed from the name
+					 */
 					name = start;
-					end = strchr (start, delim);
+					while (*end && *end != delim)
+					{
+						end++;
+					}
 					if (!end)
 					{
-						ELEKTRA_LOG_DEBUG ("Found no delimiter");
-						value = NULL;
+						error = lineno;
+						break;
 					}
-					else
+					*end = '\0';
+					start = rstrip (start);
+					value = end + 1;
+				}
+				value = lskip (value);
+
+				end = find_char_or_comment (value, '\0');
+				if (*end == ';') *end = '\0';
+				rstrip (value);
+				if (*value == '"' || *(value + 1) == '"')
+				{
+					if (*value == '"')
+						*(value++) = '\0';
+					else if (*(value + 1) == '"')
 					{
-						ELEKTRA_LOG_DEBUG ("Found delimiter");
-						if (*end == delim) *end = '\0';
-						rstrip (end - 1);
-						value = lskip (end + 1);
-						rstrip (value);
-						if (*value == '"')
-						{
-							*(value++) = '\0';
-							while ((*end != '"') && !isprint (*end) && end > value)
-								--end;
-							if (*end == '"') *end = '\0';
-						}
+						*(value + 1) = '\0';
+						value += 2;
 					}
+					while ((*end != '"') && !isprint (*end) && end > value)
+						--end;
+					if (*end == '"') *end = '\0';
 				}
 				strncpy0 (prev_name, name, sizeof (prev_name));
 

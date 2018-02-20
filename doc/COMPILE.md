@@ -49,7 +49,7 @@ installation of self-compiled Elektra (such as how to uninstall it).
 
 To build documentation you need doxygen (we recommend 1.8.8+), graphviz and [ronn](https://github.com/rtomayko/ronn/blob/master/INSTALLING#files):
 
-	apt-get install doxygen graphviz ronn
+	apt-get install doxygen graphviz ruby-ronn
 
 Or on RPM based systems:
 
