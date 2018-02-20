@@ -12,11 +12,15 @@
 #include "YAMLParser.h"
 #include "antlr4-runtime.h"
 
+#include <iostream>
+#include <kdb.hpp>
+using namespace ckdb;
+#include <kdberrors.h>
 #include <kdbhelper.h>
 
-using namespace ckdb;
 using namespace antlr;
 using namespace antlr4;
+using namespace std;
 
 /**
  * @brief This function returns a key set containing the contract of this plugin.
@@ -49,6 +53,15 @@ int elektraYanlrGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
+
+	kdb::Key parent = kdb::Key (parentKey);
+	ifstream file (parent.getString ());
+	if (!file.is_open ())
+	{
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_COULD_NOT_OPEN, parent.getKey (), "Unable to open file “%s”",
+				    parent.getString ().c_str ());
+	}
+	parent.release ();
 	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 }
 
