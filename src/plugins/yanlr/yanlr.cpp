@@ -45,16 +45,18 @@ extern "C" {
 /** @see elektraDocGet */
 int elektraYanlrGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/yanlr"))
+	kdb::Key parent = kdb::Key (parentKey);
+
+	if (parent.getName () == "system/elektra/modules/yanlr")
 	{
 		KeySet * contract = contractYanlr ();
 		ksAppend (returned, contract);
 		ksDel (contract);
+		parent.release ();
 
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
-	kdb::Key parent = kdb::Key (parentKey);
 	ifstream file (parent.getString ());
 	if (!file.is_open ())
 	{
