@@ -18,9 +18,11 @@ using namespace ckdb;
 #include <kdberrors.h>
 #include <kdbhelper.h>
 
-using namespace antlr;
-using namespace antlr4;
-using namespace std;
+using antlr::YAMLLexer;
+using antlr::YAMLParser;
+using antlr4::ANTLRInputStream;
+using antlr4::CommonTokenStream;
+using std::ifstream;
 
 /**
  * @brief This function returns a key set containing the contract of this plugin.
