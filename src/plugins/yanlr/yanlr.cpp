@@ -63,6 +63,12 @@ int elektraYanlrGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_COULD_NOT_OPEN, parent.getKey (), "Unable to open file “%s”",
 				    parent.getString ().c_str ());
 	}
+
+	ANTLRInputStream input (file);
+	YAMLLexer lexer (&input);
+	CommonTokenStream tokens (&lexer);
+	YAMLParser parser (&tokens); //! OCLint
+
 	parent.release ();
 	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 }
