@@ -20,12 +20,12 @@ using std::endl;
 class KeyListener : public YAMLBaseListener
 {
 public:
-	void exitKey (KeyContext * context)
+	void exitKey (KeyContext * context) override
 	{
 		cout << "Found name “" << context->getText () << "”" << endl;
 	}
 
-	void exitValue (ValueContext * context)
+	void exitValue (ValueContext * context) override
 	{
 		cout << "Found value “" << context->getText () << "”" << endl;
 	}
