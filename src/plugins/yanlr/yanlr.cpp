@@ -8,8 +8,8 @@
  */
 
 #include "yanlr.hpp"
-#include "TestLexer.h"
-#include "TestParser.h"
+#include "YAMLLexer.h"
+#include "YAMLParser.h"
 #include "antlr4-runtime.h"
 
 #include <kdbhelper.h>
@@ -33,13 +33,6 @@ int elektraYanlrGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 			       keyNew ("system/elektra/modules/yanlr/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
-
-		ANTLRInputStream input (u8"hello world");
-		TestLexer lexer (&input);
-		CommonTokenStream tokens (&lexer);
-		TestParser parser (&tokens);
-		tree::ParseTree * tree = parser.ids ();
-		std::cout << tree->toStringTree (&parser) << std::endl << std::endl;
 
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}

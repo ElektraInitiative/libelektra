@@ -1,4 +1,4 @@
-grammar Test;
+grammar YAML;
 
 ids : id*;
 id : ID;
