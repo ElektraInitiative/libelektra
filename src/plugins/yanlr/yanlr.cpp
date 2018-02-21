@@ -19,6 +19,8 @@ using namespace ckdb;
 #include <kdberrors.h>
 #include <kdbhelper.h>
 
+using CppKey = kdb::Key;
+
 using antlr::YAMLLexer;
 using antlr::YAMLParser;
 
@@ -55,7 +57,7 @@ extern "C" {
 /** @see elektraDocGet */
 int elektraYanlrGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
-	kdb::Key parent = kdb::Key (parentKey);
+	auto parent = CppKey (parentKey);
 
 	if (parent.getName () == "system/elektra/modules/yanlr")
 	{
