@@ -20,7 +20,7 @@ if (DEPENDENCY_PHASE)
 
 	set (GRAMMAR_NAME YAML)
 	set (GRAMMAR_FILE ${CMAKE_CURRENT_SOURCE_DIR}/${GRAMMAR_NAME}.g4)
-	set (GENERATED_SOURCE_FILES_NAMES Lexer Parser BaseListener BaseVisitor Listener Visitor)
+	set (GENERATED_SOURCE_FILES_NAMES Lexer Parser BaseListener Listener)
 	foreach (file ${GENERATED_SOURCE_FILES_NAMES})
 		set (filepath ${CMAKE_CURRENT_BINARY_DIR}/${GRAMMAR_NAME}${file}.cpp)
 		set_source_files_properties (${filepath} PROPERTIES GENERATED TRUE)
@@ -30,7 +30,7 @@ if (DEPENDENCY_PHASE)
 
 	add_custom_command (
 		OUTPUT ${GENERATED_SOURCE_FILES}
-		COMMAND antlr4 -Werror -Dlanguage=Cpp -listener -visitor -o ${CMAKE_CURRENT_BINARY_DIR} -package antlr ${GRAMMAR_FILE}
+		COMMAND antlr4 -Werror -Dlanguage=Cpp -o ${CMAKE_CURRENT_BINARY_DIR} -package antlr ${GRAMMAR_FILE}
 		DEPENDS ${GRAMMAR_FILE}
 	)
 endif (DEPENDENCY_PHASE)
