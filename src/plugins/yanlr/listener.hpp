@@ -13,14 +13,11 @@
 #include "YAMLBaseListener.h"
 
 using antlr::YAMLBaseListener;
-using KeyContext = antlr::YAMLParser::KeyContext;
-using ValueContext = antlr::YAMLParser::ValueContext;
+using MappingContext = antlr::YAMLParser::MappingContext;
 
 using CppKey = kdb::Key;
 using CppKeySet = kdb::KeySet;
 
-using std::cout;
-using std::endl;
 
 class KeyListener : public YAMLBaseListener
 {
@@ -32,13 +29,11 @@ public:
 	{
 	}
 
-	void exitKey (KeyContext * context) override
+	void exitMapping (MappingContext * context) override
 	{
-		cout << "Found name “" << context->getText () << "”" << endl;
-	}
-
-	void exitValue (ValueContext * context) override
-	{
-		cout << "Found value “" << context->getText () << "”" << endl;
+		CppKey key{ parent.getFullName (), KEY_END };
+		key.addBaseName (context->key ()->getText ());
+		key.setString (context->value ()->getText ());
+		keys.append (key);
 	}
 };
