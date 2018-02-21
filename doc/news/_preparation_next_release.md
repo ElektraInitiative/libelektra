@@ -254,7 +254,13 @@ These notes are of interest for people developing Elektra:
    Bindings now also have a `README.md` with meta data.
    A big thanks to Thomas Wahringer.
 - Logging with `ELEKTRA_LOG` is only for C/C++.
+- Including `kdberrors.h` in a C++ files now also works, if you do not add the statement
 
+  ```cpp
+  using namespace ckdb;
+  ```
+
+  before you import `kdberrors.h`.
 
 ## Fixes
 
