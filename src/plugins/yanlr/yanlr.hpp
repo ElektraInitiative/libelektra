@@ -12,12 +12,16 @@
 
 #include <kdbplugin.h>
 
+using ckdb::Key;
+using ckdb::KeySet;
+using ckdb::Plugin;
+
 extern "C" {
 
-int elektraYanlrGet (ckdb::Plugin * handle, ckdb::KeySet * ks, ckdb::Key * parentKey);
-int elektraYanlrSet (ckdb::Plugin * handle, ckdb::KeySet * ks, ckdb::Key * parentKey);
+int elektraYanlrGet (Plugin *, KeySet *, Key *);
+int elektraYanlrSet (Plugin *, KeySet *, Key *);
 
-ckdb::Plugin * ELEKTRA_PLUGIN_EXPORT (yanlr);
+Plugin * ELEKTRA_PLUGIN_EXPORT (yanlr);
 
 } // end extern "C"
 
