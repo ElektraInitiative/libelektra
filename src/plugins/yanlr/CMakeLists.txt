@@ -28,7 +28,7 @@ if (DEPENDENCY_PHASE)
 		${CMAKE_CURRENT_BINARY_DIR}/${GRAMMAR_NAME}Listener.cpp
 		${CMAKE_CURRENT_BINARY_DIR}/${GRAMMAR_NAME}Visitor.cpp
 	)
-	set (SOURCE_FILES "${GENERATED_SOURCE_FILES}" yanlr.hpp yanlr.cpp)
+	set (SOURCE_FILES "${GENERATED_SOURCE_FILES}" listener.hpp yanlr.hpp yanlr.cpp)
 	foreach (file ${GENERATED_SOURCE_FILES})
 	      set_source_files_properties (${file} PROPERTIES GENERATED TRUE)
 	endforeach (file ${GENERATED_SOURCE_FILES})

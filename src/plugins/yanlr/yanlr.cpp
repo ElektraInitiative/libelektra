@@ -11,6 +11,7 @@
 #include "YAMLLexer.h"
 #include "YAMLParser.h"
 #include "antlr4-runtime.h"
+#include "listener.hpp"
 
 #include <iostream>
 #include <kdb.hpp>
@@ -20,8 +21,12 @@ using namespace ckdb;
 
 using antlr::YAMLLexer;
 using antlr::YAMLParser;
+
 using antlr4::ANTLRInputStream;
 using antlr4::CommonTokenStream;
+using ParseTree = antlr4::tree::ParseTree;
+using ParseTreeWalker = antlr4::tree::ParseTreeWalker;
+
 using std::ifstream;
 
 /**
@@ -69,7 +74,12 @@ int elektraYanlrGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	ANTLRInputStream input (file);
 	YAMLLexer lexer (&input);
 	CommonTokenStream tokens (&lexer);
-	YAMLParser parser (&tokens); //! OCLint
+	YAMLParser parser (&tokens);
+	ParseTreeWalker walker{};
+	KeyListener listener{};
+
+	ParseTree * tree = parser.mappings ();
+	walker.walk (&listener, tree);
 
 	parent.release ();
 	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
