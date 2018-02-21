@@ -81,7 +81,7 @@ int elektraYanlrGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	CommonTokenStream tokens (&lexer);
 	YAMLParser parser (&tokens);
 	ParseTreeWalker walker{};
-	KeyListener listener{};
+	KeyListener listener{ parent };
 
 	ParseTree * tree = parser.mappings ();
 	walker.walk (&listener, tree);

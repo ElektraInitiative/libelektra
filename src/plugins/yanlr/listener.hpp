@@ -8,18 +8,30 @@
 
 #include <iostream>
 
+#include <kdb.hpp>
+
 #include "YAMLBaseListener.h"
 
 using antlr::YAMLBaseListener;
 using KeyContext = antlr::YAMLParser::KeyContext;
 using ValueContext = antlr::YAMLParser::ValueContext;
 
+using CppKey = kdb::Key;
+using CppKeySet = kdb::KeySet;
+
 using std::cout;
 using std::endl;
 
 class KeyListener : public YAMLBaseListener
 {
+	CppKeySet keys;
+	CppKey parent;
+
 public:
+	KeyListener (CppKey parent) : keys{}, parent{ parent.dup () }
+	{
+	}
+
 	void exitKey (KeyContext * context) override
 	{
 		cout << "Found name “" << context->getText () << "”" << endl;
