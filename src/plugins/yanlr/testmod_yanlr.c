@@ -8,9 +8,6 @@
  */
 
 #include <stdlib.h>
-#include <string.h>
-
-#include <kdbconfig.h>
 
 #include <tests_plugin.h>
 
