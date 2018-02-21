@@ -29,12 +29,14 @@ using ParseTreeWalker = antlr4::tree::ParseTreeWalker;
 
 using std::ifstream;
 
+namespace
+{
 /**
  * @brief This function returns a key set containing the contract of this plugin.
  *
  * @return A contract describing the functionality of this plugin.
  */
-static KeySet * contractYanlr (void)
+KeySet * contractYanlr (void)
 {
 	return ksNew (30, keyNew ("system/elektra/modules/yanlr", KEY_VALUE, "yanlr plugin waits for your orders", KEY_END),
 		      keyNew ("system/elektra/modules/yanlr/exports", KEY_END),
@@ -43,6 +45,7 @@ static KeySet * contractYanlr (void)
 #include ELEKTRA_README (yanlr)
 		      keyNew ("system/elektra/modules/yanlr/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 }
+} // end namespace
 
 extern "C" {
 // ====================
