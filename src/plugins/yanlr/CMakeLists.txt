@@ -20,18 +20,13 @@ if (DEPENDENCY_PHASE)
 
 	set (GRAMMAR_NAME YAML)
 	set (GRAMMAR_FILE ${CMAKE_CURRENT_SOURCE_DIR}/${GRAMMAR_NAME}.g4)
-	set (GENERATED_SOURCE_FILES
-		${CMAKE_CURRENT_BINARY_DIR}/${GRAMMAR_NAME}Lexer.cpp
-		${CMAKE_CURRENT_BINARY_DIR}/${GRAMMAR_NAME}Parser.cpp
-		${CMAKE_CURRENT_BINARY_DIR}/${GRAMMAR_NAME}BaseListener.cpp
-		${CMAKE_CURRENT_BINARY_DIR}/${GRAMMAR_NAME}BaseVisitor.cpp
-		${CMAKE_CURRENT_BINARY_DIR}/${GRAMMAR_NAME}Listener.cpp
-		${CMAKE_CURRENT_BINARY_DIR}/${GRAMMAR_NAME}Visitor.cpp
-	)
+	set (GENERATED_SOURCE_FILES_NAMES Lexer Parser BaseListener BaseVisitor Listener Visitor)
+	foreach (file ${GENERATED_SOURCE_FILES_NAMES})
+		set (filepath ${CMAKE_CURRENT_BINARY_DIR}/${GRAMMAR_NAME}${file}.cpp)
+		set_source_files_properties (${filepath} PROPERTIES GENERATED TRUE)
+		list (APPEND GENERATED_SOURCE_FILES ${filepath})
+	endforeach (file ${GENERATED_SOURCE_FILES_NAMES})
 	set (SOURCE_FILES "${GENERATED_SOURCE_FILES}" listener.hpp yanlr.hpp yanlr.cpp)
-	foreach (file ${GENERATED_SOURCE_FILES})
-	      set_source_files_properties (${file} PROPERTIES GENERATED TRUE)
-	endforeach (file ${GENERATED_SOURCE_FILES})
 
 	add_custom_command (
 		OUTPUT ${GENERATED_SOURCE_FILES}
