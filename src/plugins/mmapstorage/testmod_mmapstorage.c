@@ -97,10 +97,12 @@ static void test_mmap_get_set (const char * tmpFile)
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
 	KeySet * toAppend = simpleTestKeySet ();
+	ks = ksNew (0, KS_END);
 	ksAppend (ks, toAppend);
-	ksDel (toAppend);
+	//ksDel (toAppend);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
-	ksClear (ks);
+	//ksClear (ks);
+	ks = ksNew (0, KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
 
 	KeySet * expected = simpleTestKeySet ();

@@ -660,16 +660,18 @@ int elektraMmapstorageGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	ELEKTRA_LOG_WARNING ("mappedRegion ptr: %p", (void *)mappedRegion);
 
 	ksClose (returned);
-	updatePointers (&mmapHeader, mappedRegion);
-	mmapToKeySet (mappedRegion, returned);
+	char * mappedRegionCopy = elektraMalloc (sbuf.st_size);
+	memcpy (mappedRegionCopy, mappedRegion, sbuf.st_size);
+	updatePointers (&mmapHeader, mappedRegionCopy);
+	mmapToKeySet (mappedRegionCopy, returned);
 
-//	KeySet * new = ksDeepDup (returned);
-//	returned->array = new->array;
-//	returned->size = new->size;
-//	returned->alloc = new->alloc;
-//	returned->cursor = 0;
-//	returned->current = 0;
-//	returned->flags = 0;
+// 	KeySet * new = ksDeepDup (returned);
+// 	returned->array = new->array;
+// 	returned->size = new->size;
+// 	returned->alloc = new->alloc;
+// 	returned->cursor = 0;
+// 	returned->current = 0;
+// 	returned->flags = 0;
 
 	// m_output_keyset (returned);
 
