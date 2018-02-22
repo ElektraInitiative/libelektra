@@ -40,11 +40,10 @@ Elektra is now an official part of [Homebrew](http://formulae.brew.sh/formula/el
 ## Highlights
 
 - New Logo and Website Theme
-- INI as new default configuration file format
+- INI plugin greatly improved
 - Notifications API and Bindings for Asynchronous I/O
 - Plugin Processes
 - Lookup with the Order Preserving Minimal Perfect Hash Map
-- <<HIGHLIGHT6>>
 
 
 ### New Logo and Website Theme
@@ -69,13 +68,32 @@ Thanks to Thomas Wahringer.
 We also fixed security issues due to an old version of jquery,
 thanks to Marvin Mall.
 
-### INI as new Default Configuration File Format
+### INI plugin greatly improved
 
-As promised in the [previous release notes](https://www.libelektra.org/news/0.8.21-release.html) we switched to INI as default format.
-The migration will be smoothly: The `dini` plugin makes sure that old dump files are still being read.
+- We added a crash test for the INI plugin that feeds the plugin with problematic input data we determined using [AFL](http://lcamtuf.coredump.cx/afl)
+- We fixed various small bugs that could potentially cause the INI plugin to crash and fixes the problems as reported by AFL
+- The INI plugin now [converts a section to a normal key-value pair](https://github.com/ElektraInitiative/libelektra/issues/1793) if you store a value inside it. This has the advantage that you will not [lose data unexpectedly anymore](https://github.com/ElektraInitiative/libelektra/issues/1697).
+- The [INI plugin](https://www.libelektra.org/plugins/ini) should now read most key-value pairs containing delimiter characters (`=`) properly.
+
+Thanks to René Schwaiger!
+
+Nevertheless, we did not switch to INI as default format.
+This has some reasons:
+
+- The code base is not fully tested and partly not well understood.
+- In some situations meta data from the INI plugin is shown.
+- We plan to switch to a newly written parser (most likely YAML) and want to avoid two migrations.
+  The migration from `dump` is easier (especially compared with INI) because the `dump` format is recognisable without ambiguity.
+
+But for those who want to switch, the migration will be smoothly and with little problems:
+The `dini` plugin makes sure that old dump files are still being read.
 Only when writing out configuration files, configuration files are converted to INI.
+Simply use: 
 
-TODO: write a bit about INI syntax+short guide
+`-DKDB_DEFAULT_STORAGE=dini`
+
+Or simply switch for your installation with:<br>
+`sudo kdb change-default-storage dini`
 
 
 ### Notification API and Bindings for Asynchronous I/O
@@ -157,7 +175,7 @@ We added even more functionality, which could not make it to the highlights:
   [tap](http://github.com/ElektraInitiative/homebrew-elektra), if you want to install Elektra together with plugins or bindings that require
   additional libraries.
 - The building and linking of the haskell bindings and haskell plugins has been
-[greatly improved](https://github.com/ElektraInitiative/libelektra/pull/1698).
+  [greatly improved](https://github.com/ElektraInitiative/libelektra/pull/1698).
 - The invoke library can now [report errors](https://github.com/ElektraInitiative/libelektra/pull/1801) upon opening/closing a plugin,
   thanks to Armin Wurzinger.
 - The [YAML CPP plugin](https://www.libelektra.org/plugins/yamlcpp) does not require [Boost](http://www.boost.org) anymore, if you
@@ -230,18 +248,11 @@ These notes are of interest for people developing Elektra:
    Bindings now also have a `README.md` with meta data.
    A big thanks to Thomas Wahringer.
 
-## Testing
-
-- We added a crash test for the INI plugin that feeds the plugin with problematic input data we determined using [AFL](http://lcamtuf.coredump.cx/afl)
-
 ## Fixes
 
 Many problems were resolved with the following fixes:
 
 - We fixed [internal inconsistency](https://github.com/ElektraInitiative/libelektra/pull/1761) in the CMake code of the [Augeas plugin](https://www.libelektra.org/plugins/augeas)
-- We fixed various small bugs that could potentially cause the INI plugin to crash
-- The INI plugin now [converts a section to a normal key-value pair](https://github.com/ElektraInitiative/libelektra/issues/1793) if you store a value inside it. This has the advantage that you will not [lose data unexpectedly anymore](https://github.com/ElektraInitiative/libelektra/issues/1697).
-- The [INI plugin](https://www.libelektra.org/plugins/ini) should now read most key-value pairs containing delimiter characters (`=`) properly.
 - We fixed the [haskell bindings and plugins on Debian Stretch](https://github.com/ElektraInitiative/libelektra/pull/1787)
   and added a [new build server job](https://build.libelektra.org/job/elektra-haskell/) to test that in the future.
 
