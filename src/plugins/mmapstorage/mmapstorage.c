@@ -295,8 +295,8 @@ static void writeKeySet (MmapHeader * mmapHeader, KeySet * keySet, KeySet * dest
 	for (size_t i = 0; i < dynArray->size; ++i)
 	{
 		ELEKTRA_LOG_WARNING ("index: %zu", i);
-		curMeta = dynArray->keyArray[i];	// old key location
-		mmapMetaKey = (Key *)keyPtr;		// new key location
+		curMeta = dynArray->keyArray[i]; // old key location
+		mmapMetaKey = (Key *)keyPtr;     // new key location
 		keyPtr += SIZEOF_KEY;
 
 		ELEKTRA_LOG_WARNING ("meta mmap location ptr: %p", (void *)mmapMetaKey);
@@ -501,32 +501,32 @@ static void updatePointers (MmapHeader * mmapHeader, char * dest)
 {
 	size_t sourceInt = (size_t)mmapHeader->mmapAddr;
 	size_t destInt = (size_t)dest;
-	
+
 	char * ksPtr = dest + SIZEOF_MMAPHEADER;
 	char * ksArrayPtr = ksPtr + SIZEOF_KEYSET * mmapHeader->numKeySets;
 	char * keyPtr = ksArrayPtr + SIZEOF_KEY_PTR * mmapHeader->ksAlloc;
-	
+
 	KeySet * ks;
 	for (size_t i = 0; i < mmapHeader->numKeySets; ++i)
 	{
 		ks = (KeySet *)ksPtr;
 		ksPtr += SIZEOF_KEYSET;
-		if (ks->array) ks->array = (Key **)((char *)ks->array-sourceInt+destInt);
+		if (ks->array) ks->array = (Key **)((char *)ks->array - sourceInt + destInt);
 
 		for (size_t j = 0; j < ks->size; ++j)
 		{
-			if (ks->array[j]) ks->array[j] = (Key *)((char *)(ks->array[j])-sourceInt+destInt);
+			if (ks->array[j]) ks->array[j] = (Key *)((char *)(ks->array[j]) - sourceInt + destInt);
 		}
 	}
-	
+
 	Key * key;
 	for (size_t i = 0; i < mmapHeader->numKeys; ++i)
 	{
 		key = (Key *)keyPtr;
 		keyPtr += SIZEOF_KEY;
-		if (key->data.v) key->data.v = (void *)((char *)(key->data.v)-sourceInt+destInt);
-		if (key->key) key->key = ((char *)(key->key)-sourceInt+destInt);
-		if (key->meta) key->meta = (KeySet *)((char *)(key->meta)-sourceInt+destInt);
+		if (key->data.v) key->data.v = (void *)((char *)(key->data.v) - sourceInt + destInt);
+		if (key->key) key->key = ((char *)(key->key) - sourceInt + destInt);
+		if (key->meta) key->meta = (KeySet *)((char *)(key->meta) - sourceInt + destInt);
 	}
 }
 
@@ -621,20 +621,8 @@ int elektraMmapstorageGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	ELEKTRA_LOG_WARNING ("mappedRegion ptr: %p", (void *)mappedRegion);
 
 	ksClose (returned);
-	// char * mappedRegionCopy = elektraMalloc (sbuf.st_size);
-	// memcpy (mappedRegionCopy, mappedRegion, sbuf.st_size);
 	updatePointers (&mmapHeader, mappedRegion);
 	mmapToKeySet (mappedRegion, returned);
-
-// 	KeySet * new = ksDeepDup (returned);
-// 	returned->array = new->array;
-// 	returned->size = new->size;
-// 	returned->alloc = new->alloc;
-// 	returned->cursor = 0;
-// 	returned->current = 0;
-// 	returned->flags = 0;
-
-	// m_output_keyset (returned);
 
 	fclose (fp);
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;

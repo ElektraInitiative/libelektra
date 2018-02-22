@@ -422,7 +422,7 @@ static void elektraRemoveKeyName (Key * key)
 {
 	int keyNameInMmap = test_bit (key->flags, KEY_FLAG_MMAP_KEY) == KEY_FLAG_MMAP_KEY;
 	if (key->key && !keyNameInMmap) elektraFree (key->key);
-	if (keyNameInMmap) clear_bit(key->flags, KEY_FLAG_MMAP_KEY);
+	if (keyNameInMmap) clear_bit (key->flags, KEY_FLAG_MMAP_KEY);
 	key->key = 0;
 	key->keySize = 0;
 	key->keyUSize = 0;

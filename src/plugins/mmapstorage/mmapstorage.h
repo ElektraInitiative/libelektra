@@ -20,13 +20,10 @@ struct _mmapHeader
 {
 	size_t mmapMagicNumber; /**<Magic number for consistency check */
 	size_t mmapSize;	/**<Size of the complete mapping in bytes */
-	size_t numKeySets;
-	size_t ksAlloc;
-	size_t numKeys;
+	size_t numKeySets;      /**<Number of KeySets inlcuding meta KS */
+	size_t ksAlloc;		/**<Sum of all KeySet->alloc sizes */
+	size_t numKeys;		/**<Number of Keys including meta Keys */
 	size_t dataSize;	/**<Size of the data block in bytes: dynamic properties like key name, value, etc. */
-	// size_t numKeys;		/**<Number of keys in the KeySet */
-	// size_t numMetaKeys;     /**<Number of unique meta-keys (i.e. not counting shallow copies) */
-	// size_t numMetaKeySets;  /**<Number of meta KeySets */
 	char * mmapAddr;	/**<Base pointer to mapped region (points to the start of this struct) */
 };
 
