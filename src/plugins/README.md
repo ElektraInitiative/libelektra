@@ -100,6 +100,7 @@ Only suited for import/export:
 - [simpleini](simpleini/) line-based key-value pairs with configurable
   format (without sections)
 - [mini](mini/) dependency free, line based key-value storage plugin.
+- [yamlsmith](yamlsmith/) exports key sets in the YAML format
 
 Plugins that just show some functionality, (currently) not intended for
 productive use:
