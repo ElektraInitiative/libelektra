@@ -267,9 +267,6 @@ static void mmapDataSize (MmapHeader * mmapHeader, KeySet * returned, DynArray *
 	mmapHeader->ksAlloc = returned->alloc + metaKsAlloc;
 	mmapHeader->numKeys = returned->size + dynArray->size;
 	mmapHeader->dataSize = dataBlocksSize;
-	// mmapHeader->numKeys = returned->size;
-	// mmapHeader->numMetaKeySets = metaKeySets;
-	// mmapHeader->numMetaKeys = dynArray->size;
 }
 
 static void writeKeySet (MmapHeader * mmapHeader, KeySet * keySet, KeySet * dest, DynArray * dynArray)
@@ -298,9 +295,8 @@ static void writeKeySet (MmapHeader * mmapHeader, KeySet * keySet, KeySet * dest
 	for (size_t i = 0; i < dynArray->size; ++i)
 	{
 		ELEKTRA_LOG_WARNING ("index: %zu", i);
-		curMeta = dynArray->keyArray[i];		   // old key location
-		// mmapMetaKey = (Key *)(keyPtr + (i * SIZEOF_KEY)); // new key location
-		mmapMetaKey = (Key *)keyPtr; // new key location
+		curMeta = dynArray->keyArray[i];	// old key location
+		mmapMetaKey = (Key *)keyPtr;		// new key location
 		keyPtr += SIZEOF_KEY;
 
 		ELEKTRA_LOG_WARNING ("meta mmap location ptr: %p", (void *)mmapMetaKey);
@@ -335,7 +331,6 @@ static void writeKeySet (MmapHeader * mmapHeader, KeySet * keySet, KeySet * dest
 		}
 
 		// move Key itself
-		// memcpy (mmapMetaKey, curMeta, SIZEOF_KEY);
 		mmapMetaKey->flags = KEY_FLAG_MMAP_STRUCT | KEY_FLAG_MMAP_KEY | KEY_FLAG_MMAP_DATA;
 		mmapMetaKey->key = metaKeyNamePtr;
 		mmapMetaKey->data.v = metaKeyValuePtr;
@@ -359,7 +354,6 @@ static void writeKeySet (MmapHeader * mmapHeader, KeySet * keySet, KeySet * dest
 	ksRewind (keySet);
 	while ((cur = ksNext (keySet)) != 0)
 	{
-		// mmapKey = (Key *)(keyPtr + (keyIndex * SIZEOF_KEY));
 		mmapKey = (Key *)keyPtr; // new key location
 		keyPtr += SIZEOF_KEY;
 		size_t keyNameSize = cur->keySize + cur->keyUSize;
@@ -398,8 +392,6 @@ static void writeKeySet (MmapHeader * mmapHeader, KeySet * keySet, KeySet * dest
 			ELEKTRA_LOG_WARNING ("this key has meta info");
 			newMeta = (KeySet *)metaKsPtr;
 			metaKsPtr += SIZEOF_KEYSET;
-			// memcpy (newMeta, oldMeta, sizeof (KeySet));
-			//metaKsPtr += sizeof (KeySet);
 
 			newMeta->flags = KS_FLAG_MMAP_STRUCT | KS_FLAG_MMAP_ARRAY;
 			newMeta->array = (Key **)metaKsArrayPtr;
@@ -423,14 +415,12 @@ static void writeKeySet (MmapHeader * mmapHeader, KeySet * keySet, KeySet * dest
 			newMeta->size = oldMeta->size;
 			newMeta->cursor = 0;
 			newMeta->current = 0;
-			//metaKsPtr += (newMeta->alloc) * SIZEOF_KEY_PTR;
 		}
 		ELEKTRA_LOG_WARNING ("INSERT META INTO REAL KEY, HERE IS THE META KS:");
 		m_output_keyset (newMeta);
 
 
 		// move Key itself
-		// memcpy (mmapKey, cur, SIZEOF_KEY);
 		mmapKey->flags = KEY_FLAG_MMAP_STRUCT | KEY_FLAG_MMAP_KEY | KEY_FLAG_MMAP_DATA;
 		mmapKey->key = keyNamePtr;
 		mmapKey->keySize = cur->keySize;
@@ -443,14 +433,11 @@ static void writeKeySet (MmapHeader * mmapHeader, KeySet * keySet, KeySet * dest
 		ELEKTRA_LOG_WARNING ("wrote new Key and meta KS is at: %p", (void *)newMeta);
 
 		// write the Key pointer into the KeySet array
-		// memcpy (++curKsArrayPtr, &mmapKey, SIZEOF_KEY_PTR);
 		((Key **)ksArrayPtr)[keyIndex] = mmapKey;
 
-		// m_output_key(mmapKey);
 		++keyIndex;
 	}
 
-	// memcpy (ksPtr, keySet, SIZEOF_KEYSET);
 	ksPtr->flags = KS_FLAG_MMAP_STRUCT | KS_FLAG_MMAP_ARRAY;
 	ksPtr->array = (Key **)ksArrayPtrOrig;
 	ksPtr->array[keySet->size] = 0;
@@ -458,7 +445,6 @@ static void writeKeySet (MmapHeader * mmapHeader, KeySet * keySet, KeySet * dest
 	ksPtr->size = keySet->size;
 	ksPtr->cursor = 0;
 	ksPtr->current = 0;
-	// m_output_keyset (ksPtr);
 }
 
 static void mmapWrite (char * mappedRegion, KeySet * keySet, MmapHeader * mmapHeader, DynArray * dynArray)
@@ -468,7 +454,6 @@ static void mmapWrite (char * mappedRegion, KeySet * keySet, MmapHeader * mmapHe
 	//		* memcpy () to continuous region and then fwrite () only once
 	//		* use mmap to write to temp file and msync () after all data is written, then rename file
 	mmapHeader->mmapAddr = mappedRegion;
-	// memset (mappedRegion, 0, mmapHeader->mmapSize);
 	memcpy (mappedRegion, mmapHeader, SIZEOF_MMAPHEADER);
 
 	KeySet * ksPtr = (KeySet *)(mappedRegion + SIZEOF_MMAPHEADER);
@@ -543,27 +528,6 @@ static void updatePointers (MmapHeader * mmapHeader, char * dest)
 		if (key->key) key->key = ((char *)(key->key)-sourceInt+destInt);
 		if (key->meta) key->meta = (KeySet *)((char *)(key->meta)-sourceInt+destInt);
 	}
-	
-	// 	char * ksArrayPtr = (((char *)ksPtr) + SIZEOF_KEYSET);
-	// 	char * keyPtr = (ksArrayPtr + ((keySet->alloc) * SIZEOF_KEY_PTR));
-	// 	char * dataPtr = (keyPtr + (keySet->size * SIZEOF_KEY));
-	// 	char * metaPtr = (dataPtr + (mmapHeader->dataSize));
-	// 	char * metaKsPtr = (metaPtr + (dynArray->size * sizeof (Key)));
-
-// 	ks->array = (Key **)((char *)ks->array + ptrDiff);
-// 	for (size_t i = 0; i < ks->size; ++i)
-// 	{
-// 		ks->array[i] = (Key *)((char *)ks->array[i] + ptrDiff);
-// 	}
-// 
-// 	ksRewind (ks);
-// 	Key * cur;
-// 	while ((cur = ksNext (ks)) != 0)
-// 	{
-// 		cur->data.v = (void *)((char *)cur->data.v + ptrDiff);
-// 		cur->key = cur->key + ptrDiff;
-// 		cur->meta = (KeySet *)((char *)cur->meta + ptrDiff);
-// 	}
 }
 
 int elektraMmapstorageOpen (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
@@ -578,9 +542,6 @@ int elektraMmapstorageClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEK
 {
 	// free all plugin resources and shut it down
 	// this function is optional
-
-	// munmap (mappedRegion, sbuf.st_size);
-	// close (fd);
 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
@@ -608,7 +569,7 @@ int elektraMmapstorageGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	int errnosave = errno;
 	FILE * fp;
 
-	if ((fp = mmapOpenFile (parentKey, "r", errnosave)) == 0)
+	if ((fp = mmapOpenFile (parentKey, "r+", errnosave)) == 0)
 	{
 		ELEKTRA_SET_ERROR_GET (parentKey);
 		errno = errnosave;
@@ -645,7 +606,7 @@ int elektraMmapstorageGet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 	char * mappedRegion = MAP_FAILED;
 	ELEKTRA_LOG_WARNING ("MMAP addr to map: %p", (void *)mmapHeader.mmapAddr);
-	mappedRegion = mmapMapFile (mmapHeader.mmapAddr, fp, sbuf.st_size, MAP_PRIVATE | MAP_FIXED, parentKey, errnosave);
+	mappedRegion = mmapMapFile ((void *)0, fp, sbuf.st_size, MAP_PRIVATE, parentKey, errnosave);
 	ELEKTRA_LOG_WARNING ("mappedRegion ptr: %p", (void *)mappedRegion);
 
 	if (mappedRegion == MAP_FAILED)
@@ -660,10 +621,10 @@ int elektraMmapstorageGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	ELEKTRA_LOG_WARNING ("mappedRegion ptr: %p", (void *)mappedRegion);
 
 	ksClose (returned);
-	char * mappedRegionCopy = elektraMalloc (sbuf.st_size);
-	memcpy (mappedRegionCopy, mappedRegion, sbuf.st_size);
-	updatePointers (&mmapHeader, mappedRegionCopy);
-	mmapToKeySet (mappedRegionCopy, returned);
+	// char * mappedRegionCopy = elektraMalloc (sbuf.st_size);
+	// memcpy (mappedRegionCopy, mappedRegion, sbuf.st_size);
+	updatePointers (&mmapHeader, mappedRegion);
+	mmapToKeySet (mappedRegion, returned);
 
 // 	KeySet * new = ksDeepDup (returned);
 // 	returned->array = new->array;
@@ -682,7 +643,6 @@ int elektraMmapstorageGet (Plugin * handle, KeySet * returned, Key * parentKey)
 int elektraMmapstorageSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 	// set all keys
-	// m_output_keyset (returned);
 
 	int errnosave = errno;
 	FILE * fp;
@@ -733,21 +693,6 @@ int elektraMmapstorageSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 	munmap (mappedRegion, mmapHeader.mmapSize);
-	// ksClose (returned);
-
-	// all data is written, further changes need to be copy-on-write
-	// 	mappedRegion = mmapMapFile ((void *)mappedRegion, fp, mmapHeader.mmapSize, MAP_PRIVATE | MAP_FIXED, parentKey, errnosave);
-	// 	ELEKTRA_LOG_WARNING ("mappedRegion ptr: %p", (void *)mappedRegion);
-	// 	if (mappedRegion == MAP_FAILED)
-	// 	{
-	// 		fclose (fp);
-	// 		ELEKTRA_LOG ("could not remap to MAP_PRIVATE");
-	// 		return -1;
-	// 	}
-
-	// mmapToKeySet (mappedRegion, returned);
-	// m_output_keyset (returned);
-
 
 	if (dynArray.keyArray) elektraFree (dynArray.keyArray);
 	if (dynArray.mappedKeyArray) elektraFree (dynArray.mappedKeyArray);
