@@ -7,12 +7,25 @@
  *
  */
 
-#include "yamlsmith.h"
+#include "yamlsmith.hpp"
 
+#include <kdb.hpp>
 #include <kdbhelper.h>
 
+using namespace ckdb;
+
+using CppKey = kdb::Key;
+
+extern "C" {
+// ====================
+// = Plugin Interface =
+// ====================
+
+/** @see elektraDocGet */
 int elektraYamlsmithGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
+	auto parent = CppKey{ parentKey };
+
 	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/yamlsmith"))
 	{
 		KeySet * contract = ksNew (
@@ -25,8 +38,13 @@ int elektraYamlsmithGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 		ksAppend (returned, contract);
 		ksDel (contract);
 
+		parent.release ();
+
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
+
+	parent.release ();
+
 	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 }
 
@@ -40,3 +58,5 @@ Plugin * ELEKTRA_PLUGIN_EXPORT (yamlsmith)
 	return elektraPluginExport ("yamlsmith", ELEKTRA_PLUGIN_GET, &elektraYamlsmithGet, ELEKTRA_PLUGIN_SET, &elektraYamlsmithSet,
 				    ELEKTRA_PLUGIN_END);
 }
+
+} // end extern "C"

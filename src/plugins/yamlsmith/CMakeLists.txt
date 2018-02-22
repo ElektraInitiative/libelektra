@@ -1,8 +1,9 @@
 include (LibAddMacros)
 
 add_plugin (yamlsmith
+	CPP
 	SOURCES
-		yamlsmith.h
-		yamlsmith.c
+		yamlsmith.hpp
+		yamlsmith.cpp
 	ADD_TEST
 	)

@@ -12,8 +12,18 @@
 
 #include <kdbplugin.h>
 
-int elektraYamlsmithSet (Plugin * handle, KeySet * ks, Key * parentKey);
+using ckdb::Key;
+using ckdb::KeySet;
+using ckdb::Plugin;
+
+extern "C" {
+
+int elektraYamlsmithGet (Plugin *, KeySet *, Key *);
+int elektraYamlsmithSet (Plugin *, KeySet *, Key *);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (yamlsmith);
+
+} // end extern "C"
+
 
 #endif

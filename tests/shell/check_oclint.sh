@@ -19,7 +19,8 @@ oclint -p "@PROJECT_BINARY_DIR@" -enable-global-analysis -enable-clang-static-an
 	"@CMAKE_SOURCE_DIR@/src/plugins/camel/camel.c" \
 	"@CMAKE_SOURCE_DIR@/src/plugins/directoryvalue/"*.c \
 	"@CMAKE_SOURCE_DIR@/src/plugins/mini/mini.c" \
-	"@CMAKE_SOURCE_DIR@/src/plugins/yamlcpp/"*.{c,cpp}
+	"@CMAKE_SOURCE_DIR@/src/plugins/yamlcpp/"*.{c,cpp} \
+	"@CMAKE_SOURCE_DIR@/src/plugins/yamlsmith/"*.{c,cpp}
 exit_if_fail "OCLint found problematic code"
 
 end_script

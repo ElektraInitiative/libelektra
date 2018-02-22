@@ -16,7 +16,7 @@
 // -- Macros -------------------------------------------------------------------------------------------------------------------------------
 
 #define INIT_PLUGIN(parent, errorMessage)                                                                                                  \
-	Key * parentKey = keyNew (parent, KEY_VALUE, "", KEY_END);                                                                         \
+	Key * parentKey = keyNew (parent, KEY_END);                                                                                        \
 	KeySet * conf = ksNew (0, KS_END);                                                                                                 \
 	PLUGIN_OPEN ("yanlr")                                                                                                              \
 	KeySet * keySet = ksNew (0, KS_END);                                                                                               \
