@@ -70,7 +70,8 @@ s/\<metalanguage/meta-language/g
 
 s/\<round ?trip/round-trip/g
 
-s/\<(compile|deployment|mount|run|startup) ?time/\1-time/g
+s/\<(compile|deployment|mount|startup) ?time/\1-time/g
+s/\<(run) time/\1-time/g
 
 s/\<time[- ]stamp/timestamp/g
 
