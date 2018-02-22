@@ -7,6 +7,8 @@
  *
  */
 
+// -- Imports ------------------------------------------------------------------------------------------------------------------------------
+
 #include <iostream>
 
 #include <kdb.hpp>
@@ -31,6 +33,8 @@ using ParseTree = antlr4::tree::ParseTree;
 using ParseTreeWalker = antlr4::tree::ParseTreeWalker;
 
 using std::ifstream;
+
+// -- Functions ----------------------------------------------------------------------------------------------------------------------------
 
 namespace
 {
