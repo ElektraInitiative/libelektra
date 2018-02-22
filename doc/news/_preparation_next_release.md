@@ -191,8 +191,8 @@ We improved the documentation in the following ways:
   thanks to Armin Wurzinger.
 - Document how `rlwrap` might be used for `kdb shell`
 - Fixed docu in `hosts` plugin.
-- Greatly improved the license documentation in `debian/copyright`
-  in the `debian` branch, thanks to Thomas Wahringer.
+- Greatly improved the [license documentation](https://git.libelektra.org/blob/debian/debian/copyright)
+  in `debian/copyright` in the `debian` branch, thanks to Thomas Wahringer.
 
 ## Compatibility
 
