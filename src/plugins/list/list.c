@@ -47,9 +47,60 @@ typedef struct
 	KeySet * getKS[3];
 	KeySet * plugins;
 	KeySet * modules;
+
+	ElektraIoInterface * ioBinding;
 } Placements;
 
 static char lastIndex[ELEKTRA_MAX_ARRAY_SIZE];
+
+
+/**
+ * @internal
+ * Retrieves a function exported by a plugin.
+ *
+ * @param  plugin Plugin handle
+ * @param  name   Function name
+ * @return        Pointer to function
+ */
+static size_t getPluginFunction (Plugin * plugin, const char * name)
+{
+	KeySet * exports = ksNew (0, KS_END);
+	Key * pk = keyNew ("system/elektra/modules", KEY_END);
+	keyAddBaseName (pk, plugin->name);
+	plugin->kdbGet (plugin, exports, pk);
+	ksRewind (exports);
+	keyAddBaseName (pk, "exports");
+	keyAddBaseName (pk, name);
+	Key * keyFunction = ksLookup (exports, pk, 0);
+	if (!keyFunction)
+	{
+		ELEKTRA_LOG_DEBUG ("function \"%s\" from plugin \"%s\" not found", name, plugin->name);
+		ksDel (exports);
+		keyDel (pk);
+		return 0;
+	}
+
+	size_t * buffer;
+	size_t bufferSize = keyGetValueSize (keyFunction);
+	buffer = elektraMalloc (bufferSize);
+	if (buffer)
+	{
+		int result = keyGetBinary (keyFunction, buffer, bufferSize);
+		if (result == -1 || buffer == NULL)
+		{
+			ELEKTRA_LOG_WARNING ("could not get function \"%s\" from plugin \"%s\"", name, plugin->name);
+			return 0;
+		}
+	}
+
+	size_t func = *buffer;
+
+	elektraFree (buffer);
+	ksDel (exports);
+	keyDel (pk);
+
+	return func;
+}
 
 static int listParseConfiguration (Placements * placements, KeySet * config)
 {
@@ -244,7 +295,11 @@ int elektraListClose (Plugin * handle, Key * errorKey)
 }
 
 static int runPlugins (KeySet * pluginKS, KeySet * modules, KeySet * plugins, KeySet * configOrig, KeySet * returned, Key * parentKey,
+<<<<<<< HEAD
 		       OP op, Key * (*traversalFunction) (KeySet *) )
+=======
+		       OP op, Key * (*traversalFunction) (KeySet *), ElektraIoInterface * ioBinding)
+>>>>>>> dbus: asynchronous sending
 {
 	Key * current;
 
@@ -311,6 +366,16 @@ static int runPlugins (KeySet * pluginKS, KeySet * modules, KeySet * plugins, Ke
 				keyDel (slaveKey);
 			}
 		}
+		if (ioBinding)
+		{
+			size_t func = getPluginFunction (slave, "setIoBinding");
+			if (!func)
+			{
+				continue;
+			}
+			ElektraIoPluginSetBinding setIoBinding = (ElektraIoPluginSetBinding)func;
+			setIoBinding (slave, ioBinding);
+		}
 
 		if ((op == GET && slave->kdbGet && (slave->kdbGet (slave, returned, parentKey)) == -1) ||
 		    (op == SET && slave->kdbSet && (slave->kdbSet (slave, returned, parentKey)) == -1) ||
@@ -338,6 +403,7 @@ int elektraListGet (Plugin * handle, KeySet * returned, Key * parentKey)
 			       keyNew ("system/elektra/modules/list/exports/error", KEY_FUNC, elektraListError, KEY_END),
 			       keyNew ("system/elektra/modules/list/exports/addPlugin", KEY_FUNC, elektraListAddPlugin, KEY_END),
 			       keyNew ("system/elektra/modules/list/exports/editPlugin", KEY_FUNC, elektraListEditPlugin, KEY_END),
+			       keyNew ("system/elektra/modules/list/exports/setIoBinding", KEY_FUNC, elektraListSetIoBinding, KEY_END),
 #include ELEKTRA_README (list)
 			       keyNew ("system/elektra/modules/list/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
@@ -350,7 +416,8 @@ int elektraListGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	GetPlacements currentPlacement = placements->getCurrent;
 	KeySet * pluginKS = ksDup ((placements)->getKS[currentPlacement]);
 	ksRewind (pluginKS);
-	int ret = runPlugins (pluginKS, placements->modules, placements->plugins, ksDup (config), returned, parentKey, GET, ksNext);
+	int ret = runPlugins (pluginKS, placements->modules, placements->plugins, ksDup (config), returned, parentKey, GET, ksNext,
+			      placements->ioBinding);
 	placements->getCurrent = ((++currentPlacement) % getEnd);
 	while (currentPlacement < getEnd && !placements->getPlacements[currentPlacement])
 	{
@@ -368,7 +435,8 @@ int elektraListSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	KeySet * pluginKS = ksDup ((placements)->setKS[currentPlacement]);
 	ksRewind (pluginKS);
 	int ret = 0;
-	ret = runPlugins (pluginKS, placements->modules, placements->plugins, ksDup (config), returned, parentKey, SET, ksPop);
+	ret = runPlugins (pluginKS, placements->modules, placements->plugins, ksDup (config), returned, parentKey, SET, ksPop,
+			  placements->ioBinding);
 	placements->setCurrent = ((++currentPlacement) % setEnd);
 	while (currentPlacement < setEnd && !placements->setPlacements[currentPlacement])
 	{
@@ -387,7 +455,8 @@ int elektraListError (Plugin * handle, KeySet * returned, Key * parentKey)
 	ErrPlacements currentPlacement = placements->errCurrent;
 	KeySet * pluginKS = ksDup ((placements)->errKS[currentPlacement]);
 	ksRewind (pluginKS);
-	int ret = runPlugins (pluginKS, placements->modules, placements->plugins, ksDup (config), returned, parentKey, ERR, ksPop);
+	int ret = runPlugins (pluginKS, placements->modules, placements->plugins, ksDup (config), returned, parentKey, ERR, ksPop,
+			      placements->ioBinding);
 	placements->errCurrent = ((++currentPlacement) % errEnd);
 	while (currentPlacement < errEnd && !placements->errPlacements[currentPlacement])
 	{
@@ -451,6 +520,12 @@ int elektraListEditPlugin (Plugin * handle, KeySet * pluginConfig)
 	int rc = listParseConfiguration (placements, conf);
 	ksDel (conf);
 	return rc;
+}
+
+void elektraListSetIoBinding (Plugin * handle, ElektraIoInterface * binding)
+{
+	Placements * placements = elektraPluginGetData (handle);
+	placements->ioBinding = binding;
 }
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (list)

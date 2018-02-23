@@ -10,6 +10,7 @@
 #ifndef ELEKTRA_PLUGIN_LIST_H
 #define ELEKTRA_PLUGIN_LIST_H
 
+#include <kdbioplugin.h>
 #include <kdbplugin.h>
 
 int elektraListOpen (Plugin * handle, Key * errorKey);
@@ -19,6 +20,7 @@ int elektraListSet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraListError (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraListAddPlugin (Plugin * handle, KeySet * pluginConfig);
 int elektraListEditPlugin (Plugin * handle, KeySet * pluginConfig);
+void elektraListSetIoBinding (Plugin * handle, ElektraIoInterface * binding);
 Plugin * ELEKTRA_PLUGIN_EXPORT (list);
 
 #endif

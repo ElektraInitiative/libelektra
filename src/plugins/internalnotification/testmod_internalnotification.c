@@ -41,6 +41,13 @@ static size_t getPluginFunction (Plugin * plugin, const char * name)
 	keyAddBaseName (pk, "exports");
 	keyAddBaseName (pk, name);
 	Key * keyFunction = ksLookup (exports, pk, 0);
+	if (!keyFunction)
+	{
+		ELEKTRA_LOG_DEBUG ("function \"%s\" from plugin \"%s\" not found", name, plugin->name);
+		ksDel (exports);
+		keyDel (pk);
+		return 0;
+	}
 
 	size_t * buffer;
 	size_t bufferSize = keyGetValueSize (keyFunction);

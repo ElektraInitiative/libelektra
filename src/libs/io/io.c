@@ -9,13 +9,97 @@
 
 #include <kdbhelper.h>
 #include <kdbio.h>
+#include <kdbioplugin.h>
 #include <kdbioprivate.h>
 #include <kdblogger.h>
 #include <kdbprivate.h>
 
+#include <stdio.h>
+
+/**
+ * @internal
+ * Retrieves a function exported by a plugin.
+ *
+ * @param  plugin Plugin handle
+ * @param  name   Function name
+ * @return        Pointer to function
+ */
+static size_t getPluginFunction (Plugin * plugin, const char * name)
+{
+	KeySet * exports = ksNew (0, KS_END);
+	Key * pk = keyNew ("system/elektra/modules", KEY_END);
+	keyAddBaseName (pk, plugin->name);
+	plugin->kdbGet (plugin, exports, pk);
+	ksRewind (exports);
+	keyAddBaseName (pk, "exports");
+	keyAddBaseName (pk, name);
+	Key * keyFunction = ksLookup (exports, pk, 0);
+	if (!keyFunction)
+	{
+		ELEKTRA_LOG_DEBUG ("function \"%s\" from plugin \"%s\" not found", name, plugin->name);
+		ksDel (exports);
+		keyDel (pk);
+		return 0;
+	}
+
+	size_t * buffer;
+	size_t bufferSize = keyGetValueSize (keyFunction);
+	buffer = elektraMalloc (bufferSize);
+	if (buffer)
+	{
+		int result = keyGetBinary (keyFunction, buffer, bufferSize);
+		if (result == -1 || buffer == NULL)
+		{
+			ELEKTRA_LOG_DEBUG ("could not get function \"%s\" from plugin \"%s\"", name, plugin->name);
+			return 0;
+		}
+	}
+
+	size_t func = *buffer;
+
+	elektraFree (buffer);
+	ksDel (exports);
+	keyDel (pk);
+
+	return func;
+}
+
+static void debugKeySet (char * name, KeySet * ks)
+{
+	printf ("Debug KeySet %s\n", name);
+	ksRewind (ks);
+	Key * current;
+	while ((current = ksNext (ks)) != NULL)
+	{
+		printf ("  %s = %s\n", keyName (current), keyString (current));
+	}
+	ksRewind (ks);
+}
+
 void elektraIoSetBinding (KDB * kdb, ElektraIoInterface * ioBinding)
 {
 	kdb->ioBinding = ioBinding;
+
+	// iterate over global plugins
+	for (int positionIndex = 0; positionIndex < NR_GLOBAL_POSITIONS; positionIndex++)
+	{
+		for (int subPositionIndex = 0; subPositionIndex < NR_GLOBAL_SUBPOSITIONS; subPositionIndex++)
+		{
+			Plugin * plugin = kdb->globalPlugins[positionIndex][subPositionIndex];
+			if (!plugin)
+			{
+				continue;
+			}
+
+			size_t func = getPluginFunction (plugin, "setIoBinding");
+			if (!func)
+			{
+				continue;
+			}
+			ElektraIoPluginSetBinding setIoBinding = (ElektraIoPluginSetBinding)func;
+			setIoBinding (plugin, ioBinding);
+		}
+	}
 }
 
 ElektraIoInterface * elektraIoGetBinding (KDB * kdb)
