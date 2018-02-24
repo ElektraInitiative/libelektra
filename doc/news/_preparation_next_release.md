@@ -247,6 +247,15 @@ These notes are of interest for people developing Elektra:
 - `BINDINGS` was greatly improved and the CMake functions were simplified.
    Bindings now also have a `README.md` with meta data.
    A big thanks to Thomas Wahringer.
+- Including `kdberrors.h` in a C++ files now also works, if you do not add the statement
+
+  ```cpp
+  using namespace ckdb;
+  ```
+
+  before you import `kdberrors.h`.
+- The CMake code for Elektra’s [Qt-GUI](https://www.libelektra.org/tools/qt-gui) now detects the location of Qt 5 automatically if you
+  installed Qt via Homebrew.
 
 ## Fixes
 

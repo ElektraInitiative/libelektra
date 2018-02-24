@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief Tests for notification libraray.
+ * @brief Tests for notification library.
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *

@@ -7,6 +7,11 @@ if (POLICY CMP0053)
 	cmake_policy(SET CMP0053 OLD)
 endif ()
 
+if (APPLE)
+	# Provide list of default paths for Homebrew version of Qt
+	list (APPEND CMAKE_PREFIX_PATH "/usr/local/opt/qt5" "/usr/local/opt/qt@5.5")
+endif (APPLE)
+
 set(QCOMPONENTS Core Quick Gui Qml Widgets Test)
 find_package(Qt5 COMPONENTS ${QCOMPONENTS})
 find_package(Qt5 OPTIONAL_COMPONENTS Svg QUIET)
