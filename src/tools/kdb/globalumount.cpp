@@ -31,8 +31,6 @@ int GlobalUmountCommand::execute (Cmdline const & cl)
 	kdb.get (conf, parentKey);
 	printWarnings (cerr, parentKey);
 
-	conf = conf.cut (parentKey);
-
 	const string name = cl.arguments[0];
 	auto it =
 		find_if (conf.begin (), conf.end (), [&](Key key) { return key.isDirectBelow (parentKey) && key.get<string> () == name; });
