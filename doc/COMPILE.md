@@ -119,8 +119,8 @@ https://build.libelektra.org/
 |      gcc          | (Debian 4.4.5-8) 4.3        |      amd64        |
 |      gcc          | 4.6                         |      armhf        |
 |      mingw        | 4.6                         |      i386         |
-|      clang        | version 3.5.0-1~exp1        |x86_64-pc-linux-gnu|
-|      clang        | 3.9.0                       |x86_64-pc-linux-gnu|
+|      clang        | 3.8                         |x86_64-pc-linux-gnu|
+|      clang        | 5.0                         |x86_64-pc-linux-gnu|
 |      clang        | 8.1.0                       |      macOS        |
 |      icc          | 14.0.2 20140120             |x86_64-pc-linux-gnu|
 |      gcc/g++      |                             | openbsd 4.9.3 (*) |
