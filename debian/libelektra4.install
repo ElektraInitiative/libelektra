@@ -89,4 +89,5 @@ usr/lib/*/libelektra.so.0.*
 usr/lib/*/libelektra.so.4
 usr/lib/*/libelektratools-full.so*
 usr/lib/*/libelektra-utility.so*
+usr/lib/*/libelektra-pluginprocess.so*
 usr/share/doc/elektra
