@@ -184,6 +184,7 @@ We added even more functionality, which could not make it to the highlights:
   installed [yaml-cpp 0.6](https://github.com/jbeder/yaml-cpp/releases/tag/yaml-cpp-0.6.0).
 - Improved colored output in `kdb` tool.
 - added two build jobs: [docker](https://build.libelektra.org/job/test-docker/) and [haskell](https://build.libelektra.org/job/elektra-haskell/)
+- [YAML CPP](https://www.libelektra.org/plugins/yamlcpp) does not write binary data to a config file, if you forget to load the [Base64 plugin](https://www.libelektra.org/plugins/base64).
 
 ## Documentation
 
