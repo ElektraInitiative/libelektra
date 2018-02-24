@@ -179,7 +179,7 @@ void addKeys (YAML::Node & data, KeySet const & mappings, Key const & parent)
 {
 	for (auto key : mappings)
 	{
-		ELEKTRA_LOG_DEBUG ("Convert key “%s: %s”", key.getName ().c_str (), key.get<string> ().c_str ());
+		ELEKTRA_LOG_DEBUG ("Convert key “%s: %s”", key.getName ().c_str (), key.isString () ? key.getString ().c_str () : "binary");
 		NameIterator keyIterator = relativeKeyIterator (key, parent);
 		addKey (data, keyIterator, key);
 
