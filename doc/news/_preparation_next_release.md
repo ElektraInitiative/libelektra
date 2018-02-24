@@ -264,6 +264,8 @@ Many problems were resolved with the following fixes:
 - We fixed the [haskell bindings and plugins on Debian Stretch](https://github.com/ElektraInitiative/libelektra/pull/1787)
   and added a [new build server job](https://build.libelektra.org/job/elektra-haskell/) to test that in the future.
 - Cleanup in list plugin, thanks to Thomas Wahringer
+- The Shell Recorder now exports and imports the root of a mountpoint instead of the mountpoint itself. This change makes sure that Shell
+  Recorder test do not change the configuration directly below the specified mountpoint.
 
 ## Outlook
 
