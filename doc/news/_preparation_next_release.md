@@ -70,6 +70,7 @@ thanks to Marvin Mall.
 
 ### INI plugin greatly improved
 
+- `dini` is no longer experimental anymore and adds the binary plugin.
 - We added a crash test for the INI plugin that feeds the plugin with problematic input data we determined using [AFL](http://lcamtuf.coredump.cx/afl)
 - We fixed various small bugs that could potentially cause the INI plugin to crash and fixes the problems as reported by AFL
 - The INI plugin now [converts a section to a normal key-value pair](https://github.com/ElektraInitiative/libelektra/issues/1793) if you store a value inside it. This has the advantage that you will not [lose data unexpectedly anymore](https://github.com/ElektraInitiative/libelektra/issues/1697).
@@ -171,6 +172,7 @@ both search algorithms.
 We added even more functionality, which could not make it to the highlights:
 
 - The Web UI was greatly improved, thanks to Daniel Bugl
+  The version of clusterd was increased from 1.0.0 to 1.1.0.
 - Elektra is now part of the official [Homebrew repository](http://formulae.brew.sh/formula/elektra). We still provide a
   [tap](http://github.com/ElektraInitiative/homebrew-elektra), if you want to install Elektra together with plugins or bindings that require
   additional libraries.
@@ -181,6 +183,7 @@ We added even more functionality, which could not make it to the highlights:
 - The [YAML CPP plugin](https://www.libelektra.org/plugins/yamlcpp) does not require [Boost](http://www.boost.org) anymore, if you
   installed [yaml-cpp 0.6](https://github.com/jbeder/yaml-cpp/releases/tag/yaml-cpp-0.6.0).
 - Improved colored output in `kdb` tool.
+- added two build jobs: [docker](https://build.libelektra.org/job/test-docker/) and [haskell](https://build.libelektra.org/job/elektra-haskell/)
 
 ## Documentation
 
@@ -193,6 +196,7 @@ We improved the documentation in the following ways:
 - Fixed docu in `hosts` plugin.
 - Greatly improved the [license documentation](https://git.libelektra.org/blob/debian/debian/copyright)
   in `debian/copyright` in the `debian` branch, thanks to Thomas Wahringer.
+- Various fixes in doc/METADATA.ini
 
 ## Compatibility
 
@@ -210,6 +214,7 @@ Furthermore:
 - Fix bash shebang of bash scripts, thanks to Jakub Jirutka
 - Remove unportable unneeded asm, thanks to Timo Teräs and Jakub Jirutka
 - Fixed syntax in shell recorder, thanks to René Schwaiger
+- Used `mktemp` in `check_distribution.sh` to allow parallel run of test cases
 
 ## Notes for Maintainer
 
@@ -247,14 +252,18 @@ These notes are of interest for people developing Elektra:
 - `BINDINGS` was greatly improved and the CMake functions were simplified.
    Bindings now also have a `README.md` with meta data.
    A big thanks to Thomas Wahringer.
+- Logging with `ELEKTRA_LOG` is only for C/C++.
+
 
 ## Fixes
 
 Many problems were resolved with the following fixes:
 
+- Severe problem: `kdb global-umount` removed also other mountpoints
 - We fixed [internal inconsistency](https://github.com/ElektraInitiative/libelektra/pull/1761) in the CMake code of the [Augeas plugin](https://www.libelektra.org/plugins/augeas)
 - We fixed the [haskell bindings and plugins on Debian Stretch](https://github.com/ElektraInitiative/libelektra/pull/1787)
   and added a [new build server job](https://build.libelektra.org/job/elektra-haskell/) to test that in the future.
+- Cleanup in list plugin, thanks to Thomas Wahringer
 
 ## Outlook
 

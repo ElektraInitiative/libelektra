@@ -264,6 +264,7 @@ Push elektra-doc to github:
 cd ~e && cp doc/todo/NEWS.md doc/news/_preparation_next_release.md
 
 increment CMPVERSION in scripts/run_icheck
+and cleanup tests/icheck.suppression
 
 
 == Announce ==
