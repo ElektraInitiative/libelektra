@@ -185,6 +185,7 @@ We added even more functionality, which could not make it to the highlights:
 - Improved colored output in `kdb` tool.
 - added two build jobs: [docker](https://build.libelektra.org/job/test-docker/) and [haskell](https://build.libelektra.org/job/elektra-haskell/)
 - [YAML CPP](https://www.libelektra.org/plugins/yamlcpp) does not write binary data to a config file, if you forget to load the [Base64 plugin](https://www.libelektra.org/plugins/base64).
+- [YAML CPP](https://www.libelektra.org/plugins/yamlcpp) now encodes empty binary keys as NULL values (`~`), and also adds the meta key `binary` for such values automatically.
 
 ## Documentation
 
@@ -264,6 +265,7 @@ These notes are of interest for people developing Elektra:
 - The CMake code for Elektra’s [Qt-GUI](https://www.libelektra.org/tools/qt-gui) now detects the location of Qt 5 automatically if you
   installed Qt via Homebrew.
 - All Shell Recorder tests should not now correctly restore your old configuration after you execute them.
+- The [Base64 plugin](https://www.libelektra.org/plugins/base64) does not encode empty binary values in meta mode anymore. This update allows plugins such as YAML CPP to handle empty keys properly.
 
 ## Fixes
 
