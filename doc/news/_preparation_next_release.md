@@ -263,6 +263,7 @@ These notes are of interest for people developing Elektra:
   before you import `kdberrors.h`.
 - The CMake code for Elektra’s [Qt-GUI](https://www.libelektra.org/tools/qt-gui) now detects the location of Qt 5 automatically if you
   installed Qt via Homebrew.
+- All Shell Recorder tests should not now correctly restore your old configuration after you execute them.
 
 ## Fixes
 
