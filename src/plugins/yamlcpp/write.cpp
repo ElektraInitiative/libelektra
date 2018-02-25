@@ -87,7 +87,7 @@ YAML::Node createLeafNode (Key & key)
 	key.rewindMeta ();
 
 	YAML::Node metaNode{ YAML::Node (YAML::NodeType::Map) };
-	YAML::Node dataNode{ YAML::Node (key.getString ()) };
+	YAML::Node dataNode{ key.getBinarySize () == 0 ? YAML::Node (YAML::NodeType::Null) : YAML::Node (key.getString ()) };
 	Key meta;
 
 	while ((meta = key.nextMeta ()))
@@ -104,7 +104,7 @@ YAML::Node createLeafNode (Key & key)
 
 	if (metaNode.size () <= 0)
 	{
-		ELEKTRA_LOG_DEBUG ("Return leaf node with value “%s”", key.getString ().c_str ());
+		ELEKTRA_LOG_DEBUG ("Return leaf node with value “%s”", dataNode.IsNull () ? "~" : dataNode.as<string> ().c_str ());
 		return dataNode;
 	}
 

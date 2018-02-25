@@ -95,10 +95,12 @@ void convertNodeToKeySet (YAML::Node const & node, KeySet & mappings, Key & pare
 		mappings.append (key);
 		addMetadata (key, node[1]);
 	}
-	else if (node.IsScalar ())
+	else if (node.IsScalar () || node.IsNull ())
 	{
-		Key key (parent.getFullName (), KEY_VALUE, node.as<string> ().c_str (), KEY_END);
-		ELEKTRA_LOG_DEBUG ("Add key “%s: %s”", key.getName ().c_str (), key.get<string> ().c_str ());
+		Key key (parent.getFullName (), KEY_END);
+		if (!node.IsNull ()) key.setString (node.as<string> ());
+		ELEKTRA_LOG_DEBUG ("Add key “%s: %s”", key.getName ().c_str (),
+				   key.getBinarySize () == 0 ? "NULL" : key.get<string> ().c_str ());
 		if (node.Tag () == "tag:yaml.org,2002:binary")
 		{
 			ELEKTRA_LOG_DEBUG ("Set metadata type of key to binary");
