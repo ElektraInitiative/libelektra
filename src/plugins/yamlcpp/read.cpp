@@ -80,6 +80,34 @@ void addMetadata (Key & key, YAML::Node const & node)
 }
 
 /**
+ * @brief Create a key containing a (possibly empty) value.
+ *
+ * @param node This YAML node stores the data that should be converted to a new `Key`.
+ * @param name This text specifies the name of the key this function creates.
+ *
+ * @return A new key containing the data specified in `node`
+ */
+Key createLeafKey (YAML::Node const & node, string const & name)
+{
+	Key key (name, KEY_END);
+	if (node.IsNull ())
+	{
+		key.setMeta ("binary", "");
+	}
+	else
+	{
+		key.setString (node.as<string> ());
+	}
+	ELEKTRA_LOG_DEBUG ("Add key “%s: %s”", key.getName ().c_str (), key.getBinarySize () == 0 ? "NULL" : key.get<string> ().c_str ());
+	if (node.Tag () == "tag:yaml.org,2002:binary")
+	{
+		ELEKTRA_LOG_DEBUG ("Set metadata type of key to binary");
+		key.setMeta ("type", "binary");
+	}
+	return key;
+}
+
+/**
  * @brief Convert a YAML node to a key set
  *
  * @param node This YAML node stores the data that should be added to the keyset `mappings`
@@ -97,22 +125,7 @@ void convertNodeToKeySet (YAML::Node const & node, KeySet & mappings, Key & pare
 	}
 	else if (node.IsScalar () || node.IsNull ())
 	{
-		Key key (parent.getFullName (), KEY_END);
-		if (node.IsNull ())
-		{
-			key.setMeta ("binary", "");
-		}
-		else
-		{
-			key.setString (node.as<string> ());
-		}
-		ELEKTRA_LOG_DEBUG ("Add key “%s: %s”", key.getName ().c_str (),
-				   key.getBinarySize () == 0 ? "NULL" : key.get<string> ().c_str ());
-		if (node.Tag () == "tag:yaml.org,2002:binary")
-		{
-			ELEKTRA_LOG_DEBUG ("Set metadata type of key to binary");
-			key.setMeta ("type", "binary");
-		}
+		auto key = createLeafKey (node, parent.getFullName ());
 		mappings.append (key);
 	}
 	else if (node.IsMap () || node.IsSequence ())
