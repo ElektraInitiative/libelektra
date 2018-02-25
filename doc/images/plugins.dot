@@ -41,7 +41,11 @@ strict digraph G {
 	desktop -> storage;
 	info [shape=Mdiamond];
 	desktop -> info;
-	dini [shape=Mdiamond];
+	storage [shape=Mdiamond];
+	dini -> storage;
+	ini [shape=Mdiamond];
+	dini -> ini;
+	directoryvalue [shape=Mdiamond];
 	doc [shape=Mdiamond];
 	storage [shape=Mdiamond];
 	dpkg -> storage;
@@ -88,6 +92,7 @@ strict digraph G {
 	ini -> storage;
 	ini [shape=Mdiamond];
 	ini -> ini;
+	internalnotification [shape=Mdiamond];
 	check [shape=Mdiamond];
 	ipaddr -> check;
 	iterate [shape=Mdiamond];
