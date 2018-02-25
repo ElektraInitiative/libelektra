@@ -467,6 +467,7 @@ int elektraPluginClose (Plugin * handle, Key * errorKey);
 int elektraProcessPlugin (Key * cur, int * pluginNumber, char ** pluginName, char ** referenceName, Key * errorKey);
 int elektraProcessPlugins (Plugin ** plugins, KeySet * modules, KeySet * referencePlugins, KeySet * config, KeySet * systemConfig,
 			   Key * errorKey);
+size_t elektraPluginGetFunction (Plugin * plugin, const char * name);
 
 Plugin * elektraPluginMissing (void);
 Plugin * elektraPluginVersion (void);
