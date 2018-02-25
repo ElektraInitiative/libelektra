@@ -42,4 +42,35 @@ typedef int (*ElektraNotificationPluginRegisterInt) (Plugin * handle, Key * key,
  */
 typedef int (*ElektraNotificationPluginRegisterCallback) (Plugin * handle, Key * key, ElektraNotificationChangeCallback callback);
 
+/**
+ * Notify notification library of changes to a key.
+ *
+ * This callback is passed by `elektraNotificationOpen` to plugins
+ * exporting a `openNotification` function.
+ *
+ * @param  key      changed key
+ * @param  data     opaque data
+ */
+typedef void (*ElektraNotificationCallback) (Key * key, void * data);
+
+/**
+ * Initialize plugin's notification capabilities.
+ *
+ * Exported as "openNotification" by transport plugins.
+ *
+ * @param  handle   plugin handle
+ * @param  callback callback function
+ */
+typedef void (*ElektraNotificationOpenNotification) (Plugin * handle, ElektraNotificationCallback callback, void * data);
+
+/**
+ * Teardown plugin's notification capabilities.
+ *
+ * Exported as "closeNotification" by transport plugins.
+ *
+ * @param  handle   plugin handle
+ * @param  callback callback function
+ */
+typedef void (*ElektraNotificationCloseNotification) (Plugin * handle);
+
 #endif

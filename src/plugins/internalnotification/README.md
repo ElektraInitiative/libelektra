@@ -40,6 +40,10 @@ Cascading keys as `key` names are also supported.
     `system/elektra/modules/internalnotification/exports/handle`.
 - *key* Key to watch for changes.
 
+*Returns*
+
+1 on success, 0 otherwise
+
 Please note that the plugin API may change as this plugin is experimental.
 
 ### int registerInt (Plugin * handle, Key * key, int * variable)

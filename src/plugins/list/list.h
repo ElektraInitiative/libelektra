@@ -11,6 +11,7 @@
 #define ELEKTRA_PLUGIN_LIST_H
 
 #include <kdbioplugin.h>
+#include <kdbnotificationplugin.h>
 #include <kdbplugin.h>
 
 int elektraListOpen (Plugin * handle, Key * errorKey);
@@ -21,6 +22,8 @@ int elektraListError (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraListAddPlugin (Plugin * handle, KeySet * pluginConfig);
 int elektraListEditPlugin (Plugin * handle, KeySet * pluginConfig);
 void elektraListSetIoBinding (Plugin * handle, ElektraIoInterface * binding);
+void elektraListOpenNotification (Plugin * handle, ElektraNotificationCallback callback, void * data);
+void elektraListCloseNotification (Plugin * handle);
 Plugin * ELEKTRA_PLUGIN_EXPORT (list);
 
 #endif

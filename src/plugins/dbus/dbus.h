@@ -17,6 +17,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "../../bindings/io/adapter/dbus/dbus.h"
+
 typedef struct
 {
 	// remember all keys
@@ -25,7 +27,9 @@ typedef struct
 	ElektraIoInterface * ioBinding;
 
 	DBusConnection * systemBus;
+	ElektraIoDbusAdapterHandle * systemBusAdapter;
 	DBusConnection * sessionBus;
+	ElektraIoDbusAdapterHandle * sessionBusAdapter;
 
 } ElektraDbusPluginData;
 

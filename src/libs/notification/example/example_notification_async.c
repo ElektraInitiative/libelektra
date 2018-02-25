@@ -21,9 +21,6 @@
 
 #include <stdlib.h> // for exit()
 
-static volatile int keepRunning = 0;
-static volatile int doUpdateKey = 0;
-
 // from https://en.wikipedia.org/wiki/ANSI_escape_code#Colors
 #define ANSI_COLOR_RESET "\x1b[0m"
 #define ANSI_COLOR_RED "\x1b[31m"
@@ -78,12 +75,14 @@ void onSIGNAL (int signal)
 {
 	if (signal == SIGINT)
 	{
-		keepRunning = 1;
+		uv_stop (uv_default_loop ());
 	}
-	if (signal == SIGQUIT)
-	{
-		doUpdateKey = 1;
-	}
+}
+
+void printVariable (ElektraIoTimerOperation * timer)
+{
+	int value = *(int *)elektraIoTimerGetData (timer);
+	printf ("\nMy integer value is %d\n", value);
 }
 
 int main (void)
@@ -104,6 +103,7 @@ int main (void)
 
 	uv_loop_t * loop = uv_default_loop ();
 	ElektraIoInterface * binding = elektraIoUvNew (loop);
+	elektraIoSetBinding (kdb, binding);
 
 	int result = elektraNotificationOpen (kdb);
 	if (!result)
@@ -112,10 +112,7 @@ int main (void)
 		return -1;
 	}
 
-
-	elektraIoSetBinding (kdb, binding);
-
-	int value = 0;
+	int value;
 	Key * intKeyToWatch = keyNew ("/sw/tests/example_notification/#0/current/value", KEY_END);
 	result = elektraNotificationRegisterInt (kdb, intKeyToWatch, &value);
 	if (!result)
@@ -132,40 +129,26 @@ int main (void)
 		return -1;
 	}
 
-	printf ("Send SIGQUIT (Crtl+\\) to update a key; use SIGINT (Ctl+C) to exit.\n\n");
-	// uv_run (loop, UV_RUN_DEFAULT);
+	// Setup timer that repeatedly prints the variable
+	ElektraIoTimerOperation * timer = elektraIoNewTimerOperation (2000, 1, printVariable, &value);
+	elektraIoBindingAddTimer (binding, timer);
 
-	doUpdateKey = 1;
+	kdbGet (kdb, config, key);
 
-	// repeatedly call kdbGet and print variables
-	while (!keepRunning)
-	{
-		// After this kdbGet the integer variable is updated and the callback was called.
-		// TODO remove polling or make it optional when "transport plugins" are available
-		kdbGet (kdb, config, key);
+	printf ("Send SIGINT (Ctl+C) to exit.\n\n");
+	uv_run (loop, UV_RUN_DEFAULT);
 
-		if (doUpdateKey)
-		{
-			Key * test = keyNew ("system/sw/tests/example_notification/#0/current/asdas", KEY_VALUE, "fooobara", KEY_END);
-			Key * parentKey = keyNew ("system/sw/tests/example_notification/#0/current", KEY_END);
-			ksAppendKey (config, test);
-			kdbSet (kdb, config, parentKey);
-			doUpdateKey = 0;
-		}
-
-		// Print values
-		printf ("My integer value is %d\n", value);
-		printKeyValue (config, intKeyToWatch, "Try setting it to any integer value!");
-		printKeyValue (config, callbackKeyToWatch, "Try setting it to \"red\", \"green\" or \"blue\"!");
-		printf ("\n");
-
-		sleep (2);
-	}
 
 	// Cleanup
 	resetTerminalColor ();
+	elektraIoBindingRemoveTimer (timer);
+	elektraFree (timer);
 	elektraNotificationClose (kdb);
 	kdbClose (kdb, key);
+
+	elektraIoBindingCleanup (binding);
+	uv_run (loop, UV_RUN_ONCE); // allow cleanup
+
 	ksDel (config);
 	keyDel (intKeyToWatch);
 	keyDel (callbackKeyToWatch);

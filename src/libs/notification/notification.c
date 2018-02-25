@@ -534,9 +534,7 @@ static int mountGlobalPlugin (KDB * kdb, Plugin * plugin)
 			}
 			else
 			{
-				printf ("mountGlobalPlugin: required position %s/maxonce taken by plugin %s, skipping!\n", placement,
-					pluginAtPlacement->name);
-				// cannot manually add list module here as configuration is broken.
+				// cannot manually add list module here. configuration is broken:
 				// the list module needs to be mounted in every position to keep track
 				// of the current position
 				ELEKTRA_LOG_WARNING ("required position %s/maxonce taken by plugin %s, aborting!", placement,
@@ -619,6 +617,65 @@ int unmountGlobalPlugin (KDB * kdb, Plugin * plugin)
 	return 1;
 }
 
+static void pluginsOpenNotification (KDB * kdb, ElektraNotificationCallback callback, void * data)
+{
+	// iterate over global plugins
+	for (int positionIndex = 0; positionIndex < NR_GLOBAL_POSITIONS; positionIndex++)
+	{
+		for (int subPositionIndex = 0; subPositionIndex < NR_GLOBAL_SUBPOSITIONS; subPositionIndex++)
+		{
+			Plugin * plugin = kdb->globalPlugins[positionIndex][subPositionIndex];
+			if (!plugin)
+			{
+				continue;
+			}
+
+			size_t func = elektraPluginGetFunction (plugin, "openNotification");
+			if (!func)
+			{
+				continue;
+			}
+			ElektraNotificationOpenNotification openNotification = (ElektraNotificationOpenNotification)func;
+			openNotification (plugin, callback, data);
+		}
+	}
+}
+
+static void pluginsCloseNotification (KDB * kdb)
+{
+	// iterate over global plugins
+	for (int positionIndex = 0; positionIndex < NR_GLOBAL_POSITIONS; positionIndex++)
+	{
+		for (int subPositionIndex = 0; subPositionIndex < NR_GLOBAL_SUBPOSITIONS; subPositionIndex++)
+		{
+			Plugin * plugin = kdb->globalPlugins[positionIndex][subPositionIndex];
+			if (!plugin)
+			{
+				continue;
+			}
+
+			size_t func = elektraPluginGetFunction (plugin, "closeNotification");
+			if (!func)
+			{
+				continue;
+			}
+			ElektraNotificationCloseNotification closeNotification = (ElektraNotificationCloseNotification)func;
+			closeNotification (plugin);
+		}
+	}
+}
+
+void elektraNotificationDoUpdate (Key * key, void * data)
+{
+	KDB * kdb = (KDB *)data;
+
+	KeySet * ks = ksNew (0, KS_END);
+	kdbGet (kdb, ks, key);
+
+	ksDel (ks);
+	keyDel (key);
+}
+
 int elektraNotificationOpen (KDB * kdb)
 {
 	// Allow open only once
@@ -641,6 +698,9 @@ int elektraNotificationOpen (KDB * kdb)
 		keyDel (errorKey);
 		return 0;
 	}
+
+	// Open notification for plugins
+	pluginsOpenNotification (kdb, elektraNotificationDoUpdate, kdb);
 
 	kdb->notificationPlugin = notificationPlugin;
 
@@ -672,7 +732,11 @@ int elektraNotificationClose (KDB * kdb)
 		return 0;
 	}
 
+	// Close notification for plugins
+	pluginsCloseNotification (kdb);
+
 	kdb->notificationPlugin = NULL;
+
 	return 1;
 }
 

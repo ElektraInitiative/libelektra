@@ -17,7 +17,7 @@
 
 #include <kdblogger.h>
 
-static DBusConnection * dbusGetConnection (DBusBusType type, ElektraIoInterface * ioBinding)
+static DBusConnection * dbusGetConnection (DBusBusType type, ElektraIoInterface * ioBinding, ElektraIoDbusAdapterHandle ** handlePointer)
 {
 	DBusError error;
 	dbus_error_init (&error);
@@ -36,12 +36,13 @@ static DBusConnection * dbusGetConnection (DBusBusType type, ElektraIoInterface 
 
 	if (ioBinding)
 	{
-		int success = elektraIoDbusAdapterAttach (connection, ioBinding);
-		if (!success)
+		ElektraIoDbusAdapterHandle * handle = elektraIoDbusAdapterAttach (connection, ioBinding);
+		if (!handle)
 		{
 			ELEKTRA_LOG_WARNING ("Failed to attach to the I/O binding");
 			return NULL;
 		}
+		*handlePointer = handle;
 	}
 
 	return connection;
@@ -50,27 +51,24 @@ static DBusConnection * dbusGetConnection (DBusBusType type, ElektraIoInterface 
 int elektraDbusSendMessage (ElektraDbusPluginData * pluginData, DBusBusType type, const char * keyName, const char * signalName)
 {
 	DBusConnection * connection;
-	DBusError error;
 	DBusMessage * message;
 	const char * dest = NULL; // to all receivers
 	const char * interface = "org.libelektra";
 	const char * path = "/org/libelektra/configuration";
-
-	dbus_error_init (&error);
 
 	switch (type)
 	{
 	case DBUS_BUS_SYSTEM:
 		if (!pluginData->systemBus)
 		{
-			pluginData->systemBus = dbusGetConnection (type, pluginData->ioBinding);
+			pluginData->systemBus = dbusGetConnection (type, pluginData->ioBinding, &pluginData->systemBusAdapter);
 		}
 		connection = pluginData->systemBus;
 		break;
 	case DBUS_BUS_SESSION:
 		if (!pluginData->sessionBus)
 		{
-			pluginData->sessionBus = dbusGetConnection (type, pluginData->ioBinding);
+			pluginData->sessionBus = dbusGetConnection (type, pluginData->ioBinding, &pluginData->sessionBusAdapter);
 		}
 		connection = pluginData->sessionBus;
 		break;
@@ -87,8 +85,6 @@ int elektraDbusSendMessage (ElektraDbusPluginData * pluginData, DBusBusType type
 	if (message == NULL)
 	{
 		ELEKTRA_LOG_WARNING ("Couldn't allocate D-Bus message");
-		// dbus_connection_unref (connection);
-		dbus_error_free (&error);
 		return -1;
 	}
 
@@ -96,8 +92,6 @@ int elektraDbusSendMessage (ElektraDbusPluginData * pluginData, DBusBusType type
 	{
 		ELEKTRA_LOG_WARNING ("Not enough memory");
 		dbus_message_unref (message);
-		// dbus_connection_unref (connection);
-		dbus_error_free (&error);
 		return -1;
 	}
 
@@ -105,17 +99,12 @@ int elektraDbusSendMessage (ElektraDbusPluginData * pluginData, DBusBusType type
 	{
 		ELEKTRA_LOG_WARNING ("Couldn't add message argument");
 		dbus_message_unref (message);
-		// dbus_connection_unref (connection);
-		dbus_error_free (&error);
 		return -1;
 	}
 
 	dbus_connection_send (connection, message, NULL);
-	dbus_connection_flush (connection);
 
 	dbus_message_unref (message);
-	// dbus_connection_unref (connection);
-	dbus_error_free (&error);
 
 	return 1;
 }

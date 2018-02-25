@@ -12,7 +12,9 @@ else ()
 
   add_lib (notification
     SOURCES ${SOURCES}
-    LINK_ELEKTRA elektra-kdb elektra-ease
+    LINK_ELEKTRA
+      elektra-kdb
+      elektra-ease
   )
 
   configure_file (

@@ -12,6 +12,7 @@
 #endif
 
 #include "dbus.h"
+
 #include <kdbhelper.h>
 
 void elektraDbusSetIoBinding (Plugin * handle, ElektraIoInterface * binding)
@@ -153,8 +154,16 @@ int elektraDbusClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 	KeySet * ks = pluginData->keys;
 	if (ks) ksDel (ks);
 
-	if (pluginData->systemBus) dbus_connection_unref (pluginData->systemBus);
-	if (pluginData->sessionBus) dbus_connection_unref (pluginData->sessionBus);
+	if (pluginData->systemBus)
+	{
+		if (pluginData->systemBusAdapter) elektraIoDbusAdapterCleanup (pluginData->systemBusAdapter);
+		dbus_connection_unref (pluginData->systemBus);
+	}
+	if (pluginData->sessionBus)
+	{
+		if (pluginData->sessionBusAdapter) elektraIoDbusAdapterCleanup (pluginData->sessionBusAdapter);
+		dbus_connection_unref (pluginData->sessionBus);
+	}
 
 	elektraFree (pluginData);
 

@@ -7,6 +7,11 @@
 
 #include <kdbio.h>
 
-int elektraIoDbusAdapterAttach (DBusConnection * connection, ElektraIoInterface * ioBinding);
+// TODO docs
+
+typedef struct _ElektraIoDbusAdapterHandle ElektraIoDbusAdapterHandle;
+
+ElektraIoDbusAdapterHandle * elektraIoDbusAdapterAttach (DBusConnection * connection, ElektraIoInterface * ioBinding);
+int elektraIoDbusAdapterCleanup (void * handle);
 
 #endif

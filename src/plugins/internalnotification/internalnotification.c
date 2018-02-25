@@ -15,6 +15,7 @@
 #include <kdbassert.h>
 #include <kdbhelper.h>
 #include <kdblogger.h>
+#include <kdbnotificationplugin.h>
 
 typedef enum {
 	TYPE_INT = 1 << 0,
@@ -47,6 +48,9 @@ struct _PluginState
 {
 	KeyRegistration * head;
 	KeyRegistration * last;
+
+	ElektraNotificationCallback notificationCallback;
+	KDB * kdb;
 };
 typedef struct _PluginState PluginState;
 
@@ -293,13 +297,11 @@ int elektraInternalnotificationGet (Plugin * handle, KeySet * returned, Key * pa
 			keyNew ("system/elektra/modules/internalnotification/exports/close", KEY_FUNC, elektraInternalnotificationClose,
 				KEY_END),
 
-			// Export registerInt function and required plugin handle
+			// Export register* functions
 			keyNew ("system/elektra/modules/internalnotification/exports/registerInt", KEY_FUNC,
 				elektraInternalnotificationRegisterInt, KEY_END),
 			keyNew ("system/elektra/modules/internalnotification/exports/registerCallback", KEY_FUNC,
 				elektraInternalnotificationRegisterCallback, KEY_END),
-			keyNew ("system/elektra/modules/internalnotification/exports/handle", KEY_BINARY, KEY_SIZE, sizeof handle,
-				KEY_VALUE, &handle, KEY_END),
 
 #include ELEKTRA_README (internalnotification)
 

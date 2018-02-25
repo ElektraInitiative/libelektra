@@ -7,16 +7,16 @@
 #include <string.h>
 
 
-typedef struct DbusAdapterData
+typedef struct _ElektraIoDbusAdapterHandle
 {
 	DBusConnection * connection;
 	ElektraIoInterface * ioBinding;
 	ElektraIoIdleOperation * dispatchIdle;
-} DbusAdapterData;
+} _ElektraIoDbusAdapterHandle;
 
 typedef struct DbusAdapterWatchInfo
 {
-	DbusAdapterData * private;
+	_ElektraIoDbusAdapterHandle * private;
 	DBusWatch * watch;
 } DbusAdapterWatchInfo;
 
@@ -50,7 +50,7 @@ static void dbusWrapperFree (void * memory)
 static void dbusWrapperDispatch (ElektraIoIdleOperation * idle)
 {
 	// fprintf(stderr, "dbusWrapperDispatch\n");
-	DbusAdapterData * priv = elektraIoIdleGetData (idle);
+	_ElektraIoDbusAdapterHandle * priv = elektraIoIdleGetData (idle);
 
 	if (dbus_connection_get_dispatch_status (priv->connection) == DBUS_DISPATCH_DATA_REMAINS)
 	{
@@ -67,7 +67,7 @@ static void dbusWrapperDispatch (ElektraIoIdleOperation * idle)
 static void dbusWrapperHandleDispatch (DBusConnection * connection ELEKTRA_UNUSED, DBusDispatchStatus status, void * data)
 {
 	// fprintf(stderr, "dbusWrapperHandleDispatch\n");
-	DbusAdapterData * priv = (DbusAdapterData *)data;
+	_ElektraIoDbusAdapterHandle * priv = (_ElektraIoDbusAdapterHandle *)data;
 	if (status == DBUS_DISPATCH_DATA_REMAINS)
 	{
 		elektraIoIdleSetEnabled (priv->dispatchIdle, 1);
@@ -80,7 +80,7 @@ static void dbusWrapperPoll (ElektraIoFdOperation * fdOp, int flags)
 	// fprintf(stderr, "dbusWrapperPoll\n");
 	DbusAdapterWatchInfo * watchData = elektraIoFdGetData (fdOp);
 	DBusWatch * watch = watchData->watch;
-	DbusAdapterData * priv = watchData->private;
+	_ElektraIoDbusAdapterHandle * priv = watchData->private;
 
 	int dbus_condition = 0;
 	if (flags & ELEKTRA_IO_READABLE)
@@ -107,7 +107,7 @@ static void dbusWrapperTimeout (ElektraIoTimerOperation * timerOp)
 static dbus_bool_t dbusWrapperAddWatch (DBusWatch * watch, void * data)
 {
 	// printf ("dbusWrapperAddWatch\n");
-	DbusAdapterData * private = (DbusAdapterData *)data;
+	_ElektraIoDbusAdapterHandle * private = (_ElektraIoDbusAdapterHandle *)data;
 	ElektraIoInterface * ioBinding = private->ioBinding;
 
 	// Get file descriptor from watch
@@ -177,7 +177,7 @@ static void dbusWrapperWatchToggled (DBusWatch * watch, void * data ELEKTRA_UNUS
 static dbus_bool_t dbusWrapperAddTimeout (DBusTimeout * timeout, void * data)
 {
 	// fprintf(stderr, "dbusWrapperAddTimeout\n");
-	DbusAdapterData * private = (DbusAdapterData *)data;
+	_ElektraIoDbusAdapterHandle * private = (_ElektraIoDbusAdapterHandle *)data;
 	ElektraIoInterface * ioBinding = private->ioBinding;
 
 	// Create new file descriptor info
@@ -216,9 +216,9 @@ static void dbusWrapperTimeoutToggled (DBusTimeout * timeout, void * data ELEKTR
 	elektraIoBindingUpdateTimer (timerOp);
 }
 
-int elektraIoDbusAdapterAttach (DBusConnection * connection, ElektraIoInterface * ioBinding)
+ElektraIoDbusAdapterHandle * elektraIoDbusAdapterAttach (DBusConnection * connection, ElektraIoInterface * ioBinding)
 {
-	DbusAdapterData * priv = elektraMalloc (sizeof (*priv));
+	_ElektraIoDbusAdapterHandle * priv = elektraMalloc (sizeof (*priv));
 	if (!priv)
 	{
 		return 0;
@@ -236,13 +236,33 @@ int elektraIoDbusAdapterAttach (DBusConnection * connection, ElektraIoInterface 
 	ElektraIoIdleOperation * dispatchIdle = elektraIoNewIdleOperation (0, dbusWrapperDispatch, priv);
 	if (!dispatchIdle)
 	{
-		return 1;
+		return 0;
 	}
 	elektraIoBindingAddIdle (ioBinding, dispatchIdle);
 
 	priv->dispatchIdle = dispatchIdle;
 
 	dbus_connection_set_dispatch_status_function (connection, dbusWrapperHandleDispatch, priv, NULL);
+
+	return priv;
+}
+
+// TODO rename to elektraIoDbusAdapterDetach if complete reversal is possible
+int elektraIoDbusAdapterCleanup (void * handle)
+{
+	_ElektraIoDbusAdapterHandle * priv = (_ElektraIoDbusAdapterHandle *)handle;
+	DBusConnection * connection = priv->connection;
+
+	// TODO find out if this can work (uv assertion fails with example_notification_async)
+	// dbus_connection_set_watch_functions (connection, NULL, NULL, NULL, NULL, NULL);
+	// dbus_connection_set_timeout_functions (connection, NULL, NULL, NULL, NULL, NULL);
+
+	dbus_connection_set_dispatch_status_function (connection, NULL, NULL, NULL);
+
+	elektraIoBindingRemoveIdle (priv->dispatchIdle);
+	elektraFree (priv->dispatchIdle);
+
+	elektraFree (priv);
 
 	return 1;
 }

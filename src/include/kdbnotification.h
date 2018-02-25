@@ -34,7 +34,8 @@
  * (see
  * <a href="https://www.libelektra.org/plugins/internalnotification">its plugin docs</a>).
  *
- * - If no plugin is mounted at a desired position it is simply mounted.
+ * - If no plugin is mounted at a desired position the internalnotification
+ *   plugin is simply mounted.
  * - In the default configuration or when mounting a plugin globally using
  *   `kdb global-mount` the
  *   <a href="https://www.libelektra.org/plugins/list">list plugin</a> is
@@ -47,6 +48,25 @@
  *   The list plugin requires to be mounted at all positions in order to keep
  *   track of the current position and call plugins accordingly.
  *
+ * @par Transport Plugins
+ *
+ * Notification transport plugins (or simply transport plugins) export
+ * "openNotification" (ElektraNotificationOpenNotification()) and
+ * optionally "closeNotification" (ElektraNotificationCloseNotification())
+ * functions as part of their contract.
+ *
+ * The function "openNotification" is called during elektraNotificationOpen().
+ * At this point an I/O binding is set and it is save to use it.
+ * If no binding is set despite the plugin requires it, it should log a message
+ * and perform no additional operations.
+ * This ensures that the plugin can be used in applications that do not use I/O
+ * bindings or notification features.
+ *
+ * ElektraNotificationOpenNotification() receives a callback and additional data.
+ * When a key change notification is received (or a change is detected by other
+ * means) this callback shall be called with the changed Key and the additional
+ * data.
+ *
  */
 
 #ifdef __cplusplus
@@ -56,8 +76,10 @@ extern "C" {
 #endif
 
 /**
- * Initialize the notification system for the given
- * KDB instance.
+ * Initialize the notification system for the given KDB instance.
+ *
+ * Asynchronous receiving of notifications requires an I/O binding.
+ * Use elektraIoSetBinding() before calling this function.
  *
  * May only be called once for a KDB instance. Subsequent calls return 0.
  *
