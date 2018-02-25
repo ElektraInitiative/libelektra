@@ -45,7 +45,7 @@ int main (int argc, char ** argv)
 
 		 "extern kdblib_symbol kdb_exported_syms[];\n\n"
 
-		 );
+	);
 
 	for (i = 1; i < argc; ++i)
 	{

@@ -325,7 +325,7 @@ static int mapFilesForNamespaces (resolverHandles * p, Key * errorKey)
 				ELEKTRA_PLUGIN_FUNCTION (resolver, freeHandle) (resolved);
 			}
 		}
-	// FALLTHROUGH
+		// FALLTHROUGH
 
 	case KEY_NS_DIR:
 		keySetName (testKey, "dir");

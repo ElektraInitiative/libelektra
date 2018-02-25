@@ -1,6 +1,6 @@
 /**
  * @file
- * 
+ *
  * @brief Tests for I/O doc binding.
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)

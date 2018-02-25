@@ -61,19 +61,19 @@ int elektraHaskellGet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
 	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/@PLUGIN_NAME@"))
 	{
-		KeySet * contract =
-			ksNew (30, keyNew ("system/elektra/modules/@PLUGIN_NAME@", KEY_VALUE, "@PLUGIN_NAME@ plugin waits for your orders",
-					   KEY_END),
-			       keyNew ("system/elektra/modules/@PLUGIN_NAME@/exports", KEY_END),
-			       keyNew ("system/elektra/modules/@PLUGIN_NAME@/exports/open", KEY_FUNC, elektraHaskellOpen, KEY_END),
-			       keyNew ("system/elektra/modules/@PLUGIN_NAME@/exports/close", KEY_FUNC, elektraHaskellClose, KEY_END),
-			       keyNew ("system/elektra/modules/@PLUGIN_NAME@/exports/get", KEY_FUNC, elektraHaskellGet, KEY_END),
-			       keyNew ("system/elektra/modules/@PLUGIN_NAME@/exports/set", KEY_FUNC, elektraHaskellSet, KEY_END),
-			       keyNew ("system/elektra/modules/@PLUGIN_NAME@/exports/error", KEY_FUNC, elektraHaskellError, KEY_END),
+		KeySet * contract = ksNew (
+			30,
+			keyNew ("system/elektra/modules/@PLUGIN_NAME@", KEY_VALUE, "@PLUGIN_NAME@ plugin waits for your orders", KEY_END),
+			keyNew ("system/elektra/modules/@PLUGIN_NAME@/exports", KEY_END),
+			keyNew ("system/elektra/modules/@PLUGIN_NAME@/exports/open", KEY_FUNC, elektraHaskellOpen, KEY_END),
+			keyNew ("system/elektra/modules/@PLUGIN_NAME@/exports/close", KEY_FUNC, elektraHaskellClose, KEY_END),
+			keyNew ("system/elektra/modules/@PLUGIN_NAME@/exports/get", KEY_FUNC, elektraHaskellGet, KEY_END),
+			keyNew ("system/elektra/modules/@PLUGIN_NAME@/exports/set", KEY_FUNC, elektraHaskellSet, KEY_END),
+			keyNew ("system/elektra/modules/@PLUGIN_NAME@/exports/error", KEY_FUNC, elektraHaskellError, KEY_END),
 // clang-format off
 #include ELEKTRA_README (@PLUGIN_NAME@)
-			       // clang-format on
-			       keyNew ("system/elektra/modules/@PLUGIN_NAME@/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			// clang-format on
+			keyNew ("system/elektra/modules/@PLUGIN_NAME@/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 

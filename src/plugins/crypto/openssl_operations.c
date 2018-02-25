@@ -508,7 +508,7 @@ error:
  * @param errorKey holds an error description in case of failure.
  * @param length the number of random bytes to be generated.
  * @returns allocated buffer holding a hex-encoded random string or NULL in case of error. Must be freed by the caller.
-  */
+ */
 char * elektraCryptoOpenSSLCreateRandomString (Key * errorKey, const kdb_unsigned_short_t length)
 {
 	kdb_octet_t buffer[length];

@@ -189,7 +189,7 @@ KeySet * elektraInvokeGetPluginConfig (ElektraInvokeHandle * handle)
  *
  * @pre handle must be as returned from elektraInvokeOpen()
  *
- * @return the name of the plugin 
+ * @return the name of the plugin
  */
 const char * elektraInvokeGetPluginName (ElektraInvokeHandle * handle)
 {

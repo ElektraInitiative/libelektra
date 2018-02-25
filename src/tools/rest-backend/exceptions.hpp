@@ -119,7 +119,7 @@ public:
 
 /**
  * @brief exception to be used for plugins.
- * 
+ *
  * @param msg custom exception error message
  */
 class FileformatPluginException : public ElektraRestException

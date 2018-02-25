@@ -12,7 +12,7 @@
 #include <stdlib.h>
 
 /**
- * For usage look in [datastructures.md](/doc/dev/datastructures.md) 
+ * For usage look in [datastructures.md](/doc/dev/datastructures.md)
  *
  */
 

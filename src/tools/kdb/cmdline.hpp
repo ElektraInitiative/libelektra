@@ -42,9 +42,9 @@ public:
 	}
 
 	/** The synopsis of the command
-	  * Currently it is only printed out.
-	  * May be used to determine number of
-	  * commands in the future.
+	 * Currently it is only printed out.
+	 * May be used to determine number of
+	 * commands in the future.
 	 */
 	std::string synopsis;
 
@@ -100,7 +100,7 @@ public:
 	std::string executable;
 
 	/** The given name for the current command.
-	  * This is the second parameter. */
+	 * This is the second parameter. */
 	std::string commandName;
 
 	/** The arguments given on the commandline. */

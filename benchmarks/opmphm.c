@@ -853,7 +853,7 @@ static void benchmarkMappingAllSeeds (void)
 			OpmphmInit init;
 			init.getName = elektraGetString;
 			init.data = (void **)(ks->array);
-// OPMPHM
+			// OPMPHM
 
 #ifdef USE_OPENMP
 			threadI = omp_get_thread_num ();

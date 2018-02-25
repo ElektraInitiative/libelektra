@@ -150,12 +150,12 @@ __attribute__ ((noinline)) void benchmark_kslookup ()
 	using namespace kdb; // needed for KS_END
 	kdb::KeySet ks (100,
 			/*
-			*kdb::Key("user/env/override/some", KEY_END),
-			*kdb::Key("user/env/override/a/key", KEY_END),
-			*kdb::Key("user/env/override/b/key", KEY_END),
-			*kdb::Key("user/env/override/c/key", KEY_END),
-			*kdb::Key("user/env/override/d/key", KEY_END),
-			*/
+			 *kdb::Key("user/env/override/some", KEY_END),
+			 *kdb::Key("user/env/override/a/key", KEY_END),
+			 *kdb::Key("user/env/override/b/key", KEY_END),
+			 *kdb::Key("user/env/override/c/key", KEY_END),
+			 *kdb::Key("user/env/override/d/key", KEY_END),
+			 */
 			KS_END);
 	for (int i = 0; i < nr_keys; ++i)
 	{

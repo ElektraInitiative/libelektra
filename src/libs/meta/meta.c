@@ -944,11 +944,11 @@ void elektraMetaArrayAdd (Key * key, const char * metaName, const char * value)
  *
  * @code
 elektraMetaArrayToKS(
-        keyNew ("/a", KEY_VALUE, "b, c",
-                KEY_META, "dep",    "#1",
-                KEY_META, "dep/#0", "/b",
-                KEY_META, "dep/#1", "/c", KEY_END),
-        "dep");
+	keyNew ("/a", KEY_VALUE, "b, c",
+		KEY_META, "dep",    "#1",
+		KEY_META, "dep/#0", "/b",
+		KEY_META, "dep/#1", "/c", KEY_END),
+	"dep");
  * @endcode
  *
  * returns a `KeySet` containing the keys `"dep/#0"` with value `"/b"` and

@@ -361,13 +361,22 @@ static RangeType stringToType (const Key * typeMeta)
 	if (typeMeta)
 	{
 		static const char * intTypes[] = {
-			"short", "long", "long long", NULL,
+			"short",
+			"long",
+			"long long",
+			NULL,
 		};
 		static const char * uintTypes[] = {
-			"unsigned short", "unsigned long", "unsigned long long", NULL,
+			"unsigned short",
+			"unsigned long",
+			"unsigned long long",
+			NULL,
 		};
 		static const char * floatTypes[] = {
-			"float", "double", "long double", NULL,
+			"float",
+			"double",
+			"long double",
+			NULL,
 		};
 		const char * strVal = keyString (typeMeta);
 		for (int i = 0; intTypes[i] != NULL; ++i)

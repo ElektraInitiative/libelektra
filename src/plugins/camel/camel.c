@@ -659,17 +659,17 @@ static int parseFile (KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
 
 	ELEKTRA_LOG ("Read configuration data");
 
-	parserType * parser = &(parserType){.status = OK,
-					    .line = 1,
-					    .column = 1,
-					    .file = NULL,
-					    .match = NULL,
-					    .bufferBase = NULL,
-					    .buffer = NULL,
-					    .bufferCharsAvailable = 0,
-					    .parentKey = parentKey,
-					    .keySet = returned,
-					    .errorNumber = errno };
+	parserType * parser = &(parserType){ .status = OK,
+					     .line = 1,
+					     .column = 1,
+					     .file = NULL,
+					     .match = NULL,
+					     .bufferBase = NULL,
+					     .buffer = NULL,
+					     .bufferCharsAvailable = 0,
+					     .parentKey = parentKey,
+					     .keySet = returned,
+					     .errorNumber = errno };
 
 	if (openFile (parser)->status == OK) pairs (parser);
 	cleanup (parser);

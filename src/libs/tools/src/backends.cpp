@@ -113,7 +113,7 @@ BackendInfo Backends::findBackend (std::string const & mountPath, KeySet mountCo
 /**
  * @brief Unmount a backend by given mountPath
  *
- * @param mountPath the given mountpoint 
+ * @param mountPath the given mountpoint
  *
  * Uses findBackend() to locate the backend.
  *

@@ -278,8 +278,9 @@ int elektraInternalnotificationGet (Plugin * handle, KeySet * returned, Key * pa
 	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/internalnotification"))
 	{
 		KeySet * contract = ksNew (
-			30, keyNew ("system/elektra/modules/internalnotification", KEY_VALUE,
-				    "internalnotification plugin waits for your orders", KEY_END),
+			30,
+			keyNew ("system/elektra/modules/internalnotification", KEY_VALUE,
+				"internalnotification plugin waits for your orders", KEY_END),
 			keyNew ("system/elektra/modules/internalnotification/exports", KEY_END),
 			keyNew ("system/elektra/modules/internalnotification/exports/get", KEY_FUNC, elektraInternalnotificationGet,
 				KEY_END),

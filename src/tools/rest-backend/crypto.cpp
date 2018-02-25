@@ -21,11 +21,11 @@ namespace crypto
 
 /**
  * @brief encrypts a string with sha256 encryption
- * 
+ *
  * openssl based encryption function that utilizes the sha256
  * encryption algorithm to encrypt a string. useful for password
  * encryption.
- * 
+ *
  * @param input the unencrypted input string
  * @param output the target string for the encrypted version
  * @return bool whether the encryption succeeded or not

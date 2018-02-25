@@ -31,7 +31,7 @@ namespace kdbrest
 
 /**
  * @brief the constructor of the database endpoint application
- * 
+ *
  * @param srv a service container
  */
 DatabaseApp::DatabaseApp (cppcms::service & srv) : cppcms::application (srv)
@@ -51,10 +51,10 @@ DatabaseApp::DatabaseApp (cppcms::service & srv) : cppcms::application (srv)
 
 /**
  * @brief root resource handler
- * 
+ *
  * the function delegates work to different helper methods
  * based on the HTTP method in the current request.
- * 
+ *
  * for a GET request, it serves a list of entries.
  * for a POST request, it attempts an insert.
  */
@@ -86,14 +86,14 @@ void DatabaseApp::getAllEntries ()
 
 /**
  * @brief search resource handler
- * 
+ *
  * the function delegates work to different helper methods
  * based on the HTTP method in the current request.
- * 
+ *
  * for a GET request, it serves a list of entries, while
  * taking an additional GET parameter into account to limit
  * the resulting entry list.
- * 
+ *
  * @param keyPart a part of a possible entry key to reduce search space
  */
 void DatabaseApp::getEntriesByPrefix (std::string keyPart)
@@ -119,15 +119,15 @@ void DatabaseApp::getEntriesByPrefix (std::string keyPart)
 
 /**
  * @brief unique entry resource handler
- * 
+ *
  * the function delegates work to different helper methods
  * based on the HTTP method in the current request.
  * it operates on a well-specified unique resource.
- * 
+ *
  * for a GET request, it serves detailed information of an entry.
  * for a PUT request, it attempts an update on an entry.
  * for a DELETE request, it attempts the deletion of an entry.
- * 
+ *
  * @param key the unique snippet key of an entry resource
  */
 void DatabaseApp::getUniqueEntry (std::string key)
@@ -163,7 +163,7 @@ void DatabaseApp::getUniqueEntry (std::string key)
 
 /**
  * @brief handles the retrieval of a list of snippet entries
- * 
+ *
  * @param req a request
  * @param resp a response
  * @param keyPart a part of a possible entry key to reduce search space
@@ -190,7 +190,7 @@ void DatabaseApp::handleGet (cppcms::http::request & req, cppcms::http::response
 
 /**
  * @brief handles a request to retrieve details for a single snippet entry
- * 
+ *
  * @param req a request
  * @param resp a response
  * @param key the unique snippet key of the entry which shall be retrieved
@@ -281,7 +281,7 @@ void DatabaseApp::handleGetUnique (cppcms::http::request & req, cppcms::http::re
 
 /**
  * @brief handles a creation request for a new snippet entry
- * 
+ *
  * @param req a request
  * @param resp a response
  */
@@ -434,7 +434,7 @@ void DatabaseApp::handleDelete (cppcms::http::request & req, cppcms::http::respo
 
 /**
  * @brief attempts to parse input data from a request data pack
- * 
+ *
  * @param response a response for error output
  * @param requestData a json value containing all request post data
  * @param input_data the target struct to place input data in
@@ -728,7 +728,7 @@ model::Entry DatabaseApp::buildAndValidateEntry (cppcms::http::request & req, cp
 
 /**
  * @brief extracts the max number of rows to print from a request
- * 
+ *
  * @param req a request
  * @return the max number of rows to print or the default value if not set
  */
@@ -757,7 +757,7 @@ inline int DatabaseApp::getMaxrows (cppcms::http::request & req) const
 
 /**
  * @brief extracts the offset parameter from a request
- * 
+ *
  * @param req a request
  * @return the offset extracted from the request parameter, if not set 0
  */
@@ -782,7 +782,7 @@ inline int DatabaseApp::getOffset (cppcms::http::request & req) const
 
 /**
  * @brief filters a vector of snippet entries based on parameters of a request
- * 
+ *
  * @param req a request
  * @param entries the entry vector to filter
  */
@@ -808,7 +808,7 @@ inline void DatabaseApp::processFiltering (cppcms::http::request & req, std::vec
 
 /**
  * @brief sorts a vector of snippet entries based on parameters of a request
- * 
+ *
  * @param req a request
  * @param entries the entry vector to sort
  */
@@ -847,10 +847,10 @@ inline void DatabaseApp::processSorting (cppcms::http::request & req, std::vecto
 
 /**
  * @brief creates the output for a list of snippet entries
- * 
+ *
  * @note not all snippets in the list may actually be printed to the output.
  *       which snippets are used in the output depends on additional parameters.
- * 
+ *
  * @param req a request
  * @param resp a response
  * @param entries a list of snippets, of which some may be used for the output

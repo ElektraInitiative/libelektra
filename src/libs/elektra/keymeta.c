@@ -7,8 +7,8 @@
  */
 
 /***************************************************************************
-                      keymeta.c  -  Methods for Key manipulation
-                             -------------------
+		      keymeta.c  -  Methods for Key manipulation
+			     -------------------
     begin                : Fri Sep 26 2008
     copyright            : (C) 2008 by Markus Raab
     email                : elektra@markus-raab.org
@@ -182,7 +182,7 @@ int keyRewindMeta (Key * key)
  *
  * @see ksNext() for pedant in iterator interface of KeySet
  * @ingroup keymeta
-  **/
+ **/
 const Key * keyNextMeta (Key * key)
 {
 	Key * ret;

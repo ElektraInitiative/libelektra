@@ -57,7 +57,7 @@ int kdbbNeedsUTF8Conversion (Plugin * handle)
 /**
  * Converts string to (@p direction = @c UTF8_TO) and from
  * (@p direction = @c UTF8_FROM) UTF-8.
- * 
+ *
  * Since Elektra provides portability for key names and string values between
  * different codesets, you should use this helper in your backend to convert
  * to and from universal UTF-8 strings, when storing key names, values and
