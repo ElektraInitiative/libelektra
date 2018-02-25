@@ -333,13 +333,7 @@ filter: key
 
 advanced:
 	hash sum
-	signing
-	encrypting
 	binding
-
-base64 encoding (and reverse)
-
-libgcryt (LGPL, GPLv3?) used by cppcms
 
 infer links between configuration (user/a=@user/b)
 	and copy values
