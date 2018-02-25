@@ -72,6 +72,7 @@ usr/lib/*/elektra4/libelektra-mini.so*
 usr/lib/*/elektra4/libelektra-camel.so*
 usr/lib/*/elektra4/libelektra-base64.so
 usr/lib/*/elektra4/libelektra-directoryvalue.so
+usr/lib/*/elektra4/libelektra-internalnotification.so
 usr/lib/*/libelektra-core.so*
 usr/lib/*/libelektra-invoke.so*
 usr/lib/*/libelektra-ease.so*
