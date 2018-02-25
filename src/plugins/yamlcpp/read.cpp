@@ -84,7 +84,7 @@ void addMetadata (Key & key, YAML::Node const & node)
  *
  * @param node This YAML node stores the data that should be added to the keyset `mappings`
  * @param mappings The key set where the YAML data will be stored
- * @param prefix This key stores the prefix for the key name
+ * @param parent This key stores the prefix for the key name
  */
 void convertNodeToKeySet (YAML::Node const & node, KeySet & mappings, Key & parent)
 {
