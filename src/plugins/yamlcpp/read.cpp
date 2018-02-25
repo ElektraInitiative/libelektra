@@ -98,7 +98,14 @@ void convertNodeToKeySet (YAML::Node const & node, KeySet & mappings, Key & pare
 	else if (node.IsScalar () || node.IsNull ())
 	{
 		Key key (parent.getFullName (), KEY_END);
-		if (!node.IsNull ()) key.setString (node.as<string> ());
+		if (node.IsNull ())
+		{
+			key.setMeta ("binary", "");
+		}
+		else
+		{
+			key.setString (node.as<string> ());
+		}
 		ELEKTRA_LOG_DEBUG ("Add key “%s: %s”", key.getName ().c_str (),
 				   key.getBinarySize () == 0 ? "NULL" : key.get<string> ().c_str ());
 		if (node.Tag () == "tag:yaml.org,2002:binary")
