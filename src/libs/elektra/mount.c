@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief Interna of mount functionality.
+ * @brief Internals of mount functionality.
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
@@ -29,6 +29,8 @@
 #ifdef HAVE_STDIO_H
 #include <stdio.h>
 #endif
+
+#include <kdbassert.h>
 
 #include "kdbinternal.h"
 
@@ -289,9 +291,11 @@ Plugin * elektraMountGlobalsLoadPlugin (KeySet * referencePlugins, Key * cur, Ke
 	else
 	{
 		KeySet * config = elektraMountGlobalsGetConfig (cur, global);
+		ELEKTRA_NOT_NULL (config);
+		// config holds a newly allocated KeySet
 		const char * pluginName = keyString (cur);
 		// loading the new plugin
-		plugin = elektraPluginOpen (pluginName, modules, ksDup (config), errorKey);
+		plugin = elektraPluginOpen (pluginName, modules, config, errorKey);
 		if (!plugin)
 		{
 			ELEKTRA_ADD_WARNING (64, errorKey, pluginName);
@@ -303,7 +307,6 @@ Plugin * elektraMountGlobalsLoadPlugin (KeySet * referencePlugins, Key * cur, Ke
 		keyAddBaseName (refKey, keyString (cur));
 		ksAppendKey (referencePlugins, refKey);
 		keyDel (refKey);
-		ksDel (config);
 	}
 
 	return plugin;
