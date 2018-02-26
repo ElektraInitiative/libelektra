@@ -57,7 +57,11 @@ static int listParseConfiguration (Placements * placements, KeySet * config)
 	Key * key = ksLookupByName (config, "/plugins", 0);
 	KeySet * cutKS = ksCut (config, key);
 	ksRewind (cutKS);
-	if (ksGetSize (cutKS) < 2) return 0;
+	if (ksGetSize (cutKS) < 2)
+	{
+		ksDel (cutKS);
+		return 0;
+	}
 	int rc = 0;
 	while ((cur = ksNext (cutKS)) != NULL)
 	{
