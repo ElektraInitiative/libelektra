@@ -161,7 +161,7 @@ UNRELEASED -> unstable
 
 Fix debian/ + document in NEWS what maintainer need to consider, then build the package:
  cp ~elektra-ftp/releases/elektra-$VERSION.tar.gz ~elektra/elektra_$VERSION.orig.tar.gz
- gpg -u0B2F0DDC --sign `mktemp` # so that the step afterwards won't abort
+ git clean -fdx && gpg -u0B2F0DDC --sign `mktemp` # so that the step afterwards won't abort
  gbp buildpackage -rfakeroot -k0B2F0DDC -sa
 
 Now move and install:
@@ -237,7 +237,7 @@ Symlink current to latest version and add everything:
 
  cd ~elektra/$VERSION/debian/$DVERSION && reprepro --ignore=wrongdistribution include wheezy elektra_${DVERSION}_`dpkg-architecture -qDEB_BUILD_ARCH`.changes && update-reprepro
 
- TODO: automate
+ TODO: fix/automate
 
 == Commit source package ==
 
@@ -270,7 +270,7 @@ and cleanup tests/icheck.suppression
 == Announce ==
 
 Finish NEWS.md for new release (hashsum, add links where to download release, check them):
- editor doc/NEWS.md
+ editor doc/news/*$VERSION*.md
 
 Add entry for release at main page
  editor README.md
