@@ -81,6 +81,7 @@ Thanks to René Schwaiger!
 Nevertheless, we did not switch to INI as default format.
 This has some reasons:
 
+- In proper workflows, `dump` is the better choice: e.g. with `kdb editor` you can edit any parts of Elektra with any format safely.
 - The code base is not fully tested and partly not well understood.
 - In some situations meta data from the INI plugin is shown.
 - We plan to switch to a newly written parser (most likely YAML) and want to avoid two migrations.
@@ -95,6 +96,9 @@ Simply use:
 
 Or simply switch for your installation with:<br>
 `sudo kdb change-default-storage dini`
+
+You can also mount INI as root:<br>
+`sudo kdb mount / dini`
 
 
 ### Notification API and Bindings for Asynchronous I/O
@@ -247,6 +251,8 @@ The following files were removed:
 
 These notes are of interest for people developing Elektra:
 
+- We now use `clang-reformat-5.0` for formatting.
+  Please upgrade your clang.
 - Build Agent v2 was added to speed up `jenkins build all please`,
   thanks to Armin Wurzinger.
 - Travis maintenance (Qt 5 and other problems),
