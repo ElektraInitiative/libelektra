@@ -11,7 +11,7 @@
 #define ELEKTRA_PLUGIN_DBUS_H
 
 #include <kdbioplugin.h>
-#include <kdbnotificationplugin.h>
+#include <kdbnotificationinternal.h>
 #include <kdbplugin.h>
 
 #include <dbus/dbus.h>
@@ -25,7 +25,7 @@ typedef struct
 	ElektraIoInterface * ioBinding;
 
 	ElektraNotificationCallback notificationCallback;
-	void * notificationPayload;
+	void * notificationContext;
 
 	int dbusInitialized;
 	DBusConnection * systemBus;
@@ -41,7 +41,7 @@ int elektraDbusRecvTeardownReceive (ElektraDbusRecvPluginData * pluginData, DBus
 DBusHandlerResult elektraDbusRecvMessageHandler (DBusConnection * connection, DBusMessage * message, void * data);
 
 void elektraDbusRecvSetIoBinding (Plugin * handle, ElektraIoInterface * binding);
-void elektraDbusRecvOpenNotification (Plugin * handle, ElektraNotificationCallback callback, void * data);
+void elektraDbusRecvOpenNotification (Plugin * handle, ElektraNotificationCallback callback, ElektraNotificationCallbackContext * context);
 void elektraDbusRecvCloseNotification (Plugin * handle);
 
 int elektraDbusRecvOpen (Plugin * handle, Key * errorKey);

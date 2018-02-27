@@ -5,8 +5,8 @@
  * @brief Elektra-Notification structures and declarations for developing
  * notification plugins.
  *
- * Only used by elektra-notification library and notification plugins (e.g.
- * internalnotification).
+ * Only used by elektra-notification library, notification plugins (e.g.
+ * internalnotification) and transport plugins.
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
@@ -16,6 +16,12 @@
 #include "kdb.h"
 #include "kdbnotification.h"
 #include "kdbplugin.h"
+
+#ifdef __cplusplus
+namespace ckdb
+{
+extern "C" {
+#endif
 
 /**
  * Subscribe for automatic updates to a given integer variable when the given
@@ -43,15 +49,20 @@ typedef int (*ElektraNotificationPluginRegisterInt) (Plugin * handle, Key * key,
 typedef int (*ElektraNotificationPluginRegisterCallback) (Plugin * handle, Key * key, ElektraNotificationChangeCallback callback);
 
 /**
+ * Context for notification callbacks.
+ */
+typedef struct _ElektraNotificationCallbackContext ElektraNotificationCallbackContext;
+
+/**
  * Notify notification library of changes to a key.
  *
  * This callback is passed by `elektraNotificationOpen` to plugins
  * exporting a `openNotification` function.
  *
  * @param  key      changed key
- * @param  data     opaque data
+ * @param  context  context passed by ElektraNotificationOpenNotification
  */
-typedef void (*ElektraNotificationCallback) (Key * key, void * data);
+typedef void (*ElektraNotificationCallback) (Key * key, ElektraNotificationCallbackContext * context);
 
 /**
  * Initialize plugin's notification capabilities.
@@ -60,8 +71,10 @@ typedef void (*ElektraNotificationCallback) (Key * key, void * data);
  *
  * @param  handle   plugin handle
  * @param  callback callback function
+ * @param  context  callback context
  */
-typedef void (*ElektraNotificationOpenNotification) (Plugin * handle, ElektraNotificationCallback callback, void * data);
+typedef void (*ElektraNotificationOpenNotification) (Plugin * handle, ElektraNotificationCallback callback,
+						     ElektraNotificationCallbackContext * context);
 
 /**
  * Teardown plugin's notification capabilities.
@@ -72,5 +85,22 @@ typedef void (*ElektraNotificationOpenNotification) (Plugin * handle, ElektraNot
  * @param  callback callback function
  */
 typedef void (*ElektraNotificationCloseNotification) (Plugin * handle);
+
+
+/**
+ * Private struct with information about for ElektraNotificationCallback.
+ * @internal
+ *
+ * Not intended to be used by plugins
+ */
+struct _ElektraNotificationCallbackContext
+{
+	KDB * kdb; /*!< The pointer the KDB handle.*/
+};
+
+#ifdef __cplusplus
+}
+}
+#endif
 
 #endif

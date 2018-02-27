@@ -12,7 +12,7 @@
 #include <string.h>
 
 #include <kdbconfig.h>
-#include <kdbnotificationplugin.h>
+#include <kdbnotificationinternal.h>
 
 #include <tests.h>
 #include <tests_plugin.h>

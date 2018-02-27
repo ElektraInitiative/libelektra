@@ -13,7 +13,7 @@
 #include <kdbioprivate.h>
 #include <kdblogger.h>
 #include <kdbnotification.h>
-#include <kdbnotificationplugin.h>
+#include <kdbnotificationinternal.h>
 
 #include <stdio.h>
 
@@ -245,7 +245,7 @@ static int unloadPlugin (Plugin * plugin)
 
 	if (!result || hasError)
 	{
-		ELEKTRA_LOG_WARNING ("elektraPluginClose failed result=%d", result);
+		ELEKTRA_LOG_WARNING ("elektraPluginClose failed: result=%d", result);
 		return 0;
 	}
 	else
@@ -617,7 +617,7 @@ int unmountGlobalPlugin (KDB * kdb, Plugin * plugin)
 	return 1;
 }
 
-static void pluginsOpenNotification (KDB * kdb, ElektraNotificationCallback callback, void * data)
+static void pluginsOpenNotification (KDB * kdb, ElektraNotificationCallback callback, ElektraNotificationCallbackContext * context)
 {
 	// iterate over global plugins
 	for (int positionIndex = 0; positionIndex < NR_GLOBAL_POSITIONS; positionIndex++)
@@ -636,7 +636,7 @@ static void pluginsOpenNotification (KDB * kdb, ElektraNotificationCallback call
 				continue;
 			}
 			ElektraNotificationOpenNotification openNotification = (ElektraNotificationOpenNotification)func;
-			openNotification (plugin, callback, data);
+			openNotification (plugin, callback, context);
 		}
 	}
 }
@@ -665,9 +665,9 @@ static void pluginsCloseNotification (KDB * kdb)
 	}
 }
 
-void elektraNotificationDoUpdate (Key * key, void * data)
+void elektraNotificationDoUpdate (Key * key, ElektraNotificationCallbackContext * context)
 {
-	KDB * kdb = (KDB *)data;
+	KDB * kdb = context->kdb;
 
 	KeySet * ks = ksNew (0, KS_END);
 	kdbGet (kdb, ks, key);
@@ -699,8 +699,21 @@ int elektraNotificationOpen (KDB * kdb)
 		return 0;
 	}
 
+	// Create context for notification callback
+	ElektraNotificationCallbackContext * context = elektraMalloc (sizeof (*context));
+	if (context == NULL)
+	{
+		unmountGlobalPlugin (kdb, notificationPlugin);
+		Key * errorKey = keyNew (0);
+		elektraPluginClose (notificationPlugin, errorKey);
+		keyDel (errorKey);
+		return 0;
+	}
+	context->kdb = kdb;
+	kdb->notificationCallbackContext = context;
+
 	// Open notification for plugins
-	pluginsOpenNotification (kdb, elektraNotificationDoUpdate, kdb);
+	pluginsOpenNotification (kdb, elektraNotificationDoUpdate, context);
 
 	kdb->notificationPlugin = notificationPlugin;
 
@@ -734,6 +747,8 @@ int elektraNotificationClose (KDB * kdb)
 
 	// Close notification for plugins
 	pluginsCloseNotification (kdb);
+
+	elektraFree (kdb->notificationCallbackContext);
 
 	kdb->notificationPlugin = NULL;
 

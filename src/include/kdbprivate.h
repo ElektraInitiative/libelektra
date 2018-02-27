@@ -15,6 +15,7 @@
 #include <kdbhelper.h>
 #include <kdbio.h>
 #include <kdbmacros.h>
+#include <kdbnotificationinternal.h>
 #include <kdbplugin.h>
 #include <kdbproposal.h>
 #include <kdbtypes.h>
@@ -282,6 +283,7 @@ struct _KDB
 	ElektraIoInterface * ioBinding; /*!< binding for asynchronous I/O operations.*/
 
 	Plugin * notificationPlugin; /*!< reference to global plugin for notifications.*/
+	ElektraNotificationCallbackContext * notificationCallbackContext; /*!< reference to context for notification callbacks.*/
 };
 
 

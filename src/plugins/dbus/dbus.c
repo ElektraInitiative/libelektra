@@ -30,7 +30,9 @@ int elektraDbusOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 		data->keys = NULL;
 		data->ioBinding = NULL;
 		data->systemBus = NULL;
+		data->systemBusAdapter = NULL;
 		data->sessionBus = NULL;
+		data->sessionBusAdapter = NULL;
 	}
 	elektraPluginSetData (handle, data);
 

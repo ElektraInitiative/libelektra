@@ -15,7 +15,7 @@
 #include <kdbassert.h>
 #include <kdbhelper.h>
 #include <kdblogger.h>
-#include <kdbnotificationplugin.h>
+#include <kdbnotificationinternal.h>
 
 typedef enum {
 	TYPE_INT = 1 << 0,
@@ -48,9 +48,6 @@ struct _PluginState
 {
 	KeyRegistration * head;
 	KeyRegistration * last;
-
-	ElektraNotificationCallback notificationCallback;
-	KDB * kdb;
 };
 typedef struct _PluginState PluginState;
 
@@ -181,7 +178,7 @@ void elektraInternalnotificationUpdateRegisteredKeys (Plugin * plugin, KeySet * 
  * key value has changed.
  *
  * Implementation of ElektraNotificationPluginRegisterInt()
- * @see kdbnotificationplugin.h
+ * @see kdbnotificationinternal.h
  *
  * @param  handle   plugin handle
  * @param  variable integer variable
@@ -227,7 +224,7 @@ int elektraInternalnotificationRegisterInt (Plugin * handle, Key * key, int * va
  * key value has changed.
  *
  * Implementation of ElektraNotificationPluginRegisterCallback()
- * @see kdbnotificationplugin.h
+ * @see kdbnotificationinternal.h
  *
  * @param  handle   plugin handle
  * @param  key      key to watch for changes

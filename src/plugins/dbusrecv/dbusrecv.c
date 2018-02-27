@@ -25,12 +25,12 @@ void elektraDbusRecvSetIoBinding (Plugin * handle, ElektraIoInterface * binding)
 	data->ioBinding = binding;
 }
 
-void elektraDbusRecvOpenNotification (Plugin * handle, ElektraNotificationCallback callback, void * data)
+void elektraDbusRecvOpenNotification (Plugin * handle, ElektraNotificationCallback callback, ElektraNotificationCallbackContext * context)
 {
 	ElektraDbusRecvPluginData * pluginData = elektraPluginGetData (handle);
 
 	pluginData->notificationCallback = callback;
-	pluginData->notificationPayload = data;
+	pluginData->notificationContext = context;
 
 	// init dbus connections
 	if (pluginData->ioBinding && !pluginData->dbusInitialized)
@@ -60,7 +60,7 @@ void elektraDbusRecvCloseNotification (Plugin * handle)
 {
 	ElektraDbusRecvPluginData * pluginData = elektraPluginGetData (handle);
 	pluginData->notificationCallback = NULL;
-	pluginData->notificationPayload = NULL;
+	pluginData->notificationContext = NULL;
 
 	if (pluginData->dbusInitialized)
 	{
@@ -85,7 +85,9 @@ DBusHandlerResult elektraDbusRecvMessageHandler (DBusConnection * connection ELE
 
 	char * interface = "org.libelektra";
 
-	if (dbus_message_is_signal (message, interface, "KeyChanged"))
+	int processMessage =
+		dbus_message_is_signal (message, interface, "KeyChanged") || dbus_message_is_signal (message, interface, "KeyAdded");
+	if (processMessage)
 	{
 		// read the parameters
 		if (!dbus_message_iter_init (message, &args))
@@ -104,7 +106,7 @@ DBusHandlerResult elektraDbusRecvMessageHandler (DBusConnection * connection ELE
 		Key * changed = keyNew (keyName, KEY_END);
 
 		ElektraDbusRecvPluginData * pluginData = (ElektraDbusRecvPluginData *)data;
-		pluginData->notificationCallback (changed, pluginData->notificationPayload);
+		pluginData->notificationCallback (changed, pluginData->notificationContext);
 
 		return DBUS_HANDLER_RESULT_HANDLED;
 	}
