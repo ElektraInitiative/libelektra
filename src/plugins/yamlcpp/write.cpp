@@ -80,6 +80,9 @@ std::pair<bool, unsigned long long> isArrayIndex (NameIterator const & nameItera
  *
  * @param key This key specifies the data that should be saved in the YAML node returned by this function.
  *
+ * @note Since YAML does not support non-empty binary data directly this function replaces data stored in binary keys with the string
+ *       `Unsupported binary value!`. If you need support for binary data, please load the Base64 before you use YAML CPP.
+ *
  * @returns A new YAML node containing the data and metadata specified in `key`
  */
 YAML::Node createLeafNode (Key & key)
@@ -87,7 +90,8 @@ YAML::Node createLeafNode (Key & key)
 	key.rewindMeta ();
 
 	YAML::Node metaNode{ YAML::Node (YAML::NodeType::Map) };
-	YAML::Node dataNode{ YAML::Node (key.getString ()) };
+	YAML::Node dataNode{ key.getBinarySize () == 0 ? YAML::Node (YAML::NodeType::Null) :
+							 YAML::Node (key.isBinary () ? "Unsupported binary value!" : key.getString ()) };
 	Key meta;
 
 	while ((meta = key.nextMeta ()))
@@ -104,7 +108,7 @@ YAML::Node createLeafNode (Key & key)
 
 	if (metaNode.size () <= 0)
 	{
-		ELEKTRA_LOG_DEBUG ("Return leaf node with value “%s”", key.getString ().c_str ());
+		ELEKTRA_LOG_DEBUG ("Return leaf node with value “%s”", dataNode.IsNull () ? "~" : dataNode.as<string> ().c_str ());
 		return dataNode;
 	}
 
@@ -175,7 +179,7 @@ void addKeys (YAML::Node & data, KeySet const & mappings, Key const & parent)
 {
 	for (auto key : mappings)
 	{
-		ELEKTRA_LOG_DEBUG ("Convert key “%s: %s”", key.getName ().c_str (), key.get<string> ().c_str ());
+		ELEKTRA_LOG_DEBUG ("Convert key “%s: %s”", key.getName ().c_str (), key.isString () ? key.getString ().c_str () : "binary");
 		NameIterator keyIterator = relativeKeyIterator (key, parent);
 		addKey (data, keyIterator, key);
 

@@ -398,5 +398,13 @@ sudo kdb umount user/examples/yamlcpp
 - Saving a **single scalar value** directly below the mountpoint does not work
 - Adding and removing keys does remove **comments** inside the configuration file
 - The plugin currently lacks proper **type support** for scalars.
+- If Elektra uses YAML CPP as **default storage** plugin, multiple tests of the test suite fail. However, if you mount YAML CPP at `/`:
+
+   ```
+   kdb mount default.yaml / yamlcpp
+   ```
+
+   all tests should work correctly. The problem here is that Elektra does not load additional required plugins (`infos/needs`) for a
+   default storage plugin.
 
 [yaml-cpp]: https://github.com/jbeder/yaml-cpp

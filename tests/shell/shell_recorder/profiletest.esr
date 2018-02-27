@@ -23,7 +23,7 @@ Mountpoint: system/
 < kdb set system/elektra/globalplugins/prerollback list
 
 
-
+< kdb export /sw dump > /tmp/sw.dump
 < kdb set /sw/org/myapp/#0/current
 < kdb set /sw/org/myapp/#0/profile testprofile
 < kdb set /sw/org/myapp/#0/testprofile
@@ -33,4 +33,6 @@ STDOUT: TEST
 < kdb get /sw/org/myapp/#0/current/testkey
 
 < kdb rm -r system/elektra/globalplugins
-< kdb rm -r /sw/org/myapp/#0
+< kdb rm -r /sw
+< kdb import /sw dump < /tmp/sw.dump
+< rm /tmp/sw.dump

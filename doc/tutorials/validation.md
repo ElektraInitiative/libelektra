@@ -111,6 +111,13 @@ To make this work, we need a plugin that applies all metadata found in the `spec
 to all other namespaces. This plugin is called `spec` and needs to be mounted
 globally (will be added by default and also with any `kdb global-mount` call).
 
+Before we start, let us make a backup of the current data in the spec and user namespace:
+
+```sh
+kdb export spec dump > /tmp/spec.dump
+kdb export user dump > /tmp/user.dump
+```
+
 We write metadata to the namespace `spec` and the plugin `spec` applies it to every cascading key:
 
 ```sh
@@ -293,6 +300,12 @@ kdb rm -r spec/tutorial
 kdb rm -r system/tutorial
 kdb umount spec/tutorial
 kdb umount /tutorial
+kdb rm -rf spec
+kdb rm -rf user
+kdb import spec dump < /tmp/spec.dump
+kdb import user dump < /tmp/user.dump
+rm /tmp/spec.dump
+rm /tmp/user.dump
 ```
 
 ## Customized Schemas

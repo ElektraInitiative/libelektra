@@ -46,6 +46,7 @@ originates from.
 ## EXAMPLES
 
 ```sh
+# Backup-and-Restore: /sw/elektra/examples
 
 # Create the keys we use for the examples
 kdb set /sw/elektra/examples/kdb-complete/level1 foo

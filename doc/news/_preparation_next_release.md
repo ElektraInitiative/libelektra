@@ -184,6 +184,8 @@ We added even more functionality, which could not make it to the highlights:
   installed [yaml-cpp 0.6](https://github.com/jbeder/yaml-cpp/releases/tag/yaml-cpp-0.6.0).
 - Improved colored output in `kdb` tool.
 - added two build jobs: [docker](https://build.libelektra.org/job/test-docker/) and [haskell](https://build.libelektra.org/job/elektra-haskell/)
+- [YAML CPP](https://www.libelektra.org/plugins/yamlcpp) does not write binary data to a config file, if you forget to load the [Base64 plugin](https://www.libelektra.org/plugins/base64).
+- [YAML CPP](https://www.libelektra.org/plugins/yamlcpp) now encodes empty binary keys as NULL values (`~`), and also adds the meta key `binary` for such values automatically.
 
 ## Documentation
 
@@ -253,7 +255,17 @@ These notes are of interest for people developing Elektra:
    Bindings now also have a `README.md` with meta data.
    A big thanks to Thomas Wahringer.
 - Logging with `ELEKTRA_LOG` is only for C/C++.
+- Including `kdberrors.h` in a C++ files now also works, if you do not add the statement
 
+  ```cpp
+  using namespace ckdb;
+  ```
+
+  before you import `kdberrors.h`.
+- The CMake code for Elektra’s [Qt-GUI](https://www.libelektra.org/tools/qt-gui) now detects the location of Qt 5 automatically if you
+  installed Qt via Homebrew.
+- All Shell Recorder tests should not now correctly restore your old configuration after you execute them.
+- The [Base64 plugin](https://www.libelektra.org/plugins/base64) does not encode empty binary values in meta mode anymore. This update allows plugins such as YAML CPP to handle empty keys properly.
 
 ## Fixes
 
@@ -264,6 +276,8 @@ Many problems were resolved with the following fixes:
 - We fixed the [haskell bindings and plugins on Debian Stretch](https://github.com/ElektraInitiative/libelektra/pull/1787)
   and added a [new build server job](https://build.libelektra.org/job/elektra-haskell/) to test that in the future.
 - Cleanup in list plugin, thanks to Thomas Wahringer
+- The Shell Recorder now exports and imports the root of a mountpoint instead of the mountpoint itself. This change makes sure that Shell
+  Recorder test do not change the configuration directly below the specified mountpoint.
 
 ## Outlook
 

@@ -217,6 +217,29 @@ See also build server jobs:
 * [clang-asan](https://build.libelektra.org/job/elektra-clang-asan/)
 * [gcc-asan](https://build.libelektra.org/job/elektra-gcc-asan/)
 
+#### macOS
+
+If you use macOS you might want to use the `clang` versions provided by Homebrew, since it supports the [LeakSanitizer](https://github.com/google/sanitizers/wiki/AddressSanitizerLeakSanitizer). To use Homebrew’s version of `clang` you need to first install LLVM:
+
+```sh
+brew install llvm
+```
+
+. After that change the `CC` and `CXX` environment variables to point to the the clang tools provided by LLVM:
+
+```sh
+export CC=/usr/local/opt/llvm/bin/clang
+export CXX=/usr/local/opt/llvm/bin/clang++
+```
+
+. Now run CMake and build Elektra just like you normally would. To enable the Leak Sanitizer you need to also set the variable `ASAN_OPTIONS` before you run a test:
+
+```sh
+export ASAN_OPTIONS=detect_leaks=1
+```
+
+.
+
 ### CBMC
 
 For bounded model checking tests, see `scripts/cbmc`.

@@ -36,6 +36,10 @@ ostream & operator<< (ostream & os, parse_t & p)
 	   << "#include <kdbmacros.h>" << endl
 	   << "#include <string.h>" << endl
 	   << endl
+	   << "#ifdef __cplusplus" << endl
+	   << "	using namespace ckdb;" << endl
+	   << endl
+	   << "#endif" << endl
 	   << "#define ELEKTRA_SET_ERROR(number, key, text) ELEKTRA_SET_ERROR_HELPER\\" << endl
 	   << "	(number, key, text, __FILE__, __LINE__)" << endl
 	   << endl

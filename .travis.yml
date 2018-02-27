@@ -100,7 +100,6 @@ before_install:
       brew install swig
       brew install yajl
       pip2 install cheetah # Required by kdb-gen
-      export Qt5_DIR=/usr/local/opt/qt5
     fi
   - |
     if [[ "$TRAVIS_OS_NAME" == "osx" && "$HASKELL" == "ON" ]] ; then
