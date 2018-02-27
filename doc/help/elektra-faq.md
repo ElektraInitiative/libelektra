@@ -72,6 +72,7 @@ you tag (`infos/status`) it with `discouraged`.
 
 Please start by reading [here](/.github/CONTRIBUTING.md).
 
+
 ## What is the Elektra’s license?
 
 [New BSD license](/LICENSE.md) which allows us to have plugins link against GPL
@@ -87,6 +88,7 @@ result is GPL.
 ## How can I advertise Elektra?
 
 If questions about configuration come up, point users to https://www.libelektra.org
-Display the logos found at https://master.libelektra.org/doc/images (see logo.png or the circle*.svg).
-Distribute the flyer found at https://master.libelektra.org/doc/images/flyer.odt
+Display the SVG logos found at https://master.libelektra.org/doc/images/logo
+and already rastered logos at https://github.com/ElektraInitiative/blobs/tree/master/images/logos
+Distribute the flyer found at https://github.com/ElektraInitiative/blobs/raw/master/flyers/flyer.odt
 And of course: talk about it!

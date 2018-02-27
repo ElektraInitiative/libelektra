@@ -1,16 +1,16 @@
 #!/bin/sh
 
-printf "- name: "
+echo -n "- name: "
 ls $*
 
-printf "- size: "
-ls -l $* | awk '{print $5;}'
+echo -n "- size: "
+ls -l $* | cut -f 5 -d " "
 
-printf "- md5sum: "
-md5sum $* | awk '{print $1;}'
+echo -n "- md5sum: "
+md5sum $* | cut -f 1 -d " "
 
-printf "- sha1: "
-sha1sum $* | awk '{print $1;}'
+echo -n "- sha1: "
+sha1sum $* |  cut -f 1 -d " "
 
-printf "- sha256: "
-sha256sum $* | awk '{print $1;}'
+echo -n "- sha256: "
+sha256sum $* |  cut -f 1 -d " "

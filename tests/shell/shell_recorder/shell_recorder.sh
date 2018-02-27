@@ -24,13 +24,13 @@ execute()
 
 	if [ "$BACKUP" -eq '1' ];
 	then
-		if ! "$KDB" export "$Mountpoint" dump > "$TMPFILE" 2>/dev/null;
+		if ! "$KDB" export "$MountpointRoot" dump > "$TMPFILE" 2>/dev/null;
 		then
-			printf 'ERROR: Failed to backup %s\nStopping test case.\n' "$Mountpoint"
+			printf 'ERROR: Failed to backup %s\nStopping test case.\n' "$MountpointRoot"
 			exit 1
 		fi
 		BACKUP=0
-		"$KDB" rm -r "$Mountpoint" 2>/dev/null
+		"$KDB" rm -r "$MountpointRoot" 2>/dev/null
 	fi
 
 	[ -z "$Storage" ] && Storage="dump"
@@ -177,6 +177,7 @@ run_script()
 	case "$cmd" in
 	Mountpoint:)
 		Mountpoint=$(second "$line")
+		MountpointRoot=$(printf "$Mountpoint" | sed -E 's~(/?[^/]+).*~\1~')
 		;;
 	File:)
 		DBFile=$(second "$line")
@@ -284,8 +285,8 @@ export_config "$EXPORT_DIR"
 
 run_script
 
-"$KDB" rm -r "$Mountpoint" 2>/dev/null
-"$KDB" import "$Mountpoint" dump 2>/dev/null < "$TMPFILE"
+"$KDB" rm -r "$MountpointRoot" 2>/dev/null
+"$KDB" import "$MountpointRoot" dump 2>/dev/null < "$TMPFILE"
 
 # We disable the cleanup procedure temporarily, since we still need the exported configuration,
 # if the tests changed the configuration permanently.
@@ -313,7 +314,7 @@ then
 	fi
 fi
 
-if [ "$EVAL" -eq 0 ] && [ $keepProtocol == 'false' ]; then
+if [ "$EVAL" -eq 0 ] && [ $keepProtocol = 'false' ]; then
 	rm -f "$OutFile"
 else
 	>&2 printf '\n📕\nProtocol File: %s\n' "$OutFile"

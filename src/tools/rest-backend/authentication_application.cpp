@@ -217,8 +217,9 @@ bool AuthenticationApp::validateAuthentication (cppcms::http::request & request,
 	jwt_t * jwt;
 
 	// decode it
-	if (jwt_decode (&jwt, token.c_str (), reinterpret_cast<const unsigned char *> (
-						      Config::instance ().getConfig ().get<std::string> ("jwt.encryption.secret").c_str ()),
+	if (jwt_decode (&jwt, token.c_str (),
+			reinterpret_cast<const unsigned char *> (
+				Config::instance ().getConfig ().get<std::string> ("jwt.encryption.secret").c_str ()),
 			Config::instance ().getConfig ().get<std::string> ("jwt.encryption.secret").size ()) != 0)
 	{
 		RootApp::setUnauthorized (response, "Session token is invalid", "NEED_AUTHENTICATION"); // send HTTP 401
@@ -283,8 +284,9 @@ model::User AuthenticationApp::getCurrentUser (cppcms::http::request & request)
 	/* request seems fine, lets build the jwt */
 	jwt_t * jwt;
 
-	if (jwt_decode (&jwt, token.c_str (), reinterpret_cast<const unsigned char *> (
-						      Config::instance ().getConfig ().get<std::string> ("jwt.encryption.secret").c_str ()),
+	if (jwt_decode (&jwt, token.c_str (),
+			reinterpret_cast<const unsigned char *> (
+				Config::instance ().getConfig ().get<std::string> ("jwt.encryption.secret").c_str ()),
 			Config::instance ().getConfig ().get<std::string> ("jwt.encryption.secret").size ()) != 0)
 	{
 		throw exception::NoCurrentUserException ();

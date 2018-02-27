@@ -173,16 +173,16 @@ int elektraSimplespeclangGet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED,
 {
 	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/simplespeclang"))
 	{
-		KeySet * contract =
-			ksNew (30, keyNew ("system/elektra/modules/simplespeclang", KEY_VALUE,
-					   "simplespeclang plugin waits for your orders", KEY_END),
-			       keyNew ("system/elektra/modules/simplespeclang/exports", KEY_END),
-			       keyNew ("system/elektra/modules/simplespeclang/exports/get", KEY_FUNC, elektraSimplespeclangGet, KEY_END),
-			       keyNew ("system/elektra/modules/simplespeclang/exports/set", KEY_FUNC, elektraSimplespeclangSet, KEY_END),
-			       keyNew ("system/elektra/modules/simplespeclang/exports/checkconf", KEY_FUNC,
-				       elektraSimplespeclangCheckConfig, KEY_END),
+		KeySet * contract = ksNew (
+			30,
+			keyNew ("system/elektra/modules/simplespeclang", KEY_VALUE, "simplespeclang plugin waits for your orders", KEY_END),
+			keyNew ("system/elektra/modules/simplespeclang/exports", KEY_END),
+			keyNew ("system/elektra/modules/simplespeclang/exports/get", KEY_FUNC, elektraSimplespeclangGet, KEY_END),
+			keyNew ("system/elektra/modules/simplespeclang/exports/set", KEY_FUNC, elektraSimplespeclangSet, KEY_END),
+			keyNew ("system/elektra/modules/simplespeclang/exports/checkconf", KEY_FUNC, elektraSimplespeclangCheckConfig,
+				KEY_END),
 #include ELEKTRA_README (simplespeclang)
-			       keyNew ("system/elektra/modules/simplespeclang/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			keyNew ("system/elektra/modules/simplespeclang/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 

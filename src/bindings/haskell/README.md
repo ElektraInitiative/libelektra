@@ -1,3 +1,9 @@
+- infos =
+- infos/author = Armin Wurzinger <e1528532@student.tuwien.ac.at>
+- infos/status = experimental maintained
+- infos/provides =
+- infos/description =
+
 # Haskell Bindings
 A full haskell binding using c2hs.
 
@@ -33,16 +39,10 @@ Before installing the remaining dependencies, make sure to update your cabal dat
 which contains the current list of haskell packages by invoking `cabal update`, this
 is not done automatically.
 
-- hspec `cabal install hspec` (only if the tests are being built, v2.4.4 tested)
-- QuickCheck `cabal install QuickCheck` (only if the tests are being built, v2.10.1 tested)
 - c2hs > 0.28.2 (older versions may work but are untested)
   c2hs is available in some package managers and should be installed from there in that case.
   If c2hs is not available in the package manager (e.g. homebrew on macOS does not include it),
-  it can be installed via cabal by invoking `cabal install c2hs`.
-
-To configure the remaining dependencies with a single command, after having installed GHC
-and cabal, invoke `cabal update && cabal install hspec QuickCheck c2hs` if your package
-manager does not include c2hs, or `cabal update && cabal install hspec QuickCheck` otherwise.
+  it can be installed via cabal by invoking `cabal update && cabal install c2hs`.
 
 ## Limitations
 

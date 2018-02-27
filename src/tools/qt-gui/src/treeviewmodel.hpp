@@ -158,16 +158,17 @@ public:
 	Q_INVOKABLE QVariantMap get (const int & idx) const;
 
 	/**
-	  * @brief Find a search term in the model.
-	  *
-	  * @param term The search term of interest.
-	  *
-	  * @return A model which includes all ConfigNodes that have the search term in their name, value or metakeys.
-	  */
+	 * @brief Find a search term in the model.
+	 *
+	 * @param term The search term of interest.
+	 *
+	 * @return A model which includes all ConfigNodes that have the search term in their name, value or metakeys.
+	 */
 	Q_INVOKABLE QVariant find (const QString & term);
 
 	/**
-	 * @brief Inserts a new ConfigNode at a specified index into this TreeViewModel. This method is used if this TreeViewModel is holding metakeys.
+	 * @brief Inserts a new ConfigNode at a specified index into this TreeViewModel. This method is used if this TreeViewModel is
+	 * holding metakeys.
 	 * @param row The index the new ConfigNode is supposed to be inserted at.
 	 * @param key The key that holds the metadata.
 	 * @param name The name of the parent ConfigNode that holds the metadata.
@@ -175,7 +176,8 @@ public:
 	void insertMetaRow (int row, kdb::Key key, const QString & name);
 
 	/**
-	 * @brief Inserts a new ConfigNode at a specified index into this TreeViewModel. This method is used if this TreeViewModel is holding non metakey ConfigNodes.
+	 * @brief Inserts a new ConfigNode at a specified index into this TreeViewModel. This method is used if this TreeViewModel is
+	 * holding non metakey ConfigNodes.
 	 * @param row The index the new ConfigNode is supposed to be inserted at.
 	 * @param node The ConfigNode that is supposed to be inserted.
 	 * @param addParent Determines if the parentModel of the ConfigNode should be set with this TreeViewModel.
@@ -198,7 +200,8 @@ public:
 	Q_INVOKABLE kdb::Key createNewKey (const QString & path, const QString & value, const QVariantMap metaData);
 
 	/**
-	 * @brief Appends a ConfigNode to this TreeViewModel. At the time of insertion the index of the ConfigNode will be the largest in this model.
+	 * @brief Appends a ConfigNode to this TreeViewModel. At the time of insertion the index of the ConfigNode will be the largest in
+	 * this model.
 	 *
 	 * @param node The ConfigNode that is appended to this TreeViewModel.
 	 */
@@ -299,8 +302,8 @@ private:
 	kdb::tools::merging::MergeConflictStrategy * getMergeStrategy (const QString & mergeStrategy);
 
 	/**
-         * @brief Connect to system D-Bus
-         */
+	 * @brief Connect to system D-Bus
+	 */
 	void connectDBus ();
 
 protected:
@@ -311,7 +314,8 @@ signals: // Use "Error", "Warning" and "Information" as title to display the acc
 	 * @brief Triggers a messagedialog in the GUI.
 	 * @param title The title of the messagedialog in the GUI.
 	 * @param text The text of the messagedialog in the GUI.This is the text that will be initially shown to the user.
-	 * @param detailedText The detailed text of the messagedialog in the GUI.The user will have to click on a button to access this text.
+	 * @param detailedText The detailed text of the messagedialog in the GUI.The user will have to click on a button to access this
+	 * text.
 	 */
 	void showMessage (QString title, QString text, QString detailedText) const;
 	/**

@@ -3,6 +3,9 @@
 This page is the first point for anyone interested in contributing to Elektra!
 
 
+
+
+
 ## How can I get started?
 
 We prepared

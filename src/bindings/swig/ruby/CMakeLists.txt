@@ -1,21 +1,21 @@
 include (${SWIG_USE_FILE})
-include(LibAddMacros)
+include (LibAddMacros)
 
 if (APPLE)
 	# try user environment first, then search for system libs
 	# required on OSX under rvm
 	set (CMAKE_FIND_FRAMEWORK "LAST")
-endif()
+endif ()
 
-find_package(Ruby)
+find_package (Ruby)
 
 if (NOT RUBY_FOUND)
-	remove_binding(swig_ruby "ruby interpreter or ruby header files not found (package ruby-dev/ruby-devel installed?)")
+	exclude_binding (swig_ruby "ruby interpreter or ruby header files not found (package ruby-dev/ruby-devel installed?)")
 elseif (SWIG_VERSION MATCHES "^([12]\\.)|(3\\.0\\.[01234567])$")
-	remove_binding(swig_ruby "found SWIG version (${SWIG_VERSION}) is not suitable. SWIG version >= 3.0.8 required")
-else()
+	exclude_binding (swig_ruby "found SWIG version (${SWIG_VERSION}) is not suitable. SWIG version >= 3.0.8 required")
+else ()
 
-	message(STATUS "Include Binding swig_ruby")
+	add_binding (swig_ruby)
 
 	add_headers (HDR_FILES)
 	add_cppheaders (HDR_FILES)
@@ -42,8 +42,8 @@ else()
 		OUTPUT_VARIABLE RUBY_SITE_DIR
 	)
 
-	include_directories(${RUBY_VENDOR_ARCH_DIR})
-	include_directories(${RUBY_INCLUDE_DIRS})
+	include_directories (${RUBY_VENDOR_ARCH_DIR})
+	include_directories (${RUBY_INCLUDE_DIRS})
 
 	#message (STATUS "Ruby executable: ${RUBY_EXECUTABLE}")
 	#message (STATUS "Ruby library: ${RUBY_LIBRARY}")
@@ -71,11 +71,11 @@ else()
 	endif (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 
 	# add 'kdb' module
-	if (CMAKE_VERSION LESS 3.8)
+	if (CMAKE_VERSION VERSION_LESS 3.8)
 		swig_add_module (swig-ruby ruby kdb.i)
-	else (CMAKE_VERSION LESS 3.8)
+	else (CMAKE_VERSION VERSION_LESS 3.8)
 		swig_add_library (swig-ruby LANGUAGE ruby SOURCES kdb.i TYPE MODULE)
-	endif (CMAKE_VERSION LESS 3.8)
+	endif (CMAKE_VERSION VERSION_LESS 3.8)
 	# set the compiler settings for the generated file
 	# (has to be done for each module separately)
 	set_source_files_properties (
@@ -84,11 +84,11 @@ else()
 	)
 
 	# add the 'kdbtools' module
-	if (CMAKE_VERSION LESS 3.8)
+	if (CMAKE_VERSION VERSION_LESS 3.8)
 		swig_add_module (swig-ruby-tools ruby kdbtools.i)
-	else (CMAKE_VERSION LESS 3.8)
+	else (CMAKE_VERSION VERSION_LESS 3.8)
 		swig_add_library (swig-ruby-tools LANGUAGE ruby SOURCES kdbtools.i TYPE MODULE)
-	endif (CMAKE_VERSION LESS 3.8)
+	endif (CMAKE_VERSION VERSION_LESS 3.8)
 	set_source_files_properties (
 		${swig_generated_sources} PROPERTIES
 		COMPILE_FLAGS "${SWIG_COMPILE_FLAGS}"
@@ -114,20 +114,20 @@ else()
 		# should be under /usr/local/lib/...
 		set (RUBY_LIB_INSTALL_DIR "${RUBY_SITE_ARCH_DIR}")
 		set (RUBY_MODULE_INSTALL_DIR "${RUBY_SITE_DIR}")
-	elseif(${CMAKE_INSTALL_PREFIX} MATCHES "^/usr/?$")
+	elseif (${CMAKE_INSTALL_PREFIX} MATCHES "^/usr/?$")
 		# should be under /usr/lib/...
 		set (RUBY_LIB_INSTALL_DIR "${RUBY_VENDOR_ARCH_DIR}")
 		set (RUBY_MODULE_INSTALL_DIR "${RUBY_VENDOR_DIR}")
-	else()
+	else ()
 		# fallback, define a custom location
 		set (RUBY_LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/ruby/site_ruby")
 		set (RUBY_MODULE_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib/ruby/site_ruby")
-	endif()
+	endif ()
 
-	if(_RUBY_DEBUG_OUTPUT)
+	if (_RUBY_DEBUG_OUTPUT)
 		message (STATUS "Ruby lib install path: ${RUBY_LIB_INSTALL_DIR}")
 		message (STATUS "Ruby module install path: ${RUBY_MODULE_INSTALL_DIR}")
-	endif()
+	endif ()
 
 	install (
 		TARGETS swig-ruby swig-ruby-tools
@@ -142,4 +142,4 @@ else()
 	if (BUILD_TESTING)
 		add_subdirectory (tests)
 	endif (BUILD_TESTING)
-endif()
+endif ()

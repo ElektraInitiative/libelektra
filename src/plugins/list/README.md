@@ -9,7 +9,7 @@
 
 ## Introduction
 
-The List plugin can be used everywhere a list of plugins is required. It takes a list of plugins + configurations 
+The List plugin can be used everywhere a list of plugins is required. It takes a list of plugins + configurations
 for every placement it's placed in and loads them.
 
 ## Configuration
@@ -29,6 +29,12 @@ Specifies the error-placements for the list plugin.
 `plugins/#`
 
 The name of the plugin to load.
+
+`plugins/#/handle`
+
+Internal handle of already loaded plugin. Useful when loading plugins at
+run-time with `elektraPluginOpen()`. Do not set permanently (e.g. with
+`kdb set`).
 
 `plugins/#/placements/set`
 
@@ -59,4 +65,3 @@ would have the callstack:
   1. `rename->kdbGet`
   2. `keytometa->kdbGet`
   3. `enum->kdbGet`
-

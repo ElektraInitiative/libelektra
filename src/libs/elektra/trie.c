@@ -191,9 +191,9 @@ Trie * trieInsert (Trie * trie, const char * name, Backend * value)
 }
 
 
-/******************
- * Private static declarations
- ******************/
+	/******************
+	 * Private static declarations
+	 ******************/
 
 
 #if 0

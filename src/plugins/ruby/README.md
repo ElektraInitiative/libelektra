@@ -11,7 +11,7 @@
 ## Introduction
 
 This plugin is an Elektra to Ruby bridge and makes is possible to implement Elektra plugins with Ruby.
-
+This plugin requires the `swig_ruby` binding.
 
 ## Configuration Options
 
@@ -57,8 +57,8 @@ Kdb::Plugin.define :somename do
     # semantic as returning -1
   end
 
-  # the close method is currently not supported, since this will crash the 
-  # Ruby-VM if this method should be called during the VM.finializaion !!!
+  # the close method is currently not supported, since this will crash the
+  # Ruby-VM if this method should be called during the VM.finalization !!!
   #def close(errorKey)
   #
   #end
@@ -138,4 +138,3 @@ end
 - The plugin does not work correctly with Ruby version managers like `rbenv` or `rvm` and is
   intended to be used with the Ruby ecosystem installed in system context.
 - Automated test cases are missing
-

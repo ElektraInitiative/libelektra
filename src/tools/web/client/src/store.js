@@ -6,25 +6,21 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-import { createStore, applyMiddleware, compose } from 'redux'
+import { createStore, applyMiddleware } from 'redux'
 import { createMiddleware as createPromisesMiddleware } from 'redux-promises'
+import logger from 'redux-logger'
 
-import DevTools from './containers/DevTools'
 import reducer from './reducers'
 
 // create middleware store enhancer
-const middleware = applyMiddleware(
-  createPromisesMiddleware() // allow returning promises from action creators
-)
-
-// compose store enhancers
-const enhancer = process.env.NODE_ENV === 'production'
-  ? middleware
-  : compose(middleware, DevTools.instrument()) // enable devtools store enhancer
+const promiseMiddleware = createPromisesMiddleware() // allow returning promises from action creators
+const middleware = process.env.NODE_ENV === 'production'
+  ? applyMiddleware(promiseMiddleware)
+  : applyMiddleware(promiseMiddleware, logger)
 
 // configure redux store
 export default function configureStore (initialState) {
-  const store = createStore(reducer, initialState, enhancer)
+  const store = createStore(reducer, initialState, middleware)
 
   // hot-reload reducers in development mode
   if (process.env.NODE_ENV !== 'production' && module.hot) {

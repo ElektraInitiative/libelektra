@@ -1,0 +1,53 @@
+/**
+ * @file
+ *
+ * @brief main stylesheet for the elektra-web client application
+ *
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+ */
+
+@font-face {
+  font-family: 'Roboto';
+  src: url('/Roboto-Regular.ttf');
+}
+
+@font-face {
+  font-family: 'Roboto Light';
+  src: url('/Roboto-Light.ttf');
+}
+
+body {
+  margin: 0;
+  height: 100%;
+  background-color: rgba(232, 232, 232, 0.1);
+}
+
+@media (max-width: 950px) {
+  .breadcrumb { /* hide breadcrumb on small screens */
+    display: none;
+  }
+}
+
+input {
+  outline-color: #00BCD4;
+  transition: outline 0.1s;
+}
+
+h1 {
+  font-family: 'Roboto Light';
+  font-size: 24px;
+  line-height: 30px;
+}
+
+h1 b {
+  font-family: 'Roboto';
+}
+
+.refreshIcon {
+  opacity: 0.5;
+  transition: opacity 0.2s;
+}
+
+.refreshIcon:hover {
+  opacity: 1;
+}

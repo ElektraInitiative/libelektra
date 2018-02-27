@@ -40,13 +40,13 @@ struct _ElektraInvokeHandle
 /**
  * @deprecated Do not use.
  *
- * Use `elektraInvokeOpen (name, 0)` instead.
+ * Use `elektraInvokeOpen (name, 0, 0)` instead.
  *
  * @see elektraInvokeOpen()
  */
 ElektraInvokeHandle * elektraInvokeInitialize (const char * elektraPluginName)
 {
-	return elektraInvokeOpen (elektraPluginName, 0);
+	return elektraInvokeOpen (elektraPluginName, 0, 0);
 }
 
 /**
@@ -56,11 +56,12 @@ ElektraInvokeHandle * elektraInvokeInitialize (const char * elektraPluginName)
  *
  * @param elektraPluginName the plugin on which we want to invoke functions.
  * @param config the config to be passed to the plugin.
+ * @param errorKey a key where error messages will be stored
  *
  * @return the handle
  * @retval 0 on errors
  */
-ElektraInvokeHandle * elektraInvokeOpen (const char * elektraPluginName, KeySet * config)
+ElektraInvokeHandle * elektraInvokeOpen (const char * elektraPluginName, KeySet * config, Key * errorKey)
 {
 	if (!elektraPluginName)
 	{
@@ -71,7 +72,6 @@ ElektraInvokeHandle * elektraInvokeOpen (const char * elektraPluginName, KeySet 
 	{
 		return NULL;
 	}
-	Key * errorKey = keyNew (0, KEY_END);
 	KeySet * modules = ksNew (0, KS_END);
 	handle->modules = modules;
 	elektraModulesInit (modules, NULL);
@@ -85,16 +85,24 @@ ElektraInvokeHandle * elektraInvokeOpen (const char * elektraPluginName, KeySet 
 		config = ksDup (config);
 	}
 
+	int errorKeyMissing = !errorKey;
+	if (errorKeyMissing)
+	{
+		errorKey = keyNew (0, KEY_END);
+	}
+
 	Plugin * plugin = elektraPluginOpen (elektraPluginName, modules, config, errorKey);
-	if (!plugin)
+	if (errorKeyMissing)
 	{
 		keyDel (errorKey);
+	}
+	if (!plugin)
+	{
 		elektraModulesClose (modules, NULL);
 		ksDel (modules);
 		elektraFree (handle);
 		return NULL;
 	}
-	keyDel (errorKey);
 	handle->plugin = plugin;
 	return handle;
 }
@@ -181,7 +189,7 @@ KeySet * elektraInvokeGetPluginConfig (ElektraInvokeHandle * handle)
  *
  * @pre handle must be as returned from elektraInvokeOpen()
  *
- * @return the name of the plugin 
+ * @return the name of the plugin
  */
 const char * elektraInvokeGetPluginName (ElektraInvokeHandle * handle)
 {
@@ -273,18 +281,26 @@ int elektraInvoke2Args (ElektraInvokeHandle * handle, const char * elektraPlugin
  * The close function of the plugin will be called.
  *
  * @param handle the handle to work with
+ * @param errorKey a key where error messages will be stored
  *
  * @pre handle must be as returned from elektraInvokeOpen()
  */
-void elektraInvokeClose (ElektraInvokeHandle * handle)
+void elektraInvokeClose (ElektraInvokeHandle * handle, Key * errorKey)
 {
 	if (!handle)
 	{
 		return;
 	}
-	Key * errorKey = keyNew (0, KEY_END);
+	int errorKeyMissing = !errorKey;
+	if (errorKeyMissing)
+	{
+		errorKey = keyNew (0, KEY_END);
+	}
 	elektraPluginClose (handle->plugin, errorKey);
-	keyDel (errorKey);
+	if (errorKeyMissing)
+	{
+		keyDel (errorKey);
+	}
 	elektraModulesClose (handle->modules, NULL);
 	ksDel (handle->modules);
 	ksDel (handle->exports);

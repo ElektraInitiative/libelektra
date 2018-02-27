@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # bash required for platform independent time
 
 if [ -z "$KDB" ]; then

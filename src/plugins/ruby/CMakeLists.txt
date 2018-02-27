@@ -1,16 +1,19 @@
+include (LibAddBinding)
+
 if (DEPENDENCY_PHASE)
 	if (APPLE)
 		set (CMAKE_FIND_FRAMEWORK "LAST")
-	endif()
-	find_package(Ruby)
-	find_swig()
+	endif ()
+	find_package (Ruby)
+	find_swig ()
+	check_binding_included ("swig_ruby" BINDING_WAS_ADDED SUBDIRECTORY "swig/ruby")
 
 	# Disable on GCC 4 and earlier:
 	#	- https://build.libelektra.org/jenkins/job/elektra-gcc47-all
 	#	- https://build.libelektra.org/jenkins/job/elektra-gcc-configure-debian-wheezy
-	set(SUPPORTED_COMPILER (NOT ("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU" AND ${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 5)))
+	set (SUPPORTED_COMPILER (NOT ("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU" AND ${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 5)))
 
-	if (RUBY_FOUND AND SWIG_FOUND AND ${SUPPORTED_COMPILER})
+	if (RUBY_FOUND AND SWIG_FOUND AND BINDING_WAS_ADDED AND ${SUPPORTED_COMPILER})
 		include (LibAddMacros)
 
 		add_custom_command (OUTPUT runtime.h
@@ -27,12 +30,14 @@ if (DEPENDENCY_PHASE)
 		remove_plugin (ruby "ruby not found")
 	elseif (NOT ${SUPPORTED_COMPILER})
 		remove_plugin (ruby "gcc version too old (gcc -dumpversion < 5.0)")
-	else ()
+	elseif (NOT SWIG_FOUND)
 		remove_plugin (ruby "swig not found")
+	elseif (NOT BINDING_WAS_ADDED)
+		remove_plugin (ruby "swig_ruby binding is required")
 	endif ()
 endif ()
 
-add_plugin(ruby
+add_plugin (ruby
 	CPP
 	SOURCES
 		ruby.hpp ruby.cpp ${CMAKE_CURRENT_BINARY_DIR}/runtime.h
@@ -47,8 +52,8 @@ add_plugin(ruby
 
 # if (ADDTESTING_PHASE)
 # 	# bindings are required for tests
-# 	list (FIND BINDINGS "swig_python" FINDEX)
-# 	if (NOT BUILD_SHARED AND BUILD_TESTING AND FINDEX GREATER -1)
+# 	check_binding_was_added ("swig_python" BINDING_WAS_ADDED)
+# 	if (NOT BUILD_SHARED AND BUILD_TESTING AND BINDING_WAS_ADDED)
 # 		# test environment clears env so setting PYTHONPATH is no option
 # 		# we workaround this by changing the current directory to our bindings
 # 		# output directory + our test adds the current directory to pythons sys.path

@@ -86,20 +86,22 @@ you can do:
 
 	git-ref-log # recover
 
-## Github
+## Build Server
 
 When doing merge requests our [buildserver](https://build.libelektra.org)
-will build authorized users. If you are not yet authorized, the following
-question will be asked (by user markus2330):
+will build jobs of authorized users. If you are not yet authorized, the following
+question will be asked (by user @markus2330):
 
 	Can one of the admins verify if this patch should be build?
 
-Then one of the admins:
+Then one of the admins (sorted by activity):
 
-- fberlakovich
-- manuelm
-- markus2330
-- beku
+- @sanssecours
+- @markus2330
+- @beku
+- @BernhardDenner
+- @fberlakovich
+- @manuelm
 
 need to confirm by saying:
 
@@ -109,11 +111,9 @@ or if just the pull request should be checked:
 
 	.*build\W+allow.*
 
-or if just a single build of the mergerequest should be started:
+### Run Jobs
 
-	jenkins build please
-
-or if specific jobs should be started:
+After being added to whitelist you can trigger buildjobs by saying:
 
 * jenkins build [bindings](https://build.libelektra.org/job/elektra-test-bindings/) please
 * jenkins build [clang](https://build.libelektra.org/job/elektra-clang/) please
@@ -151,28 +151,27 @@ or if specific jobs should be started:
 * jenkins build [homepage](https://build.libelektra.org/job/elektra-homepage/) please
 * jenkins build [gcc-configure-debian-stretch-minimal](https://build.libelektra.org/job/elektra-gcc-configure-debian-stretch-minimal/) please
 * jenkins build [gcc-configure-debian-jessie-minimal](https://build.libelektra.org/job/elektra-gcc-configure-debian-jessie-minimal/) please
-
-If you want any configuration changes, please contact
-`Markus Raab <elektra@markus-raab.org>`.
+* jenkins build [docker](https://build.libelektra.org/job/test-docker/) please
+* jenkins build [haskell](https://build.libelektra.org/job/elektra-haskell/) please
 
 ### Run All Tests
 
-Before we merge a pull request we want to make sure, that all of the build jobs mentioned above still work. For this purpose we provide the
-phrase:
+Before we merge a pull request we want to make sure, that all of the build jobs mentioned above still work.
+For this purpose we provide the phrase:
 
 ```
 jenkins build all please
 ```
 
-. If you add this phrase to a comment in your pull request, then Jenkins will run all jobs, except for
+If you add this phrase to a comment in your pull request, then Jenkins will run all jobs, except for
 
 - `elektra-git-buildpackage-jessie`,
 - `elektra-git-buildpackage-stretch`, and
 - `elektra-git-buildpackage-wheezy`,
 
-. Since running all test jobs takes a lot of time, please use this phrase only if
+Since running all test jobs needs resources, please use this phrase only if
 
 - all of the **standard PR jobs** were already **successful**, and
 - you are sure that you **do not want change anything** in your PR anymore
 
-.
+If you want any changes to the build server infrastructure, please [report them](https://issues.libelektra.org/160).

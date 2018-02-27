@@ -7,6 +7,11 @@ if (POLICY CMP0053)
 	cmake_policy(SET CMP0053 OLD)
 endif ()
 
+if (APPLE)
+	# Provide list of default paths for Homebrew version of Qt
+	list (APPEND CMAKE_PREFIX_PATH "/usr/local/opt/qt5" "/usr/local/opt/qt@5.5")
+endif (APPLE)
+
 set(QCOMPONENTS Core Quick Gui Qml Widgets Test)
 find_package(Qt5 COMPONENTS ${QCOMPONENTS})
 find_package(Qt5 OPTIONAL_COMPONENTS Svg QUIET)
@@ -56,6 +61,7 @@ add_toolheaders (qt-gui_HDRS)
 file(GLOB qt-gui_SRCS "src/*.cpp" "src/markdownconverter/*.cpp" "src/markdownconverter/template/*.cpp")
 
 set(qt-gui_RSCS	resources.qrc)
+set_property (SOURCE qrc_resources.cpp PROPERTY SKIP_AUTOMOC ON)
 
 qt5_add_resources(RSCS ${qt-gui_RSCS})
 
@@ -79,8 +85,8 @@ configure_file(
 install (PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/elektra-qt-editor" DESTINATION bin)
 install(FILES org.libelektra.elektra-qt-editor.desktop DESTINATION share/applications)
 install(FILES org.libelektra.elektra-qt-editor.appdata.xml DESTINATION share/appdata)
-install(FILES ../../../doc/images/circle.svg DESTINATION share/icons/hicolor/scalable/apps RENAME elektra.svg)
-install(FILES ../../../doc/images/circle-symbolic.svg DESTINATION share/icons/hicolor/scalable/apps RENAME elektra-symbolic.svg)
+install(FILES ../../../doc/images/logo/logo_color.svg DESTINATION share/icons/hicolor/scalable/apps RENAME elektra.svg)
+install(FILES ../../../doc/images/logo/logo_gray.svg DESTINATION share/icons/hicolor/scalable/apps RENAME elektra-symbolic.svg)
 
 generate_manpage (kdb-qt-gui FILENAME ${CMAKE_CURRENT_SOURCE_DIR}/README.md)
 

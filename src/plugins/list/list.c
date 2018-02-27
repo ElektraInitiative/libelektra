@@ -57,7 +57,11 @@ static int listParseConfiguration (Placements * placements, KeySet * config)
 	Key * key = ksLookupByName (config, "/plugins", 0);
 	KeySet * cutKS = ksCut (config, key);
 	ksRewind (cutKS);
-	if (ksGetSize (cutKS) < 2) return 0;
+	if (ksGetSize (cutKS) < 2)
+	{
+		ksDel (cutKS);
+		return 0;
+	}
 	int rc = 0;
 	while ((cur = ksNext (cutKS)) != NULL)
 	{
@@ -251,49 +255,61 @@ static int runPlugins (KeySet * pluginKS, KeySet * modules, KeySet * plugins, Ke
 	while ((current = traversalFunction (pluginKS)) != NULL)
 	{
 		const char * name = keyString (current);
-		Key * searchKey = keyNew ("/", KEY_END);
-		keyAddBaseName (searchKey, name);
-		Key * lookup = ksLookup (plugins, searchKey, 0);
-		keyDel (searchKey);
-		if (lookup)
+
+		Key * handleKey = keyDup (current);
+		keyAddName (handleKey, "handle");
+		Key * handleLookup = ksLookup (configOrig, handleKey, 0);
+		keyDel (handleKey);
+		if (handleLookup)
 		{
-			slave = *(Plugin **)keyValue (lookup);
+			slave = *(Plugin **)keyValue (handleLookup);
 		}
 		else
 		{
-			Key * userCutPoint = keyNew ("user", 0);
-			Key * sysConfCutPoint = keyNew ("system", 0);
-			KeySet * config = ksDup (configOrig);
-			KeySet * sysConfigAll = ksCut (config, sysConfCutPoint);
-			KeySet * userConfigAll = ksCut (config, userCutPoint);
-			KeySet * pluginConfig = ksCut (userConfigAll, current);
-			realPluginConfig = elektraRenameKeys (pluginConfig, "user");
-			ksDel (pluginConfig);
-			Key * toRemove = keyNew ("user/plugins", 0);
-			ksDel (ksCut (sysConfigAll, toRemove));
-			ksAppend (realPluginConfig, sysConfigAll);
-			keyDel (toRemove);
-			toRemove = keyNew ("user/placements", 0);
-			ksDel (ksCut (realPluginConfig, toRemove));
-			ksRewind (realPluginConfig);
-			ksDel (sysConfigAll);
-			ksDel (userConfigAll);
-			ksDel (config);
-			keyDel (userCutPoint);
-			keyDel (sysConfCutPoint);
-			keyDel (toRemove);
-			slave = elektraPluginOpen (name, modules, ksDup (realPluginConfig), parentKey);
-			ksDel (realPluginConfig);
-			if (!slave)
+			Key * searchKey = keyNew ("/", KEY_END);
+			keyAddBaseName (searchKey, name);
+			Key * lookup = ksLookup (plugins, searchKey, 0);
+			keyDel (searchKey);
+			if (lookup)
 			{
-				ksDel (configOrig);
-				return -1;
+				slave = *(Plugin **)keyValue (lookup);
 			}
-			Key * slaveKey = keyNew (name, KEY_BINARY, KEY_SIZE, sizeof (Plugin *), KEY_VALUE, &slave, KEY_END);
-			keySetName (slaveKey, "/");
-			keyAddBaseName (slaveKey, name);
-			ksAppendKey (plugins, keyDup (slaveKey));
-			keyDel (slaveKey);
+			else
+			{
+				Key * userCutPoint = keyNew ("user", 0);
+				Key * sysConfCutPoint = keyNew ("system", 0);
+				KeySet * config = ksDup (configOrig);
+				KeySet * sysConfigAll = ksCut (config, sysConfCutPoint);
+				KeySet * userConfigAll = ksCut (config, userCutPoint);
+				KeySet * pluginConfig = ksCut (userConfigAll, current);
+				realPluginConfig = elektraRenameKeys (pluginConfig, "user");
+				ksDel (pluginConfig);
+				Key * toRemove = keyNew ("user/plugins", 0);
+				ksDel (ksCut (sysConfigAll, toRemove));
+				ksAppend (realPluginConfig, sysConfigAll);
+				keyDel (toRemove);
+				toRemove = keyNew ("user/placements", 0);
+				ksDel (ksCut (realPluginConfig, toRemove));
+				ksRewind (realPluginConfig);
+				ksDel (sysConfigAll);
+				ksDel (userConfigAll);
+				ksDel (config);
+				keyDel (userCutPoint);
+				keyDel (sysConfCutPoint);
+				keyDel (toRemove);
+				slave = elektraPluginOpen (name, modules, ksDup (realPluginConfig), parentKey);
+				ksDel (realPluginConfig);
+				if (!slave)
+				{
+					ksDel (configOrig);
+					return -1;
+				}
+				Key * slaveKey = keyNew (name, KEY_BINARY, KEY_SIZE, sizeof (Plugin *), KEY_VALUE, &slave, KEY_END);
+				keySetName (slaveKey, "/");
+				keyAddBaseName (slaveKey, name);
+				ksAppendKey (plugins, keyDup (slaveKey));
+				keyDel (slaveKey);
+			}
 		}
 
 		if ((op == GET && slave->kdbGet && (slave->kdbGet (slave, returned, parentKey)) == -1) ||
@@ -448,4 +464,3 @@ Plugin * ELEKTRA_PLUGIN_EXPORT (list)
 			ELEKTRA_PLUGIN_ERROR,	&elektraListError,
 			ELEKTRA_PLUGIN_END);
 }
-

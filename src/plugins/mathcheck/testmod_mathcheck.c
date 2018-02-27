@@ -50,8 +50,9 @@ static void test_multiUp (void)
 {
 	Key * parentKey = keyNew ("user/tests/mathcheck", KEY_VALUE, "", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
-	KeySet * ks = ksNew (5, keyNew ("user/tests/mathcheck/up/sum", KEY_VALUE, "0", KEY_META, "check/math",
-					":= + ../val1 + ../../val2 ../val3", KEY_END),
+	KeySet * ks = ksNew (5,
+			     keyNew ("user/tests/mathcheck/up/sum", KEY_VALUE, "0", KEY_META, "check/math",
+				     ":= + ../val1 + ../../val2 ../val3", KEY_END),
 			     keyNew ("user/tests/mathcheck/up/val1", KEY_VALUE, "1", KEY_END),
 			     keyNew ("user/tests/mathcheck/val2", KEY_VALUE, "2", KEY_END),
 			     keyNew ("user/tests/mathcheck/up/val3", KEY_VALUE, "10", KEY_END), KS_END);

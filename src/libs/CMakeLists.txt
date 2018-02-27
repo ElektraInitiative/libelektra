@@ -12,9 +12,15 @@ add_subdirectory (meta)
 
 add_subdirectory (plugin)
 
+add_subdirectory (pluginprocess)
+
 add_subdirectory (utility)
 
+add_subdirectory (io)
+
 add_subdirectory (invoke)
+
+add_subdirectory (notification)
 
 add_subdirectory (elektra)
 

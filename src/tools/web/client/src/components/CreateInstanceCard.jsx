@@ -38,28 +38,35 @@ export default class CreateInstanceCard extends React.Component {
     return (
         <Card style={{ margin: '10px', marginBottom: '25px' }}>
             <CardHeader
-              title="add new instance"
+              title={
+                  <span style={{ fontSize: 24, lineHeight: '30px' }}>
+                      {'add new instance'}
+                  </span>
+              }
               subtitle="please enter a host and a friendly name"
             />
             <CardText>
-                <TextField
-                  ref="nameField"
-                  floatingLabelText="name"
-                  floatingLabelFixed={true}
-                  hintText="my webserver"
-                  onChange={(evt) => this.setState({ name: evt.target.value })}
-                  value={this.state.name}
-                />
-                {' '}
-                <TextField
-                  ref="hostField"
-                  floatingLabelText="host"
-                  floatingLabelFixed={true}
-                  hintText="http://127.0.0.1:33333"
-                  onChange={(evt) => this.setState({ host: evt.target.value })}
-                  value={this.state.host}
-                />
-                <div style={{ marginTop: '25px' }}>
+                <div style={{ display: 'block' }}>
+                    <TextField
+                      ref="nameField"
+                      floatingLabelText="name"
+                      floatingLabelFixed={true}
+                      hintText="e.g. my webserver"
+                      onChange={(evt) => this.setState({ name: evt.target.value })}
+                      value={this.state.name}
+                    />
+                </div>
+                <div style={{ display: 'block', marginTop: 8 }}>
+                    <TextField
+                      ref="hostField"
+                      floatingLabelText="host"
+                      floatingLabelFixed={true}
+                      hintText="e.g. http://127.0.0.1:33333"
+                      onChange={(evt) => this.setState({ host: evt.target.value })}
+                      value={this.state.host}
+                    />
+                </div>
+                <div style={{ marginTop: 32 }}>
                   <FlatButton
                     label="add"
                     primary={true}

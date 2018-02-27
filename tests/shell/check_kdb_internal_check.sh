@@ -27,6 +27,10 @@ do
 		# output on open/close
 		continue
 		;;
+	"semlock")
+		# exclude due to issue 1781
+		continue
+		;;
 	esac
 
 	> $FILE

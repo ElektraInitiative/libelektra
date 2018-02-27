@@ -15,12 +15,12 @@ Elektra-web requires:
 
  * Install dependencies (see above)
  * Clone libelektra repo and `cd libelektra/src/tools/web`
- * Install and start elektrad:
+ * Install and start an elektrad instance:
    * `cd elektrad`
    * `npm install`
    * `npm start`
- * Install and start clusterd:
-   * `cd clusterd`
+ * Install and start the client (connects to the elektrad instance):
+   * `cd client`
    * `npm install`
    * `npm start`
  * You can now access the client on: [http://localhost:33334](http://localhost:33334)
@@ -35,8 +35,9 @@ HTTP URL, e.g. `http://localhost:33333`.
 If this configuration option is set, elektra-web will load the configuration
 page for that instance instead of the main overview page.
 
-If you want to host elektra-web with clusterd and elektrad on the same instance,
-you can run clusterd as follows:
+If you want to host elektra-web with the client and elektrad on the same
+instance, after starting elektrad via `npm start`, you can run start the
+client as follows:
 
 ```
 INSTANCE="http://localhost:33333" npm start
@@ -51,21 +52,19 @@ browser, the configuration page for the instance will be opened immediately.
 Elektra web consists of multiple components:
 
  * (multiple) servers running an elektra daemon ([`elektrad`](elektrad/))
- * a single cluster management server to communicate with the elektra daemons ([`clusterd`](clusterd/))
- * a client (web browser) that accesses the Web UI on the cluster management server ([`client`](client/))
+ * a single server to communicate with the elektra daemons and serve the client ([`clusterd`](clusterd/))
+ * a web browser that accesses the client (Web UI) on the cluster management server ([`client`](client/))
 
 ![https://cdn.rawgit.com/ElektraInitiative/libelektra/master/src/tools/web/doc/network_structure.png](https://cdn.rawgit.com/ElektraInitiative/libelektra/master/src/tools/web/doc/network_structure.png)
 
 
 ## GUI
 
-The Web UI allows the user to add new instances to the network, as well as
-combine multiple instances into a cluster. If the configuration of a cluster is
-edited, the changes are pushed to all instances in the cluster. Furthermore,
-single instances can be configured independently.
+The Web UI allows the user to add multiple instances to be configured.
 
 The configuration view of elektra web is similar to the tree view of the
-[qt-gui](https://git.libelektra.org/tree/master/src/tools/qt-gui).
+[qt-gui](https://git.libelektra.org/tree/master/src/tools/qt-gui), but with
+dynamic fields rendered via key metadata.
 
 ![https://cdn.rawgit.com/ElektraInitiative/libelektra/master/src/tools/web/doc/ui_structure.png](https://cdn.rawgit.com/ElektraInitiative/libelektra/master/src/tools/web/doc/ui_structure.png)
 

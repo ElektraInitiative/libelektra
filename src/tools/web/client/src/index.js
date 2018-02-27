@@ -10,30 +10,30 @@
 
 import React from 'react'
 import ReactDOM from 'react-dom'
+import injectTapEventPlugin from 'react-tap-event-plugin'
+import { Provider } from 'react-redux'
+
+import configureStore from './store'
+import { fetchInstances } from './actions'
+import App from './components/App.jsx'
+
+import './css/main.css'
 
 // enable onTouchTap events
 //   this makes it possible to listen to events from mobile phone taps as well
 //   as clicks on machines that don't have a touch screen
-import injectTapEventPlugin from 'react-tap-event-plugin'
 injectTapEventPlugin()
 
 // initialize redux store
-import configureStore from './store'
 const store = configureStore()
 
 // fetch instances when the app is loaded
-import { configureInstance, fetchInstances, fetchClusters } from './actions'
-store.dispatch(configureInstance('my')) // single instance mode
 store.dispatch(fetchInstances())
-store.dispatch(fetchClusters())
 
 // load and render the app
-import { Provider } from 'react-redux'
-import ConnectedApp from './containers/ConnectedApp'
-
 ReactDOM.render(
-  React.createElement(Provider, { store },
-    React.createElement(ConnectedApp)
-  ),
-  document.getElementById('main')
+  <Provider store={store}>
+    <App store={store} />
+  </Provider>,
+  document.getElementById('root')
 )

@@ -3,22 +3,22 @@
 
 ## Linux
 
-For the following Linux Distributions 0.8 packages are available:
+For the following Linux distributions and package managers 0.8 packages are available:
 
- - [Fedora](https://admin.fedoraproject.org/pkgdb/package/elektra/)
- - [Gentoo](http://packages.gentoo.org/package/app-admin/elektra)
  - [Arch Linux](https://aur.archlinux.org/packages/elektra/)
- - [Debian](https://packages.debian.org/de/jessie/libelektra4)
- - [Ubuntu](https://launchpad.net/ubuntu/+source/elektra)
  - [Openwrt](https://github.com/openwrt/packages/tree/master/libs/elektra)
  - [OpenSuse](https://software.opensuse.org/package/elektra)
- - [PLDLinux](http://sophie.zarb.org/rpms/763d9e52beefaa15b1363d11d836b65c)
- - [LEDE](https://lede-project.org/packages/pkgdata/libelektra-core?s[]=elektra)
+ - [Debian](https://packages.debian.org/de/jessie/libelektra4)
+ - [Ubuntu](https://launchpad.net/ubuntu/+source/elektra)
+ - [Gentoo](http://packages.gentoo.org/package/app-admin/elektra)
  - [Linux Mint](https://community.linuxmint.com/software/view/elektra-bin)
+ - [LinuxBrew](https://github.com/Linuxbrew/homebrew-core/blob/master/Formula/elektra.rb)
+ - [Alpine Linux](https://pkgs.alpinelinux.org/package/edge/testing/x86_64/elektra)
 
-Available, but not up-to-date (Version 0.7):
+Available, but not up-to-date:
 
  - [Mageia](http://svnweb.mageia.org/packages/updates/1/elektra/)
+ - [Fedora](https://admin.fedoraproject.org/pkgdb/package/elektra/)
 
 For [OpenSUSE, CentOS, Fedora, RHEL and SLE](https://build.opensuse.org/package/show/home:bekun:devel/elektra)
 Kai-Uwe Behrmann kindly provides packages [for download](http://software.opensuse.org/download.html?project=home%3Abekun%3Adevel&package=libelektra4).
@@ -55,10 +55,13 @@ To build Debian Packages from the source you might want to use:
 
 ## macOS
 
-A tap for [Homebrew](http://brew.sh) is available [here](http://github.com/ElektraInitiative/homebrew-elektra). To install Elektra using this tap just use the two shell commands listed below.
+You can install Elektra using [Homebrew](http://brew.sh) via the shell command:
 
-	brew tap ElektraInitiative/homebrew-elektra
-	brew install elektra
+```sh
+brew install elektra
+```
+
+. We also provide a tap containing a more elaborate formula [here](http://github.com/ElektraInitiative/homebrew-elektra).
 
 ## Generic
 

@@ -35,17 +35,17 @@
 #define ELEKTRA_PLUGIN_FUNCTION3(module, variant, function) libelektra_##module##_##variant##_LTX_elektraPlugin##function
 #else
 /**
-	 * @brief Declare a plugin's function name suitable for
-	 * compilation variants (see doc/tutorials).
-	 *
-	 * It can be used in the same way as elektraPluginExport().
-	 * @see ELEKTRA_PLUGIN_EXPORT
-	 *
-	 * @ingroup plugin
-	 *
-	 * @param plugin the name of the plugin
-	 * @param function which function it is (open, close, get, set, error)
-	 */
+ * @brief Declare a plugin's function name suitable for
+ * compilation variants (see doc/tutorials).
+ *
+ * It can be used in the same way as elektraPluginExport().
+ * @see ELEKTRA_PLUGIN_EXPORT
+ *
+ * @ingroup plugin
+ *
+ * @param plugin the name of the plugin
+ * @param function which function it is (open, close, get, set, error)
+ */
 #define ELEKTRA_PLUGIN_FUNCTION(module, function) libelektra_##module##_LTX_elektraPlugin##function
 #endif
 
@@ -55,13 +55,13 @@
 #define ELEKTRA_README3(module, variant) ELEKTRA_QUOTE (readme_##module##_##variant.c)
 #else
 /**
-	 * @brief The filename for inclusion of the readme for
-	 * compilation variants (see doc/tutorials).
-	 *
-	 * @ingroup plugin
-	 *
-	 * @param plugin the name of the plugin
-	 */
+ * @brief The filename for inclusion of the readme for
+ * compilation variants (see doc/tutorials).
+ *
+ * @ingroup plugin
+ *
+ * @param plugin the name of the plugin
+ */
 #define ELEKTRA_README(module) ELEKTRA_README2 (module)
 #define ELEKTRA_README2(module) ELEKTRA_QUOTE (readme_##module.c)
 #endif

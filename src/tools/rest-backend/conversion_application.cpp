@@ -20,7 +20,7 @@ namespace kdbrest
 
 /**
  * @brief the constructor of the conversion endpoint application
- * 
+ *
  * @param srv a service container
  */
 ConversionApp::ConversionApp (cppcms::service & srv) : cppcms::application (srv)
@@ -34,7 +34,7 @@ ConversionApp::ConversionApp (cppcms::service & srv) : cppcms::application (srv)
 
 /**
  * @brief handler for the conversion resource
- * 
+ *
  * the function parses the content of a request, takes a snippet
  * and configuration format as input and converts the snippet into
  * the desired output format.

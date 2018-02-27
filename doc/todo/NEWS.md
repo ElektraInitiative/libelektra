@@ -1,11 +1,13 @@
 # 0.8.<<VERSION>> Release
 
 This release did not happen yet.
+
 Please update this file within PRs accordingly.
 For non-trivial changes, you can choose to be
 part of the highlighted changes. Please make
-sure to add some short tutorial or how-to-use
-for highlighted items.
+sure to add some short tutorial, asciinema,
+or how-to-use for highlighted items.
+
 Please add your name to every contribution
 syntax: ", thanks to <myname>".
 
@@ -25,6 +27,9 @@ For more information, visit [https://libelektra.org](https://libelektra.org).
 For a small demo see here:
 
 [![asciicast](https://asciinema.org/a/cantr04assr4jkv8v34uz9b8r.png)](https://asciinema.org/a/cantr04assr4jkv8v34uz9b8r)
+
+You can also read the news [on our website](https://www.libelektra.org/news/0.8.<<VERSION>>-release)
+
 
 
 ## Highlights
@@ -113,7 +118,7 @@ For any questions and comments, please contact the
 issue tracker [on GitHub](http://issues.libelektra.org)
 or me by email using elektra@markus-raab.org.
 
-[Permalink to this NEWS entry](https://doc.libelektra.org/news/0.8.<<VERSION>>-release)
+[Permalink to this NEWS entry](https://www.libelektra.org/news/0.8.<<VERSION>>-release)
 
 For more information, see [https://libelektra.org](https://libelektra.org)
 

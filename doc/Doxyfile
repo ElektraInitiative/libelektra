@@ -769,6 +769,7 @@ INPUT                  = "@PROJECT_SOURCE_DIR@/src/libs" \
                          "@PROJECT_SOURCE_DIR@/src/include" \
                          "@PROJECT_SOURCE_DIR@/src/bindings/cpp/include" \
                          "@PROJECT_SOURCE_DIR@/src/bindings/jna/libelektra4j/src" \
+                         "@PROJECT_SOURCE_DIR@/src/bindings/io/doc" \
                          "@PROJECT_SOURCE_DIR@/src/plugins" \
                          "@PROJECT_SOURCE_DIR@/src/plugins/doc/doc.h" \
                          "@PROJECT_SOURCE_DIR@/doc" \
@@ -876,7 +877,8 @@ EXAMPLE_PATH           = "@PROJECT_SOURCE_DIR@/examples" \
                          "@PROJECT_SOURCE_DIR@/tests/abi" \
                          "@PROJECT_SOURCE_DIR@/tests/ctest" \
                          "@PROJECT_SOURCE_DIR@/tests/cframework" \
-                         "@PROJECT_SOURCE_DIR@/src/plugins/doc"
+                         "@PROJECT_SOURCE_DIR@/src/plugins/doc" \
+                         "@PROJECT_SOURCE_DIR@/src/bindings/io/doc"
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the
 # EXAMPLE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp and

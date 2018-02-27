@@ -89,50 +89,50 @@ static void test_flat (void)
 {
 	test_read ("yamlcpp/flat_block_mapping.yaml",
 #include "yamlcpp/flat_block_mapping.h"
-		   );
+	);
 	test_write_read (
 #include "yamlcpp/flat_block_mapping.h"
-		);
+	);
 
 	test_read ("yamlcpp/flat_flow_mapping.yaml",
 #include "yamlcpp/flat_flow_mapping.h"
-		   );
+	);
 	test_write_read (
 #include "yamlcpp/flat_flow_mapping.h"
-		);
+	);
 }
 
 static void test_nested (void)
 {
 	test_read ("yamlcpp/nested_block_mapping.yaml",
 #include "yamlcpp/nested_block_mapping.h"
-		   );
+	);
 	test_write_read (
 #include "yamlcpp/nested_block_mapping.h"
-		);
+	);
 	test_read ("yamlcpp/nested_mixed_mapping.yaml",
 #include "yamlcpp/nested_mixed_mapping.h"
-		   );
+	);
 	test_write_read (
 #include "yamlcpp/nested_mixed_mapping.h"
-		);
+	);
 }
 
 static void test_array (void)
 {
 	test_read ("yamlcpp/simple_sequence.yaml",
 #include "yamlcpp/simple_sequence.h"
-		   );
+	);
 	test_write_read (
 #include "yamlcpp/simple_sequence.h"
-		);
+	);
 
 	test_read ("yamlcpp/nested_sequences.yaml",
 #include "yamlcpp/nested_sequences.h"
-		   );
+	);
 	test_write_read (
 #include "yamlcpp/nested_sequences.h"
-		);
+	);
 }
 
 // -- Main ---------------------------------------------------------------------------------------------------------------------------------

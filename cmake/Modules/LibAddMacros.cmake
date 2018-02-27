@@ -219,7 +219,7 @@ macro (add_headers HDR_FILES)
 	file (GLOB SRC_HDR_FILES ${SOURCE_INCLUDE_DIR}/*.h)
 	list (APPEND ${HDR_FILES} ${SRC_HDR_FILES})
 
-	set_source_files_properties (${BINARY_INCLUDE_DIR}/kdberrors.h PROPERTIES GENERATED ON)
+	set_source_files_properties (${BINARY_INCLUDE_DIR}/kdberrors.h PROPERTIES GENERATED ON SKIP_AUTOMOC ON)
 	list (APPEND ${HDR_FILES} "${BINARY_INCLUDE_DIR}/kdberrors.h")
 endmacro (add_headers)
 
@@ -276,14 +276,6 @@ macro (remove_plugin name reason)
 		set (REMOVED_PLUGINS "${name}" CACHE STRING "${REMOVED_PLUGINS_DOC}" FORCE)
 	endif ()
 endmacro (remove_plugin)
-
-
-macro (remove_binding name reason)
-	set (TMP ${BINDINGS})
-	message (STATUS "Exclude Binding ${name} because ${reason}")
-	list (REMOVE_ITEM TMP ${name})
-	set (BINDINGS ${TMP} CACHE STRING ${BINDINGS_DOC} FORCE)
-endmacro (remove_binding)
 
 
 macro (remove_tool name reason)

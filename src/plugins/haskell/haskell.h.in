@@ -3,7 +3,7 @@
  *
  * @brief Header for haskell plugin
  *
- * @copyrigh*t BSD License (see LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -17,7 +17,6 @@ int elektraHaskellClose (Plugin * handle, Key * errorKey);
 int elektraHaskellGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraHaskellSet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraHaskellError (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraHaskellCheckConfig (Key * errorKey, KeySet * conf);
 
 // clang-format off
 Plugin * ELEKTRA_PLUGIN_EXPORT (@PLUGIN_NAME@);

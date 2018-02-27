@@ -1,3 +1,11 @@
+- infos =
+- infos/author = Markus Raab <elektra@libelektra.org>
+- infos/status = experimental maintained
+- infos/provides =
+- infos/description =
+
+# JNA
+
 A full java binding using JNA. This binding requires Elektra to be installed on
 the system to work.
 

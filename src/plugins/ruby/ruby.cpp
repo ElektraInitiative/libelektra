@@ -601,11 +601,11 @@ int RUBY_PLUGIN_FUNCTION (Close) (ckdb::Plugin * handle, ckdb::Key * warningsKey
 int RUBY_PLUGIN_FUNCTION (Get) (ckdb::Plugin * handle, ckdb::KeySet * returned, ckdb::Key * parentKey)
 {
 	ELEKTRA_LOG_DEBUG ("ruby plugin get");
-/* TODO
- * how should we proceed here?
- * shall we get these values from the according ruby plugin ???
- * or just add static values from this 'static' plugin ???
- */
+	/* TODO
+	 * how should we proceed here?
+	 * shall we get these values from the according ruby plugin ???
+	 * or just add static values from this 'static' plugin ???
+	 */
 
 #define _MODULE_CONFIG_PATH "system/elektra/modules/" RUBY_PLUGIN_NAME_STR
 	if (!strcmp (keyName (parentKey), _MODULE_CONFIG_PATH))

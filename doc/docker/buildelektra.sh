@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -o errexit
 set -o pipefail
@@ -15,7 +15,7 @@ Then builds and installs Elektra.
   -t=DIR         download Elektra into DIR (relative to current working directory).
                  If DIR already exists, use sources from DIR.
                  Default DIR is './libelektra-TAG'.
-  -j=JOBS        Number of sumulateneos jobs/recipes executed by make (like make -j JOBS).
+  -j=JOBS        Number of simultaneous jobs/recipes executed by make (like make -j JOBS).
   -c=VERSION     Use clang. Set the version to use (either 5.0 or 3.8 in this container).
   -D=PARAMS      Pass additional parameters to cmake. Usage: -D="-DBINDINGS=cpp;glib".
   -h             display this help and exit.

@@ -1,16 +1,35 @@
-module Elektra.Key (Key (..), Namespace (..), withKey,
-    keyNew, keyNewWithValue, keyDup, keyCopy, keyClear, keyIncRef, keyDecRef, keyGetRef,
-    keyName, keyGetNameSize, keyUnescapedName, keyGetUnescapedNameSize, keySetName, keyGetFullNameSize, keyGetFullName,
-    keyAddName,  keyBaseName, keyGetBaseName, keyGetBaseNameSize, keyAddBaseName, keySetBaseName, keyGetNamespace,
-    keyString, keyGetValueSize, keySetString, keySet,
-    keyRewindMeta, keyNextMeta, keyCurrentMeta, keyCopyMeta, keyCopyAllMeta, keyGetMeta, keySetMeta, keyListMeta,
-    keyCmp, keyNeedSync, keyIsBelow, keyIsDirectBelow, keyRel, keyIsInactive, keyIsBinary, keyIsString, keyPtrNull, ifKey) where
+--
+-- @file
+--
+-- @brief Key Haskell bindings
+--
+-- @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+-- 
+module Elektra.Key (
+  Key (..), Namespace (..), ElektraKeyVarargs (KeyMetaName, KeyBinary, KeyComment, KeyOwner),
+  keyNew, keyNewWithValue, keyNewWithFlagsAndValue,
+  keyDup, keyCopy, keyClear,
+  keyIncRef, keyDecRef, keyGetRef,
+  keyName, keyGetNameSize, keySetName, keyAddName, 
+  keyUnescapedName, keyGetUnescapedNameSize,
+  keyGetFullNameSize, keyGetFullName,
+  keyBaseName, keyGetBaseName, keyGetBaseNameSize, keyAddBaseName, keySetBaseName, keyDeleteBaseName,
+  keyGetNamespace,
+  keyString, keyGetValueSize, keySetString, keySet,
+  keyRewindMeta, keyNextMeta, keyCurrentMeta,
+  keyCopyMeta, keyCopyAllMeta, keyGetMeta, keySetMeta, keyListMeta,
+  keyCmp, keyNeedSync, 
+  keyIsBelow, keyIsDirectBelow, 
+  keyRel, keyIsInactive, keyIsBinary, keyIsString, keyPtrNull, 
+  ifKey, withKey
+) where
 
 #include <kdb.h>
 import Foreign.Marshal.Alloc (allocaBytes)
 import Foreign.Ptr (castPtr, nullPtr)
 import Foreign.ForeignPtr (withForeignPtr)
 import System.IO.Unsafe (unsafePerformIO)
+import Data.Maybe (isJust, fromJust)
 import Control.Monad (liftM)
 
 {#context lib="libelektra" #}
@@ -27,6 +46,13 @@ import Control.Monad (liftM)
 {#enum KEY_NS_NONE as Namespace { underscoreToCase } deriving (Show, Eq) #}
 {#enum KEY_NAME as ElektraKeyVarargs { underscoreToCase } deriving (Show, Eq) #}
 
+data KeyNew = KeyNew { knKeyName :: Maybe String
+                     , knKeyValue :: Maybe String
+                     , knMeta :: [(String, String)]
+                     , knKeySize :: Maybe Int
+                     , knFlags :: [ElektraKeyVarargs]
+                     } deriving (Show)
+
 -- ***
 -- KEY CREATION / DELETION / COPPY METHODS
 -- ***
@@ -38,22 +64,31 @@ keyPtrNull (Key ptr) = withForeignPtr ptr (return . (== nullPtr))
 -- so it gets deleted properly when haskell calls the finalizer
 keyNew :: String -> IO Key
 keyNew name = do
-    key <- keyNewRaw name KeyEnd
-    keyIncRef key
-    return key
+  key <- keyNewRaw name KeyEnd
+  keyIncRef key
+  return key
 keyNewWithValue :: String -> String -> IO Key
 keyNewWithValue name value = do
-    key <- keyNewRawWithValue name KeyValue value KeyEnd
-    keyIncRef key
-    return key
+  key <- keyNewRawWithValue name KeyValue value KeyEnd
+  keyIncRef key
+  return key
+keyNewWithFlagsAndValue :: String -> ElektraKeyVarargs -> String -> IO Key
+keyNewWithFlagsAndValue name flags value = do
+  key <- keyNewRawWithFlagsAndValue name KeyFlags flags KeyValue value KeyEnd
+  keyIncRef key
+  return key
 {#fun unsafe variadic keyNew[keyswitch_t] as keyNewRaw {`String', `ElektraKeyVarargs'} -> `Key' #}
 {#fun unsafe variadic keyNew[keyswitch_t, const char *, keyswitch_t]
-    as keyNewRawWithValue {`String', `ElektraKeyVarargs', `String', `ElektraKeyVarargs'} -> `Key' #}
+  as keyNewRawWithValue {`String', `ElektraKeyVarargs', `String', `ElektraKeyVarargs'} -> `Key' #}
+{#fun unsafe variadic keyNew[keyswitch_t, keyswitch_t, keyswitch_t, const char *, keyswitch_t]
+  as keyNewRawWithFlagsAndValue 
+    {`String', `ElektraKeyVarargs', `ElektraKeyVarargs', `ElektraKeyVarargs', `String', `ElektraKeyVarargs'} 
+    -> `Key' #}
 keyDup :: Key -> IO Key
 keyDup key = do
-    dup <- keyDupRaw key
-    keyIncRef dup
-    return dup
+  dup <- keyDupRaw key
+  keyIncRef dup
+  return dup
 {#fun unsafe keyDup as keyDupRaw {`Key'} -> `Key' #}
 {#fun unsafe keyCopy {`Key', `Key'} -> `Int' #}
 {#fun unsafe keyClear {`Key'} -> `Int' #}
@@ -70,19 +105,19 @@ keyGetName = keyName
 {#fun unsafe keyGetNameSize {`Key'} -> `Int' #}
 keyUnescapedName :: Key -> IO String
 keyUnescapedName key = do
-    size <- keyGetUnescapedNameSize key
-    withKey key $ (\cKey -> do
-        result <- {#call unsafe keyUnescapedName as keyUnescapedNameRaw #} cKey
-        C2HSImp.peekCStringLen (castPtr result, size))
+  size <- keyGetUnescapedNameSize key
+  withKey key $ (\cKey -> do
+    result <- {#call unsafe keyUnescapedName as keyUnescapedNameRaw #} cKey
+    C2HSImp.peekCStringLen (castPtr result, size))
 {#fun unsafe keyGetUnescapedNameSize {`Key'} -> `Int' #}
 {#fun unsafe keySetName {`Key', `String'} -> `Int' #}
 keyGetFullName :: (Key) -> IO String
 keyGetFullName key = do
-    size <- keyGetFullNameSize key
-    withKey key $ \cKey -> 
-        allocaBytes size (\result -> do
-            {#call unsafe keyGetFullName as keyGetFullNameRaw #} cKey result size
-            C2HSImp.peekCString result)
+  size <- keyGetFullNameSize key
+  withKey key $ \cKey -> 
+    allocaBytes size (\result -> do
+      {#call unsafe keyGetFullName as keyGetFullNameRaw #} cKey result size
+      C2HSImp.peekCString result)
 {#fun unsafe keyGetFullNameSize {`Key'} -> `Int' #}
 {#fun unsafe keyBaseName {`Key'} -> `String' #}
 keyGetBaseName :: Key -> IO String
@@ -90,7 +125,16 @@ keyGetBaseName = keyBaseName
 {#fun unsafe keyGetBaseNameSize {`Key'} -> `Int' #}
 {#fun unsafe keyAddBaseName {`Key', `String'} -> `Int' #}
 {#fun unsafe keyAddName {`Key', `String'} -> `Int' #}
-{#fun unsafe keySetBaseName {`Key', `String'} -> `Int' #}
+keySetBaseName :: Key -> String -> IO Int
+keySetBaseName key baseName = keySetBaseNameRaw key (Just baseName)
+keyDeleteBaseName :: Key -> IO Int
+keyDeleteBaseName key = keySetBaseNameRaw key Nothing
+keySetBaseNameRaw :: Key -> Maybe String -> IO Int
+keySetBaseNameRaw key baseName = do
+  withKey key $ \cKey -> if (isJust baseName)
+    then C2HSImp.withCString (fromJust baseName) $ \cValue -> call cKey cValue
+    else call cKey nullPtr
+  where call cKey cValue = {#call unsafe keySetBaseName as keySetBaseNameRaw' #} cKey cValue
 {#fun unsafe keyGetNamespace {`Key'} -> `Namespace' #}
 
 -- ***
@@ -118,11 +162,11 @@ keySet key = keySetString key . show
 {#fun unsafe keySetMeta {`Key', `String', `String'} -> `Int' #}
 keyListMeta :: Key -> IO [Key]
 keyListMeta key = keyRewindMeta key >> listMeta []
-    where
-        listMeta res = do
-            cur <- keyNextMeta key
-            isNull <- keyPtrNull cur
-            if isNull then return res else keyIncRef cur >> liftM (cur :) (listMeta res)
+  where
+    listMeta res = do
+      cur <- keyNextMeta key
+      isNull <- keyPtrNull cur
+      if isNull then return res else keyIncRef cur >> liftM (cur :) (listMeta res)
 
 -- ***
 -- KEY TESTING METHODS
@@ -143,14 +187,14 @@ keyListMeta key = keyRewindMeta key >> listMeta []
 -- ***
 
 instance Show Key where
-    show key = unsafePerformIO $ do
-        name <- keyName key
-        value <- keyString key
-        ref <- keyGetRef key
-        return $ name ++ " " ++ value ++ " " ++ (show ref)
+  show key = unsafePerformIO $ do
+    name <- keyName key
+    value <- keyString key
+    ref <- keyGetRef key
+    return $ name ++ " " ++ value ++ " " ++ (show ref)
 
 instance Eq Key where
-    key1 == key2 = unsafePerformIO $ fmap (== 0) $ keyCmp key1 key2
+  key1 == key2 = unsafePerformIO $ fmap (== 0) $ keyCmp key1 key2
 
 -- ***
 -- ADDITIONAL HELPERS USEFUL IN HASKELL
@@ -158,5 +202,5 @@ instance Eq Key where
 
 ifKey :: IO Key -> (Key -> IO a) -> IO a -> IO a
 ifKey k t f = do
-    null <- k >>= keyPtrNull
-    if null then f else k >>= t
+  null <- k >>= keyPtrNull
+  if null then f else k >>= t

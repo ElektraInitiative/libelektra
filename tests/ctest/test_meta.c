@@ -339,12 +339,6 @@ static void checkTopOrder3 (Key ** array)
 	succeed_if_top (2, "/c");
 	succeed_if_top (3, "/a");
 }
-uint64_t rdtsc (void)
-{
-	unsigned int lo, hi;
-	__asm__ __volatile__("rdtsc" : "=a"(lo), "=d"(hi));
-	return ((uint64_t)hi << 32) | lo;
-}
 static void test_top (void)
 {
 	KeySet * test0 = ksNew (10, keyNew ("/a", KEY_VALUE, "whatever", KEY_END), KS_END);
@@ -459,8 +453,9 @@ static void test_top (void)
 
 
 	KeySet * orderTest3 = ksNew (
-		10, keyNew ("/a", KEY_VALUE, "b", KEY_META, "dep", "#1", KEY_META, "dep/#0", "/a", KEY_META, "dep/#1", "/b", KEY_META,
-			    "order", "#2", KEY_END),
+		10,
+		keyNew ("/a", KEY_VALUE, "b", KEY_META, "dep", "#1", KEY_META, "dep/#0", "/a", KEY_META, "dep/#1", "/b", KEY_META, "order",
+			"#2", KEY_END),
 		keyNew ("/b", KEY_VALUE, "b", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/b", KEY_META, "order", "#0", KEY_END),
 		keyNew ("/c", KEY_VALUE, "d", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/d", KEY_META, "order", "#1", KEY_END),
 		keyNew ("/d", KEY_VALUE, "d", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/d", KEY_META, "order", "#5", KEY_END), KS_END);

@@ -14,10 +14,11 @@ function (add_plugin_shell_test PLUGIN)
 	endif ()
 endfunction ()
 
-# Only add test below if INI plugin is available
-list (FIND REMOVED_PLUGINS mini PLUGIN_INDEX_INI)
+# Only add tests below if INI plugin is available
+list (FIND REMOVED_PLUGINS ini PLUGIN_INDEX_INI)
 if (${PLUGIN_INDEX_INI} EQUAL -1)
 	add_s_test (msr_syntax "${CMAKE_SOURCE_DIR}/tests/shell/shell_recorder/tutorial_wrapper/SyntaxCheck.md")
+	add_s_test (ini_crash_test "${CMAKE_SOURCE_DIR}/src/plugins/ini/crash_test/crash_test.md")
 endif (${PLUGIN_INDEX_INI} EQUAL -1)
 
 # Only add test below if Spec plugin is available

@@ -21,8 +21,8 @@ Following shell expansions are used in this document:
 == Testing ==
 
 - fuzz checker
-- fix memleaks
-- run on filesystem to small (buildserver!)
+- memleaks
+- ASAN
 
 
 
@@ -125,7 +125,7 @@ commands below work for copy&paste:
 
 == Tag the version ==
 
- git tag --sign -f $VERSION -m "Release $VERSION"
+ git tag --sign $VERSION -m "Release $VERSION"
 
 
 == Prepare Source Package ==
@@ -237,6 +237,8 @@ Symlink current to latest version and add everything:
 
  cd ~elektra/$VERSION/debian/$DVERSION && reprepro --ignore=wrongdistribution include wheezy elektra_${DVERSION}_`dpkg-architecture -qDEB_BUILD_ARCH`.changes && update-reprepro
 
+ TODO: automate
+
 == Commit source package ==
 
 Commit elektra-ftp:
@@ -255,6 +257,14 @@ Push elektra-ftp:
 
 Push elektra-doc to github:
  cd ~elektra-doc && git push && git push github
+
+
+== prep for next release ==
+
+cd ~e && cp doc/todo/NEWS.md doc/news/_preparation_next_release.md
+
+increment CMPVERSION in scripts/run_icheck
+and cleanup tests/icheck.suppression
 
 
 == Announce ==

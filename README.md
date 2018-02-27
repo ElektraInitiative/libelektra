@@ -3,7 +3,7 @@
 _Elektra serves as a universal and secure framework to access configuration
 settings in a global, hierarchical key database._
 
-<img src="https://cdn.rawgit.com/ElektraInitiative/libelektra/master/doc/images/circle.svg" alt="Elektra" width="150" />
+<img src="https://cdn.rawgit.com/ElektraInitiative/libelektra/master/doc/images/logo/logo_color.svg" alt="Elektra" width="150" />
 
 Elektra provides a mature, consistent and easily comprehensible API.
 Its modularity effectively avoids code duplication across applications
@@ -18,6 +18,12 @@ applications' configurations, leveraging easy application integration.
 - [API docu](https://doc.libelektra.org/api/latest/html/)
 
 ## Overview
+
+Elektra provides benefits for:
+
+1. *Application Developers* by making it easier to access configuration settings in a modular, reliable, and extensible way.
+2. *System Administrators* by making it possible to access configuration settings in the same way applications access them.
+3. *Everyone* by making application integration and context-aware configuration a reality.
 
 Elektra consists of three parts:
 

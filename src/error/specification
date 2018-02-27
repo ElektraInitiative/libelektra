@@ -1181,3 +1181,17 @@ severity:error
 ingroup:plugin
 module:directoryvalue
 macro:DIRECTORY_VALUE_ARRAY
+
+number:190
+description:Failed to initialize the pluginprocess library for a plugin
+severity:error
+ingroup:plugin
+module:pluginprocess
+macro:PLUGIN_PROCESS_INITIALIZATION
+
+number:191
+description:Failed to communicate with the child process
+severity:error
+ingroup:plugin
+module:pluginprocess
+macro:PLUGIN_PROCESS_COMMAND

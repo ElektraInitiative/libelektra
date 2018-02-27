@@ -49,7 +49,7 @@ installation of self-compiled Elektra (such as how to uninstall it).
 
 To build documentation you need doxygen (we recommend 1.8.8+), graphviz and [ronn](https://github.com/rtomayko/ronn/blob/master/INSTALLING#files):
 
-	apt-get install doxygen graphviz ronn
+	apt-get install doxygen graphviz ruby-ronn
 
 Or on RPM based systems:
 
@@ -119,8 +119,8 @@ https://build.libelektra.org/
 |      gcc          | (Debian 4.4.5-8) 4.3        |      amd64        |
 |      gcc          | 4.6                         |      armhf        |
 |      mingw        | 4.6                         |      i386         |
-|      clang        | version 3.5.0-1~exp1        |x86_64-pc-linux-gnu|
-|      clang        | 3.9.0                       |x86_64-pc-linux-gnu|
+|      clang        | 3.8                         |x86_64-pc-linux-gnu|
+|      clang        | 5.0                         |x86_64-pc-linux-gnu|
 |      clang        | 8.1.0                       |      macOS        |
 |      icc          | 14.0.2 20140120             |x86_64-pc-linux-gnu|
 |      gcc/g++      |                             | openbsd 4.9.3 (*) |
@@ -305,13 +305,11 @@ To specify specific tools you can use, e.g.:
 
 #### Bindings
 
-Bindings are used in the same way as `TOOLS`.
-For example, to include all non-experimental bindings you can use:
+Bindings are used in a like as `PLUGINS`.
+For example, to build all maintainted bindings and exclude experimental bindings
+you can use:
 
-    -DBINDINGS=ALL
-
-> Note that the behavior is different to PLUGINS
-> which includes all PLUGINS if ALL is used.
+    -DBINDINGS=MAINTAINED;-EXPERIMENTAL
 
 Note that the same languages are sometimes available over GI and SWIG.
 In this case, the SWIG bindings are preferred.
@@ -321,20 +319,22 @@ The SWIG executable may be specified with:
 
 If this option is not used, cmake will find the first occurrence of
 `swig` in your environment's path.
-Even with `ALL` GI bindings (deprecated) and gsettings (experimental) are not included.
-To include them, use:
+To build GI bindings (deprecated) and gsettings (experimental) use:
 
-    -DBINDINGS="ALL;GI;gsettings"
+    -DBINDINGS="GI;gsettings"
 
 Some bindings provide different APIs (and not a different language), e.g:
 
 - `gsettings`
 - `INTERCEPT` with `intercept_fs` and `intercept_env`
+- `IO` with `io_uv`
 
 To not add such APIs, but only `swig` bindings and `cpp`, you can use:
 
     -DBINDINGS="SWIG;cpp"
 
+For a list of available bindings see
+[binding's README.md](/src/bindings/README.md).
 
 #### CMAKE_BUILD_TYPE
 

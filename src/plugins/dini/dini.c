@@ -18,9 +18,9 @@ int elektraDiniOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 
 	dini->dumpConfig = ksDup (elektraPluginGetConfig (handle));
 	dini->iniConfig = ksDup (elektraPluginGetConfig (handle));
-	dini->dump = elektraInvokeOpen ("dump", dini->dumpConfig);
-	dini->ini = elektraInvokeOpen ("ini", dini->iniConfig);
-	dini->bin = elektraInvokeOpen ("binary", dini->iniConfig);
+	dini->dump = elektraInvokeOpen ("dump", dini->dumpConfig, 0);
+	dini->ini = elektraInvokeOpen ("ini", dini->iniConfig, 0);
+	dini->bin = elektraInvokeOpen ("binary", dini->iniConfig, 0);
 
 	dini->dumpErrors = keyNew ("", KEY_END);
 
@@ -33,9 +33,9 @@ int elektraDiniClose (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 {
 	Dini * dini = elektraPluginGetData (handle);
 
-	elektraInvokeClose (dini->bin);
-	elektraInvokeClose (dini->ini);
-	elektraInvokeClose (dini->dump);
+	elektraInvokeClose (dini->bin, 0);
+	elektraInvokeClose (dini->ini, 0);
+	elektraInvokeClose (dini->dump, 0);
 
 	keyDel (dini->dumpErrors);
 	ksDel (dini->dumpConfig);

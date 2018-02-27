@@ -9,6 +9,9 @@ and unusable. Thus there is an urge for this decision.
 
 ## Constraints
 
+- this decision is irrelevant for plugins and bindings that are not
+  written in C/C++. In any case, however, logging must be disabled
+  by default.
 - should completely compile away with ELEKTRA_LOGGING=OFF
 - should support minimalistic, compile-time filtering
   (per modules and verbosity level?) and some sinks (stderr, syslog
@@ -26,6 +29,9 @@ and unusable. Thus there is an urge for this decision.
 
 ## Considered Alternatives
 
+- log similar to the warnings/error system work, discarded because
+  of the run-time overhead and no use case why end users should see
+  log statements.
 - C++ logging library (boost, apache,..), discarded because C++
   should not be in core
 - libraries needed static initializing: problematic, logging should

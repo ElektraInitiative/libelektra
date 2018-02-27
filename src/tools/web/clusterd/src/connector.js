@@ -44,4 +44,46 @@ const rm = (host, path) =>
       return { status: res.status }
     })
 
-export default { version, get, set, rm }
+const mv = (host, path, destination) =>
+  fetch(`${host}/kdbMv/${encodePath(path)}`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'text/plain',
+      },
+      body: destination,
+    }
+  )
+    .then(res => {
+      return { status: res.status }
+    })
+
+const setmeta = (host, path, key, value) =>
+  fetch(`${host}/kdbMeta/${encodePath(path)}`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ key, value }),
+    }
+  )
+    .then(res => {
+      return { status: res.status }
+    })
+
+const rmmeta = (host, path, key) =>
+  fetch(`${host}/kdbMeta/${encodePath(path)}`,
+    {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ key }),
+    }
+  )
+    .then(res => {
+      return { status: res.status }
+    })
+
+export default { version, get, set, rm, mv, setmeta, rmmeta }

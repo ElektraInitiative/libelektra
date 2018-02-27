@@ -44,8 +44,11 @@ The kdb shell offers a number of commands to interact with the key database.
 
 ## EXAMPLES
 
-To execute commands from a textfile, you can use:
+To execute commands from a textfile, you can use:<br>
 `cat commands.txt | kdb shell`
+
+To have readline functionality (line editing, history, ...), you can use:<br>
+`rlwrap kdb shell`
 
 ## SEE ALSO
 

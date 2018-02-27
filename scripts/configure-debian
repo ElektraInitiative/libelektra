@@ -12,7 +12,6 @@ cd $BUILD
 cmake	-DSWIG_EXECUTABLE=/usr/bin/swig3.0 \
 	-DPLUGINS="ALL" \
 	-DTOOLS="ALL" \
-	-DBINDINGS="ALL" \
 	-DENABLE_DEBUG="OFF" \
 	-DENABLE_LOGGER="OFF" \
 	$*

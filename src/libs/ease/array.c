@@ -21,7 +21,6 @@
 #include <string.h>
 
 /**
- * @internal
  * @brief validate array syntax
  *
  * @param key an element of an array

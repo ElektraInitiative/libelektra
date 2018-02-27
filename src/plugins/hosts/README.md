@@ -1,4 +1,4 @@
-- infos = Information about HOSTS plugin is in keys below
+- infos = Information about hosts plugin is in keys below
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
 - infos/provides = storage/hosts
@@ -18,34 +18,30 @@ with hostnames, one line per IP address. The format is described in `hosts(5)`.
 
 ### Hostnames
 
-Canonical hostnames are stored as key names with the IP address as key
-value.
+Canonical hostnames are stored as key names with their IP address
+as value.
 
 ### Aliases
 
 Aliases are stored as sub keys with a read only duplicate of the
-associated ip address as value.
+associated IP address as value.
 
 ### Comments
 
-Comments are stored according to the comment metadata specification (see [/doc/METADATA.ini](/doc/METADATA.ini) for more information)
+Comments are stored according to the comment metadata specification
+(see [/doc/METADATA.ini](/doc/METADATA.ini) for more information).
 
-### Multi-Line Comments
+### Ordering
 
-Since line breaks are preserved, you can identify multi line comments
-by their trailing line break.
-
-
-## Restrictions
-
-The ordering of the hosts is stored in metakeys of type "order".
-The value is an ascending number. Ordering of aliases is NOT preserved.
+The ordering of the hosts is stored in metakeys of type `order`.
+The value is an ascending number. Ordering of aliases is
+*not* preserved.
 
 ## Examples
 
 Mount the plugin:
 
-    $ kdb mount --with-recommends /etc/hosts system/hosts hosts
+    $ sudo kdb mount --with-recommends /etc/hosts system/hosts hosts
 
 Print out all known hosts and their aliases:
 
@@ -59,9 +55,11 @@ Check if a comment is belonging to host "localhost":
 
     $ kdb lsmeta system/hosts/ipv4/localhost
 
-Try to change the host "localhost", should fail because it is not an ipv4 address:
+Try to change the host "localhost", should fail because it is not an
+IPv4 address:
 
-    $ kdb set system/hosts/ipv4/localhost ::1
+    $ sudo kdb set system/hosts/ipv4/localhost ::1
+
 
 ```sh
 # Backup-and-Restore:/examples/hosts

@@ -70,7 +70,7 @@
  *   criteria.
  *
  * Use following include to have the functions that are not
- * implement by you available:
+ * implemented by you available:
  *
  * @snippet doc.c plugin include
  *

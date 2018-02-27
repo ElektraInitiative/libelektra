@@ -19,6 +19,18 @@ calculate default values
 	make a key only optional on some condition
 	otherwise fail if key is not present
 
+## Validation
+
+use getaddrinfo_a to make network plugin faster on many lookups
+
+constraint solver
+
+white/black lists (generalization of enum?)
+
+improve error messages for validation:
+	heuristics where last error has been (sync flag)
+	line number information
+
 ### Function plugin ###
 
 allow to use functional programming in Elektra
@@ -68,8 +80,6 @@ inherit/copy metadata/bind mounts:
 werror plugin:
 	turn specified warnings into errors (for both get+set paths)
 
-logging plugin:
-	improve error messages for validation
 
 ## Rework plugins
 
@@ -323,13 +333,7 @@ filter: key
 
 advanced:
 	hash sum
-	signing
-	encrypting
 	binding
-
-base64 encoding (and reverse)
-
-libgcryt (LGPL, GPLv3?) used by cppcms
 
 infer links between configuration (user/a=@user/b)
 	and copy values

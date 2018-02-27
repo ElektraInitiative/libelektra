@@ -35,101 +35,14 @@ set (ADDED_DIRECTORIES "" CACHE STRING ${PLUGINS_DOC} FORCE)
 # set BINDINGS cache variable
 #
 
-remember_for_removal(BINDINGS TO_REMOVE_BINDINGS)
-
-set (BINDINGS_LIST_DEFAULT cpp)
-
-if (BINDINGS MATCHES "NODEP")
-	set (BINDINGS_FORCE FORCE)
-endif()
-
-if (BINDINGS MATCHES "DEFAULT")
-	set (BINDINGS_FORCE FORCE)
-endif()
-
-list (FIND BINDINGS "SWIG" FINDEX)
-if (BINDINGS MATCHES "ALL" OR FINDEX GREATER -1)
-	set (BINDINGS_LIST_SWIG
-		swig_lua
-		swig_python2
-		swig_python
-		swig_ruby
-		)
-	set (BINDINGS_FORCE FORCE)
-endif ()
-# rename swig_python3 to swig_python - TODO remove sometime in the future
-list (FIND BINDINGS "swig_python3" FINDEX)
-if (FINDEX GREATER -1)
-	message (STATUS "swig_python3 has been renamed to swig_python")
-	list (REMOVE_ITEM BINDINGS swig_python3)
-	list (APPEND BINDINGS swig_python)
-endif ()
-
-list (FIND BINDINGS "GI" FINDEX)
-if (FINDEX GREATER -1)
-	set (BINDINGS_LIST_GI
-		glib
-		gi_lua
-		gi_python
-		)
-	set (BINDINGS_FORCE FORCE)
-endif ()
-
-list (FIND BINDINGS "gsettings" FINDEX)
-if (FINDEX GREATER -1)
-	set (BINDINGS_LIST_GSETTINGS
-		glib
-		gsettings
-		)
-	set (BINDINGS_FORCE FORCE)
-endif ()
-
-#compatibility for 0.8.18
-list (FIND BINDINGS "intercept" FINDEX)
-if (FINDEX GREATER -1)
-	set(BINDINGS_LIST_INTERCEPT
-		intercept_fs
-		intercept_env
-		)
-	set (BINDINGS_FORCE FORCE)
-endif()
-
-list (FIND BINDINGS "INTERCEPT" FINDEX)
-if (FINDEX GREATER -1 OR BINDINGS MATCHES "ALL")
-	set(BINDINGS_LIST_INTERCEPT
-		intercept_fs
-		intercept_env
-		)
-	set (BINDINGS_FORCE FORCE)
-endif()
-
-if (BINDINGS MATCHES "ALL")
-	set(BINDINGS_LIST_ALL
-		jna
-		)
-	set (BINDINGS_FORCE FORCE)
-	list (REMOVE_ITEM BINDINGS ALL)
-endif()
-
 set (BINDINGS_DOC "Which bindings should be added? ALL for all available, DEFAULT for minimal set, see doc/COMPILE.md.")
 
+# TODO include swig_ruby when issue #1770 is resolved (also in scripts/configure-*)
+set(BINDINGS "MAINTAINED;-EXPERIMENTAL;-DEPRECATED;-swig_ruby" CACHE STRING ${BINDINGS_DOC})
 
-set (BINDINGS
-	${BINDINGS_LIST_DEFAULT}
-	${BINDINGS_LIST_SWIG}
-	${BINDINGS_LIST_GI}
-	${BINDINGS_LIST_GSETTINGS}
-	${BINDINGS_LIST_INTERCEPT}
-	${BINDINGS_LIST_ALL}
-	${BINDINGS}
-	CACHE STRING ${BINDINGS_DOC}
-	${BINDINGS_FORCE}
-	)
-
-removal(BINDINGS TO_REMOVE_BINDINGS)
-set(BINDINGS ${BINDINGS} CACHE STRING ${BINDINGS_DOC} FORCE)
-
-
+set (INFO_BINDINGS_DOC "only for informational purposes. Modify BINDINGS to change the list.")
+set (ADDED_BINDINGS_DOC "List of bindings already added, ${INFO_BINDINGS_DOC}")
+set (ADDED_BINDINGS "" CACHE STRING ${BINDINGS_DOC} FORCE)
 
 
 
@@ -177,10 +90,6 @@ set (TOOLS
 
 removal(TOOLS TO_REMOVE_TOOLS)
 set(TOOLS ${TOOLS} CACHE STRING ${TOOLS_DOC} FORCE)
-
-
-
-
 
 
 
@@ -301,7 +210,7 @@ endif ()
 
 option (INSTALL_BUILD_TOOLS "Install build tools for cross-compilation" OFF)
 
-option (ENABLE_OPTIMIZATIONS "Turn on optimizations that trade memory for speed" OFF)
+option (ENABLE_OPTIMIZATIONS "Turn on optimizations that trade memory for speed" ON)
 
 
 #
@@ -481,6 +390,8 @@ MARK_AS_ADVANCED(FORCE
 	BOOST_THREAD_LIBRARY
 
 	ADDED_DIRECTORIES ADDED_PLUGINS REMOVED_PLUGINS
+
+	ADDED_BINDINGS
 
 	LIBGCRYPTCONFIG_EXECUTABLE
 

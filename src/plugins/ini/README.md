@@ -140,27 +140,6 @@ kdb rm -r user/examples/ini
 sudo kdb umount user/examples/ini
 ```
 
-## Directory Values
-
-By default the INI plugin does not store values in a directory key, if you create a leaf node below the directory key first.
-
-```sh
-sudo kdb mount config.ini /examples/ini ini
-
-kdb set /examples/ini/aimee/man 'Deathly'
-kdb file /examples/ini | xargs cat
-#> [aimee]
-#> man = Deathly
-kdb set /examples/ini/aimee 'Save Me'
-kdb get /examples/ini/aimee/man
-#> Deathly
-kdb get /examples/ini/aimee # 😭
-#>
-
-kdb rm -r /examples/ini
-sudo kdb umount /examples/ini
-```
-
 ## Binary Data
 
 By default the INI plugin does not support binary data. You can use the [Base64 plugin](../base64/) to remove this limitation.
@@ -192,12 +171,50 @@ kdb rm -r user/examples/ini
 sudo kdb umount user/examples/ini
 ```
 
+## Metadata
+
+The INI plugin also supports metadata.
+
+```sh
+sudo kdb mount config.ini user/examples/ini ini
+
+# Add a new key and some metadata
+kdb set user/examples/ini/brand new
+kdb setmeta user/examples/ini/brand description "The Devil And God Are Raging Inside Me"
+kdb setmeta user/examples/ini/brand rationale "Because I Love It"
+
+# The plugin stores metadata as comments inside the INI file
+kdb file /examples/ini | xargs cat
+#> #@META description = The Devil And God Are Raging Inside Me
+#> #@META rationale = Because I Love It
+#> brand = new
+
+# Retrieve metadata
+kdb lsmeta user/examples/ini/brand | grep --invert-match 'internal'
+# rationale
+# description
+
+kdb getmeta user/examples/ini/brand description
+#> The Devil And God Are Raging Inside Me
+kdb getmeta user/examples/ini/brand rationale
+#> Because I Love It
+
+# The plugin ignores some metadata such as `comment`!
+kdb setmeta user/examples/ini/brand comment "Where Art Thou?"
+kdb getmeta user/examples/ini/brand comment
+# STDERR: Metakey not found
+# RET: 2
+
+kdb rm -r user/examples/ini
+sudo kdb umount user/examples/ini
+```
+
 ## Sections
 
 The ini plugin supports 3 different sectioning modes (via `section=`):
 
 - `NONE` sections wont be printed as `[Section]` but as part of the key name `section/key`
-- `NULL` only binary keys will be printed as `[Section]`
+- `NULL` only empty keys will be printed as `[Section]`
 - `ALWAYS` sections will be created automatically. This is the default setting:
 
 ```sh
@@ -280,3 +297,24 @@ kdb rm -r /examples/ini
 sudo kdb umount /examples/ini
 ```
 
+## Special Characters
+
+The INI plugin also supports values and keys containing delimiter characters (`=`) properly.
+
+```sh
+sudo kdb mount test.ini user/examples/ini ini
+
+printf '[section1]\n'    >  `kdb file user/examples/ini`
+printf 'hello = world\n' >> `kdb file user/examples/ini`
+
+kdb get user/examples/ini/section1/hello
+#> world
+
+kdb set user/examples/ini/section1/x=x 'a + b = b + a'
+kdb get user/examples/ini/section1/x=x
+#> a + b = b + a
+
+# Undo modifications
+kdb rm -r user/examples/ini
+sudo kdb umount user/examples/ini
+```

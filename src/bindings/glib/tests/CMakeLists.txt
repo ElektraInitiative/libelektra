@@ -1,5 +1,5 @@
 set (TEST_FILES $<TARGET_OBJECTS:cframework>)
-add_testheaders(TEST_FILES)
+add_testheaders (TEST_FILES)
 
 macro (do_glib_test file)
 	get_filename_component (name ${file} NAME_WE)

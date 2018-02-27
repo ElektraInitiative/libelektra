@@ -12,17 +12,16 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 
 import Menu from '../components/Menu.jsx'
-import { addInstance, addCluster, unaddCluster, returnToMain, createCluster } from '../actions'
+import { addInstance } from '../actions'
 
 const mapStateToProps = (state) => {
   return {
     loading: !state.idle,
-    addingCluster: state.container.addingCluster,
-    clusterInstances: state.container.clusterInstances,
+    status: state.container,
   }
 }
 
 const mapDispatchToProps = (dispatch) =>
-  bindActionCreators({ addInstance, addCluster, unaddCluster, returnToMain, createCluster }, dispatch)
+  bindActionCreators({ addInstance }, dispatch)
 
 export default connect(mapStateToProps, mapDispatchToProps)(Menu)
