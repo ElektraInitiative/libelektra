@@ -8,18 +8,15 @@
  */
 
 #include <kdb.h>
-#include <kdbio.h>    // I/O binding functions (elektraIo*)
-#include <kdbio_uv.h> // I/O binding constructor for uv (elektraIoUvNew)
-#include <kdbnotification.h>
+#include <kdbhelper.h>       // elektraFree
+#include <kdbio.h>	   // I/O binding functions (elektraIo*)
+#include <kdbio_uv.h>	// I/O binding constructor for uv (elektraIoUvNew)
+#include <kdbnotification.h> // notification functions
 
 #include <uv.h> // uv functions
 
-#include <signal.h>
-#include <stdio.h>
-#include <string.h>
-#include <unistd.h>
-
-#include <stdlib.h> // for exit()
+#include <signal.h> // signal()
+#include <stdio.h>  // printf() & co
 
 // from https://en.wikipedia.org/wiki/ANSI_escape_code#Colors
 #define ANSI_COLOR_RESET "\x1b[0m"
@@ -32,15 +29,15 @@ void setTerminalColor (Key * color)
 	const char * value = keyString (color);
 	printf ("Callback called. Changing color to %s\n", value);
 
-	if (strcmp (value, "red") == 0)
+	if (elektraStrCmp (value, "red") == 0)
 	{
 		printf (ANSI_COLOR_RED);
 	}
-	else if (strcmp (value, "green") == 0)
+	else if (elektraStrCmp (value, "green") == 0)
 	{
 		printf (ANSI_COLOR_GREEN);
 	}
-	else if (strcmp (value, "blue") == 0)
+	else if (elektraStrCmp (value, "blue") == 0)
 	{
 		printf (ANSI_COLOR_BLUE);
 	}
@@ -137,7 +134,6 @@ int main (void)
 
 	printf ("Send SIGINT (Ctl+C) to exit.\n\n");
 	uv_run (loop, UV_RUN_DEFAULT);
-
 
 	// Cleanup
 	resetTerminalColor ();

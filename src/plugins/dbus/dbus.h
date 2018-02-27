@@ -35,6 +35,8 @@ typedef struct
 
 int elektraDbusSendMessage (ElektraDbusPluginData * data, DBusBusType type, const char * keyName, const char * signalName);
 int elektraDbusReceiveMessage (DBusBusType type, DBusHandleMessageFunction filter_func);
+int elektraDbusSetupReceiveMessage (DBusConnection * connection, DBusHandleMessageFunction filter_func, void * data);
+int elektraDbusTeardownReceiveMessage (DBusConnection * connection, DBusHandleMessageFunction filter_func, void * data);
 
 void elektraDbusSetIoBinding (Plugin * handle, ElektraIoInterface * binding);
 

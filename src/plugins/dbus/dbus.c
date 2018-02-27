@@ -109,26 +109,34 @@ int elektraDbusSet (Plugin * handle, KeySet * returned, Key * parentKey)
 		}
 	}
 
+	Key * resolvedParentKey = parentKey;
+	// Resolve cascaded keys
+	if (!strncmp (keyName (parentKey), "/", 1))
+	{
+		resolvedParentKey = ksLookup (returned, parentKey, 0);
+	}
+	int announceSession = 0;
+	int announceSystem = 0;
+	if (resolvedParentKey != NULL)
+	{
+		announceSession = !strncmp (keyName (resolvedParentKey), "user", 4);
+		announceSystem = !strncmp (keyName (resolvedParentKey), "system", 6);
+	}
+
 	if (!strncmp (keyString (ksLookupByName (elektraPluginGetConfig (handle), "/announce", 0)), "once", 4))
 	{
-		if (!strncmp (keyName (parentKey), "user", 4))
-			elektraDbusSendMessage (pluginData, DBUS_BUS_SESSION, keyName (parentKey), "Commit");
-		if (!strncmp (keyName (parentKey), "system", 6))
-			elektraDbusSendMessage (pluginData, DBUS_BUS_SYSTEM, keyName (parentKey), "Commit");
+		if (announceSession) elektraDbusSendMessage (pluginData, DBUS_BUS_SESSION, keyName (resolvedParentKey), "Commit");
+		if (announceSystem) elektraDbusSendMessage (pluginData, DBUS_BUS_SYSTEM, keyName (resolvedParentKey), "Commit");
 	}
 	else
 	{
-		int announceAll = !strncmp (keyName (parentKey), "/", 1);
-		int announceSession = !strncmp (keyName (parentKey), "user", 4);
-		int announceSystem = !strncmp (keyName (parentKey), "system", 6);
-
-		if (announceSession || announceAll)
+		if (announceSession)
 		{
 			announceKeys (addedKeys, "KeyAdded", DBUS_BUS_SESSION, pluginData);
 			announceKeys (changedKeys, "KeyChanged", DBUS_BUS_SESSION, pluginData);
 			announceKeys (removedKeys, "KeyDeleted", DBUS_BUS_SESSION, pluginData);
 		}
-		if (announceSystem || announceAll)
+		if (announceSystem)
 		{
 			announceKeys (addedKeys, "KeyAdded", DBUS_BUS_SYSTEM, pluginData);
 			announceKeys (changedKeys, "KeyChanged", DBUS_BUS_SYSTEM, pluginData);

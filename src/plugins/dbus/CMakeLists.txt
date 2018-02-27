@@ -26,3 +26,26 @@ add_plugintest (dbus
 		${DBUS_INCLUDE_DIR}
 		${DBUS_ARCH_INCLUDE_DIR}
 	)
+
+if (ADDTESTING_PHASE)
+	set (example example_dbus)
+
+	SET (SRC_FILES
+		${CMAKE_CURRENT_SOURCE_DIR}/example_dbus.c
+		${CMAKE_CURRENT_SOURCE_DIR}/sendmessage.c
+		${CMAKE_CURRENT_SOURCE_DIR}/receivemessage.c
+	)
+	SET (HDR_FILES
+		${CMAKE_CURRENT_SOURCE_DIR}/dbus.h
+	)
+	add_headers (ELEKTRA_HEADERS)
+	set (SOURCES ${SRC_FILES} ${HDR_FILES} ${ELEKTRA_HEADERS})
+
+	add_executable (${example} ${SOURCES})
+	add_dependencies (${example} kdberrors_generated)
+
+	target_include_directories (${example} SYSTEM PUBLIC ${DBUS_INCLUDE_DIR} ${DBUS_ARCH_INCLUDE_DIR})
+
+	target_link_libraries (${example} ${DBUS_LIBRARIES})
+	target_link_elektra (${example} elektra-kdb elektra-io-adapter-dbus)
+endif ()
