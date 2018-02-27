@@ -118,18 +118,17 @@ int elektraDbusSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	}
 	else
 	{
-		if (!strncmp (keyName (parentKey), "/", 1))
-		{
-			// fix announcement for cascading parent keys
-			// TODO what is the expected behavior?
-		}
-		else if (!strncmp (keyName (parentKey), "user", 4))
+		int announceAll = !strncmp (keyName (parentKey), "/", 1);
+		int announceSession = !strncmp (keyName (parentKey), "user", 4);
+		int announceSystem = !strncmp (keyName (parentKey), "system", 6);
+
+		if (announceSession || announceAll)
 		{
 			announceKeys (addedKeys, "KeyAdded", DBUS_BUS_SESSION, pluginData);
 			announceKeys (changedKeys, "KeyChanged", DBUS_BUS_SESSION, pluginData);
 			announceKeys (removedKeys, "KeyDeleted", DBUS_BUS_SESSION, pluginData);
 		}
-		else if (!strncmp (keyName (parentKey), "system", 6))
+		if (announceSystem || announceAll)
 		{
 			announceKeys (addedKeys, "KeyAdded", DBUS_BUS_SYSTEM, pluginData);
 			announceKeys (changedKeys, "KeyChanged", DBUS_BUS_SYSTEM, pluginData);
