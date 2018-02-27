@@ -270,15 +270,8 @@ and cleanup tests/icheck.suppression
 == Announce ==
 
 Finish NEWS.md for new release (hashsum, add links where to download release, check them):
+ scripts/generate-hashsums ~elektra-ftp/releases/elektra-$VERSION.tar.gz
  editor doc/news/*$VERSION*.md
-
-Add entry for release at main page
- editor README.md
-
-Check spelling, links and line length
-
-Add text also to
- libelektra.org/releases
 
 Finally send out mail to list
 (Personal notice: see also NOTIFY)
