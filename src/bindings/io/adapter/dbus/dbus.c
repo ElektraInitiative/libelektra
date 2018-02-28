@@ -247,9 +247,8 @@ ElektraIoDbusAdapterHandle * elektraIoDbusAdapterAttach (DBusConnection * connec
 }
 
 // TODO rename to elektraIoDbusAdapterDetach when complete reversal is possible
-int elektraIoDbusAdapterCleanup (void * handle)
+int elektraIoDbusAdapterCleanup (ElektraIoDbusAdapterHandle * priv)
 {
-	_ElektraIoDbusAdapterHandle * priv = (_ElektraIoDbusAdapterHandle *)handle;
 	DBusConnection * connection = priv->connection;
 
 	// TODO currently not possible because dbus uses multiple watches for the same fd
