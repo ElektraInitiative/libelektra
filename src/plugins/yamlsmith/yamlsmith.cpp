@@ -32,20 +32,21 @@ extern "C" {
 int elektraYamlsmithGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 	auto parent = CppKey{ parentKey };
+	auto keys = CppKeySet{ returned };
 
 	if (parent.getName () == "system/elektra/modules/yamlsmith")
 	{
-		KeySet * contract = ksNew (
+		auto contract = CppKeySet (
 			30, keyNew ("system/elektra/modules/yamlsmith", KEY_VALUE, "yamlsmith plugin waits for your orders", KEY_END),
 			keyNew ("system/elektra/modules/yamlsmith/exports", KEY_END),
 			keyNew ("system/elektra/modules/yamlsmith/exports/get", KEY_FUNC, elektraYamlsmithGet, KEY_END),
 			keyNew ("system/elektra/modules/yamlsmith/exports/set", KEY_FUNC, elektraYamlsmithSet, KEY_END),
 #include ELEKTRA_README (yamlsmith)
 			keyNew ("system/elektra/modules/yamlsmith/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
-		ksAppend (returned, contract);
-		ksDel (contract);
+		keys.append (contract);
 
 		parent.release ();
+		keys.release ();
 
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
