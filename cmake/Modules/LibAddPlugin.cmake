@@ -46,7 +46,7 @@ function (add_plugintest testname)
 		restore_variable (${PLUGIN_NAME} ARG_COMPILE_DEFINITIONS)
 		restore_variable (${PLUGIN_NAME} ARG_INCLUDE_DIRECTORIES)
 		restore_variable (${PLUGIN_NAME} ARG_INCLUDE_SYSTEM_DIRECTORIES)
-		restore_variable (${PLUGIN_NAME} ARG_LINK_ELEKTRA)
+		restore_variable (${PLUGIN_NAME} ARG_LINK_ELEKTRA ALLOW_MATCH)
 		restore_variable (${PLUGIN_NAME} ARG_ADD_TEST)
 		restore_variable (${PLUGIN_NAME} ARG_INSTALL_TEST_DATA)
 
@@ -176,14 +176,26 @@ function (plugin_check_if_included PLUGIN_SHORT_NAME)
 endfunction ()
 
 function (restore_variable PLUGIN_NAME VARIABLE)
+	cmake_parse_arguments (ARG
+		"ALLOW_MATCH" # optional keywords
+		""        # one value keywords
+		"" # multi value keywords
+		${ARGN}
+	)
 	set (PROP_NAME "${PLUGIN_NAME}_${VARIABLE}")
 	get_property (VAR GLOBAL PROPERTY "${PROP_NAME}")
 	if (VAR)
 		if (DEFINED ${VARIABLE})
 			# both stored and given by user: do consistency check
 			#message (STATUS "consistency check, plugin ${PLUGIN_NAME} got ${VARIABLE} reset to ${VAR}")
-			if (NOT ${VARIABLE} STREQUAL "${VAR}")
-				message (FATAL_ERROR "Internally inconsistency, plugin ${PLUGIN_NAME} got different values for variable ${VARIABLE}: '${${VARIABLE}}' != '${VAR}'")
+			if (${ARG_ALLOW_MATCH})
+				if (NOT ${VARIABLE} MATCHES "${VAR}")
+					message (FATAL_ERROR "Internally inconsistency, plugin ${PLUGIN_NAME} got different values for variable ${VARIABLE}: '${${VARIABLE}}' needs to include '${VAR}'")
+				endif ()
+			else ()
+				if (NOT ${VARIABLE} STREQUAL "${VAR}")
+					message (FATAL_ERROR "Internally inconsistency, plugin ${PLUGIN_NAME} got different values for variable ${VARIABLE}: '${${VARIABLE}}' != '${VAR}'")
+				endif ()
 			endif ()
 		else ()
 			# stored, but not given by user, use what was stored
