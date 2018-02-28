@@ -29,7 +29,7 @@ int elektraYamlsmithGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 {
 	auto parent = CppKey{ parentKey };
 
-	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/yamlsmith"))
+	if (parent.getName () == "system/elektra/modules/yamlsmith")
 	{
 		KeySet * contract = ksNew (
 			30, keyNew ("system/elektra/modules/yamlsmith", KEY_VALUE, "yamlsmith plugin waits for your orders", KEY_END),
