@@ -10,12 +10,14 @@
 // -- Imports ------------------------------------------------------------------------------------------------------------------------------
 
 #include <fstream>
+#include <iostream>
 
 #include "yamlsmith.hpp"
 
 #include <kdb.hpp>
 #include <kdberrors.h>
 
+using std::endl;
 using std::ofstream;
 
 using ckdb::Key;
@@ -72,9 +74,10 @@ int elektraYamlsmithGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 }
 
 /** @see elektraDocSet */
-int elektraYamlsmithSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
+int elektraYamlsmithSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 	CppKey parent{ parentKey };
+	CppKeySet keys{ returned };
 
 	ofstream file{ parent.getString () };
 	if (!file.is_open ())
@@ -83,8 +86,15 @@ int elektraYamlsmithSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKT
 				    parent.getString ().c_str ());
 	}
 
+	for (auto key : keys)
+	{
+		file << key.getName () << ": " << key.getString () << endl;
+	}
+
 	parent.release ();
-	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+	keys.release ();
+
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (yamlsmith)
