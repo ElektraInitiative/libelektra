@@ -29,6 +29,9 @@ typedef struct
 /** D-Bus bus type used by tests  */
 DBusBusType testBusType;
 
+/** key namespace to use for tests */
+char * testKeyNamespace;
+
 /**
  * @internal
  * Process D-Bus messages and check for expected message.
@@ -154,10 +157,12 @@ static void test_prerequisites (void)
 	if (systemBus)
 	{
 		testBusType = DBUS_BUS_SYSTEM;
+		testKeyNamespace = "system";
 	}
 	else if (sessionBus)
 	{
 		testBusType = DBUS_BUS_SESSION;
+		testKeyNamespace = "user";
 	}
 
 	if (systemBus) dbus_connection_unref (systemBus);
@@ -168,9 +173,16 @@ static void test_keyAdded (void)
 {
 	printf ("test adding keys\n");
 
-	Key * toAdd = keyNew ("system/tests/foo/bar", KEY_VALUE, "test", KEY_END);
+	// (namespace)/tests/foo
+	Key * parentKey = keyNew (testKeyNamespace, KEY_END);
+	keyAddName (parentKey, "tests/foo");
+
+	// (namespace)/tests/foo/bar
+	Key * toAdd = keyDup (parentKey);
+	keyAddName (toAdd, "bar");
+	keySetString (toAdd, "test");
+
 	KeySet * ks = ksNew (0, KS_END);
-	Key * parentKey = keyNew ("system/tests/foo", KEY_END);
 
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("dbus");
@@ -205,9 +217,17 @@ static void test_keyChanged (void)
 	// All keys created by keyNew have the KEY_FLAG_SYNC set and will be
 	// detected as changed by the dbus plugin
 	// This flag is only cleared after kdbSet or when keys come from a backend.
-	Key * toChange = keyNew ("system/tests/foo/bar", KEY_VALUE, "test", KEY_END);
+
+	// (namespace)/tests/foo
+	Key * parentKey = keyNew (testKeyNamespace, KEY_END);
+	keyAddName (parentKey, "tests/foo");
+
+	// (namespace)/tests/foo/bar
+	Key * toChange = keyDup (parentKey);
+	keyAddName (toChange, "bar");
+	keySetString (toChange, "test");
+
 	KeySet * ks = ksNew (2, toChange, KS_END);
-	Key * parentKey = keyNew ("system/tests/foo", KEY_END);
 
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("dbus");
@@ -239,9 +259,16 @@ static void test_keyDeleted (void)
 {
 	printf ("test deleting keys\n");
 
-	Key * toDelete = keyNew ("system/tests/foo/bar", KEY_VALUE, "test", KEY_END);
+	// (namespace)/tests/foo
+	Key * parentKey = keyNew (testKeyNamespace, KEY_END);
+	keyAddName (parentKey, "tests/foo");
+
+	// (namespace)/tests/foo/bar
+	Key * toDelete = keyDup (parentKey);
+	keyAddName (toDelete, "bar");
+	keySetString (toDelete, "test");
+
 	KeySet * ks = ksNew (1, keyDup (toDelete), KS_END);
-	Key * parentKey = keyNew ("system/tests/foo", KEY_END);
 
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("dbus");
@@ -275,11 +302,25 @@ static void test_announceOnce (void)
 {
 	printf ("test announce once\n");
 
-	Key * toAdd1 = keyNew ("system/tests/foo/bar/#0", KEY_VALUE, "test", KEY_END);
-	Key * toAdd2 = keyNew ("system/tests/foo/bar/#1", KEY_VALUE, "test", KEY_END);
-	Key * toChange = keyNew ("system/tests/foo/bar", KEY_VALUE, "test", KEY_END);
+	// (namespace)/tests/foo
+	Key * parentKey = keyNew (testKeyNamespace, KEY_END);
+	keyAddName (parentKey, "tests/foo");
+
+	// (namespace)/tests/foo/bar/#0
+	Key * toAdd1 = keyDup (parentKey);
+	keyAddName (toAdd1, "bar/#0");
+	keySetString (toAdd1, "test");
+
+	// (namespace)/tests/foo/bar/#1
+	Key * toAdd2 = keyDup (toAdd1);
+	keySetBaseName (toAdd2, "#1");
+
+	// (namespace)/tests/foo/bar
+	Key * toChange = keyDup (parentKey);
+	keyAddName (toChange, "bar");
+	keySetString (toChange, "test");
+
 	KeySet * ks = ksNew (1, toChange, KS_END);
-	Key * parentKey = keyNew ("system/tests/foo", KEY_END);
 
 	KeySet * conf = ksNew (1, keyNew ("/announce", KEY_VALUE, "once", KEY_END), KS_END);
 	PLUGIN_OPEN ("dbus");
@@ -313,10 +354,18 @@ static void test_cascadedChangeNotification (void)
 {
 	printf ("test change notification with cascaded parent key\n");
 
-	Key * toAdd = keyNew ("system/tests/foo/bar", KEY_VALUE, "test", KEY_END);
-	Key * completeParentKey = keyNew ("system/tests/foo", KEY_END);
-	KeySet * ks = ksNew (1, completeParentKey, KS_END);
 	Key * parentKey = keyNew ("/tests/foo", KEY_END);
+
+	// (namespace)/tests/foo
+	Key * completeParentKey = keyNew (testKeyNamespace, KEY_END);
+	keyAddName (completeParentKey, "tests/foo");
+
+	// (namespace)/tests/foo/bar
+	Key * toAdd = keyDup (completeParentKey);
+	keyAddName (toAdd, "bar");
+	keySetString (toAdd, "test");
+
+	KeySet * ks = ksNew (1, completeParentKey, KS_END);
 
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("dbus");
@@ -348,10 +397,18 @@ static void test_cascadedAnnounceOnce (void)
 {
 	printf ("test announce once with cascaded parent key\n");
 
-	Key * toAdd = keyNew ("system/tests/foo/bar", KEY_VALUE, "test", KEY_END);
-	Key * completeParentKey = keyNew ("system/tests/foo", KEY_END);
-	KeySet * ks = ksNew (1, completeParentKey, KS_END);
 	Key * parentKey = keyNew ("/tests/foo", KEY_END);
+
+	// (namespace)/tests/foo
+	Key * completeParentKey = keyNew (testKeyNamespace, KEY_END);
+	keyAddName (completeParentKey, "tests/foo");
+
+	// (namespace)/tests/foo/bar
+	Key * toAdd = keyDup (completeParentKey);
+	keyAddName (toAdd, "bar");
+	keySetString (toAdd, "test");
+
+	KeySet * ks = ksNew (1, completeParentKey, KS_END);
 
 	KeySet * conf = ksNew (1, keyNew ("/announce", KEY_VALUE, "once", KEY_END), KS_END);
 	PLUGIN_OPEN ("dbus");
