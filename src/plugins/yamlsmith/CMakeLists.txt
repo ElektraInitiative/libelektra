@@ -6,4 +6,5 @@ add_plugin (yamlsmith
 		yamlsmith.hpp
 		yamlsmith.cpp
 	ADD_TEST
+	TEST_README
 	)

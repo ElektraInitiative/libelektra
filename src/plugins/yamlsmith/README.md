@@ -11,6 +11,16 @@
 
 # YAML Smith
 
+## Example
+
+```sh
+# Mount plugin
+sudo kdb mount config.yaml user/examples/yamlsmith yamlsmith
+
+# Unmount plugin
+sudo kdb umount user/examples/yamlsmith
+```
+
 ## Limitations
 
 This plugin currently does nothing useful.
