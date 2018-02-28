@@ -10,6 +10,8 @@
 
 #include <kdblogger.h>
 
+#define RECEIVE_MATCH_RULE "type='signal',interface='org.libelektra',path='/org/libelektra/configuration'"
+
 /**
  * @internal
  * Get and setup D-Bus connection.
@@ -90,7 +92,7 @@ int elektraDbusRecvTeardownReceive (ElektraDbusRecvPluginData * pluginData, DBus
 
 	dbus_error_init (&error);
 
-	dbus_bus_remove_match (connection, "type='signal',interface='org.libelektra',path='/org/libelektra/configuration'", &error);
+	dbus_bus_remove_match (connection, RECEIVE_MATCH_RULE, &error);
 	if (dbus_error_is_set (&error)) goto error;
 
 	dbus_connection_remove_filter (connection, filter_func, pluginData);
@@ -143,7 +145,7 @@ int elektraDbusRecvSetupReceive (ElektraDbusRecvPluginData * pluginData, DBusBus
 
 	dbus_error_init (&error);
 
-	dbus_bus_add_match (connection, "type='signal',interface='org.libelektra',path='/org/libelektra/configuration'", &error);
+	dbus_bus_add_match (connection, RECEIVE_MATCH_RULE, &error);
 	if (dbus_error_is_set (&error)) goto error;
 
 	if (!dbus_connection_add_filter (connection, filter_func, pluginData, NULL))

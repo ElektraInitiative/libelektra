@@ -45,6 +45,12 @@ Elektra's notification feature has received its first transport plugin: D-Bus.
 Transport plugins provide a link between applications using Elektra.
 These plugins send and receive notifications when a key is modified within the
 key database.
+The existing `dbus` plugin has been modified to use an asynchronous I/O binding
+for sending messages, if available.
+The new `dbusrecv` plugin is responsible for receiving messages sent from the
+`dbus` plugin and other sources with the same
+[message format](https://www.libelektra.org/plugins/dbus#notification-format).
+
 For more details see the
 [notification tutorial](https://github.com/ElektraInitiative/libelektra/tree/master/doc/tutorials/notifications.md)
 or the [example applications](https://github.com/ElektraInitiative/libelektra/tree/master/src/libs/notification/example)

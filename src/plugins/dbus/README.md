@@ -187,3 +187,33 @@ of the whole system knows that a chain of reactions will terminate.
 When doing such event-driven programming, care is needed to avoid
 infinite loops.  Elektra guarantees consistency of the key database even
 in such cases.
+
+# Transport Plugin
+
+Mount this plugin globally with default settings to use it as *sending*
+transport plugin for Elektra's notification feature:
+
+> kdb global-mount dbus
+
+# Notification Format
+
+This plugin uses D-Bus signal messages as notifications.
+Notifications we path `/org/libelektra/configuration` and the D-Bus interface
+`org.libelektra`.
+The following signal names are used:
+
+- KeyAdded: a key has been added
+- KeyChanged: a key has been changed
+
+The first argument contains the name of the changed key.
+The system bus is used if the affected keys is below the `system` namespace.
+If the key is below the `user` namespace the session bus is used.
+
+Example output from `dbus-monitor`:
+
+```
+signal time=1519856379.538736 sender=:1.1 -> destination=(null destination) serial=18 path=/org/libelektra/configuration; interface=org.libelektra; member=KeyAdded
+   string "system/tests/foo/bar"
+signal time=1519856379.538753 sender=:1.1 -> destination=(null destination) serial=19 path=/org/libelektra/configuration; interface=org.libelektra; member=KeyChanged
+   string "system/tests/foo"
+```

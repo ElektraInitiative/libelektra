@@ -33,3 +33,13 @@ no actions.
 This plugin cannot be directly used to receive notifications.
 Applications that use the notification feature implicitly use it when this
 plugin is mounted globally.
+
+# Transport Plugin
+
+Mount this plugin globally with default settings to use it as *receiving*
+transport plugin for Elektra's notification feature:
+
+> kdb global-mount dbusrecv
+
+For the message format please see
+[the `dbus` plugin documentation](https://www.libelektra.org/plugins/dbus#notification-format).
