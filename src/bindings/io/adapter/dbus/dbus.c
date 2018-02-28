@@ -226,11 +226,10 @@ ElektraIoDbusAdapterHandle * elektraIoDbusAdapterAttach (DBusConnection * connec
 	priv->connection = connection;
 	priv->ioBinding = ioBinding;
 
-	dbus_connection_set_watch_functions (connection, dbusWrapperAddWatch, dbusWrapperRemoveWatch, dbusWrapperWatchToggled, priv,
-					     dbusWrapperFree);
+	dbus_connection_set_watch_functions (connection, dbusWrapperAddWatch, dbusWrapperRemoveWatch, dbusWrapperWatchToggled, priv, NULL);
 
 	dbus_connection_set_timeout_functions (connection, dbusWrapperAddTimeout, dbusWrapperRemoveTimeout, dbusWrapperTimeoutToggled, priv,
-					       dbusWrapperFree);
+					       NULL);
 
 	// Add timeout for reading messages
 	ElektraIoIdleOperation * dispatchIdle = elektraIoNewIdleOperation (0, dbusWrapperDispatch, priv);
@@ -247,13 +246,15 @@ ElektraIoDbusAdapterHandle * elektraIoDbusAdapterAttach (DBusConnection * connec
 	return priv;
 }
 
-// TODO rename to elektraIoDbusAdapterDetach if complete reversal is possible
+// TODO rename to elektraIoDbusAdapterDetach when complete reversal is possible
 int elektraIoDbusAdapterCleanup (void * handle)
 {
 	_ElektraIoDbusAdapterHandle * priv = (_ElektraIoDbusAdapterHandle *)handle;
 	DBusConnection * connection = priv->connection;
 
-	// TODO find out if this can work (uv assertion fails with example_notification_async)
+	// TODO currently not possible because dbus uses multiple watches for the same fd
+	// which raises an assertion in uv when trying to remove one of them
+	// calling dbus_connection_close() & dbus_connection_unref() works fine
 	// dbus_connection_set_watch_functions (connection, NULL, NULL, NULL, NULL, NULL);
 	// dbus_connection_set_timeout_functions (connection, NULL, NULL, NULL, NULL, NULL);
 

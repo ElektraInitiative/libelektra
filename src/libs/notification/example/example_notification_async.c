@@ -109,7 +109,7 @@ int main (void)
 		return -1;
 	}
 
-	int value;
+	int value = 0;
 	Key * intKeyToWatch = keyNew ("/sw/tests/example_notification/#0/current/value", KEY_END);
 	result = elektraNotificationRegisterInt (kdb, intKeyToWatch, &value);
 	if (!result)
@@ -132,7 +132,11 @@ int main (void)
 
 	kdbGet (kdb, config, key);
 
+	printf ("Asynchronous Notification Example Application\n");
+	printf ("- Set \"%s\" to red, blue or green to change the text color\n", keyName (callbackKeyToWatch));
+	printf ("- Set \"%s\" to any integer value\n", keyName (intKeyToWatch));
 	printf ("Send SIGINT (Ctl+C) to exit.\n\n");
+
 	uv_run (loop, UV_RUN_DEFAULT);
 
 	// Cleanup

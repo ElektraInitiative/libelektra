@@ -160,11 +160,15 @@ int elektraDbusRecvClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 	{
 		elektraIoDbusAdapterCleanup (pluginData->systemBusAdapter);
 		dbus_connection_close (pluginData->systemBus);
+		dbus_connection_unref (pluginData->systemBus);
+		pluginData->systemBus = NULL;
 	}
 	if (pluginData->sessionBus)
 	{
 		elektraIoDbusAdapterCleanup (pluginData->sessionBusAdapter);
 		dbus_connection_close (pluginData->sessionBus);
+		dbus_connection_unref (pluginData->sessionBus);
+		pluginData->sessionBus = NULL;
 	}
 
 	elektraFree (pluginData);

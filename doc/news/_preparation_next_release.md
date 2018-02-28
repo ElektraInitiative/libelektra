@@ -72,7 +72,7 @@ compiled against an older 0.8 version of Elektra will continue to work
 
 We added:
 
-- the private headerfiles `kdbnotificationinternal.h`.
+- the private headerfiles `kdbnotificationinternal.h`, `kdbioplugin.h`.
 
 ## Notes for Maintainer
 

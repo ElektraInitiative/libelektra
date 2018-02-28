@@ -165,13 +165,15 @@ int elektraDbusClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 
 	if (pluginData->systemBus)
 	{
-		if (pluginData->systemBusAdapter) elektraIoDbusAdapterCleanup (pluginData->systemBusAdapter);
 		dbus_connection_unref (pluginData->systemBus);
+		if (pluginData->systemBusAdapter) elektraIoDbusAdapterCleanup (pluginData->systemBusAdapter);
+		pluginData->systemBus = NULL;
 	}
 	if (pluginData->sessionBus)
 	{
-		if (pluginData->sessionBusAdapter) elektraIoDbusAdapterCleanup (pluginData->sessionBusAdapter);
 		dbus_connection_unref (pluginData->sessionBus);
+		if (pluginData->sessionBusAdapter) elektraIoDbusAdapterCleanup (pluginData->sessionBusAdapter);
+		pluginData->sessionBus = NULL;
 	}
 
 	elektraFree (pluginData);

@@ -8,10 +8,8 @@
 
 #include "dbus.h"
 
-#include <pthread.h>
-#include <stdio.h>
-
-#include <time.h> // time()
+#include <stdio.h> // printf() & co
+#include <time.h>  // time()
 
 #include <tests.h>
 #include <tests_plugin.h>
