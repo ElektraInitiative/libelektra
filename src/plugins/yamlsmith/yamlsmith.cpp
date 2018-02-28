@@ -14,9 +14,13 @@
 #include <kdb.hpp>
 #include <kdbhelper.h>
 
-using namespace ckdb;
+using ckdb::Key;
+using ckdb::KeySet;
+using ckdb::keyNew;
 
 using CppKey = kdb::Key;
+using CppKeySet = kdb::KeySet;
+
 // -- Functions ----------------------------------------------------------------------------------------------------------------------------
 
 extern "C" {
