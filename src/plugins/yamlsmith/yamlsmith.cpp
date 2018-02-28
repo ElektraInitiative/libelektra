@@ -23,6 +23,25 @@ using CppKeySet = kdb::KeySet;
 
 // -- Functions ----------------------------------------------------------------------------------------------------------------------------
 
+namespace
+{
+
+/**
+ * @brief This function returns a key set containing the contract of the plugin.
+ *
+ * @return A contract describing the functionality of this plugin
+ */
+CppKeySet contractYamlsmith ()
+{
+	return CppKeySet (30, keyNew ("system/elektra/modules/yamlsmith", KEY_VALUE, "yamlsmith plugin waits for your orders", KEY_END),
+			  keyNew ("system/elektra/modules/yamlsmith/exports", KEY_END),
+			  keyNew ("system/elektra/modules/yamlsmith/exports/get", KEY_FUNC, elektraYamlsmithGet, KEY_END),
+			  keyNew ("system/elektra/modules/yamlsmith/exports/set", KEY_FUNC, elektraYamlsmithSet, KEY_END),
+#include ELEKTRA_README (yamlsmith)
+			  keyNew ("system/elektra/modules/yamlsmith/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+}
+} // end namespace
+
 extern "C" {
 // ====================
 // = Plugin Interface =
@@ -36,15 +55,7 @@ int elektraYamlsmithGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 
 	if (parent.getName () == "system/elektra/modules/yamlsmith")
 	{
-		auto contract = CppKeySet (
-			30, keyNew ("system/elektra/modules/yamlsmith", KEY_VALUE, "yamlsmith plugin waits for your orders", KEY_END),
-			keyNew ("system/elektra/modules/yamlsmith/exports", KEY_END),
-			keyNew ("system/elektra/modules/yamlsmith/exports/get", KEY_FUNC, elektraYamlsmithGet, KEY_END),
-			keyNew ("system/elektra/modules/yamlsmith/exports/set", KEY_FUNC, elektraYamlsmithSet, KEY_END),
-#include ELEKTRA_README (yamlsmith)
-			keyNew ("system/elektra/modules/yamlsmith/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
-		keys.append (contract);
-
+		keys.append (contractYamlsmith ());
 		parent.release ();
 		keys.release ();
 
