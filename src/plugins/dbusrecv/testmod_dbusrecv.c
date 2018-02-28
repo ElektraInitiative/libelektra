@@ -25,6 +25,13 @@
 Key * test_callbackKey;
 uv_loop_t * test_callbackLoop;
 
+/**
+ * @internal
+ * Get and setup D-Bus connection
+ *
+ * @param  type D-Bus bus type
+ * @return      D-Bus connection or NULL on error
+ */
 static DBusConnection * getDbusConnection (DBusBusType type)
 {
 	DBusError error;
@@ -45,6 +52,13 @@ static DBusConnection * getDbusConnection (DBusBusType type)
 	return connection;
 }
 
+/**
+ * @internal
+ * Send Elektra's D-Bus message.
+ *
+ * @param signalName signal name
+ * @param keyName    key name
+ */
 static void dbusSendMessage (const char * signalName, const char * keyName)
 {
 	DBusMessage * message;
@@ -67,12 +81,30 @@ static void dbusSendMessage (const char * signalName, const char * keyName)
 	return;
 }
 
+/**
+ * Timeout for tests.
+ *
+ * Creates a failure and stops the event loop
+ *
+ * @param timerOp timer operation
+ */
 static void test_timerCallback (ElektraIoTimerOperation * timerOp ELEKTRA_UNUSED)
 {
 	succeed_if (0, "timeout exceeded; test failed");
 	uv_stop (test_callbackLoop);
 }
 
+/**
+ * @internal
+ * Called by plugin when a notification was received.
+ * The key is saved to be evaluated by the current test and the event loop is
+ * stopped.
+ *
+ * @see ElektraNotificationCallback (kdbnotificationinternal.h)
+ *
+ * @param key     changed key
+ * @param context notification callback context
+ */
 static void test_notificationCallback (Key * key, ElektraNotificationCallbackContext * context ELEKTRA_UNUSED)
 {
 	test_callbackKey = key;

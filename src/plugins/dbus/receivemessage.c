@@ -8,8 +8,23 @@
 
 #include "dbus.h"
 
+#include <stdio.h>
+
+/**
+ * @internal
+ * Setup D-Bus connection for receiving Elektra's signal messages.
+ *
+ * @param  connection  D-Bus connection
+ * @param  filter_func message handler
+ * @param  data        data passed to message handler
+ * @retval 1 on success
+ * @retval 0 on error
+ */
 int elektraDbusSetupReceiveMessage (DBusConnection * connection, DBusHandleMessageFunction filter_func, void * data)
 {
+	ELEKTRA_NOT_NULL (connection);
+	ELEKTRA_NOT_NULL (filter_func);
+
 	DBusError error;
 	dbus_error_init (&error);
 
@@ -27,11 +42,24 @@ int elektraDbusSetupReceiveMessage (DBusConnection * connection, DBusHandleMessa
 error:
 	printf ("Error occurred\n");
 	dbus_error_free (&error);
-	return -1;
+	return 0;
 }
 
+/**
+ * @internal
+ * Revert changes made to D-Bus connection by elektraDbusSetupReceiveMessage().
+ *
+ * @param  connection  D-Bus connection
+ * @param  filter_func message handler
+ * @param  data        data passed to message handler
+ * @retval 1 on success
+ * @retval 0 on error
+ */
 int elektraDbusTeardownReceiveMessage (DBusConnection * connection, DBusHandleMessageFunction filter_func, void * data)
 {
+	ELEKTRA_NOT_NULL (connection);
+	ELEKTRA_NOT_NULL (filter_func);
+
 	DBusError error;
 	dbus_error_init (&error);
 
@@ -46,11 +74,23 @@ int elektraDbusTeardownReceiveMessage (DBusConnection * connection, DBusHandleMe
 error:
 	printf ("Error occurred\n");
 	dbus_error_free (&error);
-	return -1;
+	return 0;
 }
 
+/**
+ * Setup receiving of Elektra's D-Bus signal messages and do blocking dispatch.
+ *
+ * Messages are passed to filter_func
+ *
+ * @param  type        D-Bus bus type
+ * @param  filter_func message handler
+ * @retval 0 on success
+ * @retval -1 on error
+ */
 int elektraDbusReceiveMessage (DBusBusType type, DBusHandleMessageFunction filter_func)
 {
+	ELEKTRA_NOT_NULL (filter_func);
+
 	DBusConnection * connection;
 	DBusError error;
 

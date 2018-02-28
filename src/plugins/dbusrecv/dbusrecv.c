@@ -19,15 +19,26 @@
 
 #include <stdio.h>
 
+/**
+ * @see ElektraIoPluginSetBinding (kdbioplugin.h)
+ */
 void elektraDbusRecvSetIoBinding (Plugin * handle, ElektraIoInterface * binding)
 {
+	ELEKTRA_NOT_NULL (handle);
 	ElektraDbusRecvPluginData * data = elektraPluginGetData (handle);
+	ELEKTRA_NOT_NULL (data);
+
 	data->ioBinding = binding;
 }
 
+/**
+ * @see ElektraNotificationOpenNotification (kdbnotificationinternal.h)
+ */
 void elektraDbusRecvOpenNotification (Plugin * handle, ElektraNotificationCallback callback, ElektraNotificationCallbackContext * context)
 {
+	ELEKTRA_NOT_NULL (handle);
 	ElektraDbusRecvPluginData * pluginData = elektraPluginGetData (handle);
+	ELEKTRA_NOT_NULL (pluginData);
 
 	pluginData->notificationCallback = callback;
 	pluginData->notificationContext = context;
@@ -75,9 +86,22 @@ void elektraDbusRecvCloseNotification (Plugin * handle)
 		{
 			ELEKTRA_LOG_WARNING ("teardown for session bus failed!");
 		}
+
+		pluginData->dbusInitialized = 0;
 	}
 }
 
+/**
+ * @internal
+ * Process D-Bus messages and check for Elektra's signal messages.
+ *
+ * Only KeyChanged and KeyAdded are processed.
+ *
+ * @param  connection	D-Bus connection
+ * @param  message    message
+ * @param  data       plugin data
+ * @return            handler result
+ */
 DBusHandlerResult elektraDbusRecvMessageHandler (DBusConnection * connection ELEKTRA_UNUSED, DBusMessage * message, void * data)
 {
 	char * interface = "org.libelektra";
@@ -100,6 +124,7 @@ DBusHandlerResult elektraDbusRecvMessageHandler (DBusConnection * connection ELE
 		{
 			Key * changed = keyNew (keyName, KEY_END);
 			ElektraDbusRecvPluginData * pluginData = (ElektraDbusRecvPluginData *)data;
+			ELEKTRA_NOT_NULL (pluginData);
 			pluginData->notificationCallback (changed, pluginData->notificationContext);
 		}
 
@@ -155,6 +180,10 @@ int elektraDbusRecvGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key *
 int elektraDbusRecvClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 {
 	ElektraDbusRecvPluginData * pluginData = elektraPluginGetData (handle);
+	if (pluginData == NULL)
+	{
+		return 1;
+	}
 
 	if (pluginData->systemBus)
 	{
@@ -172,6 +201,7 @@ int elektraDbusRecvClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 	}
 
 	elektraFree (pluginData);
+	elektraPluginSetData (handle, NULL);
 
 	return 1; /* success */
 }

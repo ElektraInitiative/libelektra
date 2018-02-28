@@ -10,7 +10,17 @@
 
 #include <kdblogger.h>
 
-
+/**
+ * @internal
+ * Get and setup D-Bus connection.
+ *
+ * handlePointer is updated to point to D-Bus I/O adapter handle.
+ *
+ * @param  type          D-Bus bus type
+ * @param  ioBinding     I/O binding (optional)
+ * @param  handlePointer Pointer to D-Bus I/O adapter handle
+ * @return D-Bus connection or NULL on error
+ */
 static DBusConnection * dbusGetConnection (DBusBusType type, ElektraIoInterface * ioBinding, ElektraIoDbusAdapterHandle ** handlePointer)
 {
 	DBusError error;
@@ -39,6 +49,16 @@ static DBusConnection * dbusGetConnection (DBusBusType type, ElektraIoInterface 
 	return connection;
 }
 
+/**
+ * @internal
+ * Revert changes made to D-Bus connection by elektraDbusRecvSetupReceive().
+ *
+ * @param  pluginData  Plugin data
+ * @param  connection  D-bus bus type
+ * @param  filter_func message handler
+ * @retval 1 on success
+ * @retval 0 on error
+ */
 int elektraDbusRecvTeardownReceive (ElektraDbusRecvPluginData * pluginData, DBusBusType type, DBusHandleMessageFunction filter_func)
 {
 	DBusConnection * connection;
@@ -77,11 +97,21 @@ int elektraDbusRecvTeardownReceive (ElektraDbusRecvPluginData * pluginData, DBus
 
 	return 1;
 error:
-	printf ("Error occurred\n");
+	ELEKTRA_LOG_WARNING ("Error occurred\n");
 	dbus_error_free (&error);
 	return 0;
 }
 
+/**
+ * @internal
+ * Setup D-Bus connection for receiving Elektra's signal messages.
+ *
+ * @param  pluginData  Plugin data
+ * @param  connection  D-Bus connection
+ * @param  filter_func message handler
+ * @retval 1 on success
+ * @retval 0 on error
+ */
 int elektraDbusRecvSetupReceive (ElektraDbusRecvPluginData * pluginData, DBusBusType type, DBusHandleMessageFunction filter_func)
 {
 	DBusConnection * connection;
@@ -123,7 +153,7 @@ int elektraDbusRecvSetupReceive (ElektraDbusRecvPluginData * pluginData, DBusBus
 
 	return 1;
 error:
-	printf ("Error occurred\n");
+	ELEKTRA_LOG_WARNING ("Error occurred\n");
 	dbus_error_free (&error);
 	return 0;
 }

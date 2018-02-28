@@ -17,6 +17,18 @@
 
 #include <kdblogger.h>
 
+/**
+ * @internal
+ * Get and setup D-Bus connection.
+ *
+ * If I/O binding is not NULL, handlePointer is updated to point to D-Bus I/O
+ * adapter handle.
+ *
+ * @param  type          D-Bus bus type
+ * @param  ioBinding     I/O binding (optional)
+ * @param  handlePointer Pointer to D-Bus I/O adapter handle
+ * @return D-Bus connection or NULL on error
+ */
 static DBusConnection * dbusGetConnection (DBusBusType type, ElektraIoInterface * ioBinding, ElektraIoDbusAdapterHandle ** handlePointer)
 {
 	DBusError error;
@@ -48,6 +60,17 @@ static DBusConnection * dbusGetConnection (DBusBusType type, ElektraIoInterface 
 	return connection;
 }
 
+/**
+ * @internal
+ * Send Elektra's signal message over D-Bus.
+ *
+ * @param  pluginData Plugin data, stores D-Bus connection, I/O binding and more
+ * @param  type       D-Bus bus type
+ * @param  keyName    Key name to include in message
+ * @param  signalName Signal name
+ * @retval 1 on success
+ * @retval -1 on error
+ */
 int elektraDbusSendMessage (ElektraDbusPluginData * pluginData, DBusBusType type, const char * keyName, const char * signalName)
 {
 	DBusConnection * connection;

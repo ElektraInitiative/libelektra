@@ -15,15 +15,22 @@
 
 #include <kdbhelper.h>
 
+/**
+ * @see ElektraIoPluginSetBinding (kdbioplugin.h)
+ */
 void elektraDbusSetIoBinding (Plugin * handle, ElektraIoInterface * binding)
 {
+	ELEKTRA_NOT_NULL (handle);
 	ElektraDbusPluginData * data = elektraPluginGetData (handle);
+	ELEKTRA_NOT_NULL (data);
+
 	data->ioBinding = binding;
 }
 
 int elektraDbusOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 {
-	ElektraDbusPluginData * data = (ElektraDbusPluginData *) elektraPluginGetData (handle);
+	ElektraDbusPluginData * data = elektraPluginGetData (handle);
+
 	if (!data)
 	{
 		data = elektraMalloc (sizeof (*data));
@@ -61,6 +68,8 @@ int elektraDbusGet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 	// remember all keys
 	ElektraDbusPluginData * pluginData = elektraPluginGetData (handle);
+	ELEKTRA_NOT_NULL (pluginData);
+
 	KeySet * ks = pluginData->keys;
 	if (ks) ksDel (ks);
 	pluginData->keys = ksDup (returned);
@@ -68,8 +77,21 @@ int elektraDbusGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	return 1; /* success */
 }
 
+/**
+ * @internal
+ * Announce multiple keys with same signal name.
+ *
+ * @param ks         key set containing modified keys
+ * @param signalName signal name to use
+ * @param busType    D-Bus bus type
+ * @param data       plugin data containing D-Bus connections, etc.
+ */
 static void announceKeys (KeySet * ks, const char * signalName, DBusBusType busType, ElektraDbusPluginData * data)
 {
+	ELEKTRA_NOT_NULL (ks);
+	ELEKTRA_NOT_NULL (signalName);
+	ELEKTRA_NOT_NULL (data);
+
 	ksRewind (ks);
 	Key * k = 0;
 	while ((k = ksNext (ks)) != 0)
@@ -81,6 +103,8 @@ static void announceKeys (KeySet * ks, const char * signalName, DBusBusType busT
 int elektraDbusSet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
 	ElektraDbusPluginData * pluginData = elektraPluginGetData (handle);
+	ELEKTRA_NOT_NULL (pluginData);
+
 	KeySet * oldKeys = pluginData->keys;
 	// because elektraLogchangeGet will always be executed before elektraLogchangeSet
 	// we know that oldKeys must exist here!
@@ -110,7 +134,7 @@ int elektraDbusSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	}
 
 	Key * resolvedParentKey = parentKey;
-	// Resolve cascaded keys
+	// Resolve cascaded parent key to get its namespace
 	if (!strncmp (keyName (parentKey), "/", 1))
 	{
 		resolvedParentKey = ksLookup (returned, parentKey, 0);
@@ -159,24 +183,29 @@ int elektraDbusSet (Plugin * handle, KeySet * returned, Key * parentKey)
 int elektraDbusClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 {
 	ElektraDbusPluginData * pluginData = elektraPluginGetData (handle);
+	if (pluginData == NULL)
+	{
+		return 1;
+	}
 
 	KeySet * ks = pluginData->keys;
 	if (ks) ksDel (ks);
 
 	if (pluginData->systemBus)
 	{
-		dbus_connection_unref (pluginData->systemBus);
 		if (pluginData->systemBusAdapter) elektraIoDbusAdapterCleanup (pluginData->systemBusAdapter);
+		dbus_connection_unref (pluginData->systemBus);
 		pluginData->systemBus = NULL;
 	}
 	if (pluginData->sessionBus)
 	{
-		dbus_connection_unref (pluginData->sessionBus);
 		if (pluginData->sessionBusAdapter) elektraIoDbusAdapterCleanup (pluginData->sessionBusAdapter);
+		dbus_connection_unref (pluginData->sessionBus);
 		pluginData->sessionBus = NULL;
 	}
 
 	elektraFree (pluginData);
+	elektraPluginSetData (handle, NULL);
 
 	return 1; /* success */
 }

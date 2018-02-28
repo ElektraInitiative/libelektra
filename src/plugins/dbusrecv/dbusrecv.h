@@ -10,29 +10,39 @@
 #ifndef ELEKTRA_PLUGIN_DBUS_H
 #define ELEKTRA_PLUGIN_DBUS_H
 
+#include <kdbassert.h>
 #include <kdbioplugin.h>
 #include <kdbnotificationinternal.h>
 #include <kdbplugin.h>
 
 #include <dbus/dbus.h>
-#include <stdio.h>
 #include <string.h>
 
 #include "../../bindings/io/adapter/dbus/dbus.h"
 
+/**
+ * @internal
+ * Private plugin data
+ */
 typedef struct
 {
+	// I/O binding (may be NULL)
 	ElektraIoInterface * ioBinding;
 
+	// Notification callback (may be NULL)
 	ElektraNotificationCallback notificationCallback;
 	void * notificationContext;
 
+	// Indicates whether D-Bus connections are initialized
 	int dbusInitialized;
-	DBusConnection * systemBus;
-	ElektraIoDbusAdapterHandle * systemBusAdapter;
-	DBusConnection * sessionBus;
-	ElektraIoDbusAdapterHandle * sessionBusAdapter;
 
+	// D-Bus connections (may be NULL)
+	DBusConnection * systemBus;
+	DBusConnection * sessionBus;
+
+	// D-Bus I/O adapter handles
+	ElektraIoDbusAdapterHandle * systemBusAdapter;
+	ElektraIoDbusAdapterHandle * sessionBusAdapter;
 
 } ElektraDbusRecvPluginData;
 

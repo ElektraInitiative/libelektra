@@ -10,25 +10,33 @@
 #ifndef ELEKTRA_PLUGIN_DBUS_H
 #define ELEKTRA_PLUGIN_DBUS_H
 
+#include <kdbassert.h>
 #include <kdbioplugin.h>
 #include <kdbplugin.h>
 
 #include <dbus/dbus.h>
-#include <stdio.h>
 #include <string.h>
 
 #include "../../bindings/io/adapter/dbus/dbus.h"
 
+/**
+ * @internal
+ * Private plugin data
+ */
 typedef struct
 {
 	// remember all keys
 	KeySet * keys;
 
+	// I/O binding (may be NULL)
 	ElektraIoInterface * ioBinding;
 
+	// D-Bus connections (may be NULL)
 	DBusConnection * systemBus;
-	ElektraIoDbusAdapterHandle * systemBusAdapter;
 	DBusConnection * sessionBus;
+
+	// D-Bus I/O adapter handles (may be NULL)
+	ElektraIoDbusAdapterHandle * systemBusAdapter;
 	ElektraIoDbusAdapterHandle * sessionBusAdapter;
 
 } ElektraDbusPluginData;

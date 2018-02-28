@@ -38,10 +38,10 @@
 #include <stdio.h>
 #endif
 
+#include <kdbassert.h>
 #include <kdberrors.h>
 #include <kdbinternal.h>
 #include <kdbversion.h>
-
 
 /**
  * @retval 1 and an allocated string of the pluginName if a new plugins should be created.
@@ -339,6 +339,9 @@ int elektraPluginClose (Plugin * handle, Key * errorKey)
  */
 size_t elektraPluginGetFunction (Plugin * plugin, const char * name)
 {
+	ELEKTRA_NOT_NULL (plugin);
+	ELEKTRA_NOT_NULL (name);
+
 	KeySet * exports = ksNew (0, KS_END);
 	Key * pk = keyNew ("system/elektra/modules", KEY_END);
 	keyAddBaseName (pk, plugin->name);

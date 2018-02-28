@@ -237,6 +237,7 @@ static Plugin * loadPlugin (KDB * kdb, char * name, KeySet * config)
  */
 static int unloadPlugin (Plugin * plugin)
 {
+	ELEKTRA_NOT_NULL (plugin);
 	Key * errorKey = keyNew (0);
 	int result = elektraPluginClose (plugin, errorKey);
 
@@ -265,6 +266,8 @@ static int unloadPlugin (Plugin * plugin)
  */
 static char * getPluginPlacementList (Plugin * plugin)
 {
+	ELEKTRA_NOT_NULL (plugin);
+
 	// Get placements from plugin
 	Key * pluginInfo = keyNew ("system/elektra/modules/", KEY_END);
 	keyAddBaseName (pluginInfo, plugin->name);
@@ -301,6 +304,10 @@ static char * getPluginPlacementList (Plugin * plugin)
  */
 static int listAddPlugin (Plugin * list, Plugin * plugin, char * placement)
 {
+	ELEKTRA_NOT_NULL (list);
+	ELEKTRA_NOT_NULL (plugin);
+	ELEKTRA_NOT_NULL (placement);
+
 	KeySet * newConfig = ksDup (list->config);
 
 	// Find name for next item in plugins array
@@ -432,6 +439,9 @@ static void moveKeysRecursive (const char * source, const char * dest, KeySet * 
  */
 static int listRemovePlugin (Plugin * list, Plugin * plugin)
 {
+	ELEKTRA_NOT_NULL (list);
+	ELEKTRA_NOT_NULL (plugin);
+
 	KeySet * newConfig = ksDup (list->config);
 
 	Key * configBase = keyNew ("user/plugins", KEY_END);
@@ -498,6 +508,9 @@ static int listRemovePlugin (Plugin * list, Plugin * plugin)
  */
 static int mountGlobalPlugin (KDB * kdb, Plugin * plugin)
 {
+	ELEKTRA_NOT_NULL (kdb);
+	ELEKTRA_NOT_NULL (plugin);
+
 	char * placementList = getPluginPlacementList (plugin);
 
 	// Parse plament list (contains placements from README.md seperated by whitespace)
@@ -567,6 +580,9 @@ static int mountGlobalPlugin (KDB * kdb, Plugin * plugin)
  */
 int unmountGlobalPlugin (KDB * kdb, Plugin * plugin)
 {
+	ELEKTRA_NOT_NULL (kdb);
+	ELEKTRA_NOT_NULL (plugin);
+
 	char * placementList = getPluginPlacementList (plugin);
 
 	// Parse plament list (contains placements from README.md seperated by whitespace)
@@ -619,6 +635,9 @@ int unmountGlobalPlugin (KDB * kdb, Plugin * plugin)
 
 static void pluginsOpenNotification (KDB * kdb, ElektraNotificationCallback callback, ElektraNotificationCallbackContext * context)
 {
+	ELEKTRA_NOT_NULL (kdb);
+	ELEKTRA_NOT_NULL (callback);
+
 	// iterate over global plugins
 	for (int positionIndex = 0; positionIndex < NR_GLOBAL_POSITIONS; positionIndex++)
 	{
@@ -643,6 +662,8 @@ static void pluginsOpenNotification (KDB * kdb, ElektraNotificationCallback call
 
 static void pluginsCloseNotification (KDB * kdb)
 {
+	ELEKTRA_NOT_NULL (kdb);
+
 	// iterate over global plugins
 	for (int positionIndex = 0; positionIndex < NR_GLOBAL_POSITIONS; positionIndex++)
 	{
@@ -667,6 +688,9 @@ static void pluginsCloseNotification (KDB * kdb)
 
 void elektraNotificationDoUpdate (Key * key, ElektraNotificationCallbackContext * context)
 {
+	ELEKTRA_NOT_NULL (key);
+	ELEKTRA_NOT_NULL (context);
+
 	KDB * kdb = context->kdb;
 
 	KeySet * ks = ksNew (0, KS_END);
@@ -678,9 +702,16 @@ void elektraNotificationDoUpdate (Key * key, ElektraNotificationCallbackContext 
 
 int elektraNotificationOpen (KDB * kdb)
 {
+	// Make sure kdb is not null
+	if (!kdb)
+	{
+		ELEKTRA_LOG_WARNING ("kdb was not set");
+		return 0;
+	}
 	// Allow open only once
 	if (kdb->notificationPlugin)
 	{
+		ELEKTRA_LOG_WARNING ("elektraNotificationOpen already called for kdb");
 		return 0;
 	}
 
@@ -710,20 +741,28 @@ int elektraNotificationOpen (KDB * kdb)
 		return 0;
 	}
 	context->kdb = kdb;
-	kdb->notificationCallbackContext = context;
 
 	// Open notification for plugins
 	pluginsOpenNotification (kdb, elektraNotificationDoUpdate, context);
 
 	kdb->notificationPlugin = notificationPlugin;
+	kdb->notificationCallbackContext = context;
 
 	return 1;
 }
 
 int elektraNotificationClose (KDB * kdb)
 {
+	// Make sure kdb is not null
+	if (!kdb)
+	{
+		ELEKTRA_LOG_WARNING ("kdb was not set");
+		return 0;
+	}
+	// Make sure open was called
 	if (!kdb->notificationPlugin)
 	{
+		ELEKTRA_LOG_WARNING ("elektraNotificationOpen not called before elektraPluginClose");
 		return 0;
 	}
 
@@ -733,7 +772,6 @@ int elektraNotificationClose (KDB * kdb)
 	int result = unmountGlobalPlugin (kdb, notificationPlugin);
 	if (!result)
 	{
-		ELEKTRA_LOG_WARNING ("unmountGlobalPlugin failed");
 		return 0;
 	}
 
@@ -741,7 +779,6 @@ int elektraNotificationClose (KDB * kdb)
 	result = unloadPlugin (notificationPlugin);
 	if (!result)
 	{
-		ELEKTRA_LOG_WARNING ("elektraPluginClose failed result=%d", result);
 		return 0;
 	}
 
@@ -751,6 +788,7 @@ int elektraNotificationClose (KDB * kdb)
 	elektraFree (kdb->notificationCallbackContext);
 
 	kdb->notificationPlugin = NULL;
+	kdb->notificationCallbackContext = NULL;
 
 	return 1;
 }
@@ -764,6 +802,8 @@ int elektraNotificationClose (KDB * kdb)
  */
 static Plugin * getNotificationPlugin (KDB * kdb)
 {
+	ELEKTRA_NOT_NULL (kdb);
+
 	if (kdb->notificationPlugin)
 	{
 		return kdb->notificationPlugin;
@@ -778,6 +818,12 @@ static Plugin * getNotificationPlugin (KDB * kdb)
 
 int elektraNotificationRegisterInt (KDB * kdb, Key * key, int * variable)
 {
+	if (!kdb || !key || !variable)
+	{
+		ELEKTRA_LOG_WARNING ("null pointer passed");
+		return 0;
+	}
+
 	// Find notification plugin
 	Plugin * notificationPlugin = getNotificationPlugin (kdb);
 	if (!notificationPlugin)
@@ -799,6 +845,12 @@ int elektraNotificationRegisterInt (KDB * kdb, Key * key, int * variable)
 
 int elektraNotificationRegisterCallback (KDB * kdb, Key * key, ElektraNotificationChangeCallback callback)
 {
+	if (!kdb || !key || !callback)
+	{
+		ELEKTRA_LOG_WARNING ("null pointer passed");
+		return 0;
+	}
+
 	// Find notification plugin
 	Plugin * notificationPlugin = getNotificationPlugin (kdb);
 	if (!notificationPlugin)

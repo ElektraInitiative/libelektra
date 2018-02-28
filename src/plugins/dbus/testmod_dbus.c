@@ -23,6 +23,18 @@ typedef struct
 	int stop;
 } ReceiveContext;
 
+#define TEST_TIMEOUT 1
+#define TEST_DISPATCH_TIMEOUT 100
+
+/**
+ * @internal
+ * Process D-Bus messages and check for expected message.
+ *
+ * @param  connection D-Bus connection
+ * @param  message    received D-Bus message
+ * @param  data       test context
+ * @return            message handler result
+ */
 DBusHandlerResult receiveMessageHandler (DBusConnection * connection ELEKTRA_UNUSED, DBusMessage * message, void * data)
 {
 	ReceiveContext * context = (ReceiveContext *)data;
@@ -53,16 +65,23 @@ DBusHandlerResult receiveMessageHandler (DBusConnection * connection ELEKTRA_UNU
 	return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
 }
 
+/**
+ * @internal
+ * Dispatch messages and declares timeout if dispatching is not stopped within
+ * TEST_TIMEOUT.
+ *
+ * @param context test context
+ */
 static void runDispatch (ReceiveContext * context)
 {
 	time_t now;
 	time_t start = time (NULL);
 	context->stop = 0;
-	while (!context->stop && dbus_connection_read_write_dispatch (context->connection, 100))
+	while (!context->stop && dbus_connection_read_write_dispatch (context->connection, TEST_DISPATCH_TIMEOUT))
 	{
 		now = time (NULL);
 		// Stop dispatching after one second
-		if (now - start > 1)
+		if (now - start > TEST_TIMEOUT)
 		{
 			succeed_if (0, "timeout exceeded; test failed");
 			break;
@@ -70,6 +89,14 @@ static void runDispatch (ReceiveContext * context)
 	}
 }
 
+/**
+ * @internal
+ * Create new test context.
+ *
+ * @param  connection D-Bus connection
+ * @param  signalName Expected signal name
+ * @return            Context
+ */
 static ReceiveContext * createReceiveContext (DBusConnection * connection, char * signalName)
 {
 	ReceiveContext * context = elektraMalloc (sizeof *context);
@@ -81,6 +108,13 @@ static ReceiveContext * createReceiveContext (DBusConnection * connection, char 
 	return context;
 }
 
+/**
+ * @internal
+ * Get and setup D-Bus connection.
+ *
+ * @param  type D-Bus bus type
+ * @return      D-Bus connection or NULL on error
+ */
 static DBusConnection * getDbusConnection (DBusBusType type)
 {
 	DBusError error;
