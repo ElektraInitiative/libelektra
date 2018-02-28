@@ -23,18 +23,22 @@ add_plugin (dbusrecv
 		elektra-io-adapter-dbus
 	)
 
-# the test requires an IO binding; using io_uv for now
-check_binding_included ("io_uv" IS_INCLUDED SUBDIRECTORY "io/uv")
-if (IS_INCLUDED)
-	add_plugintest (dbusrecv
-		LINK_LIBRARIES
-			${DBUS_LIBRARIES}
-		INCLUDE_DIRECTORIES
-			${DBUS_INCLUDE_DIR}
-			${DBUS_ARCH_INCLUDE_DIR}
-		LINK_ELEKTRA
-			elektra-io-adapter-dbus
-			elektra-io
-			elektra-io-uv
-		)
+if (ADDTESTING_PHASE)
+	# the test requires an IO binding; using io_uv for now
+	check_binding_included ("io_uv" IS_INCLUDED SUBDIRECTORY "io/uv")
+	if (BUILD_TESTING AND IS_INCLUDED)
+		add_plugintest (dbusrecv
+			LINK_LIBRARIES
+				${DBUS_LIBRARIES}
+			INCLUDE_DIRECTORIES
+				${DBUS_INCLUDE_DIR}
+				${DBUS_ARCH_INCLUDE_DIR}
+			LINK_ELEKTRA
+				elektra-io-adapter-dbus
+				elektra-io
+				elektra-io-uv
+			)
+	else ()
+		message (WARNING "io_uv bindings are required for testing, test deactivated")
+	endif ()
 endif ()

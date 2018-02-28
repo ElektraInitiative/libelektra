@@ -56,10 +56,10 @@ matrix:
 
     # HASKELL: Only build Haskell binding and plugin
 
-    - os: osx
-      osx_image: xcode9.3beta
-      compiler: clang
-      env: [ HASKELL=ON ]
+#    - os: osx
+#      osx_image: xcode9.3beta
+#      compiler: clang
+#      env: [ HASKELL=ON ]
 
     - os: linux
       compiler: gcc
@@ -115,10 +115,12 @@ before_install:
       brew install python3
       # Since Qt 5.10.1 GCC is unable to compile the Qt-GUI under macOS printing the following error message:
       #   'init_priority' attribute is not supported on this platform
-      brew install qt@5.5
-      brew install swig
-      brew install yajl
+      #DISABLEDbrew install qt@5.5
+      #DISABLEDbrew install swig
+      #DISABLEDbrew install yajl
       pip2 install cheetah # Required by kdb-gen
+      # start dbus (session?) bus
+      brew services start dbus
     fi
   - |
     if [[ "$TRAVIS_OS_NAME" == "osx" && "$HASKELL" == "ON" ]] ; then
@@ -180,8 +182,8 @@ before_script:
     cmake
     -GNinja
     -DBUILD_STATIC=OFF
-    -DPLUGINS="${plugins:-ALL;-jni}"
-    -DBINDINGS="${bindings}"
+    -DPLUGINS="${plugins:-ALL;-jni;dbusrecv;internalnotification}"
+    -DBINDINGS="${bindings:-MAINTAINED;-EXPERIMENTAL;-DEPRECATED;-swig_ruby;io_uv}"
     -DENABLE_DEBUG=ON
     -DTOOLS="${tools:-ALL;}"
     -DINSTALL_SYSTEM_FILES=OFF
