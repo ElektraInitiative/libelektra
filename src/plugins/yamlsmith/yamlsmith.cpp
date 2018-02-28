@@ -54,8 +54,8 @@ extern "C" {
 /** @see elektraDocGet */
 int elektraYamlsmithGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
-	auto parent = CppKey{ parentKey };
-	auto keys = CppKeySet{ returned };
+	CppKey parent{ parentKey };
+	CppKeySet keys{ returned };
 
 	if (parent.getName () == "system/elektra/modules/yamlsmith")
 	{
