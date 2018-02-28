@@ -20,6 +20,7 @@
 #include "yanlr.hpp"
 
 using CppKey = kdb::Key;
+using CppKeySet = kdb::KeySet;
 
 using antlr::YAMLLexer;
 using antlr::YAMLParser;
@@ -86,8 +87,14 @@ int elektraYanlrGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	ParseTree * tree = parser.mappings ();
 	walker.walk (&listener, tree);
 
+	auto keys = CppKeySet (returned);
+	auto readKeys = listener.keySet ();
+	keys.append (readKeys);
+
+	keys.release ();
 	parent.release ();
-	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+
+	return readKeys.size () <= 0 ? ELEKTRA_PLUGIN_STATUS_NO_UPDATE : ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
 /** @see elektraDocSet */

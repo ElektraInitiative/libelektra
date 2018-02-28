@@ -15,12 +15,22 @@
 
 ```sh
 # Mount plugin to cascading namespace `/examples/yanlr`
-sudo kdb mount config.file /examples/yanlr yanlr
+sudo kdb mount config.yaml user/examples/yanlr yanlr
+
+# Manually add some mappings to the configuration file
+printf 'key : value\n'   >  `kdb file user/examples/yanlr`
+printf 'hello : world\n' >> `kdb file user/examples/yanlr`
+
+kdb ls /examples/yanlr
+#> user/examples/yanlr/hello
+#> user/examples/yanlr/key
 
 # Undo modifications to the key database
-sudo kdb umount /examples/yanlr
+rm -f `kdb file user/examples/yanlr`
+sudo kdb umount user/examples/yanlr
 ```
 
 ## Limitations
 
-- The plugin currently does not provide any useful functionality
+- The plugin only reads the most basic YAML key-value pairs
+- Yan LR does not provide write support for data

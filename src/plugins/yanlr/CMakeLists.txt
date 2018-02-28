@@ -45,4 +45,7 @@ add_plugin (yanlr
 		${ANTLR4CPP_LIBRARIES}
 	ADD_TEST
 	TEST_README
+	# Unfortunately it looks like ANTLR’s code causes a container-overflow
+	TEST_ENVIRONMENT
+		"ASAN_OPTIONS=detect_container_overflow=0"
 	)

@@ -36,4 +36,9 @@ public:
 		key.setString (context->value ()->getText ());
 		keys.append (key);
 	}
+
+	CppKeySet keySet ()
+	{
+		return keys;
+	}
 };
