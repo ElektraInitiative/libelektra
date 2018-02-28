@@ -20,7 +20,9 @@ target_link_elektra (${example} elektra-kdb elektra-notification)
 
 # The asynchronous example requires io_uv
 check_binding_included ("io_uv" IS_INCLUDED SUBDIRECTORY "io/uv")
-if (IS_INCLUDED)
+find_package (PkgConfig)
+pkg_check_modules (LIBUV QUIET libuv>=1)
+if (IS_INCLUDED AND LIBUV_FOUND)
   ## Build example_notification_async
   set (example example_notification_async)
 

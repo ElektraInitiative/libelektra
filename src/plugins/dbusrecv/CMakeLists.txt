@@ -25,7 +25,7 @@ add_plugin (dbusrecv
 
 if (ADDTESTING_PHASE)
 	# the test requires an IO binding; using io_uv for now
-	check_binding_included ("io_uv" IS_INCLUDED SUBDIRECTORY "io/uv")
+	check_binding_was_added ("io_uv" IS_INCLUDED)
 	if (BUILD_TESTING AND IS_INCLUDED)
 		add_plugintest (dbusrecv
 			LINK_LIBRARIES
