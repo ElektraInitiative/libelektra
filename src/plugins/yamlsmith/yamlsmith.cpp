@@ -7,6 +7,8 @@
  *
  */
 
+// -- Imports ------------------------------------------------------------------------------------------------------------------------------
+
 #include "yamlsmith.hpp"
 
 #include <kdb.hpp>
@@ -15,6 +17,7 @@
 using namespace ckdb;
 
 using CppKey = kdb::Key;
+// -- Functions ----------------------------------------------------------------------------------------------------------------------------
 
 extern "C" {
 // ====================
@@ -48,6 +51,7 @@ int elektraYamlsmithGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 }
 
+/** @see elektraDocSet */
 int elektraYamlsmithSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
 	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
