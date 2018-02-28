@@ -25,6 +25,9 @@
 Key * test_callbackKey;
 uv_loop_t * test_callbackLoop;
 
+/** D-Bus bus type used by tests  */
+DBusBusType testBusType;
+
 /**
  * @internal
  * Get and setup D-Bus connection
@@ -40,7 +43,7 @@ static DBusConnection * getDbusConnection (DBusBusType type)
 	DBusConnection * connection = dbus_bus_get (type, &error);
 	if (connection == NULL)
 	{
-		printf ("Failed to open connection to %s message bus: %s\n", (type == DBUS_BUS_SYSTEM) ? "system" : "session",
+		printf ("connect: Failed to open connection to %s message bus: %s\n", (type == DBUS_BUS_SYSTEM) ? "system" : "session",
 			error.message);
 		dbus_error_free (&error);
 		return NULL;
@@ -65,7 +68,7 @@ static void dbusSendMessage (const char * signalName, const char * keyName)
 	const char * interface = "org.libelektra";
 	const char * path = "/org/libelektra/configuration";
 
-	DBusConnection * connection = getDbusConnection (DBUS_BUS_SYSTEM);
+	DBusConnection * connection = getDbusConnection (testBusType);
 	exit_if_fail (connection != NULL, "could not get bus connection");
 
 	message = dbus_message_new_signal (path, interface, signalName);
@@ -114,13 +117,24 @@ static void test_notificationCallback (Key * key, ElektraNotificationCallbackCon
 static void test_prerequisites (void)
 {
 	printf ("testing prerequisites\n");
+	printf ("detecting available bus types - please ignore single error messages prefixed with \"connect:\"\n");
 
 	DBusConnection * systemBus = getDbusConnection (DBUS_BUS_SYSTEM);
-	succeed_if (systemBus != NULL, "could not open system bus");
 	DBusConnection * sessionBus = getDbusConnection (DBUS_BUS_SESSION);
-	succeed_if (sessionBus != NULL, "could not open session bus");
 
-	exit_if_fail (systemBus != NULL, "could not get system message bus connection");
+	exit_if_fail (systemBus != NULL || sessionBus != NULL, "could not get system or session message bus connection");
+
+	// Set bus type for tests
+	// NOTE brew dbus on MacOs supports session by out of the box while session
+	// bus is not available without further configuration on Linux
+	if (systemBus)
+	{
+		testBusType = DBUS_BUS_SYSTEM;
+	}
+	else if (sessionBus)
+	{
+		testBusType = DBUS_BUS_SESSION;
+	}
 
 	if (systemBus) dbus_connection_unref (systemBus);
 	if (sessionBus) dbus_connection_unref (sessionBus);

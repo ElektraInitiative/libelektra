@@ -26,6 +26,9 @@ typedef struct
 #define TEST_TIMEOUT 1
 #define TEST_DISPATCH_TIMEOUT 100
 
+/** D-Bus bus type used by tests  */
+DBusBusType testBusType;
+
 /**
  * @internal
  * Process D-Bus messages and check for expected message.
@@ -123,7 +126,7 @@ static DBusConnection * getDbusConnection (DBusBusType type)
 	DBusConnection * connection = dbus_bus_get (type, &error);
 	if (connection == NULL)
 	{
-		printf ("Failed to open connection to %s message bus: %s\n", (type == DBUS_BUS_SYSTEM) ? "system" : "session",
+		printf ("connect: Failed to open connection to %s message bus: %s\n", (type == DBUS_BUS_SYSTEM) ? "system" : "session",
 			error.message);
 		dbus_error_free (&error);
 		return NULL;
@@ -138,12 +141,27 @@ static DBusConnection * getDbusConnection (DBusBusType type)
 static void test_prerequisites (void)
 {
 	printf ("testing prerequisites\n");
+	printf ("detecting available bus types - please ignore single error messages prefixed with \"connect:\"\n");
 
 	DBusConnection * systemBus = getDbusConnection (DBUS_BUS_SYSTEM);
+	DBusConnection * sessionBus = getDbusConnection (DBUS_BUS_SESSION);
 
-	exit_if_fail (systemBus != NULL, "could not get system message bus connection");
+	exit_if_fail (systemBus != NULL || sessionBus != NULL, "could not get system or session message bus connection");
 
-	dbus_connection_unref (systemBus);
+	// Set bus type for tests
+	// NOTE brew dbus on MacOs supports session by out of the box while session
+	// bus is not available without further configuration on Linux
+	if (systemBus)
+	{
+		testBusType = DBUS_BUS_SYSTEM;
+	}
+	else if (sessionBus)
+	{
+		testBusType = DBUS_BUS_SESSION;
+	}
+
+	if (systemBus) dbus_connection_unref (systemBus);
+	if (sessionBus) dbus_connection_unref (sessionBus);
 }
 
 static void test_keyAdded (void)
@@ -163,7 +181,7 @@ static void test_keyAdded (void)
 	// add key to keyset
 	ksAppendKey (ks, toAdd);
 
-	DBusConnection * connection = getDbusConnection (DBUS_BUS_SYSTEM);
+	DBusConnection * connection = getDbusConnection (testBusType);
 	ReceiveContext * context = createReceiveContext (connection, "KeyAdded");
 	elektraDbusSetupReceiveMessage (connection, receiveMessageHandler, (void *)context);
 
@@ -200,7 +218,7 @@ static void test_keyChanged (void)
 	// change key in keyset
 	keySetString (toChange, "new value");
 
-	DBusConnection * connection = getDbusConnection (DBUS_BUS_SYSTEM);
+	DBusConnection * connection = getDbusConnection (testBusType);
 	ReceiveContext * context = createReceiveContext (connection, "KeyChanged");
 	elektraDbusSetupReceiveMessage (connection, receiveMessageHandler, (void *)context);
 
@@ -235,7 +253,7 @@ static void test_keyDeleted (void)
 	Key * deleted = ksLookup (ks, toDelete, KDB_O_POP);
 	succeed_if (deleted != NULL, "key was not found");
 
-	DBusConnection * connection = getDbusConnection (DBUS_BUS_SYSTEM);
+	DBusConnection * connection = getDbusConnection (testBusType);
 	ReceiveContext * context = createReceiveContext (connection, "KeyDeleted");
 	elektraDbusSetupReceiveMessage (connection, receiveMessageHandler, (void *)context);
 
@@ -274,7 +292,7 @@ static void test_announceOnce (void)
 	ksAppendKey (ks, toAdd2);
 	keySetString (toChange, "new value");
 
-	DBusConnection * connection = getDbusConnection (DBUS_BUS_SYSTEM);
+	DBusConnection * connection = getDbusConnection (testBusType);
 	ReceiveContext * context = createReceiveContext (connection, "Commit");
 	elektraDbusSetupReceiveMessage (connection, receiveMessageHandler, (void *)context);
 
@@ -309,7 +327,7 @@ static void test_cascadedChangeNotification (void)
 	// add key to keyset
 	ksAppendKey (ks, toAdd);
 
-	DBusConnection * connection = getDbusConnection (DBUS_BUS_SYSTEM);
+	DBusConnection * connection = getDbusConnection (testBusType);
 	ReceiveContext * context = createReceiveContext (connection, "KeyAdded");
 	elektraDbusSetupReceiveMessage (connection, receiveMessageHandler, (void *)context);
 
@@ -344,7 +362,7 @@ static void test_cascadedAnnounceOnce (void)
 	// add key to keyset
 	ksAppendKey (ks, toAdd);
 
-	DBusConnection * connection = getDbusConnection (DBUS_BUS_SYSTEM);
+	DBusConnection * connection = getDbusConnection (testBusType);
 	ReceiveContext * context = createReceiveContext (connection, "Commit");
 	elektraDbusSetupReceiveMessage (connection, receiveMessageHandler, (void *)context);
 
