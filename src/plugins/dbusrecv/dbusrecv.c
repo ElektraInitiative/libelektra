@@ -80,34 +80,30 @@ void elektraDbusRecvCloseNotification (Plugin * handle)
 
 DBusHandlerResult elektraDbusRecvMessageHandler (DBusConnection * connection ELEKTRA_UNUSED, DBusMessage * message, void * data)
 {
-	DBusMessageIter args;
-	char * keyName;
-
 	char * interface = "org.libelektra";
 
 	int processMessage =
 		dbus_message_is_signal (message, interface, "KeyChanged") || dbus_message_is_signal (message, interface, "KeyAdded");
 	if (processMessage)
 	{
-		// read the parameters
-		if (!dbus_message_iter_init (message, &args))
+		char * keyName;
+		DBusError error;
+		dbus_error_init (&error);
+
+		// read key name from message
+		dbus_message_get_args (message, &error, DBUS_TYPE_STRING, &keyName, DBUS_TYPE_INVALID);
+		if (dbus_error_is_set (&error))
 		{
-			ELEKTRA_LOG_WARNING ("malformed message received");
+			ELEKTRA_LOG_WARNING ("Failed to read message: %s", error.message);
 		}
 		else
 		{
-			if (DBUS_TYPE_STRING == dbus_message_iter_get_arg_type (&args))
-			{
-				dbus_message_iter_get_basic (&args, &keyName);
-			}
-			dbus_message_iter_next (&args);
+			Key * changed = keyNew (keyName, KEY_END);
+			ElektraDbusRecvPluginData * pluginData = (ElektraDbusRecvPluginData *)data;
+			pluginData->notificationCallback (changed, pluginData->notificationContext);
 		}
 
-		Key * changed = keyNew (keyName, KEY_END);
-
-		ElektraDbusRecvPluginData * pluginData = (ElektraDbusRecvPluginData *)data;
-		pluginData->notificationCallback (changed, pluginData->notificationContext);
-
+		dbus_error_free (&error);
 		return DBUS_HANDLER_RESULT_HANDLED;
 	}
 	return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
