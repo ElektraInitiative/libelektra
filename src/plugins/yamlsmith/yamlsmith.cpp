@@ -15,6 +15,7 @@
 #include "yamlsmith.hpp"
 
 #include <kdb.hpp>
+#include <kdbease.h>
 #include <kdberrors.h>
 
 using std::endl;
@@ -22,6 +23,7 @@ using std::ofstream;
 
 using ckdb::Key;
 using ckdb::KeySet;
+using ckdb::elektraKeyGetRelativeName;
 using ckdb::keyNew;
 
 using CppKey = kdb::Key;
@@ -88,7 +90,7 @@ int elektraYamlsmithSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 
 	for (auto key : keys)
 	{
-		file << key.getName () << ": " << key.getString () << endl;
+		file << elektraKeyGetRelativeName (*key, *parent) << ": " << key.getString () << endl;
 	}
 
 	parent.release ();

@@ -5,6 +5,7 @@ add_plugin (yamlsmith
 	SOURCES
 		yamlsmith.hpp
 		yamlsmith.cpp
+	LINK_ELEKTRA elektra-ease
 	ADD_TEST
 	TEST_README
 	)

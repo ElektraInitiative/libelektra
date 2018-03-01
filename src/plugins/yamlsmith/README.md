@@ -20,8 +20,8 @@ kdb set user/examples/yamlsmith/time 'will die and love will burrow it'
 
 # Export data using YAML Smith
 kdb export user/examples/yamlsmith yamlsmith
-#> user/examples/yamlsmith/key: value
-#> user/examples/yamlsmith/time: will die and love will burrow it
+#> key: value
+#> time: will die and love will burrow it
 
 # Undo modifications
 kdb rm -r user/examples/yamlsmith
