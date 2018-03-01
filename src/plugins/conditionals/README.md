@@ -99,6 +99,10 @@ sudo kdb umount /examples/conditionals
 Global plugin example:
 
 ```sh
+# Backup old list of global plugins
+kdb set user/examples/msr $(mktemp)
+kdb export system/elektra/globalplugins > $(kdb get user/examples/msr)
+
 sudo kdb mount main.ini /examples/conditionals ni
 sudo kdb mount sub.ini /examples/conditionals/sub ini
 
@@ -141,4 +145,9 @@ sudo kdb umount /examples/conditionals/sub
 sudo kdb umount /examples/conditionals
 
 sudo kdb global-umount conditionals
+
+kdb rm -r system/elektra/globalplugins
+kdb import system/elektra/globalplugins < $(kdb get user/examples/msr)
+rm $(kdb get user/examples/msr)
+kdb rm user/examples/msr
 ```
