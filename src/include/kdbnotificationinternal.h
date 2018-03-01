@@ -3,7 +3,7 @@
  * @ingroup kdbnotification
  *
  * @brief Elektra-Notification structures and declarations for developing
- * notification plugins.
+ * notification and transport plugins.
  *
  * Only used by elektra-notification library, notification plugins (e.g.
  * internalnotification) and transport plugins.

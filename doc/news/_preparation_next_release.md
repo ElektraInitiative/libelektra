@@ -41,7 +41,8 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.8.
 
 ### Notification: New transport plugin
 
-Elektra's notification feature has received its first transport plugin: D-Bus.
+Elektra's notification feature has received its first transport plugin pair:
+D-Bus.
 Transport plugins provide a link between applications using Elektra.
 These plugins send and receive notifications when a key is modified within the
 key database.
@@ -53,7 +54,8 @@ The new `dbusrecv` plugin is responsible for receiving messages sent from the
 
 For more details see the
 [notification tutorial](https://github.com/ElektraInitiative/libelektra/tree/master/doc/tutorials/notifications.md)
-or the [example applications](https://github.com/ElektraInitiative/libelektra/tree/master/src/libs/notification/example)
+or the
+[example applications](https://github.com/ElektraInitiative/libelektra/tree/master/src/libs/notification/example)
 
 ### <<HIGHLIGHT2>>
 

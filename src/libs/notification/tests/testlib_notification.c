@@ -16,7 +16,7 @@
 
 int callback_called;
 
-void test_openclose (void)
+static void test_openclose (void)
 {
 	printf ("test open & close\n");
 
@@ -39,7 +39,7 @@ void test_openclose (void)
 	keyDel (key);
 }
 
-void test_registerInt (void)
+static void test_registerInt (void)
 {
 	printf ("test elektraNotificationRegisterInt\n");
 
@@ -71,12 +71,12 @@ void test_registerInt (void)
 	keyDel (valueKey);
 }
 
-void testCallback (Key * key ELEKTRA_UNUSED)
+static void testCallback (Key * key ELEKTRA_UNUSED)
 {
 	callback_called = 1;
 }
 
-void test_registerCallback (void)
+static void test_registerCallback (void)
 {
 	printf ("test elektraNotificationRegisterCallback\n");
 

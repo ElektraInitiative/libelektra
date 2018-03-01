@@ -11,7 +11,6 @@
 #include "kdbconfig.h"
 #endif
 
-#include "../../bindings/io/adapter/dbus/dbus.h"
 #include "dbusrecv.h"
 
 #include <kdbhelper.h>
@@ -206,7 +205,7 @@ int elektraDbusRecvClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 	return 1; /* success */
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (dbus)
+Plugin * ELEKTRA_PLUGIN_EXPORT (dbusrecv)
 {
 	// clang-format off
 	return elektraPluginExport("dbusrecv",

@@ -6,11 +6,9 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "dbus.h"
+#include "dbusrecv.h"
 
-#include <stdio.h>  // printf() & co
-#include <unistd.h> // sleep()
-//#include <time.h> // time()
+#include <stdio.h> // printf() & co
 
 #include <kdbio_uv.h>
 #include <kdbioplugin.h>

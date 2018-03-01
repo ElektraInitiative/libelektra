@@ -17,7 +17,8 @@
 #include <dbus/dbus.h>
 #include <string.h>
 
-#include "../../bindings/io/adapter/dbus/dbus.h"
+// elektraIoDbus*()
+#include "../../libs/io/adapter/dbus/dbus.h"
 
 /**
  * @internal

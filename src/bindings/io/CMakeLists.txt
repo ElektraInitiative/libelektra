@@ -12,5 +12,3 @@ endif ()
 #if (IS_INCLUDED)
 #	add_subdirectory (doc)
 #endif ()
-
-add_subdirectory (adapter)

@@ -24,7 +24,7 @@
 #define ANSI_COLOR_GREEN "\x1b[32m"
 #define ANSI_COLOR_BLUE "\x1b[34m"
 
-void setTerminalColor (Key * color)
+static void setTerminalColor (Key * color)
 {
 	const char * value = keyString (color);
 	printf ("Callback called. Changing color to %s\n", value);
@@ -48,27 +48,12 @@ void setTerminalColor (Key * color)
 	}
 }
 
-void resetTerminalColor (void)
+static void resetTerminalColor (void)
 {
 	printf (ANSI_COLOR_RESET "\n");
 }
 
-void printKeyValue (KeySet * ks, Key * search, char * messageNotSet)
-{
-	Key * found = ksLookup (ks, search, 0);
-	printf ("Key \"%s\"", keyName (search));
-	if (!found)
-	{
-		printf (" not set. %s", messageNotSet);
-	}
-	else
-	{
-		printf (" has value \"%s\"", keyString (found));
-	}
-	printf ("\n");
-}
-
-void onSIGNAL (int signal)
+static void onSIGNAL (int signal)
 {
 	if (signal == SIGINT)
 	{
@@ -76,7 +61,7 @@ void onSIGNAL (int signal)
 	}
 }
 
-void printVariable (ElektraIoTimerOperation * timer)
+static void printVariable (ElektraIoTimerOperation * timer)
 {
 	int value = *(int *)elektraIoTimerGetData (timer);
 	printf ("\nMy integer value is %d\n", value);

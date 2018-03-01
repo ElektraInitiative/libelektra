@@ -25,7 +25,7 @@
  * @param  placement Placement name
  * @return           Placement index or -1 on unknown placement name
  */
-int placementToPosition (char * placement)
+static int placementToPosition (char * placement)
 {
 	if (strcmp (placement, "prerollback") == 0)
 	{
@@ -578,7 +578,7 @@ static int mountGlobalPlugin (KDB * kdb, Plugin * plugin)
  * @retval 0 on errors
  * @retval 1 on success
  */
-int unmountGlobalPlugin (KDB * kdb, Plugin * plugin)
+static int unmountGlobalPlugin (KDB * kdb, Plugin * plugin)
 {
 	ELEKTRA_NOT_NULL (kdb);
 	ELEKTRA_NOT_NULL (plugin);
@@ -686,7 +686,23 @@ static void pluginsCloseNotification (KDB * kdb)
 	}
 }
 
-void elektraNotificationDoUpdate (Key * key, ElektraNotificationCallbackContext * context)
+/**
+ * @internal
+ * Performs kdbGet to get updates for the changed key.
+ *
+ * The notification plugin (internalnotification) implicitly updates registered
+ * keys.
+ *
+ * NOTE This function might be moved to the internalnotification plugin to
+ * run kdbGet only for registered keys.
+ * Overrides through spec might be problematic however.
+ *
+ * @see ElektraNotificationChangeCallback (kdbnotificationinternal.h)
+ *
+ * @param key     changed key
+ * @param context callback context
+ */
+static void elektraNotificationDoUpdate (Key * key, ElektraNotificationCallbackContext * context)
 {
 	ELEKTRA_NOT_NULL (key);
 	ELEKTRA_NOT_NULL (context);

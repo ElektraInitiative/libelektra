@@ -21,7 +21,7 @@ typedef struct
 
 	DBusConnection * connection;
 	int stop;
-} ReceiveContext;
+} TestContext;
 
 #define TEST_TIMEOUT 1
 #define TEST_DISPATCH_TIMEOUT 100
@@ -41,9 +41,9 @@ char * testKeyNamespace;
  * @param  data       test context
  * @return            message handler result
  */
-DBusHandlerResult receiveMessageHandler (DBusConnection * connection ELEKTRA_UNUSED, DBusMessage * message, void * data)
+static DBusHandlerResult receiveMessageHandler (DBusConnection * connection ELEKTRA_UNUSED, DBusMessage * message, void * data)
 {
-	ReceiveContext * context = (ReceiveContext *)data;
+	TestContext * context = (TestContext *)data;
 
 	char * interface = "org.libelektra";
 	if (dbus_message_is_signal (message, interface, context->lookupSignalName))
@@ -78,7 +78,7 @@ DBusHandlerResult receiveMessageHandler (DBusConnection * connection ELEKTRA_UNU
  *
  * @param context test context
  */
-static void runDispatch (ReceiveContext * context)
+static void runDispatch (TestContext * context)
 {
 	time_t now;
 	time_t start = time (NULL);
@@ -103,9 +103,9 @@ static void runDispatch (ReceiveContext * context)
  * @param  signalName Expected signal name
  * @return            Context
  */
-static ReceiveContext * createReceiveContext (DBusConnection * connection, char * signalName)
+static TestContext * createTestContext (DBusConnection * connection, char * signalName)
 {
-	ReceiveContext * context = elektraMalloc (sizeof *context);
+	TestContext * context = elektraMalloc (sizeof *context);
 	exit_if_fail (context, "malloc failed");
 
 	context->lookupSignalName = signalName;
@@ -194,7 +194,7 @@ static void test_keyAdded (void)
 	ksAppendKey (ks, toAdd);
 
 	DBusConnection * connection = getDbusConnection (testBusType);
-	ReceiveContext * context = createReceiveContext (connection, "KeyAdded");
+	TestContext * context = createTestContext (connection, "KeyAdded");
 	elektraDbusSetupReceiveMessage (connection, receiveMessageHandler, (void *)context);
 
 	plugin->kdbSet (plugin, ks, parentKey);
@@ -239,7 +239,7 @@ static void test_keyChanged (void)
 	keySetString (toChange, "new value");
 
 	DBusConnection * connection = getDbusConnection (testBusType);
-	ReceiveContext * context = createReceiveContext (connection, "KeyChanged");
+	TestContext * context = createTestContext (connection, "KeyChanged");
 	elektraDbusSetupReceiveMessage (connection, receiveMessageHandler, (void *)context);
 
 	plugin->kdbSet (plugin, ks, parentKey);
@@ -281,7 +281,7 @@ static void test_keyDeleted (void)
 	succeed_if (deleted != NULL, "key was not found");
 
 	DBusConnection * connection = getDbusConnection (testBusType);
-	ReceiveContext * context = createReceiveContext (connection, "KeyDeleted");
+	TestContext * context = createTestContext (connection, "KeyDeleted");
 	elektraDbusSetupReceiveMessage (connection, receiveMessageHandler, (void *)context);
 
 	plugin->kdbSet (plugin, ks, parentKey);
@@ -334,7 +334,7 @@ static void test_announceOnce (void)
 	keySetString (toChange, "new value");
 
 	DBusConnection * connection = getDbusConnection (testBusType);
-	ReceiveContext * context = createReceiveContext (connection, "Commit");
+	TestContext * context = createTestContext (connection, "Commit");
 	elektraDbusSetupReceiveMessage (connection, receiveMessageHandler, (void *)context);
 
 	plugin->kdbSet (plugin, ks, parentKey);
@@ -377,7 +377,7 @@ static void test_cascadedChangeNotification (void)
 	ksAppendKey (ks, toAdd);
 
 	DBusConnection * connection = getDbusConnection (testBusType);
-	ReceiveContext * context = createReceiveContext (connection, "KeyAdded");
+	TestContext * context = createTestContext (connection, "KeyAdded");
 	elektraDbusSetupReceiveMessage (connection, receiveMessageHandler, (void *)context);
 
 	plugin->kdbSet (plugin, ks, parentKey);
@@ -420,7 +420,7 @@ static void test_cascadedAnnounceOnce (void)
 	ksAppendKey (ks, toAdd);
 
 	DBusConnection * connection = getDbusConnection (testBusType);
-	ReceiveContext * context = createReceiveContext (connection, "Commit");
+	TestContext * context = createTestContext (connection, "Commit");
 	elektraDbusSetupReceiveMessage (connection, receiveMessageHandler, (void *)context);
 
 	plugin->kdbSet (plugin, ks, parentKey);

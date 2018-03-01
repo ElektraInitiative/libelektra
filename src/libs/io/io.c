@@ -16,19 +16,6 @@
 
 #include <stdio.h>
 
-// TODO remove before final commit
-void debugKeySet (char * name, KeySet * ks)
-{
-	printf ("Debug KeySet %s\n", name);
-	ksRewind (ks);
-	Key * current;
-	while ((current = ksNext (ks)) != NULL)
-	{
-		printf ("  %s = %s\n", keyName (current), keyString (current));
-	}
-	ksRewind (ks);
-}
-
 void elektraIoSetBinding (KDB * kdb, ElektraIoInterface * ioBinding)
 {
 	kdb->ioBinding = ioBinding;

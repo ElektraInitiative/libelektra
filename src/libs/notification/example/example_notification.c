@@ -23,7 +23,7 @@ static volatile int keepRunning = 0;
 #define ANSI_COLOR_GREEN "\x1b[32m"
 #define ANSI_COLOR_BLUE "\x1b[34m"
 
-void setTerminalColor (Key * color)
+static void setTerminalColor (Key * color)
 {
 	const char * value = keyString (color);
 	printf ("Callback called. Changing color to %s\n", value);
@@ -47,12 +47,12 @@ void setTerminalColor (Key * color)
 	}
 }
 
-void resetTerminalColor (void)
+static void resetTerminalColor (void)
 {
 	printf (ANSI_COLOR_RESET "\n");
 }
 
-void printKeyValue (KeySet * ks, Key * search, char * messageNotSet)
+static void printKeyValue (KeySet * ks, Key * search, char * messageNotSet)
 {
 	Key * found = ksLookup (ks, search, 0);
 	printf ("Key \"%s\"", keyName (search));

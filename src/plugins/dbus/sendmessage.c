@@ -9,8 +9,6 @@
 
 #include "dbus.h"
 
-#include "../../bindings/io/adapter/dbus/dbus.h"
-
 #ifndef HAVE_KDBCONFIG
 #include "kdbconfig.h"
 #endif
