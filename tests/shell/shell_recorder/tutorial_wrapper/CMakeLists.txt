@@ -1,7 +1,16 @@
 function (add_s_test NAME FILE)
 	set (TEST_NAME testshell_markdown_${NAME})
 	set (oneValueArgs ENVIRONMENT)
+	set (multiValueArgs REQUIRED_PLUGINS)
 	cmake_parse_arguments (ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
+	foreach (plugin ${ARG_REQUIRED_PLUGINS})
+		list (FIND REMOVED_PLUGINS ${plugin} plugin_index)
+		if (plugin_index GREATER -1)
+			return ()
+		endif (plugin_index GREATER -1)
+	endforeach (plugin ${ARG_REQUIRED_PLUGINS})
+
 	add_test (
 		NAME testshell_markdown_${NAME}
 		COMMAND "${CMAKE_CURRENT_BINARY_DIR}/markdown_shell_recorder.sh" "${FILE}"
@@ -18,18 +27,9 @@ function (add_plugin_shell_test PLUGIN)
 	endif ()
 endfunction ()
 
-# Only add tests below if INI plugin is available
-list (FIND REMOVED_PLUGINS ini PLUGIN_INDEX_INI)
-if (${PLUGIN_INDEX_INI} EQUAL -1)
-	add_s_test (msr_syntax "${CMAKE_SOURCE_DIR}/tests/shell/shell_recorder/tutorial_wrapper/SyntaxCheck.md")
-	add_s_test (ini_crash_test "${CMAKE_SOURCE_DIR}/src/plugins/ini/crash_test/crash_test.md")
-endif (${PLUGIN_INDEX_INI} EQUAL -1)
-
-# Only add test below if Spec plugin is available
-list (FIND REMOVED_PLUGINS spec PLUGIN_INDEX_SPEC)
-if (${PLUGIN_INDEX_SPEC} EQUAL -1)
-	add_s_test (kdb-global-umount "${CMAKE_SOURCE_DIR}/doc/help/kdb-global-umount.md")
-endif (${PLUGIN_INDEX_SPEC} EQUAL -1)
+add_s_test (msr_syntax "${CMAKE_SOURCE_DIR}/tests/shell/shell_recorder/tutorial_wrapper/SyntaxCheck.md" REQUIRED_PLUGINS ini)
+add_s_test (ini_crash_test "${CMAKE_SOURCE_DIR}/src/plugins/ini/crash_test/crash_test.md" REQUIRED_PLUGINS ini)
+add_s_test (kdb-global-umount "${CMAKE_SOURCE_DIR}/doc/help/kdb-global-umount.md" REQUIRED_PLUGINS spec)
 
 add_s_test (readme_msr "${CMAKE_SOURCE_DIR}/tests/shell/shell_recorder/tutorial_wrapper/README.md")
 add_s_test (issue_template "${CMAKE_SOURCE_DIR}/.github/ISSUE_TEMPLATE.md")
@@ -63,12 +63,7 @@ add_plugin_shell_test (yamlcpp)
 # See also: https://github.com/ElektraInitiative/libelektra/pull/1728
 set (ASAN_LINUX ENABLE_ASAN AND ${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 if (NOT (${ASAN_LINUX} AND CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4))
-	# Only add test below if Validation plugin is available
-	list (FIND REMOVED_PLUGINS validation PLUGIN_INDEX_VALIDATION)
-	if (${PLUGIN_INDEX_VALIDATION} EQUAL -1)
-		add_s_test (tutorial_validation "${CMAKE_SOURCE_DIR}/doc/tutorials/validation.md")
-	endif (${PLUGIN_INDEX_VALIDATION} EQUAL -1)
-
+	add_s_test (tutorial_validation "${CMAKE_SOURCE_DIR}/doc/tutorials/validation.md" REQUIRED_PLUGINS validation)
 	add_plugin_shell_test (base64)
 	add_plugin_shell_test (ini)
 	add_plugin_shell_test (mini)
