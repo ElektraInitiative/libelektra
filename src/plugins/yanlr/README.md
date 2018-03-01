@@ -1,7 +1,7 @@
 - infos = Information about the yanlr plugin is in keys below
 - infos/author = René Schwaiger <sanssecours@me.com>
 - infos/licence = BSD
-- infos/needs =
+- infos/needs = yamlsmith
 - infos/provides = storage/yaml
 - infos/recommends =
 - infos/placements = getstorage
