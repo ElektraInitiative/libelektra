@@ -1,8 +1,6 @@
 include (LibAddMacros)
 
-set (ASAN_LINUX (ENABLE_ASAN AND CMAKE_SYSTEM_NAME MATCHES "Linux"))
-
-if (BUILD_TESTING AND NOT ${ASAN_LINUX})
+if (BUILD_TESTING)
 
 	add_headers (HDR_FILES)
 
@@ -30,4 +28,4 @@ if (BUILD_TESTING AND NOT ${ASAN_LINUX})
 
 	endforeach (file ${TESTS})
 
-endif (BUILD_TESTING AND NOT ${ASAN_LINUX})
+endif (BUILD_TESTING)

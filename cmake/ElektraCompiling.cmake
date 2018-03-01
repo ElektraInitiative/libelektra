@@ -100,6 +100,7 @@ if (ENABLE_ASAN)
 	set (ASAN_LIBRARY "-lasan") #this is needed for GIR to put asan in front
 
 	if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+		set (CXX_EXTRA_FLAGS "${CXX_EXTRA_FLAGS} -fno-sanitize=vptr")
 		set (EXTRA_FLAGS "${EXTRA_FLAGS} -fsanitize=integer")
 		set (EXTRA_FLAGS "${EXTRA_FLAGS} -fsanitize-blacklist=\"${CMAKE_SOURCE_DIR}/tests/sanitizer.blacklist\"")
 	endif ()
@@ -157,4 +158,3 @@ set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX_STD} ${EXTRA_FLAGS} ${CXX_EXTRA_F
 
 message (STATUS "C flags are ${CMAKE_C_FLAGS}")
 message (STATUS "CXX flags are ${CMAKE_CXX_FLAGS}")
-
