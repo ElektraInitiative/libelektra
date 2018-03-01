@@ -82,7 +82,7 @@ function (add_s_test NAME FILE)
 
 	add_test (
 		NAME testshell_markdown_${NAME}
-		COMMAND "${CMAKE_CURRENT_BINARY_DIR}/markdown_shell_recorder.sh" "${FILE}"
+		COMMAND "${CMAKE_BINARY_DIR}/tests/shell/shell_recorder/tutorial_wrapper/markdown_shell_recorder.sh" "${FILE}"
 		WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
 		)
 	set_tests_properties (${TEST_NAME} PROPERTIES ENVIRONMENT "${ARG_ENVIRONMENT}")
