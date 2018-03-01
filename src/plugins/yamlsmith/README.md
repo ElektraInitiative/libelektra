@@ -4,7 +4,7 @@
 - infos/needs =
 - infos/provides = conv
 - infos/recommends =
-- infos/placements = getstorage setstorage
+- infos/placements = setstorage
 - infos/status = maintained specific unittest nodep preview experimental unfinished nodoc concept discouraged
 - infos/metadata =
 - infos/description = This plugin exports key sets in the YAML format
