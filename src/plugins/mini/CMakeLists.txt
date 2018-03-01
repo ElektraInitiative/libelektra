@@ -9,4 +9,5 @@ add_plugin (mini
 		elektra-utility
 	ADD_TEST
 	INSTALL_TEST_DATA
+	TEST_README
 	)

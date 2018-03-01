@@ -11,10 +11,6 @@ add_s_test (kdb-complete "${CMAKE_SOURCE_DIR}/doc/help/kdb-complete.md")
 add_s_test (kdb-ls "${CMAKE_SOURCE_DIR}/doc/help/kdb-ls.md")
 
 add_s_test (tutorial_validation "${CMAKE_SOURCE_DIR}/doc/tutorials/validation.md" REQUIRED_PLUGINS validation)
-add_plugin_shell_test (base64)
-add_plugin_shell_test (ini)
-add_plugin_shell_test (mini)
-add_plugin_shell_test (tcl)
 
 # Only works with super user privileges, since it writes to `/etc/hosts`:
 # add_s_test (tutorial_mount "${CMAKE_SOURCE_DIR}/doc/tutorials/mount.md")
