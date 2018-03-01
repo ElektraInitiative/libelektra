@@ -14,11 +14,17 @@
 ## Example
 
 ```sh
-# Mount plugin
-sudo kdb mount config.yaml user/examples/yamlsmith yamlsmith
+# Add some key-value pairs to the database
+kdb set user/examples/yamlsmith/key value
+kdb set user/examples/yamlsmith/time 'will die and love will burrow it'
 
-# Unmount plugin
-sudo kdb umount user/examples/yamlsmith
+# Export data using YAML Smith
+kdb export user/examples/yamlsmith yamlsmith
+#> user/examples/yamlsmith/key: value
+#> user/examples/yamlsmith/time: will die and love will burrow it
+
+# Undo modifications
+kdb rm -r user/examples/yamlsmith
 ```
 
 ## Limitations
