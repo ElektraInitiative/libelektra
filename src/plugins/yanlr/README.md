@@ -25,8 +25,20 @@ kdb ls /examples/yanlr
 #> user/examples/yanlr/hello
 #> user/examples/yanlr/key
 
+# Add a new key-value pair
+# Yan LR actually uses the YAML Smith plugin to write data
+kdb set /examples/yanlr/new brand
+
+kdb ls /examples/yanlr
+#> user/examples/yanlr/hello
+#> user/examples/yanlr/key
+#> user/examples/yanlr/new
+
+kdb get /examples/yanlr/hello
+#> world
+
 # Undo modifications to the key database
-rm -f `kdb file user/examples/yanlr`
+kdb rm -r user/examples/yanlr
 sudo kdb umount user/examples/yanlr
 ```
 
