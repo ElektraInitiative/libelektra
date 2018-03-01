@@ -21,10 +21,7 @@ function (add_s_test NAME FILE)
 endfunction ()
 
 function (add_plugin_shell_test PLUGIN)
-	list (FIND REMOVED_PLUGINS ${PLUGIN} INDEX)
-	if (${INDEX} EQUAL -1)
-		add_s_test (${PLUGIN} "${CMAKE_SOURCE_DIR}/src/plugins/${PLUGIN}/README.md" ${ARGN})
-	endif ()
+	add_s_test (${PLUGIN} "${CMAKE_SOURCE_DIR}/src/plugins/${PLUGIN}/README.md" ${ARGN} REQUIRED_PLUGINS ${PLUGIN})
 endfunction ()
 
 add_s_test (msr_syntax "${CMAKE_SOURCE_DIR}/tests/shell/shell_recorder/tutorial_wrapper/SyntaxCheck.md" REQUIRED_PLUGINS ini)
