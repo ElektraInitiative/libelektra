@@ -48,7 +48,6 @@ KeySet * contractYanlr (void)
 	return ksNew (30, keyNew ("system/elektra/modules/yanlr", KEY_VALUE, "yanlr plugin waits for your orders", KEY_END),
 		      keyNew ("system/elektra/modules/yanlr/exports", KEY_END),
 		      keyNew ("system/elektra/modules/yanlr/exports/get", KEY_FUNC, elektraYanlrGet, KEY_END),
-		      keyNew ("system/elektra/modules/yanlr/exports/set", KEY_FUNC, elektraYanlrSet, KEY_END),
 #include ELEKTRA_README (yanlr)
 		      keyNew ("system/elektra/modules/yanlr/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 }
@@ -101,16 +100,9 @@ int elektraYanlrGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	return readKeys.size () <= 0 ? ELEKTRA_PLUGIN_STATUS_NO_UPDATE : ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
-/** @see elektraDocSet */
-int elektraYanlrSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
-{
-	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
-}
-
 Plugin * ELEKTRA_PLUGIN_EXPORT (yanlr)
 {
-	return elektraPluginExport ("yanlr", ELEKTRA_PLUGIN_GET, &elektraYanlrGet, ELEKTRA_PLUGIN_SET, &elektraYanlrSet,
-				    ELEKTRA_PLUGIN_END);
+	return elektraPluginExport ("yanlr", ELEKTRA_PLUGIN_GET, &elektraYanlrGet, ELEKTRA_PLUGIN_END);
 }
 
 } // end extern "C"

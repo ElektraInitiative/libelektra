@@ -19,7 +19,6 @@ using ckdb::Plugin;
 extern "C" {
 
 int elektraYanlrGet (Plugin *, KeySet *, Key *);
-int elektraYanlrSet (Plugin *, KeySet *, Key *);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (yanlr);
 
