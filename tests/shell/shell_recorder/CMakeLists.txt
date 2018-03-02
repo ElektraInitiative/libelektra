@@ -1,3 +1,23 @@
+function (add_shell_recorder_test FILENAME)
+	set (multiValueArgs REQUIRED_PLUGINS)
+	cmake_parse_arguments (ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
+	foreach (plugin ${ARG_REQUIRED_PLUGINS})
+		list (FIND REMOVED_PLUGINS ${plugin} plugin_index)
+		if (plugin_index GREATER -1)
+			return ()
+		endif (plugin_index GREATER -1)
+	endforeach (plugin ${ARG_REQUIRED_PLUGINS})
+
+	get_filename_component (testname_we ${FILENAME} NAME_WE)
+	add_test (
+		testshell_${testname_we}
+		"${CMAKE_CURRENT_BINARY_DIR}/shell_recorder.sh"
+		"${CMAKE_CURRENT_SOURCE_DIR}/${name}"
+		)
+	set_property(TEST testshell_${testname_we} PROPERTY LABELS memleak kdbtests)
+endfunction (add_shell_recorder_test FILENAME)
+
 if (ENABLE_KDB_TESTING)
 	# set kdb command
 	SET(USE_CMAKE_KDB_COMMAND "")
@@ -39,30 +59,12 @@ if (ENABLE_KDB_TESTING)
 			@ONLY
 		)
 
-	set (SCRIPT_TESTS
-		"db_changes.esr"
-		"hosts.esr"
-		"listtest.esr"
-		"profiletest.esr"
-		"script.esr"
-	)
-
-	# Only add the tests below if it works using the current configuration
-	list (FIND REMOVED_PLUGINS ni PLUGIN_INDEX)
-	if (${PLUGIN_INDEX} EQUAL -1)
-		list (APPEND SCRIPT_TESTS "mathcheck.esr")
-	endif (${PLUGIN_INDEX} EQUAL -1)
-
-	foreach (name ${SCRIPT_TESTS})
-		get_filename_component (testname_we ${name} NAME_WE)
-		add_test (
-			testshell_${testname_we}
-			"${CMAKE_CURRENT_BINARY_DIR}/shell_recorder.sh"
-			"${CMAKE_CURRENT_SOURCE_DIR}/${name}"
-			)
-
-		set_property(TEST testshell_${testname_we} PROPERTY LABELS memleak kdbtests)
-	endforeach (name ${SCRIPT_TESTS})
+	add_shell_recorder_test (db_changes.esr)
+	add_shell_recorder_test (host.esr REQUIRED_PLUGINS hosts)
+	add_shell_recorder_test (listtest.esr REQUIRED_PLUGINS dump list)
+	add_shell_recorder_test (mathcheck.esr REQUIRED_PLUGINS math)
+	add_shell_recorder_test (profiletest.esr)
+	add_shell_recorder_test (script.esr)
 
 	# The tests below might fail on Linux if ASAN is enabled
 	# The problem might be related to a call of a function via a pointer of incorrect type
