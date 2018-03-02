@@ -286,7 +286,7 @@ function (add_plugin PLUGIN_SHORT_NAME)
 		endif ()
 
 		if (ARG_TEST_README)
-			add_plugin_shell_test (${PLUGIN_SHORT_NAME} ENVIRONMENT ${ARG_TEST_ENVIRONMENT})
+			add_msr_test_plugin (${PLUGIN_SHORT_NAME} ENVIRONMENT ${ARG_TEST_ENVIRONMENT})
 		endif (ARG_TEST_README)
 
 		return ()

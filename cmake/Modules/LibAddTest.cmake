@@ -77,7 +77,7 @@ endmacro (add_gtest)
 #
 # ENVIRONMENT:
 # 	This optional argument specifies environment variables defined while CTest executes the MSR test.
-function (add_s_test NAME FILE)
+function (add_msr_test NAME FILE)
 	set (TEST_NAME testshell_markdown_${NAME})
 	set (multiValueArgs REQUIRED_PLUGINS ENVIRONMENT)
 	cmake_parse_arguments (ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
@@ -107,9 +107,9 @@ endfunction ()
 #
 # ENVIRONMENT:
 # 	This optional argument specifies environment variables defined while CTest executes the MSR test.
-function (add_plugin_shell_test PLUGIN)
+function (add_msr_test_plugin PLUGIN)
 	set (multiValueArgs REQUIRED_PLUGINS)
 	cmake_parse_arguments (ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 	list (APPEND ARG_REQUIRED_PLUGINS ${PLUGIN})
-	add_s_test (${PLUGIN} "${CMAKE_SOURCE_DIR}/src/plugins/${PLUGIN}/README.md" ${ARGN} REQUIRED_PLUGINS ${ARG_REQUIRED_PLUGINS})
+	add_msr_test (${PLUGIN} "${CMAKE_SOURCE_DIR}/src/plugins/${PLUGIN}/README.md" ${ARGN} REQUIRED_PLUGINS ${ARG_REQUIRED_PLUGINS})
 endfunction ()
