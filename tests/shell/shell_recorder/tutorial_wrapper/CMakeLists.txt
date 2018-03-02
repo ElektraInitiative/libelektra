@@ -1,16 +1,20 @@
 function (add_s_test NAME FILE)
+	set (TEST_NAME testshell_markdown_${NAME})
+	set (oneValueArgs ENVIRONMENT)
+	cmake_parse_arguments (ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 	add_test (
 		NAME testshell_markdown_${NAME}
 		COMMAND "${CMAKE_CURRENT_BINARY_DIR}/markdown_shell_recorder.sh" "${FILE}"
 		WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
 		)
-	set_property(TEST testshell_markdown_${NAME} PROPERTY LABELS memleak kdbtests)
+	set_tests_properties (${TEST_NAME} PROPERTIES ENVIRONMENT "${ARG_ENVIRONMENT}")
+	set_property(TEST ${TEST_NAME} PROPERTY LABELS memleak kdbtests)
 endfunction ()
 
 function (add_plugin_shell_test PLUGIN)
 	list (FIND REMOVED_PLUGINS ${PLUGIN} INDEX)
 	if (${INDEX} EQUAL -1)
-		add_s_test (${PLUGIN} "${CMAKE_SOURCE_DIR}/src/plugins/${PLUGIN}/README.md")
+		add_s_test (${PLUGIN} "${CMAKE_SOURCE_DIR}/src/plugins/${PLUGIN}/README.md" ${ARGN})
 	endif ()
 endfunction ()
 
