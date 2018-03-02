@@ -76,7 +76,17 @@ These notes are of interest for people maintaining packages of Elektra:
 
 These notes are of interest for people developing Elektra:
 
-- <<TODO>>
+- You can now add a [Markdown Shell Recorder](https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper) test for a plugin
+  via the CMake function `add_plugin`.
+- The CMake functions
+
+   - `add_plugin`
+   - `add_msr_test`
+   - `add_msr_test_plugin`, and the new
+   - `add_shell_recorder_test`
+
+    now allow you to specify a list of required plugins for [Shell Recorder](https://master.libelektra.org/tests/shell/shell_recorder) and
+   Markdown Shell Recorder tests.
 
 ## Fixes
 
