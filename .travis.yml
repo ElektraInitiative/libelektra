@@ -198,6 +198,9 @@ script:
   - ninja
   - |
     if [[ "$FAST" == "ON" || "$ASAN" = "ON" ]]; then
+      if [[ "$ASAN" = "ON" ]]; then
+        export LD_PRELOAD=$(find /usr/ -name '*libclang_rt.ubsan_standalone_cxx-x86_64.so')
+      fi
       ninja run_all
     else
       ninja install
