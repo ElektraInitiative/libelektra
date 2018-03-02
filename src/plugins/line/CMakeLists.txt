@@ -16,6 +16,7 @@ add_plugin (line
 	LINK_ELEKTRA
 		elektra-ease
 	INSTALL_TEST_DATA
+	TEST_README
 	)
 
 if (ADDTESTING_PHASE)

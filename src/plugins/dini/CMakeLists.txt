@@ -6,4 +6,5 @@ add_plugin (dini
 		dini.c
 	LINK_ELEKTRA
 		elektra-invoke
+	TEST_README
 	)

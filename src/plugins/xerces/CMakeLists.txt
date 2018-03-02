@@ -22,6 +22,7 @@ add_plugin (xerces
 	LINK_ELEKTRA
 		elektra-meta
 	INSTALL_TEST_DATA
+	TEST_README
 )
 
 if (ADDTESTING_PHASE)

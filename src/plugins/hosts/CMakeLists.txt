@@ -12,5 +12,6 @@ add_plugin (hosts
 		elektra-proposal
 		elektra-meta
 	ADD_TEST
+	TEST_README
 	INSTALL_TEST_DATA
 	)

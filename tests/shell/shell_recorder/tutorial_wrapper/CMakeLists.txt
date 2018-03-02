@@ -10,27 +10,6 @@ add_s_test (tutorial_cascading "${CMAKE_SOURCE_DIR}/doc/tutorials/cascading.md")
 add_s_test (kdb-complete "${CMAKE_SOURCE_DIR}/doc/help/kdb-complete.md")
 add_s_test (kdb-ls "${CMAKE_SOURCE_DIR}/doc/help/kdb-ls.md")
 
-add_plugin_shell_test (blockresolver)
-add_plugin_shell_test (boolean)
-add_plugin_shell_test (csvstorage)
-add_plugin_shell_test (cachefilter)
-add_plugin_shell_test (camel)
-add_plugin_shell_test (conditionals)
-add_plugin_shell_test (dini)
-add_plugin_shell_test (directoryvalue)
-add_plugin_shell_test (enum)
-add_plugin_shell_test (hosts)
-add_plugin_shell_test (ipaddr)
-add_plugin_shell_test (line)
-add_plugin_shell_test (mathcheck)
-add_plugin_shell_test (mozprefs)
-add_plugin_shell_test (multifile)
-add_plugin_shell_test (range)
-add_plugin_shell_test (type)
-add_plugin_shell_test (xerces)
-add_plugin_shell_test (yajl)
-add_plugin_shell_test (yamlcpp)
-
 # The tests below might fail on Linux if ASAN is enabled
 # The problem might be related to a call of a function via a pointer of incorrect type
 # See also: https://github.com/ElektraInitiative/libelektra/pull/1728

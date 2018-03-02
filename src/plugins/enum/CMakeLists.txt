@@ -8,4 +8,5 @@ add_plugin (enum
 		elektra-meta
 		elektra-utility
 	ADD_TEST
+	TEST_README
 	)

@@ -8,4 +8,5 @@ add_plugin (blockresolver
 		elektra-invoke
 	ADD_TEST
 	INSTALL_TEST_DATA
+	TEST_README
 	)

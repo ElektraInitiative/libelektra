@@ -7,4 +7,5 @@ add_plugin (conditionals
 	LINK_ELEKTRA
 		elektra-meta
 	ADD_TEST
+	TEST_README
 	)

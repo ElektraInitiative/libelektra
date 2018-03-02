@@ -6,4 +6,5 @@ add_plugin (ipaddr
 		ipaddr.c
 		test_ipaddr.h
 	ADD_TEST
+	TEST_README
 	)

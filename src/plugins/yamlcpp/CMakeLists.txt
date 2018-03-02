@@ -22,6 +22,7 @@ endif (DEPENDENCY_PHASE)
 add_plugin (yamlcpp
 	CPP
 	ADD_TEST
+	TEST_README
 	INSTALL_TEST_DATA
 	SOURCES
 		yamlcpp.hpp yamlcpp.cpp

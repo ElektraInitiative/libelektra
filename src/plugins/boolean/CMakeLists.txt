@@ -5,4 +5,5 @@ add_plugin (boolean
 		boolean.h
 		boolean.c
 	ADD_TEST
+	TEST_README
 	)
