@@ -233,12 +233,15 @@ endfunction ()
 # TEST_ENVIRONMENT:
 #   Specifies environment variables for the **Markdown Shell Recorder** test
 #
+# TEST_REQUIRED_PLUGINS:
+#   Specifies a list of required plugins for the **Markdown Shell Recorder** test
+#
 function (add_plugin PLUGIN_SHORT_NAME)
 	cmake_parse_arguments (ARG
 		"CPP;ADD_TEST;TEST_README;INSTALL_TEST_DATA" # optional keywords
 		"INCLUDE_SYSTEM_DIRECTORIES" # one value keywords
 		# multi value keywords
-		"SOURCES;LINK_LIBRARIES;COMPILE_DEFINITIONS;INCLUDE_DIRECTORIES;LINK_ELEKTRA;DEPENDS;TEST_ENVIRONMENT"
+		"SOURCES;LINK_LIBRARIES;COMPILE_DEFINITIONS;INCLUDE_DIRECTORIES;LINK_ELEKTRA;DEPENDS;TEST_ENVIRONMENT;TEST_REQUIRED_PLUGINS"
 		${ARGN}
 	)
 
@@ -255,6 +258,7 @@ function (add_plugin PLUGIN_SHORT_NAME)
 	restore_variable (${PLUGIN_NAME} ARG_ADD_TEST)
 	restore_variable (${PLUGIN_NAME} ARG_TEST_README)
 	restore_variable (${PLUGIN_NAME} ARG_TEST_ENVIRONMENT)
+	restore_variable (${PLUGIN_NAME} ARG_TEST_REQUIRED_PLUGINS)
 	restore_variable (${PLUGIN_NAME} ARG_INSTALL_TEST_DATA)
 
 	if (ARG_UNPARSED_ARGUMENTS)
@@ -286,7 +290,9 @@ function (add_plugin PLUGIN_SHORT_NAME)
 		endif ()
 
 		if (ARG_TEST_README)
-			add_msr_test_plugin (${PLUGIN_SHORT_NAME} ENVIRONMENT ${ARG_TEST_ENVIRONMENT})
+			add_msr_test_plugin (${PLUGIN_SHORT_NAME}
+				ENVIRONMENT ${ARG_TEST_ENVIRONMENT}
+				REQUIRED_PLUGINS ${ARG_TEST_REQUIRED_PLUGINS})
 		endif (ARG_TEST_README)
 
 		return ()
