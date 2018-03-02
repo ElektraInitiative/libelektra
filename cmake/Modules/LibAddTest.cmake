@@ -79,8 +79,7 @@ endmacro (add_gtest)
 # 	This optional argument specifies environment variables defined while CTest executes the MSR test.
 function (add_s_test NAME FILE)
 	set (TEST_NAME testshell_markdown_${NAME})
-	set (oneValueArgs ENVIRONMENT)
-	set (multiValueArgs REQUIRED_PLUGINS)
+	set (multiValueArgs REQUIRED_PLUGINS ENVIRONMENT)
 	cmake_parse_arguments (ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
 	foreach (plugin ${ARG_REQUIRED_PLUGINS})
