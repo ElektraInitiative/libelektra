@@ -67,6 +67,16 @@ macro (add_gtest source)
 	endif(BUILD_TESTING)
 endmacro (add_gtest)
 
+# Add a Markdown Shell Recorder test for a certain Markdown file
+#
+# NAME: This argument specifies a postfix for the name of the CTest this function creates.
+# FILE: This argument specifies the location of the Markdown file that contains the test data.
+#
+# REQUIRED_PLUGINS:
+#	This optional variable specifies a list of plugins required to run the test.
+#
+# ENVIRONMENT:
+# 	This optional argument specifies environment variables defined while CTest executes the MSR test.
 function (add_s_test NAME FILE)
 	set (TEST_NAME testshell_markdown_${NAME})
 	set (oneValueArgs ENVIRONMENT)
@@ -89,6 +99,12 @@ function (add_s_test NAME FILE)
 	set_property(TEST ${TEST_NAME} PROPERTY LABELS memleak kdbtests)
 endfunction ()
 
+# Add a Markdown Shell Recorder test for a certain plugin
+#
+# PLUGIN: This argument specifies the name of the plugin for which this function creates a MSR test.
+#
+# ENVIRONMENT:
+# 	This optional argument specifies environment variables defined while CTest executes the MSR test.
 function (add_plugin_shell_test PLUGIN)
 	add_s_test (${PLUGIN} "${CMAKE_SOURCE_DIR}/src/plugins/${PLUGIN}/README.md" ${ARGN} REQUIRED_PLUGINS ${PLUGIN})
 endfunction ()
