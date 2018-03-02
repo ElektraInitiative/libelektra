@@ -227,6 +227,12 @@ endfunction ()
 # INSTALL_TEST_DATA:
 #  Install a directory with test data which has the same name as the plugin.
 #
+# TEST_README:
+#  Add a Markdown Shell Recorder test for the ReadMe of the plugin
+#
+# ENVIRONMENT:
+#   Specifies environment variables for the Markdown Shell Recorder test
+#
 function (add_plugin PLUGIN_SHORT_NAME)
 	cmake_parse_arguments (ARG
 		"CPP;ADD_TEST;TEST_README;INSTALL_TEST_DATA" # optional keywords
