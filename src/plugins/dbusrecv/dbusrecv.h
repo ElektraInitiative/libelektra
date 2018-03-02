@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief Source for dbus plugin
+ * @brief Headers for dbusrecv plugin
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
@@ -19,7 +19,7 @@
 #include <string.h>
 
 // elektraIoDbus*()
-#include "../../libs/io/adapter/dbus/dbus.h"
+#include <kdbio_adapter_dbus.h>
 
 /**
  * @internal
@@ -42,8 +42,8 @@ typedef struct
 	DBusConnection * sessionBus;
 
 	// D-Bus I/O adapter handles
-	ElektraIoDbusAdapterHandle * systemBusAdapter;
-	ElektraIoDbusAdapterHandle * sessionBusAdapter;
+	ElektraIoAdapterDbusHandle * systemBusAdapter;
+	ElektraIoAdapterDbusHandle * sessionBusAdapter;
 
 } ElektraDbusRecvPluginData;
 

@@ -6,7 +6,7 @@ if (DEPENDENCY_PHASE)
 	endif ()
 	find_package (Ruby)
 	find_swig ()
-	check_binding_included ("swig_ruby" BINDING_WAS_ADDED SUBDIRECTORY "swig/ruby")
+	check_binding_included ("swig_ruby" BINDING_WAS_ADDED SUBDIRECTORY "swig/ruby" SILENT)
 
 	# Disable on GCC 4 and earlier:
 	#	- https://build.libelektra.org/jenkins/job/elektra-gcc47-all

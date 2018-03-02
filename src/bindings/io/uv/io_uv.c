@@ -129,11 +129,7 @@ static void ioUvBindingFdCallback (uv_poll_t * handle, int status, int events)
  *
  * @param handle libuv timer handle
  */
-#ifdef HAVE_LIBUV0
-static void ioUvBindingTimerCallback (uv_timer_t * handle, int unknown ELEKTRA_UNUSED)
-#elif HAVE_LIBUV1
 static void ioUvBindingTimerCallback (uv_timer_t * handle)
-#endif
 {
 	ELEKTRA_NOT_NULL (handle->data);
 	UvBindingData * bindingData = (UvBindingData *) handle->data;
@@ -148,11 +144,7 @@ static void ioUvBindingTimerCallback (uv_timer_t * handle)
  *
  * @param handle libuv idle handle
  */
-#ifdef HAVE_LIBUV0
-static void ioUvBindingIdleCallback (uv_idle_t * handle, int unknown ELEKTRA_UNUSED)
-#elif HAVE_LIBUV1
 static void ioUvBindingIdleCallback (uv_idle_t * handle)
-#endif
 {
 	ELEKTRA_NOT_NULL (handle->data);
 	UvBindingData * bindingData = (UvBindingData *) handle->data;

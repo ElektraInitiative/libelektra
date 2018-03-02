@@ -18,7 +18,7 @@
 #include <string.h>
 
 // elektraIoDbus*()
-#include "../../libs/io/adapter/dbus/dbus.h"
+#include <kdbio_adapter_dbus.h>
 
 /**
  * @internal
@@ -37,8 +37,8 @@ typedef struct
 	DBusConnection * sessionBus;
 
 	// D-Bus I/O adapter handles (may be NULL)
-	ElektraIoDbusAdapterHandle * systemBusAdapter;
-	ElektraIoDbusAdapterHandle * sessionBusAdapter;
+	ElektraIoAdapterDbusHandle * systemBusAdapter;
+	ElektraIoAdapterDbusHandle * sessionBusAdapter;
 
 } ElektraDbusPluginData;
 

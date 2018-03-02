@@ -1,22 +1,28 @@
-#include "dbus.h"
-
+/**
+ * @file
+ *
+ * @brief I/O Adapter for D-Bus.
+ *
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+ */
 #include <kdbhelper.h>
+#include <kdbio_adapter_dbus.h>
 #include <kdblogger.h>
 
 #include <stdlib.h>
 #include <string.h>
 
 
-typedef struct _ElektraIoDbusAdapterHandle
+typedef struct _ElektraIoAdapterDbusHandle
 {
 	DBusConnection * connection;
 	ElektraIoInterface * ioBinding;
 	ElektraIoIdleOperation * dispatchIdle;
-} _ElektraIoDbusAdapterHandle;
+} _ElektraIoAdapterDbusHandle;
 
 typedef struct DbusAdapterWatchInfo
 {
-	_ElektraIoDbusAdapterHandle * private;
+	_ElektraIoAdapterDbusHandle * private;
 	DBusWatch * watch;
 } DbusAdapterWatchInfo;
 
@@ -50,7 +56,7 @@ static void dbusWrapperFree (void * memory)
 static void dbusWrapperDispatch (ElektraIoIdleOperation * idle)
 {
 	// fprintf(stderr, "dbusWrapperDispatch\n");
-	_ElektraIoDbusAdapterHandle * priv = elektraIoIdleGetData (idle);
+	_ElektraIoAdapterDbusHandle * priv = elektraIoIdleGetData (idle);
 
 	if (dbus_connection_get_dispatch_status (priv->connection) == DBUS_DISPATCH_DATA_REMAINS)
 	{
@@ -67,7 +73,7 @@ static void dbusWrapperDispatch (ElektraIoIdleOperation * idle)
 static void dbusWrapperHandleDispatch (DBusConnection * connection ELEKTRA_UNUSED, DBusDispatchStatus status, void * data)
 {
 	// fprintf(stderr, "dbusWrapperHandleDispatch\n");
-	_ElektraIoDbusAdapterHandle * priv = (_ElektraIoDbusAdapterHandle *)data;
+	_ElektraIoAdapterDbusHandle * priv = (_ElektraIoAdapterDbusHandle *)data;
 	if (status == DBUS_DISPATCH_DATA_REMAINS)
 	{
 		elektraIoIdleSetEnabled (priv->dispatchIdle, 1);
@@ -80,7 +86,7 @@ static void dbusWrapperPoll (ElektraIoFdOperation * fdOp, int flags)
 	// fprintf(stderr, "dbusWrapperPoll\n");
 	DbusAdapterWatchInfo * watchData = elektraIoFdGetData (fdOp);
 	DBusWatch * watch = watchData->watch;
-	_ElektraIoDbusAdapterHandle * priv = watchData->private;
+	_ElektraIoAdapterDbusHandle * priv = watchData->private;
 
 	int dbus_condition = 0;
 	if (flags & ELEKTRA_IO_READABLE)
@@ -107,7 +113,7 @@ static void dbusWrapperTimeout (ElektraIoTimerOperation * timerOp)
 static dbus_bool_t dbusWrapperAddWatch (DBusWatch * watch, void * data)
 {
 	// printf ("dbusWrapperAddWatch\n");
-	_ElektraIoDbusAdapterHandle * private = (_ElektraIoDbusAdapterHandle *)data;
+	_ElektraIoAdapterDbusHandle * private = (_ElektraIoAdapterDbusHandle *)data;
 	ElektraIoInterface * ioBinding = private->ioBinding;
 
 	// Get file descriptor from watch
@@ -177,7 +183,7 @@ static void dbusWrapperWatchToggled (DBusWatch * watch, void * data ELEKTRA_UNUS
 static dbus_bool_t dbusWrapperAddTimeout (DBusTimeout * timeout, void * data)
 {
 	// fprintf(stderr, "dbusWrapperAddTimeout\n");
-	_ElektraIoDbusAdapterHandle * private = (_ElektraIoDbusAdapterHandle *)data;
+	_ElektraIoAdapterDbusHandle * private = (_ElektraIoAdapterDbusHandle *)data;
 	ElektraIoInterface * ioBinding = private->ioBinding;
 
 	// Create new file descriptor info
@@ -216,9 +222,9 @@ static void dbusWrapperTimeoutToggled (DBusTimeout * timeout, void * data ELEKTR
 	elektraIoBindingUpdateTimer (timerOp);
 }
 
-ElektraIoDbusAdapterHandle * elektraIoDbusAdapterAttach (DBusConnection * connection, ElektraIoInterface * ioBinding)
+ElektraIoAdapterDbusHandle * elektraIoAdapterDbusAttach (DBusConnection * connection, ElektraIoInterface * ioBinding)
 {
-	_ElektraIoDbusAdapterHandle * priv = elektraMalloc (sizeof (*priv));
+	_ElektraIoAdapterDbusHandle * priv = elektraMalloc (sizeof (*priv));
 	if (!priv)
 	{
 		return 0;
@@ -246,8 +252,8 @@ ElektraIoDbusAdapterHandle * elektraIoDbusAdapterAttach (DBusConnection * connec
 	return priv;
 }
 
-// TODO rename to elektraIoDbusAdapterDetach when complete reversal is possible
-int elektraIoDbusAdapterCleanup (ElektraIoDbusAdapterHandle * priv)
+// TODO rename to elektraIoAdapterDbusDetach when complete reversal is possible
+int elektraIoAdapterDbusCleanup (ElektraIoAdapterDbusHandle * priv)
 {
 	DBusConnection * connection = priv->connection;
 

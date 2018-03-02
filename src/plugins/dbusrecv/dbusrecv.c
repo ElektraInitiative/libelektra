@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief Source for dbus plugin
+ * @brief Source for dbusrecv plugin
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
@@ -186,14 +186,14 @@ int elektraDbusRecvClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 
 	if (pluginData->systemBus)
 	{
-		elektraIoDbusAdapterCleanup (pluginData->systemBusAdapter);
+		elektraIoAdapterDbusCleanup (pluginData->systemBusAdapter);
 		dbus_connection_close (pluginData->systemBus);
 		dbus_connection_unref (pluginData->systemBus);
 		pluginData->systemBus = NULL;
 	}
 	if (pluginData->sessionBus)
 	{
-		elektraIoDbusAdapterCleanup (pluginData->sessionBusAdapter);
+		elektraIoAdapterDbusCleanup (pluginData->sessionBusAdapter);
 		dbus_connection_close (pluginData->sessionBus);
 		dbus_connection_unref (pluginData->sessionBus);
 		pluginData->sessionBus = NULL;

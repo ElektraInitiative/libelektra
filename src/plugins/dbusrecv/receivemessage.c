@@ -23,7 +23,7 @@
  * @param  handlePointer Pointer to D-Bus I/O adapter handle
  * @return D-Bus connection or NULL on error
  */
-static DBusConnection * dbusGetConnection (DBusBusType type, ElektraIoInterface * ioBinding, ElektraIoDbusAdapterHandle ** handlePointer)
+static DBusConnection * dbusGetConnection (DBusBusType type, ElektraIoInterface * ioBinding, ElektraIoAdapterDbusHandle ** handlePointer)
 {
 	DBusError error;
 	dbus_error_init (&error);
@@ -40,7 +40,7 @@ static DBusConnection * dbusGetConnection (DBusBusType type, ElektraIoInterface 
 
 	dbus_connection_set_exit_on_disconnect (connection, FALSE);
 
-	ElektraIoDbusAdapterHandle * handle = elektraIoDbusAdapterAttach (connection, ioBinding);
+	ElektraIoAdapterDbusHandle * handle = elektraIoAdapterDbusAttach (connection, ioBinding);
 	if (!handle)
 	{
 		ELEKTRA_LOG_WARNING ("Failed to attach to the I/O binding");

@@ -17,8 +17,6 @@ add_plugin (dbus
 		elektra-io-adapter-dbus
 	LINK_LIBRARIES
 		${DBUS_LIBRARIES}
-	DEPENDS
-		elektra-io-adapter-dbus
 	)
 
 add_plugintest (dbus

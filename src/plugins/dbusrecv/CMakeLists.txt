@@ -19,17 +19,23 @@ add_plugin (dbusrecv
 		elektra-io-adapter-dbus
 	LINK_LIBRARIES
 		${DBUS_LIBRARIES}
-	DEPENDS
-		elektra-io-adapter-dbus
 	)
 
 if (ADDTESTING_PHASE)
 	# the test requires an IO binding; using io_uv for now
 	check_binding_was_added ("io_uv" IS_INCLUDED)
 	if (BUILD_TESTING AND IS_INCLUDED)
+		if (BUILD_FULL OR BUILD_STATIC)
+			find_package (PkgConfig)
+			pkg_check_modules (LIBUV QUIET libuv>=1)
+			# libuv is present; otherwise io_uv bindings would not be added
+			set (STATIC_LIBRARIES ${LIBUV_LIBRARIES})
+		endif ()
+
 		add_plugintest (dbusrecv
 			LINK_LIBRARIES
 				${DBUS_LIBRARIES}
+				${STATIC_LIBRARIES}
 			INCLUDE_DIRECTORIES
 				${DBUS_INCLUDE_DIR}
 				${DBUS_ARCH_INCLUDE_DIR}
@@ -38,6 +44,13 @@ if (ADDTESTING_PHASE)
 				elektra-io
 				elektra-io-uv
 			)
+
+		# add sources manually because add_plugintest does not support generator
+		# expressions for additional source files
+		if (BUILD_FULL OR BUILD_STATIC)
+			# add sources for elektra-io-uv for static and full builds
+			target_sources (testmod_dbusrecv PRIVATE $<TARGET_OBJECTS:OBJ_elektra-io-uv>)
+		endif ()
 	else ()
 		message (WARNING "io_uv bindings are required for testing, test deactivated")
 	endif ()

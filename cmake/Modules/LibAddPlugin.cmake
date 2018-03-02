@@ -42,7 +42,7 @@ function (add_plugintest testname)
 
 
 		set (PLUGIN_NAME elektra-${testname})
-		restore_variable (${PLUGIN_NAME} ARG_LINK_LIBRARIES)
+		restore_variable (${PLUGIN_NAME} ARG_LINK_LIBRARIES ALLOW_MATCH)
 		restore_variable (${PLUGIN_NAME} ARG_COMPILE_DEFINITIONS)
 		restore_variable (${PLUGIN_NAME} ARG_INCLUDE_DIRECTORIES)
 		restore_variable (${PLUGIN_NAME} ARG_INCLUDE_SYSTEM_DIRECTORIES)
