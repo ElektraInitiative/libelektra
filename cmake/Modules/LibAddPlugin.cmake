@@ -231,7 +231,7 @@ function (add_plugin PLUGIN_SHORT_NAME)
 	cmake_parse_arguments (ARG
 		"CPP;ADD_TEST;TEST_README;INSTALL_TEST_DATA" # optional keywords
 		"INCLUDE_SYSTEM_DIRECTORIES" # one value keywords
-		"SOURCES;LINK_LIBRARIES;COMPILE_DEFINITIONS;INCLUDE_DIRECTORIES;LINK_ELEKTRA;DEPENDS" # multi value keywords
+		"SOURCES;LINK_LIBRARIES;COMPILE_DEFINITIONS;INCLUDE_DIRECTORIES;LINK_ELEKTRA;DEPENDS;ENVIRONMENT" # multi value keywords
 		${ARGN}
 	)
 
@@ -247,6 +247,7 @@ function (add_plugin PLUGIN_SHORT_NAME)
 	restore_variable (${PLUGIN_NAME} ARG_LINK_ELEKTRA)
 	restore_variable (${PLUGIN_NAME} ARG_ADD_TEST)
 	restore_variable (${PLUGIN_NAME} ARG_TEST_README)
+	restore_variable (${PLUGIN_NAME} ARG_ENVIRONMENT)
 	restore_variable (${PLUGIN_NAME} ARG_INSTALL_TEST_DATA)
 
 	if (ARG_UNPARSED_ARGUMENTS)
@@ -278,7 +279,7 @@ function (add_plugin PLUGIN_SHORT_NAME)
 		endif ()
 
 		if (ARG_TEST_README)
-			add_plugin_shell_test (${PLUGIN_SHORT_NAME})
+			add_plugin_shell_test (${PLUGIN_SHORT_NAME} ENVIRONMENT ${ARG_ENVIRONMENT})
 		endif (ARG_TEST_README)
 
 		return ()
