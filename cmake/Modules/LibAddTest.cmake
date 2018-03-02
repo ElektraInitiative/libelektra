@@ -102,8 +102,14 @@ endfunction ()
 #
 # PLUGIN: This argument specifies the name of the plugin for which this function creates a MSR test.
 #
+# REQUIRED_PLUGINS:
+#	This optional variable specifies a list of plugins required to run the MSR test.
+#
 # ENVIRONMENT:
 # 	This optional argument specifies environment variables defined while CTest executes the MSR test.
 function (add_plugin_shell_test PLUGIN)
-	add_s_test (${PLUGIN} "${CMAKE_SOURCE_DIR}/src/plugins/${PLUGIN}/README.md" ${ARGN} REQUIRED_PLUGINS ${PLUGIN})
+	set (multiValueArgs REQUIRED_PLUGINS)
+	cmake_parse_arguments (ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+	list (APPEND ARG_REQUIRED_PLUGINS ${PLUGIN})
+	add_s_test (${PLUGIN} "${CMAKE_SOURCE_DIR}/src/plugins/${PLUGIN}/README.md" ${ARGN} REQUIRED_PLUGINS ${ARG_REQUIRED_PLUGINS})
 endfunction ()
