@@ -48,4 +48,6 @@ add_plugin (yanlr
 	# Unfortunately it looks like ANTLR’s code causes a container-overflow
 	TEST_ENVIRONMENT
 		"ASAN_OPTIONS=detect_container_overflow=0"
+	TEST_REQUIRED_PLUGINS
+		yamlsmith
 	)
