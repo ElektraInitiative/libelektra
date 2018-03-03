@@ -118,6 +118,13 @@ install (FILES
 	DESTINATION include/${TARGET_INCLUDE_FOLDER})
 
 
+check_binding_included ("io_glib" IO_GLIB_INCLUDED SUBDIRECTORY "io/glib" SILENT)
+if (IO_GLIB_INCLUDED)
+	install (FILES
+		kdbio_glib.h
+		DESTINATION include/${TARGET_INCLUDE_FOLDER})
+endif ()
+
 
 add_custom_target(
     elektra_config_headers ALL

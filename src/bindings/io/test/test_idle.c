@@ -106,7 +106,7 @@ static void testIdleShouldUpdateEnabledControl (ElektraIoIdleOperation * idleOp 
 	testUpdateEnabledControlCalled--;
 
 	// Disable probe operation on first run
-	if (testUpdateEnabledControlCalled == IDLE_TEST_CONTROL_TIMES - 1)
+	if (testUpdateEnabledProbeCalled == 1)
 	{
 		elektraIoIdleSetEnabled (testUpdateEnabledIdleProbe, 0);
 		elektraIoBindingUpdateIdle (testUpdateEnabledIdleProbe);
@@ -191,15 +191,11 @@ static void testIdleShouldRemove (ElektraIoTestSuiteCreateBinding createBinding,
 
 	start ();
 
-	succeed_if (testRemoveProbeCalled == 1, "idle callback was not removed");
+	succeed_if (testRemoveProbeCalled <= 1, "idle callback was not removed");
 
 	succeed_if (testRemoveControlCalled == 0, "idle control callback was not called required amount of times");
 
 	elektraIoBindingRemoveIdle (idleControl);
-	if (testRemoveProbeCalled != 1)
-	{
-		elektraIoBindingRemoveIdle (idleProbe);
-	}
 	elektraIoBindingCleanup (binding);
 	elektraFree (idleControl);
 	elektraFree (idleProbe);
