@@ -66,3 +66,29 @@ macro (add_gtest source)
 	endif (ARG_KDBTESTS)
 	endif(BUILD_TESTING)
 endmacro (add_gtest)
+
+function (add_s_test NAME FILE)
+	set (TEST_NAME testshell_markdown_${NAME})
+	set (oneValueArgs ENVIRONMENT)
+	set (multiValueArgs REQUIRED_PLUGINS)
+	cmake_parse_arguments (ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
+	foreach (plugin ${ARG_REQUIRED_PLUGINS})
+		list (FIND REMOVED_PLUGINS ${plugin} plugin_index)
+		if (plugin_index GREATER -1)
+			return ()
+		endif (plugin_index GREATER -1)
+	endforeach (plugin ${ARG_REQUIRED_PLUGINS})
+
+	add_test (
+		NAME testshell_markdown_${NAME}
+		COMMAND "${CMAKE_CURRENT_BINARY_DIR}/markdown_shell_recorder.sh" "${FILE}"
+		WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+		)
+	set_tests_properties (${TEST_NAME} PROPERTIES ENVIRONMENT "${ARG_ENVIRONMENT}")
+	set_property(TEST ${TEST_NAME} PROPERTY LABELS memleak kdbtests)
+endfunction ()
+
+function (add_plugin_shell_test PLUGIN)
+	add_s_test (${PLUGIN} "${CMAKE_SOURCE_DIR}/src/plugins/${PLUGIN}/README.md" ${ARGN} REQUIRED_PLUGINS ${PLUGIN})
+endfunction ()
