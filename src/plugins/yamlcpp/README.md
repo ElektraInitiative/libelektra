@@ -52,10 +52,13 @@ kdb get "/examples/yamlcpp/some key"
 echo "🔑: value" >  `kdb file /examples/yamlcpp`
 
 # Add some values via `kdb set`
+kdb set /examples/yamlcpp 🎵
 kdb set /examples/yamlcpp/fleetwood mac
 kdb set /examples/yamlcpp/the chain
 
 # Retrieve the new values
+kdb get /examples/yamlcpp
+#> 🎵
 kdb get /examples/yamlcpp/the
 #> chain
 kdb get /examples/yamlcpp/fleetwood
@@ -395,7 +398,6 @@ sudo kdb umount user/examples/yamlcpp
 
 ### Other Limitations
 
-- Saving a **single scalar value** directly below the mountpoint does not work
 - Adding and removing keys does remove **comments** inside the configuration file
 - The plugin currently lacks proper **type support** for scalars.
 - If Elektra uses YAML CPP as **default storage** plugin, multiple tests of the test suite fail. However, if you mount YAML CPP at `/`:

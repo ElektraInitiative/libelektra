@@ -92,7 +92,7 @@ These notes are of interest for people developing Elektra:
 
 Many problems were resolved with the following fixes:
 
-- <<TODO>>
+- [YAML CPP](http://libelektra.org/plugins/yamlcpp) now also saves key values directly below a mountpoint correctly.
 
 ## Outlook
 
