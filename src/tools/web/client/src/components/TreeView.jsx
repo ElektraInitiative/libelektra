@@ -17,23 +17,6 @@ export default class TreeView extends React.Component {
   constructor (props, ...args) {
     super(props, ...args)
     this.state = { selection: [], unfolded: [] }
-    this.Opener = ({ item, className, onClick, children }) => {
-      const handleClick = (e) => {
-        this.refreshItem(item)
-        onClick(e)
-      }
-      return <span className={className} onClick={handleClick}>{children}</span>
-    }
-  }
-
-  refresh = () => {
-    const { data } = this.props
-    const { unfolded } = this.state
-    const user = data.find(d => d.path === 'user')
-    const allUnfolded = [ user, ...unfolded ]
-    return Promise.all(
-      allUnfolded.map(this.refreshItem)
-    )
   }
 
   refreshPath = (path) => {
@@ -81,20 +64,6 @@ export default class TreeView extends React.Component {
           instanceId={instanceId}
         />
     )
-  }
-
-  waitForData = () => {
-    const { data } = this.props
-    const user = Array.isArray(data) && data.find(d => d.path === 'user')
-    if (!user) {
-      this.timeout = setTimeout(this.waitForData, 100)
-    } else {
-      this.refreshItem(user)
-    }
-  }
-
-  componentDidMount () {
-    this.waitForData()
   }
 
   handleSearch = input => item => {
@@ -151,7 +120,6 @@ export default class TreeView extends React.Component {
           transitionEnterTimeout: 200,
           transitionLeaveTimeout: 200,
         }}
-        opener={this.Opener}
         openerOpts={{ position: 'left' }}
       />
     )

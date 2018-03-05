@@ -93,18 +93,19 @@ export default class Configuration extends Component {
 
   generateData = ({ ls, match, getKey }) => {
     const { id } = match && match.params
-    console.log('!!! REGENERATING DATA !!!')
     return parseData(getKey, id, ls)
   }
 
   refresh = () => {
+    const { data } = this.state
     const { getKdb, match, sendNotification } = this.props
     const { id } = match && match.params
+
     sendNotification('refreshing configuration data...')
     getKdb(id)
-      .then(() => {
-        if (this.tree) return this.tree.refresh()
-      })
+      .then(() =>
+        this.preload(data).then(this.updateData)
+      )
       .then(() => sendNotification('configuration data refreshed!'))
   }
 
@@ -150,7 +151,7 @@ export default class Configuration extends Component {
             <b>{name}</b>{' instance'}
             <IconButton
               className="refreshIcon"
-              style={{ width: 28, height: 28 }}
+              style={{ marginLeft: 6, width: 28, height: 28, padding: 6 }}
               iconStyle={{ width: 16, height: 16 }}
               onClick={this.refresh}
               tooltip="refresh"
@@ -166,7 +167,6 @@ export default class Configuration extends Component {
             <CardText>
                 {data
                   ? <TreeView
-                      treeRef={t => { this.tree = t }}
                       instanceId={id}
                       data={data}
                     />
