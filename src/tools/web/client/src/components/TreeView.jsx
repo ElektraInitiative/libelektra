@@ -133,6 +133,7 @@ export default class TreeView extends React.Component {
           : !this.state.get().unfolded.find(i => i.path === item.path)
       } ]
     }
+
     return (
       <ExplorerView
         dragndrop={{ drop: this.handleDrop }}

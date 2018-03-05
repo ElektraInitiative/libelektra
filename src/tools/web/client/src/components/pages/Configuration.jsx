@@ -66,6 +66,35 @@ export default class Configuration extends Component {
     const { getKdb, match } = props
     const { id } = match && match.params
     getKdb(id)
+    this.state = { data: this.generateData(props) || [] }
+  }
+
+  componentWillReceiveProps (nextProps) {
+    this.setState({ data: this.generateData(nextProps) || [] })
+  }
+
+  updateData = (data) => {
+    return this.setState({ data })
+  }
+
+  waitForData = () => {
+    const { data } = this.state
+    const user = Array.isArray(data) && data.find(d => d.path === 'user')
+    if (!user) {
+      this.timeout = setTimeout(this.waitForData, 100)
+    } else {
+      this.preload(data).then(this.updateData)
+    }
+  }
+
+  componentDidMount () {
+    this.waitForData()
+  }
+
+  generateData = ({ ls, match, getKey }) => {
+    const { id } = match && match.params
+    console.log('!!! REGENERATING DATA !!!')
+    return parseData(getKey, id, ls)
   }
 
   refresh = () => {
@@ -79,10 +108,28 @@ export default class Configuration extends Component {
       .then(() => sendNotification('configuration data refreshed!'))
   }
 
+  preload = async tree => {
+    if (!tree) return Promise.resolve(tree)
+    return await Promise.all(tree.map(async item => {
+      // do not preload system/ namespace
+      if (item.name === 'system') return item
+
+      let { children } = item
+
+      if (!children) return item
+      children = await this.preload(
+        typeof children === 'function'
+          ? await children()
+          : children
+      )
+
+      return { ...item, children }
+    }))
+  }
+
   render () {
-    const {
-      instance, ls, match, getKey,
-    } = this.props
+    const { instance, match } = this.props
+    const { data } = this.state
 
     if (!instance) {
       const title = (
@@ -97,7 +144,6 @@ export default class Configuration extends Component {
 
     const { id } = match && match.params
     const { name, host } = instance
-    const data = parseData(getKey, id, ls)
 
     const title = (
         <h1>

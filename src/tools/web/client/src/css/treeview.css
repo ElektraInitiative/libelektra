@@ -79,7 +79,11 @@
 }
 
 /* Root list */
-.ExplorerView ul.depth-0 {}
+.ExplorerView ul.depth-0:empty::before {
+  font-size: 1.1em;
+  color: rgba(0, 0, 0, 0.6);
+  content: 'No results found.';
+}
 
 /* Not disabled */
 .ExplorerView ul li:not(.disabled) {}
