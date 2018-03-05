@@ -24,6 +24,6 @@ endfunction (add_kdb_test suffix)
 
 add_kdb_test (allplugins)
 add_kdb_test (conflict REQUIRED_PLUGINS error)
-add_kdb_test (error REQUIRED_PLUGINS error)
+add_kdb_test (error REQUIRED_PLUGINS error list spec)
 add_kdb_test (nested REQUIRED_PLUGINS error)
 add_kdb_test (simple REQUIRED_PLUGINS error)
