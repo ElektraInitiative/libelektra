@@ -12,6 +12,7 @@ import ActionDelete from 'material-ui/svg-icons/action/delete'
 import ActionBuild from 'material-ui/svg-icons/action/build'
 import ContentAdd from 'material-ui/svg-icons/content/add'
 import ContentCopy from 'material-ui/svg-icons/content/content-copy'
+import ContentEdit from 'material-ui/svg-icons/editor/mode-edit'
 
 import ActionButton from './ActionButton.jsx'
 import SavedIcon from './SavedIcon.jsx'
@@ -22,6 +23,7 @@ import AddDialog from './dialogs/AddDialog.jsx'
 import SettingsDialog from './dialogs/SettingsDialog.jsx'
 import RemoveDialog from './dialogs/RemoveDialog.jsx'
 import DuplicateDialog from './dialogs/DuplicateDialog.jsx'
+import EditDialog from './dialogs/EditDialog.jsx'
 
 export default class TreeItem extends Component {
   constructor (...args) {
@@ -29,6 +31,7 @@ export default class TreeItem extends Component {
     this.state = {
       dialogs: {
         add: false,
+        edit: false,
         settings: false,
         remove: false,
       },
@@ -80,7 +83,7 @@ export default class TreeItem extends Component {
     const { savedTimeout } = this.state
     const { instanceId, setKey, item } = this.props
     const { path } = item
-    setKey(instanceId, path, value)
+    return setKey(instanceId, path, value)
       .then(() => {
         if (savedTimeout) clearTimeout(savedTimeout)
         this.setState({
@@ -136,10 +139,11 @@ export default class TreeItem extends Component {
 
     const meta = data && data.meta
     const isCheckbox = meta && meta['check/type'] && meta['check/type'] === 'boolean'
+    const valueVisible = data && !item.children
 
     return (
         <a style={{ display: 'flex', alignItems: 'center' }}>
-            {(data && !item.children)
+            {valueVisible
               ? (
                   <span style={{ display: 'flex', alignItems: 'center', height: 48 }}>
                       <b style={titleStyle}>{item.name + ': '}</b>
@@ -151,6 +155,9 @@ export default class TreeItem extends Component {
             <span className="actions">
                 <SavedIcon saved={this.state.saved} />
                 <ActionButton icon={<ContentAdd />} onClick={this.handleOpen('add')} tooltip="create sub-key" />
+                {!rootLevel && !valueVisible &&
+                  <ActionButton icon={<ContentEdit />} onClick={this.handleOpen('edit')} tooltip="edit value" />
+                }
                 {!rootLevel &&
                   <ActionButton icon={<ContentCopy />} onClick={this.handleOpen('duplicate')} tooltip="duplicate key" />
                 }
@@ -169,6 +176,13 @@ export default class TreeItem extends Component {
               open={this.state.dialogs.add}
               onAdd={this.handleAdd}
               onClose={this.handleClose('add')}
+            />
+            <EditDialog
+              item={item}
+              value={data && data.value}
+              open={this.state.dialogs.edit}
+              onEdit={this.handleEdit}
+              onClose={this.handleClose('edit')}
             />
             <DuplicateDialog
               item={item}
