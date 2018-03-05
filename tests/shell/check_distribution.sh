@@ -7,6 +7,7 @@ echo
 # high level test to check whether keys are distributed to correct
 # backend
 
+is_plugin_available sync || { echo "Test requires sync plugin, aborting" >&2; exit 0; }
 check_version
 
 #method that does all the checking
