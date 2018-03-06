@@ -114,8 +114,10 @@ globally (will be added by default and also with any `kdb global-mount` call).
 Before we start, let us make a backup of the current data in the spec and user namespace:
 
 ```sh
-kdb export spec dump > /tmp/spec.dump
-kdb export user dump > /tmp/user.dump
+kdb set system/examples/spec $(mktemp)
+kdb set system/examples/user $(mktemp)
+kdb export spec dump > $(kdb get system/examples/spec)
+kdb export user dump > $(kdb get system/examples/user)
 ```
 
 We write metadata to the namespace `spec` and the plugin `spec` applies it to every cascading key:
@@ -302,10 +304,12 @@ kdb umount spec/tutorial
 kdb umount /tutorial
 kdb rm -rf spec
 kdb rm -rf user
-kdb import spec dump < /tmp/spec.dump
-kdb import user dump < /tmp/user.dump
-rm /tmp/spec.dump
-rm /tmp/user.dump
+kdb import spec dump < $(kdb get system/examples/spec)
+kdb import user dump < $(kdb get system/examples/user)
+rm $(kdb get system/examples/spec)
+rm $(kdb get system/examples/user)
+kdb rm system/examples/spec
+kdb rm system/examples/user
 ```
 
 ## Customized Schemas
