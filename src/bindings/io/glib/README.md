@@ -17,15 +17,14 @@ Use the `elektraIoGlibNew` function to get a new I/O binding instance.
 Make sure to build your application with `elektra-io-glib`, `elektra-io` and `glib` or
 simply use `pkg-config --cflags --libs elektra-io-glib`.
 
-# TODO: update example
-
-### ElektraIoInterface * elektraIoGlibNew (uv_loop_t * loop)
+### ElektraIoInterface * elektraIoGlibNew (GMainContext * context)
 
 Create and initialize a new I/O binding.
 
 *Parameters*
 
-- loop Loop to use for I/O operations
+- context Context to use for I/O operations. May be NULL to indicate the glib's
+  default context.
 
 *Returns*
 
@@ -37,9 +36,9 @@ Populated I/O interface
 
 #include <elektra/kdb.h>
 #include <elektra/kdbio.h>
-#include <elektra/kdbio_uv.h>
+#include <elektra/kdbio_glib.h>
 
-#include <uv.h>
+#include <glib.h>
 
 void main (void)
 
@@ -47,21 +46,22 @@ void main (void)
 	KDB* repo;
 	// ... open KDB
 
-	// Create libuv event loop
-	uv_loop_t * loop = uv_default_loop ();
+	// Create glib main loop
+	GMainContext * context = NULL;
+	GMainLoop * loop = g_main_loop_new (context, 0);
 
-	// Initialize I/O binding tied to event loop
-	ElektraIoInterface * binding = elektraIoGlibNew (loop);
+	// Initialize I/O binding tied to context
+	ElektraIoInterface * binding = elektraIoGlibNew (context);
 
 	// Set I/O binding
 	elektraIoSetBinding (kdb, binding);
 
 	// Start the event loop
-	uv_run (loop, UV_RUN_DEFAULT);
+	g_main_loop_run (loop);
 
 	// Cleanup before exit
 	elektraIoBindingCleanup (binding);
-	uv_loop_close (loop);
+	g_main_loop_unref (loop);
 }
 
 ```

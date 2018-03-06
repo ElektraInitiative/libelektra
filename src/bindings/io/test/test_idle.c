@@ -19,7 +19,7 @@
 #include <kdbiotest.h>
 
 #define IDLE_TEST_INTERVAL 1
-#define IDLE_TEST_CONTROL_TIMES 2
+#define IDLE_TEST_CONTROL_TIMES 3
 #define IDLE_DIFF_WARNING_THRESHOLD 5
 #define IDLE_DIFF_ERROR_THRESHOLD (IDLE_DIFF_WARNING_THRESHOLD * 100)
 
@@ -103,16 +103,17 @@ static void testIdleShouldCallbackImmediately (ElektraIoTestSuiteCreateBinding c
 
 static void testIdleShouldUpdateEnabledControl (ElektraIoIdleOperation * idleOp ELEKTRA_UNUSED)
 {
-	testUpdateEnabledControlCalled--;
+	testUpdateEnabledControlCalled++;
 
-	// Disable probe operation on first run
-	if (testUpdateEnabledProbeCalled == 1)
+	// Disable probe operation on second run
+	if (testUpdateEnabledProbeCalled == IDLE_TEST_CONTROL_TIMES - 1)
 	{
 		elektraIoIdleSetEnabled (testUpdateEnabledIdleProbe, 0);
 		elektraIoBindingUpdateIdle (testUpdateEnabledIdleProbe);
 	}
 
-	if (testUpdateEnabledControlCalled == 0 || testUpdateEnabledProbeCalled > 1)
+	// Stop test when control limit was reached or probe was called twice
+	if (testUpdateEnabledControlCalled == IDLE_TEST_CONTROL_TIMES || testUpdateEnabledProbeCalled > 2)
 	{
 		testStop ();
 	}
@@ -135,15 +136,16 @@ static void testIdleShouldUpdateEnabled (ElektraIoTestSuiteCreateBinding createB
 	elektraIoBindingAddIdle (binding, idleProbe);
 
 	testStop = stop;
-	testUpdateEnabledControlCalled = IDLE_TEST_CONTROL_TIMES;
+	testUpdateEnabledControlCalled = 0; // IDLE_TEST_CONTROL_TIMES;
 	testUpdateEnabledProbeCalled = 0;
 	testUpdateEnabledIdleProbe = idleProbe;
 	testUpdateEnabledBinding = binding;
 
 	start ();
 
-	succeed_if (testUpdateEnabledProbeCalled == 1, "idle callback was not disabled");
-	succeed_if (testUpdateEnabledControlCalled == 0, "idle control callback was not called required amount of times");
+	succeed_if (testUpdateEnabledProbeCalled > 0 && testUpdateEnabledProbeCalled <= 2, "idle callback was not disabled");
+	succeed_if (testUpdateEnabledControlCalled == IDLE_TEST_CONTROL_TIMES,
+		    "idle control callback was not called required amount of times");
 
 	elektraIoBindingRemoveIdle (idleControl);
 	elektraIoBindingRemoveIdle (idleProbe);
@@ -154,7 +156,7 @@ static void testIdleShouldUpdateEnabled (ElektraIoTestSuiteCreateBinding createB
 
 static void testIdleShouldRemoveControl (ElektraIoIdleOperation * idleOp ELEKTRA_UNUSED)
 {
-	testRemoveControlCalled--;
+	testRemoveControlCalled++;
 
 	// Remove probe operation on first run
 	if (testRemoveControlCalled == IDLE_TEST_CONTROL_TIMES - 1)
@@ -162,7 +164,7 @@ static void testIdleShouldRemoveControl (ElektraIoIdleOperation * idleOp ELEKTRA
 		elektraIoBindingRemoveIdle (testRemoveIdleProbe);
 	}
 
-	if (testRemoveControlCalled == 0 || testRemoveProbeCalled > 1)
+	if (testRemoveControlCalled == IDLE_TEST_CONTROL_TIMES || testRemoveProbeCalled > 2)
 	{
 		testStop ();
 	}
@@ -184,16 +186,16 @@ static void testIdleShouldRemove (ElektraIoTestSuiteCreateBinding createBinding,
 	elektraIoBindingAddIdle (binding, idleProbe);
 
 	testStop = stop;
-	testRemoveControlCalled = IDLE_TEST_CONTROL_TIMES;
+	testRemoveControlCalled = 0;
 	testRemoveProbeCalled = 0;
 	testRemoveIdleProbe = idleProbe;
 	testRemoveBinding = binding;
 
 	start ();
 
-	succeed_if (testRemoveProbeCalled <= 1, "idle callback was not removed");
+	succeed_if (testRemoveProbeCalled > 0 && testRemoveProbeCalled <= 2, "idle callback was not removed");
 
-	succeed_if (testRemoveControlCalled == 0, "idle control callback was not called required amount of times");
+	succeed_if (testRemoveControlCalled == IDLE_TEST_CONTROL_TIMES, "idle control callback was not called required amount of times");
 
 	elektraIoBindingRemoveIdle (idleControl);
 	elektraIoBindingCleanup (binding);

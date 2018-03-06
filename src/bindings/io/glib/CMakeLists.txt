@@ -23,6 +23,7 @@ else ()
 	# create object library so that executables can use
 	# $<TARGET_OBJECTS:OBJ_${IO_VARIANT_LIBRARY}>
 	add_library(OBJ_${IO_VARIANT_LIBRARY} OBJECT ${SOURCES})
+	target_include_directories (OBJ_${IO_VARIANT_LIBRARY} SYSTEM PUBLIC ${GLIB_INCLUDE_DIRS})
 
 	add_lib (io-${BINDING_VARIANT}
 		SOURCES ${SOURCES}
@@ -34,7 +35,8 @@ else ()
 
 	if (BUILD_FULL OR BUILD_STATIC)
 		add_includes ("elektra-full" ${GLIB_INCLUDE_DIRS})
-	else ()
+	endif ()
+	if (BUILD_SHARED)
 		target_include_directories (${IO_VARIANT_LIBRARY} SYSTEM PUBLIC ${GLIB_INCLUDE_DIRS})
 	endif ()
 
@@ -59,7 +61,7 @@ else ()
 	list (APPEND TEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/testio_${BINDING_VARIANT}.c")
 
 	if (BUILD_FULL OR BUILD_STATIC)
-    # add sources for elektra-io-uv for static and full builds
+    # add sources for elektra-io-glib for static and full builds
 		list (APPEND TEST_SOURCES $<TARGET_OBJECTS:OBJ_${IO_VARIANT_LIBRARY}>)
   endif ()
 
@@ -79,5 +81,5 @@ else ()
 		WORKING_DIRECTORY "${WORKING_DIRECTORY}"
 	)
 
-	#add_subdirectory (example)
+	add_subdirectory (example)
 endif ()

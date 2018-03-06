@@ -52,7 +52,11 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.8.
 
 We added even more functionality, which could not make it to the highlights:
 
-- <<TODO>>
+- A new experimental [I/O binding for glib](https://www.libelektra.org/bindings/io_glib)
+  has been added.
+  It can be used to integrate the notification feature with applications based
+  on glib.
+
 
 ## Documentation
 
@@ -135,5 +139,3 @@ For more information, see [https://libelektra.org](https://libelektra.org)
 
 Best regards,
 [Elektra Initiative](https://www.libelektra.org/developers/authors)
-
-
