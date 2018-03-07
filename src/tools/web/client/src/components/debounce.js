@@ -6,10 +6,10 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-import React, { Component } from 'react'
+import React from 'react'
 
 export default function debounce (WrappedComponent, {
-  timeout = 1000, handlerFn = 'onChange'
+  timeout = 750, handlerFn = 'onChange'
 } = {}) {
   return class extends React.Component {
     constructor (...args) {
@@ -35,11 +35,12 @@ export default function debounce (WrappedComponent, {
     }
 
     render () {
+      // do not pass onDebounced down to the wrapped component
+      const { onDebounced, ...originalProps } = this.props
       const injectedProps = {
         [handlerFn]: this.handleChange,
-        onDebounced: null,
       }
-      return <WrappedComponent {...this.props} {...injectedProps} />
+      return <WrappedComponent {...originalProps} {...injectedProps} />
     }
   }
 }

@@ -133,11 +133,12 @@ export default class SettingsDialog extends Component {
                 <SavedIcon saved={this.getSaved('description')} />
             </div>
             <div style={{ display: 'block' }}>
-                <TextField
+                <DebouncedTextField
                   floatingLabelText="example"
                   floatingLabelFixed={true}
                   hintText="provide an example"
-                  onChange={this.handleEdit('example')}
+                  onChange={this.handleEdit('example', IMMEDIATE)}
+                  onDebounced={this.handleEdit('example', DEBOUNCED)}
                   value={this.getMeta('example', '')}
                 />
                 <SavedIcon saved={this.getSaved('example')} />
@@ -146,8 +147,8 @@ export default class SettingsDialog extends Component {
                 <SelectField
                   floatingLabelText="type"
                   floatingLabelFixed={true}
+                  onChange={(e, _, val) => this.handleEdit('check/type')(val)}
                   value={this.getMeta('check/type', 'string')}
-                  onChange={this.handleEdit('check/type')}
                 >
                     <MenuItem value="string" primaryText="Text (string)" />
                     <MenuItem value="boolean" primaryText="Checkbox (boolean)" />
