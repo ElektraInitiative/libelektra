@@ -5,4 +5,5 @@ add_plugin (template
 		template.h
 		template.c
 	ADD_TEST
+	TEST_README
 	)

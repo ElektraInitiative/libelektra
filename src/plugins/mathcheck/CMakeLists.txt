@@ -6,5 +6,6 @@ add_plugin (mathcheck
 		mathcheck.c
 		floathelper.h
 		floathelper.c
+	TEST_README
 	)
 add_plugintest (mathcheck)

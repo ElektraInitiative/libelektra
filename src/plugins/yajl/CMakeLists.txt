@@ -18,6 +18,7 @@ add_plugin(yajl
 		yajl_parse.c name.c
 		"${CMAKE_CURRENT_BINARY_DIR}/yajl.h"
 	ADD_TEST
+	TEST_README
 	INSTALL_TEST_DATA
 	INCLUDE_DIRECTORIES
 		"${INCL}"

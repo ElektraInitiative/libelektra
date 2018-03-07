@@ -7,4 +7,5 @@ add_plugin (directoryvalue
 	LINK_ELEKTRA
 		elektra-ease
 	ADD_TEST
+	TEST_README
 	)

@@ -13,4 +13,5 @@ add_plugin(tcl
 		tcl.hpp tcl.cpp
 		action.hpp action.cpp
 		printer.hpp printer.cpp
+	TEST_README
 	)

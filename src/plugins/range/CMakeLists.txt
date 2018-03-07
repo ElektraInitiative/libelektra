@@ -11,4 +11,5 @@ add_plugin (range
 	LINK_LIBRARIES
 		"-lm"
 	ADD_TEST
+	TEST_README
 	)

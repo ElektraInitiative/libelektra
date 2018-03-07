@@ -16,4 +16,5 @@ add_plugin (multifile
 	LINK_ELEKTRA
 		elektra-kdb
 		elektra-invoke
+	TEST_README
 	)

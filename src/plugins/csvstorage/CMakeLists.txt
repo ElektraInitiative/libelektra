@@ -8,4 +8,5 @@ add_plugin (csvstorage
 		elektra-ease
 	ADD_TEST
 	INSTALL_TEST_DATA
+	TEST_README
 	)

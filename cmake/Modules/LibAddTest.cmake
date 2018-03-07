@@ -66,3 +66,50 @@ macro (add_gtest source)
 	endif (ARG_KDBTESTS)
 	endif(BUILD_TESTING)
 endmacro (add_gtest)
+
+# Add a Markdown Shell Recorder test for a certain Markdown file
+#
+# NAME: This argument specifies a postfix for the name of the CTest this function creates.
+# FILE: This argument specifies the location of the Markdown file that contains the test data.
+#
+# REQUIRED_PLUGINS:
+#	This optional variable specifies a list of plugins required to run the test.
+#
+# ENVIRONMENT:
+# 	This optional argument specifies environment variables defined while CTest executes the MSR test.
+function (add_msr_test NAME FILE)
+	set (TEST_NAME testshell_markdown_${NAME})
+	set (multiValueArgs REQUIRED_PLUGINS ENVIRONMENT)
+	cmake_parse_arguments (ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
+	foreach (plugin ${ARG_REQUIRED_PLUGINS})
+		list (FIND REMOVED_PLUGINS ${plugin} plugin_index)
+		if (plugin_index GREATER -1)
+			return ()
+		endif (plugin_index GREATER -1)
+	endforeach (plugin ${ARG_REQUIRED_PLUGINS})
+
+	add_test (
+		NAME testshell_markdown_${NAME}
+		COMMAND "${CMAKE_BINARY_DIR}/tests/shell/shell_recorder/tutorial_wrapper/markdown_shell_recorder.sh" "${FILE}"
+		WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+		)
+	set_tests_properties (${TEST_NAME} PROPERTIES ENVIRONMENT "${ARG_ENVIRONMENT}")
+	set_property(TEST ${TEST_NAME} PROPERTY LABELS memleak kdbtests)
+endfunction ()
+
+# Add a Markdown Shell Recorder test for a certain plugin
+#
+# PLUGIN: This argument specifies the name of the plugin for which this function creates a MSR test.
+#
+# REQUIRED_PLUGINS:
+#	This optional variable specifies a list of plugins required to run the MSR test.
+#
+# ENVIRONMENT:
+# 	This optional argument specifies environment variables defined while CTest executes the MSR test.
+function (add_msr_test_plugin PLUGIN)
+	set (multiValueArgs REQUIRED_PLUGINS)
+	cmake_parse_arguments (ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+	list (APPEND ARG_REQUIRED_PLUGINS ${PLUGIN})
+	add_msr_test (${PLUGIN} "${CMAKE_SOURCE_DIR}/src/plugins/${PLUGIN}/README.md" ${ARGN} REQUIRED_PLUGINS ${ARG_REQUIRED_PLUGINS})
+endfunction ()

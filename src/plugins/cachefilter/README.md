@@ -18,6 +18,7 @@ A global plugin that steps in during `kdbGet()` process to filter the results in
 There is not much to do to use the plugin. Just mount is as global plugin and you are done:
 
 ```sh
+# Backup-and-Restore: system/elektra/globalplugins
 kdb global-mount cachefilter
 ```
 
