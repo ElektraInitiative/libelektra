@@ -1,5 +1,11 @@
 grammar YAML ;
 
+/* ================== */
+/* = Subset Grammar = */
+/* ================== */
+
+// The following lines contain a simplistic version of a very basic YAML grammar.
+
 mappings : mapping+ ;
 mapping : key ':' value ;
 key : WORD ;
