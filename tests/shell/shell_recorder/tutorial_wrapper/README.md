@@ -59,15 +59,17 @@ echo Babymetal Death | \
   grep -o Death
 #> Death
 
-cat > /tmp/hereout << EOF \
+kdb set user/examples/tempfile $(mktemp)
+cat > $(kdb get user/examples/tempfile) << EOF \
 line 1\
 line 2\
 EOF
-cat /tmp/hereout
+cat $(kdb get user/examples/tempfile)
 #> line 1
 #> line 2
 
-rm /tmp/hereout
+rm $(kdb get user/examples/tempfile)
+kdb rm user/examples/tempfile
 ```
 
 ### Checks

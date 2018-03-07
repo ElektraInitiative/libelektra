@@ -13,7 +13,7 @@ echo "Test specification get"
 ROOT_FILE=spec_tests.ecf
 ROOT_MOUNTPOINT=/test/script/spec
 
-if is_plugin_available dump
+if is_plugin_available dump && is_plugin_available list && is_plugin_available sync
 then
 	"$KDB" mount $ROOT_FILE $ROOT_MOUNTPOINT dump 1>/dev/null
 	succeed_if "could not mount root: $ROOT_FILE at $ROOT_MOUNTPOINT"

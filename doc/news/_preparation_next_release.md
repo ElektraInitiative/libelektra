@@ -92,7 +92,8 @@ These notes are of interest for people developing Elektra:
 
 Many problems were resolved with the following fixes:
 
-- <<TODO>>
+- [YAML CPP](http://libelektra.org/plugins/yamlcpp) now also saves key values directly below a mountpoint correctly.
+- If you use a minimal configuration ([`dump`](http://libelektra.org/plugins/dump) and [`resolver`](https://www.libelektra.org/plugins/resolver) only), all test of the test suite now finish successfully again.
 
 ## Outlook
 
