@@ -17,16 +17,24 @@ import MenuItem from 'material-ui/MenuItem'
 import SavedIcon from '../SavedIcon.jsx'
 import EnumSubDialog from './EnumSubDialog.jsx'
 
+import debounce from '../../debounce'
+
+const DebouncedTextField = debounce(TextField)
+
+const IMMEDIATE = 'IMMEDIATE'
+const DEBOUNCED = 'DEBOUNCED'
+
 export default class SettingsDialog extends Component {
   constructor (...args) {
     super(...args)
     this.state = {}
   }
 
-  handleEdit = key => (evt, _, val) => {
+  handleEdit = (key, debounced = false) => (val) => {
     const isEnum = key === 'check/type' && val === 'enum'
 
     const { meta, data, setMeta } = this.props
+
     // changing from enum
     if (key === 'check/type' && !isEnum && meta && meta['check/enum']) {
       const { deleteMeta } = this.props
@@ -38,25 +46,30 @@ export default class SettingsDialog extends Component {
       setMeta('check/enum', this.getMeta('check/enum', '[\'' + data + '\']'))
     }
 
-    // set value of field
     const value = isEnum
       ? 'string' // special case: enum is also a string
-      : (val || evt.target.value)
-    this.setState({ [key]: { ...this.state[key], value: isEnum ? 'enum' : value } })
+      : val
 
-    // persist value to kdb and show notification
-    const { timeout } = this.state[key] || {}
-    setMeta(key, value)
-      .then(() => {
-        if (timeout) clearTimeout(timeout)
-        this.setState({ [key]: {
-          ...this.state[key],
-          saved: true,
-          timeout: setTimeout(() => {
-            this.setState({ [key]: { ...this.state[key], saved: false } })
-          }, 1500),
-        } })
-      })
+    if (!debounced || debounced === IMMEDIATE) {
+      // set value of field
+      this.setState({ [key]: { ...this.state[key], value: isEnum ? 'enum' : value } })
+    }
+
+    if (!debounced || debounced === DEBOUNCED) {
+      // persist value to kdb and show notification
+      const { timeout } = this.state[key] || {}
+      setMeta(key, value)
+        .then(() => {
+          if (timeout) clearTimeout(timeout)
+          this.setState({ [key]: {
+            ...this.state[key],
+            saved: true,
+            timeout: setTimeout(() => {
+              this.setState({ [key]: { ...this.state[key], saved: false } })
+            }, 1500),
+          } })
+        })
+    }
   }
 
   getMeta (key, fallback) {
@@ -69,7 +82,9 @@ export default class SettingsDialog extends Component {
         : meta[key] // is not enum
       : false // does not exist
 
-    return stateVal || val || fallback
+    return stateVal === undefined
+      ? val || fallback
+      : stateVal
   }
 
   getSaved (key) {
@@ -107,11 +122,12 @@ export default class SettingsDialog extends Component {
         >
             <h1>Settings for <b>{path}</b></h1>
             <div style={{ display: 'block' }}>
-                <TextField
+                <DebouncedTextField
                   floatingLabelText="description"
                   floatingLabelFixed={true}
                   hintText="describe the field"
-                  onChange={this.handleEdit('description')}
+                  onChange={this.handleEdit('description', IMMEDIATE)}
+                  onDebounced={this.handleEdit('description', DEBOUNCED)}
                   value={this.getMeta('description', '')}
                 />
                 <SavedIcon saved={this.getSaved('description')} />
