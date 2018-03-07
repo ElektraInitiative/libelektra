@@ -55,6 +55,7 @@ int main (int argc, char ** argv)
 
 	init (argc, argv);
 
+	context = g_main_context_new ();
 	loop = g_main_loop_new (context, 0);
 
 	elektraIoTestSuite (createBinding, startLoop, stopLoop);
@@ -62,6 +63,7 @@ int main (int argc, char ** argv)
 	print_result ("iowrapper_glib");
 
 	g_main_loop_unref (loop);
+	g_main_context_unref (context);
 
 	return nbError;
 }

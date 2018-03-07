@@ -169,7 +169,6 @@ static int ioGlibBindingFdDispatch (GSource * source, GSourceFunc callback, void
 	}
 
 	// Call operation callback
-	ELEKTRA_NOT_NULL (data);
 	GlibBindingData * bindingData = fdSource->bindingData;
 	ElektraIoFdOperation * fdOp = (ElektraIoFdOperation *)bindingData->operation.fd;
 	elektraIoFdGetCallback (fdOp) (fdOp, flags);
@@ -267,7 +266,6 @@ static int ioGlibBindingAddFd (ElektraIoInterface * binding, ElektraIoFdOperatio
 		return 0;
 	}
 	GMainContext * context = (GMainContext *)elektraIoBindingGetData (binding);
-	ELEKTRA_NOT_NULL (context);
 
 	elektraIoFdSetBindingData (fdOp, bindingData);
 	bindingData->operation.fd = fdOp;
@@ -346,7 +344,6 @@ static int ioGlibBindingUpdateTimer (ElektraIoTimerOperation * timerOp)
 		}
 		ElektraIoInterface * binding = elektraIoTimerGetBinding (timerOp);
 		GMainContext * context = (GMainContext *)elektraIoBindingGetData (binding);
-		ELEKTRA_NOT_NULL (context);
 
 		// (Re-)create timeout source since interval of existing source cannot be changed
 		GSource * timeoutSource = g_timeout_source_new (elektraIoTimerGetInterval (timerOp));
@@ -421,7 +418,6 @@ static int ioGlibBindingAddIdle (ElektraIoInterface * binding, ElektraIoIdleOper
 		return 0;
 	}
 	GMainContext * context = (GMainContext *)elektraIoBindingGetData (binding);
-	ELEKTRA_NOT_NULL (context);
 
 	elektraIoIdleSetBindingData (idleOp, bindingData);
 	bindingData->operation.idle = idleOp;
