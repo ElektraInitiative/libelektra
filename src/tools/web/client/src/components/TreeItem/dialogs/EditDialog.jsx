@@ -14,18 +14,20 @@ import TextField from 'material-ui/TextField'
 
 import SavedIcon from '../SavedIcon.jsx'
 
+import debounce from '../../debounce'
+
+const DebouncedTextField = debounce(TextField)
+
 export default class EditDialog extends Component {
   constructor (...args) {
     super(...args)
     this.state = { value: false, saved: false, timeout: false }
   }
 
-  handleEdit = (evt) => {
+  handleEdit = (value) => {
     const { onEdit } = this.props
     const { timeout } = this.state
-    const { value } = evt && evt.target
 
-    this.setState({ value })
     return onEdit(value)
       .then(() => {
         if (timeout) clearTimeout(timeout)
@@ -57,10 +59,11 @@ export default class EditDialog extends Component {
         >
             <h1>Value of <b>{path}</b></h1>
             <div style={{ display: 'block' }}>
-                <TextField
+                <DebouncedTextField
                   floatingLabelText="value"
                   floatingLabelFixed={true}
-                  onChange={this.handleEdit}
+                  onChange={value => this.setState({ value })}
+                  onDebounced={this.handleEdit}
                   value={this.state.value === false ? value : this.state.value}
                 />
                 <SavedIcon saved={this.state.saved} />

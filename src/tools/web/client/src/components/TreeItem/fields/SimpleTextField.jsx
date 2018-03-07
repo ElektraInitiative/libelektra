@@ -11,6 +11,9 @@ import React, { Component } from 'react'
 import TextField from 'material-ui/TextField'
 
 import validateType from './validateType'
+import debounce from '../../debounce'
+
+const DebouncedTextField = debounce(TextField)
 
 export default class SimpleTextField extends Component {
   constructor (props) {
@@ -24,26 +27,20 @@ export default class SimpleTextField extends Component {
 
     return (
       <div draggable="true" onDragStart={e => e.preventDefault()}>
-        <TextField
+        <DebouncedTextField
           id={id}
           value={val}
           errorText={this.state.error}
           hintText={meta && meta.example}
-          onChange={(evt) => {
-            if (this.state.timeout) clearTimeout(this.state.timeout)
-            const currentValue = evt.target.value
-            this.setState({
-              value: currentValue,
-              timeout: setTimeout(() => {
-                const validationError = validateType(meta, currentValue)
-                if (validationError) {
-                  return this.setState({ error: validationError })
-                } else {
-                  this.setState({ error: false })
-                }
-                onChange(currentValue)
-              }, 500),
-            })
+          onChange={value => this.setState({ value })}
+          onDebounced={currentValue => {
+            const validationError = validateType(meta, currentValue)
+            if (validationError) {
+              return this.setState({ error: validationError })
+            } else {
+              this.setState({ error: false })
+            }
+            onChange(currentValue)
           }}
         />
       </div>

@@ -12,7 +12,10 @@ import TextField from 'material-ui/TextField'
 
 import SavedIcon from '../SavedIcon.jsx'
 
-// TODO: abstract as DebouncedTextField
+import debounce from '../../debounce'
+
+const DebouncedTextField = debounce(TextField)
+
 export default class EnumSubDialog extends Component {
   constructor (...args) {
     super(...args)
@@ -33,27 +36,21 @@ export default class EnumSubDialog extends Component {
 
     return (
         <div style={{ display: 'block', marginTop: 8 }}>
-            <TextField
+            <DebouncedTextField
               floatingLabelText="enum"
               floatingLabelFixed={true}
               hintText="e.g. ['option1','option2']"
               value={val}
               errorText={this.state.error}
-              onChange={(evt) => {
-                if (this.state.timeout) clearTimeout(this.state.timeout)
-                const currentValue = evt.target.value
-                this.setState({
-                  value: currentValue,
-                  timeout: setTimeout(() => {
-                    const validationError = this.validateEnum(currentValue)
-                    if (validationError) {
-                      return this.setState({ error: validationError })
-                    } else {
-                      this.setState({ error: false })
-                    }
-                    onChange(null, null, currentValue)
-                  }, 500),
-                })
+              onChange={value => this.setState({ value })}
+              onDebounced={currentValue => {
+                const validationError = this.validateEnum(currentValue)
+                if (validationError) {
+                  return this.setState({ error: validationError })
+                } else {
+                  this.setState({ error: false })
+                }
+                onChange(currentValue)
               }}
             />
             <SavedIcon saved={saved} />
