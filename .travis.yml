@@ -191,6 +191,7 @@ before_install:
       brew install qt
       brew install swig
       brew install yajl
+      brew install zeromq
       pip2 install cheetah # Required by kdb-gen
       # start D-Bus session bus
       brew services start dbus
@@ -232,6 +233,7 @@ before_install:
       sudo apt-get install libuv-dev
       sudo apt-get install libdbus-1-dev
       sudo apt-get install libev-dev
+      sudo apt-get install libzmq3-dev
       sudo apt-get install libxerces-c-dev
       sudo apt-get install moreutils # contains `sponge` required by `reformat-cmake`
       sudo pip install --upgrade cmake_format==0.4.1 pyyaml

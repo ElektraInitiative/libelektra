@@ -32,6 +32,8 @@ RUN apt-get -y install \
   libbotan1.10-dev \
   libev-dev \
   libsystemd-dev \
+  libuv1-dev \
+	libzmq3-dev \
   openjdk-8-jdk-headless \
   ghc \
   ghc-dynamic \
