@@ -17,12 +17,20 @@
 
 #include <zmq.h>
 
-// elektraIoDbus*()
-//#include <kdbio_adapter_zeromq.h>
+#include <kdbio_adapter_zeromq.h> // elektraIoAdapterZeroMq*()
+
+
+typedef struct ElektraZeroMqSendQueuedNotification
+{
+	char * changeType;
+	char * keyName;
+
+	struct ElektraZeroMqSendQueuedNotification * next;
+} ElektraZeroMqSendQueuedNotification;
 
 /**
  * @internal
- * Private plugin data
+ * Private plugin state
  */
 typedef struct
 {
@@ -32,12 +40,20 @@ typedef struct
 	// I/O binding (may be NULL)
 	ElektraIoInterface * ioBinding;
 
-	// ZeroMQ context and socket (may be NULL)
+	// ZeroMQ context and socket (NULL until initialized at first elektraZeroMqSendPublish())
 	void * zmqContext;
 	void * zmqPublisher;
 
-	// ZeroMQ I/O adapter handle
-	// ElektraIoAdapterZeroMqHandle * zmqAdapter;
+	// ZeroMQ I/O adapter handle (NULL without I/O binding)
+	ElektraIoAdapterZeroMqHandle * zmqAdapter;
+
+	// delay inital actions until connection is available
+	ElektraIoTimerOperation * settleTimer;
+
+	// pointer to list of queued notifications
+	ElektraZeroMqSendQueuedNotification * head;
+	// pointer to last queued notification for adding new items
+	ElektraZeroMqSendQueuedNotification * last;
 
 } ElektraZeroMqSendPluginData;
 

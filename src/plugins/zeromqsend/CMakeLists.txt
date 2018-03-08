@@ -16,7 +16,7 @@ add_plugin (zeromqsend
 	INCLUDE_DIRECTORIES
 		${ZMQ_INCLUDE_DIR}
 	LINK_ELEKTRA
-		#elektra-io-adapter-zeromq
+		elektra-io-adapter-zeromq
 	LINK_LIBRARIES
 		${ZMQ_LIBRARIES}
 	)
@@ -42,9 +42,8 @@ if (ADDTESTING_PHASE)
 			INCLUDE_DIRECTORIES
 				${ZMQ_INCLUDE_DIR}
 			LINK_ELEKTRA
-				#elektra-io-adapter-zeromq
-				#elektra-io
-				#elektra-io-uv
+				elektra-io-adapter-zeromq
+				elektra-io-uv
 			)
 
 		# add sources manually because add_plugintest does not support generator

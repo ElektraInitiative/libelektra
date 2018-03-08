@@ -63,6 +63,10 @@ int elektraZeroMqSendOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 		data->ioBinding = NULL;
 		data->zmqContext = NULL;
 		data->zmqPublisher = NULL;
+		data->zmqAdapter = NULL;
+		data->settleTimer = NULL;
+		data->head = NULL;
+		data->last = NULL;
 	}
 	elektraPluginSetData (handle, data);
 
@@ -158,10 +162,17 @@ int elektraZeroMqSendClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 
 	KeySet * ks = pluginData->keys;
 	if (ks) ksDel (ks);
+	if (pluginData->zmqAdapter)
+	{
+		if (!elektraIoZeroMqAdapterDetach (pluginData->zmqAdapter))
+		{
+			ELEKTRA_LOG_WARNING ("detach adapter failed");
+		}
+		pluginData->zmqAdapter = NULL;
+	}
 
 	if (pluginData->zmqPublisher)
 	{
-		// TODO elektraIoAdapterZeroMqCleanup (pluginData->zmqAdapter);
 		zmq_close (pluginData->zmqPublisher);
 		pluginData->zmqPublisher = NULL;
 	}

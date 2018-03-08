@@ -16,7 +16,7 @@ It is compatible with the sending D-Bus plugin.
 
 ## Dependencies
 
-- `libzmq` (TODO check compatible versions)
+- `libzmq3-dev` (ZeroMQ C bindings > 3.2 )
 
 ## Usage
 
