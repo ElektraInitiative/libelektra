@@ -23,14 +23,14 @@
 /** zmq context for tests */
 void * context;
 
-/** time (300ms in microseconds) to wait until zmq connections are established and sending & receiving works */
-#define TIME_SETTLE_US (300 * 1000)
+/** time in microseconds to wait until zmq connections are established and sending & receiving works */
+#define TIME_SETTLE_US (1000 * 1000)
 
 /** time (100ms in microseconds) before a new socket is created. leaves the system some after binding a socket again */
 #define TIME_HOLDOFF (100 * 1000)
 
 /** timeout for tests in seconds */
-#define TEST_TIMEOUT 1
+#define TEST_TIMEOUT 3
 
 Key * test_callbackKey;
 uv_loop_t * test_callbackLoop;
