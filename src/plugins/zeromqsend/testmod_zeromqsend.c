@@ -12,14 +12,12 @@
 #include <time.h>   // time()
 #include <unistd.h> // usleep()
 
-#include <kdbio_uv.h>    // elektraIoUvNew()
 #include <kdbioplugin.h> // ElektraIoPluginSetBinding
 
 #include <tests.h>
 #include <tests_plugin.h>
 
 #include <pthread.h>
-#include <uv.h>
 
 /** change type received by readNotificationFromTestSocket() */
 char * receivedChangeType;
@@ -30,17 +28,14 @@ char * receivedKeyName;
 /** zmq context for tests */
 void * context;
 
-/** time (300ms in microseconds) to wait until zmq connections are established and sending & receiving works */
-#define TIME_SETTLE (300 * 1000)
+/** time in microseconds to wait until zmq connections are established and sending & receiving works */
+#define TIME_SETTLE (1000 * 1000)
 
 /** time (100ms in microseconds) before a new socket is created. leaves the system some after binding a socket again */
 #define TIME_HOLDOFF (100 * 1000)
 
 /** timeout for tests in seconds */
 #define TEST_TIMEOUT 3
-
-/** uv loop used in async tests */
-uv_loop_t * globalLoop;
 
 /**
  * Create subscriber socket for tests.
@@ -154,12 +149,6 @@ static void * notificationReaderThreadMain (void * filter)
 	zmq_msg_close (&message);
 	zmq_close (subSocket);
 
-	// Stop uv loop if set
-	if (globalLoop)
-	{
-		uv_stop (globalLoop);
-	}
-
 	return NULL;
 }
 
@@ -190,7 +179,7 @@ static void test_sending (void)
 	{
 		yield_error ("zmq_connect failed!");
 		printf ("zmq_connect error: %s\n", zmq_strerror (zmq_errno ()));
-		exit (-1);
+		return;
 	}
 
 	pthread_t * thread = startNotificationReaderThread ("test");
@@ -209,8 +198,6 @@ static void test_sending (void)
 	elektraFree (receivedKeyName);
 	elektraFree (receivedChangeType);
 	elektraFree (thread);
-
-	return;
 }
 
 static void test_keyAdded (void)
@@ -315,58 +302,6 @@ static void test_keyDeleted (void)
 	elektraFree (thread);
 }
 
-static void test_timerCallback (ElektraIoTimerOperation * timer ELEKTRA_UNUSED)
-{
-	yield_error ("uv timeout exceeded!\n");
-	uv_stop (globalLoop);
-}
-
-static void test_async (uv_loop_t * loop, ElektraIoInterface * binding)
-{
-	printf ("test asynchronous sending\n");
-
-	Key * parentKey = keyNew ("system/tests/foo", KEY_END);
-	Key * toAdd = keyNew ("system/tests/foo/bar", KEY_END);
-	KeySet * ks = ksNew (0, KS_END);
-
-	KeySet * conf = ksNew (0, KS_END);
-	PLUGIN_OPEN ("zeromqsend");
-
-	// set io binding
-	size_t func = elektraPluginGetFunction (plugin, "setIoBinding");
-	exit_if_fail (func, "could not get function setIoBinding");
-	ElektraIoPluginSetBinding setIoBinding = (ElektraIoPluginSetBinding)func;
-	setIoBinding (plugin, binding);
-
-	// initial get to save current state
-	plugin->kdbGet (plugin, ks, parentKey);
-
-	// add key to keyset
-	ksAppendKey (ks, toAdd);
-
-	pthread_t * thread = startNotificationReaderThread ("Key");
-	plugin->kdbSet (plugin, ks, parentKey);
-
-	ElektraIoTimerOperation * timer = elektraIoNewTimerOperation (TEST_TIMEOUT * 1000, 1, test_timerCallback, NULL);
-	elektraIoBindingAddTimer (binding, timer);
-
-	globalLoop = loop;
-	uv_run (loop, UV_RUN_DEFAULT);
-	pthread_join (*thread, NULL);
-
-	succeed_if_same_string ("KeyAdded", receivedChangeType);
-	succeed_if_same_string (keyName (toAdd), receivedKeyName);
-
-	elektraIoBindingRemoveTimer (timer);
-	elektraFree (timer);
-	ksDel (ks);
-	keyDel (parentKey);
-	PLUGIN_CLOSE ();
-	elektraFree (receivedKeyName);
-	elektraFree (receivedChangeType);
-	elektraFree (thread);
-}
-
 int main (int argc, char ** argv)
 {
 	printf ("ZEROMQSEND TESTS\n");
@@ -388,25 +323,9 @@ int main (int argc, char ** argv)
 	test_keyChanged ();
 	test_keyDeleted ();
 
-	uv_loop_t * loop = uv_default_loop ();
-	ElektraIoInterface * binding = elektraIoUvNew (loop);
-
-	test_async (loop, binding);
-
-	elektraIoBindingCleanup (binding);
+	printf ("\ntestmod_zeromqsend RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
 	zmq_ctx_destroy (context);
-
-	if (uv_loop_close (loop) == UV_EBUSY)
-	{
-		while (uv_loop_alive (loop))
-		{
-			uv_run (loop, UV_RUN_ONCE);
-		}
-		uv_loop_close (loop);
-	}
-
-	printf ("\ntestmod_zeromqsend RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
 	return nbError;
 }

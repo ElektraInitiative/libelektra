@@ -10,102 +10,23 @@
 
 #include <kdbhelper.h>
 #include <kdblogger.h>
-#include <unistd.h>
+
+#include <time.h>   // clock_gettime()
+#include <unistd.h> // usleep()
 
 /** time (300ms) to wait until zmq connections are established and sending & receiving works */
-#define TIME_SETTLE_MS (300)
-
-/** settle time in microseconds */
-#define TIME_SETTLE_US (TIME_SETTLE_MS * 1000)
-
-
-static void zeroMqSendSocketWritable (void * socket, void * context)
-{
-	ElektraZeroMqSendPluginData * data = context;
-
-	// process next notification
-	ElektraZeroMqSendQueuedNotification * notification = data->head;
-	if (notification != NULL)
-	{
-		// remove notification from list
-		data->head = notification->next;
-
-		if (!elektraZeroMqSendNotification (socket, notification->changeType, notification->keyName))
-		{
-			ELEKTRA_LOG_WARNING ("could not send notification");
-		}
-
-		elektraFree (notification->changeType);
-		elektraFree (notification->keyName);
-		elektraFree (notification);
-	}
-
-	if (data->head == NULL)
-	{
-		// disable adapter until next notifications are sent
-		elektraIoZeroMqAdapterSetEnabled (data->zmqAdapter, 0);
-	}
-}
-
-static void zeroMqSettleTimeout (ElektraIoTimerOperation * timer)
-{
-	ElektraIoAdapterZeroMqHandle * zmqAdapter = elektraIoTimerGetData (timer);
-	ELEKTRA_NOT_NULL (zmqAdapter);
-
-	// enable adapter
-	elektraIoZeroMqAdapterSetEnabled (zmqAdapter, 1);
-
-	elektraIoBindingRemoveTimer (timer);
-	elektraFree (timer);
-}
+#define TIME_SETTLE_US (300 * 1000)
 
 /**
- * Append notification to the end of the list.
  * @internal
+ * Connect to ZeroMq SUB or XSUB socket bound at endpoint.
  *
- * @param pluginData   internal plugin data
- * @param notification notification ot append
+ * @param  data plugin data
+ * @retval 1 on success
+ * @retval 0 on error
  */
-static void zeroMqQueueNotification (ElektraZeroMqSendPluginData * pluginData, ElektraZeroMqSendQueuedNotification * notification)
+int elektraZeroMqSendConnect (ElektraZeroMqSendPluginData * data)
 {
-	notification->next = NULL;
-
-	if (pluginData->head == NULL)
-	{
-		// Initialize list
-		pluginData->head = pluginData->last = notification;
-	}
-	else
-	{
-		// Make new notification end of list
-		pluginData->last->next = notification;
-		pluginData->last = notification;
-	}
-}
-
-void elektraZeroMqSendPublish (const char * changeType, const char * keyName, ElektraZeroMqSendPluginData * data)
-{
-	/* NOTE
-	 * - context and socket are created
-	 * - socket connects to endpoint
-	 *   - if I/O binding is not present
-	 *     - wait until connection is available (using usleep) otherwise messages are lost when writing immediately
-	 *
-	 * if I/O binding is present
-	 *   - if necessary create zeromq adapter which calls zeroMqSendSocketWritable when the socket is writable
-	 *     - wait until connection is available (using ElektraIoTimerOperation) otherwise socket would become writable immediately and
-	 *       messages are lost
-	 *     - the timer enables the adapter
-	 *     - which sends the notification and disables the adapter
-	 *   - else (adapter is already created)
-	 *     - the connection is already established
-	 *     - we enable the adapter
-	 *     - which sends the notification and disables the adapter
-	 * else (I/O binding is not present)
-	 *   - send the notification
-	 */
-	int haveIoBinding = data->ioBinding != NULL;
-
 	// create zmq context
 	if (!data->zmqContext)
 	{
@@ -113,7 +34,7 @@ void elektraZeroMqSendPublish (const char * changeType, const char * keyName, El
 		if (data->zmqContext == NULL)
 		{
 			ELEKTRA_LOG_WARNING ("zmq_ctx_new failed %s", zmq_strerror (zmq_errno ()));
-			return;
+			return 0;
 		}
 	}
 
@@ -125,7 +46,7 @@ void elektraZeroMqSendPublish (const char * changeType, const char * keyName, El
 		{
 			ELEKTRA_LOG_WARNING ("zmq_socket failed %s", zmq_strerror (zmq_errno ()));
 			zmq_close (data->zmqPublisher);
-			return;
+			return 0;
 		}
 		// connect to endpoint
 		char * endpoint = "tcp://localhost:6000"; // TODO make configurable
@@ -135,60 +56,88 @@ void elektraZeroMqSendPublish (const char * changeType, const char * keyName, El
 			ELEKTRA_LOG_WARNING ("zmq_connect error: %s\n", zmq_strerror (zmq_errno ()));
 			zmq_close (data->zmqPublisher);
 			data->zmqPublisher = NULL;
-			return;
+			return 0;
 		}
 
-		if (!haveIoBinding)
-		{
-			// wait for connection to be available
-			usleep (TIME_SETTLE_US);
-		}
+		// store timestamp when connection was initiated (not established...)
+		clock_gettime (CLOCK_MONOTONIC, &data->timeConnect);
 	}
 
-	if (haveIoBinding)
+	return 1;
+}
+
+/**
+ * Publish notification on ZeroMq connection.
+ *
+ * @param changeType type of change
+ * @param keyName    name of changed key
+ * @param data       plugin data
+ */
+void elektraZeroMqSendPublish (const char * changeType, const char * keyName, ElektraZeroMqSendPluginData * data)
+{
+	/* NOTE
+	 * - context and socket are created
+	 * - socket connects to endpoint
+	 *   - if I/O binding is not present
+	 *     - wait until connection is available (using usleep) otherwise messages are lost when writing immediately
+	 *   - send the notification
+	 */
+	if (!elektraZeroMqSendConnect (data))
 	{
-		ElektraZeroMqSendQueuedNotification * notification = elektraMalloc (sizeof (*notification));
-		if (!notification)
-		{
-			ELEKTRA_LOG_WARNING ("malloc failed");
-			return;
-		}
-		notification->changeType = elektraStrDup (changeType);
-		notification->keyName = elektraStrDup (keyName);
-		zeroMqQueueNotification (data, notification);
+		ELEKTRA_LOG_WARNING ("could not connect to endpoint");
+		return;
+	}
 
-		if (!data->zmqAdapter)
+	// check if settle time has passed
+	struct timespec wait;
+	struct timespec now;
+	if (clock_gettime (CLOCK_MONOTONIC, &now) == 0)
+	{
+		// calculate remaining settle time
+		wait.tv_sec = (now.tv_sec - data->timeConnect.tv_sec);
+		if (wait.tv_sec > 0)
 		{
-			// attach ZeroMq adater and wait for socket to be writable
-			data->zmqAdapter = elektraIoAdapterZeroMqAttach (data->zmqPublisher, data->ioBinding,
-									 ELEKTRA_IO_ADAPTER_ZEROMQCB_WRITE, zeroMqSendSocketWritable, data);
-			if (!data->zmqAdapter)
-			{
-				ELEKTRA_LOG_WARNING ("could not attach zmq adapter");
-				return;
-			}
-			// disable adapter until connection is available
-			elektraIoZeroMqAdapterSetEnabled (data->zmqAdapter, 0);
-
-			// asynchronously wait for connection to be available
-			data->settleTimer = elektraIoNewTimerOperation (TIME_SETTLE_MS, 1, zeroMqSettleTimeout, data->zmqAdapter);
-			elektraIoBindingAddTimer (data->ioBinding, data->settleTimer);
+			// more than a second has passed, do not wait
+			wait.tv_sec = 0;
+			wait.tv_nsec = 0;
 		}
 		else
 		{
-			elektraIoZeroMqAdapterSetEnabled (data->zmqAdapter, 1);
+			// wait remaining settle time
+			wait.tv_nsec = (TIME_SETTLE_US * 1000) - (now.tv_nsec - data->timeConnect.tv_nsec);
 		}
+
+		ELEKTRA_LOG_DEBUG ("remaining settle time %ld us", wait.tv_nsec / 1000);
 	}
 	else
 	{
-		// send notification
-		if (!elektraZeroMqSendNotification (data->zmqPublisher, changeType, keyName))
-		{
-			ELEKTRA_LOG_WARNING ("could not send notification");
-		}
+		ELEKTRA_LOG_WARNING ("cannot use clock_gettime(); using complete settle time");
+		wait.tv_sec = 0;
+		wait.tv_nsec = (TIME_SETTLE_US * 1000);
+	}
+	while (!nanosleep (&wait, &wait) && errno == EINTR)
+		;
+
+	// send notification
+	if (!elektraZeroMqSendNotification (data->zmqPublisher, changeType, keyName))
+	{
+		ELEKTRA_LOG_WARNING ("could not send notification");
 	}
 }
 
+/**
+ * @internal
+ * Send notification over ZeroMq socket.
+ *
+ * zmq_send() asynchronous.
+ * Processing already handled in a thread created by ZeroMq.
+ *
+ * @param  socket     ZeroMq socket
+ * @param  changeType type of change
+ * @param  keyName    name of changed key
+ * @retval 1 on success
+ * @retval 0 on error
+ */
 int elektraZeroMqSendNotification (void * socket, const char * changeType, const char * keyName)
 {
 	unsigned int size;

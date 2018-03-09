@@ -1,34 +1,33 @@
-- infos = Information about the dbus plugin is in keys below
-- infos/author = Markus Raab <elektra@libelektra.org>
+- infos = Information about the zeromqsend plugin is in keys below
+- infos/author = Thomas Wahringer <waht@libelektra.org>
 - infos/licence = BSD
 - infos/provides = notification
 - infos/needs =
 - infos/recommends =
 - infos/placements = postgetstorage postcommit
 - infos/status = maintained unittest libc global experimental
-- infos/description = Sends DBus signals when a method is called
+- infos/description = Sends notifications over ZeroMq publish sockets when a key is changed
 
 ## Introduction
 
-This plugin is a notification plugin, which receives a signal from D-Bus when
-the key database (KDB) has been modified.
-It is compatible with the sending D-Bus plugin.
+This plugin is a notification plugin, which sends notifications using ZeroMq
+publish (`ZMQ_PUB`) sockets when the key database (KDB) has been modified.
+It is compatible with the sending zeromqrecv plugin.
 
 ## Dependencies
 
-- `libzmq3-dev` (ZeroMQ C bindings > 3.2 )
+- `libzmq3-dev` (ZeroMQ C bindings > 3.2)
 
 ## Usage
 
 The recommended way is to globally mount the plugin together with the zeromqrecv plugin:
 
-	kdb global-mount zeromqsend zeromqrecv
+> kdb global-mount zeromqsend zeromqrecv
 
 This plugin is designed to be used as a transport plugin for Elektra's
 notification feature.
-If notification is not enabled (i.e. in the tool `kdb` or in any other
-application that does not use `elektraNotificationOpen()`) this plugin falls
-back to synchronous sending.
+Since ZeroMq creates threads for asynchronous I/O this plugin always operates
+asynchronously.
 
 # Transport Plugin
 

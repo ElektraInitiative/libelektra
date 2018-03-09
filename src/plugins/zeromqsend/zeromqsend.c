@@ -20,18 +20,6 @@
 
 
 /**
- * @see ElektraIoPluginSetBinding (kdbioplugin.h)
- */
-void elektraZeroMqSendSetIoBinding (Plugin * handle, ElektraIoInterface * binding)
-{
-	ELEKTRA_NOT_NULL (handle);
-	ElektraZeroMqSendPluginData * data = elektraPluginGetData (handle);
-	ELEKTRA_NOT_NULL (data);
-
-	data->ioBinding = binding;
-}
-
-/**
  * @internal
  * Announce multiple keys with same signal name.
  *
@@ -60,15 +48,19 @@ int elektraZeroMqSendOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 	{
 		data = elektraMalloc (sizeof (*data));
 		data->keys = NULL;
-		data->ioBinding = NULL;
 		data->zmqContext = NULL;
 		data->zmqPublisher = NULL;
-		data->zmqAdapter = NULL;
-		data->settleTimer = NULL;
-		data->head = NULL;
-		data->last = NULL;
+		// data->timeOpen = 0;
+		// TODO store endpoint in data
 	}
 	elektraPluginSetData (handle, data);
+
+
+	// create connection
+	if (!elektraZeroMqSendConnect (data))
+	{
+		ELEKTRA_LOG_WARNING ("could not connect to endpoint");
+	}
 
 	return 1; /* success */
 }
@@ -84,7 +76,6 @@ int elektraZeroMqSendGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key
 			keyNew ("system/elektra/modules/zeromqsend/exports/get", KEY_FUNC, elektraZeroMqSendGet, KEY_END),
 			keyNew ("system/elektra/modules/zeromqsend/exports/set", KEY_FUNC, elektraZeroMqSendSet, KEY_END),
 			keyNew ("system/elektra/modules/zeromqsend/exports/close", KEY_FUNC, elektraZeroMqSendClose, KEY_END),
-			keyNew ("system/elektra/modules/zeromqsend/exports/setIoBinding", KEY_FUNC, elektraZeroMqSendSetIoBinding, KEY_END),
 #include ELEKTRA_README (zeromqsend)
 			keyNew ("system/elektra/modules/zeromqsend/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
@@ -162,14 +153,6 @@ int elektraZeroMqSendClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 
 	KeySet * ks = pluginData->keys;
 	if (ks) ksDel (ks);
-	if (pluginData->zmqAdapter)
-	{
-		if (!elektraIoZeroMqAdapterDetach (pluginData->zmqAdapter))
-		{
-			ELEKTRA_LOG_WARNING ("detach adapter failed");
-		}
-		pluginData->zmqAdapter = NULL;
-	}
 
 	if (pluginData->zmqPublisher)
 	{

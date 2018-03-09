@@ -11,22 +11,11 @@
 #define ELEKTRA_PLUGIN_ZEROMQSEND_H
 
 #include <kdbassert.h>
-#include <kdbioplugin.h>
-#include <kdbnotificationinternal.h>
 #include <kdbplugin.h>
 
+#include <time.h> // struct timespec
+
 #include <zmq.h>
-
-#include <kdbio_adapter_zeromq.h> // elektraIoAdapterZeroMq*()
-
-
-typedef struct ElektraZeroMqSendQueuedNotification
-{
-	char * changeType;
-	char * keyName;
-
-	struct ElektraZeroMqSendQueuedNotification * next;
-} ElektraZeroMqSendQueuedNotification;
 
 /**
  * @internal
@@ -37,26 +26,16 @@ typedef struct
 	// remember keys for change detection
 	KeySet * keys;
 
-	// I/O binding (may be NULL)
-	ElektraIoInterface * ioBinding;
-
 	// ZeroMQ context and socket (NULL until initialized at first elektraZeroMqSendPublish())
 	void * zmqContext;
 	void * zmqPublisher;
 
-	// ZeroMQ I/O adapter handle (NULL without I/O binding)
-	ElektraIoAdapterZeroMqHandle * zmqAdapter;
-
-	// delay inital actions until connection is available
-	ElektraIoTimerOperation * settleTimer;
-
-	// pointer to list of queued notifications
-	ElektraZeroMqSendQueuedNotification * head;
-	// pointer to last queued notification for adding new items
-	ElektraZeroMqSendQueuedNotification * last;
+	// Timestamp when the connection was created
+	struct timespec timeConnect;
 
 } ElektraZeroMqSendPluginData;
 
+int elektraZeroMqSendConnect (ElektraZeroMqSendPluginData * data);
 void elektraZeroMqSendPublish (const char * changeType, const char * keyName, ElektraZeroMqSendPluginData * data);
 int elektraZeroMqSendNotification (void * socket, const char * changeType, const char * keyName);
 
