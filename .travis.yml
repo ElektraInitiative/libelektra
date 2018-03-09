@@ -172,7 +172,6 @@ before_script:
     ${CMAKE_OPT[@]}
     $TRAVIS_BUILD_DIR
   - export PATH=$PATH:"$INSTALL_DIR/bin"
-  - export LD_LIBRARY_PATH="$INSTALL_DIR/lib"
 
 script:
   - ninja
