@@ -168,9 +168,9 @@ ElektraIoAdapterZeroMqHandle * elektraIoAdapterZeroMqAttach (void * socket, Elek
 	}*/
 	// enable adapter
 	handle->enabled = 0;
-	if (!elektraIoZeroMqAdapterSetEnabled (handle, 1))
+	if (!elektraIoAdapterZeroMqSetEnabled (handle, 1))
 	{
-		elektraIoZeroMqAdapterSetEnabled (handle, 0);
+		elektraIoAdapterZeroMqSetEnabled (handle, 0);
 		elektraFree (dispatchIdle);
 		elektraFree (fdOp);
 		elektraFree (handle);
@@ -180,7 +180,7 @@ ElektraIoAdapterZeroMqHandle * elektraIoAdapterZeroMqAttach (void * socket, Elek
 	return handle;
 }
 
-int elektraIoZeroMqAdapterSetEnabled (ElektraIoAdapterZeroMqHandle * handle, int enabled)
+int elektraIoAdapterZeroMqSetEnabled (ElektraIoAdapterZeroMqHandle * handle, int enabled)
 {
 	if (handle->enabled == enabled)
 	{
@@ -218,12 +218,12 @@ int elektraIoZeroMqAdapterSetEnabled (ElektraIoAdapterZeroMqHandle * handle, int
 	return 1;
 }
 
-void elektraIoZeroMqAdapterSetContext (ElektraIoAdapterZeroMqHandle * handle, void * context)
+void elektraIoAdapterZeroMqSetContext (ElektraIoAdapterZeroMqHandle * handle, void * context)
 {
 	handle->callbackContext = context;
 }
 
-int elektraIoZeroMqAdapterDetach (ElektraIoAdapterZeroMqHandle * handle)
+int elektraIoAdapterZeroMqDetach (ElektraIoAdapterZeroMqHandle * handle)
 {
 	if (handle->enabled)
 	{

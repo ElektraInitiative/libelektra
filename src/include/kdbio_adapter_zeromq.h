@@ -71,7 +71,7 @@ ElektraIoAdapterZeroMqHandle * elektraIoAdapterZeroMqAttach (void * socket, Elek
  * @param handle  adapter handle
  * @param enabled 1 to enable, any other value to disable
  */
-int elektraIoZeroMqAdapterSetEnabled (ElektraIoAdapterZeroMqHandle * handle, int enabled);
+int elektraIoAdapterZeroMqSetEnabled (ElektraIoAdapterZeroMqHandle * handle, int enabled);
 
 /**
  * Set the callback context for a ZeroMq adapter handle.
@@ -81,7 +81,7 @@ int elektraIoZeroMqAdapterSetEnabled (ElektraIoAdapterZeroMqHandle * handle, int
  * @param handle  adapter handle
  * @param context new callback context
  */
-void elektraIoZeroMqAdapterSetContext (ElektraIoAdapterZeroMqHandle * handle, void * context);
+void elektraIoAdapterZeroMqSetContext (ElektraIoAdapterZeroMqHandle * handle, void * context);
 
 /**
  * Remove ZeroMq socket from I/O binding.
@@ -92,6 +92,6 @@ void elektraIoZeroMqAdapterSetContext (ElektraIoAdapterZeroMqHandle * handle, vo
  * @retval 1 on success
  * @retval 0 on error
  */
-int elektraIoZeroMqAdapterDetach (ElektraIoAdapterZeroMqHandle * handle);
+int elektraIoAdapterZeroMqDetach (ElektraIoAdapterZeroMqHandle * handle);
 
 #endif
