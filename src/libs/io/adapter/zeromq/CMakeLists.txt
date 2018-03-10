@@ -31,4 +31,6 @@ if (ZMQ_FOUND)
 		target_include_directories (${ADAPTER_LIBRARY} SYSTEM PUBLIC ${ZMQ_INCLUDE_DIR})
 	endif ()
 
+	add_subdirectory (hub)
+
 endif ()

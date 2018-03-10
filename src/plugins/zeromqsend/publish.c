@@ -74,20 +74,17 @@ int elektraZeroMqSendConnect (ElektraZeroMqSendPluginData * data)
  */
 void elektraZeroMqSendPublish (const char * changeType, const char * keyName, ElektraZeroMqSendPluginData * data)
 {
-	/* NOTE
-	 * - context and socket are created
-	 * - socket connects to endpoint
-	 *   - if I/O binding is not present
-	 *     - wait until connection is available (using usleep) otherwise messages are lost when writing immediately
-	 *   - send the notification
-	 */
 	if (!elektraZeroMqSendConnect (data))
 	{
 		ELEKTRA_LOG_WARNING ("could not connect to endpoint");
 		return;
 	}
 
-	// check if settle time has passed
+	// NOTE zmq_connect() returns before a connection is established since ZeroMq
+	// asynchronously does that in the background.
+	// All notifications sent before the connection is established are lost since
+	// ZMQ_PUB sockets handle message filtering: Without subscribers all messages
+	// are discarded.
 	struct timespec wait;
 	struct timespec now;
 	if (clock_gettime (CLOCK_MONOTONIC, &now) == 0)
