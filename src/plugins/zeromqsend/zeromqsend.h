@@ -17,6 +17,8 @@
 
 #include <zmq.h>
 
+#define ELEKTRA_ZEROMQ_DEFAULT_PUB_ENDPOINT "tcp://localhost:6000"
+
 /**
  * @internal
  * Private plugin state
@@ -29,6 +31,9 @@ typedef struct
 	// ZeroMQ context and socket (NULL until initialized at first elektraZeroMqSendPublish())
 	void * zmqContext;
 	void * zmqPublisher;
+
+	// endpoint for publish socket
+	const char * endpoint;
 
 	// Timestamp when the connection was created
 	struct timespec timeConnect;

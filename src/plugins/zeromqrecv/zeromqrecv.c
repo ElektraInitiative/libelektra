@@ -65,6 +65,17 @@ void elektraZeroMqRecvCloseNotification (Plugin * handle)
 
 int elektraZeroMqRecvOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 {
+	Key * endpointKey = ksLookupByName (elektraPluginGetConfig (handle), "/config/endpoint", 0);
+	const char * endpoint;
+	if (endpointKey)
+	{
+		endpoint = keyString (endpointKey);
+	}
+	else
+	{
+		endpoint = ELEKTRA_ZEROMQ_DEFAULT_SUB_ENDPOINT;
+	}
+
 	ElektraZeroMqRecvPluginData * data = elektraPluginGetData (handle);
 	if (!data)
 	{
@@ -73,6 +84,7 @@ int elektraZeroMqRecvOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 		data->zmqContext = NULL;
 		data->zmqSubscriber = NULL;
 		data->zmqAdapter = NULL;
+		data->endpoint = endpoint;
 	}
 	elektraPluginSetData (handle, data);
 

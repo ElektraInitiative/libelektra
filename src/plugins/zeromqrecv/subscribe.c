@@ -98,8 +98,7 @@ void elektraZeroMqRecvSetup (ElektraZeroMqRecvPluginData * data)
 		}
 
 		// connect to endpoint
-		char * endpoint = "tcp://localhost:6001"; // TODO make configurable
-		int result = zmq_connect (data->zmqSubscriber, endpoint);
+		int result = zmq_connect (data->zmqSubscriber, data->endpoint);
 		if (result != 0)
 		{
 			ELEKTRA_LOG_WARNING ("zmq_connect error: %s\n", zmq_strerror (zmq_errno ()));

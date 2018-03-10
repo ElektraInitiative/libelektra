@@ -49,8 +49,7 @@ int elektraZeroMqSendConnect (ElektraZeroMqSendPluginData * data)
 			return 0;
 		}
 		// connect to endpoint
-		char * endpoint = "tcp://localhost:6000"; // TODO make configurable
-		int result = zmq_connect (data->zmqPublisher, endpoint);
+		int result = zmq_connect (data->zmqPublisher, data->endpoint);
 		if (result != 0)
 		{
 			ELEKTRA_LOG_WARNING ("zmq_connect error: %s\n", zmq_strerror (zmq_errno ()));

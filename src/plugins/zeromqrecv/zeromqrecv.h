@@ -19,14 +19,7 @@
 
 #include <kdbio_adapter_zeromq.h> // elektraIoAdapterZeroMq*()
 
-
-typedef struct ElektraZeroMqRecvQueuedNotification
-{
-	char * changeType;
-	char * keyName;
-
-	struct ElektraZeroMqRecvQueuedNotification * next;
-} ElektraZeroMqRecvQueuedNotification;
+#define ELEKTRA_ZEROMQ_DEFAULT_SUB_ENDPOINT "tcp://localhost:6001"
 
 /**
  * @internal
@@ -44,6 +37,9 @@ typedef struct
 	// ZeroMQ context and socket (NULL until initialized at first elektraZeroMqRecvPublish())
 	void * zmqContext;
 	void * zmqSubscriber;
+
+	// endpoint for subscribe socket
+	const char * endpoint;
 
 	// ZeroMQ I/O adapter handle (NULL without I/O binding)
 	ElektraIoAdapterZeroMqHandle * zmqAdapter;

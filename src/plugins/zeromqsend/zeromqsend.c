@@ -43,6 +43,17 @@ static void announceKeys (KeySet * ks, const char * changeType, ElektraZeroMqSen
 
 int elektraZeroMqSendOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 {
+	Key * endpointKey = ksLookupByName (elektraPluginGetConfig (handle), "/config/endpoint", 0);
+	const char * endpoint;
+	if (endpointKey)
+	{
+		endpoint = keyString (endpointKey);
+	}
+	else
+	{
+		endpoint = ELEKTRA_ZEROMQ_DEFAULT_PUB_ENDPOINT;
+	}
+
 	ElektraZeroMqSendPluginData * data = elektraPluginGetData (handle);
 	if (!data)
 	{
@@ -50,8 +61,7 @@ int elektraZeroMqSendOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 		data->keys = NULL;
 		data->zmqContext = NULL;
 		data->zmqPublisher = NULL;
-		// data->timeOpen = 0;
-		// TODO store endpoint in data
+		data->endpoint = endpoint;
 	}
 	elektraPluginSetData (handle, data);
 
