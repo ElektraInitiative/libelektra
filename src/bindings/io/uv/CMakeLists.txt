@@ -72,7 +72,7 @@ else ()
 
 	target_link_elektra (${testexename} elektra-kdb elektra-plugin elektra-io ${IO_UV_LIBRARY} m)
 	if (BUILD_FULL OR BUILD_STATIC)
-  	target_link_libraries (${testexename} ${LIBUV_LDFLAGS})
+  	target_link_libraries (${testexename} "${LIBUV_LIBRARIES};m")
   endif ()
 
 	add_test (NAME ${testexename}

@@ -29,6 +29,7 @@ else ()
 
 		if (BUILD_FULL OR BUILD_STATIC)
 			add_includes ("elektra-full" "${DBUS_INCLUDE_DIR};${DBUS_ARCH_INCLUDE_DIR}")
+			set_property (GLOBAL APPEND PROPERTY "elektra-full_LIBRARIES" "${DBUS_LIBRARIES}")
 		endif ()
 		if (BUILD_SHARED)
 			target_include_directories (${ADAPTER_LIBRARY} SYSTEM PUBLIC ${DBUS_INCLUDE_DIR} ${DBUS_ARCH_INCLUDE_DIR})
