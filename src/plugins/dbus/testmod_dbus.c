@@ -456,7 +456,7 @@ int main (int argc, char ** argv)
 	test_cascadedAnnounceOnce ();
 	test_cascadedChangeNotification ();
 
-	printf ("\ntestmod_dbus RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("testmod_dbus");
 
 	dbus_shutdown ();
 

@@ -61,9 +61,9 @@ else ()
 	list (APPEND TEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/testio_${BINDING_VARIANT}.c")
 
 	if (BUILD_FULL OR BUILD_STATIC)
-    # add sources for elektra-io-uv for static and full builds
+		# add sources for elektra-io-uv for static and full builds
 		list (APPEND TEST_SOURCES $<TARGET_OBJECTS:OBJ_${IO_UV_LIBRARY}>)
-  endif ()
+	endif ()
 
 	add_executable (${testexename} ${TEST_SOURCES})
 	add_dependencies (${testexename} kdberrors_generated)
@@ -72,8 +72,8 @@ else ()
 
 	target_link_elektra (${testexename} elektra-kdb elektra-plugin elektra-io ${IO_UV_LIBRARY} m)
 	if (BUILD_FULL OR BUILD_STATIC)
-  	target_link_libraries (${testexename} "${LIBUV_LIBRARIES};m")
-  endif ()
+		target_link_libraries (${testexename} "${LIBUV_LIBRARIES};m")
+	endif ()
 
 	add_test (NAME ${testexename}
 		COMMAND "${CMAKE_BINARY_DIR}/bin/${testexename}" "${CMAKE_CURRENT_SOURCE_DIR}"

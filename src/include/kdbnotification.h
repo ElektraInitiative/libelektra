@@ -34,8 +34,8 @@
  * (see
  * <a href="https://www.libelektra.org/plugins/internalnotification">its plugin docs</a>).
  *
- * - If no plugin is mounted at a desired position the internalnotification
- *   plugin is simply mounted.
+ * - If there is no plugin mounted at a required position the internalnotification
+ *   plugin is mounted at this position.
  * - In the default configuration or when mounting a plugin globally using
  *   `kdb global-mount` the
  *   <a href="https://www.libelektra.org/plugins/list">list plugin</a> is

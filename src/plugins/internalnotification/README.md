@@ -14,10 +14,10 @@
 Allows applications to automatically update registered variables when the value
 of a specified key has changed.
 
-It is recommended to use the notification wrapper (see
-[notification tutorial](https://www.libelektra.org/tutorials/notifications)) instead of this plugin
-directly.
-The wrapper has a simple API and decouples applications from the actual plugin.
+Application developers should use the
+[Notification API](https://doc.libelektra.org/api/current/html/group__kdbnotification.html)
+instead of the functions exported by this plugin.
+The API is easier to use and decouples applications from this plugin.
 
 ## Exported Methods
 

@@ -1,8 +1,8 @@
 include (LibAddMacros)
 
-if (NOT ENABLE_IO_ADAPTER_DBUS)
-	# required for debian-musl build - not other purpose
-	message (WARNING "D-Bus I/O adapter disabled. Targets that depend on this adapter will fail to compile.")
+# disable adapter when compiling with musl
+if (${CMAKE_C_COMPILER} MATCHES "musl")
+	message (WARNING "D-Bus I/O adapter disabled when compiling with musl. Targets that depend on this adapter will fail to compile.")
 else ()
 	find_package (DBus)
 

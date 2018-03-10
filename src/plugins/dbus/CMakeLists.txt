@@ -9,7 +9,7 @@ endif ()
 add_plugin (dbus
 	SOURCES
 		dbus.h dbus.c
-		sendmessage.c receivemessage.c
+		sendmessage.c
 	INCLUDE_DIRECTORIES
 		${DBUS_INCLUDE_DIR}
 		${DBUS_ARCH_INCLUDE_DIR}
@@ -20,6 +20,8 @@ add_plugin (dbus
 	)
 
 add_plugintest (dbus
+	testmod_dbus.c
+	receivemessage.c
 	INCLUDE_DIRECTORIES
 		${DBUS_INCLUDE_DIR}
 		${DBUS_ARCH_INCLUDE_DIR}

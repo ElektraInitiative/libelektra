@@ -28,7 +28,6 @@ typedef struct DbusAdapterWatchInfo
 
 static int dbusToFlags (int dbus)
 {
-	// fprintf(stderr, "dbusToFlags\n");
 	int flags = 0;
 	if (dbus & DBUS_WATCH_READABLE)
 	{
@@ -43,19 +42,8 @@ static int dbusToFlags (int dbus)
 	return flags;
 }
 
-static void dbusWrapperFree (void * memory)
-{
-	// fprintf(stderr, "dbusWrapperFree\n");
-	// well...
-	// if (memory != NULL)
-	//{
-	elektraFree (memory);
-	//}
-}
-
 static void dbusWrapperDispatch (ElektraIoIdleOperation * idle)
 {
-	// fprintf(stderr, "dbusWrapperDispatch\n");
 	_ElektraIoAdapterDbusHandle * priv = elektraIoIdleGetData (idle);
 
 	if (dbus_connection_get_dispatch_status (priv->connection) == DBUS_DISPATCH_DATA_REMAINS)
@@ -72,7 +60,6 @@ static void dbusWrapperDispatch (ElektraIoIdleOperation * idle)
 
 static void dbusWrapperHandleDispatch (DBusConnection * connection ELEKTRA_UNUSED, DBusDispatchStatus status, void * data)
 {
-	// fprintf(stderr, "dbusWrapperHandleDispatch\n");
 	_ElektraIoAdapterDbusHandle * priv = (_ElektraIoAdapterDbusHandle *)data;
 	if (status == DBUS_DISPATCH_DATA_REMAINS)
 	{
@@ -83,7 +70,6 @@ static void dbusWrapperHandleDispatch (DBusConnection * connection ELEKTRA_UNUSE
 
 static void dbusWrapperPoll (ElektraIoFdOperation * fdOp, int flags)
 {
-	// fprintf(stderr, "dbusWrapperPoll\n");
 	DbusAdapterWatchInfo * watchData = elektraIoFdGetData (fdOp);
 	DBusWatch * watch = watchData->watch;
 	_ElektraIoAdapterDbusHandle * priv = watchData->private;
@@ -105,7 +91,6 @@ static void dbusWrapperPoll (ElektraIoFdOperation * fdOp, int flags)
 
 static void dbusWrapperTimeout (ElektraIoTimerOperation * timerOp)
 {
-	// fprintf(stderr, "dbusWrapperTimeout\n");
 	DBusTimeout * timeout = elektraIoTimerGetData (timerOp);
 	dbus_timeout_handle (timeout);
 }
@@ -146,7 +131,7 @@ static dbus_bool_t dbusWrapperAddWatch (DBusWatch * watch, void * data)
 	}
 
 	// Store file descriptor info in watcher
-	dbus_watch_set_data (watch, (void *)fdOp, dbusWrapperFree);
+	dbus_watch_set_data (watch, (void *)fdOp, elektraFree);
 
 	int success = elektraIoBindingAddFd (ioBinding, fdOp);
 	if (!success)
@@ -160,7 +145,6 @@ static dbus_bool_t dbusWrapperAddWatch (DBusWatch * watch, void * data)
 
 static void dbusWrapperRemoveWatch (DBusWatch * watch, void * data ELEKTRA_UNUSED)
 {
-	// fprintf(stderr, "dbusWrapperRemoveWatch\n");
 	ElektraIoFdOperation * fdOp = dbus_watch_get_data (watch);
 	DbusAdapterWatchInfo * watchInfo = elektraIoFdGetData (fdOp);
 
@@ -171,7 +155,6 @@ static void dbusWrapperRemoveWatch (DBusWatch * watch, void * data ELEKTRA_UNUSE
 
 static void dbusWrapperWatchToggled (DBusWatch * watch, void * data ELEKTRA_UNUSED)
 {
-	// fprintf(stderr, "redisWrapperDelRead\n");
 	ElektraIoFdOperation * fdOp = dbus_watch_get_data (watch);
 
 	elektraIoFdSetEnabled (fdOp, dbus_watch_get_enabled (watch));
@@ -182,7 +165,6 @@ static void dbusWrapperWatchToggled (DBusWatch * watch, void * data ELEKTRA_UNUS
 
 static dbus_bool_t dbusWrapperAddTimeout (DBusTimeout * timeout, void * data)
 {
-	// fprintf(stderr, "dbusWrapperAddTimeout\n");
 	_ElektraIoAdapterDbusHandle * private = (_ElektraIoAdapterDbusHandle *)data;
 	ElektraIoInterface * ioBinding = private->ioBinding;
 
@@ -196,7 +178,7 @@ static dbus_bool_t dbusWrapperAddTimeout (DBusTimeout * timeout, void * data)
 	}
 
 	// Store file descriptor info in timeouter
-	dbus_timeout_set_data (timeout, (void *)timerOp, dbusWrapperFree);
+	dbus_timeout_set_data (timeout, (void *)timerOp, elektraFree);
 
 	elektraIoBindingAddTimer (ioBinding, timerOp);
 	return TRUE;
@@ -205,7 +187,6 @@ static dbus_bool_t dbusWrapperAddTimeout (DBusTimeout * timeout, void * data)
 
 static void dbusWrapperRemoveTimeout (DBusTimeout * timeout, void * data ELEKTRA_UNUSED)
 {
-	// fprintf(stderr, "dbusWrapperRemoveTimeout\n");
 	ElektraIoTimerOperation * timerOp = dbus_timeout_get_data (timeout);
 
 	elektraIoBindingRemoveTimer (timerOp);
@@ -213,7 +194,6 @@ static void dbusWrapperRemoveTimeout (DBusTimeout * timeout, void * data ELEKTRA
 
 static void dbusWrapperTimeoutToggled (DBusTimeout * timeout, void * data ELEKTRA_UNUSED)
 {
-	// fprintf(stderr, "redisWrapperDelRead\n");
 	ElektraIoTimerOperation * timerOp = dbus_timeout_get_data (timeout);
 
 	elektraIoTimerSetEnabled (timerOp, dbus_timeout_get_enabled (timeout));

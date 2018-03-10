@@ -241,7 +241,7 @@ int main (int argc, char ** argv)
 	test_keyAdded (loop, binding);
 	test_keyChanged (loop, binding);
 
-	printf ("\ntestmod_dbusrecv RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("testmod_dbusrecv");
 
 	elektraIoBindingCleanup (binding);
 	uv_run (loop, UV_RUN_ONCE);

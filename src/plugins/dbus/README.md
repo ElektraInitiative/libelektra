@@ -6,7 +6,7 @@
 - infos/recommends =
 - infos/placements = postgetstorage postcommit
 - infos/status = maintained unittest libc global
-- infos/description = Sends DBus signals when a method is called
+- infos/description = Sends notifications for every change via D-Bus
 
 ## Introduction
 
@@ -198,8 +198,8 @@ transport plugin for Elektra's notification feature:
 # Notification Format
 
 This plugin uses D-Bus signal messages as notifications.
-Notifications we path `/org/libelektra/configuration` and the D-Bus interface
-`org.libelektra`.
+Notifications have the path `/org/libelektra/configuration` and the D-Bus
+interface `org.libelektra`.
 The following signal names are used:
 
 - KeyAdded: a key has been added

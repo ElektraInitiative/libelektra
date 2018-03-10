@@ -1,12 +1,12 @@
 - infos = Information about the dbus plugin is in keys below
-- infos/author = Markus Raab <elektra@libelektra.org>
+- infos/author = Thomas Wahringer <waht@libelektra.org>
 - infos/licence = BSD
 - infos/provides = notification
 - infos/needs =
 - infos/recommends =
-- infos/placements = postgetstorage postcommit
+- infos/placements = postgetstorage
 - infos/status = maintained unittest libc global experimental
-- infos/description = Sends DBus signals when a method is called
+- infos/description = Receives notifications via D-Bus
 
 ## Introduction
 

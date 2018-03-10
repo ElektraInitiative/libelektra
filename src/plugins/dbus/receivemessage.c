@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief
+ * @brief Test helpers for dbus plugin
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
