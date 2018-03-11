@@ -37,8 +37,6 @@ static int dbusToFlags (int dbus)
 	{
 		flags |= ELEKTRA_IO_WRITABLE;
 	}
-	// from docs: "all watches implicitly include a watch for hangups, errors, and other exceptional conditions."
-	// TODO add DBUS_WATCH_ERROR and DBUS_WATCH_ERROR to flags
 	return flags;
 }
 
