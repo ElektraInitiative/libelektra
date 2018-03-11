@@ -59,7 +59,14 @@ static void * createTestSocket (void)
 	return pubSocket;
 }
 
-
+/**
+ * @internal
+ * Send a notification over a socket.
+ *
+ * @param socket     ZeroMq socket
+ * @param changeType change type
+ * @param keyName    key name
+ */
 static void sendTestNotification (void * socket, char * changeType, char * keyName)
 {
 	succeed_if (zmq_send (socket, changeType, elektraStrLen (changeType), ZMQ_SNDMORE) != -1, "failed to send change type");

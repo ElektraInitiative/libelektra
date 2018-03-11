@@ -54,6 +54,9 @@ void elektraZeroMqRecvOpenNotification (Plugin * handle, ElektraNotificationCall
 	}
 }
 
+/**
+ * @see ElektraNotificationCloseNotification (kdbnotificationinternal.h)
+ */
 void elektraZeroMqRecvCloseNotification (Plugin * handle)
 {
 	ElektraZeroMqRecvPluginData * pluginData = elektraPluginGetData (handle);

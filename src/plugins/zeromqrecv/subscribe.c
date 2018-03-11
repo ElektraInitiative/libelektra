@@ -11,6 +11,15 @@
 #include <kdbhelper.h>
 #include <kdblogger.h>
 
+/**
+ * @internal
+ * Called whenever the socket becomes readable.
+ * ZeroMq since sends multipart messages atomically (all or nothing)
+ * both message parts are instantly available.
+ *
+ * @param socket  ZeroMq socket
+ * @param context context passed to elektraIoAdapterZeroMqAttach()
+ */
 static void zeroMqRecvSocketReadable (void * socket, void * context)
 {
 	ElektraZeroMqRecvPluginData * data = context;
@@ -61,6 +70,12 @@ static void zeroMqRecvSocketReadable (void * socket, void * context)
 	elektraFree (changedKeyName);
 }
 
+/**
+ * @internal
+ * Setup ZeroMq for receiving notifications.
+ *
+ * @param data plugin data containing context, socket, etc.
+ */
 void elektraZeroMqRecvSetup (ElektraZeroMqRecvPluginData * data)
 {
 	// create zmq context
@@ -118,6 +133,12 @@ void elektraZeroMqRecvSetup (ElektraZeroMqRecvPluginData * data)
 	}
 }
 
+/**
+ * @internal
+ * Cleanup ZeroMq.
+ *
+ * @param data plugin data
+ */
 void elektraZeroMqRecvTeardown (ElektraZeroMqRecvPluginData * data)
 {
 	if (data->zmqAdapter)
