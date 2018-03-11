@@ -15,18 +15,6 @@
 
 #include <kdbhelper.h>
 
-/**
- * @see ElektraIoPluginSetBinding (kdbioplugin.h)
- */
-void elektraDbusSetIoBinding (Plugin * handle, ElektraIoInterface * binding)
-{
-	ELEKTRA_NOT_NULL (handle);
-	ElektraDbusPluginData * data = elektraPluginGetData (handle);
-	ELEKTRA_NOT_NULL (data);
-
-	data->ioBinding = binding;
-}
-
 int elektraDbusOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 {
 	ElektraDbusPluginData * data = elektraPluginGetData (handle);
@@ -35,11 +23,8 @@ int elektraDbusOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 	{
 		data = elektraMalloc (sizeof (*data));
 		data->keys = NULL;
-		data->ioBinding = NULL;
 		data->systemBus = NULL;
-		data->systemBusAdapter = NULL;
 		data->sessionBus = NULL;
-		data->sessionBusAdapter = NULL;
 	}
 	elektraPluginSetData (handle, data);
 
@@ -57,7 +42,6 @@ int elektraDbusGet (Plugin * handle, KeySet * returned, Key * parentKey)
 			       keyNew ("system/elektra/modules/dbus/exports/get", KEY_FUNC, elektraDbusGet, KEY_END),
 			       keyNew ("system/elektra/modules/dbus/exports/set", KEY_FUNC, elektraDbusSet, KEY_END),
 			       keyNew ("system/elektra/modules/dbus/exports/close", KEY_FUNC, elektraDbusClose, KEY_END),
-			       keyNew ("system/elektra/modules/dbus/exports/setIoBinding", KEY_FUNC, elektraDbusSetIoBinding, KEY_END),
 #include ELEKTRA_README (dbus)
 			       keyNew ("system/elektra/modules/dbus/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
@@ -193,13 +177,11 @@ int elektraDbusClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 
 	if (pluginData->systemBus)
 	{
-		if (pluginData->systemBusAdapter) elektraIoAdapterDbusCleanup (pluginData->systemBusAdapter);
 		dbus_connection_unref (pluginData->systemBus);
 		pluginData->systemBus = NULL;
 	}
 	if (pluginData->sessionBus)
 	{
-		if (pluginData->sessionBusAdapter) elektraIoAdapterDbusCleanup (pluginData->sessionBusAdapter);
 		dbus_connection_unref (pluginData->sessionBus);
 		pluginData->sessionBus = NULL;
 	}

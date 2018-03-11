@@ -29,25 +29,15 @@ typedef struct
 	// remember all keys
 	KeySet * keys;
 
-	// I/O binding (may be NULL)
-	ElektraIoInterface * ioBinding;
-
 	// D-Bus connections (may be NULL)
 	DBusConnection * systemBus;
 	DBusConnection * sessionBus;
-
-	// D-Bus I/O adapter handles (may be NULL)
-	ElektraIoAdapterDbusHandle * systemBusAdapter;
-	ElektraIoAdapterDbusHandle * sessionBusAdapter;
-
 } ElektraDbusPluginData;
 
 int elektraDbusSendMessage (ElektraDbusPluginData * data, DBusBusType type, const char * keyName, const char * signalName);
 int elektraDbusReceiveMessage (DBusBusType type, DBusHandleMessageFunction filter_func);
 int elektraDbusSetupReceiveMessage (DBusConnection * connection, DBusHandleMessageFunction filter_func, void * data);
 int elektraDbusTeardownReceiveMessage (DBusConnection * connection, DBusHandleMessageFunction filter_func, void * data);
-
-void elektraDbusSetIoBinding (Plugin * handle, ElektraIoInterface * binding);
 
 int elektraDbusOpen (Plugin * handle, Key * errorKey);
 int elektraDbusClose (Plugin * handle, Key * errorKey);

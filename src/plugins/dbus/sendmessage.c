@@ -19,15 +19,12 @@
  * @internal
  * Get and setup D-Bus connection.
  *
- * If I/O binding is not NULL, handlePointer is updated to point to D-Bus I/O
- * adapter handle.
- *
  * @param  type          D-Bus bus type
  * @param  ioBinding     I/O binding (optional)
  * @param  handlePointer Pointer to D-Bus I/O adapter handle
  * @return D-Bus connection or NULL on error
  */
-static DBusConnection * dbusGetConnection (DBusBusType type, ElektraIoInterface * ioBinding, ElektraIoAdapterDbusHandle ** handlePointer)
+static DBusConnection * dbusGetConnection (DBusBusType type)
 {
 	DBusError error;
 	dbus_error_init (&error);
@@ -43,17 +40,6 @@ static DBusConnection * dbusGetConnection (DBusBusType type, ElektraIoInterface 
 	dbus_error_free (&error);
 
 	dbus_connection_set_exit_on_disconnect (connection, FALSE);
-
-	if (ioBinding)
-	{
-		ElektraIoAdapterDbusHandle * handle = elektraIoAdapterDbusAttach (connection, ioBinding);
-		if (!handle)
-		{
-			ELEKTRA_LOG_WARNING ("Failed to attach to the I/O binding");
-			return NULL;
-		}
-		*handlePointer = handle;
-	}
 
 	return connection;
 }
@@ -82,14 +68,14 @@ int elektraDbusSendMessage (ElektraDbusPluginData * pluginData, DBusBusType type
 	case DBUS_BUS_SYSTEM:
 		if (!pluginData->systemBus)
 		{
-			pluginData->systemBus = dbusGetConnection (type, pluginData->ioBinding, &pluginData->systemBusAdapter);
+			pluginData->systemBus = dbusGetConnection (type);
 		}
 		connection = pluginData->systemBus;
 		break;
 	case DBUS_BUS_SESSION:
 		if (!pluginData->sessionBus)
 		{
-			pluginData->sessionBus = dbusGetConnection (type, pluginData->ioBinding, &pluginData->sessionBusAdapter);
+			pluginData->sessionBus = dbusGetConnection (type);
 		}
 		connection = pluginData->sessionBus;
 		break;
