@@ -57,7 +57,11 @@ static void onSIGNAL (int signal)
 {
 	if (signal == SIGINT)
 	{
-		uv_stop (uv_default_loop ());
+#ifdef HAVE_LIBUV1
+		uv_loop_close (uv_default_loop ());
+#elif HAVE_LIBUV0
+		uv_loop_delete (uv_default_loop ());
+#endif
 	}
 }
 

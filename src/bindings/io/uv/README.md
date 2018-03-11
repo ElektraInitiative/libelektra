@@ -9,7 +9,7 @@
 
 ## Requirements
 
-- libuv (version 1.x)
+- libuv (version 1.x is recommended; 0.x is supported)
 
 ## Usage
 

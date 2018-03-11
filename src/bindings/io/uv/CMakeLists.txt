@@ -1,7 +1,7 @@
 include (LibAddMacros)
 
 find_package (PkgConfig)
-pkg_check_modules (LIBUV QUIET libuv>=1)
+pkg_check_modules (LIBUV QUIET libuv)
 
 if (${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
 	exclude_binding (io_uv "cannot be built on Windows")
@@ -25,6 +25,11 @@ else ()
 	# create object library so that executables can use
 	# $<TARGET_OBJECTS:OBJ_${IO_UV_LIBRARY}>
 	add_library(OBJ_${IO_UV_LIBRARY} OBJECT ${SOURCES})
+	if (LIBUV_VERSION VERSION_LESS "1.0")
+		target_compile_definitions (OBJ_${IO_UV_LIBRARY} PRIVATE "HAVE_LIBUV0")
+	else ()
+		target_compile_definitions (OBJ_${IO_UV_LIBRARY} PRIVATE "HAVE_LIBUV1")
+	endif ()
 
 	add_lib (io-${BINDING_VARIANT}
 		SOURCES ${SOURCES}
@@ -36,8 +41,21 @@ else ()
 
 	if (BUILD_FULL OR BUILD_STATIC)
 		add_includes ("elektra-full" ${LIBUV_INCLUDE_DIRS})
-	else ()
+
+		if (LIBUV_VERSION VERSION_LESS "1.0")
+			add_definitions ("-DHAVE_LIBUV0")
+		else ()
+			add_definitions ("-DHAVE_LIBUV1")
+		endif ()
+	endif ()
+	if (BUILD_SHARED)
 		target_include_directories (${IO_UV_LIBRARY} SYSTEM PUBLIC ${LIBUV_INCLUDE_DIRS})
+
+		if (LIBUV_VERSION VERSION_LESS "1.0")
+			target_compile_definitions (${IO_UV_LIBRARY} PRIVATE "HAVE_LIBUV0")
+		else ()
+			target_compile_definitions (${IO_UV_LIBRARY} PRIVATE "HAVE_LIBUV1")
+		endif ()
 	endif ()
 
 	configure_file (
@@ -52,7 +70,7 @@ else ()
 	)
 
 	## Build test
-	set (testexename testio_${BINDING_VARIANT})
+	set (TESTEXENAME testio_${BINDING_VARIANT})
 
 	set (TEST_SOURCES $<TARGET_OBJECTS:cframework>)
 	add_headers (TEST_SOURCES)
@@ -65,18 +83,24 @@ else ()
 		list (APPEND TEST_SOURCES $<TARGET_OBJECTS:OBJ_${IO_UV_LIBRARY}>)
 	endif ()
 
-	add_executable (${testexename} ${TEST_SOURCES})
-	add_dependencies (${testexename} kdberrors_generated)
+	add_executable (${TESTEXENAME} ${TEST_SOURCES})
+	add_dependencies (${TESTEXENAME} kdberrors_generated)
 
-	target_include_directories (${testexename} PUBLIC "${CMAKE_SOURCE_DIR}/tests/cframework")
+	target_include_directories (${TESTEXENAME} PUBLIC "${CMAKE_SOURCE_DIR}/tests/cframework")
 
-	target_link_elektra (${testexename} elektra-kdb elektra-plugin elektra-io ${IO_UV_LIBRARY} m)
+	target_link_elektra (${TESTEXENAME} elektra-kdb elektra-plugin elektra-io ${IO_UV_LIBRARY} m)
 	if (BUILD_FULL OR BUILD_STATIC)
-		target_link_libraries (${testexename} "${LIBUV_LIBRARIES};m")
+		target_link_libraries (${TESTEXENAME} "${LIBUV_LIBRARIES};m")
 	endif ()
 
-	add_test (NAME ${testexename}
-		COMMAND "${CMAKE_BINARY_DIR}/bin/${testexename}" "${CMAKE_CURRENT_SOURCE_DIR}"
+	if (LIBUV_VERSION VERSION_LESS "1.0")
+		target_compile_definitions (${TESTEXENAME} PRIVATE "HAVE_LIBUV0")
+	else ()
+		target_compile_definitions (${TESTEXENAME} PRIVATE "HAVE_LIBUV1")
+	endif ()
+
+	add_test (NAME ${TESTEXENAME}
+		COMMAND "${CMAKE_BINARY_DIR}/bin/${TESTEXENAME}" "${CMAKE_CURRENT_SOURCE_DIR}"
 		WORKING_DIRECTORY "${WORKING_DIRECTORY}"
 	)
 

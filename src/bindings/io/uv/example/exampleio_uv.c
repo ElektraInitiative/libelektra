@@ -127,7 +127,11 @@ int main (void)
 	// Start the event loop
 	uv_run (loop, UV_RUN_DEFAULT);
 
+#ifdef HAVE_LIBUV1
 	uv_loop_close (loop);
+#elif HAVE_LIBUV0
+	uv_loop_delete (loop);
+#endif
 
 	return 0;
 }

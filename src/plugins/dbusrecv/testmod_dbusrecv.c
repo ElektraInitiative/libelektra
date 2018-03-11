@@ -245,7 +245,11 @@ int main (int argc, char ** argv)
 
 	elektraIoBindingCleanup (binding);
 	uv_run (loop, UV_RUN_ONCE);
+#ifdef HAVE_LIBUV1
 	uv_loop_close (loop);
+#elif HAVE_LIBUV0
+	uv_loop_delete (loop);
+#endif
 
 	dbus_shutdown ();
 

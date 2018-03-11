@@ -12,14 +12,20 @@ if (BUILD_FULL OR BUILD_STATIC)
 endif ()
 
 ## Build test
-set (example exampleio_uv)
+set (EXAMPLE exampleio_uv)
 
-add_executable (${example} ${SOURCES})
-add_dependencies (${example} kdberrors_generated)
+add_executable (${EXAMPLE} ${SOURCES})
+add_dependencies (${EXAMPLE} kdberrors_generated)
 
-target_include_directories (${example} SYSTEM PUBLIC ${LIBUV_INCLUDE_DIRS})
+target_include_directories (${EXAMPLE} SYSTEM PUBLIC ${LIBUV_INCLUDE_DIRS})
 
-target_link_elektra (${example} elektra-kdb elektra-io elektra-io-uv)
+target_link_elektra (${EXAMPLE} elektra-kdb elektra-io elektra-io-uv)
 if (BUILD_FULL OR BUILD_STATIC)
-	target_link_libraries (${example} ${LIBUV_LDFLAGS})
+	target_link_libraries (${EXAMPLE} ${LIBUV_LDFLAGS})
+endif ()
+
+if (LIBUV_VERSION VERSION_LESS "1.0")
+	target_compile_definitions (${EXAMPLE} PRIVATE "HAVE_LIBUV0")
+else ()
+	target_compile_definitions (${EXAMPLE} PRIVATE "HAVE_LIBUV1")
 endif ()
