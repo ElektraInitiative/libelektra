@@ -351,10 +351,6 @@ set (MEMORYCHECK_SUPPRESSIONS_FILE
 		CACHE FILEPATH
 		"Full path to suppression file for valgrind")
 
-set (ENABLE_IO_ADAPTER_DBUS "ON"
-		CACHE STRING
-		"Enable or disable building the D-Bus asynchronous I/O adapter"
-		)
 
 
 set(DISCLAMER "
@@ -413,5 +409,4 @@ MARK_AS_ADVANCED(FORCE
 	Qt5DBus_DIR
 	Qt5Svg_DIR
 
-	ENABLE_IO_ADAPTER_DBUS
 	)
