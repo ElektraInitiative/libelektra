@@ -105,8 +105,9 @@ DBusHandlerResult elektraDbusRecvMessageHandler (DBusConnection * connection ELE
 {
 	char * interface = "org.libelektra";
 
-	int processMessage =
-		dbus_message_is_signal (message, interface, "KeyChanged") || dbus_message_is_signal (message, interface, "KeyAdded");
+	int processMessage = dbus_message_is_signal (message, interface, "Commit") ||
+			     dbus_message_is_signal (message, interface, "KeyAdded") ||
+			     dbus_message_is_signal (message, interface, "KeyChanged");
 	if (processMessage)
 	{
 		char * keyName;

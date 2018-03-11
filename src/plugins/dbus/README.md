@@ -193,7 +193,7 @@ in such cases.
 Mount this plugin globally with default settings to use it as *sending*
 transport plugin for Elektra's notification feature:
 
-> kdb global-mount dbus
+> kdb global-mount dbus announce=once
 
 # Notification Format
 
@@ -202,6 +202,7 @@ Notifications have the path `/org/libelektra/configuration` and the D-Bus
 interface `org.libelektra`.
 The following signal names are used:
 
+- Commit: preferred, keys below the changed key have changed
 - KeyAdded: a key has been added
 - KeyChanged: a key has been changed
 
@@ -212,8 +213,6 @@ If the key is below the `user` namespace the session bus is used.
 Example output from `dbus-monitor`:
 
 ```
-signal time=1519856379.538736 sender=:1.1 -> destination=(null destination) serial=18 path=/org/libelektra/configuration; interface=org.libelektra; member=KeyAdded
-   string "system/tests/foo/bar"
-signal time=1519856379.538753 sender=:1.1 -> destination=(null destination) serial=19 path=/org/libelektra/configuration; interface=org.libelektra; member=KeyChanged
+signal time=1520805003.227723 sender=:1.8 -> destination=(null destination) serial=15 path=/org/libelektra/configuration; interface=org.libelektra; member=Commit
    string "system/tests/foo"
 ```

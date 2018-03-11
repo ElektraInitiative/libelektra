@@ -13,8 +13,6 @@ add_plugin (dbus
 	INCLUDE_DIRECTORIES
 		${DBUS_INCLUDE_DIR}
 		${DBUS_ARCH_INCLUDE_DIR}
-	LINK_ELEKTRA
-		elektra-io-adapter-dbus
 	LINK_LIBRARIES
 		${DBUS_LIBRARIES}
 	)
@@ -47,5 +45,5 @@ if (ADDTESTING_PHASE)
 	target_include_directories (${example} SYSTEM PUBLIC ${DBUS_INCLUDE_DIR} ${DBUS_ARCH_INCLUDE_DIR})
 
 	target_link_libraries (${example} ${DBUS_LIBRARIES})
-	target_link_elektra (${example} elektra-kdb elektra-io-adapter-dbus)
+	target_link_elektra (${example} elektra-kdb)
 endif ()
