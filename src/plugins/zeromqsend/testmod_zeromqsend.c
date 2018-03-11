@@ -200,9 +200,9 @@ static void test_sending (void)
 	elektraFree (thread);
 }
 
-static void test_keyAdded (void)
+static void test_commit (void)
 {
-	printf ("test adding keys\n");
+	printf ("test commit notification\n");
 
 	Key * parentKey = keyNew ("system/tests/foo", KEY_END);
 	Key * toAdd = keyNew ("system/tests/foo/bar", KEY_END);
@@ -217,83 +217,13 @@ static void test_keyAdded (void)
 	// add key to keyset
 	ksAppendKey (ks, toAdd);
 
-	pthread_t * thread = startNotificationReaderThread ("Key");
+	pthread_t * thread = startNotificationReaderThread ("Commit");
 	plugin->kdbSet (plugin, ks, parentKey);
 	pthread_join (*thread, NULL);
 
-	succeed_if_same_string ("KeyAdded", receivedChangeType);
-	succeed_if_same_string (keyName (toAdd), receivedKeyName);
+	succeed_if_same_string ("Commit", receivedChangeType);
+	succeed_if_same_string (keyName (parentKey), receivedKeyName);
 
-	ksDel (ks);
-	keyDel (parentKey);
-	PLUGIN_CLOSE ();
-	elektraFree (receivedKeyName);
-	elektraFree (receivedChangeType);
-	elektraFree (thread);
-}
-
-static void test_keyChanged (void)
-{
-	printf ("test changing keys\n");
-
-	// All keys created by keyNew have the KEY_FLAG_SYNC set and will be
-	// detected as changed by the dbus plugin
-	// This flag is only cleared after kdbSet or when keys come from a backend.
-
-	Key * parentKey = keyNew ("system/tests/foo", KEY_END);
-	Key * toChange = keyNew ("system/tests/foo/bar", KEY_VALUE, "test", KEY_END);
-	KeySet * ks = ksNew (1, toChange, KS_END);
-
-	KeySet * conf = ksNew (0, KS_END);
-	PLUGIN_OPEN ("zeromqsend");
-
-	// initial get to save current state
-	plugin->kdbGet (plugin, ks, parentKey);
-
-	// change key in keyset
-	keySetString (toChange, "new value");
-
-	pthread_t * thread = startNotificationReaderThread ("Key");
-	plugin->kdbSet (plugin, ks, parentKey);
-	pthread_join (*thread, NULL);
-
-	succeed_if_same_string ("KeyChanged", receivedChangeType);
-	succeed_if_same_string (keyName (toChange), receivedKeyName);
-
-	ksDel (ks);
-	keyDel (parentKey);
-	PLUGIN_CLOSE ();
-	elektraFree (receivedKeyName);
-	elektraFree (receivedChangeType);
-	elektraFree (thread);
-}
-
-static void test_keyDeleted (void)
-{
-	printf ("test deleting keys\n");
-
-	Key * parentKey = keyNew ("system/tests/foo", KEY_END);
-	Key * toDelete = keyNew ("system/tests/foo/bar", KEY_END);
-	KeySet * ks = ksNew (1, keyDup (toDelete), KS_END);
-
-	KeySet * conf = ksNew (0, KS_END);
-	PLUGIN_OPEN ("zeromqsend");
-
-	// initial get to save current state
-	plugin->kdbGet (plugin, ks, parentKey);
-
-	// remove key from keyset
-	Key * deleted = ksLookup (ks, toDelete, KDB_O_POP);
-	succeed_if (deleted != NULL, "key was not found");
-
-	pthread_t * thread = startNotificationReaderThread ("Key");
-	plugin->kdbSet (plugin, ks, parentKey);
-	pthread_join (*thread, NULL);
-
-	succeed_if_same_string ("KeyDeleted", receivedChangeType);
-	succeed_if_same_string (keyName (toDelete), receivedKeyName);
-
-	keyDel (toDelete);
 	ksDel (ks);
 	keyDel (parentKey);
 	PLUGIN_CLOSE ();
@@ -318,10 +248,8 @@ int main (int argc, char ** argv)
 	// Test basic sending
 	test_sending ();
 
-	// Test added, changed & deleted
-	test_keyAdded ();
-	test_keyChanged ();
-	test_keyDeleted ();
+	// Test notification from plugin
+	test_commit ();
 
 	printf ("\ntestmod_zeromqsend RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

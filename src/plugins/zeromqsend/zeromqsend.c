@@ -16,31 +16,6 @@
 #include <kdbhelper.h>
 #include <kdblogger.h>
 
-#include <stdio.h>
-
-
-/**
- * @internal
- * Announce multiple keys with same signal name.
- *
- * @param ks         key set containing modified keys
- * @param changeType signal name to use
- * @param data       plugin data containing connections, etc.
- */
-static void announceKeys (KeySet * ks, const char * changeType, ElektraZeroMqSendPluginData * data)
-{
-	ELEKTRA_NOT_NULL (ks);
-	ELEKTRA_NOT_NULL (changeType);
-
-	ksRewind (ks);
-	Key * k = 0;
-	while ((k = ksNext (ks)) != 0)
-	{
-		elektraZeroMqSendPublish (changeType, keyName (k), data);
-	}
-}
-
-
 int elektraZeroMqSendOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 {
 	Key * endpointKey = ksLookupByName (elektraPluginGetConfig (handle), "/config/endpoint", 0);
@@ -58,13 +33,11 @@ int elektraZeroMqSendOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 	if (!data)
 	{
 		data = elektraMalloc (sizeof (*data));
-		data->keys = NULL;
 		data->zmqContext = NULL;
 		data->zmqPublisher = NULL;
 		data->endpoint = endpoint;
 	}
 	elektraPluginSetData (handle, data);
-
 
 	// create connection
 	if (!elektraZeroMqSendConnect (data))
@@ -94,61 +67,15 @@ int elektraZeroMqSendGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key
 		return 1; /* success */
 	}
 
-	// remember all keys
-	ElektraZeroMqSendPluginData * pluginData = elektraPluginGetData (handle);
-	ELEKTRA_NOT_NULL (pluginData);
-
-	KeySet * ks = pluginData->keys;
-	if (ks) ksDel (ks);
-	pluginData->keys = ksDup (returned);
-
 	return 1; /* success */
 }
 
-int elektraZeroMqSendSet (Plugin * handle, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
+int elektraZeroMqSendSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
 	ElektraZeroMqSendPluginData * pluginData = elektraPluginGetData (handle);
 	ELEKTRA_NOT_NULL (pluginData);
 
-	KeySet * oldKeys = pluginData->keys;
-	// because elektraPluginGet will always be executed before elektraPluginSet
-	// we know that oldKeys must exist here!
-	ksRewind (oldKeys);
-	ksRewind (returned);
-
-	KeySet * addedKeys = ksDup (returned);
-	KeySet * changedKeys = ksNew (0, KS_END);
-	KeySet * removedKeys = ksNew (0, KS_END);
-
-	Key * k = 0;
-	while ((k = ksNext (oldKeys)) != 0)
-	{
-		Key * p = ksLookup (addedKeys, k, KDB_O_POP);
-		// Note: keyDel not needed, because at least two references exist
-		if (p)
-		{
-			if (keyNeedSync (p))
-			{
-				ksAppendKey (changedKeys, p);
-			}
-		}
-		else
-		{
-			ksAppendKey (removedKeys, k);
-		}
-	}
-
-	announceKeys (addedKeys, "KeyAdded", pluginData);
-	announceKeys (changedKeys, "KeyChanged", pluginData);
-	announceKeys (removedKeys, "KeyDeleted", pluginData);
-
-	ksDel (oldKeys);
-	ksDel (addedKeys);
-	ksDel (changedKeys);
-	ksDel (removedKeys);
-
-	// for next invocation of elektraLogchangeSet, remember our current keyset
-	pluginData->keys = ksDup (returned);
+	elektraZeroMqSendPublish ("Commit", keyName (parentKey), pluginData);
 
 	return 1; /* success */
 }
@@ -160,9 +87,6 @@ int elektraZeroMqSendClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 	{
 		return 1;
 	}
-
-	KeySet * ks = pluginData->keys;
-	if (ks) ksDel (ks);
 
 	if (pluginData->zmqPublisher)
 	{

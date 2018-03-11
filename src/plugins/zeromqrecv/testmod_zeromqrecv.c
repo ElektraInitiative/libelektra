@@ -109,9 +109,9 @@ static void test_timerCallbackIncomplete (ElektraIoTimerOperation * timerOp ELEK
 	uv_stop (test_callbackLoop);
 }
 
-static void test_keyAdded (uv_loop_t * loop, ElektraIoInterface * binding)
+static void test_commit (uv_loop_t * loop, ElektraIoInterface * binding)
 {
-	printf ("test KeyAdded type\n");
+	printf ("test commit notification\n");
 
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("zeromqrecv");
@@ -132,57 +132,7 @@ static void test_keyAdded (uv_loop_t * loop, ElektraIoInterface * binding)
 
 	usleep (TIME_SETTLE_US);
 
-	char * changeType = "KeyAdded";
-	char * expectedKeyName = "system/foo/bar";
-	sendTestNotification (pubSocket, changeType, expectedKeyName);
-
-	ElektraIoTimerOperation * timerOp = elektraIoNewTimerOperation (TEST_TIMEOUT * 1000, 1, test_timerCallback, NULL);
-	elektraIoBindingAddTimer (binding, timerOp);
-
-	test_callbackKey = NULL;
-	test_callbackLoop = loop;
-	uv_run (loop, UV_RUN_DEFAULT);
-
-	succeed_if_same_string (expectedKeyName, keyName (test_callbackKey));
-
-	// close notification
-	func = elektraPluginGetFunction (plugin, "closeNotification");
-	exit_if_fail (func, "could not get function closeNotification");
-	ElektraNotificationCloseNotification closeNotification = (ElektraNotificationCloseNotification)func;
-	closeNotification (plugin);
-
-	zmq_close (pubSocket);
-
-	elektraIoBindingRemoveTimer (timerOp);
-	elektraFree (timerOp);
-	keyDel (test_callbackKey);
-	PLUGIN_CLOSE ();
-}
-
-static void test_keyChanged (uv_loop_t * loop, ElektraIoInterface * binding)
-{
-	printf ("test KeyChanged type\n");
-
-	KeySet * conf = ksNew (0, KS_END);
-	PLUGIN_OPEN ("zeromqrecv");
-
-	void * pubSocket = createTestSocket ();
-
-	// set io binding
-	size_t func = elektraPluginGetFunction (plugin, "setIoBinding");
-	exit_if_fail (func, "could not get function setIoBinding");
-	ElektraIoPluginSetBinding setIoBinding = (ElektraIoPluginSetBinding)func;
-	setIoBinding (plugin, binding);
-
-	// open notification
-	func = elektraPluginGetFunction (plugin, "openNotification");
-	exit_if_fail (func, "could not get function openNotification");
-	ElektraNotificationOpenNotification openNotification = (ElektraNotificationOpenNotification)func;
-	openNotification (plugin, test_notificationCallback, NULL);
-
-	usleep (TIME_SETTLE_US);
-
-	char * changeType = "KeyChanged";
+	char * changeType = "Commit";
 	char * expectedKeyName = "system/foo/bar";
 	sendTestNotification (pubSocket, changeType, expectedKeyName);
 
@@ -279,8 +229,7 @@ int main (int argc, char ** argv)
 	uv_loop_t * loop = uv_default_loop ();
 	ElektraIoInterface * binding = elektraIoUvNew (loop);
 
-	test_keyAdded (loop, binding);
-	test_keyChanged (loop, binding);
+	test_commit (loop, binding);
 	test_incompleteMessage (loop, binding);
 
 	printf ("\ntestmod_zeromqrecv RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);

@@ -85,16 +85,11 @@ void elektraZeroMqRecvSetup (ElektraZeroMqRecvPluginData * data)
 			return;
 		}
 
-		// subscribe to change notifications
-		char * keyAddedType = "KeyAdded";
-		char * keyChangedType = "KeyChanged";
-		if (zmq_setsockopt (data->zmqSubscriber, ZMQ_SUBSCRIBE, keyAddedType, elektraStrLen (keyAddedType)) != 0)
+		// subscribe to notifications
+		char * keyCommitType = "Commit";
+		if (zmq_setsockopt (data->zmqSubscriber, ZMQ_SUBSCRIBE, keyCommitType, elektraStrLen (keyCommitType)) != 0)
 		{
-			ELEKTRA_LOG_WARNING ("failed to subscribe to %s messages", keyAddedType);
-		}
-		if (zmq_setsockopt (data->zmqSubscriber, ZMQ_SUBSCRIBE, keyChangedType, elektraStrLen (keyChangedType)) != 0)
-		{
-			ELEKTRA_LOG_WARNING ("failed to subscribe to %s messages", keyChangedType);
+			ELEKTRA_LOG_WARNING ("failed to subscribe to %s messages", keyCommitType);
 		}
 
 		// connect to endpoint

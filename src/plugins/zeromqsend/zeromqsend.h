@@ -25,9 +25,6 @@
  */
 typedef struct
 {
-	// remember keys for change detection
-	KeySet * keys;
-
 	// ZeroMQ context and socket (NULL until initialized at first elektraZeroMqSendPublish())
 	void * zmqContext;
 	void * zmqPublisher;

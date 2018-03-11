@@ -44,8 +44,4 @@ The ZeroMQ transport plugins use the publish/subscribe sockets (`ZMQ_PUB` and
 Each notification is a multipart message. The first part contains the type of
 change, the second part contains the name of the changed key.
 
-Possible change types are:
-
-- KeyAdded
-- KeyChanged
-- KeyDeleted
+Possible only current change is `Commit`.
