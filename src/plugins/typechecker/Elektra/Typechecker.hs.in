@@ -25,11 +25,11 @@ typecheck :: KeySet -> Key -> IO ()
 typecheck ks k = withGlobalLogging (LogConfig Nothing ("@ENABLE_LOGGER@" == "ON")) $ do
   logDebug "Parse Specifications now."
 
-  typeSpecs <- parseTypeSpecifications ks
+  typeSpecs <- parseTypeSpecifications k ks
   logDebugT $ "Got " ++ show (length typeSpecs) ++ " function specifications"
   mapM_ (logDebugT . show) typeSpecs
 
-  keySpecs <- parseKeySpecifications ks
+  keySpecs <- parseKeySpecifications k ks
   logDebugT $ "Got " ++ show (length keySpecs) ++ " key specifications"
   mapM_ (logDebugT . show) keySpecs
 

@@ -25,22 +25,18 @@ import Data.List.Split (splitOn)
 
 import qualified Data.Text as T
 
-prefix :: String
-prefix = "spec/examples/"
+specPrefix :: String -> String
+specPrefix = flip (++) "/elektra/spec" 
 
-specPrefix :: String
-specPrefix = prefix ++ "specElektra"
-
-prefixKey :: IO Key
-prefixKey = keyNew prefix
-
-specPrefixKey :: IO Key
-specPrefixKey = keyNew specPrefix
+specPrefixKey :: String -> IO Key
+specPrefixKey = keyNew . specPrefix
 
 type Path = String
 type BaseType = String
 type Implementation = String
 type TypeName = String
+
+type RootKey = Key
 
 type FunctionCandidate = (Function, String)
 data Function = ArrayFunction TypeName String | Function TypeName deriving Eq
@@ -88,17 +84,17 @@ data TypeSpecification = TypeSpecification {
 keyFilterMeta :: Key -> (String -> Bool) -> IO [Key]
 keyFilterMeta k p = keyListMeta k >>= filterM (fmap p . keyName) 
 
-parseKeySpecification :: Key -> IO KeySpecification
-parseKeySpecification k = do
-  pPath               <- prefixKey >>= keyGetRelativeName k
+parseKeySpecification :: RootKey -> Key -> IO KeySpecification
+parseKeySpecification r k = do
+  pPath               <- keyGetRelativeName k r
   pDefaultValue       <- ifKey (keyGetMeta k "default") (fmap Just . keyString) (return Nothing) 
   pKeyType            <- ifKey (keyGetMeta k "type") (fmap parseType . keyString) (return $ Right "Top")
   pFunctionCandidates <- mapM parseFunctionCandidate =<< keyFilterMeta k (\s -> (s /= "default") && (s /= "type")) 
-  pTypeSpecification  <- parseTypeSpecification k
+  pTypeSpecification  <- parseTypeSpecification r k
   return $ KeySpecification pPath pDefaultValue pKeyType pFunctionCandidates pTypeSpecification
   where
     parseFunctionCandidate fk = do
-      str     <- join $ liftM2 keyGetRelativeName (keyNew =<< keyString fk) prefixKey
+      str     <- keyString fk >>= keyNew >>= flip keyGetRelativeName r
       isArray <- arrayValidateName fk
       if isArray == Invalid
       then do
@@ -106,13 +102,13 @@ parseKeySpecification k = do
         return (Function name, str)
       else do
         bfk          <- flip keyAddName "#" !=<< keyDeleteBaseName !=<< keyDup fk
-        baseName     <- fmap T.pack . keyGetRelativeName bfk =<< prefixKey
+        baseName     <- fmap T.pack (keyGetRelativeName bfk r)
         let splitted = T.splitAt (T.length baseName) baseName
         return (ArrayFunction (T.unpack $ fst splitted) (T.unpack $ snd splitted), str)
 
-parseTypeSpecification :: Key -> IO TypeSpecification
-parseTypeSpecification k = do
-  pName <- specPrefixKey >>= keyGetRelativeName k
+parseTypeSpecification :: RootKey -> Key -> IO TypeSpecification
+parseTypeSpecification r k = do
+  pName <- keyGetRelativeName k r
   pVar  <- parsePathVariable <$> keyString k
   pType <- ifKey (keyGetMeta k "elektra/spec/type") (fmap parseTypeParameters . keyString) (return [])
   pImpl <- let parseImpl = fmap (Just . map T.unpack . T.splitOn (T.pack "\\n") . T.pack) . keyString in
@@ -131,19 +127,19 @@ parseType t
   | "./" `isPrefixOf` t || "/" `isPrefixOf` t = Left t
   | otherwise = Right t
 
-parseSpecifications :: KeySet -> (Key -> IO a) -> (KeySet -> IO KeySet) -> IO [a]
-parseSpecifications ks parser keySelector = do
-  parent <- keyNew "spec/examples"
-  keySelector ks >>= ksList >>= mapM parser
+parseSpecifications :: RootKey -> KeySet -> (Key -> IO a) -> (Key -> KeySet -> IO KeySet) -> IO [a]
+parseSpecifications k ks parser keySelector = keySelector k ks >>= ksList >>= mapM parser
 
-parseKeySpecifications :: KeySet -> IO [KeySpecification]
-parseKeySpecifications ks = parseSpecifications ks parseKeySpecification (\ks -> cutSpecElektra ks >> return ks)
+parseKeySpecifications :: RootKey -> KeySet -> IO [KeySpecification]
+parseKeySpecifications k ks = parseSpecifications k ks (parseKeySpecification k) (\k ks -> cutSpecElektra k ks >> return ks)
 
-parseTypeSpecifications :: KeySet -> IO [TypeSpecification]
-parseTypeSpecifications ks = parseSpecifications ks parseTypeSpecification cutSpecElektra
+parseTypeSpecifications :: RootKey -> KeySet -> IO [TypeSpecification]
+parseTypeSpecifications k ks = do
+  spk <- keyName k >>= specPrefixKey
+  parseSpecifications k ks (parseTypeSpecification spk) cutSpecElektra
 
-cutSpecElektra :: KeySet -> IO KeySet
-cutSpecElektra ks = specPrefixKey >>= ksCut ks
+cutSpecElektra :: Key -> KeySet -> IO KeySet
+cutSpecElektra k ks = keyName k >>= specPrefixKey >>= ksCut ks
 
 dt :: (T.Text -> T.Text) -> String -> String
 dt fn = T.unpack . fn . T.pack
