@@ -108,6 +108,8 @@ if (ENABLE_ASAN)
 	endif ()
 
 	if (CMAKE_COMPILER_IS_GNUCXX AND NOT APPLE)
+		# Work around error “unrecognized option '--push-state'”
+		set (EXTRA_FLAGS "${EXTRA_FLAGS} -fuse-ld=gold")
 		set (CMAKE_SHARED_LINKER_FLAGS "-fsanitize=address ${CMAKE_SHARED_LINKER_FLAGS}")
 		# this is needed because of wrong pthread detection https://gcc.gnu.org/bugzilla/show_bug.cgi?id=69443
 		find_package(Threads)
