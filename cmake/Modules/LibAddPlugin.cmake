@@ -49,9 +49,11 @@ function (add_plugintest testname)
 		restore_variable (${PLUGIN_NAME} ARG_LINK_ELEKTRA ALLOW_MATCH)
 		restore_variable (${PLUGIN_NAME} ARG_ADD_TEST)
 		restore_variable (${PLUGIN_NAME} ARG_INSTALL_TEST_DATA)
+		restore_variable (${PLUGIN_NAME} ARG_OBJECT_SOURCES)
 
 		set (TEST_SOURCES
 				$<TARGET_OBJECTS:cframework>
+				${ARG_OBJECT_SOURCES}
 				)
 
 		foreach (A ${ARG_UNPARSED_ARGUMENTS})
@@ -215,6 +217,9 @@ endfunction ()
 # SOURCES:
 #  The sources of the plugin
 #
+# OBJECT_SOURCES:
+#  Object library sources for the plugin
+#
 # LINK_LIBRARIES:
 #  add here only add libraries found by cmake
 #  do not add dependencies to Elektra, use LINK_ELEKTRA for that
@@ -253,7 +258,7 @@ function (add_plugin PLUGIN_SHORT_NAME)
 		"CPP;ADD_TEST;TEST_README;INSTALL_TEST_DATA" # optional keywords
 		"INCLUDE_SYSTEM_DIRECTORIES" # one value keywords
 		# multi value keywords
-		"SOURCES;LINK_LIBRARIES;COMPILE_DEFINITIONS;INCLUDE_DIRECTORIES;LINK_ELEKTRA;DEPENDS;TEST_ENVIRONMENT;TEST_REQUIRED_PLUGINS"
+		"SOURCES;OBJECT_SOURCES;LINK_LIBRARIES;COMPILE_DEFINITIONS;INCLUDE_DIRECTORIES;LINK_ELEKTRA;DEPENDS;TEST_ENVIRONMENT;TEST_REQUIRED_PLUGINS"
 		${ARGN}
 	)
 
@@ -263,6 +268,7 @@ function (add_plugin PLUGIN_SHORT_NAME)
 
 	restore_variable (${PLUGIN_NAME} ARG_LINK_LIBRARIES)
 	restore_variable (${PLUGIN_NAME} ARG_SOURCES)
+	restore_variable (${PLUGIN_NAME} ARG_OBJECT_SOURCES)
 	restore_variable (${PLUGIN_NAME} ARG_COMPILE_DEFINITIONS)
 	restore_variable (${PLUGIN_NAME} ARG_INCLUDE_DIRECTORIES)
 	restore_variable (${PLUGIN_NAME} ARG_INCLUDE_SYSTEM_DIRECTORIES)
@@ -414,6 +420,7 @@ function (add_plugin PLUGIN_SHORT_NAME)
 
 	if (BUILD_SHARED)
 		add_library (${PLUGIN_NAME} MODULE ${ARG_SOURCES})
+		target_sources(${PLUGIN_NAME} PRIVATE ${ARG_OBJECT_SOURCES})
 		add_dependencies (${PLUGIN_NAME} kdberrors_generated)
 		if (ARG_DEPENDS)
 			add_dependencies (${PLUGIN_NAME} ${ARG_DEPENDS})
@@ -457,6 +464,7 @@ function (add_plugin PLUGIN_SHORT_NAME)
 	#message (STATUS "added ${PLUGIN_TARGET_OBJS}")
 	set_property (GLOBAL APPEND PROPERTY "elektra-full_SRCS"
 		${PLUGIN_TARGET_OBJS}
+		${ARG_OBJECT_SOURCES}
 		)
 
 	set_property (GLOBAL APPEND PROPERTY "elektra-full_LIBRARIES"
