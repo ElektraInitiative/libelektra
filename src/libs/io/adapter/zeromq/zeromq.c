@@ -27,8 +27,6 @@ typedef struct _ElektraIoAdapterZeroMqHandle
 	ElektraIoAdapterZeroMqCallback callback;
 	void * callbackContext;
 
-	int enabled;
-
 } _ElektraIoAdapterZeroMqHandle;
 
 static void zmqAdapterDispatch (_ElektraIoAdapterZeroMqHandle * handle)
@@ -141,12 +139,12 @@ ElektraIoAdapterZeroMqHandle * elektraIoAdapterZeroMqAttach (void * socket, Elek
 		return NULL;
 	}
 	handle->fdOp = fdOp;
-	/*if (!elektraIoBindingAddFd (ioBinding, fdOp))
+	if (!elektraIoBindingAddFd (ioBinding, fdOp))
 	{
 		elektraFree (fdOp);
 		elektraFree (handle);
 		return NULL;
-	}*/
+	}
 
 	// Add timeout for reading messages
 	ElektraIoIdleOperation * dispatchIdle = elektraIoNewIdleOperation (0, zmqAdapterIdleCallback, handle);
@@ -158,64 +156,16 @@ ElektraIoAdapterZeroMqHandle * elektraIoAdapterZeroMqAttach (void * socket, Elek
 		return NULL;
 	}
 	handle->dispatchIdle = dispatchIdle;
-	/*if (!elektraIoBindingAddIdle (ioBinding, dispatchIdle))
+	if (!elektraIoBindingAddIdle (ioBinding, dispatchIdle))
 	{
 		elektraFree (dispatchIdle);
 		elektraIoBindingRemoveFd (fdOp);
 		elektraFree (fdOp);
 		elektraFree (handle);
 		return NULL;
-	}*/
-	// enable adapter
-	handle->enabled = 0;
-	if (!elektraIoAdapterZeroMqSetEnabled (handle, 1))
-	{
-		elektraIoAdapterZeroMqSetEnabled (handle, 0);
-		elektraFree (dispatchIdle);
-		elektraFree (fdOp);
-		elektraFree (handle);
-		return NULL;
 	}
 
 	return handle;
-}
-
-int elektraIoAdapterZeroMqSetEnabled (ElektraIoAdapterZeroMqHandle * handle, int enabled)
-{
-	if (handle->enabled == enabled)
-	{
-		ELEKTRA_LOG_DEBUG ("adapter state not changed");
-		return 1;
-	}
-
-	handle->enabled = enabled;
-	if (enabled)
-	{
-		if (!elektraIoBindingAddIdle (handle->ioBinding, handle->dispatchIdle))
-		{
-			ELEKTRA_LOG_WARNING ("could not add idle operation");
-			return 0;
-		}
-		if (!elektraIoBindingAddFd (handle->ioBinding, handle->fdOp))
-		{
-			ELEKTRA_LOG_WARNING ("could not add fd operation");
-			return 0;
-		}
-	}
-	else
-	{
-		if (!elektraIoBindingRemoveFd (handle->fdOp))
-		{
-			ELEKTRA_LOG_WARNING ("coudl remove fd operation");
-			return 0;
-		}
-		if (!elektraIoBindingRemoveIdle (handle->dispatchIdle))
-		{
-			ELEKTRA_LOG_WARNING ("coudl remove idle operation");
-			return 0;
-		}
-	}
-	return 1;
 }
 
 void elektraIoAdapterZeroMqSetContext (ElektraIoAdapterZeroMqHandle * handle, void * context)
@@ -225,16 +175,14 @@ void elektraIoAdapterZeroMqSetContext (ElektraIoAdapterZeroMqHandle * handle, vo
 
 int elektraIoAdapterZeroMqDetach (ElektraIoAdapterZeroMqHandle * handle)
 {
-	if (handle->enabled)
+
+	if (!elektraIoBindingRemoveIdle (handle->dispatchIdle))
 	{
-		if (!elektraIoBindingRemoveIdle (handle->dispatchIdle))
-		{
-			ELEKTRA_LOG_WARNING ("could not remove idle operation");
-		}
-		if (!elektraIoBindingRemoveFd (handle->fdOp))
-		{
-			ELEKTRA_LOG_WARNING ("could not remove fd operation");
-		}
+		ELEKTRA_LOG_WARNING ("could not remove idle operation");
+	}
+	if (!elektraIoBindingRemoveFd (handle->fdOp))
+	{
+		ELEKTRA_LOG_WARNING ("could not remove fd operation");
 	}
 	elektraFree (handle->dispatchIdle);
 	elektraFree (handle->fdOp);

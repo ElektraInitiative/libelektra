@@ -13,10 +13,10 @@ add_plugin (zeromqrecv
 	SOURCES
 		zeromqrecv.h zeromqrecv.c
 		subscribe.c
+	OBJECT_SOURCES
+		$<TARGET_OBJECTS:io-adapter-zeromq>
 	INCLUDE_DIRECTORIES
 		${ZMQ_INCLUDE_DIR}
-	LINK_ELEKTRA
-		elektra-io-adapter-zeromq
 	LINK_LIBRARIES
 		${ZMQ_LIBRARIES}
 	)
@@ -38,7 +38,6 @@ if (ADDTESTING_PHASE)
 			INCLUDE_DIRECTORIES
 				${ZMQ_INCLUDE_DIR}
 			LINK_ELEKTRA
-				elektra-io-adapter-zeromq
 				elektra-io-uv
 			)
 		if (LIBUV_VERSION VERSION_LESS "1.0")

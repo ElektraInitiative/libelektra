@@ -63,17 +63,6 @@ ElektraIoAdapterZeroMqHandle * elektraIoAdapterZeroMqAttach (void * socket, Elek
 							     ElektraIoAdapterZeroMqCallback callback, void * context);
 
 /**
- * Enable or disable ZeroMq adapter.
- *
- * Allows to disable polling etc. so that the callback is no called anymore
- * until the adapter handle is re-enabled.
- *
- * @param handle  adapter handle
- * @param enabled 1 to enable, any other value to disable
- */
-int elektraIoAdapterZeroMqSetEnabled (ElektraIoAdapterZeroMqHandle * handle, int enabled);
-
-/**
  * Set the callback context for a ZeroMq adapter handle.
  *
  * The previous context is replaced and not freed.

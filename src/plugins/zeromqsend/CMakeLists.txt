@@ -1,5 +1,3 @@
-include (LibAddBinding)
-
 if (DEPENDENCY_PHASE)
 	find_package (PkgConfig)
 	pkg_check_modules (ZMQ QUIET libzmq)
@@ -15,8 +13,6 @@ add_plugin (zeromqsend
 		publish.c
 	INCLUDE_DIRECTORIES
 		${ZMQ_INCLUDE_DIR}
-	LINK_ELEKTRA
-		elektra-io-adapter-zeromq
 	LINK_LIBRARIES
 		${ZMQ_LIBRARIES}
 	)
