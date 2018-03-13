@@ -12,6 +12,7 @@
 #include <errno.h>
 #include <stdlib.h>
 
+#include <kdb.h>
 #include <kdbassert.h>
 #include <kdbhelper.h>
 #include <kdblogger.h>
@@ -50,6 +51,76 @@ struct _PluginState
 	KeyRegistration * last;
 };
 typedef struct _PluginState PluginState;
+
+/**
+ * @internal
+ * Convert key name into cascading key name for comparison.
+ *
+ * Key name is not modified, nothing to free
+ *
+ * @param  keyName key name
+ * @return         pointer to cascading name
+ */
+static const char * toCascadingName (const char * keyName)
+{
+	while (keyName[0] != '/')
+	{
+		keyName++;
+	}
+	return keyName;
+}
+
+/**
+ * @internal
+ * Call kdbGet if there are registrations below the changed key.
+ *
+ * On kdbGet this plugin implicitly updates registered keys.
+ *
+ * @see ElektraNotificationChangeCallback (kdbnotificationinternal.h)
+ *
+ * @param key     changed key
+ * @param context callback context
+ */
+static void elektraInternalnotificationDoUpdate (Key * changedKey, ElektraNotificationCallbackContext * context)
+{
+	ELEKTRA_NOT_NULL (changedKey);
+	ELEKTRA_NOT_NULL (context);
+
+	KDB * kdb = context->kdb;
+	Plugin * plugin = context->notificationPlugin;
+
+	PluginState * pluginState = elektraPluginGetData (plugin);
+	ELEKTRA_NOT_NULL (pluginState);
+
+	int kdbChanged = 0;
+	KeyRegistration * keyRegistration = pluginState->head;
+	while (keyRegistration != NULL)
+	{
+		Key * registereKey = keyNew (keyRegistration->name, KEY_END);
+
+		if (keyIsBelow (changedKey, registereKey))
+		{
+			kdbChanged |= 1;
+		}
+		else if (keyGetNamespace (registereKey) == KEY_NS_CASCADING || keyGetNamespace (changedKey) == KEY_NS_CASCADING)
+		{
+			const char * cascadingRegisterdKey = toCascadingName (keyRegistration->name);
+			const char * cascadingChangedKey = toCascadingName (keyName (changedKey));
+			kdbChanged |= elektraStrCmp (cascadingChangedKey, cascadingRegisterdKey) == 0;
+		}
+
+		keyRegistration = keyRegistration->next;
+		keyDel (registereKey);
+	}
+
+	if (kdbChanged)
+	{
+		KeySet * ks = ksNew (0, KS_END);
+		kdbGet (kdb, ks, changedKey);
+		ksDel (ks);
+	}
+	keyDel (changedKey);
+}
 
 /**
  * Creates a new KeyRegistration structure and appends it at the end of the registration list
@@ -281,9 +352,8 @@ int elektraInternalnotificationGet (Plugin * handle, KeySet * returned, Key * pa
 	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/internalnotification"))
 	{
 		KeySet * contract = ksNew (
-			30,
-			keyNew ("system/elektra/modules/internalnotification", KEY_VALUE,
-				"internalnotification plugin waits for your orders", KEY_END),
+			30, keyNew ("system/elektra/modules/internalnotification", KEY_VALUE,
+				    "internalnotification plugin waits for your orders", KEY_END),
 			keyNew ("system/elektra/modules/internalnotification/exports", KEY_END),
 			keyNew ("system/elektra/modules/internalnotification/exports/get", KEY_FUNC, elektraInternalnotificationGet,
 				KEY_END),
@@ -293,6 +363,8 @@ int elektraInternalnotificationGet (Plugin * handle, KeySet * returned, Key * pa
 				KEY_END),
 			keyNew ("system/elektra/modules/internalnotification/exports/close", KEY_FUNC, elektraInternalnotificationClose,
 				KEY_END),
+			keyNew ("system/elektra/modules/internalnotification/exports/notificationCallback", KEY_FUNC,
+				elektraInternalnotificationDoUpdate, KEY_END),
 
 			// Export register* functions
 			keyNew ("system/elektra/modules/internalnotification/exports/registerInt", KEY_FUNC,

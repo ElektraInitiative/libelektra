@@ -686,36 +686,6 @@ static void pluginsCloseNotification (KDB * kdb)
 	}
 }
 
-/**
- * @internal
- * Performs kdbGet to get updates for the changed key.
- *
- * The notification plugin (internalnotification) implicitly updates registered
- * keys.
- *
- * NOTE This function might be moved to the internalnotification plugin to
- * run kdbGet only for registered keys.
- * Overrides through spec might be problematic however.
- *
- * @see ElektraNotificationChangeCallback (kdbnotificationinternal.h)
- *
- * @param key     changed key
- * @param context callback context
- */
-static void elektraNotificationDoUpdate (Key * key, ElektraNotificationCallbackContext * context)
-{
-	ELEKTRA_NOT_NULL (key);
-	ELEKTRA_NOT_NULL (context);
-
-	KDB * kdb = context->kdb;
-
-	KeySet * ks = ksNew (0, KS_END);
-	kdbGet (kdb, ks, key);
-
-	ksDel (ks);
-	keyDel (key);
-}
-
 int elektraNotificationOpen (KDB * kdb)
 {
 	// Make sure kdb is not null
@@ -757,9 +727,22 @@ int elektraNotificationOpen (KDB * kdb)
 		return 0;
 	}
 	context->kdb = kdb;
+	context->notificationPlugin = notificationPlugin;
+
+	// Get notification callback from notification plugin
+	size_t func = elektraPluginGetFunction (notificationPlugin, "notificationCallback");
+	if (!func)
+	{
+		unmountGlobalPlugin (kdb, notificationPlugin);
+		Key * errorKey = keyNew (0);
+		elektraPluginClose (notificationPlugin, errorKey);
+		keyDel (errorKey);
+		return 0;
+	}
+	ElektraNotificationCallback notificationCallback = (ElektraNotificationCallback)func;
 
 	// Open notification for plugins
-	pluginsOpenNotification (kdb, elektraNotificationDoUpdate, context);
+	pluginsOpenNotification (kdb, notificationCallback, context);
 
 	kdb->notificationPlugin = notificationPlugin;
 	kdb->notificationCallbackContext = context;

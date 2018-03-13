@@ -96,6 +96,8 @@ typedef void (*ElektraNotificationCloseNotification) (Plugin * handle);
 struct _ElektraNotificationCallbackContext
 {
 	KDB * kdb; /*!< The pointer the KDB handle.*/
+
+	Plugin * notificationPlugin; /*!< Notification plugin handle.*/
 };
 
 #ifdef __cplusplus
