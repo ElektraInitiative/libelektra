@@ -1,0 +1,491 @@
+// FIXME sloc publish errors
+// XXX add missing jobs
+// TODO have a per plugin/binding deps in Dockerfile for easier maintanence
+// TODO add warnings plugins to scan for compiler warnings
+// XXX setup way to determine what tests should run
+//           regex on env.ghprbCommentBody
+
+// # Set Variables #
+CMPVERSION = '0.8.22'
+VERSION = '0.8.23'
+
+docker_node_label = 'docker'
+docker_image_prefix = 'build-elektra-'
+
+// ## Setup log discarder ##
+properties([
+    buildDiscarder(logRotator(numToKeepStr: '60', artifactNumToKeepStr: '60'))
+])
+
+// ## Define Docker images ##
+DOCKER_IMAGES = [
+    sid: [
+        id: docker_image_prefix + 'debian-sid' + ':' + env.BUILD_NUMBER,
+        path: "./doc/docker/debian/sid",
+        file: "Dockerfile"
+    ],
+    stretch: [
+        id: docker_image_prefix + 'debian-stretch' + ':' + env.BUILD_NUMBER,
+        path: "./doc/docker/debian/stretch",
+        file: "Dockerfile"
+    ],
+    stretch_minimal: [
+        id: docker_image_prefix + 'debian-stretch-minimal' + ':' + env.BUILD_NUMBER,
+        path: "./doc/docker/debian/stretch",
+        file: "Dockerfile.minimal"
+    ],
+    stretch_doc: [
+        id: docker_image_prefix + 'debian-stretch-doc' + ':' + env.BUILD_NUMBER,
+        path: "./doc/docker/debian/stretch",
+        file: "Dockerfile.doc"
+    ],
+    jessie: [
+        id: docker_image_prefix + 'debian-jessie' + ':' + env.BUILD_NUMBER,
+        path: "./doc/docker/debian/jessie",
+        file: "Dockerfile"
+    ],
+    xenial: [
+        id: docker_image_prefix + 'ubuntu-xenial' + ':' + env.BUILD_NUMBER,
+        path: "./doc/docker/ubuntu/xenial",
+        file: "Dockerfile"
+    ]
+]
+
+// ## Define Build Flags ##
+BUILD_FLAGS_STANDARD = [
+    'SITE': '${STAGE_NAME}',
+    'KDB_DB_SYSTEM': '${HOME}/.config/kdb/system',
+    'KDB_DB_SPEC': '${HOME}/.config/kdb/spec',
+    'CMAKE_INSTALL_PREFIX': '${WORKSPACE}/system',
+    'INSTALL_SYSTEM_FILES': 'OFF',
+    'BUILD_DOCUMENTATION': 'OFF'
+]
+
+BUILD_FLAGS_ALL = [
+    'BINDINGS': 'ALL;EXPERIMENTAL;-DEPRECATED',
+    'PLUGINS': 'ALL;EXPERIMENTAL;-DEPRECATED',
+    'TOOLS': 'ALL'
+]
+
+BUILD_FLAGS_COVERAGE = [
+    'ENABLE_COVERAGE': 'ON'
+]
+
+BUILD_FLAGS_JAVA = [
+    'JAVA_AWT_INCLUDE_PATH': '/usr/lib/jvm/java-8-openjdk-amd64/include/'
+]
+
+BUILD_FLAGS_CLANG = [
+    'CMAKE_C_COMPILER': 'clang',
+    'CMAKE_CXX_COMPILER': 'clang++'
+]
+
+BUILD_FLAGS_ASAN = ['ENABLE_ASAN': 'ON']
+BUILD_FLAGS_DEBUG = ['ENABLE_DEBUG': 'ON']
+BUILD_FLAGS_LOGGER = ['ENABLE_LOGGER': 'ON']
+
+// ## Define Test Flags ##
+TEST_MEM = 'mem'
+TEST_NOKDB = 'nokdb'
+TEST_ALL = 'all'
+TEST_INSTALL = 'install'
+
+/* # Determine what needs to be build #
+target = "light"
+
+matcher = /jenkins build jenkinsfile(?:\[(.*)\])? please/
+new_target = (env.ghprbCommentBody =~ matcher)[0][1]
+if(new_target) {
+    if(new_target.equalsIgnoreCase("full")) {
+        target = "full"
+    }
+}
+*/
+
+// # Main Stages #
+// Build containers, locked to single build executing
+lock('docker-build') {
+    stage("Build docker images") {
+        parallel generate_docker_images()
+    }
+}
+
+stage("Fast builds") {
+    parallel generate_elektra_builds_fast()
+}
+
+// Do full builds
+stage("Full build") {
+    parallel generate_elektra_builds_full()
+}
+
+
+// # Stage Generators #
+def generate_docker_images() {
+    def docker_nodes = nodesByLabel label:docker_node_label
+    def tasks = [:]
+
+    docker_nodes.each { node_value ->
+        tasks << build_images(node_value)
+    }
+    return tasks
+}
+
+def build_images(node_value) {
+    def taskname = "build/${node_value}/"
+    return [(taskname): {
+        stage(taskname) {
+            node(node_value) {
+                checkout scm
+                def uid = getUid()
+                def gid = getGid()
+                DOCKER_IMAGES.each { id, image ->
+                    docker.build(
+                        image.id,"""\
+--pull \
+--build-arg JENKINS_GROUPID=${gid} \
+--build-arg JENKINS_USERID=${uid} \
+-f ${image.path}/${image.file} \
+${image.path}"""
+                    )
+                }
+            }
+        }
+    }]
+}
+
+def generate_elektra_builds_fast() {
+    def tasks = [:]
+    tasks << test(
+        "debian-stable-fast",
+        DOCKER_IMAGES.stretch,
+        BUILD_FLAGS_STANDARD +
+            BUILD_FLAGS_ALL +
+            BUILD_FLAGS_JAVA
+    )
+    tasks << test(
+        "debian-unstable-log",
+        DOCKER_IMAGES.sid,
+        BUILD_FLAGS_STANDARD +
+            BUILD_FLAGS_DEBUG,
+        [TEST_ALL, TEST_MEM]
+    )
+
+    return tasks
+}
+
+def generate_elektra_builds_full() {
+    def tasks = [:]
+    tasks << test_todo()
+    tasks << test_doc()
+    tasks << test_asan(
+        "debian-stable-asan",
+        DOCKER_IMAGES.stretch
+    )
+    tasks << test(
+        "debian-stable-full",
+        DOCKER_IMAGES.stretch,
+        BUILD_FLAGS_STANDARD +
+            BUILD_FLAGS_ALL +
+            BUILD_FLAGS_COVERAGE +
+            BUILD_FLAGS_JAVA,
+        [TEST_ALL, TEST_MEM, TEST_INSTALL]
+    )
+    tasks << test(
+        "debian-oldstable-full",
+        DOCKER_IMAGES.jessie,
+        BUILD_FLAGS_STANDARD +
+            BUILD_FLAGS_ALL +
+            BUILD_FLAGS_COVERAGE,
+        [TEST_ALL, TEST_MEM, TEST_INSTALL]
+    )
+    tasks << test(
+        "debian-unstable-full",
+        DOCKER_IMAGES.sid,
+        BUILD_FLAGS_STANDARD +
+            BUILD_FLAGS_ALL +
+            BUILD_FLAGS_COVERAGE,
+        [TEST_ALL, TEST_MEM, TEST_INSTALL]
+    )
+    tasks << test(
+        "debian-stable-full-clang",
+        DOCKER_IMAGES.stretch,
+        BUILD_FLAGS_STANDARD +
+            BUILD_FLAGS_ALL +
+            BUILD_FLAGS_COVERAGE +
+            BUILD_FLAGS_JAVA +
+            BUILD_FLAGS_CLANG,
+        [TEST_ALL, TEST_MEM, TEST_INSTALL]
+    )
+    tasks << test(
+        "ubuntu-xenial",
+        DOCKER_IMAGES.xenial,
+        BUILD_FLAGS_STANDARD + BUILD_FLAGS_ALL,
+        [TEST_ALL]
+    )
+    tasks << test(
+        "debian-stable-minimal",
+        DOCKER_IMAGES.stretch_minimal,
+        BUILD_FLAGS_STANDARD,
+        [TEST_ALL]
+    )
+    return tasks
+}
+
+def test_todo() {
+    def test_name = "todo"
+    def open_task_patterns = '''\
+**/*.c, **/*.h, **/*.hpp, **/*.cpp,\
+**/CMakeLists.txt, **/Dockerfile*, Jenkinsfile*
+'''
+    return dockerize(test_name, DOCKER_IMAGES.stretch_doc) {
+        sh "sloccount --duplicates --wide --details ${WORKSPACE} > sloccount.sc"
+        step([$class: 'SloccountPublisher', ignoreBuildFailure: true])
+        openTasks pattern: open_task_patterns,
+                  high: 'XXX',
+                  normal: 'FIXME',
+                  low: 'TODO'
+        archive(["sloccount.sc"])
+        deleteDir()
+    }
+}
+
+def test_doc() {
+    def test_name = "doc"
+    cmake_flags = [
+        'BUILD_PDF': 'ON',
+        'BUILD_FULL': 'OFF',
+        'BUILD_SHARED': 'OFF',
+        'BUILD_STATIC': 'OFF',
+        'BUILD_TESTING': 'OFF'
+    ]
+    return dockerize(test_name, DOCKER_IMAGES.stretch_doc) {
+        dir('build') {
+            deleteDir()
+            cmake(env.WORKSPACE, cmake_flags)
+            sh "make html latex man pdf"
+        }
+        warnings parserConfigurations: [
+            [parserName: 'Doxygen', pattern: 'build/doc/doxygen.log']
+        ]
+        // TODO don't write to latest on PR's
+        sshPublisher(publishers: [
+          sshPublisherDesc(
+            configName: 'doc.libelektra.org',
+            transfers: [
+              sshTransfer(
+                sourceFiles: 'build/doc/latex/*',
+                removePrefix: 'build/doc/',
+                remoteDirectory: 'api/latest'
+              ),
+              sshTransfer(
+                sourceFiles: 'build/doc/man/*',
+                removePrefix: 'build/doc/',
+                remoteDirectory: 'api/latest'
+              ),
+              sshTransfer(
+                sourceFiles: 'doc/help/*.html',
+                removePrefix: 'doc/help/',
+                remoteDirectory: 'help'
+              )
+          ])
+        ])
+        deleteDir()
+    }
+}
+
+def test_asan(test_name, image, extra_cmake_flags = [:]) {
+    def cmake_flags = BUILD_FLAGS_STANDARD +
+                      BUILD_FLAGS_ALL +
+                      BUILD_FLAGS_ASAN +
+                      extra_cmake_flags
+    return dockerize(test_name, image) {
+        dir('build') {
+            deleteDir()
+            cmake(env.WORKSPACE, cmake_flags)
+            sh "make"
+            def llvm_symbolizer = sh(returnStdout: true,
+                                     script: 'which llvm-symbolizer').trim()
+            withEnv(["ASAN_OPTIONS='symbolize=1'",
+                     "ASAN_SYMBOLIZER_PATH=${llvm_symbolizer}"]){
+                ctest()
+            }
+        }
+    }
+}
+
+def test(test_name, image, cmake_flags, tests = [], extra_artifacts = []) {
+    def artifacts = []
+    if(tests) {
+        artifacts.add("build/Testing/*/*.xml")
+    }
+    def test_coverage = cmake_flags.intersect(BUILD_FLAGS_COVERAGE)
+                                   .equals(BUILD_FLAGS_COVERAGE)
+    def test_mem = tests.contains(TEST_MEM)
+    def test_nokdb = tests.contains(TEST_NOKDB)
+    def test_all = tests.contains(TEST_ALL)
+    def install = tests.contains(TEST_INSTALL)
+    return dockerize(test_name, image) {
+        try {
+            dir('build') {
+                deleteDir()
+                cmake(env.WORKSPACE, cmake_flags)
+                sh "make"
+                trackCoverage(test_coverage) {
+                    if(test_all) {
+                        ctest()
+                    } else if(test_nokdb) {
+                        cnokdbtest()
+                    }
+                    if(test_mem) {
+                        cmemcheck(test_nokdb)
+                    }
+                }
+                if(install) {
+                    sh 'make install'
+                }
+            }
+            if(install) {
+                sh '''\
+export LD_LIBRARY_PATH=${WORKSPACE}/system/lib:$LD_LIBRARY_PATH
+export PATH=${WORKSPACE}/system/bin:$PATH
+export DBUS_SESSION_BUS_ADDRESS=`dbus-daemon --session --fork --print-address`
+export LUA_CPATH="${WORKSPACE}/system/lib/lua/5.2/?.so;"
+kdb run_all
+kill `pidof dbus-daemon`
+'''
+            }
+        } catch(e) {
+            // rethrow to mark as failed
+            throw e
+        } finally {
+            /* Warnings plugin overwrites each other, disable for now
+            warnings canRunOnFailed: true, consoleParsers: [
+                [parserName: 'GNU Make + GNU C Compiler (gcc)']
+            ]
+            */
+            archive(artifacts)
+            if(test_coverage) {
+                publishCoverage(test_name)
+            }
+            if(test_mem || test_nokdb || test_all) {
+                xunitUpload()
+            }
+            deleteDir()
+        }
+    }
+}
+
+// Helper functions
+def archive(paths) {
+    echo "Start archivation"
+    if (paths) {
+        def prefix = "artifacts/"
+        def dest = "${prefix}${env.STAGE_NAME}/"
+        sh "mkdir -p ${dest}"
+        paths.each { path ->
+            sh "cp -v ${path} ${dest} || true"
+        }
+        archiveArtifacts artifacts: "${prefix}**", fingerprint: true
+    } else {
+        echo "No Artifacts to archive"
+    }
+    echo "Finish archivation"
+}
+
+def cmake(String directory, Map args_map) {
+    def args_str = ""
+    args_map.each { key, value ->
+        args_str += "-D$key=\"$value\" "
+    }
+    sh("cmake $args_str $directory")
+}
+
+def publishCoverage(String test_name) {
+    echo "Start publication of coverage data"
+    sh "mkdir -p ssh/coverage/ || true"
+    sh "mv build/coverage ssh/coverage/${test_name} || true"
+    sshPublisher(publishers: [
+      sshPublisherDesc(
+        configName: 'doc.libelektra.org',
+        transfers: [
+          sshTransfer(
+            sourceFiles: 'ssh/**',
+            removePrefix: 'ssh'
+          )
+      ])
+    ])
+    echo "Finish publication of coverage data"
+}
+
+def getUid() {
+    return sh(returnStdout: true, script: 'id -u').trim()
+}
+
+def getGid() {
+    return sh(returnStdout: true, script: 'id -g').trim()
+}
+
+def trackCoverage(do_track, cl) {
+    if(do_track) {
+        sh 'make coverage-start'
+    }
+    cl()
+    if(do_track) {
+        sh 'make coverage-stop'
+        sh 'make coverage-genhtml'
+    }
+}
+
+def dockerize(test_name, image, cl) {
+    return [(test_name): {
+        stage(test_name) {
+            node(docker_node_label) {
+                timeout(activity: true, time: 2, unit: 'MINUTES') {
+                    def cpu_count = cpuCount()
+                    withEnv(["MAKEFLAGS='-j${cpu_count+2} -l${cpu_count*2}'",
+                             "CTEST_PARALLEL_LEVEL='${cpu_count+2}'"]) {
+                        echo "Staring ${env.STAGE_NAME} on ${env.NODE_NAME}"
+                        checkout scm
+                        docker.image(image.id).inside { cl() }
+                    }
+                }
+            }
+        }
+    }]
+}
+
+def cpuCount() {
+    return sh(returnStdout: true,
+              script: 'grep -c ^processor /proc/cpuinfo').trim() as Integer
+}
+
+def ctest(target = "Test") {
+    sh """ctest -j ${env.CTEST_PARALLEL_LEVEL} --force-new-ctest-process \
+            --output-on-failure --no-compress-output -T ${target}"""
+}
+
+def cmemcheck(kdbtests) {
+    if(kdbtests) {
+        ctest("MemCheck -LE memleak")
+    } else {
+        ctest("MemCheck -LE memleak||kdbtests")
+    }
+}
+
+def cnokdbtest() {
+    ctest("Test -LE kdbtests")
+}
+
+def xunitUpload() {
+    step([$class: 'XUnitBuilder',
+          thresholds: [
+            [$class: 'SkippedThreshold', failureThreshold: '0'],
+            [$class: 'FailedThreshold', failureThreshold: '0']
+          ],
+          tools: [
+            [$class: 'CTestType',
+                pattern: 'build/Testing/**/*.xml']
+        ]
+    ])
+}
