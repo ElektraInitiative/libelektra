@@ -17,6 +17,8 @@ add_plugin (zeromqrecv
 		$<TARGET_OBJECTS:io-adapter-zeromq>
 	INCLUDE_DIRECTORIES
 		${ZMQ_INCLUDE_DIR}
+	LINK_ELEKTRA
+		elektra-io
 	LINK_LIBRARIES
 		${ZMQ_LIBRARIES}
 	)
