@@ -139,10 +139,10 @@ static int listParseConfiguration (Placements * placements, KeySet * config)
 int elektraListOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 {
 
-	Placements * placements = (Placements *)elektraPluginGetData (handle);
+	Placements * placements = (Placements *) elektraPluginGetData (handle);
 	if (!placements)
 	{
-		placements = (Placements *)elektraMalloc (sizeof (Placements));
+		placements = (Placements *) elektraMalloc (sizeof (Placements));
 		memset (placements, 0, sizeof (Placements));
 		placements->errCurrent = preRollback;
 		placements->setCurrent = preSetStorage;
@@ -232,7 +232,7 @@ int elektraListClose (Plugin * handle, Key * errorKey)
 	while ((cur = ksNext (placements->plugins)) != NULL)
 	{
 		Plugin * slave;
-		slave = *(Plugin **)keyValue (cur);
+		slave = *(Plugin **) keyValue (cur);
 		elektraPluginClose (slave, errorKey);
 	}
 	ksDel (placements->plugins);
@@ -244,7 +244,7 @@ int elektraListClose (Plugin * handle, Key * errorKey)
 }
 
 static int runPlugins (KeySet * pluginKS, KeySet * modules, KeySet * plugins, KeySet * configOrig, KeySet * returned, Key * parentKey,
-		       OP op, Key * (*traversalFunction) (KeySet *))
+		       OP op, Key * (*traversalFunction) (KeySet *) )
 {
 	Key * current;
 
@@ -262,7 +262,7 @@ static int runPlugins (KeySet * pluginKS, KeySet * modules, KeySet * plugins, Ke
 		keyDel (handleKey);
 		if (handleLookup)
 		{
-			slave = *(Plugin **)keyValue (handleLookup);
+			slave = *(Plugin **) keyValue (handleLookup);
 		}
 		else
 		{
@@ -272,7 +272,7 @@ static int runPlugins (KeySet * pluginKS, KeySet * modules, KeySet * plugins, Ke
 			keyDel (searchKey);
 			if (lookup)
 			{
-				slave = *(Plugin **)keyValue (lookup);
+				slave = *(Plugin **) keyValue (lookup);
 			}
 			else
 			{

@@ -64,7 +64,7 @@ int CRYPTO_PLUGIN_FUNCTION (getSaltFromPayload) (Key * errorKey, Key * k, kdb_oc
 	const ssize_t payloadLen = keyGetValueSize (k) - ELEKTRA_CRYPTO_MAGIC_NUMBER_LEN;
 
 	// validate payload length
-	if ((size_t)payloadLen < sizeof (size_t) || payloadLen < 0)
+	if ((size_t) payloadLen < sizeof (size_t) || payloadLen < 0)
 	{
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INTERNAL_ERROR, errorKey,
 				    "payload is too small to contain a salt (payload length is: %lu)", payloadLen);
@@ -72,7 +72,7 @@ int CRYPTO_PLUGIN_FUNCTION (getSaltFromPayload) (Key * errorKey, Key * k, kdb_oc
 		return -1;
 	}
 
-	const kdb_octet_t * value = (kdb_octet_t *)keyValue (k);
+	const kdb_octet_t * value = (kdb_octet_t *) keyValue (k);
 	const kdb_octet_t * payload = &value[ELEKTRA_CRYPTO_MAGIC_NUMBER_LEN];
 	kdb_unsigned_long_t restoredSaltLen = 0;
 
@@ -90,7 +90,7 @@ int CRYPTO_PLUGIN_FUNCTION (getSaltFromPayload) (Key * errorKey, Key * k, kdb_oc
 	}
 
 	// restore salt
-	if (salt) *salt = ((kdb_octet_t *)(payload)) + headerLen;
+	if (salt) *salt = ((kdb_octet_t *) (payload)) + headerLen;
 
 	return 1;
 }

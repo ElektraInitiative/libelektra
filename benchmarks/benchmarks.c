@@ -31,7 +31,7 @@ void timePrint (char * msg)
 	gettimeofday (&measure, 0);
 
 	diff = (measure.tv_sec - start.tv_sec) * 1000000 + (measure.tv_usec - start.tv_usec);
-	fprintf (stdout, "%20s: %20d Microseconds\n", msg, (int)diff);
+	fprintf (stdout, "%20s: %20d Microseconds\n", msg, (int) diff);
 
 	gettimeofday (&start, 0);
 }
@@ -325,7 +325,7 @@ static KsTreeVertex * recGenerateKsTree (KsTreeVertex * parent, const size_t siz
 	KsShapeFunctionReturn ret;
 	shape->shapef (size, *actualSize, level, seed, &ret, data);
 	// if too many set max
-	if (ret.subKeys > (ssize_t)*actualSize + 1)
+	if (ret.subKeys > (ssize_t) *actualSize + 1)
 	{
 		ret.subKeys = *actualSize;
 	}

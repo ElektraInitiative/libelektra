@@ -273,7 +273,7 @@ inline static int isChild (const Key * key, void * parent)
 	ELEKTRA_NOT_NULL (key);
 	ELEKTRA_NOT_NULL (parent);
 
-	return keyIsDirectBelow ((const Key *)parent, key);
+	return keyIsDirectBelow ((const Key *) parent, key);
 }
 
 /**
@@ -294,7 +294,7 @@ static bool onlyArrayEntriesDirectlyBelow (Key * key, KeySet * keys)
 
 	KeySet * arrayEntries = elektraArrayGet (key, keys);
 	KeySet * children = ksNew (ksGetSize (keys), KS_END);
-	elektraKsFilter (children, keys, &isChild, (void *)key);
+	elektraKsFilter (children, keys, &isChild, (void *) key);
 
 	bool onlyArrayEntries = ksGetSize (arrayEntries) == ksGetSize (children);
 

@@ -59,7 +59,7 @@ static int elektraYajlIncrementArrayEntry (KeySet * ks)
 
 static int elektraYajlParseNull (void * ctx)
 {
-	KeySet * ks = (KeySet *)ctx;
+	KeySet * ks = (KeySet *) ctx;
 	elektraYajlIncrementArrayEntry (ks);
 
 	Key * current = ksCurrent (ks);
@@ -75,7 +75,7 @@ static int elektraYajlParseNull (void * ctx)
 
 static int elektraYajlParseBoolean (void * ctx, int boolean)
 {
-	KeySet * ks = (KeySet *)ctx;
+	KeySet * ks = (KeySet *) ctx;
 	elektraYajlIncrementArrayEntry (ks);
 
 	Key * current = ksCurrent (ks);
@@ -99,13 +99,13 @@ static int elektraYajlParseBoolean (void * ctx, int boolean)
 
 static int elektraYajlParseNumber (void * ctx, const char * stringVal, yajl_size_type stringLen)
 {
-	KeySet * ks = (KeySet *)ctx;
+	KeySet * ks = (KeySet *) ctx;
 	elektraYajlIncrementArrayEntry (ks);
 
 	Key * current = ksCurrent (ks);
 
 	unsigned char delim = stringVal[stringLen];
-	char * stringValue = (char *)stringVal;
+	char * stringValue = (char *) stringVal;
 	stringValue[stringLen] = '\0';
 
 #ifdef ELEKTRA_YAJL_VERBOSE
@@ -123,13 +123,13 @@ static int elektraYajlParseNumber (void * ctx, const char * stringVal, yajl_size
 
 static int elektraYajlParseString (void * ctx, const unsigned char * stringVal, yajl_size_type stringLen)
 {
-	KeySet * ks = (KeySet *)ctx;
+	KeySet * ks = (KeySet *) ctx;
 	elektraYajlIncrementArrayEntry (ks);
 
 	Key * current = ksCurrent (ks);
 
 	unsigned char delim = stringVal[stringLen];
-	char * stringValue = (char *)stringVal;
+	char * stringValue = (char *) stringVal;
 	stringValue[stringLen] = '\0';
 
 #ifdef ELEKTRA_YAJL_VERBOSE
@@ -145,14 +145,14 @@ static int elektraYajlParseString (void * ctx, const unsigned char * stringVal, 
 
 static int elektraYajlParseMapKey (void * ctx, const unsigned char * stringVal, yajl_size_type stringLen)
 {
-	KeySet * ks = (KeySet *)ctx;
+	KeySet * ks = (KeySet *) ctx;
 	elektraYajlIncrementArrayEntry (ks);
 
 	Key * currentKey = keyNew (keyName (ksCurrent (ks)), KEY_END);
 	keySetString (currentKey, 0);
 
 	unsigned char delim = stringVal[stringLen];
-	char * stringValue = (char *)stringVal;
+	char * stringValue = (char *) stringVal;
 	stringValue[stringLen] = '\0';
 
 #ifdef ELEKTRA_YAJL_VERBOSE
@@ -180,7 +180,7 @@ static int elektraYajlParseMapKey (void * ctx, const unsigned char * stringVal, 
 
 static int elektraYajlParseStartMap (void * ctx)
 {
-	KeySet * ks = (KeySet *)ctx;
+	KeySet * ks = (KeySet *) ctx;
 	elektraYajlIncrementArrayEntry (ks);
 
 	Key * currentKey = ksCurrent (ks);
@@ -199,7 +199,7 @@ static int elektraYajlParseStartMap (void * ctx)
 
 static int elektraYajlParseEnd (void * ctx)
 {
-	KeySet * ks = (KeySet *)ctx;
+	KeySet * ks = (KeySet *) ctx;
 	Key * currentKey = ksCurrent (ks);
 
 	Key * lookupKey = keyNew (keyName (currentKey), KEY_END);
@@ -218,7 +218,7 @@ static int elektraYajlParseEnd (void * ctx)
 		printf ("elektraYajlParseEnd did not find key!\n");
 	}
 #else
-	(void)foundKey; // foundKey is not used, but lookup is needed
+	(void) foundKey; // foundKey is not used, but lookup is needed
 #endif
 
 	keyDel (lookupKey);
@@ -228,7 +228,7 @@ static int elektraYajlParseEnd (void * ctx)
 
 static int elektraYajlParseStartArray (void * ctx)
 {
-	KeySet * ks = (KeySet *)ctx;
+	KeySet * ks = (KeySet *) ctx;
 	elektraYajlIncrementArrayEntry (ks);
 
 	Key * currentKey = ksCurrent (ks);
@@ -344,7 +344,7 @@ int elektraYajlGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 
 	while (!done)
 	{
-		yajl_size_type rd = fread ((void *)fileData, 1, sizeof (fileData) - 1, fileHandle);
+		yajl_size_type rd = fread ((void *) fileData, 1, sizeof (fileData) - 1, fileHandle);
 		if (rd == 0)
 		{
 			if (!feof (fileHandle))
@@ -378,7 +378,7 @@ int elektraYajlGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 		if (test_status)
 		{
 			unsigned char * str = yajl_get_error (hand, 1, fileData, rd);
-			ELEKTRA_SET_ERROR (77, parentKey, (char *)str);
+			ELEKTRA_SET_ERROR (77, parentKey, (char *) str);
 			yajl_free_error (hand, str);
 			yajl_free (hand);
 			fclose (fileHandle);

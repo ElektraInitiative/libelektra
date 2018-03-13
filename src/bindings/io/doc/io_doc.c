@@ -302,7 +302,7 @@ typedef struct DocBindingData
 {
 	// For this example let's assume handle is passed as argument
 	ELEKTRA_NOT_NULL (handle->data);
-	ElektraIoFdOperation * fdOp = (ElektraIoFdOperation *)handle->data;
+	ElektraIoFdOperation * fdOp = (ElektraIoFdOperation *) handle->data;
 
 	// Convert bitmask to Elekta's flags
 	elektraIoFdGetCallback (fdOp) (fdOp, someBitMaskToElektraIoFlags (bitmask));
@@ -319,8 +319,8 @@ typedef struct DocBindingData
 {
 	// For this example let's assume handle was passed as argument
 	ELEKTRA_NOT_NULL (handle->data);
-	ElektraIoTimerOperation * timerOp = (ElektraIoTimerOperation *)handle->data;
-	DocOperationData * operationData = (DocOperationData *)elektraIoTimerGetBindingData (timerOp);
+	ElektraIoTimerOperation * timerOp = (ElektraIoTimerOperation *) handle->data;
+	DocOperationData * operationData = (DocOperationData *) elektraIoTimerGetBindingData (timerOp);
 
 	elektraIoTimerGetCallback (timerOp) (timerOp);
 }
@@ -336,8 +336,8 @@ typedef struct DocBindingData
 {
 	// For this example let's assume handle was passed as argument
 	ELEKTRA_NOT_NULL (handle->data);
-	ElektraIoIdleOperation * idleOp = (ElektraIoIdleOperation *)handle->data;
-	DocOperationData * operationData = (DocOperationData *)elektraIoIdleGetBindingData (idleOp);
+	ElektraIoIdleOperation * idleOp = (ElektraIoIdleOperation *) handle->data;
+	DocOperationData * operationData = (DocOperationData *) elektraIoIdleGetBindingData (idleOp);
 
 	elektraIoIdleGetCallback (idleOp) (idleOp);
 }
@@ -349,7 +349,7 @@ typedef struct DocBindingData
 /*static*/ int ioDocBindingUpdateFd (ElektraIoFdOperation * fdOp)
 {
 	ELEKTRA_NOT_NULL (elektraIoFdGetBindingData (fdOp));
-	DocOperationData * operationData = (DocOperationData *)elektraIoFdGetBindingData (fdOp);
+	DocOperationData * operationData = (DocOperationData *) elektraIoFdGetBindingData (fdOp);
 
 	// Based on elektraIoFdIsEnabled() enable or disable the operation
 	// Based on elektraIoFdGetFlags() set the flag bitmask (will need conversion)
@@ -396,7 +396,7 @@ typedef struct DocBindingData
 {
 	ELEKTRA_NOT_NULL (elektraIoFdGetBindingData (fdOp));
 	//! [kdbio operation getdata]
-	DocOperationData * operationData = (DocOperationData *)elektraIoFdGetBindingData (fdOp);
+	DocOperationData * operationData = (DocOperationData *) elektraIoFdGetBindingData (fdOp);
 	//! [kdbio operation getdata]
 
 	// Stop polling of the file descriptor and free data afterwards
@@ -413,7 +413,7 @@ typedef struct DocBindingData
 /*static*/ int ioDocBindingUpdateTimer (ElektraIoTimerOperation * timerOp)
 {
 	ELEKTRA_NOT_NULL (elektraIoTimerGetBindingData (timerOp));
-	DocOperationData * operationData = (DocOperationData *)elektraIoTimerGetBindingData (timerOp);
+	DocOperationData * operationData = (DocOperationData *) elektraIoTimerGetBindingData (timerOp);
 
 	// Based on elektraIoTimerIsEnabled (timerOp) enable or disable the operation
 	// Based on elektraIoTimerGetInterval (timerOp) change the timer interval
@@ -457,7 +457,7 @@ typedef struct DocBindingData
 /*static*/ int ioDocBindingRemoveTimer (ElektraIoTimerOperation * timerOp)
 {
 	ELEKTRA_NOT_NULL (elektraIoTimerGetBindingData (timerOp));
-	DocOperationData * operationData = (DocOperationData *)elektraIoTimerGetBindingData (timerOp);
+	DocOperationData * operationData = (DocOperationData *) elektraIoTimerGetBindingData (timerOp);
 
 	// Stop polling of the file descriptor and free data afterwards
 	// someIoLibStopTimer (operationData->handle);
@@ -473,7 +473,7 @@ typedef struct DocBindingData
 /*static*/ int ioDocBindingUpdateIdle (ElektraIoIdleOperation * idleOp)
 {
 	ELEKTRA_NOT_NULL (elektraIoIdleGetBindingData (idleOp));
-	DocOperationData * operationData = (DocOperationData *)elektraIoIdleGetBindingData (idleOp);
+	DocOperationData * operationData = (DocOperationData *) elektraIoIdleGetBindingData (idleOp);
 
 	// Based on elektraIoIdleIsEnabled (idleOp) enable or disable the operation
 	// someIoLibUpdateIdle (operationData->handle, elektraIoIdleIsEnabled (idleOp));
@@ -515,7 +515,7 @@ typedef struct DocBindingData
 /*static*/ int ioDocBindingRemoveIdle (ElektraIoIdleOperation * idleOp)
 {
 	ELEKTRA_NOT_NULL (elektraIoIdleGetBindingData (idleOp));
-	DocOperationData * operationData = (DocOperationData *)elektraIoIdleGetBindingData (idleOp);
+	DocOperationData * operationData = (DocOperationData *) elektraIoIdleGetBindingData (idleOp);
 
 	// Stop polling of the file descriptor and free data afterwards
 	// someIoLibStopIdle (operationData->handle);

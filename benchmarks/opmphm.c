@@ -303,7 +303,7 @@ static void benchmarkMapping (void)
 					// OPMPHM
 					OpmphmInit init;
 					init.getName = elektraGetString;
-					init.data = (void **)(ks->array);
+					init.data = (void **) (ks->array);
 // OPMPHM
 #ifdef USE_OPENMP
 					threadI = omp_get_thread_num ();
@@ -589,7 +589,7 @@ static void benchmarkMappingOpt (void)
 				// OPMPHM
 				OpmphmInit init;
 				init.getName = elektraGetString;
-				init.data = (void **)(ks->array);
+				init.data = (void **) (ks->array);
 // OPMPHM
 #ifdef USE_OPENMP
 				threadI = omp_get_thread_num ();
@@ -852,7 +852,7 @@ static void benchmarkMappingAllSeeds (void)
 			// OPMPHM
 			OpmphmInit init;
 			init.getName = elektraGetString;
-			init.data = (void **)(ks->array);
+			init.data = (void **) (ks->array);
 			// OPMPHM
 
 #ifdef USE_OPENMP
@@ -934,7 +934,7 @@ static void benchmarkMappingAllSeeds (void)
 		{
 			sum += results[nI * maxMappings + mappingI];
 		}
-		if (sum != (size_t)endSeed - startSeed + 1)
+		if (sum != (size_t) endSeed - startSeed + 1)
 		{
 			printExit ("benchmarkSeedRangeMappingCount: results sanity check failed");
 		}
@@ -1140,7 +1140,7 @@ static FILE * openOutFileWithRPartitePostfix (const char * name, uint8_t r)
 
 static const char * elektraGetString (void * data)
 {
-	return keyName ((Key *)data);
+	return keyName ((Key *) data);
 }
 
 /**

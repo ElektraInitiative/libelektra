@@ -45,7 +45,7 @@
 
 /* BSDI has this functionality, but its not defined */
 #if !defined(RTLD_NEXT)
-#define RTLD_NEXT ((void *)-1L)
+#define RTLD_NEXT ((void *) -1L)
 #endif
 
 using namespace std;

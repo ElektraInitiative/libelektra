@@ -87,7 +87,7 @@ size_t elektraParseToken (char ** token, const char * line)
 		i++;
 
 	size_t tokenSize = i - start + 1;
-	*token = (char *)elektraMalloc (tokenSize);
+	*token = (char *) elektraMalloc (tokenSize);
 	strncpy (*token, line + start, tokenSize);
 	(*token)[tokenSize - 1] = '\0';
 

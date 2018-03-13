@@ -205,7 +205,7 @@ static CondResult evalCondition (const Key * curKey, const char * leftSide, Comp
 				result = ERROR;
 				goto Cleanup;
 			}
-			if (elektraRealloc ((void **)&compareTo, endPos - rightSide) < 0)
+			if (elektraRealloc ((void **) &compareTo, endPos - rightSide) < 0)
 			{
 				ELEKTRA_SET_ERROR (87, parentKey, "Out of memory");
 				result = ERROR;
@@ -224,7 +224,7 @@ static CondResult evalCondition (const Key * curKey, const char * leftSide, Comp
 			else
 				len = elektraStrLen (rightSide);
 
-			if (elektraRealloc ((void **)&lookupName, len) < 0)
+			if (elektraRealloc ((void **) &lookupName, len) < 0)
 			{
 				ELEKTRA_SET_ERROR (87, parentKey, "Out of memory");
 				result = ERROR;
@@ -248,7 +248,7 @@ static CondResult evalCondition (const Key * curKey, const char * leftSide, Comp
 				result = FALSE;
 				goto Cleanup;
 			}
-			if (elektraRealloc ((void **)&compareTo, keyGetValueSize (key)) < 0)
+			if (elektraRealloc ((void **) &compareTo, keyGetValueSize (key)) < 0)
 			{
 				ELEKTRA_SET_ERROR (87, parentKey, "Out of memory");
 				result = ERROR;
@@ -264,7 +264,7 @@ static CondResult evalCondition (const Key * curKey, const char * leftSide, Comp
 	else
 		len = elektraStrLen (leftSide);
 
-	if (elektraRealloc ((void **)&lookupName, len) < 0)
+	if (elektraRealloc ((void **) &lookupName, len) < 0)
 	{
 		ELEKTRA_SET_ERROR (87, parentKey, "Out of memory");
 		result = ERROR;
@@ -383,7 +383,7 @@ static char * condition2cmpOp (const char * condition, Comparator * cmpOp)
 	}
 	else
 	{
-		char * ptr = (char *)condition;
+		char * ptr = (char *) condition;
 		while (isspace (*ptr) && *ptr != '!' && *ptr)
 		{
 			++ptr;
@@ -423,7 +423,7 @@ static CondResult parseSingleCondition (const Key * key, const char * condition,
 	}
 	unsigned long startPos = 0;
 	unsigned long endPos = 0;
-	char * ptr = (char *)condition;
+	char * ptr = (char *) condition;
 	int firstNot = 1;
 	if (*ptr == '!')
 	{
@@ -466,7 +466,7 @@ static CondResult parseSingleCondition (const Key * key, const char * condition,
 		++ptr;
 		++startPos;
 	}
-	ptr = (char *)condition + (elektraStrLen (condition) - 2);
+	ptr = (char *) condition + (elektraStrLen (condition) - 2);
 	while (isspace (*ptr))
 	{
 		--ptr;
@@ -902,12 +902,12 @@ int elektraConditionalsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned EL
 	CondResult ret = FALSE;
 	while ((cur = ksNext (returned)) != NULL)
 	{
-		Key * conditionMeta = (Key *)keyGetMeta (cur, "check/condition");
-		Key * assignMeta = (Key *)keyGetMeta (cur, "assign/condition");
-		Key * suffixList = (Key *)keyGetMeta (cur, "condition/validsuffix");
-		Key * anyConditionMeta = (Key *)keyGetMeta (cur, "check/condition/any");
-		Key * allConditionMeta = (Key *)keyGetMeta (cur, "check/condition/all");
-		Key * noneConditionMeta = (Key *)keyGetMeta (cur, "check/condition/none");
+		Key * conditionMeta = (Key *) keyGetMeta (cur, "check/condition");
+		Key * assignMeta = (Key *) keyGetMeta (cur, "assign/condition");
+		Key * suffixList = (Key *) keyGetMeta (cur, "condition/validsuffix");
+		Key * anyConditionMeta = (Key *) keyGetMeta (cur, "check/condition/any");
+		Key * allConditionMeta = (Key *) keyGetMeta (cur, "check/condition/all");
+		Key * noneConditionMeta = (Key *) keyGetMeta (cur, "check/condition/none");
 
 		if (conditionMeta)
 		{
@@ -986,12 +986,12 @@ int elektraConditionalsSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned EL
 	CondResult ret = FALSE;
 	while ((cur = ksNext (returned)) != NULL)
 	{
-		Key * conditionMeta = (Key *)keyGetMeta (cur, "check/condition");
-		Key * assignMeta = (Key *)keyGetMeta (cur, "assign/condition");
-		Key * suffixList = (Key *)keyGetMeta (cur, "condition/validsuffix");
-		Key * anyConditionMeta = (Key *)keyGetMeta (cur, "check/condition/any");
-		Key * allConditionMeta = (Key *)keyGetMeta (cur, "check/condition/all");
-		Key * noneConditionMeta = (Key *)keyGetMeta (cur, "check/condition/none");
+		Key * conditionMeta = (Key *) keyGetMeta (cur, "check/condition");
+		Key * assignMeta = (Key *) keyGetMeta (cur, "assign/condition");
+		Key * suffixList = (Key *) keyGetMeta (cur, "condition/validsuffix");
+		Key * anyConditionMeta = (Key *) keyGetMeta (cur, "check/condition/any");
+		Key * allConditionMeta = (Key *) keyGetMeta (cur, "check/condition/all");
+		Key * noneConditionMeta = (Key *) keyGetMeta (cur, "check/condition/none");
 
 		if (conditionMeta)
 		{

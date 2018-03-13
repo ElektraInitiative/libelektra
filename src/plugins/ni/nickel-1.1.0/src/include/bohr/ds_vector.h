@@ -91,11 +91,11 @@ typedef struct Ds_vector
  */
 Ds_VECTOR_INLINE int Ds_InitVector (Ds_vector * restrict v, size_t cap)
 {
-	*v = (Ds_vector)Ds_VECTOR_INIT;
+	*v = (Ds_vector) Ds_VECTOR_INIT;
 
 	if (cap > 0)
 	{
-		if (!(v->buf = (Ds_VECTOR_TYPE *)elektraMalloc (cap * sizeof (Ds_VECTOR_TYPE)))) return 0;
+		if (!(v->buf = (Ds_VECTOR_TYPE *) elektraMalloc (cap * sizeof (Ds_VECTOR_TYPE)))) return 0;
 
 		v->cap = cap;
 	}
@@ -111,7 +111,7 @@ Ds_VECTOR_INLINE void Ds_FreeVector (Ds_vector * restrict v)
 	{
 		elektraFree (v->buf);
 	}
-	*v = (Ds_vector)Ds_VECTOR_INIT;
+	*v = (Ds_vector) Ds_VECTOR_INIT;
 }
 
 /* Inserts items somewhere into the Ds_vector.  pos is the 0-based offset to
@@ -137,7 +137,7 @@ Ds_VECTOR_INLINE int Ds_InsertVectorItems (Ds_vector * restrict v, const Ds_VECT
 	if (new_cap > v->cap)
 	{
 		Ds_VECTOR_TYPE * new_buf;
-		if (!(new_buf = (Ds_VECTOR_TYPE *)realloc (v->buf, new_cap * sizeof (Ds_VECTOR_TYPE))))
+		if (!(new_buf = (Ds_VECTOR_TYPE *) realloc (v->buf, new_cap * sizeof (Ds_VECTOR_TYPE))))
 		{
 			return 0;
 		}
@@ -182,7 +182,7 @@ Ds_VECTOR_INLINE int Ds_ResizeVector (Ds_vector * restrict v, size_t cap)
 	{
 		Ds_VECTOR_TYPE * new_buf;
 
-		if (!(new_buf = (Ds_VECTOR_TYPE *)realloc (v->buf, cap * sizeof (Ds_VECTOR_TYPE))))
+		if (!(new_buf = (Ds_VECTOR_TYPE *) realloc (v->buf, cap * sizeof (Ds_VECTOR_TYPE))))
 		{
 			return 0;
 		}

@@ -77,7 +77,7 @@ static int Python_AppendToSysPath (const char * path)
 {
 	if (path == nullptr) return 0;
 
-	PyObject * sysPath = PySys_GetObject ((char *)"path");
+	PyObject * sysPath = PySys_GetObject ((char *) "path");
 	PyObject * pyPath = PyUnicode_FromString (path);
 	PyList_Append (sysPath, pyPath);
 	Py_DECREF (pyPath);

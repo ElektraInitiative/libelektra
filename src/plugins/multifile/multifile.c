@@ -114,7 +114,7 @@ static int elektraResolveFilename (Key * parentKey, ElektraResolveTempfile tmpFi
 	}
 	ElektraResolved * resolved = NULL;
 	typedef ElektraResolved * (*resolveFileFunc) (elektraNamespace, const char *, ElektraResolveTempfile, Key *);
-	resolveFileFunc resolveFunc = *(resolveFileFunc *)elektraInvokeGetFunction (handle, "filename");
+	resolveFileFunc resolveFunc = *(resolveFileFunc *) elektraInvokeGetFunction (handle, "filename");
 
 	if (!resolveFunc)
 	{
@@ -123,7 +123,7 @@ static int elektraResolveFilename (Key * parentKey, ElektraResolveTempfile tmpFi
 	}
 
 	typedef void (*freeHandleFunc) (ElektraResolved *);
-	freeHandleFunc freeHandle = *(freeHandleFunc *)elektraInvokeGetFunction (handle, "freeHandle");
+	freeHandleFunc freeHandle = *(freeHandleFunc *) elektraInvokeGetFunction (handle, "freeHandle");
 
 	if (!freeHandle)
 	{
@@ -184,7 +184,7 @@ static void closeBackends (KeySet * b)
 	Key * k;
 	while ((k = ksNext (b)) != NULL)
 	{
-		SingleConfig * s = *(SingleConfig **)keyValue (k);
+		SingleConfig * s = *(SingleConfig **) keyValue (k);
 		// fprintf (stderr, "closing backend %s:(%s)\n", s->parentString, s->fullPath);
 		closeBackend (s);
 	}
@@ -325,7 +325,7 @@ static Codes updateFilesRecursive (MultiConfig * mc, KeySet * found, Key * paren
 	Codes rc = NOUPDATE;
 	char * dirs[2];
 	dirs[0] = mc->directory;
-	dirs[1] = (void *)NULL;
+	dirs[1] = (void *) NULL;
 	FTS * fts = fts_open (dirs, FTS_COMFOLLOW | FTS_NOCHDIR, NULL);
 	if (fts)
 	{
@@ -480,7 +480,7 @@ static Codes updateFiles (MultiConfig * mc, KeySet * returned, Key * parentKey)
 	{
 		if (ksLookup (mc->childBackends, c, KDB_O_POP))
 		{
-			SingleConfig * s = *(SingleConfig **)keyValue (c);
+			SingleConfig * s = *(SingleConfig **) keyValue (c);
 			keySetName (parentKey, s->parentString);
 			keySetString (parentKey, s->fullPath);
 			int r = resolverGet (s, returned, parentKey);
@@ -534,7 +534,7 @@ static Codes doGetStorage (MultiConfig * mc, Key * parentKey)
 	Key * k;
 	while ((k = ksNext (mc->childBackends)) != NULL)
 	{
-		SingleConfig * s = *(SingleConfig **)keyValue (k);
+		SingleConfig * s = *(SingleConfig **) keyValue (k);
 		if (s->rcResolver != SUCCESS) continue;
 		keySetName (parentKey, s->parentString);
 		keySetString (parentKey, s->fullPath);
@@ -566,7 +566,7 @@ static void fillReturned (MultiConfig * mc, KeySet * returned)
 	Key * k;
 	while ((k = ksNext (mc->childBackends)) != NULL)
 	{
-		SingleConfig * s = *(SingleConfig **)keyValue (k);
+		SingleConfig * s = *(SingleConfig **) keyValue (k);
 		ksAppend (returned, s->ks);
 	}
 	ksRewind (returned);
@@ -646,7 +646,7 @@ static Codes resolverSet (MultiConfig * mc, Key * parentKey)
 	Codes rc = NOUPDATE;
 	while ((k = ksNext (mc->childBackends)) != NULL)
 	{
-		SingleConfig * s = *(SingleConfig **)keyValue (k);
+		SingleConfig * s = *(SingleConfig **) keyValue (k);
 		if (s->rcResolver == NOUPDATE)
 		{
 			// fprintf (stderr, "SKIPPING %s:(%s)\n", s->parentString, s->fullPath);
@@ -687,7 +687,7 @@ static Codes doSetStorage (MultiConfig * mc, Key * parentKey)
 	Key * k;
 	while ((k = ksNext (mc->childBackends)) != NULL)
 	{
-		SingleConfig * s = *(SingleConfig **)keyValue (k);
+		SingleConfig * s = *(SingleConfig **) keyValue (k);
 		if (s->rcResolver == EMPTY)
 		{
 			rc = SUCCESS;
@@ -723,7 +723,7 @@ static Codes doCommit (MultiConfig * mc, Key * parentKey)
 	Key * k;
 	while ((k = ksNext (mc->childBackends)) != NULL)
 	{
-		SingleConfig * s = *(SingleConfig **)keyValue (k);
+		SingleConfig * s = *(SingleConfig **) keyValue (k);
 		if (s->rcStorage == EMPTY)
 		{
 			unlink (s->fullPath);
@@ -786,7 +786,7 @@ static void flagUpdateBackends (MultiConfig * mc, KeySet * returned)
 	Key * k;
 	while ((k = ksNext (mc->childBackends)) != NULL)
 	{
-		SingleConfig * s = *(SingleConfig **)keyValue (k);
+		SingleConfig * s = *(SingleConfig **) keyValue (k);
 		Key * cutKey = keyNew (s->parentString, KEY_END);
 		KeySet * cutKS = ksCut (returned, cutKey);
 		if (ksGetSize (cutKS) == 0)
@@ -863,7 +863,7 @@ int elektraMultifileError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 	Key * initialParent = keyDup (parentKey);
 	while ((key = ksNext (mc->childBackends)) != NULL)
 	{
-		SingleConfig * s = *(SingleConfig **)keyValue (key);
+		SingleConfig * s = *(SingleConfig **) keyValue (key);
 		Plugin * resolver = s->resolver;
 		keySetName (parentKey, s->parentString);
 		keySetString (parentKey, s->fullPath);

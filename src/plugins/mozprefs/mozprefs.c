@@ -112,7 +112,7 @@ int elektraMozprefsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key *
 		{
 			fseek (fp, ((len - 1) * (-1)), SEEK_CUR);
 			len *= 2;
-			elektraRealloc ((void **)&buffer, len * sizeof (char));
+			elektraRealloc ((void **) &buffer, len * sizeof (char));
 			continue;
 		}
 		else
@@ -142,7 +142,7 @@ int elektraMozprefsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key *
 static char * keyNameToPrefName (const char * prefName)
 {
 	char * buffer = elektraCalloc (strlen (prefName) + 1);
-	char * src = (char *)prefName;
+	char * src = (char *) prefName;
 	char * dst = buffer;
 	unsigned short flag = 0;
 	while (*src)
@@ -208,7 +208,7 @@ static char * prefArgToString (const Key * key)
 
 static void writeKey (FILE * fp, const Key * parentKey, const Key * key)
 {
-	char * prefName = (char *)keyName (key) + strlen (keyName (parentKey)) + 1; // skip parentKey name + '/'
+	char * prefName = (char *) keyName (key) + strlen (keyName (parentKey)) + 1; // skip parentKey name + '/'
 	unsigned short flag = 0;
 	PrefType pref = PREF;
 	for (; pref < PREF_END; ++pref)

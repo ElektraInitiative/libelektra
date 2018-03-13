@@ -191,7 +191,7 @@ int elektraJniOpen (Plugin * handle, Key * errorKey)
 	}
 	else
 	{
-		option = (char *)keyString (k);
+		option = (char *) keyString (k);
 	}
 
 	k = ksLookupByName (config, "/ignore", 0);
@@ -214,7 +214,7 @@ int elektraJniOpen (Plugin * handle, Key * errorKey)
 	vmArgs.options = options;
 	vmArgs.ignoreUnrecognized = ign;
 
-	jint res = JNI_CreateJavaVM (&data->jvm, (void **)&data->env, (void **)&vmArgs);
+	jint res = JNI_CreateJavaVM (&data->jvm, (void **) &data->env, (void **) &vmArgs);
 	elektraFree (classpath);
 	if (res < 0)
 	{

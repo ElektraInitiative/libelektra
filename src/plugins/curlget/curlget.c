@@ -90,7 +90,7 @@ static int elektraResolveFilename (Key * parentKey, ElektraResolveTempfile tmpFi
 	}
 	ElektraResolved * resolved = NULL;
 	typedef ElektraResolved * (*resolveFileFunc) (elektraNamespace, const char *, ElektraResolveTempfile, Key *);
-	resolveFileFunc resolveFunc = *(resolveFileFunc *)elektraInvokeGetFunction (handle, "filename");
+	resolveFileFunc resolveFunc = *(resolveFileFunc *) elektraInvokeGetFunction (handle, "filename");
 
 	if (!resolveFunc)
 	{
@@ -99,7 +99,7 @@ static int elektraResolveFilename (Key * parentKey, ElektraResolveTempfile tmpFi
 	}
 
 	typedef void (*freeHandleFunc) (ElektraResolved *);
-	freeHandleFunc freeHandle = *(freeHandleFunc *)elektraInvokeGetFunction (handle, "freeHandle");
+	freeHandleFunc freeHandle = *(freeHandleFunc *) elektraInvokeGetFunction (handle, "freeHandle");
 
 	if (!freeHandle)
 	{
@@ -498,8 +498,8 @@ static FILE * fetchFile (Data * data, int fd)
 	}
 	if (data->getProto == PROTO_HTTPS || data->getProto == PROTO_FTPS || data->useSSL)
 	{
-		curl_easy_setopt (curl, CURLOPT_SSL_VERIFYPEER, (long)data->sslVerifyPeer);
-		curl_easy_setopt (curl, CURLOPT_SSL_VERIFYHOST, (long)data->sslVerifyHost);
+		curl_easy_setopt (curl, CURLOPT_SSL_VERIFYPEER, (long) data->sslVerifyPeer);
+		curl_easy_setopt (curl, CURLOPT_SSL_VERIFYHOST, (long) data->sslVerifyHost);
 		curl_easy_setopt (curl, CURLOPT_USE_SSL, CURLUSESSL_ALL);
 	}
 	else
@@ -538,7 +538,7 @@ static int moveFile (const char * source, const char * dest)
 	size_t bytesRead = 0;
 	while (bytesRead < fileSize)
 	{
-		size_t bytes = fread (buffer + bytesRead, 1, (size_t)fileSize, inFile);
+		size_t bytes = fread (buffer + bytesRead, 1, (size_t) fileSize, inFile);
 		if (bytes == 0) break;
 		bytesRead += bytes;
 	}
@@ -660,7 +660,7 @@ int elektraCurlgetGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 	}
 	else if (data->tmpFile)
 	{
-		if (strncmp ((char *)data->lastHash, (char *)hash, MD5_DIGEST_LENGTH))
+		if (strncmp ((char *) data->lastHash, (char *) hash, MD5_DIGEST_LENGTH))
 		{
 			// remote file has changed
 			// if preferRemote is set: replace local copy with
@@ -714,7 +714,7 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 			fclose (fp);
 			unsigned char * hash = hashBuffer (buffer, size);
 			++(data->setPhase);
-			if (strncmp ((char *)data->lastHash, (char *)hash, MD5_DIGEST_LENGTH))
+			if (strncmp ((char *) data->lastHash, (char *) hash, MD5_DIGEST_LENGTH))
 			{
 				ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CONFLICT, parentKey, "remote file has changed");
 				retval = -1;
@@ -784,8 +784,8 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 			{
 				if (data->putProto == PROTO_HTTPS || data->useSSL)
 				{
-					curl_easy_setopt (curl, CURLOPT_SSL_VERIFYPEER, (long)data->sslVerifyPeer);
-					curl_easy_setopt (curl, CURLOPT_SSL_VERIFYHOST, (long)data->sslVerifyHost);
+					curl_easy_setopt (curl, CURLOPT_SSL_VERIFYPEER, (long) data->sslVerifyPeer);
+					curl_easy_setopt (curl, CURLOPT_SSL_VERIFYHOST, (long) data->sslVerifyHost);
 					curl_easy_setopt (curl, CURLOPT_USE_SSL, CURLUSESSL_ALL);
 				}
 				else
@@ -823,7 +823,7 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 					curl_easy_setopt (curl, CURLOPT_UPLOAD, 1L);
 					curl_easy_setopt (curl, CURLOPT_READDATA, fp);
 					curl_easy_setopt (curl, CURLOPT_CUSTOMREQUEST, "PUT");
-					curl_easy_setopt (curl, CURLOPT_INFILESIZE_LARGE, (curl_off_t)size);
+					curl_easy_setopt (curl, CURLOPT_INFILESIZE_LARGE, (curl_off_t) size);
 					res = curl_easy_perform (curl);
 					if (res != CURLE_OK)
 					{
@@ -836,7 +836,7 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 				{
 					curl_easy_setopt (curl, CURLOPT_UPLOAD, 1L);
 					curl_easy_setopt (curl, CURLOPT_READDATA, fp);
-					curl_easy_setopt (curl, CURLOPT_INFILESIZE_LARGE, (curl_off_t)size);
+					curl_easy_setopt (curl, CURLOPT_INFILESIZE_LARGE, (curl_off_t) size);
 					res = curl_easy_perform (curl);
 					if (res != CURLE_OK)
 					{
@@ -850,8 +850,8 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 			{
 				if (data->putProto == PROTO_FTPS || data->useSSL)
 				{
-					curl_easy_setopt (curl, CURLOPT_SSL_VERIFYPEER, (long)data->sslVerifyPeer);
-					curl_easy_setopt (curl, CURLOPT_SSL_VERIFYHOST, (long)data->sslVerifyHost);
+					curl_easy_setopt (curl, CURLOPT_SSL_VERIFYPEER, (long) data->sslVerifyPeer);
+					curl_easy_setopt (curl, CURLOPT_SSL_VERIFYHOST, (long) data->sslVerifyHost);
 					curl_easy_setopt (curl, CURLOPT_USE_SSL, CURLUSESSL_ALL);
 				}
 				else
@@ -873,7 +873,7 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 				curl_easy_setopt (curl, CURLOPT_UPLOAD, 1L);
 				curl_easy_setopt (curl, CURLOPT_READDATA, fp);
 				curl_easy_setopt (curl, CURLOPT_UPLOAD, 1L);
-				curl_easy_setopt (curl, CURLOPT_INFILESIZE_LARGE, (curl_off_t)size);
+				curl_easy_setopt (curl, CURLOPT_INFILESIZE_LARGE, (curl_off_t) size);
 				res = curl_easy_perform (curl);
 				if (res != CURLE_OK)
 				{
@@ -898,7 +898,7 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 
 				curl_easy_setopt (curl, CURLOPT_UPLOAD, 1L);
 				curl_easy_setopt (curl, CURLOPT_READDATA, fp);
-				curl_easy_setopt (curl, CURLOPT_INFILESIZE_LARGE, (curl_off_t)size);
+				curl_easy_setopt (curl, CURLOPT_INFILESIZE_LARGE, (curl_off_t) size);
 				res = curl_easy_perform (curl);
 				if (res != CURLE_OK)
 				{
@@ -919,7 +919,7 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 				curl_easy_setopt (curl, CURLOPT_URL, data->uploadUrl);
 				curl_easy_setopt (curl, CURLOPT_UPLOAD, 1L);
 				curl_easy_setopt (curl, CURLOPT_READDATA, fp);
-				curl_easy_setopt (curl, CURLOPT_INFILESIZE_LARGE, (curl_off_t)size);
+				curl_easy_setopt (curl, CURLOPT_INFILESIZE_LARGE, (curl_off_t) size);
 				res = curl_easy_perform (curl);
 				if (res != CURLE_OK)
 				{

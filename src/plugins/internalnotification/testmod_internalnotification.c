@@ -69,7 +69,7 @@ static int internalnotificationRegisterInt (Plugin * plugin, Key * key, int * va
 	size_t address = getPluginFunction (plugin, "registerInt");
 
 	// Register key with plugin
-	return ((ElektraNotificationPluginRegisterInt)address) (plugin, key, variable);
+	return ((ElektraNotificationPluginRegisterInt) address) (plugin, key, variable);
 }
 
 static int internalnotificationRegisterCallback (Plugin * plugin, Key * key, ElektraNotificationChangeCallback callback)
@@ -77,7 +77,7 @@ static int internalnotificationRegisterCallback (Plugin * plugin, Key * key, Ele
 	size_t address = getPluginFunction (plugin, "registerCallback");
 
 	// Register key with plugin
-	return ((ElektraNotificationPluginRegisterCallback)address) (plugin, key, callback);
+	return ((ElektraNotificationPluginRegisterCallback) address) (plugin, key, callback);
 }
 
 static int digits (long long number)
@@ -246,7 +246,7 @@ static void test_intUpdateWithValueNotYetExceedingIntMax (void)
 		    "call to elektraInternalnotificationRegisterInt was not successful");
 
 	int exceedsInt = INT_MAX;
-	char * stringValue = convertLongLongToString ((long long)exceedsInt);
+	char * stringValue = convertLongLongToString ((long long) exceedsInt);
 	keySetString (valueKey, stringValue);
 
 
@@ -273,7 +273,7 @@ static void test_intNoUpdateWithValueExceedingIntMax (void)
 	succeed_if (internalnotificationRegisterInt (plugin, valueKey, &value) == 1,
 		    "call to elektraInternalnotificationRegisterInt was not successful");
 
-	long long exceedsInt = (long long)INT_MAX + 1;
+	long long exceedsInt = (long long) INT_MAX + 1;
 	char * stringValue = convertLongLongToString (exceedsInt);
 	keySetString (valueKey, stringValue);
 
@@ -303,7 +303,7 @@ static void test_intUpdateWithValueNotYetExceedingIntMin (void)
 		    "call to elektraInternalnotificationRegisterInt was not successful");
 
 	int exceedsInt = INT_MIN;
-	char * stringValue = convertLongLongToString ((long long)exceedsInt);
+	char * stringValue = convertLongLongToString ((long long) exceedsInt);
 	keySetString (valueKey, stringValue);
 
 
@@ -330,7 +330,7 @@ static void test_intNoUpdateWithValueExceedingIntMin (void)
 	succeed_if (internalnotificationRegisterInt (plugin, valueKey, &value) == 1,
 		    "call to elektraInternalnotificationRegisterInt was not successful");
 
-	long long exceedsInt = (long long)INT_MIN - 1;
+	long long exceedsInt = (long long) INT_MIN - 1;
 	char * stringValue = convertLongLongToString (exceedsInt);
 	keySetString (valueKey, stringValue);
 
@@ -346,8 +346,8 @@ static void test_intNoUpdateWithValueExceedingIntMin (void)
 static void test_callback (Key * key)
 {
 	callback_called = 1;
-	callback_keyValue = (char *)keyValue (key);
-	callback_keyName = (char *)keyName (key);
+	callback_keyValue = (char *) keyValue (key);
+	callback_keyName = (char *) keyName (key);
 }
 
 static void test_callbackCalledWithKey (void)

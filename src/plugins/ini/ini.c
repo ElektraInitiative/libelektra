@@ -79,7 +79,7 @@ static void flushCollectedComment (CallbackHandle * handle, Key * key)
 		}
 		ksDel (comments);
 		keyRewindMeta (handle->collectedComment);
-		while ((cur = (Key *)keyNextMeta (handle->collectedComment)) != NULL)
+		while ((cur = (Key *) keyNextMeta (handle->collectedComment)) != NULL)
 		{
 			if (!strncmp (keyName (cur), "meta/", 5)) keySetMeta (key, keyName (cur) + 5, keyString (cur));
 		}
@@ -160,7 +160,7 @@ static void setOrderNumber (Key * parentKey, Key * key)
 	const Key * orderKey = keyGetMeta (parentKey, "internal/ini/order");
 	if (orderKey != NULL)
 	{
-		char * ptr = (char *)keyString (orderKey);
+		char * ptr = (char *) keyString (orderKey);
 		++ptr; // skip #
 		while (*ptr == '_')
 		{
@@ -206,8 +206,8 @@ static void setSubOrderNumber (Key * key, const char * oldOrder)
 
 static void iniBomHandler (void * vhandle, short BOM)
 {
-	CallbackHandle * handle = (CallbackHandle *)vhandle;
-	IniPluginConfig * pluginConfig = (IniPluginConfig *)handle->pluginConfig;
+	CallbackHandle * handle = (CallbackHandle *) vhandle;
+	IniPluginConfig * pluginConfig = (IniPluginConfig *) handle->pluginConfig;
 	if (BOM)
 	{
 		pluginConfig->BOM = 1;
@@ -341,7 +341,7 @@ static void insertKeyIntoKeySet (Key * parentKey, Key * key, KeySet * ks)
 
 static int iniKeyToElektraKey (void * vhandle, const char * section, const char * name, const char * value, unsigned short lineContinuation)
 {
-	CallbackHandle * handle = (CallbackHandle *)vhandle;
+	CallbackHandle * handle = (CallbackHandle *) vhandle;
 	if ((!section || *section == '\0') && (!name || *name == '\0'))
 	{
 		Key * rootKey = keyNew (keyName (handle->parentKey), KEY_END);
@@ -441,7 +441,7 @@ static short isSectionKey (Key * key)
 
 static int iniSectionToElektraKey (void * vhandle, const char * section)
 {
-	CallbackHandle * handle = (CallbackHandle *)vhandle;
+	CallbackHandle * handle = (CallbackHandle *) vhandle;
 	Key * appendKey = keyNew (keyName (handle->parentKey), KEY_END);
 	createUnescapedKey (appendKey, section);
 	Key * existingKey = NULL;
@@ -462,7 +462,7 @@ static int iniSectionToElektraKey (void * vhandle, const char * section)
 
 static int iniCommentToMeta (void * vhandle, const char * comment)
 {
-	CallbackHandle * handle = (CallbackHandle *)vhandle;
+	CallbackHandle * handle = (CallbackHandle *) vhandle;
 	if (!handle->collectedComment) handle->collectedComment = keyNew ("/comments", KEY_CASCADING_NAME, KEY_END);
 	if (strncmp (comment, "#@META ", 7))
 		elektraMetaArrayAdd (handle->collectedComment, "comments", comment);
@@ -624,7 +624,7 @@ static void outputDebug (KeySet * ks)
 		const Key * meta;
 		while ((meta = keyNextMeta (cur)) != NULL)
 		{
-			fprintf (stderr, ", %s: %s", keyName (meta), (char *)keyValue (meta));
+			fprintf (stderr, ", %s: %s", keyName (meta), (char *) keyValue (meta));
 		}
 		fprintf (stderr, "\n");
 	}
@@ -883,7 +883,7 @@ static char * getIniName (Key * section, Key * key)
 		if (!strcmp (keyName (section), strchr (keyName (key) + 1, '/'))) return strdup (keyBaseName (key));
 	}
 	int slashCount = 0;
-	char * slashCounter = (char *)keyName (key);
+	char * slashCounter = (char *) keyName (key);
 	while (*slashCounter)
 	{
 		if (*slashCounter == '/') ++slashCount;
@@ -895,16 +895,16 @@ static char * getIniName (Key * section, Key * key)
 	char * ptr = NULL;
 	if (!strcmp (keyName (section), "/"))
 	{
-		ptr = (char *)keyName (key);
+		ptr = (char *) keyName (key);
 	}
 	else if (keyName (section)[0] == '/' && keyName (key)[0] != '/')
 	{
 		size_t offset = strchr (keyName (key) + 1, '/') - keyName (key);
-		ptr = (char *)keyName (key) + strlen (keyName (section)) + offset + 1;
+		ptr = (char *) keyName (key) + strlen (keyName (section)) + offset + 1;
 	}
 	else
 	{
-		ptr = (char *)keyName (key) + strlen (keyName (section)) + 1;
+		ptr = (char *) keyName (key) + strlen (keyName (section)) + 1;
 	}
 
 	size_t size = 0;
@@ -1104,8 +1104,8 @@ void insertIntoKS (Key * parentKey, Key * cur, KeySet * newKS, IniPluginConfig *
 
 static int iniCmpOrder (const void * a, const void * b)
 {
-	const Key * ka = (*(const Key **)a);
-	const Key * kb = (*(const Key **)b);
+	const Key * ka = (*(const Key **) a);
+	const Key * kb = (*(const Key **) b);
 
 	if (!ka && !kb) return 0;
 	if (ka && !kb) return 1;
@@ -1138,7 +1138,7 @@ static int iniCmpOrder (const void * a, const void * b)
 // test if the keyname contains a reserved character and needs to be quoted
 static int keyContainsSpecialCharacter (const char * str)
 {
-	char * ptr = (char *)str;
+	char * ptr = (char *) str;
 	if (isspace (*ptr) || (isspace (*(ptr + strlen (str) - 1)))) return 1;
 	if (*ptr == '#' || *ptr == ';') return 1;
 	if (*ptr == '[') return 1;
@@ -1156,7 +1156,7 @@ static int keyContainsSpecialCharacter (const char * str)
 // test if the keyvalue contains a reserved character and needs to be quoted
 static int valueContainsSpecialCharacter (const char * str)
 {
-	char * ptr = (char *)str;
+	char * ptr = (char *) str;
 	if (isspace (*ptr) || (isspace (*(ptr + strlen (str) - 1)))) return 1;
 	if (*ptr == '#' || *ptr == ';') return 1;
 	while (*ptr)
@@ -1175,7 +1175,7 @@ static void iniWriteMeta (FILE * fh, Key * key)
 	keyRewindMeta (key);
 	while (keyNextMeta (key) != NULL)
 	{
-		Key * meta = (Key *)keyCurrentMeta (key);
+		Key * meta = (Key *) keyCurrentMeta (key);
 		const char * name = keyName (meta);
 		if (strncmp (name, "internal/", 9) && strcmp (name, "internal/ini/section") && strncmp (name, "comment", 7) &&
 		    strncmp (name, "warnings/", 9) && strncmp (name, "error/", 6) && strcmp (name, "warnings") && strcmp (name, "error"))

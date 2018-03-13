@@ -490,7 +490,7 @@ static int listRemovePlugin (Plugin * list, Plugin * plugin)
 
 		if (handle)
 		{
-			Plugin * handleValue = (*(Plugin **)keyValue (handle));
+			Plugin * handleValue = (*(Plugin **) keyValue (handle));
 			if (handleValue == plugin)
 			{
 				// Remove plugin configuration
@@ -755,7 +755,7 @@ int elektraNotificationRegisterInt (KDB * kdb, Key * key, int * variable)
 	}
 
 	// Call register function
-	ElektraNotificationPluginRegisterInt registerFunc = (ElektraNotificationPluginRegisterInt)func;
+	ElektraNotificationPluginRegisterInt registerFunc = (ElektraNotificationPluginRegisterInt) func;
 	return registerFunc (notificationPlugin, key, variable);
 }
 
@@ -776,6 +776,6 @@ int elektraNotificationRegisterCallback (KDB * kdb, Key * key, ElektraNotificati
 	}
 
 	// Call register function
-	ElektraNotificationPluginRegisterCallback registerFunc = (ElektraNotificationPluginRegisterCallback)func;
+	ElektraNotificationPluginRegisterCallback registerFunc = (ElektraNotificationPluginRegisterCallback) func;
 	return registerFunc (notificationPlugin, key, callback);
 }

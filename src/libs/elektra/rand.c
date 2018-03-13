@@ -37,7 +37,7 @@ void elektraRand (int32_t * seed)
 	ELEKTRA_ASSERT (*seed < ELEKTRARANDMAX, "seed is equal or bigger than ELEKTRARANDMAX");
 	uint32_t lo, hi;
 	lo = 16807 * (int32_t) (*seed & 0xFFFF);
-	hi = 16807 * (int32_t) ((uint32_t)*seed >> 16);
+	hi = 16807 * (int32_t) ((uint32_t) *seed >> 16);
 	lo += (hi & 0x7FFF) << 16;
 	if (lo > ELEKTRARANDMAX)
 	{
@@ -50,7 +50,7 @@ void elektraRand (int32_t * seed)
 		lo &= ELEKTRARANDMAX;
 		++lo;
 	}
-	*seed = (int32_t)lo;
+	*seed = (int32_t) lo;
 }
 
 /**

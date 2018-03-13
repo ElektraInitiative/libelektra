@@ -42,6 +42,7 @@ NamespaceIndentation: None
 PointerAlignment: Middle
 TabWidth: 8
 MaxEmptyLinesToKeep: 2
+SpaceAfterCStyleCast: true
 SpaceBeforeAssignmentOperators: true
 SpaceBeforeParens: Always
 SpaceInEmptyParentheses: false

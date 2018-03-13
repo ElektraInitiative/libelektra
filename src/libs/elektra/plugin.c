@@ -214,7 +214,7 @@ int elektraProcessPlugins (Plugin ** plugins, KeySet * modules, KeySet * referen
 					ksDel (config);
 					return -1;
 				}
-				plugins[pluginNumber] = *(Plugin **)keyValue (lookup);
+				plugins[pluginNumber] = *(Plugin **) keyValue (lookup);
 				++plugins[pluginNumber]->refcounter;
 			}
 			elektraFree (pluginName);

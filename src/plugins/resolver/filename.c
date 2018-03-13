@@ -352,7 +352,7 @@ static void elektraResolveSystemXDGHelper (char ** filename, const char * path, 
 	size_t pathSize = elektraStrLen (path);
 	size_t filenameSize = configDirSize + pathSize + sizeof ("/") + 1;
 
-	elektraRealloc ((void **)filename, filenameSize);
+	elektraRealloc ((void **) filename, filenameSize);
 	strcpy (*filename, result);
 	strcat (*filename, "/");
 	strcat (*filename, path);
@@ -505,7 +505,7 @@ static char * elektraGetCwd (Key * warningsKey)
 
 			// try to double the space
 			size *= 2;
-			elektraRealloc ((void **)&cwd, size);
+			elektraRealloc ((void **) &cwd, size);
 			if (cwd == NULL)
 			{
 				ELEKTRA_ADD_WARNINGF (83, warningsKey, "could not realloc for getcwd size %d, defaulting to /", size);

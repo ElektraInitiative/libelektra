@@ -12,7 +12,7 @@
 int main (void)
 {
 	Key * k = keyNew ("user/hello", KEY_VALUE, "Hello World", KEY_END);
-	printf ("%s\n", (char *)keyValue (k));
+	printf ("%s\n", (char *) keyValue (k));
 	keyDel (k);
 
 	return 0;

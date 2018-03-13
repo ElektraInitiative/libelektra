@@ -417,7 +417,7 @@ gboolean gelektra_key_hasmeta (const GElektraKey * key, const gchar * name)
  */
 GElektraKey * gelektra_key_getmeta (const GElektraKey * key, const gchar * name)
 {
-	return gelektra_key_make ((Key *)keyGetMeta (key->key, name));
+	return gelektra_key_make ((Key *) keyGetMeta (key->key, name));
 }
 
 gint gelektra_key_copymeta (const GElektraKey * key, GElektraKey * dest, const gchar * name)
@@ -444,7 +444,7 @@ gint gelektra_key_rewindmeta (GElektraKey * key)
  */
 GElektraKey * gelektra_key_nextmeta (GElektraKey * key)
 {
-	return gelektra_key_make ((Key *)keyNextMeta (key->key));
+	return gelektra_key_make ((Key *) keyNextMeta (key->key));
 }
 
 /**
@@ -456,7 +456,7 @@ GElektraKey * gelektra_key_nextmeta (GElektraKey * key)
  */
 GElektraKey * gelektra_key_currentmeta (const GElektraKey * key)
 {
-	return gelektra_key_make ((Key *)keyCurrentMeta (key->key));
+	return gelektra_key_make ((Key *) keyCurrentMeta (key->key));
 }
 
 /* validating */

@@ -30,8 +30,8 @@ static const char * CONVERT_APPENDMODE = "convert/append";
  */
 int elektraKeyCmpOrderWrapper (const void * a, const void * b)
 {
-	const Key ** ka = (const Key **)a;
-	const Key ** kb = (const Key **)b;
+	const Key ** ka = (const Key **) a;
+	const Key ** kb = (const Key **) b;
 
 	int orderResult = elektraKeyCmpOrder (*ka, *kb);
 

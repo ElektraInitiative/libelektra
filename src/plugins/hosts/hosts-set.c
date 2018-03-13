@@ -18,7 +18,7 @@
 
 static int keyCmpOrderWrapper (const void * a, const void * b)
 {
-	return elektraKeyCmpOrder (*((const Key **)a), *((const Key **)b));
+	return elektraKeyCmpOrder (*((const Key **) a), *((const Key **) b));
 }
 
 static void writeComment (const char * spaces, const char * start, const char * comment, FILE * fp)
@@ -101,7 +101,7 @@ static void writeInlineComment (Key * key, FILE * fp)
 
 static void writeHostsEntry (Key * key, KeySet * returned, FILE * fp)
 {
-	fprintf (fp, "%s\t%s", (char *)keyValue (key), (char *)keyBaseName (key));
+	fprintf (fp, "%s\t%s", (char *) keyValue (key), (char *) keyBaseName (key));
 	/* position the cursor at the current key and
 	 * iterate over its subkeys
 	 */
@@ -111,7 +111,7 @@ static void writeHostsEntry (Key * key, KeySet * returned, FILE * fp)
 	{
 		if (keyRel (key, alias) < 1) break;
 
-		fprintf (fp, " %s", (char *)keyBaseName (alias));
+		fprintf (fp, " %s", (char *) keyBaseName (alias));
 	}
 }
 

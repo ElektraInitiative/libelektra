@@ -24,11 +24,11 @@ char * elektraLskip (char const * const text)
 	ELEKTRA_ASSERT (text != NULL, "The Parameter `text` contains `NULL` instead of a valid string.");
 
 	char const * start = text;
-	while (isspace ((unsigned char)*start))
+	while (isspace ((unsigned char) *start))
 	{
 		start++;
 	}
-	return (char *)start;
+	return (char *) start;
 }
 
 /**
@@ -67,7 +67,7 @@ char * elektraRstrip (char * const start, char ** end)
 
 	char * last = (end == NULL || *end == NULL) ? start + strlen (start) - 1 : *end;
 
-	while (start <= last && isspace ((unsigned char)*last))
+	while (start <= last && isspace ((unsigned char) *last))
 	{
 		last--;
 	}

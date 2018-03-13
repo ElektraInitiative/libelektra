@@ -90,13 +90,13 @@ static struct lineFormat getFormat (Plugin * handle)
 					{
 						// first format conversion specifier
 						// position after '%'
-						delimiterStart = (char *)&(userFormat[i]);
+						delimiterStart = (char *) &(userFormat[i]);
 					}
 					else if (numFormatSpecifier == 2)
 					{
 						// second format spec.
 						// position of '%'
-						delimiterEnd = (char *)&(userFormat[i - 1]);
+						delimiterEnd = (char *) &(userFormat[i - 1]);
 					}
 				}
 				gotPercent = 0;

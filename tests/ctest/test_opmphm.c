@@ -119,8 +119,8 @@ static void test_cyclicMultipleEdges (void)
 			OpmphmInit opmphmInit;
 			// dummy data
 			opmphmInit.getName = test_opmphm_getName;
-			opmphmInit.initSeed = (int32_t)1;
-			opmphmInit.data = (void **)1;
+			opmphmInit.initSeed = (int32_t) 1;
+			opmphmInit.data = (void **) 1;
 			// fill
 			for (size_t i = 0; i < n; ++i)
 			{
@@ -158,8 +158,8 @@ static void test_cyclicCountUpEdges (void)
 			OpmphmInit opmphmInit;
 			// dummy data
 			opmphmInit.getName = test_opmphm_getName;
-			opmphmInit.initSeed = (int32_t)1;
-			opmphmInit.data = (void **)1;
+			opmphmInit.initSeed = (int32_t) 1;
+			opmphmInit.data = (void **) 1;
 			// fill
 			uint32_t data[rUniPar];
 			for (uint8_t r = 0; r < rUniPar; ++r)
@@ -209,8 +209,8 @@ static void test_cyclicCountDownEdges (void)
 			OpmphmInit opmphmInit;
 			// dummy data
 			opmphmInit.getName = test_opmphm_getName;
-			opmphmInit.initSeed = (int32_t)1;
-			opmphmInit.data = (void **)1;
+			opmphmInit.initSeed = (int32_t) 1;
+			opmphmInit.data = (void **) 1;
 			// fill
 			int32_t data[rUniPar];
 			for (uint8_t r = 0; r < rUniPar; ++r)
@@ -233,7 +233,7 @@ static void test_cyclicCountDownEdges (void)
 					{
 						data[r] = componentSize - 1;
 					}
-				} while (data[r] == (int32_t)componentSize - 1);
+				} while (data[r] == (int32_t) componentSize - 1);
 			}
 			// check
 			succeed_if (opmphmMapping (opmphm, graph, &opmphmInit, n), "graph with cycles marked as acyclic");
@@ -268,8 +268,8 @@ static void test_acyclicDefaultOrder (void)
 			OpmphmInit opmphmInit;
 			// dummy data
 			opmphmInit.getName = test_opmphm_getName;
-			opmphmInit.initSeed = (int32_t)1;
-			opmphmInit.data = (void **)1;
+			opmphmInit.initSeed = (int32_t) 1;
+			opmphmInit.data = (void **) 1;
 			// fill
 			for (size_t i = 0; i < n; ++i)
 			{
@@ -327,8 +327,8 @@ static void test_acyclicReverseOrder (void)
 			OpmphmInit opmphmInit;
 			// dummy data
 			opmphmInit.getName = test_opmphm_getName;
-			opmphmInit.initSeed = (int32_t)1;
-			opmphmInit.data = (void **)1;
+			opmphmInit.initSeed = (int32_t) 1;
+			opmphmInit.data = (void **) 1;
 			// fill
 			for (size_t i = 0; i < n; ++i)
 			{

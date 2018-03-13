@@ -82,14 +82,14 @@ static char * createAbsolutePath (const char * path, const char * cwd)
 			pathlen = strlen (path) + strlen (pwd->pw_dir) + 2;
 			absPath = calloc (pathlen, sizeof (char));
 			snprintf (absPath, pathlen, "%s/", pwd->pw_dir);
-			pathPtr = (char *)(path + 2);
+			pathPtr = (char *) (path + 2);
 		}
 		else
 		{
 			pathlen = strlen (path) + strlen (cwd) + 2;
 			absPath = calloc (pathlen, sizeof (char));
 			snprintf (absPath, pathlen, "%s/", cwd);
-			pathPtr = (char *)path;
+			pathPtr = (char *) path;
 		}
 		canonicalizePath (absPath, pathPtr);
 		return absPath;
@@ -133,7 +133,7 @@ void init (void)
 			tmp->value = NULL;
 		else
 			tmp->value = createAbsolutePath (keyString (key), cwd);
-		tmp->oflags = (unsigned short)-1;
+		tmp->oflags = (unsigned short) -1;
 		Key * lookupKey = keyDup (key);
 		keyAddBaseName (lookupKey, "readonly");
 		Key * found = ksLookup (ks, lookupKey, 0);
@@ -149,7 +149,7 @@ void init (void)
 		found = ksLookup (ks, lookupKey, 0);
 		if (found)
 		{
-			if (tmp->value == NULL) tmp->value = (char *)genTemporaryFilename ();
+			if (tmp->value == NULL) tmp->value = (char *) genTemporaryFilename ();
 			tmp->exportKey = strdup (keyString (found));
 			keyAddBaseName (lookupKey, "plugin");
 			found = ksLookup (ks, lookupKey, 0);
@@ -227,7 +227,7 @@ static Node * resolvePathname (const char * pathname)
 			resolvedPath = calloc (strlen (pathname) + 1, sizeof (char));
 			size_t size = sizeof (resolvedPath);
 			memset (resolvedPath, 0, size);
-			canonicalizePath (resolvedPath, (char *)pathname);
+			canonicalizePath (resolvedPath, (char *) pathname);
 		}
 		Node * current = head;
 		while (current)
@@ -303,7 +303,7 @@ int open (const char * pathname, int flags, ...)
 {
 	Node * node = resolvePathname (pathname);
 	const char * newPath = NULL;
-	unsigned short newFlags = (unsigned short)-1;
+	unsigned short newFlags = (unsigned short) -1;
 	if (!node)
 	{
 		newPath = pathname;
@@ -348,7 +348,7 @@ int open64 (const char * pathname, int flags, ...)
 {
 	Node * node = resolvePathname (pathname);
 	const char * newPath = NULL;
-	unsigned short newFlags = (unsigned short)-1;
+	unsigned short newFlags = (unsigned short) -1;
 	if (!node)
 	{
 		newPath = pathname;

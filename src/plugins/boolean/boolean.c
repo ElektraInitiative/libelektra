@@ -69,7 +69,7 @@ int elektraBooleanClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_
 
 static int isTrue (const char * value, const char ** trueValues)
 {
-	char ** ptr = (char **)trueValues;
+	char ** ptr = (char **) trueValues;
 	int retVal = 0;
 	while (*ptr)
 	{
@@ -85,7 +85,7 @@ static int isTrue (const char * value, const char ** trueValues)
 
 static int isFalse (const char * value, const char ** falseValues)
 {
-	char ** ptr = (char **)falseValues;
+	char ** ptr = (char **) falseValues;
 	int retVal = 0;
 	while (*ptr)
 	{
@@ -108,8 +108,8 @@ static void normalize (Key * key, Key * parentKey, BoolData * data)
 		"FALSE", "0", "OFF", "DISABLE", "DISABLED", "NO", "NOT", NULL,
 	};
 	const char * value = keyString (key);
-	const char ** falseValues = (const char **)data->falseValues;
-	const char ** trueValues = (const char **)data->trueValues;
+	const char ** falseValues = (const char **) data->falseValues;
+	const char ** trueValues = (const char **) data->trueValues;
 	const char ** falseStrings = falseValues ? falseValues : defaultFalseValues;
 	const char ** trueStrings = trueValues ? trueValues : defaultTrueValues;
 	if (isTrue (value, trueStrings))
@@ -160,7 +160,7 @@ static void strToArray (Key * key, char *** array)
 {
 	int count = 1;
 	const char * values = keyString (key);
-	char * ptr = (char *)values;
+	char * ptr = (char *) values;
 	while (*ptr)
 	{
 		if (*ptr == ';') ++count;
@@ -228,8 +228,8 @@ static void parseConfig (KeySet * config, BoolData * data)
 		else
 			data->invalid |= WARNING;
 	}
-	data->true = (char *)trueValue;
-	data->false = (char *)falseValue;
+	data->true = (char *) trueValue;
+	data->false = (char *) falseValue;
 	Key * validTrueKey = ksLookupByName (config, "/true", 0);
 	Key * validFalseKey = ksLookupByName (config, "/false", 0);
 	if (validTrueKey)

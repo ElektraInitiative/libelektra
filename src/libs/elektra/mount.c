@@ -285,7 +285,7 @@ Plugin * elektraMountGlobalsLoadPlugin (KeySet * referencePlugins, Key * cur, Ke
 	if (refKey)
 	{
 		// plugin already loaded, just reference it
-		plugin = *(Plugin **)keyValue (refKey);
+		plugin = *(Plugin **) keyValue (refKey);
 		plugin->refcounter += 1;
 	}
 	else

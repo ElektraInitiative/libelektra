@@ -76,7 +76,7 @@ on 1 byte), but shoehorning those bytes into integers efficiently is messy.
 #define HASH_BIG_ENDIAN 0
 #endif
 
-#define hashsize(n) ((uint32_t)1 << (n))
+#define hashsize(n) ((uint32_t) 1 << (n))
 #define hashmask(n) (hashsize (n) - 1)
 #define rot(x, k) (((x) << (k)) | ((x) >> (32 - (k))))
 
@@ -214,7 +214,7 @@ static uint32_t hashword (const uint32_t * restrict k, /* the key, an array of u
 	uint32_t a, b, c;
 
 	/* Set up the internal state */
-	a = b = c = 0xdeadbeef + (((uint32_t)length) << 2) + initval;
+	a = b = c = 0xdeadbeef + (((uint32_t) length) << 2) + initval;
 
 	/*------------------------------------------------- handle most of the key */
 	while (length > 3)
@@ -339,7 +339,7 @@ static uint32_t hashlittle (const void * restrict key, size_t length, uint32_t i
 	u.ptr = key;
 	if (HASH_LITTLE_ENDIAN && ((u.i & 0x3) == 0))
 	{
-		const uint32_t * k = (const uint32_t *)key; /* read 32-bit chunks */
+		const uint32_t * k = (const uint32_t *) key; /* read 32-bit chunks */
 #if defined(VALGRIND) || defined(__SANITIZE_ADDRESS__) || defined(__has_feature) && __has_feature(address_sanitizer)
 		const uint8_t * k8;
 #endif
@@ -423,7 +423,7 @@ static uint32_t hashlittle (const void * restrict key, size_t length, uint32_t i
 
 #else /* make valgrind happy */
 
-		k8 = (const uint8_t *)k;
+		k8 = (const uint8_t *) k;
 		switch (length)
 		{
 		case 12:
@@ -432,9 +432,9 @@ static uint32_t hashlittle (const void * restrict key, size_t length, uint32_t i
 			a += k[0];
 			break;
 		case 11:
-			c += ((uint32_t)k8[10]) << 16; /* fall through */
+			c += ((uint32_t) k8[10]) << 16; /* fall through */
 		case 10:
-			c += ((uint32_t)k8[9]) << 8; /* fall through */
+			c += ((uint32_t) k8[9]) << 8; /* fall through */
 		case 9:
 			c += k8[8]; /* fall through */
 		case 8:
@@ -442,18 +442,18 @@ static uint32_t hashlittle (const void * restrict key, size_t length, uint32_t i
 			a += k[0];
 			break;
 		case 7:
-			b += ((uint32_t)k8[6]) << 16; /* fall through */
+			b += ((uint32_t) k8[6]) << 16; /* fall through */
 		case 6:
-			b += ((uint32_t)k8[5]) << 8; /* fall through */
+			b += ((uint32_t) k8[5]) << 8; /* fall through */
 		case 5:
 			b += k8[4]; /* fall through */
 		case 4:
 			a += k[0];
 			break;
 		case 3:
-			a += ((uint32_t)k8[2]) << 16; /* fall through */
+			a += ((uint32_t) k8[2]) << 16; /* fall through */
 		case 2:
-			a += ((uint32_t)k8[1]) << 8; /* fall through */
+			a += ((uint32_t) k8[1]) << 8; /* fall through */
 		case 1:
 			a += k8[0];
 			break;
@@ -465,55 +465,55 @@ static uint32_t hashlittle (const void * restrict key, size_t length, uint32_t i
 	}
 	else if (HASH_LITTLE_ENDIAN && ((u.i & 0x1) == 0))
 	{
-		const uint16_t * k = (const uint16_t *)key; /* read 16-bit chunks */
+		const uint16_t * k = (const uint16_t *) key; /* read 16-bit chunks */
 		const uint8_t * k8;
 
 		/*--------------- all but last block: aligned reads and different mixing */
 		while (length > 12)
 		{
-			a += k[0] + (((uint32_t)k[1]) << 16);
-			b += k[2] + (((uint32_t)k[3]) << 16);
-			c += k[4] + (((uint32_t)k[5]) << 16);
+			a += k[0] + (((uint32_t) k[1]) << 16);
+			b += k[2] + (((uint32_t) k[3]) << 16);
+			c += k[4] + (((uint32_t) k[5]) << 16);
 			mix (a, b, c);
 			length -= 12;
 			k += 6;
 		}
 
 		/*----------------------------- handle the last (probably partial) block */
-		k8 = (const uint8_t *)k;
+		k8 = (const uint8_t *) k;
 		switch (length)
 		{
 		case 12:
-			c += k[4] + (((uint32_t)k[5]) << 16);
-			b += k[2] + (((uint32_t)k[3]) << 16);
-			a += k[0] + (((uint32_t)k[1]) << 16);
+			c += k[4] + (((uint32_t) k[5]) << 16);
+			b += k[2] + (((uint32_t) k[3]) << 16);
+			a += k[0] + (((uint32_t) k[1]) << 16);
 			break;
 		case 11:
-			c += ((uint32_t)k8[10]) << 16; /* fall through */
+			c += ((uint32_t) k8[10]) << 16; /* fall through */
 		case 10:
 			c += k[4];
-			b += k[2] + (((uint32_t)k[3]) << 16);
-			a += k[0] + (((uint32_t)k[1]) << 16);
+			b += k[2] + (((uint32_t) k[3]) << 16);
+			a += k[0] + (((uint32_t) k[1]) << 16);
 			break;
 		case 9:
 			c += k8[8]; /* fall through */
 		case 8:
-			b += k[2] + (((uint32_t)k[3]) << 16);
-			a += k[0] + (((uint32_t)k[1]) << 16);
+			b += k[2] + (((uint32_t) k[3]) << 16);
+			a += k[0] + (((uint32_t) k[1]) << 16);
 			break;
 		case 7:
-			b += ((uint32_t)k8[6]) << 16; /* fall through */
+			b += ((uint32_t) k8[6]) << 16; /* fall through */
 		case 6:
 			b += k[2];
-			a += k[0] + (((uint32_t)k[1]) << 16);
+			a += k[0] + (((uint32_t) k[1]) << 16);
 			break;
 		case 5:
 			b += k8[4]; /* fall through */
 		case 4:
-			a += k[0] + (((uint32_t)k[1]) << 16);
+			a += k[0] + (((uint32_t) k[1]) << 16);
 			break;
 		case 3:
-			a += ((uint32_t)k8[2]) << 16; /* fall through */
+			a += ((uint32_t) k8[2]) << 16; /* fall through */
 		case 2:
 			a += k[0];
 			break;
@@ -526,23 +526,23 @@ static uint32_t hashlittle (const void * restrict key, size_t length, uint32_t i
 	}
 	else
 	{ /* need to read the key one byte at a time */
-		const uint8_t * k = (const uint8_t *)key;
+		const uint8_t * k = (const uint8_t *) key;
 
 		/*--------------- all but the last block: affect some 32 bits of (a,b,c) */
 		while (length > 12)
 		{
 			a += k[0];
-			a += ((uint32_t)k[1]) << 8;
-			a += ((uint32_t)k[2]) << 16;
-			a += ((uint32_t)k[3]) << 24;
+			a += ((uint32_t) k[1]) << 8;
+			a += ((uint32_t) k[2]) << 16;
+			a += ((uint32_t) k[3]) << 24;
 			b += k[4];
-			b += ((uint32_t)k[5]) << 8;
-			b += ((uint32_t)k[6]) << 16;
-			b += ((uint32_t)k[7]) << 24;
+			b += ((uint32_t) k[5]) << 8;
+			b += ((uint32_t) k[6]) << 16;
+			b += ((uint32_t) k[7]) << 24;
 			c += k[8];
-			c += ((uint32_t)k[9]) << 8;
-			c += ((uint32_t)k[10]) << 16;
-			c += ((uint32_t)k[11]) << 24;
+			c += ((uint32_t) k[9]) << 8;
+			c += ((uint32_t) k[10]) << 16;
+			c += ((uint32_t) k[11]) << 24;
 			mix (a, b, c);
 			length -= 12;
 			k += 12;
@@ -552,27 +552,27 @@ static uint32_t hashlittle (const void * restrict key, size_t length, uint32_t i
 		switch (length) /* all the case statements fall through */
 		{
 		case 12:
-			c += ((uint32_t)k[11]) << 24; // FALLTHROUGH
+			c += ((uint32_t) k[11]) << 24; // FALLTHROUGH
 		case 11:
-			c += ((uint32_t)k[10]) << 16; // FALLTHROUGH
+			c += ((uint32_t) k[10]) << 16; // FALLTHROUGH
 		case 10:
-			c += ((uint32_t)k[9]) << 8; // FALLTHROUGH
+			c += ((uint32_t) k[9]) << 8; // FALLTHROUGH
 		case 9:
 			c += k[8]; // FALLTHROUGH
 		case 8:
-			b += ((uint32_t)k[7]) << 24; // FALLTHROUGH
+			b += ((uint32_t) k[7]) << 24; // FALLTHROUGH
 		case 7:
-			b += ((uint32_t)k[6]) << 16; // FALLTHROUGH
+			b += ((uint32_t) k[6]) << 16; // FALLTHROUGH
 		case 6:
-			b += ((uint32_t)k[5]) << 8; // FALLTHROUGH
+			b += ((uint32_t) k[5]) << 8; // FALLTHROUGH
 		case 5:
 			b += k[4]; // FALLTHROUGH
 		case 4:
-			a += ((uint32_t)k[3]) << 24; // FALLTHROUGH
+			a += ((uint32_t) k[3]) << 24; // FALLTHROUGH
 		case 3:
-			a += ((uint32_t)k[2]) << 16; // FALLTHROUGH
+			a += ((uint32_t) k[2]) << 16; // FALLTHROUGH
 		case 2:
-			a += ((uint32_t)k[1]) << 8; // FALLTHROUGH
+			a += ((uint32_t) k[1]) << 8; // FALLTHROUGH
 		case 1:
 			a += k[0];
 			break;
@@ -611,13 +611,13 @@ static void hashlittle2 (const void * restrict key, /* the key to hash */
 	} u; /* needed for Mac Powerbook G4 */
 
 	/* Set up the internal state */
-	a = b = c = 0xdeadbeef + ((uint32_t)length) + *pc;
+	a = b = c = 0xdeadbeef + ((uint32_t) length) + *pc;
 	c += *pb;
 
 	u.ptr = key;
 	if (HASH_LITTLE_ENDIAN && ((u.i & 0x3) == 0))
 	{
-		const uint32_t * k = (const uint32_t *)key; /* read 32-bit chunks */
+		const uint32_t * k = (const uint32_t *) key; /* read 32-bit chunks */
 #if defined(VALGRIND) || defined(__SANITIZE_ADDRESS__)
 		const uint8_t * k8;
 #endif
@@ -703,7 +703,7 @@ static void hashlittle2 (const void * restrict key, /* the key to hash */
 
 #else /* make valgrind happy */
 
-		k8 = (const uint8_t *)k;
+		k8 = (const uint8_t *) k;
 		switch (length)
 		{
 		case 12:
@@ -712,9 +712,9 @@ static void hashlittle2 (const void * restrict key, /* the key to hash */
 			a += k[0];
 			break;
 		case 11:
-			c += ((uint32_t)k8[10]) << 16; /* fall through */
+			c += ((uint32_t) k8[10]) << 16; /* fall through */
 		case 10:
-			c += ((uint32_t)k8[9]) << 8; /* fall through */
+			c += ((uint32_t) k8[9]) << 8; /* fall through */
 		case 9:
 			c += k8[8]; /* fall through */
 		case 8:
@@ -722,18 +722,18 @@ static void hashlittle2 (const void * restrict key, /* the key to hash */
 			a += k[0];
 			break;
 		case 7:
-			b += ((uint32_t)k8[6]) << 16; /* fall through */
+			b += ((uint32_t) k8[6]) << 16; /* fall through */
 		case 6:
-			b += ((uint32_t)k8[5]) << 8; /* fall through */
+			b += ((uint32_t) k8[5]) << 8; /* fall through */
 		case 5:
 			b += k8[4]; /* fall through */
 		case 4:
 			a += k[0];
 			break;
 		case 3:
-			a += ((uint32_t)k8[2]) << 16; /* fall through */
+			a += ((uint32_t) k8[2]) << 16; /* fall through */
 		case 2:
-			a += ((uint32_t)k8[1]) << 8; /* fall through */
+			a += ((uint32_t) k8[1]) << 8; /* fall through */
 		case 1:
 			a += k8[0];
 			break;
@@ -747,55 +747,55 @@ static void hashlittle2 (const void * restrict key, /* the key to hash */
 	}
 	else if (HASH_LITTLE_ENDIAN && ((u.i & 0x1) == 0))
 	{
-		const uint16_t * k = (const uint16_t *)key; /* read 16-bit chunks */
+		const uint16_t * k = (const uint16_t *) key; /* read 16-bit chunks */
 		const uint8_t * k8;
 
 		/*--------------- all but last block: aligned reads and different mixing */
 		while (length > 12)
 		{
-			a += k[0] + (((uint32_t)k[1]) << 16);
-			b += k[2] + (((uint32_t)k[3]) << 16);
-			c += k[4] + (((uint32_t)k[5]) << 16);
+			a += k[0] + (((uint32_t) k[1]) << 16);
+			b += k[2] + (((uint32_t) k[3]) << 16);
+			c += k[4] + (((uint32_t) k[5]) << 16);
 			mix (a, b, c);
 			length -= 12;
 			k += 6;
 		}
 
 		/*----------------------------- handle the last (probably partial) block */
-		k8 = (const uint8_t *)k;
+		k8 = (const uint8_t *) k;
 		switch (length)
 		{
 		case 12:
-			c += k[4] + (((uint32_t)k[5]) << 16);
-			b += k[2] + (((uint32_t)k[3]) << 16);
-			a += k[0] + (((uint32_t)k[1]) << 16);
+			c += k[4] + (((uint32_t) k[5]) << 16);
+			b += k[2] + (((uint32_t) k[3]) << 16);
+			a += k[0] + (((uint32_t) k[1]) << 16);
 			break;
 		case 11:
-			c += ((uint32_t)k8[10]) << 16; /* fall through */
+			c += ((uint32_t) k8[10]) << 16; /* fall through */
 		case 10:
 			c += k[4];
-			b += k[2] + (((uint32_t)k[3]) << 16);
-			a += k[0] + (((uint32_t)k[1]) << 16);
+			b += k[2] + (((uint32_t) k[3]) << 16);
+			a += k[0] + (((uint32_t) k[1]) << 16);
 			break;
 		case 9:
 			c += k8[8]; /* fall through */
 		case 8:
-			b += k[2] + (((uint32_t)k[3]) << 16);
-			a += k[0] + (((uint32_t)k[1]) << 16);
+			b += k[2] + (((uint32_t) k[3]) << 16);
+			a += k[0] + (((uint32_t) k[1]) << 16);
 			break;
 		case 7:
-			b += ((uint32_t)k8[6]) << 16; /* fall through */
+			b += ((uint32_t) k8[6]) << 16; /* fall through */
 		case 6:
 			b += k[2];
-			a += k[0] + (((uint32_t)k[1]) << 16);
+			a += k[0] + (((uint32_t) k[1]) << 16);
 			break;
 		case 5:
 			b += k8[4]; /* fall through */
 		case 4:
-			a += k[0] + (((uint32_t)k[1]) << 16);
+			a += k[0] + (((uint32_t) k[1]) << 16);
 			break;
 		case 3:
-			a += ((uint32_t)k8[2]) << 16; /* fall through */
+			a += ((uint32_t) k8[2]) << 16; /* fall through */
 		case 2:
 			a += k[0];
 			break;
@@ -810,23 +810,23 @@ static void hashlittle2 (const void * restrict key, /* the key to hash */
 	}
 	else
 	{ /* need to read the key one byte at a time */
-		const uint8_t * k = (const uint8_t *)key;
+		const uint8_t * k = (const uint8_t *) key;
 
 		/*--------------- all but the last block: affect some 32 bits of (a,b,c) */
 		while (length > 12)
 		{
 			a += k[0];
-			a += ((uint32_t)k[1]) << 8;
-			a += ((uint32_t)k[2]) << 16;
-			a += ((uint32_t)k[3]) << 24;
+			a += ((uint32_t) k[1]) << 8;
+			a += ((uint32_t) k[2]) << 16;
+			a += ((uint32_t) k[3]) << 24;
 			b += k[4];
-			b += ((uint32_t)k[5]) << 8;
-			b += ((uint32_t)k[6]) << 16;
-			b += ((uint32_t)k[7]) << 24;
+			b += ((uint32_t) k[5]) << 8;
+			b += ((uint32_t) k[6]) << 16;
+			b += ((uint32_t) k[7]) << 24;
 			c += k[8];
-			c += ((uint32_t)k[9]) << 8;
-			c += ((uint32_t)k[10]) << 16;
-			c += ((uint32_t)k[11]) << 24;
+			c += ((uint32_t) k[9]) << 8;
+			c += ((uint32_t) k[10]) << 16;
+			c += ((uint32_t) k[11]) << 24;
 			mix (a, b, c);
 			length -= 12;
 			k += 12;
@@ -836,27 +836,27 @@ static void hashlittle2 (const void * restrict key, /* the key to hash */
 		switch (length) /* all the case statements fall through */
 		{
 		case 12:
-			c += ((uint32_t)k[11]) << 24;
+			c += ((uint32_t) k[11]) << 24;
 		case 11:
-			c += ((uint32_t)k[10]) << 16;
+			c += ((uint32_t) k[10]) << 16;
 		case 10:
-			c += ((uint32_t)k[9]) << 8;
+			c += ((uint32_t) k[9]) << 8;
 		case 9:
 			c += k[8];
 		case 8:
-			b += ((uint32_t)k[7]) << 24;
+			b += ((uint32_t) k[7]) << 24;
 		case 7:
-			b += ((uint32_t)k[6]) << 16;
+			b += ((uint32_t) k[6]) << 16;
 		case 6:
-			b += ((uint32_t)k[5]) << 8;
+			b += ((uint32_t) k[5]) << 8;
 		case 5:
 			b += k[4];
 		case 4:
-			a += ((uint32_t)k[3]) << 24;
+			a += ((uint32_t) k[3]) << 24;
 		case 3:
-			a += ((uint32_t)k[2]) << 16;
+			a += ((uint32_t) k[2]) << 16;
 		case 2:
-			a += ((uint32_t)k[1]) << 8;
+			a += ((uint32_t) k[1]) << 8;
 		case 1:
 			a += k[0];
 			break;
@@ -891,12 +891,12 @@ static uint32_t hashbig (const void * restrict key, size_t length, uint32_t init
 	} u; /* to cast key to (size_t) happily */
 
 	/* Set up the internal state */
-	a = b = c = 0xdeadbeef + ((uint32_t)length) + initval;
+	a = b = c = 0xdeadbeef + ((uint32_t) length) + initval;
 
 	u.ptr = key;
 	if (HASH_BIG_ENDIAN && ((u.i & 0x3) == 0))
 	{
-		const uint32_t * k = (const uint32_t *)key; /* read 32-bit chunks */
+		const uint32_t * k = (const uint32_t *) key; /* read 32-bit chunks */
 #if defined(VALGRIND) || defined(__SANITIZE_ADDRESS__)
 		const uint8_t * k8;
 #endif
@@ -980,7 +980,7 @@ static uint32_t hashbig (const void * restrict key, size_t length, uint32_t init
 
 #else /* make valgrind happy */
 
-		k8 = (const uint8_t *)k;
+		k8 = (const uint8_t *) k;
 		switch (length) /* all the case statements fall through */
 		{
 		case 12:
@@ -989,30 +989,30 @@ static uint32_t hashbig (const void * restrict key, size_t length, uint32_t init
 			a += k[0];
 			break;
 		case 11:
-			c += ((uint32_t)k8[10]) << 8; /* fall through */
+			c += ((uint32_t) k8[10]) << 8; /* fall through */
 		case 10:
-			c += ((uint32_t)k8[9]) << 16; /* fall through */
+			c += ((uint32_t) k8[9]) << 16; /* fall through */
 		case 9:
-			c += ((uint32_t)k8[8]) << 24; /* fall through */
+			c += ((uint32_t) k8[8]) << 24; /* fall through */
 		case 8:
 			b += k[1];
 			a += k[0];
 			break;
 		case 7:
-			b += ((uint32_t)k8[6]) << 8; /* fall through */
+			b += ((uint32_t) k8[6]) << 8; /* fall through */
 		case 6:
-			b += ((uint32_t)k8[5]) << 16; /* fall through */
+			b += ((uint32_t) k8[5]) << 16; /* fall through */
 		case 5:
-			b += ((uint32_t)k8[4]) << 24; /* fall through */
+			b += ((uint32_t) k8[4]) << 24; /* fall through */
 		case 4:
 			a += k[0];
 			break;
 		case 3:
-			a += ((uint32_t)k8[2]) << 8; /* fall through */
+			a += ((uint32_t) k8[2]) << 8; /* fall through */
 		case 2:
-			a += ((uint32_t)k8[1]) << 16; /* fall through */
+			a += ((uint32_t) k8[1]) << 16; /* fall through */
 		case 1:
-			a += ((uint32_t)k8[0]) << 24;
+			a += ((uint32_t) k8[0]) << 24;
 			break;
 		case 0:
 			return c;
@@ -1022,23 +1022,23 @@ static uint32_t hashbig (const void * restrict key, size_t length, uint32_t init
 	}
 	else
 	{ /* need to read the key one byte at a time */
-		const uint8_t * k = (const uint8_t *)key;
+		const uint8_t * k = (const uint8_t *) key;
 
 		/*--------------- all but the last block: affect some 32 bits of (a,b,c) */
 		while (length > 12)
 		{
-			a += ((uint32_t)k[0]) << 24;
-			a += ((uint32_t)k[1]) << 16;
-			a += ((uint32_t)k[2]) << 8;
-			a += ((uint32_t)k[3]);
-			b += ((uint32_t)k[4]) << 24;
-			b += ((uint32_t)k[5]) << 16;
-			b += ((uint32_t)k[6]) << 8;
-			b += ((uint32_t)k[7]);
-			c += ((uint32_t)k[8]) << 24;
-			c += ((uint32_t)k[9]) << 16;
-			c += ((uint32_t)k[10]) << 8;
-			c += ((uint32_t)k[11]);
+			a += ((uint32_t) k[0]) << 24;
+			a += ((uint32_t) k[1]) << 16;
+			a += ((uint32_t) k[2]) << 8;
+			a += ((uint32_t) k[3]);
+			b += ((uint32_t) k[4]) << 24;
+			b += ((uint32_t) k[5]) << 16;
+			b += ((uint32_t) k[6]) << 8;
+			b += ((uint32_t) k[7]);
+			c += ((uint32_t) k[8]) << 24;
+			c += ((uint32_t) k[9]) << 16;
+			c += ((uint32_t) k[10]) << 8;
+			c += ((uint32_t) k[11]);
 			mix (a, b, c);
 			length -= 12;
 			k += 12;
@@ -1050,27 +1050,27 @@ static uint32_t hashbig (const void * restrict key, size_t length, uint32_t init
 		case 12:
 			c += k[11];
 		case 11:
-			c += ((uint32_t)k[10]) << 8;
+			c += ((uint32_t) k[10]) << 8;
 		case 10:
-			c += ((uint32_t)k[9]) << 16;
+			c += ((uint32_t) k[9]) << 16;
 		case 9:
-			c += ((uint32_t)k[8]) << 24;
+			c += ((uint32_t) k[8]) << 24;
 		case 8:
 			b += k[7];
 		case 7:
-			b += ((uint32_t)k[6]) << 8;
+			b += ((uint32_t) k[6]) << 8;
 		case 6:
-			b += ((uint32_t)k[5]) << 16;
+			b += ((uint32_t) k[5]) << 16;
 		case 5:
-			b += ((uint32_t)k[4]) << 24;
+			b += ((uint32_t) k[4]) << 24;
 		case 4:
 			a += k[3];
 		case 3:
-			a += ((uint32_t)k[2]) << 8;
+			a += ((uint32_t) k[2]) << 8;
 		case 2:
-			a += ((uint32_t)k[1]) << 16;
+			a += ((uint32_t) k[1]) << 16;
 		case 1:
-			a += ((uint32_t)k[0]) << 24;
+			a += ((uint32_t) k[0]) << 24;
 			break;
 		case 0:
 			return c;
@@ -1138,7 +1138,7 @@ void driver2 (void)
 				for (m = 1; m < 8; ++m) /*------------ for several possible initvals, */
 				{
 					for (l = 0; l < HASHSTATE; ++l)
-						e[l] = f[l] = g[l] = h[l] = x[l] = y[l] = ~((uint32_t)0);
+						e[l] = f[l] = g[l] = h[l] = x[l] = y[l] = ~((uint32_t) 0);
 
 					/*---- check that every output bit is affected by that input bit */
 					for (k = 0; k < MAXPAIR; k += 2)
@@ -1147,7 +1147,7 @@ void driver2 (void)
 						/* keys have one bit different */
 						for (l = 0; l < hlen + 1; ++l)
 						{
-							a[l] = b[l] = (uint8_t)0;
+							a[l] = b[l] = (uint8_t) 0;
 						}
 						/* have a and b be two keys differing in only one bit */
 						a[i] ^= (k << j);
@@ -1207,8 +1207,8 @@ void driver3 (void)
 
 	printf ("Endianness.  These lines should all be the same (for values filled in):\n");
 	printf ("%.8x                            %.8x                            %.8x\n",
-		hashword ((const uint32_t *)q, (sizeof (q) - 1) / 4, 13), hashword ((const uint32_t *)q, (sizeof (q) - 5) / 4, 13),
-		hashword ((const uint32_t *)q, (sizeof (q) - 9) / 4, 13));
+		hashword ((const uint32_t *) q, (sizeof (q) - 1) / 4, 13), hashword ((const uint32_t *) q, (sizeof (q) - 5) / 4, 13),
+		hashword ((const uint32_t *) q, (sizeof (q) - 9) / 4, 13));
 	p = q;
 	printf ("%.8x %.8x %.8x %.8x %.8x %.8x %.8x %.8x %.8x %.8x %.8x %.8x\n", hashlittle (p, sizeof (q) - 1, 13),
 		hashlittle (p, sizeof (q) - 2, 13), hashlittle (p, sizeof (q) - 3, 13), hashlittle (p, sizeof (q) - 4, 13),
@@ -1257,11 +1257,11 @@ void driver3 (void)
 				*(b + j) = 0;
 
 			/* these should all be equal */
-			ref = hashlittle (b, len, (uint32_t)1);
-			*(b + i) = (uint8_t)~0;
-			*(b - 1) = (uint8_t)~0;
-			x = hashlittle (b, len, (uint32_t)1);
-			y = hashlittle (b, len, (uint32_t)1);
+			ref = hashlittle (b, len, (uint32_t) 1);
+			*(b + i) = (uint8_t) ~0;
+			*(b - 1) = (uint8_t) ~0;
+			x = hashlittle (b, len, (uint32_t) 1);
+			y = hashlittle (b, len, (uint32_t) 1);
 			if ((ref != x) || (ref != y))
 			{
 				printf ("alignment error: %.8x %.8x %.8x %d %d\n", ref, x, y, h, i);

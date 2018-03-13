@@ -67,7 +67,7 @@ static int elektraResolveFilename (Key * parentKey, ElektraResolveTempfile tmpFi
 	}
 	ElektraResolved * resolved = NULL;
 	typedef ElektraResolved * (*resolveFileFunc) (elektraNamespace, const char *, ElektraResolveTempfile, Key *);
-	resolveFileFunc resolveFunc = *(resolveFileFunc *)elektraInvokeGetFunction (handle, "filename");
+	resolveFileFunc resolveFunc = *(resolveFileFunc *) elektraInvokeGetFunction (handle, "filename");
 
 	if (!resolveFunc)
 	{
@@ -76,7 +76,7 @@ static int elektraResolveFilename (Key * parentKey, ElektraResolveTempfile tmpFi
 	}
 
 	typedef void (*freeHandleFunc) (ElektraResolved *);
-	freeHandleFunc freeHandle = *(freeHandleFunc *)elektraInvokeGetFunction (handle, "freeHandle");
+	freeHandleFunc freeHandle = *(freeHandleFunc *) elektraInvokeGetFunction (handle, "freeHandle");
 
 	if (!freeHandle)
 	{
@@ -183,9 +183,9 @@ static int initData (Plugin * handle, Key * parentKey)
 		const char * defaultBranch = "master";
 		key = ksLookupByName (config, "/branch", KDB_O_NONE);
 		if (!key)
-			data->branch = (char *)defaultBranch;
+			data->branch = (char *) defaultBranch;
 		else
-			data->branch = (char *)keyString (key);
+			data->branch = (char *) keyString (key);
 
 		key = ksLookupByName (config, "/tracking", KDB_O_NONE);
 		if (!key)
@@ -460,7 +460,7 @@ static MergeAnalysis mergeAnalysis (git_repository * repo, const git_annotated_c
 {
 	git_merge_analysis_t analysis;
 	git_merge_preference_t preference;
-	int rc = git_merge_analysis (&analysis, &preference, repo, (const git_annotated_commit **)heads, 1);
+	int rc = git_merge_analysis (&analysis, &preference, repo, (const git_annotated_commit **) heads, 1);
 	if (rc < 0)
 	{
 		return ERROR;
@@ -496,7 +496,7 @@ static int doMerge (git_repository * repo, const git_annotated_commit ** heads)
 	git_merge_options mergeOpts = { GIT_MERGE_OPTIONS_VERSION, .flags = GIT_MERGE_FAIL_ON_CONFLICT };
 	git_checkout_options checkoutOpts = { GIT_CHECKOUT_OPTIONS_VERSION, .checkout_strategy = GIT_CHECKOUT_FORCE };
 
-	int rc = git_merge (repo, (const git_annotated_commit **)heads, 1, &mergeOpts, &checkoutOpts);
+	int rc = git_merge (repo, (const git_annotated_commit **) heads, 1, &mergeOpts, &checkoutOpts);
 	if (rc < 0)
 	{
 		return -1;
@@ -556,7 +556,7 @@ static int pullFromRemote (GitData * data ELEKTRA_UNUSED, git_repository * repo)
 		return -1;
 	}
 
-	MergeAnalysis res = mergeAnalysis (repo, (const git_annotated_commit **)heads);
+	MergeAnalysis res = mergeAnalysis (repo, (const git_annotated_commit **) heads);
 	rc = 0;
 	switch (res)
 	{
@@ -572,7 +572,7 @@ static int pullFromRemote (GitData * data ELEKTRA_UNUSED, git_repository * repo)
 		goto PULL_CLEANUP;
 		break;
 	case FASTFORWARD:
-		rc = doMerge (repo, (const git_annotated_commit **)heads);
+		rc = doMerge (repo, (const git_annotated_commit **) heads);
 		if (rc)
 		{
 			goto PULL_CLEANUP;
@@ -753,8 +753,8 @@ int elektraGitresolverGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 		git_libgit2_shutdown ();
 		return -1;
 	}
-	fwrite (git_blob_rawcontent ((git_blob *)blob), (size_t)git_blob_rawsize ((git_blob *)blob), 1, outFile);
-	unsigned char * hash = hashBuffer (git_blob_rawcontent ((git_blob *)blob), git_blob_rawsize ((git_blob *)blob));
+	fwrite (git_blob_rawcontent ((git_blob *) blob), (size_t) git_blob_rawsize ((git_blob *) blob), 1, outFile);
+	unsigned char * hash = hashBuffer (git_blob_rawcontent ((git_blob *) blob), git_blob_rawsize ((git_blob *) blob));
 	if (!*(data->lastHash)) memcpy (data->lastHash, hash, MD5_DIGEST_LENGTH);
 	elektraFree (hash);
 	fclose (outFile);
@@ -791,7 +791,7 @@ static int moveFile (const char * source, const char * dest)
 	size_t bytesRead = 0;
 	while (bytesRead < fileSize)
 	{
-		size_t bytes = fread (buffer + bytesRead, 1, (size_t)fileSize, inFile);
+		size_t bytes = fread (buffer + bytesRead, 1, (size_t) fileSize, inFile);
 		if (bytes == 0) break;
 		bytesRead += bytes;
 	}
@@ -902,8 +902,8 @@ int elektraGitresolverSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 
 		// add file
 		git_blob * buffer = addFileToIndex (repo, data, index);
-		unsigned char * hash = hashBuffer ((unsigned char *)git_blob_rawcontent (buffer), git_blob_rawsize (buffer));
-		if (!strncmp ((char *)data->lastHash, (char *)hash, MD5_DIGEST_LENGTH))
+		unsigned char * hash = hashBuffer ((unsigned char *) git_blob_rawcontent (buffer), git_blob_rawsize (buffer));
+		if (!strncmp ((char *) data->lastHash, (char *) hash, MD5_DIGEST_LENGTH))
 		{
 			elektraFree (hash);
 			git_index_free (index);
@@ -940,7 +940,7 @@ int elektraGitresolverSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 
 		// create default commit
 		git_oid commitID;
-		git_commit_create (&commitID, repo, "HEAD", sig, sig, NULL, "kdb git autocommit", tree, 1, (const git_commit **)&parent);
+		git_commit_create (&commitID, repo, "HEAD", sig, sig, NULL, "kdb git autocommit", tree, 1, (const git_commit **) &parent);
 
 
 		git_signature_free (sig);

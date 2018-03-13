@@ -76,11 +76,11 @@ ssize_t elektraMemcpy (Key ** array1, Key ** array2, size_t size)
 	if (size > SSIZE_MAX) return -1;
 	if (size == 0) return 0;
 #if DEBUG
-	char * a = (char *)array1;
-	char * b = (char *)array2;
+	char * a = (char *) array1;
+	char * b = (char *) array2;
 	for (size_t i = 0; i < size; i++)
 	{
-		ELEKTRA_ASSERT (a + i != b && b + i != a, "memcpy overlap: %p and %p with size %zu", (void *)a, (void *)b, size);
+		ELEKTRA_ASSERT (a + i != b && b + i != a, "memcpy overlap: %p and %p with size %zu", (void *) a, (void *) b, size);
 	}
 #endif
 	memcpy (array1, array2, size * sizeof (Key *));
@@ -123,7 +123,7 @@ ssize_t elektraMemmove (Key ** array1, Key ** array2, size_t size)
  **/
 int elektraStrCmp (const char * s1, const char * s2)
 {
-	ELEKTRA_ASSERT (s1 != NULL && s2 != NULL, "Got null pointer s1: %p s2: %p", (void *)s1, (void *)s2);
+	ELEKTRA_ASSERT (s1 != NULL && s2 != NULL, "Got null pointer s1: %p s2: %p", (void *) s1, (void *) s2);
 
 	return strcmp (s1, s2);
 }
@@ -141,7 +141,7 @@ int elektraStrCmp (const char * s1, const char * s2)
  **/
 int elektraStrCaseCmp (const char * s1, const char * s2)
 {
-	ELEKTRA_ASSERT (s1 != NULL && s2 != NULL, "Got null pointer s1: %p s2: %p", (void *)s1, (void *)s2);
+	ELEKTRA_ASSERT (s1 != NULL && s2 != NULL, "Got null pointer s1: %p s2: %p", (void *) s1, (void *) s2);
 	return strcasecmp (s1, s2);
 }
 
@@ -161,7 +161,7 @@ int elektraStrCaseCmp (const char * s1, const char * s2)
 int elektraMemCaseCmp (const char * s1, const char * s2, size_t size)
 {
 	size_t i;
-	ELEKTRA_ASSERT (s1 != NULL && s2 != NULL, "Got null pointer s1: %p s2: %p", (void *)s1, (void *)s2);
+	ELEKTRA_ASSERT (s1 != NULL && s2 != NULL, "Got null pointer s1: %p s2: %p", (void *) s1, (void *) s2);
 	for (i = 0; i < size; i++)
 	{
 		const unsigned char cmp1 = s1[i];
@@ -416,7 +416,7 @@ char * elektraVFormat (const char * format, va_list arg_list)
 	// Allocate an intermediate buffer
 	// according to the calculated length from our last try
 	size_t const adjusted_buffer_size = calculated_length + 1;
-	elektraRealloc ((void **)&buffer, adjusted_buffer_size);
+	elektraRealloc ((void **) &buffer, adjusted_buffer_size);
 	if (!buffer)
 	{
 		va_end (arg_list_adj);
@@ -520,7 +520,7 @@ int elektraUnescapeKeyNamePartBegin (const char * source, size_t size, char ** d
 	const char * sp = source;
 	char * dp = *dest;
 
-	ELEKTRA_ASSERT (sp != NULL && dp != NULL, "Got null pointer sp: %p dp: %p", (void *)sp, (void *)dp);
+	ELEKTRA_ASSERT (sp != NULL && dp != NULL, "Got null pointer sp: %p dp: %p", (void *) sp, (void *) dp);
 
 	if (!strncmp ("%", sp, size))
 	{
@@ -610,7 +610,7 @@ char * elektraUnescapeKeyNamePart (const char * source, size_t size, char * dest
 	char * dp = dest;
 	size_t count = 0;
 
-	ELEKTRA_ASSERT (sp != NULL && dp != NULL, "Got null pointer sp: %p dp: %p", (void *)sp, (void *)dp);
+	ELEKTRA_ASSERT (sp != NULL && dp != NULL, "Got null pointer sp: %p dp: %p", (void *) sp, (void *) dp);
 
 	while (size)
 	{
@@ -679,7 +679,7 @@ size_t elektraUnescapeKeyName (const char * source, char * dest)
 	char * dp = dest;
 	size_t size = 0;
 
-	ELEKTRA_ASSERT (sp != NULL && dp != NULL, "Got null pointer sp: %p dp: %p", (void *)sp, (void *)dp);
+	ELEKTRA_ASSERT (sp != NULL && dp != NULL, "Got null pointer sp: %p dp: %p", (void *) sp, (void *) dp);
 
 	if (*sp == '/')
 	{
@@ -709,7 +709,7 @@ int elektraEscapeKeyNamePartBegin (const char * source, char * dest)
 	const char * sp = source;
 	char * dp = dest;
 
-	ELEKTRA_ASSERT (sp != NULL && dp != NULL, "Got null pointer sp: %p dp: %p", (void *)sp, (void *)dp);
+	ELEKTRA_ASSERT (sp != NULL && dp != NULL, "Got null pointer sp: %p dp: %p", (void *) sp, (void *) dp);
 
 	if (!strcmp ("", sp))
 	{
@@ -782,7 +782,7 @@ char * elektraEscapeKeyNamePart (const char * source, char * dest)
 	const char * sp = source;
 	char * dp = dest;
 
-	ELEKTRA_ASSERT (sp != NULL && dp != NULL, "Got null pointer sp: %p dp: %p", (void *)sp, (void *)dp);
+	ELEKTRA_ASSERT (sp != NULL && dp != NULL, "Got null pointer sp: %p dp: %p", (void *) sp, (void *) dp);
 
 	while (*sp)
 	{

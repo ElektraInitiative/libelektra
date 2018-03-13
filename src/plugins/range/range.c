@@ -53,7 +53,7 @@ static void normalizeValues (RangeType type, RangeValue * min, RangeValue * max,
 	case INT:
 	case HEX:
 	case CHAR:
-		if ((long long)tmpIA <= (long long)tmpIB)
+		if ((long long) tmpIA <= (long long) tmpIB)
 		{
 			min->Value.i = tmpIA;
 			max->Value.i = tmpIB;
@@ -135,7 +135,7 @@ RangeValue strToValue (const char ** ptr, RangeType type)
 			v.type = NA;
 		}
 		v.Value.i = **ptr;
-		endPtr = (char *)*ptr + 1;
+		endPtr = (char *) *ptr + 1;
 	default:
 		break;
 	}
@@ -286,7 +286,7 @@ static int validateSingleRange (const char * valueStr, const char * rangeString,
 	case INT:
 	case HEX:
 	case CHAR:
-		if ((long long)val.Value.i < (long long)min.Value.i || (long long)val.Value.i > (long long)max.Value.i)
+		if ((long long) val.Value.i < (long long) min.Value.i || (long long) val.Value.i > (long long) max.Value.i)
 		{
 			return 0;
 		}

@@ -17,7 +17,7 @@ int owncmp (const char * str1, const char * str2)
 		str1++;
 		str2++;
 	}
-	return *(const unsigned char *)str1 - *(const unsigned char *)str2;
+	return *(const unsigned char *) str1 - *(const unsigned char *) str2;
 }
 
 // warning: these are not correct implementations, but just to get an
@@ -39,7 +39,7 @@ int slacmp (const char * str1, const char * str2)
 	{
 		return -1;
 	}
-	return *(const unsigned char *)str1 - *(const unsigned char *)str2;
+	return *(const unsigned char *) str1 - *(const unsigned char *) str2;
 	// found different char
 }
 
@@ -77,7 +77,7 @@ int natcmp (const char * str1, const char * str2)
 	{
 		return -1;
 	}
-	return *(const unsigned char *)str1 - *(const unsigned char *)str2;
+	return *(const unsigned char *) str1 - *(const unsigned char *) str2;
 }
 
 

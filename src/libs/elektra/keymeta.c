@@ -283,7 +283,7 @@ int keyCopyMeta (Key * dest, const Key * source, const char * metaName)
 	if (!dest) return -1;
 	if (dest->flags & KEY_FLAG_RO_META) return -1;
 
-	ret = (Key *)keyGetMeta (source, metaName);
+	ret = (Key *) keyGetMeta (source, metaName);
 
 	if (!ret)
 	{

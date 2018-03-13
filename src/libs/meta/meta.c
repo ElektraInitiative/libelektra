@@ -264,11 +264,11 @@ uid_t keyGetUID (const Key * key)
 	char * endptr;
 	int errorval = errno;
 
-	if (!key) return (uid_t)-1;
+	if (!key) return (uid_t) -1;
 
 	uid = keyValue (keyGetMeta (key, "uid"));
-	if (!uid) return (uid_t)-1;
-	if (*uid == '\0') return (uid_t)-1;
+	if (!uid) return (uid_t) -1;
+	if (*uid == '\0') return (uid_t) -1;
 
 	/*From now on we have to leave using cleanup*/
 	errno = 0;
@@ -287,7 +287,7 @@ uid_t keyGetUID (const Key * key)
 cleanup:
 	/*First restore errno*/
 	errno = errorval;
-	return (uid_t)-1;
+	return (uid_t) -1;
 }
 
 
@@ -349,11 +349,11 @@ gid_t keyGetGID (const Key * key)
 	char * endptr;
 	int errorval = errno;
 
-	if (!key) return (gid_t)-1;
+	if (!key) return (gid_t) -1;
 
 	gid = keyValue (keyGetMeta (key, "gid"));
-	if (!gid) return (gid_t)-1;
-	if (*gid == '\0') return (gid_t)-1;
+	if (!gid) return (gid_t) -1;
+	if (*gid == '\0') return (gid_t) -1;
 
 	/*From now on we have to leave using cleanup*/
 	errno = 0;
@@ -372,7 +372,7 @@ gid_t keyGetGID (const Key * key)
 cleanup:
 	/*First restore errno*/
 	errno = errorval;
-	return (gid_t)-1;
+	return (gid_t) -1;
 }
 
 
@@ -477,7 +477,7 @@ mode_t keyGetMode (const Key * key)
 	char * endptr;
 	int errorval = errno;
 
-	if (!key) return (mode_t)-1;
+	if (!key) return (mode_t) -1;
 
 	mode = keyValue (keyGetMeta (key, "mode"));
 	if (!mode) return KDB_FILE_MODE;
@@ -622,11 +622,11 @@ time_t keyGetATime (const Key * key)
 	char * endptr;
 	int errorval = errno;
 
-	if (!key) return (time_t)-1;
+	if (!key) return (time_t) -1;
 
 	atime = keyValue (keyGetMeta (key, "atime"));
 	if (!atime) return 0;
-	if (*atime == '\0') return (time_t)-1;
+	if (*atime == '\0') return (time_t) -1;
 
 	/*From now on we have to leave using cleanup*/
 	errno = 0;
@@ -645,7 +645,7 @@ time_t keyGetATime (const Key * key)
 cleanup:
 	/*First restore errno*/
 	errno = errorval;
-	return (time_t)-1;
+	return (time_t) -1;
 }
 
 /**
@@ -715,11 +715,11 @@ time_t keyGetMTime (const Key * key)
 	char * endptr;
 	int errorval = errno;
 
-	if (!key) return (time_t)-1;
+	if (!key) return (time_t) -1;
 
 	mtime = keyValue (keyGetMeta (key, "mtime"));
 	if (!mtime) return 0;
-	if (*mtime == '\0') return (time_t)-1;
+	if (*mtime == '\0') return (time_t) -1;
 
 	/*From now on we have to leave using cleanup*/
 	errno = 0;
@@ -738,7 +738,7 @@ time_t keyGetMTime (const Key * key)
 cleanup:
 	/*First restore errno*/
 	errno = errorval;
-	return (time_t)-1;
+	return (time_t) -1;
 }
 
 /**
@@ -799,11 +799,11 @@ time_t keyGetCTime (const Key * key)
 	char * endptr;
 	int errorval = errno;
 
-	if (!key) return (time_t)-1;
+	if (!key) return (time_t) -1;
 
 	ctime = keyValue (keyGetMeta (key, "ctime"));
 	if (!ctime) return 0;
-	if (*ctime == '\0') return (time_t)-1;
+	if (*ctime == '\0') return (time_t) -1;
 
 	/*From now on we have to leave using cleanup*/
 	errno = 0;
@@ -822,7 +822,7 @@ time_t keyGetCTime (const Key * key)
 cleanup:
 	/*First restore errno*/
 	errno = errorval;
-	return (time_t)-1;
+	return (time_t) -1;
 }
 
 
@@ -970,7 +970,7 @@ KeySet * elektraMetaArrayToKS (Key * key, const char * metaName)
 
 	if (keyString (meta)[0] != '#')
 	{
-		ksAppendKey (result, (Key *)meta);
+		ksAppendKey (result, (Key *) meta);
 		ksRewind (result);
 		return result;
 	}
@@ -979,7 +979,7 @@ KeySet * elektraMetaArrayToKS (Key * key, const char * metaName)
 	keyAddName (currentKey, "#");
 	elektraArrayIncName (currentKey);
 	Key * curMeta = NULL;
-	while ((curMeta = (Key *)keyGetMeta (key, keyName (currentKey))) != NULL)
+	while ((curMeta = (Key *) keyGetMeta (key, keyName (currentKey))) != NULL)
 	{
 		ksAppendKey (result, keyDup (curMeta));
 		elektraArrayIncName (currentKey);
@@ -1011,8 +1011,8 @@ typedef struct
  */
 static int topCmpOrder (const void * a, const void * b)
 {
-	const Key * ka = (*(const Key **)a);
-	const Key * kb = (*(const Key **)b);
+	const Key * ka = (*(const Key **) a);
+	const Key * kb = (*(const Key **) b);
 
 	if (!ka && !kb) return 0;
 	if (ka && !kb) return 1;
@@ -1416,22 +1416,22 @@ char * elektraMetaArrayToString (Key * key, const char * metaName, const char * 
 	char * result = NULL;
 	Key * lookupElem = keyDup (keyGetMeta (key, metaName));
 	keyAddBaseName (lookupElem, "#0");
-	Key * elem = (Key *)keyGetMeta (key, keyName (lookupElem));
+	Key * elem = (Key *) keyGetMeta (key, keyName (lookupElem));
 	if (elem != NULL)
 	{
-		elektraRealloc ((void **)&result, keyGetValueSize (elem));
+		elektraRealloc ((void **) &result, keyGetValueSize (elem));
 		snprintf (result, keyGetValueSize (elem), "%s", keyString (elem));
 	}
 	elektraArrayIncName (lookupElem);
-	elem = (Key *)keyGetMeta (key, keyName (lookupElem));
+	elem = (Key *) keyGetMeta (key, keyName (lookupElem));
 	while (elem != NULL)
 	{
-		elektraRealloc ((void **)&result,
+		elektraRealloc ((void **) &result,
 				elektraStrLen (result) + keyGetValueSize (elem) + 1); // String (incl. +2 times \0) + delimiter + whitespace
 		strcat (result, delim);
 		strcat (result, keyString (elem));
 		elektraArrayIncName (lookupElem);
-		elem = (Key *)keyGetMeta (key, keyName (lookupElem));
+		elem = (Key *) keyGetMeta (key, keyName (lookupElem));
 	}
 	keyDel (lookupElem);
 	return result;

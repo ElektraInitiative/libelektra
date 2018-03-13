@@ -41,7 +41,7 @@ size_t opmphmLookup (Opmphm * opmphm, size_t n, const void * name)
 #ifndef OPMPHM_TEST
 		uint32_t hash = opmphmHashfunction (name, nameLength, opmphm->hashFunctionSeeds[r]) % opmphm->componentSize;
 #else
-		uint32_t hash = ((uint32_t *)name)[r];
+		uint32_t hash = ((uint32_t *) name)[r];
 #endif
 		ret += opmphm->graph[r * opmphm->componentSize + hash];
 	}
@@ -659,8 +659,8 @@ ELEKTRA_NO_SANITIZE_INTEGER
 uint32_t opmphmHashfunction (const void * key, size_t length, uint32_t initval)
 {
 	uint32_t a, b, c;
-	a = b = c = 0xdeadbeef + ((uint32_t)length) + initval;
-	const uint32_t * k = (const uint32_t *)key;
+	a = b = c = 0xdeadbeef + ((uint32_t) length) + initval;
+	const uint32_t * k = (const uint32_t *) key;
 	while (length > 12)
 	{
 		a += k[0];
@@ -734,22 +734,22 @@ ELEKTRA_NO_SANITIZE_INTEGER
 uint32_t opmphmHashfunction (const void * key, size_t length, uint32_t initval)
 {
 	uint32_t a, b, c;
-	a = b = c = 0xdeadbeef + ((uint32_t)length) + initval;
-	const uint8_t * k = (const uint8_t *)key;
+	a = b = c = 0xdeadbeef + ((uint32_t) length) + initval;
+	const uint8_t * k = (const uint8_t *) key;
 	while (length > 12)
 	{
 		a += k[0];
-		a += ((uint32_t)k[1]) << 8;
-		a += ((uint32_t)k[2]) << 16;
-		a += ((uint32_t)k[3]) << 24;
+		a += ((uint32_t) k[1]) << 8;
+		a += ((uint32_t) k[2]) << 16;
+		a += ((uint32_t) k[3]) << 24;
 		b += k[4];
-		b += ((uint32_t)k[5]) << 8;
-		b += ((uint32_t)k[6]) << 16;
-		b += ((uint32_t)k[7]) << 24;
+		b += ((uint32_t) k[5]) << 8;
+		b += ((uint32_t) k[6]) << 16;
+		b += ((uint32_t) k[7]) << 24;
 		c += k[8];
-		c += ((uint32_t)k[9]) << 8;
-		c += ((uint32_t)k[10]) << 16;
-		c += ((uint32_t)k[11]) << 24;
+		c += ((uint32_t) k[9]) << 8;
+		c += ((uint32_t) k[10]) << 16;
+		c += ((uint32_t) k[11]) << 24;
 		OPMPHM_HASHFUNCTION_MIX (a, b, c);
 		length -= 12;
 		k += 12;
@@ -757,37 +757,37 @@ uint32_t opmphmHashfunction (const void * key, size_t length, uint32_t initval)
 	switch (length)
 	{
 	case 12:
-		c += ((uint32_t)k[11]) << 24;
+		c += ((uint32_t) k[11]) << 24;
 		ELEKTRA_FALLTHROUGH;
 	case 11:
-		c += ((uint32_t)k[10]) << 16;
+		c += ((uint32_t) k[10]) << 16;
 		ELEKTRA_FALLTHROUGH;
 	case 10:
-		c += ((uint32_t)k[9]) << 8;
+		c += ((uint32_t) k[9]) << 8;
 		ELEKTRA_FALLTHROUGH;
 	case 9:
 		c += k[8];
 		ELEKTRA_FALLTHROUGH;
 	case 8:
-		b += ((uint32_t)k[7]) << 24;
+		b += ((uint32_t) k[7]) << 24;
 		ELEKTRA_FALLTHROUGH;
 	case 7:
-		b += ((uint32_t)k[6]) << 16;
+		b += ((uint32_t) k[6]) << 16;
 		ELEKTRA_FALLTHROUGH;
 	case 6:
-		b += ((uint32_t)k[5]) << 8;
+		b += ((uint32_t) k[5]) << 8;
 		ELEKTRA_FALLTHROUGH;
 	case 5:
 		b += k[4];
 		ELEKTRA_FALLTHROUGH;
 	case 4:
-		a += ((uint32_t)k[3]) << 24;
+		a += ((uint32_t) k[3]) << 24;
 		ELEKTRA_FALLTHROUGH;
 	case 3:
-		a += ((uint32_t)k[2]) << 16;
+		a += ((uint32_t) k[2]) << 16;
 		ELEKTRA_FALLTHROUGH;
 	case 2:
-		a += ((uint32_t)k[1]) << 8;
+		a += ((uint32_t) k[1]) << 8;
 		ELEKTRA_FALLTHROUGH;
 	case 1:
 		a += k[0];
