@@ -28,6 +28,14 @@ matrix:
       env: [ ASAN=ON ]
 
     - os: linux
+      compiler: gcc
+      addons:
+        apt:
+          sources: [ ubuntu-toolchain-r-test ]
+          packages: [ g++-7 ]
+      env: [ ASAN=ON ]
+
+    - os: linux
       compiler: clang
       env: [ ASAN=ON ]
 
@@ -114,6 +122,7 @@ before_install:
     fi
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+      [[ $ASAN == ON && $CC == gcc ]] && export CC=gcc-7 CXX=g++-7
       sudo apt-get -qq update
       sudo apt-get install clang-format-3.8
       sudo apt-get install ninja-build
@@ -172,7 +181,6 @@ before_script:
     ${CMAKE_OPT[@]}
     $TRAVIS_BUILD_DIR
   - export PATH=$PATH:"$INSTALL_DIR/bin"
-  - export LD_LIBRARY_PATH="$INSTALL_DIR/lib"
 
 script:
   - ninja

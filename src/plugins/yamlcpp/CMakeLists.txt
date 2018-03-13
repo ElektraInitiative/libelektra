@@ -4,6 +4,11 @@ if (DEPENDENCY_PHASE)
 		remove_plugin (yamlcpp "yaml-cpp (libyaml-cpp-dev >= 0.5) not found")
 	else (NOT YAML-CPP_FOUND)
 		if (YAML-CPP_VERSION VERSION_LESS "0.6.0")
+			if (ENABLE_ASAN AND CMAKE_COMPILER_IS_GNUCXX)
+				remove_plugin (yamlcpp "yaml-cpp ${YAML-CPP_VERSION} reports runtime errors if you compile it with GCC "
+						       "using AddressSanitizer")
+			endif (ENABLE_ASAN AND CMAKE_COMPILER_IS_GNUCXX)
+
 			find_package (Boost QUIET)
 			if (NOT Boost_FOUND)
 				remove_plugin (yamlcpp "yaml-cpp ${YAML-CPP_VERSION} requires Boost")

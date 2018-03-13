@@ -97,9 +97,6 @@ endif ()
 
 if (ENABLE_ASAN)
 	set (EXTRA_FLAGS "${EXTRA_FLAGS} -fsanitize=undefined -fsanitize=address -fno-omit-frame-pointer")
-	if (NOT (APPLE OR ("${CMAKE_C_COMPILER_ID}" STREQUAL "Clang" AND "${CMAKE_C_COMPILER_VERSION}" VERSION_GREATER "4.0")))
-		set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -lubsan")
-	endif ()
 	set (ASAN_LIBRARY "-lasan") #this is needed for GIR to put asan in front
 
 	if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -107,8 +104,9 @@ if (ENABLE_ASAN)
 		set (EXTRA_FLAGS "${EXTRA_FLAGS} -fsanitize-blacklist=\"${CMAKE_SOURCE_DIR}/tests/sanitizer.blacklist\"")
 	endif ()
 
-	if (CMAKE_COMPILER_IS_GNUCXX AND NOT APPLE)
-		set (CMAKE_SHARED_LINKER_FLAGS "-fsanitize=address ${CMAKE_SHARED_LINKER_FLAGS}")
+	if (CMAKE_COMPILER_IS_GNUCXX)
+		# Work around error “unrecognized option '--push-state'”
+		set (EXTRA_FLAGS "${EXTRA_FLAGS} -fuse-ld=gold")
 		# this is needed because of wrong pthread detection https://gcc.gnu.org/bugzilla/show_bug.cgi?id=69443
 		find_package(Threads)
 		set (THREAD_LIBS_AS_NEEDED "-Wl,--as-needed ${CMAKE_THREAD_LIBS_INIT}")
