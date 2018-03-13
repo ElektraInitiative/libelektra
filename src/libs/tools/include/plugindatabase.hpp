@@ -332,7 +332,7 @@ private:
 
 
 typedef std::shared_ptr<PluginDatabase> PluginDatabasePtr;
-}
-}
+} // namespace tools
+} // namespace kdb
 
 #endif

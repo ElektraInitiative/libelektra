@@ -97,9 +97,9 @@ public:
 private:
 	KeySet m_conflicts;
 };
-}
-}
-}
+} // namespace merging
+} // namespace tools
+} // namespace kdb
 
 
 #endif /* KDBMERGE_HPP_ */

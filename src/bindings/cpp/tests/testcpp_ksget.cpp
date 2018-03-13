@@ -74,7 +74,7 @@ struct KeySetTypeWrapper<Point>
 		return Point (x.get<int> (), y.get<int> ());
 	}
 };
-}
+} // namespace kdb
 
 TEST (ks, getOwnType)
 {

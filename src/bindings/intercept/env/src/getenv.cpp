@@ -746,4 +746,4 @@ extern "C" char * secure_getenv (const char * name) // throw ()
 	elektraUnlockMutex ();
 	return ret;
 }
-}
+} // namespace ckdb

@@ -69,6 +69,6 @@ void MergeResult::resolveConflict (Key & key)
 	conflictSet.lookup (key, KDB_O_POP);
 	resolvedKeys++;
 }
-}
-}
-}
+} // namespace merging
+} // namespace tools
+} // namespace kdb

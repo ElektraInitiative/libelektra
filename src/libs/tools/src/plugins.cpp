@@ -415,7 +415,7 @@ void serializeConfig (std::string name, KeySet const & ks, KeySet & ret)
 		if (k.getNamespace () == "user") ret.append (kdb::tools::helper::rebaseKey (k, oldParent, newParent));
 	}
 }
-}
+} // namespace
 
 
 void ErrorPlugins::serialise (Key & baseKey, KeySet & ret)
@@ -469,5 +469,5 @@ void SetPlugins::serialise (Key & baseKey, KeySet & ret)
 		if (fr) serializeConfig (name, plugins[i]->getConfig (), ret);
 	}
 }
-}
-}
+} // namespace tools
+} // namespace kdb

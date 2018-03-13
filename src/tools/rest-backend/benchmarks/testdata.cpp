@@ -92,5 +92,5 @@ std::vector<model::User> createTestUsers (int num)
 
 	return result;
 }
-}
-}
+} // namespace benchmark
+} // namespace kdbrest

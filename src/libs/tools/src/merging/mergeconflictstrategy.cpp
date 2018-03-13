@@ -56,6 +56,6 @@ void MergeConflictStrategy::copyKeyValue (const Key & source, Key & destination)
 		}
 	}
 }
-}
-}
-}
+} // namespace merging
+} // namespace tools
+} // namespace kdb

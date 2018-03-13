@@ -165,7 +165,7 @@ int unserialise (std::istream & is, ckdb::Key * errorKey, ckdb::KeySet * ks, Plu
 
 	return 1;
 }
-}
+} // namespace
 
 extern "C" {
 

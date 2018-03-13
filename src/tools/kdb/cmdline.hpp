@@ -31,7 +31,7 @@ namespace kdb
 {
 class Key;
 class KeySet;
-}
+} // namespace kdb
 
 class Cmdline
 {

@@ -93,6 +93,6 @@ Key commonKeyName (Key key1, Key key2)
 	}
 	return ret;
 }
-}
-}
-}
+} // namespace helper
+} // namespace tools
+} // namespace kdb

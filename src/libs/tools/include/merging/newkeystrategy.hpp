@@ -31,8 +31,8 @@ public:
 
 	virtual void resolveConflict (const MergeTask & task, Key & conflictKey, MergeResult & result) override;
 };
-}
-}
-}
+} // namespace merging
+} // namespace tools
+} // namespace kdb
 
 #endif /* NEWKEYSTRATEGY_HPP_ */

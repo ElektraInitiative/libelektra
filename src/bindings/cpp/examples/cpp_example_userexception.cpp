@@ -97,7 +97,7 @@ public:
 		return "User Exception: Exception thrown by get/set";
 	}
 };
-}
+} // namespace kdb
 
 #define USER_DEFINED_EXCEPTIONS
 #include <key.hpp>
@@ -124,7 +124,7 @@ public:
 private:
 	Key m_key;
 };
-}
+} // namespace kdb
 
 
 #include <kdb.hpp>

@@ -807,6 +807,6 @@ std::ostream & operator<< (std::ostream & os,
 	os << static_cast<T> (v);
 	return os;
 }
-}
+} // namespace kdb
 
 #endif

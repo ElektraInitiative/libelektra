@@ -29,6 +29,6 @@ void AutoMergeConfiguration::configureMerger (ThreeWayMerge & merger)
 	allocatedStrategies.push_back (autoMergeStrategy);
 	merger.addConflictStrategy (autoMergeStrategy);
 }
-}
-}
-}
+} // namespace merging
+} // namespace tools
+} // namespace kdb

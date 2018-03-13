@@ -560,8 +560,8 @@ void benchmarkInsertData (sql::Connection * con, int numUsers, int numEntriesPer
 
 	std::cout << std::endl;
 }
-}
-}
+} // namespace benchmark
+} // namespace kdbrest
 
 
 void printUsage (char * argv[])

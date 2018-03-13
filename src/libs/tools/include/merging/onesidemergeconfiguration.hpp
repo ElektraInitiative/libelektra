@@ -37,8 +37,8 @@ public:
 	}
 	virtual void configureMerger (ThreeWayMerge & merger) override;
 };
-}
-}
-}
+} // namespace merging
+} // namespace tools
+} // namespace kdb
 
 #endif /* ONESIDEMERGECONFIGURATION_HPP_ */

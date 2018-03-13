@@ -85,8 +85,8 @@ private:
 
 	void addConflictMeta (Key & key, std::string const & who, ConflictOperation operation);
 };
-}
-}
-}
+} // namespace merging
+} // namespace tools
+} // namespace kdb
 
 #endif /* MERGERESULT_HPP_ */

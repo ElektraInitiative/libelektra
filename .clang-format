@@ -33,6 +33,7 @@ ContinuationIndentWidth: 8
 Cpp11BracedListStyle: false
 DerivePointerAlignment: false
 DisableFormat: false
+FixNamespaceComments: true
 IndentCaseLabels: false
 IndentWidth: 8
 IndentWrappedFunctionNames: false

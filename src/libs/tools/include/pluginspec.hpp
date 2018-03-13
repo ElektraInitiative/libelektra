@@ -109,7 +109,7 @@ bool operator!= (PluginSpec const & self, PluginSpec const & other);
 typedef std::vector<PluginSpec> PluginSpecVector;
 
 std::ostream & operator<< (std::ostream & os, PluginSpec const & spec);
-}
-}
+} // namespace tools
+} // namespace kdb
 
 #endif

@@ -382,8 +382,8 @@ void benchmarkInsertData (int numUsers, int numEntriesPerUser, int numTagsPerEnt
 
 	std::cout << std::endl;
 }
-}
-}
+} // namespace benchmark
+} // namespace kdbrest
 
 
 void printUsage (char * argv[])

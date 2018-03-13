@@ -43,9 +43,9 @@ public:
 	};
 	virtual void configureMerger (ThreeWayMerge & merger) = 0;
 };
-}
-}
-}
+} // namespace merging
+} // namespace tools
+} // namespace kdb
 
 
 #endif /* MERGECONFIGURATION_HPP_ */

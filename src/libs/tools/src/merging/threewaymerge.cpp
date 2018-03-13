@@ -204,6 +204,6 @@ MergeResult ThreeWayMerge::mergeKeySet (const KeySet & base, const KeySet & ours
 
 	return merged;
 }
-}
-}
-}
+} // namespace merging
+} // namespace tools
+} // namespace kdb

@@ -34,6 +34,6 @@ void ImportMergeConfiguration::configureMerger (ThreeWayMerge & merger)
 	allocatedStrategies.push_back (oneSideValueStrategy);
 	merger.addConflictStrategy (oneSideValueStrategy);
 }
-}
-}
-}
+} // namespace merging
+} // namespace tools
+} // namespace kdb

@@ -90,6 +90,6 @@ int MergingKDB::synchronize (KeySet & returned, Key & parentKey, ThreeWayMerge &
 		}
 	}
 }
-}
-}
-}
+} // namespace merging
+} // namespace tools
+} // namespace kdb

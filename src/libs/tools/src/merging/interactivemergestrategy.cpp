@@ -105,6 +105,6 @@ void InteractiveMergeStrategy::resolveConflict (const MergeTask & task, Key & co
 	strategy.resolveConflict (task, conflictKey, result);
 	outputStream << "Key merged..." << endl;
 }
-}
-}
-}
+} // namespace merging
+} // namespace tools
+} // namespace kdb

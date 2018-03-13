@@ -37,7 +37,7 @@ void copySingleKey (Cmdline const & cl, Key const & rk, KeySet & tmpConf, KeySet
 	}
 	newConf.append (rk);
 }
-}
+} // namespace
 
 int CpCommand::execute (Cmdline const & cl)
 {

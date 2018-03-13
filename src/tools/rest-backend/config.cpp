@@ -87,4 +87,4 @@ bool Config::initializeConfiguration (const cppcms::json::value & cfg, const std
 
 	return !error;
 }
-}
+} // namespace kdbrest

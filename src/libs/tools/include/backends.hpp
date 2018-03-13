@@ -50,7 +50,7 @@ public:
 
 	static const char * mountpointsPath;
 };
-}
-}
+} // namespace tools
+} // namespace kdb
 
 #endif

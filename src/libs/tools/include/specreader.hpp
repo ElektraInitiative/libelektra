@@ -82,7 +82,7 @@ public:
 	 */
 	void readSpecification (KeySet const & ks);
 };
-}
-}
+} // namespace tools
+} // namespace kdb
 
 #endif

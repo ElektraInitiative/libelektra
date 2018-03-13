@@ -202,7 +202,7 @@ public:
 	void importFromFile (KeySet & ks, Key const & parentKey) const;
 	void exportToFile (KeySet const & ks, Key const & parentKey) const;
 };
-}
-}
+} // namespace tools
+} // namespace kdb
 
 #endif

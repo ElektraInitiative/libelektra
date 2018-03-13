@@ -62,8 +62,8 @@ public:
 		throw InvalidConflictOperation ("The conflict operation \"" + name + "\" is unknown");
 	}
 };
-}
-}
-}
+} // namespace merging
+} // namespace tools
+} // namespace kdb
 
 #endif /* MERGECONFLICT_HPP_ */

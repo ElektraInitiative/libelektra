@@ -56,6 +56,6 @@ void OneSideStrategy::resolveConflict (const MergeTask & task, Key & conflictKey
 		result.removeMergeKey (conflictKey);
 	}
 }
-}
-}
-}
+} // namespace merging
+} // namespace tools
+} // namespace kdb

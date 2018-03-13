@@ -38,8 +38,8 @@ protected:
 };
 
 typedef std::unique_ptr<MergeConflictStrategy> MergeConflictStrategyPtr;
-}
-}
-}
+} // namespace merging
+} // namespace tools
+} // namespace kdb
 
 #endif /* MERGECONFLICTSTRATEGY_HPP_ */

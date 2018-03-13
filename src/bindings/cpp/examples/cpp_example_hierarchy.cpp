@@ -243,7 +243,7 @@ private:
 
 	KeySet & m_keyset;
 };
-}
+} // namespace kdb
 
 
 /**
