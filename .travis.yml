@@ -66,6 +66,10 @@ matrix:
 
     - os: linux
       compiler: clang
+      addons:
+        apt:
+          sources: [ llvm-toolchain-trusty-5.0 ]
+          packages: [ clang-format-5.0 ]
 
 before_install:
   - |
@@ -127,7 +131,6 @@ before_install:
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
       [[ $ASAN == ON && $CC == gcc ]] && export CC=gcc-7 CXX=g++-7
       sudo apt-get -qq update
-      sudo apt-get install clang-format-3.8
       sudo apt-get install ninja-build
       sudo apt-get install libboost-all-dev
       sudo apt-get install libyaml-cpp-dev
