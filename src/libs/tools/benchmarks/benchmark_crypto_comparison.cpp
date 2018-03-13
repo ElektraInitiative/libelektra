@@ -21,14 +21,7 @@ extern "C" char ** environ;
 // test key is located at src/plugins/crypto/test_key.asc
 #define GPG_TEST_KEY_ID "DDEBEF9EE2DC931701338212DAF635B17F230E8D"
 
-enum PluginVariant
-{
-	NO_CRYPTO = 0,
-	CRYPTO_OPENSSL = 1,
-	CRYPTO_GCRYPT = 2,
-	CRYPTO_BOTAN = 3,
-	FCRYPT = 4
-};
+enum PluginVariant { NO_CRYPTO = 0, CRYPTO_OPENSSL = 1, CRYPTO_GCRYPT = 2, CRYPTO_BOTAN = 3, FCRYPT = 4 };
 
 static const std::string plugin_variant_names[] = { "no_crypto_plugin", "crypto_openssl", "crypto_gcrypt", "crypto_botan", "fcrypt" };
 

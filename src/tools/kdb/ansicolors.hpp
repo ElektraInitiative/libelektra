@@ -13,28 +13,11 @@
 /**
  *  An enum type representing different ansi color escape sequences.
  */
-enum class ANSI_COLOR
-{
-	RESET,
-	BOLD,
-	UNDERSCORE,
-	BLACK,
-	RED,
-	GREEN,
-	YELLOW,
-	MAGENTA,
-	BLUE,
-	CYAN,
-	WHITE
-};
+enum class ANSI_COLOR { RESET, BOLD, UNDERSCORE, BLACK, RED, GREEN, YELLOW, MAGENTA, BLUE, CYAN, WHITE };
 /**
  *  An enum type representing different ansi color escape layers.
  */
-enum class ANSI_COLOR_LAYER
-{
-	FG,
-	BG
-};
+enum class ANSI_COLOR_LAYER { FG, BG };
 
 /**
  * @brief Query if stderr has colors

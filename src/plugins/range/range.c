@@ -33,7 +33,8 @@ typedef enum {
 typedef struct
 {
 	RangeType type;
-	union uValue {
+	union uValue
+	{
 		unsigned long long int i;
 		long double f;
 	} Value;

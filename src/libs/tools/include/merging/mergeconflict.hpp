@@ -28,14 +28,7 @@ public:
 	explicit InvalidConflictOperation (std::string message) : ToolException (message){};
 };
 
-enum ConflictOperation
-{
-	CONFLICT_ADD,
-	CONFLICT_DELETE,
-	CONFLICT_MODIFY,
-	CONFLICT_META,
-	CONFLICT_SAME
-};
+enum ConflictOperation { CONFLICT_ADD, CONFLICT_DELETE, CONFLICT_MODIFY, CONFLICT_META, CONFLICT_SAME };
 
 class MergeConflictOperation
 {

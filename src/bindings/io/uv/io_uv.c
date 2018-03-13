@@ -22,12 +22,14 @@
  */
 typedef struct UvBindingData
 {
-	union {
+	union
+	{
 		ElektraIoFdOperation * fd;
 		ElektraIoTimerOperation * timer;
 		ElektraIoIdleOperation * idle;
 	} operation;
-	union {
+	union
+	{
 		uv_poll_t fd;
 		uv_timer_t timer;
 		uv_idle_t idle;

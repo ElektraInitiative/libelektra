@@ -2,14 +2,7 @@
 #include <kdbprivate.h>
 #include <string.h>
 
-enum
-{
-	PROP_0,
-	PROP_KEY_NAME,
-	PROP_KEY_BASENAME,
-	PROP_KEY_FULLNAME,
-	N_PROPERTIES
-};
+enum { PROP_0, PROP_KEY_NAME, PROP_KEY_BASENAME, PROP_KEY_FULLNAME, N_PROPERTIES };
 
 G_DEFINE_TYPE (GElektraKey, gelektra_key, G_TYPE_OBJECT)
 static Key * gelektra_key_swap (GElektraKey * key, Key * newkey);
@@ -393,7 +386,8 @@ gssize gelektra_key_getvaluesize (const GElektraKey * key)
  */
 gelektra_func_t gelektra_key_getfunc (const GElektraKey * key)
 {
-	union {
+	union
+	{
 		gelektra_func_t f;
 		void * v;
 	} data;

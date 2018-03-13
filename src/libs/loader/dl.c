@@ -37,7 +37,8 @@ typedef struct _Module Module;
 struct _Module
 {
 	void * handle;
-	union {
+	union
+	{
 		elektraPluginFactory f;
 		void * v;
 	} symbol;

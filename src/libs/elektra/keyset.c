@@ -2047,7 +2047,8 @@ static Key * elektraLookupSearch (KeySet * ks, Key * key, option_t options)
 {
 	if (!ks->size) return 0;
 	typedef Key * (*callback_t) (KeySet * ks, Key * key, Key * found, option_t options);
-	union {
+	union
+	{
 		callback_t f;
 		void * v;
 	} conversation;

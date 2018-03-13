@@ -292,7 +292,8 @@ static inline int createdWithinTimeframe (int (*f) (int, const char *, struct st
 
 typedef int (*orig_open_f_type) (const char * pathname, int flags, ...);
 
-typedef union {
+typedef union
+{
 	void * d;
 	orig_open_f_type f;
 } OpenSymbol;
@@ -393,12 +394,14 @@ int open64 (const char * pathname, int flags, ...)
 typedef int (*orig_xstat_f_type) (int ver, const char * path, struct stat * buf);
 typedef int (*orig_xstat64_f_type) (int ver, const char * path, struct stat64 * buf);
 
-typedef union {
+typedef union
+{
 	void * d;
 	orig_xstat_f_type f;
 } XstatSymbol;
 
-typedef union {
+typedef union
+{
 	void * d;
 	orig_xstat64_f_type f;
 } Xstat64Symbol;
@@ -453,7 +456,8 @@ int __xstat64 (int ver, const char * path, struct stat64 * buf)
 
 typedef int (*orig_access_f_type) (const char * pathname, int mode);
 
-typedef union {
+typedef union
+{
 	void * d;
 	orig_access_f_type f;
 } AccessSymbol;

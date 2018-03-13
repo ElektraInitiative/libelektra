@@ -123,17 +123,20 @@ typedef int (*fcn) (int *(main) (int, char **, char **), int argc, char ** argv,
 #endif
 typedef char * (*gfcn) (const char *);
 
-union Start {
+union Start
+{
 	void * d;
 	fcn f;
 } start; // symbol for libc pre-main
-union Sym {
+union Sym
+{
 	void * d;
 	gfcn f;
 } sym, ssym; // symbols for libc (secure) getenv
 
 typedef pid_t (*ffcn) (void);
-union Fork {
+union Fork
+{
 	void * d;
 	ffcn f;
 } ffork; // symbols for libc fork

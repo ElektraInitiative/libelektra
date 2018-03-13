@@ -30,7 +30,8 @@ struct _KeyRegistration
 	char * name;
 	KeyRegistrationType type;
 	char * lastValue;
-	union {
+	union
+	{
 		int * variable;
 		ElektraNotificationChangeCallback callback;
 	} ref;

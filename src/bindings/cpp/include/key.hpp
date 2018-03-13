@@ -1270,7 +1270,8 @@ inline ssize_t Key::getStringSize () const
  */
 inline Key::func_t Key::getFunc () const
 {
-	union {
+	union
+	{
 		Key::func_t f;
 		void * v;
 	} conversation;
@@ -1284,7 +1285,8 @@ inline Key::func_t Key::getFunc () const
 
 inline void Key::setCallback (callback_t fct)
 {
-	union {
+	union
+	{
 		callback_t f;
 		void * v;
 	} conversation;

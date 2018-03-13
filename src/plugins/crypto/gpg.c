@@ -27,8 +27,7 @@
 	") in plugin configuration. GPG could not find any secret keys. Please generate a secret key first!"
 #define GPG_ERROR_INVALID_KEY "'%s' does not identify a valid GPG private key."
 
-enum gpgKeyListState
-{
+enum gpgKeyListState {
 	GPG_KEYLIST_STATE_START,
 	GPG_KEYLIST_STATE_FPR2,
 	GPG_KEYLIST_STATE_FPR3,
@@ -36,13 +35,7 @@ enum gpgKeyListState
 	GPG_KEYLIST_STATE_KEYID
 };
 
-enum gpgCallErrorCode
-{
-	GPG_CALL_DUP_STDIN = 0x4200,
-	GPG_CALL_DUP_STDOUT = 0x4201,
-	GPG_CALL_DUP_STDERR = 0x4202,
-	GPG_CALL_EXECV = 0x4203
-};
+enum gpgCallErrorCode { GPG_CALL_DUP_STDIN = 0x4200, GPG_CALL_DUP_STDOUT = 0x4201, GPG_CALL_DUP_STDERR = 0x4202, GPG_CALL_EXECV = 0x4203 };
 
 struct gpgKeyListElement
 {

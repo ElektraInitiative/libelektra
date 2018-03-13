@@ -37,12 +37,7 @@
 class Template
 {
 public:
-	enum RenderOption
-	{
-		ScrollbarSynchronization = 0x00000001,
-		MathSupport = 0x00000002,
-		CodeHighlighting = 0x00000004
-	};
+	enum RenderOption { ScrollbarSynchronization = 0x00000001, MathSupport = 0x00000002, CodeHighlighting = 0x00000004 };
 	Q_DECLARE_FLAGS (RenderOptions, RenderOption)
 
 	virtual ~Template ()

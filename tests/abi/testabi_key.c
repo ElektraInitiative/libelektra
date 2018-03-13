@@ -1657,7 +1657,8 @@ static void test_binary (void)
 	keyDel (k);
 
 
-	union {
+	union
+	{
 		void (*f) (void);
 		void * v;
 	} conversation;

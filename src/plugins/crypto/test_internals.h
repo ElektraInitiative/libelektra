@@ -164,7 +164,8 @@ static void test_incomplete_config (const char * pluginName)
 
 static void test_crypto_operations (const char * pluginName)
 {
-	union {
+	union
+	{
 		checkConfPtr f;
 		void * v;
 	} conversation;

@@ -30,11 +30,7 @@
 #include <kdbmacros.h>
 #include <kdbtypes.h>
 
-enum FcryptGetState
-{
-	PREGETSTORAGE = 0,
-	POSTGETSTORAGE = 1
-};
+enum FcryptGetState { PREGETSTORAGE = 0, POSTGETSTORAGE = 1 };
 
 struct _fcryptState
 {

@@ -40,18 +40,21 @@ typedef struct
  */
 struct _GlibBindingData
 {
-	union {
+	union
+	{
 		ElektraIoFdOperation * fd;
 		ElektraIoTimerOperation * timer;
 		ElektraIoIdleOperation * idle;
 	} operation;
-	union {
+	union
+	{
 		GSource * gSource;
 		FdSource * fdSource;
 	} source;
 
 	int enabled; /*!< operation's enabled flag. Only updated on elektraIoBindingUpdateOPERATION */
-	union {
+	union
+	{
 		unsigned int timerInterval; /*!< timer interval. Only updated on elektraIoBindingUpdateTimer */
 	} cache;
 	GSourceFuncs * fdFuncs; /*!< functions for fd source */

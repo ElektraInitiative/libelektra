@@ -327,7 +327,8 @@ acceptable.  Do NOT use for cryptographic purposes.
 static uint32_t hashlittle (const void * restrict key, size_t length, uint32_t initval)
 {
 	uint32_t a, b, c; /* internal state */
-	union {
+	union
+	{
 		const void * ptr;
 		size_t i;
 	} u; /* needed for Mac Powerbook G4 */
@@ -603,7 +604,8 @@ static void hashlittle2 (const void * restrict key, /* the key to hash */
 			 uint32_t * restrict pb)    /* IN: secondary initval, OUT: secondary hash */
 {
 	uint32_t a, b, c; /* internal state */
-	union {
+	union
+	{
 		const void * ptr;
 		size_t i;
 	} u; /* needed for Mac Powerbook G4 */
@@ -882,7 +884,8 @@ static void hashlittle2 (const void * restrict key, /* the key to hash */
 static uint32_t hashbig (const void * restrict key, size_t length, uint32_t initval)
 {
 	uint32_t a, b, c;
-	union {
+	union
+	{
 		const void * ptr;
 		size_t i;
 	} u; /* to cast key to (size_t) happily */
