@@ -23,6 +23,18 @@ add_plugin (dbusrecv
 		${DBUS_LIBRARIES}
 	)
 
+set (NOT_INCLUDED "")
+plugin_check_if_included ("${PLUGIN_SHORT_NAME}")
+if (DEPENDENCY_PHASE AND NOT NOT_INCLUDED)
+	if (BUILD_SHARED)
+		#target_compile_options(elektra-dbusrecv PRIVATE "-fPIC")
+		#set_property (TARGET ${ADAPTER_OBJECT} PROPERTY CMAKE_POSITION_INDEPENDENT_CODE ON)
+	endif ()
+	#if (BUILD_FULL OR BUILD_STATIC)
+	#
+	#endif ()
+endif ()
+
 if (ADDTESTING_PHASE)
 	# the test requires an IO binding; using io_uv for now
 	check_binding_was_added ("io_uv" IS_INCLUDED)

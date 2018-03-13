@@ -77,7 +77,6 @@ static const char * toCascadingName (const char * keyName)
  * On kdbGet this plugin implicitly updates registered keys.
  *
  * @see ElektraNotificationChangeCallback (kdbnotificationinternal.h)
- *
  * @param key     changed key
  * @param context callback context
  */
@@ -352,8 +351,9 @@ int elektraInternalnotificationGet (Plugin * handle, KeySet * returned, Key * pa
 	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/internalnotification"))
 	{
 		KeySet * contract = ksNew (
-			30, keyNew ("system/elektra/modules/internalnotification", KEY_VALUE,
-				    "internalnotification plugin waits for your orders", KEY_END),
+			30,
+			keyNew ("system/elektra/modules/internalnotification", KEY_VALUE,
+				"internalnotification plugin waits for your orders", KEY_END),
 			keyNew ("system/elektra/modules/internalnotification/exports", KEY_END),
 			keyNew ("system/elektra/modules/internalnotification/exports/get", KEY_FUNC, elektraInternalnotificationGet,
 				KEY_END),
@@ -363,6 +363,7 @@ int elektraInternalnotificationGet (Plugin * handle, KeySet * returned, Key * pa
 				KEY_END),
 			keyNew ("system/elektra/modules/internalnotification/exports/close", KEY_FUNC, elektraInternalnotificationClose,
 				KEY_END),
+
 			keyNew ("system/elektra/modules/internalnotification/exports/notificationCallback", KEY_FUNC,
 				elektraInternalnotificationDoUpdate, KEY_END),
 
