@@ -12,11 +12,13 @@ add_plugin (dbusrecv
 	SOURCES
 		dbusrecv.h dbusrecv.c
 		receivemessage.c
+	OBJECT_SOURCES
+		$<TARGET_OBJECTS:io-adapter-dbus>
 	INCLUDE_DIRECTORIES
 		${DBUS_INCLUDE_DIR}
 		${DBUS_ARCH_INCLUDE_DIR}
 	LINK_ELEKTRA
-		elektra-io-adapter-dbus
+		elektra-io
 	LINK_LIBRARIES
 		${DBUS_LIBRARIES}
 	)
@@ -40,7 +42,6 @@ if (ADDTESTING_PHASE)
 				${DBUS_INCLUDE_DIR}
 				${DBUS_ARCH_INCLUDE_DIR}
 			LINK_ELEKTRA
-				elektra-io-adapter-dbus
 				elektra-io
 				elektra-io-uv
 			)
