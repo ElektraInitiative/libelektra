@@ -41,6 +41,11 @@ if (ADDTESTING_PHASE)
 				elektra-io-adapter-zeromq
 				elektra-io-uv
 			)
+		if (LIBUV_VERSION VERSION_LESS "1.0")
+			target_compile_definitions (testmod_zeromqrecv PRIVATE "HAVE_LIBUV0")
+		else ()
+			target_compile_definitions (testmod_zeromqrecv PRIVATE "HAVE_LIBUV1")
+		endif ()
 
 		# add sources manually because add_plugintest does not support generator
 		# expressions for additional source files
