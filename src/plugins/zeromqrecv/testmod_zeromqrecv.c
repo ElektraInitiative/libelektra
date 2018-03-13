@@ -245,20 +245,11 @@ int main (int argc, char ** argv)
 
 	zmq_ctx_destroy (context);
 
+	while (uv_run (loop, UV_RUN_NOWAIT) != 0)
+		;
 #ifdef HAVE_LIBUV1
-	if (uv_loop_close (loop) == UV_EBUSY)
-	{
-		while (uv_loop_alive (loop))
-		{
-			uv_run (loop, UV_RUN_ONCE);
-		}
-		uv_loop_close (loop);
-	}
+	uv_loop_close (loop);
 #elif HAVE_LIBUV0
-	while (loop->active_handles > 0)
-	{
-		uv_run (loop, UV_RUN_ONCE);
-	}
 	uv_loop_delete (loop);
 #endif
 	return nbError;
