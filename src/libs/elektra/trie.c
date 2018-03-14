@@ -191,11 +191,6 @@ Trie * trieInsert (Trie * trie, const char * name, Backend * value)
 }
 
 
-	/******************
-	 * Private static declarations
-	 ******************/
-
-
 #if 0
 
 static Trie *delete_trie(Trie *trie, char *name, CloseMapper closemapper)
