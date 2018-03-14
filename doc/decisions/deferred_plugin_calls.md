@@ -31,7 +31,8 @@ function for its encapsulated plugins.
 ## Decision
 
 Encapsulating plugins export a function called `deferFunctionCall` with the
-declaration `void deferFunctionCall (char * name, KeySet * parameters)`.
+declaration
+`void deferFunctionCall (Plugin * plugin, char * name, KeySet * parameters)`.
 Encapsulating plugins shall save multiple deferred calls and call the exported
 functions specified by `name` passing the `parameters` KeySet when a plugin is
 initialized in the same order as received.
@@ -44,6 +45,10 @@ the `elektraIoSetBinding()` or `elektraNotificationOpen()`.
 
 ## Implications
 
+The called functions have the declaration
+`void function (Plugin * plugin, KeySet * parameters)`.
+This means that the functions also receive their parameters via a KeySet.
+
 ## Related decisions
 
 ## Notes
@@ -51,5 +56,6 @@ the `elektraIoSetBinding()` or `elektraNotificationOpen()`.
 Utility functions that help with managing deferred calls would be nice:
 
 - `ElektraDeferredCallList * elektraDeferredCallCreateList (void)`
-- `ElektraDeferredCall * elektraDeferredCallAdd (ElektraDeferredCallList * list, char * name, KeySet * parameters)`
+- `void elektraDeferredCallDeleteList (ElektraDeferredCallList * list)`
+- `int elektraDeferredCallAdd (ElektraDeferredCallList * list, char * name, KeySet * parameters)`
 - `void elektraDeferredCallsExecute (Plugin * plugin, ElektraDeferredCallList * list)`
