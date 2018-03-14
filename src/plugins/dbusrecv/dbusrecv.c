@@ -21,11 +21,16 @@
 /**
  * @see ElektraIoPluginSetBinding (kdbioplugin.h)
  */
-void elektraDbusRecvSetIoBinding (Plugin * handle, ElektraIoInterface * binding)
+void elektraDbusRecvSetIoBinding (Plugin * handle, KeySet * parameters)
 {
 	ELEKTRA_NOT_NULL (handle);
+	ELEKTRA_NOT_NULL (parameters);
 	ElektraDbusRecvPluginData * data = elektraPluginGetData (handle);
 	ELEKTRA_NOT_NULL (data);
+
+	Key * ioBindingKey = ksLookupByName (parameters, "/ioBinding", 0);
+	ELEKTRA_NOT_NULL (ioBindingKey);
+	ElektraIoInterface * binding = *(ElektraIoInterface **)keyValue (ioBindingKey);
 
 	data->ioBinding = binding;
 }
@@ -33,11 +38,27 @@ void elektraDbusRecvSetIoBinding (Plugin * handle, ElektraIoInterface * binding)
 /**
  * @see ElektraNotificationOpenNotification (kdbnotificationinternal.h)
  */
-void elektraDbusRecvOpenNotification (Plugin * handle, ElektraNotificationCallback callback, ElektraNotificationCallbackContext * context)
+void elektraDbusRecvOpenNotification (Plugin * handle, KeySet * parameters)
 {
 	ELEKTRA_NOT_NULL (handle);
 	ElektraDbusRecvPluginData * pluginData = elektraPluginGetData (handle);
 	ELEKTRA_NOT_NULL (pluginData);
+
+	ElektraNotificationCallback callback;
+	Key * callbackKey = ksLookupByName (parameters, "/callback", 0);
+	ELEKTRA_NOT_NULL (callbackKey);
+	callback = *(ElektraNotificationCallback *)keyValue (callbackKey);
+
+	ElektraNotificationCallbackContext * context;
+	Key * contextKey = ksLookupByName (parameters, "/context", 0);
+	if (contextKey != NULL)
+	{
+		context = *(ElektraNotificationCallbackContext **)keyValue (contextKey);
+	}
+	else
+	{
+		context = NULL;
+	}
 
 	pluginData->notificationCallback = callback;
 	pluginData->notificationContext = context;
@@ -66,7 +87,7 @@ void elektraDbusRecvOpenNotification (Plugin * handle, ElektraNotificationCallba
 	}
 }
 
-void elektraDbusRecvCloseNotification (Plugin * handle)
+void elektraDbusRecvCloseNotification (Plugin * handle, KeySet * parameters ELEKTRA_UNUSED)
 {
 	ElektraDbusRecvPluginData * pluginData = elektraPluginGetData (handle);
 	pluginData->notificationCallback = NULL;

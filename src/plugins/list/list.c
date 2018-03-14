@@ -13,6 +13,7 @@
 #endif
 
 #include "list.h"
+#include <kdbassert.h>
 #include <kdberrors.h>
 #include <kdbinternal.h>
 #include <kdbmodule.h>
@@ -20,7 +21,33 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+/**
+ * Structure for registered key variable pairs
+ * @internal
+ */
+typedef struct _ElektraDeferredCall
+{
+	char * name;
+	KeySet * parameters;
+	struct _ElektraDeferredCall * next;
+} ElektraDeferredCall;
 
+/**
+ * Structure for internal plugin state
+ * @internal
+ */
+typedef struct
+{
+	ElektraDeferredCall * head;
+	ElektraDeferredCall * last;
+} ElektraDeferredCallList;
+
+/**
+ * Declaration for functions that can be called with elektraDeferredCallsExecute().
+ *
+ * @param  parameters function parameters
+ */
+typedef void (*ElektraDeferredCallable) (Plugin * plugin, KeySet * parameters);
 
 typedef enum { preGetStorage = 0, postGetStorage, postGetCleanup, getEnd } GetPlacements;
 
@@ -48,13 +75,100 @@ typedef struct
 	KeySet * plugins;
 	KeySet * modules;
 
-	ElektraIoInterface * ioBinding;
+	ElektraDeferredCallList * deferredCalls;
 
-	ElektraNotificationCallback notificationCallback;
-	void * notificationContext;
 } Placements;
 
 static char lastIndex[ELEKTRA_MAX_ARRAY_SIZE];
+
+/**
+ * Add a new deferred call to the deferred call list.
+ *
+ * @param  list       deferred call list
+ * @param  name       function name
+ * @param  parameters function parameters
+ * @retval 1 on success
+ * @retval 0 when malloc failed
+ */
+int elektraDeferredCallAdd (ElektraDeferredCallList * list, char * name, KeySet * parameters)
+{
+	ElektraDeferredCall * item = elektraMalloc (sizeof *item);
+	if (item == NULL)
+	{
+		return 0;
+	}
+	item->name = elektraStrDup (name);
+	item->parameters = ksDup (parameters);
+	item->next = NULL;
+
+	if (list->head == NULL)
+	{
+		// Initialize list
+		list->head = list->last = item;
+	}
+	else
+	{
+		// Make new item end of list
+		list->last->next = item;
+		list->last = item;
+	}
+
+	return 1;
+}
+
+/**
+ * Create new deferred call list.
+ *
+ * The list needs to be deleted with elektraDeferredCallDeleteList().
+ *
+ * @return  new list
+ */
+ElektraDeferredCallList * elektraDeferredCallCreateList (void)
+{
+	ElektraDeferredCallList * list = elektraMalloc (sizeof *list);
+	if (list == NULL)
+	{
+		return NULL;
+	}
+	list->head = NULL;
+	list->last = NULL;
+	return list;
+}
+
+void elektraDeferredCallDeleteList (ElektraDeferredCallList * list)
+{
+	ElektraDeferredCall * item = list->head;
+	while (item != NULL)
+	{
+		elektraFree (item->name);
+		ksDel (item->parameters);
+
+		ElektraDeferredCall * next = item->next;
+		elektraFree (item);
+
+		item = next;
+	}
+
+	elektraFree (list);
+}
+
+void elektraDeferredCallsExecute (Plugin * plugin, ElektraDeferredCallList * list)
+{
+	ElektraDeferredCall * item = list->head;
+	while (item != NULL)
+	{
+		size_t func = elektraPluginGetFunction (plugin, item->name);
+		if (!func)
+		{
+			item = item->next;
+			continue;
+		}
+		ElektraDeferredCallable callable = (ElektraDeferredCallable) func;
+		callable (plugin, item->parameters);
+
+		item = item->next;
+	}
+}
 
 static int listParseConfiguration (Placements * placements, KeySet * config)
 {
@@ -141,6 +255,14 @@ static int listParseConfiguration (Placements * placements, KeySet * config)
 	return rc;
 }
 
+void elektraListDeferFunctionCall (Plugin * plugin, char * name, KeySet * parameters)
+{
+	Placements * placements = elektraPluginGetData (plugin);
+	ELEKTRA_NOT_NULL (placements);
+	printf ("elektraListDeferFunctionCall called\n");
+	elektraDeferredCallAdd (placements->deferredCalls, name, parameters);
+}
+
 int elektraListOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 {
 
@@ -163,6 +285,7 @@ int elektraListOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 		placements->errKS[1] = ksNew (0, KS_END);
 		placements->plugins = ksNew (0, KS_END);
 		placements->modules = ksNew (0, KS_END);
+		placements->deferredCalls = elektraDeferredCallCreateList ();
 	}
 	elektraPluginSetData (handle, placements);
 
@@ -243,14 +366,14 @@ int elektraListClose (Plugin * handle, Key * errorKey)
 	ksDel (placements->plugins);
 	elektraModulesClose (placements->modules, NULL);
 	ksDel (placements->modules);
+	elektraDeferredCallDeleteList (placements->deferredCalls);
 	elektraFree (placements);
 	elektraPluginSetData (handle, 0);
 	return 1; /* success */
 }
 
 static int runPlugins (KeySet * pluginKS, KeySet * modules, KeySet * plugins, KeySet * configOrig, KeySet * returned, Key * parentKey,
-		       OP op, Key * (*traversalFunction) (KeySet *), ElektraIoInterface * ioBinding,
-		       ElektraNotificationCallback notificationCallback, ElektraNotificationCallbackContext * notificationContext)
+		       OP op, Key * (*traversalFunction) (KeySet *), ElektraDeferredCallList * deferredCalls)
 {
 	Key * current;
 
@@ -317,33 +440,7 @@ static int runPlugins (KeySet * pluginKS, KeySet * modules, KeySet * plugins, Ke
 				keyDel (slaveKey);
 			}
 		}
-		if (ioBinding)
-		{
-			size_t func = elektraPluginGetFunction (slave, "setIoBinding");
-			if (func)
-			{
-				ElektraIoPluginSetBinding setIoBinding = (ElektraIoPluginSetBinding) func;
-				setIoBinding (slave, ioBinding);
-			}
-		}
-		if (notificationCallback)
-		{
-			size_t func = elektraPluginGetFunction (slave, "openNotification");
-			if (func)
-			{
-				ElektraNotificationOpenNotification openNotification = (ElektraNotificationOpenNotification) func;
-				openNotification (slave, notificationCallback, notificationContext);
-			}
-		}
-		else
-		{
-			size_t func = elektraPluginGetFunction (slave, "closeNotification");
-			if (func)
-			{
-				ElektraNotificationCloseNotification closeNotification = (ElektraNotificationCloseNotification) func;
-				closeNotification (slave);
-			}
-		}
+		elektraDeferredCallsExecute (slave, deferredCalls);
 
 		if ((op == GET && slave->kdbGet && (slave->kdbGet (slave, returned, parentKey)) == -1) ||
 		    (op == SET && slave->kdbSet && (slave->kdbSet (slave, returned, parentKey)) == -1) ||
@@ -371,9 +468,7 @@ int elektraListGet (Plugin * handle, KeySet * returned, Key * parentKey)
 			keyNew ("system/elektra/modules/list/exports/error", KEY_FUNC, elektraListError, KEY_END),
 			keyNew ("system/elektra/modules/list/exports/addPlugin", KEY_FUNC, elektraListAddPlugin, KEY_END),
 			keyNew ("system/elektra/modules/list/exports/editPlugin", KEY_FUNC, elektraListEditPlugin, KEY_END),
-			keyNew ("system/elektra/modules/list/exports/setIoBinding", KEY_FUNC, elektraListSetIoBinding, KEY_END),
-			keyNew ("system/elektra/modules/list/exports/openNotification", KEY_FUNC, elektraListOpenNotification, KEY_END),
-			keyNew ("system/elektra/modules/list/exports/closeNotification", KEY_FUNC, elektraListCloseNotification, KEY_END),
+			keyNew ("system/elektra/modules/list/exports/deferFunctionCall", KEY_FUNC, elektraListDeferFunctionCall, KEY_END),
 #include ELEKTRA_README (list)
 			keyNew ("system/elektra/modules/list/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
@@ -387,7 +482,7 @@ int elektraListGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	KeySet * pluginKS = ksDup ((placements)->getKS[currentPlacement]);
 	ksRewind (pluginKS);
 	int ret = runPlugins (pluginKS, placements->modules, placements->plugins, ksDup (config), returned, parentKey, GET, ksNext,
-			      placements->ioBinding, placements->notificationCallback, placements->notificationContext);
+			      placements->deferredCalls);
 	placements->getCurrent = ((++currentPlacement) % getEnd);
 	while (currentPlacement < getEnd && !placements->getPlacements[currentPlacement])
 	{
@@ -406,7 +501,7 @@ int elektraListSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	ksRewind (pluginKS);
 	int ret = 0;
 	ret = runPlugins (pluginKS, placements->modules, placements->plugins, ksDup (config), returned, parentKey, SET, ksPop,
-			  placements->ioBinding, placements->notificationCallback, placements->notificationContext);
+			  placements->deferredCalls);
 	placements->setCurrent = ((++currentPlacement) % setEnd);
 	while (currentPlacement < setEnd && !placements->setPlacements[currentPlacement])
 	{
@@ -426,7 +521,7 @@ int elektraListError (Plugin * handle, KeySet * returned, Key * parentKey)
 	KeySet * pluginKS = ksDup ((placements)->errKS[currentPlacement]);
 	ksRewind (pluginKS);
 	int ret = runPlugins (pluginKS, placements->modules, placements->plugins, ksDup (config), returned, parentKey, ERR, ksPop,
-			      placements->ioBinding, placements->notificationCallback, placements->notificationContext);
+			      placements->deferredCalls);
 	placements->errCurrent = ((++currentPlacement) % errEnd);
 	while (currentPlacement < errEnd && !placements->errPlacements[currentPlacement])
 	{
@@ -490,26 +585,6 @@ int elektraListEditPlugin (Plugin * handle, KeySet * pluginConfig)
 	int rc = listParseConfiguration (placements, conf);
 	ksDel (conf);
 	return rc;
-}
-
-void elektraListSetIoBinding (Plugin * handle, ElektraIoInterface * binding)
-{
-	Placements * placements = elektraPluginGetData (handle);
-	placements->ioBinding = binding;
-}
-
-void elektraListOpenNotification (Plugin * handle, ElektraNotificationCallback callback, ElektraNotificationCallbackContext * context)
-{
-	Placements * placements = elektraPluginGetData (handle);
-	placements->notificationCallback = callback;
-	placements->notificationContext = context;
-}
-
-void elektraListCloseNotification (Plugin * handle)
-{
-	Placements * placements = elektraPluginGetData (handle);
-	placements->notificationCallback = NULL;
-	placements->notificationContext = NULL;
 }
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (list)

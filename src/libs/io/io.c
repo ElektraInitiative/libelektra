@@ -20,6 +20,9 @@ void elektraIoSetBinding (KDB * kdb, ElektraIoInterface * ioBinding)
 {
 	kdb->ioBinding = ioBinding;
 
+	KeySet * parameters =
+		ksNew (1, keyNew ("/ioBinding", KEY_BINARY, KEY_SIZE, sizeof (ioBinding), KEY_VALUE, &ioBinding, KEY_END), KS_END);
+
 	// iterate over global plugins
 	for (int positionIndex = 0; positionIndex < NR_GLOBAL_POSITIONS; positionIndex++)
 	{
@@ -32,14 +35,25 @@ void elektraIoSetBinding (KDB * kdb, ElektraIoInterface * ioBinding)
 			}
 
 			size_t func = elektraPluginGetFunction (plugin, "setIoBinding");
-			if (!func)
+			if (func)
 			{
-				continue;
+				ElektraIoPluginSetBinding setIoBinding = (ElektraIoPluginSetBinding)func;
+				setIoBinding (plugin, parameters);
 			}
-			ElektraIoPluginSetBinding setIoBinding = (ElektraIoPluginSetBinding)func;
-			setIoBinding (plugin, ioBinding);
+			else
+			{
+				func = elektraPluginGetFunction (plugin, "deferFunctionCall");
+				if (func)
+				{
+					typedef void (*DeferFunctionCall) (Plugin * handle, char * name, KeySet * parameters);
+					DeferFunctionCall defer = (DeferFunctionCall)func;
+					defer (plugin, "setIoBinding", parameters);
+				}
+			}
 		}
 	}
+
+	ksDel (parameters);
 }
 
 ElektraIoInterface * elektraIoGetBinding (KDB * kdb)

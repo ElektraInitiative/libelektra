@@ -66,26 +66,22 @@ typedef void (*ElektraNotificationCallback) (Key * key, ElektraNotificationCallb
 
 /**
  * Initialize plugin's notification capabilities.
- *
  * Exported as "openNotification" by transport plugins.
  *
- * @param  handle   plugin handle
- * @param  callback callback function
- * @param  context  callback context
+ * @param  handle     plugin handle
+ * @param  parameters contains the keys "/callback" (ElektraNotificationCallback * ) and "/context" (ElektraNotificationCallbackContext *).
  */
-typedef void (*ElektraNotificationOpenNotification) (Plugin * handle, ElektraNotificationCallback callback,
-						     ElektraNotificationCallbackContext * context);
+typedef void (*ElektraNotificationOpenNotification) (Plugin * handle, KeySet * parameters);
 
 /**
  * Teardown plugin's notification capabilities.
  *
  * Exported as "closeNotification" by transport plugins.
  *
- * @param  handle   plugin handle
- * @param  callback callback function
+ * @param  handle     plugin handle
+ * @param  parameters unused
  */
-typedef void (*ElektraNotificationCloseNotification) (Plugin * handle);
-
+typedef void (*ElektraNotificationCloseNotification) (Plugin * handle, KeySet * parameters);
 
 /**
  * Private struct with information about for ElektraNotificationCallback.

@@ -1,7 +1,8 @@
 /**
  * @file
  *
- * @brief Implementation of notification functions as defined in kdbnotification.h
+ * @brief Implementation of notification functions as defined in
+ * kdbnotification.h
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
@@ -110,7 +111,8 @@ static int placementToPosition (char * placement)
  * Plament names are converted to one of these position types.
  *
  * @param  placement Placement name
- * @return           Placement type for list plugin or NULL on unknown placement name
+ * @return           Placement type for list plugin or NULL on unknown placement
+ * name
  */
 static char * placementToListPositionType (char * placement)
 {
@@ -513,7 +515,8 @@ static int mountGlobalPlugin (KDB * kdb, Plugin * plugin)
 
 	char * placementList = getPluginPlacementList (plugin);
 
-	// Parse plament list (contains placements from README.md seperated by whitespace)
+	// Parse plament list (contains placements from README.md seperated by
+	// whitespace)
 	char * placement = strtok (placementList, " ");
 	while (placement != NULL)
 	{
@@ -585,7 +588,8 @@ static int unmountGlobalPlugin (KDB * kdb, Plugin * plugin)
 
 	char * placementList = getPluginPlacementList (plugin);
 
-	// Parse plament list (contains placements from README.md seperated by whitespace)
+	// Parse plament list (contains placements from README.md seperated by
+	// whitespace)
 	char * placement = strtok (placementList, " ");
 	while (placement != NULL)
 	{
@@ -608,7 +612,10 @@ static int unmountGlobalPlugin (KDB * kdb, Plugin * plugin)
 			// Add plugin to list plugin
 			if (strcmp (pluginAtPlacement->name, "list") == 0)
 			{
-				ELEKTRA_LOG_DEBUG ("required position %s/maxonce taken by list plugin, removing plugin", placement);
+				ELEKTRA_LOG_DEBUG (
+					"required position %s/maxonce taken by list plugin, "
+					"removing plugin",
+					placement);
 				int result = listRemovePlugin (pluginAtPlacement, plugin);
 				if (!result)
 				{
@@ -619,8 +626,10 @@ static int unmountGlobalPlugin (KDB * kdb, Plugin * plugin)
 			}
 			else
 			{
-				ELEKTRA_LOG_WARNING ("required position %s/maxonce taken by plugin %s, should be either list or plugin!",
-						     placement, pluginAtPlacement->name);
+				ELEKTRA_LOG_WARNING (
+					"required position %s/maxonce taken by plugin %s, "
+					"should be either list or plugin!",
+					placement, pluginAtPlacement->name);
 			}
 		}
 
@@ -638,6 +647,10 @@ static void pluginsOpenNotification (KDB * kdb, ElektraNotificationCallback call
 	ELEKTRA_NOT_NULL (kdb);
 	ELEKTRA_NOT_NULL (callback);
 
+	printf ("pluginsOpenNotification context %p\n", (void *)context);
+	KeySet * parameters = ksNew (2, keyNew ("/callback", KEY_FUNC, callback, KEY_END),
+				     keyNew ("/context", KEY_BINARY, KEY_SIZE, sizeof (context), KEY_VALUE, &context, KEY_END), KS_END);
+
 	// iterate over global plugins
 	for (int positionIndex = 0; positionIndex < NR_GLOBAL_POSITIONS; positionIndex++)
 	{
@@ -649,15 +662,27 @@ static void pluginsOpenNotification (KDB * kdb, ElektraNotificationCallback call
 				continue;
 			}
 
+
 			size_t func = elektraPluginGetFunction (plugin, "openNotification");
-			if (!func)
+			if (func)
 			{
-				continue;
+				ElektraNotificationOpenNotification openNotification = (ElektraNotificationOpenNotification)func;
+				openNotification (plugin, parameters);
 			}
-			ElektraNotificationOpenNotification openNotification = (ElektraNotificationOpenNotification)func;
-			openNotification (plugin, callback, context);
+			else
+			{
+				func = elektraPluginGetFunction (plugin, "deferFunctionCall");
+				if (func)
+				{
+					typedef void (*DeferFunctionCall) (Plugin * handle, char * name, KeySet * parameters);
+					DeferFunctionCall defer = (DeferFunctionCall)func;
+					defer (plugin, "openNotification", parameters);
+				}
+			}
 		}
 	}
+
+	ksDel (parameters);
 }
 
 static void pluginsCloseNotification (KDB * kdb)
@@ -676,12 +701,21 @@ static void pluginsCloseNotification (KDB * kdb)
 			}
 
 			size_t func = elektraPluginGetFunction (plugin, "closeNotification");
-			if (!func)
+			if (func)
 			{
-				continue;
+				ElektraNotificationCloseNotification closeNotification = (ElektraNotificationCloseNotification)func;
+				closeNotification (plugin, NULL);
 			}
-			ElektraNotificationCloseNotification closeNotification = (ElektraNotificationCloseNotification)func;
-			closeNotification (plugin);
+			else
+			{
+				func = elektraPluginGetFunction (plugin, "deferFunctionCall");
+				if (func)
+				{
+					typedef void (*DeferFunctionCall) (Plugin * handle, char * name, KeySet * parameters);
+					DeferFunctionCall defer = (DeferFunctionCall)func;
+					defer (plugin, "closeNotification", NULL);
+				}
+			}
 		}
 	}
 }
@@ -810,7 +844,9 @@ static Plugin * getNotificationPlugin (KDB * kdb)
 	else
 	{
 		ELEKTRA_LOG_WARNING (
-			"notificationPlugin not set. use elektraNotificationOpen before calling other elektraNotification-functions");
+			"notificationPlugin not set. use "
+			"elektraNotificationOpen before calling other "
+			"elektraNotification-functions");
 		return NULL;
 	}
 }

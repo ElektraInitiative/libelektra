@@ -148,14 +148,19 @@ static void test_commit (uv_loop_t * loop, ElektraIoInterface * binding)
 	// io binding is required for dispatching
 	size_t func = elektraPluginGetFunction (plugin, "setIoBinding");
 	exit_if_fail (func, "could not get function setIoBinding");
+	KeySet * setIoBindingParams =
+		ksNew (1, keyNew ("/ioBinding", KEY_BINARY, KEY_SIZE, sizeof (binding), KEY_VALUE, &binding, KEY_END), KS_END);
 	ElektraIoPluginSetBinding setIoBinding = (ElektraIoPluginSetBinding)func;
-	setIoBinding (plugin, binding);
+	setIoBinding (plugin, setIoBindingParams);
+	ksDel (setIoBindingParams);
 
 	// open notification
 	func = elektraPluginGetFunction (plugin, "openNotification");
 	exit_if_fail (func, "could not get function openNotification");
 	ElektraNotificationOpenNotification openNotification = (ElektraNotificationOpenNotification)func;
-	openNotification (plugin, test_notificationCallback, NULL);
+	KeySet * openNotificationParams = ksNew (2, keyNew ("/callback", KEY_FUNC, test_notificationCallback, KEY_END), KS_END);
+	openNotification (plugin, openNotificationParams);
+	ksDel (openNotificationParams);
 
 	char * expectedKeyName = "system/tests/testmod_dbusrecv/changed";
 	dbusSendMessage ("Commit", expectedKeyName);
@@ -173,7 +178,7 @@ static void test_commit (uv_loop_t * loop, ElektraIoInterface * binding)
 	func = elektraPluginGetFunction (plugin, "closeNotification");
 	exit_if_fail (func, "could not get function closeNotification");
 	ElektraNotificationCloseNotification closeNotification = (ElektraNotificationCloseNotification)func;
-	closeNotification (plugin);
+	closeNotification (plugin, NULL);
 
 	elektraIoBindingRemoveTimer (timerOp);
 	elektraFree (timerOp);
@@ -191,14 +196,19 @@ static void test_keyAdded (uv_loop_t * loop, ElektraIoInterface * binding)
 	// io binding is required for dispatching
 	size_t func = elektraPluginGetFunction (plugin, "setIoBinding");
 	exit_if_fail (func, "could not get function setIoBinding");
+	KeySet * setIoBindingParams =
+		ksNew (1, keyNew ("/ioBinding", KEY_BINARY, KEY_SIZE, sizeof (binding), KEY_VALUE, &binding, KEY_END), KS_END);
 	ElektraIoPluginSetBinding setIoBinding = (ElektraIoPluginSetBinding)func;
-	setIoBinding (plugin, binding);
+	setIoBinding (plugin, setIoBindingParams);
+	ksDel (setIoBindingParams);
 
 	// open notification
 	func = elektraPluginGetFunction (plugin, "openNotification");
 	exit_if_fail (func, "could not get function openNotification");
+	KeySet * openNotificationParams = ksNew (2, keyNew ("/callback", KEY_FUNC, test_notificationCallback, KEY_END), KS_END);
 	ElektraNotificationOpenNotification openNotification = (ElektraNotificationOpenNotification)func;
-	openNotification (plugin, test_notificationCallback, NULL);
+	openNotification (plugin, openNotificationParams);
+	ksDel (openNotificationParams);
 
 	char * expectedKeyName = "system/tests/testmod_dbusrecv/added";
 	dbusSendMessage ("KeyAdded", expectedKeyName);
@@ -216,7 +226,7 @@ static void test_keyAdded (uv_loop_t * loop, ElektraIoInterface * binding)
 	func = elektraPluginGetFunction (plugin, "closeNotification");
 	exit_if_fail (func, "could not get function closeNotification");
 	ElektraNotificationCloseNotification closeNotification = (ElektraNotificationCloseNotification)func;
-	closeNotification (plugin);
+	closeNotification (plugin, NULL);
 
 	elektraIoBindingRemoveTimer (timerOp);
 	elektraFree (timerOp);
@@ -234,14 +244,19 @@ static void test_keyChanged (uv_loop_t * loop, ElektraIoInterface * binding)
 	// io binding is required for dispatching
 	size_t func = elektraPluginGetFunction (plugin, "setIoBinding");
 	exit_if_fail (func, "could not get function setIoBinding");
+	KeySet * setIoBindingParams =
+		ksNew (1, keyNew ("/ioBinding", KEY_BINARY, KEY_SIZE, sizeof (binding), KEY_VALUE, &binding, KEY_END), KS_END);
 	ElektraIoPluginSetBinding setIoBinding = (ElektraIoPluginSetBinding)func;
-	setIoBinding (plugin, binding);
+	setIoBinding (plugin, setIoBindingParams);
+	ksDel (setIoBindingParams);
 
 	// open notification
 	func = elektraPluginGetFunction (plugin, "openNotification");
 	exit_if_fail (func, "could not get function openNotification");
+	KeySet * openNotificationParams = ksNew (2, keyNew ("/callback", KEY_FUNC, test_notificationCallback, KEY_END), KS_END);
 	ElektraNotificationOpenNotification openNotification = (ElektraNotificationOpenNotification)func;
-	openNotification (plugin, test_notificationCallback, NULL);
+	openNotification (plugin, openNotificationParams);
+	ksDel (openNotificationParams);
 
 	char * expectedKeyName = "system/tests/testmod_dbusrecv/changed";
 	dbusSendMessage ("KeyChanged", expectedKeyName);
@@ -259,7 +274,7 @@ static void test_keyChanged (uv_loop_t * loop, ElektraIoInterface * binding)
 	func = elektraPluginGetFunction (plugin, "closeNotification");
 	exit_if_fail (func, "could not get function closeNotification");
 	ElektraNotificationCloseNotification closeNotification = (ElektraNotificationCloseNotification)func;
-	closeNotification (plugin);
+	closeNotification (plugin, NULL);
 
 	elektraIoBindingRemoveTimer (timerOp);
 	elektraFree (timerOp);

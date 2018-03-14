@@ -51,9 +51,9 @@ int elektraDbusRecvSetupReceive (ElektraDbusRecvPluginData * pluginData, DBusBus
 int elektraDbusRecvTeardownReceive (ElektraDbusRecvPluginData * pluginData, DBusBusType type, DBusHandleMessageFunction filter_func);
 DBusHandlerResult elektraDbusRecvMessageHandler (DBusConnection * connection, DBusMessage * message, void * data);
 
-void elektraDbusRecvSetIoBinding (Plugin * handle, ElektraIoInterface * binding);
-void elektraDbusRecvOpenNotification (Plugin * handle, ElektraNotificationCallback callback, ElektraNotificationCallbackContext * context);
-void elektraDbusRecvCloseNotification (Plugin * handle);
+void elektraDbusRecvSetIoBinding (Plugin * handle, KeySet * parameters);
+void elektraDbusRecvOpenNotification (Plugin * handle, KeySet * parameters);
+void elektraDbusRecvCloseNotification (Plugin * handle, KeySet * parameters);
 
 int elektraDbusRecvOpen (Plugin * handle, Key * errorKey);
 int elektraDbusRecvClose (Plugin * handle, Key * errorKey);
