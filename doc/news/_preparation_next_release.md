@@ -91,6 +91,8 @@ These notes are of interest for people developing Elektra:
 
     now allow you to specify a list of required plugins for [Shell Recorder](https://master.libelektra.org/tests/shell/shell_recorder) and
    Markdown Shell Recorder tests.
+- All current versions of Clang-Format (6.0+) and the outdated Clang-Format 5 will now produce exactly the same output for the whole
+  codebase.
 
 ## Fixes
 
