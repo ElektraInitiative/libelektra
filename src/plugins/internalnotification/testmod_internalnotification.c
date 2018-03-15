@@ -23,6 +23,8 @@ int callback_called;
 char * callback_keyValue;
 char * callback_keyName;
 
+#define CALLBACK_CONTEXT_MAGIC_NUMBER ((void *) 1234)
+
 static int internalnotificationRegisterInt (Plugin * plugin, Key * key, int * variable)
 {
 	size_t address = elektraPluginGetFunction (plugin, "registerInt");
@@ -31,12 +33,20 @@ static int internalnotificationRegisterInt (Plugin * plugin, Key * key, int * va
 	return ((ElektraNotificationPluginRegisterInt) address) (plugin, key, variable);
 }
 
-static int internalnotificationRegisterCallback (Plugin * plugin, Key * key, ElektraNotificationChangeCallback callback)
+static int internalnotificationRegisterFloat (Plugin * plugin, Key * key, float * variable)
+{
+	size_t address = elektraPluginGetFunction (plugin, "registerFloat");
+
+	// Register key with plugin
+	return ((ElektraNotificationPluginRegisterFloat) address) (plugin, key, variable);
+}
+
+static int internalnotificationRegisterCallback (Plugin * plugin, Key * key, ElektraNotificationChangeCallback callback, void * context)
 {
 	size_t address = elektraPluginGetFunction (plugin, "registerCallback");
 
 	// Register key with plugin
-	return ((ElektraNotificationPluginRegisterCallback) address) (plugin, key, callback);
+	return ((ElektraNotificationPluginRegisterCallback) address) (plugin, key, callback, context);
 }
 
 static int digits (long long number)
@@ -302,8 +312,60 @@ static void test_intNoUpdateWithValueExceedingIntMin (void)
 	PLUGIN_CLOSE ();
 }
 
-static void test_callback (Key * key)
+
+static void test_floatUpdateWithCascadingKey (void)
 {
+	printf ("test update with cascading key registered\n");
+
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("internalnotification");
+
+	Key * registeredKey = keyNew ("/test/internalnotification/value", KEY_END);
+	float value = 0;
+	succeed_if (internalnotificationRegisterFloat (plugin, registeredKey, &value) == 1,
+		    "call to elektraInternalnotificationRegisterFloat was not successful");
+
+	Key * valueKey = keyNew ("user/test/internalnotification/value", KEY_VALUE, "2.3", KEY_END);
+	KeySet * ks = ksNew (1, valueKey, KS_END);
+
+	elektraInternalnotificationUpdateRegisteredKeys (plugin, ks);
+
+	succeed_if (value >= 2.295 && value <= 2.305, "registered value was not updated");
+
+	keyDel (registeredKey);
+	ksDel (ks);
+	PLUGIN_CLOSE ();
+}
+
+static void test_floatNoUpdateWithInvalidValue (void)
+{
+	printf ("test no update with invalid value\n");
+
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("internalnotification");
+
+	Key * valueKey = keyNew ("user/test/internalnotification/value", KEY_END);
+	KeySet * ks = ksNew (1, valueKey, KS_END);
+
+	float value = 0.0;
+	succeed_if (internalnotificationRegisterFloat (plugin, valueKey, &value) == 1,
+		    "call to elektraInternalnotificationRegisterFloat was not successful");
+
+	keySetString (valueKey, "4.a");
+
+
+	elektraInternalnotificationUpdateRegisteredKeys (plugin, ks);
+
+	succeed_if ((int) value == 0, "registered value was updated");
+
+	ksDel (ks);
+	PLUGIN_CLOSE ();
+}
+
+
+static void test_callback (Key * key, void * context)
+{
+	succeed_if (context == CALLBACK_CONTEXT_MAGIC_NUMBER, "callback context was not passed");
 	callback_called = 1;
 	callback_keyValue = (char *) keyValue (key);
 	callback_keyName = (char *) keyName (key);
@@ -320,7 +382,7 @@ static void test_callbackCalledWithKey (void)
 	Key * valueKey = keyNew ("user/test/internalnotification/value", KEY_VALUE, value, KEY_END);
 	KeySet * ks = ksNew (1, valueKey, KS_END);
 
-	succeed_if (internalnotificationRegisterCallback (plugin, valueKey, test_callback) == 1,
+	succeed_if (internalnotificationRegisterCallback (plugin, valueKey, test_callback, CALLBACK_CONTEXT_MAGIC_NUMBER) == 1,
 		    "call to elektraInternalnotificationRegisterCallback was not successful");
 
 	elektraInternalnotificationUpdateRegisteredKeys (plugin, ks);
@@ -344,7 +406,7 @@ static void test_callbackCalledWithChangeDetection (void)
 	Key * valueKey = keyNew ("user/test/internalnotification/value", KEY_VALUE, value, KEY_END);
 	KeySet * ks = ksNew (1, valueKey, KS_END);
 
-	succeed_if (internalnotificationRegisterCallback (plugin, valueKey, test_callback) == 1,
+	succeed_if (internalnotificationRegisterCallback (plugin, valueKey, test_callback, CALLBACK_CONTEXT_MAGIC_NUMBER) == 1,
 		    "call to elektraInternalnotificationRegisterCallback was not successful");
 
 	elektraInternalnotificationUpdateRegisteredKeys (plugin, ks);
@@ -377,6 +439,10 @@ int main (int argc, char ** argv)
 	test_intNoUpdateWithValueExceedingIntMax ();
 	test_intUpdateWithValueNotYetExceedingIntMin ();
 	test_intNoUpdateWithValueExceedingIntMin ();
+
+	printf ("\nregisterFloat\n-----------\n");
+	test_floatUpdateWithCascadingKey ();
+	test_floatNoUpdateWithInvalidValue ();
 
 	printf ("\nregisterCallback\n----------------\n");
 	test_callbackCalledWithKey ();

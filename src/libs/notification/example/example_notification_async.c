@@ -24,7 +24,7 @@
 #define ANSI_COLOR_GREEN "\x1b[32m"
 #define ANSI_COLOR_BLUE "\x1b[34m"
 
-static void setTerminalColor (Key * color)
+static void setTerminalColor (Key * color, void * context ELEKTRA_UNUSED)
 {
 	const char * value = keyString (color);
 	printf ("Callback called. Changing color to %s\n", value);
@@ -104,7 +104,7 @@ int main (void)
 	}
 
 	Key * callbackKeyToWatch = keyNew ("/sw/tests/example_notification/#0/current/color", KEY_END);
-	result = elektraNotificationRegisterCallback (kdb, callbackKeyToWatch, &setTerminalColor);
+	result = elektraNotificationRegisterCallback (kdb, callbackKeyToWatch, &setTerminalColor, NULL);
 	if (!result)
 	{
 		printf ("could not register callback. aborting!");

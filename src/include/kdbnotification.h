@@ -115,11 +115,25 @@ int elektraNotificationClose (KDB * kdb);
 int elektraNotificationRegisterInt (KDB * kdb, Key * key, int * variable);
 
 /**
+ * Subscribe for automatic updates to a given float variable when the given
+ * key value is changed.
+ *
+ * @param  handle   plugin handle
+ * @param  key      key to watch for changes
+ * @param  variable float variable
+ *
+ * @retval 1 on success
+ * @retval 0 on failure
+ */
+int elektraNotificationRegisterFloat (KDB * kdb, Key * key, float * variable);
+
+/**
  * Callback function for key changes.
  *
- * @param  key changed key
+ * @param  key      changed key
+ * @param  Context  user supplied callback context
  */
-typedef void (*ElektraNotificationChangeCallback) (Key * key);
+typedef void (*ElektraNotificationChangeCallback) (Key * key, void * context);
 
 /**
  * Subscribe for updates via callback when a given key value is changed.
@@ -127,11 +141,12 @@ typedef void (*ElektraNotificationChangeCallback) (Key * key);
  * @param  handle   plugin handle
  * @param  key      key to watch for changes
  * @param  callback callback function
+ * @param  context  user supplied context passed to callback function
  *
  * @retval 1 on success
  * @retval 0 on failure
  */
-int elektraNotificationRegisterCallback (KDB * kdb, Key * key, ElektraNotificationChangeCallback callback);
+int elektraNotificationRegisterCallback (KDB * kdb, Key * key, ElektraNotificationChangeCallback callback, void * context);
 
 
 #ifdef __cplusplus

@@ -71,7 +71,7 @@ static void test_registerInt (void)
 	keyDel (valueKey);
 }
 
-static void testCallback (Key * key ELEKTRA_UNUSED)
+static void testCallback (Key * key ELEKTRA_UNUSED, void * context ELEKTRA_UNUSED)
 {
 	callback_called = 1;
 }
@@ -86,11 +86,11 @@ static void test_registerCallback (void)
 
 	KDB * kdb = kdbOpen (key);
 
-	succeed_if (elektraNotificationRegisterCallback (kdb, valueKey, testCallback) == 0, "register should fail before open");
+	succeed_if (elektraNotificationRegisterCallback (kdb, valueKey, testCallback, NULL) == 0, "register should fail before open");
 
 	elektraNotificationOpen (kdb);
 
-	succeed_if (elektraNotificationRegisterCallback (kdb, valueKey, testCallback), "register failed");
+	succeed_if (elektraNotificationRegisterCallback (kdb, valueKey, testCallback, NULL), "register failed");
 
 	// call kdbGet; value gets automatically updated
 	KeySet * config = ksNew (0, KS_END);

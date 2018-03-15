@@ -877,7 +877,34 @@ int elektraNotificationRegisterInt (KDB * kdb, Key * key, int * variable)
 	return registerFunc (notificationPlugin, key, variable);
 }
 
-int elektraNotificationRegisterCallback (KDB * kdb, Key * key, ElektraNotificationChangeCallback callback)
+int elektraNotificationRegisterFloat (KDB * kdb, Key * key, float * variable)
+{
+	if (!kdb || !key || !variable)
+	{
+		ELEKTRA_LOG_WARNING ("null pointer passed");
+		return 0;
+	}
+
+	// Find notification plugin
+	Plugin * notificationPlugin = getNotificationPlugin (kdb);
+	if (!notificationPlugin)
+	{
+		return 0;
+	}
+
+	// Get register function from plugin
+	size_t func = elektraPluginGetFunction (notificationPlugin, "registerFloat");
+	if (!func)
+	{
+		return 0;
+	}
+
+	// Call register function
+	ElektraNotificationPluginRegisterFloat registerFunc = (ElektraNotificationPluginRegisterFloat) func;
+	return registerFunc (notificationPlugin, key, variable);
+}
+
+int elektraNotificationRegisterCallback (KDB * kdb, Key * key, ElektraNotificationChangeCallback callback, void * context)
 {
 	if (!kdb || !key || !callback)
 	{
@@ -901,5 +928,5 @@ int elektraNotificationRegisterCallback (KDB * kdb, Key * key, ElektraNotificati
 
 	// Call register function
 	ElektraNotificationPluginRegisterCallback registerFunc = (ElektraNotificationPluginRegisterCallback) func;
-	return registerFunc (notificationPlugin, key, callback);
+	return registerFunc (notificationPlugin, key, callback, context);
 }

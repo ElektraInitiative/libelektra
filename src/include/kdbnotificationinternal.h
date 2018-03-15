@@ -37,16 +37,31 @@ extern "C" {
 typedef int (*ElektraNotificationPluginRegisterInt) (Plugin * handle, Key * key, int * variable);
 
 /**
+ * Subscribe for automatic updates to a given float variable when the given
+ * key value is changed.
+ *
+ * @param  handle   plugin handle
+ * @param  key      key to watch for changes
+ * @param  variable float variable
+ *
+ * @retval 1 on success
+ * @retval 0 on failure
+ */
+typedef int (*ElektraNotificationPluginRegisterFloat) (Plugin * handle, Key * key, float * variable);
+
+/**
  * Subscribe for updates via callback when a given key value is changed.
  *
  * @param  handle   plugin handle
  * @param  key      key to watch for changes
  * @param  callback callback function
+ * @param  context  user supplied context passed to callback function
  *
  * @retval 1 on success
  * @retval 0 on failure
  */
-typedef int (*ElektraNotificationPluginRegisterCallback) (Plugin * handle, Key * key, ElektraNotificationChangeCallback callback);
+typedef int (*ElektraNotificationPluginRegisterCallback) (Plugin * handle, Key * key, ElektraNotificationChangeCallback callback,
+							  void * context);
 
 /**
  * Context for notification callbacks.
