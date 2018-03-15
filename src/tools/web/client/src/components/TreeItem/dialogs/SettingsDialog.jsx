@@ -28,6 +28,17 @@ const DebouncedTextField = debounce(TextField)
 const IMMEDIATE = 'IMMEDIATE'
 const DEBOUNCED = 'DEBOUNCED'
 
+export const HANDLED_METADATA = [
+  'check/type',
+  'check/enum',
+  'check/range',
+  'readonly',
+  'description',
+  'example',
+  'check/validation',
+  'check/validation/message',
+]
+
 export default class SettingsDialog extends Component {
   constructor (...args) {
     super(...args)
@@ -221,9 +232,10 @@ export default class SettingsDialog extends Component {
             {isNumberType(this.getMeta('check/type', false)) ? this.renderNumber() : null}
             <h2 style={{ marginTop: 48 }}>Additional Metadata</h2>
             <AdditionalSubDialog
-              handleEdit={this.handleEdit}
-              getMeta={this.getMeta}
-              getSaved={this.getSaved}
+              handleEdit={this.handleEdit.bind(this)}
+              getMeta={this.getMeta.bind(this)}
+              getSaved={this.getSaved.bind(this)}
+              meta={this.props.meta}
             />
         </Dialog>
     )

@@ -170,7 +170,7 @@ export default class Configuration extends Component {
                       instanceId={id}
                       data={data}
                     />
-                  : <div style={{ fontSize: '1.1em', color: 'rgba(0, 0, 0, 0.6)' }}>
+                  : <div style={{ fontSize: '1.1em', color: 'rgba(0, 0, 0, 0.4)' }}>
                         Loading configuration data...
                     </div>
                 }
