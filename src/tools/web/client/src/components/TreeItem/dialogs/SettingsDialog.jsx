@@ -18,6 +18,7 @@ import Checkbox from 'material-ui/Checkbox'
 import SavedIcon from '../SavedIcon.jsx'
 import EnumSubDialog from './EnumSubDialog.jsx'
 import NumberSubDialog from './NumberSubDialog.jsx'
+import AdditionalSubDialog from './AdditionalSubDialog.jsx'
 
 import debounce from '../../debounce'
 import { toElektraBool, fromElektraBool, isNumberType } from '../../../utils'
@@ -190,7 +191,8 @@ export default class SettingsDialog extends Component {
                     <SavedIcon saved={this.getSaved('check/validation/message')} />
                 </div>
             </div>
-            <div style={{ display: 'block', marginTop: 32, color: 'rgba(245, 166, 35, 0.5)' }}>
+            <h2 style={{ marginTop: 48 }}>Type</h2>
+            <div style={{ display: 'block', color: 'rgba(245, 166, 35, 0.5)' }}>
                 <b style={{ fontSize: '1.1em' }}>Please note:</b><br />
                 Changing the type might result in loss of data. For example,
                 when changing from <code>string</code> to <code>boolean</code>,
@@ -217,6 +219,12 @@ export default class SettingsDialog extends Component {
             </div>
             {this.getMeta('check/enum', false) ? this.renderEnum() : null}
             {isNumberType(this.getMeta('check/type', false)) ? this.renderNumber() : null}
+            <h2 style={{ marginTop: 48 }}>Additional Metadata</h2>
+            <AdditionalSubDialog
+              handleEdit={this.handleEdit}
+              getMeta={this.getMeta}
+              getSaved={this.getSaved}
+            />
         </Dialog>
     )
   }
