@@ -112,6 +112,11 @@ if (IO_GLIB_INCLUDED)
 	install (FILES kdbio_glib.h DESTINATION include/${TARGET_INCLUDE_FOLDER})
 endif ()
 
+check_binding_included ("io_ev" IO_EV_INCLUDED SUBDIRECTORY "io/ev" SILENT)
+if (IO_EV_INCLUDED)
+	install (FILES kdbio_ev.h DESTINATION include/${TARGET_INCLUDE_FOLDER})
+endif ()
+
 add_custom_target (elektra_config_headers
 		   ALL
 		   DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/kdb.h
