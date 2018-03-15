@@ -42,7 +42,7 @@ void elektraIoSetBinding (KDB * kdb, ElektraIoInterface * ioBinding)
 			}
 			else
 			{
-				func = elektraPluginGetFunction (plugin, "deferFunctionCall");
+				func = elektraPluginGetFunction (plugin, "deferredCall");
 				if (func)
 				{
 					typedef void (*DeferFunctionCall) (Plugin * handle, char * name, KeySet * parameters);

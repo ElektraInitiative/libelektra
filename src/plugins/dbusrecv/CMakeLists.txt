@@ -19,6 +19,7 @@ add_plugin (dbusrecv
 		${DBUS_ARCH_INCLUDE_DIR}
 	LINK_ELEKTRA
 		elektra-io
+		elektra-invoke
 	LINK_LIBRARIES
 		${DBUS_LIBRARIES}
 	)

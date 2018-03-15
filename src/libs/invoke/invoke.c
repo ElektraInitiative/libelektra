@@ -12,6 +12,28 @@ struct _ElektraInvokeHandle
 };
 
 /**
+ * Structure for deferred calls
+ * @internal
+ */
+typedef struct _ElektraDeferredCall
+{
+	char * name;
+	KeySet * parameters;
+	struct _ElektraDeferredCall * next;
+} _ElektraDeferredCall;
+
+/**
+ * Structure for internal plugin state
+ * @internal
+ */
+struct _ElektraDeferredCallList
+{
+	_ElektraDeferredCall * head;
+	_ElektraDeferredCall * last;
+};
+
+
+/**
  * @defgroup invoke
  * @brief Functionality to use plugins and invoke functions
  *
@@ -305,6 +327,154 @@ void elektraInvokeClose (ElektraInvokeHandle * handle, Key * errorKey)
 	ksDel (handle->modules);
 	ksDel (handle->exports);
 	elektraFree (handle);
+}
+
+/**
+ * Add a new deferred call to the deferred call list.
+ *
+ * @param  list       deferred call list
+ * @param  name       function name
+ * @param  parameters function parameters
+ * @retval 1 on success
+ * @retval 0 when malloc failed
+ */
+int elektraDeferredCallAdd (ElektraDeferredCallList * list, const char * name, KeySet * parameters)
+{
+	_ElektraDeferredCall * item = elektraMalloc (sizeof *item);
+	if (item == NULL)
+	{
+		return 0;
+	}
+	item->name = elektraStrDup (name);
+	item->parameters = ksDup (parameters);
+	item->next = NULL;
+
+	if (list->head == NULL)
+	{
+		// Initialize list
+		list->head = list->last = item;
+	}
+	else
+	{
+		// Make new item end of list
+		list->last->next = item;
+		list->last = item;
+	}
+
+	return 1;
+}
+
+/**
+ * Create new deferred call list.
+ *
+ * The list needs to be deleted with elektraDeferredCallDeleteList().
+ *
+ * @return  new list
+ */
+ElektraDeferredCallList * elektraDeferredCallCreateList (void)
+{
+	ElektraDeferredCallList * list = elektraMalloc (sizeof *list);
+	if (list == NULL)
+	{
+		return NULL;
+	}
+	list->head = NULL;
+	list->last = NULL;
+	return list;
+}
+
+/**
+ * Delete deferred call list.
+ *
+ * @param list list
+ */
+void elektraDeferredCallDeleteList (ElektraDeferredCallList * list)
+{
+	_ElektraDeferredCall * item = list->head;
+	while (item != NULL)
+	{
+		elektraFree (item->name);
+		ksDel (item->parameters);
+
+		_ElektraDeferredCall * next = item->next;
+		elektraFree (item);
+
+		item = next;
+	}
+
+	elektraFree (list);
+}
+
+/**
+ * Execute deferred calls on given plugin.
+ *
+ * @param plugin plugin handle
+ * @param list   list
+ */
+void elektraDeferredCallsExecute (Plugin * plugin, ElektraDeferredCallList * list)
+{
+	_ElektraDeferredCall * item = list->head;
+	while (item != NULL)
+	{
+		size_t func = elektraPluginGetFunction (plugin, item->name);
+		if (!func)
+		{
+			item = item->next;
+			continue;
+		}
+		ElektraDeferredCallable callable = (ElektraDeferredCallable)func;
+		callable (plugin, item->parameters);
+
+		item = item->next;
+	}
+}
+
+/**
+ * Invokes a deferable function on a plugin handle.
+ * If the function is exported by the plugin it is directly invoked,
+ * if the plugin supports deferring calls, the call is deferred.
+ *
+ * The parameters KeySet can be freed afterwards.
+ *
+ * @param  handle                    [description]
+ * @param  elektraPluginFunctionName [description]
+ * @param  ks                        [description]
+ * @retval 0 on success
+ * @retval 1 when function not exported and deferring unsupported by plugin
+ */
+int elektraInvokeCallDeferable (ElektraInvokeHandle * handle, const char * elektraPluginFunctionName, KeySet * parameters)
+{
+	ElektraDeferredCallable direct = *(ElektraDeferredCallable *)elektraInvokeGetFunction (handle, elektraPluginFunctionName);
+	if (direct)
+	{
+		direct (handle->plugin, parameters);
+	}
+	else
+	{
+		ElektraDeferredCall deferredCall = *(ElektraDeferredCall *)elektraInvokeGetFunction (handle, "deferredCall");
+		if (deferredCall)
+		{
+			deferredCall (handle->plugin, elektraPluginFunctionName, parameters);
+		}
+		else
+		{
+			// no direct call and deferring possible
+			return 1;
+		}
+	}
+
+	// success
+	return 0;
+}
+
+/**
+ * Execute deferred calls on given invoke handle.
+ * @param handle invoke handle
+ * @param list   list
+ */
+void elektraInvokeExecuteDeferredCalls (ElektraInvokeHandle * handle, ElektraDeferredCallList * list)
+{
+	elektraDeferredCallsExecute (handle->plugin, list);
 }
 
 /**

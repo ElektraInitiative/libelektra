@@ -16,38 +16,13 @@
 #include <kdbassert.h>
 #include <kdberrors.h>
 #include <kdbinternal.h>
+#include <kdbinvoke.h>
 #include <kdbmodule.h>
 #include <kdbos.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-/**
- * Structure for registered key variable pairs
- * @internal
- */
-typedef struct _ElektraDeferredCall
-{
-	char * name;
-	KeySet * parameters;
-	struct _ElektraDeferredCall * next;
-} ElektraDeferredCall;
 
-/**
- * Structure for internal plugin state
- * @internal
- */
-typedef struct
-{
-	ElektraDeferredCall * head;
-	ElektraDeferredCall * last;
-} ElektraDeferredCallList;
-
-/**
- * Declaration for functions that can be called with elektraDeferredCallsExecute().
- *
- * @param  parameters function parameters
- */
-typedef void (*ElektraDeferredCallable) (Plugin * plugin, KeySet * parameters);
 
 typedef enum { preGetStorage = 0, postGetStorage, postGetCleanup, getEnd } GetPlacements;
 
@@ -80,95 +55,6 @@ typedef struct
 } Placements;
 
 static char lastIndex[ELEKTRA_MAX_ARRAY_SIZE];
-
-/**
- * Add a new deferred call to the deferred call list.
- *
- * @param  list       deferred call list
- * @param  name       function name
- * @param  parameters function parameters
- * @retval 1 on success
- * @retval 0 when malloc failed
- */
-int elektraDeferredCallAdd (ElektraDeferredCallList * list, char * name, KeySet * parameters)
-{
-	ElektraDeferredCall * item = elektraMalloc (sizeof *item);
-	if (item == NULL)
-	{
-		return 0;
-	}
-	item->name = elektraStrDup (name);
-	item->parameters = ksDup (parameters);
-	item->next = NULL;
-
-	if (list->head == NULL)
-	{
-		// Initialize list
-		list->head = list->last = item;
-	}
-	else
-	{
-		// Make new item end of list
-		list->last->next = item;
-		list->last = item;
-	}
-
-	return 1;
-}
-
-/**
- * Create new deferred call list.
- *
- * The list needs to be deleted with elektraDeferredCallDeleteList().
- *
- * @return  new list
- */
-ElektraDeferredCallList * elektraDeferredCallCreateList (void)
-{
-	ElektraDeferredCallList * list = elektraMalloc (sizeof *list);
-	if (list == NULL)
-	{
-		return NULL;
-	}
-	list->head = NULL;
-	list->last = NULL;
-	return list;
-}
-
-void elektraDeferredCallDeleteList (ElektraDeferredCallList * list)
-{
-	ElektraDeferredCall * item = list->head;
-	while (item != NULL)
-	{
-		elektraFree (item->name);
-		ksDel (item->parameters);
-
-		ElektraDeferredCall * next = item->next;
-		elektraFree (item);
-
-		item = next;
-	}
-
-	elektraFree (list);
-}
-
-void elektraDeferredCallsExecute (Plugin * plugin, ElektraDeferredCallList * list)
-{
-	ElektraDeferredCall * item = list->head;
-	while (item != NULL)
-	{
-		size_t func = elektraPluginGetFunction (plugin, item->name);
-		if (!func)
-		{
-			item = item->next;
-			continue;
-		}
-		ElektraDeferredCallable callable = (ElektraDeferredCallable) func;
-		callable (plugin, item->parameters);
-
-		item = item->next;
-	}
-}
 
 static int listParseConfiguration (Placements * placements, KeySet * config)
 {
@@ -255,11 +141,10 @@ static int listParseConfiguration (Placements * placements, KeySet * config)
 	return rc;
 }
 
-void elektraListDeferFunctionCall (Plugin * plugin, char * name, KeySet * parameters)
+void elektraListDeferredCall (Plugin * plugin, const char * name, KeySet * parameters)
 {
 	Placements * placements = elektraPluginGetData (plugin);
 	ELEKTRA_NOT_NULL (placements);
-	printf ("elektraListDeferFunctionCall called\n");
 	elektraDeferredCallAdd (placements->deferredCalls, name, parameters);
 }
 
@@ -458,19 +343,19 @@ int elektraListGet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
 	if (!strcmp (keyName (parentKey), "system/elektra/modules/list"))
 	{
-		KeySet * contract = ksNew (
-			30, keyNew ("system/elektra/modules/list", KEY_VALUE, "list plugin waits for your orders", KEY_END),
-			keyNew ("system/elektra/modules/list/exports", KEY_END),
-			keyNew ("system/elektra/modules/list/exports/open", KEY_FUNC, elektraListOpen, KEY_END),
-			keyNew ("system/elektra/modules/list/exports/close", KEY_FUNC, elektraListClose, KEY_END),
-			keyNew ("system/elektra/modules/list/exports/get", KEY_FUNC, elektraListGet, KEY_END),
-			keyNew ("system/elektra/modules/list/exports/set", KEY_FUNC, elektraListSet, KEY_END),
-			keyNew ("system/elektra/modules/list/exports/error", KEY_FUNC, elektraListError, KEY_END),
-			keyNew ("system/elektra/modules/list/exports/addPlugin", KEY_FUNC, elektraListAddPlugin, KEY_END),
-			keyNew ("system/elektra/modules/list/exports/editPlugin", KEY_FUNC, elektraListEditPlugin, KEY_END),
-			keyNew ("system/elektra/modules/list/exports/deferFunctionCall", KEY_FUNC, elektraListDeferFunctionCall, KEY_END),
+		KeySet * contract =
+			ksNew (30, keyNew ("system/elektra/modules/list", KEY_VALUE, "list plugin waits for your orders", KEY_END),
+			       keyNew ("system/elektra/modules/list/exports", KEY_END),
+			       keyNew ("system/elektra/modules/list/exports/open", KEY_FUNC, elektraListOpen, KEY_END),
+			       keyNew ("system/elektra/modules/list/exports/close", KEY_FUNC, elektraListClose, KEY_END),
+			       keyNew ("system/elektra/modules/list/exports/get", KEY_FUNC, elektraListGet, KEY_END),
+			       keyNew ("system/elektra/modules/list/exports/set", KEY_FUNC, elektraListSet, KEY_END),
+			       keyNew ("system/elektra/modules/list/exports/error", KEY_FUNC, elektraListError, KEY_END),
+			       keyNew ("system/elektra/modules/list/exports/addPlugin", KEY_FUNC, elektraListAddPlugin, KEY_END),
+			       keyNew ("system/elektra/modules/list/exports/editPlugin", KEY_FUNC, elektraListEditPlugin, KEY_END),
+			       keyNew ("system/elektra/modules/list/exports/deferredCall", KEY_FUNC, elektraListDeferredCall, KEY_END),
 #include ELEKTRA_README (list)
-			keyNew ("system/elektra/modules/list/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system/elektra/modules/list/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 

@@ -671,7 +671,7 @@ static void pluginsOpenNotification (KDB * kdb, ElektraNotificationCallback call
 			}
 			else
 			{
-				func = elektraPluginGetFunction (plugin, "deferFunctionCall");
+				func = elektraPluginGetFunction (plugin, "deferredCall");
 				if (func)
 				{
 					typedef void (*DeferFunctionCall) (Plugin * handle, char * name, KeySet * parameters);
@@ -708,7 +708,7 @@ static void pluginsCloseNotification (KDB * kdb)
 			}
 			else
 			{
-				func = elektraPluginGetFunction (plugin, "deferFunctionCall");
+				func = elektraPluginGetFunction (plugin, "deferredCall");
 				if (func)
 				{
 					typedef void (*DeferFunctionCall) (Plugin * handle, char * name, KeySet * parameters);
