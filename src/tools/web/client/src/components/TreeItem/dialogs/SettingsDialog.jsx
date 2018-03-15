@@ -131,27 +131,53 @@ export default class SettingsDialog extends Component {
                 />
                 <SavedIcon saved={this.getSaved('readonly')} />
             </div>
-            <div style={{ display: 'block' }}>
-                <DebouncedTextField
-                  floatingLabelText="description"
-                  floatingLabelFixed={true}
-                  hintText="describe the field"
-                  onChange={this.handleEdit('description', IMMEDIATE)}
-                  onDebounced={this.handleEdit('description', DEBOUNCED)}
-                  value={this.getMeta('description', '')}
-                />
-                <SavedIcon saved={this.getSaved('description')} />
+            <div style={{ display: 'flex' }}>
+                <div style={{ flex: 1 }}>
+                    <DebouncedTextField
+                      floatingLabelText="description"
+                      floatingLabelFixed={true}
+                      hintText="e.g. username of the account"
+                      onChange={this.handleEdit('description', IMMEDIATE)}
+                      onDebounced={this.handleEdit('description', DEBOUNCED)}
+                      value={this.getMeta('description', '')}
+                    />
+                    <SavedIcon saved={this.getSaved('description')} />
+                </div>
+                <div style={{ flex: 1 }}>
+                    <DebouncedTextField
+                      floatingLabelText="example"
+                      floatingLabelFixed={true}
+                      hintText="e.g. hitchhiker42"
+                      onChange={this.handleEdit('example', IMMEDIATE)}
+                      onDebounced={this.handleEdit('example', DEBOUNCED)}
+                      value={this.getMeta('example', '')}
+                    />
+                    <SavedIcon saved={this.getSaved('example')} />
+                </div>
             </div>
-            <div style={{ display: 'block' }}>
-                <DebouncedTextField
-                  floatingLabelText="example"
-                  floatingLabelFixed={true}
-                  hintText="provide an example"
-                  onChange={this.handleEdit('example', IMMEDIATE)}
-                  onDebounced={this.handleEdit('example', DEBOUNCED)}
-                  value={this.getMeta('example', '')}
-                />
-                <SavedIcon saved={this.getSaved('example')} />
+            <div style={{ display: 'flex' }}>
+                <div style={{ flex: 1 }}>
+                    <DebouncedTextField
+                      floatingLabelText="validation regex"
+                      floatingLabelFixed={true}
+                      hintText="e.g. ^[a-zA-Z0-9]+$"
+                      onChange={this.handleEdit('check/validation', IMMEDIATE)}
+                      onDebounced={this.handleEdit('check/validation', DEBOUNCED)}
+                      value={this.getMeta('check/validation', '')}
+                    />
+                    <SavedIcon saved={this.getSaved('check/validation')} />
+                </div>
+                <div style={{ flex: 1 }}>
+                    <DebouncedTextField
+                      floatingLabelText="validation error message"
+                      floatingLabelFixed={true}
+                      hintText="e.g. invalid username"
+                      onChange={this.handleEdit('check/validation/message', IMMEDIATE)}
+                      onDebounced={this.handleEdit('check/validation/message', DEBOUNCED)}
+                      value={this.getMeta('check/validation/message', '')}
+                    />
+                    <SavedIcon saved={this.getSaved('check/validation/message')} />
+                </div>
             </div>
             <div style={{ display: 'block', marginTop: 8 }}>
                 <SelectField

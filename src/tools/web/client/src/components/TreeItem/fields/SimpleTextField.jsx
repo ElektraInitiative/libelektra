@@ -32,7 +32,7 @@ export default class SimpleTextField extends Component {
           id={id}
           value={val}
           errorText={this.state.error}
-          hintText={meta && meta.example}
+          hintText={(meta && meta.example) ? `e.g. ${meta.example}` : false}
           onChange={value => this.setState({ value })}
           onDebounced={currentValue => {
             const validationError = validateType(meta, currentValue)
