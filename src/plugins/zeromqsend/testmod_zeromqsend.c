@@ -37,6 +37,8 @@ void * context;
 /** timeout for tests in seconds */
 #define TEST_TIMEOUT 3
 
+#define TEST_ENDPOINT "ipc://testmod_zeromqsend"
+
 /**
  * Create subscriber socket for tests.
  * @internal
@@ -50,7 +52,7 @@ static void * createTestSocket (char * subscribeFilter)
 	usleep (TIME_HOLDOFF);
 
 	void * subSocket = zmq_socket (context, ZMQ_SUB);
-	int result = zmq_bind (subSocket, "tcp://*:6000");
+	int result = zmq_bind (subSocket, TEST_ENDPOINT);
 	if (result != 0)
 	{
 		yield_error ("zmq_bind failed");
@@ -88,6 +90,8 @@ static void * notificationReaderThreadMain (void * filter)
 	int lastErrno;
 	do
 	{
+		usleep (100 * 1000); // wait 100 ms
+
 		lastErrno = 0;
 		int result = zmq_msg_recv (&message, subSocket, ZMQ_DONTWAIT);
 
@@ -142,6 +146,7 @@ static void * notificationReaderThreadMain (void * filter)
 			default:
 				yield_error ("test inconsistency");
 			}
+
 			partCounter++;
 		}
 	} while (lastErrno == EAGAIN || (more && partCounter < maxParts));
@@ -174,7 +179,7 @@ static void test_sending (void)
 	char * sendingKeyName = "user/foo/bar";
 
 	void * pubSocket = zmq_socket (context, ZMQ_PUB);
-	int result = zmq_connect (pubSocket, "tcp://localhost:6000");
+	int result = zmq_connect (pubSocket, TEST_ENDPOINT);
 	if (result != 0)
 	{
 		yield_error ("zmq_connect failed!");
@@ -208,7 +213,7 @@ static void test_commit (void)
 	Key * toAdd = keyNew ("system/tests/foo/bar", KEY_END);
 	KeySet * ks = ksNew (0, KS_END);
 
-	KeySet * conf = ksNew (0, KS_END);
+	KeySet * conf = ksNew (1, keyNew ("/config/endpoint", KEY_VALUE, TEST_ENDPOINT, KEY_END), KS_END);
 	PLUGIN_OPEN ("zeromqsend");
 
 	// initial get to save current state
