@@ -9,6 +9,8 @@
 import React, { Component } from 'react'
 
 import TextField from 'material-ui/TextField'
+import FlatButton from 'material-ui/FlatButton'
+import ContentAddIcon from 'material-ui/svg-icons/content/add'
 
 import SavedIcon from '../SavedIcon.jsx'
 import debounce from '../../debounce'
@@ -65,13 +67,41 @@ export default class AdditionalSubDialog extends Component {
     ])
   }
 
+  createKey = () => {
+    const { handleEdit } = this.props
+    const name = prompt("Please enter the key name (e.g. check/condition)")
+    if (HANDLED_METADATA.includes(name)) {
+      alert(
+        "Cannot add metakey '" + name + "' because it is already handled by elektra-web. " +
+        "Please use the existing field on the settings page to configure this metakey."
+      )
+    } else {
+      handleEdit(name)('')
+    }
+  }
+
   render () {
     const { items } = this.state
-
-    return (items && Array.isArray(items) && items.length > 0)
+    const renderedItems = (items && Array.isArray(items) && items.length > 0)
       ? this.renderItems()
-      : <div style={{ fontSize: '1.1em', color: 'rgba(0, 0, 0, 0.4)' }}>
+      : [
+        <div style={{ fontSize: '1.1em', color: 'rgba(0, 0, 0, 0.4)', marginTop: 16 }}>
           No additional metadata defined yet.
         </div>
+      ]
+
+    return [
+      <h2 style={{ marginTop: 48, marginBottom: 0, display: 'block' }}>
+        Additional Metadata
+        <FlatButton
+          label="create new metakey"
+          icon={<ContentAddIcon />}
+          primary
+          style={{ marginLeft: 16 }}
+          onClick={this.createKey}
+        />
+      </h2>,
+      ...renderedItems,
+    ]
   }
 }
