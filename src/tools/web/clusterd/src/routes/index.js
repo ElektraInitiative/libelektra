@@ -17,7 +17,7 @@ import initInstanceRoutes from './instances'
 import initClusterRoutes from './clusters'
 
 export default function initRoutes (app) {
-  app.get('/version', (req, res) =>
+  app.get('/api/version', (req, res) =>
     getVersions()
       .then(output => successResponse(res, output))
       .catch(err => errorResponse(res, err))

@@ -17,7 +17,7 @@ export const GET_KDB_FAILURE = 'GET_KDB_FAILURE'
 export const getKdb = (id) => thunkCreator({
   id,
   types: [GET_KDB_REQUEST, GET_KDB_SUCCESS, GET_KDB_FAILURE],
-  promise: fetch(`/instances/${id}/kdb`, { credentials: 'same-origin' })
+  promise: fetch(`/api/instances/${id}/kdb`, { credentials: 'same-origin' })
     .then(parseJSONResponse)
     .then(result => {
       return { ...result, id }
@@ -34,7 +34,7 @@ export const getKey = (id, path) => thunkCreator({
   id, path,
   types: [GET_KEY_REQUEST, GET_KEY_SUCCESS, GET_KEY_FAILURE],
   promise: fetch(
-    `/instances/${id}/kdb/${encodePath(path)}`,
+    `/api/instances/${id}/kdb/${encodePath(path)}`,
     { credentials: 'same-origin' }
   )
     .then(parseJSONResponse)
@@ -54,7 +54,7 @@ export const setKey = (id, path, value) => thunkCreator({
   request: { id, path, value }, // TODO: use this syntax everywhere
   types: [SET_KEY_REQUEST, SET_KEY_SUCCESS, SET_KEY_FAILURE],
   promise: fetch(
-    `/instances/${id}/kdb/${encodePath(path)}`,
+    `/api/instances/${id}/kdb/${encodePath(path)}`,
     {
       credentials: 'same-origin',
       method: 'PUT',
@@ -76,7 +76,7 @@ export const deleteKey = (id, path) => thunkCreator({
   request: { id, path },
   types: [DELETE_KEY_REQUEST, DELETE_KEY_SUCCESS, DELETE_KEY_FAILURE],
   promise: fetch(
-    `/instances/${id}/kdb/${encodePath(path)}`,
+    `/api/instances/${id}/kdb/${encodePath(path)}`,
     {
       credentials: 'same-origin',
       method: 'DELETE',
@@ -94,7 +94,7 @@ export const moveKey = (id, from, to) => thunkCreator({
   request: { id, from, to },
   types: [MOVE_KEY_REQUEST, MOVE_KEY_SUCCESS, MOVE_KEY_FAILURE],
   promise: fetch(
-    `/instances/${id}/kdbMv/${encodePath(from)}`,
+    `/api/instances/${id}/kdbMv/${encodePath(from)}`,
     {
       credentials: 'same-origin',
       method: 'POST',
@@ -116,7 +116,7 @@ export const copyKey = (id, from, to) => thunkCreator({
   request: { id, from, to },
   types: [COPY_KEY_REQUEST, COPY_KEY_SUCCESS, COPY_KEY_FAILURE],
   promise: fetch(
-    `/instances/${id}/kdbCp/${encodePath(from)}`,
+    `/api/instances/${id}/kdbCp/${encodePath(from)}`,
     {
       credentials: 'same-origin',
       method: 'POST',
@@ -138,7 +138,7 @@ export const setMetaKey = (id, path, key, value) => thunkCreator({
   request: { id, path, key, value },
   types: [SET_META_REQUEST, SET_META_SUCCESS, SET_META_FAILURE],
   promise: fetch(
-    `/instances/${id}/kdbMeta/${encodePath(path)}`,
+    `/api/instances/${id}/kdbMeta/${encodePath(path)}`,
     {
       credentials: 'same-origin',
       method: 'POST',
@@ -160,7 +160,7 @@ export const deleteMetaKey = (id, path, key) => thunkCreator({
   request: { id, path, key },
   types: [DELETE_META_REQUEST, DELETE_META_SUCCESS, DELETE_META_FAILURE],
   promise: fetch(
-    `/instances/${id}/kdbMeta/${encodePath(path)}`,
+    `/api/instances/${id}/kdbMeta/${encodePath(path)}`,
     {
       credentials: 'same-origin',
       method: 'DELETE',

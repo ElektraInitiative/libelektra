@@ -36,7 +36,7 @@ const getInstances = () =>
     })
 
 export default function initInstanceRoutes (app) {
-  app.route('/instances')
+  app.route('/api/instances')
     .get((req, res) =>
       getInstances()
         .then(output => successResponse(res, output))
@@ -48,7 +48,7 @@ export default function initInstanceRoutes (app) {
         .catch(err => errorResponse(res, err))
     )
 
-  app.route('/instances/:id')
+  app.route('/api/instances/:id')
     .get((req, res) =>
       getInstance(req.params.id)
         .then(output => successResponse(res, output))
@@ -65,14 +65,14 @@ export default function initInstanceRoutes (app) {
         .catch(err => errorResponse(res, err))
     )
 
-  app.get('/instances/:id/version', (req, res) =>
+  app.get('/api/instances/:id/version', (req, res) =>
     getInstance(req.params.id)
       .then(instance => remoteKdb.version(instance.host))
       .then(output => successResponse(res, output))
       .catch(err => errorResponse(res, err))
   )
 
-  app.get('/instances/:id/kdb', (req, res) =>
+  app.get('/api/instances/:id/kdb', (req, res) =>
     getInstance(req.params.id)
       .then(instance => {
         if (!instance || !instance.host) {
@@ -85,7 +85,7 @@ export default function initInstanceRoutes (app) {
       .catch(err => errorResponse(res, err))
   )
 
-  app.route('/instances/:id/kdb/*')
+  app.route('/api/instances/:id/kdb/*')
     .get((req, res) =>
       getInstance(req.params.id)
         .then(instance => remoteKdb.get(instance.host, req.params[0]))
@@ -106,21 +106,21 @@ export default function initInstanceRoutes (app) {
         .catch(err => errorResponse(res, err))
     )
 
-  app.post('/instances/:id/kdbMv/*', (req, res) =>
+  app.post('/api/instances/:id/kdbMv/*', (req, res) =>
     getInstance(req.params.id)
       .then(instance => remoteKdb.mv(instance.host, req.params[0], req.body))
       .then(() => res.status(204).send())
       .catch(err => errorResponse(res, err))
   )
 
-  app.post('/instances/:id/kdbCp/*', (req, res) =>
+  app.post('/api/instances/:id/kdbCp/*', (req, res) =>
     getInstance(req.params.id)
       .then(instance => remoteKdb.cp(instance.host, req.params[0], req.body))
       .then(() => res.status(204).send())
       .catch(err => errorResponse(res, err))
   )
 
-  app.route('/instances/:id/kdbMeta/*')
+  app.route('/api/instances/:id/kdbMeta/*')
     .post((req, res) =>
       getInstance(req.params.id)
         .then(instance => remoteKdb.setmeta(instance.host, req.params[0], req.body.key, req.body.value))

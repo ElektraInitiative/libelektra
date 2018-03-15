@@ -16,7 +16,7 @@ export const INSTANCES_FAILURE = 'INSTANCES_FAILURE'
 
 export const fetchInstances = () => thunkCreator({
   types: [INSTANCES_REQUEST, INSTANCES_SUCCESS, INSTANCES_FAILURE],
-  promise: fetch(`/instances`, { credentials: 'same-origin' })
+  promise: fetch(`/api/instances`, { credentials: 'same-origin' })
     .then(parseJSONResponse),
 })
 
@@ -28,7 +28,7 @@ export const INSTANCE_FAILURE = 'INSTANCE_FAILURE'
 
 export const fetchInstance = (id) => thunkCreator({
   types: [INSTANCE_REQUEST, INSTANCE_SUCCESS, INSTANCE_FAILURE],
-  promise: fetch(`/instances/${id}`, { credentials: 'same-origin' })
+  promise: fetch(`/api/instances/${id}`, { credentials: 'same-origin' })
     .then(parseJSONResponse),
 })
 
@@ -40,7 +40,7 @@ export const INSTANCE_UPDATE_FAILURE = 'INSTANCE_UPDATE_FAILURE'
 
 export const updateInstance = (id, data) => thunkCreator({
   types: [INSTANCE_UPDATE_REQUEST, INSTANCE_UPDATE_SUCCESS, INSTANCE_UPDATE_FAILURE],
-  promise: fetch(`/instances/${id}`, {
+  promise: fetch(`/api/instances/${id}`, {
     credentials: 'same-origin',
     method: 'PUT',
     headers: {
@@ -58,7 +58,7 @@ export const INSTANCE_DELETE_FAILURE = 'INSTANCE_DELETE_FAILURE'
 
 export const deleteInstance = (id, data) => thunkCreator({
   types: [INSTANCE_DELETE_REQUEST, INSTANCE_DELETE_SUCCESS, INSTANCE_DELETE_FAILURE],
-  promise: fetch(`/instances/${id}`, {
+  promise: fetch(`/api/instances/${id}`, {
     credentials: 'same-origin',
     method: 'DELETE',
   }).then(parseJSONResponse),
@@ -72,7 +72,7 @@ export const CREATE_INSTANCE_FAILURE = 'CREATE_INSTANCE_FAILURE'
 
 export const createInstance = (data) => thunkCreator({
   types: [CREATE_INSTANCE_REQUEST, CREATE_INSTANCE_SUCCESS, CREATE_INSTANCE_FAILURE],
-  promise: fetch(`/instances`, {
+  promise: fetch(`/api/instances`, {
     credentials: 'same-origin',
     method: 'POST',
     headers: {

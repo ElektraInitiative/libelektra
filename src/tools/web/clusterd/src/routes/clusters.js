@@ -34,7 +34,7 @@ const applyToAllInstances = (res, clusterId, fn) =>
     })
 
 export default function initClusterRoutes (app) {
-  app.route('/clusters')
+  app.route('/api/clusters')
     .get((req, res) =>
       getClusters()
         .then(output => successResponse(res, output))
@@ -46,7 +46,7 @@ export default function initClusterRoutes (app) {
         .catch(err => errorResponse(res, err))
     )
 
-  app.route('/clusters/:id')
+  app.route('/api/clusters/:id')
     .get((req, res) =>
       getCluster(req.params.id)
         .then(output => successResponse(res, output))
@@ -63,7 +63,7 @@ export default function initClusterRoutes (app) {
         .catch(err => errorResponse(res, err))
     )
 
-  app.route('/clusters/:id/instances')
+  app.route('/api/clusters/:id/instances')
     .get((req, res) =>
       applyToAllInstances(res, req.params.id, (instance) => instance)
     )
@@ -73,13 +73,13 @@ export default function initClusterRoutes (app) {
         .catch(err => errorResponse(res, err))
     )
 
-  app.delete('/clusters/:id/instances/:instanceId', (req, res) =>
+  app.delete('/api/clusters/:id/instances/:instanceId', (req, res) =>
     removeInstanceFromCluster(req.params.id, req.params.instanceId)
       .then(output => successResponse(res, output))
       .catch(err => errorResponse(res, err))
   )
 
-  app.get('/clusters/:id/version', (req, res) =>
+  app.get('/api/clusters/:id/version', (req, res) =>
     applyToAllInstances(res, req.params.id, (instance) =>
       remoteKdb.version(instance.host)
     )
@@ -95,7 +95,7 @@ export default function initClusterRoutes (app) {
   }
 
   // TODO: check if cluster id actually exists
-  app.get('/clusters/:id/kdb', (req, res) =>
+  app.get('/api/clusters/:id/kdb', (req, res) =>
     kdb.getAndLs(virtualKdb(req.params.id))
       .then(stripVirtualPath(req.params.id))
       .then(output => successResponse(res, output))
@@ -103,7 +103,7 @@ export default function initClusterRoutes (app) {
   )
 
   // TODO: what if an instance isn't online? -> send later
-  app.route('/clusters/:id/kdb/*')
+  app.route('/api/clusters/:id/kdb/*')
     .get((req, res) =>
       kdb.getAndLs(virtualKdb(req.params.id, req.params[0]))
         .then(stripVirtualPath(req.params.id))
