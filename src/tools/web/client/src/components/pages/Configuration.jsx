@@ -165,12 +165,14 @@ export default class Configuration extends Component {
         <Card style={{ padding: '8px 16px' }}>
             <CardHeader title={title} subtitle={host} />
             <CardText>
-                {data
+                {(data && Array.isArray(data) && data.length > 0)
                   ? <TreeView
                       instanceId={id}
                       data={data}
                     />
-                  : 'loading configuration data...'
+                  : <div style={{ fontSize: '1.1em', color: 'rgba(0, 0, 0, 0.6)' }}>
+                        Loading configuration data...
+                    </div>
                 }
             </CardText>
             <CardActions>
