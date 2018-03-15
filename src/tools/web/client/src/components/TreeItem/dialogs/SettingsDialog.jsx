@@ -202,7 +202,7 @@ export default class SettingsDialog extends Component {
                     <SavedIcon saved={this.getSaved('check/validation/message')} />
                 </div>
             </div>
-            <h2 style={{ marginTop: 48 }}>Type</h2>
+            <h3 style={{ marginTop: 48 }}>Type</h3>
             <div style={{ display: 'block', color: 'rgba(245, 166, 35, 0.5)' }}>
                 <b style={{ fontSize: '1.1em' }}>Please note:</b><br />
                 Changing the type might result in loss of data. For example,
@@ -230,7 +230,7 @@ export default class SettingsDialog extends Component {
             </div>
             {this.getMeta('check/enum', false) ? this.renderEnum() : null}
             {isNumberType(this.getMeta('check/type', false)) ? this.renderNumber() : null}
-            <h2 style={{ marginTop: 48 }}>Additional Metadata</h2>
+            <h3 style={{ marginTop: 48, marginBottom: 0 }}>Additional Metadata</h3>
             <AdditionalSubDialog
               handleEdit={this.handleEdit.bind(this)}
               getMeta={this.getMeta.bind(this)}

@@ -53,32 +53,25 @@ export default class AdditionalSubDialog extends Component {
     const { handleEdit, getMeta, getSaved } = this.props
     const { items } = this.state
 
-    return items.map(item =>
-      <div>
-        <DebouncedTextField
-          floatingLabelText={item.key}
-          floatingLabelFixed={true}
-          value={item.value || getMeta(item.key)}
-          onChange={this.updateValue(item.key)}
-          onDebounced={handleEdit(item.key)}
-        />
-        <SavedIcon saved={getSaved(item.key)} />
-      </div>
-    )
+    return items.map(item => [
+      <DebouncedTextField
+        floatingLabelText={item.key}
+        floatingLabelFixed={true}
+        value={item.value || getMeta(item.key)}
+        onChange={this.updateValue(item.key)}
+        onDebounced={handleEdit(item.key)}
+      />,
+      <SavedIcon saved={getSaved(item.key)} />
+    ])
   }
 
   render () {
     const { items } = this.state
 
-    return (
-        <div style={{ display: 'block' }}>
-          {(items && Array.isArray(items) && items.length > 0)
-            ? this.renderItems()
-            : <div style={{ fontSize: '1.1em', color: 'rgba(0, 0, 0, 0.4)' }}>
-                No additional metadata defined yet.
-              </div>
-          }
+    return (items && Array.isArray(items) && items.length > 0)
+      ? this.renderItems()
+      : <div style={{ fontSize: '1.1em', color: 'rgba(0, 0, 0, 0.4)' }}>
+          No additional metadata defined yet.
         </div>
-    )
   }
 }
