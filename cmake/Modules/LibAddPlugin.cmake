@@ -29,7 +29,7 @@ function (add_plugintest testname)
 		cmake_parse_arguments (ARG
 			"MEMLEAK;INSTALL_TEST_DATA" # optional keywords
 			"INCLUDE_SYSTEM_DIRECTORIES"        # one value keywords
-			"COMPILE_DEFINITIONS;INCLUDE_DIRECTORIES;LINK_LIBRARIES;LINK_ELEKTRA;LINK_PLUGIN;WORKING_DIRECTORY" # multi value keywords
+			"COMPILE_DEFINITIONS;INCLUDE_DIRECTORIES;LINK_LIBRARIES;LINK_ELEKTRA;TEST_LINK_LIBRARIES;TEST_LINK_ELEKTRA;LINK_PLUGIN;WORKING_DIRECTORY" # multi value keywords
 			${ARGN}
 		)
 
@@ -42,14 +42,16 @@ function (add_plugintest testname)
 
 
 		set (PLUGIN_NAME elektra-${testname})
-		restore_variable (${PLUGIN_NAME} ARG_LINK_LIBRARIES ALLOW_MATCH)
+		restore_variable (${PLUGIN_NAME} ARG_LINK_LIBRARIES)
 		restore_variable (${PLUGIN_NAME} ARG_COMPILE_DEFINITIONS)
 		restore_variable (${PLUGIN_NAME} ARG_INCLUDE_DIRECTORIES)
 		restore_variable (${PLUGIN_NAME} ARG_INCLUDE_SYSTEM_DIRECTORIES)
-		restore_variable (${PLUGIN_NAME} ARG_LINK_ELEKTRA ALLOW_MATCH)
+		restore_variable (${PLUGIN_NAME} ARG_LINK_ELEKTRA)
 		restore_variable (${PLUGIN_NAME} ARG_ADD_TEST)
 		restore_variable (${PLUGIN_NAME} ARG_INSTALL_TEST_DATA)
 		restore_variable (${PLUGIN_NAME} ARG_OBJECT_SOURCES)
+		restore_variable (${PLUGIN_NAME} ARG_TEST_LINK_LIBRARIES)
+		restore_variable (${PLUGIN_NAME} ARG_TEST_LINK_ELEKTRA)
 
 		set (TEST_SOURCES
 				$<TARGET_OBJECTS:cframework>
@@ -95,9 +97,9 @@ function (add_plugintest testname)
 			endif ()
 		endif (INSTALL_TESTING)
 
-		target_link_elektra(${testexename} elektra-kdb elektra-plugin ${ARG_LINK_ELEKTRA})
+		target_link_elektra(${testexename} elektra-kdb elektra-plugin ${ARG_LINK_ELEKTRA} ${ARG_TEST_LINK_ELEKTRA})
 
-		target_link_libraries (${testexename} ${ARG_LINK_LIBRARIES})
+		target_link_libraries (${testexename} ${ARG_LINK_LIBRARIES} ${ARG_TEST_LINK_LIBRARIES})
 		set_target_properties (${testexename} PROPERTIES
 				COMPILE_DEFINITIONS "HAVE_KDBCONFIG_H;ELEKTRA_PLUGIN_TEST;${ARG_COMPILE_DEFINITIONS}")
 		set_property(TARGET ${testexename}
@@ -178,27 +180,14 @@ function (plugin_check_if_included PLUGIN_SHORT_NAME)
 endfunction ()
 
 function (restore_variable PLUGIN_NAME VARIABLE)
-	cmake_parse_arguments (ARG
-		"ALLOW_MATCH" # optional keywords
-		""        # one value keywords
-		"" # multi value keywords
-		${ARGN}
-	)
 	set (PROP_NAME "${PLUGIN_NAME}_${VARIABLE}")
 	get_property (VAR GLOBAL PROPERTY "${PROP_NAME}")
 	if (VAR)
 		if (DEFINED ${VARIABLE})
 			# both stored and given by user: do consistency check
 			#message (STATUS "consistency check, plugin ${PLUGIN_NAME} got ${VARIABLE} reset to ${VAR}")
-			if (${ARG_ALLOW_MATCH})
-				string (FIND "${${VARIABLE}}" "${VAR}" IS_SUBSTRING)
-				if (${IS_SUBSTRING} EQUAL -1)
-					message (FATAL_ERROR "Internally inconsistency, plugin ${PLUGIN_NAME} got different values for variable ${VARIABLE}: '${${VARIABLE}}' needs to include '${VAR}'")
-				endif ()
-			else ()
-				if (NOT ${VARIABLE} STREQUAL "${VAR}")
-					message (FATAL_ERROR "Internally inconsistency, plugin ${PLUGIN_NAME} got different values for variable ${VARIABLE}: '${${VARIABLE}}' != '${VAR}'")
-				endif ()
+			if (NOT ${VARIABLE} STREQUAL "${VAR}")
+				message (FATAL_ERROR "Internally inconsistency, plugin ${PLUGIN_NAME} got different values for variable ${VARIABLE}: '${${VARIABLE}}' != '${VAR}'")
 			endif ()
 		else ()
 			# stored, but not given by user, use what was stored
@@ -253,6 +242,12 @@ endfunction ()
 #
 # TEST_REQUIRED_PLUGINS:
 #   Specifies a list of required plugins for the **Markdown Shell Recorder** test
+#
+# TEST_LINK_LIBRARIES:
+#   like LINK_LIBRARIES but only applies to plugin tests
+#
+# TEST_LINK_ELEKTRA:
+#   like LINK_ELEKTRA but only applies to plugin tests
 #
 function (add_plugin PLUGIN_SHORT_NAME)
 	cmake_parse_arguments (ARG

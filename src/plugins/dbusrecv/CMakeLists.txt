@@ -47,14 +47,9 @@ if (ADDTESTING_PHASE)
 		endif ()
 
 		add_plugintest (dbusrecv
-			LINK_LIBRARIES
-				${DBUS_LIBRARIES}
+			TEST_LINK_LIBRARIES
 				${STATIC_LIBRARIES}
-			INCLUDE_DIRECTORIES
-				${DBUS_INCLUDE_DIR}
-				${DBUS_ARCH_INCLUDE_DIR}
-			LINK_ELEKTRA
-				elektra-io
+			TEST_LINK_ELEKTRA
 				elektra-io-uv
 			)
 
