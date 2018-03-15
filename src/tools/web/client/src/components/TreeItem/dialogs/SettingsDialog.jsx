@@ -179,7 +179,13 @@ export default class SettingsDialog extends Component {
                     <SavedIcon saved={this.getSaved('check/validation/message')} />
                 </div>
             </div>
-            <div style={{ display: 'block', marginTop: 8 }}>
+            <div style={{ display: 'block', marginTop: 32, color: 'rgba(245, 166, 35, 0.5)' }}>
+                <b style={{ fontSize: '1.1em' }}>Please note:</b><br />
+                Changing the type might result in loss of data. For example,
+                when changing from <code>string</code> to <code>boolean</code>,
+                the string value will get overwritten!
+            </div>
+            <div style={{ display: 'block' }}>
                 <SelectField
                   floatingLabelText="type"
                   floatingLabelFixed={true}
