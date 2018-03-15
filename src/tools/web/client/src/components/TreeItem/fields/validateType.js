@@ -1,3 +1,5 @@
+import { isNumberType, RANGE_REGEX } from '../../../utils'
+
 const INTEGER_TYPES = [
   'short', 'unsigned_short', 'long', 'unsigned_long', 'long_long',
   'unsigned_long_long',
@@ -11,6 +13,35 @@ const elektraEnumToJSON = (val) => {
   const convertedVal = val.replace(/'/g, '"')
   if (val.charAt(0) !== '[') return '[' + convertedVal + ']'
   else return convertedVal
+}
+
+const getMinMax = (first, second) => {
+  if (second < first) {
+    return [ second, first ]
+  }
+  return [ first, second ]
+}
+
+const validateRange = (rangeStr, num) => {
+  const ranges = rangeStr.split(',')
+  let msg = 'invalid number, value between '
+
+  const valid = ranges.reduce((res, range, i) => {
+    if (res) return res
+    const [ _, first, second ] = range.match(RANGE_REGEX)
+    const [ min, max ] = getMinMax(Number(first), Number(second))
+    if ((num >= min) && (num <= max)) {
+      return true
+    }
+    if (i > 0) {
+      msg += ' or '
+    }
+    msg += min + ' and ' + max
+  }, false)
+
+  if (!valid) {
+    return msg + ' expected'
+  }
 }
 
 const validateType = (metadata, value) => {
@@ -41,6 +72,17 @@ const validateType = (metadata, value) => {
       return 'invalid number, long long (integer between -9223372036854775808 and 9223372036854775807) expected'
     } else if (type === 'unsigned_long_long' && !(i >= 0 && i <= 18446744073709551615)) {
       return 'invalid number, unsigned long long (integer between 0 and 18446744073709551615) expected'
+    }
+  }
+
+  if (isNumberType(type)) {
+    const i = Number(value)
+    const range = metadata['check/range']
+    if (range) {
+      const validationError = validateRange(range, i)
+      if (validationError) {
+        return validationError
+      }
     }
   }
 

@@ -17,9 +17,10 @@ import Checkbox from 'material-ui/Checkbox'
 
 import SavedIcon from '../SavedIcon.jsx'
 import EnumSubDialog from './EnumSubDialog.jsx'
+import NumberSubDialog from './NumberSubDialog.jsx'
 
 import debounce from '../../debounce'
-import { toElektraBool, fromElektraBool } from '../../../utils'
+import { toElektraBool, fromElektraBool, isNumberType } from '../../../utils'
 
 const DebouncedTextField = debounce(TextField)
 
@@ -99,6 +100,16 @@ export default class SettingsDialog extends Component {
           onChange={this.handleEdit('check/enum')}
           value={this.getMeta('check/enum', '')}
           saved={this.getSaved('check/enum')}
+        />
+    )
+  }
+
+  renderNumber () {
+    return (
+        <NumberSubDialog
+          onChange={this.handleEdit('check/range')}
+          value={this.getMeta('check/range', '')}
+          saved={this.getSaved('check/range')}
         />
     )
   }
@@ -205,6 +216,7 @@ export default class SettingsDialog extends Component {
                 <SavedIcon saved={this.getSaved('check/type')} style={{ paddingBottom: 16 }} />
             </div>
             {this.getMeta('check/enum', false) ? this.renderEnum() : null}
+            {isNumberType(this.getMeta('check/type', false)) ? this.renderNumber() : null}
         </Dialog>
     )
   }
