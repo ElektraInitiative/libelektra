@@ -1,6 +1,6 @@
 # Relative
 
-## Issue
+## Problem
 
 There is a different behavior of various plugins whether their name is
 absolute or relative, including:

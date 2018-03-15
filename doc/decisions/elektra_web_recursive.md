@@ -1,6 +1,6 @@
 # Elektra Web recursive structure
 
-## Issue
+## Problem
 
 After deciding how to remotely manage instances and groups of instances
 (clusters) with Elektra Web, there is still the issue of recursively nested

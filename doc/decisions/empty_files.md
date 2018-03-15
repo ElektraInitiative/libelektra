@@ -1,6 +1,6 @@
 # Empty Files
 
-## Issue
+## Problem
 
 An empty KeySet is passed to kdbSet(). What is the correct persistent
 representation?

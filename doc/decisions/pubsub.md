@@ -1,6 +1,6 @@
 # Pub/Sub Communication
 
-## Issue
+## Problem
 
 To develop a [Web UI](https://github.com/ElektraInitiative/libelektra/issues/252),
 we need to be able to remotely configure Elektra via a network socket.

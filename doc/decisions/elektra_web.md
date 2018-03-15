@@ -1,6 +1,6 @@
 # Elektra Web structure
 
-## Issue
+## Problem
 
 For Elektra Web, there needs to be a way to remotely manage instances and groups
 of instances (clusters). The remote configuration of a single instance is

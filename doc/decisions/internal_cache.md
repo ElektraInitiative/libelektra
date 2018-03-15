@@ -1,6 +1,6 @@
 # Internal KeySet Cache
 
-## Issue
+## Problem
 
 When doing kdbGet() possible more keys are returned which might be
 confusing. When doing a second kdbGet() with a new keyset

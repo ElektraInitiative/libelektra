@@ -1,6 +1,6 @@
 # C++ Unit Testing Framework
 
-## Issue
+## Problem
 
 The previous unit testing framework started as hack to have a bit more
 than simple asserts. It is not easy to use (needs explicit enumeration

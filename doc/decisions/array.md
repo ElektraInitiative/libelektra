@@ -1,6 +1,6 @@
 # Arrays
 
-## Issue
+## Problem
 
 Currently it is inefficient to detect the length of an array and
 it is impossible to know if an key (without subkeys) should be

@@ -1,6 +1,6 @@
 # Vendor Spec
 
-## Issue
+## Problem
 
 Vendors (distributors, administrators) might want to modify the specification.
 gsettings has a similar feature.

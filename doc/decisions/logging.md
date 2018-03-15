@@ -1,6 +1,6 @@
 # Logging
 
-## Issue
+## Problem
 
 Both code comments and assertions are unfortunately not very popular.
 A quite efficient way to still get some documentation about the code

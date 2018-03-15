@@ -1,6 +1,6 @@
 # CMake Spec
 
-## Issue
+## Problem
 
 The compilation variants of plugins blow up the number of plugins.
 Additionally there is the concept of default storage + resolver that is

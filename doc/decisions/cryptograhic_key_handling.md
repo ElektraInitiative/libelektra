@@ -1,6 +1,6 @@
 # Cryptographic Key Handling
 
-## Issue
+## Problem
 
 The crypto plugin applies cryptographic operations to Keys and KeySets.
 In order to do that it needs keys and initialization vectors (IV).

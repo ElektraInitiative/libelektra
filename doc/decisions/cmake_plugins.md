@@ -1,6 +1,6 @@
 # CMake Plugins
 
-## Issue
+## Problem
 
 - Plugin names and plugin folders not always exactly
   match (resolver_*, crypto_*)

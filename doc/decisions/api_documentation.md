@@ -1,6 +1,6 @@
 # REST API Documentation
 
-## Issue
+## Problem
 
 A standard way of describing REST APIs offered by tools and plugins for Elektra is required to ease development for and usage of these. Because many good standards for describing APIs are out there already, an existing one shall be used.
 

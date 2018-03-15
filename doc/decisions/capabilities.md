@@ -1,6 +1,6 @@
 # Capabilities
 
-## Issue
+## Problem
 
 Every backend, except `filesys`, was unable to represent full file system
 semantics.  Capabilities described the differences between `filesys`

@@ -1,6 +1,6 @@
 # Script Testing
 
-## Issue
+## Problem
 
 Writing portable shell code for testing command-line tools is difficult.
 

@@ -1,6 +1,6 @@
 # Bootstrap
 
-## Issue
+## Problem
 
 Currently the default backend (default.ecf) will also be used for bootstrapping. There are two problems with this approach:
 

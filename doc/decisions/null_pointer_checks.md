@@ -1,6 +1,6 @@
 # Null Pointer Checks
 
-## Issue
+## Problem
 
 Currently all functions do proper argument checking which might degrade
 performance.

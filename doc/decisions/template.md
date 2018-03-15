@@ -1,6 +1,6 @@
 # Template
 
-## Issue
+## Problem
 
 ## Constraints
 

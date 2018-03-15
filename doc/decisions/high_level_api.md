@@ -1,6 +1,6 @@
 # High-level API
 
-## Issue
+## Problem
 
 Projects usually do not want to use low-level APIs.
 `KDB` and `KeySet` is useful for plugins and to

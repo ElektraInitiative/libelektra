@@ -1,6 +1,6 @@
 # Definition of Bool
 
-## Issue
+## Problem
 
 Inconsistent use of bool in various parts of Elektra.
 
