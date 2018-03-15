@@ -42,9 +42,22 @@
   content: "";
   height: 1em;
   width: 2em;
-  mask: url('/folded.svg') no-repeat;
-  background-color: #000000;
   transition: all 0.2s;
+}
+@supports (mask: url('/folded.svg') no-repeat) {
+  .ExplorerView ul > li.category .opener {
+    mask: url('/folded.svg') no-repeat;
+    background-color: #000000;
+  }
+  .ExplorerView ul li.selected > span.item > .opener {
+    background-color: #00BCD4;
+  }
+}
+@supports not (mask: url('/folded.svg') no-repeat) {
+  .ExplorerView ul > li.category .opener {
+    background-image: url('/folded.svg');
+    background-repeat: no-repeat;
+  }
 }
 .ExplorerView ul li:not(.category) > span.item:before {
   display: block;
@@ -91,9 +104,6 @@
 
 /* Selected */
 .ExplorerView ul li.selected {}
-.ExplorerView ul li.selected > span.item > .opener {
-  background-color: #00BCD4;
-}
 .ExplorerView ul li.selected > span.item {
   color: #00BCD4;
 }
