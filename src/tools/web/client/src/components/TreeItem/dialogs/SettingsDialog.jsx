@@ -13,11 +13,13 @@ import FlatButton from 'material-ui/FlatButton'
 import TextField from 'material-ui/TextField'
 import SelectField from 'material-ui/SelectField'
 import MenuItem from 'material-ui/MenuItem'
+import Checkbox from 'material-ui/Checkbox'
 
 import SavedIcon from '../SavedIcon.jsx'
 import EnumSubDialog from './EnumSubDialog.jsx'
 
 import debounce from '../../debounce'
+import { toElektraBool, fromElektraBool } from '../../../utils'
 
 const DebouncedTextField = debounce(TextField)
 
@@ -121,6 +123,14 @@ export default class SettingsDialog extends Component {
           onRequestClose={onClose}
         >
             <h1>Settings for <b>{path}</b></h1>
+            <div style={{ display: 'block', marginTop: 32 }}>
+                <Checkbox
+                  checked={fromElektraBool(this.getMeta('readonly', false))}
+                  onCheck={(e, val) => this.handleEdit('readonly')(toElektraBool(val))}
+                  label="read only / disabled"
+                />
+                <SavedIcon saved={this.getSaved('readonly')} />
+            </div>
             <div style={{ display: 'block' }}>
                 <DebouncedTextField
                   floatingLabelText="description"

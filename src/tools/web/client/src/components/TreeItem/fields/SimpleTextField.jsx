@@ -12,6 +12,7 @@ import TextField from 'material-ui/TextField'
 
 import validateType from './validateType'
 import debounce from '../../debounce'
+import { fromElektraBool } from '../../../utils'
 
 const DebouncedTextField = debounce(TextField)
 
@@ -42,6 +43,7 @@ export default class SimpleTextField extends Component {
             }
             onChange(currentValue)
           }}
+          disabled={fromElektraBool(meta && meta.readonly)}
         />
       </div>
     )
