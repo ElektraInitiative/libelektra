@@ -82,7 +82,7 @@ To add a new module, one simply adds his/her module to `elektramodules.h` via
 The module name `<NAME>` shall be consistent with module names used in
 `module:` of `src/error/specification`.
 
-## Argument
+## Rationale
 
 A more complex system seems to be overkill. Thus libraries should not have
 any effects other than what is described by their API, logging should nearly

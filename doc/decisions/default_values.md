@@ -18,7 +18,7 @@
 
 - spec-plugin does a lookup for values (Maybe also resolving missing fallback/override links?)
 
-## Argument
+## Rationale
 
 ## Implications
 

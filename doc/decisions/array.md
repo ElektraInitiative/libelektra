@@ -44,7 +44,7 @@ myarray/#5 = value5
 ```
 
 
-## Argument
+## Rationale
 
 - Is very similar to `binary` metadata.
 - The key alone suffices to know if its an array

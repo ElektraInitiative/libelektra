@@ -31,7 +31,7 @@ A standard way of describing REST APIs offered by tools and plugins for Elektra 
 
 The decision is to use [API blueprints](https://apiblueprint.org/) together with additional tools from its ecosystem.
 
-## Argument
+## Rationale
 
 **API Blueprints** together with some (free) tools for it support all given constraints and also all soft-constraints. It also fits the current documentation style of the Elektra project the most.
 

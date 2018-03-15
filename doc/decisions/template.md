@@ -10,7 +10,7 @@
 
 ## Decision
 
-## Argument
+## Rationale
 
 ## Implications
 

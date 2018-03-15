@@ -58,7 +58,7 @@ for what should happen on kdbGet and handle problems e.g.
 Use a wrapper plugin to iterate over the keyset and delegate the validation
 of each key to the corresponding validation plugin.
 
-## Argument
+## Rationale
 
 - Validation plugins don't need to know what should be done if the validation fails
 - We can run multiple validations on every key and improve error messages

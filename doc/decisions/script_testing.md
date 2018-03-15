@@ -36,7 +36,7 @@ None.
 
 Develop shell recorder and tutorial wrapper.
 
-## Argument
+## Rationale
 
 ## Implications
 

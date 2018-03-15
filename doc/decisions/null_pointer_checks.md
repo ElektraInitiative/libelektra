@@ -19,7 +19,7 @@ performance.
 
 Delayed to 1.0.0
 
-## Argument
+## Rationale
 
 - should have consistent, defined behavior
 

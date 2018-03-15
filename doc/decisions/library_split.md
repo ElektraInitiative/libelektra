@@ -26,7 +26,7 @@ are all linked together to libelektra.org.
 
 - split libraries
 
-## Argument
+## Rationale
 
 - allows various users (plugins, applications) to link to exactly what they need
 - allows symbol versioning on different levels (for different evolving libraries)

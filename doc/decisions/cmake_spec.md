@@ -29,7 +29,7 @@ needed for bootstrapping plugins.
 ## Decision
 
 
-## Argument
+## Rationale
 
 ## Implications
 

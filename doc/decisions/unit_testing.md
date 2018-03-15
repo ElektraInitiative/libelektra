@@ -30,7 +30,7 @@ the assertion that failed).
   Fedora,...)
 
 
-## Argument
+## Rationale
 
 + Having the output of current values when an assertion fails in any case
 + No listing of all test cases in main (but instead having test discovery)

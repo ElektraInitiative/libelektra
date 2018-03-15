@@ -26,7 +26,7 @@ daemons.
 
 Use one cluster daemon (clusterd) to manage all clusters and instances.
 
-## Argument
+## Rationale
 
 Accessing the elektrad daemons directly would require us to store all the
 information in the client, which is not a good idea if we want to be able to

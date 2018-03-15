@@ -113,7 +113,7 @@ Use cases:
 
 
 
-## Argument
+## Rationale
 
 Some nice features that will be implemented as global plugins.
 

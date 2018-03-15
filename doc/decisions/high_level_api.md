@@ -249,7 +249,7 @@ keyhHasChildren (KeyHierarchy * kh);
 - merging on conflicts? (maybe libelektra-tools dynamically loaded?)
 - some API calls have a question mark next to it
 
-## Argument
+## Rationale
 
 1. Very easy to get started with, to get a key needs 3 lines of codes:
 

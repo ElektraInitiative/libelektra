@@ -25,7 +25,7 @@ duplications exactly of the parts as requested.
 
 Use global plugin to implement internal cache.
 
-## Argument
+## Rationale
 
 Semantics can be provided without additional code or overhead in the core.
 

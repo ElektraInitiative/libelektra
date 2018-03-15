@@ -42,7 +42,7 @@ Capabilities were unable to describe:
 No capabilities are used, but instead other plugins implement the
 limitations other plugins have.
 
-## Argument
+## Rationale
 
 The main problem was that the complexity was just moved to the
 applications.  In the end, application developers had to understand

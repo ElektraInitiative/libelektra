@@ -25,7 +25,7 @@ representation?
 
 Remove files on empty KeySet.
 
-## Argument
+## Rationale
 
 + allows user to undo what a previous kdbSet() did
 + easy to understand semantics

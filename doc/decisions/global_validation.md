@@ -25,7 +25,7 @@ with the respective `kdbGet`.
 
 ## Decision
 
-## Argument
+## Rationale
 
 ## Implications
 

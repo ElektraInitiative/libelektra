@@ -29,7 +29,7 @@
 
 ## Decision
 
-## Argument
+## Rationale
 
 - The user wants deterministic retrieval of configuration.
   It must be answerable (w/o study of source code and debugging) which

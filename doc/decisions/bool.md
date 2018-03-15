@@ -44,7 +44,7 @@ The convenience plugin should transform (it might be combined with a plugin that
 - "false", "off", "no"  to "0"
 - "true",  "on",  "yes" to "1"
 
-## Argument
+## Rationale
 
 - most easy to implement
 - allows presence to be true

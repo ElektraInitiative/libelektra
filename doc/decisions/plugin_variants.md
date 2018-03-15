@@ -123,7 +123,7 @@ system/elektra/plugins/simpleini/variants/spacesep/config/format = "% %"
 ```
 
 
-## Argument
+## Rationale
 
 - The `genconf` API was chosen to be consistent with `checkconf`.
   The pluginhandle might be missing for some scenarios.
