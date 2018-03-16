@@ -24,6 +24,7 @@ struct _mmapHeader
 	size_t ksAlloc;		/**<Sum of all KeySet->alloc sizes */
 	size_t numKeys;		/**<Number of Keys including meta Keys */
 	size_t dataSize;	/**<Size of the data block in bytes: dynamic properties like key name, value, etc. */
+	uint32_t checksum;      /**<Checksum of the data */
 	char * mmapAddr;	/**<Base pointer to mapped region (points to the start of this struct) */
 };
 

@@ -26,6 +26,8 @@
 #include <sys/types.h> // ftruncate ()
 #include <unistd.h>    // close(), ftruncate()
 
+#include <zlib.h> // crc32()
+
 
 #define SIZEOF_KEY (sizeof (Key))
 #define SIZEOF_KEY_PTR (sizeof (Key *))
@@ -454,13 +456,11 @@ static void mmapWrite (char * mappedRegion, KeySet * keySet, MmapHeader * mmapHe
 	//		* memcpy () to continuous region and then fwrite () only once
 	//		* use mmap to write to temp file and msync () after all data is written, then rename file
 	mmapHeader->mmapAddr = mappedRegion;
-	memcpy (mappedRegion, mmapHeader, SIZEOF_MMAPHEADER);
 
 	KeySet * ksPtr = (KeySet *)(mappedRegion + SIZEOF_MMAPHEADER);
 
 	if (keySet->size < 1)
 	{
-		// TODO: review mpranj
 		char * ksArrayPtr = (((char *)ksPtr) + SIZEOF_KEYSET);
 		ksPtr->flags = KS_FLAG_MMAP_STRUCT | KS_FLAG_MMAP_ARRAY;
 		ksPtr->array = (Key **)ksArrayPtr;
@@ -469,10 +469,18 @@ static void mmapWrite (char * mappedRegion, KeySet * keySet, MmapHeader * mmapHe
 		ksPtr->size = 0;
 		ksPtr->cursor = 0;
 		ksPtr->current = 0;
-		return;
+	}
+	else
+	{
+		writeKeySet (mmapHeader, keySet, ksPtr, dynArray);
 	}
 
-	writeKeySet (mmapHeader, keySet, ksPtr, dynArray);
+	char * ksCharPtr = (char *)ksPtr;
+	uint32_t checksum = crc32 (0L, Z_NULL, 0);
+	checksum = crc32 (checksum, ksCharPtr, (mmapHeader->mmapSize - SIZEOF_MMAPHEADER));
+
+	mmapHeader->checksum = checksum;
+	memcpy (mappedRegion, mmapHeader, SIZEOF_MMAPHEADER);
 }
 
 static void mmapToKeySet (char * mappedRegion, KeySet * returned)
@@ -619,6 +627,20 @@ int elektraMmapstorageGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	}
 	ELEKTRA_LOG_WARNING ("mappedRegion size: %zu", sbuf.st_size);
 	ELEKTRA_LOG_WARNING ("mappedRegion ptr: %p", (void *)mappedRegion);
+
+	char * ksPtr = (char *)(mappedRegion + SIZEOF_MMAPHEADER);
+	uint32_t checksum = crc32 (0L, Z_NULL, 0);
+	checksum = crc32 (checksum, ksPtr, mmapHeader.mmapSize - SIZEOF_MMAPHEADER);
+
+	ELEKTRA_LOG_WARNING ("old checksum: %ul", mmapHeader.checksum);
+	ELEKTRA_LOG_WARNING ("new checksum: %ul", checksum);
+	if (checksum != mmapHeader.checksum)
+	{
+		ELEKTRA_SET_ERROR_GET (parentKey);
+		errno = errnosave;
+		ELEKTRA_LOG ("checksum failed");
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
 
 	ksClose (returned);
 	updatePointers (&mmapHeader, mappedRegion);
