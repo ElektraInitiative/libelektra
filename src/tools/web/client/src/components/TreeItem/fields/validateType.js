@@ -28,7 +28,7 @@ const validateRange = (rangeStr, num) => {
 
   const valid = ranges.reduce((res, range, i) => {
     if (res) return res
-    const [ _, first, second ] = range.match(RANGE_REGEX)
+    const [ , first, second ] = range.match(RANGE_REGEX)
     const [ min, max ] = getMinMax(Number(first), Number(second))
     if ((num >= min) && (num <= max)) {
       return true
@@ -37,6 +37,7 @@ const validateRange = (rangeStr, num) => {
       msg += ' or '
     }
     msg += min + ' and ' + max
+    return res
   }, false)
 
   if (!valid) {

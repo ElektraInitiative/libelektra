@@ -66,8 +66,8 @@ export default class AdditionalSubDialog extends Component {
     const { handleEdit, getMeta, getSaved } = this.props
     const { items } = this.state
 
-    return items.map(item => (
-      <span style={{ marginRight: 60 }}>
+    return items.map((item, index) => (
+      <span key={index} style={{ marginRight: 60 }}>
         <DebouncedTextField
           floatingLabelText={item.key}
           floatingLabelFixed={true}
@@ -116,7 +116,7 @@ export default class AdditionalSubDialog extends Component {
       ]
 
     return [
-      <h2 style={{ marginTop: 48, marginBottom: 0, display: 'block' }}>
+      <h2 key={'header'} style={{ marginTop: 48, marginBottom: 0, display: 'block' }}>
         Additional Metadata
         <FlatButton
           label="create new metakey"

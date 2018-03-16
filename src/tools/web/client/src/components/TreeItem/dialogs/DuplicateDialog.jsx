@@ -57,7 +57,7 @@ export default class DuplicateDialog extends Component {
         <Dialog
           actions={actions}
           modal={false}
-          open={open}
+          open={open || false}
           onRequestClose={this.handleClose}
         >
             <h1>Duplicating <b>{path}</b> key</h1>
