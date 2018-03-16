@@ -63,6 +63,9 @@ matrix:
 
     - os: linux
       compiler: gcc
+      apt:
+        sources: [ llvm-toolchain-trusty-6.0, ubuntu-toolchain-r-test]
+        packages: [ clang-format-6.0 ]
 
     - os: linux
       compiler: clang
