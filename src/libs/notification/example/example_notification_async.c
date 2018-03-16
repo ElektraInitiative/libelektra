@@ -63,7 +63,7 @@ static void onSIGNAL (int signal)
 
 static void printVariable (ElektraIoTimerOperation * timer)
 {
-	int value = *(int *)elektraIoTimerGetData (timer);
+	int value = *(int *) elektraIoTimerGetData (timer);
 	printf ("\nMy integer value is %d\n", value);
 }
 

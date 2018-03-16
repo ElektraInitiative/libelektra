@@ -1,3 +1,10 @@
+/**
+ * @file
+ *
+ * @brief Library for invoking exported plugin functions
+ *
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+ */
 #include <kdbinvoke.h>
 #include <kdbmodule.h>
 #include <kdbprivate.h> // for elektraPluginOpen/Close
@@ -422,7 +429,7 @@ void elektraDeferredCallsExecute (Plugin * plugin, ElektraDeferredCallList * lis
 			item = item->next;
 			continue;
 		}
-		ElektraDeferredCallable callable = (ElektraDeferredCallable)func;
+		ElektraDeferredCallable callable = (ElektraDeferredCallable) func;
 		callable (plugin, item->parameters);
 
 		item = item->next;
@@ -444,14 +451,14 @@ void elektraDeferredCallsExecute (Plugin * plugin, ElektraDeferredCallList * lis
  */
 int elektraInvokeCallDeferable (ElektraInvokeHandle * handle, const char * elektraPluginFunctionName, KeySet * parameters)
 {
-	ElektraDeferredCallable direct = *(ElektraDeferredCallable *)elektraInvokeGetFunction (handle, elektraPluginFunctionName);
+	ElektraDeferredCallable direct = *(ElektraDeferredCallable *) elektraInvokeGetFunction (handle, elektraPluginFunctionName);
 	if (direct)
 	{
 		direct (handle->plugin, parameters);
 	}
 	else
 	{
-		ElektraDeferredCall deferredCall = *(ElektraDeferredCall *)elektraInvokeGetFunction (handle, "deferredCall");
+		ElektraDeferredCall deferredCall = *(ElektraDeferredCall *) elektraInvokeGetFunction (handle, "deferredCall");
 		if (deferredCall)
 		{
 			deferredCall (handle->plugin, elektraPluginFunctionName, parameters);

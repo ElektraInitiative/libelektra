@@ -58,7 +58,7 @@ static void dbusWrapperDispatch (ElektraIoIdleOperation * idle)
 
 static void dbusWrapperHandleDispatch (DBusConnection * connection ELEKTRA_UNUSED, DBusDispatchStatus status, void * data)
 {
-	_ElektraIoAdapterDbusHandle * priv = (_ElektraIoAdapterDbusHandle *)data;
+	_ElektraIoAdapterDbusHandle * priv = (_ElektraIoAdapterDbusHandle *) data;
 	if (status == DBUS_DISPATCH_DATA_REMAINS)
 	{
 		elektraIoIdleSetEnabled (priv->dispatchIdle, 1);
@@ -96,7 +96,7 @@ static void dbusWrapperTimeout (ElektraIoTimerOperation * timerOp)
 static dbus_bool_t dbusWrapperAddWatch (DBusWatch * watch, void * data)
 {
 	// printf ("dbusWrapperAddWatch\n");
-	_ElektraIoAdapterDbusHandle * private = (_ElektraIoAdapterDbusHandle *)data;
+	_ElektraIoAdapterDbusHandle * private = (_ElektraIoAdapterDbusHandle *) data;
 	ElektraIoInterface * ioBinding = private->ioBinding;
 
 	// Get file descriptor from watch
@@ -129,7 +129,7 @@ static dbus_bool_t dbusWrapperAddWatch (DBusWatch * watch, void * data)
 	}
 
 	// Store file descriptor info in watcher
-	dbus_watch_set_data (watch, (void *)fdOp, elektraFree);
+	dbus_watch_set_data (watch, (void *) fdOp, elektraFree);
 
 	int success = elektraIoBindingAddFd (ioBinding, fdOp);
 	if (!success)
@@ -163,7 +163,7 @@ static void dbusWrapperWatchToggled (DBusWatch * watch, void * data ELEKTRA_UNUS
 
 static dbus_bool_t dbusWrapperAddTimeout (DBusTimeout * timeout, void * data)
 {
-	_ElektraIoAdapterDbusHandle * private = (_ElektraIoAdapterDbusHandle *)data;
+	_ElektraIoAdapterDbusHandle * private = (_ElektraIoAdapterDbusHandle *) data;
 	ElektraIoInterface * ioBinding = private->ioBinding;
 
 	// Create new file descriptor info
@@ -176,7 +176,7 @@ static dbus_bool_t dbusWrapperAddTimeout (DBusTimeout * timeout, void * data)
 	}
 
 	// Store file descriptor info in timeouter
-	dbus_timeout_set_data (timeout, (void *)timerOp, elektraFree);
+	dbus_timeout_set_data (timeout, (void *) timerOp, elektraFree);
 
 	elektraIoBindingAddTimer (ioBinding, timerOp);
 	return TRUE;

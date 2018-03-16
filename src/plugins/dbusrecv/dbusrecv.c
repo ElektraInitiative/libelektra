@@ -30,7 +30,7 @@ void elektraDbusRecvSetIoBinding (Plugin * handle, KeySet * parameters)
 
 	Key * ioBindingKey = ksLookupByName (parameters, "/ioBinding", 0);
 	ELEKTRA_NOT_NULL (ioBindingKey);
-	ElektraIoInterface * binding = *(ElektraIoInterface **)keyValue (ioBindingKey);
+	ElektraIoInterface * binding = *(ElektraIoInterface **) keyValue (ioBindingKey);
 
 	data->ioBinding = binding;
 }
@@ -47,13 +47,13 @@ void elektraDbusRecvOpenNotification (Plugin * handle, KeySet * parameters)
 	ElektraNotificationCallback callback;
 	Key * callbackKey = ksLookupByName (parameters, "/callback", 0);
 	ELEKTRA_NOT_NULL (callbackKey);
-	callback = *(ElektraNotificationCallback *)keyValue (callbackKey);
+	callback = *(ElektraNotificationCallback *) keyValue (callbackKey);
 
 	ElektraNotificationCallbackContext * context;
 	Key * contextKey = ksLookupByName (parameters, "/context", 0);
 	if (contextKey != NULL)
 	{
-		context = *(ElektraNotificationCallbackContext **)keyValue (contextKey);
+		context = *(ElektraNotificationCallbackContext **) keyValue (contextKey);
 	}
 	else
 	{
@@ -144,7 +144,7 @@ DBusHandlerResult elektraDbusRecvMessageHandler (DBusConnection * connection ELE
 		else
 		{
 			Key * changed = keyNew (keyName, KEY_END);
-			ElektraDbusRecvPluginData * pluginData = (ElektraDbusRecvPluginData *)data;
+			ElektraDbusRecvPluginData * pluginData = (ElektraDbusRecvPluginData *) data;
 			ELEKTRA_NOT_NULL (pluginData);
 			pluginData->notificationCallback (changed, pluginData->notificationContext);
 		}
@@ -157,7 +157,7 @@ DBusHandlerResult elektraDbusRecvMessageHandler (DBusConnection * connection ELE
 
 int elektraDbusRecvOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 {
-	ElektraDbusRecvPluginData * data = (ElektraDbusRecvPluginData *)elektraPluginGetData (handle);
+	ElektraDbusRecvPluginData * data = (ElektraDbusRecvPluginData *) elektraPluginGetData (handle);
 	if (!data)
 	{
 		data = elektraMalloc (sizeof (*data));

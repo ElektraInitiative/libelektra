@@ -647,7 +647,6 @@ static void pluginsOpenNotification (KDB * kdb, ElektraNotificationCallback call
 	ELEKTRA_NOT_NULL (kdb);
 	ELEKTRA_NOT_NULL (callback);
 
-	printf ("pluginsOpenNotification context %p\n", (void *)context);
 	KeySet * parameters = ksNew (2, keyNew ("/callback", KEY_FUNC, callback, KEY_END),
 				     keyNew ("/context", KEY_BINARY, KEY_SIZE, sizeof (context), KEY_VALUE, &context, KEY_END), KS_END);
 
@@ -666,7 +665,7 @@ static void pluginsOpenNotification (KDB * kdb, ElektraNotificationCallback call
 			size_t func = elektraPluginGetFunction (plugin, "openNotification");
 			if (func)
 			{
-				ElektraNotificationOpenNotification openNotification = (ElektraNotificationOpenNotification)func;
+				ElektraNotificationOpenNotification openNotification = (ElektraNotificationOpenNotification) func;
 				openNotification (plugin, parameters);
 			}
 			else
@@ -675,7 +674,7 @@ static void pluginsOpenNotification (KDB * kdb, ElektraNotificationCallback call
 				if (func)
 				{
 					typedef void (*DeferFunctionCall) (Plugin * handle, char * name, KeySet * parameters);
-					DeferFunctionCall defer = (DeferFunctionCall)func;
+					DeferFunctionCall defer = (DeferFunctionCall) func;
 					defer (plugin, "openNotification", parameters);
 				}
 			}
@@ -703,7 +702,7 @@ static void pluginsCloseNotification (KDB * kdb)
 			size_t func = elektraPluginGetFunction (plugin, "closeNotification");
 			if (func)
 			{
-				ElektraNotificationCloseNotification closeNotification = (ElektraNotificationCloseNotification)func;
+				ElektraNotificationCloseNotification closeNotification = (ElektraNotificationCloseNotification) func;
 				closeNotification (plugin, NULL);
 			}
 			else
@@ -712,7 +711,7 @@ static void pluginsCloseNotification (KDB * kdb)
 				if (func)
 				{
 					typedef void (*DeferFunctionCall) (Plugin * handle, char * name, KeySet * parameters);
-					DeferFunctionCall defer = (DeferFunctionCall)func;
+					DeferFunctionCall defer = (DeferFunctionCall) func;
 					defer (plugin, "closeNotification", NULL);
 				}
 			}
@@ -773,7 +772,7 @@ int elektraNotificationOpen (KDB * kdb)
 		keyDel (errorKey);
 		return 0;
 	}
-	ElektraNotificationCallback notificationCallback = (ElektraNotificationCallback)func;
+	ElektraNotificationCallback notificationCallback = (ElektraNotificationCallback) func;
 
 	// Open notification for plugins
 	pluginsOpenNotification (kdb, notificationCallback, context);

@@ -43,7 +43,7 @@ char * testKeyNamespace;
  */
 static DBusHandlerResult receiveMessageHandler (DBusConnection * connection ELEKTRA_UNUSED, DBusMessage * message, void * data)
 {
-	TestContext * context = (TestContext *)data;
+	TestContext * context = (TestContext *) data;
 
 	char * interface = "org.libelektra";
 	if (dbus_message_is_signal (message, interface, context->lookupSignalName))
@@ -195,7 +195,7 @@ static void test_keyAdded (void)
 
 	DBusConnection * connection = getDbusConnection (testBusType);
 	TestContext * context = createTestContext (connection, "KeyAdded");
-	elektraDbusSetupReceiveMessage (connection, receiveMessageHandler, (void *)context);
+	elektraDbusSetupReceiveMessage (connection, receiveMessageHandler, (void *) context);
 
 	plugin->kdbSet (plugin, ks, parentKey);
 	runDispatch (context);
@@ -203,7 +203,7 @@ static void test_keyAdded (void)
 	succeed_if_same_string (keyName (toAdd), context->receivedKeyName);
 
 	elektraFree (context);
-	elektraDbusTeardownReceiveMessage (connection, receiveMessageHandler, (void *)context);
+	elektraDbusTeardownReceiveMessage (connection, receiveMessageHandler, (void *) context);
 	dbus_connection_unref (connection);
 	ksDel (ks);
 	keyDel (parentKey);
@@ -240,7 +240,7 @@ static void test_keyChanged (void)
 
 	DBusConnection * connection = getDbusConnection (testBusType);
 	TestContext * context = createTestContext (connection, "KeyChanged");
-	elektraDbusSetupReceiveMessage (connection, receiveMessageHandler, (void *)context);
+	elektraDbusSetupReceiveMessage (connection, receiveMessageHandler, (void *) context);
 
 	plugin->kdbSet (plugin, ks, parentKey);
 	runDispatch (context);
@@ -248,7 +248,7 @@ static void test_keyChanged (void)
 	succeed_if_same_string (keyName (toChange), context->receivedKeyName);
 
 	elektraFree (context);
-	elektraDbusTeardownReceiveMessage (connection, receiveMessageHandler, (void *)context);
+	elektraDbusTeardownReceiveMessage (connection, receiveMessageHandler, (void *) context);
 	dbus_connection_unref (connection);
 	ksDel (ks);
 	keyDel (parentKey);
@@ -282,7 +282,7 @@ static void test_keyDeleted (void)
 
 	DBusConnection * connection = getDbusConnection (testBusType);
 	TestContext * context = createTestContext (connection, "KeyDeleted");
-	elektraDbusSetupReceiveMessage (connection, receiveMessageHandler, (void *)context);
+	elektraDbusSetupReceiveMessage (connection, receiveMessageHandler, (void *) context);
 
 	plugin->kdbSet (plugin, ks, parentKey);
 	runDispatch (context);
@@ -290,7 +290,7 @@ static void test_keyDeleted (void)
 	succeed_if_same_string (keyName (toDelete), context->receivedKeyName);
 
 	elektraFree (context);
-	elektraDbusTeardownReceiveMessage (connection, receiveMessageHandler, (void *)context);
+	elektraDbusTeardownReceiveMessage (connection, receiveMessageHandler, (void *) context);
 	dbus_connection_unref (connection);
 	keyDel (toDelete);
 	ksDel (ks);
@@ -335,7 +335,7 @@ static void test_announceOnce (void)
 
 	DBusConnection * connection = getDbusConnection (testBusType);
 	TestContext * context = createTestContext (connection, "Commit");
-	elektraDbusSetupReceiveMessage (connection, receiveMessageHandler, (void *)context);
+	elektraDbusSetupReceiveMessage (connection, receiveMessageHandler, (void *) context);
 
 	plugin->kdbSet (plugin, ks, parentKey);
 	runDispatch (context);
@@ -343,7 +343,7 @@ static void test_announceOnce (void)
 	succeed_if_same_string (keyName (parentKey), context->receivedKeyName);
 
 	elektraFree (context);
-	elektraDbusTeardownReceiveMessage (connection, receiveMessageHandler, (void *)context);
+	elektraDbusTeardownReceiveMessage (connection, receiveMessageHandler, (void *) context);
 	dbus_connection_unref (connection);
 	ksDel (ks);
 	keyDel (parentKey);
@@ -378,7 +378,7 @@ static void test_cascadedChangeNotification (void)
 
 	DBusConnection * connection = getDbusConnection (testBusType);
 	TestContext * context = createTestContext (connection, "KeyAdded");
-	elektraDbusSetupReceiveMessage (connection, receiveMessageHandler, (void *)context);
+	elektraDbusSetupReceiveMessage (connection, receiveMessageHandler, (void *) context);
 
 	plugin->kdbSet (plugin, ks, parentKey);
 	runDispatch (context);
@@ -386,7 +386,7 @@ static void test_cascadedChangeNotification (void)
 	succeed_if_same_string (keyName (toAdd), context->receivedKeyName);
 
 	elektraFree (context);
-	elektraDbusTeardownReceiveMessage (connection, receiveMessageHandler, (void *)context);
+	elektraDbusTeardownReceiveMessage (connection, receiveMessageHandler, (void *) context);
 	dbus_connection_unref (connection);
 	ksDel (ks);
 	keyDel (parentKey);
@@ -421,7 +421,7 @@ static void test_cascadedAnnounceOnce (void)
 
 	DBusConnection * connection = getDbusConnection (testBusType);
 	TestContext * context = createTestContext (connection, "Commit");
-	elektraDbusSetupReceiveMessage (connection, receiveMessageHandler, (void *)context);
+	elektraDbusSetupReceiveMessage (connection, receiveMessageHandler, (void *) context);
 
 	plugin->kdbSet (plugin, ks, parentKey);
 	runDispatch (context);
@@ -429,7 +429,7 @@ static void test_cascadedAnnounceOnce (void)
 	succeed_if_same_string (keyName (completeParentKey), context->receivedKeyName);
 
 	elektraFree (context);
-	elektraDbusTeardownReceiveMessage (connection, receiveMessageHandler, (void *)context);
+	elektraDbusTeardownReceiveMessage (connection, receiveMessageHandler, (void *) context);
 	dbus_connection_unref (connection);
 	ksDel (ks);
 	keyDel (parentKey);

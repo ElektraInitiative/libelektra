@@ -37,7 +37,7 @@ void elektraIoSetBinding (KDB * kdb, ElektraIoInterface * ioBinding)
 			size_t func = elektraPluginGetFunction (plugin, "setIoBinding");
 			if (func)
 			{
-				ElektraIoPluginSetBinding setIoBinding = (ElektraIoPluginSetBinding)func;
+				ElektraIoPluginSetBinding setIoBinding = (ElektraIoPluginSetBinding) func;
 				setIoBinding (plugin, parameters);
 			}
 			else
@@ -46,7 +46,7 @@ void elektraIoSetBinding (KDB * kdb, ElektraIoInterface * ioBinding)
 				if (func)
 				{
 					typedef void (*DeferFunctionCall) (Plugin * handle, char * name, KeySet * parameters);
-					DeferFunctionCall defer = (DeferFunctionCall)func;
+					DeferFunctionCall defer = (DeferFunctionCall) func;
 					defer (plugin, "setIoBinding", parameters);
 				}
 			}
