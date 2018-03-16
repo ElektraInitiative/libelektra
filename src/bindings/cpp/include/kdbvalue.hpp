@@ -142,7 +142,7 @@ public:
 /**
  * @brief Needed to put a ValueObserver in a map
  *
- * @return Comparision result
+ * @return Comparison result
  */
 inline bool operator< (ValueObserver const & lhs, ValueObserver const & rhs)
 {
@@ -175,7 +175,7 @@ struct Command
 public:
 	typedef std::pair<std::string, std::string> Pair;
 	/**
-	 * @brief Typedef for function that returs oldKey, newKey pair
+	 * @brief Typedef for function that returns oldKey, newKey pair
 	 */
 	typedef std::function<Pair ()> Func;
 	Command (ValueSubject const & v_, Func & execute_, bool hasChanged_ = false)
