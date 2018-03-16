@@ -62,6 +62,7 @@ inline none_t Key::get () const
 class Layer
 {
 public:
+	virtual ~Layer (){};
 	virtual std::string id () const = 0;
 	virtual std::string operator() () const = 0;
 };
@@ -78,6 +79,7 @@ public:
 class Wrapped
 {
 public:
+	virtual ~Wrapped (){};
 	virtual std::string layerId () const = 0;
 	virtual std::string layerVal () const = 0;
 };
@@ -88,6 +90,8 @@ public:
 	explicit WrapLayer (Wrapped const & wrapped) : m_wrapped (wrapped)
 	{
 	}
+
+	virtual ~WrapLayer (){};
 
 	virtual std::string id () const
 	{
@@ -109,6 +113,9 @@ public:
 	KeyValueLayer (std::string key, std::string value) : m_key (std::move (key)), m_value (std::move (value))
 	{
 	}
+
+	virtual ~KeyValueLayer (){};
+
 	std::string id () const override
 	{
 		return m_key;
