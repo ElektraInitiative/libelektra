@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief Example program for io_uv binding.
+ * @brief Example program for io_ev binding.
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
@@ -21,9 +21,9 @@
 #include <kdbassert.h> // assertions (ELEKTRA_NOT_NULL)
 #include <kdbhelper.h> // malloc & free
 #include <kdbio.h>     // I/O binding functions (elektraIo*)
-#include <kdbio_uv.h>  // I/O binding constructor for uv (elektraIoUvNew)
+#include <kdbio_ev.h>  // I/O binding constructor for ev (elektraIoEvNew)
 
-#include <uv.h> // uv functions
+#include <ev.h> // ev functions
 
 #define BUFFER_LENGTH 255
 #define ONE_SECOND 1000
@@ -46,7 +46,7 @@ void stopLoop (void)
 	elektraFree (output);
 	elektraIoBindingCleanup (binding);
 
-	uv_stop (uv_default_loop ());
+	ev_break (EV_DEFAULT, EVBREAK_ONE);
 }
 
 void readText (ElektraIoFdOperation * fdOp, int flags ELEKTRA_UNUSED)
@@ -110,11 +110,11 @@ int main (void)
 	printf ("Please enter some text and press return.\n");
 	printf ("Enter \"exit\" to stop and exit.\n");
 
-	// Create libuv event loop
-	uv_loop_t * loop = uv_default_loop ();
+	// Create libev event loop
+	struct ev_loop * loop = EV_DEFAULT;
 
 	// Initialize I/O binding tied to event loop
-	binding = elektraIoUvNew (loop);
+	binding = elektraIoEvNew (loop);
 	// Read lines from STDIN
 	input = elektraIoNewFdOperation (STDIN_FILENO, ELEKTRA_IO_READABLE, 1, readText, &lastInput);
 	// Print last read data every second
@@ -125,13 +125,9 @@ int main (void)
 	elektraIoBindingAddTimer (binding, output);
 
 	// Start the event loop
-	uv_run (loop, UV_RUN_DEFAULT);
+	ev_run (loop, 0);
 
-#ifdef HAVE_LIBUV1
-	uv_loop_close (loop);
-#elif HAVE_LIBUV0
-	uv_loop_delete (loop);
-#endif
+	ev_loop_destroy (loop);
 
 	return 0;
 }

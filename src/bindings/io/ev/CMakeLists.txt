@@ -80,5 +80,5 @@ else ()
 		WORKING_DIRECTORY "${WORKING_DIRECTORY}"
 	)
 
-	#add_subdirectory (example)
+	add_subdirectory (example)
 endif ()
