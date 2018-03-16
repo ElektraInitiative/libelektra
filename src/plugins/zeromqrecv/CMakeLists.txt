@@ -34,12 +34,9 @@ if (ADDTESTING_PHASE)
 		endif ()
 
 		add_plugintest (zeromqrecv
-			LINK_LIBRARIES
-				${ZMQ_LIBRARIES}
+			TEST_LINK_LIBRARIES
 				${STATIC_LIBRARIES}
-			INCLUDE_DIRECTORIES
-				${ZMQ_INCLUDE_DIR}
-			LINK_ELEKTRA
+			TEST_LINK_ELEKTRA
 				elektra-io-uv
 			)
 		if (LIBUV_VERSION VERSION_LESS "1.0")

@@ -128,14 +128,19 @@ static void test_commit (uv_loop_t * loop, ElektraIoInterface * binding)
 	// set io binding
 	size_t func = elektraPluginGetFunction (plugin, "setIoBinding");
 	exit_if_fail (func, "could not get function setIoBinding");
-	ElektraIoPluginSetBinding setIoBinding = (ElektraIoPluginSetBinding)func;
-	setIoBinding (plugin, binding);
+	KeySet * setIoBindingParams =
+		ksNew (1, keyNew ("/ioBinding", KEY_BINARY, KEY_SIZE, sizeof (binding), KEY_VALUE, &binding, KEY_END), KS_END);
+	ElektraIoPluginSetBinding setIoBinding = (ElektraIoPluginSetBinding) func;
+	setIoBinding (plugin, setIoBindingParams);
+	ksDel (setIoBindingParams);
 
 	// open notification
 	func = elektraPluginGetFunction (plugin, "openNotification");
 	exit_if_fail (func, "could not get function openNotification");
-	ElektraNotificationOpenNotification openNotification = (ElektraNotificationOpenNotification)func;
-	openNotification (plugin, test_notificationCallback, NULL);
+	KeySet * openNotificationParams = ksNew (2, keyNew ("/callback", KEY_FUNC, test_notificationCallback, KEY_END), KS_END);
+	ElektraNotificationOpenNotification openNotification = (ElektraNotificationOpenNotification) func;
+	openNotification (plugin, openNotificationParams);
+	ksDel (openNotificationParams);
 
 	usleep (TIME_SETTLE_US);
 
@@ -155,8 +160,8 @@ static void test_commit (uv_loop_t * loop, ElektraIoInterface * binding)
 	// close notification
 	func = elektraPluginGetFunction (plugin, "closeNotification");
 	exit_if_fail (func, "could not get function closeNotification");
-	ElektraNotificationCloseNotification closeNotification = (ElektraNotificationCloseNotification)func;
-	closeNotification (plugin);
+	ElektraNotificationCloseNotification closeNotification = (ElektraNotificationCloseNotification) func;
+	closeNotification (plugin, NULL);
 
 	zmq_close (pubSocket);
 
@@ -178,14 +183,19 @@ static void test_incompleteMessage (uv_loop_t * loop, ElektraIoInterface * bindi
 	// set io binding
 	size_t func = elektraPluginGetFunction (plugin, "setIoBinding");
 	exit_if_fail (func, "could not get function setIoBinding");
-	ElektraIoPluginSetBinding setIoBinding = (ElektraIoPluginSetBinding)func;
-	setIoBinding (plugin, binding);
+	KeySet * setIoBindingParams =
+		ksNew (1, keyNew ("/ioBinding", KEY_BINARY, KEY_SIZE, sizeof (binding), KEY_VALUE, &binding, KEY_END), KS_END);
+	ElektraIoPluginSetBinding setIoBinding = (ElektraIoPluginSetBinding) func;
+	setIoBinding (plugin, setIoBindingParams);
+	ksDel (setIoBindingParams);
 
 	// open notification
 	func = elektraPluginGetFunction (plugin, "openNotification");
 	exit_if_fail (func, "could not get function openNotification");
-	ElektraNotificationOpenNotification openNotification = (ElektraNotificationOpenNotification)func;
-	openNotification (plugin, test_notificationCallback, NULL);
+	KeySet * openNotificationParams = ksNew (2, keyNew ("/callback", KEY_FUNC, test_notificationCallback, KEY_END), KS_END);
+	ElektraNotificationOpenNotification openNotification = (ElektraNotificationOpenNotification) func;
+	openNotification (plugin, openNotificationParams);
+	ksDel (openNotificationParams);
 
 	usleep (TIME_SETTLE_US);
 
@@ -210,8 +220,8 @@ static void test_incompleteMessage (uv_loop_t * loop, ElektraIoInterface * bindi
 	// close notification
 	func = elektraPluginGetFunction (plugin, "closeNotification");
 	exit_if_fail (func, "could not get function closeNotification");
-	ElektraNotificationCloseNotification closeNotification = (ElektraNotificationCloseNotification)func;
-	closeNotification (plugin);
+	ElektraNotificationCloseNotification closeNotification = (ElektraNotificationCloseNotification) func;
+	closeNotification (plugin, NULL);
 
 	zmq_close (pubSocket);
 

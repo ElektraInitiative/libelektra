@@ -22,11 +22,16 @@
 /**
  * @see ElektraIoPluginSetBinding (kdbioplugin.h)
  */
-void elektraZeroMqRecvSetIoBinding (Plugin * handle, ElektraIoInterface * binding)
+void elektraZeroMqRecvSetIoBinding (Plugin * handle, KeySet * parameters)
 {
 	ELEKTRA_NOT_NULL (handle);
+	ELEKTRA_NOT_NULL (parameters);
 	ElektraZeroMqRecvPluginData * data = elektraPluginGetData (handle);
 	ELEKTRA_NOT_NULL (data);
+
+	Key * ioBindingKey = ksLookupByName (parameters, "/ioBinding", 0);
+	ELEKTRA_NOT_NULL (ioBindingKey);
+	ElektraIoInterface * binding = *(ElektraIoInterface **) keyValue (ioBindingKey);
 
 	data->ioBinding = binding;
 }
@@ -34,11 +39,27 @@ void elektraZeroMqRecvSetIoBinding (Plugin * handle, ElektraIoInterface * bindin
 /**
  * @see ElektraNotificationOpenNotification (kdbnotificationinternal.h)
  */
-void elektraZeroMqRecvOpenNotification (Plugin * handle, ElektraNotificationCallback callback, ElektraNotificationCallbackContext * context)
+void elektraZeroMqRecvOpenNotification (Plugin * handle, KeySet * parameters)
 {
 	ELEKTRA_NOT_NULL (handle);
 	ElektraZeroMqRecvPluginData * pluginData = elektraPluginGetData (handle);
 	ELEKTRA_NOT_NULL (pluginData);
+
+	ElektraNotificationCallback callback;
+	Key * callbackKey = ksLookupByName (parameters, "/callback", 0);
+	ELEKTRA_NOT_NULL (callbackKey);
+	callback = *(ElektraNotificationCallback *) keyValue (callbackKey);
+
+	ElektraNotificationCallbackContext * context;
+	Key * contextKey = ksLookupByName (parameters, "/context", 0);
+	if (contextKey != NULL)
+	{
+		context = *(ElektraNotificationCallbackContext **) keyValue (contextKey);
+	}
+	else
+	{
+		context = NULL;
+	}
 
 	pluginData->notificationCallback = callback;
 	pluginData->notificationContext = context;
@@ -57,7 +78,7 @@ void elektraZeroMqRecvOpenNotification (Plugin * handle, ElektraNotificationCall
 /**
  * @see ElektraNotificationCloseNotification (kdbnotificationinternal.h)
  */
-void elektraZeroMqRecvCloseNotification (Plugin * handle)
+void elektraZeroMqRecvCloseNotification (Plugin * handle, KeySet * parameters ELEKTRA_UNUSED)
 {
 	ElektraZeroMqRecvPluginData * pluginData = elektraPluginGetData (handle);
 	pluginData->notificationCallback = NULL;

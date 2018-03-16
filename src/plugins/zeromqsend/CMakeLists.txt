@@ -23,11 +23,8 @@ if (ADDTESTING_PHASE)
 
 	if (BUILD_TESTING )
 		add_plugintest (zeromqsend
-			LINK_LIBRARIES
-				${ZMQ_LIBRARIES}
+			TEST_LINK_LIBRARIES
 				${CMAKE_THREAD_LIBS_INIT}
-			INCLUDE_DIRECTORIES
-				${ZMQ_INCLUDE_DIR}
 			)
 	endif ()
 endif ()
