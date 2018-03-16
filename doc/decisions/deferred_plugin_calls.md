@@ -91,6 +91,8 @@ The called function receive their parameters via a KeySet.
 While called functions could return data using the `parameters` KeySet (or a
 seperate KeySet) there is no defined moment when the data can be collected.
 Defining such a moment would break the lazy-loading constraint.
+It is recommended to use callbacks passed as `parameters`.
+The callback function declaration is not affected by this decision.
 
 ## Related decisions
 
