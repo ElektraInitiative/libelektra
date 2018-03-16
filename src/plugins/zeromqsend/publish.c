@@ -14,8 +14,14 @@
 #include <time.h>   // clock_gettime()
 #include <unistd.h> // usleep()
 
-/** time (300ms) to wait until zmq connections are established and sending & receiving works */
-#define TIME_SETTLE_US (300 * 1000)
+/** wait inside loop while waiting for subscribers (10ms)  */
+#define ELEKTRA_ZEROMQSEND_LOOPDELAY_NS (10 * 1000 * 1000)
+
+/** timeout for waiting for a subscription: 1 second */
+#define ELEKTRA_ZEROMQSEND_SUBSCRIBE_TIMEOUT (1)
+
+/** first byte of a subscription message */
+#define ELEKTRA_ZEROMQSEND_SUBSCRIPTION_MESSAGE '\x01'
 
 /**
  * @internal
@@ -41,7 +47,7 @@ int elektraZeroMqSendConnect (ElektraZeroMqSendPluginData * data)
 	// create publish socket
 	if (!data->zmqPublisher)
 	{
-		data->zmqPublisher = zmq_socket (data->zmqContext, ZMQ_PUB);
+		data->zmqPublisher = zmq_socket (data->zmqContext, ZMQ_XPUB);
 		if (data->zmqPublisher == NULL)
 		{
 			ELEKTRA_LOG_WARNING ("zmq_socket failed %s", zmq_strerror (zmq_errno ()));
@@ -57,9 +63,6 @@ int elektraZeroMqSendConnect (ElektraZeroMqSendPluginData * data)
 			data->zmqPublisher = NULL;
 			return 0;
 		}
-
-		// store timestamp when connection was initiated (not established...)
-		clock_gettime (CLOCK_MONOTONIC, &data->timeConnect);
 	}
 
 	return 1;
@@ -80,39 +83,64 @@ void elektraZeroMqSendPublish (const char * changeType, const char * keyName, El
 		return;
 	}
 
-	// NOTE zmq_connect() returns before a connection is established since ZeroMq
-	// asynchronously does that in the background.
-	// All notifications sent before the connection is established are lost since
-	// ZMQ_PUB sockets handle message filtering: Without subscribers all messages
-	// are discarded.
-	struct timespec wait;
-	struct timespec now;
-	if (clock_gettime (CLOCK_MONOTONIC, &now) == 0)
+	// wait for subscription message
+	if (!data->hasSubscriber)
 	{
-		// calculate remaining settle time
-		wait.tv_sec = (now.tv_sec - data->timeConnect.tv_sec);
-		if (wait.tv_sec > 0)
+		// NOTE zmq_connect() returns before a connection is established since
+		// ZeroMq asynchronously does that in the background.
+		// All notifications sent before the connection is established and and the
+		// socket has a subscriber are lost since ZMQ_(X)PUB sockets handle message
+		// filtering: Without subscribers all messages are discarded.
+		// Therefore we use a ZMQ_XPUB socket which allows us to wait for a
+		// subscription message.
+		time_t start = time (NULL);
+		struct timespec wait;
+		zmq_msg_t message;
+		zmq_msg_init (&message);
+		int lastErrno = 0;
+		do
 		{
-			// more than a second has passed, do not wait
 			wait.tv_sec = 0;
-			wait.tv_nsec = 0;
-		}
-		else
-		{
-			// wait remaining settle time
-			wait.tv_nsec = (TIME_SETTLE_US * 1000) - (now.tv_nsec - data->timeConnect.tv_nsec);
-		}
+			wait.tv_nsec = ELEKTRA_ZEROMQSEND_LOOPDELAY_NS;
+			while (!nanosleep (&wait, &wait) && errno == EINTR)
+				;
 
-		ELEKTRA_LOG_DEBUG ("remaining settle time %ld us", wait.tv_nsec / 1000);
+			lastErrno = 0;
+			int result = zmq_msg_recv (&message, data->zmqPublisher, ZMQ_DONTWAIT);
+			if (result == -1)
+			{
+				lastErrno = zmq_errno ();
+			}
+
+			if (time (NULL) - start > ELEKTRA_ZEROMQSEND_SUBSCRIBE_TIMEOUT)
+			{
+				ELEKTRA_LOG_WARNING ("subscribing timed out. could not publish notification");
+				zmq_msg_close (&message);
+				return;
+			}
+
+			if (result == -1)
+			{
+				if (lastErrno != EAGAIN)
+				{
+					ELEKTRA_LOG_WARNING ("sending failed %s", zmq_strerror (lastErrno));
+					zmq_msg_close (&message);
+					return;
+				}
+			}
+			else
+			{
+				// we have received a message subscription or unsubscription message
+				char * messageData = zmq_msg_data (&message);
+				if (messageData[0] == ELEKTRA_ZEROMQSEND_SUBSCRIPTION_MESSAGE)
+				{
+					data->hasSubscriber = 1;
+				}
+			}
+		} while (lastErrno == EAGAIN && !data->hasSubscriber);
+
+		zmq_msg_close (&message);
 	}
-	else
-	{
-		ELEKTRA_LOG_WARNING ("cannot use clock_gettime(); using complete settle time");
-		wait.tv_sec = 0;
-		wait.tv_nsec = (TIME_SETTLE_US * 1000);
-	}
-	while (!nanosleep (&wait, &wait) && errno == EINTR)
-		;
 
 	// send notification
 	if (!elektraZeroMqSendNotification (data->zmqPublisher, changeType, keyName))

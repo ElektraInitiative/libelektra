@@ -32,9 +32,7 @@ typedef struct
 	// endpoint for publish socket
 	const char * endpoint;
 
-	// Timestamp when the connection was created
-	struct timespec timeConnect;
-
+	int hasSubscriber;
 } ElektraZeroMqSendPluginData;
 
 int elektraZeroMqSendConnect (ElektraZeroMqSendPluginData * data);

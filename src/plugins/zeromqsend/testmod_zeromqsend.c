@@ -28,9 +28,6 @@ char * receivedKeyName;
 /** zmq context for tests */
 void * context;
 
-/** time in microseconds to wait until zmq connections are established and sending & receiving works */
-#define TIME_SETTLE (1000 * 1000)
-
 /** time (100ms in microseconds) before a new socket is created. leaves the system some after binding a socket again */
 #define TIME_HOLDOFF (100 * 1000)
 
@@ -76,7 +73,7 @@ static void * createTestSocket (char * subscribeFilter)
  */
 static void * notificationReaderThreadMain (void * filter)
 {
-	void * subSocket = createTestSocket ((char *)filter);
+	void * subSocket = createTestSocket ((char *) filter);
 
 	time_t start = time (NULL);
 
@@ -164,45 +161,11 @@ static void * notificationReaderThreadMain (void * filter)
  * @param  filter subscription filter
  * @return        new thread
  */
-pthread_t * startNotificationReaderThread (char * filter)
+static pthread_t * startNotificationReaderThread (char * filter)
 {
 	pthread_t * thread = elektraMalloc (sizeof *thread);
 	pthread_create (thread, NULL, notificationReaderThreadMain, filter);
 	return thread;
-}
-
-static void test_sending (void)
-{
-	printf ("test sending messages\n");
-
-	char * changeType = "test";
-	char * sendingKeyName = "user/foo/bar";
-
-	void * pubSocket = zmq_socket (context, ZMQ_PUB);
-	int result = zmq_connect (pubSocket, TEST_ENDPOINT);
-	if (result != 0)
-	{
-		yield_error ("zmq_connect failed!");
-		printf ("zmq_connect error: %s\n", zmq_strerror (zmq_errno ()));
-		return;
-	}
-
-	pthread_t * thread = startNotificationReaderThread ("test");
-	usleep (TIME_SETTLE);
-
-	succeed_if (elektraZeroMqSendNotification (pubSocket, changeType, sendingKeyName), "could not send notification failed");
-
-	// Wait for receive thread to finish
-	pthread_join (*thread, NULL);
-
-	succeed_if_same_string (changeType, receivedChangeType);
-	succeed_if_same_string (sendingKeyName, receivedKeyName);
-
-	zmq_close (pubSocket);
-
-	elektraFree (receivedKeyName);
-	elektraFree (receivedChangeType);
-	elektraFree (thread);
 }
 
 static void test_commit (void)
@@ -249,9 +212,6 @@ int main (int argc, char ** argv)
 	printf ("zeromq version is %d.%d.%d\n", major, minor, patch);
 
 	context = zmq_ctx_new ();
-
-	// Test basic sending
-	test_sending ();
 
 	// Test notification from plugin
 	test_commit ();

@@ -36,14 +36,9 @@ int elektraZeroMqSendOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 		data->zmqContext = NULL;
 		data->zmqPublisher = NULL;
 		data->endpoint = endpoint;
+		data->hasSubscriber = 0;
 	}
 	elektraPluginSetData (handle, data);
-
-	// create connection
-	if (!elektraZeroMqSendConnect (data))
-	{
-		ELEKTRA_LOG_WARNING ("could not connect to endpoint");
-	}
 
 	return 1; /* success */
 }
