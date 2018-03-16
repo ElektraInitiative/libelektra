@@ -235,6 +235,7 @@ export default class SettingsDialog extends Component {
               getMeta={this.getMeta.bind(this)}
               getSaved={this.getSaved.bind(this)}
               meta={this.props.meta}
+              deleteMeta={this.props.deleteMeta}
             />
         </Dialog>
     )
