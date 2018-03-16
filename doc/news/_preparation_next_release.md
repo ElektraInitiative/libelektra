@@ -80,7 +80,7 @@ These notes are of interest for people maintaining packages of Elektra:
 
 These notes are of interest for people developing Elektra:
 
-- You can now add a [Markdown Shell Recorder](https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper) test for a plugin
+- You can now add a [Markdown Shell Recorder][] test for a plugin
   via the CMake function `add_plugin`.
 - The CMake functions
 
@@ -93,6 +93,9 @@ These notes are of interest for people developing Elektra:
    Markdown Shell Recorder tests.
 - All current versions of Clang-Format (6.0+) and the outdated Clang-Format 5 will now produce exactly the same output for the whole
   codebase.
+- We added an [Markdown Shell Recorder][] test for the [Constants](http://libelektra.org/plugins/constants) plugin.
+
+[Markdown Shell Recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
 
 ## Fixes
 
