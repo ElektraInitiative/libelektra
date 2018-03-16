@@ -94,6 +94,7 @@ Many problems were resolved with the following fixes:
 
 - [YAML CPP](http://libelektra.org/plugins/yamlcpp) now also saves key values directly below a mountpoint correctly.
 - If you use a minimal configuration ([`dump`](http://libelektra.org/plugins/dump) and [`resolver`](https://www.libelektra.org/plugins/resolver) only), all test of the test suite now finish successfully again.
+- We resolved undefined behavior in polymorphic classes that contained virtual functions, by explicitly adding a virtual destructor.
 
 ## Outlook
 
