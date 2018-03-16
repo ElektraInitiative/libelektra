@@ -8,6 +8,7 @@
  */
 
 #include <kdb.h>
+#include <kdbhelper.h> // ELEKTRA_UNUSED
 #include <kdbnotification.h>
 
 #include <signal.h>
@@ -23,7 +24,7 @@ static volatile int keepRunning = 0;
 #define ANSI_COLOR_GREEN "\x1b[32m"
 #define ANSI_COLOR_BLUE "\x1b[34m"
 
-static void setTerminalColor (Key * color, void * context)
+static void setTerminalColor (Key * color, void * context ELEKTRA_UNUSED)
 {
 	const char * value = keyString (color);
 	printf ("Callback called. Changing color to %s\n", value);

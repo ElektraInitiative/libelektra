@@ -877,6 +877,60 @@ int elektraNotificationRegisterInt (KDB * kdb, Key * key, int * variable)
 	return registerFunc (notificationPlugin, key, variable);
 }
 
+int elektraNotificationRegisterLong (KDB * kdb, Key * key, long * variable)
+{
+	if (!kdb || !key || !variable)
+	{
+		ELEKTRA_LOG_WARNING ("null pointer passed");
+		return 0;
+	}
+
+	// Find notification plugin
+	Plugin * notificationPlugin = getNotificationPlugin (kdb);
+	if (!notificationPlugin)
+	{
+		return 0;
+	}
+
+	// Get register function from plugin
+	size_t func = elektraPluginGetFunction (notificationPlugin, "registerLong");
+	if (!func)
+	{
+		return 0;
+	}
+
+	// Call register function
+	ElektraNotificationPluginRegisterLong registerFunc = (ElektraNotificationPluginRegisterLong)func;
+	return registerFunc (notificationPlugin, key, variable);
+}
+
+int elektraNotificationRegisterUnsignedLong (KDB * kdb, Key * key, unsigned long * variable)
+{
+	if (!kdb || !key || !variable)
+	{
+		ELEKTRA_LOG_WARNING ("null pointer passed");
+		return 0;
+	}
+
+	// Find notification plugin
+	Plugin * notificationPlugin = getNotificationPlugin (kdb);
+	if (!notificationPlugin)
+	{
+		return 0;
+	}
+
+	// Get register function from plugin
+	size_t func = elektraPluginGetFunction (notificationPlugin, "registerUnsignedLong");
+	if (!func)
+	{
+		return 0;
+	}
+
+	// Call register function
+	ElektraNotificationPluginRegisterUnsignedLong registerFunc = (ElektraNotificationPluginRegisterUnsignedLong)func;
+	return registerFunc (notificationPlugin, key, variable);
+}
+
 int elektraNotificationRegisterFloat (KDB * kdb, Key * key, float * variable)
 {
 	if (!kdb || !key || !variable)
@@ -901,6 +955,33 @@ int elektraNotificationRegisterFloat (KDB * kdb, Key * key, float * variable)
 
 	// Call register function
 	ElektraNotificationPluginRegisterFloat registerFunc = (ElektraNotificationPluginRegisterFloat) func;
+	return registerFunc (notificationPlugin, key, variable);
+}
+
+int elektraNotificationRegisterDouble (KDB * kdb, Key * key, double * variable)
+{
+	if (!kdb || !key || !variable)
+	{
+		ELEKTRA_LOG_WARNING ("null pointer passed");
+		return 0;
+	}
+
+	// Find notification plugin
+	Plugin * notificationPlugin = getNotificationPlugin (kdb);
+	if (!notificationPlugin)
+	{
+		return 0;
+	}
+
+	// Get register function from plugin
+	size_t func = elektraPluginGetFunction (notificationPlugin, "registerDouble");
+	if (!func)
+	{
+		return 0;
+	}
+
+	// Call register function
+	ElektraNotificationPluginRegisterDouble registerFunc = (ElektraNotificationPluginRegisterDouble)func;
 	return registerFunc (notificationPlugin, key, variable);
 }
 

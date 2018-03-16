@@ -115,6 +115,32 @@ int elektraNotificationClose (KDB * kdb);
 int elektraNotificationRegisterInt (KDB * kdb, Key * key, int * variable);
 
 /**
+ * Subscribe for automatic updates to a given long variable when the given
+ * key value is changed.
+ *
+ * @param  handle   plugin handle
+ * @param  key      key to watch for changes
+ * @param  variable long variable
+ *
+ * @retval 1 on success
+ * @retval 0 on failure
+ */
+int elektraNotificationRegisterLong (KDB * kdb, Key * key, long * variable);
+
+/**
+ * Subscribe for automatic updates to a given unsigned long variable when the given
+ * key value is changed.
+ *
+ * @param  handle   plugin handle
+ * @param  key      key to watch for changes
+ * @param  variable unsigned long variable
+ *
+ * @retval 1 on success
+ * @retval 0 on failure
+ */
+int elektraNotificationRegisterUnsignedLong (KDB * kdb, Key * key, unsigned long * variable);
+
+/**
  * Subscribe for automatic updates to a given float variable when the given
  * key value is changed.
  *
@@ -126,6 +152,19 @@ int elektraNotificationRegisterInt (KDB * kdb, Key * key, int * variable);
  * @retval 0 on failure
  */
 int elektraNotificationRegisterFloat (KDB * kdb, Key * key, float * variable);
+
+/**
+ * Subscribe for automatic updates to a given double variable when the given
+ * key value is changed.
+ *
+ * @param  handle   plugin handle
+ * @param  key      key to watch for changes
+ * @param  variable double variable
+ *
+ * @retval 1 on success
+ * @retval 0 on failure
+ */
+int elektraNotificationRegisterDouble (KDB * kdb, Key * key, double * variable);
 
 /**
  * Callback function for key changes.

@@ -37,6 +37,32 @@ extern "C" {
 typedef int (*ElektraNotificationPluginRegisterInt) (Plugin * handle, Key * key, int * variable);
 
 /**
+ * Subscribe for automatic updates to a given long variable when the given
+ * key value is changed.
+ *
+ * @param  handle   plugin handle
+ * @param  key      key to watch for changes
+ * @param  variable long variable
+ *
+ * @retval 1 on success
+ * @retval 0 on failure
+ */
+typedef int (*ElektraNotificationPluginRegisterLong) (Plugin * handle, Key * key, long * variable);
+
+/**
+ * Subscribe for automatic updates to a given unsigned long variable when the given
+ * key value is changed.
+ *
+ * @param  handle   plugin handle
+ * @param  key      key to watch for changes
+ * @param  variable unsigned long variable
+ *
+ * @retval 1 on success
+ * @retval 0 on failure
+ */
+typedef int (*ElektraNotificationPluginRegisterUnsignedLong) (Plugin * handle, Key * key, unsigned long * variable);
+
+/**
  * Subscribe for automatic updates to a given float variable when the given
  * key value is changed.
  *
@@ -48,6 +74,19 @@ typedef int (*ElektraNotificationPluginRegisterInt) (Plugin * handle, Key * key,
  * @retval 0 on failure
  */
 typedef int (*ElektraNotificationPluginRegisterFloat) (Plugin * handle, Key * key, float * variable);
+
+/**
+ * Subscribe for automatic updates to a given double variable when the given
+ * key value is changed.
+ *
+ * @param  handle   plugin handle
+ * @param  key      key to watch for changes
+ * @param  variable double variable
+ *
+ * @retval 1 on success
+ * @retval 0 on failure
+ */
+typedef int (*ElektraNotificationPluginRegisterDouble) (Plugin * handle, Key * key, double * variable);
 
 /**
  * Subscribe for updates via callback when a given key value is changed.

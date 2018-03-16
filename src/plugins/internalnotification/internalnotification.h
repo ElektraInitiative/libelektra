@@ -24,4 +24,11 @@ Plugin * ELEKTRA_PLUGIN_EXPORT (internalnotification);
 // Not exported by plugin; used for testing
 void elektraInternalnotificationUpdateRegisteredKeys (Plugin * plugin, KeySet * keySet);
 
+// Conversion functions
+void elektraInternalnotificationConvertInt (Key * key, void * context);
+void elektraInternalnotificationConvertLong (Key * key, void * context);
+void elektraInternalnotificationConvertUnsignedLong (Key * key, void * context);
+void elektraInternalnotificationConvertFloat (Key * key, void * context);
+void elektraInternalnotificationConvertDouble (Key * key, void * context);
+
 #endif
