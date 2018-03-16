@@ -9,7 +9,7 @@
 
 ## Requirements
 
-- libev (tested with 4.22)
+- [libev](http://libev.schmorp.de) (tested with 4.x)
 
 ## Usage
 

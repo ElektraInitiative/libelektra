@@ -26,6 +26,7 @@ Experimental bindings (included in `EXPERIMENTAL`):
 - [intercept_fs](intercept/fs/) Intercepts file system calls to configuration files (experimental)
 - [io_uv](io/uv/) I/O bindings for uv (experimental)
 - [io_glib](io/glib/) I/O bindings for glib (experimental)
+- [io_ev](io/ev/) I/O bindings for ev (experimental)
 - [jna](jna/) A full java binding using JNA
 
 Deprecated bindings (included in `DEPRECATED`):

@@ -54,6 +54,10 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.8.
 
 We added even more functionality, which could not make it to the highlights:
 
+- New I/O bindings for [ev](https://www.libelektra.org/bindings/io_ev) have been
+  added.
+  They can be used to integrate the notification feature with applications based
+  on [ev](http://libev.schmorp.de) main loops.
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -196,5 +200,3 @@ For more information, see [https://libelektra.org](https://libelektra.org)
 
 Best regards,
 [Elektra Initiative](https://www.libelektra.org/developers/authors)
-
-

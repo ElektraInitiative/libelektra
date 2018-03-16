@@ -30,6 +30,7 @@ RUN apt-get -qq update && apt-get -qq -y install \
 	libglib2.0-dev \
 	swig3.0 \
 	libuv1-dev \
+	libev-dev \
 	checkinstall \
 	valgrind \
 && gem install ronn \
