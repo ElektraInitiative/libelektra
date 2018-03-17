@@ -62,6 +62,7 @@ inline none_t Key::get () const
 class Layer
 {
 public:
+	virtual ~Layer (){};
 	virtual std::string id () const = 0;
 	virtual std::string operator() () const = 0;
 };
@@ -78,6 +79,7 @@ public:
 class Wrapped
 {
 public:
+	virtual ~Wrapped (){};
 	virtual std::string layerId () const = 0;
 	virtual std::string layerVal () const = 0;
 };
@@ -88,6 +90,8 @@ public:
 	explicit WrapLayer (Wrapped const & wrapped) : m_wrapped (wrapped)
 	{
 	}
+
+	virtual ~WrapLayer (){};
 
 	virtual std::string id () const
 	{
@@ -109,6 +113,9 @@ public:
 	KeyValueLayer (std::string key, std::string value) : m_key (std::move (key)), m_value (std::move (value))
 	{
 	}
+
+	virtual ~KeyValueLayer (){};
+
 	std::string id () const override
 	{
 		return m_key;
@@ -142,7 +149,7 @@ public:
 /**
  * @brief Needed to put a ValueObserver in a map
  *
- * @return Comparision result
+ * @return Comparison result
  */
 inline bool operator< (ValueObserver const & lhs, ValueObserver const & rhs)
 {
@@ -175,7 +182,7 @@ struct Command
 public:
 	typedef std::pair<std::string, std::string> Pair;
 	/**
-	 * @brief Typedef for function that returs oldKey, newKey pair
+	 * @brief Typedef for function that returns oldKey, newKey pair
 	 */
 	typedef std::function<Pair ()> Func;
 	Command (ValueSubject const & v_, Func & execute_, bool hasChanged_ = false)
