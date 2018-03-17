@@ -16,7 +16,7 @@
 
 #include <ev.h>
 
-#include "kdbio_ev.h"
+#include <kdbio_ev.h>
 
 static ElektraIoInterface * createBinding (void)
 {

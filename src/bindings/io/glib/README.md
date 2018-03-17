@@ -23,7 +23,7 @@ Create and initialize a new I/O binding.
 
 *Parameters*
 
-- context Context to use for I/O operations. May be NULL to indicate the glib's
+- context: Context to use for I/O operations. May be NULL to indicate the glib's
   default context.
 
 *Returns*

@@ -9,7 +9,7 @@
 
 ## Requirements
 
-- [libuv](http://libuv.org/) (version 1.x is recommended; 0.x is supported)
+- [libuv](http://libuv.org/) (version 1.x is recommended; 0.10 is supported)
 
 ## Usage
 
@@ -23,7 +23,7 @@ Create and initialize a new I/O binding.
 
 *Parameters*
 
-- loop Loop to use for I/O operations
+- loop: Loop to use for I/O operations
 
 *Returns*
 

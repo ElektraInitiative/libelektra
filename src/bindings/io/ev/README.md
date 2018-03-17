@@ -23,7 +23,7 @@ Create and initialize a new I/O binding.
 
 *Parameters*
 
-- loop Loop to use for I/O operations
+- loop: Loop to use for I/O operations
 
 *Returns*
 
