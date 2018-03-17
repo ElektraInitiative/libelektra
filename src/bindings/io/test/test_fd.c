@@ -77,7 +77,7 @@ static void testFdBasics (ElektraIoTestSuiteCreateBinding createBinding)
 	succeed_if (elektraIoBindingRemoveFd (fdOp), "removeFd did not succeed");
 
 	succeed_if (elektraIoBindingAddFd (binding, fdOp), "addFd: should be able to assign operation after removal");
-	succeed_if (elektraIoBindingRemoveFd (fdOp), "removeTimer did not succeed");
+	succeed_if (elektraIoBindingRemoveFd (fdOp), "removeFd did not succeed");
 	elektraIoBindingCleanup (binding);
 	elektraFree (fdOp);
 }
@@ -98,7 +98,6 @@ static void testFdShouldSignalWritableProbe (ElektraIoFdOperation * fdOp ELEKTRA
 static void testFdShouldSignalWritable (ElektraIoTestSuiteCreateBinding createBinding, ElektraIoTestSuiteStart start,
 					ElektraIoTestSuiteStop stop)
 {
-
 	int fds[2];
 	if (pipe (fds) == -1)
 	{
@@ -127,8 +126,8 @@ static void testFdShouldSignalWritable (ElektraIoTestSuiteCreateBinding createBi
 	elektraIoBindingCleanup (binding);
 	elektraFree (fdOp);
 	elektraFree (timerOp);
-	close (fds[0]);
-	close (fds[1]);
+	close (fds[FD_READ_END]);
+	close (fds[FD_WRITE_END]);
 }
 
 static void testFdShouldSignalReadableProbe (ElektraIoFdOperation * fdOp, int flags)
@@ -145,7 +144,6 @@ static void testFdShouldSignalReadableProbe (ElektraIoFdOperation * fdOp, int fl
 static void testFdShouldSignalReadable (ElektraIoTestSuiteCreateBinding createBinding, ElektraIoTestSuiteStart start,
 					ElektraIoTestSuiteStop stop)
 {
-
 	int fds[2];
 	if (pipe (fds) == -1)
 	{
@@ -153,7 +151,7 @@ static void testFdShouldSignalReadable (ElektraIoTestSuiteCreateBinding createBi
 		return;
 	}
 	char * buffer = FD_BUFFER_TESTDATA;
-	succeed_if (write (fds[1], buffer, FD_BUFFER_TESTDATA_LENGTH) == FD_BUFFER_TESTDATA_LENGTH, "write failed");
+	succeed_if (write (fds[FD_WRITE_END], buffer, FD_BUFFER_TESTDATA_LENGTH) == FD_BUFFER_TESTDATA_LENGTH, "write failed");
 
 	ElektraIoFdOperation * fdOp =
 		elektraIoNewFdOperation (fds[FD_READ_END], ELEKTRA_IO_READABLE, 1, testFdShouldSignalReadableProbe, NULL);
@@ -176,8 +174,8 @@ static void testFdShouldSignalReadable (ElektraIoTestSuiteCreateBinding createBi
 	elektraIoBindingCleanup (binding);
 	elektraFree (fdOp);
 	elektraFree (timerOp);
-	close (fds[0]);
-	close (fds[1]);
+	close (fds[FD_READ_END]);
+	close (fds[FD_WRITE_END]);
 }
 
 static void testFdShouldUpdateEnabledControl (ElektraIoTimerOperation * timerOp ELEKTRA_UNUSED)
@@ -206,7 +204,6 @@ static void testFdShouldUpdateEnabledProbe (ElektraIoFdOperation * fdOp ELEKTRA_
 static void testFdShouldUpdateEnabled (ElektraIoTestSuiteCreateBinding createBinding, ElektraIoTestSuiteStart start,
 				       ElektraIoTestSuiteStop stop)
 {
-
 	int fds[2];
 	if (pipe (fds) == -1)
 	{
@@ -239,8 +236,8 @@ static void testFdShouldUpdateEnabled (ElektraIoTestSuiteCreateBinding createBin
 	elektraIoBindingCleanup (binding);
 	elektraFree (fdOp);
 	elektraFree (timerOp);
-	close (fds[0]);
-	close (fds[1]);
+	close (fds[FD_READ_END]);
+	close (fds[FD_WRITE_END]);
 }
 
 static void testFdShouldUpdateFlagsControl (ElektraIoTimerOperation * timerOp ELEKTRA_UNUSED)
@@ -269,7 +266,6 @@ static void testFdShouldUpdateFlagsProbe (ElektraIoFdOperation * fdOp ELEKTRA_UN
 static void testFdShouldUpdateFlags (ElektraIoTestSuiteCreateBinding createBinding, ElektraIoTestSuiteStart start,
 				     ElektraIoTestSuiteStop stop)
 {
-
 	int fds[2];
 	if (pipe (fds) == -1)
 	{
@@ -302,8 +298,8 @@ static void testFdShouldUpdateFlags (ElektraIoTestSuiteCreateBinding createBindi
 	elektraIoBindingCleanup (binding);
 	elektraFree (fdOp);
 	elektraFree (timerOp);
-	close (fds[0]);
-	close (fds[1]);
+	close (fds[FD_READ_END]);
+	close (fds[FD_WRITE_END]);
 }
 
 static void testFdShouldRemoveControl (ElektraIoTimerOperation * timerOp ELEKTRA_UNUSED)
@@ -367,8 +363,8 @@ static void testFdShouldRemove (ElektraIoTestSuiteCreateBinding createBinding, E
 	elektraIoBindingCleanup (binding);
 	elektraFree (fdOp);
 	elektraFree (timerOp);
-	close (fds[0]);
-	close (fds[1]);
+	close (fds[FD_READ_END]);
+	close (fds[FD_WRITE_END]);
 }
 
 /**
