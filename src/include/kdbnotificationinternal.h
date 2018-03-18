@@ -3,7 +3,7 @@
  * @ingroup kdbnotification
  *
  * @brief Elektra-Notification structures and declarations for developing
- * notification and transport plugins.
+ * notification and transport plugins. Only available in Elektra's source.
  *
  * Only used by elektra-notification library, notification plugins (e.g.
  * internalnotification) and transport plugins.
@@ -23,70 +23,33 @@ namespace ckdb
 extern "C" {
 #endif
 
-/**
- * Subscribe for automatic updates to a given integer variable when the given
- * key value is changed.
- *
- * @param  handle   plugin handle
- * @param  key      key to watch for changes
- * @param  variable integer variable
- *
- * @retval 1 on success
- * @retval 0 on failure
- */
-typedef int (*ElektraNotificationPluginRegisterInt) (Plugin * handle, Key * key, int * variable);
+#define ELEKTRA_NOTIFICATION_REGISTERFUNC_TYPEDEF(FUNC_TYPE_NAME, TYPE)                                                                    \
+	typedef int (*FUNC_TYPE_NAME) (Plugin * handle, Key * key, TYPE * variable);
 
-/**
- * Subscribe for automatic updates to a given long variable when the given
- * key value is changed.
- *
- * @param  handle   plugin handle
- * @param  key      key to watch for changes
- * @param  variable long variable
- *
- * @retval 1 on success
- * @retval 0 on failure
- */
-typedef int (*ElektraNotificationPluginRegisterLong) (Plugin * handle, Key * key, long * variable);
-
-/**
- * Subscribe for automatic updates to a given unsigned long variable when the given
- * key value is changed.
- *
- * @param  handle   plugin handle
- * @param  key      key to watch for changes
- * @param  variable unsigned long variable
- *
- * @retval 1 on success
- * @retval 0 on failure
- */
-typedef int (*ElektraNotificationPluginRegisterUnsignedLong) (Plugin * handle, Key * key, unsigned long * variable);
-
-/**
- * Subscribe for automatic updates to a given float variable when the given
- * key value is changed.
- *
- * @param  handle   plugin handle
- * @param  key      key to watch for changes
- * @param  variable float variable
- *
- * @retval 1 on success
- * @retval 0 on failure
- */
-typedef int (*ElektraNotificationPluginRegisterFloat) (Plugin * handle, Key * key, float * variable);
-
-/**
- * Subscribe for automatic updates to a given double variable when the given
- * key value is changed.
- *
- * @param  handle   plugin handle
- * @param  key      key to watch for changes
- * @param  variable double variable
- *
- * @retval 1 on success
- * @retval 0 on failure
- */
-typedef int (*ElektraNotificationPluginRegisterDouble) (Plugin * handle, Key * key, double * variable);
+#define ELEKTRA_NOTIFICATION_TYPE_DEFINITION(TYPE, TYPE_NAME)                                                                              \
+	ELEKTRA_NOTIFICATION_REGISTER_SIGNATURE (TYPE, TYPE_NAME)                                                                          \
+	{                                                                                                                                  \
+		if (!kdb || !key || !variable)                                                                                             \
+		{                                                                                                                          \
+			ELEKTRA_LOG_WARNING ("null pointer passed");                                                                       \
+			return 0;                                                                                                          \
+		}                                                                                                                          \
+		/* get notification plugins */                                                                                             \
+		Plugin * notificationPlugin = getNotificationPlugin (kdb);                                                                 \
+		if (!notificationPlugin)                                                                                                   \
+		{                                                                                                                          \
+			return 0;                                                                                                          \
+		}                                                                                                                          \
+		/* get register function from plugin */                                                                                    \
+		size_t func = elektraPluginGetFunction (notificationPlugin, "register" #TYPE_NAME);                                        \
+		if (!func)                                                                                                                 \
+		{                                                                                                                          \
+			return 0;                                                                                                          \
+		}                                                                                                                          \
+		ELEKTRA_NOTIFICATION_REGISTERFUNC_TYPEDEF (RegisterFuncType, TYPE)                                                         \
+		RegisterFuncType registerFunc = (RegisterFuncType)func;                                                                    \
+		return registerFunc (notificationPlugin, key, variable);                                                                   \
+	}
 
 /**
  * Subscribe for updates via callback when a given key value is changed.

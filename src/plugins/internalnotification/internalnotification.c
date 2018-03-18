@@ -15,6 +15,8 @@
 #include <kdblogger.h>
 #include <kdbnotificationinternal.h>
 
+#include <errno.h>  // errno
+#include <stdlib.h> // strto* functions
 /*
 	checklist for types
 	[ ] TYPE_BOOLEAN = 1 << 0,
@@ -230,96 +232,37 @@ void elektraInternalnotificationUpdateRegisteredKeys (Plugin * plugin, KeySet * 
 	}
 }
 
+// Generate register and conversion functions
+INTERNALNOTIFICATION_TYPE (int, long int, Int, (strtol (string, &end, 10)),
+			   INTERNALNOTIFICATION_CHECK_CONVERSION_RANGE (value <= INT_MAX && value >= INT_MIN))
+INTERNALNOTIFICATION_TYPE (unsigned int, unsigned long int, UnsignedInt, (strtoul (string, &end, 10)),
+			   INTERNALNOTIFICATION_CHECK_CONVERSION_RANGE (value <= UINT_MAX))
 
-/**
- * @see kdbnotificationinternal.h ::elektraNotificationRegisterInt
- */
-int elektraInternalnotificationRegisterInt (Plugin * handle, Key * key, int * variable)
-{
-	PluginState * pluginState = elektraPluginGetData (handle);
-	ELEKTRA_ASSERT (pluginState != NULL, "plugin state was not initialized properly");
+INTERNALNOTIFICATION_TYPE (long, long, Long, (strtol (string, &end, 10)), INTERNALNOTIFICATION_CHECK_CONVERSION)
+INTERNALNOTIFICATION_TYPE (unsigned long, unsigned long, UnsignedLong, (strtoul (string, &end, 10)), INTERNALNOTIFICATION_CHECK_CONVERSION)
 
-	KeyRegistration * registeredKey =
-		elektraInternalnotificationAddNewRegistration (pluginState, key, elektraInternalnotificationConvertInt, variable);
-	if (registeredKey == NULL)
-	{
-		return 0;
-	}
+INTERNALNOTIFICATION_TYPE (float, float, Float, (strtof (string, &end)), INTERNALNOTIFICATION_CHECK_CONVERSION)
+INTERNALNOTIFICATION_TYPE (double, double, Double, (strtod (string, &end)), INTERNALNOTIFICATION_CHECK_CONVERSION)
 
-	return 1;
-}
-
-/**
- * @see kdbnotificationinternal.h ::elektraNotificationRegisterLong
- */
-int elektraInternalnotificationRegisterLong (Plugin * handle, Key * key, long * variable)
-{
-	PluginState * pluginState = elektraPluginGetData (handle);
-	ELEKTRA_ASSERT (pluginState != NULL, "plugin state was not initialized properly");
-
-	KeyRegistration * registeredKey =
-		elektraInternalnotificationAddNewRegistration (pluginState, key, elektraInternalnotificationConvertLong, variable);
-	if (registeredKey == NULL)
-	{
-		return 0;
-	}
-
-	return 1;
-}
-
-/**
- * @see kdbnotificationinternal.h ::elektraNotificationRegisterUnsignedLong
- */
-int elektraInternalnotificationRegisterUnsignedLong (Plugin * handle, Key * key, unsigned long * variable)
-{
-	PluginState * pluginState = elektraPluginGetData (handle);
-	ELEKTRA_ASSERT (pluginState != NULL, "plugin state was not initialized properly");
-
-	KeyRegistration * registeredKey =
-		elektraInternalnotificationAddNewRegistration (pluginState, key, elektraInternalnotificationConvertUnsignedLong, variable);
-	if (registeredKey == NULL)
-	{
-		return 0;
-	}
-
-	return 1;
-}
-
-/**
- * @see kdbnotificationinternal.h ::ElektraNotificationPluginRegisterFloat
- */
-int elektraInternalnotificationRegisterFloat (Plugin * handle, Key * key, float * variable)
-{
-	PluginState * pluginState = elektraPluginGetData (handle);
-	ELEKTRA_ASSERT (pluginState != NULL, "plugin state was not initialized properly");
-
-	KeyRegistration * registeredKey =
-		elektraInternalnotificationAddNewRegistration (pluginState, key, elektraInternalnotificationConvertFloat, variable);
-	if (registeredKey == NULL)
-	{
-		return 0;
-	}
-
-	return 1;
-}
-
-/**
- * @see kdbnotificationinternal.h ::ElektraNotificationPluginRegisterDouble
- */
-int elektraInternalnotificationRegisterDouble (Plugin * handle, Key * key, double * variable)
-{
-	PluginState * pluginState = elektraPluginGetData (handle);
-	ELEKTRA_ASSERT (pluginState != NULL, "plugin state was not initialized properly");
-
-	KeyRegistration * registeredKey =
-		elektraInternalnotificationAddNewRegistration (pluginState, key, elektraInternalnotificationConvertDouble, variable);
-	if (registeredKey == NULL)
-	{
-		return 0;
-	}
-
-	return 1;
-}
+INTERNALNOTIFICATION_TYPE (kdb_boolean_t, int, KdbBoolean, (!strcmp (string, "1")), 1)
+INTERNALNOTIFICATION_TYPE (kdb_char_t, kdb_char_t, KdbChar, (string[0]), 1)
+INTERNALNOTIFICATION_TYPE (kdb_octet_t, unsigned int, KdbOctet, (strtoul (string, &end, 10)),
+			   INTERNALNOTIFICATION_CHECK_CONVERSION_RANGE (value <= 255))
+INTERNALNOTIFICATION_TYPE (kdb_short_t, int, KdbShort, (strtol (string, &end, 10)),
+			   INTERNALNOTIFICATION_CHECK_CONVERSION_RANGE (value <= SHRT_MAX && value >= SHRT_MIN))
+INTERNALNOTIFICATION_TYPE (kdb_unsigned_short_t, unsigned int, KdbUnsignedShort, (strtoul (string, &end, 10)),
+			   INTERNALNOTIFICATION_CHECK_CONVERSION_RANGE (value <= USHRT_MAX))
+INTERNALNOTIFICATION_TYPE (kdb_long_t, kdb_long_t, KdbLong, (strtol (string, &end, 10)), INTERNALNOTIFICATION_CHECK_CONVERSION)
+INTERNALNOTIFICATION_TYPE (kdb_unsigned_long_t, kdb_unsigned_long_t, KdbUnsignedLong, (strtoul (string, &end, 10)),
+			   INTERNALNOTIFICATION_CHECK_CONVERSION)
+INTERNALNOTIFICATION_TYPE (kdb_long_long_t, kdb_long_long_t, KdbLongLong, (ELEKTRA_LONG_LONG_S (string, &end, 10)),
+			   INTERNALNOTIFICATION_CHECK_CONVERSION)
+INTERNALNOTIFICATION_TYPE (kdb_unsigned_long_long_t, kdb_unsigned_long_long_t, KdbUnsignedLongLong,
+			   (ELEKTRA_UNSIGNED_LONG_LONG_S (string, &end, 10)), INTERNALNOTIFICATION_CHECK_CONVERSION)
+INTERNALNOTIFICATION_TYPE (kdb_float_t, kdb_float_t, KdbFloat, (strtof (string, &end)), INTERNALNOTIFICATION_CHECK_CONVERSION)
+INTERNALNOTIFICATION_TYPE (kdb_double_t, kdb_double_t, KdbDouble, (strtod (string, &end)), INTERNALNOTIFICATION_CHECK_CONVERSION)
+INTERNALNOTIFICATION_TYPE (kdb_long_double_t, kdb_long_double_t, KdbLongDouble, (strtold (string, &end)),
+			   INTERNALNOTIFICATION_CHECK_CONVERSION)
 
 /**
  * @see kdbnotificationinternal.h ::ElektraNotificationPluginRegisterCallback
@@ -371,16 +314,18 @@ int elektraInternalnotificationGet (Plugin * handle, KeySet * returned, Key * pa
 				elektraInternalnotificationDoUpdate, KEY_END),
 
 			// Export register* functions
-			keyNew ("system/elektra/modules/internalnotification/exports/registerInt", KEY_FUNC,
-				elektraInternalnotificationRegisterInt, KEY_END),
-			keyNew ("system/elektra/modules/internalnotification/exports/registerLong", KEY_FUNC,
-				elektraInternalnotificationRegisterLong, KEY_END),
-			keyNew ("system/elektra/modules/internalnotification/exports/registerUnsignedLong", KEY_FUNC,
-				elektraInternalnotificationRegisterUnsignedLong, KEY_END),
-			keyNew ("system/elektra/modules/internalnotification/exports/registerFloat", KEY_FUNC,
-				elektraInternalnotificationRegisterFloat, KEY_END),
-			keyNew ("system/elektra/modules/internalnotification/exports/registerDouble", KEY_FUNC,
-				elektraInternalnotificationRegisterDouble, KEY_END),
+			INTERNALNOTIFICATION_EXPORT_FUNCTION (Int), INTERNALNOTIFICATION_EXPORT_FUNCTION (UnsignedInt),
+			INTERNALNOTIFICATION_EXPORT_FUNCTION (Long), INTERNALNOTIFICATION_EXPORT_FUNCTION (UnsignedLong),
+			INTERNALNOTIFICATION_EXPORT_FUNCTION (Float), INTERNALNOTIFICATION_EXPORT_FUNCTION (Double),
+
+			// Export register* functions for kdb_*_t types
+			INTERNALNOTIFICATION_EXPORT_FUNCTION (KdbBoolean), INTERNALNOTIFICATION_EXPORT_FUNCTION (KdbChar),
+			INTERNALNOTIFICATION_EXPORT_FUNCTION (KdbOctet), INTERNALNOTIFICATION_EXPORT_FUNCTION (KdbShort),
+			INTERNALNOTIFICATION_EXPORT_FUNCTION (KdbUnsignedShort), INTERNALNOTIFICATION_EXPORT_FUNCTION (KdbLong),
+			INTERNALNOTIFICATION_EXPORT_FUNCTION (KdbUnsignedLong), INTERNALNOTIFICATION_EXPORT_FUNCTION (KdbLongLong),
+			INTERNALNOTIFICATION_EXPORT_FUNCTION (KdbUnsignedLongLong), INTERNALNOTIFICATION_EXPORT_FUNCTION (KdbFloat),
+			INTERNALNOTIFICATION_EXPORT_FUNCTION (KdbDouble), INTERNALNOTIFICATION_EXPORT_FUNCTION (KdbLongDouble),
+
 			keyNew ("system/elektra/modules/internalnotification/exports/registerCallback", KEY_FUNC,
 				elektraInternalnotificationRegisterCallback, KEY_END),
 

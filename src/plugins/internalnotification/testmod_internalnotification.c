@@ -13,6 +13,7 @@
 
 #include <kdbconfig.h>
 #include <kdbnotificationinternal.h>
+#include <kdbtypes.h>
 
 #include <tests.h>
 #include <tests_plugin.h>
@@ -25,49 +26,76 @@ char * callback_keyName;
 
 #define CALLBACK_CONTEXT_MAGIC_NUMBER ((void *) 1234)
 
+#define REGISTER_FUNC_NAME(TYPE_NAME) internalnotificationRegister##TYPE_NAME
+#define TEST_CASE_UPDATE_NAME(TYPE_NAME) test_update##TYPE_NAME
+#define TEST_CASE_NO_UPDATE_NAME(TYPE_NAME) test_noUpdate##TYPE_NAME
+
+#define RUN_TYPE_TESTS(TYPE_NAME)                                                                                                          \
+	printf ("\n" #TYPE_NAME "\n----------------\n");                                                                                   \
+	TEST_CASE_UPDATE_NAME (TYPE_NAME) ();                                                                                              \
+	TEST_CASE_NO_UPDATE_NAME (TYPE_NAME) ();
+
+#define REGISTER_FUNC_DEFINITION(TYPE, TYPE_NAME)                                                                                          \
+	static int REGISTER_FUNC_NAME (TYPE_NAME) (Plugin * plugin, Key * key, TYPE * variable)                                            \
+	{                                                                                                                                  \
+		size_t address = elektraPluginGetFunction (plugin, "register" #TYPE_NAME);                                                 \
+		if (!address) yield_error ("function not exported");                                                                       \
+                                                                                                                                           \
+		/* register key with plugin */                                                                                             \
+		ELEKTRA_NOTIFICATION_REGISTERFUNC_TYPEDEF (RegisterFuncType, TYPE)                                                         \
+		return ((RegisterFuncType) address) (plugin, key, variable);                                                               \
+	}
+
+#define CREATE_UPDATE_TEST_CASE(TYPE, TYPE_NAME, FORMAT_STRING, TEST_VALUE, CHECK_VALUE)                                                   \
+	static void TEST_CASE_UPDATE_NAME (TYPE_NAME) (void)                                                                               \
+	{                                                                                                                                  \
+		printf (#TYPE ": test update\n");                                                                                          \
+		KeySet * conf = ksNew (0, KS_END);                                                                                         \
+		PLUGIN_OPEN ("internalnotification");                                                                                      \
+		Key * registeredKey = keyNew ("/test/internalnotification/value", KEY_END);                                                \
+		TYPE value = 0;                                                                                                            \
+		succeed_if (REGISTER_FUNC_NAME (TYPE_NAME) (plugin, registeredKey, &value) == 1, "registration was not successful");       \
+		char * valueStr = elektraFormat (FORMAT_STRING, TEST_VALUE);                                                               \
+		Key * valueKey = keyNew ("user/test/internalnotification/value", KEY_VALUE, valueStr, KEY_END);                            \
+		KeySet * ks = ksNew (1, valueKey, KS_END);                                                                                 \
+		elektraInternalnotificationUpdateRegisteredKeys (plugin, ks);                                                              \
+		succeed_if (CHECK_VALUE, "registered value was not updated");                                                              \
+		free (valueStr);                                                                                                           \
+		keyDel (registeredKey);                                                                                                    \
+		ksDel (ks);                                                                                                                \
+		PLUGIN_CLOSE ();                                                                                                           \
+	}
+
+#define CREATE_TYPE_TESTS(TYPE, TYPE_NAME, FORMAT_STRING, TEST_VALUE, CHECK_VALUE, INVALID_VALUE, CHECK_INVALID)                           \
+	REGISTER_FUNC_DEFINITION (TYPE, TYPE_NAME)                                                                                         \
+                                                                                                                                           \
+	CREATE_UPDATE_TEST_CASE (TYPE, TYPE_NAME, FORMAT_STRING, TEST_VALUE, CHECK_VALUE)                                                  \
+                                                                                                                                           \
+	static void TEST_CASE_NO_UPDATE_NAME (TYPE_NAME) (void)                                                                            \
+	{                                                                                                                                  \
+		printf (#TYPE ": test no update with invalid value\n");                                                                    \
+		KeySet * conf = ksNew (0, KS_END);                                                                                         \
+		PLUGIN_OPEN ("internalnotification");                                                                                      \
+		Key * valueKey = keyNew ("user/test/internalnotification/value", KEY_END);                                                 \
+		KeySet * ks = ksNew (1, valueKey, KS_END);                                                                                 \
+		TYPE value = 0;                                                                                                            \
+		succeed_if (REGISTER_FUNC_NAME (TYPE_NAME) (plugin, valueKey, &value) == 1, "registration was not successful");            \
+		keySetString (valueKey, INVALID_VALUE);                                                                                    \
+		elektraInternalnotificationUpdateRegisteredKeys (plugin, ks);                                                              \
+		succeed_if (CHECK_INVALID, "registered value was updated");                                                                \
+		ksDel (ks);                                                                                                                \
+		PLUGIN_CLOSE ();                                                                                                           \
+	}
+
+
 static int internalnotificationRegisterInt (Plugin * plugin, Key * key, int * variable)
 {
 	size_t address = elektraPluginGetFunction (plugin, "registerInt");
 	if (!address) yield_error ("function not exported");
 
 	// Register key with plugin
-	return ((ElektraNotificationPluginRegisterInt) address) (plugin, key, variable);
-}
-
-static int internalnotificationRegisterLong (Plugin * plugin, Key * key, long * variable)
-{
-	size_t address = elektraPluginGetFunction (plugin, "registerLong");
-	if (!address) yield_error ("function not exported");
-
-	// Register key with plugin
-	return ((ElektraNotificationPluginRegisterLong)address) (plugin, key, variable);
-}
-
-static int internalnotificationRegisterUnsignedLong (Plugin * plugin, Key * key, unsigned long * variable)
-{
-	size_t address = elektraPluginGetFunction (plugin, "registerUnsignedLong");
-	if (!address) yield_error ("function not exported");
-
-	// Register key with plugin
-	return ((ElektraNotificationPluginRegisterUnsignedLong)address) (plugin, key, variable);
-}
-
-static int internalnotificationRegisterFloat (Plugin * plugin, Key * key, float * variable)
-{
-	size_t address = elektraPluginGetFunction (plugin, "registerFloat");
-	if (!address) yield_error ("function not exported");
-
-	// Register key with plugin
-	return ((ElektraNotificationPluginRegisterFloat) address) (plugin, key, variable);
-}
-
-static int internalnotificationRegisterDouble (Plugin * plugin, Key * key, double * variable)
-{
-	size_t address = elektraPluginGetFunction (plugin, "registerDouble");
-	if (!address) yield_error ("function not exported");
-
-	// Register key with plugin
-	return ((ElektraNotificationPluginRegisterDouble)address) (plugin, key, variable);
+	ELEKTRA_NOTIFICATION_REGISTERFUNC_TYPEDEF (RegisterFuncType, int)
+	return ((RegisterFuncType) address) (plugin, key, variable);
 }
 
 static int internalnotificationRegisterCallback (Plugin * plugin, Key * key, ElektraNotificationChangeCallback callback, void * context)
@@ -342,203 +370,6 @@ static void test_intNoUpdateWithValueExceedingIntMin (void)
 	PLUGIN_CLOSE ();
 }
 
-
-static void test_floatUpdateWithCascadingKey (void)
-{
-	printf ("test update with cascading key registered\n");
-
-	KeySet * conf = ksNew (0, KS_END);
-	PLUGIN_OPEN ("internalnotification");
-
-	Key * registeredKey = keyNew ("/test/internalnotification/value", KEY_END);
-	float value = 0;
-	succeed_if (internalnotificationRegisterFloat (plugin, registeredKey, &value) == 1,
-		    "call to elektraInternalnotificationRegisterFloat was not successful");
-
-	Key * valueKey = keyNew ("user/test/internalnotification/value", KEY_VALUE, "2.3", KEY_END);
-	KeySet * ks = ksNew (1, valueKey, KS_END);
-
-	elektraInternalnotificationUpdateRegisteredKeys (plugin, ks);
-
-	succeed_if (value >= 2.295 && value <= 2.305, "registered value was not updated");
-
-	keyDel (registeredKey);
-	ksDel (ks);
-	PLUGIN_CLOSE ();
-}
-
-static void test_floatNoUpdateWithInvalidValue (void)
-{
-	printf ("test no update with invalid value\n");
-
-	KeySet * conf = ksNew (0, KS_END);
-	PLUGIN_OPEN ("internalnotification");
-
-	Key * valueKey = keyNew ("user/test/internalnotification/value", KEY_END);
-	KeySet * ks = ksNew (1, valueKey, KS_END);
-
-	float value = 0.0;
-	succeed_if (internalnotificationRegisterFloat (plugin, valueKey, &value) == 1,
-		    "call to elektraInternalnotificationRegisterFloat was not successful");
-
-	keySetString (valueKey, "4.a");
-
-	elektraInternalnotificationUpdateRegisteredKeys (plugin, ks);
-
-	succeed_if ((int)value == 0, "registered value was updated");
-
-	ksDel (ks);
-	PLUGIN_CLOSE ();
-}
-
-static void test_doubleUpdateWithCascadingKey (void)
-{
-	printf ("test update with cascading key registered\n");
-
-	KeySet * conf = ksNew (0, KS_END);
-	PLUGIN_OPEN ("internalnotification");
-
-	Key * registeredKey = keyNew ("/test/internalnotification/value", KEY_END);
-	double value = 0;
-	succeed_if (internalnotificationRegisterDouble (plugin, registeredKey, &value) == 1,
-		    "call to elektraInternalnotificationRegisterFloat was not successful");
-
-	Key * valueKey = keyNew ("user/test/internalnotification/value", KEY_VALUE, "1.00000001", KEY_END);
-	KeySet * ks = ksNew (1, valueKey, KS_END);
-
-	elektraInternalnotificationUpdateRegisteredKeys (plugin, ks);
-
-	succeed_if (value >= 1 + 1e-9 && value <= 1 + 1e-7, "registered value was not updated");
-
-	keyDel (registeredKey);
-	ksDel (ks);
-	PLUGIN_CLOSE ();
-}
-
-static void test_doubleNoUpdateWithInvalidValue (void)
-{
-	printf ("test no update with invalid value\n");
-
-	KeySet * conf = ksNew (0, KS_END);
-	PLUGIN_OPEN ("internalnotification");
-
-	Key * valueKey = keyNew ("user/test/internalnotification/value", KEY_END);
-	KeySet * ks = ksNew (1, valueKey, KS_END);
-
-	double value = 0.0;
-	succeed_if (internalnotificationRegisterDouble (plugin, valueKey, &value) == 1,
-		    "call to elektraInternalnotificationRegisterFloat was not successful");
-
-	keySetString (valueKey, "4.a");
-
-	elektraInternalnotificationUpdateRegisteredKeys (plugin, ks);
-
-	succeed_if ((int) value == 0, "registered value was updated");
-
-	ksDel (ks);
-	PLUGIN_CLOSE ();
-}
-
-static void test_longUpdateWithCascadingKey (void)
-{
-	printf ("test update with cascading key registered\n");
-
-	KeySet * conf = ksNew (0, KS_END);
-	PLUGIN_OPEN ("internalnotification");
-
-	Key * registeredKey = keyNew ("/test/internalnotification/value", KEY_END);
-	long value = 0;
-	succeed_if (internalnotificationRegisterLong (plugin, registeredKey, &value) == 1,
-		    "call to elektraInternalnotificationRegisterFloat was not successful");
-
-	char * valueStr = convertLongLongToString (LONG_MAX);
-	Key * valueKey = keyNew ("user/test/internalnotification/value", KEY_VALUE, valueStr, KEY_END);
-	KeySet * ks = ksNew (1, valueKey, KS_END);
-
-	elektraInternalnotificationUpdateRegisteredKeys (plugin, ks);
-
-	succeed_if (value == LONG_MAX, "registered value was not updated");
-
-	elektraFree (valueStr);
-	keyDel (registeredKey);
-	ksDel (ks);
-	PLUGIN_CLOSE ();
-}
-
-static void test_longNoUpdateWithInvalidValue (void)
-{
-	printf ("test no update with invalid value\n");
-
-	KeySet * conf = ksNew (0, KS_END);
-	PLUGIN_OPEN ("internalnotification");
-
-	Key * valueKey = keyNew ("user/test/internalnotification/value", KEY_END);
-	KeySet * ks = ksNew (1, valueKey, KS_END);
-
-	long value = 0;
-	succeed_if (internalnotificationRegisterLong (plugin, valueKey, &value) == 1,
-		    "call to elektraInternalnotificationRegisterFloat was not successful");
-
-	keySetString (valueKey, "5000abc000");
-
-	elektraInternalnotificationUpdateRegisteredKeys (plugin, ks);
-
-	succeed_if (value == 0, "registered value was updated");
-
-	ksDel (ks);
-	PLUGIN_CLOSE ();
-}
-
-static void test_unsignedLongUpdateWithCascadingKey (void)
-{
-	printf ("test update with cascading key registered\n");
-
-	KeySet * conf = ksNew (0, KS_END);
-	PLUGIN_OPEN ("internalnotification");
-
-	Key * registeredKey = keyNew ("/test/internalnotification/value", KEY_END);
-	unsigned long value = 0;
-	succeed_if (internalnotificationRegisterUnsignedLong (plugin, registeredKey, &value) == 1,
-		    "call to elektraInternalnotificationRegisterFloat was not successful");
-
-	char * valueStr = convertLongLongToString (ULONG_MAX);
-	Key * valueKey = keyNew ("user/test/internalnotification/value", KEY_VALUE, valueStr, KEY_END);
-	KeySet * ks = ksNew (1, valueKey, KS_END);
-
-	elektraInternalnotificationUpdateRegisteredKeys (plugin, ks);
-
-	succeed_if (value == ULONG_MAX, "registered value was not updated");
-
-	elektraFree (valueStr);
-	keyDel (registeredKey);
-	ksDel (ks);
-	PLUGIN_CLOSE ();
-}
-
-static void test_unsignedLongNoUpdateWithInvalidValue (void)
-{
-	printf ("test no update with invalid value\n");
-
-	KeySet * conf = ksNew (0, KS_END);
-	PLUGIN_OPEN ("internalnotification");
-
-	Key * valueKey = keyNew ("user/test/internalnotification/value", KEY_END);
-	KeySet * ks = ksNew (1, valueKey, KS_END);
-
-	unsigned long value = 0;
-	succeed_if (internalnotificationRegisterUnsignedLong (plugin, valueKey, &value) == 1,
-		    "call to elektraInternalnotificationRegisterFloat was not successful");
-
-	keySetString (valueKey, "AA446744073709551615");
-
-	elektraInternalnotificationUpdateRegisteredKeys (plugin, ks);
-
-	succeed_if (value == 0, "registered value was updated");
-
-	ksDel (ks);
-	PLUGIN_CLOSE ();
-}
-
 static void test_callback (Key * key, void * context)
 {
 	succeed_if (context == CALLBACK_CONTEXT_MAGIC_NUMBER, "callback context was not passed");
@@ -597,6 +428,32 @@ static void test_callbackCalledWithChangeDetection (void)
 	PLUGIN_CLOSE ();
 }
 
+CREATE_TYPE_TESTS (unsigned int, UnsignedInt, "%u", UINT_MAX, (value == UINT_MAX), "-1", value == 0)
+CREATE_TYPE_TESTS (long, Long, "%ld", LONG_MAX, (value == LONG_MAX), "5000abc000", value == 0)
+CREATE_TYPE_TESTS (unsigned long, UnsignedLong, "%lu", ULONG_MAX, (value == ULONG_MAX), "AA446744073709551615", value == 0)
+
+CREATE_TYPE_TESTS (float, Float, "%f", 2.3, (value >= 2.295 && value <= 2.305), "4.a", ((int) value == 0))
+CREATE_TYPE_TESTS (double, Double, "%1.8f", 1.00000001, (value >= 1 + 1e-9 && value <= 1 + 1e-7), "4.a", ((int) value == 0))
+
+REGISTER_FUNC_DEFINITION (kdb_boolean_t, KdbBoolean)
+CREATE_UPDATE_TEST_CASE (kdb_boolean_t, KdbBoolean, "%d", 1, (value))
+
+REGISTER_FUNC_DEFINITION (kdb_char_t, KdbChar)
+CREATE_UPDATE_TEST_CASE (kdb_char_t, KdbChar, "abc%d", 1, (value == 'a'))
+
+CREATE_TYPE_TESTS (kdb_octet_t, KdbOctet, "%d", 255, (value == 255), "4a", value == 0)
+CREATE_TYPE_TESTS (kdb_short_t, KdbShort, "%d", SHRT_MIN, (value == SHRT_MIN), "-55ABC", value == 0)
+CREATE_TYPE_TESTS (kdb_unsigned_short_t, KdbUnsignedShort, "%d", USHRT_MAX, (value == USHRT_MAX), "55ABC", value == 0)
+CREATE_TYPE_TESTS (kdb_long_t, KdbLong, "%d", INT_MIN, (value == INT_MIN), "B5C", value == 0)
+CREATE_TYPE_TESTS (kdb_unsigned_long_t, KdbUnsignedLong, "%d", UINT_MAX, (value == UINT_MAX), "B5C", value == 0)
+CREATE_TYPE_TESTS (kdb_long_long_t, KdbLongLong, ELEKTRA_LONG_LONG_F, LONG_MIN, (value == LONG_MIN), "50000asasd", value == 0)
+CREATE_TYPE_TESTS (kdb_unsigned_long_long_t, KdbUnsignedLongLong, ELEKTRA_UNSIGNED_LONG_LONG_F, ULONG_MAX, (value == ULONG_MAX), "-B5C",
+		   value == 0)
+CREATE_TYPE_TESTS (kdb_float_t, KdbFloat, "%f", 2.3, (value >= 2.295 && value <= 2.305), "4.a", ((int) value == 0))
+CREATE_TYPE_TESTS (kdb_double_t, KdbDouble, "%1.8f", 1.00000001, (value >= 1 + 1e-9 && value <= 1 + 1e-7), "4.a", ((int) value == 0))
+CREATE_TYPE_TESTS (kdb_long_double_t, KdbLongDouble, "%1.8f", 1.00000001, (value >= 1 + 1e-9 && value <= 1 + 1e-7), "4.a",
+		   ((int) value == 0))
+
 int main (int argc, char ** argv)
 {
 	printf ("INTERNALNOTIFICATION     TESTS\n");
@@ -616,25 +473,33 @@ int main (int argc, char ** argv)
 	test_intUpdateWithValueNotYetExceedingIntMin ();
 	test_intNoUpdateWithValueExceedingIntMin ();
 
-	printf ("\nregisterLong\n-----------\n");
-	test_longUpdateWithCascadingKey ();
-	test_longNoUpdateWithInvalidValue ();
-
-	printf ("\nregisterUnsignedLong\n-----------\n");
-	test_unsignedLongUpdateWithCascadingKey ();
-	test_unsignedLongNoUpdateWithInvalidValue ();
-
-	printf ("\nregisterFloat\n-----------\n");
-	test_floatUpdateWithCascadingKey ();
-	test_floatNoUpdateWithInvalidValue ();
-
-	printf ("\nregisterDouble\n-----------\n");
-	test_doubleUpdateWithCascadingKey ();
-	test_doubleNoUpdateWithInvalidValue ();
-
 	printf ("\nregisterCallback\n----------------\n");
 	test_callbackCalledWithKey ();
 	test_callbackCalledWithChangeDetection ();
+
+	RUN_TYPE_TESTS (UnsignedInt)
+	RUN_TYPE_TESTS (Long)
+	RUN_TYPE_TESTS (UnsignedLong)
+
+	RUN_TYPE_TESTS (Float)
+	RUN_TYPE_TESTS (Double)
+
+	printf ("\nKdbBoolean\n----------------\n");
+	TEST_CASE_UPDATE_NAME (KdbBoolean) ();
+
+	printf ("\nKdbChar\n----------------\n");
+	TEST_CASE_UPDATE_NAME (KdbChar) ();
+
+	RUN_TYPE_TESTS (KdbOctet)
+	RUN_TYPE_TESTS (KdbShort)
+	RUN_TYPE_TESTS (KdbUnsignedShort)
+	RUN_TYPE_TESTS (KdbLong)
+	RUN_TYPE_TESTS (KdbUnsignedLong)
+	RUN_TYPE_TESTS (KdbLongLong)
+	RUN_TYPE_TESTS (KdbUnsignedLongLong)
+	RUN_TYPE_TESTS (KdbFloat)
+	RUN_TYPE_TESTS (KdbDouble)
+	RUN_TYPE_TESTS (KdbLongDouble)
 
 	printf ("\ntestmod_internalnotification RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

@@ -13,6 +13,7 @@
 #define KDB_NOTIFICATION_H_
 
 #include "kdb.h"
+#include "kdbtypes.h"
 
 /**
  * @defgroup kdbnotification Notification
@@ -76,6 +77,7 @@ extern "C" {
 #endif
 
 /**
+ * @ingroup kdbnotification
  * Initialize the notification system for the given KDB instance.
  *
  * Asynchronous receiving of notifications requires an I/O binding.
@@ -90,6 +92,7 @@ extern "C" {
 int elektraNotificationOpen (KDB * kdb);
 
 /**
+ * @ingroup kdbnotification
  * Stop the notification system for the given KDB instance.
  *
  * May only be called after elektraNotificationOpen() was called for given KDB
@@ -101,72 +104,50 @@ int elektraNotificationOpen (KDB * kdb);
  */
 int elektraNotificationClose (KDB * kdb);
 
+#define ELEKTRA_NOTIFICATION_REGISTER_NAME(TYPE_NAME) elektraNotificationRegister##TYPE_NAME
+
+#define ELEKTRA_NOTIFICATION_REGISTER_SIGNATURE(TYPE, TYPE_NAME)                                                                           \
+	/** @copydoc elektraNotificationRegisterInt */                                                                                     \
+	int ELEKTRA_NOTIFICATION_REGISTER_NAME (TYPE_NAME) (KDB * kdb, Key * key, TYPE * variable)
+
+#define ELEKTRA_NOTIFICATION_TYPE_DECLARATION(TYPE, TYPE_NAME) ELEKTRA_NOTIFICATION_REGISTER_SIGNATURE (TYPE, TYPE_NAME);
+
 /**
- * Subscribe for automatic updates to a given integer variable when the given
- * key value is changed.
+ * @ingroup kdbnotification
+ * @brief Subscribe for automatic updates to a given variable when the given key value is changed.
  *
  * @param  handle   plugin handle
  * @param  key      key to watch for changes
- * @param  variable integer variable
+ * @param  variable variable
  *
  * @retval 1 on success
  * @retval 0 on failure
+ * @{
  */
-int elektraNotificationRegisterInt (KDB * kdb, Key * key, int * variable);
+ELEKTRA_NOTIFICATION_TYPE_DECLARATION (int, Int)
+ELEKTRA_NOTIFICATION_TYPE_DECLARATION (unsigned int, UnsignedInt)
+ELEKTRA_NOTIFICATION_TYPE_DECLARATION (long, Long)
+ELEKTRA_NOTIFICATION_TYPE_DECLARATION (unsigned long, UnsignedLong)
+ELEKTRA_NOTIFICATION_TYPE_DECLARATION (float, Float)
+ELEKTRA_NOTIFICATION_TYPE_DECLARATION (double, Double)
+
+ELEKTRA_NOTIFICATION_TYPE_DECLARATION (kdb_boolean_t, KdbBoolean)
+ELEKTRA_NOTIFICATION_TYPE_DECLARATION (kdb_char_t, KdbChar)
+ELEKTRA_NOTIFICATION_TYPE_DECLARATION (kdb_octet_t, KdbOctet)
+ELEKTRA_NOTIFICATION_TYPE_DECLARATION (kdb_short_t, KdbShort)
+ELEKTRA_NOTIFICATION_TYPE_DECLARATION (kdb_unsigned_short_t, KdbUnsignedShort)
+ELEKTRA_NOTIFICATION_TYPE_DECLARATION (kdb_long_t, KdbLong)
+ELEKTRA_NOTIFICATION_TYPE_DECLARATION (kdb_unsigned_long_t, KdbUnsignedLong)
+ELEKTRA_NOTIFICATION_TYPE_DECLARATION (kdb_long_long_t, KdbLongLong)
+ELEKTRA_NOTIFICATION_TYPE_DECLARATION (kdb_unsigned_long_long_t, KdbUnsignedLongLong)
+ELEKTRA_NOTIFICATION_TYPE_DECLARATION (kdb_float_t, KdbFloat)
+ELEKTRA_NOTIFICATION_TYPE_DECLARATION (kdb_double_t, KdbDouble)
+ELEKTRA_NOTIFICATION_TYPE_DECLARATION (kdb_long_double_t, KdbLongDouble)
+/** @} */
+
 
 /**
- * Subscribe for automatic updates to a given long variable when the given
- * key value is changed.
- *
- * @param  handle   plugin handle
- * @param  key      key to watch for changes
- * @param  variable long variable
- *
- * @retval 1 on success
- * @retval 0 on failure
- */
-int elektraNotificationRegisterLong (KDB * kdb, Key * key, long * variable);
-
-/**
- * Subscribe for automatic updates to a given unsigned long variable when the given
- * key value is changed.
- *
- * @param  handle   plugin handle
- * @param  key      key to watch for changes
- * @param  variable unsigned long variable
- *
- * @retval 1 on success
- * @retval 0 on failure
- */
-int elektraNotificationRegisterUnsignedLong (KDB * kdb, Key * key, unsigned long * variable);
-
-/**
- * Subscribe for automatic updates to a given float variable when the given
- * key value is changed.
- *
- * @param  handle   plugin handle
- * @param  key      key to watch for changes
- * @param  variable float variable
- *
- * @retval 1 on success
- * @retval 0 on failure
- */
-int elektraNotificationRegisterFloat (KDB * kdb, Key * key, float * variable);
-
-/**
- * Subscribe for automatic updates to a given double variable when the given
- * key value is changed.
- *
- * @param  handle   plugin handle
- * @param  key      key to watch for changes
- * @param  variable double variable
- *
- * @retval 1 on success
- * @retval 0 on failure
- */
-int elektraNotificationRegisterDouble (KDB * kdb, Key * key, double * variable);
-
-/**
+ * @ingroup kdbnotification
  * Callback function for key changes.
  *
  * @param  key      changed key
@@ -175,6 +156,7 @@ int elektraNotificationRegisterDouble (KDB * kdb, Key * key, double * variable);
 typedef void (*ElektraNotificationChangeCallback) (Key * key, void * context);
 
 /**
+ * @ingroup kdbnotification
  * Subscribe for updates via callback when a given key value is changed.
  *
  * @param  handle   plugin handle

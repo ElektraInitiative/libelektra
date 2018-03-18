@@ -850,140 +850,25 @@ static Plugin * getNotificationPlugin (KDB * kdb)
 	}
 }
 
-int elektraNotificationRegisterInt (KDB * kdb, Key * key, int * variable)
-{
-	if (!kdb || !key || !variable)
-	{
-		ELEKTRA_LOG_WARNING ("null pointer passed");
-		return 0;
-	}
+ELEKTRA_NOTIFICATION_TYPE_DEFINITION (int, Int)
+ELEKTRA_NOTIFICATION_TYPE_DEFINITION (unsigned int, UnsignedInt)
+ELEKTRA_NOTIFICATION_TYPE_DEFINITION (long, Long)
+ELEKTRA_NOTIFICATION_TYPE_DEFINITION (unsigned long, UnsignedLong)
+ELEKTRA_NOTIFICATION_TYPE_DEFINITION (float, Float)
+ELEKTRA_NOTIFICATION_TYPE_DEFINITION (double, Double)
 
-	// Find notification plugin
-	Plugin * notificationPlugin = getNotificationPlugin (kdb);
-	if (!notificationPlugin)
-	{
-		return 0;
-	}
-
-	// Get register function from plugin
-	size_t func = elektraPluginGetFunction (notificationPlugin, "registerInt");
-	if (!func)
-	{
-		return 0;
-	}
-
-	// Call register function
-	ElektraNotificationPluginRegisterInt registerFunc = (ElektraNotificationPluginRegisterInt) func;
-	return registerFunc (notificationPlugin, key, variable);
-}
-
-int elektraNotificationRegisterLong (KDB * kdb, Key * key, long * variable)
-{
-	if (!kdb || !key || !variable)
-	{
-		ELEKTRA_LOG_WARNING ("null pointer passed");
-		return 0;
-	}
-
-	// Find notification plugin
-	Plugin * notificationPlugin = getNotificationPlugin (kdb);
-	if (!notificationPlugin)
-	{
-		return 0;
-	}
-
-	// Get register function from plugin
-	size_t func = elektraPluginGetFunction (notificationPlugin, "registerLong");
-	if (!func)
-	{
-		return 0;
-	}
-
-	// Call register function
-	ElektraNotificationPluginRegisterLong registerFunc = (ElektraNotificationPluginRegisterLong)func;
-	return registerFunc (notificationPlugin, key, variable);
-}
-
-int elektraNotificationRegisterUnsignedLong (KDB * kdb, Key * key, unsigned long * variable)
-{
-	if (!kdb || !key || !variable)
-	{
-		ELEKTRA_LOG_WARNING ("null pointer passed");
-		return 0;
-	}
-
-	// Find notification plugin
-	Plugin * notificationPlugin = getNotificationPlugin (kdb);
-	if (!notificationPlugin)
-	{
-		return 0;
-	}
-
-	// Get register function from plugin
-	size_t func = elektraPluginGetFunction (notificationPlugin, "registerUnsignedLong");
-	if (!func)
-	{
-		return 0;
-	}
-
-	// Call register function
-	ElektraNotificationPluginRegisterUnsignedLong registerFunc = (ElektraNotificationPluginRegisterUnsignedLong)func;
-	return registerFunc (notificationPlugin, key, variable);
-}
-
-int elektraNotificationRegisterFloat (KDB * kdb, Key * key, float * variable)
-{
-	if (!kdb || !key || !variable)
-	{
-		ELEKTRA_LOG_WARNING ("null pointer passed");
-		return 0;
-	}
-
-	// Find notification plugin
-	Plugin * notificationPlugin = getNotificationPlugin (kdb);
-	if (!notificationPlugin)
-	{
-		return 0;
-	}
-
-	// Get register function from plugin
-	size_t func = elektraPluginGetFunction (notificationPlugin, "registerFloat");
-	if (!func)
-	{
-		return 0;
-	}
-
-	// Call register function
-	ElektraNotificationPluginRegisterFloat registerFunc = (ElektraNotificationPluginRegisterFloat) func;
-	return registerFunc (notificationPlugin, key, variable);
-}
-
-int elektraNotificationRegisterDouble (KDB * kdb, Key * key, double * variable)
-{
-	if (!kdb || !key || !variable)
-	{
-		ELEKTRA_LOG_WARNING ("null pointer passed");
-		return 0;
-	}
-
-	// Find notification plugin
-	Plugin * notificationPlugin = getNotificationPlugin (kdb);
-	if (!notificationPlugin)
-	{
-		return 0;
-	}
-
-	// Get register function from plugin
-	size_t func = elektraPluginGetFunction (notificationPlugin, "registerDouble");
-	if (!func)
-	{
-		return 0;
-	}
-
-	// Call register function
-	ElektraNotificationPluginRegisterDouble registerFunc = (ElektraNotificationPluginRegisterDouble)func;
-	return registerFunc (notificationPlugin, key, variable);
-}
+ELEKTRA_NOTIFICATION_TYPE_DEFINITION (kdb_boolean_t, KdbBoolean)
+ELEKTRA_NOTIFICATION_TYPE_DEFINITION (kdb_char_t, KdbChar)
+ELEKTRA_NOTIFICATION_TYPE_DEFINITION (kdb_octet_t, KdbOctet)
+ELEKTRA_NOTIFICATION_TYPE_DEFINITION (kdb_short_t, KdbShort)
+ELEKTRA_NOTIFICATION_TYPE_DEFINITION (kdb_unsigned_short_t, KdbUnsignedShort)
+ELEKTRA_NOTIFICATION_TYPE_DEFINITION (kdb_long_t, KdbLong)
+ELEKTRA_NOTIFICATION_TYPE_DEFINITION (kdb_unsigned_long_t, KdbUnsignedLong)
+ELEKTRA_NOTIFICATION_TYPE_DEFINITION (kdb_long_long_t, KdbLongLong)
+ELEKTRA_NOTIFICATION_TYPE_DEFINITION (kdb_unsigned_long_long_t, KdbUnsignedLongLong)
+ELEKTRA_NOTIFICATION_TYPE_DEFINITION (kdb_float_t, KdbFloat)
+ELEKTRA_NOTIFICATION_TYPE_DEFINITION (kdb_double_t, KdbDouble)
+ELEKTRA_NOTIFICATION_TYPE_DEFINITION (kdb_long_double_t, KdbLongDouble)
 
 int elektraNotificationRegisterCallback (KDB * kdb, Key * key, ElektraNotificationChangeCallback callback, void * context)
 {
