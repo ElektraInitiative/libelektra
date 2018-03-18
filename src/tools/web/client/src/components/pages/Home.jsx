@@ -35,7 +35,7 @@ const Home = ({ instances, status }) =>
               />
           </div>
         )}
-        {status && status.addingInstance &&
+        {((status && status.addingInstance) || !instances || instances.length <= 0) &&
           <div key="addingInstance" style={cellStyle}>
               <ConnectedCreateInstanceCard />
           </div>

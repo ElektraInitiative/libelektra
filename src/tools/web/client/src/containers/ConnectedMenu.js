@@ -18,6 +18,7 @@ const mapStateToProps = (state) => {
   return {
     loading: !state.idle,
     status: state.container,
+    instances: state.instances,
   }
 }
 

@@ -56,7 +56,7 @@ export default class Menu extends React.Component {
   }
 
   render () {
-    const { loading, subpage, status } = this.props
+    const { loading, instances, subpage, status } = this.props
     const { addInstance } = this.props // action creators
     const title = (
         <ToolbarGroup>
@@ -84,7 +84,7 @@ export default class Menu extends React.Component {
               label="instance"
               primary={true}
               onTouchTap={addInstance}
-              disabled={status && status.addingInstance}
+              disabled={(status && status.addingInstance) || !instances || instances.length <= 0}
             />
         </ToolbarGroup>
     )

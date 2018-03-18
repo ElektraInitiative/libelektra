@@ -17,7 +17,9 @@ import {
 } from '../actions'
 
 const mapStateToProps = (state, { id }) => {
-  return {}
+  return {
+    instances: state.instances,
+  }
 }
 
 const mapDispatchToProps = (dispatch) =>

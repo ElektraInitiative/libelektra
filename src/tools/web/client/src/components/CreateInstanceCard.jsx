@@ -34,7 +34,13 @@ export default class CreateInstanceCard extends React.Component {
   }
 
   render () {
-    const { createInstance, unaddInstance } = this.props // action creators
+    const { instances, createInstance, unaddInstance } = this.props // action creators
+    const { name, host } = this.state
+
+    const noInstancesYet = (!instances || instances.length <= 0)
+    const nameEmpty = !name || name.trim().length <= 0
+    const hostEmpty = !host || host.trim().length <= 0
+
     return (
         <Card style={{ margin: '10px', marginBottom: '25px' }}>
             <CardHeader
@@ -53,7 +59,7 @@ export default class CreateInstanceCard extends React.Component {
                       floatingLabelFixed={true}
                       hintText="e.g. my webserver"
                       onChange={(evt) => this.setState({ name: evt.target.value })}
-                      value={this.state.name}
+                      value={name}
                     />
                 </div>
                 <div style={{ display: 'block', marginTop: 8 }}>
@@ -63,7 +69,7 @@ export default class CreateInstanceCard extends React.Component {
                       floatingLabelFixed={true}
                       hintText="e.g. http://127.0.0.1:33333"
                       onChange={(evt) => this.setState({ host: evt.target.value })}
-                      value={this.state.host}
+                      value={host}
                     />
                 </div>
                 <div style={{ marginTop: 32 }}>
@@ -71,20 +77,27 @@ export default class CreateInstanceCard extends React.Component {
                     label="add"
                     primary={true}
                     onTouchTap={() => {
-                      createInstance({
-                        name: this.state.name,
-                        host: this.state.host,
-                      })
-                      this.resetValues()
+                      if (!nameEmpty && !hostEmpty) {
+                        createInstance({
+                          name: name,
+                          host: host,
+                        })
+                        this.resetValues()
+                      } else {
+                        alert('please enter a name and host!')
+                      }
                     }}
+                    disabled={nameEmpty || hostEmpty}
                   />
-                  <FlatButton
-                    label="cancel"
-                    onTouchTap={() => {
-                      unaddInstance()
-                      this.resetValues()
-                    }}
-                  />
+                  {!noInstancesYet &&
+                    <FlatButton
+                      label="cancel"
+                      onTouchTap={() => {
+                        unaddInstance()
+                        this.resetValues()
+                      }}
+                    />
+                  }
                 </div>
             </CardText>
         </Card>
