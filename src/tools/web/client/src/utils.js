@@ -14,7 +14,6 @@ export const isNumberType = (type) => {
     case 'unsigned_long':
     case 'long_long':
     case 'unsigned_long_long':
-    case 'any':
       return true
 
     default:

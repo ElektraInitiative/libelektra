@@ -44,7 +44,6 @@ export default function keyReducer (state = {}, action) {
     case SET_KEY_REQUEST:
       return updateState(state, action.request)
 
-    // TODO: recursively copy keys here? is this needed? we refresh on expand anyway
     case COPY_KEY_REQUEST: {
       const { id, from, to } = action && action.request
       const fromData = state[id] && state[id][from]
