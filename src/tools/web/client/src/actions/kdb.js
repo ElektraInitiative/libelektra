@@ -30,11 +30,11 @@ export const GET_KEY_REQUEST = 'GET_KEY_REQUEST'
 export const GET_KEY_SUCCESS = 'GET_KEY_SUCCESS'
 export const GET_KEY_FAILURE = 'GET_KEY_FAILURE'
 
-export const getKey = (id, path) => thunkCreator({
+export const getKey = (id, path, preload = false) => thunkCreator({
   id, path,
   types: [GET_KEY_REQUEST, GET_KEY_SUCCESS, GET_KEY_FAILURE],
   promise: fetch(
-    `/api/instances/${id}/kdb/${encodePath(path)}`,
+    `/api/instances/${id}/kdb/${encodePath(path)}${preload ? '?preload=1' : ''}`,
     { credentials: 'same-origin' }
   )
     .then(parseJSONResponse)

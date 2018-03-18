@@ -15,16 +15,16 @@ const version = (host) =>
   fetch(`${host}/version`)
     .then(res => res.json())
 
-const getRoot = (host) =>
-  fetch(`${host}/kdb`)
+const getRoot = (host, query = '') =>
+  fetch(`${host}/kdb${query}`)
     .then(res => res.json())
 
-const getPath = (host, path) =>
-  fetch(`${host}/kdb/${encodePath(path)}`)
+const getPath = (host, path, query = '') =>
+  fetch(`${host}/kdb/${encodePath(path)}${query}`)
     .then(res => res.json())
 
-const get = (host, path) =>
-  path ? getPath(host, path) : getRoot(host)
+const get = (host, path, query) =>
+  path ? getPath(host, path, query) : getRoot(host, query)
 
 const set = (host, path, value) =>
   fetch(`${host}/kdb/${encodePath(path)}`,

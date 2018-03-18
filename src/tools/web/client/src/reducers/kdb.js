@@ -33,7 +33,13 @@ const updateState = (state, { id, path, value, meta }) => {
 export default function keyReducer (state = {}, action) {
   switch (action.type) {
     case GET_KEY_SUCCESS:
-      return updateState(state, action.result)
+      const newState = updateState(state, action.result)
+      if (action.result && Array.isArray(action.result.children)) {
+        return action.result.children.reduce(
+          (res, c) => updateState(res, { ...c, id: action.result.id }), newState
+        )
+      }
+      return newState
 
     case SET_KEY_REQUEST:
       return updateState(state, action.request)

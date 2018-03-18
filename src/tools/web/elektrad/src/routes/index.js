@@ -22,14 +22,14 @@ export default function initRoutes (app) {
   )
 
   app.get('/kdb', (req, res) =>
-    kdb.getAndLs('/')
+    kdb.getAndLs('/', req.query)
       .then(output => successResponse(res, output))
       .catch(err => errorResponse(res, err))
   )
 
   app.route('/kdb/*')
     .get((req, res) =>
-      kdb.getAndLs(req.params[0])
+      kdb.getAndLs(req.params[0], req.query)
         .then(output => successResponse(res, output))
         .catch(err => errorResponse(res, err))
     )

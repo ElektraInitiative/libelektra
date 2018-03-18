@@ -88,7 +88,10 @@ export default function initInstanceRoutes (app) {
   app.route('/api/instances/:id/kdb/*')
     .get((req, res) =>
       getInstance(req.params.id)
-        .then(instance => remoteKdb.get(instance.host, req.params[0]))
+        .then(instance => {
+          const qs = req._parsedUrl.query
+          return remoteKdb.get(instance.host, req.params[0], qs ? '?' + qs : '')
+        })
         .then(dontShowDB)
         .then(output => successResponse(res, output))
         .catch(err => errorResponse(res, err))

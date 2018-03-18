@@ -45,7 +45,7 @@ const parseDataSet = (getKey, instanceId, tree, path) => {
       children: (Array.isArray(children) && children.length > 0)
         ? () => {
           return new Promise(resolve => {
-            children.map(child => getKey(instanceId, child.path))
+            getKey(instanceId, newPath, true)
             resolve(children)
           })
         } : false,
@@ -73,8 +73,30 @@ export default class Configuration extends Component {
     this.setState({ data: this.generateData(nextProps) || [] })
   }
 
-  updateData = (data) => {
-    return this.setState({ data })
+  updateKey = (data, [ keyPath, ...paths ], keyData) =>
+    Array.isArray(data)
+      ? data.map(d => {
+          if (d.name === keyPath) {
+            if (paths.length > 0) { // recurse deeper
+              return {
+                ...d,
+                children: this.updateKey(d.children, paths, keyData),
+              }
+            }
+
+            // we found the key, replace data
+            return keyData
+          }
+
+          // not the path we want to edit
+          return d
+        })
+      : data
+
+  updateData = (keyData, paths) => {
+    const { data } = this.state
+    const newData = this.updateKey(data, paths, keyData)
+    return this.setState({ data: newData })
   }
 
   waitForData = () => {
@@ -83,7 +105,7 @@ export default class Configuration extends Component {
     if (!user) {
       this.timeout = setTimeout(this.waitForData, 100)
     } else {
-      this.preload(data).then(this.updateData)
+      this.preload(data)
     }
   }
 
@@ -103,28 +125,25 @@ export default class Configuration extends Component {
 
     sendNotification('refreshing configuration data...')
     getKdb(id)
-      .then(() =>
-        this.preload(data).then(this.updateData)
-      )
+      .then(() => this.preload(data))
       .then(() => sendNotification('configuration data refreshed!'))
   }
 
-  preload = async tree => {
-    if (!tree) return Promise.resolve(tree)
-    return await Promise.all(tree.map(async item => {
+  preload = async (tree, paths = []) => {
+    if (!tree) return await Promise.resolve(tree)
+    return await Promise.all(tree.map(async (item, i) => {
       // do not preload system/ namespace
       if (item.name === 'system') return item
 
       let { children } = item
 
       if (!children) return item
-      children = await this.preload(
-        typeof children === 'function'
-          ? await children()
+      return this.updateData({
+        ...item,
+        children: typeof children === 'function'
+          ? await children() // resolve children if necessary
           : children
-      )
-
-      return { ...item, children }
+      }, [ ...paths, item.name ])
     }))
   }
 

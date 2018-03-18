@@ -240,11 +240,27 @@ const _import = (path, value) =>
   ).then(result => _export(path))
 
 // get value and available paths under a given `path`
-const getAndLs = (path) =>
+const getAndLs = (path, { preload = 0 }) =>
   Promise.all(
     [ ls(path), get(path), getAllMeta(path) ] // execute ls and get in parallel
   ).then(([ lsRes, value, meta ]) => {
-    return { ls: lsRes || [], value, meta } // return results as object
+    let result = { name: path.split('/').pop(), path, ls: lsRes || [], value, meta }
+    if (preload > 0 && Array.isArray(lsRes)) {
+      return Promise.all(lsRes
+        .filter(p => {
+          const isNotSame = p !== path
+          const isNotDeeplyNested = p.split('/').length <= (path.split('/').length + 1)
+          return isNotSame && isNotDeeplyNested
+        })
+        .map(p =>
+          getAndLs(p, { preload: preload - 1 })
+        ))
+        .then(children => {
+          result.children = children
+          return result
+        })
+    }
+    return result // return results as object
   })
 
 // export kdb functions as `kdb` object
