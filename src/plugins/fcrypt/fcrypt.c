@@ -30,7 +30,17 @@
 #include <kdbmacros.h>
 #include <kdbtypes.h>
 
-enum FcryptGetState { PREGETSTORAGE = 0, POSTGETSTORAGE = 1 };
+/**
+ * @brief Defines the plugin state during the <code>kdb get</code> phase.
+ */
+enum FcryptGetState {
+
+	/** Perform a decryption run before <code>kdb get</code> reads from the storage. */
+	PREGETSTORAGE = 0,
+
+	/** Perform an encryption run after <code>kdb get</code> has read from the storage. */
+	POSTGETSTORAGE = 1
+};
 
 struct _fcryptState
 {
