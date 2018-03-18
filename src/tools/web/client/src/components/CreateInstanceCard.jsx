@@ -37,7 +37,7 @@ export default class CreateInstanceCard extends React.Component {
     const { instances, createInstance, unaddInstance } = this.props // action creators
     const { name, host } = this.state
 
-    const noInstancesYet = (!instances || instances.length <= 0)
+    const noInstancesYet = !instances || instances.length <= 0
     const nameEmpty = !name || name.trim().length <= 0
     const hostEmpty = !host || host.trim().length <= 0
 

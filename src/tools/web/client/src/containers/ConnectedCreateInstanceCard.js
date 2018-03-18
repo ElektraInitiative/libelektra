@@ -15,7 +15,9 @@ import CreateInstanceCard from '../components/CreateInstanceCard.jsx'
 import { createInstance, unaddInstance } from '../actions'
 
 const mapStateToProps = (state) => {
-  return {}
+  return {
+    instances: state.instances,
+  }
 }
 
 const mapDispatchToProps = (dispatch) =>
