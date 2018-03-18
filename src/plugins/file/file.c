@@ -53,7 +53,7 @@ int elektraFileGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 		return -1;
 	}
 
-	long long fileSize = (long long)sb.st_size;
+	long long fileSize = (long long) sb.st_size;
 
 	unsigned char * buffer = NULL;
 	if (!binary)
@@ -81,7 +81,7 @@ int elektraFileGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 	long long bytesRead = 0;
 	while (bytesRead < fileSize)
 	{
-		size_t bytes = fread (buffer + bytesRead, 1, (size_t)fileSize, fp);
+		size_t bytes = fread (buffer + bytesRead, 1, (size_t) fileSize, fp);
 		if (bytes == 0) break;
 		bytesRead += bytes;
 	}
@@ -99,12 +99,12 @@ int elektraFileGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 	Key * key = keyNew (keyName (parentKey), KEY_END);
 	if (binary)
 	{
-		keySetBinary (key, (const void *)buffer, (size_t)fileSize);
+		keySetBinary (key, (const void *) buffer, (size_t) fileSize);
 	}
 	else
 	{
 		buffer[fileSize] = '\0';
-		keySetString (key, (char *)buffer);
+		keySetString (key, (char *) buffer);
 	}
 	if (info)
 	{
@@ -116,13 +116,13 @@ int elektraFileGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 		keySetMeta (key, "info/ctime", ctime (&sb.st_ctime));
 		keySetMeta (key, "info/atime", ctime (&sb.st_atime));
 		keySetMeta (key, "info/mtime", ctime (&sb.st_mtime));
-		snprintf (tmp, sizeof (tmp), "%ld", (long)sb.st_uid);
+		snprintf (tmp, sizeof (tmp), "%ld", (long) sb.st_uid);
 		keySetMeta (key, "info/uid", tmp);
-		snprintf (tmp, sizeof (tmp), "%ld", (long)sb.st_gid);
+		snprintf (tmp, sizeof (tmp), "%ld", (long) sb.st_gid);
 		keySetMeta (key, "info/gid", tmp);
-		snprintf (tmp, sizeof (tmp), "%o", (unsigned int)sb.st_mode);
+		snprintf (tmp, sizeof (tmp), "%o", (unsigned int) sb.st_mode);
 		keySetMeta (key, "info/mode", tmp);
-		snprintf (tmp, sizeof (tmp), "%ld", (long)sb.st_ino);
+		snprintf (tmp, sizeof (tmp), "%ld", (long) sb.st_ino);
 		keySetMeta (key, "info/inode", tmp);
 	}
 	ksAppendKey (returned, key);
@@ -152,7 +152,7 @@ int elektraFileSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 		fclose (fp);
 		return 0;
 	}
-	size_t valueSize = (size_t)svalueSize;
+	size_t valueSize = (size_t) svalueSize;
 	unsigned char * value = elektraMalloc (valueSize);
 	if (!value)
 	{
@@ -162,7 +162,7 @@ int elektraFileSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 	}
 	if (!keyIsBinary (key))
 	{
-		keyGetString (key, (char *)value, valueSize);
+		keyGetString (key, (char *) value, valueSize);
 		valueSize -= 1; // don't write the null terminator to the file
 	}
 	else

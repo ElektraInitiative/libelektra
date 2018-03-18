@@ -45,7 +45,7 @@ int elektraArrayValidateName (const Key * key)
 		underscores++;
 	}
 
-	while (isdigit ((unsigned char)*current))
+	while (isdigit ((unsigned char) *current))
 	{
 		current++;
 		digits++;
@@ -184,7 +184,7 @@ int elektraArrayDecName (Key * key)
  */
 static int arrayFilter (const Key * key, void * argument)
 {
-	const Key * arrayParent = (const Key *)argument;
+	const Key * arrayParent = (const Key *) argument;
 	return keyIsDirectBelow (arrayParent, key) && elektraArrayValidateName (key) > 0;
 }
 
@@ -215,7 +215,7 @@ KeySet * elektraArrayGet (const Key * arrayParent, KeySet * keys)
 	if (!keys) return 0;
 
 	KeySet * arrayKeys = ksNew (ksGetSize (keys), KS_END);
-	elektraKsFilter (arrayKeys, keys, &arrayFilter, (void *)arrayParent);
+	elektraKsFilter (arrayKeys, keys, &arrayFilter, (void *) arrayParent);
 	return arrayKeys;
 }
 

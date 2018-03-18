@@ -23,7 +23,7 @@ static int executeCommand (const char * cmdline)
 	char * cmd[4];
 	cmd[0] = "/bin/sh";
 	cmd[1] = "-c";
-	cmd[2] = (char *)cmdline;
+	cmd[2] = (char *) cmdline;
 	cmd[3] = NULL;
 
 	pid_t pid = fork ();

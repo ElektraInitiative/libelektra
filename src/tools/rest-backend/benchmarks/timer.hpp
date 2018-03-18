@@ -111,7 +111,7 @@ private:
 	std::chrono::high_resolution_clock::time_point m_start;
 	std::chrono::high_resolution_clock::time_point m_end;
 };
-}
-}
+} // namespace benchmark
+} // namespace kdbrest
 
 #endif

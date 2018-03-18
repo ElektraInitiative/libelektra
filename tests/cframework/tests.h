@@ -188,8 +188,8 @@ int init (int argc, char ** argv);
 #define compare_key(pk1, pk2)                                                                                                              \
 	{                                                                                                                                  \
 		nbTest++;                                                                                                                  \
-		Key * mmk1 = (Key *)pk1;                                                                                                   \
-		Key * mmk2 = (Key *)pk2;                                                                                                   \
+		Key * mmk1 = (Key *) pk1;                                                                                                  \
+		Key * mmk2 = (Key *) pk2;                                                                                                  \
 		if (mmk1 != mmk2)                                                                                                          \
 		{                                                                                                                          \
 			compare_key_name (mmk1, mmk2);                                                                                     \
@@ -231,8 +231,8 @@ int init (int argc, char ** argv);
 #define compare_keyset(pks1, pks2)                                                                                                         \
 	{                                                                                                                                  \
 		nbTest++;                                                                                                                  \
-		KeySet * mmks1 = (KeySet *)pks1;                                                                                           \
-		KeySet * mmks2 = (KeySet *)pks2;                                                                                           \
+		KeySet * mmks1 = (KeySet *) pks1;                                                                                          \
+		KeySet * mmks2 = (KeySet *) pks2;                                                                                          \
 		if (mmks1 != mmks2)                                                                                                        \
 		{                                                                                                                          \
 			Key * cmmk1 = 0;                                                                                                   \
@@ -246,8 +246,8 @@ int init (int argc, char ** argv);
 				nbError++;                                                                                                 \
 				printf ("%s:%d: error in %s: Compare keyset failed, size of keysets are not equal with size(%s): %d, "     \
 					"size(%s): %d\n",                                                                                  \
-					__FILE__, __LINE__, __func__, ELEKTRA_QUOTE (mmks1), (int)ksGetSize (mmks1),                       \
-					ELEKTRA_QUOTE (mmks2), (int)ksGetSize (mmks2));                                                    \
+					__FILE__, __LINE__, __func__, ELEKTRA_QUOTE (mmks1), (int) ksGetSize (mmks1),                      \
+					ELEKTRA_QUOTE (mmks2), (int) ksGetSize (mmks2));                                                   \
 				printf ("mmks1:\n");                                                                                       \
 				output_keyset (mmks1);                                                                                     \
 				printf ("mmks2:\n");                                                                                       \

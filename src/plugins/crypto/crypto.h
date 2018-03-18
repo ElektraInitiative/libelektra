@@ -13,18 +13,9 @@
 #include <kdbplugin.h>
 #include <stdio.h>
 
-enum ElektraCryptoHeaderFlags
-{
-	ELEKTRA_CRYPTO_FLAG_NONE = 0,
-	ELEKTRA_CRYPTO_FLAG_STRING = 1,
-	ELEKTRA_CRYPTO_FLAG_NULL = 2
-};
+enum ElektraCryptoHeaderFlags { ELEKTRA_CRYPTO_FLAG_NONE = 0, ELEKTRA_CRYPTO_FLAG_STRING = 1, ELEKTRA_CRYPTO_FLAG_NULL = 2 };
 
-enum ElektraCryptoOperation
-{
-	ELEKTRA_CRYPTO_ENCRYPT = 0,
-	ELEKTRA_CRYPTO_DECRYPT = 1
-};
+enum ElektraCryptoOperation { ELEKTRA_CRYPTO_ENCRYPT = 0, ELEKTRA_CRYPTO_DECRYPT = 1 };
 
 /*
  * A NOTE ABOUT THE CRYPTOGRAPHIC PAYLOAD

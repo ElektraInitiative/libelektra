@@ -93,7 +93,7 @@ inline std::ostream & printWarnings (std::ostream & os, kdb::Key const & error)
 
 	return os;
 }
-}
+} // namespace kdb
 
 #endif
 

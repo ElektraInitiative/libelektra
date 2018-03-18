@@ -80,6 +80,6 @@ inline std::istream & operator>> (std::istream & is, kdb::Key & k)
 
 	return is;
 }
-}
+} // namespace kdb
 
 #endif

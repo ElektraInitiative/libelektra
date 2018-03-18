@@ -26,7 +26,7 @@ inline QColor Key::get () const
 	QColor c (str.c_str ());
 	return c;
 }
-}
+} // namespace kdb
 
 void GUISettings::setDefaults ()
 {

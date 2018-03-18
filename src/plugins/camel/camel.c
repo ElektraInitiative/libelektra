@@ -168,7 +168,7 @@ static parserType * bufferChar (parserType * const parser)
 		size_t bufferCharsAvailable = parser->bufferCharsAvailable + numberCharsRead;
 		size_t bufferSize = bufferOffset + bufferCharsAvailable + 1;
 		if ((parser->bufferBase == 0 && (parser->bufferBase = elektraMalloc (bufferSize)) == NULL) ||
-		    ((elektraRealloc ((void **)&parser->bufferBase, bufferSize) < 0)))
+		    ((elektraRealloc ((void **) &parser->bufferBase, bufferSize) < 0)))
 		{
 			return setErrorMalloc (parser, bufferSize);
 		}

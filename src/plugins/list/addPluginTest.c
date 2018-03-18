@@ -48,9 +48,9 @@ int main (int argc, char const * argv[])
 	ksRewind (exports);
 	int rc = list->kdbGet (list, ks, parentKey);
 	typedef int (*addPlugin) (Plugin *, void *);
-	addPlugin addPtr = *(addPlugin **)getFunction (list, "addPlugin");
+	addPlugin addPtr = *(addPlugin **) getFunction (list, "addPlugin");
 	typedef int (*editPlugin) (Plugin *, void *);
-	addPlugin editPtr = *(editPlugin **)getFunction (list, "editPlugin");
+	addPlugin editPtr = *(editPlugin **) getFunction (list, "editPlugin");
 
 	KeySet * appendPlugin =
 		ksNew (20, keyNew ("user/plugins", KEY_END), keyNew ("user/plugins/#3", KEY_VALUE, "timeofday", KEY_END),

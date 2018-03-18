@@ -46,7 +46,7 @@ int elektraCachefilterGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	}
 	else
 	{
-		toBeCached = (KeySet *)cache;
+		toBeCached = (KeySet *) cache;
 	}
 
 	// first ensure the cache is up to date with the
@@ -83,7 +83,7 @@ int elektraCachefilterSet (Plugin * handle, KeySet * returned, Key * parentKey)
 			   // also no elektraCachefilterGet()
 	}
 
-	KeySet * cachedKeys = (KeySet *)cache;
+	KeySet * cachedKeys = (KeySet *) cache;
 
 	// first remove all keys from the cache that match the parentKey
 	// but are not in the returned keyset anymore (deleted keys)
@@ -97,7 +97,7 @@ int elektraCachefilterSet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 int elektraCachefilterClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 {
-	KeySet * ks = (KeySet *)elektraPluginGetData (handle);
+	KeySet * ks = (KeySet *) elektraPluginGetData (handle);
 	if (ks) ksDel (ks);
 	return 1; /* success */
 }

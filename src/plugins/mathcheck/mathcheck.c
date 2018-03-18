@@ -76,7 +76,7 @@ int elektraMathcheckGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKT
 }
 static PNElem nextVal (const PNElem * stackPtr)
 {
-	PNElem * ptr = (PNElem *)stackPtr;
+	PNElem * ptr = (PNElem *) stackPtr;
 	PNElem result;
 	result.op = ERROR;
 	while (ptr->op != END)
@@ -198,7 +198,7 @@ static PNElem parsePrefixString (const char * prefixString, Key * curKey, KeySet
 {
 	const char * regexString =
 		"(((((\\.)|(\\.\\.\\/)*|(@)|(\\/))([[:alnum:]]*/)*[[:alnum:]]+))|('[0-9]*[.,]{0,1}[0-9]*')|(==)|([-+:/<>=!{*]))";
-	char * ptr = (char *)prefixString;
+	char * ptr = (char *) prefixString;
 	regex_t regex;
 	Key * key;
 

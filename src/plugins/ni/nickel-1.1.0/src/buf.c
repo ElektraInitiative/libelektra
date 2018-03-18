@@ -24,7 +24,7 @@
  */
 elektraNi_PRIVATE int InitFileBuf (file_buf * restrict b, FILE * restrict f)
 {
-	*b = (file_buf)FILE_BUF_INIT;
+	*b = (file_buf) FILE_BUF_INIT;
 	b->stream = f;
 	return Ds_InitVector_uc (&b->buffer, INITIAL_BUF_SIZE);
 }
@@ -34,7 +34,7 @@ elektraNi_PRIVATE int InitFileBuf (file_buf * restrict b, FILE * restrict f)
 elektraNi_PRIVATE void FreeFileBuf (file_buf * restrict b)
 {
 	Ds_FreeVector_uc (&b->buffer);
-	*b = (file_buf)FILE_BUF_INIT;
+	*b = (file_buf) FILE_BUF_INIT;
 }
 
 /* Basically like fgetc on our file_buf.  Translates newlines automatically for

@@ -129,7 +129,7 @@ public:
 
 	void serialise (kdb::Key & baseKey, kdb::KeySet & ret);
 };
-}
-}
+} // namespace tools
+} // namespace kdb
 
 #endif

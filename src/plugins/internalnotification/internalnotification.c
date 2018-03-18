@@ -30,7 +30,8 @@ struct _KeyRegistration
 	char * name;
 	KeyRegistrationType type;
 	char * lastValue;
-	union {
+	union
+	{
 		int * variable;
 		ElektraNotificationChangeCallback callback;
 	} ref;
@@ -139,7 +140,7 @@ void elektraInternalnotificationUpdateRegisteredKeys (Plugin * plugin, KeySet * 
 			{
 			case TYPE_INT:
 				ELEKTRA_LOG_DEBUG ("found registeredKey=%s; updating variable=%p with string value \"%s\"",
-						   registeredKey->name, (void *)registeredKey->ref.variable, keyString (key));
+						   registeredKey->name, (void *) registeredKey->ref.variable, keyString (key));
 
 				// Convert string value to long
 				char * end;
@@ -159,7 +160,7 @@ void elektraInternalnotificationUpdateRegisteredKeys (Plugin * plugin, KeySet * 
 			case TYPE_CALLBACK:
 				ELEKTRA_LOG_DEBUG ("found registeredKey=%s; invoking callback", registeredKey->name);
 				ElektraNotificationChangeCallback callback =
-					*(ElektraNotificationChangeCallback)registeredKey->ref.callback;
+					*(ElektraNotificationChangeCallback) registeredKey->ref.callback;
 				callback (key);
 				break;
 			}

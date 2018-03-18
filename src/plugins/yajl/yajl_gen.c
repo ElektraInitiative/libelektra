@@ -92,7 +92,7 @@ static int elektraGenOpenValue (yajl_gen g, const Key * next)
 	int valueNeeded = 1;
 
 #ifdef ELEKTRA_YAJL_VERBOSE
-	printf ("elektraGenOpenValue next: \"%.*s\"\n", (int)last.size, last.current);
+	printf ("elektraGenOpenValue next: \"%.*s\"\n", (int) last.size, last.current);
 #endif
 
 	if (!strcmp (last.current, "###empty_array"))
@@ -118,7 +118,7 @@ static int elektraGenOpenValue (yajl_gen g, const Key * next)
 #ifdef ELEKTRA_YAJL_VERBOSE
 		printf ("GEN string (L1,3)\n");
 #endif
-		yajl_gen_string (g, (const unsigned char *)last.current, last.size - 1);
+		yajl_gen_string (g, (const unsigned char *) last.current, last.size - 1);
 	}
 
 	return valueNeeded;
@@ -161,7 +161,7 @@ static void elektraGenValue (yajl_gen g, Key * parentKey, const Key * cur)
 	else if ((!type && keyGetValueSize (cur) >= 1) || // default is string
 		 (!strcmp (keyString (type), "string")))
 	{
-		yajl_gen_string (g, (const unsigned char *)keyString (cur), keyGetValueSize (cur) - 1);
+		yajl_gen_string (g, (const unsigned char *) keyString (cur), keyGetValueSize (cur) - 1);
 	}
 	else if (!strcmp (keyString (type), "boolean"))
 	{
@@ -176,7 +176,7 @@ static void elektraGenValue (yajl_gen g, Key * parentKey, const Key * cur)
 		else
 		{
 			ELEKTRA_ADD_WARNING (78, parentKey, "got boolean which is neither true nor false");
-			yajl_gen_string (g, (const unsigned char *)keyString (cur), keyGetValueSize (cur) - 1);
+			yajl_gen_string (g, (const unsigned char *) keyString (cur), keyGetValueSize (cur) - 1);
 		}
 	}
 	else if (!strcmp (keyString (type), "double"))
@@ -186,7 +186,7 @@ static void elektraGenValue (yajl_gen g, Key * parentKey, const Key * cur)
 	else
 	{ // unknown or unsupported type, render it as string but add warning
 		ELEKTRA_ADD_WARNINGF (78, parentKey, "the key %s has unknown type: %s", keyName (cur), keyString (type));
-		yajl_gen_string (g, (const unsigned char *)keyString (cur), keyGetValueSize (cur) - 1);
+		yajl_gen_string (g, (const unsigned char *) keyString (cur), keyGetValueSize (cur) - 1);
 	}
 }
 

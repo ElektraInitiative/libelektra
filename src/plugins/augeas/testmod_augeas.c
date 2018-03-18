@@ -239,7 +239,7 @@ static void test_order (char * fileName)
 
 			succeed_if (orderKey, errorMessage);
 
-			char * orderString = (char *)keyValue (orderKey);
+			char * orderString = (char *) keyValue (orderKey);
 			long order;
 			char * end;
 			order = strtol (orderString, &end, 10);

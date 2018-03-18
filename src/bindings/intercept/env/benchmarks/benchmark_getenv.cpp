@@ -76,7 +76,8 @@ __attribute__ ((noinline)) void benchmark_dl_next_getenv ()
 {
 	static Timer t ("dl next getenv");
 	typedef char * (*gfcn) (const char *);
-	union Sym {
+	union Sym
+	{
 		void * d;
 		gfcn f;
 	} sym;
@@ -98,7 +99,8 @@ __attribute__ ((noinline)) void benchmark_dl_next_getenv ()
 __attribute__ ((noinline)) void benchmark_libc_getenv ()
 {
 	typedef char * (*gfcn) (const char *);
-	union Sym {
+	union Sym
+	{
 		void * d;
 		gfcn f;
 	} sym;

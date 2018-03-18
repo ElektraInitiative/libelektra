@@ -44,10 +44,10 @@ static void test_uid (void)
 	succeed_if_same_string (keyValue (keyGetMeta (key, "uid")), "0");
 	succeed_if (keyGetUID (key) == 0, "uid was not set correctly");
 
-	succeed_if (keySetUID (key, (uid_t)-1) == 0, "could not set uid");
+	succeed_if (keySetUID (key, (uid_t) -1) == 0, "could not set uid");
 	warn_if_fail (!strcmp (keyValue (keyGetMeta (key, "uid")), "-1"),
 		      "this is for 64bit, other platforms might have other results here");
-	succeed_if (keyGetUID (key) == (uid_t)-1, "uid was not set correctly");
+	succeed_if (keyGetUID (key) == (uid_t) -1, "uid was not set correctly");
 
 	succeed_if (keySetMeta (key, "uid", "102") == sizeof ("102"), "could not set meta");
 	succeed_if_same_string (keyValue (keyGetMeta (key, "uid")), "102");
@@ -55,11 +55,11 @@ static void test_uid (void)
 
 	succeed_if (keySetMeta (key, "uid", "x") == sizeof ("x"), "could not set meta");
 	succeed_if_same_string (keyValue (keyGetMeta (key, "uid")), "x");
-	succeed_if (keyGetUID (key) == (uid_t)-1, "uid was not set correctly");
+	succeed_if (keyGetUID (key) == (uid_t) -1, "uid was not set correctly");
 
 	succeed_if (keySetMeta (key, "uid", "x1") == sizeof ("x1"), "could not set meta");
 	succeed_if_same_string (keyValue (keyGetMeta (key, "uid")), "x1");
-	succeed_if (keyGetUID (key) == (uid_t)-1, "uid was not set correctly");
+	succeed_if (keyGetUID (key) == (uid_t) -1, "uid was not set correctly");
 
 	succeed_if (keySetMeta (key, "uid", "2000000") == sizeof ("2000000"), "could not set large uid");
 	succeed_if_same_string (keyValue (keyGetMeta (key, "uid")), "2000000");
@@ -67,17 +67,17 @@ static void test_uid (void)
 
 	succeed_if (keySetMeta (key, "uid", "1x") == sizeof ("1x"), "could not set meta");
 	succeed_if_same_string (keyValue (keyGetMeta (key, "uid")), "1x");
-	succeed_if (keyGetUID (key) == (uid_t)-1, "uid was not set correctly");
+	succeed_if (keyGetUID (key) == (uid_t) -1, "uid was not set correctly");
 
 	succeed_if (keySetMeta (key, "uid", "50x") == sizeof ("50x"), "could not set meta");
 	succeed_if_same_string (keyValue (keyGetMeta (key, "uid")), "50x");
-	succeed_if (keyGetUID (key) == (uid_t)-1, "uid was not set correctly");
+	succeed_if (keyGetUID (key) == (uid_t) -1, "uid was not set correctly");
 
 	keyDel (key);
 
 	key = keyNew ("user/uid", KEY_END);
 	succeed_if (keyValue (keyGetMeta (key, "uid")) == 0, "got value, but uid was not set up to now");
-	succeed_if (keyGetUID (key) == (uid_t)-1, "got value, but uid was not set up to now");
+	succeed_if (keyGetUID (key) == (uid_t) -1, "got value, but uid was not set up to now");
 
 	keyDel (key);
 }
@@ -371,19 +371,19 @@ static void test_top (void)
 
 	checkTopArray (array, ksGetSize (test1));
 
-	elektraRealloc ((void **)&array, ksGetSize (test2) * sizeof (Key *));
+	elektraRealloc ((void **) &array, ksGetSize (test2) * sizeof (Key *));
 	memset (array, 0, ksGetSize (test2) * sizeof (Key *));
 	elektraSortTopology (test2, array);
 
 	checkTopArray (array, ksGetSize (test2));
 
-	elektraRealloc ((void **)&array, ksGetSize (test3) * sizeof (Key *));
+	elektraRealloc ((void **) &array, ksGetSize (test3) * sizeof (Key *));
 	memset (array, 0, ksGetSize (test3) * sizeof (Key *));
 	elektraSortTopology (test3, array);
 
 	checkTopArray (array, ksGetSize (test3));
 
-	elektraRealloc ((void **)&array, ksGetSize (test0) * sizeof (Key *));
+	elektraRealloc ((void **) &array, ksGetSize (test0) * sizeof (Key *));
 	memset (array, 0, ksGetSize (test0) * sizeof (Key *));
 	elektraSortTopology (test0, array);
 
@@ -418,16 +418,16 @@ static void test_top (void)
 		       keyNew ("/g", KEY_VALUE, "a", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/a", KEY_END), KS_END);
 
 
-	elektraRealloc ((void **)&array, ksGetSize (testCycle) * sizeof (Key *));
+	elektraRealloc ((void **) &array, ksGetSize (testCycle) * sizeof (Key *));
 	succeed_if (elektraSortTopology (testCycle, array) == 0, "Cycle detection failed\n");
 
-	elektraRealloc ((void **)&array, ksGetSize (testCycle2) * sizeof (Key *));
+	elektraRealloc ((void **) &array, ksGetSize (testCycle2) * sizeof (Key *));
 	succeed_if (elektraSortTopology (testCycle2, array) == 0, "Cycle detection failed\n");
 
-	elektraRealloc ((void **)&array, ksGetSize (testCycle3) * sizeof (Key *));
+	elektraRealloc ((void **) &array, ksGetSize (testCycle3) * sizeof (Key *));
 	succeed_if (elektraSortTopology (testCycle3, array) == 0, "Cycle detection failed\n");
 
-	elektraRealloc ((void **)&array, ksGetSize (testCycle4) * sizeof (Key *));
+	elektraRealloc ((void **) &array, ksGetSize (testCycle4) * sizeof (Key *));
 	succeed_if (elektraSortTopology (testCycle4, array) == 0, "Cycle detection failed\n");
 
 	KeySet * orderTest1 = ksNew (
@@ -435,7 +435,7 @@ static void test_top (void)
 		keyNew ("/b", KEY_VALUE, "b, c", KEY_META, "dep", "#1", KEY_META, "dep/#0", "/b", KEY_META, "dep/#1", "/c", KEY_END),
 		keyNew ("/c", KEY_VALUE, "-", KEY_META, "order", "#1", KEY_END),
 		keyNew ("/d", KEY_VALUE, "d", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/d", KEY_META, "order", "#0", KEY_END), KS_END);
-	elektraRealloc ((void **)&array, ksGetSize (orderTest1) * sizeof (Key *));
+	elektraRealloc ((void **) &array, ksGetSize (orderTest1) * sizeof (Key *));
 	memset (array, 0, ksGetSize (orderTest1) * sizeof (Key *));
 	elektraSortTopology (orderTest1, array);
 	checkTopOrder1 (array);
@@ -483,13 +483,13 @@ static void test_top (void)
 		keyNew ("/f", KEY_VALUE, "g", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/g", KEY_META, "order", "#4", KEY_END),
 		keyNew ("/g", KEY_VALUE, "a", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/a", KEY_META, "order", "#6", KEY_END), KS_END);
 
-	elektraRealloc ((void **)&array, ksGetSize (testCycleOrder1) * sizeof (Key *));
+	elektraRealloc ((void **) &array, ksGetSize (testCycleOrder1) * sizeof (Key *));
 	succeed_if (elektraSortTopology (testCycleOrder1, array) == 0, "Cycle detection failed\n");
 
-	elektraRealloc ((void **)&array, ksGetSize (testCycleOrder2) * sizeof (Key *));
+	elektraRealloc ((void **) &array, ksGetSize (testCycleOrder2) * sizeof (Key *));
 	succeed_if (elektraSortTopology (testCycleOrder2, array) == 0, "Cycle detection failed\n");
 
-	elektraRealloc ((void **)&array, ksGetSize (testCycleOrder3) * sizeof (Key *));
+	elektraRealloc ((void **) &array, ksGetSize (testCycleOrder3) * sizeof (Key *));
 	succeed_if (elektraSortTopology (testCycleOrder3, array) == 0, "Cycle detection failed\n");
 
 	ksDel (test0);

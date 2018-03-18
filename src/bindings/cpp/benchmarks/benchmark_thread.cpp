@@ -78,7 +78,7 @@ public:
 	ThreadString profile;
 	ThreadInteger bm;
 };
-}
+} // namespace kdb
 
 
 // benchmarking

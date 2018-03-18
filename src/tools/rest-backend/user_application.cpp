@@ -36,7 +36,7 @@ UserApp::UserApp (cppcms::service & srv) : cppcms::application (srv)
 	mapper ().assign ("handle", "/{1}");
 
 	// force caching of database
-	(void)kdbrest::service::StorageEngine::instance ();
+	(void) kdbrest::service::StorageEngine::instance ();
 }
 
 /**

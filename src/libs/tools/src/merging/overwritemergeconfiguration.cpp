@@ -29,6 +29,6 @@ void OverwriteMergeConfiguration::configureMerger (ThreeWayMerge & merger)
 	allocatedStrategies.push_back (oneSideStrategy);
 	merger.addConflictStrategy (oneSideStrategy);
 }
-}
-}
-}
+} // namespace merging
+} // namespace tools
+} // namespace kdb

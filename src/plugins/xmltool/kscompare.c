@@ -59,7 +59,7 @@ ssize_t ksGetCommonParentName (const KeySet * working, char * returnedCommonPare
 	sMaxSize = maxSize;
 
 	cinit = ksGetCursor (working);
-	ks = (KeySet *)working;
+	ks = (KeySet *) working;
 
 	if (ksGetSize (ks) < 1) return 0;
 

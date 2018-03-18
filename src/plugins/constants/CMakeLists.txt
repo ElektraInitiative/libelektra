@@ -9,4 +9,5 @@ endif ()
 add_plugin (constants
 	SOURCES
 		${CMAKE_CURRENT_BINARY_DIR}/constants.c
+	TEST_README
 	)

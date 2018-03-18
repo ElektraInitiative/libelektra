@@ -52,7 +52,11 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.8.
 
 We added even more functionality, which could not make it to the highlights:
 
-- <<TODO>>
+- A new experimental [I/O binding for glib](https://www.libelektra.org/bindings/io_glib)
+  has been added.
+  It can be used to integrate the notification feature with applications based
+  on glib.
+
 
 ## Documentation
 
@@ -76,7 +80,7 @@ These notes are of interest for people maintaining packages of Elektra:
 
 These notes are of interest for people developing Elektra:
 
-- You can now add a [Markdown Shell Recorder](https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper) test for a plugin
+- You can now add a [Markdown Shell Recorder][] test for a plugin
   via the CMake function `add_plugin`.
 - The CMake functions
 
@@ -87,6 +91,11 @@ These notes are of interest for people developing Elektra:
 
     now allow you to specify a list of required plugins for [Shell Recorder](https://master.libelektra.org/tests/shell/shell_recorder) and
    Markdown Shell Recorder tests.
+- All current versions of Clang-Format (6.0+) and the outdated Clang-Format 5 will now produce exactly the same output for the whole
+  codebase.
+- We added an [Markdown Shell Recorder][] test for the [Constants](http://libelektra.org/plugins/constants) plugin.
+
+[Markdown Shell Recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
 
 ## Fixes
 
@@ -94,6 +103,7 @@ Many problems were resolved with the following fixes:
 
 - [YAML CPP](http://libelektra.org/plugins/yamlcpp) now also saves key values directly below a mountpoint correctly.
 - If you use a minimal configuration ([`dump`](http://libelektra.org/plugins/dump) and [`resolver`](https://www.libelektra.org/plugins/resolver) only), all test of the test suite now finish successfully again.
+- We resolved undefined behavior in polymorphic classes that contained virtual functions, by explicitly adding a virtual destructor.
 
 ## Outlook
 
@@ -135,5 +145,3 @@ For more information, see [https://libelektra.org](https://libelektra.org)
 
 Best regards,
 [Elektra Initiative](https://www.libelektra.org/developers/authors)
-
-

@@ -9,7 +9,20 @@ AllowShortFunctionsOnASingleLine: false
 AlwaysBreakBeforeMultilineStrings: true
 AlwaysBreakTemplateDeclarations: true
 BinPackParameters: true
-BreakBeforeBraces: Allman
+BreakBeforeBraces: Custom
+BraceWrapping:
+  BeforeCatch: true
+  AfterClass: true
+  AfterControlStatement: true
+  # We do not add a newline after `enum` since Clang-Format 5 **does not** add a
+  # newline after `typedef enum`, even if we set `AfterEnum` to true.
+  # TODO: Enable the option below after we switched to `clang-format-6` or newer.
+  # AfterEnum: true
+  AfterFunction: true
+  AfterNamespace: true
+  AfterStruct: true
+  AfterUnion: true
+  BeforeElse: true
 BreakBeforeTernaryOperators: false
 BreakConstructorInitializersBeforeComma: false
 ColumnLimit: 140
@@ -20,6 +33,7 @@ ContinuationIndentWidth: 8
 Cpp11BracedListStyle: false
 DerivePointerAlignment: false
 DisableFormat: false
+FixNamespaceComments: true
 IndentCaseLabels: false
 IndentWidth: 8
 IndentWrappedFunctionNames: false
@@ -28,6 +42,7 @@ NamespaceIndentation: None
 PointerAlignment: Middle
 TabWidth: 8
 MaxEmptyLinesToKeep: 2
+SpaceAfterCStyleCast: true
 SpaceBeforeAssignmentOperators: true
 SpaceBeforeParens: Always
 SpaceInEmptyParentheses: false

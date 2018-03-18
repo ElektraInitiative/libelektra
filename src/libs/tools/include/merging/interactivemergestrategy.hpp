@@ -38,8 +38,8 @@ private:
 	std::istream & inputStream;
 	std::ostream & outputStream;
 };
-}
-}
-}
+} // namespace merging
+} // namespace tools
+} // namespace kdb
 
 #endif

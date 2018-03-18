@@ -610,7 +610,7 @@ void printKeys (KeySet const & theirs, KeySet const & base, KeySet const & ours)
 	}
 }
 #endif
-}
+} // namespace
 
 QStringList getConflicts (KeySet const & conflictSet)
 {

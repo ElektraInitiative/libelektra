@@ -13,9 +13,9 @@ static void test_elektraMalloc (void)
 	char * buffer = 0;
 	buffer = elektraMalloc (50);
 	exit_if_fail (buffer, "buffer must not be 0 after allocation");
-	elektraRealloc ((void **)&buffer, 100);
+	elektraRealloc ((void **) &buffer, 100);
 	exit_if_fail (buffer, "buffer must not be 0 after reallocation");
-	elektraRealloc ((void **)&buffer, 20);
+	elektraRealloc ((void **) &buffer, 20);
 	exit_if_fail (buffer, "buffer must not be 0 after reallocation");
 	elektraFree (buffer);
 
@@ -25,9 +25,9 @@ static void test_elektraMalloc (void)
 	{
 		succeed_if (buffer[i] == 0, "elektraCalloc did not initialize buffer with zeros");
 	}
-	elektraRealloc ((void **)&buffer, 100);
+	elektraRealloc ((void **) &buffer, 100);
 	exit_if_fail (buffer, "buffer must not be 0 after reallocation");
-	elektraRealloc ((void **)&buffer, 20);
+	elektraRealloc ((void **) &buffer, 20);
 	exit_if_fail (buffer, "buffer must not be 0 after reallocation");
 
 	char * dup = elektraStrNDup (buffer, 20);
@@ -55,7 +55,7 @@ static void test_elektraStrLen (void)
 		charSeq[4] = '\0';
 
 		// printf ("%s %d %d\n", charSeq, elektraStrLen (charSeq), strlen(charSeq));
-		succeed_if (elektraStrLen ((char *)charSeq) == 5, "could not deduce correct multichar sequence length");
+		succeed_if (elektraStrLen ((char *) charSeq) == 5, "could not deduce correct multichar sequence length");
 	}
 }
 

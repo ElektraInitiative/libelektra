@@ -167,7 +167,7 @@ static void test_keyNewSystem (void)
 	succeed_if (key != NULL, "keyNew: Unable to create a key with name + value of default type");
 	succeed_if (keyIsBinary (key), "Could not set type to binary");
 	succeed_if (keyGetValueSize (key) == sizeof (array), "Value size not correct");
-	succeed_if (memcmp ((char *)keyValue (key), array, sizeof (array)) == 0, "could not get correct binary value");
+	succeed_if (memcmp ((char *) keyValue (key), array, sizeof (array)) == 0, "could not get correct binary value");
 	getBack = elektraMalloc (keyGetValueSize (key));
 	keyGetBinary (key, getBack, keyGetValueSize (key));
 	succeed_if (memcmp (getBack, array, sizeof (array)) == 0, "could not get correct value with keyGetBinary");
@@ -403,7 +403,7 @@ static void test_keyName (void)
 	{
 		succeed_if (keyGetName (key, ret, i) == sizeof (testName), "length checking longer");
 	}
-	succeed_if (keyGetName (key, ret, (size_t)-1) == -1, "maxSize exceeded");
+	succeed_if (keyGetName (key, ret, (size_t) -1) == -1, "maxSize exceeded");
 	keyDel (key);
 
 	succeed_if (keyName (0) == 0, "null pointer");
@@ -432,7 +432,7 @@ static void test_keyName (void)
 	{
 		succeed_if (keyGetFullName (key, ret, i) == sizeof (testFullName), "length checking longer");
 	}
-	succeed_if (keyGetFullName (key, ret, (size_t)-1) == -1, "maxSize exceeded");
+	succeed_if (keyGetFullName (key, ret, (size_t) -1) == -1, "maxSize exceeded");
 	keyDel (key);
 
 	key = keyNew (0);
@@ -458,7 +458,7 @@ static void test_keyName (void)
 	{
 		succeed_if (keyGetBaseName (key, ret, i) == sizeof (testBaseName), "length checking longer");
 	}
-	succeed_if (keyGetBaseName (key, ret, (size_t)-1) == -1, "maxSize exceeded");
+	succeed_if (keyGetBaseName (key, ret, (size_t) -1) == -1, "maxSize exceeded");
 	keyDel (key);
 
 	succeed_if (keyBaseName (0) == 0, "null pointer");
@@ -1007,7 +1007,7 @@ static void test_keyValue (void)
 	{
 		succeed_if (keyGetString (key, ret, i) == sizeof (testString), "length checking longer");
 	}
-	succeed_if (keyGetString (key, ret, (size_t)-1) == -1, "maxSize exceeded");
+	succeed_if (keyGetString (key, ret, (size_t) -1) == -1, "maxSize exceeded");
 
 	succeed_if (keySetString (key, 0) == 1, "delete string");
 	succeed_if (keyGetString (key, ret, i) == 1, "length checking deleting");
@@ -1056,7 +1056,7 @@ static void test_keyValue (void)
 	{
 		succeed_if (keyGetBinary (key, ret, i) == sizeof (testBinary), "length checking longer");
 	}
-	succeed_if (keyGetBinary (key, ret, (size_t)-1) == -1, "maxSize exceeded");
+	succeed_if (keyGetBinary (key, ret, (size_t) -1) == -1, "maxSize exceeded");
 
 	succeed_if (keySetBinary (key, 0, 0) == 0, "delete binary");
 	succeed_if (keyGetBinary (key, ret, i) == 0, "length checking deleting");
@@ -1183,17 +1183,17 @@ static void test_keyBinary (void)
 
 	key = keyNew (0);
 	i = 23;
-	keySetBinary (key, (void *)&i, sizeof (i));
+	keySetBinary (key, (void *) &i, sizeof (i));
 
 	succeed_if (keyIsBinary (key) == 1, "should be binary");
 	succeed_if (keyIsString (key) == 0, "should not be string");
 	succeed_if (keyGetValueSize (key) == sizeof (i), "size not correct");
-	succeed_if (memcmp ((void *)&i, keyValue (key), sizeof (i)) == 0, "memcmp");
+	succeed_if (memcmp ((void *) &i, keyValue (key), sizeof (i)) == 0, "memcmp");
 	succeed_if (keyGetBinary (key, ret, 1000) == sizeof (i), "could not get binary data");
-	succeed_if (memcmp ((void *)&i, ret, sizeof (i)) == 0, "memcmp");
+	succeed_if (memcmp ((void *) &i, ret, sizeof (i)) == 0, "memcmp");
 	succeed_if (keyGetString (key, ret, 1000) == -1, "should be type mismatch");
 
-	i = *(int *)keyValue (key);
+	i = *(int *) keyValue (key);
 	succeed_if (i == 23, "incorrect int");
 
 	keyDel (key);
@@ -1657,7 +1657,8 @@ static void test_binary (void)
 	keyDel (k);
 
 
-	union {
+	union
+	{
 		void (*f) (void);
 		void * v;
 	} conversation;
@@ -2688,10 +2689,10 @@ static void test_keyCanonify (void)
 		keyName (k), "/a/very/long/#0/name\\/with/sec\\tion/and\\\\/subsection/and!/$%&/chars()/[about]/{some}/_-.,;:/€/»/|/key");
 	succeed_if (keyGetNameSize (k) == 105, "name size wrong");
 	succeed_if (keyGetUnescapedNameSize (k) == 103, "unescaped name size wrong");
-	succeed_if_same_string ((char *)keyUnescapedName (k), "");
-	succeed_if_same_string ((char *)keyUnescapedName (k) + 1, "a");
-	succeed_if_same_string ((char *)keyUnescapedName (k) + 3, "very");
-	succeed_if_same_string ((char *)keyUnescapedName (k) + 99, "key");
+	succeed_if_same_string ((char *) keyUnescapedName (k), "");
+	succeed_if_same_string ((char *) keyUnescapedName (k) + 1, "a");
+	succeed_if_same_string ((char *) keyUnescapedName (k) + 3, "very");
+	succeed_if_same_string ((char *) keyUnescapedName (k) + 99, "key");
 
 	keyDel (k);
 }

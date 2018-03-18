@@ -55,8 +55,7 @@ public:
 	// virtual void registerPlugin(PluginSpec) = 0;
 	// virtual std::vector<PluginSpec> listAllPlugins() const = 0;
 
-	enum Status
-	{
+	enum Status {
 		/// does not directly, but can be loaded via provides
 		provides,
 		/// exists and working as given
@@ -160,7 +159,7 @@ protected:
 
 public:
 	ModulesPluginDatabase ();
-	~ModulesPluginDatabase ();
+	virtual ~ModulesPluginDatabase ();
 
 	std::vector<std::string> listAllPlugins () const;
 	PluginDatabase::Status status (PluginSpec const & whichplugin) const;
@@ -197,7 +196,7 @@ public:
 	 * @param conf keyset containing keys from system/elektra/plugins
 	 */
 	explicit PluginVariantDatabase (const KeySet & conf);
-	~PluginVariantDatabase ();
+	virtual ~PluginVariantDatabase ();
 
 	std::vector<std::string> listAllPlugins () const;
 
@@ -333,7 +332,7 @@ private:
 
 
 typedef std::shared_ptr<PluginDatabase> PluginDatabasePtr;
-}
-}
+} // namespace tools
+} // namespace kdb
 
 #endif

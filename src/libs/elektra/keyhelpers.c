@@ -90,7 +90,7 @@ Level 4 name: jkl
  */
 char * keyNameGetOneLevel (const char * name, size_t * size)
 {
-	char * real = (char *)name;
+	char * real = (char *) name;
 	size_t cursor = 0;
 	int end = 0;	 // bool to check for end of level
 	int escapeCount = 0; // counter to check if / was escaped
@@ -335,7 +335,7 @@ void keyVInit (Key * key, const char * name, va_list va)
 
 			default:
 				ELEKTRA_ASSERT (0, "Unknown option " ELEKTRA_UNSIGNED_LONG_LONG_F " in keyVInit",
-						(kdb_unsigned_long_long_t)action);
+						(kdb_unsigned_long_long_t) action);
 				break;
 			}
 		}

@@ -19,8 +19,8 @@ static void testIP (char const * const ip, const int ret, char const * const ver
 	PLUGIN_OPEN (PLUGIN_NAME);
 	const int pluginStatus = plugin->kdbSet (plugin, ks, parentKey);
 	char message[200];
-	(void)snprintf (message, 200, "validation of %s address “%s” returned %d instead of %d", version[0] == '\0' ? "IP" : version, ip,
-			pluginStatus, ret);
+	(void) snprintf (message, 200, "validation of %s address “%s” returned %d instead of %d", version[0] == '\0' ? "IP" : version, ip,
+			 pluginStatus, ret);
 	succeed_if (pluginStatus == ret, message);
 	ksDel (ks);
 	keyDel (parentKey);

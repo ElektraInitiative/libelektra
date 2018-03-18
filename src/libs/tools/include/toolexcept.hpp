@@ -453,7 +453,7 @@ struct VersionInfoMismatch : public PluginCheckException
 		return "Version info does not match with library!";
 	}
 };
-}
-}
+} // namespace tools
+} // namespace kdb
 
 #endif

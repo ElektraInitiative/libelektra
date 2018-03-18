@@ -68,6 +68,6 @@ void AutoMergeStrategy::resolveConflict (const MergeTask & task, Key & conflictK
 		break;
 	}
 }
-}
-}
-}
+} // namespace merging
+} // namespace tools
+} // namespace kdb

@@ -63,6 +63,6 @@ bool keyMetaEqual (Key & k1, Key & k2)
 
 	return true;
 }
-}
-}
-}
+} // namespace helper
+} // namespace tools
+} // namespace kdb

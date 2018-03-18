@@ -72,7 +72,7 @@ std::string getCascadingName (std::string name)
 	if (name.find ('/') == std::string::npos) return "/";
 	return name.substr (name.find ('/'));
 }
-}
+} // namespace
 
 ckdb::Key * printTrace (ELEKTRA_UNUSED ckdb::KeySet * ks, ckdb::Key * key, ckdb::Key * found, option_t options)
 {

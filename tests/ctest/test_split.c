@@ -132,11 +132,11 @@ static void test_remove (void)
 	}
 
 	splitRemove (split, 3);
-	succeed_if ((int)split->syncbits[0] == 0, "syncbits not correct");
-	succeed_if ((int)split->syncbits[1] == 1, "syncbits not correct");
-	succeed_if ((int)split->syncbits[2] == 2, "syncbits not correct");
-	succeed_if ((int)split->syncbits[3] == 4, "did not remove third?");
-	succeed_if ((int)split->syncbits[4] == 5, "did not remove third?");
+	succeed_if ((int) split->syncbits[0] == 0, "syncbits not correct");
+	succeed_if ((int) split->syncbits[1] == 1, "syncbits not correct");
+	succeed_if ((int) split->syncbits[2] == 2, "syncbits not correct");
+	succeed_if ((int) split->syncbits[3] == 4, "did not remove third?");
+	succeed_if ((int) split->syncbits[4] == 5, "did not remove third?");
 
 	splitAppend (split, 0, 0, 100);
 	succeed_if (split->alloc == APPROXIMATE_NR_OF_BACKENDS, "should not realloc");
@@ -144,18 +144,18 @@ static void test_remove (void)
 	succeed_if (split->alloc == APPROXIMATE_NR_OF_BACKENDS * 2, "should realloc");
 
 	splitRemove (split, 3);
-	succeed_if ((int)split->syncbits[0] == 0, "syncbits not correct");
-	succeed_if ((int)split->syncbits[1] == 1, "syncbits not correct");
-	succeed_if ((int)split->syncbits[2] == 2, "syncbits not correct");
-	succeed_if ((int)split->syncbits[3] == 5, "did not remove third (again)?");
-	succeed_if ((int)split->syncbits[4] == 6, "did not remove third (again)?");
+	succeed_if ((int) split->syncbits[0] == 0, "syncbits not correct");
+	succeed_if ((int) split->syncbits[1] == 1, "syncbits not correct");
+	succeed_if ((int) split->syncbits[2] == 2, "syncbits not correct");
+	succeed_if ((int) split->syncbits[3] == 5, "did not remove third (again)?");
+	succeed_if ((int) split->syncbits[4] == 6, "did not remove third (again)?");
 
 	splitRemove (split, 0);
-	succeed_if ((int)split->syncbits[0] == 1, "did not remove zeroth?");
-	succeed_if ((int)split->syncbits[1] == 2, "did not remove zeroth?");
-	succeed_if ((int)split->syncbits[2] == 5, "did not remove zeroth?");
-	succeed_if ((int)split->syncbits[3] == 6, "did not remove zeroth?");
-	succeed_if ((int)split->syncbits[4] == 7, "did not remove zeroth?");
+	succeed_if ((int) split->syncbits[0] == 1, "did not remove zeroth?");
+	succeed_if ((int) split->syncbits[1] == 2, "did not remove zeroth?");
+	succeed_if ((int) split->syncbits[2] == 5, "did not remove zeroth?");
+	succeed_if ((int) split->syncbits[3] == 6, "did not remove zeroth?");
+	succeed_if ((int) split->syncbits[4] == 7, "did not remove zeroth?");
 
 	splitDel (split);
 }

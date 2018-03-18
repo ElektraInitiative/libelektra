@@ -39,8 +39,8 @@ static int validatepwent (struct passwd * pwd)
 		if ((*ptr < '-') || (*ptr > 'z') || (strchr (invalidCharacters, *ptr) != NULL)) return -1;
 	}
 	if (!pwd->pw_passwd) return -1;
-	if (pwd->pw_uid == (uid_t)-1) return -1;
-	if (pwd->pw_gid == (gid_t)-1) return -1;
+	if (pwd->pw_uid == (uid_t) -1) return -1;
+	if (pwd->pw_gid == (gid_t) -1) return -1;
 	if (!pwd->pw_gecos) return -1;
 	if (!pwd->pw_dir) return -1;
 	if (!pwd->pw_shell) return -1;
@@ -162,7 +162,7 @@ static struct passwd * KStoPasswd (KeySet * ks, SortBy index)
 	{
 		found = ksLookup (ks, parent, 0);
 		if (!found)
-			pwd->pw_uid = (uid_t)-1;
+			pwd->pw_uid = (uid_t) -1;
 		else
 			pwd->pw_uid = atoi (keyBaseName (found));
 		keyAddBaseName (lookup, "name");
@@ -170,7 +170,7 @@ static struct passwd * KStoPasswd (KeySet * ks, SortBy index)
 		if (!found)
 			pwd->pw_name = NULL;
 		else
-			pwd->pw_name = (char *)keyString (found);
+			pwd->pw_name = (char *) keyString (found);
 	}
 	else
 	{
@@ -178,11 +178,11 @@ static struct passwd * KStoPasswd (KeySet * ks, SortBy index)
 		if (!found)
 			pwd->pw_name = NULL;
 		else
-			pwd->pw_name = (char *)keyBaseName (found);
+			pwd->pw_name = (char *) keyBaseName (found);
 		keyAddBaseName (lookup, "uid");
 		found = ksLookup (ks, lookup, 0);
 		if (!found)
-			pwd->pw_uid = (uid_t)-1;
+			pwd->pw_uid = (uid_t) -1;
 		else
 			pwd->pw_uid = atoi (keyString (found));
 	}
@@ -191,11 +191,11 @@ static struct passwd * KStoPasswd (KeySet * ks, SortBy index)
 	if (!found)
 		pwd->pw_shell = NULL;
 	else
-		pwd->pw_shell = (char *)keyString (found);
+		pwd->pw_shell = (char *) keyString (found);
 	keySetBaseName (lookup, "gid");
 	found = ksLookup (ks, lookup, 0);
 	if (!found)
-		pwd->pw_gid = (gid_t)-1;
+		pwd->pw_gid = (gid_t) -1;
 	else
 		pwd->pw_gid = atoi (keyString (found));
 	keySetBaseName (lookup, "home");
@@ -203,19 +203,19 @@ static struct passwd * KStoPasswd (KeySet * ks, SortBy index)
 	if (!found)
 		pwd->pw_dir = NULL;
 	else
-		pwd->pw_dir = (char *)keyString (found);
+		pwd->pw_dir = (char *) keyString (found);
 	keySetBaseName (lookup, "gecos");
 	found = ksLookup (ks, lookup, 0);
 	if (!found)
 		pwd->pw_gecos = "";
 	else
-		pwd->pw_gecos = (char *)keyString (found);
+		pwd->pw_gecos = (char *) keyString (found);
 	keySetBaseName (lookup, "passwd");
 	found = ksLookup (ks, lookup, 0);
 	if (!found)
 		pwd->pw_passwd = "";
 	else
-		pwd->pw_passwd = (char *)keyString (found);
+		pwd->pw_passwd = (char *) keyString (found);
 	keyDel (parent);
 	keyDel (lookup);
 	return pwd;

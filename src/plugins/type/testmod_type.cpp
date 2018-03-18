@@ -68,7 +68,8 @@ TEST (type, validate)
 	key = ckdb::ksLookupByName (ks, "system/elektra/modules/type/exports/validateKey", 0);
 	exit_if_fail (key, "key not found");
 
-	union {
+	union
+	{
 		int (*f) (ckdb::Key *, ckdb::Key *);
 		void * v;
 	} conversation;

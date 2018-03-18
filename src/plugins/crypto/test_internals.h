@@ -164,7 +164,8 @@ static void test_incomplete_config (const char * pluginName)
 
 static void test_crypto_operations (const char * pluginName)
 {
-	union {
+	union
+	{
 		checkConfPtr f;
 		void * v;
 	} conversation;
@@ -220,11 +221,11 @@ static void test_crypto_operations (const char * pluginName)
 			{
 				succeed_if (keyIsBinary (k), "Key value is not binary although it should have been encrypted");
 				succeed_if (keyGetValueSize (k) > 0, "NULL Key must have encrypted metadata and can not have length 0");
-				succeed_if (memcmp (keyValue (k), binVal, MIN (keyGetValueSize (k), (ssize_t)sizeof (binVal))),
+				succeed_if (memcmp (keyValue (k), binVal, MIN (keyGetValueSize (k), (ssize_t) sizeof (binVal))),
 					    "encryption failed");
-				succeed_if (memcmp (keyValue (k), strVal, MIN (keyGetValueSize (k), (ssize_t)sizeof (strVal))),
+				succeed_if (memcmp (keyValue (k), strVal, MIN (keyGetValueSize (k), (ssize_t) sizeof (strVal))),
 					    "encryption failed");
-				succeed_if (memcmp (keyValue (k), strValLong, MIN (keyGetValueSize (k), (ssize_t)sizeof (strValLong))),
+				succeed_if (memcmp (keyValue (k), strValLong, MIN (keyGetValueSize (k), (ssize_t) sizeof (strValLong))),
 					    "encryption failed");
 			}
 			else

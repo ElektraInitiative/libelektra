@@ -22,12 +22,7 @@ namespace tools
 namespace merging
 {
 
-enum ConflictResolutionSide
-{
-	BASE,
-	OURS,
-	THEIRS
-};
+enum ConflictResolutionSide { BASE, OURS, THEIRS };
 
 class MergeConflictStrategy
 {
@@ -43,8 +38,8 @@ protected:
 };
 
 typedef std::unique_ptr<MergeConflictStrategy> MergeConflictStrategyPtr;
-}
-}
-}
+} // namespace merging
+} // namespace tools
+} // namespace kdb
 
 #endif /* MERGECONFLICTSTRATEGY_HPP_ */

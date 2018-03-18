@@ -255,9 +255,9 @@ int keyIsBelow (const Key * key, const Key * check)
 		else
 		{
 			size_t size = 0;
-			char * ptr = (char *)keyname;
+			char * ptr = (char *) keyname;
 			keyNameGetOneLevel (ptr, &size);
-			if (size == (size_t)keysize)
+			if (size == (size_t) keysize)
 			{
 				return 1;
 			}
@@ -277,9 +277,9 @@ int keyIsBelow (const Key * key, const Key * check)
 	else if (keyname[0] == '/')
 	{
 		size_t size = 0;
-		char * ptr = (char *)checkname;
+		char * ptr = (char *) checkname;
 		keyNameGetOneLevel (ptr, &size);
-		if (size == (size_t)checksize)
+		if (size == (size_t) checksize)
 		{
 			return 0;
 		}
@@ -763,8 +763,8 @@ int keyCompareMeta (const Key * k1, const Key * k2)
 {
 	const Key * meta1;
 
-	Key * key1 = (Key *)k1;
-	Key * key2 = (Key *)k2;
+	Key * key1 = (Key *) k1;
+	Key * key2 = (Key *) k2;
 
 	keyRewindMeta (key1);
 	keyRewindMeta (key2);

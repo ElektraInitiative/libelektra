@@ -42,7 +42,7 @@ using char_t = unsigned char;	  // default: 0
 // using wchar_t; // default: 0 wchar_t not supported!
 using boolean_t = bool;  // default: false
 using octet_t = uint8_t; // default: 0
-}
+} // namespace kdb
 #endif // for c++
 
 

@@ -30,8 +30,8 @@ class ImportMergeConfiguration : public AutoMergeConfiguration
 public:
 	virtual void configureMerger (ThreeWayMerge & merger) override;
 };
-}
-}
-}
+} // namespace merging
+} // namespace tools
+} // namespace kdb
 
 #endif /* IMPORTMERGECONFIGURATION_HPP_ */

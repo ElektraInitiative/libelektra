@@ -91,8 +91,8 @@ public:
 				  mergeRoot);
 	}
 };
-}
-}
-}
+} // namespace merging
+} // namespace tools
+} // namespace kdb
 
 #endif /* MERGETASK_HPP_ */

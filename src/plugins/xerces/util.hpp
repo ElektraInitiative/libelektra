@@ -87,7 +87,7 @@ public:
 private:
 	std::string msg;
 };
-}
+} // namespace xerces
 
 #define ELEKTRA_XERCES_ORIGINAL_ROOT_NAME "xerces/rootname"
 

@@ -122,7 +122,7 @@ bool hasProvides (PluginDatabase const & pd, std::string which)
 	}
 	return false;
 }
-}
+} // namespace
 
 
 // TODO: directly use data from CONTRACT.ini
@@ -632,5 +632,5 @@ void MockPluginDatabase::setCheckconfFunction (const MockPluginDatabase::checkCo
 {
 	checkconf = newCheckconf;
 }
-}
-}
+} // namespace tools
+} // namespace kdb

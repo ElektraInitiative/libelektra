@@ -57,7 +57,7 @@ struct elektraNi_node_struct
 #define GetItem(e) ((elektraNi_node) ((e)->item))
 
 // Returns the Ds_hash_entry the node belongs to.
-#define GetEntry(n) ((Ds_hash_entry *)((unsigned char *)(n)-offsetof (Ds_hash_entry, item)))
+#define GetEntry(n) ((Ds_hash_entry *) ((unsigned char *) (n) -offsetof (Ds_hash_entry, item)))
 
 // Inits the node and adds it as a child of the parent.
 static elektraNi_node AddNode (elektraNi_node restrict n, elektraNi_node restrict parent, const char * restrict name, int name_len,
@@ -101,7 +101,7 @@ elektraNi_PUBLIC elektraNi_node elektraNi_New (void)
 {
 	elektraNi_node n;
 
-	if ((n = (elektraNi_node)malloc (sizeof (struct elektraNi_node_struct))) != NULL)
+	if ((n = (elektraNi_node) malloc (sizeof (struct elektraNi_node_struct))) != NULL)
 	{
 		if (!InitNode (n, NULL))
 		{
@@ -233,7 +233,7 @@ elektraNi_PUBLIC elektraNi_node elektraNi_GetChild (elektraNi_node restrict n, c
 		}
 		if (name_len > elektraNi_KEY_SIZE - 1) name_len = elektraNi_KEY_SIZE - 1;
 
-		hash = Hash (name, (size_t)name_len, 0xbadc0de5);
+		hash = Hash (name, (size_t) name_len, 0xbadc0de5);
 
 		if ((e = Ds_SearchHashTable (&n->children, name, name_len, hash, Compare)) != NULL)
 			child = GetItem (e);
@@ -767,7 +767,7 @@ static int InitNode (elektraNi_node restrict n, elektraNi_node restrict parent)
 {
 	assert (n);
 
-	*n = (struct elektraNi_node_struct)NODE_STRUCT_INIT;
+	*n = (struct elektraNi_node_struct) NODE_STRUCT_INIT;
 
 	n->root = (parent ? parent->root : n);
 	n->parent = parent;
@@ -881,7 +881,7 @@ static int RecursiveWrite (elektraNi_node restrict n, FILE * restrict stream, in
 static int Compare (const void * restrict key, size_t key_size, const void * restrict item, size_t item_size ELEKTRA_UNUSED)
 {
 	const struct elektraNi_node_struct * n;
-	n = (const struct elektraNi_node_struct *)item;
+	n = (const struct elektraNi_node_struct *) item;
 
 	assert (item_size == sizeof (struct elektraNi_node_struct));
 	assert (key != NULL);

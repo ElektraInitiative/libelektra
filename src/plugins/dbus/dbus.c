@@ -32,7 +32,7 @@ int elektraDbusGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	}
 
 	// remember all keys
-	KeySet * ks = (KeySet *)elektraPluginGetData (handle);
+	KeySet * ks = (KeySet *) elektraPluginGetData (handle);
 	if (ks) ksDel (ks);
 	elektraPluginSetData (handle, ksDup (returned));
 
@@ -51,7 +51,7 @@ static void announceKeys (KeySet * ks, const char * signalName, DBusBusType busT
 
 int elektraDbusSet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
-	KeySet * oldKeys = (KeySet *)elektraPluginGetData (handle);
+	KeySet * oldKeys = (KeySet *) elektraPluginGetData (handle);
 	// because elektraLogchangeGet will always be executed before elektraLogchangeSet
 	// we know that oldKeys must exist here!
 	ksRewind (oldKeys);
@@ -114,7 +114,7 @@ int elektraDbusSet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 int elektraDbusClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 {
-	KeySet * ks = (KeySet *)elektraPluginGetData (handle);
+	KeySet * ks = (KeySet *) elektraPluginGetData (handle);
 	if (ks) ksDel (ks);
 	return 1; /* success */
 }

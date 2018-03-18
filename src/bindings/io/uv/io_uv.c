@@ -22,12 +22,14 @@
  */
 typedef struct UvBindingData
 {
-	union {
+	union
+	{
 		ElektraIoFdOperation * fd;
 		ElektraIoTimerOperation * timer;
 		ElektraIoIdleOperation * idle;
 	} operation;
-	union {
+	union
+	{
 		uv_poll_t fd;
 		uv_timer_t timer;
 		uv_idle_t idle;
@@ -94,7 +96,7 @@ static UvBindingData * newBindingData (void)
 static void ioUvBindingHandleClosedCallback (uv_handle_t * handle)
 {
 	ELEKTRA_NOT_NULL (handle->data);
-	UvBindingData * bindingData = (UvBindingData *)handle->data;
+	UvBindingData * bindingData = (UvBindingData *) handle->data;
 
 	elektraFree (bindingData);
 }
@@ -115,8 +117,8 @@ static void ioUvBindingFdCallback (uv_poll_t * handle, int status, int events)
 	}
 
 	ELEKTRA_NOT_NULL (handle->data);
-	UvBindingData * bindingData = (UvBindingData *)handle->data;
-	ElektraIoFdOperation * fdOp = (ElektraIoFdOperation *)bindingData->operation.fd;
+	UvBindingData * bindingData = (UvBindingData *) handle->data;
+	ElektraIoFdOperation * fdOp = (ElektraIoFdOperation *) bindingData->operation.fd;
 
 	elektraIoFdGetCallback (fdOp) (fdOp, eventsToFlags (events));
 }
@@ -134,8 +136,8 @@ static void ioUvBindingTimerCallback (uv_timer_t * handle)
 #endif
 {
 	ELEKTRA_NOT_NULL (handle->data);
-	UvBindingData * bindingData = (UvBindingData *)handle->data;
-	ElektraIoTimerOperation * timerOp = (ElektraIoTimerOperation *)bindingData->operation.timer;
+	UvBindingData * bindingData = (UvBindingData *) handle->data;
+	ElektraIoTimerOperation * timerOp = (ElektraIoTimerOperation *) bindingData->operation.timer;
 
 	elektraIoTimerGetCallback (timerOp) (timerOp);
 }
@@ -153,8 +155,8 @@ static void ioUvBindingIdleCallback (uv_idle_t * handle)
 #endif
 {
 	ELEKTRA_NOT_NULL (handle->data);
-	UvBindingData * bindingData = (UvBindingData *)handle->data;
-	ElektraIoIdleOperation * idleOp = (ElektraIoIdleOperation *)bindingData->operation.idle;
+	UvBindingData * bindingData = (UvBindingData *) handle->data;
+	ElektraIoIdleOperation * idleOp = (ElektraIoIdleOperation *) bindingData->operation.idle;
 
 	elektraIoIdleGetCallback (idleOp) (idleOp);
 }
@@ -166,7 +168,7 @@ static void ioUvBindingIdleCallback (uv_idle_t * handle)
 static int ioUvBindingUpdateFd (ElektraIoFdOperation * fdOp)
 {
 	ELEKTRA_NOT_NULL (elektraIoFdGetBindingData (fdOp));
-	UvBindingData * bindingData = (UvBindingData *)elektraIoFdGetBindingData (fdOp);
+	UvBindingData * bindingData = (UvBindingData *) elektraIoFdGetBindingData (fdOp);
 	if (elektraIoFdIsEnabled (fdOp))
 	{
 		uv_poll_start (&bindingData->handle.fd, flagsToEvents (elektraIoFdGetFlags (fdOp)), ioUvBindingFdCallback);
@@ -189,7 +191,7 @@ static int ioUvBindingAddFd (ElektraIoInterface * binding, ElektraIoFdOperation 
 	{
 		return 0;
 	}
-	uv_loop_t * loop = (uv_loop_t *)elektraIoBindingGetData (binding);
+	uv_loop_t * loop = (uv_loop_t *) elektraIoBindingGetData (binding);
 	ELEKTRA_NOT_NULL (loop);
 
 	elektraIoFdSetBindingData (fdOp, bindingData);
@@ -218,9 +220,9 @@ static int ioUvBindingAddFd (ElektraIoInterface * binding, ElektraIoFdOperation 
 static int ioUvBindingRemoveFd (ElektraIoFdOperation * fdOp)
 {
 	ELEKTRA_NOT_NULL (elektraIoFdGetBindingData (fdOp));
-	UvBindingData * bindingData = (UvBindingData *)elektraIoFdGetBindingData (fdOp);
+	UvBindingData * bindingData = (UvBindingData *) elektraIoFdGetBindingData (fdOp);
 	uv_poll_stop (&bindingData->handle.fd);
-	uv_close ((uv_handle_t *)&bindingData->handle.fd, ioUvBindingHandleClosedCallback);
+	uv_close ((uv_handle_t *) &bindingData->handle.fd, ioUvBindingHandleClosedCallback);
 	return 1;
 }
 
@@ -231,7 +233,7 @@ static int ioUvBindingRemoveFd (ElektraIoFdOperation * fdOp)
 static int ioUvBindingUpdateTimer (ElektraIoTimerOperation * timerOp)
 {
 	ELEKTRA_NOT_NULL (elektraIoTimerGetBindingData (timerOp));
-	UvBindingData * bindingData = (UvBindingData *)elektraIoTimerGetBindingData (timerOp);
+	UvBindingData * bindingData = (UvBindingData *) elektraIoTimerGetBindingData (timerOp);
 	if (elektraIoTimerIsEnabled (timerOp))
 	{
 		unsigned int interval = elektraIoTimerGetInterval (timerOp);
@@ -255,7 +257,7 @@ static int ioUvBindingAddTimer (ElektraIoInterface * binding, ElektraIoTimerOper
 	{
 		return 0;
 	}
-	uv_loop_t * loop = (uv_loop_t *)elektraIoBindingGetData (binding);
+	uv_loop_t * loop = (uv_loop_t *) elektraIoBindingGetData (binding);
 	ELEKTRA_NOT_NULL (loop);
 
 	elektraIoTimerSetBindingData (timerOp, bindingData);
@@ -286,9 +288,9 @@ static int ioUvBindingAddTimer (ElektraIoInterface * binding, ElektraIoTimerOper
 static int ioUvBindingRemoveTimer (ElektraIoTimerOperation * timerOp)
 {
 	ELEKTRA_NOT_NULL (elektraIoTimerGetBindingData (timerOp));
-	UvBindingData * bindingData = (UvBindingData *)elektraIoTimerGetBindingData (timerOp);
+	UvBindingData * bindingData = (UvBindingData *) elektraIoTimerGetBindingData (timerOp);
 	uv_timer_stop (&bindingData->handle.timer);
-	uv_close ((uv_handle_t *)&bindingData->handle.timer, ioUvBindingHandleClosedCallback);
+	uv_close ((uv_handle_t *) &bindingData->handle.timer, ioUvBindingHandleClosedCallback);
 	return 1;
 }
 
@@ -299,7 +301,7 @@ static int ioUvBindingRemoveTimer (ElektraIoTimerOperation * timerOp)
 static int ioUvBindingUpdateIdle (ElektraIoIdleOperation * idleOp)
 {
 	ELEKTRA_NOT_NULL (elektraIoIdleGetBindingData (idleOp));
-	UvBindingData * bindingData = (UvBindingData *)elektraIoIdleGetBindingData (idleOp);
+	UvBindingData * bindingData = (UvBindingData *) elektraIoIdleGetBindingData (idleOp);
 	if (elektraIoIdleIsEnabled (idleOp))
 	{
 		uv_idle_start (&bindingData->handle.idle, ioUvBindingIdleCallback);
@@ -322,7 +324,7 @@ static int ioUvBindingAddIdle (ElektraIoInterface * binding, ElektraIoIdleOperat
 	{
 		return 0;
 	}
-	uv_loop_t * loop = (uv_loop_t *)elektraIoBindingGetData (binding);
+	uv_loop_t * loop = (uv_loop_t *) elektraIoBindingGetData (binding);
 	ELEKTRA_NOT_NULL (loop);
 
 	elektraIoIdleSetBindingData (idleOp, bindingData);
@@ -353,9 +355,9 @@ static int ioUvBindingAddIdle (ElektraIoInterface * binding, ElektraIoIdleOperat
 static int ioUvBindingRemoveIdle (ElektraIoIdleOperation * idleOp)
 {
 	ELEKTRA_NOT_NULL (elektraIoIdleGetBindingData (idleOp));
-	UvBindingData * bindingData = (UvBindingData *)elektraIoIdleGetBindingData (idleOp);
+	UvBindingData * bindingData = (UvBindingData *) elektraIoIdleGetBindingData (idleOp);
 	uv_idle_stop (&bindingData->handle.idle);
-	uv_close ((uv_handle_t *)&bindingData->handle.idle, ioUvBindingHandleClosedCallback);
+	uv_close ((uv_handle_t *) &bindingData->handle.idle, ioUvBindingHandleClosedCallback);
 	return 1;
 }
 

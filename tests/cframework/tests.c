@@ -273,7 +273,7 @@ void output_meta (Key * k)
 	keyRewindMeta (k);
 	while ((meta = keyNextMeta (k)) != 0)
 	{
-		printf (", %s: %s", keyName (meta), (const char *)keyValue (meta));
+		printf (", %s: %s", keyName (meta), (const char *) keyValue (meta));
 	}
 	printf ("\n");
 }
@@ -281,7 +281,7 @@ void output_meta (Key * k)
 void output_key (Key * k)
 {
 	// output_meta will print endline
-	printf ("%p key: %s, string: %s", (void *)k, keyName (k), keyString (k));
+	printf ("%p key: %s, string: %s", (void *) k, keyName (k), keyString (k));
 	output_meta (k);
 }
 
@@ -318,14 +318,14 @@ void output_trie (Trie * trie)
 	{
 		if (trie->value[i])
 		{
-			printf ("output_trie: %p, mp: %s %s [%d]\n", (void *)trie->value[i], keyName (trie->value[i]->mountpoint),
+			printf ("output_trie: %p, mp: %s %s [%d]\n", (void *) trie->value[i], keyName (trie->value[i]->mountpoint),
 				keyString (trie->value[i]->mountpoint), i);
 		}
 		if (trie->children[i]) output_trie (trie->children[i]);
 	}
 	if (trie->empty_value)
 	{
-		printf ("empty_value: %p, mp: %s %s\n", (void *)trie->empty_value, keyName (trie->empty_value->mountpoint),
+		printf ("empty_value: %p, mp: %s %s\n", (void *) trie->empty_value, keyName (trie->empty_value->mountpoint),
 			keyString (trie->empty_value->mountpoint));
 	}
 }
@@ -339,7 +339,7 @@ void output_split (Split * split)
 		{
 			printf ("split #%zu size: %zd, handle: %p, sync: %d, parent: %s (%s), spec: %zd, dir: %zd, user: %zd, system: "
 				"%zd\n",
-				i, ksGetSize (split->keysets[i]), (void *)split->handles[i], split->syncbits[i],
+				i, ksGetSize (split->keysets[i]), (void *) split->handles[i], split->syncbits[i],
 				keyName (split->parents[i]), keyString (split->parents[i]), split->handles[i]->specsize,
 				split->handles[i]->dirsize, split->handles[i]->usersize, split->handles[i]->systemsize);
 		}

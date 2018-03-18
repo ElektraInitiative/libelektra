@@ -47,7 +47,7 @@ public:
 private:
 	KeySet modules;
 };
-}
-}
+} // namespace tools
+} // namespace kdb
 
 #endif

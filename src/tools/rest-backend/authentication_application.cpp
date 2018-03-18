@@ -38,7 +38,7 @@ AuthenticationApp::AuthenticationApp (cppcms::service & srv) : cppcms::applicati
 	mapper ().assign ("");
 
 	// force caching of database
-	(void)kdbrest::service::StorageEngine::instance ();
+	(void) kdbrest::service::StorageEngine::instance ();
 }
 
 /**

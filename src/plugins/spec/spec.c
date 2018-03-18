@@ -239,53 +239,53 @@ static void parseLocalConfig (Key * specKey, ConflictHandling * localCh, Directi
 	switch (dir)
 	{
 	case GET:
-		if ((localConflictMeta = (Key *)keyGetMeta (specKey, "conflict/get/member")) != NULL)
+		if ((localConflictMeta = (Key *) keyGetMeta (specKey, "conflict/get/member")) != NULL)
 		{
 			localCh->member = getConfOption (localConflictMeta);
 		}
-		else if ((localConflictMeta = (Key *)keyGetMeta (specKey, "conflict/get/invalid")) != NULL)
+		else if ((localConflictMeta = (Key *) keyGetMeta (specKey, "conflict/get/invalid")) != NULL)
 		{
 			localCh->invalid = getConfOption (localConflictMeta);
 		}
-		else if ((localConflictMeta = (Key *)keyGetMeta (specKey, "conflict/get/count")) != NULL)
+		else if ((localConflictMeta = (Key *) keyGetMeta (specKey, "conflict/get/count")) != NULL)
 		{
 			localCh->count = getConfOption (localConflictMeta);
 		}
-		else if ((localConflictMeta = (Key *)keyGetMeta (specKey, "conflict/get/collision")) != NULL)
+		else if ((localConflictMeta = (Key *) keyGetMeta (specKey, "conflict/get/collision")) != NULL)
 		{
 			localCh->conflict = getConfOption (localConflictMeta);
 		}
-		else if ((localConflictMeta = (Key *)keyGetMeta (specKey, "conflict/get/range")) != NULL)
+		else if ((localConflictMeta = (Key *) keyGetMeta (specKey, "conflict/get/range")) != NULL)
 		{
 			localCh->range = getConfOption (localConflictMeta);
 		}
-		else if ((localConflictMeta = (Key *)keyGetMeta (specKey, "conflict/get/missing")) != NULL)
+		else if ((localConflictMeta = (Key *) keyGetMeta (specKey, "conflict/get/missing")) != NULL)
 		{
 			localCh->missing = getConfOption (localConflictMeta);
 		}
 		break;
 	case SET:
-		if ((localConflictMeta = (Key *)keyGetMeta (specKey, "conflict/set/member")) != NULL)
+		if ((localConflictMeta = (Key *) keyGetMeta (specKey, "conflict/set/member")) != NULL)
 		{
 			localCh->member = getConfOption (localConflictMeta);
 		}
-		else if ((localConflictMeta = (Key *)keyGetMeta (specKey, "conflict/set/invalid")) != NULL)
+		else if ((localConflictMeta = (Key *) keyGetMeta (specKey, "conflict/set/invalid")) != NULL)
 		{
 			localCh->invalid = getConfOption (localConflictMeta);
 		}
-		else if ((localConflictMeta = (Key *)keyGetMeta (specKey, "conflict/set/count")) != NULL)
+		else if ((localConflictMeta = (Key *) keyGetMeta (specKey, "conflict/set/count")) != NULL)
 		{
 			localCh->count = getConfOption (localConflictMeta);
 		}
-		else if ((localConflictMeta = (Key *)keyGetMeta (specKey, "conflict/set/collision")) != NULL)
+		else if ((localConflictMeta = (Key *) keyGetMeta (specKey, "conflict/set/collision")) != NULL)
 		{
 			localCh->conflict = getConfOption (localConflictMeta);
 		}
-		else if ((localConflictMeta = (Key *)keyGetMeta (specKey, "conflict/set/range")) != NULL)
+		else if ((localConflictMeta = (Key *) keyGetMeta (specKey, "conflict/set/range")) != NULL)
 		{
 			localCh->range = getConfOption (localConflictMeta);
 		}
-		else if ((localConflictMeta = (Key *)keyGetMeta (specKey, "conflict/set/missing")) != NULL)
+		else if ((localConflictMeta = (Key *) keyGetMeta (specKey, "conflict/set/missing")) != NULL)
 		{
 			localCh->missing = getConfOption (localConflictMeta);
 		}
@@ -369,7 +369,7 @@ static int handleArrayConflict (Key * parentKey, Key * key, Key * conflictMeta, 
 	}
 	if (problemKeys)
 	{
-		elektraFree ((void *)problemKeys);
+		elektraFree ((void *) problemKeys);
 	}
 	return ret;
 }
@@ -436,7 +436,7 @@ static int handleConflictConflict (Key * parentKey, Key * key, Key * conflictMet
 	}
 	if (problemKeys)
 	{
-		elektraFree ((void *)problemKeys);
+		elektraFree ((void *) problemKeys);
 	}
 	return ret;
 }
@@ -502,7 +502,7 @@ static int handleMissingConflict (Key * parentKey, Key * key, Key * conflictMeta
 	}
 	if (problemKeys)
 	{
-		elektraFree ((void *)problemKeys);
+		elektraFree ((void *) problemKeys);
 	}
 	return ret;
 }
@@ -551,7 +551,7 @@ static int handleErrors (Key * parentKey, KeySet * ks, Key * key, Key * specKey,
 	Key * meta;
 	while (keyNextMeta (parent) != NULL)
 	{
-		meta = (Key *)keyCurrentMeta (parent);
+		meta = (Key *) keyCurrentMeta (parent);
 		conflict = getConflict (meta);
 		if (conflict != NAC)
 		{
@@ -566,7 +566,7 @@ static int handleErrors (Key * parentKey, KeySet * ks, Key * key, Key * specKey,
 	keyRewindMeta (key);
 	while (keyNextMeta (key) != NULL)
 	{
-		meta = (Key *)keyCurrentMeta (key);
+		meta = (Key *) keyCurrentMeta (key);
 		conflict = getConflict (meta);
 		if (conflict != NAC)
 		{

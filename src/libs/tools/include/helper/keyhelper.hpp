@@ -73,8 +73,8 @@ void removeNamespace (Key & key);
  * @return the longest common name found
  */
 Key commonKeyName (Key key1, Key key2);
-}
-}
-}
+} // namespace helper
+} // namespace tools
+} // namespace kdb
 
 #endif /* KEYHELPER_HPP_ */

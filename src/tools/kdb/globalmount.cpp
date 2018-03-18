@@ -91,7 +91,7 @@ void removePlugins (std::vector<std::string> & plugins, std::string globalPlugin
 		}
 	}
 }
-}
+} // namespace
 
 void GlobalMountCommand::buildBackend (Cmdline const & cl)
 {

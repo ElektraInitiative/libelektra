@@ -36,7 +36,7 @@ namespace detail
 {
 void processArgument (PluginSpecVector & arguments, size_t & counter, std::string argument);
 void fixArguments (PluginSpecVector & arguments);
-}
+} // namespace detail
 
 /**
  * @brief Parse a complete commandline that is already tokenized in pluginname pluginconfig
@@ -60,7 +60,7 @@ PluginSpecVector parseArguments (Iterator first, Iterator last)
 	detail::fixArguments (arguments);
 	return arguments;
 }
-}
-}
+} // namespace tools
+} // namespace kdb
 
 #endif

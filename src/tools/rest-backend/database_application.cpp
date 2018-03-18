@@ -46,7 +46,7 @@ DatabaseApp::DatabaseApp (cppcms::service & srv) : cppcms::application (srv)
 	mapper ().assign ("");
 
 	// force caching of database
-	(void)kdbrest::service::StorageEngine::instance ();
+	(void) kdbrest::service::StorageEngine::instance ();
 }
 
 /**

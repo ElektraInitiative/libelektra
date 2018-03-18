@@ -232,7 +232,7 @@ static VALUE define_kdb_plugin_class ()
 		rb_define_const (rb_cObject, RB_GLOBAL_PLUGIN_KLASS, klass);
 	}
 
-	rb_define_singleton_method (klass, "define", ((VALUE (*) (...))rb_kdb_plugin_define), 1);
+	rb_define_singleton_method (klass, "define", ((VALUE (*) (...)) rb_kdb_plugin_define), 1);
 	return klass;
 }
 
@@ -350,7 +350,7 @@ static VALUE load_ruby_plugin (VALUE config ELEKTRA_UNUSED)
 
 	kdb::KeySet * conf = nullptr;
 	/* get kdb::KeySet pointer from Ruby object */
-	if (SWIG_ConvertPtr (config, (void **)&conf, SWIG_TypeQuery ("kdb::KeySet *"), 0) == -1)
+	if (SWIG_ConvertPtr (config, (void **) &conf, SWIG_TypeQuery ("kdb::KeySet *"), 0) == -1)
 	{
 		/* failed to get pointer */
 		ELEKTRA_LOG_WARNING ("could not convert plugin config");

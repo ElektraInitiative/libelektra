@@ -206,7 +206,7 @@ static void elektraResolveUser (resolverHandle * p, Key * warningsKey)
 		ELEKTRA_ADD_WARNING (90, warningsKey, "could not get home (CSIDL_PROFILE), using /");
 	}
 #else
-	char * home = (char *)getenv ("HOME");
+	char * home = (char *) getenv ("HOME");
 	if (!home)
 	{
 		home = "";
@@ -422,7 +422,7 @@ int elektraWresolverSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key 
 		ELEKTRA_SET_ERRORF (
 			ELEKTRA_ERROR_CONFLICT, parentKey,
 			"conflict, file modification time stamp %ld is different than our time stamp %ld config file name is \"%s\", ",
-			(long)buf.st_mtime, (long)pk->mtime, pk->filename);
+			(long) buf.st_mtime, (long) pk->mtime, pk->filename);
 		pk->state = 0; // invalid state, need to kdbGet again
 		return -1;
 	}

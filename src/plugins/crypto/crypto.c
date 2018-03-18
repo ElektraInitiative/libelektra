@@ -76,14 +76,14 @@ static inline int isSpecNamespace (const Key * k)
  */
 static int checkPayloadVersion (Key * k, Key * errorKey)
 {
-	if (keyGetValueSize (k) < ((ssize_t)ELEKTRA_CRYPTO_MAGIC_NUMBER_LEN))
+	if (keyGetValueSize (k) < ((ssize_t) ELEKTRA_CRYPTO_MAGIC_NUMBER_LEN))
 	{
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_PAYLOAD, errorKey, "%s", keyName (k));
 		return 0; // failure
 	}
 
 	// check the magic number without the version
-	const kdb_octet_t * value = (kdb_octet_t *)keyValue (k);
+	const kdb_octet_t * value = (kdb_octet_t *) keyValue (k);
 	if (memcmp (value, ELEKTRA_CRYPTO_MAGIC_NUMBER, ELEKTRA_CRYPTO_MAGIC_NUMBER_LEN - 2))
 	{
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_PAYLOAD, errorKey, "%s", keyName (k));
@@ -139,7 +139,7 @@ static kdb_unsigned_short_t elektraCryptoGetRandomPasswordLength (Key * errorKey
 	Key * k = ksLookupByName (conf, ELEKTRA_CRYPTO_PARAM_MASTER_PASSWORD_LEN, 0);
 	if (k && keyIsString (k) > 0)
 	{
-		kdb_unsigned_short_t passwordLen = (kdb_unsigned_short_t)strtoul (keyString (k), NULL, 10);
+		kdb_unsigned_short_t passwordLen = (kdb_unsigned_short_t) strtoul (keyString (k), NULL, 10);
 		if (passwordLen > 0)
 		{
 			return passwordLen;
@@ -191,7 +191,7 @@ static void elektraCryptoSafelyReleaseKey (Key * key)
 		ssize_t length = keyGetValueSize (key);
 		if (length > 0)
 		{
-			memset ((void *)keyValue (key), 0, length);
+			memset ((void *) keyValue (key), 0, length);
 		}
 
 		// release the key

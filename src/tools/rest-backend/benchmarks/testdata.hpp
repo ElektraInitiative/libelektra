@@ -22,7 +22,7 @@ namespace benchmark
 
 std::vector<model::Entry> createTestEntries (model::User user, int num, int numTags);
 std::vector<model::User> createTestUsers (int num);
-}
-}
+} // namespace benchmark
+} // namespace kdbrest
 
 #endif

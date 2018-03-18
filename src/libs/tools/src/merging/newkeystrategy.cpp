@@ -58,6 +58,6 @@ void NewKeyStrategy::resolveConflict (const MergeTask & task, Key & conflictKey,
 		break;
 	}
 }
-}
-}
-}
+} // namespace merging
+} // namespace tools
+} // namespace kdb

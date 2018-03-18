@@ -26,7 +26,7 @@ void * writer (void * pV_data ELEKTRA_UNUSED)
 	Key * parent = keyNew ("user/test/race", KEY_END);
 	KDB * h = kdbOpen (parent);
 	char buffer[4096];
-	unsigned long tid = (unsigned long)pthread_self ();
+	unsigned long tid = (unsigned long) pthread_self ();
 	int pid = getpid ();
 	sprintf (buffer, "user/test/race/keys/%d/%lu", pid, tid);
 	KeySet * ks = ksNew (20, KS_END);
@@ -148,7 +148,7 @@ int main (int argc, char ** argv)
 			pthread_t * pwriter = elektraMalloc (num_threads * sizeof (pthread_t));
 			if (!pwriter) return 13;
 			for (i = 0; i < num_threads; i++)
-				if (pthread_create (&pwriter[i], NULL, writer, (void *)0) != 0) return 14;
+				if (pthread_create (&pwriter[i], NULL, writer, (void *) 0) != 0) return 14;
 			for (i = 0; i < num_threads; i++)
 				pthread_join (pwriter[i], NULL);
 			elektraFree (pwriter);

@@ -19,7 +19,7 @@ namespace tools
 {
 class MountBackendInterface;
 }
-}
+} // namespace kdb
 
 class MountCommand : public MountBaseCommand
 {

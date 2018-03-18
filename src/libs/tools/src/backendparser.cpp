@@ -160,6 +160,6 @@ void fixArguments (PluginSpecVector & arguments)
 		}
 	}
 }
-}
-}
-}
+} // namespace detail
+} // namespace tools
+} // namespace kdb

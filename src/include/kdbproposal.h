@@ -33,9 +33,8 @@ KeySet * ksRenameKeys (KeySet * config, const Key * name);
  *
  * @ingroup proposal
  */
-enum elektraLockOptions
-{
-	KEY_LOCK_NAME = 1 << 17,
+enum elektraLockOptions {
+	KEY_LOCK_NAME = 1 << 17, ///< lock the name of a key
 	KEY_LOCK_VALUE = 1 << 18,
 	KEY_LOCK_META = 1 << 19
 };
@@ -45,8 +44,7 @@ enum elektraLockOptions
  *
  * @ingroup proposal
  */
-enum elektraLookupOptions
-{
+enum elektraLookupOptions {
 	KDB_O_SPEC = 1 << 15,	///< Use the passed key as specification, instead of looking up the specification first
 	KDB_O_CREATE = 1 << 16,      ///< Create the key if it was not found
 	KDB_O_NOCASCADING = 1 << 17, ///< Disable cascading search for keys starting with /

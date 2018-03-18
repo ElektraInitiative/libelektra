@@ -27,8 +27,7 @@
 	") in plugin configuration. GPG could not find any secret keys. Please generate a secret key first!"
 #define GPG_ERROR_INVALID_KEY "'%s' does not identify a valid GPG private key."
 
-enum gpgKeyListState
-{
+enum gpgKeyListState {
 	GPG_KEYLIST_STATE_START,
 	GPG_KEYLIST_STATE_FPR2,
 	GPG_KEYLIST_STATE_FPR3,
@@ -36,13 +35,7 @@ enum gpgKeyListState
 	GPG_KEYLIST_STATE_KEYID
 };
 
-enum gpgCallErrorCode
-{
-	GPG_CALL_DUP_STDIN = 0x4200,
-	GPG_CALL_DUP_STDOUT = 0x4201,
-	GPG_CALL_DUP_STDERR = 0x4202,
-	GPG_CALL_EXECV = 0x4203
-};
+enum gpgCallErrorCode { GPG_CALL_DUP_STDIN = 0x4200, GPG_CALL_DUP_STDOUT = 0x4201, GPG_CALL_DUP_STDERR = 0x4202, GPG_CALL_EXECV = 0x4203 };
 
 struct gpgKeyListElement
 {
@@ -309,7 +302,7 @@ static void freeKeyList (struct gpgKeyListElement * head)
 static struct gpgKeyListElement * parseGpgKeyIdFromOutput (Key * msgKey, size_t * totalChars, size_t * keyCount)
 {
 	// generate a list of secret key IDs
-	const char * input = (char *)keyValue (msgKey);
+	const char * input = (char *) keyValue (msgKey);
 	const ssize_t inputLen = keyGetValueSize (msgKey);
 	*totalChars = 0;
 	*keyCount = 0;
@@ -418,7 +411,7 @@ static struct gpgKeyListElement * parseGpgKeyIdFromOutput (Key * msgKey, size_t 
 static int isValidGpgKey (KeySet * conf, const char * value)
 {
 	// NOTE it is save to discard the const modifier (although it is not pretty) - the value is not being modified
-	char * argv[] = { "", "--batch", "--with-colons", "--fixed-list-mode", "--list-secret-keys", (char *)value, NULL };
+	char * argv[] = { "", "--batch", "--with-colons", "--fixed-list-mode", "--list-secret-keys", (char *) value, NULL };
 	Key * errorKey = keyNew (0);
 	Key * msgKey = keyNew (0);
 
@@ -532,7 +525,7 @@ char * CRYPTO_PLUGIN_FUNCTION (getMissingGpgKeyErrorText) (KeySet * conf)
 				return NULL;
 			}
 
-			const char * content = (const char *)keyValue (msgKey);
+			const char * content = (const char *) keyValue (msgKey);
 
 			size_t index = strlen (GPG_ERROR_MISSING_KEY_LIST);
 			strncpy (errorBuffer, GPG_ERROR_MISSING_KEY_LIST, errorBufferLen);
@@ -632,7 +625,7 @@ int CRYPTO_PLUGIN_FUNCTION (gpgEncryptMasterPassword) (KeySet * conf, Key * erro
 	{
 		argv[i] = "-r";
 		// NOTE argv[] values will not be modified, so const can be discarded safely
-		argv[i + 1] = (char *)keyString (root);
+		argv[i + 1] = (char *) keyString (root);
 		i = i + 2;
 	}
 
@@ -644,7 +637,7 @@ int CRYPTO_PLUGIN_FUNCTION (gpgEncryptMasterPassword) (KeySet * conf, Key * erro
 		{
 			argv[i] = "-r";
 			// NOTE argv[] values will not be modified, so const can be discarded safely
-			argv[i + 1] = (char *)keyString (k);
+			argv[i + 1] = (char *) keyString (k);
 			i = i + 2;
 		}
 	}

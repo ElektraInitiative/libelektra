@@ -69,9 +69,9 @@ elektraPluginFactory elektraModulesLoad (KeySet * modules, const char * name, Ke
 	Key * lookup = ksLookup (modules, moduleKey, 0);
 	if (lookup)
 	{
-		kdblib_symbol * module = (kdblib_symbol *)keyValue (lookup);
+		kdblib_symbol * module = (kdblib_symbol *) keyValue (lookup);
 		keyDel (moduleKey);
-		return (elektraPluginFactory)module->function;
+		return (elektraPluginFactory) module->function;
 	}
 
 	kdblib_symbol * handle = elektraStaticLoad (name);
@@ -94,7 +94,7 @@ elektraPluginFactory elektraModulesLoad (KeySet * modules, const char * name, Ke
 	keySetBinary (moduleKey, module, sizeof (kdblib_symbol));
 	ksAppendKey (modules, moduleKey);
 
-	return (elektraPluginFactory)module->function;
+	return (elektraPluginFactory) module->function;
 }
 
 int elektraModulesClose (KeySet * modules, Key * error ELEKTRA_UNUSED)

@@ -25,11 +25,11 @@ int main (void)
 	keySetMeta (k, "empty", "");
 
 	meta = keyGetMeta (k, "hello");
-	printf ("Metadata %s has the value %s with the value size %zd\n", keyName (meta), (const char *)keyValue (meta),
+	printf ("Metadata %s has the value %s with the value size %zd\n", keyName (meta), (const char *) keyValue (meta),
 		keyGetValueSize (meta));
-	printf ("Metadata mode has the value %s\n", (const char *)keyValue (keyGetMeta (k, "mode")));
-	printf ("Metadata time has the value %s\n", (const char *)keyValue (keyGetMeta (k, "time")));
-	printf ("Metadata empty has the value %s\n", (const char *)keyValue (keyGetMeta (k, "empty")));
+	printf ("Metadata mode has the value %s\n", (const char *) keyValue (keyGetMeta (k, "mode")));
+	printf ("Metadata time has the value %s\n", (const char *) keyValue (keyGetMeta (k, "time")));
+	printf ("Metadata empty has the value %s\n", (const char *) keyValue (keyGetMeta (k, "empty")));
 
 	if (!keyGetMeta (k, "nonexist")) printf ("Check if a metadata exist\n");
 
@@ -38,21 +38,21 @@ int main (void)
 
 	if (keyGetMeta (k, "hello") == keyGetMeta (c, "hello")) printf ("Check if they point to the same metadata after a copy\n");
 
-	printf ("Metadata hello now has the value %s\n", (const char *)keyValue (keyGetMeta (k, "hello")));
+	printf ("Metadata hello now has the value %s\n", (const char *) keyValue (keyGetMeta (k, "hello")));
 
 	keySetMeta (k, "hello", 0);
 
-	printf ("Metadata hello now has the value %s (after dropping)\n", (const char *)keyValue (keyGetMeta (k, "hello")));
+	printf ("Metadata hello now has the value %s (after dropping)\n", (const char *) keyValue (keyGetMeta (k, "hello")));
 
 	keySetMeta (k, "hello", "goodbye");
 
-	printf ("Metadata hello now has the value %s\n", (const char *)keyValue (keyGetMeta (k, "hello")));
+	printf ("Metadata hello now has the value %s\n", (const char *) keyValue (keyGetMeta (k, "hello")));
 
 	printf ("Now we will output all metadata of the key:\n");
 	keyRewindMeta (k);
 	while ((meta = keyNextMeta (k)) != 0)
 	{
-		printf ("%s=%s\n", keyName (meta), (const char *)keyValue (meta));
+		printf ("%s=%s\n", keyName (meta), (const char *) keyValue (meta));
 	}
 
 	keyDel (k);

@@ -54,7 +54,7 @@ static int validateIPv6 (const char * addr)
 		return 0;
 	else
 	{
-		char * ptr = (char *)addr;
+		char * ptr = (char *) addr;
 		int count = 0;
 		while (*ptr)
 		{
