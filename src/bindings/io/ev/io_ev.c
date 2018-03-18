@@ -23,12 +23,14 @@ typedef struct ev_loop ev_loop_t;
  */
 typedef struct EvBindingData
 {
-	union {
+	union
+	{
 		ElektraIoFdOperation * fd;
 		ElektraIoTimerOperation * timer;
 		ElektraIoIdleOperation * idle;
 	} operation;
-	union {
+	union
+	{
 		ev_io fd;
 		ev_timer timer;
 		ev_idle idle;
@@ -95,8 +97,8 @@ static EvBindingData * newBindingData (void)
 static void ioEvBindingFdCallback (ev_loop_t * loop ELEKTRA_UNUSED, ev_io * handle, int revents ELEKTRA_UNUSED)
 {
 	ELEKTRA_NOT_NULL (handle->data);
-	EvBindingData * bindingData = (EvBindingData *)handle->data;
-	ElektraIoFdOperation * fdOp = (ElektraIoFdOperation *)bindingData->operation.fd;
+	EvBindingData * bindingData = (EvBindingData *) handle->data;
+	ElektraIoFdOperation * fdOp = (ElektraIoFdOperation *) bindingData->operation.fd;
 
 	elektraIoFdGetCallback (fdOp) (fdOp, eventsToFlags (revents));
 }
@@ -110,8 +112,8 @@ static void ioEvBindingFdCallback (ev_loop_t * loop ELEKTRA_UNUSED, ev_io * hand
 static void ioEvBindingTimerCallback (ev_loop_t * loop ELEKTRA_UNUSED, ev_timer * handle, int revents ELEKTRA_UNUSED)
 {
 	ELEKTRA_NOT_NULL (handle->data);
-	EvBindingData * bindingData = (EvBindingData *)handle->data;
-	ElektraIoTimerOperation * timerOp = (ElektraIoTimerOperation *)bindingData->operation.timer;
+	EvBindingData * bindingData = (EvBindingData *) handle->data;
+	ElektraIoTimerOperation * timerOp = (ElektraIoTimerOperation *) bindingData->operation.timer;
 
 	elektraIoTimerGetCallback (timerOp) (timerOp);
 }
@@ -125,8 +127,8 @@ static void ioEvBindingTimerCallback (ev_loop_t * loop ELEKTRA_UNUSED, ev_timer 
 static void ioEvBindingIdleCallback (ev_loop_t * loop ELEKTRA_UNUSED, ev_idle * handle, int revents ELEKTRA_UNUSED)
 {
 	ELEKTRA_NOT_NULL (handle->data);
-	EvBindingData * bindingData = (EvBindingData *)handle->data;
-	ElektraIoIdleOperation * idleOp = (ElektraIoIdleOperation *)bindingData->operation.idle;
+	EvBindingData * bindingData = (EvBindingData *) handle->data;
+	ElektraIoIdleOperation * idleOp = (ElektraIoIdleOperation *) bindingData->operation.idle;
 
 	elektraIoIdleGetCallback (idleOp) (idleOp);
 }
@@ -137,7 +139,7 @@ static void ioEvBindingIdleCallback (ev_loop_t * loop ELEKTRA_UNUSED, ev_idle * 
  */
 static int ioEvBindingUpdateFd (ElektraIoFdOperation * fdOp)
 {
-	EvBindingData * bindingData = (EvBindingData *)elektraIoFdGetBindingData (fdOp);
+	EvBindingData * bindingData = (EvBindingData *) elektraIoFdGetBindingData (fdOp);
 	ELEKTRA_NOT_NULL (bindingData);
 	ev_loop_t * loop = elektraIoBindingGetData (elektraIoFdGetBinding (fdOp));
 	ev_io * fd = &bindingData->handle.fd;
@@ -187,7 +189,7 @@ static int ioEvBindingAddFd (ElektraIoInterface * binding ELEKTRA_UNUSED, Elektr
  */
 static int ioEvBindingRemoveFd (ElektraIoFdOperation * fdOp)
 {
-	EvBindingData * bindingData = (EvBindingData *)elektraIoFdGetBindingData (fdOp);
+	EvBindingData * bindingData = (EvBindingData *) elektraIoFdGetBindingData (fdOp);
 	ELEKTRA_NOT_NULL (bindingData);
 	ev_loop_t * loop = elektraIoBindingGetData (elektraIoFdGetBinding (fdOp));
 	ev_io * fd = &bindingData->handle.fd;
@@ -202,7 +204,7 @@ static int ioEvBindingRemoveFd (ElektraIoFdOperation * fdOp)
  */
 static int ioEvBindingUpdateTimer (ElektraIoTimerOperation * timerOp)
 {
-	EvBindingData * bindingData = (EvBindingData *)elektraIoTimerGetBindingData (timerOp);
+	EvBindingData * bindingData = (EvBindingData *) elektraIoTimerGetBindingData (timerOp);
 	ELEKTRA_NOT_NULL (bindingData);
 	ev_loop_t * loop = elektraIoBindingGetData (elektraIoTimerGetBinding (timerOp));
 	ev_timer * timer = &bindingData->handle.timer;
@@ -252,7 +254,7 @@ static int ioEvBindingAddTimer (ElektraIoInterface * binding ELEKTRA_UNUSED, Ele
  */
 static int ioEvBindingRemoveTimer (ElektraIoTimerOperation * timerOp)
 {
-	EvBindingData * bindingData = (EvBindingData *)elektraIoTimerGetBindingData (timerOp);
+	EvBindingData * bindingData = (EvBindingData *) elektraIoTimerGetBindingData (timerOp);
 	ELEKTRA_NOT_NULL (bindingData);
 	ev_loop_t * loop = elektraIoBindingGetData (elektraIoTimerGetBinding (timerOp));
 	ev_timer * timer = &bindingData->handle.timer;
