@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief sub-dialog to modify number metadata of keys
+ * @brief section of the settings dialog to modify number metadata of keys
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */

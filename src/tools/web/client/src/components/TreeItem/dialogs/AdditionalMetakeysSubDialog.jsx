@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief sub-dialog to add and modify additional metadata of keys
+ * @brief section of the settings dialog where users can add additional metakeys
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
@@ -20,7 +20,7 @@ import { HANDLED_METADATA } from './SettingsDialog.jsx'
 
 const DebouncedTextField = debounce(TextField)
 
-export default class AdditionalSubDialog extends Component {
+export default class AdditionalMetakeysSubDialog extends Component {
   constructor (props, ...args) {
     super(props, ...args)
     this.state = {
@@ -30,12 +30,15 @@ export default class AdditionalSubDialog extends Component {
     }
   }
 
+  // keep state in sync with property updates
   componentWillReceiveProps (nextProps) {
     if (nextProps && nextProps.meta) {
       this.setState({ items: this.parseMetadata(nextProps.meta) || [] })
     }
   }
 
+  // filter metakeys that are not handled otherwise and convert them
+  // to a key/value object format
   parseMetadata = (meta) => {
     const keys = Object.keys(meta)
       .filter(k => !HANDLED_METADATA.includes(k))
@@ -45,6 +48,7 @@ export default class AdditionalSubDialog extends Component {
     })
   }
 
+  // update value of a metakey
   updateValue = (key) => (value) => {
     const { items } = this.state
     this.setState({ items: items.map(item => {
@@ -55,10 +59,11 @@ export default class AdditionalSubDialog extends Component {
     }) })
   }
 
+  // delete a metakey
   deleteItem = (item) => {
     if (window.confirm('Do you really want to delete the \'' + item.key + '\' metakey?')) {
       const { deleteMeta } = this.props
-      deleteMeta(item.key) // TODO: this should update the items array
+      deleteMeta(item.key)
     }
   }
 

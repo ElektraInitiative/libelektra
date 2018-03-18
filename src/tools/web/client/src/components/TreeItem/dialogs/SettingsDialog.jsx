@@ -18,7 +18,7 @@ import Checkbox from 'material-ui/Checkbox'
 import SavedIcon from '../SavedIcon.jsx'
 import EnumSubDialog from './EnumSubDialog.jsx'
 import NumberSubDialog from './NumberSubDialog.jsx'
-import AdditionalSubDialog from './AdditionalSubDialog.jsx'
+import AdditionalMetakeysSubDialog from './AdditionalMetakeysSubDialog.jsx'
 
 import debounce from '../../debounce'
 import { toElektraBool, fromElektraBool, isNumberType } from '../../../utils'
@@ -230,7 +230,7 @@ export default class SettingsDialog extends Component {
             </div>
             {this.getMeta('check/enum', false) ? this.renderEnum() : null}
             {isNumberType(this.getMeta('check/type', false)) ? this.renderNumber() : null}
-            <AdditionalSubDialog
+            <AdditionalMetakeysSubDialog
               handleEdit={this.handleEdit.bind(this)}
               getMeta={this.getMeta.bind(this)}
               getSaved={this.getSaved.bind(this)}
