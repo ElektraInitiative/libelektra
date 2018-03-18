@@ -62,8 +62,6 @@ export default function keyReducer (state = {}, action) {
       return updateState(state, { id, path, meta: { ...meta, [key]: undefined } })
     }
 
-
-    // TODO: recursively delete keys here? is this needed? we refresh on expand anyway
     case DELETE_KEY_REQUEST: {
       const { id, path } = action.request
       return {
@@ -79,7 +77,6 @@ export default function keyReducer (state = {}, action) {
       }
     }
 
-    // TODO: recursively move keys here? is this needed? we refresh on expand anyway
     case MOVE_KEY_SUCCESS: {
       const { id, from, to } = action && action.request
       const fromData = state[id] && state[id][from]
