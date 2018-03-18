@@ -13,7 +13,19 @@
 /**
  *  An enum type representing different ansi color escape sequences.
  */
-enum class ANSI_COLOR { RESET, BOLD, UNDERSCORE, BLACK, RED, GREEN, YELLOW, MAGENTA, BLUE, CYAN, WHITE };
+enum class ANSI_COLOR {
+	RESET, ///< remove previous color properties
+	BOLD,
+	UNDERSCORE,
+	BLACK,
+	RED,
+	GREEN,
+	YELLOW,
+	MAGENTA,
+	BLUE,
+	CYAN,
+	WHITE
+};
 /**
  *  An enum type representing different ansi color escape layers.
  */

@@ -33,7 +33,11 @@ KeySet * ksRenameKeys (KeySet * config, const Key * name);
  *
  * @ingroup proposal
  */
-enum elektraLockOptions { KEY_LOCK_NAME = 1 << 17, KEY_LOCK_VALUE = 1 << 18, KEY_LOCK_META = 1 << 19 };
+enum elektraLockOptions {
+	KEY_LOCK_NAME = 1 << 17, ///< lock the name of a key
+	KEY_LOCK_VALUE = 1 << 18,
+	KEY_LOCK_META = 1 << 19
+};
 
 /**
  * @brief More lookup options
