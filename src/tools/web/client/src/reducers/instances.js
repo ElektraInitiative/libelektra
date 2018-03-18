@@ -26,7 +26,7 @@ export default function instancesReducer (state = [], action) {
           : instance
       )
 
-    case INSTANCES_SUCCESS: // instance list pulled from clusterd, update state
+    case INSTANCES_SUCCESS: // instance list pulled from webd, update state
       return action.result
 
     case CREATE_INSTANCE_SUCCESS: // instance created, add to state

@@ -113,7 +113,7 @@ export default function initClusterRoutes (app) {
     .put((req, res) => {
       const clusterId = req.params.id
       const path = req.params[0]
-      // set key in virtual kdb on clusterd server
+      // set key in virtual kdb on webd server
       kdb.set(virtualKdb(clusterId, path), req.body)
         .then(output =>
           // set key on all instances in the cluster

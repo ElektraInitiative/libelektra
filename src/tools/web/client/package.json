@@ -26,11 +26,11 @@
     "redux-promises": "^1.0.0"
   },
   "scripts": {
-    "postinstall": "npm install --prefix ../clusterd",
+    "postinstall": "npm install --prefix ../webd",
     "start": "npm run server",
-    "server": "cd ../clusterd && npm start",
+    "server": "cd ../webd && npm start",
     "start:dev": "concurrently \"react-scripts start\" \"npm run server:dev\"",
-    "server:dev": "cd ../clusterd && npm run start:dev",
+    "server:dev": "cd ../webd && npm run start:dev",
     "build": "react-scripts build",
     "eject": "react-scripts eject"
   }

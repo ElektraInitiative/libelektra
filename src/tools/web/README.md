@@ -52,8 +52,8 @@ browser, the configuration page for the instance will be opened immediately.
 Elektra web consists of multiple components:
 
  * (multiple) servers running an elektra daemon ([`elektrad`](elektrad/))
- * a single server to communicate with the elektra daemons and serve the client ([`clusterd`](clusterd/))
- * a web browser that accesses the client (Web UI) on the cluster management server ([`client`](client/))
+ * a single server to communicate with the elektra daemons and serve the client ([`webd`](webd/))
+ * a web browser that accesses the client (Web UI) on the [`webd`](webd/) server ([`client`](client/))
 
 ![https://cdn.rawgit.com/ElektraInitiative/libelektra/master/src/tools/web/doc/network_structure.png](https://cdn.rawgit.com/ElektraInitiative/libelektra/master/src/tools/web/doc/network_structure.png)
 

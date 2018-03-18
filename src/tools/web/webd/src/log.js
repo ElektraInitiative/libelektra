@@ -5,7 +5,7 @@
  *
  * e.g.
  * const { info, error } = makeLog('routes')
- * info('routes loaded!') // displays "clusterd:routes:info routes loaded!"
+ * info('routes loaded!') // displays "webd:routes:info routes loaded!"
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */

@@ -1,9 +1,9 @@
-# elektra-web/clusterd
+# elektra-web/webd
 
-The cluster management server for elektra-web, built using
+The instance management server for elektra-web, built using
 [express](https://expressjs.com/). It accesses the API of multiple
 [`elektrad`](../elektrad/) instances and provides an API to manage single
-instances and clusters of instances (multiple instances at once).
+instances.
 
 
 ## Installation
@@ -33,14 +33,14 @@ npm run start:dev
 
 ## Client
 
-By default, `clusterd` serves its API and the elektra-web client on
+By default, `webd` serves its API and the elektra-web client on
 [http://localhost:33334](http://localhost:33334)
 
-If you want to use the `clusterd` in combination with the client in development
-mode, start the client via `npm run start:dev`, it will also start `clusterd`.
+If you want to use the `webd` in combination with the client in development
+mode, start the client via `npm run start:dev`, it will also start `webd`.
 
 
 ## API
 
- - API documentation: http://docs.clusterd.apiary.io/
- - API blueprint: [clusterd.apib](https://master.libelektra.org/doc/api_blueprints/clusterd.apib)
+ - API documentation: http://docs.webd.apiary.io/
+ - API blueprint: [webd.apib](https://master.libelektra.org/doc/api_blueprints/webd.apib)
