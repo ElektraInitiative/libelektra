@@ -56,12 +56,12 @@ export default class Menu extends React.Component {
   }
 
   render () {
-    const { loading, instances, subpage, status } = this.props
+    const { loading, instances, subpage, status, singleInstanceMode } = this.props
     const { addInstance } = this.props // action creators
     const title = (
         <ToolbarGroup>
           <div style={{ display: 'flex' }}>
-            {subpage && // show back button on subpages
+            {(subpage && !singleInstanceMode) && // show back button on subpages
               <Link style={{ textDecoration: 'none' }} to="/"><NavigationArrowBack style={navigationArrowStyle} /></Link>}
             <Link style={{ textDecoration: 'none' }} to="/">
               <ToolbarTitle

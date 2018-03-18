@@ -194,11 +194,13 @@ export default class Configuration extends Component {
                     </div>
                 }
             </CardText>
-            <CardActions>
-                <Link to="/" style={{ textDecoration: 'none' }}>
-                    <FlatButton primary label="done" />
-                </Link>
-            </CardActions>
+            {(id !== 'my') &&
+              <CardActions>
+                  <Link to="/" style={{ textDecoration: 'none' }}>
+                      <FlatButton primary label="done" />
+                  </Link>
+              </CardActions>
+            }
         </Card>
     )
   }
