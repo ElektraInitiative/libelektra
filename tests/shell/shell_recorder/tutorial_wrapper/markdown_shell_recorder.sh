@@ -102,6 +102,8 @@ translate()
 
 resetGlobals
 
+printf 'Input: %s\n' "$1"
+
 BLOCKS=$(sed -n '/```sh/,/```\n/p' "$1")
 BUF=
 SHELL_RECORDER_ERROR=0
