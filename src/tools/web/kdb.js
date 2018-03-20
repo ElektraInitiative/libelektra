@@ -186,8 +186,8 @@ const rm = (path) =>
 
 // list meta values at given `path`
 const lsmeta = (path) =>
-  safeExec(escapeValues`kdb lsmeta ${path}`)
-    .then(stdout => stdout && stdout.split('\n'))
+  safeExec(escapeValues`kdb lsmeta -0 ${path}`)
+    .then(stdout => stdout && stdout.split('\0'))
 
 // get meta value from given `path`
 const getmeta = (path, meta) =>
