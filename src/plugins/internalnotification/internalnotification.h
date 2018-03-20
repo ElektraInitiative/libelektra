@@ -43,7 +43,7 @@ void elektraInternalnotificationUpdateRegisteredKeys (Plugin * plugin, KeySet * 
 #define INTERNALNOTIFICATION_TYPE(TYPE, VALUE_TYPE, TYPE_NAME, TO_VALUE, CHECK_CONVERSION)                                                 \
 	INTERNALNOTIFICATION_CONVERSION_CALLBACK_SIGNATURE (TYPE_NAME)                                                                     \
 	{                                                                                                                                  \
-		TYPE * variable = (TYPE *)context;                                                                                         \
+		TYPE * variable = (TYPE *) context;                                                                                        \
 		char * end ELEKTRA_UNUSED;                                                                                                 \
 		const char * string = keyValue (key);                                                                                      \
 		errno = 0;                                                                                                                 \

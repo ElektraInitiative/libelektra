@@ -47,7 +47,7 @@ extern "C" {
 			return 0;                                                                                                          \
 		}                                                                                                                          \
 		ELEKTRA_NOTIFICATION_REGISTERFUNC_TYPEDEF (RegisterFuncType, TYPE)                                                         \
-		RegisterFuncType registerFunc = (RegisterFuncType)func;                                                                    \
+		RegisterFuncType registerFunc = (RegisterFuncType) func;                                                                   \
 		return registerFunc (notificationPlugin, key, variable);                                                                   \
 	}
 
