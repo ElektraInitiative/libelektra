@@ -67,10 +67,13 @@ export default class CreateInstanceCard extends React.Component {
                       ref="hostField"
                       floatingLabelText="host"
                       floatingLabelFixed={true}
-                      hintText="e.g. http://127.0.0.1:33333"
                       onChange={(evt) => this.setState({ host: evt.target.value })}
                       value={host}
                     />
+                </div>
+                <div style={{ display: 'block', marginTop: 4 }}>
+                  <i>If elektrad is running on the same machine: </i>
+                  <code>http://127.0.0.1:33333</code>
                 </div>
                 <div style={{ marginTop: 32 }}>
                   <FlatButton
