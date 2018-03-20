@@ -138,7 +138,7 @@ export default class SettingsDialog extends Component {
       />,
     ]
 
-    const type = this.getMeta('check/type', 'string') // TODO: change to `any`
+    const type = this.getMeta('check/type', 'any')
 
     return (
         <Dialog
@@ -185,8 +185,9 @@ export default class SettingsDialog extends Component {
                       floatingLabelText="type"
                       floatingLabelFixed={true}
                       onChange={(e, _, val) => this.handleEdit('check/type')(val)}
-                      value={this.getMeta('check/type', 'string')}
+                      value={type}
                     >
+                        <MenuItem value="any" primaryText="Text (any)" />
                         <MenuItem value="string" primaryText="Text (string)" />
                         <MenuItem value="boolean" primaryText="Checkbox (boolean)" />
                         <MenuItem value="enum" primaryText="Radio (enum)" />
