@@ -150,7 +150,7 @@ export default class SettingsDialog extends Component {
                 <Checkbox
                   checked={fromElektraBool(this.getMeta('readonly', false))}
                   onCheck={(e, val) => this.handleEdit('readonly')(toElektraBool(val))}
-                  label="read only / disabled"
+                  label="read only"
                 />
                 <SavedIcon saved={this.getSaved('readonly')} />
             </div>
