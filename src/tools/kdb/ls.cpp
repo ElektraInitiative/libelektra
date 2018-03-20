@@ -92,7 +92,15 @@ void LsCommand::printResults (KeySet const & part, const int rootDepth, Cmdline 
 			{
 				cout << " " << depth;
 			}
-			cout << endl;
+
+			if (cl.null)
+			{
+				cout << '\0' << std::flush;
+			}
+			else
+			{
+				cout << endl;
+			}
 		}
 	}
 }
