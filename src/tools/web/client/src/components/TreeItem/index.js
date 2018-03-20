@@ -149,7 +149,7 @@ export default class TreeItem extends Component {
                       <b style={titleStyle}>{item.name + ': '}</b>
                       <span
                         style={{ marginLeft: 6 }}
-                        onClick={(meta && meta.readonly === '1') && (() => alert('this key is set to read-only'))}
+                        onClick={(meta && meta.readonly === '1') && (() => alert('This key is set to read-only and cannot be edited.'))}
                       >
                         {this.renderValue(item.path, data)}
                       </span>
@@ -183,6 +183,7 @@ export default class TreeItem extends Component {
               onClose={this.handleClose('add')}
             />
             <EditDialog
+              field={this.renderValue(item.path, data || {})}
               item={item}
               value={data && data.value}
               open={this.state.dialogs.edit}
