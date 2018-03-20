@@ -194,6 +194,7 @@ export default class TreeItem extends Component {
               open={this.state.dialogs.duplicate}
               onDuplicate={this.handleDuplicate}
               onClose={this.handleClose('duplicate')}
+              pathExists={this.props.pathExists}
             />
             <SettingsDialog
               item={item}

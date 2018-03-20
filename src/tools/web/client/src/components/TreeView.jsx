@@ -62,6 +62,7 @@ export default class TreeView extends React.Component {
           item={item}
           inputs={inputs}
           instanceId={instanceId}
+          pathExists={(path) => kdb && kdb[path]}
         />
     )
   }

@@ -17,20 +17,24 @@ export default class DuplicateDialog extends Component {
     super(...args)
     const [ props ] = args
     this.state = {
-      name: (props && props.item && props.item.name)
-        ? props.item.name + 'Copy'
-        : '',
+      name: this.getInitialName(props),
     }
+  }
+
+  getInitialName = (props) => {
+    return (props && props.item && props.item.name)
+      ? props.item.name + 'Copy'
+      : ''
   }
 
   handleClose = () => {
     const { onClose } = this.props
-    this.setState({ name: '' })
+    this.setState({ name: this.getInitialName(this.props) })
     onClose()
   }
 
   render () {
-    const { item, open, onDuplicate } = this.props
+    const { item, open, onDuplicate, pathExists } = this.props
     const { path } = item
     const { name } = this.state
 
@@ -47,6 +51,12 @@ export default class DuplicateDialog extends Component {
         label="Duplicate"
         primary={true}
         onTouchTap={() => {
+          if (path === newPath) {
+            return alert('Cannot duplicate to the same key name!')
+          }
+          if (pathExists(newPath)) {
+            return alert('Cannot duplicate to a path that already exists!')
+          }
           onDuplicate(path, newPath)
           this.handleClose()
         }}
