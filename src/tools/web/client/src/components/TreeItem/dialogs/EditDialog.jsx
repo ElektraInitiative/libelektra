@@ -13,7 +13,7 @@ import FlatButton from 'material-ui/FlatButton'
 
 export default class EditDialog extends Component {
   render () {
-    const { item, value, open, field, onClose } = this.props
+    const { item, open, field, onClose } = this.props
     const { path } = item
 
     const actions = [
