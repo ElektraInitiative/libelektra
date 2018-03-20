@@ -145,7 +145,7 @@ export default class SettingsDialog extends Component {
           open={open}
           onRequestClose={onClose}
         >
-            <h1>Settings for <b>{path}</b></h1>
+            <h1>Metadata for <b>{path}</b></h1>
             <div style={{ display: 'block', marginTop: 32 }}>
                 <Checkbox
                   checked={fromElektraBool(this.getMeta('readonly', false))}
