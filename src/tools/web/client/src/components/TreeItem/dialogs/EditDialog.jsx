@@ -65,6 +65,11 @@ export default class EditDialog extends Component {
                   onChange={value => this.setState({ value })}
                   onDebounced={this.handleEdit}
                   value={this.state.value === false ? value : this.state.value}
+                  onKeyPress={e => {
+                    if (e.key === 'Enter') {
+                      onClose()
+                    }
+                  }}
                 />
                 <SavedIcon saved={this.state.saved} />
             </div>

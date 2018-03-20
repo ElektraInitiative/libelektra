@@ -33,8 +33,26 @@ export default class CreateInstanceCard extends React.Component {
     })
   }
 
+  handleCreate = () => {
+    const { createInstance } = this.props
+    const { name, host } = this.state
+
+    const nameEmpty = !name || name.trim().length <= 0
+    const hostEmpty = !host || host.trim().length <= 0
+
+    if (!nameEmpty && !hostEmpty) {
+      createInstance({
+        name: name,
+        host: host,
+      })
+      this.resetValues()
+    } else {
+      alert('Please enter a name and host!')
+    }
+  }
+
   render () {
-    const { instances, createInstance, unaddInstance } = this.props // action creators
+    const { instances, unaddInstance } = this.props
     const { name, host } = this.state
 
     const noInstancesYet = !instances || instances.length <= 0
@@ -69,6 +87,11 @@ export default class CreateInstanceCard extends React.Component {
                       floatingLabelFixed={true}
                       onChange={(evt) => this.setState({ host: evt.target.value })}
                       value={host}
+                      onKeyPress={e => {
+                        if (e.key === 'Enter') {
+                          this.handleCreate()
+                        }
+                      }}
                     />
                 </div>
                 <div style={{ display: 'block', marginTop: 4 }}>
@@ -79,17 +102,7 @@ export default class CreateInstanceCard extends React.Component {
                   <FlatButton
                     label="add"
                     primary={true}
-                    onTouchTap={() => {
-                      if (!nameEmpty && !hostEmpty) {
-                        createInstance({
-                          name: name,
-                          host: host,
-                        })
-                        this.resetValues()
-                      } else {
-                        alert('please enter a name and host!')
-                      }
-                    }}
+                    onTouchTap={this.handleCreate}
                     disabled={nameEmpty || hostEmpty}
                   />
                   {!noInstancesYet &&

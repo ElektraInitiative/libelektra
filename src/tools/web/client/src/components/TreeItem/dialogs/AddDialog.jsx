@@ -27,10 +27,20 @@ export default class AddDialog extends Component {
     onClose()
   }
 
-  render () {
-    const { item, open, onAdd } = this.props
+  handleCreate = () => {
+    const { item, onAdd } = this.props
     const { path } = item
     const { name, value } = this.state
+    onAdd(path, name, value)
+    this.handleClose()
+  }
+
+  render () {
+    const { item, open } = this.props
+    const { path } = item
+    const { name, value } = this.state
+
+    const nameEmpty = !name || name.trim().length <= 0
 
     const actions = [
       <FlatButton
@@ -40,10 +50,8 @@ export default class AddDialog extends Component {
       <FlatButton
         label="Create"
         primary={true}
-        onTouchTap={() => {
-          onAdd(path, name, value)
-          this.handleClose()
-        }}
+        onTouchTap={this.handleCreate}
+        disabled={nameEmpty}
       />,
     ]
 
@@ -63,6 +71,11 @@ export default class AddDialog extends Component {
                   hintText="e.g. keyName"
                   onChange={evt => this.setState({ name: evt.target.value })}
                   value={name}
+                  onKeyPress={e => {
+                    if (!nameEmpty && e.key === 'Enter') {
+                      this.handleCreate()
+                    }
+                  }}
                 />
             </div>
             <div style={{ display: 'block', marginTop: 8 }}>
@@ -73,6 +86,11 @@ export default class AddDialog extends Component {
                   hintText="e.g. hello world"
                   onChange={evt => this.setState({ value: evt.target.value })}
                   value={value}
+                  onKeyPress={e => {
+                    if (!nameEmpty && e.key === 'Enter') {
+                      this.handleCreate()
+                    }
+                  }}
                 />
             </div>
         </Dialog>

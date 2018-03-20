@@ -33,6 +33,20 @@ export default class DuplicateDialog extends Component {
     onClose()
   }
 
+  handleDuplicate = (path, newPath) => {
+    const { onDuplicate, pathExists } = this.props
+
+    if (path === newPath) {
+      return alert('Cannot duplicate to the same key name!')
+    }
+    if (pathExists(newPath)) {
+      return alert('Cannot duplicate to a path that already exists!')
+    }
+
+    onDuplicate(path, newPath)
+    this.handleClose()
+  }
+
   render () {
     const { item, open, onDuplicate, pathExists } = this.props
     const { path } = item
@@ -50,16 +64,7 @@ export default class DuplicateDialog extends Component {
       <FlatButton
         label="Duplicate"
         primary={true}
-        onTouchTap={() => {
-          if (path === newPath) {
-            return alert('Cannot duplicate to the same key name!')
-          }
-          if (pathExists(newPath)) {
-            return alert('Cannot duplicate to a path that already exists!')
-          }
-          onDuplicate(path, newPath)
-          this.handleClose()
-        }}
+        onTouchTap={() => this.handleDuplicate(path, newPath)}
       />,
     ]
 
@@ -78,6 +83,11 @@ export default class DuplicateDialog extends Component {
                   floatingLabelFixed={true}
                   hintText="e.g. keyNameCopy"
                   onChange={evt => this.setState({ name: evt.target.value })}
+                  onKeyPress={e => {
+                    if (e.key === 'Enter') {
+                      this.handleDuplicate(path, newPath)
+                    }
+                  }}
                   value={name}
                 />
             </div>
