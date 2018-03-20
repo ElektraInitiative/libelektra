@@ -35,7 +35,7 @@ export default class EnumSubDialog extends Component {
     const val = this.state.value === false ? value : this.state.value
 
     return (
-        <div style={{ display: 'block', marginTop: 8 }}>
+        <div style={{ display: 'block' }}>
             <DebouncedTextField
               floatingLabelText="enum"
               floatingLabelFixed={true}

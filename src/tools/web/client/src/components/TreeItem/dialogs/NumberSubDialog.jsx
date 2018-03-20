@@ -39,7 +39,7 @@ export default class NumberSubDialog extends Component {
     const val = this.state.value === false ? value : this.state.value
 
     return (
-        <div style={{ display: 'block', marginTop: 8 }}>
+        <div style={{ display: 'block' }}>
             <DebouncedTextField
               floatingLabelText="range"
               floatingLabelFixed={true}

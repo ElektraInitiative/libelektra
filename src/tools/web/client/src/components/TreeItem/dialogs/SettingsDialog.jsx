@@ -138,6 +138,8 @@ export default class SettingsDialog extends Component {
       />,
     ]
 
+    const type = this.getMeta('check/type', 'string') // TODO: change to `any`
+
     return (
         <Dialog
           actions={actions}
@@ -146,14 +148,6 @@ export default class SettingsDialog extends Component {
           onRequestClose={onClose}
         >
             <h1>Metadata for <b>{path}</b></h1>
-            <div style={{ display: 'block', marginTop: 32 }}>
-                <Checkbox
-                  checked={fromElektraBool(this.getMeta('readonly', false))}
-                  onCheck={(e, val) => this.handleEdit('readonly')(toElektraBool(val))}
-                  label="read only"
-                />
-                <SavedIcon saved={this.getSaved('readonly')} />
-            </div>
             <div style={{ display: 'flex' }}>
                 <div style={{ flex: 1 }}>
                     <DebouncedTextField
@@ -178,30 +172,6 @@ export default class SettingsDialog extends Component {
                     <SavedIcon saved={this.getSaved('example')} />
                 </div>
             </div>
-            <div style={{ display: 'flex' }}>
-                <div style={{ flex: 1 }}>
-                    <DebouncedTextField
-                      floatingLabelText="validation regex"
-                      floatingLabelFixed={true}
-                      hintText="e.g. ^[a-zA-Z0-9]+$"
-                      onChange={this.handleEdit('check/validation', IMMEDIATE)}
-                      onDebounced={this.handleEdit('check/validation', DEBOUNCED)}
-                      value={this.getMeta('check/validation', '')}
-                    />
-                    <SavedIcon saved={this.getSaved('check/validation')} />
-                </div>
-                <div style={{ flex: 1 }}>
-                    <DebouncedTextField
-                      floatingLabelText="validation error message"
-                      floatingLabelFixed={true}
-                      hintText="e.g. invalid username"
-                      onChange={this.handleEdit('check/validation/message', IMMEDIATE)}
-                      onDebounced={this.handleEdit('check/validation/message', DEBOUNCED)}
-                      value={this.getMeta('check/validation/message', '')}
-                    />
-                    <SavedIcon saved={this.getSaved('check/validation/message')} />
-                </div>
-            </div>
             <h2 style={{ marginTop: 48 }}>Type</h2>
             <div style={{ display: 'block', color: 'rgba(245, 166, 35, 0.5)' }}>
                 <b style={{ fontSize: '1.1em' }}>Please note:</b><br />
@@ -209,27 +179,63 @@ export default class SettingsDialog extends Component {
                 when changing from <code>string</code> to <code>boolean</code>,
                 the string value will get overwritten!
             </div>
-            <div style={{ display: 'block' }}>
-                <SelectField
-                  floatingLabelText="type"
-                  floatingLabelFixed={true}
-                  onChange={(e, _, val) => this.handleEdit('check/type')(val)}
-                  value={this.getMeta('check/type', 'string')}
-                >
-                    <MenuItem value="string" primaryText="Text (string)" />
-                    <MenuItem value="boolean" primaryText="Checkbox (boolean)" />
-                    <MenuItem value="enum" primaryText="Radio (enum)" />
-                    <MenuItem value="short" primaryText="Number (short)" />
-                    <MenuItem value="unsigned_short" primaryText="Positive Number (unsigned_short)" />
-                    <MenuItem value="long" primaryText="Number (long)" />
-                    <MenuItem value="unsigned_long" primaryText="Positive Number (unsigned_long)" />
-                    <MenuItem value="long_long" primaryText="Number (long_long)" />
-                    <MenuItem value="unsigned_long_long" primaryText="Positive Number (unsigned_long_long)" />
-                </SelectField>
-                <SavedIcon saved={this.getSaved('check/type')} style={{ paddingBottom: 16 }} />
+            <div style={{ display: 'flex' }}>
+                <div style={{ flex: 1 }}>
+                    <SelectField
+                      floatingLabelText="type"
+                      floatingLabelFixed={true}
+                      onChange={(e, _, val) => this.handleEdit('check/type')(val)}
+                      value={this.getMeta('check/type', 'string')}
+                    >
+                        <MenuItem value="string" primaryText="Text (string)" />
+                        <MenuItem value="boolean" primaryText="Checkbox (boolean)" />
+                        <MenuItem value="enum" primaryText="Radio (enum)" />
+                        <MenuItem value="short" primaryText="Number (short)" />
+                        <MenuItem value="unsigned_short" primaryText="Positive Number (unsigned_short)" />
+                        <MenuItem value="long" primaryText="Number (long)" />
+                        <MenuItem value="unsigned_long" primaryText="Positive Number (unsigned_long)" />
+                        <MenuItem value="long_long" primaryText="Number (long_long)" />
+                        <MenuItem value="unsigned_long_long" primaryText="Positive Number (unsigned_long_long)" />
+                    </SelectField>
+                    <SavedIcon saved={this.getSaved('check/type')} style={{ paddingBottom: 16 }} />
+                </div>
+                <div style={{ flex: 1, paddingTop: 32 }}>
+                    <Checkbox
+                      checked={fromElektraBool(this.getMeta('readonly', false))}
+                      onCheck={(e, val) => this.handleEdit('readonly')(toElektraBool(val))}
+                      label="read only"
+                    />
+                    <SavedIcon saved={this.getSaved('readonly')} />
+                </div>
             </div>
             {this.getMeta('check/enum', false) ? this.renderEnum() : null}
             {isNumberType(this.getMeta('check/type', false)) ? this.renderNumber() : null}
+            {(type === 'string' || type === 'any') &&
+              <div style={{ display: 'flex' }}>
+                  <div style={{ flex: 1 }}>
+                      <DebouncedTextField
+                        floatingLabelText="validation regex"
+                        floatingLabelFixed={true}
+                        hintText="e.g. ^[a-zA-Z0-9]+$"
+                        onChange={this.handleEdit('check/validation', IMMEDIATE)}
+                        onDebounced={this.handleEdit('check/validation', DEBOUNCED)}
+                        value={this.getMeta('check/validation', '')}
+                      />
+                      <SavedIcon saved={this.getSaved('check/validation')} />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                      <DebouncedTextField
+                        floatingLabelText="validation error message"
+                        floatingLabelFixed={true}
+                        hintText="e.g. invalid username"
+                        onChange={this.handleEdit('check/validation/message', IMMEDIATE)}
+                        onDebounced={this.handleEdit('check/validation/message', DEBOUNCED)}
+                        value={this.getMeta('check/validation/message', '')}
+                      />
+                      <SavedIcon saved={this.getSaved('check/validation/message')} />
+                  </div>
+              </div>
+            }
             <AdditionalMetakeysSubDialog
               handleEdit={this.handleEdit.bind(this)}
               getMeta={this.getMeta.bind(this)}
