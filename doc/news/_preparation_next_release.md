@@ -362,7 +362,14 @@ Thanks to Daniel Bugl.
 - replaced strdup with elektraStrDup (for C99 compatibility) *(Markus Raab)*
 - You can now remove the basename of a key via the C++ API by calling `key.delBaseName()`. *(René Schwaiger)*
 - The function `elektraArrayGetNextKey` now uses `NULL` instead of the empty string as init value for the returned key. *(René Schwaiger)*
-
+- The
+  [notification API](https://doc.libelektra.org/api/current/html/group__kdbnotification.html)
+  was extended.
+  The API now supports contexts for callbacks, the types `int`, `unsigned int`,
+  `long`, `unsigned long`, `float` and `double`.
+  It also supports all of Elektra's `kdb_*_t` types defined in `kdbtypes.h`.
+- <<TODO>>
+- <<TODO>>
 - <<TODO>>
 
 ### pluginprocess
@@ -476,6 +483,18 @@ Thanks to Daniel Bugl.
 [#1887]: https://github.com/ElektraInitiative/libelektra/issues/1887
 [Markdown Shell Recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
 [Shell Recorder]: (https://master.libelektra.org/tests/shell/shell_recorder)
+
+## Compatibility
+
+As always, the ABI and API of kdb.h is fully compatible, i.e. programs
+compiled against an older 0.8 version of Elektra will continue to work
+(ABI) and you will be able to recompile programs without errors (API).
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- `kdbtypes.h` now comes with support for C99 types
+- We added the private headerfiles `kdbnotificationinternal.h`, `kdbioplugin.h`.
 
 ## Build
 
