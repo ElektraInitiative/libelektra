@@ -48,7 +48,7 @@ export default class DuplicateDialog extends Component {
   }
 
   render () {
-    const { item, open, onDuplicate, pathExists } = this.props
+    const { item, open } = this.props
     const { path } = item
     const { name } = this.state
 
