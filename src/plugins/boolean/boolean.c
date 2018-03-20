@@ -29,8 +29,8 @@ typedef enum {
 
 typedef struct
 {
-	char * true;
-	char * false;
+	char * trueValue;
+	char * falseValue;
 	InvalidAction invalid;
 	char ** trueValues;
 	char ** falseValues;
@@ -115,14 +115,14 @@ static void normalize (Key * key, Key * parentKey, BoolData * data)
 	if (isTrue (value, trueStrings))
 	{
 		keySetMeta (key, "origvalue", keyString (key));
-		ELEKTRA_LOG_DEBUG ("Convert “%s” to “%s”", value, data->true);
-		keySetString (key, data->true);
+		ELEKTRA_LOG_DEBUG ("Convert “%s” to “%s”", value, data->trueValue);
+		keySetString (key, data->trueValue);
 	}
 	else if (isFalse (value, falseStrings))
 	{
 		keySetMeta (key, "origvalue", keyString (key));
-		ELEKTRA_LOG_DEBUG ("Convert “%s” to “%s”", value, data->false);
-		keySetString (key, data->false);
+		ELEKTRA_LOG_DEBUG ("Convert “%s” to “%s”", value, data->falseValue);
+		keySetString (key, data->falseValue);
 	}
 	else
 	{
@@ -135,20 +135,20 @@ static void normalize (Key * key, Key * parentKey, BoolData * data)
 			{
 				ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_INVALID_BOOL, parentKey,
 						      "Key %s with value %s is not a valid boolean. Defaulting to %s.", keyName (key),
-						      keyString (key), data->true);
+						      keyString (key), data->trueValue);
 			}
 			keySetMeta (key, "origvalue", keyString (key));
-			keySetString (key, data->true);
+			keySetString (key, data->trueValue);
 			break;
 		case FALSE:
 			if (data->invalid & WARNING)
 			{
 				ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_INVALID_BOOL, parentKey,
 						      "Key %s with value %s is not a valid boolean. Defaulting to %s.", keyName (key),
-						      keyString (key), data->false);
+						      keyString (key), data->falseValue);
 			}
 			keySetMeta (key, "origvalue", keyString (key));
-			keySetString (key, data->false);
+			keySetString (key, data->falseValue);
 			break;
 		case WARNING:
 			break;
@@ -228,8 +228,8 @@ static void parseConfig (KeySet * config, BoolData * data)
 		else
 			data->invalid |= WARNING;
 	}
-	data->true = (char *) trueValue;
-	data->false = (char *) falseValue;
+	data->trueValue = (char *) trueValue;
+	data->falseValue = (char *) falseValue;
 	Key * validTrueKey = ksLookupByName (config, "/true", 0);
 	Key * validFalseKey = ksLookupByName (config, "/false", 0);
 	if (validTrueKey)
@@ -323,8 +323,8 @@ int elektraBooleanSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 		parseConfig (config, data);
 		elektraPluginSetData (handle, data);
 	}
-	const char * trueValue = data->true;
-	const char * falseValue = data->false;
+	const char * trueValue = data->trueValue;
+	const char * falseValue = data->falseValue;
 
 	ksRewind (returned);
 	Key * key;
@@ -360,4 +360,3 @@ Plugin * ELEKTRA_PLUGIN_EXPORT (boolean)
 	    ELEKTRA_PLUGIN_SET,	&elektraBooleanSet,
 	    ELEKTRA_PLUGIN_END);
 }
-
