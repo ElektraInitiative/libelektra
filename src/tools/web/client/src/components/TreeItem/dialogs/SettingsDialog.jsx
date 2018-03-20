@@ -197,6 +197,8 @@ export default class SettingsDialog extends Component {
                         <MenuItem value="unsigned_long" primaryText="Positive Number (unsigned_long)" />
                         <MenuItem value="long_long" primaryText="Number (long_long)" />
                         <MenuItem value="unsigned_long_long" primaryText="Positive Number (unsigned_long_long)" />
+                        <MenuItem value="float" primaryText="Floating Point Number (float)" />
+                        <MenuItem value="double" primaryText="Floating Point Number (double)" />
                     </SelectField>
                     <SavedIcon saved={this.getSaved('check/type')} style={{ paddingBottom: 16 }} />
                 </div>
