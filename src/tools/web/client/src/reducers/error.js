@@ -12,6 +12,7 @@ import {
   INSTANCES_FAILURE, INSTANCE_UPDATE_FAILURE, INSTANCE_DELETE_FAILURE,
   CREATE_INSTANCE_FAILURE,
   GET_KEY_FAILURE, SET_KEY_FAILURE,
+  DISMISS_ERROR,
 } from '../actions'
 
 export default function errorReducer (state = false, action) {
@@ -23,6 +24,9 @@ export default function errorReducer (state = false, action) {
     case GET_KEY_FAILURE:
     case SET_KEY_FAILURE:
       return action.error
+
+    case DISMISS_ERROR:
+      return false
 
     default:
       return state

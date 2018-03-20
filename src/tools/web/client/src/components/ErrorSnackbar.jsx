@@ -9,7 +9,7 @@
 import React from 'react'
 import Snackbar from 'material-ui/Snackbar'
 
-const ErrorSnackbar = ({ error }) => {
+const ErrorSnackbar = ({ error, dismissError }) => {
   if (error) console.error(error)
   const message = typeof error === 'string' ? error : error.message
   const name = (error && error.name) ? error.name : 'Error'
@@ -18,6 +18,9 @@ const ErrorSnackbar = ({ error }) => {
       <Snackbar
         open={!!error}
         message={name + ': ' + message}
+        onRequestClose={() => {/* do nothing */}}
+        action="dismiss"
+        onActionClick={dismissError}
       />
     )
   } else {

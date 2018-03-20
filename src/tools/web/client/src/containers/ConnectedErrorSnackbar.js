@@ -9,15 +9,16 @@
  */
 
 import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
 
 import ErrorSnackbar from '../components/ErrorSnackbar.jsx'
+import { dismissError } from '../actions'
 
 const mapStateToProps = (state) => {
   return { error: state.error }
 }
 
-const mapDispatchToProps = (dispatch) => {
-  return {}
-}
+const mapDispatchToProps = (dispatch) =>
+  bindActionCreators({ dismissError }, dispatch)
 
 export default connect(mapStateToProps, mapDispatchToProps)(ErrorSnackbar)

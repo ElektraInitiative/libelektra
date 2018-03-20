@@ -14,7 +14,7 @@
     "@bosket/tools": "^0.4.2",
     "bosket-react-fork": "^0.4.6",
     "concurrently": "^3.5.1",
-    "material-ui": "^0.19.4",
+    "material-ui": "^0.20.0",
     "react": "^16.1.1",
     "react-dom": "^16.1.1",
     "react-redux": "^5.0.6",
