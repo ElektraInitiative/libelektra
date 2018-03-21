@@ -11,7 +11,7 @@ import {
   SET_META_REQUEST, DELETE_META_REQUEST, COPY_KEY_REQUEST,
 } from '../actions'
 
-const updateState = (state, { id, path, value, meta }) => {
+const updateState = (state, { id, path, value, meta, exists }) => {
   const updatedPart = {
     value: typeof value !== 'undefined'
       ? value
@@ -19,6 +19,9 @@ const updateState = (state, { id, path, value, meta }) => {
     meta: typeof meta !== 'undefined'
       ? meta
       : (state[id] && state[id][path] && state[id][path].meta),
+    exists: typeof exists !== 'undefined'
+      ? exists
+      : (state[id] && state[id][path] && state[id][path].exists),
   }
   return {
     ...state,

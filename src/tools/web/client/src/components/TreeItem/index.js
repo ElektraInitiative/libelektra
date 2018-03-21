@@ -140,9 +140,11 @@ export default class TreeItem extends Component {
     const meta = data && data.meta
     const isCheckbox = meta && meta['check/type'] && meta['check/type'] === 'boolean'
     const valueVisible = data && !item.children
+     // we return no value property if the key doesn't exist, otherwise we return an *empty* value
+    const keyExists = rootLevel || (data && data.exists)
 
     return (
-        <a style={{ display: 'flex', alignItems: 'center' }}>
+        <a style={{ display: 'flex', alignItems: 'center', opacity: keyExists ? 1 : 0.4 }}>
             {valueVisible
               ? (
                   <span style={{ display: 'flex', alignItems: 'center', height: 48 }}>

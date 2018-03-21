@@ -110,7 +110,7 @@ const safeExec = (script) => new Promise((resolve, reject) =>
     }
     const result = trimNewline(stdout)
     if (!result) {
-      return resolve() // empty result, return no value
+      return resolve('') // empty result, return empty string
     }
     return resolve(result)
   })
@@ -244,7 +244,7 @@ const getAndLs = (path, { preload = 0 }) =>
   Promise.all(
     [ ls(path), get(path), getAllMeta(path) ] // execute ls and get in parallel
   ).then(([ lsRes, value, meta ]) => {
-    let result = { name: path.split('/').pop(), path, ls: lsRes || [], value, meta }
+    let result = { exists: value !== undefined, name: path.split('/').pop(), path, ls: lsRes || [], value, meta }
     if (preload > 0 && Array.isArray(lsRes)) {
       return Promise.all(lsRes
         .filter(p => {
