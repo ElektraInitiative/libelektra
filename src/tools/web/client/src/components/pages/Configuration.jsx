@@ -115,7 +115,7 @@ export default class Configuration extends Component {
 
   generateData = ({ ls, match, getKey }) => {
     const { id } = match && match.params
-    return parseData(getKey, id, ls)
+    return parseData(getKey, id, [ 'user', ...ls ])
   }
 
   refresh = () => {
