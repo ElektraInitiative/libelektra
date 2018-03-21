@@ -37,10 +37,10 @@ export default class SimpleTextField extends Component {
           onDebounced={currentValue => {
             const validationError = validateType(meta, currentValue)
             if (validationError) {
-              onError(validationError)
+              if (typeof onError === 'function') onError(validationError)
               return this.setState({ error: validationError })
             } else {
-              onError(false)
+              if (typeof onError === 'function') onError(false)
               this.setState({ error: false })
             }
             onChange(currentValue)

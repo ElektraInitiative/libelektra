@@ -138,18 +138,18 @@ export default class SettingsDialog extends Component {
           onRequestClose={onClose}
         >
             <h1>Metadata for <b>{path}</b></h1>
+            <div style={{ display: 'block' }}>
+                <DebouncedTextField
+                  floatingLabelText="description"
+                  floatingLabelFixed={true}
+                  hintText="e.g. username of the account"
+                  onChange={this.handleEdit('description', IMMEDIATE)}
+                  onDebounced={this.handleEdit('description', DEBOUNCED)}
+                  value={this.getMeta('description', '')}
+                />
+                <SavedIcon saved={this.getSaved('description')} />
+            </div>
             <div style={{ display: 'flex' }}>
-                <div style={{ flex: 1 }}>
-                    <DebouncedTextField
-                      floatingLabelText="description"
-                      floatingLabelFixed={true}
-                      hintText="e.g. username of the account"
-                      onChange={this.handleEdit('description', IMMEDIATE)}
-                      onDebounced={this.handleEdit('description', DEBOUNCED)}
-                      value={this.getMeta('description', '')}
-                    />
-                    <SavedIcon saved={this.getSaved('description')} />
-                </div>
                 <div style={{ flex: 1 }}>
                     <DebouncedTextField
                       floatingLabelText="example"
@@ -160,6 +160,16 @@ export default class SettingsDialog extends Component {
                       value={this.getMeta('example', '')}
                     />
                     <SavedIcon saved={this.getSaved('example')} />
+                </div>
+                <div style={{ flex: 1 }}>
+                    <DebouncedTextField
+                      floatingLabelText="default value"
+                      floatingLabelFixed={true}
+                      onChange={this.handleEdit('default', IMMEDIATE)}
+                      onDebounced={this.handleEdit('default', DEBOUNCED)}
+                      value={this.getMeta('default', '')}
+                    />
+                    <SavedIcon saved={this.getSaved('default')} />
                 </div>
             </div>
             <h2 style={{ marginTop: 48 }}>Type</h2>

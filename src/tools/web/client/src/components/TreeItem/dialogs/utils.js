@@ -20,6 +20,7 @@ export const HANDLED_METADATA = [
   'readonly',
   'description',
   'example',
+  'default',
   'check/validation',
   'check/validation/message',
 ]

@@ -117,14 +117,16 @@ export default class TreeItem extends Component {
   }
 
   renderValue = (id, { value, meta, onChange, onKeyPress, onError, label }) => {
+    const val = value || (meta && meta['default'])
+
     if (meta) {
-      const special = this.renderSpecialValue(id, { value, meta, onChange, label })
+      const special = this.renderSpecialValue(id, { value: val, meta, onChange, label })
       if (special) return special
     }
 
     // fallback
     return (
-      <SimpleTextField label={label} id={id} value={value} meta={meta} onError={onError} onChange={onChange || this.handleEdit} onKeyPress={onKeyPress} />
+      <SimpleTextField label={label} id={id} value={val} meta={meta} onError={onError} onChange={onChange || this.handleEdit} onKeyPress={onKeyPress} />
     )
   }
 
