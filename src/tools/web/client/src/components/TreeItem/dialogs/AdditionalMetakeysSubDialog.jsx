@@ -16,7 +16,7 @@ import ActionDeleteIcon from 'material-ui/svg-icons/action/delete'
 
 import SavedIcon from '../SavedIcon.jsx'
 import debounce from '../../debounce'
-import { HANDLED_METADATA } from './SettingsDialog.jsx'
+import { HANDLED_METADATA } from './utils'
 
 const DebouncedTextField = debounce(TextField)
 

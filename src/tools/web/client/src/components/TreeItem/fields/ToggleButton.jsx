@@ -25,7 +25,7 @@ export default class ToggleButton extends React.Component {
   }
 
   render () {
-    const { id, meta } = this.props
+    const { id, meta, label } = this.props
     return (
         <Checkbox
           id={id}
@@ -34,6 +34,7 @@ export default class ToggleButton extends React.Component {
           onCheck={this.handleCheck}
           style={{ display: 'inline-block', width: 'auto', position: 'relative', top: 6, marginTop: -11 }}
           disabled={fromElektraBool(meta && meta.readonly)}
+          label={label}
         />
     )
   }

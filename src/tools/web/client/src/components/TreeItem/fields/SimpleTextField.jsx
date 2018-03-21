@@ -23,7 +23,7 @@ export default class SimpleTextField extends Component {
   }
 
   render () {
-    const { id, value, meta, onChange } = this.props
+    const { id, value, meta, label, onChange, onError } = this.props
     const val = this.state.value === false ? value : this.state.value
 
     return (
@@ -37,13 +37,17 @@ export default class SimpleTextField extends Component {
           onDebounced={currentValue => {
             const validationError = validateType(meta, currentValue)
             if (validationError) {
+              onError(validationError)
               return this.setState({ error: validationError })
             } else {
+              onError(false)
               this.setState({ error: false })
             }
             onChange(currentValue)
           }}
           disabled={fromElektraBool(meta && meta.readonly)}
+          floatingLabelText={label}
+          floatingLabelFixed={!!label}
         />
       </div>
     )

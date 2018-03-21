@@ -95,12 +95,12 @@ export default class TreeItem extends Component {
       })
   }
 
-  renderSpecialValue = (id, { value, meta }) => {
+  renderSpecialValue = (id, { value, meta, onChange, label }) => {
     if (meta['check/enum']) {
       try {
         const options = JSON.parse(meta['check/enum'].replace(/'/g, '"'))
         return (
-            <RadioButtons id={id} value={value} meta={meta} options={options} onChange={this.handleEdit} />
+            <RadioButtons id={id} value={value} meta={meta} options={options} onChange={onChange || this.handleEdit} />
         )
       } catch (err) {
         console.warn('invalid enum type:', meta['check/enum'])
@@ -110,21 +110,21 @@ export default class TreeItem extends Component {
     if (meta['check/type']) {
       if (meta['check/type'] === 'boolean') {
         return (
-            <ToggleButton id={id} value={value} meta={meta} onChange={this.handleEdit} />
+            <ToggleButton label={label} id={id} value={value} meta={meta} onChange={onChange || this.handleEdit} />
         )
       }
     }
   }
 
-  renderValue = (id, { value, meta }) => {
+  renderValue = (id, { value, meta, onChange, onKeyPress, onError, label }) => {
     if (meta) {
-      const special = this.renderSpecialValue(id, { value, meta })
+      const special = this.renderSpecialValue(id, { value, meta, onChange, label })
       if (special) return special
     }
 
     // fallback
     return (
-      <SimpleTextField id={id} value={value} meta={meta} onChange={this.handleEdit} />
+      <SimpleTextField label={label} id={id} value={value} meta={meta} onError={onError} onChange={onChange || this.handleEdit} onKeyPress={onKeyPress} />
     )
   }
 
@@ -181,6 +181,10 @@ export default class TreeItem extends Component {
               open={this.state.dialogs.add}
               onAdd={this.handleAdd}
               onClose={this.handleClose('add')}
+              renderField={({ value, meta, onChange, onKeyPress, label, onError }) =>
+                this.renderValue('addValueField', { value, meta, onChange, onKeyPress, label, onError })
+              }
+              setMetaByPath={(path, key, value) => setMetaKey(instanceId, path, key, value)}
             />
             <EditDialog
               field={this.renderValue(item.path, data || {})}

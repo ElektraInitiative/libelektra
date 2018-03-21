@@ -22,22 +22,12 @@ import AdditionalMetakeysSubDialog from './AdditionalMetakeysSubDialog.jsx'
 
 import debounce from '../../debounce'
 import { toElektraBool, fromElektraBool, isNumberType } from '../../../utils'
+import { KEY_TYPES } from './utils'
 
 const DebouncedTextField = debounce(TextField)
 
 const IMMEDIATE = 'IMMEDIATE'
 const DEBOUNCED = 'DEBOUNCED'
-
-export const HANDLED_METADATA = [
-  'check/type',
-  'check/enum',
-  'check/range',
-  'readonly',
-  'description',
-  'example',
-  'check/validation',
-  'check/validation/message',
-]
 
 export default class SettingsDialog extends Component {
   constructor (...args) {
@@ -187,18 +177,9 @@ export default class SettingsDialog extends Component {
                       onChange={(e, _, val) => this.handleEdit('check/type')(val)}
                       value={type}
                     >
-                        <MenuItem value="any" primaryText="Text (any)" />
-                        <MenuItem value="string" primaryText="Text (string)" />
-                        <MenuItem value="boolean" primaryText="Checkbox (boolean)" />
-                        <MenuItem value="enum" primaryText="Radio (enum)" />
-                        <MenuItem value="short" primaryText="Number (short)" />
-                        <MenuItem value="unsigned_short" primaryText="Positive Number (unsigned_short)" />
-                        <MenuItem value="long" primaryText="Number (long)" />
-                        <MenuItem value="unsigned_long" primaryText="Positive Number (unsigned_long)" />
-                        <MenuItem value="long_long" primaryText="Number (long_long)" />
-                        <MenuItem value="unsigned_long_long" primaryText="Positive Number (unsigned_long_long)" />
-                        <MenuItem value="float" primaryText="Floating Point Number (float)" />
-                        <MenuItem value="double" primaryText="Floating Point Number (double)" />
+                        {KEY_TYPES.map(({ type, name }) =>
+                          <MenuItem key={type} value={type} primaryText={name} />
+                        )}
                     </SelectField>
                     <SavedIcon saved={this.getSaved('check/type')} style={{ paddingBottom: 16 }} />
                 </div>
