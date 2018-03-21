@@ -72,7 +72,7 @@ typedef uint64_t kdb_unsigned_long_long_t;
 #define ELEKTRA_UNSIGNED_LONG_F "%u"
 #endif
 
-#if SIZEOF_LONG == 8
+#if SIZEOF_LONG == 8 && !defined(__APPLE__)
 #define ELEKTRA_LONG_LONG_F "%ld"
 #define ELEKTRA_LONG_LONG_S strtol
 #define ELEKTRA_UNSIGNED_LONG_LONG_F "%lu"
