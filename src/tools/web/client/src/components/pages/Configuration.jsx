@@ -33,12 +33,12 @@ const createTree = (ls) =>
     return partsTree(acc, item.split('/'))
   }, {})
 
-const parseDataSet = (getKey, instanceId, tree, path) => {
+const parseDataSet = (getKey, sendNotification, instanceId, tree, path) => {
   return Object.keys(tree).map(key => {
     const newPath = path
       ? path + '/' + key
       : key
-    const children = parseDataSet(getKey, instanceId, tree[key], newPath)
+    const children = parseDataSet(getKey, sendNotification, instanceId, tree[key], newPath)
     return {
       name: key,
       path: newPath,
@@ -46,6 +46,7 @@ const parseDataSet = (getKey, instanceId, tree, path) => {
         ? () => {
           return new Promise(resolve => {
             getKey(instanceId, newPath, true)
+            sendNotification('finished loading \'' + newPath + '\' keyset')
             resolve(children)
           })
         } : false,
@@ -53,10 +54,10 @@ const parseDataSet = (getKey, instanceId, tree, path) => {
   })
 }
 
-const parseData = (getKey, instanceId, ls, kdb) => {
+const parseData = (getKey, sendNotification, instanceId, ls, kdb) => {
   if (!Array.isArray(ls)) return
   const tree = createTree(ls)
-  return parseDataSet(getKey, instanceId, tree)
+  return parseDataSet(getKey, sendNotification, instanceId, tree)
 }
 
 // configuration page
@@ -115,7 +116,8 @@ export default class Configuration extends Component {
 
   generateData = ({ ls, match, getKey }) => {
     const { id } = match && match.params
-    return parseData(getKey, id, [ 'user', ...ls ])
+    const { sendNotification } = this.props
+    return parseData(getKey, sendNotification, id, [ 'user', ...ls ])
   }
 
   refresh = () => {
