@@ -161,8 +161,8 @@ const version = () =>
 
 // list available paths under a given `path`
 const ls = (path) =>
-  safeExec(escapeValues`kdb ls ${path}`)
-    .then(stdout => stdout && stdout.split('\n'))
+  safeExec(escapeValues`kdb ls -0 ${path}`)
+    .then(stdout => stdout && stdout.split('\0'))
 
 // get value from given `path`
 const get = (path) =>
