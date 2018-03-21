@@ -98,9 +98,7 @@ export default class TreeView extends React.Component {
         }
       } ],
       fold: [ function unfoldByPath (item) {
-        return (item && item.path === 'user')
-          ? false // always unfold `user`
-          : !this.state.get().unfolded.find(i => i.path === item.path)
+        return !this.state.get().unfolded.find(i => i.path === item.path)
       } ]
     }
 
