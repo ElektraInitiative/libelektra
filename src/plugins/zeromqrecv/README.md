@@ -29,12 +29,27 @@ If notification is not enabled (i.e. in the tool `kdb` or in any other
 application that does not use `elektraNotificationOpen()`) this plugin does
 performs no operations.
 
+Since ZeroMQ sockets only provide a 1:n mapping (i.e. one publisher with many
+subscribers or one subscriber and many publishers) the `zeromqsend` and
+`zeromqrecv` plugins require a XPUB/XSUB endpoint.
+The kdb tool ["hub-zeromq"](https://www.libelektra.org/tools/hub-zeromq)
+provides these endpoints.
+
 # Transport Plugin
 
 Mount this plugin globally with default settings to use it as *receiving*
 transport plugin for Elektra's notification feature:
 
 > kdb global-mount zeromqrecv
+
+# Configuration
+
+This plugin supports the following configuration options when mounting:
+
+- **endpoint**: ZeroMQ XPUB or PUB socket to connect to. The
+[`ipc`](http://api.zeromq.org/4-2:zmq-ipc) and
+[`tcp`](http://api.zeromq.org/4-2:zmq-tcp) ZeroMQ transports are recommended.
+The default value is "tcp://localhost:6001".
 
 # Notification Format
 

@@ -21,6 +21,4 @@ if (ZMQ_FOUND)
 	target_compile_options(${ADAPTER_OBJECT} PRIVATE "-fPIC")
 	set_property (TARGET ${ADAPTER_OBJECT} PROPERTY CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-	add_subdirectory (hub)
-
 endif ()

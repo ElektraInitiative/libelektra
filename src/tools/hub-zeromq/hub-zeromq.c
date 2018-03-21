@@ -42,7 +42,7 @@ int main (void)
 
 	KeySet * config = ksNew (2, KS_END);
 
-	Key * parentKey = keyNew ("/sw/elektra/hub_zeromq/#0/current", KEY_END);
+	Key * parentKey = keyNew ("/sw/elektra/hub-zeromq/#0/current", KEY_END);
 	Key * configXSubEndpoint = keyDup (parentKey);
 	keyAddBaseName (configXSubEndpoint, "bind_xsub");
 	Key * configXPubEndpoint = keyDup (parentKey);
