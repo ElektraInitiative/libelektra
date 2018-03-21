@@ -18,6 +18,8 @@ import { Link } from 'react-router-dom'
 
 import TreeView from '../../containers/ConnectedTreeView'
 
+const NAMESPACES = [ 'user', 'system', 'spec', 'proc', 'dir' ]
+
 // create tree structure from kdb ls result (list of available keys)
 const partsTree = (acc, parts) => {
   if (parts.length <= 0) return acc
@@ -117,7 +119,7 @@ export default class Configuration extends Component {
   generateData = ({ ls, match, getKey }) => {
     const { id } = match && match.params
     const { sendNotification } = this.props
-    return parseData(getKey, sendNotification, id, [ 'user', ...ls ])
+    return parseData(getKey, sendNotification, id, [ ...NAMESPACES, ...ls ])
   }
 
   refresh = () => {
