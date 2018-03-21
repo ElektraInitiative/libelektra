@@ -337,7 +337,60 @@ void elektraInvokeClose (ElektraInvokeHandle * handle, Key * errorKey)
 }
 
 /**
+ * Invokes a deferable function on a plugin handle.
+ * If the function is exported by the plugin it is directly invoked,
+ * if the plugin supports deferring calls, the call is deferred.
+ *
+ * The parameters key set can be freed afterwards.
+ *
+ * @param  handle                    invoke handle
+ * @param  elektraPluginFunctionName function name
+ * @param  ks                        parameter key set
+ * @retval 0 on success
+ * @retval 1 when function not exported and deferring unsupported by plugin
+ */
+int elektraInvokeCallDeferable (ElektraInvokeHandle * handle, const char * elektraPluginFunctionName, KeySet * parameters)
+{
+	ElektraDeferredCallable direct = *(ElektraDeferredCallable *) elektraInvokeGetFunction (handle, elektraPluginFunctionName);
+	if (direct)
+	{
+		direct (handle->plugin, parameters);
+	}
+	else
+	{
+		ElektraDeferredCall deferredCall = *(ElektraDeferredCall *) elektraInvokeGetFunction (handle, "deferredCall");
+		if (deferredCall)
+		{
+			deferredCall (handle->plugin, elektraPluginFunctionName, parameters);
+		}
+		else
+		{
+			// no direct call and deferring possible
+			return 1;
+		}
+	}
+
+	// success
+	return 0;
+}
+
+/**
+ * Execute deferred calls from list on given invoke handle.
+ *
+ * Used internally by plugins holding invoke handles.
+ *
+ * @param handle invoke handle
+ * @param list   list
+ */
+void elektraInvokeExecuteDeferredCalls (ElektraInvokeHandle * handle, ElektraDeferredCallList * list)
+{
+	elektraDeferredCallsExecute (handle->plugin, list);
+}
+
+/**
  * Add a new deferred call to the deferred call list.
+ *
+ * Used internally by plugins.
  *
  * @param  list       deferred call list
  * @param  name       function name
@@ -375,6 +428,7 @@ int elektraDeferredCallAdd (ElektraDeferredCallList * list, const char * name, K
  * Create new deferred call list.
  *
  * The list needs to be deleted with elektraDeferredCallDeleteList().
+ * Used internally by plugins.
  *
  * @return  new list
  */
@@ -392,6 +446,8 @@ ElektraDeferredCallList * elektraDeferredCallCreateList (void)
 
 /**
  * Delete deferred call list.
+ *
+ * Used internally by plugins.
  *
  * @param list list
  */
@@ -415,6 +471,8 @@ void elektraDeferredCallDeleteList (ElektraDeferredCallList * list)
 /**
  * Execute deferred calls on given plugin.
  *
+ * Used internally by plugins.
+ *
  * @param plugin plugin handle
  * @param list   list
  */
@@ -434,54 +492,6 @@ void elektraDeferredCallsExecute (Plugin * plugin, ElektraDeferredCallList * lis
 
 		item = item->next;
 	}
-}
-
-/**
- * Invokes a deferable function on a plugin handle.
- * If the function is exported by the plugin it is directly invoked,
- * if the plugin supports deferring calls, the call is deferred.
- *
- * The parameters KeySet can be freed afterwards.
- *
- * @param  handle                    [description]
- * @param  elektraPluginFunctionName [description]
- * @param  ks                        [description]
- * @retval 0 on success
- * @retval 1 when function not exported and deferring unsupported by plugin
- */
-int elektraInvokeCallDeferable (ElektraInvokeHandle * handle, const char * elektraPluginFunctionName, KeySet * parameters)
-{
-	ElektraDeferredCallable direct = *(ElektraDeferredCallable *) elektraInvokeGetFunction (handle, elektraPluginFunctionName);
-	if (direct)
-	{
-		direct (handle->plugin, parameters);
-	}
-	else
-	{
-		ElektraDeferredCall deferredCall = *(ElektraDeferredCall *) elektraInvokeGetFunction (handle, "deferredCall");
-		if (deferredCall)
-		{
-			deferredCall (handle->plugin, elektraPluginFunctionName, parameters);
-		}
-		else
-		{
-			// no direct call and deferring possible
-			return 1;
-		}
-	}
-
-	// success
-	return 0;
-}
-
-/**
- * Execute deferred calls on given invoke handle.
- * @param handle invoke handle
- * @param list   list
- */
-void elektraInvokeExecuteDeferredCalls (ElektraInvokeHandle * handle, ElektraDeferredCallList * list)
-{
-	elektraDeferredCallsExecute (handle->plugin, list);
 }
 
 /**
