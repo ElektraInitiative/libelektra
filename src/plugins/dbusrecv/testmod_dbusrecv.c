@@ -112,7 +112,7 @@ static void test_notificationCallback (Key * key, ElektraNotificationCallbackCon
 	uv_stop (test_callbackLoop);
 }
 
-static void test_prerequisites (void)
+static int test_prerequisites (void)
 {
 	printf ("testing prerequisites\n");
 	printf ("detecting available bus types - please ignore single error messages prefixed with \"connect:\"\n");
@@ -120,22 +120,27 @@ static void test_prerequisites (void)
 	DBusConnection * systemBus = getDbusConnection (DBUS_BUS_SYSTEM);
 	DBusConnection * sessionBus = getDbusConnection (DBUS_BUS_SESSION);
 
-	exit_if_fail (systemBus != NULL || sessionBus != NULL, "could not get system or session message bus connection");
-
-	// Set bus type for tests
-	// NOTE brew dbus on MacOs supports session by out of the box while session
-	// bus is not available without further configuration on Linux
-	if (systemBus)
+	int success = 0;
+	if (systemBus != NULL || sessionBus != NULL)
 	{
-		testBusType = DBUS_BUS_SYSTEM;
-	}
-	else if (sessionBus)
-	{
-		testBusType = DBUS_BUS_SESSION;
+		// Set bus type for tests
+		// NOTE brew dbus on MacOs supports session by out of the box while session
+		// bus is not available without further configuration on Linux
+		if (systemBus)
+		{
+			testBusType = DBUS_BUS_SYSTEM;
+		}
+		else if (sessionBus)
+		{
+			testBusType = DBUS_BUS_SESSION;
+		}
+		success = 1;
 	}
 
 	if (systemBus) dbus_connection_unref (systemBus);
 	if (sessionBus) dbus_connection_unref (sessionBus);
+
+	return success;
 }
 
 static void test_commit (uv_loop_t * loop, ElektraIoInterface * binding)
@@ -290,25 +295,31 @@ int main (int argc, char ** argv)
 	init (argc, argv);
 
 	// Test if dbus is available
-	test_prerequisites ();
+	if (test_prerequisites ())
+	{
 
-	uv_loop_t * loop = uv_default_loop ();
-	ElektraIoInterface * binding = elektraIoUvNew (loop);
+		uv_loop_t * loop = uv_default_loop ();
+		ElektraIoInterface * binding = elektraIoUvNew (loop);
 
-	// Test change types
-	test_commit (loop, binding);
-	test_keyAdded (loop, binding);
-	test_keyChanged (loop, binding);
+		// Test change types
+		test_commit (loop, binding);
+		test_keyAdded (loop, binding);
+		test_keyChanged (loop, binding);
+
+		elektraIoBindingCleanup (binding);
+		uv_run (loop, UV_RUN_ONCE);
+#ifdef HAVE_LIBUV1
+		uv_loop_close (loop);
+#elif HAVE_LIBUV0
+		uv_loop_delete (loop);
+#endif
+	}
+	else
+	{
+		printf ("warning: no dbus daemon available; skipping tests that require dbus\n");
+	}
 
 	print_result ("testmod_dbusrecv");
-
-	elektraIoBindingCleanup (binding);
-	uv_run (loop, UV_RUN_ONCE);
-#ifdef HAVE_LIBUV1
-	uv_loop_close (loop);
-#elif HAVE_LIBUV0
-	uv_loop_delete (loop);
-#endif
 
 	dbus_shutdown ();
 

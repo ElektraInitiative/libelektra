@@ -141,7 +141,7 @@ static DBusConnection * getDbusConnection (DBusBusType type)
 	return connection;
 }
 
-static void test_prerequisites (void)
+static int test_prerequisites (void)
 {
 	printf ("testing prerequisites\n");
 	printf ("detecting available bus types - please ignore single error messages prefixed with \"connect:\"\n");
@@ -149,24 +149,30 @@ static void test_prerequisites (void)
 	DBusConnection * systemBus = getDbusConnection (DBUS_BUS_SYSTEM);
 	DBusConnection * sessionBus = getDbusConnection (DBUS_BUS_SESSION);
 
-	exit_if_fail (systemBus != NULL || sessionBus != NULL, "could not get system or session message bus connection");
+	int success = 0;
+	if (systemBus != NULL || sessionBus != NULL)
+	{
+		// Set bus type for tests
+		// NOTE brew dbus on MacOs supports session by out of the box while session
+		// bus is not available without further configuration on Linux
+		if (systemBus)
+		{
+			testBusType = DBUS_BUS_SYSTEM;
+			testKeyNamespace = "system";
+		}
+		else if (sessionBus)
+		{
+			testBusType = DBUS_BUS_SESSION;
+			testKeyNamespace = "user";
+		}
 
-	// Set bus type for tests
-	// NOTE brew dbus on MacOs supports session by out of the box while session
-	// bus is not available without further configuration on Linux
-	if (systemBus)
-	{
-		testBusType = DBUS_BUS_SYSTEM;
-		testKeyNamespace = "system";
-	}
-	else if (sessionBus)
-	{
-		testBusType = DBUS_BUS_SESSION;
-		testKeyNamespace = "user";
+		success = 1;
 	}
 
 	if (systemBus) dbus_connection_unref (systemBus);
 	if (sessionBus) dbus_connection_unref (sessionBus);
+
+	return success;
 }
 
 static void test_keyAdded (void)
@@ -444,17 +450,22 @@ int main (int argc, char ** argv)
 	init (argc, argv);
 
 	// Test if dbus is available
-	test_prerequisites ();
+	if (test_prerequisites ())
+	{
+		// Test added, changed & deleted
+		test_keyAdded ();
+		test_keyChanged ();
+		test_keyDeleted ();
 
-	// Test added, changed & deleted
-	test_keyAdded ();
-	test_keyChanged ();
-	test_keyDeleted ();
+		test_announceOnce ();
 
-	test_announceOnce ();
-
-	test_cascadedAnnounceOnce ();
-	test_cascadedChangeNotification ();
+		test_cascadedAnnounceOnce ();
+		test_cascadedChangeNotification ();
+	}
+	else
+	{
+		printf ("warning no dbus daemon available; skipping tests that require dbus\n");
+	}
 
 	print_result ("testmod_dbus");
 
