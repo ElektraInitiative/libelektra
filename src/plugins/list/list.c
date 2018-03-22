@@ -146,6 +146,16 @@ void elektraListDeferredCall (Plugin * plugin, const char * name, KeySet * param
 	Placements * placements = elektraPluginGetData (plugin);
 	ELEKTRA_NOT_NULL (placements);
 	elektraDeferredCallAdd (placements->deferredCalls, name, parameters);
+
+	// Execute call immediately on already loaded plugins
+	ksRewind (placements->plugins);
+	Key * current;
+	while ((current = ksNext (placements->plugins)) != NULL)
+	{
+		Plugin * slave;
+		slave = *(Plugin **) keyValue (current);
+		elektraDeferredCallsExecute (slave, placements->deferredCalls);
+	}
 }
 
 int elektraListOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
