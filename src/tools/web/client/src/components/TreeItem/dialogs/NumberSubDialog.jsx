@@ -44,54 +44,57 @@ class RangeItem extends Component {
   }
 
   render () {
-    const { onChange, onDelete } = this.props
+    const { last, onChange, onDelete } = this.props
     const { min, max, errorMin, errorMax } = this.state
 
     return (
-      <span style={{ marginRight: 48 }}>
-        <DebouncedTextField
-          style={{ width: 35, marginRight: 4 }}
-          floatingLabelText="min"
-          floatingLabelFixed={true}
-          value={min}
-          underlineStyle={errorMin && { borderBottom: '2px solid rgb(244, 67, 54)' }}
-          onChange={value => this.setState({ min: value })}
-          onDebounced={value => {
-            const { min, max } = this.state // pull updated values from state
-            if (isNaN(min) || min.trim().length <= 0) {
-              this.setState({ errorMin: true })
-            } else {
-              this.setState({ errorMin: false })
-              if (!errorMax) onChange([ min, max ])
-            }
-          }}
-        />
-        {' — '}
-        <DebouncedTextField
-          style={{ width: 35, marginLeft: 8 }}
-          floatingLabelText="max"
-          floatingLabelFixed={true}
-          value={max}
-          underlineStyle={errorMax && { borderBottom: '2px solid rgb(244, 67, 54)' }}
-          onChange={value => this.setState({ max: value })}
-          onDebounced={value => {
-            const { min, max } = this.state // pull updated values from state
-            if (isNaN(max) || max.trim().length <= 0) {
-              this.setState({ errorMax: true })
-            } else {
-              this.setState({ errorMax: false })
-              if (!errorMin) onChange([ min, max ])
-            }
-          }}
-        />
-        <IconButton
-          style={{ width: 22, height: 22, padding: 4 }}
-          iconStyle={{ width: 14, height: 14 }}
-          tooltip="delete range"
-          onClick={onDelete}
-        >
-          <ActionDeleteIcon />
-        </IconButton>
+      <span style={{ marginRight: 32 }}>
+        <span style={{ marginRight: 22 }}>
+          <DebouncedTextField
+            style={{ width: 35, marginRight: 4 }}
+            floatingLabelText="min"
+            floatingLabelFixed={true}
+            value={min}
+            underlineStyle={errorMin && { borderBottom: '2px solid rgb(244, 67, 54)' }}
+            onChange={value => this.setState({ min: value })}
+            onDebounced={value => {
+              const { min, max } = this.state // pull updated values from state
+              if (isNaN(min) || min.trim().length <= 0) {
+                this.setState({ errorMin: true })
+              } else {
+                this.setState({ errorMin: false })
+                if (!errorMax) onChange([ min, max ])
+              }
+            }}
+          />
+          {' — '}
+          <DebouncedTextField
+            style={{ width: 35, marginLeft: 8 }}
+            floatingLabelText="max"
+            floatingLabelFixed={true}
+            value={max}
+            underlineStyle={errorMax && { borderBottom: '2px solid rgb(244, 67, 54)' }}
+            onChange={value => this.setState({ max: value })}
+            onDebounced={value => {
+              const { min, max } = this.state // pull updated values from state
+              if (isNaN(max) || max.trim().length <= 0) {
+                this.setState({ errorMax: true })
+              } else {
+                this.setState({ errorMax: false })
+                if (!errorMin) onChange([ min, max ])
+              }
+            }}
+          />
+          <IconButton
+            style={{ width: 22, height: 22, padding: 4 }}
+            iconStyle={{ width: 14, height: 14 }}
+            tooltip="delete range"
+            onClick={onDelete}
+          >
+            <ActionDeleteIcon />
+          </IconButton>
+        </span>
+        { !last && <i>or</i> }
       </span>
     )
   }
@@ -136,6 +139,7 @@ class Ranges extends Component {
               key={'range' + i}
               min={min}
               max={max}
+              last={i === ranges.length - 1}
               onDelete={() => {
                 const newState = ranges.filter((r, j) => i !== j)
                 this.setState({ ranges: newState.length > 0 ? newState : [['', '']] })
