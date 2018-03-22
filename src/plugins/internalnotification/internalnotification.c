@@ -17,23 +17,6 @@
 
 #include <errno.h>  // errno
 #include <stdlib.h> // strto* functions
-/*
-	checklist for types
-	[ ] TYPE_BOOLEAN = 1 << 0,
-	[ ] TYPE_CHAR = 1 << 1,
-	[ ] TYPE_OCTET = 1 << 2,
-	[ ] TYPE_SHORT = 1 << 3,
-	[ ] TYPE_UNSIGNED_SHORT = 1 << 4,
-	[x] TYPE_INT = 1 << 5,
-	[x] TYPE_LONG = 1 << 6,
-	[x] TYPE_UNSIGNED_LONG = 1 << 7,
-	[ ] TYPE_LONG_LONG = 1 << 8,
-	[ ] TYPE_UNSIGNED_LONG_LONG = 1 << 9,
-	[x] TYPE_FLOAT = 1 << 10,
-	[x] TYPE_DOUBLE = 1 << 11,
-	[ ] TYPE_LONG_DOUBLE = 1 << 12,
-	[x] TYPE_CALLBACK = 1 << 13,
-*/
 
 /**
  * Structure for registered key variable pairs
@@ -43,6 +26,7 @@ struct _KeyRegistration
 {
 	char * name;
 	char * lastValue;
+	int sameOrBelow;
 	ElektraNotificationChangeCallback callback;
 	void * context;
 	struct _KeyRegistration * next;
@@ -62,20 +46,66 @@ typedef struct _PluginState PluginState;
 
 /**
  * @internal
- * Convert key name into cascading key name for comparison.
+ * Check if two keys have the same name.
+ * If one of the keys is cascading only the cascading names are compared.
  *
- * Key name is not modified, nothing to free
- *
- * @param  keyName key name
- * @return         pointer to cascading name
+ * @param  key   key
+ * @param  check check
+ * @retval 1 if keys have the same name
+ * @retval 0 otherwise
  */
-static const char * toCascadingName (const char * keyName)
+static int checkKeyIsSame (Key * key, Key * check)
 {
-	while (keyName[0] != '/')
+	int result = 0;
+	if (keyGetNamespace (check) == KEY_NS_CASCADING || keyGetNamespace (key) == KEY_NS_CASCADING)
 	{
-		keyName++;
+		const char * cascadingCheck = strrchr (keyName (check), '/');
+		const char * cascadingKey = strrchr (keyName (key), '/');
+		if (cascadingCheck != NULL && cascadingKey != NULL)
+		{
+			result = elektraStrCmp (cascadingKey, cascadingCheck) == 0;
+		}
+		else
+		{
+			if (cascadingCheck == NULL)
+			{
+				ELEKTRA_LOG_WARNING ("invalid key given: '%s' is not a valid key", cascadingCheck);
+			}
+			if (cascadingKey == NULL)
+			{
+				ELEKTRA_LOG_WARNING ("invalid key given: '%s' is not a valid key", cascadingKey);
+			}
+		}
 	}
-	return keyName;
+	else
+	{
+		result = elektraStrCmp (keyName (check), keyName (key)) == 0;
+	}
+	return result;
+}
+
+/**
+ * @internal
+ * Check if a key has the same name or is below a given key.
+ *
+ * @param  key   key
+ * @param  check check
+ * @retval 1 if key has the same name or is below
+ * @retval 0 otherwise
+ */
+static int checkKeyIsBelowOrSame (Key * key, Key * check)
+{
+	int result = 0;
+	if (keyIsBelow (key, check))
+	{
+		result = 1;
+	}
+	else
+	{
+		result = checkKeyIsSame (key, check);
+	}
+
+	return result;
 }
 
 /**
@@ -103,21 +133,21 @@ static void elektraInternalnotificationDoUpdate (Key * changedKey, ElektraNotifi
 	KeyRegistration * keyRegistration = pluginState->head;
 	while (keyRegistration != NULL)
 	{
-		Key * registereKey = keyNew (keyRegistration->name, KEY_END);
+		Key * registeredKey = keyNew (keyRegistration->name, KEY_END);
 
-		if (keyIsBelow (changedKey, registereKey))
+		if (keyRegistration->sameOrBelow)
 		{
-			kdbChanged |= 1;
+			// check if changed key is same or below registered key
+			kdbChanged |= checkKeyIsBelowOrSame (registeredKey, changedKey);
 		}
-		else if (keyGetNamespace (registereKey) == KEY_NS_CASCADING || keyGetNamespace (changedKey) == KEY_NS_CASCADING)
+		else
 		{
-			const char * cascadingRegisterdKey = toCascadingName (keyRegistration->name);
-			const char * cascadingChangedKey = toCascadingName (keyName (changedKey));
-			kdbChanged |= elektraStrCmp (cascadingChangedKey, cascadingRegisterdKey) == 0;
+			// check if changed key is same as registered key
+			kdbChanged |= checkKeyIsSame (changedKey, registeredKey);
 		}
 
 		keyRegistration = keyRegistration->next;
-		keyDel (registereKey);
+		keyDel (registeredKey);
 	}
 
 	if (kdbChanged)
@@ -150,6 +180,7 @@ static KeyRegistration * elektraInternalnotificationAddNewRegistration (PluginSt
 	item->name = elektraStrDup (keyName (key));
 	item->callback = callback;
 	item->context = context;
+	item->sameOrBelow = 0;
 
 	if (pluginState->head == NULL)
 	{
@@ -164,6 +195,31 @@ static KeyRegistration * elektraInternalnotificationAddNewRegistration (PluginSt
 	}
 
 	return item;
+}
+
+/**
+ * @internal
+ * Check if a key set contains a key that is same or below a given key.
+ *
+ * @param  key  key
+ * @param  ks   key set
+ * @retval 1 if the key set contains the key
+ * @retval 0 otherwise
+ */
+static int keySetContainsSameOrBelow (Key * check, KeySet * ks)
+{
+	int result = 0;
+	Key * current;
+	ksRewind (ks);
+	while ((current = ksNext (ks)) != NULL)
+	{
+		if (checkKeyIsBelowOrSame (check, current))
+		{
+			result = 1;
+			break;
+		}
+	}
+	return result;
 }
 
 /**
@@ -183,37 +239,54 @@ void elektraInternalnotificationUpdateRegisteredKeys (Plugin * plugin, KeySet * 
 	KeyRegistration * registeredKey = pluginState->head;
 	while (registeredKey != NULL)
 	{
-		Key * key = ksLookupByName (keySet, registeredKey->name, 0);
-		if (key == NULL)
-		{
-			registeredKey = registeredKey->next;
-			continue;
-		}
-
-		// Detect changes for string keys
 		int changed = 0;
-		if (!keyIsString (key))
+		Key * key;
+		if (registeredKey->sameOrBelow)
 		{
-			// always notify for binary keys
-			changed = 1;
+			Key * checkKey = keyNew (registeredKey->name, KEY_END);
+			if (keySetContainsSameOrBelow (checkKey, keySet))
+			{
+				changed = 1;
+				key = checkKey;
+			}
+			else
+			{
+				keyDel (checkKey);
+			}
 		}
 		else
 		{
-			const char * currentValue = keyString (key);
-			changed = registeredKey->lastValue == NULL || strcmp (currentValue, registeredKey->lastValue) != 0;
-
-			if (changed)
+			key = ksLookupByName (keySet, registeredKey->name, 0);
+			if (key == NULL)
 			{
-				// Save last value
-				char * buffer = elektraStrDup (currentValue);
-				if (buffer)
+				registeredKey = registeredKey->next;
+				continue;
+			}
+
+			// Detect changes for string keys
+			if (!keyIsString (key))
+			{
+				// always notify for binary keys
+				changed = 1;
+			}
+			else
+			{
+				const char * currentValue = keyString (key);
+				changed = registeredKey->lastValue == NULL || strcmp (currentValue, registeredKey->lastValue) != 0;
+
+				if (changed)
 				{
-					if (registeredKey->lastValue != NULL)
+					// Save last value
+					char * buffer = elektraStrDup (currentValue);
+					if (buffer)
 					{
-						// Free previous value
-						elektraFree (registeredKey->lastValue);
+						if (registeredKey->lastValue != NULL)
+						{
+							// Free previous value
+							elektraFree (registeredKey->lastValue);
+						}
+						registeredKey->lastValue = buffer;
 					}
-					registeredKey->lastValue = buffer;
 				}
 			}
 		}
@@ -282,6 +355,25 @@ int elektraInternalnotificationRegisterCallback (Plugin * handle, Key * key, Ele
 }
 
 /**
+ * @see kdbnotificationinternal.h ::ElektraNotificationPluginRegisterCallbackSameOrBelow
+ */
+int elektraInternalnotificationRegisterCallbackSameOrBelow (Plugin * handle, Key * key, ElektraNotificationChangeCallback callback,
+							    void * context)
+{
+	PluginState * pluginState = elektraPluginGetData (handle);
+	ELEKTRA_ASSERT (pluginState != NULL, "plugin state was not initialized properly");
+
+	KeyRegistration * registeredKey = elektraInternalnotificationAddNewRegistration (pluginState, key, callback, context);
+	if (registeredKey == NULL)
+	{
+		return 0;
+	}
+	registeredKey->sameOrBelow = 1;
+
+	return 1;
+}
+
+/**
  * Updates registrations with current data from storage.
  * Part of elektra plugin contract.
  *
@@ -328,6 +420,8 @@ int elektraInternalnotificationGet (Plugin * handle, KeySet * returned, Key * pa
 
 			keyNew ("system/elektra/modules/internalnotification/exports/registerCallback", KEY_FUNC,
 				elektraInternalnotificationRegisterCallback, KEY_END),
+			keyNew ("system/elektra/modules/internalnotification/exports/registerCallbackSameOrBelow", KEY_FUNC,
+				elektraInternalnotificationRegisterCallbackSameOrBelow, KEY_END),
 
 #include ELEKTRA_README (internalnotification)
 

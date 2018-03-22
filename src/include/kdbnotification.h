@@ -169,6 +169,20 @@ typedef void (*ElektraNotificationChangeCallback) (Key * key, void * context);
  */
 int elektraNotificationRegisterCallback (KDB * kdb, Key * key, ElektraNotificationChangeCallback callback, void * context);
 
+/**
+ * @ingroup kdbnotification
+ * Subscribe for updates via callback when a given key or a key below changed.
+ *
+ * @param  handle   plugin handle
+ * @param  key      key to watch for changes
+ * @param  callback callback function
+ * @param  context  user supplied context passed to callback function
+ *
+ * @retval 1 on success
+ * @retval 0 on failure
+ */
+int elektraNotificationRegisterCallbackSameOrBelow (KDB * kdb, Key * key, ElektraNotificationChangeCallback callback, void * context);
+
 
 #ifdef __cplusplus
 }
