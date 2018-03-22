@@ -974,24 +974,18 @@ ssize_t keyAddName (Key * key, const char * newName)
 
 	const size_t origSize = key->keySize;
 	const size_t newSize = origSize + nameSize;
-<<<<<<< HEAD
-	elektraRealloc ((void **) &key->key, newSize * 2);
-=======
+
 	if (test_bit (key->flags, KEY_FLAG_MMAP_KEY) == KEY_FLAG_MMAP_KEY)
 	{
 		// key was in mmap region, clear flag and trigger malloc instead of realloc
 		key->key = elektraMalloc (newSize * 2);
 		clear_bit (key->flags, KEY_FLAG_MMAP_KEY);
 	}
-<<<<<<< HEAD
-	elektraRealloc ((void **)&key->key, newSize * 2);
->>>>>>> mmapstorage: fix some realloc problems
-=======
 	else
 	{
-		elektraRealloc ((void **)&key->key, newSize * 2);
+		elektraRealloc ((void **) &key->key, newSize * 2);
 	}
->>>>>>> mmapstorage: fix some reallocs
+
 	if (!key->key) return -1;
 
 	size_t size = 0;
@@ -1127,24 +1121,17 @@ ssize_t keySetBaseName (Key * key, const char * baseName)
 	elektraEscapeKeyNamePart (baseName, escaped);
 	size_t sizeEscaped = elektraStrLen (escaped);
 
-<<<<<<< HEAD
-	elektraRealloc ((void **) &key->key, (key->keySize + sizeEscaped) * 2);
-=======
 	if (test_bit (key->flags, KEY_FLAG_MMAP_KEY) == KEY_FLAG_MMAP_KEY)
 	{
 		// key was in mmap region, clear flag and trigger malloc instead of realloc
 		key->key = elektraMalloc ((key->keySize + sizeEscaped) * 2);
 		clear_bit (key->flags, KEY_FLAG_MMAP_KEY);
 	}
-<<<<<<< HEAD
-	elektraRealloc ((void **)&key->key, (key->keySize + sizeEscaped) * 2);
->>>>>>> mmapstorage: fix some realloc problems
-=======
 	else
 	{
-		elektraRealloc ((void **)&key->key, (key->keySize + sizeEscaped) * 2);
+		elektraRealloc ((void **) &key->key, (key->keySize + sizeEscaped) * 2);
 	}
->>>>>>> mmapstorage: fix some reallocs
+
 	if (!key->key)
 	{
 		elektraFree (escaped);

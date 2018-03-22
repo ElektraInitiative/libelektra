@@ -537,7 +537,7 @@ ssize_t keySetRaw (Key * key, const void * newBinary, size_t dataSize)
 		}
 		else
 		{
-			if (-1 == elektraRealloc ((void **)&key->data.v, key->dataSize)) return -1;
+			if (-1 == elektraRealloc ((void **) &key->data.v, key->dataSize)) return -1;
 		}
 
 		if (-1 == elektraRealloc ((void **) &key->data.v, key->dataSize)) return -1;

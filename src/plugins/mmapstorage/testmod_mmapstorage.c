@@ -47,7 +47,7 @@ static void m_output_meta (Key * k)
 	{
 		ELEKTRA_LOG_WARNING ("Meta KeySet size: %zu", k->meta->size);
 		if (!meta) ELEKTRA_LOG_WARNING ("Meta Key is NULL");
-		ELEKTRA_LOG_WARNING (", %s: %s", keyName (meta), (const char *)keyValue (meta));
+		ELEKTRA_LOG_WARNING (", %s: %s", keyName (meta), (const char *) keyValue (meta));
 	}
 	ELEKTRA_LOG_WARNING ("\n");
 }
@@ -57,10 +57,10 @@ static void m_output_key (Key * k)
 	// output_meta will print endline
 	if (!k) ELEKTRA_LOG_WARNING ("Key is NULL");
 
-	ELEKTRA_LOG_WARNING ("Key ptr: %p", (void *)k);
-	ELEKTRA_LOG_WARNING ("keyname ptr: %p", (void *)k->key);
+	ELEKTRA_LOG_WARNING ("Key ptr: %p", (void *) k);
+	ELEKTRA_LOG_WARNING ("keyname ptr: %p", (void *) k->key);
 	ELEKTRA_LOG_WARNING ("keyname: %s", keyName (k));
-	ELEKTRA_LOG_WARNING ("keystring ptr: %p", (void *)k->data.v);
+	ELEKTRA_LOG_WARNING ("keystring ptr: %p", (void *) k->data.v);
 	ELEKTRA_LOG_WARNING ("keystring: %s", keyString (k));
 	ELEKTRA_LOG_WARNING ("key flags: %u", k->flags);
 	m_output_meta (k);
@@ -316,7 +316,7 @@ static void clearStorage (const char * tmpFile)
 #ifdef DEBUG
 int cmpfunc (const void * a, const void * b)
 {
-	return (*(int *)a - *(int *)b);
+	return (*(int *) a - *(int *) b);
 }
 
 static void testDynArray1 ()
@@ -335,7 +335,7 @@ static void testDynArray1 ()
 
 	for (size_t i = 0; i < 100; ++i)
 	{
-		findOrInsert ((Key *)testData[i], &dynArray);
+		findOrInsert ((Key *) testData[i], &dynArray);
 	}
 
 	qsort (testData, 100, sizeof (size_t), cmpfunc);
@@ -343,7 +343,7 @@ static void testDynArray1 ()
 	int error = 0;
 	for (size_t i = 0; i < 100; ++i)
 	{
-		if (testData[i] != (size_t)dynArray.keyArray[i])
+		if (testData[i] != (size_t) dynArray.keyArray[i])
 		{
 			++error;
 		}
