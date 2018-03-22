@@ -13,6 +13,7 @@ import FlatButton from 'material-ui/FlatButton'
 import TextField from 'material-ui/TextField'
 import SelectField from 'material-ui/SelectField'
 import MenuItem from 'material-ui/MenuItem'
+import ActionBuild from 'material-ui/svg-icons/action/build'
 
 import { KEY_TYPES } from './utils'
 
@@ -98,7 +99,7 @@ export default class AddDialog extends Component {
                 </SelectField>
             </div>
             <div style={{ display: 'block', marginTop: 8 }}>
-                {renderField({
+                {type !== 'enum' && renderField({
                   value,
                   meta: { 'check/type': type },
                   onChange: (evt, _, val) => {
@@ -114,6 +115,18 @@ export default class AddDialog extends Component {
                   onError: err => this.setState({ error: err }),
                   label: 'value',
                 })}
+                {type === 'enum' && (
+                  <div style={{ display: 'block', marginTop: 16, color: 'rgba(0, 0, 0, 0.5)' }}>
+                      <b style={{ fontSize: '1.1em' }}>Please note:</b><br />
+                      You can only define options after the key is created.<br />
+                      Please create the key, then
+                      <i style={{ paddingLeft: 6, paddingRight: 8 }}>
+                        <ActionBuild style={{ width: 14, height: 14, marginRight: 4, color: 'rgba(0, 0, 0, 0.5)' }} />
+                        configure metadata
+                      </i>
+                      to define options.
+                  </div>
+                )}
             </div>
         </Dialog>
     )
