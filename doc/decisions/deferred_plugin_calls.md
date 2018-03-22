@@ -104,6 +104,12 @@ calls with new functions:
 - `void elektraInvokeExecuteDeferredCalls (ElektraInvokeHandle * handle, ElektraDeferredCallList * list)`
   which executes deferred calls for a encapsulated plugin loaded with invoke.
 
+- Functions supporting deferred calls should allow for multiple calls (i.e.
+  they should be idempotent).
+  This leaves state at affected plugins and does avoids duplicating state (e.g.
+  "was this function called for this plugin before?") in encapsulating
+  plugins.
+
 ## Notes
 
 Utility functions that help with managing deferred calls would be nice:
