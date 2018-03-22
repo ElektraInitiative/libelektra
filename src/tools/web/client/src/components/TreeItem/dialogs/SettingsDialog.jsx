@@ -81,8 +81,9 @@ export default class SettingsDialog extends Component {
     return (
         <EnumSubDialog
           onChange={i => this.handleEdit(`check/enum/#${i}`)}
-          value={i => this.getMeta(`check/enum/#${i}`, '')}
+          value={i => this.props.meta && this.props.meta[`check/enum/#${i}`]}
           saved={i => this.getSaved(`check/enum/#${i}`)}
+          deleteMeta={i => this.props.deleteMeta(`check/enum/#${i}`)}
         />
     )
   }

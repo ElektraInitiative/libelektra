@@ -120,6 +120,12 @@ class Ranges extends Component {
     return ranges.map(r => r.join('-')).join(',')
   }
 
+  createRange = () => {
+    const { ranges } = this.state
+    const newState = [ ...ranges, ['', ''] ]
+    this.setState({ ranges: newState })
+  }
+
   render () {
     const { onChange } = this.props
     const { ranges } = this.state
@@ -147,29 +153,36 @@ class Ranges extends Component {
               }}
             />
           )}
-          <FlatButton
-            key="add"
-            label="create new range"
-            icon={<ContentAddIcon />}
-            style={{ marginLeft: 16 }}
-            onClick={() => {
-              const newState = [ ...ranges, ['', ''] ]
-              this.setState({ ranges: newState })
-            }}
-          />
         </div>
     )
   }
 }
 
 export default class NumberSubDialog extends Component {
+  handleCreate = () => {
+    if (this.ranges) {
+      this.ranges.createRange()
+    }
+  }
+
   render () {
     const { value, saved, onChange } = this.props
 
     return (
         <div style={{ marginTop: 16 }}>
-            <b>Ranges <SavedIcon saved={saved} /></b>
-            <Ranges ranges={value} onChange={onChange} />
+            <h3>
+              Ranges
+              <IconButton
+                style={{ marginLeft: 8, top: 2, width: 20, height: 20, padding: 2 }}
+                iconStyle={{ width: 16, height: 16 }}
+                tooltip="create new range"
+                onClick={this.handleCreate}
+              >
+                <ContentAddIcon color="#00BCD4" />
+              </IconButton>
+              <SavedIcon saved={saved} />
+            </h3>
+            <Ranges ref={r => this.ranges = r} ranges={value} onChange={onChange} />
         </div>
     )
   }

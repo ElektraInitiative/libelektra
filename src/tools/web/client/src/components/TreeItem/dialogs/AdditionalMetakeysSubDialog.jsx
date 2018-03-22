@@ -41,7 +41,7 @@ export default class AdditionalMetakeysSubDialog extends Component {
   // to a key/value object format
   parseMetadata = (meta) => {
     const keys = Object.keys(meta)
-      .filter(k => !HANDLED_METADATA.includes(k))
+      .filter(k => !HANDLED_METADATA.find(m => k.startsWith(m)))
       .filter(k => meta[k] !== undefined)
     return keys.map(k => {
       return { key: k, value: meta[k] }
@@ -99,7 +99,7 @@ export default class AdditionalMetakeysSubDialog extends Component {
       return alert("Empty/invalid metakey name.")
     }
 
-    if (HANDLED_METADATA.includes(name)) {
+    if (HANDLED_METADATA.find(m => name.startsWith(m))) {
       return alert(
         "Cannot add metakey '" + name + "' because it is already handled by elektra-web. " +
         "Please use the existing field on the settings page to configure this metakey."
