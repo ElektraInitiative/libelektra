@@ -23,7 +23,7 @@ export default function debounce (WrappedComponent, {
 
       const value = val || evt.target.value
 
-      onChange(value)
+      if (typeof onChange === 'function') onChange(value)
       if (timeoutFn) clearTimeout(timeoutFn)
 
       this.setState({
