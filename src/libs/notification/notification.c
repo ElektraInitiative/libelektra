@@ -719,6 +719,16 @@ static void pluginsCloseNotification (KDB * kdb)
 	}
 }
 
+/**
+ * @see kdbnotificationinternal.h ::ElektraNotificationKdbUpdate
+ */
+static void elektraNotificationKdbUpdate (KDB * kdb, Key * changedKey)
+{
+	KeySet * ks = ksNew (0, KS_END);
+	kdbGet (kdb, ks, changedKey);
+	ksDel (ks);
+}
+
 int elektraNotificationOpen (KDB * kdb)
 {
 	// Make sure kdb is not null
@@ -760,6 +770,7 @@ int elektraNotificationOpen (KDB * kdb)
 		return 0;
 	}
 	context->kdb = kdb;
+	context->kdbUpdate = &elektraNotificationKdbUpdate;
 	context->notificationPlugin = notificationPlugin;
 
 	// Get notification callback from notification plugin

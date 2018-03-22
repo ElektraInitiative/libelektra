@@ -24,6 +24,8 @@ int callback_called;
 char * callback_keyValue;
 char * callback_keyName;
 
+int doUpdate_callback_called;
+
 #define CALLBACK_CONTEXT_MAGIC_NUMBER ((void *) 1234)
 
 #define REGISTER_FUNC_NAME(TYPE_NAME) internalnotificationRegister##TYPE_NAME
@@ -105,6 +107,16 @@ static int internalnotificationRegisterCallback (Plugin * plugin, Key * key, Ele
 
 	// Register key with plugin
 	return ((ElektraNotificationPluginRegisterCallback) address) (plugin, key, callback, context);
+}
+
+static int internalnotificationRegisterCallbackSameOrBelow (Plugin * plugin, Key * key, ElektraNotificationChangeCallback callback,
+							    void * context)
+{
+	size_t address = elektraPluginGetFunction (plugin, "registerCallbackSameOrBelow");
+	if (!address) yield_error ("function not exported");
+
+	// Register key with plugin
+	return ((ElektraNotificationPluginRegisterCallbackSameOrBelow) address) (plugin, key, callback, context);
 }
 
 static int digits (long long number)
@@ -428,6 +440,146 @@ static void test_callbackCalledWithChangeDetection (void)
 	PLUGIN_CLOSE ();
 }
 
+static void test_doUpdate_callback (KDB * kdb ELEKTRA_UNUSED, Key * changedKey ELEKTRA_UNUSED)
+{
+	doUpdate_callback_called = 1;
+}
+
+static void test_doUpdateShouldUpdateKey (void)
+{
+	printf ("test doUpdate should update same key\n");
+
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("internalnotification");
+
+	Key * changedKey = keyNew ("user/test/internalnotification/value", KEY_END);
+
+	succeed_if (internalnotificationRegisterCallback (plugin, changedKey, test_callback, NULL) == 1,
+		    "call to elektraInternalnotificationRegisterCallback was not successful");
+
+	ElektraNotificationCallbackContext * context = elektraMalloc (sizeof *context);
+	context->kdbUpdate = NULL;
+	context->kdbUpdate = test_doUpdate_callback;
+	context->notificationPlugin = plugin;
+
+	doUpdate_callback_called = 0;
+	elektraInternalnotificationDoUpdate (changedKey, context);
+
+	succeed_if (doUpdate_callback_called, "did not call callback for registered key");
+
+	elektraFree (context);
+	PLUGIN_CLOSE ();
+}
+
+static void test_doUpdateShouldUpdateKeyBelow (void)
+{
+	printf ("test doUpdate should update key below changed key\n");
+
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("internalnotification");
+
+	Key * changedKey = keyNew ("user/test/internalnotification", KEY_END);
+
+	Key * registeredKey = keyNew ("user/test/internalnotification/value", KEY_END);
+	succeed_if (internalnotificationRegisterCallback (plugin, registeredKey, test_callback, NULL) == 1,
+		    "call to elektraInternalnotificationRegisterCallback was not successful");
+
+	ElektraNotificationCallbackContext * context = elektraMalloc (sizeof *context);
+	context->kdbUpdate = NULL;
+	context->kdbUpdate = test_doUpdate_callback;
+	context->notificationPlugin = plugin;
+
+	doUpdate_callback_called = 0;
+	elektraInternalnotificationDoUpdate (changedKey, context);
+
+	succeed_if (doUpdate_callback_called, "did not call callback for registered key");
+
+	elektraFree (context);
+	keyDel (registeredKey);
+	PLUGIN_CLOSE ();
+}
+
+static void test_doUpdateShouldNotUpdateKeyAbove (void)
+{
+	printf ("test doUpdate should not update key above changed key\n");
+
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("internalnotification");
+
+	Key * changedKey = keyNew ("user/test/internalnotification/value", KEY_END);
+
+	Key * registeredKey = keyNew ("user/test/internalnotification", KEY_END);
+	succeed_if (internalnotificationRegisterCallback (plugin, registeredKey, test_callback, NULL) == 1,
+		    "call to elektraInternalnotificationRegisterCallback was not successful");
+
+	ElektraNotificationCallbackContext * context = elektraMalloc (sizeof *context);
+	context->kdbUpdate = NULL;
+	context->kdbUpdate = test_doUpdate_callback;
+	context->notificationPlugin = plugin;
+
+	doUpdate_callback_called = 0;
+	elektraInternalnotificationDoUpdate (changedKey, context);
+
+	succeed_if (doUpdate_callback_called == 0, "did call callback for key above");
+
+	elektraFree (context);
+	keyDel (registeredKey);
+	PLUGIN_CLOSE ();
+}
+
+static void test_doUpdateShouldUpdateKeyAbove (void)
+{
+	printf ("test doUpdate should update key above changed key for sameOrBelow callbacks\n");
+
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("internalnotification");
+
+	Key * changedKey = keyNew ("user/test/internalnotification/value", KEY_END);
+
+	Key * registeredKey = keyNew ("user/test/internalnotification", KEY_END);
+	succeed_if (internalnotificationRegisterCallbackSameOrBelow (plugin, registeredKey, test_callback, NULL) == 1,
+		    "call to internalnotificationRegisterCallbackSameOrBelow was not successful");
+
+	ElektraNotificationCallbackContext * context = elektraMalloc (sizeof *context);
+	context->kdbUpdate = NULL;
+	context->kdbUpdate = test_doUpdate_callback;
+	context->notificationPlugin = plugin;
+
+	doUpdate_callback_called = 0;
+	elektraInternalnotificationDoUpdate (changedKey, context);
+
+	succeed_if (doUpdate_callback_called, "did not call callback for key above");
+
+	elektraFree (context);
+	keyDel (registeredKey);
+	PLUGIN_CLOSE ();
+}
+
+static void test_doUpdateShouldNotUpdateUnregisteredKey (void)
+{
+	printf ("test doUpdate should not update unregistered key\n");
+
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("internalnotification");
+
+	Key * changedKey = keyNew ("user/test/internalnotification/value", KEY_END);
+
+	// No key registration made
+
+	ElektraNotificationCallbackContext * context = elektraMalloc (sizeof *context);
+	context->kdbUpdate = NULL;
+	context->kdbUpdate = test_doUpdate_callback;
+	context->notificationPlugin = plugin;
+
+	doUpdate_callback_called = 0;
+	elektraInternalnotificationDoUpdate (changedKey, context);
+
+	succeed_if (doUpdate_callback_called == 0, "did call callback for unregistered key");
+
+	elektraFree (context);
+	PLUGIN_CLOSE ();
+}
+
 CREATE_TYPE_TESTS (unsigned int, UnsignedInt, "%u", UINT_MAX, (value == UINT_MAX), "-1", value == 0)
 CREATE_TYPE_TESTS (long, Long, "%ld", LONG_MAX, (value == LONG_MAX), "5000abc000", value == 0)
 CREATE_TYPE_TESTS (unsigned long, UnsignedLong, "%lu", ULONG_MAX, (value == ULONG_MAX), "AA446744073709551615", value == 0)
@@ -500,6 +652,13 @@ int main (int argc, char ** argv)
 	RUN_TYPE_TESTS (KdbFloat)
 	RUN_TYPE_TESTS (KdbDouble)
 	RUN_TYPE_TESTS (KdbLongDouble)
+
+	printf ("\nelektraInternalnotificationDoUpdate\n-----------------------------------\n");
+	test_doUpdateShouldUpdateKey ();
+	test_doUpdateShouldUpdateKeyBelow ();
+	test_doUpdateShouldNotUpdateKeyAbove ();
+	test_doUpdateShouldNotUpdateUnregisteredKey ();
+	test_doUpdateShouldUpdateKeyAbove ();
 
 	printf ("\ntestmod_internalnotification RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

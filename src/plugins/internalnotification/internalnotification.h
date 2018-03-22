@@ -11,6 +11,7 @@
 #define ELEKTRA_PLUGIN_INTERNALNOTIFICATION_H
 
 #include <kdbnotification.h>
+#include <kdbnotificationinternal.h>
 #include <kdbplugin.h>
 
 
@@ -23,6 +24,7 @@ Plugin * ELEKTRA_PLUGIN_EXPORT (internalnotification);
 
 // Not exported by plugin; used for testing
 void elektraInternalnotificationUpdateRegisteredKeys (Plugin * plugin, KeySet * keySet);
+void elektraInternalnotificationDoUpdate (Key * changedKey, ElektraNotificationCallbackContext * context);
 
 #define INTERNALNOTIFICATION_REGISTER_NAME(TYPE_NAME) elektraInternalnotificationRegister##TYPE_NAME
 #define INTERNALNOTIFICATION_CONVERSION_CALLBACK_NAME(TYPE_NAME) elektraInternalnotificationConvert##TYPE_NAME

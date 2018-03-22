@@ -115,6 +115,14 @@ typedef void (*ElektraNotificationOpenNotification) (Plugin * handle, KeySet * p
 typedef void (*ElektraNotificationCloseNotification) (Plugin * handle, KeySet * parameters);
 
 /**
+ * Used by notification plugins to get values from the key database.
+ *
+ * @param  kdb        kdb handle
+ * @param  changedKey which key was updated
+ */
+typedef void (*ElektraNotificationKdbUpdate) (KDB * kdb, Key * changedKey);
+
+/**
  * Private struct with information about for ElektraNotificationCallback.
  * @internal
  *
@@ -122,7 +130,9 @@ typedef void (*ElektraNotificationCloseNotification) (Plugin * handle, KeySet * 
  */
 struct _ElektraNotificationCallbackContext
 {
-	KDB * kdb; /*!< The pointer the KDB handle.*/
+	KDB * kdb; /*!< The pointer to kdb handle.*/
+
+	ElektraNotificationKdbUpdate kdbUpdate; /*!< The pointer to the update function.*/
 
 	Plugin * notificationPlugin; /*!< Notification plugin handle.*/
 };

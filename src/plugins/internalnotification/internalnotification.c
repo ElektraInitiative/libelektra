@@ -118,12 +118,11 @@ static int checkKeyIsBelowOrSame (Key * key, Key * check)
  * @param key     changed key
  * @param context callback context
  */
-static void elektraInternalnotificationDoUpdate (Key * changedKey, ElektraNotificationCallbackContext * context)
+void elektraInternalnotificationDoUpdate (Key * changedKey, ElektraNotificationCallbackContext * context)
 {
 	ELEKTRA_NOT_NULL (changedKey);
 	ELEKTRA_NOT_NULL (context);
 
-	KDB * kdb = context->kdb;
 	Plugin * plugin = context->notificationPlugin;
 
 	PluginState * pluginState = elektraPluginGetData (plugin);
@@ -135,15 +134,13 @@ static void elektraInternalnotificationDoUpdate (Key * changedKey, ElektraNotifi
 	{
 		Key * registeredKey = keyNew (keyRegistration->name, KEY_END);
 
+		// check if registered key is same or below changed/commit key
+		kdbChanged |= checkKeyIsBelowOrSame (changedKey, registeredKey);
+
 		if (keyRegistration->sameOrBelow)
 		{
-			// check if changed key is same or below registered key
+			// check if registered key is also above changed/commit key
 			kdbChanged |= checkKeyIsBelowOrSame (registeredKey, changedKey);
-		}
-		else
-		{
-			// check if changed key is same as registered key
-			kdbChanged |= checkKeyIsSame (changedKey, registeredKey);
 		}
 
 		keyRegistration = keyRegistration->next;
@@ -152,9 +149,7 @@ static void elektraInternalnotificationDoUpdate (Key * changedKey, ElektraNotifi
 
 	if (kdbChanged)
 	{
-		KeySet * ks = ksNew (0, KS_END);
-		kdbGet (kdb, ks, changedKey);
-		ksDel (ks);
+		context->kdbUpdate (context->kdb, changedKey);
 	}
 	keyDel (changedKey);
 }
