@@ -99,16 +99,6 @@ const validateType = (metadata, value) => {
     }
   }
 
-  const validationEnum = metadata.hasOwnProperty('check/enum')
-    ? JSON.parse(elektraEnumToJSON(metadata['check/enum']))
-    : false
-  if (validationEnum && Array.isArray(validationEnum)) {
-    if (!validationEnum.includes(value)) {
-      return validationError ||
-        'validation failed, value must be one of: ' + validationEnum.join(', ')
-    }
-  }
-
   return false
 }
 

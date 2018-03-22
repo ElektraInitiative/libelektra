@@ -35,29 +35,12 @@ export default class SettingsDialog extends Component {
     this.state = {}
   }
 
-  handleEdit = (key, debounced = false) => (val) => {
-    const isEnum = key === 'check/type' && val === 'enum'
-
+  handleEdit = (key, debounced = false) => (value) => {
     const { meta, data, setMeta } = this.props
-
-    // changing from enum
-    if (key === 'check/type' && !isEnum && meta && meta['check/enum']) {
-      const { deleteMeta } = this.props
-      deleteMeta('check/enum')
-    }
-
-    // changing to enum
-    if (key === 'check/type' && isEnum) {
-      setMeta('check/enum', this.getMeta('check/enum', '[\'' + data + '\']'))
-    }
-
-    const value = isEnum
-      ? 'string' // special case: enum is also a string
-      : val
 
     if (!debounced || debounced === IMMEDIATE) {
       // set value of field
-      this.setState({ [key]: { ...this.state[key], value: isEnum ? 'enum' : value } })
+      this.setState({ [key]: { ...this.state[key], value } })
     }
 
     if (!debounced || debounced === DEBOUNCED) {
@@ -82,9 +65,7 @@ export default class SettingsDialog extends Component {
 
     const { meta } = this.props
     const val = meta // meta exists
-      ? ((key === 'check/type') && meta['check/enum']) // is enum?
-        ? 'enum'
-        : meta[key] // is not enum
+      ? meta[key]
       : false // does not exist
 
     return stateVal === undefined
@@ -99,9 +80,9 @@ export default class SettingsDialog extends Component {
   renderEnum () {
     return (
         <EnumSubDialog
-          onChange={this.handleEdit('check/enum')}
-          value={this.getMeta('check/enum', '')}
-          saved={this.getSaved('check/enum')}
+          onChange={i => this.handleEdit(`check/enum/#${i}`)}
+          value={i => this.getMeta(`check/enum/#${i}`, '')}
+          saved={i => this.getSaved(`check/enum/#${i}`)}
         />
     )
   }
@@ -202,7 +183,7 @@ export default class SettingsDialog extends Component {
                     <SavedIcon saved={this.getSaved('readonly')} />
                 </div>
             </div>
-            {this.getMeta('check/enum', false) ? this.renderEnum() : null}
+            {this.getMeta('check/type', false) === 'enum' ? this.renderEnum() : null}
             {isNumberType(this.getMeta('check/type', false)) ? this.renderNumber() : null}
             {(type === 'string' || type === 'any') &&
               <div style={{ display: 'flex' }}>

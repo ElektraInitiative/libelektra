@@ -24,6 +24,7 @@ import SettingsDialog from './dialogs/SettingsDialog.jsx'
 import RemoveDialog from './dialogs/RemoveDialog.jsx'
 import DuplicateDialog from './dialogs/DuplicateDialog.jsx'
 import EditDialog from './dialogs/EditDialog.jsx'
+import { parseEnum } from './utils'
 
 export default class TreeItem extends Component {
   constructor (...args) {
@@ -96,18 +97,17 @@ export default class TreeItem extends Component {
   }
 
   renderSpecialValue = (id, { value, meta, onChange, label }) => {
-    if (meta['check/enum']) {
-      try {
-        const options = JSON.parse(meta['check/enum'].replace(/'/g, '"'))
+    if (meta['check/type']) {
+      if (meta['check/type'] === 'enum') {
+        const valueFn = i => {
+          return meta[`check/enum/#${i}`]
+        }
+        const options = parseEnum(valueFn)
         return (
             <RadioButtons id={id} value={value} meta={meta} options={options} onChange={onChange || this.handleEdit} />
         )
-      } catch (err) {
-        console.warn('invalid enum type:', meta['check/enum'])
       }
-    }
 
-    if (meta['check/type']) {
       if (meta['check/type'] === 'boolean') {
         return (
             <ToggleButton label={label} id={id} value={value} meta={meta} onChange={onChange || this.handleEdit} />
