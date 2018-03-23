@@ -32,6 +32,8 @@ const Home = ({ instances, status }) =>
                 id={instance.id}
                 name={instance.name}
                 host={instance.host}
+                description={instance.description}
+                visibility={instance.visibility}
               />
           </div>
         )}

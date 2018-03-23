@@ -16,10 +16,10 @@ export const getInstances = () =>
 const persistInstances = (instances) =>
   kdb.import(path('instances'), instances)
 
-export const createInstance = ({ name, host }) => {
+export const createInstance = ({ name, host, description, visibility }) => {
   const generatedId = generateId()
   return getInstances()
-    .then(instances => instances.concat({ id: generatedId, name, host }))
+    .then(instances => instances.concat({ id: generatedId, name, host, description, visibility }))
     .then(persistInstances)
     .then(findById(generatedId))
 }
