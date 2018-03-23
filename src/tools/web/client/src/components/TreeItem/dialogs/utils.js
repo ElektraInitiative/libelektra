@@ -23,4 +23,5 @@ export const HANDLED_METADATA = [
   'default',
   'check/validation',
   'check/validation/message',
+  'visibility',
 ]

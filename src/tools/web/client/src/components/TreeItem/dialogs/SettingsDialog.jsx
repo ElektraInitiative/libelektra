@@ -21,7 +21,7 @@ import NumberSubDialog from './NumberSubDialog.jsx'
 import AdditionalMetakeysSubDialog from './AdditionalMetakeysSubDialog.jsx'
 
 import debounce from '../../debounce'
-import { toElektraBool, fromElektraBool, isNumberType } from '../../../utils'
+import { VISIBILITY_LEVELS, visibility, toElektraBool, fromElektraBool, isNumberType } from '../../../utils'
 import { KEY_TYPES } from './utils'
 
 const DebouncedTextField = debounce(TextField)
@@ -98,6 +98,18 @@ export default class SettingsDialog extends Component {
     )
   }
 
+  handleVisibilityChange = (val) => {
+    if (visibility(val) < visibility('user')) { // TODO: make this per-instance
+      const confirmed = window.confirm(
+        'Setting the visibility lower than the instance visibility will hide ' +
+        'this item in this instance. Only proceed if you no longer plan on ' +
+        'editing this item here.'
+      )
+      if (!confirmed) return
+    }
+    return this.handleEdit('visibility')(val)
+  }
+
   render () {
     const { item, open, onClose } = this.props
     const { path } = item
@@ -111,6 +123,7 @@ export default class SettingsDialog extends Component {
     ]
 
     const type = this.getMeta('check/type', 'any')
+    const visibility = this.getMeta('visibility', 'user')
 
     return (
         <Dialog
@@ -120,16 +133,31 @@ export default class SettingsDialog extends Component {
           onRequestClose={onClose}
         >
             <h1>Metadata for <b>{path}</b></h1>
-            <div style={{ display: 'block' }}>
-                <DebouncedTextField
-                  floatingLabelText="description"
-                  floatingLabelFixed={true}
-                  hintText="e.g. username of the account"
-                  onChange={this.handleEdit('description', IMMEDIATE)}
-                  onDebounced={this.handleEdit('description', DEBOUNCED)}
-                  value={this.getMeta('description', '')}
-                />
-                <SavedIcon saved={this.getSaved('description')} />
+            <div style={{ display: 'flex' }}>
+                <div style={{ flex: 1 }}>
+                    <DebouncedTextField
+                      floatingLabelText="description"
+                      floatingLabelFixed={true}
+                      hintText="e.g. username of the account"
+                      onChange={this.handleEdit('description', IMMEDIATE)}
+                      onDebounced={this.handleEdit('description', DEBOUNCED)}
+                      value={this.getMeta('description', '')}
+                    />
+                    <SavedIcon saved={this.getSaved('description')} />
+                </div>
+                <div style={{ flex: 1 }}>
+                    <SelectField
+                      floatingLabelText="visibility"
+                      floatingLabelFixed={true}
+                      onChange={(e, _, val) => this.handleVisibilityChange(val)}
+                      value={visibility}
+                    >
+                        {Object.keys(VISIBILITY_LEVELS).map(lvl =>
+                          <MenuItem key={lvl} value={lvl} primaryText={lvl} />
+                        )}
+                    </SelectField>
+                    <SavedIcon saved={this.getSaved('check/type')} style={{ paddingBottom: 16 }} />
+                </div>
             </div>
             <div style={{ display: 'flex' }}>
                 <div style={{ flex: 1 }}>
