@@ -60,7 +60,7 @@ export default class TreeView extends React.Component {
 
     if (data && data.meta && data.meta['visibility']) {
       const lvl = visibility(data.meta['visibility'])
-      if (lvl < instanceVisibility) {
+      if (lvl < visibility(instanceVisibility)) {
         // hide this item
         return false
       }

@@ -100,7 +100,7 @@ export default class SettingsDialog extends Component {
 
   handleVisibilityChange = (val) => {
     const { instanceVisibility } = this.props
-    if (visibility(val) < instanceVisibility) {
+    if (visibility(val) < visibility(instanceVisibility)) {
       const confirmed = window.confirm(
         'Setting the visibility lower than the instance visibility will hide ' +
         'this item in this instance. Only proceed if you no longer plan on ' +
