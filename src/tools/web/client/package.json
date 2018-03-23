@@ -12,7 +12,7 @@
   "dependencies": {
     "@bosket/core": "^0.4.2",
     "@bosket/tools": "^0.4.2",
-    "bosket-react-fork": "^0.4.6",
+    "bosket-react": "^0.4.5",
     "concurrently": "^3.5.1",
     "material-ui": "^0.20.0",
     "react": "^16.1.1",

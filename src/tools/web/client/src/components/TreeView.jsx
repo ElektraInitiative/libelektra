@@ -7,9 +7,10 @@
  */
 
 import React from 'react'
-import { ExplorerView } from 'bosket-react-fork'
+import { ExplorerView } from 'bosket-react'
 
 import TreeItem from '../containers/ConnectedTreeItem'
+import { visibility } from '../utils'
 
 import '../css/treeview.css'
 
@@ -56,6 +57,14 @@ export default class TreeView extends React.Component {
   renderItem = (item, inputs) => {
     const { kdb, instanceId } = this.props
     const data = kdb && kdb[item.path]
+
+    if (data && data.meta && data.meta['visibility']) {
+      const lvl = visibility(data.meta['visibility'])
+      if (lvl < visibility('user')) { // TODO: make this per-instance
+        // hide this item
+        return false
+      }
+    }
     return (
         <TreeItem
           data={data}

@@ -36,7 +36,7 @@ export default class SettingsDialog extends Component {
   }
 
   handleEdit = (key, debounced = false) => (value) => {
-    const { meta, data, setMeta } = this.props
+    const { setMeta } = this.props
 
     if (!debounced || debounced === IMMEDIATE) {
       // set value of field

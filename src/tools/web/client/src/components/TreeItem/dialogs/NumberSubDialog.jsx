@@ -10,7 +10,6 @@ import React, { Component } from 'react'
 
 import TextField from 'material-ui/TextField'
 import IconButton from 'material-ui/IconButton'
-import FlatButton from 'material-ui/FlatButton'
 import ActionDeleteIcon from 'material-ui/svg-icons/action/delete'
 import ContentAddIcon from 'material-ui/svg-icons/content/add'
 

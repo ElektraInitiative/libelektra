@@ -22,3 +22,15 @@ export const isNumberType = (type) => {
       return false
   }
 }
+
+export const VISIBILITY_LEVELS = {
+  critical: 7,
+  important: 6,
+  user: 5,
+  advanced: 4,
+  developer: 3,
+  debug: 2,
+  disabled: 1,
+}
+
+export const visibility = (name) => VISIBILITY_LEVELS[name]

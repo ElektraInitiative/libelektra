@@ -9,12 +9,6 @@ const FLOAT_TYPES = [ 'float', 'double' ]
 
 const isNumber = (value) => !isNaN(value)
 
-const elektraEnumToJSON = (val) => {
-  const convertedVal = val.replace(/'/g, '"')
-  if (val.charAt(0) !== '[') return '[' + convertedVal + ']'
-  else return convertedVal
-}
-
 const getMinMax = (first, second) => {
   if (second < first) {
     return [ second, first ]
