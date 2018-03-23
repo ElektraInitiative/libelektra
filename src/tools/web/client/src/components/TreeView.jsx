@@ -55,12 +55,12 @@ export default class TreeView extends React.Component {
   }
 
   renderItem = (item, inputs) => {
-    const { kdb, instanceId } = this.props
+    const { kdb, instanceId, instanceVisibility } = this.props
     const data = kdb && kdb[item.path]
 
     if (data && data.meta && data.meta['visibility']) {
       const lvl = visibility(data.meta['visibility'])
-      if (lvl < visibility('user')) { // TODO: make this per-instance
+      if (lvl < instanceVisibility) {
         // hide this item
         return false
       }
@@ -72,6 +72,7 @@ export default class TreeView extends React.Component {
           inputs={inputs}
           instanceId={instanceId}
           pathExists={(path) => kdb && kdb[path]}
+          instanceVisibility={instanceVisibility}
         />
     )
   }

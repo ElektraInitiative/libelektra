@@ -167,7 +167,7 @@ export default class Configuration extends Component {
     }
 
     const { id } = match && match.params
-    const { name, host } = instance
+    const { name, host, visibility } = instance
 
     const title = (
         <h1>
@@ -192,6 +192,7 @@ export default class Configuration extends Component {
                   ? <TreeView
                       instanceId={id}
                       data={data}
+                      instanceVisibility={visibility}
                     />
                   : <div style={{ fontSize: '1.1em', color: 'rgba(0, 0, 0, 0.4)' }}>
                         Loading configuration data...

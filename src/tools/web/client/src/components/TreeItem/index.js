@@ -131,7 +131,7 @@ export default class TreeItem extends Component {
   }
 
   render () {
-    const { data, item, instanceId, setMetaKey, deleteMetaKey } = this.props
+    const { data, item, instanceId, instanceVisibility, setMetaKey, deleteMetaKey } = this.props
 
     const rootLevel = (item && item.path)
       ? !item.path.includes('/')
@@ -213,6 +213,7 @@ export default class TreeItem extends Component {
               setMeta={(key, value) => setMetaKey(instanceId, item.path, key, value)}
               deleteMeta={key => deleteMetaKey(instanceId, item.path, key)}
               onClose={this.handleClose('settings')}
+              instanceVisibility={instanceVisibility}
             />
             <RemoveDialog
               item={item}
