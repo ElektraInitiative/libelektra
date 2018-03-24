@@ -11,6 +11,8 @@
 #include "kdbconfig.h"
 #endif
 
+#include <kdberrors.h>
+
 #include "zeromqsend.h"
 
 #include <kdbhelper.h>
@@ -70,7 +72,23 @@ int elektraZeroMqSendSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key
 	ElektraZeroMqSendPluginData * pluginData = elektraPluginGetData (handle);
 	ELEKTRA_NOT_NULL (pluginData);
 
-	elektraZeroMqSendPublish ("Commit", keyName (parentKey), pluginData);
+	int result = elektraZeroMqSendPublish ("Commit", keyName (parentKey), pluginData);
+	switch (result)
+	{
+	case 1:
+		// success!
+		break;
+	case -1:
+		// connection timeout - hub not running
+		ELEKTRA_ADD_WARNING (ELEKTRA_WARNING_ZEROMQSEND_TIMEOUT, parentKey, "this is a test");
+		break;
+	case -2:
+		// subscription timeout - no application are listening for notifications, can be ignored
+		break;
+	default:
+		ELEKTRA_ADD_WARNING (ELEKTRA_WARNING_ZEROMQSEND_ERROR, parentKey, "could not send notifications");
+		break;
+	}
 
 	return 1; /* success */
 }

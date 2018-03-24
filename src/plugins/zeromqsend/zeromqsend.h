@@ -28,6 +28,7 @@ typedef struct
 	// ZeroMQ context and socket (NULL until initialized at first elektraZeroMqSendPublish())
 	void * zmqContext;
 	void * zmqPublisher;
+	void * zmqPublisherMonitor;
 
 	// endpoint for publish socket
 	const char * endpoint;
@@ -36,7 +37,7 @@ typedef struct
 } ElektraZeroMqSendPluginData;
 
 int elektraZeroMqSendConnect (ElektraZeroMqSendPluginData * data);
-void elektraZeroMqSendPublish (const char * changeType, const char * keyName, ElektraZeroMqSendPluginData * data);
+int elektraZeroMqSendPublish (const char * changeType, const char * keyName, ElektraZeroMqSendPluginData * data);
 int elektraZeroMqSendNotification (void * socket, const char * changeType, const char * keyName);
 
 int elektraZeroMqSendOpen (Plugin * handle, Key * errorKey);

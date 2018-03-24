@@ -12,6 +12,7 @@
 #include <time.h>   // time()
 #include <unistd.h> // usleep()
 
+#include <kdberrors.h>   // ELEKTRA_WARNING_ZEROMQSEND_TIMEOUT
 #include <kdbioplugin.h> // ElektraIoPluginSetBinding
 
 #include <tests.h>
@@ -24,6 +25,9 @@ char * receivedChangeType;
 
 /** key name received by readNotificationFromTestSocket() */
 char * receivedKeyName;
+
+/** disable error on read thread timeout */
+volatile int suppressErrorOnTimeout;
 
 /** zmq context for tests */
 void * context;
@@ -95,7 +99,10 @@ static void * notificationReaderThreadMain (void * filter)
 		// check for timeout
 		if (time (NULL) - start > TEST_TIMEOUT)
 		{
-			yield_error ("timeout - test failed");
+			if (!suppressErrorOnTimeout)
+			{
+				yield_error ("timeout - test failed");
+			}
 			receivedChangeType = NULL;
 			receivedKeyName = NULL;
 			zmq_msg_close (&message);
@@ -163,6 +170,7 @@ static void * notificationReaderThreadMain (void * filter)
  */
 static pthread_t * startNotificationReaderThread (char * filter)
 {
+	suppressErrorOnTimeout = 0;
 	pthread_t * thread = elektraMalloc (sizeof *thread);
 	pthread_create (thread, NULL, notificationReaderThreadMain, filter);
 	return thread;
@@ -185,12 +193,84 @@ static void test_commit (void)
 	// add key to keyset
 	ksAppendKey (ks, toAdd);
 
+	receivedKeyName = NULL;
+	receivedChangeType = NULL;
+
 	pthread_t * thread = startNotificationReaderThread ("Commit");
 	plugin->kdbSet (plugin, ks, parentKey);
 	pthread_join (*thread, NULL);
 
 	succeed_if_same_string ("Commit", receivedChangeType);
 	succeed_if_same_string (keyName (parentKey), receivedKeyName);
+
+	ksDel (ks);
+	keyDel (parentKey);
+	PLUGIN_CLOSE ();
+	elektraFree (receivedKeyName);
+	elektraFree (receivedChangeType);
+	elektraFree (thread);
+}
+
+static void test_timeoutConnect (void)
+{
+	printf ("test connect timeout\n");
+
+	Key * parentKey = keyNew ("system/tests/foo", KEY_END);
+	Key * toAdd = keyNew ("system/tests/foo/bar", KEY_END);
+	KeySet * ks = ksNew (0, KS_END);
+
+	KeySet * conf = ksNew (1, keyNew ("/config/endpoint", KEY_VALUE, TEST_ENDPOINT, KEY_END), KS_END);
+	PLUGIN_OPEN ("zeromqsend");
+
+	// initial get to save current state
+	plugin->kdbGet (plugin, ks, parentKey);
+
+	// add key to keyset
+	ksAppendKey (ks, toAdd);
+
+	plugin->kdbSet (plugin, ks, parentKey);
+
+	char * expectedWarningNumber = elektraFormat ("%d", ELEKTRA_WARNING_ZEROMQSEND_TIMEOUT);
+	succeed_if (keyGetMeta (parentKey, "warnings"), "warning meta key was not set");
+	succeed_if_same_string (expectedWarningNumber, keyValue (keyGetMeta (parentKey, "warnings/#00/number")));
+
+	ksDel (ks);
+	keyDel (parentKey);
+	PLUGIN_CLOSE ();
+	elektraFree (expectedWarningNumber);
+}
+
+static void test_timeoutSubscribe (void)
+{
+	printf ("test subscribe message timeout\n");
+
+	Key * parentKey = keyNew ("system/tests/foo", KEY_END);
+	Key * toAdd = keyNew ("system/tests/foo/bar", KEY_END);
+	KeySet * ks = ksNew (0, KS_END);
+
+	KeySet * conf = ksNew (1, keyNew ("/config/endpoint", KEY_VALUE, TEST_ENDPOINT, KEY_END), KS_END);
+	PLUGIN_OPEN ("zeromqsend");
+
+	// initial get to save current state
+	plugin->kdbGet (plugin, ks, parentKey);
+
+	// add key to keyset
+	ksAppendKey (ks, toAdd);
+
+	receivedKeyName = NULL;
+	receivedChangeType = NULL;
+
+	// do not subscribe to Commit messages, this makes the plugin timeout due to no subscribers
+	pthread_t * thread = startNotificationReaderThread ("SomethingOtherThanCommit");
+	suppressErrorOnTimeout = 1;
+
+	plugin->kdbSet (plugin, ks, parentKey);
+	// without timeout we won't return here
+
+	pthread_join (*thread, NULL);
+
+	succeed_if (receivedKeyName == NULL, "received key name should be unchanged");
+	succeed_if (receivedChangeType == NULL, "received change type should be unchanged");
 
 	ksDel (ks);
 	keyDel (parentKey);
@@ -215,6 +295,10 @@ int main (int argc, char ** argv)
 
 	// Test notification from plugin
 	test_commit ();
+
+	// test timeouts
+	test_timeoutConnect ();
+	test_timeoutSubscribe ();
 
 	printf ("\ntestmod_zeromqsend RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
