@@ -193,7 +193,9 @@ Many problems were resolved with the following fixes:
   when checking if the ABI changed. *(Lukas Winkler)*
 - You can now build the [Qt-GUI](https://www.libelektra.org/tools/qt-gui) using Qt `5.11`. *(René Schwaiger)*
 - We fixed various minor spelling mistakes in the documentation. *(René Schwaiger)*
-
+- The [`list` plugin](http://libelektra.org/plugins/list) which is responsible
+  for global mounting had a bug which prevented globally mounted plugins from
+  being configurable. *(Thomas Wahringer)*
 
 ## Outlook
 
@@ -238,5 +240,3 @@ For more information, see [https://libelektra.org](https://libelektra.org)
 
 Best regards,
 [Elektra Initiative](https://www.libelektra.org/developers/authors)
-
-

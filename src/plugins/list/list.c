@@ -306,21 +306,29 @@ static int runPlugins (KeySet * pluginKS, KeySet * modules, KeySet * plugins, Ke
 				KeySet * sysConfigAll = ksCut (config, sysConfCutPoint);
 				KeySet * userConfigAll = ksCut (config, userCutPoint);
 				KeySet * pluginConfig = ksCut (userConfigAll, current);
-				realPluginConfig = elektraRenameKeys (pluginConfig, "user");
+				// replace "user/plugins/#X" with "user/"
+				KeySet * pluginConfigWithConfigPrefix = elektraRenameKeys (pluginConfig, "user");
 				ksDel (pluginConfig);
-				Key * toRemove = keyNew ("user/plugins", 0);
+				// append system config to plugin?
+				// seems like it is not used anymore
+				// TODO remove?
+				/*Key * toRemove = keyNew ("user/plugins", 0);
 				ksDel (ksCut (sysConfigAll, toRemove));
-				ksAppend (realPluginConfig, sysConfigAll);
-				keyDel (toRemove);
-				toRemove = keyNew ("user/placements", 0);
-				ksDel (ksCut (realPluginConfig, toRemove));
-				ksRewind (realPluginConfig);
+				ksAppend (pluginConfigWithConfigPrefix, sysConfigAll);
+				keyDel (toRemove);*/
+				// remove placements from plugin config
+				Key * toRemove = keyNew ("user/placements", 0);
+				ksDel (ksCut (pluginConfigWithConfigPrefix, toRemove));
+				ksRewind (pluginConfigWithConfigPrefix);
 				ksDel (sysConfigAll);
 				ksDel (userConfigAll);
 				ksDel (config);
 				keyDel (userCutPoint);
 				keyDel (sysConfCutPoint);
 				keyDel (toRemove);
+				// replace "user/config/" with "user/"
+				realPluginConfig = elektraRenameKeys (pluginConfigWithConfigPrefix, "user");
+				ksDel (pluginConfigWithConfigPrefix);
 				slave = elektraPluginOpen (name, modules, ksDup (realPluginConfig), parentKey);
 				ksDel (realPluginConfig);
 				if (!slave)
