@@ -346,10 +346,11 @@ set (LIB_SUFFIX ""
 		"Optional suffix to use on lib folders (e.g. 64 for lib64)"
     )
 
-set(MEMORYCHECK_SUPPRESSIONS_FILE
+set (MEMORYCHECK_SUPPRESSIONS_FILE
 		"${CMAKE_SOURCE_DIR}/tests/valgrind.suppression"
 		CACHE FILEPATH
 		"Full path to suppression file for valgrind")
+
 
 
 set(DISCLAMER "
@@ -407,4 +408,5 @@ MARK_AS_ADVANCED(FORCE
 	Qt5_DIR
 	Qt5DBus_DIR
 	Qt5Svg_DIR
+
 	)

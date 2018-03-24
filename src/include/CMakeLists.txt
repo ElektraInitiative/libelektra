@@ -2,6 +2,7 @@ include(CheckIncludeFile)
 include(CheckSymbolExists)
 include(CheckTypeSize)
 include(TestBigEndian)
+include(LibAddBinding)
 
 check_symbol_exists(clearenv      "stdlib.h"         HAVE_CLEARENV)
 check_symbol_exists(setenv        "stdlib.h"         HAVE_SETENV)
@@ -117,6 +118,12 @@ install (FILES
 	"${CMAKE_CURRENT_BINARY_DIR}/kdbversion.h"
 	DESTINATION include/${TARGET_INCLUDE_FOLDER})
 
+check_binding_included ("io_uv" IO_UV_INCLUDED SUBDIRECTORY "io/uv" SILENT)
+if (IO_UV_INCLUDED)
+	install (FILES
+		kdbio_uv.h
+		DESTINATION include/${TARGET_INCLUDE_FOLDER})
+endif ()
 
 check_binding_included ("io_glib" IO_GLIB_INCLUDED SUBDIRECTORY "io/glib" SILENT)
 if (IO_GLIB_INCLUDED)

@@ -597,6 +597,11 @@ ElektraIoIdleCallback elektraIoIdleGetCallback (ElektraIoIdleOperation * idleOp)
 /**
  * Set I/O binding for asynchronous I/O operations for KDB instance.
  *
+ * All global plugins that export a "setIoBinding" function get the binding
+ * passed through this function.
+ *
+ * @ingroup kdbio
+ *
  * @param  kdb       KDB instance
  * @param  ioBinding I/O binding
  */

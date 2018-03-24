@@ -6,7 +6,7 @@
 - infos/recommends =
 - infos/placements = postgetstorage postcommit
 - infos/status = maintained unittest libc global
-- infos/description = Sends DBus signals when a method is called
+- infos/description = Sends notifications for every change via D-Bus
 
 ## Introduction
 
@@ -187,3 +187,32 @@ of the whole system knows that a chain of reactions will terminate.
 When doing such event-driven programming, care is needed to avoid
 infinite loops.  Elektra guarantees consistency of the key database even
 in such cases.
+
+# Transport Plugin
+
+Mount this plugin globally with default settings to use it as *sending*
+transport plugin for Elektra's notification feature:
+
+> kdb global-mount dbus announce=once
+
+# Notification Format
+
+This plugin uses D-Bus signal messages as notifications.
+Notifications have the path `/org/libelektra/configuration` and the D-Bus
+interface `org.libelektra`.
+The following signal names are used:
+
+- Commit: preferred, keys below the changed key have changed
+- KeyAdded: a key has been added
+- KeyChanged: a key has been changed
+
+The first argument contains the name of the changed key.
+The system bus is used if the affected keys is below the `system` namespace.
+If the key is below the `user` namespace the session bus is used.
+
+Example output from `dbus-monitor`:
+
+```
+signal time=1520805003.227723 sender=:1.8 -> destination=(null destination) serial=15 path=/org/libelektra/configuration; interface=org.libelektra; member=Commit
+   string "system/tests/foo"
+```

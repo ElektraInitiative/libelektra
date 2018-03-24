@@ -5,4 +5,6 @@ add_plugin (internalnotification
 		internalnotification.h
 		internalnotification.c
 	ADD_TEST
+	LINK_ELEKTRA
+		elektra-kdb
 	)

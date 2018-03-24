@@ -15,9 +15,9 @@
  *
  * @brief Asynchronous I/O feature
  *
- * @par Asynchronous I/O with Elektra
+ * @section async Asynchronous I/O with Elektra
  *
- * This page contains useful details for creating I/O bindings and using the
+ * This section contains useful details for creating I/O bindings and using the
  * operations provided by these bindings.
  * Application developers are normally not required to do those
  * tasks.

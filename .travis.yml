@@ -119,6 +119,8 @@ before_install:
       brew install swig
       brew install yajl
       pip2 install cheetah # Required by kdb-gen
+      # start D-Bus session bus
+      brew services start dbus
     fi
   - |
     if [[ "$TRAVIS_OS_NAME" == "osx" && "$HASKELL" == "ON" ]] ; then
@@ -139,6 +141,7 @@ before_install:
       sudo apt-get install libboost-all-dev
       sudo apt-get install libyaml-cpp-dev
       sudo apt-get install libuv-dev
+      sudo apt-get install libdbus-1-dev
     fi
 
 #
@@ -195,8 +198,14 @@ before_script:
 script:
   - ninja
   - |
-    if [[ "$FAST" == "ON" || "$ASAN" = "ON" ]]; then
+    if [[ "$FAST" == "ON" ]]; then
       ninja run_all
+    elif [[ "$ASAN" = "ON" && "$TRAVIS_OS_NAME" == "linux" && "$CC" == "clang" ]]; then
+      # preload required libraries (LD_PRELOAD is a space separated list)
+      UBSAN_LIBRARY=$(find /usr/ -name '*libclang_rt.ubsan_standalone_cxx-x86_64.so')
+      LD_PRELOAD="$UBSAN_LIBRARY" ASAN_OPTIONS=symbolize=1 ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer) ninja run_all
+    elif [[ "$ASAN" = "ON" ]]; then
+      ASAN_OPTIONS=symbolize=1 ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer) ninja run_all
     else
       ninja install
       ninja run_all && kdb run_all

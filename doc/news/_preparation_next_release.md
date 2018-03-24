@@ -34,13 +34,28 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.8.
 
 ## Highlights
 
-- <<HIGHLIGHT1>>
+- Notification: New transport plugin
 - <<HIGHLIGHT2>>
 - <<HIGHLIGHT3>>
 
 
-### <<HIGHLIGHT1>>
+### Notification: New transport plugin
 
+Elektra's notification feature has received its first transport plugin pair:
+D-Bus.
+Transport plugins provide a link between applications using Elektra.
+These plugins send and receive notifications when a key is modified within the
+key database.
+The existing `dbus` plugin has been modified to use an asynchronous I/O binding
+for sending messages, if available.
+The new `dbusrecv` plugin is responsible for receiving messages sent from the
+`dbus` plugin and other sources with the same
+[message format](https://www.libelektra.org/plugins/dbus#notification-format).
+
+For more details see the
+[notification tutorial](https://github.com/ElektraInitiative/libelektra/tree/master/doc/tutorials/notifications.md)
+or the
+[example applications](https://github.com/ElektraInitiative/libelektra/tree/master/src/libs/notification/example)
 
 ### <<HIGHLIGHT2>>
 
@@ -69,6 +84,10 @@ We improved the documentation in the following ways:
 As always, the ABI and API of kdb.h is fully compatible, i.e. programs
 compiled against an older 0.8 version of Elektra will continue to work
 (ABI) and you will be able to recompile programs without errors (API).
+
+We added:
+
+- the private headerfiles `kdbnotificationinternal.h`, `kdbioplugin.h`.
 
 ## Notes for Maintainer
 

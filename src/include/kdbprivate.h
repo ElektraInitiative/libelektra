@@ -15,6 +15,7 @@
 #include <kdbhelper.h>
 #include <kdbio.h>
 #include <kdbmacros.h>
+#include <kdbnotificationinternal.h>
 #include <kdbplugin.h>
 #include <kdbproposal.h>
 #include <kdbtypes.h>
@@ -282,6 +283,7 @@ struct _KDB
 	ElektraIoInterface * ioBinding; /*!< binding for asynchronous I/O operations.*/
 
 	Plugin * notificationPlugin; /*!< reference to global plugin for notifications.*/
+	ElektraNotificationCallbackContext * notificationCallbackContext; /*!< reference to context for notification callbacks.*/
 };
 
 
@@ -467,6 +469,7 @@ int elektraPluginClose (Plugin * handle, Key * errorKey);
 int elektraProcessPlugin (Key * cur, int * pluginNumber, char ** pluginName, char ** referenceName, Key * errorKey);
 int elektraProcessPlugins (Plugin ** plugins, KeySet * modules, KeySet * referencePlugins, KeySet * config, KeySet * systemConfig,
 			   Key * errorKey);
+size_t elektraPluginGetFunction (Plugin * plugin, const char * name);
 
 Plugin * elektraPluginMissing (void);
 Plugin * elektraPluginVersion (void);

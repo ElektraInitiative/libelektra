@@ -16,11 +16,12 @@
 
 int callback_called;
 
-void test_openclose (void)
+static void test_openclose (void)
 {
 	printf ("test open & close\n");
 
-	Key * key = keyNew ("/sw/tests/testlib_notification", KEY_END);
+	// TODO test with ASAN and with & without cascading key
+	Key * key = keyNew ("system/sw/tests/testlib_notification", KEY_END);
 	KDB * kdb = kdbOpen (key);
 	exit_if_fail (kdb, "opening kdb failed");
 
@@ -38,7 +39,7 @@ void test_openclose (void)
 	keyDel (key);
 }
 
-void test_registerInt (void)
+static void test_registerInt (void)
 {
 	printf ("test elektraNotificationRegisterInt\n");
 
@@ -70,12 +71,12 @@ void test_registerInt (void)
 	keyDel (valueKey);
 }
 
-void testCallback (Key * key ELEKTRA_UNUSED)
+static void testCallback (Key * key ELEKTRA_UNUSED)
 {
 	callback_called = 1;
 }
 
-void test_registerCallback (void)
+static void test_registerCallback (void)
 {
 	printf ("test elektraNotificationRegisterCallback\n");
 

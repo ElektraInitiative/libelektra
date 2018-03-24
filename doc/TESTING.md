@@ -54,7 +54,7 @@ You have some options to avoid running them as root:
    ```
    Then change the permissions:
    ```
-   chown -R `whoami` `kdb sget system/info/elektra/constants/cmake/CMAKE_INSTALL_PREFIX .`/`kdb get system/info/constants/cmake/KDB_DB_SPEC .`
+   chown -R `whoami` `kdb sget system/info/elektra/constants/cmake/CMAKE_INSTALL_PREFIX .`/`kdb sget system/info/elektra/constants/cmake/KDB_DB_SPEC .`
    chown -R `whoami` `kdb sget system/info/elektra/constants/cmake/KDB_DB_SYSTEM .`
    ```
    After that all test cases should run successfully as described above.

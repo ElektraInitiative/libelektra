@@ -6,5 +6,6 @@ add_plugin (list
 		list.c
 	LINK_ELEKTRA
 		elektra-kdb
+		elektra-invoke
 	ADD_TEST
 	)

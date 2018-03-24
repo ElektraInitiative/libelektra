@@ -8,14 +8,15 @@
  */
 
 #include <kdb.h>
-#include <kdbnotification.h>
+#include <kdbhelper.h>       // elektraFree
+#include <kdbio.h>	   // I/O binding functions (elektraIo*)
+#include <kdbio_uv.h>	// I/O binding constructor for uv (elektraIoUvNew)
+#include <kdbnotification.h> // notification functions
 
-#include <signal.h>
-#include <stdio.h>
-#include <string.h>
-#include <unistd.h>
+#include <uv.h> // uv functions
 
-static volatile int keepRunning = 0;
+#include <signal.h> // signal()
+#include <stdio.h>  // printf() & co
 
 // from https://en.wikipedia.org/wiki/ANSI_escape_code#Colors
 #define ANSI_COLOR_RESET "\x1b[0m"
@@ -28,15 +29,15 @@ static void setTerminalColor (Key * color)
 	const char * value = keyString (color);
 	printf ("Callback called. Changing color to %s\n", value);
 
-	if (strcmp (value, "red") == 0)
+	if (elektraStrCmp (value, "red") == 0)
 	{
 		printf (ANSI_COLOR_RED);
 	}
-	else if (strcmp (value, "green") == 0)
+	else if (elektraStrCmp (value, "green") == 0)
 	{
 		printf (ANSI_COLOR_GREEN);
 	}
-	else if (strcmp (value, "blue") == 0)
+	else if (elektraStrCmp (value, "blue") == 0)
 	{
 		printf (ANSI_COLOR_BLUE);
 	}
@@ -52,33 +53,25 @@ static void resetTerminalColor (void)
 	printf (ANSI_COLOR_RESET "\n");
 }
 
-static void printKeyValue (KeySet * ks, Key * search, char * messageNotSet)
-{
-	Key * found = ksLookup (ks, search, 0);
-	printf ("Key \"%s\"", keyName (search));
-	if (!found)
-	{
-		printf (" not set. %s", messageNotSet);
-	}
-	else
-	{
-		printf (" has value \"%s\"", keyString (found));
-	}
-	printf ("\n");
-}
-
-void onSIGINT (int signal)
+static void onSIGNAL (int signal)
 {
 	if (signal == SIGINT)
 	{
-		keepRunning = 1;
+		uv_stop (uv_default_loop ());
 	}
+}
+
+static void printVariable (ElektraIoTimerOperation * timer)
+{
+	int value = *(int *) elektraIoTimerGetData (timer);
+	printf ("\nMy integer value is %d\n", value);
 }
 
 int main (void)
 {
 	// Cleanup on SIGINT
-	signal (SIGINT, onSIGINT);
+	signal (SIGINT, onSIGNAL);
+	signal (SIGQUIT, onSIGNAL);
 
 	KeySet * config = ksNew (20, KS_END);
 
@@ -89,6 +82,10 @@ int main (void)
 		printf ("could not open KDB. aborting\n");
 		return -1;
 	}
+
+	uv_loop_t * loop = uv_default_loop ();
+	ElektraIoInterface * binding = elektraIoUvNew (loop);
+	elektraIoSetBinding (kdb, binding);
 
 	int result = elektraNotificationOpen (kdb);
 	if (!result)
@@ -114,28 +111,34 @@ int main (void)
 		return -1;
 	}
 
-	printf ("Press Ctl+C to exit.\n\n");
+	// Setup timer that repeatedly prints the variable
+	ElektraIoTimerOperation * timer = elektraIoNewTimerOperation (2000, 1, printVariable, &value);
+	elektraIoBindingAddTimer (binding, timer);
 
-	// repeatedly call kdbGet and print variables
-	while (!keepRunning)
-	{
-		// After this kdbGet the integer variable is updated and the callback was called.
-		// TODO remove polling or make it optional when "transport plugins" are available
-		kdbGet (kdb, config, key);
+	kdbGet (kdb, config, key);
 
-		// Print values
-		printf ("My integer value is %d\n", value);
-		printKeyValue (config, intKeyToWatch, "Try setting it to any integer value!");
-		printKeyValue (config, callbackKeyToWatch, "Try setting it to \"red\", \"green\" or \"blue\"!");
-		printf ("\n");
+	printf ("Asynchronous Notification Example Application\n");
+	printf ("- Set \"%s\" to red, blue or green to change the text color\n", keyName (callbackKeyToWatch));
+	printf ("- Set \"%s\" to any integer value\n", keyName (intKeyToWatch));
+	printf ("Send SIGINT (Ctl+C) to exit.\n\n");
 
-		sleep (2);
-	}
+	uv_run (loop, UV_RUN_DEFAULT);
 
 	// Cleanup
 	resetTerminalColor ();
+	elektraIoBindingRemoveTimer (timer);
+	elektraFree (timer);
 	elektraNotificationClose (kdb);
 	kdbClose (kdb, key);
+
+	elektraIoBindingCleanup (binding);
+	uv_run (loop, UV_RUN_ONCE); // allow cleanup
+#ifdef HAVE_LIBUV1
+	uv_loop_close (uv_default_loop ());
+#elif HAVE_LIBUV0
+	uv_loop_delete (uv_default_loop ());
+#endif
+
 	ksDel (config);
 	keyDel (intKeyToWatch);
 	keyDel (callbackKeyToWatch);

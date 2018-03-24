@@ -36,6 +36,7 @@ section here.
 - [Script Testing](script_testing.md)
 - [Array](array.md)
 - [Vendor Spec](vendor_spec.md)
+- [Deferred Plugin Calls](deferred_plugin_calls.md)
 
 ## Drafts
 
