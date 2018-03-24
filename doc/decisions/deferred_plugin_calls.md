@@ -67,14 +67,14 @@ These plugins also "hide" functions exported by encapsulated plugins.
 
 Encapsulating plugins export a function called `deferredCall` with the
 declaration
-`void ElektraDeferredCall (Plugin * plugin, char * name, KeySet * parameters)`.
+`void elektraDeferredCall (Plugin * plugin, char * name, KeySet * parameters)`.
 Encapsulating plugins shall save multiple deferred calls and call the exported
 functions specified by `name` passing the `parameters` KeySet when a plugin is
 initialized in the same order as received.
 
 Plugins that support deferred calls shall have the following declaration for
 their functions
-`void ElektraDeferredCallable (Plugin * plugin, KeySet * parameters)`.
+`void somePluginFunction (Plugin * plugin, KeySet * parameters)`.
 The calling developer is responsible for ensuring that the called functions have
 a compatible declaration.
 Encapsulated plugins that do not export a specified function name are omitted.
@@ -89,15 +89,15 @@ breaking callers.
 The called function receive their parameters via a KeySet.
 
 While called functions could return data using the `parameters` KeySet (or a
-seperate KeySet) there is no defined moment when the data can be collected.
+separate KeySet) there is no defined moment when the data can be collected.
 Defining such a moment would break the lazy-loading constraint.
 It is recommended to use callbacks passed as `parameters`.
 The callback function declaration is not affected by this decision.
 
 ## Related decisions
 
-- Elektra's invoke functionality will be extended to also allow use of deferred
-calls with new functions:
+- Elektra's invoke functionality will be extended to also allow us to use
+  deferred calls with new functions:
 
 - `int elektraInvokeFunctionDeferred (ElektraInvokeHandle * handle, const char * elektraPluginFunctionName, KeySet * ks)`
   which defers a call if the plugin exports `deferredCall`.
