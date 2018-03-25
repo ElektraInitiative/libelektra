@@ -203,18 +203,16 @@ static KeyRegistration * elektraInternalnotificationAddNewRegistration (PluginSt
  */
 static int keySetContainsSameOrBelow (Key * check, KeySet * ks)
 {
-	int result = 0;
 	Key * current;
 	ksRewind (ks);
 	while ((current = ksNext (ks)) != NULL)
 	{
 		if (checkKeyIsBelowOrSame (check, current))
 		{
-			result = 1;
-			break;
+			return 1;
 		}
 	}
-	return result;
+	return 0;
 }
 
 /**
@@ -252,35 +250,32 @@ void elektraInternalnotificationUpdateRegisteredKeys (Plugin * plugin, KeySet * 
 		else
 		{
 			key = ksLookupByName (keySet, registeredKey->name, 0);
-			if (key == NULL)
+			if (key != NULL)
 			{
-				registeredKey = registeredKey->next;
-				continue;
-			}
-
-			// Detect changes for string keys
-			if (!keyIsString (key))
-			{
-				// always notify for binary keys
-				changed = 1;
-			}
-			else
-			{
-				const char * currentValue = keyString (key);
-				changed = registeredKey->lastValue == NULL || strcmp (currentValue, registeredKey->lastValue) != 0;
-
-				if (changed)
+				// Detect changes for string keys
+				if (!keyIsString (key))
 				{
-					// Save last value
-					char * buffer = elektraStrDup (currentValue);
-					if (buffer)
+					// always notify for binary keys
+					changed = 1;
+				}
+				else
+				{
+					const char * currentValue = keyString (key);
+					changed = registeredKey->lastValue == NULL || strcmp (currentValue, registeredKey->lastValue) != 0;
+
+					if (changed)
 					{
-						if (registeredKey->lastValue != NULL)
+						// Save last value
+						char * buffer = elektraStrDup (currentValue);
+						if (buffer)
 						{
-							// Free previous value
-							elektraFree (registeredKey->lastValue);
+							if (registeredKey->lastValue != NULL)
+							{
+								// Free previous value
+								elektraFree (registeredKey->lastValue);
+							}
+							registeredKey->lastValue = buffer;
 						}
-						registeredKey->lastValue = buffer;
 					}
 				}
 			}
@@ -296,41 +291,124 @@ void elektraInternalnotificationUpdateRegisteredKeys (Plugin * plugin, KeySet * 
 			callback (key, registeredKey->context);
 		}
 
+		// proceed with next registered key
 		registeredKey = registeredKey->next;
 	}
 }
 
 // Generate register and conversion functions
-INTERNALNOTIFICATION_TYPE (int, long int, Int, (strtol (string, &end, 10)),
-			   INTERNALNOTIFICATION_CHECK_CONVERSION_RANGE (value <= INT_MAX && value >= INT_MIN))
-INTERNALNOTIFICATION_TYPE (unsigned int, unsigned long int, UnsignedInt, (strtoul (string, &end, 10)),
-			   INTERNALNOTIFICATION_CHECK_CONVERSION_RANGE (value <= UINT_MAX))
+// for built-in C types
+#define TYPE int
+#define VALUE_TYPE long int
+#define TYPE_NAME Int
+#define TO_VALUE (strtol (string, &end, 10))
+#define CHECK_CONVERSION INTERNALNOTIFICATION_CHECK_CONVERSION_RANGE (value <= INT_MAX && value >= INT_MIN)
+#include "macros/addType.h"
 
-INTERNALNOTIFICATION_TYPE (long, long, Long, (strtol (string, &end, 10)), INTERNALNOTIFICATION_CHECK_CONVERSION)
-INTERNALNOTIFICATION_TYPE (unsigned long, unsigned long, UnsignedLong, (strtoul (string, &end, 10)), INTERNALNOTIFICATION_CHECK_CONVERSION)
+#define TYPE unsigned int
+#define VALUE_TYPE unsigned long int
+#define TYPE_NAME UnsignedInt
+#define TO_VALUE (strtoul (string, &end, 10))
+#define CHECK_CONVERSION INTERNALNOTIFICATION_CHECK_CONVERSION_RANGE (value <= UINT_MAX)
+#include "macros/addType.h"
 
-INTERNALNOTIFICATION_TYPE (float, float, Float, (strtof (string, &end)), INTERNALNOTIFICATION_CHECK_CONVERSION)
-INTERNALNOTIFICATION_TYPE (double, double, Double, (strtod (string, &end)), INTERNALNOTIFICATION_CHECK_CONVERSION)
+#define TYPE long
+#define TYPE_NAME Long
+#define TO_VALUE (strtol (string, &end, 10))
+#define CHECK_CONVERSION INTERNALNOTIFICATION_CHECK_CONVERSION
+#include "macros/addType.h"
 
-INTERNALNOTIFICATION_TYPE (kdb_boolean_t, int, KdbBoolean, (!strcmp (string, "1")), 1)
-INTERNALNOTIFICATION_TYPE (kdb_char_t, kdb_char_t, KdbChar, (string[0]), 1)
-INTERNALNOTIFICATION_TYPE (kdb_octet_t, unsigned int, KdbOctet, (strtoul (string, &end, 10)),
-			   INTERNALNOTIFICATION_CHECK_CONVERSION_RANGE (value <= 255))
-INTERNALNOTIFICATION_TYPE (kdb_short_t, int, KdbShort, (strtol (string, &end, 10)),
-			   INTERNALNOTIFICATION_CHECK_CONVERSION_RANGE (value <= SHRT_MAX && value >= SHRT_MIN))
-INTERNALNOTIFICATION_TYPE (kdb_unsigned_short_t, unsigned int, KdbUnsignedShort, (strtoul (string, &end, 10)),
-			   INTERNALNOTIFICATION_CHECK_CONVERSION_RANGE (value <= USHRT_MAX))
-INTERNALNOTIFICATION_TYPE (kdb_long_t, kdb_long_t, KdbLong, (strtol (string, &end, 10)), INTERNALNOTIFICATION_CHECK_CONVERSION)
-INTERNALNOTIFICATION_TYPE (kdb_unsigned_long_t, kdb_unsigned_long_t, KdbUnsignedLong, (strtoul (string, &end, 10)),
-			   INTERNALNOTIFICATION_CHECK_CONVERSION)
-INTERNALNOTIFICATION_TYPE (kdb_long_long_t, kdb_long_long_t, KdbLongLong, (ELEKTRA_LONG_LONG_S (string, &end, 10)),
-			   INTERNALNOTIFICATION_CHECK_CONVERSION)
-INTERNALNOTIFICATION_TYPE (kdb_unsigned_long_long_t, kdb_unsigned_long_long_t, KdbUnsignedLongLong,
-			   (ELEKTRA_UNSIGNED_LONG_LONG_S (string, &end, 10)), INTERNALNOTIFICATION_CHECK_CONVERSION)
-INTERNALNOTIFICATION_TYPE (kdb_float_t, kdb_float_t, KdbFloat, (strtof (string, &end)), INTERNALNOTIFICATION_CHECK_CONVERSION)
-INTERNALNOTIFICATION_TYPE (kdb_double_t, kdb_double_t, KdbDouble, (strtod (string, &end)), INTERNALNOTIFICATION_CHECK_CONVERSION)
-INTERNALNOTIFICATION_TYPE (kdb_long_double_t, kdb_long_double_t, KdbLongDouble, (strtold (string, &end)),
-			   INTERNALNOTIFICATION_CHECK_CONVERSION)
+#define TYPE unsigned long
+#define TYPE_NAME UnsignedLong
+#define TO_VALUE (strtoul (string, &end, 10))
+#define CHECK_CONVERSION INTERNALNOTIFICATION_CHECK_CONVERSION
+#include "macros/addType.h"
+
+#define TYPE float
+#define TYPE_NAME Float
+#define TO_VALUE (strtof (string, &end))
+#define CHECK_CONVERSION INTERNALNOTIFICATION_CHECK_CONVERSION
+#include "macros/addType.h"
+
+#define TYPE double
+#define TYPE_NAME Double
+#define TO_VALUE (strtod (string, &end))
+#define CHECK_CONVERSION INTERNALNOTIFICATION_CHECK_CONVERSION
+#include "macros/addType.h"
+
+// for kdb_*_t Types
+#define TYPE kdb_boolean_t
+#define TYPE_NAME KdbBoolean
+#define TO_VALUE (!strcmp (string, "1"))
+#include "macros/addType.h"
+
+#define TYPE kdb_char_t
+#define TYPE_NAME KdbChar
+#define TO_VALUE (string[0])
+#include "macros/addType.h"
+
+#define TYPE kdb_octet_t
+#define VALUE_TYPE unsigned int
+#define TYPE_NAME KdbOctet
+#define TO_VALUE (strtoul (string, &end, 10))
+#define CHECK_CONVERSION INTERNALNOTIFICATION_CHECK_CONVERSION_RANGE (value <= 255)
+#include "macros/addType.h"
+
+#define TYPE kdb_short_t
+#define VALUE_TYPE int
+#define TYPE_NAME KdbShort
+#define TO_VALUE (strtol (string, &end, 10))
+#define CHECK_CONVERSION INTERNALNOTIFICATION_CHECK_CONVERSION_RANGE (value <= SHRT_MAX && value >= SHRT_MIN)
+#include "macros/addType.h"
+
+#define TYPE kdb_unsigned_short_t
+#define VALUE_TYPE unsigned int
+#define TYPE_NAME KdbUnsignedShort
+#define TO_VALUE (strtoul (string, &end, 10))
+#define CHECK_CONVERSION INTERNALNOTIFICATION_CHECK_CONVERSION_RANGE (value <= USHRT_MAX)
+#include "macros/addType.h"
+
+#define TYPE kdb_long_t
+#define TYPE_NAME KdbLong
+#define TO_VALUE (strtol (string, &end, 10))
+#define CHECK_CONVERSION INTERNALNOTIFICATION_CHECK_CONVERSION
+#include "macros/addType.h"
+
+#define TYPE kdb_unsigned_long_t
+#define TYPE_NAME KdbUnsignedLong
+#define TO_VALUE (strtoul (string, &end, 10))
+#define CHECK_CONVERSION INTERNALNOTIFICATION_CHECK_CONVERSION
+#include "macros/addType.h"
+
+#define TYPE kdb_long_long_t
+#define TYPE_NAME KdbLongLong
+#define TO_VALUE (ELEKTRA_LONG_LONG_S (string, &end, 10))
+#define CHECK_CONVERSION INTERNALNOTIFICATION_CHECK_CONVERSION
+#include "macros/addType.h"
+
+#define TYPE kdb_unsigned_long_long_t
+#define TYPE_NAME KdbUnsignedLongLong
+#define TO_VALUE (ELEKTRA_UNSIGNED_LONG_LONG_S (string, &end, 10))
+#define CHECK_CONVERSION INTERNALNOTIFICATION_CHECK_CONVERSION
+#include "macros/addType.h"
+
+#define TYPE kdb_float_t
+#define TYPE_NAME KdbFloat
+#define TO_VALUE (strtof (string, &end))
+#define CHECK_CONVERSION INTERNALNOTIFICATION_CHECK_CONVERSION
+#include "macros/addType.h"
+
+#define TYPE kdb_double_t
+#define TYPE_NAME KdbDouble
+#define TO_VALUE (strtod (string, &end))
+#define CHECK_CONVERSION INTERNALNOTIFICATION_CHECK_CONVERSION
+#include "macros/addType.h"
+
+#define TYPE kdb_long_double_t
+#define TYPE_NAME KdbLongDouble
+#define TO_VALUE (strtold (string, &end))
+#define CHECK_CONVERSION INTERNALNOTIFICATION_CHECK_CONVERSION
+#include "macros/addType.h"
 
 /**
  * @see kdbnotificationinternal.h ::ElektraNotificationPluginRegisterCallback

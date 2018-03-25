@@ -2,17 +2,7 @@
 
 ## Preface
 
-**Not all of the features described in this document are implemented yet.**
-
-Development state:
-
- - [x] internalnotification plugin (support for int and callback)
- - [x] notification wrapper (support for int and callback)
- - [X] transport plugin dbus
- - [ ] transport plugin zeromq
- - [ ] transport plugin redis
- - [ ] internalnotification plugin & notfication wrapper (support for Elektra's basic types)
-
+**The features described in this document are experimental.**
 
 This document explains how notifications are implemented in Elektra and how
 they can be used by application developers.
@@ -194,8 +184,10 @@ changed key needs further processing.
 #define ANSI_COLOR_RED			"\x1b[31m"
 #define ANSI_COLOR_GREEN		"\x1b[32m"
 
-void setTerminalColor (Key * color, void * context)
+void setTerminalColor (Key * color, void * context ELEKTRA_UNUSED)
 {
+  // context contains whatever was passed as 4th parameter
+  // to elektraNotificationRegisterCallback()
 	char * value = keyString (color);
 
 	if (strcmp (value, "red") == 0)

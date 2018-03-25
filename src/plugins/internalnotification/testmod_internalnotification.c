@@ -28,7 +28,6 @@ int doUpdate_callback_called;
 
 #define CALLBACK_CONTEXT_MAGIC_NUMBER ((void *) 1234)
 
-#define REGISTER_FUNC_NAME(TYPE_NAME) internalnotificationRegister##TYPE_NAME
 #define TEST_CASE_UPDATE_NAME(TYPE_NAME) test_update##TYPE_NAME
 #define TEST_CASE_NO_UPDATE_NAME(TYPE_NAME) test_noUpdate##TYPE_NAME
 
@@ -36,59 +35,6 @@ int doUpdate_callback_called;
 	printf ("\n" #TYPE_NAME "\n----------------\n");                                                                                   \
 	TEST_CASE_UPDATE_NAME (TYPE_NAME) ();                                                                                              \
 	TEST_CASE_NO_UPDATE_NAME (TYPE_NAME) ();
-
-#define REGISTER_FUNC_DEFINITION(TYPE, TYPE_NAME)                                                                                          \
-	static int REGISTER_FUNC_NAME (TYPE_NAME) (Plugin * plugin, Key * key, TYPE * variable)                                            \
-	{                                                                                                                                  \
-		size_t address = elektraPluginGetFunction (plugin, "register" #TYPE_NAME);                                                 \
-		if (!address) yield_error ("function not exported");                                                                       \
-                                                                                                                                           \
-		/* register key with plugin */                                                                                             \
-		ELEKTRA_NOTIFICATION_REGISTERFUNC_TYPEDEF (RegisterFuncType, TYPE)                                                         \
-		return ((RegisterFuncType) address) (plugin, key, variable);                                                               \
-	}
-
-#define CREATE_UPDATE_TEST_CASE(TYPE, TYPE_NAME, FORMAT_STRING, TEST_VALUE, CHECK_VALUE)                                                   \
-	static void TEST_CASE_UPDATE_NAME (TYPE_NAME) (void)                                                                               \
-	{                                                                                                                                  \
-		printf (#TYPE ": test update\n");                                                                                          \
-		KeySet * conf = ksNew (0, KS_END);                                                                                         \
-		PLUGIN_OPEN ("internalnotification");                                                                                      \
-		Key * registeredKey = keyNew ("/test/internalnotification/value", KEY_END);                                                \
-		TYPE value = 0;                                                                                                            \
-		succeed_if (REGISTER_FUNC_NAME (TYPE_NAME) (plugin, registeredKey, &value) == 1, "registration was not successful");       \
-		char * valueStr = elektraFormat (FORMAT_STRING, TEST_VALUE);                                                               \
-		Key * valueKey = keyNew ("user/test/internalnotification/value", KEY_VALUE, valueStr, KEY_END);                            \
-		KeySet * ks = ksNew (1, valueKey, KS_END);                                                                                 \
-		elektraInternalnotificationUpdateRegisteredKeys (plugin, ks);                                                              \
-		succeed_if (CHECK_VALUE, "registered value was not updated");                                                              \
-		free (valueStr);                                                                                                           \
-		keyDel (registeredKey);                                                                                                    \
-		ksDel (ks);                                                                                                                \
-		PLUGIN_CLOSE ();                                                                                                           \
-	}
-
-#define CREATE_TYPE_TESTS(TYPE, TYPE_NAME, FORMAT_STRING, TEST_VALUE, CHECK_VALUE, INVALID_VALUE, CHECK_INVALID)                           \
-	REGISTER_FUNC_DEFINITION (TYPE, TYPE_NAME)                                                                                         \
-                                                                                                                                           \
-	CREATE_UPDATE_TEST_CASE (TYPE, TYPE_NAME, FORMAT_STRING, TEST_VALUE, CHECK_VALUE)                                                  \
-                                                                                                                                           \
-	static void TEST_CASE_NO_UPDATE_NAME (TYPE_NAME) (void)                                                                            \
-	{                                                                                                                                  \
-		printf (#TYPE ": test no update with invalid value\n");                                                                    \
-		KeySet * conf = ksNew (0, KS_END);                                                                                         \
-		PLUGIN_OPEN ("internalnotification");                                                                                      \
-		Key * valueKey = keyNew ("user/test/internalnotification/value", KEY_END);                                                 \
-		KeySet * ks = ksNew (1, valueKey, KS_END);                                                                                 \
-		TYPE value = 0;                                                                                                            \
-		succeed_if (REGISTER_FUNC_NAME (TYPE_NAME) (plugin, valueKey, &value) == 1, "registration was not successful");            \
-		keySetString (valueKey, INVALID_VALUE);                                                                                    \
-		elektraInternalnotificationUpdateRegisteredKeys (plugin, ks);                                                              \
-		succeed_if (CHECK_INVALID, "registered value was updated");                                                                \
-		ksDel (ks);                                                                                                                \
-		PLUGIN_CLOSE ();                                                                                                           \
-	}
-
 
 static int internalnotificationRegisterInt (Plugin * plugin, Key * key, int * variable)
 {
@@ -580,31 +526,136 @@ static void test_doUpdateShouldNotUpdateUnregisteredKey (void)
 	PLUGIN_CLOSE ();
 }
 
-CREATE_TYPE_TESTS (unsigned int, UnsignedInt, "%u", UINT_MAX, (value == UINT_MAX), "-1", value == 0)
-CREATE_TYPE_TESTS (long, Long, "%ld", LONG_MAX, (value == LONG_MAX), "5000abc000", value == 0)
-CREATE_TYPE_TESTS (unsigned long, UnsignedLong, "%lu", ULONG_MAX, (value == ULONG_MAX), "AA446744073709551615", value == 0)
+// Generate test cases for C built-in types
+#define TYPE unsigned int
+#define TYPE_NAME UnsignedInt
+#define FORMAT_STRING "%u"
+#define TEST_VALUE UINT_MAX
+#define INVALID_VALUE "-1"
+#include "macros/testCreateTypeTests.h"
 
-CREATE_TYPE_TESTS (float, Float, "%f", 2.3, (value >= 2.295 && value <= 2.305), "4.a", ((int) value == 0))
-CREATE_TYPE_TESTS (double, Double, "%1.8f", 1.00000001, (value >= 1 + 1e-9 && value <= 1 + 1e-7), "4.a", ((int) value == 0))
+#define TYPE long
+#define TYPE_NAME Long
+#define FORMAT_STRING "%ld"
+#define TEST_VALUE LONG_MAX
+#define INVALID_VALUE "5000abc000"
+#include "macros/testCreateTypeTests.h"
 
-REGISTER_FUNC_DEFINITION (kdb_boolean_t, KdbBoolean)
-CREATE_UPDATE_TEST_CASE (kdb_boolean_t, KdbBoolean, "%d", 1, (value))
+#define TYPE unsigned long
+#define TYPE_NAME UnsignedLong
+#define FORMAT_STRING "%lu"
+#define TEST_VALUE ULONG_MAX
+#define INVALID_VALUE "AA446744073709551615"
+#include "macros/testCreateTypeTests.h"
 
-REGISTER_FUNC_DEFINITION (kdb_char_t, KdbChar)
-CREATE_UPDATE_TEST_CASE (kdb_char_t, KdbChar, "abc%d", 1, (value == 'a'))
+#define TYPE float
+#define TYPE_NAME Float
+#define FORMAT_STRING "%f"
+#define TEST_VALUE 2.3
+#define CHECK_VALUE (value >= 2.295 && value <= 2.305)
+#define INVALID_VALUE "4.a"
+#define CHECK_INVALID ((int) value == 0)
+#include "macros/testCreateTypeTests.h"
 
-CREATE_TYPE_TESTS (kdb_octet_t, KdbOctet, "%d", 255, (value == 255), "4a", value == 0)
-CREATE_TYPE_TESTS (kdb_short_t, KdbShort, "%d", SHRT_MIN, (value == SHRT_MIN), "-55ABC", value == 0)
-CREATE_TYPE_TESTS (kdb_unsigned_short_t, KdbUnsignedShort, "%d", USHRT_MAX, (value == USHRT_MAX), "55ABC", value == 0)
-CREATE_TYPE_TESTS (kdb_long_t, KdbLong, "%d", INT_MIN, (value == INT_MIN), "B5C", value == 0)
-CREATE_TYPE_TESTS (kdb_unsigned_long_t, KdbUnsignedLong, "%d", UINT_MAX, (value == UINT_MAX), "B5C", value == 0)
-CREATE_TYPE_TESTS (kdb_long_long_t, KdbLongLong, ELEKTRA_LONG_LONG_F, LONG_MIN, (value == LONG_MIN), "50000asasd", value == 0)
-CREATE_TYPE_TESTS (kdb_unsigned_long_long_t, KdbUnsignedLongLong, ELEKTRA_UNSIGNED_LONG_LONG_F, ULONG_MAX, (value == ULONG_MAX), "-B5C",
-		   value == 0)
-CREATE_TYPE_TESTS (kdb_float_t, KdbFloat, "%f", 2.3, (value >= 2.295 && value <= 2.305), "4.a", ((int) value == 0))
-CREATE_TYPE_TESTS (kdb_double_t, KdbDouble, "%1.8f", 1.00000001, (value >= 1 + 1e-9 && value <= 1 + 1e-7), "4.a", ((int) value == 0))
-CREATE_TYPE_TESTS (kdb_long_double_t, KdbLongDouble, "%1.8f", 1.00000001, (value >= 1 + 1e-9 && value <= 1 + 1e-7), "4.a",
-		   ((int) value == 0))
+#define TYPE double
+#define TYPE_NAME Double
+#define FORMAT_STRING "%1.8f"
+#define TEST_VALUE 1.00000001
+#define CHECK_VALUE (value >= 1 + 1e-9 && value <= 1 + 1e-7)
+#define INVALID_VALUE "4.a"
+#define CHECK_INVALID ((int) value == 0)
+#include "macros/testCreateTypeTests.h"
+
+// for kdb_*_t types
+#define TYPE kdb_boolean_t
+#define TYPE_NAME KdbBoolean
+#define FORMAT_STRING "%d"
+#define TEST_VALUE 1
+#define CHECK_VALUE (value)
+#include "macros/testCreateTypeTests.h"
+
+#define TYPE kdb_char_t
+#define TYPE_NAME KdbChar
+#define FORMAT_STRING "abc%d"
+#define TEST_VALUE 1
+#define CHECK_VALUE (value == 'a')
+#include "macros/testCreateTypeTests.h"
+
+#define TYPE kdb_octet_t
+#define TYPE_NAME KdbOctet
+#define FORMAT_STRING "%d"
+#define TEST_VALUE 255
+#define INVALID_VALUE "4a"
+#include "macros/testCreateTypeTests.h"
+
+#define TYPE kdb_short_t
+#define TYPE_NAME KdbShort
+#define FORMAT_STRING "%d"
+#define TEST_VALUE SHRT_MIN
+#define INVALID_VALUE "-55ABC"
+#include "macros/testCreateTypeTests.h"
+
+#define TYPE kdb_unsigned_short_t
+#define TYPE_NAME KdbUnsignedShort
+#define FORMAT_STRING "%d"
+#define TEST_VALUE USHRT_MAX
+#define INVALID_VALUE "55ABC"
+#include "macros/testCreateTypeTests.h"
+
+#define TYPE kdb_long_t
+#define TYPE_NAME KdbLong
+#define FORMAT_STRING "%d"
+#define TEST_VALUE INT_MIN
+#define INVALID_VALUE "B5C"
+#include "macros/testCreateTypeTests.h"
+
+#define TYPE kdb_unsigned_long_t
+#define TYPE_NAME KdbUnsignedLong
+#define FORMAT_STRING "%d"
+#define TEST_VALUE UINT_MAX
+#define INVALID_VALUE "B5C"
+#include "macros/testCreateTypeTests.h"
+
+#define TYPE kdb_long_long_t
+#define TYPE_NAME KdbLongLong
+#define FORMAT_STRING ELEKTRA_LONG_LONG_F
+#define TEST_VALUE LONG_MIN
+#define INVALID_VALUE "50000asasd"
+#include "macros/testCreateTypeTests.h"
+
+#define TYPE kdb_unsigned_long_long_t
+#define TYPE_NAME KdbUnsignedLongLong
+#define FORMAT_STRING ELEKTRA_UNSIGNED_LONG_LONG_F
+#define TEST_VALUE ULONG_MAX
+#define INVALID_VALUE "-B5C"
+#include "macros/testCreateTypeTests.h"
+
+#define TYPE kdb_float_t
+#define TYPE_NAME KdbFloat
+#define FORMAT_STRING "%f"
+#define TEST_VALUE 2.3
+#define CHECK_VALUE (value >= 2.295 && value <= 2.305)
+#define INVALID_VALUE "4.a"
+#define CHECK_INVALID ((int) value == 0)
+#include "macros/testCreateTypeTests.h"
+
+#define TYPE kdb_double_t
+#define TYPE_NAME KdbDouble
+#define FORMAT_STRING "%1.8f"
+#define TEST_VALUE 1.00000001
+#define CHECK_VALUE (value >= 1 + 1e-9 && value <= 1 + 1e-7)
+#define INVALID_VALUE "4.a"
+#define CHECK_INVALID ((int) value == 0)
+#include "macros/testCreateTypeTests.h"
+
+#define TYPE kdb_long_double_t
+#define TYPE_NAME KdbLongDouble
+#define FORMAT_STRING "%1.8f"
+#define TEST_VALUE 1.00000001
+#define CHECK_VALUE (value >= 1 + 1e-9 && value <= 1 + 1e-7)
+#define INVALID_VALUE "4.a"
+#define CHECK_INVALID ((int) value == 0)
+#include "macros/testCreateTypeTests.h"
 
 int main (int argc, char ** argv)
 {
@@ -660,7 +711,7 @@ int main (int argc, char ** argv)
 	test_doUpdateShouldNotUpdateUnregisteredKey ();
 	test_doUpdateShouldUpdateKeyAbove ();
 
-	printf ("\ntestmod_internalnotification RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("testmod_internalnotification");
 
 	return nbError;
 }
