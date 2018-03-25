@@ -64,25 +64,12 @@ typedef uint16_t kdb_unsigned_short_t;
 typedef uint32_t kdb_unsigned_long_t;
 typedef uint64_t kdb_unsigned_long_long_t;
 
-#if SIZEOF_LONG == 4
-#define ELEKTRA_LONG_F "%ld"
-#define ELEKTRA_UNSIGNED_LONG_F "%lu"
-#elif SIZEOF_INT == 4
-#define ELEKTRA_LONG_F "%d"
-#define ELEKTRA_UNSIGNED_LONG_F "%u"
-#endif
-
-#if SIZEOF_LONG == 8 && !defined(__APPLE__)
-#define ELEKTRA_LONG_LONG_F "%ld"
-#define ELEKTRA_LONG_LONG_S strtol
-#define ELEKTRA_UNSIGNED_LONG_LONG_F "%lu"
-#define ELEKTRA_UNSIGNED_LONG_LONG_S strtoul
-#elif defined(HAVE_SIZEOF_LONG_LONG) && (SIZEOF_LONG_LONG == 8)
-#define ELEKTRA_LONG_LONG_F "%lld"
+#define ELEKTRA_LONG_F "%" PRIi32
+#define ELEKTRA_UNSIGNED_LONG_F "%" PRIu32
+#define ELEKTRA_LONG_LONG_F "%" PRIi64
 #define ELEKTRA_LONG_LONG_S strtoll
-#define ELEKTRA_UNSIGNED_LONG_LONG_F "%llu"
+#define ELEKTRA_UNSIGNED_LONG_LONG_F "%" PRIu64
 #define ELEKTRA_UNSIGNED_LONG_LONG_S strtoull
-#endif
 
 #else // for C89
 typedef unsigned char kdb_boolean_t;
