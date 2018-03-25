@@ -78,8 +78,8 @@ branch).
 
 ## Preparation
 
-Elektra uses cmake.
-Tested are cmake version 2.8.9 (minimum) and version 3.0.2 (recommended) among others.
+Elektra uses cmake3.
+Tested are cmake version 3.0.2 and 3.7.2 among others.
 
 To configure Elektra graphically (with curses) run (`..` belongs to command):
 
