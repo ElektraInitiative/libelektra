@@ -1,3 +1,26 @@
+/**
+ * Add a type to the internalnotification plugin.
+ *
+ * Additional required steps:
+ * - Export the register function using INTERNALNOTIFICATION_EXPORT_FUNCTION in elektraInternalnotificationGet()
+ * - Update testmod_internalnotification.c: Generate additional test cases using the create_type_tests supermacro
+ * - Update kdbnotification.h: add a ELEKTRA_NOTIFICATION_TYPE_DECLARATION
+ * - Update libs/notification/notification.c: add a ELEKTRA_NOTIFICATION_TYPE_DEFINITION
+ *
+ * This supermacro creates the following functions:
+ * - void elektraInternalnotificationConvertTYPE_NAME (Key * key, void * context)
+ * - int elektraInternalnotificationRegisterTYPE_NAME (Plugin * handle, Key * key, TYPE * variable)
+ *
+ * @param  TYPE             valid C type (e.g. int or kdb_short_t)
+ * @param  TYPE_NAME        name suffix for the functions (e.g. Int or UnsignedLong)
+ * @param  VALUE_TYPE       optional, defaults to TYPE. Ideally a larger type assigned to variable `value` for
+ *                          checking the range before the variable is updated
+ * @param  TO_VALUE         expression for converting `string` (variable containing the key value) to VALUE_TYPE
+ * @param  CHECK_CONVERSION optional, defaults to true. A boolean expression. Allows to check the range after
+ *                          conversion. Use INTERNALNOTIFICATION_CHECK_CONVERSION to check if a conversion using
+ *                          strto*()-functions was successful and INTERNALNOTIFICATION_CHECK_CONVERSION_RANGE (RANGE)
+ *                          to check additionally for a specified range.
+ */
 #ifndef TYPE
 #error "You have to #define TYPE, TYPE_NAME and TO_VALUE before including the addType supermacro"
 #endif
@@ -15,10 +38,10 @@
 #define CHECK_CONVERSION 1
 #endif
 
-#define CONCAT(X, Y) CONCAT2 (X, Y)
-#define CONCAT2(X, Y) X##Y
+#define ELEKTRA_CONCAT(X, Y) ELEKTRA_CONCAT2 (X, Y)
+#define ELEKTRA_CONCAT2(X, Y) X##Y
 
-#define INTERNALNOTIFICATION_CONVERSION_CALLBACK_NAME(TYPE_NAME) CONCAT (elektraInternalnotificationConvert, TYPE_NAME)
+#define INTERNALNOTIFICATION_CONVERSION_CALLBACK_NAME(TYPE_NAME) ELEKTRA_CONCAT (elektraInternalnotificationConvert, TYPE_NAME)
 
 #define INTERNALNOTIFICATION_REGISTER_SIGNATURE(TYPE, TYPE_NAME)                                                                           \
 	int INTERNALNOTIFICATION_REGISTER_NAME (TYPE_NAME) (Plugin * handle, Key * key, TYPE * variable)
@@ -58,8 +81,8 @@ INTERNALNOTIFICATION_REGISTER_SIGNATURE (TYPE, TYPE_NAME)
 	return 1;
 }
 
-#undef CONCAT
-#undef CONCAT2
+#undef ELEKTRA_CONCAT
+#undef ELEKTRA_CONCAT2
 #undef INTERNALNOTIFICATION_CONVERSION_CALLBACK_NAME
 #undef INTERNALNOTIFICATION_CONVERSION_CALLBACK_SIGNATURE
 #undef INTERNALNOTIFICATION_REGISTER_SIGNATURE

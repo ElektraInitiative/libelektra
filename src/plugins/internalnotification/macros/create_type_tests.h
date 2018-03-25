@@ -1,3 +1,19 @@
+/**
+ * Create test cases for internalnotification type.
+ *
+ * This supermacro creates the following functions:
+ * - int internalnotificationRegisterTYPE_NAME (Plugin * plugin, Key * key, TYPE * variable)
+ * - static void test_updateTYPE_NAME (void)
+ * - static void test_noUpdateTYPE_NAME (void) (only if INVALID_VALUE is defined)
+ *
+ * @param  TYPE           valid C type (e.g. int or kdb_short_t)
+ * @param  TYPE_NAME      name suffix for the functions (e.g. Int or UnsignedLong)
+ * @param  TEST_VALUE     value of type TYPE. Used for the "update" test case
+ * @param  FORMAT_STRING  format to convert TEST_VALUE to string (passed to elektraFormat())
+ * @param  CHECK_VALUE    optional, default is (value == TEST_VALUE). Boolean expression to check if `value` equals the test value
+ * @param  INVALID_VALUE  optional. Value of type string. Used for the no update test case. If not defined, "no update" test case is omitted
+ * @param  CHECK_INVALID  optioal, defaults to (value == 0). Check if the variable `value` has not been updated. Value should be 0.
+ */
 #ifndef TYPE
 #error "You have to #define TYPE, TYPE_NAME, FORMAT_STRING, TEST_VALUE and CHECK_VALUE before including the testCreateTypeRegister supermacro"
 #endif
@@ -17,20 +33,20 @@
 #define CHECK_INVALID (value == 0)
 #endif
 
-#define CONCAT(X, Y) CONCAT2 (X, Y)
-#define CONCAT2(X, Y) X##Y
+#define ELEKTRA_CONCAT(X, Y) ELEKTRA_CONCAT2 (X, Y)
+#define ELEKTRA_CONCAT2(X, Y) X##Y
 
-#define STRINGIFY(X) STRINGIFY2 (X)
-#define STRINGIFY2(X) #X
+#define ELEKTRA_STRINGIFY(X) ELEKTRA_STRINGIFY2 (X)
+#define ELEKTRA_STRINGIFY2(X) #X
 
-#define REGISTER_FUNC_NAME(TYPE_NAME) CONCAT (internalnotificationRegister, TYPE_NAME)
+#define REGISTER_FUNC_NAME(TYPE_NAME) ELEKTRA_CONCAT (internalnotificationRegister, TYPE_NAME)
 
 #define TEST_CASE_UPDATE_SIGNATURE(TYPE_NAME) static void TEST_CASE_UPDATE_NAME (TYPE_NAME) (void)
 #define TEST_CASE_NO_UPDATE_SIGNATURE(TYPE_NAME) static void TEST_CASE_NO_UPDATE_NAME (TYPE_NAME) (void)
 
 static int REGISTER_FUNC_NAME (TYPE_NAME) (Plugin * plugin, Key * key, TYPE * variable)
 {
-	size_t address = elektraPluginGetFunction (plugin, STRINGIFY (CONCAT (register, TYPE_NAME)));
+	size_t address = elektraPluginGetFunction (plugin, ELEKTRA_STRINGIFY (ELEKTRA_CONCAT (register, TYPE_NAME)));
 	if (!address) yield_error ("function not exported");
 
 	/* register key with plugin */
@@ -75,10 +91,10 @@ TEST_CASE_NO_UPDATE_SIGNATURE (TYPE_NAME)
 }
 #endif
 
-#undef CONCAT
-#undef CONCAT2
-#undef STRINGIFY
-#undef STRINGIFY2
+#undef ELEKTRA_CONCAT
+#undef ELEKTRA_CONCAT2
+#undef ELEKTRA_STRINGIFY
+#undef ELEKTRA_STRINGIFY2
 
 #undef TYPE
 #undef TYPE_NAME
