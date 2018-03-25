@@ -148,10 +148,19 @@ ELEKTRA_NOTIFICATION_TYPE_DECLARATION (kdb_long_double_t, KdbLongDouble)
 
 /**
  * @ingroup kdbnotification
+ * Callback function called when string to number conversion failed.
+ *
+ * @param  key      key with invalid value
+ * @param  context  user supplied callback context
+ */
+typedef void (*ElektraNotificationConversionErrorCallback) (Key * key, void * context);
+
+/**
+ * @ingroup kdbnotification
  * Callback function for key changes.
  *
  * @param  key      changed key
- * @param  Context  user supplied callback context
+ * @param  context  user supplied callback context
  */
 typedef void (*ElektraNotificationChangeCallback) (Key * key, void * context);
 

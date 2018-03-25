@@ -11,6 +11,7 @@
 #include <kdbassert.h>
 #include <kdbease.h>
 #include <kdbinternal.h>
+#include <kdbinvoke.h>
 #include <kdbioprivate.h>
 #include <kdblogger.h>
 #include <kdbnotification.h>
@@ -662,22 +663,7 @@ static void pluginsOpenNotification (KDB * kdb, ElektraNotificationCallback call
 			}
 
 
-			size_t func = elektraPluginGetFunction (plugin, "openNotification");
-			if (func)
-			{
-				ElektraNotificationOpenNotification openNotification = (ElektraNotificationOpenNotification) func;
-				openNotification (plugin, parameters);
-			}
-			else
-			{
-				func = elektraPluginGetFunction (plugin, "deferredCall");
-				if (func)
-				{
-					typedef void (*DeferFunctionCall) (Plugin * handle, char * name, KeySet * parameters);
-					DeferFunctionCall defer = (DeferFunctionCall) func;
-					defer (plugin, "openNotification", parameters);
-				}
-			}
+			elektraDeferredCall (plugin, "openNotification", parameters);
 		}
 	}
 
@@ -699,22 +685,7 @@ static void pluginsCloseNotification (KDB * kdb)
 				continue;
 			}
 
-			size_t func = elektraPluginGetFunction (plugin, "closeNotification");
-			if (func)
-			{
-				ElektraNotificationCloseNotification closeNotification = (ElektraNotificationCloseNotification) func;
-				closeNotification (plugin, NULL);
-			}
-			else
-			{
-				func = elektraPluginGetFunction (plugin, "deferredCall");
-				if (func)
-				{
-					typedef void (*DeferFunctionCall) (Plugin * handle, char * name, KeySet * parameters);
-					DeferFunctionCall defer = (DeferFunctionCall) func;
-					defer (plugin, "closeNotification", NULL);
-				}
-			}
+			elektraDeferredCall (plugin, "closeNotification", NULL);
 		}
 	}
 }
@@ -933,4 +904,32 @@ int elektraNotificationRegisterCallbackSameOrBelow (KDB * kdb, Key * key, Elektr
 	// Call register function
 	ElektraNotificationPluginRegisterCallbackSameOrBelow registerFunc = (ElektraNotificationPluginRegisterCallbackSameOrBelow) func;
 	return registerFunc (notificationPlugin, key, callback, context);
+}
+
+int elektraNotificationSetConversionErrorCallback (KDB * kdb, ElektraNotificationConversionErrorCallback callback, void * context)
+{
+	if (!kdb || !callback)
+	{
+		ELEKTRA_LOG_WARNING ("null pointer passed");
+		return 0;
+	}
+
+	// Find notification plugin
+	Plugin * notificationPlugin = getNotificationPlugin (kdb);
+	if (!notificationPlugin)
+	{
+		return 0;
+	}
+
+	// Get register function from plugin
+	size_t func = elektraPluginGetFunction (notificationPlugin, "setConversionErrorCallback");
+	if (!func)
+	{
+		return 0;
+	}
+
+	// Call register function
+	ElektraNotificationSetConversionErrorCallback setCallbackFunc = (ElektraNotificationSetConversionErrorCallback) func;
+	setCallbackFunc (notificationPlugin, callback, context);
+	return 1;
 }

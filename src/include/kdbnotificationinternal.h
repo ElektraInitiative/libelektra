@@ -53,6 +53,7 @@ extern "C" {
 
 /**
  * Subscribe for updates via callback when a given key value is changed.
+ * Exported as "registerCallback" by notification plugins.
  *
  * @param  handle   plugin handle
  * @param  key      key to watch for changes
@@ -67,6 +68,7 @@ typedef int (*ElektraNotificationPluginRegisterCallback) (Plugin * handle, Key *
 
 /**
  * Subscribe for updates via callback when a given key or a key below is changed.
+ * Exported as "registerCallbackSameOrBelow" by notification plugins.
  *
  * @param  handle   plugin handle
  * @param  key      key to watch for changes
@@ -78,6 +80,17 @@ typedef int (*ElektraNotificationPluginRegisterCallback) (Plugin * handle, Key *
  */
 typedef int (*ElektraNotificationPluginRegisterCallbackSameOrBelow) (Plugin * handle, Key * key, ElektraNotificationChangeCallback callback,
 								     void * context);
+
+/**
+ * Allow setting a callback that is called when a value conversion failed.
+ * Exported as "setConversionErrorCallback" notification plugins.
+ *
+ * @param  kdb      kdb handle
+ * @param  callback callback
+ * @param  context  context
+ */
+typedef void (*ElektraNotificationSetConversionErrorCallback) (Plugin * handle, ElektraNotificationConversionErrorCallback callback,
+							       void * context);
 
 /**
  * Context for notification callbacks.
@@ -100,7 +113,7 @@ typedef void (*ElektraNotificationCallback) (Key * key, ElektraNotificationCallb
  * Exported as "openNotification" by transport plugins.
  *
  * @param  handle     plugin handle
- * @param  parameters contains the keys "/callback" (ElektraNotificationCallback * ) and "/context" (ElektraNotificationCallbackContext *).
+ * @param  parameters contains the keys "/callback" (ElektraNotificationCallback) and "/context" (ElektraNotificationCallbackContext *).
  */
 typedef void (*ElektraNotificationOpenNotification) (Plugin * handle, KeySet * parameters);
 

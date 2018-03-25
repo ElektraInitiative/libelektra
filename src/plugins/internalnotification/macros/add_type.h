@@ -51,7 +51,8 @@
 
 INTERNALNOTIFICATION_CONVERSION_CALLBACK_SIGNATURE (TYPE_NAME)
 {
-	TYPE * variable = (TYPE *) context;
+	_ElektraInternalnotificationConversionContext * ctx = (_ElektraInternalnotificationConversionContext *) context;
+	TYPE * variable = (TYPE *) ctx->variable;
 	char * end ELEKTRA_UNUSED;
 	const char * string = keyValue (key);
 	errno = 0;
@@ -65,6 +66,10 @@ INTERNALNOTIFICATION_CONVERSION_CALLBACK_SIGNATURE (TYPE_NAME)
 	else
 	{
 		ELEKTRA_LOG_WARNING ("conversion failed! string=%s, stopped=%c errno=%d", keyString (key), *end, errno);
+		if (ctx->errorCallback)
+		{
+			ctx->errorCallback (key, ctx->errorCallbackContext);
+		}
 	}
 }
 
@@ -72,8 +77,18 @@ INTERNALNOTIFICATION_REGISTER_SIGNATURE (TYPE, TYPE_NAME)
 {
 	PluginState * pluginState = elektraPluginGetData (handle);
 	ELEKTRA_ASSERT (pluginState != NULL, "plugin state was not initialized properly");
+
+	_ElektraInternalnotificationConversionContext * context = elektraMalloc (sizeof *context);
+	if (context == NULL)
+	{
+		return 0;
+	}
+	context->errorCallback = pluginState->conversionErrorCallback;
+	context->errorCallbackContext = pluginState->conversionErrorCallbackContext;
+	context->variable = variable;
+
 	KeyRegistration * registeredKey = elektraInternalnotificationAddNewRegistration (
-		pluginState, key, INTERNALNOTIFICATION_CONVERSION_CALLBACK_NAME (TYPE_NAME), variable);
+		pluginState, key, INTERNALNOTIFICATION_CONVERSION_CALLBACK_NAME (TYPE_NAME), context, 1);
 	if (registeredKey == NULL)
 	{
 		return 0;

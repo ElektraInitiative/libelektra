@@ -36,6 +36,14 @@ int doUpdate_callback_called;
 	TEST_CASE_UPDATE_NAME (TYPE_NAME) ();                                                                                              \
 	TEST_CASE_NO_UPDATE_NAME (TYPE_NAME) ();
 
+static void test_callback (Key * key, void * context)
+{
+	succeed_if (context == CALLBACK_CONTEXT_MAGIC_NUMBER, "callback context was not passed");
+	callback_called = 1;
+	callback_keyValue = (char *) keyValue (key);
+	callback_keyName = (char *) keyName (key);
+}
+
 static int internalnotificationRegisterInt (Plugin * plugin, Key * key, int * variable)
 {
 	size_t address = elektraPluginGetFunction (plugin, "registerInt");
@@ -44,6 +52,17 @@ static int internalnotificationRegisterInt (Plugin * plugin, Key * key, int * va
 	// Register key with plugin
 	ELEKTRA_NOTIFICATION_REGISTERFUNC_TYPEDEF (RegisterFuncType, int)
 	return ((RegisterFuncType) address) (plugin, key, variable);
+}
+
+static int internalnotificationSetConversionErrorCallback (Plugin * plugin, ElektraNotificationConversionErrorCallback callback,
+							   void * context)
+{
+	size_t address = elektraPluginGetFunction (plugin, "setConversionErrorCallback");
+	if (!address) yield_error ("function not exported");
+
+	// Register key with plugin
+	((ElektraNotificationSetConversionErrorCallback) address) (plugin, callback, context);
+	return 1;
 }
 
 static int internalnotificationRegisterCallback (Plugin * plugin, Key * key, ElektraNotificationChangeCallback callback, void * context)
@@ -216,6 +235,38 @@ static void test_intNoUpdateWithInvalidValue (void)
 	PLUGIN_CLOSE ();
 }
 
+static void test_conversionError (void)
+{
+	printf ("test conversion error callback is called on invalid value\n");
+
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("internalnotification");
+
+	Key * valueKey = keyNew ("user/test/internalnotification/value", KEY_END);
+	KeySet * ks = ksNew (1, valueKey, KS_END);
+
+	succeed_if (internalnotificationSetConversionErrorCallback (plugin, test_callback, CALLBACK_CONTEXT_MAGIC_NUMBER) == 1,
+		    "call to elektraInternalnotificationSetConversionErrorCallback was not successful");
+
+	int value = 123;
+	succeed_if (internalnotificationRegisterInt (plugin, valueKey, &value) == 1,
+		    "call to elektraInternalnotificationRegisterInt was not successful");
+
+	keySetString (valueKey, "42abcd");
+
+	callback_called = 0;
+	callback_keyName = NULL;
+	callback_keyValue = NULL;
+	elektraInternalnotificationUpdateRegisteredKeys (plugin, ks);
+
+	succeed_if (value == 123, "registered value was updated");
+	succeed_if (callback_called, "conversion error callback was not called");
+	succeed_if_same_string (keyName (valueKey), callback_keyName) succeed_if_same_string (keyString (valueKey), callback_keyValue)
+
+		ksDel (ks);
+	PLUGIN_CLOSE ();
+}
+
 static void test_intUpdateWithValueNotYetExceedingIntMax (void)
 {
 	printf ("test update with value = INT_MAX\n");
@@ -326,14 +377,6 @@ static void test_intNoUpdateWithValueExceedingIntMin (void)
 	elektraFree (stringValue);
 	ksDel (ks);
 	PLUGIN_CLOSE ();
-}
-
-static void test_callback (Key * key, void * context)
-{
-	succeed_if (context == CALLBACK_CONTEXT_MAGIC_NUMBER, "callback context was not passed");
-	callback_called = 1;
-	callback_keyValue = (char *) keyValue (key);
-	callback_keyName = (char *) keyName (key);
 }
 
 static void test_callbackCalledWithKey (void)
@@ -667,6 +710,7 @@ int main (int argc, char ** argv)
 	test_basics ();
 	test_updateOnKdbGet ();
 	test_updateOnKdbSet ();
+	test_conversionError ();
 
 	printf ("\nregisterInt\n-----------\n");
 	test_intUpdateWithCascadingKey ();

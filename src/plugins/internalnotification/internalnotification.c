@@ -27,6 +27,7 @@ struct _KeyRegistration
 	char * name;
 	char * lastValue;
 	int sameOrBelow;
+	int freeContext;
 	ElektraNotificationChangeCallback callback;
 	void * context;
 	struct _KeyRegistration * next;
@@ -41,8 +42,25 @@ struct _PluginState
 {
 	KeyRegistration * head;
 	KeyRegistration * last;
+	ElektraNotificationConversionErrorCallback conversionErrorCallback;
+	void * conversionErrorCallbackContext;
 };
 typedef struct _PluginState PluginState;
+
+/**
+ * @see kdbnotificationinternal.h ::ElektraNotificationSetConversionErrorCallback
+ */
+static void elektraInternalnotificationSetConversionErrorCallback (Plugin * handle, ElektraNotificationConversionErrorCallback callback,
+								   void * context)
+{
+	ELEKTRA_NOT_NULL (handle);
+	ELEKTRA_NOT_NULL (callback);
+	PluginState * data = elektraPluginGetData (handle);
+	ELEKTRA_NOT_NULL (data);
+
+	data->conversionErrorCallback = callback;
+	data->conversionErrorCallbackContext = context;
+}
 
 /**
  * @internal
@@ -158,12 +176,17 @@ void elektraInternalnotificationDoUpdate (Key * changedKey, ElektraNotificationC
  * Creates a new KeyRegistration structure and appends it at the end of the registration list
  * @internal
  *
- * @param pluginState		internal plugin data structure
+ * @param pluginState   internal plugin data structure
+ * @param key           key
+ * @param callback      callback for changes
+ * @param context       context for callback
+ * @param freeContext   context needs to be freed on close
  *
  * @return pointer to created KeyRegistration structure or NULL if memory allocation failed
  */
 static KeyRegistration * elektraInternalnotificationAddNewRegistration (PluginState * pluginState, Key * key,
-									ElektraNotificationChangeCallback callback, void * context)
+									ElektraNotificationChangeCallback callback, void * context,
+									int freeContext)
 {
 	KeyRegistration * item = elektraMalloc (sizeof *item);
 	if (item == NULL)
@@ -176,6 +199,7 @@ static KeyRegistration * elektraInternalnotificationAddNewRegistration (PluginSt
 	item->callback = callback;
 	item->context = context;
 	item->sameOrBelow = 0;
+	item->freeContext = freeContext;
 
 	if (pluginState->head == NULL)
 	{
@@ -418,7 +442,7 @@ int elektraInternalnotificationRegisterCallback (Plugin * handle, Key * key, Ele
 	PluginState * pluginState = elektraPluginGetData (handle);
 	ELEKTRA_ASSERT (pluginState != NULL, "plugin state was not initialized properly");
 
-	KeyRegistration * registeredKey = elektraInternalnotificationAddNewRegistration (pluginState, key, callback, context);
+	KeyRegistration * registeredKey = elektraInternalnotificationAddNewRegistration (pluginState, key, callback, context, 0);
 	if (registeredKey == NULL)
 	{
 		return 0;
@@ -436,7 +460,7 @@ int elektraInternalnotificationRegisterCallbackSameOrBelow (Plugin * handle, Key
 	PluginState * pluginState = elektraPluginGetData (handle);
 	ELEKTRA_ASSERT (pluginState != NULL, "plugin state was not initialized properly");
 
-	KeyRegistration * registeredKey = elektraInternalnotificationAddNewRegistration (pluginState, key, callback, context);
+	KeyRegistration * registeredKey = elektraInternalnotificationAddNewRegistration (pluginState, key, callback, context, 0);
 	if (registeredKey == NULL)
 	{
 		return 0;
@@ -495,6 +519,8 @@ int elektraInternalnotificationGet (Plugin * handle, KeySet * returned, Key * pa
 				elektraInternalnotificationRegisterCallback, KEY_END),
 			keyNew ("system/elektra/modules/internalnotification/exports/registerCallbackSameOrBelow", KEY_FUNC,
 				elektraInternalnotificationRegisterCallbackSameOrBelow, KEY_END),
+			keyNew ("system/elektra/modules/internalnotification/exports/setConversionErrorCallback", KEY_FUNC,
+				elektraInternalnotificationSetConversionErrorCallback, KEY_END),
 
 #include ELEKTRA_README (internalnotification)
 
@@ -553,6 +579,8 @@ int elektraInternalnotificationOpen (Plugin * handle, Key * parentKey ELEKTRA_UN
 		// Initialize list pointers for registered keys
 		pluginState->head = NULL;
 		pluginState->last = NULL;
+		pluginState->conversionErrorCallback = NULL;
+		pluginState->conversionErrorCallbackContext = NULL;
 	}
 
 	return 1;
@@ -583,6 +611,10 @@ int elektraInternalnotificationClose (Plugin * handle, Key * parentKey ELEKTRA_U
 			if (current->lastValue != NULL)
 			{
 				elektraFree (current->lastValue);
+			}
+			if (current->freeContext)
+			{
+				elektraFree (current->context);
 			}
 			elektraFree (current);
 

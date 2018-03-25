@@ -34,4 +34,17 @@ void elektraInternalnotificationDoUpdate (Key * changedKey, ElektraNotificationC
 	keyNew ("system/elektra/modules/internalnotification/exports/register" #TYPE_NAME, KEY_FUNC,                                       \
 		INTERNALNOTIFICATION_REGISTER_NAME (TYPE_NAME), KEY_END)
 
+/**
+ * Structure containing conversion context
+ * @internal
+ */
+struct _ElektraInternalnotificationConversionContext
+{
+	void * variable;
+	ElektraNotificationConversionErrorCallback errorCallback;
+	void * errorCallbackContext;
+};
+typedef struct _ElektraInternalnotificationConversionContext _ElektraInternalnotificationConversionContext;
+
+
 #endif
