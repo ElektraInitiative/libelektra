@@ -167,7 +167,7 @@ export default class Configuration extends Component {
     }
 
     const { id } = match && match.params
-    const { name, host, visibility } = instance
+    const { name, description, host, visibility } = instance
 
     const title = (
         <h1>
@@ -186,7 +186,16 @@ export default class Configuration extends Component {
 
     return (
         <Card style={{ padding: '8px 16px' }}>
-            <CardHeader title={title} subtitle={host} />
+            <CardHeader
+              title={title}
+              subtitle={
+                <span>
+                  {description ? description + ' — ' : ''}
+                  host: <span style={{ opacity: 0.7 }}>{host}</span>
+                  &nbsp;— visibility: <span style={{ opacity: 0.7 }}>{visibility}</span>
+                </span>
+              }
+            />
             <CardText>
                 {(data && Array.isArray(data) && data.length > 0)
                   ? <TreeView
