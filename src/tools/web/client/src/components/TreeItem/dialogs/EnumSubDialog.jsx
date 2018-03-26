@@ -25,11 +25,6 @@ class EnumItem extends Component {
     this.state = { value: props.value || '' }
   }
 
-  // keep state in sync with property updates
-  componentWillReceiveProps (nextProps) {
-    this.setState({ value: nextProps.value || '' })
-  }
-
   render () {
     const { id, onChange, saved } = this.props
     const { value } = this.state
