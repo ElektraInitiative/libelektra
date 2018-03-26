@@ -76,7 +76,7 @@ static void benchmarkHashFunctionTime (void)
 	{
 		for (size_t s = 0; s < numberOfShapes; ++s)
 		{
-			printf ("now at n: %lu/%lu shape: %lu/%lu\r", i, nCount, s, numberOfShapes);
+			printf ("now at n: %zu/%zu shape: %zu/%zu\r", i, nCount, s, numberOfShapes);
 			fflush (stdout);
 			int32_t seed;
 			if (getRandomSeed (&seed) != &seed) printExit ("Seed Parsing Error or feed me more seeds");
@@ -120,11 +120,11 @@ static void benchmarkHashFunctionTime (void)
 		{
 			if (!s && !i)
 			{
-				fprintf (out, "%lu", n[i]);
+				fprintf (out, "%zu", n[i]);
 			}
 			else
 			{
-				fprintf (out, ";%lu", n[i]);
+				fprintf (out, ";%zu", n[i]);
 			}
 		}
 	}
@@ -138,11 +138,11 @@ static void benchmarkHashFunctionTime (void)
 			{
 				if (!s && !i)
 				{
-					fprintf (out, "%lu", results[i * (numberOfShapes * runs) + s * runs + r]);
+					fprintf (out, "%zu", results[i * (numberOfShapes * runs) + s * runs + r]);
 				}
 				else
 				{
-					fprintf (out, ";%lu", results[i * (numberOfShapes * runs) + s * runs + r]);
+					fprintf (out, ";%zu", results[i * (numberOfShapes * runs) + s * runs + r]);
 				}
 			}
 		}
@@ -164,7 +164,7 @@ static void benchmarkHashFunctionTime (void)
  * the opmphmMapping (...) invocations.
  * At the end the results are written out in the following format:
  *
- * trials;n_%luc_%lu;... (each n and c are unique)
+ * trials;n_%zuc_%f;... (each n and c are unique)
  *
  * The number of needed seeds for this benchmarks is: nCount * numberOfShapes * keySetsPerShape (KeySets generation) + numberOfSeeds (tested
  * seeds)
@@ -234,7 +234,7 @@ static void benchmarkMapping (void)
 	printf ("KeySet Cache Build:\n");
 	for (size_t nI = 0; nI < nCount; ++nI)
 	{
-		printf ("now at: %lu/%lu\r", nI + 1, nCount);
+		printf ("now at: %zu/%zu\r", nI + 1, nCount);
 		fflush (stdout);
 		for (size_t shapeI = 0; shapeI < numberOfShapes; ++shapeI)
 		{
@@ -277,7 +277,7 @@ static void benchmarkMapping (void)
 		// and cCount
 		for (size_t cI = 0; cI < cCount; ++cI)
 		{
-			printf ("now at: n = %lu/%lu c = %lu/%lu\r", nI + 1, nCount, cI + 1, cCount);
+			printf ("now at: n = %zu/%zu c = %zu/%zu\r", nI + 1, nCount, cI + 1, cCount);
 			fflush (stdout);
 			// OPMPHM for all threads
 			Opmphm * opmphms[NUMBEROFTHREADS];
@@ -404,19 +404,19 @@ static void benchmarkMapping (void)
 	{
 		for (size_t cI = 0; cI < cCount; ++cI)
 		{
-			fprintf (out, ";n_%luc_%f", n[nI], opmphmMinC (rUniPar) + c[cI]);
+			fprintf (out, ";n_%zuc_%f", n[nI], opmphmMinC (rUniPar) + c[cI]);
 		}
 	}
 	fprintf (out, "\n");
 	// print data
 	for (size_t mappingI = 0; mappingI < maxMappings; ++mappingI)
 	{
-		fprintf (out, "%lu", mappingI + 1); // unshift, because 0 is not a result
+		fprintf (out, "%zu", mappingI + 1); // unshift, because 0 is not a result
 		for (size_t nI = 0; nI < nCount; ++nI)
 		{
 			for (size_t cI = 0; cI < cCount; ++cI)
 			{
-				fprintf (out, ";%lu", results[nI * (cCount * maxMappings) + cI * maxMappings + mappingI]);
+				fprintf (out, ";%zu", results[nI * (cCount * maxMappings) + cI * maxMappings + mappingI]);
 			}
 		}
 		fprintf (out, "\n");
@@ -446,7 +446,7 @@ static void benchmarkMapping (void)
  * Then the benchmarking for every KeySet size (n) takes place, with a fixed set of seeds for the opmphmMapping (...) invocations.
  * At the end the results are written out in the following format:
  *
- * trials;n_%lucr_%luc_%f;... (each n is unique)
+ * trials;n_%zur_%uc_%f;... (each n is unique)
  *
  * The number of needed seeds for this benchmarks is: nCount * numberOfShapes * keySetsPerShape (KeySets generation) + numberOfSeeds (tested
  * seeds)
@@ -522,7 +522,7 @@ static void benchmarkMappingOpt (void)
 	printf ("KeySet Cache Build:\n");
 	for (size_t nI = 0; nI < nCount; ++nI)
 	{
-		printf ("now at: %lu/%lu\r", nI + 1, nCount);
+		printf ("now at: %zu/%zu\r", nI + 1, nCount);
 		fflush (stdout);
 		for (size_t shapeI = 0; shapeI < numberOfShapes; ++shapeI)
 		{
@@ -562,7 +562,7 @@ static void benchmarkMappingOpt (void)
 	// for all nCount
 	for (size_t nI = 0; nI < nCount; ++nI)
 	{
-		printf ("now at: n = %lu/%lu\r", nI + 1, nCount);
+		printf ("now at: n = %zu/%zu\r", nI + 1, nCount);
 		fflush (stdout);
 		// OPMPHM for all threads
 		Opmphm * opmphms[NUMBEROFTHREADS];
@@ -698,16 +698,16 @@ static void benchmarkMappingOpt (void)
 	fprintf (out, "trials");
 	for (size_t nI = 0; nI < nCount; ++nI)
 	{
-		fprintf (out, ";n_%lur_%uc_%f", n[nI], opmphmOptR (n[nI]), opmphmMinC (opmphmOptR (n[nI])) + opmphmOptC (n[nI]));
+		fprintf (out, ";n_%zur_%uc_%f", n[nI], opmphmOptR (n[nI]), opmphmMinC (opmphmOptR (n[nI])) + opmphmOptC (n[nI]));
 	}
 	fprintf (out, "\n");
 	// print data
 	for (size_t mappingI = 0; mappingI < maxMappings; ++mappingI)
 	{
-		fprintf (out, "%lu", mappingI + 1); // unshift, because 0 is not a result
+		fprintf (out, "%zu", mappingI + 1); // unshift, because 0 is not a result
 		for (size_t nI = 0; nI < nCount; ++nI)
 		{
-			fprintf (out, ";%lu", results[nI * maxMappings + mappingI]);
+			fprintf (out, ";%zu", results[nI * maxMappings + mappingI]);
 		}
 		fprintf (out, "\n");
 	}
@@ -737,7 +737,7 @@ static void benchmarkMappingOpt (void)
  * the seeds start at 1 and go to ELEKTRARANDMAX - 1 = 2147483646.
  * At the end the results are written out in the following format:
  *
- * trials;n_%lucr_%luc_%f;... (each n is unique)
+ * trials;n_%zur_%uc_%f;... (each n is unique)
  *
  * The number of needed seeds for this benchmarks is: nCount (KeySets generation)
  */
@@ -867,7 +867,7 @@ static void benchmarkMappingAllSeeds (void)
 			{
 				if (threadI == 0 && (seed % 1000) == 0)
 				{
-					printf ("now at: n = %lu/%lu and seed %i from %i\r", nI + 1, nCount, seed, partIntervals[1]);
+					printf ("now at: n = %zu/%zu and seed %i from %i\r", nI + 1, nCount, seed, partIntervals[1]);
 					fflush (stdout);
 				}
 				size_t mappings = 0; // counts mapping invocations
@@ -950,16 +950,16 @@ static void benchmarkMappingAllSeeds (void)
 	fprintf (out, "trials");
 	for (size_t nI = 0; nI < nCount; ++nI)
 	{
-		fprintf (out, ";n_%lur_%uc_%f", n[nI], opmphmOptR (n[nI]), opmphmMinC (opmphmOptR (n[nI])) + opmphmOptC (n[nI]));
+		fprintf (out, ";n_%zur_%uc_%f", n[nI], opmphmOptR (n[nI]), opmphmMinC (opmphmOptR (n[nI])) + opmphmOptC (n[nI]));
 	}
 	fprintf (out, "\n");
 	// print data
 	for (size_t mappingI = 0; mappingI < maxMappings; ++mappingI)
 	{
-		fprintf (out, "%lu", mappingI + 1); // unshift, because 0 is not a result
+		fprintf (out, "%zu", mappingI + 1); // unshift, because 0 is not a result
 		for (size_t nI = 0; nI < nCount; ++nI)
 		{
-			fprintf (out, ";%lu", results[nI * maxMappings + mappingI]);
+			fprintf (out, ";%zu", results[nI * maxMappings + mappingI]);
 		}
 		fprintf (out, "\n");
 	}
@@ -998,7 +998,7 @@ static void benchmarkPrintAllKeySetShapes (void)
 		// print KS
 		if (1)
 		{
-			printf (" ======================= shapeId %lu =======================\n\n", shapeId);
+			printf (" ======================= shapeId %zu =======================\n\n", shapeId);
 			Key * key;
 			ksRewind (ks);
 			while ((key = ksNext (ks)))
