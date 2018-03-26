@@ -39,7 +39,9 @@ export default class AddDialog extends Component {
     const { path } = item
     const { name, value, type } = this.state
     onAdd(path, name, value)
-    setMetaByPath(path + '/' + name, 'check/type', type)
+    if (type !== 'any') {
+      setMetaByPath(path + '/' + name, 'check/type', type)
+    }
     this.handleClose()
   }
 

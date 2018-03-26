@@ -100,6 +100,9 @@ export default class SettingsDialog extends Component {
 
   handleVisibilityChange = (val) => {
     const { instanceVisibility } = this.props
+    if (val === this.getMeta('visibility', 'user')) { // visibility was not changed, ignore
+      return
+    }
     if (visibility(val) < visibility(instanceVisibility)) {
       const confirmed = window.confirm(
         'Setting the visibility lower than the instance visibility will hide ' +
@@ -190,6 +193,9 @@ export default class SettingsDialog extends Component {
                       floatingLabelText="type"
                       floatingLabelFixed={true}
                       onChange={(e, _, val) => {
+                        if (val === type) { // type was not changed, ignore
+                          return
+                        }
                         const text = 'Changing the type might result in loss of data. ' +
                          'For example, when changing from \'string\' to \'boolean\', ' +
                          'the string value will get overwritten!'
