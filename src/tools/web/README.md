@@ -43,6 +43,14 @@ client as follows:
 INSTANCE="http://localhost:33333" npm start
 ```
 
+It is also possible to set visibility by prefixing the host with `VISIBILITY@`.
+
+For example (`advanced` visibility, `user` is default):
+
+```
+INSTANCE="advanced@http://localhost:33333" npm start
+```
+
 Now, when you open [http://localhost:33334](http://localhost:33334) in your
 browser, the configuration page for the instance will be opened immediately.
 
