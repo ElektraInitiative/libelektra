@@ -19,7 +19,7 @@ import TextField from 'material-ui/TextField'
 import SelectField from 'material-ui/SelectField'
 import MenuItem from 'material-ui/MenuItem'
 
-import { VISIBILITY_LEVELS } from '../utils'
+import { VISIBILITY_LEVELS, HOST_REGEX } from '../utils'
 
 export default class CreateInstanceCard extends React.Component {
   constructor (props) {
@@ -29,6 +29,7 @@ export default class CreateInstanceCard extends React.Component {
       host: '',
       description: '',
       visibility: 'user',
+      hostError: '',
     }
   }
 
@@ -38,6 +39,7 @@ export default class CreateInstanceCard extends React.Component {
       host: '',
       description: '',
       visibility: 'user',
+      hostError: '',
     })
   }
 
@@ -59,7 +61,7 @@ export default class CreateInstanceCard extends React.Component {
 
   render () {
     const { instances, unaddInstance } = this.props
-    const { name, host, description, visibility } = this.state
+    const { name, host, description, visibility, hostError } = this.state
 
     const noInstancesYet = !instances || instances.length <= 0
     const nameEmpty = !name || name.trim().length <= 0
@@ -92,7 +94,17 @@ export default class CreateInstanceCard extends React.Component {
                           ref="hostField"
                           floatingLabelText="host*"
                           floatingLabelFixed={true}
-                          onChange={(evt) => this.setState({ host: evt.target.value })}
+                          errorText={hostError}
+                          onChange={(evt) => {
+                            const newHost = evt.target.value
+                            this.setState({ host: newHost })
+                            const [ , matchedHost ] = newHost.match(HOST_REGEX) || []
+                            if (!matchedHost) {
+                              this.setState({ hostError: 'invalid host, use http://host:port syntax' })
+                            } else {
+                              this.setState({ hostError: '' })
+                            }
+                          }}
                           value={host}
                           onKeyPress={e => {
                             if (e.key === 'Enter') {
@@ -144,7 +156,7 @@ export default class CreateInstanceCard extends React.Component {
                     label="add"
                     primary={true}
                     onTouchTap={this.handleCreate}
-                    disabled={nameEmpty || hostEmpty}
+                    disabled={nameEmpty || hostEmpty || hostError}
                   />
                   {!noInstancesYet &&
                     <FlatButton

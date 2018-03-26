@@ -17,9 +17,17 @@ import { getSingleInstance } from '../config'
 
 import remoteKdb from '../connector'
 
-const makeMyInstance = (host) => {
-  if (!host) return false
-  return { host, id: 'my', name: 'My', description: 'Single instance mode', visibility: 'user' }
+// match VISIBILITY@HOST, while ignoring tailing slashes
+const SINGLE_INSTANCE_REGEX = /^((.*)\@)?(https?\:\/\/[^\/]*)(\/.*)?$/
+
+const makeMyInstance = (str) => {
+  if (!str) return false
+  const [ , , visibility, host ] = str.match(SINGLE_INSTANCE_REGEX)
+  if (!host) {
+    console.error(`Invalid single instance string \'${str}\'. Format should be: VISIBILITY@HOST, e.g. user@http://localhost:33333`)
+    return false
+  }
+  return { host, id: 'my', name: 'My', description: 'Single instance mode', visibility: visibility || 'user' }
 }
 
 const getInstance = (id) =>

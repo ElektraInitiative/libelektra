@@ -7,6 +7,17 @@
  */
 
 import { thunkCreator, parseJSONResponse } from './utils'
+import { HOST_REGEX } from '../utils'
+
+const cleanInstanceData = (data) => {
+  if (data && data.host) {
+    const [ , host ] = data.host.match(HOST_REGEX)
+    if (host) {
+      return { ...data, host }
+    }
+  }
+  return data
+}
 
 // ~~~
 
@@ -46,7 +57,7 @@ export const updateInstance = (id, data) => thunkCreator({
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(data),
+    body: JSON.stringify(cleanInstanceData(data)),
   }).then(parseJSONResponse),
 })
 
@@ -78,6 +89,6 @@ export const createInstance = (data) => thunkCreator({
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(data),
+    body: JSON.stringify(cleanInstanceData(data)),
   }).then(parseJSONResponse),
 })

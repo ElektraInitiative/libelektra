@@ -5,6 +5,7 @@ export const fromElektraBool = (val) =>
   (val === '1') ? true : false
 
 export const RANGE_REGEX = /(-?[0-9]+)-(-?[0-9]+)/
+export const HOST_REGEX = /(https?:\/\/[^/]+)(\/.*)?/
 
 export const isNumberType = (type) => {
   switch (type) {

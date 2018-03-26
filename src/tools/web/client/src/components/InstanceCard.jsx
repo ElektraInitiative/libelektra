@@ -15,7 +15,7 @@ import { Link } from 'react-router-dom'
 import SelectField from 'material-ui/SelectField'
 import MenuItem from 'material-ui/MenuItem'
 
-import { VISIBILITY_LEVELS } from '../utils'
+import { VISIBILITY_LEVELS, HOST_REGEX } from '../utils'
 
 export default class InstanceCard extends React.Component {
   constructor (props) {
@@ -25,18 +25,23 @@ export default class InstanceCard extends React.Component {
       host: props.host,
       description: props.description,
       visibility: props.visibility,
+      hostError: '',
     }
   }
 
   handleCreate = () => {
     const { id, updateInstance, sendNotification } = this.props
-    const { name, host, description, visibility } = this.state
+    const { name, host, description, visibility, hostError } = this.state
 
     const nameEmpty = !name || name.trim().length <= 0
     const hostEmpty = !host || host.trim().length <= 0
 
     if (nameEmpty || hostEmpty) {
       return alert('Please enter a name and host!')
+    }
+
+    if (hostError) {
+      return alert('The host format is invalid, use http://host:port, e.g. http://localhost:33333')
     }
 
     updateInstance(id, { name, host, description, visibility })
@@ -53,7 +58,7 @@ export default class InstanceCard extends React.Component {
 
   render () {
     const { id } = this.props
-    const { name, host, description, visibility } = this.state
+    const { name, host, description, visibility, hostError } = this.state
 
     const nameEmpty = !name || name.trim().length <= 0
     const hostEmpty = !host || host.trim().length <= 0
@@ -82,7 +87,7 @@ export default class InstanceCard extends React.Component {
                           floatingLabelText="name*"
                           floatingLabelFixed={true}
                           hintText="e.g. my webserver"
-                          defaultValue={name}
+                          value={name}
                           disabled={id === 'my'}
                           onChange={(evt) => this.setState({ name: evt.target.value })}
                           onKeyPress={e => {
@@ -97,9 +102,19 @@ export default class InstanceCard extends React.Component {
                           ref="hostField"
                           floatingLabelText="host*"
                           floatingLabelFixed={true}
-                          defaultValue={host}
+                          errorText={hostError}
+                          value={host}
                           disabled={id === 'my'}
-                          onChange={(evt) => this.setState({ host: evt.target.value })}
+                          onChange={(evt) => {
+                            const newHost = evt.target.value
+                            this.setState({ host: newHost })
+                            const [ , matchedHost ] = newHost.match(HOST_REGEX) || []
+                            if (!matchedHost) {
+                              this.setState({ hostError: 'invalid host, use http://host:port syntax' })
+                            } else {
+                              this.setState({ hostError: '' })
+                            }
+                          }}
                           onKeyPress={e => {
                             if (e.key === 'Enter') {
                               this.handleCreate()
@@ -123,7 +138,7 @@ export default class InstanceCard extends React.Component {
                         ref="descriptionField"
                         floatingLabelText="description"
                         floatingLabelFixed={true}
-                        defaultValue={description}
+                        value={description}
                         disabled={id === 'my'}
                         onChange={(evt) => this.setState({ description: evt.target.value })}
                         onKeyPress={e => {
@@ -153,7 +168,7 @@ export default class InstanceCard extends React.Component {
                     label="save"
                     primary={true}
                     onTouchTap={this.handleCreate}
-                    disabled={id === 'my' || nameEmpty || hostEmpty}
+                    disabled={id === 'my' || nameEmpty || hostEmpty || hostError}
                   />
                   <Link to={'/instances/' + id}>
                       <FlatButton label="configure" />
