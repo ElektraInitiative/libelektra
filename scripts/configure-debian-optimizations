@@ -10,7 +10,7 @@ SCRIPTS_DIR=$(dirname "$0")
 
 cd $BUILD
 cmake	-DSWIG_EXECUTABLE=/usr/bin/swig3.0 \
-	-DENABLE_OPTIMIZATIONS="ON" \
+	-DENABLE_OPTIMIZATIONS="OFF" \
 	-DPLUGINS="ALL" \
 	-DTOOLS="ALL" \
 	-DBINDINGS="ALL;-swig_ruby" \
