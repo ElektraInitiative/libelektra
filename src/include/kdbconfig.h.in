@@ -88,6 +88,7 @@
 #define BUILTIN_DATA_FOLDER      "@BUILTIN_DATA_FOLDER@"
 
 #define SIZEOF_INT               @SIZEOF_INT@
+#define SIZEOF_SIZE_T            @SIZEOF_SIZE_T@
 #define SIZEOF_LONG              @SIZEOF_LONG@
 #define SIZEOF_MODE_T            @SIZEOF_MODE_T@
 #define SIZEOF_TV_USEC           @SIZEOF_TV_USEC@
