@@ -22,6 +22,7 @@ const containerStyle = {
 
 const cellStyle = {
   flex: 1,
+  maxWidth: '700px',
 }
 
 const Home = ({ instances, status }) =>

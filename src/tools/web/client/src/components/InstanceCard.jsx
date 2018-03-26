@@ -54,8 +54,8 @@ export default class InstanceCard extends React.Component {
               }
               subtitle={
                 <span>
-                  {description}
-                  &nbsp;— host: <span style={{ opacity: 0.7 }}>{host}</span>
+                  {description ? description + ' — ' : ''}
+                  host: <span style={{ opacity: 0.7 }}>{host}</span>
                   &nbsp;— visibility: <span style={{ opacity: 0.7 }}>{visibility}</span>
                 </span>
               }
