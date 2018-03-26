@@ -14,6 +14,8 @@ import { visibility } from '../utils'
 
 import '../css/treeview.css'
 
+const NAMESPACES_ORDER = [ 'spec', 'dir', 'user', 'system' ]
+
 export default class TreeView extends React.Component {
   constructor (props, ...args) {
     super(props, ...args)
@@ -94,6 +96,17 @@ export default class TreeView extends React.Component {
     return false
   }
 
+  handleSort = (a, b) => {
+    if (NAMESPACES_ORDER.includes(a.name)) { // is a namespace -> special ordering
+      const aI = NAMESPACES_ORDER.indexOf(a.name)
+      const bI = NAMESPACES_ORDER.indexOf(b.name)
+      return aI - bI
+    }
+    return !a.children === !b.children
+      ? a.name.localeCompare(b.name)
+      : a.children ? -1 : 1
+  }
+
   render () {
     const { data } = this.props
     const { selection } = this.state
@@ -119,6 +132,7 @@ export default class TreeView extends React.Component {
         category="children"
         name="name"
         search={this.handleSearch}
+        sort={this.handleSort}
         selection={selection}
         strategies={strategies}
         updateModel={this.handleUpdate}

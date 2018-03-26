@@ -18,7 +18,7 @@ import { Link } from 'react-router-dom'
 
 import TreeView from '../../containers/ConnectedTreeView'
 
-const NAMESPACES = [ 'user', 'system', 'spec', 'proc', 'dir' ]
+const NAMESPACES = [ 'user', 'system', 'spec', 'dir' ]
 
 // create tree structure from kdb ls result (list of available keys)
 const partsTree = (acc, parts) => {
