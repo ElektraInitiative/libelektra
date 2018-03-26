@@ -71,7 +71,7 @@ We added even more functionality, which could not make it to the highlights:
   has been added.
   It can be used to integrate the notification feature with applications based
   on glib.
-
+- The Order Preserving Minimal Perfect Hash Map (OPMPHM), used to speed up the lookups, got optimized.
 
 ## Documentation
 
