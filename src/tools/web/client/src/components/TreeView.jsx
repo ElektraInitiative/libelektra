@@ -97,7 +97,7 @@ export default class TreeView extends React.Component {
   }
 
   handleSort = (a, b) => {
-    if (NAMESPACES_ORDER.includes(a.name)) { // is a namespace -> special ordering
+    if (a.root) { // is a namespace -> special ordering
       const aI = NAMESPACES_ORDER.indexOf(a.name)
       const bI = NAMESPACES_ORDER.indexOf(b.name)
       return aI - bI

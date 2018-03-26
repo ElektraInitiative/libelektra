@@ -44,6 +44,7 @@ const parseDataSet = (getKey, sendNotification, instanceId, tree, path) => {
     return {
       name: key,
       path: newPath,
+      root: !path,
       children: (Array.isArray(children) && children.length > 0)
         ? () => {
           return new Promise(resolve => {
