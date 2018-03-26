@@ -103,3 +103,29 @@ this is to use a reverse proxy (e.g. [nginx reverse proxy](https://www.nginx.com
 
 Once you set up a reverse proxy on your web server, you can use it to
 authenticate users, e.g. by [username/password auth](https://www.digitalocean.com/community/tutorials/how-to-set-up-password-authentication-with-nginx-on-ubuntu-14-04)
+
+
+## Code structure
+
+- `elektrad/` - contains the daemon to interact with a single elektra instance
+- `webd/` - contains a daemon to serve the client and interact with multiple elektra instances
+- `client/` - contains the elektra-web client (Web UI)
+  - `src/actions/` - Redux actions to access the KDB or display notifications in the UI
+  - `src/components/` - React components
+    - `pages/` - pages in the app
+      - `Home.jsx` - the main page (overview of all instances)
+      - `Configuration.jsx` - configuration page (single instance)
+    - `TreeItem/` - contains all UI components related to a single item in the tree view
+      - `dialogs/` - these dialogs are opened when certain actions are pressed (icons next to the tree items)
+        - `AddDialog.jsx` - dialog to create a new (sub-)key
+        - `DuplicateDialog.jsx` - dialog to duplicate a key
+        - `EditDialog.jsx` - dialog to edit a key value
+        - `RemoveDialog.jsx` - dialog to confirm the removal of a key
+        - `SettingsDialog.jsx` - dialog to edit metadata (new metadata can be implemented here)
+        - `*SubDialog.jsx` - sub-dialogs of the SettingsDialog
+      - `fields/` - special input fields to display various values
+    - `App.jsx` - defines app structure and routes
+  - `src/index.js` - main entry point of the app (fetches instances and renders UI)
+  - `src/containers/` - contains components that are connected to Redux
+  - `src/css/` - contains CSS styles
+  - `src/reducers/` - contains Redux reducers (used to process actions)
