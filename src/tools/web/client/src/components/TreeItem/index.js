@@ -116,7 +116,7 @@ export default class TreeItem extends Component {
     }
   }
 
-  renderValue = (id, { value, meta, onChange, onKeyPress, onError, label }) => {
+  renderValue = (id, { value, meta, debounce = true, onChange, onKeyPress, onError, label }) => {
     const val = typeof value !== 'undefined' ? value : (meta && meta['default'])
 
     if (meta) {
@@ -126,7 +126,7 @@ export default class TreeItem extends Component {
 
     // fallback
     return (
-      <SimpleTextField label={label} id={id} value={val} meta={meta} onError={onError} onChange={onChange || this.handleEdit} onKeyPress={onKeyPress} />
+      <SimpleTextField debounce={debounce} label={label} id={id} value={val} meta={meta} onError={onError} onChange={onChange || this.handleEdit} onKeyPress={onKeyPress} />
     )
   }
 
@@ -185,8 +185,8 @@ export default class TreeItem extends Component {
               open={this.state.dialogs.add}
               onAdd={this.handleAdd}
               onClose={this.handleClose('add')}
-              renderField={({ value, meta, onChange, onKeyPress, label, onError }) =>
-                this.renderValue('addValueField', { value, meta, onChange, onKeyPress, label, onError })
+              renderField={({ value, meta, debounce, onChange, onKeyPress, label, onError }) =>
+                this.renderValue('addValueField', { value, meta, debounce, onChange, onKeyPress, label, onError })
               }
               setMetaByPath={(path, key, value) => setMetaKey(instanceId, path, key, value)}
             />

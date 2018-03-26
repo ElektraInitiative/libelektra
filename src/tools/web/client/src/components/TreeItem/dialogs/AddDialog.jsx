@@ -104,6 +104,7 @@ export default class AddDialog extends Component {
                 {type !== 'enum' && renderField({
                   value,
                   meta: { 'check/type': type },
+                  debounce: false,
                   onChange: (value) => this.setState({ value }),
                   onKeyPress: e => {
                     if (!nameEmpty && !error && e.key === 'Enter') {
