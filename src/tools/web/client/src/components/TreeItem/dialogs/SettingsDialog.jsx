@@ -154,7 +154,7 @@ export default class SettingsDialog extends Component {
                       value={visibility}
                     >
                         {Object.keys(VISIBILITY_LEVELS).map(lvl =>
-                          <MenuItem key={lvl} value={lvl} primaryText={lvl} />
+                          <MenuItem key={lvl} value={lvl} primaryText={'>= ' + lvl} />
                         )}
                     </SelectField>
                     <SavedIcon saved={this.getSaved('check/type')} style={{ paddingBottom: 16 }} />
