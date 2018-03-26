@@ -184,18 +184,19 @@ export default class SettingsDialog extends Component {
                 </div>
             </div>
             <h2 style={{ marginTop: 48 }}>Type</h2>
-            <div style={{ display: 'block', color: 'rgba(245, 166, 35, 0.5)' }}>
-                <b style={{ fontSize: '1.1em' }}>Please note:</b><br />
-                Changing the type might result in loss of data. For example,
-                when changing from <code>string</code> to <code>boolean</code>,
-                the string value will get overwritten!
-            </div>
             <div style={{ display: 'flex' }}>
                 <div style={{ flex: 1 }}>
                     <SelectField
                       floatingLabelText="type"
                       floatingLabelFixed={true}
-                      onChange={(e, _, val) => this.handleEdit('check/type')(val)}
+                      onChange={(e, _, val) => {
+                        const text = 'Changing the type might result in loss of data. ' +
+                         'For example, when changing from \'string\' to \'boolean\', ' +
+                         'the string value will get overwritten!'
+                        if (window.confirm(text)) {
+                          this.handleEdit('check/type')(val)
+                        }
+                      }}
                       value={type}
                     >
                         {KEY_TYPES.map(({ type, name }) =>
