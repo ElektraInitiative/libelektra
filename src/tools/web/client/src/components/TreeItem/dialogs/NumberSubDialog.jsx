@@ -16,7 +16,7 @@ import ContentAddIcon from 'material-ui/svg-icons/content/add'
 import SavedIcon from '../SavedIcon.jsx'
 import debounce from '../../debounce'
 
-const DebouncedTextField = debounce(TextField, { timeout: 250 })
+const DebouncedTextField = debounce(TextField)
 
 class RangeItem extends Component {
   constructor (props, ...args) {
@@ -29,17 +29,6 @@ class RangeItem extends Component {
       errorMin: min.trim().length <= 0,
       errorMax: max.trim().length <= 0,
     }
-  }
-
-  componentWillReceiveProps (nextProps) {
-    const min = nextProps.min || ''
-    const max = nextProps.max || ''
-    this.setState({
-      min,
-      max,
-      errorMin: min.trim().length <= 0,
-      errorMax: max.trim().length <= 0,
-    })
   }
 
   render () {
@@ -62,7 +51,7 @@ class RangeItem extends Component {
                 this.setState({ errorMin: true })
               } else {
                 this.setState({ errorMin: false })
-                if (!errorMax) onChange([ min, max ])
+                if (!errorMax) onChange([ value, max ])
               }
             }}
           />
@@ -80,7 +69,7 @@ class RangeItem extends Component {
                 this.setState({ errorMax: true })
               } else {
                 this.setState({ errorMax: false })
-                if (!errorMin) onChange([ min, max ])
+                if (!errorMin) onChange([ min, value ])
               }
             }}
           />
