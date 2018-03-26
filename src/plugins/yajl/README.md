@@ -74,6 +74,8 @@ Arrays are mapped to Elektra’s array convention #0, #1,..
   fall backs to string but warnings are produced.
 - Arrays will be normalized (to #0, #1, ..)
 - Comments of various JSON-dialects are discarded.
+- Mixing of arrays and maps is not detected and leads to corrupted
+  JSON files. Please specify arrays to avoid such situations.
 
 Because of these potential problems a type checker
 and comments filter are highly recommended.
