@@ -1,0 +1,230 @@
+FORMAT: 1A
+
+# webd API
+
+the web management server (`webd`) provides a REST HTTP API to control
+multiple `elektrad` instances and serves the `client`
+
+
+
+# get versions [GET /version]
+
+returns the current version of the API and elektra
+
+The API version is increased whenever breaking changes
+(i.e. changes that prevent backward compatibility) are made.
+The Elektra version is directly taken from the Elektra library,
+for further information and explanation see [doc/VERSION.md](https://github.com/ElektraInitiative/libelektra/blob/master/doc/VERSION.md).
+
++ Response 200 (application/json)
+    + Attributes (object)
+        + elektra (object) - Detailed version information about the used Elektra library
+            + version (string) - The currently used version in its complete format
+            + major (number) - The currently used major version
+            + minor (number) - The currently used minor version
+            + micro (number) - The currently used micro version
+        + api (number) - The version of the API itself
+
+
+
+# Group instances
+
+## instances endpoint [/instances]
+
+### list all instances [GET]
+
++ Response 200 (application/json)
+    + Attributes (array[Instance])
+
++ Response 401 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
+
+### create a new instance [POST]
+
++ Attributes (Base Instance)
+
++ Request (application/json)
+
++ Response 201
+    + Attributes (Instance)
+
++ Response 400 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `NAME_MISSING` name not specified
+            - `HOST_MISSING` host not specified
+
++ Response 406 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `REQUEST_UNSUPPORTED_CONTENT_TYPE` if the submitted Content-Type is not `application/json`
+
++ Response 422 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `HOST_DOES_ALREADY_EXIST` if the supplied `host` is already used in another instance
+
+
+## single instance [/instances/{instance_id}]
+
++ Attributes (Instance)
+
++ Parameters
+    + instance_id: `46a288ae-7475-4cdd-a04c-3826c9a4b5f5` (string) - id of an instance
+
+### get information about a single instance [GET]
+
++ Response 200 (application/json)
+    + Attributes (Instance)
+
++ Response 404 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `INSTANCE_NOT_FOUND` if the requested instance does not exist in the database
+
+### edit a single instance [PUT]
+
++ Request update host of instance (application/json)
+    + Attributes (object)
+        + host: `192.168.0.6` (string) - hostname/IP address of the instance
+
++ Response 204
+
++ Response 404 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `INSTANCE_NOT_FOUND` if the requested instance does not exist in the database
+
++ Response 406 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `REQUEST_UNSUPPORTED_CONTENT_TYPE` if the submitted Content-Type is not `application/json`
+
+### delete a single instance [DELETE]
+
++ Response 204 (application/json)
+    + Attributes (object)
+        + id: `46a288ae-7475-4cdd-a04c-3826c9a4b5f5` (string) - id of the deleted instance
+
++ Response 404 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `INSTANCE_NOT_FOUND` if the requested instance does not exist in the database
+
+### get version of a single instance [GET /instances/{instance_id}/version]
+
++ Response 200 (application/json)
+    + Attributes (Version)
+
++ Response 404 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `INSTANCE_NOT_FOUND` if the requested instance does not exist in the database
+
+
+## single instance key database [/instances/{instance_id}/kdb/{+path}]
+
+you can access a single instances' configuration via `clusterd` the same way you would directly access it
+
++ Parameters
+    + instance_id: `46a288ae-7475-4cdd-a04c-3826c9a4b5f5` (string) - id of an instance
+    + path: `user/hello` (string) - path to the elektra config
+
+### get configuration [GET]
+
+get the content and subkeys of the specified `path` in the elektra key database
+
++ Response 200 (application/json)
+    + Attributes (KDBResponse)
+
++ Response 404 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `INSTANCE_NOT_FOUND` if the requested instance does not exist in the database
+            - `PATH_NOT_FOUND` if the requested path does not exist in the key database
+
+### set configuration [PUT]
+
+set the content of the specified `path` in the elektra key database
+
++ Request (text/plain)
+
+        hello world
+
++ Response 204
+
++ Request (application/json)
+
+        "hello world"
+
++ Response 204
+
++ Response 404 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `INSTANCE_NOT_FOUND` if the requested instance does not exist in the database
+            - `PATH_NOT_FOUND` if the requested path does not exist in the key database
+
++ Response 406 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `REQUEST_UNSUPPORTED_CONTENT_TYPE` if the submitted Content-Type is not `application/json` or `text/plain`
+
+### delete configuration [DELETE]
+
+delete the key on the specified `path` from the elektra key database
+
++ Response 204
+
++ Response 404 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `INSTANCE_NOT_FOUND` if the requested instance does not exist in the database
+            - `PATH_NOT_FOUND` if the requested path does not exist in the key database
+
+
+
+# Data Structures
+
+## Base Version (object)
++ api (number) - The version of the API itself
+
+## Version (Base Version)
++ elektra (object) - Detailed version information about the used Elektra library
+    + version (string) - The currently used version in its complete format
+    + major (number) - The currently used major version
+    + minor (number) - The currently used minor version
+    + micro (number) - The currently used micro version
+
+## Base Instance (object)
++ name: test instance (string, required)
++ host: 192.168.0.5 (string, required)
+
+## Instance (Base Instance)
++ id: `46a288ae-7475-4cdd-a04c-3826c9a4b5f5` (string, required)
+
+## KDBResponse (object)
++ ls: user/hello, user/hello/world (array[string], required) - subkeys of the requested path, similar to `kdb ls`
++ value: hello world (string, required)
++ meta (object, required) - metadata of the requested path
+
+## Error (object)
++ status (string) - textual description of the HTTP status
++ message (string) - detailed error information, e.g. hint about malformed request
++ i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+
