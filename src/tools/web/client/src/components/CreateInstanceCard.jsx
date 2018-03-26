@@ -128,7 +128,7 @@ export default class CreateInstanceCard extends React.Component {
                   </div>
                   <div style={{ flex: 1 }}>
                       <SelectField
-                        floatingLabelText="visibility"
+                        floatingLabelText="visibility*"
                         floatingLabelFixed={true}
                         onChange={(e, _, val) => this.setState({ visibility: val })}
                         value={visibility}

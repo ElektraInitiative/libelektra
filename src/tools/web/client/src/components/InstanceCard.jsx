@@ -20,17 +20,26 @@ import { VISIBILITY_LEVELS } from '../utils'
 export default class InstanceCard extends React.Component {
   constructor (props) {
     super(props)
-    this.state = { visibility: props.visibility }
+    this.state = {
+      name: props.name,
+      host: props.host,
+      description: props.description,
+      visibility: props.visibility,
+    }
   }
 
   handleCreate = () => {
     const { id, updateInstance, sendNotification } = this.props
-    updateInstance(id, {
-      name: this.refs.nameField.getValue(),
-      host: this.refs.hostField.getValue(),
-      description: this.refs.descriptionField.getValue(),
-      visibility: this.state.visibility,
-    })
+    const { name, host, description, visibility } = this.state
+
+    const nameEmpty = !name || name.trim().length <= 0
+    const hostEmpty = !host || host.trim().length <= 0
+
+    if (nameEmpty || hostEmpty) {
+      return alert('Please enter a name and host!')
+    }
+
+    updateInstance(id, { name, host, description, visibility })
       .then(() => sendNotification('Instance updated successfully.'))
   }
 
@@ -43,20 +52,23 @@ export default class InstanceCard extends React.Component {
   }
 
   render () {
-    const { id, name, host, description } = this.props
-    const { visibility } = this.state
+    const { id } = this.props
+    const { name, host, description, visibility } = this.state
+
+    const nameEmpty = !name || name.trim().length <= 0
+    const hostEmpty = !host || host.trim().length <= 0
 
     return (
         <Card style={{ margin: '10px', marginBottom: '25px' }}>
             <CardHeader
               title={
-                  <span style={{ fontSize: 24, lineHeight: '30px' }}>{name}</span>
+                  <span style={{ fontSize: 24, lineHeight: '30px' }}>{this.props.name}</span>
               }
               subtitle={
                 <span>
-                  {description ? description + ' — ' : ''}
-                  host: <span style={{ opacity: 0.7 }}>{host}</span>
-                  &nbsp;— visibility: <span style={{ opacity: 0.7 }}>{visibility}</span>
+                  {this.props.description ? this.props.description + ' — ' : ''}
+                  host: <span style={{ opacity: 0.7 }}>{this.props.host}</span>
+                  &nbsp;— visibility: <span style={{ opacity: 0.7 }}>{this.props.visibility}</span>
                 </span>
               }
               actAsExpander={true}
@@ -72,6 +84,7 @@ export default class InstanceCard extends React.Component {
                           hintText="e.g. my webserver"
                           defaultValue={name}
                           disabled={id === 'my'}
+                          onChange={(evt) => this.setState({ name: evt.target.value })}
                           onKeyPress={e => {
                             if (e.key === 'Enter') {
                               this.handleCreate()
@@ -86,6 +99,7 @@ export default class InstanceCard extends React.Component {
                           floatingLabelFixed={true}
                           defaultValue={host}
                           disabled={id === 'my'}
+                          onChange={(evt) => this.setState({ host: evt.target.value })}
                           onKeyPress={e => {
                             if (e.key === 'Enter') {
                               this.handleCreate()
@@ -111,6 +125,7 @@ export default class InstanceCard extends React.Component {
                         floatingLabelFixed={true}
                         defaultValue={description}
                         disabled={id === 'my'}
+                        onChange={(evt) => this.setState({ description: evt.target.value })}
                         onKeyPress={e => {
                           if (e.key === 'Enter') {
                             this.handleCreate()
@@ -121,7 +136,7 @@ export default class InstanceCard extends React.Component {
                   <div style={{ flex: 1 }}>
                       <SelectField
                         ref="visibilityField"
-                        floatingLabelText="visibility"
+                        floatingLabelText="visibility*"
                         floatingLabelFixed={true}
                         onChange={(e, _, val) => this.setState({ visibility: val })}
                         value={visibility}
@@ -138,7 +153,7 @@ export default class InstanceCard extends React.Component {
                     label="save"
                     primary={true}
                     onTouchTap={this.handleCreate}
-                    disabled={id === 'my'}
+                    disabled={id === 'my' || nameEmpty || hostEmpty}
                   />
                   <Link to={'/instances/' + id}>
                       <FlatButton label="configure" />
