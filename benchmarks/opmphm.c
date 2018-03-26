@@ -1005,7 +1005,7 @@ static void benchmarkPrintAllKeySetShapes (void)
 			{
 				printf ("%s\n", keyName (key));
 			}
-			printf ("\n ======================== size %li ========================\n\n", ksGetSize (ks));
+			printf ("\n ======================== size %zd ========================\n\n", ksGetSize (ks));
 		}
 		ksDel (ks);
 	}
