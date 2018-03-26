@@ -117,7 +117,7 @@ export default class TreeItem extends Component {
   }
 
   renderValue = (id, { value, meta, onChange, onKeyPress, onError, label }) => {
-    const val = value || (meta && meta['default'])
+    const val = typeof value !== 'undefined' ? value : (meta && meta['default'])
 
     if (meta) {
       const special = this.renderSpecialValue(id, { value: val, meta, onChange, label })

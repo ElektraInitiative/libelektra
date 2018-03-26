@@ -48,6 +48,8 @@ export default class AddDialog extends Component {
     const { path } = item
     const { name, value, type, error } = this.state
 
+    console.log('!! value', value)
+
     const nameEmpty = !name || name.trim().length <= 0
 
     const actions = [
@@ -102,11 +104,7 @@ export default class AddDialog extends Component {
                 {type !== 'enum' && renderField({
                   value,
                   meta: { 'check/type': type },
-                  onChange: (evt, _, val) => {
-                    if (val || (evt && evt.target && evt.target.value)) {
-                      this.setState({ value: val || evt.target.value })
-                    }
-                  },
+                  onChange: (value) => this.setState({ value }),
                   onKeyPress: e => {
                     if (!nameEmpty && !error && e.key === 'Enter') {
                       this.handleCreate()
