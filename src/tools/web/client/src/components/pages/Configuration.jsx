@@ -173,7 +173,7 @@ export default class Configuration extends Component {
         <h1>
             <b>{name}</b>{' instance'}
             <IconButton
-              className="refreshIcon"
+              className="hoverEffect"
               style={{ marginLeft: 6, width: 28, height: 28, padding: 6 }}
               iconStyle={{ width: 16, height: 16 }}
               onClick={this.refresh}

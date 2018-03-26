@@ -43,11 +43,11 @@ h1 b {
   font-family: 'Roboto';
 }
 
-.refreshIcon {
-  opacity: 0.5;
+.hoverEffect {
+  opacity: 0.6;
   transition: opacity 0.2s;
 }
 
-.refreshIcon:hover {
+.hoverEffect:hover {
   opacity: 1;
 }

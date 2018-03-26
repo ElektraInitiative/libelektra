@@ -14,6 +14,8 @@ import TextField from 'material-ui/TextField'
 import { Link } from 'react-router-dom'
 import SelectField from 'material-ui/SelectField'
 import MenuItem from 'material-ui/MenuItem'
+import IconButton from 'material-ui/IconButton'
+import PlayIcon from 'material-ui/svg-icons/av/play-arrow'
 
 import { VISIBILITY_LEVELS, HOST_REGEX } from '../utils'
 
@@ -66,6 +68,18 @@ export default class InstanceCard extends React.Component {
     return (
         <Card style={{ margin: '10px', marginBottom: '25px' }}>
             <CardHeader
+              avatar={
+                <Link to={'/instances/' + id}>
+                  <IconButton
+                    className="hoverEffect"
+                    tooltip="configure instance"
+                    iconStyle={{ width: 40, height: 40 }}
+                    style={{ width: 48, height: 48, padding: 4 }}
+                  >
+                    <PlayIcon />
+                  </IconButton>
+                </Link>
+              }
               title={
                   <span style={{ fontSize: 24, lineHeight: '30px' }}>{this.props.name}</span>
               }
