@@ -435,7 +435,7 @@ static int csvRead (KeySet * returned, Key * parentKey, char delim, Key * colAsP
 			keyAddName (key, keyString (cur));
 			keySetString (key, col);
 			ksAppendKey (tmpKs, key);
-			lastIndex = (char *)keyBaseName (cur);
+			lastIndex = (char *) keyBaseName (cur);
 			++nr_keys;
 			++colCounter;
 		}
@@ -562,19 +562,19 @@ int elektraCsvstorageGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		if (fixColumnCountKey)
 		{
 			KeySet * namesKS = ksCut (config, setNamesKey);
-			unsigned long nrNames = (unsigned long)ksGetSize (namesKS) - 1;
+			unsigned long nrNames = (unsigned long) ksGetSize (namesKS) - 1;
 			if (nrNames == fixColumnCount)
 			{
-				colNames = (char *)elektraMalloc (nrNames * sizeof (char *));
+				colNames = (char *) elektraMalloc (nrNames * sizeof (char *));
 				Key * cur;
-				char ** ptr = (char **)colNames;
+				char ** ptr = (char **) colNames;
 				while ((cur = ksNext (namesKS)) != NULL)
 				{
 					if (!strcmp (keyName (cur), keyName (setNamesKey))) continue;
 					if (!strcmp (keyString (cur), ""))
 						*ptr = NULL;
 					else
-						*ptr = (char *)keyString (cur);
+						*ptr = (char *) keyString (cur);
 					++ptr;
 				}
 			}
@@ -583,7 +583,7 @@ int elektraCsvstorageGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		}
 	}
 	int nr_keys;
-	nr_keys = csvRead (returned, parentKey, delim, colAsParent, useHeader, fixColumnCount, (const char **)colNames);
+	nr_keys = csvRead (returned, parentKey, delim, colAsParent, useHeader, fixColumnCount, (const char **) colNames);
 	if (colNames) elektraFree (colNames);
 	if (nr_keys == -1) return -1;
 	return 1;

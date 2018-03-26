@@ -6,7 +6,7 @@ add_plugin (csvstorage
 		csvstorage.c
 	LINK_ELEKTRA
 		elektra-ease
-        elektra-proposal
+		elektra-proposal
 	ADD_TEST
 	INSTALL_TEST_DATA
 	TEST_README
