@@ -14,13 +14,27 @@ const ErrorSnackbar = ({ error, dismissError }) => {
   const message = typeof error === 'string' ? error : error.message
   const name = (error && error.name) ? error.name : 'Error'
   if (typeof message === 'string' && message.length > 0) {
+    const fullStr = name + ': ' + message
+
+    let str = fullStr
+    let action = 'dismiss'
+    let onClick = dismissError
+    if (str.length > 37) {
+      str = str.slice(0, 37) + '...'
+      action = 'view & ' + action
+      onClick = () => {
+        alert(fullStr)
+        dismissError()
+      }
+    }
+    
     return (
       <Snackbar
         open={!!error}
-        message={name + ': ' + message}
+        message={str}
         onRequestClose={() => {/* do nothing */}}
-        action="dismiss"
-        onActionClick={dismissError}
+        action={action}
+        onActionClick={onClick}
       />
     )
   } else {
