@@ -62,8 +62,8 @@ export default class Menu extends React.Component {
         <ToolbarGroup>
           <div style={{ display: 'flex' }}>
             {(subpage && !singleInstanceMode) && // show back button on subpages
-              <Link style={{ textDecoration: 'none' }} to="/"><NavigationArrowBack style={navigationArrowStyle} /></Link>}
-            <Link style={{ textDecoration: 'none' }} to="/">
+              <Link style={{ textDecoration: 'none' }} to="/" tabIndex="0"><NavigationArrowBack style={navigationArrowStyle} /></Link>}
+            <Link style={{ textDecoration: 'none' }} to="/" tabIndex="-1">
               <ToolbarTitle
                 style={{ fontFamily: 'Roboto Light', fontSize: 22, letterSpacing: 0.79, color: 'rgba(0,0,0,0.40)' }}
                 text="elektra-web"

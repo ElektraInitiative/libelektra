@@ -69,7 +69,7 @@ export default class InstanceCard extends React.Component {
         <Card style={{ margin: '10px', marginBottom: '25px' }}>
             <CardHeader
               avatar={
-                <Link to={'/instances/' + id}>
+                <Link tabIndex="-1" to={'/instances/' + id}>
                   <IconButton
                     className="hoverEffect"
                     tooltip="configure instance"
@@ -184,7 +184,7 @@ export default class InstanceCard extends React.Component {
                     onTouchTap={this.handleCreate}
                     disabled={id === 'my' || nameEmpty || hostEmpty || hostError}
                   />
-                  <Link to={'/instances/' + id}>
+                  <Link tabIndex="-1" to={'/instances/' + id}>
                       <FlatButton label="configure" />
                   </Link>
                   <FlatButton
