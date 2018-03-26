@@ -14,30 +14,43 @@
 /**
  * For usage look in [datastructures.md](/doc/dev/datastructures.md)
  *
+ * Theoretical limit of elements:
+ *
+ * The whole OPMPHM is limited to the opmphmHashfunction (...) that returns a uint32_t.
+ * The limit of elements is than ((2^32) - 1) * r / c, since (2^32) - 1 is the maximum component size of the
+ * r-uniform r-partite hypergraph.
+ *
+ * To save space the limit of elements is set to (2^32) - 1.
  */
+
+#if SIZEOF_SIZE_T == 8
+#define KDB_OPMPHM_MAX_N 4294967295 // = (2^32) - 1
+#else
+#define KDB_OPMPHM_MAX_N 795364313 // bound by opmphm->size max value
+#endif
 
 /**
  * The r-uniform r-partite hypergraph
  */
 typedef struct
 {
-	size_t order;	/*!< desired hash map return value */
-	size_t * nextEdge;   /*!< arary with Opmphm->rUniPar indices of the next edge in the lists */
+	uint32_t order;      /*!< desired hash map return value */
+	uint32_t * nextEdge; /*!< arary with Opmphm->rUniPar indices of the next edge in the lists */
 	uint32_t * vertices; /*!< array with Opmphm->rUniPar indices of vertices that the edge connects */
 } OpmphmEdge;
 
 typedef struct
 {
-	size_t firstEdge; /*!< first edge in the list of edges of a vertex */
-	size_t degree;    /*!< length of the list */
+	uint32_t firstEdge; /*!< first edge in the list of edges of a vertex */
+	uint32_t degree;    /*!< length of the list */
 } OpmphmVertex;
 
 typedef struct
 {
-	OpmphmEdge * edges;      /*!< array of all edges */
-	OpmphmVertex * vertices; /*!< array of all vertices */
-	size_t * removeSequence; /*!< remove sequence of acyclic r-uniform r-partite hypergraph */
-	size_t removeIndex;      /*!< the index used for insertion in removeSequence */
+	OpmphmEdge * edges;	/*!< array of all edges */
+	OpmphmVertex * vertices;   /*!< array of all vertices */
+	uint32_t * removeSequence; /*!< remove sequence of acyclic r-uniform r-partite hypergraph */
+	uint32_t removeIndex;      /*!< the index used for insertion in removeSequence */
 } OpmphmGraph;
 
 /**
@@ -48,7 +61,7 @@ typedef struct
 	int32_t * hashFunctionSeeds; /*!< arary with Opmphm->rUniPar seeds for the hash function calls */
 	uint8_t rUniPar;	     /*! < number of components in the r-uniform r-partite hypergraph */
 	size_t componentSize;	/*!< the number of vertices in one part of the r-uniform r-partite hypergraph */
-	size_t * graph;		     /*!< array containing the final OPMPHM */
+	uint32_t * graph;	    /*!< array containing the final OPMPHM */
 	size_t size;		     /*!< size of g in bytes */
 } Opmphm;
 

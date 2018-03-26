@@ -38,6 +38,7 @@ static void test_opmphmGraphNew (void)
 			// check opmphm
 			succeed_if (opmphm->rUniPar == 0, "check opmphm->rUniPar");
 			succeed_if (opmphm->size == 0, "check opmphm->size");
+			succeed_if (opmphm->componentSize == 0, "check opmphm->componentSize");
 			OpmphmGraph * graph = opmphmGraphNew (opmphm, rUniPar, n, 1);
 			exit_if_fail (graph, "opmphmGraphNew");
 			// check opmphm
@@ -279,7 +280,7 @@ static void test_acyclicDefaultOrder (void)
 				}
 			}
 			// save element last and create multiple edge
-			int32_t data[rUniPar];
+			uint32_t data[rUniPar];
 			for (uint8_t r = 0; r < rUniPar; ++r)
 			{
 				data[r] = graph->edges[n - 1].vertices[r];
@@ -339,7 +340,7 @@ static void test_acyclicReverseOrder (void)
 				graph->edges[i].order = n - 1 - i;
 			}
 			// save element last and create multiple edge
-			int32_t data[rUniPar];
+			uint32_t data[rUniPar];
 			for (uint8_t r = 0; r < rUniPar; ++r)
 			{
 				data[r] = graph->edges[n - 1].vertices[r];
