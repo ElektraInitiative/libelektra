@@ -11,7 +11,16 @@ Elektra-web requires:
  * A recent [node.js](https://nodejs.org/en/) installation (at least 6.x)
 
 
-## Getting Started
+## Getting started
+
+ * Install dependencies (see above)
+ * Build elektra with the elektra-web tool, e.g. `cmake .. -DTOOLS="web"`
+ * After building via `make` and installing via `sudo make install`:
+    * Start an elektrad instance: `kdb run-elektrad`
+    * Start the client: `kdb run-web`
+ * You can now access the client on: [http://localhost:33334](http://localhost:33334)
+
+## Running from source
 
  * Install dependencies (see above)
  * Clone libelektra repo and `cd libelektra/src/tools/web`
