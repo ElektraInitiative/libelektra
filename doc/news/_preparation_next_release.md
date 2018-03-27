@@ -95,6 +95,8 @@ We added:
 
 These notes are of interest for people maintaining packages of Elektra:
 
+- Docu is updated that cmake3 is required.
+  thanks to Lukas Winkler for reporting.
 - <<TODO>>
 
 ## Notes for Elektra's Developers
