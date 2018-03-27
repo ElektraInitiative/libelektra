@@ -89,7 +89,7 @@ void elektraZeroMqRecvCloseNotification (Plugin * handle, KeySet * parameters EL
 
 int elektraZeroMqRecvOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 {
-	Key * endpointKey = ksLookupByName (elektraPluginGetConfig (handle), "/config/endpoint", 0);
+	Key * endpointKey = ksLookupByName (elektraPluginGetConfig (handle), "/endpoint", 0);
 	const char * endpoint;
 	if (endpointKey)
 	{

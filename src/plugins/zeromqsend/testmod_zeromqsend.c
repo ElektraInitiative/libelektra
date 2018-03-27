@@ -26,8 +26,8 @@ char * receivedChangeType;
 /** key name received by readNotificationFromTestSocket() */
 char * receivedKeyName;
 
-/** disable error on read thread timeout */
-volatile int suppressErrorOnTimeout;
+/** variable indicating that a timeout occured while receiving */
+int receiveTimeout;
 
 /** zmq context for tests */
 void * context;
@@ -60,8 +60,11 @@ static void * createTestSocket (char * subscribeFilter)
 		printf ("zmq error was: %s\n", zmq_strerror (zmq_errno ()));
 		exit (-1);
 	}
-	exit_if_fail (zmq_setsockopt (subSocket, ZMQ_SUBSCRIBE, subscribeFilter, 1) == 0, "subscribe failed"); // subscribe to all messages
-
+	if (subscribeFilter != NULL)
+	{
+		exit_if_fail (zmq_setsockopt (subSocket, ZMQ_SUBSCRIBE, subscribeFilter, elektraStrLen (subscribeFilter)) == 0,
+			      "subscribe failed"); // subscribe to all messages
+	}
 	return subSocket;
 }
 
@@ -99,10 +102,7 @@ static void * notificationReaderThreadMain (void * filter)
 		// check for timeout
 		if (time (NULL) - start > TEST_TIMEOUT)
 		{
-			if (!suppressErrorOnTimeout)
-			{
-				yield_error ("timeout - test failed");
-			}
+			receiveTimeout = 1;
 			receivedChangeType = NULL;
 			receivedKeyName = NULL;
 			zmq_msg_close (&message);
@@ -170,7 +170,6 @@ static void * notificationReaderThreadMain (void * filter)
  */
 static pthread_t * startNotificationReaderThread (char * filter)
 {
-	suppressErrorOnTimeout = 0;
 	pthread_t * thread = elektraMalloc (sizeof *thread);
 	pthread_create (thread, NULL, notificationReaderThreadMain, filter);
 	return thread;
@@ -184,7 +183,7 @@ static void test_commit (void)
 	Key * toAdd = keyNew ("system/tests/foo/bar", KEY_END);
 	KeySet * ks = ksNew (0, KS_END);
 
-	KeySet * conf = ksNew (1, keyNew ("/config/endpoint", KEY_VALUE, TEST_ENDPOINT, KEY_END), KS_END);
+	KeySet * conf = ksNew (1, keyNew ("/endpoint", KEY_VALUE, TEST_ENDPOINT, KEY_END), KS_END);
 	PLUGIN_OPEN ("zeromqsend");
 
 	// initial get to save current state
@@ -193,6 +192,7 @@ static void test_commit (void)
 	// add key to keyset
 	ksAppendKey (ks, toAdd);
 
+	receiveTimeout = 0;
 	receivedKeyName = NULL;
 	receivedChangeType = NULL;
 
@@ -200,6 +200,7 @@ static void test_commit (void)
 	plugin->kdbSet (plugin, ks, parentKey);
 	pthread_join (*thread, NULL);
 
+	succeed_if (receiveTimeout == 0, "receiving did time out");
 	succeed_if_same_string ("Commit", receivedChangeType);
 	succeed_if_same_string (keyName (parentKey), receivedKeyName);
 
@@ -219,7 +220,7 @@ static void test_timeoutConnect (void)
 	Key * toAdd = keyNew ("system/tests/foo/bar", KEY_END);
 	KeySet * ks = ksNew (0, KS_END);
 
-	KeySet * conf = ksNew (1, keyNew ("/config/endpoint", KEY_VALUE, TEST_ENDPOINT, KEY_END), KS_END);
+	KeySet * conf = ksNew (1, keyNew ("/endpoint", KEY_VALUE, TEST_ENDPOINT, KEY_END), KS_END);
 	PLUGIN_OPEN ("zeromqsend");
 
 	// initial get to save current state
@@ -248,7 +249,7 @@ static void test_timeoutSubscribe (void)
 	Key * toAdd = keyNew ("system/tests/foo/bar", KEY_END);
 	KeySet * ks = ksNew (0, KS_END);
 
-	KeySet * conf = ksNew (1, keyNew ("/config/endpoint", KEY_VALUE, TEST_ENDPOINT, KEY_END), KS_END);
+	KeySet * conf = ksNew (1, keyNew ("/endpoint", KEY_VALUE, TEST_ENDPOINT, KEY_END), KS_END);
 	PLUGIN_OPEN ("zeromqsend");
 
 	// initial get to save current state
@@ -257,18 +258,19 @@ static void test_timeoutSubscribe (void)
 	// add key to keyset
 	ksAppendKey (ks, toAdd);
 
+	receiveTimeout = 0;
 	receivedKeyName = NULL;
 	receivedChangeType = NULL;
 
 	// do not subscribe to Commit messages, this makes the plugin timeout due to no subscribers
-	pthread_t * thread = startNotificationReaderThread ("SomethingOtherThanCommit");
-	suppressErrorOnTimeout = 1;
+	pthread_t * thread = startNotificationReaderThread (NULL);
 
 	plugin->kdbSet (plugin, ks, parentKey);
 	// without timeout we won't return here
 
 	pthread_join (*thread, NULL);
 
+	succeed_if (receiveTimeout, "receiving did not time out");
 	succeed_if (receivedKeyName == NULL, "received key name should be unchanged");
 	succeed_if (receivedChangeType == NULL, "received change type should be unchanged");
 
@@ -300,7 +302,7 @@ int main (int argc, char ** argv)
 	test_timeoutConnect ();
 	test_timeoutSubscribe ();
 
-	printf ("\ntestmod_zeromqsend RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("testmod_zeromqsend");
 
 	zmq_ctx_destroy (context);
 

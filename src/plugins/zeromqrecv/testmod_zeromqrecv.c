@@ -249,7 +249,7 @@ int main (int argc, char ** argv)
 	test_commit (loop, binding);
 	test_incompleteMessage (loop, binding);
 
-	printf ("\ntestmod_zeromqrecv RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("testmod_zeromqrecv");
 
 	elektraIoBindingCleanup (binding);
 
