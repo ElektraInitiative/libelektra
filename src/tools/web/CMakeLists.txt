@@ -1,5 +1,10 @@
 find_program (NPM_EXECUTABLE "npm")
 
+list (FIND REMOVED_PLUGINS "yajl" yajl_index)
+if (NOT yajl_index EQUAL -1)
+    remove_tool (${tool} "yajl plugin not available")
+else ()
+
 if (NOT NPM_EXECUTABLE)
     remove_tool (${tool} "dependency manager 'npm' not found")
 else ()
@@ -45,3 +50,6 @@ else ()
     generate_manpage (kdb-run-${tool} FILENAME ${CMAKE_CURRENT_BINARY_DIR}/README.md)
 
 endif ()
+
+endif ()
+
