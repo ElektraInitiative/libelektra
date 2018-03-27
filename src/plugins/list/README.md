@@ -26,6 +26,10 @@ Specifies the get-placements for the list plugin.
 
 Specifies the error-placements for the list plugin.
 
+`config/`
+
+Common config for all plugins.
+
 `plugins/#`
 
 The name of the plugin to load.
@@ -47,6 +51,7 @@ Plugin specific config.
 ## Example
 
     placements/get = "postgetstorage"
+    config/cut = "will/be/overridden/for/plugin/#0"
     plugins/#0 = "rename"
     plugins/#0/placements   plugin placements
     plugins/#0/placements/get = "postgetstorage"
