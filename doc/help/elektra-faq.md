@@ -1,6 +1,18 @@
 # Frequently Asked Questions
 
 
+## I am stuck. Where can I get help?
+
+If this FAQ does not contain your question, [please open an issue](https://git.libelektra.org/issues).
+You can simply remove all template text and it is enough if the issue only contains your question.
+If you want you can [label it as question](https://git.libelektra.org/issues/labels/question), but we
+can also categorize it for you.
+
+Please do not waste too much time to find something out yourself. Information where people get
+stuck is valuable to improve Elektra and its documentation. Even if you find out directly after
+you posted the question: the pointer can be helpful for other people having the same problem.
+
+
 ## Isn't it easier to implement a new parser than to use Elektra?
 
 No, it is not. And even if it were, the story does not end with implementing
@@ -10,13 +22,36 @@ a configuration file parser but, at least, you also need:
 - tools to change the configuration files
 - validation to make such changes user friendly
 
-Every successful project has implemented most features Elektra has.
+Every successful project has implemented many features Elektra has.
 But Elektra has the distinctive advantage that you can pick the features
 as you need them. Not used plugins do not cause any overhead or dependency.
 If you need new plugins or bindings, there is a community which can help you.
 Furthermore, Elektra has a defined API and you can swap implementations as needed.
 
 So it pays off to use Elektra -- in the short and in the long term.
+
+
+## Why do I need Elektra if I already use configuration management tools?
+
+Short answer: Try [puppet-libelektra](https://puppet.libelektra.org)
+to see how useful it can be.
+
+Longer answer:
+
+Elektra abstracts [configuration settings](elektra-glossary.md), something
+desperately needed within configuration management. Instead of rewriting
+complete configuration files, which might create security problems,
+Elektra operates precisely on the configuration setting you want to
+change: leaving others as chosen by the application or distribution.
+Furthermore, Elektra also allows us to *specify* configuration settings,
+which again brings benefits for configuration management tools.
+
+Elektra is a radical step needed towards better configuration management:
+Let us fix how applications access configuration settings, so that we
+can properly access them, for example, from configuration management tools.
+
+As an intermediate step, we can [mount](elektra-mounting.md)
+existing configuration files and operate on them.
 
 
 ## Do we retain the old way of configuring things, i.e. manually editing a ini file in /etc?
@@ -32,18 +67,6 @@ Elektra does not interfere with restarting. It is a passive library.
 It provides some techniques for reloading but they are optional (but we
 recommend that you keep the in-memory and persistent configuration in
 sync via notification).
-
-
-## I am stuck. Where can I get help?
-
-If this FAQ does not contain your question, [please open an issue](https://git.libelektra.org/issues).
-You can simply remove all template text and it is enough if the issue only contains your question.
-If you want you can [label it as question](https://git.libelektra.org/issues/labels/question), but we
-can also categorize it for you.
-
-Please do not waste too much time to find something out yourself. Information where people get
-stuck is valuable to improve Elektra and its documentation. Even if you find out directly after
-you posted the question: the pointer can be helpful for other people having the same problem.
 
 
 ## Is this an actual problem of Elektra or is it just me?

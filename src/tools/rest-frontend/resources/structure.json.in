@@ -47,7 +47,7 @@
                         }
                     },
                     {
-                        "name": "Metadata",
+                        "name": "Meta-Specification",
                         "type": "staticfile",
                         "options": {
                             "path": "doc/METADATA.ini"
@@ -58,6 +58,13 @@
                         "type": "staticref",
                         "options": {
                             "path": "tutorials"
+                        }
+                    },
+                    {
+                        "name": "FAQ",
+                        "type": "staticref",
+                        "options": {
+                            "path": "doc/help/elektra-faq.md"
                         }
                     }
                 ]

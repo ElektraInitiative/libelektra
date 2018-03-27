@@ -77,6 +77,8 @@ We added even more functionality, which could not make it to the highlights:
 
 We improved the documentation in the following ways:
 
+- FAQ was extended by [Why do I need Elektra if I already use configuration management tools?](https://www.libelektra.org/docgettingstarted/faq)
+- documented possible JSON corruption
 - <<TODO>>
 
 ## Compatibility
