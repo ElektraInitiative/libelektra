@@ -1955,6 +1955,10 @@ static const char * elektraOpmphmGetString (void * data)
 
 static int elektraLookupBuildOpmphm (KeySet * ks)
 {
+	if (ks->size > KDB_OPMPHM_MAX_N)
+	{
+		return -1;
+	}
 	if (!ks->opmphm)
 	{
 		ks->opmphm = opmphmNew ();
@@ -2056,7 +2060,6 @@ static Key * elektraLookupSearch (KeySet * ks, Key * key, option_t options)
 	Key * found = 0;
 
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
-	int opmphmOptionIsSet = 0;
 	// KDB_O_WITHOWNER and KDB_O_NOCASE flags are not compatible with OPMPHM
 	if (((options & KDB_O_WITHOWNER) || (options & KDB_O_NOCASE)) && (options & KDB_O_OPMPHM))
 	{
@@ -2066,7 +2069,8 @@ static Key * elektraLookupSearch (KeySet * ks, Key * key, option_t options)
 
 	if (options & KDB_O_OPMPHM)
 	{
-		opmphmOptionIsSet = 1;
+		// remove OPMPHM, due to callback stuff
+		options ^= KDB_O_OPMPHM;
 		if (!ks->opmphm || !opmphmIsBuild (ks->opmphm))
 		{
 			if (elektraLookupBuildOpmphm (ks))
@@ -2088,11 +2092,6 @@ static Key * elektraLookupSearch (KeySet * ks, Key * key, option_t options)
 	{
 		found = elektraLookupBinarySearch (ks, key, options);
 	}
-	// OPMPHM needs to be removed due to callback stuff
-	if (opmphmOptionIsSet)
-	{
-		options ^= KDB_O_OPMPHM;
-	}
 #else
 	found = elektraLookupBinarySearch (ks, key, options);
 #endif
@@ -2108,13 +2107,6 @@ static Key * elektraLookupSearch (KeySet * ks, Key * key, option_t options)
 			}
 		}
 	}
-#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
-	// callback done add KDB_O_OPMPHM
-	if (opmphmOptionIsSet)
-	{
-		options ^= KDB_O_OPMPHM;
-	}
-#endif
 
 	return ret;
 }
