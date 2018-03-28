@@ -27,9 +27,9 @@ export default class TreeView extends React.Component {
     return getKey(instanceId, path)
   }
 
-  refreshItem = (item) => {
+  refreshItem = (item, noRecursive = false) => {
     const mainPromise = this.refreshPath(item.path)
-    if (Array.isArray(item.children)) {
+    if (!noRecursive && Array.isArray(item.children)) {
       return Promise.all([
         mainPromise,
         ...item.children.map(
@@ -43,7 +43,7 @@ export default class TreeView extends React.Component {
 
   handleSelect = (newSelection, item, ancestors, neighbours) => {
     this.setState({ selection: newSelection })
-    this.refreshItem(item)
+    this.refreshItem(item, true)
   }
 
   handleDrop = (target, evt, inputs) => {
@@ -107,21 +107,45 @@ export default class TreeView extends React.Component {
       : a.children ? -1 : 1
   }
 
+  createOpener () {
+    const tree = this
+    const { unfolded } = this.state
+    return class Opener extends React.Component {
+      onClick = (event) => {
+        const { onClick, item } = this.props
+        const newUnfolded = unfolded.filter(p => p !== item.path)
+        if (newUnfolded.length === unfolded.length) {
+          newUnfolded.push(item.path)
+        }
+        tree.setState({ unfolded: newUnfolded })
+        onClick(event)
+        event.stopPropagation()
+      }
+
+      render () {
+        const { onClick, item, children, ...rest } = this.props
+        return <span {...rest} onClick={this.onClick}>{children}</span>
+      }
+    }
+  }
+
   render () {
     const { data } = this.props
-    const { selection } = this.state
+    const { selection, unfolded } = this.state
     const tree = this
     const strategies = {
-      click: [ "select", function unfoldOnSelectionByPath (item) {
+      click: [ function unfoldOnSelectionByPath (item) {
         if (!this.isSelected(item)) {
-          const newUnfolded = this.state.get().unfolded.filter(i => i.path !== item.path)
-          newUnfolded.push(item)
-          this.state.set({ unfolded: newUnfolded })
-          tree.setState({ unfolded: newUnfolded })
+          const newUnfolded = unfolded.filter(p => p !== item.path)
+          if (newUnfolded.length === unfolded.length) {
+            newUnfolded.push(item.path)
+            tree.setState({ unfolded: newUnfolded })
+          }
         }
+        return this.inputs.get().onSelect(item, this.inputs.get().ancestors, this.inputs.get().model)
       } ],
       fold: [ function unfoldByPath (item) {
-        return !this.state.get().unfolded.find(i => i.path === item.path)
+        return !unfolded.find(p => p === item.path)
       } ]
     }
 
@@ -131,6 +155,7 @@ export default class TreeView extends React.Component {
         model={data}
         category="children"
         name="name"
+        opener={this.createOpener()}
         search={this.handleSearch}
         sort={this.handleSort}
         selection={selection}

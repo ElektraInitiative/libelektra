@@ -50,8 +50,6 @@ export default class AddDialog extends Component {
     const { path } = item
     const { name, value, type, error } = this.state
 
-    console.log('!! value', value)
-
     const nameEmpty = !name || name.trim().length <= 0
 
     const actions = [

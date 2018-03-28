@@ -27,8 +27,6 @@ export default class SimpleTextField extends Component {
     const val = this.state.value === false ? value : this.state.value
     const comp = debounce ? DebouncedTextField : TextField
 
-    console.log('debounce', debounce)
-
     return (
       <div draggable="true" onDragStart={e => e.preventDefault()}>
         {React.createElement(comp, {

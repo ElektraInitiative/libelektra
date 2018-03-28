@@ -153,7 +153,7 @@ export default class TreeItem extends Component {
                       <b style={titleStyle}>{item.name + ': '}</b>
                       <span
                         style={{ marginLeft: 6 }}
-                        onClick={(meta && meta.readonly === '1') && (() => alert('This key is set to read-only and cannot be edited.'))}
+                        onClick={(meta && meta.readonly === '1') ? (() => alert('This key is set to read-only and cannot be edited.')) : undefined}
                       >
                         {this.renderValue(item.path, data)}
                       </span>
