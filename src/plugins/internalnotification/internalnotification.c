@@ -326,38 +326,38 @@ void elektraInternalnotificationUpdateRegisteredKeys (Plugin * plugin, KeySet * 
 #define VALUE_TYPE long int
 #define TYPE_NAME Int
 #define TO_VALUE (strtol (string, &end, 10))
-#define CHECK_CONVERSION INTERNALNOTIFICATION_CHECK_CONVERSION_RANGE (value <= INT_MAX && value >= INT_MIN)
+#define CHECK_CONVERSION ELEKTRA_TYPE_CHECK_CONVERSION_RANGE (value <= INT_MAX && value >= INT_MIN)
 #include "macros/add_type.h"
 
 #define TYPE unsigned int
 #define VALUE_TYPE unsigned long int
 #define TYPE_NAME UnsignedInt
 #define TO_VALUE (strtoul (string, &end, 10))
-#define CHECK_CONVERSION INTERNALNOTIFICATION_CHECK_CONVERSION_RANGE (value <= UINT_MAX)
+#define CHECK_CONVERSION ELEKTRA_TYPE_CHECK_CONVERSION_RANGE (value <= UINT_MAX)
 #include "macros/add_type.h"
 
 #define TYPE long
 #define TYPE_NAME Long
 #define TO_VALUE (strtol (string, &end, 10))
-#define CHECK_CONVERSION INTERNALNOTIFICATION_CHECK_CONVERSION
+#define CHECK_CONVERSION ELEKTRA_TYPE_CHECK_CONVERSION
 #include "macros/add_type.h"
 
 #define TYPE unsigned long
 #define TYPE_NAME UnsignedLong
 #define TO_VALUE (strtoul (string, &end, 10))
-#define CHECK_CONVERSION INTERNALNOTIFICATION_CHECK_CONVERSION
+#define CHECK_CONVERSION ELEKTRA_TYPE_CHECK_CONVERSION
 #include "macros/add_type.h"
 
 #define TYPE float
 #define TYPE_NAME Float
 #define TO_VALUE (strtof (string, &end))
-#define CHECK_CONVERSION INTERNALNOTIFICATION_CHECK_CONVERSION
+#define CHECK_CONVERSION ELEKTRA_TYPE_CHECK_CONVERSION
 #include "macros/add_type.h"
 
 #define TYPE double
 #define TYPE_NAME Double
 #define TO_VALUE (strtod (string, &end))
-#define CHECK_CONVERSION INTERNALNOTIFICATION_CHECK_CONVERSION
+#define CHECK_CONVERSION ELEKTRA_TYPE_CHECK_CONVERSION
 #include "macros/add_type.h"
 
 // for kdb_*_t Types
@@ -375,63 +375,63 @@ void elektraInternalnotificationUpdateRegisteredKeys (Plugin * plugin, KeySet * 
 #define VALUE_TYPE unsigned int
 #define TYPE_NAME KdbOctet
 #define TO_VALUE (strtoul (string, &end, 10))
-#define CHECK_CONVERSION INTERNALNOTIFICATION_CHECK_CONVERSION_RANGE (value <= 255)
+#define CHECK_CONVERSION ELEKTRA_TYPE_CHECK_CONVERSION_RANGE (value <= 255)
 #include "macros/add_type.h"
 
 #define TYPE kdb_short_t
 #define VALUE_TYPE int
 #define TYPE_NAME KdbShort
 #define TO_VALUE (strtol (string, &end, 10))
-#define CHECK_CONVERSION INTERNALNOTIFICATION_CHECK_CONVERSION_RANGE (value <= SHRT_MAX && value >= SHRT_MIN)
+#define CHECK_CONVERSION ELEKTRA_TYPE_CHECK_CONVERSION_RANGE (value <= SHRT_MAX && value >= SHRT_MIN)
 #include "macros/add_type.h"
 
 #define TYPE kdb_unsigned_short_t
 #define VALUE_TYPE unsigned int
 #define TYPE_NAME KdbUnsignedShort
 #define TO_VALUE (strtoul (string, &end, 10))
-#define CHECK_CONVERSION INTERNALNOTIFICATION_CHECK_CONVERSION_RANGE (value <= USHRT_MAX)
+#define CHECK_CONVERSION ELEKTRA_TYPE_CHECK_CONVERSION_RANGE (value <= USHRT_MAX)
 #include "macros/add_type.h"
 
 #define TYPE kdb_long_t
 #define TYPE_NAME KdbLong
 #define TO_VALUE (strtol (string, &end, 10))
-#define CHECK_CONVERSION INTERNALNOTIFICATION_CHECK_CONVERSION
+#define CHECK_CONVERSION ELEKTRA_TYPE_CHECK_CONVERSION
 #include "macros/add_type.h"
 
 #define TYPE kdb_unsigned_long_t
 #define TYPE_NAME KdbUnsignedLong
 #define TO_VALUE (strtoul (string, &end, 10))
-#define CHECK_CONVERSION INTERNALNOTIFICATION_CHECK_CONVERSION
+#define CHECK_CONVERSION ELEKTRA_TYPE_CHECK_CONVERSION
 #include "macros/add_type.h"
 
 #define TYPE kdb_long_long_t
 #define TYPE_NAME KdbLongLong
 #define TO_VALUE (ELEKTRA_LONG_LONG_S (string, &end, 10))
-#define CHECK_CONVERSION INTERNALNOTIFICATION_CHECK_CONVERSION
+#define CHECK_CONVERSION ELEKTRA_TYPE_CHECK_CONVERSION
 #include "macros/add_type.h"
 
 #define TYPE kdb_unsigned_long_long_t
 #define TYPE_NAME KdbUnsignedLongLong
 #define TO_VALUE (ELEKTRA_UNSIGNED_LONG_LONG_S (string, &end, 10))
-#define CHECK_CONVERSION INTERNALNOTIFICATION_CHECK_CONVERSION
+#define CHECK_CONVERSION ELEKTRA_TYPE_CHECK_CONVERSION
 #include "macros/add_type.h"
 
 #define TYPE kdb_float_t
 #define TYPE_NAME KdbFloat
 #define TO_VALUE (strtof (string, &end))
-#define CHECK_CONVERSION INTERNALNOTIFICATION_CHECK_CONVERSION
+#define CHECK_CONVERSION ELEKTRA_TYPE_CHECK_CONVERSION
 #include "macros/add_type.h"
 
 #define TYPE kdb_double_t
 #define TYPE_NAME KdbDouble
 #define TO_VALUE (strtod (string, &end))
-#define CHECK_CONVERSION INTERNALNOTIFICATION_CHECK_CONVERSION
+#define CHECK_CONVERSION ELEKTRA_TYPE_CHECK_CONVERSION
 #include "macros/add_type.h"
 
 #define TYPE kdb_long_double_t
 #define TYPE_NAME KdbLongDouble
 #define TO_VALUE (strtold (string, &end))
-#define CHECK_CONVERSION INTERNALNOTIFICATION_CHECK_CONVERSION
+#define CHECK_CONVERSION ELEKTRA_TYPE_CHECK_CONVERSION
 #include "macros/add_type.h"
 
 /**

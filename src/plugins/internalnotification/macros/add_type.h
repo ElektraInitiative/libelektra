@@ -41,7 +41,8 @@
 #define ELEKTRA_CONCAT(X, Y) ELEKTRA_CONCAT2 (X, Y)
 #define ELEKTRA_CONCAT2(X, Y) X##Y
 
-#define INTERNALNOTIFICATION_CONVERSION_CALLBACK_NAME(TYPE_NAME) ELEKTRA_CONCAT (elektraInternalnotificationConvert, TYPE_NAME)
+#define INTERNALNOTIFICATION_CONVERSION_FUNCTION_NAME(TYPE_NAME) ELEKTRA_CONCAT (elektraInternalnotificationConvert, TYPE_NAME)
+#define INTERNALNOTIFICATION_CONVERSION_CALLBACK_NAME(TYPE_NAME) ELEKTRA_CONCAT (elektraInternalnotificationConvertCallback, TYPE_NAME)
 
 #define INTERNALNOTIFICATION_REGISTER_SIGNATURE(TYPE, TYPE_NAME)                                                                           \
 	int INTERNALNOTIFICATION_REGISTER_NAME (TYPE_NAME) (Plugin * handle, Key * key, TYPE * variable)
@@ -49,23 +50,16 @@
 #define INTERNALNOTIFICATION_CONVERSION_CALLBACK_SIGNATURE(TYPE_NAME)                                                                      \
 	void INTERNALNOTIFICATION_CONVERSION_CALLBACK_NAME (TYPE_NAME) (Key * key, void * context)
 
+#define DISABLE_UNDEF_PARAMETERS
+#define NAME_MACRO INTERNALNOTIFICATION_CONVERSION_FUNCTION_NAME
+#include <macros/type_create_to_value.h>
+
 INTERNALNOTIFICATION_CONVERSION_CALLBACK_SIGNATURE (TYPE_NAME)
 {
 	_ElektraInternalnotificationConversionContext * ctx = (_ElektraInternalnotificationConversionContext *) context;
 	TYPE * variable = (TYPE *) ctx->variable;
-	char * end ELEKTRA_UNUSED;
-	const char * string = keyValue (key);
-	errno = 0;
-	/* convert string to target type */
-	VALUE_TYPE value = TO_VALUE;
-	/* only update if conversion was successful */
-	if (CHECK_CONVERSION)
+	if (!INTERNALNOTIFICATION_CONVERSION_FUNCTION_NAME (TYPE_NAME) (key, variable))
 	{
-		*(variable) = value;
-	}
-	else
-	{
-		ELEKTRA_LOG_WARNING ("conversion failed! string=%s, stopped=%c errno=%d", keyString (key), *end, errno);
 		if (ctx->errorCallback)
 		{
 			ctx->errorCallback (key, ctx->errorCallbackContext);
@@ -99,8 +93,10 @@ INTERNALNOTIFICATION_REGISTER_SIGNATURE (TYPE, TYPE_NAME)
 #undef ELEKTRA_CONCAT
 #undef ELEKTRA_CONCAT2
 #undef INTERNALNOTIFICATION_CONVERSION_CALLBACK_NAME
+#undef INTERNALNOTIFICATION_CONVERSION_FUNCTION_NAME_SIGNATURE
 #undef INTERNALNOTIFICATION_CONVERSION_CALLBACK_SIGNATURE
 #undef INTERNALNOTIFICATION_REGISTER_SIGNATURE
+#undef NAME_MACRO
 
 #undef TYPE
 #undef VALUE_TYPE
