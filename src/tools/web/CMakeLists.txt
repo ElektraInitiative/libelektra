@@ -39,10 +39,6 @@ else ()
     install (PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/run-${tool} ${CMAKE_CURRENT_BINARY_DIR}/run-elektrad ${CMAKE_CURRENT_BINARY_DIR}/build-${tool}
              DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
-    # attempt to install npm dependencies
-    install (CODE "execute_process (COMMAND npm install --unsafe-perm WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${install_directory}/elektrad OUTPUT_QUIET)")
-    install (CODE "execute_process (COMMAND npm install --unsafe-perm WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${install_directory}/client OUTPUT_QUIET)")
-
     # build elektra-web
     install (CODE "execute_process (COMMAND ${TARGET_TOOL_EXEC_FOLDER}/build-${tool} OUTPUT_QUIET)")
 
@@ -52,4 +48,3 @@ else ()
 endif ()
 
 endif ()
-

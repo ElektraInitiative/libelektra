@@ -2,4 +2,4 @@
 cd @CMAKE_INSTALL_PREFIX@/@install_directory@
 
 cd client
-npm start
+npm run start:prod
