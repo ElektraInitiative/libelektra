@@ -116,6 +116,8 @@ int elektraNotificationClose (KDB * kdb);
  * @ingroup kdbnotification
  * @brief Subscribe for automatic updates to a given variable when the given key value is changed.
  *
+ * On kdbGet iff the key is present and its content is valid, the registered variable is updated.
+ *
  * @param  handle   plugin handle
  * @param  key      key to watch for changes
  * @param  variable variable
