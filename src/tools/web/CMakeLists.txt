@@ -34,13 +34,19 @@ else ()
     )
 
     # install files to destination
-    install (DIRECTORY elektrad webd client DESTINATION ${install_directory})
+    install (DIRECTORY elektrad webd client
+             DESTINATION ${install_directory}
+             PATTERN "node_modules" EXCLUDE
+             PATTERN "build" EXCLUDE)
     install (FILES README.md kdb.js DESTINATION ${install_directory})
     install (PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/run-${tool} ${CMAKE_CURRENT_BINARY_DIR}/run-elektrad ${CMAKE_CURRENT_BINARY_DIR}/build-${tool}
              DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
     # build elektra-web
-    install (CODE "execute_process (COMMAND ${TARGET_TOOL_EXEC_FOLDER}/build-${tool} OUTPUT_QUIET)")
+    install (CODE "execute_process (COMMAND npm install --unsafe-perm WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${install_directory}/elektrad OUTPUT_QUIET)")
+    install (CODE "execute_process (COMMAND npm run build --unsafe-perm WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${install_directory}/elektrad OUTPUT_QUIET)")
+    install (CODE "execute_process (COMMAND npm install --unsafe-perm WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${install_directory}/client OUTPUT_QUIET)")
+    install (CODE "execute_process (COMMAND npm run build --unsafe-perm WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${install_directory}/client OUTPUT_QUIET)")
 
     generate_manpage (kdb-run-elektrad FILENAME ${CMAKE_CURRENT_BINARY_DIR}/README.md)
     generate_manpage (kdb-run-${tool} FILENAME ${CMAKE_CURRENT_BINARY_DIR}/README.md)
