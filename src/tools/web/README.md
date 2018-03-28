@@ -14,10 +14,11 @@ Elektra-web requires:
 ## Getting started
 
  * Install dependencies (see above)
- * Build elektra with the elektra-web tool, e.g. `cmake .. -DTOOLS="web"`
- * After building via `make` and installing via `sudo make install`:
-    * Start an elektrad instance: `kdb run-elektrad`
-    * Start the client: `kdb run-web`
+ * Configure elektra build with the elektra-web tool, e.g. `cmake .. -DTOOLS="web"`
+ * Build elektra: `make`
+ * Install elektra: `sudo make install`
+ * Start an elektrad instance: `kdb run-elektrad`
+ * Start the client: `kdb run-web`
  * You can now access the client on: [http://localhost:33334](http://localhost:33334)
 
 ## Running from source
@@ -28,10 +29,12 @@ Elektra-web requires:
    * `cd elektrad`
    * `npm install`
    * `npm start`
+
  * Install and start the client (connects to the elektrad instance):
    * `cd client`
    * `npm install`
    * `npm start`
+
  * You can now access the client on: [http://localhost:33334](http://localhost:33334)
 
 ### Running elektra-web on a single instance
@@ -109,12 +112,14 @@ authenticate users, e.g. by [username/password auth](https://www.digitalocean.co
 
 - `elektrad/` - contains the daemon to interact with a single elektra instance
 - `webd/` - contains a daemon to serve the client and interact with multiple elektra instances
+
 - `client/` - contains the elektra-web client (Web UI)
   - `src/actions/` - Redux actions to access the KDB or display notifications in the UI
   - `src/components/` - React components
     - `pages/` - pages in the app
       - `Home.jsx` - the main page (overview of all instances)
       - `Configuration.jsx` - configuration page (single instance)
+
     - `TreeItem/` - contains all UI components related to a single item in the tree view
       - `dialogs/` - these dialogs are opened when certain actions are pressed (icons next to the tree items)
         - `AddDialog.jsx` - dialog to create a new (sub-)key
@@ -123,8 +128,11 @@ authenticate users, e.g. by [username/password auth](https://www.digitalocean.co
         - `RemoveDialog.jsx` - dialog to confirm the removal of a key
         - `SettingsDialog.jsx` - dialog to edit metadata (new metadata can be implemented here)
         - `*SubDialog.jsx` - sub-dialogs of the SettingsDialog
+
       - `fields/` - special input fields to display various values
+
     - `App.jsx` - defines app structure and routes
+
   - `src/index.js` - main entry point of the app (fetches instances and renders UI)
   - `src/containers/` - contains components that are connected to Redux
   - `src/css/` - contains CSS styles

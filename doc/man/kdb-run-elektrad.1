@@ -21,18 +21,19 @@ A recent node\.js \fIhttps://nodejs\.org/en/\fR installation (at least 6\.x)
 Install dependencies (see above)
 .
 .IP "\(bu" 4
-Build elektra with the elektra\-web tool, e\.g\. \fBcmake \.\. \-DTOOLS="web"\fR
+Configure elektra build with the elektra\-web tool, e\.g\. \fBcmake \.\. \-DTOOLS="web"\fR
 .
 .IP "\(bu" 4
+Build elektra: \fBmake\fR
+.
+.IP "\(bu" 4
+Install elektra: \fBsudo make install\fR
 .
 .IP "\(bu" 4
 Start an elektrad instance: \fBkdb run\-elektrad\fR
 .
 .IP "\(bu" 4
-Start the elektra\-web client: \fBkdb run\-web\fR
-.
-.IP "" 0
-
+Start the client: \fBkdb run\-web\fR
 .
 .IP "\(bu" 4
 You can now access the client on: \fIhttp://localhost:33334\fR
@@ -48,6 +49,7 @@ Install dependencies (see above)
 Clone libelektra repo and \fBcd libelektra/src/tools/web\fR
 .
 .IP "\(bu" 4
+Install and start an elektrad instance:
 .
 .IP "\(bu" 4
 \fBcd elektrad\fR
@@ -62,6 +64,7 @@ Clone libelektra repo and \fBcd libelektra/src/tools/web\fR
 
 .
 .IP "\(bu" 4
+Install and start the client (connects to the elektrad instance):
 .
 .IP "\(bu" 4
 \fBcd client\fR
@@ -160,3 +163,89 @@ Currently, clusterd does not support authentication\. The best way to work aroun
 .
 .P
 Once you set up a reverse proxy on your web server, you can use it to authenticate users, e\.g\. by username/password auth \fIhttps://www\.digitalocean\.com/community/tutorials/how\-to\-set\-up\-password\-authentication\-with\-nginx\-on\-ubuntu\-14\-04\fR
+.
+.SH "Code structure"
+.
+.IP "\(bu" 4
+\fBelektrad/\fR \- contains the daemon to interact with a single elektra instance
+.
+.IP "\(bu" 4
+\fBwebd/\fR \- contains a daemon to serve the client and interact with multiple elektra instances
+.
+.IP "\(bu" 4
+\fBclient/\fR \- contains the elektra\-web client (Web UI)
+.
+.IP "\(bu" 4
+\fBsrc/actions/\fR \- Redux actions to access the KDB or display notifications in the UI
+.
+.IP "\(bu" 4
+\fBsrc/components/\fR \- React components
+.
+.IP "\(bu" 4
+\fBpages/\fR \- pages in the app
+.
+.IP "\(bu" 4
+\fBHome\.jsx\fR \- the main page (overview of all instances)
+.
+.IP "\(bu" 4
+\fBConfiguration\.jsx\fR \- configuration page (single instance)
+.
+.IP "" 0
+
+.
+.IP "\(bu" 4
+\fBTreeItem/\fR \- contains all UI components related to a single item in the tree view
+.
+.IP "\(bu" 4
+\fBdialogs/\fR \- these dialogs are opened when certain actions are pressed (icons next to the tree items)
+.
+.IP "\(bu" 4
+\fBAddDialog\.jsx\fR \- dialog to create a new (sub\-)key
+.
+.IP "\(bu" 4
+\fBDuplicateDialog\.jsx\fR \- dialog to duplicate a key
+.
+.IP "\(bu" 4
+\fBEditDialog\.jsx\fR \- dialog to edit a key value
+.
+.IP "\(bu" 4
+\fBRemoveDialog\.jsx\fR \- dialog to confirm the removal of a key
+.
+.IP "\(bu" 4
+\fBSettingsDialog\.jsx\fR \- dialog to edit metadata (new metadata can be implemented here)
+.
+.IP "\(bu" 4
+\fB*SubDialog\.jsx\fR \- sub\-dialogs of the SettingsDialog
+.
+.IP "" 0
+
+.
+.IP "\(bu" 4
+\fBfields/\fR \- special input fields to display various values
+.
+.IP "" 0
+
+.
+.IP "\(bu" 4
+\fBApp\.jsx\fR \- defines app structure and routes
+.
+.IP "" 0
+
+.
+.IP "\(bu" 4
+\fBsrc/index\.js\fR \- main entry point of the app (fetches instances and renders UI)
+.
+.IP "\(bu" 4
+\fBsrc/containers/\fR \- contains components that are connected to Redux
+.
+.IP "\(bu" 4
+\fBsrc/css/\fR \- contains CSS styles
+.
+.IP "\(bu" 4
+\fBsrc/reducers/\fR \- contains Redux reducers (used to process actions)
+.
+.IP "" 0
+
+.
+.IP "" 0
+
