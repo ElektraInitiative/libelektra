@@ -86,13 +86,13 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 	{
 		option o = { "load", no_argument, nullptr, 'f' };
 		long_options.push_back (o);
-		helpText += "-l --load                Load plugin even if system/elektra is available\n";
+		helpText += "-l --load                Load plugin even if system/elektra is available.\n";
 	}
 	if (acceptedOptions.find ('h') != string::npos)
 	{
 		option o = { "human-readable", no_argument, nullptr, 'h' };
 		long_options.push_back (o);
-		helpText += "-h --human-readable      Print numbers in an human readable way\n";
+		helpText += "-h --human-readable      Print numbers in an human readable way.\n";
 	}
 	if (acceptedOptions.find ('H') != string::npos)
 	{
@@ -146,7 +146,7 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 		acceptedOptions.insert (optionPos + 1, ":");
 		option o = { "resolver", required_argument, nullptr, 'R' };
 		long_options.push_back (o);
-		helpText += "-R --resolver <name>     Specify the resolver plugin to use\n";
+		helpText += "-R --resolver <name>     Specify the resolver plugin to use.\n";
 	}
 	optionPos = acceptedOptions.find ('p');
 	if (optionPos != string::npos)
@@ -154,7 +154,7 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 		acceptedOptions.insert (optionPos + 1, ":");
 		option o = { "profile", required_argument, nullptr, 'p' };
 		long_options.push_back (o);
-		helpText += "-p --profile <name>      Use a different profile for kdb configuration\n";
+		helpText += "-p --profile <name>      Use a different profile for kdb configuration.\n";
 	}
 	optionPos = acceptedOptions.find ('s');
 	if (optionPos != string::npos)
