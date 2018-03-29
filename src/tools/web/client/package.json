@@ -27,7 +27,7 @@
   },
   "scripts": {
     "postinstall": "npm install --prefix ../webd",
-    "start": "npm run build && npm run start:prod",
+    "start": "npm run build && cd ../webd && npm run build && npm run start:prod",
     "start:prod": "npm run server",
     "server": "cd ../webd && npm run start:prod",
     "start:dev": "concurrently \"react-scripts start\" \"npm run server:dev\"",
