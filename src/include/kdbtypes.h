@@ -52,6 +52,7 @@ typedef unsigned char kdb_char_t;
 
 #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
 // for C99+
+#include <inttypes.h>
 #include <stdbool.h>
 #include <stdint.h>
 
