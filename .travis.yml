@@ -124,12 +124,6 @@ before_install:
     fi
   - |
     if [[ "$TRAVIS_OS_NAME" == "osx" && "$HASKELL" == "ON" ]] ; then
-      # ————————————————————————————————————————————————————————————————————————————————
-      # TODO: Remove this after Homebrew Core contains a new version of `cabal-install`
-      # The Homebrew formula of Cabal currently requires GHC 8.2
-      brew install ghc@8.2
-      brew link --force ghc@8.2
-      # ————————————————————————————————————————————————————————————————————————————————
       brew install cabal-install
       cabal update
       # avoid reinstalls if we already have them cached
