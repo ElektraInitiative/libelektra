@@ -2,11 +2,6 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(DISCOUNT_FIND_QUIETLY ON)
 
-# Disable warnings about policies in Qt’s CMake code
-if (POLICY CMP0053)
-	cmake_policy(SET CMP0053 OLD)
-endif ()
-
 if (APPLE)
 	# Provide list of default paths for Homebrew version of Qt
 	list (APPEND CMAKE_PREFIX_PATH "/usr/local/opt/qt5" "/usr/local/opt/qt@5.5")
