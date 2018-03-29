@@ -431,34 +431,42 @@ void TestCommand::doMetaTest ()
 		}
 }
 
+namespace
+{
+bool checkArgument (std::vector<std::string> const & arguments, std::string testname)
+{
+	return arguments.size () == 1 || find (arguments.begin (), arguments.end (), testname) != arguments.end ();
+}
+}
+
 void TestCommand::doTests (std::vector<std::string> const & arguments)
 {
-	if (arguments.size () == 1 || find (arguments.begin (), arguments.end (), "basic") != arguments.end ())
+	if (checkArgument (arguments, "basic"))
 	{
 		cout << "Doing basic tests" << std::endl;
 		doBasicTest ();
 	}
-	if (arguments.size () == 1 || find (arguments.begin (), arguments.end (), "string") != arguments.end ())
+	if (checkArgument (arguments, "string"))
 	{
 		cout << "Doing string tests" << std::endl;
 		doStringTest ();
 	}
-	if (arguments.size () == 1 || find (arguments.begin (), arguments.end (), "umlauts") != arguments.end ())
+	if (checkArgument (arguments, "umlauts"))
 	{
 		cout << "Doing umlauts tests" << std::endl;
 		doUmlautsTest ();
 	}
-	if (arguments.size () == 1 || find (arguments.begin (), arguments.end (), "binary") != arguments.end ())
+	if (checkArgument (arguments, "binary"))
 	{
 		cout << "Doing binary tests" << std::endl;
 		doBinaryTest ();
 	}
-	if (arguments.size () == 1 || find (arguments.begin (), arguments.end (), "naming") != arguments.end ())
+	if (checkArgument (arguments, "naming"))
 	{
 		cout << "Doing naming tests" << std::endl;
 		doNamingTest ();
 	}
-	if (arguments.size () == 1 || find (arguments.begin (), arguments.end (), "meta") != arguments.end ())
+	if (checkArgument (arguments, "meta"))
 	{
 		cout << "Doing meta tests" << std::endl;
 		doMetaTest ();
