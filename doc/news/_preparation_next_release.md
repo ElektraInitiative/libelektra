@@ -72,6 +72,7 @@ We added even more functionality, which could not make it to the highlights:
   It can be used to integrate the notification feature with applications based
   on glib.
 - The Order Preserving Minimal Perfect Hash Map (OPMPHM), used to speed up the lookups, got optimized.
+- `kdb ls` now has `-0` option
 
 ## Documentation
 
@@ -79,6 +80,7 @@ We improved the documentation in the following ways:
 
 - FAQ was extended by [Why do I need Elektra if I already use configuration management tools?](https://www.libelektra.org/docgettingstarted/faq)
 - documented possible JSON corruption
+- uniformly add `.` at end of short help
 - <<TODO>>
 
 ## Compatibility
@@ -128,6 +130,7 @@ Many problems were resolved with the following fixes:
 - [YAML CPP](http://libelektra.org/plugins/yamlcpp) now also saves key values directly below a mountpoint correctly.
 - If you use a minimal configuration ([`dump`](http://libelektra.org/plugins/dump) and [`resolver`](https://www.libelektra.org/plugins/resolver) only), all test of the test suite now finish successfully again.
 - We resolved undefined behavior in polymorphic classes that contained virtual functions, by explicitly adding a virtual destructor.
+- small refactoring in `kdb-test`
 
 ## Outlook
 
