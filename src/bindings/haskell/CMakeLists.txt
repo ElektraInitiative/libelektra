@@ -1,6 +1,6 @@
 find_package (Haskell)
 
-if (HASKELL_FOUND) 
+if (HASKELL_FOUND)
 if (NOT BUILD_STATIC)
 
 	set (CABAL_INCLUDE_DIRS "\"${CMAKE_SOURCE_DIR}/src/include\", \"${CMAKE_BINARY_DIR}/src/include\"")
@@ -26,14 +26,14 @@ if (NOT BUILD_STATIC)
 		set (ELEKTRA_DEPENDENCY "elektra-static;")
 	endif ()
 	string (REPLACE ";" " " CABAL_ELEKTRA_DEPENDENCY "${ELEKTRA_DEPENDENCY}")
-	
+
 	# configure include paths
 	configure_file (
 		"${CMAKE_CURRENT_SOURCE_DIR}/libelektra-haskell.cabal.in"
 		"${CMAKE_CURRENT_BINARY_DIR}/libelektra-haskell.cabal"
 		@ONLY
 	)
-	# Use the post-build logic to glue the bindings together with cmake as its done for plugins		
+	# Use the post-build logic to glue the bindings together with cmake as its done for plugins
 	configure_file (
 		"${CMAKE_SOURCE_DIR}/src/plugins/haskell/Setup.hs.in"
 		"${CMAKE_CURRENT_BINARY_DIR}/Setup.hs"
@@ -73,7 +73,7 @@ if (NOT BUILD_STATIC)
 		# the tests need the elektra library already built - while for the haskell plugins it doesn't matter
 		# as a static build depends on the plugins but not on the bindings, this is the way we can resolve the
 		# circular dependency by treating the tests separately
-		set (HASKELL_TESTS 
+		set (HASKELL_TESTS
 			"${CMAKE_CURRENT_BINARY_DIR}/dist/build/testhaskell_basic/testhaskell_basic"
 			"${CMAKE_CURRENT_BINARY_DIR}/dist/build/testhaskell_basic_optimized/testhaskell_basic_optimized"
 			"${CMAKE_CURRENT_BINARY_DIR}/dist/build/testhaskell_realworld/testhaskell_realworld"
@@ -123,22 +123,22 @@ if (NOT BUILD_STATIC)
 				"${CMAKE_CURRENT_BINARY_DIR}/dist/build/testhaskell_realworld/testhaskell_realworld")
 			set_property (TEST testhaskell_realworld
 				PROPERTY LABELS bindings)
-			set_property (TEST testhaskell_realworld 
+			set_property (TEST testhaskell_realworld
 				APPEND PROPERTY LABELS kdbtests)
-			set_property (TEST testhaskell_realworld 
+			set_property (TEST testhaskell_realworld
 				APPEND PROPERTY LABELS memleak)
-			set_property (TEST testhaskell_realworld 
+			set_property (TEST testhaskell_realworld
 				PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
 
 			add_test (testhaskell_realworld_optimized
 				"${CMAKE_CURRENT_BINARY_DIR}/dist/build/testhaskell_realworld_optimized/testhaskell_realworld_optimized")
-			set_property (TEST testhaskell_realworld_optimized 
+			set_property (TEST testhaskell_realworld_optimized
 				PROPERTY LABELS bindings)
-			set_property (TEST testhaskell_realworld_optimized 
+			set_property (TEST testhaskell_realworld_optimized
 				APPEND PROPERTY LABELS kdbtests)
-			set_property (TEST testhaskell_realworld_optimized 
+			set_property (TEST testhaskell_realworld_optimized
 				APPEND PROPERTY LABELS memleak)
-			set_property (TEST testhaskell_realworld_optimized 
+			set_property (TEST testhaskell_realworld_optimized
 				PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
 		endif (ENABLE_KDB_TESTING)
 	endif (BUILD_TESTING)
