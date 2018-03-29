@@ -22,6 +22,7 @@ const containerStyle = {
 
 const cellStyle = {
   flex: 1,
+  maxWidth: '700px',
 }
 
 const Home = ({ instances, status }) =>
@@ -32,10 +33,12 @@ const Home = ({ instances, status }) =>
                 id={instance.id}
                 name={instance.name}
                 host={instance.host}
+                description={instance.description}
+                visibility={instance.visibility}
               />
           </div>
         )}
-        {status && status.addingInstance &&
+        {((status && status.addingInstance) || !instances || instances.length <= 0) &&
           <div key="addingInstance" style={cellStyle}>
               <ConnectedCreateInstanceCard />
           </div>

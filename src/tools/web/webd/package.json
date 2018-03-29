@@ -1,22 +1,22 @@
 {
-  "name": "@elektra-web/clusterd",
+  "name": "@elektra-web/webd",
   "version": "1.1.0",
   "description": "server to control (multiple) elektrad instances",
   "keywords": [
     "elektra",
     "elektra-web",
-    "clusterd"
+    "webd"
   ],
   "homepage": "https://git.libelektra.org/blob/master/src/tools/web/",
   "license": "BSD",
   "main": "src/index.js",
   "scripts": {
     "start": "npm run build && npm run start:prod",
-    "start:verbose": "npm run build && npm run start:prod:verbose",
-    "build": "cross-env NODE_ENV=production babel -d build/ src/ && npm run build --prefix ../client",
-    "start:prod": "cross-env NODE_ENV=production DEBUG=clusterd:*,-*debug,-*log node build/",
-    "start:prod:verbose": "cross-env NODE_ENV=production DEBUG=clusterd:* node build/",
-    "start:dev": "cross-env NODE_ENV=development DEBUG=clusterd:* babel-watch src/",
+    "start:verbose": "npm run start:prod:verbose",
+    "build": "cross-env NODE_ENV=production babel -d build/ src/",
+    "start:prod": "cross-env NODE_ENV=production DEBUG=webd:*,-*debug,-*log node build/",
+    "start:prod:verbose": "cross-env NODE_ENV=production DEBUG=webd:* node build/",
+    "start:dev": "cross-env NODE_ENV=development DEBUG=webd:* babel-watch src/",
     "test": "npm run lint",
     "lint": "eslint src"
   },

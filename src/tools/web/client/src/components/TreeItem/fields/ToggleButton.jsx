@@ -10,6 +10,8 @@ import React from 'react'
 
 import Checkbox from 'material-ui/Checkbox'
 
+import { fromElektraBool } from '../../../utils'
+
 export default class ToggleButton extends React.Component {
   constructor (props, ...args) {
     super(props, ...args)
@@ -23,14 +25,15 @@ export default class ToggleButton extends React.Component {
   }
 
   render () {
-    const { id, meta } = this.props
+    const { id, meta, label } = this.props
     return (
         <Checkbox
           id={id}
-          label={meta && meta.description}
+          label={(meta && meta.description) || label}
           checked={this.state.checked}
           onCheck={this.handleCheck}
           style={{ display: 'inline-block', width: 'auto', position: 'relative', top: 6, marginTop: -11 }}
+          disabled={fromElektraBool(meta && meta.readonly)}
         />
     )
   }

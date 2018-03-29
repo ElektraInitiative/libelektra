@@ -13,9 +13,21 @@ import FlatButton from 'material-ui/FlatButton'
 import TextField from 'material-ui/TextField'
 import SelectField from 'material-ui/SelectField'
 import MenuItem from 'material-ui/MenuItem'
+import Checkbox from 'material-ui/Checkbox'
 
 import SavedIcon from '../SavedIcon.jsx'
 import EnumSubDialog from './EnumSubDialog.jsx'
+import NumberSubDialog from './NumberSubDialog.jsx'
+import AdditionalMetakeysSubDialog from './AdditionalMetakeysSubDialog.jsx'
+
+import debounce from '../../debounce'
+import { VISIBILITY_LEVELS, visibility, toElektraBool, fromElektraBool, isNumberType } from '../../../utils'
+import { KEY_TYPES } from './utils'
+
+const DebouncedTextField = debounce(TextField)
+
+const IMMEDIATE = 'IMMEDIATE'
+const DEBOUNCED = 'DEBOUNCED'
 
 export default class SettingsDialog extends Component {
   constructor (...args) {
@@ -23,40 +35,29 @@ export default class SettingsDialog extends Component {
     this.state = {}
   }
 
-  handleEdit = key => (evt, _, val) => {
-    const isEnum = key === 'check/type' && val === 'enum'
+  handleEdit = (key, debounced = false) => (value) => {
+    const { setMeta } = this.props
 
-    const { meta, data, setMeta } = this.props
-    // changing from enum
-    if (key === 'check/type' && !isEnum && meta && meta['check/enum']) {
-      const { deleteMeta } = this.props
-      deleteMeta('check/enum')
+    if (!debounced || debounced === IMMEDIATE) {
+      // set value of field
+      this.setState({ [key]: { ...this.state[key], value } })
     }
 
-    // changing to enum
-    if (key === 'check/type' && isEnum) {
-      setMeta('check/enum', this.getMeta('check/enum', '[\'' + data + '\']'))
+    if (!debounced || debounced === DEBOUNCED) {
+      // persist value to kdb and show notification
+      const { timeout } = this.state[key] || {}
+      setMeta(key, value)
+        .then(() => {
+          if (timeout) clearTimeout(timeout)
+          this.setState({ [key]: {
+            ...this.state[key],
+            saved: true,
+            timeout: setTimeout(() => {
+              this.setState({ [key]: { ...this.state[key], saved: false } })
+            }, 1500),
+          } })
+        })
     }
-
-    // set value of field
-    const value = isEnum
-      ? 'string' // special case: enum is also a string
-      : (val || evt.target.value)
-    this.setState({ [key]: { ...this.state[key], value: isEnum ? 'enum' : value } })
-
-    // persist value to kdb and show notification
-    const { timeout } = this.state[key] || {}
-    setMeta(key, value)
-      .then(() => {
-        if (timeout) clearTimeout(timeout)
-        this.setState({ [key]: {
-          ...this.state[key],
-          saved: true,
-          timeout: setTimeout(() => {
-            this.setState({ [key]: { ...this.state[key], saved: false } })
-          }, 1500),
-        } })
-      })
   }
 
   getMeta (key, fallback) {
@@ -64,12 +65,12 @@ export default class SettingsDialog extends Component {
 
     const { meta } = this.props
     const val = meta // meta exists
-      ? ((key === 'check/type') && meta['check/enum']) // is enum?
-        ? 'enum'
-        : meta[key] // is not enum
+      ? meta[key]
       : false // does not exist
 
-    return stateVal || val || fallback
+    return stateVal === undefined
+      ? val || fallback
+      : stateVal
   }
 
   getSaved (key) {
@@ -79,11 +80,38 @@ export default class SettingsDialog extends Component {
   renderEnum () {
     return (
         <EnumSubDialog
-          onChange={this.handleEdit('check/enum')}
-          value={this.getMeta('check/enum', '')}
-          saved={this.getSaved('check/enum')}
+          onChange={i => this.handleEdit(`check/enum/#${i}`)}
+          value={i => this.props.meta && this.props.meta[`check/enum/#${i}`]}
+          saved={i => this.getSaved(`check/enum/#${i}`)}
+          deleteMeta={i => this.props.deleteMeta(`check/enum/#${i}`)}
         />
     )
+  }
+
+  renderNumber () {
+    return (
+        <NumberSubDialog
+          onChange={this.handleEdit('check/range')}
+          value={this.getMeta('check/range', '')}
+          saved={this.getSaved('check/range')}
+        />
+    )
+  }
+
+  handleVisibilityChange = (val) => {
+    const { instanceVisibility } = this.props
+    if (val === this.getMeta('visibility', 'user')) { // visibility was not changed, ignore
+      return
+    }
+    if (visibility(val) < visibility(instanceVisibility)) {
+      const confirmed = window.confirm(
+        'Setting the visibility lower than the instance visibility will hide ' +
+        'this item in this instance. Only proceed if you no longer plan on ' +
+        'editing this item here.'
+      )
+      if (!confirmed) return
+    }
+    return this.handleEdit('visibility')(val)
   }
 
   render () {
@@ -98,6 +126,9 @@ export default class SettingsDialog extends Component {
       />,
     ]
 
+    const type = this.getMeta('check/type', 'any')
+    const visibility = this.getMeta('visibility', 'user')
+
     return (
         <Dialog
           actions={actions}
@@ -105,37 +136,125 @@ export default class SettingsDialog extends Component {
           open={open}
           onRequestClose={onClose}
         >
-            <h1>Settings for <b>{path}</b></h1>
-            <div style={{ display: 'block' }}>
-                <TextField
-                  floatingLabelText="description"
-                  floatingLabelFixed={true}
-                  hintText="describe the field"
-                  onChange={this.handleEdit('description')}
-                  value={this.getMeta('description', '')}
-                />
-                <SavedIcon saved={this.getSaved('description')} />
+            <h1>Metadata for <b>{path}</b></h1>
+            <div style={{ display: 'flex' }}>
+                <div style={{ flex: 1 }}>
+                    <DebouncedTextField
+                      floatingLabelText="description"
+                      floatingLabelFixed={true}
+                      hintText="e.g. username of the account"
+                      onChange={this.handleEdit('description', IMMEDIATE)}
+                      onDebounced={this.handleEdit('description', DEBOUNCED)}
+                      value={this.getMeta('description', '')}
+                    />
+                    <SavedIcon saved={this.getSaved('description')} />
+                </div>
+                <div style={{ flex: 1 }}>
+                    <SelectField
+                      floatingLabelText="visibility"
+                      floatingLabelFixed={true}
+                      onChange={(e, _, val) => this.handleVisibilityChange(val)}
+                      value={visibility}
+                    >
+                        {Object.keys(VISIBILITY_LEVELS).map(lvl =>
+                          <MenuItem key={lvl} value={lvl} primaryText={'>= ' + lvl} />
+                        )}
+                    </SelectField>
+                    <SavedIcon saved={this.getSaved('check/type')} style={{ paddingBottom: 16 }} />
+                </div>
             </div>
-            <div style={{ display: 'block', marginTop: 8 }}>
-                <SelectField
-                  floatingLabelText="type"
-                  floatingLabelFixed={true}
-                  value={this.getMeta('check/type', 'string')}
-                  onChange={this.handleEdit('check/type')}
-                >
-                    <MenuItem value="string" primaryText="Text (string)" />
-                    <MenuItem value="boolean" primaryText="Checkbox (boolean)" />
-                    <MenuItem value="enum" primaryText="Radio (enum)" />
-                    <MenuItem value="short" primaryText="Number (short)" />
-                    <MenuItem value="unsigned_short" primaryText="Positive Number (unsigned_short)" />
-                    <MenuItem value="long" primaryText="Number (long)" />
-                    <MenuItem value="unsigned_long" primaryText="Positive Number (unsigned_long)" />
-                    <MenuItem value="long_long" primaryText="Number (long_long)" />
-                    <MenuItem value="unsigned_long_long" primaryText="Positive Number (unsigned_long_long)" />
-                </SelectField>
-                <SavedIcon saved={this.getSaved('check/type')} style={{ paddingBottom: 16 }} />
+            <div style={{ display: 'flex' }}>
+                <div style={{ flex: 1 }}>
+                    <DebouncedTextField
+                      floatingLabelText="example"
+                      floatingLabelFixed={true}
+                      hintText="e.g. hitchhiker42"
+                      onChange={this.handleEdit('example', IMMEDIATE)}
+                      onDebounced={this.handleEdit('example', DEBOUNCED)}
+                      value={this.getMeta('example', '')}
+                    />
+                    <SavedIcon saved={this.getSaved('example')} />
+                </div>
+                <div style={{ flex: 1 }}>
+                    <DebouncedTextField
+                      floatingLabelText="default value"
+                      floatingLabelFixed={true}
+                      onChange={this.handleEdit('default', IMMEDIATE)}
+                      onDebounced={this.handleEdit('default', DEBOUNCED)}
+                      value={this.getMeta('default', '')}
+                    />
+                    <SavedIcon saved={this.getSaved('default')} />
+                </div>
             </div>
-            {this.getMeta('check/enum', false) ? this.renderEnum() : null}
+            <h2 style={{ marginTop: 48 }}>Type</h2>
+            <div style={{ display: 'flex' }}>
+                <div style={{ flex: 1 }}>
+                    <SelectField
+                      floatingLabelText="type"
+                      floatingLabelFixed={true}
+                      onChange={(e, _, val) => {
+                        if (val === type) { // type was not changed, ignore
+                          return
+                        }
+                        const text = 'Changing the type might result in loss of data. ' +
+                         'For example, when changing from \'string\' to \'boolean\', ' +
+                         'the string value will get overwritten!'
+                        if (window.confirm(text)) {
+                          this.handleEdit('check/type')(val)
+                        }
+                      }}
+                      value={type}
+                    >
+                        {KEY_TYPES.map(({ type, name }) =>
+                          <MenuItem key={type} value={type} primaryText={name} />
+                        )}
+                    </SelectField>
+                    <SavedIcon saved={this.getSaved('check/type')} style={{ paddingBottom: 16 }} />
+                </div>
+                <div style={{ flex: 1, paddingTop: 32 }}>
+                    <Checkbox
+                      checked={fromElektraBool(this.getMeta('readonly', false))}
+                      onCheck={(e, val) => this.handleEdit('readonly')(toElektraBool(val))}
+                      label="read only"
+                    />
+                    <SavedIcon saved={this.getSaved('readonly')} />
+                </div>
+            </div>
+            {this.getMeta('check/type', false) === 'enum' ? this.renderEnum() : null}
+            {isNumberType(this.getMeta('check/type', false)) ? this.renderNumber() : null}
+            {(type === 'string' || type === 'any') &&
+              <div style={{ display: 'flex' }}>
+                  <div style={{ flex: 1 }}>
+                      <DebouncedTextField
+                        floatingLabelText="validation regex"
+                        floatingLabelFixed={true}
+                        hintText="e.g. ^[a-zA-Z0-9]+$"
+                        onChange={this.handleEdit('check/validation', IMMEDIATE)}
+                        onDebounced={this.handleEdit('check/validation', DEBOUNCED)}
+                        value={this.getMeta('check/validation', '')}
+                      />
+                      <SavedIcon saved={this.getSaved('check/validation')} />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                      <DebouncedTextField
+                        floatingLabelText="validation error message"
+                        floatingLabelFixed={true}
+                        hintText="e.g. invalid username"
+                        onChange={this.handleEdit('check/validation/message', IMMEDIATE)}
+                        onDebounced={this.handleEdit('check/validation/message', DEBOUNCED)}
+                        value={this.getMeta('check/validation/message', '')}
+                      />
+                      <SavedIcon saved={this.getSaved('check/validation/message')} />
+                  </div>
+              </div>
+            }
+            <AdditionalMetakeysSubDialog
+              handleEdit={this.handleEdit.bind(this)}
+              getMeta={this.getMeta.bind(this)}
+              getSaved={this.getSaved.bind(this)}
+              meta={this.props.meta}
+              deleteMeta={this.props.deleteMeta}
+            />
         </Dialog>
     )
   }

@@ -110,7 +110,7 @@ const safeExec = (script) => new Promise((resolve, reject) =>
     }
     const result = trimNewline(stdout)
     if (!result) {
-      return resolve() // empty result, return no value
+      return resolve('') // empty result, return empty string
     }
     return resolve(result)
   })
@@ -161,8 +161,8 @@ const version = () =>
 
 // list available paths under a given `path`
 const ls = (path) =>
-  safeExec(escapeValues`kdb ls ${path}`)
-    .then(stdout => stdout && stdout.split('\n'))
+  safeExec(escapeValues`kdb ls -0 ${path}`)
+    .then(stdout => stdout && stdout.split('\0'))
 
 // get value from given `path`
 const get = (path) =>
@@ -170,11 +170,15 @@ const get = (path) =>
 
 // set value at given `path`
 const set = (path, value) =>
-  safeExec(escapeValues`kdb set ${path} ${value}`)
+  safeExec(escapeValues`kdb set ${path} -- ${value}`)
 
 // move value from given `path` to `destination`
 const mv = (path, destination) =>
   safeExec(escapeValues`kdb mv -r ${path} ${destination}`)
+
+// copy value from given `path` to `destination`
+const cp = (path, destination) =>
+  safeExec(escapeValues`kdb cp -r ${path} ${destination}`)
 
 // remove value at given `path`
 const rm = (path) =>
@@ -182,8 +186,8 @@ const rm = (path) =>
 
 // list meta values at given `path`
 const lsmeta = (path) =>
-  safeExec(escapeValues`kdb lsmeta ${path}`)
-    .then(stdout => stdout && stdout.split('\n'))
+  safeExec(escapeValues`kdb lsmeta -0 ${path}`)
+    .then(stdout => stdout && stdout.split('\0'))
 
 // get meta value from given `path`
 const getmeta = (path, meta) =>
@@ -236,15 +240,31 @@ const _import = (path, value) =>
   ).then(result => _export(path))
 
 // get value and available paths under a given `path`
-const getAndLs = (path) =>
+const getAndLs = (path, { preload = 0 }) =>
   Promise.all(
     [ ls(path), get(path), getAllMeta(path) ] // execute ls and get in parallel
   ).then(([ lsRes, value, meta ]) => {
-    return { ls: lsRes || [], value, meta } // return results as object
+    let result = { exists: value !== undefined, name: path.split('/').pop(), path, ls: lsRes || [], value, meta }
+    if (preload > 0 && Array.isArray(lsRes)) {
+      return Promise.all(lsRes
+        .filter(p => {
+          const isNotSame = p !== path
+          const isNotDeeplyNested = p.split('/').length <= (path.split('/').length + 1)
+          return isNotSame && isNotDeeplyNested
+        })
+        .map(p =>
+          getAndLs(p, { preload: preload - 1 })
+        ))
+        .then(children => {
+          result.children = children
+          return result
+        })
+    }
+    return result // return results as object
   })
 
 // export kdb functions as `kdb` object
 module.exports = {
-  version, ls, get, getAndLs, set, mv, rm, export: _export, import: _import,
+  version, ls, get, getAndLs, set, mv, cp, rm, export: _export, import: _import,
   getmeta, setmeta, rmmeta, lsmeta, getAllMeta,
 }

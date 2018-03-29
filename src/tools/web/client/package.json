@@ -10,11 +10,11 @@
   "proxy": "http://localhost:33334",
   "license": "BSD",
   "dependencies": {
-    "@bosket/core": "^0.4.1",
-    "@bosket/tools": "^0.4.1",
-    "bosket-react-fork": "^0.4.3",
+    "@bosket/core": "^0.4.2",
+    "@bosket/tools": "^0.4.2",
+    "bosket-react": "^0.4.5",
     "concurrently": "^3.5.1",
-    "material-ui": "^0.19.4",
+    "material-ui": "^0.20.0",
     "react": "^16.1.1",
     "react-dom": "^16.1.1",
     "react-redux": "^5.0.6",
@@ -26,11 +26,12 @@
     "redux-promises": "^1.0.0"
   },
   "scripts": {
-    "postinstall": "npm install --prefix ../clusterd",
-    "start": "npm run server",
-    "server": "cd ../clusterd && npm start",
+    "postinstall": "npm install --prefix ../webd",
+    "start": "npm run build && cd ../webd && npm run build && npm run start:prod",
+    "start:prod": "npm run server",
+    "server": "cd ../webd && npm run start:prod",
     "start:dev": "concurrently \"react-scripts start\" \"npm run server:dev\"",
-    "server:dev": "cd ../clusterd && npm run start:dev",
+    "server:dev": "cd ../webd && npm run start:dev",
     "build": "react-scripts build",
     "eject": "react-scripts eject"
   }

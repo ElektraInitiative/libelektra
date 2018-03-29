@@ -10,6 +10,8 @@ import React from 'react'
 
 import { RadioButton, RadioButtonGroup } from 'material-ui/RadioButton'
 
+import { fromElektraBool } from '../../../utils'
+
 const RadioButtons = ({ id, value, meta, options, onChange }) => (
     <RadioButtonGroup
       id={id}
@@ -24,6 +26,7 @@ const RadioButtons = ({ id, value, meta, options, onChange }) => (
               value={option}
               label={option}
               style={{ display: 'inline-block', width: 'auto', paddingRight: 32 }}
+              disabled={fromElektraBool(meta && meta.readonly)}
             />
         )}
     </RadioButtonGroup>

@@ -6,3 +6,9 @@ export const sendNotification = (message) => {
     message,
   }
 }
+
+export const DISMISS_ERROR = 'DISMISS_ERROR'
+
+export const dismissError = () => {
+  return { type: DISMISS_ERROR }
+}

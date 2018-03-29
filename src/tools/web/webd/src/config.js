@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief configuration for clusterd, can be adjusted with environment variables
+ * @brief configuration for webd, can be adjusted with environment variables
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */

@@ -1,11 +1,11 @@
 /**
  * @file
  *
- * @brief the main entry point, this file gets executed when clusterd is started
+ * @brief the main entry point, this file gets executed when webd is started
  *
  * it will detect if Elektra (with the yajl plugin) is installed and show an
  * error if that isn't the case. otherwise, it will show version information
- * from Elektra and initialize clusterd
+ * from Elektra and initialize webd
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */

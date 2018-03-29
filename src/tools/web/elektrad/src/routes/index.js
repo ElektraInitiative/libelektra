@@ -22,14 +22,14 @@ export default function initRoutes (app) {
   )
 
   app.get('/kdb', (req, res) =>
-    kdb.getAndLs('/')
+    kdb.getAndLs('/', req.query)
       .then(output => successResponse(res, output))
       .catch(err => errorResponse(res, err))
   )
 
   app.route('/kdb/*')
     .get((req, res) =>
-      kdb.getAndLs(req.params[0])
+      kdb.getAndLs(req.params[0], req.query)
         .then(output => successResponse(res, output))
         .catch(err => errorResponse(res, err))
     )
@@ -46,6 +46,12 @@ export default function initRoutes (app) {
 
   app.post('/kdbMv/*', (req, res) =>
     kdb.mv(req.params[0], req.body)
+      .then(() => res.status(204).send())
+      .catch(err => errorResponse(res, err))
+  )
+
+  app.post('/kdbCp/*', (req, res) =>
+    kdb.cp(req.params[0], req.body)
       .then(() => res.status(204).send())
       .catch(err => errorResponse(res, err))
   )

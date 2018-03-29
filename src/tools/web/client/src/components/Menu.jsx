@@ -56,14 +56,14 @@ export default class Menu extends React.Component {
   }
 
   render () {
-    const { loading, subpage, status } = this.props
+    const { loading, instances, subpage, status, singleInstanceMode } = this.props
     const { addInstance } = this.props // action creators
     const title = (
         <ToolbarGroup>
           <div style={{ display: 'flex' }}>
-            {subpage && // show back button on subpages
-              <Link style={{ textDecoration: 'none' }} to="/"><NavigationArrowBack style={navigationArrowStyle} /></Link>}
-            <Link style={{ textDecoration: 'none' }} to="/">
+            {(subpage && !singleInstanceMode) && // show back button on subpages
+              <Link style={{ textDecoration: 'none' }} to="/" tabIndex="0"><NavigationArrowBack style={navigationArrowStyle} /></Link>}
+            <Link style={{ textDecoration: 'none' }} to="/" tabIndex="-1">
               <ToolbarTitle
                 style={{ fontFamily: 'Roboto Light', fontSize: 22, letterSpacing: 0.79, color: 'rgba(0,0,0,0.40)' }}
                 text="elektra-web"
@@ -84,7 +84,7 @@ export default class Menu extends React.Component {
               label="instance"
               primary={true}
               onTouchTap={addInstance}
-              disabled={status && status.addingInstance}
+              disabled={(status && status.addingInstance) || !instances || instances.length <= 0}
             />
         </ToolbarGroup>
     )

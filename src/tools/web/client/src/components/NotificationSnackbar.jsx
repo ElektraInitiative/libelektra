@@ -11,7 +11,7 @@ import Snackbar from 'material-ui/Snackbar'
 
 const NotificationSnackbar = ({ message }) => {
   return (
-      <Snackbar open={!!message} message={message} autoHideDuration={2500} />
+      <Snackbar open={!!message} message={message} autoHideDuration={4500} />
   )
 }
 

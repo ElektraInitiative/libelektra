@@ -12,13 +12,15 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 
 import CreateInstanceCard from '../components/CreateInstanceCard.jsx'
-import { createInstance, unaddInstance } from '../actions'
+import { createInstance, unaddInstance, sendNotification } from '../actions'
 
 const mapStateToProps = (state) => {
-  return {}
+  return {
+    instances: state.instances,
+  }
 }
 
 const mapDispatchToProps = (dispatch) =>
-  bindActionCreators({ createInstance, unaddInstance }, dispatch)
+  bindActionCreators({ createInstance, unaddInstance, sendNotification }, dispatch)
 
 export default connect(mapStateToProps, mapDispatchToProps)(CreateInstanceCard)
