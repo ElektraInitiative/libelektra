@@ -112,7 +112,10 @@
 }
 
 /* Categories : Nodes with children */
-.ExplorerView ul li.category {}
+.ExplorerView ul li.category {
+  box-sizing: border-box;
+  padding-top: 12px;
+}
 .ExplorerView ul li.category > span.item {}
 /* Folded */
 .ExplorerView ul li.category.folded > span.item > .opener {
@@ -128,9 +131,7 @@
   margin-right: 25px;
   transform: rotate(90deg);
 }
-.ExplorerView ul li.category:not(.folded) {
-  margin-bottom: 16px;
-}
+.ExplorerView ul li.category:not(.folded) {}
 .ExplorerView ul li.category:not(.folded) > span.item {}
 /* Opener */
 .ExplorerView ul li.category > span.item > .opener {}
