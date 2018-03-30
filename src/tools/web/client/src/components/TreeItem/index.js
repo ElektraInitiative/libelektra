@@ -223,6 +223,7 @@ export default class TreeItem extends Component {
               setMeta={(key, value) => setMetaKey(instanceId, item.path, key, value)}
               deleteMeta={key => deleteMetaKey(instanceId, item.path, key)}
               onClose={this.handleClose('settings')}
+              onEdit={this.handleEdit}
               instanceVisibility={instanceVisibility}
             />
             <RemoveDialog

@@ -115,7 +115,7 @@ export default class SettingsDialog extends Component {
   }
 
   render () {
-    const { item, open, onClose } = this.props
+    const { item, open, onClose, onEdit } = this.props
     const { path } = item
 
     const actions = [
@@ -196,11 +196,21 @@ export default class SettingsDialog extends Component {
                         if (val === type) { // type was not changed, ignore
                           return
                         }
-                        const text = 'Changing the type might result in loss of data. ' +
-                         'For example, when changing from \'string\' to \'boolean\', ' +
-                         'the string value will get overwritten!'
+                        if (val === 'any' || val === 'string') {
+                          // changing to `any` or `string` is fine
+                          return this.handleEdit('check/type')(val)
+                        }
+
+                        const text = 'Changing the type from \'' + type + '\'' +
+                                     ' to \'' + val + '\' will result in the ' +
+                                     'current value getting overwritten! ' +
+                                     'Are you sure you want to proceed?'
                         if (window.confirm(text)) {
                           this.handleEdit('check/type')(val)
+                          setTimeout(() => {
+                            if (val === 'boolean') onEdit('0')
+                            else onEdit('')
+                          }, 250)
                         }
                       }}
                       value={type}
