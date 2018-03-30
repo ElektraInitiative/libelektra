@@ -80,6 +80,7 @@ export default class Menu extends React.Component {
     const actions = (
         <ToolbarGroup>
             <RaisedButton
+              tabIndex="0"
               icon={<ContentAddIcon />}
               label="instance"
               primary={true}

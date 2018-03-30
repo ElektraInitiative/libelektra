@@ -22,6 +22,8 @@ const RadioButtons = ({ id, value, meta, options, onChange }) => (
     >
         {options.map(option =>
             <RadioButton
+              tabIndex="0"
+              className="value"
               key={id + '-' + option}
               value={option}
               label={option}

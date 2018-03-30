@@ -32,6 +32,8 @@ export default class SimpleTextField extends Component {
         {React.createElement(comp, {
           id,
           value: val,
+          tabIndex: 0,
+          className: 'value',
           errorText: this.state.error,
           hintText: (meta && meta.example) ? `e.g. ${meta.example}` : false,
           onChange: debounce

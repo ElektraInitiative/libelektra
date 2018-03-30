@@ -226,7 +226,7 @@ export default class Configuration extends Component {
             </CardText>
             {(id !== 'my') &&
               <CardActions>
-                  <Link to="/" style={{ textDecoration: 'none' }}>
+                  <Link tabIndex="0" to="/" style={{ textDecoration: 'none' }}>
                       <FlatButton primary label="done" />
                   </Link>
               </CardActions>

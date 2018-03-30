@@ -32,12 +32,16 @@
 .ExplorerView ul > li a .actions > i {
   margin-left: 1.5em;
 }
+
+/* when root element is hovered with mouse */
 .ExplorerView ul > li a:hover .actions > button,
 .ExplorerView ul > li a:hover .actions > i {
   opacity: 0.5;
 }
+/* when action button is focussed with keyboard or hovered with mouse */
+.ExplorerView ul > li a .actions > button:focus,
 .ExplorerView ul > li a .actions > button:hover {
-  opacity: 1;
+  opacity: 1 !important;
 }
 .ExplorerView ul > li.category .opener {
   display: block;
@@ -52,7 +56,8 @@
     mask: url('/folded.svg') no-repeat;
     background-color: #000000;
   }
-  .ExplorerView ul li.selected > span.item > .opener {
+  .ExplorerView ul li.selected > span.item > .opener,
+  .ExplorerView ul li > span.item > .opener:focus {
     background-color: #00BCD4;
   }
 }
@@ -60,6 +65,9 @@
   .ExplorerView ul > li.category .opener {
     background-image: url('/folded.svg');
     background-repeat: no-repeat;
+  }
+  .ExplorerView ul li > span.item > .opener:focus {
+    border: 3px solid #00BCD4;
   }
 }
 .ExplorerView ul li:not(.category) > span.item:before {

@@ -8,6 +8,7 @@
 
 import React from 'react'
 import { ExplorerView } from 'bosket-react'
+import IconButton from 'material-ui/IconButton'
 
 import TreeItem from '../containers/ConnectedTreeItem'
 import { visibility } from '../utils'
@@ -125,7 +126,20 @@ export default class TreeView extends React.Component {
 
       render () {
         const { onClick, item, children, ...rest } = this.props
-        return <span {...rest} onClick={this.onClick}>{children}</span>
+        return (
+          <span
+            {...rest}
+            tabIndex="0"
+            onClick={this.onClick}
+            onKeyPress={e => {
+              if (e.key === 'Enter') {
+                this.onClick(e)
+              }
+            }}
+          >
+            {children}
+          </span>
+        )
       }
     }
   }

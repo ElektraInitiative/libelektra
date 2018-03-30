@@ -28,6 +28,8 @@ export default class ToggleButton extends React.Component {
     const { id, meta, label } = this.props
     return (
         <Checkbox
+          className="value"
+          tabIndex="0"
           id={id}
           label={(meta && meta.description) || label}
           checked={this.state.checked}
