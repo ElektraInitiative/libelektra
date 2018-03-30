@@ -172,7 +172,7 @@ export default class InstanceCard extends React.Component {
                         disabled={id === 'my'}
                       >
                           {Object.keys(VISIBILITY_LEVELS).map(lvl =>
-                            <MenuItem key={lvl} value={lvl} primaryText={lvl} />
+                            <MenuItem key={lvl} value={lvl} primaryText={'>= ' + lvl} />
                           )}
                       </SelectField>
                   </div>
