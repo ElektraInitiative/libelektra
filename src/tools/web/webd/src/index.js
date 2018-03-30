@@ -16,6 +16,7 @@ const { info, error } = makeLog()
 import { name as packageName, version as packageVersion } from '../package.json'
 import getVersions from './versions'
 import initApp from './app'
+import kdb from '../../kdb'
 
 import { getInstances } from './db'
 
@@ -29,6 +30,8 @@ getVersions()
     } else {
       getInstances() // make sure yajl is installed
         .then(() => {
+          if (kdb.KDB_COMMAND === 'kdb') info(`|- using default kdb command`)
+          else info(`|- using kdb from: ${kdb.KDB_COMMAND}`)
           info(`|- versions: %o`, versions)
           initApp(port => info(`\`-> running on http://localhost:${port}`))
         })

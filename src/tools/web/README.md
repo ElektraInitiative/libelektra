@@ -21,6 +21,7 @@ Elektra-web requires:
  * Start the client: `kdb run-web`
  * You can now access the client on: [http://localhost:33334](http://localhost:33334)
 
+
 ## Running from source
 
  * Install dependencies (see above)
@@ -28,14 +29,17 @@ Elektra-web requires:
  * Install and start an elektrad instance:
    * `cd elektrad`
    * `npm install`
-   * `npm start`
+   * `npm start` (replaces `kdb run-elektrad`)
 
  * Install and start the client (connects to the elektrad instance):
    * `cd client`
    * `npm install`
-   * `npm start`
+   * `npm start` (replaces `kdb run-web`)
 
  * You can now access the client on: [http://localhost:33334](http://localhost:33334)
+
+
+## Use-cases
 
 ### Running elektra-web on a single instance
 
@@ -48,11 +52,11 @@ If this configuration option is set, elektra-web will load the configuration
 page for that instance instead of the main overview page.
 
 If you want to host elektra-web with the client and elektrad on the same
-instance, after starting elektrad via `npm start`, you can run start the
+instance, after starting elektrad via `kdb run-elektrad`, you can run start the
 client as follows:
 
 ```
-INSTANCE="http://localhost:33333" npm start
+INSTANCE="http://localhost:33333" kdb run-web
 ```
 
 It is also possible to set visibility by prefixing the host with `VISIBILITY@`.
@@ -60,11 +64,24 @@ It is also possible to set visibility by prefixing the host with `VISIBILITY@`.
 For example (`advanced` visibility, `user` is default):
 
 ```
-INSTANCE="advanced@http://localhost:33333" npm start
+INSTANCE="advanced@http://localhost:33333" kdb run-web
 ```
 
 Now, when you open [http://localhost:33334](http://localhost:33334) in your
 browser, the configuration page for the instance will be opened immediately.
+
+### Using a different `kdb` executable
+
+It is possible to change the `kdb` executable that elektra-web uses by setting
+the `KDB` environment variable. Please ensure to select the same `KDB` when
+starting `elektrad` and the `client`.
+
+For example:
+
+```
+KDB="/usr/local/custom/bin/kdb" kdb run-elektrad
+KDB="/usr/local/custom/bin/kdb" kdb run-web
+```
 
 
 ## Overview

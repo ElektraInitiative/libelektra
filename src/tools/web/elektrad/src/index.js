@@ -16,6 +16,7 @@ const { info, error } = makeLog()
 import { name as packageName, version as packageVersion } from '../package.json'
 import getVersions from './versions'
 import initApp from './app'
+import kdb from '../../kdb'
 
 info(`%s v%s starting`, packageName, packageVersion)
 getVersions()
@@ -25,6 +26,8 @@ getVersions()
       error(`are you sure you have libelektra and kdb installed?`)
       process.exit(1)
     } else {
+      if (kdb.KDB_COMMAND === 'kdb') info(`|- using default kdb command`)
+      else info(`|- using kdb from: ${kdb.KDB_COMMAND}`)
       info(`|- versions: %o`, versions)
       initApp(port => info(`\`-> running on http://localhost:${port}`))
     }
