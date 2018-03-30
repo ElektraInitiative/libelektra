@@ -173,7 +173,7 @@ export default class Configuration extends Component {
 
     if (!instance) {
       const title = (
-          <h1><b>404</b> instance not found</h1>
+          <h1><b>Loading instance...</b> please wait</h1>
       )
       return (
           <Card>
