@@ -39,7 +39,7 @@ export default function pathReducer (state = [], action) {
 
     case COPY_KEY_SUCCESS: {
       const { from, to } = action && action.request
-      const copiedPaths = state.filter(p => p.startsWith(from))
+      const copiedPaths = state.filter(p => p === from || p.startsWith(from + '/'))
       return copiedPaths
         .map(p => p.replace(from, to))
         .reduce(insertPath, state)

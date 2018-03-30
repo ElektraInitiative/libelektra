@@ -77,6 +77,7 @@ export default class TreeItem extends Component {
 
   handleDuplicate = (from, to) => {
     const { instanceId, copyKey, sendNotification } = this.props
+    console.log('duplicating', from, to)
     copyKey(instanceId, from, to).then(() =>
       sendNotification('successfully duplicated key: ' + from + ' -> ' + to)
     )
