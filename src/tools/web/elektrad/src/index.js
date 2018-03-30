@@ -26,6 +26,13 @@ getVersions()
       error(`are you sure you have libelektra and kdb installed?`)
       process.exit(1)
     } else {
+      const { major, minor, micro } = versions.elektra
+      const versionSupported = major >= 0 && minor >= 8 && micro >= 22
+      if (!versionSupported) {
+        error(`you are running an old libelektra version, which is not supported`)
+        error(`please upgrade to libelektra 0.8.22 or higher`)
+        process.exit(1)
+      }
       if (kdb.KDB_COMMAND === 'kdb') info(`|- using default kdb command`)
       else info(`|- using kdb from: ${kdb.KDB_COMMAND}`)
       info(`|- versions: %o`, versions)
