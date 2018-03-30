@@ -13,6 +13,8 @@ import ActionBuild from 'material-ui/svg-icons/action/build'
 import ContentAdd from 'material-ui/svg-icons/content/add'
 import ContentCopy from 'material-ui/svg-icons/content/content-copy'
 import ContentEdit from 'material-ui/svg-icons/editor/mode-edit'
+import ContentPaste from 'material-ui/svg-icons/content/content-paste'
+import { CopyToClipboard } from 'react-copy-to-clipboard'
 
 import ActionButton from './ActionButton.jsx'
 import SavedIcon from './SavedIcon.jsx'
@@ -131,7 +133,10 @@ export default class TreeItem extends Component {
   }
 
   render () {
-    const { data, item, instanceId, instanceVisibility, setMetaKey, deleteMetaKey } = this.props
+    const {
+      data, item, instanceId, instanceVisibility,
+      setMetaKey, deleteMetaKey, sendNotification,
+    } = this.props
 
     const rootLevel = (item && item.path)
       ? !item.path.includes('/')
@@ -163,6 +168,11 @@ export default class TreeItem extends Component {
             }
             <span className="actions">
                 <SavedIcon saved={this.state.saved} />
+                {valueVisible &&
+                  <CopyToClipboard text={(data && data.value) || ''} onCopy={() => sendNotification('Copied value of ' + item.path + ' to clipboard!')}>
+                    <ActionButton icon={<ContentPaste />} tooltip="copy value" />
+                  </CopyToClipboard>
+                }
                 <ActionButton icon={<ContentAdd />} onClick={this.handleOpen('add')} tooltip="create sub-key" />
                 {!rootLevel && !valueVisible &&
                   <ActionButton icon={<ContentEdit />} onClick={this.handleOpen('edit')} tooltip="edit value" />
