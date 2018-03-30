@@ -46,10 +46,12 @@ const parseDataSet = (getKey, sendNotification, instanceId, tree, path) => {
       path: newPath,
       root: !path,
       children: (Array.isArray(children) && children.length > 0)
-        ? () => {
+        ? (notify = true) => {
           return new Promise(resolve => {
             getKey(instanceId, newPath, true)
-            sendNotification('finished loading \'' + newPath + '\' keyset')
+            if (notify) {
+              sendNotification('finished loading \'' + newPath + '\' keyset')
+            }
             resolve(children)
           })
         } : false,
@@ -104,12 +106,14 @@ export default class Configuration extends Component {
   }
 
   waitForData = () => {
+    const { sendNotification } = this.props
     const { data } = this.state
     const user = Array.isArray(data) && data.find(d => d.path === 'user')
-    if (!user) {
+    if (!user || !user.children) {
       this.timeout = setTimeout(this.waitForData, 100)
     } else {
       this.preload(data)
+        .then(() => sendNotification('configuration data loaded!'))
     }
   }
 
@@ -134,21 +138,32 @@ export default class Configuration extends Component {
       .then(() => sendNotification('configuration data refreshed!'))
   }
 
-  preload = async (tree, paths = []) => {
+  preload = async (tree, paths = [], levels = 1) => {
     if (!tree) return await Promise.resolve(tree)
     return await Promise.all(tree.map(async (item, i) => {
-      // do not preload system/ namespace
-      if (item.name === 'system') return item
-
       let { children } = item
 
       if (!children) return item
-      return this.updateData({
-        ...item,
-        children: typeof children === 'function'
-          ? await children() // resolve children if necessary
-          : children
-      }, [ ...paths, item.name ])
+
+      const childItems = typeof children === 'function'
+        ? await children(false) // resolve children if necessary
+        : children
+      const newPaths = [ ...paths, item.name ]
+
+      let promises = [
+        this.updateData({
+          ...item,
+          children: childItems
+        }, newPaths)
+      ]
+
+      if (levels > 0) {
+        promises.push(
+          this.preload(childItems, newPaths, levels - 1)
+        )
+      }
+
+      return Promise.all(promises)
     }))
   }
 
