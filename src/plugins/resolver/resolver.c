@@ -465,9 +465,12 @@ int ELEKTRA_PLUGIN_FUNCTION (resolver, open) (Plugin * handle, Key * errorKey)
 
 	int ret = mapFilesForNamespaces (p, errorKey);
 
-	elektraPluginSetData (handle, p);
+	if (ret != -1)
+	{
+		elektraPluginSetData (handle, p);
+	}
 
-	return ret; /* success */
+	return ret;
 }
 
 int ELEKTRA_PLUGIN_FUNCTION (resolver, close) (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
