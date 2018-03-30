@@ -28,7 +28,7 @@ const RadioButtons = ({ id, value, meta, options, onChange }) => (
               value={option}
               label={option}
               style={{ display: 'inline-block', width: 'auto', paddingRight: 32 }}
-              disabled={fromElektraBool(meta && meta.readonly)}
+              disabled={(meta && meta.hasOwnProperty('binary')) || fromElektraBool(meta && meta.readonly)}
             />
         )}
     </RadioButtonGroup>

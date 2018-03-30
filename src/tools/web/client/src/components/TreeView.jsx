@@ -75,6 +75,7 @@ export default class TreeView extends React.Component {
           instanceId={instanceId}
           pathExists={(path) => kdb && kdb[path]}
           instanceVisibility={instanceVisibility}
+          refreshPath={this.refreshPath}
         />
     )
   }

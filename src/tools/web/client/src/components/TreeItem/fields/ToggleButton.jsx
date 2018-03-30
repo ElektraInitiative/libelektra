@@ -35,7 +35,7 @@ export default class ToggleButton extends React.Component {
           checked={this.state.checked}
           onCheck={this.handleCheck}
           style={{ display: 'inline-block', width: 'auto', position: 'relative', top: 6, marginTop: -11 }}
-          disabled={fromElektraBool(meta && meta.readonly)}
+          disabled={(meta && meta.hasOwnProperty('binary')) || fromElektraBool(meta && meta.readonly)}
         />
     )
   }

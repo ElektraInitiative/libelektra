@@ -24,4 +24,5 @@ export const HANDLED_METADATA = [
   'check/validation',
   'check/validation/message',
   'visibility',
+  'binary',
 ]

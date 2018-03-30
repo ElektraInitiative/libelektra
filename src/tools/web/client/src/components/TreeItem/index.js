@@ -135,7 +135,7 @@ export default class TreeItem extends Component {
   render () {
     const {
       data, item, instanceId, instanceVisibility,
-      setMetaKey, deleteMetaKey, sendNotification,
+      setMetaKey, deleteMetaKey, sendNotification, refreshPath,
     } = this.props
 
     const rootLevel = (item && item.path)
@@ -161,6 +161,17 @@ export default class TreeItem extends Component {
       </div>
     )
 
+    let onClickHandler = undefined
+    if (meta && meta.readonly === '1') {
+      onClickHandler = () =>
+        alert('This key is set to read-only and cannot be edited.')
+    }
+    if (meta && meta.hasOwnProperty('binary')) {
+      onClickHandler = () =>
+        alert('Elektra Web currently does not support editing binary keys. ' +
+              'Configure metadata of this key to remove the binary flag.')
+    }
+
     return (
         <a style={{ display: 'flex', alignItems: 'center', opacity: keyExists ? 1 : 0.4 }}>
             {valueVisible
@@ -169,7 +180,7 @@ export default class TreeItem extends Component {
                       <b style={titleStyle}>{item.name + ': '}</b>
                       <span
                         style={{ marginLeft: 6 }}
-                        onClick={(meta && meta.readonly === '1') ? (() => alert('This key is set to read-only and cannot be edited.')) : undefined}
+                        onClick={onClickHandler}
                       >
                         {this.renderValue(item.path, data)}
                       </span>
@@ -237,6 +248,7 @@ export default class TreeItem extends Component {
               onClose={this.handleClose('settings')}
               onEdit={this.handleEdit}
               instanceVisibility={instanceVisibility}
+              refreshKey={() => refreshPath(item.path)}
             />
             <RemoveDialog
               item={item}
