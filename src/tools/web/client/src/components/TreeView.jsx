@@ -8,7 +8,6 @@
 
 import React from 'react'
 import { ExplorerView } from 'bosket-react'
-import IconButton from 'material-ui/IconButton'
 
 import TreeItem from '../containers/ConnectedTreeItem'
 import { visibility } from '../utils'
@@ -50,7 +49,6 @@ export default class TreeView extends React.Component {
   handleDrop = (target, evt, inputs) => {
     const { instanceId, moveKey } = this.props
     const { selection } = inputs
-    console.log('!! target', target)
 
     selection.map(
       sel => moveKey(instanceId, sel.path, target.path + '/' + sel.name)
