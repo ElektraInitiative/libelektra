@@ -49,6 +49,7 @@ export default class TreeView extends React.Component {
   handleDrop = (target, evt, inputs) => {
     const { instanceId, moveKey } = this.props
     const { selection } = inputs
+    console.log('!! target', target)
 
     selection.map(
       sel => moveKey(instanceId, sel.path, target.path + '/' + sel.name)
@@ -151,7 +152,10 @@ export default class TreeView extends React.Component {
 
     return (
       <ExplorerView
-        dragndrop={{ drop: this.handleDrop }}
+        dragndrop={{
+          drop: this.handleDrop,
+          droppable: true, /* allow dropping to keys without children */
+        }}
         model={data}
         category="children"
         name="name"
