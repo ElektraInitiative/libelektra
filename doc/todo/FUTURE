@@ -27,6 +27,9 @@ remove old metadata get/set
 
 remove null ptr checks? (see decision)
 
+C++:
+	add getValueSize()?
+
 Start arrays with _ (and not with #)?
 
 make KEY_END, ELEKTRA_PLUGIN_END also pointers and check them with
