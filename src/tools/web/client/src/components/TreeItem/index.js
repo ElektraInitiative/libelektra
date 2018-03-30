@@ -150,6 +150,17 @@ export default class TreeItem extends Component {
      // we return no value property if the key doesn't exist, otherwise we return an *empty* value
     const keyExists = rootLevel || (data && data.exists)
 
+    const renderedField = (
+      <div style={{ display: 'flex', alignItems: 'center' }}>
+        <div style={{ flex: 'initial' }}>
+          {this.renderValue(item.path, data || {})}
+        </div>
+        <div style={{ flex: 'initial' }}>
+          <SavedIcon saved={this.state.saved} />
+        </div>
+      </div>
+    )
+
     return (
         <a style={{ display: 'flex', alignItems: 'center', opacity: keyExists ? 1 : 0.4 }}>
             {valueVisible
@@ -201,7 +212,7 @@ export default class TreeItem extends Component {
               setMetaByPath={(path, key, value) => setMetaKey(instanceId, path, key, value)}
             />
             <EditDialog
-              field={this.renderValue(item.path, data || {})}
+              field={renderedField}
               item={item}
               value={data && data.value}
               open={this.state.dialogs.edit}
@@ -216,7 +227,7 @@ export default class TreeItem extends Component {
               pathExists={this.props.pathExists}
             />
             <SettingsDialog
-              field={this.renderValue(item.path, data || {})}
+              field={renderedField}
               item={item}
               meta={data && data.meta}
               data={data && data.value}

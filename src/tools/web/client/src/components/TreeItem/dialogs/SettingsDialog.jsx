@@ -32,18 +32,36 @@ const DEBOUNCED = 'DEBOUNCED'
 export default class SettingsDialog extends Component {
   constructor (...args) {
     super(...args)
-    this.state = {}
+    this.state = { regexError: false }
   }
 
   handleEdit = (key, debounced = false) => (value) => {
-    const { setMeta } = this.props
+    const { data, setMeta } = this.props
 
     if (!debounced || debounced === IMMEDIATE) {
       // set value of field
       this.setState({ [key]: { ...this.state[key], value } })
+      if (key === 'check/validation') {
+        if (value) {
+          // ensure key value matches regex
+          let validationRegex
+          try {
+            validationRegex = new RegExp(value)
+          } catch (e) {}
+          if (!validationRegex) {
+            return this.setState({ regexError: 'invalid regex code' })
+          } else if (!validationRegex.test(data)) {
+            return this.setState({ regexError: 'current value does not match regex' })
+          }
+        }
+        return this.setState({ regexError: false })
+      }
     }
 
     if (!debounced || debounced === DEBOUNCED) {
+      if (key === 'check/validation' && this.state.regexError) {
+        return // do not save regex that does not match
+      }
       // persist value to kdb and show notification
       const { timeout } = this.state[key] || {}
       setMeta(key, value)
@@ -116,6 +134,7 @@ export default class SettingsDialog extends Component {
 
   render () {
     const { item, open, field, onClose, onEdit } = this.props
+    const { regexError } = this.state
     const { path } = item
 
     const actions = [
@@ -239,6 +258,7 @@ export default class SettingsDialog extends Component {
                         floatingLabelText="validation regex"
                         floatingLabelFixed={true}
                         hintText="e.g. ^[a-zA-Z0-9]+$"
+                        errorText={regexError}
                         onChange={this.handleEdit('check/validation', IMMEDIATE)}
                         onDebounced={this.handleEdit('check/validation', DEBOUNCED)}
                         value={this.getMeta('check/validation', '')}
