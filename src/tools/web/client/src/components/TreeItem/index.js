@@ -216,6 +216,7 @@ export default class TreeItem extends Component {
               pathExists={this.props.pathExists}
             />
             <SettingsDialog
+              field={this.renderValue(item.path, data || {})}
               item={item}
               meta={data && data.meta}
               data={data && data.value}

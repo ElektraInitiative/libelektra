@@ -115,7 +115,7 @@ export default class SettingsDialog extends Component {
   }
 
   render () {
-    const { item, open, onClose, onEdit } = this.props
+    const { item, open, field, onClose, onEdit } = this.props
     const { path } = item
 
     const actions = [
@@ -256,6 +256,12 @@ export default class SettingsDialog extends Component {
                       />
                       <SavedIcon saved={this.getSaved('check/validation/message')} />
                   </div>
+              </div>
+            }
+            {(type === 'string' || type === 'any') &&
+              <div style={{ display: 'flex' }}>
+                <h3 style={{ flex: 2 }}>Current value:</h3>
+                <div style={{ flex: 8, marginTop: 4 }}>{field}</div>
               </div>
             }
             <AdditionalMetakeysSubDialog
