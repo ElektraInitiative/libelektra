@@ -7,6 +7,9 @@
 
 # I/O binding for libev
 
+For the purpose of I/O bindings please read the
+[bindings readme](https://www.libelektra.org/bindings/readme#i-o-bindings).
+
 ## Requirements
 
 - [libev](http://libev.schmorp.de) (tested with 4.x)
@@ -40,7 +43,6 @@ Populated I/O interface
 #include <ev.h>
 
 void main (void)
-
 {
 	KDB* repo;
 	// ... open KDB

@@ -36,7 +36,8 @@ Deprecated bindings (included in `DEPRECATED`):
 
 # I/O Bindings
 
-I/O bindings add support for asynchronous I/O to Elektra.
+These bindings allow Elektra to integrate into different main loop APIs using a
+thin abstraction layer called "I/O binding".
 The build all available I/O bindings use `-DBINDINGS="IO"` when configuring `cmake`.
 
 For more information please check out the

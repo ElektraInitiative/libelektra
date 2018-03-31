@@ -7,6 +7,9 @@
 
 # I/O binding for glib
 
+For the purpose of I/O bindings please read the
+[bindings readme](https://www.libelektra.org/bindings/readme#i-o-bindings).
+
 ## Requirements
 
 - glib (version 2.x)
@@ -41,7 +44,6 @@ Populated I/O interface
 #include <glib.h>
 
 void main (void)
-
 {
 	KDB* repo;
 	// ... open KDB

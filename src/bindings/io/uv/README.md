@@ -7,6 +7,9 @@
 
 # I/O binding for libuv
 
+For the purpose of I/O bindings please read the
+[bindings readme](https://www.libelektra.org/bindings/readme#i-o-bindings).
+
 ## Requirements
 
 - [libuv](http://libuv.org/) (version 1.x is recommended; 0.10 is supported)
@@ -40,7 +43,6 @@ Populated I/O interface
 #include <uv.h>
 
 void main (void)
-
 {
 	KDB* repo;
 	// ... open KDB

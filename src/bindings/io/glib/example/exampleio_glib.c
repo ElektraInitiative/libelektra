@@ -8,6 +8,8 @@
  * This program uses two I/O operations:
  * - The "input" operation is a file descriptor watcher that waits for
  *   STDIN_FILENO (stdin) to become readable.
+ *   In reality code using the I/O binding will attach non-blocking file
+ *   descriptors (e.g. from sockets).
  *   Since input is buffered, this typically happends when the user enters some
  *   text and presses return.
  * - The "output" operation is a timer that prints the last read data every
