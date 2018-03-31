@@ -35,6 +35,7 @@ DerivePointerAlignment: false
 DisableFormat: false
 #TODO: Set `FixNamespaceComments` to `true` after we switched to `clang-format-6` or newer.
 #FixNamespaceComments: true
+FixNamespaceComments: false
 IndentCaseLabels: false
 IndentWidth: 8
 IndentWrappedFunctionNames: false
