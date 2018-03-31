@@ -248,3 +248,18 @@ Existing I/O bindings provide a good inspiration on how to implement a custom
 binding.
 Since a binding is generic and not application specific it is much appreciated
 if you contribute your I/O binding back to the Elektra project.
+
+## Logging
+
+In order to log and analyze application behavior the logging plugins
+["syslog"](https://www.libelektra.org/plugins/syslog),
+["journald"](https://www.libelektra.org/plugins/journald) or
+["logchange"](https://www.libelektra.org/plugins/logchange) can be used.
+In order to log not only `kdbSet()` but also `kdbGet()` the option "get=on"
+should be used when mounting these plugins.
+
+For example:
+
+```
+$ kdb global-mount syslog get=on
+```
