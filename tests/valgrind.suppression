@@ -355,3 +355,14 @@
    ...
    fun:g_main_loop_run
 }
+{
+   glib context global state
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:*alloc
+   ...
+   fun:g_slice_alloc
+   fun:g_slist_prepend
+   fun:g_once_init_enter
+   fun:g_main_context_new
+}
