@@ -33,7 +33,8 @@ ContinuationIndentWidth: 8
 Cpp11BracedListStyle: false
 DerivePointerAlignment: false
 DisableFormat: false
-FixNamespaceComments: true
+#TODO: Set `FixNamespaceComments` to `true` after we switched to `clang-format-6` or newer.
+#FixNamespaceComments: true
 IndentCaseLabels: false
 IndentWidth: 8
 IndentWrappedFunctionNames: false
