@@ -437,7 +437,7 @@ bool checkArgument (std::vector<std::string> const & arguments, std::string test
 {
 	return arguments.size () == 1 || find (arguments.begin (), arguments.end (), testname) != arguments.end ();
 }
-}
+} // namespace
 
 void TestCommand::doTests (std::vector<std::string> const & arguments)
 {
