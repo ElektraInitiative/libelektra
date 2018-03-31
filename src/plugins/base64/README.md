@@ -99,7 +99,7 @@ Some file formats such as [YAML](http://yaml.org) already support Base64 encoded
 
 The diagram below shows how the Base64 conversion process works in conjunction with the YAML CPP plugin.
 
-![Tree](./base64/Base64.pdf)
+![Tree](./Base64.pdf)
 
 #### Example
 
