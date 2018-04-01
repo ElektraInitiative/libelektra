@@ -10,7 +10,7 @@ import React from 'react'
 import { ExplorerView } from 'bosket-react'
 
 import TreeItem from '../containers/ConnectedTreeItem'
-import { visibility } from '../utils'
+import { visibility, ARRAY_KEY_REGEX } from '../utils'
 
 import '../css/treeview.css'
 
@@ -103,9 +103,18 @@ export default class TreeView extends React.Component {
       const bI = NAMESPACES_ORDER.indexOf(b.name)
       return aI - bI
     }
-    return !a.children === !b.children
-      ? a.name.localeCompare(b.name)
-      : a.children ? -1 : 1
+    if (!a.children === !b.children) {
+      const matchA = a.name.match(ARRAY_KEY_REGEX)
+      const matchB = b.name.match(ARRAY_KEY_REGEX)
+      if (matchA && matchB) {
+        const [ , , indexA ] = matchA
+        const [ , , indexB ] = matchB
+        return Number(indexA) - Number(indexB) // compare array key index directly (ignore prefix)
+      } else {
+        return a.name.localeCompare(b.name)
+      }
+    }
+    return a.children ? -1 : 1 // list keys with subkeys first
   }
 
   createOpener () {

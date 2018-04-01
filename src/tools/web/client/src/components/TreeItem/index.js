@@ -28,8 +28,7 @@ import RemoveDialog from './dialogs/RemoveDialog.jsx'
 import DuplicateDialog from './dialogs/DuplicateDialog.jsx'
 import EditDialog from './dialogs/EditDialog.jsx'
 import { parseEnum } from './utils'
-
-const ARRAY_KEY_REGEX = /#(_*)([0-9]+)/
+import { ARRAY_KEY_REGEX } from '../../utils'
 
 export default class TreeItem extends Component {
   constructor (...args) {
