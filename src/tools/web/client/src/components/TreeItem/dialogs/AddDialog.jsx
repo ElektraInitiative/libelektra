@@ -28,6 +28,18 @@ export default class AddDialog extends Component {
     }
   }
 
+  generateArrayKey = (length) => {
+    const numberStr = String(length)
+    const prefix = '_'.repeat(numberStr.length - 1)
+    return '#' + prefix + length
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (this.state.name.length === 0 && nextProps.arrayKeyLength) {
+      this.setState({ name: this.generateArrayKey(nextProps.arrayKeyLength) })
+    }
+  }
+
   handleClose = () => {
     const { onClose } = this.props
     this.setState({ name: '', value: '', type: 'any', error: false })
@@ -46,7 +58,7 @@ export default class AddDialog extends Component {
   }
 
   render () {
-    const { item, open, renderField } = this.props
+    const { item, open, renderField, arrayKeyLength } = this.props
     const { path } = item
     const { name, value, type, error } = this.state
 
@@ -72,8 +84,9 @@ export default class AddDialog extends Component {
           open={open}
           onRequestClose={this.handleClose}
         >
-            <h1>Creating new key at <b>{path}</b></h1>
-            <div style={{ display: 'block' }}>
+            <h1>Creating new {arrayKeyLength ? 'array ' : ''}key at <b>{path}</b></h1>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <div style={{ flex: 'initial' }}>
                 <TextField
                   ref="nameField"
                   floatingLabelText="name"
@@ -87,6 +100,10 @@ export default class AddDialog extends Component {
                     }
                   }}
                 />
+              </div>
+              <div style={{ flex: 'initial', marginLeft: 48, marginTop: 12 }}>
+                <i>Hint: create a #0 sub-key in a key without children to turn it into an array</i>
+              </div>
             </div>
             <div style={{ display: 'block', marginTop: 8 }}>
                 <SelectField

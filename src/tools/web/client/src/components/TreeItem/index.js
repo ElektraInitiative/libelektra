@@ -17,6 +17,7 @@ import ContentPaste from 'material-ui/svg-icons/content/content-paste'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
 
 import ActionButton from './ActionButton.jsx'
+import ArrayIcon from './ArrayIcon.jsx'
 import SavedIcon from './SavedIcon.jsx'
 import SimpleTextField from './fields/SimpleTextField.jsx'
 import RadioButtons from './fields/RadioButtons.jsx'
@@ -27,6 +28,8 @@ import RemoveDialog from './dialogs/RemoveDialog.jsx'
 import DuplicateDialog from './dialogs/DuplicateDialog.jsx'
 import EditDialog from './dialogs/EditDialog.jsx'
 import { parseEnum } from './utils'
+
+const ARRAY_KEY_REGEX = /#(_*)([0-9]+)/
 
 export default class TreeItem extends Component {
   constructor (...args) {
@@ -142,13 +145,21 @@ export default class TreeItem extends Component {
       ? !item.path.includes('/')
       : false
 
-    const titleStyle = { marginTop: -3 }
+    const titleStyle = { marginTop: -3, display: 'flex', alignItems: 'center' }
 
     const meta = data && data.meta
     const isCheckbox = meta && meta['check/type'] && meta['check/type'] === 'boolean'
     const valueVisible = !rootLevel && data && !item.children
      // we return no value property if the key doesn't exist, otherwise we return an *empty* value
     const keyExists = rootLevel || (data && data.exists)
+
+    const arrayKeyLength = (item && Array.isArray(item.children))
+      ? item.children.reduce((res, i) => {
+          if (res === false) return false
+          if (!i.name.match(ARRAY_KEY_REGEX)) return false
+          return res + 1
+        }, 0)
+      : false
 
     const renderedField = (
       <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -177,7 +188,7 @@ export default class TreeItem extends Component {
             {valueVisible
               ? (
                   <span style={{ display: 'flex', alignItems: 'center', height: 48 }}>
-                      <b style={titleStyle}>{item.name + ': '}</b>
+                      <b style={titleStyle}>{item.name + ': ' /* TODO: make array keys prettier */}</b>
                       <span
                         style={{ marginLeft: 6 }}
                         onClick={onClickHandler}
@@ -186,7 +197,14 @@ export default class TreeItem extends Component {
                       </span>
                   </span>
                 )
-              : <b style={titleStyle}>{item.name}</b>
+              : <b style={titleStyle}>
+                  <span style={{ flex: 'initial', marginTop: -2 }}>{item.name}</span>
+                  {arrayKeyLength &&
+                    <span style={{ flex: 'initial', marginLeft: 8 }}>
+                      <ArrayIcon />
+                    </span>
+                  }
+                </b>
             }
             <span className="actions">
                 <SavedIcon saved={this.state.saved} />
@@ -214,6 +232,7 @@ export default class TreeItem extends Component {
             </span>
             <AddDialog
               item={item}
+              arrayKeyLength={arrayKeyLength}
               open={this.state.dialogs.add}
               onAdd={this.handleAdd}
               onClose={this.handleClose('add')}
