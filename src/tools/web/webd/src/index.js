@@ -35,7 +35,7 @@ getVersions()
         error(`please upgrade to libelektra 0.8.23 or higher`)
         process.exit(1)
       }
-      getInstances() // make sure yajl is installed
+      return getInstances() // make sure yajl is installed
         .then(() => {
           if (kdb.KDB_COMMAND === 'kdb') info(`|- using default kdb command`)
           else info(`|- using kdb from: ${kdb.KDB_COMMAND}`)

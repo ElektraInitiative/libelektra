@@ -100,12 +100,12 @@ export default class SettingsDialog extends Component {
             refreshKey()
             const { timeout } = this.state['binary'] || {}
             if (timeout) clearTimeout(timeout)
-            this.setState({ ['binary']: {
-              ...this.state['binary'],
+            this.setState({ binary: {
+              ...this.state.binary,
               value: false,
               saved: true,
               timeout: setTimeout(() => {
-                this.setState({ ['binary']: { ...this.state['binary'], saved: false } })
+                this.setState({ binary: { ...this.state.binary, saved: false } })
               }, 1500),
             } })
           })
