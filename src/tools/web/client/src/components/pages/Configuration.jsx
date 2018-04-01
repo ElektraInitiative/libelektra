@@ -17,6 +17,7 @@ import NavigationRefresh from 'material-ui/svg-icons/navigation/refresh'
 import { Link } from 'react-router-dom'
 
 import TreeView from '../../containers/ConnectedTreeView'
+import InstanceError from '../InstanceError.jsx'
 
 const NAMESPACES = [ 'user', 'system', 'spec', 'dir' ]
 
@@ -128,6 +129,11 @@ export default class Configuration extends Component {
   }
 
   refresh = () => {
+    const { instanceError } = this.props
+    if (instanceError) {
+      return window.location.reload()
+    }
+
     const { data } = this.state
     const { getKdb, match, sendNotification } = this.props
     const { id } = match && match.params
@@ -168,7 +174,7 @@ export default class Configuration extends Component {
   }
 
   render () {
-    const { instance, match } = this.props
+    const { instance, match, instanceError } = this.props
     const { data } = this.state
 
     if (!instance) {
@@ -213,15 +219,17 @@ export default class Configuration extends Component {
               }
             />
             <CardText>
-                {(data && Array.isArray(data) && data.length > 0)
-                  ? <TreeView
-                      instanceId={id}
-                      data={data}
-                      instanceVisibility={visibility}
-                    />
-                  : <div style={{ fontSize: '1.1em', color: 'rgba(0, 0, 0, 0.4)' }}>
-                        Loading configuration data...
-                    </div>
+                {instanceError
+                  ? <InstanceError instance={instance} error={instanceError} refresh={this.refresh} />
+                  : (data && Array.isArray(data) && data.length > 0)
+                    ? <TreeView
+                        instanceId={id}
+                        data={data}
+                        instanceVisibility={visibility}
+                      />
+                    : <div style={{ fontSize: '1.1em', color: 'rgba(0, 0, 0, 0.4)' }}>
+                          Loading configuration data...
+                      </div>
                 }
             </CardText>
             {(id !== 'my') &&

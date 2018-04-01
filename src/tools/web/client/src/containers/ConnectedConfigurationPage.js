@@ -18,9 +18,11 @@ import {
 
 const mapStateToProps = (state, { match }) => {
   const { id } = match && match.params
+  const { error, instances, ls } = state
   return {
-    instance: state.instances.find(instance => instance.id === id),
-    ls: state.ls,
+    instance: instances.find(instance => instance.id === id),
+    ls,
+    instanceError: (error && error.instanceError) ? error : false,
   }
 }
 

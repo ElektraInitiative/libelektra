@@ -13,16 +13,24 @@ import {
   CREATE_INSTANCE_FAILURE,
   GET_KEY_FAILURE, SET_KEY_FAILURE,
   DISMISS_ERROR,
+  GET_KDB_FAILURE,
 } from '../actions'
 
 export default function errorReducer (state = false, action) {
   switch (action.type) {
+    case GET_KDB_FAILURE:
+      return { ...action.error, instanceError: true }
+
     case INSTANCES_FAILURE:
     case INSTANCE_UPDATE_FAILURE:
     case INSTANCE_DELETE_FAILURE:
     case CREATE_INSTANCE_FAILURE:
     case GET_KEY_FAILURE:
     case SET_KEY_FAILURE:
+      const { message } = action.error
+      if (message.includes('ECONNREFUSED')) { // elektrad was shut down -> instance error
+        return { ...action.error, instanceError: true }
+      }
       return action.error
 
     case DISMISS_ERROR:
