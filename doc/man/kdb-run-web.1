@@ -58,7 +58,7 @@ Install and start an elektrad instance:
 \fBnpm install\fR
 .
 .IP "\(bu" 4
-\fBnpm start\fR
+\fBnpm start\fR (replaces \fBkdb run\-elektrad\fR)
 .
 .IP "" 0
 
@@ -73,7 +73,7 @@ Install and start the client (connects to the elektrad instance):
 \fBnpm install\fR
 .
 .IP "\(bu" 4
-\fBnpm start\fR
+\fBnpm start\fR (replaces \fBkdb run\-web\fR)
 .
 .IP "" 0
 
@@ -83,6 +83,8 @@ You can now access the client on: \fIhttp://localhost:33334\fR
 .
 .IP "" 0
 .
+.SH "Use\-cases"
+.
 .SS "Running elektra\-web on a single instance"
 If you do not want to configure multiple instances, you can set the \fBINSTANCE\fR environment variable to the server you want to configure\. You can also set \fBuser/sw/elektra/web/#0/current/instance\fR to the host\. Make sure to enter a full HTTP URL, e\.g\. \fBhttp://localhost:33333\fR\.
 .
@@ -90,13 +92,13 @@ If you do not want to configure multiple instances, you can set the \fBINSTANCE\
 If this configuration option is set, elektra\-web will load the configuration page for that instance instead of the main overview page\.
 .
 .P
-If you want to host elektra\-web with the client and elektrad on the same instance, after starting elektrad via \fBnpm start\fR, you can run start the client as follows:
+If you want to host elektra\-web with the client and elektrad on the same instance, after starting elektrad via \fBkdb run\-elektrad\fR, you can run start the client as follows:
 .
 .IP "" 4
 .
 .nf
 
-INSTANCE="http://localhost:33333" npm start
+INSTANCE="http://localhost:33333" kdb run\-web
 .
 .fi
 .
@@ -112,7 +114,7 @@ For example (\fBadvanced\fR visibility, \fBuser\fR is default):
 .
 .nf
 
-INSTANCE="advanced@http://localhost:33333" npm start
+INSTANCE="advanced@http://localhost:33333" kdb run\-web
 .
 .fi
 .
@@ -120,6 +122,23 @@ INSTANCE="advanced@http://localhost:33333" npm start
 .
 .P
 Now, when you open \fIhttp://localhost:33334\fR in your browser, the configuration page for the instance will be opened immediately\.
+.
+.SS "Using a different <code>kdb</code> executable"
+It is possible to change the \fBkdb\fR executable that elektra\-web uses by setting the \fBKDB\fR environment variable\. Please ensure to use the same \fBKDB\fR executable when starting \fBelektrad\fR and the \fBclient\fR\.
+.
+.P
+For example:
+.
+.IP "" 4
+.
+.nf
+
+KDB="/usr/local/custom/bin/kdb" kdb run\-elektrad
+KDB="/usr/local/custom/bin/kdb" kdb run\-web
+.
+.fi
+.
+.IP "" 0
 .
 .SH "Overview"
 Elektra web consists of multiple components:
