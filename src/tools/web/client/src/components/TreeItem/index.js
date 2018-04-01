@@ -28,7 +28,7 @@ import RemoveDialog from './dialogs/RemoveDialog.jsx'
 import DuplicateDialog from './dialogs/DuplicateDialog.jsx'
 import EditDialog from './dialogs/EditDialog.jsx'
 import { parseEnum } from './utils'
-import { ARRAY_KEY_REGEX } from '../../utils'
+import { ARRAY_KEY_REGEX, prettyPrintArrayIndex } from '../../utils'
 
 export default class TreeItem extends Component {
   constructor (...args) {
@@ -187,7 +187,7 @@ export default class TreeItem extends Component {
             {valueVisible
               ? (
                   <span style={{ display: 'flex', alignItems: 'center', height: 48 }}>
-                      <b style={titleStyle}>{item.name + ': ' /* TODO: make array keys prettier */}</b>
+                      <b style={titleStyle}>{prettyPrintArrayIndex(item.name)}: </b>
                       <span
                         style={{ marginLeft: 6 }}
                         onClick={onClickHandler}
