@@ -22,6 +22,33 @@ export default class TreeView extends React.Component {
     this.state = { selection: [], unfolded: [] }
   }
 
+  shouldComponentUpdate (nextProps, nextState) {
+    // check for everything except `instance` (we do not care about updates of `unfolded` as we are already sync)
+    return this.props.kdb !== nextProps.kdb ||
+           this.props.ref !== nextProps.ref ||
+           this.props.data !== nextProps.data ||
+           this.props.visibility !== nextProps.visibility ||
+           this.props.instanceId !== nextProps.instanceId ||
+           this.state.selection !== nextState.selection ||
+           this.state.unfolded !== nextState.unfolded
+  }
+
+  componentWillReceiveProps = (nextProps) => {
+    const { unfolded } = this.state
+    if (unfolded.length <= 0) {
+      const { instance } = nextProps
+      if (instance && instance.unfolded && instance.unfolded.length > 0) {
+        this.setState({ unfolded: instance.unfolded })
+      }
+    }
+  }
+
+  updateUnfolded = (unfolded) => {
+    const { instanceId, updateInstance } = this.props
+    this.setState({ unfolded })
+    updateInstance(instanceId, { unfolded })
+  }
+
   refreshPath = (path) => {
     const { getKey, instanceId } = this.props
     return getKey(instanceId, path)
@@ -127,7 +154,7 @@ export default class TreeView extends React.Component {
         if (newUnfolded.length === unfolded.length) {
           newUnfolded.push(item.path)
         }
-        tree.setState({ unfolded: newUnfolded })
+        tree.updateUnfolded(newUnfolded)
         onClick(event)
         event.stopPropagation()
       }
@@ -162,7 +189,7 @@ export default class TreeView extends React.Component {
           const newUnfolded = unfolded.filter(p => p !== item.path)
           if (newUnfolded.length === unfolded.length) {
             newUnfolded.push(item.path)
-            tree.setState({ unfolded: newUnfolded })
+            tree.updateUnfolded(newUnfolded)
           }
         }
         return this.inputs.get().onSelect(item, this.inputs.get().ancestors, this.inputs.get().model)

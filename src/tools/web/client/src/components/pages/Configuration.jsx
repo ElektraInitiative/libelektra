@@ -51,7 +51,7 @@ const parseDataSet = (getKey, sendNotification, instanceId, tree, path) => {
           return new Promise(resolve => {
             getKey(instanceId, newPath, true)
             if (notify) {
-              sendNotification('finished loading \'' + newPath + '\' keyset')
+              sendNotification('finished (re-)loading \'' + newPath + '\' keyset')
             }
             resolve(children)
           })
@@ -223,6 +223,7 @@ export default class Configuration extends Component {
                   ? <InstanceError instance={instance} error={instanceError} refresh={this.refresh} />
                   : (data && Array.isArray(data) && data.length > 0)
                     ? <TreeView
+                        instance={instance}
                         instanceId={id}
                         data={data}
                         instanceVisibility={visibility}
