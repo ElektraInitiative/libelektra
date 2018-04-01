@@ -251,16 +251,27 @@ export default class SettingsDialog extends Component {
                     checked={isBinary}
                     onCheck={this.handleBinary}
                     label="binary"
+                    disabled={this.getMeta('restrict/null', '0') === '1' || this.getMeta('restrict/binary', '0') === '1'}
                   />
                   <SavedIcon saved={this.getSaved('binary')} />
               </div>
               <div style={{ flex: 1 }}>
                   <Checkbox
-                    checked={fromElektraBool(this.getMeta('readonly', false))}
-                    onCheck={(e, val) => this.handleEdit('readonly')(toElektraBool(val))}
-                    label="read only"
+                    checked={fromElektraBool(this.getMeta('restrict/null', false))}
+                    onCheck={(e, val) => this.handleEdit('restrict/null')(toElektraBool(val))}
+                    label="restrict/null"
+                    disabled={isBinary}
                   />
-                  <SavedIcon saved={this.getSaved('readonly')} />
+                  <SavedIcon saved={this.getSaved('restrict/null')} />
+              </div>
+              <div style={{ flex: 1 }}>
+                  <Checkbox
+                    checked={fromElektraBool(this.getMeta('restrict/binary', false))}
+                    onCheck={(e, val) => this.handleEdit('restrict/binary')(toElektraBool(val))}
+                    label="restrict/binary"
+                    disabled={isBinary}
+                  />
+                  <SavedIcon saved={this.getSaved('restrict/binary')} />
               </div>
             </div>
             {!isBinary &&
@@ -300,6 +311,26 @@ export default class SettingsDialog extends Component {
                     </div>
                     <div style={{ flex: 'initial' }}>
                         <SavedIcon saved={this.getSaved('check/type')} style={{ paddingBottom: 16 }} />
+                    </div>
+                    <div style={{ display: 'initial', marginLeft: 24 }}>
+                      <Checkbox
+                        checked={fromElektraBool(this.getMeta('restrict/write', false))}
+                        onCheck={(e, val) => this.handleEdit('restrict/write')(toElektraBool(val))}
+                        label="restrict/write"
+                      />
+                    </div>
+                    <div style={{ flex: 'initial' }}>
+                      <SavedIcon saved={this.getSaved('restrict/write')} />
+                    </div>
+                    <div style={{ flex: 'initial', marginLeft: 24 }}>
+                      <Checkbox
+                        checked={fromElektraBool(this.getMeta('restrict/remove', false))}
+                        onCheck={(e, val) => this.handleEdit('restrict/remove')(toElektraBool(val))}
+                        label="restrict/remove"
+                      />
+                    </div>
+                    <div style={{ flex: 'initial' }}>
+                      <SavedIcon saved={this.getSaved('restrict/remove')} />
                     </div>
                 </div>
                 {this.getMeta('check/type', false) === 'enum' ? this.renderEnum() : null}

@@ -162,7 +162,7 @@ export default class TreeItem extends Component {
     )
 
     let onClickHandler = undefined
-    if (meta && meta.readonly === '1') {
+    if (meta && meta['restrict/write'] === '1') {
       onClickHandler = () =>
         alert('This key is set to read-only and cannot be edited.')
     }
@@ -205,7 +205,7 @@ export default class TreeItem extends Component {
                 {!rootLevel &&
                   <ActionButton icon={<ActionBuild />} onClick={this.handleOpen('settings')} size={13} tooltip="configure metadata" />
                 }
-                {!rootLevel &&
+                {!rootLevel && !(meta && meta['restrict/remove'] === '1') &&
                   <ActionButton icon={<ActionDelete />} onClick={this.handleOpen('remove')} tooltip="delete key" />
                 }
                 <i>

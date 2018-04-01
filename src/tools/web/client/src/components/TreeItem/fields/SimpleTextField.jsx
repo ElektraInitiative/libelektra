@@ -51,7 +51,7 @@ export default class SimpleTextField extends Component {
             }
             onChange(currentValue)
           }),
-          disabled: isBinary || fromElektraBool(meta && meta.readonly),
+          disabled: isBinary || fromElektraBool(meta && meta['restrict/write']),
           floatingLabelText: label,
           floatingLabelFixed: !!label,
         })}
