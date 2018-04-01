@@ -51,8 +51,31 @@ export const SET_KEY_FAILURE = 'SET_KEY_FAILURE'
 
 export const setKey = (id, path, value) => thunkCreator({
   id, path, value,
-  request: { id, path, value }, // TODO: use this syntax everywhere
+  request: { id, path, value },
   types: [SET_KEY_REQUEST, SET_KEY_SUCCESS, SET_KEY_FAILURE],
+  promise: fetch(
+    `/api/instances/${id}/kdb/${encodePath(path)}`,
+    {
+      credentials: 'same-origin',
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'text/plain',
+      },
+      body: value,
+    }
+  ).then(parseJSONResponse),
+})
+
+// ~~~
+
+export const CREATE_KEY_REQUEST = 'CREATE_KEY_REQUEST'
+export const CREATE_KEY_SUCCESS = 'CREATE_KEY_SUCCESS'
+export const CREATE_KEY_FAILURE = 'CREATE_KEY_FAILURE'
+
+export const createKey = (id, path, value) => thunkCreator({
+  id, path, value,
+  request: { id, path, value },
+  types: [CREATE_KEY_REQUEST, CREATE_KEY_SUCCESS, CREATE_KEY_FAILURE],
   promise: fetch(
     `/api/instances/${id}/kdb/${encodePath(path)}`,
     {

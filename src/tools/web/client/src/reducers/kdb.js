@@ -8,7 +8,7 @@
 
 import {
   GET_KEY_SUCCESS, SET_KEY_REQUEST, DELETE_KEY_REQUEST, MOVE_KEY_SUCCESS,
-  SET_META_REQUEST, DELETE_META_REQUEST, COPY_KEY_REQUEST,
+  SET_META_REQUEST, DELETE_META_REQUEST, COPY_KEY_REQUEST, CREATE_KEY_REQUEST,
 } from '../actions'
 
 const updateState = (state, { id, path, value, meta, exists }) => {
@@ -44,6 +44,7 @@ export default function keyReducer (state = {}, action) {
       }
       return newState
 
+    case CREATE_KEY_REQUEST:
     case SET_KEY_REQUEST:
       return updateState(state, action.request)
 

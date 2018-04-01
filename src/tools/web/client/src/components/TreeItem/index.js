@@ -70,9 +70,9 @@ export default class TreeItem extends Component {
   }
 
   handleAdd = (path, addKeyName, addKeyValue) => {
-    const { instanceId, setKey, sendNotification } = this.props
+    const { instanceId, createKey, sendNotification } = this.props
     const fullPath = path + '/' + addKeyName
-    setKey(instanceId, fullPath, addKeyValue).then(() =>
+    createKey(instanceId, fullPath, addKeyValue).then(() =>
       sendNotification('successfully created key: ' + fullPath)
     )
   }

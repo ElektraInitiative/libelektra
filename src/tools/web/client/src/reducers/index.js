@@ -7,6 +7,7 @@
  */
 
 import { combineReducers } from 'redux'
+import { undoHistoryReducer } from 'redux-undo-redo-middleware'
 
 import { reducer as idleReducer } from 'redux-promises'
 
@@ -25,4 +26,5 @@ export default combineReducers({
   ls: pathReducer,
   error: errorReducer,
   notification: notificationReducer,
+  undoHistory: undoHistoryReducer,
 })

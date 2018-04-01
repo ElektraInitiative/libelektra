@@ -10,6 +10,7 @@
 
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
+import { actions as undoActions } from 'redux-undo-redo-middleware'
 
 import Menu from '../components/Menu.jsx'
 import { addInstance } from '../actions'
@@ -19,10 +20,15 @@ const mapStateToProps = (state) => {
     loading: !state.idle,
     status: state.container,
     instances: state.instances,
+    canUndo: state.undoHistory.undoQueue.length > 0,
+    canRedo: state.undoHistory.redoQueue.length > 0,
   }
 }
 
 const mapDispatchToProps = (dispatch) =>
-  bindActionCreators({ addInstance }, dispatch)
+  bindActionCreators({
+    addInstance,
+    onUndo: undoActions.undo, onRedo: undoActions.redo,
+  }, dispatch)
 
 export default connect(mapStateToProps, mapDispatchToProps)(Menu)
