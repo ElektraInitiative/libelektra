@@ -409,7 +409,7 @@ static Codes updateFilesGlob (MultiConfig * mc, KeySet * found, Key * parentKey)
 	struct stat sb;
 	for (unsigned int i = 0; i < results.gl_pathc; ++i)
 	{
-		ret = lstat (results.gl_pathv[i], &sb);
+		ret = stat (results.gl_pathv[i], &sb);
 		if (S_ISREG (sb.st_mode))
 		{
 			Key * lookup = keyNew ("/", KEY_CASCADING_NAME, KEY_END);
