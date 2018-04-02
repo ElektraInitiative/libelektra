@@ -36,6 +36,9 @@ Conflicts with usage of `header`.
 `columns/index`
 Use the value of the column given as argument to index the records instead of the record number.
 
+`/export`
+Export only columns with matching names.
+
 ## Examples
 
 First line should determine the headers:
@@ -163,7 +166,7 @@ kdb rm -r /examples/csv
 sudo kdb umount /examples/csv
 ```
 
-#Column as index
+# Column as index
 
 ```
 kdb mount config.csv /examples/csv csvstorage "delimiter=;,header=colname,columns/index=IMDB"
@@ -184,6 +187,32 @@ kdb ls /examples/csv
 
 kdb get /examples/csv/tt0108052/Title
 #> Schindler´s List
+
+kdb rm -r /examples/csv
+sudo kdb umount /examples/csv
+
+```
+
+# Export filter
+
+```
+kdb mount config.csv /examples/csv csvstorage "delimiter=;,header=colname,columns/index=IMDB"
+
+printf 'IMDB;Title;Year\n'                          >> `kdb file /examples/csv`
+printf 'tt0108052;Schindler´s List;1993\n'          >> `kdb file /examples/csv`
+printf 'tt0110413;Léon: The Professional;1994\n'    >> `kdb file /examples/csv`
+
+kdb export /examples/csv csvstorage -c "delimiter=;,header=colname,columns/index=IMDB,export=,export/IMDB=,export/Title="
+#> IMDB;Title
+#> tt0108052;Schindler´s List
+#> tt0110413;Léon: The Professional
+
+
+kdb export /examples/csv csvstorage -c "delimiter=;,header=colname,columns/index=IMDB,export=,export/IMDB=,export/Year="
+#> IMDB;Year
+#> tt0108052;1993
+#> tt0110413;1994
+
 
 kdb rm -r /examples/csv
 sudo kdb umount /examples/csv
