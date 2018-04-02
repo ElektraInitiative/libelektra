@@ -256,11 +256,11 @@ kdb set /tutorial/links/url "invalid url"
 Note that the backend `tutorial.dump` is mounted for all namespaces:
 ```sh
 kdb file user/tutorial
-# STDOUT-REGEX: /(home|Users)/.*/\.config/tutorial\.dump
+# STDOUT-REGEX: /.*/tutorial\.dump
 kdb file system/tutorial
-# STDOUT-REGEX: .*/tutorial\.dump
+# STDOUT-REGEX: /.*/tutorial\.dump
 kdb file dir/tutorial
-# STDOUT-REGEX: /.*/\.dir/tutorial\.dump
+# STDOUT-REGEX: /.*/tutorial\.dump
 ```
 
 If you want to set a key for another namespace and do not want to go without validation,
