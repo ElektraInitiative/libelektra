@@ -346,6 +346,7 @@ set (LIB_SUFFIX ""
 		"Optional suffix to use on lib folders (e.g. 64 for lib64)"
     )
 
+set (MEMORYCHECK_COMMAND_OPTIONS "--error-exitcode=1" )
 set (MEMORYCHECK_SUPPRESSIONS_FILE
 		"${CMAKE_SOURCE_DIR}/tests/valgrind.suppression"
 		CACHE FILEPATH

@@ -120,6 +120,7 @@ These notes are of interest for people developing Elektra:
   codebase.
 - We added an [Markdown Shell Recorder][] test for the [Constants](http://libelektra.org/plugins/constants) plugin.
 - The [Markdown Shell Recorder][] now prints the path of the test file.
+- If any of the tests in `make run_memcheck` fail valgrind will now set an exit-code which will get picked up by make.
 
 [Markdown Shell Recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
 
