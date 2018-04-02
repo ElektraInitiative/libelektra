@@ -632,7 +632,14 @@ static int csvWrite (KeySet * returned, Key * parentKey, Key * colAsParent, char
 			while ((tmp = ksNext (headerKs)) != NULL)
 			{
 				++colCounter;
-				fprintf (fp, ";%s", keyName (tmp) + strlen (keyName (cur)) + 1);
+				if ((strchr (keyName (tmp), '\n') != NULL) && (keyName (tmp)[0] != '"'))
+				{
+					fprintf (fp, ";\"%s\"", keyName (tmp) + strlen (keyName (cur)) + 1);
+				}
+				else
+				{
+					fprintf (fp, ";%s", keyName (tmp) + strlen (keyName (cur)) + 1);
+				}
 			}
 			fprintf (fp, "\n");
 			if (columns == 0)
@@ -653,6 +660,10 @@ static int csvWrite (KeySet * returned, Key * parentKey, Key * colAsParent, char
 			if (colCounter) fprintf (fp, "%c", delim);
 			++colCounter;
 			if (keyGetMeta (toWrite, "internal/csvstorage/quoted"))
+			{
+				fprintf (fp, "\"%s\"", keyString (toWrite));
+			}
+			else if ((strchr (keyString (toWrite), '\n') != NULL) && (keyString (toWrite)[0] != '"'))
 			{
 				fprintf (fp, "\"%s\"", keyString (toWrite));
 			}
