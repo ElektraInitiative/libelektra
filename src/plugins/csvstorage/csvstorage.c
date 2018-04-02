@@ -589,7 +589,24 @@ int elektraCsvstorageGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	return 1;
 }
 
-static int csvWrite (KeySet * returned, Key * parentKey, Key * colAsParent, char delim, short useHeader)
+static int isExportKey (const Key * key, const Key * parent, KeySet * ks)
+{
+	if (!ks) return 1;
+	Key * lookupKey = keyNew ("/export", KEY_CASCADING_NAME, KEY_END);
+	keyAddName (lookupKey, keyName (key) + strlen (keyName (parent)) + 1);
+	if (!ksLookupByName (ks, keyName (lookupKey), KDB_O_NONE))
+	{
+		keyDel (lookupKey);
+		return 0;
+	}
+	else
+	{
+		keyDel (lookupKey);
+		return 1;
+	}
+}
+
+static int csvWrite (KeySet * returned, Key * parentKey, KeySet * exportKS, Key * colAsParent, char delim, short useHeader)
 {
 	FILE * fp;
 	fp = fopen (keyString (parentKey), "w");
@@ -627,19 +644,27 @@ static int csvWrite (KeySet * returned, Key * parentKey, Key * colAsParent, char
 			ksDel (tmpKs);
 			ksNext (headerKs);
 			Key * tmp = ksNext (headerKs);
-			fprintf (fp, "%s", keyName (tmp) + strlen (keyName (cur)) + 1);
+			int printDelim = 0;
+			if (isExportKey (tmp, cur, exportKS))
+			{
+				fprintf (fp, "%s", keyName (tmp) + strlen (keyName (cur)) + 1);
+				printDelim = 1;
+			}
 			++colCounter;
 			while ((tmp = ksNext (headerKs)) != NULL)
 			{
 				++colCounter;
+				if (!isExportKey (tmp, cur, exportKS)) continue;
+				if (printDelim) fprintf (fp, "%c", delim);
 				if ((strchr (keyName (tmp), '\n') != NULL) && (keyName (tmp)[0] != '"'))
 				{
-					fprintf (fp, ";\"%s\"", keyName (tmp) + strlen (keyName (cur)) + 1);
+					fprintf (fp, "\"%s\"", keyName (tmp) + strlen (keyName (cur)) + 1);
 				}
 				else
 				{
-					fprintf (fp, ";%s", keyName (tmp) + strlen (keyName (cur)) + 1);
+					fprintf (fp, "%s", keyName (tmp) + strlen (keyName (cur)) + 1);
 				}
+				printDelim = 1;
 			}
 			fprintf (fp, "\n");
 			if (columns == 0)
@@ -652,24 +677,33 @@ static int csvWrite (KeySet * returned, Key * parentKey, Key * colAsParent, char
 		colCounter = 0;
 		toWriteKS = ksCut (returned, cur);
 		ksRewind (toWriteKS);
+		int printDelim = 0;
 		while (1)
 		{
 			toWrite = ksNext (toWriteKS);
 			if (!keyCmp (cur, toWrite)) continue;
 			if (!toWrite) break;
-			if (colCounter) fprintf (fp, "%c", delim);
+			if (!isExportKey (toWrite, cur, exportKS))
+			{
+				++colCounter;
+				continue;
+			}
+			if (printDelim) fprintf (fp, "%c", delim);
 			++colCounter;
 			if (keyGetMeta (toWrite, "internal/csvstorage/quoted"))
 			{
 				fprintf (fp, "\"%s\"", keyString (toWrite));
+				printDelim = 1;
 			}
 			else if ((strchr (keyString (toWrite), '\n') != NULL) && (keyString (toWrite)[0] != '"'))
 			{
 				fprintf (fp, "\"%s\"", keyString (toWrite));
+				printDelim = 1;
 			}
 			else
 			{
 				fprintf (fp, "%s", keyString (toWrite));
+				printDelim = 1;
 			}
 		}
 		ksDel (toWriteKS);
@@ -706,14 +740,25 @@ int elektraCsvstorageSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	}
 	Key * colAsParent = ksLookupByName (config, "/columns/index", 0);
 	Key * useHeaderKey = ksLookupByName (config, "/header", 0);
+	Key * exportKey = ksLookupByName (config, "/export", 0);
+	KeySet * exportKS = NULL;
+	if (exportKey)
+	{
+		exportKS = ksCut (config, exportKey);
+		ksAppend (config, exportKS);
+		keyDel (ksLookup (exportKS, exportKey, KDB_O_POP));
+		ksRewind (exportKS);
+	}
 	short useHeader = 0;
 	if (!strcmp (keyString (useHeaderKey), "skip")) useHeader = -1;
-	if (csvWrite (returned, parentKey, colAsParent, outputDelim, useHeader) == -1)
+	if (csvWrite (returned, parentKey, exportKS, colAsParent, outputDelim, useHeader) == -1)
 	{
+		if (exportKS) ksDel (exportKS);
 		return -1;
 	}
 	else
 	{
+		if (exportKS) ksDel (exportKS);
 		return 1; /* success */
 	}
 }
