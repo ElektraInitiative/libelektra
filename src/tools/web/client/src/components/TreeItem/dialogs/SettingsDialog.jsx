@@ -23,6 +23,7 @@ import AdditionalMetakeysSubDialog from './AdditionalMetakeysSubDialog.jsx'
 import debounce from '../../debounce'
 import { VISIBILITY_LEVELS, visibility, toElektraBool, fromElektraBool, isNumberType } from '../../../utils'
 import { KEY_TYPES } from './utils'
+import { validateRange } from '../fields/validateType'
 
 const DebouncedTextField = debounce(TextField)
 
@@ -32,7 +33,7 @@ const DEBOUNCED = 'DEBOUNCED'
 export default class SettingsDialog extends Component {
   constructor (...args) {
     super(...args)
-    this.state = { regexError: false }
+    this.state = { regexError: false, rangeError: false }
   }
 
   handleEdit = (key, debounced = false) => (value) => {
@@ -41,6 +42,7 @@ export default class SettingsDialog extends Component {
     if (!debounced || debounced === IMMEDIATE) {
       // set value of field
       this.setState({ [key]: { ...this.state[key], value } })
+
       if (key === 'check/validation') {
         if (value) {
           // ensure key value matches regex
@@ -56,11 +58,27 @@ export default class SettingsDialog extends Component {
         }
         return this.setState({ regexError: false })
       }
+
+      if (key === 'check/range') {
+        if (value) {
+          console.log('validating range', value)
+          console.log('val', data)
+          const err = validateRange(value, data)
+          console.log('err', err)
+          if (err) {
+            return this.setState({ rangeError: err })
+          }
+        }
+        return this.setState({ rangeError: false })
+      }
     }
 
     if (!debounced || debounced === DEBOUNCED) {
       if (key === 'check/validation' && this.state.regexError) {
         return // do not save regex that does not match
+      }
+      if (key === 'check/range' && this.state.rangeError) {
+        return // do not save range that does not match
       }
       // persist value to kdb and show notification
       const { timeout } = this.state[key] || {}
@@ -145,6 +163,7 @@ export default class SettingsDialog extends Component {
     return (
         <NumberSubDialog
           onChange={this.handleEdit('check/range')}
+          error={this.state.rangeError}
           value={this.getMeta('check/range', '')}
           saved={this.getSaved('check/range')}
         />
@@ -362,7 +381,7 @@ export default class SettingsDialog extends Component {
                       </div>
                   </div>
                 }
-                {(type === 'string' || type === 'any') &&
+                {(type === 'string' || type === 'any' || isNumberType(type)) &&
                   <div style={{ display: 'flex' }}>
                     <h3 style={{ flex: 2 }}>Current value:</h3>
                     <div style={{ flex: 8, marginTop: 4 }}>{field}</div>
