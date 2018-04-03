@@ -39,7 +39,10 @@ const undoMiddleware = createUndoMiddleware({
           : createKey(id, path, previousValue),
       createArgs: storePreviousValue,
     },
-    'CREATE_KEY_SUCCESS': ({ id, path }) => deleteKey(id, path),
+    'CREATE_KEY_SUCCESS': {
+      action: ({ id, path }) => deleteKey(id, path),
+      createArgs: (state, { value }) => ({ previousValue: value }),
+    },
     'SET_META_SUCCESS': {
       action: ({ id, path, key }, { previousMeta }) =>
         previousMeta
@@ -54,7 +57,10 @@ const undoMiddleware = createUndoMiddleware({
       action: ({ id, path, key }, { previousMeta }) => createMetaKey(id, path, key, previousMeta),
       createArgs: storePreviousMeta,
     },
-    'CREATE_META_SUCCESS': ({ id, path, key }) => deleteMetaKey(id, path, key),
+    'CREATE_META_SUCCESS': {
+      action: ({ id, path, key }) => deleteMetaKey(id, path, key),
+      createArgs: (state, { value }) => ({ previousMeta: value }),
+    },
     'COPY_KEY_SUCCESS': {
       action: ({ id, from, to }) => deleteKey(id, to),
       createArgs: (state, { from, to }) => ({ from, to }),
