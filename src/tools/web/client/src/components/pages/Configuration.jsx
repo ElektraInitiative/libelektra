@@ -129,19 +129,7 @@ export default class Configuration extends Component {
   }
 
   refresh = () => {
-    const { instanceError } = this.props
-    if (instanceError) {
-      return window.location.reload()
-    }
-
-    const { data } = this.state
-    const { getKdb, match, sendNotification } = this.props
-    const { id } = match && match.params
-
-    sendNotification('refreshing configuration data...')
-    getKdb(id)
-      .then(() => this.preload(data))
-      .then(() => sendNotification('configuration data refreshed!'))
+    return window.location.reload()
   }
 
   preload = async (tree, paths = [], levels = 1) => {

@@ -144,9 +144,8 @@ export default class TreeView extends React.Component {
     const { unfolded } = this.state
     return class Opener extends React.Component {
       onClick = (event) => {
-        const { onClick, item } = this.props
+        const { item } = this.props
         const newUnfolded = unfolded.filter(p => p !== item.path)
-        console.log('new unfolded', newUnfolded)
         if (newUnfolded.length === unfolded.length) {
           newUnfolded.push(item.path)
         }
