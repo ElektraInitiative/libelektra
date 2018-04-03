@@ -254,7 +254,7 @@ export default class SettingsDialog extends Component {
                           <MenuItem key={lvl} value={lvl} primaryText={lvl} />
                         )}
                     </SelectField>
-                    <SavedIcon saved={this.getSaved('check/type')} style={{ paddingBottom: 16 }} />
+                    <SavedIcon saved={this.getSaved('visibility')} style={{ paddingBottom: 16 }} />
                 </div>
             </div>
             <div style={{ display: 'flex' }}>
