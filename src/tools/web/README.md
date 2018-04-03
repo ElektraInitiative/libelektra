@@ -1,6 +1,6 @@
 # elektra-web
 
-_an API and web user interface to remotely manage multiple Elektra instances_
+_an API and web user interface to remotely manage Elektra instances_
 
 
 ## Dependencies
@@ -15,10 +15,10 @@ Elektra-web requires:
 
 To build Elektra with the elektra-web tool:
 
- * Install Node.js (see above)
- * Configure elektra build with the elektra-web tool, e.g. `cmake .. -DTOOLS="kdb;web"` (yajl plugin is included by default now)
- * Build elektra: `make`
- * Install elektra: `sudo make install`
+ * Install Node.js and dependencies for `yajl` plugin (see links above)
+ * Configure libelektra build with the elektra-web tool, e.g. `cmake .. -DTOOLS="kdb;web"`
+ * Build libelektra: `make`
+ * Install libelektra: `sudo make install`
 
 
 ## Getting started
