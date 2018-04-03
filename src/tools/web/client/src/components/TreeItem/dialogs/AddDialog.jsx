@@ -15,7 +15,7 @@ import SelectField from 'material-ui/SelectField'
 import MenuItem from 'material-ui/MenuItem'
 import ActionBuild from 'material-ui/svg-icons/action/build'
 
-import { VISIBILITY_LEVELS } from '../../../utils'
+import { VISIBILITY_LEVELS, visibility } from '../../../utils'
 import { KEY_TYPES } from './utils'
 
 export default class AddDialog extends Component {
@@ -55,13 +55,25 @@ export default class AddDialog extends Component {
   handleCreate = () => {
     const { item, onAdd, setMetaByPath } = this.props
     const { path } = item
-    const { name, value, type, visibility } = this.state
+    const { name, value, type } = this.state
+    const v = this.state.visibility
+    if (v !== 'user') {
+      const { instanceVisibility } = this.props
+      if (visibility(v) < visibility(instanceVisibility)) {
+        const confirmed = window.confirm(
+          'Setting the visibility lower than the instance visibility will hide ' +
+          'this item in this instance. Only proceed if you no longer plan on ' +
+          'editing this item here.'
+        )
+        if (!confirmed) return
+      }
+    }
     onAdd(path, name, value)
     if (type !== 'any') {
       setMetaByPath(path + '/' + name, 'check/type', type)
     }
-    if (visibility !== 'user') {
-      setMetaByPath(path + '/' + name, 'visibility', visibility)
+    if (v !== 'user') {
+      setMetaByPath(path + '/' + name, 'visibility', v)
     }
     this.handleClose()
   }
