@@ -22,17 +22,6 @@ export default class TreeView extends React.Component {
     this.state = { selection: [], unfolded: [] }
   }
 
-  shouldComponentUpdate (nextProps, nextState) {
-    // check for everything except `instance` (we do not care about updates of `unfolded` as we are already sync)
-    return this.props.kdb !== nextProps.kdb ||
-           this.props.ref !== nextProps.ref ||
-           this.props.data !== nextProps.data ||
-           this.props.visibility !== nextProps.visibility ||
-           this.props.instanceId !== nextProps.instanceId ||
-           this.state.selection !== nextState.selection ||
-           this.state.unfolded !== nextState.unfolded
-  }
-
   componentWillReceiveProps = (nextProps) => {
     const { unfolded } = this.state
     if (unfolded.length <= 0) {
@@ -157,11 +146,11 @@ export default class TreeView extends React.Component {
       onClick = (event) => {
         const { onClick, item } = this.props
         const newUnfolded = unfolded.filter(p => p !== item.path)
+        console.log('new unfolded', newUnfolded)
         if (newUnfolded.length === unfolded.length) {
           newUnfolded.push(item.path)
         }
         tree.updateUnfolded(newUnfolded)
-        onClick(event)
         event.stopPropagation()
       }
 
