@@ -37,6 +37,7 @@ Please describe what actually happened.
 ## System Information
 
 - Elektra Version: master
+- Operating System or Docker Container?
 - Versions of other relevant software?
 
 ## Further Log Files and Output
