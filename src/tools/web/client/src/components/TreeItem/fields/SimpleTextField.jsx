@@ -19,16 +19,18 @@ const DebouncedTextField = debounce(TextField)
 export default class SimpleTextField extends Component {
   constructor (props) {
     super(props)
-    this.state = { value: props.value || false, error: false }
+    this.state = { value: props.value || '', error: false }
   }
 
   componentWillReceiveProps (nextProps) {
-    this.setState({ value: nextProps.value || false })
+    if (nextProps.value) {
+      this.setState({ value: nextProps.value })
+    }
   }
 
   render () {
-    const { id, value, meta, label, debounce = true, onChange, onError } = this.props
-    const val = this.state.value === false ? value : this.state.value
+    const { id, meta, label, debounce = true, onChange, onError } = this.props
+    const val = this.state.value
     const comp = debounce ? DebouncedTextField : TextField
     const isBinary = meta && meta.hasOwnProperty('binary')
 

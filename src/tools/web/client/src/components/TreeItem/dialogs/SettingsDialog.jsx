@@ -33,7 +33,45 @@ const DEBOUNCED = 'DEBOUNCED'
 export default class SettingsDialog extends Component {
   constructor (...args) {
     super(...args)
-    this.state = { regexError: false, rangeError: false }
+    this.state = { regexError: false, rangeError: false, regexStr: false, rangeStr: false }
+  }
+
+  componentWillReceiveProps (nextProps) {
+    const { regexError, rangeError, regexStr, rangeStr } = this.state
+    if (regexError) {
+      this.handleEdit('check/validation', IMMEDIATE)(regexStr)
+      setTimeout(() => this.handleEdit('check/validation', DEBOUNCED)(regexStr), 500)
+    }
+    if (rangeError) {
+      this.handleEdit('check/range', IMMEDIATE)(rangeStr)
+      setTimeout(() => this.handleEdit('check/range', DEBOUNCED)(rangeStr), 500)
+    }
+  }
+
+  ensureRegex = (regexStr, data) => {
+    if (regexStr) {
+      // ensure key value matches regex
+      let validationRegex
+      try {
+        validationRegex = new RegExp(regexStr)
+      } catch (e) {}
+      if (!validationRegex) {
+        return this.setState({ regexError: 'invalid regex code', regexStr })
+      } else if (!validationRegex.test(data)) {
+        return this.setState({ regexError: 'current value does not match regex', regexStr })
+      }
+    }
+    this.setState({ regexError: false, regexStr: false })
+  }
+
+  ensureRange = (rangeStr, data) => {
+    if (rangeStr) {
+      const err = validateRange(rangeStr, data)
+      if (err) {
+        return this.setState({ rangeError: err, rangeStr })
+      }
+    }
+    this.setState({ rangeError: false, rangeStr: false })
   }
 
   handleEdit = (key, debounced = false) => (value) => {
@@ -44,32 +82,11 @@ export default class SettingsDialog extends Component {
       this.setState({ [key]: { ...this.state[key], value } })
 
       if (key === 'check/validation') {
-        if (value) {
-          // ensure key value matches regex
-          let validationRegex
-          try {
-            validationRegex = new RegExp(value)
-          } catch (e) {}
-          if (!validationRegex) {
-            return this.setState({ regexError: 'invalid regex code' })
-          } else if (!validationRegex.test(data)) {
-            return this.setState({ regexError: 'current value does not match regex' })
-          }
-        }
-        return this.setState({ regexError: false })
+        this.ensureRegex(value, data)
       }
 
       if (key === 'check/range') {
-        if (value) {
-          console.log('validating range', value)
-          console.log('val', data)
-          const err = validateRange(value, data)
-          console.log('err', err)
-          if (err) {
-            return this.setState({ rangeError: err })
-          }
-        }
-        return this.setState({ rangeError: false })
+        this.ensureRange(value, data)
       }
     }
 
