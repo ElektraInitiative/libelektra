@@ -1,0 +1,28 @@
+name:                regex-types
+version:             0.1.0.0
+synopsis:            regex-types
+description:         typechecker plugin for supporting regex-based subtyping
+homepage:            https://libelektra.org
+license:             BSD3
+author:              e1528532
+maintainer:          e1528532@student.tuwien.ac.at
+copyright:           libelektra.org
+category:            Type System
+build-type:          Simple
+extra-source-files:  ChangeLog.md
+cabal-version:       >=1.10
+
+library
+  exposed-modules:     RegexTypes.Plugin
+                     , RegexTypes.RegexType
+  build-depends:       base >=4.9 && <4.11
+                     , ghc >= 8.0.1 && < 8.6
+                     , ghc-tcplugins-extra
+                     , HaLeX
+  other-extensions:    CPP
+                     , TypeInType
+                     , TypeFamilies
+                     , ConstraintKinds
+                     , UndecidableInstances
+  build-depends:       base >= 4.7 && < 5
+  default-language:    Haskell2010
