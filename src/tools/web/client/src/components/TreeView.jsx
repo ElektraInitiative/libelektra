@@ -141,15 +141,16 @@ export default class TreeView extends React.Component {
 
   createOpener () {
     const tree = this
-    const { unfolded } = this.state
     return class Opener extends React.Component {
       onClick = (event) => {
-        const { item } = this.props
+        const { onClick, item } = this.props
+        const { unfolded } = tree.state
         const newUnfolded = unfolded.filter(p => p !== item.path)
         if (newUnfolded.length === unfolded.length) {
           newUnfolded.push(item.path)
         }
         tree.updateUnfolded(newUnfolded)
+        onClick(event)
         event.stopPropagation()
       }
 
@@ -179,17 +180,28 @@ export default class TreeView extends React.Component {
     const tree = this
     const strategies = {
       click: [ function unfoldOnSelectionByPath (item) {
-        if (!this.isSelected(item) && item.children && item.children.length > 0) {
+        if (!this.isSelected(item) && item.children) {
           const newUnfolded = unfolded.filter(p => p !== item.path)
           if (newUnfolded.length === unfolded.length) {
             newUnfolded.push(item.path)
             tree.updateUnfolded(newUnfolded)
+            const newVal = this.state.get().unfolded.filter(i => i !== item)
+            if(newVal.length === this.state.get().unfolded.length)
+                newVal.push(item)
+            this.state.set({ unfolded: newVal })
           }
         }
         return this.inputs.get().onSelect(item, this.inputs.get().ancestors, this.inputs.get().model)
       } ],
       fold: [ function unfoldByPath (item) {
-        return !unfolded.find(p => p === item.path)
+        const isFolded = !unfolded.find(p => p === item.path)
+        if (!isFolded) {
+          const newVal = this.state.get().unfolded.filter(i => i !== item)
+          if(newVal.length === this.state.get().unfolded.length)
+              newVal.push(item)
+          this.state.set({ unfolded: newVal })
+        }
+        return isFolded
       } ]
     }
 
