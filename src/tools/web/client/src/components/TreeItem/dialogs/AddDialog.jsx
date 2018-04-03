@@ -43,10 +43,10 @@ export default class AddDialog extends Component {
   }
 
   handleClose = () => {
-    const { onClose } = this.props
+    const { onClose, instanceVisibility } = this.props
     this.setState({
       name: '', value: '', type: 'any',
-      visibility: props.instanceVisibility || 'user',
+      visibility: instanceVisibility || 'user',
       error: false,
     })
     onClose()
@@ -55,7 +55,7 @@ export default class AddDialog extends Component {
   handleCreate = () => {
     const { item, onAdd, setMetaByPath } = this.props
     const { path } = item
-    const { name, value, type } = this.state
+    const { name, value, type, visibility } = this.state
     onAdd(path, name, value)
     if (type !== 'any') {
       setMetaByPath(path + '/' + name, 'check/type', type)
