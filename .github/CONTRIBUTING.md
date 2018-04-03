@@ -31,8 +31,7 @@ We recommend that you read:
 Before you issue a pull request that modifies code:
 
 - You should read the [coding document](/doc/CODING.md).
-- You should read the [design document](/doc/DESIGN.md).
-- Make sure you fulfilled the [definition of done](/.github/PULL_REQUEST_TEMPLATE.md).
+- Make sure you fulfilled the [checklist](/.github/PULL_REQUEST_TEMPLATE.md).
 
 
 # Architecture
@@ -41,6 +40,7 @@ Before you start making fundamental changes:
 
 - Propose it by creating a [github issue](https://github.com/ElektraInitiative/libelektra/issues/new)
   for discussions.
+- You should read the [design document](/doc/DESIGN.md).
 - Create a [decision](/doc/decisions/README.md) describing you want to do
   to keep the discussion more efficient and architecture documented.
 
