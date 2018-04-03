@@ -7,8 +7,8 @@
  */
 
 import {
-  GET_KEY_SUCCESS, SET_KEY_REQUEST, DELETE_KEY_REQUEST, MOVE_KEY_SUCCESS,
-  SET_META_REQUEST, DELETE_META_REQUEST, COPY_KEY_REQUEST, CREATE_KEY_REQUEST,
+  GET_KEY_SUCCESS, SET_KEY_SUCCESS, DELETE_KEY_SUCCESS, MOVE_KEY_SUCCESS,
+  SET_META_SUCCESS, DELETE_META_SUCCESS, COPY_KEY_SUCCESS, CREATE_KEY_SUCCESS,
 } from '../actions'
 
 const updateState = (state, { id, path, value, meta, exists }) => {
@@ -44,29 +44,29 @@ export default function keyReducer (state = {}, action) {
       }
       return newState
 
-    case CREATE_KEY_REQUEST:
-    case SET_KEY_REQUEST:
+    case CREATE_KEY_SUCCESS:
+    case SET_KEY_SUCCESS:
       return updateState(state, action.request)
 
-    case COPY_KEY_REQUEST: {
+    case COPY_KEY_SUCCESS: {
       const { id, from, to } = action && action.request
       const fromData = state[id] && state[id][from]
       return updateState(state, { ...fromData, id, path: to })
     }
 
-    case SET_META_REQUEST: {
+    case SET_META_SUCCESS: {
       const { id, path, key, value } = action.request
       const { meta } = state[id] && state[id][path]
       return updateState(state, { id, path, meta: { ...meta, [key]: value } })
     }
 
-    case DELETE_META_REQUEST: {
+    case DELETE_META_SUCCESS: {
       const { id, path, key } = action.request
       const { meta } = state[id] && state[id][path]
       return updateState(state, { id, path, meta: { ...meta, [key]: undefined } })
     }
 
-    case DELETE_KEY_REQUEST: {
+    case DELETE_KEY_SUCCESS: {
       const { id, path } = action.request
       return {
         ...state,

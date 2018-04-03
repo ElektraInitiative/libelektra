@@ -19,7 +19,11 @@ const DebouncedTextField = debounce(TextField)
 export default class SimpleTextField extends Component {
   constructor (props) {
     super(props)
-    this.state = { value: false, error: false }
+    this.state = { value: props.value || false, error: false }
+  }
+
+  componentWillReceiveProps (nextProps) {
+    this.setState({ value: nextProps.value || false })
   }
 
   render () {

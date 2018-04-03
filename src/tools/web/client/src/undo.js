@@ -8,11 +8,19 @@
 
 import { createUndoMiddleware } from 'redux-undo-redo-middleware'
 
-import { setKey, deleteKey, createKey } from './actions'
+import {
+  setKey, deleteKey, createKey,
+  setMetaKey, deleteMetaKey, createMetaKey,
+} from './actions'
 
 const storePreviousValue = (state, { id, path }) => ({
   previousValue: state.kdb && state.kdb[id] && state.kdb[id][path] &&
                  state.kdb[id][path].value,
+})
+
+const storePreviousMeta = (state, { id, path, key }) => ({
+  previousMeta: state.kdb && state.kdb[id] && state.kdb[id][path] &&
+                state.kdb[id][path].meta && state.kdb[id][path].meta[key],
 })
 
 const undoMiddleware = createUndoMiddleware({
@@ -21,17 +29,40 @@ const undoMiddleware = createUndoMiddleware({
       action: ({ id, path }, { previousValue }) => setKey(id, path, previousValue),
       createArgs: storePreviousValue,
     },
+    'RESET_KEY_SUCCESS': { // when re-doing set actions, set back to original value
+      action: ({ id, path, value }) => setKey(id, path, value),
+    },
     'DELETE_KEY_SUCCESS': {
       action: ({ id, path }, { previousValue }) => createKey(id, path, previousValue),
       createArgs: storePreviousValue,
     },
     'CREATE_KEY_SUCCESS': ({ id, path }) => deleteKey(id, path),
+    'SET_META_SUCCESS': {
+      action: ({ id, path, key }, { previousMeta }) =>
+        previousMeta
+          ? setMetaKey(id, path, key, previousMeta)
+          : deleteMetaKey(id, path, key), // there was no previous value -> delete
+      createArgs: storePreviousMeta,
+    },
+    'RESET_META_SUCCESS': { // when re-doing meta set actions, set back to original value
+      action: ({ id, path, key, value }) => setMetaKey(id, path, key, value),
+    },
+    'DELETE_META_SUCCESS': {
+      action: ({ id, path, key }, { previousMeta }) => createMetaKey(id, path, key, previousMeta),
+      createArgs: storePreviousMeta,
+    },
+    'CREATE_META_SUCCESS': ({ id, path, key }) => deleteMetaKey(id, path, key),
     // TODO: moveKey
     // TODO: copyKey
-    // TODO: setMetaKey
-    // TODO: deleteMetaKey
-    // TODO: createMetaKey
   },
+  originalActions: {
+    'SET_KEY_SUCCESS': 'RESET_KEY_SUCCESS',
+    'DELETE_KEY_SUCCESS': 'CREATE_KEY_SUCCESS',
+    'CREATE_KEY_SUCCESS': 'DELETE_KEY_SUCCESS',
+    'SET_META_SUCCESS': 'RESET_META_SUCCESS',
+    'DELETE_META_SUCCESS': 'CREATE_META_SUCCESS',
+    'CREATE_META_SUCCESS': 'DELETE_META_SUCCESS',
+  }
 })
 
 export default undoMiddleware

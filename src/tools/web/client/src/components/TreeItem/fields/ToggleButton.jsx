@@ -18,6 +18,10 @@ export default class ToggleButton extends React.Component {
     this.state = { checked: props.value === '1' }
   }
 
+  componentWillReceiveProps (nextProps) {
+    this.setState({ checked: nextProps.value === '1' })
+  }
+
   handleCheck = (evt, checked) => {
     const { onChange } = this.props
     this.setState({ checked })

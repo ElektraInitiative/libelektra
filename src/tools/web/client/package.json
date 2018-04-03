@@ -25,7 +25,7 @@
     "redux": "^3.7.2",
     "redux-logger": "^3.0.6",
     "redux-promises": "^1.0.0",
-    "redux-undo-redo-middleware": "^1.1.6"
+    "redux-undo-redo-middleware": "^1.2.0"
   },
   "scripts": {
     "postinstall": "npm install --prefix ../webd",
