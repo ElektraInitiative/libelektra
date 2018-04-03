@@ -87,13 +87,19 @@ export default class TreeView extends React.Component {
     const { kdb, instanceId, instanceVisibility } = this.props
     const data = kdb && kdb[item.path]
 
-    if (data && data.meta && data.meta['visibility']) {
-      const lvl = visibility(data.meta['visibility'])
+    const isRootPath = !item.path.includes('/')
+
+    if (!isRootPath) { // namespaces are always shown
+      const lvl = (data && data.meta && data.meta['visibility'])
+        ? visibility(data.meta['visibility'])
+        : visibility('user') // default visibility is user
+
       if (lvl < visibility(instanceVisibility)) {
         // hide this item
         return false
       }
     }
+
     return (
         <TreeItem
           data={data}

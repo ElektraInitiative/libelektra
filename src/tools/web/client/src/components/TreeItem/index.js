@@ -232,6 +232,7 @@ export default class TreeItem extends Component {
             <AddDialog
               item={item}
               arrayKeyLength={arrayKeyLength}
+              instanceVisibility={instanceVisibility}
               open={this.state.dialogs.add}
               onAdd={this.handleAdd}
               onClose={this.handleClose('add')}

@@ -15,15 +15,17 @@ import SelectField from 'material-ui/SelectField'
 import MenuItem from 'material-ui/MenuItem'
 import ActionBuild from 'material-ui/svg-icons/action/build'
 
+import { VISIBILITY_LEVELS } from '../../../utils'
 import { KEY_TYPES } from './utils'
 
 export default class AddDialog extends Component {
-  constructor (...args) {
-    super(...args)
+  constructor (props, ...args) {
+    super(props, ...args)
     this.state = {
       name: '',
       value: '',
       type: 'any',
+      visibility: props.instanceVisibility || 'user',
       error: false,
     }
   }
@@ -42,7 +44,11 @@ export default class AddDialog extends Component {
 
   handleClose = () => {
     const { onClose } = this.props
-    this.setState({ name: '', value: '', type: 'any', error: false })
+    this.setState({
+      name: '', value: '', type: 'any',
+      visibility: props.instanceVisibility || 'user',
+      error: false,
+    })
     onClose()
   }
 
@@ -54,13 +60,16 @@ export default class AddDialog extends Component {
     if (type !== 'any') {
       setMetaByPath(path + '/' + name, 'check/type', type)
     }
+    if (visibility !== 'user') {
+      setMetaByPath(path + '/' + name, 'visibility', visibility)
+    }
     this.handleClose()
   }
 
   render () {
     const { item, open, renderField, arrayKeyLength } = this.props
     const { path } = item
-    const { name, value, type, error } = this.state
+    const { name, value, type, error, visibility } = this.state
 
     const nameEmpty = !name || name.trim().length <= 0
 
@@ -116,6 +125,18 @@ export default class AddDialog extends Component {
                       <MenuItem key={type} value={type} primaryText={name} />
                     )}
                 </SelectField>
+            </div>
+            <div style={{ display: 'block', marginTop: 8 }}>
+              <SelectField
+                floatingLabelText="visibility"
+                floatingLabelFixed={true}
+                onChange={(e, _, val) => this.setState({ visibility: val })}
+                value={visibility}
+              >
+                  {Object.keys(VISIBILITY_LEVELS).map(lvl =>
+                    <MenuItem key={lvl} value={lvl} primaryText={lvl} />
+                  )}
+              </SelectField>
             </div>
             <div style={{ display: 'block', marginTop: 8 }}>
                 {type !== 'enum' && renderField({
