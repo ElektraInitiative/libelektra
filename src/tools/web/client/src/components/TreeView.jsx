@@ -185,7 +185,7 @@ export default class TreeView extends React.Component {
     const tree = this
     const strategies = {
       click: [ function unfoldOnSelectionByPath (item) {
-        if (!this.isSelected(item)) {
+        if (!this.isSelected(item) && item.children && item.children.length > 0) {
           const newUnfolded = unfolded.filter(p => p !== item.path)
           if (newUnfolded.length === unfolded.length) {
             newUnfolded.push(item.path)
