@@ -24,7 +24,6 @@ export const validateRange = (rangeStr, num) => {
     if (res) return res
     const [ , first, second ] = range.match(RANGE_REGEX)
     const [ min, max ] = getMinMax(Number(first), Number(second))
-    console.log('valida!!!', num, min, max)
     if ((num >= min) && (num <= max)) {
       return true
     }
