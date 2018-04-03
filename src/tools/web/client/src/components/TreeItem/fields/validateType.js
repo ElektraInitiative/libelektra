@@ -79,17 +79,17 @@ const validateType = (metadata, value) => {
         return validationError
       }
     }
-  }
+  } else {
+    const validationErrorMessage = metadata['check/validation/message']
 
-  const validationErrorMessage = metadata['check/validation/message']
-
-  const validationRegex = metadata.hasOwnProperty('check/validation')
-    ? new RegExp(metadata['check/validation'])
-    : false
-  if (validationRegex) {
-    if (!validationRegex.test(value)) {
-      return validationErrorMessage ||
-        'validation failed for ' + metadata['check/validation']
+    const validationRegex = metadata.hasOwnProperty('check/validation')
+      ? new RegExp(metadata['check/validation'])
+      : false
+    if (validationRegex) {
+      if (!validationRegex.test(value)) {
+        return validationErrorMessage ||
+          'validation failed for ' + metadata['check/validation']
+      }
     }
   }
 
