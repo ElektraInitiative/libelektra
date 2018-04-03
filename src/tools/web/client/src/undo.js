@@ -9,7 +9,7 @@
 import { createUndoMiddleware } from 'redux-undo-redo-middleware'
 
 import {
-  setKey, deleteKey, createKey,
+  setKey, deleteKey, createKey, copyKey, moveKey,
   setMetaKey, deleteMetaKey, createMetaKey,
 } from './actions'
 
@@ -33,7 +33,10 @@ const undoMiddleware = createUndoMiddleware({
       action: ({ id, path, value }) => setKey(id, path, value),
     },
     'DELETE_KEY_SUCCESS': {
-      action: ({ id, path }, { previousValue }) => createKey(id, path, previousValue),
+      action: ({ id, path }, { previousValue, from, to }) =>
+        (from && to) // we are reverting a copy action
+          ? copyKey(id, from, to)
+          : createKey(id, path, previousValue),
       createArgs: storePreviousValue,
     },
     'CREATE_KEY_SUCCESS': ({ id, path }) => deleteKey(id, path),
@@ -52,8 +55,16 @@ const undoMiddleware = createUndoMiddleware({
       createArgs: storePreviousMeta,
     },
     'CREATE_META_SUCCESS': ({ id, path, key }) => deleteMetaKey(id, path, key),
-    // TODO: moveKey
-    // TODO: copyKey
+    'COPY_KEY_SUCCESS': {
+      action: ({ id, from, to }) => deleteKey(id, to),
+      createArgs: (state, { from, to }) => ({ from, to }),
+    },
+    'MOVE_KEY_SUCCESS': {
+      action: ({ id, from, to }) => moveKey(id, to, from),
+    },
+    'RESET_MOVE_KEY_SUCCESS': {
+      action: ({ id, from, to }) => moveKey(id, from, to),
+    }
   },
   originalActions: {
     'SET_KEY_SUCCESS': 'RESET_KEY_SUCCESS',
@@ -62,6 +73,8 @@ const undoMiddleware = createUndoMiddleware({
     'SET_META_SUCCESS': 'RESET_META_SUCCESS',
     'DELETE_META_SUCCESS': 'CREATE_META_SUCCESS',
     'CREATE_META_SUCCESS': 'DELETE_META_SUCCESS',
+    'COPY_KEY_SUCCESS': 'DELETE_KEY_SUCCESS',
+    'MOVE_KEY_SUCCESS': 'RESET_MOVE_KEY_SUCCESS',
   }
 })
 
