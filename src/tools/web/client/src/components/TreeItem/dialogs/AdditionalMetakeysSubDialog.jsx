@@ -115,7 +115,7 @@ export default class AdditionalMetakeysSubDialog extends Component {
     const renderedItems = (items && Array.isArray(items) && items.length > 0)
       ? this.renderItems()
       : [
-        <div style={{ fontSize: '1.1em', color: 'rgba(0, 0, 0, 0.4)', marginTop: 16 }}>
+        <div key={'no-data'} style={{ fontSize: '1.1em', color: 'rgba(0, 0, 0, 0.4)', marginTop: 16 }}>
           No additional metadata defined yet.
         </div>
       ]

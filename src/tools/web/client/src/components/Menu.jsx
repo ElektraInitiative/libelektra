@@ -86,7 +86,7 @@ export default class Menu extends React.Component {
     const mainActions = (
         <ToolbarGroup>
             <RaisedButton
-              tabIndex="0"
+              tabIndex={0}
               icon={<ContentAddIcon />}
               label="instance"
               primary={true}
@@ -99,14 +99,14 @@ export default class Menu extends React.Component {
     const subpageActions = (
         <ToolbarGroup>
             <RaisedButton
-              tabIndex="0"
+              tabIndex={0}
               icon={<ContentUndoIcon />}
               label="undo"
               onTouchTap={onUndo}
               disabled={!canUndo}
             />
             <RaisedButton
-              tabIndex="0"
+              tabIndex={0}
               icon={<ContentRedoIcon />}
               label="redo"
               onTouchTap={onRedo}

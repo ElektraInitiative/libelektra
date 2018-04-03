@@ -248,7 +248,7 @@ export default class SettingsDialog extends Component {
             <div style={{ display: 'flex', paddingTop: 12 }}>
               <div style={{ flex: 1 }}>
                   <Checkbox
-                    checked={isBinary}
+                    checked={!!isBinary}
                     onCheck={this.handleBinary}
                     label="binary"
                     disabled={this.getMeta('restrict/null', '0') === '1' || this.getMeta('restrict/binary', '0') === '1'}
@@ -257,10 +257,10 @@ export default class SettingsDialog extends Component {
               </div>
               <div style={{ flex: 1 }}>
                   <Checkbox
-                    checked={fromElektraBool(this.getMeta('restrict/null', false))}
+                    checked={!!fromElektraBool(this.getMeta('restrict/null', false))}
                     onCheck={(e, val) => this.handleEdit('restrict/null')(toElektraBool(val))}
                     label="restrict/null"
-                    disabled={isBinary}
+                    disabled={!!isBinary}
                   />
                   <SavedIcon saved={this.getSaved('restrict/null')} />
               </div>
@@ -269,7 +269,7 @@ export default class SettingsDialog extends Component {
                     checked={fromElektraBool(this.getMeta('restrict/binary', false))}
                     onCheck={(e, val) => this.handleEdit('restrict/binary')(toElektraBool(val))}
                     label="restrict/binary"
-                    disabled={isBinary}
+                    disabled={!!isBinary}
                   />
                   <SavedIcon saved={this.getSaved('restrict/binary')} />
               </div>
