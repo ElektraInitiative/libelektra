@@ -119,12 +119,12 @@ dynamic fields rendered via key metadata.
 [API blueprints](https://apiblueprint.org/) are available for both APIs:
 
  * [elektrad](https://master.libelektra.org/doc/api_blueprints/elektrad.apib), documentation: http://docs.elektrad.apiary.io/
- * [clusterd](https://master.libelektra.org/doc/api_blueprints/clusterd.apib), documentation: http://docs.clusterd.apiary.io/
+ * [webd](https://master.libelektra.org/doc/api_blueprints/webd.apib), documentation: http://docs.elektrawebd.apiary.io/
 
 
 ## Auth
 
-Currently, clusterd does not support authentication. The best way to work around
+Currently, webd does not support authentication. The best way to work around
 this is to use a reverse proxy (e.g. [nginx reverse proxy](https://www.nginx.com/resources/admin-guide/reverse-proxy/)).
 
 Once you set up a reverse proxy on your web server, you can use it to
