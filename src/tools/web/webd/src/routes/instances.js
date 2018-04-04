@@ -64,12 +64,12 @@ export default function initInstanceRoutes (app) {
     )
     .put((req, res) =>
       updateInstance(req.params.id, req.body)
-        .then(() => res.status(204).send())
+        .then(output => successResponse(res, output))
         .catch(err => errorResponse(res, err))
     )
     .delete((req, res) =>
       deleteInstance(req.params.id)
-        .then(() => res.status(204).send())
+        .then(output => successResponse(res, output))
         .catch(err => errorResponse(res, err))
     )
 
@@ -112,13 +112,13 @@ export default function initInstanceRoutes (app) {
     .put((req, res) =>
       getInstance(req.params.id)
         .then(instance => remoteKdb.set(instance.host, req.params[0], req.body))
-        .then(() => res.status(204).send())
+        .then(output => successResponse(res, output))
         .catch(err => errorResponse(res, err))
     )
     .delete((req, res) =>
       getInstance(req.params.id)
         .then(instance => remoteKdb.rm(instance.host, req.params[0]))
-        .then(() => res.status(204).send())
+        .then(output => successResponse(res, output))
         .catch(err => errorResponse(res, err))
     )
 

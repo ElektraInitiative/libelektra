@@ -12,7 +12,7 @@ export const prettyprint = (obj) =>
 export const successResponse = (res, output) =>
   output
     ? res.json(output)
-    : res.status(404).send()
+    : res.send()
 
 export const errorResponse = (res, err) =>
-  res.status(400).send(prettyprint({ error: err }))
+  res.status(400).json({ error: err })

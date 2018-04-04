@@ -66,7 +66,7 @@ works like `kdb set`
 
             hello world
 
-+ Response 204
++ Response 200
 
 + Response 400 (application/json; charset=utf-8)
     + Attributes (Error)
@@ -75,12 +75,12 @@ works like `kdb set`
 
 delete a key (and all its subkeys) - works like `kdb rm -r`
 
-+ Request (text/plain)
++ Request
     + Parameters
         + path: `user/hello` (string) - path to the elektra config
 
-+ Response 204
-
++ Response 200
+   
 + Response 400 (application/json; charset=utf-8)
     + Attributes (Error)
 

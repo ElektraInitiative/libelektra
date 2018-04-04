@@ -35,12 +35,12 @@ export default function initRoutes (app) {
     )
     .put((req, res) =>
       kdb.set(req.params[0], req.body)
-        .then(() => res.status(204).send())
+        .then(output => successResponse(res, output))
         .catch(err => errorResponse(res, err))
     )
     .delete((req, res) =>
       kdb.rm(req.params[0])
-        .then(() => res.status(204).send())
+        .then(output => successResponse(res, output))
         .catch(err => errorResponse(res, err))
     )
 
