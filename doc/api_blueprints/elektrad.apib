@@ -15,109 +15,145 @@ The API version is increased whenever breaking changes
 The Elektra version is directly taken from the Elektra library,
 for further information and explanation see [doc/VERSION.md](https://github.com/ElektraInitiative/libelektra/blob/master/doc/VERSION.md).
 
-+ Response 200 (application/json)
++ Response 200 (application/json; charset=utf-8)
     + Attributes (object)
+        + api: 1 (number) - The version of the API itself
         + elektra (object) - Detailed version information about the used Elektra library
-            + version (string) - The currently used version in its complete format
-            + major (number) - The currently used major version
-            + minor (number) - The currently used minor version
-            + micro (number) - The currently used micro version
-        + api (number) - The version of the API itself
+            + version: 0.8.23 (string) - The currently used version in its complete format
+            + major: 0 (number) - The currently used major version
+            + minor: 8 (number) - The currently used minor version
+            + micro: 23 (number) - The currently used micro version
 
 
-## elektra key database [/kdb/{+path}{?apikey}]
+## elektra key database [/kdb/{+path}]
 
 access the elektra key database by specifying a `path`
 
-+ Parameters
-    + path: `user/hello` (string) - path to the elektra config
-    + apikey: `7b7947e6-adc5-4d23-b53c-783623f894f8` (string, required) - API key used to authenticate with `elektrad`
-
 ### get configuration [GET]
 
-+ Response 200 (application/json)
+this actually does `kdb get`, `kdb ls` and `kdb lsmeta`/`kdb getmeta` at once and is used to browse the kdb
+
++ Request
+    + Parameters
+        + path: `user/hello` (string) - path to the elektra config
+
++ Response 200 (application/json; charset=utf-8)
     + Attributes (object)
+        + exists: true (boolean, required) - `true` if the key exists in the kdb
+        + name: hello (string, required) - name of the requested key
+        + path: user/hello (string, required) - full path of the requested key
         + ls: user/hello, user/hello/world (array[string], required) - subkeys of the requested path, similar to `kdb ls`
-        + value: hello world (string, required)
-        + meta (object, required) - metadata of the requested path
+        + value: hello world (string) - value of the key. Note: a key can exist but not have a value!
+        + meta (object) - metadata of the requested path
 
-+ Response 400 (application/json)
-    + Attributes (Error)
-        + i18n (string)
-            A comprehensive list of possible errors:
-            - `APIKEY_MISSING` api key not specified
++ Request
+    + Parameters
+        + path: `user/doesnotexist` (string) - path to the elektra config
 
-+ Response 401 (application/json)
-    + Attributes (Error)
-        + i18n (string)
-            A comprehensive list of possible errors:
-            - `NEED_AUTHENTICATION` if no valid apikey has been supplied
++ Response 200 (application/json; charset=utf-8)
+    + Attributes (object)
+        + exists: false (boolean, required)
+        + name: doesnotexist (string, required)
+        + path: user/doesnotexist (string, required)
+        + ls: [] (array[string], required)
 
-+ Response 404 (application/json)
++ Response 400 (application/json; charset=utf-8)
     + Attributes (Error)
-        + i18n (string)
-            A comprehensive list of possible errors:
-            - `PATH_NOT_FOUND` if the requested path does not exist in the key database
 
 ### set configuration [PUT]
 
+works like `kdb set`
+
 + Request (text/plain)
+    + Parameters
+        + path: `user/hello` (string) - path to the elektra config
 
-        hello world
+    + Body
 
-+ Response 204
-
-+ Request (application/json)
-
-        "hello world"
+            hello world
 
 + Response 204
 
-+ Response 400 (application/json)
++ Response 400 (application/json; charset=utf-8)
     + Attributes (Error)
-        + i18n (string)
-            A comprehensive list of possible errors:
-            - `APIKEY_MISSING` api key not specified
-
-+ Response 401 (application/json)
-    + Attributes (Error)
-        + i18n (string)
-            A comprehensive list of possible errors:
-            - `NEED_AUTHENTICATION` if no valid apikey has been supplied
-
-+ Response 404 (application/json)
-    + Attributes (Error)
-        + i18n (string)
-            A comprehensive list of possible errors:
-            - `PATH_NOT_FOUND` if the requested path does not exist in the key database
-
-+ Response 406 (application/json)
-    + Attributes (Error)
-        + i18n (string)
-            A comprehensive list of possible errors:
-            - `REQUEST_UNSUPPORTED_CONTENT_TYPE` if the submitted Content-Type is not `application/json` or `text/plain`
 
 ### delete configuration [DELETE]
 
+delete a key (and all its subkeys) - works like `kdb rm -r`
+
++ Request (text/plain)
+    + Parameters
+        + path: `user/hello` (string) - path to the elektra config
+
 + Response 204
 
-+ Response 400 (application/json)
++ Response 400 (application/json; charset=utf-8)
     + Attributes (Error)
-        + i18n (string)
-            A comprehensive list of possible errors:
-            - `APIKEY_MISSING` api key not specified
 
-+ Response 401 (application/json)
-    + Attributes (Error)
-        + i18n (string)
-            A comprehensive list of possible errors:
-            - `NEED_AUTHENTICATION` if no valid apikey has been supplied
 
-+ Response 404 (application/json)
+## Metakeys [/kdbMeta/{+path}]
+
+### create metakey [POST]
+
++ Attributes (Metakey)
+
++ Request (application/json)
+    + Parameters
+        + path: `user/hello` (string) - path to the elektra config
+
++ Response 204
+
++ Response 400 (application/json; charset=utf-8)
     + Attributes (Error)
-        + i18n (string)
-            A comprehensive list of possible errors:
-            - `PATH_NOT_FOUND` if the requested path does not exist in the key database
+
+### delete metakey [DELETE]
+
++ Attributes (Metakey)
+
++ Request (application/json)
+    + Parameters
+        + path: `user/hello` (string) - path to the elektra config
+
++ Response 204
+
++ Response 400 (application/json; charset=utf-8)
+    + Attributes (Error)
+
+
+## Move operation [POST /kdbMv/{+from}]
+
+move a key (and all its subkeys) to a new path - works like `kdb mv -r`
+
++ Request (text/plain)
+    + Parameters
+        + from: `user/hello` (string) - path to the elektra config
+
+    + Body
+
+            user/toPath
+
++ Response 204
+
++ Response 400 (application/json; charset=utf-8)
+    + Attributes (Error)
+
+
+## Copy operation [POST /kdbCp/{+from}]
+
+copy a key (and all its subkeys) to a new path - works like `kdb cp -r`
+
++ Request (text/plain)
+    + Parameters
+        + from: `user/hello` (string) - path to the elektra config
+
+    + Body
+
+            user/toPath
+
++ Response 204
+
++ Response 400 (application/json; charset=utf-8)
+    + Attributes (Error)
 
 
 
@@ -129,6 +165,9 @@ access the elektra key database by specifying a `path`
 + meta (object, required) - metadata of the requested path
 
 ## Error (object)
-+ status (string) - textual description of the HTTP status
++ name (string) - description of the error, e.g. KDBError
 + message (string) - detailed error information, e.g. hint about malformed request
-+ i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+
+## Metakey (object)
++ key: metaName (string, required)
++ value: meta value (string, required)
