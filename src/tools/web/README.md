@@ -2,6 +2,10 @@
 
 _an API and web user interface to remotely manage Elektra instances_
 
+The configuration view of elektra-web is similar to the tree view of the
+[qt-gui](https://git.libelektra.org/tree/master/src/tools/qt-gui), but with
+dynamic fields rendered via key metadata.
+
 
 ## Dependencies
 
@@ -101,25 +105,14 @@ Elektra web consists of multiple components:
 ![https://cdn.rawgit.com/ElektraInitiative/libelektra/master/src/tools/web/doc/network_structure.png](https://cdn.rawgit.com/ElektraInitiative/libelektra/master/src/tools/web/doc/network_structure.png)
 
 
-## GUI
-
-The Web UI allows the user to add multiple instances to be configured.
-
-The configuration view of elektra web is similar to the tree view of the
-[qt-gui](https://git.libelektra.org/tree/master/src/tools/qt-gui), but with
-dynamic fields rendered via key metadata.
-
-![https://cdn.rawgit.com/ElektraInitiative/libelektra/master/src/tools/web/doc/ui_structure.png](https://cdn.rawgit.com/ElektraInitiative/libelektra/master/src/tools/web/doc/ui_structure.png)
-
-
 ## API
 
 ![https://cdn.rawgit.com/ElektraInitiative/libelektra/master/src/tools/web/doc/daemon_structure.png](https://cdn.rawgit.com/ElektraInitiative/libelektra/master/src/tools/web/doc/daemon_structure.png)
 
 [API blueprints](https://apiblueprint.org/) are available for both APIs:
 
- * [elektrad](https://master.libelektra.org/doc/api_blueprints/elektrad.apib), documentation: http://docs.elektrad.apiary.io/
- * [webd](https://master.libelektra.org/doc/api_blueprints/webd.apib), documentation: http://docs.elektrawebd.apiary.io/
+ * [elektrad](https://master.libelektra.org/doc/api_blueprints/elektrad.apib), documentation: https://elektrad.docs.apiary.io/
+ * [webd](https://master.libelektra.org/doc/api_blueprints/webd.apib), documentation: https://elektrawebd.docs.apiary.io/
 
 
 ## Auth

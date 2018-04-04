@@ -2,8 +2,7 @@
 
 The instance management server for elektra-web, built using
 [express](https://expressjs.com/). It accesses the API of multiple
-[`elektrad`](../elektrad/) instances and provides an API to manage single
-instances.
+[`elektrad`](../elektrad/) instances and provides an API to manage instances.
 
 
 ## Installation
@@ -42,5 +41,5 @@ mode, start the client via `npm run start:dev`, it will also start `webd`.
 
 ## API
 
- - API documentation: http://docs.webd.apiary.io/
+ - API documentation: https://elektrawebd.docs.apiary.io/
  - API blueprint: [webd.apib](https://master.libelektra.org/doc/api_blueprints/webd.apib)
