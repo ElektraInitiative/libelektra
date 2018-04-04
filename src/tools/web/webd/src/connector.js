@@ -36,7 +36,6 @@ const set = (host, path, value) =>
       body: value,
     }
   )
-    .then(res => res.json())
 
 const rm = (host, path) =>
   fetch(`${host}/kdb/${encodePath(path)}`, { method: 'DELETE' })

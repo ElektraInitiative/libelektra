@@ -38,13 +38,7 @@ this actually does `kdb get`, `kdb ls` and `kdb lsmeta`/`kdb getmeta` at once an
         + path: `user/hello` (string) - path to the elektra config
 
 + Response 200 (application/json; charset=utf-8)
-    + Attributes (object)
-        + exists: true (boolean, required) - `true` if the key exists in the kdb
-        + name: hello (string, required) - name of the requested key
-        + path: user/hello (string, required) - full path of the requested key
-        + ls: user/hello, user/hello/world (array[string], required) - subkeys of the requested path, similar to `kdb ls`
-        + value: hello world (string) - value of the key. Note: a key can exist but not have a value!
-        + meta (object) - metadata of the requested path
+    + Attributes (KDBResponse)
 
 + Request
     + Parameters
@@ -91,7 +85,7 @@ delete a key (and all its subkeys) - works like `kdb rm -r`
     + Attributes (Error)
 
 
-## Metakeys [/kdbMeta/{+path}]
+## metakeys [/kdbMeta/{+path}]
 
 ### create metakey [POST]
 
@@ -160,9 +154,12 @@ copy a key (and all its subkeys) to a new path - works like `kdb cp -r`
 # Data Structures
 
 ## KDBResponse (object)
++ exists: true (boolean, required) - `true` if the key exists in the kdb
++ name: hello (string, required) - name of the requested key
++ path: user/hello (string, required) - full path of the requested key
 + ls: user/hello, user/hello/world (array[string], required) - subkeys of the requested path, similar to `kdb ls`
-+ value: hello world (string, required)
-+ meta (object, required) - metadata of the requested path
++ value: hello world (string) - value of the key. Note: a key can exist but not have a value!
++ meta (object) - metadata of the requested path
 
 ## Error (object)
 + name (string) - description of the error, e.g. KDBError

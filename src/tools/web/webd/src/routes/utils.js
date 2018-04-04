@@ -19,7 +19,7 @@ export const prettyprint = (obj) =>
 
 export const successResponse = (res, output) =>
   output
-    ? res.type('application/json').send(prettyprint(output))
+    ? res.json(output)
     : res.status(404).send() // no output -> 404
 
 export const errorResponse = (res, err) => {

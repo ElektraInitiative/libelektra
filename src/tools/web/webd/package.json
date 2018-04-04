@@ -17,7 +17,7 @@
     "start:prod": "cross-env NODE_ENV=production DEBUG=webd:*,-*debug,-*log node build/",
     "start:prod:verbose": "cross-env NODE_ENV=production DEBUG=webd:* node build/",
     "start:dev": "cross-env NODE_ENV=development DEBUG=webd:* babel-watch src/",
-    "test": "dredd ../../../../doc/api_blueprints/elektrad.apib http://localhost:33334"
+    "test": "dredd ../../../../doc/api_blueprints/webd.apib http://localhost:33334 --hookfiles=./testHooks.js"
   },
   "dependencies": {
     "body-parser": "^1.18.2",
