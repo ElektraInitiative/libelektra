@@ -16,7 +16,8 @@
     "build": "cross-env NODE_ENV=production babel -d build/ src/",
     "start:prod": "cross-env NODE_ENV=production DEBUG=webd:*,-*debug,-*log node build/",
     "start:prod:verbose": "cross-env NODE_ENV=production DEBUG=webd:* node build/",
-    "start:dev": "cross-env NODE_ENV=development DEBUG=webd:* babel-watch src/"
+    "start:dev": "cross-env NODE_ENV=development DEBUG=webd:* babel-watch src/",
+    "test": "dredd ../../../../doc/api_blueprints/elektrad.apib http://localhost:33334"
   },
   "dependencies": {
     "body-parser": "^1.18.2",
@@ -29,15 +30,16 @@
     "uuid": "^3.2.1"
   },
   "devDependencies": {
+    "babel-cli": "^6.26.0",
     "babel-core": "^6.26.0",
+    "babel-eslint": "^8.0.2",
     "babel-loader": "^7.1.2",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
     "babel-register": "^6.26.0",
     "babel-runtime": "^6.26.0",
-    "babel-cli": "^6.26.0",
-    "babel-eslint": "^8.0.2",
-    "babel-preset-env": "^1.6.1",
     "babel-watch": "^2.0.7",
+    "dredd": "^5.1.5",
     "webpack": "^3.11.0"
   }
 }

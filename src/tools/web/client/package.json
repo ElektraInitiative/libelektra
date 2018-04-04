@@ -15,7 +15,6 @@
     "@bosket/tools": "^0.4.2",
     "ajv": "^6.4.0",
     "bosket-react": "^0.4.6",
-    "concurrently": "^3.5.1",
     "material-ui": "^0.20.0",
     "react": "^16.1.1",
     "react-copy-to-clipboard": "^5.0.1",
@@ -39,6 +38,7 @@
     "build": "react-scripts build"
   },
   "devDependencies": {
+    "concurrently": "^3.5.1",
     "webpack": "^3.11.0"
   }
 }
