@@ -18,6 +18,10 @@ export default class ToggleButton extends React.Component {
     this.state = { checked: props.value === '1' }
   }
 
+  componentWillReceiveProps (nextProps) {
+    this.setState({ checked: nextProps.value === '1' })
+  }
+
   handleCheck = (evt, checked) => {
     const { onChange } = this.props
     this.setState({ checked })
@@ -28,12 +32,14 @@ export default class ToggleButton extends React.Component {
     const { id, meta, label } = this.props
     return (
         <Checkbox
+          className="value"
+          tabIndex="0"
           id={id}
           label={(meta && meta.description) || label}
           checked={this.state.checked}
           onCheck={this.handleCheck}
           style={{ display: 'inline-block', width: 'auto', position: 'relative', top: 6, marginTop: -11 }}
-          disabled={fromElektraBool(meta && meta.readonly)}
+          disabled={(meta && meta.hasOwnProperty('binary')) || fromElektraBool(meta && meta['restrict/write'])}
         />
     )
   }

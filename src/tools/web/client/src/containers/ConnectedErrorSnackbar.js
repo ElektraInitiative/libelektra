@@ -15,7 +15,12 @@ import ErrorSnackbar from '../components/ErrorSnackbar.jsx'
 import { dismissError } from '../actions'
 
 const mapStateToProps = (state) => {
-  return { error: state.error }
+  const { error } = state
+  return {
+    error: (error && error.instanceError)
+      ? false // instance error is already handled by configuration page
+      : error,
+  }
 }
 
 const mapDispatchToProps = (dispatch) =>

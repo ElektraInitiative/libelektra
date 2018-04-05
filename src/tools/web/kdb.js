@@ -9,6 +9,8 @@
 const { exec } = require('child_process')
 const { readFileSync, unlink } = require('fs')
 
+const KDB_COMMAND = process.env.KDB || 'kdb'
+
 // constants
 const ERR_KEY_NOT_FOUND = 'Did not find key'
 
@@ -131,7 +133,9 @@ const escapeValues = (template, ...values) =>
 
     (source: @krit0n - https://github.com/ElektraInitiative/libelektra/pull/983#discussion_r83965059)
     */
-    let val = values[i - 1].replace(/((\\\\)*)(\\(")|("))/g, '$1\\$4$5')
+    let val = values[i - 1]
+      .replace(/`/g, '\\`') // escape backticks
+      .replace(/((\\\\)*)(\\(")|("))/g, '$1\\$4$5')
     if (typeof val === 'string') val = `"${val}"`
     return acc + val + part
   })
@@ -140,7 +144,7 @@ const ELEKTRA_VERSION_REGEX = /KDB_VERSION\:\ ([0-9]+\.[0-9]+\.[0-9]+)\n/
 
 // get Elektra version
 const version = () =>
-  safeExec(`kdb --version`)
+  safeExec(`${KDB_COMMAND} --version`)
     .then(output => { // parse result
       const matches = ELEKTRA_VERSION_REGEX.exec(output)
       if (!matches) {
@@ -161,45 +165,45 @@ const version = () =>
 
 // list available paths under a given `path`
 const ls = (path) =>
-  safeExec(escapeValues`kdb ls -0 ${path}`)
+  safeExec(escapeValues`${KDB_COMMAND} ls -0 ${path}`)
     .then(stdout => stdout && stdout.split('\0'))
 
 // get value from given `path`
 const get = (path) =>
-  safeExec(escapeValues`kdb get ${path}`)
+  safeExec(escapeValues`${KDB_COMMAND} get ${path}`)
 
 // set value at given `path`
 const set = (path, value) =>
-  safeExec(escapeValues`kdb set ${path} -- ${value}`)
+  safeExec(escapeValues`${KDB_COMMAND} set ${path} -- ${value}`)
 
 // move value from given `path` to `destination`
 const mv = (path, destination) =>
-  safeExec(escapeValues`kdb mv -r ${path} ${destination}`)
+  safeExec(escapeValues`${KDB_COMMAND} mv -r ${path} ${destination}`)
 
 // copy value from given `path` to `destination`
 const cp = (path, destination) =>
-  safeExec(escapeValues`kdb cp -r ${path} ${destination}`)
+  safeExec(escapeValues`${KDB_COMMAND} cp -r ${path} ${destination}`)
 
 // remove value at given `path`
 const rm = (path) =>
-  safeExec(escapeValues`kdb rm -r ${path}`)
+  safeExec(escapeValues`${KDB_COMMAND} rm -r ${path}`)
 
 // list meta values at given `path`
 const lsmeta = (path) =>
-  safeExec(escapeValues`kdb lsmeta -0 ${path}`)
+  safeExec(escapeValues`${KDB_COMMAND} lsmeta -0 ${path}`)
     .then(stdout => stdout && stdout.split('\0'))
 
 // get meta value from given `path`
 const getmeta = (path, meta) =>
-  safeExec(escapeValues`kdb getmeta ${path} ${meta}`)
+  safeExec(escapeValues`${KDB_COMMAND} getmeta ${path} ${meta}`)
 
 // set meta value at given `path`
 const setmeta = (path, meta, value) =>
-  safeExec(escapeValues`kdb setmeta ${path} ${meta} ${value}`)
+  safeExec(escapeValues`${KDB_COMMAND} setmeta ${path} ${meta} ${value}`)
 
 // remove meta value at given `path`
 const rmmeta = (path, meta) =>
-  safeExec(escapeValues`kdb rmmeta ${path} ${meta}`)
+  safeExec(escapeValues`${KDB_COMMAND} rmmeta ${path} ${meta}`)
 
 // get all metavalues for given `path`
 const getAllMeta = (path) =>
@@ -221,7 +225,7 @@ const getBufferFile = () => `/tmp/elektra-web.${Date.now()}.buffer.json`
 // export javascript object from given `path`
 const _export = (path) => {
   const buffer = getBufferFile()
-  return safeExec(escapeValues`kdb export ${path} yajl ${buffer}`)
+  return safeExec(escapeValues`${KDB_COMMAND} export ${path} yajl ${buffer}`)
     .then(() => {
       const data = JSON.parse(readFileSync(buffer))
       unlink(buffer, (err) =>
@@ -236,7 +240,7 @@ const _import = (path, value) =>
   safeExec(
     // we can trust JSON.stringify to escape values for us
     `echo '${JSON.stringify(value)}' | ` + // pipe json into kdb
-    escapeValues`kdb import ${path} yajl`
+    escapeValues`${KDB_COMMAND} import ${path} yajl`
   ).then(result => _export(path))
 
 // get value and available paths under a given `path`
@@ -266,5 +270,5 @@ const getAndLs = (path, { preload = 0 }) =>
 // export kdb functions as `kdb` object
 module.exports = {
   version, ls, get, getAndLs, set, mv, cp, rm, export: _export, import: _import,
-  getmeta, setmeta, rmmeta, lsmeta, getAllMeta,
+  getmeta, setmeta, rmmeta, lsmeta, getAllMeta, KDB_COMMAND,
 }

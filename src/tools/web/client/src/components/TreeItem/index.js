@@ -13,8 +13,11 @@ import ActionBuild from 'material-ui/svg-icons/action/build'
 import ContentAdd from 'material-ui/svg-icons/content/add'
 import ContentCopy from 'material-ui/svg-icons/content/content-copy'
 import ContentEdit from 'material-ui/svg-icons/editor/mode-edit'
+import ContentPaste from 'material-ui/svg-icons/content/content-paste'
+import { CopyToClipboard } from 'react-copy-to-clipboard'
 
 import ActionButton from './ActionButton.jsx'
+import ArrayIcon from './ArrayIcon.jsx'
 import SavedIcon from './SavedIcon.jsx'
 import SimpleTextField from './fields/SimpleTextField.jsx'
 import RadioButtons from './fields/RadioButtons.jsx'
@@ -25,6 +28,7 @@ import RemoveDialog from './dialogs/RemoveDialog.jsx'
 import DuplicateDialog from './dialogs/DuplicateDialog.jsx'
 import EditDialog from './dialogs/EditDialog.jsx'
 import { parseEnum } from './utils'
+import { ARRAY_KEY_REGEX, prettyPrintArrayIndex } from '../../utils'
 
 export default class TreeItem extends Component {
   constructor (...args) {
@@ -66,9 +70,9 @@ export default class TreeItem extends Component {
   }
 
   handleAdd = (path, addKeyName, addKeyValue) => {
-    const { instanceId, setKey, sendNotification } = this.props
+    const { instanceId, createKey, sendNotification } = this.props
     const fullPath = path + '/' + addKeyName
-    setKey(instanceId, fullPath, addKeyValue).then(() =>
+    createKey(instanceId, fullPath, addKeyValue).then(() =>
       sendNotification('successfully created key: ' + fullPath)
     )
   }
@@ -131,13 +135,16 @@ export default class TreeItem extends Component {
   }
 
   render () {
-    const { data, item, instanceId, instanceVisibility, setMetaKey, deleteMetaKey } = this.props
+    const {
+      data, item, instanceId, instanceVisibility,
+      setMetaKey, deleteMetaKey, sendNotification, refreshPath,
+    } = this.props
 
     const rootLevel = (item && item.path)
       ? !item.path.includes('/')
       : false
 
-    const titleStyle = { marginTop: -3 }
+    const titleStyle = { marginTop: -3, display: 'flex', alignItems: 'center' }
 
     const meta = data && data.meta
     const isCheckbox = meta && meta['check/type'] && meta['check/type'] === 'boolean'
@@ -145,24 +152,66 @@ export default class TreeItem extends Component {
      // we return no value property if the key doesn't exist, otherwise we return an *empty* value
     const keyExists = rootLevel || (data && data.exists)
 
+    const arrayKeyLength = (item && Array.isArray(item.children))
+      ? item.children.reduce((res, i) => {
+          if (res === false) return false
+          if (!i.name.match(ARRAY_KEY_REGEX)) return false
+          return res + 1
+        }, 0)
+      : false
+
+    const renderedField = (
+      <div style={{ display: 'flex', alignItems: 'center' }}>
+        <div style={{ flex: 'initial' }}>
+          {this.renderValue(item.path, data || {})}
+        </div>
+        <div style={{ flex: 'initial' }}>
+          <SavedIcon saved={this.state.saved} />
+        </div>
+      </div>
+    )
+
+    let onClickHandler = undefined
+    if (meta && meta['restrict/write'] === '1') {
+      onClickHandler = () =>
+        alert('This key is set to read-only and cannot be edited.')
+    }
+    if (meta && meta.hasOwnProperty('binary')) {
+      onClickHandler = () =>
+        alert('Elektra Web currently does not support editing binary keys. ' +
+              'Configure metadata of this key to remove the binary flag.')
+    }
+
     return (
         <a style={{ display: 'flex', alignItems: 'center', opacity: keyExists ? 1 : 0.4 }}>
             {valueVisible
               ? (
                   <span style={{ display: 'flex', alignItems: 'center', height: 48 }}>
-                      <b style={titleStyle}>{item.name + ': '}</b>
+                      <b style={titleStyle}>{prettyPrintArrayIndex(item.name)}: </b>
                       <span
                         style={{ marginLeft: 6 }}
-                        onClick={(meta && meta.readonly === '1') ? (() => alert('This key is set to read-only and cannot be edited.')) : undefined}
+                        onClick={onClickHandler}
                       >
                         {this.renderValue(item.path, data)}
                       </span>
                   </span>
                 )
-              : <b style={titleStyle}>{item.name}</b>
+              : <b style={titleStyle}>
+                  <span style={{ flex: 'initial', marginTop: -2 }}>{prettyPrintArrayIndex(item.name)}</span>
+                  {arrayKeyLength &&
+                    <span style={{ flex: 'initial', marginLeft: 8 }}>
+                      <ArrayIcon />
+                    </span>
+                  }
+                </b>
             }
             <span className="actions">
                 <SavedIcon saved={this.state.saved} />
+                {valueVisible &&
+                  <CopyToClipboard text={(data && data.value) || ''} onCopy={() => sendNotification('Copied value of ' + item.path + ' to clipboard!')}>
+                    <ActionButton icon={<ContentPaste />} tooltip="copy value" />
+                  </CopyToClipboard>
+                }
                 <ActionButton icon={<ContentAdd />} onClick={this.handleOpen('add')} tooltip="create sub-key" />
                 {!rootLevel && !valueVisible &&
                   <ActionButton icon={<ContentEdit />} onClick={this.handleOpen('edit')} tooltip="edit value" />
@@ -173,7 +222,7 @@ export default class TreeItem extends Component {
                 {!rootLevel &&
                   <ActionButton icon={<ActionBuild />} onClick={this.handleOpen('settings')} size={13} tooltip="configure metadata" />
                 }
-                {!rootLevel &&
+                {!rootLevel && !(meta && meta['restrict/remove'] === '1') &&
                   <ActionButton icon={<ActionDelete />} onClick={this.handleOpen('remove')} tooltip="delete key" />
                 }
                 <i>
@@ -182,6 +231,8 @@ export default class TreeItem extends Component {
             </span>
             <AddDialog
               item={item}
+              arrayKeyLength={arrayKeyLength}
+              instanceVisibility={instanceVisibility}
               open={this.state.dialogs.add}
               onAdd={this.handleAdd}
               onClose={this.handleClose('add')}
@@ -191,7 +242,7 @@ export default class TreeItem extends Component {
               setMetaByPath={(path, key, value) => setMetaKey(instanceId, path, key, value)}
             />
             <EditDialog
-              field={this.renderValue(item.path, data || {})}
+              field={renderedField}
               item={item}
               value={data && data.value}
               open={this.state.dialogs.edit}
@@ -206,6 +257,7 @@ export default class TreeItem extends Component {
               pathExists={this.props.pathExists}
             />
             <SettingsDialog
+              field={renderedField}
               item={item}
               meta={data && data.meta}
               data={data && data.value}
@@ -213,7 +265,9 @@ export default class TreeItem extends Component {
               setMeta={(key, value) => setMetaKey(instanceId, item.path, key, value)}
               deleteMeta={key => deleteMetaKey(instanceId, item.path, key)}
               onClose={this.handleClose('settings')}
+              onEdit={this.handleEdit}
               instanceVisibility={instanceVisibility}
+              refreshKey={() => refreshPath(item.path)}
             />
             <RemoveDialog
               item={item}

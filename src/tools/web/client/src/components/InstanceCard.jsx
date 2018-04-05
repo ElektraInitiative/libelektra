@@ -172,7 +172,7 @@ export default class InstanceCard extends React.Component {
                         disabled={id === 'my'}
                       >
                           {Object.keys(VISIBILITY_LEVELS).map(lvl =>
-                            <MenuItem key={lvl} value={lvl} primaryText={lvl} />
+                            <MenuItem key={lvl} value={lvl} primaryText={'>= ' + lvl} />
                           )}
                       </SelectField>
                   </div>
@@ -182,7 +182,7 @@ export default class InstanceCard extends React.Component {
                     label="save"
                     primary={true}
                     onTouchTap={this.handleCreate}
-                    disabled={id === 'my' || nameEmpty || hostEmpty || hostError}
+                    disabled={!!(id === 'my' || nameEmpty || hostEmpty || hostError)}
                   />
                   <Link tabIndex="-1" to={'/instances/' + id}>
                       <FlatButton label="configure" />

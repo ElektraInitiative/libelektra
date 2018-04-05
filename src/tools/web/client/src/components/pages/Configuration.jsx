@@ -17,6 +17,7 @@ import NavigationRefresh from 'material-ui/svg-icons/navigation/refresh'
 import { Link } from 'react-router-dom'
 
 import TreeView from '../../containers/ConnectedTreeView'
+import InstanceError from '../InstanceError.jsx'
 
 const NAMESPACES = [ 'user', 'system', 'spec', 'dir' ]
 
@@ -46,10 +47,12 @@ const parseDataSet = (getKey, sendNotification, instanceId, tree, path) => {
       path: newPath,
       root: !path,
       children: (Array.isArray(children) && children.length > 0)
-        ? () => {
+        ? (notify = true) => {
           return new Promise(resolve => {
             getKey(instanceId, newPath, true)
-            sendNotification('finished loading \'' + newPath + '\' keyset')
+            if (notify) {
+              sendNotification('finished (re-)loading \'' + newPath + '\' keyset')
+            }
             resolve(children)
           })
         } : false,
@@ -104,12 +107,14 @@ export default class Configuration extends Component {
   }
 
   waitForData = () => {
+    const { sendNotification } = this.props
     const { data } = this.state
     const user = Array.isArray(data) && data.find(d => d.path === 'user')
-    if (!user) {
+    if (!user || !user.children) {
       this.timeout = setTimeout(this.waitForData, 100)
     } else {
       this.preload(data)
+        .then(() => sendNotification('configuration data loaded!'))
     }
   }
 
@@ -124,41 +129,45 @@ export default class Configuration extends Component {
   }
 
   refresh = () => {
-    const { data } = this.state
-    const { getKdb, match, sendNotification } = this.props
-    const { id } = match && match.params
-
-    sendNotification('refreshing configuration data...')
-    getKdb(id)
-      .then(() => this.preload(data))
-      .then(() => sendNotification('configuration data refreshed!'))
+    return window.location.reload()
   }
 
-  preload = async (tree, paths = []) => {
+  preload = async (tree, paths = [], levels = 1) => {
     if (!tree) return await Promise.resolve(tree)
     return await Promise.all(tree.map(async (item, i) => {
-      // do not preload system/ namespace
-      if (item.name === 'system') return item
-
       let { children } = item
 
       if (!children) return item
-      return this.updateData({
-        ...item,
-        children: typeof children === 'function'
-          ? await children() // resolve children if necessary
-          : children
-      }, [ ...paths, item.name ])
+
+      const childItems = typeof children === 'function'
+        ? await children(false) // resolve children if necessary
+        : children
+      const newPaths = [ ...paths, item.name ]
+
+      let promises = [
+        this.updateData({
+          ...item,
+          children: childItems
+        }, newPaths)
+      ]
+
+      if (levels > 0) {
+        promises.push(
+          this.preload(childItems, newPaths, levels - 1)
+        )
+      }
+
+      return Promise.all(promises)
     }))
   }
 
   render () {
-    const { instance, match } = this.props
+    const { instance, match, instanceError } = this.props
     const { data } = this.state
 
     if (!instance) {
       const title = (
-          <h1><b>404</b> instance not found</h1>
+          <h1><b>Loading instance...</b> please wait</h1>
       )
       return (
           <Card>
@@ -198,20 +207,23 @@ export default class Configuration extends Component {
               }
             />
             <CardText>
-                {(data && Array.isArray(data) && data.length > 0)
-                  ? <TreeView
-                      instanceId={id}
-                      data={data}
-                      instanceVisibility={visibility}
-                    />
-                  : <div style={{ fontSize: '1.1em', color: 'rgba(0, 0, 0, 0.4)' }}>
-                        Loading configuration data...
-                    </div>
+                {instanceError
+                  ? <InstanceError instance={instance} error={instanceError} refresh={this.refresh} />
+                  : (data && Array.isArray(data) && data.length > 0)
+                    ? <TreeView
+                        instance={instance}
+                        instanceId={id}
+                        data={data}
+                        instanceVisibility={visibility}
+                      />
+                    : <div style={{ fontSize: '1.1em', color: 'rgba(0, 0, 0, 0.4)' }}>
+                          Loading configuration data...
+                      </div>
                 }
             </CardText>
             {(id !== 'my') &&
               <CardActions>
-                  <Link to="/" style={{ textDecoration: 'none' }}>
+                  <Link tabIndex="0" to="/" style={{ textDecoration: 'none' }}>
                       <FlatButton primary label="done" />
                   </Link>
               </CardActions>

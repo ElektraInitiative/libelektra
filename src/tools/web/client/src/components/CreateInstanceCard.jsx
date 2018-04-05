@@ -146,7 +146,7 @@ export default class CreateInstanceCard extends React.Component {
                         value={visibility}
                       >
                           {Object.keys(VISIBILITY_LEVELS).map(lvl =>
-                            <MenuItem key={lvl} value={lvl} primaryText={lvl} />
+                            <MenuItem key={lvl} value={lvl} primaryText={'>= ' + lvl} />
                           )}
                       </SelectField>
                   </div>

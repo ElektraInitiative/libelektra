@@ -1,14 +1,14 @@
 {
   "name": "@elektra-web/webd",
-  "version": "1.1.0",
+  "version": "1.3.0",
   "description": "server to control (multiple) elektrad instances",
   "keywords": [
     "elektra",
     "elektra-web",
     "webd"
   ],
-  "homepage": "https://git.libelektra.org/blob/master/src/tools/web/",
-  "license": "BSD",
+  "repository": "github:ElektraInitiative/libelektra",
+  "license": "SEE LICENSE IN ../../../../LICENSE.md",
   "main": "src/index.js",
   "scripts": {
     "start": "npm run build && npm run start:prod",
@@ -17,32 +17,32 @@
     "start:prod": "cross-env NODE_ENV=production DEBUG=webd:*,-*debug,-*log node build/",
     "start:prod:verbose": "cross-env NODE_ENV=production DEBUG=webd:* node build/",
     "start:dev": "cross-env NODE_ENV=development DEBUG=webd:* babel-watch src/",
-    "test": "npm run lint",
-    "lint": "eslint src"
+    "test": "dredd ../../../../doc/api_blueprints/webd.apib http://localhost:33334 --hookfiles=./testHooks.js --server \"npm run test:server\" --server-wait 20",
+    "test:server": "concurrently \"npm run test:server:elektrad\" \"npm run test:server:webd\"",
+    "test:server:elektrad": "cd ../elektrad && npm start",
+    "test:server:webd": "npm start"
   },
   "dependencies": {
-    "babel-core": "^6.26.0",
-    "babel-loader": "^7.1.2",
-    "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "babel-preset-es2015": "^6.24.1",
-    "babel-register": "^6.26.0",
-    "babel-runtime": "^6.26.0",
     "body-parser": "^1.18.2",
     "cors": "^2.8.4",
     "cross-env": "^5.1.1",
-    "debug": "^3.1.0",
+    "debug": "^2.6.9",
     "debug-dude": "^1.0.3",
     "express": "^4.16.2",
     "node-fetch": "^1.7.3",
-    "node-uuid": "^1.4.8"
+    "uuid": "^3.2.1"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.0",
     "babel-eslint": "^8.0.2",
+    "babel-loader": "^7.1.2",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-register": "^6.26.0",
+    "babel-runtime": "^6.26.0",
     "babel-watch": "^2.0.7",
-    "eslint": "^4.12.0",
-    "eslint-config-standard": "^10.2.1",
-    "eslint-plugin-promise": "^3.6.0",
-    "eslint-plugin-standard": "^3.0.1"
+    "concurrently": "^3.5.1",
+    "webpack": "^3.11.0"
   }
 }

@@ -1,6 +1,10 @@
 # elektra-web
 
-_an API and web user interface to remotely manage multiple Elektra instances_
+_an API and web user interface to remotely manage Elektra instances_
+
+The configuration view of elektra-web is similar to the tree view of the
+[qt-gui](https://git.libelektra.org/tree/master/src/tools/qt-gui), but with
+dynamic fields rendered via key metadata.
 
 
 ## Dependencies
@@ -11,15 +15,22 @@ Elektra-web requires:
  * A recent [node.js](https://nodejs.org/en/) installation (at least 6.x)
 
 
+## Building with elektra-web tool
+
+To build Elektra with the elektra-web tool:
+
+ * Install Node.js and dependencies for `yajl` plugin (see links above)
+ * Configure libelektra build with the elektra-web tool, e.g. `cmake .. -DTOOLS="kdb;web"`
+ * Build libelektra: `make`
+ * Install libelektra: `sudo make install`
+
+
 ## Getting started
 
- * Install dependencies (see above)
- * Configure elektra build with the elektra-web tool, e.g. `cmake .. -DTOOLS="web"`
- * Build elektra: `make`
- * Install elektra: `sudo make install`
  * Start an elektrad instance: `kdb run-elektrad`
  * Start the client: `kdb run-web`
  * You can now access the client on: [http://localhost:33334](http://localhost:33334)
+
 
 ## Running from source
 
@@ -28,14 +39,17 @@ Elektra-web requires:
  * Install and start an elektrad instance:
    * `cd elektrad`
    * `npm install`
-   * `npm start`
+   * `npm start` (replaces `kdb run-elektrad`)
 
  * Install and start the client (connects to the elektrad instance):
    * `cd client`
    * `npm install`
-   * `npm start`
+   * `npm start` (replaces `kdb run-web`)
 
  * You can now access the client on: [http://localhost:33334](http://localhost:33334)
+
+
+## Use-cases
 
 ### Running elektra-web on a single instance
 
@@ -48,11 +62,11 @@ If this configuration option is set, elektra-web will load the configuration
 page for that instance instead of the main overview page.
 
 If you want to host elektra-web with the client and elektrad on the same
-instance, after starting elektrad via `npm start`, you can run start the
+instance, after starting elektrad via `kdb run-elektrad`, you can run start the
 client as follows:
 
 ```
-INSTANCE="http://localhost:33333" npm start
+INSTANCE="http://localhost:33333" kdb run-web
 ```
 
 It is also possible to set visibility by prefixing the host with `VISIBILITY@`.
@@ -60,11 +74,24 @@ It is also possible to set visibility by prefixing the host with `VISIBILITY@`.
 For example (`advanced` visibility, `user` is default):
 
 ```
-INSTANCE="advanced@http://localhost:33333" npm start
+INSTANCE="advanced@http://localhost:33333" kdb run-web
 ```
 
 Now, when you open [http://localhost:33334](http://localhost:33334) in your
 browser, the configuration page for the instance will be opened immediately.
+
+### Using a different `kdb` executable
+
+It is possible to change the `kdb` executable that elektra-web uses by setting
+the `KDB` environment variable. Please ensure to use the same `KDB` executable
+when starting `elektrad` and the `client`.
+
+For example:
+
+```
+KDB="/usr/local/custom/bin/kdb" kdb run-elektrad
+KDB="/usr/local/custom/bin/kdb" kdb run-web
+```
 
 
 ## Overview
@@ -78,30 +105,19 @@ Elektra web consists of multiple components:
 ![https://cdn.rawgit.com/ElektraInitiative/libelektra/master/src/tools/web/doc/network_structure.png](https://cdn.rawgit.com/ElektraInitiative/libelektra/master/src/tools/web/doc/network_structure.png)
 
 
-## GUI
-
-The Web UI allows the user to add multiple instances to be configured.
-
-The configuration view of elektra web is similar to the tree view of the
-[qt-gui](https://git.libelektra.org/tree/master/src/tools/qt-gui), but with
-dynamic fields rendered via key metadata.
-
-![https://cdn.rawgit.com/ElektraInitiative/libelektra/master/src/tools/web/doc/ui_structure.png](https://cdn.rawgit.com/ElektraInitiative/libelektra/master/src/tools/web/doc/ui_structure.png)
-
-
 ## API
 
 ![https://cdn.rawgit.com/ElektraInitiative/libelektra/master/src/tools/web/doc/daemon_structure.png](https://cdn.rawgit.com/ElektraInitiative/libelektra/master/src/tools/web/doc/daemon_structure.png)
 
 [API blueprints](https://apiblueprint.org/) are available for both APIs:
 
- * [elektrad](https://master.libelektra.org/doc/api_blueprints/elektrad.apib), documentation: http://docs.elektrad.apiary.io/
- * [clusterd](https://master.libelektra.org/doc/api_blueprints/clusterd.apib), documentation: http://docs.clusterd.apiary.io/
+ * [elektrad](https://master.libelektra.org/doc/api_blueprints/elektrad.apib), documentation: https://elektrad.docs.apiary.io/
+ * [webd](https://master.libelektra.org/doc/api_blueprints/webd.apib), documentation: https://elektrawebd.docs.apiary.io/
 
 
 ## Auth
 
-Currently, clusterd does not support authentication. The best way to work around
+Currently, webd does not support authentication. The best way to work around
 this is to use a reverse proxy (e.g. [nginx reverse proxy](https://www.nginx.com/resources/admin-guide/reverse-proxy/)).
 
 Once you set up a reverse proxy on your web server, you can use it to

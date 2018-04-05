@@ -158,7 +158,7 @@ export default class NumberSubDialog extends Component {
   }
 
   render () {
-    const { value, saved, onChange } = this.props
+    const { value, saved, onChange, error } = this.props
 
     return (
         <div style={{ marginTop: 16 }}>
@@ -173,6 +173,11 @@ export default class NumberSubDialog extends Component {
                 <ContentAddIcon color="#00BCD4" />
               </IconButton>
               <SavedIcon saved={saved} />
+              {error &&
+                <span style={{ color: 'red', fontSize: '0.7em' }}>
+                  Could not save range: Current value does not match range.
+                </span>
+              }
             </h3>
             <Ranges ref={r => this.ranges = r} ranges={value} onChange={onChange} />
         </div>

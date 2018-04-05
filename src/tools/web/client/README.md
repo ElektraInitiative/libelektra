@@ -2,7 +2,7 @@
 
 The client for elektra-web, built using
 [React](https://facebook.github.io/react/) and [Redux](http://redux.js.org/). It
-accesses the API that [`clusterd`](../clusterd/) provides.
+accesses the API that [`webd`](../webd/) provides.
 
 
 ## Installation

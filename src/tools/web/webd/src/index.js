@@ -16,6 +16,7 @@ const { info, error } = makeLog()
 import { name as packageName, version as packageVersion } from '../package.json'
 import getVersions from './versions'
 import initApp from './app'
+import kdb from '../../kdb'
 
 import { getInstances } from './db'
 
@@ -27,8 +28,17 @@ getVersions()
       error(`are you sure you have libelektra and kdb installed?`)
       process.exit(1)
     } else {
-      getInstances() // make sure yajl is installed
+      const { major, minor, micro } = versions.elektra
+      const versionSupported = major >= 0 && minor >= 8 && micro >= 23
+      if (!versionSupported) {
+        error(`you are running an old libelektra version, which is not supported`)
+        error(`please upgrade to libelektra 0.8.23 or higher`)
+        process.exit(1)
+      }
+      return getInstances() // make sure yajl is installed
         .then(() => {
+          if (kdb.KDB_COMMAND === 'kdb') info(`|- using default kdb command`)
+          else info(`|- using kdb from: ${kdb.KDB_COMMAND}`)
           info(`|- versions: %o`, versions)
           initApp(port => info(`\`-> running on http://localhost:${port}`))
         })

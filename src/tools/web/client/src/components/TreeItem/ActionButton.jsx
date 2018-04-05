@@ -16,6 +16,7 @@ const ActionButton = ({ icon, tooltip, onClick, size = 14 }) => (
       iconStyle={{ width: 14, height: 14 }}
       onClick={onClick}
       tooltip={tooltip}
+      tabIndex={0}
     >
         {icon}
     </IconButton>

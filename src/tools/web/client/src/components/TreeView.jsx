@@ -10,7 +10,7 @@ import React from 'react'
 import { ExplorerView } from 'bosket-react'
 
 import TreeItem from '../containers/ConnectedTreeItem'
-import { visibility } from '../utils'
+import { visibility, ARRAY_KEY_REGEX } from '../utils'
 
 import '../css/treeview.css'
 
@@ -20,6 +20,22 @@ export default class TreeView extends React.Component {
   constructor (props, ...args) {
     super(props, ...args)
     this.state = { selection: [], unfolded: [] }
+  }
+
+  componentWillReceiveProps = (nextProps) => {
+    const { unfolded } = this.state
+    if (unfolded.length <= 0) {
+      const { instance } = nextProps
+      if (instance && instance.unfolded && instance.unfolded.length > 0) {
+        this.setState({ unfolded: instance.unfolded })
+      }
+    }
+  }
+
+  updateUnfolded = (unfolded) => {
+    const { instanceId, updateInstance } = this.props
+    this.setState({ unfolded })
+    updateInstance(instanceId, { unfolded })
   }
 
   refreshPath = (path) => {
@@ -60,13 +76,19 @@ export default class TreeView extends React.Component {
     const { kdb, instanceId, instanceVisibility } = this.props
     const data = kdb && kdb[item.path]
 
-    if (data && data.meta && data.meta['visibility']) {
-      const lvl = visibility(data.meta['visibility'])
+    const isRootPath = !item.path.includes('/')
+
+    if (!isRootPath) { // namespaces are always shown
+      const lvl = (data && data.meta && data.meta['visibility'])
+        ? visibility(data.meta['visibility'])
+        : visibility('user') // default visibility is user
+
       if (lvl < visibility(instanceVisibility)) {
         // hide this item
         return false
       }
     }
+
     return (
         <TreeItem
           data={data}
@@ -75,6 +97,7 @@ export default class TreeView extends React.Component {
           instanceId={instanceId}
           pathExists={(path) => kdb && kdb[path]}
           instanceVisibility={instanceVisibility}
+          refreshPath={this.refreshPath}
         />
     )
   }
@@ -102,29 +125,49 @@ export default class TreeView extends React.Component {
       const bI = NAMESPACES_ORDER.indexOf(b.name)
       return aI - bI
     }
-    return !a.children === !b.children
-      ? a.name.localeCompare(b.name)
-      : a.children ? -1 : 1
+    const matchA = a.name.match(ARRAY_KEY_REGEX)
+    const matchB = b.name.match(ARRAY_KEY_REGEX)
+    if (matchA && matchB) {
+      const [ , , indexA ] = matchA
+      const [ , , indexB ] = matchB
+      return Number(indexA) - Number(indexB) // compare array key index directly (ignore prefix)
+    } else if (!a.children === !b.children) {
+      return a.name.localeCompare(b.name)
+    }
+    return a.children ? -1 : 1 // list keys with subkeys first
   }
 
   createOpener () {
     const tree = this
-    const { unfolded } = this.state
     return class Opener extends React.Component {
       onClick = (event) => {
         const { onClick, item } = this.props
+        const { unfolded } = tree.state
         const newUnfolded = unfolded.filter(p => p !== item.path)
         if (newUnfolded.length === unfolded.length) {
           newUnfolded.push(item.path)
         }
-        tree.setState({ unfolded: newUnfolded })
+        tree.updateUnfolded(newUnfolded)
         onClick(event)
         event.stopPropagation()
       }
 
       render () {
         const { onClick, item, children, ...rest } = this.props
-        return <span {...rest} onClick={this.onClick}>{children}</span>
+        return (
+          <span
+            {...rest}
+            tabIndex="0"
+            onClick={this.onClick}
+            onKeyPress={e => {
+              if (e.key === 'Enter') {
+                this.onClick(e)
+              }
+            }}
+          >
+            {children}
+          </span>
+        )
       }
     }
   }
@@ -135,23 +178,37 @@ export default class TreeView extends React.Component {
     const tree = this
     const strategies = {
       click: [ function unfoldOnSelectionByPath (item) {
-        if (!this.isSelected(item)) {
+        if (!this.isSelected(item) && item.children) {
           const newUnfolded = unfolded.filter(p => p !== item.path)
           if (newUnfolded.length === unfolded.length) {
             newUnfolded.push(item.path)
-            tree.setState({ unfolded: newUnfolded })
+            tree.updateUnfolded(newUnfolded)
+            const newVal = this.state.get().unfolded.filter(i => i !== item)
+            if(newVal.length === this.state.get().unfolded.length)
+                newVal.push(item)
+            this.state.set({ unfolded: newVal })
           }
         }
         return this.inputs.get().onSelect(item, this.inputs.get().ancestors, this.inputs.get().model)
       } ],
       fold: [ function unfoldByPath (item) {
-        return !unfolded.find(p => p === item.path)
+        const isFolded = !unfolded.find(p => p === item.path)
+        if (!isFolded) {
+          const newVal = this.state.get().unfolded.filter(i => i !== item)
+          if(newVal.length === this.state.get().unfolded.length)
+              newVal.push(item)
+          this.state.set({ unfolded: newVal })
+        }
+        return isFolded
       } ]
     }
 
     return (
       <ExplorerView
-        dragndrop={{ drop: this.handleDrop }}
+        dragndrop={{
+          drop: this.handleDrop,
+          droppable: true, /* allow dropping to keys without children */
+        }}
         model={data}
         category="children"
         name="name"

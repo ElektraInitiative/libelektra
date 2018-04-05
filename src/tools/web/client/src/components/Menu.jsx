@@ -15,6 +15,8 @@ import { Toolbar, ToolbarGroup, ToolbarTitle } from 'material-ui/Toolbar'
 import RaisedButton from 'material-ui/RaisedButton'
 import CircularProgress from 'material-ui/CircularProgress'
 import ContentAddIcon from 'material-ui/svg-icons/content/add'
+import ContentUndoIcon from 'material-ui/svg-icons/content/undo'
+import ContentRedoIcon from 'material-ui/svg-icons/content/redo'
 import NavigationArrowBack from 'material-ui/svg-icons/navigation/arrow-back'
 import NavigationChevronRight from 'material-ui/svg-icons/navigation/chevron-right'
 import { Link } from 'react-router-dom'
@@ -56,8 +58,12 @@ export default class Menu extends React.Component {
   }
 
   render () {
-    const { loading, instances, subpage, status, singleInstanceMode } = this.props
-    const { addInstance } = this.props // action creators
+    const {
+      loading, instances, subpage, status, singleInstanceMode,
+      canUndo, canRedo, onUndo, onRedo,
+      addInstance,
+    } = this.props
+
     const title = (
         <ToolbarGroup>
           <div style={{ display: 'flex' }}>
@@ -77,9 +83,10 @@ export default class Menu extends React.Component {
         </ToolbarGroup>
     )
 
-    const actions = (
+    const mainActions = (
         <ToolbarGroup>
             <RaisedButton
+              tabIndex={0}
               icon={<ContentAddIcon />}
               label="instance"
               primary={true}
@@ -89,10 +96,32 @@ export default class Menu extends React.Component {
         </ToolbarGroup>
     )
 
+    const subpageActions = (
+        <ToolbarGroup>
+            <RaisedButton
+              tabIndex={0}
+              icon={<ContentUndoIcon />}
+              label="undo"
+              onTouchTap={onUndo}
+              disabled={!canUndo}
+            />
+            <RaisedButton
+              tabIndex={0}
+              icon={<ContentRedoIcon />}
+              label="redo"
+              onTouchTap={onRedo}
+              disabled={!canRedo}
+            />
+        </ToolbarGroup>
+    )
+
     return (
         <Toolbar>
           {title}
-          {!subpage && actions /* don't show action buttons on subpages */}
+          {subpage
+            ? subpageActions
+            : mainActions
+          }
         </Toolbar>
     )
   }

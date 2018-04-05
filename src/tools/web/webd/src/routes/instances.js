@@ -52,7 +52,7 @@ export default function initInstanceRoutes (app) {
     )
     .post((req, res) =>
       createInstance(req.body)
-        .then(output => successResponse(res, output))
+        .then(output => successResponse(res.status(201), output))
         .catch(err => errorResponse(res, err))
     )
 
@@ -75,7 +75,12 @@ export default function initInstanceRoutes (app) {
 
   app.get('/api/instances/:id/version', (req, res) =>
     getInstance(req.params.id)
-      .then(instance => remoteKdb.version(instance.host))
+      .then(instance => {
+        if (!instance || !instance.host) {
+          throw new APIError('Instance not found or invalid (no host)')
+        }
+        return remoteKdb.version(instance.host)
+      })
       .then(output => successResponse(res, output))
       .catch(err => errorResponse(res, err))
   )

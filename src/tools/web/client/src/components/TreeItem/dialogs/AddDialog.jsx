@@ -15,22 +15,40 @@ import SelectField from 'material-ui/SelectField'
 import MenuItem from 'material-ui/MenuItem'
 import ActionBuild from 'material-ui/svg-icons/action/build'
 
+import { VISIBILITY_LEVELS, visibility } from '../../../utils'
 import { KEY_TYPES } from './utils'
 
 export default class AddDialog extends Component {
-  constructor (...args) {
-    super(...args)
+  constructor (props, ...args) {
+    super(props, ...args)
     this.state = {
       name: '',
       value: '',
       type: 'any',
+      visibility: props.instanceVisibility || 'user',
       error: false,
     }
   }
 
+  generateArrayKey = (length) => {
+    const numberStr = String(length)
+    const prefix = '_'.repeat(numberStr.length - 1)
+    return '#' + prefix + length
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (this.state.name.length === 0 && nextProps.arrayKeyLength) {
+      this.setState({ name: this.generateArrayKey(nextProps.arrayKeyLength) })
+    }
+  }
+
   handleClose = () => {
-    const { onClose } = this.props
-    this.setState({ name: '', value: '', type: 'any', error: false })
+    const { onClose, instanceVisibility } = this.props
+    this.setState({
+      name: '', value: '', type: 'any',
+      visibility: instanceVisibility || 'user',
+      error: false,
+    })
     onClose()
   }
 
@@ -38,17 +56,32 @@ export default class AddDialog extends Component {
     const { item, onAdd, setMetaByPath } = this.props
     const { path } = item
     const { name, value, type } = this.state
+    const v = this.state.visibility
+    if (v !== 'user') {
+      const { instanceVisibility } = this.props
+      if (visibility(v) < visibility(instanceVisibility)) {
+        const confirmed = window.confirm(
+          'Setting the visibility lower than the instance visibility will hide ' +
+          'this item in this instance. Only proceed if you no longer plan on ' +
+          'editing this item here.'
+        )
+        if (!confirmed) return
+      }
+    }
     onAdd(path, name, value)
     if (type !== 'any') {
       setMetaByPath(path + '/' + name, 'check/type', type)
+    }
+    if (v !== 'user') {
+      setMetaByPath(path + '/' + name, 'visibility', v)
     }
     this.handleClose()
   }
 
   render () {
-    const { item, open, renderField } = this.props
+    const { item, open, renderField, arrayKeyLength } = this.props
     const { path } = item
-    const { name, value, type, error } = this.state
+    const { name, value, type, error, visibility } = this.state
 
     const nameEmpty = !name || name.trim().length <= 0
 
@@ -72,8 +105,9 @@ export default class AddDialog extends Component {
           open={open}
           onRequestClose={this.handleClose}
         >
-            <h1>Creating new key at <b>{path}</b></h1>
-            <div style={{ display: 'block' }}>
+            <h1>Creating new {arrayKeyLength ? 'array ' : ''}key at <b>{path}</b></h1>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <div style={{ flex: 'initial' }}>
                 <TextField
                   ref="nameField"
                   floatingLabelText="name"
@@ -87,6 +121,10 @@ export default class AddDialog extends Component {
                     }
                   }}
                 />
+              </div>
+              <div style={{ flex: 'initial', marginLeft: 48, marginTop: 12, fontSize: '0.75em' }}>
+                <i>Hint: create a #0 sub-key in a key without children to turn it into an array</i>
+              </div>
             </div>
             <div style={{ display: 'block', marginTop: 8 }}>
                 <SelectField
@@ -99,6 +137,18 @@ export default class AddDialog extends Component {
                       <MenuItem key={type} value={type} primaryText={name} />
                     )}
                 </SelectField>
+            </div>
+            <div style={{ display: 'block', marginTop: 8 }}>
+              <SelectField
+                floatingLabelText="visibility"
+                floatingLabelFixed={true}
+                onChange={(e, _, val) => this.setState({ visibility: val })}
+                value={visibility}
+              >
+                  {Object.keys(VISIBILITY_LEVELS).map(lvl =>
+                    <MenuItem key={lvl} value={lvl} primaryText={lvl} />
+                  )}
+              </SelectField>
             </div>
             <div style={{ display: 'block', marginTop: 8 }}>
                 {type !== 'enum' && renderField({

@@ -1,8 +1,11 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "README" "" "March 2018" "" ""
-\fIan API and web user interface to remotely manage multiple Elektra instances\fR
+.TH "README" "" "April 2018" "" ""
+\fIan API and web user interface to remotely manage Elektra instances\fR
+.
+.P
+The configuration view of elektra\-web is similar to the tree view of the qt\-gui \fIhttps://git\.libelektra\.org/tree/master/src/tools/qt\-gui\fR, but with dynamic fields rendered via key metadata\.
 .
 .SH "Dependencies"
 Elektra\-web requires:
@@ -15,19 +18,24 @@ A recent node\.js \fIhttps://nodejs\.org/en/\fR installation (at least 6\.x)
 .
 .IP "" 0
 .
+.SH "Building with elektra\-web tool"
+To build Elektra with the elektra\-web tool:
+.
+.IP "\(bu" 4
+Install Node\.js and dependencies for \fByajl\fR plugin (see links above)
+.
+.IP "\(bu" 4
+Configure libelektra build with the elektra\-web tool, e\.g\. \fBcmake \.\. \-DTOOLS="kdb;web"\fR
+.
+.IP "\(bu" 4
+Build libelektra: \fBmake\fR
+.
+.IP "\(bu" 4
+Install libelektra: \fBsudo make install\fR
+.
+.IP "" 0
+.
 .SH "Getting started"
-.
-.IP "\(bu" 4
-Install dependencies (see above)
-.
-.IP "\(bu" 4
-Configure elektra build with the elektra\-web tool, e\.g\. \fBcmake \.\. \-DTOOLS="web"\fR
-.
-.IP "\(bu" 4
-Build elektra: \fBmake\fR
-.
-.IP "\(bu" 4
-Install elektra: \fBsudo make install\fR
 .
 .IP "\(bu" 4
 Start an elektrad instance: \fBkdb run\-elektrad\fR
@@ -58,7 +66,7 @@ Install and start an elektrad instance:
 \fBnpm install\fR
 .
 .IP "\(bu" 4
-\fBnpm start\fR
+\fBnpm start\fR (replaces \fBkdb run\-elektrad\fR)
 .
 .IP "" 0
 
@@ -73,7 +81,7 @@ Install and start the client (connects to the elektrad instance):
 \fBnpm install\fR
 .
 .IP "\(bu" 4
-\fBnpm start\fR
+\fBnpm start\fR (replaces \fBkdb run\-web\fR)
 .
 .IP "" 0
 
@@ -83,6 +91,8 @@ You can now access the client on: \fIhttp://localhost:33334\fR
 .
 .IP "" 0
 .
+.SH "Use\-cases"
+.
 .SS "Running elektra\-web on a single instance"
 If you do not want to configure multiple instances, you can set the \fBINSTANCE\fR environment variable to the server you want to configure\. You can also set \fBuser/sw/elektra/web/#0/current/instance\fR to the host\. Make sure to enter a full HTTP URL, e\.g\. \fBhttp://localhost:33333\fR\.
 .
@@ -90,13 +100,13 @@ If you do not want to configure multiple instances, you can set the \fBINSTANCE\
 If this configuration option is set, elektra\-web will load the configuration page for that instance instead of the main overview page\.
 .
 .P
-If you want to host elektra\-web with the client and elektrad on the same instance, after starting elektrad via \fBnpm start\fR, you can run start the client as follows:
+If you want to host elektra\-web with the client and elektrad on the same instance, after starting elektrad via \fBkdb run\-elektrad\fR, you can run start the client as follows:
 .
 .IP "" 4
 .
 .nf
 
-INSTANCE="http://localhost:33333" npm start
+INSTANCE="http://localhost:33333" kdb run\-web
 .
 .fi
 .
@@ -112,7 +122,7 @@ For example (\fBadvanced\fR visibility, \fBuser\fR is default):
 .
 .nf
 
-INSTANCE="advanced@http://localhost:33333" npm start
+INSTANCE="advanced@http://localhost:33333" kdb run\-web
 .
 .fi
 .
@@ -120,6 +130,23 @@ INSTANCE="advanced@http://localhost:33333" npm start
 .
 .P
 Now, when you open \fIhttp://localhost:33334\fR in your browser, the configuration page for the instance will be opened immediately\.
+.
+.SS "Using a different <code>kdb</code> executable"
+It is possible to change the \fBkdb\fR executable that elektra\-web uses by setting the \fBKDB\fR environment variable\. Please ensure to use the same \fBKDB\fR executable when starting \fBelektrad\fR and the \fBclient\fR\.
+.
+.P
+For example:
+.
+.IP "" 4
+.
+.nf
+
+KDB="/usr/local/custom/bin/kdb" kdb run\-elektrad
+KDB="/usr/local/custom/bin/kdb" kdb run\-web
+.
+.fi
+.
+.IP "" 0
 .
 .SH "Overview"
 Elektra web consists of multiple components:
@@ -137,29 +164,21 @@ a web browser that accesses the client (Web UI) on the \fBwebd\fR \fIwebd/\fR se
 .
 .P
 .
-.SH "GUI"
-The Web UI allows the user to add multiple instances to be configured\.
-.
-.P
-The configuration view of elektra web is similar to the tree view of the qt\-gui \fIhttps://git\.libelektra\.org/tree/master/src/tools/qt\-gui\fR, but with dynamic fields rendered via key metadata\.
-.
-.P
-.
 .SH "API"
 .
 .P
 API blueprints \fIhttps://apiblueprint\.org/\fR are available for both APIs:
 .
 .IP "\(bu" 4
-elektrad \fIhttps://master\.libelektra\.org/doc/api_blueprints/elektrad\.apib\fR, documentation: http://docs\.elektrad\.apiary\.io/
+elektrad \fIhttps://master\.libelektra\.org/doc/api_blueprints/elektrad\.apib\fR, documentation: https://elektrad\.docs\.apiary\.io/
 .
 .IP "\(bu" 4
-clusterd \fIhttps://master\.libelektra\.org/doc/api_blueprints/clusterd\.apib\fR, documentation: http://docs\.clusterd\.apiary\.io/
+webd \fIhttps://master\.libelektra\.org/doc/api_blueprints/webd\.apib\fR, documentation: https://elektrawebd\.docs\.apiary\.io/
 .
 .IP "" 0
 .
 .SH "Auth"
-Currently, clusterd does not support authentication\. The best way to work around this is to use a reverse proxy (e\.g\. nginx reverse proxy \fIhttps://www\.nginx\.com/resources/admin\-guide/reverse\-proxy/\fR)\.
+Currently, webd does not support authentication\. The best way to work around this is to use a reverse proxy (e\.g\. nginx reverse proxy \fIhttps://www\.nginx\.com/resources/admin\-guide/reverse\-proxy/\fR)\.
 .
 .P
 Once you set up a reverse proxy on your web server, you can use it to authenticate users, e\.g\. by username/password auth \fIhttps://www\.digitalocean\.com/community/tutorials/how\-to\-set\-up\-password\-authentication\-with\-nginx\-on\-ubuntu\-14\-04\fR

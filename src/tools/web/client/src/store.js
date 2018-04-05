@@ -11,12 +11,13 @@ import { createMiddleware as createPromisesMiddleware } from 'redux-promises'
 import logger from 'redux-logger'
 
 import reducer from './reducers'
+import undoMiddleware from './undo'
 
 // create middleware store enhancer
 const promiseMiddleware = createPromisesMiddleware() // allow returning promises from action creators
 const middleware = process.env.NODE_ENV === 'production'
-  ? applyMiddleware(promiseMiddleware)
-  : applyMiddleware(promiseMiddleware, logger)
+  ? applyMiddleware(promiseMiddleware, undoMiddleware)
+  : applyMiddleware(promiseMiddleware, undoMiddleware, logger)
 
 // configure redux store
 export default function configureStore (initialState) {

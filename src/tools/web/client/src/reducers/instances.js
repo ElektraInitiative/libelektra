@@ -19,12 +19,19 @@ export default function instancesReducer (state = [], action) {
       )
 
     case INSTANCE_UPDATE_SUCCESS: // instance updated, update in state
-      return state.map(
-        (instance) =>
-          instance.id === action.result.id
-          ? action.result
-          : instance
-      )
+      return state.map((instance) => {
+        if (instance.id === action.result.id) {
+          const hasDifference = // ignore differences in unfolded
+            instance.name !== action.result.name ||
+            instance.description !== action.result.description ||
+            instance.host !== action.result.host ||
+            instance.visibility !== action.result.visibility
+          if (hasDifference) {
+            return action.result
+          }
+        }
+        return instance
+      })
 
     case INSTANCES_SUCCESS: // instance list pulled from webd, update state
       return action.result

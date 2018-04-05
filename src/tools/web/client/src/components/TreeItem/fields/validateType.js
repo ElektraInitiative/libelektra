@@ -16,7 +16,7 @@ const getMinMax = (first, second) => {
   return [ first, second ]
 }
 
-const validateRange = (rangeStr, num) => {
+export const validateRange = (rangeStr, num) => {
   const ranges = rangeStr.split(',')
   let msg = 'invalid number, value between '
 
@@ -79,17 +79,17 @@ const validateType = (metadata, value) => {
         return validationError
       }
     }
-  }
+  } else {
+    const validationErrorMessage = metadata['check/validation/message']
 
-  const validationError = metadata['check/validation/message']
-
-  const validationRegex = metadata.hasOwnProperty('check/validation')
-    ? new RegExp(metadata['check/validation'])
-    : false
-  if (validationRegex) {
-    if (!validationRegex.test(value)) {
-      return validationError ||
-        'validation failed for ' + metadata['check/validation']
+    const validationRegex = metadata.hasOwnProperty('check/validation')
+      ? new RegExp(metadata['check/validation'])
+      : false
+    if (validationRegex) {
+      if (!validationRegex.test(value)) {
+        return validationErrorMessage ||
+          'validation failed for ' + metadata['check/validation']
+      }
     }
   }
 

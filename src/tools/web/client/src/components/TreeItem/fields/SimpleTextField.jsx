@@ -19,19 +19,28 @@ const DebouncedTextField = debounce(TextField)
 export default class SimpleTextField extends Component {
   constructor (props) {
     super(props)
-    this.state = { value: false, error: false }
+    this.state = { value: props.value || '', error: false }
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.value) {
+      this.setState({ value: nextProps.value })
+    }
   }
 
   render () {
-    const { id, value, meta, label, debounce = true, onChange, onError } = this.props
-    const val = this.state.value === false ? value : this.state.value
+    const { id, meta, label, debounce = true, onChange, onError } = this.props
+    const val = this.state.value
     const comp = debounce ? DebouncedTextField : TextField
+    const isBinary = meta && meta.hasOwnProperty('binary')
 
     return (
       <div draggable="true" onDragStart={e => e.preventDefault()}>
         {React.createElement(comp, {
           id,
-          value: val,
+          value: val || (isBinary ? '(null)' : ''),
+          tabIndex: 0,
+          className: 'value',
           errorText: this.state.error,
           hintText: (meta && meta.example) ? `e.g. ${meta.example}` : false,
           onChange: debounce
@@ -48,7 +57,7 @@ export default class SimpleTextField extends Component {
             }
             onChange(currentValue)
           }),
-          disabled: fromElektraBool(meta && meta.readonly),
+          disabled: isBinary || fromElektraBool(meta && meta['restrict/write']),
           floatingLabelText: label,
           floatingLabelFixed: !!label,
         })}

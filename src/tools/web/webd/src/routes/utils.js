@@ -19,8 +19,8 @@ export const prettyprint = (obj) =>
 
 export const successResponse = (res, output) =>
   output
-    ? res.type('application/json').send(prettyprint(output))
-    : res.status(404).send() // no output -> 404
+    ? res.json(output)
+    : res.send()
 
 export const errorResponse = (res, err) => {
   if (process.env.NODE_ENV !== 'production') {
@@ -30,7 +30,7 @@ export const errorResponse = (res, err) => {
     ? { name: err.name, message: err.message }
     : err
   return res.status(400).type('application/json')
-            .send(prettyprint({ error: errObj }))
+            .json({ error: errObj })
 }
 
 // don't show the internal database via the API

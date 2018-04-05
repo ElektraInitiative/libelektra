@@ -14,7 +14,10 @@
 }
 .ExplorerView ul > li {
   min-height: 48px;
-  opacity: 0.8;
+  /* opacity: 0.8;
+     FIXME: this looks really cool as it provides a visual hierarchy.
+            unfortunately, it can cause flickering for deeply nested keys.
+  */
   transition: opacity 0.2s;
   cursor: pointer;
 }
@@ -29,12 +32,16 @@
 .ExplorerView ul > li a .actions > i {
   margin-left: 1.5em;
 }
+
+/* when root element is hovered with mouse */
 .ExplorerView ul > li a:hover .actions > button,
 .ExplorerView ul > li a:hover .actions > i {
   opacity: 0.5;
 }
+/* when action button is focussed with keyboard or hovered with mouse */
+.ExplorerView ul > li a .actions > button:focus,
 .ExplorerView ul > li a .actions > button:hover {
-  opacity: 1;
+  opacity: 1 !important;
 }
 .ExplorerView ul > li.category .opener {
   display: block;
@@ -49,7 +56,8 @@
     mask: url('/folded.svg') no-repeat;
     background-color: #000000;
   }
-  .ExplorerView ul li.selected > span.item > .opener {
+  .ExplorerView ul li.selected > span.item > .opener,
+  .ExplorerView ul li > span.item > .opener:focus {
     background-color: #00BCD4;
   }
 }
@@ -112,7 +120,10 @@
 }
 
 /* Categories : Nodes with children */
-.ExplorerView ul li.category {}
+.ExplorerView ul li.category {
+  box-sizing: border-box;
+  padding-top: 12px;
+}
 .ExplorerView ul li.category > span.item {}
 /* Folded */
 .ExplorerView ul li.category.folded > span.item > .opener {
@@ -128,9 +139,7 @@
   margin-right: 25px;
   transform: rotate(90deg);
 }
-.ExplorerView ul li.category:not(.folded) {
-  margin-bottom: 16px;
-}
+.ExplorerView ul li.category:not(.folded) {}
 .ExplorerView ul li.category:not(.folded) > span.item {}
 /* Opener */
 .ExplorerView ul li.category > span.item > .opener {}
