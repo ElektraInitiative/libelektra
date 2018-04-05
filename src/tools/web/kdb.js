@@ -134,7 +134,6 @@ const escapeValues = (template, ...values) =>
     (source: @krit0n - https://github.com/ElektraInitiative/libelektra/pull/983#discussion_r83965059)
     */
     let val = values[i - 1]
-      .replace(/\n/g, '\\n') // escape newlines
       .replace(/`/g, '\\`') // escape backticks
       .replace(/((\\\\)*)(\\(")|("))/g, '$1\\$4$5')
     if (typeof val === 'string') val = `"${val}"`
