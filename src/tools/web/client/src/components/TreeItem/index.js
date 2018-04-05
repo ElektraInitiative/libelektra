@@ -197,7 +197,7 @@ export default class TreeItem extends Component {
                   </span>
                 )
               : <b style={titleStyle}>
-                  <span style={{ flex: 'initial', marginTop: -2 }}>{item.name}</span>
+                  <span style={{ flex: 'initial', marginTop: -2 }}>{prettyPrintArrayIndex(item.name)}</span>
                   {arrayKeyLength &&
                     <span style={{ flex: 'initial', marginLeft: 8 }}>
                       <ArrayIcon />
