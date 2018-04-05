@@ -43,7 +43,6 @@
     "babel-runtime": "^6.26.0",
     "babel-watch": "^2.0.7",
     "concurrently": "^3.5.1",
-    "dredd": "^5.1.5",
     "webpack": "^3.11.0"
   }
 }

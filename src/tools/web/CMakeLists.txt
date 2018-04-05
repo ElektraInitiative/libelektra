@@ -61,8 +61,13 @@ else ()
     generate_manpage (kdb-run-${tool} FILENAME ${CMAKE_CURRENT_BINARY_DIR}/README.md)
 
     # test apis
-    enable_testing ()
-    add_test (NAME elektra-web COMMAND ./test.sh WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+    find_program (DREDD_EXECUTABLE "dredd")
+    if (NOT DREDD_EXECUTABLE)
+      # testing disabled
+    else ()
+      enable_testing ()
+      add_test (NAME elektra-web COMMAND ./test.sh WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+    endif ()
 
 endif ()
 
