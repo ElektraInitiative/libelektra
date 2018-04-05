@@ -17,7 +17,10 @@
     "start:prod": "cross-env NODE_ENV=production DEBUG=webd:*,-*debug,-*log node build/",
     "start:prod:verbose": "cross-env NODE_ENV=production DEBUG=webd:* node build/",
     "start:dev": "cross-env NODE_ENV=development DEBUG=webd:* babel-watch src/",
-    "test": "dredd ../../../../doc/api_blueprints/webd.apib http://localhost:33334 --hookfiles=./testHooks.js"
+    "test": "dredd ../../../../doc/api_blueprints/webd.apib http://localhost:33334 --hookfiles=./testHooks.js --server \"npm run test:server\" --server-wait 20",
+    "test:server": "concurrently \"npm run test:server:elektrad\" \"npm run test:server:webd\"",
+    "test:server:elektrad": "cd ../elektrad && npm start",
+    "test:server:webd": "npm start"
   },
   "dependencies": {
     "body-parser": "^1.18.2",
@@ -39,6 +42,7 @@
     "babel-register": "^6.26.0",
     "babel-runtime": "^6.26.0",
     "babel-watch": "^2.0.7",
+    "concurrently": "^3.5.1",
     "dredd": "^5.1.5",
     "webpack": "^3.11.0"
   }
