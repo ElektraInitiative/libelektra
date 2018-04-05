@@ -9,7 +9,7 @@ then
 	echo "Installed Elektra will be used"
 else
 	echo "Elektra or pkg-config not installed, will exit"
-	exit
+	exit @SKIP_RETURN_CODE@
 fi
 
 check_version
@@ -19,7 +19,7 @@ then
 	echo "ni plugin available"
 else
 	echo "no ni plugin available"
-	exit
+	exit @SKIP_RETURN_CODE@
 fi
 
 if /usr/bin/env python2 -V &> /dev/null
@@ -27,7 +27,7 @@ then
 	echo "python available"
 else
 	echo "no python available"
-	exit
+	exit @SKIP_RETURN_CODE@
 fi
 
 if /usr/bin/env python2 -c 'from Cheetah.Template import Template' 2> /dev/null
@@ -35,7 +35,7 @@ then
 	echo "Cheetah available"
 else
 	echo "Cheetah not available"
-	exit
+	exit @SKIP_RETURN_CODE@
 fi
 
 [ -z "${CC}" ] && CC=gcc
@@ -45,7 +45,7 @@ then
 	echo "GCC available"
 else
 	echo "GCC not available"
-	exit
+	exit @SKIP_RETURN_CODE@
 fi
 
 GEN_FOLDER="@CMAKE_SOURCE_DIR@/src/tools/gen"
@@ -59,7 +59,7 @@ then
 	echo "$GEN available"
 else
 	echo "$GEN does not work (e.g. cheetah missing)"
-	exit 1
+	exit @SKIP_RETURN_CODE@
 fi
 
 LIFT_FILE=test_lift.ini

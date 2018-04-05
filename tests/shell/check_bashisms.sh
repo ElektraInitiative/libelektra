@@ -4,7 +4,7 @@ echo
 echo ELEKTRA SCRIPTS BASHISMS TEST
 echo
 
-command -v checkbashisms >/dev/null 2>&1 || { echo "checkbashisms command needed for this test, aborting" >&2; exit 0; }
+command -v checkbashisms >/dev/null 2>&1 || { echo "checkbashisms command needed for this test, aborting" >&2; exit @SKIP_RETURN_CODE@; }
 
 cd "@CMAKE_SOURCE_DIR@"
 

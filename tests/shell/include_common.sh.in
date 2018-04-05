@@ -21,6 +21,9 @@ nbSkip=0
 # the script itself
 scriptName=`basename "$0"`
 
+#return code for skipped test suites
+SKIP_RETURN_CODE=@SKIP_RETURN_CODE@
+
 MOUNTPOINT="/tests/script"
 
 NAMESPACES="user system"

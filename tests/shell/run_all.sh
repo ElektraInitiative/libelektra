@@ -27,11 +27,16 @@ do
 
 	"$KDB" $t
 
-	if [ $? != "0" ]
+	if [ $? == "@SKIP_RETURN_CODE" ]
 	then
-		nbError=$(( $nbError + 1 ))
-		nbFailed="$nbFailed\n$t"
-		echo error: $t
+		nbSkip=$(( $nbSkip + 1 ))
+	else
+		if [ $? != "0" ]
+		then
+			nbError=$(( $nbError + 1 ))
+			nbFailed="$nbFailed$t"
+			echo error: $t
+		fi
 	fi
 	nbTests=$(( $nbTests + 1 ))
 

@@ -11,8 +11,8 @@ then
 	echo "The test will fail if installed version does not use"
 	echo "same KDB."
 else
-	echo "Elektra or pkg-config not installed, will exit"
-	exit
+	echo "Elektra or pkg-config not installed, will skip"
+	exit @SKIP_RETURN_CODE@
 fi
 
 

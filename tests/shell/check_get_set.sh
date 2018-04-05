@@ -4,6 +4,7 @@ echo
 echo ELEKTRA BASIC COMMAND SCRIPTS TESTS
 echo
 
+exit @SKIP_RETURN_CODE@
 
 check_version
 

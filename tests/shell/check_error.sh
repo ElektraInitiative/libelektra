@@ -15,8 +15,8 @@ ROOT_FILE=${FILE_SUFFIX}_root.ecf
 ROOT_MOUNTPOINT=/test/script
 if ! is_plugin_available dump || ! is_plugin_available sync
 then
-	echo "Need dump and sync to run test, will abort"
-	exit 0
+	echo "Need dump and sync to run test, will skip"
+	exit @SKIP_RETURN_CODE@
 fi
 
 

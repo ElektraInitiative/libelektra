@@ -4,8 +4,8 @@ echo
 echo ELEKTRA CHECK FORMATTING
 echo
 
-command -v git >/dev/null 2>&1 || { echo "git command needed for this test, aborting" >&2; exit 0; }
-command -v clang-format-5.0 >/dev/null 2>&1 || command -v clang-format >/dev/null 2>&1 || { echo "clang-format command needed for this test, aborting" >&2; exit 0; }
+command -v git >/dev/null 2>&1 || { echo "git command needed for this test, skipping" >&2; exit @SKIP_RETURN_CODE@; }
+command -v clang-format-5.0 >/dev/null 2>&1 || command -v clang-format >/dev/null 2>&1 || { echo "clang-format command needed for this test, skipping" >&2; exit @SKIP_RETURN_CODE@; }
 
 cd "@CMAKE_SOURCE_DIR@"
 

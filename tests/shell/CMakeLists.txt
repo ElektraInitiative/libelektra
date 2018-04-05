@@ -11,6 +11,7 @@ configure_file (
 file(READ "${CMAKE_CURRENT_BINARY_DIR}/include_common.sh"
 	INCLUDE_COMMON_INSTALLED_FILE)
 
+set(SKIP_RETURN_CODE 33)
 
 set(IS_INSTALLED "NO")
 configure_file (
@@ -105,6 +106,7 @@ function (add_scripttest testname)
 				)
 			#dash does memleak:
 			set_property(TEST testscr_${testname_we} PROPERTY LABELS memleak kdbtests)
+			set_property(TEST testscr_${testname_we} PROPERTY SKIP_RETURN_CODE ${SKIP_RETURN_CODE})
 			endif (NOT ${testname_we} STREQUAL "run_all")
 			endif(ENABLE_KDB_TESTING)
 		endif (TARGET)
