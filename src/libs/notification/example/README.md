@@ -1,6 +1,7 @@
 # Example Applications for Notifications
 
-This folder contains two example notifications:
+This folder contains example notifications which demonstrate how
+notifications and the I/O binding API are used in applications:
 
 - example_notification: Repeatedly calls kdbGet, does not require transport plugins
 - example_notification_async: Uses asynchronous I/O. Requires transport plugins
@@ -25,4 +26,4 @@ Usage:
 
 Make sure that the required transport plugins are mounted (e.g. for D-Bus):
 
-> kdb global-mount dbus dbusrecv
+> kdb global-mount dbus announce=once dbusrecv
