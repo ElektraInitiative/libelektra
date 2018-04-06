@@ -215,6 +215,7 @@ Many problems were resolved with the following fixes:
 - We resolved undefined behavior in polymorphic classes that contained virtual functions, by explicitly adding a virtual destructor.
   thanks to René Schwaiger
 - small refactoring in `kdb-test`
+- The haskell plugin failed to build if the haskell bindings were not included explicitly by name.
 - Fix invalid handling of keynames in the [spec](http://libelektra.org/plugins/spec) plugin.
 - We now disable the [Xerces plugin](http://libelektra.org/plugins/xerces) if you use GCC with enabled ASAN to build Elektra. This update
   makes sure that you do not build the plugin with compilation settings that are known to
