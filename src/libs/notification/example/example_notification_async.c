@@ -18,7 +18,6 @@
 #include <signal.h> // signal()
 #include <stdio.h>  // printf() & co
 
-ElektraIoTimerOperation * timer;
 uv_async_t wakeup;
 
 #ifdef HAVE_LIBUV0
@@ -67,7 +66,6 @@ static void onSIGNAL (int signal)
 {
 	if (signal == SIGINT)
 	{
-		elektraIoBindingRemoveTimer (timer);
 		uv_stop (uv_default_loop ());
 		// Without this call the loop would be "sleeping" until the next timer interval
 		uv_async_send (&wakeup);
@@ -84,7 +82,6 @@ int main (void)
 {
 	// Cleanup on SIGINT
 	signal (SIGINT, onSIGNAL);
-	signal (SIGQUIT, onSIGNAL);
 
 	KeySet * config = ksNew (20, KS_END);
 
@@ -125,16 +122,17 @@ int main (void)
 	}
 
 	// Setup timer that repeatedly prints the variable
-	timer = elektraIoNewTimerOperation (2000, 1, printVariable, &value);
+	ElektraIoTimerOperation * timer = elektraIoNewTimerOperation (2000, 1, printVariable, &value);
 	elektraIoBindingAddTimer (binding, timer);
-
-	kdbGet (kdb, config, key);
 
 	printf ("Asynchronous Notification Example Application\n");
 	printf ("- Set \"%s\" to red, blue or green to change the text color\n", keyName (callbackKeyToWatch));
 	printf ("- Set \"%s\" to any integer value\n", keyName (intKeyToWatch));
 	printf ("Send SIGINT (Ctl+C) to exit.\n\n");
-	printVariable (timer);
+
+	// Get configuration
+	kdbGet (kdb, config, key);
+	printVariable (timer); // "value" was automatically updated
 
 	// This allows us to wake the loop from our signal handler
 #ifdef HAVE_LIBUV1
@@ -147,6 +145,7 @@ int main (void)
 
 	// Cleanup
 	resetTerminalColor ();
+	elektraIoBindingRemoveTimer (timer);
 	elektraFree (timer);
 	elektraNotificationClose (kdb);
 	kdbClose (kdb, key);
