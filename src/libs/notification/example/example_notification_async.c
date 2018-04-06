@@ -18,6 +18,16 @@
 #include <signal.h> // signal()
 #include <stdio.h>  // printf() & co
 
+ElektraIoTimerOperation * timer;
+uv_async_t wakeup;
+
+#ifdef HAVE_LIBUV0
+static void wakeupCallback (uv_async_t * async ELEKTRA_UNUSED, int unknown ELEKTRA_UNUSED)
+{
+	// nothing to do; callback required for libuv 0.x
+}
+#endif
+
 // from https://en.wikipedia.org/wiki/ANSI_escape_code#Colors
 #define ANSI_COLOR_RESET "\x1b[0m"
 #define ANSI_COLOR_RED "\x1b[31m"
@@ -57,13 +67,16 @@ static void onSIGNAL (int signal)
 {
 	if (signal == SIGINT)
 	{
+		elektraIoBindingRemoveTimer (timer);
 		uv_stop (uv_default_loop ());
+		// Without this call the loop would be "sleeping" until the next timer interval
+		uv_async_send (&wakeup);
 	}
 }
 
-static void printVariable (ElektraIoTimerOperation * timer)
+static void printVariable (ElektraIoTimerOperation * timerOp)
 {
-	int value = *(int *) elektraIoTimerGetData (timer);
+	int value = *(int *) elektraIoTimerGetData (timerOp);
 	printf ("\nMy integer value is %d\n", value);
 }
 
@@ -112,7 +125,7 @@ int main (void)
 	}
 
 	// Setup timer that repeatedly prints the variable
-	ElektraIoTimerOperation * timer = elektraIoNewTimerOperation (2000, 1, printVariable, &value);
+	timer = elektraIoNewTimerOperation (2000, 1, printVariable, &value);
 	elektraIoBindingAddTimer (binding, timer);
 
 	kdbGet (kdb, config, key);
@@ -121,21 +134,28 @@ int main (void)
 	printf ("- Set \"%s\" to red, blue or green to change the text color\n", keyName (callbackKeyToWatch));
 	printf ("- Set \"%s\" to any integer value\n", keyName (intKeyToWatch));
 	printf ("Send SIGINT (Ctl+C) to exit.\n\n");
+	printVariable (timer);
+
+	// This allows us to wake the loop from our signal handler
+#ifdef HAVE_LIBUV1
+	uv_async_init (loop, &wakeup, NULL);
+#else
+	uv_async_init (loop, &wakeup, wakeupCallback);
+#endif
 
 	uv_run (loop, UV_RUN_DEFAULT);
 
 	// Cleanup
 	resetTerminalColor ();
-	elektraIoBindingRemoveTimer (timer);
 	elektraFree (timer);
 	elektraNotificationClose (kdb);
 	kdbClose (kdb, key);
 
 	elektraIoBindingCleanup (binding);
-	uv_run (loop, UV_RUN_ONCE); // allow cleanup
+	uv_run (loop, UV_RUN_NOWAIT);
 #ifdef HAVE_LIBUV1
 	uv_loop_close (uv_default_loop ());
-#elif HAVE_LIBUV0
+#else
 	uv_loop_delete (uv_default_loop ());
 #endif
 
