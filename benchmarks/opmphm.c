@@ -1852,10 +1852,12 @@ int main (int argc, char ** argv)
 	char * benchmarkNameBinarySearchTime = "binarysearchtime";
 	benchmarks[7].name = benchmarkNameBinarySearchTime;
 	benchmarks[7].benchmarkF = benchmarkBinarySearchTime;
+#ifdef HAVE_HSEARCHR
 	// hsearchbuildtime
 	char * benchmarkNameHsearchBuildTime = "hsearchbuildtime";
 	benchmarks[benchmarksCount - 1].name = benchmarkNameHsearchBuildTime;
 	benchmarks[benchmarksCount - 1].benchmarkF = benchmarkHsearchBuildTime;
+#endif
 
 	// run benchmark
 	if (argc == 1)
