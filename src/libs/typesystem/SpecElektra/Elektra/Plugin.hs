@@ -1,13 +1,6 @@
---
--- @file
---
--- @brief Typechecker Plugin for Regex Types
---
--- @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
--- 
 {-# LANGUAGE CPP, TupleSections, RecordWildCards, LambdaCase #-}
 
-module Elektra.Plugin (plugin) where
+module RegexTypes.Plugin (plugin) where
 
 import RegexTypes.Automata
 import RegexTypes.RegExpParser

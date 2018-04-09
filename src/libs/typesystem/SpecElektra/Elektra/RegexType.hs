@@ -1,6 +1,13 @@
+--
+-- @file
+--
+-- @brief Regex Types for SpecElektra
+--
+-- @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+-- 
 {-# LANGUAGE TypeInType, TypeFamilies, ConstraintKinds, UndecidableInstances #-}
 
-module RegexTypes.RegexType (RegexContains, RegexIntersection, RegexIntersects, Key (..)) where
+module Elektra.RegexType (RegexContains, RegexIntersection, RegexIntersects, Key (..)) where
 
 import GHC.TypeLits
 import GHC.Exts (Constraint)

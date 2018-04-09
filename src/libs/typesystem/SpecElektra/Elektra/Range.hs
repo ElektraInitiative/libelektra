@@ -1,4 +1,11 @@
-module RegexTypes.Range (regexesForRange, regexForRange) where
+--
+-- @file
+--
+-- @brief Regex generation for numerical ranges
+--
+-- @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+-- 
+module Elektra.Range (regexesForRange, regexForRange) where
 
 import Data.List (intercalate, notElem, partition, sort, nub)
 

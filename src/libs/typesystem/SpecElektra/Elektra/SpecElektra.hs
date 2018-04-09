@@ -1,3 +1,10 @@
+--
+-- @file
+--
+-- @brief SpecElektra core definition
+--
+-- @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+-- 
 {-# LANGUAGE TypeFamilies, TypeInType, TypeOperators,
              UndecidableInstances, GADTs, ExistentialQuantification, ScopedTypeVariables #-}
 
