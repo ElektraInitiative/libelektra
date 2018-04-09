@@ -1,0 +1,23 @@
+name:                libfa
+version:             0.1.0.0
+synopsis:            regex-types
+description:         haskell bindings for augeas' libfa
+homepage:            https://libelektra.org
+license:             BSD3
+author:              e1528532
+maintainer:          e1528532@student.tuwien.ac.at
+copyright:           libelektra.org
+category:            Binding
+build-type:          Simple
+cabal-version:       >=1.10
+
+library
+  exposed-modules:   FiniteAutomata
+  build-depends:     base >=4.6 && <4.11
+  includes:          fa.h
+  include-dirs:      /usr/local/include
+  extra-lib-dirs:    /usr/local/lib
+  extra-libraries:   fa
+  default-language:  Haskell2010
+  other-extensions:  ForeignFunctionInterface
+  build-tools:       c2hs
