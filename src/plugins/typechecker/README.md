@@ -46,6 +46,7 @@ type behavior can be observed when getting/setting a key in a specification.
 * ghc, tested with 8.1.2, may work with older versions as well
 * ghc-pkg, usually bundled with ghc
 * cabal, the haskell build system, usually bundled with ghc
+* augeas, which provides libfa utilized by this plugin
 
 ## Limitations
 
@@ -53,4 +54,3 @@ Very experimental. Typechecking currently only happens when getting or setting
 a key in a mounted specification. Errors are currently very raw and haskell-focused.
 It only supports mounting specifications to `spec/examples` as it is only intended
 as a proof of concept and will be extended.
-

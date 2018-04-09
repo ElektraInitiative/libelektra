@@ -15,8 +15,8 @@ library
   exposed-modules:   FiniteAutomata
   build-depends:     base >=4.6 && <4.11
   includes:          fa.h
-  include-dirs:      /usr/local/include
-  extra-lib-dirs:    /usr/local/lib
+  include-dirs:      "@LIBFA_INCLUDE_DIRS@"
+  extra-lib-dirs:    "@LIBFA_LIBRARY_DIRS@"
   extra-libraries:   fa
   default-language:  Haskell2010
   other-extensions:  ForeignFunctionInterface
