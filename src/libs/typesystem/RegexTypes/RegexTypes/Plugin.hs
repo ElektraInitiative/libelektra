@@ -1,40 +1,45 @@
-{-# LANGUAGE CPP, TupleSections, RecordWildCards #-}
+--
+-- @file
+--
+-- @brief Typechecker Plugin for Regex Types
+--
+-- @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+-- 
+{-# LANGUAGE CPP, TupleSections, RecordWildCards, LambdaCase #-}
 
-module RegexTypes.Plugin (plugin) where
+module Elektra.Plugin (plugin) where
 
-import Data.List (partition, isPrefixOf, intersect)
-import Data.Maybe (mapMaybe)
+import RegexTypes.Automata
+import RegexTypes.RegExpParser
+
+import Data.List (partition)
+import Data.Maybe (mapMaybe, catMaybes)
 import Control.Arrow ((***))
 import Control.Applicative (liftA2)
 import Debug.Trace
 
 import GHC.TcPluginM.Extra (evByFiat, lookupModule, lookupName)
 
-import qualified Language.HaLex.RegExp as H
-import qualified Language.HaLex.RegExpParser as H
-import qualified Language.HaLex.RegExp2Fa as H
-import qualified Language.HaLex.RegExpAsDiGraph as H
-import qualified Language.HaLex.Equivalence as H
+import qualified Language.HaLex.RegExp2Fa       as H
+import qualified Language.HaLex.Equivalence     as H
+import qualified Language.HaLex.Dfa             as H
 
-import qualified Language.HaLex.Dfa as H
-import qualified Language.HaLex.Ndfa as H
-import qualified Language.HaLex.Minimize as H
-import qualified Language.HaLex.FaOperations as H
-import qualified Language.HaLex.Fa2RegExp as H
-import qualified Language.HaLex.Parser as H
+import qualified Text.Regex.TDFA      as R
+import qualified Text.Regex.TDFA.TDFA as R
+import qualified Text.Regex.TDFA.TNFA as R
 
-import qualified Language.HaLex.Dfa2MDfa as H
+import qualified FiniteAutomata as FA
 
 -- GHC API
 import GhcPlugins
 import Outputable (Outputable (..), (<+>), text, ppr, fcat)
 import Plugins    (Plugin (..), defaultPlugin)
 import TcEvidence (EvTerm (..))
-import TcPluginM  (TcPluginM, tcLookupTyCon, tcPluginIO, zonkCt, newWanted)
-import TcRnTypes  (Ct(..), TcPlugin(..), TcPluginResult(..), CtEvidence (..), ctEvidence, ctEvPred, ctLoc,
+import TcPluginM  (TcPluginM, tcLookupTyCon, tcPluginIO, newWanted)
+import TcRnTypes  (Ct(..), TcPlugin(..), TcPluginResult(..), ctEvidence, ctEvPred, ctLoc,
                    tyCoVarsOfCtList)
-import Type       (classifyPredType, eqType, isStrLitTy)
-import TyCoRep    (TyLit(..), Type(..), pprTyLit)
+import Type       (classifyPredType, eqType)
+import TyCoRep    (TyLit(..), Type(..))
 
 --
 -- proposed way:
@@ -91,50 +96,41 @@ getTyCon m p t = lookupModule regexModule regexPackage
 -- D -> additional facts for error message backtracking
 -- W -> facts that the compiler wants us to prove or disprove
 solveRegex :: RgxData -> [Ct] -> [Ct] -> [Ct] -> TcPluginM TcPluginResult
-solveRegex rgxData g  _ [] = do
-  ncts <- concat <$> mapM generateRgxCntCt g
-  return $ TcPluginOk [] []
-  where
-    generateRgxCntCt ct@(CFunEqCan e f t fsk) = do
-      let ty = mkTyConTy $ keyTyCon rgxData
-      ev <- newWanted (ctLoc ct) ty
-      return $ [CTyEqCan ev fsk ty NomEq]
-    generateRgxCntCt _ = return []
-
 solveRegex rgxData [] _ w  = do
-    case fld of
-      [] -> return $ TcPluginOk (mapMaybe (\c -> (,c) <$> evRegexConstraint c) slvd) []
-      _  -> return $ TcPluginContradiction fld
+  (rcs, rcf) <- (map fst *** map fst) . partition snd . catMaybes <$> pRgxContains
+  (ris, rif) <- (map fst *** map fst) . partition snd . catMaybes <$> pRgxIntersects
+  let (slvd, fld) = (rcs ++ ris, rcf ++ rif)
+  case fld of
+    [] -> return $ TcPluginOk (mapMaybe (\c -> (,c) <$> evRegexConstraint c) slvd) []
+    _  -> return $ TcPluginContradiction fld
   where
     wRgxContains   = filter (hasTyCon $ rgxContainsTyCon rgxData) w
-    pRgxContains   = mapMaybe (solve regexContains) wRgxContains
-    (rcs, rcf)     = (map fst *** map fst)
-                   $ partition snd pRgxContains
+    pRgxContains   = mapM (solve regexContains) wRgxContains
     wRgxIntersects = filter (hasTyCon $ rgxIntersectsTyCon rgxData) w
-    pRgxIntersects = mapMaybe (solve $ regexIntersects $ rgxIntersectionTyCon rgxData) wRgxIntersects
-    (ris, rif)     = (map fst *** map fst)
-                   $ partition snd pRgxIntersects
-    (slvd, fld)    = (rcs ++ ris, rcf ++ rif)
+    pRgxIntersects = mapM (solve $ regexIntersects $ rgxIntersectionTyCon rgxData) wRgxIntersects
 
 -- Something already given, means we resolved the constraints already
 -- that we can use to prove our equalities in terms of subtyping
 -- However, a != b "a" != "a-z", this only holds if b is coerced to "a-z" before
 -- so we need an extra coercion constraint
-solveRegex rgxData g  _ w  = do
-    return $ TcPluginOk (mapMaybe (\c -> (,c) <$> evRegexEquality c) w) []
+solveRegex _ g  _ w  = return $ TcPluginOk (mapMaybe (\c -> (,c) <$> evRegexEquality c) w) []
   where
     processed  = mapMaybe solveRegexEquality (zip g w)
     (slvd,fld) = (map fst *** map fst)
                $ partition snd processed
 
-hasTyCon wtc ct = case classifyPredType $ ctEvPred $ ctEvidence ct of
-    EqPred _  (TyConApp tc [x, y]) t -> trace ("hasTyCon" ++ showSDocUnsafe (ppr wtc) ++ " vs " ++ showSDocUnsafe (ppr tc)) $ tc == wtc
-    _ -> False
 
-solve :: (Type -> Type -> Maybe Bool) -> Ct -> Maybe (Ct, Bool)
+hasTyCon :: TyCon -> Ct -> Bool
+hasTyCon wtc ct = case classifyPredType $ ctEvPred $ ctEvidence ct of
+    EqPred _  (TyConApp tc [_, _]) _ -> tc == wtc
+    _                                -> False
+
+solve :: (Type -> Type -> TcPluginM (Maybe Bool)) -> Ct -> TcPluginM (Maybe (Ct, Bool))
 solve p ct = case classifyPredType $ ctEvPred $ ctEvidence ct of
-    EqPred _  (TyConApp _ [x, y]) t -> (ct,) <$> p x y
-    _ -> Nothing
+    EqPred _  (TyConApp _ [x, y]) _ -> do
+      res <- p x y
+      return $ (ct,) <$> res
+    _                               -> return Nothing
 
 -- Intuitively: "Given our proved constraint RegexContains b a, show that b equals to a up to subtyping"
 solveRegexEquality :: (Ct, Ct) -> Maybe (Ct, Bool)
@@ -149,7 +145,7 @@ solveRegexEquality (g, w) = case classifyPredType $ ctEvPred $ ctEvidence w of
 -- we proof this in the thesis' proof part and just use it directly here
 evRegexConstraint :: Ct -> Maybe EvTerm
 evRegexConstraint ct = case classifyPredType $ ctEvPred $ ctEvidence ct of
-    EqPred _ (TyConApp _ [x, y]) t -> Just (evByFiat "regex-types" x y)
+    EqPred _ (TyConApp _ [x, y]) _ -> Just (evByFiat "regex-types" x y)
     _                              -> Nothing
 
 evRegexEquality :: Ct -> Maybe EvTerm
@@ -160,54 +156,65 @@ evRegexEquality ct = case classifyPredType $ ctEvPred $ ctEvidence ct of
 --
 -- A Regex a is subsumed by the Regex b if a|b represents the same as a
 -- e.g. aa is contained in a+ as a+ == (aa)|(a+)
+-- Lives in the TcPluginM to have access to IO for the libfa bindings
 --
-regexContains :: Type -> Type -> Maybe Bool
+regexContains :: Type -> Type -> TcPluginM (Maybe Bool)
 regexContains (LitTy (StrTyLit fsx)) (LitTy (StrTyLit fsy))
   = let sx = unpackFS fsx
         sy = unpackFS fsy
         rsx = "(" ++ sx ++ ")|(" ++ sy ++ ")"
         rsy = "(" ++ sy ++ ")"
-        hsx = H.regExp2Dfa <$> H.parseRegExp rsx
-        hsy = H.regExp2Dfa <$> H.parseRegExp rsy
-    in liftA2 H.equivDfa hsx hsy
-regexContains _ _ = Nothing
+    in tcPluginIO $ do
+      hsx <- FA.compile rsx
+      hsy <- FA.compile rsy
+      let eq = sequence . rightToMaybe $ liftA2 FA.equals hsx hsy
+      (>>= \case
+          e | e < 0     -> Nothing
+            | e == 0    -> Just False
+            | otherwise -> Just True) <$> eq
+regexContains _ _ = return Nothing
 
-regexIntersects :: TyCon -> Type -> Type -> Maybe Bool
-regexIntersects tc x y = regexIntersects' $ reduceRegexIntersects tc x y
+rightToMaybe :: Either a b -> Maybe b
+rightToMaybe = either (const Nothing) Just
 
-regexIntersects' :: Maybe (H.Dfa Int Char) -> Maybe Bool
-regexIntersects' hs = let e = H.beautifyDfa . H.regExp2Dfa <$> H.parseRegExp ""
-                      in not <$> liftA2 H.equivDfa e hs
+regexIntersects :: TyCon -> Type -> Type -> TcPluginM (Maybe Bool)
+regexIntersects tc x y = reduceRegexIntersectsFA tc x y >>= \i -> tcPluginIO $ do
+  emptyFA <- Just <$> FA.makeBasic FA.Empty
+  let eq = sequence $ liftA2 FA.equals emptyFA i
+  --We return true if they are not equal - this means the intersection is possible
+  (>>= \case
+      e | e < 0     -> Nothing
+        | e == 0    -> Just True
+        | otherwise -> Just False) <$> eq
+
+reduceRegexIntersectsFA :: TyCon -> Type -> Type -> TcPluginM (Maybe FA.FiniteAutomata)
+reduceRegexIntersectsFA _ (LitTy (StrTyLit fsx)) (LitTy (StrTyLit fsy)) = tcPluginIO $ do
+  let sx = unpackFS fsx
+      sy = unpackFS fsy
+  hsx <- FA.compile sx
+  hsy <- FA.compile sy
+  sequence . rightToMaybe $ liftA2 FA.intersect hsx hsy
+reduceRegexIntersectsFA rixtc (TyConApp tc [a,b]) (LitTy (StrTyLit fsy))
+  | tc == rixtc = reduceRegexIntersectsFA rixtc a b >>= \hsx -> tcPluginIO $ do
+    hsy <- FA.compile $ unpackFS fsy
+    sequence $ liftA2 FA.intersect (rightToMaybe hsy) hsx
+  | otherwise   = return Nothing
+reduceRegexIntersectsFA _ _ _ = return Nothing
 
 reduceRegexIntersects :: TyCon -> Type -> Type -> Maybe (H.Dfa Int Char)
 reduceRegexIntersects _ (LitTy (StrTyLit fsx)) (LitTy (StrTyLit fsy))
   = let sx = unpackFS fsx
         sy = unpackFS fsy
-        hsx = H.regExp2Dfa <$> H.parseRegExp sx
-        hsy = H.regExp2Dfa <$> H.parseRegExp sy
-    in H.beautifyDfa <$> regexIntersection hsx hsy
+        hsx = H.regExp2Dfa <$> parseAndNormalizeRegExp sx
+        hsy = H.regExp2Dfa <$> parseAndNormalizeRegExp sy
+    in H.beautifyDfa <$> intersectAndConvertDfa hsx hsy
 reduceRegexIntersects rixtc (TyConApp tc [a,b]) (LitTy (StrTyLit fsy))
   | tc == rixtc = let hsx = reduceRegexIntersects rixtc a b 
                       sy  = unpackFS fsy
-                      hsy = H.beautifyDfa . H.regExp2Dfa <$> H.parseRegExp sy
-                  in H.beautifyDfa <$> regexIntersection hsx hsy
+                      hsy = H.beautifyDfa . H.regExp2Dfa <$> parseAndNormalizeRegExp sy
+                  in H.beautifyDfa <$> intersectAndConvertDfa hsx hsy
   | otherwise   = Nothing
-
-regexIntersection :: (Ord a, Eq b) => Maybe (H.Dfa a b) -> Maybe (H.Dfa a b) -> Maybe (H.Dfa [a] b)
-regexIntersection hsx hsy = H.ndfa2dfa <$> liftA2 intersectDfa hsx hsy
-
-intersectDfa :: (Eq a, Eq b) => H.Dfa a b -> H.Dfa a b -> H.Ndfa a b
-intersectDfa (H.Dfa vp qp sp zp dp) (H.Dfa vq qq sq zq dq) = H.Ndfa v' q' s' z' d'
-  where
-    v'           = vp `intersect` vq
-    q'           = qp `intersect` qq
-    s'           = [sp, sq]
-    z'           = zp ++ zq
-    d' _ Nothing = []
-    d' q (Just sy)
-      | q `elem` qp && sy `elem` vp = [dp q sy]
-      | q `elem` qq && sy `elem` vq = [dq q sy]
-      | otherwise                   = []
+reduceRegexIntersects _ _ _ = Nothing
 
 solveEquality :: TyCon -> Ct -> TcPluginM [Ct]
 solveEquality key ct = case classifyPredType $ ctEvPred $ ctEvidence ct of
@@ -220,7 +227,7 @@ solveEquality key ct = case classifyPredType $ ctEvPred $ ctEvidence ct of
     _ -> return []
   where
     isKey t v = do
-      let kt = (mkTyConApp key [t])
+      let kt = mkTyConApp key [t]
       ev <- newWanted (ctLoc ct) kt
       return $ CTyEqCan ev v kt NomEq
 
@@ -239,9 +246,7 @@ tracePlugin s TcPlugin{..} = TcPlugin { tcPluginInit  = traceInit
                                       , tcPluginStop  = traceStop
                                       }
   where
-    traceInit = do
-      tcPluginDebug ("tcPluginInit " ++ s) empty >> tcPluginInit
-
+    traceInit = tcPluginDebug ("tcPluginInit " ++ s) empty >> tcPluginInit
     traceStop  z = tcPluginDebug ("tcPluginStop " ++ s) empty >> tcPluginStop z
     traceSolve z given derived wanted = do
       tcPluginDebug ("tcPluginSolve start " ++ s)
