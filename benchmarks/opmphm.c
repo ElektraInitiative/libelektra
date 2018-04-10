@@ -55,7 +55,8 @@ const size_t numberOfShapes = 8;
 typedef struct
 {
 	char * name;
-	void (*benchmarkF) (void);
+	size_t numberOfSeedsNeeded;
+	void (*benchmarkF) (char *);
 } Benchmark;
 
 
@@ -68,7 +69,7 @@ typedef struct
  *
  * This benchmark takes numberOfShapes * nCount seeds
  */
-static void benchmarkHashFunctionTime (void)
+static void benchmarkHashFunctionTime (char * name)
 {
 	const size_t nCount = 4;
 	const size_t n[] = { 10, 100, 1000, 10000 };
@@ -80,6 +81,7 @@ static void benchmarkHashFunctionTime (void)
 		printExit ("malloc");
 	}
 	// benchmark
+	printf ("Run Benchmark %s:\n", name);
 	KeySetShape * keySetShapes = getKeySetShapes ();
 	for (size_t i = 0; i < nCount; ++i)
 	{
@@ -200,7 +202,7 @@ static void benchmarkMappingCheckOpmphm (Opmphm * opmphm, OpmphmGraph * graph, s
 	}
 }
 
-static void benchmarkMapping (void)
+static void benchmarkMapping (char * name)
 {
 	size_t rUniPar = 3;
 	const size_t nCount = 15;
@@ -257,7 +259,7 @@ static void benchmarkMapping (void)
 		}
 	}
 
-	printf ("\nRun Benchmark:\n");
+	printf ("\nRun Benchmark %s:\n", name);
 
 #ifdef USE_OPENMP
 	omp_set_num_threads (NUMBEROFTHREADS);
@@ -461,7 +463,7 @@ static void benchmarkMapping (void)
  * seeds)
  */
 
-static void benchmarkMappingOpt (void)
+static void benchmarkMappingOpt (char * name)
 {
 	// create the n array
 	const size_t nCount = 132;
@@ -545,7 +547,7 @@ static void benchmarkMappingOpt (void)
 		}
 	}
 
-	printf ("\nRun Benchmark:\n");
+	printf ("\nRun Benchmark %s:\n", name);
 
 #ifdef USE_OPENMP
 	omp_set_num_threads (NUMBEROFTHREADS);
@@ -751,7 +753,7 @@ static void benchmarkMappingOpt (void)
  * The number of needed seeds for this benchmarks is: nCount (KeySets generation)
  */
 
-static void benchmarkMappingAllSeeds (void)
+static void benchmarkMappingAllSeeds (char * name)
 {
 	// create the n array
 	const size_t nCount = 7;
@@ -796,7 +798,7 @@ static void benchmarkMappingAllSeeds (void)
 		keySetsCache[nI] = generateKeySet (n[nI], &genSeed, &keySetShapes[0]); // shape 0 is shapefConstBinary with 0 parents
 	}
 
-	printf ("\nRun Benchmark:\n");
+	printf ("\nRun Benchmark %s:\n", name);
 
 #ifdef USE_OPENMP
 	omp_set_num_threads (NUMBEROFTHREADS);
@@ -1057,7 +1059,7 @@ static size_t benchmarkOPMPHMBuildTimeMeasure (KeySet * ks, size_t * repeats, si
 	return repeats[numberOfRepeats / 2]; // take median
 }
 
-void benchmarkOPMPHMBuildTime (void)
+void benchmarkOPMPHMBuildTime (char * name)
 {
 	const size_t startN = 50;
 	const size_t stepN = 500;
@@ -1120,7 +1122,7 @@ void benchmarkOPMPHMBuildTime (void)
 	// get KeySet shapes
 	KeySetShape * keySetShapes = getKeySetShapes ();
 
-	printf ("Run Benchmark:\n");
+	printf ("Run Benchmark %s:\n", name);
 
 	// for all KeySet shapes
 	for (size_t shapeI = 0; shapeI < numberOfShapes; ++shapeI)
@@ -1326,7 +1328,7 @@ static size_t benchmarkSearchTimeMeasure (KeySet * ks, size_t searches, int32_t 
  * @param outFileName the output file name
  * @param option the option to pass to the ksLookup (...)
  */
-static void benchmarkSearchTime (char * outFileName, option_t option)
+static void benchmarkSearchTime (char * name, char * outFileName, option_t option)
 {
 	const size_t startN = 50;
 	const size_t stepN = 500;
@@ -1392,7 +1394,7 @@ static void benchmarkSearchTime (char * outFileName, option_t option)
 	// get KeySet shapes
 	KeySetShape * keySetShapes = getKeySetShapes ();
 
-	printf ("Run Benchmark:\n");
+	printf ("Run Benchmark %s:\n", name);
 
 	// for all KeySet shapes
 	for (size_t shapeI = 0; shapeI < numberOfShapes; ++shapeI)
@@ -1480,9 +1482,9 @@ static void benchmarkSearchTime (char * outFileName, option_t option)
 	elektraFree (results);
 }
 
-void benchmarkOPMPHMSearchTime (void)
+void benchmarkOPMPHMSearchTime (char * name)
 {
-	benchmarkSearchTime ("benchmark_opmphm_search_time", KDB_O_OPMPHM | KDB_O_NOCASCADING);
+	benchmarkSearchTime (name, "benchmark_opmphm_search_time", KDB_O_OPMPHM | KDB_O_NOCASCADING);
 }
 
 /**
@@ -1503,9 +1505,9 @@ void benchmarkOPMPHMSearchTime (void)
  * The number of needed seeds for this benchmarks is: numberOfShapes * nCount * ksPerN * (1  + searchesCount )
  */
 
-static void benchmarkBinarySearchTime (void)
+static void benchmarkBinarySearchTime (char * name)
 {
-	benchmarkSearchTime ("benchmark_binary_search_time", KDB_O_NOCASCADING);
+	benchmarkSearchTime (name, "benchmark_binary_search_time", KDB_O_NOCASCADING);
 }
 
 /**
@@ -1608,7 +1610,7 @@ static size_t benchmarkHsearchBuildTimeMeasure (KeySet * ks, size_t nI, double l
 	return repeats[numberOfRepeats / 2]; // take median
 }
 
-void benchmarkHsearchBuildTime (void)
+void benchmarkHsearchBuildTime (char * name)
 {
 	const size_t startN = 50;
 	const size_t stepN = 500;
@@ -1672,7 +1674,7 @@ void benchmarkHsearchBuildTime (void)
 	// get KeySet shapes
 	KeySetShape * keySetShapes = getKeySetShapes ();
 
-	printf ("Run Benchmark:\n");
+	printf ("Run Benchmark %s:\n", name);
 
 	// for all KeySet shapes
 	for (size_t shapeI = 0; shapeI < numberOfShapes; ++shapeI)
@@ -1774,8 +1776,9 @@ void benchmarkHsearchBuildTime (void)
  * START ================================================= Prints all KeySetShapes =================================================== START
  */
 
-static void benchmarkPrintAllKeySetShapes (void)
+static void benchmarkPrintAllKeySetShapes (char * name)
 {
+	printf ("%s\n", name);
 	const size_t n = 30;
 	int32_t seed = 47658589;
 	KeySetShape * keySetShapes = getKeySetShapes ();
@@ -1824,49 +1827,59 @@ int main (int argc, char ** argv)
 	char * benchmarkNameHashFunctionTime = "hashfunctiontime";
 	benchmarks[0].name = benchmarkNameHashFunctionTime;
 	benchmarks[0].benchmarkF = benchmarkHashFunctionTime;
+	benchmarks[0].numberOfSeedsNeeded = 32;
 	// mapping
 	char * benchmarkNameMapping = "mapping";
 	benchmarks[1].name = benchmarkNameMapping;
 	benchmarks[1].benchmarkF = benchmarkMapping;
+	benchmarks[1].numberOfSeedsNeeded = 12400;
 	// mapping_opt
 	char * benchmarkNameMappingOpt = "mapping_opt";
 	benchmarks[2].name = benchmarkNameMappingOpt;
 	benchmarks[2].benchmarkF = benchmarkMappingOpt;
+	benchmarks[2].numberOfSeedsNeeded = 93920;
 	// mapping_allseeds
 	char * benchmarkNameMappingAllSeeds = "mapping_allseeds";
 	benchmarks[3].name = benchmarkNameMappingAllSeeds;
 	benchmarks[3].benchmarkF = benchmarkMappingAllSeeds;
+	benchmarks[3].numberOfSeedsNeeded = 7;
 	// printallkeysetshapes
 	char * benchmarkNamePrintAllKeySetShapes = "printallkeysetshapes";
 	benchmarks[4].name = benchmarkNamePrintAllKeySetShapes;
 	benchmarks[4].benchmarkF = benchmarkPrintAllKeySetShapes;
+	benchmarks[4].numberOfSeedsNeeded = 0;
 	// opmphmbuildtime
 	char * benchmarkNameOpmphmBuildTime = "opmphmbuildtime";
 	benchmarks[5].name = benchmarkNameOpmphmBuildTime;
 	benchmarks[5].benchmarkF = benchmarkOPMPHMBuildTime;
+	benchmarks[5].numberOfSeedsNeeded = 2008;
 	// opmphmsearchtime
 	char * benchmarkNameOpmphmSearchTime = "opmphmsearchtime";
 	benchmarks[6].name = benchmarkNameOpmphmSearchTime;
 	benchmarks[6].benchmarkF = benchmarkOPMPHMSearchTime;
+	benchmarks[6].numberOfSeedsNeeded = 72800;
 	// binarysearchtime
 	char * benchmarkNameBinarySearchTime = "binarysearchtime";
 	benchmarks[7].name = benchmarkNameBinarySearchTime;
 	benchmarks[7].benchmarkF = benchmarkBinarySearchTime;
+	benchmarks[7].numberOfSeedsNeeded = 72800;
 #ifdef HAVE_HSEARCHR
 	// hsearchbuildtime
 	char * benchmarkNameHsearchBuildTime = "hsearchbuildtime";
 	benchmarks[benchmarksCount - 1].name = benchmarkNameHsearchBuildTime;
 	benchmarks[benchmarksCount - 1].benchmarkF = benchmarkHsearchBuildTime;
+	benchmarks[benchmarksCount - 1].numberOfSeedsNeeded = 800;
 #endif
 
 	// run benchmark
 	if (argc == 1)
 	{
-		fprintf (stderr, "Usage: %s <benchmark>\n", argv[0]);
-		fprintf (stderr, "Available benchmarks:\n");
+		fprintf (stderr, "Usage: cat <fileWithSeeds> | %s <benchmark>\n", argv[0]);
+		fprintf (stderr, "\nUse the generate-seeds script to generate <fileWithSeeds>, number of seeds according to:\n\n");
+		fprintf (stderr, "%-20s %10s\n", "<benchmark>", "seeds");
 		for (size_t i = 0; i < benchmarksCount; ++i)
 		{
-			fprintf (stderr, "* %s\n", benchmarks[i].name);
+			fprintf (stderr, "%-20s %10zu\n", benchmarks[i].name, benchmarks[i].numberOfSeedsNeeded);
 		}
 		elektraFree (benchmarks);
 		return EXIT_FAILURE;
@@ -1875,7 +1888,7 @@ int main (int argc, char ** argv)
 	{
 		if (!strncmp (benchmarks[i].name, argv[1], strlen (argv[1])))
 		{
-			benchmarks[i].benchmarkF ();
+			benchmarks[i].benchmarkF (benchmarks[i].name);
 			elektraFree (benchmarks);
 			return EXIT_SUCCESS;
 		}
@@ -1915,6 +1928,11 @@ static int32_t * getRandomSeed (int32_t * seed)
 	for (c = data; *c != '\n'; ++c)
 		;
 	*c = '\0';
+	// prevent empty lines
+	if (strlen (data) == 0)
+	{
+		return NULL;
+	}
 	// convert to int
 	char * pEnd;
 	*seed = strtol (data, &pEnd, 10);
@@ -1975,7 +1993,7 @@ static size_t getPower (size_t p, size_t q)
 }
 
 /**
- * @brief Compares two integer.
+ * @brief comparison between integers suitable as qsort callback.
  *
  * @param a first integer
  * @param b second integer
