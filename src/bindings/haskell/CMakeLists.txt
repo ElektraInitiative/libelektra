@@ -1,6 +1,9 @@
 find_package (Haskell)
 
+set (GHC_MIN_VERSION "8.0.0")
+
 if (HASKELL_FOUND)
+if (NOT GHC_VERSION VERSION_LESS ${GHC_MIN_VERSION})
 if (NOT BUILD_STATIC)
 
 	set (CABAL_INCLUDE_DIRS "\"${CMAKE_SOURCE_DIR}/src/include\", \"${CMAKE_BINARY_DIR}/src/include\"")
@@ -146,6 +149,9 @@ if (NOT BUILD_STATIC)
 else (NOT BUILD_STATIC)
 	exclude_binding (haskell "BUILD_STATIC is currently not compatible with the haskell bindings")
 endif (NOT BUILD_STATIC)
+else (NOT GHC_VERSION VERSION_LESS ${GHC_MIN_VERSION})
+	exclude_binding (haskell "ghc: ${GHC_VERSION} found, but ${GHC_MIN_VERSION} required")
+endif (NOT GHC_VERSION VERSION_LESS ${GHC_MIN_VERSION})
 else (HASKELL_FOUND)
 	exclude_binding (haskell ${HASKELL_NOTFOUND_INFO})
 endif (HASKELL_FOUND)
