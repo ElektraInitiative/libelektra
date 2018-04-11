@@ -589,8 +589,7 @@ int opmphmCopy (Opmphm * dest, const Opmphm * source)
  */
 int opmphmIsBuild (const Opmphm * opmphm)
 {
-	ELEKTRA_NOT_NULL (opmphm);
-	if (opmphm->size)
+	if (opmphm && opmphm->size)
 	{
 		return -1;
 	}
