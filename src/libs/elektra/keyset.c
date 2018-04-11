@@ -41,13 +41,16 @@
  *
  * @brief KeySets OPMPHM cleaner.
  *
- * Should be invoked by every function changing a Key name in a KeySet.
+ * Must be invoked by every function that changes a Key name in a KeySet, adds a Key or
+ * removes a Key.
+ * Set also the KS_FLAG_REBUILD_OPMPHM KeySet flag.
  *
  * @param ks the KeySet
  */
 static void elektraOpmphmInvalidate (KeySet * ks ELEKTRA_UNUSED)
 {
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+	ks->flags |= KS_FLAG_REBUILD_OPMPHM;
 	if (ks && ks->opmphm) opmphmClear (ks->opmphm);
 #endif
 }
@@ -55,7 +58,7 @@ static void elektraOpmphmInvalidate (KeySet * ks ELEKTRA_UNUSED)
 /**
  * @internal
  *
- * @brief KeySets OPMPHM copy.
+ * @brief KeySets OPMPHM and OPMPHM predictor copy.
  *
  * Should be invoked by every function making a copy of a KeySet.
  *
@@ -69,18 +72,29 @@ static void elektraOpmphmCopy (KeySet * dest ELEKTRA_UNUSED, const KeySet * sour
 	{
 		return;
 	}
-	// nothing to copy
-	if (!source->opmphm || !opmphmIsBuild (source->opmphm))
+	// predictor
+	if (source->opmphmPredictor)
 	{
-		return;
+		if (!dest->opmphmPredictor)
+		{
+			dest->opmphmPredictor = opmphmPredictorNew ();
+		}
+		if (dest->opmphmPredictor)
+		{
+			opmphmPredictorCopy (dest->opmphmPredictor, source->opmphmPredictor);
+		}
 	}
-	if (!dest->opmphm)
+	// OPMPHM
+	if (opmphmIsBuild (source->opmphm))
 	{
-		dest->opmphm = opmphmNew ();
-	}
-	if (dest->opmphm)
-	{
-		opmphmCopy (dest->opmphm, source->opmphm);
+		if (!dest->opmphm)
+		{
+			dest->opmphm = opmphmNew ();
+		}
+		if (dest->opmphm)
+		{
+			opmphmCopy (dest->opmphm, source->opmphm);
+		}
 	}
 #endif
 }
@@ -414,6 +428,10 @@ int ksDel (KeySet * ks)
 	if (ks->opmphm)
 	{
 		opmphmDel (ks->opmphm);
+	}
+	if (ks->opmphmPredictor)
+	{
+		opmphmPredictorDel (ks->opmphmPredictor);
 	}
 #endif
 
@@ -1948,11 +1966,33 @@ static Key * elektraLookupBinarySearch (KeySet * ks, Key const * key, option_t o
 
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 
+/**
+ * @internal
+ *
+ * @brief Extracts the Key name of Keys
+ *
+ * @param data the Key
+ *
+ * @return the Key name
+ */
 static const char * elektraOpmphmGetString (void * data)
 {
 	return keyName ((Key *) data);
 }
 
+/**
+ * @internal
+ *
+ * @brief Builds the OPMPHM
+ *
+ * Creates the OPMPHM when not here.
+ * The passed KeySet must have a not build OPMPHM.
+ *
+ * @param ks the KeySet which OPMPHM is to build
+ *
+ * @return 0 on success
+ * @return -1 on memory error or to many mapping invocations
+ */
 static int elektraLookupBuildOpmphm (KeySet * ks)
 {
 	if (ks->size > KDB_OPMPHM_MAX_N)
@@ -1967,6 +2007,7 @@ static int elektraLookupBuildOpmphm (KeySet * ks)
 			return -1;
 		}
 	}
+	ELEKTRA_ASSERT (!opmphmIsBuild (ks->opmphm), "build already build OPMPHM");
 	// make graph
 	uint8_t r = opmphmOptR (ks->size);
 	double c = opmphmMinC (r);
@@ -2007,9 +2048,24 @@ static int elektraLookupBuildOpmphm (KeySet * ks)
 	return 0;
 }
 
+/**
+ * @internal
+ *
+ * @brief Searches for a Key in an already build OPMPHM.
+ *
+ * The OPMPHM must be build.
+ *
+ * @param ks the KeySet
+ * @param key the Key to search for
+ * @param options lookup options
+ *
+ * @return Key * when key found
+ * @return NULL when key not found
+ *
+ */
 static Key * elektraLookupOpmphmSearch (KeySet * ks, Key const * key, option_t options)
 {
-
+	ELEKTRA_ASSERT (opmphmIsBuild (ks->opmphm), "OPMPHM not build");
 	cursor_t cursor = 0;
 	cursor = ksGetCursor (ks);
 	size_t index = opmphmLookup (ks->opmphm, ks->size, keyName (key));
@@ -2060,18 +2116,68 @@ static Key * elektraLookupSearch (KeySet * ks, Key * key, option_t options)
 	Key * found = 0;
 
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
-	// KDB_O_WITHOWNER and KDB_O_NOCASE flags are not compatible with OPMPHM
-	if (((options & KDB_O_WITHOWNER) || (options & KDB_O_NOCASE)) && (options & KDB_O_OPMPHM))
+	// flags incompatible with OPMPHM
+	if (options & (KDB_O_WITHOWNER | KDB_O_NOCASE))
 	{
-		// remove OPMPHM
-		options ^= KDB_O_OPMPHM;
+		// remove KDB_O_OPMPHM and set KDB_O_BINSEARCH
+		options &= ~KDB_O_OPMPHM;
+		options |= KDB_O_BINSEARCH;
 	}
 
-	if (options & KDB_O_OPMPHM)
+	// predictor
+	if (!(options & (KDB_O_BINSEARCH | KDB_O_OPMPHM)))
 	{
-		// remove OPMPHM, due to callback stuff
-		options ^= KDB_O_OPMPHM;
-		if (!ks->opmphm || !opmphmIsBuild (ks->opmphm))
+		// predictor not overruled
+		if (!ks->opmphmPredictor)
+		{
+			ks->opmphmPredictor = opmphmPredictorNew ();
+		}
+		if (ks->opmphmPredictor)
+		{
+			if (opmphmIsBuild (ks->opmphm))
+			{
+				opmphmPredictorIncCountOpmphm (ks->opmphmPredictor);
+				options |= KDB_O_OPMPHM;
+			}
+			else
+			{
+				if (ks->flags & KS_FLAG_REBUILD_OPMPHM)
+				{
+					// KeySet changed ask predictor
+					if (opmphmPredictor (ks->opmphmPredictor, ks->size))
+					{
+						options |= KDB_O_OPMPHM;
+					}
+					else
+					{
+						options |= KDB_O_BINSEARCH;
+					}
+					ks->flags ^= KS_FLAG_REBUILD_OPMPHM;
+				}
+				else
+				{
+					if (opmphmPredictorIncCountBinarySearch (ks->opmphmPredictor, ks->size))
+					{
+						options |= KDB_O_OPMPHM;
+					}
+					else
+					{
+						options |= KDB_O_BINSEARCH;
+					}
+				}
+			}
+		}
+		else
+		{
+			// when predictor is not here use binary search as backup
+			options |= KDB_O_BINSEARCH;
+		}
+	}
+
+	// the actual lookup
+	if ((options & (KDB_O_BINSEARCH | KDB_O_OPMPHM)) == KDB_O_OPMPHM)
+	{
+		if (!opmphmIsBuild (ks->opmphm))
 		{
 			if (elektraLookupBuildOpmphm (ks))
 			{
@@ -2088,10 +2194,25 @@ static Key * elektraLookupSearch (KeySet * ks, Key * key, option_t options)
 			found = elektraLookupOpmphmSearch (ks, key, options);
 		}
 	}
-	else
+	else if ((options & (KDB_O_BINSEARCH | KDB_O_OPMPHM)) == KDB_O_BINSEARCH)
 	{
 		found = elektraLookupBinarySearch (ks, key, options);
 	}
+	else
+	{
+		// both flags set, make the best out of it
+		if (opmphmIsBuild (ks->opmphm))
+		{
+			found = elektraLookupOpmphmSearch (ks, key, options);
+		}
+		else
+		{
+			found = elektraLookupBinarySearch (ks, key, options);
+		}
+	}
+
+	// remove flags to not interfere with callback
+	options &= ~(KDB_O_OPMPHM | KDB_O_BINSEARCH);
 #else
 	found = elektraLookupBinarySearch (ks, key, options);
 #endif
@@ -2552,6 +2673,7 @@ int ksInit (KeySet * ks)
 
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 	ks->opmphm = NULL;
+	ks->opmphmPredictor = opmphmPredictorNew ();
 #endif
 
 	return 0;

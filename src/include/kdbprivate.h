@@ -21,6 +21,7 @@
 #include <kdbtypes.h>
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 #include <kdbopmphm.h>
+#include <kdbopmphmpredictor.h>
 #endif
 #include <kdbglobal.h>
 
@@ -133,11 +134,15 @@ typedef enum {
  * @ingroup backend
  */
 typedef enum {
-	KS_FLAG_SYNC = 1 /*!<
-		 KeySet need sync.
-		 If keys were popped from the Keyset
-		 this flag will be set, so that the backend will sync
-		 the keys to database.*/
+	KS_FLAG_SYNC = 1,	/*!<
+			KeySet need sync.
+			If keys were popped from the Keyset
+			this flag will be set, so that the backend will sync
+			the keys to database.*/
+	KS_FLAG_REBUILD_OPMPHM = 1 << 1	/*!<
+			The OPMPHM needs to be rebuild.
+			If some Key name changed in the KeySet this flag will be set,
+			includes also Key add and removal.*/
 } ksflag_t;
 
 
@@ -242,6 +247,10 @@ struct _KeySet
 	 * The Order Preserving Minimal Perfect Hash Map.
 	 */
 	Opmphm * opmphm;
+	/**
+	 * The Order Preserving Minimal Perfect Hash Map Predictor.
+	 */
+	OpmphmPredictor * opmphmPredictor;
 #endif
 };
 
