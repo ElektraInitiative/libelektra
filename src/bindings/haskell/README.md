@@ -29,7 +29,7 @@ inside ghci.
 
 ## Dependencies
 
-- GHC (Glasgow Haskell Compiler) > 8.0.0 (older versions may work but are untested)
+- GHC (Glasgow Haskell Compiler) > 8.0.0
 - cabal > 1.24.0.2  (older versions may work but untested, 2.0.0.0 works as well)
 
 GHC and cabal can be either obtained using a package manager or downloaded directly
