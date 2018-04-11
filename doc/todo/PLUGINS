@@ -370,13 +370,12 @@ If you want in the filename that contains $, you need to double it. So:
 
 Block resolver:
 	only take care of a block within the configuration file, leave the rest untouched
+	with support for multiple blocks
 
 Multi-file resolver:
-	resolve a directory of conf files with a backend each
+	resolve a directory of conf files with a backend each and merge them together
 
-curl resolver:
-	a resolver that downloads file from http/ftp/ssh/sftp/etc and uses them
-
+support systems without home directory
 
 ## no/ro resolver ##
 
