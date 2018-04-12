@@ -9,26 +9,39 @@
 
 #include "hexnumber.h"
 
-#include <kdbhelper.h>
 #include <kdberrors.h>
-#include <stdlib.h>
-#include <stdio.h>
+#include <kdbhelper.h>
 #include <kdbprivate.h>
 #include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
 
+/**
+ * Creates a KeySet representing the contract of this plugin.
+ */
 static KeySet * elektraContract (void)
 {
-	return ksNew (
-		30, keyNew ("system/elektra/modules/hexnumber", KEY_VALUE, "hexnumber plugin waits for your orders", KEY_END),
-		keyNew ("system/elektra/modules/hexnumber/exports", KEY_END),
-		keyNew ("system/elektra/modules/hexnumber/exports/get", KEY_FUNC, elektraHexnumberGet, KEY_END),
-		keyNew ("system/elektra/modules/hexnumber/exports/set", KEY_FUNC, elektraHexnumberSet, KEY_END),
+	return ksNew (30, keyNew ("system/elektra/modules/hexnumber", KEY_VALUE, "hexnumber plugin waits for your orders", KEY_END),
+		      keyNew ("system/elektra/modules/hexnumber/exports", KEY_END),
+		      keyNew ("system/elektra/modules/hexnumber/exports/get", KEY_FUNC, elektraHexnumberGet, KEY_END),
+		      keyNew ("system/elektra/modules/hexnumber/exports/set", KEY_FUNC, elektraHexnumberSet, KEY_END),
 
 #include ELEKTRA_README (hexnumber)
 
-		keyNew ("system/elektra/modules/hexnumber/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+		      keyNew ("system/elektra/modules/hexnumber/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 }
 
+/**
+ * Converts a Key with a hexadecimal number value to a Key with a decimal value.
+ *
+ * @pre The key has to actually contain a hexadecimal number string.
+ *
+ * @param key The Key whose value should be converted.
+ * @param parentKey The parent Key used to set errors.
+ *
+ * @retval #ELEKTRA_PLUGIN_STATUS_SUCCESS if the Key was successfully converted
+ * @retval #ELEKTRA_PLUGIN_STATUS_ERROR if the Key could not be converted
+ */
 static int convertHexToDec (Key * key, Key * parentKey)
 {
 	// get hex string from key
@@ -86,6 +99,17 @@ static int convertHexToDec (Key * key, Key * parentKey)
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
+/**
+ * Converts a Key with a decimal number value to a Key with a hexadecimal value.
+ *
+ * @pre The key has to actually contain a decimal number string.
+ *
+ * @param key The Key whose value should be converted.
+ * @param parentKey The parent Key used to set errors.
+ *
+ * @retval #ELEKTRA_PLUGIN_STATUS_SUCCESS if the Key was successfully converted
+ * @retval #ELEKTRA_PLUGIN_STATUS_ERROR if the Key could not be converted
+ */
 static int convertDecToHex (Key * key, Key * parentKey)
 {
 	// get decimal string from key
@@ -142,28 +166,46 @@ static int convertDecToHex (Key * key, Key * parentKey)
 }
 
 /**
- * Checks whether a given Key's value is a hexadecimal number.
+ * Checks whether a given Key's value is a hexadecimal string.
  *
  * @param key The Key that should be checked.
- * @param checkPrefix Set to true to indicate that a Key containing a string starting with 0x counts as hexadecimal.
  *
- * @retval true If the Key's value is a hexadecimal number.
- * @retval false If the Key's value is not a hexadecimal number.
+ * @retval #true if the Key's value starts with 0x
+ * @retval #false otherwise
  */
-static bool isHexNumber (const Key * key, const bool checkPrefix)
+static bool isHexString (const Key * key)
 {
-	const Key * typeMeta = keyGetMeta (key, "type");
-	if (typeMeta)
-	{
-		ELEKTRA_LOG_DEBUG ("Meta key “type” contains value “%s”", keyString (typeMeta));
-		return !strcmp (keyString (typeMeta), ELEKTRA_HEXNUMBER_META_TYPE);
-	}
-
-	typeMeta = keyGetMeta (key, "check/type");
-	if (typeMeta && !strcmp (keyString (typeMeta), ELEKTRA_HEXNUMBER_META_TYPE)) { return true; }
-	return checkPrefix && strncasecmp (keyString (key), "0x", 2) == 0;
+	return strncasecmp (keyString (key), "0x", 2) == 0;
 }
 
+/**
+ * Checks whether a given Key's type metadata is #ELEKTRA_HEXNUMBER_META_TYPE.
+ *
+ * @param key The Key that should be checked.
+ *
+ * @retval #true if the Key's type metadata is #ELEKTRA_HEXNUMBER_META_TYPE
+ * @retval #false otherwise
+ */
+static bool hasHexType (const Key * key)
+{
+	const Key * typeMeta = keyGetMeta (key, "type");
+	return typeMeta && strcmp (keyString (typeMeta), ELEKTRA_HEXNUMBER_META_TYPE) == 0;
+}
+
+/**
+ * Establish the plugin contract and convert all hexadecimal values in the KeySet to decimal.
+ *
+ * @note The plugin will attempt to convert ALL values starting with 0x from hexadecimal into decimal.
+ * 	 If a value starts with 0x but is not a hexadecimal number the resulting value will be 0!
+ *
+ * @param handle This parameter stores the configuration of the plugin.
+ * @param returned This parameter specifies the key set that this function updates.
+ * @param parentKey The function stores information about errors/warnings in this parameter.
+ *
+ * @retval #ELEKTRA_PLUGIN_STATUS_SUCCESS if any keys were updated
+ * @retval #ELEKTRA_PLUGIN_STATUS_NO_UPDATE if \p returned was not modified
+ * @retval #ELEKTRA_PLUGIN_STATUS_ERROR on failure
+ */
 int elektraHexnumberGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/hexnumber"))
@@ -181,13 +223,27 @@ int elektraHexnumberGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 	int status = ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 	while ((cur = ksNext (returned)) != NULL)
 	{
-		if (!keyIsString (cur) || !isHexNumber (cur, true)) { continue; }
+		if (!keyIsString (cur) || !isHexString (cur))
+		{
+			continue;
+		}
 		status |= convertHexToDec (cur, parentKey);
 	}
 
 	return status;
 }
 
+/**
+ * Convert all values in the KeySet originally stored as hexadecimal (marked by type metdata) to hexadecimal.
+ *
+ * @param handle This parameter stores the configuration of the plugin.
+ * @param returned This parameter specifies the key set that this function updates.
+ * @param parentKey The function stores information about errors/warnings in this parameter.
+ *
+ * @retval #ELEKTRA_PLUGIN_STATUS_SUCCESS if any keys were updated
+ * @retval #ELEKTRA_PLUGIN_STATUS_NO_UPDATE if \p returned was not modified
+ * @retval #ELEKTRA_PLUGIN_STATUS_ERROR on failure
+ */
 int elektraHexnumberSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
 	Key * cur;
@@ -196,13 +252,19 @@ int elektraHexnumberSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKT
 	int status = ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 	while ((cur = ksNext (returned)) != NULL)
 	{
-		if (!keyIsString (cur) || !isHexNumber (cur, false)) { continue; }
+		if (!keyIsString (cur) || !hasHexType (cur))
+		{
+			continue;
+		}
 		status |= convertDecToHex (cur, parentKey);
 	}
 
 	return status;
 }
 
+/**
+ * Exports the plugin to be used by Elektra.
+ */
 Plugin * ELEKTRA_PLUGIN_EXPORT (hexnumber)
 {
 	// clang-format off

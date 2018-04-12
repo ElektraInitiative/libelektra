@@ -20,4 +20,4 @@ int elektraHexnumberSet (Plugin * handle, KeySet * ks, Key * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (hexnumber);
 
-#endif //ELEKTRA_HEXNUMBER_H
+#endif // ELEKTRA_HEXNUMBER_H

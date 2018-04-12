@@ -17,9 +17,8 @@
 #define ELEKTRA_HEXNUMBER_META_TYPE "hexnumber"
 
 #define CREATE_TEST_KEY(HEX)                                                                                                               \
-        (keyNew ("user/tests/hexnumber/" #HEX, KEY_VALUE, #HEX, KEY_META, "type", ELEKTRA_HEXNUMBER_META_TYPE, KEY_END))
-#define CHECK_TEST_KEY(HEX, DEC)                                                                                                           \
-                succeed_if_same_string (keyString (ksLookupByName (ks, "user/tests/hexnumber/" #HEX, 0)), #DEC)\
+	(keyNew ("user/tests/hexnumber/" #HEX, KEY_VALUE, #HEX, KEY_META, "type", ELEKTRA_HEXNUMBER_META_TYPE, KEY_END))
+#define CHECK_TEST_KEY(HEX, DEC) succeed_if_same_string (keyString (ksLookupByName (ks, "user/tests/hexnumber/" #HEX, 0)), #DEC)
 
 
 static void test_basics (void)
@@ -46,7 +45,8 @@ static void test_default (void)
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("hexnumber");
 	KeySet * ks = ksNew (30, CREATE_TEST_KEY (0xF), CREATE_TEST_KEY (0xf), CREATE_TEST_KEY (0x14), CREATE_TEST_KEY (0xFFFFFFFFFFFFFFFF),
-			     CREATE_TEST_KEY (0x0), CREATE_TEST_KEY (0x2), CREATE_TEST_KEY (-0x2), CREATE_TEST_KEY (-0x1), KS_END);
+			     CREATE_TEST_KEY (0x0), CREATE_TEST_KEY (0x2), CREATE_TEST_KEY (-0x2), CREATE_TEST_KEY (-0x1),
+			     CREATE_TEST_KEY (test), CREATE_TEST_KEY (0xtest), KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 	CHECK_TEST_KEY (0xF, 15);
 	CHECK_TEST_KEY (0xf, 15);
@@ -54,8 +54,10 @@ static void test_default (void)
 	CHECK_TEST_KEY (0xFFFFFFFFFFFFFFFF, 18446744073709551615);
 	CHECK_TEST_KEY (0x0, 0);
 	CHECK_TEST_KEY (0x2, 2);
-	CHECK_TEST_KEY (-0x2, 18446744073709551614);
-	CHECK_TEST_KEY (-0x1, 18446744073709551615);
+	CHECK_TEST_KEY (-0x2, -0x2);
+	CHECK_TEST_KEY (-0x1, -0x1);
+	CHECK_TEST_KEY (test, test);
+	CHECK_TEST_KEY (0xtest, 0);
 
 	ksDel (ks);
 	keyDel (parentKey);

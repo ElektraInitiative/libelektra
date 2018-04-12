@@ -11,20 +11,21 @@
 
 ## Introduction
 
-TODO
+This plugin can be used to read configuration files that use hexadecimal values. All hexadecimal values (strings starting with 0x) will be 
+converted into decimal when the Elektra reads values from the mounted file. When Elektra writes back to the file all values originally 
+stored as hexadecimal will be converted back and stored as before.
 
 ## Usage
 
-TODO
+- To mount a simple backend that uses hexadecimal numbers, you can use:
 
-## Dependencies
+    ```sh
+    sudo kdb mount test.ecf /examples/hexnumber/test hexnumber
+    ```
 
-None.
+- To unmount the plugin use the following command:
 
-## Examples
+    ```sh
+    sudo kdb umount /examples/hexnumber/test
+    ```
 
-TODO
-
-## Limitations
-
-None.
