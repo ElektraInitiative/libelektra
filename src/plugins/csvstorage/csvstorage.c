@@ -479,7 +479,6 @@ static int csvRead (KeySet * returned, Key * parentKey, char delim, Key * colAsP
 				fclose (fp);
 				keyDel (dirKey);
 				ksDel (header);
-				if (tmpKs) ksDel (tmpKs);
 				return -1;
 			}
 			ELEKTRA_ADD_WARNINGF (118, parentKey, "illegal number of columns in line %lu", lineCounter);
@@ -751,16 +750,9 @@ int elektraCsvstorageSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	}
 	short useHeader = 0;
 	if (!strcmp (keyString (useHeaderKey), "skip")) useHeader = -1;
-	if (csvWrite (returned, parentKey, exportKS, colAsParent, outputDelim, useHeader) == -1)
-	{
-		if (exportKS) ksDel (exportKS);
-		return -1;
-	}
-	else
-	{
-		if (exportKS) ksDel (exportKS);
-		return 1; /* success */
-	}
+	int rc = csvWrite (returned, parentKey, exportKS, colAsParent, outputDelim, useHeader);
+	ksDel (exportKS);
+	return rc;
 }
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (csvstorage)
