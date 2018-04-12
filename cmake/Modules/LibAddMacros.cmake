@@ -554,7 +554,7 @@ function (generate_readme p) # rerun cmake when README.md is changed  also allow
 			contents
 			"${contents}")
 	string (REGEX
-		REPLACE "\"- +infos/author *= *([.@<>a-zéA-Z0-9 %_-]*)\\\\n\""
+		REPLACE "\"- +infos/author *= *([^\\\\]*)\\\\n\""
 			"keyNew(\"system/elektra/modules/${p}/infos/author\",\nKEY_VALUE, \"\\1\", KEY_END),"
 			contents
 			"${contents}")
