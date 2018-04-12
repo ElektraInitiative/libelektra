@@ -34,10 +34,10 @@ Sets the column names. Only usable in combination with the `columns` key. The nu
 Conflicts with usage of `header`.
 
 `columns/index`
-Use the value of the column given as argument to index the records instead of the record number.
+specify which column should be used to index records instead of the record number.
 
-`/export`
-Export only columns with matching names.
+`/export/<column name>`
+only export column `column name`. Configuration can be give multiple times for different columns to export.
 
 ## Examples
 
