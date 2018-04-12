@@ -264,6 +264,7 @@ Many problems were resolved with the following fixes:
    - OpenSSL
 
    now also works properly, if we treat warnings as errors (compiler switch `-Werror`).
+- [multifile](http://libelektra.org/plugins/multifile) now passes the child config to the storage plugins too and also handles symlinks correctly. 
 
 ## Outlook
 
