@@ -133,6 +133,7 @@ Many problems were resolved with the following fixes:
 - If you use a minimal configuration ([`dump`](http://libelektra.org/plugins/dump) and [`resolver`](https://www.libelektra.org/plugins/resolver) only), all test of the test suite now finish successfully again.
 - We resolved undefined behavior in polymorphic classes that contained virtual functions, by explicitly adding a virtual destructor.
 - small refactoring in `kdb-test`
+- [multifile](http://libelektra.org/plugins/multifile) now passes the child config to the storage plugins too and also handles symlinks correctly. 
 
 ## Outlook
 
