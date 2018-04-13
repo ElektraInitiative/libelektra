@@ -179,10 +179,10 @@ Doing other stuff:
 
 Log/Send out all changes to configuration to:
 
-- [dbus](dbus/) sends notifications for every change via dbus
-- [dbusrecv](dbusrecv/) receives notifications via dbus
-- [zeromqsend](zeromqsend/) sends notifications for every change via ZeroMQ sockets
-- [zeromqrecv](zeromqrecv/) receives notifications via ZeroMQ sockets
+- [dbus](dbus/) sends notifications for every change via dbus `notification`
+- [dbusrecv](dbusrecv/) receives notifications via dbus `notification`
+- [zeromqsend](zeromqsend/) sends notifications for every change via ZeroMQ sockets `notification`
+- [zeromqrecv](zeromqrecv/) receives notifications via ZeroMQ sockets `notification`
 - [syslog](syslog/) logs key database changes to syslog
 - [journald](journald/) logs key database changes to journald
 - [logchange](logchange/) prints the change of every key on the console
