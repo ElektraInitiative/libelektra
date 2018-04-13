@@ -18,14 +18,14 @@ typedef struct _mmapHeader MmapHeader;
 
 struct _mmapHeader
 {
-	size_t mmapMagicNumber; /**<Magic number for consistency check */
-	size_t mmapSize;	/**<Size of the complete mapping in bytes */
-	size_t numKeySets;      /**<Number of KeySets inlcuding meta KS */
-	size_t ksAlloc;		/**<Sum of all KeySet->alloc sizes */
-	size_t numKeys;		/**<Number of Keys including meta Keys */
-	size_t dataSize;	/**<Size of the data block in bytes: dynamic properties like key name, value, etc. */
-	uint32_t checksum;      /**<Checksum of the data */
-	char * mmapAddr;	/**<Base pointer to mapped region (points to the start of this struct) */
+	uint64_t mmapMagicNumber; /**<Magic number for consistency check */
+	size_t mmapSize;	  /**<Size of the complete mapping in bytes */
+	size_t numKeySets;	/**<Number of KeySets inlcuding meta KS */
+	size_t ksAlloc;		  /**<Sum of all KeySet->alloc sizes */
+	size_t numKeys;		  /**<Number of Keys including meta Keys */
+	size_t dataSize;	  /**<Size of the data block in bytes: dynamic properties like key name, value, etc. */
+	uint32_t checksum;	/**<Checksum of the data */
+	char * mmapAddr;	  /**<Base pointer to mapped region (points to the start of this struct) */
 };
 
 typedef struct _dynArray DynArray;
