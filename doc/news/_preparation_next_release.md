@@ -133,6 +133,7 @@ Many problems were resolved with the following fixes:
 - If you use a minimal configuration ([`dump`](http://libelektra.org/plugins/dump) and [`resolver`](https://www.libelektra.org/plugins/resolver) only), all test of the test suite now finish successfully again.
 - We resolved undefined behavior in polymorphic classes that contained virtual functions, by explicitly adding a virtual destructor.
 - small refactoring in `kdb-test`
+- Fix invalid handling of keynames in the [spec](http://libelektra.org/plugins/spec) plugin.
 
 ## Outlook
 

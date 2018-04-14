@@ -51,6 +51,8 @@ typedef struct
 	int counter;
 } PluginConfig;
 
+
+// elektra wildcard syntax to fnmatch syntax
 static char * keyNameToMatchingString (const Key * key)
 {
 	uint8_t arrayCount = 0;
@@ -80,9 +82,17 @@ static char * keyNameToMatchingString (const Key * key)
 	return pattern;
 }
 
+
+// match pattern against keyname - ignore namespace
+// @retval true if keyname matches pattern
+// @retval false if keyname doesn't match pattern
 static int matchPatternToKey (const char * pattern, const Key * key)
 {
-	return !fnmatch (pattern, (strchr (keyName (key), '/') + 1), FNM_PATHNAME);
+	const char * ptr = strchr (keyName (key), '/');
+	if (ptr)
+		return !fnmatch (pattern, ++ptr, FNM_PATHNAME);
+	else
+		return FNM_NOMATCH;
 }
 
 static int isValidArrayKey (Key * key)
@@ -959,7 +969,7 @@ Plugin * ELEKTRA_PLUGIN_EXPORT (spec)
 {
 	// clang-format off
 	return elektraPluginExport ("spec",
-		ELEKTRA_PLUGIN_CLOSE, &elektraSpecClose,
+			ELEKTRA_PLUGIN_CLOSE, &elektraSpecClose,
 			ELEKTRA_PLUGIN_GET,	&elektraSpecGet,
 			ELEKTRA_PLUGIN_SET,	&elektraSpecSet,
 			ELEKTRA_PLUGIN_END);
