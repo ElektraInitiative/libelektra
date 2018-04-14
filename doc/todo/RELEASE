@@ -36,6 +36,7 @@ Following shell expansions are used in this document:
 - Update contracts using update-infos-status
 - Shell recorder of release notes/highlights of release
 - regenerate dot of plugins
+- run link checker: cd ~build && ~e/scripts/link-checker external-links.txt
 
 == Increment Version Number ==
 
