@@ -281,9 +281,9 @@ static Codes initBackend (MultiConfig * mc, SingleConfig * s, Key * parentKey)
 	s->parentString = childParentString;
 	// fprintf (stderr, "Added file %s:(%s)\n\tChildParentKey: %s\n", s->fullPath, s->filename, s->parentString);
 	Plugin * resolver = NULL;
-	KeySet * childConfig = ksDup (mc->childConfig);
-	ksAppendKey (childConfig, keyNew ("/path", KEY_VALUE, s->fullPath, KEY_END));
-	resolver = elektraPluginOpen (mc->resolver, mc->modules, childConfig, parentKey);
+	KeySet * resolverChildConfig = ksDup (mc->childConfig);
+	ksAppendKey (resolverChildConfig, keyNew ("/path", KEY_VALUE, s->fullPath, KEY_END));
+	resolver = elektraPluginOpen (mc->resolver, mc->modules, resolverChildConfig, parentKey);
 	// fprintf (stderr, "%s:(%s)\n", keyName (parentKey), keyString (parentKey));
 	if (!resolver)
 	{
@@ -295,8 +295,9 @@ static Codes initBackend (MultiConfig * mc, SingleConfig * s, Key * parentKey)
 		s->resolver = resolver;
 	}
 	Plugin * storage = NULL;
-	storage = elektraPluginOpen (mc->storage, mc->modules, ksNew (1, keyNew ("system/path", KEY_VALUE, s->fullPath, KEY_END), KS_END),
-				     parentKey);
+	KeySet * storageChildConfig = ksDup (mc->childConfig);
+	ksAppendKey (storageChildConfig, keyNew ("system/path", KEY_VALUE, s->fullPath, KEY_END));
+	storage = elektraPluginOpen (mc->storage, mc->modules, storageChildConfig, parentKey);
 	if (!storage)
 	{
 		// fprintf (stderr, "Failed to load storage %s for %s\n", mc->storage, s->parentString);
@@ -326,7 +327,7 @@ static Codes updateFilesRecursive (MultiConfig * mc, KeySet * found, Key * paren
 	char * dirs[2];
 	dirs[0] = mc->directory;
 	dirs[1] = (void *) NULL;
-	FTS * fts = fts_open (dirs, FTS_COMFOLLOW | FTS_NOCHDIR, NULL);
+	FTS * fts = fts_open (dirs, FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOCHDIR, NULL);
 	if (fts)
 	{
 		FTSENT * ent = NULL;
@@ -408,7 +409,7 @@ static Codes updateFilesGlob (MultiConfig * mc, KeySet * found, Key * parentKey)
 	struct stat sb;
 	for (unsigned int i = 0; i < results.gl_pathc; ++i)
 	{
-		ret = lstat (results.gl_pathv[i], &sb);
+		ret = stat (results.gl_pathv[i], &sb);
 		if (S_ISREG (sb.st_mode))
 		{
 			Key * lookup = keyNew ("/", KEY_CASCADING_NAME, KEY_END);
