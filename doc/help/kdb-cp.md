@@ -16,6 +16,13 @@ Where `source` is the path of the key(s) you want to copy and `dest` is the path
 Note that when using the `-r` flag, `source` as well as all of the keys below it will be copied.
 
 
+## LIMITATIONS
+
+Neither `source` nor `dest` can be a cascading key.
+(Start with `/`).
+Make sure to select a namespace.
+
+
 ## RETURN VALUES
 
 This command will return the following values as an exit status:
@@ -25,7 +32,8 @@ This command will return the following values as an exit status:
 - 1-10:
   standard exit codes, see [kdb(1)](kdb.md)
 - 11:
-  Would override a key (pass `-f` to force)
+  No key to copy found.
+
 
 ## OPTIONS
 
@@ -57,7 +65,7 @@ To copy a single key:<br>
 
 To copy keys below an existing key:<br>
 `kdb cp -r user/example user/example/key1`<br>
-Note that in this example, all keys in the example directory will be copied below `key1` EXCEPT `key1`.
+Note that in this example, all keys in the example directory will be copied below `key1` **except** `key1`.
 
 
 

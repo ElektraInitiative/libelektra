@@ -189,8 +189,8 @@ int GetCommand::execute (Cmdline const & cl)
 	}
 	else
 	{
-		cerr << "Did not find key";
-		ret = 1;
+		cerr << "Did not find key '" << root.getName () << "'";
+		ret = 11;
 	}
 
 	if (!cl.noNewline)
