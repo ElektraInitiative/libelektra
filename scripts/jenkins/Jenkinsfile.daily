@@ -1,0 +1,79 @@
+/* https://build.libelektra.org/jenkins/job/elektra-jenkinsfile-daily/ */
+
+// Set properties for buildjob
+properties([
+    // Trigger only at specified cron time
+    pipelineTriggers([cron('H H(1-3) * * *')]),
+
+    // Discard all but the latest 30 logs
+    buildDiscarder(logRotator(numToKeepStr: '30', artifactNumToKeepStr: '30')),
+
+    // Don't run concurrently
+    disableConcurrentBuilds()
+])
+
+// The label we use to determine where to install a reference repository
+env.gitmirror_node_label = "gitmirror"
+
+stage ("Maintain Reference Repositories") {
+    // Get all nodes with label 'gitmirror' and the master
+    // DO NOT TAG master WITH 'gitmirror' as it will only show up as (null)
+    def nodes = nodesByLabel label:env.gitmirror_node_label
+    nodes.add("master")  // Add master manually
+    println "Update Git Mirrors on all nodes with tag ${env.gitmirror_node_label} + master\n${nodes}"
+
+    // define all the repos we actually want to fetch
+    def repos = [
+        [
+            url:"https://github.com/ElektraInitiative/libelektra.git",
+            dest: "libelektra"
+        ]
+    ]
+    // work through all tasks defined in maintain_repositories parallelly
+    parallel generate_repository_maintanence_stages("git_mirrors", nodes, repos)
+}
+
+def generate_repository_maintanence_stages(basedir, nodes, repos) {
+    def tasks = [:]
+    for(int i=0; i< nodes.size(); i++) {
+        def axisNodeValue = nodes[i]
+        for(int j=0; j<repos.size(); j++) {
+            def repo = repos[j]
+            def taskname = "git/${axisNodeValue}/${repo.dest}"
+            tasks[taskname] = {
+                node(axisNodeValue) {
+                    def jenkins_home = nodeRootDir(axisNodeValue).toString()
+                    dir(jenkins_home) {
+                        dir(basedir) {
+                            if(fileExists(repo.dest)) {
+                                dir(repo.dest) {
+                                    def current = pwd()
+                                    println "Updating mirror in ${current}"
+                                    sh("git fetch --prune")
+                                }
+                            } else {
+                                def current = pwd()
+                                println "Creating new mirror in ${current}/${repo.dest}"
+                                sh("git clone --mirror " + repo.url + " " + repo.dest)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return tasks
+}
+
+// Workaround to get the jenkins users HOME directory
+@NonCPS
+def nodeRootDir(nodeName){
+    if (nodeName.equals('master')){
+        return env.JENKINS_HOME
+    }
+    for (node in Jenkins.instance.nodes){
+        if (!nodeName.equals('master') && node.name.compareTo(nodeName) == 0 ){
+            return node.getRootPath()
+        }
+    }
+}

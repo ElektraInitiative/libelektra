@@ -122,6 +122,7 @@ These notes are of interest for people developing Elektra:
 - The [Markdown Shell Recorder][] now prints the path of the test file.
 - If any of the tests in `make run_memcheck` fail valgrind will now set an exit-code which will get picked up by make.
 - The haskell binding now explicitly requires GHC installed with a minimum version of 8.0.0 during cmake
+- We introduced git reference repositories to save io on our build system
 
 [Markdown Shell Recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
 
