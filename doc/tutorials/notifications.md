@@ -59,7 +59,7 @@ transport.
 kdb global-mount dbus announce=once dbusrecv
 ```
 
-Plugins usable as transport plugin are marked with `transport` on the
+Plugins usable as transport plugin are marked with `notification` on the
 [plugin page](https://www.libelektra.org/plugins/readme#notification-and-logging).
 
 ## How to integrate an I/O binding and send notifications asynchronously
@@ -257,9 +257,139 @@ int main (void)
 }
 ```
 
-## Guidelines
+## Emergent Behavior Guidelines
 
-TODO
+When applications react to configuration changes made by other applications this
+can lead to *emergent behavior*.
+We speak of emergent behavior when the parts of a system are functioning as
+designed but an unintended, unexpected or unanticipated behavior at system level
+occurs.
+
+For example, take the following sequence of events:
+
+1. application `A` changes its configuration
+2. application `B` receives a notification about the change from `A` and updates its configuration
+
+ Given these two steps the sequence could be a case of *wanted* emergent behavior:
+ Maybe application `B` keeps track of the number of global configuration
+ changes.
+ Now consider adding the following events to the sequence:
+
+3. application `A` receives a notification about the change from `B` and changes its configuration
+4. *continue at step 2*
+
+These additional two steps cause an infinite cycle of configuration updates
+which introduced *unwanted* behavior.
+
+When designing a system it is desirable to use components with predictable and
+well-defined behavior.
+As a system grows larger and gets more *complex* unpredictable behavior
+emerges that was neither intended by the system designer nor by the designer of
+the components.
+This system behavior is called *emergent behavior* if it cannot be explained
+from its components but only from analysis of the whole system.
+
+Emergent behavior can be beneficial for a system, for example, useful cooperation
+in an ant colony but it also has disadvantages.
+Systems that bear *unwanted* emergent behavior are difficult to manage and
+experience failures in the worst case.
+This kind of unwanted emergent behavior is called
+[*emergent misbehavior*](http://www.hpl.hp.com/techreports/2006/HPL-2006-2.html).
+Examples of emergent misbehavior are traffic jams or the
+[Millenium Footbridge](https://researchcourse.pbworks.com/f/structural+engineering.pdf)
+[incident in London](https://www.sciencedaily.com/releases/2005/11/051103080801.htm).
+
+An evaluation of Elektra's notification feature shows that it can exhibit the
+following symptoms:
+
+- **Synchronization** occurs due to the shared notification medium.
+  Multiple applications receive a notification at the same time and execute
+  their configuration update logic.
+  In turn shared resources like hard disk or CPU become overutilized.
+- **Oscillation** occurs when applications are reacting to configuration changes
+  by other applications.
+- In the worst case oscillation results in **livelock** when the frequency of
+  configuration updates becomes so high that applications are only executing
+  configuration update logic.
+- **Phase change** is a sudden change of the system behavior in reaction to a
+  minor change (e.g. incremental change of a configuration setting).
+  Phase change is introduced by application logic.
+
+Building on these findings we will now present guidelines for preventing
+emergent misbehavior when using the notification API and callbacks in particular.
+
+### Guideline 1: Avoid callbacks
+> Most of the guidelines are related to callbacks.
+> With normal use of the notification API emergent behavior should not occur.
+
+Callbacks couple an application temporally to configuration changes of other
+applications or instances of the same application.
+This observation is the basis for [Guidelines 1](#guideline-1-avoid-callbacks),
+[2](#guideline-2-wait-before-reacting-to-changes) and [3](#guideline-3-avoid-updates-as-reaction-to-change).
+While it is possible with registered variables to check for configuration
+changes at regular time intervals and react to changes the coupling is not as
+tight as with callbacks.
+
+### Guideline 2: Wait before reacting to changes
+> Waiting decouples an application from changes and reduces the risk for unwanted ***synchronization***.
+
+In applications where applying changes has impact on resource usage (e.g. CPU or
+disk) applying a time delay as suggested by this Guideline is a
+sensible choice.
+But this guideline is not only limited to these applications.
+
+Generally waiting before reacting to changes reduces the risk for unwanted
+synchronization by decoupling the application temporally.
+Waiting can be implemented using random time delays which further promotes
+decoupling since applications react at different points in time to changes.
+Waiting can also be implemented using a flag:
+Callbacks set the flag and when the control flow is in the main loop again, the
+pending updates are applied and the flag is cleared.
+
+### Guideline 3: Avoid updates as reaction to change
+> Avoid changing the configuration as reaction to a change especially in callbacks.
+> This reduces the risk for unwanted ***oscillation***.
+
+While this guideline does not forbid updating the key database using `kdbSet()`
+in a callback it advises to avoid it.
+If we recall the example from before we see how updating as reaction to change
+leads to unwanted oscillation.
+If necessary, the function `kdbSet()` should be temporally decoupled as
+suggested in [Guideline 2](#guideline-2-wait-before-reacting-to-changes).
+
+### Guideline 4: Do not use notifications for synchronization
+> Applications should not use notifications for synchronization as this can lead to ***phase change***.
+
+This guideline limits the use of the notification API to notifications about
+configuration changes.
+There are better suited techiques for different use cases.
+Applications should not keep track of changes and change their behavior on
+certain conditions.
+
+For example, this happens when applications synchronize themselves at startup by
+incrementing a counter in the key database.
+When a certain limit of application instances is reached the applications
+proceed with different behavior.
+If this behavior affects other applications phase change has occured.
+
+### Guideline 5: Apply changes immediately
+> Call `kdbSet()` to save updated configuration immediately after a change occured.
+> This reduces conflicting changes in the key database.
+
+When a configuration setting is updated within an application this guideline
+suggests to write the change immediately to the key database using `kdbSet()`.
+This ensures that other applications have the same view of the key database and
+operate on current settings.
+
+### Guideline 6: Be careful on what to call inside callbacks
+> Notification callbacks are called from within Elektra.
+> Calling `kdbClose()`, `elektraNotificationClose()` or `elektraSetIoBinding()` in a callback will lead to undefined behavior or an application crash.
+
+Closing and cleaning up the KDB handle will cause an application crash because
+the control flow returns from the callback to now removed code.
+While this can be considered an implementation detail it aligns with
+[Guideline 2](#guidline-2-wait-before-reacting-to-changes) since reinitialization of KDB
+uses more resources than other operations like `kdbGet()` or `kdbSet()`.
 
 ## Logging
 
