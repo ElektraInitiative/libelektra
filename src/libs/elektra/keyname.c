@@ -818,7 +818,7 @@ ssize_t keyGetBaseName (const Key * key, char * returned, size_t maxSize)
  * The escaping rules apply as in @link keyname above @endlink.
  *
  * A simple example is:
- * @snippet basename.c add base basic
+ * @snippet keyBasename.c add base basic
  *
  * E.g. if you add . it will be escaped:
  * @snippet testabi_key.c base1 add
@@ -1030,7 +1030,7 @@ ssize_t keyAddName (Key * key, const char * newName)
  * (dot-dot), % and "" (empty)). They will be properly escaped.
  *
  * A simple example is:
- * @snippet basename.c set base basic
+ * @snippet keyBasename.c set base basic
  *
  * If you want to add and not change the basename, use keyAddBaseName()
  * instead. If you do not want escaping, use keyAddName() instead.

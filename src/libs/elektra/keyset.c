@@ -1026,7 +1026,7 @@ ssize_t ksCopyInternal (KeySet * ks, size_t to, size_t from)
  * - @p system/mountpoint/other/key1
  *
  * When you use
- * @snippet cut.c cut
+ * @snippet ksCut.c cut
  *
  * Then in @p returned are:
  * - @p system/mountpoint/interest
