@@ -1,0 +1,65 @@
+properties([
+    pipelineTriggers([cron('H H(1-3) * * *')]),
+    buildDiscarder(logRotator(numToKeepStr: '30', artifactNumToKeepStr: '30')),
+    disableConcurrentBuilds()
+])
+
+env.gitmirror_node_label = "gitmirror"
+
+stage ("Maintain Reference Repositories") {
+    def nodes = nodesByLabel label:env.gitmirror_node_label
+    nodes.add("master")
+    println "Update Git Mirrors on all nodes with tag ${env.gitmirror_node_label} + master\n${nodes}"
+    def repos = [
+        [
+            url:"https://github.com/ElektraInitiative/libelektra.git",
+            dest: "libelektra"
+        ]
+    ]
+    parallel maintain_repositories("git_mirrors", nodes, repos)
+}
+
+
+def maintain_repositories(basedir, nodes, repos){
+    def tasks = [:]
+    for(int i=0; i< nodes.size(); i++) {
+        def axisNodeValue = nodes[i]
+        for(int j=0; j<repos.size(); j++){
+            def repo = repos[j]
+            def taskname = "git/${axisNodeValue}/${repo.dest}"
+            tasks[taskname] = {
+                node(axisNodeValue) {
+                    def jenkins_home = nodeRootDir(axisNodeValue).toString()
+                    dir(jenkins_home){
+                        dir(basedir){
+                            if(fileExists(repo.dest)) {
+                                dir(repo.dest) {
+                                    def current = pwd()
+                                    println "Updating mirror in ${current}"
+                                    sh("git fetch --prune")
+                                }
+                            }else {
+                                def current = pwd()
+                                println "Creating new mirror in ${current}/${repo.dest}"
+                                sh("git clone --mirror " + repo.url + " " + repo.dest)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return tasks
+}
+
+@NonCPS
+def nodeRootDir(nodeName){
+    if (nodeName.equals('master')){
+        return env.JENKINS_HOME
+    }
+    for (node in Jenkins.instance.nodes){
+        if (!nodeName.equals('master') && node.name.compareTo(nodeName) == 0 ){
+            return node.getRootPath()
+        }
+    }
+}
