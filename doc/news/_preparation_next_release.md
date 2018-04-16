@@ -105,6 +105,9 @@ These notes are of interest for people maintaining packages of Elektra:
 
 These notes are of interest for people developing Elektra:
 
+- Tests no longer clear environment or reset locales.
+  This fixes TMPDIR, DBUS_SESSION_BUS_ADDRESS problems but might
+  cause problems with wrongly set HOME and USER.
 - You can now add a [Markdown Shell Recorder][] test for a plugin
   via the CMake function `add_plugin`.
 - The CMake functions
