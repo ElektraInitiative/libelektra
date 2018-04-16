@@ -142,6 +142,7 @@ before_install:
       sudo apt-get install libyaml-cpp-dev
       sudo apt-get install libuv-dev
       sudo apt-get install libdbus-1-dev
+      sudo apt-get install libxerces-c-dev
     fi
 
 #
