@@ -11,7 +11,7 @@ Note that when using the `-r` flag, `source` as well as all of the keys below it
 ## DESCRIPTION
 
 This command moves key(s) in the Key database.
-You can move keys to another other paths within the database.
+You can move keys to other paths within the database.
 
 
 ## LIMITATIONS
