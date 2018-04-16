@@ -21,16 +21,18 @@ module Elektra.Key (
   keyCmp, keyNeedSync, 
   keyIsBelow, keyIsDirectBelow, 
   keyRel, keyIsInactive, keyIsBinary, keyIsString, keyPtrNull, 
-  ifKey, withKey
+  ifKey, withKey,
+  tmpRef
 ) where
 
 #include <kdb.h>
 import Foreign.Marshal.Alloc (allocaBytes)
 import Foreign.Ptr (castPtr, nullPtr)
-import Foreign.ForeignPtr (withForeignPtr)
+import Foreign.ForeignPtr (FinalizerPtr (..), withForeignPtr, addForeignPtrFinalizer)
 import System.IO.Unsafe (unsafePerformIO)
 import Data.Maybe (isJust, fromJust)
 import Control.Monad (liftM)
+import Debug.Trace
 
 {#context lib="libelektra" #}
 
@@ -38,7 +40,7 @@ import Control.Monad (liftM)
 -- TYPE DEFINITIONS
 -- ***
 
-{#pointer *Key foreign finalizer keyDel newtype #}
+{#pointer *Key foreign newtype #}
 
 {#typedef size_t Int#}
 {#typedef ssize_t Int #}
@@ -63,11 +65,11 @@ keyPtrNull (Key ptr) = withForeignPtr ptr (return . (== nullPtr))
 -- as we use haskell's reference counting here, increase the number by one
 -- so it gets deleted properly when haskell calls the finalizer
 keyNew :: String -> IO Key
-keyNew name = keyNewRaw name KeyEnd
+keyNew name = keyNewRaw name KeyEnd >>= addFinalizer
 keyNewWithValue :: String -> String -> IO Key
-keyNewWithValue name value = keyNewRawWithValue name KeyValue value KeyEnd
+keyNewWithValue name value = keyNewRawWithValue name KeyValue value KeyEnd >>= addFinalizer
 keyNewWithFlagsAndValue :: String -> ElektraKeyVarargs -> String -> IO Key
-keyNewWithFlagsAndValue name flags value = keyNewRawWithFlagsAndValue name KeyFlags flags KeyValue value KeyEnd
+keyNewWithFlagsAndValue name flags value = keyNewRawWithFlagsAndValue name KeyFlags flags KeyValue value KeyEnd >>= addFinalizer
 {#fun unsafe variadic keyNew[keyswitch_t] as keyNewRaw {`String', `ElektraKeyVarargs'} -> `Key' #}
 {#fun unsafe variadic keyNew[keyswitch_t, const char *, keyswitch_t]
   as keyNewRawWithValue {`String', `ElektraKeyVarargs', `String', `ElektraKeyVarargs'} -> `Key' #}
@@ -75,7 +77,9 @@ keyNewWithFlagsAndValue name flags value = keyNewRawWithFlagsAndValue name KeyFl
   as keyNewRawWithFlagsAndValue 
     {`String', `ElektraKeyVarargs', `ElektraKeyVarargs', `ElektraKeyVarargs', `String', `ElektraKeyVarargs'} 
     -> `Key' #}
-{#fun unsafe keyDup {`Key'} -> `Key' #}
+keyDup :: Key -> IO Key
+keyDup k = keyDupRaw k >>= addFinalizer
+{#fun unsafe keyDup as keyDupRaw {`Key'} -> `Key' #}
 {#fun unsafe keyCopy {`Key', `Key'} -> `Int' #}
 {#fun unsafe keyClear {`Key'} -> `Int' #}
 {#fun unsafe keyIncRef {`Key'} -> `Int' #}
@@ -140,17 +144,11 @@ keySet key = keySetString key . show
 -- ***
 
 {#fun unsafe keyRewindMeta {`Key'} -> `Int' #}
-keyNextMeta :: Key -> IO Key
-keyNextMeta = incRef . keyNextMetaRaw
-{#fun unsafe keyNextMeta as keyNextMetaRaw {`Key'} -> `Key' #}
-keyCurrentMeta :: Key -> IO Key
-keyCurrentMeta = incRef . keyCurrentMetaRaw
-{#fun unsafe keyCurrentMeta as keyCurrentMetaRaw {`Key'} -> `Key' #}
+{#fun unsafe keyNextMeta as keyNextMeta {`Key'} -> `Key' #}
+{#fun unsafe keyCurrentMeta as keyCurrentMeta {`Key'} -> `Key' #}
 {#fun unsafe keyCopyMeta {`Key', `Key', `String'} -> `Int' #}
 {#fun unsafe keyCopyAllMeta {`Key', `Key'} -> `Int' #}
-keyGetMeta :: Key -> String -> IO Key
-keyGetMeta k = incRef . keyGetMetaRaw k
-{#fun unsafe keyGetMeta as keyGetMetaRaw {`Key', `String'} -> `Key' #}
+{#fun unsafe keyGetMeta as keyGetMeta {`Key', `String'} -> `Key' #}
 {#fun unsafe keySetMeta {`Key', `String', `String'} -> `Int' #}
 keyListMeta :: Key -> IO [Key]
 keyListMeta key = keyRewindMeta key >> listMeta []
@@ -192,13 +190,23 @@ instance Eq Key where
 -- ADDITIONAL HELPERS USEFUL IN HASKELL
 -- ***
 
--- Haskell always calls keyDel whenever we get a Key from the FFI
--- So for some functions (metadata) we have to increase the reference counter
--- to avoid deleting the metadata still associated with a key
-incRef :: IO Key -> IO Key
-incRef k = ifKey (k) (\i -> keyIncRef i >> return i) k
+--Key (C2HSImp.ForeignPtr (Key))
+addFinalizer :: Key -> IO Key
+addFinalizer (Key a) = addForeignPtrFinalizer keyDel a >> return (Key a)
 
 ifKey :: IO Key -> (Key -> IO a) -> IO a -> IO a
 ifKey k t f = do
   null <- k >>= keyPtrNull
   if null then f else k >>= t
+
+-- Temporarily increases the reference counter so e.g. a keyset will not take ownership so
+-- Haskell's finalizer can run successfully afterwards
+tmpRef :: Key -> IO Key
+tmpRef k@(Key a) = keyIncRef k >> addForeignPtrFinalizer keyDecRefPtr a >> return (Key a)
+
+foreign import ccall unsafe "Elektra/Key.chs.h &keyDel"
+  keyDel :: C2HSImp.FunPtr ((C2HSImp.Ptr (Key)) -> (IO ()))
+
+
+foreign import ccall unsafe "Elektra/Key.chs.h &keyDecRef"
+  keyDecRefPtr :: C2HSImp.FunPtr ((C2HSImp.Ptr (Key)) -> (IO ()))

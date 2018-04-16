@@ -60,11 +60,11 @@ ksNew size = ksNewRaw size 0
 
 -- As Haskell will call keyDel on all Key references, the KeySet is not allowed to take ownership
 ksAppendKey :: KeySet -> Key -> IO Int
-ksAppendKey ks k = keyIncRef k >> ksAppendKeyRaw ks k
+ksAppendKey ks k = tmpRef k >>= ksAppendKeyRaw ks
 {#fun unsafe ksAppendKey as ksAppendKeyRaw {`KeySet', `Key'} -> `Int' #}
 ksAppend :: KeySet -> KeySet -> IO Int
 ksAppend ks1 ks2 = do
-  ksList ks1 >>= (mapM_ keyIncRef)
+  ksList ks1 >>= (mapM_ tmpRef)
   ksAppendRaw ks1 ks2
 {#fun unsafe ksAppend as ksAppendRaw  {`KeySet', `KeySet'} -> `Int' #}
 {#fun unsafe ksCut {`KeySet', `Key'} -> `KeySet' #}
