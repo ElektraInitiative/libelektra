@@ -7,6 +7,7 @@ kdb-get(1) -- Get the value of a key stored in the key database
 
 Where `key name` is the name of the key.
 
+
 ## DESCRIPTION
 
 This command is used to retrieve the value of a key.
@@ -14,9 +15,25 @@ This command is used to retrieve the value of a key.
 If you enter a `key name` starting with a leading `/`, then a cascading lookup will be performed in order to attempt to locate the key.
 In this case, using the `-v` option allows the user to see the full key name of the key if it is found.
 
-Note: There is a current limitation where only keys that are mounted will be considered during a cascading lookup.
-A workaround that will lookup all keys is to pass the `-a` option.
-Additionally, a user can use the command `kdb ls <same key>` to see if an override or a fallback will be considered by the lookup.
+
+## LIMITATIONS
+
+Only keys within the mountpoint or below the `<key name>` will be considered during a cascading lookup.
+A workaround is to pass the `-a` option.
+Use the command `kdb get -v <key name>` to see if an override or a fallback was considered by the lookup.
+
+
+
+## RETURN VALUES
+
+This command will return the following values as an exit status:
+
+- 0:
+  No errors.
+- 1-10:
+  standard exit codes, see [kdb(1)](kdb.md)
+- 11:
+  No key found.
 
 
 ## OPTIONS

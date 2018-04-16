@@ -92,6 +92,14 @@ compiled against an older 0.8 version of Elektra will continue to work
 We added:
 
 - the private headerfiles `kdbnotificationinternal.h`, `kdbioplugin.h`.
+- `kdb get`, `kdb mv` and `kdb cp` use error code `11` if keys are not found
+
+We removed:
+
+- not used error code `12` from `kdb mv` removed from docu
+- cascading keys as arguments to `kdb cp` and `kdb mv` now fail instead
+  of doing something unexpected, thanks to @sanssecours for reporting
+  (see #1483)
 
 ## Notes for Maintainer
 

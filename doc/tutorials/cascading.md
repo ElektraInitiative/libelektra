@@ -28,7 +28,7 @@ kdb set user/examples/overrides $(mktemp)
 kdb export system/overrides dump > $(kdb get user/examples/overrides)
 
 kdb get /sw/tutorial/cascading/#0/current/test
-# RET: 1
+# RET: 11
 # STDERR: Did not find key
 
 # Now add the key ...

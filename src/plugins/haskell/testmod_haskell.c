@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief Tests for haskelltemplate plugin
+ * @brief Tests for haskell plugin
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *

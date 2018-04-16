@@ -60,7 +60,7 @@ execute()
 		nbTest=$(( nbTest + 1 ))
 		if ! printf '%s' "$RETVAL" | grep -Ewq $RETCMP;
 		then
-			printf 'Return value “%s” does not match “%s”\n' "$RETVAL" "$RETCMP"
+			printerr '\nERROR - RET:\nReturn value “%s” does not match “%s”\n\n' "$RETVAL" "$RETCMP"
 			printf '=== FAILED return value does not match expected pattern %s\n' "$RETCMP" >> "$OutFile"
 			nbError=$(( nbError + 1 ))
 		fi
@@ -79,7 +79,7 @@ execute()
 		nbTest=$(( nbTest + 1 ))
 		if ! printf '%s' "$STDERR" | replace_newline_return | grep -Eq --text "$STDERRCMP";
 		then
-			printf '\nERROR - STDERR:\n“%s”\ndoes not match\n“%s”\n\n' "$STDERR" "$STDERRCMP"
+			printerr '\nERROR - STDERR:\n“%s”\ndoes not match\n“%s”\n\n' "$STDERR" "$STDERRCMP"
 			printf '=== FAILED stderr does not match expected pattern %s\n' "$STDERRCMP" >> "$OutFile"
 			nbError=$(( nbError + 1 ))
 		fi
@@ -97,7 +97,7 @@ execute()
 		nbTest=$(( nbTest + 1 ))
 		if ! printf '%s' "$STDOUT" | replace_newline_return | grep -Fqx --text "$STDOUTCMP";
 		then
-			printf '\nERROR - STDOUT:\n“%s”\ndoes not match\n“%s”\n\n' "$STDOUT" "$STDOUTCMP"
+			printerr '\nERROR - STDOUT:\n“%s”\ndoes not match\n“%s”\n\n' "$STDOUT" "$STDOUTCMP"
 			printf '=== FAILED stdout does not match expected pattern %s\n' "$STDOUTCMP" >> "$OutFile"
 			nbError=$(( nbError + 1 ))
 		fi
@@ -112,7 +112,7 @@ execute()
 		nbTest=$(( nbTest + 1 ))
 		if !  printf '%s' "$STDOUT" | replace_newline_return | grep -Eq --text "$STDOUTRECMP";
 		then
-			printf '\nERROR - STDOUT:\n“%s”\ndoes not match\n“%s”\n\n' "$STDOUT" "$STDOUTRECMP"
+			printerr '\nERROR - STDOUT:\n“%s”\ndoes not match\n“%s”\n\n' "$STDOUT" "$STDOUTRECMP"
 			printf '=== FAILED stdout does not match expected pattern %s\n' "$STDOUTRECMP" >> "$OutFile"
 			nbError=$(( nbError + 1 ))
 		fi
@@ -130,7 +130,7 @@ execute()
 		nbTest=$(( nbTest + 1 ))
 		if ! printf '%s' "$WARNINGS" | replace_newline_return | grep -Eq --text "$WARNINGSCMP";
 		then
-			printf '\nERROR - WARNINGS:\n“%s”\ndoes not match\n“%s”\n\n' "$WARNINGS" "$WARNINGSCMP"
+			printerr '\nERROR - WARNINGS:\n“%s”\ndoes not match\n“%s”\n\n' "$WARNINGS" "$WARNINGSCMP"
 			printf '=== FAILED Warnings do not match expected pattern %s\n' "$WARNINGSCMP" >> "$OutFile"
 			nbError=$(( nbError + 1 ))
 		fi
@@ -148,7 +148,7 @@ execute()
 		nbTest=$(( nbTest + 1 ))
 		if ! printf '%s' "$ERROR" | replace_newline_return | grep -Eq --text "$ERRORCMP";
 		then
-			printf '\nERROR - ERROR:\n“%s”\ndoes not match\n“%s”\n\n' "$ERROR" "$ERRORCMP"
+			printerr '\nERROR - ERROR:\n“%s”\ndoes not match\n“%s”\n\n' "$ERROR" "$ERRORCMP"
 			printf '=== FAILED Errors do not match expected pattern %s\n' "$ERRORCMP" >> "$OutFile"
 			nbError=$(( nbError + 1 ))
 		fi
@@ -307,7 +307,7 @@ then
 	RESULT=$(diff -N --text "$2" "$OutFile" 2>/dev/null)
 	if [ "$?" -ne '0' ];
 	then
-		printf '=======================================\nReplay test failed, protocols differ\n%s\n\n\n\n' "$RESULT"
+		printerr '=======================================\nReplay test failed, protocols differ\n%s\n\n\n\n' "$RESULT"
 		EVAL=1
 	else
 		printf '=======================================\nReplay test succeeded\n'
@@ -317,7 +317,7 @@ fi
 if [ "$EVAL" -eq 0 ] && [ $keepProtocol = 'false' ]; then
 	rm -f "$OutFile"
 else
-	>&2 printf '\n📕\nProtocol File: %s\n' "$OutFile"
+	printerr '\nProtocol File: %s\n' "$OutFile"
 fi
 
 rm "${TMPFILE}"

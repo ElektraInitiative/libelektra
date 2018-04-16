@@ -250,7 +250,9 @@ replace_newline_return () {
 	awk '{if (NR>1) {printf("%s⏎", line);} line=$0;} END { printf("%s", line); }'
 }
 
-
+printerr () {
+	>&2 printf "$@"
+}
 
 #
 # EXPORT FUNCTIONS
@@ -388,8 +390,6 @@ export_check()
 		check_failed "$EXPORTS" "$TESTNAME" mount
 	fi
 }
-
-
 
 
 
