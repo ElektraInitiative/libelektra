@@ -60,7 +60,7 @@ execute()
 		nbTest=$(( nbTest + 1 ))
 		if ! printf '%s' "$RETVAL" | grep -Ewq $RETCMP;
 		then
-			printerr 'Return value “%s” does not match “%s”\n' "$RETVAL" "$RETCMP"
+			printerr '\nERROR - RET:\nReturn value “%s” does not match “%s”\n\n' "$RETVAL" "$RETCMP"
 			printf '=== FAILED return value does not match expected pattern %s\n' "$RETCMP" >> "$OutFile"
 			nbError=$(( nbError + 1 ))
 		fi
