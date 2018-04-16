@@ -5,7 +5,7 @@ module Elektra.Typechecker () where
 import Elektra.Key
 import Elektra.KeySet
 import Elektra.Plugin
-import Elektra.SpecTranslator
+import Elektra.SpecTranslator2
 import Elektra.SpecParser
 import Elektra.Errors
 
@@ -14,6 +14,7 @@ import Control.Logger.Simple
 import Text.PrettyPrint
 import Language.Haskell.Exts.Pretty
 import Language.Haskell.Interpreter
+import Language.Haskell.Interpreter.Unsafe
 import Data.List                    (intercalate, isPrefixOf)
 import System.IO.Temp               (writeTempFile)
 import System.Directory             (removeFile)
@@ -39,7 +40,9 @@ typecheck ks k = withGlobalLogging (LogConfig Nothing ("@ENABLE_LOGGER@" == "ON"
   
   putStepLn "Done Translating all Specifications."
   specFile <- writeTempFile "/tmp/" "testSpecification.hs" rendered
-  r <- runInterpreter (keyInterpreter specFile)
+  r <- unsafeRunInterpreterWithArgs [
+    "-package-db /Users/admin/git/libelektra/build/.cabal-sandbox/x86_64-osx-ghc-8.2.2-packages.conf.d",
+    "-fplugin=Elektra.RegexTypeChecker"] (keyInterpreter specFile)
   removeFile specFile
   case r of
     Left err -> do
@@ -52,7 +55,9 @@ typecheck ks k = withGlobalLogging (LogConfig Nothing ("@ENABLE_LOGGER@" == "ON"
 
 keyInterpreter :: FilePath -> InterpreterT IO ()
 keyInterpreter specFile = do
-  loadModules ["@CMAKE_INSTALL_PREFIX@/@KDB_DB_SPEC@/SpecElektra.hs", specFile]
+  --let prefix = "@CMAKE_INSTALL_PREFIX@/@KDB_DB_SPEC@/"
+  let prefix = "/Users/admin/git/libelektra/src/libs/typesystem/SpecElektra/Elektra/"
+  loadModules [specFile]
   say "Loaded our rendered specification, now we can infer the stuff in it."
   setTopLevelModules ["TestSpecification"]
   getModuleExports "TestSpecification" >>= mapM_ showTypes . filter isFun . filter (not . isPrefixOf "specElektraRawKey" . name)
