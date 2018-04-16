@@ -31,7 +31,7 @@ import Language.Haskell.Exts.Parser
 type FunctionMap         = Map TypeName TypeSpecification
 type FunctionExchangeMap = Map String [FunctionCandidate]
 
-translateSpecifications :: [TypeSpecification] -> [KeySpecification] -> Module ()
+translateSpecifications :: [TypeSpecification] -> [KeySpecification] -> IO Module ()
 translateSpecifications ts ks = mkModule $ translatedTypes ++ translatedTypeDefinitions ++ translatedKeyDefinitions
   where
     typeDefinitions = ts
@@ -65,7 +65,11 @@ mkModule = Module ()
   [LanguagePragma () [name "DataKinds", name "TypeOperators", name "NoImplicitPrelude",
                       name "AllowAmbiguousTypes", name "GADTs"]]
   [ImportDecl {importAnn = (),
-               importModule = ModuleName () "Elektra.SpecElektra",
+               importModule = ModuleName () "Elektra.RegexType",
+               importQualified = False, importSrc = False, importSafe = False,
+               importPkg = Nothing, importAs = Nothing, importSpecs = Nothing}
+  ,ImportDecl {importAnn = (),
+               importModule = ModuleName () "GHC.TypeLits",
                importQualified = False, importSrc = False, importSafe = False,
                importPkg = Nothing, importAs = Nothing, importSpecs = Nothing}
   ,ImportDecl {importAnn = (),

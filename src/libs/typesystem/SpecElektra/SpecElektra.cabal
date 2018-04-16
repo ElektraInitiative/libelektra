@@ -13,6 +13,9 @@ cabal-version:       >=1.10
 
 library
   exposed-modules:   Elektra.SpecElektra
+                   , Elektra.Range
+                   , Elektra.RegexType
+                   , Elektra.RegexTypeChecker
   other-extensions:  TypeFamilies
                    , TypeInType
                    , TypeOperators

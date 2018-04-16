@@ -77,24 +77,23 @@ static void test_basics (void)
 		KEY_END));
 
 	ksAppendKey (ks, keyNew (PARENT_KEY_NAME "/elektra/spec/fallback/#",
-		KEY_META, "elektra/spec/type", "RegexContains b a => Key a -> Key b -> Key a",
-		KEY_META, "elektra/spec/impl", "fallback (Key Nothing) b = b \n fallback a _ = a",
+		KEY_META, "elektra/spec/type", "RegexContains b a => Key a -> Key b :: . -> Key a",
+		KEY_META, "elektra/spec/impl", "fallback (Key P.Nothing) b = b \n fallback a _ = a",
 		KEY_END));
 
 	ksAppendKey (ks, keyNew (PARENT_KEY_NAME "/elektra/spec/override/#",
-		KEY_META, "elektra/spec/type", "RegexContains b a => Key b -> Key a -> Key b",
-		KEY_META, "elektra/spec/impl", "override (Key Nothing) b = b \n override a _ = a",
+		KEY_META, "elektra/spec/type", "RegexContains b a => Key b -> Key a :: . -> Key b",
+		KEY_META, "elektra/spec/impl", "override (Key P.Nothing) b = b \n override a _ = a",
 		KEY_END));
 
 	ksAppendKey (ks, keyNew (PARENT_KEY_NAME "/elektra/spec/check/range",
-		KEY_VALUE, "b",
-		KEY_META, "elektra/spec/type", "RegexIntersects a b => Key a -> Proxy b -> Key (RegexIntersection a b)",
-		KEY_META, "elektra/spec/impl", "checkRange a _ = a",
+		KEY_META, "elektra/spec/type", "RegexIntersects a b => Key a -> P.Proxy b :: Range . -> Key (RegexIntersection a b)",
+		KEY_META, "elektra/spec/impl", "checkrange a _ = a",
 		KEY_END));
 
 	ksAppendKey (ks, keyNew (PARENT_KEY_NAME "/elektra/spec/check/long",
-		KEY_META, "elektra/spec/type", "RegexIntersects a \"" LONG_REGEX "\" => Key a -> Proxy b -> Key (RegexIntersection a " LONG_REGEX ")",
-		KEY_META, "elektra/spec/impl", "checkLong a = a",
+		KEY_META, "elektra/spec/type", "RegexIntersects a \"" LONG_REGEX "\" => Key a -> Key (RegexIntersection a \"" LONG_REGEX "\")",
+		KEY_META, "elektra/spec/impl", "checklong a = a",
 		KEY_END));
 
 	succeed_if (plugin->kdbOpen (plugin, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbOpen was not successful");

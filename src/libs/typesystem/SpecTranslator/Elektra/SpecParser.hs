@@ -5,81 +5,37 @@
 --
 -- @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
 -- 
-{-# LANGUAGE TypeFamilies, TypeInType, TypeOperators, 
+{-# LANGUAGE TypeFamilies, TypeInType, TypeOperators, OverloadedStrings,
              ExistentialQuantification, GADTs, UndecidableInstances #-}
 
 module Elektra.SpecParser (
-  parseTypeSpecifications, parseKeySpecifications, 
-  Path, BaseType, Implementation, TypeName, FunctionCandidate, PathVariable (..), Function (..),
-  TypeParameter (..), TypeSpecification (..), 
-  TransformationSpecification (..), KeySpecification (..), functionBaseName
+  parseTypeSpecifications, parseKeySpecifications
 ) where
 
 import Elektra.Key
 import Elektra.KeySet
 import Elektra.Ease
 
-import Control.Monad   (filterM, liftM2, join)
-import Data.List       (isPrefixOf)
-import Data.List.Split (splitOn)
+import Control.Applicative (pure, liftA2)
+import Control.Monad       (filterM, liftM2, join, void)
+import Data.List           (isPrefixOf)
+import Data.List.Split     (splitOn)
 
-import qualified Data.Text as T
+import Elektra.Specifications
+import Elektra.Parsers
+import Elektra.Range
+import FiniteAutomata
+
+import qualified Data.Text       as T
+import qualified Data.Text.Read  as T
+
+type RootKey = Key
 
 specPrefix :: String -> String
 specPrefix = flip (++) "/elektra/spec" 
 
 specPrefixKey :: String -> IO Key
 specPrefixKey = keyNew . specPrefix
-
-type Path = String
-type BaseType = String
-type Implementation = String
-type TypeName = String
-
-type RootKey = Key
-
-type FunctionCandidate = (Function, String)
-data Function = ArrayFunction TypeName String | Function TypeName deriving Eq
-
-instance Show Function
-  where show (ArrayFunction s i) = s ++ i
-        show (Function s)        = s
-
-functionBaseName :: Function -> String
-functionBaseName (ArrayFunction s _) = s
-functionBaseName (Function s)        = s
-
-data PathVariable = Self | Path Path deriving Eq
-instance Show PathVariable
-  where
-    show Self     = "self"
-    show (Path p) = p
-
-data TransformationSpecification = TransformationSpecification {
-  transformFrom   :: Path,
-  transformToType :: String
-} deriving (Show, Eq)
-
-data KeySpecification = KeySpecification {
-  path               :: Path,
-  defaultValue       :: Maybe String,
-  keyType            :: Either Path String,
-  functionCandidates :: [FunctionCandidate],
-  typeSpecification  :: TypeSpecification
-} deriving (Show, Eq)
-
--- TODO remove none, use some better error handling (errorT monad?)
-data TypeParameter = TypeParameter { 
-  typePathVariable :: PathVariable,
-  baseType         :: BaseType
-} deriving (Show, Eq)
-
-data TypeSpecification = TypeSpecification {
-  typeName       :: TypeName,
-  pathVariable   :: PathVariable,
-  typeParameters :: [TypeParameter],
-  implementation :: Maybe [Implementation]
-} deriving (Show, Eq)
 
 keyFilterMeta :: Key -> (String -> Bool) -> IO [Key]
 keyFilterMeta k p = keyListMeta k >>= filterM (fmap p . keyName) 
@@ -88,8 +44,8 @@ parseKeySpecification :: RootKey -> Key -> IO KeySpecification
 parseKeySpecification r k = do
   pPath               <- keyGetRelativeName k r
   pDefaultValue       <- ifKey (keyGetMeta k "default") (fmap Just . keyString) (return Nothing) 
-  pKeyType            <- ifKey (keyGetMeta k "type") (fmap parseType . keyString) (return $ Right "Top")
-  pFunctionCandidates <- mapM parseFunctionCandidate =<< keyFilterMeta k (\s -> (s /= "default") && (s /= "type")) 
+  pKeyType            <- ifKey (keyGetMeta k "type") (fmap parseType . keyString) (return $ Right ".*")
+  pFunctionCandidates <- let notReserved = liftA2 (&&) (/= "default") (/= "type") in mapM parseFunctionCandidate =<< keyFilterMeta k notReserved
   pTypeSpecification  <- parseTypeSpecification r k
   return $ KeySpecification pPath pDefaultValue pKeyType pFunctionCandidates pTypeSpecification
   where
@@ -108,19 +64,13 @@ parseKeySpecification r k = do
 
 parseTypeSpecification :: RootKey -> Key -> IO TypeSpecification
 parseTypeSpecification r k = do
-  pName <- keyGetRelativeName k r
-  pVar  <- parsePathVariable <$> keyString k
-  pType <- ifKey (keyGetMeta k "elektra/spec/type") (fmap parseTypeParameters . keyString) (return [])
-  pImpl <- let parseImpl = fmap (Just . map T.unpack . T.splitOn (T.pack "\\n") . T.pack) . keyString in
-           ifKey (keyGetMeta k "elektra/spec/impl") parseImpl (return Nothing)
-  return $ TypeSpecification pName pVar pType pImpl
-  where
-    parseTypeParameters      = fmap (translate . splitOn "::") . splitOn "->"
-    parsePathVariable "self" = Self
-    parsePathVariable p      = Path p
-    -- TODO use text natively is probably much better on the long run... but for now keep it simple
-    translate [x,y]          = TypeParameter (parsePathVariable $ dt T.strip x) (dt T.strip y)
-    translate x              = error $ "invalid translation" ++ show x
+  pName  <- keyGetRelativeName k r
+  --pVar   <- parsePathVariable . T.pack <$> keyString k
+  pImpl  <- let parseImpl = fmap (Just . lines) . keyString in
+            ifKey (keyGetMeta k "elektra/spec/impl") parseImpl (return Nothing)
+  pType  <- ifKey (keyGetMeta k "elektra/spec/type") (fmap parseTypeSignature . keyString) (return Nothing)
+  -- TODO: improve error handling
+  return $ TypeSpecification pName Nothing pType pImpl
 
 parseType :: String -> Either Path String
 parseType t
