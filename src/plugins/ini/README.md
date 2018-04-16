@@ -237,7 +237,7 @@ E.g., if you use `NULL` instead you only get a section if you explicitly create 
 sudo kdb mount /empty.ini dir/empty ini section=NULL
 kdb set dir/empty/a/b ab
 kdb get dir/empty/a       # no key here
-# RET: 1
+# RET: 11
 cat empty.ini
 #> a/b = ab
 kdb rm dir/empty/a/b

@@ -11,7 +11,7 @@ kdb get /test/a
 #> a
 kdb get /test/c
 # Expected:
-# RET:1
+# RET:11
 # STDERR:Did not find key
 kdb rm -r /test
 ```

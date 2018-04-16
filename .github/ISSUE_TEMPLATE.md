@@ -17,7 +17,7 @@ kdb get /examples/hello
 #> world
 
 kdb get user/does/not/exist
-# RET: 1
+# RET: 11
 # STDERR: [Dd]id not find key
 
 kdb rm /examples/hello

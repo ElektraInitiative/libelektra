@@ -288,7 +288,7 @@ kdb set /tutorial/spec/should_not_be_here abc
 # RET:    5
 # STDERR: .*error.*10.*occurred.*
 kdb get /tutorial/spec/should_not_be_here
-# RET: 1
+# RET: 11
 # STDERR: Did not find key
 ```
 
