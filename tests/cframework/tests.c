@@ -27,9 +27,6 @@
 int nbError;
 int nbTest;
 
-uid_t nbUid;
-gid_t nbGid;
-
 char file[KDB_MAX_PATH_LENGTH];
 char srcdir[KDB_MAX_PATH_LENGTH];
 
@@ -50,18 +47,6 @@ int init (int argc, char ** argv)
 {
 	char * tmpvar;
 	int fd;
-
-	setlocale (LC_ALL, "");
-
-#ifdef HAVE_CLEARENV
-	clearenv ();
-#else
-	unsetenv ("HOME");
-	unsetenv ("USER");
-#endif
-
-	nbUid = getuid ();
-	nbGid = getgid ();
 
 	if (argc > 1)
 	{
@@ -115,12 +100,6 @@ Key * create_root_key (const char * backendName)
 {
 	Key * root = keyNew ("user/tests", KEY_END);
 	/*Make mountpoint beneath root, and do all tests here*/
-	/* Not needed anymore:
-	keySetDir(root);
-	keySetUID(root, nbUid);
-	keySetGID(root, nbGid);
-	keySetComment (root, "backend root key for tests");
-	*/
 	keyAddBaseName (root, backendName);
 	keySetString (root, backendName);
 	keySetString (root, backendName);
