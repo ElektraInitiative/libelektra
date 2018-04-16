@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "KDB\-GET" "1" "October 2017" "" ""
+.TH "KDB\-GET" "1" "April 2018" "" ""
 .
 .SH "NAME"
 \fBkdb\-get\fR \- Get the value of a key stored in the key database
@@ -18,8 +18,23 @@ This command is used to retrieve the value of a key\.
 .P
 If you enter a \fBkey name\fR starting with a leading \fB/\fR, then a cascading lookup will be performed in order to attempt to locate the key\. In this case, using the \fB\-v\fR option allows the user to see the full key name of the key if it is found\.
 .
-.P
-Note: There is a current limitation where only keys that are mounted will be considered during a cascading lookup\. A workaround that will lookup all keys is to pass the \fB\-a\fR option\. Additionally, a user can use the command \fBkdb ls <same key>\fR to see if an override or a fallback will be considered by the lookup\.
+.SH "LIMITATIONS"
+Only keys within the mountpoint or below the \fB<key name>\fR will be considered during a cascading lookup\. A workaround is to pass the \fB\-a\fR option\. Use the command \fBkdb get \-v <key name>\fR to see if an override or a fallback was considered by the lookup\.
+.
+.SH "RETURN VALUES"
+This command will return the following values as an exit status:
+.
+.TP
+0
+No errors\.
+.
+.TP
+1\-10
+standard exit codes, see kdb(1) \fIkdb\.md\fR
+.
+.TP
+11
+No key found\.
 .
 .SH "OPTIONS"
 .

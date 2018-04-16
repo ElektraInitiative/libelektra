@@ -521,7 +521,7 @@ kdb::KeySet Cmdline::getPluginsConfig (string basepath) const
  *
  * @return a newly created key from the name found in cl.arguments[pos]
  */
-kdb::Key Cmdline::createKey (int pos) const
+kdb::Key Cmdline::createKey (int pos, bool allowCascading) const
 {
 	std::string name = arguments[pos];
 	// std::cerr << "Using " << name << std::endl;
@@ -550,6 +550,12 @@ kdb::Key Cmdline::createKey (int pos) const
 					"can be used (see 'man elektra-namespaces').\n" +
 					"Please also ensure that the path is separated by a '/'.\n" +
 					"An example for a valid absolute key is user/a/key, and for a valid cascading key /a/key.");
+	}
+
+	if (!allowCascading && root.isCascading ())
+	{
+		throw invalid_argument ("The key '" + root.getName () +
+					"'is a cascading keyname, which is not supported. Please choose a namespace.");
 	}
 
 	return root;

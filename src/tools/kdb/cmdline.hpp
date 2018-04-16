@@ -91,7 +91,7 @@ public:
 	map bookmarks;
 	std::string profile;
 
-	kdb::Key createKey (int pos) const;
+	kdb::Key createKey (int pos, bool allowCascading = true) const;
 	kdb::Key resolveBookmark (std::string name) const;
 
 	kdb::KeySet getPluginsConfig (std::string basepath = "user/") const;

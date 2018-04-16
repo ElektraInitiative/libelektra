@@ -32,9 +32,9 @@ int MvCommand::execute (Cmdline const & cl)
 	}
 
 	KeySet conf;
-	Key sourceKey = cl.createKey (0);
+	Key sourceKey = cl.createKey (0, false);
 
-	Key destKey = cl.createKey (1);
+	Key destKey = cl.createKey (1, false);
 	string newDirName = destKey.getName ();
 
 	Key root = tools::helper::commonKeyName (sourceKey, destKey);
@@ -44,18 +44,18 @@ int MvCommand::execute (Cmdline const & cl)
 	KeySet oldConf;
 
 	oldConf.append (tmpConf.cut (sourceKey));
+	std::string sourceName = sourceKey.getName ();
 
 	if (!oldConf.size ())
 	{
-		cerr << "No key to be moved found\n";
-		return 1;
+		std::cerr << "No key to copy found below '" << sourceName << "'" << std::endl;
+		return 11;
 	}
 
 	KeySet newConf;
 
 	Key k;
 	oldConf.rewind ();
-	std::string sourceName = sourceKey.getName ();
 
 	if (cl.recursive)
 	{
@@ -72,7 +72,7 @@ int MvCommand::execute (Cmdline const & cl)
 		{
 			cerr << "First key found " << k.getName () << " does not exactly match given key " << sourceKey.getName ()
 			     << ", aborting (use -r to move hierarchy)\n";
-			return 1;
+			return 11;
 		}
 		newConf.append (rename_key (k, sourceName, newDirName, cl.verbose));
 	}
