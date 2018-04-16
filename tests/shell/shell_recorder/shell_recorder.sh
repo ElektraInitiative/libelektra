@@ -317,7 +317,7 @@ fi
 if [ "$EVAL" -eq 0 ] && [ $keepProtocol = 'false' ]; then
 	rm -f "$OutFile"
 else
-	printerr '\n📕\nProtocol File: %s\n' "$OutFile"
+	printerr '\nProtocol File: %s\n' "$OutFile"
 fi
 
 rm "${TMPFILE}"
