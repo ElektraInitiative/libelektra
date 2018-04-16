@@ -51,10 +51,10 @@ This command will return the following values as an exit status:
 
 ## EXAMPLES
 
-To move multiple keys:  
+To move multiple keys:<br>
 `kdb mv -r user/example1 user/example2`
 
-To move a single key:  
+To move a single key:<br>
 `kdb mv user/example/key1 user/example/key2`
 
 
