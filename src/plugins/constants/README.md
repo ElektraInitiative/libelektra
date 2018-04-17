@@ -36,6 +36,7 @@ kdb ls user/examples/constants
 #> user/examples/constants/cmake/BUILTIN_EXEC_FOLDER
 #> user/examples/constants/cmake/BUILTIN_PLUGIN_FOLDER
 #> user/examples/constants/cmake/CMAKE_INSTALL_PREFIX
+#> user/examples/constants/cmake/ENABLE_ASAN
 #> user/examples/constants/cmake/ENABLE_DEBUG
 #> user/examples/constants/cmake/ENABLE_LOGGER
 #> user/examples/constants/cmake/GTEST_ROOT
