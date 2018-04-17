@@ -76,18 +76,7 @@ if (ENABLE_KDB_TESTING)
 	add_shell_recorder_test (mathcheck.esr REQUIRED_PLUGINS math)
 	add_shell_recorder_test (profiletest.esr)
 	add_shell_recorder_test (script.esr)
-
-	# The tests below might fail on Linux if ASAN is enabled
-	# The problem might be related to a call of a function via a pointer of incorrect type
-	# See also: https://github.com/ElektraInitiative/libelektra/pull/1728
-	set (ASAN_LINUX ENABLE_ASAN AND ${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-	if (NOT (${ASAN_LINUX} AND CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4))
-		# Only add the test below if it works using the current configuration
-		list (FIND REMOVED_PLUGINS mini PLUGIN_INDEX)
-		if (${PLUGIN_INDEX} EQUAL -1)
-			list (APPEND SCRIPT_TESTS "selftest.esr")
-		endif (${PLUGIN_INDEX} EQUAL -1)
-	endif (NOT (${ASAN_LINUX} AND CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4))
+	add_shell_recorder_test (selftest.esr REQUIRED_PLUGINS mini)
 
 	if (ENABLE_REPLAY_TESTS)
 		file (GLOB REPLAY_TESTS replay_tests/*.esr)
