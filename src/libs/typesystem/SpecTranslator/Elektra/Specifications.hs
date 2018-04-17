@@ -9,7 +9,7 @@
              ExistentialQuantification, GADTs, UndecidableInstances #-}
 
 module Elektra.Specifications (
-  Path, Implementation, FunctionCandidate, TypeName, PathVariable (..), Function (..),
+  Path, Implementation, FunctionCandidate (..), TypeName, PathVariable (..), Function (..),
   TypeSpecification (..), TypeSignature (..), RegexTypeParam (..), RegexType (..),
   RegexConstraint (..), TransformationSpecification (..), KeySpecification (..), functionBaseName
 ) where
@@ -18,7 +18,12 @@ type Path = String
 type Implementation = String
 type TypeName = String
 
-type FunctionCandidate = (Function, String)
+data FunctionCandidate = FunctionCandidate {
+  fncFun  :: Function,
+  fncPath :: Path,
+  fncStr  :: String
+} deriving (Show, Eq)
+
 data Function = ArrayFunction TypeName String
               | Function TypeName
               deriving Eq

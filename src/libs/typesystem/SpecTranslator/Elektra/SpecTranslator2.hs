@@ -77,26 +77,29 @@ translateKeySpecification f k = [rawKeyTypeSig, rawKeyTranslation, specTranslati
     rawKeyTranslation = let kv = Con () (translateUnqual "Key") <=> (translateDefaultValue . defaultValue) k
                         in nameBind (name $ rawKeyName k) kv
     specTranslation   = let specs  = functionCandidates k
-                            conv (TypeSignature _ r, s) = foldl (<=>) (Var () (translateUnqual $ rawKeyName k)) $ translateFunctionParameters' r s
-                            sigs = map (signature <=< (f M.!?) . functionBaseName . fst) specs
-                            zipped = zip sigs (map snd specs)
-                            repack (Nothing, _) = Nothing
+                            parFld n = foldl (<=>) $ Var () (translateUnqual . pathToDeclName $ functionBaseName n)
+                            conv (TypeSignature _ r, v) = parFld (fncFun v) . catMaybes $ translateFunctionParameters' r (path k) v
+                            sigs   = map (signature <=< (f M.!?) . functionBaseName . fncFun) specs
+                            zipped = zip sigs specs
+                            repack (Nothing, b) = Nothing
                             repack (Just a , b) = Just (a, b)
                             transl = fmap conv <$> map repack zipped
-                        in nameBind (specificationKeyName k) $ foldl (<=>) (Var () (translateUnqual $ rawKeyName k)) $ catMaybes transl
+                        in nameBind (specificationKeyName k) $ foldr (<=>) (Var () (translateUnqual $ rawKeyName k)) $ catMaybes transl
     translateFunctionParameters e (ArrayFunction p _, s) = let fn = Var () (translateUnqualPath p) <=> e
                                                                k  = Var () (translateUnqualPath s)
                                                            in  fn <=> k
     translateFunctionParameters e (Function p, _)        = Var () (translateUnqualPath p) <=> e
-    translateFunctionParameters' [r,x]  s = [translateFunctionParameter r s]
-    translateFunctionParameters' (r:rs) s = translateFunctionParameter r s : translateFunctionParameters' rs s
-    translateFunctionParameters' _      _ = error "a function must at least take a param and a return value"
-    -- TODO error handling again, and path handling
-    translateFunctionParameter (RegexTypeParam r (Range x)) s = let rng = parseRange s
-                                                                    rgx = maybe ".*" (uncurry regexForRange) $ rng
-                                                                in  Var () (preludeProxy) <=> Lit () (String () rgx rgx)
-    translateFunctionParameter (RegexTypeParam r (Path  p)) s = Var () (translateUnqualPath p)
-    translateFunctionParameter (RegexTypeParam r Self)      s = Var () (translateUnqual $ rawKeyName k)
+    translateFunctionParameters' [r,x]  n v = [translateFunctionParameter r n v]
+    translateFunctionParameters' (r:rs) n v = translateFunctionParameter r n v : translateFunctionParameters' rs n v
+    translateFunctionParameters' _      _ _ = error "a function must at least take a param and a return value"
+    -- TODO error handling again
+    translateFunctionParameter (RegexTypeParam _ (Range x)) _ v = let rng = parseRange $ fncStr v
+                                                                      rgx = maybe ".*" (uncurry regexForRange) rng
+                                                                      var = Var () preludeProxy
+                                                                      ty  = TyCon () preludeProxy <-> TyPromoted () (PromotedString () rgx rgx)
+                                                                  in  Just $ ExpTypeSig () var ty
+    translateFunctionParameter (RegexTypeParam _ (Path  p)) _ v = Just $ Var () (translateUnqualPath $ fncPath v)
+    translateFunctionParameter (RegexTypeParam _ Self     ) _ _ = Nothing
     translateUnqualPath = translateUnqual . pathToDeclName
 
 mkModule :: [Decl ()] -> Module ()

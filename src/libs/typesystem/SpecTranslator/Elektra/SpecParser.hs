@@ -9,7 +9,7 @@
              ExistentialQuantification, GADTs, UndecidableInstances #-}
 
 module Elektra.SpecParser (
-  parseTypeSpecifications, parseKeySpecifications
+  parseTypeSpecifications, parseKeySpecifications, resolvePath
 ) where
 
 import Elektra.Key
@@ -20,16 +20,26 @@ import Control.Applicative (pure, liftA2)
 import Control.Monad       (filterM, liftM2, join, void)
 import Data.List           (isPrefixOf)
 import Data.List.Split     (splitOn)
+import System.IO.Unsafe    (unsafePerformIO)
 
 import Elektra.Specifications
 import Elektra.Parsers
 import Elektra.Range
 import FiniteAutomata
 
+import Debug.Trace
+
 import qualified Data.Text       as T
 import qualified Data.Text.Read  as T
 
 type RootKey = Key
+
+-- we can safely use unsafePerformIO as the result only depends on the inputs
+resolvePath :: String -> String -> String
+resolvePath k s = unsafePerformIO $ do
+  d <- keyNew $ "/" ++ k
+  keyAddBaseName d s
+  keyName d
 
 specPrefix :: String -> String
 specPrefix = flip (++) "/elektra/spec" 
@@ -50,17 +60,19 @@ parseKeySpecification r k = do
   return $ KeySpecification pPath pDefaultValue pKeyType pFunctionCandidates pTypeSpecification
   where
     parseFunctionCandidate fk = do
-      str     <- keyString fk >>= keyNew >>= flip keyGetRelativeName r
+      str     <- keyString fk
+      pth     <- keyNew str >>= flip keyGetRelativeName r
       isArray <- arrayValidateName fk
       if isArray == Invalid
       then do
         name <- keyName fk
-        return (Function name, str)
+        return $ FunctionCandidate (Function name) pth str
       else do
         bfk          <- flip keyAddName "#" !=<< keyDeleteBaseName !=<< keyDup fk
         baseName     <- fmap T.pack (keyGetRelativeName bfk r)
         let splitted = T.splitAt (T.length baseName) baseName
-        return (ArrayFunction (T.unpack $ fst splitted) (T.unpack $ snd splitted), str)
+        let arrFn    = ArrayFunction (T.unpack $ fst splitted) (T.unpack $ snd splitted)
+        return $ FunctionCandidate arrFn pth str
 
 parseTypeSpecification :: RootKey -> Key -> IO TypeSpecification
 parseTypeSpecification r k = do

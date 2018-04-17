@@ -6,6 +6,7 @@ import Data.List (partition)
 import Data.Maybe (mapMaybe, catMaybes)
 import Control.Arrow ((***))
 import Control.Applicative (liftA2)
+import Control.Monad (join)
 import Debug.Trace
 
 import GHC.TcPluginM.Extra (evByFiat, lookupModule, lookupName)
@@ -81,7 +82,7 @@ solveRegex rgxData [] _ w  = do
     wRgxContains   = filter (hasTyCon $ rgxContainsTyCon rgxData) w
     pRgxContains   = mapM (solve regexContains) wRgxContains
     wRgxIntersects = filter (hasTyCon $ rgxIntersectsTyCon rgxData) w
-    pRgxIntersects = mapM (solve $ regexIntersects $ rgxIntersectionTyCon rgxData) wRgxIntersects
+    pRgxIntersects = mapM (solve regexIntersects) wRgxIntersects
 
 -- Something already given, means we resolved the constraints already
 -- that we can use to prove our equalities in terms of subtyping
@@ -136,23 +137,35 @@ regexContains :: Type -> Type -> TcPluginM (Maybe Bool)
 regexContains (LitTy (StrTyLit fsx)) (LitTy (StrTyLit fsy))
   = let sx = unpackFS fsx
         sy = unpackFS fsy
-        rsx = "(" ++ sx ++ ")|(" ++ sy ++ ")"
-        rsy = "(" ++ sy ++ ")"
     in tcPluginIO $ do
-      hsx <- FA.compile rsx
-      hsy <- FA.compile rsy
-      let eq = sequence . rightToMaybe $ liftA2 FA.equals hsx hsy
-      (>>= \case
-          e | e < 0     -> Nothing
-            | e == 0    -> Just False
-            | otherwise -> Just True) <$> eq
+      hsx <- FA.compile sx
+      hsy <- FA.compile sy
+      fmap join . sequence $ liftA2 regexContains' (rightToMaybe hsx) (rightToMaybe hsy)
+regexContains (TyConApp _ [a,b]) (LitTy (StrTyLit fsy)) = 
+  let sy = unpackFS fsy in do
+    hsx <- reduceRegexIntersects a b
+    tcPluginIO $ do
+      hsy <- FA.compile sy
+      fmap join . sequence $ liftA2 regexContains' hsx (rightToMaybe hsy)
+regexContains (TyConApp _ [a,b]) (TyConApp _ [c,d]) = do
+  hsx <- reduceRegexIntersects a b
+  hsy <- reduceRegexIntersects c d
+  tcPluginIO $ fmap join . sequence $ liftA2 regexContains' hsx hsy
 regexContains _ _ = return Nothing
+
+regexContains' :: FA.FiniteAutomata -> FA.FiniteAutomata -> IO (Maybe Bool)
+regexContains' hsx hsy = 
+  (\case
+    e | e < 0     -> Nothing
+      | e == 0    -> Just False
+      | otherwise -> Just True)
+  <$> FA.contains hsx hsy
 
 rightToMaybe :: Either a b -> Maybe b
 rightToMaybe = either (const Nothing) Just
 
-regexIntersects :: TyCon -> Type -> Type -> TcPluginM (Maybe Bool)
-regexIntersects tc x y = reduceRegexIntersects tc x y >>= \i -> tcPluginIO $ do
+regexIntersects :: Type -> Type -> TcPluginM (Maybe Bool)
+regexIntersects x y = reduceRegexIntersects x y >>= \i -> tcPluginIO $ do
   emptyFA <- Just <$> FA.makeBasic FA.Empty
   let eq = sequence $ liftA2 FA.equals emptyFA i
   --We return true if they are not equal - this means the intersection is possible
@@ -161,18 +174,24 @@ regexIntersects tc x y = reduceRegexIntersects tc x y >>= \i -> tcPluginIO $ do
         | e == 0    -> Just True
         | otherwise -> Just False) <$> eq
 
-reduceRegexIntersects :: TyCon -> Type -> Type -> TcPluginM (Maybe FA.FiniteAutomata)
-reduceRegexIntersects _ (LitTy (StrTyLit fsx)) (LitTy (StrTyLit fsy)) = tcPluginIO $ do
+reduceRegexIntersects :: Type -> Type -> TcPluginM (Maybe FA.FiniteAutomata)
+reduceRegexIntersects (LitTy (StrTyLit fsx)) (LitTy (StrTyLit fsy)) = tcPluginIO $ do
   let sx = unpackFS fsx
       sy = unpackFS fsy
   hsx <- FA.compile sx
   hsy <- FA.compile sy
   sequence . rightToMaybe $ liftA2 FA.intersect hsx hsy
-reduceRegexIntersects rixtc (TyConApp tc [a,b]) (LitTy (StrTyLit fsy))
-  | tc == rixtc = reduceRegexIntersects rixtc a b >>= \hsx -> tcPluginIO $ 
+reduceRegexIntersects (TyConApp _ [a,b]) (LitTy (StrTyLit fsy)) =
+    reduceRegexIntersects a b >>= \hsx -> tcPluginIO $ 
     FA.compile (unpackFS fsy) >>= sequence . liftA2 FA.intersect hsx . rightToMaybe
-  | otherwise   = return Nothing
-reduceRegexIntersects _ _ _ = return Nothing
+reduceRegexIntersects (LitTy (StrTyLit fsx)) (TyConApp _ [a,b]) =
+    reduceRegexIntersects a b >>= \hsy -> tcPluginIO $ 
+    FA.compile (unpackFS fsx) >>= sequence . liftA2 FA.intersect hsy . rightToMaybe
+reduceRegexIntersects (TyConApp _ [a,b]) (TyConApp _ [c, d]) = do
+    hsx <- reduceRegexIntersects a b
+    hsy <- reduceRegexIntersects c d
+    tcPluginIO $ sequence $ liftA2 FA.intersect hsx hsy
+reduceRegexIntersects _ _ = return Nothing
 
 solveEquality :: TyCon -> Ct -> TcPluginM [Ct]
 solveEquality key ct = case classifyPredType $ ctEvPred $ ctEvidence ct of
