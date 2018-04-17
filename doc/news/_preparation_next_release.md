@@ -93,6 +93,7 @@ We added:
 
 - the private headerfiles `kdbnotificationinternal.h`, `kdbioplugin.h`.
 - `kdb get`, `kdb mv` and `kdb cp` use error code `11` if keys are not found
+- the constant `ENABLE_ASAN` in the constants plugin
 
 We removed:
 
