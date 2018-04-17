@@ -146,6 +146,9 @@ Many problems were resolved with the following fixes:
 - We resolved undefined behavior in polymorphic classes that contained virtual functions, by explicitly adding a virtual destructor.
 - small refactoring in `kdb-test`
 - Fix invalid handling of keynames in the [spec](http://libelektra.org/plugins/spec) plugin.
+- We now disable the [Xerces plugin](http://libelektra.org/plugins/xerces) if you use GCC with enabled ASAN to build Elektra. This update
+  makes sure that you do not build the plugin with compilation settings that are known to
+  [cause problems](https://github.com/ElektraInitiative/libelektra/issues/1895).
 
 ## Outlook
 
