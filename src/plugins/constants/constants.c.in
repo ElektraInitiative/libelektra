@@ -156,6 +156,7 @@ static void elektraAddConstants (KeySet * ks, Key * parentKey)
 
 	elektraAddKeyValue (ks, parentKey, "cmake/ENABLE_DEBUG", "@ENABLE_DEBUG@");
 	elektraAddKeyValue (ks, parentKey, "cmake/ENABLE_LOGGER", "@ENABLE_LOGGER@");
+	elektraAddKeyValue (ks, parentKey, "cmake/ENABLE_ASAN", "@ENABLE_ASAN@");
 
 	elektraAddKeyValue (ks, parentKey, "cmake/BUILTIN_PLUGIN_FOLDER", BUILTIN_PLUGIN_FOLDER);
 	elektraAddKeyValue (ks, parentKey, "cmake/BUILTIN_DATA_FOLDER", BUILTIN_DATA_FOLDER);
