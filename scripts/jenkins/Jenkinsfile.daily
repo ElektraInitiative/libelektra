@@ -24,7 +24,6 @@ def generate_repository_maintanence_stages() {
     // DO NOT TAG master WITH 'gitmirror' as it will only show up as (null)
     def nodes = nodesByLabel label:"gitmirror"
     nodes.add("master")
-    echo "Update Git Mirrors on all nodes with tag ${env.gitmirror_node_label} + master\n${nodes}"
 
     def repos = [
         [
