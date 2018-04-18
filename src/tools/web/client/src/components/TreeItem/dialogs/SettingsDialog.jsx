@@ -8,12 +8,12 @@
 
 import React, { Component } from 'react'
 
-import Dialog from 'material-ui/Dialog'
 import FlatButton from 'material-ui/FlatButton'
 import TextField from 'material-ui/TextField'
 import SelectField from 'material-ui/SelectField'
 import MenuItem from 'material-ui/MenuItem'
 import Checkbox from 'material-ui/Checkbox'
+import FocusTrapDialog from './FocusTrapDialog.jsx'
 
 import SavedIcon from '../SavedIcon.jsx'
 import EnumSubDialog from './EnumSubDialog.jsx'
@@ -33,7 +33,7 @@ const DEBOUNCED = 'DEBOUNCED'
 export default class SettingsDialog extends Component {
   constructor (...args) {
     super(...args)
-    this.state = { regexError: false, rangeError: false, regexStr: false, rangeStr: false }
+    this.state = { regexError: false, rangeError: false, regexStr: false, rangeStr: false, paused: false }
   }
 
   componentWillReceiveProps (nextProps) {
@@ -213,6 +213,11 @@ export default class SettingsDialog extends Component {
         label="Done"
         primary={true}
         onTouchTap={onClose}
+        onKeyPress={e => {
+          if (e.key === 'Enter') {
+            onClose()
+          }
+        }}
       />,
     ]
 
@@ -224,11 +229,13 @@ export default class SettingsDialog extends Component {
       : meta && meta.hasOwnProperty('binary')
 
     return (
-        <Dialog
+        <FocusTrapDialog
           actions={actions}
           modal={false}
           open={open}
+          paused={this.state.paused}
           onRequestClose={onClose}
+          autoScrollBodyContent={true}
         >
             <h1>Metadata for <b>{path}</b></h1>
             <div style={{ display: 'flex' }}>
@@ -236,6 +243,7 @@ export default class SettingsDialog extends Component {
                     <DebouncedTextField
                       floatingLabelText="description"
                       floatingLabelFixed={true}
+                      tabIndex="0"
                       hintText="e.g. username of the account"
                       onChange={this.handleEdit('description', IMMEDIATE)}
                       onDebounced={this.handleEdit('description', DEBOUNCED)}
@@ -247,7 +255,11 @@ export default class SettingsDialog extends Component {
                     <SelectField
                       floatingLabelText="visibility"
                       floatingLabelFixed={true}
-                      onChange={(e, _, val) => this.handleVisibilityChange(val)}
+                      onFocus={() => !this.state.paused && this.setState({ paused: true })}
+                      onChange={(e, _, val) => {
+                        this.handleVisibilityChange(val)
+                        this.setState({ paused: false })
+                      }}
                       value={visibility}
                     >
                         {Object.keys(VISIBILITY_LEVELS).map(lvl =>
@@ -262,6 +274,7 @@ export default class SettingsDialog extends Component {
                     <DebouncedTextField
                       floatingLabelText="example"
                       floatingLabelFixed={true}
+                      tabIndex="0"
                       hintText="e.g. hitchhiker42"
                       onChange={this.handleEdit('example', IMMEDIATE)}
                       onDebounced={this.handleEdit('example', DEBOUNCED)}
@@ -273,6 +286,7 @@ export default class SettingsDialog extends Component {
                     <DebouncedTextField
                       floatingLabelText="default value"
                       floatingLabelFixed={true}
+                      tabIndex="0"
                       onChange={this.handleEdit('default', IMMEDIATE)}
                       onDebounced={this.handleEdit('default', DEBOUNCED)}
                       value={this.getMeta('default', '')}
@@ -284,6 +298,7 @@ export default class SettingsDialog extends Component {
             <div style={{ display: 'flex', paddingTop: 12 }}>
               <div style={{ flex: 1 }}>
                   <Checkbox
+                    tabIndex="0"
                     checked={!!isBinary}
                     onCheck={this.handleBinary}
                     label="binary"
@@ -293,6 +308,7 @@ export default class SettingsDialog extends Component {
               </div>
               <div style={{ flex: 1 }}>
                   <Checkbox
+                    tabIndex="0"
                     checked={fromElektraBool(this.getMeta('restrict/binary', false))}
                     onCheck={(e, val) => this.handleEdit('restrict/binary')(toElektraBool(val))}
                     label="restrict/binary"
@@ -302,6 +318,7 @@ export default class SettingsDialog extends Component {
               </div>
               <div style={{ display: 'initial', marginLeft: 24 }}>
                 <Checkbox
+                  tabIndex="0"
                   checked={fromElektraBool(this.getMeta('restrict/write', false))}
                   onCheck={(e, val) => this.handleEdit('restrict/write')(toElektraBool(val))}
                   label="restrict/write"
@@ -312,6 +329,7 @@ export default class SettingsDialog extends Component {
               </div>
               <div style={{ flex: 'initial', marginLeft: 24 }}>
                 <Checkbox
+                  tabIndex="0"
                   checked={fromElektraBool(this.getMeta('restrict/remove', false))}
                   onCheck={(e, val) => this.handleEdit('restrict/remove')(toElektraBool(val))}
                   label="restrict/remove"
@@ -328,7 +346,9 @@ export default class SettingsDialog extends Component {
                         <SelectField
                           floatingLabelText="type"
                           floatingLabelFixed={true}
+                          onFocus={() => !this.state.paused && this.setState({ paused: true })}
                           onChange={(e, _, val) => {
+                            this.setState({ paused: false })
                             if (val === type) { // type was not changed, ignore
                               return
                             }
@@ -368,6 +388,7 @@ export default class SettingsDialog extends Component {
                           <DebouncedTextField
                             floatingLabelText="validation regex"
                             floatingLabelFixed={true}
+                            tabIndex="0"
                             hintText="e.g. ^[a-zA-Z0-9]+$"
                             errorText={regexError}
                             onChange={this.handleEdit('check/validation', IMMEDIATE)}
@@ -380,6 +401,7 @@ export default class SettingsDialog extends Component {
                           <DebouncedTextField
                             floatingLabelText="validation error message"
                             floatingLabelFixed={true}
+                            tabIndex="0"
                             hintText="e.g. invalid username"
                             onChange={this.handleEdit('check/validation/message', IMMEDIATE)}
                             onDebounced={this.handleEdit('check/validation/message', DEBOUNCED)}
@@ -404,7 +426,7 @@ export default class SettingsDialog extends Component {
               meta={this.props.meta}
               deleteMeta={this.props.deleteMeta}
             />
-        </Dialog>
+        </FocusTrapDialog>
     )
   }
 }

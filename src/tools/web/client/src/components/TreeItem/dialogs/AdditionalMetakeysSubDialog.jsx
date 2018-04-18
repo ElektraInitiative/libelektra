@@ -76,12 +76,14 @@ export default class AdditionalMetakeysSubDialog extends Component {
         <DebouncedTextField
           floatingLabelText={item.key}
           floatingLabelFixed={true}
+          tabIndex="0"
           value={item.value || getMeta(item.key)}
           onChange={this.updateValue(item.key)}
           onDebounced={handleEdit(item.key)}
         />
         <SavedIcon saved={getSaved(item.key)} />
         <IconButton
+          tabIndex="0"
           style={{ width: 24, height: 24, padding: 4 }}
           iconStyle={{ width: 16, height: 16 }}
           onClick={() => this.deleteItem(item)}
@@ -124,6 +126,7 @@ export default class AdditionalMetakeysSubDialog extends Component {
       <h2 key={'header'} style={{ marginTop: 48, marginBottom: 0, display: 'block' }}>
         Additional Metadata
         <FlatButton
+          tabIndex="0"
           label="create new metakey"
           icon={<ContentAddIcon />}
           primary

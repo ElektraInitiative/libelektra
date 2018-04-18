@@ -10,26 +10,41 @@ import React, { Component } from 'react'
 
 import Dialog from 'material-ui/Dialog'
 import FlatButton from 'material-ui/FlatButton'
+import FocusTrap from 'focus-trap-react'
 
 export default class RemoveDialog extends Component {
   render () {
     const { item, open, onClose, onDelete } = this.props
     const { path } = item
 
-    const actions = [
-      <FlatButton
-        label="Cancel"
-        onTouchTap={onClose}
-      />,
-      <FlatButton
-        label="Delete"
-        secondary={true}
-        onTouchTap={() => {
-          onDelete(path)
-          onClose()
-        }}
-      />,
-    ]
+    const actions = (
+      <FocusTrap active={open} focusTrapOptions={{ escapeDeactivates: false, returnFocusOnDeactivate: false }}>
+        <FlatButton
+          ref={node => this.cancelButton = node}
+          label="Cancel"
+          onTouchTap={onClose}
+          onKeyPress={e => {
+            if (e.key === 'Enter') {
+              onClose()
+            }
+          }}
+        />
+        <FlatButton
+          label="Delete"
+          secondary={true}
+          onTouchTap={() => {
+            onDelete(path)
+            onClose()
+          }}
+          onKeyPress={e => {
+            if (e.key === 'Enter') {
+              onDelete(path)
+              onClose()
+            }
+          }}
+        />,
+      </FocusTrap>
+    )
 
     const additionalText =
       (Array.isArray(item.children) && item.children.length > 0)

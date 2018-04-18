@@ -8,8 +8,8 @@
 
 import React, { Component } from 'react'
 
-import Dialog from 'material-ui/Dialog'
 import FlatButton from 'material-ui/FlatButton'
+import FocusTrapDialog from './FocusTrapDialog.jsx'
 
 export default class EditDialog extends Component {
   render () {
@@ -21,21 +21,27 @@ export default class EditDialog extends Component {
         label="Done"
         primary={true}
         onTouchTap={onClose}
+        onKeyPress={e => {
+          if (e.key === 'Enter') {
+            onClose()
+          }
+        }}
       />,
     ]
 
     return (
-        <Dialog
+        <FocusTrapDialog
           actions={actions}
           modal={false}
           open={open}
+          paused={true}
           onRequestClose={onClose}
         >
             <h1>Value of <b>{path}</b></h1>
             <div style={{ display: 'block' }}>
                 {field}
             </div>
-        </Dialog>
+        </FocusTrapDialog>
     )
   }
 }
