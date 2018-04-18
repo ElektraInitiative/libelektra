@@ -287,18 +287,9 @@ export default class SettingsDialog extends Component {
                     checked={!!isBinary}
                     onCheck={this.handleBinary}
                     label="binary"
-                    disabled={this.getMeta('restrict/null', '0') === '1' || this.getMeta('restrict/binary', '0') === '1'}
+                    disabled={this.getMeta('restrict/binary', '0') === '1'}
                   />
                   <SavedIcon saved={this.getSaved('binary')} />
-              </div>
-              <div style={{ flex: 1 }}>
-                  <Checkbox
-                    checked={!!fromElektraBool(this.getMeta('restrict/null', false))}
-                    onCheck={(e, val) => this.handleEdit('restrict/null')(toElektraBool(val))}
-                    label="restrict/null"
-                    disabled={!!isBinary}
-                  />
-                  <SavedIcon saved={this.getSaved('restrict/null')} />
               </div>
               <div style={{ flex: 1 }}>
                   <Checkbox

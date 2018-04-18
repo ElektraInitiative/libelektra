@@ -19,7 +19,6 @@ export const HANDLED_METADATA = [
   'check/range',
   'restrict/write',
   'restrict/remove',
-  'restrict/null',
   'restrict/binary',
   'description',
   'example',
