@@ -81,6 +81,13 @@
     opacity: 0;
     transform: translateX(-20px) scale(0);
   }
+  /* Selection animations */
+  .ExplorerView ul li:not(.category) > span.item:before {
+    transition: color 0.2s;
+  }
+  .ExplorerView ul > li > span.item {
+    transition: color 0.2s;
+  }
 }
 
 /* Older browsers, e.g. Firefox ESR */
@@ -98,13 +105,9 @@
   height: 100%;
   width: 2em;
   color: #000000;
-  transition: color 0.2s;
   position: relative;
   top: 16px;
   left: 2px;
-}
-.ExplorerView ul > li > span.item {
-  transition: color 0.2s;
 }
 .ExplorerView ul > li:not(.category) > span.item > a {
   min-height: 48px;

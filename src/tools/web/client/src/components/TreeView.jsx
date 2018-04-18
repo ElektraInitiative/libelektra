@@ -59,7 +59,8 @@ export default class TreeView extends React.Component {
 
   handleSelect = (newSelection, item, ancestors, neighbours) => {
     this.setState({ selection: newSelection })
-    this.refreshItem(item, true)
+    // push refresh action at the back of the queue (re-renders selection first)
+    setTimeout(() => this.refreshItem(item, true))
   }
 
   handleDrop = (target, evt, inputs) => {
