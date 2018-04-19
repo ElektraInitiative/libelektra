@@ -18,6 +18,7 @@ import Language.Haskell.Interpreter.Unsafe
 import Data.List                    (intercalate, isPrefixOf)
 import System.IO.Temp               (writeTempFile)
 import System.Directory             (removeFile)
+import System.Environment           (lookupEnv)
 import Foreign.Ptr
 
 import qualified Data.Text as T
@@ -40,9 +41,11 @@ typecheck ks k = withGlobalLogging (LogConfig Nothing ("@ENABLE_LOGGER@" == "ON"
   
   putStepLn "Done Translating all Specifications."
   specFile <- writeTempFile "/tmp/" "testSpecification.hs" rendered
-  r <- unsafeRunInterpreterWithArgs [
-    "-package-db /Users/admin/git/libelektra/build/.cabal-sandbox/x86_64-osx-ghc-8.2.2-packages.conf.d",
-    "-fplugin=Elektra.RegexTypeChecker"] (keyInterpreter specFile)
+
+  -- So we can override it for the build tests
+  pdb <- lookupEnv "SANDBOX_PACKAGEDB"
+  let args = filter (not . null) ["-package-db=" ++ maybe "@TYPECHECKER_GHC_PLUGIN@" id pdb, "-fplugin=Elektra.RegexTypeChecker", "-v"]
+  r <- unsafeRunInterpreterWithArgs args (keyInterpreter specFile)
   removeFile specFile
   case r of
     Left err -> do
@@ -55,8 +58,6 @@ typecheck ks k = withGlobalLogging (LogConfig Nothing ("@ENABLE_LOGGER@" == "ON"
 
 keyInterpreter :: FilePath -> InterpreterT IO ()
 keyInterpreter specFile = do
-  --let prefix = "@CMAKE_INSTALL_PREFIX@/@KDB_DB_SPEC@/"
-  let prefix = "/Users/admin/git/libelektra/src/libs/typesystem/SpecElektra/Elektra/"
   loadModules [specFile]
   say "Loaded our rendered specification, now we can infer the stuff in it."
   setTopLevelModules ["TestSpecification"]

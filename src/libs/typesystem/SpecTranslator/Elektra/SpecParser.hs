@@ -18,7 +18,7 @@ import Elektra.Ease
 
 import Control.Applicative (pure, liftA2)
 import Control.Monad       (filterM, liftM2, join, void)
-import Data.List           (isPrefixOf)
+import Data.List           (isPrefixOf, sort)
 import Data.List.Split     (splitOn)
 import System.IO.Unsafe    (unsafePerformIO)
 
@@ -50,6 +50,21 @@ specPrefixKey = keyNew . specPrefix
 keyFilterMeta :: Key -> (String -> Bool) -> IO [Key]
 keyFilterMeta k p = keyListMeta k >>= filterM (fmap p . keyName) 
 
+-- TODO presorted for now, but we really need to find some kind of general way
+links :: [String]
+links = ["fallback/#", "override/#"]
+instance Ord FunctionCandidate
+  where
+    a <= b = let n1 = functionBaseName $ fncFun a
+                 n2 = functionBaseName $ fncFun b
+             in  if n1 `elem` links then
+                   if n2 `elem` links then 
+                     n1 <= n2
+                   else
+                     True
+                  else
+                    False
+
 parseKeySpecification :: RootKey -> Key -> IO KeySpecification
 parseKeySpecification r k = do
   pPath               <- keyGetRelativeName k r
@@ -57,7 +72,7 @@ parseKeySpecification r k = do
   pKeyType            <- ifKey (keyGetMeta k "type") (fmap parseType . keyString) (return $ Right ".*")
   pFunctionCandidates <- let notReserved = liftA2 (&&) (/= "default") (/= "type") in mapM parseFunctionCandidate =<< keyFilterMeta k notReserved
   pTypeSpecification  <- parseTypeSpecification r k
-  return $ KeySpecification pPath pDefaultValue pKeyType pFunctionCandidates pTypeSpecification
+  return $ KeySpecification pPath pDefaultValue pKeyType (sort pFunctionCandidates) pTypeSpecification
   where
     parseFunctionCandidate fk = do
       str     <- keyString fk

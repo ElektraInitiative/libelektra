@@ -14,7 +14,7 @@ cabal-version:       >=1.24
 @CABAL_CUSTOM_SETUP@
 
 library
-  hs-source-dirs:    "@CMAKE_CURRENT_SOURCE_DIR@"
+  hs-source-dirs:    "@CMAKE_CURRENT_BINARY_DIR@"
   exposed-modules:   Elektra.Typechecker
   other-extensions:  TypeFamilies
                    , TypeInType
@@ -37,7 +37,7 @@ library
   cpp-options:       -DENABLE_LOGGER_@ENABLE_LOGGER@
   default-language:  Haskell2010
   other-extensions:  ForeignFunctionInterface
-  
+
 source-repository head
   type:     git
   location: https://git.libelektra.org

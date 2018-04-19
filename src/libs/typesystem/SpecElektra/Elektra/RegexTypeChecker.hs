@@ -26,7 +26,7 @@ import TyCoRep    (TyLit(..), Type(..))
 
 plugin :: Plugin
 plugin = defaultPlugin {
-  tcPlugin = const (Just $ tracePlugin "Tracing Regex Type Checker" regexPlugin)
+  tcPlugin = const $ Just regexPlugin
   }
 
 regexPlugin :: TcPlugin

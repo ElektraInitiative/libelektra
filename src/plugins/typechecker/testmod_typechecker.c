@@ -49,32 +49,11 @@ elektra/spec/check/long =
 #define KEY1_NAME PARENT_KEY_NAME "/key1"
 #define KEY2_NAME PARENT_KEY_NAME "/key2"
 #define KEY3_NAME PARENT_KEY_NAME "/key3"
+#define KEY4_NAME PARENT_KEY_NAME "/key4"
 
-static void test_basics (void)
+static KeySet * keysetWithStandardFunctions (void)
 {
-	printf ("test basics\n");
-
-	Key * parentKey = keyNew (PARENT_KEY_NAME, KEY_END);
-	KeySet * conf = ksNew (0, KS_END);
-	PLUGIN_OPEN ("typechecker");
-
 	KeySet * ks = ksNew (0, KS_END);
-
-	ksAppendKey (ks, keyNew (KEY1_NAME,
-		KEY_VALUE, "2500",
-		KEY_META, "check/range", "0-5000",
-		KEY_END));
-
-	ksAppendKey (ks, keyNew (KEY2_NAME,
-		KEY_VALUE, "500",
-		KEY_META, "fallback/#1", KEY1_NAME,
-		KEY_META, "check/range", "-250-7500",
-		KEY_END));
-
-	ksAppendKey (ks, keyNew (KEY3_NAME,
-		KEY_META, "fallback/#1", KEY1_NAME,
-		KEY_META, "fallback/#2", KEY2_NAME,
-		KEY_END));
 
 	ksAppendKey (ks, keyNew (PARENT_KEY_NAME "/elektra/spec/fallback/#",
 		KEY_META, "elektra/spec/type", "RegexContains b a => Key b :: . -> Key a -> Key a",
@@ -96,21 +75,77 @@ static void test_basics (void)
 		KEY_META, "elektra/spec/impl", "checklong a = a",
 		KEY_END));
 
-	succeed_if (plugin->kdbOpen (plugin, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbOpen was not successful");
+	return ks;
+}
+
+static void test_basics (void)
+{
+	printf ("test basics\n");
+
+	Key * parentKey = keyNew (PARENT_KEY_NAME, KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("typechecker");
+
+	KeySet * ks = keysetWithStandardFunctions ();
+
+	ksAppendKey (ks, keyNew (KEY1_NAME,
+		KEY_VALUE, "2500",
+		KEY_META, "check/range", "0-5000",
+		KEY_END));
+
+	ksAppendKey (ks, keyNew (KEY2_NAME,
+		KEY_VALUE, "500",
+		KEY_META, "fallback/#1", KEY1_NAME,
+		KEY_META, "check/range", "-250-7500",
+		KEY_END));
+
+	ksAppendKey (ks, keyNew (KEY3_NAME,
+		KEY_META, "fallback/#1", KEY1_NAME,
+		KEY_META, "fallback/#2", KEY2_NAME,
+		KEY_END));
+
+	ksAppendKey (ks, keyNew (KEY4_NAME,
+		KEY_META, "fallback/#1", KEY1_NAME,
+		KEY_META, "override/#1", KEY2_NAME,
+		KEY_META, "check/long" , "",
+		KEY_END));
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "call to kdbGet was not successful");
-
-	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "call to kdbSet was not successful");
-
-	succeed_if (plugin->kdbError (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbError was not successful");
-
-	succeed_if (plugin->kdbClose (plugin, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbClose was not successful");
+	succeed_if (output_warnings(parentKey), "warning(s) found but none expected")
 
 	keyDel (parentKey);
 	ksDel (ks);
 	PLUGIN_CLOSE ();
 }
 
+static void test_invalid_ranges_override (void)
+{
+	printf ("test invalid ranges fallback\n");
+
+	Key * parentKey = keyNew (PARENT_KEY_NAME, KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("typechecker");
+
+	KeySet * ks = keysetWithStandardFunctions ();
+
+	ksAppendKey (ks, keyNew (KEY1_NAME,
+		KEY_VALUE, "2500",
+		KEY_META, "check/range", "0-5000",
+		KEY_END));
+
+	ksAppendKey (ks, keyNew (KEY2_NAME,
+		KEY_VALUE, "500",
+		KEY_META, "override/#1", KEY1_NAME,
+		KEY_META, "check/range", "7200-10000",
+		KEY_END));
+
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "call to kdbGet was not successful");
+	succeed_if (!output_warnings(parentKey), "no warnings found but one is expected")
+
+	keyDel (parentKey);
+	ksDel (ks);
+	PLUGIN_CLOSE ();
+}
 
 int main (int argc, char ** argv)
 {
@@ -120,6 +155,7 @@ int main (int argc, char ** argv)
 	init (argc, argv);
 
 	test_basics ();
+	test_invalid_ranges_override ();
 
 	print_result ("testmod_typechecker");
 

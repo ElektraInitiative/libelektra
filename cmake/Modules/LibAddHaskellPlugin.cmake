@@ -1,10 +1,9 @@
 include (LibAddMacros)
 
 # ~~~
-# Allows one to add plugins written in Haskell, setting up the include paths and
-# libraries automatically.
+# Allows one to add plugins written in haskell, setting up the include paths and libraries automatically.
 #
-# Expects that plugins make use of Cabal as their build system.
+# Expects that plugins make use of cabal as their build system.
 #
 # MODULES:
 #  the name of the Haskell modules to be compiled
@@ -41,8 +40,8 @@ macro (add_haskell_plugin target)
 		# set by find_program
 		if (PLUGINPROCESS_FOUND)
 			if (HASKELL_FOUND)
-				check_binding_included ("haskell" HAVE_HASKELL_BINDING)
-				if (HAVE_HASKELL_BINDING)
+				list (FIND BINDINGS "haskell" FINDEX)
+				if (FINDEX GREATER -1)
 
 					# needed for HsFFI.h
 					execute_process (COMMAND ${GHC_EXECUTABLE} --print-libdir
@@ -68,13 +67,11 @@ macro (add_haskell_plugin target)
 						set (CABAL_OPTS "${CABAL_OPTS};--disable-shared")
 					endif ()
 
-					# ~~~
 					# since we want to continue to use our cmake add_plugin macro
 					# we compile via the c compiler instead of ghc
 					# so we must feed it with the ghc library paths manually
 					# inspired by https://github.com/jarrett/cpphs/blob/master/Makefile
 					# use HSrts_thr for the threaded version of the rts
-					# ~~~
 					set (GHC_RTS_PATH "${GHC_LIB_DIR}/rts")
 					find_library (GHC_RTS_LIB "HSrts${GHC_DYNAMIC_SUFFIX}" PATHS ${GHC_RTS_PATH})
 
@@ -128,28 +125,24 @@ macro (add_haskell_plugin target)
 									# configure include paths
 									configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/${target}.cabal.in"
 											"${CMAKE_CURRENT_BINARY_DIR}/${target}.cabal"
-											@ONLY)
-
-									# configure the haskell plugin base file for the current plugin
+											@ONLY) # configure the haskell plugin base file for
+											       # the current plugin
 									configure_file (
 										"${CMAKE_SOURCE_DIR}/src/plugins/haskell/haskell.c.in"
 										"${CMAKE_CURRENT_BINARY_DIR}/haskell.c"
-										@ONLY)
-
-									# same for the header
+										@ONLY) # same for the header
 									configure_file (
 										"${CMAKE_SOURCE_DIR}/src/plugins/haskell/haskell.h.in"
 										"${CMAKE_CURRENT_BINARY_DIR}/haskell.h"
-										@ONLY)
-
-									# copy the readme so the macro in haskell.c finds it
+										@ONLY) # copy the readme so the macro in haskell.c finds it
 									file (COPY
 									      "${CMAKE_CURRENT_SOURCE_DIR}/README.md"
 									      DESTINATION
-									      "${CMAKE_CURRENT_BINARY_DIR}")
-
-									# same for the setup logic, depending on whether a custom one exists
-									# use the default suitable for almost everything
+									      "${CMAKE_CURRENT_BINARY_DIR}") # same for the setup logic,
+													     # depending on wheter a custom
+													     # one exists  use the default
+													     # suitable for almost
+													     # everything
 									set (CABAL_CUSTOM_SETUP_FILE
 									     "${CMAKE_CURRENT_SOURCE_DIR}/Setup.hs.in")
 									if (NOT EXISTS ${CABAL_CUSTOM_SETUP_FILE})
@@ -176,9 +169,20 @@ macro (add_haskell_plugin target)
 												   c2hs_haskell)
 
 									# Grab potential haskell source files
-									file (GLOB_RECURSE PLUGIN_SOURCE_FILES
+									file (GLOB_RECURSE PLUGIN_SOURCE_FILES_UNFILTERED
 											   "${CMAKE_CURRENT_SOURCE_DIR}/*.hs"
-											   "${CMAKE_CURRENT_SOURCE_DIR}/*.lhs")
+											   "${CMAKE_CURRENT_SOURCE_DIR}/*.lhs"
+											   "${CMAKE_CURRENT_BINARY_DIR}/*.hs"
+											   "${CMAKE_CURRENT_BINARY_DIR}/*.lhs")
+
+									# exclude the dist directory
+									set (PLUGIN_SOURCE_FILES)
+									foreach (file ${PLUGIN_SOURCE_FILES_UNFILTERED})
+										if (NOT file MATCHES "${CMAKE_CURRENT_BINARY_DIR}/dist/")
+											list (APPEND PLUGIN_SOURCE_FILES ${file})
+										endif ()
+									endforeach ()
+
 									set (PLUGIN_SOURCE_FILES
 									     "${PLUGIN_SOURCE_FILES}"
 									     "${CMAKE_CURRENT_SOURCE_DIR}/${target}.cabal.in"
@@ -223,9 +227,9 @@ macro (add_haskell_plugin target)
 						remove_plugin (${target} "GHC_RTS_LIB not found")
 					endif (GHC_RTS_LIB)
 
-				else (HAVE_HASKELL_BINDING)
+				else (FINDEX GREATER -1)
 					remove_plugin (${target} "haskell bindings are not included in the cmake configuration")
-				endif (HAVE_HASKELL_BINDING)
+				endif (FINDEX GREATER -1)
 			else (HASKELL_FOUND)
 				remove_plugin (${target} ${HASKELL_NOTFOUND_INFO})
 			endif (HASKELL_FOUND)
@@ -247,11 +251,20 @@ macro (add_haskell_plugin target)
 	add_plugintest (${target} MEMLEAK)
 	if (TARGET elektra-${target})
 		if (DEPENDENCY_PHASE AND (BUILD_SHARED OR BUILD_FULL))
-			set_target_properties (elektra-${target} PROPERTIES INSTALL_RPATH "${HASKELL_RPATH}")
+			set_target_properties (
+				elektra-${target}
+				PROPERTIES INSTALL_RPATH
+					   "${HASKELL_RPATH}"
+					   SANDBOX_PACKAGEDB
+					   "${CMAKE_BINARY_DIR}/.cabal-sandbox/${GHC_TARGET_PLATFORM2}-ghc-${GHC_VERSION}-packages.conf.d/")
 		endif (DEPENDENCY_PHASE AND (BUILD_SHARED OR BUILD_FULL))
 		if (ADDTESTING_PHASE AND BUILD_TESTING AND (BUILD_SHARED OR BUILD_FULL))
 			get_target_property (HASKELL_RPATH elektra-${target} INSTALL_RPATH)
-			set_target_properties (testmod_${target} PROPERTIES INSTALL_RPATH "${HASKELL_RPATH}")
+			get_target_property (SANDBOX_PACKAGEDB elektra-${target} SANDBOX_PACKAGEDB)
+			set_target_properties (testmod_${target} PROPERTIES INSTALL_RPATH "${HASKELL_RPATH}") # this is required so that it
+													      # finds the type checker
+													      # plugin and all the libraries
+			set_property (TEST testmod_${target} PROPERTY ENVIRONMENT "SANDBOX_PACKAGEDB=${SANDBOX_PACKAGEDB}")
 		endif (ADDTESTING_PHASE AND BUILD_TESTING AND (BUILD_SHARED OR BUILD_FULL))
 	endif (TARGET elektra-${target})
 
@@ -317,3 +330,4 @@ macro (configure_haskell_sandbox)
 
 	set_property (GLOBAL PROPERTY HASKELL_SANDBOX_DEP_IDX "${HASKELL_SANDBOX_DEP_IDX}")
 endmacro (configure_haskell_sandbox)
+
