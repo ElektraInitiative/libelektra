@@ -316,33 +316,31 @@ export default class SettingsDialog extends Component {
                   />
                   <SavedIcon saved={this.getSaved('restrict/binary')} />
               </div>
-              <div style={{ display: 'initial', marginLeft: 24 }}>
+            </div>
+            <div style={{ display: 'flex' }}>
+              <div style={{ flex: 1 }}>
                 <Checkbox
                   tabIndex="0"
                   checked={fromElektraBool(this.getMeta('restrict/write', false))}
                   onCheck={(e, val) => this.handleEdit('restrict/write')(toElektraBool(val))}
                   label="restrict/write"
                 />
-              </div>
-              <div style={{ flex: 'initial' }}>
                 <SavedIcon saved={this.getSaved('restrict/write')} />
               </div>
-              <div style={{ flex: 'initial', marginLeft: 24 }}>
+              <div style={{ flex: 1 }}>
                 <Checkbox
                   tabIndex="0"
                   checked={fromElektraBool(this.getMeta('restrict/remove', false))}
                   onCheck={(e, val) => this.handleEdit('restrict/remove')(toElektraBool(val))}
                   label="restrict/remove"
                 />
-              </div>
-              <div style={{ flex: 'initial' }}>
                 <SavedIcon saved={this.getSaved('restrict/remove')} />
               </div>
             </div>
             {!isBinary &&
               <div>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <div style={{ flex: 'initial' }}>
+                    <div style={{ flex: 1 }}>
                         <SelectField
                           floatingLabelText="type"
                           floatingLabelFixed={true}
@@ -375,9 +373,15 @@ export default class SettingsDialog extends Component {
                               <MenuItem key={type} value={type} primaryText={name} />
                             )}
                         </SelectField>
-                    </div>
-                    <div style={{ flex: 'initial' }}>
                         <SavedIcon saved={this.getSaved('check/type')} style={{ paddingBottom: 16 }} />
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      {(type === 'string' || type === 'any' || isNumberType(type)) &&
+                        <div>
+                          <div><small>Current value:</small></div>
+                          <div>{field}</div>
+                        </div>
+                      }
                     </div>
                 </div>
                 {this.getMeta('check/type', false) === 'enum' ? this.renderEnum() : null}
@@ -409,12 +413,6 @@ export default class SettingsDialog extends Component {
                           />
                           <SavedIcon saved={this.getSaved('check/validation/message')} />
                       </div>
-                  </div>
-                }
-                {(type === 'string' || type === 'any' || isNumberType(type)) &&
-                  <div style={{ display: 'flex' }}>
-                    <h3 style={{ flex: 2 }}>Current value:</h3>
-                    <div style={{ flex: 8, marginTop: 4 }}>{field}</div>
                   </div>
                 }
               </div>
