@@ -14,7 +14,7 @@ import validateType from './validateType'
 import debounce from '../../debounce'
 import { fromElektraBool } from '../../../utils'
 
-const DebouncedTextField = debounce(TextField)
+const DebouncedTextField = debounce(TextField, { timeout: 1500 })
 
 export default class SimpleTextField extends Component {
   constructor (props) {
@@ -23,7 +23,8 @@ export default class SimpleTextField extends Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.value) {
+    if (nextProps.value && nextProps.value !== this.props.value) {
+      console.log('next value', nextProps.value)
       this.setState({ value: nextProps.value })
     }
   }
