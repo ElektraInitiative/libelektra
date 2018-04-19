@@ -15,7 +15,7 @@ const FocusTrapDialog = ({ children, open, paused = false, onRequestClose, ...re
     <FocusTrap
       active={open}
       paused={paused}
-      focusTrapOptions={{ escapeDeactivates: false, returnFocusOnDeactivate: false }}
+      focusTrapOptions={{ clickOutsideDeactivates: true, escapeDeactivates: false, returnFocusOnDeactivate: false }}
     >
       {children}
     </FocusTrap>
