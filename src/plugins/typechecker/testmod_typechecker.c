@@ -66,6 +66,7 @@ static void test_basics (void)
 
 	ksAppendKey (ks, keyNew (KEY3_NAME, KEY_META, "fallback/#1", KEY1_NAME, KEY_META, "fallback/#2", KEY2_NAME, KEY_END));
 
+
 	ksAppendKey (ks, keyNew (KEY4_NAME, KEY_META, "fallback/#1", KEY1_NAME, KEY_META, "override/#1", KEY2_NAME, KEY_META, "check/long",
 				 "", KEY_END));
 
@@ -86,6 +87,7 @@ static void test_invalid_ranges_override (void)
 	PLUGIN_OPEN ("typechecker");
 
 	KeySet * ks = keysetWithStandardFunctions ();
+
 
 	ksAppendKey (ks, keyNew (KEY1_NAME, KEY_VALUE, "2500", KEY_META, "check/range", "0-5000", KEY_END));
 
