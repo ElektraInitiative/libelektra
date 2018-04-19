@@ -20,6 +20,9 @@ import { HANDLED_METADATA } from './utils'
 
 const DebouncedTextField = debounce(TextField)
 
+const IMMEDIATE = 'IMMEDIATE'
+const DEBOUNCED = 'DEBOUNCED'
+
 export default class AdditionalMetakeysSubDialog extends Component {
   constructor (props, ...args) {
     super(props, ...args)
@@ -77,9 +80,9 @@ export default class AdditionalMetakeysSubDialog extends Component {
           floatingLabelText={item.key}
           floatingLabelFixed={true}
           tabIndex="0"
-          value={item.value || getMeta(item.key)}
-          onChange={this.updateValue(item.key)}
-          onDebounced={handleEdit(item.key)}
+          value={getMeta(item.key)}
+          onChange={handleEdit(item.key, IMMEDIATE)}
+          onDebounced={handleEdit(item.key, DEBOUNCED)}
         />
         <SavedIcon saved={getSaved(item.key)} />
         <IconButton
