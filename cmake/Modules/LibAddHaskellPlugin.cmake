@@ -298,13 +298,14 @@ macro (configure_haskell_sandbox)
 		add_custom_command (OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/cabal.sandbox.config"
 				    COMMAND ${CABAL_EXECUTABLE} sandbox init ${SHARED_SANDBOX} -v0
 				    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+				    COMMENT "add-source being xecuted"
 				    DEPENDS ${ARG_DEPENDS})
 		set (HASKELL_ADD_SOURCES_TARGET haskell-add-sources-${HASKELL_SANDBOX_DEP_IDX})
-		add_custom_target (${HASKELL_ADD_SOURCES_TARGET} ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/cabal.sandbox.config")
 	else (NOT HASKELL_SANDBOX_DEP_IDX)
 		add_custom_command (OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/cabal.sandbox.config"
 				    COMMAND ${CABAL_EXECUTABLE} sandbox init ${SHARED_SANDBOX} -v0
 				    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+				    COMMENT "add-source being xecuted"
 				    DEPENDS haskell-add-sources-${HASKELL_SANDBOX_DEP_IDX}
 					    ${ARG_DEPENDS})
 		math (EXPR HASKELL_SANDBOX_DEP_IDX "${HASKELL_SANDBOX_DEP_IDX} + 1")
@@ -328,6 +329,7 @@ macro (configure_haskell_sandbox)
 			    COMMAND ${CABAL_EXECUTABLE} install ${CABAL_OPTS} --only-dependencies -v0 || true
 			    APPEND)
 
+	add_custom_target (${HASKELL_ADD_SOURCES_TARGET} ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/cabal.sandbox.config")
+
 	set_property (GLOBAL PROPERTY HASKELL_SANDBOX_DEP_IDX "${HASKELL_SANDBOX_DEP_IDX}")
 endmacro (configure_haskell_sandbox)
-
