@@ -129,8 +129,9 @@ export default class SettingsDialog extends Component {
         'Are you sure you want to convert this key to a normal key and ' +
         'wipe its value?'
       if (window.confirm(text)) {
-        const { deleteMeta, refreshKey } = this.props
-        deleteMeta('binary')
+        const { onEdit, deleteMeta, refreshKey } = this.props
+        onEdit('') // wipe value
+          .then(() => deleteMeta('binary')) // turn into normal key
           .then(() => {
             refreshKey()
             const { timeout } = this.state['binary'] || {}
