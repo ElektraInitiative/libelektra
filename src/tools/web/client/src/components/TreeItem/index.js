@@ -183,10 +183,10 @@ export default class TreeItem extends Component {
     }
 
     return (
-        <a style={{ display: 'flex', alignItems: 'center', opacity: keyExists ? 1 : 0.4 }}>
+        <a style={{ display: 'flex', alignItems: 'center' }}>
             {valueVisible
               ? (
-                  <span style={{ display: 'flex', alignItems: 'center', height: 48 }}>
+                  <span style={{ display: 'flex', alignItems: 'center', height: 48, opacity: keyExists ? 1 : 0.4 }}>
                       <b style={titleStyle}>{prettyPrintArrayIndex(item.name)}: </b>
                       <span
                         style={{ marginLeft: 6 }}
@@ -196,7 +196,7 @@ export default class TreeItem extends Component {
                       </span>
                   </span>
                 )
-              : <b style={titleStyle}>
+              : <b style={{ ...titleStyle, opacity: keyExists ? 1 : 0.4 }}>
                   <span style={{ flex: 'initial', marginTop: -2 }}>{prettyPrintArrayIndex(item.name)}</span>
                   {arrayKeyLength &&
                     <span style={{ flex: 'initial', marginLeft: 8 }}>
