@@ -162,7 +162,7 @@ before_script:
   - |
     if [[ $HASKELL == ON ]]; then
       bindings="haskell"
-      plugins="resolver_fm_hpu_b;dump;list;spec"
+      plugins="resolver_fm_hpu_b;dump;list;spec;haskell;typechecker"
       tools="kdb"
     fi
   - |
