@@ -23,8 +23,7 @@ export default class SimpleTextField extends Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.value && nextProps.value !== this.props.value) {
-      console.log('next value', nextProps.value)
+    if (nextProps.value !== this.props.value) {
       this.setState({ value: nextProps.value })
     }
   }
