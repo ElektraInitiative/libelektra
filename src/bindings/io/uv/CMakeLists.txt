@@ -103,6 +103,11 @@ else ()
 		COMMAND "${CMAKE_BINARY_DIR}/bin/${TESTEXENAME}" "${CMAKE_CURRENT_SOURCE_DIR}"
 		WORKING_DIRECTORY "${WORKING_DIRECTORY}"
 	)
+	set_property (
+		TEST ${TESTEXENAME}
+		PROPERTY ENVIRONMENT
+		"LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib"
+)
 
 	add_subdirectory (example)
 endif ()

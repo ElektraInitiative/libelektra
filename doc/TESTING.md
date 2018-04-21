@@ -29,8 +29,14 @@ can use:
 
     make run_nokdbtests
 
-Directly running `ctest` might cause problems:
-You need to set `LD_LIBRARY_PATH` as `run_all` and `run_nokdbtests` do.
+You can also directly run ctest to make use of parallel testing:
+
+    ctest -T Test --output-on-failure -j 6
+    ctest -T MemCheck -LE memleak --output-on-failure -j 6
+
+The alternative to `make run_nokdbtests`:
+
+    ctest -T Test --output-on-failure -LE kdbtests -j 6
 
 If the access is denied, several tests will fail.
 You have some options to avoid running them as root:
@@ -84,6 +90,10 @@ You have some options to avoid running them as root:
   command:
 
         set_property(TEST testname PROPERTY LABELS memleak)
+- If your test modifies resources needed by other tests you also need to set
+    `RUN_SERIAL`:
+
+        set_property(TEST testname PROPERTY RUN_SERIAL TRUE)
 
 
 ## Strategy

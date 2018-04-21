@@ -62,10 +62,14 @@ else ()
 
     # test apis
     find_program (DREDD_EXECUTABLE "dredd")
-    if (NOT DREDD_EXECUTABLE)
-      # testing disabled
-    else ()
+    if (DREDD_EXECUTABLE)
+      # testing is possible
       add_test (NAME elektra-web COMMAND ./test.sh WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+      set_property (
+        TEST elektra-web
+        PROPERTY ENVIRONMENT
+        "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib"
+      )
     endif ()
 
 endif ()

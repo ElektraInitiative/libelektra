@@ -23,6 +23,10 @@ macro (do_gi_lua_test source)
 			TEST ${name}
 			APPEND PROPERTY LABELS kdbtests
 		)
+		set_property (
+			TEST ${name}
+			PROPERTY RUN_SERIAL TRUE
+		)
 	endif ()
 endmacro (do_gi_lua_test)
 

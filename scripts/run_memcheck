@@ -6,4 +6,4 @@ then
 	exit 1
 fi
 
-LD_LIBRARY_PATH=`pwd`/lib ctest -T memcheck --output-on-failure --build-config $1 -LE memleak
+ctest -T memcheck --output-on-failure --build-config $1 -LE memleak

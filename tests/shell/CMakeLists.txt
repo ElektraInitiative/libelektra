@@ -104,7 +104,15 @@ function (add_scripttest testname)
 				"${testscriptname}"
 				)
 			#dash does memleak:
-			set_property(TEST testscr_${testname_we} PROPERTY LABELS memleak kdbtests)
+			set_property(
+				TEST testscr_${testname_we}
+				PROPERTY LABELS memleak kdbtests)
+			set_property(
+				TEST testscr_${testname_we}
+				PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
+			set_property(
+				TEST testscr_${testname_we}
+				PROPERTY RUN_SERIAL TRUE)
 			endif (NOT ${testname_we} STREQUAL "run_all")
 			endif(ENABLE_KDB_TESTING)
 		endif (TARGET)

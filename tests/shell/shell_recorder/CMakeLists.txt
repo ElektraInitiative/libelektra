@@ -15,7 +15,15 @@ function (add_shell_recorder_test FILENAME)
 		"${CMAKE_CURRENT_BINARY_DIR}/shell_recorder.sh"
 		"${CMAKE_CURRENT_SOURCE_DIR}/${name}"
 		)
-	set_property(TEST testshell_${testname_we} PROPERTY LABELS memleak kdbtests)
+	set_property(
+		TEST testshell_${testname_we} PROPERTY
+		LABELS memleak kdbtests)
+	set_property(
+		TEST testshell_${testname_we} PROPERTY
+		ENVIRONMENT LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib)
+	set_property(
+		TEST testshell_${testname_we} PROPERTY
+		RUN_SERIAL TRUE)
 endfunction (add_shell_recorder_test FILENAME)
 
 if (ENABLE_KDB_TESTING)
@@ -92,7 +100,14 @@ if (ENABLE_KDB_TESTING)
 				"${file}"
 				"${directory}/${name_without_extension}.epf"
 				)
-			set_property(TEST testshell_replay_${name_without_extension} PROPERTY LABELS memleak kdbtests)
+			set_property(TEST testshell_replay_${name_without_extension} PROPERTY
+				LABELS memleak kdbtests)
+			set_property(
+				TEST testshell_replay_${name_without_extension} PROPERTY
+				ENVIRONMENT LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib)
+			set_property(
+				TEST testshell_replay_${name_without_extension} PROPERTY
+				RUN_SERIAL TRUE)
 		endforeach (file ${SCRIPT_TESTS})
 	endif (ENABLE_REPLAY_TESTS)
 

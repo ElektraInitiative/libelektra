@@ -122,6 +122,8 @@ function (add_plugintest testname)
 				COMMAND "${CMAKE_BINARY_DIR}/bin/${testexename}" "${CMAKE_CURRENT_SOURCE_DIR}"
 				WORKING_DIRECTORY "${WORKING_DIRECTORY}"
 				)
+		set_property(TEST ${testexename} PROPERTY
+				ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
 		if (ARG_MEMLEAK)
 			set_property(TEST ${testexename} PROPERTY
 				LABELS memleak)

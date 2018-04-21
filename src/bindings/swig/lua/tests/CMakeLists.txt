@@ -24,6 +24,10 @@ macro (do_lua_test source)
 			TEST ${name}
 			APPEND PROPERTY LABELS kdbtests
 		)
+		set_property (
+			TEST ${name}
+            APPEND PROPERTY RUN_SERIAL TRUE
+		)
 	endif ()
 endmacro (do_lua_test)
 
