@@ -65,7 +65,6 @@ else ()
     if (NOT DREDD_EXECUTABLE)
       # testing disabled
     else ()
-      enable_testing ()
       add_test (NAME elektra-web COMMAND ./test.sh WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
     endif ()
 
