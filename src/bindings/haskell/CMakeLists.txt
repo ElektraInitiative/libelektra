@@ -130,6 +130,8 @@ if (NOT BUILD_STATIC)
 			set_property (TEST testhaskell_realworld
 				APPEND PROPERTY LABELS kdbtests)
 			set_property (TEST testhaskell_realworld
+				PROPERTY RUN_SERIAL TRUE)
+			set_property (TEST testhaskell_realworld
 				APPEND PROPERTY LABELS memleak)
 			set_property (TEST testhaskell_realworld
 				PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
@@ -140,6 +142,8 @@ if (NOT BUILD_STATIC)
 				PROPERTY LABELS bindings)
 			set_property (TEST testhaskell_realworld_optimized
 				APPEND PROPERTY LABELS kdbtests)
+			set_property (TEST testhaskell_realworld_optimized
+				PROPERTY RUN_SERIAL TRUE)
 			set_property (TEST testhaskell_realworld_optimized
 				APPEND PROPERTY LABELS memleak)
 			set_property (TEST testhaskell_realworld_optimized

@@ -33,6 +33,11 @@ macro (do_test source)
 			"${CMAKE_BINARY_DIR}/bin/${source}"
 			"${CMAKE_CURRENT_BINARY_DIR}"
 			)
+	set_property (
+			TEST ${source}
+			PROPERTY ENVIRONMENT
+			"LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib"
+			)
 endmacro (do_test)
 
 if (NOT CMAKE_VERSION VERSION_LESS 3.2)

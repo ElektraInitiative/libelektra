@@ -55,14 +55,16 @@ macro (add_gtest source)
 			"${CMAKE_BINARY_DIR}/bin/${source}"
 			"${CMAKE_CURRENT_BINARY_DIR}/"
 			)
+	set_property(TEST ${source} PROPERTY ENVIRONMENT
+		"LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib"
+	)
 
 	if (ARG_MEMLEAK)
-		set_property(TEST ${source} PROPERTY
-			LABELS memleak)
+		set_property(TEST ${source} PROPERTY LABELS memleak)
 	endif (ARG_MEMLEAK)
 	if (ARG_KDBTESTS)
-		set_property(TEST ${name} PROPERTY
-			LABELS kdbtests)
+		set_property(TEST ${name} PROPERTY LABELS kdbtests)
+		set_property(TEST ${name} PROPERTY RUN_SERIAL TRUE)
 	endif (ARG_KDBTESTS)
 	endif(BUILD_TESTING)
 endmacro (add_gtest)
@@ -94,8 +96,12 @@ function (add_msr_test NAME FILE)
 		COMMAND "${CMAKE_BINARY_DIR}/tests/shell/shell_recorder/tutorial_wrapper/markdown_shell_recorder.sh" "${FILE}"
 		WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
 		)
-	set_tests_properties (${TEST_NAME} PROPERTIES ENVIRONMENT "${ARG_ENVIRONMENT}")
-	set_property(TEST ${TEST_NAME} PROPERTY LABELS memleak kdbtests)
+	set_property(TEST ${TEST_NAME} PROPERTY ENVIRONMENT
+		"LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib"
+		"${ARG_ENVIRONMENT}"
+	)
+	set_property(TEST ${TEST_NAME} PROPERTY LABELS memleak kdbtests )
+	set_property(TEST ${TEST_NAME} PROPERTY RUN_SERIAL TRUE)
 endfunction ()
 
 # Add a Markdown Shell Recorder test for a certain plugin

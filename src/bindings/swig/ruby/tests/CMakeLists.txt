@@ -30,4 +30,9 @@ if (NOT (APPLE AND ENABLE_ASAN))
 		TEST "testruby_kdb"
 		APPEND PROPERTY LABELS kdbtests
 	)
+	set_property (
+		TEST "testruby_kdb"
+		PROPERTY RUN_SERIAL TRUE
+	)
+
 endif (NOT (APPLE AND ENABLE_ASAN))
