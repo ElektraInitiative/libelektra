@@ -74,7 +74,7 @@ execute()
 
 
 	[ -n "$STDERR" ] && printf 'STDERR: %s\n' "$STDERR" >> "$OutFile"
-	if [ -n "$STDERRCMP" ];
+	if [ -n "${STDERRCMP+unset}" ];
 	then
 		nbTest=$(( nbTest + 1 ))
 		if ! printf '%s' "$STDERR" | replace_newline_return | grep -Eq --text "^$STDERRCMP\$";
@@ -207,7 +207,7 @@ run_script()
 		STDOUTRECMP=$(tail "$line")
 		;;
 	STDERR:)
-		STDERRCMP=$(tail "$line")
+		STDERRCMP=$(printf '%s' "$line" | sed -E 's/[^:]+: ?(.*)/\1/')
 		;;
 	\<)
 		OP="$cmd"
@@ -226,7 +226,7 @@ run_script()
 		WARNINGSCMP=
 		STDOUTCMP=
 		STDOUTRECMP=
-		STDERRCMP=
+		unset STDERRCMP
 		ARG=
 	fi
 	done < "$FILE"
@@ -261,7 +261,6 @@ ERRORCMP=
 WARNINGSCMP=
 STDOUTCMP=
 STDOUTRECMP=
-STDERRCMP=
 
 BACKUP=0
 TMPFILE=$(mktempfile_elektra)

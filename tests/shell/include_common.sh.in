@@ -247,7 +247,7 @@ mktempfile_elektra()
 }
 
 replace_newline_return () {
-	awk '{if (NR>1) {printf("%s⏎", line);} line=$0;} END { printf("%s", line); }'
+	awk '{if (NR>1) {printf("%s⏎", line);} line=$0;} END { printf("%s\n", line); }'
 }
 
 printerr () {

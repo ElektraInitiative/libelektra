@@ -9,6 +9,7 @@ kdb set /test/b b
 # should yield 'a'
 kdb get /test/a
 #> a
+# STDERR:
 kdb get /test/c
 # Expected:
 # RET:11

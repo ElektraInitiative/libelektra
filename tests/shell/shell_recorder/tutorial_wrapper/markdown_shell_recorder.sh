@@ -12,7 +12,7 @@ resetGlobals()
 	WARNINGS=
 	STDOUT=
 	STDOUTRE=
-	STDERR=
+	unset STDERR
 	OUTBUF=
 	MOUNTPOINT=
 }
@@ -23,7 +23,7 @@ writeBlock()
 	[ -n "$RET" ] && printf 'RET: %s\n' $RET >> "$TMPFILE" || { [ -z "$ERROR" ] && printf 'RET: 0\n' >> "$TMPFILE"; }
 	[ -n "$ERROR" ] && printf 'ERROR: %s\n' "$ERROR" >> "$TMPFILE"
 	[ -n "$WARNINGS" ] && printf 'WARNINGS: %s\n' "$WARNINGS" >> "$TMPFILE"
-	[ -n "$STDERR" ] && printf 'STDERR: %s\n' "$STDERR" >> "$TMPFILE"
+	[ -n "${STDERR+unset}" ] && printf 'STDERR: %s\n' "$STDERR" >> "$TMPFILE"
 	if [ -n "$OUTBUF" ]; then printf 'STDOUT: %s\n' "$OUTBUF" >> "$TMPFILE"
 	elif [ -n "$STDOUTRE" ]; then printf 'STDOUT-REGEX: %s\n' "$STDOUTRE" >> "$TMPFILE"
 	fi
