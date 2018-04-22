@@ -166,6 +166,7 @@ Many problems were resolved with the following fixes:
 - We now disable the [Xerces plugin](http://libelektra.org/plugins/xerces) if you use GCC with enabled ASAN to build Elektra. This update
   makes sure that you do not build the plugin with compilation settings that are known to
   [cause problems](https://github.com/ElektraInitiative/libelektra/issues/1895).
+- The [Shell Recorder][] counts the number of executed tests properly again.
 
 ## Outlook
 

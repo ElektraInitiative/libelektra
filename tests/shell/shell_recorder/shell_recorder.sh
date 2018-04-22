@@ -57,12 +57,12 @@ execute()
 
 	if [ -n "$RETCMP" ];
 	then
-		nbTest=$(( nbTest + 1 ))
+		executedTests=$(( executedTests + 1 ))
 		if ! printf '%s' "$RETVAL" | grep -Ewq $RETCMP;
 		then
 			printerr '\nERROR - RET:\nReturn value “%s” does not match “%s”\n\n' "$RETVAL" "$RETCMP"
 			printf '=== FAILED return value does not match expected pattern %s\n' "$RETCMP" >> "$OutFile"
-			nbError=$(( nbError + 1 ))
+			numberErrors=$(( numberErrors + 1 ))
 		fi
 	fi
 
@@ -76,12 +76,12 @@ execute()
 	[ -n "$STDERR" ] && printf 'STDERR: %s\n' "$STDERR" >> "$OutFile"
 	if [ -n "${STDERRCMP+unset}" ];
 	then
-		nbTest=$(( nbTest + 1 ))
+		executedTests=$(( executedTests + 1 ))
 		if ! printf '%s' "$STDERR" | replace_newline_return | grep -Eq --text "^$STDERRCMP\$";
 		then
 			printerr '\nERROR - STDERR:\n“%s”\ndoes not match\n“%s”\n\n' "$STDERR" "$STDERRCMP"
 			printf '=== FAILED stderr does not match expected pattern %s\n' "$STDERRCMP" >> "$OutFile"
-			nbError=$(( nbError + 1 ))
+			numberErrors=$(( numberErrors + 1 ))
 		fi
 	fi
 
@@ -94,12 +94,12 @@ execute()
 	[ -n "$STDOUT" ] && printf '%s\n' "STDOUT: $STDOUT" >> "$OutFile"
 	if [ -n "$STDOUTCMP" ];
 	then
-		nbTest=$(( nbTest + 1 ))
+		executedTests=$(( executedTests + 1 ))
 		if ! printf '%s' "$STDOUT" | replace_newline_return | grep -Fqx --text "$STDOUTCMP";
 		then
 			printerr '\nERROR - STDOUT:\n“%s”\ndoes not match\n“%s”\n\n' "$STDOUT" "$STDOUTCMP"
 			printf '=== FAILED stdout does not match expected pattern %s\n' "$STDOUTCMP" >> "$OutFile"
-			nbError=$(( nbError + 1 ))
+			numberErrors=$(( numberErrors + 1 ))
 		fi
 	fi
 
@@ -109,12 +109,12 @@ execute()
 
 	if [ -n "$STDOUTRECMP" ];
 	then
-		nbTest=$(( nbTest + 1 ))
+		executedTests=$(( executedTests + 1 ))
 		if !  printf '%s' "$STDOUT" | replace_newline_return | grep -Eq --text "$STDOUTRECMP";
 		then
 			printerr '\nERROR - STDOUT:\n“%s”\ndoes not match\n“%s”\n\n' "$STDOUT" "$STDOUTRECMP"
 			printf '=== FAILED stdout does not match expected pattern %s\n' "$STDOUTRECMP" >> "$OutFile"
-			nbError=$(( nbError + 1 ))
+			numberErrors=$(( numberErrors + 1 ))
 		fi
 	fi
 
@@ -127,12 +127,12 @@ execute()
 	[ -n "$WARNINGS" ] && printf 'WARNINGS: %s\n' "$WARNINGS" >> "$OutFile"
 	if [ -n "$WARNINGSCMP" ];
 	then
-		nbTest=$(( nbTest + 1 ))
+		executedTests=$(( executedTests + 1 ))
 		if ! printf '%s' "$WARNINGS" | replace_newline_return | grep -Eq --text "$WARNINGSCMP";
 		then
 			printerr '\nERROR - WARNINGS:\n“%s”\ndoes not match\n“%s”\n\n' "$WARNINGS" "$WARNINGSCMP"
 			printf '=== FAILED Warnings do not match expected pattern %s\n' "$WARNINGSCMP" >> "$OutFile"
-			nbError=$(( nbError + 1 ))
+			numberErrors=$(( numberErrors + 1 ))
 		fi
 	fi
 
@@ -145,12 +145,12 @@ execute()
 	[ -n "$ERROR" ] && printf 'ERROR: %s\n' "$ERROR" >> "$OutFile"
 	if [ -n "$ERRORCMP" ];
 	then
-		nbTest=$(( nbTest + 1 ))
+		executedTests=$(( executedTests + 1 ))
 		if ! printf '%s' "$ERROR" | replace_newline_return | grep -Eq --text "$ERRORCMP";
 		then
 			printerr '\nERROR - ERROR:\n“%s”\ndoes not match\n“%s”\n\n' "$ERROR" "$ERRORCMP"
 			printf '=== FAILED Errors do not match expected pattern %s\n' "$ERRORCMP" >> "$OutFile"
-			nbError=$(( nbError + 1 ))
+			numberErrors=$(( numberErrors + 1 ))
 		fi
 	fi
 }
@@ -266,8 +266,8 @@ BACKUP=0
 TMPFILE=$(mktempfile_elektra)
 
 # variables to count up errors and tests
-nbError=0
-nbTest=0
+numberErrors=0
+executedTests=0
 
 if [ "$#" -lt '1' ] || [ "$#" -gt '2' ];
 then
@@ -297,8 +297,8 @@ EVAL=0
 
 if [ "$#" -eq '1' ];
 then
-	printf 'shell_recorder %s RESULTS: %s test(s) done %s error(s).' "$1" "$nbTest" "$nbError"
-	EVAL=$nbError
+	printf 'shell_recorder %s RESULTS: %s test(s) done %s error(s).' "$1" "$executedTests" "$numberErrors"
+	EVAL=$numberErrors
 fi
 
 if [ "$#" -eq '2' ];
