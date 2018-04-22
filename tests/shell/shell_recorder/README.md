@@ -61,7 +61,6 @@ does not match
 “NaNaNaNaNaNaNa”
 
 shell_recorder /Users/rene/Documents/test.esr RESULTS: 2 test(s) done 2 error(s).
-📕
 Protocol File: /var/folders/hx/flbncdhj4fs87095gzxvnj3h0000gn/T/elektraenv.XXXXXXXXX.gWyTCr2O
 ```
 
