@@ -126,7 +126,7 @@ These notes are of interest for people developing Elektra:
    - `add_msr_test_plugin`, and the new
    - `add_shell_recorder_test`
 
-    now allow you to specify a list of required plugins for [Shell Recorder](https://master.libelektra.org/tests/shell/shell_recorder) and
+    now allow you to specify a list of required plugins for [Shell Recorder][] and
    Markdown Shell Recorder tests.
 - The [Markdown Shell Recorder][] now compares the whole output of `stderr` with the text following the directive `STDERR:`.
 - You can now leave the text following the directive `STDERR:` in a [Markdown Shell Recorder][] test empty:
@@ -137,6 +137,7 @@ These notes are of interest for people developing Elektra:
    ```
 
    . The MSR will then check if the command printed nothing to the standard error output.
+- The [Shell Recorder][] now also prints the content of the protocol file if a test was unsuccessful or you used the command switch `-p`.
 - All current versions of Clang-Format (6.0+) and the outdated Clang-Format 5 will now produce exactly the same output for the whole
   codebase.
 - We added an [Markdown Shell Recorder][] test for the [Constants](http://libelektra.org/plugins/constants) plugin.
@@ -151,6 +152,7 @@ These notes are of interest for people developing Elektra:
 - Speeding up your test runs via ctest -j is now possible
 
 [Markdown Shell Recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
+[Shell Recorder]: https://master.libelektra.org/tests/shell/shell_recorder
 
 ## Fixes
 
