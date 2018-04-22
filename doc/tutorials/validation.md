@@ -289,7 +289,7 @@ kdb set /tutorial/spec/should_not_be_here abc
 # STDERR: .*error.*10.*occurred.*
 kdb get /tutorial/spec/should_not_be_here
 # RET: 11
-# STDERR: Did not find key
+# STDERR: Did not find key '/tutorial/spec/should_not_be_here'
 ```
 
 If we want to reject every optional key (and only want to allow required keys)

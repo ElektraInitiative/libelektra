@@ -128,6 +128,7 @@ These notes are of interest for people developing Elektra:
 
     now allow you to specify a list of required plugins for [Shell Recorder](https://master.libelektra.org/tests/shell/shell_recorder) and
    Markdown Shell Recorder tests.
+- The [Markdown Shell Recorder][] now compares the whole output of `stderr` with the text following the directive `STDERR:`.
 - All current versions of Clang-Format (6.0+) and the outdated Clang-Format 5 will now produce exactly the same output for the whole
   codebase.
 - We added an [Markdown Shell Recorder][] test for the [Constants](http://libelektra.org/plugins/constants) plugin.

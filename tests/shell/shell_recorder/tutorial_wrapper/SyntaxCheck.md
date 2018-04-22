@@ -12,7 +12,7 @@ kdb get /test/a
 kdb get /test/c
 # Expected:
 # RET:11
-# STDERR:Did not find key
+# STDERR:Did not find key '/test/c'
 kdb rm -r /test
 ```
 

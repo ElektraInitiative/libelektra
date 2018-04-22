@@ -77,7 +77,7 @@ execute()
 	if [ -n "$STDERRCMP" ];
 	then
 		nbTest=$(( nbTest + 1 ))
-		if ! printf '%s' "$STDERR" | replace_newline_return | grep -Eq --text "$STDERRCMP";
+		if ! printf '%s' "$STDERR" | replace_newline_return | grep -Eq --text "^$STDERRCMP\$";
 		then
 			printerr '\nERROR - STDERR:\n“%s”\ndoes not match\n“%s”\n\n' "$STDERR" "$STDERRCMP"
 			printf '=== FAILED stderr does not match expected pattern %s\n' "$STDERRCMP" >> "$OutFile"
