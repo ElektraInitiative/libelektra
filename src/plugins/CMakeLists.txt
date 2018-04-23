@@ -68,6 +68,10 @@ if (output EQUAL -1)
 	message (SEND_ERROR "selected default resolver (${KDB_DEFAULT_RESOLVER}) is not selected in PLUGINS, please change KDB_DEFAULT_RESOLVER or PLUGINS")
 endif ()
 
+list (FIND ADDED_PLUGINS list output)
+if (output EQUAL -1)
+	message (SEND_ERROR "The required plugin `list` is not selected in PLUGINS, please add `list` to PLUGINS")
+endif ()
 
 if (BUILD_SHARED)
 	mkdir (${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
