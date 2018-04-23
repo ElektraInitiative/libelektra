@@ -16,28 +16,22 @@ module Elektra.SpecTranslator2 (
 
 import Elektra.Specifications
 import Elektra.Parsers
-import Elektra.SpecParser
 import Elektra.Range
 
-import Data.Char           (isSpace, isAlphaNum, toUpper, isUpper)
-import Data.List           (nub, last, (\\), union)
+import Data.Char           (isAlphaNum, toUpper)
 import Data.Map            (Map)
 import Data.Maybe          (catMaybes, maybeToList, maybe)
 import Control.Applicative (liftA2)
-import Control.Monad       ((<=<), mapM)
+import Control.Monad       ((<=<))
 import Unsafe.Coerce
 
 import qualified Data.Map.Strict      as M
-import qualified Data.Text            as T
 
 import Language.Haskell.Exts.Build
 import Language.Haskell.Exts.Syntax
 import Language.Haskell.Exts.Parser
 
-import Debug.Trace
-
 type FunctionMap         = Map TypeName TypeSpecification
-type FunctionExchangeMap = Map String [FunctionCandidate]
 
 translateSpecifications :: [TypeSpecification] -> [KeySpecification] -> Module ()
 translateSpecifications ts ks = mkModule $ concatMap translateTypeSpecification ts ++ concatMap (translateKeySpecification functions) filteredKeyDefinitions
@@ -54,7 +48,7 @@ translateTypeSpecification t = maybeToList typeSig ++ (maybeToList . fmap impl $
     funTypes      = foldr1 (TyFun ()) . map convertRegexTypeParameter
     constraint [] = Nothing
     constraint c  = Just $ CxTuple () (map asst c)
-    asst (RegexConstraint a p)   = AppA () (name $ a) [convertRegexType p]
+    asst (RegexConstraint a p)   = AppA () (name a) [convertRegexType p]
     typeSig' (TypeSignature c p) = TypeSig () [name . pathToDeclName $ tySpecName t] $ TyForall () Nothing (constraint c) (funTypes p)
 
 
@@ -64,7 +58,7 @@ convertRegexTypeParameter (RegexTypeParam r _) = convertRegexType r
 convertRegexType :: RegexType -> Type ()
 convertRegexType (RegexTypeApp a b) = TyApp () (convertRegexType a) (convertRegexType b)
 convertRegexType (Regex r) = TyPromoted () (PromotedString () r r)
-convertRegexType (RegexType r) = TyVar () (name $ r)
+convertRegexType (RegexType r) = TyVar () (name r)
 
 translateKeySpecification :: FunctionMap -> KeySpecification -> [Decl ()]
 translateKeySpecification f k = [rawKeyTypeSig, rawKeyTranslation, specTranslation]
@@ -79,26 +73,26 @@ translateKeySpecification f k = [rawKeyTypeSig, rawKeyTranslation, specTranslati
     specTranslation   = let specs  = functionCandidates k
                             parFld n = foldl (<=>) $ Var () (translateUnqual . pathToDeclName $ functionBaseName n)
                             conv (TypeSignature _ r, v) = parFld (fncFun v) . catMaybes $ translateFunctionParameters' r (path k) v
-                            sigs   = map (signature <=< (f M.!?) . functionBaseName . fncFun) specs
+                            sigs   = map (signature <=< flip M.lookup f . functionBaseName . fncFun) specs
                             zipped = zip sigs specs
-                            repack (Nothing, b) = Nothing
+                            repack (Nothing, _) = Nothing
                             repack (Just a , b) = Just (a, b)
                             transl = fmap conv <$> map repack zipped
                         in nameBind (specificationKeyName k) $ foldr (<=>) (Var () (translateUnqual $ rawKeyName k)) $ catMaybes transl
     translateFunctionParameters e (ArrayFunction p _, s) = let fn = Var () (translateUnqualPath p) <=> e
-                                                               k  = Var () (translateUnqualPath s)
-                                                           in  fn <=> k
+                                                               kp  = Var () (translateUnqualPath s)
+                                                           in  fn <=> kp
     translateFunctionParameters e (Function p, _)        = Var () (translateUnqualPath p) <=> e
-    translateFunctionParameters' [r,x]  n v = [translateFunctionParameter r n v]
+    translateFunctionParameters' [r,_]  n v = [translateFunctionParameter r n v]
     translateFunctionParameters' (r:rs) n v = translateFunctionParameter r n v : translateFunctionParameters' rs n v
     translateFunctionParameters' _      _ _ = error "a function must at least take a param and a return value"
     -- TODO error handling again
-    translateFunctionParameter (RegexTypeParam _ (Range x)) _ v = let rng = parseRange $ fncStr v
+    translateFunctionParameter (RegexTypeParam _ (Range _)) _ v = let rng = parseRange $ fncStr v
                                                                       rgx = maybe ".*" (uncurry regexForRange) rng
-                                                                      var = Var () preludeProxy
+                                                                      vr = Var () preludeProxy
                                                                       ty  = TyCon () preludeProxy <-> TyPromoted () (PromotedString () rgx rgx)
-                                                                  in  Just $ ExpTypeSig () var ty
-    translateFunctionParameter (RegexTypeParam _ (Path  p)) _ v = Just $ Var () (translateUnqualPath $ fncPath v)
+                                                                  in  Just $ ExpTypeSig () vr ty
+    translateFunctionParameter (RegexTypeParam _ (Path  _)) _ v = Just $ Var () (translateUnqualPath $ fncPath v)
     translateFunctionParameter (RegexTypeParam _ Self     ) _ _ = Nothing
     translateUnqualPath = translateUnqual . pathToDeclName
 
