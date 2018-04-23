@@ -60,7 +60,7 @@ endforeach(plugin)
 
 list (FIND ADDED_PLUGINS ${KDB_DEFAULT_STORAGE} output)
 if (output EQUAL -1)
-	message(SEND_ERROR "selected default storage (${KDB_DEFAULT_STORAGE})  is not selected in PLUGINS, please change KDB_DEFAULT_STORAGE or PLUGINS")
+	message(SEND_ERROR "selected default storage (${KDB_DEFAULT_STORAGE}) is not selected in PLUGINS, please change KDB_DEFAULT_STORAGE or PLUGINS")
 endif()
 
 list (FIND ADDED_PLUGINS ${KDB_DEFAULT_RESOLVER} output)
