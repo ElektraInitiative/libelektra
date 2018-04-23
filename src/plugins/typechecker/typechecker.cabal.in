@@ -29,7 +29,7 @@ library
                    , SpecTranslator
                    , haskell-src-exts
                    , pretty
-                   , hint
+                   , hint >= 0.7.0
                    , directory
                    , temporary
                    , text
@@ -37,7 +37,7 @@ library
   cpp-options:       -DENABLE_LOGGER_@ENABLE_LOGGER@
   default-language:  Haskell2010
   other-extensions:  ForeignFunctionInterface
-
+  
 source-repository head
   type:     git
   location: https://git.libelektra.org

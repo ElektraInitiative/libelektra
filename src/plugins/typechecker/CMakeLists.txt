@@ -24,7 +24,7 @@ if (HASKELL_FOUND)
 			file (COPY "${CMAKE_CURRENT_SOURCE_DIR}/sandbox/" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/sandbox/")
 
 			add_custom_command (OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/sandbox/cabal.sandbox.config"
-					    COMMAND ${CABAL_EXECUTABLE} sandbox delete
+					    COMMAND ${CABAL_EXECUTABLE} sandbox delete -v0
 					    COMMAND ${CABAL_EXECUTABLE} sandbox init -v0
 					    COMMAND ${CABAL_EXECUTABLE} sandbox add-source -v0
 						    "${CMAKE_BINARY_DIR}/src/libs/typesystem/libfa"
