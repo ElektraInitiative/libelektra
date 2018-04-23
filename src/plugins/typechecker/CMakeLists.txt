@@ -15,10 +15,10 @@ if (HASKELL_FOUND)
 
 		add_haskell_plugin (typechecker
 				    SANDBOX_ADD_SOURCES
-				    "${CMAKE_BINARY_DIR}/src/bindings/haskell"
-				    "${CMAKE_BINARY_DIR}/src/libs/typesystem/libfa"
-				    "${CMAKE_SOURCE_DIR}/src/libs/typesystem/SpecElektra"
-				    "${CMAKE_SOURCE_DIR}/src/libs/typesystem/SpecTranslator")
+				    "src/bindings/haskell"
+				    "src/libs/typesystem/libfa"
+				    "src/libs/typesystem/SpecElektra"
+				    "src/libs/typesystem/SpecTranslator")
 
 		if (DEPENDENCY_PHASE)
 			file (COPY "${CMAKE_CURRENT_SOURCE_DIR}/sandbox/" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/sandbox/")

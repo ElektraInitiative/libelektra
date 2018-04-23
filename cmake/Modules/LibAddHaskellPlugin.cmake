@@ -291,13 +291,20 @@ macro (add_haskell_plugin target)
 	mark_as_advanced (GHC_FFI_LIB GHC_RTS_LIB GHC_BASE_LIB GHC_GMP_LIB GHC_PRIM_LIB)
 endmacro (add_haskell_plugin)
 
-# Allows adding sandbox sources for haskell plugins which will be executed in a serial manner to avoid cabal concurrency issues
-# https://github.com/haskell/cabal/issues/2220. Also initializes sandboxes and will install the dependencies into them.
+# ~~~
+# Allows adding sandbox sources for haskell plugins which will be executed in a serial manner
+# to avoid cabal concurrency issues https://github.com/haskell/cabal/issues/2220. Also initializes
+# sandboxes and will install the dependencies into them.
 #
-# SANDBOX_ADD_SOURCES: additional source paths which should be added to the cabal sandbox required if the build should depend on haskell
-# libraries not available on hackage WORKING_DIRECTORY: in case your plugin depends on other files than *.hs and *.lhs haskell files and the
-# default cabal file and c test file and setup file, you can specify them here DEPENDS: additional targets this call should be dependent on
-#
+# SANDBOX_ADD_SOURCES:
+#  additional source paths which should be added to the cabal sandbox
+#  required if the build should depend on haskell libraries not available on hackage
+# WORKING_DIRECTORY:
+#  in case your plugin depends on other files than *.hs and *.lhs haskell files and the default
+#  cabal file and c test file and setup file, you can specify them here
+# DEPENDS:
+#  additional targets this call should be dependent on
+# ~~~
 macro (configure_haskell_sandbox)
 	cmake_parse_arguments (ARG
 			       "" # optional keywords

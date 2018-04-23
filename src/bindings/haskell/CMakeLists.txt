@@ -51,10 +51,10 @@ if (HASKELL_FOUND)
 					    COMMAND ${CABAL_EXECUTABLE} update -v0
 					    COMMAND ${CABAL_EXECUTABLE} install ${CABAL_OPTS} --only-dependencies -v0 || true
 					    COMMAND ${CABAL_EXECUTABLE} configure ${CABAL_OPTS} -v0
-					    COMMAND ${CABAL_EXECUTABLE} build -v0 # || Sometimes building fails reporting an outdated
-										  # package file. In this case we need to configure the
-										  # package again. ${CABAL_EXECUTABLE} configure
-										  # ${CABAL_OPTS} -v0 && ${CABAL_EXECUTABLE} build -v0
+					    COMMAND ${CABAL_EXECUTABLE} build -v0 || # Sometimes building fails reporting an outdated
+										     # package file. In this case we need to configure the
+										     # package again. ${CABAL_EXECUTABLE} configure
+						    ${CABAL_OPTS} -v0 && ${CABAL_EXECUTABLE} build -v0
 					    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 					    DEPENDS ${BINDING_HASKELL_DEPENDENCIES}
 						    ${ELEKTRA_DEPENDENCY})
