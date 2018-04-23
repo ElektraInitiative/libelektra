@@ -306,7 +306,7 @@ To specify specific tools you can use, e.g.:
 #### Bindings
 
 Bindings are used in a like as `PLUGINS`.
-For example, to build all maintainted bindings and exclude experimental bindings
+For example, to build all maintained bindings and exclude experimental bindings
 you can use:
 
     -DBINDINGS=MAINTAINED;-EXPERIMENTAL
