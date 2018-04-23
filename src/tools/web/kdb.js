@@ -97,7 +97,7 @@ const safeExec = (script) => new Promise((resolve, reject) =>
     if (err) {
       const errors = err.message.split('\n')
       // ignore error if it's "key not found"
-      if (errors.length > 1 && errors[1] === ERR_KEY_NOT_FOUND) {
+      if (errors.length > 1 && errors[1].startsWith(ERR_KEY_NOT_FOUND)) {
         return resolve()
       } else {
         return reject(new KDBError(err.message))
