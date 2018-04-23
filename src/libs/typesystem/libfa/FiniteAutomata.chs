@@ -5,7 +5,7 @@
 --
 -- @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
 -- 
-module FiniteAutomata (FiniteAutomata, State, BasicAutomata (..),
+module FiniteAutomata (FiniteAutomata, BasicAutomata (..),
   compile, makeBasic, asRegexp, minimize, FiniteAutomata.concat, union, 
   intersect, complement, minus, iter, contains, equals, overlap) where
 
@@ -20,7 +20,6 @@ import Foreign.C.String      (withCString)
 {#context lib="libfa" prefix = "fa" #}
 
 {#pointer *fa    as FiniteAutomata foreign finalizer free newtype #}
-{#pointer *state as State          foreign                newtype #}
 
 {#enum fa_basic as BasicAutomata { underscoreToCase } deriving (Show, Eq) #}
 
