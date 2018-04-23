@@ -25,14 +25,17 @@ if (HASKELL_FOUND)
 
 			add_custom_command (OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/sandbox/cabal.sandbox.config"
 					    COMMAND ${CABAL_EXECUTABLE} sandbox delete -v0
-					    COMMAND ${CABAL_EXECUTABLE} sandbox init
-					    COMMAND ${CABAL_EXECUTABLE} sandbox add-source -v
+					    COMMAND ${CABAL_EXECUTABLE} sandbox init -v0
+					    COMMAND ${CABAL_EXECUTABLE} sandbox add-source -v0
 						    "${CMAKE_BINARY_DIR}/src/libs/typesystem/libfa"
-					    COMMAND ${CABAL_EXECUTABLE} sandbox add-source -v
+					    COMMAND ${CABAL_EXECUTABLE} sandbox add-source -v0
 						    "${CMAKE_BINARY_DIR}/src/libs/typesystem/SpecElektra"
-					    COMMAND ${CABAL_EXECUTABLE} install --only-dependencies -v
+					    COMMAND ${CABAL_EXECUTABLE} install --only-dependencies -v0
 					    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/sandbox/")
-			add_custom_target ("typechecker-ghc-plugin" ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/sandbox/cabal.sandbox.config")
+			add_custom_target ("typechecker-ghc-plugin"
+					   ALL
+					   DEPENDS c2hs_haskell
+						   "${CMAKE_CURRENT_BINARY_DIR}/sandbox/cabal.sandbox.config")
 		endif (DEPENDENCY_PHASE)
 
 		# copy our small typechecker sandbox to the library dir so it can be easily deployed and use the dependencies
