@@ -1,24 +1,26 @@
 include (LibAddHaskellPlugin)
 
-find_package (Haskell)
+find_package (fa)
 
-if (HASKELL_FOUND)
-	list (FIND BINDINGS "haskell" FINDEX)
-	if (FINDEX GREATER -1)
+if (LIBFA_FOUND)
 
-		set (TYPECHECKER_GHC_PLUGIN_PATH "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/elektra/typechecker-ghc-plugin")
-		set (TYPECHECKER_GHC_PLUGIN "${TYPECHECKER_GHC_PLUGIN_PATH}/${GHC_TARGET_PLATFORM2}-ghc-${GHC_VERSION}-packages.conf.d/")
+	find_package (Haskell)
 
-		configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/Elektra/Typechecker.hs.in"
-				"${CMAKE_CURRENT_BINARY_DIR}/Elektra/Typechecker.hs"
-				@ONLY)
+	set (TYPECHECKER_GHC_PLUGIN_PATH "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/elektra/typechecker-ghc-plugin")
+	set (TYPECHECKER_GHC_PLUGIN "${TYPECHECKER_GHC_PLUGIN_PATH}/${GHC_TARGET_PLATFORM2}-ghc-${GHC_VERSION}-packages.conf.d/")
 
-		add_haskell_plugin (typechecker
-				    SANDBOX_ADD_SOURCES
-				    "src/bindings/haskell"
-				    "src/libs/typesystem/libfa"
-				    "src/libs/typesystem/SpecElektra"
-				    "src/libs/typesystem/SpecTranslator")
+	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/Elektra/Typechecker.hs.in" "${CMAKE_CURRENT_BINARY_DIR}/Elektra/Typechecker.hs" @ONLY)
+
+	add_haskell_plugin (typechecker
+			    SANDBOX_ADD_SOURCES
+			    "src/bindings/haskell"
+			    "src/libs/typesystem/libfa"
+			    "src/libs/typesystem/SpecElektra"
+			    "src/libs/typesystem/SpecTranslator")
+
+	# if haskell was not found, the target will not be created and a message was already printed
+	# so we can skip the extra installation procedures
+	if (NOT TARGET typechecker)
 
 		if (DEPENDENCY_PHASE)
 			file (COPY "${CMAKE_CURRENT_SOURCE_DIR}/sandbox/" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/sandbox/")
@@ -42,8 +44,10 @@ if (HASKELL_FOUND)
 		# for hint from there
 		install (DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/sandbox/.cabal-sandbox/" DESTINATION ${TYPECHECKER_GHC_PLUGIN_PATH})
 
-		mark_as_advanced (TYPECHECKER_GHC_PLUGIN)
+	endif (NOT TARGET typechecker)
 
-	endif (FINDEX GREATER -1)
+	mark_as_advanced (TYPECHECKER_GHC_PLUGIN TYPECHECKER_GHC_PLUGIN_PATH)
 
-endif (HASKELL_FOUND)
+else (LIBFA_FOUND)
+	remove_plugin (typechecker "libfa not found (usually bundled with augeas), but required for haskell plugins")
+endif (LIBFA_FOUND)
