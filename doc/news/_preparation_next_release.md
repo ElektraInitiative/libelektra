@@ -167,8 +167,8 @@ Many problems were resolved with the following fixes:
   makes sure that you do not build the plugin with compilation settings that are known to
   [cause problems](https://github.com/ElektraInitiative/libelektra/issues/1895).
 - The [Shell Recorder][] counts the number of executed tests properly again.
-- CMake now fails if the required plugins [list](http://libelektra.org/plugins/list) or [spec](http://libelektra.org/plugins/spec) are
-   missing from the current build configuration.
+- CMake now fails if the required plugins [list](http://libelektra.org/plugins/list) or [spec](http://libelektra.org/plugins/spec) (on
+   non-[MinGW](http://mingw.org) platforms) are missing from the current build configuration.
 
 ## Outlook
 
