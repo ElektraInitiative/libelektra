@@ -20,7 +20,7 @@ if (LIBFA_FOUND)
 
 	# if haskell was not found, the target will not be created and a message was already printed
 	# so we can skip the extra installation procedures
-	if (NOT TARGET typechecker)
+	if (TARGET typechecker)
 
 		if (DEPENDENCY_PHASE)
 			file (COPY "${CMAKE_CURRENT_SOURCE_DIR}/sandbox/" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/sandbox/")
@@ -44,7 +44,7 @@ if (LIBFA_FOUND)
 		# for hint from there
 		install (DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/sandbox/.cabal-sandbox/" DESTINATION ${TYPECHECKER_GHC_PLUGIN_PATH})
 
-	endif (NOT TARGET typechecker)
+	endif (TARGET typechecker)
 
 	mark_as_advanced (TYPECHECKER_GHC_PLUGIN TYPECHECKER_GHC_PLUGIN_PATH)
 
