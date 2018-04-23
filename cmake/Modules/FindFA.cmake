@@ -6,7 +6,6 @@
 #  LIBFA_LIBRARIES    - The libraries needed to use LibFA
 #  LIBFA_LIBRARY_DIRS - The directories containing the required libraries
 # ~~~
-
 find_library (LIBFA_LIBRARY "fa")
 find_path (LIBFA_INCLUDE_DIR fa.h)
 

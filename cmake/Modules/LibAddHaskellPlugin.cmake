@@ -1,29 +1,30 @@
 include (LibAddMacros)
 
 # ~~~
-# Allows one to add plugins written in haskell, setting up the include paths and libraries automatically.
+# Allows one to add plugins written in haskell, setting up the include paths and
+# libraries automatically.
 #
 # Expects that plugins make use of cabal as their build system.
 #
 # MODULES:
-#  the name of the Haskell modules to be compiled
+#  the name of the haskell modules to be compiled
 #  by default it assumes there is a single module called Elektra.<pluginName>
 # NO_SHARED_SANDBOX:
-#  By default all Haskell plugins and the bindings are compiled in a shared sandbox to
+#  By default all haskell plugins and the bindings are compiled in a shared sandbox to
 #  speed up compilation times by only compiling commonly-used libraries once. Set this
 #  flag to use an independent sandbox instead in case there are e.g. library version conflicts
 # SANDBOX_ADD_SOURCES:
-#  additional source paths which should be added to the Cabal sandbox
-#  required if the build should depend on Haskell libraries not available on hackage
+#  additional source paths which should be added to the cabal sandbox
+#  required if the build should depend on haskell libraries not available on hackage
 # ADDITIONAL_SOURCES:
-#  in case your plugin depends on other files than *.hs and *.lhs Haskell files and the default
-#  Cabal file and c test file and setup file, you can specify them here
+#  in case your plugin depends on other files than *.hs and *.lhs haskell files and the default
+#  cabal file and c test file and setup file, you can specify them here
 # ~~~
 macro (add_haskell_plugin target)
 	cmake_parse_arguments (ARG
-			       "NO_SHARED_SANDBOX" # optional keywords
+			       "NO_SHARED_SANDBOX;TEST_README;INSTALL_TEST_DATA" # optional keywords
 			       "MODULE" # one value keywords
-			       "MODULES;SANDBOX_ADD_SOURCES;ADDITIONAL_SOURCES" # multi value keywords
+			       "MODULES;SANDBOX_ADD_SOURCES;ADDITIONAL_SOURCES;TEST_REQUIRED_PLUGINS" # multi value keywords
 			       ${ARGN})
 
 	set (PLUGIN_NAME ${target})
@@ -158,7 +159,7 @@ macro (add_haskell_plugin target)
 										set (SHARED_SANDBOX
 										     "--sandbox;${CMAKE_BINARY_DIR}/.cabal-sandbox")
 										set (SANDBOX_ADD_SOURCES
-										     "${ARG_SANDBOX_ADD_SOURCES};../../bindings/haskell/")
+										     "${ARG_SANDBOX_ADD_SOURCES};src/bindings/haskell/")
 									endif (NOT ARG_NO_SHARED_SANDBOX)
 
 									configure_haskell_sandbox (SHARED_SANDBOX
@@ -238,6 +239,15 @@ macro (add_haskell_plugin target)
 		endif (PLUGINPROCESS_FOUND)
 	endif (DEPENDENCY_PHASE)
 
+	set (PLUGIN_ARGS "")
+	if (ARG_TEST_README)
+		list (APPEND PLUGIN_ARGS "TEST_README")
+	endif (ARG_TEST_README)
+	if (ARG_TEST_REQUIRED_PLUGINS)
+		list (APPEND PLUGIN_ARGS "TEST_REQUIRED_PLUGINS")
+		list (APPEND PLUGIN_ARGS "${ARG_TEST_REQUIRED_PLUGINS}")
+	endif (ARG_TEST_REQUIRED_PLUGINS)
+
 	# compile our c wrapper which takes care of invoking the haskell runtime
 	# the actual haskell plugin gets linked in dynamically as a library
 	add_plugin (${target}
@@ -246,9 +256,16 @@ macro (add_haskell_plugin target)
 		    INCLUDE_DIRECTORIES ${GHC_INCLUDE_DIRS}
 		    LINK_LIBRARIES ${GHC_LIBS}
 		    LINK_ELEKTRA elektra-pluginprocess
+				 "${PLUGIN_ARGS}"
 		    DEPENDS ${target}
 			    c2hs_haskell)
-	add_plugintest (${target} MEMLEAK)
+
+	set (PLUGINTEST_ARGS "")
+	if (ARG_INSTALL_TEST_DATA)
+		list (APPEND PLUGINTEST_ARGS "INSTALL_TEST_DATA")
+	endif (ARG_INSTALL_TEST_DATA)
+
+	add_plugintest (${target} MEMLEAK "${PLUGINTEST_ARGS}")
 	if (TARGET elektra-${target})
 		if (DEPENDENCY_PHASE AND (BUILD_SHARED OR BUILD_FULL))
 			set_target_properties (
@@ -256,35 +273,31 @@ macro (add_haskell_plugin target)
 				PROPERTIES INSTALL_RPATH
 					   "${HASKELL_RPATH}"
 					   SANDBOX_PACKAGEDB
-					   "${CMAKE_BINARY_DIR}/.cabal-sandbox/${GHC_TARGET_PLATFORM2}-ghc-${GHC_VERSION}-packages.conf.d/")
+					   "${CMAKE_BINARY_DIR}/.cabal-sandbox/${GHC_TARGET_PLATFORM}-ghc-${GHC_VERSION}-packages.conf.d/")
 		endif (DEPENDENCY_PHASE AND (BUILD_SHARED OR BUILD_FULL))
 		if (ADDTESTING_PHASE AND BUILD_TESTING AND (BUILD_SHARED OR BUILD_FULL))
 			get_target_property (HASKELL_RPATH elektra-${target} INSTALL_RPATH)
 			get_target_property (SANDBOX_PACKAGEDB elektra-${target} SANDBOX_PACKAGEDB)
+
 			set_target_properties (testmod_${target} PROPERTIES INSTALL_RPATH "${HASKELL_RPATH}") # this is required so that it
 													      # finds the type checker
 													      # plugin and all the libraries
-			set_property (TEST testmod_${target} PROPERTY ENVIRONMENT "SANDBOX_PACKAGEDB=${SANDBOX_PACKAGEDB}")
+			set_property (TEST testmod_${target}
+				      PROPERTY ENVIRONMENT
+					       "SANDBOX_PACKAGEDB=${SANDBOX_PACKAGEDB};LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
 		endif (ADDTESTING_PHASE AND BUILD_TESTING AND (BUILD_SHARED OR BUILD_FULL))
 	endif (TARGET elektra-${target})
 
 	mark_as_advanced (GHC_FFI_LIB GHC_RTS_LIB GHC_BASE_LIB GHC_GMP_LIB GHC_PRIM_LIB)
 endmacro (add_haskell_plugin)
 
-# ~~~
-# Allows adding sandbox sources for haskell plugins which will be executed in a serial manner
-# to avoid cabal concurrency issues https://github.com/haskell/cabal/issues/2220. Also initializes
-# sandboxes and will install the dependencies into them.
+# Allows adding sandbox sources for haskell plugins which will be executed in a serial manner to avoid cabal concurrency issues
+# https://github.com/haskell/cabal/issues/2220. Also initializes sandboxes and will install the dependencies into them.
 #
-# SANDBOX_ADD_SOURCES:
-#  additional source paths which should be added to the cabal sandbox
-#  required if the build should depend on haskell libraries not available on hackage
-# WORKING_DIRECTORY:
-#  in case your plugin depends on other files than *.hs and *.lhs haskell files and the default
-#  cabal file and c test file and setup file, you can specify them here
-# DEPENDS:
-#  additional targets this call should be dependent on
-# ~~~
+# SANDBOX_ADD_SOURCES: additional source paths which should be added to the cabal sandbox required if the build should depend on haskell
+# libraries not available on hackage WORKING_DIRECTORY: in case your plugin depends on other files than *.hs and *.lhs haskell files and the
+# default cabal file and c test file and setup file, you can specify them here DEPENDS: additional targets this call should be dependent on
+#
 macro (configure_haskell_sandbox)
 	cmake_parse_arguments (ARG
 			       "" # optional keywords
@@ -298,25 +311,26 @@ macro (configure_haskell_sandbox)
 		add_custom_command (OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/cabal.sandbox.config"
 				    COMMAND ${CABAL_EXECUTABLE} sandbox init ${SHARED_SANDBOX} -v0
 				    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-				    COMMENT "add-source being xecuted"
 				    DEPENDS ${ARG_DEPENDS})
 		set (HASKELL_ADD_SOURCES_TARGET haskell-add-sources-${HASKELL_SANDBOX_DEP_IDX})
 	else (NOT HASKELL_SANDBOX_DEP_IDX)
 		add_custom_command (OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/cabal.sandbox.config"
 				    COMMAND ${CABAL_EXECUTABLE} sandbox init ${SHARED_SANDBOX} -v0
 				    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-				    COMMENT "add-source being xecuted"
 				    DEPENDS haskell-add-sources-${HASKELL_SANDBOX_DEP_IDX}
 					    ${ARG_DEPENDS})
 		math (EXPR HASKELL_SANDBOX_DEP_IDX "${HASKELL_SANDBOX_DEP_IDX} + 1")
 		set (HASKELL_ADD_SOURCES_TARGET haskell-add-sources-${HASKELL_SANDBOX_DEP_IDX})
-		add_custom_target (${HASKELL_ADD_SOURCES_TARGET} ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/cabal.sandbox.config")
 	endif (NOT HASKELL_SANDBOX_DEP_IDX)
 
 	if (ARG_SANDBOX_ADD_SOURCES)
-		foreach (SANDBOX_ADD_SOURCE ${ARG_SANDBOX_ADD_SOURCES})
+		foreach (SANDBOX_ADD_SOURCE ${ARG_SANDBOX_ADD_SOURCES}) # to avoid generating files in the source folders, copy over the
+									# add-sources  to the build directory if they are not already there
+			get_filename_component (SANDBOX_ADD_SOURCE_PARENT "${SANDBOX_ADD_SOURCE}" DIRECTORY)
+			file (COPY "${CMAKE_SOURCE_DIR}/${SANDBOX_ADD_SOURCE}/" DESTINATION "${CMAKE_BINARY_DIR}/${SANDBOX_ADD_SOURCE}")
+
 			add_custom_command (OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/cabal.sandbox.config"
-					    COMMAND ${CABAL_EXECUTABLE} sandbox add-source "${SANDBOX_ADD_SOURCE}" -v0
+					    COMMAND ${CABAL_EXECUTABLE} sandbox add-source "${CMAKE_BINARY_DIR}/${SANDBOX_ADD_SOURCE}" -v0
 					    APPEND)
 		endforeach (SANDBOX_ADD_SOURCE ${ARG_SANDBOX_ADD_SOURCES})
 	endif (ARG_SANDBOX_ADD_SOURCES)

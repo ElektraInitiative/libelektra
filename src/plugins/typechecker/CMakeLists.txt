@@ -16,7 +16,7 @@ if (HASKELL_FOUND)
 		add_haskell_plugin (typechecker
 				    SANDBOX_ADD_SOURCES
 				    "${CMAKE_BINARY_DIR}/src/bindings/haskell"
-				    "${CMAKE_SOURCE_DIR}/src/libs/typesystem/libfa"
+				    "${CMAKE_BINARY_DIR}/src/libs/typesystem/libfa"
 				    "${CMAKE_SOURCE_DIR}/src/libs/typesystem/SpecElektra"
 				    "${CMAKE_SOURCE_DIR}/src/libs/typesystem/SpecTranslator")
 
@@ -27,9 +27,9 @@ if (HASKELL_FOUND)
 					    COMMAND ${CABAL_EXECUTABLE} sandbox delete
 					    COMMAND ${CABAL_EXECUTABLE} sandbox init -v0
 					    COMMAND ${CABAL_EXECUTABLE} sandbox add-source -v0
-						    "${CMAKE_SOURCE_DIR}/src/libs/typesystem/libfa"
+						    "${CMAKE_BINARY_DIR}/src/libs/typesystem/libfa"
 					    COMMAND ${CABAL_EXECUTABLE} sandbox add-source -v0
-						    "${CMAKE_SOURCE_DIR}/src/libs/typesystem/SpecElektra"
+						    "${CMAKE_BINARY_DIR}/src/libs/typesystem/SpecElektra"
 					    COMMAND ${CABAL_EXECUTABLE} install --only-dependencies -v0
 					    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/sandbox/")
 			add_custom_target ("typechecker-ghc-plugin" ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/sandbox/cabal.sandbox.config")
