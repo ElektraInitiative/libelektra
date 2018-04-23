@@ -165,6 +165,7 @@ the configuration files are named) and also do many other
 tasks related to configuration.
 
 The minimal set of plugins you should add:
+
 - [dump](/src/plugins/dump) is the default storage.
   If you remove it, make sure you add another one and set
   `KDB_DEFAULT_STORAGE` to it.
