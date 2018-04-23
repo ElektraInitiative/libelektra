@@ -14,7 +14,7 @@ if (ADDTESTING_PHASE)
 		include ("${plugin}/CMakeLists.txt")
 		set (CMAKE_CURRENT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR_TOPSAFE})
 		set (CMAKE_CURRENT_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR_TOPSAFE})
-	endforeach(plugin)
+	endforeach (plugin)
 	return ()
 endif ()
 
@@ -39,7 +39,7 @@ foreach (plugin ${DIRECTORIES})
 		set (CMAKE_CURRENT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR_TOPSAFE})
 		set (CMAKE_CURRENT_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR_TOPSAFE})
 	endif ()
-endforeach(plugin)
+endforeach (plugin)
 
 #
 # Now ADDED_DIRECTORIES and ADDED_PLUGINS is modified accordingly
@@ -56,17 +56,17 @@ foreach (plugin ${ADDED_DIRECTORIES})
 	else ()
 		message (WARNING "${plugin} is not a valid directory")
 	endif ()
-endforeach(plugin)
+endforeach (plugin)
 
 list (FIND ADDED_PLUGINS ${KDB_DEFAULT_STORAGE} output)
 if (output EQUAL -1)
-	message(SEND_ERROR "selected default storage (${KDB_DEFAULT_STORAGE}) is not selected in PLUGINS, please change KDB_DEFAULT_STORAGE or PLUGINS")
-endif()
+	message (SEND_ERROR "selected default storage (${KDB_DEFAULT_STORAGE}) is not selected in PLUGINS, please change KDB_DEFAULT_STORAGE or PLUGINS")
+endif ()
 
 list (FIND ADDED_PLUGINS ${KDB_DEFAULT_RESOLVER} output)
 if (output EQUAL -1)
-	message(SEND_ERROR "selected default resolver (${KDB_DEFAULT_RESOLVER}) is not selected in PLUGINS, please change KDB_DEFAULT_RESOLVER or PLUGINS")
-endif()
+	message (SEND_ERROR "selected default resolver (${KDB_DEFAULT_RESOLVER}) is not selected in PLUGINS, please change KDB_DEFAULT_RESOLVER or PLUGINS")
+endif ()
 
 
 if (BUILD_SHARED)
@@ -83,4 +83,3 @@ if (BUILD_SHARED)
 			PLUGIN
 			)
 endif (BUILD_SHARED)
-
