@@ -25,12 +25,12 @@ if (HASKELL_FOUND)
 
 			add_custom_command (OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/sandbox/cabal.sandbox.config"
 					    COMMAND ${CABAL_EXECUTABLE} sandbox delete -v0
-					    COMMAND ${CABAL_EXECUTABLE} sandbox init -v0
-					    COMMAND ${CABAL_EXECUTABLE} sandbox add-source -v0
+					    COMMAND ${CABAL_EXECUTABLE} sandbox init
+					    COMMAND ${CABAL_EXECUTABLE} sandbox add-source -v
 						    "${CMAKE_BINARY_DIR}/src/libs/typesystem/libfa"
-					    COMMAND ${CABAL_EXECUTABLE} sandbox add-source -v0
+					    COMMAND ${CABAL_EXECUTABLE} sandbox add-source -v
 						    "${CMAKE_BINARY_DIR}/src/libs/typesystem/SpecElektra"
-					    COMMAND ${CABAL_EXECUTABLE} install --only-dependencies -v0
+					    COMMAND ${CABAL_EXECUTABLE} install --only-dependencies -v
 					    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/sandbox/")
 			add_custom_target ("typechecker-ghc-plugin" ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/sandbox/cabal.sandbox.config")
 		endif (DEPENDENCY_PHASE)
@@ -42,4 +42,5 @@ if (HASKELL_FOUND)
 		mark_as_advanced (TYPECHECKER_GHC_PLUGIN)
 
 	endif (FINDEX GREATER -1)
+
 endif (HASKELL_FOUND)
