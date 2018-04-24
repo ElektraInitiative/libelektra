@@ -20,9 +20,16 @@ library
                    , Elektra.KDB
                    , Elektra.Plugin
                    , Elektra.Ease
+                   , Elektra.Errors
   build-depends:     base >= 4.7 && < 5
-  includes:          kdb.h, kdbplugin.h, kdbease.h
+  includes:          kdb.h
+                   , kdbplugin.h
+                   , kdbease.h
+                   , kdberrors.h
+                   , hs_kdberrors.h
   include-dirs:      @CABAL_INCLUDE_DIRS@
+                   , "@CMAKE_CURRENT_SOURCE_DIR@/src/include"
+  c-sources:         "@CMAKE_CURRENT_SOURCE_DIR@/src/c/hs_kdberrors.c"
   extra-lib-dirs:    "@CMAKE_BINARY_DIR@/lib"
   default-language:  Haskell2010
   other-extensions:  ForeignFunctionInterface

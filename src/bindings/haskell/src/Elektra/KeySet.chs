@@ -17,7 +17,7 @@ module Elektra.KeySet (
 ) where
 
 {#import Elektra.Key#}
-import Control.Monad (liftM, liftM2)
+import Control.Monad (liftM, liftM2, mapM_)
 import Data.List (intercalate, deleteFirstsBy)
 import System.IO.Unsafe (unsafePerformIO)
 
@@ -58,8 +58,15 @@ ksNew size = ksNewRaw size 0
 -- KEYSET MODIFICATION
 -- ***
 
-{#fun unsafe ksAppendKey {`KeySet', `Key'} -> `Int' #}
-{#fun unsafe ksAppend {`KeySet', `KeySet'} -> `Int' #}
+-- As Haskell will call keyDel on all Key references, the KeySet is not allowed to take ownership
+ksAppendKey :: KeySet -> Key -> IO Int
+ksAppendKey ks k = keyIncRef k >> ksAppendKeyRaw ks k
+{#fun unsafe ksAppendKey as ksAppendKeyRaw {`KeySet', `Key'} -> `Int' #}
+ksAppend :: KeySet -> KeySet -> IO Int
+ksAppend ks1 ks2 = do
+  ksList ks1 >>= (mapM_ keyIncRef)
+  ksAppendRaw ks1 ks2
+{#fun unsafe ksAppend as ksAppendRaw  {`KeySet', `KeySet'} -> `Int' #}
 {#fun unsafe ksCut {`KeySet', `Key'} -> `KeySet' #}
 {#fun unsafe ksPop {`KeySet'} -> `Key' #}
 
