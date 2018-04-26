@@ -134,6 +134,16 @@ export default class TreeItem extends Component {
     )
   }
 
+  getArrayKeyLength (item) {
+    return (item && Array.isArray(item.children))
+      ? item.children.reduce((res, i) => {
+          if (res === false) return false
+          if (!i.name.match(ARRAY_KEY_REGEX)) return false
+          return res + 1
+        }, 0)
+      : false
+  }
+
   render () {
     const {
       data, item, instanceId, instanceVisibility,
@@ -152,13 +162,8 @@ export default class TreeItem extends Component {
      // we return no value property if the key doesn't exist, otherwise we return an *empty* value
     const keyExists = rootLevel || (data && data.exists)
 
-    const arrayKeyLength = (item && Array.isArray(item.children))
-      ? item.children.reduce((res, i) => {
-          if (res === false) return false
-          if (!i.name.match(ARRAY_KEY_REGEX)) return false
-          return res + 1
-        }, 0)
-      : false
+    const arrayKeyLength = this.getArrayKeyLength(item)
+    const parentArrayKeyLength = this.getArrayKeyLength(item.parent)
 
     const renderedField = (
       <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -241,6 +246,7 @@ export default class TreeItem extends Component {
                 }
                 <DuplicateDialog
                   item={item}
+                  arrayKeyLength={parentArrayKeyLength}
                   open={this.state.dialogs.duplicate}
                   onDuplicate={this.handleDuplicate}
                   onClose={this.handleClose('duplicate')}

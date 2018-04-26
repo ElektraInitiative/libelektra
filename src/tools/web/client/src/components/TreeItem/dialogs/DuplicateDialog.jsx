@@ -21,7 +21,16 @@ export default class DuplicateDialog extends Component {
     }
   }
 
+  generateArrayKey = (length) => {
+    const numberStr = String(length)
+    const prefix = '_'.repeat(numberStr.length - 1)
+    return '#' + prefix + length
+  }
+
   getInitialName = (props) => {
+    if (props.arrayKeyLength) {
+      return this.generateArrayKey(props.arrayKeyLength)
+    }
     return (props && props.item && props.item.name)
       ? props.item.name + 'Copy'
       : ''
