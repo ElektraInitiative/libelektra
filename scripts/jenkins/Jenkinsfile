@@ -161,14 +161,15 @@ def generate_elektra_builds_fast() {
         DOCKER_IMAGES.stretch,
         BUILD_FLAGS_STANDARD +
             BUILD_FLAGS_ALL +
-            BUILD_FLAGS_JAVA
+            BUILD_FLAGS_JAVA,
+        [TEST_NOKDB]
     )
     tasks << test(
-        "debian-unstable-log",
+        "debian-unstable-fast",
         DOCKER_IMAGES.sid,
         BUILD_FLAGS_STANDARD +
             BUILD_FLAGS_DEBUG,
-        [TEST_ALL, TEST_MEM]
+        [TEST_NOKDB]
     )
 
     return tasks
