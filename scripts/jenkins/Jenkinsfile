@@ -125,29 +125,33 @@ def generate_docker_images() {
     def docker_nodes = nodesByLabel label:docker_node_label
     def tasks = [:]
 
-    docker_nodes.each { node_value ->
-        tasks << build_images(node_value)
+    DOCKER_IMAGES.each { id, image ->
+        tasks << build_image(image)
     }
     return tasks
 }
 
-def build_images(node_value) {
-    def taskname = "build/${node_value}/"
+def build_image(image) {
+    def taskname = "build/${image.id}/"
     return [(taskname): {
         stage(taskname) {
-            node(node_value) {
+            node(docker_node_label) {
                 checkout scm
                 def uid = getUid()
                 def gid = getGid()
-                DOCKER_IMAGES.each { id, image ->
-                    docker.build(
-                        image.id,"""\
+                docker.withRegistry('https://hub.libelektra.org',
+                                    'docker-hub-elektra-jenkins') {
+                    DOCKER_IMAGES.each { id, image ->
+                        def i = docker.build(
+                            image.id,"""\
 --pull \
 --build-arg JENKINS_GROUPID=${gid} \
 --build-arg JENKINS_USERID=${uid} \
 -f ${image.path}/${image.file} \
 ${image.path}"""
-                    )
+                        )
+                        i.push()
+                    }
                 }
             }
         }
@@ -446,13 +450,16 @@ def dockerize(test_name, image, cl) {
     return [(test_name): {
         stage(test_name) {
             node(docker_node_label) {
-                timeout(activity: true, time: 5, unit: 'MINUTES') {
-                    def cpu_count = cpuCount()
-                    withEnv(["MAKEFLAGS='-j${cpu_count+2} -l${cpu_count*2}'",
-                             "CTEST_PARALLEL_LEVEL='${cpu_count+2}'"]) {
-                        echo "Staring ${env.STAGE_NAME} on ${env.NODE_NAME}"
-                        checkout scm
-                        docker.image(image.id).inside { cl() }
+                docker.withRegistry('https://hub.libelektra.org',
+                                    'docker-hub-elektra-jenkins') {
+                    timeout(activity: true, time: 5, unit: 'MINUTES') {
+                        def cpu_count = cpuCount()
+                        withEnv(["MAKEFLAGS='-j${cpu_count+2} -l${cpu_count*2}'",
+                                 "CTEST_PARALLEL_LEVEL='${cpu_count+2}'"]) {
+                            echo "Staring ${env.STAGE_NAME} on ${env.NODE_NAME}"
+                            checkout scm
+                            docker.image(image.id).inside { cl() }
+                        }
                     }
                 }
             }
