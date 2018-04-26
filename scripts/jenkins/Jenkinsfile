@@ -122,7 +122,6 @@ stage("Full build") {
 
 // # Stage Generators #
 def generate_docker_images() {
-    def docker_nodes = nodesByLabel label:docker_node_label
     def tasks = [:]
 
     DOCKER_IMAGES.each { id, image ->
@@ -141,17 +140,15 @@ def build_image(image) {
                 def gid = getGid()
                 docker.withRegistry('https://hub.libelektra.org',
                                     'docker-hub-elektra-jenkins') {
-                    DOCKER_IMAGES.each { id, image ->
-                        def i = docker.build(
-                            image.id,"""\
+                    def i = docker.build(
+                        image.id,"""\
 --pull \
 --build-arg JENKINS_GROUPID=${gid} \
 --build-arg JENKINS_USERID=${uid} \
 -f ${image.path}/${image.file} \
 ${image.path}"""
-                        )
-                        i.push()
-                    }
+                    )
+                    i.push()
                 }
             }
         }
