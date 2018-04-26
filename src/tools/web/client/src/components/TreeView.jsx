@@ -23,13 +23,12 @@ export default class TreeView extends React.Component {
   }
 
   componentWillReceiveProps = (nextProps) => {
-    if (this.props.data !== nextProps.data) {
-      this.setState({ data: nextProps.data })
-    }
-
-    if (this.props.kdb !== nextProps.kdb) { // kdb updated
-      // force re-render of tree view
-      this.setState({ data: this.state.data.slice() })
+    // kdb updated
+    if (this.props.data !== nextProps.data ||
+        this.props.kdb !== nextProps.kdb ||
+        this.props.ls !== nextProps.ls) {
+      // re-render tree view
+      this.setState({ data: nextProps.data.slice() })
     }
 
     const { unfolded } = this.state
