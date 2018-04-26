@@ -19,10 +19,19 @@ const NAMESPACES_ORDER = [ 'spec', 'dir', 'user', 'system' ]
 export default class TreeView extends React.Component {
   constructor (props, ...args) {
     super(props, ...args)
-    this.state = { selection: [], unfolded: [] }
+    this.state = { selection: [], unfolded: [], data: props.data }
   }
 
   componentWillReceiveProps = (nextProps) => {
+    if (this.props.data !== nextProps.data) {
+      this.setState({ data: nextProps.data })
+    }
+
+    if (this.props.kdb !== nextProps.kdb) { // kdb updated
+      // force re-render of tree view
+      this.setState({ data: this.state.data.slice() })
+    }
+
     const { unfolded } = this.state
     if (unfolded.length <= 0) {
       const { instance } = nextProps
@@ -174,8 +183,7 @@ export default class TreeView extends React.Component {
   }
 
   render () {
-    const { data } = this.props
-    const { selection, unfolded } = this.state
+    const { data, selection, unfolded } = this.state
     const tree = this
     const strategies = {
       click: [ function unfoldOnSelectionByPath (item) {
