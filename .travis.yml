@@ -72,6 +72,7 @@ before_install:
     if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
       brew update
       brew install ninja
+      brew install augeas
     fi
   - |
     if [[ "$TRAVIS_OS_NAME" == "osx" && "$HASKELL" != "ON" ]]; then
@@ -94,7 +95,6 @@ before_install:
         # Unfortunately Xerces 3.2 causes multiple problems if we translate Elektra with GCC on macOS
         brew install xerces-c
       fi
-      brew install augeas
       brew install dbus
       brew install discount
       brew install libgcrypt
