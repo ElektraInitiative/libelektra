@@ -98,7 +98,7 @@ For information what you can use as `OPTION1` and `OPTION2`, see above.
 Note: You have to enclose a value with quotes `""` if it contains a semicolon (`;`).
 E.g.:
 
-    cmake -DPLUGINS="dump;resolver;yajl" ..
+    cmake -DPLUGINS="dump;resolver;yajl;list;spec" ..
 
 Some scripts in the folder of the same name may help you running cmake.
 
@@ -173,8 +173,10 @@ The minimal set of plugins you should add:
   If you remove it, make sure you add another one and set
   `KDB_DEFAULT_RESOLVER` to it.
 - [list](/src/plugins/list) delegates work to a list of plugins.
+  Needed for tests. (Required with `ENABLE_TESTING`.)
 - [spec](/src/plugins/spec) copies metadata from spec namespace
   to other namespaces.
+  Needed for tests. (Required with `ENABLE_TESTING`, except on mingw.)
 - [sync](/src/plugins/sync) is very useful to not lose any data.
   If you do not want to include it, make sure to set
   `/sw/elektra/kdb/#0/current/plugins` to a value not containing sync

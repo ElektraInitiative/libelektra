@@ -69,13 +69,13 @@ if (output EQUAL -1)
 endif ()
 
 list (FIND ADDED_PLUGINS list output)
-if (output EQUAL -1)
-	message (SEND_ERROR "The required plugin `list` is not selected in PLUGINS, please add `list` to PLUGINS")
+if (output EQUAL -1 AND ENABLE_TESTING)
+	message (SEND_ERROR "The required plugin `list` is not selected in PLUGINS but needed for testing, please add `list` to PLUGINS")
 endif ()
 
 list (FIND ADDED_PLUGINS spec output)
-if (output EQUAL -1 AND (NOT MINGW))
-	message (SEND_ERROR "The required plugin `spec` is not selected in PLUGINS, please add `spec` to PLUGINS")
+if (output EQUAL -1 AND (NOT MINGW) AND ENABLE_TESTING)
+	message (SEND_ERROR "The required plugin `spec` is not selected in PLUGINS but needed for testing, please add `spec` to PLUGINS")
 endif ()
 
 if (BUILD_SHARED)

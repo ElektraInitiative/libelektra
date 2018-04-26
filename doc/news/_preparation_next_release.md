@@ -102,6 +102,12 @@ We removed:
   of doing something unexpected, thanks to @sanssecours for reporting
   (see #1483)
 
+Compilation:
+
+- list and spec plugins are needed if tests are enabled.
+  So if ENABLE_TESTING is checked, a storage, a resolver,
+  the list and the spec plugin is needed.
+
 ## Notes for Maintainer
 
 These notes are of interest for people maintaining packages of Elektra:
