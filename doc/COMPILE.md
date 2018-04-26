@@ -165,12 +165,16 @@ the configuration files are named) and also do many other
 tasks related to configuration.
 
 The minimal set of plugins you should add:
+
 - [dump](/src/plugins/dump) is the default storage.
   If you remove it, make sure you add another one and set
   `KDB_DEFAULT_STORAGE` to it.
 - [resolver](/src/plugins/resolver) is the default resolver.
   If you remove it, make sure you add another one and set
   `KDB_DEFAULT_RESOLVER` to it.
+- [list](/src/plugins/list) delegates work to a list of plugins.
+- [spec](/src/plugins/spec) copies metadata from spec namespace
+  to other namespaces.
 - [sync](/src/plugins/sync) is very useful to not lose any data.
   If you do not want to include it, make sure to set
   `/sw/elektra/kdb/#0/current/plugins` to a value not containing sync
@@ -306,7 +310,7 @@ To specify specific tools you can use, e.g.:
 #### Bindings
 
 Bindings are used in a like as `PLUGINS`.
-For example, to build all maintainted bindings and exclude experimental bindings
+For example, to build all maintained bindings and exclude experimental bindings
 you can use:
 
     -DBINDINGS=MAINTAINED;-EXPERIMENTAL

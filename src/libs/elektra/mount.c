@@ -323,11 +323,13 @@ KeySet * elektraDefaultGlobalConfig (void)
 		keyNew ("system/elektra/globalplugins/postcommit/user/placements/get", KEY_VALUE, "pregetstorage postgetstorage", KEY_END),
 		keyNew ("system/elektra/globalplugins/postcommit/user/placements/set", KEY_VALUE, "presetstorage precommit postcommit",
 			KEY_END),
+#ifndef __MINGW32__
 		keyNew ("system/elektra/globalplugins/postcommit/user/plugins", KEY_VALUE, "", KEY_END),
 		keyNew ("system/elektra/globalplugins/postcommit/user/plugins/#0", KEY_VALUE, "spec", KEY_END),
 		keyNew ("system/elektra/globalplugins/postcommit/user/plugins/#0/placements", KEY_VALUE, "spec", KEY_END),
 		keyNew ("system/elektra/globalplugins/postcommit/user/plugins/#0/placements/get", KEY_VALUE, "postgetstorage", KEY_END),
 		keyNew ("system/elektra/globalplugins/postcommit/user/plugins/#0/placements/set", KEY_VALUE, "presetstorage", KEY_END),
+#endif
 		keyNew ("system/elektra/globalplugins/postgetstorage", KEY_VALUE, "list", KEY_END),
 		keyNew ("system/elektra/globalplugins/postrollback", KEY_VALUE, "list", KEY_END),
 		keyNew ("system/elektra/globalplugins/precommit", KEY_VALUE, "list", KEY_END),
