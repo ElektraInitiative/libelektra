@@ -116,6 +116,9 @@ before_install:
     fi
   - |
     if [[ "$TRAVIS_OS_NAME" == "osx" && "$HASKELL" == "ON" ]] ; then
+      # 8.4 is currently not supported by hint which we use
+      brew install ghc@8.2
+      brew link ghc@8.2 --force
       brew install cabal-install
       cabal update
       # avoid reinstalls if we already have them cached
