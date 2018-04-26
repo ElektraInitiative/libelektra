@@ -225,7 +225,7 @@ export default class TreeItem extends Component {
                   }
                   setMetaByPath={(path, key, value) => setMetaKey(instanceId, path, key, value)}
                 />
-                {!rootLevel && !valueVisible &&
+                {!rootLevel && !valueVisible && !(meta && meta['restrict/write'] === '1') &&
                   <ActionButton icon={<ContentEdit />} onClick={this.handleOpen('edit')} tooltip="edit value" />
                 }
                 <EditDialog

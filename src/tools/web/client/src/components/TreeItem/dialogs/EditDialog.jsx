@@ -38,7 +38,7 @@ export default class EditDialog extends Component {
           onRequestClose={onClose}
         >
             <h1>Value of <b>{path}</b></h1>
-            <div style={{ display: 'block' }}>
+            <div style={{ display: 'block' }} tabIndex="0">
                 {field}
             </div>
         </FocusTrapDialog>
