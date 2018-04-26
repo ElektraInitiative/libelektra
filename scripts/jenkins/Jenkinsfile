@@ -445,7 +445,7 @@ def dockerize(test_name, image, cl) {
     return [(test_name): {
         stage(test_name) {
             node(docker_node_label) {
-                timeout(activity: true, time: 2, unit: 'MINUTES') {
+                timeout(activity: true, time: 5, unit: 'MINUTES') {
                     def cpu_count = cpuCount()
                     withEnv(["MAKEFLAGS='-j${cpu_count+2} -l${cpu_count*2}'",
                              "CTEST_PARALLEL_LEVEL='${cpu_count+2}'"]) {
