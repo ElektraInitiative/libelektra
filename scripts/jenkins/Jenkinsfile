@@ -178,10 +178,12 @@ def generate_elektra_builds_full() {
     def tasks = [:]
     tasks << test_todo()
     tasks << test_doc()
+    /* TODO Reenable for next release
     tasks << test_asan(
         "debian-stable-asan",
         DOCKER_IMAGES.stretch
     )
+    */
     tasks << test(
         "debian-stable-full",
         DOCKER_IMAGES.stretch,
@@ -207,6 +209,7 @@ def generate_elektra_builds_full() {
             BUILD_FLAGS_COVERAGE,
         [TEST_ALL, TEST_MEM, TEST_INSTALL]
     )
+    /* TODO Reenable for next release
     tasks << test(
         "debian-stable-full-clang",
         DOCKER_IMAGES.stretch,
@@ -217,6 +220,7 @@ def generate_elektra_builds_full() {
             BUILD_FLAGS_CLANG,
         [TEST_ALL, TEST_MEM, TEST_INSTALL]
     )
+    */
     tasks << test(
         "ubuntu-xenial",
         DOCKER_IMAGES.xenial,
