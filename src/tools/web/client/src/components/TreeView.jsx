@@ -235,6 +235,7 @@ export default class TreeView extends React.Component {
           transitionLeaveTimeout: 200,
         }}
         openerOpts={{ position: 'left' }}
+        labels={{ 'search.placeholder': 'Filter keys...' }}
       />
     )
   }
