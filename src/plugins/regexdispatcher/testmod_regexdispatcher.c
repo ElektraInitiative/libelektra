@@ -16,23 +16,25 @@
 
 static void test_basics (void)
 {
-	printf ("test basics\n");
+	printf ("test_basics\n");
 
 	Key * parentKey = keyNew ("user/tests/regexdispatcher", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
+
 	PLUGIN_OPEN ("regexdispatcher");
 
-	KeySet * ks = ksNew (0, KS_END);
+	KeySet * ks = ksNew (1, KS_END);
+	Key * key1 = keyNew ("/key1", KEY_META, "check/range", "0-5000", KEY_END);
+	ksAppendKey (ks, key1);
 
-	succeed_if (plugin->kdbOpen (plugin, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbOpen was not successful");
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
 
-	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "call to kdbGet was not successful");
+	const Key * pKey1 = ksLookupByName (ks, "/key1", KDB_O_NONE);
+	const Key * checkRange1 = keyGetMeta (pKey1, "elektra/spec/regex/check/range");
 
-	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "call to kdbSet was not successful");
-
-	succeed_if (plugin->kdbError (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbError was not successful");
-
-	succeed_if (plugin->kdbClose (plugin, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbClose was not successful");
+	succeed_if (checkRange1, "the range regex hasn't been generated");
+	succeed_if (0 == strcmp (keyString (checkRange1), "[0-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-4][0-9][0-9][0-9]|5000"),
+		    "the range regex is invalid");
 
 	keyDel (parentKey);
 	ksDel (ks);
