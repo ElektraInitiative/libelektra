@@ -134,14 +134,16 @@ def build_image(image) {
         stage(taskname) {
             node(docker_node_label) {
                 checkout scm
-                def uid = getUid()
-                def gid = getGid()
                 def id = image_id(image)
                 docker.withRegistry('https://hub.libelektra.org',
                                     'docker-hub-elektra-jenkins') {
                     try {
+                        // check if Docker file with tag exists
                         docker.image(id).pull()
                     } catch(e) {
+                        // build and push if it does not
+                        def uid = getUid()
+                        def gid = getGid()
                         def i = docker.build(
                             id,"""\
 --pull \
