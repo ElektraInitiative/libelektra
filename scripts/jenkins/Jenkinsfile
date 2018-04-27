@@ -20,34 +20,34 @@ properties([
 // ## Define Docker images ##
 DOCKER_IMAGES = [
     sid: [
-        id: docker_image_prefix + 'debian-sid' + ':' + env.BUILD_NUMBER,
-        path: "./doc/docker/debian/sid",
-        file: "Dockerfile"
+        id: docker_image_prefix + 'debian-sid',
+        context: "./doc/docker/debian/sid",
+        file: "./doc/docker/debian/sid/Dockerfile"
     ],
     stretch: [
-        id: docker_image_prefix + 'debian-stretch' + ':' + env.BUILD_NUMBER,
-        path: "./doc/docker/debian/stretch",
-        file: "Dockerfile"
+        id: docker_image_prefix + 'debian-stretch',
+        context: "./doc/docker/debian/stretch",
+        file: "./doc/docker/debian/stretch/Dockerfile",
     ],
     stretch_minimal: [
-        id: docker_image_prefix + 'debian-stretch-minimal' + ':' + env.BUILD_NUMBER,
-        path: "./doc/docker/debian/stretch",
-        file: "Dockerfile.minimal"
+        id: docker_image_prefix + 'debian-stretch-minimal',
+        context: "./doc/docker/debian/stretch",
+        file: "./doc/docker/debian/stretch/Dockerfile.minimal",
     ],
     stretch_doc: [
-        id: docker_image_prefix + 'debian-stretch-doc' + ':' + env.BUILD_NUMBER,
-        path: "./doc/docker/debian/stretch",
-        file: "Dockerfile.doc"
+        id: docker_image_prefix + 'debian-stretch-doc',
+        context: "./doc/docker/debian/stretch",
+        file: "./doc/docker/debian/stretch/Dockerfile.doc",
     ],
     jessie: [
-        id: docker_image_prefix + 'debian-jessie' + ':' + env.BUILD_NUMBER,
-        path: "./doc/docker/debian/jessie",
-        file: "Dockerfile"
+        id: docker_image_prefix + 'debian-jessie',
+        context: "./doc/docker/debian/jessie",
+        file: "./doc/docker/debian/jessie/Dockerfile",
     ],
     xenial: [
-        id: docker_image_prefix + 'ubuntu-xenial' + ':' + env.BUILD_NUMBER,
-        path: "./doc/docker/ubuntu/xenial",
-        file: "Dockerfile"
+        id: docker_image_prefix + 'ubuntu-xenial',
+        context: "./doc/docker/ubuntu/xenial",
+        file: "./doc/docker/ubuntu/xenial/Dockerfile",
     ]
 ]
 
@@ -138,17 +138,21 @@ def build_image(image) {
                 checkout scm
                 def uid = getUid()
                 def gid = getGid()
+                def id = image_id(image)
                 docker.withRegistry('https://hub.libelektra.org',
                                     'docker-hub-elektra-jenkins') {
-                    def i = docker.build(
-                        image.id,"""\
+                    try {
+                        docker.image(id).pull()
+                    } catch(e) {
+                        def i = docker.build(
+                            id,"""\
 --pull \
 --build-arg JENKINS_GROUPID=${gid} \
 --build-arg JENKINS_USERID=${uid} \
--f ${image.path}/${image.file} \
-${image.path}"""
-                    )
-                    i.push()
+-f ${image.file} ${image.context}"""
+                        )
+                        i.push()
+                    }
                 }
             }
         }
@@ -455,7 +459,7 @@ def dockerize(test_name, image, cl) {
                                  "CTEST_PARALLEL_LEVEL='${cpu_count+2}'"]) {
                             echo "Staring ${env.STAGE_NAME} on ${env.NODE_NAME}"
                             checkout scm
-                            docker.image(image.id).inside { cl() }
+                            docker.image(image_id(image)).inside { cl() }
                         }
                     }
                 }
@@ -497,4 +501,15 @@ def xunitUpload() {
                 pattern: 'build/Testing/**/*.xml']
         ]
     ])
+}
+
+def image_id(image) {
+    def t = checksum(image.file)
+    return "${image.id}:${t}"
+}
+
+def checksum(file) {
+    return sh(returnStdout: true,
+              script: "cat $file | sha256sum | dd bs=1 count=8 status=none")
+           .trim()
 }
