@@ -113,10 +113,10 @@ regexTypeParameterP = RegexTypeParam <$> regexTypeP <*> pVar
   where
     pVar = try c <|> pure Self
     c = pathVarL *> a
-    a = r <|> s <|> p
+    a = d <|> s <|> p
     s = const Self <$> selfL
     p = Path <$> pathL
-    r = Range <$> (symbolL "Range" *> pathL)
+    d = Dispatched <$> (symbolL "Dispatched" *> pathL)
 
 -- Parser for range regexes
 

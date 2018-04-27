@@ -83,12 +83,11 @@ translateKeySpecification f k = [rawKeyTypeSig, rawKeyTranslation, specTranslati
     translateFunctionParameters' [r,_]  n v = [translateFunctionParameter r n v]
     translateFunctionParameters' (r:rs) n v = translateFunctionParameter r n v : translateFunctionParameters' rs n v
     translateFunctionParameters' _      _ _ = error "a function must at least take a param and a return value"
-    -- TODO error handling again
-    translateFunctionParameter (RegexTypeParam _ (Range _)) _ v = let rng = parseRange $ fncStr v
-                                                                      rgx = maybe ".*" (uncurry regexForRange) rng
-                                                                      vr = Var () preludeProxy
-                                                                      ty  = TyCon () preludeProxy <-> TyPromoted () (PromotedString () rgx rgx)
-                                                                  in  Just $ ExpTypeSig () vr ty
+    translateFunctionParameter (RegexTypeParam _ (Dispatched _)) _ v = 
+      let rgx = fncStr v
+          vr  = Var () preludeProxy
+          ty  = TyCon () preludeProxy <-> TyPromoted () (PromotedString () rgx rgx)
+      in  Just $ ExpTypeSig () vr ty
     translateFunctionParameter (RegexTypeParam _ (Path  _)) _ v = Just $ Var () (translateUnqualPath $ fncPath v)
     translateFunctionParameter (RegexTypeParam _ Self     ) _ _ = Nothing
     translateUnqualPath = translateUnqual . pathToDeclName
