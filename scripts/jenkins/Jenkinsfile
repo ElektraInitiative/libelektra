@@ -248,7 +248,7 @@ def test_todo() {
 **/*.c, **/*.h, **/*.hpp, **/*.cpp,\
 **/CMakeLists.txt, **/Dockerfile*, Jenkinsfile*
 '''
-    return dockerize(test_name, DOCKER_IMAGES.stretch_doc) {
+    return withDockerEnv(test_name, DOCKER_IMAGES.stretch_doc) {
         sh "sloccount --duplicates --wide --details ${WORKSPACE} > sloccount.sc"
         step([$class: 'SloccountPublisher', ignoreBuildFailure: true])
         openTasks pattern: open_task_patterns,
@@ -269,7 +269,7 @@ def test_doc() {
         'BUILD_STATIC': 'OFF',
         'BUILD_TESTING': 'OFF'
     ]
-    return dockerize(test_name, DOCKER_IMAGES.stretch_doc) {
+    return withDockerEnv(test_name, DOCKER_IMAGES.stretch_doc) {
         dir('build') {
             deleteDir()
             cmake(env.WORKSPACE, cmake_flags)
@@ -309,7 +309,7 @@ def test_asan(test_name, image, extra_cmake_flags = [:]) {
                       BUILD_FLAGS_ALL +
                       BUILD_FLAGS_ASAN +
                       extra_cmake_flags
-    return dockerize(test_name, image) {
+    return withDockerEnv(test_name, image) {
         dir('build') {
             deleteDir()
             cmake(env.WORKSPACE, cmake_flags)
@@ -335,7 +335,7 @@ def test(test_name, image, cmake_flags, tests = [], extra_artifacts = []) {
     def test_nokdb = tests.contains(TEST_NOKDB)
     def test_all = tests.contains(TEST_ALL)
     def install = tests.contains(TEST_INSTALL)
-    return dockerize(test_name, image) {
+    return withDockerEnv(test_name, image) {
         try {
             dir('build') {
                 deleteDir()
@@ -447,7 +447,7 @@ def trackCoverage(do_track, cl) {
     }
 }
 
-def dockerize(test_name, image, cl) {
+def withDockerEnv(test_name, image, cl) {
     return [(test_name): {
         stage(test_name) {
             node(docker_node_label) {
