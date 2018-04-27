@@ -18,6 +18,7 @@ library
   exposed-modules:   Elektra.RegexDispatcher
   other-modules:     Elektra.Dispatch
                    , Elektra.RangeDispatcher
+                   , Elektra.EnumDispatcher
                    , Elektra.Range
                    , Elektra.Parsers
   build-depends:     base >= 4.7 && < 5

@@ -20,10 +20,7 @@ import Control.Monad (filterM, (>=>), mapM)
 import Data.Maybe (catMaybes)
 
 rangeDispatch :: Dispatcher
-rangeDispatch ks = selector ks >>= fmap catMaybes . mapM generator 
+rangeDispatch ks = ksList ks >>= fmap catMaybes . mapM dispatch
   where
-  	selector = ksList >=> filterM (filterMeta "check/range")
-  	generator k = do
-  		cr <- keyGetMeta k "check/range"
-  		name <- ("elektra/spec/regex/" ++) <$> keyName cr
-  		fmap (k, name, ) . fmap (uncurry regexForRange) . parseRange <$> keyString cr
+  	dispatch k    = ifKey (keyGetMeta k "check/range") (dispatch' k) (return Nothing) 
+  	dispatch' k m = fmap (k, dispatchedPrefix ++ "check/range", ) . fmap (uncurry regexForRange) . parseRange <$> keyString m
