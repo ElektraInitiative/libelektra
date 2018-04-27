@@ -2,6 +2,7 @@
 - infos/author = Armin Wurzinger <e1528532@libelektra.org>
 - infos/licence = BSD
 - infos/needs =
+- infos/needs = regexdispatcher
 - infos/provides = typechecker
 - infos/recommends =
 - infos/placements = postgetstorage presetstorage
