@@ -104,7 +104,7 @@ if(new_target) {
 
 // # Main Stages #
 // Build containers, locked to single build executing
-lock('docker-build') {
+lock('docker-images') {
     stage("Build docker images") {
         parallel generate_docker_images()
     }
