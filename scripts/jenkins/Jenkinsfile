@@ -103,7 +103,6 @@ if(new_target) {
 */
 
 // # Main Stages #
-// Build containers, locked to single build executing
 lock('docker-images') {
     stage("Build docker images") {
         parallel generate_docker_images()
@@ -114,7 +113,6 @@ stage("Fast builds") {
     parallel generate_elektra_builds_fast()
 }
 
-// Do full builds
 stage("Full build") {
     parallel generate_elektra_builds_full()
 }
