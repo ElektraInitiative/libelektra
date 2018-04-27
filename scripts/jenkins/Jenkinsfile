@@ -21,33 +21,33 @@ properties([
 DOCKER_IMAGES = [
     sid: [
         id: docker_image_prefix + 'debian-sid',
-        context: "./doc/docker/debian/sid",
-        file: "./doc/docker/debian/sid/Dockerfile"
+        context: "./scripts/docker/debian/sid",
+        file: "./scripts/docker/debian/sid/Dockerfile"
     ],
     stretch: [
         id: docker_image_prefix + 'debian-stretch',
-        context: "./doc/docker/debian/stretch",
-        file: "./doc/docker/debian/stretch/Dockerfile",
+        context: "./scripts/docker/debian/stretch",
+        file: "./scripts/docker/debian/stretch/Dockerfile",
     ],
     stretch_minimal: [
         id: docker_image_prefix + 'debian-stretch-minimal',
-        context: "./doc/docker/debian/stretch",
-        file: "./doc/docker/debian/stretch/Dockerfile.minimal",
+        context: "./scripts/docker/debian/stretch",
+        file: "./scripts/docker/debian/stretch/Dockerfile.minimal",
     ],
     stretch_doc: [
         id: docker_image_prefix + 'debian-stretch-doc',
-        context: "./doc/docker/debian/stretch",
-        file: "./doc/docker/debian/stretch/Dockerfile.doc",
+        context: "./scripts/docker/debian/stretch",
+        file: "./scripts/docker/debian/stretch/Dockerfile.doc",
     ],
     jessie: [
         id: docker_image_prefix + 'debian-jessie',
-        context: "./doc/docker/debian/jessie",
-        file: "./doc/docker/debian/jessie/Dockerfile",
+        context: "./scripts/docker/debian/jessie",
+        file: "./scripts/docker/debian/jessie/Dockerfile",
     ],
     xenial: [
         id: docker_image_prefix + 'ubuntu-xenial',
-        context: "./doc/docker/ubuntu/xenial",
-        file: "./doc/docker/ubuntu/xenial/Dockerfile",
+        context: "./scripts/docker/ubuntu/xenial",
+        file: "./scripts/docker/ubuntu/xenial/Dockerfile",
     ]
 ]
 
