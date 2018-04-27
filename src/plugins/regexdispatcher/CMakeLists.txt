@@ -5,6 +5,7 @@ find_package (fa)
 if (LIBFA_FOUND)
 	
 	add_haskell_plugin (regexdispatcher
+		MODULE "RegexDispatcher"
 		SANDBOX_ADD_SOURCES
 		"src/bindings/haskell"
 		"src/libs/typesystem/libfa"
