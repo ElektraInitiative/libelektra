@@ -16,6 +16,7 @@ import Elektra.Plugin
 
 import Elektra.Dispatch
 import Elektra.RangeDispatcher
+import Elektra.EnumDispatcher
 
 import Foreign.Ptr
 import Data.Bool
@@ -26,7 +27,7 @@ import qualified Data.Text as T
 dispatch :: KeySet -> Key -> IO Bool
 dispatch ks k = do
   ksList ks >>= mapM_ (keyListMeta >=> mapM_ print)
-  dispatched <- fmap concat . sequence $ map ($ ks) [rangeDispatch]
+  dispatched <- fmap concat . sequence $ map ($ ks) [rangeDispatch, enumDispatch]
   forM_ dispatched $ uncurry3 keySetMeta
   ksList ks >>= mapM_ (keyListMeta >=> mapM_ print)
   return . not $ null dispatched
