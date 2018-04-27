@@ -56,7 +56,9 @@ RUN cabal update && cabal install hspec QuickCheck
 
 # Handle Java
 RUN echo 'export JAVA_HOME=$(readlink -f /usr/bin/javac | sed "s:/bin/javac::")'>> /etc/bash.bashrc
-ADD --chown=0:0 ld-jdk.conf /etc/ld.so.conf.d/jdk.conf
+RUN echo '\
+/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64/\n\
+/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64/server/\n' > /etc/ld.so.conf.d/jdk.con
 RUN ldconfig
 
 # Create User:Group
