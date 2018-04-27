@@ -19,15 +19,20 @@ import Elektra.RangeDispatcher
 
 import Foreign.Ptr
 import Data.Bool
-import Control.Monad (sequence, forM_)
+import Control.Monad (sequence, forM_, mapM_, (>=>))
 
 import qualified Data.Text as T
 
 dispatch :: KeySet -> Key -> IO Bool
 dispatch ks k = do
+  ksList ks >>= mapM_ (keyListMeta >=> mapM_ print)
   dispatched <- fmap concat . sequence $ map ($ ks) [rangeDispatch]
-  forM_ dispatched (ksAppendKey ks)
+  forM_ dispatched $ uncurry3 keySetMeta
+  ksList ks >>= mapM_ (keyListMeta >=> mapM_ print)
   return . not $ null dispatched
+
+uncurry3 :: (a -> b -> c -> d) -> ((a, b, c) -> d)
+uncurry3 f = \(a, b, c) -> f a b c
 
 elektraRegexdispatcherOpen :: Plugin -> Key -> IO PluginStatus
 elektraRegexdispatcherOpen p k = keySetMeta k "/plugins/regexdispatcher" "elektraRegexdispatcherOpen" >> return Success
