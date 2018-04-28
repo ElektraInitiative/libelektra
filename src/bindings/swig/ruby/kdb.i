@@ -47,8 +47,10 @@ namespace std {
 %{
   extern "C" {
     #include "kdbconfig.h"
-    #include "kdbprivate.h" /* required for KEYSET_SIZE */
-    #include "kdblogger.h"
+    /* #include "kdbprivate.h" required for KEYSET_SIZE */
+    #define  KEYSET_SIZE  16
+    /* #include "kdblogger.h" we can't make use of it because this is a
+                              elektra private API */
     #include "kdb.h"
   }
 
@@ -249,8 +251,15 @@ underlaying key, which allows a Ruby-style iteration over metadata:
 %newobject kdb::Key::meta;
 %extend kdb::Key {
   kdb::KeySet* meta() {
-    /* Key is the owner of the meta keyset, so we have to dup it */
-    return new kdb::KeySet(ckdb::ksDup($self->getKey()->meta));
+    /* create a new KeySet with all meta keys added */
+    kdb::KeySet* metaKeys = new kdb::KeySet();
+    kdb::Key curMeta;
+    $self->rewindMeta();
+    while ((curMeta = $self->nextMeta()) != nullptr) {
+      metaKeys->append(curMeta);
+    }
+
+    return metaKeys;
   }
 }
 
@@ -599,7 +608,7 @@ aliased to '<=>', implemented for sorting operations.
   /* in case we have an array, append each element and return */
   if (RB_TYPE_P($input, T_ARRAY)) {
     int size = RARRAY_LEN($input);
-    ELEKTRA_LOG_DEBUG("append Array of Keys of len %d", size);
+    /* ELEKTRA_LOG_DEBUG("append Array of Keys of len %d", size); private API */
     for ( int i = 0; i < size; ++i) {
       Key* k;
       int reskey = 0;
@@ -618,7 +627,7 @@ aliased to '<=>', implemented for sorting operations.
 
   } else {
   /* standard case for KeySet, just convert and check for correct type */
-    ELEKTRA_LOG_DEBUG("append KeySet");
+    /* ELEKTRA_LOG_DEBUG("append KeySet"); private API */
     if (!SWIG_IsOK(
           SWIG_ConvertPtr($input, (void**)&$1, SWIGTYPE_p_kdb__KeySet, 0))) {
       rb_raise(rb_eArgError,
