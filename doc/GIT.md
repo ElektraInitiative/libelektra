@@ -145,7 +145,9 @@ phrases:
 * jenkins build [multiconfig-gcc47-cmake-options](https://build.libelektra.org/job/elektra-multiconfig-gcc47-cmake-options/) please
 * jenkins build [source-package-test](https://build.libelektra.org/job/elektra-source-package-test/) please
 * jenkins build [homepage](https://build.libelektra.org/job/elektra-homepage/) please
-* jenkins build [jenkinsfile](https://build.libelektra.org/jenkins/job/elektra-jenkinsfile/) please
+* jenkins build [jenkinsfile](https://build.libelektra.org/jenkins/job/elektra-jenkinsfile/)[REGEX] please
+  * Use the optional `REGEX` field to specify which stages you want to run
+    The REGEX has to match the stagename.
 
 ### Run All Tests
 
