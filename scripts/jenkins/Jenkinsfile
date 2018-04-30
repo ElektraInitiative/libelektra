@@ -97,6 +97,8 @@ target = ".*"
 matcher = /jenkins build jenkinsfile(?:\[(.*)\])? please/
 new_target = (env.ghprbCommentBody =~ matcher)[0][1]
 if(new_target) {
+    // if we specify a new target we degrade the build to unstable
+    currentBuild.result = 'UNSTABLE'
     target = new_target
 }
 
