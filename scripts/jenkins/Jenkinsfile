@@ -17,7 +17,7 @@ properties([
     buildDiscarder(logRotator(numToKeepStr: '60', artifactNumToKeepStr: '60'))
 ])
 
-// ## Define Docker images ##
+// ## Define Docker images globals ##
 DOCKER_IMAGES = [
     sid: [
         id: docker_image_prefix + 'debian-sid',
@@ -51,7 +51,7 @@ DOCKER_IMAGES = [
     ]
 ]
 
-// ## Define Build Flags ##
+// ## Define Build Flag globals ##
 BUILD_FLAGS_STANDARD = [
     'SITE': '${STAGE_NAME}',
     'KDB_DB_SYSTEM': '${HOME}/.config/kdb/system',
@@ -84,13 +84,13 @@ BUILD_FLAGS_ASAN = ['ENABLE_ASAN': 'ON']
 BUILD_FLAGS_DEBUG = ['ENABLE_DEBUG': 'ON']
 BUILD_FLAGS_LOGGER = ['ENABLE_LOGGER': 'ON']
 
-// ## Define Test Flags ##
+// ## Define Test Flag globals ##
 TEST_MEM = 'mem'
 TEST_NOKDB = 'nokdb'
 TEST_ALL = 'all'
 TEST_INSTALL = 'install'
 
-/* # Determine what needs to be build #
+// # Determine what needs to be build #
 target = "light"
 
 matcher = /jenkins build jenkinsfile(?:\[(.*)\])? please/
@@ -100,7 +100,6 @@ if(new_target) {
         target = "full"
     }
 }
-*/
 
 // # Main Stages #
 lock('docker-images') {
@@ -386,7 +385,7 @@ kill `pidof dbus-daemon`
     }
 }
 
-// Helper functions
+// ## Define helper functions ##
 def archive(paths) {
     echo "Start archivation"
     if (paths) {
