@@ -92,15 +92,14 @@ TEST_INSTALL = 'install'
 
 
 // # Determine what needs to be build #
-env.STATUS = "Build target: FULL"
 target = ".*"
 
 matcher = /jenkins build jenkinsfile(?:\[(.*)\])? please/
 new_target = (env.ghprbCommentBody =~ matcher)[0][1]
 if(new_target) {
     // if we specify a new target we degrade the build to unstable
+    // this will report the test as failed on github
     currentBuild.result = 'UNSTABLE'
-    env.STATUS = "Build target: ${target}"
     target = new_target
 }
 
