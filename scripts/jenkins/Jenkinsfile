@@ -90,15 +90,14 @@ TEST_NOKDB = 'nokdb'
 TEST_ALL = 'all'
 TEST_INSTALL = 'install'
 
+
 // # Determine what needs to be build #
-target = "light"
+target = ".*"
 
 matcher = /jenkins build jenkinsfile(?:\[(.*)\])? please/
 new_target = (env.ghprbCommentBody =~ matcher)[0][1]
 if(new_target) {
-    if(new_target.equalsIgnoreCase("full")) {
-        target = "full"
-    }
+    target = new_target
 }
 
 // # Main Stages #
@@ -448,7 +447,7 @@ def trackCoverage(do_track, cl) {
 
 def withDockerEnv(test_name, image, cl) {
     return [(test_name): {
-        stage(test_name) {
+        maybeRegexStage(test_name) {
             node(docker_node_label) {
                 docker.withRegistry('https://hub.libelektra.org',
                                     'docker-hub-elektra-jenkins') {
@@ -511,4 +510,14 @@ def checksum(file) {
     return sh(returnStdout: true,
               script: "cat $file | sha256sum | dd bs=1 count=8 status=none")
            .trim()
+}
+
+def maybeRegexStage(String name, Closure body) {
+    if(name =~ target) {
+        stage(name, body)
+    } else {
+        stage(name) {
+            echo "Stage skipped: ${name}"
+        }
+    }
 }
