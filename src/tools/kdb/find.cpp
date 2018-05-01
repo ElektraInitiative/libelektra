@@ -36,15 +36,23 @@ int FindCommand::execute (Cmdline const & cl)
 
 	KeySet part;
 	std::smatch match;
-	std::regex reg (cl.arguments[0]);
 
-	for (const auto & it : ks)
+	try
 	{
-		std::string name = it.getName ();
-		if (std::regex_search (name, match, reg))
+		std::regex reg (cl.arguments[0]);
+
+		for (const auto & it : ks)
 		{
-			part.append (it);
+			std::string name = it.getName ();
+			if (std::regex_search (name, match, reg))
+			{
+				part.append (it);
+			}
 		}
+	}
+	catch (const regex_error & error)
+	{
+		cerr << "Regex error in “" << cl.arguments[0] << "”: " << error.what () << endl;
 	}
 
 	if (cl.verbose) cout << "size of found keys: " << part.size () << endl;
