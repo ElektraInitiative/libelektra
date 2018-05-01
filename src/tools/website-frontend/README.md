@@ -48,6 +48,11 @@ To stop the `@tool@`, simply run `kdb stop-@tool@` from anywhere.
 This file will be copied and mounted by the command `kdb mount-website-frontend-config`. The configuration will then be available
 below `@config_root@/@config_default_profile@` in Elektra.
 
+#### PID file
+
+Using ${config_root}${config_default_profile}/daemon/lock (i.e., `daemon.lock` in JSON) you can specify which PID file should be used.
+Default: /run/elektra-@tool@.pid
+
 #### APIs (Backend & GitHub)
 
 The configuration file allows to set the URL to the backend in `backend.root`.
