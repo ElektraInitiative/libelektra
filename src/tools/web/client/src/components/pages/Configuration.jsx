@@ -36,27 +36,29 @@ const createTree = (ls) =>
     return partsTree(acc, item.split('/'))
   }, {})
 
-const parseDataSet = (getKey, sendNotification, instanceId, tree, path) => {
+const parseDataSet = (getKey, sendNotification, instanceId, tree, path, parent) => {
   return Object.keys(tree).map(key => {
     const newPath = path
       ? path + '/' + key
       : key
-    const children = parseDataSet(getKey, sendNotification, instanceId, tree[key], newPath)
-    return {
+    let data = {
       name: key,
       path: newPath,
       root: !path,
-      children: (Array.isArray(children) && children.length > 0)
-        ? (notify = true) => {
-          return new Promise(resolve => {
-            getKey(instanceId, newPath, true)
-            if (notify) {
-              sendNotification('finished (re-)loading \'' + newPath + '\' keyset')
-            }
-            resolve(children)
-          })
-        } : false,
+      parent: parent,
     }
+    const children = parseDataSet(getKey, sendNotification, instanceId, tree[key], newPath, data)
+    data.children = (Array.isArray(children) && children.length > 0)
+      ? (notify = true) => {
+        return new Promise(resolve => {
+          getKey(instanceId, newPath, true)
+          if (notify) {
+            sendNotification('finished (re-)loading \'' + newPath + '\' keyset')
+          }
+          resolve(children)
+        })
+      } : false
+    return data
   })
 }
 

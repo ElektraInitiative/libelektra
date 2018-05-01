@@ -32,8 +32,9 @@ class RangeItem extends Component {
   }
 
   render () {
-    const { last, onChange, onDelete } = this.props
+    const { last, ranges, onChange, onDelete } = this.props
     const { min, max, errorMin, errorMax } = this.state
+    const onlyItem = ranges.length === 1
 
     return (
       <span style={{ marginRight: 32 }}>
@@ -43,7 +44,7 @@ class RangeItem extends Component {
             floatingLabelText="min"
             floatingLabelFixed={true}
             value={min}
-            underlineStyle={errorMin && { borderBottom: '2px solid rgb(244, 67, 54)' }}
+            underlineStyle={errorMin && !onlyItem && { borderBottom: '2px solid rgb(244, 67, 54)' }}
             onChange={value => this.setState({ min: value })}
             onDebounced={value => {
               const { min, max } = this.state // pull updated values from state
@@ -61,7 +62,7 @@ class RangeItem extends Component {
             floatingLabelText="max"
             floatingLabelFixed={true}
             value={max}
-            underlineStyle={errorMax && { borderBottom: '2px solid rgb(244, 67, 54)' }}
+            underlineStyle={errorMax && !onlyItem && { borderBottom: '2px solid rgb(244, 67, 54)' }}
             onChange={value => this.setState({ max: value })}
             onDebounced={value => {
               const { min, max } = this.state // pull updated values from state
@@ -128,6 +129,7 @@ class Ranges extends Component {
               min={min}
               max={max}
               last={i === ranges.length - 1}
+              ranges={ranges}
               onDelete={() => {
                 const newState = ranges.filter((r, j) => i !== j)
                 this.setState({ ranges: newState.length > 0 ? newState : [['', '']] })

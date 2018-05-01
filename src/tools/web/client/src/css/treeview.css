@@ -49,18 +49,48 @@
   content: "";
   height: 1em;
   width: 2em;
-  transition: all 0.2s;
 }
+
+/* Newer browsers */
 @supports (mask: url('/folded.svg') no-repeat) {
   .ExplorerView ul > li.category .opener {
     mask: url('/folded.svg') no-repeat;
     background-color: #000000;
+    transition: all 0.2s;
   }
   .ExplorerView ul li.selected > span.item > .opener,
   .ExplorerView ul li > span.item > .opener:focus {
     background-color: #00BCD4;
   }
+  /* Animations on component creation / destruction */
+  .ExplorerViewTransition-enter {
+    transition: all .2s ease-in-out;
+    opacity: 0;
+    transform-origin: left top;
+    transform: translateX(-20px) scale(0);
+  }
+  .ExplorerViewTransition-enter-active {
+    opacity: 1;
+    transform: translateX(0px) scale(1);
+  }
+  .ExplorerViewTransition-leave {
+    transition: all .2s ease-in-out;
+    transform-origin: left top;
+  }
+  .ExplorerViewTransition-leave-active {
+    opacity: 0;
+    transform: translateX(-20px) scale(0);
+  }
+  /* Selection animations */
+  .ExplorerView ul li:not(.category) > span.item:before {
+    transition: color 0.2s;
+  }
+  .ExplorerView ul > li > span.item {
+    transition: color 0.2s;
+  }
 }
+
+/* Older browsers, e.g. Firefox ESR */
 @supports not (mask: url('/folded.svg') no-repeat) {
   .ExplorerView ul > li.category .opener {
     background-image: url('/folded.svg');
@@ -75,13 +105,9 @@
   height: 100%;
   width: 2em;
   color: #000000;
-  transition: color 0.2s;
   position: relative;
   top: 16px;
   left: 2px;
-}
-.ExplorerView ul > li > span.item {
-  transition: color 0.2s;
 }
 .ExplorerView ul > li:not(.category) > span.item > a {
   min-height: 48px;
@@ -103,7 +129,7 @@
 .ExplorerView ul.depth-0:empty::before {
   font-size: 1.1em;
   color: rgba(0, 0, 0, 0.6);
-  content: 'No results found.';
+  content: 'No results found in the currently opened keys.';
 }
 
 /* Not disabled */
@@ -157,23 +183,3 @@
 .ExplorerView li.dragover > span.item {}
 .ExplorerView li.nodrop {}
 .ExplorerView li.nodrop > span.item {}
-
-/* Animations on component creation / destruction */
-.ExplorerViewTransition-enter {
-  transition: all .2s ease-in-out;
-  opacity: 0;
-  transform-origin: left top;
-  transform: translateX(-20px) scale(0);
-}
-.ExplorerViewTransition-enter-active {
-  opacity: 1;
-  transform: translateX(0px) scale(1);
-}
-.ExplorerViewTransition-leave {
-  transition: all .2s ease-in-out;
-  transform-origin: left top;
-}
-.ExplorerViewTransition-leave-active {
-  opacity: 0;
-  transform: translateX(-20px) scale(0);
-}

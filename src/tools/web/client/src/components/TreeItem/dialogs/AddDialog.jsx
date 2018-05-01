@@ -8,12 +8,12 @@
 
 import React, { Component } from 'react'
 
-import Dialog from 'material-ui/Dialog'
 import FlatButton from 'material-ui/FlatButton'
 import TextField from 'material-ui/TextField'
 import SelectField from 'material-ui/SelectField'
 import MenuItem from 'material-ui/MenuItem'
 import ActionBuild from 'material-ui/svg-icons/action/build'
+import FocusTrapDialog from './FocusTrapDialog.jsx'
 
 import { VISIBILITY_LEVELS, visibility } from '../../../utils'
 import { KEY_TYPES } from './utils'
@@ -27,6 +27,7 @@ export default class AddDialog extends Component {
       type: 'any',
       visibility: props.instanceVisibility || 'user',
       error: false,
+      paused: false,
     }
   }
 
@@ -89,95 +90,112 @@ export default class AddDialog extends Component {
       <FlatButton
         label="Cancel"
         onTouchTap={this.handleClose}
+        onKeyPress={e => {
+          if (e.key === 'Enter') {
+            this.handleClose()
+          }
+        }}
       />,
       <FlatButton
         label="Create"
         primary={true}
         onTouchTap={this.handleCreate}
+        onKeyPress={e => {
+          if (e.key === 'Enter') {
+            this.handleCreate()
+          }
+        }}
         disabled={nameEmpty || error}
       />,
     ]
 
     return (
-        <Dialog
+        <FocusTrapDialog
           actions={actions}
           modal={false}
           open={open}
+          paused={this.state.paused}
           onRequestClose={this.handleClose}
         >
-            <h1>Creating new {arrayKeyLength ? 'array ' : ''}key at <b>{path}</b></h1>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <div style={{ flex: 'initial' }}>
-                <TextField
-                  ref="nameField"
-                  floatingLabelText="name"
-                  floatingLabelFixed={true}
-                  hintText="e.g. keyName"
-                  onChange={evt => this.setState({ name: evt.target.value })}
-                  value={name}
-                  onKeyPress={e => {
-                    if (!nameEmpty && !error && e.key === 'Enter') {
-                      this.handleCreate()
-                    }
-                  }}
-                />
-              </div>
-              <div style={{ flex: 'initial', marginLeft: 48, marginTop: 12, fontSize: '0.75em' }}>
-                <i>Hint: create a #0 sub-key in a key without children to turn it into an array</i>
-              </div>
-            </div>
-            <div style={{ display: 'block', marginTop: 8 }}>
-                <SelectField
-                  floatingLabelText="type"
-                  floatingLabelFixed={true}
-                  onChange={(e, _, val) => this.setState({ type: val })}
-                  value={type}
-                >
-                    {KEY_TYPES.map(({ type, name }) =>
-                      <MenuItem key={type} value={type} primaryText={name} />
-                    )}
-                </SelectField>
-            </div>
-            <div style={{ display: 'block', marginTop: 8 }}>
-              <SelectField
-                floatingLabelText="visibility"
+          <h1>Creating new {arrayKeyLength ? 'array ' : ''}key at <b>{path}</b></h1>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <div style={{ flex: 'initial' }}>
+              <TextField
+                ref="nameField"
+                floatingLabelText="name"
                 floatingLabelFixed={true}
-                onChange={(e, _, val) => this.setState({ visibility: val })}
-                value={visibility}
+                hintText="e.g. keyName"
+                onChange={evt => this.setState({ name: evt.target.value })}
+                value={name}
+                onKeyPress={e => {
+                  if (!nameEmpty && !error && e.key === 'Enter') {
+                    this.handleCreate()
+                  }
+                }}
+              />
+            </div>
+            <div style={{ flex: 'initial', marginLeft: 48, marginTop: 12, fontSize: '0.75em' }}>
+              <i>Hint: create a #0 sub-key in a key without children to turn it into an array</i>
+            </div>
+          </div>
+          <div style={{ display: 'block', marginTop: 8 }}>
+              <SelectField
+                floatingLabelText="type"
+                floatingLabelFixed={true}
+                onFocus={() => !this.state.paused && this.setState({ paused: true })}
+                onChange={(e, _, val) => {
+                  this.setState({ type: val, paused: false })
+                }}
+                value={type}
               >
-                  {Object.keys(VISIBILITY_LEVELS).map(lvl =>
-                    <MenuItem key={lvl} value={lvl} primaryText={lvl} />
+                  {KEY_TYPES.map(({ type, name }) =>
+                    <MenuItem key={type} value={type} primaryText={name} />
                   )}
               </SelectField>
-            </div>
-            <div style={{ display: 'block', marginTop: 8 }}>
-                {type !== 'enum' && renderField({
-                  value,
-                  meta: { 'check/type': type },
-                  debounce: false,
-                  onChange: (value) => this.setState({ value }),
-                  onKeyPress: e => {
-                    if (!nameEmpty && !error && e.key === 'Enter') {
-                      this.handleCreate()
-                    }
-                  },
-                  onError: err => this.setState({ error: err }),
-                  label: 'value',
-                })}
-                {type === 'enum' && (
-                  <div style={{ display: 'block', marginTop: 16, color: 'rgba(0, 0, 0, 0.5)' }}>
-                      <b style={{ fontSize: '1.1em' }}>Please note:</b><br />
-                      You can only define options after the key is created.<br />
-                      Please create the key, then
-                      <i style={{ paddingLeft: 6, paddingRight: 8 }}>
-                        <ActionBuild style={{ width: 14, height: 14, marginRight: 4, color: 'rgba(0, 0, 0, 0.5)' }} />
-                        configure metadata
-                      </i>
-                      to define options.
-                  </div>
+          </div>
+          <div style={{ display: 'block', marginTop: 8 }}>
+            <SelectField
+              floatingLabelText="visibility"
+              floatingLabelFixed={true}
+              onFocus={() => !this.state.paused && this.setState({ paused: true })}
+              onChange={(e, _, val) => {
+                this.setState({ visibility: val, paused: false })
+              }}
+              value={visibility}
+            >
+                {Object.keys(VISIBILITY_LEVELS).map(lvl =>
+                  <MenuItem key={lvl} value={lvl} primaryText={lvl} />
                 )}
-            </div>
-        </Dialog>
+            </SelectField>
+          </div>
+          <div style={{ display: 'block', marginTop: 8 }}>
+              {type !== 'enum' && renderField({
+                value,
+                meta: { 'check/type': type },
+                debounce: false,
+                onChange: (value) => this.setState({ value }),
+                onKeyPress: e => {
+                  if (!nameEmpty && !error && e.key === 'Enter') {
+                    this.handleCreate()
+                  }
+                },
+                onError: err => this.setState({ error: err }),
+                label: 'value',
+              })}
+              {type === 'enum' && (
+                <div style={{ display: 'block', marginTop: 16, color: 'rgba(0, 0, 0, 0.5)' }}>
+                    <b style={{ fontSize: '1.1em' }}>Please note:</b><br />
+                    You can only define options after the key is created.<br />
+                    Please create the key, then
+                    <i style={{ paddingLeft: 6, paddingRight: 8 }}>
+                      <ActionBuild style={{ width: 14, height: 14, marginRight: 4, color: 'rgba(0, 0, 0, 0.5)' }} />
+                      configure metadata
+                    </i>
+                    to define options.
+                </div>
+              )}
+          </div>
+        </FocusTrapDialog>
     )
   }
 }

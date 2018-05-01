@@ -15,6 +15,7 @@
     "@bosket/tools": "^0.4.2",
     "ajv": "^6.4.0",
     "bosket-react": "^0.4.6",
+    "focus-trap-react": "^3.1.2",
     "material-ui": "^0.20.0",
     "react": "^16.1.1",
     "react-copy-to-clipboard": "^5.0.1",

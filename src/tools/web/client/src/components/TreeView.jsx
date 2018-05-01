@@ -19,10 +19,20 @@ const NAMESPACES_ORDER = [ 'spec', 'dir', 'user', 'system' ]
 export default class TreeView extends React.Component {
   constructor (props, ...args) {
     super(props, ...args)
-    this.state = { selection: [], unfolded: [] }
+    this.state = { selection: [], unfolded: [], data: props.data }
   }
 
   componentWillReceiveProps = (nextProps) => {
+    if (this.props.data !== nextProps.data) {
+      this.setState({ data: nextProps.data })
+    }
+
+    // kdb updated
+    if (this.props.kdb !== nextProps.kdb || this.props.ls !== nextProps.ls) {
+      // re-render tree view
+      this.setState({ data: nextProps.data.slice() })
+    }
+
     const { unfolded } = this.state
     if (unfolded.length <= 0) {
       const { instance } = nextProps
@@ -59,7 +69,8 @@ export default class TreeView extends React.Component {
 
   handleSelect = (newSelection, item, ancestors, neighbours) => {
     this.setState({ selection: newSelection })
-    this.refreshItem(item, true)
+    // push refresh action at the back of the queue (re-renders selection first)
+    setTimeout(() => this.refreshItem(item, true))
   }
 
   handleDrop = (target, evt, inputs) => {
@@ -173,8 +184,7 @@ export default class TreeView extends React.Component {
   }
 
   render () {
-    const { data } = this.props
-    const { selection, unfolded } = this.state
+    const { data, selection, unfolded } = this.state
     const tree = this
     const strategies = {
       click: [ function unfoldOnSelectionByPath (item) {
@@ -226,6 +236,7 @@ export default class TreeView extends React.Component {
           transitionLeaveTimeout: 200,
         }}
         openerOpts={{ position: 'left' }}
+        labels={{ 'search.placeholder': 'Filter keys...' }}
       />
     )
   }

@@ -134,6 +134,16 @@ export default class TreeItem extends Component {
     )
   }
 
+  getArrayKeyLength (item) {
+    return (item && Array.isArray(item.children))
+      ? item.children.reduce((res, i) => {
+          if (res === false) return false
+          if (!i.name.match(ARRAY_KEY_REGEX)) return false
+          return res + 1
+        }, 0)
+      : false
+  }
+
   render () {
     const {
       data, item, instanceId, instanceVisibility,
@@ -152,13 +162,8 @@ export default class TreeItem extends Component {
      // we return no value property if the key doesn't exist, otherwise we return an *empty* value
     const keyExists = rootLevel || (data && data.exists)
 
-    const arrayKeyLength = (item && Array.isArray(item.children))
-      ? item.children.reduce((res, i) => {
-          if (res === false) return false
-          if (!i.name.match(ARRAY_KEY_REGEX)) return false
-          return res + 1
-        }, 0)
-      : false
+    const arrayKeyLength = this.getArrayKeyLength(item)
+    const parentArrayKeyLength = this.getArrayKeyLength(item.parent)
 
     const renderedField = (
       <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -183,10 +188,10 @@ export default class TreeItem extends Component {
     }
 
     return (
-        <a style={{ display: 'flex', alignItems: 'center', opacity: keyExists ? 1 : 0.4 }}>
+        <a style={{ display: 'flex', alignItems: 'center' }}>
             {valueVisible
               ? (
-                  <span style={{ display: 'flex', alignItems: 'center', height: 48 }}>
+                  <span style={{ display: 'flex', alignItems: 'center', height: 48, opacity: keyExists ? 1 : 0.4 }}>
                       <b style={titleStyle}>{prettyPrintArrayIndex(item.name)}: </b>
                       <span
                         style={{ marginLeft: 6 }}
@@ -196,7 +201,7 @@ export default class TreeItem extends Component {
                       </span>
                   </span>
                 )
-              : <b style={titleStyle}>
+              : <b style={{ ...titleStyle, opacity: keyExists ? 1 : 0.4 }}>
                   <span style={{ flex: 'initial', marginTop: -2 }}>{prettyPrintArrayIndex(item.name)}</span>
                   {arrayKeyLength &&
                     <span style={{ flex: 'initial', marginLeft: 8 }}>
@@ -213,68 +218,72 @@ export default class TreeItem extends Component {
                   </CopyToClipboard>
                 }
                 <ActionButton icon={<ContentAdd />} onClick={this.handleOpen('add')} tooltip="create sub-key" />
-                {!rootLevel && !valueVisible &&
+                <AddDialog
+                  item={item}
+                  arrayKeyLength={arrayKeyLength}
+                  instanceVisibility={instanceVisibility}
+                  open={this.state.dialogs.add}
+                  onAdd={this.handleAdd}
+                  onClose={this.handleClose('add')}
+                  renderField={({ value, meta, debounce, onChange, onKeyPress, label, onError }) =>
+                    this.renderValue('addValueField', { value, meta, debounce, onChange, onKeyPress, label, onError })
+                  }
+                  setMetaByPath={(path, key, value) => setMetaKey(instanceId, path, key, value)}
+                />
+                {!rootLevel && !valueVisible && !(meta && meta['restrict/write'] === '1') &&
                   <ActionButton icon={<ContentEdit />} onClick={this.handleOpen('edit')} tooltip="edit value" />
                 }
+                <EditDialog
+                  field={renderedField}
+                  item={item}
+                  value={data && data.value}
+                  open={this.state.dialogs.edit}
+                  onEdit={this.handleEdit}
+                  onClose={this.handleClose('edit')}
+                />
                 {!rootLevel &&
                   <ActionButton icon={<ContentCopy />} onClick={this.handleOpen('duplicate')} tooltip="duplicate key" />
                 }
+                <DuplicateDialog
+                  item={item}
+                  arrayKeyLength={parentArrayKeyLength}
+                  open={this.state.dialogs.duplicate}
+                  onDuplicate={this.handleDuplicate}
+                  onClose={this.handleClose('duplicate')}
+                  pathExists={this.props.pathExists}
+                />
                 {!rootLevel &&
                   <ActionButton icon={<ActionBuild />} onClick={this.handleOpen('settings')} size={13} tooltip="configure metadata" />
                 }
+                <SettingsDialog
+                  field={renderedField}
+                  item={item}
+                  meta={data && data.meta}
+                  data={data && data.value}
+                  open={this.state.dialogs.settings}
+                  setMeta={(key, value) => setMetaKey(instanceId, item.path, key, value)}
+                  deleteMeta={key => deleteMetaKey(instanceId, item.path, key)}
+                  onClose={this.handleClose('settings')}
+                  onEdit={this.handleEdit}
+                  instanceVisibility={instanceVisibility}
+                  refreshKey={() => refreshPath(item.path)}
+                />
                 {!rootLevel && !(meta && meta['restrict/remove'] === '1') &&
-                  <ActionButton icon={<ActionDelete />} onClick={this.handleOpen('remove')} tooltip="delete key" />
+                  <ActionButton icon={<ActionDelete />} onClick={e => {
+                    this.handleOpen('remove')(e)
+                    e.preventDefault()
+                  }} tooltip="delete key" />
                 }
+                <RemoveDialog
+                  item={item}
+                  open={this.state.dialogs.remove}
+                  onDelete={this.handleDelete}
+                  onClose={this.handleClose('remove')}
+                />
                 <i>
                   {!isCheckbox && meta && meta.description}
                 </i>
             </span>
-            <AddDialog
-              item={item}
-              arrayKeyLength={arrayKeyLength}
-              instanceVisibility={instanceVisibility}
-              open={this.state.dialogs.add}
-              onAdd={this.handleAdd}
-              onClose={this.handleClose('add')}
-              renderField={({ value, meta, debounce, onChange, onKeyPress, label, onError }) =>
-                this.renderValue('addValueField', { value, meta, debounce, onChange, onKeyPress, label, onError })
-              }
-              setMetaByPath={(path, key, value) => setMetaKey(instanceId, path, key, value)}
-            />
-            <EditDialog
-              field={renderedField}
-              item={item}
-              value={data && data.value}
-              open={this.state.dialogs.edit}
-              onEdit={this.handleEdit}
-              onClose={this.handleClose('edit')}
-            />
-            <DuplicateDialog
-              item={item}
-              open={this.state.dialogs.duplicate}
-              onDuplicate={this.handleDuplicate}
-              onClose={this.handleClose('duplicate')}
-              pathExists={this.props.pathExists}
-            />
-            <SettingsDialog
-              field={renderedField}
-              item={item}
-              meta={data && data.meta}
-              data={data && data.value}
-              open={this.state.dialogs.settings}
-              setMeta={(key, value) => setMetaKey(instanceId, item.path, key, value)}
-              deleteMeta={key => deleteMetaKey(instanceId, item.path, key)}
-              onClose={this.handleClose('settings')}
-              onEdit={this.handleEdit}
-              instanceVisibility={instanceVisibility}
-              refreshKey={() => refreshPath(item.path)}
-            />
-            <RemoveDialog
-              item={item}
-              open={this.state.dialogs.remove}
-              onDelete={this.handleDelete}
-              onClose={this.handleClose('remove')}
-            />
         </a>
     )
   }

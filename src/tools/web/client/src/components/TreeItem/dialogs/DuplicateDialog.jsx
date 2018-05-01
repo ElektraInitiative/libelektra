@@ -8,9 +8,9 @@
 
 import React, { Component } from 'react'
 
-import Dialog from 'material-ui/Dialog'
 import FlatButton from 'material-ui/FlatButton'
 import TextField from 'material-ui/TextField'
+import FocusTrapDialog from './FocusTrapDialog.jsx'
 
 export default class DuplicateDialog extends Component {
   constructor (...args) {
@@ -21,7 +21,16 @@ export default class DuplicateDialog extends Component {
     }
   }
 
+  generateArrayKey = (length) => {
+    const numberStr = String(length)
+    const prefix = '_'.repeat(numberStr.length - 1)
+    return '#' + prefix + length
+  }
+
   getInitialName = (props) => {
+    if (props.arrayKeyLength) {
+      return this.generateArrayKey(props.arrayKeyLength)
+    }
     return (props && props.item && props.item.name)
       ? props.item.name + 'Copy'
       : ''
@@ -60,19 +69,30 @@ export default class DuplicateDialog extends Component {
       <FlatButton
         label="Cancel"
         onTouchTap={this.handleClose}
+        onKeyPress={e => {
+          if (e.key === 'Enter') {
+            this.handleClose()
+          }
+        }}
       />,
       <FlatButton
         label="Duplicate"
         primary={true}
         onTouchTap={() => this.handleDuplicate(path, newPath)}
+        onKeyPress={e => {
+          if (e.key === 'Enter') {
+            this.handleDuplicate(path, newPath)
+          }
+        }}
       />,
     ]
 
     return (
-        <Dialog
+        <FocusTrapDialog
           actions={actions}
           modal={false}
           open={open || false}
+          paused={true}
           onRequestClose={this.handleClose}
         >
             <h1>Duplicating <b>{path}</b> key</h1>
@@ -91,7 +111,7 @@ export default class DuplicateDialog extends Component {
                   value={name}
                 />
             </div>
-        </Dialog>
+        </FocusTrapDialog>
     )
   }
 }
