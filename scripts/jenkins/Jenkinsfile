@@ -91,6 +91,9 @@ TEST_NOKDB = 'nokdb'
 TEST_ALL = 'all'
 TEST_INSTALL = 'install'
 
+// ## DATE ##
+NOW = new Date()
+
 // # Determine what needs to be build #
 target = ".*"
 
@@ -506,7 +509,7 @@ def xunitUpload() {
 
 def imageId(image) {
     def cs = checksum(image.file)
-    def dateString = dateFormatter(Long.valueOf(env.timeInMillis))
+    def dateString = dateFormatter(NOW)
     return "${image.id}:${dateString}-${cs}"
 }
 
