@@ -506,7 +506,7 @@ def xunitUpload() {
 
 def imageId(image) {
     def cs = checksum(image.file)
-    def dateString = dateFormatter(env.timeInMillis)
+    def dateString = dateFormatter(Long.valueOf(env.timeInMillis))
     return "${image.id}:${dateString}-${cs}"
 }
 
