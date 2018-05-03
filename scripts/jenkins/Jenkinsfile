@@ -515,10 +515,10 @@ def imageId(image) {
 
 def checksum(file) {
     // Used to identify if a Dockerfile changed
-    // Collissions result in not rebuilding the Docker image even though it
-    //   changed.
+    // TODO expand to use more than one file if Dockerfile ever depends on
+    //      external files
     return sh(returnStdout: true,
-              script: "cat $file | sha256sum | dd bs=1 count=8 status=none")
+              script: "cat $file | sha256sum | dd bs=1 count=64 status=none")
            .trim()
 }
 
