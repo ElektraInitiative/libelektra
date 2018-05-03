@@ -183,7 +183,7 @@ int PluginDatabase::calculateStatus (std::string statusString)
 			{
 				ret += stoi (status);
 			}
-			catch (std::invalid_argument)
+			catch (std::invalid_argument &)
 			{
 			}
 		}
