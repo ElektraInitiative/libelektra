@@ -126,7 +126,7 @@ void ConfigNode::setValue (const QVariant & value)
 			m_value = value;
 		}
 	}
-	catch (KeyTypeMismatch ex)
+	catch (KeyTypeMismatch & ex)
 	{
 		emit showMessage (tr ("Error"), tr ("Creating/Editing binary keys is not yet supported."), ex.what ());
 		return;
@@ -291,7 +291,7 @@ void ConfigNode::setKeyName (const QString & name)
 		{
 			m_key.setName (name.toStdString ());
 		}
-		catch (KeyInvalidName ex)
+		catch (KeyInvalidName & ex)
 		{
 			emit showMessage (tr ("Error"), tr ("Could not set name because Keyname \"%1\" is invalid.").arg (name),
 					  ex.what ());
