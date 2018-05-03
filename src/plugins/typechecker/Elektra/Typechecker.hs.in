@@ -1,30 +1,32 @@
-{-# LANGUAGE TypeFamilies, UndecidableInstances, OverloadedStrings,
-  ExistentialQuantification, TypeInType, GADTs, TypeOperators, CPP #-}
+{-# LANGUAGE OverloadedStrings, CPP #-}
 module Elektra.Typechecker () where
 
 import Elektra.Key
 import Elektra.KeySet
 import Elektra.Plugin
-import Elektra.SpecTranslator2
+import Elektra.SpecTranslator
 import Elektra.SpecParser
 import Elektra.Errors
 
 import Control.Monad                (mapM_)
 import Control.Logger.Simple
-import Text.PrettyPrint
-import Language.Haskell.Exts.Pretty
-import Language.Haskell.Interpreter
-import Language.Haskell.Interpreter.Unsafe
 import Data.List                    (intercalate, isPrefixOf)
+import Foreign.Ptr
 import System.IO.Temp               (writeTempFile)
 import System.Directory             (removeFile)
 import System.Environment           (lookupEnv)
-import Foreign.Ptr
+import Text.PrettyPrint
+
+import Language.Haskell.Exts.Pretty
+import Language.Haskell.Interpreter
+import Language.Haskell.Interpreter.Unsafe
 
 import qualified Data.Text as T
 
-typecheck :: KeySet -> Key -> IO ()
-typecheck ks k = withGlobalLogging (LogConfig Nothing ("@ENABLE_LOGGER@" == "ON")) $ do
+data CheckMode = Get | Set
+
+typecheck :: KeySet -> Key -> CheckMode -> IO ()
+typecheck ks k c = withGlobalLogging (LogConfig Nothing ("@ENABLE_LOGGER@" == "ON")) $ do
   logDebug "Parse Specifications now."
 
   typeSpecs <- parseTypeSpecifications k ks
@@ -50,7 +52,9 @@ typecheck ks k = withGlobalLogging (LogConfig Nothing ("@ENABLE_LOGGER@" == "ON"
   case r of
     Left err -> do
       let errStr = errorString err
-      triggerWarnings 192 k errStr
+      case c of
+        Set -> triggerError 193 k errStr
+        Get -> triggerWarnings 192 k errStr
       logDebugT errStr
     Right () -> return ()
   where
@@ -89,11 +93,11 @@ elektraTypecheckerClose _ _ = return Success
 hs_elektraHaskellClose = elektraPluginCloseWith elektraTypecheckerClose
 
 elektraTypecheckerGet :: Plugin -> KeySet -> Key -> IO PluginStatus
-elektraTypecheckerGet _ ks k = typecheck ks k >> return NoUpdate
+elektraTypecheckerGet _ ks k = typecheck ks k Get >> return NoUpdate
 hs_elektraHaskellGet = elektraPluginGetWith elektraTypecheckerGet
 
 elektraTypecheckerSet :: Plugin -> KeySet -> Key -> IO PluginStatus
-elektraTypecheckerSet _ ks k = typecheck ks k >> return NoUpdate
+elektraTypecheckerSet _ ks k = typecheck ks k Set >> return NoUpdate
 hs_elektraHaskellSet = elektraPluginSetWith elektraTypecheckerSet
 
 elektraTypecheckerError :: Plugin -> KeySet -> Key -> IO PluginStatus

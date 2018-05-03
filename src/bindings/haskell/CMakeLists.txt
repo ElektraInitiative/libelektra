@@ -41,7 +41,7 @@ if (HASKELL_FOUND)
 			     "${CMAKE_CURRENT_SOURCE_DIR}/src/Elektra/Ease.chs"
 			     "${CMAKE_CURRENT_SOURCE_DIR}/test/Elektra.hs"
 			     "${CMAKE_CURRENT_SOURCE_DIR}/test/ElektraRealWorld.hs"
-			     "${CMAKE_CURRENT_SOURCE_DIR}/src/c/hs_kdberrors.c"
+			     "${CMAKE_CURRENT_SOURCE_DIR}/src/c/hskdberrors.c"
 			     "${CMAKE_SOURCE_DIR}/src/plugins/haskell/Setup.hs.in")
 			execute_process (COMMAND ${CABAL_EXECUTABLE} sandbox init --sandbox ${CMAKE_BINARY_DIR}/.cabal-sandbox -v0
 					 WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}

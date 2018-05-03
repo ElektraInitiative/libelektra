@@ -1,10 +1,10 @@
 name:                typechecker
-version:             0.1.0.0
+version:             1.@KDB_VERSION@
 synopsis:            Checks configuration specification in the spec namespace for type errors
 description:         Checks configuration specification in the spec namespace for type errors
 homepage:            https://www.libelektra.org
 license:             BSD3
-author:              e1528532
+author:              Armin Wurzinger
 maintainer:          e1528532@libelektra.org
 copyright:           libelektra.org
 category:            plugin
@@ -16,17 +16,12 @@ cabal-version:       >=1.24
 library
   hs-source-dirs:    "@CMAKE_CURRENT_BINARY_DIR@"
   exposed-modules:   Elektra.Typechecker
-  other-extensions:  TypeFamilies
-                   , TypeInType
-                   , TypeOperators
-                   , UndecidableInstances
-                   , ExistentialQuantification
-                   , GADTs
+  other-extensions:  OverloadedStrings
                    , CPP
   build-depends:     base >= 4.7 && < 5
                    , libelektra-haskell
-                   , SpecElektra
-                   , SpecTranslator
+                   , specelektra
+                   , spectranslator
                    , haskell-src-exts
                    , pretty
                    , hint >= 0.7.0

@@ -4,7 +4,7 @@ synopsis:            Haskell bindings for libelektra
 description:         Haskell bindings for libelektra
 homepage:            https://www.libelektra.org
 license:             BSD3
-author:              e1528532
+author:              Armin Wurzinger
 maintainer:          e1528532@libelektra.org
 copyright:           libelektra.org
 category:            binding
@@ -26,10 +26,10 @@ library
                    , kdbplugin.h
                    , kdbease.h
                    , kdberrors.h
-                   , hs_kdberrors.h
+                   , hskdberrors.h
   include-dirs:      @CABAL_INCLUDE_DIRS@
                    , "@CMAKE_CURRENT_SOURCE_DIR@/src/include"
-  c-sources:         "@CMAKE_CURRENT_BINARY_DIR@/src/c/hs_kdberrors.c"
+  c-sources:         "@CMAKE_CURRENT_BINARY_DIR@/src/c/hskdberrors.c"
   extra-lib-dirs:    "@CMAKE_BINARY_DIR@/lib"
   default-language:  Haskell2010
   other-extensions:  ForeignFunctionInterface

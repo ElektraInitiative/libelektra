@@ -1201,4 +1201,11 @@ description:The mounted specification failed the typecheck
 severity:warning
 ingroup:plugin
 module:typechecker
-macro:PLUGIN_TYPECHECKER
+macro:PLUGIN_TYPECHECKER_GET
+
+number:193
+description:The modified specification failed the typecheck
+severity:error
+ingroup:plugin
+module:typechecker
+macro:PLUGIN_TYPECHECKER_SET

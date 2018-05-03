@@ -9,11 +9,11 @@ module Elektra.Errors (
   triggerError, triggerWarnings
 ) where
 
-#include <hs_kdberrors.h>
+#include <hskdberrors.h>
 
 {#import Elektra.Key#}
 
 {#context lib="libelektra" #}
 
-{#fun unsafe hs_elektraTriggerError as triggerError {`Int', `Key', `String'} -> `()' #}
-{#fun unsafe hs_elektraTriggerWarnings as triggerWarnings {`Int', `Key', `String'} -> `()' #}
+{#fun unsafe hsElektraTriggerError as triggerError {`Int', `Key', `String'} -> `()' #}
+{#fun unsafe hsElektraTriggerWarnings as triggerWarnings {`Int', `Key', `String'} -> `()' #}

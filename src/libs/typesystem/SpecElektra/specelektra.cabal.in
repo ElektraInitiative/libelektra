@@ -1,29 +1,28 @@
-name:                SpecElektra
-version:             0.1.0.0
+name:                specelektra
+version:             1.@KDB_VERSION@
 synopsis:            A type system for libelektra
 description:         A type system for libelektra
 homepage:            https://www.libelektra.org
 license:             BSD3
-author:              e1528532
+author:              Armin Wurzinger
 maintainer:          e1528532@libelektra.org
 copyright:           libelektra.org
 category:            typesystem
 build-type:          Simple
-cabal-version:       >=1.10
+cabal-version:       >=1.24
 
 library
-  exposed-modules:   Elektra.SpecElektra
-                   , Elektra.Range
+  exposed-modules:   Elektra.Range
                    , Elektra.RegexType
                    , Elektra.RegexTypeChecker
-  other-extensions:  TypeFamilies
-                   , TypeInType
-                   , TypeOperators
+  other-extensions:  TypeInType
+                   , TypeFamilies
+                   , ConstraintKinds
                    , UndecidableInstances
-                   , PatternGuards
-                   , ExistentialQuantification
-                   , GADTs
-                   , OverloadedStrings
+                   , CPP
+                   , TupleSections
+                   , RecordWildCards
+                   , LambdaCase
   build-depends:     base >= 4.7 && < 5
                    , ghc >= 8.0.1 && < 8.6
                    , ghc-tcplugins-extra >= 0.2.5 && < 0.3

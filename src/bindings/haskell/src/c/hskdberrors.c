@@ -5,15 +5,15 @@
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
-#include <hs_kdberrors.h>
+#include <hskdberrors.h>
 #include <kdberrors.h>
 
-void hs_elektraTriggerError (int nr, Key * parentKey, const char * message)
+void hsElektraTriggerError (int nr, Key * parentKey, const char * message)
 {
 	elektraTriggerError (nr, parentKey, message);
 }
 
-void hs_elektraTriggerWarnings (int nr, Key * parentKey, const char * message)
+void hsElektraTriggerWarnings (int nr, Key * parentKey, const char * message)
 {
 	elektraTriggerWarnings (nr, parentKey, message);
 }

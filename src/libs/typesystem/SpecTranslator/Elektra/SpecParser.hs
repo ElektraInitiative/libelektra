@@ -5,8 +5,7 @@
 --
 -- @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
 -- 
-{-# LANGUAGE TypeFamilies, TypeInType, TypeOperators, OverloadedStrings,
-             ExistentialQuantification, GADTs, UndecidableInstances #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Elektra.SpecParser (
   parseTypeSpecifications, parseKeySpecifications, resolvePath
@@ -26,8 +25,6 @@ import Elektra.Specifications
 import Elektra.Parsers
 import Elektra.Range
 import FiniteAutomata
-
-import Debug.Trace
 
 import qualified Data.Text       as T
 import qualified Data.Text.Read  as T

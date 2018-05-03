@@ -1,10 +1,10 @@
 name:                haskell
-version:             0.1.0.0
+version:             1.@KDB_VERSION@
 synopsis:            Base for developing haskell plugins
 description:         Base for developing haskell plugins
 homepage:            https://www.libelektra.org
 license:             BSD3
-author:              e1528532
+author:              Armin Wurzinger
 maintainer:          e1528532@libelektra.org
 copyright:           libelektra.org
 category:            plugin

@@ -69,10 +69,10 @@ static void test_basics (void)
 	ksAppendKey (ks, keyNew (KEY4_NAME, KEY_META, "fallback/#1", KEY1_NAME, KEY_META, "override/#1", KEY2_NAME, KEY_META, "check/long",
 				 "", KEY_END));
 
-	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "call to kdbGet was not successful");
-	succeed_if (output_warnings (parentKey), "warning(s) found but none expected")
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "call to kdbSet was not successful");
+	succeed_if (output_error (parentKey), "error(s) found but none expected")
 
-		keyDel (parentKey);
+	keyDel (parentKey);
 	ksDel (ks);
 	PLUGIN_CLOSE ();
 }
@@ -92,10 +92,10 @@ static void test_invalid_ranges_override (void)
 	ksAppendKey (ks, keyNew (KEY2_NAME, KEY_VALUE, "500", KEY_META, "override/#1", KEY1_NAME, KEY_META, "check/range", "7200-10000",
 				 KEY_END));
 
-	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "call to kdbGet was not successful");
-	succeed_if (!output_warnings (parentKey), "no warnings found but one is expected")
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "call to kdbSet was not successful");
+	succeed_if (!output_error (parentKey), "no errors found but one is expected")
 
-		keyDel (parentKey);
+	keyDel (parentKey);
 	ksDel (ks);
 	PLUGIN_CLOSE ();
 }

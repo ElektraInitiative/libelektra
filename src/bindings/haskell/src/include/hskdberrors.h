@@ -10,7 +10,7 @@
 
 #include <kdb.h>
 
-void hs_elektraTriggerError (int nr, Key * parentKey, const char * message);
-void hs_elektraTriggerWarnings (int nr, Key * parentKey, const char * message);
+void hsElektraTriggerError (int nr, Key * parentKey, const char * message);
+void hsElektraTriggerWarnings (int nr, Key * parentKey, const char * message);
 
 #endif

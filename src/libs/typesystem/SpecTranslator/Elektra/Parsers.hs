@@ -3,11 +3,14 @@
 --
 -- @brief Some parsers which are used in the translation process
 --
+-- To parse the type signatures which are used to carry all the
+-- required information to create a corresponding specification
+-- in our haskell EDSL we use a parser. As those type signatures
+-- are not necessarily regular we use a parser instead of regexes
+-- or string splitting to have a robust extensible foundation.
+--
 -- @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
--- 
-{-# LANGUAGE TypeFamilies, TypeInType, TypeOperators, OverloadedStrings,
-             ExistentialQuantification, GADTs, UndecidableInstances #-}
-
+--
 module Elektra.Parsers (parseTypeSignature, parseRange, 
   regexTypeP, regexTypeParameterP, typeSignatureP, rangeP) where
 
@@ -30,10 +33,7 @@ parseTypeSignature = parseMaybe typeSignatureP
 parseRange :: String -> Maybe (Int, Int)
 parseRange = parseMaybe rangeP
 
---parseMaybe :: Parser b -> String -> Maybe b
---parseMaybe p = either (const Nothing) Just . parse p ""
-
--- Lexer for the signatures, primitive string operations are just wrong to use for that...
+-- Lexer for the signatures
 
 sc :: Parser ()
 sc = L.space space1 empty empty

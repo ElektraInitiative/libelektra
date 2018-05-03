@@ -5,9 +5,6 @@
 --
 -- @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
 -- 
-{-# LANGUAGE TypeFamilies, TypeInType, TypeOperators, OverloadedStrings,
-             ExistentialQuantification, GADTs, UndecidableInstances #-}
-
 module Elektra.Specifications (
   Path, Implementation, FunctionCandidate (..), TypeName, PathVariable (..), Function (..),
   TypeSpecification (..), TypeSignature (..), RegexTypeParam (..), RegexType (..),
