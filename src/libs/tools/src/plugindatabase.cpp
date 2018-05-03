@@ -137,7 +137,7 @@ const std::map<std::string, int> PluginDatabase::statusMap = {
    {"compatible",    2000},
    {"coverage",      2000},
    {"specific",      1000},
-                           
+
    {"unittest",      1000},
    {"shelltest",     1000},
    {"tested",         500},
