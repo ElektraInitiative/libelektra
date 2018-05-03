@@ -532,3 +532,4 @@ def maybeRegexStage(String name, Closure body) {
 def dateFormatter(date) {
     df = new SimpleDateFormat("yyyyMM")
     return df.format(date)
+}
