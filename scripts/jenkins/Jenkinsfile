@@ -1,3 +1,5 @@
+/* https://build.libelektra.org/jenkins/job/elektra-jenkinsfile/ */
+
 // FIXME sloc publish errors
 // XXX add missing jobs
 // TODO have a per plugin/binding deps in Dockerfile for easier maintanence
