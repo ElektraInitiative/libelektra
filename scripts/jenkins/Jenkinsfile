@@ -9,9 +9,6 @@
 import java.text.SimpleDateFormat
 
 // # Set Variables #
-CMPVERSION = '0.8.22'
-VERSION = '0.8.23'
-
 docker_node_label = 'docker'
 docker_image_prefix = 'build-elektra-'
 
