@@ -3,6 +3,9 @@
 // TODO have a per plugin/binding deps in Dockerfile for easier maintanence
 // TODO add warnings plugins to scan for compiler warnings
 
+// # Imports #
+import java.text.SimpleDateFormat
+
 // # Set Variables #
 CMPVERSION = '0.8.22'
 VERSION = '0.8.23'
@@ -88,7 +91,6 @@ TEST_NOKDB = 'nokdb'
 TEST_ALL = 'all'
 TEST_INSTALL = 'install'
 
-
 // # Determine what needs to be build #
 target = ".*"
 
@@ -133,7 +135,7 @@ def build_image(image) {
         stage(taskname) {
             node(docker_node_label) {
                 checkout scm
-                def id = image_id(image)
+                def id = imageId(image)
                 docker.withRegistry('https://hub.libelektra.org',
                                     'docker-hub-elektra-jenkins') {
                     try {
@@ -458,7 +460,7 @@ def withDockerEnv(test_name, image, cl) {
                                  "CTEST_PARALLEL_LEVEL='${cpu_count+2}'"]) {
                             echo "Staring ${env.STAGE_NAME} on ${env.NODE_NAME}"
                             checkout scm
-                            docker.image(image_id(image)).inside { cl() }
+                            docker.image(imageId(image)).inside { cl() }
                         }
                     }
                 }
@@ -502,9 +504,10 @@ def xunitUpload() {
     ])
 }
 
-def image_id(image) {
-    def t = checksum(image.file)
-    return "${image.id}:${t}"
+def imageId(image) {
+    def cs = checksum(image.file)
+    def dateString = dateFormatter(env.timeInMillis)
+    return "${image.id}:${dateString}-${cs}"
 }
 
 def checksum(file) {
@@ -522,3 +525,7 @@ def maybeRegexStage(String name, Closure body) {
         }
     }
 }
+
+def dateFormatter(date) {
+    df = new SimpleDateFormat("yyyyMM")
+    return df.format(date)
