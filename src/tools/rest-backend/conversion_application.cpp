@@ -59,7 +59,7 @@ void ConversionApp::convert ()
 		{
 			requestData = RootApp::parsePostDataAsJson (request ());
 		}
-		catch (kdbrest::exception::InvalidPostDataFormatException & e)
+		catch (kdbrest::exception::InvalidPostDataFormatException const & e)
 		{
 			RootApp::setBadRequest (response (), "The submitted data is not of type application/json.",
 						"REQUEST_MALFORMED_DATA");
@@ -72,7 +72,7 @@ void ConversionApp::convert ()
 		{
 			this->retrieveConversionInputData (response (), requestData, input_data);
 		}
-		catch (kdbrest::exception::InvalidPostDataFormatException & e)
+		catch (kdbrest::exception::InvalidPostDataFormatException const & e)
 		{
 			return; // error message already set
 		}
@@ -86,12 +86,12 @@ void ConversionApp::convert ()
 			auto subkeys = cfg.getKeySet ();
 			entry.addSubkeys (subkeys);
 		}
-		catch (kdbrest::exception::UnsupportedConfigurationFormatException & e)
+		catch (kdbrest::exception::UnsupportedConfigurationFormatException const & e)
 		{
 			RootApp::setBadRequest (response (), "The given input format is not supported.", "CONVERT_INVALID_INPUT_FORMAT");
 			return; // quit early
 		}
-		catch (kdbrest::exception::ParseConfigurationException & e)
+		catch (kdbrest::exception::ParseConfigurationException const & e)
 		{
 			RootApp::setBadRequest (response (), "The given configuration could not be parsed within the given format.",
 						"CONVERT_UNABLE_TO_PARSE_SNIPPET");
@@ -105,13 +105,13 @@ void ConversionApp::convert ()
 				service::ConvertEngine::instance ().findSuitablePlugin (input_data.output_format);
 			cfg = service::ConvertEngine::instance ().exportTo (pluginFormat, entry);
 		}
-		catch (kdbrest::exception::UnsupportedConfigurationFormatException & e)
+		catch (kdbrest::exception::UnsupportedConfigurationFormatException const & e)
 		{
 			RootApp::setUnprocessableEntity (response (), "The given output format is not supported.",
 							 "CONVERT_INVALID_OUTPUT_FORMAT ");
 			return; // quit early
 		}
-		catch (kdbrest::exception::ParseConfigurationException & e)
+		catch (kdbrest::exception::ParseConfigurationException const & e)
 		{
 			RootApp::setUnprocessableEntity (response (),
 							 "The given configuration snippet cannot be represented by the"
@@ -191,7 +191,7 @@ void ConversionApp::retrieveConversionInputData (cppcms::http::response & resp, 
 	{
 		data.input_format = requestData.get<std::string> (INDEX_INPUT_FORMAT);
 	}
-	catch (cppcms::json::bad_value_cast & e)
+	catch (cppcms::json::bad_value_cast const & e)
 	{
 		RootApp::setBadRequest (resp, "You have to supply an input format.", "CONVERT_MISSING_INPUT_FORMAT");
 		throw exception::InvalidPostDataFormatException (); // quit early
@@ -200,7 +200,7 @@ void ConversionApp::retrieveConversionInputData (cppcms::http::response & resp, 
 	{
 		data.input_value = requestData.get<std::string> (INDEX_INPUT_VALUE);
 	}
-	catch (cppcms::json::bad_value_cast & e)
+	catch (cppcms::json::bad_value_cast const & e)
 	{
 		RootApp::setBadRequest (resp, "You have to supply an input value (configuration snippet).",
 					"CONVERT_MISSING_INPUT_SNIPPET");
@@ -210,7 +210,7 @@ void ConversionApp::retrieveConversionInputData (cppcms::http::response & resp, 
 	{
 		data.output_format = requestData.get<std::string> (INDEX_OUTPUT_FORMAT);
 	}
-	catch (cppcms::json::bad_value_cast & e)
+	catch (cppcms::json::bad_value_cast const & e)
 	{
 		RootApp::setBadRequest (resp, "You have to supply an output format.", "CONVERT_MISSING_OUTPUT_FORMAT");
 		throw exception::InvalidPostDataFormatException (); // quit early

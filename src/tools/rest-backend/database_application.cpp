@@ -210,12 +210,12 @@ void DatabaseApp::handleGetUnique (cppcms::http::request & req, cppcms::http::re
 				RootApp::setOkRaw (resp, configFormat.getConfig (), MIME_TEXT_PLAIN);
 				return; // quit here
 			}
-			catch (kdbrest::exception::UnsupportedConfigurationFormatException & e)
+			catch (kdbrest::exception::UnsupportedConfigurationFormatException const & e)
 			{
 				RootApp::setBadRequest (resp, "Configuration format not supported.", "ENTRY_UNSUPPORTED_FORMAT");
 				return; // quit early
 			}
-			catch (kdbrest::exception::ParseConfigurationException & e)
+			catch (kdbrest::exception::ParseConfigurationException const & e)
 			{
 				RootApp::setBadRequest (resp, "The snippet cannot be represented using the submitted format.",
 							"ENTRY_UNABLE_TO_EXPORT_SNIPPET");
@@ -272,7 +272,7 @@ void DatabaseApp::handleGetUnique (cppcms::http::request & req, cppcms::http::re
 
 		RootApp::setOk (resp, data, MIME_APPLICATION_JSON);
 	}
-	catch (exception::EntryNotFoundException & e)
+	catch (exception::EntryNotFoundException const & e)
 	{
 		RootApp::setNotFound (resp, "The requested entry does not exist.", "ENTRY_DOES_NOT_EXIST");
 		return;
@@ -298,7 +298,7 @@ void DatabaseApp::handleInsert (cppcms::http::request & req, cppcms::http::respo
 	{
 		currentUser = AuthenticationApp::getCurrentUser (req);
 	}
-	catch (exception::ElektraRestException & e)
+	catch (exception::ElektraRestException const & e)
 	{
 		RootApp::setUnauthorized (resp, "You need to be authenticated to perform this action.", "NEED_AUTHENTICATION");
 		return; // quit early
@@ -309,7 +309,7 @@ void DatabaseApp::handleInsert (cppcms::http::request & req, cppcms::http::respo
 	{
 		entry = this->buildAndValidateEntry (req, resp);
 	}
-	catch (exception::EntryValidationException & e)
+	catch (exception::EntryValidationException const & e)
 	{
 		// error already written to output
 		return; // so quit early
@@ -325,7 +325,7 @@ void DatabaseApp::handleInsert (cppcms::http::request & req, cppcms::http::respo
 	{
 		service::StorageEngine::instance ().createEntry (entry);
 	}
-	catch (exception::EntryAlreadyExistsException & e)
+	catch (exception::EntryAlreadyExistsException const & e)
 	{
 		RootApp::setBadRequest (resp, "An entry with the given details does already exist.", "ENTRY_DOES_ALREADY_EXIST");
 		return; // quit early
@@ -349,7 +349,7 @@ void DatabaseApp::handleUpdate (cppcms::http::request & req, cppcms::http::respo
 	{
 		oldEntry = service::StorageEngine::instance ().getEntry (key);
 	}
-	catch (exception::EntryNotFoundException & e)
+	catch (exception::EntryNotFoundException const & e)
 	{
 		RootApp::setNotFound (resp, "The entry to update does not exist.", "ENTRY_DOES_NOT_EXIST");
 		return; // quit early
@@ -368,7 +368,7 @@ void DatabaseApp::handleUpdate (cppcms::http::request & req, cppcms::http::respo
 	{
 		newEntry = this->buildAndValidateEntry (req, resp, key);
 	}
-	catch (exception::EntryValidationException & e)
+	catch (exception::EntryValidationException const & e)
 	{
 		// error already written to output
 		return; // so quit early
@@ -382,7 +382,7 @@ void DatabaseApp::handleUpdate (cppcms::http::request & req, cppcms::http::respo
 	{
 		service::StorageEngine::instance ().updateEntry (oldEntry);
 	}
-	catch (exception::EntryNotFoundException & e)
+	catch (exception::EntryNotFoundException const & e)
 	{
 		RootApp::setBadRequest (resp, "An entry with the given details does not exist.", "ENTRY_DOES_NOT_EXIST");
 		return; // quit early
@@ -406,7 +406,7 @@ void DatabaseApp::handleDelete (cppcms::http::request & req, cppcms::http::respo
 	{
 		entry = service::StorageEngine::instance ().getEntry (key);
 	}
-	catch (exception::EntryNotFoundException & e)
+	catch (exception::EntryNotFoundException const & e)
 	{
 		RootApp::setNotFound (resp, "The entry to delete does not exist.", "ENTRY_DOES_NOT_EXIST");
 		return; // quit early
@@ -423,7 +423,7 @@ void DatabaseApp::handleDelete (cppcms::http::request & req, cppcms::http::respo
 	{
 		service::StorageEngine::instance ().deleteEntry (entry);
 	}
-	catch (exception::EntryNotFoundException & e)
+	catch (exception::EntryNotFoundException const & e)
 	{
 		RootApp::setBadRequest (resp, "An entry with the given details does not exist.", "ENTRY_DOES_NOT_EXIST");
 		return; // quit early
@@ -458,7 +458,7 @@ void DatabaseApp::retrieveEntryInputData (cppcms::http::response & resp, const c
 		{
 			data.organization = requestData.get<std::string> ("organization");
 		}
-		catch (cppcms::json::bad_value_cast & e)
+		catch (cppcms::json::bad_value_cast const & e)
 		{
 			RootApp::setBadRequest (resp, "You have to supply an organization.", "ENTRY_MISSING_ORGANIZATION");
 			throw exception::EntryValidationException (); // quit early
@@ -468,7 +468,7 @@ void DatabaseApp::retrieveEntryInputData (cppcms::http::response & resp, const c
 		{
 			data.application = requestData.get<std::string> ("application");
 		}
-		catch (cppcms::json::bad_value_cast & e)
+		catch (cppcms::json::bad_value_cast const & e)
 		{
 			RootApp::setBadRequest (resp, "You have to supply an application.", "ENTRY_MISSING_APPLICATION");
 			throw exception::EntryValidationException (); // quit early
@@ -478,7 +478,7 @@ void DatabaseApp::retrieveEntryInputData (cppcms::http::response & resp, const c
 		{
 			data.scope = requestData.get<std::string> ("scope");
 		}
-		catch (cppcms::json::bad_value_cast & e)
+		catch (cppcms::json::bad_value_cast const & e)
 		{
 			RootApp::setBadRequest (resp, "You have to supply a scope.", "ENTRY_MISSING_SCOPE");
 			throw exception::EntryValidationException (); // quit early
@@ -488,7 +488,7 @@ void DatabaseApp::retrieveEntryInputData (cppcms::http::response & resp, const c
 		{
 			data.slug = requestData.get<std::string> ("slug");
 		}
-		catch (cppcms::json::bad_value_cast & e)
+		catch (cppcms::json::bad_value_cast const & e)
 		{
 			RootApp::setBadRequest (resp, "You have to supply a slug.", "ENTRY_MISSING_SLUG");
 			throw exception::EntryValidationException (); // quit early
@@ -499,7 +499,7 @@ void DatabaseApp::retrieveEntryInputData (cppcms::http::response & resp, const c
 	{
 		data.title = requestData.get<std::string> ("title");
 	}
-	catch (cppcms::json::bad_value_cast & e)
+	catch (cppcms::json::bad_value_cast const & e)
 	{
 		RootApp::setBadRequest (resp, "You have to supply a title.", "ENTRY_MISSING_TITLE");
 		throw exception::EntryValidationException (); // quit early
@@ -509,7 +509,7 @@ void DatabaseApp::retrieveEntryInputData (cppcms::http::response & resp, const c
 	{
 		data.description = requestData.get<std::string> ("description");
 	}
-	catch (cppcms::json::bad_value_cast & e)
+	catch (cppcms::json::bad_value_cast const & e)
 	{
 		RootApp::setBadRequest (resp, "You have to supply a description.", "ENTRY_MISSING_DESCRIPTION");
 		throw exception::EntryValidationException (); // quit early
@@ -519,7 +519,7 @@ void DatabaseApp::retrieveEntryInputData (cppcms::http::response & resp, const c
 	{
 		data.conf_format = requestData.get<std::string> ("configuration.format");
 	}
-	catch (cppcms::json::bad_value_cast & e)
+	catch (cppcms::json::bad_value_cast const & e)
 	{
 		RootApp::setBadRequest (resp, "You have to supply a configuration format.", "ENTRY_MISSING_CONFIGURATION_FORMAT");
 		throw exception::EntryValidationException (); // quit early
@@ -529,7 +529,7 @@ void DatabaseApp::retrieveEntryInputData (cppcms::http::response & resp, const c
 	{
 		data.conf_value = requestData.get<std::string> ("configuration.value");
 	}
-	catch (cppcms::json::bad_value_cast & e)
+	catch (cppcms::json::bad_value_cast const & e)
 	{
 		RootApp::setBadRequest (resp, "You have to supply a configuration snippet.", "ENTRY_MISSING_CONFIGURATION_VALUE");
 		throw exception::EntryValidationException (); // quit early
@@ -636,7 +636,7 @@ model::Entry DatabaseApp::buildAndValidateEntry (cppcms::http::request & req, cp
 	{
 		requestData = RootApp::parsePostDataAsJson (req);
 	}
-	catch (kdbrest::exception::InvalidPostDataFormatException & e)
+	catch (kdbrest::exception::InvalidPostDataFormatException const & e)
 	{
 		RootApp::setBadRequest (resp, "The submitted data is not of type application/json.", "REQUEST_MALFORMED_DATA");
 		throw exception::EntryValidationException (); // quit early
@@ -648,11 +648,11 @@ model::Entry DatabaseApp::buildAndValidateEntry (cppcms::http::request & req, cp
 	{
 		this->retrieveEntryInputData (resp, requestData, input_data, keyName.empty ());
 	}
-	catch (kdbrest::exception::InvalidPostDataFormatException & e)
+	catch (kdbrest::exception::InvalidPostDataFormatException const & e)
 	{
 		throw exception::EntryValidationException (); // error is set already
 	}
-	catch (kdbrest::exception::EntryValidationException & e)
+	catch (kdbrest::exception::EntryValidationException const & e)
 	{
 		throw; // error is set already
 	}
@@ -662,7 +662,7 @@ model::Entry DatabaseApp::buildAndValidateEntry (cppcms::http::request & req, cp
 	{
 		this->validateEntryInputData (resp, input_data, keyName.empty ());
 	}
-	catch (kdbrest::exception::EntryValidationException & e)
+	catch (kdbrest::exception::EntryValidationException const & e)
 	{
 		throw; // error is set already
 	}
@@ -680,7 +680,7 @@ model::Entry DatabaseApp::buildAndValidateEntry (cppcms::http::request & req, cp
 	{
 		currentUser = AuthenticationApp::getCurrentUser (req);
 	}
-	catch (exception::ElektraRestException & e)
+	catch (exception::ElektraRestException const & e)
 	{
 		RootApp::setUnauthorized (resp, "You need to be authenticated to perform this action.", "NEED_AUTHENTICATION");
 		throw exception::EntryValidationException (); // quit early
@@ -708,13 +708,13 @@ model::Entry DatabaseApp::buildAndValidateEntry (cppcms::http::request & req, cp
 		entry.addSubkeys (subkeys);
 		entry.setUploadPlugin (cfg.getPluginformat ().getPluginnameWithConfig ());
 	}
-	catch (exception::UnsupportedConfigurationFormatException & e)
+	catch (exception::UnsupportedConfigurationFormatException const & e)
 	{
 		RootApp::setBadRequest (resp, "The given configuration has an invalid or unsupported format.",
 					"ENTRY_INVALID_CONFIGURATION_FORMAT");
 		throw exception::EntryValidationException (); // quit early
 	}
-	catch (exception::ParseConfigurationException & e)
+	catch (exception::ParseConfigurationException const & e)
 	{
 		RootApp::setBadRequest (resp, "The given configuration could not be parsed within the given format.",
 					"ENTRY_INVALID_CONFIGURATION_VALUE");
@@ -747,7 +747,7 @@ inline int DatabaseApp::getMaxrows (cppcms::http::request & req) const
 				maxrows = ELEKTRA_REST_OUTPUT_MAX_ENTRIES;
 			}
 		}
-		catch (std::invalid_argument & e)
+		catch (std::invalid_argument const & e)
 		{
 		}
 	}
@@ -772,7 +772,7 @@ inline int DatabaseApp::getOffset (cppcms::http::request & req) const
 		{
 			offset = std::stoi (s_offset);
 		}
-		catch (std::invalid_argument & e)
+		catch (std::invalid_argument const & e)
 		{
 		}
 	}

@@ -183,7 +183,7 @@ int PluginDatabase::calculateStatus (std::string statusString)
 			{
 				ret += stoi (status);
 			}
-			catch (std::invalid_argument &)
+			catch (std::invalid_argument const &)
 			{
 			}
 		}
@@ -299,7 +299,7 @@ PluginSpec ModulesPluginDatabase::lookupProvides (std::string const & which) con
 	{
 		foundPlugins = lookupAllProvidesWithStatus (which);
 	}
-	catch (kdb::tools::NoPlugin & e)
+	catch (kdb::tools::NoPlugin const & e)
 	{
 		throw;
 	}
@@ -373,7 +373,7 @@ std::vector<PluginSpec> ModulesPluginDatabase::lookupAllProvides (std::string co
 			       [&plugins](const std::map<int, PluginSpec>::value_type & elem) { plugins.push_back (elem.second); });
 		return plugins;
 	}
-	catch (kdb::tools::NoPlugin & e)
+	catch (kdb::tools::NoPlugin const & e)
 	{
 		// if no plugins were found, return an empty vector
 		return std::vector<PluginSpec> ();
@@ -429,7 +429,7 @@ std::vector<PluginSpec> PluginVariantDatabase::getPluginVariants (PluginSpec con
 		auto funcGenconf = reinterpret_cast<void (*) (ckdb::KeySet *, ckdb::Key *)> (plugin->getSymbol ("genconf"));
 		funcGenconf (ksGenconf.getKeySet (), 0);
 	}
-	catch (kdb::tools::MissingSymbol & e)
+	catch (kdb::tools::MissingSymbol const & e)
 	{
 		// no genconf, but maybe sysconf variants
 		KeySet placeholder;

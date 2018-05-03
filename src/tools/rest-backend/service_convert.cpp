@@ -105,11 +105,11 @@ model::PluginFormat ConvertEngine::findSuitablePlugin (const std::string & forma
 
 		return model::PluginFormat (actualFormat, plugin.getName (), statuses, config);
 	}
-	catch (kdb::tools::NoPlugin & e)
+	catch (kdb::tools::NoPlugin const & e)
 	{
 		throw exception::UnsupportedConfigurationFormatException ();
 	}
-	catch (kdb::tools::BadPluginName & e)
+	catch (kdb::tools::BadPluginName const & e)
 	{
 		throw exception::UnsupportedConfigurationFormatException ();
 	}
@@ -179,11 +179,11 @@ model::ConfigFormat ConvertEngine::exportTo (const std::string format, model::En
 		model::PluginFormat pluginFormat = this->findSuitablePlugin (format);
 		return this->exportTo (pluginFormat, entry);
 	}
-	catch (kdbrest::exception::UnsupportedConfigurationFormatException & e)
+	catch (kdbrest::exception::UnsupportedConfigurationFormatException const & e)
 	{
 		throw; // re-throw explicitely
 	}
-	catch (kdbrest::exception::ParseConfigurationException & e)
+	catch (kdbrest::exception::ParseConfigurationException const & e)
 	{
 		throw; // re-throw explicitely
 	}
@@ -227,7 +227,7 @@ model::ConfigFormat ConvertEngine::exportTo (const model::PluginFormat & plugin,
 			throw exception::ParseConfigurationException ();
 		}
 	}
-	catch (kdb::tools::MissingSymbol & e)
+	catch (kdb::tools::MissingSymbol const & e)
 	{
 		throw exception::UnsupportedConfigurationFormatException ();
 	}
@@ -274,7 +274,7 @@ model::ConfigFormat ConvertEngine::exportTo (const model::PluginFormat & plugin,
 		// if we reach this point, export is valid
 		result.setValidated (true);
 	}
-	catch (kdbrest::exception::ElektraRestException & e)
+	catch (kdbrest::exception::ElektraRestException const & e)
 	{
 		result.setValidated (false);
 	}
@@ -307,11 +307,11 @@ std::vector<model::ConfigFormat> ConvertEngine::exportToAll (model::Entry & entr
 		{
 			result.push_back (this->exportTo (elem, entry));
 		}
-		catch (kdbrest::exception::UnsupportedConfigurationFormatException & e)
+		catch (kdbrest::exception::UnsupportedConfigurationFormatException const & e)
 		{
 			// do nothing, we can leave this configuration out
 		}
-		catch (kdbrest::exception::ParseConfigurationException & e)
+		catch (kdbrest::exception::ParseConfigurationException const & e)
 		{
 			// do also nothing
 		}
@@ -374,7 +374,7 @@ model::ImportedConfig ConvertEngine::import (const std::string & config, const s
 			}
 		}
 	}
-	catch (kdbrest::exception::UnsupportedConfigurationFormatException & e)
+	catch (kdbrest::exception::UnsupportedConfigurationFormatException const & e)
 	{
 		throw; // re-throw explicitely
 	}

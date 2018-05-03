@@ -396,7 +396,7 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 			{
 				minDepth = stoi (optarg);
 			}
-			catch (std::invalid_argument & ia)
+			catch (std::invalid_argument const & ia)
 			{
 				std::cerr << argv[0] << ": -m --min-depth needs a valid number as argument\n";
 				invalidOpt = true;
@@ -407,7 +407,7 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 			{
 				maxDepth = stoi (optarg);
 			}
-			catch (std::invalid_argument & ia)
+			catch (std::invalid_argument const & ia)
 			{
 				std::cerr << argv[0] << ": -M --max-depth needs a valid number as argument\n";
 				invalidOpt = true;

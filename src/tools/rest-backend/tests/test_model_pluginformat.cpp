@@ -23,7 +23,7 @@ TEST (kdbrestModelsPluginformatTest, ConstructorCheck)
 	{
 		kdbrest::model::PluginFormat pf ("xml", "xmltool");
 	}
-	catch (kdbrest::exception::FileformatPluginException & e)
+	catch (kdbrest::exception::FileformatPluginException const & e)
 	{
 		ASSERT_TRUE (false);
 	}
@@ -33,7 +33,7 @@ TEST (kdbrestModelsPluginformatTest, ConstructorCheck)
 	{
 		kdbrest::model::PluginFormat pf2 (pf);
 	}
-	catch (kdbrest::exception::FileformatPluginException & e)
+	catch (kdbrest::exception::FileformatPluginException const & e)
 	{
 		ASSERT_TRUE (false);
 	}

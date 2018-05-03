@@ -171,7 +171,7 @@ TEST (kdbrestServicesStorageengineTest, UpdateEntryCheck)
 	{
 		StorageEngine::instance ().updateEntry (testEntry);
 	}
-	catch (EntryNotFoundException & e)
+	catch (EntryNotFoundException const & e)
 	{
 		ASSERT_TRUE (false);
 	}
@@ -352,7 +352,7 @@ TEST (kdbrestServicesStorageengineTest, GetEntryCheck)
 		ASSERT_EQ (entry.getName (), testKeyAbs.getName ());
 		ASSERT_EQ (entry.get<std::string> (), testKeyAbs.get<std::string> ());
 	}
-	catch (kdbrest::exception::EntryNotFoundException & e)
+	catch (kdbrest::exception::EntryNotFoundException const & e)
 	{
 		ASSERT_TRUE (false);
 	}
