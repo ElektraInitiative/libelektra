@@ -94,16 +94,7 @@ TEST_INSTALL = 'install'
 NOW = new Date()
 
 // # Determine what needs to be build #
-target = ".*"
-
-matcher = /jenkins build jenkinsfile(?:\[(.*)\])? please/
-new_target = (env.ghprbCommentBody =~ matcher)[0][1]
-if(new_target) {
-    // if we specify a new target we degrade the build to unstable
-    // this will report the test as failed on github
-    currentBuild.result = 'UNSTABLE'
-    target = new_target
-}
+target = determineBuildTarget()
 
 // # Main Stages #
 lock('docker-images') {
@@ -534,4 +525,18 @@ def maybeRegexStage(String name, Closure body) {
 def dateFormatter(date) {
     df = new SimpleDateFormat("yyyyMM")
     return df.format(date)
+}
+
+def determineBuildTarget(default_target = ".*") {
+    def target = default_target
+
+    matcher = /jenkins build jenkinsfile(?:\[(.*)\])? please/
+    new_target = (env.ghprbCommentBody =~ matcher)[0][1]
+    if(new_target) {
+        // if we specify a new target we degrade the build to unstable
+        // this will report the test as failed on github
+        currentBuild.result = 'UNSTABLE'
+        target = new_target
+    }
+    return target
 }
