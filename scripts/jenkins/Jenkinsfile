@@ -2,8 +2,6 @@
 // XXX add missing jobs
 // TODO have a per plugin/binding deps in Dockerfile for easier maintanence
 // TODO add warnings plugins to scan for compiler warnings
-// XXX setup way to determine what tests should run
-//           regex on env.ghprbCommentBody
 
 // # Set Variables #
 CMPVERSION = '0.8.22'
