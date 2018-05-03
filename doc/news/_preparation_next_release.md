@@ -175,6 +175,9 @@ Many problems were resolved with the following fixes:
 - The [Shell Recorder][] counts the number of executed tests properly again.
 - CMake now fails if the required plugins [list](http://libelektra.org/plugins/list) or [spec](http://libelektra.org/plugins/spec) (on
    non-[MinGW](http://mingw.org) platforms) are missing from the current build configuration.
+- The [Lua](http://libelektra.org/plugins/lua), [Python 2](http://libelektra.org/plugins/python2),
+   [Python](http://libelektra.org/plugins/python), and [Ruby](http://libelektra.org/plugins/ruby) plugins now require SWIG bindings for
+   the corresponding programming language.
 
 ## Outlook
 
