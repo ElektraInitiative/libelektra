@@ -1,0 +1,54 @@
+bullet_char: '-'
+command_case: lower
+line_ending: unix
+line_width: 140
+max_subargs_per_line: 1
+separate_ctrl_name_with_space: True
+separate_fn_name_with_space: True
+tab_size: 8
+
+additional_commands:
+
+  add_gtest:
+    flags:
+      - MEMLEAK
+      - KDBTESTS
+      - NO_MAIN
+      - LINK_TOOLS
+    kwargs:
+      LINK_LIBRARIES: "*"
+      LINK_ELEKTRA: "*"
+      SOURCES: "*"
+
+  add_plugin:
+    flags:
+      - CPP
+      - ADD_TEST
+      - INSTALL_TEST_DATA
+      - TEST_README
+    kwargs:
+      COMPILE_DEFINITIONS: "*"
+      DEPENDS: "*"
+      INCLUDE_DIRECTORIES: "*"
+      INCLUDE_SYSTEM_DIRECTORIES: 1
+      LINK_ELEKTRA: "*"
+      LINK_LIBRARIES: "*"
+      OBJECT_SOURCES: "*"
+      SOURCES: "*"
+      TEST_ENVIRONMENT: "*"
+      TEST_REQUIRED_PLUGINS: "*"
+
+  add_plugintest:
+    flags:
+      - MEMLEAK
+      - INSTALL_TEST_DATA
+    kwargs:
+      INCLUDE_SYSTEM_DIRECTORIES: 1
+      COMPILE_DEFINITIONS: "*"
+      INCLUDE_DIRECTORIES: "*"
+      LINK_LIBRARIES: "*"
+      LINK_ELEKTRA: "*"
+      TEST_LINK_LIBRARIES: "*"
+      TEST_LINK_ELEKTRA: "*"
+      LINK_PLUGIN: "*"
+      WORKING_DIRECTORY: "*"
