@@ -28,26 +28,16 @@ if (DEPENDENCY_PHASE)
 	endforeach (file ${GENERATED_SOURCE_FILES_NAMES})
 	set (SOURCE_FILES "${GENERATED_SOURCE_FILES}" listener.hpp yanlr.hpp yanlr.cpp)
 
-	add_custom_command (
-		OUTPUT ${GENERATED_SOURCE_FILES}
-		COMMAND antlr4 -Werror -Dlanguage=Cpp -o ${CMAKE_CURRENT_BINARY_DIR} -package antlr ${GRAMMAR_FILE}
-		DEPENDS ${GRAMMAR_FILE}
-	)
+	add_custom_command (OUTPUT ${GENERATED_SOURCE_FILES}
+			    COMMAND antlr4 -Werror -Dlanguage=Cpp -o ${CMAKE_CURRENT_BINARY_DIR} -package antlr ${GRAMMAR_FILE}
+			    DEPENDS ${GRAMMAR_FILE})
 endif (DEPENDENCY_PHASE)
 
-add_plugin (yanlr
-	CPP
-	SOURCES
-		${SOURCE_FILES}
-	INCLUDE_DIRECTORIES
-		${ANTLR4CPP_INCLUDE_DIRS}
-	LINK_LIBRARIES
-		${ANTLR4CPP_LIBRARIES}
-	ADD_TEST
-	TEST_README
-	# Unfortunately it looks like ANTLR’s code causes a container-overflow
-	TEST_ENVIRONMENT
-		"ASAN_OPTIONS=detect_container_overflow=0"
-	TEST_REQUIRED_PLUGINS
-		yamlsmith
-	)
+add_plugin (yanlr CPP
+	    SOURCES ${SOURCE_FILES}
+	    INCLUDE_DIRECTORIES ${ANTLR4CPP_INCLUDE_DIRS}
+	    LINK_LIBRARIES ${ANTLR4CPP_LIBRARIES}
+	    ADD_TEST TEST_README
+	    TEST_ENVIRONMENT "ASAN_OPTIONS=detect_container_overflow=0" # Unfortunately it looks like ANTLR’s code causes a container-
+									 # overflow
+	    TEST_REQUIRED_PLUGINS yamlsmith)
