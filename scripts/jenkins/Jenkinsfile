@@ -1,23 +1,30 @@
-/* https://build.libelektra.org/jenkins/job/elektra-jenkinsfile/ */
+/* https://build.libelektra.org/jenkins/job/elektra-jenkinsfile/
+ * This file describes how the elektra-jenkinsfile buildjob should be
+ * executed.
+ *
+ * 1. imports and global variables are set
+ * 2. define the main stages of the pipeline
+ * 3. describe sub stages. This is where you will want to add new builds
+ * 4. helper section to help write build scripts
+ */
 
 // FIXME sloc publish errors
 // XXX add missing jobs
 // TODO have a per plugin/binding deps in Dockerfile for easier maintanence
 // TODO add warnings plugins to scan for compiler warnings
 
-// # Imports #
+// Imports
 import java.text.SimpleDateFormat
 
-// # Set Variables #
-docker_node_label = 'docker'
-docker_image_prefix = 'build-elektra-'
-
-// ## Setup log discarder ##
+// Buildjob properties
 properties([
     buildDiscarder(logRotator(numToKeepStr: '60', artifactNumToKeepStr: '60'))
 ])
 
-// ## Define Docker images globals ##
+// Globals
+docker_node_label = 'docker'
+docker_image_prefix = 'build-elektra-'
+
 DOCKER_IMAGES = [
     sid: [
         id: docker_image_prefix + 'debian-sid',
@@ -51,8 +58,8 @@ DOCKER_IMAGES = [
     ]
 ]
 
-// ## Define Build Flag globals ##
-BUILD_FLAGS_STANDARD = [
+// Define reusable cmake Flag globals
+CMAKE_FLAGS_BASE = [
     'SITE': '${STAGE_NAME}',
     'KDB_DB_SYSTEM': '${HOME}/.config/kdb/system',
     'KDB_DB_SPEC': '${HOME}/.config/kdb/spec',
@@ -61,58 +68,70 @@ BUILD_FLAGS_STANDARD = [
     'BUILD_DOCUMENTATION': 'OFF'
 ]
 
-BUILD_FLAGS_ALL = [
+CMAKE_FLAGS_BUILD_ALL = [
     'BINDINGS': 'ALL;EXPERIMENTAL;-DEPRECATED',
     'PLUGINS': 'ALL;EXPERIMENTAL;-DEPRECATED',
     'TOOLS': 'ALL'
 ]
 
-BUILD_FLAGS_COVERAGE = [
-    'ENABLE_COVERAGE': 'ON'
-]
+CMAKE_FLAGS_COVERAGE = ['ENABLE_COVERAGE': 'ON']
 
-BUILD_FLAGS_JAVA = [
+CMAKE_FLAGS_JAVA = [
     'JAVA_AWT_INCLUDE_PATH': '/usr/lib/jvm/java-8-openjdk-amd64/include/'
 ]
 
-BUILD_FLAGS_CLANG = [
+CMAKE_FLAGS_CLANG = [
     'CMAKE_C_COMPILER': 'clang',
     'CMAKE_CXX_COMPILER': 'clang++'
 ]
 
-BUILD_FLAGS_ASAN = ['ENABLE_ASAN': 'ON']
-BUILD_FLAGS_DEBUG = ['ENABLE_DEBUG': 'ON']
-BUILD_FLAGS_LOGGER = ['ENABLE_LOGGER': 'ON']
+CMAKE_FLAGS_ASAN = ['ENABLE_ASAN': 'ON']
+CMAKE_FLAGS_DEBUG = ['ENABLE_DEBUG': 'ON']
+CMAKE_FLAGS_LOGGER = ['ENABLE_LOGGER': 'ON']
 
-// ## Define Test Flag globals ##
+// Define Test Flag globals
 TEST_MEM = 'mem'
 TEST_NOKDB = 'nokdb'
 TEST_ALL = 'all'
 TEST_INSTALL = 'install'
 
-// ## DATE ##
+// DATE
 NOW = new Date()
 
-// # Determine what needs to be build #
+/* Determine what needs to be build
+ *
+ * Execution of this script is triggered by SCM changes or manually by
+ * commenting 'jenkins build Jenkinsfile[REGEX] please. The [REGEX] is
+ * optional but when it exists it allows for specification of which
+ * stages should be build.
+ */
 target = determineBuildTarget()
 
-// # Main Stages #
+/* Main Stages
+ *
+ * Serial stages that contain parallized logic. Only proceeds to the next
+ * if previous stage did not fail.
+ */
 lock('docker-images') {
     stage("Build docker images") {
+        // makes sure docker images corresponding to the Dockerfiles are
+        //   available to run the tests in
         parallel generate_docker_images()
     }
 }
 
 stage("Fast builds") {
+    // quick builds to give fast initial feedback to programmers
     parallel generate_elektra_builds_fast()
 }
 
-stage("Full build") {
+stage("Full builds") {
+    // tests to reach full coverage
     parallel generate_elektra_builds_full()
 }
 
 
-// # Stage Generators #
+// Stage Generators
 def generate_docker_images() {
     def tasks = [:]
 
@@ -155,19 +174,17 @@ def build_image(image) {
 
 def generate_elektra_builds_fast() {
     def tasks = [:]
-    tasks << test(
+    tasks << build_and_test(
         "debian-stable-fast",
         DOCKER_IMAGES.stretch,
-        BUILD_FLAGS_STANDARD +
-            BUILD_FLAGS_ALL +
-            BUILD_FLAGS_JAVA,
+        CMAKE_FLAGS_BUILD_ALL +
+            CMAKE_FLAGS_JAVA,
         [TEST_NOKDB]
     )
-    tasks << test(
+    tasks << build_and_test(
         "debian-unstable-fast",
         DOCKER_IMAGES.sid,
-        BUILD_FLAGS_STANDARD +
-            BUILD_FLAGS_DEBUG,
+        CMAKE_FLAGS_DEBUG,
         [TEST_NOKDB]
     )
 
@@ -176,67 +193,64 @@ def generate_elektra_builds_fast() {
 
 def generate_elektra_builds_full() {
     def tasks = [:]
-    tasks << test_todo()
-    tasks << test_doc()
+    tasks << build_todo()
+    tasks << build_doc()
     /* TODO Reenable for next release
-    tasks << test_asan(
+    tasks << build_and_test_asan(
         "debian-stable-asan",
-        DOCKER_IMAGES.stretch
+        DOCKER_IMAGES.stretch,
+        CMAKE_FLAGS_BUILD_ALL
     )
     */
-    tasks << test(
+    tasks << build_and_test(
         "debian-stable-full",
         DOCKER_IMAGES.stretch,
-        BUILD_FLAGS_STANDARD +
-            BUILD_FLAGS_ALL +
-            BUILD_FLAGS_COVERAGE +
-            BUILD_FLAGS_JAVA,
+        CMAKE_FLAGS_BUILD_ALL +
+            CMAKE_FLAGS_COVERAGE +
+            CMAKE_FLAGS_JAVA,
         [TEST_ALL, TEST_MEM, TEST_INSTALL]
     )
-    tasks << test(
+    tasks << build_and_test(
         "debian-oldstable-full",
         DOCKER_IMAGES.jessie,
-        BUILD_FLAGS_STANDARD +
-            BUILD_FLAGS_ALL +
-            BUILD_FLAGS_COVERAGE,
+        CMAKE_FLAGS_BUILD_ALL +
+            CMAKE_FLAGS_COVERAGE,
         [TEST_ALL, TEST_MEM, TEST_INSTALL]
     )
-    tasks << test(
+    tasks << build_and_test(
         "debian-unstable-full",
         DOCKER_IMAGES.sid,
-        BUILD_FLAGS_STANDARD +
-            BUILD_FLAGS_ALL +
-            BUILD_FLAGS_COVERAGE,
+        CMAKE_FLAGS_BUILD_ALL +
+            CMAKE_FLAGS_COVERAGE,
         [TEST_ALL, TEST_MEM, TEST_INSTALL]
     )
     /* TODO Reenable for next release
-    tasks << test(
+    tasks << build_and_test(
         "debian-stable-full-clang",
         DOCKER_IMAGES.stretch,
-        BUILD_FLAGS_STANDARD +
-            BUILD_FLAGS_ALL +
-            BUILD_FLAGS_COVERAGE +
-            BUILD_FLAGS_JAVA +
-            BUILD_FLAGS_CLANG,
+        CMAKE_FLAGS_BUILD_ALL +
+            CMAKE_FLAGS_COVERAGE +
+            CMAKE_FLAGS_JAVA +
+            CMAKE_FLAGS_CLANG,
         [TEST_ALL, TEST_MEM, TEST_INSTALL]
     )
     */
-    tasks << test(
+    tasks << build_and_test(
         "ubuntu-xenial",
         DOCKER_IMAGES.xenial,
-        BUILD_FLAGS_STANDARD + BUILD_FLAGS_ALL,
+        CMAKE_FLAGS_BUILD_ALL,
         [TEST_ALL]
     )
-    tasks << test(
+    tasks << build_and_test(
         "debian-stable-minimal",
         DOCKER_IMAGES.stretch_minimal,
-        BUILD_FLAGS_STANDARD,
+        [:],
         [TEST_ALL]
     )
     return tasks
 }
 
-def test_todo() {
+def build_todo() {
     def test_name = "todo"
     def open_task_patterns = '''\
 **/*.c, **/*.h, **/*.hpp, **/*.cpp,\
@@ -254,7 +268,7 @@ def test_todo() {
     }
 }
 
-def test_doc() {
+def build_doc() {
     def test_name = "doc"
     cmake_flags = [
         'BUILD_PDF': 'ON',
@@ -298,10 +312,10 @@ def test_doc() {
     }
 }
 
-def test_asan(test_name, image, extra_cmake_flags = [:]) {
-    def cmake_flags = BUILD_FLAGS_STANDARD +
-                      BUILD_FLAGS_ALL +
-                      BUILD_FLAGS_ASAN +
+/* Helper to generate an asan enabled test */
+def build_and_test_asan(test_name, image, extra_cmake_flags = [:]) {
+    def cmake_flags = CMAKE_FLAGS_BASE +
+                      CMAKE_FLAGS_ASAN +
                       extra_cmake_flags
     return withDockerEnv(test_name, image) {
         dir('build') {
@@ -318,13 +332,24 @@ def test_asan(test_name, image, extra_cmake_flags = [:]) {
     }
 }
 
-def test(test_name, image, cmake_flags, tests = [], extra_artifacts = []) {
+/* Helper to generate a typical elektra test environment
+ *   Builds elektra, depending on the contents of 'tests' it runs the
+ *   corresponding test suites.
+ * test_name: used to identify the test and name the stage
+ * image: which docker image should be used
+ * cmake_flags: which flags should be passed to cmake
+ * tests: list of tests which should be run
+ * extra_artifacts: which files should be additionally saved from the build
+ */
+def build_and_test(test_name, image, extra_cmake_flags,
+                   tests = [], extra_artifacts = []) {
+    def cmake_flags = CMAKE_FLAGS_BASE + extra_cmake_flags
     def artifacts = []
     if(tests) {
         artifacts.add("build/Testing/*/*.xml")
     }
-    def test_coverage = cmake_flags.intersect(BUILD_FLAGS_COVERAGE)
-                                   .equals(BUILD_FLAGS_COVERAGE)
+    def test_coverage = cmake_flags.intersect(CMAKE_FLAGS_COVERAGE)
+                                   .equals(CMAKE_FLAGS_COVERAGE)
     def test_mem = tests.contains(TEST_MEM)
     def test_nokdb = tests.contains(TEST_NOKDB)
     def test_all = tests.contains(TEST_ALL)
@@ -380,7 +405,7 @@ kill `pidof dbus-daemon`
     }
 }
 
-// ## Define helper functions ##
+// Define helper functions
 def archive(paths) {
     echo "Start archivation"
     if (paths) {
