@@ -23,36 +23,35 @@ properties([
 
 // Globals
 docker_node_label = 'docker'
-docker_image_prefix = 'build-elektra-'
 
 DOCKER_IMAGES = [
     sid: [
-        id: docker_image_prefix + 'debian-sid',
+        id: prefixDockerId('debian-sid'),
         context: "./scripts/docker/debian/sid",
         file: "./scripts/docker/debian/sid/Dockerfile"
     ],
     stretch: [
-        id: docker_image_prefix + 'debian-stretch',
+        id: prefixDockerId('debian-stretch'),
         context: "./scripts/docker/debian/stretch",
         file: "./scripts/docker/debian/stretch/Dockerfile",
     ],
     stretch_minimal: [
-        id: docker_image_prefix + 'debian-stretch-minimal',
+        id: prefixDockerId('debian-stretch-minimal'),
         context: "./scripts/docker/debian/stretch",
         file: "./scripts/docker/debian/stretch/Dockerfile.minimal",
     ],
     stretch_doc: [
-        id: docker_image_prefix + 'debian-stretch-doc',
+        id: prefixDockerId('debian-stretch-doc'),
         context: "./scripts/docker/debian/stretch",
         file: "./scripts/docker/debian/stretch/Dockerfile.doc",
     ],
     jessie: [
-        id: docker_image_prefix + 'debian-jessie',
+        id: prefixDockerId('debian-jessie'),
         context: "./scripts/docker/debian/jessie",
         file: "./scripts/docker/debian/jessie/Dockerfile",
     ],
     xenial: [
-        id: docker_image_prefix + 'ubuntu-xenial',
+        id: prefixDockerId('ubuntu-xenial'),
         context: "./scripts/docker/ubuntu/xenial",
         file: "./scripts/docker/ubuntu/xenial/Dockerfile",
     ]
@@ -95,7 +94,6 @@ TEST_NOKDB = 'nokdb'
 TEST_ALL = 'all'
 TEST_INSTALL = 'install'
 
-// DATE
 NOW = new Date()
 
 /* Determine what needs to be build
@@ -105,13 +103,14 @@ NOW = new Date()
  * optional but when it exists it allows for specification of which
  * stages should be build.
  */
-target = determineBuildTarget()
+BUILD_TARGET = determineBuildTarget()
 
-/* Main Stages
+/*****************************************************************************
+ * Main Stages
  *
  * Serial stages that contain parallized logic. Only proceeds to the next
  * if previous stage did not fail.
- */
+ *****************************************************************************/
 lock('docker-images') {
     stage("Build docker images") {
         // makes sure docker images corresponding to the Dockerfiles are
@@ -120,18 +119,22 @@ lock('docker-images') {
     }
 }
 
+
+// quick builds to give fast initial feedback to programmers
 stage("Fast builds") {
-    // quick builds to give fast initial feedback to programmers
     parallel generate_elektra_builds_fast()
 }
 
+
+// tests to reach full coverage
 stage("Full builds") {
-    // tests to reach full coverage
     parallel generate_elektra_builds_full()
 }
 
 
-// Stage Generators
+/*****************************************************************************
+ * Stage Generators
+ *****************************************************************************/
 def generate_docker_images() {
     def tasks = [:]
 
@@ -147,7 +150,7 @@ def build_image(image) {
         stage(taskname) {
             node(docker_node_label) {
                 checkout scm
-                def id = imageId(image)
+                def id = imageFullName(image)
                 docker.withRegistry('https://hub.libelektra.org',
                                     'docker-hub-elektra-jenkins') {
                     try {
@@ -172,6 +175,11 @@ def build_image(image) {
     }]
 }
 
+/* Generate Test stages that return quickly
+ *
+ * Should be used to give quick feedback to developer and check for obvious
+ * errors before the intensive tasks start
+ */
 def generate_elektra_builds_fast() {
     def tasks = [:]
     tasks << build_and_test(
@@ -187,10 +195,11 @@ def generate_elektra_builds_fast() {
         CMAKE_FLAGS_DEBUG,
         [TEST_NOKDB]
     )
-
     return tasks
 }
 
+/* Generate Test stages for full tets coverage
+ */
 def generate_elektra_builds_full() {
     def tasks = [:]
     tasks << build_todo()
@@ -405,7 +414,17 @@ kill `pidof dbus-daemon`
     }
 }
 
-// Define helper functions
+
+/*****************************************************************************
+ * Define helper functions
+ *****************************************************************************/
+
+/* Archives files located in paths
+ *
+ * Automatically prefixes with the current STAGE_NAME to identify where the
+ * file was created.
+ * @param paths List of paths to be archived
+ */
 def archive(paths) {
     echo "Start archivation"
     if (paths) {
@@ -422,6 +441,11 @@ def archive(paths) {
     echo "Finish archivation"
 }
 
+
+/* Run cmake
+ * @param directory Basedir for cmake
+ * @param args_map Map of arguments for cmake
+ */
 def cmake(String directory, Map args_map) {
     def args_str = ""
     args_map.each { key, value ->
@@ -430,6 +454,9 @@ def cmake(String directory, Map args_map) {
     sh("cmake $args_str $directory")
 }
 
+/* Publishes coverage reports
+ * @param test_name Name of the test for identification
+ */
 def publishCoverage(String test_name) {
     echo "Start publication of coverage data"
     sh "mkdir -p ssh/coverage/ || true"
@@ -447,14 +474,26 @@ def publishCoverage(String test_name) {
     echo "Finish publication of coverage data"
 }
 
+/* Get the current users uid
+ */
 def getUid() {
     return sh(returnStdout: true, script: 'id -u').trim()
 }
 
+
+/* Get the current users gid
+ */
 def getGid() {
     return sh(returnStdout: true, script: 'id -g').trim()
 }
 
+/* Track coverage
+ *
+ * Tracks coverage of commands executed in the passed closure if do_track
+ * evaluates to true.
+ * @param do_track If true track coverage
+ * @param cl A closure that this function wraps around
+ */
 def trackCoverage(do_track, cl) {
     if(do_track) {
         sh 'make coverage-start'
@@ -466,9 +505,19 @@ def trackCoverage(do_track, cl) {
     }
 }
 
-def withDockerEnv(test_name, image, cl) {
-    return [(test_name): {
-        maybeRegexStage(test_name) {
+/* Run the passed closure in a docker environment
+ *
+ * Automatically takes care of docker registry authentification,
+ * selecting a docker capable node,
+ * checkout of scm and
+ * setting of useful Environment variables
+ * @param stage_name Name of the stage
+ * @param image Docker image that should be used
+ * @param cl A closure that should be run inside the docker image
+ */
+def withDockerEnv(stage_name, image, cl) {
+    return [(stage_name): {
+        maybeRegexStage(stage_name) {
             node(docker_node_label) {
                 docker.withRegistry('https://hub.libelektra.org',
                                     'docker-hub-elektra-jenkins') {
@@ -478,7 +527,7 @@ def withDockerEnv(test_name, image, cl) {
                                  "CTEST_PARALLEL_LEVEL='${cpu_count+2}'"]) {
                             echo "Staring ${env.STAGE_NAME} on ${env.NODE_NAME}"
                             checkout scm
-                            docker.image(imageId(image)).inside { cl() }
+                            docker.image(imageFullName(image)).inside { cl() }
                         }
                     }
                 }
@@ -487,16 +536,24 @@ def withDockerEnv(test_name, image, cl) {
     }]
 }
 
+/* Get cpu count
+ */
 def cpuCount() {
     return sh(returnStdout: true,
               script: 'grep -c ^processor /proc/cpuinfo').trim() as Integer
 }
 
+/* Run ctest with appropriate env variables
+ * @param target What target to pass to ctest
+ */
 def ctest(target = "Test") {
     sh """ctest -j ${env.CTEST_PARALLEL_LEVEL} --force-new-ctest-process \
             --output-on-failure --no-compress-output -T ${target}"""
 }
 
+/* Helper for ctest to run MemCheck without memleak tagged tests
+ * @param kdbtests If true run tests tagged as kdbtests
+ */
 def cmemcheck(kdbtests) {
     if(kdbtests) {
         ctest("MemCheck -LE memleak")
@@ -505,10 +562,14 @@ def cmemcheck(kdbtests) {
     }
 }
 
+/* Helper for ctest to run tests without tests tagged as kdbtests
+ */
 def cnokdbtest() {
     ctest("Test -LE kdbtests")
 }
 
+/* Uploads ctest restults
+ */
 def xunitUpload() {
     step([$class: 'XUnitBuilder',
           thresholds: [
@@ -522,12 +583,21 @@ def xunitUpload() {
     ])
 }
 
-def imageId(image) {
-    def cs = checksum(image.file)
+/* Build full name of docker image
+ *
+ * We use identifiers in the form of name:yyyyMM-hash
+ * The hash is build from reading the Dockerfile
+ * @param image_map Map identifying an docker image (see DOCKER_IMAGES)
+ */
+def imageFullName(image_map) {
+    def cs = checksum(image_map.file)
     def dateString = dateFormatter(NOW)
-    return "${image.id}:${dateString}-${cs}"
+    return "${image_map.id}:${dateString}-${cs}"
 }
 
+/* Generate the checksum of a file
+ * @param file File to generate a checksum for
+ */
 def checksum(file) {
     // Used to identify if a Dockerfile changed
     // TODO expand to use more than one file if Dockerfile ever depends on
@@ -537,8 +607,15 @@ def checksum(file) {
            .trim()
 }
 
+/* Generate a Stage
+ *
+ * If the stage name matches BUILD_TARGET regex the stage is executed else
+ * skipped
+ * @param name Name of the stage
+ * @param body Closure representing stage body
+ */
 def maybeRegexStage(String name, Closure body) {
-    if(name =~ target) {
+    if(name =~ BUILD_TARGET) {
         stage(name, body)
     } else {
         stage(name) {
@@ -547,11 +624,26 @@ def maybeRegexStage(String name, Closure body) {
     }
 }
 
+/* Format the date input
+ * @param date Date to format
+ */
 def dateFormatter(date) {
     df = new SimpleDateFormat("yyyyMM")
     return df.format(date)
 }
 
+/* Determines which stages should be build
+ *
+ * Usually build is triggered by scm changes, but it can also manually be
+ * started for a PR by commenting "jenkins build jenkinsfile[REGEX] please"
+ * The optional REGEX determines if all stages should be build or only a
+ * selection of them.
+ * To build only fast builds one would commenet "jenkins build
+ * jenkinsfile[.*-fast] please".
+ * NOTE: none complete builds are automatically set to UNSTABLE which reports
+ * as a test failure on github.
+ * @param default_target What should be build if no REGEX was provided
+ */
 def determineBuildTarget(default_target = ".*") {
     def target = default_target
 
@@ -565,3 +657,10 @@ def determineBuildTarget(default_target = ".*") {
     }
     return target
 }
+
+/* Provide a common prefix for an image name
+ * @param name Name of the docker image
+ */
+def prefixDockerId(name) {
+    def base = 'build-elektra-'
+    return base + name
