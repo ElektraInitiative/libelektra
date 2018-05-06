@@ -11,6 +11,8 @@ or how-to-use for highlighted items.
 Please add your name to every contribution
 syntax: ", thanks to <myname>".
 
+TODO: look through git history c7ca68f25750af26f2dbdb92b507b86fc012ea6d Plugin Database
+
 
 <<`scripts/generate-news-entry`>>
 
@@ -21,7 +23,7 @@ We are proud to release Elektra 0.8.<<VERSION>>.
 ## What is Elektra?
 
 Elektra serves as a universal and secure framework to access
-configuration settings in a global, hierarchical key database.
+configuration settings in a specified, global, hierarchical key database.
 For more information, visit [https://libelektra.org](https://libelektra.org).
 
 For a small demo see here:
@@ -59,8 +61,14 @@ or the
 
 ### <<HIGHLIGHT2>>
 
+?? Web UI
 
-### <<HIGHLIGHT2>>
+Video?
+
+
+### <<HIGHLIGHT3>>
+
+?? Debian Packages+New CI
 
 
 ## Other New Features
@@ -72,7 +80,7 @@ We added even more functionality, which could not make it to the highlights:
   It can be used to integrate the notification feature with applications based
   on glib.
 - The Order Preserving Minimal Perfect Hash Map (OPMPHM), used to speed up the lookups, got optimized.
-- `kdb ls` now has `-0` option
+- `kdb ls` now has `-0` option (needed for Web UI)
 
 ## Documentation
 
@@ -81,6 +89,18 @@ We improved the documentation in the following ways:
 - FAQ was extended by [Why do I need Elektra if I already use configuration management tools?](https://www.libelektra.org/docgettingstarted/faq)
 - documented possible JSON corruption
 - uniformly add `.` at end of short help
+- Logo for Doc Set was added and logo for favicon was updated
+  thanks to René Schwaiger
+- template of design decisions was updated to use the words
+  problem (instead of issue) and rationale (instead of argument).
+- METADATA.ini:
+  - added visibility (partially implemented in WebUI)
+  - added type (only check/type existed)
+  - plenty of metadata is now used by Web UI
+- update docu for type plugin to say that `check/type/min` and  `check/type/max` are deprecated
+  (not only METADATA.ini)
+- Fixed various spelling mistakes
+  thanks to René Schwaiger
 - <<TODO>>
 
 ## Compatibility
@@ -108,12 +128,22 @@ Compilation:
   So if ENABLE_TESTING is checked, a storage, a resolver,
   the list and the spec plugin is needed.
 
+Some classes now got virtual destructors, which previously did not
+have any virtual method. You might get warnings like:
+```
+Symbol `_ZTVN3kdb5tools18MockPluginDatabaseE' has different size in shared object, consider re-linking
+```
+
 ## Notes for Maintainer
 
 These notes are of interest for people maintaining packages of Elektra:
 
 - Docu is updated that cmake3 is required.
   thanks to Lukas Winkler for reporting.
+- This will be the last release supporting Debian Wheezy
+  (LTS support will stop in May)
+  Directly after the release, Jessie (oldstable) with gcc 4.8.4 will
+  be the oldest supported platform.
 - <<TODO>>
 
 ## Notes for Elektra's Developers
@@ -123,8 +153,12 @@ These notes are of interest for people developing Elektra:
 - Tests no longer clear environment or reset locales.
   This fixes TMPDIR, DBUS_SESSION_BUS_ADDRESS problems but might
   cause problems with wrongly set HOME and USER.
+  thanks to Lukas Winkler
 - You can now add a [Markdown Shell Recorder][] test for a plugin
-  via the CMake function `add_plugin`.
+  via the CMake function `add_plugin` by adding `TEST_README`.
+  Furthermore `TEST_REQUIRED_PLUGINS` allows us to specify which
+  additional plugins are required.
+  thanks to René Schwaiger
 - The CMake functions
 
    - `add_plugin`
@@ -135,6 +169,7 @@ These notes are of interest for people developing Elektra:
     now allow you to specify a list of required plugins for [Shell Recorder][] and
    Markdown Shell Recorder tests.
 - The [Markdown Shell Recorder][] now compares the whole output of `stderr` with the text following the directive `STDERR:`.
+  thanks to René Schwaiger
 - You can now leave the text following the directive `STDERR:` in a [Markdown Shell Recorder][] test empty:
 
    ```sh
@@ -144,18 +179,27 @@ These notes are of interest for people developing Elektra:
 
    . The MSR will then check if the command printed nothing to the standard error output.
 - The [Shell Recorder][] now also prints the content of the protocol file if a test was unsuccessful or you used the command switch `-p`.
+  thanks to René Schwaiger
 - All current versions of Clang-Format (6.0+) and the outdated Clang-Format 5 will now produce exactly the same output for the whole
   codebase.
+  thanks to René Schwaiger
 - We added an [Markdown Shell Recorder][] test for the [Constants](http://libelektra.org/plugins/constants) plugin.
 - The [Markdown Shell Recorder][] now prints the path of the test file.
+  thanks to René Schwaiger
 - If any of the tests in `make run_memcheck` fail valgrind will now set an exit-code which will get picked up by make.
+  thanks to René Schwaiger
 - The haskell binding now explicitly requires GHC installed with a minimum version of 8.0.0 during cmake
-- We introduced git reference repositories to save io on our build system
+  thanks to René Schwaiger
+- We introduced git reference repositories to save I/O on our build system,
+  thanks to Lukas Winkler
 - Set `LD_LIBRARY_PATH` in all tests removing the need to specify it during
   ctest runs
+  thanks to Lukas Winkler
 - Provide the `RUN_SERIAL` property to all tests that can not be run in
   parallel
+  thanks to Lukas Winkler
 - Speeding up your test runs via ctest -j is now possible
+  thanks to Lukas Winkler
 
 [Markdown Shell Recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
 [Shell Recorder]: https://master.libelektra.org/tests/shell/shell_recorder
@@ -165,8 +209,11 @@ These notes are of interest for people developing Elektra:
 Many problems were resolved with the following fixes:
 
 - [YAML CPP](http://libelektra.org/plugins/yamlcpp) now also saves key values directly below a mountpoint correctly.
-- If you use a minimal configuration ([`dump`](http://libelektra.org/plugins/dump) and [`resolver`](https://www.libelektra.org/plugins/resolver) only), all test of the test suite now finish successfully again.
+  thanks to René Schwaiger
+- If you use a minimal configuration ([`dump`](http://libelektra.org/plugins/dump), [`resolver`](https://www.libelektra.org/plugins/resolver), list, and spec), all test of the test suite now finish successfully again.
+  thanks to René Schwaiger
 - We resolved undefined behavior in polymorphic classes that contained virtual functions, by explicitly adding a virtual destructor.
+  thanks to René Schwaiger
 - small refactoring in `kdb-test`
 - Fix invalid handling of keynames in the [spec](http://libelektra.org/plugins/spec) plugin.
 - We now disable the [Xerces plugin](http://libelektra.org/plugins/xerces) if you use GCC with enabled ASAN to build Elektra. This update
@@ -176,14 +223,25 @@ Many problems were resolved with the following fixes:
 - CMake now fails if the required plugins [list](http://libelektra.org/plugins/list) or [spec](http://libelektra.org/plugins/spec) (on
    non-[MinGW](http://mingw.org) platforms) are missing from the current build configuration.
 - The [Lua](http://libelektra.org/plugins/lua), [Python 2](http://libelektra.org/plugins/python2),
-   [Python](http://libelektra.org/plugins/python), and [Ruby](http://libelektra.org/plugins/ruby) plugins now require SWIG bindings for
-   the corresponding programming language.
+  [Python](http://libelektra.org/plugins/python), and [Ruby](http://libelektra.org/plugins/ruby) plugins now require SWIG bindings for
+  the corresponding programming language.
+  thanks to René Schwaiger
+- type checker now also honors `type` next to `check/type`
 
 ## Outlook
 
 We are currently working on following topics:
 
-- <<TODO>>
+- [elektrifying LCDproc](https://www.libelektra.org/news/elektrify-lcdproc) by Klemens Böswirth
+  After some setbacks (the two original developers who wanted to work on LCDproc resigned)
+  LCDproc development restarted now successfully.
+  The new plan is to have more intermediate stages.
+  In particular the first integration will be a minimal invasive integration without high-level API.
+- Continous integration by Lukas Winkler
+- Type system by Armin Wurzinger
+- Web UI by Daniel Bugl
+- We created a proof of concept for a Chef resource and an Ansible module successfully setting Elektra's keys.
+  They are not yet published.  If you are interested on this preliminary work, please contact us.
 
 ## Get It!
 
