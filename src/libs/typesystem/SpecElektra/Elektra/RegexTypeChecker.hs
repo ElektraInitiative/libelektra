@@ -45,7 +45,7 @@ data RgxData = RgxData {
 
 initTyCons :: TcPluginM RgxData
 initTyCons = do
-    let getRgxTyCon = getTyCon "Elektra.RegexType" "SpecElektra"
+    let getRgxTyCon = getTyCon "Elektra.RegexType" "specelektra"
     ktc   <- getRgxTyCon "Key"
     rctc  <- getRgxTyCon "RegexContains'"
     ritc  <- getRgxTyCon "RegexIntersects'"
