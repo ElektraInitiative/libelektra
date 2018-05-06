@@ -13,52 +13,47 @@ cheetahVarStartToken = $
 @from support.elektra_gen import *
 @set support = ElektraGenSupport()
 
+#include <elektra.h>
+
+#ifndef $support.include_guard($args.template)
+#define $support.include_guard($args.template)
+
 /**
- * Enums
+ * Enum Types
  */
 
-@for $key, $info in $parameters.iteritems()
-@if $support.type_of($info) == "enum"
-$support.enum_typedef($key, $info)
-
-@end if
+@for $enum in $support.enums($parameters)
+$support.enum_typedef($enum)
 @end for
+
+/**
+ * Enum Tags
+ */
+
+@for $enum in $support.enums($parameters)
+ELEKTRA_TAG_DECLARATIONS ($enum.type, $enum.type_name)
+@end for
+
+
 /**
  * Default KeySet
  */
 
-#define ELEKTRA_DEFAULTS ksNew ($len($parameters), \
+#define ELEKTRA_DEFAULTS \
+	ksNew ($len($parameters), \
 @for $key, $info in $parameters.iteritems()
 @if $support.check_default($key, $info)
-keyNew ("$key", KEY_VALUE, "$support.default_value(key, info)", KEY_META, "type", "$support.type_of(info)", KEY_END), \
+		keyNew ("$key", KEY_VALUE, "$support.default_value(key, info)", KEY_META, "type", "$support.type_of(info)", KEY_END), \
 @end if
 @end for
-KS_END)
+		KS_END)
 
 /**
- * Elektra Tags
+ * Elektra Tag Values
  */
 
 @for $key, $info in $parameters.iteritems()
-#define $support.tag($key) ($support.tag_type(key, info)){"$key"}
+ELEKTRA_TAG_VALUE ($support.tag_name($key), "$key", $support.tag_type(key, info))
 @end for
 
-/**
- * Types
- */
-
-@for $key, $info in $parameters.iteritems()
-@if $support.type_of($info) == "enum"
-ELEKTRA_DECLARATIONS($support.enum_type($key), $support.enum_type_name($key))
-@end if
-@end for
-
-#undef ELEKTRA_TAG_NAMES_GEN
-#define ELEKTRA_TAG_NAMES_GEN(X) \
-@for $key, $info in $parameters.iteritems()
-@if $support.type_of($info) == "enum"
-X($support.enum_type_name($key)) \
-@end if
-@end for
-
-#include <elektra_generic.h>
+#endif // $support.include_guard($args.template)

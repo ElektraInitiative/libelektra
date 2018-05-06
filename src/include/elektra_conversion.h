@@ -15,7 +15,7 @@
 #define KDB_STRING_TO_STRING(value) value
 
 #define KDB_STRING_TO_BOOLEAN(string) (kdb_boolean_t) !strcmp (string, "1")
-#define KDB_STRING_TO_CHAR(string) (kdb_char_t) string[0]
+#define KDB_STRING_TO_CHAR(string) (kdb_char_t) (string)[0]
 #define KDB_STRING_TO_OCTET(string) (kdb_octet_t) strtoul (string, NULL, 10)
 #define KDB_STRING_TO_SHORT(string) (kdb_short_t) strtoul (string, NULL, 10)
 #define KDB_STRING_TO_UNSIGNED_SHORT(string) (kdb_unsigned_short_t) strtoul (string, NULL, 10)
@@ -26,9 +26,9 @@
 #define KDB_STRING_TO_FLOAT(string) strtof (string, NULL)
 #define KDB_STRING_TO_DOUBLE(string) strtod (string, NULL)
 #define KDB_STRING_TO_LONG_DOUBLE(string) strtold (string, NULL)
-#define KDB_STRING_TO_ENUM(string) atoi (string)
+#define KDB_STRING_TO_ENUM(string) (int) strtol (string, NULL, 10)
 
-#define KDB_BOOLEAN_TO_STRING(value) ((value ? "1" : "0"))
+#define KDB_BOOLEAN_TO_STRING(value) (((value) ? "1" : "0"))
 #define KDB_CHAR_TO_STRING(value) elektraFormat ("%c", value)
 #define KDB_OCTET_TO_STRING(value) elektraFormat ("%d", value)
 #define KDB_SHORT_TO_STRING(value) elektraFormat ("%d", value)

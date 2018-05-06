@@ -1,4 +1,3 @@
-
 # High-Level API
 
 ## Introduction
@@ -140,6 +139,23 @@ elektraClose (elektra);
 
 Be sure not to access indexes outside of the arrays bounds. The same rules a described in [Read values from the KDB](#read-values-from-the-kdb) apply here, meaning, that you are responsible for providing a complete and correct specification (see [Application Integration](/doc/tutorials/application-integration.md)). If you try to access a key that you have not specified, the library will call `exit(EXIT_FAILURE)`.
 
+### Reading Enum Values
+Read enum values is a special case, because the compiler is not able to infer the enum type from the key alone. Therefore you can either use the function `int elektraGetEnumInt (Elektra * elektra, char * keyName)`, and deal with the raw integer yourself, or use the convenience macro `elektraGetEnum(elektra, keyname, enumType)`, which calls `elektraGetEnumInt` and then casts to `enumType`.
+
+```c
+typedef enum { A, B, C } MyEnum;
+
+Elektra * elektra = elektraOpen ("/sw/org/myapp/#0/current", NULL, NULL);
+
+// Read raw int value
+int value = elektraGetEnumInt (elektra, "message");
+MyEnum enumValue = elektraGetEnum(elektra, "message", MyEnum);
+
+// enumValue == (MyEnum) value
+
+elektraClose (elektra);
+```
+
 ## Example
 
 ```c
@@ -172,18 +188,100 @@ int main ()
 
 ## Code Generator
 
-The high-level API is backed by a code generator you can use to generate constants for keynames and a defaults `KeySet` to pass to elektraOpen out of a specification file you provide. Use `kdb gen specification.ini elektra_gen.h -o elektra_gen.h` to generate a elektra_gen.h file and include it in your source file with `#include "elektra_gen.h"`. Read [Code Generation](/src/tools/gen/README.md) for more information on this topic.
+The high-level API is backed by a code generator you can use to generate tags used to access keys as well as a defaults `KeySet` to pass to elektraOpen. For code generation to work you will need to provide a specification file, which describes your configuration.
 
-After you have generated the file, you can use the constants prefixed with ELEKTRA_TAG_ as keynames in the getters and setters described in [Read values from the KDB](#read-values-from-the-kdb). Additionally the API provides two alternative functions to use solely with the code generated keynames: `elektraSet` and `elektraGet`.
+```sh
+kdb gen specification.ini elektra_gen.h -o generated.h
+kdb gen specification.ini elektra_gen.c -o generated.c
+```
+
+Use the above snippet to generate the files `generated.h` and `generated.c`. Copy these files into your source directory and include the header with `#include "generated.h"`. Read [Code Generation](/src/tools/gen/README.md) for more information on this topic.
+
+After you have generated and included the file, you can use the tags prefixed with `ELEKTRA_TAG_` together with the macros `elektraSet`, `elektraGet`, `elektraSetArrayElement` and `elektraGetArrayElement`. If you use code generation, you will not need to specify the type to get a typed result when reading an enum value.
 
 The code generator also generates a defaults `KeySet` for you containing the values you have specified as defaults for each key in your specification. It is accessible by the name `ELEKTRA_DEFAULTS` and can be passed as argument for the parameter `defaults` in elektraOpen.
 
-Here is an example of how this looks like in code:
+### Example
+
+Specification
+```ini
+[/myenumvalue]
+check/enum/#0=off
+check/enum/#1=on
+check/enum/#2=blank
+default=off
+type=enum
+gen/enumtype=MyEnum
+
+[/message]
+type=string
+default=A string
+
+[/myfloatarray]
+type=float
+default=0.0f
+```
+
+Generated Code-File
+```c
+#include <elektra.h>
+#include "test.h"
+
+ELEKTRA_TAG_DEFINITIONS (ElektraEnumMyEnum, EnumMyEnum, KDB_TYPE_ENUM, KDB_ENUM_TO_STRING, KDB_STRING_TO_ENUM)
+```
+
+Generated Header-File
+```c
+#include <elektra.h>
+
+#ifndef __ELEKTRA_GEN_H__
+#define __ELEKTRA_GEN_H__
+
+/**
+ * Enum Types
+ */
+
+typedef enum {
+	ELEKTRA_ENUM_MYENUM_OFF = 0,
+	ELEKTRA_ENUM_MYENUM_ON = 1,
+	ELEKTRA_ENUM_MYENUM_BLANK = 2,
+} ElektraEnumMyEnum;
+
+/**
+ * Enum Tags
+ */
+
+ELEKTRA_TAG_DECLARATIONS (ElektraEnumMyEnum, EnumMyEnum)
+
+
+/**
+ * Default KeySet
+ */
+
+#define ELEKTRA_DEFAULTS \
+	ksNew (3, \
+		keyNew ("/myfloatarray", KEY_VALUE, "0.0f", KEY_META, "type", "float", KEY_END), \
+		keyNew ("/message", KEY_VALUE, "A string", KEY_META, "type", "string", KEY_END), \
+		keyNew ("/myenumvalue", KEY_VALUE, "0", KEY_META, "type", "enum", KEY_END), \
+		KS_END)
+
+/**
+ * Elektra Tag Values
+ */
+
+ELEKTRA_TAG_VALUE (MYFLOATARRAY, "/myfloatarray", Float)
+ELEKTRA_TAG_VALUE (MESSAGE, "/message", String)
+ELEKTRA_TAG_VALUE (MYENUMVALUE, "/myenumvalue", EnumMyEnum)
+
+#endif // __ELEKTRA_GEN_H__
+```
+
+Usage
 
 ```c
 #include <stdio.h>
 #include <elektra.h>
-#include "elektra_gen.h"
+#include "generated.h"
 
 int main ()
 {
@@ -198,12 +296,24 @@ int main ()
     printf ("Will exit now...\n");
     exit (EXIT_FAILURE);
   }
-
-  // You can either get the message via elektraGetString as you would do it with keynames passed as strings.
-  const char * message = elektraGetString (elektra, ELEKTRA_TAG_MESSAGE);
   
-  // Alternatively you can use the generic elektraGet method with ELEKTRA_TAG_MESSAGE.
-  const char * message_ = elektraGet (elektra, ELEKTRA_TAG_MESSAGE);
+  // Read a configuration value
+  const char * message = elektraGet (elektra, ELEKTRA_TAG_MESSAGE);
+  
+  // Read an enum value
+  ElektraEnumMyEnum val = elektraGet (elektra, ELEKTRA_TAG_MYENUMVALUE);
+  
+  // Write a configuration value
+  elektraSet (elektra, ELEKTRA_TAG_MESSAGE, "new message");
+  
+  // Write an enum value
+  elektraSet (elektra, ELEKTRA_TAG_MYENUM_VALUE, ELEKTRA_ENUM_MYENUM_BLANK);
+  
+  // Read element 0 of an array-type key
+  float message = elektraGetArrayElement (elektra, ELEKTRA_TAG_MY_FLOAT_ARRAY, 0);
+  
+  // Write element 1 of an array-type key
+  elektraSet (elektra, ELEKTRA_TAG_MY_FLOAT_ARRAY, 1, 3.14f);
   
   printf ("%s", message);
   

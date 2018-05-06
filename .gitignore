@@ -36,5 +36,4 @@ nbproject/
 
 #ignore CLion project files
 .idea/
-cmake-build-debug/
-cmake-build-release/
+cmake-build-*/

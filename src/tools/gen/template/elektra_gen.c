@@ -11,15 +11,12 @@ directiveStartToken = @
 cheetahVarStartToken = $
 #end compiler-settings
 @from support.elektra_gen import *
+@import os
 @set support = ElektraGenSupport()
 
-#include <stdlib.h>
 #include <elektra.h>
-#include <kdbhelper.h>
-#include "elektra_gen.h"
+#include "$support.header_file($args.output)"
 
-@for $key, $info in $parameters.iteritems()
-@if $support.type_of($info) == "enum"
-ELEKTRA_DEFINITIONS ($support.enum_type($key), $support.enum_type_name($key), "enum", KDB_ENUM_TO_STRING, KDB_STRING_TO_ENUM)
-@end if
+@for $enum in $support.enums($parameters)
+ELEKTRA_TAG_DEFINITIONS ($enum.type, $enum.type_name, KDB_TYPE_ENUM, KDB_ENUM_TO_STRING, KDB_STRING_TO_ENUM)
 @end for

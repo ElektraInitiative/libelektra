@@ -141,7 +141,8 @@ int init (int argc, char ** argv);
 #endif
 #define ELEKTRA_PRAGMA_STR(x) #x
 #define ELEKTRA_DIAG_STORE ELEKTRA_PRAGMA (GCC diagnostic push)
-#define ELEKTRA_DIAG_OFF(x) ELEKTRA_PRAGMA (GCC diagnostic ignored ELEKTRA_PRAGMA_STR (x))
+#define ELEKTRA_DIAG_OFF_STR(x) ELEKTRA_PRAGMA (GCC diagnostic ignored x)
+#define ELEKTRA_DIAG_OFF(x) ELEKTRA_DIAG_OFF_STR (ELEKTRA_PRAGMA_STR (x))
 #define ELEKTRA_DIAG_RESTORE ELEKTRA_PRAGMA (GCC diagnostic pop)
 
 #define succeed_if_same_string(ps1, ps2)                                                                                                   \
