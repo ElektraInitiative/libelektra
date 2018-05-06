@@ -66,14 +66,14 @@ An example backend configuration is given as follows:
 
 	kdb mount test.ini user/test crypto_gcrypt "crypto/key=DDEBEF9EE2DC931701338212DAF635B17F230E8D" base64 ini
 	
-We recommend to add the `base64` plugin to the backend, because `crypto` will output binary data.
+We recommend adding the `base64` plugin to the backend, because `crypto` will output binary data.
 Having binary data in configuration files is hardly ever feasible.
 `base64` encodes all binary values within a configuration file and transforms them into Base64 strings.
 
 ### Marking Keys For Encryption
 
 To tell the `crypto` plugin which Keys it should process, the meta-key `crypto/encrypt` is used.
-The `crypto` plugin searches for the meta-key `crypto/encryp`.
+The `crypto` plugin searches for the meta-key `crypto/encrypt`.
 If the value is equal to `1`, the value of the Key will be encrypted.
 
 Let's demonstrate this using an example.
