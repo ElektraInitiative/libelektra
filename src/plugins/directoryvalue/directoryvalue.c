@@ -437,7 +437,7 @@ static Key * arrayKeyToLeaf (Key * array, Key * error)
 		ELEKTRA_MALLOC_ERROR (error, valueLength);
 		return NULL;
 	}
-	strncpy (value, ARRAY_VALUE_PREFIX, ARRAY_VALUE_PREFIX_LENGTH);			 //! OCLint (constant conditional operator)
+	strcpy (value, ARRAY_VALUE_PREFIX);						 //! OCLint (constant conditional operator)
 	strncpy (value + ARRAY_VALUE_PREFIX_LENGTH - 1, keyString (array), valueLength); //! OCLint (constant conditional operator)
 	keySetString (leaf, value);
 	elektraFree (value);

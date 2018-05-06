@@ -159,7 +159,7 @@ public:
 		{
 			k = this->getSubkey (ELEKTRA_REST_MODEL_USER_META_EMAIL);
 		}
-		catch (kdbrest::exception::SubkeyNotFoundException & e)
+		catch (kdbrest::exception::SubkeyNotFoundException const & e)
 		{
 			k.setName (this->getName () + std::string ("/") + ELEKTRA_REST_MODEL_USER_META_EMAIL);
 		}
@@ -179,7 +179,7 @@ public:
 			kdb::Key k = this->getSubkey (ELEKTRA_REST_MODEL_USER_META_EMAIL);
 			return k.get<std::string> ();
 		}
-		catch (kdbrest::exception::SubkeyNotFoundException & e)
+		catch (kdbrest::exception::SubkeyNotFoundException const & e)
 		{
 			return "";
 		}
@@ -201,7 +201,7 @@ public:
 		{
 			k = this->getSubkey (ELEKTRA_REST_MODEL_USER_META_RANK);
 		}
-		catch (kdbrest::exception::SubkeyNotFoundException & e)
+		catch (kdbrest::exception::SubkeyNotFoundException const & e)
 		{
 			k.setName (this->getName () + std::string ("/") + ELEKTRA_REST_MODEL_USER_META_RANK);
 		}
@@ -224,7 +224,7 @@ public:
 			kdb::Key k = this->getSubkey (ELEKTRA_REST_MODEL_USER_META_RANK);
 			return k.get<int> ();
 		}
-		catch (kdbrest::exception::SubkeyNotFoundException & e)
+		catch (kdbrest::exception::SubkeyNotFoundException const & e)
 		{
 			return Config::instance ().getConfig ().get<int> ("permissions.rank.default"); // default is user rank
 		}
@@ -242,7 +242,7 @@ public:
 		{
 			k = this->getSubkey (ELEKTRA_REST_MODEL_USER_META_CREATEDAT);
 		}
-		catch (kdbrest::exception::SubkeyNotFoundException & e)
+		catch (kdbrest::exception::SubkeyNotFoundException const & e)
 		{
 			k.setName (this->getName () + std::string ("/") + ELEKTRA_REST_MODEL_USER_META_CREATEDAT);
 		}
@@ -262,7 +262,7 @@ public:
 			kdb::Key k = this->getSubkey (ELEKTRA_REST_MODEL_USER_META_CREATEDAT);
 			return k.get<long> ();
 		}
-		catch (kdbrest::exception::SubkeyNotFoundException & e)
+		catch (kdbrest::exception::SubkeyNotFoundException const & e)
 		{
 			return 0;
 		}

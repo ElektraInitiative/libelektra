@@ -96,7 +96,7 @@ int elektraProcessPlugin (Key * cur, int * pluginNumber, char ** pluginName, cha
 			referenceNameSize = fullsize - pluginNameSize - 4;
 			++iter; /* advance to one after hash */
 			*referenceName = elektraMalloc (referenceNameSize + sizeof (prefixReferenceName));
-			strncpy (*referenceName, prefixReferenceName, sizeof (prefixReferenceName));
+			strcpy (*referenceName, prefixReferenceName);
 			strncat (*referenceName, iter, referenceNameSize);
 			(*referenceName)[referenceNameSize + sizeof (prefixReferenceName) - 2] = 0;
 
@@ -107,7 +107,7 @@ int elektraProcessPlugin (Key * cur, int * pluginNumber, char ** pluginName, cha
 			/* We reference back to a plugin */
 
 			*referenceName = elektraMalloc (fullsize - 3 + sizeof (prefixReferenceName) - 1);
-			strncpy (*referenceName, prefixReferenceName, sizeof (prefixReferenceName));
+			strcpy (*referenceName, prefixReferenceName);
 			strncat (*referenceName, &fullname[3], fullsize - 3);
 
 			return 2;

@@ -68,12 +68,12 @@ int elektraYamlcppGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 		yamlRead (keys, parent);
 		status = ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
-	catch (YAML::ParserException & exception)
+	catch (YAML::ParserException const & exception)
 	{
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_PARSE, parent.getKey (), "Unable to parse file “%s”: %s.", parent.getString ().c_str (),
 				    exception.what ());
 	}
-	catch (YAML::RepresentationException & exception)
+	catch (YAML::RepresentationException const & exception)
 	{
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_YAMLCPP_REPRESENTATION, parent.getKey (), "Unable to read data from file “%s”: %s",
 				    parent.getString ().c_str (), exception.what ());
@@ -98,12 +98,12 @@ int elektraYamlcppSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 		yamlWrite (keys, parent);
 		status = ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
-	catch (YAML::BadFile & exception)
+	catch (YAML::BadFile const & exception)
 	{
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_YAMLCPP_WRITE_FAILED, parent.getKey (), "Unable to write to file “%s”: %s.",
 				    parent.getString ().c_str (), exception.what ());
 	}
-	catch (YAML::EmitterException & exception)
+	catch (YAML::EmitterException const & exception)
 	{
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_YAMLCPP_EMITTER_FAILED, parent.getKey (),
 				    "Something went wrong while emitting YAML data to file “%s”: %s.", parent.getString ().c_str (),

@@ -43,7 +43,7 @@ int main ()
 		srv.applications_pool ().mount (cppcms::applications_factory<kdbrest::RootApp> ());
 		srv.run ();
 	}
-	catch (cppcms::json::bad_value_cast & e)
+	catch (cppcms::json::bad_value_cast const & e)
 	{
 		std::cerr << "CppCMS configuration not found, cannot start service." << std::endl;
 	}

@@ -139,7 +139,7 @@ void RootApp::version ()
 			ksLookup ("system/elektra/version/constants/KDB_VERSION_MINOR", data["elektra"]["minor"], true);
 			ksLookup ("system/elektra/version/constants/KDB_VERSION_MICRO", data["elektra"]["micro"], true);
 		}
-		catch (kdb::KDBException & e)
+		catch (kdb::KDBException const & e)
 		{
 			error = true;
 		}

@@ -115,7 +115,7 @@ void GUIBackend::serialise (TreeViewModel * model)
 	{
 		m_backend->serialize (m_mountConf);
 	}
-	catch (ToolException & ex)
+	catch (ToolException const & ex)
 	{
 		emit showMessage (tr ("Error"), tr ("Could not serialise backend."), ex.what ());
 	}
@@ -261,7 +261,7 @@ QStringList GUIBackend::availablePlugins (bool includeStorage, bool includeResol
 		{
 			ptr = modules.load (s);
 		}
-		catch (NoPlugin & ex)
+		catch (NoPlugin const & ex)
 		{
 			continue;
 		}
@@ -289,7 +289,7 @@ QString GUIBackend::pluginType (QString plugin) const
 	{
 		ptr = modules.load (plugin.toStdString ());
 	}
-	catch (NoPlugin & ex)
+	catch (NoPlugin const & ex)
 	{
 		return "";
 	}
