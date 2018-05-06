@@ -17,26 +17,23 @@ stringContain() { [ -z "${2##*$1*}" ] && ([ -z "$1" ] || [ -n "$2" ]); }
 
 # readlink replacement, currently intended only to work with -f and the
 # argument
-readlink() {
-        if stringContain "Darwin" "$(uname)"; then
-                # no readlink -f on macOS
-                if [ "$(which greadlink)" ]; then
-                        # if user brewed coreutils, greadlink is like
+if stringContain "Darwin" "$(uname)"; then
+	# use readlink replacement
+	# because there is no readlink -f on macOS
+	readlink() {
+		if [ "$(which greadlink)" ]; then
+			# if user brewed coreutils, greadlink is like
 			# the gnu readlink
-                        greadlink "$@"
-                elif [ "$1" = "-f" ]; then
-                        # use our readlink replacement
-                        realpath "$2"
-                else
-                        # otherwise try to use it like it is for now
-                        $(which readlink) "$@"
-                fi
-        else
-                # on other systems, or with other parameters just
-		# execute it as it is
-                $(which readlink) "$@"
-        fi
-}
+			greadlink "$@"
+		else
+			if [ "$1" = "-f" ]; then
+				realpath "$2"
+			else
+				$(which readlink) "$@"
+			fi
+		fi
+	}
+fi
 
 
 SELF=$(readlink -f "$0")

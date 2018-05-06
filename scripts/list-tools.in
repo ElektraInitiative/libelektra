@@ -1,8 +1,13 @@
 #!/bin/sh
 
-EXEC_FOLDER=@CMAKE_INSTALL_PREFIX@/@TARGET_TOOL_EXEC_FOLDER@
+EXEC_PATH=@CMAKE_INSTALL_PREFIX@/@TARGET_TOOL_EXEC_FOLDER@
+
+if [ -d "$KDB_EXEC_PATH" ]
+then
+	EXEC_PATH=$KDB_EXEC_PATH
+fi
 
 # list all installed tools
 echo "External tools are located in $EXEC_FOLDER"
 
-/bin/ls $EXEC_FOLDER
+ls $EXEC_FOLDER
