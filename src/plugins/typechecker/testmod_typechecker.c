@@ -70,7 +70,7 @@ static void test_basics (void)
 				 "", KEY_END));
 
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "call to kdbSet was not successful");
-	succeed_if (output_error (parentKey), "error(s) found but none expected")
+	succeed_if (output_error (parentKey), "error(s) found but none expected");
 
 	keyDel (parentKey);
 	ksDel (ks);
@@ -93,7 +93,7 @@ static void test_invalid_ranges_override (void)
 				 KEY_END));
 
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "call to kdbSet was not successful");
-	succeed_if (!output_error (parentKey), "no errors found but one is expected")
+	succeed_if (!output_error (parentKey), "no errors found but one is expected");
 
 	keyDel (parentKey);
 	ksDel (ks);

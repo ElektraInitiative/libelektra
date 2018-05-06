@@ -12,7 +12,11 @@
 ## Introduction
 
 A plugin which typechecks specifications before setting keys and after getting keys from
-a mounted specification. 
+a mounted specification.
+
+The typesystem is currently based on regular expressions. Each key is assigned with a regex
+that describes its contents. Links between keys can only be done if the regexes describing 
+the linked keys are compatible with each other.
 
 ## Usage
 
@@ -27,12 +31,19 @@ the typechecking to happen, issuing a warning if it detects any problem with it.
 
 ## Examples
 
-To see its functionality there will be a test specification installed into 
-`/usr/local/share/elektra/specifications/simpleTestSpecification.ini`. This
-path may vary slightly depending on the build configuration. The file can be
-typechecked by mounting it along with the typechecker plugin by calling
+Loading a configuration specification which is invalid.
 
-`kdb mount simpleTestSpecification.ini spec/examples ini typechecker`
+```sh
+# Backup-and-Restore:spec/examples/simplespecification
+
+sudo kdb mount simplespecification.ini spec/examples/simplespecification ini typechecker
+
+kdb get spec/examples/simplespecification/key2
+#> bar
+
+sudo kdb rm -r spec/examples/simplespecification
+sudo kdb umount spec/examples/simplespecification
+```
 
 ## Debugging
 
@@ -43,14 +54,14 @@ type behavior can be observed when getting/setting a key in a specification.
 
 ## Dependencies
 
-* ghc, tested with 8.1.2, may work with older versions as well
+* ghc >= 8.0.1 and <= 8.2
 * ghc-pkg, usually bundled with ghc
 * cabal, the haskell build system, usually bundled with ghc
 * augeas, which provides libfa utilized by this plugin
 
 ## Limitations
 
-Very experimental. Typechecking currently only happens when getting or setting
-a key in a mounted specification. Errors are currently very raw and haskell-focused.
-It only supports mounting specifications to `spec/examples` as it is only intended
-as a proof of concept and will be extended.
+- Rather experimental
+- Typechecking only happens when getting or setting
+a key in a mounted specification
+- Errors are currently raw and haskell-focused
