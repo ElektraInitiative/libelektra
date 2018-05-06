@@ -1,0 +1,39 @@
+# Usage: cd build && source run_dev_shell
+
+# common configure script
+SCRIPTS_DIR=$(dirname "$0")
+. "${SCRIPTS_DIR}/include-common"
+
+BUILD=`pwd`
+if [ -d "$1" ]
+then
+	BUILD=$(readlink -f "$1")
+fi
+
+# set paths
+if [ -z "$PATH" ]
+then
+	export PATH="$BUILD/bin:$SCRIPTS_DIR"
+else
+	export PATH="$BUILD/bin:$SCRIPTS_DIR:$PATH"
+fi
+
+# TODO: split up
+export KDB_EXEC_PATH="$BUILD/bin"
+
+if [ -z "$LD_LIBRARY_PATH" ]
+then
+	export LD_LIBRARY_PATH="$BUILD/lib"
+else
+	export LD_LIBRARY_PATH="$BUILD/lib:$LD_LIBRARY_PATH"
+fi
+
+# TODO currently does not work, needs man1 and man7 subdirs
+#if [ -z "$MANPATH" ]
+#then
+#	export MANPATH="$SOURCE/doc/man"
+#else
+#	export MANPATH="$SOURCE/doc/man:$MANPATH"
+#fi
+
+export PS1="[DEV] $PS1"
