@@ -1,9 +1,9 @@
 include(LibAddMacros)
 
-# - Adds a binding if it is included in BINDINGS and not exluded by name or
+# - Adds a binding if it is included in BINDINGS and not excluded by name or
 #   category (infos/status or infos/provides from it's README.md).
 #
-#   If the binding is exluded the reason is printed along with the binding name.
+#   If the binding is excluded the reason is printed along with the binding name.
 #
 #   This is function can be used anywhere since the base directory is fixed to
 #   the bindings source directory. However if the binding uses subdirectories
