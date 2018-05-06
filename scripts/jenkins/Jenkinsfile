@@ -664,3 +664,4 @@ def determineBuildTarget(default_target = ".*") {
 def prefixDockerId(name) {
     def base = 'build-elektra-'
     return base + name
+}
