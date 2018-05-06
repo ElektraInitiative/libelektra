@@ -1,3 +1,13 @@
+--
+-- @file
+--
+-- @brief Regex Typechecker Plugin for GHC
+--
+-- A typechecker plugin which treats the semantics of the type operators defined in
+-- the Elektra.RegexType module.
+--
+-- @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+-- 
 {-# LANGUAGE CPP, TupleSections, RecordWildCards, LambdaCase #-}
 
 module Elektra.RegexTypeChecker (plugin) where
@@ -24,6 +34,7 @@ import TcRnTypes  (Ct(..), TcPlugin(..), TcPluginResult(..), ctEvidence, ctEvPre
 import Type       (classifyPredType, eqType)
 import TyCoRep    (TyLit(..), Type(..))
 
+-- GHC Plugin Interface definition
 plugin :: Plugin
 plugin = defaultPlugin {
   tcPlugin = const $ Just regexPlugin
@@ -36,6 +47,7 @@ regexPlugin = TcPlugin {
   tcPluginStop  = const (return ())
   }
 
+-- Container for holding the type constructors defined in Elektra.RegexType
 data RgxData = RgxData {
   keyTyCon             :: TyCon,
   rgxContainsTyCon     :: TyCon,
@@ -43,6 +55,8 @@ data RgxData = RgxData {
   rgxIntersectionTyCon :: TyCon
 }
 
+-- Get the type constructor definitions from this package to filter for them
+-- during the typechecking phase
 initTyCons :: TcPluginM RgxData
 initTyCons = do
     let getRgxTyCon = getTyCon "Elektra.RegexType" "specelektra"
@@ -65,7 +79,9 @@ getTyCon m p t = lookupModule regexModule regexPackage
     regexModule  = mkModuleName m
     regexPackage = fsLit p
 
--- Solve Regex Type equalities as defined in our specification
+-- Deal with the semantics of the type operators introduced in the Elektra.RegexType module
+-- by either proving or disproving them. This way we can typecheck generated specifications
+-- specified in our EDSL.
 -- RegexType TyCon -> Given Constraints -> Derived Constraints -> Wanted Constraints -> Result
 -- G -> proven facts we can rely on
 -- D -> additional facts for error message backtracking
@@ -79,21 +95,23 @@ solveRegex rgxData [] _ w  = do
     [] -> return $ TcPluginOk (mapMaybe (\c -> (,c) <$> evRegexConstraint c) slvd) []
     _  -> return $ TcPluginContradiction fld
   where
+    -- Filter and solve or disprove the type constrains introduced by RegexContains 
     wRgxContains   = filter (hasTyCon $ rgxContainsTyCon rgxData) w
     pRgxContains   = mapM (solve regexContains) wRgxContains
+    -- Filter and solve or disprove the type constrains introduced by RegexIntersects 
     wRgxIntersects = filter (hasTyCon $ rgxIntersectsTyCon rgxData) w
     pRgxIntersects = mapM (solve regexIntersects) wRgxIntersects
 
 -- Something already given, means we resolved the constraints already
--- that we can use to prove our equalities in terms of subtyping
--- However, a != b "a" != "a-z", this only holds if b is coerced to "a-z" before
--- so we need an extra coercion constraint
+-- that we can use to prove our equalities
+-- Now we have to give a proof for the coercion, which we simply do 
+-- directly without giving a concrete proof in GHC's core language
+-- Instead, the soundness of the type system is proved in the thesis already
 solveRegex _ g  _ w  = return $ TcPluginOk (mapMaybe (\c -> (,c) <$> evRegexEquality c) w) []
   where
     processed  = mapMaybe solveRegexEquality (zip g w)
     (slvd,fld) = (map fst *** map fst)
                $ partition snd processed
-
 
 hasTyCon :: TyCon -> Ct -> Bool
 hasTyCon wtc ct = case classifyPredType $ ctEvPred $ ctEvidence ct of
@@ -120,20 +138,19 @@ solveRegexEquality (g, w) = case classifyPredType $ ctEvPred $ ctEvidence w of
 -- we proof this in the thesis' proof part and just use it directly here
 evRegexConstraint :: Ct -> Maybe EvTerm
 evRegexConstraint ct = case classifyPredType $ ctEvPred $ ctEvidence ct of
-    EqPred _ (TyConApp _ [x, y]) _ -> Just (evByFiat "regex-types" x y)
+    EqPred _ (TyConApp _ [x, y]) _ -> Just (evByFiat "specelektra" x y)
     _                              -> Nothing
 
 evRegexEquality :: Ct -> Maybe EvTerm
 evRegexEquality ct = case classifyPredType $ ctEvPred $ ctEvidence ct of
-    EqPred _ x y -> Just (evByFiat "regex-types" x y)
+    EqPred _ x y -> Just (evByFiat "specelektra" x y)
     _            -> Nothing
 
---
 -- A Regex a is subsumed by the Regex b if a|b represents the same as a
 -- e.g. aa is contained in a+ as a+ == (aa)|(a+)
 -- Lives in the TcPluginM to have access to IO for the libfa bindings
---
 regexContains :: Type -> Type -> TcPluginM (Maybe Bool)
+-- Case 1: Both arguments are already regexes
 regexContains (LitTy (StrTyLit fsx)) (LitTy (StrTyLit fsy))
   = let sx = unpackFS fsx
         sy = unpackFS fsy
@@ -141,12 +158,16 @@ regexContains (LitTy (StrTyLit fsx)) (LitTy (StrTyLit fsy))
       hsx <- FA.compile sx
       hsy <- FA.compile sy
       fmap join . sequence $ liftA2 regexContains' (rightToMaybe hsx) (rightToMaybe hsy)
+-- Case 2: the lefthand side is an argument of type RegexIntersection
+-- therefore we have to calculate the intersection before the typechecking
 regexContains (TyConApp _ [a,b]) (LitTy (StrTyLit fsy)) = 
   let sy = unpackFS fsy in do
     hsx <- reduceRegexIntersects a b
     tcPluginIO $ do
       hsy <- FA.compile sy
       fmap join . sequence $ liftA2 regexContains' hsx (rightToMaybe hsy)
+-- Case 2: both sides are an argument of type RegexIntersection
+-- therefore we have to calculate the intersections before the typechecking
 regexContains (TyConApp _ [a,b]) (TyConApp _ [c,d]) = do
   hsx <- reduceRegexIntersects a b
   hsy <- reduceRegexIntersects c d
@@ -174,6 +195,7 @@ regexIntersects x y = reduceRegexIntersects x y >>= \i -> tcPluginIO $ do
         | e == 0    -> Just True
         | otherwise -> Just False) <$> eq
 
+-- Calculates a regex intersection and returns the result as a FiniteAutomata.
 reduceRegexIntersects :: Type -> Type -> TcPluginM (Maybe FA.FiniteAutomata)
 reduceRegexIntersects (LitTy (StrTyLit fsx)) (LitTy (StrTyLit fsy)) = tcPluginIO $ do
   let sx = unpackFS fsx
@@ -208,6 +230,7 @@ solveEquality key ct = case classifyPredType $ ctEvPred $ ctEvidence ct of
       ev <- newWanted (ctLoc ct) kt
       return $ CTyEqCan ev v kt NomEq
 
+-- Some debugging utilities
 debugS :: String -> TcPluginM ()
 debugS = tcPluginIO . putStrLn
 

@@ -25,7 +25,7 @@ import qualified Text.Megaparsec.Char.Lexer as L
 
 type Parser = Parsec Void String
 
--- Accessory functions
+-- Parse the given strings without further error analysis for now
 
 parseTypeSignature :: String -> Maybe TypeSignature
 parseTypeSignature = parseMaybe typeSignatureP
@@ -71,6 +71,7 @@ identifierL = lexeme $ qual <|> unqual
 pathL :: Parser String
 pathL = lexeme $ many (try alphaNumChar <|> try punctuationChar) <* notFollowedBy arrL
 
+-- Read string so everything between two "", dealing with escaped quotes as well
 escapeL = choice (zipWith decode "bnfrt\\\"/" "\b\n\f\r\t\\\"/")
     where decode c r = r <$ char c
 
