@@ -32,15 +32,16 @@ KDBType KDB_TYPE_DOUBLE = "double";
 KDBType KDB_TYPE_ENUM = "enum";
 
 static Key * generateLookupKey (Elektra * elektra, const char * name);
+static Key * generateArrayLookupKey (Elektra * elektra, const char * name, size_t index);
 
 static const char * getKeyValue (Elektra * elektra, Key * key, KDBType type);
-
-static Key * generateArrayLookupKey (Elektra * elektra, const char * name, size_t index);
+static void setKeyValue (Elektra * elektra, Key * key, KDBType type, const char * value, ElektraError ** error);
 
 /**
  * \defgroup highlevel High-level API
  * @{
  */
+
 
 ELEKTRA_TAG_DEFINITIONS (const char *, String, KDB_TYPE_STRING, KDB_STRING_TO_STRING, KDB_STRING_TO_STRING)
 ELEKTRA_TAG_DEFINITIONS (kdb_boolean_t, Boolean, KDB_TYPE_BOOLEAN, KDB_BOOLEAN_TO_STRING, KDB_STRING_TO_BOOLEAN)
@@ -134,6 +135,19 @@ const char * elektraGetArrayElementValue (Elektra * elektra, const char * name, 
 	Key * const key = generateArrayLookupKey (elektra, name, index);
 
 	return getKeyValue (elektra, key, type);
+}
+
+void elektraSetValue (Elektra * elektra, const char * name, const char * value, KDBType type, ElektraError ** error)
+{
+	Key * const key = keyDup (generateLookupKey (elektra, name));
+	setKeyValue (elektra, key, type, value, error);
+}
+
+void elektraSetArrayElementValue (Elektra * elektra, const char * name, size_t index, const char * value, KDBType type,
+				  ElektraError ** error)
+{
+	Key * const key = keyDup (generateArrayLookupKey (elektra, name, index));
+	setKeyValue (elektra, key, type, value, error);
 }
 
 #define ELEKTRA_SET_VALUE(TO_STRING, KDB_TYPE, elektra, keyname, value, error)                                                             \
@@ -557,19 +571,6 @@ static void setKeyValue (Elektra * elektra, Key * key, KDBType type, const char 
 	keySetString (key, value);
 
 	saveKey (elektra, key, error);
-}
-
-void elektraSetValue (Elektra * elektra, const char * name, const char * value, KDBType type, ElektraError ** error)
-{
-	Key * const key = keyDup (generateLookupKey (elektra, name));
-	setKeyValue (elektra, key, type, value, error);
-}
-
-void elektraSetArrayElementValue (Elektra * elektra, const char * name, size_t index, const char * value, KDBType type,
-				  ElektraError ** error)
-{
-	Key * const key = keyDup (generateArrayLookupKey (elektra, name, index));
-	setKeyValue (elektra, key, type, value, error);
 }
 
 // Get values
