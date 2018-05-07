@@ -1,4 +1,18 @@
 include(LibAddMacros)
+# QUICK INTRODUCTION:
+# > To add a binding the following steps have to be performed:
+#   - call "check_binding_included ()": this prints exclusion messages based on categories
+#   - based on dependency checks
+#    a) call "exclude_binding ()": this prints a custom exclusion message
+#    b) call "add_binding ()": this prints the inclusion message
+#
+# > To check if a binding is built there are two options:
+#   - General check (i.e. is this binding included by categories): "check_binding_included ()"
+#   - Check if "add_binding ()" was called: "check_binding_was_added ()"
+#     Note that this only works after the CMake has processed the scripts in
+#     "bindings" directory. As a result this only works for CMake scripts in the
+#     "tools", "include" and "plugins" (ADDTESTING_PHASE) directories.
+#
 
 # - Adds a binding if it is included in BINDINGS and not excluded by name or
 #   category (infos/status or infos/provides from it's README.md).

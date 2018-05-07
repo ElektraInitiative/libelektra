@@ -5,6 +5,7 @@ set (GHC_MIN_VERSION "8.0.0")
 if (HASKELL_FOUND)
 if (NOT GHC_VERSION VERSION_LESS ${GHC_MIN_VERSION})
 if (NOT BUILD_STATIC)
+	add_binding (haskell)
 
 	set (CABAL_INCLUDE_DIRS "\"${CMAKE_SOURCE_DIR}/src/include\", \"${CMAKE_BINARY_DIR}/src/include\"")
 

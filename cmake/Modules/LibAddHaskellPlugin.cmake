@@ -10,7 +10,7 @@ include (LibAddMacros)
 #  by default it assumes there is a single module called Elektra.<pluginName>
 # NO_SHARED_SANDBOX:
 #  By default all haskell plugins and the bindings are compiled in a shared sandbox to
-#  peed up compilation times by only compiling commonly-used libraries once. Set this 
+#  peed up compilation times by only compiling commonly-used libraries once. Set this
 #  flag to use an independent sandbox instead in case there are e.g. library version conflicts
 # SANDBOX_ADD_SOURCES:
 #  additional source paths which should be added to the cabal sandbox
@@ -18,7 +18,7 @@ include (LibAddMacros)
 # ADDITIONAL_SOURCES:
 #  in case your plugin depends on other files than *.hs and *.lhs haskell files and the default
 #  cabal file and c test file and setup file, you can specify them here
-# 
+#
 macro (add_haskell_plugin target)
 	cmake_parse_arguments (ARG
 		"NO_SHARED_SANDBOX" # optional keywords
@@ -39,10 +39,10 @@ macro (add_haskell_plugin target)
 		find_package (Pluginprocess)
 
 		# set by find_program
-		if (PLUGINPROCESS_FOUND) 
+		if (PLUGINPROCESS_FOUND)
 		if (HASKELL_FOUND)
-		list (FIND BINDINGS "haskell" FINDEX)
-		if (FINDEX GREATER -1)
+		check_binding_included ("haskell" HAVE_HASKELL_BINDING)
+		if (HAVE_HASKELL_BINDING)
 
 			# needed for HsFFI.h
 			execute_process (
@@ -206,19 +206,19 @@ macro (add_haskell_plugin target)
 				OUTPUT ${PLUGIN_HASKELL_NAME}
 				COMMAND ${CABAL_EXECUTABLE} configure ${CABAL_OPTS} -v0
 				COMMAND ${CABAL_EXECUTABLE} build -v0
-				WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} 
+				WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 				DEPENDS c2hs_haskell
 				${PLUGIN_SOURCE_FILES}
 				${HASKELL_ADD_SOURCES_TARGET}
 			)
 			add_custom_target (${target} ALL DEPENDS ${PLUGIN_HASKELL_NAME})
-			
+
 			if (BUILD_SHARED OR BUILD_FULL)
-				install (DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/haskell" 
+				install (DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/haskell"
 					DESTINATION "lib${LIB_SUFFIX}/elektra/")
 			endif (BUILD_SHARED OR BUILD_FULL)
-			
-			set (HASKELL_RPATH 
+
+			set (HASKELL_RPATH
 				"${GHC_RTS_PATH}"
 				"${GHC_BASE_PATH}"
 				"${GHC_PRIM_PATH}"
@@ -301,7 +301,7 @@ endmacro (add_haskell_plugin)
 #  cabal file and c test file and setup file, you can specify them here
 # DEPENDS:
 #  additional targets this call should be dependent on
-# 
+#
 macro (configure_haskell_sandbox)
 	cmake_parse_arguments (ARG
 		"" # optional keywords
@@ -354,4 +354,3 @@ macro (configure_haskell_sandbox)
 
 	set_property (GLOBAL PROPERTY HASKELL_SANDBOX_DEP_IDX "${HASKELL_SANDBOX_DEP_IDX}")
 endmacro (configure_haskell_sandbox)
-
