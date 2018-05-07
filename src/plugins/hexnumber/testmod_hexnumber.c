@@ -14,10 +14,9 @@
 
 #include <tests_plugin.h>
 
-#define ELEKTRA_HEXNUMBER_META_TYPE "hexnumber"
+#include "hexnumber.h"
 
-#define CREATE_TEST_KEY(HEX)                                                                                                               \
-	(keyNew ("user/tests/hexnumber/" #HEX, KEY_VALUE, #HEX, KEY_META, "type", ELEKTRA_HEXNUMBER_META_TYPE, KEY_END))
+#define CREATE_TEST_KEY(HEX) (keyNew ("user/tests/hexnumber/" #HEX, KEY_VALUE, #HEX, KEY_META, "type", "int", KEY_END))
 #define CHECK_TEST_KEY(HEX, DEC) succeed_if_same_string (keyString (ksLookupByName (ks, "user/tests/hexnumber/" #HEX, 0)), #DEC)
 
 

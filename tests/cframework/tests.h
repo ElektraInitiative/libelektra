@@ -147,7 +147,7 @@ int init (int argc, char ** argv);
 		ELEKTRA_DIAG_OFF (-Waddress)                                                                                               \
 		if (!s1)                                                                                                                   \
 			yield_error ("left hand side is null pointer") else if (!s2)                                                       \
-				yield_error ("right hand side is null pointer") else if (strcmp (s1, s2))                                  \
+				yield_error ("right hand side is null pointer") else if (strcmp (s1, s2) != 0)                             \
 			{                                                                                                                  \
 				char errorMsg[BUFFER_LENGTH];                                                                              \
                                                                                                                                            \
