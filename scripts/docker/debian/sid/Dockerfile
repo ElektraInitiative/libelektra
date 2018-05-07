@@ -38,7 +38,7 @@ RUN apt-get update && apt-get -y install \
     cabal-install \
     c2hs \
     checkinstall \
-    openjdk-8-jdk-headless \
+    openjdk-8-jdk \
     maven \
     gobject-introspection \
     libgirepository1.0-dev \

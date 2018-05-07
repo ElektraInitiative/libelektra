@@ -75,10 +75,6 @@ CMAKE_FLAGS_BUILD_ALL = [
 
 CMAKE_FLAGS_COVERAGE = ['ENABLE_COVERAGE': 'ON']
 
-CMAKE_FLAGS_JAVA = [
-    'JAVA_AWT_INCLUDE_PATH': '/usr/lib/jvm/java-8-openjdk-amd64/include/'
-]
-
 CMAKE_FLAGS_CLANG = [
     'CMAKE_C_COMPILER': 'clang',
     'CMAKE_CXX_COMPILER': 'clang++'
@@ -185,8 +181,7 @@ def generate_elektra_builds_fast() {
     tasks << build_and_test(
         "debian-stable-fast",
         DOCKER_IMAGES.stretch,
-        CMAKE_FLAGS_BUILD_ALL +
-            CMAKE_FLAGS_JAVA,
+        CMAKE_FLAGS_BUILD_ALL
         [TEST_NOKDB]
     )
     tasks << build_and_test(
@@ -215,8 +210,7 @@ def generate_elektra_builds_full() {
         "debian-stable-full",
         DOCKER_IMAGES.stretch,
         CMAKE_FLAGS_BUILD_ALL +
-            CMAKE_FLAGS_COVERAGE +
-            CMAKE_FLAGS_JAVA,
+            CMAKE_FLAGS_COVERAGE
         [TEST_ALL, TEST_MEM, TEST_INSTALL]
     )
     tasks << build_and_test(
@@ -238,8 +232,7 @@ def generate_elektra_builds_full() {
         "debian-stable-full-clang",
         DOCKER_IMAGES.stretch,
         CMAKE_FLAGS_BUILD_ALL +
-            CMAKE_FLAGS_COVERAGE +
-            CMAKE_FLAGS_JAVA +
+            CMAKE_FLAGS_COVERAGE
             CMAKE_FLAGS_CLANG,
         [TEST_ALL, TEST_MEM, TEST_INSTALL]
     )
