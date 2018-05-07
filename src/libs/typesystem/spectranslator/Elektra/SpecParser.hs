@@ -18,7 +18,6 @@ import Elektra.Ease
 import Control.Applicative (pure, liftA2)
 import Control.Monad       (filterM, liftM2, join, void)
 import Data.List           (isPrefixOf, sort)
-import Data.List.Split     (splitOn)
 import System.IO.Unsafe    (unsafePerformIO)
 
 import Elektra.Specifications
@@ -90,8 +89,9 @@ parseTypeSpecification :: RootKey -> Key -> IO TypeSpecification
 parseTypeSpecification r k = do
   pName  <- keyGetRelativeName k r
   --pVar   <- parsePathVariable . T.pack <$> keyString k
-  pImpl  <- let parseImpl = fmap (Just . lines) . keyString in
-            ifKey (keyGetMeta k "elektra/spec/impl") parseImpl (return Nothing)
+  pImpl  <- let isSeparator s = s == '\n' || s == ';'
+                parseImpl = fmap (Just . fmap T.unpack . T.split isSeparator . T.pack) . keyString
+            in  ifKey (keyGetMeta k "elektra/spec/impl") parseImpl (return Nothing)
   pType  <- ifKey (keyGetMeta k "elektra/spec/type") (fmap parseTypeSignature . keyString) (return Nothing)
   -- TODO: improve error handling
   return $ TypeSpecification pName Nothing pType pImpl

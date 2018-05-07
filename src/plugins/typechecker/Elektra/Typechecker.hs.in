@@ -27,13 +27,17 @@ data CheckMode = Get | Set
 
 typecheck :: KeySet -> Key -> CheckMode -> IO ()
 typecheck ks k c = withGlobalLogging (LogConfig Nothing ("@ENABLE_LOGGER@" == "ON")) $ do
-  logDebug "Parse Specifications now."
+  name <- keyName k
+  logDebugT $ "Parse Specifications at " ++ name
 
-  typeSpecs <- parseTypeSpecifications k ks
+  -- Otherwise ksCut would remove keys, we don't want that behavior here
+  ksc <- ksDup ks
+  
+  typeSpecs <- parseTypeSpecifications k ksc
   logDebugT $ "Got " ++ show (length typeSpecs) ++ " function specifications"
   mapM_ (logDebugT . show) typeSpecs
 
-  keySpecs <- parseKeySpecifications k ks
+  keySpecs <- parseKeySpecifications k ksc
   logDebugT $ "Got " ++ show (length keySpecs) ++ " key specifications"
   mapM_ (logDebugT . show) keySpecs
 

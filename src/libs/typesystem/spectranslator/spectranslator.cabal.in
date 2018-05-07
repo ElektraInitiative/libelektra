@@ -25,7 +25,6 @@ library
                    , pretty
                    , text
                    , containers
-                   , split
                    , libfa
                    , megaparsec
   default-language:  Haskell2010

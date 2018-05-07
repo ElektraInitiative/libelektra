@@ -16,7 +16,7 @@ import Elektra.Range
 
 import Data.Char           (isAlphaNum, toUpper)
 import Data.Map            (Map)
-import Data.Maybe          (catMaybes, maybeToList, maybe)
+import Data.Maybe          (catMaybes, maybeToList, maybe, isJust)
 import Control.Applicative (liftA2)
 import Control.Monad       ((<=<))
 import Unsafe.Coerce
@@ -30,9 +30,11 @@ import qualified Data.Map.Strict as M
 type FunctionMap         = Map TypeName TypeSpecification
 
 translateSpecifications :: [TypeSpecification] -> [KeySpecification] -> Module ()
-translateSpecifications ts ks = mkModule $ concatMap translateTypeSpecification ts ++ concatMap (translateKeySpecification functions) filteredKeyDefinitions
+translateSpecifications ts ks = mkModule $ concatMap translateTypeSpecification fts ++ concatMap (translateKeySpecification functions) filteredKeyDefinitions
   where
-    functions = M.fromList [(tySpecName t, t) | t <- ts]
+    isValid t = isJust (signature t) && isJust (implementation t)
+    fts = filter isValid ts
+    functions = M.fromList [(tySpecName t, t) | t <- fts]
     filteredKeyDefinitions = filter (not . null . path) ks
 
 translateTypeSpecification :: TypeSpecification -> [Decl ()]
@@ -46,7 +48,6 @@ translateTypeSpecification t = maybeToList typeSig ++ (maybeToList . fmap impl $
     constraint c  = Just $ CxTuple () (map asst c)
     asst (RegexConstraint a p)   = AppA () (name a) [convertRegexType p]
     typeSig' (TypeSignature c p) = TypeSig () [name . pathToDeclName $ tySpecName t] $ TyForall () Nothing (constraint c) (funTypes p)
-
 
 convertRegexTypeParameter :: RegexTypeParam -> Type ()
 convertRegexTypeParameter (RegexTypeParam r _) = convertRegexType r

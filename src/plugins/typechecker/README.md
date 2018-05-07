@@ -46,28 +46,35 @@ keySetName spec/examples/simplespecification/elektraspec/fallback/# \
 keySetMeta elektraspec/type RegexContains b a => Key b :: . -> Key a -> Key a \
 keySetMeta elektraspec/impl fallback a (Key P.Nothing) = a \n fallback _ a = a \
 ksAppendKey \
+keyClear \
 keySetName spec/examples/simplespecification/elektraspec/override/#\
 keySetMeta elektra/spec/type RegexContains b a => Key b :: . -> Key a -> Key a \
 keySetMeta elektra/spec/impl override (Key P.Nothing) b = b \n override a _ = a \
 ksAppendKey \
+keyClear \
 keySetName spec/examples/simplespecification/elektraspec/check/range \
 keySetMeta elektraspec/type RegexIntersects a b => P.Proxy b :: Range . -> Key a -> Key (RegexIntersection a b) \
 keySetMeta elektraspec/impl checkrange _ a = a \
 ksAppendKey \
+keyClear \
 keySetName spec/examples/simplespecification/elektraspec/check/long \
 keySetMeta elektraspec/type RegexIntersects a "-[1-9]|-214748364[0-8]|-?[1-9][0-9]|-?[1-9][0-9][0-9]|-?[1-9][0-9][0-9][0-9]|-?[1-9][0-9][0-9][0-9][0-9]|-?[1-9][0-9][0-9][0-9][0-9][0-9]|-?[1-9][0-9][0-9][0-9][0-9][0-9][0-9]|-?[1-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]|-?[1-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]|-?1[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]|-?20[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]|-?21[0-3][0-9][0-9][0-9][0-9][0-9][0-9][0-9]|-?214[0-6][0-9][0-9][0-9][0-9][0-9][0-9]|-?2147[0-3][0-9][0-9][0-9][0-9][0-9]|-?21474[0-7][0-9][0-9][0-9][0-9]|-?214748[0-2][0-9][0-9][0-9]|-?2147483[0-5][0-9][0-9]|-?21474836[0-3][0-9]|[0-9]|214748364[0-7]" => Key a -> Key (RegexIntersection a "-[1-9]|-214748364[0-8]|-?[1-9][0-9]|-?[1-9][0-9][0-9]|-?[1-9][0-9][0-9][0-9]|-?[1-9][0-9][0-9][0-9][0-9]|-?[1-9][0-9][0-9][0-9][0-9][0-9]|-?[1-9][0-9][0-9][0-9][0-9][0-9][0-9]|-?[1-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]|-?[1-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]|-?1[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]|-?20[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]|-?21[0-3][0-9][0-9][0-9][0-9][0-9][0-9][0-9]|-?214[0-6][0-9][0-9][0-9][0-9][0-9][0-9]|-?2147[0-3][0-9][0-9][0-9][0-9][0-9]|-?21474[0-7][0-9][0-9][0-9][0-9]|-?214748[0-2][0-9][0-9][0-9]|-?2147483[0-5][0-9][0-9]|-?21474836[0-3][0-9]|[0-9]|214748364[0-7]") \
 keySetMeta elektraspec/impl checklong a = a \
 ksAppendKey\
+keyClear \
 keySetName spec/examples/simplespecification/key1 \
 keySetMeta check/range 0-5000 \
 ksAppendKey \
+keyClear \
 keySetName spec/examples/simplespecification/key2 \
 keySetMeta check/range 7200-10000 \
 ksAppendKey\
+keyClear \
 keySetName spec/examples/simplespecification/key3 \
 keySetMeta check/long \
 keySetMeta fallback/#1 spec/examples/simplespecification/key1 \
 ksAppendKey \
+keyClear \
 kdbSet spec/examples/simplespecification' | kdb shell
 
 kdb get spec/examples/simplespecification/key1
@@ -81,7 +88,7 @@ kdb setmeta spec/examples/simplespecification/key2 fallback/#1 spec/examples/sim
 
 kdb get spec/examples/simplespecification/key2
 
-sudo kdb rm -r spec/examples/simplespecification
+kdb rm -r spec/examples/simplespecification
 sudo kdb umount spec/examples/simplespecification
 ```
 
