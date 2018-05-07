@@ -144,6 +144,30 @@ So do not give this responsibility out of hands entirely.
 
 **Example:** [src/bindings/cpp/include/kdb.hpp](/src/bindings/cpp/include/kdb.hpp)
 
+### CMake Guidelines
+
+We use a similar style for CMake as we do for other code:
+
+- The length of a functions should not exceed 100 lines.
+- The length of a file should not exceed 1000 lines.
+- A line should not be longer than 140 characters.
+- Use tabs for indentation.
+- One tab equals 8 spaces.
+- Declare variables as late as possible, preferable within blocks.
+- Add a space character before round parenthesis ( `(` ).
+- Use lower case for command names (e.g. `set` instead of `SET`)
+
+You can use [`cmake-format`](https://github.com/cheshirekow/cmake_format) to reformat code according to the guidelines given above. Since
+`cmake-format` currently does not support tabs, please use the standard command `unexpand` to fix this issue. For example, to reformat the
+file `CMakeLists.txt` in the root folder of the repository you can use the following command:
+
+```sh
+# This command uses `sponge`, which is part of the [moreutils](https://joeyh.name/code/moreutils/) package.
+cmake-format CMakeLists.txt | unexpand | sponge CMakeLists.txt
+```
+
+.
+
 ### Markdown Guidelines
 
  * File Ending is `.md` or integrated within Doxygen comments
