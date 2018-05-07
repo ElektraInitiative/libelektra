@@ -283,6 +283,8 @@ These notes are of interest for people developing Elektra:
 - Speeding up your test runs via ctest -j is now possible
   thanks to Lukas Winkler
 - Documentation and debugging capabilities of [Markdown Shell Recorder][] were improved.
+- We added style guidelines for CMake code to
+   [`doc/CODING.md`](https://github.com/ElektraInitiative/libelektra/blob/master/doc/CODING.md#cmake-guidelines).
 
 [Markdown Shell Recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
 [Shell Recorder]: https://master.libelektra.org/tests/shell/shell_recorder
