@@ -116,36 +116,39 @@ lock('docker-images') {
     stage("Build docker images") {
         // makes sure docker images corresponding to the Dockerfiles are
         //   available to run the tests in
-        parallel generate_docker_images()
+        parallel generate_docker_build_stages()
     }
 }
 
 
 // quick builds to give fast initial feedback to programmers
 stage("Fast builds") {
-    parallel generate_elektra_builds_fast()
+    parallel generate_fast_build_stages()
 }
 
 
 // tests to reach full coverage
 stage("Full builds") {
-    parallel generate_elektra_builds_full()
+    parallel generate_full_build_stages()
 }
 
 
 /*****************************************************************************
  * Stage Generators
  *****************************************************************************/
-def generate_docker_images() {
+def generate_docker_build_stages() {
     def tasks = [:]
 
     DOCKER_IMAGES.each { id, image ->
-        tasks << build_image(image)
+        tasks << maybe_build_image(image)
     }
     return tasks
 }
 
-def build_image(image) {
+/* Build image if not available in docker repository
+ * @param image Map identifying which image to build
+ */
+def maybe_build_image(image) {
     def taskname = "build/${image.id}/"
     return [(taskname): {
         stage(taskname) {
@@ -181,7 +184,7 @@ def build_image(image) {
  * Should be used to give quick feedback to developer and check for obvious
  * errors before the intensive tasks start
  */
-def generate_elektra_builds_fast() {
+def generate_fast_build_stages() {
     def tasks = [:]
     tasks << build_and_test(
         "debian-stable-fast",
@@ -200,7 +203,7 @@ def generate_elektra_builds_fast() {
 
 /* Generate Test stages for full tets coverage
  */
-def generate_elektra_builds_full() {
+def generate_full_build_stages() {
     def tasks = [:]
     tasks << build_todo()
     tasks << build_doc()
