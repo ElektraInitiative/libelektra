@@ -113,30 +113,27 @@ or if just the pull request should be checked:
 
 ### Run Jobs
 
-After being added to whitelist you can trigger buildjobs by saying:
+After being added to whitelist you can trigger buildjobs by pushing to the PR.
+Most tests can be found described in scripts/jenkins/Jenkinsfile.
 
-* jenkins build [bindings](https://build.libelektra.org/job/elektra-test-bindings/) please
+You can manually trigger rebuilds (in case of outtages) with the following
+phrases:
+
 * jenkins build [clang](https://build.libelektra.org/job/elektra-clang/) please
 * jenkins build [clang-asan](https://build.libelektra.org/job/elektra-clang-asan/) please
-* jenkins build [doc](https://build.libelektra.org/jenkins/job/elektra-doc/) please
 * jenkins build [gcc-asan](https://build.libelektra.org/job/elektra-gcc-asan/) please
-* jenkins build [fast](https://build.libelektra.org/job/elektra-mergerequests-fast/) please
-* jenkins build [gcc](https://build.libelektra.org/job/elektra-gcc/) please
 * jenkins build [gcc-configure-debian](https://build.libelektra.org/job/elektra-gcc-configure-debian/) please
 * jenkins build [gcc-configure-debian-debug](https://build.libelektra.org/job/elektra-gcc-configure-debian-debug) please
 * jenkins build [gcc-configure-debian-intree](https://build.libelektra.org/job/elektra-gcc-configure-debian-intree/) please
-* jenkins build [gcc-configure-debian-log](https://build.libelektra.org/job/elektra-gcc-configure-debian-log) please
 * jenkins build [gcc-configure-debian-musl](https://build.libelektra.org/job/elektra-gcc-configure-debian-musl/) please
 * jenkins build [gcc-configure-debian-nokdbtest](https://build.libelektra.org/job/elektra-gcc-configure-debian-nokdbtest/) please
 * jenkins build [gcc-configure-debian-notest](https://build.libelektra.org/job/elektra-gcc-configure-debian-notest/) please
 * jenkins build [gcc-configure-debian-shared](https://build.libelektra.org/job/elektra-gcc-configure-debian-shared/) please
-* jenkins build [gcc-configure-debian-stretch](https://build.libelektra.org/job/elektra-gcc-configure-debian-stretch/) please
 * jenkins build [gcc-configure-debian-optimizations](https://build.libelektra.org/job/elektra-gcc-configure-debian-optimizations/) please
 * jenkins build [gcc-configure-debian-wheezy](https://build.libelektra.org/job/elektra-gcc-configure-debian-wheezy/) please
 * jenkins build [gcc-configure-debian-withspace](https://build.libelektra.org/job/elektra-gcc-configure-debian-withspace/) please
 * jenkins build [gcc-configure-xdg](https://build.libelektra.org/job/elektra-gcc-configure-xdg/) please
 * jenkins build [gcc-i386](https://build.libelektra.org/job/elektra-gcc-i386/) please
-* jenkins build [gcc47-all](https://build.libelektra.org/job/elektra-gcc47-all/) please
 * jenkins build [git-buildpackage-jessie](https://build.libelektra.org/job/elektra-git-buildpackage-jessie/) please
 * jenkins build [git-buildpackage-wheezy](https://build.libelektra.org/job/elektra-git-buildpackage-wheezy/) please
 * jenkins build [icc](https://build.libelektra.org/job/elektra-icc/) please
@@ -147,13 +144,15 @@ After being added to whitelist you can trigger buildjobs by saying:
 * jenkins build [multiconfig-gcc-stable](https://build.libelektra.org/job/elektra-multiconfig-gcc-stable/) please
 * jenkins build [multiconfig-gcc47-cmake-options](https://build.libelektra.org/job/elektra-multiconfig-gcc47-cmake-options/) please
 * jenkins build [source-package-test](https://build.libelektra.org/job/elektra-source-package-test/) please
-* jenkins build [stable](https://build.libelektra.org/job/elektra-mergerequests-stable/) please
-* jenkins build [unstable](https://build.libelektra.org/job/elektra-mergerequests-unstable/) please
 * jenkins build [homepage](https://build.libelektra.org/job/elektra-homepage/) please
-* jenkins build [gcc-configure-debian-stretch-minimal](https://build.libelektra.org/job/elektra-gcc-configure-debian-stretch-minimal/) please
-* jenkins build [gcc-configure-debian-jessie-minimal](https://build.libelektra.org/job/elektra-gcc-configure-debian-jessie-minimal/) please
-* jenkins build [docker](https://build.libelektra.org/job/test-docker/) please
-* jenkins build [haskell](https://build.libelektra.org/job/elektra-haskell/) please
+* jenkins build [jenkinsfile](https://build.libelektra.org/jenkins/job/elektra-jenkinsfile/)[REGEX] please
+  * Use the optional `[REGEX]` field to specify which stages you want to run
+    The default is to run all stages.
+    Docker build phase stages will always be run.
+    Running a partial build will degrade the build result to unstable which is
+    displayed as failed in the github status.
+    Example: `jenkins build jenkinsfile[.*-fast] please` will run all stages
+    ending with `-fast`.
 
 ### Run All Tests
 
