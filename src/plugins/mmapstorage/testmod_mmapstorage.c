@@ -8,6 +8,8 @@
  *
  */
 
+/* -- Imports --------------------------------------------------------------------------------------------------------------------------- */
+
 #include <stdlib.h>
 #include <string.h>
 
@@ -18,6 +20,11 @@
 
 #include "mmapstorage.h"
 
+/* -- Macros ---------------------------------------------------------------------------------------------------------------------------- */
+
+#define TEST_ROOT_KEY "user/tests/mmapstorage"
+
+/* -- Functions ------------------------------------------------------------------------------------------------------------------------- */
 
 static KeySet * simpleTestKeySet ()
 {
@@ -38,60 +45,9 @@ static KeySet * metaTestKeySet ()
 		      KS_END);
 }
 
-static void m_output_meta (Key * k)
-{
-	const Key * meta;
-
-	keyRewindMeta (k);
-	while ((meta = keyNextMeta (k)) != 0)
-	{
-		ELEKTRA_LOG_WARNING ("Meta KeySet size: %zu", k->meta->size);
-		if (!meta) ELEKTRA_LOG_WARNING ("Meta Key is NULL");
-		ELEKTRA_LOG_WARNING (", %s: %s", keyName (meta), (const char *) keyValue (meta));
-	}
-	ELEKTRA_LOG_WARNING ("\n");
-}
-
-static void m_output_key (Key * k)
-{
-	// output_meta will print endline
-	if (!k) ELEKTRA_LOG_WARNING ("Key is NULL");
-
-	ELEKTRA_LOG_WARNING ("Key ptr: %p", (void *) k);
-	ELEKTRA_LOG_WARNING ("keyname ptr: %p", (void *) k->key);
-	ELEKTRA_LOG_WARNING ("keyname: %s", keyName (k));
-	ELEKTRA_LOG_WARNING ("keystring ptr: %p", (void *) k->data.v);
-	ELEKTRA_LOG_WARNING ("keystring: %s", keyString (k));
-	ELEKTRA_LOG_WARNING ("key flags: %u", k->flags);
-	m_output_meta (k);
-}
-
-static void m_output_keyset (KeySet * ks)
-{
-	ELEKTRA_LOG_WARNING ("-------------------> output keyset start");
-	if (!ks) ELEKTRA_LOG_WARNING ("KeySet is NULL");
-	if (ks->size == 0) ELEKTRA_LOG_WARNING ("KeySet is empty");
-
-	ELEKTRA_LOG_WARNING ("KeySet size: %zu", ks->size);
-
-	Key * k;
-	ksRewind (ks);
-	size_t ks_iterations = 0;
-	while ((k = ksNext (ks)) != 0)
-	{
-		ELEKTRA_LOG_WARNING ("Key:");
-		m_output_key (k);
-		++ks_iterations;
-	}
-	ELEKTRA_LOG_WARNING ("KeySet iteration: %zu", ks_iterations);
-	ELEKTRA_LOG_WARNING ("KeySet current: %zu", ks->current);
-	ELEKTRA_LOG_WARNING ("KeySet size: %zu", ks->size);
-	ELEKTRA_LOG_WARNING ("-------------------> output keyset done");
-}
-
 static void test_mmap_get_set (const char * tmpFile)
 {
-	Key * parentKey = keyNew ("user/tests/mmapstorage", KEY_VALUE, tmpFile, KEY_END);
+	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("mmapstorage");
 	KeySet * ks = ksNew (0, KS_END);
@@ -116,7 +72,7 @@ static void test_mmap_get_set (const char * tmpFile)
 
 static void test_mmap_set_get (const char * tmpFile)
 {
-	Key * parentKey = keyNew ("user/tests/mmapstorage", KEY_VALUE, tmpFile, KEY_END);
+	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("mmapstorage");
 	KeySet * ks = simpleTestKeySet ();
@@ -138,7 +94,7 @@ static void test_mmap_set_get (const char * tmpFile)
 
 static void test_mmap_get_after_reopen (const char * tmpFile)
 {
-	Key * parentKey = keyNew ("user/tests/mmapstorage", KEY_VALUE, tmpFile, KEY_END);
+	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("mmapstorage");
 	KeySet * returned = ksNew (0, KS_END);
@@ -156,7 +112,7 @@ static void test_mmap_get_after_reopen (const char * tmpFile)
 
 static void test_mmap_ks_copy (const char * tmpFile)
 {
-	Key * parentKey = keyNew ("user/tests/mmapstorage", KEY_VALUE, tmpFile, KEY_END);
+	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("mmapstorage");
 	KeySet * returned = ksNew (0, KS_END);
@@ -180,7 +136,7 @@ static void test_mmap_ks_copy (const char * tmpFile)
 
 static void test_mmap_empty_after_clear (const char * tmpFile)
 {
-	Key * parentKey = keyNew ("user/tests/mmapstorage", KEY_VALUE, tmpFile, KEY_END);
+	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("mmapstorage");
 	KeySet * returned = ksNew (0, KS_END);
@@ -196,7 +152,7 @@ static void test_mmap_empty_after_clear (const char * tmpFile)
 
 static void test_mmap_meta (const char * tmpFile)
 {
-	Key * parentKey = keyNew ("user/tests/mmapstorage", KEY_VALUE, tmpFile, KEY_END);
+	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("mmapstorage");
 	KeySet * ks = metaTestKeySet ();
@@ -217,9 +173,9 @@ static void test_mmap_meta (const char * tmpFile)
 	PLUGIN_CLOSE ();
 }
 
-static void test_mmap_meta_reread (const char * tmpFile)
+static void test_mmap_meta_get_after_reopen (const char * tmpFile)
 {
-	Key * parentKey = keyNew ("user/tests/mmapstorage", KEY_VALUE, tmpFile, KEY_END);
+	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("mmapstorage");
 	KeySet * ks = ksNew (0, KS_END);
@@ -237,7 +193,7 @@ static void test_mmap_meta_reread (const char * tmpFile)
 
 static void test_mmap_metacopy (const char * tmpFile)
 {
-	Key * parentKey = keyNew ("user/tests/mmapstorage", KEY_VALUE, tmpFile, KEY_END);
+	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("mmapstorage");
 	KeySet * ks = metaTestKeySet ();
@@ -273,7 +229,7 @@ static void test_mmap_metacopy (const char * tmpFile)
 
 static void test_mmap_ks_copy_with_meta (const char * tmpFile)
 {
-	Key * parentKey = keyNew ("user/tests/mmapstorage", KEY_VALUE, tmpFile, KEY_END);
+	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("mmapstorage");
 	KeySet * ks = metaTestKeySet ();
@@ -301,7 +257,7 @@ static void test_mmap_ks_copy_with_meta (const char * tmpFile)
 
 static void clearStorage (const char * tmpFile)
 {
-	Key * parentKey = keyNew ("user/tests/mmapstorage", KEY_VALUE, tmpFile, KEY_END);
+	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("mmapstorage");
 	KeySet * ks = ksNew (0, KS_END);
@@ -355,28 +311,8 @@ static void testDynArray1 ()
 }
 #endif
 
-static void testMetaPreAnything ()
-{
-	KeySet * ks = metaTestKeySet ();
 
-	Key * cur;
-	ksRewind (ks);
-
-	while ((cur = ksNext (ks)) != 0)
-	{
-		if (cur->meta)
-		{
-			Key * curMeta;
-			ksRewind (cur->meta);
-			while ((curMeta = ksNext (cur->meta)) != 0)
-			{
-				output_key (curMeta);
-			}
-		}
-	}
-	ksDel (ks);
-}
-
+/* -- Main ------------------------------------------------------------------------------------------------------------------------------ */
 
 int main (int argc, char ** argv)
 {
@@ -388,8 +324,6 @@ int main (int argc, char ** argv)
 #ifdef DEBUG
 	testDynArray1 ();
 #endif
-
-	// testMetaPreAnything();
 
 	const char * tmpFile = elektraFilename ();
 
@@ -405,7 +339,7 @@ int main (int argc, char ** argv)
 	test_mmap_empty_after_clear (tmpFile);
 
 	test_mmap_meta (tmpFile);
-	test_mmap_meta_reread (tmpFile);
+	test_mmap_meta_get_after_reopen (tmpFile);
 
 	test_mmap_metacopy (tmpFile);
 
