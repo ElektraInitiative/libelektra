@@ -8,6 +8,6 @@ then
 fi
 
 # list all installed tools
-echo "External tools are located in $EXEC_FOLDER"
+echo "External tools are located in $EXEC_PATH"
 
-ls $EXEC_FOLDER
+ls $EXEC_PATH
