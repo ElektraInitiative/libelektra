@@ -35,5 +35,5 @@ foreach (file ${TESTS})
 endforeach (file ${TESTS})
 
 if (BUILD_TESTING AND ENABLE_TESTING AND ERROR_PLUGIN_AVAILABLE)
-	set_property(TEST testtool_mergingkdb PROPERTY LABELS kdbtests)
+	set_property (TEST testtool_mergingkdb PROPERTY LABELS kdbtests)
 endif ()
