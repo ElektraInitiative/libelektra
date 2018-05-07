@@ -181,7 +181,7 @@ def generate_elektra_builds_fast() {
     tasks << build_and_test(
         "debian-stable-fast",
         DOCKER_IMAGES.stretch,
-        CMAKE_FLAGS_BUILD_ALL
+        CMAKE_FLAGS_BUILD_ALL,
         [TEST_NOKDB]
     )
     tasks << build_and_test(
