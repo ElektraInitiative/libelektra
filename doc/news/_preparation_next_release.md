@@ -82,6 +82,14 @@ We added even more functionality, which could not make it to the highlights:
 - The Order Preserving Minimal Perfect Hash Map (OPMPHM), used to speed up the lookups, got optimized.
 - `kdb ls` now has `-0` option (needed for Web UI)
 
+## Other News
+
+- Peter Nirschl finished his [thesis](https://www.libelektra.org/ftp/elektra/publications/nirschl2018cryptographic.pdf)
+  ([signature](https://www.libelektra.org/ftp/elektra/publications/nirschl2018cryptographic.pdf.sig)).
+  It includes a benchmark of different cryptographic providers.
+- Markus Raab gave a [talk](https://cfp.linuxwochen.at/de/LWW18/public/events/798) at Linuxwochen Wien (in German).
+  For similar talks in English, please refer to the [FOSDEM talks](https://fosdem.org/2018/schedule/speaker/markus_raab/).
+
 ## Documentation
 
 We improved the documentation in the following ways:
