@@ -1,10 +1,3 @@
 include (LibAddMacros)
 
-add_plugin (internalnotification
-	SOURCES
-		internalnotification.h
-		internalnotification.c
-	ADD_TEST
-	LINK_ELEKTRA
-		elektra-kdb
-	)
+add_plugin (internalnotification SOURCES internalnotification.h internalnotification.c ADD_TEST LINK_ELEKTRA elektra-kdb)
