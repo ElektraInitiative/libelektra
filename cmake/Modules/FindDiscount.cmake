@@ -1,5 +1,5 @@
-
-#-------------------------------------------------------------------------------
+# ~~~
+# -------------------------------------------------------------------------------
 # Copyright (c) 2013-2013, Lars Baehren <lbaehren@gmail.com>
 # All rights reserved.
 #
@@ -22,8 +22,10 @@
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-#-------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
+# ~~~
 
+# ~~~
 # DISCOUNT is a implementation of John Gruber's Markdown markup language.
 #
 # DISCOUNT is free software written by David Parsons <orc@pell.chi.il.us>;
@@ -36,71 +38,55 @@
 #  DISCOUNT_INCLUDES   = Include path for the header files of DISCOUNT
 #  DISCOUNT_LIBRARIES  = Link these to use DISCOUNT
 #  DISCOUNT_LFLAGS     = Linker flags (optional)
+# ~~~
 
 if (NOT DISCOUNT_FOUND)
 
-  if (NOT DISCOUNT_ROOT_DIR)
-    set (DISCOUNT_ROOT_DIR ${CMAKE_INSTALL_PREFIX})
-  endif (NOT DISCOUNT_ROOT_DIR)
+	if (NOT DISCOUNT_ROOT_DIR)
+		set (DISCOUNT_ROOT_DIR ${CMAKE_INSTALL_PREFIX})
+	endif (NOT DISCOUNT_ROOT_DIR)
 
-  ##____________________________________________________________________________
-  ## Check for the header files
+	# ____________________________________________________________________________
+	# Check for the header files
 
-  find_path (DISCOUNT_INCLUDES
-    NAMES mkdio.h
-    HINTS ${DISCOUNT_ROOT_DIR} ${CMAKE_INSTALL_PREFIX}
-    PATH_SUFFIXES include
-    )
+	find_path (DISCOUNT_INCLUDES NAMES mkdio.h HINTS ${DISCOUNT_ROOT_DIR} ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES include)
 
-  ##____________________________________________________________________________
-  ## Check for the library
+	# ____________________________________________________________________________
+	# Check for the library
 
-  find_library (DISCOUNT_LIBRARIES markdown
-    HINTS ${DISCOUNT_ROOT_DIR} ${CMAKE_INSTALL_PREFIX}
-    PATH_SUFFIXES lib
-    )
+	find_library (DISCOUNT_LIBRARIES markdown HINTS ${DISCOUNT_ROOT_DIR} ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES lib)
 
-  ##____________________________________________________________________________
-  ## Check for the executable
+	# ____________________________________________________________________________
+	# Check for the executable
 
-  find_program (MARKDOWN_EXECUTABLE markdown
-    HINTS ${DISCOUNT_ROOT_DIR} ${CMAKE_INSTALL_PREFIX}
-    PATH_SUFFIXES bin
-    )
+	find_program (MARKDOWN_EXECUTABLE markdown HINTS ${DISCOUNT_ROOT_DIR} ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES bin)
 
-  ##____________________________________________________________________________
-  ## Actions taken when all components have been found
+	# ____________________________________________________________________________
+	# Actions taken when all components have been found
 
-  find_package_handle_standard_args (DISCOUNT DEFAULT_MSG
-      DISCOUNT_LIBRARIES DISCOUNT_INCLUDES MARKDOWN_EXECUTABLE
-      )
+	find_package_handle_standard_args (DISCOUNT DEFAULT_MSG DISCOUNT_LIBRARIES DISCOUNT_INCLUDES MARKDOWN_EXECUTABLE)
 
-  if (DISCOUNT_FOUND)
-      ## Update DISCOUNT_ROOT DIR
-      get_filename_component (_name ${MARKDOWN_EXECUTABLE} NAME)
-      string (REGEX REPLACE "/bin/${_name}" "" DISCOUNT_ROOT_DIR ${MARKDOWN_EXECUTABLE})
-      ## Display variables
-      if (NOT DISCOUNT_FIND_QUIETLY)
-          message (STATUS "Found components for DISCOUNT")
-          message (STATUS "DISCOUNT_ROOT_DIR   = ${DISCOUNT_ROOT_DIR}")
-          message (STATUS "DISCOUNT_INCLUDES   = ${DISCOUNT_INCLUDES}")
-          message (STATUS "DISCOUNT_LIBRARIES  = ${DISCOUNT_LIBRARIES}")
-          message (STATUS "MARKDOWN_EXECUTABLE = ${MARKDOWN_EXECUTABLE}")
-      endif (NOT DISCOUNT_FIND_QUIETLY)
-  else (DISCOUNT_FOUND)
-      if (DISCOUNT_FIND_REQUIRED)
-          message (FATAL_ERROR "Could not find DISCOUNT!")
-      endif (DISCOUNT_FIND_REQUIRED)
-  endif (DISCOUNT_FOUND)
+	if (DISCOUNT_FOUND)
 
-  ##____________________________________________________________________________
-  ## Mark advanced variables
+		# Update DISCOUNT_ROOT DIR
+		get_filename_component (_name ${MARKDOWN_EXECUTABLE} NAME)
+		string (REGEX REPLACE "/bin/${_name}" "" DISCOUNT_ROOT_DIR ${MARKDOWN_EXECUTABLE}) # Display variables
+		if (NOT DISCOUNT_FIND_QUIETLY)
+			message (STATUS "Found components for DISCOUNT")
+			message (STATUS "DISCOUNT_ROOT_DIR   = ${DISCOUNT_ROOT_DIR}")
+			message (STATUS "DISCOUNT_INCLUDES   = ${DISCOUNT_INCLUDES}")
+			message (STATUS "DISCOUNT_LIBRARIES  = ${DISCOUNT_LIBRARIES}")
+			message (STATUS "MARKDOWN_EXECUTABLE = ${MARKDOWN_EXECUTABLE}")
+		endif (NOT DISCOUNT_FIND_QUIETLY)
+	else (DISCOUNT_FOUND)
+		if (DISCOUNT_FIND_REQUIRED)
+			message (FATAL_ERROR "Could not find DISCOUNT!")
+		endif (DISCOUNT_FIND_REQUIRED)
+	endif (DISCOUNT_FOUND)
 
-  mark_as_advanced (
-    DISCOUNT_ROOT_DIR
-    DISCOUNT_INCLUDES
-    DISCOUNT_LIBRARIES
-    MARKDOWN_EXECUTABLE
-    )
+	# ____________________________________________________________________________
+	# Mark advanced variables
+
+	mark_as_advanced (DISCOUNT_ROOT_DIR DISCOUNT_INCLUDES DISCOUNT_LIBRARIES MARKDOWN_EXECUTABLE)
 
 endif (NOT DISCOUNT_FOUND)
