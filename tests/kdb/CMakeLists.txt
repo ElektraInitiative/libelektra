@@ -1,8 +1,8 @@
-find_package(Threads)
+find_package (Threads)
 
 add_headers (HDR_FILES)
 add_cppheaders (HDR_FILES)
-add_toolheaders(HDR_FILES)
+add_toolheaders (HDR_FILES)
 
 include (LibAddTest)
 
