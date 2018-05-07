@@ -84,38 +84,38 @@ Thus please use following techniques (in order of preference):
 
 - Limits
 
- * Functions should not exceed 100 lines.
- * Files should not exceed 1000 lines.
- * A line should not be longer than 140 characters.
+  * Functions should not exceed 100 lines.
+  * Files should not exceed 1000 lines.
+  * A line should not be longer than 140 characters.
 
-Split up when those limits are reached.
-Rationale: Readability with split windows.
+  Split up when those limits are reached.
+  Rationale: Readability with split windows.
 
 - Indentation
 
- * Use tabs for indentation.
- * One tab equals 8 spaces.
+  * Use tabs for indentation.
+  * One tab equals 8 spaces.
 
 - Blocks
 
- * Use blocks even for single line statements.
- * Curly braces go on a line on their own on the previous indentation level.
- * Avoid multiple variable declarations at one place.
- * Declare Variables as late as possible, preferable within blocks.
+  * Use blocks even for single line statements.
+  * Curly braces go on a line on their own on the previous indentation level.
+  * Avoid multiple variable declarations at one place.
+  * Declare Variables as late as possible, preferable within blocks.
 
 - Naming
 
- * Use camelCase for functions and variables.
- * Start types with upper-case, everything else with lower-case.
- * Prefix names with `elektra` for internal usage. External API either starts
-   with `ks`, `key` or `kdb`.
+  * Use camelCase for functions and variables.
+  * Start types with upper-case, everything else with lower-case.
+  * Prefix names with `elektra` for internal usage. External API either starts
+    with `ks`, `key` or `kdb`.
 
 - Whitespaces
 
- * Use space before and after equal when assigning a value.
- * Use space before round parenthesis ( `(` ).
- * Use space before and after `*` from Pointers.
- * Use space after `,` of every function argument.
+  * Use space before and after equal when assigning a value.
+  * Use space before round parenthesis ( `(` ).
+  * Use space before and after `*` from Pointers.
+  * Use space after `,` of every function argument.
 
 The [reformat script](/scripts/reformat-source) can ensure most code style rules,
 but it is obviously not capable of ensuring everything (e.g. naming conventions).
