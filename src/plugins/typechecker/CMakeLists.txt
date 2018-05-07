@@ -7,7 +7,7 @@ if (LIBFA_FOUND)
 	find_package (Haskell)
 
 	set (TYPECHECKER_GHC_PLUGIN_PATH "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/elektra/typechecker-ghc-plugin")
-	set (TYPECHECKER_GHC_PLUGIN "${TYPECHECKER_GHC_PLUGIN_PATH}/${GHC_TARGET_PLATFORM2}-ghc-${GHC_VERSION}-packages.conf.d/")
+	set (TYPECHECKER_GHC_PLUGIN "${TYPECHECKER_GHC_PLUGIN_PATH}/${GHC_TARGET_PLATFORM}-ghc-${GHC_VERSION}-packages.conf.d/")
 
 	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/Elektra/Typechecker.hs.in" "${CMAKE_CURRENT_BINARY_DIR}/Elektra/Typechecker.hs" @ONLY)
 
@@ -16,7 +16,9 @@ if (LIBFA_FOUND)
 			    "src/bindings/haskell"
 			    "src/libs/typesystem/libfa"
 			    "src/libs/typesystem/SpecElektra"
-			    "src/libs/typesystem/SpecTranslator")
+			    "src/libs/typesystem/SpecTranslator"
+			    TEST_README
+			    INSTALL_TEST_DATA)
 
 	# if haskell was not found, the target will not be created and a message was already printed
 	# so we can skip the extra installation procedures

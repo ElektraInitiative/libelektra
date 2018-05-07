@@ -59,12 +59,6 @@ if (HASKELL_FOUND)
 					    DEPENDS ${BINDING_HASKELL_DEPENDENCIES}
 						    ${ELEKTRA_DEPENDENCY})
 			add_custom_target (c2hs_haskell ALL DEPENDS "${BINDING_HASKELL_NAME}")
-			if (BUILD_SHARED OR BUILD_FULL) # build and install it to the global db
-				install (
-					CODE
-					"execute_process (COMMAND ${CABAL_EXECUTABLE} --ignore-sandbox install -v0 WORKING_DIRECTORY \"${CMAKE_CURRENT_BINARY_DIR}\")"
-					)
-			endif (BUILD_SHARED OR BUILD_FULL)
 
 			if (BUILD_TESTING) # recompile with tests enabled, to get the dependency graph for the static versions correct  the
 					   # tests need the elektra library already built - while for the haskell plugins it doesn't matter
