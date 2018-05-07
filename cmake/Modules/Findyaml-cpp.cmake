@@ -1,6 +1,7 @@
 # Try to find yaml-cpp
 # ====================
 
+# ~~~
 # Once done this will define
 #
 #  YAML-CPP_FOUND		System has yaml-cpp
@@ -8,20 +9,15 @@
 #  YAML-CPP_LIBRARIES		The libraries needed to use yaml-cpp
 #  YAML-CPP_VERSION		The version string of yaml-cpp
 #
-# This script is a modified version of the code available here:
-#	https://cmake.org/Wiki/CMake:How_To_Find_Libraries#Writing_find_modules
+# This script is a modified version of the code available here: https://cmake.org/Wiki/CMake:How_To_Find_Libraries#Writing_find_modules
+# ~~~
 
 find_package (PkgConfig)
 pkg_check_modules (PC_YAML-CPP QUIET yaml-cpp)
 
-find_path (YAML-CPP_INCLUDE_DIR
-	NAMES yaml-cpp/yaml.h
-	HINTS ${PC_YAML-CPP_INCLUDEDIR} ${PC_YAML-CPP_INCLUDE_DIRS}
-	PATH_SUFFIXES yaml-cpp)
+find_path (YAML-CPP_INCLUDE_DIR NAMES yaml-cpp/yaml.h HINTS ${PC_YAML-CPP_INCLUDEDIR} ${PC_YAML-CPP_INCLUDE_DIRS} PATH_SUFFIXES yaml-cpp)
 
-find_library (YAML-CPP_LIBRARY
-	NAMES yaml-cpp
-	HINTS ${PC_YAML-CPP_LIBDIR} ${PC_YAML-CPP_LIBRARY_DIRS})
+find_library (YAML-CPP_LIBRARY NAMES yaml-cpp HINTS ${PC_YAML-CPP_LIBDIR} ${PC_YAML-CPP_LIBRARY_DIRS})
 
 set (YAML-CPP_VERSION ${PC_YAML-CPP_VERSION})
 
