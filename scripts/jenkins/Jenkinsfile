@@ -649,7 +649,11 @@ def determineBuildTarget(default_target = ".*") {
     def target = default_target
 
     matcher = /jenkins build jenkinsfile(?:\[(.*)\])? please/
-    new_target = (env.ghprbCommentBody =~ matcher)[0][1]
+    try {
+        new_target = (env.ghprbCommentBody =~ matcher)[0][1]
+    } catch(e) {
+        new_target = null
+    }
     if(new_target) {
         // if we specify a new target we degrade the build to unstable
         // this will report the test as failed on github
