@@ -343,7 +343,7 @@ def build_and_test_asan(test_name, image, extra_cmake_flags = [:]) {
  * tests: list of tests which should be run
  * extra_artifacts: which files should be additionally saved from the build
  */
-def build_and_test(test_name, image, extra_cmake_flags,
+def build_and_test(test_name, image, extra_cmake_flags = [:],
                    tests = [], extra_artifacts = []) {
     def cmake_flags = CMAKE_FLAGS_BASE + extra_cmake_flags
     def artifacts = []
