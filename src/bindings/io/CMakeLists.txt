@@ -8,7 +8,4 @@ if (IS_INCLUDED)
 	add_subdirectory (glib)
 endif ()
 
-#check_binding_included ("io_doc" IS_INCLUDED SUBDIRECTORY "io/doc")
-#if (IS_INCLUDED)
-#	add_subdirectory (doc)
-#endif ()
+# check_binding_included ("io_doc" IS_INCLUDED SUBDIRECTORY "io/doc") if (IS_INCLUDED) add_subdirectory (doc) endif ()
