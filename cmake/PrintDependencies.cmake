@@ -1,4 +1,4 @@
-#
+# ~~~
 # Print a list of Elektra's dependencies
 #
 # (currently only essential deps, excluding CMake which is needed
@@ -13,7 +13,7 @@
 # On Apple:
 #
 # brew install `cmake -DPLUGINS="ALL" -P cmake/PrintDependencies.cmake`
-#
+# ~~~
 
 execute_process (COMMAND lsb_release -is OUTPUT_VARIABLE LSB_DISTRIB)
 
