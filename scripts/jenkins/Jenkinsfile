@@ -210,7 +210,7 @@ def generate_elektra_builds_full() {
         "debian-stable-full",
         DOCKER_IMAGES.stretch,
         CMAKE_FLAGS_BUILD_ALL +
-            CMAKE_FLAGS_COVERAGE
+            CMAKE_FLAGS_COVERAGE,
         [TEST_ALL, TEST_MEM, TEST_INSTALL]
     )
     tasks << build_and_test(
@@ -232,7 +232,7 @@ def generate_elektra_builds_full() {
         "debian-stable-full-clang",
         DOCKER_IMAGES.stretch,
         CMAKE_FLAGS_BUILD_ALL +
-            CMAKE_FLAGS_COVERAGE
+            CMAKE_FLAGS_COVERAGE +
             CMAKE_FLAGS_CLANG,
         [TEST_ALL, TEST_MEM, TEST_INSTALL]
     )
