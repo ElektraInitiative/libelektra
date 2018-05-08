@@ -106,7 +106,6 @@ before_install:
       brew install checkbashisms
       brew install dbus
       brew install discount
-      brew install gobject-introspection
       brew install libgcrypt
       brew install libgit2
       brew install libuv
