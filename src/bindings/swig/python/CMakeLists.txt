@@ -41,6 +41,7 @@ else ()
 	# Unfortunately compiling Python’s source code produces warnings about casts between incompatible function types.
 	if (CMAKE_COMPILER_IS_GNUCXX)
 		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-cast-function-type")
+		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-stringop-truncation")
 	endif (CMAKE_COMPILER_IS_GNUCXX)
 	set_source_files_properties (${swig_generated_file_fullname} PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -DSWIG_TYPE_TABLE=kdb")
 
