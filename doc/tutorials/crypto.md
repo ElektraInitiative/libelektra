@@ -68,6 +68,9 @@ The GPG key, which is used for encryption and decryption, is specified in the ba
 
 	sudo kdb mount test.ini user/test fcrypt "encrypt/key=DDEBEF9EE2DC931701338212DAF635B17F230E8D" ini
 
+If the above command fails, please take a look at the
+[ReadMe of the `fcrypt` plugin](https://master.libelektra.org/src/plugins/fcrypt/README.md#known-issues).
+
 As a result the file `test.ini` is encrypted using GnuPG.
 `fcrypt` will call the `gpg2` or `gpg` binary as follows:
 
@@ -82,12 +85,12 @@ You can try to decrypt `test.ini` with GPG:
 ## Configuration File Signatures
 
 `fcrypt` also offers the option to sign and verify configuration files, thus protecting the integrity of the configuration values.
-If `sign/key` is specified in the backend configuration, `fcrypt` will forward the key ID to be used for signing the configuration file.
+If `sign/key` is specified in the backend configuration, `fcrypt` will forward the key ID for signing the configuration file.
 
 An example backend configuration is given as follows:
 
 	sudo kdb mount test.ini user/test fcrypt "sign/key=DDEBEF9EE2DC931701338212DAF635B17F230E8D" ini
-	
+
 As a result the file `test.ini` will be signed using GPG.
 `fcrypt` will call the `gpg2` or `gpg` binary as follows:
 
@@ -121,7 +124,7 @@ GPG is required for the key-handling.
 To follow our example of an encrypted password in `test.ini`, we first mount the INI-file with the `crypto_gcrypt` plugin enabled, like this:
 
 	sudo kdb mount test.ini user/test crypto_gcrypt "crypto/key=DDEBEF9EE2DC931701338212DAF635B17F230E8D" base64 ini
-	
+
 We recommend adding the `base64` plugin to the backend, because `crypto` will output binary data.
 Having binary data in configuration files is hardly ever feasible.
 `base64` encodes all binary values within a configuration file and transforms them into Base64 strings.
@@ -136,11 +139,11 @@ We want to protect the password, that is stored under `user/test/password`.
 So we set the meta-key as follows:
 
 	kdb setmeta user/test/password crypto/encrypt 1
-	
+
 Now we are safe to set the actual password:
 
 	kdb set user/test/password "1234"
-	
+
 The resulting INI-file contains the following data:
 
 	#@META crypto/encrypt = 1
@@ -149,7 +152,7 @@ The resulting INI-file contains the following data:
 You can access the password as usual with `kdb get`:
 
 	kdb get user/test/password
-	
+
 As a result you get "1234".
 
 ### Disabling Encryption
