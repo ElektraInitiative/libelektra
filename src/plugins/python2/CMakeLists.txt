@@ -13,7 +13,10 @@ if (DEPENDENCY_PHASE)
 		add_custom_command (OUTPUT runtime.h COMMAND ${SWIG_EXECUTABLE} -c++ -python -external-runtime runtime.h)
 
 		# we call this SWIG_COMPILE_FLAGS because we have the same variable in our swig bindings
-		set (SWIG_COMPILE_FLAGS "-Wno-shadow -Wno-old-style-cast -Wno-unused-variable -Wno-deprecated-register")
+		set (SWIG_COMPILE_FLAGS "-Wno-shadow -Wno-old-style-cast -Wno-unused-variable")
+		if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+			set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-deprecated-register")
+		endif (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 		set_source_files_properties ("python.cpp" PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS}")
 	elseif (NOT PYTHON2LIBS_FOUND)
 		remove_plugin (python2 "python 2 libs (libpython-dev) not found")
