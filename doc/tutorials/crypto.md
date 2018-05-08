@@ -40,17 +40,30 @@ The `fcrypt` plugin and the `crypto` plugin support both versions (version 1 and
 In this tutorial we explain the use of the `crypto` plugin and the `fcrypt` plugin by a simple example:
 We want to protect a password that is contained in an INI-file.
 
-Without encryption, the file could be mounted like this:
+The following example demonstrates how the INI-file is mounted without encryption enabled.
+We create the password at `user/test/password` and display the contents of `test.ini`.
 
+*Step 1:* Mount `test.ini`
+
+```sh
 	sudo kdb mount test.ini user/test ini
+```
 
-We create the password at `user/test/password`:
+*Step 2:* Set the password at `user/test/password` and display the contents of `test.ini`
 
+```sh
 	kdb set user/test/password 1234
+	#> Create a new key user/test/password with string "1234"
+	kdb file user/test/password | xargs cat
+	#> password = 1234
+```
 
-The command above results in the following content of `test.ini`:
+*Step 3:* (Optional) Delekte and unmount `test.ini`
 
-	password = 1234
+```sh
+	kdb file user/test/password | xargs rm -f
+	sudo kdb umount user/test
+```
 
 As you can see the password is stored in plain text.
 In this tutorial we demonstrate two different approaches towards confidentiality:
@@ -81,6 +94,18 @@ You can try to decrypt `test.ini` with GPG:
 
 	gpg2 -d test.ini
 
+The complete procedure looks like this:
+
+```sh
+	kdb set /sw/elektra/kdb/#0/current/plugins ""
+	sudo kdb set system/sw/elektra/kdb/#0/current/plugins ""
+	sudo kdb mount test.ini user/test fcrypt "encrypt/key=DDEBEF9EE2DC931701338212DAF635B17F230E8D" ini
+	kdb set user/test/password 1234
+	#> Create a new key user/test/password with string "1234"
+	kdb file user/test/password | xargs cat
+	kdb file user/test/password | xargs rm -f
+	sudo kdb umount user/test
+```
 
 ## Configuration File Signatures
 
