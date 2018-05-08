@@ -294,7 +294,6 @@ def generateFullBuildStages() {
         CMAKE_FLAGS_BUILD_ALL,
         [TEST_ALL, TEST_MEM, TEST_INSTALL]
     )
-    /* TODO Reenable for next release
     tasks << buildAndTest(
         "debian-stable-full-clang",
         DOCKER_IMAGES.stretch,
@@ -302,7 +301,6 @@ def generateFullBuildStages() {
             CMAKE_FLAGS_CLANG,
         [TEST_ALL, TEST_MEM, TEST_INSTALL]
     )
-    */
     tasks << buildAndTest(
         "ubuntu-xenial",
         DOCKER_IMAGES.xenial,
