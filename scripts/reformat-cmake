@@ -22,7 +22,8 @@ fi
 
 cd "$SOURCE"
 
-for file in $(find . \( -name 'CMakeLists.txt' -or -name '*.cmake' \) -and \( -not -regex '.*build/.*' -and -not -regex '.*gtest.*' \));
+for file in $(find . \( -name 'CMakeLists.txt' -or -name '*.cmake' \) -and                                   \
+                     \( -not -regex '.*build/.*' -and -not -regex '.*gtest.*' -and -not -regex '.*tests/shell/CMakeLists.txt$' \));
 do
 	$CMAKE_FORMAT "$file" | unexpand | sponge "$file"
 done
