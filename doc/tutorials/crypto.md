@@ -40,7 +40,7 @@ The `fcrypt` plugin and the `crypto` plugin support both versions (version 1 and
 In this tutorial we explain the use of the `crypto` plugin and the `fcrypt` plugin by a simple example:
 We want to protect a password that is contained in an INI-file.
 
-Without encryption, the file could be mounted like:
+Without encryption, the file could be mounted like this:
 
 	sudo kdb mount test.ini user/test ini
 
@@ -74,6 +74,10 @@ As a result the file `test.ini` is encrypted using GnuPG.
 	gpg2 -o test.ini -a -r DDEBEF9EE2DC931701338212DAF635B17F230E8D -e test.ini.tmp
 
 Note that `test.ini` can not only be decrypted by Elektra, but it is also possible to decrypt it with GnuPG directly.
+You can try to decrypt `test.ini` with GPG:
+
+	gpg2 -d test.ini
+
 
 ## Configuration File Signatures
 
@@ -95,20 +99,26 @@ If `test.ini` is modified, all following calls of `kdb get` will fail with an er
 
 The options `sign/key` and `encrypt/key` can be combined together, resulting in configuration files, that are signed and encrypted.
 
+Mounting `test.ini` with signatures and encryption enabled can be done like this:
+
+	sudo kdb mount test.ini user/test fcrypt "sign/key=DDEBEF9EE2DC931701338212DAF635B17F230E8D,encrypt/key=DDEBEF9EE2DC931701338212DAF635B17F230E8D" ini
+
+
 ## Configuration Value Encryption/Decryption
 
-The compilation variants of the `crypto` plugin:
+The `crypto` plugin is actually a family of plugins and comes with three different providers:
 
-1. `crypto_gcrypt`,
-2. `crypto_openssl`, and
-3. `crypto_botan`
+1. `crypto_gcrypt` using `libgcrypt`,
+2. `crypto_openssl` using `libcrypto`, and
+3. `crypto_botan` using `Botan`.
 
-provide the option to encrypt and decrypt single configuration values (Keys) in a Keyset.
-`crypto` is using GPG for key-handling.
+We recommend that you use `crypto_gcrypt` as it is the fastest variant.
+The variants of the `crypto` plugin work the same internally, but use a different crypto library for cryptographic operations.
 
-Let's assume you want to store an encrypted password in `test.ini` but you do not want to encrypt the entire configuration file.
-You can use the `crypto` plugin to solve this problem.
-An example backend configuration is given as follows:
+The `crypto` plugins provide the option to encrypt and decrypt single configuration values (Keys) in a Keyset.
+GPG is required for the key-handling.
+
+To follow our example of an encrypted password in `test.ini`, we first mount the INI-file with the `crypto_gcrypt` plugin enabled, like this:
 
 	sudo kdb mount test.ini user/test crypto_gcrypt "crypto/key=DDEBEF9EE2DC931701338212DAF635B17F230E8D" base64 ini
 	
@@ -122,7 +132,6 @@ To tell the `crypto` plugin which Keys it should process, the meta-key `crypto/e
 The `crypto` plugin searches for the meta-key `crypto/encrypt`.
 If the value is equal to `1`, the value of the Key will be encrypted.
 
-Let's demonstrate this using an example.
 We want to protect the password, that is stored under `user/test/password`.
 So we set the meta-key as follows:
 
