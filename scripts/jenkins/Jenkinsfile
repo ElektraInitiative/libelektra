@@ -18,7 +18,7 @@
 
 // FIXME sloc publish errors
 // XXX add missing jobs
-// TODO have a per plugin/binding deps in Dockerfile for easier maintanence
+// TODO have a per plugin/binding deps in Dockerfile for easier maintenance
 // TODO add warnings plugins to scan for compiler warnings
 // TODO maybe intend with 2 lines to not waste so much ws
 
@@ -118,7 +118,7 @@ BUILD_TARGET = determineBuildTarget()
 /*****************************************************************************
  * Main Stages
  *
- * Serial stages that contain parallized logic. Only proceeds to the next
+ * Serial stages that contain parallelized logic. Only proceeds to the next
  * if previous stage did not fail.
  *****************************************************************************/
 lock('docker-images') {
@@ -215,7 +215,7 @@ def generate_fast_build_stages() {
     return tasks
 }
 
-/* Generate Test stages for full tets coverage
+/* Generate Test stages for full test coverage
  */
 def generate_full_build_stages() {
     def tasks = [:]
@@ -568,7 +568,7 @@ def trackCoverage(do_track, cl) {
 
 /* Run the passed closure in a docker environment
  *
- * Automatically takes care of docker registry authentification,
+ * Automatically takes care of docker registry authentication,
  * selecting a docker capable node,
  * checkout of scm and
  * setting of useful Environment variables
@@ -631,7 +631,7 @@ def cnokdbtest() {
     ctest("Test -LE kdbtests")
 }
 
-/* Uploads ctest restults
+/* Uploads ctest results
  */
 def xunitUpload() {
     step([$class: 'XUnitBuilder',
@@ -701,7 +701,7 @@ def dateFormatter(date) {
  * started for a PR by commenting "jenkins build jenkinsfile[REGEX] please"
  * The optional REGEX determines if all stages should be build or only a
  * selection of them.
- * To build only fast builds one would commenet "jenkins build
+ * To build only fast builds one would comment "jenkins build
  * jenkinsfile[.*-fast] please".
  * NOTE: none complete builds are automatically set to UNSTABLE which reports
  * as a test failure on github.
