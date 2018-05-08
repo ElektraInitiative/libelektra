@@ -22,9 +22,13 @@
 
 /* -- Macros ---------------------------------------------------------------------------------------------------------------------------- */
 
+#define KEY_NAME_LENGTH 1000
+#define NUM_DIR 10
+#define NUM_KEY 10
+
 #define TEST_ROOT_KEY "user/tests/mmapstorage"
 
-/* -- Functions ------------------------------------------------------------------------------------------------------------------------- */
+/* -- KeySet test data ------------------------------------------------------------------------------------------------------------------ */
 
 static KeySet * simpleTestKeySet ()
 {
@@ -44,6 +48,28 @@ static KeySet * metaTestKeySet ()
 			      "here some even more with ugly €@\\1¹²³¼ chars", KEY_END),
 		      KS_END);
 }
+
+static KeySet * largeTestKeySet ()
+{
+	int i, j;
+	char name[KEY_NAME_LENGTH + 1];
+	char value[] = "data";
+	KeySet * large = ksNew (NUM_KEY * NUM_DIR, KS_END);
+
+	for (i = 0; i < NUM_DIR; i++)
+	{
+		snprintf (name, KEY_NAME_LENGTH, "%s/%s%d", TEST_ROOT_KEY, "dir", i);
+		ksAppendKey (large, keyNew (name, KEY_VALUE, value, KEY_END));
+		for (j = 0; j < NUM_KEY; j++)
+		{
+			snprintf (name, KEY_NAME_LENGTH, "%s/%s%d/%s%d", TEST_ROOT_KEY, "dir", i, "key", j);
+			ksAppendKey (large, keyNew (name, KEY_VALUE, value, KEY_END));
+		}
+	}
+	return large;
+}
+
+/* -- Functions ------------------------------------------------------------------------------------------------------------------------- */
 
 static void test_mmap_get_set (const char * tmpFile)
 {
@@ -110,13 +136,40 @@ static void test_mmap_get_after_reopen (const char * tmpFile)
 	PLUGIN_CLOSE ();
 }
 
+static void test_mmap_set_get_large_keyset (const char * tmpFile)
+{
+	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("mmapstorage");
+	KeySet * ks = largeTestKeySet ();
+	KeySet * expected = ksDeepDup (ks);
+
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+	ksDel (ks);
+
+	KeySet * returned = ksNew (0, KS_END);
+	succeed_if (plugin->kdbGet (plugin, returned, parentKey) == 1, "kdbGet was not successful");
+
+	compare_keyset (expected, returned);
+
+	ksDel (expected);
+	ksDel (returned);
+
+	keyDel (parentKey);
+	PLUGIN_CLOSE ();
+}
+
 static void test_mmap_ks_copy (const char * tmpFile)
 {
 	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("mmapstorage");
-	KeySet * returned = ksNew (0, KS_END);
+	KeySet * returned = simpleTestKeySet ();
 
+	succeed_if (plugin->kdbSet (plugin, returned, parentKey) == 1, "kdbGet was not successful");
+	ksDel (returned);
+
+	returned = ksNew (0, KS_END);
 	succeed_if (plugin->kdbGet (plugin, returned, parentKey) == 1, "kdbGet was not successful");
 
 	KeySet * expected = simpleTestKeySet ();
@@ -311,6 +364,61 @@ static void testDynArray1 ()
 }
 #endif
 
+/* -- KeySet operation tests ------------------------------------------------------------------------------------------------------------ */
+
+static void test_mmap_ksDupFun (const char * tmpFile, KeySet * copyFunction (const KeySet * source))
+{
+	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("mmapstorage");
+
+	KeySet * ks = simpleTestKeySet ();
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
+	succeed_if ((ks->flags & KS_FLAG_MMAP_ARRAY) == KS_FLAG_MMAP_ARRAY, "KeySet array not in mmap");
+
+	KeySet * dupKs = copyFunction (ks);
+	compare_keyset (dupKs, ks);
+	compare_keyset (ks, dupKs);
+
+	ksDel (dupKs);
+	keyDel (parentKey);
+	ksDel (ks);
+	PLUGIN_CLOSE ();
+}
+
+static void test_mmap_ksCopy (const char * tmpFile)
+{
+	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("mmapstorage");
+
+	KeySet * ks = simpleTestKeySet ();
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
+	succeed_if ((ks->flags & KS_FLAG_MMAP_ARRAY) == KS_FLAG_MMAP_ARRAY, "KeySet array not in mmap");
+
+	KeySet * copyKs = ksNew (0, KS_END);
+	if (ksCopy (copyKs, ks) == 1)
+	{
+		compare_keyset (copyKs, ks);
+		compare_keyset (ks, copyKs);
+	}
+	else
+	{
+		yield_error ("ksCopy failed");
+	}
+
+	ksDel (copyKs);
+	keyDel (parentKey);
+	ksDel (ks);
+	PLUGIN_CLOSE ();
+}
+
+/* -- Key operation tests --------------------------------------------------------------------------------------------------------------- */
+/* -- Key name operation tests ---------------------------------------------------------------------------------------------------------- */
+/* -- Key value operation tests --------------------------------------------------------------------------------------------------------- */
+
 
 /* -- Main ------------------------------------------------------------------------------------------------------------------------------ */
 
@@ -332,6 +440,7 @@ int main (int argc, char ** argv)
 
 	test_mmap_set_get (tmpFile);
 	test_mmap_get_after_reopen (tmpFile);
+	test_mmap_set_get_large_keyset (tmpFile);
 	test_mmap_ks_copy (tmpFile);
 
 	clearStorage (tmpFile);
@@ -346,6 +455,15 @@ int main (int argc, char ** argv)
 	clearStorage (tmpFile);
 	test_mmap_ks_copy_with_meta (tmpFile);
 
+	/* KeySet operation tests */
+	clearStorage (tmpFile);
+	test_mmap_ksDupFun (tmpFile, ksDup);
+
+	clearStorage (tmpFile);
+	test_mmap_ksDupFun (tmpFile, ksDeepDup);
+
+	clearStorage (tmpFile);
+	test_mmap_ksCopy (tmpFile);
 
 	printf ("\ntestmod_mmapstorage RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
