@@ -56,7 +56,9 @@ else ()
 	set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-dynamic-class-memaccess")
 	if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-unused-but-set-variable")
-	endif (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+	elseif (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-deprecated-register")
+	endif ()
 
 	# add 'kdb' module
 	if (CMAKE_VERSION VERSION_LESS 3.8)
