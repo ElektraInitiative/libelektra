@@ -11,7 +11,8 @@ or how-to-use for highlighted items.
 Please add your name to every contribution
 syntax: ", thanks to <myname>".
 
-TODO: look through git history c7ca68f25750af26f2dbdb92b507b86fc012ea6d Plugin Database
+TODO: look through git history
+done till 45bfae3ad73333598f28af9c47e3b2a526162151 cmake: require list
 
 
 <<`scripts/generate-news-entry`>>
@@ -65,6 +66,8 @@ or the
 
 Video?
 
+Note that Web UI requires Elektra 0.8.23 or later.
+
 
 ### <<HIGHLIGHT3>>
 
@@ -79,7 +82,9 @@ We added even more functionality, which could not make it to the highlights:
   has been added.
   It can be used to integrate the notification feature with applications based
   on glib.
-- The Order Preserving Minimal Perfect Hash Map (OPMPHM), used to speed up the lookups, got optimized.
+- The Order Preserving Minimal Perfect Hash Map (OPMPHM), used to speed up the lookups, got optimized
+  and a benchmark was added,
+  thanks to Kurt Micheli
 - `kdb ls` now has `-0` option (needed for Web UI)
 
 ## Documentation
@@ -101,6 +106,9 @@ We improved the documentation in the following ways:
   (not only METADATA.ini)
 - Fixed various spelling mistakes
   thanks to René Schwaiger
+- Document limitations of resolver (kdbOpen fails if no home directory found)
+  and yaml plugin (intermixing of array and objects not detected, which is possible
+  in Elektra but impossible in JSON)
 - <<TODO>>
 
 ## Compatibility
@@ -128,11 +136,19 @@ Compilation:
   So if ENABLE_TESTING is checked, a storage, a resolver,
   the list and the spec plugin is needed.
 
-Some classes now got virtual destructors, which previously did not
-have any virtual method. You might get warnings like:
+- We resolved undefined behavior in polymorphic classes that contained virtual functions, by explicitly adding a virtual destructor.
+  thanks to René Schwaiger
+  They previously did not have any virtual method.
+  You might get warnings like:
 ```
 Symbol `_ZTVN3kdb5tools18MockPluginDatabaseE' has different size in shared object, consider re-linking
 ```
+
+TODO: revert c7ca68f25750af26f2dbdb92b507b86fc012ea6d Plugin Database?
+
+Shell scripts:
+
+- cp and mv no longer accept cascading keys.1G
 
 ## Notes for Maintainer
 
@@ -150,6 +166,11 @@ These notes are of interest for people maintaining packages of Elektra:
 
 These notes are of interest for people developing Elektra:
 
+- We now allow `clang-reformat-5.0`,  `clang-reformat-6.0`, and
+  `clang-reformat-7.0` for formatting.
+  Thanks to René Schwaiger.
+- To make enums nicely formatting, make sure at least one member
+  is documented.
 - Tests no longer clear environment or reset locales.
   This fixes TMPDIR, DBUS_SESSION_BUS_ADDRESS problems but might
   cause problems with wrongly set HOME and USER.
@@ -189,7 +210,7 @@ These notes are of interest for people developing Elektra:
 - If any of the tests in `make run_memcheck` fail valgrind will now set an exit-code which will get picked up by make.
   thanks to René Schwaiger
 - The haskell binding now explicitly requires GHC installed with a minimum version of 8.0.0 during cmake
-  thanks to René Schwaiger
+  thanks to René Schwaiger and Lukas Winkler
 - We introduced git reference repositories to save I/O on our build system,
   thanks to Lukas Winkler
 - Set `LD_LIBRARY_PATH` in all tests removing the need to specify it during
@@ -211,8 +232,6 @@ Many problems were resolved with the following fixes:
 - [YAML CPP](http://libelektra.org/plugins/yamlcpp) now also saves key values directly below a mountpoint correctly.
   thanks to René Schwaiger
 - If you use a minimal configuration ([`dump`](http://libelektra.org/plugins/dump), [`resolver`](https://www.libelektra.org/plugins/resolver), list, and spec), all test of the test suite now finish successfully again.
-  thanks to René Schwaiger
-- We resolved undefined behavior in polymorphic classes that contained virtual functions, by explicitly adding a virtual destructor.
   thanks to René Schwaiger
 - small refactoring in `kdb-test`
 - The haskell plugin failed to build if the haskell bindings were not included explicitly by name.
