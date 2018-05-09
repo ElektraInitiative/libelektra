@@ -9,7 +9,7 @@
 
 #include <botan/init.h>
 
-int main (int argc, char ** argv)
+int main (void)
 {
 	Botan::LibraryInitializer::initialize ("");
 	return 0;
