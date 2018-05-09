@@ -46,23 +46,25 @@ We create the password at `user/test/password` and display the contents of `test
 *Step 1:* Mount `test.ini`
 
 ```sh
-	sudo kdb mount test.ini user/test ini
+kdb set /sw/elektra/kdb/#0/current/plugins ""
+sudo kdb mount test.ini user/test ini
 ```
 
 *Step 2:* Set the password at `user/test/password` and display the contents of `test.ini`
 
 ```sh
-	kdb set user/test/password 1234
-	#> Create a new key user/test/password with string "1234"
-	kdb file user/test/password | xargs cat
-	#> password = 1234
+kdb set user/test/password 1234
+#> Create a new key user/test/password with string "1234"
+kdb file user/test/password | xargs cat
+#> password = 1234
 ```
 
-*Step 3:* (Optional) Delekte and unmount `test.ini`
+*Step 3:* (Optional) Cleanup
 
 ```sh
-	kdb file user/test/password | xargs rm -f
-	sudo kdb umount user/test
+kdb rm user/test/password
+kdb rm /sw/elektra/kdb/#0/current/plugins
+sudo kdb umount user/test
 ```
 
 As you can see the password is stored in plain text.
@@ -97,14 +99,19 @@ You can try to decrypt `test.ini` with GPG:
 The complete procedure looks like this:
 
 ```sh
-	kdb set /sw/elektra/kdb/#0/current/plugins ""
-	sudo kdb set system/sw/elektra/kdb/#0/current/plugins ""
-	sudo kdb mount test.ini user/test fcrypt "encrypt/key=DDEBEF9EE2DC931701338212DAF635B17F230E8D" ini
-	kdb set user/test/password 1234
-	#> Create a new key user/test/password with string "1234"
-	kdb file user/test/password | xargs cat
-	kdb file user/test/password | xargs rm -f
-	sudo kdb umount user/test
+kdb set /sw/elektra/kdb/#0/current/plugins ""
+sudo kdb mount test.ini user/test fcrypt "encrypt/key=DDEBEF9EE2DC931701338212DAF635B17F230E8D" ini
+kdb set user/test/password 1234
+#> Create a new key user/test/password with string "1234"
+kdb file user/test/password | xargs cat
+```
+
+To clean up the environment we run:
+
+```sh
+kdb rm user/test/password
+kdb rm /sw/elektra/kdb/#0/current/plugins
+sudo kdb umount user/test
 ```
 
 ## Configuration File Signatures
@@ -123,6 +130,24 @@ As a result the file `test.ini` will be signed using GPG.
 
 If `test.ini` is modified, all following calls of `kdb get` will fail with an error message stating that the signature of the file could not be verified.
 
+The complete example looks like this:
+
+```sh
+kdb set /sw/elektra/kdb/#0/current/plugins ""
+sudo kdb mount test.ini user/test fcrypt "sign/key=DDEBEF9EE2DC931701338212DAF635B17F230E8D" ini
+kdb set user/test/password 1234
+#> Create a new key user/test/password with string "1234"
+kdb file user/test/password | xargs cat
+```
+
+To clean up the environment we run:
+
+```sh
+kdb rm user/test/password
+kdb rm /sw/elektra/kdb/#0/current/plugins
+sudo kdb umount user/test
+```
+
 ### Combining Signatures and Encryption
 
 The options `sign/key` and `encrypt/key` can be combined together, resulting in configuration files, that are signed and encrypted.
@@ -130,6 +155,24 @@ The options `sign/key` and `encrypt/key` can be combined together, resulting in 
 Mounting `test.ini` with signatures and encryption enabled can be done like this:
 
 	sudo kdb mount test.ini user/test fcrypt "sign/key=DDEBEF9EE2DC931701338212DAF635B17F230E8D,encrypt/key=DDEBEF9EE2DC931701338212DAF635B17F230E8D" ini
+
+The complete example looks like this:
+
+```sh
+kdb set /sw/elektra/kdb/#0/current/plugins ""
+sudo kdb mount test.ini user/test fcrypt "sign/key=DDEBEF9EE2DC931701338212DAF635B17F230E8D,encrypt/key" ini
+kdb set user/test/password 1234
+#> Create a new key user/test/password with string "1234"
+kdb file user/test/password | xargs cat
+```
+
+To clean up the environment we run:
+
+```sh
+kdb rm user/test/password
+kdb rm /sw/elektra/kdb/#0/current/plugins
+sudo kdb umount user/test
+```
 
 
 ## Configuration Value Encryption/Decryption
@@ -186,4 +229,33 @@ You can disable the encryption by setting `crypto/encrypt` to a value other than
 
 	kdb setmeta user/test/password crypto/encrypt 0
 
+### Complete Example
+
+The complete example looks like this:
+
+```sh
+kdb set /sw/elektra/kdb/#0/current/plugins ""
+sudo kdb mount test.ini user/test crypto_gcrypt "crypto/key=DDEBEF9EE2DC931701338212DAF635B17F230E8D" base64 ini
+kdb setmeta user/test/password crypto/encrypt 1
+kdb file user/test/password | xargs cat
+kdb set user/test/password 1234
+#> Set string to "1234"
+kdb file user/test/password | xargs cat
+```
+
+To disable encryption, we can run:
+
+```sh
+kdb setmeta user/test/password crypto/encrypt 0
+kdb file user/test/password | xargs cat
+# STDOUT-REGEX: *password = 1234*
+```
+
+To clean up the environment we run:
+
+```sh
+kdb rm user/test/password
+kdb rm /sw/elektra/kdb/#0/current/plugins
+sudo kdb umount user/test
+```
 
