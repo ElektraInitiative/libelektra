@@ -30,14 +30,14 @@
 
 /* -- KeySet test data ------------------------------------------------------------------------------------------------------------------ */
 
-static KeySet * simpleTestKeySet ()
+static KeySet * simpleTestKeySet (void)
 {
 	return ksNew (10, keyNew ("user/tests/mmapstorage/simpleKey", KEY_VALUE, "root key", KEY_END),
 		      keyNew ("user/tests/mmapstorage/simpleKey/a", KEY_VALUE, "a value", KEY_END),
 		      keyNew ("user/tests/mmapstorage/simpleKey/b", KEY_VALUE, "b value", KEY_END), KS_END);
 }
 
-static KeySet * metaTestKeySet ()
+static KeySet * metaTestKeySet (void)
 {
 	return ksNew (10,
 		      keyNew ("user/tests/mmapstorage", KEY_VALUE, "root key", KEY_META, "a",
@@ -49,7 +49,7 @@ static KeySet * metaTestKeySet ()
 		      KS_END);
 }
 
-static KeySet * largeTestKeySet ()
+static KeySet * largeTestKeySet (void)
 {
 	int i, j;
 	char name[KEY_NAME_LENGTH + 1];
@@ -328,7 +328,7 @@ int cmpfunc (const void * a, const void * b)
 	return (*(int *) a - *(int *) b);
 }
 
-static void testDynArray1 ()
+static void testDynArray1 (void)
 {
 	size_t testData[] = { 8466, 2651, 6624, 9575, 4628, 9361, 417,  8932, 4570, 343,  1866, 3135, 6617, 344,  9419, 2094, 5623,
 			      4920, 2209, 8037, 8437, 7955, 5575, 8355, 1133, 6527, 8543, 3338, 1772, 2278, 7446, 8834, 7728, 665,
@@ -415,6 +415,80 @@ static void test_mmap_ksCopy (const char * tmpFile)
 	PLUGIN_CLOSE ();
 }
 
+static void test_mmap_ksPop_ksNeedSync (const char * tmpFile)
+{
+	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("mmapstorage");
+
+	KeySet * ks = simpleTestKeySet ();
+	Key * lastKey = ksPop (ks);
+	succeed_if (ksNeedSync (ks) == 1, "ksNeedSync was not 1, even though ks needs sync");
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
+	succeed_if (ksNeedSync (ks) == 0, "ksNeedSync was 1, even though ks needs no sync");
+
+	keyDel (lastKey);
+	keyDel (parentKey);
+	ksDel (ks);
+	PLUGIN_CLOSE ();
+}
+
+static void test_mmap_ksGetSize (const char * tmpFile)
+{
+	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("mmapstorage");
+
+	KeySet * ks = simpleTestKeySet ();
+	ssize_t origSize = ksGetSize (ks);
+	succeed_if (origSize > 0, "ks was empty before kdbSet");
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+
+	ksDel (ks);
+	ks = ksNew (0, KS_END);
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
+	ssize_t returnedSize = ksGetSize (ks);
+	succeed_if (origSize == returnedSize, "ksGetSize before and after kdbSet, kdbGet differ");
+
+	keyDel (parentKey);
+	ksDel (ks);
+	PLUGIN_CLOSE ();
+}
+
+static void test_mmap_ksAppendKey (const char * tmpFile)
+{
+	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("mmapstorage");
+
+	KeySet * ks = simpleTestKeySet ();
+	ssize_t origSize = ksGetSize (ks);
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+	ksDel (ks);
+	ks = ksNew (0, KS_END);
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
+
+	Key * toAppend = keyNew ("user/tests/mmapstorage/simpleKey/c", KEY_VALUE, "c value", KEY_END);
+	if (ksAppendKey (ks, toAppend) == -1)
+	{
+		yield_error ("ksAppendKey failed");
+	}
+
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+	ksDel (ks);
+	ks = ksNew (0, KS_END);
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
+	ssize_t returnedSize = ksGetSize (ks);
+
+	succeed_if (returnedSize == (origSize + 1), "ksGetSize after append should be incremented");
+
+	keyDel (parentKey);
+	ksDel (ks);
+	PLUGIN_CLOSE ();
+}
+
+
 /* -- Key operation tests --------------------------------------------------------------------------------------------------------------- */
 /* -- Key name operation tests ---------------------------------------------------------------------------------------------------------- */
 /* -- Key value operation tests --------------------------------------------------------------------------------------------------------- */
@@ -464,6 +538,15 @@ int main (int argc, char ** argv)
 
 	clearStorage (tmpFile);
 	test_mmap_ksCopy (tmpFile);
+
+	clearStorage (tmpFile);
+	test_mmap_ksPop_ksNeedSync (tmpFile);
+
+	clearStorage (tmpFile);
+	test_mmap_ksGetSize (tmpFile);
+
+	clearStorage (tmpFile);
+	test_mmap_ksAppendKey (tmpFile);
 
 	printf ("\ntestmod_mmapstorage RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
