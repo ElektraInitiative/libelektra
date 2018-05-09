@@ -124,7 +124,7 @@ These notes are of interest for people developing Elektra:
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-
+- Travis now builds all (applicable) bindings by default again.
 
 ## Fixes
 
