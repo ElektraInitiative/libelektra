@@ -153,6 +153,7 @@ def maybe_build_image(image) {
     return [(taskname): {
         stage(taskname) {
             node(docker_node_label) {
+                echo "Starting ${env.STAGE_NAME} on ${env.NODE_NAME}"
                 checkout scm
                 def id = imageFullName(image)
                 docker.withRegistry('https://hub.libelektra.org',
