@@ -42,24 +42,24 @@ typechecking until we have finished writing the whole specification.
 sudo kdb mount simplespecification.ini spec/examples/simplespecification ini typechecker
 
 echo 'kdbGet spec/examples/simplespecification \
-keySetName spec/examples/simplespecification/elektraspec/fallback/# \
-keySetMeta elektraspec/type RegexContains b a => Key b :: . -> Key a -> Key a \
-keySetMeta elektraspec/impl fallback a (Key P.Nothing) = a \n fallback _ a = a \
+keySetName spec/examples/simplespecification/elektra/spec/fallback/# \
+keySetMeta elektra/spec/type RegexContains b a => Key b :: . -> Key a -> Key a \
+keySetMeta elektra/spec/impl fallback a (Key P.Nothing) = a \n fallback _ a = a \
 ksAppendKey \
 keyClear \
-keySetName spec/examples/simplespecification/elektraspec/override/#\
+keySetName spec/examples/simplespecification/elektra/spec/override/#\
 keySetMeta elektra/spec/type RegexContains b a => Key b :: . -> Key a -> Key a \
 keySetMeta elektra/spec/impl override (Key P.Nothing) b = b \n override a _ = a \
 ksAppendKey \
 keyClear \
-keySetName spec/examples/simplespecification/elektraspec/check/range \
-keySetMeta elektraspec/type RegexIntersects a b => P.Proxy b :: Range . -> Key a -> Key (RegexIntersection a b) \
-keySetMeta elektraspec/impl checkrange _ a = a \
+keySetName spec/examples/simplespecification/elektra/spec/check/range \
+keySetMeta elektra/spec/type RegexIntersects a b => P.Proxy b :: Range . -> Key a -> Key (RegexIntersection a b) \
+keySetMeta elektra/spec/impl checkrange _ a = a \
 ksAppendKey \
 keyClear \
-keySetName spec/examples/simplespecification/elektraspec/check/long \
-keySetMeta elektraspec/type RegexIntersects a "-[1-9]|-214748364[0-8]|-?[1-9][0-9]|-?[1-9][0-9][0-9]|-?[1-9][0-9][0-9][0-9]|-?[1-9][0-9][0-9][0-9][0-9]|-?[1-9][0-9][0-9][0-9][0-9][0-9]|-?[1-9][0-9][0-9][0-9][0-9][0-9][0-9]|-?[1-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]|-?[1-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]|-?1[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]|-?20[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]|-?21[0-3][0-9][0-9][0-9][0-9][0-9][0-9][0-9]|-?214[0-6][0-9][0-9][0-9][0-9][0-9][0-9]|-?2147[0-3][0-9][0-9][0-9][0-9][0-9]|-?21474[0-7][0-9][0-9][0-9][0-9]|-?214748[0-2][0-9][0-9][0-9]|-?2147483[0-5][0-9][0-9]|-?21474836[0-3][0-9]|[0-9]|214748364[0-7]" => Key a -> Key (RegexIntersection a "-[1-9]|-214748364[0-8]|-?[1-9][0-9]|-?[1-9][0-9][0-9]|-?[1-9][0-9][0-9][0-9]|-?[1-9][0-9][0-9][0-9][0-9]|-?[1-9][0-9][0-9][0-9][0-9][0-9]|-?[1-9][0-9][0-9][0-9][0-9][0-9][0-9]|-?[1-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]|-?[1-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]|-?1[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]|-?20[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]|-?21[0-3][0-9][0-9][0-9][0-9][0-9][0-9][0-9]|-?214[0-6][0-9][0-9][0-9][0-9][0-9][0-9]|-?2147[0-3][0-9][0-9][0-9][0-9][0-9]|-?21474[0-7][0-9][0-9][0-9][0-9]|-?214748[0-2][0-9][0-9][0-9]|-?2147483[0-5][0-9][0-9]|-?21474836[0-3][0-9]|[0-9]|214748364[0-7]") \
-keySetMeta elektraspec/impl checklong a = a \
+keySetName spec/examples/simplespecification/elektra/spec/check/long \
+keySetMeta elektra/spec/type RegexIntersects a "-[1-9]|-214748364[0-8]|-?[1-9][0-9]|-?[1-9][0-9][0-9]|-?[1-9][0-9][0-9][0-9]|-?[1-9][0-9][0-9][0-9][0-9]|-?[1-9][0-9][0-9][0-9][0-9][0-9]|-?[1-9][0-9][0-9][0-9][0-9][0-9][0-9]|-?[1-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]|-?[1-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]|-?1[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]|-?20[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]|-?21[0-3][0-9][0-9][0-9][0-9][0-9][0-9][0-9]|-?214[0-6][0-9][0-9][0-9][0-9][0-9][0-9]|-?2147[0-3][0-9][0-9][0-9][0-9][0-9]|-?21474[0-7][0-9][0-9][0-9][0-9]|-?214748[0-2][0-9][0-9][0-9]|-?2147483[0-5][0-9][0-9]|-?21474836[0-3][0-9]|[0-9]|214748364[0-7]" => Key a -> Key (RegexIntersection a "-[1-9]|-214748364[0-8]|-?[1-9][0-9]|-?[1-9][0-9][0-9]|-?[1-9][0-9][0-9][0-9]|-?[1-9][0-9][0-9][0-9][0-9]|-?[1-9][0-9][0-9][0-9][0-9][0-9]|-?[1-9][0-9][0-9][0-9][0-9][0-9][0-9]|-?[1-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]|-?[1-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]|-?1[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]|-?20[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]|-?21[0-3][0-9][0-9][0-9][0-9][0-9][0-9][0-9]|-?214[0-6][0-9][0-9][0-9][0-9][0-9][0-9]|-?2147[0-3][0-9][0-9][0-9][0-9][0-9]|-?21474[0-7][0-9][0-9][0-9][0-9]|-?214748[0-2][0-9][0-9][0-9]|-?2147483[0-5][0-9][0-9]|-?21474836[0-3][0-9]|[0-9]|214748364[0-7]") \
+keySetMeta elektra/spec/impl checklong a = a \
 ksAppendKey\
 keyClear \
 keySetName spec/examples/simplespecification/key1 \
@@ -81,12 +81,13 @@ kdb get spec/examples/simplespecification/key1
 ```
 
 Add an invalid link and see how it refuses the specification, showing the erroneous
-parts instead.
+parts instead. Note that currently it doesn't get active when using setmeta though.
 
 ```sh
 kdb setmeta spec/examples/simplespecification/key2 fallback/#1 spec/examples/simplespecification/key1
 
 kdb get spec/examples/simplespecification/key2
+# STDERR-REGEX: .*Couldn't match type.*
 
 kdb rm -r spec/examples/simplespecification
 sudo kdb umount spec/examples/simplespecification
