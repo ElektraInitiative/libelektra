@@ -38,8 +38,7 @@ else ()
 	swig_link_libraries (swig-python2 elektra-core elektra-kdb ${PYTHON2_LIBRARIES})
 	set_target_properties (_swig-python2 PROPERTIES OUTPUT_NAME _kdb)
 
-	# Unfortunately compiling Python 2’s source code produces warnings about deprecated `register` storage class specifiers and
-	# casts between incompatible function types.
+	# Unfortunately compiling the generated code produces warnings.
 	if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-deprecated-register")
 	elseif (CMAKE_COMPILER_IS_GNUCXX)

@@ -22,11 +22,12 @@ if (DEPENDENCY_PHASE)
 		set (SWIG_COMPILE_FLAGS
 		     "-Wno-shadow -Wno-old-style-cast -Wno-unused-variable -Wno-unused-parameter -Wno-reserved-user-defined-literal")
 
+		# Disable warnings produced by generated code
 		if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 			set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-deprecated-register")
-		else (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+		elseif (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 			set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-literal-suffix")
-		endif (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+		endif ()
 
 		set_source_files_properties ("ruby.cpp" PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS}")
 	elseif (NOT RUBY_FOUND)

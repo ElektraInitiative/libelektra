@@ -12,6 +12,7 @@ if (DEPENDENCY_PHASE)
 
 		# we call this SWIG_COMPILE_FLAGS because we have the same variable in our swig bindings
 		set (SWIG_COMPILE_FLAGS "-Wno-shadow -Wno-old-style-cast -Wno-unused-variable -Wno-missing-field-initializers")
+		# Unfortunately compiling the generated code produces warnings about casts between incompatible function types.
 		if (CMAKE_COMPILER_IS_GNUCXX)
 			set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-cast-function-type")
 		endif ()
