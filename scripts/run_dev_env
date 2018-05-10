@@ -1,14 +1,18 @@
-# Usage: cd build && source run_dev_shell
+if [ ! -f CMakeCache.txt ]
+then
+	echo "You must be within the build folder before you source this script"
+	echo
+	echo "Usage: cd build && source run_dev_env"
+	return
+fi
+
 
 # common configure script
-SCRIPTS_DIR=$(dirname "$0")
+ELEKTRA_DIR=`grep "^Elektra_SOURCE_DIR" CMakeCache.txt | cut -f 2 -d "="`
+SCRIPTS_DIR="${ELEKTRA_DIR}/scripts"
 . "${SCRIPTS_DIR}/include-common"
 
 BUILD=`pwd`
-if [ -d "$1" ]
-then
-	BUILD=$(readlink -f "$1")
-fi
 
 # set paths
 if [ -z "$PATH" ]
