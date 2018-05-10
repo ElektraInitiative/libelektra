@@ -355,7 +355,7 @@ int elektraCryptoOpenSSLEncrypt (elektraCryptoHandle * handle, Key * k, Key * er
 		content += partitionLen;
 	}
 
-	EVP_EncryptFinal (handle->encrypt, cipherBuffer, &written);
+	EVP_EncryptFinal_ex (handle->encrypt, cipherBuffer, &written);
 	if (written > 0)
 	{
 		BIO_write (encrypted, cipherBuffer, written);
@@ -445,7 +445,7 @@ int elektraCryptoOpenSSLDecrypt (elektraCryptoHandle * handle, Key * k, Key * er
 		}
 	}
 
-	EVP_DecryptFinal (handle->decrypt, contentBuffer, &written);
+	EVP_DecryptFinal_ex (handle->decrypt, contentBuffer, &written);
 	if (written > 0)
 	{
 		BIO_write (decrypted, contentBuffer, written);
