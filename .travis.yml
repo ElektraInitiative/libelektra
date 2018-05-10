@@ -112,7 +112,6 @@ before_install:
       brew install lua
       brew install openssl
       export PKG_CONFIG_PATH=/usr/local/opt/openssl/lib/pkgconfig
-      ln -s /usr/local/opt/openssl/include/openssl/ /usr/local/include/openssl
       brew install python@2; brew link --overwrite python@2
       brew install python || brew upgrade python
       # Since Qt 5.10.1 GCC is unable to compile the Qt-GUI under macOS printing the following error message:
@@ -184,7 +183,6 @@ before_script:
   - >
     cmake
     -GNinja
-    -DBUILD_STATIC=OFF
     -DPLUGINS="${plugins:-ALL;-jni}"
     -DBINDINGS="${bindings:-ALL}"
     -DENABLE_DEBUG=ON
