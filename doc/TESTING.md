@@ -71,6 +71,12 @@ You have some options to avoid running them as root:
 4. Use the XDG resolver (see `scripts/configure-xdg`) and set
    the environment variable `XDG_CONFIG_DIRS`, currently lacks `spec` namespaces, see #734.
 
+
+## Environment
+
+- The script `checkbashisms` is needed to check for bashism, it is part of `devscripts`.
+
+
 ## Conventions
 
 - All names of the test must start with test (needed by test driver for installed tests).
