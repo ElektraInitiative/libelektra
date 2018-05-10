@@ -255,6 +255,7 @@ Many problems were resolved with the following fixes:
   the corresponding programming language.
   thanks to René Schwaiger
 - type checker now also honors `type` next to `check/type`
+- Fix various compiler warnings
 
 ## Outlook
 
