@@ -5,7 +5,7 @@
 - infos/needs =
 - infos/placements = presetstorage
 - infos/status = maintained nodep memleak unfinished old
-- infos/metadata = check/type check/type/min check/type/max
+- infos/metadata = check/type type check/type/min check/type/max
 - infos/description = type checker using COBRA data types
 
 ## Introduction
@@ -34,6 +34,9 @@ type was valid. For example, the type `string empty` equals the type
 `any`. This facility builds a union of the sets of instances existing
 types specify. It is now deprecated due to a more general sum type
 facility.
+
+`check/type/min` and  `check/type/max` are deprecated, please use the range
+plugin instead.
 
 ## Example
 
