@@ -24,11 +24,6 @@ This folder contains documentation for “Elektra – the configuration framewor
 - [API](API.md): This overview of the application programming interface tells you how you can develop an application that uses Elektra.
 - [Design](DESIGN.md): This document describes the design of Elektra’s C API.
 
-### Virtualization
-
-- [Docker](docker/README.md): We provide [Docker](https://docker.com) images so you can try out Elektra in an virtualization environment.
-- [Vagrant](vagrant/README.md):  If you prefer [Vagrant](https://www.vagrantup.com) over Docker, then please take a look at this instruction manual.
-
 ## Advanced Information
 
 - [Metadata](METADATA.ini): This document specifies data about the KDB (meta information), like supported data types and configuration options.
