@@ -9,8 +9,14 @@
 
 #include <gcrypt.h>
 
+gcry_cipher_hd_t nothing ()
+{
+	gcry_cipher_hd_t elektraCryptoHandle = NULL;
+	return elektraCryptoHandle;
+}
+
 int main (void)
 {
-	gcry_cipher_hd_t elektraCryptoHandle;
+	nothing ();
 	return 0;
 }

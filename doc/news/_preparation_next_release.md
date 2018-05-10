@@ -256,6 +256,14 @@ Many problems were resolved with the following fixes:
   thanks to René Schwaiger
 - type checker now also honors `type` next to `check/type`
 - Fix various compiler warnings
+- The detection of
+
+   - Botan,
+   - Libgcrypt,
+   - LibGit2 and
+   - OpenSSL
+
+   now also works properly, if we treat warnings as errors (compiler switch `-Werror`).
 
 ## Outlook
 
