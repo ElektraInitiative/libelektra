@@ -159,6 +159,7 @@ protected:
 
 public:
 	ModulesPluginDatabase ();
+	~ModulesPluginDatabase ();
 	/* TODO: reintroduce with next API break
 	virtual ~ModulesPluginDatabase ();
 	*/
@@ -198,6 +199,7 @@ public:
 	 * @param conf keyset containing keys from system/elektra/plugins
 	 */
 	explicit PluginVariantDatabase (const KeySet & conf);
+	~PluginVariantDatabase ();
 	/* TODO: reintroduce with next API break
 	virtual ~PluginVariantDatabase ();
 	*/
