@@ -85,6 +85,8 @@ We added even more functionality, which could not make it to the highlights:
 - The Order Preserving Minimal Perfect Hash Map (OPMPHM), used to speed up the lookups, got optimized
   and a benchmark was added,
   thanks to Kurt Micheli
+- Added a script that calculates the complexity of configuration settings based on their specification,
+  thanks to Anton Hößl
 - `kdb ls` now has `-0` option (needed for Web UI)
 
 ## Other News
@@ -94,6 +96,8 @@ We added even more functionality, which could not make it to the highlights:
   It includes a benchmark of different cryptographic providers.
 - Markus Raab gave a [talk](https://cfp.linuxwochen.at/de/LWW18/public/events/798) at Linuxwochen Wien (in German).
   For similar talks in English, please refer to the [FOSDEM talks](https://fosdem.org/2018/schedule/speaker/markus_raab/).
+- The code of conduct was changed to not have the word "project" in it (project has per definition an end date,
+  Elektra has not, thus it is called an initiative)
 
 ## Documentation
 
@@ -140,9 +144,6 @@ We removed:
 
 Compilation:
 
-- list and spec plugins are needed if tests are enabled.
-  So if ENABLE_TESTING is checked, a storage, a resolver,
-  the list and the spec plugin is needed.
 
 - We resolved undefined behavior in polymorphic classes that contained virtual functions, by explicitly adding a virtual destructor.
   thanks to René Schwaiger
@@ -164,6 +165,10 @@ These notes are of interest for people maintaining packages of Elektra:
 
 - Docu is updated that cmake3 is required.
   thanks to Lukas Winkler for reporting.
+- To run all tests successfully, the `spec` and `list` plugin is required.
+  So if `ENABLE_TESTING` is checked, cmake checks the presence of a storage,
+  a resolver, the list and the spec plugin.
+  Thanks to René Schwaiger
 - This will be the last release supporting Debian Wheezy
   (LTS support will stop in May)
   Directly after the release, Jessie (oldstable) with gcc 4.8.4 will
@@ -174,6 +179,9 @@ These notes are of interest for people maintaining packages of Elektra:
 
 These notes are of interest for people developing Elektra:
 
+- `. run_dev_env` is a script to be sourced from the build directory.
+  It sets environment variables, so that Elektra from the build
+  directory is used (instead of the installed one).
 - We now allow `clang-reformat-5.0`,  `clang-reformat-6.0`, and
   `clang-reformat-7.0` for formatting.
   Thanks to René Schwaiger.
@@ -187,6 +195,8 @@ These notes are of interest for people developing Elektra:
   via the CMake function `add_plugin` by adding `TEST_README`.
   Furthermore `TEST_REQUIRED_PLUGINS` allows us to specify which
   additional plugins are required.
+  thanks to René Schwaiger
+- `const` was added to exceptions in catch blocks
   thanks to René Schwaiger
 - The CMake functions
 
