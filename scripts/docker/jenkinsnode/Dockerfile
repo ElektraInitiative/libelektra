@@ -41,8 +41,7 @@ RUN apt-get -y install \
   openssh-server \
   maven \
   git \
-  libcurl4-gnutls-dev \
-  gnupg2
+  libcurl4-gnutls-dev
 RUN apt-get clean && \
   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
@@ -68,13 +67,6 @@ RUN echo "\n\n\n\n\nY" | adduser --quiet --disabled-password jenkins && \
 # setup cabal for the jenkins user, then go back to root
 USER jenkins
 RUN cabal update
-USER root
-
-# install the GPG test key that is used for the crypto and fcrypt unit tests
-COPY test_key.asc /home/jenkins/test_key.asc
-USER jenkins
-RUN gpg2 --import /home/jenkins/test_key.asc && rm /home/jenkins/test_key.asc
-RUN echo "trust-model always" >> /home/jenkins/.gnupg/gpg.conf
 USER root
 
 # setup the run- utilities
