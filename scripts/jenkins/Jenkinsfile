@@ -529,7 +529,7 @@ def withDockerEnv(stage_name, image, cl) {
                         def cpu_count = cpuCount()
                         withEnv(["MAKEFLAGS='-j${cpu_count+2} -l${cpu_count*2}'",
                                  "CTEST_PARALLEL_LEVEL='${cpu_count+2}'"]) {
-                            echo "Staring ${env.STAGE_NAME} on ${env.NODE_NAME}"
+                            echo "Starting ${env.STAGE_NAME} on ${env.NODE_NAME}"
                             checkout scm
                             docker.image(imageFullName(image)).inside { cl() }
                         }
