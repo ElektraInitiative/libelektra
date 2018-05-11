@@ -12,6 +12,7 @@
 // XXX add missing jobs
 // TODO have a per plugin/binding deps in Dockerfile for easier maintanence
 // TODO add warnings plugins to scan for compiler warnings
+// TODO maybe intend with 2 lines to not waste so much ws
 
 // Imports
 import java.text.SimpleDateFormat
