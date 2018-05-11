@@ -17,6 +17,8 @@
 #include "hexnumber.h"
 
 #define CREATE_TEST_KEY(HEX) (keyNew ("user/tests/hexnumber/" #HEX, KEY_VALUE, #HEX, KEY_META, "type", "int", KEY_END))
+#define CREATE_TEST_KEY_UNITBASE(HEX) (keyNew ("user/tests/hexnumber/" #HEX, KEY_VALUE, #HEX, KEY_META, "unit/base", "hex", KEY_END))
+#define CREATE_TEST_KEY_CUSTOM(HEX, TYPE) (keyNew ("user/tests/hexnumber/" #HEX, KEY_VALUE, #HEX, KEY_META, "type", TYPE, KEY_END))
 #define CHECK_TEST_KEY(HEX, DEC) succeed_if_same_string (keyString (ksLookupByName (ks, "user/tests/hexnumber/" #HEX, 0)), #DEC)
 
 
@@ -64,6 +66,59 @@ static void test_default (void)
 	PLUGIN_CLOSE ();
 }
 
+static void test_customint (void)
+{
+	Key * parentKey = keyNew ("user/tests/hexnumber", KEY_END);
+	KeySet * conf = ksNew (10, keyNew ("system/integertypes", KEY_VALUE, "customint;othercustomint", KEY_END), KS_END);
+	PLUGIN_OPEN ("hexnumber");
+	KeySet * ks = ksNew (30, CREATE_TEST_KEY_CUSTOM (0x1F, "customint"), CREATE_TEST_KEY_CUSTOM (0xFF, "othercustomint"),
+			     CREATE_TEST_KEY_CUSTOM (0x22, "string"), KS_END);
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
+	CHECK_TEST_KEY (0x1F, 31);
+	CHECK_TEST_KEY (0xFF, 255);
+	CHECK_TEST_KEY (0x22, 0x22);
+
+	ksDel (ks);
+	keyDel (parentKey);
+
+	PLUGIN_CLOSE ();
+}
+
+static void test_unitbase (void)
+{
+	Key * parentKey = keyNew ("user/tests/hexnumber", KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("hexnumber");
+	KeySet * ks = ksNew (30, CREATE_TEST_KEY_UNITBASE (0x1F), CREATE_TEST_KEY_UNITBASE (0xFF), KS_END);
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
+	CHECK_TEST_KEY (0x1F, 31);
+	CHECK_TEST_KEY (0xFF, 255);
+
+	ksDel (ks);
+	keyDel (parentKey);
+
+	PLUGIN_CLOSE ();
+}
+
+static void test_force (void)
+{
+	Key * parentKey = keyNew ("user/tests/hexnumber", KEY_END);
+	KeySet * conf = ksNew (10, keyNew ("system/integertypes", KEY_VALUE, "customint;othercustomint", KEY_END),
+			       keyNew ("system/force", KEY_VALUE, "1", KEY_END), KS_END);
+	PLUGIN_OPEN ("hexnumber");
+	KeySet * ks = ksNew (30, CREATE_TEST_KEY_CUSTOM (0x1F, "customint"), CREATE_TEST_KEY_CUSTOM (0xFF, "othercustomint"),
+			     CREATE_TEST_KEY_CUSTOM (0x22, "string"), KS_END);
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
+	CHECK_TEST_KEY (0x1F, 31);
+	CHECK_TEST_KEY (0xFF, 255);
+	CHECK_TEST_KEY (0x22, 34);
+
+	ksDel (ks);
+	keyDel (parentKey);
+
+	PLUGIN_CLOSE ();
+}
+
 int main (int argc, char ** argv)
 {
 	printf ("HEXNUMBER    TESTS\n");
@@ -73,6 +128,9 @@ int main (int argc, char ** argv)
 
 	test_basics ();
 	test_default ();
+	test_customint ();
+	test_unitbase ();
+	test_force ();
 
 	print_result ("testmod_hexnumber");
 

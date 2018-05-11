@@ -11,7 +11,6 @@
 
 #include <kdberrors.h>
 #include <kdbhelper.h>
-#include <kdbprivate.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -97,6 +96,7 @@ static int convertHexToDec (Key * key, Key * parentKey)
 	result = snprintf (decValue, length, "%llu", value);
 	if (result < 0)
 	{
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INVALID_FORMAT, parentKey, "Unable to convert '%s' into decimal", hexValue);
 		elektraFree (decValue);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
@@ -148,7 +148,7 @@ static int convertDecToHex (Key * key, Key * parentKey)
 	errno = errnoSaved;
 
 	// convert long long int back to string (formatted as hexadecimal)
-	int result = snprintf (NULL, 0, "0x%llx", value);
+	const int result = snprintf (NULL, 0, "0x%llx", value);
 	if (result < 0)
 	{
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INVALID_FORMAT, parentKey, "Unable to convert '%s' into hexadecimal", decValue);
@@ -163,8 +163,7 @@ static int convertDecToHex (Key * key, Key * parentKey)
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
-	result = snprintf (hexValue, length, "0x%llx", value);
-	if (result < 0)
+	if (snprintf (hexValue, length, "0x%llx", value) < 0)
 	{
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INVALID_FORMAT, parentKey, "Unable to convert '%s' into hexadecimal", decValue);
 		elektraFree (hexValue);
@@ -216,14 +215,6 @@ static bool isHexUnitBase (const Key * key)
  */
 static bool hasType (const Key * key, char ** types)
 {
-	if (!types)
-	{
-		char * default_types[] = { "int",  "byte",	  "short",     "unsigned_short",
-					   "long", "unsigned_long", "long_long", "unsigned_long_long",
-					   NULL };
-		types = default_types;
-	}
-
 	const Key * typeMeta = keyGetMeta (key, "type");
 	if (!typeMeta)
 	{
@@ -319,6 +310,14 @@ void parseConfig (KeySet * config, HexnumberData * data)
 	{
 		data->integerTypes = NULL;
 	}
+
+	if (!data->integerTypes)
+	{
+		static char * default_types[] = { "int",  "byte",	  "short",     "unsigned_short",
+						  "long", "unsigned_long", "long_long", "unsigned_long_long",
+						  NULL };
+		data->integerTypes = default_types;
+	}
 }
 
 /**
@@ -358,19 +357,29 @@ int elektraHexnumberGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	int status = ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 	while ((cur = ksNext (returned)) != NULL)
 	{
-		if (keyIsString (cur))
+		if (!keyIsString (cur))
 		{
-			if (isHexUnitBase (cur) && !isHexString (cur))
-			{
-				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INVALID_FORMAT, parentKey,
-						    "Key '%s' has unit/base metadata set as hex but value '%s' does not start with 0x",
-						    cur->key, keyString (cur));
-				status |= ELEKTRA_PLUGIN_STATUS_ERROR;
-			}
-			else if (isHexString (cur) && (data->forceConversion || hasType (cur, data->integerTypes)))
+			continue;
+		}
+
+		bool hexString = isHexString (cur);
+		if (isHexUnitBase (cur))
+		{
+			if (hexString)
 			{
 				status |= convertHexToDec (cur, parentKey);
 			}
+			else
+			{
+				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INVALID_FORMAT, parentKey,
+						    "Key '%s' has unit/base metadata set as hex but value '%s' does not start with 0x",
+						    keyName (cur), keyString (cur));
+				status |= ELEKTRA_PLUGIN_STATUS_ERROR;
+			}
+		}
+		else if (hexString && (data->forceConversion || hasType (cur, data->integerTypes)))
+		{
+			status |= convertHexToDec (cur, parentKey);
 		}
 	}
 

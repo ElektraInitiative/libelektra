@@ -33,14 +33,14 @@ When mounting a backend with the hexnumber plugin, a few parameters can be confi
 1. To enable forced conversion mode set `/force` to any value. In forced conversion mode the plugin converts **ALL** strings starting with 
    `0x` (or `0X`) into decimal before passing the value on to the rest of Elektra.
 
-    ```sh
+    ```
     sudo kdb mount test.ecf /examples/hexnumber/forced hexnumber /force=1
     ```
 
 2. The types recognized as integers can be configured. For this purpose specify all types you want to be considered for possible hexadecimal
    conversion as a semicolon(;)-delimited list. This overwrites the list of default types completely.
    
-   ```sh
+   ```
    sudo kdb mount test.ecf /examples/hexnumber/customtypes hexnumber /integertypes=int;long;customint
    ```
 
@@ -48,13 +48,13 @@ When mounting a backend with the hexnumber plugin, a few parameters can be confi
 
 - To mount a simple backend that uses hexadecimal numbers, you can use:
 
-    ```sh
+    ```
     sudo kdb mount test.ecf /examples/hexnumber/test hexnumber
     ```
 
 - To unmount the plugin use the following command:
 
-    ```sh
+    ```
     sudo kdb umount /examples/hexnumber/test
     ```
 

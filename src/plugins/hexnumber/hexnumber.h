@@ -14,7 +14,7 @@
 #include <kdbplugin.h>
 
 #define ELEKTRA_HEXNUMBER_PLUGIN_NAME "hexnumber"
-#define ELEKTRA_HEXNUMBER_META_KEY "internal/"ELEKTRA_HEXNUMBER_PLUGIN_NAME"/ishex"
+#define ELEKTRA_HEXNUMBER_META_KEY "internal/" ELEKTRA_HEXNUMBER_PLUGIN_NAME "/ishex"
 
 int elektraHexnumberGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraHexnumberSet (Plugin * handle, KeySet * ks, Key * parentKey);
