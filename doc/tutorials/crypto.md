@@ -40,7 +40,7 @@ We **DO NOT RECOMMEND** to use our key on your local machine, as it is available
 
 ```sh
 curl -o test_key.asc https://raw.githubusercontent.com/ElektraInitiative/libelektra/master/src/plugins/crypto/test_key.asc
-gpg2 --import test_key.asc
+gpg --import test_key.asc
 echo "trust-model always" > ~/.gnupg/gpg.conf
 rm test_key.asc
 ```
