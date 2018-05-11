@@ -519,8 +519,9 @@ def trackCoverage(do_track, cl) {
  * @param cl A closure that should be run inside the docker image
  */
 def withDockerEnv(stage_name, image, cl) {
+    def run_stage = (stage_name =~ BUILD_TARGET) as boolean
     return [(stage_name): {
-        maybeRegexStage(stage_name) {
+        maybeStage(stage_name, run_stage) {
             node(docker_node_label) {
                 docker.withRegistry('https://hub.libelektra.org',
                                     'docker-hub-elektra-jenkins') {
@@ -612,13 +613,13 @@ def checksum(file) {
 
 /* Generate a Stage
  *
- * If the stage name matches BUILD_TARGET regex the stage is executed else
- * skipped
+ * If `expression` evaluates to TRUE, a stage(`name`) with `body` is run
  * @param name Name of the stage
+ * @param expression If True, run body
  * @param body Closure representing stage body
  */
-def maybeRegexStage(String name, Closure body) {
-    if(name =~ BUILD_TARGET) {
+def maybeStage(String name, boolean expression, Closure body) {
+    if(expression) {
         stage(name, body)
     } else {
         stage(name) {
