@@ -1,23 +1,23 @@
 include (LibAddMacros)
 
-# Allows one to add plugins written in haskell, setting up the include paths and
+# Allows one to add plugins written in Haskell, setting up the include paths and
 # libraries automatically.
 #
-# Expects that plugins make use of cabal as their build system.
+# Expects that plugins make use of Cabal as their build system.
 #
 # MODULES:
-#  the name of the haskell modules to be compiled
+#  the name of the Haskell modules to be compiled
 #  by default it assumes there is a single module called Elektra.<pluginName>
 # NO_SHARED_SANDBOX:
-#  By default all haskell plugins and the bindings are compiled in a shared sandbox to
-#  peed up compilation times by only compiling commonly-used libraries once. Set this
+#  By default all Haskell plugins and the bindings are compiled in a shared sandbox to
+#  speed up compilation times by only compiling commonly-used libraries once. Set this
 #  flag to use an independent sandbox instead in case there are e.g. library version conflicts
 # SANDBOX_ADD_SOURCES:
-#  additional source paths which should be added to the cabal sandbox
-#  required if the build should depend on haskell libraries not available on hackage
+#  additional source paths which should be added to the Cabal sandbox
+#  required if the build should depend on Haskell libraries not available on hackage
 # ADDITIONAL_SOURCES:
-#  in case your plugin depends on other files than *.hs and *.lhs haskell files and the default
-#  cabal file and c test file and setup file, you can specify them here
+#  in case your plugin depends on other files than *.hs and *.lhs Haskell files and the default
+#  Cabal file and c test file and setup file, you can specify them here
 #
 macro (add_haskell_plugin target)
 	cmake_parse_arguments (ARG

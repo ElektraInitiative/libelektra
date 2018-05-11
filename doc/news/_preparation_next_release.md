@@ -145,7 +145,7 @@ We removed:
 
 Shell scripts:
 
-- cp and mv no longer accept cascading keys.1G
+- cp and mv no longer accept cascading keys.
 
 ## Notes for Maintainer
 
@@ -186,6 +186,8 @@ These notes are of interest for people developing Elektra:
   thanks to René Schwaiger
 - `const` was added to exceptions in catch blocks
   thanks to René Schwaiger
+- Mention to read [doc/DESIGN.md](https://master.libelektra.org/doc/DESIGN.md)
+  in the contributing guidelines.
 - The CMake functions
 
    - `add_plugin`
