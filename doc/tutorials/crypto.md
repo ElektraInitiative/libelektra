@@ -177,6 +177,10 @@ sudo kdb umount user/test
 
 ## Configuration Value Encryption/Decryption
 
+So far we learned how to encrypt and decrypt entrie configuration files.
+Sometimes we only want to protect a smaller subset of configuration values in a bigger configuration setting.
+For this reason the `crypto` plugin was developed.
+
 The `crypto` plugin is actually a family of plugins and comes with three different providers:
 
 1. `crypto_gcrypt` using `libgcrypt`,
@@ -240,10 +244,12 @@ kdb setmeta user/test/password crypto/encrypt 1
 kdb file user/test/password | xargs cat
 kdb set user/test/password 1234
 #> Set string to "1234"
+kdb set user/test/config "I am not encrypted"
+#> Create a new key user/test/config with string "I am not encrypted"
 kdb file user/test/password | xargs cat
 ```
 
-To disable encryption, we can run:
+To disable encryption on `user/test/password`, we can run:
 
 ```sh
 kdb setmeta user/test/password crypto/encrypt 0
@@ -254,6 +260,7 @@ kdb file user/test/password | xargs cat
 To clean up the environment we run:
 
 ```sh
+kdb rm user/test/config
 kdb rm user/test/password
 kdb rm /sw/elektra/kdb/#0/current/plugins
 sudo kdb umount user/test
