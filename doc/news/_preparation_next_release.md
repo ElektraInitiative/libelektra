@@ -142,18 +142,6 @@ We removed:
   of doing something unexpected, thanks to @sanssecours for reporting
   (see #1483)
 
-Compilation:
-
-
-- We resolved undefined behavior in polymorphic classes that contained virtual functions, by explicitly adding a virtual destructor.
-  thanks to René Schwaiger
-  They previously did not have any virtual method.
-  You might get warnings like:
-```
-Symbol `_ZTVN3kdb5tools18MockPluginDatabaseE' has different size in shared object, consider re-linking
-```
-
-TODO: revert c7ca68f25750af26f2dbdb92b507b86fc012ea6d Plugin Database?
 
 Shell scripts:
 

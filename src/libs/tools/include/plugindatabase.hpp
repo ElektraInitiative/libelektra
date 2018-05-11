@@ -159,7 +159,9 @@ protected:
 
 public:
 	ModulesPluginDatabase ();
+	/* TODO: reintroduce with next API break
 	virtual ~ModulesPluginDatabase ();
+	*/
 
 	std::vector<std::string> listAllPlugins () const;
 	PluginDatabase::Status status (PluginSpec const & whichplugin) const;
@@ -196,7 +198,9 @@ public:
 	 * @param conf keyset containing keys from system/elektra/plugins
 	 */
 	explicit PluginVariantDatabase (const KeySet & conf);
+	/* TODO: reintroduce with next API break
 	virtual ~PluginVariantDatabase ();
+	*/
 
 	std::vector<std::string> listAllPlugins () const;
 
