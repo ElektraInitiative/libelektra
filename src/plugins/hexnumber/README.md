@@ -61,28 +61,42 @@ When mounting a backend with the hexnumber plugin, a few parameters can be confi
 ## Example
 ```sh
 # Mount plugin
-sudo kdb mount test.ecf user/examples/hexnumber/test hexnumber
+sudo kdb mount test.ecf user/examples/hexnumber/test dump hexnumber
 
 # Set up examples
 kdb set user/examples/hexnumber/test/hex 0x1F
-kdb setmeta user/examples/hexnumber/text/hex type int
+kdb setmeta user/examples/hexnumber/test/hex type int
 
 kdb set user/examples/hexnumber/test/dec 26
-kdb setmeta user/examples/hexnumber/text/dec type int
+kdb setmeta user/examples/hexnumber/test/dec type int
 
 kdb set user/examples/hexnumber/test/string value
-kdb setmeta user/examples/hexnumber/text/string type string
+kdb setmeta user/examples/hexnumber/test/string type string
+
+kdb set user/examples/hexnumber/test/hex2 0x1F
+kdb setmeta user/examples/hexnumber/test/hex2 unit/base hex
+
+kdb set user/examples/hexnumber/test/hexerror 0xXFX
+kdb setmeta user/examples/hexnumber/test/hexerror unit/base hex
 
 # Example 1: read hex value
 kdb get user/examples/hexnumber/test/hex
 #> 31
 
 # Example 2: decimal value not converted
-kdb set user/examples/hexnumber/test/dec 26
+kdb get user/examples/hexnumber/test/dec
 #> 26
 
 # Example 3: string untouched
 kdb get user/examples/hexnumber/test/string
+#> value
+
+# Example 4: read hex value with unit/base
+kdb get user/examples/hexnumber/test/hex2
+#> 31
+
+# Example 5: string untouched
+kdb get user/examples/hexnumber/test/hexerror
 #> value
 
 # Undo changes
