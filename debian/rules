@@ -45,7 +45,6 @@ CMAKE_ARGS = -DLIB_SUFFIX="/$(DEB_HOST_MULTIARCH)" \
   -DCMAKE_MODULE_LINKER_FLAGS="$(LDFLAGS)" \
   -DCMAKE_SHARED_LINKER_FLAGS="$(LDFLAGS)"
 
-T = $(CURDIR)/teststmp
 EMPTY =
 SPACE = $(EMPTY) $(EMPTY)
 COMMA_SPACE = ,$(SPACE)
@@ -61,10 +60,7 @@ override_dh_auto_configure:
 
 override_dh_auto_test:
 ifeq (,$(findstring nocheck,$(DEB_BUILD_OPTIONS)))
-	mkdir -p "$(T)"
-	cd obj-* && env HOME="$(T)" TMPDIR="$(T)" LD_LIBRARY_PATH="${CURDIR}/obj-${DEB_HOST_MULTIARCH}/lib" ctest --output-on-failure -LE kdbtests
-	find "$(T)" | sort
-	rm -rf "$(T)"
+	cd obj-* && ctest --output-on-failure -LE kdbtests
 endif
 
 override_dh_auto_install:
