@@ -16,16 +16,19 @@ RUN apt-get update \
         bison \
         ruby \
         ruby-dev \
-        python-dev \
-        python3-dev \
+        python-all \
+        python3-all \
         libpython3-dev \
+        dh-exec \
         dh-lua \
         liblua5.3-dev \
         tclcl-dev \
         libaugeas-dev \
         libbotan1.10-dev \
         libyajl-dev \
+        git \
         libgit2-dev \
+        libgtest-dev \
         libboost-all-dev \
         libssl-dev \
         libdbus-1-dev \
@@ -34,6 +37,10 @@ RUN apt-get update \
         libglib2.0-dev \
         libxerces-c-dev \
         libyaml-cpp-dev \
+        qtbase5-dev \
+        qtdeclarative5-dev \
+        libmarkdown2-dev \
+        discount \
         swig3.0 \
         libuv1-dev \
         ghc \
@@ -47,6 +54,15 @@ RUN apt-get update \
         systemd \
         libsystemd-dev \
         llvm \
+        devscripts \
+        lintian \
+        diffutils \
+        patch \
+        patchutils \
+        git-buildpackage \
+        reprepro \
+        doxygen \
+        graphviz \
         gawk \
         lcov \
         icheck \
@@ -77,5 +93,7 @@ RUN useradd \
     --gid ${JENKINS_GROUPID} \
     --shell "/bin/bash" \
     jenkins
-
 USER ${JENKINS_USERID}
+
+RUN git config --global user.email 'Jenkins <autobuilder@libelektra.org>' \
+    && git config --global user.name 'Jenkins'

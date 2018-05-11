@@ -133,6 +133,11 @@ stage("Full builds") {
     parallel generate_full_build_stages()
 }
 
+// build debian packages if on master
+// TODO replace true with env.ghprbSourceBranch=="master"
+maybeStage("Build Debian Packages", true) {
+    parallel generate_package_build_stages()
+}
 
 /*****************************************************************************
  * Stage Generators
@@ -417,6 +422,52 @@ kill `pidof dbus-daemon`
     }
 }
 
+/* Generate Stages that build Debian packages
+ */
+def generate_package_build_stages() {
+    def tasks = [:]
+    tasks << build_package_debian_stretch()
+    return tasks
+}
+
+def build_package_debian_stretch() {
+    return withDockerEnv("package/stretch", DOCKER_IMAGES.stretch) {
+        withCredentials([file(credentialsId: 'jenkins-key', variable: 'KEY'),
+                         file(credentialsId: 'jenkins-secret-key', variable: 'SKEY')]) {
+            sh "gpg --import $KEY"
+            sh "gpg --import $SKEY"
+        }
+        withEnv(["DEBSIGN_PROGRAM=gpg",
+                 "DEBFULLNAME=Jenkins (User for Elektra automated build system)",
+                 "DEBEMAIL=autobuilder@libelektra.org"]) {
+            sh "rm -R ./*"
+            def target_dir="./libelektra"
+            checkout scm: [
+                $class: 'GitSCM',
+                branches: scm.branches,
+                extensions: scm.extensions + [
+                    [$class: 'PerBuildTag'],
+                    [$class: 'RelativeTargetDirectory',
+                     relativeTargetDir: target_dir]
+                ],
+                userRemoteConfigs: scm.userRemoteConfigs
+            ]
+            dir(target_dir) {
+                sh "git checkout -B temp"
+                sh "git tag -f $VERSION"
+
+                sh "git checkout -B debian origin/debian"
+                sh "git merge --no-ff -m 'merge $VERSION' temp"
+
+                sh "dch -l '.$BUILD_NUMBER' 'auto build'"
+                sh "git commit -am 'auto build $VERSION'"
+
+                sh "gbp buildpackage -sa"
+            }
+        }
+        publishDebianPackages()
+    }
+}
 
 /*****************************************************************************
  * Define helper functions
@@ -673,4 +724,60 @@ def determineBuildTarget(default_target = ".*") {
 def prefixDockerId(name) {
     def base = 'build-elektra-'
     return base + name
+}
+
+/* Returns True if we are on the master branch
+ */
+def isMaster() {
+    return env.sha1=="master"
+}
+
+/* Publishes all files necessary for hosting a debian package
+ * @param remote where the repository is located
+ */
+def publishDebianPackages(remote="a7") {
+    if(isMaster()) {
+        def remotedir = 'compose/frontend/incoming'
+        sshPublisher(
+          publishers: [
+            sshPublisherDesc(
+              configName: remote,
+              transfers: [
+                sshTransfer(
+                  sourceFiles: '*.deb',
+                  remoteDirectory: remotedir
+                ),
+                sshTransfer(
+                  sourceFiles: '*.build',
+                  remoteDirectory: remotedir
+                ),
+                sshTransfer(
+                  sourceFiles: '*.buildinfo',
+                  remoteDirectory: remotedir
+                ),
+                sshTransfer(
+                  sourceFiles: '*.dsc',
+                  remoteDirectory: remotedir
+                ),
+                sshTransfer(
+                  sourceFiles: '*.tar.xz',
+                  remoteDirectory: remotedir
+                ),
+                sshTransfer(
+                  sourceFiles: '*.tar.gz',
+                  remoteDirectory: remotedir
+                ),
+                sshTransfer(
+                  sourceFiles: '*.changes',
+                  remoteDirectory: remotedir
+                )
+              ]
+            )
+          ],
+          verbose: true,
+          failOnError: true
+        )
+    } else {
+        echo "Skipping package publish because we are not on master"
+    }
 }
