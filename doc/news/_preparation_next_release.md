@@ -64,10 +64,17 @@ or the
 
 ?? Web UI
 
+The Web UI was greatly improved.
+
 The API was updated for [elektrad](https://master.libelektra.org/doc/api_blueprints/elektrad.apib)
-and [webd](doc/api_blueprints/webd.apib)
+and [webd](doc/api_blueprints/webd.apib) (former clusterd).
+
+- The Web-UI now is able to install itself via cmake.
+- Using visiblility you are now able to hide irrelevant configuration settings.
 
 > Note that Web UI requires Elektra 0.8.23 or later.
+
+Thanks to Daniel Bugl.
 
 
 ### <<HIGHLIGHT3>>
