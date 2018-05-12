@@ -108,6 +108,9 @@ We added even more functionality, which could not make it to the highlights:
 - Added a script that calculates the complexity of configuration settings based on their specification,
   thanks to Anton Hößl
 - `kdb ls` now has `-0` option (needed for Web UI)
+- The [csvstorage](https://www.libelektra.org/plugins/csvstorage) now can treat selected columns
+  to be part of the key.
+  thanks to Thomas Waser
 
 ## Other News
 

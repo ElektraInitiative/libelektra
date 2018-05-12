@@ -5,7 +5,7 @@
 - infos/provides =
 - infos/recommends =
 - infos/placements = getstorage setstorage
-- infos/status = maintained experimental memleak
+- infos/status = maintained memleak experimental
 - infos/metadata =
 - infos/description = base for haskell plugins
 
