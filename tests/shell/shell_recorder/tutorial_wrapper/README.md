@@ -44,15 +44,13 @@ comment `# STDERR:`.
 
 ## Add a test
 
-To add a Markdown Shell Recorder test for a certain Markdown file, you use:
+To add a Markdown Shell Recorder test for a certain Markdown file, use the CMake function `add_msr_test`:
 
 ```
 add_msr_test (name file)
 ```
 
-in a CMakeLists.txt.
-
-> Note that test cases executed with `add_msr_test` have the root of the source code repository as current working directory.
+> Note that test cases executed with `add_msr_test` use the root of the source code repository as current working directory.
 
 `add_msr_test` also supports `REQUIRED_PLUGINS` which allows you to specify which plugins need to be present in order to
 run the Markdown Shell Recorder test.
@@ -64,7 +62,7 @@ For example:
 add_msr_test (tutorial_validation "${CMAKE_SOURCE_DIR}/doc/tutorials/validation.md" REQUIRED_PLUGINS validation)
 ```
 
-Adds the [validation tutorial](/doc/tutorials/validation.md) as Markdown Shell Recorder test and requires the plugin `validation` to be present.
+adds the [validation tutorial](/doc/tutorials/validation.md) as Markdown Shell Recorder test and requires the plugin `validation` to be present.
 If the plugin is missing, the test will not be added.
 
 
@@ -108,7 +106,7 @@ All check start with a comment sign (`#`).
 - `# RET: regex` This directive compares the return code (exit status) of the command to the value after `# RET:` . If not specified, the exit value is compared to `0`. The Shell Recorder uses **regular expressions** to compare the exit code, so an expression like `1|5` is also valid.
 
 - `# ERROR: regex` Checks if the `kdb` command produced error `regex`. The text `regex` is a **regular expression** (e.g. `1|7` will check if the error `1` or the error `7` occurred).
-   If you do not specify a regex, then the Markdown Shell Recorder will then check if the command printed nothing to the standard error output.
+   If you do not specify a regex, then the Markdown Shell Recorder will check if the command printed nothing to the standard error output.
 
 - `# WARNINGS: csl` The Shell Recorder compares this **comma separated list** of numbers to the warnings thrown by a `kdb` command.
 
@@ -132,10 +130,10 @@ To get the output, use `-V` or `--output-on-failure`.
 ### Interactive Debugging
 
 Sometimes you want to inspect what happens at a specific line within the Shell Recorder.
-These features require to use either
+This feature requires you to use either use
 
-- `ctest --interactive-debug-mode 1`
-- run the shell recorder directly, which can be done using
+- `ctest --interactive-debug-mode 1`, or
+- run the shell recorder directly, which can be done using (~e is the path to an Elektra checkout)
   ```
   cd build
   . ~e/scripts/run_dev_env
