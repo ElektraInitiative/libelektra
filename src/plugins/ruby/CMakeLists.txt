@@ -25,6 +25,7 @@ if (DEPENDENCY_PHASE)
 		# Disable warnings produced by generated code
 		if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 			set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-deprecated-register")
+			set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-macro-redefined")
 		elseif (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 			set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-literal-suffix")
 		endif ()
