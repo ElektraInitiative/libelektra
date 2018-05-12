@@ -238,11 +238,11 @@ trap cleanup EXIT INT QUIT TERM
 
 # Parse optional argument `-p`
 OPTIND=1
-keepProtocol='false'
+printProtocol='false'
 while getopts "p" opt; do
 	case "$opt" in
 	p)
-		keepProtocol='true'
+		printProtocol='true'
 		;;
 	esac
 done
@@ -272,7 +272,7 @@ executedTests=0
 if [ "$#" -lt '1' ] || [ "$#" -gt '2' ];
 then
 	printf 'Usage: %s [-p] input_script [protocol to compare]\n\n' "$0"
-	printf '       -p    keep protocol file\n' "$0"
+	printf '       -p    print protocol file\n' "$0"
 	rm "$OutFile"
 	exit 0
 fi
@@ -313,14 +313,12 @@ then
 	fi
 fi
 
-if [ "$EVAL" -eq 0 ] && [ $keepProtocol = 'false' ]; then
-	rm -f "$OutFile"
-else
-	printerr '\nProtocol File: %s\n\n' "$OutFile"
-	printerr '—— Content of Protocol File ————————————————————————————————————————————————————\n'
+if [ "$EVAL" -ne 0 ] || [ $printProtocol = 'true' ]; then
+	printerr '\n\n—— Protocol ————————————————————————————————————————————————————\n'
 	>&2 cat "$OutFile"
-	printerr '————————————————————————————————————————————————————————————————————————————————\n'
+	printerr '————————————————————————————————————————————————————————————————\n'
 fi
+rm -f "$OutFile"
 
 rm "${TMPFILE}"
 exit "$EVAL"
