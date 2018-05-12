@@ -152,7 +152,7 @@ Shell scripts:
 
 These notes are of interest for people maintaining packages of Elektra:
 
-- Docu is updated that cmake3 is required.
+- Docu is updated that [cmake3](https://cmake.org/cmake/help/v3.0/) is required.
   thanks to Lukas Winkler for reporting.
 - To run all tests successfully, the `spec` and `list` plugin is required.
   So if `ENABLE_TESTING` is checked, cmake checks the presence of a storage,

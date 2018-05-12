@@ -2,7 +2,8 @@
 
 ## Dependencies
 
-For the base system you only need cmake, git, and build-essential
+For the base system you only need [cmake3](https://cmake.org/cmake/help/v3.0/),
+[git](https://git-scm.com/), and essential build tools
 (make, gcc, and some standard Unix tools; alternatively ninja and
 clang are also supported but not described here):
 
@@ -78,7 +79,7 @@ branch).
 
 ## Preparation
 
-Elektra uses cmake3.
+Elektra uses [cmake3](https://cmake.org/cmake/help/v3.0/).
 Tested are cmake version 3.0.2 and 3.7.2 among others.
 
 To configure Elektra graphically (with curses) run (`..` belongs to command):
