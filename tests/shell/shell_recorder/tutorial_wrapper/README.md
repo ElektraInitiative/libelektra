@@ -1,12 +1,12 @@
 # Markdown to Shell Recorder
 
-The Markdown Shell Recorder extracts executable code snippets from Markdown files and translate them into a suitable format for [`shell_recorder`](../shell_recorder/README.md).
+The Markdown Shell Recorder extracts executable shell snippets from Markdown files and translate them into a suitable format for the [`shell_recorder`](../shell_recorder/README.md).
 
 Snippets are shell commands inside a syntax block with additional checks (such as exit code, output, errors, etc) encoded as comments. These blocks start with ```` ```sh ````  and end with ```` ``` ````.
 
 ## Example
 
-Let us look at a simple example test first:
+Let us look at a simple example first:
 
 ```sh
 kdb set /examples/markdown/napalm death
@@ -41,6 +41,34 @@ it is not `0`. If we expect another exit code we can use the special comment `# 
 the third command, which will fail with exit code `1`, since it tries to delete a non-existing key. The Shell Recorder also checks the
 value the last command prints to the standard error output since, we specified the expected text `Did not find the key` via the special
 comment `# STDERR:`.
+
+## Add a test
+
+If you want to add a Markdown Shell Recorder tests for the README.md of your plugin, you can simply pass
+`TEST_README` as argument to `add_plugin`.
+
+To add other Markdown Shell Recorder tests for a certain Markdown file (such as an tutorial), use the CMake function `add_msr_test`:
+
+```
+add_msr_test (name file)
+```
+
+> Note that test cases executed with `add_msr_test` use the root of the source code repository as current working directory.
+
+`add_msr_test` also supports `REQUIRED_PLUGINS` which allows you to specify which plugins need to be present in order to
+run the Markdown Shell Recorder test.
+If one of the specified plugins is missing, the test will not be added.
+
+For example:
+
+```
+add_msr_test (tutorial_validation "${CMAKE_SOURCE_DIR}/doc/tutorials/validation.md" REQUIRED_PLUGINS validation)
+```
+
+adds the [validation tutorial](/doc/tutorials/validation.md) as Markdown Shell Recorder test and requires the plugin `validation` to be present.
+If the plugin is missing, the test will not be added.
+
+
 
 ## Syntax
 
@@ -81,15 +109,50 @@ All check start with a comment sign (`#`).
 - `# RET: regex` This directive compares the return code (exit status) of the command to the value after `# RET:` . If not specified, the exit value is compared to `0`. The Shell Recorder uses **regular expressions** to compare the exit code, so an expression like `1|5` is also valid.
 
 - `# ERROR: regex` Checks if the `kdb` command produced error `regex`. The text `regex` is a **regular expression** (e.g. `1|7` will check if the error `1` or the error `7` occurred).
+   If you do not specify a regex, then the Markdown Shell Recorder will check if the command printed nothing to the standard error output.
 
 - `# WARNINGS: csl` The Shell Recorder compares this **comma separated list** of numbers to the warnings thrown by a `kdb` command.
 
 - `# STDOUT-REGEX: regex` The **regular expression** `regex` is matched against the output of the command. Newlines must be encoded as `⏎`.
 
-## Comments
+### Comments
 
-- All lines starting with `#` that aren’t checks are treated as comments and will be ignored.
+- All other lines starting with `#` (that aren’t checks) are treated as comments and will be ignored.
 
 ## Examples
 
 For examples, please take a look at a the ReadMe of plugins such as [YAMLCPP](/src/plugins/yamlcpp/README). The file [SyntaxCheck.md](SyntaxCheck.md) also contains some examples for the Markdown Shell Recorder syntax.
+
+## Debugging
+
+If a test case fails, a detailed protocol will be printed by the Shell Recorder.
+By default `ctest` suppresses all output.
+To get the output, use `-V` or `--output-on-failure`.
+(`-V` additionally prints the executed command but does so for every executed test.)
+
+### Interactive Debugging
+
+Sometimes you want to inspect what happens at a specific line within the Shell Recorder.
+This feature requires you to use either use
+
+- `ctest --interactive-debug-mode 1` (with some limitations: you do not see what you type), or
+- run the shell recorder directly, which can be done using (~e is the path to an Elektra checkout)
+  ```
+  cd build
+  . ~e/scripts/run_dev_env
+  tests/shell/shell_recorder/tutorial_wrapper/markdown_shell_recorder.sh path/to/file.md
+  ```
+
+Once you started the Shell Recorder in either of these ways, you can simply use
+
+```
+interactive
+```
+
+as command to drop into a shell.
+To drop out of the shell type `ctrl+D` or use `exit`.
+
+By default `$SHELL` is used but you can also select the shell via an argument to `interactive`.
+Note that the chosen shell needs to support `-i /dev/tty` as arguments.
+The shells `dash`, `bash`, and `zsh` are known to work, `fish` only executes commands
+after you dropped out of the shell.

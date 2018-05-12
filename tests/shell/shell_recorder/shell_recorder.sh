@@ -1,5 +1,3 @@
-#!/bin/sh
-
 @INCLUDE_COMMON@
 
 set -f
@@ -44,6 +42,30 @@ execute()
 
 	[ -s "$OutFile" ] && printf '\n' >> "$OutFile"
 	printf 'CMD: %s\n' "$command" >> "$OutFile"
+
+# ===============
+# = INTERACTIVE =
+# ===============
+
+	if [ x"$(first "$command")" = xinteractive ]
+	then
+		S=$(second "$command")
+		if [ -z "$S" ]
+		then
+			S=$SHELL
+		fi
+		if [ -z "$S" ]
+		then
+			S=bash
+		fi
+		echo "spawning interactive shell $S"
+		$S -i /dev/tty
+		return
+	fi
+
+# ========
+# = EXEC =
+# ========
 
 	sh -c -f "$command" 2>stderr 1>stdout
 
@@ -157,7 +179,7 @@ execute()
 
 tail()
 {
-	printf '%s' "$*" | cut -d ' ' -f2-
+	printf '%s' "$*" | cut -sd ' ' -f2-
 }
 
 first() {
@@ -165,7 +187,7 @@ first() {
 }
 
 second() {
-	printf '%s' "$*" | cut -d ' ' -f2
+	printf '%s' "$*" | cut -sd ' ' -f2
 }
 
 run_script()

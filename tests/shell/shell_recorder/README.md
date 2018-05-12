@@ -3,7 +3,14 @@
 ## Overview
 
 The Shell Recorder is a test tool that checks the output and return values of shell commands such as `kdb`. It allows you to write unit and
-regression tests. Lets take a look at a simple Shell Recorder test first. We store the text:
+regression tests.
+
+Generally you do not want to directly use the shell recorder but use the [Markdown format](tutorial_wrapper/README.md) instead.
+
+
+## Example
+
+Lets take a look at a simple Shell Recorder test first. We store the text:
 
 ```
 Mountpoint: user/examples/shellrecorder
