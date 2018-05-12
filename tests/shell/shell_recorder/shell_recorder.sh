@@ -43,6 +43,30 @@ execute()
 	[ -s "$OutFile" ] && printf '\n' >> "$OutFile"
 	printf 'CMD: %s\n' "$command" >> "$OutFile"
 
+# ===============
+# = INTERACTIVE =
+# ===============
+
+	if [ x"$(first "$command")" = xinteractive ]
+	then
+		S=$(second "$command")
+		if [ -z "$S" ]
+		then
+			S=$SHELL
+		fi
+		if [ -z "$S" ]
+		then
+			S=bash
+		fi
+		echo "spawning interactive shell $S"
+		$S -i /dev/tty
+		return
+	fi
+
+# ========
+# = EXEC =
+# ========
+
 	sh -c -f "$command" 2>stderr 1>stdout
 
 	RETVAL="$?"
