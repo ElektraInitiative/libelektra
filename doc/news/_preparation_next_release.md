@@ -91,6 +91,7 @@ We added even more functionality, which could not make it to the highlights:
 
 ## Other News
 
+- We added a tutorial about securing the integrity and confidentiality of configuration values.
 - Peter Nirschl finished his [thesis](https://www.libelektra.org/ftp/elektra/publications/nirschl2018cryptographic.pdf)
   ([signature](https://www.libelektra.org/ftp/elektra/publications/nirschl2018cryptographic.pdf.sig)).
   It includes a benchmark of different cryptographic providers.
