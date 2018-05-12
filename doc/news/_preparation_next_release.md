@@ -206,7 +206,7 @@ These notes are of interest for people developing Elektra:
    # STDERR:
    ```
 
-   . The MSR will then check if the command printed nothing to the standard error output.
+   . The Markdown Shell Recorder will then check if the command printed nothing to the standard error output.
 - The [Shell Recorder][] now also prints the content of the protocol file if a test was unsuccessful or you used the command switch `-p`.
   thanks to René Schwaiger
 - All current versions of Clang-Format (6.0+) and the outdated Clang-Format 5 will now produce exactly the same output for the whole
@@ -229,6 +229,7 @@ These notes are of interest for people developing Elektra:
   thanks to Lukas Winkler
 - Speeding up your test runs via ctest -j is now possible
   thanks to Lukas Winkler
+- Documentation and debugging capabilities of [Markdown Shell Recorder][] were improved.
 
 [Markdown Shell Recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
 [Shell Recorder]: https://master.libelektra.org/tests/shell/shell_recorder
