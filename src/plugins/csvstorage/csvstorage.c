@@ -259,7 +259,7 @@ static char * readNextLine (FILE * fp, char delim, int * lastLine, int * linesRe
 }
 
 
-// @returns a newly allocated keyset with the column names
+/// @returns a newly allocated keyset with the column names
 static KeySet * createHeaders (Key * parentKey, int columns, const char ** colNames)
 {
 	KeySet * header = ksNew (0, KS_END);
@@ -287,7 +287,7 @@ static KeySet * createHeaders (Key * parentKey, int columns, const char ** colNa
 	return header;
 }
 
-// @returns a newly allocated keyset with the column names
+/// @returns a newly allocated keyset with the column names
 static KeySet * readHeaders (Key * parentKey, char * lineBuffer, char delim, int lineCounter, int lastLine, const char ** colNames)
 {
 	int colCounter = 0;
@@ -758,9 +758,9 @@ int elektraCsvstorageSet (Plugin * handle, KeySet * returned, Key * parentKey)
 Plugin * ELEKTRA_PLUGIN_EXPORT (csvstorage)
 {
 	// clang-format off
-    return elektraPluginExport("csvstorage",
-            ELEKTRA_PLUGIN_GET,	&elektraCsvstorageGet,
-            ELEKTRA_PLUGIN_SET,	&elektraCsvstorageSet,
-            ELEKTRA_PLUGIN_END);
+	return elektraPluginExport("csvstorage",
+			ELEKTRA_PLUGIN_GET,	&elektraCsvstorageGet,
+			ELEKTRA_PLUGIN_SET,	&elektraCsvstorageSet,
+			ELEKTRA_PLUGIN_END);
 }
 
