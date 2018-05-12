@@ -13,11 +13,12 @@
 #endif
 
 #include "csvstorage.h"
-#include "kdbproposal.h"
 #include <errno.h>
+#include <kdbassert.h>
 #include <kdbease.h>
 #include <kdberrors.h>
 #include <kdbhelper.h>
+#include <kdbproposal.h> // for ksRenameKeys
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -30,6 +31,8 @@
 static char * parseRecord (char ** ptr, char delim, int * isQuoted, int * isCol, int * hasUnescapedDQuote, unsigned long * counter,
 			   unsigned short mode)
 {
+	ELEKTRA_NOT_NULL (ptr);
+	ELEKTRA_NOT_NULL (*ptr);
 	if (**ptr == '"')
 	{
 		if (!(*isCol) && !(*isQuoted))
@@ -348,7 +351,8 @@ static int csvRead (KeySet * returned, Key * parentKey, char delim, Key * colAsP
 	{
 		if (columns != fixColumnCount)
 		{
-			ELEKTRA_SET_ERROR (117, parentKey, "illegal number of columns in Header line");
+			ELEKTRA_SET_ERRORF (117, parentKey, "illegal number of columns (%lu - %lu) in Header line: %s", columns,
+					    fixColumnCount, lineBuffer);
 			elektraFree (lineBuffer);
 			fclose (fp);
 			return -1;
@@ -357,6 +361,7 @@ static int csvRead (KeySet * returned, Key * parentKey, char delim, Key * colAsP
 	unsigned long colCounter = 0;
 	unsigned long lineCounter = 0;
 
+	// TODO: refactoring needed here
 	int nr_keys = 1;
 	KeySet * header;
 	Key * key;
@@ -474,14 +479,16 @@ static int csvRead (KeySet * returned, Key * parentKey, char delim, Key * colAsP
 		{
 			if (fixColumnCount)
 			{
-				ELEKTRA_SET_ERRORF (117, parentKey, "illegal number of columns in line %lu", lineCounter);
+				ELEKTRA_SET_ERRORF (117, parentKey, "illegal number of columns (%lu - %lu) in line %lu: %s", colCounter,
+						    columns, lineCounter, lineBuffer);
 				elektraFree (lineBuffer);
 				fclose (fp);
 				keyDel (dirKey);
 				ksDel (header);
 				return -1;
 			}
-			ELEKTRA_ADD_WARNINGF (118, parentKey, "illegal number of columns in line %lu", lineCounter);
+			ELEKTRA_ADD_WARNINGF (118, parentKey, "illegal number of columns (%lu - %lu)  in line %lu: %s", colCounter, columns,
+					      lineCounter, lineBuffer);
 		}
 		lineCounter += linesRead;
 		elektraFree (lineBuffer);
@@ -618,7 +625,7 @@ static int csvWrite (KeySet * returned, Key * parentKey, KeySet * exportKS, Key 
 	keyDel (ksLookup (returned, parentKey, KDB_O_POP));
 
 	unsigned long colCounter = 0;
-	unsigned long columns = 0;
+	unsigned long columns = 0; // TODO: not needed?
 	unsigned long lineCounter = 0;
 	Key * cur;
 	KeySet * toWriteKS;
@@ -713,7 +720,8 @@ static int csvWrite (KeySet * returned, Key * parentKey, KeySet * exportKS, Key 
 		}
 		if (colCounter != columns)
 		{
-			ELEKTRA_SET_ERRORF (117, parentKey, "illegal number of columns in line %lu\n", lineCounter);
+			ELEKTRA_SET_ERRORF (117, parentKey, "illegal number of columns (%lu - %lu) in line %lu", colCounter, columns,
+					    lineCounter);
 			fclose (fp);
 			return -1;
 		}
