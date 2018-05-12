@@ -39,7 +39,7 @@ In order to set up our tutorial we import the Elektra test key.
 We **DO NOT RECOMMEND** to use our key on your local machine, as it is available to the public!
 
 ```sh
-gpg --import src/plugins/crypto/test_key.asc
+gpg2 --import src/plugins/crypto/test_key.asc || gpg --import src/plugins/crypto/test_key.asc
 echo "trust-model always" > ~/.gnupg/gpg.conf
 ```
 
