@@ -179,7 +179,7 @@ execute()
 
 tail()
 {
-	printf '%s' "$*" | cut -d ' ' -f2-
+	printf '%s' "$*" | cut -sd ' ' -f2-
 }
 
 first() {
@@ -187,7 +187,7 @@ first() {
 }
 
 second() {
-	printf '%s' "$*" | cut -d ' ' -f2
+	printf '%s' "$*" | cut -sd ' ' -f2
 }
 
 run_script()
