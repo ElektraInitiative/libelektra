@@ -132,7 +132,7 @@ To get the output, use `-V` or `--output-on-failure`.
 Sometimes you want to inspect what happens at a specific line within the Shell Recorder.
 This feature requires you to use either use
 
-- `ctest --interactive-debug-mode 1`, or
+- `ctest --interactive-debug-mode 1` (with some limitations: you do not see what you type), or
 - run the shell recorder directly, which can be done using (~e is the path to an Elektra checkout)
   ```
   cd build
@@ -147,5 +147,9 @@ interactive
 ```
 
 as command to drop into a shell.
-By default $SHELL is used but you can also select the shell via an argument to `interactive`.
-Note that the chosen shell needs to support `-i /dev/tty` as arguments (dash, bash, and zsh do).
+To drop out of the shell type `ctrl+D` or use `exit`.
+
+By default `$SHELL` is used but you can also select the shell via an argument to `interactive`.
+Note that the chosen shell needs to support `-i /dev/tty` as arguments.
+The shells `dash`, `bash`, and `zsh` are known to work, `fish` only executes commands
+after you dropped out of the shell.
