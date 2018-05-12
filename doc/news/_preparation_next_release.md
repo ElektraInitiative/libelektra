@@ -207,8 +207,9 @@ These notes are of interest for people developing Elektra:
    ```
 
    . The MSR will then check if the command printed nothing to the standard error output.
-- The [Shell Recorder][] now also prints the content of the protocol file if a test was unsuccessful or you used the command switch `-p`.
+- The [Shell Recorder][] now prints the content of the protocol file if a test was unsuccessful or you used the command switch `-p`.
   thanks to René Schwaiger
+- The [Shell Recorder][] now always removes the protocol file.
 - All current versions of Clang-Format (6.0+) and the outdated Clang-Format 5 will now produce exactly the same output for the whole
   codebase.
   thanks to René Schwaiger

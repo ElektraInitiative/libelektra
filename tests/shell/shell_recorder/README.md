@@ -53,7 +53,10 @@ RET: 1337
 
 ```
 kdb set user/examples/shellrecorder/key value
+
+ERROR - RET:
 Return value “0” does not match “1337”
+
 
 ERROR - STDOUT:
 “Create a new key user/examples/shellrecorder/key with string "value"”
@@ -61,20 +64,17 @@ does not match
 “NaNaNaNaNaNaNa”
 
 shell_recorder /Users/rene/Documents/test.esr RESULTS: 2 test(s) done 2 error(s).
-Protocol File: /var/folders/hx/flbncdhj4fs87095gzxvnj3h0000gn/T/elektraenv.XXXXXXXXX.gWyTCr2O
-```
 
-. We see that both checks failed. The protocol file at the end of the output contain the real output and  return value of the command:
-
-```
-…
+—— Protocol ————————————————————————————————————————————————————
+CMD: kdb set user/examples/shellrecorder/key value
 RET: 0
-…
+=== FAILED return value does not match expected pattern 1337
 STDOUT: Create a new key user/examples/shellrecorder/key with string "value"
-…
+=== FAILED stdout does not match expected pattern NaNaNaNaNaNaNa
+————————————————————————————————————————————————————————————————
 ```
 
-.
+. We see that both checks failed. The protocol at the end of the output contain the real output and return value of the command.
 
 ## Configuration
 
