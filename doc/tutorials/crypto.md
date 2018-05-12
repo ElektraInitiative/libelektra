@@ -39,10 +39,8 @@ In order to set up our tutorial we import the Elektra test key.
 We **DO NOT RECOMMEND** to use our key on your local machine, as it is available to the public!
 
 ```sh
-curl -o test_key.asc https://raw.githubusercontent.com/ElektraInitiative/libelektra/master/src/plugins/crypto/test_key.asc
-gpg --import test_key.asc
+gpg --import ../../src/plugins/crypto/test_key.asc
 echo "trust-model always" > ~/.gnupg/gpg.conf
-rm test_key.asc
 ```
 
 ## Introduction
@@ -264,7 +262,6 @@ To disable encryption on `user/test/password`, we can run:
 ```sh
 kdb setmeta user/test/password crypto/encrypt 0
 kdb file user/test/password | xargs cat
-# STDOUT-REGEX: *password = 1234*
 ```
 
 To clean up the environment we run:
