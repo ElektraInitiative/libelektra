@@ -35,14 +35,6 @@ If you have no GPG private key available, you can generate one by entering the f
 
 The `fcrypt` plugin and the `crypto` plugin support both versions (version 1 and version 2) of GPG.
 
-In order to set up our tutorial we import the Elektra test key.
-We **DO NOT RECOMMEND** to use our key on your local machine, as it is available to the public!
-
-```sh
-gpg2 --import src/plugins/crypto/test_key.asc || gpg --import src/plugins/crypto/test_key.asc
-echo "trust-model always" > ~/.gnupg/gpg.conf
-```
-
 ## Introduction
 
 In this tutorial we explain the use of the `crypto` plugin and the `fcrypt` plugin by a simple example:

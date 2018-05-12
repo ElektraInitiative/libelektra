@@ -12,7 +12,5 @@ add_msr_test (kdb-ls "${CMAKE_SOURCE_DIR}/doc/help/kdb-ls.md")
 
 add_msr_test (tutorial_validation "${CMAKE_SOURCE_DIR}/doc/tutorials/validation.md" REQUIRED_PLUGINS validation)
 
-add_msr_test (tutorial_crypto "${CMAKE_SOURCE_DIR}/doc/tutorials/crypto.md" REQUIRED_PLUGINS crypto_gcrypt fcrypt)
-
 # Only works with super user privileges, since it writes to `/etc/hosts`:
 # add_msr_test (tutorial_mount "${CMAKE_SOURCE_DIR}/doc/tutorials/mount.md")
