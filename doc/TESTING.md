@@ -23,7 +23,8 @@ To run `memcheck` tests run in the build directory:
 
 They are supplementary, ideally you run all three.
 
-Some tests write into system paths.
+Some tests write into system paths and into the home directory.
+This implies that the UID running the tests must have a home directory.
 To avoid running tests that write to the disk you
 can use:
 
@@ -72,9 +73,28 @@ You have some options to avoid running them as root:
    the environment variable `XDG_CONFIG_DIRS`, currently lacks `spec` namespaces, see #734.
 
 
-## Environment
+## Recommended Environment
 
-- The script `checkbashisms` is needed to check for bashism, it is part of `devscripts`.
+The tests are designed to disable themselves if some necessary tools are
+missing or other environmental constraints are not met. To really run
+*all* tests (also those that are mostly designed for internal development)
+you need to fulfil:
+
+- Elektra must be installed (for gen + external test cases).
+- Mounted /dev (to have stdin and stdout for import & export test cases).
+- A running dbus daemon (Either "system" or "session" daemon).
+- `gpg2` or `gpg` binary must be available.
+
+Above environment is needed for both `kdb run_all` (installed test cases)
+and `make run_all` (test cases executed from the build directory).
+For `make run_all` following development tools enable even more tests:
+
+- The script `checkbashisms` is needed to check for bashism (tests/shell/check_bashisms.sh),
+  it is part of `devscripts`.
+- `git` and `clang-reformat-5` (to 7) to check formatting.
+- `pkg-config` must be available (check_external.sh and check_gen.sh).
+- A build environment including gcc (check_gen.sh).
+
 
 
 ## Conventions
@@ -90,7 +110,9 @@ You have some options to avoid running them as root:
  - should only write below
    - `/tests/<testname>` (e.g. `/tests/ruby`) and
    - `system/elektra` (e.g. for mounts or globalplugins).
- - clean up everything they change (in KDB and temporary files)
+ - Before executing tests, no keys must be present below `/tests`.
+   The test cases need to clean up everything they wrote.
+   (Including temporary files)
 - If your test has memory leaks, e.g. because the library used leaks and
   they cannot be fixed, give them the label `memleak` with the following
   command:
