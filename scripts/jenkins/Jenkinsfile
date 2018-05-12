@@ -133,9 +133,8 @@ stage("Full builds") {
     parallel generate_full_build_stages()
 }
 
-// build debian packages if on master
-// TODO replace true with env.ghprbSourceBranch=="master"
-maybeStage("Build Debian Packages", true) {
+// build debian packages + upload if on master
+stage("Build Debian Packages") {
     parallel generate_package_build_stages()
 }
 
