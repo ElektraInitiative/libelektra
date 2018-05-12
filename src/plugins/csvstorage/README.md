@@ -33,6 +33,12 @@ If this key is set the plugin will yield an error for every file that doesn't ha
 Sets the column names. Only usable in combination with the `columns` key. The number of subkeys must match the number of columns.
 Conflicts with usage of `header`.
 
+`columns/index`
+specify which column should be used to index records instead of the record number.
+
+`/export/<column name>`
+only export column `column name`. Configuration can be give multiple times for different columns to export.
+
 ## Examples
 
 First line should determine the headers:
@@ -158,6 +164,59 @@ kdb get user/examples/csv/#1
 # Undo changes to the key database
 kdb rm -r /examples/csv
 sudo kdb umount /examples/csv
+```
+
+# Column as index
+
+```
+kdb mount config.csv /examples/csv csvstorage "delimiter=;,header=colname,columns/index=IMDB"
+
+printf 'IMDB;Title;Year\n'                          >> `kdb file /examples/csv`
+printf 'tt0108052;Schindler´s List;1993\n'          >> `kdb file /examples/csv`
+printf 'tt0110413;Léon: The Professional;1994\n'    >> `kdb file /examples/csv`
+
+kdb ls /examples/csv
+#> user/examples/csv/tt0108052
+#> user/examples/csv/tt0108052/IMDB
+#> user/examples/csv/tt0108052/Title
+#> user/examples/csv/tt0108052/Year
+#> user/examples/csv/tt0110413
+#> user/examples/csv/tt0110413/IMDB
+#> user/examples/csv/tt0110413/Title
+#> user/examples/csv/tt0110413/Year
+
+kdb get /examples/csv/tt0108052/Title
+#> Schindler´s List
+
+kdb rm -r /examples/csv
+sudo kdb umount /examples/csv
+
+```
+
+# Export filter
+
+```
+kdb mount config.csv /examples/csv csvstorage "delimiter=;,header=colname,columns/index=IMDB"
+
+printf 'IMDB;Title;Year\n'                          >> `kdb file /examples/csv`
+printf 'tt0108052;Schindler´s List;1993\n'          >> `kdb file /examples/csv`
+printf 'tt0110413;Léon: The Professional;1994\n'    >> `kdb file /examples/csv`
+
+kdb export /examples/csv csvstorage -c "delimiter=;,header=colname,columns/index=IMDB,export=,export/IMDB=,export/Title="
+#> IMDB;Title
+#> tt0108052;Schindler´s List
+#> tt0110413;Léon: The Professional
+
+
+kdb export /examples/csv csvstorage -c "delimiter=;,header=colname,columns/index=IMDB,export=,export/IMDB=,export/Year="
+#> IMDB;Year
+#> tt0108052;1993
+#> tt0110413;1994
+
+
+kdb rm -r /examples/csv
+sudo kdb umount /examples/csv
+
 ```
 
 ## Limitations
