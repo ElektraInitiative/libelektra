@@ -62,7 +62,7 @@
                     },
                     {
                         "name": "FAQ",
-                        "type": "staticref",
+                        "type": "staticfile",
                         "options": {
                             "path": "doc/help/elektra-faq.md"
                         }

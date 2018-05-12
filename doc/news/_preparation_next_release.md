@@ -64,9 +64,10 @@ or the
 
 ?? Web UI
 
-Video?
+The API was updated for [elektrad](https://master.libelektra.org/doc/api_blueprints/elektrad.apib)
+and [webd](doc/api_blueprints/webd.apib)
 
-Note that Web UI requires Elektra 0.8.23 or later.
+> Note that Web UI requires Elektra 0.8.23 or later.
 
 
 ### <<HIGHLIGHT3>>
@@ -122,6 +123,9 @@ We improved the documentation in the following ways:
 - Document limitations of resolver (kdbOpen fails if no home directory found)
   and yaml plugin (intermixing of array and objects not detected, which is possible
   in Elektra but impossible in JSON)
+- Required environment to run tests is documented.
+- A decision about [deferred plugin calls](doc/decisions/deferred_plugin_calls.md) has been made and implemented.
+  Thanks to Thomas Wahringer.
 - <<TODO>>
 
 ## Compatibility
@@ -162,7 +166,15 @@ These notes are of interest for people maintaining packages of Elektra:
   (LTS support will stop in May)
   Directly after the release, Jessie (oldstable) with gcc 4.8.4 will
   be the oldest supported platform.
+- `Base64.pdf` is not installed anymore.
 - <<TODO>>
+
+## Website
+
+- Error page that is shown if no JavaScript is enabled now more clearly
+  says that the Website only renders content from the repo and
+  only contains free JavaScript.
+- Make FAQ more visible.
 
 ## Notes for Elektra's Developers
 
@@ -222,8 +234,7 @@ These notes are of interest for people developing Elektra:
   thanks to René Schwaiger and Lukas Winkler
 - We introduced git reference repositories to save I/O on our build system,
   thanks to Lukas Winkler
-- Set `LD_LIBRARY_PATH` in all tests removing the need to specify it during
-  ctest runs
+- Set `LD_LIBRARY_PATH` in all tests removing the need to specify it for running ctest
   thanks to Lukas Winkler
 - Provide the `RUN_SERIAL` property to all tests that can not be run in
   parallel
