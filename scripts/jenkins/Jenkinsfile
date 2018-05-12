@@ -6,12 +6,21 @@
  * 2. define the main stages of the pipeline
  * 3. describe sub stages. This is where you will want to add new builds
  * 4. helper section to help write build scripts
+ *
+ * General Information about Jenkinsfiles can be found at
+ * https://jenkins.io/doc/book/pipeline/jenkinsfile/.
+ *
+ * A Snippet generator is available to the public at
+ * https://qa.nuxeo.org/jenkins/pipeline-syntax/.
+ * A list of available commands on the build server can be found after a login at
+ * https://build.libelektra.org/jenkins/job/elektra-jenkinsfile/pipeline-syntax/.
  */
 
 // FIXME sloc publish errors
 // XXX add missing jobs
 // TODO have a per plugin/binding deps in Dockerfile for easier maintanence
 // TODO add warnings plugins to scan for compiler warnings
+// TODO maybe intend with 2 lines to not waste so much ws
 
 // Imports
 import java.text.SimpleDateFormat
@@ -132,6 +141,10 @@ stage("Full builds") {
     parallel generate_full_build_stages()
 }
 
+// build debian packages + upload if on master
+stage("Build Debian Packages") {
+    parallel generate_package_build_stages()
+}
 
 /*****************************************************************************
  * Stage Generators
@@ -153,6 +166,7 @@ def maybe_build_image(image) {
     return [(taskname): {
         stage(taskname) {
             node(docker_node_label) {
+                echo "Starting ${env.STAGE_NAME} on ${env.NODE_NAME}"
                 checkout scm
                 def id = imageFullName(image)
                 docker.withRegistry('https://hub.libelektra.org',
@@ -415,6 +429,52 @@ kill `pidof dbus-daemon`
     }
 }
 
+/* Generate Stages that build Debian packages
+ */
+def generate_package_build_stages() {
+    def tasks = [:]
+    tasks << build_package_debian_stretch()
+    return tasks
+}
+
+def build_package_debian_stretch() {
+    return withDockerEnv("package/stretch", DOCKER_IMAGES.stretch) {
+        withCredentials([file(credentialsId: 'jenkins-key', variable: 'KEY'),
+                         file(credentialsId: 'jenkins-secret-key', variable: 'SKEY')]) {
+            sh "gpg --import $KEY"
+            sh "gpg --import $SKEY"
+        }
+        withEnv(["DEBSIGN_PROGRAM=gpg",
+                 "DEBFULLNAME=Jenkins (User for Elektra automated build system)",
+                 "DEBEMAIL=autobuilder@libelektra.org"]) {
+            sh "rm -R ./*"
+            def target_dir="./libelektra"
+            checkout scm: [
+                $class: 'GitSCM',
+                branches: scm.branches,
+                extensions: scm.extensions + [
+                    [$class: 'PerBuildTag'],
+                    [$class: 'RelativeTargetDirectory',
+                     relativeTargetDir: target_dir]
+                ],
+                userRemoteConfigs: scm.userRemoteConfigs
+            ]
+            dir(target_dir) {
+                sh "git checkout -B temp"
+                sh "git tag -f $VERSION"
+
+                sh "git checkout -B debian origin/debian"
+                sh "git merge --no-ff -m 'merge $VERSION' temp"
+
+                sh "dch -l '.$BUILD_NUMBER' 'auto build'"
+                sh "git commit -am 'auto build $VERSION'"
+
+                sh "gbp buildpackage -sa"
+            }
+        }
+        publishDebianPackages()
+    }
+}
 
 /*****************************************************************************
  * Define helper functions
@@ -517,8 +577,9 @@ def trackCoverage(do_track, cl) {
  * @param cl A closure that should be run inside the docker image
  */
 def withDockerEnv(stage_name, image, cl) {
+    def run_stage = (stage_name =~ BUILD_TARGET) as boolean
     return [(stage_name): {
-        maybeRegexStage(stage_name) {
+        maybeStage(stage_name, run_stage) {
             node(docker_node_label) {
                 docker.withRegistry('https://hub.libelektra.org',
                                     'docker-hub-elektra-jenkins') {
@@ -526,9 +587,10 @@ def withDockerEnv(stage_name, image, cl) {
                         def cpu_count = cpuCount()
                         withEnv(["MAKEFLAGS='-j${cpu_count+2} -l${cpu_count*2}'",
                                  "CTEST_PARALLEL_LEVEL='${cpu_count+2}'"]) {
-                            echo "Staring ${env.STAGE_NAME} on ${env.NODE_NAME}"
+                            echo "Starting ${env.STAGE_NAME} on ${env.NODE_NAME}"
                             checkout scm
-                            docker.image(imageFullName(image)).inside { cl() }
+                            docker.image(imageFullName(image))
+                                  .inside("-v ${env.HOME}/git_mirrors:/home/jenkins/git_mirrors") { cl() }
                         }
                     }
                 }
@@ -610,13 +672,13 @@ def checksum(file) {
 
 /* Generate a Stage
  *
- * If the stage name matches BUILD_TARGET regex the stage is executed else
- * skipped
+ * If `expression` evaluates to TRUE, a stage(`name`) with `body` is run
  * @param name Name of the stage
+ * @param expression If True, run body
  * @param body Closure representing stage body
  */
-def maybeRegexStage(String name, Closure body) {
-    if(name =~ BUILD_TARGET) {
+def maybeStage(String name, boolean expression, Closure body) {
+    if(expression) {
         stage(name, body)
     } else {
         stage(name) {
@@ -669,4 +731,60 @@ def determineBuildTarget(default_target = ".*") {
 def prefixDockerId(name) {
     def base = 'build-elektra-'
     return base + name
+}
+
+/* Returns True if we are on the master branch
+ */
+def isMaster() {
+    return env.sha1=="master"
+}
+
+/* Publishes all files necessary for hosting a debian package
+ * @param remote where the repository is located
+ */
+def publishDebianPackages(remote="a7") {
+    if(isMaster()) {
+        def remotedir = 'compose/frontend/incoming'
+        sshPublisher(
+          publishers: [
+            sshPublisherDesc(
+              configName: remote,
+              transfers: [
+                sshTransfer(
+                  sourceFiles: '*.deb',
+                  remoteDirectory: remotedir
+                ),
+                sshTransfer(
+                  sourceFiles: '*.build',
+                  remoteDirectory: remotedir
+                ),
+                sshTransfer(
+                  sourceFiles: '*.buildinfo',
+                  remoteDirectory: remotedir
+                ),
+                sshTransfer(
+                  sourceFiles: '*.dsc',
+                  remoteDirectory: remotedir
+                ),
+                sshTransfer(
+                  sourceFiles: '*.tar.xz',
+                  remoteDirectory: remotedir
+                ),
+                sshTransfer(
+                  sourceFiles: '*.tar.gz',
+                  remoteDirectory: remotedir
+                ),
+                sshTransfer(
+                  sourceFiles: '*.changes',
+                  remoteDirectory: remotedir
+                )
+              ]
+            )
+          ],
+          verbose: true,
+          failOnError: true
+        )
+    } else {
+        echo "Skipping package publish because we are not on master"
+    }
 }

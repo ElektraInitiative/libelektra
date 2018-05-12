@@ -30,6 +30,11 @@ Kai-Uwe Behrmann kindly provides packages [for download](http://software.opensus
 To use the debian repository of the latest builds from master put following files in
 `/etc/apt/sources.list`.
 
+For Stretch:
+
+        deb     [trusted=yes] https://debian-stretch-repo.libelektra.org/ stretch main
+        deb-src [trusted=yes] https://debian-stretch-repo.libelektra.org/ stretch main
+
 For Jessie:
 
         deb     [trusted=yes] https://debian-stable.libelektra.org/elektra-stable/ jessie main
