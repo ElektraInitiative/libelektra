@@ -44,7 +44,10 @@ comment `# STDERR:`.
 
 ## Add a test
 
-To add a Markdown Shell Recorder test for a certain Markdown file, use the CMake function `add_msr_test`:
+If you want to add a Markdown Shell Recorder tests for the README.md of your plugin, you can simply pass
+`TEST_README` as argument to `add_plugin`.
+
+To add other Markdown Shell Recorder tests for a certain Markdown file (such as an tutorial), use the CMake function `add_msr_test`:
 
 ```
 add_msr_test (name file)
