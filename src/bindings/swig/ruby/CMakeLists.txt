@@ -60,6 +60,13 @@ else ()
 		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-maybe-uninitialized")
 	elseif (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-dynamic-class-memaccess")
+
+		# TODO: Reenable the following warning after we add a virtual destructor to `PluginDatabase`, and its subclasses.
+		# See also:
+		# - https://github.com/ElektraInitiative/libelektra/pull/1841
+		# - https://github.com/ElektraInitiative/libelektra/commit/15d67328
+		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-delete-non-virtual-dtor")
+
 		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-deprecated-register")
 		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-macro-redefined")
 	endif ()
