@@ -39,7 +39,8 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.8.
 
 - Notification: New transport plugin
 - <<HIGHLIGHT2>>
-- <<HIGHLIGHT3>>
+- Overhaul of build system
+- Debian Stretch daily repository is available again
 
 
 ### Notification: New transport plugin
@@ -69,10 +70,21 @@ Video?
 Note that Web UI requires Elektra 0.8.23 or later.
 
 
-### <<HIGHLIGHT3>>
+### Overhaul of build system
+We started to overhaul our build system to improve build times and
+responsivness.
+It focuses heavily on containerisation to improve hardware utilization.
+If you are interested in `#devops` have a look at our
+[Jenkinsfile](https://github.com/ElektraInitiative/libelektra/blob/master/scripts/jenkins/Jenkinsfile).
 
-?? Debian Packages+New CI
-
+### Debian Stretch daily repository is available again
+Daily builds Debian packages for Stretch are available again in our
+[stretch repository](https://debian-stretch-repo.libelektra.org).
+Add it to your `sources.list`:
+```
+deb     [trusted=yes] https://debian-stretch-repo.libelektra.org/ stretch main
+deb-src [trusted=yes] https://debian-stretch-repo.libelektra.org/ stretch main
+```
 
 ## Other New Features
 
