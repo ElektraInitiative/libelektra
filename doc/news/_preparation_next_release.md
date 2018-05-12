@@ -38,9 +38,8 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.8.
 ## Highlights
 
 - Notification: New transport plugin
-- <<HIGHLIGHT2>>
-- Overhaul of build system
-- Debian Stretch daily repository is available again
+- Web UI
+- Overhaul of Build System and Daily Stretch Repository
 
 
 ### Notification: New transport plugin
@@ -61,38 +60,56 @@ For more details see the
 or the
 [example applications](https://github.com/ElektraInitiative/libelektra/tree/master/src/libs/notification/example)
 
-### <<HIGHLIGHT2>>
+Thanks to Thomas Wahringer.
 
-?? Web UI
+### Web UI
 
 The Web UI was greatly improved.
 
-The API was updated for [elektrad](https://master.libelektra.org/doc/api_blueprints/elektrad.apib)
-and [webd](doc/api_blueprints/webd.apib) (former clusterd).
+The goal of the Web UI is to have safe and unified access to all configuration settings of a system.
+Different to all other UIs, it can dynamically read specifications of configuration settings and
+generates its interface accordingly.
+
+If a configuration setting only has some choices, you get exactly these choices
+within the user interface.
+
+To get outstanding usability, it now provides:
+
+- undo functionality
+- Using visiblility you are able to hide irrelevant configuration settings
+- built-in validation for many types of configuration settings
+- support for arrays
+- description of configuration settings is embedded in the user interface
+
+Furthermore:
 
 - The Web-UI now is able to install itself via cmake.
-- Using visiblility you are now able to hide irrelevant configuration settings.
+- The API was updated for [elektrad](https://master.libelektra.org/doc/api_blueprints/elektrad.apib)
+  and [webd](doc/api_blueprints/webd.apib) (former clusterd).
 
-> Note that Web UI requires Elektra 0.8.23 or later.
+> Note that new version of the Web UI requires Elektra 0.8.23 or later.
 
 Thanks to Daniel Bugl.
 
 
-### Overhaul of build system
-We started to overhaul our build system to improve build times and
-responsivness.
+### Overhaul of Build System and Daily Stretch Repository
+
+We started to overhaul our build system to improve build times and responsiveness.
 It focuses heavily on containerisation to improve hardware utilization.
+
 If you are interested in `#devops` have a look at our
 [Jenkinsfile](https://github.com/ElektraInitiative/libelektra/blob/master/scripts/jenkins/Jenkinsfile).
 
-### Debian Stretch daily repository is available again
 Daily builds Debian packages for Stretch are available again in our
 [stretch repository](https://debian-stretch-repo.libelektra.org).
 Add it to your `sources.list`:
+
 ```
 deb     [trusted=yes] https://debian-stretch-repo.libelektra.org/ stretch main
 deb-src [trusted=yes] https://debian-stretch-repo.libelektra.org/ stretch main
 ```
+
+Thanks to Lukas Winkler.
 
 ## Other New Features
 
@@ -196,7 +213,8 @@ These notes are of interest for people maintaining packages of Elektra:
 - Error page that is shown if no JavaScript is enabled now more clearly
   says that the Website only renders content from the repo and
   only contains free JavaScript.
-- Make FAQ more visible.
+- The [FAQ](https://www.libelektra.org/docgettingstarted/faq) is now
+  more visible (added to "getting started").
 
 ## Notes for Elektra's Developers
 
