@@ -452,6 +452,20 @@ static void clean_temp_home (void)
 
 	if (tempHome)
 	{
+		size_t fileToCleanLen = tempHomeLen + 30;
+		char * fileToClean = elektraMalloc (fileToCleanLen);
+		snprintf (fileToClean, fileToCleanLen, "%s/.gnupg/random_seed", tempHome);
+		unlink (fileToClean);
+		snprintf (fileToClean, fileToCleanLen, "%s/.gnupg/trustdb.gpg", tempHome);
+		unlink (fileToClean);
+		snprintf (fileToClean, fileToCleanLen, "%s/.gnupg/pubring.kbx~", tempHome);
+		unlink (fileToClean);
+		snprintf (fileToClean, fileToCleanLen, "%s/.gnupg/pubring.kbx", tempHome);
+		unlink (fileToClean);
+		snprintf (fileToClean, fileToCleanLen, "%s/.gnupg", tempHome);
+		rmdir (fileToClean);
+		elektraFree (fileToClean);
+
 		rmdir (tempHome);
 		elektraFree (tempHome);
 		tempHome = NULL;
