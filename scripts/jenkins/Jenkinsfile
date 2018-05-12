@@ -10,7 +10,7 @@
  * General Information about Jenkinsfiles can be found at
  * https://jenkins.io/doc/book/pipeline/jenkinsfile/.
  *
- * A Snipped generators is available to the public at
+ * A Snippet generators is available to the public at
  * https://qa.nuxeo.org/jenkins/pipeline-syntax/.
  * A list of available commands on the build server can be found after a login at
  * https://build.libelektra.org/jenkins/job/elektra-jenkinsfile/pipeline-syntax/.
