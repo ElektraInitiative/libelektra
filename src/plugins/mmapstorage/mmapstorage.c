@@ -99,7 +99,7 @@ static void m_output_keyset (KeySet * ks)
 	ELEKTRA_LOG_WARNING ("-------------------> output keyset done");
 }
 
-static FILE * mmapOpenFile (Key * parentKey, const char * mode, int errnosave)
+static FILE * mmapOpenFile (Key * parentKey, const char * mode)
 {
 	FILE * fp;
 	ELEKTRA_LOG ("opening file %s", keyString (parentKey));
@@ -112,7 +112,7 @@ static FILE * mmapOpenFile (Key * parentKey, const char * mode, int errnosave)
 	return fp;
 }
 
-static int mmapTruncateFile (FILE * fp, size_t mmapsize, Key * parentKey, int errnosave)
+static int mmapTruncateFile (FILE * fp, size_t mmapsize, Key * parentKey ELEKTRA_UNUSED)
 {
 	ELEKTRA_LOG ("truncating file %s", keyString (parentKey));
 
@@ -128,7 +128,7 @@ static int mmapTruncateFile (FILE * fp, size_t mmapsize, Key * parentKey, int er
 	return 1;
 }
 
-static int mmapStat (struct stat * sbuf, Key * parentKey, int errnosave)
+static int mmapStat (struct stat * sbuf, Key * parentKey)
 {
 	ELEKTRA_LOG ("stat() on file %s", keyString (parentKey));
 
@@ -141,7 +141,7 @@ static int mmapStat (struct stat * sbuf, Key * parentKey, int errnosave)
 	return 1;
 }
 
-static char * mmapMapFile (void * addr, FILE * fp, size_t mmapSize, int mapOpts, Key * parentKey, int errnosave)
+static char * mmapMapFile (void * addr, FILE * fp, size_t mmapSize, int mapOpts, Key * parentKey ELEKTRA_UNUSED)
 {
 	ELEKTRA_LOG ("mapping file %s", keyString (parentKey));
 
@@ -556,7 +556,7 @@ int elektraMmapstorageClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEK
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
-int elektraMmapstorageGet (Plugin * handle, KeySet * returned, Key * parentKey)
+int elektraMmapstorageGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/mmapstorage"))
 	{
@@ -579,7 +579,7 @@ int elektraMmapstorageGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	int errnosave = errno;
 	FILE * fp;
 
-	if ((fp = mmapOpenFile (parentKey, "r+", errnosave)) == 0)
+	if ((fp = mmapOpenFile (parentKey, "r+")) == 0)
 	{
 		ELEKTRA_SET_ERROR_GET (parentKey);
 		errno = errnosave;
@@ -587,7 +587,7 @@ int elektraMmapstorageGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	}
 
 	struct stat sbuf;
-	if (mmapStat (&sbuf, parentKey, errnosave) != 1)
+	if (mmapStat (&sbuf, parentKey) != 1)
 	{
 		ELEKTRA_SET_ERROR_GET (parentKey);
 		errno = errnosave;
@@ -616,7 +616,7 @@ int elektraMmapstorageGet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 	char * mappedRegion = MAP_FAILED;
 	ELEKTRA_LOG_WARNING ("MMAP addr to map: %p", (void *) mmapHeader.mmapAddr);
-	mappedRegion = mmapMapFile ((void *) 0, fp, sbuf.st_size, MAP_PRIVATE, parentKey, errnosave);
+	mappedRegion = mmapMapFile ((void *) 0, fp, sbuf.st_size, MAP_PRIVATE, parentKey);
 	ELEKTRA_LOG_WARNING ("mappedRegion ptr: %p", (void *) mappedRegion);
 
 	if (mappedRegion == MAP_FAILED)
@@ -661,7 +661,7 @@ int elektraMmapstorageSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 	int errnosave = errno;
 	FILE * fp;
 
-	if ((fp = mmapOpenFile (parentKey, "w+", errnosave)) == 0)
+	if ((fp = mmapOpenFile (parentKey, "w+")) == 0)
 	{
 		ELEKTRA_SET_ERROR_SET (parentKey);
 		errno = errnosave;
@@ -679,13 +679,13 @@ int elektraMmapstorageSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 	mmapHeader.mmapMagicNumber = ELEKTRA_MAGIC_MMAP_NUMBER;
 	ELEKTRA_LOG_WARNING ("elektraMmapstorageSet -------> mmapsize: %zu", mmapHeader.mmapSize);
 
-	if (mmapTruncateFile (fp, mmapHeader.mmapSize, parentKey, errnosave) != 1)
+	if (mmapTruncateFile (fp, mmapHeader.mmapSize, parentKey) != 1)
 	{
 		fclose (fp);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
-	char * mappedRegion = mmapMapFile ((void *) 0, fp, mmapHeader.mmapSize, MAP_SHARED, parentKey, errnosave);
+	char * mappedRegion = mmapMapFile ((void *) 0, fp, mmapHeader.mmapSize, MAP_SHARED, parentKey);
 	ELEKTRA_LOG_WARNING ("mappedRegion ptr: %p", (void *) mappedRegion);
 	if (mappedRegion == MAP_FAILED)
 	{

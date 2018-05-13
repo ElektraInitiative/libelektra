@@ -458,6 +458,7 @@ static void test_mmap_ksGetSize (const char * tmpFile)
 	PLUGIN_CLOSE ();
 }
 
+/* TODO
 static void test_mmap_ksAppendKey (const char * tmpFile)
 {
 	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
@@ -491,6 +492,7 @@ static void test_mmap_ksAppendKey (const char * tmpFile)
 	ksDel (ks);
 	PLUGIN_CLOSE ();
 }
+*/
 
 
 /* -- Key operation tests --------------------------------------------------------------------------------------------------------------- */

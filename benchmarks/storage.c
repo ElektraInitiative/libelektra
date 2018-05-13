@@ -133,7 +133,7 @@ size_t benchmarkIterate (KeySet * ks)
 	return c;
 }
 
-int main (int argc, char ** argv)
+int main (void)
 {
 	// open all storage plugins
 	timeInit ();
