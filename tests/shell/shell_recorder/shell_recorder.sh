@@ -312,7 +312,7 @@ run_script
 # We disable the cleanup procedure temporarily, since we still need the exported configuration,
 # if the tests changed the configuration permanently.
 trap - EXIT
-export_check "$EXPORT_DIR" 'Test' 'true'
+export_check "$EXPORT_DIR" 'Test'
 trap cleanup EXIT
 
 EVAL=0
