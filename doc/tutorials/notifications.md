@@ -2,15 +2,14 @@
 
 ## Preface
 
-**The features described in this document are experimental or not implemented
-yet.**
+**Not all of the features described in this document are implemented yet.**
 
 Development state:
 
  - [x] internalnotification plugin (support for int and callback)
  - [x] notification wrapper (support for int and callback)
+ - [X] transport plugin dbus
  - [ ] transport plugin zeromq
- - [ ] transport plugin dbus
  - [ ] transport plugin redis
  - [ ] internalnotification plugin & notfication wrapper (support for Elektra's basic types)
 
