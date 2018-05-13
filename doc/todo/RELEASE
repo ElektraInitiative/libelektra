@@ -65,7 +65,7 @@ And now commit everything:
  git-commit -a
 
 Clean up the mess left over:
- git-clean -df
+ git-clean -dfx
 
 Make an empty builddirectory:
  mkdir ~build
@@ -86,7 +86,7 @@ If version numbers are correct in
   mkdir ~elektra/$VERSION && kdb --version > ~elektra/$VERSION/version
 
 Rebuild cleanly, run all tests and also check for memleaks:
-  cd ~build && ~e/scripts/configure-debian ~e && make -j5 && make run_all && make run_memcheck
+  cd ~build && ~e/scripts/configure-debian ~e && make -j5 && make run_all -j5 && make run_memcheck -j5
 
 Check if there are really >=135 or >=95 tests
 
