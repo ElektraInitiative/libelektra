@@ -14,7 +14,7 @@
 #define PLUGIN_FUNCTION(function) PLUGIN_FUNCTION_HELPER (ELEKTRA_PLUGIN_NAME_C, function)
 
 // encoding functions
-char * PLUGIN_FUNCTION (base64Encode) (const kdb_octet_t * input, const size_t inputLength);
-int PLUGIN_FUNCTION (base64Decode) (const char * input, kdb_octet_t ** output, size_t * outputLength);
+char * base64Encode (const kdb_octet_t * input, const size_t inputLength);
+int base64Decode (const char * input, kdb_octet_t ** output, size_t * outputLength);
 
 #endif

@@ -71,7 +71,7 @@ static void test_base64_encoding (void)
 		errorAlloc[10] = testcase2char (charOffset);
 		errorMismatch[10] = testcase2char (charOffset);
 
-		char * encodedText = PLUGIN_FUNCTION (base64Encode) ((kdb_octet_t *) decoded[charOffset], strlen (decoded[charOffset]));
+		char * encodedText = base64Encode ((kdb_octet_t *) decoded[charOffset], strlen (decoded[charOffset]));
 		succeed_if (encodedText, errorAlloc);
 		if (encodedText)
 		{
@@ -95,7 +95,7 @@ static void test_base64_decoding (void)
 	size_t bufferLen = 0;
 
 	// first test case is a little special because we expect NULL on success here
-	succeed_if (PLUGIN_FUNCTION (base64Decode) (encoded[0], &buffer, &bufferLen) == 1, "decoding of test vector 1 failed");
+	succeed_if (base64Decode (encoded[0], &buffer, &bufferLen) == 1, "decoding of test vector 1 failed");
 	succeed_if (buffer == NULL, "decoding of test vector 1 returned unexpected result vector");
 	succeed_if (bufferLen == 0, "decoding of test vector 1 returned unexpected result length");
 	if (buffer)
@@ -109,7 +109,7 @@ static void test_base64_decoding (void)
 		errorFail[10] = testcase2char (i);
 		errorLength[10] = testcase2char (i);
 
-		succeed_if (PLUGIN_FUNCTION (base64Decode) (encoded[i], &buffer, &bufferLen) == 1, errorFail);
+		succeed_if (base64Decode (encoded[i], &buffer, &bufferLen) == 1, errorFail);
 		if (buffer)
 		{
 			succeed_if (bufferLen == strlen (decoded[i]), errorLength);

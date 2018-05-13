@@ -13,7 +13,6 @@
 #include "helper.h"
 #include "openssl_operations.h"
 
-#include <base64_functions.h>
 #include <kdbassert.h>
 #include <kdberrors.h>
 #include <kdbtypes.h>
@@ -63,7 +62,7 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * masterK
 		return -1;
 	}
 	pthread_mutex_unlock (&mutex_ssl);
-	saltHexString = ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, base64Encode) (salt, sizeof (salt));
+	saltHexString = CRYPTO_PLUGIN_FUNCTION (base64Encode) (salt, sizeof (salt));
 	if (!saltHexString)
 	{
 		ELEKTRA_SET_ERROR (87, errorKey, "Memory allocation failed");
@@ -521,7 +520,7 @@ char * elektraCryptoOpenSSLCreateRandomString (Key * errorKey, const kdb_unsigne
 		return NULL;
 	}
 	pthread_mutex_unlock (&mutex_ssl);
-	char * encoded = ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, base64Encode) (buffer, length);
+	char * encoded = CRYPTO_PLUGIN_FUNCTION (base64Encode) (buffer, length);
 	if (!encoded)
 	{
 		ELEKTRA_SET_ERROR (87, errorKey, "Memory allocation failed");

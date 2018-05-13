@@ -13,7 +13,6 @@
 #include "gpg.h"
 #include "helper.h"
 
-#include <base64_functions.h>
 #include <errno.h>
 #include <gcrypt.h>
 #include <kdbassert.h>
@@ -51,7 +50,7 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * masterK
 
 	// generate the salt
 	gcry_create_nonce (salt, sizeof (salt));
-	saltHexString = ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, base64Encode) (salt, sizeof (salt));
+	saltHexString = CRYPTO_PLUGIN_FUNCTION (base64Encode) (salt, sizeof (salt));
 	if (!saltHexString)
 	{
 		ELEKTRA_SET_ERROR (87, errorKey, "Memory allocation failed");
@@ -436,7 +435,7 @@ char * elektraCryptoGcryCreateRandomString (Key * errorKey, const kdb_unsigned_s
 {
 	kdb_octet_t buffer[length];
 	gcry_create_nonce (buffer, length);
-	char * encoded = ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, base64Encode) (buffer, length);
+	char * encoded = CRYPTO_PLUGIN_FUNCTION (base64Encode) (buffer, length);
 	if (!encoded)
 	{
 		ELEKTRA_SET_ERROR (87, errorKey, "Memory allocation failed");

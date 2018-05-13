@@ -13,7 +13,7 @@ static const char padding = '=';
  * @returns an allocated string holding the Base64 encoded input data or NULL if the string can not be allocated. Must be freed by the
 	    caller.
  */
-char * PLUGIN_FUNCTION (base64Encode) (const kdb_octet_t * input, const size_t inputLength)
+char * base64Encode (const kdb_octet_t * input, const size_t inputLength)
 #ifdef __llvm__
 	__attribute__ ((annotate ("oclint:suppress[long method]")))
 #endif
@@ -98,7 +98,7 @@ static kdb_octet_t getBase64Index (const char character, int * errorFlag)
  * @retval -1 if the provided string has not been encoded with Base64
  * @retval -2 if the output buffer allocation failed
  */
-int PLUGIN_FUNCTION (base64Decode) (const char * input, kdb_octet_t ** output, size_t * outputLength)
+int base64Decode (const char * input, kdb_octet_t ** output, size_t * outputLength)
 #ifdef __llvm__
 	__attribute__ ((annotate ("oclint:suppress[high ncss method]"), annotate ("oclint:suppress[high npath complexity]"),
 			annotate ("oclint:suppress[long method]"), annotate ("oclint:suppress[high cyclomatic complexity]")))

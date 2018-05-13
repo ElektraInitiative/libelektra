@@ -10,9 +10,57 @@
 #include "helper.h"
 #include "crypto.h"
 #include "gpg.h"
-#include <base64_functions.h>
 #include <kdberrors.h>
+#include <kdbinvoke.h>
 #include <stdlib.h>
+
+char * CRYPTO_PLUGIN_FUNCTION (base64Encode) (const kdb_octet_t * input, const size_t inputLength)
+{
+	ElektraInvokeHandle * handle = elektraInvokeOpen ("base64", 0, 0);
+	if (!handle)
+	{
+		// TODO proper error handling
+		return NULL;
+	}
+
+	typedef char * (*base64EncodeFunction) (const kdb_octet_t * input, const size_t inputLength);
+	base64EncodeFunction encodingFunction = *(base64EncodeFunction *) elektraInvokeGetFunction (handle, "base64Encode");
+
+	if (!encodingFunction)
+	{
+		// TODO proper error handling
+		elektraInvokeClose (handle, 0);
+		return NULL;
+	}
+
+	char * result = encodingFunction (input, inputLength);
+	elektraInvokeClose (handle, 0);
+	return result;
+}
+
+int CRYPTO_PLUGIN_FUNCTION (base64Decode) (const char * input, kdb_octet_t ** output, size_t * outputLength)
+{
+	ElektraInvokeHandle * handle = elektraInvokeOpen ("base64", 0, 0);
+	if (!handle)
+	{
+		// TODO proper error handling
+		return -1;
+	}
+
+	typedef int (*base64DecodeFunction) (const char * input, kdb_octet_t ** output, size_t * outputLength);
+	base64DecodeFunction decodingFunction = *(base64DecodeFunction *) elektraInvokeGetFunction (handle, "base64Decode");
+
+	if (!decodingFunction)
+	{
+		// TODO proper error handling
+		elektraInvokeClose (handle, 0);
+		return -1;
+	}
+
+	int result = decodingFunction (input, output, outputLength);
+	elektraInvokeClose (handle, 0);
+	return result;
+}
 
 /**
  * @brief parse the hex-encoded salt from the metakey.
@@ -34,7 +82,7 @@ int CRYPTO_PLUGIN_FUNCTION (getSaltFromMetakey) (Key * errorKey, Key * k, kdb_oc
 		return -1;
 	}
 
-	int result = ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, base64Decode) (keyString (meta), salt, &saltLenInternal);
+	int result = CRYPTO_PLUGIN_FUNCTION (base64Decode) (keyString (meta), salt, &saltLenInternal);
 	if (result == -1)
 	{
 		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_INTERNAL_ERROR, errorKey, "Salt was not stored Base64 encoded.");

@@ -98,7 +98,7 @@ static int decode (Key * key, Key * parent, bool metaMode)
 	kdb_octet_t * buffer;
 	size_t bufferLen;
 	const char * strVal = keyString (key);
-	int result = PLUGIN_FUNCTION (base64Decode) (strVal + (metaMode ? 0 : ELEKTRA_PLUGIN_BASE64_PREFIX_LENGTH), &buffer, &bufferLen);
+	int result = base64Decode (strVal + (metaMode ? 0 : ELEKTRA_PLUGIN_BASE64_PREFIX_LENGTH), &buffer, &bufferLen);
 	if (result == 1)
 	{
 		// Success
@@ -135,7 +135,7 @@ static int encode (Key * key, Key * parent, bool metaMode)
 {
 	if (!keyIsBinary (key) || (keyGetValueSize (key) == 0 && metaMode)) return 0;
 
-	char * base64 = PLUGIN_FUNCTION (base64Encode) (keyValue (key), (size_t) keyGetValueSize (key));
+	char * base64 = base64Encode (keyValue (key), (size_t) keyGetValueSize (key));
 	if (!base64)
 	{
 		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_MALLOC, parent, "Memory allocation failed");
@@ -293,5 +293,6 @@ int PLUGIN_FUNCTION (set) (Plugin * handle, KeySet * keySet, Key * parentKey)
 Plugin * ELEKTRA_PLUGIN_EXPORT (base64)
 {
 	return elektraPluginExport (ELEKTRA_PLUGIN_NAME, ELEKTRA_PLUGIN_GET, &PLUGIN_FUNCTION (get), ELEKTRA_PLUGIN_SET,
-				    &PLUGIN_FUNCTION (set), ELEKTRA_PLUGIN_END);
+				    &PLUGIN_FUNCTION (set), "base64Encode", &base64Encode, "base64Decode", &base64Decode,
+				    ELEKTRA_PLUGIN_END);
 }

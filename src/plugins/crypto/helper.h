@@ -19,4 +19,7 @@ int CRYPTO_PLUGIN_FUNCTION (getSaltFromPayload) (Key * errorKey, Key * k, kdb_oc
 Key * CRYPTO_PLUGIN_FUNCTION (getMasterPassword) (Key * errorKey, KeySet * config);
 kdb_unsigned_long_t CRYPTO_PLUGIN_FUNCTION (getIterationCount) (Key * errorKey, KeySet * config);
 
+char * CRYPTO_PLUGIN_FUNCTION (base64Encode) (const kdb_octet_t * input, const size_t inputLength);
+int CRYPTO_PLUGIN_FUNCTION (base64Decode) (const char * input, kdb_octet_t ** output, size_t * outputLength);
+
 #endif
