@@ -9,7 +9,7 @@
 # . "${SCRIPTS_DIR}/include-common"
 
 # load our readlink replacement for osx
-SCRIPTS_DIR=$(dirname "$0")
+[ -z "$SCRIPTS_DIR" ] && SCRIPTS_DIR=$(dirname "$0")
 . "${SCRIPTS_DIR}/realpath"
 
 # substring emulation which should work in dash and other shells too

@@ -9,7 +9,7 @@ fi
 
 # common configure script
 ELEKTRA_DIR=`grep "^Elektra_SOURCE_DIR" CMakeCache.txt | cut -f 2 -d "="`
-SCRIPTS_DIR="${ELEKTRA_DIR}/scripts"
+export SCRIPTS_DIR="${ELEKTRA_DIR}/scripts"
 . "${SCRIPTS_DIR}/include-common"
 
 BUILD=`pwd`
