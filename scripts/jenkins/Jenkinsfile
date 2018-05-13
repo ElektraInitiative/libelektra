@@ -232,15 +232,13 @@ def generate_full_build_stages() {
     tasks << build_and_test(
         "debian-oldstable-full",
         DOCKER_IMAGES.jessie,
-        CMAKE_FLAGS_BUILD_ALL +
-            CMAKE_FLAGS_COVERAGE,
+        CMAKE_FLAGS_BUILD_ALL,
         [TEST_ALL, TEST_MEM, TEST_INSTALL]
     )
     tasks << build_and_test(
         "debian-unstable-full",
         DOCKER_IMAGES.sid,
-        CMAKE_FLAGS_BUILD_ALL +
-            CMAKE_FLAGS_COVERAGE,
+        CMAKE_FLAGS_BUILD_ALL,
         [TEST_ALL, TEST_MEM, TEST_INSTALL]
     )
     /* TODO Reenable for next release
@@ -248,7 +246,6 @@ def generate_full_build_stages() {
         "debian-stable-full-clang",
         DOCKER_IMAGES.stretch,
         CMAKE_FLAGS_BUILD_ALL +
-            CMAKE_FLAGS_COVERAGE +
             CMAKE_FLAGS_CLANG,
         [TEST_ALL, TEST_MEM, TEST_INSTALL]
     )
