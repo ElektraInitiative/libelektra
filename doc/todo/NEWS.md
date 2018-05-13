@@ -109,6 +109,9 @@ These notes are of interest for people maintaining packages of Elektra:
 
 ## Website
 
+The website is generated from the repository, so all information about
+plugins, bindings and tools are always up to date. Furthermore, we changed:
+
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -167,7 +170,7 @@ to always get the release notifications.
 
 For any questions and comments, please contact the
 issue tracker [on GitHub](http://issues.libelektra.org)
-or me by email using elektra@markus-raab.org.
+or Markus Raab by email using elektra@markus-raab.org.
 
 [Permalink to this NEWS entry](https://www.libelektra.org/news/0.8.<<VERSION>>-release)
 
