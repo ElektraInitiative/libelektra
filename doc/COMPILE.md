@@ -122,6 +122,7 @@ https://build.libelektra.org/
 |      mingw        | 4.6                         |      i386         |
 |      clang        | 3.8                         |x86_64-pc-linux-gnu|
 |      clang        | 5.0                         |x86_64-pc-linux-gnu|
+|      clang        | 6.0                         |x86_64-pc-linux-gnu|
 |      clang        | 8.1.0                       |      macOS        |
 |      icc          | 14.0.2 20140120             |x86_64-pc-linux-gnu|
 |      gcc/g++      |                             | openbsd 4.9.3 (*) |
