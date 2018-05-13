@@ -16,7 +16,7 @@ syntax: ", thanks to <myname>".
 
 We are proud to release Elektra 0.8.<<VERSION>>.
 
-<<`scripts/git-release-stats 0.8.VERSION`>>
+<<`scripts/git-release-stats 0.8.<<VERSION>>`>>
 
 ## What is Elektra?
 
@@ -53,12 +53,32 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.8.
 We added even more functionality, which could not make it to the highlights:
 
 - <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+
+## New Plugins
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+
+## Other News
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
 
 ## Documentation
 
 We improved the documentation in the following ways:
 
 - <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
 
 ## Compatibility
 
@@ -66,29 +86,60 @@ As always, the ABI and API of kdb.h is fully compatible, i.e. programs
 compiled against an older 0.8 version of Elektra will continue to work
 (ABI) and you will be able to recompile programs without errors (API).
 
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+
 ## Notes for Maintainer
 
 These notes are of interest for people maintaining packages of Elektra:
 
 - <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+
+## Infrastructure
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+
+## Website
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
 
 ## Notes for Elektra's Developers
 
 These notes are of interest for people developing Elektra:
 
 - <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
 
 ## Fixes
 
 Many problems were resolved with the following fixes:
 
 - <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
 
 ## Outlook
 
 We are currently working on following topics:
 
 - <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
 
 ## Get It!
 
