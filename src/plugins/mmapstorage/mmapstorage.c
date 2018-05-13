@@ -26,7 +26,7 @@
 #include <sys/types.h> // ftruncate ()
 #include <unistd.h>    // close(), ftruncate()
 
-#include <zlib.h> // crc32()
+//#include <zlib.h> // crc32()
 
 
 #define SIZEOF_KEY (sizeof (Key))
@@ -475,11 +475,13 @@ static void mmapWrite (char * mappedRegion, KeySet * keySet, MmapHeader * mmapHe
 		writeKeySet (mmapHeader, keySet, ksPtr, dynArray);
 	}
 
+	/* disable CRC
 	char * ksCharPtr = (char *) ksPtr;
 	uint32_t checksum = crc32 (0L, Z_NULL, 0);
 	checksum = crc32 (checksum, ksCharPtr, (mmapHeader->mmapSize - SIZEOF_MMAPHEADER));
 
 	mmapHeader->checksum = checksum;
+	*/
 	memcpy (mappedRegion, mmapHeader, SIZEOF_MMAPHEADER);
 }
 
@@ -628,6 +630,7 @@ int elektraMmapstorageGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	ELEKTRA_LOG_WARNING ("mappedRegion size: %zu", sbuf.st_size);
 	ELEKTRA_LOG_WARNING ("mappedRegion ptr: %p", (void *) mappedRegion);
 
+	/* disable CRC
 	char * ksPtr = (char *) (mappedRegion + SIZEOF_MMAPHEADER);
 	uint32_t checksum = crc32 (0L, Z_NULL, 0);
 	checksum = crc32 (checksum, ksPtr, mmapHeader.mmapSize - SIZEOF_MMAPHEADER);
@@ -641,6 +644,7 @@ int elektraMmapstorageGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		ELEKTRA_LOG ("checksum failed");
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
+	*/
 
 	ksClose (returned);
 	updatePointers (&mmapHeader, mappedRegion);
@@ -670,7 +674,6 @@ int elektraMmapstorageSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 	dynArray.size = 0;
 	dynArray.alloc = 1;
 
-	// TODO: calculating mmap size not needed if using fwrite() instead of mmap to write to file
 	MmapHeader mmapHeader;
 	mmapDataSize (&mmapHeader, returned, &dynArray);
 	mmapHeader.mmapMagicNumber = ELEKTRA_MAGIC_MMAP_NUMBER;
