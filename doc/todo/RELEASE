@@ -236,9 +236,7 @@ Symlink current to latest version and add everything:
 
 == Debian Package ==
 
- cd ~elektra/$VERSION/debian/$DVERSION && reprepro --ignore=wrongdistribution include wheezy elektra_${DVERSION}_`dpkg-architecture -qDEB_BUILD_ARCH`.changes && update-reprepro
-
- TODO: fix/automate
+ cd ~elektra/$VERSION/debian/$DVERSION && reprepro --ignore=wrongdistribution include stretch elektra_${DVERSION}_`dpkg-architecture -qDEB_BUILD_ARCH`.changes && update-reprepro
 
 == Commit source package ==
 

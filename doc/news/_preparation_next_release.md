@@ -85,7 +85,7 @@ Furthermore:
 
 - The Web-UI now is able to install itself via cmake.
 - The API was updated for [elektrad](https://master.libelektra.org/doc/api_blueprints/elektrad.apib)
-  and [webd](doc/api_blueprints/webd.apib) (former clusterd).
+  and [webd](https://master.libelektra.org/doc/api_blueprints/webd.apib) (former clusterd).
 
 > Note that new version of the Web UI requires Elektra 0.8.23 or later.
 
@@ -163,7 +163,7 @@ We improved the documentation in the following ways:
   and yaml plugin (intermixing of array and objects not detected, which is possible
   in Elektra but impossible in JSON)
 - Required environment to run tests is documented.
-- A decision about [deferred plugin calls](doc/decisions/deferred_plugin_calls.md) has been made and implemented.
+- A decision about [deferred plugin calls](https://master.libelektra.org/doc/decisions/deferred_plugin_calls.md) has been made and implemented.
   Thanks to Thomas Wahringer.
 - <<TODO>>
 
