@@ -13,9 +13,7 @@ macro (do_benchmark source)
 	set_target_properties (benchmark_${source} PROPERTIES COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
 
 	add_custom_target (benchmark_${source}_callgrind
-			   rm
-			   -f
-			   *.out
+			   COMMAND rm -f *.out
 			   COMMAND valgrind --tool=callgrind
 				   --callgrind-out-file=callgrind.out "$<TARGET_FILE:benchmark_${source}>" > output.out # COMMAND strace -o
 															# strace.out
