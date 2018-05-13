@@ -12,12 +12,13 @@ macro (do_benchmark source)
 
 	set_target_properties (benchmark_${source} PROPERTIES COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
 
+	# ~~~
+	# Useful for debugging: COMMAND strace -o strace.out "${command}"
+	# ~~~
 	add_custom_target (benchmark_${source}_callgrind
 			   COMMAND rm -f *.out
 			   COMMAND valgrind --tool=callgrind
-				   --callgrind-out-file=callgrind.out "$<TARGET_FILE:benchmark_${source}>" > output.out # COMMAND strace -o
-															# strace.out
-															# "${command}"
+				   --callgrind-out-file=callgrind.out "$<TARGET_FILE:benchmark_${source}>" > output.out
 			   WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
 endmacro (do_benchmark)
 
