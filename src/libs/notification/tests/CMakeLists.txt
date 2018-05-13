@@ -4,9 +4,7 @@ if (BUILD_TESTING)
 
 	add_headers (HDR_FILES)
 
-	set (TESTS
-		testlib_notification.c
-	)
+	set (TESTS testlib_notification.c)
 
 	foreach (file ${TESTS})
 		get_filename_component (name ${file} NAME_WE)
@@ -22,14 +20,8 @@ if (BUILD_TESTING)
 
 		target_link_elektra (${name} elektra-kdb elektra-notification)
 
-		add_test (NAME ${name}
-			COMMAND "${CMAKE_BINARY_DIR}/bin/${name}" "${CMAKE_CURRENT_SOURCE_DIR}"
-		)
-		set_property (
-			TEST ${name}
-			PROPERTY ENVIRONMENT
-			"LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib"
-		)
+		add_test (NAME ${name} COMMAND "${CMAKE_BINARY_DIR}/bin/${name}" "${CMAKE_CURRENT_SOURCE_DIR}")
+		set_property (TEST ${name} PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
 
 	endforeach (file ${TESTS})
 

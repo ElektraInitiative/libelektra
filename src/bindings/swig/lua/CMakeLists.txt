@@ -30,10 +30,7 @@ else ()
 
 	set_source_files_properties (${swig_generated_file_fullname} PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -DSWIG_TYPE_TABLE=kdb")
 
-	install (
-		TARGETS swig-lua
-		LIBRARY DESTINATION ${TARGET_LUA_CMOD_FOLDER}
-	)
+	install (TARGETS swig-lua LIBRARY DESTINATION ${TARGET_LUA_CMOD_FOLDER})
 
 	include_directories (${CMAKE_CURRENT_SOURCE_DIR})
 	include_directories (${CMAKE_SOURCE_DIR}/src/swig/)
@@ -41,6 +38,7 @@ else ()
 	if (LUA_EXECUTABLE_VERSION_MATCHED)
 		add_subdirectory (tests)
 	else ()
-		message (WARNING "Lua interpreter does not match Lua libraries version, needed for SWIG Lua bindings tests. Tests will not be executed.")
+		message (WARNING "Lua interpreter does not match Lua libraries version, "
+				 "needed for SWIG Lua bindings tests. Tests will not be executed.")
 	endif ()
 endif ()

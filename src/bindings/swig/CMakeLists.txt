@@ -15,15 +15,13 @@ check_binding_included ("swig_python" IS_INCLUDED SUBDIRECTORY "swig/python")
 if (IS_INCLUDED)
 	add_subdirectory (python)
 else ()
-	# rename swig_python3 to swig_python - TODO remove sometime in the future
-	check_binding_included ("swig_python3" IS_INCLUDED SUBDIRECTORY "swig/python" SILENT)
+	check_binding_included ("swig_python3" IS_INCLUDED SUBDIRECTORY "swig/python" SILENT) # rename swig_python3 to swig_python - TODO
+											      # remove sometime in the future
 	if (IS_INCLUDED)
 		exclude_binding ("swig_python3" "swig_python3 has been renamed to swig_python")
 		add_subdirectory (python)
 	endif ()
 endif ()
-
-
 
 check_binding_included ("swig_lua" IS_INCLUDED SUBDIRECTORY "swig/lua")
 if (IS_INCLUDED)

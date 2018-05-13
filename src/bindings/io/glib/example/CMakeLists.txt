@@ -7,11 +7,10 @@ add_headers (ELEKTRA_HEADERS)
 set (SOURCES ${SRC_FILES} ${HDR_FILES} ${ELEKTRA_HEADERS})
 
 if (BUILD_FULL OR BUILD_STATIC)
-	# add sources for elektra-io-glib for static and full builds
-	list (APPEND SOURCES $<TARGET_OBJECTS:OBJ_elektra-io-glib>)
+	list (APPEND SOURCES $<TARGET_OBJECTS:OBJ_elektra-io-glib>) # add sources for elektra-io-glib for static and full builds
 endif ()
 
-## Build test
+# Build test
 set (example exampleio_glib)
 
 add_executable (${example} ${SOURCES})

@@ -14,10 +14,12 @@ endif (error_index GREATER -1)
 
 file (GLOB TESTS testtool_*.cpp)
 
+# ~~~
 # TODO: Reenable the following warning after we add a virtual destructor to `PluginDatabase`, and its subclasses.
 # See also:
 # - https://github.com/ElektraInitiative/libelektra/pull/1841
 # - https://github.com/ElektraInitiative/libelektra/commit/15d67328
+# ~~~
 if (CMAKE_C_COMPILER_ID MATCHES "Clang")
 	set_source_files_properties (testtool_specreader.cpp
 				     testtool_backendbuilder.cpp
@@ -35,5 +37,5 @@ foreach (file ${TESTS})
 endforeach (file ${TESTS})
 
 if (BUILD_TESTING AND ENABLE_TESTING AND ERROR_PLUGIN_AVAILABLE)
-	set_property(TEST testtool_mergingkdb PROPERTY LABELS kdbtests)
+	set_property (TEST testtool_mergingkdb PROPERTY LABELS kdbtests)
 endif ()

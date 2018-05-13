@@ -288,6 +288,8 @@ These notes are of interest for people developing Elektra:
   makes sure that you do not build the plugin with compilation settings that are known to
   [cause problems](https://github.com/ElektraInitiative/libelektra/issues/1895).
 - Documentation and debugging capabilities of [Markdown Shell Recorder][] were improved.
+- We added style guidelines for CMake code to
+   [`doc/CODING.md`](https://github.com/ElektraInitiative/libelektra/blob/master/doc/CODING.md#cmake-guidelines).
 
 [Markdown Shell Recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
 [Shell Recorder]: https://master.libelektra.org/tests/shell/shell_recorder

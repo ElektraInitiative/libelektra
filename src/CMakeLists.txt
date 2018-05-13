@@ -1,6 +1,5 @@
 add_subdirectory (error)
 
-
 set (ADDTESTING_PHASE OFF)
 add_subdirectory (plugins)
 

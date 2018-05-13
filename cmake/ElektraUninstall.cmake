@@ -1,15 +1,15 @@
-#
+# ~~~
 # Much faster is:
 # xargs rm < install_manifest.txt
-#
+# ~~~
 
-set(MANIFEST "${CMAKE_BINARY_DIR}/install_manifest.txt")
+set (MANIFEST "${CMAKE_BINARY_DIR}/install_manifest.txt")
 
 if (NOT EXISTS "${MANIFEST}")
 	message (FATAL_ERROR "Cannot find install manifest: ${MANIFEST}")
 endif (NOT EXISTS "${MANIFEST}")
 
-#message (MANIFEST IS ${MANIFEST})
+# message (MANIFEST IS ${MANIFEST})
 file (READ "${MANIFEST}" files)
 
 # ==========
@@ -17,17 +17,15 @@ file (READ "${MANIFEST}" files)
 # ==========
 
 set (PYTHON_GET_MODULES_DIR_COMMAND
-	"from distutils.sysconfig import get_python_lib; print(get_python_lib(True, prefix='${CMAKE_INSTALL_PREFIX}'))")
+     "from distutils.sysconfig import get_python_lib; print(get_python_lib(True, prefix='${CMAKE_INSTALL_PREFIX}'))")
 
 find_package (Python2Interp 2.7 QUIET)
 find_package (Python2Libs 2.7 QUIET)
 
 if (PYTHON2INTERP_FOUND)
-	execute_process (
-		COMMAND ${PYTHON2_EXECUTABLE} -c "${PYTHON_GET_MODULES_DIR_COMMAND}"
-		OUTPUT_VARIABLE PYTHON2_SITE_PACKAGES
-		OUTPUT_STRIP_TRAILING_WHITESPACE
-	)
+	execute_process (COMMAND ${PYTHON2_EXECUTABLE} -c "${PYTHON_GET_MODULES_DIR_COMMAND}"
+			 OUTPUT_VARIABLE PYTHON2_SITE_PACKAGES
+			 OUTPUT_STRIP_TRAILING_WHITESPACE)
 	string (APPEND files "\n${PYTHON2_SITE_PACKAGES}/elektra_gen-${KDB_VERSION}-py2.7.egg-info")
 endif (PYTHON2INTERP_FOUND)
 
@@ -35,12 +33,11 @@ find_package (PythonInterp 3 QUIET)
 find_package (PythonLibs 3 QUIET)
 
 if (PYTHONINTERP_FOUND)
-	execute_process (
-		COMMAND ${PYTHON_EXECUTABLE} -c "${PYTHON_GET_MODULES_DIR_COMMAND}"
-		OUTPUT_VARIABLE PYTHON_SITE_PACKAGES
-		OUTPUT_STRIP_TRAILING_WHITESPACE
-	)
-	string (APPEND files
+	execute_process (COMMAND ${PYTHON_EXECUTABLE} -c "${PYTHON_GET_MODULES_DIR_COMMAND}"
+			 OUTPUT_VARIABLE PYTHON_SITE_PACKAGES
+			 OUTPUT_STRIP_TRAILING_WHITESPACE)
+	string (APPEND
+		files
 		"\n${PYTHON_SITE_PACKAGES}/elektra_gen-${KDB_VERSION}-py${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}.egg-info")
 endif (PYTHONINTERP_FOUND)
 
@@ -50,13 +47,9 @@ endif (PYTHONINTERP_FOUND)
 
 string (REGEX REPLACE "\n" ";" files "${files}")
 foreach (file ${files})
-	message(STATUS "Uninstalling $ENV{DESTDIR}${file}")
+	message (STATUS "Uninstalling $ENV{DESTDIR}${file}")
 	if (IS_SYMLINK "$ENV{DESTDIR}${file}" OR EXISTS "$ENV{DESTDIR}${file}")
-		exec_program(
-			"${CMAKE_COMMAND}" ARGS "-E remove \"$ENV{DESTDIR}${file}\""
-			OUTPUT_VARIABLE rm_out
-			RETURN_VALUE rm_retval
-			)
+		exec_program ("${CMAKE_COMMAND}" ARGS "-E remove \"$ENV{DESTDIR}${file}\"" OUTPUT_VARIABLE rm_out RETURN_VALUE rm_retval)
 		if (NOT "${rm_retval}" STREQUAL 0)
 			message (FATAL_ERROR "Problem when removing $ENV{DESTDIR}${file}")
 		endif (NOT "${rm_retval}" STREQUAL 0)
@@ -69,33 +62,29 @@ endforeach (file)
 # = Directories =
 # ===============
 
-function(remove_directories directories)
+function (remove_directories directories)
 	foreach (directory ${directories})
 		set (dir "$ENV{DESTDIR}${directory}")
 		if (EXISTS "${dir}")
-			message(STATUS "Uninstalling directory ${dir}")
+			message (STATUS "Uninstalling directory ${dir}")
 			exec_program (
-				"${CMAKE_COMMAND}"
-				ARGS "-E remove_directory \"${dir}\""
-				OUTPUT_VARIABLE rm_out
-				RETURN_VALUE rm_retval)
+				"${CMAKE_COMMAND}" ARGS "-E remove_directory \"${dir}\"" OUTPUT_VARIABLE rm_out RETURN_VALUE rm_retval)
 
 			if (NOT "${rm_retval}" STREQUAL 0)
 				message (FATAL_ERROR "Problem when removing ${dir}")
 			endif (NOT "${rm_retval}" STREQUAL 0)
 		endif (EXISTS "${dir}")
 	endforeach (directory ${directories})
-endfunction(remove_directories)
+endfunction (remove_directories)
 
 set (DIRECTORIES
-	"${CMAKE_INSTALL_PREFIX}/include/elektra"
-	"${CMAKE_INSTALL_PREFIX}/lib/cmake/Elektra"
-	"${CMAKE_INSTALL_PREFIX}/lib/elektra"
-	"${CMAKE_INSTALL_PREFIX}/share/doc/elektra"
-	"${CMAKE_INSTALL_PREFIX}/share/doc/elektra-api"
-	"${CMAKE_INSTALL_PREFIX}/share/elektra"
-	"${CMAKE_INSTALL_PREFIX}/share/share/elektra"
-)
+     "${CMAKE_INSTALL_PREFIX}/include/elektra"
+     "${CMAKE_INSTALL_PREFIX}/lib/cmake/Elektra"
+     "${CMAKE_INSTALL_PREFIX}/lib/elektra"
+     "${CMAKE_INSTALL_PREFIX}/share/doc/elektra"
+     "${CMAKE_INSTALL_PREFIX}/share/doc/elektra-api"
+     "${CMAKE_INSTALL_PREFIX}/share/elektra"
+     "${CMAKE_INSTALL_PREFIX}/share/share/elektra")
 if (${PYTHON2_SITE_PACKAGES})
 	list (APPEND DIRECTORIES "${PYTHON2_SITE_PACKAGES}/support")
 endif (${PYTHON2_SITE_PACKAGES})
@@ -105,36 +94,35 @@ endif (${PYTHON_SITE_PACKAGES})
 
 remove_directories ("${DIRECTORIES}")
 
-# The following directories might be empty. The order of the directories is important, since we remove them in the given order.
-# A directory that occurs later in the list might be empty, since we removed all its subdirectories before.
+# The following directories might be empty. The order of the directories is important, since we remove them in the given order. A directory
+# that occurs later in the list might be empty, since we removed all its subdirectories before.
 set (REMOVAL_CANDIDATES
-	"${CMAKE_INSTALL_PREFIX}/bin"
-	"${CMAKE_INSTALL_PREFIX}/include"
-	"${CMAKE_INSTALL_PREFIX}/lib/cmake"
-	"${CMAKE_INSTALL_PREFIX}/lib/lua/5.2"
-	"${CMAKE_INSTALL_PREFIX}/lib/lua"
-	"${CMAKE_INSTALL_PREFIX}/lib/pkgconfig"
-	"${CMAKE_INSTALL_PREFIX}/lib/python2.7/site-packages"
-	"${CMAKE_INSTALL_PREFIX}/lib/python2.7"
-	"${CMAKE_INSTALL_PREFIX}/share/appdata"
-	"${CMAKE_INSTALL_PREFIX}/share/applications"
-	"${CMAKE_INSTALL_PREFIX}/share/doc"
-	"${CMAKE_INSTALL_PREFIX}/share/icons/hicolor/scalable/apps"
-	"${CMAKE_INSTALL_PREFIX}/share/icons/hicolor/scalable"
-	"${CMAKE_INSTALL_PREFIX}/share/icons/hicolor"
-	"${CMAKE_INSTALL_PREFIX}/share/icons"
-	"${CMAKE_INSTALL_PREFIX}/share/java"
-	"${CMAKE_INSTALL_PREFIX}/share/man/man1"
-	"${CMAKE_INSTALL_PREFIX}/share/man/man3"
-	"${CMAKE_INSTALL_PREFIX}/share/man/man7"
-	"${CMAKE_INSTALL_PREFIX}/share/man"
-	"${CMAKE_INSTALL_PREFIX}/share"
-	"/usr/share/bash-completion/completions"
-	"/usr/share/bash-completion"
-	"/usr/share/zsh/vendor-completions"
-	"/usr/share/zsh"
-	"/usr/share"
-)
+     "${CMAKE_INSTALL_PREFIX}/bin"
+     "${CMAKE_INSTALL_PREFIX}/include"
+     "${CMAKE_INSTALL_PREFIX}/lib/cmake"
+     "${CMAKE_INSTALL_PREFIX}/lib/lua/5.2"
+     "${CMAKE_INSTALL_PREFIX}/lib/lua"
+     "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig"
+     "${CMAKE_INSTALL_PREFIX}/lib/python2.7/site-packages"
+     "${CMAKE_INSTALL_PREFIX}/lib/python2.7"
+     "${CMAKE_INSTALL_PREFIX}/share/appdata"
+     "${CMAKE_INSTALL_PREFIX}/share/applications"
+     "${CMAKE_INSTALL_PREFIX}/share/doc"
+     "${CMAKE_INSTALL_PREFIX}/share/icons/hicolor/scalable/apps"
+     "${CMAKE_INSTALL_PREFIX}/share/icons/hicolor/scalable"
+     "${CMAKE_INSTALL_PREFIX}/share/icons/hicolor"
+     "${CMAKE_INSTALL_PREFIX}/share/icons"
+     "${CMAKE_INSTALL_PREFIX}/share/java"
+     "${CMAKE_INSTALL_PREFIX}/share/man/man1"
+     "${CMAKE_INSTALL_PREFIX}/share/man/man3"
+     "${CMAKE_INSTALL_PREFIX}/share/man/man7"
+     "${CMAKE_INSTALL_PREFIX}/share/man"
+     "${CMAKE_INSTALL_PREFIX}/share"
+     "/usr/share/bash-completion/completions"
+     "/usr/share/bash-completion"
+     "/usr/share/zsh/vendor-completions"
+     "/usr/share/zsh"
+     "/usr/share")
 
 foreach (directory ${REMOVAL_CANDIDATES})
 	set (dir "$ENV{DESTDIR}${directory}")

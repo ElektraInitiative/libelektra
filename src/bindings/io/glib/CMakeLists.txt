@@ -6,14 +6,13 @@ pkg_check_modules (GLIB QUIET glib-2.0)
 if (NOT GLIB_FOUND)
 	exclude_binding (io_glib "glib-2.0 not found")
 else ()
+
 	# Build library
-	 add_binding (io_glib)
+	add_binding (io_glib)
 
 	set (BINDING_VARIANT glib)
 
-	set (IO_VARIANT_SRC_FILES
-		"${CMAKE_CURRENT_SOURCE_DIR}/io_glib.c"
-	)
+	set (IO_VARIANT_SRC_FILES "${CMAKE_CURRENT_SOURCE_DIR}/io_glib.c")
 
 	add_headers (ELEKTRA_HEADERS)
 	set (SOURCES ${IO_VARIANT_SRC_FILES} ${ELEKTRA_HEADERS})
@@ -22,16 +21,10 @@ else ()
 
 	# create object library so that executables can use
 	# $<TARGET_OBJECTS:OBJ_${IO_VARIANT_LIBRARY}>
-	add_library(OBJ_${IO_VARIANT_LIBRARY} OBJECT ${SOURCES})
+	add_library (OBJ_${IO_VARIANT_LIBRARY} OBJECT ${SOURCES})
 	target_include_directories (OBJ_${IO_VARIANT_LIBRARY} SYSTEM PUBLIC ${GLIB_INCLUDE_DIRS})
 
-	add_lib (io-${BINDING_VARIANT}
-		SOURCES ${SOURCES}
-		LINK_ELEKTRA
-			elektra-io
-		LINK_LIBRARIES
-			${GLIB_LIBRARIES}
-	)
+	add_lib (io-${BINDING_VARIANT} SOURCES ${SOURCES} LINK_ELEKTRA elektra-io LINK_LIBRARIES ${GLIB_LIBRARIES})
 
 	if (BUILD_FULL OR BUILD_STATIC)
 		add_includes ("elektra-full" ${GLIB_INCLUDE_DIRS})
@@ -40,18 +33,13 @@ else ()
 		target_include_directories (${IO_VARIANT_LIBRARY} SYSTEM PUBLIC ${GLIB_INCLUDE_DIRS})
 	endif ()
 
-	configure_file (
-		"${CMAKE_CURRENT_SOURCE_DIR}/${IO_VARIANT_LIBRARY}.pc.in"
-		"${CMAKE_CURRENT_BINARY_DIR}/${IO_VARIANT_LIBRARY}.pc"
-		@ONLY
-	)
+	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/${IO_VARIANT_LIBRARY}.pc.in"
+			"${CMAKE_CURRENT_BINARY_DIR}/${IO_VARIANT_LIBRARY}.pc"
+			@ONLY)
 
-	install (
-		FILES "${CMAKE_CURRENT_BINARY_DIR}/${IO_VARIANT_LIBRARY}.pc"
-		DESTINATION lib${LIB_SUFFIX}/${TARGET_PKGCONFIG_FOLDER}
-	)
+	install (FILES "${CMAKE_CURRENT_BINARY_DIR}/${IO_VARIANT_LIBRARY}.pc" DESTINATION lib${LIB_SUFFIX}/${TARGET_PKGCONFIG_FOLDER})
 
-	## Build test
+	# Build test
 	set (testexename testio_${BINDING_VARIANT})
 
 	set (TEST_SOURCES $<TARGET_OBJECTS:cframework>)
@@ -60,10 +48,9 @@ else ()
 	list (APPEND TEST_SOURCES ${IO_TEST_SRC_FILES})
 	list (APPEND TEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/testio_${BINDING_VARIANT}.c")
 
-	if (BUILD_FULL OR BUILD_STATIC)
-    # add sources for elektra-io-glib for static and full builds
+	if (BUILD_FULL OR BUILD_STATIC) # add sources for elektra-io-glib for static and full builds
 		list (APPEND TEST_SOURCES $<TARGET_OBJECTS:OBJ_${IO_VARIANT_LIBRARY}>)
-  endif ()
+	endif ()
 
 	add_executable (${testexename} ${TEST_SOURCES})
 	add_dependencies (${testexename} kdberrors_generated)
@@ -73,18 +60,13 @@ else ()
 
 	target_link_elektra (${testexename} elektra-kdb elektra-plugin elektra-io ${IO_VARIANT_LIBRARY} m)
 	if (BUILD_FULL OR BUILD_STATIC)
-  	target_link_libraries (${testexename} ${GLIB_LIBRARIES})
-  endif ()
+		target_link_libraries (${testexename} ${GLIB_LIBRARIES})
+	endif ()
 
 	add_test (NAME ${testexename}
-		COMMAND "${CMAKE_BINARY_DIR}/bin/${testexename}" "${CMAKE_CURRENT_SOURCE_DIR}"
-		WORKING_DIRECTORY "${WORKING_DIRECTORY}"
-	)
-	set_property (
-		TEST ${testexename}
-		PROPERTY ENVIRONMENT
-		"LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib"
-	)
+		  COMMAND "${CMAKE_BINARY_DIR}/bin/${testexename}" "${CMAKE_CURRENT_SOURCE_DIR}"
+		  WORKING_DIRECTORY "${WORKING_DIRECTORY}")
+	set_property (TEST ${testexename} PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
 
 	add_subdirectory (example)
 endif ()

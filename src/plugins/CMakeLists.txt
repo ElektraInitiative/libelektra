@@ -18,7 +18,6 @@ if (ADDTESTING_PHASE)
 	return ()
 endif ()
 
-
 generate_manpage (elektra-plugins FILENAME ${CMAKE_CURRENT_SOURCE_DIR}/README.md SECTION 7)
 
 set (COLLECTION_PHASE ON)
@@ -28,7 +27,8 @@ set (ADDTESTING_PHASE OFF)
 file (GLOB DIRECTORIES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/*)
 
 foreach (plugin ${DIRECTORIES})
-	#message (STATUS ${plugin})
+
+	# message (STATUS ${plugin})
 	if (IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${plugin} AND NOT ${plugin} STREQUAL CMakeFiles)
 		set (CMAKE_CURRENT_SOURCE_DIR_TOPSAFE ${CMAKE_CURRENT_SOURCE_DIR})
 		set (CMAKE_CURRENT_BINARY_DIR_TOPSAFE ${CMAKE_CURRENT_BINARY_DIR})
@@ -60,12 +60,18 @@ endforeach (plugin)
 
 list (FIND ADDED_PLUGINS ${KDB_DEFAULT_STORAGE} output)
 if (output EQUAL -1)
-	message (SEND_ERROR "selected default storage (${KDB_DEFAULT_STORAGE}) is not selected in PLUGINS, please change KDB_DEFAULT_STORAGE or PLUGINS")
+	message (
+		SEND_ERROR
+			"selected default storage (${KDB_DEFAULT_STORAGE}) is not selected in PLUGINS, please change KDB_DEFAULT_STORAGE or PLUGINS"
+		)
 endif ()
 
 list (FIND ADDED_PLUGINS ${KDB_DEFAULT_RESOLVER} output)
 if (output EQUAL -1)
-	message (SEND_ERROR "selected default resolver (${KDB_DEFAULT_RESOLVER}) is not selected in PLUGINS, please change KDB_DEFAULT_RESOLVER or PLUGINS")
+	message (
+		SEND_ERROR
+			"selected default resolver (${KDB_DEFAULT_RESOLVER}) is not selected in PLUGINS, please change KDB_DEFAULT_RESOLVER or PLUGINS"
+		)
 endif ()
 
 list (FIND ADDED_PLUGINS list output)
@@ -80,15 +86,7 @@ endif ()
 
 if (BUILD_SHARED)
 	mkdir (${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
-	create_lib_symlink (
-			libelektra-${KDB_DEFAULT_STORAGE}.so
-			libelektra-storage.so
-			PLUGIN
-			)
+	create_lib_symlink (libelektra-${KDB_DEFAULT_STORAGE}.so libelektra-storage.so PLUGIN)
 
-	create_lib_symlink (
-			libelektra-${KDB_DEFAULT_RESOLVER}.so
-			libelektra-resolver.so
-			PLUGIN
-			)
+	create_lib_symlink (libelektra-${KDB_DEFAULT_RESOLVER}.so libelektra-resolver.so PLUGIN)
 endif (BUILD_SHARED)

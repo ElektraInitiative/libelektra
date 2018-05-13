@@ -1,12 +1,10 @@
 include (LibAddMacros)
 include (LibAddBinding)
 
-## Build example_notification
+# Build example_notification
 set (EXAMPLE example_notification)
 
-SET (SRC_FILES
-	example_notification.c
-)
+set (SRC_FILES example_notification.c)
 add_headers (ELEKTRA_HEADERS)
 set (SOURCES ${SRC_FILES} ${ELEKTRA_HEADERS})
 
@@ -22,17 +20,15 @@ check_binding_included ("io_uv" IS_INCLUDED SUBDIRECTORY "io/uv" SILENT)
 find_package (PkgConfig)
 pkg_check_modules (LIBUV QUIET libuv)
 if (IS_INCLUDED AND LIBUV_FOUND)
-	## Build example_notification_async
-	set (EXAMPLE example_notification_async)
 
-	SET (SRC_FILES
-		example_notification_async.c
-	)
+	set (EXAMPLE example_notification_async) # Build example_notification_async
+
+	set (SRC_FILES example_notification_async.c)
 	add_headers (ELEKTRA_HEADERS)
 	set (SOURCES ${SRC_FILES} ${ELEKTRA_HEADERS})
 	if (BUILD_FULL OR BUILD_STATIC)
-		# add sources for elektra-io-uv for static and full builds
-		list (APPEND SOURCES $<TARGET_OBJECTS:OBJ_elektra-io-uv>)
+
+		list (APPEND SOURCES $<TARGET_OBJECTS:OBJ_elektra-io-uv>) # add sources for elektra-io-uv for static and full builds
 	endif ()
 
 	add_executable (${EXAMPLE} ${SOURCES})

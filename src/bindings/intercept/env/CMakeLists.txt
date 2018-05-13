@@ -1,5 +1,5 @@
 include (CheckSymbolExists)
-check_symbol_exists (__GNU_LIBRARY__ "features.h"    HAVE_GLIBC)
+check_symbol_exists (__GNU_LIBRARY__ "features.h" HAVE_GLIBC)
 
 if (NOT BUILD_SHARED)
 	exclude_binding (intercept_env "intercept_env only works with BUILD_SHARED")

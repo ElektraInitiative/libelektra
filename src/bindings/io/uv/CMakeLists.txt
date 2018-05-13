@@ -10,12 +10,10 @@ elseif (NOT LIBUV_FOUND)
 else ()
 	add_binding (io_uv)
 
-	## Build library
+	# Build library
 	set (BINDING_VARIANT uv)
 
-	set (IO_UV_SRC_FILES
-		"${CMAKE_CURRENT_SOURCE_DIR}/io_uv.c"
-	)
+	set (IO_UV_SRC_FILES "${CMAKE_CURRENT_SOURCE_DIR}/io_uv.c")
 
 	add_headers (ELEKTRA_HEADERS)
 	set (SOURCES ${IO_UV_SRC_FILES} ${ELEKTRA_HEADERS})
@@ -24,20 +22,14 @@ else ()
 
 	# create object library so that executables can use
 	# $<TARGET_OBJECTS:OBJ_${IO_UV_LIBRARY}>
-	add_library(OBJ_${IO_UV_LIBRARY} OBJECT ${SOURCES})
+	add_library (OBJ_${IO_UV_LIBRARY} OBJECT ${SOURCES})
 	if (LIBUV_VERSION VERSION_LESS "1.0")
 		target_compile_definitions (OBJ_${IO_UV_LIBRARY} PRIVATE "HAVE_LIBUV0")
 	else ()
 		target_compile_definitions (OBJ_${IO_UV_LIBRARY} PRIVATE "HAVE_LIBUV1")
 	endif ()
 
-	add_lib (io-${BINDING_VARIANT}
-		SOURCES ${SOURCES}
-		LINK_ELEKTRA
-			elektra-io
-		LINK_LIBRARIES
-			${LIBUV_LIBRARIES}
-	)
+	add_lib (io-${BINDING_VARIANT} SOURCES ${SOURCES} LINK_ELEKTRA elektra-io LINK_LIBRARIES ${LIBUV_LIBRARIES})
 
 	if (BUILD_FULL OR BUILD_STATIC)
 		add_includes ("elektra-full" ${LIBUV_INCLUDE_DIRS})
@@ -58,18 +50,11 @@ else ()
 		endif ()
 	endif ()
 
-	configure_file (
-		"${CMAKE_CURRENT_SOURCE_DIR}/${IO_UV_LIBRARY}.pc.in"
-		"${CMAKE_CURRENT_BINARY_DIR}/${IO_UV_LIBRARY}.pc"
-		@ONLY
-	)
+	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/${IO_UV_LIBRARY}.pc.in" "${CMAKE_CURRENT_BINARY_DIR}/${IO_UV_LIBRARY}.pc" @ONLY)
 
-	install (
-		FILES "${CMAKE_CURRENT_BINARY_DIR}/${IO_UV_LIBRARY}.pc"
-		DESTINATION lib${LIB_SUFFIX}/${TARGET_PKGCONFIG_FOLDER}
-	)
+	install (FILES "${CMAKE_CURRENT_BINARY_DIR}/${IO_UV_LIBRARY}.pc" DESTINATION lib${LIB_SUFFIX}/${TARGET_PKGCONFIG_FOLDER})
 
-	## Build test
+	# Build test
 	set (TESTEXENAME testio_${BINDING_VARIANT})
 
 	set (TEST_SOURCES $<TARGET_OBJECTS:cframework>)
@@ -79,8 +64,7 @@ else ()
 	list (APPEND TEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/testio_${BINDING_VARIANT}.c")
 
 	if (BUILD_FULL OR BUILD_STATIC)
-		# add sources for elektra-io-uv for static and full builds
-		list (APPEND TEST_SOURCES $<TARGET_OBJECTS:OBJ_${IO_UV_LIBRARY}>)
+		list (APPEND TEST_SOURCES $<TARGET_OBJECTS:OBJ_${IO_UV_LIBRARY}>) # add sources for elektra-io-uv for static and full builds
 	endif ()
 
 	add_executable (${TESTEXENAME} ${TEST_SOURCES})
@@ -100,14 +84,9 @@ else ()
 	endif ()
 
 	add_test (NAME ${TESTEXENAME}
-		COMMAND "${CMAKE_BINARY_DIR}/bin/${TESTEXENAME}" "${CMAKE_CURRENT_SOURCE_DIR}"
-		WORKING_DIRECTORY "${WORKING_DIRECTORY}"
-	)
-	set_property (
-		TEST ${TESTEXENAME}
-		PROPERTY ENVIRONMENT
-		"LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib"
-)
+		  COMMAND "${CMAKE_BINARY_DIR}/bin/${TESTEXENAME}" "${CMAKE_CURRENT_SOURCE_DIR}"
+		  WORKING_DIRECTORY "${WORKING_DIRECTORY}")
+	set_property (TEST ${TESTEXENAME} PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
 
 	add_subdirectory (example)
 endif ()
