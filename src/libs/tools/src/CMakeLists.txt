@@ -6,10 +6,12 @@ add_toolheaders (HDR_FILES)
 
 file (GLOB_RECURSE SRC_FILES *.cpp)
 
+# ~~~
 # TODO: Reenable the following warning after we add a virtual destructor to `PluginDatabase`, and its subclasses.
 # See also:
 # - https://github.com/ElektraInitiative/libelektra/pull/1841
 # - https://github.com/ElektraInitiative/libelektra/commit/15d67328
+# ~~~
 if (CMAKE_C_COMPILER_ID MATCHES "Clang")
 	set_source_files_properties (backendbuilder.cpp PROPERTIES COMPILE_FLAGS -Wno-delete-non-virtual-dtor)
 endif (CMAKE_C_COMPILER_ID MATCHES "Clang")
