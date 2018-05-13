@@ -10,7 +10,7 @@ SOURCE_DIR="$(pwd)"
 BUILD_DIR="$SOURCE_DIR/../build"
 ICHECK_DIR="$SOURCE_DIR/../icheck"
 
-CMPVERSION='0.8.22'
+CMPVERSION='0.8.23'
 FILES="src/include/kdbmeta.h src/include/kdbease.h src/include/kdbplugin.h src/include/kdbproposal.h"
 
 # =============
