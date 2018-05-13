@@ -9,7 +9,7 @@ fi
 
 # common configure script
 ELEKTRA_DIR=`grep "^Elektra_SOURCE_DIR" CMakeCache.txt | cut -f 2 -d "="`
-SCRIPTS_DIR="${ELEKTRA_DIR}/scripts"
+export SCRIPTS_DIR="${ELEKTRA_DIR}/scripts"
 . "${SCRIPTS_DIR}/include-common"
 
 BUILD=`pwd`
@@ -32,12 +32,11 @@ else
 	export LD_LIBRARY_PATH="$BUILD/lib:$LD_LIBRARY_PATH"
 fi
 
-# TODO currently does not work, needs man1 and man7 subdirs
-#if [ -z "$MANPATH" ]
-#then
-#	export MANPATH="$SOURCE/doc/man"
-#else
-#	export MANPATH="$SOURCE/doc/man:$MANPATH"
-#fi
+if [ -z "$MANPATH" ]
+then
+	export MANPATH="$SOURCE/doc/man:/usr/man:/usr/share/man"
+else
+	export MANPATH="$SOURCE/doc/man:$MANPATH"
+fi
 
 export PS1="[DEV] $PS1"

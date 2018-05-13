@@ -495,7 +495,7 @@ function (generate_manpage NAME)
 			set (MDFILE ${CMAKE_CURRENT_SOURCE_DIR}/${NAME}.md)
 		endif ()
 
-		set (OUTFILE ${CMAKE_SOURCE_DIR}/doc/man/${NAME}.${SECTION})
+		set (OUTFILE ${CMAKE_SOURCE_DIR}/doc/man/man${SECTION}/${NAME}.${SECTION})
 
 		if (RONN_LOC)
 			add_custom_command (OUTPUT ${OUTFILE}
