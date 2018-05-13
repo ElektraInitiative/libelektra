@@ -34,6 +34,10 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.8.
 
 ### Notification: New transport plugin
 
+To keep persistent configuration settings in sync with the view of applications, notifications are needed.
+For notifications it is important that they do not block other parts.
+In Elektra we achieve this using transport plugins.
+
 Elektra's notification feature has received its first transport plugin pair:
 D-Bus.
 Transport plugins provide a link between applications using Elektra.
@@ -120,7 +124,7 @@ We added even more functionality, which could not make it to the highlights:
   thanks to Anton Hößl
 - `kdb ls` now has `-0` option (needed for Web UI)
 - The [csvstorage](https://www.libelektra.org/plugins/csvstorage) now can treat selected columns
-  to be part of the key.
+  to be part of the key. Error messages were improved.
   thanks to Thomas Waser
 
 ## Other News
@@ -220,6 +224,8 @@ We removed:
   only contains free JavaScript.
 - The [FAQ](https://www.libelektra.org/docgettingstarted/faq) is now
   more visible (added to "getting started").
+- The [Code of Conduct](https://www.libelektra.org/devgettingstarted/code-of-conduct)
+  was added.
 
 
 ## Notes for Elektra's Developers
@@ -326,6 +332,22 @@ Many problems were resolved with the following fixes:
 - The [multifile plugin](http://libelektra.org/plugins/multifile) now passes the child config
   to the storage plugins too and also handles symlinks correctly,
   thanks to Thomas Waser
+
+
+## Workshop
+
+Elektra Initiative are the people behind Elektra.
+Our goal is to build up expertise with configuration settings and improve the situation in the FLOSS landscape.
+To learn more about the needs of configuration-wise non-trivial FLOSS applications, we have workshops.
+After a successful workshop with the LCDproc's maintainer, the next Workshop will be with people from KDE.
+
+We will use the opportunity of [Akademy](https://akademy.kde.org/2018) being in Vienna.
+We already got positive feedback from kconfig maintainers (David Faure and Aleix Pol).
+
+If you are interested, you can [sign up](https://dudle.inf.tu-dresden.de/config_workshop_akademy/).
+We are looking forward to an informative, interactive and interesting workshop!
+
+
 
 ## Outlook
 
