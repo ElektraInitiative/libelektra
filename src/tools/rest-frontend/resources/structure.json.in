@@ -154,6 +154,13 @@
                         }
                     },
                     {
+                        "name": "Code of Conduct",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "CODE_OF_CONDUCT.md"
+                        }
+                    },
+                    {
                         "name": "Coding",
                         "type": "staticfile",
                         "options": {
