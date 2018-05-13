@@ -334,18 +334,18 @@ We are currently working on following topics:
   LCDproc development restarted now successfully.
   The new plan is to have more intermediate stages.
   In particular the first integration will be a minimal invasive integration without high-level API.
-- Armin Wurzinger: type system
+- Armin Wurzinger: type system for Elektra's specification language
 - Anton Hössl: Puppet
 - Daniel Bugl: Web UI
-- Hani Torabi Makhsos: community entry barriers
+- Hani Torabi Makhsos: reduce community entry barriers
 - Kurt Micheli: order preserving minimal perfect hash map
 - Lukas Winkler: continous integration
-- Mihael Pranjić: mmap plugin
-- Peter Nirschl: fcrypt+crypto plugin
+- Mihael Pranjić: mmap plugin (i.e. avoiding reparsing of configuration files)
+- Peter Nirschl: integrity and confidentiality
 - René Schwaiger: parsing techniques
-- Thomas Wahringer: notification
+- Thomas Wahringer: notification techniques
 - Thomas Waser: Linux distribution based on Elektra
-- Ulrike Schaefer: shell completion
+- Ulrike Schaefer: generate shell completion files from Elektra's specification
 - Vanessa Kos: misconfiguration bug database
 - We created a proof of concept for a Chef resource and an Ansible module successfully setting Elektra's keys.
   They are not yet published.  If you are interested on this preliminary work, please contact us.
