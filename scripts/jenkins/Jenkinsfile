@@ -744,7 +744,7 @@ def isMaster() {
  */
 def publishDebianPackages(remote="a7") {
     if(isMaster()) {
-        def remotedir = 'compose/frontend/incoming'
+        def remotedir = 'compose/frontend/volumes/incoming'
         sshPublisher(
           publishers: [
             sshPublisherDesc(
