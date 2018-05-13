@@ -154,7 +154,7 @@ The [hashsums are:](https://github.com/ElektraInitiative/ftp/blob/master/release
 
 <<`scripts/generate-hashsums`>>
 
-The release tarball is also available signed by Markus Raab using GnuPG from
+The release tarball is also available signed by me using GnuPG from
 [here](https://www.libelektra.org/ftp/elektra/releases/elektra-0.8.<<VERSION>>.tar.gz.gpg) or
 [GitHub](https://github.com/ElektraInitiative/ftp/blob/master/releases//elektra-0.8.<<VERSION>>.tar.gz.gpg?raw=true)
 
