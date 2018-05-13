@@ -34,8 +34,7 @@ Following shell expansions are used in this document:
 - Update doc/COMPILE.md to reflect actually tested setups
 - Update/run ~e/scripts/build-debian-package
 - Update contracts using update-infos-status
-- Shell recorder of release notes/highlights of release
-- regenerate dot of plugins
+- regenerate dot of plugins using scripts/draw-all-plugins
 - run link checker: cd ~build && ~e/scripts/link-checker external-links.txt
 
 == Increment Version Number ==
