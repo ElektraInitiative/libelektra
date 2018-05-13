@@ -14,4 +14,4 @@ fi
 #
 # also use `run make_memcheck` to check for memory issues (tests are complementary)
 
-LD_LIBRARY_PATH=`pwd`/lib ctest --force-new-ctest-process --output-on-failure --build-config $1
+ctest --force-new-ctest-process --output-on-failure --build-config $1

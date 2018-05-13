@@ -356,7 +356,7 @@ int elektraCryptoGcryDecrypt (elektraCryptoHandle * handle, Key * k, Key * error
 	saltLen += sizeof (kdb_unsigned_long_t);
 
 	// set payload pointer
-	const kdb_octet_t * payload = ((kdb_octet_t *)keyValue (k)) + saltLen + ELEKTRA_CRYPTO_MAGIC_NUMBER_LEN;
+	const kdb_octet_t * payload = ((kdb_octet_t *) keyValue (k)) + saltLen + ELEKTRA_CRYPTO_MAGIC_NUMBER_LEN;
 	const size_t payloadLen = keyGetValueSize (k) - saltLen - ELEKTRA_CRYPTO_MAGIC_NUMBER_LEN;
 
 	// plausibility check
@@ -410,7 +410,7 @@ int elektraCryptoGcryDecrypt (elektraCryptoHandle * handle, Key * k, Key * error
 	// restore the key to its original status
 	if ((flags & ELEKTRA_CRYPTO_FLAG_STRING) == ELEKTRA_CRYPTO_FLAG_STRING && contentLen > 0)
 	{
-		keySetString (k, (const char *)data);
+		keySetString (k, (const char *) data);
 	}
 	else if ((flags & ELEKTRA_CRYPTO_FLAG_NULL) == ELEKTRA_CRYPTO_FLAG_NULL || contentLen == 0)
 	{

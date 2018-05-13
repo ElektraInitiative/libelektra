@@ -117,7 +117,7 @@ Trie * trieInsert (Trie * trie, const char * name, Backend * value)
 	{
 		name = "";
 	}
-	idx = (unsigned char)name[0];
+	idx = (unsigned char) name[0];
 
 	if (trie == NULL)
 	{
@@ -170,7 +170,7 @@ Trie * trieInsert (Trie * trie, const char * name, Backend * value)
 
 			/* insert the split try into the new trie entry */
 
-			idx2 = (unsigned char)newname[0];
+			idx2 = (unsigned char) newname[0];
 			trie->children[idx]->text[idx2] = newname;
 			trie->children[idx]->textlen[idx2] = strlen (newname);
 			trie->children[idx]->value[idx2] = trie->value[idx];
@@ -183,17 +183,12 @@ Trie * trieInsert (Trie * trie, const char * name, Backend * value)
 	{
 		/* there doesn't exist an entry with the same first character */
 		trie->text[idx] = elektraStrDup (name);
-		trie->value[idx] = (void *)value;
+		trie->value[idx] = (void *) value;
 		trie->textlen[idx] = strlen (name);
 	}
 
 	return trie;
 }
-
-
-	/******************
-	 * Private static declarations
-	 ******************/
 
 
 #if 0
@@ -245,7 +240,7 @@ static char * elektraTrieStartsWith (const char * str, const char * substr)
 
 	for (i = 0; i < sublen; i++)
 	{
-		if (substr[i] != str[i]) return (char *)substr + i;
+		if (substr[i] != str[i]) return (char *) substr + i;
 	}
 	return 0;
 }
@@ -254,7 +249,7 @@ static Backend * elektraTriePrefixLookup (Trie * trie, const char * name)
 {
 	if (trie == NULL) return NULL;
 
-	unsigned char idx = (unsigned char)name[0];
+	unsigned char idx = (unsigned char) name[0];
 	const char * trieText = trie->text[idx];
 
 	if (trieText == NULL)

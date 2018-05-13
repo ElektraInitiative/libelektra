@@ -81,7 +81,7 @@ public:
 		       "or maybe you tried to change a key that is already in a KeySet.";
 	}
 };
-}
+} // namespace kdb
 
 #endif
 

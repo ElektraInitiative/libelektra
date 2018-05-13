@@ -43,12 +43,12 @@ int elektraFilecheckOpen (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA
 {
 	// plugin initialization logic
 	KeySet * config = elektraPluginGetConfig (handle);
-	checkStruct * checkConf = (checkStruct *)elektraMalloc (sizeof (checkStruct));
+	checkStruct * checkConf = (checkStruct *) elektraMalloc (sizeof (checkStruct));
 	checkConf->checkLineEnding = ksLookupByName (config, "/check/lineending", 0) != NULL;
 	checkConf->validLE = strToLE (keyString (ksLookupByName (config, "/valid/lineending", 0)));
 	checkConf->rejectNullByte = ksLookupByName (config, "/reject/null", 0) != NULL;
 	checkConf->checkEncoding = ksLookupByName (config, "/check/encoding", 0) != NULL;
-	checkConf->encoding = (char *)keyString (ksLookupByName (config, "/valid/encoding", 0));
+	checkConf->encoding = (char *) keyString (ksLookupByName (config, "/valid/encoding", 0));
 	checkConf->rejectBom = ksLookupByName (config, "/reject/bom", 0) != NULL;
 	checkConf->rejectUnprintable = ksLookupByName (config, "reject/unprintable", 0) != NULL;
 	elektraPluginSetData (handle, checkConf);
@@ -58,7 +58,7 @@ int elektraFilecheckOpen (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA
 int elektraFilecheckClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
 {
 	// free all plugin resources and shut it down
-	checkStruct * checkConf = (checkStruct *)elektraPluginGetData (handle);
+	checkStruct * checkConf = (checkStruct *) elektraPluginGetData (handle);
 	if (checkConf) elektraFree (checkConf);
 	return 1; // success
 }
@@ -118,7 +118,7 @@ static int validateLineEnding (const uint8_t * line, Lineending * valid, int res
 		fc = line[0];
 		i = 1;
 	}
-	const ssize_t lineLength = (elektraStrLen ((char *)line) - 1);
+	const ssize_t lineLength = (elektraStrLen ((char *) line) - 1);
 	for (; i < lineLength; ++i)
 	{
 		found = NA;
@@ -180,7 +180,7 @@ static int validateLineEnding (const uint8_t * line, Lineending * valid, int res
 
 static int validateEncoding (const uint8_t * line, iconv_t conv, size_t bytesRead)
 {
-	char * ptr = (char *)line;
+	char * ptr = (char *) line;
 	char outBuffer[LINE_BYTES];
 	char * outPtr = outBuffer;
 	size_t inBytes = bytesRead;
@@ -188,14 +188,14 @@ static int validateEncoding (const uint8_t * line, iconv_t conv, size_t bytesRea
 	int ret = iconv (conv, &ptr, &inBytes, &outPtr, &outSize);
 	if (ret == -1 && errno == EILSEQ)
 	{
-		return ((uint8_t *)ptr - line);
+		return ((uint8_t *) ptr - line);
 	}
 	return 0;
 }
 static int checkUnprintable (const uint8_t * line)
 {
 	unsigned int i;
-	for (i = 0; i < elektraStrLen ((char *)line); ++i)
+	for (i = 0; i < elektraStrLen ((char *) line); ++i)
 	{ // \n is > 0x7E too
 		if (line[i] < 0x20 || line[i] > 0x7E || line[i] == '\r') return i;
 	}

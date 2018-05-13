@@ -139,6 +139,20 @@ void addKey (YAML::Node & data, NameIterator & keyIterator, Key & key)
 	auto const isArray = isArrayAndIndex.first;
 	auto const arrayIndex = isArrayAndIndex.second;
 
+	if (data.IsScalar ()) data = YAML::Node (YAML::NodeType::Undefined);
+
+#ifdef HAVE_LOGGER
+	ostringstream output;
+	output << data;
+	ELEKTRA_LOG_DEBUG ("Add key part “%s” to node “%s”", (*keyIterator).c_str (), output.str ().c_str ());
+#endif
+
+	if (keyIterator == key.end ())
+	{
+		ELEKTRA_LOG_DEBUG ("Create leaf node for key “%s”", key.getName ().c_str ());
+		data = createLeafNode (key);
+		return;
+	}
 	if (keyIterator == --key.end ())
 	{
 		if (isArray)

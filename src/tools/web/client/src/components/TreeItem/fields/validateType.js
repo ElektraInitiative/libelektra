@@ -1,3 +1,5 @@
+import { isNumberType, RANGE_REGEX } from '../../../utils'
+
 const INTEGER_TYPES = [
   'short', 'unsigned_short', 'long', 'unsigned_long', 'long_long',
   'unsigned_long_long',
@@ -7,10 +9,34 @@ const FLOAT_TYPES = [ 'float', 'double' ]
 
 const isNumber = (value) => !isNaN(value)
 
-const elektraEnumToJSON = (val) => {
-  const convertedVal = val.replace(/'/g, '"')
-  if (val.charAt(0) !== '[') return '[' + convertedVal + ']'
-  else return convertedVal
+const getMinMax = (first, second) => {
+  if (second < first) {
+    return [ second, first ]
+  }
+  return [ first, second ]
+}
+
+export const validateRange = (rangeStr, num) => {
+  const ranges = rangeStr.split(',')
+  let msg = 'invalid number, value between '
+
+  const valid = ranges.reduce((res, range, i) => {
+    if (res) return res
+    const [ , first, second ] = range.match(RANGE_REGEX)
+    const [ min, max ] = getMinMax(Number(first), Number(second))
+    if ((num >= min) && (num <= max)) {
+      return true
+    }
+    if (i > 0) {
+      msg += ' or '
+    }
+    msg += min + ' and ' + max
+    return res
+  }, false)
+
+  if (!valid) {
+    return msg + ' expected'
+  }
 }
 
 const validateType = (metadata, value) => {
@@ -44,25 +70,26 @@ const validateType = (metadata, value) => {
     }
   }
 
-  const validationError = metadata['check/validation/message']
-
-  const validationRegex = metadata.hasOwnProperty('check/validation')
-    ? new RegExp(metadata['check/validation'])
-    : false
-  if (validationRegex) {
-    if (!validationRegex.test(value)) {
-      return validationError ||
-        'validation failed for ' + metadata['check/validation']
+  if (isNumberType(type)) {
+    const i = Number(value)
+    const range = metadata['check/range']
+    if (range) {
+      const validationError = validateRange(range, i)
+      if (validationError) {
+        return validationError
+      }
     }
-  }
+  } else {
+    const validationErrorMessage = metadata['check/validation/message']
 
-  const validationEnum = metadata.hasOwnProperty('check/enum')
-    ? JSON.parse(elektraEnumToJSON(metadata['check/enum']))
-    : false
-  if (validationEnum && Array.isArray(validationEnum)) {
-    if (!validationEnum.includes(value)) {
-      return validationError ||
-        'validation failed, value must be one of: ' + validationEnum.join(', ')
+    const validationRegex = metadata.hasOwnProperty('check/validation')
+      ? new RegExp(metadata['check/validation'])
+      : false
+    if (validationRegex) {
+      if (!validationRegex.test(value)) {
+        return validationErrorMessage ||
+          'validation failed for ' + metadata['check/validation']
+      }
     }
   }
 

@@ -255,5 +255,5 @@ std::ostream & operator<< (std::ostream & os, PluginSpec const & spec)
 	os << "name: " << spec.getName () << " refname: " << spec.getRefName () << " configsize: " << spec.getConfig ().size ();
 	return os;
 }
-}
-}
+} // namespace tools
+} // namespace kdb

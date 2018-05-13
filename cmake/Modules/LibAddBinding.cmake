@@ -1,9 +1,26 @@
-include(LibAddMacros)
+include (LibAddMacros)
+# ~~~
+# QUICK INTRODUCTION:
+# > To add a binding the following steps have to be performed:
+#   - call "check_binding_included ()": this prints exclusion messages based on categories
+#   - based on dependency checks
+#    a) call "exclude_binding ()": this prints a custom exclusion message
+#    b) call "add_binding ()": this prints the inclusion message
+#
+# > To check if a binding is built there are two options:
+#   - General check (i.e. is this binding included by categories): "check_binding_included ()"
+#   - Check if "add_binding ()" was called: "check_binding_was_added ()"
+#     Note that this only works after the CMake has processed the scripts in
+#     "bindings" directory. As a result this only works for CMake scripts in the
+#     "tools", "include" and "plugins" (ADDTESTING_PHASE) directories.
+#
+# ~~~
 
-# - Adds a binding if it is included in BINDINGS and not exluded by name or
+# ~~~
+# - Adds a binding if it is included in BINDINGS and not excluded by name or
 #   category (infos/status or infos/provides from it's README.md).
 #
-#   If the binding is exluded the reason is printed along with the binding name.
+#   If the binding is excluded the reason is printed along with the binding name.
 #
 #   This is function can be used anywhere since the base directory is fixed to
 #   the bindings source directory. However if the binding uses subdirectories
@@ -29,27 +46,25 @@ include(LibAddMacros)
 #   if (IS_INCLUDED)
 #     add_subdirectory (python)
 #   endif ()
-#
+# ~~~
 function (check_binding_included BINDING_NAME OUTVARIABLE)
 	cmake_parse_arguments (ARG
-		"SILENT" # optional keywords
-		"" # one value keywords
-		"" # multi value keywords
-		${ARGN}
-	)
+			       "SILENT" # optional keywords
+			       "" # one value keywords
+			       "" # multi value keywords
+			       ${ARGN})
 
-	check_item_is_excluded (
-		IS_EXCLUDED
-		BINDINGS
-		${BINDING_NAME}
-		SUBDIRECTORY ${BINDING_NAME}
-		BASEDIRECTORY "${CMAKE_SOURCE_DIR}/src/bindings"
- 		ENABLE_PROVIDES
-		${ARGN}
-	)
+	check_item_is_excluded (IS_EXCLUDED
+				BINDINGS
+				${BINDING_NAME}
+				SUBDIRECTORY
+				${BINDING_NAME}
+				BASEDIRECTORY
+				"${CMAKE_SOURCE_DIR}/src/bindings"
+				ENABLE_PROVIDES
+				${ARGN})
 	if (IS_EXCLUDED)
-		if (ARG_SILENT)
-			# make sure that the exclusion message is not printed
+		if (ARG_SILENT) # make sure that the exclusion message is not printed
 			set (IS_EXCLUDED "silent")
 		endif ()
 		exclude_binding (${BINDING_NAME} ${IS_EXCLUDED})
@@ -59,7 +74,8 @@ function (check_binding_included BINDING_NAME OUTVARIABLE)
 	endif ()
 endfunction (check_binding_included)
 
-#- Add a binding to list of bindings that will be built and print corresponding
+# ~~~
+# - Add a binding to list of bindings that will be built and print corresponding
 #  message.
 #
 #  add_binding (BINDING_NAME)
@@ -69,7 +85,7 @@ endfunction (check_binding_included)
 #
 #  example:
 #    add_binding ("anynameyouwant")
-#
+# ~~~
 function (add_binding BINDING_NAME)
 	if (ADDED_BINDINGS)
 		set (TMP "${ADDED_BINDINGS};${BINDING_NAME}")
@@ -83,7 +99,8 @@ function (add_binding BINDING_NAME)
 	message (STATUS "Include Binding ${BINDING_NAME}")
 endfunction (add_binding)
 
-#- Remove a binding from the global cache
+# ~~~
+# - Remove a binding from the global cache
 #
 #  exclude_binding (name reason)
 #
@@ -100,14 +117,13 @@ endfunction (add_binding)
 #
 # example:
 #  exclude_binding (fstab "mntent is missing")
-#
+# ~~~
 function (exclude_binding name reason)
 	cmake_parse_arguments (ARG
-		"REMOVE" # optional keywords
-		"" # one value keywords
-		"" # multi value keywords
-		${ARGN}
-	)
+			       "REMOVE" # optional keywords
+			       "" # one value keywords
+			       "" # multi value keywords
+			       ${ARGN})
 
 	if (NOT ${reason} STREQUAL "silent")
 		message (STATUS "Exclude Binding ${name} because ${reason}")
@@ -126,6 +142,7 @@ function (exclude_binding name reason)
 	endif ()
 endfunction (exclude_binding)
 
+# ~~~
 # - Check if a binding will be built.
 #   Can only be used run after bindins have been processed (e.g. in
 #   ADDTESTING_PHASE of plugins)
@@ -144,7 +161,7 @@ endfunction (exclude_binding)
 #   if (NOT WAS_ADDED)
 #     message (WARNING "swig_python bindings are required for testing, test deactivated")
 #   endif ()
-#
+# ~~~
 function (check_binding_was_added BINDING_NAME OUTVARIABLE)
 	list (FIND ADDED_BINDINGS ${BINDING_NAME} FINDEX)
 	if (FINDEX GREATER -1)
@@ -154,7 +171,8 @@ function (check_binding_was_added BINDING_NAME OUTVARIABLE)
 	endif ()
 endfunction (check_binding_was_added)
 
-#- Determines if ITEM_NAME is not included from LIST by
+# ~~~
+# - Determines if ITEM_NAME is not included from LIST by
 #  explicit mention or by category
 #
 #  check_item_is_excluded (OUTVARIABLE LIST ITEM_NAME)
@@ -185,36 +203,34 @@ endfunction (check_binding_was_added)
 # 	if (IS_EXCLUDED)
 # 		remove_something ("io_uv" ${IS_EXCLUDED})
 # 	endif ()
-#
+# ~~~
 function (check_item_is_excluded OUTVARIABLE LIST ITEM_NAME)
 	cmake_parse_arguments (ARG
-		"ENABLE_PROVIDES;NO_CATEGORIES" # optional keywords
-		"SUBDIRECTORY;BASEDIRECTORY" # one value keywords
-		"" # multi value keywords
-		${ARGN}
-	)
+			       "ENABLE_PROVIDES;NO_CATEGORIES" # optional keywords
+			       "SUBDIRECTORY;BASEDIRECTORY" # one value keywords
+			       "" # multi value keywords
+			       ${ARGN})
 	set (${OUTVARIABLE} "NO" PARENT_SCOPE)
 
 	list (FIND ${LIST} "-${ITEM_NAME}" FOUND_EXCLUDE_NAME)
 	if (FOUND_EXCLUDE_NAME GREATER -1)
-		set (${OUTVARIABLE} "explicitly excluded" PARENT_SCOPE)
-		# let explicit exclusion win
+		set (${OUTVARIABLE} "explicitly excluded" PARENT_SCOPE) # let explicit exclusion win
 
 		return ()
 	endif ()
 
 	list (FIND ${LIST} "${ITEM_NAME}" FOUND_NAME)
 	if (FOUND_NAME EQUAL -1)
-		set (${OUTVARIABLE} "silent" PARENT_SCOPE)
-		# maybe it is included by category
+		set (${OUTVARIABLE} "silent" PARENT_SCOPE) # maybe it is included by category
+
 	else ()
-		# plugin is given explicit
-		return ()
+
+		return () # plugin is given explicit
 	endif ()
 
 	if (ARG_NO_CATEGORIES)
-		# we are done if categories are disabled
-		return ()
+
+		return () # we are done if categories are disabled
 	endif ()
 
 	if (NOT ARG_BASEDIRECTORY)
@@ -226,26 +242,26 @@ function (check_item_is_excluded OUTVARIABLE LIST ITEM_NAME)
 		set (README_FILE ${ARG_BASEDIRECTORY}/${ARG_SUBDIRECTORY}/README.md)
 	endif ()
 	if (NOT EXISTS ${README_FILE})
+
 		# we need README.md for extracting categories
 		message (WARNING "readme file does not exist at ${README_FILE}")
 	else ()
-		FILE(READ ${README_FILE} contents)
-		STRING (REGEX MATCH "- +infos/status *= *([-a-zA-Z0-9 ]*)" CATEGORIES "${contents}")
-		STRING (REGEX REPLACE "- +infos/status *= *([-a-zA-Z0-9 ]*)" "\\1" CATEGORIES "${CATEGORIES}")
-		STRING (REGEX REPLACE " " ";" CATEGORIES "${CATEGORIES}")
+		file (READ ${README_FILE} contents)
+		string (REGEX MATCH "- +infos/status *= *([-a-zA-Z0-9 ]*)" CATEGORIES "${contents}")
+		string (REGEX REPLACE "- +infos/status *= *([-a-zA-Z0-9 ]*)" "\\1" CATEGORIES "${CATEGORIES}")
+		string (REGEX REPLACE " " ";" CATEGORIES "${CATEGORIES}")
 
 		if (ARG_ENABLE_PROVIDES)
-			STRING (REGEX MATCH "- +infos/provides *= *([a-zA-Z0-9/ ]*)" PROVIDES "${contents}")
-			STRING (REGEX REPLACE "- +infos/provides *= *([a-zA-Z0-9/ ]*)" "\\1" PROVIDES "${PROVIDES}")
-			STRING (REGEX REPLACE " " ";" PROVIDES "${PROVIDES}")
+			string (REGEX MATCH "- +infos/provides *= *([a-zA-Z0-9/ ]*)" PROVIDES "${contents}")
+			string (REGEX REPLACE "- +infos/provides *= *([a-zA-Z0-9/ ]*)" "\\1" PROVIDES "${PROVIDES}")
+			string (REGEX REPLACE " " ";" PROVIDES "${PROVIDES}")
 			split_plugin_providers (PROVIDES)
 			list (APPEND CATEGORIES "${PROVIDES}")
-		endif()
-	endif()
+		endif ()
+	endif ()
 	list (APPEND CATEGORIES "ALL")
 
-	STRING (TOUPPER "${CATEGORIES}" CATEGORIES)
-	#message (STATUS "CATEGORIES FOUND FOR ${ITEM_NAME}: ${CATEGORIES}")
+	string (TOUPPER "${CATEGORIES}" CATEGORIES) # message (STATUS "CATEGORIES FOUND FOR ${ITEM_NAME}: ${CATEGORIES}")
 
 	foreach (CAT ${CATEGORIES})
 		list (FIND ${LIST} "-${CAT}" FOUND_EXCLUDE_CATEGORY)

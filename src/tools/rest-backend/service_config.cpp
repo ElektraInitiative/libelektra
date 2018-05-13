@@ -110,7 +110,7 @@ void ConfigEngine::handleValueInsertion (cppcms::json::value & config, const std
 			{
 				config.at (matches.str (1));
 			}
-			catch (cppcms::json::bad_value_cast & e)
+			catch (cppcms::json::bad_value_cast const & e)
 			{
 				config.set (matches.str (1), cppcms::json::array ());
 			}
@@ -190,7 +190,7 @@ void ConfigEngine::setValue (cppcms::json::value & config, const kdb::Key & key)
 		config.set_value (key.get<long> ());
 		return;
 	}
-	catch (kdb::KeyTypeConversion & e)
+	catch (kdb::KeyTypeConversion const & e)
 	{
 		// this was only an attempt, use fallback below
 	}

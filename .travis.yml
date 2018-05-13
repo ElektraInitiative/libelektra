@@ -28,6 +28,14 @@ matrix:
       env: [ ASAN=ON ]
 
     - os: linux
+      compiler: gcc
+      addons:
+        apt:
+          sources: [ ubuntu-toolchain-r-test ]
+          packages: [ g++-7 ]
+      env: [ ASAN=ON ]
+
+    - os: linux
       compiler: clang
       env: [ ASAN=ON ]
 
@@ -55,9 +63,16 @@ matrix:
 
     - os: linux
       compiler: gcc
+      apt:
+        sources: [ llvm-toolchain-trusty-6.0, ubuntu-toolchain-r-test]
+        packages: [ clang-format-6.0 ]
 
     - os: linux
       compiler: clang
+      addons:
+        apt:
+          sources: [ llvm-toolchain-trusty-5.0 ]
+          packages: [ clang-format-5.0 ]
 
 before_install:
   - |
@@ -73,9 +88,13 @@ before_install:
       if [[ "$CC" == "gcc" ]]; then
         brew install gcc
         brew link --overwrite gcc
-        export CC=gcc-7
-        export CXX=g++-7
+        gcc_version_major=$(brew info gcc | head -n1 | sed -E 's/[^0-9]*([0-9]+)\..*/\1/')
+        export CC="gcc-$gcc_version_major"
+        export CXX="g++-$gcc_version_major"
       else
+        # Use latest version of LLVM to translate the code
+        brew install llvm
+        export CC=/usr/local/opt/llvm/bin/clang CXX=/usr/local/opt/llvm/bin/clang++
         # Linking the Homebrew versions of Botan and yaml-cpp using `gcc` fails on macOS
         brew install botan
         brew install yaml-cpp
@@ -83,6 +102,7 @@ before_install:
         brew install xerces-c
       fi
       brew install augeas
+      brew install clang-format
       brew install checkbashisms
       brew install dbus
       brew install discount
@@ -92,14 +112,16 @@ before_install:
       brew install libuv
       brew install lua
       brew install openssl
-      brew install python
-      brew install python3
+      brew install python@2; brew link --overwrite python@2
+      brew install python || brew upgrade python
       # Since Qt 5.10.1 GCC is unable to compile the Qt-GUI under macOS printing the following error message:
       #   'init_priority' attribute is not supported on this platform
       brew install qt@5.5
       brew install swig
       brew install yajl
       pip2 install cheetah # Required by kdb-gen
+      # start D-Bus session bus
+      brew services start dbus
     fi
   - |
     if [[ "$TRAVIS_OS_NAME" == "osx" && "$HASKELL" == "ON" ]] ; then
@@ -114,12 +136,14 @@ before_install:
     fi
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+      [[ $ASAN == ON && $CC == gcc ]] && export CC=gcc-7 CXX=g++-7
       sudo apt-get -qq update
-      sudo apt-get install clang-format-3.8
       sudo apt-get install ninja-build
       sudo apt-get install libboost-all-dev
       sudo apt-get install libyaml-cpp-dev
       sudo apt-get install libuv-dev
+      sudo apt-get install libdbus-1-dev
+      sudo apt-get install libxerces-c-dev
     fi
 
 #
@@ -144,7 +168,7 @@ before_script:
   - |
     if [[ $HASKELL == ON ]]; then
       bindings="haskell"
-      plugins="resolver_fm_hpu_b;dump;ini;dini;sync;error;hosts;list;glob;profile;spec;network;tracer;timeofday;base64;haskell"
+      plugins="resolver_fm_hpu_b;dump;list;spec"
       tools="kdb"
     fi
   - |
@@ -172,13 +196,18 @@ before_script:
     ${CMAKE_OPT[@]}
     $TRAVIS_BUILD_DIR
   - export PATH=$PATH:"$INSTALL_DIR/bin"
-  - export LD_LIBRARY_PATH="$INSTALL_DIR/lib"
 
 script:
   - ninja
   - |
-    if [[ "$FAST" == "ON" || "$ASAN" = "ON" ]]; then
+    if [[ "$FAST" == "ON" ]]; then
       ninja run_all
+    elif [[ "$ASAN" = "ON" && "$TRAVIS_OS_NAME" == "linux" && "$CC" == "clang" ]]; then
+      # preload required libraries (LD_PRELOAD is a space separated list)
+      UBSAN_LIBRARY=$(find /usr/ -name '*libclang_rt.ubsan_standalone_cxx-x86_64.so')
+      LD_PRELOAD="$UBSAN_LIBRARY" ASAN_OPTIONS=symbolize=1 ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer) ninja run_all
+    elif [[ "$ASAN" = "ON" ]]; then
+      ASAN_OPTIONS=symbolize=1 ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer) ninja run_all
     else
       ninja install
       ninja run_all && kdb run_all

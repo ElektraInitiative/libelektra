@@ -11,7 +11,27 @@ Note that when using the `-r` flag, `source` as well as all of the keys below it
 ## DESCRIPTION
 
 This command moves key(s) in the Key database.
-You can move keys to another directory within the database or even below another key.
+You can move keys to other paths within the database.
+
+
+## LIMITATIONS
+
+Neither `source` nor `dest` can be a cascading key.
+(Start with `/`).
+Make sure to select a namespace.
+
+
+## RETURN VALUES
+
+This command will return the following values as an exit status:
+
+- 0:
+  No errors.
+- 1-10:
+  standard exit codes, see [kdb(1)](kdb.md)
+- 11:
+  No key to move found.
+
 
 
 ## OPTIONS
@@ -31,10 +51,10 @@ You can move keys to another directory within the database or even below another
 
 ## EXAMPLES
 
-To move multiple keys:
+To move multiple keys:<br>
 `kdb mv -r user/example1 user/example2`
 
-To move a single key:
+To move a single key:<br>
 `kdb mv user/example/key1 user/example/key2`
 
 

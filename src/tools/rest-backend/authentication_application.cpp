@@ -38,7 +38,7 @@ AuthenticationApp::AuthenticationApp (cppcms::service & srv) : cppcms::applicati
 	mapper ().assign ("");
 
 	// force caching of database
-	(void)kdbrest::service::StorageEngine::instance ();
+	(void) kdbrest::service::StorageEngine::instance ();
 }
 
 /**
@@ -69,7 +69,7 @@ void AuthenticationApp::authenticate ()
 		{
 			requestData = RootApp::parsePostDataAsJson (request ());
 		}
-		catch (kdbrest::exception::InvalidPostDataFormatException & e)
+		catch (kdbrest::exception::InvalidPostDataFormatException const & e)
 		{
 			RootApp::setBadRequest (response (), "The submitted data is not of type application/json.",
 						"REQUEST_MALFORMED_DATA");
@@ -85,7 +85,7 @@ void AuthenticationApp::authenticate ()
 		{
 			username = requestData.get<std::string> ("username");
 		}
-		catch (cppcms::json::bad_value_cast & e)
+		catch (cppcms::json::bad_value_cast const & e)
 		{
 			RootApp::setBadRequest (response (), "You have to supply an username.", "AUTH_MISSING_USERNAME");
 			return;
@@ -96,7 +96,7 @@ void AuthenticationApp::authenticate ()
 		{
 			password = requestData.get<std::string> ("password");
 		}
-		catch (cppcms::json::bad_value_cast & e)
+		catch (cppcms::json::bad_value_cast const & e)
 		{
 			RootApp::setBadRequest (response (), "You have to supply a password.", "AUTH_MISSING_PASSWORD");
 			return;
@@ -120,7 +120,7 @@ void AuthenticationApp::authenticate ()
 		{
 			user = service::StorageEngine::instance ().getUser (username);
 		}
-		catch (exception::UserNotFoundException & e)
+		catch (exception::UserNotFoundException const & e)
 		{
 			RootApp::setUnauthorized (response (), "An account for the given username does not exist.",
 						  "AUTH_UNKNOWN_USERNAME");
@@ -145,7 +145,7 @@ void AuthenticationApp::authenticate ()
 		{
 			token = this->buildJWT (response (), user);
 		}
-		catch (kdbrest::exception::JwtCreationException & e)
+		catch (kdbrest::exception::JwtCreationException const & e)
 		{
 			// error is already set to response
 			return;
@@ -312,7 +312,7 @@ model::User AuthenticationApp::getCurrentUser (cppcms::http::request & request)
 		model::User user = service::StorageEngine::instance ().getUser (username);
 		return user;
 	}
-	catch (exception::UserNotFoundException & e)
+	catch (exception::UserNotFoundException const & e)
 	{
 		throw exception::UserNotFoundException ();
 	}

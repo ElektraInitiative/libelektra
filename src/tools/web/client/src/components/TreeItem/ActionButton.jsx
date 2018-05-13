@@ -10,11 +10,13 @@ import React from 'react'
 
 import IconButton from 'material-ui/IconButton'
 
-const ActionButton = ({ icon, onClick, size = 14 }) => (
+const ActionButton = ({ icon, tooltip, onClick, size = 14 }) => (
     <IconButton
-      style={{ width: 16, height: 16, paddingTop: 1 }}
+      style={{ width: 22, height: 22, padding: 4 }}
       iconStyle={{ width: 14, height: 14 }}
       onClick={onClick}
+      tooltip={tooltip}
+      tabIndex={0}
     >
         {icon}
     </IconButton>

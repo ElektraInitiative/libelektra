@@ -1,6 +1,6 @@
 # Pub/Sub Communication
 
-## Issue
+## Problem
 
 To develop a [Web UI](https://github.com/ElektraInitiative/libelektra/issues/252),
 we need to be able to remotely configure Elektra via a network socket.
@@ -28,7 +28,7 @@ changes in the Elektra state.
 
 Use ZeroMQ with [JSMQ](https://github.com/zeromq/JSMQ).
 
-## Argument
+## Rationale
 
 nanomsg sounds interesting, but isn't as popular as ZeroMQ, which is why there
 are no browser JS bindings available (only Node.js, which cannot be easily

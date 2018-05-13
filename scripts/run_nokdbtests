@@ -8,4 +8,4 @@ fi
 
 # run all tests not writing to disc
 
-LD_LIBRARY_PATH=`pwd`/lib ctest -LE kdbtests --force-new-ctest-process --output-on-failure --build-config $1
+ctest -LE kdbtests --force-new-ctest-process --output-on-failure --build-config $1

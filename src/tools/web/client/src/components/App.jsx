@@ -28,6 +28,11 @@ const getSubpage = ({ match }) => {
   }
 }
 
+const getSingleInstance = ({ match }) => {
+  const { id } = match && match.params
+  return id === 'my'
+}
+
 class App extends React.Component {
   componentWillMount () {
     const { store, history } = this.props
@@ -46,8 +51,14 @@ class App extends React.Component {
     return (
         <div>
             <Route exact path="/" component={Menu} />
-            <Route path="/:path" render={props =>
+            <Route exact path="/:path" render={props =>
                 <Menu subpage={getSubpage(props)} />
+            } />
+            <Route path="/:path/:id" render={props =>
+                <Menu
+                  subpage={getSubpage(props)}
+                  singleInstanceMode={getSingleInstance(props)}
+                />
             } />
             <div style={{ padding: 50 }}>
                 <Route exact path="/" component={Home} />

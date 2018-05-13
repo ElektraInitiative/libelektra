@@ -1,6 +1,6 @@
 # Global Validation
 
-## Issue
+## Problem
 
 Links and validation constraints might point to keys not loaded
 with the respective `kdbGet`.
@@ -25,7 +25,7 @@ with the respective `kdbGet`.
 
 ## Decision
 
-## Argument
+## Rationale
 
 ## Implications
 

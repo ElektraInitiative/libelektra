@@ -1,6 +1,6 @@
 # Bootstrap
 
-## Issue
+## Problem
 
 Currently the default backend (default.ecf) will also be used for bootstrapping. There are two problems with this approach:
 
@@ -39,7 +39,7 @@ Algorithm:
 4. if the fallback works (i.e. keys are present in system/elektra), mount the default backend to system/elektra (fallback mode)
 
 
-## Argument
+## Rationale
 
 - Solves both problems
 - Is fully compatible with any existing setup

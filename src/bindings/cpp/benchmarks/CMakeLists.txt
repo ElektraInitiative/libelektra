@@ -11,10 +11,8 @@ macro (do_benchmark source)
 
 	target_link_elektra (${source} elektra-kdb elektra-meta)
 
-	set_target_properties (${source} PROPERTIES
-			COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
+	set_target_properties (${source} PROPERTIES COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
 endmacro (do_benchmark)
-
 
 file (GLOB TESTS *.cpp)
 foreach (file ${TESTS})
@@ -23,7 +21,6 @@ foreach (file ${TESTS})
 endforeach (file ${TESTS})
 
 if (${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
-	# require by gethostname
-	target_link_libraries (benchmark_thread "ws2_32")
+	target_link_libraries (benchmark_thread "ws2_32") # required by gethostname
 	target_link_libraries (benchmark_sync "ws2_32")
 endif ()

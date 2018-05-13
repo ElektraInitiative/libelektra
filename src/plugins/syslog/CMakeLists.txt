@@ -1,7 +1,3 @@
-include(LibAddMacros)
+include (LibAddMacros)
 
-add_plugin (syslog
-	SOURCES
-		log.h
-		syslog.c
-	)
+add_plugin (syslog SOURCES log.h syslog.c)

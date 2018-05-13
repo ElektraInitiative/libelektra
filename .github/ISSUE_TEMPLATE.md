@@ -17,8 +17,8 @@ kdb get /examples/hello
 #> world
 
 kdb get user/does/not/exist
-# RET: 1
-# STDERR: [Dd]id not find key
+# RET: 11
+# STDERR: [Dd]id not find key 'user/does/not/exist'
 
 kdb rm /examples/hello
 ```
@@ -37,6 +37,7 @@ Please describe what actually happened.
 ## System Information
 
 - Elektra Version: master
+- Operating System or Docker Container?
 - Versions of other relevant software?
 
 ## Further Log Files and Output

@@ -1,6 +1,6 @@
 # Empty Files
 
-## Issue
+## Problem
 
 An empty KeySet is passed to kdbSet(). What is the correct persistent
 representation?
@@ -25,7 +25,7 @@ representation?
 
 Remove files on empty KeySet.
 
-## Argument
+## Rationale
 
 + allows user to undo what a previous kdbSet() did
 + easy to understand semantics

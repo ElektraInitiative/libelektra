@@ -1,5 +1,3 @@
-#!/bin/sh
-
 @INCLUDE_COMMON@
 
 set -f
@@ -45,6 +43,30 @@ execute()
 	[ -s "$OutFile" ] && printf '\n' >> "$OutFile"
 	printf 'CMD: %s\n' "$command" >> "$OutFile"
 
+# ===============
+# = INTERACTIVE =
+# ===============
+
+	if [ x"$(first "$command")" = xinteractive ]
+	then
+		S=$(second "$command")
+		if [ -z "$S" ]
+		then
+			S=$SHELL
+		fi
+		if [ -z "$S" ]
+		then
+			S=bash
+		fi
+		echo "spawning interactive shell $S"
+		$S -i /dev/tty
+		return
+	fi
+
+# ========
+# = EXEC =
+# ========
+
 	sh -c -f "$command" 2>stderr 1>stdout
 
 	RETVAL="$?"
@@ -57,12 +79,12 @@ execute()
 
 	if [ -n "$RETCMP" ];
 	then
-		nbTest=$(( nbTest + 1 ))
+		executedTests=$(( executedTests + 1 ))
 		if ! printf '%s' "$RETVAL" | grep -Ewq $RETCMP;
 		then
-			printf 'Return value “%s” does not match “%s”\n' "$RETVAL" "$RETCMP"
+			printerr '\nERROR - RET:\nReturn value “%s” does not match “%s”\n\n' "$RETVAL" "$RETCMP"
 			printf '=== FAILED return value does not match expected pattern %s\n' "$RETCMP" >> "$OutFile"
-			nbError=$(( nbError + 1 ))
+			numberErrors=$(( numberErrors + 1 ))
 		fi
 	fi
 
@@ -74,14 +96,14 @@ execute()
 
 
 	[ -n "$STDERR" ] && printf 'STDERR: %s\n' "$STDERR" >> "$OutFile"
-	if [ -n "$STDERRCMP" ];
+	if [ -n "${STDERRCMP+unset}" ];
 	then
-		nbTest=$(( nbTest + 1 ))
-		if ! printf '%s' "$STDERR" | replace_newline_return | grep -Eq --text "$STDERRCMP";
+		executedTests=$(( executedTests + 1 ))
+		if ! printf '%s' "$STDERR" | replace_newline_return | grep -Eq --text "^$STDERRCMP\$";
 		then
-			printf '\nERROR - STDERR:\n“%s”\ndoes not match\n“%s”\n\n' "$STDERR" "$STDERRCMP"
+			printerr '\nERROR - STDERR:\n“%s”\ndoes not match\n“%s”\n\n' "$STDERR" "$STDERRCMP"
 			printf '=== FAILED stderr does not match expected pattern %s\n' "$STDERRCMP" >> "$OutFile"
-			nbError=$(( nbError + 1 ))
+			numberErrors=$(( numberErrors + 1 ))
 		fi
 	fi
 
@@ -94,12 +116,12 @@ execute()
 	[ -n "$STDOUT" ] && printf '%s\n' "STDOUT: $STDOUT" >> "$OutFile"
 	if [ -n "$STDOUTCMP" ];
 	then
-		nbTest=$(( nbTest + 1 ))
+		executedTests=$(( executedTests + 1 ))
 		if ! printf '%s' "$STDOUT" | replace_newline_return | grep -Fqx --text "$STDOUTCMP";
 		then
-			printf '\nERROR - STDOUT:\n“%s”\ndoes not match\n“%s”\n\n' "$STDOUT" "$STDOUTCMP"
+			printerr '\nERROR - STDOUT:\n“%s”\ndoes not match\n“%s”\n\n' "$STDOUT" "$STDOUTCMP"
 			printf '=== FAILED stdout does not match expected pattern %s\n' "$STDOUTCMP" >> "$OutFile"
-			nbError=$(( nbError + 1 ))
+			numberErrors=$(( numberErrors + 1 ))
 		fi
 	fi
 
@@ -109,12 +131,12 @@ execute()
 
 	if [ -n "$STDOUTRECMP" ];
 	then
-		nbTest=$(( nbTest + 1 ))
+		executedTests=$(( executedTests + 1 ))
 		if !  printf '%s' "$STDOUT" | replace_newline_return | grep -Eq --text "$STDOUTRECMP";
 		then
-			printf '\nERROR - STDOUT:\n“%s”\ndoes not match\n“%s”\n\n' "$STDOUT" "$STDOUTRECMP"
+			printerr '\nERROR - STDOUT:\n“%s”\ndoes not match\n“%s”\n\n' "$STDOUT" "$STDOUTRECMP"
 			printf '=== FAILED stdout does not match expected pattern %s\n' "$STDOUTRECMP" >> "$OutFile"
-			nbError=$(( nbError + 1 ))
+			numberErrors=$(( numberErrors + 1 ))
 		fi
 	fi
 
@@ -127,12 +149,12 @@ execute()
 	[ -n "$WARNINGS" ] && printf 'WARNINGS: %s\n' "$WARNINGS" >> "$OutFile"
 	if [ -n "$WARNINGSCMP" ];
 	then
-		nbTest=$(( nbTest + 1 ))
+		executedTests=$(( executedTests + 1 ))
 		if ! printf '%s' "$WARNINGS" | replace_newline_return | grep -Eq --text "$WARNINGSCMP";
 		then
-			printf '\nERROR - WARNINGS:\n“%s”\ndoes not match\n“%s”\n\n' "$WARNINGS" "$WARNINGSCMP"
+			printerr '\nERROR - WARNINGS:\n“%s”\ndoes not match\n“%s”\n\n' "$WARNINGS" "$WARNINGSCMP"
 			printf '=== FAILED Warnings do not match expected pattern %s\n' "$WARNINGSCMP" >> "$OutFile"
-			nbError=$(( nbError + 1 ))
+			numberErrors=$(( numberErrors + 1 ))
 		fi
 	fi
 
@@ -145,19 +167,19 @@ execute()
 	[ -n "$ERROR" ] && printf 'ERROR: %s\n' "$ERROR" >> "$OutFile"
 	if [ -n "$ERRORCMP" ];
 	then
-		nbTest=$(( nbTest + 1 ))
+		executedTests=$(( executedTests + 1 ))
 		if ! printf '%s' "$ERROR" | replace_newline_return | grep -Eq --text "$ERRORCMP";
 		then
-			printf '\nERROR - ERROR:\n“%s”\ndoes not match\n“%s”\n\n' "$ERROR" "$ERRORCMP"
+			printerr '\nERROR - ERROR:\n“%s”\ndoes not match\n“%s”\n\n' "$ERROR" "$ERRORCMP"
 			printf '=== FAILED Errors do not match expected pattern %s\n' "$ERRORCMP" >> "$OutFile"
-			nbError=$(( nbError + 1 ))
+			numberErrors=$(( numberErrors + 1 ))
 		fi
 	fi
 }
 
 tail()
 {
-	printf '%s' "$*" | cut -d ' ' -f2-
+	printf '%s' "$*" | cut -sd ' ' -f2-
 }
 
 first() {
@@ -165,7 +187,7 @@ first() {
 }
 
 second() {
-	printf '%s' "$*" | cut -d ' ' -f2
+	printf '%s' "$*" | cut -sd ' ' -f2
 }
 
 run_script()
@@ -207,7 +229,7 @@ run_script()
 		STDOUTRECMP=$(tail "$line")
 		;;
 	STDERR:)
-		STDERRCMP=$(tail "$line")
+		STDERRCMP=$(printf '%s' "$line" | sed -E 's/[^:]+: ?(.*)/\1/')
 		;;
 	\<)
 		OP="$cmd"
@@ -226,7 +248,7 @@ run_script()
 		WARNINGSCMP=
 		STDOUTCMP=
 		STDOUTRECMP=
-		STDERRCMP=
+		unset STDERRCMP
 		ARG=
 	fi
 	done < "$FILE"
@@ -238,11 +260,11 @@ trap cleanup EXIT INT QUIT TERM
 
 # Parse optional argument `-p`
 OPTIND=1
-keepProtocol='false'
+printProtocol='false'
 while getopts "p" opt; do
 	case "$opt" in
 	p)
-		keepProtocol='true'
+		printProtocol='true'
 		;;
 	esac
 done
@@ -261,19 +283,18 @@ ERRORCMP=
 WARNINGSCMP=
 STDOUTCMP=
 STDOUTRECMP=
-STDERRCMP=
 
 BACKUP=0
 TMPFILE=$(mktempfile_elektra)
 
 # variables to count up errors and tests
-nbError=0
-nbTest=0
+numberErrors=0
+executedTests=0
 
 if [ "$#" -lt '1' ] || [ "$#" -gt '2' ];
 then
 	printf 'Usage: %s [-p] input_script [protocol to compare]\n\n' "$0"
-	printf '       -p    keep protocol file\n' "$0"
+	printf '       -p    print protocol file\n' "$0"
 	rm "$OutFile"
 	exit 0
 fi
@@ -291,15 +312,15 @@ run_script
 # We disable the cleanup procedure temporarily, since we still need the exported configuration,
 # if the tests changed the configuration permanently.
 trap - EXIT
-export_check "$EXPORT_DIR" 'Test' 'true'
+export_check "$EXPORT_DIR" 'Test'
 trap cleanup EXIT
 
 EVAL=0
 
 if [ "$#" -eq '1' ];
 then
-	printf 'shell_recorder %s RESULTS: %s test(s) done %s error(s).' "$1" "$nbTest" "$nbError"
-	EVAL=$nbError
+	printf 'shell_recorder %s RESULTS: %s test(s) done %s error(s).' "$1" "$executedTests" "$numberErrors"
+	EVAL=$numberErrors
 fi
 
 if [ "$#" -eq '2' ];
@@ -307,18 +328,19 @@ then
 	RESULT=$(diff -N --text "$2" "$OutFile" 2>/dev/null)
 	if [ "$?" -ne '0' ];
 	then
-		printf '=======================================\nReplay test failed, protocols differ\n%s\n\n\n\n' "$RESULT"
+		printerr '=======================================\nReplay test failed, protocols differ\n%s\n\n\n\n' "$RESULT"
 		EVAL=1
 	else
 		printf '=======================================\nReplay test succeeded\n'
 	fi
 fi
 
-if [ "$EVAL" -eq 0 ] && [ $keepProtocol = 'false' ]; then
-	rm -f "$OutFile"
-else
-	>&2 printf '\n📕\nProtocol File: %s\n' "$OutFile"
+if [ "$EVAL" -ne 0 ] || [ $printProtocol = 'true' ]; then
+	printerr '\n\n—— Protocol ————————————————————————————————————————————————————\n'
+	>&2 cat "$OutFile"
+	printerr '————————————————————————————————————————————————————————————————\n'
 fi
+rm -f "$OutFile"
 
 rm "${TMPFILE}"
 exit "$EVAL"

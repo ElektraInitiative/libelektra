@@ -52,5 +52,5 @@ PluginPtr Modules::load (PluginSpec const & spec)
 
 	return plugin;
 }
-}
-}
+} // namespace tools
+} // namespace kdb

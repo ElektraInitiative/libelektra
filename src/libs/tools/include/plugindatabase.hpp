@@ -55,8 +55,7 @@ public:
 	// virtual void registerPlugin(PluginSpec) = 0;
 	// virtual std::vector<PluginSpec> listAllPlugins() const = 0;
 
-	enum Status
-	{
+	enum Status {
 		/// does not directly, but can be loaded via provides
 		provides,
 		/// exists and working as given
@@ -161,6 +160,9 @@ protected:
 public:
 	ModulesPluginDatabase ();
 	~ModulesPluginDatabase ();
+	/* TODO: reintroduce with next API break
+	virtual ~ModulesPluginDatabase ();
+	*/
 
 	std::vector<std::string> listAllPlugins () const;
 	PluginDatabase::Status status (PluginSpec const & whichplugin) const;
@@ -198,6 +200,9 @@ public:
 	 */
 	explicit PluginVariantDatabase (const KeySet & conf);
 	~PluginVariantDatabase ();
+	/* TODO: reintroduce with next API break
+	virtual ~PluginVariantDatabase ();
+	*/
 
 	std::vector<std::string> listAllPlugins () const;
 
@@ -333,7 +338,7 @@ private:
 
 
 typedef std::shared_ptr<PluginDatabase> PluginDatabasePtr;
-}
-}
+} // namespace tools
+} // namespace kdb
 
 #endif

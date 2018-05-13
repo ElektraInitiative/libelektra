@@ -6,29 +6,4 @@ then
 	exit 1
 fi
 
-# checks for memleaks in ctest and gives a non-null return value
-# if a memleak is found
-#
-# Memory checking results:
-# Potential Memory Leak - 2706
-# Memory Leak - 10
-# Uninitialized Memory Conditional - 76
-# Uninitialized Memory Read - 276
-#
-# It returns successful, even if test cases failed, so it is intended
-# to be complementary to run_all, not instead.
-
-LD_LIBRARY_PATH=`pwd`/lib ctest -T memcheck --output-on-failure --build-config $1 -LE memleak |\
-awk '
-BEGIN { ret=0; }
-
-/^Potential Memory Leak - [0-9]+$/ { ret=1; }
-/^Memory Leak - [0-9]+$/ { ret=2; }
-/^Uninitialized Memory Conditional - [0-9]+$/ { ret=3; }
-/^Uninitialized Memory Read - [0-9]+$/ { ret=4; }
-/^Uninitialized Memory Write - [0-9]+$/ { ret=5; }
-
-{ print; }
-
-END{ exit ret; }
-'
+ctest -T memcheck --output-on-failure --build-config $1 -LE memleak

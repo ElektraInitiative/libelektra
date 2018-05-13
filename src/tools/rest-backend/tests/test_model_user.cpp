@@ -57,7 +57,7 @@ TEST (kdbrestModelsUserTest, SetAndGetAndCheckEmail)
 		user.getSubkey (ELEKTRA_REST_MODEL_USER_META_EMAIL);
 		ASSERT_TRUE (false);
 	}
-	catch (kdbrest::exception::SubkeyNotFoundException & e)
+	catch (kdbrest::exception::SubkeyNotFoundException const & e)
 	{
 		ASSERT_TRUE (true);
 	}
@@ -78,7 +78,7 @@ TEST (kdbrestModelsUserTest, SetAndGetRank)
 		user.getSubkey (ELEKTRA_REST_MODEL_USER_META_RANK);
 		ASSERT_TRUE (false);
 	}
-	catch (kdbrest::exception::SubkeyNotFoundException & e)
+	catch (kdbrest::exception::SubkeyNotFoundException const & e)
 	{
 		ASSERT_TRUE (true);
 	}
@@ -99,7 +99,7 @@ TEST (kdbrestModelsUserTest, SetAndGetCreatedat)
 		user.getSubkey (ELEKTRA_REST_MODEL_USER_META_CREATEDAT);
 		ASSERT_TRUE (false);
 	}
-	catch (kdbrest::exception::SubkeyNotFoundException & e)
+	catch (kdbrest::exception::SubkeyNotFoundException const & e)
 	{
 		ASSERT_TRUE (true);
 	}
@@ -112,7 +112,7 @@ int main (int argc, char * argv[])
 {
 	testing::InitGoogleTest (&argc, argv);
 	cppcms::json::value config = kdbrest::service::ConfigEngine::instance ().loadApplicationConfiguration ();
-	(void)kdbrest::Config::instance ().initializeConfiguration (config);
+	(void) kdbrest::Config::instance ().initializeConfiguration (config);
 	kdbrest::Config::instance ().setValue<std::string> ("kdb.path.users", "dir/users");
 	return RUN_ALL_TESTS ();
 }

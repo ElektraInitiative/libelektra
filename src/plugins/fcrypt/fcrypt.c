@@ -30,9 +30,15 @@
 #include <kdbmacros.h>
 #include <kdbtypes.h>
 
-enum FcryptGetState
-{
+/**
+ * @brief Defines the plugin state during the <code>kdb get</code> phase.
+ */
+enum FcryptGetState {
+
+	/** Perform a decryption run before <code>kdb get</code> reads from the storage. */
 	PREGETSTORAGE = 0,
+
+	/** Perform an encryption run after <code>kdb get</code> has read from the storage. */
 	POSTGETSTORAGE = 1
 };
 
@@ -301,7 +307,7 @@ static int fcryptEncrypt (KeySet * pluginConfig, Key * parentKey)
 	{
 		argv[i++] = "-r";
 		// NOTE argv[] values will not be modified, so const can be discarded safely
-		argv[i++] = (char *)keyString (gpgRecipientRoot);
+		argv[i++] = (char *) keyString (gpgRecipientRoot);
 	}
 
 	// append keys beneath root (crypto/key/#_) as gpg recipients
@@ -314,7 +320,7 @@ static int fcryptEncrypt (KeySet * pluginConfig, Key * parentKey)
 			{
 				argv[i++] = "-r";
 				// NOTE argv[] values will not be modified, so const can be discarded safely
-				argv[i++] = (char *)keyString (k);
+				argv[i++] = (char *) keyString (k);
 			}
 		}
 	}
@@ -328,7 +334,7 @@ static int fcryptEncrypt (KeySet * pluginConfig, Key * parentKey)
 	{
 		argv[i++] = "-u";
 		// NOTE argv[] values will not be modified, so const can be discarded safely
-		argv[i++] = (char *)keyString (gpgSignatureRoot);
+		argv[i++] = (char *) keyString (gpgSignatureRoot);
 	}
 
 	// append keys beneath root (fcrypt/sign/#_) as gpg signature keys
@@ -341,7 +347,7 @@ static int fcryptEncrypt (KeySet * pluginConfig, Key * parentKey)
 			{
 				argv[i++] = "-u";
 				// NOTE argv[] values will not be modified, so const can be discarded safely
-				argv[i++] = (char *)keyString (k);
+				argv[i++] = (char *) keyString (k);
 			}
 		}
 	}
@@ -380,7 +386,7 @@ static int fcryptEncrypt (KeySet * pluginConfig, Key * parentKey)
 		}
 	}
 
-	argv[i++] = (char *)keyString (parentKey);
+	argv[i++] = (char *) keyString (parentKey);
 	argv[i++] = NULL;
 
 	// NOTE the encryption process works like this:
@@ -439,7 +445,7 @@ static int fcryptDecrypt (KeySet * pluginConfig, Key * parentKey, fcryptState * 
 	argv[i++] = tmpFile;
 	argv[i++] = "-d";
 	// safely discarding const from keyString() return value
-	argv[i++] = (char *)keyString (parentKey);
+	argv[i++] = (char *) keyString (parentKey);
 	argv[i++] = NULL;
 
 	// NOTE the decryption process works like this:
@@ -500,7 +506,7 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, open) (Plugin * handle, KeySet
  */
 int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, close) (Plugin * handle, KeySet * ks ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
-	fcryptState * s = (fcryptState *)elektraPluginGetData (handle);
+	fcryptState * s = (fcryptState *) elektraPluginGetData (handle);
 	if (s)
 	{
 		if (s->tmpFileFd > 0 && close (s->tmpFileFd))
@@ -541,7 +547,7 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, get) (Plugin * handle, KeySet 
 
 	// check plugin state
 	KeySet * pluginConfig = elektraPluginGetConfig (handle);
-	fcryptState * s = (fcryptState *)elektraPluginGetData (handle);
+	fcryptState * s = (fcryptState *) elektraPluginGetData (handle);
 	if (!s)
 	{
 		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_FCRYPT_STATE, parentKey, "No plugin state is available.");

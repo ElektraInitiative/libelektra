@@ -6,18 +6,25 @@ file (GLOB SRC_FILES *.c)
 add_headers (ELEKTRA_HEADERS)
 set (SOURCES ${SRC_FILES} ${HDR_FILES} ${ELEKTRA_HEADERS})
 
-## Build test
-set (example exampleio_uv)
+if (BUILD_FULL OR BUILD_STATIC)
+	list (APPEND SOURCES $<TARGET_OBJECTS:OBJ_elektra-io-uv>) # add sources for elektra-io-uv for static and full builds
+endif ()
 
-add_executable (${example} ${SOURCES})
-add_dependencies (${example} kdberrors_generated)
+# Build test
+set (EXAMPLE exampleio_uv)
 
-target_include_directories (${example} SYSTEM PUBLIC ${LIBUV_INCLUDE_DIRS})
+add_executable (${EXAMPLE} ${SOURCES})
+add_dependencies (${EXAMPLE} kdberrors_generated)
 
-target_link_elektra (${example} elektra-kdb elektra-io elektra-io-uv)
+target_include_directories (${EXAMPLE} SYSTEM PUBLIC ${LIBUV_INCLUDE_DIRS})
+
+target_link_elektra (${EXAMPLE} elektra-kdb elektra-io elektra-io-uv)
+if (BUILD_FULL OR BUILD_STATIC)
+	target_link_libraries (${EXAMPLE} ${LIBUV_LDFLAGS})
+endif ()
 
 if (LIBUV_VERSION VERSION_LESS "1.0")
-	set_target_properties (${example} PROPERTIES APPEND PROPERTY COMPILE_DEFINITIONS "HAVE_LIBUV0")
+	target_compile_definitions (${EXAMPLE} PRIVATE "HAVE_LIBUV0")
 else ()
-	set_target_properties (${example} PROPERTIES APPEND PROPERTY COMPILE_DEFINITIONS "HAVE_LIBUV1")
+	target_compile_definitions (${EXAMPLE} PRIVATE "HAVE_LIBUV1")
 endif ()

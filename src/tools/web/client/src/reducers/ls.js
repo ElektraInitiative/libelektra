@@ -9,7 +9,13 @@
 
 import {
   GET_KDB_SUCCESS, DELETE_KEY_SUCCESS, SET_KEY_SUCCESS, MOVE_KEY_SUCCESS,
+  COPY_KEY_SUCCESS, CREATE_KEY_SUCCESS,
 } from '../actions'
+
+const insertPath = (state, path) =>
+  state.includes(path)
+    ? state
+    : [ ...state, path ]
 
 // controls the state of the paths available in the kdb
 export default function pathReducer (state = [], action) {
@@ -26,11 +32,18 @@ export default function pathReducer (state = [], action) {
       return state.filter(p => (p !== path) && !p.startsWith(path + '/'))
     }
 
+    case CREATE_KEY_SUCCESS:
     case SET_KEY_SUCCESS: {
       const { path } = action && action.request
-      return state.includes(path)
-        ? state
-        : [ ...state, path ]
+      return insertPath(state, path)
+    }
+
+    case COPY_KEY_SUCCESS: {
+      const { from, to } = action && action.request
+      const copiedPaths = state.filter(p => p === from || p.startsWith(from + '/'))
+      return copiedPaths
+        .map(p => p.replace(from, to))
+        .reduce(insertPath, state)
     }
 
     case MOVE_KEY_SUCCESS: {

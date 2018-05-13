@@ -1,6 +1,6 @@
 # CMake Plugins
 
-## Issue
+## Problem
 
 - Plugin names and plugin folders not always exactly
   match (resolver_*, crypto_*)
@@ -27,7 +27,7 @@
 - directly use README.md to also describe cmake deps (too limited in expression)
 - split up AddPlugin.cmake and CMakeLists.txt (does not work well with variants)
 - simply adding all directories in src/plugins and decide within the `add_plugin`
-  if we should drop the plugin (see below in Argument)
+  if we should drop the plugin (see below in Rationale)
 
 Names for flag:
 
@@ -69,7 +69,7 @@ Following cmake variables are used for the phases:
   - with `ADD_TEST` in `add_plugin`, or
   - with `add_plugintest` (for unittests that have dependencies to bindings)
 
-## Argument
+## Rationale
 
 Solves all the issues without adding too much complexity for actually adding plugins.
 

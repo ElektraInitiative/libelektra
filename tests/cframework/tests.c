@@ -27,9 +27,6 @@
 int nbError;
 int nbTest;
 
-uid_t nbUid;
-gid_t nbGid;
-
 char file[KDB_MAX_PATH_LENGTH];
 char srcdir[KDB_MAX_PATH_LENGTH];
 
@@ -50,18 +47,6 @@ int init (int argc, char ** argv)
 {
 	char * tmpvar;
 	int fd;
-
-	setlocale (LC_ALL, "");
-
-#ifdef HAVE_CLEARENV
-	clearenv ();
-#else
-	unsetenv ("HOME");
-	unsetenv ("USER");
-#endif
-
-	nbUid = getuid ();
-	nbGid = getgid ();
 
 	if (argc > 1)
 	{
@@ -115,12 +100,6 @@ Key * create_root_key (const char * backendName)
 {
 	Key * root = keyNew ("user/tests", KEY_END);
 	/*Make mountpoint beneath root, and do all tests here*/
-	/* Not needed anymore:
-	keySetDir(root);
-	keySetUID(root, nbUid);
-	keySetGID(root, nbGid);
-	keySetComment (root, "backend root key for tests");
-	*/
 	keyAddBaseName (root, backendName);
 	keySetString (root, backendName);
 	keySetString (root, backendName);
@@ -273,7 +252,7 @@ void output_meta (Key * k)
 	keyRewindMeta (k);
 	while ((meta = keyNextMeta (k)) != 0)
 	{
-		printf (", %s: %s", keyName (meta), (const char *)keyValue (meta));
+		printf (", %s: %s", keyName (meta), (const char *) keyValue (meta));
 	}
 	printf ("\n");
 }
@@ -281,7 +260,7 @@ void output_meta (Key * k)
 void output_key (Key * k)
 {
 	// output_meta will print endline
-	printf ("%p key: %s, string: %s", (void *)k, keyName (k), keyString (k));
+	printf ("%p key: %s, string: %s", (void *) k, keyName (k), keyString (k));
 	output_meta (k);
 }
 
@@ -318,14 +297,14 @@ void output_trie (Trie * trie)
 	{
 		if (trie->value[i])
 		{
-			printf ("output_trie: %p, mp: %s %s [%d]\n", (void *)trie->value[i], keyName (trie->value[i]->mountpoint),
+			printf ("output_trie: %p, mp: %s %s [%d]\n", (void *) trie->value[i], keyName (trie->value[i]->mountpoint),
 				keyString (trie->value[i]->mountpoint), i);
 		}
 		if (trie->children[i]) output_trie (trie->children[i]);
 	}
 	if (trie->empty_value)
 	{
-		printf ("empty_value: %p, mp: %s %s\n", (void *)trie->empty_value, keyName (trie->empty_value->mountpoint),
+		printf ("empty_value: %p, mp: %s %s\n", (void *) trie->empty_value, keyName (trie->empty_value->mountpoint),
 			keyString (trie->empty_value->mountpoint));
 	}
 }
@@ -339,7 +318,7 @@ void output_split (Split * split)
 		{
 			printf ("split #%zu size: %zd, handle: %p, sync: %d, parent: %s (%s), spec: %zd, dir: %zd, user: %zd, system: "
 				"%zd\n",
-				i, ksGetSize (split->keysets[i]), (void *)split->handles[i], split->syncbits[i],
+				i, ksGetSize (split->keysets[i]), (void *) split->handles[i], split->syncbits[i],
 				keyName (split->parents[i]), keyString (split->parents[i]), split->handles[i]->specsize,
 				split->handles[i]->dirsize, split->handles[i]->usersize, split->handles[i]->systemsize);
 		}
@@ -473,6 +452,20 @@ static void clean_temp_home (void)
 
 	if (tempHome)
 	{
+		size_t fileToCleanLen = tempHomeLen + 30;
+		char * fileToClean = elektraMalloc (fileToCleanLen);
+		snprintf (fileToClean, fileToCleanLen, "%s/.gnupg/random_seed", tempHome);
+		unlink (fileToClean);
+		snprintf (fileToClean, fileToCleanLen, "%s/.gnupg/trustdb.gpg", tempHome);
+		unlink (fileToClean);
+		snprintf (fileToClean, fileToCleanLen, "%s/.gnupg/pubring.kbx~", tempHome);
+		unlink (fileToClean);
+		snprintf (fileToClean, fileToCleanLen, "%s/.gnupg/pubring.kbx", tempHome);
+		unlink (fileToClean);
+		snprintf (fileToClean, fileToCleanLen, "%s/.gnupg", tempHome);
+		rmdir (fileToClean);
+		elektraFree (fileToClean);
+
 		rmdir (tempHome);
 		elektraFree (tempHome);
 		tempHome = NULL;

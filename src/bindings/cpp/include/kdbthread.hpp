@@ -458,6 +458,6 @@ using ThreadValue = Value<T, ContextPolicyIs<ThreadContext>, PolicySetter1, Poli
 typedef ThreadValue<uint32_t> ThreadInteger;
 typedef ThreadValue<bool> ThreadBoolean;
 typedef ThreadValue<std::string> ThreadString;
-}
+} // namespace kdb
 
 #endif

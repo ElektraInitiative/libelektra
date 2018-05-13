@@ -1,6 +1,6 @@
 # Null Pointer Checks
 
-## Issue
+## Problem
 
 Currently all functions do proper argument checking which might degrade
 performance.
@@ -19,7 +19,7 @@ performance.
 
 Delayed to 1.0.0
 
-## Argument
+## Rationale
 
 - should have consistent, defined behavior
 

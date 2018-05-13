@@ -9,13 +9,51 @@
 
 #include <kdbhelper.h>
 #include <kdbio.h>
+#include <kdbioplugin.h>
 #include <kdbioprivate.h>
 #include <kdblogger.h>
 #include <kdbprivate.h>
 
+#include <stdio.h>
+
 void elektraIoSetBinding (KDB * kdb, ElektraIoInterface * ioBinding)
 {
 	kdb->ioBinding = ioBinding;
+
+	KeySet * parameters =
+		ksNew (1, keyNew ("/ioBinding", KEY_BINARY, KEY_SIZE, sizeof (ioBinding), KEY_VALUE, &ioBinding, KEY_END), KS_END);
+
+	// iterate over global plugins
+	for (int positionIndex = 0; positionIndex < NR_GLOBAL_POSITIONS; positionIndex++)
+	{
+		for (int subPositionIndex = 0; subPositionIndex < NR_GLOBAL_SUBPOSITIONS; subPositionIndex++)
+		{
+			Plugin * plugin = kdb->globalPlugins[positionIndex][subPositionIndex];
+			if (!plugin)
+			{
+				continue;
+			}
+
+			size_t func = elektraPluginGetFunction (plugin, "setIoBinding");
+			if (func)
+			{
+				ElektraIoPluginSetBinding setIoBinding = (ElektraIoPluginSetBinding) func;
+				setIoBinding (plugin, parameters);
+			}
+			else
+			{
+				func = elektraPluginGetFunction (plugin, "deferredCall");
+				if (func)
+				{
+					typedef void (*DeferFunctionCall) (Plugin * handle, char * name, KeySet * parameters);
+					DeferFunctionCall defer = (DeferFunctionCall) func;
+					defer (plugin, "setIoBinding", parameters);
+				}
+			}
+		}
+	}
+
+	ksDel (parameters);
 }
 
 ElektraIoInterface * elektraIoGetBinding (KDB * kdb)
@@ -123,10 +161,11 @@ int elektraIoBindingAddFd (ElektraIoInterface * binding, ElektraIoFdOperation * 
 		ELEKTRA_LOG_WARNING ("operation cannot be assigned to multiple bindings");
 		return 0;
 	}
+	fdOp->binding = binding;
 	int result = binding->addFd (binding, fdOp);
-	if (result)
+	if (!result)
 	{
-		fdOp->binding = binding;
+		fdOp->binding = NULL;
 	}
 	return result;
 }
@@ -173,10 +212,11 @@ int elektraIoBindingAddTimer (ElektraIoInterface * binding, ElektraIoTimerOperat
 		ELEKTRA_LOG_WARNING ("operation cannot be assigned to multiple bindings");
 		return 0;
 	}
+	timerOp->binding = binding;
 	int result = binding->addTimer (binding, timerOp);
-	if (result)
+	if (!result)
 	{
-		timerOp->binding = binding;
+		timerOp->binding = NULL;
 	}
 	return result;
 }
@@ -223,10 +263,11 @@ int elektraIoBindingAddIdle (ElektraIoInterface * binding, ElektraIoIdleOperatio
 		ELEKTRA_LOG_WARNING ("operation cannot be assigned to multiple bindings");
 		return 0;
 	}
+	idleOp->binding = binding;
 	int result = binding->addIdle (binding, idleOp);
-	if (result)
+	if (!result)
 	{
-		idleOp->binding = binding;
+		idleOp->binding = NULL;
 	}
 	return result;
 }
@@ -270,7 +311,7 @@ void * elektraIoBindingGetData (ElektraIoInterface * binding)
 {
 	if (binding == NULL)
 	{
-		ELEKTRA_LOG_WARNING ("operation was NULL");
+		ELEKTRA_LOG_WARNING ("binding was NULL");
 		return NULL;
 	}
 
@@ -484,6 +525,17 @@ void * elektraIoFdGetBindingData (ElektraIoFdOperation * fdOp)
 	return fdOp->bindingData;
 }
 
+ElektraIoInterface * elektraIoFdGetBinding (ElektraIoFdOperation * fdOp)
+{
+	if (fdOp == NULL)
+	{
+		ELEKTRA_LOG_WARNING ("operation was NULL");
+		return NULL;
+	}
+
+	return fdOp->binding;
+}
+
 int elektraIoFdIsEnabled (ElektraIoFdOperation * fdOp)
 {
 	if (fdOp == NULL)
@@ -538,6 +590,17 @@ void * elektraIoTimerGetBindingData (ElektraIoTimerOperation * timerOp)
 	}
 
 	return timerOp->bindingData;
+}
+
+ElektraIoInterface * elektraIoTimerGetBinding (ElektraIoTimerOperation * timerOp)
+{
+	if (timerOp == NULL)
+	{
+		ELEKTRA_LOG_WARNING ("operation was NULL");
+		return NULL;
+	}
+
+	return timerOp->binding;
 }
 
 void * elektraIoTimerGetData (ElektraIoTimerOperation * timerOp)
@@ -605,6 +668,17 @@ void * elektraIoIdleGetBindingData (ElektraIoIdleOperation * idleOp)
 	}
 
 	return idleOp->bindingData;
+}
+
+ElektraIoInterface * elektraIoIdleGetBinding (ElektraIoIdleOperation * idleOp)
+{
+	if (idleOp == NULL)
+	{
+		ELEKTRA_LOG_WARNING ("operation was NULL");
+		return NULL;
+	}
+
+	return idleOp->binding;
 }
 
 void * elektraIoIdleGetData (ElektraIoIdleOperation * idleOp)

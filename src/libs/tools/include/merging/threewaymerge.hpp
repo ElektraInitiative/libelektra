@@ -73,8 +73,8 @@ private:
 	std::vector<MergeConflictStrategy *> strategies;
 	void detectConflicts (const MergeTask & task, MergeResult & mergeResult, bool reverseConflictMeta);
 };
-}
-}
-}
+} // namespace merging
+} // namespace tools
+} // namespace kdb
 
 #endif /* THREEWAYMERGE_HPP_ */

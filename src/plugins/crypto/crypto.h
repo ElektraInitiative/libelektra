@@ -13,16 +13,31 @@
 #include <kdbplugin.h>
 #include <stdio.h>
 
-enum ElektraCryptoHeaderFlags
-{
+/**
+ * List of flags that are put into the crypto payload header.
+ * Used to identify the data type of the encrypted content.
+ */
+enum ElektraCryptoHeaderFlags {
+
+	/** Regular binary data */
 	ELEKTRA_CRYPTO_FLAG_NONE = 0,
+
+	/** Null-terminated string value */
 	ELEKTRA_CRYPTO_FLAG_STRING = 1,
+
+	/** Null value */
 	ELEKTRA_CRYPTO_FLAG_NULL = 2
 };
 
-enum ElektraCryptoOperation
-{
+/**
+ * Defines the modes of operation of the crypto plugin.
+ */
+enum ElektraCryptoOperation {
+
+	/** Encryption mode */
 	ELEKTRA_CRYPTO_ENCRYPT = 0,
+
+	/** Decryption mode */
 	ELEKTRA_CRYPTO_DECRYPT = 1
 };
 

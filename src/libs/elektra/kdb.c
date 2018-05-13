@@ -1185,13 +1185,13 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 	int errnosave = errno;
 	Key * initialParent = keyDup (parentKey);
 
-	ELEKTRA_LOG ("now in new kdbSet (%s) %p %zd", keyName (parentKey), (void *)handle, ksGetSize (ks));
+	ELEKTRA_LOG ("now in new kdbSet (%s) %p %zd", keyName (parentKey), (void *) handle, ksGetSize (ks));
 
 	elektraGlobalSet (handle, ks, parentKey, PRESETSTORAGE, INIT);
 	elektraGlobalSet (handle, ks, parentKey, PRESETSTORAGE, MAXONCE);
 	elektraGlobalSet (handle, ks, parentKey, PRESETSTORAGE, DEINIT);
 
-	ELEKTRA_LOG ("after presetstorage maxonce(%s) %p %zd", keyName (parentKey), (void *)handle, ksGetSize (ks));
+	ELEKTRA_LOG ("after presetstorage maxonce(%s) %p %zd", keyName (parentKey), (void *) handle, ksGetSize (ks));
 
 	Split * split = splitNew ();
 	Key * errorKey = 0;

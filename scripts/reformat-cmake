@@ -1,0 +1,34 @@
+#!/bin/sh
+#
+# @author René Schwaiger <sanssecours@me.com>
+# @brief Reformats CMake source code
+# @date 7.05.2018
+# @tags reformat
+
+SCRIPTS_DIR=$(dirname "$0")
+. "${SCRIPTS_DIR}/include-common"
+
+CMAKE_FORMAT=$(which cmake-format)
+
+if [ -z "${CMAKE_FORMAT}" ]; then
+	echo "Please install `cmake-format`"
+	exit 0
+fi
+
+if [ -z "$(which sponge)" ]; then
+	echo "Please install `sponge`"
+	exit 0
+fi
+
+cd "$SOURCE"
+
+for file in $(find . \( -name 'CMakeLists.txt' -or -name '*.cmake' \) -and \
+		     \(                                                    \
+			-not -regex '.*build/.*'                           \
+			-not -regex '.*gtest.*'                            \
+			-not -regex '.*cmake/Modules/FindHaskell.cmake$'   \
+			-not -regex '.*tests/shell/CMakeLists.txt$'        \
+                     \));
+do
+	$CMAKE_FORMAT "$file" | unexpand | sponge "$file"
+done

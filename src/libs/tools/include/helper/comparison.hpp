@@ -43,8 +43,8 @@ bool keyDataEqual (const Key &, const Key &);
  * @return true if the keys have equal metadata, false otherwise
  */
 bool keyMetaEqual (Key &, Key &);
-}
-}
-}
+} // namespace helper
+} // namespace tools
+} // namespace kdb
 
 #endif /* COMPARISON_HPP_ */

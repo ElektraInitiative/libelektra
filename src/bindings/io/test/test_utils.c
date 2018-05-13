@@ -47,5 +47,5 @@ long elektraIoTestSuiteUtilGetTimeDifference (struct timespec start, struct time
 	diff.tv_sec = stop.tv_sec - start.tv_sec;
 	diff.tv_nsec = stop.tv_nsec - start.tv_nsec;
 
-	return (long)(diff.tv_sec * 1000 + round (diff.tv_nsec / 1.0e6));
+	return (long) (diff.tv_sec * 1000 + round (diff.tv_nsec / 1.0e6));
 }

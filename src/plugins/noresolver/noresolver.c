@@ -62,13 +62,13 @@ int elektraNoresolverGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEK
 	if (!strcmp (keyString (ksLookupByName (config, "/assume/unchanged", 0)), "1"))
 	{
 		// always return 0, except the first time
-		uintptr_t nr = (uintptr_t)elektraPluginGetData (handle);
+		uintptr_t nr = (uintptr_t) elektraPluginGetData (handle);
 		if (nr == 1)
 		{
 			ELEKTRA_LOG ("assume config is unchanged");
 			return 0;
 		}
-		elektraPluginSetData (handle, (void *)1);
+		elektraPluginSetData (handle, (void *) 1);
 	}
 
 	ELEKTRA_LOG ("assume config is changed");

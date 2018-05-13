@@ -1,6 +1,6 @@
 # Internal KeySet Cache
 
-## Issue
+## Problem
 
 When doing kdbGet() possible more keys are returned which might be
 confusing. When doing a second kdbGet() with a new keyset
@@ -25,7 +25,7 @@ duplications exactly of the parts as requested.
 
 Use global plugin to implement internal cache.
 
-## Argument
+## Rationale
 
 Semantics can be provided without additional code or overhead in the core.
 

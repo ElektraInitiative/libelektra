@@ -1,6 +1,6 @@
 # Plugin Variants
 
-## Issue
+## Problem
 
 Some plugins are generic in the sense that they cannot fully
 define their contract statically.
@@ -41,7 +41,7 @@ of Elektra.
 ## Considered Alternatives
 
 A specification of the plugin's configuration and a tool that
-can enumerate all possible essential configurations. Issues here
+can enumerate all possible essential configurations. Problems here
 are:
 
 - Plugins might need to self-reference (a validation plugin
@@ -123,7 +123,7 @@ system/elektra/plugins/simpleini/variants/spacesep/config/format = "% %"
 ```
 
 
-## Argument
+## Rationale
 
 - The `genconf` API was chosen to be consistent with `checkconf`.
   The pluginhandle might be missing for some scenarios.

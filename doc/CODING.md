@@ -84,38 +84,38 @@ Thus please use following techniques (in order of preference):
 
 - Limits
 
- * Functions should not exceed 100 lines.
- * Files should not exceed 1000 lines.
- * A line should not be longer than 140 characters.
+  * Functions should not exceed 100 lines.
+  * Files should not exceed 1000 lines.
+  * A line should not be longer than 140 characters.
 
-Split up when those limits are reached.
-Rationale: Readability with split windows.
+  Split up when those limits are reached.
+  Rationale: Readability with split windows.
 
 - Indentation
 
- * Use tabs for indentation.
- * One tab equals 8 spaces.
+  * Use tabs for indentation.
+  * One tab equals 8 spaces.
 
 - Blocks
 
- * Use blocks even for single line statements.
- * Curly braces go on a line on their own on the previous indentation level.
- * Avoid multiple variable declarations at one place.
- * Declare Variables as late as possible, preferable within blocks.
+  * Use blocks even for single line statements.
+  * Curly braces go on a line on their own on the previous indentation level.
+  * Avoid multiple variable declarations at one place.
+  * Declare Variables as late as possible, preferable within blocks.
 
 - Naming
 
- * Use camelCase for functions and variables.
- * Start types with upper-case, everything else with lower-case.
- * Prefix names with `elektra` for internal usage. External API either starts
-   with `ks`, `key` or `kdb`.
+  * Use camelCase for functions and variables.
+  * Start types with upper-case, everything else with lower-case.
+  * Prefix names with `elektra` for internal usage. External API either starts
+    with `ks`, `key` or `kdb`.
 
 - Whitespaces
 
- * Use space before and after equal when assigning a value.
- * Use space before round parenthesis ( `(` ).
- * Use space before and after `*` from Pointers.
- * Use space after `,` of every function argument.
+  * Use space before and after equal when assigning a value.
+  * Use space before round parenthesis ( `(` ).
+  * Use space before and after `*` from Pointers.
+  * Use space after `,` of every function argument.
 
 The [reformat script](/scripts/reformat-source) can ensure most code style rules,
 but it is obviously not capable of ensuring everything (e.g. naming conventions).
@@ -143,6 +143,30 @@ So do not give this responsibility out of hands entirely.
  * Oriented towards [more safe and modern usage](https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md).
 
 **Example:** [src/bindings/cpp/include/kdb.hpp](/src/bindings/cpp/include/kdb.hpp)
+
+### CMake Guidelines
+
+We use a similar style for CMake as we do for other code:
+
+- The length of a functions should not exceed 100 lines.
+- The length of a file should not exceed 1000 lines.
+- A line should not be longer than 140 characters.
+- Use tabs for indentation.
+- One tab equals 8 spaces.
+- Declare variables as late as possible, preferable within blocks.
+- Add a space character before round parenthesis ( `(` ).
+- Use lower case for command names (e.g. `set` instead of `SET`)
+
+You can use [`cmake-format`](https://github.com/cheshirekow/cmake_format) to reformat code according to the guidelines given above. Since
+`cmake-format` currently does not support tabs, please use the standard command `unexpand` to fix this issue. For example, to reformat the
+file `CMakeLists.txt` in the root folder of the repository you can use the following command:
+
+```sh
+# This command uses `sponge`, which is part of the [moreutils](https://joeyh.name/code/moreutils/) package.
+cmake-format CMakeLists.txt | unexpand | sponge CMakeLists.txt
+```
+
+.
 
 ### Markdown Guidelines
 

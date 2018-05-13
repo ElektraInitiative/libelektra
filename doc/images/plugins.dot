@@ -37,6 +37,8 @@ strict digraph G {
 	date [shape=Mdiamond];
 	notification [shape=Mdiamond];
 	dbus -> notification;
+	notification [shape=Mdiamond];
+	dbusrecv -> notification;
 	storage [shape=Mdiamond];
 	desktop -> storage;
 	info [shape=Mdiamond];

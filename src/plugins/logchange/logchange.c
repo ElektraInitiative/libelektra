@@ -36,7 +36,7 @@ int elektraLogchangeGet (Plugin * handle, KeySet * returned, Key * parentKey ELE
 	}
 
 	// remember all keys
-	KeySet * ks = (KeySet *)elektraPluginGetData (handle);
+	KeySet * ks = (KeySet *) elektraPluginGetData (handle);
 	if (ks) ksDel (ks);
 	elektraPluginSetData (handle, ksDup (returned));
 
@@ -55,7 +55,7 @@ static void logKeys (KeySet * ks, const char * message)
 
 int elektraLogchangeSet (Plugin * handle, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
 {
-	KeySet * oldKeys = (KeySet *)elektraPluginGetData (handle);
+	KeySet * oldKeys = (KeySet *) elektraPluginGetData (handle);
 	// because elektraLogchangeGet will always be executed before elektraLogchangeSet
 	// we know that oldKeys must exist here!
 	ksRewind (oldKeys);
@@ -100,7 +100,7 @@ int elektraLogchangeSet (Plugin * handle, KeySet * returned, Key * parentKey ELE
 
 int elektraLogchangeClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 {
-	KeySet * ks = (KeySet *)elektraPluginGetData (handle);
+	KeySet * ks = (KeySet *) elektraPluginGetData (handle);
 	if (ks) ksDel (ks);
 	return 1; /* success */
 }

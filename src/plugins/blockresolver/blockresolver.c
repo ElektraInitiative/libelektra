@@ -52,7 +52,7 @@ static int elektraResolveFilename (Key * parentKey, ElektraResolveTempfile tmpFi
 
 	ElektraResolved * resolved = NULL;
 	typedef ElektraResolved * (*resolveFileFunc) (elektraNamespace, const char *, ElektraResolveTempfile, Key *);
-	resolveFileFunc resolveFunc = *(resolveFileFunc *)elektraInvokeGetFunction (handle, "filename");
+	resolveFileFunc resolveFunc = *(resolveFileFunc *) elektraInvokeGetFunction (handle, "filename");
 
 	if (!resolveFunc)
 	{
@@ -61,7 +61,7 @@ static int elektraResolveFilename (Key * parentKey, ElektraResolveTempfile tmpFi
 	}
 
 	typedef void (*freeHandleFunc) (ElektraResolved *);
-	freeHandleFunc freeHandle = *(freeHandleFunc *)elektraInvokeGetFunction (handle, "freeHandle");
+	freeHandleFunc freeHandle = *(freeHandleFunc *) elektraInvokeGetFunction (handle, "freeHandle");
 
 	if (!freeHandle)
 	{
@@ -112,7 +112,7 @@ static int initData (Plugin * handle, Key * parentKey)
 		ksRewind (config);
 		Key * key = ksLookupByName (config, "/identifier", KDB_O_NONE);
 		if (!key) return -1;
-		data->identifier = (char *)keyString (key);
+		data->identifier = (char *) keyString (key);
 		key = ksLookupByName (config, "/path", KDB_O_NONE);
 		if (!key) return -1;
 		keySetString (parentKey, keyString (key));
@@ -127,7 +127,7 @@ static int initData (Plugin * handle, Key * parentKey)
 			return -1;
 		}
 		data->mtime = buf.st_mtime;
-		data->tmpFile = (char *)genTempFilename ();
+		data->tmpFile = (char *) genTempFilename ();
 		data->startPos = -1;
 		data->endPos = -1;
 		data->getPass = 0;
@@ -277,7 +277,7 @@ int elektraBlockresolverGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned E
 		retVal = -1;
 		goto GET_CLEANUP;
 	}
-	block = (char *)getBlock (fin, data->startPos, data->endPos);
+	block = (char *) getBlock (fin, data->startPos, data->endPos);
 	if (!block)
 	{
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_BLOCKRESOLVER_EXTRACT, parentKey, "Failed to extract block %s\n", data->identifier);
@@ -333,7 +333,7 @@ int elektraBlockresolverSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned E
 	else if (data->setPass == 1)
 	{
 		// commit phase
-		mergeFile = (char *)genTempFilename ();
+		mergeFile = (char *) genTempFilename ();
 		fout = fopen (mergeFile, "w");
 		if (!fout)
 		{
@@ -346,7 +346,7 @@ int elektraBlockresolverSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned E
 			ELEKTRA_SET_ERRORF (26, parentKey, "Couldn't open %s for reading", data->realFile);
 			goto SET_CLEANUP;
 		}
-		block = (char *)getBlock (fin, 0, data->startPos);
+		block = (char *) getBlock (fin, 0, data->startPos);
 		if (!block)
 		{
 			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_BLOCKRESOLVER_EXTRACT, parentKey, "Failed to extract block before %s\n",
@@ -358,7 +358,7 @@ int elektraBlockresolverSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned E
 		elektraFree (block);
 		block = NULL;
 		size_t blockSize = ftell (fin) - data->endPos;
-		block = (char *)getBlock (fin, data->endPos, ftell (fin));
+		block = (char *) getBlock (fin, data->endPos, ftell (fin));
 		if (!block)
 		{
 			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_BLOCKRESOLVER_EXTRACT, parentKey, "Failed to extract block after %s\n",

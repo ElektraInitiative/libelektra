@@ -143,7 +143,7 @@ void test_utf8_needed (void)
 static void set_str (char ** str, size_t * len, char * newstr)
 {
 	*len = strlen (newstr) + 1;
-	elektraRealloc ((void **)str, *len);
+	elektraRealloc ((void **) str, *len);
 	strcpy (*str, newstr);
 }
 

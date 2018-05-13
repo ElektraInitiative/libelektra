@@ -213,7 +213,7 @@ private:
 };
 
 typedef std::unique_ptr<Plugin> PluginPtr;
-}
-}
+} // namespace tools
+} // namespace kdb
 
 #endif

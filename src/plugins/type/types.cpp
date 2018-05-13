@@ -15,4 +15,4 @@ namespace elektra
 Type::~Type ()
 {
 }
-}
+} // namespace elektra

@@ -77,7 +77,7 @@ G_DEFINE_TYPE (ElektraSettingsBackend, elektra_settings_backend, G_TYPE_SETTINGS
 
 static GVariant * elektra_settings_read_string (GSettingsBackend * backend, gchar * keypathname, const GVariantType * expected_type)
 {
-	ElektraSettingsBackend * esb = (ElektraSettingsBackend *)backend;
+	ElektraSettingsBackend * esb = (ElektraSettingsBackend *) backend;
 	gelektra_kdb_get (esb->gkdb, esb->gks, esb->gkey);
 	/* Lookup the requested key */
 	GElektraKey * gkey = gelektra_keyset_lookup_byname (esb->gks, keypathname, GELEKTRA_KDB_O_NONE);
@@ -115,10 +115,10 @@ static GVariant * elektra_settings_read_string (GSettingsBackend * backend, gcha
 static gboolean elektra_settings_write_string (GSettingsBackend * backend, const gchar * key, gchar * keypathname, GVariant * value,
 					       gpointer origin_tag)
 {
-	ElektraSettingsBackend * esb = (ElektraSettingsBackend *)backend;
+	ElektraSettingsBackend * esb = (ElektraSettingsBackend *) backend;
 	/* Lookup if key already exists */
 	GElektraKey * gkey = gelektra_keyset_lookup_byname (esb->gks, keypathname, GELEKTRA_KDB_O_NONE);
-	gchar * string_value = (value != NULL ? g_variant_print ((GVariant *)value, FALSE) : NULL);
+	gchar * string_value = (value != NULL ? g_variant_print ((GVariant *) value, FALSE) : NULL);
 	if (gkey == NULL)
 	{
 		g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s %s %s.", "Key not found, creating new key:", keypathname, string_value);
@@ -170,7 +170,7 @@ static GVariant * elektra_settings_backend_read (GSettingsBackend * backend, con
 						 gboolean default_value)
 {
 	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s %s %s %.*s %s %s%s", "function read:", key,
-	       "expected_type is:", (int)(g_variant_type_get_string_length (expected_type) & INT_MAX),
+	       "expected_type is:", (int) (g_variant_type_get_string_length (expected_type) & INT_MAX),
 	       g_variant_type_peek_string (expected_type), "and we", (default_value ? "" : "do not "), "want the default_value");
 	if (default_value)
 	{
@@ -247,10 +247,10 @@ static gboolean elektra_settings_backend_write (GSettingsBackend * backend, cons
  */
 static gint elektra_settings_keyset_from_tree (gpointer key, gpointer value, gpointer data)
 {
-	gchar * fullpathname = g_strconcat (G_ELEKTRA_SETTINGS_PATH, (gchar *)(key), NULL);
-	gchar * string_value = (value != NULL ? g_variant_print ((GVariant *)value, FALSE) : NULL);
+	gchar * fullpathname = g_strconcat (G_ELEKTRA_SETTINGS_PATH, (gchar *) (key), NULL);
+	gchar * string_value = (value != NULL ? g_variant_print ((GVariant *) value, FALSE) : NULL);
 	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s %s: %s.", "Append to keyset ", fullpathname, string_value);
-	GElektraKeySet * gks = (GElektraKeySet *)data;
+	GElektraKeySet * gks = (GElektraKeySet *) data;
 	GElektraKey * gkey = gelektra_keyset_lookup_byname (gks, fullpathname, GELEKTRA_KDB_O_NONE);
 	if (gkey == NULL)
 	{
@@ -299,7 +299,7 @@ static gint elektra_settings_keyset_from_tree (gpointer key, gpointer value, gpo
  */
 static gboolean elektra_settings_backend_write_tree (GSettingsBackend * backend, GTree * tree, gpointer origin_tag)
 {
-	ElektraSettingsBackend * esb = (ElektraSettingsBackend *)backend;
+	ElektraSettingsBackend * esb = (ElektraSettingsBackend *) backend;
 	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s %s.", "Function writeTree. ", "We have to loop the tree and add the keys");
 	g_tree_foreach (tree, elektra_settings_keyset_from_tree, esb->gks);
 	/* Notify the GSettings about the changed tree */
@@ -319,7 +319,7 @@ static gboolean elektra_settings_backend_write_tree (GSettingsBackend * backend,
 static void elektra_settings_backend_reset (GSettingsBackend * backend, const gchar * key, gpointer origin_tag)
 {
 	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s %s.", "Function reset:", key);
-	ElektraSettingsBackend * esb = (ElektraSettingsBackend *)backend;
+	ElektraSettingsBackend * esb = (ElektraSettingsBackend *) backend;
 	gchar * keypathname = g_strconcat (G_ELEKTRA_SETTINGS_USER, G_ELEKTRA_SETTINGS_PATH, key, NULL);
 	GElektraKey * gkey = gelektra_keyset_lookup_byname (esb->gks, keypathname, GELEKTRA_KDB_O_NONE);
 	g_free (keypathname);
@@ -353,7 +353,7 @@ static gboolean elektra_settings_backend_get_writable (GSettingsBackend * backen
 {
 	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s %s.", "Function get_writable:", name);
 
-	ElektraSettingsBackend * esb = (ElektraSettingsBackend *)backend;
+	ElektraSettingsBackend * esb = (ElektraSettingsBackend *) backend;
 	gchar * pathToWrite = g_strconcat (G_ELEKTRA_SETTINGS_USER, G_ELEKTRA_SETTINGS_PATH, name, NULL);
 	GElektraKey * gkey = gelektra_keyset_lookup_byname (esb->gks, pathToWrite, GELEKTRA_KDB_O_NONE);
 	// TODO answer why inside the if block
@@ -371,7 +371,7 @@ static void elektra_settings_key_changed (GDBusConnection * connection G_GNUC_UN
 	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s %s.", "dbus signal that key has changed", g_variant_print (parameters, FALSE));
 	GVariant * variant = g_variant_get_child_value (parameters, 0);
 	gchar const * keypathname = g_variant_get_string (variant, NULL);
-	ElektraSettingsBackend * esb = (ElektraSettingsBackend *)user_data;
+	ElektraSettingsBackend * esb = (ElektraSettingsBackend *) user_data;
 	GElektraKeySet * ks = gelektra_keyset_dup (esb->subscription_gks);
 	gelektra_keyset_rewind (ks);
 	GElektraKey * key = gelektra_key_new (keypathname, KEY_VALUE, "", KEY_END);
@@ -394,7 +394,7 @@ static void elektra_settings_key_changed (GDBusConnection * connection G_GNUC_UN
 static void elektra_settings_bus_connected (GObject * source_object G_GNUC_UNUSED, GAsyncResult * res, gpointer user_data)
 {
 	GError * err = NULL;
-	ElektraSettingsBackend * esb = (ElektraSettingsBackend *)user_data;
+	ElektraSettingsBackend * esb = (ElektraSettingsBackend *) user_data;
 	GDBusConnection * connection = g_bus_get_finish (res, &err);
 	if (esb->dbus_connections[0] == NULL)
 	{
@@ -417,7 +417,7 @@ static void elektra_settings_bus_connected (GObject * source_object G_GNUC_UNUSE
 
 static void elektra_settings_check_bus_connection (ElektraSettingsBackend * backend)
 {
-	ElektraSettingsBackend * esb = (ElektraSettingsBackend *)backend;
+	ElektraSettingsBackend * esb = (ElektraSettingsBackend *) backend;
 	GCancellable * g_cancellable = g_cancellable_new ();
 	if (esb->dbus_connections[0] == NULL)
 	{
@@ -439,11 +439,11 @@ static void elektra_settings_backend_subscribe (GSettingsBackend * backend, cons
 {
 	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s %s.", "Subscribe to:", name);
 	gchar * pathToSubscribe = g_strconcat (G_ELEKTRA_SETTINGS_PATH, name, NULL);
-	ElektraSettingsBackend * esb = (ElektraSettingsBackend *)backend;
+	ElektraSettingsBackend * esb = (ElektraSettingsBackend *) backend;
 	GElektraKey * gkey = gelektra_keyset_lookup_byname (esb->subscription_gks, pathToSubscribe, GELEKTRA_KDB_O_NONE);
 	if (gkey != NULL)
 	{
-		(*(guint *)gelektra_key_getvalue (gkey))++;
+		(*(guint *) gelektra_key_getvalue (gkey))++;
 		g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s", "Key is already subscribed, adding to subscription");
 		return;
 	}
@@ -470,12 +470,12 @@ static void elektra_settings_backend_unsubscribe (GSettingsBackend * backend, co
 {
 	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s %s.", "Unsubscribe:", name);
 	gchar * pathToUnsubscribe = g_strconcat (G_ELEKTRA_SETTINGS_PATH, name, NULL);
-	ElektraSettingsBackend * esb = (ElektraSettingsBackend *)backend;
+	ElektraSettingsBackend * esb = (ElektraSettingsBackend *) backend;
 	GElektraKey * gkey = gelektra_keyset_lookup_byname (esb->subscription_gks, pathToUnsubscribe, GELEKTRA_KDB_O_NONE);
 	// TODO CHECK VALUE BEFORE working with it
 	if (gkey != NULL)
 	{
-		guint * counter = (guint *)gelektra_key_getvalue (gkey);
+		guint * counter = (guint *) gelektra_key_getvalue (gkey);
 		(*counter)--;
 		if (*counter == 0)
 		{
@@ -496,7 +496,7 @@ static void elektra_settings_backend_unsubscribe (GSettingsBackend * backend, co
 static void elektra_settings_backend_sync (GSettingsBackend * backend)
 {
 	// TODO conflict management
-	ElektraSettingsBackend * esb = (ElektraSettingsBackend *)backend;
+	ElektraSettingsBackend * esb = (ElektraSettingsBackend *) backend;
 	if (gelektra_kdb_set (esb->gkdb, esb->gks, esb->gkey) == -1 || gelektra_kdb_get (esb->gkdb, esb->gks, esb->gkey) == -1)
 	{
 		g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s\n", "Error on sync!");
@@ -527,7 +527,7 @@ static void elektra_settings_backend_init (ElektraSettingsBackend * esb)
 static void elektra_settings_backend_finalize (GObject * object)
 {
 	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s.", "Finalize ElektraSettingsBackend");
-	ElektraSettingsBackend * esb = (ElektraSettingsBackend *)object;
+	ElektraSettingsBackend * esb = (ElektraSettingsBackend *) object;
 	GElektraKey * errorkey = gelektra_key_new (0);
 	gelektra_kdb_close (esb->gkdb, errorkey);
 	// TODO error handling

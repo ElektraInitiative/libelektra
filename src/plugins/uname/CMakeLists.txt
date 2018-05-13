@@ -1,19 +1,11 @@
 if (DEPENDENCY_PHASE)
-	try_compile(HAS_UNAME
-			"${CMAKE_BINARY_DIR}"
-			"${PROJECT_SOURCE_DIR}/src/plugins/uname/testuname.c"
-			)
+	try_compile (HAS_UNAME "${CMAKE_BINARY_DIR}" "${PROJECT_SOURCE_DIR}/src/plugins/uname/testuname.c")
 
-	include(LibAddMacros)
+	include (LibAddMacros)
 
 	if (NOT HAS_UNAME)
 		remove_plugin (uname "uname is missing")
-	endif()
+	endif ()
 endif ()
 
-add_plugin (uname
-	SOURCES
-		uname.h
-		uname.c
-	ADD_TEST
-)
+add_plugin (uname SOURCES uname.h uname.c ADD_TEST)

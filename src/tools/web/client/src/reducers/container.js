@@ -12,7 +12,6 @@ import {
 } from '../actions'
 
 // controls the state of the card container (for adding instances)
-// TODO: move this to react state
 export default function containerReducer (
   state = { addingInstance: false },
   action

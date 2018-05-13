@@ -114,8 +114,10 @@ globally (will be added by default and also with any `kdb global-mount` call).
 Before we start, let us make a backup of the current data in the spec and user namespace:
 
 ```sh
-kdb export spec dump > /tmp/spec.dump
-kdb export user dump > /tmp/user.dump
+kdb set system/examples/spec $(mktemp)
+kdb set system/examples/user $(mktemp)
+kdb export spec dump > $(kdb get system/examples/spec)
+kdb export user dump > $(kdb get system/examples/user)
 ```
 
 We write metadata to the namespace `spec` and the plugin `spec` applies it to every cascading key:
@@ -254,11 +256,11 @@ kdb set /tutorial/links/url "invalid url"
 Note that the backend `tutorial.dump` is mounted for all namespaces:
 ```sh
 kdb file user/tutorial
-# STDOUT-REGEX: /(home|Users)/.*/\.config/tutorial\.dump
+# STDOUT-REGEX: /.*/tutorial\.dump
 kdb file system/tutorial
-# STDOUT-REGEX: .*/tutorial\.dump
+# STDOUT-REGEX: /.*/tutorial\.dump
 kdb file dir/tutorial
-# STDOUT-REGEX: /.*/\.dir/tutorial\.dump
+# STDOUT-REGEX: /.*/tutorial\.dump
 ```
 
 If you want to set a key for another namespace and do not want to go without validation,
@@ -286,8 +288,8 @@ kdb set /tutorial/spec/should_not_be_here abc
 # RET:    5
 # STDERR: .*error.*10.*occurred.*
 kdb get /tutorial/spec/should_not_be_here
-# RET: 1
-# STDERR: Did not find key
+# RET: 11
+# STDERR: Did not find key '/tutorial/spec/should_not_be_here'
 ```
 
 If we want to reject every optional key (and only want to allow required keys)
@@ -302,10 +304,12 @@ kdb umount spec/tutorial
 kdb umount /tutorial
 kdb rm -rf spec
 kdb rm -rf user
-kdb import spec dump < /tmp/spec.dump
-kdb import user dump < /tmp/user.dump
-rm /tmp/spec.dump
-rm /tmp/user.dump
+kdb import spec dump < $(kdb get system/examples/spec)
+kdb import user dump < $(kdb get system/examples/user)
+rm $(kdb get system/examples/spec)
+rm $(kdb get system/examples/user)
+kdb rm system/examples/spec
+kdb rm system/examples/user
 ```
 
 ## Customized Schemas

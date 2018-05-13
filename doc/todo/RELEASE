@@ -34,8 +34,8 @@ Following shell expansions are used in this document:
 - Update doc/COMPILE.md to reflect actually tested setups
 - Update/run ~e/scripts/build-debian-package
 - Update contracts using update-infos-status
-- Shell recorder of release notes/highlights of release
-- regenerate dot of plugins
+- regenerate dot of plugins using scripts/draw-all-plugins
+- run link checker: cd ~build && ~e/scripts/link-checker external-links.txt
 
 == Increment Version Number ==
 
@@ -65,7 +65,7 @@ And now commit everything:
  git-commit -a
 
 Clean up the mess left over:
- git-clean -df
+ git-clean -dfx
 
 Make an empty builddirectory:
  mkdir ~build
@@ -86,7 +86,7 @@ If version numbers are correct in
   mkdir ~elektra/$VERSION && kdb --version > ~elektra/$VERSION/version
 
 Rebuild cleanly, run all tests and also check for memleaks:
-  cd ~build && ~e/scripts/configure-debian ~e && make -j5 && make run_all && make run_memcheck
+  cd ~build && ~e/scripts/configure-debian ~e && make -j5 && make run_all -j5 && make run_memcheck -j5
 
 Check if there are really >=135 or >=95 tests
 
@@ -161,7 +161,7 @@ UNRELEASED -> unstable
 
 Fix debian/ + document in NEWS what maintainer need to consider, then build the package:
  cp ~elektra-ftp/releases/elektra-$VERSION.tar.gz ~elektra/elektra_$VERSION.orig.tar.gz
- gpg -u0B2F0DDC --sign `mktemp` # so that the step afterwards won't abort
+ git clean -fdx && gpg -u0B2F0DDC --sign `mktemp` # so that the step afterwards won't abort
  gbp buildpackage -rfakeroot -k0B2F0DDC -sa
 
 Now move and install:
@@ -235,9 +235,7 @@ Symlink current to latest version and add everything:
 
 == Debian Package ==
 
- cd ~elektra/$VERSION/debian/$DVERSION && reprepro --ignore=wrongdistribution include wheezy elektra_${DVERSION}_`dpkg-architecture -qDEB_BUILD_ARCH`.changes && update-reprepro
-
- TODO: automate
+ cd ~elektra/$VERSION/debian/$DVERSION && reprepro --ignore=wrongdistribution include stretch elektra_${DVERSION}_`dpkg-architecture -qDEB_BUILD_ARCH`.changes && update-reprepro
 
 == Commit source package ==
 
@@ -264,21 +262,15 @@ Push elektra-doc to github:
 cd ~e && cp doc/todo/NEWS.md doc/news/_preparation_next_release.md
 
 increment CMPVERSION in scripts/run_icheck
+increment VERSION in scripts/build-debian-package
 and cleanup tests/icheck.suppression
 
 
 == Announce ==
 
 Finish NEWS.md for new release (hashsum, add links where to download release, check them):
- editor doc/NEWS.md
-
-Add entry for release at main page
- editor README.md
-
-Check spelling, links and line length
-
-Add text also to
- libelektra.org/releases
+ scripts/generate-hashsums ~elektra-ftp/releases/elektra-$VERSION.tar.gz
+ editor doc/news/*$VERSION*.md
 
 Finally send out mail to list
 (Personal notice: see also NOTIFY)

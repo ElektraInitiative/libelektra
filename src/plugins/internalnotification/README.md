@@ -5,7 +5,7 @@
 - infos/provides =
 - infos/recommends =
 - infos/placements = postgetstorage postcommit
-- infos/status = global libc unittest concept unfinished experimental
+- infos/status = unittest libc global experimental unfinished concept
 - infos/metadata =
 - infos/description = Plugin for internal notification
 
@@ -14,10 +14,10 @@
 Allows applications to automatically update registered variables when the value
 of a specified key has changed.
 
-It is recommended to use the notification wrapper (see
-[notification tutorial](https://www.libelektra.org/tutorials/notifications)) instead of this plugin
-directly.
-The wrapper has a simple API and decouples applications from the actual plugin.
+Application developers should use the
+[Notification API](https://doc.libelektra.org/api/current/html/group__kdbnotification.html)
+instead of the functions exported by this plugin.
+The API is easier to use and decouples applications from this plugin.
 
 ## Exported Methods
 
@@ -39,6 +39,10 @@ Cascading keys as `key` names are also supported.
 - *handle* The internal plugin `handle` is exported as  		 	
     `system/elektra/modules/internalnotification/exports/handle`.
 - *key* Key to watch for changes.
+
+*Returns*
+
+1 on success, 0 otherwise
 
 Please note that the plugin API may change as this plugin is experimental.
 

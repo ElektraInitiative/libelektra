@@ -83,7 +83,7 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * masterK
 
 		return 1;
 	}
-	catch (std::exception & e)
+	catch (std::exception const & e)
 	{
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INIT, errorKey, "Failed to create a cryptographic key for encryption because: %s",
 				    e.what ());
@@ -134,7 +134,7 @@ static int getKeyIvForDecryption (KeySet * config, Key * errorKey, Key * masterK
 
 		return 1;
 	}
-	catch (std::exception & e)
+	catch (std::exception const & e)
 	{
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INIT, errorKey,
 				    "Failed to restore the cryptographic key for decryption because: %s", e.what ());
@@ -148,7 +148,7 @@ int elektraCryptoBotanInit (Key * errorKey)
 	{
 		LibraryInitializer::initialize ();
 	}
-	catch (std::exception & e)
+	catch (std::exception const & e)
 	{
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INIT, errorKey, "Botan initialization failed: %s", e.what ());
 		return -1; // failure
@@ -232,7 +232,7 @@ int elektraCryptoBotanEncrypt (KeySet * pluginConfig, Key * k, Key * errorKey, K
 			keySetBinary (k, &buffer[0], buffered + bufferIndex);
 		}
 	}
-	catch (std::exception & e)
+	catch (std::exception const & e)
 	{
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_ENCRYPT_FAIL, errorKey, "Encryption failed because: %s", e.what ());
 		elektraFree (salt);
@@ -304,7 +304,7 @@ int elektraCryptoBotanDecrypt (KeySet * pluginConfig, Key * k, Key * errorKey, K
 			keySetBinary (k, NULL, 0);
 		}
 	}
-	catch (std::exception & e)
+	catch (std::exception const & e)
 	{
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_DECRYPT_FAIL, errorKey, "Decryption failed because: %s", e.what ());
 		return -1; // failure
@@ -329,7 +329,7 @@ char * elektraCryptoBotanCreateRandomString (Key * errorKey, const kdb_unsigned_
 		char * hexString = ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, base64Encode) (&buffer[0], length);
 		return hexString;
 	}
-	catch (std::exception & e)
+	catch (std::exception const & e)
 	{
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INTERNAL_ERROR, errorKey, "Failed to generate random string because: %s",
 				    e.what ());

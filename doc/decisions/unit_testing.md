@@ -1,6 +1,6 @@
 # C++ Unit Testing Framework
 
-## Issue
+## Problem
 
 The previous unit testing framework started as hack to have a bit more
 than simple asserts. It is not easy to use (needs explicit enumeration
@@ -30,7 +30,7 @@ the assertion that failed).
   Fedora,...)
 
 
-## Argument
+## Rationale
 
 + Having the output of current values when an assertion fails in any case
 + No listing of all test cases in main (but instead having test discovery)

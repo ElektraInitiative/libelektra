@@ -23,14 +23,21 @@ To run `memcheck` tests run in the build directory:
 
 They are supplementary, ideally you run all three.
 
-Some tests write into system paths.
+Some tests write into system paths and into the home directory.
+This implies that the UID running the tests must have a home directory.
 To avoid running tests that write to the disk you
 can use:
 
     make run_nokdbtests
 
-Directly running `ctest` might cause problems:
-You need to set `LD_LIBRARY_PATH` as `run_all` and `run_nokdbtests` do.
+You can also directly run ctest to make use of parallel testing:
+
+    ctest -T Test --output-on-failure -j 6
+    ctest -T MemCheck -LE memleak --output-on-failure -j 6
+
+The alternative to `make run_nokdbtests`:
+
+    ctest -T Test --output-on-failure -LE kdbtests -j 6
 
 If the access is denied, several tests will fail.
 You have some options to avoid running them as root:
@@ -54,7 +61,7 @@ You have some options to avoid running them as root:
    ```
    Then change the permissions:
    ```
-   chown -R `whoami` `kdb sget system/info/elektra/constants/cmake/CMAKE_INSTALL_PREFIX .`/`kdb get system/info/constants/cmake/KDB_DB_SPEC .`
+   chown -R `whoami` `kdb sget system/info/elektra/constants/cmake/CMAKE_INSTALL_PREFIX .`/`kdb sget system/info/elektra/constants/cmake/KDB_DB_SPEC .`
    chown -R `whoami` `kdb sget system/info/elektra/constants/cmake/KDB_DB_SYSTEM .`
    ```
    After that all test cases should run successfully as described above.
@@ -64,6 +71,31 @@ You have some options to avoid running them as root:
    (for another example with ini see `scripts/configure-home`)
 4. Use the XDG resolver (see `scripts/configure-xdg`) and set
    the environment variable `XDG_CONFIG_DIRS`, currently lacks `spec` namespaces, see #734.
+
+
+## Recommended Environment
+
+The tests are designed to disable themselves if some necessary tools are
+missing or other environmental constraints are not met. To really run
+*all* tests (also those that are mostly designed for internal development)
+you need to fulfil:
+
+- Elektra must be installed (for gen + external test cases).
+- Mounted /dev (to have stdin and stdout for import & export test cases).
+- A running dbus daemon (Either "system" or "session" daemon).
+- `gpg2` or `gpg` binary must be available.
+
+Above environment is needed for both `kdb run_all` (installed test cases)
+and `make run_all` (test cases executed from the build directory).
+For `make run_all` following development tools enable even more tests:
+
+- The script `checkbashisms` is needed to check for bashism (tests/shell/check_bashisms.sh),
+  it is part of `devscripts`.
+- `git` and `clang-reformat-5` (to 7) to check formatting.
+- `pkg-config` must be available (check_external.sh and check_gen.sh).
+- A build environment including gcc (check_gen.sh).
+
+
 
 ## Conventions
 
@@ -78,12 +110,18 @@ You have some options to avoid running them as root:
  - should only write below
    - `/tests/<testname>` (e.g. `/tests/ruby`) and
    - `system/elektra` (e.g. for mounts or globalplugins).
- - clean up everything they change (in KDB and temporary files)
+ - Before executing tests, no keys must be present below `/tests`.
+   The test cases need to clean up everything they wrote.
+   (Including temporary files)
 - If your test has memory leaks, e.g. because the library used leaks and
   they cannot be fixed, give them the label `memleak` with the following
   command:
 
         set_property(TEST testname PROPERTY LABELS memleak)
+- If your test modifies resources needed by other tests you also need to set
+    `RUN_SERIAL`:
+
+        set_property(TEST testname PROPERTY RUN_SERIAL TRUE)
 
 
 ## Strategy

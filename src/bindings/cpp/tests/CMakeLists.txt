@@ -10,5 +10,4 @@ foreach (file ${TESTS})
 	add_gtest (${name} LINK_ELEKTRA elektra-kdb elektra-meta)
 endforeach (file ${TESTS})
 
-set_property (TEST testcpp_kdb
-	PROPERTY LABELS kdbtests)
+set_property (TEST testcpp_kdb PROPERTY LABELS kdbtests)

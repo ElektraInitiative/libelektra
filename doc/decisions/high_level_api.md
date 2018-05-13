@@ -1,6 +1,6 @@
 # High-level API
 
-## Issue
+## Problem
 
 Projects usually do not want to use low-level APIs.
 `KDB` and `KeySet` is useful for plugins and to
@@ -249,7 +249,7 @@ keyhHasChildren (KeyHierarchy * kh);
 - merging on conflicts? (maybe libelektra-tools dynamically loaded?)
 - some API calls have a question mark next to it
 
-## Argument
+## Rationale
 
 1. Very easy to get started with, to get a key needs 3 lines of codes:
 

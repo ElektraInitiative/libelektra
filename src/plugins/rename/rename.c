@@ -203,21 +203,21 @@ static Key * renameGet (Key * key, Key * parentKey, Key * cutConfig, Key * repla
 	}
 	/* if the meta config exists, it takes precedence over the global config */
 	if (cutMeta)
-		cutPath = (char *)keyString (cutMeta);
+		cutPath = (char *) keyString (cutMeta);
 	else if (cutConfig)
-		cutPath = (char *)keyString (cutConfig);
+		cutPath = (char *) keyString (cutConfig);
 	if (toMeta)
-		replaceWith = (char *)keyString (toMeta);
+		replaceWith = (char *) keyString (toMeta);
 	else if (replaceWithConfig)
-		replaceWith = (char *)keyString (replaceWithConfig);
+		replaceWith = (char *) keyString (replaceWithConfig);
 	if (toUpperMeta)
-		toUpperPath = (char *)keyString (toUpperMeta);
+		toUpperPath = (char *) keyString (toUpperMeta);
 	else if (toUpperConfig)
-		toUpperPath = (char *)keyString (toUpperConfig);
+		toUpperPath = (char *) keyString (toUpperConfig);
 	if (toLowerMeta)
-		toLowerPath = (char *)keyString (toLowerMeta);
+		toLowerPath = (char *) keyString (toLowerMeta);
 	else if (toLowerConfig)
-		toLowerPath = (char *)keyString (toLowerConfig);
+		toLowerPath = (char *) keyString (toLowerConfig);
 
 	return elektraKeyCreateNewName (key, parentKey, cutPath, replaceWith, toUpperPath, toLowerPath, initialConversion);
 }

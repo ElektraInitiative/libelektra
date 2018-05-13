@@ -86,13 +86,13 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 	{
 		option o = { "load", no_argument, nullptr, 'f' };
 		long_options.push_back (o);
-		helpText += "-l --load                Load plugin even if system/elektra is available\n";
+		helpText += "-l --load                Load plugin even if system/elektra is available.\n";
 	}
 	if (acceptedOptions.find ('h') != string::npos)
 	{
 		option o = { "human-readable", no_argument, nullptr, 'h' };
 		long_options.push_back (o);
-		helpText += "-h --human-readable      Print numbers in an human readable way\n";
+		helpText += "-h --human-readable      Print numbers in an human readable way.\n";
 	}
 	if (acceptedOptions.find ('H') != string::npos)
 	{
@@ -146,7 +146,7 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 		acceptedOptions.insert (optionPos + 1, ":");
 		option o = { "resolver", required_argument, nullptr, 'R' };
 		long_options.push_back (o);
-		helpText += "-R --resolver <name>     Specify the resolver plugin to use\n";
+		helpText += "-R --resolver <name>     Specify the resolver plugin to use.\n";
 	}
 	optionPos = acceptedOptions.find ('p');
 	if (optionPos != string::npos)
@@ -154,7 +154,7 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 		acceptedOptions.insert (optionPos + 1, ":");
 		option o = { "profile", required_argument, nullptr, 'p' };
 		long_options.push_back (o);
-		helpText += "-p --profile <name>      Use a different profile for kdb configuration\n";
+		helpText += "-p --profile <name>      Use a different profile for kdb configuration.\n";
 	}
 	optionPos = acceptedOptions.find ('s');
 	if (optionPos != string::npos)
@@ -396,7 +396,7 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 			{
 				minDepth = stoi (optarg);
 			}
-			catch (std::invalid_argument & ia)
+			catch (std::invalid_argument const & ia)
 			{
 				std::cerr << argv[0] << ": -m --min-depth needs a valid number as argument\n";
 				invalidOpt = true;
@@ -407,7 +407,7 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 			{
 				maxDepth = stoi (optarg);
 			}
-			catch (std::invalid_argument & ia)
+			catch (std::invalid_argument const & ia)
 			{
 				std::cerr << argv[0] << ": -M --max-depth needs a valid number as argument\n";
 				invalidOpt = true;
@@ -521,7 +521,7 @@ kdb::KeySet Cmdline::getPluginsConfig (string basepath) const
  *
  * @return a newly created key from the name found in cl.arguments[pos]
  */
-kdb::Key Cmdline::createKey (int pos) const
+kdb::Key Cmdline::createKey (int pos, bool allowCascading) const
 {
 	std::string name = arguments[pos];
 	// std::cerr << "Using " << name << std::endl;
@@ -550,6 +550,12 @@ kdb::Key Cmdline::createKey (int pos) const
 					"can be used (see 'man elektra-namespaces').\n" +
 					"Please also ensure that the path is separated by a '/'.\n" +
 					"An example for a valid absolute key is user/a/key, and for a valid cascading key /a/key.");
+	}
+
+	if (!allowCascading && root.isCascading ())
+	{
+		throw invalid_argument ("The key '" + root.getName () +
+					"'is a cascading keyname, which is not supported. Please choose a namespace.");
 	}
 
 	return root;

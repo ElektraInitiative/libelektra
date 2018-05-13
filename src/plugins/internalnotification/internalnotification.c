@@ -12,9 +12,11 @@
 #include <errno.h>
 #include <stdlib.h>
 
+#include <kdb.h>
 #include <kdbassert.h>
 #include <kdbhelper.h>
 #include <kdblogger.h>
+#include <kdbnotificationinternal.h>
 
 typedef enum {
 	TYPE_INT = 1 << 0,
@@ -30,7 +32,8 @@ struct _KeyRegistration
 	char * name;
 	KeyRegistrationType type;
 	char * lastValue;
-	union {
+	union
+	{
 		int * variable;
 		ElektraNotificationChangeCallback callback;
 	} ref;
@@ -48,6 +51,75 @@ struct _PluginState
 	KeyRegistration * last;
 };
 typedef struct _PluginState PluginState;
+
+/**
+ * @internal
+ * Convert key name into cascading key name for comparison.
+ *
+ * Key name is not modified, nothing to free
+ *
+ * @param  keyName key name
+ * @return         pointer to cascading name
+ */
+static const char * toCascadingName (const char * keyName)
+{
+	while (keyName[0] != '/')
+	{
+		keyName++;
+	}
+	return keyName;
+}
+
+/**
+ * @internal
+ * Call kdbGet if there are registrations below the changed key.
+ *
+ * On kdbGet this plugin implicitly updates registered keys.
+ *
+ * @see ElektraNotificationChangeCallback (kdbnotificationinternal.h)
+ * @param key     changed key
+ * @param context callback context
+ */
+static void elektraInternalnotificationDoUpdate (Key * changedKey, ElektraNotificationCallbackContext * context)
+{
+	ELEKTRA_NOT_NULL (changedKey);
+	ELEKTRA_NOT_NULL (context);
+
+	KDB * kdb = context->kdb;
+	Plugin * plugin = context->notificationPlugin;
+
+	PluginState * pluginState = elektraPluginGetData (plugin);
+	ELEKTRA_NOT_NULL (pluginState);
+
+	int kdbChanged = 0;
+	KeyRegistration * keyRegistration = pluginState->head;
+	while (keyRegistration != NULL)
+	{
+		Key * registereKey = keyNew (keyRegistration->name, KEY_END);
+
+		if (keyIsBelow (changedKey, registereKey))
+		{
+			kdbChanged |= 1;
+		}
+		else if (keyGetNamespace (registereKey) == KEY_NS_CASCADING || keyGetNamespace (changedKey) == KEY_NS_CASCADING)
+		{
+			const char * cascadingRegisterdKey = toCascadingName (keyRegistration->name);
+			const char * cascadingChangedKey = toCascadingName (keyName (changedKey));
+			kdbChanged |= elektraStrCmp (cascadingChangedKey, cascadingRegisterdKey) == 0;
+		}
+
+		keyRegistration = keyRegistration->next;
+		keyDel (registereKey);
+	}
+
+	if (kdbChanged)
+	{
+		KeySet * ks = ksNew (0, KS_END);
+		kdbGet (kdb, ks, changedKey);
+		ksDel (ks);
+	}
+	keyDel (changedKey);
+}
 
 /**
  * Creates a new KeyRegistration structure and appends it at the end of the registration list
@@ -101,6 +173,7 @@ void elektraInternalnotificationUpdateRegisteredKeys (Plugin * plugin, KeySet * 
 		Key * key = ksLookupByName (keySet, registeredKey->name, 0);
 		if (key == NULL)
 		{
+			registeredKey = registeredKey->next;
 			continue;
 		}
 
@@ -139,7 +212,7 @@ void elektraInternalnotificationUpdateRegisteredKeys (Plugin * plugin, KeySet * 
 			{
 			case TYPE_INT:
 				ELEKTRA_LOG_DEBUG ("found registeredKey=%s; updating variable=%p with string value \"%s\"",
-						   registeredKey->name, (void *)registeredKey->ref.variable, keyString (key));
+						   registeredKey->name, (void *) registeredKey->ref.variable, keyString (key));
 
 				// Convert string value to long
 				char * end;
@@ -159,7 +232,7 @@ void elektraInternalnotificationUpdateRegisteredKeys (Plugin * plugin, KeySet * 
 			case TYPE_CALLBACK:
 				ELEKTRA_LOG_DEBUG ("found registeredKey=%s; invoking callback", registeredKey->name);
 				ElektraNotificationChangeCallback callback =
-					*(ElektraNotificationChangeCallback)registeredKey->ref.callback;
+					*(ElektraNotificationChangeCallback) registeredKey->ref.callback;
 				callback (key);
 				break;
 			}
@@ -175,7 +248,7 @@ void elektraInternalnotificationUpdateRegisteredKeys (Plugin * plugin, KeySet * 
  * key value has changed.
  *
  * Implementation of ElektraNotificationPluginRegisterInt()
- * @see kdbnotificationplugin.h
+ * @see kdbnotificationinternal.h
  *
  * @param  handle   plugin handle
  * @param  variable integer variable
@@ -221,7 +294,7 @@ int elektraInternalnotificationRegisterInt (Plugin * handle, Key * key, int * va
  * key value has changed.
  *
  * Implementation of ElektraNotificationPluginRegisterCallback()
- * @see kdbnotificationplugin.h
+ * @see kdbnotificationinternal.h
  *
  * @param  handle   plugin handle
  * @param  key      key to watch for changes
@@ -291,13 +364,14 @@ int elektraInternalnotificationGet (Plugin * handle, KeySet * returned, Key * pa
 			keyNew ("system/elektra/modules/internalnotification/exports/close", KEY_FUNC, elektraInternalnotificationClose,
 				KEY_END),
 
-			// Export registerInt function and required plugin handle
+			keyNew ("system/elektra/modules/internalnotification/exports/notificationCallback", KEY_FUNC,
+				elektraInternalnotificationDoUpdate, KEY_END),
+
+			// Export register* functions
 			keyNew ("system/elektra/modules/internalnotification/exports/registerInt", KEY_FUNC,
 				elektraInternalnotificationRegisterInt, KEY_END),
 			keyNew ("system/elektra/modules/internalnotification/exports/registerCallback", KEY_FUNC,
 				elektraInternalnotificationRegisterCallback, KEY_END),
-			keyNew ("system/elektra/modules/internalnotification/exports/handle", KEY_BINARY, KEY_SIZE, sizeof handle,
-				KEY_VALUE, &handle, KEY_END),
 
 #include ELEKTRA_README (internalnotification)
 

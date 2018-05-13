@@ -273,7 +273,7 @@ inline static int isChild (const Key * key, void * parent)
 	ELEKTRA_NOT_NULL (key);
 	ELEKTRA_NOT_NULL (parent);
 
-	return keyIsDirectBelow ((const Key *)parent, key);
+	return keyIsDirectBelow ((const Key *) parent, key);
 }
 
 /**
@@ -294,7 +294,7 @@ static bool onlyArrayEntriesDirectlyBelow (Key * key, KeySet * keys)
 
 	KeySet * arrayEntries = elektraArrayGet (key, keys);
 	KeySet * children = ksNew (ksGetSize (keys), KS_END);
-	elektraKsFilter (children, keys, &isChild, (void *)key);
+	elektraKsFilter (children, keys, &isChild, (void *) key);
 
 	bool onlyArrayEntries = ksGetSize (arrayEntries) == ksGetSize (children);
 
@@ -437,7 +437,7 @@ static Key * arrayKeyToLeaf (Key * array, Key * error)
 		ELEKTRA_MALLOC_ERROR (error, valueLength);
 		return NULL;
 	}
-	strncpy (value, ARRAY_VALUE_PREFIX, ARRAY_VALUE_PREFIX_LENGTH);			 //! OCLint (constant conditional operator)
+	strcpy (value, ARRAY_VALUE_PREFIX);						 //! OCLint (constant conditional operator)
 	strncpy (value + ARRAY_VALUE_PREFIX_LENGTH - 1, keyString (array), valueLength); //! OCLint (constant conditional operator)
 	keySetString (leaf, value);
 	elektraFree (value);

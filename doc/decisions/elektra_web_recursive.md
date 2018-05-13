@@ -1,6 +1,6 @@
 # Elektra Web recursive structure
 
-## Issue
+## Problem
 
 After deciding how to remotely manage instances and groups of instances
 (clusters) with Elektra Web, there is still the issue of recursively nested
@@ -25,7 +25,7 @@ clusters (clusters of clusters).
 
 Managing the hierarchy in a single clusterd instance.
 
-## Argument
+## Rationale
 
 Accessing clusterd instances from other clusterd instances would mean that there
 also needs to be some authentication between those, complicating the set up

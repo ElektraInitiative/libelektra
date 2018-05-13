@@ -170,7 +170,7 @@ static const RepStruct * typeToTable (ISOType type)
 
 static int countLeadingHyphen (const char * date)
 {
-	char * ptr = (char *)date;
+	char * ptr = (char *) date;
 	int count = 0;
 	while (*ptr && ((*ptr == ' ') || (*ptr == '-')))
 	{

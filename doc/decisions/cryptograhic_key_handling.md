@@ -1,6 +1,6 @@
 # Cryptographic Key Handling
 
-## Issue
+## Problem
 
 The crypto plugin applies cryptographic operations to Keys and KeySets.
 In order to do that it needs keys and initialization vectors (IV).
@@ -56,7 +56,7 @@ During the **set phase** the master password _m_ is sent to the gpg binary for d
 
 During the **get phase** the master password _m_ is sent to the gpg binary for decryption in order to retrieve _r_. The following steps will be repeated for every Key _k_, that is supposed to be decrypted. The salt _s(k)_ is read from the encrypted message. By applying the PBKDF2 with _r_ and _s(k)_ the values of _e(k)_ and _i(k)_ are restored. Then the encrypted message can be decrypted.
 
-## Argument
+## Rationale
 
 The solution is reasonable to all users who are in favor of GPG.
 Also the solution might lead to a decline in dependencies (i.e. all cryptographic operations could be handled by the gpg binary).

@@ -11,7 +11,8 @@ cd "@CMAKE_SOURCE_DIR@"
 # this way we also check subdirectories
 # The script `check-env-dep` uses process substitution which is **not** a standard `sh` feature!
 # See also: https://unix.stackexchange.com/questions/151925
-scripts=$(find -E scripts/ -type f -not -regex '.+(check-env-dep|kdb_zsh_completion|sed|\.(cmake|fish|in|md|txt))$' | xargs)
+scripts=$(find -E scripts/ -type f -not -regex
+	  '.+(/docker/.+|check-env-dep|Jenkinsfile(.daily)?|kdb_zsh_completion|sed|\.(cmake|fish|in|md|txt))$' | xargs)
 checkbashisms $scripts
 ret=$?
 # 2 means skipped file, e.g. README.md, that is fine

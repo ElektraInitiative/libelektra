@@ -47,7 +47,7 @@
                         }
                     },
                     {
-                        "name": "Metadata",
+                        "name": "Meta-Specification",
                         "type": "staticfile",
                         "options": {
                             "path": "doc/METADATA.ini"
@@ -58,6 +58,13 @@
                         "type": "staticref",
                         "options": {
                             "path": "tutorials"
+                        }
+                    },
+                    {
+                        "name": "FAQ",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "doc/help/elektra-faq.md"
                         }
                     }
                 ]
@@ -144,6 +151,13 @@
                         "type": "staticfile",
                         "options": {
                             "path": ".github/CONTRIBUTING.md"
+                        }
+                    },
+                    {
+                        "name": "Code of Conduct",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "CODE_OF_CONDUCT.md"
                         }
                     },
                     {

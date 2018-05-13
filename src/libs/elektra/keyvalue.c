@@ -526,7 +526,7 @@ ssize_t keySetRaw (Key * key, const void * newBinary, size_t dataSize)
 	if (key->data.v)
 	{
 		char * previous = key->data.v;
-		if (-1 == elektraRealloc ((void **)&key->data.v, key->dataSize)) return -1;
+		if (-1 == elektraRealloc ((void **) &key->data.v, key->dataSize)) return -1;
 		if (previous == key->data.v)
 		{
 			// In case the regions overlap, use memmove to stay safe

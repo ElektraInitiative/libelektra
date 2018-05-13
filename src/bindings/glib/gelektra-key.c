@@ -2,14 +2,11 @@
 #include <kdbprivate.h>
 #include <string.h>
 
-enum
-{
-	PROP_0,
-	PROP_KEY_NAME,
-	PROP_KEY_BASENAME,
-	PROP_KEY_FULLNAME,
-	N_PROPERTIES
-};
+enum { PROP_0,
+       PROP_KEY_NAME, ///< property to get the name of the key
+       PROP_KEY_BASENAME,
+       PROP_KEY_FULLNAME,
+       N_PROPERTIES };
 
 G_DEFINE_TYPE (GElektraKey, gelektra_key, G_TYPE_OBJECT)
 static Key * gelektra_key_swap (GElektraKey * key, Key * newkey);
@@ -393,7 +390,8 @@ gssize gelektra_key_getvaluesize (const GElektraKey * key)
  */
 gelektra_func_t gelektra_key_getfunc (const GElektraKey * key)
 {
-	union {
+	union
+	{
 		gelektra_func_t f;
 		void * v;
 	} data;
@@ -423,7 +421,7 @@ gboolean gelektra_key_hasmeta (const GElektraKey * key, const gchar * name)
  */
 GElektraKey * gelektra_key_getmeta (const GElektraKey * key, const gchar * name)
 {
-	return gelektra_key_make ((Key *)keyGetMeta (key->key, name));
+	return gelektra_key_make ((Key *) keyGetMeta (key->key, name));
 }
 
 gint gelektra_key_copymeta (const GElektraKey * key, GElektraKey * dest, const gchar * name)
@@ -450,7 +448,7 @@ gint gelektra_key_rewindmeta (GElektraKey * key)
  */
 GElektraKey * gelektra_key_nextmeta (GElektraKey * key)
 {
-	return gelektra_key_make ((Key *)keyNextMeta (key->key));
+	return gelektra_key_make ((Key *) keyNextMeta (key->key));
 }
 
 /**
@@ -462,7 +460,7 @@ GElektraKey * gelektra_key_nextmeta (GElektraKey * key)
  */
 GElektraKey * gelektra_key_currentmeta (const GElektraKey * key)
 {
-	return gelektra_key_make ((Key *)keyCurrentMeta (key->key));
+	return gelektra_key_make ((Key *) keyCurrentMeta (key->key));
 }
 
 /* validating */

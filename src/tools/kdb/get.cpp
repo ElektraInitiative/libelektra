@@ -72,7 +72,7 @@ std::string getCascadingName (std::string name)
 	if (name.find ('/') == std::string::npos) return "/";
 	return name.substr (name.find ('/'));
 }
-}
+} // namespace
 
 ckdb::Key * printTrace (ELEKTRA_UNUSED ckdb::KeySet * ks, ckdb::Key * key, ckdb::Key * found, option_t options)
 {
@@ -158,10 +158,22 @@ int GetCommand::execute (Cmdline const & cl)
 		if (cl.verbose)
 		{
 			cout << "The resulting keyname is " << k.getName () << std::endl;
+			cout << "The resulting value size is " << k.getStringSize () << std::endl;
 		}
 
 		if (k.isBinary ())
 		{
+			if (cl.verbose)
+			{
+				if (k.getBinarySize () == 0)
+				{
+					cout << "The key is null." << std::endl;
+				}
+				else
+				{
+					cout << "The key is binary." << std::endl;
+				}
+			}
 			cout << std::hex;
 			const uint8_t * data = static_cast<const uint8_t *> (k.getValue ());
 			for (auto position = 0; position < k.getBinarySize (); position++)
@@ -177,8 +189,8 @@ int GetCommand::execute (Cmdline const & cl)
 	}
 	else
 	{
-		cerr << "Did not find key";
-		ret = 1;
+		cerr << "Did not find key '" << root.getName () << "'";
+		ret = 11;
 	}
 
 	if (!cl.noNewline)

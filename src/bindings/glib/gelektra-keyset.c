@@ -52,11 +52,11 @@ GElektraKeySet * gelektra_keyset_new (gsize alloc, ...)
 		ksResize (ks->keyset, alloc);
 
 		va_start (va, alloc);
-		GElektraKey * key = (GElektraKey *)va_arg (va, GElektraKey *);
+		GElektraKey * key = (GElektraKey *) va_arg (va, GElektraKey *);
 		while (key)
 		{
 			gelektra_keyset_append (ks, key);
-			key = (GElektraKey *)va_arg (va, GElektraKey *);
+			key = (GElektraKey *) va_arg (va, GElektraKey *);
 		}
 		va_end (va);
 	}

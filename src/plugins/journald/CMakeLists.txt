@@ -1,5 +1,5 @@
 if (DEPENDENCY_PHASE)
-	find_package(SystemdJournal)
+	find_package (SystemdJournal)
 
 	if (NOT LIBSYSTEMD_JOURNAL_FOUND)
 
@@ -8,12 +8,8 @@ if (DEPENDENCY_PHASE)
 	endif ()
 endif ()
 
-add_plugin(journald
-	SOURCES
-		journald.h
-		journald.c
-	INCLUDE_DIRECTORIES
-		${LIBSYSTEMD_JOURNAL_INCLUDE_DIR}
-	LINK_LIBRARIES
-		${LIBSYSTEMD_JOURNAL_LIBRARIES}
-	)
+add_plugin (journald
+	    SOURCES journald.h
+		    journald.c
+	    INCLUDE_DIRECTORIES ${LIBSYSTEMD_JOURNAL_INCLUDE_DIR}
+	    LINK_LIBRARIES ${LIBSYSTEMD_JOURNAL_LIBRARIES})

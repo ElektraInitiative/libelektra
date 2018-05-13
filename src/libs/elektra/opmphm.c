@@ -32,6 +32,8 @@ size_t opmphmLookup (Opmphm * opmphm, size_t n, const void * name)
 	ELEKTRA_ASSERT (opmphm->rUniPar > 0 && opmphm->componentSize > 0, "passed opmphm is uninitialized");
 	ELEKTRA_ASSERT (opmphm->graph != NULL, "passed opmphm is empty");
 	ELEKTRA_ASSERT (name != NULL, "passed name is a Null Pointer");
+	ELEKTRA_ASSERT (n > 0, "n is 0");
+	ELEKTRA_ASSERT (n <= KDB_OPMPHM_MAX_N, "n > KDB_OPMPHM_MAX");
 	size_t ret = 0;
 #ifndef OPMPHM_TEST
 	size_t nameLength = strlen (name);
@@ -41,7 +43,7 @@ size_t opmphmLookup (Opmphm * opmphm, size_t n, const void * name)
 #ifndef OPMPHM_TEST
 		uint32_t hash = opmphmHashfunction (name, nameLength, opmphm->hashFunctionSeeds[r]) % opmphm->componentSize;
 #else
-		uint32_t hash = ((uint32_t *)name)[r];
+		uint32_t hash = ((uint32_t *) name)[r];
 #endif
 		ret += opmphm->graph[r * opmphm->componentSize + hash];
 	}
@@ -71,86 +73,73 @@ int opmphmAssignment (Opmphm * opmphm, OpmphmGraph * graph, size_t n, int defaul
 	ELEKTRA_NOT_NULL (graph);
 	ELEKTRA_ASSERT (graph->removeIndex == n, "graph contains a cycle");
 	ELEKTRA_ASSERT (n > 0, "n is 0");
-	size_t size = opmphm->componentSize * opmphm->rUniPar * sizeof (size_t);
+	ELEKTRA_ASSERT (n <= KDB_OPMPHM_MAX_N, "n > KDB_OPMPHM_MAX");
+	size_t size = opmphm->componentSize * opmphm->rUniPar * sizeof (uint32_t);
 	opmphm->graph = elektraCalloc (size);
 	if (!opmphm->graph)
 	{
 		return -1;
 	}
 	opmphm->size = size;
-	// malloc assignment flag for each vertex
-	uint8_t * isAssigned = elektraCalloc (opmphm->componentSize * opmphm->rUniPar * sizeof (uint8_t));
-	if (!isAssigned)
-	{
-		opmphmClear (opmphm);
-		return -1;
-	}
+	// opmphm->graph[i] == 0 iff vertex i is not assigned
+	// write 0 value with n, since n mod n = 0
 	size_t i = n;
 	do
 	{
 		--i;
-		// assign edge e
-		// find out how many vertices are assigned and what is the sum of the values
-		uint8_t notAssignedCount = 0;
+		uint8_t assignableVertex = opmphm->rUniPar;
 		size_t assignedValue = 0;
-		size_t e = graph->removeSequence[i];
+		// assign edge e
+		uint32_t e = graph->removeSequence[i];
 		for (uint8_t r = 0; r < opmphm->rUniPar; ++r)
 		{
+			// go through all vertices from e
 			size_t v = r * opmphm->componentSize + graph->edges[e].vertices[r];
-			if (!isAssigned[v])
+			if (!opmphm->graph[v])
 			{
-				++notAssignedCount;
+				if (assignableVertex == opmphm->rUniPar)
+				{
+					// found the first assignableVertex
+					assignableVertex = r;
+				}
+				else
+				{
+					// already found an assignableVertex
+					// assign it != 0
+					opmphm->graph[v] = 1;
+					assignedValue += 1;
+				}
 			}
 			else
 			{
 				assignedValue += opmphm->graph[v];
 			}
 		}
-		ELEKTRA_ASSERT (notAssignedCount != 0, "no not assigned vertex");
-		// set all but one to assigned state
-		uint8_t r = 0;
-		while (notAssignedCount > 1)
+		ELEKTRA_ASSERT (assignableVertex != opmphm->rUniPar, "no assignableVertex, can not happen");
+		// assing the assignableVertex
+		size_t v = assignableVertex * opmphm->componentSize + graph->edges[e].vertices[assignableVertex];
+		size_t order;
+		if (defaultOrder)
 		{
-			size_t v = r * opmphm->componentSize + graph->edges[e].vertices[r];
-			if (!isAssigned[v])
-			{
-				isAssigned[v] = 1;
-				--notAssignedCount;
-			}
-			++r;
+			order = e;
 		}
-		// give the last the desired order
-		for (; r < opmphm->rUniPar; ++r)
+		else
 		{
-			size_t v = r * opmphm->componentSize + graph->edges[e].vertices[r];
-			if (!isAssigned[v])
-			{
-				size_t order;
-				if (defaultOrder)
-				{
-					order = e;
-				}
-				else
-				{
-					order = graph->edges[e].order;
-				}
-				if (assignedValue >= n)
-				{
-					assignedValue = assignedValue % n;
-				}
-				if (assignedValue <= order)
-				{
-					opmphm->graph[v] = order - assignedValue;
-				}
-				else
-				{
-					opmphm->graph[v] = n - assignedValue + order;
-				}
-				isAssigned[v] = 1;
-			}
+			order = graph->edges[e].order;
+		}
+		if (assignedValue >= n)
+		{
+			assignedValue = assignedValue % n;
+		}
+		if (assignedValue <= order)
+		{
+			opmphm->graph[v] = (order - assignedValue) ? (order - assignedValue) : n;
+		}
+		else
+		{
+			opmphm->graph[v] = (n - assignedValue + order) ? (n - assignedValue + order) : n;
 		}
 	} while (i);
-	elektraFree (isAssigned);
 	return 0;
 }
 
@@ -178,6 +167,7 @@ int opmphmMapping (Opmphm * opmphm, OpmphmGraph * graph, OpmphmInit * init, size
 	ELEKTRA_ASSERT (init->getName != NULL, "passed init->getString is a Null Pointer");
 	ELEKTRA_ASSERT (init->data != NULL, "passed init->data is a Null Pointer");
 	ELEKTRA_ASSERT (n > 0, "n is 0");
+	ELEKTRA_ASSERT (n <= KDB_OPMPHM_MAX_N, "n > KDB_OPMPHM_MAX");
 	// set seeds
 	for (uint8_t r = 0; r < opmphm->rUniPar; ++r)
 	{
@@ -231,7 +221,7 @@ int opmphmMapping (Opmphm * opmphm, OpmphmGraph * graph, OpmphmInit * init, size
  */
 static void peel_off (Opmphm * opmphm, OpmphmGraph * graph, size_t v)
 {
-	size_t e = graph->vertices[v].firstEdge;
+	uint32_t e = graph->vertices[v].firstEdge;
 	// add it to graph->removeSequence
 	graph->removeSequence[graph->removeIndex] = e;
 	++graph->removeIndex;
@@ -241,7 +231,7 @@ static void peel_off (Opmphm * opmphm, OpmphmGraph * graph, size_t v)
 		// w is adjacent to v through e
 		size_t w = r * opmphm->componentSize + graph->edges[e].vertices[r];
 		// remove e from w
-		size_t * j = &(graph->vertices[w].firstEdge);
+		uint32_t * j = &(graph->vertices[w].firstEdge);
 		for (; *j != e; j = &(graph->edges[*j].nextEdge[r]))
 			;
 		*j = graph->edges[*j].nextEdge[r];
@@ -342,9 +332,10 @@ double opmphmMinC (uint8_t r)
  *
  * @retval r the optimal rUniPar
  */
-uint8_t opmphmOptR (size_t n ELEKTRA_UNUSED)
+uint8_t opmphmOptR (size_t n)
 {
 	ELEKTRA_ASSERT (n > 0, "n is 0");
+	ELEKTRA_ASSERT (n <= KDB_OPMPHM_MAX_N, "n > KDB_OPMPHM_MAX");
 	if (n < 15)
 	{
 		return 6;
@@ -372,9 +363,10 @@ uint8_t opmphmOptR (size_t n ELEKTRA_UNUSED)
  *
  * @retval c the optimal `c` value
  */
-double opmphmOptC (size_t n ELEKTRA_UNUSED)
+double opmphmOptC (size_t n)
 {
 	ELEKTRA_ASSERT (n > 0, "n is 0");
+	ELEKTRA_ASSERT (n <= KDB_OPMPHM_MAX_N, "n > KDB_OPMPHM_MAX");
 	if (n < 15)
 	{
 		return 1.35;
@@ -420,6 +412,7 @@ OpmphmGraph * opmphmGraphNew (Opmphm * opmphm, uint8_t r, size_t n, double c)
 {
 	ELEKTRA_NOT_NULL (opmphm);
 	ELEKTRA_ASSERT (n > 0, "n is 0");
+	ELEKTRA_ASSERT (n <= KDB_OPMPHM_MAX_N, "n > KDB_OPMPHM_MAX");
 	ELEKTRA_ASSERT (c > 0.0, "ratio <= 0");
 	ELEKTRA_ASSERT (1 < r && r < 11, "r out of range [2,10]");
 	// lazy create
@@ -438,52 +431,50 @@ OpmphmGraph * opmphmGraphNew (Opmphm * opmphm, uint8_t r, size_t n, double c)
 		opmphm->rUniPar = r;
 	}
 	// calculate opmphm->componentSize, number of elements in one part of r-uniform r-partite hypergraph
-	size_t componentSize = (c * n / opmphm->rUniPar) + 1;
+	opmphm->componentSize = (c * n / opmphm->rUniPar) + 1;
 	// mallocs
 	OpmphmGraph * graph = elektraMalloc (sizeof (OpmphmGraph));
 	if (!graph)
 	{
+		opmphm->componentSize = 0;
 		return NULL;
 	}
 	graph->edges = elektraMalloc (n * sizeof (OpmphmEdge));
 	if (!graph->edges)
 	{
+		opmphm->componentSize = 0;
 		elektraFree (graph);
 		return NULL;
 	}
-	uint32_t * vertices = elektraMalloc (n * opmphm->rUniPar * sizeof (uint32_t));
-	if (!vertices)
-	{
-		elektraFree (graph->edges);
-		elektraFree (graph);
-		return NULL;
-	}
-	size_t * removeSequenceNextEdge = elektraMalloc ((n + n * opmphm->rUniPar) * sizeof (size_t));
-	if (!removeSequenceNextEdge)
-	{
-		elektraFree (graph->edges);
-		elektraFree (graph);
-		elektraFree (vertices);
-		return NULL;
-	}
-	// split hs for graph->edges[].h
-	// split removeSequenceNextEdge for graph->edges[].nextEdge and graph->removeSequence
-	graph->removeSequence = &removeSequenceNextEdge[n * opmphm->rUniPar];
-	for (size_t i = 0; i < n; ++i)
-	{
-		graph->edges[i].vertices = &vertices[i * opmphm->rUniPar];
-		graph->edges[i].nextEdge = &removeSequenceNextEdge[i * opmphm->rUniPar];
-	}
-	graph->vertices = elektraCalloc (componentSize * opmphm->rUniPar * sizeof (OpmphmVertex));
+	graph->vertices = elektraCalloc (opmphm->componentSize * opmphm->rUniPar * sizeof (OpmphmVertex));
 	if (!graph->vertices)
 	{
+		opmphm->componentSize = 0;
 		elektraFree (graph->edges);
 		elektraFree (graph);
-		elektraFree (vertices);
-		elektraFree (removeSequenceNextEdge);
 		return NULL;
 	}
-	opmphm->componentSize = componentSize;
+	/* one malloc for:
+	 * - graph->removeSequence	n
+	 * - graph->edges[i].vertices	n * opmphm->rUniPar
+	 * - graph->edges[i].nextEdge	n * opmphm->rUniPar
+	 */
+	uint32_t * removeSequenceVerticesNextEdge = elektraMalloc ((n + 2 * n * opmphm->rUniPar) * sizeof (uint32_t));
+	if (!removeSequenceVerticesNextEdge)
+	{
+		opmphm->componentSize = 0;
+		elektraFree (graph->vertices);
+		elektraFree (graph->edges);
+		elektraFree (graph);
+		return NULL;
+	}
+	// split removeSequenceVerticesNextEdge for graph->removeSequence, and for graph->edges[].vertices and graph->edges[].nextEdge
+	graph->removeSequence = &removeSequenceVerticesNextEdge[0];
+	for (size_t i = 0; i < n; ++i)
+	{
+		graph->edges[i].vertices = &removeSequenceVerticesNextEdge[n + i * opmphm->rUniPar];
+		graph->edges[i].nextEdge = &removeSequenceVerticesNextEdge[(n + opmphm->rUniPar * n) + i * opmphm->rUniPar];
+	}
 	return graph;
 }
 
@@ -511,8 +502,7 @@ void opmphmGraphClear (const Opmphm * opmphm, OpmphmGraph * graph)
 void opmphmGraphDel (OpmphmGraph * graph)
 {
 	ELEKTRA_NOT_NULL (graph);
-	elektraFree (graph->edges[0].vertices);
-	elektraFree (graph->edges[0].nextEdge);
+	elektraFree (graph->removeSequence);
 	elektraFree (graph->edges);
 	elektraFree (graph->vertices);
 	elektraFree (graph);
@@ -533,6 +523,7 @@ Opmphm * opmphmNew (void)
 	}
 	out->size = 0;
 	out->rUniPar = 0;
+	out->componentSize = 0;
 	return out;
 }
 
@@ -659,8 +650,8 @@ ELEKTRA_NO_SANITIZE_INTEGER
 uint32_t opmphmHashfunction (const void * key, size_t length, uint32_t initval)
 {
 	uint32_t a, b, c;
-	a = b = c = 0xdeadbeef + ((uint32_t)length) + initval;
-	const uint32_t * k = (const uint32_t *)key;
+	a = b = c = 0xdeadbeef + ((uint32_t) length) + initval;
+	const uint32_t * k = (const uint32_t *) key;
 	while (length > 12)
 	{
 		a += k[0];
@@ -734,22 +725,22 @@ ELEKTRA_NO_SANITIZE_INTEGER
 uint32_t opmphmHashfunction (const void * key, size_t length, uint32_t initval)
 {
 	uint32_t a, b, c;
-	a = b = c = 0xdeadbeef + ((uint32_t)length) + initval;
-	const uint8_t * k = (const uint8_t *)key;
+	a = b = c = 0xdeadbeef + ((uint32_t) length) + initval;
+	const uint8_t * k = (const uint8_t *) key;
 	while (length > 12)
 	{
 		a += k[0];
-		a += ((uint32_t)k[1]) << 8;
-		a += ((uint32_t)k[2]) << 16;
-		a += ((uint32_t)k[3]) << 24;
+		a += ((uint32_t) k[1]) << 8;
+		a += ((uint32_t) k[2]) << 16;
+		a += ((uint32_t) k[3]) << 24;
 		b += k[4];
-		b += ((uint32_t)k[5]) << 8;
-		b += ((uint32_t)k[6]) << 16;
-		b += ((uint32_t)k[7]) << 24;
+		b += ((uint32_t) k[5]) << 8;
+		b += ((uint32_t) k[6]) << 16;
+		b += ((uint32_t) k[7]) << 24;
 		c += k[8];
-		c += ((uint32_t)k[9]) << 8;
-		c += ((uint32_t)k[10]) << 16;
-		c += ((uint32_t)k[11]) << 24;
+		c += ((uint32_t) k[9]) << 8;
+		c += ((uint32_t) k[10]) << 16;
+		c += ((uint32_t) k[11]) << 24;
 		OPMPHM_HASHFUNCTION_MIX (a, b, c);
 		length -= 12;
 		k += 12;
@@ -757,37 +748,37 @@ uint32_t opmphmHashfunction (const void * key, size_t length, uint32_t initval)
 	switch (length)
 	{
 	case 12:
-		c += ((uint32_t)k[11]) << 24;
+		c += ((uint32_t) k[11]) << 24;
 		ELEKTRA_FALLTHROUGH;
 	case 11:
-		c += ((uint32_t)k[10]) << 16;
+		c += ((uint32_t) k[10]) << 16;
 		ELEKTRA_FALLTHROUGH;
 	case 10:
-		c += ((uint32_t)k[9]) << 8;
+		c += ((uint32_t) k[9]) << 8;
 		ELEKTRA_FALLTHROUGH;
 	case 9:
 		c += k[8];
 		ELEKTRA_FALLTHROUGH;
 	case 8:
-		b += ((uint32_t)k[7]) << 24;
+		b += ((uint32_t) k[7]) << 24;
 		ELEKTRA_FALLTHROUGH;
 	case 7:
-		b += ((uint32_t)k[6]) << 16;
+		b += ((uint32_t) k[6]) << 16;
 		ELEKTRA_FALLTHROUGH;
 	case 6:
-		b += ((uint32_t)k[5]) << 8;
+		b += ((uint32_t) k[5]) << 8;
 		ELEKTRA_FALLTHROUGH;
 	case 5:
 		b += k[4];
 		ELEKTRA_FALLTHROUGH;
 	case 4:
-		a += ((uint32_t)k[3]) << 24;
+		a += ((uint32_t) k[3]) << 24;
 		ELEKTRA_FALLTHROUGH;
 	case 3:
-		a += ((uint32_t)k[2]) << 16;
+		a += ((uint32_t) k[2]) << 16;
 		ELEKTRA_FALLTHROUGH;
 	case 2:
-		a += ((uint32_t)k[1]) << 8;
+		a += ((uint32_t) k[1]) << 8;
 		ELEKTRA_FALLTHROUGH;
 	case 1:
 		a += k[0];

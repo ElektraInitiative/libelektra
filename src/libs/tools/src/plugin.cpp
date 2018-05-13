@@ -452,5 +452,5 @@ std::string Plugin::refname ()
 		return std::string ("#") + spec.getRefName ();
 	}
 }
-}
-}
+} // namespace tools
+} // namespace kdb

@@ -157,3 +157,10 @@ Signature:
     `void * freeHandle (ElektraResolved * handle)`
 
 where `handle` is the handle returned by `filename`.
+
+## Limitations
+
+If none of the resolving techniques work, the resolver will fail during `kdbOpen`.
+This happens, for example, with the default resolver (ELEKTRA_VARIANT_USER `hpu`)
+if neither: `$HOME`, `$USER`, nor any home directory in `/etc/passwd` is set.
+

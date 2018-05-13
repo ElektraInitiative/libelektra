@@ -18,14 +18,14 @@
 #include <kdbio.h>
 #include <kdbiotest.h>
 
-#define TIMER_TEST_INTERVAL 50
+#define TIMER_TEST_INTERVAL 250
 #define TIMER_TEST_TIMES 3
 #define TIMER_DIFF_WARNING_THRESHOLD 5
 #define TIMER_DIFF_ERROR_THRESHOLD (TIMER_DIFF_WARNING_THRESHOLD * 100)
 
-// Control interval is 10ms * 5 = 50ms for the probe interval
+// Control interval is 50ms * 5 = 250ms for the probe interval
 // To check for the change (enabled or interval) we need control to run 5 + 1 times
-#define TIMER_CHANGE_CONTROL_INTERVAL 10
+#define TIMER_CHANGE_CONTROL_INTERVAL 50
 #define TIMER_CHANGE_TIMES 6
 
 #define TIMER_CHANGE_SECOND_INTERVAL TIMER_TEST_INTERVAL - TIMER_CHANGE_CONTROL_INTERVAL

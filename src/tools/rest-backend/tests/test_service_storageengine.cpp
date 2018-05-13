@@ -157,7 +157,7 @@ TEST (kdbrestServicesStorageengineTest, UpdateEntryCheck)
 	}
 
 	// force re-fetching of entry cache
-	(void)StorageEngine::instance ().getAllEntriesRef (true);
+	(void) StorageEngine::instance ().getAllEntriesRef (true);
 
 	// update the entry
 	testEntry.setTitle ("new-test-title");
@@ -171,7 +171,7 @@ TEST (kdbrestServicesStorageengineTest, UpdateEntryCheck)
 	{
 		StorageEngine::instance ().updateEntry (testEntry);
 	}
-	catch (EntryNotFoundException & e)
+	catch (EntryNotFoundException const & e)
 	{
 		ASSERT_TRUE (false);
 	}
@@ -239,7 +239,7 @@ TEST (kdbrestServicesStorageengineTest, DeleteEntryCheck)
 	}
 
 	// force re-fetching of entry cache
-	(void)StorageEngine::instance ().getAllEntriesRef (true);
+	(void) StorageEngine::instance ().getAllEntriesRef (true);
 
 	// do storage
 	StorageEngine::instance ().createEntry (testEntry);
@@ -307,7 +307,7 @@ TEST (kdbrestServicesStorageengineTest, EntryExistsCheck)
 	}
 
 	// make sure that entry cache is re-fetched
-	(void)StorageEngine::instance ().getAllEntriesRef (true);
+	(void) StorageEngine::instance ().getAllEntriesRef (true);
 
 	// check if exists now
 	ASSERT_TRUE (StorageEngine::instance ().entryExists (testKey));
@@ -342,7 +342,7 @@ TEST (kdbrestServicesStorageengineTest, GetEntryCheck)
 	}
 
 	// make sure that entry cache is re-fetched
-	(void)StorageEngine::instance ().getAllEntriesRef (true);
+	(void) StorageEngine::instance ().getAllEntriesRef (true);
 
 	// find entry, check function
 	try
@@ -352,7 +352,7 @@ TEST (kdbrestServicesStorageengineTest, GetEntryCheck)
 		ASSERT_EQ (entry.getName (), testKeyAbs.getName ());
 		ASSERT_EQ (entry.get<std::string> (), testKeyAbs.get<std::string> ());
 	}
-	catch (kdbrest::exception::EntryNotFoundException & e)
+	catch (kdbrest::exception::EntryNotFoundException const & e)
 	{
 		ASSERT_TRUE (false);
 	}
@@ -465,7 +465,7 @@ TEST (kdbrestServicesStorageengineTest, UpdateUserCheck)
 	}
 
 	// force re-fetching of user cache
-	(void)StorageEngine::instance ().getAllUsersRef (true);
+	(void) StorageEngine::instance ().getAllUsersRef (true);
 
 	// do storage
 	StorageEngine::instance ().createUser (testUser);
@@ -562,7 +562,7 @@ TEST (kdbrestServicesStorageengineTest, DeleteUserCheck)
 	}
 
 	// force re-fetching of user cache
-	(void)StorageEngine::instance ().getAllUsersRef (true);
+	(void) StorageEngine::instance ().getAllUsersRef (true);
 
 	// do storage
 	StorageEngine::instance ().createUser (testUser);
@@ -628,7 +628,7 @@ TEST (kdbrestServicesStorageengineTest, UserExistsCheck)
 	}
 
 	// force re-fetching of user cache
-	(void)StorageEngine::instance ().getAllUsersRef (true);
+	(void) StorageEngine::instance ().getAllUsersRef (true);
 
 	// check exists before creating key
 	ASSERT_FALSE (StorageEngine::instance ().userExists (username));
@@ -643,7 +643,7 @@ TEST (kdbrestServicesStorageengineTest, UserExistsCheck)
 	}
 
 	// force re-fetching of user cache
-	(void)StorageEngine::instance ().getAllUsersRef (true);
+	(void) StorageEngine::instance ().getAllUsersRef (true);
 
 	// check if exists now
 	ASSERT_TRUE (StorageEngine::instance ().userExists (username));
@@ -686,7 +686,7 @@ TEST (kdbrestServicesStorageengineTest, GetUserCheck)
 	}
 
 	// force re-fetching of user cache
-	(void)StorageEngine::instance ().getAllUsersRef (true);
+	(void) StorageEngine::instance ().getAllUsersRef (true);
 
 	// check exists before creating key
 	ASSERT_FALSE (StorageEngine::instance ().userExists (username));
@@ -702,7 +702,7 @@ TEST (kdbrestServicesStorageengineTest, GetUserCheck)
 	}
 
 	// force re-fetching of user cache
-	(void)StorageEngine::instance ().getAllUsersRef (true);
+	(void) StorageEngine::instance ().getAllUsersRef (true);
 
 	// check if exists now
 	ASSERT_TRUE (StorageEngine::instance ().userExists (username));
@@ -732,7 +732,7 @@ int main (int argc, char * argv[])
 
 	// initialize test config
 	cppcms::json::value config = kdbrest::service::ConfigEngine::instance ().loadApplicationConfiguration ();
-	(void)kdbrest::Config::instance ().initializeConfiguration (config);
+	(void) kdbrest::Config::instance ().initializeConfiguration (config);
 	// force default config
 	kdbrest::Config::instance ().setValue<std::string> ("kdb.path.configs", std::string (ELEKTRA_REST_DEFAULT_PATH_CONFIGS));
 	kdbrest::Config::instance ().setValue<std::string> ("kdb.path.users", std::string (ELEKTRA_REST_DEFAULT_PATH_USERS));

@@ -65,7 +65,8 @@ public:
 
 	bool check (Key & k)
 	{
-		Key const m = k.getMeta<const Key> ("check/type");
+		Key m = k.getMeta<const Key> ("check/type");
+		if (!m) m = k.getMeta<const Key> ("type");
 		if (!m) return !enforce;
 
 		istringstream istr (m.getString ());

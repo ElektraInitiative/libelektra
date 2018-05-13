@@ -37,7 +37,8 @@ typedef struct _Module Module;
 struct _Module
 {
 	void * handle;
-	union {
+	union
+	{
 		elektraPluginFactory f;
 		void * v;
 	} symbol;
@@ -63,7 +64,7 @@ elektraPluginFactory elektraModulesLoad (KeySet * modules, const char * name, Ke
 	Key * lookup = ksLookup (modules, moduleKey, 0);
 	if (lookup)
 	{
-		Module * module = (Module *)keyValue (lookup);
+		Module * module = (Module *) keyValue (lookup);
 		keyDel (moduleKey);
 		return module->symbol.f;
 	}
@@ -123,7 +124,7 @@ int elektraModulesClose (KeySet * modules, Key * errorKey)
 
 	while ((cur = ksPop (modules)) != 0)
 	{
-		Module * module = (Module *)keyValue (cur);
+		Module * module = (Module *) keyValue (cur);
 		if (dlclose (module->handle) != 0)
 		{
 			if (ret != -1)

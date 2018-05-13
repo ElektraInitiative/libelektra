@@ -76,7 +76,8 @@ static void resolverInit (resolverHandle * p, const char * path)
 static resolverHandle * elektraGetResolverHandle (Plugin * handle, Key * parentKey)
 {
 	resolverHandles * pks = elektraPluginGetData (handle);
-	ELEKTRA_ASSERT (pks != NULL, "Unable to retrieve plugin data for handle %p with parentKey %s", (void *)handle, keyName (parentKey));
+	ELEKTRA_ASSERT (pks != NULL, "Unable to retrieve plugin data for handle %p with parentKey %s", (void *) handle,
+			keyName (parentKey));
 
 	switch (keyGetNamespace (parentKey))
 	{
@@ -464,9 +465,12 @@ int ELEKTRA_PLUGIN_FUNCTION (resolver, open) (Plugin * handle, Key * errorKey)
 
 	int ret = mapFilesForNamespaces (p, errorKey);
 
-	elektraPluginSetData (handle, p);
+	if (ret != -1)
+	{
+		elektraPluginSetData (handle, p);
+	}
 
-	return ret; /* success */
+	return ret;
 }
 
 int ELEKTRA_PLUGIN_FUNCTION (resolver, close) (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)

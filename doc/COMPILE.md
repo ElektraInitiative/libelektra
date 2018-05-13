@@ -2,7 +2,8 @@
 
 ## Dependencies
 
-For the base system you only need cmake, git, and build-essential
+For the base system you only need [cmake3](https://cmake.org/cmake/help/v3.0/),
+[git](https://git-scm.com/), and essential build tools
 (make, gcc, and some standard Unix tools; alternatively ninja and
 clang are also supported but not described here):
 
@@ -78,8 +79,8 @@ branch).
 
 ## Preparation
 
-Elektra uses cmake.
-Tested are cmake version 2.8.9 (minimum) and version 3.0.2 (recommended) among others.
+Elektra uses [cmake3](https://cmake.org/cmake/help/v3.0/).
+Tested are cmake version 3.0.2 and 3.7.2 among others.
 
 To configure Elektra graphically (with curses) run (`..` belongs to command):
 
@@ -98,7 +99,7 @@ For information what you can use as `OPTION1` and `OPTION2`, see above.
 Note: You have to enclose a value with quotes `""` if it contains a semicolon (`;`).
 E.g.:
 
-    cmake -DPLUGINS="dump;resolver;yajl" ..
+    cmake -DPLUGINS="dump;resolver;yajl;list;spec" ..
 
 Some scripts in the folder of the same name may help you running cmake.
 
@@ -121,6 +122,7 @@ https://build.libelektra.org/
 |      mingw        | 4.6                         |      i386         |
 |      clang        | 3.8                         |x86_64-pc-linux-gnu|
 |      clang        | 5.0                         |x86_64-pc-linux-gnu|
+|      clang        | 6.0                         |x86_64-pc-linux-gnu|
 |      clang        | 8.1.0                       |      macOS        |
 |      icc          | 14.0.2 20140120             |x86_64-pc-linux-gnu|
 |      gcc/g++      |                             | openbsd 4.9.3 (*) |
@@ -165,12 +167,18 @@ the configuration files are named) and also do many other
 tasks related to configuration.
 
 The minimal set of plugins you should add:
+
 - [dump](/src/plugins/dump) is the default storage.
   If you remove it, make sure you add another one and set
   `KDB_DEFAULT_STORAGE` to it.
 - [resolver](/src/plugins/resolver) is the default resolver.
   If you remove it, make sure you add another one and set
   `KDB_DEFAULT_RESOLVER` to it.
+- [list](/src/plugins/list) delegates work to a list of plugins.
+  Needed for tests. (Required with `ENABLE_TESTING`.)
+- [spec](/src/plugins/spec) copies metadata from spec namespace
+  to other namespaces.
+  Needed for tests. (Required with `ENABLE_TESTING`, except on mingw.)
 - [sync](/src/plugins/sync) is very useful to not lose any data.
   If you do not want to include it, make sure to set
   `/sw/elektra/kdb/#0/current/plugins` to a value not containing sync
@@ -306,7 +314,7 @@ To specify specific tools you can use, e.g.:
 #### Bindings
 
 Bindings are used in a like as `PLUGINS`.
-For example, to build all maintainted bindings and exclude experimental bindings
+For example, to build all maintained bindings and exclude experimental bindings
 you can use:
 
     -DBINDINGS=MAINTAINED;-EXPERIMENTAL

@@ -560,8 +560,8 @@ void benchmarkInsertData (sql::Connection * con, int numUsers, int numEntriesPer
 
 	std::cout << std::endl;
 }
-}
-}
+} // namespace benchmark
+} // namespace kdbrest
 
 
 void printUsage (char * argv[])
@@ -604,7 +604,7 @@ int main (int argc, char * argv[])
 
 	// load configuration
 	cppcms::json::value config = kdbrest::service::ConfigEngine::instance ().loadApplicationConfiguration ();
-	(void)kdbrest::Config::instance ().initializeConfiguration (config);
+	(void) kdbrest::Config::instance ().initializeConfiguration (config);
 
 	// create mysql connection
 	sql::Driver * driver;

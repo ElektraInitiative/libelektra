@@ -52,10 +52,13 @@ kdb get "/examples/yamlcpp/some key"
 echo "🔑: value" >  `kdb file /examples/yamlcpp`
 
 # Add some values via `kdb set`
+kdb set /examples/yamlcpp 🎵
 kdb set /examples/yamlcpp/fleetwood mac
 kdb set /examples/yamlcpp/the chain
 
 # Retrieve the new values
+kdb get /examples/yamlcpp
+#> 🎵
 kdb get /examples/yamlcpp/the
 #> chain
 kdb get /examples/yamlcpp/fleetwood
@@ -254,13 +257,9 @@ echo 'bin: !!binary aGk=' > `kdb file /examples/binary`
 kdb get /examples/binary/bin
 #> \x68\x69
 
-# We can use `ruby` to convert the hexadecimal value returned by `kdb get`
-# to its ASCII representation. If you use `bash` or `fish` as shell then
-#     printf `kdb get /examples/binary/bin` # Bash
-# or
-#     printf (kdb get /examples/binary/bin) # fish
-# should work too.
-ruby -e "print ARGV[0].split('\x')[1..-1].map { |byte| byte.to_i(16).chr }.join" `kdb get /examples/binary/bin`
+# We can use `bash` to convert the hexadecimal value returned by `kdb get`
+# to its ASCII representation.
+bash -c 'printf `kdb get /examples/binary/bin`'
 #> hi
 
 # Add a string value to the database
@@ -395,7 +394,6 @@ sudo kdb umount user/examples/yamlcpp
 
 ### Other Limitations
 
-- Saving a **single scalar value** directly below the mountpoint does not work
 - Adding and removing keys does remove **comments** inside the configuration file
 - The plugin currently lacks proper **type support** for scalars.
 - If Elektra uses YAML CPP as **default storage** plugin, multiple tests of the test suite fail. However, if you mount YAML CPP at `/`:

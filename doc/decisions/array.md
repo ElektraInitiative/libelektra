@@ -1,6 +1,6 @@
 # Arrays
 
-## Issue
+## Problem
 
 Currently it is inefficient to detect the length of an array and
 it is impossible to know if an key (without subkeys) should be
@@ -44,7 +44,7 @@ myarray/#5 = value5
 ```
 
 
-## Argument
+## Rationale
 
 - Is very similar to `binary` metadata.
 - The key alone suffices to know if its an array

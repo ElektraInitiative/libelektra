@@ -397,6 +397,14 @@ int elektraIoFdSetBindingData (ElektraIoFdOperation * fdOp, void * data);
 void * elektraIoFdGetBindingData (ElektraIoFdOperation * fdOp);
 
 /**
+ * Get binding from operation.
+ *
+ * @param  fdOp fd operation handle
+ * @return      pointer to binding or NULL on error
+ */
+ElektraIoInterface * elektraIoFdGetBinding (ElektraIoFdOperation * fdOp);
+
+/**
  * Check if file descriptor watch operation is enabled or disabled.
  *
  * @param  fdOp    file descriptor operation handle
@@ -490,6 +498,14 @@ int elektraIoTimerSetBindingData (ElektraIoTimerOperation * timerOp, void * data
 void * elektraIoTimerGetBindingData (ElektraIoTimerOperation * timerOp);
 
 /**
+ * Get binding from operation.
+ *
+ * @param  timerOp  timer operation handle
+ * @return          pointer to binding or NULL on error
+ */
+ElektraIoInterface * elektraIoTimerGetBinding (ElektraIoTimerOperation * timerOp);
+
+/**
  * Get private data from operation.
  *
  * @param  timerOp  timer operation handle
@@ -555,6 +571,14 @@ int elektraIoIdleSetBindingData (ElektraIoIdleOperation * idleOp, void * data);
 void * elektraIoIdleGetBindingData (ElektraIoIdleOperation * idleOp);
 
 /**
+ * Get binding from operation.
+ *
+ * @param  idleOp idle operation handle
+ * @return        pointer to binding or NULL on error
+ */
+ElektraIoInterface * elektraIoIdleGetBinding (ElektraIoIdleOperation * idleOp);
+
+/**
  * Get private data from operation.
  *
  * @param  idleOp   idle operation handle
@@ -572,6 +596,11 @@ ElektraIoIdleCallback elektraIoIdleGetCallback (ElektraIoIdleOperation * idleOp)
 
 /**
  * Set I/O binding for asynchronous I/O operations for KDB instance.
+ *
+ * All global plugins that export a "setIoBinding" function get the binding
+ * passed through this function.
+ *
+ * @ingroup kdbio
  *
  * @param  kdb       KDB instance
  * @param  ioBinding I/O binding

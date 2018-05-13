@@ -61,8 +61,17 @@
 			<div class="row">
 				<div class="col-md-8 col-md-offset-2">
 					<div class="alert alert-danger md-mt-50" role="alert">
-						<p>This website was designed using JavaScript.</p>
-						<p>If you have troubles getting the website to work, please go to our <a href="https://github.com/ElektraInitiative/libelektra">GitHub page</a> and file an issue. All content of the website can also be found in the GitHub repository, so you won't miss anything browsing it instead!</p>
+						<p>Sorry, we could not render this website because JavaScript is required.</p>
+
+						<p>If you have troubles getting the website to work, please go to our <a href="https://issues.libelektra.org">Issue Tracker</a> and file an issue.</p>
+
+						<p>All JavaScript we use is free software and we do not use any external resources.</p>
+
+						<p>If you nevertheless decide to not enable JavaScript, please clone our repository:</p>
+
+						<pre>git clone https://github.com/ElektraInitiative/libelektra.git</pre>
+
+						<p>This website <em>only</em> renders content found in text files of this repository.</p>
 					</div>
 				</div>
 			</div>

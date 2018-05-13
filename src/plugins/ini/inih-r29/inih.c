@@ -27,7 +27,7 @@ http://code.google.com/p/inih/
 static char * rstrip (char * s)
 {
 	char * p = s + strlen (s);
-	while (p > s && isspace ((unsigned char)(*--p)))
+	while (p > s && isspace ((unsigned char) (*--p)))
 	{
 		*p = '\0';
 	}
@@ -37,11 +37,11 @@ static char * rstrip (char * s)
 /* Return pointer to first non-whitespace char in given string. */
 static char * lskip (const char * s)
 {
-	while (*s && isspace ((unsigned char)(*s)))
+	while (*s && isspace ((unsigned char) (*s)))
 	{
 		s++;
 	}
-	return (char *)s;
+	return (char *) s;
 }
 
 /* Return pointer to first char c or ';' comment in given string, or pointer to
@@ -52,10 +52,10 @@ static char * find_char_or_comment (const char * s, char c)
 	int was_whitespace = 0;
 	while (*s && *s != c && !(was_whitespace && *s == ';'))
 	{
-		was_whitespace = isspace ((unsigned char)(*s));
+		was_whitespace = isspace ((unsigned char) (*s));
 		s++;
 	}
-	return (char *)s;
+	return (char *) s;
 }
 
 /* Version of strncpy that ensures dest (size bytes) is null-terminated. */
@@ -103,7 +103,7 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 	int lineno = 0;
 	int error = 0;
 
-	line = (char *)malloc (INI_MAX_LINE);
+	line = (char *) malloc (INI_MAX_LINE);
 
 	ELEKTRA_LOG_DEBUG ("Allocated memory for line");
 
@@ -120,7 +120,7 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 
 		start = line;
 #if INI_ALLOW_BOM
-		if (lineno == 1 && (unsigned char)start[0] == 0xEF && (unsigned char)start[1] == 0xBB && (unsigned char)start[2] == 0xBF)
+		if (lineno == 1 && (unsigned char) start[0] == 0xEF && (unsigned char) start[1] == 0xBB && (unsigned char) start[2] == 0xBF)
 		{
 			start += 3;
 			config->bomHandler (user, 1);

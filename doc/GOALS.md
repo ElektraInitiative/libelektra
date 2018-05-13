@@ -1,8 +1,10 @@
 # Goals
 
 - Improve robustness of configuration systems by
+  - avoiding reimplementation of parsers for the same configuration settings.
   - rejecting invalid configuration.
   - avoiding common programming errors through the usage of better bindings.
+  - getting more guarantees when getting configuration.
 - Allow software to be better integrated on configuration level.
 - Postpone some decisions from programmers to maintainers/administrators:
   - Syntax of the configuration file(s)

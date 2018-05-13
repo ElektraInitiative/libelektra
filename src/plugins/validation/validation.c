@@ -100,7 +100,7 @@ static int validateKey (Key * key, Key * parentKey)
 	}
 	else
 	{
-		regexString = (char *)keyString (regexMeta);
+		regexString = (char *) keyString (regexMeta);
 	}
 
 	regex_t regex;
@@ -126,7 +126,7 @@ static int validateKey (Key * key, Key * parentKey)
 	{
 		char * savePtr;
 		char * token;
-		char * string = (char *)keyString (key);
+		char * string = (char *) keyString (key);
 		while ((token = strtok_r (string, " \t\n", &savePtr)) != NULL)
 		{
 			ret = regexec (&regex, token, 1, &offsets, 0);

@@ -459,14 +459,14 @@ static void test_keyHelpers (void)
 
 static void test_keyPlugin (void)
 {
-	Plugin * plug = (Plugin *)1222243;
+	Plugin * plug = (Plugin *) 1222243;
 
 	Key * k = keyNew ("system/name", KEY_BINARY, KEY_SIZE, sizeof (plug), KEY_VALUE, &plug, KEY_END);
-	Plugin * xlug = *(Plugin **)keyValue (k);
+	Plugin * xlug = *(Plugin **) keyValue (k);
 
 	succeed_if (xlug == plug, "should point to the same");
-	succeed_if (plug == (Plugin *)1222243, "should point to that");
-	succeed_if (xlug == (Plugin *)1222243, "should point to that too");
+	succeed_if (plug == (Plugin *) 1222243, "should point to that");
+	succeed_if (xlug == (Plugin *) 1222243, "should point to that too");
 
 	keyDel (k);
 }
@@ -735,7 +735,7 @@ static void test_owner (void)
 	succeed_if (key != NULL, "keyNew: Unable to create a key with name + value of default type");
 	succeed_if (keyIsBinary (key), "Could not set type to binary");
 	succeed_if (keyGetValueSize (key) == sizeof (array), "Value size not correct");
-	succeed_if (memcmp ((char *)keyValue (key), array, sizeof (array)) == 0, "could not get correct binary value");
+	succeed_if (memcmp ((char *) keyValue (key), array, sizeof (array)) == 0, "could not get correct binary value");
 	getBack = elektraMalloc (keyGetValueSize (key));
 	keyGetBinary (key, getBack, keyGetValueSize (key));
 	succeed_if (memcmp (getBack, array, sizeof (array)) == 0, "could not get correct value with keyGetBinary");
@@ -769,7 +769,7 @@ static void test_owner (void)
 	{
 		succeed_if (keyGetOwner (key, ret, i) == sizeof (testOwner), "length checking longer");
 	}
-	succeed_if (keyGetOwner (key, ret, (size_t)-1) == -1, "maxSize exceeded");
+	succeed_if (keyGetOwner (key, ret, (size_t) -1) == -1, "maxSize exceeded");
 
 	succeed_if (keySetOwner (key, 0) == 1, "delete owner");
 	succeed_if (keyGetOwner (key, ret, i) == 1, "length checking deleting");
@@ -870,7 +870,7 @@ static void test_keyComment (void)
 	{
 		succeed_if (keyGetComment (key, ret, i) == sizeof (testComment), "length checking longer");
 	}
-	succeed_if (keyGetComment (key, ret, (size_t)-1) == -1, "maxSize exceeded");
+	succeed_if (keyGetComment (key, ret, (size_t) -1) == -1, "maxSize exceeded");
 
 	succeed_if (keySetComment (key, 0) == 1, "delete comment");
 	succeed_if (keyGetComment (key, ret, i) == 1, "length checking deleting");
@@ -998,9 +998,9 @@ static void test_keyTime (void)
 
 	printf ("Test key time\n");
 
-	succeed_if (keyGetATime (0) == (time_t)-1, "null pointer check");
-	succeed_if (keyGetMTime (0) == (time_t)-1, "null pointer check");
-	succeed_if (keyGetCTime (0) == (time_t)-1, "null pointer check");
+	succeed_if (keyGetATime (0) == (time_t) -1, "null pointer check");
+	succeed_if (keyGetMTime (0) == (time_t) -1, "null pointer check");
+	succeed_if (keyGetCTime (0) == (time_t) -1, "null pointer check");
 
 	succeed_if (keySetATime (0, 0) == -1, "null pointer check");
 	succeed_if (keySetMTime (0, 0) == -1, "null pointer check");
@@ -1057,9 +1057,9 @@ static void test_keyMeta (void)
 {
 	Key * key = 0;
 
-	succeed_if (keyGetUID (key) == (uid_t)-1, "uid null pointer");
-	succeed_if (keyGetGID (key) == (gid_t)-1, "gid null pointer");
-	succeed_if (keyGetMode (key) == (mode_t)-1, "mode null pointer");
+	succeed_if (keyGetUID (key) == (uid_t) -1, "uid null pointer");
+	succeed_if (keyGetGID (key) == (gid_t) -1, "gid null pointer");
+	succeed_if (keyGetMode (key) == (mode_t) -1, "mode null pointer");
 
 	key = 0;
 	succeed_if (keyNeedSync (key) == -1, "key needs sync");
@@ -1086,8 +1086,8 @@ static void test_keyMeta (void)
 	keyDel (key);
 
 	key = keyNew (0);
-	succeed_if (keyGetUID (key) == (uid_t)-1, "uid not set to nobody");
-	succeed_if (keyGetGID (key) == (gid_t)-1, "gid not set to nobody");
+	succeed_if (keyGetUID (key) == (uid_t) -1, "uid not set to nobody");
+	succeed_if (keyGetGID (key) == (gid_t) -1, "gid not set to nobody");
 
 	succeed_if (keySetUID (key, 20) == 0, "could not set uid");
 	succeed_if (keySetGID (key, 21) == 0, "could not set uid");
@@ -1095,11 +1095,11 @@ static void test_keyMeta (void)
 	succeed_if (keyGetUID (key) == 20, "uid not set to 20");
 	succeed_if (keyGetGID (key) == 21, "gid not set to 21");
 
-	succeed_if (keySetUID (key, (uid_t)-1) == 0, "could not set uid");
-	succeed_if (keySetGID (key, (gid_t)-1) == 0, "could not set uid");
+	succeed_if (keySetUID (key, (uid_t) -1) == 0, "could not set uid");
+	succeed_if (keySetGID (key, (gid_t) -1) == 0, "could not set uid");
 
-	succeed_if (keyGetUID (key) == (uid_t)-1, "uid not set to nobody");
-	succeed_if (keyGetGID (key) == (gid_t)-1, "gid not set to nobody");
+	succeed_if (keyGetUID (key) == (uid_t) -1, "uid not set to nobody");
+	succeed_if (keyGetGID (key) == (gid_t) -1, "gid not set to nobody");
 
 	succeed_if (keySetUID (key, 0) == 0, "could not set uid");
 	succeed_if (keySetGID (key, 0) == 0, "could not set uid");

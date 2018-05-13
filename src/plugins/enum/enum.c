@@ -65,7 +65,7 @@ static char ** stringToArray (const char * string, const char * delim)
 		}
 		char * tmp = elektraStrDup (ptr);
 		char * start = elektraLskip (tmp);
-		(void)elektraRstrip (start, NULL);
+		(void) elektraRstrip (start, NULL);
 		if (start[0] == '\'') ++start;
 		if (start[strlen (start) - 1] == '\'') start[strlen (start) - 1] = '\0';
 		array[current++] = elektraStrDup (start);
@@ -74,7 +74,7 @@ static char ** stringToArray (const char * string, const char * delim)
 	}
 	if (current + 1 < elems)
 	{
-		elektraRealloc ((void **)array, (current + 1) * (sizeof (char *)));
+		elektraRealloc ((void **) array, (current + 1) * (sizeof (char *)));
 		array[current] = NULL;
 	}
 	elektraFree (localString);
@@ -111,7 +111,7 @@ static int validateWithList (Key * key, const char * meta)
 	}
 	else
 	{
-		char * delim = (char *)keyString (multiEnum);
+		char * delim = (char *) keyString (multiEnum);
 		char ** array = stringToArray (keyString (key), delim);
 		if (!array)
 		{
@@ -158,7 +158,7 @@ static int validateWithArray (Key * key)
 	{
 		if (multiEnum)
 		{
-			char * delim = (char *)keyString (multiEnum);
+			char * delim = (char *) keyString (multiEnum);
 			char ** array = stringToArray (keyString (key), delim);
 			if (!array)
 			{

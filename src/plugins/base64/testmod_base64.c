@@ -71,7 +71,7 @@ static void test_base64_encoding (void)
 		errorAlloc[10] = testcase2char (charOffset);
 		errorMismatch[10] = testcase2char (charOffset);
 
-		char * encodedText = PLUGIN_FUNCTION (base64Encode) ((kdb_octet_t *)decoded[charOffset], strlen (decoded[charOffset]));
+		char * encodedText = PLUGIN_FUNCTION (base64Encode) ((kdb_octet_t *) decoded[charOffset], strlen (decoded[charOffset]));
 		succeed_if (encodedText, errorAlloc);
 		if (encodedText)
 		{

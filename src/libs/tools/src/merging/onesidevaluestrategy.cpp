@@ -63,6 +63,6 @@ void OneSideValueStrategy::resolveConflict (const MergeTask & task, Key & confli
 		}
 	}
 }
-}
-}
-}
+} // namespace merging
+} // namespace tools
+} // namespace kdb

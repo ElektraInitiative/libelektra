@@ -178,4 +178,4 @@ void outputGTest (kdb::KeySet tocheck, std::string name)
 			  << "\") << \"string of element in keyset wrong\";" << std::endl;
 	}
 }
-}
+} // namespace testing

@@ -38,6 +38,7 @@ static void test_opmphmGraphNew (void)
 			// check opmphm
 			succeed_if (opmphm->rUniPar == 0, "check opmphm->rUniPar");
 			succeed_if (opmphm->size == 0, "check opmphm->size");
+			succeed_if (opmphm->componentSize == 0, "check opmphm->componentSize");
 			OpmphmGraph * graph = opmphmGraphNew (opmphm, rUniPar, n, 1);
 			exit_if_fail (graph, "opmphmGraphNew");
 			// check opmphm
@@ -119,8 +120,8 @@ static void test_cyclicMultipleEdges (void)
 			OpmphmInit opmphmInit;
 			// dummy data
 			opmphmInit.getName = test_opmphm_getName;
-			opmphmInit.initSeed = (int32_t)1;
-			opmphmInit.data = (void **)1;
+			opmphmInit.initSeed = (int32_t) 1;
+			opmphmInit.data = (void **) 1;
 			// fill
 			for (size_t i = 0; i < n; ++i)
 			{
@@ -158,8 +159,8 @@ static void test_cyclicCountUpEdges (void)
 			OpmphmInit opmphmInit;
 			// dummy data
 			opmphmInit.getName = test_opmphm_getName;
-			opmphmInit.initSeed = (int32_t)1;
-			opmphmInit.data = (void **)1;
+			opmphmInit.initSeed = (int32_t) 1;
+			opmphmInit.data = (void **) 1;
 			// fill
 			uint32_t data[rUniPar];
 			for (uint8_t r = 0; r < rUniPar; ++r)
@@ -209,8 +210,8 @@ static void test_cyclicCountDownEdges (void)
 			OpmphmInit opmphmInit;
 			// dummy data
 			opmphmInit.getName = test_opmphm_getName;
-			opmphmInit.initSeed = (int32_t)1;
-			opmphmInit.data = (void **)1;
+			opmphmInit.initSeed = (int32_t) 1;
+			opmphmInit.data = (void **) 1;
 			// fill
 			int32_t data[rUniPar];
 			for (uint8_t r = 0; r < rUniPar; ++r)
@@ -233,7 +234,7 @@ static void test_cyclicCountDownEdges (void)
 					{
 						data[r] = componentSize - 1;
 					}
-				} while (data[r] == (int32_t)componentSize - 1);
+				} while (data[r] == (int32_t) componentSize - 1);
 			}
 			// check
 			succeed_if (opmphmMapping (opmphm, graph, &opmphmInit, n), "graph with cycles marked as acyclic");
@@ -268,8 +269,8 @@ static void test_acyclicDefaultOrder (void)
 			OpmphmInit opmphmInit;
 			// dummy data
 			opmphmInit.getName = test_opmphm_getName;
-			opmphmInit.initSeed = (int32_t)1;
-			opmphmInit.data = (void **)1;
+			opmphmInit.initSeed = (int32_t) 1;
+			opmphmInit.data = (void **) 1;
 			// fill
 			for (size_t i = 0; i < n; ++i)
 			{
@@ -279,7 +280,7 @@ static void test_acyclicDefaultOrder (void)
 				}
 			}
 			// save element last and create multiple edge
-			int32_t data[rUniPar];
+			uint32_t data[rUniPar];
 			for (uint8_t r = 0; r < rUniPar; ++r)
 			{
 				data[r] = graph->edges[n - 1].vertices[r];
@@ -327,8 +328,8 @@ static void test_acyclicReverseOrder (void)
 			OpmphmInit opmphmInit;
 			// dummy data
 			opmphmInit.getName = test_opmphm_getName;
-			opmphmInit.initSeed = (int32_t)1;
-			opmphmInit.data = (void **)1;
+			opmphmInit.initSeed = (int32_t) 1;
+			opmphmInit.data = (void **) 1;
 			// fill
 			for (size_t i = 0; i < n; ++i)
 			{
@@ -339,7 +340,7 @@ static void test_acyclicReverseOrder (void)
 				graph->edges[i].order = n - 1 - i;
 			}
 			// save element last and create multiple edge
-			int32_t data[rUniPar];
+			uint32_t data[rUniPar];
 			for (uint8_t r = 0; r < rUniPar; ++r)
 			{
 				data[r] = graph->edges[n - 1].vertices[r];

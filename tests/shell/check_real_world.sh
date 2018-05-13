@@ -4,6 +4,7 @@ echo
 echo ELEKTRA CHECK REAL WORLD SUITE
 echo
 
+is_plugin_available sync || { echo "Test requires sync plugin, aborting" >&2; exit 0; }
 check_version
 
 FILE_SUFFIX=test_real_world

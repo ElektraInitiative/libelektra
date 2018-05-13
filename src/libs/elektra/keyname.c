@@ -818,7 +818,7 @@ ssize_t keyGetBaseName (const Key * key, char * returned, size_t maxSize)
  * The escaping rules apply as in @link keyname above @endlink.
  *
  * A simple example is:
- * @snippet basename.c add base basic
+ * @snippet keyBasename.c add base basic
  *
  * E.g. if you add . it will be escaped:
  * @snippet testabi_key.c base1 add
@@ -854,7 +854,7 @@ ssize_t keyAddBaseName (Key * key, const char * baseName)
 		key->keySize += len + 1;
 	}
 
-	elektraRealloc ((void **)&key->key, key->keySize * 2);
+	elektraRealloc ((void **) &key->key, key->keySize * 2);
 	if (!key->key)
 	{
 		elektraFree (escaped);
@@ -962,7 +962,7 @@ ssize_t keyAddName (Key * key, const char * newName)
 
 	const size_t origSize = key->keySize;
 	const size_t newSize = origSize + nameSize;
-	elektraRealloc ((void **)&key->key, newSize * 2);
+	elektraRealloc ((void **) &key->key, newSize * 2);
 	if (!key->key) return -1;
 
 	size_t size = 0;
@@ -1030,7 +1030,7 @@ ssize_t keyAddName (Key * key, const char * newName)
  * (dot-dot), % and "" (empty)). They will be properly escaped.
  *
  * A simple example is:
- * @snippet basename.c set base basic
+ * @snippet keyBasename.c set base basic
  *
  * If you want to add and not change the basename, use keyAddBaseName()
  * instead. If you do not want escaping, use keyAddName() instead.
@@ -1091,7 +1091,7 @@ ssize_t keySetBaseName (Key * key, const char * baseName)
 	elektraEscapeKeyNamePart (baseName, escaped);
 	size_t sizeEscaped = elektraStrLen (escaped);
 
-	elektraRealloc ((void **)&key->key, (key->keySize + sizeEscaped) * 2);
+	elektraRealloc ((void **) &key->key, (key->keySize + sizeEscaped) * 2);
 	if (!key->key)
 	{
 		elektraFree (escaped);

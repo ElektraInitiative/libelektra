@@ -11,8 +11,7 @@
 
 #include "kdbconfig.h"
 
-enum ElektraLogLevel
-{
+enum ElektraLogLevel {
 	/**
 	 * @brief assertion failed, will abort
 	 *

@@ -8,31 +8,468 @@
 
 #include "dbus.h"
 
-#ifdef HAVE_KDBCONFIG_H
-#include "kdbconfig.h"
-#endif
+#include <stdio.h> // printf() & co
+#include <time.h>  // time()
 
-#include <stdio.h>
+#include <tests.h>
+#include <tests_plugin.h>
 
-void print_message (DBusMessage * message, dbus_bool_t literal);
-
-DBusHandlerResult callback (DBusConnection * connection ELEKTRA_UNUSED, DBusMessage * message, void * user_data ELEKTRA_UNUSED)
+typedef struct
 {
-	if (dbus_message_is_signal (message, DBUS_INTERFACE_DBUS, "NameAcquired")) return DBUS_HANDLER_RESULT_HANDLED;
+	char * lookupSignalName;
+	char * receivedKeyName;
 
-	if (dbus_message_is_signal (message, DBUS_INTERFACE_LOCAL, "Disconnected")) return DBUS_HANDLER_RESULT_HANDLED;
+	DBusConnection * connection;
+	int stop;
+} TestContext;
 
-	printf ("Notify received\n");
-	return DBUS_HANDLER_RESULT_HANDLED;
+#define TEST_TIMEOUT 1
+#define TEST_DISPATCH_TIMEOUT 100
+
+/** D-Bus bus type used by tests  */
+DBusBusType testBusType;
+
+/** key namespace to use for tests */
+char * testKeyNamespace;
+
+/**
+ * @internal
+ * Process D-Bus messages and check for expected message.
+ *
+ * @param  connection D-Bus connection
+ * @param  message    received D-Bus message
+ * @param  data       test context
+ * @return            message handler result
+ */
+static DBusHandlerResult receiveMessageHandler (DBusConnection * connection ELEKTRA_UNUSED, DBusMessage * message, void * data)
+{
+	TestContext * context = (TestContext *) data;
+
+	char * interface = "org.libelektra";
+	if (dbus_message_is_signal (message, interface, context->lookupSignalName))
+	{
+		char * keyName;
+		DBusError error;
+		dbus_error_init (&error);
+
+		// read key name from message
+		dbus_message_get_args (message, &error, DBUS_TYPE_STRING, &keyName, DBUS_TYPE_INVALID);
+		if (dbus_error_is_set (&error))
+		{
+			ELEKTRA_LOG_WARNING ("Failed to read message: %s", error.message);
+		}
+		else
+		{
+			// Message received, stop dispatching
+			context->receivedKeyName = keyName;
+			context->stop = 1;
+		}
+
+		dbus_error_free (&error);
+		return DBUS_HANDLER_RESULT_HANDLED;
+	}
+	return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
+}
+
+/**
+ * @internal
+ * Dispatch messages and declares timeout if dispatching is not stopped within
+ * TEST_TIMEOUT.
+ *
+ * @param context test context
+ */
+static void runDispatch (TestContext * context)
+{
+	time_t now;
+	time_t start = time (NULL);
+	context->stop = 0;
+	while (!context->stop && dbus_connection_read_write_dispatch (context->connection, TEST_DISPATCH_TIMEOUT))
+	{
+		now = time (NULL);
+		// Stop dispatching after one second
+		if (now - start > TEST_TIMEOUT)
+		{
+			succeed_if (0, "timeout exceeded; test failed");
+			break;
+		}
+	}
+}
+
+/**
+ * @internal
+ * Create new test context.
+ *
+ * @param  connection D-Bus connection
+ * @param  signalName Expected signal name
+ * @return            Context
+ */
+static TestContext * createTestContext (DBusConnection * connection, char * signalName)
+{
+	TestContext * context = elektraMalloc (sizeof *context);
+	exit_if_fail (context, "malloc failed");
+
+	context->lookupSignalName = signalName;
+	context->connection = connection;
+	context->receivedKeyName = "";
+	return context;
+}
+
+/**
+ * @internal
+ * Get and setup D-Bus connection.
+ *
+ * @param  type D-Bus bus type
+ * @return      D-Bus connection or NULL on error
+ */
+static DBusConnection * getDbusConnection (DBusBusType type)
+{
+	DBusError error;
+	dbus_error_init (&error);
+
+	DBusConnection * connection = dbus_bus_get (type, &error);
+	if (connection == NULL)
+	{
+		printf ("connect: Failed to open connection to %s message bus: %s\n", (type == DBUS_BUS_SYSTEM) ? "system" : "session",
+			error.message);
+		dbus_error_free (&error);
+		return NULL;
+	}
+	dbus_error_free (&error);
+
+	dbus_connection_set_exit_on_disconnect (connection, FALSE);
+
+	return connection;
+}
+
+static int test_prerequisites (void)
+{
+	printf ("testing prerequisites\n");
+	printf ("detecting available bus types - please ignore single error messages prefixed with \"connect:\"\n");
+
+	DBusConnection * systemBus = getDbusConnection (DBUS_BUS_SYSTEM);
+	DBusConnection * sessionBus = getDbusConnection (DBUS_BUS_SESSION);
+
+	int success = 0;
+	if (systemBus != NULL || sessionBus != NULL)
+	{
+		// Set bus type for tests
+		// NOTE brew dbus on MacOs supports session by out of the box while session
+		// bus is not available without further configuration on Linux
+		if (systemBus)
+		{
+			testBusType = DBUS_BUS_SYSTEM;
+			testKeyNamespace = "system";
+		}
+		else if (sessionBus)
+		{
+			testBusType = DBUS_BUS_SESSION;
+			testKeyNamespace = "user";
+		}
+
+		success = 1;
+	}
+
+	if (systemBus) dbus_connection_unref (systemBus);
+	if (sessionBus) dbus_connection_unref (sessionBus);
+
+	return success;
+}
+
+static void test_keyAdded (void)
+{
+	printf ("test adding keys\n");
+
+	// (namespace)/tests/foo
+	Key * parentKey = keyNew (testKeyNamespace, KEY_END);
+	keyAddName (parentKey, "tests/foo");
+
+	// (namespace)/tests/foo/bar
+	Key * toAdd = keyDup (parentKey);
+	keyAddName (toAdd, "bar");
+	keySetString (toAdd, "test");
+
+	KeySet * ks = ksNew (0, KS_END);
+
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("dbus");
+
+	// initial get to save current state
+	plugin->kdbGet (plugin, ks, parentKey);
+
+	// add key to keyset
+	ksAppendKey (ks, toAdd);
+
+	DBusConnection * connection = getDbusConnection (testBusType);
+	TestContext * context = createTestContext (connection, "KeyAdded");
+	elektraDbusSetupReceiveMessage (connection, receiveMessageHandler, (void *) context);
+
+	plugin->kdbSet (plugin, ks, parentKey);
+	runDispatch (context);
+
+	succeed_if_same_string (keyName (toAdd), context->receivedKeyName);
+
+	elektraFree (context);
+	elektraDbusTeardownReceiveMessage (connection, receiveMessageHandler, (void *) context);
+	dbus_connection_unref (connection);
+	ksDel (ks);
+	keyDel (parentKey);
+	PLUGIN_CLOSE ();
+}
+
+static void test_keyChanged (void)
+{
+	printf ("test changing keys\n");
+
+	// All keys created by keyNew have the KEY_FLAG_SYNC set and will be
+	// detected as changed by the dbus plugin
+	// This flag is only cleared after kdbSet or when keys come from a backend.
+
+	// (namespace)/tests/foo
+	Key * parentKey = keyNew (testKeyNamespace, KEY_END);
+	keyAddName (parentKey, "tests/foo");
+
+	// (namespace)/tests/foo/bar
+	Key * toChange = keyDup (parentKey);
+	keyAddName (toChange, "bar");
+	keySetString (toChange, "test");
+
+	KeySet * ks = ksNew (2, toChange, KS_END);
+
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("dbus");
+
+	// initial get to save current state
+	plugin->kdbGet (plugin, ks, parentKey);
+
+	// change key in keyset
+	keySetString (toChange, "new value");
+
+	DBusConnection * connection = getDbusConnection (testBusType);
+	TestContext * context = createTestContext (connection, "KeyChanged");
+	elektraDbusSetupReceiveMessage (connection, receiveMessageHandler, (void *) context);
+
+	plugin->kdbSet (plugin, ks, parentKey);
+	runDispatch (context);
+
+	succeed_if_same_string (keyName (toChange), context->receivedKeyName);
+
+	elektraFree (context);
+	elektraDbusTeardownReceiveMessage (connection, receiveMessageHandler, (void *) context);
+	dbus_connection_unref (connection);
+	ksDel (ks);
+	keyDel (parentKey);
+	PLUGIN_CLOSE ();
+}
+
+static void test_keyDeleted (void)
+{
+	printf ("test deleting keys\n");
+
+	// (namespace)/tests/foo
+	Key * parentKey = keyNew (testKeyNamespace, KEY_END);
+	keyAddName (parentKey, "tests/foo");
+
+	// (namespace)/tests/foo/bar
+	Key * toDelete = keyDup (parentKey);
+	keyAddName (toDelete, "bar");
+	keySetString (toDelete, "test");
+
+	KeySet * ks = ksNew (1, keyDup (toDelete), KS_END);
+
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("dbus");
+
+	// initial get to save current state
+	plugin->kdbGet (plugin, ks, parentKey);
+
+	// remove key from keyset
+	Key * deleted = ksLookup (ks, toDelete, KDB_O_POP);
+	succeed_if (deleted != NULL, "key was not found");
+
+	DBusConnection * connection = getDbusConnection (testBusType);
+	TestContext * context = createTestContext (connection, "KeyDeleted");
+	elektraDbusSetupReceiveMessage (connection, receiveMessageHandler, (void *) context);
+
+	plugin->kdbSet (plugin, ks, parentKey);
+	runDispatch (context);
+
+	succeed_if_same_string (keyName (toDelete), context->receivedKeyName);
+
+	elektraFree (context);
+	elektraDbusTeardownReceiveMessage (connection, receiveMessageHandler, (void *) context);
+	dbus_connection_unref (connection);
+	keyDel (toDelete);
+	ksDel (ks);
+	keyDel (parentKey);
+	PLUGIN_CLOSE ();
+}
+
+static void test_announceOnce (void)
+{
+	printf ("test announce once\n");
+
+	// (namespace)/tests/foo
+	Key * parentKey = keyNew (testKeyNamespace, KEY_END);
+	keyAddName (parentKey, "tests/foo");
+
+	// (namespace)/tests/foo/bar/#0
+	Key * toAdd1 = keyDup (parentKey);
+	keyAddName (toAdd1, "bar/#0");
+	keySetString (toAdd1, "test");
+
+	// (namespace)/tests/foo/bar/#1
+	Key * toAdd2 = keyDup (toAdd1);
+	keySetBaseName (toAdd2, "#1");
+
+	// (namespace)/tests/foo/bar
+	Key * toChange = keyDup (parentKey);
+	keyAddName (toChange, "bar");
+	keySetString (toChange, "test");
+
+	KeySet * ks = ksNew (1, toChange, KS_END);
+
+	KeySet * conf = ksNew (1, keyNew ("/announce", KEY_VALUE, "once", KEY_END), KS_END);
+	PLUGIN_OPEN ("dbus");
+
+	// initial get to save current state
+	plugin->kdbGet (plugin, ks, parentKey);
+
+	// modify keyset
+	ksAppendKey (ks, toAdd1);
+	ksAppendKey (ks, toAdd2);
+	keySetString (toChange, "new value");
+
+	DBusConnection * connection = getDbusConnection (testBusType);
+	TestContext * context = createTestContext (connection, "Commit");
+	elektraDbusSetupReceiveMessage (connection, receiveMessageHandler, (void *) context);
+
+	plugin->kdbSet (plugin, ks, parentKey);
+	runDispatch (context);
+
+	succeed_if_same_string (keyName (parentKey), context->receivedKeyName);
+
+	elektraFree (context);
+	elektraDbusTeardownReceiveMessage (connection, receiveMessageHandler, (void *) context);
+	dbus_connection_unref (connection);
+	ksDel (ks);
+	keyDel (parentKey);
+	PLUGIN_CLOSE ();
+}
+
+static void test_cascadedChangeNotification (void)
+{
+	printf ("test change notification with cascaded parent key\n");
+
+	Key * parentKey = keyNew ("/tests/foo", KEY_END);
+
+	// (namespace)/tests/foo
+	Key * completeParentKey = keyNew (testKeyNamespace, KEY_END);
+	keyAddName (completeParentKey, "tests/foo");
+
+	// (namespace)/tests/foo/bar
+	Key * toAdd = keyDup (completeParentKey);
+	keyAddName (toAdd, "bar");
+	keySetString (toAdd, "test");
+
+	KeySet * ks = ksNew (1, completeParentKey, KS_END);
+
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("dbus");
+
+	// initial get to save current state
+	plugin->kdbGet (plugin, ks, parentKey);
+
+	// add key to keyset
+	ksAppendKey (ks, toAdd);
+
+	DBusConnection * connection = getDbusConnection (testBusType);
+	TestContext * context = createTestContext (connection, "KeyAdded");
+	elektraDbusSetupReceiveMessage (connection, receiveMessageHandler, (void *) context);
+
+	plugin->kdbSet (plugin, ks, parentKey);
+	runDispatch (context);
+
+	succeed_if_same_string (keyName (toAdd), context->receivedKeyName);
+
+	elektraFree (context);
+	elektraDbusTeardownReceiveMessage (connection, receiveMessageHandler, (void *) context);
+	dbus_connection_unref (connection);
+	ksDel (ks);
+	keyDel (parentKey);
+	PLUGIN_CLOSE ();
+}
+
+static void test_cascadedAnnounceOnce (void)
+{
+	printf ("test announce once with cascaded parent key\n");
+
+	Key * parentKey = keyNew ("/tests/foo", KEY_END);
+
+	// (namespace)/tests/foo
+	Key * completeParentKey = keyNew (testKeyNamespace, KEY_END);
+	keyAddName (completeParentKey, "tests/foo");
+
+	// (namespace)/tests/foo/bar
+	Key * toAdd = keyDup (completeParentKey);
+	keyAddName (toAdd, "bar");
+	keySetString (toAdd, "test");
+
+	KeySet * ks = ksNew (1, completeParentKey, KS_END);
+
+	KeySet * conf = ksNew (1, keyNew ("/announce", KEY_VALUE, "once", KEY_END), KS_END);
+	PLUGIN_OPEN ("dbus");
+
+	// initial get to save current state
+	plugin->kdbGet (plugin, ks, parentKey);
+
+	// add key to keyset
+	ksAppendKey (ks, toAdd);
+
+	DBusConnection * connection = getDbusConnection (testBusType);
+	TestContext * context = createTestContext (connection, "Commit");
+	elektraDbusSetupReceiveMessage (connection, receiveMessageHandler, (void *) context);
+
+	plugin->kdbSet (plugin, ks, parentKey);
+	runDispatch (context);
+
+	succeed_if_same_string (keyName (completeParentKey), context->receivedKeyName);
+
+	elektraFree (context);
+	elektraDbusTeardownReceiveMessage (connection, receiveMessageHandler, (void *) context);
+	dbus_connection_unref (connection);
+	ksDel (ks);
+	keyDel (parentKey);
+	PLUGIN_CLOSE ();
 }
 
 int main (int argc, char ** argv)
 {
-	if (argc == 2)
+	printf ("DBUS TESTS\n");
+	printf ("==========\n\n");
+
+	init (argc, argv);
+
+	// Test if dbus is available
+	if (test_prerequisites ())
 	{
-		if (!strcmp (argv[1], "send_session")) elektraDbusSendMessage (DBUS_BUS_SESSION, "test1", "KeyChanged");
-		if (!strcmp (argv[1], "send_system")) elektraDbusSendMessage (DBUS_BUS_SYSTEM, "test2", "KeyChanged");
-		if (!strcmp (argv[1], "receive_session")) elektraDbusReceiveMessage (DBUS_BUS_SESSION, callback);
-		if (!strcmp (argv[1], "receive_system")) elektraDbusReceiveMessage (DBUS_BUS_SYSTEM, callback);
+		// Test added, changed & deleted
+		test_keyAdded ();
+		test_keyChanged ();
+		test_keyDeleted ();
+
+		test_announceOnce ();
+
+		test_cascadedAnnounceOnce ();
+		test_cascadedChangeNotification ();
 	}
+	else
+	{
+		printf ("warning no dbus daemon available; skipping tests that require dbus\n");
+	}
+
+	print_result ("testmod_dbus");
+
+	dbus_shutdown ();
+
+	return nbError;
 }

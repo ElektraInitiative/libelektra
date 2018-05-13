@@ -62,7 +62,7 @@ int keySetOrderMeta (Key * key, int order)
 
 static int keyCmpOrderWrapper (const void * a, const void * b)
 {
-	return elektraKeyCmpOrder (*((const Key **)a), *((const Key **)b));
+	return elektraKeyCmpOrder (*((const Key **) a), *((const Key **) b));
 }
 
 static const char * getLensPath (Plugin * handle)
@@ -199,7 +199,7 @@ static Key * createKeyFromPath (Key * parentKey, const char * treePath)
  */
 static int convertToKey (augeas * handle, const char * treePath, void * data)
 {
-	struct KeyConversion * conversionData = (struct KeyConversion *)data;
+	struct KeyConversion * conversionData = (struct KeyConversion *) data;
 	int result = 0;
 	const char * value = 0;
 	result = aug_get (handle, treePath, &value);
@@ -230,7 +230,7 @@ static int convertToKey (augeas * handle, const char * treePath, void * data)
 static int removeOrphan (augeas * handle, const char * treePath, void * data)
 {
 	int result;
-	struct OrphanSearch * orphanData = (struct OrphanSearch *)data;
+	struct OrphanSearch * orphanData = (struct OrphanSearch *) data;
 
 	Key * key = createKeyFromPath (orphanData->parentKey, treePath);
 
@@ -286,7 +286,7 @@ static int foreachAugeasNode (augeas * handle, const char * treePath, ForeachAug
 	if (result < 0) return -1;
 
 	/* must be non NULL for aug_match to return matches */
-	char ** matches = (char **)1;
+	char ** matches = (char **) 1;
 	int numMatches = aug_match (handle, matchPath, &matches);
 	elektraFree (matchPath);
 
@@ -343,7 +343,7 @@ static char * loadFile (FILE * fh)
 	{
 		content = elektraMalloc (1);
 		if (content == 0) return 0;
-		*content = (char)0;
+		*content = (char) 0;
 	}
 
 	return content;

@@ -1,6 +1,6 @@
 # Specification
 
-## Issue
+## Problem
 
 - The commandline for mounting a backend can be very long
 - A specification is already used for code generation, but
@@ -29,7 +29,7 @@
 
 ## Decision
 
-## Argument
+## Rationale
 
 - The user wants deterministic retrieval of configuration.
   It must be answerable (w/o study of source code and debugging) which

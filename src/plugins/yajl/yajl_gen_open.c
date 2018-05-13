@@ -60,7 +60,7 @@ static void elektraGenOpenIterate (yajl_gen g, const char * pnext, int levels)
 		lookahead_t lookahead = elektraLookahead (pnext, size);
 
 #ifdef ELEKTRA_YAJL_VERBOSE
-		printf ("level by name %d: \"%.*s\", lookahead: %d\n", (int)i, (int)size, pnext, lookahead);
+		printf ("level by name %d: \"%.*s\", lookahead: %d\n", (int) i, (int) size, pnext, lookahead);
 #endif
 
 		// do not yield array indizes as names
@@ -82,18 +82,18 @@ static void elektraGenOpenIterate (yajl_gen g, const char * pnext, int levels)
 		else if (lookahead == LOOKAHEAD_ARRAY || lookahead == LOOKAHEAD_EMPTY_ARRAY || lookahead == LOOKAHEAD_EMPTY_MAP)
 		{
 #ifdef ELEKTRA_YAJL_VERBOSE
-			printf ("GEN (N2) string for start/empty array/map %.*s\n", (int)size, pnext);
+			printf ("GEN (N2) string for start/empty array/map %.*s\n", (int) size, pnext);
 #endif
-			yajl_gen_string (g, (const unsigned char *)pnext, size);
+			yajl_gen_string (g, (const unsigned char *) pnext, size);
 
 			// opening (empty) array will be handled later
 		}
 		else
 		{
 #ifdef ELEKTRA_YAJL_VERBOSE
-			printf ("GEN (N3) string %.*s\n", (int)size, pnext);
+			printf ("GEN (N3) string %.*s\n", (int) size, pnext);
 #endif
-			yajl_gen_string (g, (const unsigned char *)pnext, size);
+			yajl_gen_string (g, (const unsigned char *) pnext, size);
 
 #ifdef ELEKTRA_YAJL_VERBOSE
 			printf ("GEN (N3) map by name\n");
@@ -117,7 +117,7 @@ static void elektraGenOpenLast (yajl_gen g, const Key * key)
 	elektraKeyNameReverseNext (&last);
 
 #ifdef ELEKTRA_YAJL_VERBOSE
-	printf ("last startup entry: \"%.*s\"\n", (int)last.size, last.current);
+	printf ("last startup entry: \"%.*s\"\n", (int) last.size, last.current);
 #endif
 
 	if (last.current[0] == '#' && strcmp (last.current, "###empty_array"))
@@ -333,14 +333,14 @@ static void elektraGenOpenFirst (yajl_gen g, const char * cur, const char * next
 #ifdef ELEKTRA_YAJL_VERBOSE
 			printf ("GEN string (O4)\n");
 #endif
-			yajl_gen_string (g, (const unsigned char *)next, nextSize);
+			yajl_gen_string (g, (const unsigned char *) next, nextSize);
 		}
 		else if (lookahead == LOOKAHEAD_ARRAY || lookahead == LOOKAHEAD_EMPTY_ARRAY || lookahead == LOOKAHEAD_EMPTY_MAP)
 		{
 #ifdef ELEKTRA_YAJL_VERBOSE
 			printf ("GEN string for start/empty array (O5)\n");
 #endif
-			yajl_gen_string (g, (const unsigned char *)next, nextSize);
+			yajl_gen_string (g, (const unsigned char *) next, nextSize);
 			// opening (empty) array will be handled later
 		}
 		else if (lookahead == LOOKAHEAD_MAP)
@@ -348,7 +348,7 @@ static void elektraGenOpenFirst (yajl_gen g, const char * cur, const char * next
 #ifdef ELEKTRA_YAJL_VERBOSE
 			printf ("GEN string (O6s)\n");
 #endif
-			yajl_gen_string (g, (const unsigned char *)next, nextSize);
+			yajl_gen_string (g, (const unsigned char *) next, nextSize);
 
 #ifdef ELEKTRA_YAJL_VERBOSE
 			printf ("GEN map (O6m)\n");
@@ -458,7 +458,7 @@ void elektraGenOpen (yajl_gen g, const Key * cur, const Key * next)
 	int actionRequired = equalLevels + 1 < nextLevels;
 
 #ifdef ELEKTRA_YAJL_VERBOSE
-	printf ("elektraGenOpen %d: pcur: %s , pnext: %s, action: %d\n", (int)levels, pcur, pnext, actionRequired);
+	printf ("elektraGenOpen %d: pcur: %s , pnext: %s, action: %d\n", (int) levels, pcur, pnext, actionRequired);
 #endif
 
 	// check if anything needs to be done at all

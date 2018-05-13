@@ -28,9 +28,8 @@ public:
 	explicit InvalidConflictOperation (std::string message) : ToolException (message){};
 };
 
-enum ConflictOperation
-{
-	CONFLICT_ADD,
+enum ConflictOperation {
+	CONFLICT_ADD, ///< Conflict because of adding key
 	CONFLICT_DELETE,
 	CONFLICT_MODIFY,
 	CONFLICT_META,
@@ -69,8 +68,8 @@ public:
 		throw InvalidConflictOperation ("The conflict operation \"" + name + "\" is unknown");
 	}
 };
-}
-}
-}
+} // namespace merging
+} // namespace tools
+} // namespace kdb
 
 #endif /* MERGECONFLICT_HPP_ */

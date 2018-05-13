@@ -205,7 +205,7 @@ public:
 	void status (std::ostream & os) const;
 	bool validated () const;
 };
-}
-}
+} // namespace tools
+} // namespace kdb
 
 #endif

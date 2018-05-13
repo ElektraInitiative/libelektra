@@ -82,7 +82,7 @@
  */
 static Key * elektraKeyMalloc (void)
 {
-	Key * key = (Key *)elektraMalloc (sizeof (Key));
+	Key * key = (Key *) elektraMalloc (sizeof (Key));
 	if (!key) return 0;
 	keyInit (key);
 

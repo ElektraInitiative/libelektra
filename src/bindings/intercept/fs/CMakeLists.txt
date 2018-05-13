@@ -1,5 +1,5 @@
 include (CheckSymbolExists)
-check_symbol_exists (__GNU_LIBRARY__ "features.h"    HAVE_GLIBC)
+check_symbol_exists (__GNU_LIBRARY__ "features.h" HAVE_GLIBC)
 
 if (NOT BUILD_SHARED)
 	exclude_binding (intercept_fs "intercept_fs only works with BUILD_SHARED")
@@ -15,8 +15,5 @@ else ()
 	install (TARGETS elektraintercept-fs DESTINATION lib${LIB_SUFFIX})
 
 	mkdir (${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
-	create_lib_symlink (
-			libelektraintercept-fs.so
-			libelektraintercept.so
-			)
+	create_lib_symlink (libelektraintercept-fs.so libelektraintercept.so)
 endif ()

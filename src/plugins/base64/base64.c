@@ -135,7 +135,7 @@ static int encode (Key * key, Key * parent, bool metaMode)
 {
 	if (!keyIsBinary (key) || (keyGetValueSize (key) == 0 && metaMode)) return 0;
 
-	char * base64 = PLUGIN_FUNCTION (base64Encode) (keyValue (key), (size_t)keyGetValueSize (key));
+	char * base64 = PLUGIN_FUNCTION (base64Encode) (keyValue (key), (size_t) keyGetValueSize (key));
 	if (!base64)
 	{
 		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_MALLOC, parent, "Memory allocation failed");

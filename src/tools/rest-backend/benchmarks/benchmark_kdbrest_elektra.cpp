@@ -104,7 +104,7 @@ void benchmarkLookupSingleByKey (int numUsers, int numEntriesPerUser, int numTag
 	if (cached == 1)
 	{
 		std::cout << "-> Loading data into cache" << std::endl;
-		(void)service::StorageEngine::instance ();
+		(void) service::StorageEngine::instance ();
 	}
 
 	std::cout << "-> Executing benchmark:" << std::endl;
@@ -129,7 +129,7 @@ void benchmarkLookupSingleByKey (int numUsers, int numEntriesPerUser, int numTag
 	{
 		entries.push_back (service::StorageEngine::instance ().getEntry (key));
 	}
-	catch (kdbrest::exception::EntryNotFoundException & e)
+	catch (kdbrest::exception::EntryNotFoundException const & e)
 	{
 		// we do nothing here, just prevent abort of benchmark
 	}
@@ -164,7 +164,7 @@ void benchmarkLookupMultipleByOrganization (int numUsers, int numEntriesPerUser,
 	if (cached == 1)
 	{
 		std::cout << "-> Loading data into cache" << std::endl;
-		(void)service::StorageEngine::instance ();
+		(void) service::StorageEngine::instance ();
 	}
 
 	std::cout << "-> Executing benchmark:" << std::endl;
@@ -212,7 +212,7 @@ void benchmarkLookupMultipleByTag (int numUsers, int numEntriesPerUser, int numT
 	if (cached == 1)
 	{
 		std::cout << "-> Loading data into cache" << std::endl;
-		(void)service::StorageEngine::instance ();
+		(void) service::StorageEngine::instance ();
 	}
 
 	std::cout << "-> Executing benchmark:" << std::endl;
@@ -261,7 +261,7 @@ void benchmarkLookupMultipleByAuthor (int numUsers, int numEntriesPerUser, int n
 	if (cached == 1)
 	{
 		std::cout << "-> Loading data into cache" << std::endl;
-		(void)service::StorageEngine::instance ();
+		(void) service::StorageEngine::instance ();
 	}
 
 	std::cout << "-> Executing benchmark:" << std::endl;
@@ -309,7 +309,7 @@ void benchmarkLookupMultipleByDescription (int numUsers, int numEntriesPerUser, 
 	if (cached == 1)
 	{
 		std::cout << "-> Loading data into cache" << std::endl;
-		(void)service::StorageEngine::instance ();
+		(void) service::StorageEngine::instance ();
 	}
 
 	std::cout << "-> Executing benchmark:" << std::endl;
@@ -382,8 +382,8 @@ void benchmarkInsertData (int numUsers, int numEntriesPerUser, int numTagsPerEnt
 
 	std::cout << std::endl;
 }
-}
-}
+} // namespace benchmark
+} // namespace kdbrest
 
 
 void printUsage (char * argv[])
@@ -426,7 +426,7 @@ int main (int argc, char * argv[])
 
 	// load configuration
 	cppcms::json::value config = kdbrest::service::ConfigEngine::instance ().loadApplicationConfiguration ();
-	(void)kdbrest::Config::instance ().initializeConfiguration (config);
+	(void) kdbrest::Config::instance ().initializeConfiguration (config);
 	kdbrest::Config::instance ().setValue<std::string> ("kdb.path.configs", "dir/configs");
 	kdbrest::Config::instance ().setValue<std::string> ("kdb.path.users", "dir/users");
 

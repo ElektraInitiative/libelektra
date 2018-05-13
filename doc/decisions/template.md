@@ -1,6 +1,6 @@
 # Template
 
-## Issue
+## Problem
 
 ## Constraints
 
@@ -10,7 +10,7 @@
 
 ## Decision
 
-## Argument
+## Rationale
 
 ## Implications
 

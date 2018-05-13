@@ -86,7 +86,7 @@ bool isToBeIgnored (std::string const & name)
 
 	       name == "mountpoint" || startsWith (name, "config");
 }
-}
+} // namespace
 
 void SpecMountpointReader::processKey (Key const & ck)
 {
@@ -186,5 +186,5 @@ void SpecReader::readSpecification (KeySet const & cks)
 		}
 	}
 }
-}
-}
+} // namespace tools
+} // namespace kdb

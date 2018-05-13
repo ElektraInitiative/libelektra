@@ -14,22 +14,34 @@
 }
 .ExplorerView ul > li {
   min-height: 48px;
-  opacity: 0.8;
+  /* opacity: 0.8;
+     FIXME: this looks really cool as it provides a visual hierarchy.
+            unfortunately, it can cause flickering for deeply nested keys.
+  */
   transition: opacity 0.2s;
   cursor: pointer;
 }
 .ExplorerView ul > li:hover {
   opacity: 1;
 }
-.ExplorerView ul > li a .actions > button {
+.ExplorerView ul > li a .actions > button,
+.ExplorerView ul > li a .actions > i {
   opacity: 0;
   transition: opacity 0.2s;
 }
-.ExplorerView ul > li a:hover .actions > button {
+.ExplorerView ul > li a .actions > i {
+  margin-left: 1.5em;
+}
+
+/* when root element is hovered with mouse */
+.ExplorerView ul > li a:hover .actions > button,
+.ExplorerView ul > li a:hover .actions > i {
   opacity: 0.5;
 }
+/* when action button is focussed with keyboard or hovered with mouse */
+.ExplorerView ul > li a .actions > button:focus,
 .ExplorerView ul > li a .actions > button:hover {
-  opacity: 1;
+  opacity: 1 !important;
 }
 .ExplorerView ul > li.category .opener {
   display: block;
@@ -37,9 +49,53 @@
   content: "";
   height: 1em;
   width: 2em;
-  mask: url('/folded.svg') no-repeat;
-  background-color: #000000;
-  transition: all 0.2s;
+}
+
+/* Newer browsers */
+@supports (mask: url('/folded.svg') no-repeat) {
+  .ExplorerView ul > li.category .opener {
+    mask: url('/folded.svg') no-repeat;
+    background-color: #000000;
+    transition: all 0.2s;
+  }
+  .ExplorerView ul li.selected > span.item > .opener,
+  .ExplorerView ul li > span.item > .opener:focus {
+    background-color: #00BCD4;
+  }
+  /* Animations on component creation / destruction */
+  .ExplorerViewTransition-enter {
+    transition: all .2s ease-in-out;
+    opacity: 0;
+    transform-origin: left top;
+    transform: translateX(-20px) scale(0);
+  }
+  .ExplorerViewTransition-enter-active {
+    opacity: 1;
+    transform: translateX(0px) scale(1);
+  }
+  .ExplorerViewTransition-leave {
+    transition: all .2s ease-in-out;
+    transform-origin: left top;
+  }
+  .ExplorerViewTransition-leave-active {
+    opacity: 0;
+    transform: translateX(-20px) scale(0);
+  }
+  /* Selection animations */
+  .ExplorerView ul li:not(.category) > span.item:before {
+    transition: color 0.2s;
+  }
+  .ExplorerView ul > li > span.item {
+    transition: color 0.2s;
+  }
+}
+
+/* Older browsers, e.g. Firefox ESR */
+@supports not (mask: url('/folded.svg') no-repeat) {
+  .ExplorerView ul > li.category .opener {
+    background-image: url('/folded.svg');
+    background-repeat: no-repeat;
+  }
 }
 .ExplorerView ul li:not(.category) > span.item:before {
   display: block;
@@ -49,13 +105,9 @@
   height: 100%;
   width: 2em;
   color: #000000;
-  transition: color 0.2s;
   position: relative;
   top: 16px;
   left: 2px;
-}
-.ExplorerView ul > li > span.item {
-  transition: color 0.2s;
 }
 .ExplorerView ul > li:not(.category) > span.item > a {
   min-height: 48px;
@@ -74,7 +126,11 @@
 }
 
 /* Root list */
-.ExplorerView ul.depth-0 {}
+.ExplorerView ul.depth-0:empty::before {
+  font-size: 1.1em;
+  color: rgba(0, 0, 0, 0.6);
+  content: 'No results found in the currently opened keys.';
+}
 
 /* Not disabled */
 .ExplorerView ul li:not(.disabled) {}
@@ -82,9 +138,6 @@
 
 /* Selected */
 .ExplorerView ul li.selected {}
-.ExplorerView ul li.selected > span.item > .opener {
-  background-color: #00BCD4;
-}
 .ExplorerView ul li.selected > span.item {
   color: #00BCD4;
 }
@@ -93,7 +146,10 @@
 }
 
 /* Categories : Nodes with children */
-.ExplorerView ul li.category {}
+.ExplorerView ul li.category {
+  box-sizing: border-box;
+  padding-top: 12px;
+}
 .ExplorerView ul li.category > span.item {}
 /* Folded */
 .ExplorerView ul li.category.folded > span.item > .opener {
@@ -109,9 +165,7 @@
   margin-right: 25px;
   transform: rotate(90deg);
 }
-.ExplorerView ul li.category:not(.folded) {
-  margin-bottom: 16px;
-}
+.ExplorerView ul li.category:not(.folded) {}
 .ExplorerView ul li.category:not(.folded) > span.item {}
 /* Opener */
 .ExplorerView ul li.category > span.item > .opener {}
@@ -129,23 +183,3 @@
 .ExplorerView li.dragover > span.item {}
 .ExplorerView li.nodrop {}
 .ExplorerView li.nodrop > span.item {}
-
-/* Animations on component creation / destruction */
-.ExplorerViewTransition-enter {
-  transition: all .2s ease-in-out;
-  opacity: 0;
-  transform-origin: left top;
-  transform: translateX(-20px) scale(0);
-}
-.ExplorerViewTransition-enter-active {
-  opacity: 1;
-  transform: translateX(0px) scale(1);
-}
-.ExplorerViewTransition-leave {
-  transition: all .2s ease-in-out;
-  transform-origin: left top;
-}
-.ExplorerViewTransition-leave-active {
-  opacity: 0;
-  transform: translateX(-20px) scale(0);
-}

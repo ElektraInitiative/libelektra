@@ -482,7 +482,7 @@ void append (std::string placement, std::string & where, std::string checkPlacem
 		}
 	}
 }
-}
+} // namespace
 
 struct Placements
 {
@@ -533,7 +533,7 @@ void serializeConf (kdb::KeySet & ret, Key config, KeySet const & pluginConfig)
 		}
 	}
 }
-}
+} // namespace
 
 void GlobalPlugins::serialize (kdb::KeySet & ret)
 {
@@ -644,5 +644,5 @@ void ImportExportBackend::exportToFile (KeySet const & cks, Key const & parentKe
 		}
 	}
 }
-}
-}
+} // namespace tools
+} // namespace kdb

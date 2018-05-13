@@ -64,7 +64,7 @@ private:
 	Key m_key;
 	mutable std::string m_str;
 };
-}
+} // namespace kdb
 
 #endif
 

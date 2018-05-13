@@ -4,6 +4,7 @@ echo
 echo ELEKTRA MOUNT TESTS
 echo
 
+is_plugin_available sync || { echo "Test requires sync plugin, aborting" >&2; exit 0; }
 check_version
 
 echo "Test basic mounting"

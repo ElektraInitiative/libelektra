@@ -1,6 +1,6 @@
 # Global Plugins
 
-## Issue
+## Problem
 
 - Checker plugins see only part of the configuration and cannot check
   constraints between keys of different mountpoints
@@ -113,7 +113,7 @@ Use cases:
 
 
 
-## Argument
+## Rationale
 
 Some nice features that will be implemented as global plugins.
 

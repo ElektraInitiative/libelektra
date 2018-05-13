@@ -33,7 +33,7 @@ bool Config::initializeConfiguration (const cppcms::json::value & cfg, const std
 	{
 		this->m_config = cfg.at ("backend");
 	}
-	catch (cppcms::json::bad_value_cast & e)
+	catch (cppcms::json::bad_value_cast const & e)
 	{
 		std::cerr << "Missing configuration for the entire backend.\nPlease have a look at the manual and configure the backend "
 			     "properly."
@@ -87,4 +87,4 @@ bool Config::initializeConfiguration (const cppcms::json::value & cfg, const std
 
 	return !error;
 }
-}
+} // namespace kdbrest

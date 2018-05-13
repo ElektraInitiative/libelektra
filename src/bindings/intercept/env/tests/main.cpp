@@ -15,7 +15,7 @@ extern ckdb::KeySet * elektraDocu;
 extern std::ostream * elektraLog;
 }
 void elektraSingleCleanup ();
-}
+} // namespace ckdb
 
 int main (int argc, char ** argv)
 {

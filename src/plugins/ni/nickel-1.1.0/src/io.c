@@ -50,7 +50,7 @@
 #define hex2ascii1(c, a) (a = ((c) >> 4) & 0xf, a = (a < 10 ? a + '0' : a - 10 + 'a'))
 
 // Sets a to the ascii hex digit of the last bits of c.
-#define hex2ascii2(c, a) (a = (c)&0xf, a = (a < 10 ? a + '0' : a - 10 + 'a'))
+#define hex2ascii2(c, a) (a = (c) &0xf, a = (a < 10 ? a + '0' : a - 10 + 'a'))
 
 
 // Tokens for parsing (defined only to make it easier to change them if
@@ -878,7 +878,7 @@ static int PutString (FILE * restrict f, const char * restrict str, int str_len,
 			}
 			else
 			{
-				if (!(advance = PutUtf8Char (f, (const unsigned char *)str, str_len)))
+				if (!(advance = PutUtf8Char (f, (const unsigned char *) str, str_len)))
 				{
 					success = 0;
 				}
@@ -904,7 +904,7 @@ static int PutString (FILE * restrict f, const char * restrict str, int str_len,
 			}
 			else
 			{
-				if (!(advance = PutUtf8Char (f, (const unsigned char *)str, str_len)))
+				if (!(advance = PutUtf8Char (f, (const unsigned char *) str, str_len)))
 				{
 					success = 0;
 				}

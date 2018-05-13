@@ -24,11 +24,12 @@ With the default Elektra installation only an administrator can update configura
 # Backup-and-Restore:/sw/tutorial
 
 # Backup old override specification
-kdb export system/overrides dump > /tmp/overrides.dump
+kdb set user/examples/overrides $(mktemp)
+kdb export system/overrides dump > $(kdb get user/examples/overrides)
 
 kdb get /sw/tutorial/cascading/#0/current/test
-# RET: 1
-# STDERR: Did not find key
+# RET: 11
+# STDERR: Did not find key '/sw/tutorial/cascading/#0/current/test'
 
 # Now add the key ...
 sudo kdb set system/sw/tutorial/cascading/#0/current/test "hello world"
@@ -158,8 +159,9 @@ As last part in this tutorial we remove the modifications to the database we mad
 kdb rm -r user/sw/tutorial/
 kdb rm -r system/sw/tutorial
 kdb rm -r system/overrides
-kdb import system/overrides dump < /tmp/overrides.dump
-rm /tmp/overrides.dump
+kdb import system/overrides dump < $(kdb get user/examples/overrides)
+rm $(kdb get user/examples/overrides)
+kdb rm user/examples/overrides
 
 kdb rm /overrides/test
 

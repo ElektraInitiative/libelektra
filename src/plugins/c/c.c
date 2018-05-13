@@ -31,7 +31,7 @@ int keyGenerate (const Key * key, FILE * stream, option_t options)
 	size_t n = keyGetNameSize (key);
 	if (n > 1)
 	{
-		char * nam = (char *)elektraMalloc (n);
+		char * nam = (char *) elektraMalloc (n);
 		if (nam == NULL) return -1;
 		keyGetName (key, nam, n);
 		fprintf (stream, "\tkeyNew (\"%s\"", nam);
@@ -41,7 +41,7 @@ int keyGenerate (const Key * key, FILE * stream, option_t options)
 	size_t s = keyGetValueSize (key);
 	if (s > 1)
 	{
-		char * str = (char *)elektraMalloc (s);
+		char * str = (char *) elektraMalloc (s);
 		if (str == NULL) return -1;
 		if (keyIsBinary (key))
 		{
@@ -94,7 +94,7 @@ int ksGenerate (const KeySet * ks, FILE * stream, option_t options)
 
 	ksRewind (cks);
 
-	fprintf (stream, "ksNew (%d,\n", (int)ksGetSize (cks));
+	fprintf (stream, "ksNew (%d,\n", (int) ksGetSize (cks));
 	while ((key = ksNext (cks)) != 0)
 	{
 		if (options & KDB_O_INACTIVE)

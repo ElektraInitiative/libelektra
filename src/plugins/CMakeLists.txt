@@ -14,10 +14,9 @@ if (ADDTESTING_PHASE)
 		include ("${plugin}/CMakeLists.txt")
 		set (CMAKE_CURRENT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR_TOPSAFE})
 		set (CMAKE_CURRENT_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR_TOPSAFE})
-	endforeach(plugin)
+	endforeach (plugin)
 	return ()
 endif ()
-
 
 generate_manpage (elektra-plugins FILENAME ${CMAKE_CURRENT_SOURCE_DIR}/README.md SECTION 7)
 
@@ -28,7 +27,8 @@ set (ADDTESTING_PHASE OFF)
 file (GLOB DIRECTORIES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/*)
 
 foreach (plugin ${DIRECTORIES})
-	#message (STATUS ${plugin})
+
+	# message (STATUS ${plugin})
 	if (IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${plugin} AND NOT ${plugin} STREQUAL CMakeFiles)
 		set (CMAKE_CURRENT_SOURCE_DIR_TOPSAFE ${CMAKE_CURRENT_SOURCE_DIR})
 		set (CMAKE_CURRENT_BINARY_DIR_TOPSAFE ${CMAKE_CURRENT_BINARY_DIR})
@@ -39,7 +39,7 @@ foreach (plugin ${DIRECTORIES})
 		set (CMAKE_CURRENT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR_TOPSAFE})
 		set (CMAKE_CURRENT_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR_TOPSAFE})
 	endif ()
-endforeach(plugin)
+endforeach (plugin)
 
 #
 # Now ADDED_DIRECTORIES and ADDED_PLUGINS is modified accordingly
@@ -56,31 +56,37 @@ foreach (plugin ${ADDED_DIRECTORIES})
 	else ()
 		message (WARNING "${plugin} is not a valid directory")
 	endif ()
-endforeach(plugin)
+endforeach (plugin)
 
 list (FIND ADDED_PLUGINS ${KDB_DEFAULT_STORAGE} output)
 if (output EQUAL -1)
-	message(SEND_ERROR "selected default storage (${KDB_DEFAULT_STORAGE})  is not selected in PLUGINS, please change KDB_DEFAULT_STORAGE or PLUGINS")
-endif()
+	message (
+		SEND_ERROR
+			"selected default storage (${KDB_DEFAULT_STORAGE}) is not selected in PLUGINS, please change KDB_DEFAULT_STORAGE or PLUGINS"
+		)
+endif ()
 
 list (FIND ADDED_PLUGINS ${KDB_DEFAULT_RESOLVER} output)
 if (output EQUAL -1)
-	message(SEND_ERROR "selected default resolver (${KDB_DEFAULT_RESOLVER}) is not selected in PLUGINS, please change KDB_DEFAULT_RESOLVER or PLUGINS")
-endif()
+	message (
+		SEND_ERROR
+			"selected default resolver (${KDB_DEFAULT_RESOLVER}) is not selected in PLUGINS, please change KDB_DEFAULT_RESOLVER or PLUGINS"
+		)
+endif ()
 
+list (FIND ADDED_PLUGINS list output)
+if (output EQUAL -1 AND ENABLE_TESTING)
+	message (SEND_ERROR "The required plugin `list` is not selected in PLUGINS but needed for testing, please add `list` to PLUGINS")
+endif ()
+
+list (FIND ADDED_PLUGINS spec output)
+if (output EQUAL -1 AND (NOT MINGW) AND ENABLE_TESTING)
+	message (SEND_ERROR "The required plugin `spec` is not selected in PLUGINS but needed for testing, please add `spec` to PLUGINS")
+endif ()
 
 if (BUILD_SHARED)
 	mkdir (${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
-	create_lib_symlink (
-			libelektra-${KDB_DEFAULT_STORAGE}.so
-			libelektra-storage.so
-			PLUGIN
-			)
+	create_lib_symlink (libelektra-${KDB_DEFAULT_STORAGE}.so libelektra-storage.so PLUGIN)
 
-	create_lib_symlink (
-			libelektra-${KDB_DEFAULT_RESOLVER}.so
-			libelektra-resolver.so
-			PLUGIN
-			)
+	create_lib_symlink (libelektra-${KDB_DEFAULT_RESOLVER}.so libelektra-resolver.so PLUGIN)
 endif (BUILD_SHARED)
-

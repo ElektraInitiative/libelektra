@@ -1,6 +1,6 @@
 # Default Values
 
-## Issue
+## Problem
 
 - KeySet might get modified on access (hash rebuilds)
 - Expectation that already all keys are there after `kdbGet()`
@@ -18,7 +18,7 @@
 
 - spec-plugin does a lookup for values (Maybe also resolving missing fallback/override links?)
 
-## Argument
+## Rationale
 
 ## Implications
 

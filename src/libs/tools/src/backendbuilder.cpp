@@ -310,7 +310,7 @@ TEST(Backend, x)
 	EXPECT_EQ(removeArray("should/_20/abc/__204"), "should/_20/abc/__204");
 }
 */
-}
+} // namespace
 
 /**
  * @brief resolve all needs that were not resolved by adding plugins.
@@ -601,5 +601,5 @@ void MountBackendBuilder::serialize (kdb::KeySet & ret)
 	mbi->useConfigFile (configfile);
 	mbi->serialize (ret);
 }
-}
-}
+} // namespace tools
+} // namespace kdb

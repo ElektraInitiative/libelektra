@@ -38,10 +38,10 @@
 #include <stdio.h>
 #endif
 
+#include <kdbassert.h>
 #include <kdberrors.h>
 #include <kdbinternal.h>
 #include <kdbversion.h>
-
 
 /**
  * @retval 1 and an allocated string of the pluginName if a new plugins should be created.
@@ -96,7 +96,7 @@ int elektraProcessPlugin (Key * cur, int * pluginNumber, char ** pluginName, cha
 			referenceNameSize = fullsize - pluginNameSize - 4;
 			++iter; /* advance to one after hash */
 			*referenceName = elektraMalloc (referenceNameSize + sizeof (prefixReferenceName));
-			strncpy (*referenceName, prefixReferenceName, sizeof (prefixReferenceName));
+			strcpy (*referenceName, prefixReferenceName);
 			strncat (*referenceName, iter, referenceNameSize);
 			(*referenceName)[referenceNameSize + sizeof (prefixReferenceName) - 2] = 0;
 
@@ -107,7 +107,7 @@ int elektraProcessPlugin (Key * cur, int * pluginNumber, char ** pluginName, cha
 			/* We reference back to a plugin */
 
 			*referenceName = elektraMalloc (fullsize - 3 + sizeof (prefixReferenceName) - 1);
-			strncpy (*referenceName, prefixReferenceName, sizeof (prefixReferenceName));
+			strcpy (*referenceName, prefixReferenceName);
 			strncat (*referenceName, &fullname[3], fullsize - 3);
 
 			return 2;
@@ -214,7 +214,7 @@ int elektraProcessPlugins (Plugin ** plugins, KeySet * modules, KeySet * referen
 					ksDel (config);
 					return -1;
 				}
-				plugins[pluginNumber] = *(Plugin **)keyValue (lookup);
+				plugins[pluginNumber] = *(Plugin **) keyValue (lookup);
 				++plugins[pluginNumber]->refcounter;
 			}
 			elektraFree (pluginName);
@@ -327,6 +327,57 @@ int elektraPluginClose (Plugin * handle, Key * errorKey)
 	elektraFree (handle);
 
 	return rc;
+}
+
+
+/**
+ * Retrieves a function exported by a plugin.
+ *
+ * @param  plugin Plugin handle
+ * @param  name   Function name
+ * @return        Pointer to function. NULL if function not found or not enough memory available
+ */
+size_t elektraPluginGetFunction (Plugin * plugin, const char * name)
+{
+	ELEKTRA_NOT_NULL (plugin);
+	ELEKTRA_NOT_NULL (name);
+
+	KeySet * exports = ksNew (0, KS_END);
+	Key * pk = keyNew ("system/elektra/modules", KEY_END);
+	keyAddBaseName (pk, plugin->name);
+	plugin->kdbGet (plugin, exports, pk);
+	ksRewind (exports);
+	keyAddBaseName (pk, "exports");
+	keyAddBaseName (pk, name);
+	Key * keyFunction = ksLookup (exports, pk, 0);
+	if (!keyFunction)
+	{
+		ELEKTRA_LOG_DEBUG ("function \"%s\" from plugin \"%s\" not found", name, plugin->name);
+		ksDel (exports);
+		keyDel (pk);
+		return 0;
+	}
+
+	size_t * buffer;
+	size_t bufferSize = keyGetValueSize (keyFunction);
+	buffer = elektraMalloc (bufferSize);
+	if (buffer)
+	{
+		int result = keyGetBinary (keyFunction, buffer, bufferSize);
+		if (result == -1 || buffer == NULL)
+		{
+			ELEKTRA_LOG_WARNING ("could not get function \"%s\" from plugin \"%s\"", name, plugin->name);
+			return 0;
+		}
+	}
+
+	size_t func = *buffer;
+
+	elektraFree (buffer);
+	ksDel (exports);
+	keyDel (pk);
+
+	return func;
 }
 
 static int elektraMissingGet (Plugin * plugin ELEKTRA_UNUSED, KeySet * ks ELEKTRA_UNUSED, Key * error)

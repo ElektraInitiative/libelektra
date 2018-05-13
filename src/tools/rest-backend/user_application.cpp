@@ -36,7 +36,7 @@ UserApp::UserApp (cppcms::service & srv) : cppcms::application (srv)
 	mapper ().assign ("handle", "/{1}");
 
 	// force caching of database
-	(void)kdbrest::service::StorageEngine::instance ();
+	(void) kdbrest::service::StorageEngine::instance ();
 }
 
 /**
@@ -113,12 +113,12 @@ void UserApp::handleDispatchGet (cppcms::http::request & req, cppcms::http::resp
 			this->handleGetUnique (resp, user.getUsername ());
 			return;
 		}
-		catch (exception::NoCurrentUserException & e)
+		catch (exception::NoCurrentUserException const & e)
 		{
 			RootApp::setBadRequest (resp, "You need to be authenticated to perform this action.", "NO_CURRENT_USER");
 			return;
 		}
-		catch (exception::UserNotFoundException & e)
+		catch (exception::UserNotFoundException const & e)
 		{
 			RootApp::setNotFound (resp, "The requested user does not exist.", "USER_NOT_FOUND");
 			return;
@@ -149,17 +149,17 @@ void UserApp::handleDispatchGet (cppcms::http::request & req, cppcms::http::resp
 				return;
 			}
 		}
-		catch (exception::NoCurrentUserException & e)
+		catch (exception::NoCurrentUserException const & e)
 		{
 			RootApp::setUnauthorized (resp, "You need to be authenticated to perform this action.", "NEED_AUTHENTICATION");
 			return;
 		}
-		catch (exception::UserNotFoundException & e)
+		catch (exception::UserNotFoundException const & e)
 		{
 			RootApp::setUnauthorized (resp, "You need to be authenticated to perform this action.", "NEED_AUTHENTICATION");
 			return;
 		}
-		catch (exception::InsufficientPermissionsException & e)
+		catch (exception::InsufficientPermissionsException const & e)
 		{
 			RootApp::setUnauthorized (resp, "You have insufficient permissions to perform this action.",
 						  "USER_INSUFFICIENT_PERMISSIONS");
@@ -201,17 +201,17 @@ void UserApp::handleDispatchPut (cppcms::http::request & req, cppcms::http::resp
 		this->handleUpdate (req, resp, username,
 				    user.getRank () >= Config::instance ().getConfig ().get<int> ("permissions.user.edit"));
 	}
-	catch (exception::NoCurrentUserException & e)
+	catch (exception::NoCurrentUserException const & e)
 	{
 		RootApp::setUnauthorized (resp, "You need to be authenticated to perform this action.", "NEED_AUTHENTICATION");
 		return;
 	}
-	catch (exception::UserNotFoundException & e)
+	catch (exception::UserNotFoundException const & e)
 	{
 		RootApp::setUnauthorized (resp, "You need to be authenticated to perform this action.", "NEED_AUTHENTICATION");
 		return;
 	}
-	catch (exception::InsufficientPermissionsException & e)
+	catch (exception::InsufficientPermissionsException const & e)
 	{
 		RootApp::setUnauthorized (resp, "You have insufficient permissions to perform this action.",
 					  "USER_INSUFFICIENT_PERMISSIONS");
@@ -251,17 +251,17 @@ void UserApp::handleDispatchDelete (cppcms::http::request & req, cppcms::http::r
 		// execute the delete request
 		this->handleDelete (resp, username);
 	}
-	catch (exception::NoCurrentUserException & e)
+	catch (exception::NoCurrentUserException const & e)
 	{
 		RootApp::setUnauthorized (resp, "You need to be authenticated to perform this action.", "NEED_AUTHENTICATION");
 		return;
 	}
-	catch (exception::UserNotFoundException & e)
+	catch (exception::UserNotFoundException const & e)
 	{
 		RootApp::setUnauthorized (resp, "You need to be authenticated to perform this action.", "NEED_AUTHENTICATION");
 		return;
 	}
-	catch (exception::InsufficientPermissionsException & e)
+	catch (exception::InsufficientPermissionsException const & e)
 	{
 		RootApp::setUnauthorized (resp, "You have insufficient permissions to perform this action.",
 					  "USER_INSUFFICIENT_PERMISSIONS");
@@ -289,7 +289,7 @@ void UserApp::handleGetUnique (cppcms::http::response & resp, const std::string 
 
 		RootApp::setOk (resp, data);
 	}
-	catch (exception::UserNotFoundException & e)
+	catch (exception::UserNotFoundException const & e)
 	{
 		RootApp::setNotFound (resp, "The requested user does not exist.", "USER_NOT_FOUND");
 		return;
@@ -333,7 +333,7 @@ void UserApp::handleInsert (cppcms::http::request & req, cppcms::http::response 
 	{
 		requestData = RootApp::parsePostDataAsJson (req);
 	}
-	catch (kdbrest::exception::InvalidPostDataFormatException & e)
+	catch (kdbrest::exception::InvalidPostDataFormatException const & e)
 	{
 		RootApp::setBadRequest (resp, "The submitted data is not of type application/json.", "REQUEST_MALFORMED_DATA");
 		return;
@@ -349,7 +349,7 @@ void UserApp::handleInsert (cppcms::http::request & req, cppcms::http::response 
 	{
 		username = requestData.get<std::string> ("username");
 	}
-	catch (cppcms::json::bad_value_cast & e)
+	catch (cppcms::json::bad_value_cast const & e)
 	{
 		RootApp::setBadRequest (resp, "You have to supply an username.", "USER_CREATE_MISSING_USERNAME");
 		return;
@@ -360,7 +360,7 @@ void UserApp::handleInsert (cppcms::http::request & req, cppcms::http::response 
 	{
 		password = requestData.get<std::string> ("password");
 	}
-	catch (cppcms::json::bad_value_cast & e)
+	catch (cppcms::json::bad_value_cast const & e)
 	{
 		RootApp::setBadRequest (resp, "You have to supply a password.", "USER_CREATE_MISSING_PASSWORD");
 		return;
@@ -371,7 +371,7 @@ void UserApp::handleInsert (cppcms::http::request & req, cppcms::http::response 
 	{
 		email = requestData.get<std::string> ("email");
 	}
-	catch (cppcms::json::bad_value_cast & e)
+	catch (cppcms::json::bad_value_cast const & e)
 	{
 		RootApp::setBadRequest (resp, "You have to supply an email.", "USER_CREATE_MISSING_EMAIL");
 		return;
@@ -447,7 +447,7 @@ void UserApp::handleInsert (cppcms::http::request & req, cppcms::http::response 
 			return;
 		}
 	}
-	catch (exception::UserAlreadyExistsException & e)
+	catch (exception::UserAlreadyExistsException const & e)
 	{
 		RootApp::setUnprocessableEntity (resp,
 						 "An user with the given username does already exist. "
@@ -488,7 +488,7 @@ void UserApp::handleUpdate (cppcms::http::request & req, cppcms::http::response 
 	{
 		requestData = RootApp::parsePostDataAsJson (req);
 	}
-	catch (kdbrest::exception::InvalidPostDataFormatException & e)
+	catch (kdbrest::exception::InvalidPostDataFormatException const & e)
 	{
 		RootApp::setBadRequest (resp, "The submitted data is not of type application/json.", "REQUEST_MALFORMED_DATA");
 		return;
@@ -556,7 +556,7 @@ void UserApp::handleUpdate (cppcms::http::request & req, cppcms::http::response 
 			return;
 		}
 	}
-	catch (exception::UserNotFoundException & e)
+	catch (exception::UserNotFoundException const & e)
 	{
 		RootApp::setNotFound (resp, "A user with the given username does not exist.", "USER_NOT_FOUND");
 		return;
@@ -579,7 +579,7 @@ void UserApp::handleDelete (cppcms::http::response & resp, const std::string use
 
 		RootApp::setOk (resp, "The user has been deleted successfully.", "USER_DELETED_SUCCESSFULLY");
 	}
-	catch (exception::UserNotFoundException & e)
+	catch (exception::UserNotFoundException const & e)
 	{
 		RootApp::setNotFound (resp, "The requested user does not exist.", "USER_NOT_FOUND");
 		return;
@@ -607,7 +607,7 @@ inline int UserApp::getMaxrows (cppcms::http::request & req) const
 				maxrows = ELEKTRA_REST_OUTPUT_MAX_ENTRIES;
 			}
 		}
-		catch (std::invalid_argument & e)
+		catch (std::invalid_argument const & e)
 		{
 		}
 	}
@@ -632,7 +632,7 @@ inline int UserApp::getOffset (cppcms::http::request & req) const
 		{
 			offset = std::stoi (s_offset);
 		}
-		catch (std::invalid_argument & e)
+		catch (std::invalid_argument const & e)
 		{
 		}
 	}

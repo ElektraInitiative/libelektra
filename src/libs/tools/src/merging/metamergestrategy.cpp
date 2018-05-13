@@ -90,6 +90,6 @@ void MetaMergeStrategy::resolveConflict (const MergeTask & task, Key & conflictK
 		}
 	}
 }
-}
-}
-}
+} // namespace merging
+} // namespace tools
+} // namespace kdb

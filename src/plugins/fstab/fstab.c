@@ -218,27 +218,27 @@ int elektraFstabSet (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, Key * parentKe
 		ELEKTRA_LOG ("key: %s %s\n", keyName (key), basename);
 		if (!strcmp (basename, "device"))
 		{
-			fstabEntry.mnt_fsname = (char *)keyValue (key);
+			fstabEntry.mnt_fsname = (char *) keyValue (key);
 		}
 		else if (!strcmp (basename, "mpoint"))
 		{
-			fstabEntry.mnt_dir = (char *)keyValue (key);
+			fstabEntry.mnt_dir = (char *) keyValue (key);
 		}
 		else if (!strcmp (basename, "type"))
 		{
-			fstabEntry.mnt_type = (char *)keyValue (key);
+			fstabEntry.mnt_type = (char *) keyValue (key);
 		}
 		else if (!strcmp (basename, "options"))
 		{
-			fstabEntry.mnt_opts = (char *)keyValue (key);
+			fstabEntry.mnt_opts = (char *) keyValue (key);
 		}
 		else if (!strcmp (basename, "dumpfreq"))
 		{
-			fstabEntry.mnt_freq = atoi ((char *)keyValue (key));
+			fstabEntry.mnt_freq = atoi ((char *) keyValue (key));
 		}
 		else if (!strcmp (basename, "passno"))
 		{
-			fstabEntry.mnt_passno = atoi ((char *)keyValue (key));
+			fstabEntry.mnt_passno = atoi ((char *) keyValue (key));
 		}
 		else
 		{ // new rootname

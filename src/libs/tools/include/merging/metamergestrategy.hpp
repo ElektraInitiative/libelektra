@@ -47,8 +47,8 @@ public:
 private:
 	KeySet getMetaKeys (Key & key);
 };
-}
-}
-}
+} // namespace merging
+} // namespace tools
+} // namespace kdb
 
 #endif /* METAMERGESTRATEGY_HPP_ */

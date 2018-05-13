@@ -37,7 +37,7 @@ void copySingleKey (Cmdline const & cl, Key const & rk, KeySet & tmpConf, KeySet
 	}
 	newConf.append (rk);
 }
-}
+} // namespace
 
 int CpCommand::execute (Cmdline const & cl)
 {
@@ -47,17 +47,10 @@ int CpCommand::execute (Cmdline const & cl)
 	}
 
 	KeySet conf;
-	Key sourceKey = cl.createKey (0);
-	if (!sourceKey.isValid ())
-	{
-		throw invalid_argument ("Source given is not a valid keyname");
-	}
+	Key sourceKey = cl.createKey (0, false);
 
-	Key destKey = cl.createKey (1);
-	if (!destKey.isValid ())
-	{
-		throw invalid_argument ("Destination given is not a valid keyname");
-	}
+	Key destKey = cl.createKey (1, false);
+
 	string newDirName = destKey.getName ();
 
 	kdb.get (conf, sourceKey);
@@ -65,12 +58,18 @@ int CpCommand::execute (Cmdline const & cl)
 	KeySet tmpConf = conf;
 	KeySet oldConf;
 
+	std::string sourceName = sourceKey.getName ();
 	oldConf.append (tmpConf.cut (sourceKey));
+
+	if (!oldConf.size ())
+	{
+		std::cerr << "No key to copy found below '" << sourceName << "'" << std::endl;
+		return 11;
+	}
 
 	KeySet newConf;
 
 	oldConf.rewind ();
-	std::string sourceName = sourceKey.getName ();
 	if (cl.verbose) cout << "common name: " << sourceName << endl;
 	if (cl.recursive)
 	{
@@ -86,6 +85,12 @@ int CpCommand::execute (Cmdline const & cl)
 	{
 		// just copy one key
 		Key k = oldConf.next ();
+		if (k != sourceKey)
+		{
+			cerr << "First key found " << k.getName () << " does not exactly match given key " << sourceKey.getName ()
+			     << ", aborting (use -r to move hierarchy)\n";
+			return 11;
+		}
 		Key rk = rename_key (k, sourceName, newDirName, cl.verbose);
 		copySingleKey (cl, rk, tmpConf, newConf);
 	}

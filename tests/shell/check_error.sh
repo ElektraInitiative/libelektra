@@ -13,9 +13,9 @@ check_remaining_files $FILE_SUFFIX
 ROOT=user/test/script
 ROOT_FILE=${FILE_SUFFIX}_root.ecf
 ROOT_MOUNTPOINT=/test/script
-if ! is_plugin_available dump
+if ! is_plugin_available dump || ! is_plugin_available sync
 then
-	echo "Need dump to run test, will abort"
+	echo "Need dump and sync to run test, will abort"
 	exit 0
 fi
 

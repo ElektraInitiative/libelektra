@@ -58,5 +58,5 @@ bool sha256_encrypt (const std::string & input, std::string & output)
 
 	return true;
 }
-}
-}
+} // namespace crypto
+} // namespace kdbrest

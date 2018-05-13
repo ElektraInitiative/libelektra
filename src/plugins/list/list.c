@@ -13,8 +13,10 @@
 #endif
 
 #include "list.h"
+#include <kdbassert.h>
 #include <kdberrors.h>
 #include <kdbinternal.h>
+#include <kdbinvoke.h>
 #include <kdbmodule.h>
 #include <kdbos.h>
 #include <stdio.h>
@@ -47,6 +49,9 @@ typedef struct
 	KeySet * getKS[3];
 	KeySet * plugins;
 	KeySet * modules;
+
+	ElektraDeferredCallList * deferredCalls;
+
 } Placements;
 
 static char lastIndex[ELEKTRA_MAX_ARRAY_SIZE];
@@ -136,13 +141,30 @@ static int listParseConfiguration (Placements * placements, KeySet * config)
 	return rc;
 }
 
+void elektraListDeferredCall (Plugin * plugin, const char * name, KeySet * parameters)
+{
+	Placements * placements = elektraPluginGetData (plugin);
+	ELEKTRA_NOT_NULL (placements);
+	elektraDeferredCallAdd (placements->deferredCalls, name, parameters);
+
+	// Execute call immediately on already loaded plugins
+	ksRewind (placements->plugins);
+	Key * current;
+	while ((current = ksNext (placements->plugins)) != NULL)
+	{
+		Plugin * slave;
+		slave = *(Plugin **) keyValue (current);
+		elektraDeferredCallsExecute (slave, placements->deferredCalls);
+	}
+}
+
 int elektraListOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 {
 
-	Placements * placements = (Placements *)elektraPluginGetData (handle);
+	Placements * placements = (Placements *) elektraPluginGetData (handle);
 	if (!placements)
 	{
-		placements = (Placements *)elektraMalloc (sizeof (Placements));
+		placements = (Placements *) elektraMalloc (sizeof (Placements));
 		memset (placements, 0, sizeof (Placements));
 		placements->errCurrent = preRollback;
 		placements->setCurrent = preSetStorage;
@@ -158,6 +180,7 @@ int elektraListOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 		placements->errKS[1] = ksNew (0, KS_END);
 		placements->plugins = ksNew (0, KS_END);
 		placements->modules = ksNew (0, KS_END);
+		placements->deferredCalls = elektraDeferredCallCreateList ();
 	}
 	elektraPluginSetData (handle, placements);
 
@@ -232,19 +255,20 @@ int elektraListClose (Plugin * handle, Key * errorKey)
 	while ((cur = ksNext (placements->plugins)) != NULL)
 	{
 		Plugin * slave;
-		slave = *(Plugin **)keyValue (cur);
+		slave = *(Plugin **) keyValue (cur);
 		elektraPluginClose (slave, errorKey);
 	}
 	ksDel (placements->plugins);
 	elektraModulesClose (placements->modules, NULL);
 	ksDel (placements->modules);
+	elektraDeferredCallDeleteList (placements->deferredCalls);
 	elektraFree (placements);
 	elektraPluginSetData (handle, 0);
 	return 1; /* success */
 }
 
 static int runPlugins (KeySet * pluginKS, KeySet * modules, KeySet * plugins, KeySet * configOrig, KeySet * returned, Key * parentKey,
-		       OP op, Key * (*traversalFunction) (KeySet *))
+		       OP op, Key * (*traversalFunction) (KeySet *), ElektraDeferredCallList * deferredCalls)
 {
 	Key * current;
 
@@ -262,7 +286,7 @@ static int runPlugins (KeySet * pluginKS, KeySet * modules, KeySet * plugins, Ke
 		keyDel (handleKey);
 		if (handleLookup)
 		{
-			slave = *(Plugin **)keyValue (handleLookup);
+			slave = *(Plugin **) keyValue (handleLookup);
 		}
 		else
 		{
@@ -272,7 +296,7 @@ static int runPlugins (KeySet * pluginKS, KeySet * modules, KeySet * plugins, Ke
 			keyDel (searchKey);
 			if (lookup)
 			{
-				slave = *(Plugin **)keyValue (lookup);
+				slave = *(Plugin **) keyValue (lookup);
 			}
 			else
 			{
@@ -311,6 +335,7 @@ static int runPlugins (KeySet * pluginKS, KeySet * modules, KeySet * plugins, Ke
 				keyDel (slaveKey);
 			}
 		}
+		elektraDeferredCallsExecute (slave, deferredCalls);
 
 		if ((op == GET && slave->kdbGet && (slave->kdbGet (slave, returned, parentKey)) == -1) ||
 		    (op == SET && slave->kdbSet && (slave->kdbSet (slave, returned, parentKey)) == -1) ||
@@ -338,6 +363,7 @@ int elektraListGet (Plugin * handle, KeySet * returned, Key * parentKey)
 			       keyNew ("system/elektra/modules/list/exports/error", KEY_FUNC, elektraListError, KEY_END),
 			       keyNew ("system/elektra/modules/list/exports/addPlugin", KEY_FUNC, elektraListAddPlugin, KEY_END),
 			       keyNew ("system/elektra/modules/list/exports/editPlugin", KEY_FUNC, elektraListEditPlugin, KEY_END),
+			       keyNew ("system/elektra/modules/list/exports/deferredCall", KEY_FUNC, elektraListDeferredCall, KEY_END),
 #include ELEKTRA_README (list)
 			       keyNew ("system/elektra/modules/list/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
@@ -350,7 +376,8 @@ int elektraListGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	GetPlacements currentPlacement = placements->getCurrent;
 	KeySet * pluginKS = ksDup ((placements)->getKS[currentPlacement]);
 	ksRewind (pluginKS);
-	int ret = runPlugins (pluginKS, placements->modules, placements->plugins, ksDup (config), returned, parentKey, GET, ksNext);
+	int ret = runPlugins (pluginKS, placements->modules, placements->plugins, ksDup (config), returned, parentKey, GET, ksNext,
+			      placements->deferredCalls);
 	placements->getCurrent = ((++currentPlacement) % getEnd);
 	while (currentPlacement < getEnd && !placements->getPlacements[currentPlacement])
 	{
@@ -368,7 +395,8 @@ int elektraListSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	KeySet * pluginKS = ksDup ((placements)->setKS[currentPlacement]);
 	ksRewind (pluginKS);
 	int ret = 0;
-	ret = runPlugins (pluginKS, placements->modules, placements->plugins, ksDup (config), returned, parentKey, SET, ksPop);
+	ret = runPlugins (pluginKS, placements->modules, placements->plugins, ksDup (config), returned, parentKey, SET, ksPop,
+			  placements->deferredCalls);
 	placements->setCurrent = ((++currentPlacement) % setEnd);
 	while (currentPlacement < setEnd && !placements->setPlacements[currentPlacement])
 	{
@@ -387,7 +415,8 @@ int elektraListError (Plugin * handle, KeySet * returned, Key * parentKey)
 	ErrPlacements currentPlacement = placements->errCurrent;
 	KeySet * pluginKS = ksDup ((placements)->errKS[currentPlacement]);
 	ksRewind (pluginKS);
-	int ret = runPlugins (pluginKS, placements->modules, placements->plugins, ksDup (config), returned, parentKey, ERR, ksPop);
+	int ret = runPlugins (pluginKS, placements->modules, placements->plugins, ksDup (config), returned, parentKey, ERR, ksPop,
+			      placements->deferredCalls);
 	placements->errCurrent = ((++currentPlacement) % errEnd);
 	while (currentPlacement < errEnd && !placements->errPlacements[currentPlacement])
 	{

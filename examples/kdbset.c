@@ -24,7 +24,7 @@ KeySet * doElektraMerge (KeySet * ours, KeySet * theirs, KeySet * base)
 {
 	printf ("see libelektra-tools for merging"
 		" sizes are: %d %d %d\n",
-		(int)ksGetSize (ours), (int)ksGetSize (theirs), (int)ksGetSize (base));
+		(int) ksGetSize (ours), (int) ksGetSize (theirs), (int) ksGetSize (base));
 	return ksNew (0, KS_END);
 }
 

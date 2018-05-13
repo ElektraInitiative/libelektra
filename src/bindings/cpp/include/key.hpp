@@ -81,10 +81,10 @@ public:
 
 	// reference handling
 
-	inline void operator++ (int)const;
+	inline void operator++ (int) const;
 	inline void operator++ () const;
 
-	inline void operator-- (int)const;
+	inline void operator-- (int) const;
 	inline void operator-- () const;
 
 	inline ssize_t getReferenceCounter () const;
@@ -651,7 +651,7 @@ inline Key::Key (const char * keyName, va_list ap)
 /**
  * @copydoc keyIncRef
  */
-void Key::operator++ (int)const
+void Key::operator++ (int) const
 {
 	operator++ ();
 }
@@ -667,7 +667,7 @@ void Key::operator++ () const
 /**
  * @copydoc keyDecRef
  */
-void Key::operator-- (int)const
+void Key::operator-- (int) const
 {
 	operator-- ();
 }
@@ -1270,7 +1270,8 @@ inline ssize_t Key::getStringSize () const
  */
 inline Key::func_t Key::getFunc () const
 {
-	union {
+	union
+	{
 		Key::func_t f;
 		void * v;
 	} conversation;
@@ -1284,7 +1285,8 @@ inline Key::func_t Key::getFunc () const
 
 inline void Key::setCallback (callback_t fct)
 {
-	union {
+	union
+	{
 		callback_t f;
 		void * v;
 	} conversation;

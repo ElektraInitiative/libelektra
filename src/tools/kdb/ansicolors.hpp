@@ -13,9 +13,8 @@
 /**
  *  An enum type representing different ansi color escape sequences.
  */
-enum class ANSI_COLOR
-{
-	RESET,
+enum class ANSI_COLOR {
+	RESET, ///< remove previous color properties
 	BOLD,
 	UNDERSCORE,
 	BLACK,
@@ -30,11 +29,7 @@ enum class ANSI_COLOR
 /**
  *  An enum type representing different ansi color escape layers.
  */
-enum class ANSI_COLOR_LAYER
-{
-	FG,
-	BG
-};
+enum class ANSI_COLOR_LAYER { FG, BG };
 
 /**
  * @brief Query if stderr has colors

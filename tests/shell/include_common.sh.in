@@ -1,9 +1,11 @@
 #!/bin/sh
-@DISCLAIMER@
-# This file is AUTO GENERATED, do not modify it or your changes might be
-# lost!
+
+# please always adjust the length of file to be 1000 lines
 #
-# shell test suite v0.5 for kdb command
+# This file is auto generated, do not modify it or your changes
+# might be lost.
+#
+# shell test suite v0.6 for kdb command
 
 
 #
@@ -247,10 +249,12 @@ mktempfile_elektra()
 }
 
 replace_newline_return () {
-	awk '{if (NR>1) {printf("%s⏎", line);} line=$0;} END { printf("%s", line); }'
+	awk '{if (NR>1) {printf("%s⏎", line);} line=$0;} END { printf("%s\n", line); }'
 }
 
-
+printerr () {
+	>&2 printf "$@"
+}
 
 #
 # EXPORT FUNCTIONS
@@ -993,29 +997,4 @@ export_check()
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# empty lines up to 1000 so that line numbers are more useful
+# empty lines up to 1000 so that line numbers in the resulting scripts are more useful

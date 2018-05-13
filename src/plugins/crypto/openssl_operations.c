@@ -326,7 +326,7 @@ int elektraCryptoOpenSSLEncrypt (elektraCryptoHandle * handle, Key * k, Key * er
 	}
 
 	// encrypt content block by block
-	kdb_octet_t * content = (kdb_octet_t *)keyValue (k);
+	kdb_octet_t * content = (kdb_octet_t *) keyValue (k);
 	size_t processed = 0;
 
 	while (processed < contentLen)
@@ -355,7 +355,7 @@ int elektraCryptoOpenSSLEncrypt (elektraCryptoHandle * handle, Key * k, Key * er
 		content += partitionLen;
 	}
 
-	EVP_EncryptFinal (handle->encrypt, cipherBuffer, &written);
+	EVP_EncryptFinal_ex (handle->encrypt, cipherBuffer, &written);
 	if (written > 0)
 	{
 		BIO_write (encrypted, cipherBuffer, written);
@@ -404,7 +404,7 @@ int elektraCryptoOpenSSLDecrypt (elektraCryptoHandle * handle, Key * k, Key * er
 	saltLen += sizeof (kdb_unsigned_long_t);
 
 	// set payload pointer
-	const kdb_octet_t * payload = ((kdb_octet_t *)keyValue (k)) + saltLen + ELEKTRA_CRYPTO_MAGIC_NUMBER_LEN;
+	const kdb_octet_t * payload = ((kdb_octet_t *) keyValue (k)) + saltLen + ELEKTRA_CRYPTO_MAGIC_NUMBER_LEN;
 	const size_t payloadLen = keyGetValueSize (k) - saltLen - ELEKTRA_CRYPTO_MAGIC_NUMBER_LEN;
 
 	// initialize crypto header data
@@ -445,7 +445,7 @@ int elektraCryptoOpenSSLDecrypt (elektraCryptoHandle * handle, Key * k, Key * er
 		}
 	}
 
-	EVP_DecryptFinal (handle->decrypt, contentBuffer, &written);
+	EVP_DecryptFinal_ex (handle->decrypt, contentBuffer, &written);
 	if (written > 0)
 	{
 		BIO_write (decrypted, contentBuffer, written);
@@ -480,7 +480,7 @@ int elektraCryptoOpenSSLDecrypt (elektraCryptoHandle * handle, Key * k, Key * er
 	// write back the cipher text to the key
 	if ((flags & ELEKTRA_CRYPTO_FLAG_STRING) == ELEKTRA_CRYPTO_FLAG_STRING)
 	{
-		keySetString (k, (const char *)plaintext);
+		keySetString (k, (const char *) plaintext);
 	}
 	else if ((flags & ELEKTRA_CRYPTO_FLAG_NULL) == ELEKTRA_CRYPTO_FLAG_NULL || contentLen == 0)
 	{

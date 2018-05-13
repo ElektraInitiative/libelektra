@@ -30,7 +30,10 @@ following benefits arise:
 - The administrator can choose:
   - the configuration file syntax (e.g. XML or JSON)
   - notification and logging on configuration changes
+  - defaults on absence of values using specifications
   - and all other features [that plugins provide](/src/plugins/)
+- The parsing result is guaranteed to be the same because the same
+  parser will be used.
 - Other applications can use your configuration as override or as
     fallback (see below)
 

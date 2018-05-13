@@ -1,6 +1,6 @@
 # Vendor Spec
 
-## Issue
+## Problem
 
 Vendors (distributors, administrators) might want to modify the specification.
 gsettings has a similar feature.
@@ -24,7 +24,7 @@ and being administer friendly.
 
 Provide means that a single specification can satisfy every distribution and administrator.
 
-## Argument
+## Rationale
 
 - Elektra wants to reduce fragmentation, and vendor specific changes obviously is a severe
   kind of fragmentation

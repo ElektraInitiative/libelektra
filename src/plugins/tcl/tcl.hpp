@@ -20,7 +20,7 @@ namespace elektra
 
 void serialise (std::ostream & os, kdb::KeySet & output);
 void unserialise (std::istream & os, kdb::KeySet & output);
-}
+} // namespace elektra
 
 extern "C" {
 

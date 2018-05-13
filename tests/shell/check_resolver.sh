@@ -12,11 +12,11 @@ TMPPATH=`cd /tmp; pwd -P`
 
 check_version
 
-if is_plugin_available dump
+if is_plugin_available dump && is_plugin_available sync
 then
-	echo "dump available"
+	echo "dump and sync available"
 else
-	echo "dump not available, skipping tests"
+	echo "dump or sync not available, skipping tests"
 	nbSkip=$(( $nbSkip + 100 ))
 	exit 0
 fi

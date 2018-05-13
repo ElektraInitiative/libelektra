@@ -1,6 +1,6 @@
 # Relative
 
-## Issue
+## Problem
 
 There is a different behavior of various plugins whether their name is
 absolute or relative, including:
@@ -29,7 +29,7 @@ absolute or relative, including:
 
 Key names shall be relative to parent Key name
 
-## Argument
+## Rationale
 
 Provides a better import/export/remount and also a more uniform
 experience between different plugins.

@@ -21,7 +21,7 @@ static void elektraGenCloseLast (yajl_gen g, const Key * key)
 	elektraKeyNameReverseNext (&last);
 
 #ifdef ELEKTRA_YAJL_VERBOSE
-	printf ("last startup entry: \"%.*s\"\n", (int)last.size, last.current);
+	printf ("last startup entry: \"%.*s\"\n", (int) last.size, last.current);
 #endif
 
 	if (last.current[0] == '#' && strcmp (last.current, "###empty_array"))

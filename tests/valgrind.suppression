@@ -314,3 +314,55 @@
    ...
    fun:ruby_setup
 }
+
+{
+   glib dl_init global state
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:*alloc
+   ...
+   fun:g_hash_table_new_full
+   ...
+   fun:_dl_init
+   obj:*
+}
+{
+   glib dl_init global state
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:*alloc
+   fun:g_malloc
+   ...
+   fun:_dl_init
+   obj:*
+}
+{
+   glib main_loop global state
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:*alloc
+   ...
+   fun:g_thread_self
+   fun:g_main_loop_run
+}
+{
+   glib main_loop global state
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:*alloc
+   ...
+   fun:g_main_context_dispatch
+   ...
+   fun:g_main_loop_run
+}
+{
+   glib context global state
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:*alloc
+   ...
+   fun:g_slice_alloc
+   fun:g_slist_prepend
+   fun:g_once_init_enter
+   fun:g_main_context_new
+}

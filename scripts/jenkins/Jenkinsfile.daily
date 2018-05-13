@@ -1,0 +1,101 @@
+/* https://build.libelektra.org/jenkins/job/elektra-jenkinsfile-daily/ */
+
+// Set properties for buildjob
+properties([
+    // Discard all but the latest 30 logs
+    buildDiscarder(logRotator(numToKeepStr: '30', artifactNumToKeepStr: '30')),
+
+    // Don't run concurrently
+    disableConcurrentBuilds()
+])
+
+// Stages
+stage("Maintain Reference Repositories") {
+    parallel generate_repository_maintanence_stages()
+}
+
+stage("Maintain docker repositories") {
+    parallel generate_docker_maintanence_stages()
+}
+
+// Generators
+def generate_repository_maintanence_stages() {
+    // Get all nodes with label 'gitmirror' and the master
+    // DO NOT TAG master WITH 'gitmirror' as it will only show up as (null)
+    def nodes = nodesByLabel label:"gitmirror"
+    nodes.add("master")
+
+    def repos = [
+        [
+            url: "https://github.com/ElektraInitiative/libelektra.git",
+            dest: "libelektra"
+        ]
+    ]
+
+    def tasks = [:]
+    nodes.each { target_node ->
+        repos.each { target_repo ->
+            tasks << mirror_repo_on_node(target_node, target_repo)
+        }
+    }
+    return tasks
+}
+
+def mirror_repo_on_node(target_node, target_repo) {
+    def taskname = "git/${target_node}/${target_repo.dest}"
+    return [(taskname): {
+        stage(taskname) {
+            node(target_node) {
+                syncRepository target_repo
+            }
+        }
+    }]
+}
+
+def generate_docker_maintanence_stages() {
+    def nodes = nodesByLabel label:"docker"
+    def tasks = [:]
+
+    nodes.each { target_node ->
+        tasks << cleanup_docker_images(target_node)
+    }
+    return tasks
+}
+
+def cleanup_docker_images(target_node) {
+    def taskname = "cleanupDocker/${target_node}"
+    return [(taskname): {
+        stage(taskname) {
+            node(target_node) {
+                dockerImages().each {
+                    retainNewestImages(it, 15)
+                }
+            }
+        }
+    }]
+}
+
+// Helpers
+def dockerImages() {
+    def s = /docker images --format "{{.Repository}}" | awk '!seen[$0]++'/
+    def r = sh returnStdout: true, script: s
+    return r.tokenize('\n')
+}
+
+def retainNewestImages(image, n) {
+  sh "docker images ${image} --format \"{{.Repository}} {{.Tag}}\" | sort -k 2,2 | head -n -${n} | awk \'BEGIN{OFS=\":\"} {print \$1,\$2}' | xargs -r -n1 docker rmi"
+}
+
+def syncRepository(Map repo) {
+    dir("${env.HOME}/git_mirrors") {
+        if(fileExists(repo.dest)) {
+            echo "Found existing repository mirror"
+            dir(repo.dest){
+                sh "git fetch --prune"
+            }
+        } else {
+            echo "Create new repository mirror"
+            sh "git clone --mirror ${repo.url} ${repo.dest}"
+        }
+    }
+}

@@ -207,7 +207,8 @@ void test_checkfile (void)
 	exit_if_fail (found, "did not find checkfile symbol");
 
 	typedef int (*func_t) (const char *);
-	union {
+	union
+	{
 		func_t f;
 		void * v;
 	} conversation;

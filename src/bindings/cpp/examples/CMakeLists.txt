@@ -11,8 +11,7 @@ macro (do_example source)
 
 	target_link_elektra (${source} elektra-kdb)
 
-	set_target_properties (${source} PROPERTIES
-			COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
+	set_target_properties (${source} PROPERTIES COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
 endmacro (do_example)
 
 file (GLOB TESTS *.cpp)

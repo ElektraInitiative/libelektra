@@ -64,15 +64,15 @@ int CRYPTO_PLUGIN_FUNCTION (getSaltFromPayload) (Key * errorKey, Key * k, kdb_oc
 	const ssize_t payloadLen = keyGetValueSize (k) - ELEKTRA_CRYPTO_MAGIC_NUMBER_LEN;
 
 	// validate payload length
-	if ((size_t)payloadLen < sizeof (size_t) || payloadLen < 0)
+	if ((size_t) payloadLen < sizeof (size_t) || payloadLen < 0)
 	{
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INTERNAL_ERROR, errorKey,
-				    "payload is too small to contain a salt (payload length is: %lu)", payloadLen);
+				    "payload is too small to contain a salt (payload length is: %zu)", payloadLen);
 		if (salt) *salt = NULL;
 		return -1;
 	}
 
-	const kdb_octet_t * value = (kdb_octet_t *)keyValue (k);
+	const kdb_octet_t * value = (kdb_octet_t *) keyValue (k);
 	const kdb_octet_t * payload = &value[ELEKTRA_CRYPTO_MAGIC_NUMBER_LEN];
 	kdb_unsigned_long_t restoredSaltLen = 0;
 
@@ -84,13 +84,13 @@ int CRYPTO_PLUGIN_FUNCTION (getSaltFromPayload) (Key * errorKey, Key * k, kdb_oc
 	if (restoredSaltLen < 1 || restoredSaltLen > (payloadLen - headerLen))
 	{
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INTERNAL_ERROR, errorKey,
-				    "restored salt has invalid length of %u (payload length is: %lu)", restoredSaltLen, payloadLen);
+				    "restored salt has invalid length of %u (payload length is: %zu)", restoredSaltLen, payloadLen);
 		if (salt) *salt = NULL;
 		return -1;
 	}
 
 	// restore salt
-	if (salt) *salt = ((kdb_octet_t *)(payload)) + headerLen;
+	if (salt) *salt = ((kdb_octet_t *) (payload)) + headerLen;
 
 	return 1;
 }

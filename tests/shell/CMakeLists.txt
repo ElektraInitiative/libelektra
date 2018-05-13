@@ -104,7 +104,15 @@ function (add_scripttest testname)
 				"${testscriptname}"
 				)
 			#dash does memleak:
-			set_property(TEST testscr_${testname_we} PROPERTY LABELS memleak kdbtests)
+			set_property(
+				TEST testscr_${testname_we}
+				PROPERTY LABELS memleak kdbtests)
+			set_property(
+				TEST testscr_${testname_we}
+				PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
+			set_property(
+				TEST testscr_${testname_we}
+				PROPERTY RUN_SERIAL TRUE)
 			endif (NOT ${testname_we} STREQUAL "run_all")
 			endif(ENABLE_KDB_TESTING)
 		endif (TARGET)
@@ -122,8 +130,5 @@ endif (INSTALL_TESTING)
 file (GLOB SCRIPT_TESTS *.sh)
 foreach (file ${SCRIPT_TESTS})
 	get_filename_component (name ${file} NAME)
-	# The test `testscr_check_kdb_internal_check` might fail on Linux if ASAN is enabled because of problematic code in `stl_tree.h`
-	if (NOT (${name} MATCHES "check_kdb_internal_check" AND ENABLE_ASAN AND CMAKE_SYSTEM_NAME MATCHES "Linux"))
-		add_scripttest(${name})
-	endif (NOT (${name} MATCHES "check_kdb_internal_check" AND ENABLE_ASAN AND CMAKE_SYSTEM_NAME MATCHES "Linux"))
+	add_scripttest(${name})
 endforeach (file ${SCRIPT_TESTS})

@@ -65,4 +65,4 @@ void unserialise (istream & in, KeySet & input)
 	}
 }
 
-} // end namepace elektra
+} // namespace elektra
