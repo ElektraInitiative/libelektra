@@ -739,7 +739,7 @@ def prefixDockerId(name) {
 /* Returns True if we are on the master branch
  */
 def isMaster() {
-    return env.sha1=="master"
+    return env.BRANCH_NAME=="master"
 }
 
 /* Publishes all files necessary for hosting a debian package
