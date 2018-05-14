@@ -101,7 +101,7 @@ static int convertHexToDec (Key * key, Key * parentKey)
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
-	// set decimal string in key and set type in metadata
+	// set decimal string in key and set internal metadata
 	keySetString (key, decValue);
 	keySetMeta (key, ELEKTRA_HEXNUMBER_META_KEY, "1");
 
@@ -155,7 +155,7 @@ static int convertDecToHex (Key * key, Key * parentKey)
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
-	const size_t length = (size_t) result;
+	const size_t length = (size_t) result + 1;
 	char * hexValue = elektraMalloc (length);
 	if (!hexValue)
 	{
@@ -170,8 +170,11 @@ static int convertDecToHex (Key * key, Key * parentKey)
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
-	// set hex string in key
+	// set hex string in key and unset internal metadata
 	keySetString (key, hexValue);
+	keySetMeta (key, ELEKTRA_HEXNUMBER_META_KEY, "0");
+
+
 	elektraFree (hexValue);
 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
