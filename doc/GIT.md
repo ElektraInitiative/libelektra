@@ -145,14 +145,7 @@ phrases:
 * jenkins build [multiconfig-gcc47-cmake-options](https://build.libelektra.org/job/elektra-multiconfig-gcc47-cmake-options/) please
 * jenkins build [source-package-test](https://build.libelektra.org/job/elektra-source-package-test/) please
 * jenkins build [homepage](https://build.libelektra.org/job/elektra-homepage/) please
-* jenkins build [jenkinsfile](https://build.libelektra.org/jenkins/job/elektra-jenkinsfile/)[REGEX] please
-  * Use the optional `[REGEX]` field to specify which stages you want to run
-    The default is to run all stages.
-    Docker build phase stages will always be run.
-    Running a partial build will degrade the build result to unstable which is
-    displayed as failed in the github status.
-    Example: `jenkins build jenkinsfile[.*-fast] please` will run all stages
-    ending with `-fast`.
+* jenkins build [libelektra](https://build.libelektra.org/jenkins/job/libelektra/) please
 
 ### Run All Tests
 

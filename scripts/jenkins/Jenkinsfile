@@ -106,15 +106,6 @@ TEST_INSTALL = 'install'
 
 NOW = new Date()
 
-/* Determine what needs to be build
- *
- * Execution of this script is triggered by SCM changes or manually by
- * commenting 'jenkins build Jenkinsfile[REGEX] please. The [REGEX] is
- * optional but when it exists it allows for specification of which
- * stages should be build.
- */
-BUILD_TARGET = determineBuildTarget()
-
 /*****************************************************************************
  * Main Stages
  *
@@ -132,17 +123,20 @@ lock('docker-images') {
 
 // quick builds to give fast initial feedback to programmers
 stage("Fast builds") {
+    milestone label: "Fast builds"
     parallel generate_fast_build_stages()
 }
 
 
 // tests to reach full coverage
 stage("Full builds") {
+    milestone label: "Full builds"
     parallel generate_full_build_stages()
 }
 
 // build debian packages + upload if on master
 stage("Build Debian Packages") {
+    milestone label: "Debian Packages"
     parallel generate_package_build_stages()
 }
 
@@ -577,9 +571,8 @@ def trackCoverage(do_track, cl) {
  * @param cl A closure that should be run inside the docker image
  */
 def withDockerEnv(stage_name, image, cl) {
-    def run_stage = (stage_name =~ BUILD_TARGET) as boolean
     return [(stage_name): {
-        maybeStage(stage_name, run_stage) {
+        stage(stage_name) {
             node(docker_node_label) {
                 docker.withRegistry('https://hub.libelektra.org',
                                     'docker-hub-elektra-jenkins') {
@@ -695,36 +688,6 @@ def dateFormatter(date) {
     return df.format(date)
 }
 
-/* Determines which stages should be build
- *
- * Usually build is triggered by scm changes, but it can also manually be
- * started for a PR by commenting "jenkins build jenkinsfile[REGEX] please"
- * The optional REGEX determines if all stages should be build or only a
- * selection of them.
- * To build only fast builds one would comment "jenkins build
- * jenkinsfile[.*-fast] please".
- * NOTE: none complete builds are automatically set to UNSTABLE which reports
- * as a test failure on github.
- * @param default_target What should be build if no REGEX was provided
- */
-def determineBuildTarget(default_target = ".*") {
-    def target = default_target
-
-    matcher = /jenkins build jenkinsfile(?:\[(.*)\])? please/
-    try {
-        new_target = (env.ghprbCommentBody =~ matcher)[0][1]
-    } catch(e) {
-        new_target = null
-    }
-    if(new_target) {
-        // if we specify a new target we degrade the build to unstable
-        // this will report the test as failed on github
-        currentBuild.result = 'UNSTABLE'
-        target = new_target
-    }
-    return target
-}
-
 /* Provide a common prefix for an image name
  * @param name Name of the docker image
  */
@@ -736,7 +699,7 @@ def prefixDockerId(name) {
 /* Returns True if we are on the master branch
  */
 def isMaster() {
-    return env.sha1=="master"
+    return env.BRANCH_NAME=="master"
 }
 
 /* Publishes all files necessary for hosting a debian package
