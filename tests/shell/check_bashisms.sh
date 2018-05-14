@@ -8,10 +8,12 @@ command -v checkbashisms >/dev/null 2>&1 || { echo "checkbashisms command needed
 
 cd "@CMAKE_SOURCE_DIR@"
 
+find -version > /dev/null 2>&1 > /dev/null && FIND=find || FIND='find -E'
+
 # this way we also check subdirectories
 # The script `check-env-dep` uses process substitution which is **not** a standard `sh` feature!
 # See also: https://unix.stackexchange.com/questions/151925
-scripts=$(find -E scripts/ -type f -not -regex
+scripts=$($FIND scripts/ -type f -not -regex
 	  '.+(/docker/.+|check-env-dep|Jenkinsfile(.daily)?|kdb_zsh_completion|sed|\.(cmake|fish|in|md|txt))$' | xargs)
 checkbashisms $scripts
 ret=$?
