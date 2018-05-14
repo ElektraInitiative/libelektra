@@ -50,7 +50,12 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * masterK
 
 	// generate the salt
 	gcry_create_nonce (salt, sizeof (salt));
-	saltHexString = CRYPTO_PLUGIN_FUNCTION (base64Encode) (salt, sizeof (salt));
+	const int encodingResult = CRYPTO_PLUGIN_FUNCTION (base64Encode) (errorKey, salt, sizeof (salt), &saltHexString);
+	if (encodingResult < 0)
+	{
+		// error in libinvoke - errorKey has been set by base64Encode
+		return -1;
+	}
 	if (!saltHexString)
 	{
 		ELEKTRA_SET_ERROR (87, errorKey, "Memory allocation failed");
@@ -433,9 +438,13 @@ int elektraCryptoGcryDecrypt (elektraCryptoHandle * handle, Key * k, Key * error
  */
 char * elektraCryptoGcryCreateRandomString (Key * errorKey, const kdb_unsigned_short_t length)
 {
+	char * encoded = NULL;
 	kdb_octet_t buffer[length];
 	gcry_create_nonce (buffer, length);
-	char * encoded = CRYPTO_PLUGIN_FUNCTION (base64Encode) (buffer, length);
+	if (CRYPTO_PLUGIN_FUNCTION (base64Encode) (errorKey, buffer, length, &encoded) < 0)
+	{
+		return NULL;
+	}
 	if (!encoded)
 	{
 		ELEKTRA_SET_ERROR (87, errorKey, "Memory allocation failed");
