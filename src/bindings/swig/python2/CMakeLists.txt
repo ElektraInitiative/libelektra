@@ -38,6 +38,14 @@ else ()
 	swig_link_libraries (swig-python2 elektra-core elektra-kdb ${PYTHON2_LIBRARIES})
 	set_target_properties (_swig-python2 PROPERTIES OUTPUT_NAME _kdb)
 
+	# Unfortunately compiling the generated code produces warnings.
+	if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-deprecated-register")
+	elseif (CMAKE_COMPILER_IS_GNUCXX)
+		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-cast-function-type")
+		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-stringop-truncation")
+	endif ()
+
 	set_source_files_properties (${swig_generated_file_fullname} PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -DSWIG_TYPE_TABLE=kdb")
 
 	set (PYTHON_GET_MODULES_DIR_COMMAND

@@ -362,7 +362,7 @@ TEST (key, exceptions)
 	{
 		test.setName ("no");
 	}
-	catch (kdb::KeyInvalidName)
+	catch (kdb::KeyInvalidName const &)
 	{
 		succeed_if (test.getName () == "", "not set to noname");
 	}
@@ -374,7 +374,7 @@ TEST (key, exceptions)
 	{
 		test.setName ("no");
 	}
-	catch (kdb::KeyInvalidName)
+	catch (kdb::KeyInvalidName const &)
 	{
 		succeed_if (test.getName () == "", "not set to noname");
 	}

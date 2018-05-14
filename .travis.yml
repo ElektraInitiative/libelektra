@@ -106,12 +106,12 @@ before_install:
       brew install checkbashisms
       brew install dbus
       brew install discount
-      brew install gobject-introspection
       brew install libgcrypt
       brew install libgit2
       brew install libuv
       brew install lua
       brew install openssl
+      export PKG_CONFIG_PATH=/usr/local/opt/openssl/lib/pkgconfig
       brew install python@2; brew link --overwrite python@2
       brew install python || brew upgrade python
       # Since Qt 5.10.1 GCC is unable to compile the Qt-GUI under macOS printing the following error message:
@@ -172,21 +172,19 @@ before_script:
       tools="kdb"
     fi
   - |
-    if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+    if [[ "$TRAVIS_OS_NAME" == "osx" && "$FAST" != "ON" && "$HASKELL" != "ON" ]]; then
       python2_ver=$(python2 -c 'import sys; print(".".join(map(str, sys.version_info[:2])))') &&                  \
         CMAKE_OPT+=("-DPYTHON2_INCLUDE_DIR:PATH=$(python2-config --prefix)/include/python${python2_ver}") &&      \
         CMAKE_OPT+=("-DPYTHON2_LIBRARY:FILEPATH=$(python2-config --prefix)/lib/libpython${python2_ver}.dylib") && \
         python3_ver=$(python3 -c 'import sys; print(".".join(map(str, sys.version_info[:2])))') &&                \
         CMAKE_OPT+=("-DPYTHON_INCLUDE_DIR:PATH=$(python3-config --prefix)/include/python${python3_ver}m") &&      \
         CMAKE_OPT+=("-DPYTHON_LIBRARY:FILEPATH=$(python3-config --prefix)/lib/libpython${python3_ver}.dylib")
-      ln -s /usr/local/opt/openssl/include/openssl/ /usr/local/include/openssl
     fi
   - >
     cmake
     -GNinja
-    -DBUILD_STATIC=OFF
     -DPLUGINS="${plugins:-ALL;-jni}"
-    -DBINDINGS="${bindings}"
+    -DBINDINGS="${bindings:-ALL}"
     -DENABLE_DEBUG=ON
     -DTOOLS="${tools:-ALL;}"
     -DINSTALL_SYSTEM_FILES=OFF

@@ -53,10 +53,24 @@ else ()
 	# disable certain compiler warnings for SWIG generated files
 	set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-unused-parameter")
 	set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-sign-compare")
-	set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-dynamic-class-memaccess")
 	if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-unused-but-set-variable")
-	endif (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-catch-value")
+		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-class-memaccess")
+		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-maybe-uninitialized")
+	elseif (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-dynamic-class-memaccess")
+
+		# TODO: Reenable the following warning after we add a virtual destructor to `PluginDatabase`, and its subclasses.
+		# See also:
+		# - https://github.com/ElektraInitiative/libelektra/pull/1841
+		# - https://github.com/ElektraInitiative/libelektra/commit/15d67328
+		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-delete-non-virtual-dtor")
+
+		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-deprecated-register")
+		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-reserved-user-defined-literal")
+		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-macro-redefined")
+	endif ()
 
 	# add 'kdb' module
 	if (CMAKE_VERSION VERSION_LESS 3.8)
