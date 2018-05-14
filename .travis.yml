@@ -102,7 +102,6 @@ before_install:
         brew install xerces-c
       fi
       brew install augeas
-      brew install clang-format
       brew install dbus
       brew install discount
       brew install libgcrypt
