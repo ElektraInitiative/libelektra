@@ -13,8 +13,8 @@ find -version > /dev/null 2>&1 > /dev/null && FIND=find || FIND='find -E'
 # this way we also check subdirectories
 # The script `check-env-dep` uses process substitution which is **not** a standard `sh` feature!
 # See also: https://unix.stackexchange.com/questions/151925
-scripts=$($FIND scripts/ -type f -not -regex \
-	  '.+(/docker/.+|check-env-dep|Jenkinsfile(.daily)?|gitignore|kdb_zsh_completion|sed|Vagrantfile|\.(cmake|fish|in|md|txt))$' | \
+scripts=$($FIND scripts/ -type f -not -regex '.+/docker/.+' -not -regex \
+	'.+(check-env-dep|Jenkinsfile(.daily)?|gitignore|kdb_zsh_completion|run_dev_env|sed|Vagrantfile|\.(cmake|fish|in|md|txt))$' | \
 	  xargs)
 checkbashisms $scripts
 ret=$?
