@@ -103,7 +103,6 @@ before_install:
       fi
       brew install augeas
       brew install clang-format
-      brew install checkbashisms
       brew install dbus
       brew install discount
       brew install libgcrypt
@@ -139,6 +138,7 @@ before_install:
       [[ $ASAN == ON && $CC == gcc ]] && export CC=gcc-7 CXX=g++-7
       sudo apt-get -qq update
       sudo apt-get install ninja-build
+      sudo apt-get install devscripts # contains `checkbashisms`
       sudo apt-get install libboost-all-dev
       sudo apt-get install libyaml-cpp-dev
       sudo apt-get install libuv-dev
