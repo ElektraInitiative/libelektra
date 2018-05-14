@@ -14,7 +14,7 @@ find -version > /dev/null 2>&1 > /dev/null && FIND=find || FIND='find -E'
 # The script `check-env-dep` uses process substitution which is **not** a standard `sh` feature!
 # See also: https://unix.stackexchange.com/questions/151925
 scripts=$($FIND scripts/ -type f -not -regex \
-	  '.+(/docker/.+|check-env-dep|Jenkinsfile(.daily)?|kdb_zsh_completion|sed|\.(cmake|fish|in|md|txt))$' | xargs)
+	  '.+(/docker/.+|check-env-dep|Jenkinsfile(.daily)?|kdb_zsh_completion|sed|Vagrantfile|\.(cmake|fish|in|md|txt))$' | xargs)
 checkbashisms $scripts
 ret=$?
 # 2 means skipped file, e.g. README.md, that is fine
