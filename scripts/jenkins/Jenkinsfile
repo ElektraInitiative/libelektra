@@ -132,17 +132,20 @@ lock('docker-images') {
 
 // quick builds to give fast initial feedback to programmers
 stage("Fast builds") {
+    milestone label: "Fast builds"
     parallel generate_fast_build_stages()
 }
 
 
 // tests to reach full coverage
 stage("Full builds") {
+    milestone label: "Full builds"
     parallel generate_full_build_stages()
 }
 
 // build debian packages + upload if on master
 stage("Build Debian Packages") {
+    milestone label: "Debian Packages"
     parallel generate_package_build_stages()
 }
 
