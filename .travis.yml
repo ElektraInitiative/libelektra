@@ -13,13 +13,6 @@ cache:
 matrix:
   include:
 
-    # FAST: Do not install any dependencies
-
-    - os: osx
-      osx_image: xcode9.3beta
-      compiler: clang
-      env: [ FAST=ON ]
-
     # ASAN: Enable AddressSanitizer
 
     - os: osx
@@ -81,7 +74,7 @@ before_install:
       brew install ninja
     fi
   - |
-    if [[ "$TRAVIS_OS_NAME" == "osx" && "$FAST" != "ON" && "$HASKELL" != "ON" ]]; then
+    if [[ "$TRAVIS_OS_NAME" == "osx" && "$HASKELL" != "ON" ]]; then
       rvm install 2.3.1
       rvm use 2.3.1
       gem install test-unit --no-document
@@ -171,7 +164,7 @@ before_script:
       tools="kdb"
     fi
   - |
-    if [[ "$TRAVIS_OS_NAME" == "osx" && "$FAST" != "ON" && "$HASKELL" != "ON" ]]; then
+    if [[ "$TRAVIS_OS_NAME" == "osx" && "$HASKELL" != "ON" ]]; then
       python2_ver=$(python2 -c 'import sys; print(".".join(map(str, sys.version_info[:2])))') &&                  \
         CMAKE_OPT+=("-DPYTHON2_INCLUDE_DIR:PATH=$(python2-config --prefix)/include/python${python2_ver}") &&      \
         CMAKE_OPT+=("-DPYTHON2_LIBRARY:FILEPATH=$(python2-config --prefix)/lib/libpython${python2_ver}.dylib") && \
@@ -197,9 +190,7 @@ before_script:
 script:
   - ninja
   - |
-    if [[ "$FAST" == "ON" ]]; then
-      ninja run_all
-    elif [[ "$ASAN" = "ON" && "$TRAVIS_OS_NAME" == "linux" && "$CC" == "clang" ]]; then
+    if [[ "$ASAN" = "ON" && "$TRAVIS_OS_NAME" == "linux" && "$CC" == "clang" ]]; then
       # preload required libraries (LD_PRELOAD is a space separated list)
       UBSAN_LIBRARY=$(find /usr/ -name '*libclang_rt.ubsan_standalone_cxx-x86_64.so')
       LD_PRELOAD="$UBSAN_LIBRARY" ASAN_OPTIONS=symbolize=1 ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer) ninja run_all
