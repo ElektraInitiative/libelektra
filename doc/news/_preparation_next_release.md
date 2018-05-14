@@ -124,7 +124,13 @@ These notes are of interest for people developing Elektra:
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- Travis now builds all (applicable) bindings by default again.
+- Our Travis build job now
+  - builds all (applicable) bindings by default again, and
+  - checks the formatting of CMake code via [`cmake-format`][]
+
+  .
+
+[`cmake-format`]: https://github.com/cheshirekow/cmake_format
 
 ## Fixes
 
