@@ -166,7 +166,7 @@ file `CMakeLists.txt` in the root folder of the repository you can use the follo
 cmake-format CMakeLists.txt | unexpand | sponge CMakeLists.txt
 ```
 
-.
+. If you want to reformat the whole codebase you can use the script [`reformat-cmake`](/scripts/reformat-cmake).
 
 ### Markdown Guidelines
 
