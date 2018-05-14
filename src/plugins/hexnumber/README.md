@@ -61,7 +61,8 @@ When mounting a backend with the hexnumber plugin, a few parameters can be confi
 ## Example
 ```sh
 # Mount plugin
-sudo kdb mount test.ecf user/examples/hexnumber/test dump hexnumber
+kdb mount test.ecf user/examples/hexnumber/test hexnumber
+#>
 
 # Set up examples
 kdb set user/examples/hexnumber/test/hex 0x1F
@@ -73,11 +74,8 @@ kdb setmeta user/examples/hexnumber/test/dec type int
 kdb set user/examples/hexnumber/test/string value
 kdb setmeta user/examples/hexnumber/test/string type string
 
-kdb set user/examples/hexnumber/test/hex2 0x1F
+kdb set user/examples/hexnumber/test/hex2 0xF
 kdb setmeta user/examples/hexnumber/test/hex2 unit/base hex
-
-kdb set user/examples/hexnumber/test/hexerror 0xXFX
-kdb setmeta user/examples/hexnumber/test/hexerror unit/base hex
 
 # Example 1: read hex value
 kdb get user/examples/hexnumber/test/hex
@@ -93,13 +91,11 @@ kdb get user/examples/hexnumber/test/string
 
 # Example 4: read hex value with unit/base
 kdb get user/examples/hexnumber/test/hex2
-#> 31
-
-# Example 5: string untouched
-kdb get user/examples/hexnumber/test/hexerror
-#> value
+#> 15
 
 # Undo changes
 kdb rm -r user/examples/hexnumber/test
-sudo kdb umount user/examples/hexnumber/test
+#>
+kdb umount user/examples/hexnumber/test
+#>
 ```
