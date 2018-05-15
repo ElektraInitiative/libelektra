@@ -232,15 +232,13 @@ def generate_full_build_stages() {
     tasks << build_and_test(
         "debian-oldstable-full",
         DOCKER_IMAGES.jessie,
-        CMAKE_FLAGS_BUILD_ALL +
-            CMAKE_FLAGS_COVERAGE,
+        CMAKE_FLAGS_BUILD_ALL,
         [TEST_ALL, TEST_MEM, TEST_INSTALL]
     )
     tasks << build_and_test(
         "debian-unstable-full",
         DOCKER_IMAGES.sid,
-        CMAKE_FLAGS_BUILD_ALL +
-            CMAKE_FLAGS_COVERAGE,
+        CMAKE_FLAGS_BUILD_ALL,
         [TEST_ALL, TEST_MEM, TEST_INSTALL]
     )
     /* TODO Reenable for next release
@@ -248,7 +246,6 @@ def generate_full_build_stages() {
         "debian-stable-full-clang",
         DOCKER_IMAGES.stretch,
         CMAKE_FLAGS_BUILD_ALL +
-            CMAKE_FLAGS_COVERAGE +
             CMAKE_FLAGS_CLANG,
         [TEST_ALL, TEST_MEM, TEST_INSTALL]
     )
@@ -413,7 +410,7 @@ kill `pidof dbus-daemon`
             */
             archive(artifacts)
             if(test_coverage) {
-                publishCoverage(test_name)
+                publishCoverage()
             }
             if(test_mem || test_nokdb || test_all) {
                 xunitUpload()
@@ -510,19 +507,20 @@ def cmake(String directory, Map args_map) {
 }
 
 /* Publishes coverage reports
- * @param test_name Name of the test for identification
  */
-def publishCoverage(String test_name) {
+def publishCoverage() {
     echo "Start publication of coverage data"
-    sh "mkdir -p ssh/coverage/ || true"
-    sh "mv build/coverage ssh/coverage/${test_name} || true"
+    def uploadDir = "coverage/${env.BRANCH_NAME}/${env.STAGE_NAME}"
+
+    sh "mkdir -p ${uploadDir}"
+    sh "mv -v -T build/coverage ${uploadDir}"
+
     sshPublisher(publishers: [
       sshPublisherDesc(
         configName: 'doc.libelektra.org',
         transfers: [
           sshTransfer(
-            sourceFiles: 'ssh/**',
-            removePrefix: 'ssh'
+            sourceFiles: uploadDir + '/**',
           )
       ])
     ])

@@ -18,6 +18,10 @@ stage("Maintain docker repositories") {
     parallel generate_docker_maintanence_stages()
 }
 
+stage("Cleanup Files") {
+    parallel generate_file_cleanup_stages()
+}
+
 // Generators
 def generate_repository_maintanence_stages() {
     // Get all nodes with label 'gitmirror' and the master
@@ -75,7 +79,49 @@ def cleanup_docker_images(target_node) {
     }]
 }
 
+def generate_file_cleanup_stages() {
+    def tasks = [:]
+    tasks << cleanup_coverage()
+    return tasks
+}
+
+def cleanup_coverage() {
+    def cleanup_command = """
+find /srv/libelektra/coverage/ \
+    -mindepth 1 \
+    -maxdepth 1 \
+    -type d \
+    -ctime +30 \
+    -print0 \
+    | xargs -r -0 rm -R
+"""
+    return [(taskname): {
+        stage(taskname) {
+            node {
+                sshExec(
+                    'doc.libelektra.org',
+                    cleanup_command
+                )
+            }
+        }
+    }]
+}
+
 // Helpers
+def sshExec(remoteConfig, command) {
+    sshPublisher(publishers: [
+        sshPublisherDesc(
+            configName: remoteConfig,
+            transfers: [
+                sshTransfer(
+                    execCommand: command
+                )
+            ],
+            verbose: true
+        )
+    ])
+}
+
 def dockerImages() {
     def s = /docker images --format "{{.Repository}}" | awk '!seen[$0]++'/
     def r = sh returnStdout: true, script: s
