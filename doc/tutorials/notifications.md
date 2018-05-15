@@ -278,8 +278,8 @@ For example, take the following sequence of events:
 3. application `A` receives a notification about the change from `B` and changes its configuration
 4. *continue at step 2*
 
-These additional two steps cause an infinite cycle of configuration updates
-which introduced *unwanted* behavior.
+The additional step causes an infinite cycle of configuration updates
+which introduces *unwanted* behavior.
 
 When designing a system it is desirable to use components with predictable and
 well-defined behavior.

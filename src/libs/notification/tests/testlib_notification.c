@@ -20,7 +20,6 @@ static void test_openclose (void)
 {
 	printf ("test open & close\n");
 
-	// TODO test with ASAN and with & without cascading key
 	Key * key = keyNew ("system/sw/tests/testlib_notification", KEY_END);
 	KDB * kdb = kdbOpen (key);
 	exit_if_fail (kdb, "opening kdb failed");
