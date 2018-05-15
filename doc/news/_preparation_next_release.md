@@ -143,6 +143,8 @@ Many problems were resolved with the following fixes:
 - <<TODO>>
 - We fixed a memory leak in the [mINI plugin](https://libelektra.org/plugins/mini) by requiring the plugin
   [`ccode`](https://libelektra.org/plugins/ccode) instead of the “provider” `code`.
+- The script [`check_bashisms.sh`](https://master.libelektra.org/tests/shell/check_bashisms.sh) should now work correctly again, if the
+  system uses the GNU version `find`.
 
 
 ## Outlook
