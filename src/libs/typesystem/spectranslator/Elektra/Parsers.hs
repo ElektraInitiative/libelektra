@@ -86,6 +86,7 @@ signedIntegerL :: Parser Int
 signedIntegerL = L.signed sc integerL
 
 -- Parser for the signatures
+-- see src/plugins/typechecker/README.md for an explanation of their structure
 
 typeSignatureP :: Parser TypeSignature
 typeSignatureP = between sc eof typeSigP

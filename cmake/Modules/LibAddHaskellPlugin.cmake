@@ -1,10 +1,10 @@
 include (LibAddMacros)
 
 # ~~~
-# Allows one to add plugins written in haskell, setting up the include paths and
+# Allows one to add plugins written in Haskell, setting up the include paths and
 # libraries automatically.
 #
-# Expects that plugins make use of cabal as their build system.
+# Expects that plugins make use of Cabal as their build system.
 #
 # MODULES:
 #  the name of the haskell modules to be compiled

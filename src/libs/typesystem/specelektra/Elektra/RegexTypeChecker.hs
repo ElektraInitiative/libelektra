@@ -118,6 +118,8 @@ hasTyCon wtc ct = case classifyPredType $ ctEvPred $ ctEvidence ct of
     EqPred _  (TyConApp tc [_, _]) _ -> tc == wtc
     _                                -> False
 
+-- General pattern for solving our type constraints, which all are equality predicates
+-- asking whether an intersection is true or if a regex can be contained in another
 solve :: (Type -> Type -> TcPluginM (Maybe Bool)) -> Ct -> TcPluginM (Maybe (Ct, Bool))
 solve p ct = case classifyPredType $ ctEvPred $ ctEvidence ct of
     EqPred _  (TyConApp _ [x, y]) _ -> do
@@ -185,6 +187,8 @@ regexContains' hsx hsy =
 rightToMaybe :: Either a b -> Maybe b
 rightToMaybe = either (const Nothing) Just
 
+-- Check if two regexes can be intersected with each other, i.e. the intersection
+-- of the two regexes is not the empty automata. Both sides get reduced beforehand.
 regexIntersects :: Type -> Type -> TcPluginM (Maybe Bool)
 regexIntersects x y = reduceRegexIntersects x y >>= \i -> tcPluginIO $ do
   emptyFA <- Just <$> FA.makeBasic FA.Empty
@@ -197,38 +201,27 @@ regexIntersects x y = reduceRegexIntersects x y >>= \i -> tcPluginIO $ do
 
 -- Calculates a regex intersection and returns the result as a FiniteAutomata.
 reduceRegexIntersects :: Type -> Type -> TcPluginM (Maybe FA.FiniteAutomata)
+-- Case 1: Both arguments are already regexes
 reduceRegexIntersects (LitTy (StrTyLit fsx)) (LitTy (StrTyLit fsy)) = tcPluginIO $ do
   let sx = unpackFS fsx
       sy = unpackFS fsy
   hsx <- FA.compile sx
   hsy <- FA.compile sy
   sequence . rightToMaybe $ liftA2 FA.intersect hsx hsy
+-- Case 2: The lefthand side is an intersection, solve that recursively first
 reduceRegexIntersects (TyConApp _ [a,b]) (LitTy (StrTyLit fsy)) =
     reduceRegexIntersects a b >>= \hsx -> tcPluginIO $ 
     FA.compile (unpackFS fsy) >>= sequence . liftA2 FA.intersect hsx . rightToMaybe
+-- Case 3: The righthand side is an intersection, solve that recursively first
 reduceRegexIntersects (LitTy (StrTyLit fsx)) (TyConApp _ [a,b]) =
     reduceRegexIntersects a b >>= \hsy -> tcPluginIO $ 
     FA.compile (unpackFS fsx) >>= sequence . liftA2 FA.intersect hsy . rightToMaybe
+-- Case 4: Both sides are intersections, solve both recursively first
 reduceRegexIntersects (TyConApp _ [a,b]) (TyConApp _ [c, d]) = do
     hsx <- reduceRegexIntersects a b
     hsy <- reduceRegexIntersects c d
     tcPluginIO $ sequence $ liftA2 FA.intersect hsx hsy
 reduceRegexIntersects _ _ = return Nothing
-
-solveEquality :: TyCon -> Ct -> TcPluginM [Ct]
-solveEquality key ct = case classifyPredType $ ctEvPred $ ctEvidence ct of
-    EqPred NomEq a b -> case tyCoVarsOfCtList ct of
-      [va, vb] -> do
-        k1 <- isKey a va
-        k2 <- isKey b vb
-        return [k1, k2]
-      _ -> return []
-    _ -> return []
-  where
-    isKey t v = do
-      let kt = mkTyConApp key [t]
-      ev <- newWanted (ctLoc ct) kt
-      return $ CTyEqCan ev v kt NomEq
 
 -- Some debugging utilities
 debugS :: String -> TcPluginM ()
