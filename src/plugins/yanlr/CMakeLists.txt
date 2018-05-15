@@ -33,11 +33,13 @@ if (DEPENDENCY_PHASE)
 			    DEPENDS ${GRAMMAR_FILE})
 endif (DEPENDENCY_PHASE)
 
-add_plugin (yanlr CPP
+add_plugin (yanlr
+	    CPP
 	    SOURCES ${SOURCE_FILES}
 	    INCLUDE_DIRECTORIES ${ANTLR4CPP_INCLUDE_DIRS}
 	    LINK_LIBRARIES ${ANTLR4CPP_LIBRARIES}
-	    ADD_TEST TEST_README
+	    ADD_TEST
+	    TEST_README
 	    TEST_ENVIRONMENT "ASAN_OPTIONS=detect_container_overflow=0" # Unfortunately it looks like ANTLR’s code causes a container-
 									 # overflow
 	    TEST_REQUIRED_PLUGINS yamlsmith)
