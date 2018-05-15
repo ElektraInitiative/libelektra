@@ -53,6 +53,9 @@ is required so the typechecking only happens when the whole changes have been ma
 easiest way to do this is to use the command `kdb shell`. An example of its usage is shown
 below.
 
+Please keep in mind that its better to unmount in the reverse way, so first unmount your
+specification and then prelude.
+
 ### Usage for custom configuration specification keywords
 
 In case a new plugin has been written which can be described using regular expressions, a
@@ -64,7 +67,7 @@ fallback keyword, which would be formalized in the ini format as follows:
 
 ```
 #@META elektra/spec/type = RegexContains b a => Key b :: . -> Key a -> Key a
-#@META elektra/spec/impl = fallback a (Key P.Nothing) = a \n fallback _ b = b
+#@META elektra/spec/impl = fallback a (Key P.Nothing) = a ; fallback _ b = b
 [/elektra/spec/fallback/#]
 ```
 
@@ -81,10 +84,11 @@ refer to the path of another Key which is given relatively to the current key af
 symbol, or to the annotated key itself, in which case no extra annotation is necessary. 
 A `Regex` refers directly to a regex which can then be used as a type variable.
 
-Additionally, a small implementation has to be given. Currently our type system does not 
+Additionally, a small haskell implementation has to be given. Currently our type system does not 
 support any kind of operations other than simple pattern matching on Keys, that may either hold
 an arbitrary string as a default value matched as `Key (P.Just a)` or no default value, 
-described as `Key P.Nothing`.
+described as `Key P.Nothing`. If you want to pattern match over several possibilities like its
+done for fallback, use `;` to separate between lines.
 
 Summing up the above example can be read as "If the regex of the Key b, which path is obtained
 by taking the value of the current key, relatively referred to via `.` is equal to or a 
@@ -119,12 +123,11 @@ We use kdb shell to delay the typechecking until we have finished writing the wh
 ```sh
 # Backup-and-Restore:spec/examples/simplespecification
 
-pwd
-
-sudo kdb mount prelude.ini spec/examples/simplespecification/spec/elektra ini
+sudo kdb mount prelude.ini spec/examples/simplespecification/elektra/spec ini
 sudo kdb mount simplespecification.ini spec/examples/simplespecification ini typechecker
 
-echo 'keySetName spec/examples/simplespecification/key1 \
+echo 'kdbGet spec/examples/simplespecification \
+keySetName spec/examples/simplespecification/key1 \
 keySetMeta check/range 0-5000 \
 ksAppendKey \
 keyClear \
@@ -142,7 +145,7 @@ kdbSet spec/examples/simplespecification' | kdb shell
 kdb get spec/examples/simplespecification/key1
 ```
 
-Add an invalid link and see how it refuses the specification, showing the erroneous
+Add an invalid link now and see how it refuses the specification, showing the erroneous
 parts instead. As the two keys represent the ranges 0-5000 and 7200-10000, they 
 obviously cannot be linked together.
 
@@ -151,9 +154,8 @@ kdb setmeta spec/examples/simplespecification/key2 fallback/#1 spec/examples/sim
 # RET: 5
 # STDERR-REGEX: .*Couldn't match type.*
 
-sudo kdb umount spec/examples/simplespecification/spec/elektra
-kdb rm -r spec/examples/simplespecification
 sudo kdb umount spec/examples/simplespecification
+sudo kdb umount spec/examples/simplespecification/elektra/spec
 ```
 
 ## Debugging
@@ -176,3 +178,5 @@ type behavior can be observed when getting/setting a key in a specification.
 - Typechecking only happens when getting or setting
 a key in a mounted specification
 - Errors are currently raw and haskell-focused
+- The small implementations are not yet auto generated
+
