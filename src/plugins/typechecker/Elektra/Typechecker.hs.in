@@ -3,6 +3,7 @@ module Elektra.Typechecker () where
 
 import Elektra.Key
 import Elektra.KeySet
+import Elektra.KDB
 import Elektra.Plugin
 import Elektra.SpecTranslator
 import Elektra.SpecParser
@@ -33,7 +34,26 @@ typecheck ks k c = withGlobalLogging (LogConfig Nothing ("@ENABLE_LOGGER@" == "O
 
   -- Otherwise ksCut would remove keys, we don't want that behavior here
   ksc <- ksDup ks
-  
+
+  -- load type signatures if available, chances are prelude is mounted as well below the path
+  -- and in that case we don't get it passed by the plugin interface
+  pp <- keyDup k
+  keyAddBaseName pp "elektra"
+  keyAddBaseName pp "spec"
+  logDebugT $ "Opening prelude at " ++ show pp
+  pdc <- kdbOpen pp $ \p -> do
+    pd <- ksNew 10
+    pp2 <- keyDup pp
+    kdbGet p pd pp2
+    -- play it safe and copy it here so ksCut won't affect anything else
+    ksDup pd
+
+  pdcc <- ksCut pdc pp
+  logDebugT $ "Prelude contained " ++ show pdcc
+  ksAppend ksc pdcc
+
+  logDebugT $ "Combined specifications are " ++ show ksc
+
   typeSpecs <- parseTypeSpecifications k ksc
   logDebugT $ "Got " ++ show (length typeSpecs) ++ " function specifications"
   mapM_ (logDebugT . show) typeSpecs
@@ -45,7 +65,7 @@ typecheck ks k c = withGlobalLogging (LogConfig Nothing ("@ENABLE_LOGGER@" == "O
   putStepLn "Done Parsing all Specifications, now translate them."
   let rendered = renderStyle style {lineLength = 320} $ prettyPrim $ translateSpecifications typeSpecs keySpecs
   logDebugT rendered
-  
+
   putStepLn "Done Translating all Specifications."
   specFile <- writeTempFile "/tmp/" "testSpecification.hs" rendered
 
@@ -84,6 +104,13 @@ errorString (WontCompile es) = intercalate "\n" (header : map unbox es)
     unbox (GhcError e) = e
 errorString e = show e
 
+isCheckingPrelude :: Key -> IO Bool
+isCheckingPrelude k = do
+  bn1 <- keyBaseName k
+  keyDeleteBaseName k
+  bn2 <- keyBaseName k
+  return $ bn1 == "spec" && bn2 == "elektra"
+
 say :: String -> Interpreter ()
 say = liftIO . logDebugT
 
@@ -99,11 +126,11 @@ elektraTypecheckerClose _ _ = return Success
 hs_elektraHaskellClose = elektraPluginCloseWith elektraTypecheckerClose
 
 elektraTypecheckerGet :: Plugin -> KeySet -> Key -> IO PluginStatus
-elektraTypecheckerGet _ ks k = typecheck ks k Get >> return NoUpdate
+elektraTypecheckerGet _ ks k = isCheckingPrelude k >>= bool (typecheck ks k Get >> return NoUpdate) (return NoUpdate)
 hs_elektraHaskellGet = elektraPluginGetWith elektraTypecheckerGet
 
 elektraTypecheckerSet :: Plugin -> KeySet -> Key -> IO PluginStatus
-elektraTypecheckerSet _ ks k = bool NoUpdate Error <$> typecheck ks k Set
+elektraTypecheckerSet _ ks k = isCheckingPrelude k >>= bool (bool NoUpdate Error <$> typecheck ks k Set) (return NoUpdate)
 hs_elektraHaskellSet = elektraPluginSetWith elektraTypecheckerSet
 
 elektraTypecheckerError :: Plugin -> KeySet -> Key -> IO PluginStatus

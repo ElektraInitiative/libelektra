@@ -26,14 +26,16 @@ instance as well.
 There are basically two ways to use typechecker plugin. First we describe how the plugin
 is used in general for configuration specification developers and users. Afterwards we 
 describe how the typechecker plugin can be extended with the semantics of additional 
-configuration specification keywords. There are already a lot of commonly used keywords
-supported out of the box specified in the file [prelude.ini](/src/plugins/typechecker/prelude.ini).
+configuration specification keywords.
 
 ### General Usage
 
 In order to use the type checker, mount a configuration specification along with this
-plugin. 
+plugin. There are already a lot of commonly used keywords supported out of the box specified 
+in the file [prelude.ini](/src/plugins/typechecker/typechecker/prelude.ini).
+Usually one wants to mount that file as well beforehand so the standard configuration.
 
+`kdb mount prelude.ini spec/<path>/spec/elektra ini`
 `kdb mount <specification> spec/<path> <storage plugin to read the specification> typechecker`
 
 Retrieving a random key from the specification using `kdb get <path>` will cause
@@ -110,13 +112,16 @@ that two incompatible checks can be used for a single key.
 ## Examples
 
 Create a sample configuration specification with three keys. As it is valid, there will be no error 
-issued. We rely on the existence of [prelude.ini](/src/plugins/typechecker/prelude.ini), which already
-contains the type definitions for `check/range`, `check/long` and `fallback/#`. We use kdb shell to 
-delay the typechecking until we have finished writing the whole specification.
+issued. We rely on the existence of [prelude.ini](/src/plugins/typechecker/typechecker/prelude.ini), which already
+contains the type definitions for `check/range`, `check/long` and `fallback/#` and mount it along.
+We use kdb shell to delay the typechecking until we have finished writing the whole specification.
 
 ```sh
 # Backup-and-Restore:spec/examples/simplespecification
 
+pwd
+
+sudo kdb mount prelude.ini spec/examples/simplespecification/spec/elektra ini
 sudo kdb mount simplespecification.ini spec/examples/simplespecification ini typechecker
 
 echo 'keySetName spec/examples/simplespecification/key1 \
@@ -146,6 +151,7 @@ kdb setmeta spec/examples/simplespecification/key2 fallback/#1 spec/examples/sim
 # RET: 5
 # STDERR-REGEX: .*Couldn't match type.*
 
+sudo kdb umount spec/examples/simplespecification/spec/elektra
 kdb rm -r spec/examples/simplespecification
 sudo kdb umount spec/examples/simplespecification
 ```

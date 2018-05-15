@@ -45,6 +45,8 @@ if (LIBFA_FOUND)
 		# copy our small typechecker sandbox to the library dir so it can be easily deployed and use the dependencies
 		# for hint from there
 		install (DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/sandbox/.cabal-sandbox/" DESTINATION ${TYPECHECKER_GHC_PLUGIN_PATH})
+		# copy our prelude library so it can be always used for mounting typechecker specifications
+		install (FILES "${CMAKE_CURRENT_SOURCE_DIR}/typechecker/prelude.ini" DESTINATION ${KDB_DB_SPEC})
 
 	endif (TARGET typechecker)
 
