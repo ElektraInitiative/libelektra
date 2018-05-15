@@ -95,6 +95,7 @@ find /srv/libelektra/coverage/ \
     -print0 \
     | xargs -r -0 rm -R
 """
+    def taskname = "cleanup_coverage"
     return [(taskname): {
         stage(taskname) {
             node {
