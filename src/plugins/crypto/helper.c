@@ -23,15 +23,13 @@
  * @param output points to an allocated string holding the Base64 encoded input data or NULL if the string can not be allocated. Must be
  * freed by the caller.
  * @retval 1 on success
- * @retval -1 if the base64 plugin can not be opened. errorKey is being set.
- * @retval -2 if the decoding function can not be found. errorKey is being set.
+ * @retval -1 if libinvoke reported an error (errorKey is being set).
  */
 int CRYPTO_PLUGIN_FUNCTION (base64Encode) (Key * errorKey, const kdb_octet_t * input, const size_t inputLength, char ** output)
 {
-	ElektraInvokeHandle * handle = elektraInvokeOpen ("base64", 0, 0);
+	ElektraInvokeHandle * handle = elektraInvokeOpen ("base64", 0, errorKey);
 	if (!handle)
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_INVOKE_BASE64, errorKey, "failed to open base64 plugin for encoding");
 		return -1;
 	}
 
@@ -40,9 +38,8 @@ int CRYPTO_PLUGIN_FUNCTION (base64Encode) (Key * errorKey, const kdb_octet_t * i
 
 	if (!encodingFunction)
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_INVOKE_BASE64_FUNCTION, errorKey, "failed to invoke baes64Encode");
 		elektraInvokeClose (handle, 0);
-		return -2;
+		return -1;
 	}
 
 	*output = encodingFunction (input, inputLength);
@@ -60,15 +57,13 @@ int CRYPTO_PLUGIN_FUNCTION (base64Encode) (Key * errorKey, const kdb_octet_t * i
  * @retval 1 on success
  * @retval -1 if the provided string has not been encoded with Base64
  * @retval -2 if the output buffer allocation failed
- * @retval -3 if the base64 plugin can not be opened. errorKey is being set.
- * @retval -4 if the decoding function can not be found. errorKey is being set.
+ * @retval -3 if libinvoke reported an error (errorKey is being set).
  */
 int CRYPTO_PLUGIN_FUNCTION (base64Decode) (Key * errorKey, const char * input, kdb_octet_t ** output, size_t * outputLength)
 {
-	ElektraInvokeHandle * handle = elektraInvokeOpen ("base64", 0, 0);
+	ElektraInvokeHandle * handle = elektraInvokeOpen ("base64", 0, errorKey);
 	if (!handle)
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_INVOKE_BASE64, errorKey, "failed to open base64 plugin for decoding");
 		return -3;
 	}
 
@@ -77,9 +72,8 @@ int CRYPTO_PLUGIN_FUNCTION (base64Decode) (Key * errorKey, const char * input, k
 
 	if (!decodingFunction)
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_INVOKE_BASE64_FUNCTION, errorKey, "failed to invoke base64Decode");
 		elektraInvokeClose (handle, 0);
-		return -4;
+		return -3;
 	}
 
 	int result = decodingFunction (input, output, outputLength);
