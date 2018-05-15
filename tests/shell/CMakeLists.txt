@@ -23,6 +23,7 @@ file(READ "${CMAKE_CURRENT_BINARY_DIR}/include_common.sh"
 	INCLUDE_COMMON_FILE)
 file(REMOVE "${CMAKE_CURRENT_BINARY_DIR}/include_common.sh")
 
+# ~~~
 # Add a test for a script
 #
 # The given testname is blah.sh
@@ -30,6 +31,7 @@ file(REMOVE "${CMAKE_CURRENT_BINARY_DIR}/include_common.sh")
 #   it will be installed on the system as blah.sh
 #   the test will be called testscr_blah
 #   and the script file for the test will be testscr_blah.sh
+# ~~~
 function (add_scripttest testname)
 	get_filename_component (testname_we ${testname} NAME_WE)
 
