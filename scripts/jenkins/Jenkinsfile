@@ -295,8 +295,8 @@ def generateFullBuildStages() {
         [TEST_ALL, TEST_MEM, TEST_INSTALL]
     )
     tasks << buildAndTest(
-        "debian-stable-full-clang",
-        DOCKER_IMAGES.stretch,
+        "debian-unstable-full-clang",
+        DOCKER_IMAGES.sid,
         CMAKE_FLAGS_BUILD_ALL +
             CMAKE_FLAGS_CLANG,
         [TEST_ALL, TEST_MEM, TEST_INSTALL]
