@@ -40,13 +40,12 @@ function (add_scripttest testname)
 
 	foreach (TARGET true false)
 		if (TARGET)
-			#cascading of if is && for poor people
 			if (INSTALL_TESTING)
-			if (NOT ${testname_we} STREQUAL "check_formatting")
-			if (NOT ${testname_we} STREQUAL "check_oclint")
-			if (NOT ${testname_we} STREQUAL "check_plugins")
-			if (NOT ${testname_we} STREQUAL "check_gen")
-			if (NOT ${testname_we} STREQUAL "check_external")
+
+			set (excluded_tests check_external check_formatting check_gen check_oclint check_plugins)
+
+			list (FIND excluded_tests "${testname_we}" index_exluded)
+			if (index_exluded EQUAL -1)
 			if (BUILD_FULL)
 				set (KDB_COMMAND "kdb-full")
 			else (BUILD_FULL)
@@ -70,11 +69,8 @@ function (add_scripttest testname)
 				WORLD_READ WORLD_EXECUTE
 				RENAME ${testname_we}
 				)
-			endif (NOT ${testname_we} STREQUAL "check_external")
-			endif (NOT ${testname_we} STREQUAL "check_gen")
-			endif (NOT ${testname_we} STREQUAL "check_plugins")
-			endif (NOT ${testname_we} STREQUAL "check_oclint")
-			endif (NOT ${testname_we} STREQUAL "check_formatting")
+			endif (index_exluded EQUAL -1)
+
 			endif(INSTALL_TESTING)
 		else (TARGET)
 			if (ENABLE_KDB_TESTING)
