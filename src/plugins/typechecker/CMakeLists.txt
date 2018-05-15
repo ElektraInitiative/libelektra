@@ -15,8 +15,8 @@ if (LIBFA_FOUND)
 			    SANDBOX_ADD_SOURCES
 			    "src/bindings/haskell"
 			    "src/libs/typesystem/libfa"
-			    "src/libs/typesystem/SpecElektra"
-			    "src/libs/typesystem/SpecTranslator"
+			    "src/libs/typesystem/specelektra"
+			    "src/libs/typesystem/spectranslator"
 			    TEST_README
 			    INSTALL_TEST_DATA)
 
