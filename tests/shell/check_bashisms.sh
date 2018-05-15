@@ -17,6 +17,7 @@ find -version > /dev/null 2>&1 > /dev/null && FIND='find scripts -regextype egre
 scripts=$($FIND -type f -not -regex \
 	  '.+(check-env-dep|gitignore|kdb_zsh_completion|run_dev_env|sed|(Docker|Jenkins|Vagrant)file.*|\.(cmake|fish|in|md|txt))$' | \
 	  xargs)
+exit_if_fail 'Unable to locate shell scripts via `find`'
 checkbashisms $scripts
 ret=$?
 # 2 means skipped file, e.g. README.md, that is fine
