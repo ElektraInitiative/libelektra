@@ -9,6 +9,8 @@
 - infos/metadata =
 - infos/description = A very basic plugin that reads and writes a very small subset of YAML
 
+# Camel
+
 ## Introduction
 
 This plugin reads configuration data specified in a **very limited** subset of  the data serialization language [YAML](http://www.yaml.org).
