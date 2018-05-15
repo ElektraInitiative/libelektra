@@ -32,7 +32,7 @@ function (add_scripttest testname)
 		if (TARGET)
 			if (INSTALL_TESTING)
 
-				set (excluded_tests check_external check_formatting check_gen check_oclint check_plugins)
+				set (excluded_tests check_bashisms check_external check_formatting check_gen check_oclint check_plugins)
 
 				list (FIND excluded_tests "${testname_we}" index_exluded)
 				if (index_exluded EQUAL -1)
