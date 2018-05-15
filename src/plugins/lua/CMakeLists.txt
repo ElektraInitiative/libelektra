@@ -34,21 +34,29 @@ add_plugin (lua
 	    INSTALL_TEST_DATA)
 
 if (ADDTESTING_PHASE)
-	if (NOT APPLE) # TODO: ENABLE_BROKEN_TESTS
+	# Disable broken tests
+	if (APPLE)
+		# TODO: ENABLE_BROKEN_TESTS
+		message (WARNING "Disabling tests in ${CMAKE_CURRENT_LIST_DIR} due to APPLE")
+		return ()
+	endif (APPLE)
+	if (CMAKE_C_COMPILER_ID STREQUAL "Clang" OR
+	    CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+		message (WARNING "Disabling tests in ${CMAKE_CURRENT_LIST_DIR} due to clang")
+		return ()
+	endif ()
 
-		check_binding_was_added ("swig_lua" BINDING_WAS_ADDED) # bindings are required for tests
-		if (BUILD_TESTING AND BINDING_WAS_ADDED)
+	check_binding_was_added ("swig_lua" BINDING_WAS_ADDED) # bindings are required for tests
+	if (BUILD_TESTING AND BINDING_WAS_ADDED)
+		# test environment clears env so setting LUA_CPATH is no option
+		# we workaround this by changing the current directory to our bindings
+		# output directory + per default lua loads modules from current directory
+		add_plugintest (lua
+			MEMLEAK
+			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../../bindings/swig/lua/
+			INSTALL_TEST_DATA)
 
-			# test environment clears env so setting LUA_CPATH is no option
-			# we workaround this by changing the current directory to our bindings
-			# output directory + per default lua loads modules from current directory
-			add_plugintest (lua
-					MEMLEAK
-					WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../../bindings/swig/lua/
-					INSTALL_TEST_DATA)
-
-		else ()
-			message (WARNING "swig_lua bindings are required for testing, test deactivated")
-		endif ()
-	endif (NOT APPLE)
+	else ()
+		message (WARNING "swig_lua bindings are required for testing, test deactivated")
+	endif ()
 endif ()
