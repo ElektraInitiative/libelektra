@@ -99,6 +99,7 @@ parts instead.
 
 ```sh
 kdb setmeta spec/examples/simplespecification/key2 fallback/#1 spec/examples/simplespecification/key1
+# RET: 5
 # STDERR-REGEX: .*Couldn't match type.*
 
 kdb rm -r spec/examples/simplespecification

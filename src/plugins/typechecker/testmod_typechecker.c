@@ -92,7 +92,7 @@ static void test_invalid_ranges_override (void)
 	ksAppendKey (ks, keyNew (KEY2_NAME, KEY_VALUE, "500", KEY_META, "override/#1", KEY1_NAME, KEY_META, "check/range", "7200-10000",
 				 KEY_END));
 
-	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "call to kdbSet was not successful");
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "call to kdbSet was not successful");
 	succeed_if (!output_error (parentKey), "no errors found but one is expected");
 
 	keyDel (parentKey);

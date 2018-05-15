@@ -10,6 +10,7 @@ import Elektra.Errors
 
 import Control.Monad                (mapM_)
 import Control.Logger.Simple
+import Data.Bool                    (bool)
 import Data.List                    (intercalate, isPrefixOf)
 import Foreign.Ptr
 import System.IO.Temp               (writeTempFile)
@@ -25,7 +26,7 @@ import qualified Data.Text as T
 
 data CheckMode = Get | Set
 
-typecheck :: KeySet -> Key -> CheckMode -> IO ()
+typecheck :: KeySet -> Key -> CheckMode -> IO Bool
 typecheck ks k c = withGlobalLogging (LogConfig Nothing ("@ENABLE_LOGGER@" == "ON")) $ do
   name <- keyName k
   logDebugT $ "Parse Specifications at " ++ name
@@ -60,7 +61,8 @@ typecheck ks k c = withGlobalLogging (LogConfig Nothing ("@ENABLE_LOGGER@" == "O
         Set -> triggerError 193 k errStr
         Get -> triggerWarnings 192 k errStr
       logDebugT errStr
-    Right () -> return ()
+      return True
+    Right () -> return False
   where
     putStepLn s = logDebugT $ "\n" ++ s ++ "\n"
 
@@ -101,7 +103,7 @@ elektraTypecheckerGet _ ks k = typecheck ks k Get >> return NoUpdate
 hs_elektraHaskellGet = elektraPluginGetWith elektraTypecheckerGet
 
 elektraTypecheckerSet :: Plugin -> KeySet -> Key -> IO PluginStatus
-elektraTypecheckerSet _ ks k = typecheck ks k Set >> return NoUpdate
+elektraTypecheckerSet _ ks k = bool NoUpdate Error <$> typecheck ks k Set
 hs_elektraHaskellSet = elektraPluginSetWith elektraTypecheckerSet
 
 elektraTypecheckerError :: Plugin -> KeySet -> Key -> IO PluginStatus
