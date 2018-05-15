@@ -20,7 +20,7 @@ This plugin reads configuration data specified in a **very limited** subset of  
 ### Basic Usage
 
 ```sh
-# Mount yaml plugin to cascading namespace `/tests/camel`
+# Mount camel plugin to cascading namespace `/tests/camel`
 sudo kdb mount config.yaml /tests/camel camel
 
 kdb set /tests/camel/key value
