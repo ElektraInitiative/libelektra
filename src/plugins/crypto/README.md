@@ -2,7 +2,7 @@
 - infos/author = Peter Nirschl <peter.nirschl@gmail.com>
 - infos/licence = BSD
 - infos/provides = crypto
-- infos/needs = base64
+- infos/needs =
 - infos/recommends =
 - infos/placements = postgetstorage presetstorage
 - infos/status = unittest configurable memleak unfinished discouraged
