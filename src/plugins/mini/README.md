@@ -1,7 +1,7 @@
 - infos = Information about the mini plugin is in keys below
 - infos/author = René Schwaiger <sanssecours@me.com>
 - infos/licence = BSD
-- infos/needs = code
+- infos/needs = ccode
 - infos/provides = storage/ini
 - infos/recommends =
 - infos/placements = getstorage setstorage
