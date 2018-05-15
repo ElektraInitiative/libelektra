@@ -5,6 +5,7 @@ set (GHC_MIN_VERSION "8.0.0")
 if (HASKELL_FOUND)
 	if (NOT GHC_VERSION VERSION_LESS ${GHC_MIN_VERSION})
 		if (NOT BUILD_STATIC)
+			add_binding (haskell)
 
 			set (CABAL_INCLUDE_DIRS "\"${CMAKE_SOURCE_DIR}/src/include\", \"${CMAKE_BINARY_DIR}/src/include\"")
 
@@ -47,23 +48,25 @@ if (HASKELL_FOUND)
 					 WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 					 OUTPUT_QUIET)
 
+			# Sometimes building fails reporting an outdated package file. In this case we need to configure the
+			# package again.
 			add_custom_command (OUTPUT ${BINDING_HASKELL_NAME}
 					    COMMAND ${CABAL_EXECUTABLE} update -v0
 					    COMMAND ${CABAL_EXECUTABLE} install ${CABAL_OPTS} --only-dependencies -v0 || true
 					    COMMAND ${CABAL_EXECUTABLE} configure ${CABAL_OPTS} -v0
-					    COMMAND ${CABAL_EXECUTABLE} build -v0 || # Sometimes building fails reporting an outdated
-										     # package file. In this case we need to configure the
-										     # package again. ${CABAL_EXECUTABLE} configure
-						    ${CABAL_OPTS} -v0 && ${CABAL_EXECUTABLE} build -v0
+					    COMMAND ${CABAL_EXECUTABLE} build -v0 || ${CABAL_EXECUTABLE} configure ${CABAL_OPTS} -v0 &&
+						    ${CABAL_EXECUTABLE} build -v0
 					    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 					    DEPENDS ${BINDING_HASKELL_DEPENDENCIES}
 						    ${ELEKTRA_DEPENDENCY})
 			add_custom_target (c2hs_haskell ALL DEPENDS "${BINDING_HASKELL_NAME}")
 
-			if (BUILD_TESTING) # recompile with tests enabled, to get the dependency graph for the static versions correct  the
-					   # tests need the elektra library already built - while for the haskell plugins it doesn't matter
-					   # as a static build depends on the plugins but not on the bindings, this is the way we can
-					   # resolve the  circular dependency by treating the tests separately
+			if (BUILD_TESTING)
+
+				# recompile with tests enabled, to get the dependency graph for the static versions correct  the
+				# tests need the elektra library already built - while for the haskell plugins it doesn't matter
+				# as a static build depends on the plugins but not on the bindings, this is the way we can resolve the
+				# circular dependency by treating the tests separately
 				set (
 					HASKELL_TESTS
 					"${CMAKE_CURRENT_BINARY_DIR}/dist/build/testhaskell_basic/testhaskell_basic"
@@ -71,23 +74,26 @@ if (HASKELL_FOUND)
 					"${CMAKE_CURRENT_BINARY_DIR}/dist/build/testhaskell_realworld/testhaskell_realworld"
 					"${CMAKE_CURRENT_BINARY_DIR}/dist/build/testhaskell_realworld_optimized/testhaskell_realworld_optimized"
 					)
+
+				# Sometimes building fails reporting an
+				# outdated package file. In this case we need
+				# to configure the package again.
 				add_custom_command (OUTPUT ${HASKELL_TESTS}
 						    COMMAND ${CABAL_EXECUTABLE} install ${CABAL_OPTS} --enable-tests
 							    --only-dependencies -v0 || true
 						    COMMAND ${CABAL_EXECUTABLE} configure ${CABAL_OPTS} --enable-tests -v0
-						    COMMAND ${CABAL_EXECUTABLE} build -v0 || # Sometimes building fails reporting an
-											     # outdated package file. In this case we need
-											     # to configure the package again.
-							    ${CABAL_EXECUTABLE} configure ${CABAL_OPTS}
+						    COMMAND ${CABAL_EXECUTABLE} build -v0 || ${CABAL_EXECUTABLE} configure ${CABAL_OPTS}
 							    --enable-tests -v0 && ${CABAL_EXECUTABLE} build -v0
 						    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 						    DEPENDS ${BINDING_HASKELL_DEPENDENCIES}
 							    ${ELEKTRA_DEPENDENCY}
 							    c2hs_haskell)
 				add_custom_target (c2hs_haskell_tests ALL DEPENDS ${HASKELL_TESTS})
-				if (INSTALL_TESTING) # as those are not controlled by cmake really, adjust the rpath manually  install rpath
-						     # is enough, we don't depend on any cabal libraries anymore  tests are statically
-						     # compiled
+				if (INSTALL_TESTING)
+
+					# as those are not controlled by cmake really, adjust the rpath manually
+					# install rpath is enough, we don't depend on any cabal libraries anymore
+					# tests are statically compiled
 					foreach (HASKELL_TEST ${HASKELL_TESTS})
 						install (
 							CODE

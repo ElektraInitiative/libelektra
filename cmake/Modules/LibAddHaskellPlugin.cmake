@@ -7,18 +7,18 @@ include (LibAddMacros)
 # Expects that plugins make use of Cabal as their build system.
 #
 # MODULES:
-#  the name of the haskell modules to be compiled
+#  the name of the Haskell modules to be compiled
 #  by default it assumes there is a single module called Elektra.<pluginName>
 # NO_SHARED_SANDBOX:
-#  By default all haskell plugins and the bindings are compiled in a shared sandbox to
+#  By default all Haskell plugins and the bindings are compiled in a shared sandbox to
 #  speed up compilation times by only compiling commonly-used libraries once. Set this
 #  flag to use an independent sandbox instead in case there are e.g. library version conflicts
 # SANDBOX_ADD_SOURCES:
-#  additional source paths which should be added to the cabal sandbox
-#  required if the build should depend on haskell libraries not available on hackage
+#  additional source paths which should be added to the Cabal sandbox
+#  required if the build should depend on Haskell libraries not available on hackage
 # ADDITIONAL_SOURCES:
-#  in case your plugin depends on other files than *.hs and *.lhs haskell files and the default
-#  cabal file and c test file and setup file, you can specify them here
+#  in case your plugin depends on other files than *.hs and *.lhs Haskell files and the default
+#  Cabal file and c test file and setup file, you can specify them here
 # ~~~
 macro (add_haskell_plugin target)
 	cmake_parse_arguments (ARG
@@ -41,8 +41,8 @@ macro (add_haskell_plugin target)
 		# set by find_program
 		if (PLUGINPROCESS_FOUND)
 			if (HASKELL_FOUND)
-				list (FIND BINDINGS "haskell" FINDEX)
-				if (FINDEX GREATER -1)
+				check_binding_included ("haskell" HAVE_HASKELL_BINDING)
+				if (HAVE_HASKELL_BINDING)
 
 					# needed for HsFFI.h
 					execute_process (COMMAND ${GHC_EXECUTABLE} --print-libdir
@@ -228,9 +228,9 @@ macro (add_haskell_plugin target)
 						remove_plugin (${target} "GHC_RTS_LIB not found")
 					endif (GHC_RTS_LIB)
 
-				else (FINDEX GREATER -1)
+				else (HAVE_HASKELL_BINDING)
 					remove_plugin (${target} "haskell bindings are not included in the cmake configuration")
-				endif (FINDEX GREATER -1)
+				endif (HAVE_HASKELL_BINDING)
 			else (HASKELL_FOUND)
 				remove_plugin (${target} ${HASKELL_NOTFOUND_INFO})
 			endif (HASKELL_FOUND)
