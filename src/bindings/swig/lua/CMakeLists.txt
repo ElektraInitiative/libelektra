@@ -4,7 +4,7 @@ include (LibAddMacros)
 find_package (Lua 5.1)
 
 if (NOT LUA_FOUND)
-	exclude_binding (swig_lua "Lua libs >= 5.2 not found")
+	exclude_binding (swig_lua "Lua libs >= 5.1 not found")
 else ()
 	add_binding (swig_lua)
 
