@@ -33,7 +33,7 @@ if (LIBFA_FOUND)
 					    COMMAND ${CABAL_EXECUTABLE} sandbox add-source -v0
 						    "${CMAKE_BINARY_DIR}/src/libs/typesystem/libfa"
 					    COMMAND ${CABAL_EXECUTABLE} sandbox add-source -v0
-						    "${CMAKE_BINARY_DIR}/src/libs/typesystem/SpecElektra"
+						    "${CMAKE_BINARY_DIR}/src/libs/typesystem/specelektra"
 					    COMMAND ${CABAL_EXECUTABLE} install --only-dependencies -v0
 					    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/sandbox/")
 			add_custom_target ("typechecker-ghc-plugin"
