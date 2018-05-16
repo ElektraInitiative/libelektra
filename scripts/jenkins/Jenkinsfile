@@ -32,37 +32,56 @@ properties([
 
 // Globals
 docker_node_label = 'docker'
+registry = 'hub.libelektra.org'
 
 DOCKER_IMAGES = [
     sid: [
         id: prefixDockerId('debian-sid'),
         context: "./scripts/docker/debian/sid",
-        file: "./scripts/docker/debian/sid/Dockerfile"
+        file: "./scripts/docker/debian/sid/Dockerfile",
+        autobuild: true
     ],
     stretch: [
         id: prefixDockerId('debian-stretch'),
         context: "./scripts/docker/debian/stretch",
         file: "./scripts/docker/debian/stretch/Dockerfile",
+        autobuild: true
     ],
     stretch_minimal: [
         id: prefixDockerId('debian-stretch-minimal'),
         context: "./scripts/docker/debian/stretch",
         file: "./scripts/docker/debian/stretch/Dockerfile.minimal",
+        autobuild: true
     ],
     stretch_doc: [
         id: prefixDockerId('debian-stretch-doc'),
         context: "./scripts/docker/debian/stretch",
         file: "./scripts/docker/debian/stretch/Dockerfile.doc",
+        autobuild: true
     ],
     jessie: [
         id: prefixDockerId('debian-jessie'),
         context: "./scripts/docker/debian/jessie",
         file: "./scripts/docker/debian/jessie/Dockerfile",
+        autobuild: true
     ],
     xenial: [
         id: prefixDockerId('ubuntu-xenial'),
         context: "./scripts/docker/ubuntu/xenial",
         file: "./scripts/docker/ubuntu/xenial/Dockerfile",
+        autobuild: true
+    ],
+    homepage_frontend: [
+        id: prefixDockerId('homepage-frontend'),
+        context: ".",
+        file: "./scripts/docker/homepage/frontend/Dockerfile",
+        autobuild: false
+    ],
+    homepage_backend: [
+        id: prefixDockerId('homepage-backend'),
+        context: ".",
+        file: "./scripts/docker/homepage/backend/Dockerfile",
+        autobuild: false
     ]
 ]
 
@@ -134,10 +153,51 @@ stage("Full builds") {
     parallel generate_full_build_stages()
 }
 
-// build debian packages + upload if on master
-stage("Build Debian Packages") {
-    milestone label: "Debian Packages"
-    parallel generate_package_build_stages()
+// build artifacts (debian packages, homepage, ...)
+stage("Build artifacts") {
+    milestone label: "artifacts"
+    parallel generate_artifact_stages()
+}
+
+//maybeStage("Deploy Homepage", env.BRANCH_NAME=="master") { TODO replace
+maybeStage("Deploy Homepage", true) {
+    node("frontend") {
+        docker.withRegistry("https://${registry}",
+                            'docker-hub-elektra-jenkins') {
+            def backend_name = "elektra-backend"
+            def frontend_name = "elektra-frontend"
+            def backend = docker.image(
+                namingStrategyHomepage(DOCKER_IMAGES.homepage_backend)
+            )
+            def frontend = docker.image(
+                namingStrategyHomepage(DOCKER_IMAGES.homepage_frontend)
+            )
+            backend.pull()
+            frontend.pull()
+
+            sh "docker stop -t 5 ${backend_name} || /bin/true"
+            sh "docker rm ${backend_name} || /bin/true"
+            backend.run("""\
+                -e VIRTUAL_HOST=restapi.libelektra.org \
+                -e LETSENCRYPT_HOST=restapi.libelektra.org \
+                -e LETSENCRYPT_EMAIL=jenkins@hub.libelektra.org \
+                --name ${backend_name} \
+                --network=frontend_default \
+                --restart=always"""
+            )
+
+            sh "docker stop -t 5 ${frontend_name} || /bin/true"
+            sh "docker rm ${frontend_name} || /bin/true"
+            frontend.run("""\
+                -e VIRTUAL_HOST=www.libelektra.org \
+                -e LETSENCRYPT_HOST=www.libelektra.org \
+                -e LETSENCRYPT_EMAIL=jenkins@hub.libelektra.org \
+                --name ${frontend_name} \
+                --network=frontend_default \
+                --restart=always"""
+            )
+        }
+    }
 }
 
 /*****************************************************************************
@@ -146,24 +206,28 @@ stage("Build Debian Packages") {
 def generate_docker_build_stages() {
     def tasks = [:]
 
-    DOCKER_IMAGES.each { id, image ->
-        tasks << maybe_build_image(image)
+    DOCKER_IMAGES.each { key, image ->
+        if(image.autobuild) {
+            tasks << maybe_build_image_stage(image)
+        }
     }
     return tasks
 }
 
-/* Build image if not available in docker repository
+/* Returns a stage that builds an image if not available in docker repository
  * @param image Map identifying which image to build
+ * @param namingStrategy describes how the image should be named
+                         see namingStrategyTesting/namingStrategyHomepage
  */
-def maybe_build_image(image) {
+def maybe_build_image_stage(image, namingStrategy=this.&namingStrategyTesting) {
     def taskname = "build/${image.id}/"
     return [(taskname): {
         stage(taskname) {
             node(docker_node_label) {
                 echo "Starting ${env.STAGE_NAME} on ${env.NODE_NAME}"
                 checkout scm
-                def id = imageFullName(image)
-                docker.withRegistry('https://hub.libelektra.org',
+                def id = namingStrategy(image)
+                docker.withRegistry("https://${registry}",
                                     'docker-hub-elektra-jenkins') {
                     try {
                         // check if Docker file with tag exists
@@ -172,11 +236,14 @@ def maybe_build_image(image) {
                         // build and push if it does not
                         def uid = getUid()
                         def gid = getGid()
+                        def cpu_count = cpuCount()
+
                         def i = docker.build(
                             id,"""\
 --pull \
 --build-arg JENKINS_GROUPID=${gid} \
 --build-arg JENKINS_USERID=${uid} \
+--build-arg PARALLEL=${cpu_count} \
 -f ${image.file} ${image.context}"""
                         )
                         i.push()
@@ -298,9 +365,20 @@ def build_doc() {
             cmake(env.WORKSPACE, cmake_flags)
             sh "make html latex man pdf"
         }
+
+        def apib = "./doc/api_blueprints/snippet-sharing.apib"
+        def api_doc_dir = "./build/API_DOC/restapi"
+        sh "mkdir -p ${api_doc_dir}/${VERSION}"
+        sh "cp ${apib} ${api_doc_dir}/${VERSION}/"
+        apiary(apib, "${api_doc_dir}/${VERSION}/snippet-sharing.html")
+        dir(api_doc_dir) {
+            sh "ln -s ${VERSION} current"
+        }
+
         warnings parserConfigurations: [
             [parserName: 'Doxygen', pattern: 'build/doc/doxygen.log']
         ]
+
         // TODO don't write to latest on PR's
         sshPublisher(publishers: [
           sshPublisherDesc(
@@ -320,6 +398,10 @@ def build_doc() {
                 sourceFiles: 'doc/help/*.html',
                 removePrefix: 'doc/help/',
                 remoteDirectory: 'help'
+              ),
+              sshTransfer(
+                sourceFiles: 'build/API_DOC/*',
+                removePrefix: 'build/API_DOC/'
               )
           ])
         ])
@@ -420,11 +502,12 @@ kill `pidof dbus-daemon`
     }
 }
 
-/* Generate Stages that build Debian packages
+/* Generate Stages that build and deploy artifacts
  */
-def generate_package_build_stages() {
+def generate_artifact_stages() {
     def tasks = [:]
     tasks << build_package_debian_stretch()
+    tasks << build_homepage()
     return tasks
 }
 
@@ -465,6 +548,19 @@ def build_package_debian_stretch() {
         }
         publishDebianPackages()
     }
+}
+
+def build_homepage() {
+    def homepage_tasks = [:]
+    homepage_tasks << maybe_build_image_stage(
+        DOCKER_IMAGES.homepage_frontend,
+        this.&namingStrategyHomepage
+    )
+    homepage_tasks << maybe_build_image_stage(
+        DOCKER_IMAGES.homepage_backend,
+        this.&namingStrategyHomepage
+    )
+    return homepage_tasks
 }
 
 /*****************************************************************************
@@ -572,7 +668,7 @@ def withDockerEnv(stage_name, image, cl) {
     return [(stage_name): {
         stage(stage_name) {
             node(docker_node_label) {
-                docker.withRegistry('https://hub.libelektra.org',
+                docker.withRegistry("https://${registry}",
                                     'docker-hub-elektra-jenkins') {
                     timeout(activity: true, time: 5, unit: 'MINUTES') {
                         def cpu_count = cpuCount()
@@ -580,7 +676,7 @@ def withDockerEnv(stage_name, image, cl) {
                                  "CTEST_PARALLEL_LEVEL='${cpu_count+2}'"]) {
                             echo "Starting ${env.STAGE_NAME} on ${env.NODE_NAME}"
                             checkout scm
-                            docker.image(imageFullName(image))
+                            docker.image(namingStrategyTesting(image))
                                   .inside("-v ${env.HOME}/git_mirrors:/home/jenkins/git_mirrors") { cl() }
                         }
                     }
@@ -637,16 +733,24 @@ def xunitUpload() {
     ])
 }
 
-/* Build full name of docker image
+/* Build image ID of docker images used for tests
  *
  * We use identifiers in the form of name:yyyyMM-hash
  * The hash is build from reading the Dockerfile
  * @param image_map Map identifying an docker image (see DOCKER_IMAGES)
  */
-def imageFullName(image_map) {
+def namingStrategyTesting(image_map) {
     def cs = checksum(image_map.file)
     def dateString = dateFormatter(NOW)
     return "${image_map.id}:${dateString}-${cs}"
+}
+
+/* Build image ID for homepage
+ *
+ * @param image_map Map identifying an docker image
+ */
+def namingStrategyHomepage(image_map) {
+    return "${image_map.id}:${BUILD_NUMBER}"
 }
 
 /* Generate the checksum of a file
@@ -690,7 +794,7 @@ def dateFormatter(date) {
  * @param name Name of the docker image
  */
 def prefixDockerId(name) {
-    def base = 'build-elektra-'
+    def base = "${registry}/build-elektra-"
     return base + name
 }
 
@@ -748,4 +852,12 @@ def publishDebianPackages(remote="a7") {
     } else {
         echo "Skipping package publish because we are not on master"
     }
+}
+
+/* Run apiary
+ * @param input Input file (.apib)
+ * @param output Output file (.html)
+ */
+def apiary(input, output) {
+    sh "apiary preview --path=${input} --output=${output}"
 }
