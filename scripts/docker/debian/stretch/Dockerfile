@@ -54,6 +54,7 @@ RUN apt-get update \
         systemd \
         libsystemd-dev \
         llvm \
+        icheck \
         devscripts \
         lintian \
         diffutils \

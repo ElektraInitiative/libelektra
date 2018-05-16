@@ -215,6 +215,7 @@ def generate_full_build_stages() {
     def tasks = [:]
     tasks << build_todo()
     tasks << build_doc()
+    tasks << build_icheck()
     /* TODO Reenable for next release
     tasks << build_and_test_asan(
         "debian-stable-asan",
@@ -279,6 +280,13 @@ def build_todo() {
                   normal: 'FIXME',
                   low: 'TODO'
         archive(["sloccount.sc"])
+        deleteDir()
+    }
+}
+
+def build_icheck() {
+    return withDockerEnv("icheck", DOCKER_IMAGES.stretch) {
+        sh "scripts/run_icheck"
         deleteDir()
     }
 }
