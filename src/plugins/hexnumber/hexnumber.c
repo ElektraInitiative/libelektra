@@ -9,6 +9,7 @@
 
 #include "hexnumber.h"
 
+#include <kdbease.h>
 #include <kdberrors.h>
 #include <kdbhelper.h>
 #include <stdbool.h>
@@ -19,6 +20,7 @@ typedef struct
 {
 	bool forceConversion;
 	char ** integerTypes;
+	size_t integerTypeCount;
 } HexnumberData;
 
 /**
@@ -33,6 +35,7 @@ static KeySet * elektraContract (void)
 		keyNew ("system/elektra/modules/" ELEKTRA_HEXNUMBER_PLUGIN_NAME "/exports", KEY_END),
 		keyNew ("system/elektra/modules/" ELEKTRA_HEXNUMBER_PLUGIN_NAME "/exports/get", KEY_FUNC, elektraHexnumberGet, KEY_END),
 		keyNew ("system/elektra/modules/" ELEKTRA_HEXNUMBER_PLUGIN_NAME "/exports/set", KEY_FUNC, elektraHexnumberSet, KEY_END),
+		keyNew ("system/elektra/modules/" ELEKTRA_HEXNUMBER_PLUGIN_NAME "/exports/close", KEY_FUNC, elektraHexnumberClose, KEY_END),
 
 #include ELEKTRA_README (hexnumber)
 
@@ -212,12 +215,13 @@ static bool isHexUnitBase (const Key * key)
  * Checks whether a given key has one of the given types.
  *
  * @param key The Key that should be checked.
- * @param types A NULL terminated list of strings containing possible values for the /type metadata.
+ * @param types An array of strings containing possible values for the /type metadata.
+ * @param typeCount The number of strings in the @p types array.
  *
  * @retval #true if the Key's type metadata is contained in the types list
- * @retval #false otherwies
+ * @retval #false otherwise
  */
-static bool hasType (const Key * key, char ** types)
+static bool hasType (const Key * key, char ** types, size_t typeCount)
 {
 	const Key * typeMeta = keyGetMeta (key, "type");
 	if (!typeMeta)
@@ -226,7 +230,7 @@ static bool hasType (const Key * key, char ** types)
 	}
 
 	const char * type = keyString (typeMeta);
-	for (int i = 0; types[i] != NULL; ++i)
+	for (size_t i = 0; i < typeCount; ++i)
 	{
 		if (elektraStrCmp (types[i], type) == 0)
 		{
@@ -252,52 +256,12 @@ static bool hasHexType (const Key * key)
 }
 
 /**
- * copied from boolean/boolean.c
- */
-static void strToArray (Key * key, char *** array)
-{
-	int count = 1;
-	const char * values = keyString (key);
-	char * ptr = (char *) values;
-	while (*ptr)
-	{
-		if (*ptr == ';') ++count;
-		++ptr;
-	}
-	*array = elektraCalloc ((count + 1) * sizeof (char *));
-	char * localString = elektraStrDup (values);
-	char * saveptr = 0;
-	char * token = 0;
-	token = strtok_r (localString, ";", &saveptr);
-	if (!token)
-	{
-		elektraFree (array);
-		array = NULL;
-	}
-	else
-	{
-		int index = 0;
-		ptr = token;
-		while (*ptr == ' ')
-			++ptr;
-		(*array)[index++] = elektraStrDup (ptr);
-		while ((token = strtok_r (0, ";", &saveptr)) != NULL)
-		{
-			ptr = token;
-			while (*ptr == ' ')
-				++ptr;
-			(*array)[index++] = elektraStrDup (ptr);
-		}
-	}
-	elektraFree (localString);
-}
-
-/**
  * Parse the configuration as described in README.md
  * @param config the configuration KeySet provided by elektraPluginGetConfig
  * @param data pointer to the struct to store the configuration in
+ * @param errorKey Key used to store error information
  */
-void parseConfig (KeySet * config, HexnumberData * data)
+int parseConfig (KeySet * config, HexnumberData * data, Key * errorKey)
 {
 	Key * forceKey = ksLookupByName (config, "/force", 0);
 	if (forceKey)
@@ -305,22 +269,17 @@ void parseConfig (KeySet * config, HexnumberData * data)
 		data->forceConversion = true;
 	}
 
-	Key * typesKey = ksLookupByName (config, "/integertypes", 0);
-	if (typesKey)
+	Key * typesKey = keyNew ("/accept/type", KEY_END);
+	const ssize_t res = elektraArrayGetStrings (typesKey, config, &data->integerTypes);
+	if (res < 0)
 	{
-		strToArray (typesKey, &data->integerTypes);
+		elektraFree (data->integerTypes);
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_STATE, errorKey, "Could not parse config! Types not set correctly.");
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
-	else
-	{
-		data->integerTypes = NULL;
-	}
+	data->integerTypeCount = (size_t) res;
 
-	if (!data->integerTypes)
-	{
-		static char * default_types[] = { "byte",	  "short",     "unsigned_short",     "long",
-						  "unsigned_long", "long_long", "unsigned_long_long", NULL };
-		data->integerTypes = default_types;
-	}
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
 /**
@@ -350,12 +309,20 @@ int elektraHexnumberGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	{
 		KeySet * config = elektraPluginGetConfig (handle);
 		data = elektraCalloc (sizeof (HexnumberData));
-		parseConfig (config, data);
+		if (parseConfig (config, data, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
+		{
+			elektraFree (data);
+			return ELEKTRA_PLUGIN_STATUS_ERROR;
+		}
 		elektraPluginSetData (handle, data);
 	}
 
 	Key * cur;
 	ksRewind (returned);
+
+	static char * defaultIntegerTypes[] = { "byte",		 "short",     "unsigned_short",    "long",
+						"unsigned_long", "long_long", "unsigned_long_long" };
+	static const size_t defaultIntegerTypeCount = sizeof (defaultIntegerTypes) / sizeof (const char *);
 
 	int status = ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 	while ((cur = ksNext (returned)) != NULL)
@@ -380,7 +347,8 @@ int elektraHexnumberGet (Plugin * handle, KeySet * returned, Key * parentKey)
 				status |= ELEKTRA_PLUGIN_STATUS_ERROR;
 			}
 		}
-		else if (hexString && (data->forceConversion || hasType (cur, data->integerTypes)))
+		else if (hexString && (data->forceConversion || hasType (cur, data->integerTypes, data->integerTypeCount) ||
+				       hasType (cur, defaultIntegerTypes, defaultIntegerTypeCount)))
 		{
 			status |= convertHexToDec (cur, parentKey);
 		}
@@ -407,7 +375,11 @@ int elektraHexnumberSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKT
 	{
 		KeySet * config = elektraPluginGetConfig (handle);
 		data = elektraCalloc (sizeof (HexnumberData));
-		parseConfig (config, data);
+		if (parseConfig (config, data, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
+		{
+			elektraFree (data);
+			return ELEKTRA_PLUGIN_STATUS_ERROR;
+		}
 		elektraPluginSetData (handle, data);
 	}
 
@@ -426,6 +398,23 @@ int elektraHexnumberSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKT
 	return status;
 }
 
+int elektraHexnumberClose (Plugin * handle ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+{
+	HexnumberData * data = elektraPluginGetData (handle);
+	if (data)
+	{
+		for (size_t i = 0; i < data->integerTypeCount; ++i)
+		{
+			elektraFree (data->integerTypes[i]);
+		}
+		elektraFree (data->integerTypes);
+		elektraFree (data);
+		elektraPluginSetData (handle, NULL);
+	}
+
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+}
+
 /**
  * Exports the plugin to be used by Elektra.
  */
@@ -435,5 +424,6 @@ Plugin * ELEKTRA_PLUGIN_EXPORT (hexnumber)
 	return elektraPluginExport (ELEKTRA_HEXNUMBER_PLUGIN_NAME,
 				    ELEKTRA_PLUGIN_GET, &elektraHexnumberGet,
 				    ELEKTRA_PLUGIN_SET, &elektraHexnumberSet,
+				    ELEKTRA_PLUGIN_CLOSE, &elektraHexnumberClose,
 				    ELEKTRA_PLUGIN_END);
 }

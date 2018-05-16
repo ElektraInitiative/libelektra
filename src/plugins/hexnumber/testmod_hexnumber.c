@@ -69,14 +69,16 @@ static void test_default (void)
 static void test_customint (void)
 {
 	Key * parentKey = keyNew ("user/tests/hexnumber", KEY_END);
-	KeySet * conf = ksNew (10, keyNew ("system/integertypes", KEY_VALUE, "customint;othercustomint", KEY_END), KS_END);
+	KeySet * conf = ksNew (10, keyNew ("system/accept/type/#0", KEY_VALUE, "customint", KEY_END),
+			       keyNew ("system/accept/type/#1", KEY_VALUE, "othercustomint", KEY_END), KS_END);
 	PLUGIN_OPEN ("hexnumber");
 	KeySet * ks = ksNew (30, CREATE_TEST_KEY_CUSTOM (0x1F, "customint"), CREATE_TEST_KEY_CUSTOM (0xFF, "othercustomint"),
-			     CREATE_TEST_KEY_CUSTOM (0x22, "string"), KS_END);
+			     CREATE_TEST_KEY_CUSTOM (0x22, "string"), CREATE_TEST_KEY_CUSTOM (0x11, "long"), KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 	CHECK_TEST_KEY (0x1F, 31);
 	CHECK_TEST_KEY (0xFF, 255);
 	CHECK_TEST_KEY (0x22, 0x22);
+	CHECK_TEST_KEY (0x11, 17);
 
 	ksDel (ks);
 	keyDel (parentKey);
