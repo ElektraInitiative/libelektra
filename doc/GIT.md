@@ -137,7 +137,6 @@ phrases:
 * jenkins build [git-buildpackage-jessie](https://build.libelektra.org/job/elektra-git-buildpackage-jessie/) please
 * jenkins build [git-buildpackage-wheezy](https://build.libelektra.org/job/elektra-git-buildpackage-wheezy/) please
 * jenkins build [icc](https://build.libelektra.org/job/elektra-icc/) please
-* jenkins build [icheck](https://build.libelektra.org/job/elektra-icheck/) please
 * jenkins build [ini](https://build.libelektra.org/job/elektra-ini-mergerequests/) please
 * jenkins build [local-installation](https://build.libelektra.org/job/elektra-local-installation/) please
 * jenkins build [mingw64](https://build.libelektra.org/job/elektra-gcc-configure-mingw-w64/) please
