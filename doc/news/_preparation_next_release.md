@@ -133,6 +133,8 @@ Many problems were resolved with the following fixes:
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+- We fixed a memory leak in the [mINI plugin](https://libelektra.org/plugins/mini) by requiring the plugin
+  [`ccode`](https://libelektra.org/plugins/ccode) instead of the “provider” `code`.
 
 
 ## Outlook
