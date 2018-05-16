@@ -19,14 +19,15 @@ library
   other-extensions:  OverloadedStrings
                    , CPP
   build-depends:     base >= 4.7 && < 5
-                   , libelektra-haskell
-                   , specelektra
-                   , spectranslator
+                   , libelektra-haskell == @KDB_VERSION@
+                   , specelektra == 1.@KDB_VERSION@
+                   , spectranslator == 1.@KDB_VERSION@
                    , haskell-src-exts
                    , pretty
                    , hint >= 0.7.0 && < 0.8.0
                    , directory
                    , temporary
+                   , exceptions == 0.8.*
                    , text
                    , simple-logger
   cpp-options:       -DENABLE_LOGGER_@ENABLE_LOGGER@

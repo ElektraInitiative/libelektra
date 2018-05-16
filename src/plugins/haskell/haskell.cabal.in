@@ -17,7 +17,7 @@ library
   hs-source-dirs:    "@CMAKE_CURRENT_SOURCE_DIR@"
   exposed-modules:   Elektra.Haskell
   build-depends:     base >= 4.7 && < 5
-                   , libelektra-haskell
+                   , libelektra-haskell == @KDB_VERSION@
   default-language:  Haskell2010
   other-extensions:  ForeignFunctionInterface
   ghc-options:       
