@@ -48,7 +48,7 @@ translate()
 	while read -r line;
 	do
 		if grep -Eq '^\s*#>' <<< "$line"; then
-			output=$(sed -n 's/\s*#> \(.*\)/\1/p' <<< "$line")
+			output=$(sed 's/[ ]*#> \(.*\)/\1/' <<< "$line")
 			[ -z "$OUTBUF" ] && OUTBUF="$output" || OUTBUF="${OUTBUF}⏎$output"
 		fi
 
