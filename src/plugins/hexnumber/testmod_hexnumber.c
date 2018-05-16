@@ -16,7 +16,7 @@
 
 #include "hexnumber.h"
 
-#define CREATE_TEST_KEY(HEX) (keyNew ("user/tests/hexnumber/" #HEX, KEY_VALUE, #HEX, KEY_META, "type", "int", KEY_END))
+#define CREATE_TEST_KEY(HEX) (keyNew ("user/tests/hexnumber/" #HEX, KEY_VALUE, #HEX, KEY_META, "type", "long", KEY_END))
 #define CREATE_TEST_KEY_UNITBASE(HEX) (keyNew ("user/tests/hexnumber/" #HEX, KEY_VALUE, #HEX, KEY_META, "unit/base", "hex", KEY_END))
 #define CREATE_TEST_KEY_CUSTOM(HEX, TYPE) (keyNew ("user/tests/hexnumber/" #HEX, KEY_VALUE, #HEX, KEY_META, "type", TYPE, KEY_END))
 #define CHECK_TEST_KEY(HEX, DEC) succeed_if_same_string (keyString (ksLookupByName (ks, "user/tests/hexnumber/" #HEX, 0)), #DEC)

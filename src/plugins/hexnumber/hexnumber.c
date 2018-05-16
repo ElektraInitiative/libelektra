@@ -58,6 +58,7 @@ static int convertHexToDec (Key * key, Key * parentKey)
 
 	int errnoSaved = errno;
 
+	// TODO: use supermacro from PR #1850 once merged
 	// convert hex string to long long int
 	errno = 0;
 	char * endPtr;
@@ -190,7 +191,7 @@ static int convertDecToHex (Key * key, Key * parentKey)
  */
 static bool isHexString (const Key * key)
 {
-	return strncasecmp (keyString (key), "0x", 2) == 0;
+	return elektraStrNCaseCmp (keyString (key), "0x", 2) == 0;
 }
 
 /**
@@ -204,7 +205,7 @@ static bool isHexString (const Key * key)
 static bool isHexUnitBase (const Key * key)
 {
 	const Key * unitBaseMeta = keyGetMeta (key, "unit/base");
-	return strcmp (keyString (unitBaseMeta), "hex") == 0;
+	return elektraStrCmp (keyString (unitBaseMeta), "hex") == 0;
 }
 
 /**
@@ -227,7 +228,7 @@ static bool hasType (const Key * key, char ** types)
 	const char * type = keyString (typeMeta);
 	for (int i = 0; types[i] != NULL; ++i)
 	{
-		if (strcmp (types[i], type) == 0)
+		if (elektraStrCmp (types[i], type) == 0)
 		{
 			return true;
 		}
@@ -247,7 +248,7 @@ static bool hasType (const Key * key, char ** types)
 static bool hasHexType (const Key * key)
 {
 	const Key * typeMeta = keyGetMeta (key, ELEKTRA_HEXNUMBER_META_KEY);
-	return typeMeta && strcmp (keyString (typeMeta), "1") == 0;
+	return typeMeta && elektraStrCmp (keyString (typeMeta), "1") == 0;
 }
 
 /**
@@ -264,7 +265,7 @@ static void strToArray (Key * key, char *** array)
 		++ptr;
 	}
 	*array = elektraCalloc ((count + 1) * sizeof (char *));
-	char * localString = strdup (values);
+	char * localString = elektraStrDup (values);
 	char * saveptr = 0;
 	char * token = 0;
 	token = strtok_r (localString, ";", &saveptr);
@@ -279,13 +280,13 @@ static void strToArray (Key * key, char *** array)
 		ptr = token;
 		while (*ptr == ' ')
 			++ptr;
-		(*array)[index++] = strdup (ptr);
+		(*array)[index++] = elektraStrDup (ptr);
 		while ((token = strtok_r (0, ";", &saveptr)) != NULL)
 		{
 			ptr = token;
 			while (*ptr == ' ')
 				++ptr;
-			(*array)[index++] = strdup (ptr);
+			(*array)[index++] = elektraStrDup (ptr);
 		}
 	}
 	elektraFree (localString);
@@ -316,7 +317,7 @@ void parseConfig (KeySet * config, HexnumberData * data)
 
 	if (!data->integerTypes)
 	{
-		static char * default_types[] = { "int",  "byte",	  "short",     "unsigned_short",
+		static char * default_types[] = { "byte",	  "short",     "unsigned_short",
 						  "long", "unsigned_long", "long_long", "unsigned_long_long",
 						  NULL };
 		data->integerTypes = default_types;
