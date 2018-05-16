@@ -27,7 +27,7 @@ happens in 2 passes, which is needed because there can be files with no title.
 
 ## GitHub Specialities
 
-* GitHub supports source code fences with syntax highlighting which are not recognised by Doxygen.
+* GitHub supports source code fences with syntax highlighting which are not recognized by Doxygen.
   Thus `sh` after the fence is removed for Doxygen.
 
 

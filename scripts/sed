@@ -9,6 +9,7 @@ s/favour/favor/g
 s/generalises/generalizes/g
 s/organisation/organization/g
 s/realise/realize/g
+s/recognise/recognize/g
 s/serialise/serialize/g
 s/summarise/summarize/g
 s/synchronisation/synchronization/g
