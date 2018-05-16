@@ -131,21 +131,17 @@ NOW = new Date()
  * Serial stages that contain parallelized logic. Only proceeds to the next
  * if previous stage did not fail.
  *****************************************************************************/
-lock('docker-images') {
-    stage("Build docker images") {
-        // makes sure docker images corresponding to the Dockerfiles are
-        //   available to run the tests in
-        parallel generate_docker_build_stages()
-    }
+stage("Build docker images") {
+    // makes sure docker images corresponding to the Dockerfiles are
+    //   available to run the tests in
+    parallel generate_docker_build_stages()
 }
-
 
 // quick builds to give fast initial feedback to programmers
 stage("Fast builds") {
     milestone label: "Fast builds"
     parallel generate_fast_build_stages()
 }
-
 
 // tests to reach full coverage
 stage("Full builds") {
