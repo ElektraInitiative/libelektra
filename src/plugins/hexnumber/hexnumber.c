@@ -317,9 +317,8 @@ void parseConfig (KeySet * config, HexnumberData * data)
 
 	if (!data->integerTypes)
 	{
-		static char * default_types[] = { "byte",	  "short",     "unsigned_short",
-						  "long", "unsigned_long", "long_long", "unsigned_long_long",
-						  NULL };
+		static char * default_types[] = { "byte",	  "short",     "unsigned_short",     "long",
+						  "unsigned_long", "long_long", "unsigned_long_long", NULL };
 		data->integerTypes = default_types;
 	}
 }
