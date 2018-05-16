@@ -15,14 +15,14 @@ The file plugin reads the content of a file and stores it into the parent key.
 
 ## Configuration
 
-- `binary` 
+- `binary`
 
 	treats the file as a binary file instead of a text file
 
 - `info`
 
 	adds additional informations about the file as metadata to the parent key.
-	
+
 	- `info/size` filesize
 	- `info/ctime` time of last status change
 	- `info/atime` time of last access
