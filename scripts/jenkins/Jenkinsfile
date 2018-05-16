@@ -96,7 +96,7 @@ CMAKE_FLAGS_BASE = [
     'KDB_DB_SPEC': '${HOME}/.config/kdb/spec',
     'CMAKE_INSTALL_PREFIX': '${WORKSPACE}/system',
     'INSTALL_SYSTEM_FILES': 'OFF',
-    'BUILD_DOCUMENTATION': 'OFF'
+    'buildDocUMENTATION': 'OFF'
 ]
 
 // TODO Remove -DEPRECATED after #1954 is resolved
@@ -134,25 +134,25 @@ NOW = new Date()
 stage("Build docker images") {
     // makes sure docker images corresponding to the Dockerfiles are
     //   available to run the tests in
-    parallel generate_docker_build_stages()
+    parallel generateDockerBuildStages()
 }
 
 // quick builds to give fast initial feedback to programmers
 stage("Fast builds") {
     milestone label: "Fast builds"
-    parallel generate_fast_build_stages()
+    parallel generateFastBuildStages()
 }
 
 // tests to reach full coverage
 stage("Full builds") {
     milestone label: "Full builds"
-    parallel generate_full_build_stages()
+    parallel generateFullBuildStages()
 }
 
 // build artifacts (debian packages, homepage, ...)
 stage("Build artifacts") {
     milestone label: "artifacts"
-    parallel generate_artifact_stages()
+    parallel generateArtifactStages()
 }
 
 //maybeStage("Deploy Homepage", env.BRANCH_NAME=="master") { TODO replace
@@ -199,12 +199,12 @@ maybeStage("Deploy Homepage", true) {
 /*****************************************************************************
  * Stage Generators
  *****************************************************************************/
-def generate_docker_build_stages() {
+def generateDockerBuildStages() {
     def tasks = [:]
 
     DOCKER_IMAGES.each { key, image ->
         if(image.autobuild) {
-            tasks << maybe_build_image_stage(image)
+            tasks << maybeBuildImageStage(image)
         }
     }
     return tasks
@@ -215,7 +215,7 @@ def generate_docker_build_stages() {
  * @param namingStrategy describes how the image should be named
                          see namingStrategyTesting/namingStrategyHomepage
  */
-def maybe_build_image_stage(image, namingStrategy=this.&namingStrategyTesting) {
+def maybeBuildImageStage(image, namingStrategy=this.&namingStrategyTesting) {
     def taskname = "build/${image.id}/"
     return [(taskname): {
         stage(taskname) {
@@ -255,57 +255,57 @@ def maybe_build_image_stage(image, namingStrategy=this.&namingStrategyTesting) {
  * Should be used to give quick feedback to developer and check for obvious
  * errors before the intensive tasks start
  */
-def generate_fast_build_stages() {
+def generateFastBuildStages() {
     def tasks = [:]
-    tasks << build_and_test(
+    tasks << buildAndTest(
         "debian-stable-fast",
         DOCKER_IMAGES.stretch,
         CMAKE_FLAGS_BUILD_ALL,
         [TEST_NOKDB]
     )
-    tasks << build_and_test(
+    tasks << buildAndTest(
         "debian-unstable-fast",
         DOCKER_IMAGES.sid,
         CMAKE_FLAGS_DEBUG,
         [TEST_NOKDB]
     )
-    tasks << build_icheck()
+    tasks << buildIcheck()
     tasks << build_check_release_notes()
     return tasks
 }
 
 /* Generate Test stages for full test coverage
  */
-def generate_full_build_stages() {
+def generateFullBuildStages() {
     def tasks = [:]
-    tasks << build_todo()
-    tasks << build_doc()
-    tasks << build_and_test_asan(
+    tasks << buildTodo()
+    tasks << buildDoc()
+    tasks << buildAndTestAsan(
         "debian-stable-asan",
         DOCKER_IMAGES.stretch,
         CMAKE_FLAGS_BUILD_ALL
     )
-    tasks << build_and_test(
+    tasks << buildAndTest(
         "debian-stable-full",
         DOCKER_IMAGES.stretch,
         CMAKE_FLAGS_BUILD_ALL +
             CMAKE_FLAGS_COVERAGE,
         [TEST_ALL, TEST_MEM, TEST_INSTALL]
     )
-    tasks << build_and_test(
+    tasks << buildAndTest(
         "debian-oldstable-full",
         DOCKER_IMAGES.jessie,
         CMAKE_FLAGS_BUILD_ALL,
         [TEST_ALL, TEST_MEM, TEST_INSTALL]
     )
-    tasks << build_and_test(
+    tasks << buildAndTest(
         "debian-unstable-full",
         DOCKER_IMAGES.sid,
         CMAKE_FLAGS_BUILD_ALL,
         [TEST_ALL, TEST_MEM, TEST_INSTALL]
     )
     /* TODO Reenable for next release
-    tasks << build_and_test(
+    tasks << buildAndTest(
         "debian-stable-full-clang",
         DOCKER_IMAGES.stretch,
         CMAKE_FLAGS_BUILD_ALL +
@@ -313,13 +313,13 @@ def generate_full_build_stages() {
         [TEST_ALL, TEST_MEM, TEST_INSTALL]
     )
     */
-    tasks << build_and_test(
+    tasks << buildAndTest(
         "ubuntu-xenial",
         DOCKER_IMAGES.xenial,
         CMAKE_FLAGS_BUILD_ALL,
         [TEST_ALL]
     )
-    tasks << build_and_test(
+    tasks << buildAndTest(
         "debian-stable-minimal",
         DOCKER_IMAGES.stretch_minimal,
         [:],
@@ -328,7 +328,7 @@ def generate_full_build_stages() {
     return tasks
 }
 
-def build_todo() {
+def buildTodo() {
     def stage_name = "todo"
     def open_task_patterns = '''\
 **/*.c, **/*.h, **/*.hpp, **/*.cpp,\
@@ -362,7 +362,7 @@ def build_check_release_notes() {
     }]
 }
 
-def build_icheck() {
+def buildIcheck() {
     def stage_name = "icheck"
     return [(stage_name): {
         stage(stage_name) {
@@ -374,7 +374,7 @@ def build_icheck() {
     }]
 }
 
-def build_doc() {
+def buildDoc() {
     def test_name = "doc"
     cmake_flags = [
         'BUILD_PDF': 'ON',
@@ -438,7 +438,7 @@ def build_doc() {
 }
 
 /* Helper to generate an asan enabled test */
-def build_and_test_asan(test_name, image, extra_cmake_flags = [:]) {
+def buildAndTestAsan(test_name, image, extra_cmake_flags = [:]) {
     def cmake_flags = CMAKE_FLAGS_BASE +
                       CMAKE_FLAGS_ASAN +
                       extra_cmake_flags
@@ -470,7 +470,7 @@ def build_and_test_asan(test_name, image, extra_cmake_flags = [:]) {
  * tests: list of tests which should be run
  * extra_artifacts: which files should be additionally saved from the build
  */
-def build_and_test(test_name, image, extra_cmake_flags = [:],
+def buildAndTest(test_name, image, extra_cmake_flags = [:],
                    tests = [], extra_artifacts = []) {
     def cmake_flags = CMAKE_FLAGS_BASE + extra_cmake_flags
     def artifacts = []
@@ -540,58 +540,52 @@ kill `pidof dbus-daemon`
 
 /* Generate Stages that build and deploy artifacts
  */
-def generate_artifact_stages() {
+def generateArtifactStages() {
     def tasks = [:]
-    tasks << build_package_debian_stretch()
-    tasks << build_homepage()
+    tasks << buildPackageDebianStretch()
+    tasks << buildHomepage()
     return tasks
 }
 
-def build_package_debian_stretch() {
-    def stage_name="package/stretch"
-    return [(stage_name): {
-        stage(stage_name) {
-            withDockerEnv(DOCKER_IMAGES.stretch) {
-                withCredentials([file(credentialsId: 'jenkins-key', variable: 'KEY'),
-                                 file(credentialsId: 'jenkins-secret-key', variable: 'SKEY')]) {
-                    sh "gpg --import $KEY"
-                    sh "gpg --import $SKEY"
-                }
-                withEnv(["DEBSIGN_PROGRAM=gpg",
-                         "DEBFULLNAME=Jenkins (User for Elektra automated build system)",
-                         "DEBEMAIL=autobuilder@libelektra.org"]) {
-                    sh "rm -R ./*"
-                    def target_dir="./libelektra"
-                    checkout scm: [
-                        $class: 'GitSCM',
-                        branches: scm.branches,
-                        extensions: scm.extensions + [
-                            [$class: 'PerBuildTag'],
-                            [$class: 'RelativeTargetDirectory',
-                             relativeTargetDir: target_dir]
-                        ],
-                        userRemoteConfigs: scm.userRemoteConfigs
-                    ]
-                    dir(target_dir) {
-                        sh "git checkout -B temp"
-                        sh "git tag -f $VERSION"
+def buildPackageDebianStretch() {
+    return withDockerEnv("package/stretch", DOCKER_IMAGES.stretch) {
+        withCredentials([file(credentialsId: 'jenkins-key', variable: 'KEY'),
+                         file(credentialsId: 'jenkins-secret-key', variable: 'SKEY')]) {
+            sh "gpg --import $KEY"
+            sh "gpg --import $SKEY"
+        }
+        withEnv(["DEBSIGN_PROGRAM=gpg",
+                 "DEBFULLNAME=Jenkins (User for Elektra automated build system)",
+                 "DEBEMAIL=autobuilder@libelektra.org"]) {
+            sh "rm -R ./*"
+            def target_dir="./libelektra"
+            checkout scm: [
+                $class: 'GitSCM',
+                branches: scm.branches,
+                extensions: scm.extensions + [
+                    [$class: 'PerBuildTag'],
+                    [$class: 'RelativeTargetDirectory',
+                     relativeTargetDir: target_dir]
+                ],
+                userRemoteConfigs: scm.userRemoteConfigs
+            ]
+            dir(target_dir) {
+                sh "git checkout -B temp"
+                sh "git tag -f $VERSION"
 
-                        sh "git checkout -B debian origin/debian"
-                        sh "git merge --no-ff -m 'merge $VERSION' temp"
+                sh "git checkout -B debian origin/debian"
+                sh "git merge --no-ff -m 'merge $VERSION' temp"
 
-                        sh "dch -l '.$BUILD_NUMBER' 'auto build'"
-                        sh "git commit -am 'auto build $VERSION'"
+                sh "dch -l '.$BUILD_NUMBER' 'auto build'"
+                sh "git commit -am 'auto build $VERSION'"
 
-                        sh "gbp buildpackage -sa"
-                    }
-                }
-                publishDebianPackages()
+                sh "gbp buildpackage -sa"
             }
         }
-    }]
+    }
 }
 
-def build_homepage() {
+def buildHomepage() {
     def homepage_tasks = [:]
     homepage_tasks << maybe_build_image_stage(
         DOCKER_IMAGES.homepage_frontend,
