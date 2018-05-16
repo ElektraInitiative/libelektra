@@ -65,10 +65,11 @@ kdb ls /sw/elektra/examples/kdb-ls/ --max-depth=1
 kdb ls /sw/elektra/examples/kdb-ls --max-depth=1
 # this yields no output as /sw/elektra/examples/kdb-ls is not a key
 
-# list all keys below /sw/elektra/examples/kdb-ls with are minimum 1 level away from that key
-# and maximum 2 levels away
+# list all keys below /sw/elektra/examples/kdb-ls with are minimum 1 level (inclusive) away from that key
+# and maximum 2 levels away (exclusive)
 kdb ls /sw/elektra/examples/kdb-ls --min-depth=1 --max-depth=2
-#> user/sw/elektra/examples/kdb-ls/tost/level
+#> user/sw/elektra/examples/kdb-ls/test
+#> user/sw/elektra/examples/kdb-ls/tost
 
 # list all keys below /sw/elektra/examples/kdb-ls/test
 kdb ls /sw/elektra/examples/kdb-ls/test
@@ -78,7 +79,7 @@ kdb ls /sw/elektra/examples/kdb-ls/test
 
 # list all keys under /sw/elektra/examples/kdb-ls in verbose mode
 kdb ls /sw/elektra/examples/kdb-ls/ -v
-#> size of all keys in mountpoint: 31
+#> size of all keys in mountpoint: 5
 #> size of requested keys: 5
 #> user/sw/elektra/examples/kdb-ls/test
 #> user/sw/elektra/examples/kdb-ls/test/fizz/buzz
