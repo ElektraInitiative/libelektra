@@ -124,7 +124,15 @@ These notes are of interest for people developing Elektra:
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- Travis now builds all (applicable) bindings by default again.
+- The script [`check_formatting.sh`](https://master.libelektra.org/tests/shell/check_formatting.sh) now also checks the formatting of CMake
+  code if you installed [`sponge`](https://joeyh.name/code/moreutils) and [`cmake-format`][].
+- Our Travis build job now
+  - builds all (applicable) bindings by default again, and
+  - checks the formatting of CMake code via [`cmake-format`][]
+
+  .
+
+[`cmake-format`]: https://github.com/cheshirekow/cmake_format
 
 ## Fixes
 

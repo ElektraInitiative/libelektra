@@ -17,6 +17,13 @@ fi
 
 scripts/reformat-source
 
+if which sponge > /dev/null && which > /dev/null cmake-format
+then
+	scripts/reformat-cmake
+else
+	echo 'Warning: Since either `sponge` or `cmake-format` are not available I will not check the formatting of the CMake code.'
+fi
+
 git diff --exit-code
 succeed_if "Please commit the reformatting changes before pushing"
 
