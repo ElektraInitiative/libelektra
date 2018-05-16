@@ -193,8 +193,8 @@ macro (add_haskell_plugin target)
 
 									add_custom_command (OUTPUT ${PLUGIN_HASKELL_NAME}
 											    COMMAND ${CABAL_EXECUTABLE} configure
-												    ${CABAL_OPTS}
-											    COMMAND ${CABAL_EXECUTABLE} build
+												    ${CABAL_OPTS} -v0
+											    COMMAND ${CABAL_EXECUTABLE} build -v0
 											    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 											    DEPENDS c2hs_haskell
 												    ${PLUGIN_SOURCE_FILES}
@@ -316,13 +316,13 @@ macro (configure_haskell_sandbox)
 	if (NOT HASKELL_SANDBOX_DEP_IDX)
 		set (HASKELL_SANDBOX_DEP_IDX 1)
 		add_custom_command (OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/cabal.sandbox.config"
-				    COMMAND ${CABAL_EXECUTABLE} sandbox init ${SHARED_SANDBOX}
+				    COMMAND ${CABAL_EXECUTABLE} sandbox init ${SHARED_SANDBOX} -v0
 				    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 				    DEPENDS ${ARG_DEPENDS})
 		set (HASKELL_ADD_SOURCES_TARGET haskell-add-sources-${HASKELL_SANDBOX_DEP_IDX})
 	else (NOT HASKELL_SANDBOX_DEP_IDX)
 		add_custom_command (OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/cabal.sandbox.config"
-				    COMMAND ${CABAL_EXECUTABLE} sandbox init ${SHARED_SANDBOX}
+				    COMMAND ${CABAL_EXECUTABLE} sandbox init ${SHARED_SANDBOX} -v0
 				    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 				    DEPENDS haskell-add-sources-${HASKELL_SANDBOX_DEP_IDX}
 					    ${ARG_DEPENDS})
@@ -337,7 +337,7 @@ macro (configure_haskell_sandbox)
 			file (COPY "${CMAKE_SOURCE_DIR}/${SANDBOX_ADD_SOURCE}/" DESTINATION "${CMAKE_BINARY_DIR}/${SANDBOX_ADD_SOURCE}")
 
 			add_custom_command (OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/cabal.sandbox.config"
-					    COMMAND ${CABAL_EXECUTABLE} sandbox add-source "${CMAKE_BINARY_DIR}/${SANDBOX_ADD_SOURCE}"
+					    COMMAND ${CABAL_EXECUTABLE} sandbox add-source "${CMAKE_BINARY_DIR}/${SANDBOX_ADD_SOURCE}" -v0
 					    APPEND)
 		endforeach (SANDBOX_ADD_SOURCE ${ARG_SANDBOX_ADD_SOURCES})
 	endif (ARG_SANDBOX_ADD_SOURCES)
@@ -347,7 +347,7 @@ macro (configure_haskell_sandbox)
 	endif (BUILD_SHARED OR BUILD_FULL)
 	add_custom_command (OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/cabal.sandbox.config" # ensure any further dependencies added by plugin
 										       # developers get installed to the sandbox
-			    COMMAND ${CABAL_EXECUTABLE} install ${CABAL_OPTS} --only-dependencies || true
+			    COMMAND ${CABAL_EXECUTABLE} install ${CABAL_OPTS} --only-dependencies -v0 || true
 			    APPEND)
 
 	add_custom_target (${HASKELL_ADD_SOURCES_TARGET} ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/cabal.sandbox.config")
