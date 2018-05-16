@@ -291,7 +291,7 @@ ssize_t elektraArrayGetStrings (const Key * arrayParent, KeySet * keys, char ***
 	ksRewind (elements);
 	while ((cur = ksNext (elements)) != NULL)
 	{
-		(*strings)[index++] = elektraStrDup(keyString (cur));
+		(*strings)[index++] = elektraStrDup (keyString (cur));
 	}
 
 	ksDel (elements);

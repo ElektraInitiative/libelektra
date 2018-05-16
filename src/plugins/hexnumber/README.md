@@ -36,15 +36,16 @@ When mounting a backend with the hexnumber plugin, a few parameters can be confi
    
    NOTE: be careful when using this option, as strings like `0xg` might produce unwanted results. (see `man 3 strtoull` for details)
 
-    ```
-    sudo kdb mount test.ecf /examples/hexnumber/forced hexnumber /force=1
-    ```
+   ```
+   sudo kdb mount test.ecf /examples/hexnumber/forced hexnumber /force=1
+   ```
 
-2. The types recognized as integers can be configured. For this purpose specify all types you want to be considered for possible hexadecimal
-   conversion as a semicolon(;)-delimited list. This overwrites the list of default types completely.
+2. The types recognized as integers can be configured. For this purpose specify all *additional* types you want to be considered for 
+   possible hexadecimal conversion as an Elektra array. All keys with a type from `/accept/types/#`, or one of the default types, will 
+   be converted to hexadecimal if the value starts with `0x` (or `0X`).
    
    ```
-   sudo kdb mount test.ecf /examples/hexnumber/customtypes hexnumber /integertypes=byte;long;customint
+   sudo kdb mount test.ecf /examples/hexnumber/customtypes hexnumber /accept/types/#0=customint /accept/types/#1=othercustomint
    ```
 
 ## Usage & Example
