@@ -40,7 +40,7 @@ an easy task.
 
 ### Format Examples
 
-The serialised configuration can look like (0 bytes at end of strings are
+The serialized configuration can look like (0 bytes at end of strings are
 omitted):
 
     kdbOpen 1
@@ -51,7 +51,7 @@ omitted):
     commentBelow are the mountpoints.
     keyEnd
     keyNew 32 19
-    system/elektra/mountpoints/dbusserialised Backend
+    system/elektra/mountpoints/dbusserialized Backend
     keyEnd keyNew 39 1
     system/elektra/mountpoints/dbus/config
     keyMeta 8 72

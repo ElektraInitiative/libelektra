@@ -58,7 +58,7 @@ As already stated, some parts of the contracts are obligatory.
 `elektraPluginGet()` symbol is mandatory - it is used to yield this
 information.  Elektra’s core also uses the functions `elektraPluginSet()`,
 `elektraPluginError()`, `elektraPluginOpen()` and `elektraPluginClose()`
-if available.  Other functions like `serialise`, `unserialise` or
+if available.  Other functions like `serialize`, `unserialize` or
 `lookup` which implement special features can be supported, but are
 ignored by the core.  For the user of the library these functions can
 be very useful.  These functions shall either belong to the concern of
