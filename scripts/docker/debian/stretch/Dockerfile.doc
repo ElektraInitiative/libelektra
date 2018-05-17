@@ -10,12 +10,15 @@ RUN apt-get update && apt-get -y install \
 RUN apt-get -y install \
         doxygen \
         graphviz \
+        ruby \
+        ruby-dev \
         ruby-ronn \
         sloccount \
         texlive-latex-base \
         texlive-latex-recommended \
         texlive-latex-extra \
         texlive-fonts-recommended \
+    && gem install apiaryio \
     && rm -rf /var/lib/apt/lists/*
 
 # Create User:Group
