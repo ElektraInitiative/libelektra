@@ -11,7 +11,7 @@
 
 ## Introduction
 
-This plugin parses `passwd` files, e.g. `/etc/passwd`. 
+This plugin parses `passwd` files, e.g. `/etc/passwd`.
 
 ## Implementation Details
 
