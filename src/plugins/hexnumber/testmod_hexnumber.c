@@ -47,7 +47,7 @@ static void test_default (void)
 	PLUGIN_OPEN ("hexnumber");
 	KeySet * ks = ksNew (30, CREATE_TEST_KEY (0xF), CREATE_TEST_KEY (0xf), CREATE_TEST_KEY (0x14), CREATE_TEST_KEY (0xFFFFFFFFFFFFFFFF),
 			     CREATE_TEST_KEY (0x0), CREATE_TEST_KEY (0x2), CREATE_TEST_KEY (-0x2), CREATE_TEST_KEY (-0x1),
-			     CREATE_TEST_KEY (test), CREATE_TEST_KEY (0xtest), KS_END);
+			     CREATE_TEST_KEY (test), KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 	CHECK_TEST_KEY (0xF, 15);
 	CHECK_TEST_KEY (0xf, 15);
@@ -58,7 +58,6 @@ static void test_default (void)
 	CHECK_TEST_KEY (-0x2, -0x2);
 	CHECK_TEST_KEY (-0x1, -0x1);
 	CHECK_TEST_KEY (test, test);
-	CHECK_TEST_KEY (0xtest, 0);
 
 	ksDel (ks);
 	keyDel (parentKey);

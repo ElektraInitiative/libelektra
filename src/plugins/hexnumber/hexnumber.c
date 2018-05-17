@@ -73,7 +73,7 @@ static int convertHexToDec (Key * key, Key * parentKey)
 				    ULLONG_MAX);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
-	else if ((errno != 0 && value == 0) || endPtr == hexValue)
+	else if ((errno != 0 && value == 0) || endPtr == hexValue || *endPtr != '\0')
 	{
 		errno = errnoSaved;
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INVALID_FORMAT, parentKey, "Hexadecimal number '%s' could not be read", hexValue);
@@ -368,7 +368,7 @@ int elektraHexnumberGet (Plugin * handle, KeySet * returned, Key * parentKey)
  * @retval #ELEKTRA_PLUGIN_STATUS_NO_UPDATE if \p returned was not modified
  * @retval #ELEKTRA_PLUGIN_STATUS_ERROR on failure
  */
-int elektraHexnumberSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraHexnumberSet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
 	HexnumberData * data = elektraPluginGetData (handle);
 	if (!data)
@@ -398,7 +398,7 @@ int elektraHexnumberSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key 
 	return status;
 }
 
-int elektraHexnumberClose (Plugin * handle ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraHexnumberClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 {
 	HexnumberData * data = elektraPluginGetData (handle);
 	if (data)

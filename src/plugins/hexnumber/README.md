@@ -35,7 +35,8 @@ When mounting a backend with the hexnumber plugin, a few settings can be configu
    starting with `0x` (or `0X`) into decimal before passing the value on to the rest of Elektra. This can be useful for importing a 
    configuration file that uses hexadecimal values into Elektra without writing a specification for the file.
    
-   NOTE: be careful when using this option, as strings like `0xg` might produce unwanted results. (see `man 3 strtoull` for details)
+   NOTE: be careful when using this option, as any configuration value that contains invalid non-hexadecimal characters 
+         (i.e. does not match `0[xX][0-9A-Fa-f]+`) will result in an error.
 
    ```
    sudo kdb mount test.ecf /examples/hexnumber/forced hexnumber /force=1
