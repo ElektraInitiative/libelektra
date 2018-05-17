@@ -6,6 +6,11 @@ if (NOT SWIG_FOUND)
 	return ()
 endif ()
 
+if (ENABLE_ASAN)
+	exclude_binding (swig "SWIG is not compatible with ENABLE_ASAN")
+	return ()
+endif (ENABLE_ASAN)
+
 check_binding_included ("swig_python2" IS_INCLUDED SUBDIRECTORY "swig/python2")
 if (IS_INCLUDED)
 	add_subdirectory (python2)
