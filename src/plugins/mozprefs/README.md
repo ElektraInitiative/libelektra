@@ -41,18 +41,18 @@ will all result in `lockPref("a.lock.key", "lock");`
 
 ## Example
 ```sh
-# Backup-and-Restore:/examples/prefs
+# Backup-and-Restore:/tests/mozprefs
 
-sudo kdb mount prefs.js /examples/prefs mozprefs
+sudo kdb mount prefs.js /tests/mozprefs mozprefs
 
-kdb setmeta user/examples/prefs/lock/a/lock/key type boolean
-kdb set /examples/prefs/lock/a/lock/key true
-kdb setmeta user/examples/prefs/pref/a/default/key type string
-kdb set /examples/prefs/pref/a/default/key "i'm a default key"
-kdb setmeta user/examples/prefs/user/a/user/key type integer
-kdb set /examples/prefs/user/a/user/key 123
+kdb setmeta user/tests/mozprefs/lock/a/lock/key type boolean
+kdb set /tests/mozprefs/lock/a/lock/key true
+kdb setmeta user/tests/mozprefs/pref/a/default/key type string
+kdb set /tests/mozprefs/pref/a/default/key "i'm a default key"
+kdb setmeta user/tests/mozprefs/user/a/user/key type integer
+kdb set /tests/mozprefs/user/a/user/key 123
 
-kdb export user/examples/prefs ini
+kdb export user/tests/mozprefs ini
 #> [lock/a/lock]
 #> #@META type = boolean
 #> key = true
@@ -63,12 +63,12 @@ kdb export user/examples/prefs ini
 #> #@META type = integer
 #> key = 123
 
-cat `kdb file user/examples/prefs`
+cat `kdb file user/tests/mozprefs`
 #> lockPref("a.lock.key", true);
 #> pref("a.default.key", "i'm a default key");
 #> user_pref("a.user.key", 123);
 
 # cleanup
-kdb rm -r /examples/prefs
-sudo kdb umount /examples/prefs
+kdb rm -r /tests/mozprefs
+sudo kdb umount /tests/mozprefs
 ```
