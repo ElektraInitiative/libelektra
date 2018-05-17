@@ -158,8 +158,7 @@ stage("Build artifacts") {
     parallel generateArtifactStages()
 }
 
-//maybeStage("Deploy Homepage", env.BRANCH_NAME=="master") { TODO replace
-maybeStage("Deploy Homepage", true) {
+maybeStage("Deploy Homepage", env.BRANCH_NAME=="master") {
     node("frontend") {
         docker.withRegistry("https://${registry}",
                             'docker-hub-elektra-jenkins') {
