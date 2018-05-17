@@ -141,9 +141,9 @@ stage("Build docker images") {
 }
 
 // quick builds to give fast initial feedback to programmers
-stage("Fast builds") {
-    milestone label: "Fast builds"
-    parallel generateFastBuildStages()
+stage("Main builds") {
+    milestone label: "Main builds"
+    parallel generateMainBuildStages()
 }
 
 // tests to reach full coverage
@@ -253,24 +253,19 @@ def maybeBuildImageStage(image, namingStrategy=this.&namingStrategyTesting) {
     }]
 }
 
-/* Generate Test stages that return quickly
+/* Generate Main stages
  *
  * Should be used to give quick feedback to developer and check for obvious
  * errors before the intensive tasks start
  */
-def generateFastBuildStages() {
+def generateMainBuildStages() {
     def tasks = [:]
     tasks << buildAndTest(
-        "debian-stable-fast",
+        "debian-stable-full",
         DOCKER_IMAGES.stretch,
-        CMAKE_FLAGS_BUILD_ALL,
-        [TEST_NOKDB]
-    )
-    tasks << buildAndTest(
-        "debian-unstable-fast",
-        DOCKER_IMAGES.sid,
-        CMAKE_FLAGS_DEBUG,
-        [TEST_NOKDB]
+        CMAKE_FLAGS_BUILD_ALL +
+            CMAKE_FLAGS_COVERAGE,
+        [TEST_ALL, TEST_MEM, TEST_INSTALL]
     )
     tasks << buildIcheck()
     tasks << build_check_release_notes()
@@ -287,13 +282,6 @@ def generateFullBuildStages() {
         "debian-stable-asan",
         DOCKER_IMAGES.stretch,
         CMAKE_FLAGS_BUILD_ALL
-    )
-    tasks << buildAndTest(
-        "debian-stable-full",
-        DOCKER_IMAGES.stretch,
-        CMAKE_FLAGS_BUILD_ALL +
-            CMAKE_FLAGS_COVERAGE,
-        [TEST_ALL, TEST_MEM, TEST_INSTALL]
     )
     tasks << buildAndTest(
         "debian-oldstable-full",
