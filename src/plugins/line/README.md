@@ -61,59 +61,59 @@ This file would result in the following keyset which is being displayed as
 
 
 ```sh
-# Backup-and-Restore:/examples/line
+# Backup-and-Restore:/tests/line
 
-sudo kdb mount line /examples/line line
+sudo kdb mount line /tests/line line
 
-kdb set /examples/line/add something
-kdb set /examples/line/ignored huhu
-kdb set /examples/line ignored   # adding parent key does nothing
-kdb set /examples/line/add here
+kdb set /tests/line/add something
+kdb set /tests/line/ignored huhu
+kdb set /tests/line ignored   # adding parent key does nothing
+kdb set /tests/line/add here
 
-cat `kdb file /examples/line`
+cat `kdb file /tests/line`
 #> something
 #> huhu
 #> here
 
-kdb ls /examples/line
-#> user/examples/line
-#> user/examples/line/#0
-#> user/examples/line/#1
-#> user/examples/line/#2
+kdb ls /tests/line
+#> user/tests/line
+#> user/tests/line/#0
+#> user/tests/line/#1
+#> user/tests/line/#2
 
-kdb set /examples/line/#1 huhu
-#> Using name user/examples/line/#1
+kdb set /tests/line/#1 huhu
+#> Using name user/tests/line/#1
 #> Set string to "huhu"
 
-kdb export /examples/line line
+kdb export /tests/line line
 #> something
 #> huhu
 #> here
 
-sudo kdb umount /examples/line
+sudo kdb umount /tests/line
 ```
 
 
 ### Other Tests
 
 ```sh
-# Backup-and-Restore:/examples/line
+# Backup-and-Restore:/tests/line
 
-sudo kdb mount line /examples/line line
+sudo kdb mount line /tests/line line
 
 # create and initialize testfile
-echo 'setting1 true'        >  `kdb file /examples/line`
-echo 'setting2 false'       >> `kdb file /examples/line`
-echo 'setting3 1000'        >> `kdb file /examples/line`
-echo '#comment'             >> `kdb file /examples/line`
-echo                        >> `kdb file /examples/line`
-echo                        >> `kdb file /examples/line`
-echo '//some other comment' >> `kdb file /examples/line`
-echo                        >> `kdb file /examples/line`
-echo 'setting4 -1'          >> `kdb file /examples/line`
+echo 'setting1 true'        >  `kdb file /tests/line`
+echo 'setting2 false'       >> `kdb file /tests/line`
+echo 'setting3 1000'        >> `kdb file /tests/line`
+echo '#comment'             >> `kdb file /tests/line`
+echo                        >> `kdb file /tests/line`
+echo                        >> `kdb file /tests/line`
+echo '//some other comment' >> `kdb file /tests/line`
+echo                        >> `kdb file /tests/line`
+echo 'setting4 -1'          >> `kdb file /tests/line`
 
 # output filecontent and display line numbers
-awk '{print NR-1 "-" $0}' < `kdb file /examples/line`
+awk '{print NR-1 "-" $0}' < `kdb file /tests/line`
 #> 0-setting1 true
 #> 1-setting2 false
 #> 2-setting3 1000
@@ -125,6 +125,6 @@ awk '{print NR-1 "-" $0}' < `kdb file /examples/line`
 #> 8-setting4 -1
 
 # cleanup
-kdb rm -r /examples/line
-sudo kdb umount /examples/line
+kdb rm -r /tests/line
+sudo kdb umount /tests/line
 ```
