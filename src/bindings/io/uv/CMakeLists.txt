@@ -7,6 +7,8 @@ if (${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
 	exclude_binding (io_uv "cannot be built on Windows")
 elseif (NOT LIBUV_FOUND)
 	exclude_binding (io_uv "libuv not found")
+elseif (ENABLE_ASAN)
+	exclude_binding (io_uv "io bindings are not compatible with ENABLE_ASAN")
 else ()
 	add_binding (io_uv)
 

@@ -5,6 +5,8 @@ pkg_check_modules (GLIB QUIET glib-2.0)
 
 if (NOT GLIB_FOUND)
 	exclude_binding (io_glib "glib-2.0 not found")
+elseif (ENABLE_ASAN)
+	exclude_binding (io_glib "io bindings are not compatible with ENABLE_ASAN")
 else ()
 
 	# Build library
