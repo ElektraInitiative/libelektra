@@ -34,15 +34,10 @@ add_plugin (lua
 	    INSTALL_TEST_DATA)
 
 if (ADDTESTING_PHASE)
-	# Disable broken tests
-	if (APPLE)
-		# TODO: ENABLE_BROKEN_TESTS
-		message (WARNING "Disabling tests in ${CMAKE_CURRENT_LIST_DIR} due to APPLE")
-		return ()
-	endif (APPLE)
-	if (CMAKE_C_COMPILER_ID STREQUAL "Clang" OR
-	    CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-		message (WARNING "Disabling tests in ${CMAKE_CURRENT_LIST_DIR} due to clang")
+	# TODO: ENABLE_BROKEN_TESTS
+	if (APPLE
+	    OR CMAKE_C_COMPILER_ID STREQUAL "Clang"
+	    OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
 		return ()
 	endif ()
 
