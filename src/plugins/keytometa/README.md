@@ -100,7 +100,7 @@ For example consider the following keyset:
     user/config/key5
 
 If key1 and key2 were tagged with `convert/append = next` and key3 and key4 were tagged with `convert/append = previous` the following would happen:
-- the resulting metadata of key0 would contain `value3\nvalue4` (the values of key3 and key4 are merged together and key1 and key2 are skipped, as they have differnt append strategy)
+- the resulting metadata of key0 would contain `value3\nvalue4` (the values of key3 and key4 are merged together and key1 and key2 are skipped, as they have different append strategy)
 - the resulting metadata of key5 would contain `value1\nvalue2` (the values of key1 and key2 are merged together and key3 and key4 are skipped, as they have different append strategy)
 
 ### Same-Level Appending
