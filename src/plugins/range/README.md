@@ -9,11 +9,11 @@
 - infos/metadata = check/range check/type
 - infos/description = tests if a value is within a given range
 
-## Introduction ##
+## Introduction
 
 The range plugin checks if a `Key`'s value is within a given range.
 
-## Usage ##
+## Usage
 
 The plugin checks every `Key` in the `KeySet` for the metakey `check/range` which contains either a single range with the syntax `[-]min-[-]max`, or a list of ranges or values separated by `,` and tests if the `Key`'s value is within the range(s).
 
@@ -41,12 +41,12 @@ Possible values:
 
    for characters
 
- 
-## Dependencies ##
+
+## Dependencies
 
 None.
 
-## Examples ##
+## Examples
 
 ```sh
 # Backup-and-Restore:/examples/range
@@ -79,6 +79,6 @@ kdb rm -r /examples/range
 sudo kdb umount /examples/range
 ```
 
-## Limitations ##
+## Limitations
 
 None.
