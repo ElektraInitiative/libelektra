@@ -66,6 +66,7 @@ We added even more functionality, which could not make it to the highlights:
 
 ## Other News
 
+- The `crypto` plugin now uses Elektra's `libinvoke` and the `base64` plugin in order to encode and decode Base64 strings. This improvement reduces code duplication between the two plugins.
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>

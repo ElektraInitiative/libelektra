@@ -25,37 +25,9 @@ if (DEPENDENCY_PHASE)
 
 	# clean up for dependency phase
 	unset (plugin)
-
-	# add base64 directory to include path
-	if (NOT "${OPENSSL_INCLUDE_DIR}" MATCHES "${CMAKE_SOURCE_DIR}/src/plugins/base64/")
-		set (OPENSSL_INCLUDE_DIR
-		     ${OPENSSL_INCLUDE_DIR}
-		     "${CMAKE_SOURCE_DIR}/src/plugins/base64/"
-		     CACHE STRING
-			   "OpenSSL include path"
-		     FORCE)
-	endif ()
-
-	if (NOT "${LIBGCRYPT_INCLUDE_DIR}" MATCHES "${CMAKE_SOURCE_DIR}/src/plugins/base64/")
-		set (LIBGCRYPT_INCLUDE_DIR
-		     ${LIBGCRYPT_INCLUDE_DIR}
-		     "${CMAKE_SOURCE_DIR}/src/plugins/base64/"
-		     CACHE STRING
-			   "libgcrypt include path"
-		     FORCE)
-	endif ()
-
-	if (NOT "${BOTAN_INCLUDE_DIRS}" MATCHES "${CMAKE_SOURCE_DIR}/src/plugins/base64/")
-		set (BOTAN_INCLUDE_DIRS
-		     ${BOTAN_INCLUDE_DIRS}
-		     "${CMAKE_SOURCE_DIR}/src/plugins/base64/"
-		     CACHE STRING
-			   "Botan include path"
-		     FORCE)
-	endif ()
 endif ()
 
-set (CRYPTO_COMMON_FILES ../base64/base64_functions.h ../base64/base64_functions.c helper.h helper.c gpg.h gpg.c crypto.h crypto.c)
+set (CRYPTO_COMMON_FILES helper.h helper.c gpg.h gpg.c crypto.h crypto.c)
 
 #
 # Compile Variant: OpenSSL
@@ -66,6 +38,7 @@ add_plugin (crypto_gcrypt
 		    ${CRYPTO_COMMON_FILES}
 	    INCLUDE_DIRECTORIES ${LIBGCRYPT_INCLUDE_DIR}
 	    LINK_LIBRARIES ${LIBGCRYPT_LIBRARIES}
+	    LINK_ELEKTRA elektra-invoke
 	    COMPILE_DEFINITIONS ELEKTRA_PLUGIN_NAME=\"crypto_gcrypt\"
 				ELEKTRA_PLUGIN_NAME_C=crypto
 				ELEKTRA_VARIANT=gcrypt
@@ -80,6 +53,7 @@ add_plugin (crypto_openssl
 		    ${CRYPTO_COMMON_FILES}
 	    INCLUDE_DIRECTORIES ${OPENSSL_INCLUDE_DIR}
 	    LINK_LIBRARIES ${OPENSSL_LIBRARIES}
+	    LINK_ELEKTRA elektra-invoke
 	    COMPILE_DEFINITIONS ELEKTRA_PLUGIN_NAME=\"crypto_openssl\"
 				ELEKTRA_PLUGIN_NAME_C=crypto
 				ELEKTRA_VARIANT=openssl
@@ -94,6 +68,7 @@ add_plugin (crypto_botan
 		    ${CRYPTO_COMMON_FILES}
 	    INCLUDE_DIRECTORIES ${BOTAN_INCLUDE_DIRS}
 	    LINK_LIBRARIES ${BOTAN_LIBRARIES}
+	    LINK_ELEKTRA elektra-invoke
 	    COMPILE_DEFINITIONS ELEKTRA_PLUGIN_NAME=\"crypto_botan\"
 				ELEKTRA_PLUGIN_NAME_C=crypto
 				ELEKTRA_VARIANT=botan

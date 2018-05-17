@@ -13,7 +13,6 @@
 #include "helper.h"
 #include "openssl_operations.h"
 
-#include <base64_functions.h>
 #include <kdbassert.h>
 #include <kdberrors.h>
 #include <kdbtypes.h>
@@ -63,7 +62,12 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * masterK
 		return -1;
 	}
 	pthread_mutex_unlock (&mutex_ssl);
-	saltHexString = ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, base64Encode) (salt, sizeof (salt));
+	const int encodingResult = CRYPTO_PLUGIN_FUNCTION (base64Encode) (errorKey, salt, sizeof (salt), &saltHexString);
+	if (encodingResult < 0)
+	{
+		// error in libinvoke - errorKey has been set by base64Encode
+		return -1;
+	}
 	if (!saltHexString)
 	{
 		ELEKTRA_SET_ERROR (87, errorKey, "Memory allocation failed");
@@ -511,6 +515,7 @@ error:
  */
 char * elektraCryptoOpenSSLCreateRandomString (Key * errorKey, const kdb_unsigned_short_t length)
 {
+	char * encoded = NULL;
 	kdb_octet_t buffer[length];
 	pthread_mutex_lock (&mutex_ssl);
 	if (!RAND_bytes (buffer, length))
@@ -521,7 +526,11 @@ char * elektraCryptoOpenSSLCreateRandomString (Key * errorKey, const kdb_unsigne
 		return NULL;
 	}
 	pthread_mutex_unlock (&mutex_ssl);
-	char * encoded = ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, base64Encode) (buffer, length);
+	if (CRYPTO_PLUGIN_FUNCTION (base64Encode) (errorKey, buffer, length, &encoded) < 0)
+	{
+		// error in libinvoke - errorKey has been set by base64Encode
+		return NULL;
+	}
 	if (!encoded)
 	{
 		ELEKTRA_SET_ERROR (87, errorKey, "Memory allocation failed");

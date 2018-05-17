@@ -29,7 +29,6 @@ extern "C" {
 #include "crypto.h"
 #include "gpg.h"
 #include "helper.h"
-#include <base64_functions.h>
 #include <kdbassert.h>
 #include <kdberrors.h>
 #include <string.h>
@@ -59,7 +58,12 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * masterK
 		// generate the salt
 		AutoSeeded_RNG rng;
 		rng.randomize (salt, sizeof (salt));
-		saltHexString = ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, base64Encode) (salt, sizeof (salt));
+		const int encodingResult = CRYPTO_PLUGIN_FUNCTION (base64Encode) (errorKey, salt, sizeof (salt), &saltHexString);
+		if (encodingResult < 0)
+		{
+			// error in libinvoke - errorKey has been set by base64Encode
+			return -1;
+		}
 		if (!saltHexString)
 		{
 			ELEKTRA_SET_ERROR (87, errorKey, "Memory allocation failed");
@@ -323,10 +327,15 @@ char * elektraCryptoBotanCreateRandomString (Key * errorKey, const kdb_unsigned_
 {
 	try
 	{
+		char * hexString = NULL;
 		auto buffer = unique_ptr<kdb_octet_t[]>{ new kdb_octet_t[length] };
 		AutoSeeded_RNG rng;
 		rng.randomize (&buffer[0], length);
-		char * hexString = ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, base64Encode) (&buffer[0], length);
+		if (CRYPTO_PLUGIN_FUNCTION (base64Encode) (errorKey, &buffer[0], length, &hexString) < 0)
+		{
+			// error in libinvoke - errorKey has been set by base64Encode
+			return 0;
+		}
 		return hexString;
 	}
 	catch (std::exception const & e)
