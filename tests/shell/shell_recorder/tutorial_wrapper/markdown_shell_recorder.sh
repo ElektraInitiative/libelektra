@@ -53,7 +53,7 @@ translate()
 		fi
 
 		if grep -Eq "^(\s*)#" <<< "$line"; then
-			directive=$(sed -n 's/\s*# \(.*\)/\1/p' <<< "$line")
+			directive=$(sed -E 's/[ ]*# (.*)/\1/' <<< "$line")
 			cmd=$(cut -d ':' -f1 <<< "$directive")
 			arg=$(cut -d ':' -f2- <<< "$directive" | sed 's/[[:space:]]*//')
 

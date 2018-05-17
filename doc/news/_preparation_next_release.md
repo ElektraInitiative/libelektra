@@ -146,7 +146,7 @@ Many problems were resolved with the following fixes:
   [`ccode`](https://libelektra.org/plugins/ccode) instead of the “provider” `code`.
 - The script [`check_bashisms.sh`](https://master.libelektra.org/tests/shell/check_bashisms.sh) should now work correctly again, if the
   system uses the GNU version `find`.
-- The Markdown Shell Recorder now partially supports indented code blocks.
+- The Markdown Shell Recorder now supports indented code blocks.
 - We fixed some problems in the [Markdown Shell Recorder](https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper) test
   of [`kdb ls`](https://master.libelektra.org/doc/help/kdb-ls.md).
 
