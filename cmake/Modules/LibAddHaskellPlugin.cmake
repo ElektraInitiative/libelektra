@@ -215,7 +215,6 @@ macro (add_haskell_plugin target)
 									     "${GHC_GMP_PATH}"
 									     "${CMAKE_INSTALL_RPATH}"
 									     "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/elektra/haskell")
-
 								else (GHC_PRIM_LIB)
 									remove_plugin (${target} "GHC_PRIM_LIB not found")
 								endif (GHC_PRIM_LIB)
@@ -272,33 +271,31 @@ macro (add_haskell_plugin target)
 		    DEPENDS ${target}
 			    c2hs_haskell)
 
+	if (DEPENDENCY_PHASE AND TARGET elektra-${target})
+		set_target_properties (
+			elektra-${target}
+			PROPERTIES INSTALL_RPATH
+				   "${HASKELL_RPATH}"
+				   SANDBOX_PACKAGEDB
+				   "${CMAKE_BINARY_DIR}/.cabal-sandbox/${GHC_TARGET_PLATFORM}-ghc-${GHC_VERSION}-packages.conf.d/")
+	endif (DEPENDENCY_PHASE AND TARGET elektra-${target})
+
 	set (PLUGINTEST_ARGS "")
 	if (ARG_INSTALL_TEST_DATA)
 		list (APPEND PLUGINTEST_ARGS "INSTALL_TEST_DATA")
 	endif (ARG_INSTALL_TEST_DATA)
 
-	add_plugintest (${target} MEMLEAK "${PLUGINTEST_ARGS}")
-	if (TARGET elektra-${target})
-		if (DEPENDENCY_PHASE AND (BUILD_SHARED OR BUILD_FULL))
-			set_target_properties (
-				elektra-${target}
-				PROPERTIES INSTALL_RPATH
-					   "${HASKELL_RPATH}"
-					   SANDBOX_PACKAGEDB
-					   "${CMAKE_BINARY_DIR}/.cabal-sandbox/${GHC_TARGET_PLATFORM}-ghc-${GHC_VERSION}-packages.conf.d/")
-		endif (DEPENDENCY_PHASE AND (BUILD_SHARED OR BUILD_FULL))
-		if (ADDTESTING_PHASE AND BUILD_TESTING AND (BUILD_SHARED OR BUILD_FULL))
-			get_target_property (HASKELL_RPATH elektra-${target} INSTALL_RPATH)
-			get_target_property (SANDBOX_PACKAGEDB elektra-${target} SANDBOX_PACKAGEDB)
+	if (ADDTESTING_PHASE AND TARGET elektra-${target})
+		add_plugintest (${target} MEMLEAK "${PLUGINTEST_ARGS}")
+		get_target_property (HASKELL_RPATH elektra-${target} INSTALL_RPATH)
+		get_target_property (SANDBOX_PACKAGEDB elektra-${target} SANDBOX_PACKAGEDB)
 
-			set_target_properties (testmod_${target} PROPERTIES INSTALL_RPATH "${HASKELL_RPATH}") # this is required so that it
-													      # finds the type checker
-													      # plugin and all the libraries
-			set_property (TEST testmod_${target}
-				      PROPERTY ENVIRONMENT
-					       "SANDBOX_PACKAGEDB=${SANDBOX_PACKAGEDB};LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
-		endif (ADDTESTING_PHASE AND BUILD_TESTING AND (BUILD_SHARED OR BUILD_FULL))
-	endif (TARGET elektra-${target})
+		# this is required so that it finds the type checker plugin and all the libraries
+		set_target_properties (testmod_${target} PROPERTIES INSTALL_RPATH "${HASKELL_RPATH}")
+		set_property (TEST testmod_${target}
+			      PROPERTY ENVIRONMENT
+				       "SANDBOX_PACKAGEDB=${SANDBOX_PACKAGEDB};LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
+	endif (ADDTESTING_PHASE AND TARGET elektra-${target})
 
 	mark_as_advanced (GHC_FFI_LIB GHC_RTS_LIB GHC_BASE_LIB GHC_GMP_LIB GHC_PRIM_LIB)
 endmacro (add_haskell_plugin)
