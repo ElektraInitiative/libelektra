@@ -3,40 +3,49 @@ include (LibAddMacros)
 find_package (PkgConfig)
 pkg_check_modules (GOBJECT gobject-2.0>=2.36)
 
+# Test if binding can be build
 if (NOT GOBJECT_FOUND)
 	exclude_binding (glib "No gobject found using pkg-config, also remove gi bindings because they depend on it")
-else ()
-	add_binding (glib)
+	return ()
+endif (NOT GOBJECT_FOUND)
 
-	set (GELEKTRA_LIBRARY gelektra-${SO_VERSION}.0 CACHE INTERNAL "GELEKTRA_LIBRARY")
+if (ENABLE_ASAN)
+	exclude_binding (glib "glib is not compatible with ENABLE_ASAN")
+	return ()
+endif (ENABLE_ASAN)
 
-	file (GLOB GELEKTRA_HDR_FILES *.h)
-	file (GLOB GELEKTRA_SRC_FILES *.c)
-	add_headers (ELEKTRA_HEADERS)
-	set (SOURCES ${GELEKTRA_SRC_FILES} ${GELEKTRA_HDR_FILES} ${ELEKTRA_HEADERS})
 
-	add_library (${GELEKTRA_LIBRARY} SHARED ${SOURCES})
-	add_dependencies (${GELEKTRA_LIBRARY} kdberrors_generated)
+# Add binding
+add_binding (glib)
 
-	target_include_directories (${GELEKTRA_LIBRARY} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-	target_include_directories (${GELEKTRA_LIBRARY} SYSTEM PUBLIC ${GOBJECT_INCLUDE_DIRS})
+set (GELEKTRA_LIBRARY gelektra-${SO_VERSION}.0 CACHE INTERNAL "GELEKTRA_LIBRARY")
 
-	target_compile_options (${GELEKTRA_LIBRARY} PUBLIC ${GOBJECT_CFLAGS_OTHER})
+file (GLOB GELEKTRA_HDR_FILES *.h)
+file (GLOB GELEKTRA_SRC_FILES *.c)
+add_headers (ELEKTRA_HEADERS)
+set (SOURCES ${GELEKTRA_SRC_FILES} ${GELEKTRA_HDR_FILES} ${ELEKTRA_HEADERS})
 
-	target_link_libraries (${GELEKTRA_LIBRARY} PUBLIC elektra-core elektra-kdb)
-	target_link_libraries (${GELEKTRA_LIBRARY} PUBLIC ${GOBJECT_LDFLAGS})
+add_library (${GELEKTRA_LIBRARY} SHARED ${SOURCES})
+add_dependencies (${GELEKTRA_LIBRARY} kdberrors_generated)
 
-	install (TARGETS ${GELEKTRA_LIBRARY} LIBRARY DESTINATION lib${LIB_SUFFIX})
+target_include_directories (${GELEKTRA_LIBRARY} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories (${GELEKTRA_LIBRARY} SYSTEM PUBLIC ${GOBJECT_INCLUDE_DIRS})
 
-	install (FILES ${GELEKTRA_HDR_FILES} DESTINATION include/${TARGET_INCLUDE_FOLDER})
+target_compile_options (${GELEKTRA_LIBRARY} PUBLIC ${GOBJECT_CFLAGS_OTHER})
 
-	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/gelektra-constants.h.in" "${CMAKE_CURRENT_BINARY_DIR}/gelektra-constants.h" @ONLY)
+target_link_libraries (${GELEKTRA_LIBRARY} PUBLIC elektra-core elektra-kdb)
+target_link_libraries (${GELEKTRA_LIBRARY} PUBLIC ${GOBJECT_LDFLAGS})
 
-	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/gelektra.pc.in" "${CMAKE_CURRENT_BINARY_DIR}/${GELEKTRA_LIBRARY}.pc" @ONLY)
+install (TARGETS ${GELEKTRA_LIBRARY} LIBRARY DESTINATION lib${LIB_SUFFIX})
 
-	install (FILES "${CMAKE_CURRENT_BINARY_DIR}/${GELEKTRA_LIBRARY}.pc" DESTINATION lib${LIB_SUFFIX}/${TARGET_PKGCONFIG_FOLDER})
+install (FILES ${GELEKTRA_HDR_FILES} DESTINATION include/${TARGET_INCLUDE_FOLDER})
 
-	if (BUILD_TESTING)
-		add_subdirectory (tests)
-	endif (BUILD_TESTING)
-endif ()
+configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/gelektra-constants.h.in" "${CMAKE_CURRENT_BINARY_DIR}/gelektra-constants.h" @ONLY)
+
+configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/gelektra.pc.in" "${CMAKE_CURRENT_BINARY_DIR}/${GELEKTRA_LIBRARY}.pc" @ONLY)
+
+install (FILES "${CMAKE_CURRENT_BINARY_DIR}/${GELEKTRA_LIBRARY}.pc" DESTINATION lib${LIB_SUFFIX}/${TARGET_PKGCONFIG_FOLDER})
+
+if (BUILD_TESTING)
+	add_subdirectory (tests)
+endif (BUILD_TESTING)
