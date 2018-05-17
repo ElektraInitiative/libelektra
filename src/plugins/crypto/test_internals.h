@@ -13,9 +13,11 @@
 #include "helper.h"
 #include <kdb.h>
 #include <kdbinternal.h>
+#include <ftw.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include <tests_internal.h>
 #include <tests_plugin.h>
 
@@ -24,10 +26,12 @@
 #define TEST_KEY_ID "DDEBEF9EE2DC931701338212DAF635B17F230E8D"
 
 #define TEST_SUITE(PLUGIN_NAME)                                                                                                            \
+	init_env ();                                                                                                                       \
 	test_gpg ();                                                                                                                       \
 	test_init (PLUGIN_NAME);                                                                                                           \
 	test_incomplete_config (PLUGIN_NAME);                                                                                              \
-	test_crypto_operations (PLUGIN_NAME);
+	test_crypto_operations (PLUGIN_NAME);                                                                                              \
+	clean_env ();
 
 typedef int (*checkConfPtr) (Key *, KeySet *);
 
@@ -36,6 +40,8 @@ static const char strValLong[] = "Oh loooooooooooooooooooong Johnson";
 static const char strFullBlockSingle[] = "abcdefghijklmno";
 static const char strFullBlockDouble[] = "I am root!!!!!!!!!!!!!!!!!!!!!?";
 static const kdb_octet_t binVal[] = { 0x01, 0x02, 0x03, 0x04 };
+
+static char * gpg_dir;
 
 static inline ssize_t MIN (ssize_t a, ssize_t b)
 {
@@ -104,6 +110,69 @@ static KeySet * newPluginConfiguration (void)
 		      keyNew (ELEKTRA_CRYPTO_PARAM_GPG_UNIT_TEST, KEY_VALUE, "1", KEY_END), KS_END);
 }
 
+static void init_env (void)
+{
+	char tmp_template[] = ".gnupg.XXXXXX";
+	char * tmpdir = getenv ("TMPDIR");
+	if (tmpdir)
+	{
+		// +1 for "/"
+		// +1 for the NULL-terminator
+		size_t gpg_dir_size = sizeof (char) * (strlen (tmpdir) + strlen (tmp_template) + 2);
+		gpg_dir = malloc (gpg_dir_size);
+		succeed_if (gpg_dir != NULL, "no memory available");
+		if (gpg_dir == NULL) exit (-1);
+		snprintf (gpg_dir, gpg_dir_size, "%s/%s", tmpdir, tmp_template);
+		gpg_dir = mkdtemp (gpg_dir);
+	}
+	else
+	{
+		// +1 for the NULL-terminator
+		size_t gpg_dir_size = sizeof (char) * (strlen (tmp_template) + 1);
+		gpg_dir = malloc (gpg_dir_size);
+		succeed_if (gpg_dir != NULL, "no memory available");
+		if (gpg_dir == NULL) exit (-1);
+		snprintf (gpg_dir, gpg_dir_size, "%s", tmp_template);
+		gpg_dir = mkdtemp (gpg_dir);
+	}
+	succeed_if (gpg_dir != NULL, "failed to create the temporary directory for GNUPGHOME");
+	if (gpg_dir)
+	{
+		succeed_if (setenv ("GNUPGHOME", gpg_dir, 1) == 0, "failed to set GNUPGHOME in the environment");
+	}
+}
+
+static int delete_dir (const char * path, ELEKTRA_UNUSED const struct stat * stats, int type)
+{
+	switch (type)
+	{
+	case FTW_D:
+		rmdir (path);
+		break;
+
+	case FTW_F:
+		unlink (path);
+		break;
+
+	default:
+		// ignore
+		break;
+	}
+	return 0; // instructs ftw() to continue
+}
+
+static void clean_env (void)
+{
+	// TODO make it pretty
+	// 1. delete files
+	ftw (gpg_dir, delete_dir, 50);
+	// 2. delete dirs
+	ftw (gpg_dir, delete_dir, 50);
+	// 3. delete root
+	ftw (gpg_dir, delete_dir, 50);
+	free (gpg_dir);
+}
+
 static void test_init (const char * pluginName)
 {
 	Plugin * plugin = NULL;
@@ -117,7 +186,6 @@ static void test_init (const char * pluginName)
 	if (plugin)
 	{
 		succeed_if (!strcmp (plugin->name, pluginName), "got wrong name");
-
 		KeySet * config = elektraPluginGetConfig (plugin);
 		succeed_if (config != 0, "there should be a config");
 
