@@ -13,7 +13,7 @@
 ## Introduction
 
 This plugin is used to read configuration files that use hexadecimal values. All "hex-values" (see below) will be 
-converted into decimal when the Elektra reads values from the mounted file. When Elektra writes back to the file the converted values
+converted into decimal when Elektra reads values from the mounted file. When Elektra writes back to the file the converted values
 will be converted back and stored as before (`0X` will be replaced with `0x`).
 
 ### What are "hex-values"?
@@ -21,14 +21,15 @@ There are multiple ways you can signal to the hexnumber plugin, that a value sho
 
 1. If a Key has the metadata `unit/base` set to `hex` it will always be interpreted as a hex-value. The plugin will also produce an error,
    if the value contained in such a Key does not start with `0x` (or `0X`).
-2. If a Key has the metadata `type`, `unit/base` is not present, and the `type` value starts with `0x` (or `0X`) it will be interpreted as a hex-value.
-   The following types are recognized as integer-types per default: `byte`, `short`, `unsigned_short`, `long`, `unsigned_long`, 
-   `long_long`, `unsigned_long_long`
-3. If forced conversion mode (`/force`, see below) is enabled all values starting with `0x` (or `0X`) are considered hex-values.
+2. If `unit/base` is not present and 
+    - the `type` metadata is set to one of the recognized integer-types (default: `byte`, `short`, `unsigned_short`, `long`, `unsigned_long`, 
+      `long_long`, `unsigned_long_long`) 
+    - AND the configuration value itself starts with `0x` (or `0X`) it will be interpreted as a hex-value.
+3. If forced conversion mode (`/force` plugin configuration, see below) is enabled all values starting with `0x` (or `0X`) are considered hex-values.
 
 ## Configuration
 
-When mounting a backend with the hexnumber plugin, a few parameters can be configured.
+When mounting a backend with the hexnumber plugin, a few settings can be configured.
 
 1. To enable forced conversion mode set `/force` to any value. In forced conversion mode the plugin tries to convert **ALL** strings 
    starting with `0x` (or `0X`) into decimal before passing the value on to the rest of Elektra. This can be useful for importing a 

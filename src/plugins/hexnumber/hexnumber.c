@@ -368,7 +368,7 @@ int elektraHexnumberGet (Plugin * handle, KeySet * returned, Key * parentKey)
  * @retval #ELEKTRA_PLUGIN_STATUS_NO_UPDATE if \p returned was not modified
  * @retval #ELEKTRA_PLUGIN_STATUS_ERROR on failure
  */
-int elektraHexnumberSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraHexnumberSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
 	HexnumberData * data = elektraPluginGetData (handle);
 	if (!data)
