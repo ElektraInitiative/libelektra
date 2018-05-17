@@ -1,0 +1,20 @@
+#!/bin/sh
+#
+# @author Armin Wurzinger <e1528532@libelektra.org>
+# @brief Generates the cabal install command for installing
+# all required haskell dependencies to a custom sandbox location
+# Please note that this is intended for developers to easily generate
+# a list of all required dependencies to be included into
+# - scripts/docker/debian/stretch/Dockerfile
+# - src/bindings/haskell/README.md
+# For the correct resolution it requires that the project
+# has already been built once as cmake will configure the cabal files
+# @date 17.05.2018
+# @tags dependencies
+
+SCRIPTS_DIR=$(dirname "$0")
+. "${SCRIPTS_DIR}/include-common"
+
+FILES=$(find $SOURCE/build \( -name '*.cabal' \) | awk '$0="\""$0"\""' | paste -sd "," -)
+# good enough for now, we copy the output manually anyway
+echo "generateHaskellDependencies [$FILES]" | ghci generate_haskell_dependencies.hs
