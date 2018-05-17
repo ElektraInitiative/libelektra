@@ -394,31 +394,35 @@ def buildDoc() {
                 ]
 
                 // TODO don't write to latest on PR's
-                sshPublisher(publishers: [
-                  sshPublisherDesc(
-                    configName: 'doc.libelektra.org',
-                    transfers: [
-                      sshTransfer(
-                        sourceFiles: 'build/doc/latex/*',
-                        removePrefix: 'build/doc/',
-                        remoteDirectory: 'api/latest'
-                      ),
-                      sshTransfer(
-                        sourceFiles: 'build/doc/man/*',
-                        removePrefix: 'build/doc/',
-                        remoteDirectory: 'api/latest'
-                      ),
-                      sshTransfer(
-                        sourceFiles: 'doc/help/*.html',
-                        removePrefix: 'doc/help/',
-                        remoteDirectory: 'help'
-                      ),
-                      sshTransfer(
-                        sourceFiles: 'build/API_DOC/*',
-                        removePrefix: 'build/API_DOC/'
-                      )
-                  ])
-                ])
+                sshPublisher(
+                    publishers: [
+                        sshPublisherDesc(
+                            configName: 'doc.libelektra.org',
+                            transfers: [
+                                sshTransfer(
+                                    sourceFiles: 'build/doc/latex/*',
+                                    removePrefix: 'build/doc/',
+                                    remoteDirectory: 'api/latest'
+                                ),
+                                sshTransfer(
+                                    sourceFiles: 'build/doc/man/*',
+                                    removePrefix: 'build/doc/',
+                                    remoteDirectory: 'api/latest'
+                                ),
+                                sshTransfer(
+                                    sourceFiles: 'doc/help/*.html',
+                                    removePrefix: 'doc/help/',
+                                    remoteDirectory: 'help'
+                                ),
+                                sshTransfer(
+                                    sourceFiles: 'build/API_DOC/*',
+                                    removePrefix: 'build/API_DOC/'
+                                )
+                            ]
+                        )
+                    ],
+                    verbose: true
+                )
                 deleteDir()
             }
         }
@@ -634,15 +638,19 @@ def publishCoverage() {
     sh "mkdir -p ${uploadDir}"
     sh "mv -v -T build/coverage ${uploadDir}"
 
-    sshPublisher(publishers: [
-      sshPublisherDesc(
-        configName: 'doc.libelektra.org',
-        transfers: [
-          sshTransfer(
-            sourceFiles: uploadDir + '/**',
-          )
-      ])
-    ])
+    sshPublisher(
+        publishers: [
+            sshPublisherDesc(
+                configName: 'doc.libelektra.org',
+                transfers: [
+                    sshTransfer(
+                        sourceFiles: uploadDir + '/**',
+                    )
+                ]
+            )
+        ],
+        verbose: true
+    )
     echo "Finish publication of coverage data"
 }
 
