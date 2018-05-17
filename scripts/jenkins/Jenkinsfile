@@ -109,8 +109,8 @@ CMAKE_FLAGS_BUILD_ALL = [
 CMAKE_FLAGS_COVERAGE = ['ENABLE_COVERAGE': 'ON']
 
 CMAKE_FLAGS_CLANG = [
-    'CMAKE_C_COMPILER': 'clang',
-    'CMAKE_CXX_COMPILER': 'clang++'
+    'CMAKE_C_COMPILER': 'clang-5.0',
+    'CMAKE_CXX_COMPILER': 'clang++-5.0'
 ]
 
 CMAKE_FLAGS_ASAN = ['ENABLE_ASAN': 'ON']
@@ -309,15 +309,13 @@ def generate_full_build_stages() {
         CMAKE_FLAGS_BUILD_ALL,
         [TEST_ALL, TEST_MEM, TEST_INSTALL]
     )
-    /* TODO Reenable for next release
     tasks << build_and_test(
-        "debian-stable-full-clang",
-        DOCKER_IMAGES.stretch,
+        "debian-unstable-full-clang",
+        DOCKER_IMAGES.sid,
         CMAKE_FLAGS_BUILD_ALL +
             CMAKE_FLAGS_CLANG,
         [TEST_ALL, TEST_MEM, TEST_INSTALL]
     )
-    */
     tasks << build_and_test(
         "ubuntu-xenial",
         DOCKER_IMAGES.xenial,
