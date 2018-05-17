@@ -116,7 +116,7 @@ or if just the pull request should be checked:
 After being added to whitelist you can trigger buildjobs by pushing to the PR.
 Most tests can be found described in scripts/jenkins/Jenkinsfile.
 
-You can manually trigger rebuilds (in case of outtages) with the following
+You can manually trigger rebuilds (in case of outages) with the following
 phrases:
 
 * jenkins build [clang](https://build.libelektra.org/job/elektra-clang/) please
