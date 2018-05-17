@@ -2,6 +2,7 @@
 # Only searches for the GHC compiler and not other haskell compilers as it is
 # the most widespread and advanced haskell compiler.
 #
+<<<<<<< HEAD
 #  CABAL_EXECUTABLE      - Path to the cabal executable
 #  C2HS_EXECUTABLE	     - Path to the c2hs executable
 #  GHC_EXECUTABLE        - Path to the ghc executable
@@ -14,10 +15,23 @@
 #  CABAL_DYNLIB_PATH     - The default path where cabal installs dynamic libraries
 #  CABAL_CUSTOM_TARGET   - The default dependencies of the custom Setup.hs for plugins
 #  HASKELL_FOUND         - True if the whole required haskell environment exists
+=======
+#  CABAL_EXECUTABLE       - Path to the cabal executable
+#  C2HS_EXECUTABLE	      - Path to the c2hs executable
+#  GHC_EXECUTABLE         - Path to the ghc executable
+#  GHC-PKG_EXECUTABLE     - Path to the ghc-pkg executable
+#  GHC_HSPEC_FOUND        - True if the hspec library is available
+#  GHC_QUICKCHECK_FOUND   - True if the QuickCheck library is available
+#  GHC_VERSION			  - The numeric version of the ghc executable
+#  CABAL_DYNLIB_PATH      - The default path where cabal installs dynamic libraries
+#  CABAL_CUSTOM_TARGET    - The default dependencies of the custom Setup.hs for plugins
+#  HASKELL_SHARED_SANDBOX - The sandbox containing all required dependencies for haskell things
+#  HASKELL_FOUND          - True if the whole required haskell environment exists
+>>>>>>> haskell-cmake-improvements: remove fetching and building dependencies during the build, require them to be given beforehand
 #    This variable is set to true if CABAL_EXECUTABLE, C2HS_EXECUTABLE, GHC_EXECUTABLE
 #    and GHC-PKG_EXECUTABLE are all available. If BUILD_TESTING is enabled, it also
 #    requires GHC_HSPEC_FOUND and GHC_QUICKCHECK_FOUND to be true.
-#  HASKELL_NOTFOUND_INFO - A string describing which haskell dependency is missing
+#  HASKELL_NOTFOUND_INFO  - A string describing which haskell dependency is missing
 #
 
 find_program (GHC_EXECUTABLE ghc)
@@ -104,10 +118,21 @@ if (GHC-PKG_EXECUTABLE)
     process    >= 1.2  && < 1.7,
     filepath   >= 1.3  && < 1.5")
 
+	set (HASKELL_SHARED_SANDBOX $ENV{HASKELL_SHARED_SANDBOX})
+    if (HASKELL_SHARED_SANDBOX AND IS_DIRECTORY "${HASKELL_SHARED_SANDBOX}")
+		set (HASKELL_FOUND 1)
+    else (HASKELL_SHARED_SANDBOX AND IS_DIRECTORY "${HASKELL_SHARED_SANDBOX}")
+    	if (IS_DIRECTORY "${CMAKE_BINARY_DIR}/.cabal-sandbox")
+    		set (HASKELL_SHARED_SANDBOX "${CMAKE_BINARY_DIR}/.cabal-sandbox")
+			set (HASKELL_FOUND 1)
+    	else (IS_DIRECTORY "${CMAKE_BINARY_DIR}/.cabal-sandbox")
+    		set (HASKELL_NOTFOUND_INFO "cabal sandbox not found")
+    	endif (IS_DIRECTORY "${CMAKE_BINARY_DIR}/.cabal-sandbox")
+    endif (HASKELL_SHARED_SANDBOX AND IS_DIRECTORY "${HASKELL_SHARED_SANDBOX}")
+
 	# By using cabal sandboxes we can install hspec and QuickCheck to the sandbox without
 	# any concerns as they are independent from the global environment. So they are not required.
 	# All set, have fun with haskell!
-	set (HASKELL_FOUND 1)
 else (GHC-PKG_EXECUTABLE)
 	set (HASKELL_NOTFOUND_INFO "ghc-pkg not found")
 endif (GHC-PKG_EXECUTABLE)
