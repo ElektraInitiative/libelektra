@@ -23,12 +23,6 @@ if (NOT GIO_FOUND)
 	return ()
 endif ()
 
-# make sure glib bindings are built
-check_binding_was_added ("glib" IS_GLIB_INCLUDED)
-if (NOT IS_GLIB_INCLUDED)
-	add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/../glib ${CMAKE_CURRENT_BINARY_DIR}/../glib)
-endif ()
-
 check_binding_was_added (glib IS_GLIB_INCLUDED)
 if (NOT IS_GLIB_INCLUDED)
 	exclude_binding (gsettings "gsettings depends on glib")
