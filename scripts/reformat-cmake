@@ -27,7 +27,6 @@ for file in $(find . \( -name 'CMakeLists.txt' -or -name '*.cmake' \) -and \
 			-not -regex '.*build/.*'                           \
 			-not -regex '.*gtest.*'                            \
 			-not -regex '.*cmake/Modules/FindHaskell.cmake$'   \
-			-not -regex '.*tests/shell/CMakeLists.txt$'        \
                      \));
 do
 	$CMAKE_FORMAT "$file" | unexpand | sponge "$file"
