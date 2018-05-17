@@ -8,7 +8,7 @@ add_msr_test (readme_msr "${CMAKE_SOURCE_DIR}/tests/shell/shell_recorder/tutoria
 add_msr_test (issue_template "${CMAKE_SOURCE_DIR}/.github/ISSUE_TEMPLATE.md")
 add_msr_test (tutorial_cascading "${CMAKE_SOURCE_DIR}/doc/tutorials/cascading.md")
 add_msr_test (kdb-complete "${CMAKE_SOURCE_DIR}/doc/help/kdb-complete.md")
-add_msr_test (kdb-ls "${CMAKE_SOURCE_DIR}/doc/help/kdb-ls.md")
+add_msr_test (kdb-ls "${CMAKE_SOURCE_DIR}/doc/help/kdb-ls.md" REQUIRED_PLUGINS sync)
 
 add_msr_test (tutorial_validation "${CMAKE_SOURCE_DIR}/doc/tutorials/validation.md" REQUIRED_PLUGINS validation)
 
