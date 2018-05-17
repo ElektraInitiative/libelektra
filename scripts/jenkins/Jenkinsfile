@@ -577,11 +577,11 @@ def buildPackageDebianStretch() {
 
 def buildHomepage() {
     def homepage_tasks = [:]
-    homepage_tasks << maybe_build_image_stage(
+    homepage_tasks << maybeBuildImageStage(
         DOCKER_IMAGES.homepage_frontend,
         this.&namingStrategyHomepage
     )
-    homepage_tasks << maybe_build_image_stage(
+    homepage_tasks << maybeBuildImageStage(
         DOCKER_IMAGES.homepage_backend,
         this.&namingStrategyHomepage
     )
