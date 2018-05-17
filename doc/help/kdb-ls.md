@@ -39,6 +39,10 @@ This command will list the name of all keys below a given path.
 ```sh
 # Backup-and-Restore: /sw/elektra/examples
 
+# We use `dump` as storage format here, since storage plugins such as INI
+# automatically add keys between levels (e.g. `/sw/elektra/examples/kdb-ls/test/foo`).
+kdb mount ls.ecf /sw/elektra/examples dump
+
 # Create the keys we use for the examples
 kdb set /sw/elektra/examples/kdb-ls/test val1
 kdb set /sw/elektra/examples/kdb-ls/test/foo/bar val2
@@ -86,6 +90,8 @@ kdb ls /sw/elektra/examples/kdb-ls/ -v
 #> user/sw/elektra/examples/kdb-ls/test/foo/bar
 #> user/sw/elektra/examples/kdb-ls/tost
 #> user/sw/elektra/examples/kdb-ls/tost/level
+
+kdb umount /sw/elektra/examples
 ```
 
 ## SEE ALSO
