@@ -153,7 +153,7 @@ stage("Full builds") {
 }
 
 // build artifacts (debian packages, homepage, ...)
-stage("Build artifacts") {
+maybeStage("Build artifacts", isMaster()) {
     milestone label: "artifacts"
     parallel generateArtifactStages()
 }
