@@ -21,10 +21,11 @@ include (LibAddMacros)
 #  Cabal file and c test file and setup file, you can specify them here
 # ~~~
 macro (add_haskell_plugin target)
+	set (MULTI_VALUE_KEYWORDS MODULES SANDBOX_ADD_SOURCES ADDITIONAL_SOURCES TEST_ENVIRONMENT TEST_REQUIRED_PLUGINS)
 	cmake_parse_arguments (ARG
 			       "NO_SHARED_SANDBOX;TEST_README;INSTALL_TEST_DATA" # optional keywords
 			       "MODULE" # one value keywords
-			       "MODULES;SANDBOX_ADD_SOURCES;ADDITIONAL_SOURCES;TEST_REQUIRED_PLUGINS" # multi value keywords
+			       "${MULTI_VALUE_KEYWORDS}" # multi value keywords
 			       ${ARGN})
 
 	set (PLUGIN_NAME ${target})
@@ -242,11 +243,22 @@ macro (add_haskell_plugin target)
 	set (PLUGIN_ARGS "")
 	if (ARG_TEST_README)
 		list (APPEND PLUGIN_ARGS "TEST_README")
+		list (APPEND PLUGIN_ARGS "TEST_ENVIRONMENT")
+		list (
+			APPEND
+				PLUGIN_ARGS
+				"SANDBOX_PACKAGEDB=${CMAKE_BINARY_DIR}/.cabal-sandbox/${GHC_TARGET_PLATFORM}-ghc-${GHC_VERSION}-packages.conf.d/"
+			)
+		if (ARG_TEST_ENVIRONMENT)
+			list (APPEND PLUGIN_ARGS "${ARG_TEST_ENVIRONMENT}")
+		endif (ARG_TEST_ENVIRONMENT)
+
+		if (ARG_TEST_REQUIRED_PLUGINS)
+			list (APPEND PLUGIN_ARGS "TEST_REQUIRED_PLUGINS")
+			list (APPEND PLUGIN_ARGS "${ARG_TEST_REQUIRED_PLUGINS}")
+		endif (ARG_TEST_REQUIRED_PLUGINS)
+
 	endif (ARG_TEST_README)
-	if (ARG_TEST_REQUIRED_PLUGINS)
-		list (APPEND PLUGIN_ARGS "TEST_REQUIRED_PLUGINS")
-		list (APPEND PLUGIN_ARGS "${ARG_TEST_REQUIRED_PLUGINS}")
-	endif (ARG_TEST_REQUIRED_PLUGINS)
 
 	# compile our c wrapper which takes care of invoking the haskell runtime
 	# the actual haskell plugin gets linked in dynamically as a library

@@ -123,7 +123,15 @@ We use kdb shell to delay the typechecking until we have finished writing the wh
 ```sh
 # Backup-and-Restore:spec/examples/simplespecification
 
-sudo kdb mount prelude.ini spec/examples/simplespecification/elektra/spec ini
+# When elektra is installed the first variant will work
+# the following kdb get only decides whether this example is executed as a shell recorder test 
+# during a build, then the second variant points to the correct location
+(sudo kdb mount prelude.ini spec/examples/simplespecification/elektra/spec ini && \
+	kdb get spec/examples/simplespecification/elektra/spec/fallback/#) || \
+	(sudo kdb umount spec/examples/simplespecification/elektra/spec && \
+		sudo kdb mount "$PWD/src/plugins/typechecker/typechecker/prelude.ini" spec/examples/simplespecification/elektra/spec ini)
+# so in a normal use case one would simply call
+# sudo kdb mount prelude.ini spec/examples/simplespecification/elektra/spec ini
 sudo kdb mount simplespecification.ini spec/examples/simplespecification ini typechecker
 
 echo 'kdbGet spec/examples/simplespecification \
