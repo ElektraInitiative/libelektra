@@ -164,9 +164,8 @@ before_install:
       which happy || cabal install happy
       which alex || cabal install alex
       which c2hs || cabal install c2hs
-      mkdir -p $HOME/elektra-cabal-sandbox
-      cd $HOME/elektra-cabal-sandbox
-      cabal sandbox init
+      cd $HOME
+      cabal sandbox init --sandbox $HOME/elektra-cabal-sandbox
       cabal install 'containers >=0.4 && <0.6' 'base >=4.7 && <5' 'directory >=1.1 && <1.4' \
         'process >=1.2 && <1.7' 'filepath >=1.3 && <1.5' 'base -any' 'hspec -any' 'QuickCheck -any'
       export HASKELL_SHARED_SANDBOX=$HOME/elektra-cabal-sandbox
