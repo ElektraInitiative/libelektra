@@ -13,7 +13,7 @@ CMAKE_FORMAT=$(which cmake-format)
 cd "$SOURCE"
 
 if [ -z "${CMAKE_FORMAT}" ]; then
-	echo 'Please install `cmake-format`'
+	2>&1 printf 'Please install `cmake-format`'
 	exit 0
 fi
 
@@ -25,7 +25,7 @@ if [ $? != 0 ]; then
 fi
 
 if [ -z "$(which sponge)" ]; then
-	echo 'Please install `sponge`'
+	2>&1 printf 'Please install `sponge`\n'
 	exit 0
 fi
 
