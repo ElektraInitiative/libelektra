@@ -19,8 +19,7 @@
 typedef struct
 {
 	bool forceConversion;
-	char ** integerTypes;
-	size_t integerTypeCount;
+	KeySet * integerTypes;
 } HexnumberData;
 
 /**
@@ -212,6 +211,15 @@ static bool isHexUnitBase (const Key * key)
 }
 
 /**
+ * Filter function used in hasType() for call to elektraKsFilter()
+ */
+static int __hasTypeFilter (const Key * key, void * argument)
+{
+	const char * type = (const char *) argument;
+	return keyIsString (key) && strcmp (type, keyString (key)) == 0;
+}
+
+/**
  * Checks whether a given key has one of the given types.
  *
  * @param key The Key that should be checked.
@@ -221,24 +229,22 @@ static bool isHexUnitBase (const Key * key)
  * @retval #true if the Key's type metadata is contained in the types list
  * @retval #false otherwise
  */
-static bool hasType (const Key * key, char ** types, size_t typeCount)
+static bool hasType (const Key * key, KeySet * types)
 {
 	const Key * typeMeta = keyGetMeta (key, "type");
-	if (!typeMeta)
+	if (!typeMeta || !types)
 	{
 		return false;
 	}
 
 	const char * type = keyString (typeMeta);
-	for (size_t i = 0; i < typeCount; ++i)
-	{
-		if (elektraStrCmp (types[i], type) == 0)
-		{
-			return true;
-		}
-	}
+	KeySet * res = ksNew ((size_t) ksGetSize (types), KS_END);
+	elektraKsFilter (res, types, &__hasTypeFilter, (void *) type);
 
-	return false;
+	const ssize_t size = ksGetSize (res);
+	ksDel (res);
+
+	return size > 0;
 }
 
 /**
@@ -270,14 +276,16 @@ int parseConfig (KeySet * config, HexnumberData * data, Key * errorKey)
 	}
 
 	Key * typesKey = keyNew ("/accept/type", KEY_END);
-	const ssize_t res = elektraArrayGetStrings (typesKey, config, &data->integerTypes);
-	if (res < 0)
+	KeySet * types = elektraArrayGet (typesKey, config);
+	keyDel (typesKey);
+
+	if (!types)
 	{
-		elektraFree (data->integerTypes);
 		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_STATE, errorKey, "Could not parse config! Types not set correctly.");
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
-	data->integerTypeCount = (size_t) res;
+
+	data->integerTypes = types;
 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
@@ -320,9 +328,13 @@ int elektraHexnumberGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	Key * cur;
 	ksRewind (returned);
 
-	static char * defaultIntegerTypes[] = { "byte",		 "short",     "unsigned_short",    "long",
-						"unsigned_long", "long_long", "unsigned_long_long" };
-	static const size_t defaultIntegerTypeCount = sizeof (defaultIntegerTypes) / sizeof (const char *);
+	KeySet * defaultIntegerTypes = ksNew (7, keyNew ("system/accept/type/#0", KEY_VALUE, "byte", KEY_END),
+					      keyNew ("system/accept/type/#1", KEY_VALUE, "short", KEY_END),
+					      keyNew ("system/accept/type/#2", KEY_VALUE, "long", KEY_END),
+					      keyNew ("system/accept/type/#3", KEY_VALUE, "long_long", KEY_END),
+					      keyNew ("system/accept/type/#4", KEY_VALUE, "unsigned_short", KEY_END),
+					      keyNew ("system/accept/type/#5", KEY_VALUE, "unsigned_long", KEY_END),
+					      keyNew ("system/accept/type/#6", KEY_VALUE, "unsigned_long_long", KEY_END), KS_END);
 
 	int status = ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 	while ((cur = ksNext (returned)) != NULL)
@@ -347,12 +359,13 @@ int elektraHexnumberGet (Plugin * handle, KeySet * returned, Key * parentKey)
 				status |= ELEKTRA_PLUGIN_STATUS_ERROR;
 			}
 		}
-		else if (hexString && (data->forceConversion || hasType (cur, data->integerTypes, data->integerTypeCount) ||
-				       hasType (cur, defaultIntegerTypes, defaultIntegerTypeCount)))
+		else if (hexString && (data->forceConversion || hasType (cur, data->integerTypes) || hasType (cur, defaultIntegerTypes)))
 		{
 			status |= convertHexToDec (cur, parentKey);
 		}
 	}
+
+	ksDel (defaultIntegerTypes);
 
 	return status;
 }
@@ -403,11 +416,7 @@ int elektraHexnumberClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 	HexnumberData * data = elektraPluginGetData (handle);
 	if (data)
 	{
-		for (size_t i = 0; i < data->integerTypeCount; ++i)
-		{
-			elektraFree (data->integerTypes[i]);
-		}
-		elektraFree (data->integerTypes);
+		ksDel (data->integerTypes);
 		elektraFree (data);
 		elektraPluginSetData (handle, NULL);
 	}
