@@ -72,8 +72,6 @@ RUN apt-get update \
         valgrind \
     && rm -rf /var/lib/apt/lists/*
 
-RUN cabal update && cabal install hspec QuickCheck
-
 # Handle Java
 RUN echo 'export JAVA_HOME=$(readlink -f /usr/bin/javac | sed "s:/bin/javac::")'>> /etc/bash.bashrc
 RUN echo '\
@@ -100,3 +98,11 @@ USER ${JENKINS_USERID}
 
 RUN git config --global user.email 'Jenkins <autobuilder@libelektra.org>' \
     && git config --global user.name 'Jenkins'
+
+# Handle Haskell dependencies
+WORKDIR /home/jenkins/elektra-cabal-sandbox
+RUN cabal update && \
+cabal sandbox init && \
+cabal install 'containers >=0.4 && <0.6' 'base >=4.7 && <5' 'directory >=1.1 && <1.4' \
+'process >=1.2 && <1.7' 'filepath >=1.3 && <1.5' 'base -any' 'hspec -any' 'QuickCheck -any' && \
+echo 'export HASKELL_SHARED_SANDBOX=/home/jenkins/elektra-cabal-sandbox' >> /etc/bash.bashrc
