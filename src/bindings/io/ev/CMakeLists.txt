@@ -3,15 +3,12 @@ include (FindLibEv)
 
 if (NOT LIBEV_FOUND)
 	exclude_binding (io_ev "libev not found")
-else ()
-	## Build library
+else () # Build library
 	add_binding (io_ev)
 
 	set (BINDING_VARIANT ev)
 
-	set (IO_VARIANT_SRC_FILES
-		"${CMAKE_CURRENT_SOURCE_DIR}/io_ev.c"
-	)
+	set (IO_VARIANT_SRC_FILES "${CMAKE_CURRENT_SOURCE_DIR}/io_ev.c")
 
 	add_headers (ELEKTRA_HEADERS)
 	set (SOURCES ${IO_VARIANT_SRC_FILES} ${ELEKTRA_HEADERS})
@@ -23,13 +20,7 @@ else ()
 	add_library (OBJ_${IO_VARIANT_LIBRARY} OBJECT ${SOURCES})
 	target_include_directories (OBJ_${IO_VARIANT_LIBRARY} SYSTEM PUBLIC ${LIBEV_INCLUDE_DIRS})
 
-	add_lib (io-${BINDING_VARIANT}
-		SOURCES ${SOURCES}
-		LINK_ELEKTRA
-			elektra-io
-		LINK_LIBRARIES
-			${LIBEV_LIBRARIES}
-	)
+	add_lib (io-${BINDING_VARIANT} SOURCES ${SOURCES} LINK_ELEKTRA elektra-io LINK_LIBRARIES ${LIBEV_LIBRARIES})
 
 	if (BUILD_FULL OR BUILD_STATIC)
 		add_includes ("elektra-full" ${LIBEV_INCLUDE_DIRS})
@@ -38,18 +29,13 @@ else ()
 		target_include_directories (${IO_VARIANT_LIBRARY} SYSTEM PUBLIC ${LIBEV_INCLUDE_DIRS})
 	endif ()
 
-	configure_file (
-		"${CMAKE_CURRENT_SOURCE_DIR}/${IO_VARIANT_LIBRARY}.pc.in"
-		"${CMAKE_CURRENT_BINARY_DIR}/${IO_VARIANT_LIBRARY}.pc"
-		@ONLY
-	)
+	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/${IO_VARIANT_LIBRARY}.pc.in"
+			"${CMAKE_CURRENT_BINARY_DIR}/${IO_VARIANT_LIBRARY}.pc"
+			@ONLY)
 
-	install (
-		FILES "${CMAKE_CURRENT_BINARY_DIR}/${IO_VARIANT_LIBRARY}.pc"
-		DESTINATION lib${LIB_SUFFIX}/${TARGET_PKGCONFIG_FOLDER}
-	)
+	install (FILES "${CMAKE_CURRENT_BINARY_DIR}/${IO_VARIANT_LIBRARY}.pc" DESTINATION lib${LIB_SUFFIX}/${TARGET_PKGCONFIG_FOLDER})
 
-	## Build test
+	# Build test
 	set (testexename testio_${BINDING_VARIANT})
 
 	set (TEST_SOURCES $<TARGET_OBJECTS:cframework>)
@@ -58,8 +44,7 @@ else ()
 	list (APPEND TEST_SOURCES ${IO_TEST_SRC_FILES})
 	list (APPEND TEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/testio_${BINDING_VARIANT}.c")
 
-	if (BUILD_FULL OR BUILD_STATIC)
-		# add sources for elektra-io-ev for static and full builds
+	if (BUILD_FULL OR BUILD_STATIC) # add sources for elektra-io-ev for static and full builds
 		list (APPEND TEST_SOURCES $<TARGET_OBJECTS:OBJ_${IO_VARIANT_LIBRARY}>)
 	endif ()
 
@@ -75,9 +60,8 @@ else ()
 	endif ()
 
 	add_test (NAME ${testexename}
-		COMMAND "${CMAKE_BINARY_DIR}/bin/${testexename}" "${CMAKE_CURRENT_SOURCE_DIR}"
-		WORKING_DIRECTORY "${WORKING_DIRECTORY}"
-	)
+		  COMMAND "${CMAKE_BINARY_DIR}/bin/${testexename}" "${CMAKE_CURRENT_SOURCE_DIR}"
+		  WORKING_DIRECTORY "${WORKING_DIRECTORY}")
 
 	add_subdirectory (example)
 endif ()
