@@ -100,6 +100,7 @@ RUN git config --global user.email 'Jenkins <autobuilder@libelektra.org>' \
     && git config --global user.name 'Jenkins'
 
 # Handle Haskell dependencies
+RUN mkdir -p /home/jenkins/elektra-cabal-sandbox
 WORKDIR /home/jenkins/elektra-cabal-sandbox
 RUN cabal update && \
 cabal sandbox init && \
