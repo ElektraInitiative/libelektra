@@ -114,7 +114,10 @@ s/\<middle[- ]ware/middleware/g
 # s/\</gcc/GCC/g
 
 # plural
-s/\<files-?ystem\>/file system/g
+s/\<files-?system\>/file system/g
 
 #s/\<dependencies/dependences/g
 #s/\<dependency/dependence/g
+
+s/\type-?system/type system/g
+s/\type-?checker/type checker/g
