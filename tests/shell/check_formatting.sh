@@ -17,7 +17,7 @@ fi
 
 scripts/reformat-source
 
-if which sponge > /dev/null && which > /dev/null cmake-format
+if which sponge > /dev/null && which cmake-format > /dev/null
 then
 	scripts/reformat-cmake
 else
