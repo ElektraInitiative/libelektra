@@ -2,14 +2,16 @@
 
 This release did not happen yet.
 
-Please update this file within PRs accordingly.
-For non-trivial changes, you can choose to be
-part of the highlighted changes. Please make
-sure to add some short tutorial, asciinema,
-or how-to-use for highlighted items.
+Please update this file within every PR:
 
-Please add your name to every contribution
-syntax: ", thanks to <myname>".
+- For non-trivial changes, you can choose to be
+  part of the highlighted changes.
+- Please make
+  sure to add some short tutorial, asciinema,
+  or how-to-use for highlighted items.
+- Please add your name in parentheses and italics
+  to every contribution,
+  i.e., syntax: "*(<myname>)*".
 
 
 <<`scripts/generate-news-entry`>>
