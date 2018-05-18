@@ -14,32 +14,32 @@
 ## Example
 
 ```sh
-# Mount plugin to cascading namespace `/examples/yanlr`
-sudo kdb mount config.yaml user/examples/yanlr yanlr
+# Mount plugin to cascading namespace `/tests/yanlr`
+sudo kdb mount config.yaml user/tests/yanlr yanlr
 
 # Manually add some mappings to the configuration file
-printf 'key : value\n'   >  `kdb file user/examples/yanlr`
-printf 'hello : world\n' >> `kdb file user/examples/yanlr`
+printf 'key : value\n'   >  `kdb file user/tests/yanlr`
+printf 'hello : world\n' >> `kdb file user/tests/yanlr`
 
-kdb ls /examples/yanlr
-#> user/examples/yanlr/hello
-#> user/examples/yanlr/key
+kdb ls /tests/yanlr
+#> user/tests/yanlr/hello
+#> user/tests/yanlr/key
 
 # Add a new key-value pair
 # Yan LR actually uses the YAML Smith plugin to write data
-kdb set /examples/yanlr/new brand
+kdb set /tests/yanlr/new brand
 
-kdb ls /examples/yanlr
-#> user/examples/yanlr/hello
-#> user/examples/yanlr/key
-#> user/examples/yanlr/new
+kdb ls /tests/yanlr
+#> user/tests/yanlr/hello
+#> user/tests/yanlr/key
+#> user/tests/yanlr/new
 
-kdb get /examples/yanlr/hello
+kdb get /tests/yanlr/hello
 #> world
 
 # Undo modifications to the key database
-kdb rm -r user/examples/yanlr
-sudo kdb umount user/examples/yanlr
+kdb rm -r user/tests/yanlr
+sudo kdb umount user/tests/yanlr
 ```
 
 ## Limitations
