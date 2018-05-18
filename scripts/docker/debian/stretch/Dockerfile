@@ -105,5 +105,5 @@ WORKDIR /home/jenkins/elektra-cabal-sandbox
 RUN cabal update && \
 cabal sandbox init && \
 cabal install 'containers >=0.4 && <0.6' 'base >=4.7 && <5' 'directory >=1.1 && <1.4' \
-'process >=1.2 && <1.7' 'filepath >=1.3 && <1.5' 'base -any' 'hspec -any' 'QuickCheck -any' && \
-echo 'export HASKELL_SHARED_SANDBOX=/home/jenkins/elektra-cabal-sandbox' >> /etc/bash.bashrc
+'process >=1.2 && <1.7' 'filepath >=1.3 && <1.5' 'base -any' 'hspec -any' 'QuickCheck -any'
+ENV HASKELL_SHARED_SANDBOX /home/jenkins/elektra-cabal-sandbox
