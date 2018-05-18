@@ -95,7 +95,9 @@ stage("Pull docker images") {
 }
 
 maybeStage("Build docker images", IMAGES_TO_BUILD) {
-    parallel generateDockerBuildStages()
+    lock('docker-images') {
+        parallel generateDockerBuildStages()
+    }
 }
 
 stage("Main builds") {
