@@ -16,20 +16,24 @@ import Distribution.Types.Dependency
 import Distribution.Types.PackageId
 import Distribution.Types.PackageName
 
-import Data.List (nub, intercalate)
+import Data.List (nub)
 import Data.Maybe (catMaybes)
-import Data.Char (isSpace)
+import Control.Monad (forM_, mapM)
+import Control.Arrow ((&&&), second)
 
 import qualified Data.ByteString as BS
 
 generateHaskellDependencies :: [String] -> IO ()
 generateHaskellDependencies cabalFiles = do
-  deps <- mapM (readGenericPackageDescription normal) cabalFiles
-  let exclusions = (mkPackageName "Cabal") : map (pkgName . package . packageDescription) deps
-  let uniqueDeps = nub . concat . map generateDeps $ deps
-  let filteredDeps = filter (flip notElem exclusions . depPkgName) uniqueDeps
+  deps <- mapM (sequence . (id &&& readGenericPackageDescription normal)) cabalFiles
+  let exclusions = mkPackageName "Cabal" : map (pkgName . package . packageDescription . snd) deps
+  let filteredPerFile = second (nub . filter (flip notElem exclusions . depPkgName) . generateDeps) <$> deps
   putStr "cabal install "
-  putStrLn . intercalate " " . map (wrap . show . disp) $ filteredDeps
+  putStrLn . unwords . map (wrap . show . disp) . nub . concatMap snd $ filteredPerFile
+  forM_ filteredPerFile $ \(f, d) -> do
+    putStrLn f
+    putStr "cabal install "
+    putStrLn . unwords . map (wrap . show . disp) $ d
   where
     generateDeps pd = let gpd = packageDescription pd
                           cl  = generateBuildDeps <$> condLibrary pd
