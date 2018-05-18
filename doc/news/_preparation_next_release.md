@@ -105,7 +105,7 @@ We improved the documentation in the following ways:
   - [`file`](https://www.libelektra.org/plugins/file),
   - [`iconv`](https://www.libelektra.org/plugins/iconv) and
   - [`uname`](https://www.libelektra.org/plugins/uname),
-  plugin.
+  plugin. *(René Schwaiger)*
 
 ## Compatibility
 
