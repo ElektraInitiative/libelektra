@@ -54,14 +54,17 @@ default, it is assumed to be the folder `.cabal-sandbox` in the build directory.
 In case you want to install them to a separate location this is supported as well,
 the build system will consider the environment variable `HASKELL_SHARED_SANDBOX`.
 
-First create the folder where you want the sandbox to be located. Then switch into that
-folder and execute `cabal sandbox init`. This will create a new sandbox where the
+First create the sandbox at a location of your choice by executing the command 
+`cabal sandbox init --sandbox <path>`. This will create a new sandbox where the
 dependencies will get installed into. Please note that the following commands have to
-be execute inside the directory containing the sandbox, otherwise cabal would install
-the dependencies globally instead. This is generally not wanted to avoid conflicts
-and issues due to existing incompatible dependencies. Before configuring the project
-via cmake, make sure you have set the environment variable to the sandbox' location
-unless you are using the standard folder as described above.
+be executed in the *directory containing the sandbox directory specified above*,
+otherwise cabal would install the dependencies globally instead. This is generally not
+wanted to avoid conflicts and issues due to existing incompatible dependencies. So if you
+created the sandbox with `cabal sandbox init --sandbox /home/user/elektra-cabal-sandbox`
+the following install command has to be executed inside `/home/user/`.
+
+Before configuring the project via cmake, make sure you have set the environment variable 
+to the sandbox' location unless you are using the standard folder as described above.
 
 In case you simply want to install the bindings, but no other haskell based plugins, 
 install the following dependencies into the sandbox:
