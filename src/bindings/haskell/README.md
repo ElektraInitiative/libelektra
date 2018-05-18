@@ -70,16 +70,16 @@ In case you simply want to install the bindings, but no other haskell based plug
 install the following dependencies into the sandbox:
 
 ```
-cabal install 'containers >=0.4 && <0.6' 'base >=4.7 && <5' 'directory >=1.1 && <1.4' \
-	'process >=1.2 && <1.7' 'filepath >=1.3 && <1.5' 'binary >=0.8 && <0.9' 'base -any' \
+cabal install 'Cabal >=1.24 && <2.1' 'containers >=0.4 && <0.6' 'base >=4.7 && <5' \
+	'directory >=1.1 && <1.4' 'process >=1.2 && <1.7' 'filepath >=1.3 && <1.5' \
 	'hspec -any' 'QuickCheck -any'
 ```
 
 In case you want to install every haskell based plugin, use this command instead:
 
 ```
-cabal install 'containers >=0.4 && <0.6' 'base >=4.7 && <5' 'directory >=1.1 && <1.4' \
-	'process >=1.2 && <1.7' 'filepath >=1.3 && <1.5' 'binary >=0.8 && <0.9' 'base -any' \
+cabal install 'Cabal >=1.24 && <2.1' 'containers >=0.4 && <0.6' 'base >=4.7 && <5' \
+	'directory >=1.1 && <1.4' 'process >=1.2 && <1.7' 'filepath >=1.3 && <1.5' \
 	'hspec -any' 'QuickCheck -any'
 ```
 

@@ -116,8 +116,7 @@ if (GHC-PKG_EXECUTABLE)
     base       >= 4.7  && < 5  ,
     directory  >= 1.1  && < 1.4,
     process    >= 1.2  && < 1.7,
-    filepath   >= 1.3  && < 1.5,
-    binary     >= 0.8  && < 0.9")
+    filepath   >= 1.3  && < 1.5")
 
 	set (HASKELL_SHARED_SANDBOX $ENV{HASKELL_SHARED_SANDBOX})
     if (HASKELL_SHARED_SANDBOX AND IS_DIRECTORY "${HASKELL_SHARED_SANDBOX}")
