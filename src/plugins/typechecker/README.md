@@ -7,26 +7,27 @@
 - infos/placements = postgetstorage presetstorage
 - infos/status = maintained experimental global
 - infos/metadata =
-- infos/description = a plugin which typechecks configuration specifications
+- infos/description = a plugin that typechecks configuration specifications
 
 ## Introduction
 
-A plugin which typechecks specifications before setting keys and after getting keys from
+A plugin that typechecks specifications before setting keys and after getting keys from
 a mounted specification.
 
-The typesystem is based on regular expressions. Each key is assigned with a regex
-that describes its contents. Links between keys can only be done if the regexes describing 
-the linked keys are compatible with each other, i.e. the regex of the linked key is equal
-or a subset of the regex of the linking key. This concept is not only useful for defining
-links. It can be used to restrict the input types of transformations for 
-instance as well.
+The type checker uses regular expressions as the foundation. It assigns a regex to each key
+describing its possible contents, thus defining a key's type. Links between keys will fail
+the typecheck if the regexes describing the linked keys are not compatible with each other,
+i.e. the regex of the linked key is equal or a subset of the regex of the linking key. 
+This concept is not only useful for defining links. It can be used to restrict the input 
+types of transformations for instance as well.
 
 ## Usage
 
-There are basically two ways to use typechecker plugin. First we describe how the plugin
-is used in general for configuration specification developers and users. Afterwards we 
-describe how the typechecker plugin can be extended with the semantics of additional 
-configuration specification keywords.
+There are basically two ways to use type checker plugin. First we describe how the plugin
+is used in general for users. Afterwards we describe how the type checker plugin can be 
+extended with the semantics of additional configuration specification keywords. This is
+interesting for plugin developers who want to make use of the type system for their work
+as well.
 
 ### General Usage
 
@@ -38,20 +39,21 @@ Usually one wants to mount that file as well beforehand so the standard configur
 `kdb mount prelude.ini spec/<path>/spec/elektra ini`
 `kdb mount <specification> spec/<path> <storage plugin to read the specification> typechecker`
 
-Retrieving a random key from the specification using `kdb get <path>` will cause
-the typechecking to happen. The typechecker will issue a warning if it detects any
+Retrieving any key from the specification using `kdb get <path>` will cause
+the typechecking to happen. The type checker will issue a warning if it detects any
 problems with it. In case a key covered by a configuration specification is accessed
-programmatically, the typechecking will also happen if the typechecker is mounted.
+programmatically, the typechecking will also happen if the type checker is mounted.
 
 When altering a mounted specification using `kdb set <path>` or `kdb setmeta <path> <value>`,
-the typechecker will issue an error if the newly added key or metakey will lead to an 
+the type checker will issue an error if the newly added key or metakey will lead to an 
 inconsistent configuration specification according to the type system specification.
 
 It is often necessary to set multiple specification keywords at once in order to transform a
 valid configuration specification to another valid one. Therefore some kind of transaction
 is required so the typechecking only happens when the whole changes have been made. The
 easiest way to do this is to use the command `kdb shell`. An example of its usage is shown
-below.
+below. In case you prefer a graphical tool to edit configuration specifications you can use the
+qt-gui for Elektra.
 
 Please keep in mind that its better to unmount in the reverse way, so first unmount your
 specification and then prelude.
@@ -80,17 +82,17 @@ be a string constant describing a regex as we will see in the next example. In o
 `RegexContains b a` means that the regex stored in the type variable a is either equal to or
 a subset of the regex stored in the type variable b. The type variables arise from the type
 parameters. A type parameter may either refer to a `Key` or to a `Regex`. A `Key` may either
-refer to the path of another Key which is given relatively to the current key after the `::` 
+refer to the path of another key which is given relatively to the current key after the `::` 
 symbol, or to the annotated key itself, in which case no extra annotation is necessary. 
 A `Regex` refers directly to a regex which can then be used as a type variable.
 
 Additionally, a small haskell implementation has to be given. Currently our type system does not 
-support any kind of operations other than simple pattern matching on Keys, that may either hold
+support any kind of operations other than simple pattern matching on keys, that may either hold
 an arbitrary string as a default value matched as `Key (P.Just a)` or no default value, 
 described as `Key P.Nothing`. If you want to pattern match over several possibilities like its
 done for fallback, use `;` to separate between lines.
 
-Summing up the above example can be read as "If the regex of the Key b, which path is obtained
+Summing up the above example can be read as "If the regex of the key b, which path is obtained
 by taking the value of the current key, relatively referred to via `.` is equal to or a 
 subset of the regex describing the current key, this link is allowed. In that case the type
 of the current key will not be changed and remain to be the regex stored in the type variable a.
@@ -169,7 +171,7 @@ sudo kdb umount spec/examples/simplespecification/elektra/spec
 ## Debugging
 
 This test specification has no errors by default and will thus report nothing,
-but if you alter it you can experiment with the typechecker. If Elektra is compiled
+but if you alter it you can experiment with the type checker. If Elektra is compiled
 with the ENABLE_LOGGER flag, it will log the inferred types in all cases so the
 type behavior can be observed when getting/setting a key in a specification.
 
