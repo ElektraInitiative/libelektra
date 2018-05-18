@@ -71,14 +71,16 @@ install the following dependencies into the sandbox:
 
 ```
 cabal install 'containers >=0.4 && <0.6' 'base >=4.7 && <5' 'directory >=1.1 && <1.4' \
-'process >=1.2 && <1.7' 'filepath >=1.3 && <1.5' 'base -any' 'hspec -any' 'QuickCheck -any'
+	'process >=1.2 && <1.7' 'filepath >=1.3 && <1.5' 'binary >=0.8 && <0.9' 'base -any' \
+	'hspec -any' 'QuickCheck -any'
 ```
 
 In case you want to install every haskell based plugin, use this command instead:
 
 ```
 cabal install 'containers >=0.4 && <0.6' 'base >=4.7 && <5' 'directory >=1.1 && <1.4' \
-'process >=1.2 && <1.7' 'filepath >=1.3 && <1.5' 'base -any' 'hspec -any' 'QuickCheck -any'
+	'process >=1.2 && <1.7' 'filepath >=1.3 && <1.5' 'binary >=0.8 && <0.9' 'base -any' \
+	'hspec -any' 'QuickCheck -any'
 ```
 
 Now everything should be ready and awaits compilation.

@@ -105,4 +105,5 @@ RUN cd /home/jenkins \
     && cabal update \
     && cabal sandbox init --sandbox ${HASKELL_SHARED_SANDBOX} \
     && cabal install 'containers >=0.4 && <0.6' 'base >=4.7 && <5' 'directory >=1.1 && <1.4' \
-        'process >=1.2 && <1.7' 'filepath >=1.3 && <1.5' 'base -any' 'hspec -any' 'QuickCheck -any'
+        'process >=1.2 && <1.7' 'filepath >=1.3 && <1.5' 'binary >=0.8 && <0.9' 'base -any' \
+        'hspec -any' 'QuickCheck -any'
