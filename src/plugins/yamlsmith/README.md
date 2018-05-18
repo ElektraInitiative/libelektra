@@ -15,16 +15,16 @@
 
 ```sh
 # Add some key-value pairs to the database
-kdb set user/examples/yamlsmith/key value
-kdb set user/examples/yamlsmith/time 'will die and love will burrow it'
+kdb set user/tests/yamlsmith/key value
+kdb set user/tests/yamlsmith/time 'will die and love will burrow it'
 
 # Export data using YAML Smith
-kdb export user/examples/yamlsmith yamlsmith
+kdb export user/tests/yamlsmith yamlsmith
 #> key: value
 #> time: will die and love will burrow it
 
 # Undo modifications
-kdb rm -r user/examples/yamlsmith
+kdb rm -r user/tests/yamlsmith
 ```
 
 ## Limitations
