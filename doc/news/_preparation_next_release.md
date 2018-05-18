@@ -88,9 +88,12 @@ We added even more functionality, which could not make it to the highlights:
   this has to be done beforehand like it is the case with all other dependencies. The main
   reason is that the build servers shouldn't compile the dependencies over and over again,
   only if something changes. See the [readme](https://github.com/ElektraInitiative/libelektra/blob/master/src/bindings/haskell/README.md). *(Armin Wurzinger)*
-- <<TODO>>
-- <<TODO>>
+- The build system no longer installs haskell dependencies from hackage by itself, instead
+  this has to be done beforehand like it is the case with all other dependencies. The main
+  reason is that the build servers shouldn't compile the dependencies over and over again,
+  only if something changes. See the [readme](https://github.com/ElektraInitiative/libelektra/blob/master/src/bindings/haskell/README.md).
 - The new tool `kdb find` lists keys of the database matching a certain regular expression. *(Markus Raab)*
+- <<TODO>>
 
 ## New Plugins
 
