@@ -11,12 +11,12 @@ SCRIPTS_DIR=$(dirname "$0")
 CMAKE_FORMAT=$(which cmake-format)
 
 if [ -z "${CMAKE_FORMAT}" ]; then
-	echo "Please install `cmake-format`"
+	echo 'Please install `cmake-format`'
 	exit 0
 fi
 
 if [ -z "$(which sponge)" ]; then
-	echo "Please install `sponge`"
+	echo 'Please install `sponge`'
 	exit 0
 fi
 
