@@ -34,13 +34,31 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.8.
 
 ## Highlights
 
-- <<HIGHLIGHT1>>
+- Type system preview
 - <<HIGHLIGHT2>>
 - <<HIGHLIGHT3>>
 
 
-### <<HIGHLIGHT1>>
+### Type system preview
 
+Elektra supports specifying the semantics of keys via metakeys in the `spec` 
+namespace. An example is the metakey `check/range` which can be used to specify
+that a key only holds numbers in a given range. Another metakey is `check/enum`
+which only allows specific keywords to be the content of a key. Up to now these 
+semantics are being checked at runtime. Therefore a type system was developed to
+be able to check configuration specifications statically. As an example, it
+would detect when one accidentially add both a range and an enum check if their 
+possible contents are not compatible with each other.
+
+The type system is available as a plugin that gets mounted along with a 
+configuration specification into the spec namespace. Furthermore we include a
+set of type definitions for commonly used metakeys such as `check/range`, 
+`check/long`, `fallback` or `override`.
+
+For more details see the
+[typechecker readme](https://github.com/ElektraInitiative/libelektra/tree/master/src/plugins/typechecker/README.md)
+
+Thanks to Armin Wurzinger.
 
 ### <<HIGHLIGHT2>>
 
