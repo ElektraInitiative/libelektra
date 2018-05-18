@@ -9,33 +9,33 @@ Snippets are shell commands inside a syntax block with additional checks (such a
 Let us look at a simple example first:
 
 ```sh
-kdb set /examples/markdown/napalm death
-#> Using name user/examples/markdown/napalm
-#> Create a new key user/examples/markdown/napalm with string "death"
+kdb set /tests/markdown/napalm death
+#> Using name user/tests/markdown/napalm
+#> Create a new key user/tests/markdown/napalm with string "death"
 
-kdb rm /examples/markdown/napalm
+kdb rm /tests/markdown/napalm
 
-kdb rm /examples/markdown/babymetal
+kdb rm /tests/markdown/babymetal
 # RET: 1
 # STDERR: Did not find the key
 ```
 
 . The test above invokes three commands. The first command sets the [cascading key](/doc/tutorials/cascading.md)
-`/examples/markdown/napalm` to the value `death`. The special comment `#> ` below the command specifies the expected output to the standard
+`/tests/markdown/napalm` to the value `death`. The special comment `#> ` below the command specifies the expected output to the standard
 output. This means the Markdown Shell Recorder expects the command
 
 ```
-kdb set /examples/markdown/napalm death
+kdb set /tests/markdown/napalm death
 ```
 
 to print the text
 
 ```
-Using name user/examples/markdown/napalm
-Create a new key user/examples/markdown/napalm with string "death"
+Using name user/tests/markdown/napalm
+Create a new key user/tests/markdown/napalm with string "death"
 ```
 
-to the standard output. The second command in our test (`kdb rm /examples/markdown/napalm`) deletes the key we just created. Although there
+to the standard output. The second command in our test (`kdb rm /tests/markdown/napalm`) deletes the key we just created. Although there
 are no special comments below the command, the Markdown Shell Recorder still checks the exit code of the command and reports a failure if
 it is not `0`. If we expect another exit code we can use the special comment `# RET:` to specify the return code. This is what we did after
 the third command, which will fail with exit code `1`, since it tries to delete a non-existing key. The Shell Recorder also checks the
@@ -87,17 +87,17 @@ echo Babymetal Death | \
   grep -o Death
 #> Death
 
-kdb set user/examples/tempfile $(mktemp)
-cat > $(kdb get user/examples/tempfile) << EOF \
+kdb set user/tests/tempfile $(mktemp)
+cat > $(kdb get user/tests/tempfile) << EOF \
 line 1\
 line 2\
 EOF
-cat $(kdb get user/examples/tempfile)
+cat $(kdb get user/tests/tempfile)
 #> line 1
 #> line 2
 
-rm $(kdb get user/examples/tempfile)
-kdb rm user/examples/tempfile
+rm $(kdb get user/tests/tempfile)
+kdb rm user/tests/tempfile
 ```
 
 ### Checks
