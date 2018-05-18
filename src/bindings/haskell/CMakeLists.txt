@@ -53,7 +53,7 @@ if (HASKELL_FOUND)
 			# configure the
 			# package again.
 			add_custom_command (OUTPUT ${BINDING_HASKELL_NAME}
-						COMMAND ${CABAL_EXECUTABLE} sandbox init --sandbox ${HASKELL_SHARED_SANDBOX} -v0 
+					    COMMAND ${CABAL_EXECUTABLE} sandbox init --sandbox ${HASKELL_SHARED_SANDBOX} -v0
 					    COMMAND ${CABAL_EXECUTABLE} configure ${CABAL_OPTS} -v0
 					    COMMAND ${CABAL_EXECUTABLE} build -v0 || ${CABAL_EXECUTABLE} configure ${CABAL_OPTS} -v0 &&
 						    ${CABAL_EXECUTABLE} build -v0
