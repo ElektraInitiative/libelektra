@@ -46,15 +46,15 @@ originates from.
 ## EXAMPLES
 
 ```sh
-# Backup-and-Restore: /sw/elektra/examples
+# Backup-and-Restore: /tests/complete/examples
 
 # Create the keys we use for the examples
-kdb set /sw/elektra/examples/kdb-complete/level1 foo
-kdb set /sw/elektra/examples/kdb-complete/lvl1/lvl2 bar
-kdb set /sw/elektra/examples/kdb-complete/lvl1/lvl2/lvl3/lvl4/lvl5 fizz
-kdb set /sw/elektra/examples/kdb-complete/buzz fizzBuzz
-kdb set /sw/elektra/examples/kdb-complete/#array_1 asdf
-kdb set /sw/elektra/examples/kdb-complete/% nothing
+kdb set /tests/complete/examples/kdb-complete/level1 foo
+kdb set /tests/complete/examples/kdb-complete/lvl1/lvl2 bar
+kdb set /tests/complete/examples/kdb-complete/lvl1/lvl2/lvl3/lvl4/lvl5 fizz
+kdb set /tests/complete/examples/kdb-complete/buzz fizzBuzz
+kdb set /tests/complete/examples/kdb-complete/#array_1 asdf
+kdb set /tests/complete/examples/kdb-complete/% nothing
 
 # list suggestions for namespaces starting with us, only the current level
 kdb complete us --max-depth=1
@@ -73,26 +73,26 @@ kdb complete user/ --max-depth=1
 kdb complete --max-depth=1
 # STDOUT-REGEX: .+
 
-# list suggestions for /sw/elektra/examples/kdb-complete, only the current level
-kdb complete /sw/elektra/examples/kdb-complete --max-depth=1
-#> user/sw/elektra/examples/kdb-complete/
+# list suggestions for /tests/complete/examples/kdb-complete, only the current level
+kdb complete /tests/complete/examples/kdb-complete --max-depth=1
+#> user/tests/complete/examples/kdb-complete/
 
-# list suggestions for /sw/elektra/examples/kdb-complete/, only the next level
+# list suggestions for /tests/complete/examples/kdb-complete/, only the next level
 # again, note the difference to the previous example which has no trailing /
-kdb complete /sw/elektra/examples/kdb-complete/ --max-depth=1
-#> user/sw/elektra/examples/kdb-complete/%
-#> user/sw/elektra/examples/kdb-complete/#array_1
-#> user/sw/elektra/examples/kdb-complete/buzz
-#> user/sw/elektra/examples/kdb-complete/level1
-#> user/sw/elektra/examples/kdb-complete/lvl1/
+kdb complete /tests/complete/examples/kdb-complete/ --max-depth=1
+#> user/tests/complete/examples/kdb-complete/%
+#> user/tests/complete/examples/kdb-complete/#array_1
+#> user/tests/complete/examples/kdb-complete/buzz
+#> user/tests/complete/examples/kdb-complete/level1
+#> user/tests/complete/examples/kdb-complete/lvl1/
 
-# list suggestions for /sw/elektra/examples/kdb-complete which are minimum 2 levels
+# list suggestions for /tests/complete/examples/kdb-complete which are minimum 2 levels
 # away from that key, and maximum 4 levels away
-kdb complete /sw/elektra/examples/kdb-complete/ --min-depth=2 --max-depth=4
-#> user/sw/elektra/examples/kdb-complete/lvl1/lvl2/lvl3/
-#> user/sw/elektra/examples/kdb-complete/lvl1/lvl2/lvl3/lvl4/
+kdb complete /tests/complete/examples/kdb-complete/ --min-depth=2 --max-depth=4
+#> user/tests/complete/examples/kdb-complete/lvl1/lvl2/lvl3/
+#> user/tests/complete/examples/kdb-complete/lvl1/lvl2/lvl3/lvl4/
 
-kdb rm -r user/sw/elektra/examples/kdb-complete
+kdb rm -r user/tests/complete/examples/kdb-complete
 ```
 
 ## SEE ALSO
