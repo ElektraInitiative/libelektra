@@ -48,15 +48,12 @@ if (HASKELL_FOUND)
 			     "${CMAKE_CURRENT_SOURCE_DIR}/test/ElektraRealWorld.hs"
 			     "${CMAKE_CURRENT_SOURCE_DIR}/src/c/hskdberrors.c"
 			     "${CMAKE_SOURCE_DIR}/src/plugins/haskell/Setup.hs.in")
-			execute_process (COMMAND ${CABAL_EXECUTABLE} sandbox init --sandbox ${HASKELL_SHARED_SANDBOX} -v0
-					 WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-					 OUTPUT_QUIET)
 
 			# Sometimes building fails reporting an outdated package file. In this case we need to
 			# configure the
 			# package again.
 			add_custom_command (OUTPUT ${BINDING_HASKELL_NAME}
-						COMMAND ${CABAL_EXECUTABLE} sandbox init ${HASKELL_SHARED_SANDBOX} -v0 
+						COMMAND ${CABAL_EXECUTABLE} sandbox init --sandbox ${HASKELL_SHARED_SANDBOX} -v0 
 					    COMMAND ${CABAL_EXECUTABLE} configure ${CABAL_OPTS} -v0
 					    COMMAND ${CABAL_EXECUTABLE} build -v0 || ${CABAL_EXECUTABLE} configure ${CABAL_OPTS} -v0 &&
 						    ${CABAL_EXECUTABLE} build -v0

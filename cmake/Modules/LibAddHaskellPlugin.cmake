@@ -336,7 +336,7 @@ macro (configure_haskell_sandbox)
 			       ${ARGN})
 
 	add_custom_command (OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/cabal.sandbox.config"
-		COMMAND ${CABAL_EXECUTABLE} sandbox init ${ARG_SHARED_SANDBOX} -v0)
+		COMMAND ${CABAL_EXECUTABLE} sandbox init --sandbox ${ARG_SHARED_SANDBOX} -v0)
 
 	if (ARG_SANDBOX_ADD_SOURCES)
 		foreach (SANDBOX_ADD_SOURCE ${ARG_SANDBOX_ADD_SOURCES}) # to avoid generating files in the source folders, copy over the
