@@ -9,18 +9,18 @@ Please provide a step by step guide on how to reproduce the problem here. If pos
 syntax:
 
 ```sh
-kdb set /examples/hello world
-#> Using name user/examples/hello
-#> Create a new key user/examples/hello with string "world"
+kdb set /tests/hello world
+#> Using name user/tests/hello
+#> Create a new key user/tests/hello with string "world"
 
-kdb get /examples/hello
+kdb get /tests/hello
 #> world
 
 kdb get user/does/not/exist
 # RET: 11
 # STDERR: [Dd]id not find key 'user/does/not/exist'
 
-kdb rm /examples/hello
+kdb rm /tests/hello
 ```
 
 If your key database (KDB) might influence the outcome, please use `kdb stash`
