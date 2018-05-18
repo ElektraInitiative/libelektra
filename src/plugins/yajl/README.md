@@ -85,47 +85,47 @@ and comments filter are highly recommended.
 The following example shows you how you can read and write data using this plugin.
 
 ```sh
-# Mount the plugin to the cascading namespace `/examples/yajl`
-sudo kdb mount config.json /examples/yajl yajl
+# Mount the plugin to the cascading namespace `/tests/yajl`
+sudo kdb mount config.json /tests/yajl yajl
 
 # Manually add a key-value pair to the database
-printf '{ "number": 1337 }' > `kdb file /examples/yajl`
+printf '{ "number": 1337 }' > `kdb file /tests/yajl`
 
 # Retrieve the new value
-kdb get /examples/yajl/number
+kdb get /tests/yajl/number
 #> 1337
 
 # Determine the data type of the value
-kdb getmeta /examples/yajl/number type
+kdb getmeta /tests/yajl/number type
 #> double
 
 # Add another key-value pair
-kdb set /examples/yajl/key value
-#> Using name user/examples/yajl/key
-#> Create a new key user/examples/yajl/key with string "value"
+kdb set /tests/yajl/key value
+#> Using name user/tests/yajl/key
+#> Create a new key user/tests/yajl/key with string "value"
 
 # Retrieve the new value
-kdb get /examples/yajl/key
+kdb get /tests/yajl/key
 #> value
 
 # Check the format of the configuration file
-kdb file user/examples/yajl/ | xargs cat
+kdb file user/tests/yajl/ | xargs cat
 #> {
 #>     "key": "value",
 #>     "number": 1337
 #> }
 
 # Add an array
-kdb set user/examples/yajl/piggy/#0 straw
-kdb set user/examples/yajl/piggy/#1 sticks
-kdb set user/examples/yajl/piggy/#2 bricks
+kdb set user/tests/yajl/piggy/#0 straw
+kdb set user/tests/yajl/piggy/#1 sticks
+kdb set user/tests/yajl/piggy/#2 bricks
 
 # Retrieve an array key
-kdb get user/examples/yajl/piggy/#2
+kdb get user/tests/yajl/piggy/#2
 #> bricks
 
 # Check the format of the configuration file
-kdb file user/examples/yajl | xargs cat
+kdb file user/tests/yajl | xargs cat
 #> {
 #>     "key": "value",
 #>     "number": 1337,
@@ -137,8 +137,8 @@ kdb file user/examples/yajl | xargs cat
 #> }
 
 # Undo modifications to the database
-kdb rm -r /examples/yajl
-sudo kdb umount /examples/yajl
+kdb rm -r /tests/yajl
+sudo kdb umount /tests/yajl
 ```
 
 ### Directory Values
@@ -146,51 +146,51 @@ sudo kdb umount /examples/yajl
 The YAJL plugin support values in directory keys via the [Directory Value](../directoryvalue/) plugin.
 
 ```sh
-# Mount the plugin to the cascading namespace `/examples/yajl`
-sudo kdb mount config.json /examples/yajl yajl
+# Mount the plugin to the cascading namespace `/tests/yajl`
+sudo kdb mount config.json /tests/yajl yajl
 
 # Add two directory keys and one leaf key
-kdb set /examples/yajl/roots 'Things Fall Apart'
-kdb set /examples/yajl/roots/bloody 'Radical Face'
-kdb set /examples/yajl/roots/bloody/roots 'No Roots'
+kdb set /tests/yajl/roots 'Things Fall Apart'
+kdb set /tests/yajl/roots/bloody 'Radical Face'
+kdb set /tests/yajl/roots/bloody/roots 'No Roots'
 
 # Add an array containing two elements
-kdb set /examples/yajl/now ', Now'
-kdb set /examples/yajl/now/#0 'Neighbors'
-kdb set /examples/yajl/now/#1 'Threads'
+kdb set /tests/yajl/now ', Now'
+kdb set /tests/yajl/now/#0 'Neighbors'
+kdb set /tests/yajl/now/#1 'Threads'
 
-kdb ls /examples/yajl
-#> user/examples/yajl
-#> user/examples/yajl/now
-#> user/examples/yajl/now/#0
-#> user/examples/yajl/now/#1
-#> user/examples/yajl/roots
-#> user/examples/yajl/roots/bloody
-#> user/examples/yajl/roots/bloody/roots
+kdb ls /tests/yajl
+#> user/tests/yajl
+#> user/tests/yajl/now
+#> user/tests/yajl/now/#0
+#> user/tests/yajl/now/#1
+#> user/tests/yajl/roots
+#> user/tests/yajl/roots/bloody
+#> user/tests/yajl/roots/bloody/roots
 
 # Retrieve directory values
-kdb get /examples/yajl/roots
+kdb get /tests/yajl/roots
 #> Things Fall Apart
-kdb get /examples/yajl/roots/bloody
+kdb get /tests/yajl/roots/bloody
 #> Radical Face
 
 # Retrieve leaf value
-kdb get /examples/yajl/roots/bloody/roots
+kdb get /tests/yajl/roots/bloody/roots
 #> No Roots
 
 # Check array
-kdb get /examples/yajl/now
+kdb get /tests/yajl/now
 #> , Now
-kdb getmeta /examples/yajl/now array
+kdb getmeta /tests/yajl/now array
 #> #1
-kdb get /examples/yajl/now/#0
+kdb get /tests/yajl/now/#0
 #> Neighbors
-kdb get /examples/yajl/now/#1
+kdb get /tests/yajl/now/#1
 #> Threads
 
 # Undo modifications to the database
-kdb rm -r /examples/yajl
-sudo kdb umount /examples/yajl
+kdb rm -r /tests/yajl
+sudo kdb umount /tests/yajl
 ```
 
 ## OpenICC Device Config
