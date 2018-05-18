@@ -4,11 +4,7 @@
 - infos/provides = resolver
 - infos/needs =
 - infos/placements = rollback getresolver setresolver
-#ifdef _WIN32
 - infos/status = recommended maintained nodep configurable unfinished nodoc
-#else
-- infos/status = recommended maintained nodep configurable unfinished nodoc
-#endif
 - infos/description = Returns success on every call and can be used as resolver.
 
 ## Introduction
