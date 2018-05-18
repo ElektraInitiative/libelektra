@@ -7,24 +7,12 @@ if (DEPENDENCY_PHASE)
 	endif ()
 endif ()
 
-add_plugin (zeromqsend
-	SOURCES
-		zeromqsend.h zeromqsend.c
-		publish.c
-	INCLUDE_DIRECTORIES
-		${ZMQ_INCLUDE_DIR}
-	LINK_LIBRARIES
-		${ZMQ_LIBRARIES}
-	)
+add_plugin (zeromqsend SOURCES zeromqsend.h zeromqsend.c publish.c INCLUDE_DIRECTORIES ${ZMQ_INCLUDE_DIR} LINK_LIBRARIES ${ZMQ_LIBRARIES})
 
-if (ADDTESTING_PHASE)
-	# the test requires pthread
+if (ADDTESTING_PHASE) # the test requires pthread
 	find_package (Threads)
 
-	if (BUILD_TESTING )
-		add_plugintest (zeromqsend
-			TEST_LINK_LIBRARIES
-				${CMAKE_THREAD_LIBS_INIT}
-			)
+	if (BUILD_TESTING)
+		add_plugintest (zeromqsend TEST_LINK_LIBRARIES ${CMAKE_THREAD_LIBS_INIT})
 	endif ()
 endif ()
