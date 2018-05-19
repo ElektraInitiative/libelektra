@@ -10,7 +10,7 @@ then
 		exit 0
 	fi
 	echo "The release notes were not extended correctly (with $linesChanged lines changed)."
-	echo "Please make sure you add at least one line describing you contribution followed"
+	echo "Please make sure you add at least one line describing your contribution followed"
 	echo "by the text *(your name)*."
 	echo ""
 	echo "For example, if Sandra Power fixed a typo, she adds to doc/news/_preparation_next_release.md:"
