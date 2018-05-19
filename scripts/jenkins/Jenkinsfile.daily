@@ -74,6 +74,7 @@ def cleanup_docker_images(target_node) {
                 dockerImages().each {
                     retainNewestImages(it, 15)
                 }
+                sh "docker system prune -f"
             }
         }
     }]
