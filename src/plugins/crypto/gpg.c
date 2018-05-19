@@ -862,11 +862,6 @@ int CRYPTO_PLUGIN_FUNCTION (gpgCall) (KeySet * conf, Key * errorKey, Key * msgKe
 	// wait for the gpg process to finish
 	waitpid (pid, &status, 0);
 
-	if (status != 0)
-	{
-		fprintf (stderr, "gpg returned %d\n", status);
-	}
-
 	// evaluate return code of finished child process
 	int retval = -1;
 	switch (status)
