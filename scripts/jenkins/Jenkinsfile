@@ -353,7 +353,7 @@ def build_todo() {
 }
 
 def build_check_release_notes() {
-    return withDockerEnv("check_release_notes", DOCKER_IMAGES.stretch) {
+    return withDockerEnv("check-release-notes", DOCKER_IMAGES.stretch) {
         sh "scripts/run_check_release_notes"
         deleteDir()
     }
