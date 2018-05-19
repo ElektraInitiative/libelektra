@@ -127,6 +127,7 @@ These notes are of interest for people developing Elektra:
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+- Docker artifacts are now cleaned up in our daily build job. *(Lukas Winkler)*
 - `icheck` build server job has been ported to our new build system. *(Lukas Winkler)*
 - The script [`check_formatting.sh`](https://master.libelektra.org/tests/shell/check_formatting.sh) now also checks the formatting of CMake
   code if you installed [`sponge`](https://joeyh.name/code/moreutils) and [`cmake-format`][]. *(René Schwaiger)*
