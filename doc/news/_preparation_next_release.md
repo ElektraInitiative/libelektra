@@ -127,6 +127,8 @@ These notes are of interest for people developing Elektra:
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+- Docker artifacts are now cleaned up in our daily build job. *(Lukas Winkler)*
+- `icheck` build server job has been ported to our new build system. *(Lukas Winkler)*
 - The script [`check_formatting.sh`](https://master.libelektra.org/tests/shell/check_formatting.sh) now also checks the formatting of CMake
   code if you installed [`sponge`](https://joeyh.name/code/moreutils) and [`cmake-format`][]. *(René Schwaiger)*
 - Our Travis build job now
@@ -152,6 +154,8 @@ Many problems were resolved with the following fixes:
 - We fixed some problems in the [Markdown Shell Recorder](https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper) test
   of [`kdb ls`](https://master.libelektra.org/doc/help/kdb-ls.md). *(René Schwaiger)*
 - The script [`reformat-cmake`](https://master.libelektra.org/scripts/reformat-cmake) now checks if `cmake-format` works before it reformats CMake files. Thank you to Klemens Böswirth for the [detailed description of the problem](https://github.com/ElektraInitiative/libelektra/pull/1903#discussion_r189332987). *(René Schwaiger)*
+- `scripts/run_icheck` now no longer leaves the base directory of the project
+  when checking if the ABI changed. *(Lukas Winkler)*
 
 
 ## Outlook
