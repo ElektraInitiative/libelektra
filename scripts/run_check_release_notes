@@ -1,0 +1,3 @@
+#!/bin/sh
+
+git diff origin/master -- doc/news/_preparation_next_release.md | egrep "^\+.+\*\(.+\)\*"
