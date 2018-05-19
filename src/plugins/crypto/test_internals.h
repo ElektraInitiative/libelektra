@@ -331,6 +331,9 @@ static void test_gpg (void)
 
 	succeed_if (CRYPTO_PLUGIN_FUNCTION (gpgCall) (conf, errorKey, msg, argv, argc) == 1, "failed to install the GPG test key");
 
+	fprintf (stderr, "errorKey = %s\n", keyString (errorKey));
+	fprintf (stderr, "msg = %s\n", keyString (msg));
+
 	keyDel (msg);
 	keyDel (errorKey);
 	ksDel (conf);
