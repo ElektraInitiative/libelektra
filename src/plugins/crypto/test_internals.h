@@ -324,8 +324,8 @@ static void test_gpg (void)
 	Key * errorKey = keyNew (0);
 
 	// install the gpg key
-	char * argv[] = { "", "-a", "--import", NULL };
-	const size_t argc = 4;
+	char * argv[] = { "", "--trust-model", "always", "-a", "--import", NULL };
+	const size_t argc = 6;
 	Key * msg = keyNew (0);
 	keySetBinary (msg, test_key_asc, test_key_asc_len);
 
