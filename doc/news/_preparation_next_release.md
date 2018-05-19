@@ -79,7 +79,8 @@ We added even more functionality, which could not make it to the highlights:
 
 ## New Plugins
 
-- <<TODO>>
+- The plugin [hexnumber](https://www.libelektra.org/plugins/hexnumber) has been added. It can be used 
+  to convert hexadecimal values into decimal when read, and back to hexadecimal when written.
 - <<TODO>>
 - <<TODO>>
 

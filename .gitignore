@@ -12,6 +12,7 @@
 
 #ignore all build directories of cmake
 build*/
+cmake-build*/
 
 #ignore ctags + gdb history files
 .ctags
