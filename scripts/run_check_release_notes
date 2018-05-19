@@ -4,11 +4,11 @@ git diff origin/master -- doc/news/_preparation_next_release.md | egrep "^\+.+\*
 if [ $? != "0" ]
 then
 	echo "The release notes were not extended correctly."
-	echo "Please make sure you added at least one line which says *(your name)*"
-	echo "to make sure that your contribution is correctly attributed in the release notes."
+	echo "Please make sure you added at least one line which says *(your name)* to"
+	echo "make sure that your contribution is correctly attributed in the release notes."
 	echo ""
-	echo "For example:"
-	echo "- Minor typo fixed *(Markus Raab)*"
+	echo "For example, if Sandra Power fixed a typo, she adds to doc/news/_preparation_next_release.md:"
+	echo "- typo fixed *(Sandra Power)*"
 	echo ""
 	echo "Similar contributions might be summarized shortly before the release."
 	exit 1
