@@ -20,7 +20,6 @@ const char * elektraKeyGetRelativeName (Key const * cur, Key const * parentKey);
 
 KeySet * elektraArrayGet (const Key * arrayParent, KeySet * keys);
 Key * elektraArrayGetNextKey (KeySet * arrayKeys);
-ssize_t elektraArrayGetStrings (const Key * arrayParent, KeySet * keys, char *** strings);
 
 keyswitch_t keyCompare (const Key * key1, const Key * key2);
 keyswitch_t keyCompareMeta (const Key * key1, const Key * key2);
