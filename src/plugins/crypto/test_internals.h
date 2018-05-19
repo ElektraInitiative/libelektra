@@ -11,15 +11,15 @@
 #include "crypto.h"
 #include "gpg.h"
 #include "helper.h"
+#include <ftw.h>
 #include <kdb.h>
 #include <kdbinternal.h>
-#include <ftw.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 #include <tests_internal.h>
 #include <tests_plugin.h>
+#include <unistd.h>
 
 #include "test_key.h"
 
@@ -123,7 +123,6 @@ static void init_env (void)
 		succeed_if (gpg_dir != NULL, "no memory available");
 		if (gpg_dir == NULL) exit (-1);
 		snprintf (gpg_dir, gpg_dir_size, "%s/%s", tmpdir, tmp_template);
-		gpg_dir = mkdtemp (gpg_dir);
 	}
 	else
 	{
@@ -133,8 +132,8 @@ static void init_env (void)
 		succeed_if (gpg_dir != NULL, "no memory available");
 		if (gpg_dir == NULL) exit (-1);
 		snprintf (gpg_dir, gpg_dir_size, "%s", tmp_template);
-		gpg_dir = mkdtemp (gpg_dir);
 	}
+	gpg_dir = mkdtemp (gpg_dir);
 	succeed_if (gpg_dir != NULL, "failed to create the temporary directory for GNUPGHOME");
 	if (gpg_dir)
 	{
@@ -142,15 +141,15 @@ static void init_env (void)
 	}
 }
 
-static int delete_dir (const char * path, ELEKTRA_UNUSED const struct stat * stats, int type)
+static int delete_dir_content (const char * path, ELEKTRA_UNUSED const struct stat * stats, int type)
 {
 	switch (type)
 	{
-	case FTW_D:
+	case FTW_D: // path is a directory
 		rmdir (path);
 		break;
 
-	case FTW_F:
+	case FTW_F: // path is a file
 		unlink (path);
 		break;
 
@@ -163,14 +162,16 @@ static int delete_dir (const char * path, ELEKTRA_UNUSED const struct stat * sta
 
 static void clean_env (void)
 {
-	// TODO make it pretty
-	// 1. delete files
-	ftw (gpg_dir, delete_dir, 50);
-	// 2. delete dirs
-	ftw (gpg_dir, delete_dir, 50);
-	// 3. delete root
-	ftw (gpg_dir, delete_dir, 50);
-	free (gpg_dir);
+	if (gpg_dir)
+	{
+		// 1. delete files
+		ftw (gpg_dir, delete_dir_content, 50);
+		// 2. delete sub-directories
+		ftw (gpg_dir, delete_dir_content, 50);
+		// 3. delete root directory (GNUPGHOME)
+		ftw (gpg_dir, delete_dir_content, 50);
+		free (gpg_dir);
+	}
 }
 
 static void test_init (const char * pluginName)
