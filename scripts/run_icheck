@@ -56,3 +56,10 @@ git checkout $CMPVERSION
 canonify "$ICHECK_DIR/old_interface.h"
 
 icheck --compare "$ICHECK_DIR/old_interface.h" "$ICHECK_DIR/new_interface.h"
+if [ $? != "0" ]
+then
+	echo "There are some incompatible changes in the API (public header files)."
+	echo "Please make sure that all changes are compatible with previous APIs"
+	echo "or suppressed via tests/icheck.suppression."
+	exit 1
+fi

@@ -6,12 +6,13 @@ Please update this file within every PR:
 
 - For non-trivial changes, you can choose to be
   part of the highlighted changes.
-- Please make
-  sure to add some short tutorial, asciinema,
+- Please make sure to add some short tutorial, asciinema,
   or how-to-use for highlighted items.
 - Please add your name in parentheses and italics
   to every contribution,
   i.e., syntax: "*(<myname>)*".
+  Note: No change is irrelevant but similar contributions might
+  be summarized shortly before the release.
 
 
 <<`scripts/generate-news-entry`>>

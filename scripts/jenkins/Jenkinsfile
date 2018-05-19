@@ -354,7 +354,6 @@ def build_todo() {
 
 def build_check_release_notes() {
     return withDockerEnv("check_release_notes", DOCKER_IMAGES.stretch) {
-        echo "Check if release notes were extended correctly"
         sh "scripts/run_check_release_notes"
         deleteDir()
     }
@@ -362,7 +361,6 @@ def build_check_release_notes() {
 
 def build_icheck() {
     return withDockerEnv("icheck", DOCKER_IMAGES.stretch) {
-        echo "Check if all functions are API compatible or suppressed via tests/icheck.suppression"
         sh "scripts/run_icheck"
         deleteDir()
     }
