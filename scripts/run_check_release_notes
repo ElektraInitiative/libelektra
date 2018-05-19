@@ -3,13 +3,13 @@
 git diff origin/master -- doc/news/_preparation_next_release.md | egrep "^\+.+\*\(.+\)\*"
 if [ $? != "0" ]
 then
-	L=git diff origin/master -- doc/news/_preparation_next_release.md | egrep "^\+" | wc -l
-	if [ "$L" -ge "5" ]
+	linesChanged=`git diff origin/master -- doc/news/_preparation_next_release.md | egrep "^\+" | wc -l`
+	if [ "$linesChanged" -ge "5" ]
 	then
 		echo "We assume that you know what you are doing."
 		exit 0
 	fi
-	echo "The release notes were not extended correctly (with $L lines)."
+	echo "The release notes were not extended correctly (with $linesChanged lines changed)."
 	echo "Please make sure you added at least one line which says *(your name)* to"
 	echo "make sure that your contribution is correctly attributed in the release notes."
 	echo ""
