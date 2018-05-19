@@ -1,6 +1,6 @@
 find_package (Haskell)
 
-set (GHC_MIN_VERSION "8.0.0")
+set (GHC_MIN_VERSION "8.0.1")
 
 if (HASKELL_FOUND)
 	if (NOT GHC_VERSION VERSION_LESS ${GHC_MIN_VERSION})
@@ -12,7 +12,7 @@ if (HASKELL_FOUND)
 			set (BINDING_HASKELL_NAME "${CMAKE_CURRENT_BINARY_DIR}/libHSlibelektra-haskell")
 			if (BUILD_SHARED OR BUILD_FULL)
 				set (GHC_DYNAMIC_SUFFIX "-ghc${GHC_VERSION}")
-				set (BINDING_HASKELL_NAME "${BINDING_HASKELL_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}${GHC_DYNAMIC_ENDING}")
+				set (BINDING_HASKELL_NAME "${BINDING_HASKELL_NAME}${GHC_DYNAMIC_SUFFIX}${CMAKE_SHARED_LIBRARY_SUFFIX}")
 				set (CABAL_OPTS "--enable-shared")
 				if (BUILD_SHARED)
 					set (ELEKTRA_DEPENDENCY "elektra;elektra-kdb;elektra-ease;")
@@ -29,10 +29,10 @@ if (HASKELL_FOUND)
 			# configure include paths
 			configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/libelektra-haskell.cabal.in"
 					"${CMAKE_CURRENT_BINARY_DIR}/libelektra-haskell.cabal"
-					@ONLY)
-
-			# Use the post-build logic to glue the bindings together with cmake as its done for plugins
+					@ONLY) # Use the post-build logic to glue the bindings together with cmake  as its done for plugins
 			configure_file ("${CMAKE_SOURCE_DIR}/src/plugins/haskell/Setup.hs.in" "${CMAKE_CURRENT_BINARY_DIR}/Setup.hs" @ONLY)
+			file (COPY "${CMAKE_CURRENT_SOURCE_DIR}/src/c" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/src/")
+
 			set (BINDING_HASKELL_DEPENDENCIES
 			     "${CMAKE_CURRENT_SOURCE_DIR}/libelektra-haskell.cabal.in"
 			     "${CMAKE_CURRENT_SOURCE_DIR}/src/Elektra/Key.chs"
@@ -42,12 +42,14 @@ if (HASKELL_FOUND)
 			     "${CMAKE_CURRENT_SOURCE_DIR}/src/Elektra/Ease.chs"
 			     "${CMAKE_CURRENT_SOURCE_DIR}/test/Elektra.hs"
 			     "${CMAKE_CURRENT_SOURCE_DIR}/test/ElektraRealWorld.hs"
+			     "${CMAKE_CURRENT_SOURCE_DIR}/src/c/hskdberrors.c"
 			     "${CMAKE_SOURCE_DIR}/src/plugins/haskell/Setup.hs.in")
 			execute_process (COMMAND ${CABAL_EXECUTABLE} sandbox init --sandbox ${CMAKE_BINARY_DIR}/.cabal-sandbox -v0
 					 WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 					 OUTPUT_QUIET)
 
-			# Sometimes building fails reporting an outdated package file. In this case we need to configure the
+			# Sometimes building fails reporting an outdated package file. In this case we need to
+			# configure the
 			# package again.
 			add_custom_command (OUTPUT ${BINDING_HASKELL_NAME}
 					    COMMAND ${CABAL_EXECUTABLE} update -v0
@@ -59,20 +61,15 @@ if (HASKELL_FOUND)
 					    DEPENDS ${BINDING_HASKELL_DEPENDENCIES}
 						    ${ELEKTRA_DEPENDENCY})
 			add_custom_target (c2hs_haskell ALL DEPENDS "${BINDING_HASKELL_NAME}")
-			if (BUILD_SHARED OR BUILD_FULL)
-
-				# build and install it to the global db
-				install (
-					CODE
-					"execute_process (COMMAND ${CABAL_EXECUTABLE} --ignore-sandbox install -v0 WORKING_DIRECTORY \"${CMAKE_CURRENT_BINARY_DIR}\")"
-					)
-			endif (BUILD_SHARED OR BUILD_FULL)
 
 			if (BUILD_TESTING)
 
-				# recompile with tests enabled, to get the dependency graph for the static versions correct
-				# the tests need the elektra library already built - while for the haskell plugins it doesn't matter
-				# as a static build depends on the plugins but not on the bindings, this is the way we can resolve the
+				# recompile with tests enabled, to get the dependency graph for the static versions
+				# correct  the
+				# tests need the elektra library already built - while for the haskell plugins it
+				# doesn't matter
+				# as a static build depends on the plugins but not on the bindings, this is the way
+				# we can resolve the
 				# circular dependency by treating the tests separately
 				set (
 					HASKELL_TESTS
@@ -82,8 +79,9 @@ if (HASKELL_FOUND)
 					"${CMAKE_CURRENT_BINARY_DIR}/dist/build/testhaskell_realworld_optimized/testhaskell_realworld_optimized"
 					)
 
-				# Sometimes building fails reporting an outdated package file. In this case we need to configure the
-				# package again.
+				# Sometimes building fails reporting an
+				# outdated package file. In this case we need
+				# to configure the package again.
 				add_custom_command (OUTPUT ${HASKELL_TESTS}
 						    COMMAND ${CABAL_EXECUTABLE} install ${CABAL_OPTS} --enable-tests
 							    --only-dependencies -v0 || true

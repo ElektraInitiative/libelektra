@@ -24,4 +24,10 @@ add_subdirectory (notification)
 
 add_subdirectory (elektra)
 
+add_subdirectory (typesystem/libfa)
+
+add_subdirectory (typesystem/specelektra)
+
+add_subdirectory (typesystem/spectranslator)
+
 generate_manpage (elektra-libs FILENAME ${CMAKE_CURRENT_SOURCE_DIR}/README.md SECTION 7)

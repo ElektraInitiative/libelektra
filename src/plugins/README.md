@@ -104,6 +104,7 @@ Only suited for import/export:
 Plugins that just show some functionality, (currently) not intended for
 productive use:
 
+- [typechecker](typechecker/) typechecks a configuration specification
 - [fstab](fstab/) for fstab files.
 - [regexstore](regexstore/)
 - [csvstorage](csvstorage/) for csv files

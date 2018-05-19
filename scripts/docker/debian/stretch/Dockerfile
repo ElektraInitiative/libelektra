@@ -45,6 +45,8 @@ RUN apt-get update \
         libuv1-dev \
         ghc \
         cabal-install \
+        alex \
+        happy \
         c2hs \
         checkinstall \
         openjdk-8-jdk \

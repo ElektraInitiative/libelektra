@@ -9,6 +9,8 @@
 #  GHC_HSPEC_FOUND       - True if the hspec library is available
 #  GHC_QUICKCHECK_FOUND  - True if the QuickCheck library is available
 #  GHC_VERSION			 - The numeric version of the ghc executable
+#  GHC_TARGET_PLATFORM	 - The target platform string of ghc
+#                          sanitized (darwin -> osx, unknown-linux -> linux)
 #  CABAL_DYNLIB_PATH     - The default path where cabal installs dynamic libraries
 #  CABAL_CUSTOM_TARGET   - The default dependencies of the custom Setup.hs for plugins
 #  HASKELL_FOUND         - True if the whole required haskell environment exists
@@ -20,12 +22,16 @@
 
 find_program (GHC_EXECUTABLE ghc)
 find_program (CABAL_EXECUTABLE cabal)
+find_program (ALEX_EXECUTABLE alex)
+find_program (HAPPY_EXECUTABLE happy)
 find_program (C2HS_EXECUTABLE c2hs)
 find_program (GHC-PKG_EXECUTABLE ghc-pkg)
 
 set (HASKELL_FOUND 0)
 if (CABAL_EXECUTABLE)
 if (C2HS_EXECUTABLE)
+if (ALEX_EXECUTABLE)
+if (HAPPY_EXECUTABLE)
 if (GHC_EXECUTABLE)
 if (GHC-PKG_EXECUTABLE)
 
@@ -42,6 +48,15 @@ if (GHC-PKG_EXECUTABLE)
 		RESULT_VARIABLE GHC_QUICKCHECK_FOUND
 		OUTPUT_QUIET ERROR_QUIET
 	)
+
+	execute_process (
+		COMMAND ${GHC_EXECUTABLE} --print-target-platform
+		OUTPUT_VARIABLE GHC_TARGET_PLATFORM OUTPUT_STRIP_TRAILING_WHITESPACE
+	)
+
+	# correct the mapping..
+	string (REPLACE "apple-darwin" "osx" GHC_TARGET_PLATFORM ${GHC_TARGET_PLATFORM})
+	string (REPLACE "unknown-linux" "linux" GHC_TARGET_PLATFORM ${GHC_TARGET_PLATFORM})
 
 	# normalize the result variables, 0 means success which corresponds to 1 in cmake booleans
 	if (GHC_HSPEC_FOUND EQUAL 0)
@@ -99,6 +114,12 @@ endif (GHC-PKG_EXECUTABLE)
 else (GHC_EXECUTABLE)
 	set (HASKELL_NOTFOUND_INFO "GHC not found")
 endif (GHC_EXECUTABLE)
+else (HAPPY_EXECUTABLE)
+	set (HASKELL_NOTFOUND_INFO "happy not found")
+endif (HAPPY_EXECUTABLE)
+else (ALEX_EXECUTABLE)
+	set (HASKELL_NOTFOUND_INFO "alex not found")
+endif (ALEX_EXECUTABLE)
 else (C2HS_EXECUTABLE)
 	set (HASKELL_NOTFOUND_INFO "c2hs not found")
 endif (C2HS_EXECUTABLE)
@@ -111,6 +132,8 @@ set (HASKELL_NOTFOUND_INFO "${HASKELL_NOTFOUND_INFO}, please refer to the readme
 mark_as_advanced (
 	GHC_EXECUTABLE
 	GHC-PKG_EXECUTABLE
+	ALEX_EXECUTABLE
+	HAPPY_EXECUTABLE
 	C2HS_EXECUTABLE
 	CABAL_EXECUTABLE
 	CABAL_DYNLIB_PATH
@@ -118,4 +141,5 @@ mark_as_advanced (
 	GHC_VERSION
 	GHC_HSPEC_FOUND
 	GHC_QUICKCHECK_FOUND
+	GHC_TARGET_PLATFORM
 )
