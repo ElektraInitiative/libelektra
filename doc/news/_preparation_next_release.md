@@ -54,10 +54,10 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.8.
 
 We added even more functionality, which could not make it to the highlights:
 
-- New I/O bindings for [ev](https://www.libelektra.org/bindings/io_ev) have been
+- A new I/O binding for [ev](https://www.libelektra.org/bindings/io_ev) has been
   added.
-  They can be used to integrate the notification feature with applications based
-  on [ev](http://libev.schmorp.de) main loops.
+  It can be used to integrate the notification feature with applications based
+  on [ev](http://libev.schmorp.de) main loops. *(Thomas Wahringer)*
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
