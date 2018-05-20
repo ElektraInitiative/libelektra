@@ -34,7 +34,7 @@ as well.
 In order to use the type checker, mount a configuration specification along with this
 plugin. There are already a lot of commonly used keywords supported out of the box specified
 in the file [prelude.ini](/src/plugins/typechecker/typechecker/prelude.ini).
-Usually one wants to mount that file as well beforehand so the standard configuration.
+Usually one wants to mount that file as well beforehand for the standard configuration.
 
 `kdb mount prelude.ini spec/<path>/spec/elektra ini`
 `kdb mount <specification> spec/<path> <storage plugin to read the specification> typechecker`
