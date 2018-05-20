@@ -41,7 +41,7 @@ translate()
 	if grep -Eq 'Backup-and-Restore:' <<< "$MOUNTPOINT"; then
 		printf 'Mountpoint: %s\n' "$(cut -d ':' -f2 <<< "$MOUNTPOINT" | sed 's/^[[:space:]]*//')" >> "$TMPFILE"
 	else
-		printf 'Mountpoint: /examples\n' >> "$TMPFILE"
+		printf 'Mountpoint: /tests\n' >> "$TMPFILE"
 	fi
 
 	resetGlobals
