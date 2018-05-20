@@ -147,7 +147,7 @@ These notes are of interest for people developing Elektra:
 - A build job checks if PRs modify the release notes. *(Markus Raab)*
 - <<TODO>>
 - <<TODO>>
-- Return values of stages fixed. *(Lukas Winkler)*
+- `withDockerEnv` Jenkinsfile helper now no longer provides stages automatically. *(Lukas Winkler)*
 - Docker artifacts are now cleaned up in our daily build job. *(Lukas Winkler)*
 - `icheck` build server job has been ported to our new build system. *(Lukas Winkler)*
 - The script [`check_formatting.sh`](https://master.libelektra.org/tests/shell/check_formatting.sh) now also checks the formatting of CMake
