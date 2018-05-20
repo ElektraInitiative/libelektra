@@ -197,8 +197,7 @@ function (restore_variable PLUGIN_NAME VARIABLE)
 					FATAL_ERROR
 						"Internally inconsistency, plugin ${PLUGIN_NAME} got different values for variable ${VARIABLE}: '${${VARIABLE}}' != '${VAR}'"
 						"Concatenate variables that contain the value of ${VARIABLE} in a single variable during the DEPENDENCY_PHASE."
-						"Make sure that only a single variable is passed to every argument of add_plugin."
-					)
+						"Make sure that only a single variable is passed to every argument of add_plugin.")
 			endif ()
 		else ()
 
