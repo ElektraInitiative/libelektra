@@ -50,7 +50,7 @@ that a key only holds numbers in a given range. Another metakey is `check/enum`
 which only allows specific keywords to be the content of a key. Up to now these
 semantics are being checked at runtime. Therefore a type system was developed to
 be able to check configuration specifications statically. As an example, it
-would detect when one accidentially add both a range and an enum check if their
+would detect when one accidentally adds both a range and an enum check if their
 possible contents are not compatible with each other.
 
 The type system is available as a plugin that gets mounted along with a
