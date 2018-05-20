@@ -17,22 +17,22 @@ Different configurations might use different values for `TRUE`/`FALSE`. The `boo
 
 ```sh
 # Mount plugin
-kdb mount config.ecf user/testsboolean dump boolean
+kdb mount config.ecf user/tests/boolean dump boolean
 
 # By default the plugin uses `1` (true) and `0` (false) to represent boolean values
-kdb set user/testsboolean/truthiness false
-kdb setmeta user/testsboolean/truthiness type boolean
-kdb get user/testsboolean/truthiness
+kdb set user/tests/boolean/truthiness false
+kdb setmeta user/tests/boolean/truthiness type boolean
+kdb get user/tests/boolean/truthiness
 #> 0
 
 # The plugin does not change ordinary values
-kdb set user/testsboolean/key value
-kdb get user/testsboolean/key
+kdb set user/tests/boolean/key value
+kdb get user/tests/boolean/key
 #> value
 
 # Undo changes
-kdb rm -r user/testsboolean
-kdb umount user/testsboolean
+kdb rm -r user/tests/boolean
+kdb umount user/tests/boolean
 ```
 
 ## Configuration
