@@ -65,18 +65,18 @@ Meaning: IF `this/key` NOT EQUAL TO `'value'` THEN `then/key` MUST EQUAL `some/o
 Another full example:
 
 ```sh
-#Backup-and-Restore:/examples/conditionals
+#Backup-and-Restore:/tests/conditionals
 
-sudo kdb mount conditionals.dump /examples/conditionals conditionals dump
+sudo kdb mount conditionals.dump /tests/conditionals conditionals dump
 
-kdb set /examples/conditionals/fkey 3.0
-kdb set /examples/conditionals/hkey hello
+kdb set /tests/conditionals/fkey 3.0
+kdb set /tests/conditionals/hkey hello
 
 # will succeed
-kdb setmeta user/examples/conditionals/key check/condition "(../hkey == 'hello') ? (../fkey == '3.0')"
+kdb setmeta user/tests/conditionals/key check/condition "(../hkey == 'hello') ? (../fkey == '3.0')"
 
 # will fail
-kdb setmeta user/examples/conditionals/key check/condition "(../hkey == 'hello') ? (../fkey == '5.0')"
+kdb setmeta user/tests/conditionals/key check/condition "(../hkey == 'hello') ? (../fkey == '5.0')"
 # RET:5
 # ERROR:135
 ```
@@ -84,40 +84,40 @@ kdb setmeta user/examples/conditionals/key check/condition "(../hkey == 'hello')
 Assignment example:
 
 ```sh
-kdb set user/examples/conditionals/hkey Hello
-kdb setmeta user/examples/conditionals/hkey assign/condition "(./ == 'Hello') ? ('World')"
+kdb set user/tests/conditionals/hkey Hello
+kdb setmeta user/tests/conditionals/hkey assign/condition "(./ == 'Hello') ? ('World')"
 # alternative syntax: "(../hkey == 'Hello') ? ('World')
 
-kdb get user/examples/conditionals/hkey
+kdb get user/tests/conditionals/hkey
 #> World
 
 # cleanup
-kdb rm -r /examples/conditionals
-sudo kdb umount /examples/conditionals
+kdb rm -r /tests/conditionals
+sudo kdb umount /tests/conditionals
 ```
 
 Global plugin example:
 
 ```sh
 # Backup old list of global plugins
-kdb set user/examples/msr $(mktemp)
-kdb export system/elektra/globalplugins > $(kdb get user/examples/msr)
+kdb set user/tests/msr $(mktemp)
+kdb export system/elektra/globalplugins > $(kdb get user/tests/msr)
 
-sudo kdb mount main.ini /examples/conditionals ni
-sudo kdb mount sub.ini /examples/conditionals/sub ini
+sudo kdb mount main.ini /tests/conditionals ni
+sudo kdb mount sub.ini /tests/conditionals/sub ini
 
 # mount conditionals as global plugin
 sudo kdb global-mount conditionals || $(exit 0)
 
 # create testfiles
-echo 'key1 = val1'                                               >  `kdb file /examples/conditionals`
-echo '[key1]'                                                    >> `kdb file /examples/conditionals`
-echo "check/condition = (./ == 'val1') ? (../sub/key == 'true')" >> `kdb file /examples/conditionals`
+echo 'key1 = val1'                                               >  `kdb file /tests/conditionals`
+echo '[key1]'                                                    >> `kdb file /tests/conditionals`
+echo "check/condition = (./ == 'val1') ? (../sub/key == 'true')" >> `kdb file /tests/conditionals`
 
-echo "key = false" > `kdb file /examples/conditionals/sub`
+echo "key = false" > `kdb file /tests/conditionals/sub`
 
 # should fail and yield an error
-kdb export /examples/conditionals ini
+kdb export /tests/conditionals ini
 #> sub/key = false
 #> #@META check/condition = (./ == 'val1') ? (../sub/key == 'true')
 #> key1 = val1
@@ -131,23 +131,23 @@ kdb export /examples/conditionals ini
 # Mountpoint: system/test
 # Configfile: /home/thomas/.config/main.ini
 
-kdb set /examples/conditionals/sub/key true
+kdb set /tests/conditionals/sub/key true
 
 # should succeed
-kdb export /examples/conditionals ini
+kdb export /tests/conditionals ini
 #> sub/key = true
 #> #@META check/condition = (./ == 'val1') ? (../sub/key == 'true')
 #> key1 = val1
 
 # cleanup
-kdb rm -r /examples/conditionals
-sudo kdb umount /examples/conditionals/sub
-sudo kdb umount /examples/conditionals
+kdb rm -r /tests/conditionals
+sudo kdb umount /tests/conditionals/sub
+sudo kdb umount /tests/conditionals
 
 sudo kdb global-umount conditionals
 
 kdb rm -r system/elektra/globalplugins
-kdb import system/elektra/globalplugins < $(kdb get user/examples/msr)
-rm $(kdb get user/examples/msr)
-kdb rm user/examples/msr
+kdb import system/elektra/globalplugins < $(kdb get user/tests/msr)
+rm $(kdb get user/tests/msr)
+kdb rm user/tests/msr
 ```
