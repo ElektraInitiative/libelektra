@@ -123,36 +123,36 @@ contains the type definitions for `check/range`, `check/long` and `fallback/#` a
 We use kdb shell to delay the typechecking until we have finished writing the whole specification.
 
 ```sh
-# Backup-and-Restore:spec/examples/simplespecification
+# Backup-and-Restore:spec/tests/typechecker
 
 # When elektra is installed the first variant will work
 # the following kdb get only decides whether this example is executed as a shell recorder test
 # during a build, then the second variant points to the correct location
-(sudo kdb mount prelude.ini spec/examples/simplespecification/elektra/spec ini && \
-	kdb get spec/examples/simplespecification/elektra/spec/fallback/#) || \
-	(sudo kdb umount spec/examples/simplespecification/elektra/spec && \
-		sudo kdb mount "$PWD/src/plugins/typechecker/typechecker/prelude.ini" spec/examples/simplespecification/elektra/spec ini)
+(sudo kdb mount prelude.ini spec/tests/typechecker/elektra/spec ini && \
+	kdb get spec/tests/typechecker/elektra/spec/fallback/#) || \
+	(sudo kdb umount spec/tests/typechecker/elektra/spec && \
+		sudo kdb mount "$PWD/src/plugins/typechecker/typechecker/prelude.ini" spec/tests/typechecker/elektra/spec ini)
 # so in a normal use case one would simply call
-# sudo kdb mount prelude.ini spec/examples/simplespecification/elektra/spec ini
-sudo kdb mount simplespecification.ini spec/examples/simplespecification ini typechecker
+# sudo kdb mount prelude.ini spec/tests/typechecker/elektra/spec ini
+sudo kdb mount simplespecification.ini spec/tests/typechecker ini typechecker
 
-echo 'kdbGet spec/examples/simplespecification \
-keySetName spec/examples/simplespecification/key1 \
+echo 'kdbGet spec/tests/typechecker \
+keySetName spec/tests/typechecker/key1 \
 keySetMeta check/range 0-5000 \
 ksAppendKey \
 keyClear \
-keySetName spec/examples/simplespecification/key2 \
+keySetName spec/tests/typechecker/key2 \
 keySetMeta check/range 7200-10000 \
 ksAppendKey \
 keyClear \
-keySetName spec/examples/simplespecification/key3 \
+keySetName spec/tests/typechecker/key3 \
 keySetMeta check/long \
-keySetMeta fallback/#1 spec/examples/simplespecification/key1 \
+keySetMeta fallback/#1 spec/tests/typechecker/key1 \
 ksAppendKey \
 keyClear \
-kdbSet spec/examples/simplespecification' | kdb shell
+kdbSet spec/tests/typechecker' | kdb shell
 
-kdb get spec/examples/simplespecification/key1
+kdb get spec/tests/typechecker/key1
 ```
 
 Add an invalid link now and see how it refuses the specification, showing the erroneous
@@ -160,12 +160,12 @@ parts instead. As the two keys represent the ranges 0-5000 and 7200-10000, they
 obviously cannot be linked together.
 
 ```sh
-kdb setmeta spec/examples/simplespecification/key2 fallback/#1 spec/examples/simplespecification/key1
+kdb setmeta spec/tests/typechecker/key2 fallback/#1 spec/tests/typechecker/key1
 # RET: 5
 # STDERR-REGEX: .*Couldn't match type.*
 
-sudo kdb umount spec/examples/simplespecification
-sudo kdb umount spec/examples/simplespecification/elektra/spec
+sudo kdb umount spec/tests/typechecker
+sudo kdb umount spec/tests/typechecker/elektra/spec
 ```
 
 ## Debugging
