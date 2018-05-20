@@ -46,7 +46,7 @@ In the signature you are only allowed to add const to
 any parameter. You are *not* allowed to use subtypes to
 the objects, in C means you are not allowed to call any
 functions of an object which appear new. C does *not*
-typecheck that, it's your responsibility.
+type check that, it's your responsibility.
 
 What C also does not check are the pre and postconditions.
 That means you are not allowed to demand more client code

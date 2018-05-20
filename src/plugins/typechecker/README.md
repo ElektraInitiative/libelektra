@@ -7,16 +7,16 @@
 - infos/placements = postgetstorage presetstorage
 - infos/status = maintained experimental global
 - infos/metadata =
-- infos/description = a plugin that typechecks configuration specifications
+- infos/description = a plugin that type checks configuration specifications
 
 ## Introduction
 
-A plugin that typechecks specifications before setting keys and after getting keys from
+A plugin that type checks specifications before setting keys and after getting keys from
 a mounted specification.
 
 The type checker uses regular expressions as the foundation. It assigns a regex to each key
 describing its possible contents, thus defining a key's type. Links between keys will fail
-the typecheck if the regexes describing the linked keys are not compatible with each other,
+the type check if the regexes describing the linked keys are not compatible with each other,
 i.e. the regex of the linked key is equal or a subset of the regex of the linking key.
 This concept is not only useful for defining links. It can be used to restrict the input
 types of transformations for instance as well.
@@ -40,9 +40,9 @@ Usually one wants to mount that file as well beforehand so the standard configur
 `kdb mount <specification> spec/<path> <storage plugin to read the specification> typechecker`
 
 Retrieving any key from the specification using `kdb get <path>` will cause
-the typechecking to happen. The type checker will issue a warning if it detects any
+the type checking to happen. The type checker will issue a warning if it detects any
 problems with it. In case a key covered by a configuration specification is accessed
-programmatically, the typechecking will also happen if the type checker is mounted.
+programmatically, the type checking will also happen if the type checker is mounted.
 
 When altering a mounted specification using `kdb set <path>` or `kdb setmeta <path> <value>`,
 the type checker will issue an error if the newly added key or metakey will lead to an
@@ -50,7 +50,7 @@ inconsistent configuration specification according to the type system specificat
 
 It is often necessary to set multiple specification keywords at once in order to transform a
 valid configuration specification to another valid one. Therefore some kind of transaction
-is required so the typechecking only happens when the whole changes have been made. The
+is required so the type checking only happens when the whole changes have been made. The
 easiest way to do this is to use the command `kdb shell`. An example of its usage is shown
 below. In case you prefer a graphical tool to edit configuration specifications you can use the
 qt-gui for Elektra.
@@ -120,7 +120,7 @@ that two incompatible checks can be used for a single key.
 Create a sample configuration specification with three keys. As it is valid, there will be no error
 issued. We rely on the existence of [prelude.ini](/src/plugins/typechecker/typechecker/prelude.ini), which already
 contains the type definitions for `check/range`, `check/long` and `fallback/#` and mount it along.
-We use kdb shell to delay the typechecking until we have finished writing the whole specification.
+We use kdb shell to delay the type checking until we have finished writing the whole specification.
 
 ```sh
 # Backup-and-Restore:spec/tests/typechecker
@@ -185,7 +185,7 @@ type behavior can be observed when getting/setting a key in a specification.
 ## Limitations
 
 - Rather experimental
-- Typechecking only happens when getting or setting
+- Type checking only happens when getting or setting
 a key in a mounted specification
 - Errors are currently raw and haskell-focused
 - The small implementations are not yet auto generated
