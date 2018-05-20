@@ -1,5 +1,5 @@
 Storage: mini
-Mountpoint: user/test
+Mountpoint: user/tests
 File: config.ini
 
 RET: 0

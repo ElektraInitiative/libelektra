@@ -1,4 +1,4 @@
-Mountpoint: user/tmount/mathcheck
+Mountpoint: user/tests/mathcheck
 DiffType: File
 File: mathcheck.esr
 Storage: mathcheck
