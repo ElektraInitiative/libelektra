@@ -89,6 +89,8 @@ We added even more functionality, which could not make it to the highlights:
 ## Other News
 
 - The `crypto` plugin now uses Elektra's `libinvoke` and the `base64` plugin in order to encode and decode Base64 strings. This improvement reduces code duplication between the two plugins. *(Peter Nirschl)*
+- The completion for [fish](http://fishshell.com) now also suggest the `info/` meta attributes of the
+  [file plugin](https://www.libelektra.org/plugins/file). *(René Schwaiger)*
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -163,8 +165,10 @@ These notes are of interest for people developing Elektra:
   - checks the formatting of CMake code via [`cmake-format`][]
 
   . *(René Schwaiger)*
+- (Markdown) Shell Recorder tests now save test data below `/tests` (see issue [#1887][]). *(René Schwaiger)*
 
 [`cmake-format`]: https://github.com/cheshirekow/cmake_format
+[#1887]: https://github.com/ElektraInitiative/libelektra/issues/1887
 
 ## Fixes
 
@@ -184,6 +188,7 @@ Many problems were resolved with the following fixes:
 - `scripts/run_icheck` now no longer leaves the base directory of the project
   when checking if the ABI changed. *(Lukas Winkler)*
 - You can now build the [Qt-GUI](https://www.libelektra.org/tools/qt-gui) using Qt `5.11`. *(René Schwaiger)*
+- We fixed various minor spelling mistakes in the documentation. *(René Schwaiger)*
 
 
 ## Outlook
