@@ -1,7 +1,7 @@
 - infos = Information about the typechecker plugin is in keys below
 - infos/author = Armin Wurzinger <e1528532@libelektra.org>
 - infos/licence = BSD
-- infos/needs = 
+- infos/needs =
 - infos/provides = typechecker
 - infos/recommends =
 - infos/placements = postgetstorage presetstorage
@@ -17,14 +17,14 @@ a mounted specification.
 The type checker uses regular expressions as the foundation. It assigns a regex to each key
 describing its possible contents, thus defining a key's type. Links between keys will fail
 the typecheck if the regexes describing the linked keys are not compatible with each other,
-i.e. the regex of the linked key is equal or a subset of the regex of the linking key. 
-This concept is not only useful for defining links. It can be used to restrict the input 
+i.e. the regex of the linked key is equal or a subset of the regex of the linking key.
+This concept is not only useful for defining links. It can be used to restrict the input
 types of transformations for instance as well.
 
 ## Usage
 
 There are basically two ways to use type checker plugin. First we describe how the plugin
-is used in general for users. Afterwards we describe how the type checker plugin can be 
+is used in general for users. Afterwards we describe how the type checker plugin can be
 extended with the semantics of additional configuration specification keywords. This is
 interesting for plugin developers who want to make use of the type system for their work
 as well.
@@ -32,7 +32,7 @@ as well.
 ### General Usage
 
 In order to use the type checker, mount a configuration specification along with this
-plugin. There are already a lot of commonly used keywords supported out of the box specified 
+plugin. There are already a lot of commonly used keywords supported out of the box specified
 in the file [prelude.ini](/src/plugins/typechecker/typechecker/prelude.ini).
 Usually one wants to mount that file as well beforehand so the standard configuration.
 
@@ -45,7 +45,7 @@ problems with it. In case a key covered by a configuration specification is acce
 programmatically, the typechecking will also happen if the type checker is mounted.
 
 When altering a mounted specification using `kdb set <path>` or `kdb setmeta <path> <value>`,
-the type checker will issue an error if the newly added key or metakey will lead to an 
+the type checker will issue an error if the newly added key or metakey will lead to an
 inconsistent configuration specification according to the type system specification.
 
 It is often necessary to set multiple specification keywords at once in order to transform a
@@ -64,7 +64,7 @@ In case a new plugin has been written which can be described using regular expre
 plugin developer may want to teach the type system about this plugin. In order to do that,
 each configuration specification may contain a section prefixed with the path `elektra/spec`
 that contains information about how the type system should treat a specification keyword by
-formalizing its semantics as a function's type signature. Let's take the example of the 
+formalizing its semantics as a function's type signature. Let's take the example of the
 fallback keyword, which would be formalized in the ini format as follows:
 
 ```
@@ -73,33 +73,33 @@ fallback keyword, which would be formalized in the ini format as follows:
 [/elektra/spec/fallback/#]
 ```
 
-A type signature, inspired by Haskell's type signatures, typically has two parts. The first 
+A type signature, inspired by Haskell's type signatures, typically has two parts. The first
 part describes its constraints followed by `=>`. Then its parameter's types follow separated
 by a `->`, where the last parameter type is the result type.
 A constraint can bei either a containment constraint or a intersection constraint, written
 `RegexContains` or `RegexIntersects` followed by two type variables. Type variables may as well
-be a string constant describing a regex as we will see in the next example. In our case 
+be a string constant describing a regex as we will see in the next example. In our case
 `RegexContains b a` means that the regex stored in the type variable a is either equal to or
 a subset of the regex stored in the type variable b. The type variables arise from the type
 parameters. A type parameter may either refer to a `Key` or to a `Regex`. A `Key` may either
-refer to the path of another key which is given relatively to the current key after the `::` 
-symbol, or to the annotated key itself, in which case no extra annotation is necessary. 
+refer to the path of another key which is given relatively to the current key after the `::`
+symbol, or to the annotated key itself, in which case no extra annotation is necessary.
 A `Regex` refers directly to a regex which can then be used as a type variable.
 
-Additionally, a small haskell implementation has to be given. Currently our type system does not 
+Additionally, a small haskell implementation has to be given. Currently our type system does not
 support any kind of operations other than simple pattern matching on keys, that may either hold
-an arbitrary string as a default value matched as `Key (P.Just a)` or no default value, 
+an arbitrary string as a default value matched as `Key (P.Just a)` or no default value,
 described as `Key P.Nothing`. If you want to pattern match over several possibilities like its
 done for fallback, use `;` to separate between lines.
 
 Summing up the above example can be read as "If the regex of the key b, which path is obtained
-by taking the value of the current key, relatively referred to via `.` is equal to or a 
+by taking the value of the current key, relatively referred to via `.` is equal to or a
 subset of the regex describing the current key, this link is allowed. In that case the type
 of the current key will not be changed and remain to be the regex stored in the type variable a.
 
 Let us look at another example which makes use of `RegexIntersects`. Suppose you want to make a
 specification keyword that checks whether the key's content lies with the boundaries of a 16 bit
-unsigned short value, corresponding to the range 0-65535, or rewritten as a regex, 
+unsigned short value, corresponding to the range 0-65535, or rewritten as a regex,
 `([0-9]|[1-8][0-9]|9[0-9]|[1-8][0-9]{2}|9[0-8][0-9]|99[0-9]|[1-8][0-9]{3}|9[0-8][0-9]{2}|99[0-8][0-9]|999[0-9]|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])`
 
 ```
@@ -117,7 +117,7 @@ that two incompatible checks can be used for a single key.
 
 ## Examples
 
-Create a sample configuration specification with three keys. As it is valid, there will be no error 
+Create a sample configuration specification with three keys. As it is valid, there will be no error
 issued. We rely on the existence of [prelude.ini](/src/plugins/typechecker/typechecker/prelude.ini), which already
 contains the type definitions for `check/range`, `check/long` and `fallback/#` and mount it along.
 We use kdb shell to delay the typechecking until we have finished writing the whole specification.
@@ -126,7 +126,7 @@ We use kdb shell to delay the typechecking until we have finished writing the wh
 # Backup-and-Restore:spec/examples/simplespecification
 
 # When elektra is installed the first variant will work
-# the following kdb get only decides whether this example is executed as a shell recorder test 
+# the following kdb get only decides whether this example is executed as a shell recorder test
 # during a build, then the second variant points to the correct location
 (sudo kdb mount prelude.ini spec/examples/simplespecification/elektra/spec ini && \
 	kdb get spec/examples/simplespecification/elektra/spec/fallback/#) || \
@@ -156,7 +156,7 @@ kdb get spec/examples/simplespecification/key1
 ```
 
 Add an invalid link now and see how it refuses the specification, showing the erroneous
-parts instead. As the two keys represent the ranges 0-5000 and 7200-10000, they 
+parts instead. As the two keys represent the ranges 0-5000 and 7200-10000, they
 obviously cannot be linked together.
 
 ```sh
