@@ -29,8 +29,13 @@ writeBlock()
 	fi
 	COMMAND=$(sed s/sudo\ //g <<< "$COMMAND")
 	while read -r cmd; do
-		if printf '%s' "$cmd" | egrep 'kdb\s+set(meta)?' | egrep -vq '\s["'']?(dir|system|spec|user)?/tests'; then
-			printerr 'The command “%s” sets data outside of `/tests`!\n' "$COMMAND"
+		MATCH_COMMAND='(kdb[ \t]+(set(meta)?|rm)|kdbSet|keySetName)'
+		MATCH_OPTIONS='([ \t]+-[-a-zA-Z]+)*'
+		MATCH_SEPARATION='[ \t]+[''"]?'
+		MATCH_NAMESPACE='(/[^/]+|[^/]+/[^/]+)'
+		NAMESPACE=$(printf '%s' "$cmd" | sed -nE "s~.*$MATCH_COMMAND$MATCH_OPTIONS$MATCH_SEPARATION$MATCH_NAMESPACE.*~\5~p")
+		if [ -n "$NAMESPACE" ] && printf '%s' "$NAMESPACE" | egrep -vq '(dir|system|spec|user)?/(tests|elektra)'; then
+			printerr 'The command “%s” stores data outside of `/tests` at “%s”!\n' "$COMMAND" "$NAMESPACE"
 			SHELL_RECORDER_ERROR=1
 		fi
 		printf '< %s\n' "$cmd" >> "$TMPFILE"
