@@ -29,6 +29,10 @@ writeBlock()
 	fi
 	COMMAND=$(sed s/sudo\ //g <<< "$COMMAND")
 	while read -r cmd; do
+		if printf '%s' "$cmd" | egrep 'kdb\s+set(meta)?' | egrep -vq '\s["'']?(dir|system|spec|user)?/tests'; then
+			printerr 'The command “%s” sets data outside of `/tests`!\n' "$COMMAND"
+			SHELL_RECORDER_ERROR=1
+		fi
 		printf '< %s\n' "$cmd" >> "$TMPFILE"
 	done <<< "$COMMAND"
 	resetGlobals
