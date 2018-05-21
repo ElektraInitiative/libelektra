@@ -36,7 +36,7 @@ void * context;
 #define TIME_HOLDOFF (100 * 1000)
 
 /** timeout for tests in seconds */
-#define TEST_TIMEOUT 3
+#define TEST_TIMEOUT 10
 
 #define TEST_ENDPOINT "ipc://testmod_zeromqsend"
 
