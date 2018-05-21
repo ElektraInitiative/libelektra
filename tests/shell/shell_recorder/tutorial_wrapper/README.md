@@ -42,6 +42,10 @@ the third command, which will fail with exit code `1`, since it tries to delete 
 value the last command prints to the standard error output, since we specified the expected text `Did not find the key` via the special
 comment `# STDERR:`.
 
+## Conventions
+
+- Only add tests that store data below `/tests` (See also [TESTING.md](/doc/TESTING.md)).
+
 ## Add a Test
 
 If you want to add a Markdown Shell Recorder tests for the `README.md` of your plugin, you can simply pass
