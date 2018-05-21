@@ -167,9 +167,6 @@ kdb rm /tests/overrides/test
 
 kdb rm -r spec/tests/tutorial/
 
-# Remove key automatically created by dini/INI plugin
-kdb rm -f user/overrides
-
 rm -r .dir/
 rmdir kdbtutorial
 ```
