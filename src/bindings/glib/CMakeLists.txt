@@ -14,7 +14,6 @@ if (ENABLE_ASAN)
 	return ()
 endif (ENABLE_ASAN)
 
-
 # Add binding
 add_binding (glib)
 

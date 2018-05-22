@@ -15,9 +15,8 @@ add_dependencies (${EXAMPLE} kdberrors_generated)
 
 target_link_elektra (${EXAMPLE} elektra-kdb elektra-notification)
 
-# The asynchronous example requires io_uv
-# io_uv is disabled for ASAN builds, see
-# https://github.com/ElektraInitiative/libelektra/issues/2007
+# - The asynchronous example requires io_uv
+# - io_uv is disabled for ASAN builds, see https://github.com/ElektraInitiative/libelektra/issues/2007
 check_binding_included ("io_uv" IS_INCLUDED SUBDIRECTORY "io/uv" SILENT)
 find_package (PkgConfig)
 pkg_check_modules (LIBUV QUIET libuv)

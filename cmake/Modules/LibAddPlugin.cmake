@@ -52,6 +52,7 @@ function (add_plugintest testname)
 						"Trying to add plugintest ${testname} but no such plugin was added (try to use LINK_PLUGIN)"
 					)
 			endif ()
+
 			# plugin for test was not added in previous phase or removed
 			# because of missing deps, exit quietly
 			return ()
