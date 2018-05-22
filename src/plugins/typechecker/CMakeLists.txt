@@ -25,8 +25,9 @@ if (LIBFA_FOUND)
 	if (TARGET typechecker)
 
 		if (DEPENDENCY_PHASE)
-			file (COPY "${CMAKE_CURRENT_SOURCE_DIR}/sandbox/" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/sandbox/")
-
+			configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/sandbox/sandbox.cabal.in"
+					"${CMAKE_CURRENT_BINARY_DIR}/sandbox/sandbox.cabal"
+					@ONLY)
 			add_custom_command (OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/sandbox/cabal.sandbox.config"
 					    COMMAND ${CABAL_EXECUTABLE} sandbox delete -v0
 					    COMMAND ${CABAL_EXECUTABLE} sandbox init -v0
@@ -53,5 +54,5 @@ if (LIBFA_FOUND)
 	mark_as_advanced (TYPECHECKER_GHC_PLUGIN TYPECHECKER_GHC_PLUGIN_PATH)
 
 else (LIBFA_FOUND)
-	remove_plugin (typechecker "libfa not found (usually bundled with augeas), but required for haskell plugins")
+	remove_plugin (typechecker "libfa not found (usually bundled with augeas), but required for the typechecker plugin")
 endif (LIBFA_FOUND)

@@ -21,7 +21,7 @@ library
                    , Elektra.Plugin
                    , Elektra.Ease
                    , Elektra.Errors
-  build-depends:     base >= 4.7 && < 5
+  build-depends:     base >= 4.9 && < 5
   includes:          kdb.h
                    , kdbplugin.h
                    , kdbease.h

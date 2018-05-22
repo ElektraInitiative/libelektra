@@ -2,32 +2,21 @@
 # Only searches for the GHC compiler and not other haskell compilers as it is
 # the most widespread and advanced haskell compiler.
 #
-<<<<<<< HEAD
-#  CABAL_EXECUTABLE      - Path to the cabal executable
-#  C2HS_EXECUTABLE	     - Path to the c2hs executable
-#  GHC_EXECUTABLE        - Path to the ghc executable
-#  GHC-PKG_EXECUTABLE    - Path to the ghc-pkg executable
-#  GHC_HSPEC_FOUND       - True if the hspec library is available
-#  GHC_QUICKCHECK_FOUND  - True if the QuickCheck library is available
-#  GHC_VERSION			 - The numeric version of the ghc executable
-#  GHC_TARGET_PLATFORM	 - The target platform string of ghc
-#                          sanitized (darwin -> osx, unknown-linux -> linux)
-#  CABAL_DYNLIB_PATH     - The default path where cabal installs dynamic libraries
-#  CABAL_CUSTOM_TARGET   - The default dependencies of the custom Setup.hs for plugins
-#  HASKELL_FOUND         - True if the whole required haskell environment exists
-=======
 #  CABAL_EXECUTABLE       - Path to the cabal executable
-#  C2HS_EXECUTABLE	      - Path to the c2hs executable
+#  C2HS_EXECUTABLE        - Path to the c2hs executable
+#  ALEX_EXECUTABLE        - Path to the alex executable
+#  HAPPY_EXECUTABLE       - Path to the happy executable
 #  GHC_EXECUTABLE         - Path to the ghc executable
 #  GHC-PKG_EXECUTABLE     - Path to the ghc-pkg executable
 #  GHC_HSPEC_FOUND        - True if the hspec library is available
 #  GHC_QUICKCHECK_FOUND   - True if the QuickCheck library is available
-#  GHC_VERSION			  - The numeric version of the ghc executable
+#  GHC_VERSION            - The numeric version of the ghc executable
+#  GHC_TARGET_PLATFORM    - The target platform string of ghc
+#                           sanitized (darwin -> osx, unknown-linux -> linux)
 #  CABAL_DYNLIB_PATH      - The default path where cabal installs dynamic libraries
 #  CABAL_CUSTOM_TARGET    - The default dependencies of the custom Setup.hs for plugins
 #  HASKELL_SHARED_SANDBOX - The sandbox containing all required dependencies for haskell things
 #  HASKELL_FOUND          - True if the whole required haskell environment exists
->>>>>>> haskell-cmake-improvements: remove fetching and building dependencies during the build, require them to be given beforehand
 #    This variable is set to true if CABAL_EXECUTABLE, C2HS_EXECUTABLE, GHC_EXECUTABLE
 #    and GHC-PKG_EXECUTABLE are all available. If BUILD_TESTING is enabled, it also
 #    requires GHC_HSPEC_FOUND and GHC_QUICKCHECK_FOUND to be true.
@@ -108,15 +97,15 @@ if (GHC-PKG_EXECUTABLE)
 	set (CABAL_DYNLIB_PATH "${CABAL_LOCATION}/lib/${GHC_DYNAMIC_LIBRARY_DIR}")
 
 	# dependencies for the default cmake Setup.hs
+	# For cabal the system version should be used
 	set (CABAL_CUSTOM_SETUP
 "custom-setup
   setup-depends:
-    Cabal      >= 1.24 && < 2.1,
-    containers >= 0.4  && < 0.6,
-    base       >= 4.7  && < 5  ,
-    directory  >= 1.1  && < 1.4,
-    process    >= 1.2  && < 1.7,
-    filepath   >= 1.3  && < 1.5")
+    Cabal      >= 1.24.1 && < 2.4  ,
+    base       >= 4.9    && < 4.12 ,
+    containers >= 0.5    && < 0.6  ,
+    directory  >= 1.2    && < 1.4  ,
+    process    >= 1.4    && < 1.7" )
 
 	set (HASKELL_SHARED_SANDBOX $ENV{HASKELL_SHARED_SANDBOX})
     if (HASKELL_SHARED_SANDBOX AND IS_DIRECTORY "${HASKELL_SHARED_SANDBOX}")

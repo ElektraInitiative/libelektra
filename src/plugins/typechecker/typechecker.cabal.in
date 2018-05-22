@@ -18,16 +18,16 @@ library
   exposed-modules:   Elektra.Typechecker
   other-extensions:  OverloadedStrings
                    , CPP
-  build-depends:     base >= 4.7 && < 5
+  build-depends:     base >= 4.9 && < 5
                    , libelektra-haskell == @KDB_VERSION@
                    , specelektra == 1.@KDB_VERSION@
                    , spectranslator == 1.@KDB_VERSION@
                    , haskell-src-exts
                    , pretty
-                   , hint >= 0.7.0 && < 0.8.0
+                   , hint >= 0.7.0 && < 0.9.0
                    , directory
                    , temporary
-                   , exceptions == 0.8.*
+                   , exceptions
                    , text
                    , simple-logger
   cpp-options:       -DENABLE_LOGGER_@ENABLE_LOGGER@
