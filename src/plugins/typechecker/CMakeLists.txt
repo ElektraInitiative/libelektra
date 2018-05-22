@@ -27,8 +27,7 @@ if (LIBFA_FOUND)
 		if (DEPENDENCY_PHASE)
 			configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/sandbox/sandbox.cabal.in"
 					"${CMAKE_CURRENT_BINARY_DIR}/sandbox/sandbox.cabal"
-					@ONLY)
-			# no extra dependency required so we can inline it without needing a user sandbox
+					@ONLY) # no extra dependency required so we can inline it without needing a user sandbox
 			add_custom_command (OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/sandbox/cabal.sandbox.config"
 					    COMMAND ${CABAL_EXECUTABLE} sandbox delete -v0
 					    COMMAND ${CABAL_EXECUTABLE} sandbox init -v0

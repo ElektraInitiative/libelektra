@@ -188,8 +188,10 @@ macro (add_haskell_plugin target)
 									add_custom_command (OUTPUT ${PLUGIN_HASKELL_NAME}
 											    COMMAND ${CABAL_EXECUTABLE} configure
 												    ${CABAL_OPTS} -v0
-											    COMMAND ${CABAL_EXECUTABLE} build -v0 || ${CABAL_EXECUTABLE} configure ${CABAL_OPTS} -v0 &&
-						    					${CABAL_EXECUTABLE} build -v0
+											    COMMAND ${CABAL_EXECUTABLE} build -v0 ||
+												    ${CABAL_EXECUTABLE} configure
+												    ${CABAL_OPTS} -v0 && ${CABAL_EXECUTABLE}
+												    build -v0
 											    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 											    DEPENDS c2hs_haskell
 												    ${PLUGIN_SOURCE_FILES}
