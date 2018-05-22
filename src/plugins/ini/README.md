@@ -3,7 +3,7 @@
 - infos/licence = BSD
 - infos/needs =
 - infos/provides = storage/ini
-- infos/recommends = base64
+- infos/recommends = binary
 - infos/placements = getstorage setstorage
 - infos/status = maintained unittest shelltest nodep libc configurable 1000
 - infos/metadata = order
@@ -146,7 +146,7 @@ By default the INI plugin does not support binary data. You can use the [Base64 
 
 ```sh
 # Mount INI and recommended plugin Base64
-sudo kdb mount --with-recommends config.ini user/examples/ini ini
+sudo kdb mount config.ini user/examples/ini ini base64
 
 # Add empty binary value
 printf 'nothing = "@BASE64"\n' > `kdb file user/examples/ini`
