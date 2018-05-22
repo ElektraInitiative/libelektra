@@ -102,8 +102,8 @@ RUN git config --global user.email 'Jenkins <autobuilder@libelektra.org>' \
 # Handle Haskell dependencies
 ENV HASKELL_SHARED_SANDBOX /home/jenkins/elektra-cabal-sandbox
 RUN cd /home/jenkins \
-    && mkdir elektra-cabal-sandbox
-    && cd elektra-cabal-sandbox
+    && mkdir elektra-cabal-sandbox \
+    && cd elektra-cabal-sandbox \
     && cabal update \
     && cabal sandbox init \
     && cabal install 'Cabal >=1.24.1 && <2.4' 'base >=4.9 && <4.12' 'containers >=0.5 && <0.6' \
