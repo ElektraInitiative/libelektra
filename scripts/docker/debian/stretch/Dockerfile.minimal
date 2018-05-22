@@ -5,7 +5,7 @@ ENV LANGUAGE C.UTF-8
 ENV LC_ALL C.UTF-8
 
 RUN apt-get update && apt-get -y install \
-    cmake git build-essential curl
+    cmake git build-essential curl file
 
 # Create User:Group
 # The id is important as jenkins docker agents use the same id that is running
