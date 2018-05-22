@@ -64,13 +64,7 @@ Before configuring the project via cmake, make sure you have set the environment
 to the sandbox' location unless you are using the standard folder as described above.
 
 In case you simply want to install the bindings, but no other haskell based plugins, 
-install the following dependencies into the sandbox. Please note that ideally you use 
-the same cabal library version as your local cabal executable has been compiled with 
-to avoid compilation warnings. To find out that version use the command `cabal --version`
-and check the string `compiled using version ... of the Cabal library`, using the minor
-version.
-As an example, in case of Debian Stretch `cabal` uses the version `1.24.1.0`, so adjust
-the version string below to `Cabal == 1.24.*` before installing.
+install the following dependencies into the sandbox.
 
 ```
 cabal install 'Cabal >=1.24.1 && <2.4' 'base >=4.9 && <4.12' 'containers >=0.5 && <0.6' \
