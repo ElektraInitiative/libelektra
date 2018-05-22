@@ -26,16 +26,16 @@ import qualified Data.ByteString as BS
 generateHaskellDependencies :: [String] -> IO ()
 generateHaskellDependencies cabalFiles = do
   deps <- mapM (sequence . (id &&& readGenericPackageDescription normal)) cabalFiles
-  let exclusions = map (pkgName . package . packageDescription . snd) deps
+  let exclusions = mkPackageName "ghc" : map (pkgName . package . packageDescription . snd) deps
   let filteredPerFile = second (nub . filter (flip notElem exclusions . depPkgName) . generateDeps) <$> deps
   putStr "cabal install "
-  putStrLn . unwords . map (wrap . show . disp) . nub . concatMap snd $ filteredPerFile
-  putStr " --avoid-reinstalls"
+  putStr . unwords . map (wrap . show . disp) . nub . concatMap snd $ filteredPerFile
+  putStrLn " --avoid-reinstalls"
   forM_ filteredPerFile $ \(f, d) -> do
     putStrLn f
     putStr "cabal install "
-    putStrLn . unwords . map (wrap . show . disp) $ d
-    putStr " --avoid-reinstalls"
+    putStr . unwords . map (wrap . show . disp) $ d
+    putStrLn " --avoid-reinstalls"
   where
     generateDeps pd = let gpd = packageDescription pd
                           cl  = generateBuildDeps <$> condLibrary pd

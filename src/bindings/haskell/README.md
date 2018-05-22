@@ -30,7 +30,7 @@ inside ghci.
 ## Dependencies
 
 - GHC (Glasgow Haskell Compiler) > 8.0.1 && < 8.4
-- cabal > 1.24.0.2  (older versions may work but untested, 2.0.0.0 works as well)
+- cabal > 1.24.1.0 && < 2.4.*
 
 GHC and cabal can be either obtained using a package manager or downloaded directly
 from [the Haskell homepage](https://www.haskell.org/platform/). 
@@ -55,32 +55,37 @@ In case you want to install them to a separate location this is supported as wel
 the build system will consider the environment variable `HASKELL_SHARED_SANDBOX`.
 
 First create the sandbox at a location of your choice by executing the command 
-`cabal sandbox init --sandbox <path>`. This will create a new sandbox where the
-dependencies will get installed into. Please note that the following commands have to
-be executed in the *directory containing the sandbox directory specified above*,
-otherwise cabal would install the dependencies globally instead. This is generally not
-wanted to avoid conflicts and issues due to existing incompatible dependencies. So if you
-created the sandbox with `cabal sandbox init --sandbox /home/user/elektra-cabal-sandbox`
-the following install command has to be executed inside `/home/user/`.
-
+`cabal sandbox init`. This will create a new sandbox where the
+dependencies will get installed into. So if you have executed `cabal sandbox init` inside
+the directory `/home/user/elektra-haskell-sandbox` the environment variable gets set using
+`export HASKELL_SHARED_SANDBOX=/home/user/elektra-haskell-sandbox` and the following
+install command has to be executed in that directory as well.
 Before configuring the project via cmake, make sure you have set the environment variable 
 to the sandbox' location unless you are using the standard folder as described above.
 
 In case you simply want to install the bindings, but no other haskell based plugins, 
-install the following dependencies into the sandbox:
+install the following dependencies into the sandbox. Please note that ideally you use 
+the same cabal library version as your local cabal executable has been compiled with 
+to avoid compilation warnings. To find out that version use the command `cabal --version`
+and check the string `compiled using version ... of the Cabal library`, using the minor
+version.
+As an example, in case of Debian Stretch `cabal` uses the version `1.24.1.0`, so adjust
+the version string below to `Cabal == 1.24.*` before installing.
 
 ```
-cabal install 'Cabal >=1.24 && <2.1' 'containers >=0.4 && <0.6' 'base >=4.7 && <5' \
-	'directory >=1.1 && <1.4' 'process >=1.2 && <1.7' 'filepath >=1.3 && <1.5' \
-	'hspec -any' 'QuickCheck -any'
+cabal install 'Cabal >=1.24.1 && <2.4' 'base >=4.9 && <4.12' 'containers >=0.5 && <0.6' \
+	'directory >=1.2 && <1.4' 'process >=1.4 && <1.7' 'base >=4.9 && <5' \
+	'hspec -any' 'QuickCheck -any' --avoid-reinstalls
 ```
 
 In case you want to install every haskell based plugin, use this command instead:
 
 ```
-cabal install 'Cabal >=1.24 && <2.1' 'containers >=0.4 && <0.6' 'base >=4.7 && <5' \
-	'directory >=1.1 && <1.4' 'process >=1.2 && <1.7' 'filepath >=1.3 && <1.5' \
-	'hspec -any' 'QuickCheck -any'
+cabal install 'Cabal >=1.24.1 && <2.4' 'base >=4.9 && <4.12' 'containers >=0.5 && <0.6' \
+	'directory >=1.2 && <1.4' 'process >=1.4 && <1.7' 'base >=4.9 && <5' 'haskell-src-exts -any' \
+	'pretty -any' 'hint >=0.7.0 && <0.8.0' 'directory -any' 'temporary -any' 'exceptions -any' \
+	'text -any' 'simple-logger -any' 'containers -any' 'megaparsec -any' 'hspec -any' \
+	'QuickCheck -any' --avoid-reinstalls
 ```
 
 Now everything should be ready and awaits compilation.

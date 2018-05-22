@@ -24,7 +24,7 @@ library
                    , spectranslator == 1.@KDB_VERSION@
                    , haskell-src-exts
                    , pretty
-                   , hint >= 0.7.0 && < 0.9.0
+                   , hint >= 0.7.0 && < 0.8.0
                    , directory
                    , temporary
                    , exceptions

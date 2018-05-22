@@ -193,15 +193,6 @@ cabal install 'Cabal >=1.24.1 && <2.4' 'base >=4.9 && <4.12' 'containers >=0.5 &
 	'simple-logger -any' --avoid-reinstalls
 ```
 
-Furthermore an additional sandbox is used for the typechecker plugin. This sandbox
-gets bundled with elektra so that the typechecker will work correctly at runtime.
-It includes only the typechecker plugin itself without anything else. To install it, create an
-additional sandbox at a different location than the main sandbox exists.
-
-```
-cabal 
-```
-
 ## Limitations
 
 - Rather experimental

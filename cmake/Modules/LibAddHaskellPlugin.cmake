@@ -184,10 +184,12 @@ macro (add_haskell_plugin target)
 									     "${CMAKE_SOURCE_DIR}/src/plugins/haskell/Setup.hs.in"
 									     "${ARG_ADDITIONAL_SOURCES}")
 
+									# reconfiguration due to Cabal library version issues on stretch
 									add_custom_command (OUTPUT ${PLUGIN_HASKELL_NAME}
 											    COMMAND ${CABAL_EXECUTABLE} configure
 												    ${CABAL_OPTS} -v0
-											    COMMAND ${CABAL_EXECUTABLE} build -v0
+											    COMMAND ${CABAL_EXECUTABLE} build -v0 || ${CABAL_EXECUTABLE} configure ${CABAL_OPTS} -v0 &&
+						    					${CABAL_EXECUTABLE} build -v0
 											    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 											    DEPENDS c2hs_haskell
 												    ${PLUGIN_SOURCE_FILES}
@@ -331,13 +333,13 @@ macro (configure_haskell_sandbox)
 	if (NOT HASKELL_SANDBOX_DEP_IDX)
 		set (HASKELL_SANDBOX_DEP_IDX 1)
 		add_custom_command (OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/cabal.sandbox.config"
-				    COMMAND ${CABAL_EXECUTABLE} sandbox init --sandbox ${ARG_SHARED_SANDBOX} -v0
+				    COMMAND ${CABAL_EXECUTABLE} sandbox init --sandbox "${ARG_SHARED_SANDBOX}" -v0
 				    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 				    DEPENDS ${ARG_DEPENDS})
 		set (HASKELL_ADD_SOURCES_TARGET haskell-add-sources-${HASKELL_SANDBOX_DEP_IDX})
 	else (NOT HASKELL_SANDBOX_DEP_IDX)
 		add_custom_command (OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/cabal.sandbox.config"
-				    COMMAND ${CABAL_EXECUTABLE} sandbox init --sandbox ${ARG_SHARED_SANDBOX} -v0
+				    COMMAND ${CABAL_EXECUTABLE} sandbox init --sandbox "${ARG_SHARED_SANDBOX}" -v0
 				    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 				    DEPENDS haskell-add-sources-${HASKELL_SANDBOX_DEP_IDX}
 					    ${ARG_DEPENDS})
@@ -369,7 +371,7 @@ macro (configure_haskell_sandbox)
 	# Furthermore we implicitly add the haskell bindings as they are always required
 	add_custom_command (OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/cabal.sandbox.config"
 			    COMMAND ${CABAL_EXECUTABLE} sandbox add-source ${CMAKE_BINARY_DIR}/src/bindings/haskell/ -v0
-			    COMMAND ${CABAL_EXECUTABLE} install ${CABAL_OPTS} --only-dependencies --avoid-reinstalls --offline -v0 || true
+			    COMMAND ${CABAL_EXECUTABLE} install ${CABAL_OPTS} --only-dependencies --offline -v0 || true
 			    APPEND)
 	add_custom_target (${HASKELL_ADD_SOURCES_TARGET} ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/cabal.sandbox.config")
 

@@ -19,8 +19,6 @@ import Control.Applicative (liftA2)
 import Control.Monad (join)
 import Debug.Trace
 
-import GHC.TcPluginM.Extra (evByFiat, lookupModule, lookupName)
-
 import qualified FiniteAutomata as FA
 
 -- GHC API
@@ -28,11 +26,12 @@ import GhcPlugins
 import Outputable (Outputable (..), (<+>), text, ppr, fcat)
 import Plugins    (Plugin (..), defaultPlugin)
 import TcEvidence (EvTerm (..))
-import TcPluginM  (TcPluginM, tcLookupTyCon, tcPluginIO, newWanted)
+import TcPluginM  (TcPluginM, tcLookupTyCon, tcPluginIO, newWanted, findImportedModule, lookupOrig)
 import TcRnTypes  (Ct(..), TcPlugin(..), TcPluginResult(..), ctEvidence, ctEvPred, ctLoc,
                    tyCoVarsOfCtList)
 import Type       (classifyPredType, eqType)
-import TyCoRep    (TyLit(..), Type(..))
+import TyCoRep    (TyLit(..), Type(..), UnivCoProvenance (..))
+import Panic      (panicDoc)
 
 -- GHC Plugin Interface definition
 plugin :: Plugin
@@ -232,6 +231,40 @@ debug = debugS . showSDocUnsafe
 
 tcPluginDebug :: String -> SDoc -> TcPluginM ()
 tcPluginDebug a b = debug $ text a <+> b
+
+--
+-- lookupModule, lookupName, evByFiat, tracePlugin
+-- inlined from https://github.com/clash-lang/ghc-tcplugins-extra/blob/master/src/GHC/TcPluginM/Extra.hs
+-- to avoid an extra dependency
+--
+
+lookupModule :: ModuleName -- ^ Name of the module
+             -> FastString -- ^ Name of the package containing the module
+             -> TcPluginM Module
+lookupModule mod_nm pkg = do
+  found_module <- findImportedModule mod_nm $ Just pkg
+  case found_module of
+    Found _ h -> return h
+    _             -> do
+      found_module' <- findImportedModule mod_nm $ Just $ fsLit "this"
+      case found_module' of
+        Found _ h -> return h
+        _             -> panicDoc "Unable to resolve module looked up by plugin: " (ppr mod_nm)
+
+evByFiat :: String -- ^ Name the coercion should have
+         -> Type   -- ^ The LHS of the equivalence relation (~)
+         -> Type   -- ^ The RHS of the equivalence relation (~)
+         -> EvTerm
+evByFiat name t1 t2 =
+#if MIN_VERSION_ghc(8,5,0)
+  EvExpr $ Coercion
+#else
+  EvCoercion
+#endif
+    $ mkUnivCo (PluginProv name) Nominal t1 t2
+
+lookupName :: Module -> OccName -> TcPluginM Name
+lookupName md occ = lookupOrig md occ
 
 tracePlugin :: String -> TcPlugin -> TcPlugin
 tracePlugin s TcPlugin{..} = TcPlugin { tcPluginInit  = traceInit
