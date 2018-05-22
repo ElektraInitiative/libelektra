@@ -102,8 +102,11 @@ RUN git config --global user.email 'Jenkins <autobuilder@libelektra.org>' \
 # Handle Haskell dependencies
 ENV HASKELL_SHARED_SANDBOX /home/jenkins/elektra-cabal-sandbox
 RUN cd /home/jenkins \
+    && mkdir elektra-cabal-sandbox
+    && cd elektra-cabal-sandbox
     && cabal update \
-    && cabal sandbox init --sandbox ${HASKELL_SHARED_SANDBOX} \
-    && cabal install 'Cabal >=1.24 && <2.1' 'containers >=0.4 && <0.6' 'base >=4.7 && <5' \
-        'directory >=1.1 && <1.4' 'process >=1.2 && <1.7' 'filepath >=1.3 && <1.5' \
-        'hspec -any' 'QuickCheck -any'
+    && cabal sandbox init \
+    && cabal install 'Cabal >=1.24.1 && <2.4' 'base >=4.9 && <4.12' 'containers >=0.5 && <0.6' \
+        'directory >=1.2 && <1.4' 'process >=1.4 && <1.7' 'haskell-src-exts -any' 'pretty -any' \
+        'hint >=0.7.0 && <0.8.0' 'directory -any' 'temporary -any' 'exceptions -any' 'text -any' \
+        'simple-logger -any' --avoid-reinstalls
