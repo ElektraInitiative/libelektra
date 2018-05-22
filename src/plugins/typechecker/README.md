@@ -120,7 +120,8 @@ that two incompatible checks can be used for a single key.
 Create a sample configuration specification with three keys. As it is valid, there will be no error
 issued. We rely on the existence of [prelude.ini](/src/plugins/typechecker/typechecker/prelude.ini), which already
 contains the type definitions for `check/range`, `check/long` and `fallback/#` and mount it along.
-We use kdb shell to delay the type checking until we have finished writing the whole specification.
+Please note not to mount prelude below the specification. We use kdb shell to delay the typechecking 
+until we have finished writing the whole specification.
 
 ```sh
 # Backup-and-Restore:spec/tests/typechecker
@@ -128,13 +129,13 @@ We use kdb shell to delay the type checking until we have finished writing the w
 # When elektra is installed the first variant will work
 # the following kdb get only decides whether this example is executed as a shell recorder test
 # during a build, then the second variant points to the correct location
-(sudo kdb mount prelude.ini spec/tests/typechecker/elektra/spec ini && \
-	kdb get spec/tests/typechecker/elektra/spec/fallback/#) || \
-	(sudo kdb umount spec/tests/typechecker/elektra/spec && \
-		sudo kdb mount "$PWD/src/plugins/typechecker/typechecker/prelude.ini" spec/tests/typechecker/elektra/spec ini)
 # so in a normal use case one would simply call
-# sudo kdb mount prelude.ini spec/tests/typechecker/elektra/spec ini
-sudo kdb mount simplespecification.ini spec/tests/typechecker ini typechecker
+# sudo kdb mount prelude.ini spec/examples/simplespecification/elektra/spec ini
+(sudo kdb mount prelude.ini spec/tests/prelude ini && \
+	kdb get spec/tests/prelude/fallback/#) || \
+	(sudo kdb umount spec/tests/prelude && \
+		sudo kdb mount "$PWD/src/plugins/typechecker/typechecker/prelude.ini" spec/tests/prelude ini)
+sudo kdb mount simplespecification.ini spec/tests/simplespecification ini typechecker prelude=spec/tests/prelude
 
 echo 'kdbGet spec/tests/typechecker \
 keySetName spec/tests/typechecker/key1 \
@@ -164,8 +165,8 @@ kdb setmeta spec/tests/typechecker/key2 fallback/#1 spec/tests/typechecker/key1
 # RET: 5
 # STDERR-REGEX: .*Couldn't match type.*
 
-sudo kdb umount spec/tests/typechecker
-sudo kdb umount spec/tests/typechecker/elektra/spec
+sudo kdb umount spec/tests/simplespecification
+sudo kdb umount spec/tests/prelude
 ```
 
 ## Debugging
@@ -182,6 +183,25 @@ type behavior can be observed when getting/setting a key in a specification.
 * cabal, the haskell build system, usually bundled with ghc
 * augeas, which provides libfa utilized by this plugin
 
+Furthermore the following haskell dependencies need to be installed to the sandbox
+as explained in the [bindings readme](/src/bindings/haskell/README.md):
+
+```
+cabal install 'Cabal >=1.24.1 && <2.4' 'base >=4.9 && <4.12' 'containers >=0.5 && <0.6' \
+	'directory >=1.2 && <1.4' 'process >=1.4 && <1.7' 'haskell-src-exts -any' 'pretty -any' \
+	'hint >=0.7.0 && <0.8.0' 'directory -any' 'temporary -any' 'exceptions -any' 'text -any' \
+	'simple-logger -any' --avoid-reinstalls
+```
+
+Furthermore an additional sandbox is used for the typechecker plugin. This sandbox
+gets bundled with elektra so that the typechecker will work correctly at runtime.
+It includes only the typechecker plugin itself without anything else. To install it, create an
+additional sandbox at a different location than the main sandbox exists.
+
+```
+cabal 
+```
+
 ## Limitations
 
 - Rather experimental
@@ -189,4 +209,3 @@ type behavior can be observed when getting/setting a key in a specification.
 a key in a mounted specification
 - Errors are currently raw and haskell-focused
 - The small implementations are not yet auto generated
-
