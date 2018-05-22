@@ -2,7 +2,7 @@
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
 - infos/provides = storage/tcl
-- infos/needs = code null binary
+- infos/needs = ccode null base64
 - infos/placements = setstorage getstorage
 - infos/status = unfinished concept
 - infos/description = Serialize tcl lists

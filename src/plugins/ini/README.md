@@ -3,7 +3,7 @@
 - infos/licence = BSD
 - infos/needs =
 - infos/provides = storage/ini
-- infos/recommends = binary
+- infos/recommends = base64
 - infos/placements = getstorage setstorage
 - infos/status = maintained unittest shelltest nodep libc configurable 1000
 - infos/metadata = order
