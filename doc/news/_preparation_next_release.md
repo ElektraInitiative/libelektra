@@ -6,12 +6,13 @@ Please update this file within every PR:
 
 - For non-trivial changes, you can choose to be
   part of the highlighted changes.
-- Please make
-  sure to add some short tutorial, asciinema,
+- Please make sure to add some short tutorial, asciinema,
   or how-to-use for highlighted items.
 - Please add your name in parentheses and italics
   to every contribution,
   i.e., syntax: "*(<myname>)*".
+  Note: No change is irrelevant but similar contributions might
+  be summarized shortly before the release.
 
 
 <<`scripts/generate-news-entry`>>
@@ -143,9 +144,10 @@ plugins, bindings and tools are always up to date. Furthermore, we changed:
 
 These notes are of interest for people developing Elektra:
 
+- A build job checks if PRs modify the release notes. *(Markus Raab)*
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- `withDockerEnv` Jenkinsfile helper now no longer provides stages automatically. *(Lukas Winkler)*
 - Docker artifacts are now cleaned up in our daily build job. *(Lukas Winkler)*
 - `icheck` build server job has been ported to our new build system. *(Lukas Winkler)*
 - The script [`check_formatting.sh`](https://master.libelektra.org/tests/shell/check_formatting.sh) now also checks the formatting of CMake

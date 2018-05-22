@@ -273,6 +273,8 @@ def generate_fast_build_stages() {
         CMAKE_FLAGS_DEBUG,
         [TEST_NOKDB]
     )
+    tasks << build_icheck()
+    tasks << build_check_release_notes()
     return tasks
 }
 
@@ -282,7 +284,6 @@ def generate_full_build_stages() {
     def tasks = [:]
     tasks << build_todo()
     tasks << build_doc()
-    tasks << build_icheck()
     /* TODO Reenable for next release
     tasks << build_and_test_asan(
         "debian-stable-asan",
@@ -334,28 +335,49 @@ def generate_full_build_stages() {
 }
 
 def build_todo() {
-    def test_name = "todo"
+    def stage_name = "todo"
     def open_task_patterns = '''\
 **/*.c, **/*.h, **/*.hpp, **/*.cpp,\
 **/CMakeLists.txt, **/Dockerfile*, Jenkinsfile*
 '''
-    return withDockerEnv(test_name, DOCKER_IMAGES.stretch_doc) {
-        sh "sloccount --duplicates --wide --details ${WORKSPACE} > sloccount.sc"
-        step([$class: 'SloccountPublisher', ignoreBuildFailure: true])
-        openTasks pattern: open_task_patterns,
-                  high: 'XXX',
-                  normal: 'FIXME',
-                  low: 'TODO'
-        archive(["sloccount.sc"])
-        deleteDir()
-    }
+    return [(stage_name): {
+        stage(stage_name) {
+            withDockerEnv(DOCKER_IMAGES.stretch_doc) {
+                sh "sloccount --duplicates --wide --details ${WORKSPACE} > sloccount.sc"
+                step([$class: 'SloccountPublisher', ignoreBuildFailure: true])
+                openTasks pattern: open_task_patterns,
+                          high: 'XXX',
+                          normal: 'FIXME',
+                          low: 'TODO'
+                archive(["sloccount.sc"])
+                deleteDir()
+            }
+        }
+    }]
+}
+
+def build_check_release_notes() {
+    def stage_name = "check-release-notes"
+    return [(stage_name): {
+        maybeStage(stage_name, !isMaster()) {
+            withDockerEnv(DOCKER_IMAGES.stretch) {
+                sh "scripts/run_check_release_notes"
+                deleteDir()
+            }
+        }
+    }]
 }
 
 def build_icheck() {
-    return withDockerEnv("icheck", DOCKER_IMAGES.stretch) {
-        sh "scripts/run_icheck"
-        deleteDir()
-    }
+    def stage_name = "icheck"
+    return [(stage_name): {
+        stage(stage_name) {
+            withDockerEnv(DOCKER_IMAGES.stretch) {
+                sh "scripts/run_icheck"
+                deleteDir()
+            }
+        }
+    }]
 }
 
 def build_doc() {
@@ -367,54 +389,58 @@ def build_doc() {
         'BUILD_STATIC': 'OFF',
         'BUILD_TESTING': 'OFF'
     ]
-    return withDockerEnv(test_name, DOCKER_IMAGES.stretch_doc) {
-        dir('build') {
-            deleteDir()
-            cmake(env.WORKSPACE, cmake_flags)
-            sh "make html latex man pdf"
+    return [(test_name): {
+        stage(test_name) {
+            withDockerEnv(DOCKER_IMAGES.stretch_doc) {
+                dir('build') {
+                    deleteDir()
+                    cmake(env.WORKSPACE, cmake_flags)
+                    sh "make html latex man pdf"
+                }
+
+                def apib = "./doc/api_blueprints/snippet-sharing.apib"
+                def api_doc_dir = "./build/API_DOC/restapi"
+                sh "mkdir -p ${api_doc_dir}/${VERSION}"
+                sh "cp ${apib} ${api_doc_dir}/${VERSION}/"
+                apiary(apib, "${api_doc_dir}/${VERSION}/snippet-sharing.html")
+                dir(api_doc_dir) {
+                    sh "ln -s ${VERSION} current"
+                }
+
+                warnings parserConfigurations: [
+                    [parserName: 'Doxygen', pattern: 'build/doc/doxygen.log']
+                ]
+
+                // TODO don't write to latest on PR's
+                sshPublisher(publishers: [
+                  sshPublisherDesc(
+                    configName: 'doc.libelektra.org',
+                    transfers: [
+                      sshTransfer(
+                        sourceFiles: 'build/doc/latex/*',
+                        removePrefix: 'build/doc/',
+                        remoteDirectory: 'api/latest'
+                      ),
+                      sshTransfer(
+                        sourceFiles: 'build/doc/man/*',
+                        removePrefix: 'build/doc/',
+                        remoteDirectory: 'api/latest'
+                      ),
+                      sshTransfer(
+                        sourceFiles: 'doc/help/*.html',
+                        removePrefix: 'doc/help/',
+                        remoteDirectory: 'help'
+                      ),
+                      sshTransfer(
+                        sourceFiles: 'build/API_DOC/*',
+                        removePrefix: 'build/API_DOC/'
+                      )
+                  ])
+                ])
+                deleteDir()
+            }
         }
-
-        def apib = "./doc/api_blueprints/snippet-sharing.apib"
-        def api_doc_dir = "./build/API_DOC/restapi"
-        sh "mkdir -p ${api_doc_dir}/${VERSION}"
-        sh "cp ${apib} ${api_doc_dir}/${VERSION}/"
-        apiary(apib, "${api_doc_dir}/${VERSION}/snippet-sharing.html")
-        dir(api_doc_dir) {
-            sh "ln -s ${VERSION} current"
-        }
-
-        warnings parserConfigurations: [
-            [parserName: 'Doxygen', pattern: 'build/doc/doxygen.log']
-        ]
-
-        // TODO don't write to latest on PR's
-        sshPublisher(publishers: [
-          sshPublisherDesc(
-            configName: 'doc.libelektra.org',
-            transfers: [
-              sshTransfer(
-                sourceFiles: 'build/doc/latex/*',
-                removePrefix: 'build/doc/',
-                remoteDirectory: 'api/latest'
-              ),
-              sshTransfer(
-                sourceFiles: 'build/doc/man/*',
-                removePrefix: 'build/doc/',
-                remoteDirectory: 'api/latest'
-              ),
-              sshTransfer(
-                sourceFiles: 'doc/help/*.html',
-                removePrefix: 'doc/help/',
-                remoteDirectory: 'help'
-              ),
-              sshTransfer(
-                sourceFiles: 'build/API_DOC/*',
-                removePrefix: 'build/API_DOC/'
-              )
-          ])
-        ])
-        deleteDir()
-    }
+    }]
 }
 
 /* Helper to generate an asan enabled test */
@@ -422,19 +448,23 @@ def build_and_test_asan(test_name, image, extra_cmake_flags = [:]) {
     def cmake_flags = CMAKE_FLAGS_BASE +
                       CMAKE_FLAGS_ASAN +
                       extra_cmake_flags
-    return withDockerEnv(test_name, image) {
-        dir('build') {
-            deleteDir()
-            cmake(env.WORKSPACE, cmake_flags)
-            sh "make"
-            def llvm_symbolizer = sh(returnStdout: true,
-                                     script: 'which llvm-symbolizer').trim()
-            withEnv(["ASAN_OPTIONS='symbolize=1'",
-                     "ASAN_SYMBOLIZER_PATH=${llvm_symbolizer}"]){
-                ctest()
+    return [(test_name): {
+        stage(test_name) {
+            withDockerEnv(image) {
+                dir('build') {
+                    deleteDir()
+                    cmake(env.WORKSPACE, cmake_flags)
+                    sh "make"
+                    def llvm_symbolizer = sh(returnStdout: true,
+                                             script: 'which llvm-symbolizer').trim()
+                    withEnv(["ASAN_OPTIONS='symbolize=1'",
+                             "ASAN_SYMBOLIZER_PATH=${llvm_symbolizer}"]){
+                        ctest()
+                    }
+                }
             }
         }
-    }
+    }]
 }
 
 /* Helper to generate a typical elektra test environment
@@ -459,28 +489,30 @@ def build_and_test(test_name, image, extra_cmake_flags = [:],
     def test_nokdb = tests.contains(TEST_NOKDB)
     def test_all = tests.contains(TEST_ALL)
     def install = tests.contains(TEST_INSTALL)
-    return withDockerEnv(test_name, image) {
-        try {
-            dir('build') {
-                deleteDir()
-                cmake(env.WORKSPACE, cmake_flags)
-                sh "make"
-                trackCoverage(test_coverage) {
-                    if(test_all) {
-                        ctest()
-                    } else if(test_nokdb) {
-                        cnokdbtest()
+    return [(test_name): {
+        stage(test_name) {
+            withDockerEnv(image) {
+                try {
+                    dir('build') {
+                        deleteDir()
+                        cmake(env.WORKSPACE, cmake_flags)
+                        sh "make"
+                        trackCoverage(test_coverage) {
+                            if(test_all) {
+                                ctest()
+                            } else if(test_nokdb) {
+                                cnokdbtest()
+                            }
+                            if(test_mem) {
+                                cmemcheck(test_nokdb)
+                            }
+                        }
+                        if(install) {
+                            sh 'make install'
+                        }
                     }
-                    if(test_mem) {
-                        cmemcheck(test_nokdb)
-                    }
-                }
-                if(install) {
-                    sh 'make install'
-                }
-            }
-            if(install) {
-                sh '''\
+                    if(install) {
+                        sh '''\
 export LD_LIBRARY_PATH=${WORKSPACE}/system/lib:$LD_LIBRARY_PATH
 export PATH=${WORKSPACE}/system/bin:$PATH
 export DBUS_SESSION_BUS_ADDRESS=`dbus-daemon --session --fork --print-address`
@@ -488,26 +520,28 @@ export LUA_CPATH="${WORKSPACE}/system/lib/lua/5.2/?.so;"
 kdb run_all
 kill `pidof dbus-daemon`
 '''
+                    }
+                } catch(e) {
+                    // rethrow to mark as failed
+                    throw e
+                } finally {
+                    /* Warnings plugin overwrites each other, disable for now
+                    warnings canRunOnFailed: true, consoleParsers: [
+                        [parserName: 'GNU Make + GNU C Compiler (gcc)']
+                    ]
+                    */
+                    archive(artifacts)
+                    if(test_coverage) {
+                        publishCoverage()
+                    }
+                    if(test_mem || test_nokdb || test_all) {
+                        xunitUpload()
+                    }
+                    deleteDir()
+                }
             }
-        } catch(e) {
-            // rethrow to mark as failed
-            throw e
-        } finally {
-            /* Warnings plugin overwrites each other, disable for now
-            warnings canRunOnFailed: true, consoleParsers: [
-                [parserName: 'GNU Make + GNU C Compiler (gcc)']
-            ]
-            */
-            archive(artifacts)
-            if(test_coverage) {
-                publishCoverage()
-            }
-            if(test_mem || test_nokdb || test_all) {
-                xunitUpload()
-            }
-            deleteDir()
         }
-    }
+    }]
 }
 
 /* Generate Stages that build and deploy artifacts
@@ -520,42 +554,47 @@ def generate_artifact_stages() {
 }
 
 def build_package_debian_stretch() {
-    return withDockerEnv("package/stretch", DOCKER_IMAGES.stretch) {
-        withCredentials([file(credentialsId: 'jenkins-key', variable: 'KEY'),
-                         file(credentialsId: 'jenkins-secret-key', variable: 'SKEY')]) {
-            sh "gpg --import $KEY"
-            sh "gpg --import $SKEY"
-        }
-        withEnv(["DEBSIGN_PROGRAM=gpg",
-                 "DEBFULLNAME=Jenkins (User for Elektra automated build system)",
-                 "DEBEMAIL=autobuilder@libelektra.org"]) {
-            sh "rm -R ./*"
-            def target_dir="./libelektra"
-            checkout scm: [
-                $class: 'GitSCM',
-                branches: scm.branches,
-                extensions: scm.extensions + [
-                    [$class: 'PerBuildTag'],
-                    [$class: 'RelativeTargetDirectory',
-                     relativeTargetDir: target_dir]
-                ],
-                userRemoteConfigs: scm.userRemoteConfigs
-            ]
-            dir(target_dir) {
-                sh "git checkout -B temp"
-                sh "git tag -f $VERSION"
+    def stage_name="package/stretch"
+    return [(stage_name): {
+        stage(stage_name) {
+            withDockerEnv(DOCKER_IMAGES.stretch) {
+                withCredentials([file(credentialsId: 'jenkins-key', variable: 'KEY'),
+                                 file(credentialsId: 'jenkins-secret-key', variable: 'SKEY')]) {
+                    sh "gpg --import $KEY"
+                    sh "gpg --import $SKEY"
+                }
+                withEnv(["DEBSIGN_PROGRAM=gpg",
+                         "DEBFULLNAME=Jenkins (User for Elektra automated build system)",
+                         "DEBEMAIL=autobuilder@libelektra.org"]) {
+                    sh "rm -R ./*"
+                    def target_dir="./libelektra"
+                    checkout scm: [
+                        $class: 'GitSCM',
+                        branches: scm.branches,
+                        extensions: scm.extensions + [
+                            [$class: 'PerBuildTag'],
+                            [$class: 'RelativeTargetDirectory',
+                             relativeTargetDir: target_dir]
+                        ],
+                        userRemoteConfigs: scm.userRemoteConfigs
+                    ]
+                    dir(target_dir) {
+                        sh "git checkout -B temp"
+                        sh "git tag -f $VERSION"
 
-                sh "git checkout -B debian origin/debian"
-                sh "git merge --no-ff -m 'merge $VERSION' temp"
+                        sh "git checkout -B debian origin/debian"
+                        sh "git merge --no-ff -m 'merge $VERSION' temp"
 
-                sh "dch -l '.$BUILD_NUMBER' 'auto build'"
-                sh "git commit -am 'auto build $VERSION'"
+                        sh "dch -l '.$BUILD_NUMBER' 'auto build'"
+                        sh "git commit -am 'auto build $VERSION'"
 
-                sh "gbp buildpackage -sa"
+                        sh "gbp buildpackage -sa"
+                    }
+                }
+                publishDebianPackages()
             }
         }
-        publishDebianPackages()
-    }
+    }]
 }
 
 def build_homepage() {
@@ -666,32 +705,27 @@ def trackCoverage(do_track, cl) {
  *
  * Automatically takes care of docker registry authentication,
  * selecting a docker capable node,
- * checkout of scm and
- * setting of useful Environment variables
+ * checkout of scm and setting of useful Environment variables
  * @param stage_name Name of the stage
  * @param image Docker image that should be used
  * @param cl A closure that should be run inside the docker image
  */
-def withDockerEnv(stage_name, image, cl) {
-    return [(stage_name): {
-        stage(stage_name) {
-            node(docker_node_label) {
-                docker.withRegistry("https://${registry}",
-                                    'docker-hub-elektra-jenkins') {
-                    timeout(activity: true, time: 5, unit: 'MINUTES') {
-                        def cpu_count = cpuCount()
-                        withEnv(["MAKEFLAGS='-j${cpu_count+2} -l${cpu_count*2}'",
-                                 "CTEST_PARALLEL_LEVEL='${cpu_count+2}'"]) {
-                            echo "Starting ${env.STAGE_NAME} on ${env.NODE_NAME}"
-                            checkout scm
-                            docker.image(namingStrategyTesting(image))
-                                  .inside("-v ${env.HOME}/git_mirrors:/home/jenkins/git_mirrors") { cl() }
-                        }
-                    }
+def withDockerEnv(image, cl) {
+    node(docker_node_label) {
+        docker.withRegistry("https://${registry}",
+                            'docker-hub-elektra-jenkins') {
+            timeout(activity: true, time: 5, unit: 'MINUTES') {
+                def cpu_count = cpuCount()
+                withEnv(["MAKEFLAGS='-j${cpu_count+2} -l${cpu_count*2}'",
+                         "CTEST_PARALLEL_LEVEL='${cpu_count+2}'"]) {
+                    echo "Starting ${env.STAGE_NAME} on ${env.NODE_NAME}"
+                    checkout scm
+                    docker.image(namingStrategyTesting(image))
+                          .inside("-v ${env.HOME}/git_mirrors:/home/jenkins/git_mirrors") { cl() }
                 }
             }
         }
-    }]
+    }
 }
 
 /* Get cpu count
