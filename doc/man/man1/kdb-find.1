@@ -45,27 +45,27 @@ Use binary 0 termination\.
 .
 .nf
 
-# Backup\-and\-Restore: /test
+# Backup\-and\-Restore: /tests
 
 # Create the keys we use for the examples
-kdb set /test/test val1
-kdb set /test/test/foo/bar val2
-kdb set /test/test/fizz/buzz fizzbuzz
-kdb set /test/tostfizz val3
-kdb set /test/tust/level lvl
+kdb set /tests/tests val1
+kdb set /tests/tests/foo/bar val2
+kdb set /tests/tests/fizz/buzz fizzbuzz
+kdb set /tests/tostfizz val3
+kdb set /tests/tust/level lvl
 
-# list all keys containing /test/t[eo]
-kdb find \'/test/t[eo]\'
-#>user/test/test
-#>user/test/test/fizz/buzz
-#>user/test/test/foo/fizzbar
-#>user/test/tostfizz
+# list all keys containing /tests/t[eo]
+kdb find \'/tests/t[eo]\'
+#> user/tests/tests
+#> user/tests/tests/fizz/buzz
+#> user/tests/tests/foo/fizzbar
+#> user/tests/tostfizz
 
 # list all keys containing fizz
 kdb find \'fizz\'
-#>user/test/test/fizz/buzz
-#>user/test/test/foo/fizzbar
-#>user/test/tostfizz
+#> user/tests/tests/fizz/buzz
+#> user/tests/tests/foo/fizzbar
+#> user/tests/tostfizz
 .
 .fi
 .
