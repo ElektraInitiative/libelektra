@@ -146,7 +146,9 @@ By default the INI plugin does not support binary data. You can use the [Base64 
 
 ```sh
 # Mount INI and recommended plugin Base64
-sudo kdb mount config.ini user/examples/ini ini base64
+# We add the required plugin `base64` (which provides `binary`) at the end too,
+# since otherwise this command leaks memory.
+sudo kdb mount --with-recommends config.ini user/examples/ini ini base64
 
 # Add empty binary value
 printf 'nothing = "@BASE64"\n' > `kdb file user/examples/ini`
