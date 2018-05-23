@@ -726,7 +726,7 @@ def withDockerEnv(image, cl) {
                          "CTEST_PARALLEL_LEVEL='${cpu_count+2}'"]) {
                     echo "Starting ${env.STAGE_NAME} on ${env.NODE_NAME}"
                     checkout scm
-                    docker.image(namingStrategyTesting(image))
+                    docker.image(image.id)
                           .inside("-v ${env.HOME}/git_mirrors:/home/jenkins/git_mirrors") { cl() }
                 }
             }
