@@ -57,7 +57,7 @@ else ()
 	add_executable (qt-gui ${qt-gui_SRCS} ${qt-gui_HDRS} ${UIS} ${RSCS} ${TRS})
 	add_dependencies (qt-gui kdberrors_generated)
 
-	qt5_use_modules (qt-gui Quick Gui Core Qml Widgets)
+	target_link_libraries (qt-gui Qt5::Quick Qt5::Gui Qt5::Core Qt5::Qml Qt5::Widgets)
 
 	include_directories (${DISCOUNT_INCLUDES})
 	target_link_libraries (qt-gui ${DISCOUNT_LIBRARIES})
