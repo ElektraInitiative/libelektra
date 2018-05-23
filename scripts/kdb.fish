@@ -299,7 +299,7 @@ function __fish_kdb_subcommand_supports_option_force -d 'Check if the current su
 end
 
 function __fish_kdb_subcommand_supports_option_null -d 'Check if the current subcommand supports binary null termination'
-    __fish_kdb_subcommand_includes complete list list-commands ls lsmeta mount
+    __fish_kdb_subcommand_includes complete find list list-commands ls lsmeta mount
 end
 
 function __fish_kdb_subcommand_supports_option_plugins_config -d 'Check if the current subcommand supports plugin configuration'
