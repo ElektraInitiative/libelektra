@@ -15,11 +15,12 @@ add_dependencies (${EXAMPLE} kdberrors_generated)
 
 target_link_elektra (${EXAMPLE} elektra-kdb elektra-notification)
 
-# The asynchronous example requires io_uv
+# - The asynchronous example requires io_uv
+# - io_uv is disabled for ASAN builds, see https://github.com/ElektraInitiative/libelektra/issues/2007
 check_binding_included ("io_uv" IS_INCLUDED SUBDIRECTORY "io/uv" SILENT)
 find_package (PkgConfig)
 pkg_check_modules (LIBUV QUIET libuv)
-if (IS_INCLUDED AND LIBUV_FOUND)
+if (IS_INCLUDED AND LIBUV_FOUND AND NOT ENABLE_ASAN)
 
 	set (EXAMPLE example_notification_async) # Build example_notification_async
 

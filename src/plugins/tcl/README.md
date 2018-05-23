@@ -34,7 +34,9 @@ distinguish-able style. It looks like:
 
 ```sh
 # Mount Tcl plugin to namespace `user/examples/tcl`
-sudo kdb mount config.tcl user/examples/tcl tcl
+# We add the required plugins (instead of the plugin providers)
+# for `tcl` manually, since otherwise this command leaks memory.
+sudo kdb mount config.tcl user/examples/tcl tcl ccode null base64
 
 # Add a key value pair to the database
 kdb set user/examples/tcl/key value
@@ -65,7 +67,7 @@ The plugin also supports binary data via the [base64 plugin](../base64/) and nul
 
 ```sh
 # Mount plugin
-sudo kdb mount config.tcl user/tests tcl
+sudo kdb mount config.tcl user/tests tcl ccode null base64
 
 # Import some data
 kdb import user/tests/dump xmltool < src/plugins/xmltool/xmltool/dump.xml

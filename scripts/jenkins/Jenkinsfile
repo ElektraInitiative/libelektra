@@ -284,13 +284,11 @@ def generate_full_build_stages() {
     def tasks = [:]
     tasks << build_todo()
     tasks << build_doc()
-    /* TODO Reenable for next release
     tasks << build_and_test_asan(
         "debian-stable-asan",
         DOCKER_IMAGES.stretch,
         CMAKE_FLAGS_BUILD_ALL
     )
-    */
     tasks << build_and_test(
         "debian-stable-full",
         DOCKER_IMAGES.stretch,

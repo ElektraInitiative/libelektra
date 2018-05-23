@@ -1,9 +1,3 @@
-if (CMAKE_MAJOR_VERSION LESS 3)
-	remove_binding (gsettings "Need at least CMake 3.0 for gsettings backend")
-	return ()
-endif ()
-
-cmake_minimum_required (VERSION 3.0)
 project (elektrasettings VERSION 0.1.1 LANGUAGES C)
 
 find_package (PkgConfig)
@@ -27,12 +21,6 @@ endif ()
 if (NOT GIO_FOUND)
 	exclude_binding (gsettings "gio >= 2.42 needed for gsettings backend")
 	return ()
-endif ()
-
-# make sure glib bindings are built
-check_binding_was_added ("glib" IS_GLIB_INCLUDED)
-if (NOT IS_GLIB_INCLUDED)
-	add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/../glib ${CMAKE_CURRENT_BINARY_DIR}/../glib)
 endif ()
 
 check_binding_was_added (glib IS_GLIB_INCLUDED)

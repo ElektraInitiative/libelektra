@@ -10,7 +10,7 @@ add_msr_test (tutorial_cascading "${CMAKE_SOURCE_DIR}/doc/tutorials/cascading.md
 add_msr_test (kdb-complete "${CMAKE_SOURCE_DIR}/doc/help/kdb-complete.md")
 add_msr_test (kdb-ls "${CMAKE_SOURCE_DIR}/doc/help/kdb-ls.md" REQUIRED_PLUGINS sync)
 
-add_msr_test (tutorial_validation "${CMAKE_SOURCE_DIR}/doc/tutorials/validation.md" REQUIRED_PLUGINS validation)
+add_msr_test (tutorial_validation "${CMAKE_SOURCE_DIR}/doc/tutorials/validation.md" REQUIRED_PLUGINS ni validation)
 
 # ~~~
 # Only works with super user privileges, since it writes to `/etc/hosts`:

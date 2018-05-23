@@ -1,7 +1,11 @@
 find_package (Haskell)
 
-set (GHC_MIN_VERSION "8.0.1")
+if (ENABLE_ASAN)
+	exclude_binding (haskell "not compatible with ENABLE_ASAN")
+	return ()
+endif (ENABLE_ASAN)
 
+set (GHC_MIN_VERSION "8.0.1")
 if (HASKELL_FOUND)
 	if (NOT GHC_VERSION VERSION_LESS ${GHC_MIN_VERSION})
 		if (NOT BUILD_STATIC)

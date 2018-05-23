@@ -33,6 +33,23 @@ do
 		;;
 	esac
 
+	# The following checks fail on an ASAN enabled build
+	# See also: https://github.com/ElektraInitiative/libelektra/pull/1963
+	ASAN='@ENABLE_ASAN@'
+	if [ "$ASAN" = 'ON' ]; then
+		case "$PLUGIN" in
+		'crypto_gcrypt')
+			continue
+			;;
+		'jni')
+			continue
+			;;
+		'ruby')
+			continue
+			;;
+		esac
+	fi
+
 	> $FILE
 	"$KDB" check $PLUGIN 1> $FILE 2> $FILE
 	succeed_if "check of plugin $PLUGIN failed"

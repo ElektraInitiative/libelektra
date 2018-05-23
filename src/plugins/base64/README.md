@@ -106,8 +106,8 @@ The diagram below shows how the Base64 conversion process works in conjunction w
 The following example shows you how you can use the INI plugin together with Base64’s meta mode.
 
 ```sh
-# Mount Ni and Base64 plugin (provides `binary`) with the configuration key `binary/meta`
-kdb mount config.ini user/examples/base64 ini binary binary/meta=
+# Mount INI and Base64 plugin (provides `binary`) with the configuration key `binary/meta`
+kdb mount config.ini user/examples/base64 ini base64 binary/meta=
 
 # Save base64 encoded data `"value"` (`0x76616c7565`)
 kdb set user/examples/base64/encoded dmFsdWUA
