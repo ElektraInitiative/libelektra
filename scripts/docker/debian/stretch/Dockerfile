@@ -106,7 +106,7 @@ RUN cd /home/jenkins \
     && cd elektra-cabal-sandbox \
     && cabal update \
     && cabal sandbox init \
-    && cabal install 'Cabal == 1.24.0.0' 'base >=4.9 && <4.12' 'containers >=0.5 && <0.6' \
+    && cabal install 'Cabal == 1.24.2.0' 'base >=4.9 && <4.12' 'containers >=0.5 && <0.6' \
         'directory >=1.2 && <1.4' 'process >=1.4 && <1.7' 'base >=4.9 && <5' 'haskell-src-exts -any' \
         'pretty -any' 'hint >=0.7.0 && <0.8.0' 'directory -any' 'temporary -any' 'exceptions -any' \
         'text -any' 'simple-logger -any' 'containers -any' 'megaparsec -any' 'hspec -any' \
