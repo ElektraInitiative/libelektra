@@ -177,6 +177,7 @@ Many problems were resolved with the following fixes:
 - The script [`reformat-cmake`](https://master.libelektra.org/scripts/reformat-cmake) now checks if `cmake-format` works before it reformats CMake files. Thank you to Klemens Böswirth for the [detailed description of the problem](https://github.com/ElektraInitiative/libelektra/pull/1903#discussion_r189332987). *(René Schwaiger)*
 - `scripts/run_icheck` now no longer leaves the base directory of the project
   when checking if the ABI changed. *(Lukas Winkler)*
+- You can now build the [Qt-GUI](https://www.libelektra.org/tools/qt-gui) using Qt `5.11`. *(René Schwaiger)*
 
 
 ## Outlook
