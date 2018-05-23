@@ -26,17 +26,35 @@ matrix:
         apt:
           sources: [ ubuntu-toolchain-r-test ]
           packages: [ g++-7 ]
-      env: [ ASAN=ON ]
+      env:
+        - ASAN=ON
+        - CC_COMPILER=gcc-7
+        - CXX_COMPILER=g++-7
 
     - os: linux
       compiler: clang
-      env: [ ASAN=ON ]
+      addons:
+        apt:
+          sources: [ llvm-toolchain-trusty-6.0, ubuntu-toolchain-r-test ]
+          packages: [ clang-6.0 ]
+      env:
+        - ASAN=ON
+        - CC_COMPILER=clang-6.0
+        - CXX_COMPILER=clang++-6.0
+
 
     # FULL: Build full version of Elektra (BUILD_FULL=ON)
 
     - os: linux
       compiler: gcc
-      env: [ FULL=ON ]
+      addons:
+        apt:
+          sources: [ ubuntu-toolchain-r-test ]
+          packages: [ g++-8 ]
+      env:
+        - FULL=ON
+        - CC_COMPILER=gcc-8
+        - CXX_COMPILER=g++-8
 
     - os: osx
       # Translating the `syslog` plugin with GCC on macOS 10.13 does not work, since GCC is unable to compile `sys/syslog.h`.
@@ -56,16 +74,23 @@ matrix:
 
     - os: linux
       compiler: gcc
-      apt:
-        sources: [ llvm-toolchain-trusty-6.0, ubuntu-toolchain-r-test]
-        packages: [ clang-format-6.0 ]
+      addons:
+        apt:
+          sources: [ ubuntu-toolchain-r-test ]
+          packages: [ g++-7 ]
+      env:
+        - CC_COMPILER=gcc-7
+        - CXX_COMPILER=g++-7
 
     - os: linux
       compiler: clang
       addons:
         apt:
-          sources: [ llvm-toolchain-trusty-5.0 ]
-          packages: [ clang-format-5.0 ]
+          sources: [ llvm-toolchain-trusty-6.0, ubuntu-toolchain-r-test ]
+          packages: [ clang-6.0 ]
+      env:
+        - CC_COMPILER=clang-6.0
+        - CXX_COMPILER=clang++-6.0
 
 before_install:
   - |
@@ -128,7 +153,8 @@ before_install:
     fi
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-      [[ $ASAN == ON && $CC == gcc ]] && export CC=gcc-7 CXX=g++-7
+      [[ -n "$CC_COMPILER" ]] && export CC="$CC_COMPILER"
+      [[ -n "$CXX_COMPILER" ]] && export CXX="$CXX_COMPILER"
       sudo apt-get -qq update
       sudo apt-get install ninja-build
       sudo apt-get install devscripts # contains `checkbashisms`
