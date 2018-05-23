@@ -128,6 +128,7 @@ These notes are of interest for people maintaining packages of Elektra:
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+- The Jenkins build server now also compiles and tests Elektra with enabled address sanitizer. *(Lukas Winkler)*
 
 
 ## Website
