@@ -148,6 +148,7 @@ These notes are of interest for people developing Elektra:
 - A build job checks if PRs modify the release notes. *(Markus Raab)*
 - <<TODO>>
 - <<TODO>>
+- Ported GCC ASAN build job to new build system *(René Schwaiger + Lukas Winkler)
 - `withDockerEnv` Jenkinsfile helper now no longer provides stages automatically. *(Lukas Winkler)*
 - Docker artifacts are now cleaned up in our daily build job. *(Lukas Winkler)*
 - `icheck` build server job has been ported to our new build system. *(Lukas Winkler)*
