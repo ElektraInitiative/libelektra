@@ -259,7 +259,7 @@ def generateMainBuildStages() {
         [TEST_ALL, TEST_MEM, TEST_INSTALL]
     )
     tasks << buildIcheck()
-    tasks << build_check_release_notes()
+    tasks << buildCheckReleaseNotes()
     return tasks
 }
 
@@ -330,7 +330,7 @@ def buildTodo() {
     }]
 }
 
-def build_check_release_notes() {
+def buildCheckReleaseNotes() {
     def stage_name = "check-release-notes"
     return [(stage_name): {
         maybeStage(stage_name, !isMaster()) {
