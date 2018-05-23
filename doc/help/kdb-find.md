@@ -40,16 +40,16 @@ kdb set /test/tust/level lvl
 
 # list all keys containing /test/t[eo]
 kdb find '/test/t[eo]'
-#>user/test/test
-#>user/test/test/fizz/buzz
-#>user/test/test/foo/fizzbar
-#>user/test/tostfizz
+#> user/test/test
+#> user/test/test/fizz/buzz
+#> user/test/test/foo/fizzbar
+#> user/test/tostfizz
 
 # list all keys containing fizz
 kdb find 'fizz'
-#>user/test/test/fizz/buzz
-#>user/test/test/foo/fizzbar
-#>user/test/tostfizz
+#> user/test/test/fizz/buzz
+#> user/test/test/foo/fizzbar
+#> user/test/tostfizz
 ```
 
 ## SEE ALSO
