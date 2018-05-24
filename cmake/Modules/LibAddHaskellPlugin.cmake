@@ -168,13 +168,30 @@ macro (add_haskell_plugin target)
 												"${CMAKE_CURRENT_BINARY_DIR}/Setup.hs"
 												@ONLY)
 
-										# as we require the sandbox to exist we can do this during the configuration phase it doesn't compile or install anything
-										execute_process (COMMAND ${CABAL_EXECUTABLE} sandbox init --sandbox "${HASKELL_SHARED_SANDBOX}" -v0 WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
-			    						foreach (SANDBOX_ADD_SOURCE ${ARG_SANDBOX_ADD_SOURCES})
-			    							# our custom libs are all to be processed by cmake before we can add them, so enforce that, the build is more stable this way
-											add_subdirectory ("${CMAKE_SOURCE_DIR}/${SANDBOX_ADD_SOURCE}" "${CMAKE_BINARY_DIR}/${SANDBOX_ADD_SOURCE}")
-			    							execute_process (COMMAND ${CABAL_EXECUTABLE} sandbox add-source "${CMAKE_BINARY_DIR}/${SANDBOX_ADD_SOURCE}" -v0 WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
-			    						endforeach ()
+										# as we require the sandbox to exist we can do this during
+										# the configuration phase it doesn't compile or install
+										# anything
+										execute_process (COMMAND ${CABAL_EXECUTABLE} sandbox init
+													 --sandbox
+													 "${HASKELL_SHARED_SANDBOX}" -v0
+												 WORKING_DIRECTORY
+													 ${CMAKE_CURRENT_BINARY_DIR})
+										foreach (SANDBOX_ADD_SOURCE ${ARG_SANDBOX_ADD_SOURCES})
+										# our custom libs are all to be processed by cmake before we
+										# can add them, so enforce that, the build is more stable
+										# this way
+											add_subdirectory (
+												"${CMAKE_SOURCE_DIR}/${SANDBOX_ADD_SOURCE}"
+												"${CMAKE_BINARY_DIR}/${SANDBOX_ADD_SOURCE}")
+											execute_process (
+												COMMAND
+													${CABAL_EXECUTABLE} sandbox
+													add-source
+													"${CMAKE_BINARY_DIR}/${SANDBOX_ADD_SOURCE}"
+													-v0
+												WORKING_DIRECTORY
+													${CMAKE_CURRENT_BINARY_DIR})
+										endforeach ()
 
 										# Grab potential haskell source files
 										file (GLOB_RECURSE PLUGIN_SOURCE_FILES_UNFILTERED
@@ -201,21 +218,48 @@ macro (add_haskell_plugin target)
 										     "${CMAKE_SOURCE_DIR}/src/plugins/haskell/Setup.hs.in"
 										     "${ARG_ADDITIONAL_SOURCES}")
 
-										# reconfiguration due to Cabal library version issues on stretch
-										install_sandbox_dependencies (DEPENDS c2hs_haskell)
+										get_property (HASKELL_LAST_PLUGIN
+											      GLOBAL
+											      PROPERTY HASKELL_LAST_PLUGIN)
+										if (NOT HASKELL_LAST_PLUGIN)
+											set (HASKELL_LAST_PLUGIN ${target})
+											add_custom_command (
+												OUTPUT ${PLUGIN_HASKELL_NAME}
+												COMMAND ${CABAL_EXECUTABLE} install
+													${CABAL_OPTS} --only-dependencies
+													--offline -v0 || true
+												WORKING_DIRECTORY
+													${CMAKE_CURRENT_BINARY_DIR}
+												DEPENDS c2hs_haskell)
+										else (NOT HASKELL_LAST_PLUGIN)
+											add_custom_command (
+												OUTPUT ${PLUGIN_HASKELL_NAME}
+												COMMAND ${CABAL_EXECUTABLE} install
+													${CABAL_OPTS} --only-dependencies
+													--offline -v0 || true
+												WORKING_DIRECTORY
+													${CMAKE_CURRENT_BINARY_DIR}
+												DEPENDS ${HASKELL_LAST_PLUGIN})
+										endif (NOT HASKELL_LAST_PLUGIN)
+										set_property (GLOBAL
+											      PROPERTY HASKELL_LAST_PLUGIN
+												       "${target}")
+
+										# reconfiguration due to Cabal library version issues on
+										# stretch
 										add_custom_command (OUTPUT ${PLUGIN_HASKELL_NAME}
-													COMMAND ${CABAL_EXECUTABLE} install ${CABAL_OPTS} --only-dependencies --offline -v0 || true
 												    COMMAND ${CABAL_EXECUTABLE} configure
 													    ${CABAL_OPTS} -v0
 												    COMMAND ${CABAL_EXECUTABLE} build -v0 ||
-													    ${CABAL_EXECUTABLE} configure
+													    ( ${CABAL_EXECUTABLE} configure
 													    ${CABAL_OPTS} -v0 &&
-													    ${CABAL_EXECUTABLE} build -v0
+													    ${CABAL_EXECUTABLE} build -v0 )
 												    WORKING_DIRECTORY
 													    ${CMAKE_CURRENT_BINARY_DIR}
 												    DEPENDS c2hs_haskell
 													    ${PLUGIN_SOURCE_FILES}
-													    ${HASKELL_ADD_SOURCES_TARGET})
+													    ${HASKELL_ADD_SOURCES_TARGET}
+												    APPEND)
 										add_custom_target (${target}
 												   ALL
 												   DEPENDS ${PLUGIN_HASKELL_NAME})
@@ -321,45 +365,3 @@ macro (add_haskell_plugin target)
 
 	mark_as_advanced (GHC_FFI_LIB GHC_RTS_LIB GHC_BASE_LIB GHC_GMP_LIB GHC_PRIM_LIB)
 endmacro (add_haskell_plugin)
-
-# ~~~
-# Allows installing sandbox dependencies in a serial manner
-# to avoid cabal concurrency issues https://github.com/haskell/cabal/issues/2220.
-#
-# DEPENDS:
-#  additional targets this call should be dependent on
-# ~~~
-macro (install_sandbox_dependencies)
-	cmake_parse_arguments (ARG
-			       "" # optional keywords
-			       "" # one value keywords
-			       "DEPENDS" # multi value keywords
-			       ${ARGN})
-
-	if (BUILD_SHARED OR BUILD_FULL)
-		set (CABAL_OPTS "--enable-shared")
-	endif (BUILD_SHARED OR BUILD_FULL)
-
-	get_property (HASKELL_SANDBOX_DEP_IDX GLOBAL PROPERTY HASKELL_SANDBOX_DEP_IDX)
-	if (NOT HASKELL_SANDBOX_DEP_IDX)
-		set (HASKELL_SANDBOX_DEP_IDX 1)
-		add_custom_command (OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/cabal.sandbox.config"
-				    COMMAND ${CABAL_EXECUTABLE} install ${CABAL_OPTS} --only-dependencies --offline -v0 || true
-				    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-				    DEPENDS ${ARG_DEPENDS})
-		set (HASKELL_ADD_SOURCES_TARGET haskell-add-sources-${HASKELL_SANDBOX_DEP_IDX})
-	else (NOT HASKELL_SANDBOX_DEP_IDX)
-		add_custom_command (OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/cabal.sandbox.config"
-				    COMMAND ${CABAL_EXECUTABLE} install ${CABAL_OPTS} --only-dependencies --offline -v0 || true
-				    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-				    DEPENDS haskell-add-sources-${HASKELL_SANDBOX_DEP_IDX}
-					    ${ARG_DEPENDS})
-		math (EXPR HASKELL_SANDBOX_DEP_IDX "${HASKELL_SANDBOX_DEP_IDX} + 1")
-		set (HASKELL_ADD_SOURCES_TARGET haskell-add-sources-${HASKELL_SANDBOX_DEP_IDX})
-	endif (NOT HASKELL_SANDBOX_DEP_IDX)
-	add_custom_target (${HASKELL_ADD_SOURCES_TARGET} ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/cabal.sandbox.config")
-
-	set_property (GLOBAL PROPERTY HASKELL_SANDBOX_DEP_IDX "${HASKELL_SANDBOX_DEP_IDX}")
-endmacro (install_sandbox_dependencies)
-
-
