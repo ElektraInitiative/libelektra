@@ -18,14 +18,17 @@ matrix:
     - os: osx
       osx_image: xcode9.3beta
       compiler: clang
-      env: [ ASAN=ON ]
+      env:
+        - ASAN=ON
 
     - os: linux
       compiler: gcc
       addons:
         apt:
-          sources: [ ubuntu-toolchain-r-test ]
-          packages: [ g++-7 ]
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-7
       env:
         - ASAN=ON
         - CC_COMPILER=gcc-7
@@ -35,13 +38,15 @@ matrix:
       compiler: clang
       addons:
         apt:
-          sources: [ llvm-toolchain-trusty-6.0, ubuntu-toolchain-r-test ]
-          packages: [ clang-6.0 ]
+          sources:
+            - llvm-toolchain-trusty-6.0
+            - ubuntu-toolchain-r-test
+          packages:
+            - clang-6.0
       env:
         - ASAN=ON
         - CC_COMPILER=clang-6.0
         - CXX_COMPILER=clang++-6.0
-
 
     # FULL: Build full version of Elektra (BUILD_FULL=ON)
 
@@ -49,8 +54,10 @@ matrix:
       compiler: gcc
       addons:
         apt:
-          sources: [ ubuntu-toolchain-r-test ]
-          packages: [ g++-8 ]
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-8
       env:
         - FULL=ON
         - CC_COMPILER=gcc-8
@@ -70,14 +77,17 @@ matrix:
     - os: osx
       osx_image: xcode9.3beta
       compiler: clang
-      env: [ HASKELL=ON ]
+      env:
+        - HASKELL=ON
 
     - os: linux
       compiler: gcc
       addons:
         apt:
-          sources: [ ubuntu-toolchain-r-test ]
-          packages: [ g++-7 ]
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-7
       env:
         - CC_COMPILER=gcc-7
         - CXX_COMPILER=g++-7
@@ -86,8 +96,11 @@ matrix:
       compiler: clang
       addons:
         apt:
-          sources: [ llvm-toolchain-trusty-6.0, ubuntu-toolchain-r-test ]
-          packages: [ clang-6.0 ]
+          sources:
+            - llvm-toolchain-trusty-6.0
+            - ubuntu-toolchain-r-test
+          packages:
+            - clang-6.0
       env:
         - CC_COMPILER=clang-6.0
         - CXX_COMPILER=clang++-6.0
