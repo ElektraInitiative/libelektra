@@ -113,17 +113,17 @@ elektraHaskellPluginPostBuildHook _ flags pd lbi = do
       readProcess (C.programPath lt) ("-static" : "-o" : libraryName : ls) "" >>= logV
     mainLink ln = let filename = "libHS" ++ (C.unPackageName . C.packageName . C.package) pd ++ suffix lbi in 
       logV "linking main library" >>
-      readProcess (C.programPath ln) ["-f", libraryPath, filename] "" >>= logV
+      readProcess (C.programPath ln) ["-s", "-f", "@CMAKE_CURRENT_BINARY_DIR@/" ++ libraryPath, filename] "" >>= logV
     mainDepLink ln = do
       logV "linking main library for libraries"
-      let readProcessFn prfx = readProcess (C.programPath ln) ["-f", libraryPath, prfx ++ "/" ++ libraryName] "" >>= logV
+      let readProcessFn prfx = readProcess (C.programPath ln) ["-s", "-f", "@CMAKE_CURRENT_BINARY_DIR@/" ++ libraryPath, prfx ++ "/" ++ libraryName] "" >>= logV
       readProcessFn "@CMAKE_LIBRARY_OUTPUT_DIRECTORY@"
       readProcessFn "haskell"
     depLink ln lib = do
       l <- showLibrary lbi lib
       logV ("linking library " ++ l)
       let name prfx = prfx ++ "/libHS" ++ getLibraryName lib ++ suffix lbi
-      let readProcessFn name = readProcess (C.programPath ln) ["-f", l, name] "" >>= logV
+      let readProcessFn name = readProcess (C.programPath ln) ["-s", "-f", l, name] "" >>= logV
       let cmakeName = name "@CMAKE_LIBRARY_OUTPUT_DIRECTORY@"
       unless (cmakeName == l) $ readProcessFn cmakeName
       readProcessFn "haskell"
