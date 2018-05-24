@@ -4,15 +4,13 @@
   - avoiding reimplementation of parsers for the same configuration settings.
   - rejecting invalid configuration.
   - avoiding common programming errors through the usage of better bindings.
-  - getting more guarantees when getting configuration.
+  - getting more guarantees when accessing configuration.
 - Allow software to be better integrated on configuration level.
 - Postpone some decisions from programmers to maintainers/administrators:
   - Syntax of the configuration file(s)
   - Side effects (e.g. logging, vcs commit, notifications)
   - Flexible adoption to specific needs
   - Adoption of standards (xdg, xml, JSON)
-- Reduce duplication of code (a single parser/generator used by
-  everyone accessing a specific part of the configuration).
 
 ## Target
 
@@ -23,8 +21,8 @@
   using Elektra can be connected by already existing configuration
   management tools.
 - Desktop: Elektra allows applications to read and write from a global
-  configuration tree. Missing is a description (schema) so that these
-  values actually can be shared.
+  configuration tree. We miss a specification (schema) so that these
+  configuration values can be shared (integrated).
 
 ## Quality Goals
 
@@ -83,7 +81,7 @@ them, everything else is an extension.
 
 4.) Performance
 
-Configuration is the main impact for bootup and startup-time.
+Accessing configuration has impact on bootup and startup-time.
 Elektra needs to be similar fast then current solutions.
 Ideally it should get faster because of centralized optimization
 endeavours where everyone using Elektra can benefit from.
@@ -93,5 +91,6 @@ Only pay for what you need.
 ## Non-Goals
 
 - Support semantics that do not fit into the KeySet (key-value pairs) with an `kdbGet()`/`kdbSet()` interface.
-- Support for non-configuration issues, e.g. storing any key-value data.
+- Support for non-configuration issues, e.g., storing key-value data unrelated to configuration settings.
 - Elektra is not a distributed CM, use Puppet, CFEngine on top or a distributed file system below Elektra.
+
