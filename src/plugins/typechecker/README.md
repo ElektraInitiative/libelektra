@@ -162,7 +162,6 @@ parts instead. As the two keys represent the ranges 0-5000 and 7200-10000, they
 obviously cannot be linked together.
 
 ```sh
-kdb getmeta spec/tests/typechecker/key2 elektra/spec/regex/check/range
 kdb setmeta spec/tests/typechecker/key2 fallback/#1 spec/tests/typechecker/key1
 # RET: 5
 # STDERR-REGEX: .*Couldn't match type.*
