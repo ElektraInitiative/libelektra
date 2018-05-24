@@ -20,7 +20,6 @@ library
                    , libelektra-haskell == @KDB_VERSION@
   default-language:  Haskell2010
   other-extensions:  ForeignFunctionInterface
-  ghc-options:       
 
 source-repository head
   type:     git
