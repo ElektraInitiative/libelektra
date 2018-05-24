@@ -288,6 +288,12 @@ def generateFullBuildStages() {
         DOCKER_IMAGES.stretch,
         CMAKE_FLAGS_BUILD_ALL
     )
+    tasks << buildAndTestAsan(
+        "debian-unstable-clang-asan",
+        DOCKER_IMAGES.stretch,
+        CMAKE_FLAGS_BUILD_ALL +
+            CMAKE_FLAGS_CLANG
+    )
     tasks << buildAndTest(
         "debian-oldstable-full",
         DOCKER_IMAGES.jessie,
