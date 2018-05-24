@@ -36,20 +36,20 @@ distinguish-able style. It looks like:
 # Mount Tcl plugin to namespace `user/examples/tcl`
 # We add the required plugins (instead of the plugin providers)
 # for `tcl` manually, since otherwise this command leaks memory.
-sudo kdb mount config.tcl user/examples/tcl tcl ccode null base64
+sudo kdb mount config.tcl user/tests/tcl tcl ccode null base64
 
 # Add a key value pair to the database
-kdb set user/examples/tcl/key value
+kdb set user/tests/tcl/key value
 # The Tcl plugin also supports metadata
-kdb setmeta user/examples/tcl/key comment "This key contains example data."
+kdb setmeta user/tests/tcl/key comment "This key contains example data."
 # A known limitation of the plugin is that it discards whitespace characters
-kdb getmeta user/examples/tcl/key comment
+kdb getmeta user/tests/tcl/key comment
 #> Thiskeycontainsexampledata.
 
-kdb export user/examples/tcl tcl
+kdb export user/tests/tcl tcl
 #> {
 #> 	{
-#> 		user/examples/tcl/key = value
+#> 		user/tests/tcl/key = value
 #> 		{
 #> 			comment = Thiskeycontainsexampledata.
 #> 		}
@@ -57,8 +57,8 @@ kdb export user/examples/tcl tcl
 #> }
 
 # Undo modifications
-kdb rm -r user/examples/tcl
-sudo kdb umount user/examples/tcl
+kdb rm -r user/tests/tcl
+sudo kdb umount user/tests/tcl
 ```
 
 ## Binary Data

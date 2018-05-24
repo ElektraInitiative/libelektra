@@ -63,26 +63,28 @@ Access to **kdb** can be retrieved using the Python import
 
 An example script that prints some information for each method call would be:
 
-    class ElektraPlugin(object):
-        def open(self, config, errorKey):
-            print("Python script method 'open' called")
-            return 0
+```py
+class ElektraPlugin(object):
+    def open(self, config, errorKey):
+        print("Python script method 'open' called")
+        return 0
 
-        def get(self, returned, parentKey):
-            print("Python script method 'get' called")
-            return 1
+    def get(self, returned, parentKey):
+        print("Python script method 'get' called")
+        return 1
 
-        def set(self, returned, parentKey):
-            print("Python script method 'set' called")
-            return 1
+    def set(self, returned, parentKey):
+        print("Python script method 'set' called")
+        return 1
 
-        def error(self, returned, parentKey):
-            print("Python script method 'error' called")
-            return 1
+    def error(self, returned, parentKey):
+        print("Python script method 'error' called")
+        return 1
 
-        def close(self, errorKey):
-            print("Python script method 'close' called")
-            return 0
+    def close(self, errorKey):
+        print("Python script method 'close' called")
+        return 0
+```
 
 Further examples can be found in the [python](python/) directory.
 

@@ -11,7 +11,7 @@
 
 ## Introduction
 
-This plugin parses `passwd` files, e.g. `/etc/passwd`. 
+This plugin parses `passwd` files, e.g. `/etc/passwd`.
 
 ## Implementation Details
 
@@ -19,13 +19,13 @@ If present, the not-posix compliant `fgetpwent` function will be used to read th
 
 ## Configuration
 
-If the config key `index` is set to `name` passwd entrys will be sorted by name, if not set or set to `uid` passwd entries will be sorted by uid
+If the config key `index` is set to `name` passwd entries will be sorted by name, if not set or set to `uid` passwd entries will be sorted by uid
 
 ## Fields
 
 - `gecos` contains the full name of the account
 - `gid` contains the accounts primary group id
-- `home` contains the path to the accounts home directoy
+- `home` contains the path to the accounts home directory
 - `shell` contains the accounts default shell
 - `uid` contains the accounts uid
 - `name` contains the account name

@@ -40,12 +40,12 @@ None.
 ## Examples
 
 ```sh
-# Backup-and-Restore: user/examples/template
+# Backup-and-Restore: user/tests/template
 
-kdb set user/examples/template/key value
-#> Create a new key user/examples/template/key with string "value"
+kdb set user/tests/template/key value
+#> Create a new key user/tests/template/key with string "value"
 
-kdb get /examples/template/key
+kdb get /tests/template/key
 #> value
 ```
 

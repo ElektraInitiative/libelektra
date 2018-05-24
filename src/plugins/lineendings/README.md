@@ -5,16 +5,16 @@
 - infos/provides =
 - infos/placements = pregetstorage precommit
 - infos/status = maintained unittest nodep configurable nodoc
-- infos/description = verifies lineendings of files
+- infos/description = verifies line endings of files
 
 ## Introduction
 
-The Lineendings Plugin verifies the Lineendings of a file.
-If inconsistent lineendings or lineendings that don't match `valid` are detected the plugin yields an error.
+The Lineendings Plugin verifies the line endings of a file.
+If inconsistent line endings or line endings that don't match `valid` are detected the plugin yields an error.
 
 ## Configuration
 
-`valid` 
-The key tells the plugin to reject all lineendings other than specified in this key. Valid options: CRLF, LFCR, CR, LF
-If the key doesn't exist only inconsistent lineendings get rejected. 
+`valid`
+The key tells the plugin to reject all line endings other than specified in this key. Valid options: CRLF, LFCR, CR, LF
+If the key doesn't exist only inconsistent line endings are rejected.
 

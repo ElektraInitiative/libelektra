@@ -3,35 +3,35 @@
 - Test 1
 
   ```sh
-  # Backup-and-Restore:/test
+  # Backup-and-Restore:/tests/msr
   # testcomment
-  kdb set /test/a a
-  kdb set /test/b b
+  kdb set /tests/msr/a a
+  kdb set /tests/msr/b b
   # RET:0
   # should yield 'a'
-  kdb get /test/a
+  kdb get /tests/msr/a
   #> a
   # STDERR:
-  kdb get /test/c
+  kdb get /tests/msr/c
   # Expected:
   # RET:11
-  # STDERR:Did not find key '/test/c'
-  kdb rm -r /test
+  # STDERR:Did not find key '/tests/msr/c'
+  kdb rm -r /tests/msr
   ```
 
 - Test 2
 
   ```sh
-  kdb set /test/x x
-  kdb set /test/y y
-  kdb get /test/x
+  kdb set /tests/msr/x x
+  kdb set /tests/msr/y y
+  kdb get /tests/msr/x
   #> x
-  kdb get /test/y
+  kdb get /tests/msr/y
   #> y
-  kdb export /test ini
+  kdb export /tests/msr ini
   # STDOUT-REGEX: (\[\]⏎)?x = x⏎y = y
-  kdb ls /test
-  kdb rm -r /test
+  kdb ls /tests/msr
+  kdb rm -r /tests/msr
   ```
 
 - Test 3

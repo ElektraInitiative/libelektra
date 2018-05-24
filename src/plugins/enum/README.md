@@ -40,44 +40,44 @@ But `middle_small_small` would fail because every entry might only occur once.
 
 ## Example
 ```sh
-# Backup-and-Restore:/examples/enum
+# Backup-and-Restore:/tests/enum
 
-sudo kdb mount enum.ecf /examples/enum enum dump
+sudo kdb mount enum.ecf /tests/enum enum dump
 
 # valid initial value + setup valid enum list
-kdb set /examples/enum/value middle
-kdb setmeta user/examples/enum/value check/enum "'low', 'middle', 'high'"
+kdb set /tests/enum/value middle
+kdb setmeta user/tests/enum/value check/enum "'low', 'middle', 'high'"
 
 # should succeed
-kdb set /examples/enum/value low
+kdb set /tests/enum/value low
 
 # should fail with error 121
-kdb set /examples/enum/value no
+kdb set /tests/enum/value no
 # RET:5
 # ERROR:121
 ```
 Or with multi-enums:
 ```sh
 # valid initial value + setup array with valid enums
-kdb set /examples/enum/multivalue middle_small
-kdb setmeta user/examples/enum/multivalue check/enum/#0 small
-kdb setmeta user/examples/enum/multivalue check/enum/#1 middle
-kdb setmeta user/examples/enum/multivalue check/enum/#2 large
-kdb setmeta user/examples/enum/multivalue check/enum/#3 huge
-kdb setmeta user/examples/enum/multivalue check/enum/multi _
-kdb setmeta user/examples/enum/multivalue check/enum "#3"
+kdb set /tests/enum/multivalue middle_small
+kdb setmeta user/tests/enum/multivalue check/enum/#0 small
+kdb setmeta user/tests/enum/multivalue check/enum/#1 middle
+kdb setmeta user/tests/enum/multivalue check/enum/#2 large
+kdb setmeta user/tests/enum/multivalue check/enum/#3 huge
+kdb setmeta user/tests/enum/multivalue check/enum/multi _
+kdb setmeta user/tests/enum/multivalue check/enum "#3"
 
 # should succeed
-kdb set /examples/enum/multivalue ___small_middle__
+kdb set /tests/enum/multivalue ___small_middle__
 
 # should fail with error 121
-kdb set /examples/enum/multivalue ___all_small__
+kdb set /tests/enum/multivalue ___all_small__
 # RET:5
 # ERROR:121
 
 # cleanup
-kdb rm -r /examples/enum
-sudo kdb umount /examples/enum
+kdb rm -r /tests/enum
+sudo kdb umount /tests/enum
 ```
 
 ## Limitations

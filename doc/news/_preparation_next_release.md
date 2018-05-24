@@ -50,7 +50,7 @@ that a key only holds numbers in a given range. Another metakey is `check/enum`
 which only allows specific keywords to be the content of a key. Up to now these
 semantics are being checked at runtime. Therefore a type system was developed to
 be able to check configuration specifications statically. As an example, it
-would detect when one accidentially add both a range and an enum check if their
+would detect when one accidentally adds both a range and an enum check if their
 possible contents are not compatible with each other.
 
 The type system is available as a plugin that gets mounted along with a
@@ -81,7 +81,7 @@ We added even more functionality, which could not make it to the highlights:
 ## New Plugins
 
 - The plugin [hexnumber](https://www.libelektra.org/plugins/hexnumber) has been added. It can be used
-  to convert hexadecimal values into decimal when read, and back to hexadecimal when written.
+  to convert hexadecimal values into decimal when read, and back to hexadecimal when written. *(Klemens Böswirth)*
 - <<TODO>>
 - <<TODO>>
 
@@ -89,6 +89,8 @@ We added even more functionality, which could not make it to the highlights:
 ## Other News
 
 - The `crypto` plugin now uses Elektra's `libinvoke` and the `base64` plugin in order to encode and decode Base64 strings. This improvement reduces code duplication between the two plugins. *(Peter Nirschl)*
+- The completion for [fish](http://fishshell.com) now also suggest the `info/` meta attributes of the
+  [file plugin](https://www.libelektra.org/plugins/file). *(René Schwaiger)*
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -101,7 +103,11 @@ We improved the documentation in the following ways:
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-
+- We added new [Markdown Shell Recorder](https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper) tests for the
+  - [`file`](https://www.libelektra.org/plugins/file),
+  - [`iconv`](https://www.libelektra.org/plugins/iconv) and
+  - [`uname`](https://www.libelektra.org/plugins/uname),
+  plugin. *(René Schwaiger)*
 
 ## Compatibility
 
@@ -159,8 +165,11 @@ These notes are of interest for people developing Elektra:
   - checks the formatting of CMake code via [`cmake-format`][]
 
   . *(René Schwaiger)*
+- (Markdown) Shell Recorder tests now save test data below `/tests` (see issue [#1887][]). *(René Schwaiger)*
+- The Markdown Shell Recorder checks `kdb set` commands to ensure we only add tests that store data below `/tests`. *(René Schwaiger)*
 
 [`cmake-format`]: https://github.com/cheshirekow/cmake_format
+[#1887]: https://github.com/ElektraInitiative/libelektra/issues/1887
 
 ## Fixes
 
@@ -180,6 +189,7 @@ Many problems were resolved with the following fixes:
 - `scripts/run_icheck` now no longer leaves the base directory of the project
   when checking if the ABI changed. *(Lukas Winkler)*
 - You can now build the [Qt-GUI](https://www.libelektra.org/tools/qt-gui) using Qt `5.11`. *(René Schwaiger)*
+- We fixed various minor spelling mistakes in the documentation. *(René Schwaiger)*
 
 
 ## Outlook

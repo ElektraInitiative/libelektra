@@ -41,15 +41,15 @@ plugin instead.
 ## Example
 
 ```sh
-sudo kdb mount typetest.dump user/typetest dump type
-kdb set user/typetest/key a
-kdb setmeta user/typetest/key check/type char
+sudo kdb mount typetest.dump user/tests/type dump type
+kdb set user/tests/type/key a
+kdb setmeta user/tests/type/key check/type char
 
-kdb get user/typetest/key
+kdb get user/tests/type/key
 #> a
 
-kdb rm user/typetest/key
-sudo kdb umount user/typetest
+kdb rm user/tests/type/key
+sudo kdb umount user/tests/type
 ```
 
 
