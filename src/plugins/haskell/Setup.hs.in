@@ -54,7 +54,7 @@ type PackageIndex a = C.PackageIndex
 data Build = Static | Dynamic
 
 main :: IO ()
-main = defaultMainWithHooks (simpleUserHooks { hookedPrograms = [C.simpleProgram "libtool", C.simpleProgram "ln", C.simpleProgram "cp"]
+main = defaultMainWithHooks (simpleUserHooks { hookedPrograms = [C.simpleProgram "libtool", C.simpleProgram "ln"]
                                              ,  confHook = elektraHaskellPluginConfHook
                                              ,  postBuild = elektraHaskellPluginPostBuildHook})
 
@@ -80,15 +80,14 @@ elektraHaskellPluginPostBuildHook _ flags pd lbi = do
   logV "Preparing the Haskell dependencies.."
   libraries >>= mapM_ logV
   let ln               = C.lookupProgram (C.simpleProgram "ln") $ C.withPrograms lbi
-  let cp               = C.lookupProgram (C.simpleProgram "cp") $ C.withPrograms lbi
-  let maybeMainCopy    = fmap mainCopy cp
-  let maybeMainDepCopy = fmap mainDepCopy cp
-  let maybeDepCopy     = fmap depCopy cp
-  let maybeDepCopies   = fmap (`fmap` dependencies) maybeDepCopy
-  let maybeCopy        = liftA2 (:) (Just $ createDirectoryIfMissing True "haskell")
-                       $ liftA2 (:) maybeMainDepCopy
-                       $ liftA2 (:) maybeMainCopy maybeDepCopies
-  maybe copyFailure (\l -> sequence_ l >> logV "Finished generating the post-build output..") maybeCopy
+  let maybeMainLink    = fmap mainLink ln
+  let maybeMainDepLink = fmap mainDepLink ln
+  let maybeDepLink     = fmap depLink ln
+  let maybeDepLinks    = fmap (`fmap` dependencies) maybeDepLink
+  let maybeLink        = liftA2 (:) (Just $ createDirectoryIfMissing True "haskell")
+                       $ liftA2 (:) maybeMainDepLink
+                       $ liftA2 (:) maybeMainLink maybeDepLinks
+  maybe linkFailure (\l -> sequence_ l >> logV "Finished generating the post-build output..") maybeLink
   -- let maybeLibtool = fmap packWithLibtool $ C.lookupProgram (C.simpleProgram "libtool") $ C.withPrograms lbi
   -- let maybeAr = fmap packWithAr $ C.lookupProgram (C.simpleProgram "ar") $ C.withPrograms lbi
   -- maybe packFailure (>> logV "Finished packing all the haskell dependencies..") (maybeLibtool <|> maybeAr)
@@ -99,7 +98,6 @@ elektraHaskellPluginPostBuildHook _ flags pd lbi = do
     failure str = hPutStrLn stderr str >> exitFailure
     packFailure = failure "Failed to locate libtool and ar, no program to pack the dependencies"
     linkFailure = failure "Failed to locate ln"
-    copyFailure = failure "Failed to locate cp"
     libraryName = "lib" ++ C.getHSLibraryName (C.localUnitId lbi) ++ suffix lbi
     libraryPath = C.buildDir lbi ++ "/" ++ libraryName
     libraries   = sequence $ (return libraryPath :) $ map (showLibrary lbi) dependencies
@@ -113,19 +111,19 @@ elektraHaskellPluginPostBuildHook _ flags pd lbi = do
       logV "packing with libtool"
       ls <- libraries
       readProcess (C.programPath lt) ("-static" : "-o" : libraryName : ls) "" >>= logV
-    mainCopy cp = let filename = "libHS" ++ (C.unPackageName . C.packageName . C.package) pd ++ suffix lbi in 
+    mainLink ln = let filename = "libHS" ++ (C.unPackageName . C.packageName . C.package) pd ++ suffix lbi in 
       logV "linking main library" >>
-      readProcess (C.programPath cp) [libraryPath, filename] "" >>= logV
-    mainDepCopy cp = do
+      readProcess (C.programPath ln) ["-f", libraryPath, filename] "" >>= logV
+    mainDepLink ln = do
       logV "linking main library for libraries"
-      let readProcessFn prfx = readProcess (C.programPath cp) [libraryPath, prfx ++ "/" ++ libraryName] "" >>= logV
+      let readProcessFn prfx = readProcess (C.programPath ln) ["-f", libraryPath, prfx ++ "/" ++ libraryName] "" >>= logV
       readProcessFn "@CMAKE_LIBRARY_OUTPUT_DIRECTORY@"
       readProcessFn "haskell"
-    depCopy cp lib = do
+    depLink ln lib = do
       l <- showLibrary lbi lib
-      logV ("copying library " ++ l)
+      logV ("linking library " ++ l)
       let name prfx = prfx ++ "/libHS" ++ getLibraryName lib ++ suffix lbi
-      let readProcessFn name = readProcess (C.programPath cp) [l, name] "" >>= logV
+      let readProcessFn name = readProcess (C.programPath ln) ["-f", l, name] "" >>= logV
       let cmakeName = name "@CMAKE_LIBRARY_OUTPUT_DIRECTORY@"
       unless (cmakeName == l) $ readProcessFn cmakeName
       readProcessFn "haskell"
