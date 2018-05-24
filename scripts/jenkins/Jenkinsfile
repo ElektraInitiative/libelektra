@@ -177,6 +177,7 @@ def dockerInit() {
     }
 }
 
+/* Generate Stages to pull all docker images */
 def generateDockerPullStages() {
     def tasks = [:]
     DOCKER_IMAGES.each { key, image ->
@@ -188,6 +189,9 @@ def generateDockerPullStages() {
 }
 
 /* Returns a stage that tries to pull an image
+ *
+ * Also sets IMAGES_TO_BUILD to true if an image can not be found
+ * to indicated that rebuilds are needed
  * @param image Map identifying which image to pull
  */
 def pullImageStage(image) {
