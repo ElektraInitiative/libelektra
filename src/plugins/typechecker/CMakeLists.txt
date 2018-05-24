@@ -13,7 +13,6 @@ if (LIBFA_FOUND)
 
 	add_haskell_plugin (typechecker
 			    SANDBOX_ADD_SOURCES
-			    "src/bindings/haskell"
 			    "src/libs/typesystem/libfa"
 			    "src/libs/typesystem/specelektra"
 			    "src/libs/typesystem/spectranslator"
