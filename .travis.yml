@@ -232,12 +232,8 @@ before_script:
 script:
   - ninja
   - |
-    if [[ "$ASAN" = "ON" && "$TRAVIS_OS_NAME" == "linux" && "$CC" == "clang" ]]; then
-      # preload required libraries (LD_PRELOAD is a space separated list)
-      UBSAN_LIBRARY=$(find /usr/ -name '*libclang_rt.ubsan_standalone_cxx-x86_64.so')
-      LD_PRELOAD="$UBSAN_LIBRARY" ASAN_OPTIONS=symbolize=1 ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer) ninja run_all
-    elif [[ "$ASAN" = "ON" ]]; then
-      ASAN_OPTIONS=symbolize=1 ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer) ninja run_all
+    if [[ "$ASAN" = "ON" ]]; then
+      ninja run_all
     else
       ninja install
       ninja run_all && kdb run_all
