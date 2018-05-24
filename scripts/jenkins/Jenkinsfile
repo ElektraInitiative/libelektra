@@ -227,6 +227,10 @@ def generateDockerBuildStages() {
     return tasks
 }
 
+/* Returns a map with a closure that builds image
+ *
+ * @param image Image that needs to be build
+ */
 def buildImageStage(image) {
     def taskname = "build/${image.id}/"
     return [(taskname): {
