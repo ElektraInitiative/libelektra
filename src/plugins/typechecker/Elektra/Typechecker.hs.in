@@ -10,7 +10,7 @@ import Elektra.SpecTranslator
 import Elektra.SpecParser
 import Elektra.Errors
 
-import Control.Monad                (mapM_, (>=>))
+import Control.Monad                (mapM_, forM_, (>=>))
 import Control.Logger.Simple
 import Data.Bool                    (bool)
 import Data.List                    (intercalate, isPrefixOf)
@@ -33,6 +33,12 @@ typecheck :: Plugin -> KeySet -> Key -> CheckMode -> IO Bool
 typecheck p ks k c = withGlobalLogging (LogConfig Nothing ("@ENABLE_LOGGER@" == "ON")) $ do
   name <- keyName k
   logDebugT $ "Parse Specifications at " ++ name
+  logDebugT $ "Where we have the keys "
+  keys <- ksList ks
+  forM_ keys $ \dk -> do
+    logDebugT $ show dk
+    metakeys <- keyListMeta dk
+    forM_ metakeys (logDebugT . show)
 
   conf <- elektraPluginGetConfig p
 
