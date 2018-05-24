@@ -171,8 +171,8 @@ macro (add_haskell_plugin target)
 										# as we require the sandbox to exist we can do this during the configuration phase it doesn't compile or install anything
 										execute_process (COMMAND ${CABAL_EXECUTABLE} sandbox init --sandbox "${HASKELL_SHARED_SANDBOX}" -v0 WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 			    						foreach (SANDBOX_ADD_SOURCE ${ARG_SANDBOX_ADD_SOURCES})
-											get_filename_component (SANDBOX_ADD_SOURCE_PARENT "${SANDBOX_ADD_SOURCE}" DIRECTORY)
-											file (COPY "${CMAKE_SOURCE_DIR}/${SANDBOX_ADD_SOURCE}/" DESTINATION "${CMAKE_BINARY_DIR}/${SANDBOX_ADD_SOURCE}")
+			    							# our custom libs are all to be processed by cmake before we can add them, so enforce that, the build is more stable this way
+											add_subdirectory ("${CMAKE_SOURCE_DIR}/${SANDBOX_ADD_SOURCE}" "${CMAKE_BINARY_DIR}/${SANDBOX_ADD_SOURCE}")
 			    							execute_process (COMMAND ${CABAL_EXECUTABLE} sandbox add-source "${CMAKE_BINARY_DIR}/${SANDBOX_ADD_SOURCE}" -v0 WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 			    						endforeach ()
 
