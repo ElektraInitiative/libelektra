@@ -136,7 +136,7 @@ until we have finished writing the whole specification.
 	kdb get spec/tests/prelude/fallback/#) || \
 	(sudo kdb umount spec/tests/prelude && \
 		sudo kdb mount "$PWD/src/plugins/typechecker/typechecker/prelude.ini" spec/tests/prelude ini)
-sudo kdb mount simplespecification.ini spec/tests/typechecker ini typechecker prelude=spec/tests/prelude
+sudo kdb mount simplespecification.ini spec/tests/typechecker ini regexdispatcher typechecker prelude=spec/tests/prelude
 
 echo 'kdbGet spec/tests/typechecker \
 keySetName spec/tests/typechecker/key1 \
@@ -162,6 +162,7 @@ parts instead. As the two keys represent the ranges 0-5000 and 7200-10000, they
 obviously cannot be linked together.
 
 ```sh
+kdb getmeta spec/tests/typechecker/key2 elektra/spec/regex/check/range
 kdb setmeta spec/tests/typechecker/key2 fallback/#1 spec/tests/typechecker/key1
 # RET: 5
 # STDERR-REGEX: .*Couldn't match type.*
