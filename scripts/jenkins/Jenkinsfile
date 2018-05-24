@@ -122,6 +122,12 @@ maybeStage("Deploy Homepage", isMaster()) {
 /*****************************************************************************
  * Stage Generators
  *****************************************************************************/
+
+/* Populate DOCKER_IMAGES with data
+ *
+ * For this we need a checkout of the scm to generate the hash for the
+ * Dockerfiles which indicates if a rebuild of the images is needed
+ */
 def dockerInit() {
     node("master") {
         echo "Processing DOCKER_IMAGES"
