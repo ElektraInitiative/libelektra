@@ -744,14 +744,14 @@ def trackCoverage(do_track, cl) {
  * @param cl A closure that should be run inside the docker image
  */
 def withDockerEnv(image, opts=[], cl) {
-    def docker_args = ""
-    if (opts.contains(DOCKER_OPTS.MOUNT_MIRROR)) {
-        docker_args += "-v ${env.HOME}/git_mirrors:/home/jenkins/git_mirrors "
-    }
-    if (opts.contains(DOCKER_OPTS.PTRACE)) {
-        docker_args += "--cap-add SYS_PTRACE "
-    }
     node(docker_node_label) {
+        def docker_args = ""
+        if (opts.contains(DOCKER_OPTS.MOUNT_MIRROR)) {
+            docker_args += "-v ${env.HOME}/git_mirrors:/home/jenkins/git_mirrors "
+        }
+        if (opts.contains(DOCKER_OPTS.PTRACE)) {
+            docker_args += "--cap-add SYS_PTRACE "
+        }
         docker.withRegistry("https://${registry}",
                             'docker-hub-elektra-jenkins') {
             timeout(activity: true, time: 5, unit: 'MINUTES') {
