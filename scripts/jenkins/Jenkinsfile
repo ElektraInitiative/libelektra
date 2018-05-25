@@ -372,7 +372,7 @@ def buildIcheck() {
     def stage_name = "icheck"
     return [(stage_name): {
         stage(stage_name) {
-            withDockerEnv(DOCKER_IMAGES.stretch) {
+            withDockerEnv(DOCKER_IMAGES.stretch, [DOCKER_OPTS.MOUNT_MIRROR]) {
                 sh "scripts/run_icheck"
                 deleteDir()
             }
