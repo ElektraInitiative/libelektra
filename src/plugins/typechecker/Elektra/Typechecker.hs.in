@@ -46,12 +46,20 @@ typecheck p ks k c = withGlobalLogging (LogConfig Nothing ("@ENABLE_LOGGER@" == 
   ksc <- ksDup ks
   kscc <- ksCut ksc k
 
-  -- load type signatures if a path to prelude is specified
-  -- it is important that the path to prelude is not "under"
-  -- this path otherwise it would lead to recursions
+  -- TODO
+  -- prelude handling
+  -- We load it via invoke + ini plugin as kdbOpen in here leads to unpredicted behavior combined with the process plugin
+  -- #1: Environment variable (tests)
+
+  -- #2: Plugin Config (user custom preludes)
+
+  -- #3: default global spec namespace (default)
+
+  -- #4: nothing otherwise
+
   logDebugT $ "the configuration is " ++ show conf
   prelude <- ifKey (ksLookupByName conf "/prelude") (keyString >=> fmap Just . keyNew) (return Nothing)
-  ps <- maybe (ksNew 0) readPrelude prelude
+  ps <- ksNew 0 -- TODO replace with libinvoke + ini
   logDebugT $ "Prelude contained " ++ show ps
 
   -- now rename the prelude keys to the correct parent key
