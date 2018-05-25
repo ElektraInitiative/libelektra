@@ -14,8 +14,12 @@ stage("Maintain Reference Repositories") {
     parallel generateRepositoryMaintanenceStages()
 }
 
-stage("Maintain docker repositories") {
+stage("Maintain docker nodes") {
     parallel generateDockerMaintanenceStages()
+}
+
+stage("Maintain docker repositories") {
+    parallel generateDockerRepoMaintanenceStages()
 }
 
 stage("Cleanup Files") {
@@ -78,6 +82,35 @@ def cleanupDockerImages(target_node) {
             }
         }
     }]
+}
+
+def generateDockerRepoMaintanenceStages() {
+    def nodes = nodesByLabel label:"docker&&registry"
+    def tasks = [:]
+
+    nodes.each { target_node ->
+        tasks << cleanupDockerRegistry(target_node)
+    }
+    return tasks
+}
+
+def cleanupDockerRegistry(target_node) {
+    def taskname = "cleanupDockerRegistry/${target_node}"
+    return [(taskname): {
+        stage(taskname) {
+            node(target_node) {
+                withCredentials([usernameColonPassword(credentialsId:
+                'docker-hub-elektra-jenkins', variable: 'AUTH')]) {
+                    docker.image('anoxis/registry-cli')
+                          .withRun('-l $AUTH -r https://hub.libelektra.org --delete')
+                }
+                def frontend_folder = "${env.HOME}/compose/frontend"
+                dir(frontend_folder){
+                    sh 'docker-compose run registry bin/registry garbage-collect /etc/docker/registry/config.yml'
+                }
+            }
+        }
+    }
 }
 
 def generateFileCleanupStages() {
