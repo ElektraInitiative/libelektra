@@ -102,7 +102,7 @@ def cleanupDockerRegistry(target_node) {
                 withCredentials([usernameColonPassword(credentialsId:
                 'docker-hub-elektra-jenkins', variable: 'AUTH')]) {
                     docker.image('anoxis/registry-cli')
-                          .withRun('-l $AUTH -r https://hub.libelektra.org --delete')
+                          .run('--rm', '-l $AUTH -r https://hub.libelektra.org --delete')
                 }
                 def frontend_folder = "${env.HOME}/compose/frontend"
                 dir(frontend_folder){
