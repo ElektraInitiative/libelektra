@@ -36,8 +36,8 @@ protected:
 	}
 };
 
-const std::string Simple::configFile = "kdbFile.dump";
-const std::string Simple::testRoot = "/tests/kdb/";
+const std::string Simple::configFile = "kdbFileSimple.dump";
+const std::string Simple::testRoot = "/tests/kdb/simple/";
 
 TEST_F (Simple, GetNothing)
 {
