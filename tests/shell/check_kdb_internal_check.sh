@@ -41,6 +41,12 @@ do
 		'crypto_gcrypt')
 			continue
 			;;
+		'crypto_botan')
+			continue
+			;;
+		'xerces')
+			continue
+			;;
 		'jni')
 			continue
 			;;
