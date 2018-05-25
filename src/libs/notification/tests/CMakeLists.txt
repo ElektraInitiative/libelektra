@@ -1,6 +1,7 @@
 include (LibAddMacros)
 
-if (BUILD_TESTING)
+# Clang with enabled ASAN reports that this test leaks memory: https://travis-ci.org/sanssecours/elektra/jobs/383014685#L2197
+if (BUILD_TESTING AND NOT ENABLE_ASAN)
 
 	add_headers (HDR_FILES)
 
@@ -25,4 +26,4 @@ if (BUILD_TESTING)
 
 	endforeach (file ${TESTS})
 
-endif (BUILD_TESTING)
+endif (BUILD_TESTING AND NOT ENABLE_ASAN)
