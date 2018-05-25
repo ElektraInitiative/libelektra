@@ -26,6 +26,8 @@ if (DEPENDENCY_PHASE)
 		set_source_files_properties (${filepath} PROPERTIES GENERATED TRUE)
 		list (APPEND GENERATED_SOURCE_FILES ${filepath})
 	endforeach (file ${GENERATED_SOURCE_FILES_NAMES})
+	set_source_files_properties (${GRAMMAR_NAME}Lexer.cpp PROPERTIES COMPILE_FLAGS "-Wno-unused-parameter")
+
 	set (SOURCE_FILES "${GENERATED_SOURCE_FILES}" listener.hpp yanlr.hpp yanlr.cpp)
 
 	add_custom_command (OUTPUT ${GENERATED_SOURCE_FILES}
