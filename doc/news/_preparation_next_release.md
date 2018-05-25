@@ -170,7 +170,7 @@ plugins, bindings and tools are always up to date. Furthermore, we changed:
 These notes are of interest for people developing Elektra:
 
 - A build job checks if PRs modify the release notes. *(Markus Raab)*
-- `clang` tests have been ported to the new build system
+- `clang` tests have been ported to the new build system *(Lukas Winkler et al)*
 - Several improvments to the build system have been implemented *(Lukas Winkler)*:
   - Better Docker image handling
   - abort of previously queued but unfinished runs on new commits
