@@ -110,7 +110,7 @@ def cleanupDockerRegistry(target_node) {
                 }
             }
         }
-    }
+    }]
 }
 
 def generateFileCleanupStages() {
