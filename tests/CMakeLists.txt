@@ -2,7 +2,7 @@
 # Elektra Test Suite
 #
 # This file is responsible for generating all tests
-# regarding elektra's core.
+# regarding Elektra's core.
 #
 # Backends and Bindings specific tests might be in
 # their folders.
