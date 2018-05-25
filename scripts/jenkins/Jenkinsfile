@@ -360,7 +360,7 @@ def buildCheckReleaseNotes() {
     def stage_name = "check-release-notes"
     return [(stage_name): {
         maybeStage(stage_name, !isMaster()) {
-            withDockerEnv(DOCKER_IMAGES.stretch) {
+            withDockerEnv(DOCKER_IMAGES.stretch, [DOCKER_OPTS.MOUNT_MIRROR]) {
                 sh "scripts/run_check_release_notes"
                 deleteDir()
             }
