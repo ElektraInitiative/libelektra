@@ -42,10 +42,10 @@ protected:
 	}
 };
 
-const std::string Nested::testRoot = "/tests/kdb/";
-const std::string Nested::testBelow = "/tests/kdb/below/";
-const std::string Nested::configFileRoot = "kdbFileRoot.dump";
-const std::string Nested::configFileBelow = "kdbFileBelow.dump";
+const std::string Nested::testRoot = "/tests/kdb/nested/";
+const std::string Nested::testBelow = "/tests/kdb/nested/below/";
+const std::string Nested::configFileRoot = "kdbFileNestedRoot.dump";
+const std::string Nested::configFileBelow = "kdbFileNestedBelow.dump";
 
 
 TEST_F (Nested, GetSetNothing)

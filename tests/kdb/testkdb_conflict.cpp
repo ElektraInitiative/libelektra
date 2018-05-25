@@ -50,8 +50,8 @@ protected:
 	}
 };
 
-const std::string Conflict::configFile = "kdbFile.dump";
-const std::string Conflict::testRoot = "/tests/kdb/";
+const std::string Conflict::configFile = "kdbFileConflict.dump";
+const std::string Conflict::testRoot = "/tests/kdb/conflict/";
 
 TEST_P (Conflict, ConflictWithFile)
 {

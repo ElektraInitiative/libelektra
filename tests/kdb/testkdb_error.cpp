@@ -38,7 +38,7 @@ protected:
 	}
 };
 
-const std::string Error::testRoot = "/tests/kdb/";
+const std::string Error::testRoot = "/tests/kdb/error/";
 const std::string Error::configFileRoot = "kdbFileError.dump";
 
 
