@@ -1,10 +1,10 @@
 name:                regexdispatcher
-version:             0.1.0.0
-synopsis:            Generates regex-representations of specification keywords
-description:         Generates regex-representations of specification keywords
+version:             1.@KDB_VERSION@
+synopsis:            Generates regex representations of specification keywords
+description:         Generates regex representations of specification keywords
 homepage:            https://www.libelektra.org
 license:             BSD3
-author:              e1528532
+author:              Armin Wurzinger
 maintainer:          e1528532@libelektra.org
 copyright:           libelektra.org
 category:            plugin
@@ -21,8 +21,8 @@ library
                    , Elektra.EnumDispatcher
                    , Elektra.Range
                    , Elektra.Parsers
-  build-depends:     base >= 4.7 && < 5
-                   , libelektra-haskell
+  build-depends:     base >= 4.7 && < 4.12
+                   , libelektra-haskell == @KDB_VERSION@
                    , text
                    , megaparsec
   cpp-options:       -DENABLE_LOGGER_@ENABLE_LOGGER@
