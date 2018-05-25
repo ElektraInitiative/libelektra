@@ -27,7 +27,7 @@ library
                    , TupleSections
                    , RecordWildCards
                    , LambdaCase
-  build-depends:     base >= 4.9 && < 5
+  build-depends:     base >= 4.9 && < 4.12
                    , ghc >= 8.0.1 && < 8.6
                    , libfa == 1.@KDB_VERSION@
   default-language:  Haskell2010

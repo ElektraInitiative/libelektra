@@ -13,7 +13,7 @@ cabal-version:       >=1.24
 
 library
   exposed-modules:   FiniteAutomata
-  build-depends:     base >= 4.9 && < 5
+  build-depends:     base >= 4.9 && < 4.12
   includes:          fa.h
   include-dirs:      "@LIBFA_INCLUDE_DIRS@"
   extra-lib-dirs:    "@LIBFA_LIBRARY_DIRS@"

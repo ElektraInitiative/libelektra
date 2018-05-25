@@ -101,11 +101,12 @@ if (GHC-PKG_EXECUTABLE)
 	set (CABAL_CUSTOM_SETUP
 "custom-setup
   setup-depends:
-    Cabal      >= 1.24.1 && < 2.4  ,
+    Cabal      >= 1.24.0 && < 2.4  ,
     base       >= 4.9    && < 4.12 ,
     containers >= 0.5    && < 0.6  ,
     directory  >= 1.2    && < 1.4  ,
-    process    >= 1.4    && < 1.7" )
+    process    >= 1.4    && < 1.7  ,
+    binary     >= 0.8    && < 0.9" )
 
 	set (HASKELL_SHARED_SANDBOX "$ENV{HASKELL_SHARED_SANDBOX}/.cabal-sandbox")
 	get_filename_component (HASKELL_SHARED_SANDBOX "${HASKELL_SHARED_SANDBOX}" REALPATH)

@@ -67,19 +67,19 @@ In case you simply want to install the bindings, but no other haskell based plug
 install the following dependencies into the sandbox.
 
 ```
-cabal install 'Cabal >=1.24.1 && <2.4' 'base >=4.9 && <4.12' 'containers >=0.5 && <0.6' \
-	'directory >=1.2 && <1.4' 'process >=1.4 && <1.7' 'base >=4.9 && <5' \
+cabal install 'base >=4.9 && <4.12' 'containers >=0.5 && <0.6' \
+	'directory >=1.2 && <1.4' 'process >=1.4 && <1.7' 'binary >=0.5 && <0.6' \
 	'hspec -any' 'QuickCheck -any' --avoid-reinstalls
 ```
 
 In case you want to install every haskell based plugin, use this command instead:
 
 ```
-cabal install 'Cabal >=1.24.1 && <2.4' 'base >=4.9 && <4.12' 'containers >=0.5 && <0.6' \
-	'directory >=1.2 && <1.4' 'process >=1.4 && <1.7' 'base >=4.9 && <5' 'haskell-src-exts -any' \
-	'pretty -any' 'hint >=0.7.0 && <0.8.0' 'directory -any' 'temporary -any' 'exceptions -any' \
-	'text -any' 'simple-logger -any' 'containers -any' 'megaparsec -any' 'hspec -any' \
-	'QuickCheck -any' --avoid-reinstalls
+cabal install 'base >=4.9 && <4.12' 'containers >=0.5 && <0.6' \
+	'directory >=1.2 && <1.4' 'process >=1.4 && <1.7' 'binary >=0.5 && <0.6' \
+	'haskell-src-exts-any' 'pretty -any' 'hint >=0.7.0 && <0.8.0' 'temporary -any' \
+	'exceptions -any' 'text -any' 'simple-logger -any' 'megaparsec -any' \
+	'hspec -any' 'QuickCheck-any' --avoid-reinstalls
 ```
 
 Now everything should be ready and awaits compilation.
