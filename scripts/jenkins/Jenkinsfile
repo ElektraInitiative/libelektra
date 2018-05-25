@@ -732,7 +732,6 @@ def trackCoverage(do_track, cl) {
  * Automatically takes care of docker registry authentication,
  * selecting a docker capable node,
  * checkout of scm and setting of useful Environment variables
- * @param stage_name Name of the stage
  * @param image Docker image that should be used
  * @param cl A closure that should be run inside the docker image
  */
