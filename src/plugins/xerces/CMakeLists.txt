@@ -5,12 +5,8 @@ if (DEPENDENCY_PHASE)
 		remove_plugin (xerces "XercesC library libxerces-c-dev not found")
 	elseif (XercesC_VERSION VERSION_LESS 3.0.0)
 		remove_plugin (xerces "XercesC library version 3.0.0 or higher required")
-	elseif (XercesC_VERSION VERSION_LESS 3.2)
-		if (ENABLE_ASAN AND CMAKE_COMPILER_IS_GNUCXX)
-			remove_plugin (xerces
-				       "XercesC ${XercesC_VERSION} reports runtime errors if you compile it with GCC "
-				       "using AddressSanitizer")
-		endif (ENABLE_ASAN AND CMAKE_COMPILER_IS_GNUCXX)
+	elseif (ENABLE_ASAN)
+		remove_plugin (xerces "is incompatible with ENABLE_ASAN")
 	endif ()
 endif (DEPENDENCY_PHASE)
 
