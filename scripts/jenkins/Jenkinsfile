@@ -67,10 +67,10 @@ CMAKE_FLAGS_DEBUG = ['ENABLE_DEBUG': 'ON']
 CMAKE_FLAGS_LOGGER = ['ENABLE_LOGGER': 'ON']
 
 // Define Test Flag globals
-TEST_MEM = 'mem'
-TEST_NOKDB = 'nokdb'
-TEST_ALL = 'all'
-TEST_INSTALL = 'install'
+enum TEST {
+    MEM, NOKDB, ALL, INSTALL
+    public TEST()  {} // WORKAROUND https://issues.jenkins-ci.org/browse/JENKINS-33023
+}
 
 NOW = new Date()
 DOCKER_IMAGES = [:]
@@ -270,7 +270,7 @@ def generateMainBuildStages() {
         DOCKER_IMAGES.stretch,
         CMAKE_FLAGS_BUILD_ALL +
             CMAKE_FLAGS_COVERAGE,
-        [TEST_ALL, TEST_MEM, TEST_INSTALL]
+        [TEST.ALL, TEST.MEM, TEST.INSTALL]
     )
     tasks << buildIcheck()
     tasks << buildCheckReleaseNotes()
@@ -298,32 +298,32 @@ def generateFullBuildStages() {
         "debian-oldstable-full",
         DOCKER_IMAGES.jessie,
         CMAKE_FLAGS_BUILD_ALL,
-        [TEST_ALL, TEST_MEM, TEST_INSTALL]
+        [TEST.ALL, TEST.MEM, TEST.INSTALL]
     )
     tasks << buildAndTest(
         "debian-unstable-full",
         DOCKER_IMAGES.sid,
         CMAKE_FLAGS_BUILD_ALL,
-        [TEST_ALL, TEST_MEM, TEST_INSTALL]
+        [TEST.ALL, TEST.MEM, TEST.INSTALL]
     )
     tasks << buildAndTest(
         "debian-unstable-full-clang",
         DOCKER_IMAGES.sid,
         CMAKE_FLAGS_BUILD_ALL +
             CMAKE_FLAGS_CLANG,
-        [TEST_ALL, TEST_MEM, TEST_INSTALL]
+        [TEST.ALL, TEST.MEM, TEST.INSTALL]
     )
     tasks << buildAndTest(
         "ubuntu-xenial",
         DOCKER_IMAGES.xenial,
         CMAKE_FLAGS_BUILD_ALL,
-        [TEST_ALL]
+        [TEST.ALL]
     )
     tasks << buildAndTest(
         "debian-stable-minimal",
         DOCKER_IMAGES.stretch_minimal,
         [:],
-        [TEST_ALL]
+        [TEST.ALL]
     )
     return tasks
 }
@@ -483,10 +483,10 @@ def buildAndTest(test_name, image, extra_cmake_flags = [:],
     }
     def test_coverage = cmake_flags.intersect(CMAKE_FLAGS_COVERAGE)
                                    .equals(CMAKE_FLAGS_COVERAGE)
-    def test_mem = tests.contains(TEST_MEM)
-    def test_nokdb = tests.contains(TEST_NOKDB)
-    def test_all = tests.contains(TEST_ALL)
-    def install = tests.contains(TEST_INSTALL)
+    def test_mem = tests.contains(TEST.MEM)
+    def test_nokdb = tests.contains(TEST.NOKDB)
+    def test_all = tests.contains(TEST.ALL)
+    def install = tests.contains(TEST.INSTALL)
     return [(test_name): {
         stage(test_name) {
             withDockerEnv(image) {
