@@ -127,16 +127,9 @@ until we have finished writing the whole specification.
 ```sh
 # Backup-and-Restore:spec/tests/typechecker
 
-# When elektra is installed the first variant will work
-# the following kdb get only decides whether this example is executed as a shell recorder test
-# during a build, then the second variant points to the correct location
-# so in a normal use case one would simply call
-# sudo kdb mount prelude.ini spec/examples/simplespecification/elektra/spec ini
-(sudo kdb mount prelude.ini spec/tests/prelude ini && \
-	kdb get spec/tests/prelude/fallback/#) || \
-	(sudo kdb umount spec/tests/prelude && \
-		sudo kdb mount "$PWD/src/plugins/typechecker/typechecker/prelude.ini" spec/tests/prelude ini)
-sudo kdb mount simplespecification.ini spec/tests/typechecker ini regexdispatcher typechecker prelude=spec/tests/prelude
+# TODO: use libinvoke + ini for prelude to avoid the kdbOpen issues
+# either load from: environmnet variable -> tests, plugin config -> user custom preludes, spec/prelude -> default
+sudo kdb mount simplespecification.ini spec/tests/typechecker ini regexdispatcher typechecker
 
 echo 'kdbGet spec/tests/typechecker \
 keySetName spec/tests/typechecker/key1 \
@@ -167,7 +160,6 @@ kdb setmeta spec/tests/typechecker/key2 fallback/#1 spec/tests/typechecker/key1
 # STDERR-REGEX: .*Couldn't match type.*
 
 sudo kdb umount spec/tests/typechecker
-sudo kdb umount spec/tests/prelude
 ```
 
 ## Debugging
