@@ -11,19 +11,19 @@ properties([
 
 // Stages
 stage("Maintain Reference Repositories") {
-    parallel generate_repository_maintanence_stages()
+    parallel generateRepositoryMaintanenceStages()
 }
 
 stage("Maintain docker repositories") {
-    parallel generate_docker_maintanence_stages()
+    parallel generateDockerMaintanenceStages()
 }
 
 stage("Cleanup Files") {
-    parallel generate_file_cleanup_stages()
+    parallel generateFileCleanupStages()
 }
 
 // Generators
-def generate_repository_maintanence_stages() {
+def generateRepositoryMaintanenceStages() {
     // Get all nodes with label 'gitmirror' and the master
     // DO NOT TAG master WITH 'gitmirror' as it will only show up as (null)
     def nodes = nodesByLabel label:"gitmirror"
@@ -39,13 +39,13 @@ def generate_repository_maintanence_stages() {
     def tasks = [:]
     nodes.each { target_node ->
         repos.each { target_repo ->
-            tasks << mirror_repo_on_node(target_node, target_repo)
+            tasks << mirrorRepoOnNode(target_node, target_repo)
         }
     }
     return tasks
 }
 
-def mirror_repo_on_node(target_node, target_repo) {
+def mirrorRepoOnNode(target_node, target_repo) {
     def taskname = "git/${target_node}/${target_repo.dest}"
     return [(taskname): {
         stage(taskname) {
@@ -56,17 +56,17 @@ def mirror_repo_on_node(target_node, target_repo) {
     }]
 }
 
-def generate_docker_maintanence_stages() {
+def generateDockerMaintanenceStages() {
     def nodes = nodesByLabel label:"docker"
     def tasks = [:]
 
     nodes.each { target_node ->
-        tasks << cleanup_docker_images(target_node)
+        tasks << cleanupDockerImages(target_node)
     }
     return tasks
 }
 
-def cleanup_docker_images(target_node) {
+def cleanupDockerImages(target_node) {
     def taskname = "cleanupDocker/${target_node}"
     return [(taskname): {
         stage(taskname) {
@@ -80,13 +80,13 @@ def cleanup_docker_images(target_node) {
     }]
 }
 
-def generate_file_cleanup_stages() {
+def generateFileCleanupStages() {
     def tasks = [:]
-    tasks << cleanup_coverage()
+    tasks << cleanupCoverage()
     return tasks
 }
 
-def cleanup_coverage() {
+def cleanupCoverage() {
     def cleanup_command = """
 find /srv/libelektra/coverage/ \
     -mindepth 1 \
