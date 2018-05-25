@@ -25,11 +25,6 @@ set (gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 
 add_subdirectory (${googletest_SOURCE_DIR} ${googletest_BINARY_DIR})
 
-# When using CMake 2.8.11 or later, header path dependencies are automatically added to the gtest and gmock targets. For earlier CMake
-# versions, we have to explicitly add the required directories to the header search path ourselves.
-if (CMAKE_VERSION VERSION_LESS 2.8.11)
-	include_directories ("${gtest_SOURCE_DIR}/include" "${gmock_SOURCE_DIR}/include")
-endif ()
 
 # don't call add_headers in a loop
 add_headers (HDR_FILES)
