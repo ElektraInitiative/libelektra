@@ -552,7 +552,7 @@ def generateArtifactStages() {
 }
 
 def buildPackageDebianStretch() {
-    return withDockerEnv("package/stretch", DOCKER_IMAGES.stretch) {
+    return withDockerEnv(DOCKER_IMAGES.stretch) {
         withCredentials([file(credentialsId: 'jenkins-key', variable: 'KEY'),
                          file(credentialsId: 'jenkins-secret-key', variable: 'SKEY')]) {
             sh "gpg --import $KEY"
