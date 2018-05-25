@@ -72,6 +72,12 @@ enum TEST {
     public TEST() {}  // WORKAROUND https://issues.jenkins-ci.org/browse/JENKINS-33023
 }
 
+// Define DOCKER_OPTS enum which is used in withDockerEnv
+enum DOCKER_OPTS {
+    MOUNT_MIRROR, PTRACE
+    public DOCKER_OPTS() {} // WORKAROUND see TEST
+}
+
 NOW = new Date()
 DOCKER_IMAGES = [:]
 
@@ -446,9 +452,10 @@ def buildAndTestAsan(test_name, image, extra_cmake_flags = [:]) {
     def cmake_flags = CMAKE_FLAGS_BASE +
                       CMAKE_FLAGS_ASAN +
                       extra_cmake_flags
+    def docker_opts = [DOCKER_OPTS.MOUNT_MIRROR, DOCKER_OPTS.PTRACE]
     return [(test_name): {
         stage(test_name) {
-            withDockerEnv(image) {
+            withDockerEnv(image, docker_opts) {
                 dir('build') {
                     deleteDir()
                     cmake(env.WORKSPACE, cmake_flags)
@@ -552,7 +559,7 @@ def generateArtifactStages() {
 }
 
 def buildPackageDebianStretch() {
-    return withDockerEnv(DOCKER_IMAGES.stretch) {
+    return withDockerEnv(DOCKER_IMAGES.stretch, [DOCKER_OPTS.MOUNT_MIRROR]) {
         withCredentials([file(credentialsId: 'jenkins-key', variable: 'KEY'),
                          file(credentialsId: 'jenkins-secret-key', variable: 'SKEY')]) {
             sh "gpg --import $KEY"
@@ -733,9 +740,17 @@ def trackCoverage(do_track, cl) {
  * selecting a docker capable node,
  * checkout of scm and setting of useful Environment variables
  * @param image Docker image that should be used
+ * @param opts List of DOCKER_OPTS that should be passed to docker
  * @param cl A closure that should be run inside the docker image
  */
-def withDockerEnv(image, cl) {
+def withDockerEnv(image, opts=[], cl) {
+    def docker_args = ""
+    if (opts.contains(DOCKER_OPTS.MOUNT_MIRROR)) {
+        docker_args += "-v ${env.HOME}/git_mirrors:/home/jenkins/git_mirrors "
+    }
+    if (opts.contains(DOCKER_OPTS.PTRACE)) {
+        docker_args += "--cap-add SYS_PTRACE "
+    }
     node(docker_node_label) {
         docker.withRegistry("https://${registry}",
                             'docker-hub-elektra-jenkins') {
@@ -746,7 +761,7 @@ def withDockerEnv(image, cl) {
                     echo "Starting ${env.STAGE_NAME} on ${env.NODE_NAME}"
                     checkout scm
                     docker.image(image.id)
-                          .inside("-v ${env.HOME}/git_mirrors:/home/jenkins/git_mirrors --cap-add SYS_PTRACE") { cl() }
+                          .inside(docker_args) { cl() }
                 }
             }
         }
