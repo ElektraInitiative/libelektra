@@ -66,10 +66,10 @@ CMAKE_FLAGS_ASAN = ['ENABLE_ASAN': 'ON']
 CMAKE_FLAGS_DEBUG = ['ENABLE_DEBUG': 'ON']
 CMAKE_FLAGS_LOGGER = ['ENABLE_LOGGER': 'ON']
 
-// Define Test Flag globals
+// Define TEST enum used in buildAndTest helper
 enum TEST {
     MEM, NOKDB, ALL, INSTALL
-    public TEST()  {} // WORKAROUND https://issues.jenkins-ci.org/browse/JENKINS-33023
+    public TEST() {}  // WORKAROUND https://issues.jenkins-ci.org/browse/JENKINS-33023
 }
 
 NOW = new Date()
