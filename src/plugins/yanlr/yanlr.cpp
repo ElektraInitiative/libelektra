@@ -87,7 +87,7 @@ int elektraYanlrGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	ParseTreeWalker walker{};
 	KeyListener listener{ parent };
 
-	ParseTree * tree = parser.mappings ();
+	ParseTree * tree = parser.yaml ();
 	walker.walk (&listener, tree);
 
 	auto keys = CppKeySet (returned);
