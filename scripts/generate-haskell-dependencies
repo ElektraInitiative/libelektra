@@ -17,4 +17,4 @@ SCRIPTS_DIR=$(dirname "$0")
 
 FILES=$(find $SOURCE/build \( -name '*.cabal' \) | awk '$0="\""$0"\""' | paste -sd "," -)
 # good enough for now, we copy the output manually anyway
-echo "generateHaskellDependencies [$FILES]" | ghci generate_haskell_dependencies.hs
+echo "generateHaskellDependencies [$FILES]" | ghci "${SCRIPTS_DIR}/generate-haskell-dependencies.hs"

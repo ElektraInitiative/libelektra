@@ -26,7 +26,7 @@ import qualified Data.ByteString as BS
 generateHaskellDependencies :: [String] -> IO ()
 generateHaskellDependencies cabalFiles = do
   deps <- mapM (sequence . (id &&& readGenericPackageDescription normal)) cabalFiles
-  let exclusions = mkPackageName "ghc" : map (pkgName . package . packageDescription . snd) deps
+  let exclusions = mkPackageName "Cabal" : mkPackageName "ghc" : map (pkgName . package . packageDescription . snd) deps
   let filteredPerFile = second (nub . filter (flip notElem exclusions . depPkgName) . generateDeps) <$> deps
   putStr "cabal install "
   putStr . unwords . map (wrap . show . disp) . nub . concatMap snd $ filteredPerFile
