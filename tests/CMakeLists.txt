@@ -25,6 +25,10 @@ set (gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 
 add_subdirectory (${googletest_SOURCE_DIR} ${googletest_BINARY_DIR})
 
+set_property (TARGET gmock PROPERTY COMPILE_FLAGS "-Wno-undef -Wno-missing-field-initializers")
+set_property (TARGET gmock_main PROPERTY COMPILE_FLAGS "-Wno-undef")
+set_property (TARGET gtest PROPERTY COMPILE_FLAGS "-Wno-undef -Wno-missing-field-initializers")
+set_property (TARGET gtest_main PROPERTY COMPILE_FLAGS "-Wno-undef")
 
 # don't call add_headers in a loop
 add_headers (HDR_FILES)
