@@ -167,6 +167,7 @@ These notes are of interest for people developing Elektra:
   . *(René Schwaiger)*
 - (Markdown) Shell Recorder tests now save test data below `/tests` (see issue [#1887][]). *(René Schwaiger)*
 - The Markdown Shell Recorder checks `kdb set` commands to ensure we only add tests that store data below `/tests`. *(René Schwaiger)*
+- tests/kdb can now be run in parallel *(Lukas Winkler)*
 
 [`cmake-format`]: https://github.com/cheshirekow/cmake_format
 [#1887]: https://github.com/ElektraInitiative/libelektra/issues/1887
