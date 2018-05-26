@@ -152,9 +152,6 @@ export default class AddDialog extends Component {
                 }}
               />
             </div>
-            <div style={{ flex: 'initial', marginLeft: 48, marginTop: 12, fontSize: '0.75em' }}>
-              <i>Hint: create a #0 sub-key in a key without children to turn it into an array</i>
-            </div>
           </div>
           <div style={{ display: 'block', marginTop: 8 }}>
               <SelectField
