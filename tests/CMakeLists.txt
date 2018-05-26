@@ -9,26 +9,29 @@
 # ~~~
 
 include (LibAddMacros)
-include (DownloadProject)
 
-if (CMAKE_VERSION VERSION_LESS 3.2)
-	set (UPDATE_DISCONNECTED_IF_AVAILABLE "")
-else ()
-	set (UPDATE_DISCONNECTED_IF_AVAILABLE "UPDATE_DISCONNECTED 1")
-endif ()
+if (ENABLE_TESTING)
+	include (DownloadProject)
 
-download_project (
-	PROJ googletest GIT_REPOSITORY https://github.com/google/googletest.git GIT_TAG master ${UPDATE_DISCONNECTED_IF_AVAILABLE})
+	if (CMAKE_VERSION VERSION_LESS 3.2)
+		set (UPDATE_DISCONNECTED_IF_AVAILABLE "")
+	else ()
+		set (UPDATE_DISCONNECTED_IF_AVAILABLE "UPDATE_DISCONNECTED 1")
+	endif ()
 
-# Prevent GoogleTest from overriding our compiler/linker options when building with Visual Studio
-set (gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+	download_project (
+		PROJ googletest GIT_REPOSITORY https://github.com/google/googletest.git GIT_TAG master ${UPDATE_DISCONNECTED_IF_AVAILABLE})
 
-add_subdirectory (${googletest_SOURCE_DIR} ${googletest_BINARY_DIR})
+	# Prevent GoogleTest from overriding our compiler/linker options when building with Visual Studio
+	set (gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 
-set_property (TARGET gmock PROPERTY COMPILE_FLAGS "-Wno-undef -Wno-missing-field-initializers")
-set_property (TARGET gmock_main PROPERTY COMPILE_FLAGS "-Wno-undef")
-set_property (TARGET gtest PROPERTY COMPILE_FLAGS "-Wno-undef -Wno-missing-field-initializers")
-set_property (TARGET gtest_main PROPERTY COMPILE_FLAGS "-Wno-undef")
+	add_subdirectory (${googletest_SOURCE_DIR} ${googletest_BINARY_DIR})
+
+	set_property (TARGET gmock PROPERTY COMPILE_FLAGS "-Wno-undef -Wno-missing-field-initializers")
+	set_property (TARGET gmock_main PROPERTY COMPILE_FLAGS "-Wno-undef")
+	set_property (TARGET gtest PROPERTY COMPILE_FLAGS "-Wno-undef -Wno-missing-field-initializers")
+	set_property (TARGET gtest_main PROPERTY COMPILE_FLAGS "-Wno-undef")
+endif (ENABLE_TESTING)
 
 # don't call add_headers in a loop
 add_headers (HDR_FILES)
