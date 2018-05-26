@@ -21,4 +21,4 @@ fi
 
 cd "$SOURCE"
 
-$($CLANG_FORMAT -style=file -i `find . -name '*.[ch]' -or -name '*.[ch]pp' -or -name '*.[ch].in' | egrep -v "^(./src/tools/gen|./tests/gtest-1.7.0)"`)
+$($CLANG_FORMAT -style=file -i `find . -name '*.[ch]' -or -name '*.[ch]pp' -or -name '*.[ch].in' | egrep -v "^./src/tools/gen"`)
