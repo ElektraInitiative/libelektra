@@ -145,6 +145,7 @@ phrases:
 * jenkins build [source-package-test](https://build.libelektra.org/job/elektra-source-package-test/) please
 * jenkins build [homepage](https://build.libelektra.org/job/elektra-homepage/) please
 * jenkins build [libelektra](https://build.libelektra.org/jenkins/job/libelektra/) please
+* jenkins build [daily](https://build.libelektra.org/jenkins/job/elektra-jenkinsfile-daily/) please
 
 ### Run All Tests
 
