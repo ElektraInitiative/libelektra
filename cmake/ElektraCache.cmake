@@ -110,8 +110,6 @@ endif ()
 # Compile options
 #
 
-set (GTEST_ROOT "" CACHE PATH "use external gtest instead of internal")
-
 set (CMAKE_PIC_FLAGS "-fPIC" CACHE STRING "Which pic flags should be used for cases cmake cannot handle it itself")
 
 set (
