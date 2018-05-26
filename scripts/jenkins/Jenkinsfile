@@ -848,8 +848,8 @@ def createDockerImageDesc(name, idFun, context, file, autobuild=true) {
 def idTesting(imageMap) {
     def cs = checksum(imageMap.file)
     def dateString = dateFormatter(NOW)
-    imageMap.id = "${image_map.name}:${dateString}-${cs}"
-    return image_map
+    imageMap.id = "${imageMap.name}:${dateString}-${cs}"
+    return imageMap
 }
 
 /* Build id for homepage
@@ -857,7 +857,7 @@ def idTesting(imageMap) {
  * @param imageMap Map identifying an docker image
  */
 def idHomepage(imageMap) {
-    imageMap.id = "${image_map.name}:${BRANCH_NAME}_${BUILD_NUMBER}"
+    imageMap.id = "${imageMap.name}:${BRANCH_NAME}_${BUILD_NUMBER}"
     return imageMap
 }
 
