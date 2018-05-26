@@ -721,5 +721,5 @@ and the
 
 ## See also
 
-- [INSTALL](INSTALL.md).
-- [TESTING](TESTING.md).
+- [INSTALL](INSTALL.md)
+- [TESTING](TESTING.md)
