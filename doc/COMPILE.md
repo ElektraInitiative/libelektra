@@ -428,14 +428,6 @@ Similar to above, but with the plugins. Default is:
 It can be also left empty to install plugins next
 to other libraries.
 
-#### `GTEST_ROOT`
-
-Specifies the root of the GoogleTest sources, to be used
-for some of the tests. A `CMakeLists.txt` inside `GTEST_ROOT`
-will be searched as way to detect a valid GoogleTest source
-directory.
-If it is empty (`""`), an internal version of gtest will be used.
-
 It is recommended that you browse through all of the options using ccmake.
 Afterwards press 'c' again (maybe multiple times until all variables are
 resolved) and then 'g' to generate.  Finally press 'e' to exit.
