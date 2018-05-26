@@ -75,7 +75,7 @@ export default class SettingsDialog extends Component {
   }
 
   handleEdit = (key, debounced = false) => (value) => {
-    const { data, setMeta } = this.props
+    const { data, setMeta, deleteMeta } = this.props
 
     if (!debounced || debounced === IMMEDIATE) {
       // set value of field
@@ -99,7 +99,12 @@ export default class SettingsDialog extends Component {
       }
       // persist value to kdb and show notification
       const { timeout } = this.state[key] || {}
-      setMeta(key, value)
+
+      // remove metakey when setting to 0
+      const action = (key.startsWith('restrict/') && value === '0')
+        ? deleteMeta
+        : setMeta
+      action(key, value)
         .then(() => {
           if (timeout) clearTimeout(timeout)
           this.setState({ [key]: {
