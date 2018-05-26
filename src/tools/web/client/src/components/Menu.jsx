@@ -90,7 +90,7 @@ export default class Menu extends React.Component {
               icon={<ContentAddIcon />}
               label="instance"
               primary={true}
-              onTouchTap={addInstance}
+              onClick={addInstance}
               disabled={(status && status.addingInstance) || !instances || instances.length <= 0}
             />
         </ToolbarGroup>
@@ -102,14 +102,14 @@ export default class Menu extends React.Component {
               tabIndex={0}
               icon={<ContentUndoIcon />}
               label="undo"
-              onTouchTap={onUndo}
+              onClick={onUndo}
               disabled={!canUndo}
             />
             <RaisedButton
               tabIndex={0}
               icon={<ContentRedoIcon />}
               label="redo"
-              onTouchTap={onRedo}
+              onClick={onRedo}
               disabled={!canRedo}
             />
         </ToolbarGroup>

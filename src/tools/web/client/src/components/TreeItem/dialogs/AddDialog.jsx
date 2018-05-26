@@ -53,7 +53,7 @@ export default class AddDialog extends Component {
     onClose()
   }
 
-  handleCreate = () => {
+  handleCreate = (arrayKey = false) => {
     const { item, onAdd, setMetaByPath } = this.props
     const { path } = item
     const { name, value, type } = this.state
@@ -76,7 +76,14 @@ export default class AddDialog extends Component {
     if (v !== 'user') {
       setMetaByPath(path + '/' + name, 'visibility', v)
     }
+    if (arrayKey) {
+      setTimeout(() => onAdd(path + '/' + name, '#0', ''), 250)
+    }
     this.handleClose()
+  }
+
+  handleCreateArrayKey = () => {
+    this.handleCreate(true)
   }
 
   render () {
@@ -89,7 +96,7 @@ export default class AddDialog extends Component {
     const actions = [
       <FlatButton
         label="Cancel"
-        onTouchTap={this.handleClose}
+        onClick={this.handleClose}
         onKeyPress={e => {
           if (e.key === 'Enter') {
             this.handleClose()
@@ -97,9 +104,20 @@ export default class AddDialog extends Component {
         }}
       />,
       <FlatButton
+        label="Create array key"
+        primary={true}
+        onClick={this.handleCreateArrayKey}
+        onKeyPress={e => {
+          if (e.key === 'Enter') {
+            this.handleCreateArrayKey()
+          }
+        }}
+        disabled={nameEmpty || error}
+      />,
+      <FlatButton
         label="Create"
         primary={true}
-        onTouchTap={this.handleCreate}
+        onClick={this.handleCreate}
         onKeyPress={e => {
           if (e.key === 'Enter') {
             this.handleCreate()

@@ -54,7 +54,7 @@ export default class ErrorSnackbar extends React.Component {
       <FlatButton
         label="dismiss"
         primary={true}
-        onTouchTap={this.handleClose}
+        onClick={this.handleClose}
       />,
     ]
 

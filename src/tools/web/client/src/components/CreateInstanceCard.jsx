@@ -155,13 +155,13 @@ export default class CreateInstanceCard extends React.Component {
                   <FlatButton
                     label="add"
                     primary={true}
-                    onTouchTap={this.handleCreate}
+                    onClick={this.handleCreate}
                     disabled={nameEmpty || hostEmpty || hostError}
                   />
                   {!noInstancesYet &&
                     <FlatButton
                       label="cancel"
-                      onTouchTap={() => {
+                      onClick={() => {
                         unaddInstance()
                         this.resetValues()
                       }}

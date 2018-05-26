@@ -181,7 +181,7 @@ export default class InstanceCard extends React.Component {
                   <FlatButton
                     label="save"
                     primary={true}
-                    onTouchTap={this.handleCreate}
+                    onClick={this.handleCreate}
                     disabled={!!(id === 'my' || nameEmpty || hostEmpty || hostError)}
                   />
                   <Link tabIndex="-1" to={'/instances/' + id}>
@@ -190,7 +190,7 @@ export default class InstanceCard extends React.Component {
                   <FlatButton
                     label="delete"
                     secondary={true}
-                    onTouchTap={this.handleDelete}
+                    onClick={this.handleDelete}
                     disabled={id === 'my'}
                   />
                 </div>
