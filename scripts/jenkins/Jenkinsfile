@@ -503,7 +503,7 @@ def buildAndTest(testName, image, extraCmakeFlags = [:],
                         cmake(env.WORKSPACE, cmakeFlags)
                         sh "make"
                         trackCoverage(testCoverage) {
-                            if(test_all) {
+                            if(testAll) {
                                 ctest()
                             } else if(testNokdb) {
                                 cnokdbtest()
@@ -633,10 +633,10 @@ def deployHomepage() {
 }
 
 def buildHomepage() {
-    def homepage_tasks = [:]
-    homepage_tasks << buildImageStage(DOCKER_IMAGES.homepage_frontend)
-    homepage_tasks << buildImageStage(DOCKER_IMAGES.homepage_backend)
-    return homepage_tasks
+    def homepageTasks = [:]
+    homepageTasks << buildImageStage(DOCKER_IMAGES.homepage_frontend)
+    homepageTasks << buildImageStage(DOCKER_IMAGES.homepage_backend)
+    return homepageTasks
 }
 
 /*****************************************************************************
