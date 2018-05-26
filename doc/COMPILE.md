@@ -344,14 +344,14 @@ To not add such APIs, but only `swig` bindings and `cpp`, you can use:
 For a list of available bindings see
 [binding's README.md](/src/bindings/README.md).
 
-#### CMAKE_BUILD_TYPE
+#### `CMAKE_BUILD_TYPE`
 
 `Debug`, `Release` or `RelWithDebInfo`
 See help bar at bottom of ccmake for that option or:
 http://www.cmake.org/Wiki/CMake_Useful_Variables
 
 
-### BUILD_SHARED BUILD_FULL BUILD_STATIC
+### `BUILD_SHARED BUILD_FULL BUILD_STATIC`
 
 `BUILD_SHARED` is the typical build you want to have on systems that support `dlopen`.
 It can be used for desktop builds, but also embedded systems as long as they support
@@ -374,7 +374,7 @@ one would use:
 
     cmake -DBUILD_SHARED=ON -DBUILD_FULL=ON -DBUILD_STATIC=OFF ..
 
-#### ELEKTRA_DEBUG_BUILD and ELEKTRA_VERBOSE_BUILD
+#### `ELEKTRA_DEBUG_BUILD` and `ELEKTRA_VERBOSE_BUILD`
 
 Only needed by Elektra developers.
 Make the library to output logging information.
@@ -393,7 +393,7 @@ for information about logging.
 Then continue reading [testing](/doc/TESTING.md) for options about
 testing.
 
-#### CMAKE_INSTALL_PREFIX
+#### `CMAKE_INSTALL_PREFIX`
 
 `CMAKE_INSTALL_PREFIX` defaults to `/usr/local`.
 So by default most files will installed below `/usr/local`.
@@ -405,7 +405,7 @@ Also called system prefix within the documentation.
 If you want to create a package afterwards it is ok to use
 paths that you can write to (e.g. `-DCMAKE_INSTALL_PREFIX=/home/username/`)
 
-#### LIB_SUFFIX
+#### `LIB_SUFFIX`
 
 Lets you install libraries into architecture specific folder.
 E.g. for 32/64 bit systems you might install libraries under
@@ -413,7 +413,7 @@ E.g. for 32/64 bit systems you might install libraries under
 So the system library folder will be `CMAKE_INSTALL_PREFIX/lib64`
 then.
 
-#### TARGET_INCLUDE_FOLDER
+#### `TARGET_INCLUDE_FOLDER`
 
 By default include folders will be installed below
 `CMAKE_INSTALL_PREFIX/include/elektra`.
@@ -421,14 +421,14 @@ This entry let you change the elektra.
 If the entry is empty, the include files will be
 installed directly to `CMAKE_INSTALL_PREFIX/include`.
 
-#### TARGET_PLUGIN_FOLDER
+#### `TARGET_PLUGIN_FOLDER`
 
 Similar to above, but with the plugins. Default is:
 `CMAKE_INSTALL_PREFIX/lib${LIB_SUFFIX}/elektra`
 It can be also left empty to install plugins next
 to other libraries.
 
-#### GTEST_ROOT
+#### `GTEST_ROOT`
 
 Specifies the root of the GoogleTest sources, to be used
 for some of the tests. A `CMakeLists.txt` inside `GTEST_ROOT`
@@ -440,12 +440,12 @@ It is recommended that you browse through all of the options using ccmake.
 Afterwards press 'c' again (maybe multiple times until all variables are
 resolved) and then 'g' to generate.  Finally press 'e' to exit.
 
-#### INSTALL_BUILD_TOOLS
+#### `INSTALL_BUILD_TOOLS`
 
 Specifies that the build tools, i.e. `elektra-export-symbols` and `elektra-export-symbols`
 are installed (by default off). Is needed for cross-compilation.
 
-#### INSTALL_SYSTEM_FILES
+#### `INSTALL_SYSTEM_FILES`
 
 Some of Elektra’s targets require to be installed into specific folders in the
 file system hierarchy to work properly.
@@ -467,7 +467,7 @@ Currently the installed system files are as following:
 
 > (*) Or `/usr/share/bash-completion/completions` as fallback.
 
-#### ENABLE_OPTIMIZATIONS
+#### `ENABLE_OPTIMIZATIONS`
 
 In order to keep the binaries as small as possible this flag allows to trade memory for speed.
 
@@ -533,7 +533,7 @@ For example, for Debian:
 
 
 
-### RPATH
+### `RPATH`
 
 By default Elektra uses `RPATH` to hide its plugins. This makes it obvious that
 external applications should *not* link against plugins. Instead every application
