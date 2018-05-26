@@ -108,6 +108,7 @@ We improved the documentation in the following ways:
   - [`iconv`](https://www.libelektra.org/plugins/iconv) and
   - [`uname`](https://www.libelektra.org/plugins/uname),
   plugin. *(René Schwaiger)*
+- We improved the formatting of our [compilation guide](/doc/COMPILE.md). *(René Schwaiger)*
 
 ## Compatibility
 
