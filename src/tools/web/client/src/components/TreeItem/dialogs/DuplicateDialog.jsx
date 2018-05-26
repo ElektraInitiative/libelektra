@@ -68,7 +68,7 @@ export default class DuplicateDialog extends Component {
     const actions = [
       <FlatButton
         label="Cancel"
-        onTouchTap={this.handleClose}
+        onClick={this.handleClose}
         onKeyPress={e => {
           if (e.key === 'Enter') {
             this.handleClose()
@@ -78,7 +78,7 @@ export default class DuplicateDialog extends Component {
       <FlatButton
         label="Duplicate"
         primary={true}
-        onTouchTap={() => this.handleDuplicate(path, newPath)}
+        onClick={() => this.handleDuplicate(path, newPath)}
         onKeyPress={e => {
           if (e.key === 'Enter') {
             this.handleDuplicate(path, newPath)

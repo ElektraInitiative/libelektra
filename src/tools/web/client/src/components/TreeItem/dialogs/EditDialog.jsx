@@ -20,7 +20,7 @@ export default class EditDialog extends Component {
       <FlatButton
         label="Done"
         primary={true}
-        onTouchTap={onClose}
+        onClick={onClose}
         onKeyPress={e => {
           if (e.key === 'Enter') {
             onClose()

@@ -22,7 +22,7 @@ export default class RemoveDialog extends Component {
         <FlatButton
           ref={node => this.cancelButton = node}
           label="Cancel"
-          onTouchTap={onClose}
+          onClick={onClose}
           onKeyPress={e => {
             if (e.key === 'Enter') {
               onClose()
@@ -32,7 +32,7 @@ export default class RemoveDialog extends Component {
         <FlatButton
           label="Delete"
           secondary={true}
-          onTouchTap={() => {
+          onClick={() => {
             onDelete(path)
             onClose()
           }}
