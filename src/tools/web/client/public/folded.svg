@@ -1,16 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <svg width="8px" height="12px" viewBox="0 0 8 12" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: Sketch 48.1 (47250) - http://www.bohemiancoding.com/sketch -->
+    <!-- Generator: Sketch 50.2 (55047) - http://www.bohemiancoding.com/sketch -->
+    <title>folded</title>
     <desc>Created with Sketch.</desc>
     <defs></defs>
-    <g id="Page-1" stroke="none" stroke-width="1">
-        <g id="Body" transform="translate(-55.000000, -267.000000)">
-            <g id="Card" transform="translate(20.000000, 91.000000)">
-                <g id="Tree" transform="translate(32.000000, 173.000000)">
-                    <g id="Nested-Entry" transform="translate(3.000000, 0.000000)">
-                        <polygon id="Shape" points="0 4.4 1.40000002 3 7.4000001 9 1.40000002 15 0 13.6 4.60000006 9"></polygon>
-                    </g>
-                </g>
-            </g>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="folded" transform="translate(-2.000000, 0.000000)" fill="#000000" fill-rule="nonzero">
+            <polygon id="Shape" points="2.5 1.4 3.82432433 0 9.5 6 3.82432433 12 2.5 10.6 6.85135135 6"></polygon>
         </g>
     </g>
 </svg>

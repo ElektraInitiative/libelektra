@@ -161,9 +161,10 @@
 .ExplorerView ul li.category:not(.folded) > span.item > .opener {
   width: 1em;
   height: 25px;
-  margin-left: -10px;
-  margin-right: 25px;
+  margin-top: -7px;
+  padding-right: 15px;
   transform: rotate(90deg);
+  transform-origin: left center;
 }
 .ExplorerView ul li.category:not(.folded) {}
 .ExplorerView ul li.category:not(.folded) > span.item {}
