@@ -76,7 +76,7 @@ We added even more functionality, which could not make it to the highlights:
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-
+- The new tool `kdb find` lists keys of the database matching a certain regular expression. *(Markus Raab)*
 
 ## New Plugins
 
