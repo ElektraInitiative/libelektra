@@ -36,7 +36,7 @@ int elektraJournaldGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key *
 		return 1;
 	}
 
-	if (strncmp (keyString (ksLookupByName (elektraPluginGetConfig (handle), "/get", 0)), "1", 1) == 0)
+	if (strncmp (keyString (ksLookupByName (elektraPluginGetConfig (handle), "/log/get", 0)), "1", 1) == 0)
 	{
 		sd_journal_send ("MESSAGE=loading configuration %s", keyName (parentKey), "MESSAGE_ID=fc65eab25c18463f97e4f9b61ea31eae",
 				 "PRIORITY=5", /* notice priority */

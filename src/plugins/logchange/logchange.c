@@ -50,7 +50,7 @@ int elektraLogchangeGet (Plugin * handle, KeySet * returned, Key * parentKey ELE
 	if (ks) ksDel (ks);
 	elektraPluginSetData (handle, ksDup (returned));
 
-	if (strncmp (keyString (ksLookupByName (elektraPluginGetConfig (handle), "/get", 0)), "1", 1) == 0)
+	if (strncmp (keyString (ksLookupByName (elektraPluginGetConfig (handle), "/log/get", 0)), "1", 1) == 0)
 	{
 		KeySet * logset = ksNew (1, keyDup (parentKey), KS_END);
 		logKeys (logset, "loading configuration");

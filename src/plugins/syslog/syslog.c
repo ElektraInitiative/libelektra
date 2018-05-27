@@ -57,7 +57,7 @@ int elektraSyslogGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		return 1;
 	}
 
-	if (strncmp (keyString (ksLookupByName (elektraPluginGetConfig (handle), "/get", 0)), "1", 1) == 0)
+	if (strncmp (keyString (ksLookupByName (elektraPluginGetConfig (handle), "/log/get", 0)), "1", 1) == 0)
 	{
 		syslog (LOG_NOTICE, "loading configuration %s", keyName (parentKey));
 	}
