@@ -110,6 +110,16 @@ endif ()
 # Compile options
 #
 
+set (
+	GTEST_ROOT
+	""
+	CACHE
+		PATH
+		"This value specifies the path to a local version of Google Test. \
+If you leave it blank, then the build system will download \
+a copy of Google Test into the build directory."
+	)
+
 set (CMAKE_PIC_FLAGS "-fPIC" CACHE STRING "Which pic flags should be used for cases cmake cannot handle it itself")
 
 set (

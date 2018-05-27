@@ -492,6 +492,18 @@ Similar to above, but with the plugins. Default is:
 It can be also left empty to install plugins next
 to other libraries.
 
+#### `GTEST_ROOT`
+
+This value specifies the root directory of a local copy of the [Google Test][] framework.
+
+- If it is empty (`""`), then the build system will download a copy of
+   [Google Test][] into the build directory.
+- Otherwise the build system will search for the file `CMakeLists.txt` in the
+  top level directory of `GTEST_ROOT`. If this file exists, then the build system
+  will use the sources files at `GTEST_ROOT` to translate tests that use [Google Test][].
+
+[Google Test]: https://github.com/google/googletest
+
 It is recommended that you browse through all of the options using `ccmake`.
 Afterwards press `c` again (maybe multiple times until all variables are
 resolved) and then `g` to generate.  Finally press `e` to exit.

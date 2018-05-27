@@ -11,20 +11,27 @@
 include (LibAddMacros)
 
 if (ENABLE_TESTING)
-	include (DownloadProject)
 
-	if (CMAKE_VERSION VERSION_LESS 3.2)
-		set (UPDATE_DISCONNECTED_IF_AVAILABLE "")
-	else ()
-		set (UPDATE_DISCONNECTED_IF_AVAILABLE "UPDATE_DISCONNECTED 1")
-	endif ()
+	include (FindGTest)
 
-	# Since the last released version of Google Test (`release-1.8.0`) is quite old, we download a more recent commit of the repository
-	# instead.
-	download_project (PROJ googletest
-			  GIT_REPOSITORY https://github.com/google/googletest.git
-			  GIT_TAG 4e4df226fc197c0dda6e37f5c8c3845ca1e73a49
-				  ${UPDATE_DISCONNECTED_IF_AVAILABLE})
+	if (DEFINED GOOGLETEST_ROOT)
+		set (googletest_SOURCE_DIR "${GOOGLETEST_ROOT}")
+		set (googletest_BINARY_DIR "${CMAKE_BINARY_DIR}/gtest")
+	else (DEFINED GOOGLETEST_ROOT)
+		include (DownloadProject)
+		if (CMAKE_VERSION VERSION_LESS 3.2)
+			set (UPDATE_DISCONNECTED_IF_AVAILABLE "")
+		else ()
+			set (UPDATE_DISCONNECTED_IF_AVAILABLE "UPDATE_DISCONNECTED 1")
+		endif ()
+
+		# Since the last released version of Google Test (`release-1.8.0`) is quite old, we download a more recent commit of the
+		# repository instead.
+		download_project (PROJ googletest
+				  GIT_REPOSITORY https://github.com/google/googletest.git
+				  GIT_TAG 4e4df226fc197c0dda6e37f5c8c3845ca1e73a49
+					  ${UPDATE_DISCONNECTED_IF_AVAILABLE})
+	endif (DEFINED GOOGLETEST_ROOT)
 
 	# Prevent GoogleTest from overriding our compiler/linker options when building with Visual Studio
 	set (gtest_force_shared_crt ON CACHE BOOL "" FORCE)

@@ -171,11 +171,14 @@ These notes are of interest for people developing Elektra:
 - The Markdown Shell Recorder checks `kdb set` commands to ensure we only add tests that store data below `/tests`. *(René Schwaiger)*
 - We disabled the test `testlib_notification` on ASAN enabled builds, since Clang reports that the test leaks memory. *(René Schwaiger)*
 - Docker Registry is cleaned up by our daily buildserver task. *(Lukas Winkler)*
-- We now import the current version of [Google Test](https://github.com/google/googletest) as external project at
-   configuration time using [DownloadProject](https://github.com/Crascit/DownloadProject). *(René Schwaiger)*
+- We now import the current version of [Google Test][] as external project at configuration time using
+   [DownloadProject](https://github.com/Crascit/DownloadProject). If you want to use a local installation of
+   [Google Test][] instead, please set the value of `GTEST_ROOT` to the path of you local copy of the
+   [Google Test][] framework. *(René Schwaiger)*
 
 [`cmake-format`]: https://github.com/cheshirekow/cmake_format
 [#1887]: https://github.com/ElektraInitiative/libelektra/issues/1887
+[Google Test]: https://github.com/google/googletest
 
 ## Fixes
 
