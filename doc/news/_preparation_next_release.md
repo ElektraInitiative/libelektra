@@ -83,7 +83,7 @@ We added even more functionality, which could not make it to the highlights:
   option called "get" which can be enabled to log which configuration settings
   are loaded by applications.
   The new option can be used for logging application behavior when using
-  [notifications](https://www.libelektra.org/tutorials/notifications).
+  [notifications](https://www.libelektra.org/tutorials/notifications). *(Thomas Wahringer)*
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>

@@ -255,7 +255,7 @@ In order to log and analyze application behavior the logging plugins
 ["syslog"](https://www.libelektra.org/plugins/syslog),
 ["journald"](https://www.libelektra.org/plugins/journald) or
 ["logchange"](https://www.libelektra.org/plugins/logchange) can be used.
-In order to log not only `kdbSet()` but also `kdbGet()` the option "get=on"
+In order to log not only `kdbSet()` but also `kdbGet()` the option "get=1"
 should be used when mounting these plugins.
 
 For example:
