@@ -91,6 +91,9 @@ We added even more functionality, which could not make it to the highlights:
 - The `crypto` plugin now uses Elektra's `libinvoke` and the `base64` plugin in order to encode and decode Base64 strings. This improvement reduces code duplication between the two plugins. *(Peter Nirschl)*
 - The completion for [fish](http://fishshell.com) now also suggest the `info/` meta attributes of the
   [file plugin](https://www.libelektra.org/plugins/file). *(René Schwaiger)*
+- The [`list` plugin](http://libelektra.org/plugins/list) now allows us to pass
+  common configuration for all plugins by using keys below the "config/" setting.
+  The updated plugin documentation contains more information and an example. *(Thomas Wahringer)*
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -193,7 +196,9 @@ Many problems were resolved with the following fixes:
   when checking if the ABI changed. *(Lukas Winkler)*
 - You can now build the [Qt-GUI](https://www.libelektra.org/tools/qt-gui) using Qt `5.11`. *(René Schwaiger)*
 - We fixed various minor spelling mistakes in the documentation. *(René Schwaiger)*
-
+- The [`list` plugin](http://libelektra.org/plugins/list) which is responsible
+  for global mounting had a bug which prevented globally mounted plugins from
+  being configurable. *(Thomas Wahringer)*
 
 ## Outlook
 
@@ -238,5 +243,3 @@ For more information, see [https://libelektra.org](https://libelektra.org)
 
 Best regards,
 [Elektra Initiative](https://www.libelektra.org/developers/authors)
-
-
