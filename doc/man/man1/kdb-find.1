@@ -45,26 +45,33 @@ Use binary 0 termination\.
 .
 .nf
 
-# Backup\-and\-Restore: /tests
+# Backup\-and\-Restore: /tests/find
+
+# We use the `dump` plugin, since some storage plugins, e\.g\. INI,
+# create intermediate keys, such as `/tests/find/tests/foo`
+# for the following test\.
+sudo kdb mount find\.ecf /tests/find dump
 
 # Create the keys we use for the examples
-kdb set /tests/tests val1
-kdb set /tests/tests/foo/bar val2
-kdb set /tests/tests/fizz/buzz fizzbuzz
-kdb set /tests/tostfizz val3
-kdb set /tests/tust/level lvl
+kdb set /tests/find/tests val1
+kdb set /tests/find/tests/foo/bar val2
+kdb set /tests/find/tests/fizz/buzz fizzbuzz
+kdb set /tests/find/tostfizz val3
+kdb set /tests/find/tust/level lvl
 
-# list all keys containing /tests/t[eo]
-kdb find \'/tests/t[eo]\'
-#> user/tests/tests
-#> user/tests/tests/fizz/buzz
-#> user/tests/tests/foo/bar
-#> user/tests/tostfizz
+# list all keys containing /tests/find/t[eo]
+kdb find \'/tests/find/t[eo]\'
+#> user/tests/find/tests
+#> user/tests/find/tests/fizz/buzz
+#> user/tests/find/tests/foo/bar
+#> user/tests/find/tostfizz
 
 # list all keys containing fizz
 kdb find \'fizz\'
-#> user/tests/tests/fizz/buzz
-#> user/tests/tostfizz
+#> user/tests/find/tests/fizz/buzz
+#> user/tests/find/tostfizz
+
+sudo kdb umount /tests/find
 .
 .fi
 .
