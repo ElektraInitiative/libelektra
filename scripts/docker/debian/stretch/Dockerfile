@@ -42,6 +42,8 @@ RUN apt-get update \
         discount \
         swig3.0 \
         libuv1-dev \
+        libev-dev \
+        libzmq3-dev \
         ghc \
         ghc-dynamic \
         cabal-install \
