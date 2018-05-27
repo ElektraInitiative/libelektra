@@ -367,7 +367,7 @@ Thanks to Daniel Bugl.
   was extended.
   The API now supports contexts for callbacks, the types `int`, `unsigned int`,
   `long`, `unsigned long`, `float` and `double`.
-  It also supports all of Elektra's `kdb_*_t` types defined in `kdbtypes.h`.
+  It also supports all of Elektra's `kdb_*_t` types defined in `kdbtypes.h`. *(Thomas Wahringer)*
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -494,7 +494,7 @@ compiled against an older 0.8 version of Elektra will continue to work
 - <<TODO>>
 - <<TODO>>
 - `kdbtypes.h` now comes with support for C99 types
-- We added the private headerfiles `kdbnotificationinternal.h`, `kdbioplugin.h`.
+- We added the private headerfiles `kdbnotificationinternal.h`, `kdbioplugin.h`. *(Thomas Wahringer)*
 
 ## Build
 
