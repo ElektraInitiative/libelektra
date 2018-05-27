@@ -7,6 +7,13 @@ add_toolheaders (HDR_FILES)
 include_directories (${CMAKE_CURRENT_SOURCE_DIR})
 
 file (GLOB SRC_FILES *.cpp)
+
+if (CMAKE_COMPILER_IS_GNUCXX AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.9)
+	set (REGEX_FIND "find.cpp$")
+	list_filter (SRC_FILES REGEX_FIND)
+	message (STATUS "Excluding kdb-find since GCC ${CMAKE_CXX_COMPILER_VERSION} does not support regular expressions properly")
+endif (CMAKE_COMPILER_IS_GNUCXX AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.9)
+
 set (SOURCES ${SRC_FILES} ${HDR_FILES})
 
 if (BUILD_SHARED OR BUILD_FULL)
