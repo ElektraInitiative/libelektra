@@ -12,5 +12,5 @@
 This plugin is a logging plugin which adds a log entry to syslog on
 commit and rollback of the configuration.
 
-Configure the plugin with `get=on` to enable logging before a configuration is
-loaded. For example, `kdb gmount syslog get=on`.
+Configure the plugin with `get=1` to enable logging when configuration is
+loaded. For example, `kdb gmount syslog get=1`.

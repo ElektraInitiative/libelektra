@@ -19,5 +19,5 @@ To use it, add it during mounting:
 
     kdb mount logchange.dump user/logchange dump logchange
 
-Configure the plugin with `get=on` to enable printing before a configuration is
-loaded. For example, `kdb gmount logchange get=on`.
+Configure the plugin with `get=1` to enable printing when configuration is
+loaded. For example, `kdb gmount logchange get=1`.

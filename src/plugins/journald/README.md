@@ -14,8 +14,8 @@ See the [systemd-journal manpage](http://www.freedesktop.org/software/systemd/ma
 Errors are reported with priority 3 (error priority) and use the message ID `fb3928ea453048649c61d62619847ef6`.
 Successful writes are reported with priority 5 (notice priority) and use the message ID `fc65eab25c18463f97e4f9b61ea31eae`.
 
-Configure the plugin with `get=on` to enable logging before a configuration is
-loaded. For example, `kdb gmount journald get=on`.
+Configure the plugin with `get=1` to enable logging when configuration is
+loaded. For example, `kdb gmount journald get=1`.
 
 ## Dependencies
 
