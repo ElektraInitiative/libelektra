@@ -73,6 +73,10 @@ Thanks to Armin Wurzinger.
 
 We added even more functionality, which could not make it to the highlights:
 
+- A new I/O binding for [ev](https://www.libelektra.org/bindings/io_ev) has been
+  added.
+  It can be used to integrate the notification feature with applications based
+  on [ev](http://libev.schmorp.de) main loops. *(Thomas Wahringer)*
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>

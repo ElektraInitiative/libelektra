@@ -5,22 +5,22 @@
 - infos/provides = io
 - infos/description =
 
-# I/O binding for libuv
+# I/O binding for libev
 
 For the purpose of I/O bindings please read the
 [bindings readme](https://www.libelektra.org/bindings/readme#i-o-bindings).
 
 ## Requirements
 
-- [libuv](http://libuv.org/) (version 1.x is recommended; 0.10 is supported)
+- [libev](http://libev.schmorp.de) (4.x; tested with 4.22)
 
 ## Usage
 
-Use the `elektraIoUvNew` function to get a new I/O binding instance.
-Make sure to build your application with `elektra-io-uv`, `elektra-io` and `uv` or
-simply use `pkg-config --cflags --libs elektra-io-uv`.
+Use the `elektraIoEvNew` function to get a new I/O binding instance.
+Make sure to build your application with `elektra-io-ev`, `elektra-io` and `ev` or
+simply use `pkg-config --cflags --libs elektra-io-ev`.
 
-### ElektraIoInterface * elektraIoUvNew (uv_loop_t * loop)
+### ElektraIoInterface * elektraIoEvNew (struct ev_loop * loop)
 
 Create and initialize a new I/O binding.
 
@@ -35,33 +35,31 @@ Populated I/O interface
 ## Example
 
 ```C
-
 #include <elektra/kdb.h>
 #include <elektra/kdbio.h>
-#include <elektra/kdbio_uv.h>
+#include <elektra/kdbio_ev.h>
 
-#include <uv.h>
+#include <ev.h>
 
 void main (void)
 {
-	KDB* repo;
+	KDB * repo;
 	// ... open KDB
 
 	// Create libuv event loop
-	uv_loop_t * loop = uv_default_loop ();
+	struct ev_loop * loop = EV_DEFAULT;
 
 	// Initialize I/O binding tied to event loop
-	ElektraIoInterface * binding = elektraIoUvNew (loop);
+	ElektraIoInterface * binding = elektraIoEvNew (loop);
 
 	// Set I/O binding
 	elektraIoSetBinding (kdb, binding);
 
 	// Start the event loop
-	uv_run (loop, UV_RUN_DEFAULT);
+	ev_run (loop, 0);
 
 	// Cleanup before exit
 	elektraIoBindingCleanup (binding);
-	uv_loop_close (loop);
+	ev_loop_destroy (EV_DEFAULT);
 }
-
 ```

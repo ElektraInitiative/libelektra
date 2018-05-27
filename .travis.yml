@@ -138,6 +138,7 @@ before_install:
       brew install libgcrypt
       brew install libgit2
       brew install libuv
+      brew install libev
       brew install lua
       brew install openssl
       export PKG_CONFIG_PATH=/usr/local/opt/openssl/lib/pkgconfig
@@ -175,6 +176,7 @@ before_install:
       sudo apt-get install libyaml-cpp-dev
       sudo apt-get install libuv-dev
       sudo apt-get install libdbus-1-dev
+      sudo apt-get install libev-dev
       sudo apt-get install libxerces-c-dev
       sudo apt-get install moreutils # contains `sponge` required by `reformat-cmake`
       sudo pip install --upgrade cmake_format

@@ -30,6 +30,7 @@ RUN apt-get -y install \
   ruby-ronn \
   libgcrypt20-dev \
   libbotan1.10-dev \
+  libev-dev \
   libsystemd-dev \
   openjdk-8-jdk-headless \
   ghc \
