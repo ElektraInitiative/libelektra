@@ -193,6 +193,7 @@ Many problems were resolved with the following fixes:
   when checking if the ABI changed. *(Lukas Winkler)*
 - You can now build the [Qt-GUI](https://www.libelektra.org/tools/qt-gui) using Qt `5.11`. *(René Schwaiger)*
 - We fixed various minor spelling mistakes in the documentation. *(René Schwaiger)*
+- We exclude the command `kdb find`, if the we know that the current compiler ships with broken support for regular expressions. *(René Schwaiger)*
 
 
 ## Outlook
