@@ -29,26 +29,26 @@ This command will list the name of all keys that contain `regex`.
 ## EXAMPLES
 
 ```sh
-# Backup-and-Restore: /tests
+# Backup-and-Restore: /tests/find
 
 # Create the keys we use for the examples
-kdb set /tests/tests val1
-kdb set /tests/tests/foo/bar val2
-kdb set /tests/tests/fizz/buzz fizzbuzz
-kdb set /tests/tostfizz val3
-kdb set /tests/tust/level lvl
+kdb set /tests/find/tests val1
+kdb set /tests/find/tests/foo/bar val2
+kdb set /tests/find/tests/fizz/buzz fizzbuzz
+kdb set /tests/find/tostfizz val3
+kdb set /tests/find/tust/level lvl
 
-# list all keys containing /tests/t[eo]
-kdb find '/tests/t[eo]'
-#> user/tests/tests
-#> user/tests/tests/fizz/buzz
-#> user/tests/tests/foo/bar
-#> user/tests/tostfizz
+# list all keys containing /tests/find/t[eo]
+kdb find '/tests/find/t[eo]'
+#> user/tests/find/tests
+#> user/tests/find/tests/fizz/buzz
+#> user/tests/find/tests/foo/bar
+#> user/tests/find/tostfizz
 
 # list all keys containing fizz
 kdb find 'fizz'
-#> user/tests/tests/fizz/buzz
-#> user/tests/tostfizz
+#> user/tests/find/tests/fizz/buzz
+#> user/tests/find/tostfizz
 ```
 
 ## SEE ALSO
