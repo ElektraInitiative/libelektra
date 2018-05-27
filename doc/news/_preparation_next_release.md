@@ -91,9 +91,9 @@ We added even more functionality, which could not make it to the highlights:
 - The `crypto` plugin now uses Elektra's `libinvoke` and the `base64` plugin in order to encode and decode Base64 strings. This improvement reduces code duplication between the two plugins. *(Peter Nirschl)*
 - The completion for [fish](http://fishshell.com) now also suggest the `info/` meta attributes of the
   [file plugin](https://www.libelektra.org/plugins/file). *(René Schwaiger)*
-- The [`list` plugin](http://libelektra.org/plugins/list) now allows to pass
-  common configuration for plugins below the "config/" setting. The updated
-  plugin documentation contains more information and an example. *(Thomas Wahringer)*
+- The [`list` plugin](http://libelektra.org/plugins/list) now allows us to pass
+  common configuration for all plugins by using keys below the "config/" setting.
+  The updated plugin documentation contains more information and an example. *(Thomas Wahringer)*
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
