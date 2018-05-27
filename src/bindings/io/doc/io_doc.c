@@ -30,7 +30,7 @@
  * for available I/O bindings and their according READMEs for more details.
  * After creating, an I/O binding is associated to a KDB instance using
  * elektraIoSetBinding().
- * Having different I/O bindings (e.g. same or differnt main loop APIs) for
+ * Having different I/O bindings (e.g. same or different main loop APIs) for
  * different KDB instances is supported.
  *
  * The remainder of this page contains useful details for creating I/O bindings

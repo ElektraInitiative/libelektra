@@ -12,7 +12,7 @@ For the purpose of I/O bindings please read the
 
 ## Requirements
 
-- [libev](http://libev.schmorp.de) (tested with 4.x)
+- [libev](http://libev.schmorp.de) (4.x; tested with 4.22)
 
 ## Usage
 
@@ -35,7 +35,6 @@ Populated I/O interface
 ## Example
 
 ```C
-
 #include <elektra/kdb.h>
 #include <elektra/kdbio.h>
 #include <elektra/kdbio_ev.h>
@@ -44,11 +43,11 @@ Populated I/O interface
 
 void main (void)
 {
-	KDB* repo;
+	KDB * repo;
 	// ... open KDB
 
 	// Create libuv event loop
-	struct ev_loop * loop = EV_DEFAULT
+	struct ev_loop * loop = EV_DEFAULT;
 
 	// Initialize I/O binding tied to event loop
 	ElektraIoInterface * binding = elektraIoEvNew (loop);
@@ -63,5 +62,4 @@ void main (void)
 	elektraIoBindingCleanup (binding);
 	ev_loop_destroy (EV_DEFAULT);
 }
-
 ```
