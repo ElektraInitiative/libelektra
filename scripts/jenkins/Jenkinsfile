@@ -22,6 +22,7 @@
 // TODO add warnings plugins to scan for compiler warnings
 // TODO maybe intend with 2 lines to not waste so much ws
 
+
 // Imports
 import java.text.SimpleDateFormat
 
@@ -29,6 +30,9 @@ import java.text.SimpleDateFormat
 properties([
     buildDiscarder(logRotator(numToKeepStr: '60', artifactNumToKeepStr: '60'))
 ])
+
+// If previous run is still running, cancel it
+abortPreviousRun()
 
 // Globals
 DOCKER_NODE_LABEL = 'docker'
@@ -79,10 +83,8 @@ enum DOCKER_OPTS {
 }
 
 NOW = new Date()
-DOCKER_IMAGES = [:]
-
-// If previous run is still running, cancel it
-abortPreviousRun()
+DOCKER_IMAGES = [:]  // Containers docker image descriptions, populated during
+                     // dockerINIT()
 
 /*****************************************************************************
  * Main Stages
