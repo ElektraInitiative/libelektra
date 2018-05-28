@@ -84,7 +84,7 @@ enum DOCKER_OPTS {
 
 NOW = new Date()
 DOCKER_IMAGES = [:]  // Containers docker image descriptions, populated during
-                     // dockerINIT()
+                     // dockerInit()
 
 /*****************************************************************************
  * Main Stages
@@ -477,11 +477,11 @@ def buildAndTestAsan(testName, image, extraCmakeFlags = [:]) {
 /* Helper to generate a typical elektra test environment
  *   Builds elektra, depending on the contents of 'tests' it runs the
  *   corresponding test suites.
- * test_name: used to identify the test and name the stage
+ * testName: used to identify the test and name the stage
  * image: which docker image should be used
- * cmake_flags: which flags should be passed to cmake
- * tests: list of tests which should be run
- * extra_artifacts: which files should be additionally saved from the build
+ * extraCmakeFlags: which flags should be passed to cmake
+ * tests: list of tests (see TEST enum) which should be run
+ * extraArtifacts: which files should be additionally saved from the build
  */
 def buildAndTest(testName, image, extraCmakeFlags = [:],
                    tests = [], extraArtifacts = []) {
@@ -817,7 +817,7 @@ def xunitUpload() {
     ])
 }
 
-/* Create a new Docker Image Description
+/* Create a new Docker Image description
  *
  * @param name Name of the image, will be extended with registry, a common
  *             prefix and a tag
@@ -825,7 +825,8 @@ def xunitUpload() {
  * @param context Context for the docker build
  * @param file Path to Dockerfile
  * @param autobuild If it should be automatically build at the start of the
- *                  Jenkins run
+ *                  Jenkins run. If false it can be build manually
+ *                  (see buildImageStage)
  */
 def createDockerImageDesc(name, idFun, context, file, autobuild=true) {
     def prefix = 'build-elektra'
