@@ -97,12 +97,11 @@ stage("Init docker images") {
     dockerInit()
 }
 
-IMAGES_TO_BUILD = false
 stage("Pull docker images") {
     parallel generateDockerPullStages()
 }
 
-maybeStage("Build docker images", IMAGES_TO_BUILD) {
+maybeStage("Build docker images", DOCKER_IMAGES.any {img -> !img.value.exists}) {
     lock('docker-images') {
         parallel generateDockerBuildStages()
     }
@@ -217,7 +216,6 @@ def pullImageStage(image) {
                     } catch(e) {
                         echo "Detected changes"
                         image.exists = false
-                        IMAGES_TO_BUILD = true
                     }
                 }
             }
