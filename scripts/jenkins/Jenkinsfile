@@ -822,11 +822,12 @@ def xunitUpload() {
  * @param idFun Closure describing how the image id should be formatted
  *                      (see idTesting() / idHomepage())
  * @param context Build context for the docker build (base directory that will
- *                be sent to the docker agent).
- * @param file Path to Dockerfile
+ *                be sent to the docker agent). Relative to the current working
+ *                directory.
+ * @param file Path to Dockerfile relative to the current working directory.
  * @param autobuild If it should be automatically build at the start of the
  *                  Jenkins run. If false it can be build manually
- *                  (see buildImageStage())
+ *                  (see buildImageStage()).
  */
 def createDockerImageDesc(name, idFun, context, file, autobuild=true) {
     def prefix = 'build-elektra'
