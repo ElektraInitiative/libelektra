@@ -23,6 +23,7 @@ RUN apt-get update && apt-get -y install \
     libaugeas-dev \
     libbotan1.10-dev \
     libyajl-dev \
+    git \
     libgit2-dev \
     libboost-all-dev \
     libssl-dev \
