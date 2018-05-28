@@ -69,9 +69,8 @@ RUN echo "\n\n\n\n\nY" | adduser --quiet --disabled-password jenkins && \
 USER jenkins
 # Handle Haskell dependencies
 ENV HASKELL_SHARED_SANDBOX /home/jenkins/elektra-cabal-sandbox
-RUN cd /home/jenkins \
-    && mkdir elektra-cabal-sandbox \
-    && cd elektra-cabal-sandbox \
+RUN mkdir -p $HASKELL_SHARED_SANDBOX \
+    && cd $HASKELL_SHARED_SANDBOX \
     && cabal update \
     && cabal sandbox init \
     && cabal install 'base >=4.9 && <4.12' 'containers >=0.5 && <0.6' \
