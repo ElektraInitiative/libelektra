@@ -98,14 +98,16 @@ private:
 // -- Parser Rules -------------------------------------------------------------
 
 yaml : child EOF ;
-child : INDENT (scalar | sequence | map) NEWLINE* DEDENT ;
+child : INDENT (sequence | map) NEWLINE* DEDENT
+      | INDENT value NEWLINE* DEDENT;
 
 sequence : element (NEWLINE element)*  ;
 element : C_SEQUENCE_ENTRY S_SPACE (scalar | map)
         | C_SEQUENCE_ENTRY S_SPACE? NEWLINE child ;
 
-map : mapping (NEWLINE mapping)* ;
-mapping : key s_white* C_MAPPING_VALUE S_SPACE value ;
+map : mapping (NEWLINE* mapping)* ;
+mapping : key s_white* C_MAPPING_VALUE S_SPACE value
+        | key C_MAPPING_VALUE S_SPACE? NEWLINE child;
 key : scalar ;
 value : scalar ;
 
