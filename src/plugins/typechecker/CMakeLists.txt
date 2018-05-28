@@ -18,8 +18,10 @@ if (LIBFA_FOUND)
 			    "src/libs/typesystem/spectranslator"
 			    TEST_README
 			    INSTALL_TEST_DATA
-			    TEST_ENVIRONMENT "TYPECHECKER_PRELUDE=${CMAKE_CURRENT_SOURCE_DIR}/typechecker/prelude.ini"
-			    TEST_REQUIRED_PLUGINS "ini;regexdispatcher")
+			    TEST_ENVIRONMENT
+			    "TYPECHECKER_PRELUDE=${CMAKE_CURRENT_SOURCE_DIR}/typechecker/prelude.ini"
+			    TEST_REQUIRED_PLUGINS
+			    "ini;regexdispatcher")
 
 	# if haskell was not found, the target will not be created and a message was already printed
 	# so we can skip the extra installation procedures
