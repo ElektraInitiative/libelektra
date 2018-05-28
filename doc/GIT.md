@@ -111,7 +111,7 @@ or if just the pull request should be checked:
 
 	.*build\W+allow.*
 
-This is only necessry for legady build jobs (that are not defined via
+This is only necessary for legacy build jobs (that are not defined via
 Jenkinsfiles).
 
 ### Run Jobs
