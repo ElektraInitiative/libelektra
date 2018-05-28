@@ -11,6 +11,7 @@ RUN apt-get update && apt-get -y install \
     autotools-dev \
     automake \
     cmake \
+    libcurl3 \
     pkg-config \
     bison \
     ruby-dev \
