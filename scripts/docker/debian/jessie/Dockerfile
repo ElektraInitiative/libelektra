@@ -35,9 +35,6 @@ RUN apt-get update && apt-get -y install \
     libyaml-cpp-dev \
     swig3.0 \
     libuv0.10-dev \
-    ghc \
-    cabal-install \
-    c2hs \
     checkinstall \
     gobject-introspection \
     libgirepository1.0-dev \
@@ -47,9 +44,6 @@ RUN apt-get update && apt-get -y install \
     lcov \
     valgrind && \
     rm -rf /var/lib/apt/lists/*
-
-RUN cabal update && cabal install hspec QuickCheck
-
 
 # Create User:Group
 # The id is important as jenkins docker agents use the same id that is running

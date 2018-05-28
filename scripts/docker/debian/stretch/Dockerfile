@@ -44,6 +44,7 @@ RUN apt-get update \
         swig3.0 \
         libuv1-dev \
         ghc \
+        ghc-dynamic \
         cabal-install \
         alex \
         happy \
