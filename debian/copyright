@@ -37,6 +37,10 @@ License: BSD-3-clause
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+Files: cmake/Modules/DownloadProject*
+Copyright: 2015 Craig Scott
+License: MIT
+
 Files: cmake/Modules/FindAugeas.cmake
        cmake/Modules/FindDBus.cmake
        cmake/Modules/FindGObjectIntrospection.cmake
