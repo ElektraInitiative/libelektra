@@ -126,9 +126,6 @@ until we have finished writing the whole specification.
 
 ```sh
 # Backup-and-Restore:spec/tests/typechecker
-
-# TODO: use libinvoke + ini for prelude to avoid the kdbOpen issues
-# either load from: environmnet variable -> tests, plugin config -> user custom preludes, spec/prelude -> default
 sudo kdb mount simplespecification.ini spec/tests/typechecker ini regexdispatcher typechecker
 
 echo 'kdbGet spec/tests/typechecker \
