@@ -21,10 +21,12 @@ library
                    , Elektra.Plugin
                    , Elektra.Ease
                    , Elektra.Errors
+                   , Elektra.Invoke
   build-depends:     base >= 4.9 && < 4.12
   includes:          kdb.h
                    , kdbplugin.h
                    , kdbease.h
+                   , kdbinvoke.h
                    , kdberrors.h
                    , hskdberrors.h
   include-dirs:      @CABAL_INCLUDE_DIRS@
