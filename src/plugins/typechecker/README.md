@@ -188,7 +188,7 @@ as explained in the [bindings readme](/src/bindings/haskell/README.md):
 
 ```
 cabal install 'base >=4.9 && <4.12' 'containers >=0.5 && <0.6' \
-	'directory >=1.2 && <1.4' 'process >=1.4 && <1.7' 'binary >=0.5 && <0.6' \
+	'directory >=1.2 && <1.4' 'process >=1.4 && <1.7' 'binary >=0.8 && <0.9' \
 	'haskell-src-exts-any' 'pretty -any' 'hint >=0.7.0 && <0.8.0' 'temporary -any' \
 	'exceptions -any' 'text -any' 'simple-logger -any' 'megaparsec -any' \
 	'hspec -any' 'QuickCheck-any' --avoid-reinstalls
