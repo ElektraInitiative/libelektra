@@ -111,6 +111,9 @@ or if just the pull request should be checked:
 
 	.*build\W+allow.*
 
+This is only necessry for legady build jobs (that are not defined via
+Jenkinsfiles).
+
 ### Run Jobs
 
 After being added to whitelist you can trigger buildjobs by pushing to the PR.
