@@ -44,6 +44,7 @@ if (HASKELL_FOUND)
 			     "${CMAKE_CURRENT_SOURCE_DIR}/src/Elektra/Plugin.chs"
 			     "${CMAKE_CURRENT_SOURCE_DIR}/src/Elektra/KDB.chs"
 			     "${CMAKE_CURRENT_SOURCE_DIR}/src/Elektra/Ease.chs"
+			     "${CMAKE_CURRENT_SOURCE_DIR}/src/Elektra/Invoke.chs"
 			     "${CMAKE_CURRENT_SOURCE_DIR}/test/Elektra.hs"
 			     "${CMAKE_CURRENT_SOURCE_DIR}/test/ElektraRealWorld.hs"
 			     "${CMAKE_CURRENT_SOURCE_DIR}/src/c/hskdberrors.c"
