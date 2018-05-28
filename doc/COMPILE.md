@@ -502,6 +502,12 @@ This value specifies the root directory of a local copy of the [Google Test][] f
   top level directory of `GTEST_ROOT`. If this file exists, then the build system
   will use the sources files at `GTEST_ROOT` to translate tests that use [Google Test][].
 
+We currently pin Google Test to commit
+[4e4df22](https://github.com/google/googletest/commit/4e4df226fc197c0dda6e37f5c8c3845ca1e73a49)
+while autodownloading or when running in the build server.
+For building our Debian packages we use the
+[Google Test package](https://packages.debian.org/stretch/googletest).
+
 [Google Test]: https://github.com/google/googletest
 
 It is recommended that you browse through all of the options using `ccmake`.
