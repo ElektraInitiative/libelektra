@@ -11,6 +11,16 @@ RUN apt-get update && apt-get -y install \
     && apt-get install -y nodejs \
     && rm -rf /var/lib/apt/lists/*
 
+# Google Test
+ENV GTEST_ROOT=/opt/gtest
+ARG GTEST_VER=4e4df226fc197c0dda6e37f5c8c3845ca1e73a49
+RUN mkdir -p ${GTEST_ROOT} \
+    && cd /tmp \
+    && curl -o gtest.tar.gz \
+      -L https://github.com/google/googletest/archive/${GTEST_VER}.tar.gz \
+    && tar -zxvf gtest.tar.gz --strip-components=1 -C ${GTEST_ROOT} \
+    && rm gtest.tar.gz
+
 ARG PARALLEL=2
 # start build of kdb
 ENV C_FLAGS="-D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security -fstack-protector-strong -Wstack-protector -fPIE -pie"
