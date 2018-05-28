@@ -3,7 +3,7 @@
 - infos/licence = BSD
 - infos/provides = logging
 - infos/needs =
-- infos/placements = postcommit postrollback
+- infos/placements = pregetstorage postcommit postrollback
 - infos/status = maintained tested nodep global nodoc
 - infos/description = Logs set and error calls to syslog.
 
@@ -12,3 +12,5 @@
 This plugin is a logging plugin which adds a log entry to syslog on
 commit and rollback of the configuration.
 
+Configure the plugin with `log/get=1` to enable logging when configuration is
+loaded. For example, `kdb gmount syslog log/get=1`.

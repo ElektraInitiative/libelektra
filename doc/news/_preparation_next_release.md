@@ -77,6 +77,13 @@ We added even more functionality, which could not make it to the highlights:
   added.
   It can be used to integrate the notification feature with applications based
   on [ev](http://libev.schmorp.de) main loops. *(Thomas Wahringer)*
+- The logging plugins ["syslog"](https://www.libelektra.org/plugins/syslog),
+  ["journald"](https://www.libelektra.org/plugins/journald) and
+  ["logchange"](https://www.libelektra.org/plugins/logchange) now have a new
+  option called "get" which can be enabled to log which configuration settings
+  are loaded by applications.
+  The new option can be used for logging application behavior when using
+  [notifications](https://www.libelektra.org/tutorials/notifications). *(Thomas Wahringer)*
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -101,7 +108,6 @@ We added even more functionality, which could not make it to the highlights:
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-
 
 ## Documentation
 
