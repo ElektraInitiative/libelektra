@@ -50,7 +50,7 @@ Additionally it can manually triggered by its defined phrase as described in
 The [libelektra](https://build.libelektra.org/jenkins/job/libelektra/)
 build is triggered for all branches of the libelektra repository except for
 `debian`.
-Additionally all open branches in forks targeting libelektras repository via
+Additionally all open branches in forks targeting libelektra's repository via
 PRs are going to be build.
 Pushes to any of those branches will trigger a new build automatically.
 Again a trigger phrase has been added that allows forced rebuilds via the
@@ -58,23 +58,22 @@ repository.
 
 
 ## Test Environments
-We use Docker Containers to provide the various Test enviornments.
+We use Docker containers to provide the various test environments.
 
 They are described
 [in the repository](https://github.com/ElektraInitiative/libelektra/tree/master/scripts/docker)
-and the Jenkinsfile describes how to build them
-.
+and the Jenkinsfile describes how to build them.
 If a rebuild of the images is needed is determined by the hash of the
 Dockerfile used to describe it.
 If it has not changed the build step will be skipped.
 In the case that an image needed a build it will afterwards be uploaded into a
-private docker image registry (currently on a7) and thus is shared between all
-docker capable build slaves.
+private Docker image registry (currently on a7) and thus is shared between all
+Docker capable build slaves.
 
 ## Tests
 We will use the Docker images build as described earlier to run compilations
 and tests for Elektra.
-This allows us to run tests independend of which nodes are available (as the
+This allows us to run tests independent: of which nodes are available (as the
 environment is portable).
 
 The Jenkinsfile describes the steps used to run tests.
