@@ -6,6 +6,7 @@ import Elektra.KeySet
 import Elektra.KDB
 import Elektra.Plugin
 import Elektra.Ease
+import Elektra.Invoke
 import Elektra.SpecTranslator
 import Elektra.SpecParser
 import Elektra.Errors
@@ -14,10 +15,10 @@ import Control.Monad                (mapM_, forM_, (>=>))
 import Control.Logger.Simple
 import Data.Bool                    (bool)
 import Data.List                    (intercalate, isPrefixOf)
-import Data.Maybe                   (fromJust)
+import Data.Maybe                   (fromJust, listToMaybe)
 import Foreign.Ptr
 import System.IO.Temp               (writeTempFile)
-import System.Directory             (removeFile)
+import System.Directory             (removeFile, doesFileExist)
 import System.Environment           (lookupEnv)
 import Text.PrettyPrint
 
@@ -41,42 +42,42 @@ typecheck p ks k c = withGlobalLogging (LogConfig Nothing ("@ENABLE_LOGGER@" == 
     forM_ metakeys (logDebugT . show)
 
   conf <- elektraPluginGetConfig p
+  logDebugT $ "the configuration is " ++ show conf
 
   -- Otherwise ksCut would remove keys, we don't want that behavior here
   ksc <- ksDup ks
   kscc <- ksCut ksc k
 
-  -- TODO
   -- prelude handling
   -- We load it via invoke + ini plugin as kdbOpen in here leads to unpredicted behavior combined with the process plugin
-  -- #1: Environment variable (tests)
-
-  -- #2: Plugin Config (user custom preludes)
-
-  -- #3: default global spec namespace (default)
-
-  -- #4: nothing otherwise
-
-  logDebugT $ "the configuration is " ++ show conf
-  prelude <- ifKey (ksLookupByName conf "/prelude") (keyString >=> fmap Just . keyNew) (return Nothing)
-  ps <- ksNew 0 -- TODO replace with libinvoke + ini
+  let globalSpecPrelude = "@KDB_DB_SPEC@/prelude.ini"
+  preludePath <- listToMaybe <$> sequence [
+    -- #1: Environment variable (tests)
+    lookupEnv "TYPECHECKER_PRELUDE",
+    -- #2: Plugin Config (user custom preludes)
+    ifKey (ksLookupByName conf "/prelude") (fmap Just . keyString) (return Nothing),
+    -- #3: default global spec namespace (default)
+    bool Nothing (Just globalSpecPrelude) <$> doesFileExist globalSpecPrelude
+    -- #4: nothing otherwise
+    ]
+  ps <- maybe (ksNew 0) (invokePrelude name) preludePath
   logDebugT $ "Prelude contained " ++ show ps
 
   -- now rename the prelude keys to the correct parent key
   -- and append kscc to pdcc to avoid overwriting custom type specifications
   -- We cannot rename keys stored in a keyset to append it to a new one
-  rs <- ksGetSize ps >>= ksNew
+  --rs <- ksGetSize ps >>= ksNew
   -- if its Nothing, there will be an empty list so this is fine
-  ksList ps >>= mapM_ (renamePrelude (fromJust prelude) name >=> ksAppendKey rs)
-  ksAppend rs kscc
+  --ksList ps >>= mapM_ (renamePrelude (fromJust prelude) name >=> ksAppendKey rs)
+  ksAppend ps kscc
 
-  logDebugT $ "Combined specifications are " ++ show rs
+  logDebugT $ "Combined specifications are " ++ show ps
 
-  typeSpecs <- parseTypeSpecifications k rs
-  logDebugT $ "Got " ++ show (length typeSpecs) ++ " function specifications"
+  typeSpecs <- parseTypeSpecifications k ps
+  logDebugT $ "Got " ++ show (length typeSpecs) ++ " funfction specifications"
   mapM_ (logDebugT . show) typeSpecs
 
-  keySpecs <- parseKeySpecifications k rs
+  keySpecs <- parseKeySpecifications k ps
   logDebugT $ "Got " ++ show (length keySpecs) ++ " key specifications"
   mapM_ (logDebugT . show) keySpecs
 
@@ -117,6 +118,14 @@ typecheck p ks k c = withGlobalLogging (LogConfig Nothing ("@ENABLE_LOGGER@" == 
       c <- keyDup p
       keySetName c $ name ++ "/elektra/spec/" ++ r
       return c
+    invokePrelude name location = do
+      errorKey <- Just <$> keyNew ""
+      ini <- elektraInvokeOpen "ini" Nothing errorKey
+      prelude <- ksNew 0
+      baseKey <- keyNew name
+      elektraInvoke2Args ini "get" prelude baseKey
+      elektraInvokeClose ini errorKey
+      return prelude
 
 keyInterpreter :: FilePath -> InterpreterT IO ()
 keyInterpreter specFile = do
