@@ -62,7 +62,7 @@ typecheck p ks k c = withGlobalLogging (LogConfig Nothing ("@ENABLE_LOGGER@" == 
     -- #4: nothing otherwise
     ]
   logDebugT $ "Loading prelude located at " ++ show preludePath ++ " to " ++ name
-  ps <- maybe (ksNew 0) (readPrelude name) preludePath
+  ps <- maybe (ksNew 0) (readPrelude p name) preludePath
   logDebugT $ "Prelude contained " ++ show ps
   ksAppend ps kscc
   logDebugT $ "Combined specifications are " ++ show ps
@@ -98,19 +98,13 @@ typecheck p ks k c = withGlobalLogging (LogConfig Nothing ("@ENABLE_LOGGER@" == 
     Right () -> return False
   where
     putStepLn s = logDebugT $ "\n" ++ s ++ "\n"
-    readPrelude name location = do
-      errorKey <- Just <$> keyNew ""
-      ini <- elektraInvokeOpen "ini" Nothing errorKey
-      logDebugT $ "Opened ini plugin " ++ show errorKey
+    readPrelude p name location = do
       prelude <- ksNew 0
       baseKey <- keyNewWithValue (name ++ "/elektra/spec/") location
-      elektraInvoke2Args ini "get" prelude baseKey
-      logDebugT $ "Called get on iniPlugin " ++ show errorKey
-      preludeDupped <- ksDup prelude
-      -- TODO why does this crash here? but ideally we open it in the TypecheckerOpen and use the plugin data
-      -- from then on
-      --elektraInvokeClose ini errorKey
-      return preludeDupped
+      ini <- elektraPluginGetData p
+      -- the handle is set otherwise opening the plugin would fail already
+      -- likewise we could assume the data is set as well and use fromJust, but lets stay functional
+      maybe (ksNew 0) (\i -> elektraInvoke2Args i "get" prelude baseKey >> ksDup prelude) ini
 
 keyInterpreter :: FilePath -> InterpreterT IO ()
 keyInterpreter specFile = do
@@ -130,33 +124,40 @@ errorString (WontCompile es) = intercalate "\n" (header : map unbox es)
     unbox (GhcError e) = e
 errorString e = show e
 
-isCheckingPrelude :: Key -> IO Bool
-isCheckingPrelude k = do
-  bn1 <- keyBaseName k
-  keyDeleteBaseName k
-  bn2 <- keyBaseName k
-  return $ bn1 == "spec" && bn2 == "elektra"
-
 say :: String -> Interpreter ()
 say = liftIO . logDebugT
 
 logDebugT :: MonadIO m => String -> m ()
 logDebugT = logDebug . T.pack
 
+openIni :: Plugin -> Key -> IO PluginStatus
+openIni p k = do
+  logDebugT "Opening ini"
+  ini <- elektraInvokeOpen "ini" Nothing (Just k)
+  ifHandle ini (return Error) (\i -> elektraPluginSetData p i >> return Success) 
+
+closeIni :: Plugin -> Key -> IO PluginStatus
+closeIni p k = do
+  logDebugT "Closing ini"
+  ini <- elektraPluginGetData p
+  maybe (return Success) closeHandle ini
+  where
+    closeHandle ini = ifHandle ini (return Success) (\i -> elektraInvokeClose i (Just k) >> return Success)
+
 elektraTypecheckerOpen :: Plugin -> Key -> IO PluginStatus
-elektraTypecheckerOpen _ _ = return Success
+elektraTypecheckerOpen p k = openIni p k
 hs_elektraHaskellOpen = elektraPluginOpenWith elektraTypecheckerOpen
 
 elektraTypecheckerClose :: Plugin -> Key -> IO PluginStatus
-elektraTypecheckerClose _ _ = return Success
+elektraTypecheckerClose p k = closeIni p k
 hs_elektraHaskellClose = elektraPluginCloseWith elektraTypecheckerClose
 
 elektraTypecheckerGet :: Plugin -> KeySet -> Key -> IO PluginStatus
-elektraTypecheckerGet p ks k = isCheckingPrelude k >>= bool (typecheck p ks k Get >> return NoUpdate) (return NoUpdate)
+elektraTypecheckerGet p ks k = const NoUpdate <$> typecheck p ks k Get
 hs_elektraHaskellGet = elektraPluginGetWith elektraTypecheckerGet
 
 elektraTypecheckerSet :: Plugin -> KeySet -> Key -> IO PluginStatus
-elektraTypecheckerSet p ks k = isCheckingPrelude k >>= bool (bool NoUpdate Error <$> typecheck p ks k Set) (return NoUpdate)
+elektraTypecheckerSet p ks k = bool NoUpdate Error <$> typecheck p ks k Set
 hs_elektraHaskellSet = elektraPluginSetWith elektraTypecheckerSet
 
 elektraTypecheckerError :: Plugin -> KeySet -> Key -> IO PluginStatus
