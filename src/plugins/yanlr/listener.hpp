@@ -9,6 +9,7 @@
 // -- Imports ------------------------------------------------------------------------------------------------------------------------------
 
 #include <iostream>
+#include <numeric>
 
 #include <kdb.hpp>
 
@@ -16,6 +17,7 @@
 
 using antlr::YAMLBaseListener;
 using MappingContext = antlr::YAMLParser::MappingContext;
+using ValueContext = antlr::YAMLParser::ValueContext;
 
 using CppKey = kdb::Key;
 using CppKeySet = kdb::KeySet;
@@ -31,6 +33,8 @@ class KeyListener : public YAMLBaseListener
 	CppKeySet keys;
 	/** The key `parent` stores the common path of all keys. */
 	CppKey parent;
+	/** This stack stores each level of of the current key name. */
+	deque<string> path;
 
 public:
 	/**
@@ -43,16 +47,44 @@ public:
 	}
 
 	/**
-	 * @brief This function will be called after the parser matched a complete mapping.
+	 * @brief This function will be called after the parser exits a scalar value.
 	 *
 	 * @param context The context specifies data matched by the rule.
 	 */
-	void exitMapping (MappingContext * context) override
+	virtual void exitValue (ValueContext * context) override
 	{
-		CppKey key{ parent.getFullName (), KEY_END };
-		key.addBaseName (context->key ()->getText ());
-		key.setString (context->value ()->getText ());
+		CppKey key = parent.dup ();
+
+		// Calculate the current key name from `parent` + `path`
+		key = accumulate (path.begin (), path.end (), key, [](CppKey & key, string part) {
+			key.addBaseName (part);
+			return key;
+		});
+		key.setString (context->getText ());
 		keys.append (key);
+	}
+
+	/**
+	 * @brief This function will be called after the parser enters a mapping.
+	 *
+	 * @param context The context specifies data matched by the rule.
+	 */
+	virtual void enterMapping (MappingContext * context) override
+	{
+		// Entering a mapping such as `part: …` means that we need need to add `part` to the key name
+		string part = context->key ()->getText ();
+		path.push_back (part);
+	}
+
+	/**
+	 * @brief This function will be called after the parser exits a mapping.
+	 *
+	 * @param context The context specifies data matched by the rule.
+	 */
+	virtual void exitMapping (MappingContext * context __attribute__ ((unused))) override
+	{
+		// Returning from a mapping such as `part: …` means that we need need to remove `part` from the key name
+		path.pop_back ();
 	}
 
 	/**
