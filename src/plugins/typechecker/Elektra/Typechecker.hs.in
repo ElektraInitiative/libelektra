@@ -56,7 +56,7 @@ typecheck p ks k c = withGlobalLogging (LogConfig Nothing ("@ENABLE_LOGGER@" == 
     -- #1: Environment variable (tests)
     lookupEnv "TYPECHECKER_PRELUDE",
     -- #2: Plugin Config (user custom preludes)
-    ifKey (ksLookupByName conf "/prelude") (fmap Just . keyString) (return Nothing),
+    ksLookupByName conf "/prelude" >>= ifKey (return Nothing) (fmap Just . keyString),
     -- #3: default global spec namespace (default)
     bool Nothing (Just globalSpecPrelude) <$> doesFileExist globalSpecPrelude
     -- #4: nothing otherwise
