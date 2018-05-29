@@ -8,7 +8,6 @@ RUN apt-get update \
     && apt-get -y install \
         curl \
         build-essential \
-        clang \
         autotools-dev \
         automake \
         cmake \
@@ -17,6 +16,7 @@ RUN apt-get update \
         ruby \
         ruby-dev \
         python-all \
+        python-pip \
         python3-all \
         libpython3-dev \
         dh-exec \
@@ -74,6 +74,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 RUN cabal update && cabal install hspec QuickCheck
+RUN pip install --upgrade cmake_format
 
 # Google Test
 ENV GTEST_ROOT=/opt/gtest

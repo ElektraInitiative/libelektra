@@ -8,6 +8,7 @@ RUN apt-get update && apt-get -y install \
     curl \
     build-essential \
     clang-5.0 \
+    clang-format-5.0 \
     autotools-dev \
     automake \
     cmake \
@@ -15,6 +16,7 @@ RUN apt-get update && apt-get -y install \
     bison \
     ruby-dev \
     python-dev \
+    python-pip \
     python3-dev \
     libpython3-dev \
     dh-lua \
@@ -57,6 +59,7 @@ RUN apt-get update && apt-get -y install \
     rm -rf /var/lib/apt/lists/*
 
 RUN cabal update && cabal install hspec QuickCheck
+RUN pip install --upgrade cmake_format
 
 # Google Test
 ENV GTEST_ROOT=/opt/gtest

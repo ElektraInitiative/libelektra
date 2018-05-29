@@ -7,7 +7,6 @@ ENV LC_ALL C.UTF-8
 RUN apt-get update && apt-get -y install \
     curl \
     build-essential \
-    clang \
     autotools-dev \
     automake \
     cmake \
