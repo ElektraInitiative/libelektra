@@ -6,23 +6,33 @@
 -- @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
 -- 
 module Elektra.Invoke (
-  InvokeFunction, PluginData,
+  InvokeFunction,
   elektraInvokeOpen, elektraInvokeGetFunction, 
   elektraInvokeGetPluginConfig, elektraInvokeGetPluginName, elektraInvokeGetPluginData, elektraInvokeGetModules,
-  elektraInvokeGetExports, elektraInvoke2Args, elektraInvokeClose
+  elektraInvokeGetExports, elektraInvoke2Args, elektraInvokeClose,
+  ifHandle
 ) where
 
-{#import Elektra.Key#}
-{#import Elektra.KeySet#}
+{#import Elektra.Key #}
+{#import Elektra.KeySet #}
+{#import Elektra.Plugin #}
 
 import Data.Maybe (maybe)
-import Foreign.Ptr (castPtr, nullPtr)
+import Foreign.Ptr (Ptr, castPtr, nullPtr)
+import Foreign.ForeignPtr (withForeignPtr, newForeignPtr_)
 
 #include <kdbinvoke.h>
 
 {#pointer *ElektraInvokeHandle foreign newtype #}
 type InvokeFunction = C2HSImp.Ptr ()
-type PluginData = C2HSImp.Ptr ()
+
+-- Handles are already pointers, so just cast them from/to void pointers
+instance PluginData ElektraInvokeHandle where
+	store (ElektraInvokeHandle p) = withForeignPtr p (return . castPtr) 
+	retrieve p = if p == nullPtr then (return Nothing) else (Just . ElektraInvokeHandle <$> newForeignPtr_ (castPtr p))
+
+ifHandle :: ElektraInvokeHandle -> IO a -> (ElektraInvokeHandle -> IO a) -> IO a
+ifHandle h@(ElektraInvokeHandle p) f t = withForeignPtr p (\p' -> if p' == nullPtr then f else t h)
 
 -- ***
 -- Invoke METHODS
@@ -38,7 +48,9 @@ elektraInvokeOpen elektraPluginName config errorKey = do
 {#fun unsafe elektraInvokeGetFunction {`ElektraInvokeHandle', `String'} -> `InvokeFunction' return* #}
 {#fun unsafe elektraInvokeGetPluginConfig {`ElektraInvokeHandle'} -> `KeySet' #}
 {#fun unsafe elektraInvokeGetPluginName {`ElektraInvokeHandle'} -> `String' #}
-{#fun unsafe elektraInvokeGetPluginData {`ElektraInvokeHandle'} -> `PluginData' return* #}
+elektraInvokeGetPluginData :: PluginData d => ElektraInvokeHandle -> IO (Maybe d)
+elektraInvokeGetPluginData h = elektraInvokeGetPluginDataRaw h >>= retrieve
+{#fun unsafe elektraInvokeGetPluginData as elektraInvokeGetPluginDataRaw {`ElektraInvokeHandle'} -> `Ptr ()' return* #}
 {#fun unsafe elektraInvokeGetModules {`ElektraInvokeHandle'} -> `KeySet' #}
 {#fun unsafe elektraInvokeGetExports {`ElektraInvokeHandle'} -> `KeySet' #}
 {#fun unsafe elektraInvoke2Args {`ElektraInvokeHandle', `String', `KeySet', `Key'} -> `Int' #}
