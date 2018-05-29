@@ -31,7 +31,7 @@ import Foreign.Ptr (castPtr, nullPtr)
 import Foreign.ForeignPtr (FinalizerPtr (..), withForeignPtr, addForeignPtrFinalizer)
 import System.IO.Unsafe (unsafePerformIO)
 import Data.Maybe (isJust, fromJust)
-import Control.Monad (liftM, join)
+import Control.Monad (liftM)
 import Data.Bool (bool)
 
 {#context lib="libelektra" #}
@@ -194,7 +194,7 @@ addFinalizer :: Key -> IO Key
 addFinalizer (Key a) = addForeignPtrFinalizer keyDel a >> return (Key a)
 
 ifKey :: IO a -> (Key -> IO a) -> Key -> IO a
-ifKey f t k = join $ bool (t k) f <$> keyPtrNull k
+ifKey f t k = keyPtrNull k >>= bool (t k) f 
 
 whenKey :: (Key -> IO ()) -> Key -> IO ()
 whenKey w k = ifKey (return ()) w k
