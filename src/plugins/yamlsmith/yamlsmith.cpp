@@ -49,6 +49,50 @@ CppKeySet contractYamlsmith ()
 #include ELEKTRA_README (yamlsmith)
 			  keyNew ("system/elektra/modules/yamlsmith/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 }
+
+/**
+ * @brief This class provides additional functionality for the key set class.
+ */
+class CppKeySetPlus : public CppKeySet
+{
+public:
+	/**
+	 * @copydoc KeySet::KeySet(ckdb::KeySet)
+	 */
+	CppKeySetPlus (ckdb::KeySet * keys) : CppKeySet (keys)
+	{
+	}
+
+	/**
+	 * @brief Collect leaf keys (keys without any key below) for this key set.
+	 *
+	 * @return A key set containing all leaf keys
+	 */
+	CppKeySet leaves ()
+	{
+		CppKeySet leaves;
+
+		auto current = this->begin ();
+		if (current == this->end ()) return leaves;
+
+		CppKey previous = *current;
+		while (++current != this->end ())
+		{
+			bool isLeaf = !current->isBelow (previous);
+			if (isLeaf)
+			{
+				leaves.append (previous);
+			}
+
+			previous = *current;
+		}
+		// The last key is always a leaf
+		leaves.append (previous);
+
+		return leaves;
+	}
+};
+
 } // end namespace
 
 extern "C" {
