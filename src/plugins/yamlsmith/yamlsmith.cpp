@@ -20,6 +20,7 @@
 
 using std::endl;
 using std::ofstream;
+using std::string;
 
 using ckdb::Key;
 using ckdb::KeySet;
@@ -29,6 +30,7 @@ using ckdb::keyNew;
 
 using CppKey = kdb::Key;
 using CppKeySet = kdb::KeySet;
+using NameIterator = kdb::NameIterator;
 
 // -- Functions ----------------------------------------------------------------------------------------------------------------------------
 
@@ -49,6 +51,41 @@ CppKeySet contractYamlsmith ()
 #include ELEKTRA_README (yamlsmith)
 			  keyNew ("system/elektra/modules/yamlsmith/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 }
+
+/**
+ * @brief This class provides additional functionality for the keys.
+ */
+class CppKeyPlus : public CppKey
+{
+public:
+	/**
+	 * @copydoc Key::Key(Key &)
+	 */
+	CppKeyPlus (kdb::Key const & key) : CppKey (key)
+	{
+	}
+
+	/**
+	 * @brief This function returns a `NameIterator` starting at the first level that is not part of `parent`.
+	 *
+	 * @pre This key must be a child of `parent`.
+	 *
+	 * @param parent This key specifies the part of the name iterator that will not be part of the return value of this function.
+	 *
+	 * @returns A relative iterator that starts with the first part of the name of `key` not contained in `parent`.
+	 */
+	NameIterator relativeKeyIterator (Key const & parent)
+	{
+		auto parentIterator = parent.begin ();
+		auto keyIterator = this->begin ();
+		while (parentIterator != parent.end () && keyIterator != this->end ())
+		{
+			parentIterator++;
+			keyIterator++;
+		}
+		return keyIterator;
+	}
+};
 
 /**
  * @brief This class provides additional functionality for the key set class.
@@ -131,7 +168,16 @@ int elektraYamlsmithSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 	{
 		for (auto key : keys.leaves ())
 		{
-			file << elektraKeyGetRelativeName (*key, *parent) << ": " << key.getString () << endl;
+			string indent;
+			CppKeyPlus plus{ *key };
+			auto relative = plus.relativeKeyIterator (parent);
+			while (relative != plus.end ())
+			{
+				file << indent << *relative << ":" << endl;
+				relative++;
+				indent += "  ";
+			}
+			file << indent << plus.getString () << endl;
 		}
 	}
 	else

@@ -17,11 +17,17 @@
 # Add some key-value pairs to the database
 kdb set user/tests/yamlsmith/key value
 kdb set user/tests/yamlsmith/time 'will die and love will burrow it'
+kdb set user/tests/yamlsmith/level1/level2 'nested'
 
 # Export data using YAML Smith
 kdb export user/tests/yamlsmith yamlsmith
-#> key: value
-#> time: will die and love will burrow it
+#> key:
+#>   value
+#> level1:
+#>   level2:
+#>     nested
+#> time:
+#>   will die and love will burrow it
 
 # Undo modifications
 kdb rm -r user/tests/yamlsmith
@@ -29,4 +35,4 @@ kdb rm -r user/tests/yamlsmith
 
 ## Limitations
 
-This plugin currently does nothing useful.
+This plugin supports only **a very limited** subset of YAML.
