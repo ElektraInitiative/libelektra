@@ -12,11 +12,34 @@ import FlatButton from 'material-ui/FlatButton'
 import FocusTrapDialog from './FocusTrapDialog.jsx'
 
 export default class EditDialog extends Component {
+  handleAbort = () => {
+    const { batchUndo, sendNotification, onUndo, onClose, refreshKey } = this.props
+    onClose()
+    const steps = []
+    for (let i = 0; i < batchUndo; i++) {
+      steps.push(i)
+    }
+    Promise.all(steps.map(onUndo)).then(() => {
+      sendNotification('Reverted ' + batchUndo + ' changes.')
+      refreshKey()
+    })
+  }
+
   render () {
     const { item, open, field, onClose } = this.props
     const { path } = item
 
     const actions = [
+      <FlatButton
+        label="Abort"
+        secondary={true}
+        onClick={this.handleAbort}
+        onKeyPress={e => {
+          if (e.key === 'Enter') {
+            this.handleAbort()
+          }
+        }}
+      />,
       <FlatButton
         label="Done"
         primary={true}

@@ -13,16 +13,19 @@ import { bindActionCreators } from 'redux'
 
 import TreeItem from '../components/TreeItem'
 import {
-  setKey, createKey, deleteKey, copyKey, sendNotification, setMetaKey, deleteMetaKey
+  setKey, createKey, deleteKey, copyKey, sendNotification, setMetaKey, deleteMetaKey,
+  resetBatchUndo,
 } from '../actions'
+import { actions as undoActions } from 'redux-undo-redo-middleware'
 
 const mapStateToProps = (state) => {
-  return {}
+  return { batchUndo: state.batchUndo }
 }
 
 const mapDispatchToProps = (dispatch) =>
   bindActionCreators({
-    setKey, createKey, deleteKey, copyKey, sendNotification, setMetaKey, deleteMetaKey
+    setKey, createKey, deleteKey, copyKey, sendNotification, setMetaKey, deleteMetaKey,
+    onUndo: undoActions.undo, onRedo: undoActions.redo, resetBatchUndo,
   }, dispatch)
 
 export default connect(mapStateToProps, mapDispatchToProps)(TreeItem)
