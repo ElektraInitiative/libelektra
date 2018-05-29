@@ -26,8 +26,9 @@ enumDispatch ks = ksList ks >>= fmap catMaybes . mapM dispatch
     dispatch k = do
       es <- filterMeta "check/enum/#" k
       if null es then return Nothing else 
-        Just . (k, "elektra/spec/regex/check/enum", ) <$>
-        ifKey (keyGetMeta k "check/enum/multi") (multiEnum es) (singleEnum es)
+        keyGetMeta k "check/enum/multi" >>=
+        ifKey (singleEnum es) (multiEnum es) >>=
+        return . Just . (k, "elektra/spec/regex/check/enum", )
     multiEnum es s = do
       s <- keyString s
       let group = ('(' :) . (++ ")") . intercalate s

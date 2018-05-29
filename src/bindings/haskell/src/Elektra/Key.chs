@@ -21,7 +21,7 @@ module Elektra.Key (
   keyCmp, keyNeedSync, 
   keyIsBelow, keyIsDirectBelow, 
   keyRel, keyIsInactive, keyIsBinary, keyIsString, keyPtrNull, 
-  ifKey, withKey,
+  ifKey, withKey, whenKey,
   tmpRef
 ) where
 
@@ -31,8 +31,8 @@ import Foreign.Ptr (castPtr, nullPtr)
 import Foreign.ForeignPtr (FinalizerPtr (..), withForeignPtr, addForeignPtrFinalizer)
 import System.IO.Unsafe (unsafePerformIO)
 import Data.Maybe (isJust, fromJust)
-import Control.Monad (liftM)
-import Debug.Trace
+import Control.Monad (liftM, join)
+import Data.Bool (bool)
 
 {#context lib="libelektra" #}
 
@@ -190,14 +190,14 @@ instance Eq Key where
 -- ADDITIONAL HELPERS USEFUL IN HASKELL
 -- ***
 
---Key (C2HSImp.ForeignPtr (Key))
 addFinalizer :: Key -> IO Key
 addFinalizer (Key a) = addForeignPtrFinalizer keyDel a >> return (Key a)
 
-ifKey :: IO Key -> (Key -> IO a) -> IO a -> IO a
-ifKey k t f = do
-  null <- k >>= keyPtrNull
-  if null then f else k >>= t
+ifKey :: IO a -> (Key -> IO a) -> Key -> IO a
+ifKey f t k = join $ bool f (t k) <$> keyPtrNull k
+
+whenKey :: (Key -> IO ()) -> Key -> IO ()
+whenKey w k = ifKey (return ()) w k
 
 -- Temporarily increases the reference counter so e.g. a keyset will not take ownership so
 -- Haskell's finalizer can run successfully afterwards
