@@ -194,7 +194,7 @@ addFinalizer :: Key -> IO Key
 addFinalizer (Key a) = addForeignPtrFinalizer keyDel a >> return (Key a)
 
 ifKey :: IO a -> (Key -> IO a) -> Key -> IO a
-ifKey f t k = join $ bool f (t k) <$> keyPtrNull k
+ifKey f t k = join $ bool (t k) f <$> keyPtrNull k
 
 whenKey :: (Key -> IO ()) -> Key -> IO ()
 whenKey w k = ifKey (return ()) w k
