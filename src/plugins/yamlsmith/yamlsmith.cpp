@@ -80,18 +80,20 @@ int elektraYamlsmithGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 int elektraYamlsmithSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 	CppKey parent{ parentKey };
-	CppKeySet keys{ returned };
+	CppKeySetPlus keys{ returned };
 
 	ofstream file{ parent.getString () };
-	if (!file.is_open ())
+	if (file.is_open ())
+	{
+		for (auto key : keys.leaves ())
+		{
+			file << elektraKeyGetRelativeName (*key, *parent) << ": " << key.getString () << endl;
+		}
+	}
+	else
 	{
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_COULD_NOT_OPEN, parent.getKey (), "Unable to open file “%s”",
 				    parent.getString ().c_str ());
-	}
-
-	for (auto key : keys)
-	{
-		file << elektraKeyGetRelativeName (*key, *parent) << ": " << key.getString () << endl;
 	}
 
 	parent.release ();
