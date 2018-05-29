@@ -32,7 +32,7 @@ validationDispatch ks = ksList ks >>= fmap catMaybes . mapM dispatch
       where
         processAdditionalMetakeys Nothing = return Nothing
         processAdditionalMetakeys (Just rgx) = do
-          complementedRgx <- keyGetMeta k "check/validation/invert" >>= ifKey (return rgx) (const $ complement rgx) 
+          complementedRgx <- keyGetMeta k "check/validation/invert" >>= ifKey (return rgx) (const $ complement rgx)
           keyGetMeta k "check/validation/ignorecase" >>= whenKey (const $ const () <$> nocase complementedRgx)
           _ <- minimize complementedRgx
-          either (const Nothing) Just <$> asRegexp rgx
+          either (const Nothing) Just <$> asRegexp complementedRgx

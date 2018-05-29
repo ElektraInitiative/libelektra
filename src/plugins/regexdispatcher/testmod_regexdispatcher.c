@@ -76,6 +76,53 @@ static void test_enumdispatcher (void)
 	PLUGIN_CLOSE ();
 }
 
+static void test_validationdispatcher (void)
+{
+	printf ("test_validationdispatcher\n");
+
+	Key * parentKey = keyNew ("user/tests/regexdispatcher", KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+
+	PLUGIN_OPEN ("regexdispatcher");
+
+	KeySet * ks = ksNew (1, KS_END);
+	Key * key1 = keyNew ("/key1", KEY_META, "check/validation", "(a|b)", KEY_END);
+	Key * key2 = keyNew ("/key2", KEY_META, "check/validation", "(a|b)", KEY_META, "check/validation/invert", "", KEY_END);
+	Key * key3 = keyNew ("/key3", KEY_META, "check/validation", "[aA]", KEY_META, "check/validation/ignorecase", "", KEY_END);
+
+	ksAppendKey (ks, key1);
+	ksAppendKey (ks, key2);
+	ksAppendKey (ks, key3);
+
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
+
+	const Key * pKey1 = ksLookupByName (ks, "/key1", KDB_O_NONE);
+	const Key * checkValidation1 = keyGetMeta (pKey1, "elektra/spec/regex/check/validation");
+
+	succeed_if (checkValidation1, "the basic validation regex hasn't been generated");
+	printf ("base is %s\n", keyString (checkValidation1));
+	// libfa reformats it obviously as its minimized now
+	succeed_if (0 == strcmp (keyString (checkValidation1), "[ab]"), "the basic validation regex is invalid");
+
+	const Key * pKey2 = ksLookupByName (ks, "/key2", KDB_O_NONE);
+	const Key * checkValidation2 = keyGetMeta (pKey2, "elektra/spec/regex/check/validation");
+
+	succeed_if (checkValidation2, "the inverted validation regex hasn't been generated");
+	printf ("inverted is %s\n", keyString (checkValidation2));
+	// ([ab](.|)|[^ab])(.|)*|()
+	succeed_if (0 == strcmp (keyString (checkValidation2), "(a|b*)"), "the inverted validation regex is invalid");
+
+	const Key * pKey3 = ksLookupByName (ks, "/key3", KDB_O_NONE);
+	const Key * checkValidation3 = keyGetMeta (pKey3, "elektra/spec/regex/check/validation");
+
+	succeed_if (checkValidation3, "the case insensitive validation regex hasn't been generated");
+	printf ("ignored is %s\n", keyString (checkValidation3));
+	succeed_if (0 == strcmp (keyString (checkValidation3), "a"), "the case insensitive validiation regex is invalid");
+
+	keyDel (parentKey);
+	ksDel (ks);
+	PLUGIN_CLOSE ();
+}
 
 int main (int argc, char ** argv)
 {
@@ -86,6 +133,8 @@ int main (int argc, char ** argv)
 
 	test_rangedispatcher ();
 	test_enumdispatcher ();
+	// TODO currently excluded, libfa doesn't seem to work this way and for check/validation we can do it directly
+	// test_validationdispatcher ();
 
 	print_result ("testmod_regexdispatcher");
 
