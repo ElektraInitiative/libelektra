@@ -64,8 +64,8 @@ instance Ord FunctionCandidate
 parseKeySpecification :: RootKey -> Key -> IO KeySpecification
 parseKeySpecification r k = do
   pPath               <- keyGetRelativeName k r
-  pDefaultValue       <- ifKey (return Nothing) (fmap Just . keyString) <$> keyGetMeta k "default"
-  pKeyType            <- ifKey (return $ Right ".*") (fmap parseType . keyString) <$> keyGetMeta k "type"
+  pDefaultValue       <- keyGetMeta k "default" >>= ifKey (return Nothing) (fmap Just . keyString)
+  pKeyType            <- keyGetMeta k "type" >>= ifKey (return $ Right ".*") (fmap parseType . keyString)
   pFunctionCandidates <- let notReserved = liftA2 (&&) (/= "default") (/= "type") in mapM parseFunctionCandidate =<< keyFilterMeta k notReserved
   pTypeSpecification  <- parseTypeSpecification r k
   return $ KeySpecification pPath pDefaultValue pKeyType (sort pFunctionCandidates) pTypeSpecification
@@ -91,8 +91,8 @@ parseTypeSpecification r k = do
   --pVar   <- parsePathVariable . T.pack <$> keyString k
   pImpl  <- let isSeparator s = s == '\n' || s == ';'
                 parseImpl = fmap (Just . fmap T.unpack . T.split isSeparator . T.pack) . keyString
-            in  ifKey (return Nothing) parseImpl <$> keyGetMeta k "elektra/spec/impl"
-  pType  <- ifKey (return Nothing) (fmap parseTypeSignature . keyString) <$> keyGetMeta k "elektra/spec/type"
+            in  keyGetMeta k "elektra/spec/impl" >>= ifKey (return Nothing) parseImpl
+  pType  <- keyGetMeta k "elektra/spec/type" >>= ifKey (return Nothing) (fmap parseTypeSignature . keyString)
   -- TODO: improve error handling
   return $ TypeSpecification pName Nothing pType pImpl
 

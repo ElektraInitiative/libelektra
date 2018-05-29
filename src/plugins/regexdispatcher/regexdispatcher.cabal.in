@@ -19,10 +19,12 @@ library
   other-modules:     Elektra.Dispatch
                    , Elektra.RangeDispatcher
                    , Elektra.EnumDispatcher
+                   , Elektra.ValidationDispatcher
                    , Elektra.Range
                    , Elektra.Parsers
   build-depends:     base >= 4.7 && < 4.12
                    , libelektra-haskell == @KDB_VERSION@
+                   , libfa == 1.@KDB_VERSION@
                    , text
                    , megaparsec
   cpp-options:       -DENABLE_LOGGER_@ENABLE_LOGGER@
