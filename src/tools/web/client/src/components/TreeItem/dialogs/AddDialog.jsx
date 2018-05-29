@@ -136,8 +136,8 @@ export default class AddDialog extends Component {
           onRequestClose={this.handleClose}
         >
           <h1>Creating new {arrayKeyLength ? 'array ' : ''}key at <b>{path}</b></h1>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <div style={{ flex: 'initial' }}>
+          <div style={{ display: 'flex' }}>
+            <div style={{ flex: 1 }}>
               <TextField
                 ref="nameField"
                 floatingLabelText="name"
@@ -152,63 +152,65 @@ export default class AddDialog extends Component {
                 }}
               />
             </div>
+            <div style={{ flex: 1 }}>
+                <SelectField
+                  floatingLabelText="type"
+                  floatingLabelFixed={true}
+                  onFocus={() => !this.state.paused && this.setState({ paused: true })}
+                  onChange={(e, _, val) => {
+                    this.setState({ type: val, paused: false })
+                  }}
+                  value={type}
+                >
+                    {KEY_TYPES.map(({ type, name }) =>
+                      <MenuItem key={type} value={type} primaryText={name} />
+                    )}
+                </SelectField>
+            </div>
           </div>
-          <div style={{ display: 'block', marginTop: 8 }}>
+          <div style={{ display: 'flex' }}>
+            <div style={{ flex: 1 }}>
+                {type !== 'enum' && renderField({
+                  value,
+                  meta: { 'check/type': type },
+                  debounce: false,
+                  onChange: (value) => this.setState({ value }),
+                  onKeyPress: e => {
+                    if (!nameEmpty && !error && e.key === 'Enter') {
+                      this.handleCreate()
+                    }
+                  },
+                  onError: err => this.setState({ error: err }),
+                  label: 'value',
+                })}
+                {type === 'enum' && (
+                  <div style={{ display: 'block', marginTop: 16, color: 'rgba(0, 0, 0, 0.5)' }}>
+                      <b style={{ fontSize: '1.1em' }}>Please note:</b><br />
+                      You can only define options after the key is created.<br />
+                      Please create the key, then
+                      <i style={{ paddingLeft: 6, paddingRight: 8 }}>
+                        <ActionBuild style={{ width: 14, height: 14, marginRight: 4, color: 'rgba(0, 0, 0, 0.5)' }} />
+                        configure metadata
+                      </i>
+                      to define options.
+                  </div>
+                )}
+            </div>
+            <div style={{ flex: 1 }}>
               <SelectField
-                floatingLabelText="type"
+                floatingLabelText="visibility"
                 floatingLabelFixed={true}
                 onFocus={() => !this.state.paused && this.setState({ paused: true })}
                 onChange={(e, _, val) => {
-                  this.setState({ type: val, paused: false })
+                  this.setState({ visibility: val, paused: false })
                 }}
-                value={type}
+                value={visibility}
               >
-                  {KEY_TYPES.map(({ type, name }) =>
-                    <MenuItem key={type} value={type} primaryText={name} />
+                  {Object.keys(VISIBILITY_LEVELS).map(lvl =>
+                    <MenuItem key={lvl} value={lvl} primaryText={lvl} />
                   )}
               </SelectField>
-          </div>
-          <div style={{ display: 'block', marginTop: 8 }}>
-            <SelectField
-              floatingLabelText="visibility"
-              floatingLabelFixed={true}
-              onFocus={() => !this.state.paused && this.setState({ paused: true })}
-              onChange={(e, _, val) => {
-                this.setState({ visibility: val, paused: false })
-              }}
-              value={visibility}
-            >
-                {Object.keys(VISIBILITY_LEVELS).map(lvl =>
-                  <MenuItem key={lvl} value={lvl} primaryText={lvl} />
-                )}
-            </SelectField>
-          </div>
-          <div style={{ display: 'block', marginTop: 8 }}>
-              {type !== 'enum' && renderField({
-                value,
-                meta: { 'check/type': type },
-                debounce: false,
-                onChange: (value) => this.setState({ value }),
-                onKeyPress: e => {
-                  if (!nameEmpty && !error && e.key === 'Enter') {
-                    this.handleCreate()
-                  }
-                },
-                onError: err => this.setState({ error: err }),
-                label: 'value',
-              })}
-              {type === 'enum' && (
-                <div style={{ display: 'block', marginTop: 16, color: 'rgba(0, 0, 0, 0.5)' }}>
-                    <b style={{ fontSize: '1.1em' }}>Please note:</b><br />
-                    You can only define options after the key is created.<br />
-                    Please create the key, then
-                    <i style={{ paddingLeft: 6, paddingRight: 8 }}>
-                      <ActionBuild style={{ width: 14, height: 14, marginRight: 4, color: 'rgba(0, 0, 0, 0.5)' }} />
-                      configure metadata
-                    </i>
-                    to define options.
-                </div>
-              )}
+            </div>
           </div>
         </FocusTrapDialog>
     )
