@@ -5,61 +5,62 @@ ENV LANGUAGE C.UTF-8
 ENV LC_ALL C.UTF-8
 
 RUN apt-get update && apt-get -y install \
-    curl \
-    build-essential \
-    clang-5.0 \
-    clang-format-5.0 \
-    autotools-dev \
-    automake \
-    cmake \
-    pkg-config \
-    bison \
-    ruby-dev \
-    python-dev \
-    python-pip \
-    python3-dev \
-    libpython3-dev \
-    dh-lua \
-    liblua5.3-dev \
-    tclcl-dev \
-    libaugeas-dev \
-    libbotan1.10-dev \
-    libyajl-dev \
-    git \
-    libgit2-dev \
-    libboost-all-dev \
-    libssl-dev \
-    libdbus-1-dev \
-    libpcre3-dev \
-    libpcre++-dev \
-    libglib2.0-dev \
-    libxerces-c-dev \
-    libyaml-cpp-dev \
-    swig3.0 \
-    libuv1-dev \
-    ghc \
-    ghc-dynamic \
-    cabal-install \
-    alex \
-    happy \
-    c2hs \
-    checkinstall \
-    openjdk-8-jdk \
-    maven \
-    gobject-introspection \
-    libgirepository1.0-dev \
-    systemd \
-    libsystemd-dev \
-    llvm \
-    sloccount \
-    gawk \
-    lcov \
-    icheck \
-    valgrind && \
-    rm -rf /var/lib/apt/lists/*
+        curl \
+        build-essential \
+        clang-5.0 \
+        clang-format-5.0 \
+        autotools-dev \
+        automake \
+        cmake \
+        pkg-config \
+        bison \
+        ruby-dev \
+        python-dev \
+        python-pip \
+        python3-dev \
+        libpython3-dev \
+        dh-lua \
+        liblua5.3-dev \
+        tclcl-dev \
+        libaugeas-dev \
+        libbotan1.10-dev \
+        libyajl-dev \
+        git \
+        libgit2-dev \
+        libboost-all-dev \
+        libssl-dev \
+        libdbus-1-dev \
+        libpcre3-dev \
+        libpcre++-dev \
+        libglib2.0-dev \
+        libxerces-c-dev \
+        libyaml-cpp-dev \
+        swig3.0 \
+        libuv1-dev \
+        ghc \
+        ghc-dynamic \
+        cabal-install \
+        alex \
+        happy \
+        c2hs \
+        checkinstall \
+        openjdk-8-jdk \
+        maven \
+        gobject-introspection \
+        libgirepository1.0-dev \
+        systemd \
+        libsystemd-dev \
+        llvm \
+        sloccount \
+        gawk \
+        lcov \
+        icheck \
+        valgrind \
+        moreutils \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN cabal update && cabal install hspec QuickCheck
-RUN pip install --upgrade cmake_format
+RUN pip install --upgrade cmake_format pyyaml
 
 # Google Test
 ENV GTEST_ROOT=/opt/gtest

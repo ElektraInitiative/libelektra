@@ -71,10 +71,11 @@ RUN apt-get update \
         lcov \
         icheck \
         valgrind \
+        moreutils \
     && rm -rf /var/lib/apt/lists/*
 
 RUN cabal update && cabal install hspec QuickCheck
-RUN pip install --upgrade cmake_format
+RUN pip install --upgrade cmake_format pyyaml
 
 # Google Test
 ENV GTEST_ROOT=/opt/gtest
