@@ -26,7 +26,7 @@
 #include <kdbassert.h> // assertions (ELEKTRA_NOT_NULL)
 #include <kdbhelper.h> // malloc & free
 #include <kdbio.h>     // I/O binding functions (elektraIo*)
-#include <kdbio_uv.h>  // I/O binding constructor for uv (elektraIoUvNew)
+#include <kdbio/uv.h>  // I/O binding constructor for uv (elektraIoUvNew)
 
 #include <uv.h> // uv functions
 

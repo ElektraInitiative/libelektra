@@ -80,7 +80,7 @@ the initialization of an I/O binding.
 ```C
 #include <elektra/kdb.h>
 #include <elektra/kdbio.h>
-#include <elektra/kdbio_uv.h>
+#include <elektra/kdbio/uv.h>
 
 #include <uv.h>
 
@@ -143,7 +143,7 @@ The following examples are shortened for tangibility. The complete example is av
 ```C
 #include <elektra/kdb.h>
 #include <elektra/kdbio.h>
-#include <elektra/kdbio_uv.h>
+#include <elektra/kdbio/uv.h>
 #include <elektra/kdbnotification.h>
 
 #include <uv.h>

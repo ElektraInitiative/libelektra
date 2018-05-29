@@ -10,7 +10,7 @@
 
 #include <stdio.h> // printf() & co
 
-#include <kdbio_uv.h>
+#include <kdbio/uv.h>
 #include <kdbioplugin.h>
 
 #include <uv.h>

@@ -26,7 +26,7 @@
 #include <kdbassert.h>  // assertions (ELEKTRA_NOT_NULL)
 #include <kdbhelper.h>  // malloc & free
 #include <kdbio.h>      // I/O binding functions (elektraIo*)
-#include <kdbio_glib.h> // I/O binding constructor for glib (elektraIoGlibNew)
+#include <kdbio/glib.h> // I/O binding constructor for glib (elektraIoGlibNew)
 
 #include <glib.h> // glib functions
 

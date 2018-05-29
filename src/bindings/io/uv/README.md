@@ -38,7 +38,7 @@ Populated I/O interface
 
 #include <elektra/kdb.h>
 #include <elektra/kdbio.h>
-#include <elektra/kdbio_uv.h>
+#include <elektra/kdbio/uv.h>
 
 #include <uv.h>
 

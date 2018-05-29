@@ -39,7 +39,7 @@ Populated I/O interface
 
 #include <elektra/kdb.h>
 #include <elektra/kdbio.h>
-#include <elektra/kdbio_glib.h>
+#include <elektra/kdbio/glib.h>
 
 #include <glib.h>
 

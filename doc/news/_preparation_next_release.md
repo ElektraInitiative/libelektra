@@ -495,6 +495,8 @@ compiled against an older 0.8 version of Elektra will continue to work
 - <<TODO>>
 - `kdbtypes.h` now comes with support for C99 types
 - We added the private headerfiles `kdbnotificationinternal.h`, `kdbioplugin.h`. *(Thomas Wahringer)*
+- The I/O binding header files have been moved a new directory called `kdbio`.
+  For example, instead of including `elektra/kdbio_ev.h` users of the binding now include `elektra/kdbio/ev.h`. *(Thomas Wahringer)*
 
 ## Build
 
