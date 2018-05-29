@@ -209,12 +209,35 @@ export default class SettingsDialog extends Component {
     return this.handleEdit('visibility')(val)
   }
 
+  handleAbort = () => {
+    const { batchUndo, sendNotification, onUndo, onClose, refreshKey } = this.props
+    onClose()
+    const steps = []
+    for (let i = 0; i < batchUndo; i++) {
+      steps.push(i)
+    }
+    Promise.all(steps.map(onUndo)).then(() => {
+      sendNotification('Reverted ' + batchUndo + ' changes.')
+      refreshKey()
+    })
+  }
+
   render () {
     const { item, open, meta, field, onClose, onEdit } = this.props
     const { regexError } = this.state
     const { path } = item
 
     const actions = [
+      <FlatButton
+        label="Abort"
+        secondary={true}
+        onClick={this.handleAbort}
+        onKeyPress={e => {
+          if (e.key === 'Enter') {
+            this.handleAbort()
+          }
+        }}
+      />,
       <FlatButton
         label="Done"
         primary={true}

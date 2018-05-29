@@ -47,6 +47,7 @@ export default class TreeItem extends Component {
   handleOpen = (dialog) => (e) => {
     e.stopPropagation()
     const { dialogs } = this.state
+    this.props.resetBatchUndo()
     this.setState({ dialogs: { ...dialogs, [dialog]: true } })
   }
 
@@ -145,7 +146,7 @@ export default class TreeItem extends Component {
 
   render () {
     const {
-      data, item, instanceId, instanceVisibility,
+      data, item, instanceId, instanceVisibility, batchUndo, onUndo, onRedo,
       setMetaKey, deleteMetaKey, sendNotification, refreshPath,
     } = this.props
 
@@ -239,6 +240,11 @@ export default class TreeItem extends Component {
                   open={this.state.dialogs.edit}
                   onEdit={this.handleEdit}
                   onClose={this.handleClose('edit')}
+                  refreshKey={() => refreshPath(item.path)}
+                  sendNotification={sendNotification}
+                  batchUndo={batchUndo}
+                  onUndo={onUndo}
+                  onRedo={onRedo}
                 />
                 {!rootLevel &&
                   <ActionButton icon={<ContentCopy />} onClick={this.handleOpen('duplicate')} tooltip="duplicate key" />
@@ -257,6 +263,10 @@ export default class TreeItem extends Component {
                 <SettingsDialog
                   field={renderedField}
                   item={item}
+                  sendNotification={sendNotification}
+                  batchUndo={batchUndo}
+                  onUndo={onUndo}
+                  onRedo={onRedo}
                   meta={data && data.meta}
                   data={data && data.value}
                   open={this.state.dialogs.settings}

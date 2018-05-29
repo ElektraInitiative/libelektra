@@ -17,6 +17,7 @@ import keyReducer from './kdb'
 import pathReducer from './ls'
 import errorReducer from './error'
 import notificationReducer from './notification'
+import batchUndoReducer from './batchUndo'
 
 export default combineReducers({
   idle: idleReducer,
@@ -27,4 +28,5 @@ export default combineReducers({
   error: errorReducer,
   notification: notificationReducer,
   undoHistory: undoHistoryReducer,
+  batchUndo: batchUndoReducer,
 })
