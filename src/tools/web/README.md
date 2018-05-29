@@ -153,3 +153,52 @@ authenticate users, e.g. by [username/password auth](https://www.digitalocean.co
   - `src/containers/` - contains components that are connected to Redux
   - `src/css/` - contains CSS styles
   - `src/reducers/` - contains Redux reducers (used to process actions)
+
+
+## Development Guides
+
+### Updating dependencies
+
+Lockfiles (`package-lock.json`) can be updated by simply deleting the current
+lock file and running `npm install`, which creates a new lock file.
+
+Check for outdated dependencies via `npm outdated`. Dependencies can then be
+updated by running `npm update`.
+
+### Adding support for new metadata
+
+- Create a new sub dialog by, for example, copying the `NumberSubDialog.jsx`
+  file (or similar) to a new file in the
+  `client/src/components/TreeItem/dialogs` folder.
+
+- Include the sub dialog by adding it to the `SettingsDialog.jsx` file in the
+  same folder. For example, it could be added before the
+  AdditionalMetakeysSubDialog at the end of the file:
+
+```diff
++     <NewSubDialog
++       onChange={this.handleEdit('check/something')}
++       value={this.getMeta('check/something', '')}
++       saved={this.getSaved('check/something')}
++     />
+      <AdditionalMetakeysSubDialog
+        handleEdit={this.handleEdit.bind(this)}
+        getMeta={this.getMeta.bind(this)}
+        getSaved={this.getSaved.bind(this)}
+        meta={this.props.meta}
+        deleteMeta={this.props.deleteMeta}
+      />
+    </FocusTrapDialog>
+```
+
+- Mark the meta keys as handled by adding them to the `HANDLED_METADATA` array
+  in `client/src/components/TreeItem/dialogs/utils.js`:
+
+```diff
+export const HANDLED_METADATA = [
+  ...,
+  'visibility',
+  'binary',
++ 'check/something',
+]
+```
