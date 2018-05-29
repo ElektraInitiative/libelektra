@@ -142,6 +142,15 @@ keySetMeta check/long \
 keySetMeta fallback/#1 spec/tests/typechecker/key1 \
 ksAppendKey \
 keyClear \
+keySetName spec/tests/typechecker/key4 \
+keySetMeta check/validation a[0-9]+ \
+ksAppendKey \
+keyClear \
+keySetName spec/tests/typechecker/key5 \
+keySetMeta check/validation [a-z][0-9]+ \
+keySetMeta fallback/#1 spec/tests/typechecker/key4 \
+ksAppendKey \
+keyClear \
 kdbSet spec/tests/typechecker' | kdb shell
 
 kdb get spec/tests/typechecker/key1
