@@ -21,11 +21,11 @@ else
 	echo 'Warning: clang-format not available, skipping reformat-source'
 fi
 
-if which sponge > /dev/null && which cmake-format > /dev/null
+if which sponge > /dev/null || which cmake-format > /dev/null
 then
 	scripts/reformat-cmake
 else
-	echo 'Warning: Since either `sponge` or `cmake-format` are not available I will not check the formatting of the CMake code.'
+	echo 'Warning: Since either `sponge` or `cmake-format` is not available I will not check the formatting of the CMake code.'
 fi
 
 git diff --exit-code
