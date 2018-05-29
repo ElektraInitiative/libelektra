@@ -24,7 +24,6 @@ import RadioButtons from './fields/RadioButtons.jsx'
 import ToggleButton from './fields/ToggleButton.jsx'
 import AddDialog from './dialogs/AddDialog.jsx'
 import SettingsDialog from './dialogs/SettingsDialog.jsx'
-import RemoveDialog from './dialogs/RemoveDialog.jsx'
 import DuplicateDialog from './dialogs/DuplicateDialog.jsx'
 import EditDialog from './dialogs/EditDialog.jsx'
 import { parseEnum } from './utils'
@@ -270,16 +269,10 @@ export default class TreeItem extends Component {
                 />
                 {!rootLevel && !(meta && meta['restrict/remove'] === '1') &&
                   <ActionButton icon={<ActionDelete />} onClick={e => {
-                    this.handleOpen('remove')(e)
+                    this.handleDelete(item.path)
                     e.preventDefault()
                   }} tooltip="delete key" />
                 }
-                <RemoveDialog
-                  item={item}
-                  open={this.state.dialogs.remove}
-                  onDelete={this.handleDelete}
-                  onClose={this.handleClose('remove')}
-                />
                 <i>
                   {!isCheckbox && meta && meta.description}
                 </i>
