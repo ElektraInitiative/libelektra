@@ -46,8 +46,7 @@ export const VISIBILITY_LEVELS = {
   user: 5,
   advanced: 4,
   developer: 3,
-  debug: 2,
-  disabled: 1,
+  internal: 2,
 }
 
 export const visibility = (name) => VISIBILITY_LEVELS[name]
