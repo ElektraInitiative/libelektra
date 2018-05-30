@@ -44,7 +44,10 @@ static void m_output_meta (Key * k)
 		ELEKTRA_LOG_WARNING ("Meta is NULL");
 		return;
 	}
-	if (k->meta->size == 0) ELEKTRA_LOG_WARNING ("Meta is empty");
+	if (k->meta->size == 0)
+	{
+		ELEKTRA_LOG_WARNING ("Meta is empty");
+	}
 
 	ELEKTRA_LOG_WARNING ("Meta size: %zu", k->meta->size);
 
@@ -52,7 +55,10 @@ static void m_output_meta (Key * k)
 	while ((meta = keyNextMeta (k)) != 0)
 	{
 		// ELEKTRA_LOG_WARNING ("Meta KeySet size: %zu", k->meta->size);
-		if (!meta) ELEKTRA_LOG_WARNING ("Meta Key is NULL");
+		if (!meta)
+		{
+			ELEKTRA_LOG_WARNING ("Meta Key is NULL");
+		}
 		ELEKTRA_LOG_WARNING (", %s: %s", keyName (meta), (const char *) keyValue (meta));
 	}
 	ELEKTRA_LOG_WARNING ("\n");
@@ -61,7 +67,10 @@ static void m_output_meta (Key * k)
 static void m_output_key (Key * k)
 {
 	// output_meta will print endline
-	if (!k) ELEKTRA_LOG_WARNING ("Key is NULL");
+	if (!k)
+	{
+		ELEKTRA_LOG_WARNING ("Key is NULL");
+	}
 
 	ELEKTRA_LOG_WARNING ("Key ptr: %p", (void *) k);
 	ELEKTRA_LOG_WARNING ("keyname ptr: %p", (void *) k->key);
@@ -80,7 +89,10 @@ static void m_output_keyset (KeySet * ks)
 		ELEKTRA_LOG_WARNING ("KeySet is NULL");
 		return;
 	}
-	if (ks->size == 0) ELEKTRA_LOG_WARNING ("KeySet is empty");
+	if (ks->size == 0)
+	{
+		ELEKTRA_LOG_WARNING ("KeySet is empty");
+	}
 
 	ELEKTRA_LOG_WARNING ("KeySet size: %zu", ks->size);
 
@@ -521,11 +533,13 @@ static void updatePointers (MmapHeader * mmapHeader, char * dest)
 	{
 		ks = (KeySet *) ksPtr;
 		ksPtr += SIZEOF_KEYSET;
-		if (ks->array) ks->array = (Key **) ((char *) ks->array - sourceInt + destInt);
-
-		for (size_t j = 0; j < ks->size; ++j)
+		if (ks->array)
 		{
-			if (ks->array[j]) ks->array[j] = (Key *) ((char *) (ks->array[j]) - sourceInt + destInt);
+			ks->array = (Key **) ((char *) ks->array - sourceInt + destInt);
+			for (size_t j = 0; j < ks->size; ++j)
+			{
+				if (ks->array[j]) ks->array[j] = (Key *) ((char *) (ks->array[j]) - sourceInt + destInt);
+			}
 		}
 	}
 
@@ -615,7 +629,7 @@ int elektraMmapstorageGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 	}
 
 	char * mappedRegion = MAP_FAILED;
-	ELEKTRA_LOG_WARNING ("MMAP addr to map: %p", (void *) mmapHeader.mmapAddr);
+	ELEKTRA_LOG_WARNING ("MMAP old addr: %p", (void *) mmapHeader.mmapAddr);
 	mappedRegion = mmapMapFile ((void *) 0, fp, sbuf.st_size, MAP_PRIVATE, parentKey);
 	ELEKTRA_LOG_WARNING ("mappedRegion ptr: %p", (void *) mappedRegion);
 
@@ -649,7 +663,13 @@ int elektraMmapstorageGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 	ksClose (returned);
 	updatePointers (&mmapHeader, mappedRegion);
 	mmapToKeySet (mappedRegion, returned);
-
+	/*
+	char * niceCopy = elektraMalloc (mmapHeader.mmapSize);
+	memcpy (niceCopy, mappedRegion, mmapHeader.mmapSize);
+	updatePointers (&mmapHeader, niceCopy);
+	mmapToKeySet (niceCopy, returned);
+	munmap (mappedRegion, mmapHeader.mmapSize);
+	*/
 	fclose (fp);
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
@@ -657,6 +677,7 @@ int elektraMmapstorageGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 int elektraMmapstorageSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 	// set all keys
+	m_output_keyset (returned);
 
 	int errnosave = errno;
 	FILE * fp;

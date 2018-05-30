@@ -71,6 +71,21 @@ static KeySet * largeTestKeySet (void)
 
 /* -- Functions ------------------------------------------------------------------------------------------------------------------------- */
 
+static void test_mmap_get_set_empty (const char * tmpFile)
+{
+	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("mmapstorage");
+
+	KeySet * ks = ksNew (0, KS_END);
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+
+	keyDel (parentKey);
+	ksDel (ks);
+	PLUGIN_CLOSE ();
+}
+
 static void test_mmap_get_set (const char * tmpFile)
 {
 	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
@@ -79,11 +94,9 @@ static void test_mmap_get_set (const char * tmpFile)
 	KeySet * ks = ksNew (0, KS_END);
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
-	KeySet * toAppend = simpleTestKeySet ();
-	ksAppend (ks, toAppend);
-	ksDel (toAppend);
+	ksDel (ks);
+	ks = simpleTestKeySet ();
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
-	ksClear (ks);
 	ksDel (ks);
 	ks = ksNew (0, KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
@@ -458,7 +471,38 @@ static void test_mmap_ksGetSize (const char * tmpFile)
 	PLUGIN_CLOSE ();
 }
 
-/* TODO
+static void test_mmap_double_get (const char * tmpFile)
+{
+	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("mmapstorage");
+
+	KeySet * ks = simpleTestKeySet ();
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+
+	KeySet * first = ksNew (0, KS_END);
+	succeed_if (plugin->kdbGet (plugin, first, parentKey) == 1, "kdbGet was not successful");
+	KeySet * second = ksNew (0, KS_END);
+	succeed_if (plugin->kdbGet (plugin, second, parentKey) == 1, "kdbGet was not successful");
+	succeed_if (first->array != second->array, "ks->array points to same thing");
+
+	compare_keyset (first, ks);
+	compare_keyset (ks, first);
+
+	ksDel (ks);
+	ks = metaTestKeySet();
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+
+	compare_keyset (first, second);
+	compare_keyset (second, first);
+	ksDel (first);
+	ksDel (second);
+
+	ksDel (ks);
+	keyDel (parentKey);
+	PLUGIN_CLOSE ();
+}
+
 static void test_mmap_ksAppendKey (const char * tmpFile)
 {
 	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
@@ -468,12 +512,11 @@ static void test_mmap_ksAppendKey (const char * tmpFile)
 	KeySet * ks = simpleTestKeySet ();
 	ssize_t origSize = ksGetSize (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
-	ksDel (ks);
-	ks = ksNew (0, KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
 
 	ssize_t appendSize = 0;
-	Key * toAppend = keyNew ("user/tests/mmapstorage/simpleKey/zdefinitelynew", KEY_VALUE, "fresh value", KEY_END);
+	Key * toAppend = keyNew ("user/my/new/key", KEY_END);
+	ELEKTRA_LOG_WARNING ("will now do ksAppendKey");
 	if ((appendSize = ksAppendKey (ks, toAppend)) == -1)
 	{
 		yield_error ("ksAppendKey failed");
@@ -492,8 +535,35 @@ static void test_mmap_ksAppendKey (const char * tmpFile)
 	ksDel (ks);
 	PLUGIN_CLOSE ();
 }
-*/
 
+static void test_mmap_ksAppend (const char * tmpFile)
+{
+	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("mmapstorage");
+
+	KeySet * ks = simpleTestKeySet ();
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
+
+	KeySet * toAppend = ksNew (10, keyNew ("user/tests/mmapstorage/zzzz", KEY_VALUE, "root key", KEY_END),
+				keyNew ("user/tests/mmapstorage/simpleKey/c", KEY_VALUE, "c value", KEY_END),
+				keyNew ("user/tests/mmapstorage/simpleKey/d", KEY_VALUE, "d value", KEY_END), KS_END);
+	if (ksAppend (ks, toAppend) == -1)
+	{
+		yield_error ("ksAppend failed");
+	}
+
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+	ksDel (ks);
+	ks = ksNew (0, KS_END);
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
+
+	ksDel (toAppend);
+	keyDel (parentKey);
+	ksDel (ks);
+	PLUGIN_CLOSE ();
+}
 
 /* -- Key operation tests --------------------------------------------------------------------------------------------------------------- */
 /* -- Key name operation tests ---------------------------------------------------------------------------------------------------------- */
@@ -508,23 +578,28 @@ int main (int argc, char ** argv)
 	printf ("==================\n\n");
 
 	init (argc, argv);
+	const char * tmpFile = elektraFilename ();
 
 #ifdef DEBUG
 	testDynArray1 ();
 #endif
 
-	const char * tmpFile = elektraFilename ();
-
+	// call once before clearStorage, to test non existent file
 	test_mmap_get_set (tmpFile);
-	clearStorage (tmpFile);
 
+	clearStorage (tmpFile);
+	test_mmap_get_set_empty (tmpFile);
+
+	clearStorage (tmpFile);
+	test_mmap_get_set (tmpFile);
+
+	clearStorage (tmpFile);
 	test_mmap_set_get (tmpFile);
 	test_mmap_get_after_reopen (tmpFile);
 	test_mmap_set_get_large_keyset (tmpFile);
 	test_mmap_ks_copy (tmpFile);
 
 	clearStorage (tmpFile);
-
 	test_mmap_empty_after_clear (tmpFile);
 
 	test_mmap_meta (tmpFile);
@@ -535,7 +610,7 @@ int main (int argc, char ** argv)
 	clearStorage (tmpFile);
 	test_mmap_ks_copy_with_meta (tmpFile);
 
-	/* KeySet operation tests */
+	// KeySet operation tests
 	clearStorage (tmpFile);
 	test_mmap_ksDupFun (tmpFile, ksDup);
 
@@ -551,9 +626,14 @@ int main (int argc, char ** argv)
 	clearStorage (tmpFile);
 	test_mmap_ksGetSize (tmpFile);
 
-	// TODO: enable ksAppendKey when test is fixed
-	// clearStorage (tmpFile);
-	// test_mmap_ksAppendKey (tmpFile);
+	clearStorage (tmpFile);
+	test_mmap_double_get (tmpFile); // regression test
+
+	clearStorage (tmpFile);
+	test_mmap_ksAppendKey (tmpFile);
+
+	clearStorage (tmpFile);
+	test_mmap_ksAppend (tmpFile);
 
 	printf ("\ntestmod_mmapstorage RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

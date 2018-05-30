@@ -2536,15 +2536,6 @@ int ksResize (KeySet * ks, size_t alloc)
 			return 0;
 	}
 
-	if (ks->array != NULL && (test_bit (ks->flags, KS_FLAG_MMAP_ARRAY) == KS_FLAG_MMAP_ARRAY))
-	{
-		// need to move the ks->array out of mmap
-		Key ** new = elektraMalloc (sizeof (struct _Key *) * ks->alloc);
-		elektraMemcpy (new, ks->array, ks->size + 1); // copy including ending NULL
-		ks->array = new;
-		clear_bit (ks->flags, KS_FLAG_MMAP_ARRAY);
-	}
-
 	if (ks->array == NULL)
 	{ /* Not allocated up to now */
 		ks->alloc = alloc;
@@ -2558,6 +2549,20 @@ int ksResize (KeySet * ks, size_t alloc)
 		}
 	}
 	ks->alloc = alloc;
+
+	if (test_bit (ks->flags, KS_FLAG_MMAP_ARRAY) == KS_FLAG_MMAP_ARRAY)
+	{
+		// need to move the ks->array out of mmap
+		Key ** new = elektraMalloc (sizeof (struct _Key *) * ks->alloc);
+		if (!new)
+		{
+			/*errno = KDB_ERR_NOMEM;*/
+			return -1;
+		}
+		elektraMemcpy (new, ks->array, ks->size + 1); // copy including ending NULL
+		ks->array = new;
+		clear_bit (ks->flags, KS_FLAG_MMAP_ARRAY);
+	}
 
 	if (elektraRealloc ((void **) &ks->array, sizeof (struct _Key *) * ks->alloc) == -1)
 	{
