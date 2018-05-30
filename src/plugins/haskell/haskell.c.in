@@ -16,6 +16,11 @@
 #include <kdbpluginprocess.h>
 #include <stdio.h>
 
+// TODO:
+// Haskell plugins need some custom way to store plugin data
+// Directly calling pluginSetData or pluginGetData would override the pluginProcess data on some OS
+// and then crash everything... (works on mac, fails on linux)
+
 int elektraHaskellOpen (Plugin * handle, Key * errorKey)
 {
 	ElektraPluginProcess * pp = elektraPluginGetData (handle);

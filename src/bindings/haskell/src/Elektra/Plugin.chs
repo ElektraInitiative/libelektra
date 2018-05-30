@@ -50,15 +50,15 @@ instance Enum PluginStatus where
 -- If you want to use other data structures you have to provide an instance of PluginData yourself
 -- This way we can hide the ugly casting to c's void pointer
 class PluginData d where
-  store :: d -> IO (Ptr ())
-  retrieve :: Ptr () -> IO (Maybe d)
+  store :: (Ptr () -> IO ()) -> d -> IO ()
+  retrieve :: Ptr () -> Maybe d
 
 elektraPluginSetData :: PluginData d => Plugin -> d -> IO ()
-elektraPluginSetData p d = store d >>= elektraPluginSetDataRaw p
+elektraPluginSetData p = store (elektraPluginSetDataRaw p)
 {#fun unsafe elektraPluginSetData as elektraPluginSetDataRaw {`Plugin', `Ptr ()'} -> `()' #}
 
 elektraPluginGetData :: PluginData d => Plugin -> IO (Maybe d)
-elektraPluginGetData p = elektraPluginGetDataRaw p >>= retrieve
+elektraPluginGetData p = retrieve <$> elektraPluginGetDataRaw p
 {#fun unsafe elektraPluginGetData as elektraPluginGetDataRaw {`Plugin'} -> `Ptr ()' #}
 
 -- ***
