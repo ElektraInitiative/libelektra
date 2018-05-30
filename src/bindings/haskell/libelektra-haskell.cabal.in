@@ -21,7 +21,7 @@ library
                    , Elektra.Plugin
                    , Elektra.Ease
                    , Elektra.Errors
-  build-depends:     base >= 4.7 && < 5
+  build-depends:     base >= 4.9 && < 4.12
   includes:          kdb.h
                    , kdbplugin.h
                    , kdbease.h
@@ -35,14 +35,13 @@ library
   other-extensions:  ForeignFunctionInterface
   extra-libraries:   @CABAL_ELEKTRA_DEPENDENCY@
   build-tools:       c2hs
-  ghc-options:       -fPIC
 
 test-suite testhaskell_basic
   type:              exitcode-stdio-1.0
   hs-source-dirs:    "@CMAKE_CURRENT_SOURCE_DIR@/test"
   main-is:           Elektra.hs
-  build-depends:     base
-                   , libelektra-haskell
+  build-depends:     base >= 4.9 && < 4.12
+                   , libelektra-haskell == @KDB_VERSION@
                    , hspec
                    , QuickCheck
   ghc-options:       -O0 -j
@@ -52,8 +51,8 @@ test-suite testhaskell_basic_optimized
   type:              exitcode-stdio-1.0
   hs-source-dirs:    "@CMAKE_CURRENT_SOURCE_DIR@/test"
   main-is:           Elektra.hs
-  build-depends:     base
-                   , libelektra-haskell
+  build-depends:     base >= 4.9 && < 4.12
+                   , libelektra-haskell == @KDB_VERSION@
                    , hspec
                    , QuickCheck
   ghc-options:       -O1 -j
@@ -63,8 +62,8 @@ test-suite testhaskell_realworld
   type:              exitcode-stdio-1.0
   hs-source-dirs:    "@CMAKE_CURRENT_SOURCE_DIR@/test"
   main-is:           ElektraRealWorld.hs
-  build-depends:     base
-                   , libelektra-haskell
+  build-depends:     base >= 4.9 && < 4.12
+                   , libelektra-haskell == @KDB_VERSION@
                    , hspec
                    , QuickCheck
   ghc-options:       -O0 -j
@@ -74,8 +73,8 @@ test-suite testhaskell_realworld_optimized
   type:              exitcode-stdio-1.0
   hs-source-dirs:    "@CMAKE_CURRENT_SOURCE_DIR@/test"
   main-is:           ElektraRealWorld.hs
-  build-depends:     base
-                   , libelektra-haskell
+  build-depends:     base >= 4.9 && < 4.12
+                   , libelektra-haskell == @KDB_VERSION@
                    , hspec
                    , QuickCheck
   ghc-options:       -O1 -j

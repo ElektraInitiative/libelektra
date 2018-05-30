@@ -10,8 +10,6 @@
 
 module Main (main) where
 
-import Distribution.Simple
-import Distribution.InstalledPackageInfo (InstalledPackageInfo)
 import Control.Monad        (mapM_, when, filterM, sequence, unless)
 import Control.Applicative  (liftA2)
 import Data.Foldable        (toList, traverse_)
@@ -23,6 +21,8 @@ import System.Exit          (exitFailure)
 import System.Process       (readProcess)
 import System.Directory     (createDirectoryIfMissing, doesFileExist)
 
+import Distribution.Simple
+import Distribution.InstalledPackageInfo (InstalledPackageInfo)
 import qualified Data.Set                                     as S
 import qualified Distribution.Simple.Compiler                 as C
 import qualified Distribution.Simple.Setup                    as C
@@ -48,8 +48,6 @@ import qualified Distribution.InstalledPackageInfo            as IPI
 
 #if MIN_VERSION_Cabal(1,24,0)
 type PackageIndex a = C.PackageIndex IPI.InstalledPackageInfo
-#elif MIN_VERSION_Cabal(1,22,0)
-type PackageIndex a = C.PackageIndex (IPI.InstalledPackageInfo_ a)
 #else
 type PackageIndex a = C.PackageIndex
 #endif
@@ -115,17 +113,17 @@ elektraHaskellPluginPostBuildHook _ flags pd lbi = do
       readProcess (C.programPath lt) ("-static" : "-o" : libraryName : ls) "" >>= logV
     mainLink ln = let filename = "libHS" ++ (C.unPackageName . C.packageName . C.package) pd ++ suffix lbi in 
       logV "linking main library" >>
-      readProcess (C.programPath ln) ["-f", libraryPath, filename] "" >>= logV
+      readProcess (C.programPath ln) ["-s", "-f", "@CMAKE_CURRENT_BINARY_DIR@/" ++ libraryPath, filename] "" >>= logV
     mainDepLink ln = do
       logV "linking main library for libraries"
-      let readProcessFn prfx = readProcess (C.programPath ln) ["-f", libraryPath, prfx ++ "/" ++ libraryName] "" >>= logV
+      let readProcessFn prfx = readProcess (C.programPath ln) ["-s", "-f", "@CMAKE_CURRENT_BINARY_DIR@/" ++ libraryPath, prfx ++ "/" ++ libraryName] "" >>= logV
       readProcessFn "@CMAKE_LIBRARY_OUTPUT_DIRECTORY@"
       readProcessFn "haskell"
     depLink ln lib = do
       l <- showLibrary lbi lib
       logV ("linking library " ++ l)
       let name prfx = prfx ++ "/libHS" ++ getLibraryName lib ++ suffix lbi
-      let readProcessFn name = readProcess (C.programPath ln) ["-f", l, name] "" >>= logV
+      let readProcessFn name = readProcess (C.programPath ln) ["-s", "-f", l, name] "" >>= logV
       let cmakeName = name "@CMAKE_LIBRARY_OUTPUT_DIRECTORY@"
       unless (cmakeName == l) $ readProcessFn cmakeName
       readProcessFn "haskell"
