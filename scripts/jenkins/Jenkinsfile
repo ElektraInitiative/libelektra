@@ -334,6 +334,7 @@ def generateFullBuildStages() {
     return tasks
 }
 
+/* Stage for analysing open Tasks and running sloccount */
 def buildTodo() {
     def stageName = "todo"
     def openTaskPatterns = '''\
@@ -356,6 +357,7 @@ def buildTodo() {
     }]
 }
 
+/* Stage checking if release notes have been updated */
 def buildCheckReleaseNotes() {
     def stageName = "check-release-notes"
     return [(stageName): {
@@ -368,6 +370,7 @@ def buildCheckReleaseNotes() {
     }]
 }
 
+/* Stage running Icheck to see if the API has been modified */
 def buildIcheck() {
     def stageName = "icheck"
     return [(stageName): {
@@ -380,6 +383,7 @@ def buildIcheck() {
     }]
 }
 
+/* Stage building and uploading the documentation */
 def buildDoc() {
     def stageName = "doc"
     cmakeFlags = [
