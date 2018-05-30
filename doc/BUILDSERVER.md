@@ -1,8 +1,8 @@
 # Buildserver
 
 The [Elektra buildserver](https://build.libelektra.org/) handles a variety of
-tasks that reaches from testing PR's to deploying new versions of the Elektra
-homepage.
+tasks that reaches from testing Pull Requests (PRs) to deploying new versions
+of the Elektra homepage.
 
 ## Legacy build jobs
 Build jobs that are not ported into Jenkinsfiles use
@@ -84,6 +84,7 @@ Pushes to any of those branches will trigger a new build automatically.
 The following phrases can be used as comments to manually trigger a specific
 build:
 
+* jenkins build [daily](https://build.libelektra.org/jenkins/job/elektra-jenkinsfile-daily/) please
 * jenkins build [gcc-configure-debian](https://build.libelektra.org/job/elektra-gcc-configure-debian/) please
 * jenkins build [gcc-configure-debian-debug](https://build.libelektra.org/job/elektra-gcc-configure-debian-debug) please
 * jenkins build [gcc-configure-debian-intree](https://build.libelektra.org/job/elektra-gcc-configure-debian-intree/) please
@@ -99,16 +100,15 @@ build:
 * jenkins build [git-buildpackage-wheezy](https://build.libelektra.org/job/elektra-git-buildpackage-wheezy/) please
 * jenkins build [icc](https://build.libelektra.org/job/elektra-icc/) please
 * jenkins build [ini](https://build.libelektra.org/job/elektra-ini-mergerequests/) please
+* jenkins build [libelektra](https://build.libelektra.org/jenkins/job/libelektra/) please
 * jenkins build [local-installation](https://build.libelektra.org/job/elektra-local-installation/) please
 * jenkins build [mingw64](https://build.libelektra.org/job/elektra-gcc-configure-mingw-w64/) please
 * jenkins build [multiconfig-gcc-stable](https://build.libelektra.org/job/elektra-multiconfig-gcc-stable/) please
 * jenkins build [source-package-test](https://build.libelektra.org/job/elektra-source-package-test/) please
-* jenkins build [libelektra](https://build.libelektra.org/jenkins/job/libelektra/) please
-* jenkins build [daily](https://build.libelektra.org/jenkins/job/elektra-jenkinsfile-daily/) please
 
-Additionally `jenkins build all please` can be used to to trigger all existing
-build jobs relevant for PR's.
-Since  this is needs a lot of resources please use it only if
+Additionally `jenkins build all please` can be used to trigger all build jobs
+relevant for PR's.
+Since this needs a lot of resources please use it only if
 
 - all of the **standard PR jobs** were already **successful**, and
 - you are sure that you **do not want change anything** in your PR anymore
@@ -138,6 +138,15 @@ The Jenkinsfile describes the steps used to run tests.
 Helper functions for easily adding new tests are available
 (buildAndTest, BuildAndTestAsan, ...).
 
+Coverage reports are generated automatically when using the buildAndTest helper
+and the appropriate Cmake flags for coverage generation have been set. They are
+uploaded to https://doc.libelektra.org/coverage/.
+
+Artifacts from `ctest` are also preserved automatically when using
+buildAndTest.
+The function also takes care of providing a stagename based path so multiple tests
+can not overwrite files that share the same name.
+
 Tests are executed in order dictated by the Jenkinsfile.
 In general new tests should be added to the 'full build stage' that will only
 run after a standard full test run succeeded.
@@ -150,8 +159,9 @@ your needs.
 ## Deployment
 For runs of the build job that are run in the master branch we also execute
 deployment steps after all tests pass.
-We use it to build debian packages and move it into the repository.
-Additionally we recompile the homepage and deploy it.
+We use it to build debian packages and move it into the repository on the a7
+node.
+Additionally we recompile the homepage and deploy it on the a7 node.
 
 ## Issues with the build environment
 If you have issues that are related to the build system you can open a normal
