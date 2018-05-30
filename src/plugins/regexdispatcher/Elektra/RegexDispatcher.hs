@@ -28,7 +28,7 @@ import qualified Data.Text as T
 dispatch :: KeySet -> Key -> IO Bool
 dispatch ks k = do
   ksList ks >>= mapM_ (keyListMeta >=> mapM_ print)
-  dispatched <- fmap concat . sequence $ map ($ ks) [rangeDispatch, enumDispatch, validationDispatch]
+  dispatched <- fmap concat . sequence $ map ($ ks) [rangeDispatch, enumDispatch]
   forM_ dispatched $ uncurry3 keySetMeta
   ksList ks >>= mapM_ (keyListMeta >=> mapM_ print)
   return . not $ null dispatched
