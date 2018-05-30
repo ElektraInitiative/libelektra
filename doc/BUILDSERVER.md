@@ -39,7 +39,7 @@ Currently Elektra uses two different files.
 
 ### Jenkinsfile.daily
 * Jenkinsfile.daily is for daily maintanence tasks, like cleaning up build servers.
-* [Buildjob: elektra-jenkinsfile-daily](https://build.libelektra.org/jenkins/job/elektra-jenkinsfile-daily/)
+* [Buildjob: libelektra-daily](https://build.libelektra.org/jenkins/job/libelektra-daily/)
 * [Jenkinsfile.daily](https://master.libelektra.org/scripts/jenkins/Jenkinsfile.daily)
 
 ### Jenkinsfile
@@ -71,7 +71,7 @@ This setting can be modified on the respective build job configuration site.
 All Triggers are described in the configuration of the respective build jobs.
 
 The
-[daily build](https://build.libelektra.org/jenkins/job/elektra-jenkinsfile-daily/)
+[daily build](https://build.libelektra.org/jenkins/job/libelektra-daily/)
 is executed according to a cron schedule.
 
 The [libelektra](https://build.libelektra.org/jenkins/job/libelektra/)
@@ -84,7 +84,7 @@ Pushes to any of those branches will trigger a new build automatically.
 The following phrases can be used as comments to manually trigger a specific
 build:
 
-* jenkins build [daily](https://build.libelektra.org/jenkins/job/elektra-jenkinsfile-daily/) please
+* jenkins build [daily](https://build.libelektra.org/jenkins/job/libelektra-daily/) please
 * jenkins build [gcc-configure-debian](https://build.libelektra.org/job/elektra-gcc-configure-debian/) please
 * jenkins build [gcc-configure-debian-debug](https://build.libelektra.org/job/elektra-gcc-configure-debian-debug) please
 * jenkins build [gcc-configure-debian-intree](https://build.libelektra.org/job/elektra-gcc-configure-debian-intree/) please
