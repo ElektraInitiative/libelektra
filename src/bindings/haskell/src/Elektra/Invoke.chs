@@ -23,16 +23,16 @@ import Foreign.ForeignPtr (withForeignPtr, newForeignPtr_)
 
 #include <kdbinvoke.h>
 
-{#pointer *ElektraInvokeHandle foreign newtype #}
-type InvokeFunction = C2HSImp.Ptr ()
+{#pointer *ElektraInvokeHandle newtype #}
+type InvokeFunction = Ptr ()
 
 -- Handles are already pointers, so just cast them from/to void pointers
 instance PluginData ElektraInvokeHandle where
-	store (ElektraInvokeHandle p) = withForeignPtr p (return . castPtr) 
-	retrieve p = if p == nullPtr then (return Nothing) else (Just . ElektraInvokeHandle <$> newForeignPtr_ (castPtr p))
+  store a (ElektraInvokeHandle p) = a $ castPtr p
+  retrieve p = if p == nullPtr then Nothing else (Just . ElektraInvokeHandle $ castPtr p)
 
-ifHandle :: ElektraInvokeHandle -> IO a -> (ElektraInvokeHandle -> IO a) -> IO a
-ifHandle h@(ElektraInvokeHandle p) f t = withForeignPtr p (\p' -> if p' == nullPtr then f else t h)
+ifHandle :: IO a -> (ElektraInvokeHandle -> IO a) -> ElektraInvokeHandle -> IO a
+ifHandle f t h@(ElektraInvokeHandle p) = if p == nullPtr then f else t h
 
 -- ***
 -- Invoke METHODS
@@ -49,7 +49,7 @@ elektraInvokeOpen elektraPluginName config errorKey = do
 {#fun unsafe elektraInvokeGetPluginConfig {`ElektraInvokeHandle'} -> `KeySet' #}
 {#fun unsafe elektraInvokeGetPluginName {`ElektraInvokeHandle'} -> `String' #}
 elektraInvokeGetPluginData :: PluginData d => ElektraInvokeHandle -> IO (Maybe d)
-elektraInvokeGetPluginData h = elektraInvokeGetPluginDataRaw h >>= retrieve
+elektraInvokeGetPluginData h = retrieve <$> elektraInvokeGetPluginDataRaw h
 {#fun unsafe elektraInvokeGetPluginData as elektraInvokeGetPluginDataRaw {`ElektraInvokeHandle'} -> `Ptr ()' return* #}
 {#fun unsafe elektraInvokeGetModules {`ElektraInvokeHandle'} -> `KeySet' #}
 {#fun unsafe elektraInvokeGetExports {`ElektraInvokeHandle'} -> `KeySet' #}

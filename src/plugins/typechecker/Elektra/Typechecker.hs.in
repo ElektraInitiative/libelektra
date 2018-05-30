@@ -133,23 +133,21 @@ logDebugT = logDebug . T.pack
 openIni :: Plugin -> Key -> IO PluginStatus
 openIni p k = do
   logDebugT "Opening ini"
-  ini <- elektraInvokeOpen "ini" Nothing (Just k)
-  ifHandle ini (return Error) (\i -> elektraPluginSetData p i >> return Success) 
-
+  elektraInvokeOpen "ini" Nothing (Just k) >>= ifHandle (return Error) (\i -> elektraPluginSetData p i >> return Success)
+  
 closeIni :: Plugin -> Key -> IO PluginStatus
 closeIni p k = do
   logDebugT "Closing ini"
-  ini <- elektraPluginGetData p
-  maybe (return Success) closeHandle ini
+  elektraPluginGetData p >>= maybe (return Success) closeHandle
   where
-    closeHandle ini = ifHandle ini (return Success) (\i -> elektraInvokeClose i (Just k) >> return Success)
-
+    closeHandle = ifHandle (return Success) (\i -> elektraInvokeClose i (Just k) >> return Success)
+  
 elektraTypecheckerOpen :: Plugin -> Key -> IO PluginStatus
-elektraTypecheckerOpen p k = openIni p k
+elektraTypecheckerOpen = openIni
 hs_elektraHaskellOpen = elektraPluginOpenWith elektraTypecheckerOpen
 
 elektraTypecheckerClose :: Plugin -> Key -> IO PluginStatus
-elektraTypecheckerClose p k = closeIni p k
+elektraTypecheckerClose = closeIni
 hs_elektraHaskellClose = elektraPluginCloseWith elektraTypecheckerClose
 
 elektraTypecheckerGet :: Plugin -> KeySet -> Key -> IO PluginStatus
