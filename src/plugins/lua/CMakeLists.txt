@@ -46,10 +46,7 @@ if (ADDTESTING_PHASE)
 		# test environment clears env so setting LUA_CPATH is no option
 		# we workaround this by changing the current directory to our bindings
 		# output directory + per default lua loads modules from current directory
-		add_plugintest (lua
-			MEMLEAK
-			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../../bindings/swig/lua/
-			INSTALL_TEST_DATA)
+		add_plugintest (lua MEMLEAK WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../../bindings/swig/lua/ INSTALL_TEST_DATA)
 
 	else ()
 		message (WARNING "swig_lua bindings are required for testing, test deactivated")
