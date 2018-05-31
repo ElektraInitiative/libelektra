@@ -25,13 +25,10 @@
 
 #define TEST_KEY_ID "DDEBEF9EE2DC931701338212DAF635B17F230E8D"
 
-static void test_install_key (void)
+static void init_gpgme (void)
 {
 	gpgme_error_t err;
-	gpgme_ctx_t ctx;
-	gpgme_genkey_result_t result;
 
-	// initialize gpgme
 	gpgme_check_version (NULL);
 	setlocale (LC_ALL, "");
 	gpgme_set_locale (NULL, LC_CTYPE, setlocale (LC_CTYPE, NULL));
@@ -41,11 +38,17 @@ static void test_install_key (void)
 
 	err = gpgme_engine_check_version (GPGME_PROTOCOL_OpenPGP);
 	succeed_if (!err, "failed to initialize gpgme");
+}
+
+static void test_install_key (void)
+{
+	gpgme_error_t err;
+	gpgme_ctx_t ctx;
+	gpgme_genkey_result_t result;
 
 	// generate the GPG key
 	err = gpgme_new (&ctx);
 	succeed_if (!err, "failed to initialize gpgme handle");
-
 
 	const char * keyParams =
 		"<GnupgKeyParms format=\"internal\">\n"
@@ -76,7 +79,12 @@ int main (int argc, char ** argv)
 
 	init (argc, argv);
 
-	test_install_key ();
+	init_gpgme ();
+	for (int i = 0; i < 10; i++)
+	{
+		// to see how the build server responds
+		test_install_key ();
+	}
 
 	print_result ("gpgme");
 	return nbError;
