@@ -80,9 +80,24 @@ delete a key (and all its subkeys) - works like `kdb rm -r`
         + path: `user/hello` (string) - path to the elektra config
 
 + Response 200
-   
+
 + Response 400 (application/json; charset=utf-8)
     + Attributes (Error)
+
+
+## find keys [GET /kdbFind/{+query}]
+
++ Request (application/json)
+    + Parameters
+        + query: `hello` (string) - search query
+
++ Response 200 (application/json; charset=utf-8)
+    + Body
+
+            [
+                "user/hello",
+                "user/helloWorld"
+            ]
 
 
 ## metakeys [/kdbMeta/{+path}]
@@ -114,7 +129,7 @@ delete a key (and all its subkeys) - works like `kdb rm -r`
     + Attributes (Error)
 
 
-## Move operation [POST /kdbMv/{+from}]
+## move operation [POST /kdbMv/{+from}]
 
 move a key (and all its subkeys) to a new path - works like `kdb mv -r`
 
@@ -132,7 +147,7 @@ move a key (and all its subkeys) to a new path - works like `kdb mv -r`
     + Attributes (Error)
 
 
-## Copy operation [POST /kdbCp/{+from}]
+## copy operation [POST /kdbCp/{+from}]
 
 copy a key (and all its subkeys) to a new path - works like `kdb cp -r`
 
