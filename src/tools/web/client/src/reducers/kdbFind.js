@@ -7,7 +7,7 @@
  */
 
 import {
-  FIND_KEY_REQUEST, FIND_KEY_SUCCESS, FIND_KEY_FAILURE
+  FIND_KEY_REQUEST, FIND_KEY_SUCCESS, FIND_KEY_FAILURE, CLEAR_SEARCH,
 } from '../actions'
 
 const initialState = {
@@ -27,6 +27,9 @@ export default function batchUndoReducer (state = initialState, action) {
 
     case FIND_KEY_FAILURE:
       return { loading: false, error: action.error, done: true, results: [], query: action.query }
+
+    case CLEAR_SEARCH:
+      return initialState
 
     default:
       return state

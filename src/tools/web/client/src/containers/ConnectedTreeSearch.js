@@ -12,13 +12,13 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 
 import TreeSearch from '../components/TreeSearch'
-import { findKey } from '../actions'
+import { findKey, clearSearch } from '../actions'
 
 const mapStateToProps = (state) => {
   return { search: state.kdbFind }
 }
 
 const mapDispatchToProps = (dispatch) =>
-  bindActionCreators({ findKey }, dispatch)
+  bindActionCreators({ findKey, clearSearch }, dispatch)
 
 export default connect(mapStateToProps, mapDispatchToProps)(TreeSearch)

@@ -130,6 +130,10 @@ export const findKey = (id, query) => thunkCreator({
     }),
 })
 
+export const CLEAR_SEARCH = 'CLEAR_SEARCH'
+
+export const clearSearch = () => ({ type: CLEAR_SEARCH })
+
 // ~~~
 
 export const MOVE_KEY_REQUEST = 'MOVE_KEY_REQUEST'
