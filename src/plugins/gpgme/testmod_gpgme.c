@@ -53,9 +53,9 @@ static void test_install_key (void)
 	const char * keyParams =
 		"<GnupgKeyParms format=\"internal\">\n"
 		"Key-Type: RSA\n"
-		"Key-Length: 1024\n"
+		"Key-Length: 512\n"
 		"Subkey-Type: RSA\n"
-		"Subkey-Length: 1024\n"
+		"Subkey-Length: 512\n"
 		"Name-Real: Elektra Test Key\n"
 		"Name-Comment: DO NOT USE THIS KEY IN PRODUCTION\n"
 		"Name-Email: test@libelektra.org\n"
@@ -80,11 +80,7 @@ int main (int argc, char ** argv)
 	init (argc, argv);
 
 	init_gpgme ();
-	for (int i = 0; i < 3; i++)
-	{
-		// to see how the build server responds
-		test_install_key ();
-	}
+	test_install_key ();
 
 	print_result ("gpgme");
 	return nbError;
