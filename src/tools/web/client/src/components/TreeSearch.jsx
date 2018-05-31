@@ -38,7 +38,7 @@ export default class TreeSearch extends React.Component {
         .catch(() => sendNotification('error while searching!'))
     } else {
       clearSearch()
-      setTimeout(() => sendNotification('search cleared!'))
+      setTimeout(() => sendNotification('search cleared!'), 200)
     }
   }
 

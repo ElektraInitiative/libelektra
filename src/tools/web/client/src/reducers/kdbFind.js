@@ -7,10 +7,12 @@
  */
 
 import {
-  FIND_KEY_REQUEST, FIND_KEY_SUCCESS, FIND_KEY_FAILURE, CLEAR_SEARCH,
+  FIND_KEY_REQUEST, FIND_KEY_SUCCESS, FIND_KEY_FAILURE,
+  CLEAR_SEARCH, CLEAR_SEARCH_FINAL,
 } from '../actions'
 
 const initialState = {
+  clearing: false,
   loading: false,
   error: false,
   done: false,
@@ -20,15 +22,18 @@ const initialState = {
 export default function batchUndoReducer (state = initialState, action) {
   switch (action.type) {
     case FIND_KEY_REQUEST:
-      return { loading: true, error: false, done: false, results: [], query: action.query }
+      return { clearing: false, loading: true, error: false, done: false, results: [], query: action.query }
 
     case FIND_KEY_SUCCESS:
-      return { loading: false, error: false, done: true, results: action.result.result, query: action.query }
+      return { clearing: false, loading: false, error: false, done: true, results: action.result.result, query: action.query }
 
     case FIND_KEY_FAILURE:
-      return { loading: false, error: action.error, done: true, results: [], query: action.query }
+      return { clearing: false, loading: false, error: action.error, done: true, results: [], query: action.query }
 
     case CLEAR_SEARCH:
+      return { ...initialState, clearing: true }
+
+    case CLEAR_SEARCH_FINAL:
       return initialState
 
     default:
