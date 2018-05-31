@@ -564,41 +564,46 @@ def generateArtifactStages() {
 }
 
 def buildPackageDebianStretch() {
-    return withDockerEnv(DOCKER_IMAGES.stretch, [DOCKER_OPTS.MOUNT_MIRROR]) {
-        withCredentials([file(credentialsId: 'jenkins-key', variable: 'KEY'),
-                         file(credentialsId: 'jenkins-secret-key', variable: 'SKEY')]) {
-            sh "gpg --import $KEY"
-            sh "gpg --import $SKEY"
-        }
-        withEnv(["DEBSIGN_PROGRAM=gpg",
-                 "DEBFULLNAME=Jenkins (User for Elektra automated build system)",
-                 "DEBEMAIL=autobuilder@libelektra.org"]) {
-            sh "rm -R ./*"
-            def targetDir="./libelektra"
-            checkout scm: [
-                $class: 'GitSCM',
-                branches: scm.branches,
-                extensions: scm.extensions + [
-                    [$class: 'PerBuildTag'],
-                    [$class: 'RelativeTargetDirectory',
-                     relativeTargetDir: targetDir]
-                ],
-                userRemoteConfigs: scm.userRemoteConfigs
-            ]
-            dir(targetDir) {
-                sh "git checkout -B temp"
-                sh "git tag -f $VERSION"
+    def stageName = "buildPackage/debian/stretch"
+    return [(stageName): {
+        stage(stageName) {
+            return withDockerEnv(DOCKER_IMAGES.stretch, [DOCKER_OPTS.MOUNT_MIRROR]) {
+                withCredentials([file(credentialsId: 'jenkins-key', variable: 'KEY'),
+                                 file(credentialsId: 'jenkins-secret-key', variable: 'SKEY')]) {
+                    sh "gpg --import $KEY"
+                    sh "gpg --import $SKEY"
+                }
+                withEnv(["DEBSIGN_PROGRAM=gpg",
+                         "DEBFULLNAME=Jenkins (User for Elektra automated build system)",
+                         "DEBEMAIL=autobuilder@libelektra.org"]) {
+                    sh "rm -R ./*"
+                    def targetDir="./libelektra"
+                    checkout scm: [
+                        $class: 'GitSCM',
+                        branches: scm.branches,
+                        extensions: scm.extensions + [
+                            [$class: 'PerBuildTag'],
+                            [$class: 'RelativeTargetDirectory',
+                             relativeTargetDir: targetDir]
+                        ],
+                        userRemoteConfigs: scm.userRemoteConfigs
+                    ]
+                    dir(targetDir) {
+                        sh "git checkout -B temp"
+                        sh "git tag -f $VERSION"
 
-                sh "git checkout -B debian origin/debian"
-                sh "git merge --no-ff -m 'merge $VERSION' temp"
+                        sh "git checkout -B debian origin/debian"
+                        sh "git merge --no-ff -m 'merge $VERSION' temp"
 
-                sh "dch -l '.$BUILD_NUMBER' 'auto build'"
-                sh "git commit -am 'auto build $VERSION'"
+                        sh "dch -l '.$BUILD_NUMBER' 'auto build'"
+                        sh "git commit -am 'auto build $VERSION'"
 
-                sh "gbp buildpackage -sa"
+                        sh "gbp buildpackage -sa"
+                    }
+                }
             }
         }
-    }
+    }]
 }
 
 def deployHomepage() {
