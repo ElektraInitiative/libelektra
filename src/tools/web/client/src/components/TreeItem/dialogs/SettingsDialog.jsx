@@ -100,10 +100,23 @@ export default class SettingsDialog extends Component {
       // persist value to kdb and show notification
       const { timeout } = this.state[key] || {}
 
-      // remove metakey when setting to 0
-      const action = (key.startsWith('restrict/') && value === '0')
-        ? deleteMeta
-        : setMeta
+      let action = setMeta
+
+      // remove metakeys when setting to 0 or empty
+      if (key.startsWith('restrict/')) {
+        if (value === '0' || value.trim() === '') {
+          action = deleteMeta
+        }
+      }
+
+      // remove metakeys when setting to default value
+      if (key === 'check/type' && value === 'any') {
+        action = deleteMeta
+      }
+      if (key === 'visibility' && value === 'user') {
+        action = deleteMeta
+      }
+
       action(key, value)
         .then(() => {
           if (timeout) clearTimeout(timeout)
