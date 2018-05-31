@@ -258,13 +258,6 @@ export default class Configuration extends Component {
                       </div>
                 }
             </CardText>
-            {(id !== 'my') &&
-              <CardActions>
-                  <Link tabIndex="0" to="/" style={{ textDecoration: 'none' }}>
-                      <FlatButton primary label="done" />
-                  </Link>
-              </CardActions>
-            }
         </Card>
     )
   }
