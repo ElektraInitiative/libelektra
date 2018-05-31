@@ -179,19 +179,18 @@ input[type="search"].error {
   box-sizing: border-box;
   padding-top: 12px;
 }
-.ExplorerView ul li.category > span.item {}
-/* Folded */
-.ExplorerView ul li.category.folded > span.item > .opener {
+.ExplorerView ul li.category > span.item > .opener {
   margin-top: 3px;
 }
+/* Folded */
+.ExplorerView ul li.category.folded > span.item > .opener {}
 .ExplorerView ul li.category.folded {}
 .ExplorerView ul li.category.folded > span.item {}
 /* Unfolded */
 .ExplorerView ul li.category:not(.folded) > span.item > .opener {
-  margin-top: 5px;
   mask-position: bottom left;
   background-position: bottom left;
-  transform: translate(28px) rotate(90deg);
+  transform: translate(28px, 2px) rotate(90deg);
   transform-origin: left top;
 }
 .ExplorerView ul li.category:not(.folded) {}
