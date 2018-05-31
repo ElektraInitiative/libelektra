@@ -104,7 +104,7 @@ export default class AddDialog extends Component {
         }}
       />,
       <FlatButton
-        label="Create array key"
+        label="Create array"
         primary={true}
         onClick={this.handleCreateArrayKey}
         onKeyPress={e => {
