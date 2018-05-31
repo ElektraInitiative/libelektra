@@ -87,6 +87,9 @@ ASAN disables the following parts during cmake as they throw errors:
 - plugins:
   - crypto_botan
 
+Further kdb_check_internal skips tests that output sanitizer warnings during
+load as it would make the test fail.
+
 ## bindings
 
 - swig_ruby excluded due to failing tests (see #1770)

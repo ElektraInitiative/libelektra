@@ -502,6 +502,9 @@ This value specifies the root directory of a local copy of the [Google Test][] f
   top level directory of `GTEST_ROOT`. If this file exists, then the build system
   will use the sources files at `GTEST_ROOT` to translate tests that use [Google Test][].
 
+It can be provided as CMake or environment variable.
+If both options are provided the value passed via CMake takes precedence.
+
 [Google Test]: https://github.com/google/googletest
 
 It is recommended that you browse through all of the options using `ccmake`.
@@ -735,3 +738,4 @@ and the
 
 - [INSTALL](INSTALL.md)
 - [TESTING](TESTING.md)
+- [BUILDSERVER](BUILDSERVER.md)

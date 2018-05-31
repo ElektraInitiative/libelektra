@@ -141,7 +141,8 @@ compiled against an older 0.8 version of Elektra will continue to work
 
 These notes are of interest for people maintaining packages of Elektra:
 
-- <<TODO>>
+- The cmake variable `GTEST_ROOT` now respects the environment variable
+  `GTEST_ROOT` if it is set. *(Lukas Winkler)*
 - <<TODO>>
 - <<TODO>>
 
@@ -170,6 +171,12 @@ plugins, bindings and tools are always up to date. Furthermore, we changed:
 These notes are of interest for people developing Elektra:
 
 - A build job checks if PRs modify the release notes. *(Markus Raab)*
+- `clang` tests have been ported to the new build system *(Lukas Winkler et al)*
+- `clang-5.0` is now used for clang tests by the build system *(Lukas Winkler)*
+- An additional build job on Ubuntu:xenial has been added *(Lukas Winkler)*
+- Several improvments to the build system have been implemented *(Lukas Winkler)*:
+  - Better Docker image handling
+  - abort of previously queued but unfinished runs on new commits
 - <<TODO>>
 - <<TODO>>
 - Ported GCC ASAN build job to new build system *(René Schwaiger + Lukas Winkler)*
@@ -191,6 +198,7 @@ These notes are of interest for people developing Elektra:
    [DownloadProject](https://github.com/Crascit/DownloadProject). If you want to use a local installation of
    [Google Test][] instead, please set the value of `GTEST_ROOT` to the path of you local copy of the
    [Google Test][] framework. *(René Schwaiger)*
+- [Google Test][] is installed in Docker images used by the build system.
 
 [`cmake-format`]: https://github.com/cheshirekow/cmake_format
 [#1887]: https://github.com/ElektraInitiative/libelektra/issues/1887

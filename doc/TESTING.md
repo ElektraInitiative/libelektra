@@ -395,3 +395,5 @@ See also the build server job:
 
 - [COMPILE](COMPILE.md).
 - [INSTALL](INSTALL.md).
+- [BUILDSERVER](BUILDSERVER.md).
+

@@ -7,7 +7,6 @@ ENV LC_ALL C.UTF-8
 RUN apt-get update && apt-get -y install \
     curl \
     build-essential \
-    clang \
     autotools-dev \
     automake \
     cmake \
@@ -45,6 +44,16 @@ RUN apt-get update && apt-get -y install \
     lcov \
     valgrind && \
     rm -rf /var/lib/apt/lists/*
+
+# Google Test
+ENV GTEST_ROOT=/opt/gtest
+ARG GTEST_VER=4e4df226fc197c0dda6e37f5c8c3845ca1e73a49
+RUN mkdir -p ${GTEST_ROOT} \
+    && cd /tmp \
+    && curl -o gtest.tar.gz \
+      -L https://github.com/google/googletest/archive/${GTEST_VER}.tar.gz \
+    && tar -zxvf gtest.tar.gz --strip-components=1 -C ${GTEST_ROOT} \
+    && rm gtest.tar.gz
 
 # Create User:Group
 # The id is important as jenkins docker agents use the same id that is running

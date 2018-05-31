@@ -112,7 +112,7 @@ endif ()
 
 set (
 	GTEST_ROOT
-	""
+	"$ENV{GTEST_ROOT}"
 	CACHE
 		PATH
 		"This value specifies the path to a local version of Google Test. \
