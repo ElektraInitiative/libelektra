@@ -17,6 +17,16 @@
 
 #include "logchange.h"
 
+static void logKeys (KeySet * ks, const char * message)
+{
+	ksRewind (ks);
+	Key * k = 0;
+	while ((k = ksNext (ks)) != 0)
+	{
+		printf ("%s: %s\n", message, keyName (k));
+	}
+}
+
 int elektraLogchangeGet (Plugin * handle, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
 {
 	if (!strcmp (keyName (parentKey), "system/elektra/modules/logchange"))
@@ -40,17 +50,14 @@ int elektraLogchangeGet (Plugin * handle, KeySet * returned, Key * parentKey ELE
 	if (ks) ksDel (ks);
 	elektraPluginSetData (handle, ksDup (returned));
 
-	return 1; /* success */
-}
-
-static void logKeys (KeySet * ks, const char * message)
-{
-	ksRewind (ks);
-	Key * k = 0;
-	while ((k = ksNext (ks)) != 0)
+	if (strncmp (keyString (ksLookupByName (elektraPluginGetConfig (handle), "/log/get", 0)), "1", 1) == 0)
 	{
-		printf ("%s: %s\n", message, keyName (k));
+		KeySet * logset = ksNew (1, keyDup (parentKey), KS_END);
+		logKeys (logset, "loading configuration");
+		ksDel (logset);
 	}
+
+	return 1; /* success */
 }
 
 int elektraLogchangeSet (Plugin * handle, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
@@ -114,4 +121,3 @@ Plugin * ELEKTRA_PLUGIN_EXPORT (logchange)
 		ELEKTRA_PLUGIN_CLOSE,	&elektraLogchangeClose,
 		ELEKTRA_PLUGIN_END);
 }
-

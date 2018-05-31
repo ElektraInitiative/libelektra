@@ -5,7 +5,7 @@ cache:
     $HOME/.m2
     $HOME/.cabal
     $HOME/Library/Haskell
-    $TRAVIS_BUILD_DIR/../build/.cabal-sandbox
+    $HOME/elektra-cabal-sandbox
 
 #
 # Define the build matrix
@@ -138,6 +138,7 @@ before_install:
       brew install libgcrypt
       brew install libgit2
       brew install libuv
+      brew install libev
       brew install lua
       brew install openssl
       export PKG_CONFIG_PATH=/usr/local/opt/openssl/lib/pkgconfig
@@ -163,6 +164,16 @@ before_install:
       which happy || cabal install happy
       which alex || cabal install alex
       which c2hs || cabal install c2hs
+      cd $HOME
+      mkdir elektra-cabal-sandbox
+      cd elektra-cabal-sandbox
+      cabal sandbox init
+      cabal install 'base >=4.9 && <4.12' 'containers >=0.5 && <0.6' \
+        'directory >=1.2 && <1.4' 'process >=1.4 && <1.7' 'binary >=0.8 && <0.9' \
+        'haskell-src-exts-any' 'pretty -any' 'hint >=0.7.0 && <0.8.0' 'temporary -any' \
+        'exceptions -any' 'text -any' 'simple-logger -any' 'megaparsec -any' \
+        'hspec -any' 'QuickCheck-any' --avoid-reinstalls
+      export HASKELL_SHARED_SANDBOX=$HOME/elektra-cabal-sandbox
     fi
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
@@ -175,6 +186,7 @@ before_install:
       sudo apt-get install libyaml-cpp-dev
       sudo apt-get install libuv-dev
       sudo apt-get install libdbus-1-dev
+      sudo apt-get install libev-dev
       sudo apt-get install libxerces-c-dev
       sudo apt-get install moreutils # contains `sponge` required by `reformat-cmake`
       sudo pip install --upgrade cmake_format
@@ -189,7 +201,7 @@ before_script:
   - >
     [[ "$TRAVIS_OS_NAME" == "linux" ]] && INSTALL_DIR="$PWD/install" || INSTALL_DIR="/usr/local"
   - SYSTEM_DIR="$PWD/kdbsystem"
-  # gets created due to sandbox caching automatically
+  - mkdir build
   - cd build
   - >
     [[ $ASAN == ON ]] && CMAKE_OPT=(-DENABLE_ASAN=ON) || CMAKE_OPT=()

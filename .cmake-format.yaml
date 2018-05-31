@@ -52,3 +52,9 @@ additional_commands:
       TEST_LINK_ELEKTRA: "*"
       LINK_PLUGIN: "*"
       WORKING_DIRECTORY: "*"
+
+  download_project:
+    kwargs:
+      PROJ: 1
+      GIT_REPOSITORY: 1
+      GIT_TAG: 1

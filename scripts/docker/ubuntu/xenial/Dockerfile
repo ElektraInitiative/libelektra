@@ -17,6 +17,7 @@ RUN apt-get update && apt-get -y install \
         tclcl-dev \
         libaugeas-dev \
         libyajl-dev \
+        git \
         libgit2-dev \
         libboost-all-dev \
         libssl-dev \

@@ -29,6 +29,7 @@
 #include <editor.hpp>
 #include <export.hpp>
 #include <file.hpp>
+#include <find.hpp>
 #include <fstab.hpp>
 #include <get.hpp>
 #include <globalmount.hpp>
@@ -91,6 +92,7 @@ public:
 		m_factory.insert (std::make_pair ("mount", new Cnstancer<MountCommand> ()));
 		m_factory.insert (std::make_pair ("remount", new Cnstancer<RemountCommand> ()));
 		m_factory.insert (std::make_pair ("shell", new Cnstancer<ShellCommand> ()));
+		m_factory.insert (std::make_pair ("find", new Cnstancer<FindCommand> ()));
 		m_factory.insert (std::make_pair ("getmeta", new Cnstancer<MetaGetCommand> ()));
 		m_factory.insert (std::make_pair ("rmmeta", new Cnstancer<MetaRemoveCommand> ()));
 		m_factory.insert (std::make_pair ("setmeta", new Cnstancer<MetaSetCommand> ()));

@@ -13,7 +13,6 @@ if (LIBFA_FOUND)
 
 	add_haskell_plugin (typechecker
 			    SANDBOX_ADD_SOURCES
-			    "src/bindings/haskell"
 			    "src/libs/typesystem/libfa"
 			    "src/libs/typesystem/specelektra"
 			    "src/libs/typesystem/spectranslator"
@@ -25,8 +24,9 @@ if (LIBFA_FOUND)
 	if (TARGET typechecker)
 
 		if (DEPENDENCY_PHASE)
-			file (COPY "${CMAKE_CURRENT_SOURCE_DIR}/sandbox/" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/sandbox/")
-
+			configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/sandbox/sandbox.cabal.in"
+					"${CMAKE_CURRENT_BINARY_DIR}/sandbox/sandbox.cabal"
+					@ONLY) # no extra dependency required so we can inline it without needing a user sandbox
 			add_custom_command (OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/sandbox/cabal.sandbox.config"
 					    COMMAND ${CABAL_EXECUTABLE} sandbox delete -v0
 					    COMMAND ${CABAL_EXECUTABLE} sandbox init -v0
@@ -34,7 +34,7 @@ if (LIBFA_FOUND)
 						    "${CMAKE_BINARY_DIR}/src/libs/typesystem/libfa"
 					    COMMAND ${CABAL_EXECUTABLE} sandbox add-source -v0
 						    "${CMAKE_BINARY_DIR}/src/libs/typesystem/specelektra"
-					    COMMAND ${CABAL_EXECUTABLE} install --only-dependencies -v0
+					    COMMAND ${CABAL_EXECUTABLE} install --only-dependencies --avoid-reinstalls --offline -v0
 					    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/sandbox/")
 			add_custom_target ("typechecker-ghc-plugin"
 					   ALL
@@ -53,5 +53,5 @@ if (LIBFA_FOUND)
 	mark_as_advanced (TYPECHECKER_GHC_PLUGIN TYPECHECKER_GHC_PLUGIN_PATH)
 
 else (LIBFA_FOUND)
-	remove_plugin (typechecker "libfa not found (usually bundled with augeas), but required for haskell plugins")
+	remove_plugin (typechecker "libfa not found (usually bundled with augeas), but required for the typechecker plugin")
 endif (LIBFA_FOUND)

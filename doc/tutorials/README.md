@@ -25,6 +25,7 @@ provides.
 - [Python Bindings](python-kdb.md)
 - [Ruby Bindings](/src/bindings/swig/ruby/README.md)
 - [Code Generation](/src/tools/gen/README.md)
+- [Notifications](notifications.md)
 
 ## System Administrators
 
@@ -52,4 +53,3 @@ These tutorials provide additional information on how to
 install and set up specific plugins and tools.
 
 - [Snippet Sharing REST-Service](snippet-sharing-rest-service.md)
-

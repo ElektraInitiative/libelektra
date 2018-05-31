@@ -23,6 +23,7 @@ RUN apt-get update && apt-get -y install \
     libaugeas-dev \
     libbotan1.10-dev \
     libyajl-dev \
+    git \
     libgit2-dev \
     libboost-all-dev \
     libssl-dev \
@@ -35,7 +36,10 @@ RUN apt-get update && apt-get -y install \
     swig3.0 \
     libuv1-dev \
     ghc \
+    ghc-dynamic \
     cabal-install \
+    alex \
+    happy \
     c2hs \
     checkinstall \
     openjdk-8-jdk \
@@ -51,8 +55,6 @@ RUN apt-get update && apt-get -y install \
     icheck \
     valgrind && \
     rm -rf /var/lib/apt/lists/*
-
-RUN cabal update && cabal install hspec QuickCheck
 
 # Handle Java
 RUN echo 'export JAVA_HOME=$(readlink -f /usr/bin/javac | sed "s:/bin/javac::")'>> /etc/bash.bashrc
@@ -78,3 +80,15 @@ RUN useradd \
     jenkins
 
 USER ${JENKINS_USERID}
+
+# Handle Haskell dependencies
+ENV HASKELL_SHARED_SANDBOX /home/jenkins/elektra-cabal-sandbox
+RUN mkdir -p $HASKELL_SHARED_SANDBOX \
+    && cd $HASKELL_SHARED_SANDBOX \
+    && cabal update \
+    && cabal sandbox init \
+    && cabal install 'base >=4.9 && <4.12' 'containers >=0.5 && <0.6' \
+        'directory >=1.2 && <1.4' 'process >=1.4 && <1.7' 'binary >=0.8 && <0.9' \
+        'haskell-src-exts-any' 'pretty -any' 'hint >=0.7.0 && <0.8.0' 'temporary -any' \
+        'exceptions -any' 'text -any' 'simple-logger -any' 'megaparsec -any' \
+        'hspec -any' 'QuickCheck-any' --avoid-reinstalls

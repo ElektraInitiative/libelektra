@@ -2,22 +2,25 @@
 # Only searches for the GHC compiler and not other haskell compilers as it is
 # the most widespread and advanced haskell compiler.
 #
-#  CABAL_EXECUTABLE      - Path to the cabal executable
-#  C2HS_EXECUTABLE	     - Path to the c2hs executable
-#  GHC_EXECUTABLE        - Path to the ghc executable
-#  GHC-PKG_EXECUTABLE    - Path to the ghc-pkg executable
-#  GHC_HSPEC_FOUND       - True if the hspec library is available
-#  GHC_QUICKCHECK_FOUND  - True if the QuickCheck library is available
-#  GHC_VERSION			 - The numeric version of the ghc executable
-#  GHC_TARGET_PLATFORM	 - The target platform string of ghc
-#                          sanitized (darwin -> osx, unknown-linux -> linux)
-#  CABAL_DYNLIB_PATH     - The default path where cabal installs dynamic libraries
-#  CABAL_CUSTOM_TARGET   - The default dependencies of the custom Setup.hs for plugins
-#  HASKELL_FOUND         - True if the whole required haskell environment exists
+#  CABAL_EXECUTABLE       - Path to the cabal executable
+#  C2HS_EXECUTABLE        - Path to the c2hs executable
+#  ALEX_EXECUTABLE        - Path to the alex executable
+#  HAPPY_EXECUTABLE       - Path to the happy executable
+#  GHC_EXECUTABLE         - Path to the ghc executable
+#  GHC-PKG_EXECUTABLE     - Path to the ghc-pkg executable
+#  GHC_HSPEC_FOUND        - True if the hspec library is available
+#  GHC_QUICKCHECK_FOUND   - True if the QuickCheck library is available
+#  GHC_VERSION            - The numeric version of the ghc executable
+#  GHC_TARGET_PLATFORM    - The target platform string of ghc
+#                           sanitized (darwin -> osx, unknown-linux -> linux)
+#  CABAL_DYNLIB_PATH      - The default path where cabal installs dynamic libraries
+#  CABAL_CUSTOM_TARGET    - The default dependencies of the custom Setup.hs for plugins
+#  HASKELL_SHARED_SANDBOX - The sandbox containing all required dependencies for haskell things
+#  HASKELL_FOUND          - True if the whole required haskell environment exists
 #    This variable is set to true if CABAL_EXECUTABLE, C2HS_EXECUTABLE, GHC_EXECUTABLE
 #    and GHC-PKG_EXECUTABLE are all available. If BUILD_TESTING is enabled, it also
 #    requires GHC_HSPEC_FOUND and GHC_QUICKCHECK_FOUND to be true.
-#  HASKELL_NOTFOUND_INFO - A string describing which haskell dependency is missing
+#  HASKELL_NOTFOUND_INFO  - A string describing which haskell dependency is missing
 #
 
 find_program (GHC_EXECUTABLE ghc)
@@ -94,20 +97,33 @@ if (GHC-PKG_EXECUTABLE)
 	set (CABAL_DYNLIB_PATH "${CABAL_LOCATION}/lib/${GHC_DYNAMIC_LIBRARY_DIR}")
 
 	# dependencies for the default cmake Setup.hs
+	# For cabal the system version should be used
 	set (CABAL_CUSTOM_SETUP
 "custom-setup
   setup-depends:
-    Cabal      >= 1.24 && < 2.1,
-    containers >= 0.4  && < 0.6,
-    base       >= 4.7  && < 5  ,
-    directory  >= 1.1  && < 1.4,
-    process    >= 1.2  && < 1.7,
-    filepath   >= 1.3  && < 1.5")
+    Cabal      >= 1.24.0 && < 2.4  ,
+    base       >= 4.9    && < 4.12 ,
+    containers >= 0.5    && < 0.6  ,
+    directory  >= 1.2    && < 1.4  ,
+    process    >= 1.4    && < 1.7  ,
+    binary     >= 0.8    && < 0.9" )
+
+	set (HASKELL_SHARED_SANDBOX "$ENV{HASKELL_SHARED_SANDBOX}/.cabal-sandbox")
+	get_filename_component (HASKELL_SHARED_SANDBOX "${HASKELL_SHARED_SANDBOX}" REALPATH)
+    if (HASKELL_SHARED_SANDBOX AND IS_DIRECTORY "${HASKELL_SHARED_SANDBOX}")
+		set (HASKELL_FOUND 1)
+    else (HASKELL_SHARED_SANDBOX AND IS_DIRECTORY "${HASKELL_SHARED_SANDBOX}")
+    	if (IS_DIRECTORY "${CMAKE_BINARY_DIR}/.cabal-sandbox")
+    		set (HASKELL_SHARED_SANDBOX "${CMAKE_BINARY_DIR}/.cabal-sandbox")
+			set (HASKELL_FOUND 1)
+    	else (IS_DIRECTORY "${CMAKE_BINARY_DIR}/.cabal-sandbox")
+    		set (HASKELL_NOTFOUND_INFO "cabal sandbox not found")
+    	endif (IS_DIRECTORY "${CMAKE_BINARY_DIR}/.cabal-sandbox")
+    endif (HASKELL_SHARED_SANDBOX AND IS_DIRECTORY "${HASKELL_SHARED_SANDBOX}")
 
 	# By using cabal sandboxes we can install hspec and QuickCheck to the sandbox without
 	# any concerns as they are independent from the global environment. So they are not required.
 	# All set, have fun with haskell!
-	set (HASKELL_FOUND 1)
 else (GHC-PKG_EXECUTABLE)
 	set (HASKELL_NOTFOUND_INFO "ghc-pkg not found")
 endif (GHC-PKG_EXECUTABLE)

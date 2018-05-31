@@ -33,7 +33,6 @@ fi
 for file in $(find . \( -name 'CMakeLists.txt' -or -name '*.cmake' \) -and \
 		     \(                                                    \
 			-not -regex '.*build/.*'                           \
-			-not -regex '.*gtest.*'                            \
 			-not -regex '.*cmake/Modules/FindHaskell.cmake$'   \
                      \));
 do

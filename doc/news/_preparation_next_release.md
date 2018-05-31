@@ -73,10 +73,24 @@ Thanks to Armin Wurzinger.
 
 We added even more functionality, which could not make it to the highlights:
 
+- A new I/O binding for [ev](https://www.libelektra.org/bindings/io_ev) has been
+  added.
+  It can be used to integrate the notification feature with applications based
+  on [ev](http://libev.schmorp.de) main loops. *(Thomas Wahringer)*
+- The logging plugins ["syslog"](https://www.libelektra.org/plugins/syslog),
+  ["journald"](https://www.libelektra.org/plugins/journald) and
+  ["logchange"](https://www.libelektra.org/plugins/logchange) now have a new
+  option called "get" which can be enabled to log which configuration settings
+  are loaded by applications.
+  The new option can be used for logging application behavior when using
+  [notifications](https://www.libelektra.org/tutorials/notifications). *(Thomas Wahringer)*
+- The build system no longer installs haskell dependencies from hackage by itself, instead
+  this has to be done beforehand like it is the case with all other dependencies. The main
+  reason is that the build servers shouldn't compile the dependencies over and over again,
+  only if something changes. See the [readme](https://github.com/ElektraInitiative/libelektra/blob/master/src/bindings/haskell/README.md). *(Armin Wurzinger)*
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
-
+- The new tool `kdb find` lists keys of the database matching a certain regular expression. *(Markus Raab)*
 
 ## New Plugins
 
@@ -91,10 +105,12 @@ We added even more functionality, which could not make it to the highlights:
 - The `crypto` plugin now uses Elektra's `libinvoke` and the `base64` plugin in order to encode and decode Base64 strings. This improvement reduces code duplication between the two plugins. *(Peter Nirschl)*
 - The completion for [fish](http://fishshell.com) now also suggest the `info/` meta attributes of the
   [file plugin](https://www.libelektra.org/plugins/file). *(René Schwaiger)*
+- The [`list` plugin](http://libelektra.org/plugins/list) now allows us to pass
+  common configuration for all plugins by using keys below the "config/" setting.
+  The updated plugin documentation contains more information and an example. *(Thomas Wahringer)*
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-
 
 ## Documentation
 
@@ -108,6 +124,7 @@ We improved the documentation in the following ways:
   - [`iconv`](https://www.libelektra.org/plugins/iconv) and
   - [`uname`](https://www.libelektra.org/plugins/uname),
   plugin. *(René Schwaiger)*
+- We improved the formatting of our [compilation guide](/doc/COMPILE.md). *(René Schwaiger)*
 
 ## Compatibility
 
@@ -170,9 +187,14 @@ These notes are of interest for people developing Elektra:
 - The Markdown Shell Recorder checks `kdb set` commands to ensure we only add tests that store data below `/tests`. *(René Schwaiger)*
 - We disabled the test `testlib_notification` on ASAN enabled builds, since Clang reports that the test leaks memory. *(René Schwaiger)*
 - Docker Registry is cleaned up by our daily buildserver task. *(Lukas Winkler)*
+- We now import the current version of [Google Test][] as external project at configuration time using
+   [DownloadProject](https://github.com/Crascit/DownloadProject). If you want to use a local installation of
+   [Google Test][] instead, please set the value of `GTEST_ROOT` to the path of you local copy of the
+   [Google Test][] framework. *(René Schwaiger)*
 
 [`cmake-format`]: https://github.com/cheshirekow/cmake_format
 [#1887]: https://github.com/ElektraInitiative/libelektra/issues/1887
+[Google Test]: https://github.com/google/googletest
 
 ## Fixes
 
@@ -193,7 +215,9 @@ Many problems were resolved with the following fixes:
   when checking if the ABI changed. *(Lukas Winkler)*
 - You can now build the [Qt-GUI](https://www.libelektra.org/tools/qt-gui) using Qt `5.11`. *(René Schwaiger)*
 - We fixed various minor spelling mistakes in the documentation. *(René Schwaiger)*
-
+- The [`list` plugin](http://libelektra.org/plugins/list) which is responsible
+  for global mounting had a bug which prevented globally mounted plugins from
+  being configurable. *(Thomas Wahringer)*
 
 ## Outlook
 
@@ -238,5 +262,3 @@ For more information, see [https://libelektra.org](https://libelektra.org)
 
 Best regards,
 [Elektra Initiative](https://www.libelektra.org/developers/authors)
-
-

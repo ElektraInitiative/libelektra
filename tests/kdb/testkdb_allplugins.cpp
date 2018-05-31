@@ -81,4 +81,4 @@ TEST_P (AllPlugins, modules)
 }
 
 
-INSTANTIATE_TEST_CASE_P (AllPlugins, AllPlugins, testing::ValuesIn (getAllPlugins ()));
+INSTANTIATE_TEST_CASE_P (AllPlugins, AllPlugins, testing::ValuesIn (getAllPlugins ()), );
