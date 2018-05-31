@@ -16,7 +16,7 @@ matrix:
     # ASAN: Enable AddressSanitizer
 
     - os: osx
-      osx_image: xcode9.3beta
+      osx_image: xcode9.3
       compiler: clang
       env:
         - ASAN=ON
@@ -69,13 +69,13 @@ matrix:
       compiler: gcc
 
     - os: osx
-      osx_image: xcode9.3beta
+      osx_image: xcode9.3
       compiler: clang
 
     # HASKELL: Only build Haskell binding and plugin
 
     - os: osx
-      osx_image: xcode9.3beta
+      osx_image: xcode9.3
       compiler: clang
       env:
         - HASKELL=ON
