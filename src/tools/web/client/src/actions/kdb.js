@@ -131,8 +131,12 @@ export const findKey = (id, query) => thunkCreator({
 })
 
 export const CLEAR_SEARCH = 'CLEAR_SEARCH'
+export const CLEAR_SEARCH_FINAL = 'CLEAR_SEARCH_FINAL'
 
-export const clearSearch = () => ({ type: CLEAR_SEARCH })
+export const clearSearch = () => dispatch => {
+  dispatch({ type: CLEAR_SEARCH })
+  setTimeout(() => dispatch({ type: CLEAR_SEARCH_FINAL }), 200)
+}
 
 // ~~~
 

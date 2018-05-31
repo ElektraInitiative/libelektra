@@ -244,7 +244,7 @@ export default class Configuration extends Component {
                                 No results found for "{search.query}".
                             </div>
                           : <TreeView
-                              searching={isSearching}
+                              searching={isSearching || (search && search.clearing)}
                               instance={filteredInstance}
                               instanceId={id}
                               data={filteredData}
