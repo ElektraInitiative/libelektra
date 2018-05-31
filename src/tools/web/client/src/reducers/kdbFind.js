@@ -22,7 +22,7 @@ export default function batchUndoReducer (state = initialState, action) {
       return { loading: true, error: false, results: [] }
 
     case FIND_KEY_SUCCESS:
-      return { loading: false, error: false, results: action.result }
+      return { loading: false, error: false, results: action.result.result }
 
     case FIND_KEY_FAILURE:
       return { loading: false, error: action.error, results: [] }
