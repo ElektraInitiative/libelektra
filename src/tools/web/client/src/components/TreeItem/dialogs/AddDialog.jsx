@@ -76,7 +76,7 @@ export default class AddDialog extends Component {
     if (v !== 'user') {
       setMetaByPath(path + '/' + name, 'visibility', v)
     }
-    if (arrayKey) {
+    if (arrayKey === true) {
       setTimeout(() => onAdd(path + '/' + name, '#0', ''), 250)
     }
     this.handleClose()
