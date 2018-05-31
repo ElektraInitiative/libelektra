@@ -45,8 +45,6 @@ RUN apt-get update && apt-get -y install \
     valgrind && \
     rm -rf /var/lib/apt/lists/*
 
-RUN cabal update && cabal install hspec QuickCheck
-
 # Google Test
 ENV GTEST_ROOT=/opt/gtest
 ARG GTEST_VER=4e4df226fc197c0dda6e37f5c8c3845ca1e73a49
