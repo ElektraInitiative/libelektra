@@ -31,8 +31,12 @@ export default class TreeSearch extends React.Component {
   }
 
   handleFind = (value) => {
-    const { instanceId, findKey } = this.props
-    findKey(instanceId, value)
+    const { instanceId, findKey, clearSearch } = this.props
+    if (value && value.length > 0) {
+      findKey(instanceId, value)
+    } else {
+      clearSearch()
+    }
   }
 
   render () {

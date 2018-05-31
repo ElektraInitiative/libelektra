@@ -10,11 +10,9 @@
 
 import React, { Component } from 'react'
 
-import { Card, CardHeader, CardText, CardActions } from 'material-ui/Card'
-import FlatButton from 'material-ui/FlatButton'
+import { Card, CardHeader, CardText } from 'material-ui/Card'
 import IconButton from 'material-ui/IconButton'
 import NavigationRefresh from 'material-ui/svg-icons/navigation/refresh'
-import { Link } from 'react-router-dom'
 
 import TreeView from '../../containers/ConnectedTreeView'
 import TreeSearch from '../../containers/ConnectedTreeSearch'
