@@ -113,6 +113,9 @@
   min-height: 48px;
 }
 .ExplorerView > input[type="search"] {
+  display: none; /* hide filter */
+}
+input[type="search"] {
   border: 0;
   box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 6px, rgba(0, 0, 0, 0.12) 0px 1px 4px;
   margin-bottom: 8px;
@@ -123,6 +126,32 @@
   background: url('/search.svg') no-repeat;
   background-position: 16px center;
   background-color: #FAFAFA;
+  transition: box-shadow 0.5s;
+}
+
+input[type="search"] {
+  outline-width: 2px;
+}
+
+@keyframes glow {
+  from {
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 6px, rgba(0, 0, 0, 0.12) 0px 1px 4px;
+  }
+  to {
+    box-shadow: rgba(0, 188, 212, 0.5) 0px 1px 12px, rgba(0, 188, 212, 0.5) 0px 1px 8px;
+  }
+}
+
+input[type="search"].loading {
+  animation: glow 0.5s infinite alternate;
+}
+
+input[type="search"].success {
+  box-shadow: rgba(0, 188, 212, 0.5) 0px 1px 12px, rgba(0, 188, 212, 0.5) 0px 1px 8px;
+}
+
+input[type="search"].error {
+  box-shadow: rgba(255, 64, 129, 0.5) 0px 1px 12px, rgba(255, 64, 129, 0.5) 0px 1px 8px;
 }
 
 /* Root list */
