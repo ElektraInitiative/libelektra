@@ -13,19 +13,20 @@ import {
 const initialState = {
   loading: false,
   error: false,
+  done: false,
   results: [],
 }
 
 export default function batchUndoReducer (state = initialState, action) {
   switch (action.type) {
     case FIND_KEY_REQUEST:
-      return { loading: true, error: false, results: [] }
+      return { loading: true, error: false, done: false, results: [], query: action.query }
 
     case FIND_KEY_SUCCESS:
-      return { loading: false, error: false, results: action.result.result }
+      return { loading: false, error: false, done: true, results: action.result.result, query: action.query }
 
     case FIND_KEY_FAILURE:
-      return { loading: false, error: action.error, results: [] }
+      return { loading: false, error: action.error, done: true, results: [], query: action.query }
 
     default:
       return state

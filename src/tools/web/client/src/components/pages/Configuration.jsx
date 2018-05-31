@@ -212,13 +212,14 @@ export default class Configuration extends Component {
         </h1>
     )
 
-    const isSearching = (search && search.results && search.results.length > 0)
+    const isSearching = search && search.done
+    const hasResults = search && search.results && search.results.length > 0
 
-    const filteredData = isSearching
+    const filteredData = (isSearching && hasResults)
       ? this.generateData({ ...this.props, ls: search.results })
       : data
 
-    const filteredInstance = isSearching
+    const filteredInstance = (isSearching && hasResults)
       ? { ...instance, unfolded: getUnfolded(search.results) }
       : instance
 
@@ -240,13 +241,17 @@ export default class Configuration extends Component {
                   : (data && Array.isArray(data) && data.length > 0)
                     ? [
                         <TreeSearch instanceId={id} />,
-                        <TreeView
-                          searching={isSearching}
-                          instance={filteredInstance}
-                          instanceId={id}
-                          data={filteredData}
-                          instanceVisibility={visibility}
-                        />,
+                        (isSearching && !hasResults)
+                          ? <div style={{ fontSize: '1.1em', color: 'rgba(0, 0, 0, 0.4)', marginTop: '1.5em', padingLeft: '0.5em' }}>
+                                No results found for "{search.query}".
+                            </div>
+                          : <TreeView
+                              searching={isSearching}
+                              instance={filteredInstance}
+                              instanceId={id}
+                              data={filteredData}
+                              instanceVisibility={visibility}
+                            />,
                       ]
                     : <div style={{ fontSize: '1.1em', color: 'rgba(0, 0, 0, 0.4)' }}>
                           Loading configuration data...
