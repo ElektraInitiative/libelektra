@@ -23,6 +23,7 @@ RUN apt-get update && apt-get -y install \
     tclcl-dev \
     libaugeas-dev \
     libbotan1.10-dev \
+    libgpgme-dev \
     libyajl-dev \
     libgit2-dev \
     libboost-all-dev \
