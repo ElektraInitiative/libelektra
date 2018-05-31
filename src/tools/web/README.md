@@ -173,7 +173,7 @@ updated by running `npm update`.
 
 ### Building docker image
 
-Run the following command in the `src/tools/web/` directory, replacing `1.5.0` with the latest version:
+Run the following command in the `scripts/docker/web/` directory, replacing `1.5.0` with the latest version:
 
 ```
 docker build -t elektra/web:1.5.0 -t elektra/web:latest .
