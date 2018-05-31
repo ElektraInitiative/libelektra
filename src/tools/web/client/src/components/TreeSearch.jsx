@@ -31,11 +31,14 @@ export default class TreeSearch extends React.Component {
   }
 
   handleFind = (value) => {
-    const { instanceId, findKey, clearSearch } = this.props
+    const { instanceId, findKey, clearSearch, sendNotification } = this.props
     if (value && value.length > 0) {
       findKey(instanceId, value)
+        .then(() => sendNotification('search completed successfully!'))
+        .catch(() => sendNotification('error while searching!'))
     } else {
       clearSearch()
+      setTimeout(() => sendNotification('search cleared!'))
     }
   }
 
