@@ -169,6 +169,7 @@ Transformations:
 Doing other stuff:
 
 - [crypto](crypto/) encrypts / decrypts confidential values
+- [gpgme](gpgme/) encrypts / decrypts confidential values (with GPGME)
 - [fcrypt](fcrypt/) encrypts / decrypts entire backend files
 - [iconv](iconv/) makes sure the configuration will have correct
   character encoding
