@@ -61,7 +61,7 @@ public:
 	/**
 	 * @copydoc Key::Key(Key &)
 	 */
-	CppKeyPlus (kdb::Key const & key) : CppKey (key)
+	CppKeyPlus (kdb::Key const & other) : CppKey (other)
 	{
 	}
 
