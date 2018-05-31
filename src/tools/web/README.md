@@ -202,3 +202,10 @@ export const HANDLED_METADATA = [
 + 'check/something',
 ]
 ```
+
+- Validation can then be added by handling metadata in the
+  `client/src/components/TreeItem/fields/validateType.js` file to the
+  `validateType` function.
+
+- Rendering fields in a special way when certain metakeys are present can be
+  done by adjusting the `renderSpecialValue` function in the `client/src/components/TreeItem/index.js` file.
