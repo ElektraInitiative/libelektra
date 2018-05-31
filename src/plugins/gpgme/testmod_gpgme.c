@@ -80,7 +80,7 @@ int main (int argc, char ** argv)
 	init (argc, argv);
 
 	init_gpgme ();
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < 3; i++)
 	{
 		// to see how the build server responds
 		test_install_key ();
