@@ -17,6 +17,7 @@ import NavigationRefresh from 'material-ui/svg-icons/navigation/refresh'
 import { Link } from 'react-router-dom'
 
 import TreeView from '../../containers/ConnectedTreeView'
+import TreeSearch from '../../containers/ConnectedTreeSearch'
 import InstanceError from '../InstanceError.jsx'
 
 const NAMESPACES = [ 'user', 'system', 'spec', 'dir' ]
@@ -212,12 +213,15 @@ export default class Configuration extends Component {
                 {instanceError
                   ? <InstanceError instance={instance} error={instanceError} refresh={this.refresh} />
                   : (data && Array.isArray(data) && data.length > 0)
-                    ? <TreeView
-                        instance={instance}
-                        instanceId={id}
-                        data={data}
-                        instanceVisibility={visibility}
-                      />
+                    ? [
+                        <TreeSearch instanceId={id} />,
+                        <TreeView
+                          instance={instance}
+                          instanceId={id}
+                          data={data}
+                          instanceVisibility={visibility}
+                        />,
+                      ]
                     : <div style={{ fontSize: '1.1em', color: 'rgba(0, 0, 0, 0.4)' }}>
                           Loading configuration data...
                       </div>

@@ -112,6 +112,26 @@ export const deleteKey = (id, path) => thunkCreator({
 
 // ~~~
 
+export const FIND_KEY_REQUEST = 'FIND_KEY_REQUEST'
+export const FIND_KEY_SUCCESS = 'FIND_KEY_SUCCESS'
+export const FIND_KEY_FAILURE = 'FIND_KEY_FAILURE'
+
+export const findKey = (id, query) => thunkCreator({
+  id, query,
+  request: { id, query },
+  types: [FIND_KEY_REQUEST, FIND_KEY_SUCCESS, FIND_KEY_FAILURE],
+  promise: fetch(
+    `/api/instances/${id}/kdbFind/${encodeURIComponent(query)}`,
+    { credentials: 'same-origin' }
+  )
+    .then(parseJSONResponse)
+    .then(result => {
+      return { result, id, query }
+    }),
+})
+
+// ~~~
+
 export const MOVE_KEY_REQUEST = 'MOVE_KEY_REQUEST'
 export const MOVE_KEY_SUCCESS = 'MOVE_KEY_SUCCESS'
 export const MOVE_KEY_FAILURE = 'MOVE_KEY_FAILURE'
