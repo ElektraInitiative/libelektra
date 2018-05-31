@@ -141,7 +141,8 @@ compiled against an older 0.8 version of Elektra will continue to work
 
 These notes are of interest for people maintaining packages of Elektra:
 
-- <<TODO>>
+- The cmake variable `GTEST_ROOT` now respects the environment variable
+  `GTEST_ROOT` if it is set. *(Lukas Winkler)*
 - <<TODO>>
 - <<TODO>>
 
