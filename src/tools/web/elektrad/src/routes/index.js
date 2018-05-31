@@ -44,6 +44,12 @@ export default function initRoutes (app) {
         .catch(err => errorResponse(res, err))
     )
 
+  app.get('/kdbFind/*', (req, res) =>
+    kdb.find(req.params[0])
+      .then(output => successResponse(res, output))
+      .catch(err => errorResponse(res, err))
+  )
+
   app.post('/kdbMv/*', (req, res) =>
     kdb.mv(req.params[0], req.body)
       .then(() => res.status(204).send())

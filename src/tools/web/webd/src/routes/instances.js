@@ -122,6 +122,13 @@ export default function initInstanceRoutes (app) {
         .catch(err => errorResponse(res, err))
     )
 
+  app.get('/api/instances/:id/kdbFind/*', (req, res) =>
+    getInstance(req.params.id)
+      .then(instance => remoteKdb.find(instance.host, req.params[0]))
+      .then(output => successResponse(res, output))
+      .catch(err => errorResponse(res, err))
+  )
+
   app.post('/api/instances/:id/kdbMv/*', (req, res) =>
     getInstance(req.params.id)
       .then(instance => remoteKdb.mv(instance.host, req.params[0], req.body))
