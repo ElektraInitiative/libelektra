@@ -32,6 +32,12 @@ To build Elektra with the elektra-web tool:
  * You can now access the client on: [http://localhost:33334](http://localhost:33334)
 
 
+## Getting started (docker)
+
+ * Create and run a new docker container: `docker run -d -it -p 33333:33333 -p 33334:33334 elektra/web`
+ * You can now access the client on: [http://localhost:33334](http://localhost:33334)
+
+
 ## Running from source
 
  * Install dependencies (see above)
@@ -164,6 +170,26 @@ lock file and running `npm install`, which creates a new lock file.
 
 Check for outdated dependencies via `npm outdated`. Dependencies can then be
 updated by running `npm update`.
+
+### Building docker image
+
+Run the following command in the `src/tools/web/` directory, replacing `1.5.0` with the latest version:
+
+```
+docker build -t elektra/web:1.5.0 -t elektra/web:latest .
+```
+
+Test the image:
+
+```
+docker run -d -it -p 33333:33333 -p 33334:33334 elektra/web:1.5.0
+```
+
+Publish it to the docker registry:
+
+```
+docker push elektra/web:1.5.0
+```
 
 ### Adding support for new metadata
 
