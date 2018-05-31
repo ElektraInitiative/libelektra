@@ -64,11 +64,11 @@ std::pair<bool, unsigned long long> isArrayIndex (NameIterator const & nameItera
 	{
 		return std::make_pair (true, stoull (name.substr (name.find_first_not_of ("#\\_"))));
 	}
-	catch (invalid_argument)
+	catch (invalid_argument const &)
 	{
 		return std::make_pair (false, 0);
 	}
-	catch (out_of_range)
+	catch (out_of_range const &)
 	{
 		errno = errnoValue;
 		return std::make_pair (false, 0);
