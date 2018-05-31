@@ -69,6 +69,21 @@ const parseData = (getKey, sendNotification, instanceId, ls, kdb) => {
   return parseDataSet(getKey, sendNotification, instanceId, tree)
 }
 
+const getUnfolded = (searchResults) => {
+  let unfolded = []
+  for (let r of searchResults) {
+    const parts = r.split('/')
+    let path = ''
+    for (let p of parts) {
+      path = path.length === 0 ? p : (path + '/' + p)
+      if (!unfolded.includes(path)) {
+        unfolded.push(path)
+      }
+    }
+  }
+  return unfolded
+}
+
 // configuration page
 export default class Configuration extends Component {
   constructor (props, ...rest) {
@@ -165,7 +180,7 @@ export default class Configuration extends Component {
   }
 
   render () {
-    const { instance, match, instanceError } = this.props
+    const { instance, match, instanceError, search } = this.props
     const { data } = this.state
 
     if (!instance) {
@@ -197,6 +212,16 @@ export default class Configuration extends Component {
         </h1>
     )
 
+    const isSearching = (search && search.results && search.results.length > 0)
+
+    const filteredData = isSearching
+      ? this.generateData({ ...this.props, ls: search.results })
+      : data
+
+    const filteredInstance = isSearching
+      ? { ...instance, unfolded: getUnfolded(search.results) }
+      : instance
+
     return (
         <Card style={{ padding: '8px 16px' }}>
             <CardHeader
@@ -216,9 +241,10 @@ export default class Configuration extends Component {
                     ? [
                         <TreeSearch instanceId={id} />,
                         <TreeView
-                          instance={instance}
+                          searching={isSearching}
+                          instance={filteredInstance}
                           instanceId={id}
-                          data={data}
+                          data={filteredData}
                           instanceVisibility={visibility}
                         />,
                       ]

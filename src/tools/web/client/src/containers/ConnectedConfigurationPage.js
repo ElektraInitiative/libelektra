@@ -23,6 +23,7 @@ const mapStateToProps = (state, { match }) => {
     instance: instances.find(instance => instance.id === id),
     ls,
     instanceError: (error && error.instanceError) ? error : false,
+    search: state.kdbFind,
   }
 }
 
