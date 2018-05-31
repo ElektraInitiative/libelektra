@@ -29,6 +29,7 @@ RUN apt-get -y install \
   libgtest-dev \
   ruby-ronn \
   libgcrypt20-dev \
+  libgpgme-dev \
   libbotan1.10-dev \
   libev-dev \
   libuv1-dev \
