@@ -102,6 +102,7 @@ RUN apt-get update && apt-get install -y \
          libboost-thread1.62.0 \
          libssl1.1 \
          libicu57 \
+         libyajl2 \
          pwgen \
     && rm -rf /var/lib/apt/lists/*
 
