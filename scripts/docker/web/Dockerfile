@@ -1,13 +1,11 @@
 FROM ubuntu:16.04
 
 # elektra deps
-RUN apt-get update -y
-RUN apt-get install -y cmake git build-essential
+RUN apt-get update && apt-get install -y --no-install-recommends cmake git build-essential curl
 
 # elektra web deps
-RUN apt-get install -y libyajl-dev curl nodejs-legacy npm
 RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
-RUN apt-get install -y nodejs
+RUN apt-get install -y --no-install-recommends nodejs libyajl-dev nodejs-legacy npm
 
 # pull latest libelektra
 RUN mkdir /home/elektra
@@ -20,6 +18,9 @@ WORKDIR /home/elektra/libelektra/build
 RUN cmake .. -DTOOLS="kdb;web"
 RUN make
 RUN make install
+
+# clean up
+RUN apt-get remove -y curl libyajl-dev cmake git build-essential
 
 # create start script
 WORKDIR /home/elektra
