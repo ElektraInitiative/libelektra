@@ -53,39 +53,26 @@ CppKeySet contractYamlsmith ()
 }
 
 /**
- * @brief This class provides additional functionality for the keys.
+ * @brief This function returns a `NameIterator` starting at the first level that is not part of `parent`.
+ *
+ * @pre The parameter `key` must be a child of `parent`.
+ *
+ * @param key This is the key for which this function returns a relative iterator.
+ * @param parent This key specifies the part of the name iterator that will not be part of the return value of this function.
+ *
+ * @returns A relative iterator that starts with the first part of the name of `key` not contained in `parent`.
  */
-class CppKeyPlus : public CppKey
+NameIterator relativeKeyIterator (CppKey const & key, CppKey const & parent)
 {
-public:
-	/**
-	 * @copydoc Key::Key(Key &)
-	 */
-	CppKeyPlus (kdb::Key const & other) : CppKey (other)
+	auto parentIterator = parent.begin ();
+	auto keyIterator = key.begin ();
+	while (parentIterator != parent.end () && keyIterator != key.end ())
 	{
+		parentIterator++;
+		keyIterator++;
 	}
-
-	/**
-	 * @brief This function returns a `NameIterator` starting at the first level that is not part of `parent`.
-	 *
-	 * @pre This key must be a child of `parent`.
-	 *
-	 * @param parent This key specifies the part of the name iterator that will not be part of the return value of this function.
-	 *
-	 * @returns A relative iterator that starts with the first part of the name of `key` not contained in `parent`.
-	 */
-	NameIterator relativeKeyIterator (Key const & parent)
-	{
-		auto parentIterator = parent.begin ();
-		auto keyIterator = this->begin ();
-		while (parentIterator != parent.end () && keyIterator != this->end ())
-		{
-			parentIterator++;
-			keyIterator++;
-		}
-		return keyIterator;
-	}
-};
+	return keyIterator;
+}
 
 /**
  * @brief This class provides additional functionality for the key set class.
@@ -169,15 +156,14 @@ int elektraYamlsmithSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 		for (auto key : keys.leaves ())
 		{
 			string indent;
-			CppKeyPlus plus{ *key };
-			auto relative = plus.relativeKeyIterator (parent);
-			while (relative != plus.end ())
+			auto relative = relativeKeyIterator (*key, parent);
+			while (relative != key.end ())
 			{
 				file << indent << *relative << ":" << endl;
 				relative++;
 				indent += "  ";
 			}
-			file << indent << plus.getString () << endl;
+			file << indent << key.getString () << endl;
 		}
 	}
 	else
