@@ -175,7 +175,7 @@ def dockerInit() {
             "./scripts/docker/homepage/frontend/Dockerfile",
             false
         )
-        DOCKER_IMAGES.homepage_frontend = createDockerImageDesc(
+        DOCKER_IMAGES.homepage_backend = createDockerImageDesc(
             "homepage-backend", this.&idHomepage,
             ".",
             "./scripts/docker/homepage/backend/Dockerfile",
