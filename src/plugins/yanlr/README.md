@@ -1,7 +1,7 @@
 - infos = Information about the yanlr plugin is in keys below
 - infos/author = René Schwaiger <sanssecours@me.com>
 - infos/licence = BSD
-- infos/needs = yamlsmith
+- infos/needs = directoryvalue yamlsmith
 - infos/provides = storage/yaml
 - infos/recommends =
 - infos/placements = getstorage
@@ -30,17 +30,21 @@ kdb get user/tests/yanlr/all
 
 # Add new key-value pairs
 # Yan LR actually uses the YAML Smith plugin to write data
-kdb set /tests/yanlr/new brand
+kdb set /tests/yanlr/brand new
+kdb set /tests/yanlr/brand/new eyes
 kdb set /tests/yanlr/dance/gavin 'Dance!'
 
 kdb ls /tests/yanlr
 #> user/tests/yanlr/all
+#> user/tests/yanlr/brand
+#> user/tests/yanlr/brand/new
 #> user/tests/yanlr/dance/gavin
 #> user/tests/yanlr/hello
-#> user/tests/yanlr/new
 
 kdb get /tests/yanlr/hello
 #> world
+kdb get user/tests/yanlr/brand
+#> new
 kdb get /tests/yanlr/dance/gavin
 #> Dance!
 
