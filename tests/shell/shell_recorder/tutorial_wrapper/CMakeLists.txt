@@ -17,8 +17,11 @@ else (CMAKE_COMPILER_IS_GNUCXX AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.9)
 	add_msr_test (kdb_find "${CMAKE_SOURCE_DIR}/doc/help/kdb-find.md")
 endif (CMAKE_COMPILER_IS_GNUCXX AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.9)
 
-add_msr_test (tutorial_validation "${CMAKE_SOURCE_DIR}/doc/tutorials/validation.md" REQUIRED_PLUGINS ni validation)
-
+if (ENABLE_ASAN)
+	message (STATUS "Excluding Markdown Shell Recorder test for `validation`, as it leaks memory and fails with ASAN enabled")
+else (ENABLE_ASAN)
+	add_msr_test (tutorial_validation "${CMAKE_SOURCE_DIR}/doc/tutorials/validation.md" REQUIRED_PLUGINS ni validation)
+endif (ENABLE_ASAN)
 # ~~~
 # Only works with super user privileges, since it writes to `/etc/hosts`:
 # add_msr_test (tutorial_mount "${CMAKE_SOURCE_DIR}/doc/tutorials/mount.md")
