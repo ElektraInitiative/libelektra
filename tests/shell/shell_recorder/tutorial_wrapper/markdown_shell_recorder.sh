@@ -12,7 +12,7 @@ resetGlobals()
 	WARNINGS=
 	STDOUTRE=
 	unset STDERR
-	OUTBUF=
+	STDOUT=
 	MOUNTPOINT=
 }
 
@@ -23,7 +23,7 @@ writeBlock()
 	[ -n "$ERROR" ] && printf 'ERROR: %s\n' "$ERROR" >> "$TMPFILE"
 	[ -n "$WARNINGS" ] && printf 'WARNINGS: %s\n' "$WARNINGS" >> "$TMPFILE"
 	[ -n "${STDERR+unset}" ] && printf 'STDERR: %s\n' "$STDERR" >> "$TMPFILE"
-	if [ -n "$OUTBUF" ]; then printf 'STDOUT: %s\n' "$OUTBUF" >> "$TMPFILE"
+	if [ -n "$STDOUT" ]; then printf 'STDOUT: %s\n' "$STDOUT" >> "$TMPFILE"
 	elif [ -n "$STDOUTRE" ]; then printf 'STDOUT-REGEX: %s\n' "$STDOUTRE" >> "$TMPFILE"
 	fi
 	COMMAND=$(sed s/sudo\ //g <<< "$COMMAND")
@@ -57,7 +57,7 @@ translate()
 	do
 		if grep -Eq '^\s*#>' <<< "$line"; then
 			output=$(sed -E -e 's/([ ]*#>$)/\1 /' -e 's/[ ]*#> (.*)/\1/' <<< "$line")
-			[ -z "$OUTBUF" ] && OUTBUF="$output" || OUTBUF="${OUTBUF}⏎$output"
+			[ -z "$STDOUT" ] && STDOUT="$output" || STDOUT="${STDOUT}⏎$output"
 		fi
 
 		if grep -Eq "^(\s*)#" <<< "$line"; then
