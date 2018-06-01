@@ -90,6 +90,9 @@ ASAN disables the following parts during cmake as they throw errors:
 Further kdb_check_internal skips tests that output sanitizer warnings during
 load as it would make the test fail.
 
+No tutorial validation is done for `validation.md` with ASAN because during the
+mount spec step an memory leak is detected which fails the test.
+
 ## bindings
 
 - swig_ruby excluded due to failing tests (see #1770)
