@@ -612,8 +612,8 @@ def deployHomepage() {
                             'docker-hub-elektra-jenkins') {
             def backendName = "elektra-backend"
             def frontendName = "elektra-frontend"
-            def backend = docker.image(DOCKER_IMAGES.homepage-backend.id)
-            def frontend = docker.image(DOCKER_IMAGES.homepage-frontend.id)
+            def backend = docker.image(DOCKER_IMAGES.homepage_backend.id)
+            def frontend = docker.image(DOCKER_IMAGES.homepage_frontend.id)
             backend.pull()
             frontend.pull()
 
@@ -644,8 +644,8 @@ def deployHomepage() {
 
 def buildHomepage() {
     def homepageTasks = [:]
-    homepageTasks << buildImageStage(DOCKER_IMAGES.homepage-frontend)
-    homepageTasks << buildImageStage(DOCKER_IMAGES.homepage-backend)
+    homepageTasks << buildImageStage(DOCKER_IMAGES.homepage_frontend)
+    homepageTasks << buildImageStage(DOCKER_IMAGES.homepage_backend)
     return homepageTasks
 }
 
