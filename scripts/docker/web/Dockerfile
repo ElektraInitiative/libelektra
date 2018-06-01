@@ -32,3 +32,6 @@ RUN chown -R elektra:elektra /home/elektra
 USER elektra
 CMD ["/home/elektra/start"]
 
+EXPOSE 33333
+EXPOSE 33334
+
