@@ -61,6 +61,38 @@ For in-detail explanation of the syntax
 (nested keys are not supported by the plugin)
 [see /src/plugins/ni/nickel-1.1.0/include/bohr/ni.h](/src/plugins/ni/nickel-1.1.0/include/bohr/ni.h)
 
+## Examples
+
+```sh
+# Mount the `ni` plugin at `spec/tests/ni`
+sudo kdb mount file.ini spec/tests/ni ni
+
+# Add some metadata
+kdb setmeta spec/tests/ni/key metakey metavalue
+kdb setmeta spec/tests/ni/key check/type char
+
+# Retrieve metadata
+kdb lsmeta spec/tests/ni/key
+#> check/type
+#> metakey
+kdb getmeta spec/tests/ni/key metakey
+#> metavalue
+
+# Add and retrieve key values
+kdb get spec/tests/ni/key
+#>
+kdb set spec/tests/ni/key value
+kdb set spec/tests/ni/key/to nothing
+kdb get spec/tests/ni/key
+#> value
+kdb get spec/tests/ni/key/to
+#> nothing
+
+# Undo modifications
+kdb rm -r spec/tests/ni
+sudo kdb umount spec/tests/ni
+```
+
 ## Limitations
 
 - Supports most KeySets, but `kdb test` currently reports some errors
