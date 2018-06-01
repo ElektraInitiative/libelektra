@@ -12,7 +12,7 @@ resetGlobals()
 	WARNINGS=
 	STDOUTRE=
 	unset STDERR
-	STDOUT=
+	unset STDOUT
 	MOUNTPOINT=
 }
 
@@ -23,7 +23,7 @@ writeBlock()
 	[ -n "$ERROR" ] && printf 'ERROR: %s\n' "$ERROR" >> "$TMPFILE"
 	[ -n "$WARNINGS" ] && printf 'WARNINGS: %s\n' "$WARNINGS" >> "$TMPFILE"
 	[ -n "${STDERR+unset}" ] && printf 'STDERR: %s\n' "$STDERR" >> "$TMPFILE"
-	if [ -n "$STDOUT" ]; then printf 'STDOUT: %s\n' "$STDOUT" >> "$TMPFILE"
+	if [ -n "${STDOUT+unset}" ]; then printf 'STDOUT: %s\n' "$STDOUT" >> "$TMPFILE"
 	elif [ -n "$STDOUTRE" ]; then printf 'STDOUT-REGEX: %s\n' "$STDOUTRE" >> "$TMPFILE"
 	fi
 	COMMAND=$(sed s/sudo\ //g <<< "$COMMAND")
