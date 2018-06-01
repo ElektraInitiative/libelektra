@@ -138,8 +138,9 @@ We improved the documentation in the following ways:
 - <<TODO>>
 - We added new [Markdown Shell Recorder](https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper) tests for the
   - [`file`](https://www.libelektra.org/plugins/file),
-  - [`iconv`](https://www.libelektra.org/plugins/iconv) and
-  - [`uname`](https://www.libelektra.org/plugins/uname),
+  - [`iconv`](https://www.libelektra.org/plugins/iconv),
+  - [`ni`](https://www.libelektra.org/plugins/ni), and
+  - [`uname`](https://www.libelektra.org/plugins/uname)
   plugin. *(René Schwaiger)*
 - We improved the formatting of our [compilation guide](/doc/COMPILE.md). *(René Schwaiger)*
 
