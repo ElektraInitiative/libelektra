@@ -10,7 +10,6 @@ resetGlobals()
 	RET=
 	ERROR=
 	WARNINGS=
-	STDOUT=
 	STDOUTRE=
 	unset STDERR
 	OUTBUF=
