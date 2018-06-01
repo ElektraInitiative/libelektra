@@ -236,6 +236,7 @@ export default class TreeItem extends Component {
                 <EditDialog
                   field={renderedField}
                   item={item}
+                  meta={meta}
                   value={data && data.value}
                   open={this.state.dialogs.edit}
                   onEdit={this.handleEdit}

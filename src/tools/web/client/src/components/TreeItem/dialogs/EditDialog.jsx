@@ -10,6 +10,7 @@ import React, { Component } from 'react'
 
 import FlatButton from 'material-ui/FlatButton'
 import FocusTrapDialog from './FocusTrapDialog.jsx'
+import { fromElektraBool } from '../../../utils'
 
 export default class EditDialog extends Component {
   handleAbort = () => {
@@ -26,7 +27,7 @@ export default class EditDialog extends Component {
   }
 
   render () {
-    const { item, open, field, onClose } = this.props
+    const { item, open, field, onClose, meta } = this.props
     const { path } = item
 
     const actions = [
@@ -52,6 +53,9 @@ export default class EditDialog extends Component {
       />,
     ]
 
+    const isDisabled = (meta && meta.hasOwnProperty('binary')) ||
+                       fromElektraBool(meta && meta['restrict/write'])
+
     return (
         <FocusTrapDialog
           actions={actions}
@@ -61,7 +65,7 @@ export default class EditDialog extends Component {
           onRequestClose={onClose}
         >
             <h1>Value of <b>{path}</b></h1>
-            <div style={{ display: 'block' }} tabIndex="0">
+            <div style={{ display: 'block' }} tabIndex={isDisabled && '0'}>
                 {field}
             </div>
         </FocusTrapDialog>
