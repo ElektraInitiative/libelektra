@@ -114,10 +114,11 @@ execute()
 	STDOUT=$(cat ./stdout)
 
 	[ -n "$STDOUT" ] && printf '%s\n' "STDOUT: $STDOUT" >> "$OutFile"
-	if [ -n "$STDOUTCMP" ];
+	if [ -n "${STDOUTCMP+unset}" ];
 	then
 		executedTests=$(( executedTests + 1 ))
-		if ! printf '%s' "$STDOUT" | replace_newline_return | grep -Fqx --text "$STDOUTCMP";
+		if ! printf '%s' "$STDOUT" | replace_newline_return | grep -Fqx --text "$STDOUTCMP" || \
+		   test -z "$STDOUTCMP" -a -n "$STDOUT";
 		then
 			printerr '\nERROR - STDOUT:\n“%s”\ndoes not match\n“%s”\n\n' "$STDOUT" "$STDOUTCMP"
 			printf '=== FAILED stdout does not match expected pattern %s\n' "$STDOUTCMP" >> "$OutFile"
@@ -246,7 +247,7 @@ run_script()
 		RETCMP=
 		ERRORCMP=
 		WARNINGSCMP=
-		STDOUTCMP=
+		unset STDOUTCMP
 		STDOUTRECMP=
 		unset STDERRCMP
 		ARG=
@@ -281,7 +282,7 @@ OutFile=$(mktempfile_elektra)
 RETCMP=
 ERRORCMP=
 WARNINGSCMP=
-STDOUTCMP=
+unset STDOUTCMP
 STDOUTRECMP=
 
 BACKUP=0
