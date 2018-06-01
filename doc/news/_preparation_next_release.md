@@ -226,9 +226,8 @@ Many problems were resolved with the following fixes:
 - The [`list` plugin](http://libelektra.org/plugins/list) which is responsible
   for global mounting had a bug which prevented globally mounted plugins from
   being configurable. *(Thomas Wahringer)*
-- Fix an issue with excluded plugins for rest-backend builds with ASAN enabled *(Lukas Winkler)*
-  - Reenable `ni` plugin for ASAN builds
-  - Disable failing markdown parser test for `validation` since it leaks memory and thus fails
+- Disable Markdown Shell Recorder test `validation.md` for ASAN builds.
+  It leaks memory and thus fails the test during spec mount. *(Lukas Winkler)*
 
 ## Outlook
 
