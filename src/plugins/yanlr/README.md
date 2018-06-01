@@ -18,23 +18,25 @@
 sudo kdb mount config.yaml user/tests/yanlr yanlr
 
 # Manually add some mappings to the configuration file
-printf 'key : value\n'   >  `kdb file user/tests/yanlr`
-printf 'hello : world\n' >> `kdb file user/tests/yanlr`
+printf 'all : circles presuppose\n' >  `kdb file user/tests/yanlr`
+printf 'hello : world\n'            >> `kdb file user/tests/yanlr`
 
 kdb ls /tests/yanlr
+#> user/tests/yanlr/all
 #> user/tests/yanlr/hello
-#> user/tests/yanlr/key
 
-# Add a new key-value pair
+kdb get user/tests/yanlr/all
+#> circles presuppose
+
 # Add new key-value pairs
 # Yan LR actually uses the YAML Smith plugin to write data
 kdb set /tests/yanlr/new brand
 kdb set /tests/yanlr/dance/gavin 'Dance!'
 
 kdb ls /tests/yanlr
+#> user/tests/yanlr/all
 #> user/tests/yanlr/dance/gavin
 #> user/tests/yanlr/hello
-#> user/tests/yanlr/key
 #> user/tests/yanlr/new
 
 kdb get /tests/yanlr/hello
