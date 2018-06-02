@@ -72,6 +72,31 @@ static void test_install_key (void)
 	gpgme_release (ctx);
 }
 
+static void test_import_key (void)
+{
+	gpgme_error_t err;
+	gpgme_data_t keydata;
+	gpgme_import_result_t result;
+	gpgme_ctx_t ctx;
+
+	err = gpgme_new (&ctx);
+	succeed_if (!err, "failed to initialize gpgme handle");
+
+	err = gpgme_data_new_from_mem (&keydata, test_key_asc, test_key_asc_len, 1);
+	succeed_if (!err, "failed to transform the test key to gpgme data structure");
+
+	err = gpgme_op_import (ctx, keydata);
+	succeed_if (!err, "failed to import GPG test key");
+
+	if (!err)
+	{
+		result = gpgme_op_import_result (ctx);
+		succeed_if (result->imported + result->unchanged == 1, "the GPG import failed");
+	}
+
+	gpgme_release (ctx);
+}
+
 int main (int argc, char ** argv)
 {
 	printf ("GPGME        TESTS\n");
@@ -81,6 +106,10 @@ int main (int argc, char ** argv)
 
 	init_gpgme ();
 	test_install_key ();
+	for (int i = 0; i < 20; i++)
+	{
+		test_import_key ();
+	}
 
 	print_result ("gpgme");
 	return nbError;
