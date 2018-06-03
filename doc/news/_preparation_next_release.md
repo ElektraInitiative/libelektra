@@ -191,7 +191,7 @@ These notes are of interest for people developing Elektra:
 - `clang` tests have been ported to the new build system *(Lukas Winkler et al)*
 - `clang-5.0` is now used for clang tests by the build system *(Lukas Winkler)*
 - An additional build job on Ubuntu:xenial has been added *(Lukas Winkler)*
-- Several improvments to the build system have been implemented *(Lukas Winkler)*:
+- Several improvements to the build system have been implemented *(Lukas Winkler)*:
   - Better Docker image handling.
   - Abort of previously queued but unfinished runs on new commits.
   - Document how to locally replicate the Docker environment used for tests.
