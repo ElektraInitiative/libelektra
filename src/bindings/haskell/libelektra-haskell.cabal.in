@@ -22,6 +22,7 @@ library
                    , Elektra.Ease
                    , Elektra.Errors
                    , Elektra.Invoke
+                   , Elektra.PluginProcess
   build-depends:     base >= 4.9 && < 4.12
   includes:          kdb.h
                    , kdbplugin.h
@@ -29,6 +30,7 @@ library
                    , kdbinvoke.h
                    , kdberrors.h
                    , hskdberrors.h
+                   , kdbpluginprocess.h
   include-dirs:      @CABAL_INCLUDE_DIRS@
                    , "@CMAKE_CURRENT_SOURCE_DIR@/src/include"
   c-sources:         "@CMAKE_CURRENT_BINARY_DIR@/src/c/hskdberrors.c"

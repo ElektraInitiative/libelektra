@@ -31,6 +31,7 @@ struct _ElektraPluginProcess
 	int pid;
 	int counter;
 	ElektraInvokeHandle * dump;
+	void * pluginData;
 };
 
 static void cleanupPluginData (ElektraPluginProcess * pp, Key * errorKey)
@@ -333,6 +334,7 @@ ElektraPluginProcess * elektraPluginProcessInit (Key * errorKey)
 	pp->resultPipe = getPipename (pp->pipeDirectory, "/result");
 	pp->dump = elektraInvokeOpen ("dump", 0, errorKey);
 	pp->counter = 0;
+	pp->pluginData = NULL;
 
 	if (pp->pipeDirectory && pp->commandPipe && pp->resultPipe && pp->dump)
 	{
@@ -400,4 +402,35 @@ int elektraPluginProcessClose (ElektraPluginProcess * pp, Key * errorKey)
 	int done = pp->counter <= 0;
 	if (done) cleanupPluginData (pp, errorKey);
 	return done;
+}
+
+/** Store a pointer to any plugin related data that is being executed inside an own process.
+ *
+ * @param plugin a pointer to the plugin
+ * @param data the pointer to the data
+ */
+void elektraPluginProcessSetData (Plugin * handle, void * data)
+{
+	ElektraPluginProcess * pp = elektraPluginGetData (handle);
+	if (pp)
+	{
+		pp->pluginData = data;
+	}
+}
+
+/** Get a pointer to any plugin related data stored before.
+ *
+ * If elektraPluginProcessSetData was not called earlier, NULL will be returned.
+ *
+ * @param plugin a pointer to the plugin
+ * @retval a pointer to the data
+ */
+void * elektraPluginProcessGetData (Plugin * handle)
+{
+	ElektraPluginProcess * pp = elektraPluginGetData (handle);
+	if (pp)
+	{
+		return pp->pluginData;
+	}
+	return NULL;
 }
