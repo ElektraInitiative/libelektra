@@ -209,6 +209,7 @@ Thanks to Armin Wurzinger.
 - Port `elektra-ini-mergerequests` to new build system. *(Lukas Winkler)*
 - Port `elektra-gcc-configure-debian-nokdbtest` to new build system. *(Lukas Winkler)*
 - Docker Registry is cleaned up by our daily buildserver task. *(Lukas Winkler)*
+- Builds now throw Errors for Warnings. *(Lukas Winkler)*
 
 ### Travis
 
