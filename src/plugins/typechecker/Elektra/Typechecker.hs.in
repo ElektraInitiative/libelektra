@@ -5,6 +5,7 @@ import Elektra.Key
 import Elektra.KeySet
 import Elektra.KDB
 import Elektra.Plugin
+import Elektra.PluginProcess
 import Elektra.Ease
 import Elektra.Invoke
 import Elektra.SpecTranslator
@@ -41,6 +42,7 @@ typecheck p ks k c = withGlobalLogging (LogConfig Nothing ("@ENABLE_LOGGER@" == 
     metakeys <- keyListMeta dk
     forM_ metakeys (logDebugT . show)
 
+  logDebugT "getting config"
   conf <- elektraPluginGetConfig p
   logDebugT $ "the configuration is " ++ show conf
 
@@ -101,7 +103,7 @@ typecheck p ks k c = withGlobalLogging (LogConfig Nothing ("@ENABLE_LOGGER@" == 
     readPrelude p name location = do
       prelude <- ksNew 0
       baseKey <- keyNewWithValue (name ++ "/elektra/spec/") location
-      ini <- elektraPluginGetData p
+      ini <- elektraPluginProcessGetData p
       -- the handle is set otherwise opening the plugin would fail already
       -- likewise we could assume the data is set as well and use fromJust, but lets stay functional
       maybe (ksNew 0) (\i -> elektraInvoke2Args i "get" prelude baseKey >> ksDup prelude) ini
@@ -133,12 +135,12 @@ logDebugT = logDebug . T.pack
 openIni :: Plugin -> Key -> IO PluginStatus
 openIni p k = do
   logDebugT "Opening ini"
-  elektraInvokeOpen "ini" Nothing (Just k) >>= ifHandle (return Error) (\i -> elektraPluginSetData p i >> return Success)
+  elektraInvokeOpen "ini" Nothing (Just k) >>= ifHandle (return Error) (\i -> elektraPluginProcessSetData p i >> return Success)
   
 closeIni :: Plugin -> Key -> IO PluginStatus
 closeIni p k = do
   logDebugT "Closing ini"
-  elektraPluginGetData p >>= maybe (return Success) closeHandle
+  elektraPluginProcessGetData p >>= maybe (return Success) closeHandle
   where
     closeHandle = ifHandle (return Success) (\i -> elektraInvokeClose i (Just k) >> return Success)
   

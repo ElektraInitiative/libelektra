@@ -6,7 +6,7 @@
 -- @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
 -- 
 module Elektra.Plugin (
-  Plugin, PluginStatus (..), PluginData (..),
+  Plugin, withPlugin, PluginStatus (..), PluginData (..),
   elektraPluginGetConfig, 
   elektraPluginSetData, elektraPluginGetData,
   elektraPluginOpenWith, elektraPluginCloseWith, 
