@@ -1,5 +1,5 @@
 # Elektra Docker Artifacts
-This folder contains all Docker related Artifacts.
+This folder contains all Docker related artifacts.
 
 **Note:**
 Any commands in this file are expected to be run from the root
@@ -23,7 +23,7 @@ You should also adjust the tag used via `-t` if you are building a different
 image.
 
 Please note that the complete images used to test Elektra are quite big
-(~3.7GB) and take a some time (10min+) to build.
+(~3.7GB) and take a some time (15min+) to build.
 
 ## Testing Elektra via Docker images
 To replicate errors on the test server you can build the image that ran the
@@ -42,7 +42,15 @@ Note since we used matching userid + groupid to your current user the container
 will write to your mounted directory with the correct permissions.
 
 Once you are running inside the container you can use the same commands as you
-would use normally to configure, compile and test Elektra.
+would use normally to
+[configure/compile](http://master.libelektra.org/doc/COMPILE.md)
+and [test](http://master.libelektra.org/doc/TESTING.md) Elektra.
+There is also some information on how the
+[build server](http://master.libelektra.org/doc/BUILDSERVER.md) uses
+the Docker images as well as the actual instructions executed by the
+build server in our
+[Jenkinsfiles](http://master.libelektra.org/scripts/jenkins).
+
 
 ## Differences to the build server
 The build server does not create a bash shell inside the containers.
@@ -52,5 +60,6 @@ open.
 Afterwards it executes each step via `docker exec`.
 
 There might be some more differences that might influence test outcomes.
-One such documented case is #2008 and #1973 where errors on the test
+One such documented case is [#2008](https://issues.libelektra.org/2008) and
+[#1973](https://issues.libelektra.org/1973) where errors on the test
 server could not be replicated when running identical commands locally.
