@@ -193,6 +193,7 @@ These notes are of interest for people developing Elektra:
 - Several improvments to the build system have been implemented *(Lukas Winkler)*:
   - Better Docker image handling
   - abort of previously queued but unfinished runs on new commits
+  - Document how to locally replicate the Docker environment used for tests.
 - <<TODO>>
 - <<TODO>>
 - Ported GCC ASAN build job to new build system *(René Schwaiger + Lukas Winkler)*
