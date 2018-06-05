@@ -199,7 +199,8 @@ These notes are of interest for people developing Elektra:
    [DownloadProject](https://github.com/Crascit/DownloadProject). If you want to use a local installation of
    [Google Test][] instead, please set the value of `GTEST_ROOT` to the path of you local copy of the
    [Google Test][] framework. *(René Schwaiger)*
-- [Google Test][] is installed in Docker images used by the build system.
+- [Google Test][] is installed in Docker images used by the build system. *(Lukas Winkler)*
+- Port `debian-multiconfig-gcc-stable` to new build system. *(Lukas Winkler)*
 
 [`cmake-format`]: https://github.com/cheshirekow/cmake_format
 [#1887]: https://github.com/ElektraInitiative/libelektra/issues/1887
