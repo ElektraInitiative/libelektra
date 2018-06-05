@@ -1,11 +1,16 @@
 # Elektra Docker Artifacts
+
 This folder contains all Docker related artifacts.
 
-**Note:**
-Any commands in this file are expected to be run from the root
-of the repository.
+A list of all Dockerfiles used by the build server can be found in the
+[Jenkinsfile](https://master.libelektra.org/scripts/jenkins/Jenkinsfile).
+
+> **Note:**
+> Any commands in this file are expected to be run from the root
+> of the repository.
 
 ## Building Images locally
+
 If you want to run or test Elektra via our Docker images you currently have
 to build them yourself.
 You can do so by running the following command:
@@ -26,6 +31,7 @@ Please note that the complete images used to test Elektra are quite big
 (~3.7GB) and take a some time (15min+) to build.
 
 ## Testing Elektra via Docker images
+
 To replicate errors on the test server you can build the image that ran the
 test as shown above.
 
@@ -43,16 +49,17 @@ will write to your mounted directory with the correct permissions.
 
 Once you are running inside the container you can use the same commands as you
 would use normally to
-[configure/compile](http://master.libelektra.org/doc/COMPILE.md)
-and [test](http://master.libelektra.org/doc/TESTING.md) Elektra.
+[configure/compile](https://master.libelektra.org/doc/COMPILE.md)
+and [test](https://master.libelektra.org/doc/TESTING.md) Elektra.
 There is also some information on how the
-[build server](http://master.libelektra.org/doc/BUILDSERVER.md) uses
+[build server](https://master.libelektra.org/doc/BUILDSERVER.md) uses
 the Docker images as well as the actual instructions executed by the
 build server in our
-[Jenkinsfiles](http://master.libelektra.org/scripts/jenkins).
+[Jenkinsfiles](https://master.libelektra.org/scripts/jenkins).
 
 
 ## Differences to the build server
+
 The build server does not create a bash shell inside the containers.
 Instead it runs a nonterminating command (usually `cat`) to keep the container
 open.
