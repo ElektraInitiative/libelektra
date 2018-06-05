@@ -228,7 +228,6 @@ Try it out now on: http://webui.libelektra.org:33334/
   - Better Docker image handling.
   - Abort of previously queued but unfinished runs on new commits.
   - Document how to locally replicate the Docker environment used for tests.
-  *(Lukas Winkler)*
 - The Jenkins build server now also compiles and tests Elektra with enabled address sanitizer. *(Lukas Winkler)*
 - Ported GCC ASAN build job to new build system *(René Schwaiger + Lukas Winkler)*
 - Docker artifacts are now cleaned up in our daily build job. *(Lukas Winkler)*
@@ -240,6 +239,7 @@ Try it out now on: http://webui.libelektra.org:33334/
 - Port `elektra-ini-mergerequests` to new build system. *(Lukas Winkler)*
 - Port `elektra-gcc-configure-debian-nokdbtest` to new build system. *(Lukas Winkler)*
 - Port `elektra-gcc-configure-xdg`to new build system. *(Lukas Winkler)*
+- Port `elektra-gcc-i386` to new build system. *(Lukas Winkler)*
 - Docker Registry is cleaned up by our daily buildserver task. *(Lukas Winkler)*
 
 

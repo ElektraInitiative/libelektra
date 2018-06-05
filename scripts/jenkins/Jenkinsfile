@@ -72,6 +72,11 @@ CMAKE_FLAGS_INI = [
     'KDB_DEFAULT_STORAGE': 'ini'
 ]
 
+CMAKE_FLAGS_I386 = [
+    'CMAKE_C_FLAGS': '-m32',
+    'CMAKE_CXX_FLAGS': '-m32'
+]
+
 CMAKE_FLAGS_ASAN = ['ENABLE_ASAN': 'ON']
 CMAKE_FLAGS_DEBUG = ['ENABLE_DEBUG': 'ON']
 CMAKE_FLAGS_LOGGER = ['ENABLE_LOGGER': 'ON']
@@ -160,6 +165,11 @@ def dockerInit() {
             "debian-stretch-minimal", this.&idTesting,
             "./scripts/docker/debian/stretch",
             "./scripts/docker/debian/stretch/Dockerfile.minimal"
+        )
+        DOCKER_IMAGES.stretch_i386 = createDockerImageDesc(
+            "debian-stretch-i386", this.&idTesting,
+            "./scripts/docker/debian/stretch",
+            "./scripts/docker/debian/stretch/Dockerfile.i386"
         )
         DOCKER_IMAGES.stretch_doc = createDockerImageDesc(
             "debian-stretch-doc", this.&idTesting,
@@ -318,6 +328,14 @@ def generateFullBuildStages() {
         DOCKER_IMAGES.sid,
         CMAKE_FLAGS_BUILD_ALL,
         [TEST.ALL, TEST.MEM, TEST.INSTALL]
+    )
+    tasks << buildAndTest(
+        "debian-stable-full-i386",
+        DOCKER_IMAGES.stretch_i386,
+        CMAKE_FLAGS_I386 + [
+            'PLUGINS': 'NODEP'
+        ],
+        [TEST.ALL]
     )
     tasks << buildAndTest(
         "debian-unstable-full-clang",
