@@ -331,6 +331,25 @@ def generateFullBuildStages() {
         [:],
         [TEST.ALL]
     )
+    for(plugins in ['ALL', 'NODEP']) {
+        for(buildType in ['Debug', 'Release', 'RelWithDebInfo']) {
+            if (plugins == 'ALL' && buildType == 'RelWithDebInfo') {
+                // Skip as it tested via "debian-stable-full"
+                continue
+            }
+            def testName = "debian-stable-multiconf[plugins=${plugins},buildType=${buildType}]"
+            tasks << buildAndTest(
+                testName,
+                DOCKER_IMAGES.stretch,
+                [
+                    'PLUGINS': plugins,
+                    'CMAKE_BUILD_TYPE': buildType
+                ],
+                [TEST.ALL, TEST.MEM]
+            )
+        }
+    }
+
     return tasks
 }
 
