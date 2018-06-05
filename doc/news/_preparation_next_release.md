@@ -265,6 +265,7 @@ Try it out now on: http://webui.libelektra.org:33334/
   - Abort of previously queued but unfinished runs on new commits.
   - Document how to locally replicate the Docker environment used for tests.
 - The Jenkins build server now also compiles and tests Elektra with enabled address sanitizer. *(Lukas Winkler)*
+- Add `STATIC` and `FULL` linked builds. *(Lukas Winkler)*
 - Ported GCC ASAN build job to new build system *(René Schwaiger + Lukas Winkler)*
 - Docker artifacts are now cleaned up in our daily build job. *(Lukas Winkler)*
 - `clang` tests have been ported to the new build system *(Lukas Winkler et al)*
