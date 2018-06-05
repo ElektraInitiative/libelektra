@@ -5,7 +5,7 @@
 - infos/provides = typechecker
 - infos/recommends =
 - infos/placements = postgetstorage presetstorage
-- infos/status = maintained experimental global
+- infos/status = maintained global experimental
 - infos/metadata =
 - infos/description = a plugin that type checks configuration specifications
 
