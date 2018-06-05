@@ -893,7 +893,9 @@ static void elektraModifyFileTime (resolverHandle * pk)
 /* Update timestamp of old file to provoke conflicts in
  * stalling processes that might still wait with the old
  * filedescriptor */
-static void elektraUpdateFileTime (resolverHandle * pk, int fd, Key * parentKey)
+static void elektraUpdateFileTime (resolverHandle * pk ELEKTRA_UNUSED,
+                                   int fd ELEKTRA_UNUSED,
+                                   Key * parentKey ELEKTRA_UNUSED)
 {
 #ifdef HAVE_FUTIMENS
 	const struct timespec times[2] = { pk->mtime,   // atime
@@ -913,8 +915,6 @@ static void elektraUpdateFileTime (resolverHandle * pk, int fd, Key * parentKey)
 		ELEKTRA_ADD_WARNINGF (99, parentKey, "Could not update time stamp of \"%s\", because %s",
 				      fd == pk->fd ? pk->filename : pk->tempfile, strerror (errno));
 	}
-#else
-#warning futimens/futimes not defined
 #endif
 }
 
