@@ -103,7 +103,6 @@ build:
 * jenkins build [libelektra](https://build.libelektra.org/jenkins/job/libelektra/) please
 * jenkins build [local-installation](https://build.libelektra.org/job/elektra-local-installation/) please
 * jenkins build [mingw64](https://build.libelektra.org/job/elektra-gcc-configure-mingw-w64/) please
-* jenkins build [multiconfig-gcc-stable](https://build.libelektra.org/job/elektra-multiconfig-gcc-stable/) please
 * jenkins build [source-package-test](https://build.libelektra.org/job/elektra-source-package-test/) please
 
 Additionally `jenkins build all please` can be used to trigger all build jobs
