@@ -1,7 +1,8 @@
 --
 -- @file
 --
--- @brief Some parsers which are used in the translation process
+-- @brief Some parsers that are used by the regexdispatcher to parse metakeys 
+-- before generating regexes out of them
 --
 -- @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
 -- 
@@ -16,12 +17,12 @@ import qualified Text.Megaparsec.Char.Lexer as L
 
 type Parser = Parsec Void String
 
--- Accessory functions
+-- Parse the given strings without further error analysis for now
 
 parseRange :: String -> Maybe (Int, Int)
 parseRange = parseMaybe rangeP
 
--- Lexer for the signatures, primitive string operations are just wrong to use for that...
+-- Basic lexer definitions
 
 sc :: Parser ()
 sc = L.space space1 empty empty

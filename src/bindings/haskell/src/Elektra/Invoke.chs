@@ -1,7 +1,7 @@
 --
 -- @file
 --
--- @brief invoke Haskell bindings
+-- @brief Haskell bindings for libelektra-invoke
 --
 -- @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
 -- 

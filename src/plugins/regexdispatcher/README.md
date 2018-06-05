@@ -1,19 +1,23 @@
 - infos = Information about the regexdispatcher plugin is in keys below
-- infos/author = e1528532 <e1528532@libelektra.org>
+- infos/author = Armin Wurzinger <e1528532@libelektra.org>
 - infos/licence = BSD
 - infos/needs =
 - infos/provides = 
 - infos/recommends =
 - infos/placements = presetstorage
+- infos/ordering = typechecker
 - infos/status = maintained experimental
-- infos/metadata =
+- infos/metadata = check/enum/# check/enum/multi elektra/spec/regex/check/enum check/range elektra/spec/regex/check/range
 - infos/description = a plugin which generates regex-representations of specification keywords
 
 ## Introduction
 
-A plugin which generates regex-representations of specification keywords for the 
-typechecker plugin before saving a configuration specification. Intended to be 
-mounted before the typechecker plugin.
+A plugin which generates regex representations of specification keywords for the 
+typechecker plugin before saving a configuration specification. For instance the
+regex for the metakey `check/enum/#` depends on the metakey's values, as the two
+definitions `check/enum/#1=A` and `check/enum/#2=B` would result in the regex
+`A|B` stored in the `elektra/spec/regex/check/enum` metakey that can be treated
+by the typechecker as a regex directly.
 
 ## Usage
 
@@ -28,9 +32,9 @@ In order to generate regex representations for different specification keywords,
 * cabal, the haskell build system, usually bundled with ghc
 * augeas, which provides libfa utilized by this plugin
 
-## Limitations
+## Supported Metakeys
 
 The following specification keywords are supported:
 
-* enum
-* range
+* check/enum/# and check/enum/multi
+* check/range
