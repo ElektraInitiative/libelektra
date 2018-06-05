@@ -4,11 +4,13 @@
 - infos/provides = conv
 - infos/needs =
 - infos/placements = presetstorage postgetstorage
-- infos/status = maintained unittest tested nodep libc configurable
-- infos/metadata =
+- infos/status = unittest tested nodep libc configurable discouraged
+- infos/metadata = comment
 - infos/description = conversion of keys to metakeys and vice versa
 
 ## Introduction
+
+> Note: This plugin uses a deprecated way to store comments.
 
 This plugin converts keys into metakeys of other keys.
 The keys to be converted are tagged with special metadata.
