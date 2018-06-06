@@ -30,7 +30,7 @@ static void test_rangedispatcher (void)
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
 
 	const Key * pKey1 = ksLookupByName (ks, "/key1", KDB_O_NONE);
-	const Key * checkRange1 = keyGetMeta (pKey1, "elektra/spec/regex/check/range");
+	const Key * checkRange1 = keyGetMeta (pKey1, "check/validation");
 
 	succeed_if (checkRange1, "the range regex hasn't been generated");
 	succeed_if (0 == strcmp (keyString (checkRange1), "[0-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-4][0-9][0-9][0-9]|5000"),
@@ -60,13 +60,13 @@ static void test_enumdispatcher (void)
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
 
 	const Key * pKey1 = ksLookupByName (ks, "/key1", KDB_O_NONE);
-	const Key * checkEnum1 = keyGetMeta (pKey1, "elektra/spec/regex/check/enum");
+	const Key * checkEnum1 = keyGetMeta (pKey1, "check/validation");
 
 	succeed_if (checkEnum1, "the single enum regex hasn't been generated");
 	succeed_if (0 == strcmp (keyString (checkEnum1), "a|b"), "the single enum regex is invalid");
 
 	const Key * pKey2 = ksLookupByName (ks, "/key2", KDB_O_NONE);
-	const Key * checkEnum2 = keyGetMeta (pKey2, "elektra/spec/regex/check/enum");
+	const Key * checkEnum2 = keyGetMeta (pKey2, "check/validation");
 
 	succeed_if (checkEnum2, "the multi enum regex hasn't been generated");
 	succeed_if (0 == strcmp (keyString (checkEnum2), "(a,b)|(b,a)"), "the mutli enum regex is invalid");

@@ -7,7 +7,7 @@
 - infos/placements = presetstorage
 - infos/ordering = typechecker
 - infos/status = maintained experimental
-- infos/metadata = check/enum/# check/enum/multi elektra/spec/regex/check/enum check/range elektra/spec/regex/check/range
+- infos/metadata = check/enum/# check/enum/multi check/range check/validation
 - infos/description = a plugin which generates regex-representations of specification keywords
 
 ## Introduction
