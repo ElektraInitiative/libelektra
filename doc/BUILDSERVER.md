@@ -89,7 +89,6 @@ build:
 * jenkins build [gcc-configure-debian-debug](https://build.libelektra.org/job/elektra-gcc-configure-debian-debug) please
 * jenkins build [gcc-configure-debian-intree](https://build.libelektra.org/job/elektra-gcc-configure-debian-intree/) please
 * jenkins build [gcc-configure-debian-musl](https://build.libelektra.org/job/elektra-gcc-configure-debian-musl/) please
-* jenkins build [gcc-configure-debian-notest](https://build.libelektra.org/job/elektra-gcc-configure-debian-notest/) please
 * jenkins build [gcc-configure-debian-shared](https://build.libelektra.org/job/elektra-gcc-configure-debian-shared/) please
 * jenkins build [gcc-configure-debian-optimizations](https://build.libelektra.org/job/elektra-gcc-configure-debian-optimizations/) please
 * jenkins build [gcc-configure-debian-withspace](https://build.libelektra.org/job/elektra-gcc-configure-debian-withspace/) please
