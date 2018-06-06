@@ -197,6 +197,9 @@ Try it out now on: http://webui.libelektra.org:33334/
 - We disabled the test `testlib_notification` on ASAN enabled builds, since Clang reports that the test leaks memory. *(René Schwaiger)*
 - Disable Markdown Shell Recorder test `validation.md` for ASAN builds.
   It leaks memory and thus fails the test during spec mount. *(Lukas Winkler)*
+- Haskell plugins and bindings are now correctly excluded when using BUILD_FULL or BUILD_STATIC
+  as this is currently unsupported. Another issue when building haskell plugins with a cached sandbox
+  is fixed as well. *(Armin Wurzinger)*
 
 [Google Test]: https://github.com/google/googletest
 
