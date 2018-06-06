@@ -64,6 +64,14 @@ if (CMAKE_COMPILER_IS_GNUCXX)
 	execute_process (COMMAND ${CMAKE_C_COMPILER} -dumpversion OUTPUT_VARIABLE GCC_VERSION)
 	if (WIN32)
 		message (STATUS "mingw detected")
+
+		# mingw builds need wine to be installed
+		find_program (WINE "wine")
+		if (WINE)
+			message (STATUS "wine detected")
+		else (WINE)
+			message (FATAL_ERROR "wine could not be found but is needed for mingw builds")
+		endif (WINE)
 	else (WIN32)
 
 		# not supported by icc:
