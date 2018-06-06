@@ -29,7 +29,7 @@ using namespace std;
 int displayHelp (std::string app, Factory const & f)
 {
 	std::cout << "Usage: " << app << " <command> [args]\n" << std::endl;
-	std::cout << app << " is a program to manage elektra's key database.\n"
+	std::cout << app << " is a program to manage Elektra's key database.\n"
 		  << "Please run a command with -H or --help as args to show a help text for\n"
 		  << "a specific command.\n"
 		  << std::endl;
