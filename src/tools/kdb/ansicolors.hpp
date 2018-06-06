@@ -38,7 +38,7 @@ enum class ANSI_COLOR_LAYER { FG, BG };
  *
  * @return if stderr has colors
  */
-bool hasErrorColor (std::string const & c = "");
+bool hasErrorColor (std::string const & c = "auto");
 
 
 /**
@@ -48,7 +48,7 @@ bool hasErrorColor (std::string const & c = "");
  *
  * @return if stdout has colors
  */
-bool hasStdColor (std::string const & c = "");
+bool hasStdColor (std::string const & c = "auto");
 
 /**
  *  getColorEscape returns the ansi escape sequence for the requested color and
