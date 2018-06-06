@@ -325,6 +325,7 @@ def generateFullBuildStages() {
             CMAKE_FLAGS_CLANG,
         [TEST.ALL, TEST.MEM, TEST.INSTALL]
     )
+    tasks << buildAndTestMingwW64(),
     tasks << buildAndTest(
         "ubuntu-xenial",
         DOCKER_IMAGES.xenial,
@@ -503,6 +504,28 @@ def buildAndTestAsan(testName, image, extraCmakeFlags = [:]) {
                              "ASAN_SYMBOLIZER_PATH=${llvm_symbolizer}"]){
                         ctest()
                     }
+                }
+            }
+        }
+    }]
+}
+
+/* Helper to generate mingw test */
+def buildAndTestMingwW64() {
+    def testName = "debian-stable-mingw-w64"
+    return [(testName): {
+        stage(testName) {
+            withDockerEnv(DOCKER_IMAGES.stretch) {
+                dir('build') {
+                    deleteDir()
+                    sh '../scripts/configure-mingw-w64 ..'
+                    sh 'make'
+                    def destdir='elektra'
+                    withEnv(["DESTDIR='${destdir}'"]){
+                        sh 'make install'
+                    }
+                    sh "zip -r elektra.zip ${destdir}"
+                    archive(['elektra.zip'])
                 }
             }
         }
