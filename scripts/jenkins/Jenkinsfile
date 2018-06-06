@@ -66,6 +66,12 @@ CMAKE_FLAGS_CLANG = [
     'CMAKE_CXX_COMPILER': 'clang++-5.0'
 ]
 
+CMAKE_FLAGS_INI = [
+    'KDB_DB_FILE': 'default.ini',
+    'KDB_DB_INIT': 'elektra.ini',
+    'KDB_DEFAULT_STORAGE': 'ini'
+]
+
 CMAKE_FLAGS_ASAN = ['ENABLE_ASAN': 'ON']
 CMAKE_FLAGS_DEBUG = ['ENABLE_DEBUG': 'ON']
 CMAKE_FLAGS_LOGGER = ['ENABLE_LOGGER': 'ON']
@@ -331,6 +337,15 @@ def generateFullBuildStages() {
         [:],
         [TEST.ALL]
     )
+    tasks << buildAndTest(
+        "debian-stable-full-ini",
+        DOCKER_IMAGES.stretch,
+        CMAKE_FLAGS_BUILD_ALL +
+            CMAKE_FLAGS_INI +
+            CMAKE_FLAGS_COVERAGE
+        ,
+        [TEST.ALL, TEST.MEM]
+    )
     for(plugins in ['ALL', 'NODEP']) {
         for(buildType in ['Debug', 'Release', 'RelWithDebInfo']) {
             if (plugins == 'ALL' && buildType == 'RelWithDebInfo') {
@@ -349,7 +364,6 @@ def generateFullBuildStages() {
             )
         }
     }
-
     return tasks
 }
 
