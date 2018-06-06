@@ -521,7 +521,7 @@ def buildAndTestMingwW64() {
                     sh '../scripts/configure-mingw-w64 ..'
                     sh 'make'
                     def destdir='elektra'
-                    withEnv(["DESTDIR='${destdir}'"]){
+                    withEnv(["DESTDIR=${destdir}"]){
                         sh 'make install'
                     }
                     sh "zip -r elektra.zip ${destdir}"
