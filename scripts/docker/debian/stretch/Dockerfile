@@ -57,6 +57,7 @@ RUN apt-get update \
         systemd \
         libsystemd-dev \
         mingw-w64 \
+        wine \
         llvm \
         icheck \
         devscripts \
