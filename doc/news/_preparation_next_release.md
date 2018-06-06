@@ -121,8 +121,9 @@ We improved the documentation in the following ways:
 - <<TODO>>
 - We added new [Markdown Shell Recorder](https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper) tests for the
   - [`file`](https://www.libelektra.org/plugins/file),
-  - [`iconv`](https://www.libelektra.org/plugins/iconv) and
-  - [`uname`](https://www.libelektra.org/plugins/uname),
+  - [`iconv`](https://www.libelektra.org/plugins/iconv),
+  - [`ni`](https://www.libelektra.org/plugins/ni), and
+  - [`uname`](https://www.libelektra.org/plugins/uname)
   plugin. *(René Schwaiger)*
 - We improved the formatting of our [compilation guide](/doc/COMPILE.md). *(René Schwaiger)*
 
@@ -174,7 +175,7 @@ These notes are of interest for people developing Elektra:
 - `clang` tests have been ported to the new build system *(Lukas Winkler et al)*
 - `clang-5.0` is now used for clang tests by the build system *(Lukas Winkler)*
 - An additional build job on Ubuntu:xenial has been added *(Lukas Winkler)*
-- Several improvments to the build system have been implemented *(Lukas Winkler)*:
+- Several improvements to the build system have been implemented *(Lukas Winkler)*:
   - Better Docker image handling.
   - Abort of previously queued but unfinished runs on new commits.
   - Document how to locally replicate the Docker environment used for tests.
@@ -218,6 +219,7 @@ Many problems were resolved with the following fixes:
 - The script [`check_bashisms.sh`](https://master.libelektra.org/tests/shell/check_bashisms.sh) should now work correctly again, if the
   system uses the GNU version `find`. *(René Schwaiger)*
 - The Markdown Shell Recorder now supports indented code blocks. *(René Schwaiger)*
+- The Markdown Shell Recorder now also tests if a command prints nothing to `stdout` if you add the check `#>`. *(René Schwaiger)*
 - We fixed some problems in the [Markdown Shell Recorder](https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper) test
   of [`kdb ls`](https://master.libelektra.org/doc/help/kdb-ls.md). *(René Schwaiger)*
 - The script [`reformat-cmake`](https://master.libelektra.org/scripts/reformat-cmake) now checks if `cmake-format` works before it reformats CMake files. Thank you to Klemens Böswirth for the [detailed description of the problem](https://github.com/ElektraInitiative/libelektra/pull/1903#discussion_r189332987). *(René Schwaiger)*
