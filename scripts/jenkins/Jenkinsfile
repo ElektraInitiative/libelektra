@@ -341,7 +341,8 @@ def generateFullBuildStages() {
         "debian-stable-full-ini",
         DOCKER_IMAGES.stretch,
         CMAKE_FLAGS_BUILD_ALL +
-            CMAKE_FLAGS_INI
+            CMAKE_FLAGS_INI +
+            CMAKE_FLAGS_COVERAGE
         ,
         [TEST.ALL, TEST.MEM]
     )
