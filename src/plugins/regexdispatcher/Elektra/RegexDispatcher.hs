@@ -27,14 +27,9 @@ import qualified Data.Text as T
 
 dispatch :: KeySet -> Key -> IO Bool
 dispatch ks k = do
-  ksList ks >>= mapM_ (keyListMeta >=> mapM_ print)
   dispatched <- fmap concat . sequence $ map ($ ks) [rangeDispatch, enumDispatch]
-  forM_ dispatched $ uncurry3 keySetMeta
-  ksList ks >>= mapM_ (keyListMeta >=> mapM_ print)
+  forM_ dispatched . uncurry $ flip keySetMeta "check/validation"
   return . not $ null dispatched
-
-uncurry3 :: (a -> b -> c -> d) -> ((a, b, c) -> d)
-uncurry3 f = \(a, b, c) -> f a b c
 
 elektraRegexdispatcherOpen :: Plugin -> Key -> IO PluginStatus
 elektraRegexdispatcherOpen p k = keySetMeta k "/plugins/regexdispatcher" "elektraRegexdispatcherOpen" >> return Success
