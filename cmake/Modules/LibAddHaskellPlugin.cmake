@@ -43,6 +43,7 @@ macro (add_haskell_plugin target)
 		find_package (Pluginprocess)
 
 		# set by find_program
+		if (NOT BUILD_STATIC AND NOT BUILD_FULL)
 		if (NOT ENABLE_ASAN)
 			if (PLUGINPROCESS_FOUND)
 				if (HASKELL_FOUND)
@@ -316,6 +317,9 @@ macro (add_haskell_plugin target)
 		else (NOT ENABLE_ASAN)
 			remove_plugin (${target} "haskell plugins are not compatible with ENABLE_ASAN")
 		endif (NOT ENABLE_ASAN)
+	else (NOT BUILD_STATIC AND NOT BUILD_FULL)
+		remove_plugin (${target} "haskell plugins are not compatible with BUILD_STATIC or BUILD_FULL")
+	endif (NOT BUILD_STATIC AND NOT BUILD_FULL)
 	endif (DEPENDENCY_PHASE)
 
 	set (SANDBOX_PACKAGEDB "${HASKELL_SHARED_SANDBOX}/${GHC_TARGET_PLATFORM}-ghc-${GHC_VERSION}-packages.conf.d/")
