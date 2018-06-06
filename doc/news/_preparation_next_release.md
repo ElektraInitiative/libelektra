@@ -218,6 +218,7 @@ These notes are of interest for people developing Elektra:
    [Google Test][] instead, please set the value of `GTEST_ROOT` to the path of you local copy of the
    [Google Test][] framework. *(René Schwaiger)*
 - [Google Test][] is installed in Docker images used by the build system. *(Lukas Winkler)*
+- Port `elektra-gcc-configure-mingw-w64` to new build system. *(Lukas Winkler)*
 - Port `debian-multiconfig-gcc-stable` to new build system. *(Lukas Winkler)*
 - Port `elektra-ini-mergerequests` to new build system. *(Lukas Winkler)*
 

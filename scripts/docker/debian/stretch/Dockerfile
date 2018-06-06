@@ -56,6 +56,7 @@ RUN apt-get update \
         libgirepository1.0-dev \
         systemd \
         libsystemd-dev \
+        mingw-w64 \
         llvm \
         icheck \
         devscripts \
