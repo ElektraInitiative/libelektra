@@ -198,6 +198,8 @@ These notes are of interest for people developing Elektra:
   - Document how to locally replicate the Docker environment used for tests.
 - <<TODO>>
 - <<TODO>>
+- Port `elektra-gcc-configure-debian-optimizations` to new build system.
+  *(Lukas Winkler)*
 - Ported GCC ASAN build job to new build system *(René Schwaiger + Lukas Winkler)*
 - `withDockerEnv` Jenkinsfile helper now no longer provides stages automatically. *(Lukas Winkler)*
 - Docker artifacts are now cleaned up in our daily build job. *(Lukas Winkler)*

@@ -75,6 +75,7 @@ CMAKE_FLAGS_INI = [
 CMAKE_FLAGS_ASAN = ['ENABLE_ASAN': 'ON']
 CMAKE_FLAGS_DEBUG = ['ENABLE_DEBUG': 'ON']
 CMAKE_FLAGS_LOGGER = ['ENABLE_LOGGER': 'ON']
+CMAKE_FLAGS_OPTIMIZATIONS_OFF = ['ENABLE_OPTIMIZATIONS': 'OFF']
 
 // Define TEST enum used in buildAndTest helper
 enum TEST {
@@ -359,6 +360,16 @@ def generateFullBuildStages() {
             'KDB_DEFAULT_RESOLVER': 'resolver_fm_b_b'
         ],
         [TEST.NOKDB]
+    )
+    tasks << buildAndTest(
+        "debian-stable-full-optimizations-off",
+        DOCKER_IMAGES.stretch,
+        CMAKE_FLAGS_BUILD_ALL +
+            CMAKE_FLAGS_OPTIMIZATIONS_OFF +
+            CMAKE_FLAGS_DEBUG +
+            CMAKE_FLAGS_LOGGER
+        ,
+        [TEST.ALL, TEST.MEM]
     )
     for(plugins in ['ALL', 'NODEP']) {
         for(buildType in ['Debug', 'Release', 'RelWithDebInfo']) {
