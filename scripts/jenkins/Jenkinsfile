@@ -325,7 +325,7 @@ def generateFullBuildStages() {
             CMAKE_FLAGS_CLANG,
         [TEST.ALL, TEST.MEM, TEST.INSTALL]
     )
-    tasks << buildAndTestMingwW64(),
+    tasks << buildAndTestMingwW64()
     tasks << buildAndTest(
         "ubuntu-xenial",
         DOCKER_IMAGES.xenial,
