@@ -43,6 +43,8 @@ Every core-tool has the following options:
   Use a different kdb profile, see below.
 - `-C`, `--color <when>`:
   Print never/auto(default)/always colored output.
+- `--`:
+  Do not process any following arguments starting with `-` as options.
 
 ## COMMON OPTIONS
 
