@@ -347,6 +347,19 @@ def generateFullBuildStages() {
         ,
         [TEST.ALL, TEST.MEM]
     )
+    tasks << buildAndTest(
+        "debian-stable-nokdb",
+        DOCKER_IMAGES.stretch,
+        // Set extra flags to make sure we are not allowed to write
+        // in system + spec + home
+        [
+            'KDB_DB_SYSTEM': '/system',
+            'KDB_DB_SPEC': '/spec',
+            'KDB_DB_HOME': '/local',
+            'KDB_DEFAULT_RESOLVER': 'resolver_fm_b_b'
+        ],
+        [TEST.NOKDB]
+    )
     for(plugins in ['ALL', 'NODEP']) {
         for(buildType in ['Debug', 'Release', 'RelWithDebInfo']) {
             if (plugins == 'ALL' && buildType == 'RelWithDebInfo') {
