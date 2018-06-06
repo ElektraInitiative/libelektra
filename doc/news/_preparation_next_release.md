@@ -203,6 +203,7 @@ These notes are of interest for people developing Elektra:
 - [Google Test][] is installed in Docker images used by the build system. *(Lukas Winkler)*
 - Port `debian-multiconfig-gcc-stable` to new build system. *(Lukas Winkler)*
 - Port `elektra-ini-mergerequests` to new build system. *(Lukas Winkler)*
+- Port `elektra-gcc-configure-debian-nokdbtest` to new build system. *(Lukas Winkler)*
 
 [`cmake-format`]: https://github.com/cheshirekow/cmake_format
 [#1887]: https://github.com/ElektraInitiative/libelektra/issues/1887
