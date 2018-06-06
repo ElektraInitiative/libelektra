@@ -174,6 +174,9 @@ Try it out now on: http://webui.libelektra.org:33334/
 - The Markdown Shell Recorder now also tests if a command prints nothing to `stdout` if you add the check `#>`. *(René Schwaiger)*
 - We fixed some problems in the [Markdown Shell Recorder](https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper) test
   of [`kdb ls`](https://master.libelektra.org/doc/help/kdb-ls.md). *(René Schwaiger)*
+- The documentation for `kdb` and `kdb set` now mention the `--` option to stop option processing. This is useful for setting negative values among other things.
+
+## Compatibility
 
 [#1887]: https://github.com/ElektraInitiative/libelektra/issues/1887
 
