@@ -8,13 +8,14 @@ cache:
 
 # don't cache our own libraries generated in the build
 # so they always get rebuilt properly and to avoid init issues
-# | true with unregister as they might not exist on build errors
+# we ignore the result as some or all might not exist on build
+# errors, in that case unregister would fail
 before_cache:
   - cd $HOME/elektra-cabal-sandbox
-  - cabal sandbox hc-pkg unregister spectranslator | true
-  - cabal sandbox hc-pkg unregister specelektra | true
-  - cabal sandbox hc-pkg unregister libfa | true
-  - cabal sandbox hc-pkg unregister libelektra-haskell | true
+  - cabal sandbox hc-pkg unregister spectranslator > /dev/null; true
+  - cabal sandbox hc-pkg unregister specelektra > /dev/null; true
+  - cabal sandbox hc-pkg unregister libfa > /dev/null; true
+  - cabal sandbox hc-pkg unregister libelektra-haskell > /dev/null; true
   - rm -f .cabal-sandbox/add-source-timestamps
 
 #
