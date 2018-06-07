@@ -10,11 +10,16 @@
 
 ## Introduction
 
-When writing a C string in C code some characters cannot be expressed
-directly but have a special one letter abbreviation.
-The ccode plugin allows us to map any single escaped
-character to be replaced by another single character and vice versa.
-The user can configure this mapping.
+The `ccode` plugin replaces (escapes) any special characters with two characters:
+
+- an escape character (default: `\`) and
+- another character representing the escaped character (e.g `n` for newline)
+
+before writing a `KeySet`. The plugin undoes this modification after reading a `KeySet`.
+
+CCode provides a reasonable default configuration, using the usual escape sequences
+for C strings (e.g. `\n` for newline, `\t` for tab). You can also configure the escape character
+(`/escape`) and the mapping for special characters (`chars`).
 
 ## Examples
 
