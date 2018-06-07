@@ -6,6 +6,13 @@ cache:
     $HOME/.cabal
     $HOME/elektra-cabal-sandbox
 
+# don't cache our own libraries generated in the build
+# so they always get rebuilt properly and to avoid init issues
+before_cache:
+  - cd $HOME/elektra-cabal-sandbox
+  - cabal sandbox hc-pkg unregister spectranslator specelektra libfa libelektra-haskell
+  - rm -f .cabal-sandbox/add-source-timestamps
+
 #
 # Define the build matrix
 #
