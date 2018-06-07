@@ -361,6 +361,7 @@ def generateFullBuildStages() {
         ],
         [TEST.NOKDB]
     )
+    /*
     tasks << buildAndTest(
         "debian-stable-full-optimizations-off",
         DOCKER_IMAGES.stretch,
@@ -371,6 +372,7 @@ def generateFullBuildStages() {
         ,
         [TEST.ALL, TEST.MEM]
     )
+    */
     for(plugins in ['ALL', 'NODEP']) {
         for(buildType in ['Debug', 'Release', 'RelWithDebInfo']) {
             if (plugins == 'ALL' && buildType == 'RelWithDebInfo') {
