@@ -312,6 +312,7 @@ Thanks to Michael Zronek and Vanessa Kos.
   - checks the formatting of CMake code via [`cmake-format`][]
   . *(René Schwaiger)*
 - Some cache issues on the Travis build job for cached haskell sandboxes have been resolved. *(Armin Wurzinger)*
+- Travis caches downloaded Homebrew packages to improve the reliability of macOS build jobs. *(René Schwaiger)*
 
 ## Compatibility
 
