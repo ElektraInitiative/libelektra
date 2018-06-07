@@ -4,7 +4,6 @@ cache:
   directories:
     $HOME/.m2
     $HOME/.cabal
-    $HOME/Library/Haskell
     $HOME/elektra-cabal-sandbox
 
 #
@@ -159,21 +158,21 @@ before_install:
       brew install cabal-install
       cabal update
       # avoid reinstalls if we already have them cached
-      # disable everything that slows down compilation times of the dependencies to have reasonable travis build times
       PATH=$PATH:"$HOME/.cabal/bin"
       which happy || cabal install happy
       which alex || cabal install alex
+      # language-c-0.8 fails to parse libfa, use 0.7.2 instead
+      cabal install language-c-0.7.2
       which c2hs || cabal install c2hs
-      cd $HOME
-      mkdir elektra-cabal-sandbox
-      cd elektra-cabal-sandbox
+      export HASKELL_SHARED_SANDBOX=$HOME/elektra-cabal-sandbox
+      mkdir -p $HASKELL_SHARED_SANDBOX
+      cd $HASKELL_SHARED_SANDBOX
       cabal sandbox init
       cabal install 'base >=4.9 && <4.12' 'containers >=0.5 && <0.6' \
         'directory >=1.2 && <1.4' 'process >=1.4 && <1.7' 'binary >=0.8 && <0.9' \
         'haskell-src-exts-any' 'pretty -any' 'hint >=0.7.0 && <0.8.0' 'temporary -any' \
         'exceptions -any' 'text -any' 'simple-logger -any' 'megaparsec -any' \
         'hspec -any' 'QuickCheck-any' --avoid-reinstalls
-      export HASKELL_SHARED_SANDBOX=$HOME/elektra-cabal-sandbox
     fi
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
