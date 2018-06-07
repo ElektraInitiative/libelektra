@@ -40,14 +40,20 @@ which contains the current list of haskell packages by invoking `cabal update`, 
 is not done automatically. Then first ensure the following programs are available on
 the PATH:
 
-- c2hs (tested with 0.28.2)
+- c2hs (tested with 0.28.2 and 0.28.5 if compiled with language-c-0.7.2)
+  Please note that language-c-0.8 is currently unsupported while c2hs would
+  pick it by default if the older version isn't installed already!
 - alex (tested with 3.2.4)
 - happy (tested with 1.19.9)
 
 All three depedendencies are available in some package managers and should be installed from 
 there in that case. If one or all of them are not available in the package manager 
-(e.g. homebrew on macOS does not include it), they can be installed via cabal by invoking 
-`cabal update && cabal install c2hs && cabal install alex && cabal install happy`.
+(e.g. homebrew on macOS does not include it), they can be installed via cabal by invoking:
+
+```
+cabal update && cabal install language-c-0.7.2 && cabal install c2hs && \
+	cabal install alex && cabal install happy
+```
 
 Next a cabal sandbox containing all the haskell dependencies has to be created. By 
 default, it is assumed to be the folder `.cabal-sandbox` in the build directory.
