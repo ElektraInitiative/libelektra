@@ -211,6 +211,7 @@ Many problems were resolved with the following fixes:
 
 - <<TODO>>
 - <<TODO>>
+- We fixed a problem of color escape characters on non-terminals. *(Lukas Winkler)*
 - <<TODO>>
 - We fixed a memory leak in the [mINI plugin](https://libelektra.org/plugins/mini) by requiring the plugin
   [`ccode`](https://libelektra.org/plugins/ccode) instead of the “provider” `code`. *(René Schwaiger)*
