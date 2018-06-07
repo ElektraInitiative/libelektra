@@ -21,40 +21,11 @@
  */
 static inline int elektraHexcodeConvFromHex (char c)
 {
-	if (c == '0')
-		return 0;
-	else if (c == '1')
-		return 1;
-	else if (c == '2')
-		return 2;
-	else if (c == '3')
-		return 3;
-	else if (c == '4')
-		return 4;
-	else if (c == '5')
-		return 5;
-	else if (c == '6')
-		return 6;
-	else if (c == '7')
-		return 7;
-	else if (c == '8')
-		return 8;
-	else if (c == '9')
-		return 9;
-	else if (c == 'a' || c == 'A')
-		return 10;
-	else if (c == 'b' || c == 'B')
-		return 11;
-	else if (c == 'c' || c == 'C')
-		return 12;
-	else if (c == 'd' || c == 'D')
-		return 13;
-	else if (c == 'e' || c == 'E')
-		return 14;
-	else if (c == 'f' || c == 'F')
-		return 15;
-	else
-		return 0; /* Unknown escape char */
+	if (c >= '0' && c <= '9') return c - '0';
+	if (c >= 'a' && c <= 'f') return c - 'a' + 10;
+	if (c >= 'A' && c <= 'F') return c - 'A' + 10;
+
+	return 0; /* Unknown escape char */
 }
 
 int elektraCcodeOpen (Plugin * handle, Key * key ELEKTRA_UNUSED)
