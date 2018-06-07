@@ -75,32 +75,27 @@ int elektraCcodeOpen (Plugin * handle, Key * key ELEKTRA_UNUSED)
 		d->decode['\''] = '\'';
 		d->decode['"'] = '\"';
 		d->decode['0'] = '\0';
+
+		return 0;
 	}
-	else
+
+	Key * cur = 0;
+	while ((cur = ksNext (config)) != 0)
 	{
-		Key * cur = 0;
-		while ((cur = ksNext (config)) != 0)
-		{
-			/* ignore all keys not direct below */
-			if (keyRel (root, cur) == 1)
-			{
-				/* ignore invalid size */
-				if (keyGetBaseNameSize (cur) != 3) continue;
-				if (keyGetValueSize (cur) != 3) continue;
+		/* Ignore keys that are not directly below the config root key or have an incorrect size */
+		if (keyRel (root, cur) != 1 || keyGetBaseNameSize (cur) != 3 || keyGetValueSize (cur) != 3) continue;
 
-				int res;
-				res = elektraHexcodeConvFromHex (keyBaseName (cur)[1]);
-				res += elektraHexcodeConvFromHex (keyBaseName (cur)[0]) * 16;
+		int res;
+		res = elektraHexcodeConvFromHex (keyBaseName (cur)[1]);
+		res += elektraHexcodeConvFromHex (keyBaseName (cur)[0]) * 16;
 
-				int val;
-				val = elektraHexcodeConvFromHex (keyString (cur)[1]);
-				val += elektraHexcodeConvFromHex (keyString (cur)[0]) * 16;
+		int val;
+		val = elektraHexcodeConvFromHex (keyString (cur)[1]);
+		val += elektraHexcodeConvFromHex (keyString (cur)[0]) * 16;
 
-				/* Hexencode this character! */
-				d->encode[res & 255] = val;
-				d->decode[val & 255] = res;
-			}
-		}
+		/* Hexencode this character! */
+		d->encode[res & 255] = val;
+		d->decode[val & 255] = res;
 	}
 
 	return 0;
