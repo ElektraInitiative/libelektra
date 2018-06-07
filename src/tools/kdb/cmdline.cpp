@@ -242,22 +242,13 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 		long_options.push_back (o);
 		helpText += "-c --plugins-config <c>  Add a plugin configuration.\n";
 	}
-
-#ifdef _WIN32
-	color = "never";
-#endif
-
 	optionPos = acceptedOptions.find ('C');
 	if (optionPos != string::npos)
 	{
 		acceptedOptions.insert (optionPos + 1, ":");
 		option o = { "color", required_argument, nullptr, 'C' };
 		long_options.push_back (o);
-#ifndef _WIN32
 		helpText += "-C --color <when>       Print never/auto(default)/always colored output.\n";
-#else
-		helpText += "-C --color <when>       Print never(default)/auto/always colored output.\n";
-#endif
 	}
 
 	int index = 0;
