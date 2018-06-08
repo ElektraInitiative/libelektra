@@ -11,12 +11,14 @@ cache:
 # we ignore the result as some or all might not exist on build
 # errors, in that case unregister would fail
 before_cache:
+  - rm -rf $HOME/.cabal/logs
   - cd $HOME/elektra-cabal-sandbox
   - cabal sandbox hc-pkg unregister spectranslator > /dev/null; true
   - cabal sandbox hc-pkg unregister specelektra > /dev/null; true
   - cabal sandbox hc-pkg unregister libfa > /dev/null; true
   - cabal sandbox hc-pkg unregister libelektra-haskell > /dev/null; true
   - rm -rf .cabal-sandbox/logs
+  - rm -f .cabal-sandbox/world
   - rm -f .cabal-sandbox/add-source-timestamps
 
 #
@@ -179,11 +181,14 @@ before_install:
       mkdir -p $HASKELL_SHARED_SANDBOX
       cd $HASKELL_SHARED_SANDBOX
       cabal sandbox init
+      # there is some strange cache bug where it complains that one of our own library's
+      # directory doesn't exist though it gets properly unregistered. Apparently ignoring
+      # that works anyway.
       cabal install 'base >=4.9 && <4.12' 'containers >=0.5 && <0.6' \
         'directory >=1.2 && <1.4' 'process >=1.4 && <1.7' 'binary >=0.8 && <0.9' \
         'haskell-src-exts-any' 'pretty -any' 'hint >=0.7.0 && <0.8.0' 'temporary -any' \
         'exceptions -any' 'text -any' 'simple-logger -any' 'megaparsec -any' \
-        'hspec -any' 'QuickCheck-any' --avoid-reinstalls
+        'hspec -any' 'QuickCheck-any' --avoid-reinstalls || true
     fi
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
