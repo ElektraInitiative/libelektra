@@ -170,9 +170,18 @@ These notes are of interest for people maintaining packages of Elektra:
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- The Jenkins build server now also compiles and tests Elektra with enabled address sanitizer. *(Lukas Winkler)*
-- Travis now uses the latest version of GCC and Clang to translate Elektra on Linux. *(René Schwaiger)*
 
+### Jenkins
+
+- The Jenkins build server now also compiles and tests Elektra with enabled address sanitizer. *(Lukas Winkler)*
+
+### Travis
+
+- Travis now uses the latest version of GCC and Clang to translate Elektra on Linux. *(René Schwaiger)*
+- Our Travis build job now
+  - builds all (applicable) bindings by default again, and
+  - checks the formatting of CMake code via [`cmake-format`][]
+  . *(René Schwaiger)*
 
 ## Website
 
@@ -206,11 +215,6 @@ These notes are of interest for people developing Elektra:
 - `icheck` build server job has been ported to our new build system. *(Lukas Winkler)*
 - The script [`check_formatting.sh`](https://master.libelektra.org/tests/shell/check_formatting.sh) now also checks the formatting of CMake
   code if you installed [`sponge`](https://joeyh.name/code/moreutils) and [`cmake-format`][]. *(René Schwaiger)*
-- Our Travis build job now
-  - builds all (applicable) bindings by default again, and
-  - checks the formatting of CMake code via [`cmake-format`][]
-
-  . *(René Schwaiger)*
 - (Markdown) Shell Recorder tests now save test data below `/tests` (see issue [#1887][]). *(René Schwaiger)*
 - The Markdown Shell Recorder checks `kdb set` commands to ensure we only add tests that store data below `/tests`. *(René Schwaiger)*
 - We disabled the test `testlib_notification` on ASAN enabled builds, since Clang reports that the test leaks memory. *(René Schwaiger)*
