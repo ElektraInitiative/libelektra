@@ -48,23 +48,29 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.8.
 ### <<HIGHLIGHT2>>
 
 
-## Other New Features
-
-We added even more functionality, which could not make it to the highlights:
+## Plugins
 
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
 
 
-## New Plugins
+
+## Bindings
 
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
 
 
-## Other News
+## Tools
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+
+## Scripts
 
 - <<TODO>>
 - <<TODO>>
@@ -73,12 +79,45 @@ We added even more functionality, which could not make it to the highlights:
 
 ## Documentation
 
-We improved the documentation in the following ways:
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+## Tests
 
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
 
+
+## Build
+
+### CMake
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### Docker
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+
+## Infrastructure
+
+### Jenkins
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### Travis
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ## Compatibility
 
@@ -91,44 +130,10 @@ compiled against an older 0.8 version of Elektra will continue to work
 - <<TODO>>
 
 
-## Notes for Maintainer
-
-These notes are of interest for people maintaining packages of Elektra:
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-
-## Infrastructure
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-
 ## Website
 
 The website is generated from the repository, so all information about
 plugins, bindings and tools are always up to date. Furthermore, we changed:
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-
-## Notes for Elektra's Developers
-
-These notes are of interest for people developing Elektra:
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-
-## Fixes
-
-Many problems were resolved with the following fixes:
 
 - <<TODO>>
 - <<TODO>>
