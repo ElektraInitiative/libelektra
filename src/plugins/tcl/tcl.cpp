@@ -61,7 +61,7 @@ int elektraTclGet (Plugin *, KeySet * returned, Key * parentKey)
 	int ret = 0;
 	try
 	{
-		elektra::unserialise (in, input);
+		elektra::unserialise (in, input, parent);
 	}
 	catch (boost::spirit::qi::expectation_failure<boost::spirit::istream_iterator> const & e)
 	{
@@ -100,7 +100,7 @@ int elektraTclSet (Plugin *, KeySet * returned, Key * parentKey)
 
 	kdb::KeySet output (returned);
 
-	elektra::serialise (ofs, output);
+	elektra::serialise (ofs, output, parent);
 	parent.release ();
 	output.release ();
 

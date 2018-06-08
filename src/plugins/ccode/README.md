@@ -32,7 +32,7 @@ sudo kdb mount config.tcl user/tests/ccode tcl ccode base64
 kdb set user/tests/ccode/multiline "`printf 'one\ntwo\nthree'`"
 # By default the plugin uses `\n` to escape newline characters
 grep 'multiline' `kdb file user/tests/ccode/multiline` | sed 's/[[:space:]]*//'
-#> user/tests/ccode/multiline = one\ntwo\nthree
+#> multiline = one\ntwo\nthree
 
 # The `ccode` plugin escapes and unescapes the data. The `tcl` plugin
 # returns the unescaped values.

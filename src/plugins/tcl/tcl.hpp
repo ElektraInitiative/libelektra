@@ -18,8 +18,8 @@
 namespace elektra
 {
 
-void serialise (std::ostream & os, kdb::KeySet & output);
-void unserialise (std::istream & os, kdb::KeySet & output);
+void serialise (std::ostream & os, kdb::KeySet & output, kdb::Key & parent);
+void unserialise (std::istream & os, kdb::KeySet & output, kdb::Key & parent);
 } // namespace elektra
 
 extern "C" {
