@@ -6,7 +6,7 @@
 -- @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
 -- 
 module Elektra.Plugin (
-  Plugin, PluginStatus (..),
+  Plugin, withPlugin, PluginStatus (..), PluginData (..),
   elektraPluginGetConfig, 
   elektraPluginSetData, elektraPluginGetData,
   elektraPluginOpenWith, elektraPluginCloseWith, 
@@ -16,6 +16,7 @@ module Elektra.Plugin (
 
 {#import Elektra.Key#}
 {#import Elektra.KeySet#}
+
 import Foreign.Ptr (Ptr)
 import Foreign.ForeignPtr (newForeignPtr_)
 import Control.Monad (join, liftM, liftM2, liftM3)
@@ -44,9 +45,21 @@ instance Enum PluginStatus where
 -- ***
 
 {#fun unsafe elektraPluginGetConfig {`Plugin'} -> `KeySet' #}
--- You have to cast it using Foreign.Ptr.castPtr to the data structure you use manually
-{#fun unsafe elektraPluginSetData {`Plugin', `Ptr ()'} -> `()' #}
-{#fun unsafe elektraPluginGetData {`Plugin'} -> `Ptr ()' #}
+
+-- This is already implemented for invoke handles
+-- If you want to use other data structures you have to provide an instance of PluginData yourself
+-- This way we can hide the ugly casting to c's void pointer
+class PluginData d where
+  store :: (Ptr () -> IO ()) -> d -> IO ()
+  retrieve :: Ptr () -> Maybe d
+
+elektraPluginSetData :: PluginData d => Plugin -> d -> IO ()
+elektraPluginSetData p = store (elektraPluginSetDataRaw p)
+{#fun unsafe elektraPluginSetData as elektraPluginSetDataRaw {`Plugin', `Ptr ()'} -> `()' #}
+
+elektraPluginGetData :: PluginData d => Plugin -> IO (Maybe d)
+elektraPluginGetData p = retrieve <$> elektraPluginGetDataRaw p
+{#fun unsafe elektraPluginGetData as elektraPluginGetDataRaw {`Plugin'} -> `Ptr ()' #}
 
 -- ***
 -- PLUGIN STUB METHODS

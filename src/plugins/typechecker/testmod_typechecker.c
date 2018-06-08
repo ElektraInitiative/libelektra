@@ -38,9 +38,9 @@ static KeySet * keysetWithStandardFunctions (void)
 				 "RegexContains b a => Key b :: . -> Key a -> Key a", KEY_META, "elektra/spec/impl",
 				 "override (Key P.Nothing) b = b \n override a _ = a", KEY_END));
 
-	ksAppendKey (ks, keyNew (PARENT_KEY_NAME "/elektra/spec/check/range", KEY_META, "elektra/spec/type",
-				 "RegexIntersects a b => P.Proxy b :: Range . -> Key a -> Key (RegexIntersection a b)", KEY_META,
-				 "elektra/spec/impl", "checkrange _ a = a", KEY_END));
+	ksAppendKey (ks, keyNew (PARENT_KEY_NAME "/elektra/spec/elektra/spec/regex/check/range", KEY_META, "elektra/spec/type",
+				 "RegexIntersects a b => P.Proxy b :: Dispatched . -> Key a -> Key (RegexIntersection a b)", KEY_META,
+				 "elektra/spec/impl", "elektraspecregexcheckrange _ a = a", KEY_END));
 
 	ksAppendKey (ks, keyNew (PARENT_KEY_NAME "/elektra/spec/check/long", KEY_META, "elektra/spec/type",
 				 "RegexIntersects a \"" LONG_REGEX "\" => Key a -> Key (RegexIntersection a \"" LONG_REGEX "\")", KEY_META,
@@ -59,12 +59,17 @@ static void test_basics (void)
 
 	KeySet * ks = keysetWithStandardFunctions ();
 
-	ksAppendKey (ks, keyNew (KEY1_NAME, KEY_VALUE, "2500", KEY_META, "check/range", "0-5000", KEY_END));
+	ksAppendKey (ks, keyNew (KEY1_NAME, KEY_VALUE, "2500", KEY_META, "elektra/spec/regex/check/range",
+				 "[0-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-4][0-9][0-9][0-9]|5000", KEY_END));
 
-	ksAppendKey (ks, keyNew (KEY2_NAME, KEY_VALUE, "500", KEY_META, "fallback/#1", KEY1_NAME, KEY_META, "check/range", "-250-7500",
-				 KEY_END));
+	ksAppendKey (ks,
+		     keyNew (KEY2_NAME, KEY_VALUE, "500", KEY_META, "fallback/#1", KEY1_NAME, KEY_META, "elektra/spec/regex/check/range",
+			     "-[1-9]|-1[0-9][0-9]|-2[0-4][0-9]|-250|-?[1-9][0-9]|[0-9]|[1-9][0-9][0-9]|[1-6][0-9][0-9][0-9]|7[0-4][0-9][0-"
+			     "9]|7500",
+			     KEY_END));
 
 	ksAppendKey (ks, keyNew (KEY3_NAME, KEY_META, "fallback/#1", KEY1_NAME, KEY_META, "fallback/#2", KEY2_NAME, KEY_END));
+
 
 	ksAppendKey (ks, keyNew (KEY4_NAME, KEY_META, "fallback/#1", KEY1_NAME, KEY_META, "override/#1", KEY2_NAME, KEY_META, "check/long",
 				 "", KEY_END));
@@ -87,10 +92,11 @@ static void test_invalid_ranges_override (void)
 
 	KeySet * ks = keysetWithStandardFunctions ();
 
-	ksAppendKey (ks, keyNew (KEY1_NAME, KEY_VALUE, "2500", KEY_META, "check/range", "0-5000", KEY_END));
+	ksAppendKey (ks, keyNew (KEY1_NAME, KEY_VALUE, "2500", KEY_META, "elektra/spec/regex/check/range",
+				 "[0-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-4][0-9][0-9][0-9]|5000", KEY_END));
 
-	ksAppendKey (ks, keyNew (KEY2_NAME, KEY_VALUE, "500", KEY_META, "override/#1", KEY1_NAME, KEY_META, "check/range", "7200-10000",
-				 KEY_END));
+	ksAppendKey (ks, keyNew (KEY2_NAME, KEY_VALUE, "500", KEY_META, "override/#1", KEY1_NAME, KEY_META,
+				 "elektra/spec/regex/check/range", "[7-9][2-9][0-9][0-9]|10000", KEY_END));
 
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "call to kdbSet was not successful");
 	succeed_if (!output_error (parentKey), "no errors found but one is expected");

@@ -59,7 +59,7 @@ set of type definitions for commonly used metakeys such as `check/range`,
 `check/long`, `fallback` or `override`.
 
 For more details see the
-[typechecker readme](https://github.com/ElektraInitiative/libelektra/tree/master/src/plugins/typechecker/README.md)
+[typechecker readme](https://www.libelektra.org/plugins/typechecker)
 
 Thanks to Armin Wurzinger.
 
@@ -87,16 +87,17 @@ We added even more functionality, which could not make it to the highlights:
 - The build system no longer installs haskell dependencies from hackage by itself, instead
   this has to be done beforehand like it is the case with all other dependencies. The main
   reason is that the build servers shouldn't compile the dependencies over and over again,
-  only if something changes. See the [readme](https://github.com/ElektraInitiative/libelektra/blob/master/src/bindings/haskell/README.md). *(Armin Wurzinger)*
-- <<TODO>>
-- <<TODO>>
+  only if something changes. See the [readme](https://www.libelektra.org/bindings/haskell). *(Armin Wurzinger)*
 - The new tool `kdb find` lists keys of the database matching a certain regular expression. *(Markus Raab)*
+- <<TODO>>
 
 ## New Plugins
 
 - The plugin [hexnumber](https://www.libelektra.org/plugins/hexnumber) has been added. It can be used
   to convert hexadecimal values into decimal when read, and back to hexadecimal when written. *(Klemens Böswirth)*
-- <<TODO>>
+- The plugin [regexdispatcher](https://www.libelektra.org/plugins/regexdispatcher) has been added. It calculates regex representations for commonly used specification
+  keywords to be used with the [typechecker](https://www.libelektra.org/plugins/typechecker). Currently the
+  keywords `check/range`, `check/enum` and `check/validation` are supported. *(Armin Wurzinger)*
 - <<TODO>>
 
 

@@ -35,14 +35,14 @@ functionBaseName (Function s)        = s
 
 data PathVariable = Self
                   | Path Path
-                  | Range Path
+                  | Dispatched Path
                   deriving Eq
 
 instance Show PathVariable
   where
     show Self      = "self"
     show (Path p)  = "@PATH@" ++ p
-    show (Range r) = "@RANGE@" ++ r
+    show (Dispatched d) = "@DISPATCHED@" ++ d
 
 data TransformationSpecification = TransformationSpecification {
   transformFrom   :: Path,

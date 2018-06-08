@@ -30,10 +30,13 @@ macro (add_haskell_plugin target)
 
 	set (PLUGIN_NAME ${target})
 	set (PLUGIN_NAME_CAPITALIZED ${target})
-	string (SUBSTRING ${PLUGIN_NAME} 0 1 FIRST_LETTER)
-	string (TOUPPER ${FIRST_LETTER} FIRST_LETTER)
-	string (REGEX REPLACE "^.(.*)" "${FIRST_LETTER}\\1" PLUGIN_NAME_CAPITALIZED "${PLUGIN_NAME}")
-	string (TOUPPER ${PLUGIN_NAME} PLUGIN_NAME_UPPERCASE)
+	if (ARG_MODULE)
+		set (PLUGIN_NAME_CAPITALIZED ${ARG_MODULE})
+	else (ARG_MODULE)
+		string (SUBSTRING ${PLUGIN_NAME} 0 1 FIRST_LETTER)
+		string (TOUPPER ${FIRST_LETTER} FIRST_LETTER)
+		string (REGEX REPLACE "^.(.*)" "${FIRST_LETTER}\\1" PLUGIN_NAME_CAPITALIZED "${PLUGIN_NAME}")
+	endif (ARG_MODULE)
 
 	if (DEPENDENCY_PHASE)
 		find_package (Haskell)
@@ -180,9 +183,16 @@ macro (add_haskell_plugin target)
 										# our custom libs are all to be processed by cmake before we
 										# can add them, so enforce that, the build is more stable
 										# this way
-											add_subdirectory (
-												"${CMAKE_SOURCE_DIR}/${SANDBOX_ADD_SOURCE}"
-												"${CMAKE_BINARY_DIR}/${SANDBOX_ADD_SOURCE}")
+											if (NOT
+											    IS_DIRECTORY
+											    "${CMAKE_BINARY_DIR}/${SANDBOX_ADD_SOURCE}")
+												add_subdirectory (
+													"${CMAKE_SOURCE_DIR}/${SANDBOX_ADD_SOURCE}"
+													"${CMAKE_BINARY_DIR}/${SANDBOX_ADD_SOURCE}"
+													)
+											endif (NOT
+											       IS_DIRECTORY
+											       "${CMAKE_BINARY_DIR}/${SANDBOX_ADD_SOURCE}")
 											execute_process (
 												COMMAND
 													${CABAL_EXECUTABLE} sandbox

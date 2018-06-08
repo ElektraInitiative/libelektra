@@ -5,19 +5,21 @@ import Elektra.Key
 import Elektra.KeySet
 import Elektra.KDB
 import Elektra.Plugin
+import Elektra.PluginProcess
 import Elektra.Ease
+import Elektra.Invoke
 import Elektra.SpecTranslator
 import Elektra.SpecParser
 import Elektra.Errors
 
-import Control.Monad                (mapM_, forM_, (>=>))
+import Control.Monad                (mapM_, forM_, (>=>), join)
 import Control.Logger.Simple
 import Data.Bool                    (bool)
 import Data.List                    (intercalate, isPrefixOf)
-import Data.Maybe                   (fromJust)
+import Data.Maybe                   (fromJust, listToMaybe)
 import Foreign.Ptr
 import System.IO.Temp               (writeTempFile)
-import System.Directory             (removeFile)
+import System.Directory             (removeFile, doesFileExist)
 import System.Environment           (lookupEnv)
 import Text.PrettyPrint
 
@@ -40,35 +42,38 @@ typecheck p ks k c = withGlobalLogging (LogConfig Nothing ("@ENABLE_LOGGER@" == 
     metakeys <- keyListMeta dk
     forM_ metakeys (logDebugT . show)
 
+  logDebugT "getting config"
   conf <- elektraPluginGetConfig p
+  logDebugT $ "the configuration is " ++ show conf
 
   -- Otherwise ksCut would remove keys, we don't want that behavior here
   ksc <- ksDup ks
   kscc <- ksCut ksc k
 
-  -- load type signatures if a path to prelude is specified
-  -- it is important that the path to prelude is not "under"
-  -- this path otherwise it would lead to recursions
+  -- prelude handling
+  -- We load it via invoke + ini plugin as kdbOpen in here leads to unpredicted behavior combined with the process plugin
   logDebugT $ "the configuration is " ++ show conf
-  prelude <- ifKey (ksLookupByName conf "/prelude") (keyString >=> fmap Just . keyNew) (return Nothing)
-  ps <- maybe (ksNew 0) readPrelude prelude
+  let globalSpecPrelude = "@KDB_DB_SPEC@/prelude.ini"
+  preludePath <- join . listToMaybe <$> sequence [
+    -- #1: Environment variable (tests)
+    lookupEnv "TYPECHECKER_PRELUDE",
+    -- #2: Plugin Config (user custom preludes)
+    ksLookupByName conf "/prelude" >>= ifKey (return Nothing) (fmap Just . keyString),
+    -- #3: default global spec namespace (default)
+    bool Nothing (Just globalSpecPrelude) <$> doesFileExist globalSpecPrelude
+    -- #4: nothing otherwise
+    ]
+  logDebugT $ "Loading prelude located at " ++ show preludePath ++ " to " ++ name
+  ps <- maybe (ksNew 0) (readPrelude p name) preludePath
   logDebugT $ "Prelude contained " ++ show ps
+  ksAppend ps kscc
+  logDebugT $ "Combined specifications are " ++ show ps
 
-  -- now rename the prelude keys to the correct parent key
-  -- and append kscc to pdcc to avoid overwriting custom type specifications
-  -- We cannot rename keys stored in a keyset to append it to a new one
-  rs <- ksGetSize ps >>= ksNew
-  -- if its Nothing, there will be an empty list so this is fine
-  ksList ps >>= mapM_ (renamePrelude (fromJust prelude) name >=> ksAppendKey rs)
-  ksAppend rs kscc
-
-  logDebugT $ "Combined specifications are " ++ show rs
-
-  typeSpecs <- parseTypeSpecifications k rs
+  typeSpecs <- parseTypeSpecifications k ps
   logDebugT $ "Got " ++ show (length typeSpecs) ++ " function specifications"
   mapM_ (logDebugT . show) typeSpecs
 
-  keySpecs <- parseKeySpecifications k rs
+  keySpecs <- parseKeySpecifications k ps
   logDebugT $ "Got " ++ show (length keySpecs) ++ " key specifications"
   mapM_ (logDebugT . show) keySpecs
 
@@ -95,20 +100,13 @@ typecheck p ks k c = withGlobalLogging (LogConfig Nothing ("@ENABLE_LOGGER@" == 
     Right () -> return False
   where
     putStepLn s = logDebugT $ "\n" ++ s ++ "\n"
-    readPrelude prelude = do
-      pp <- keyDup prelude
-      logDebugT $ "Opening prelude at " ++ show pp
-      kdbOpen pp $ \p -> do
-        pd <- ksNew 10
-        pp2 <- keyDup pp
-        kdbGet p pd pp2
-        -- play it safe and copy it here so ksCut won't affect anything else
-        ksDup pd >>= flip ksCut pp
-    renamePrelude prelude name p = do
-      r <- keyGetRelativeName p prelude
-      c <- keyDup p
-      keySetName c $ name ++ "/elektra/spec/" ++ r
-      return c
+    readPrelude p name location = do
+      prelude <- ksNew 0
+      baseKey <- keyNewWithValue (name ++ "/elektra/spec/") location
+      ini <- elektraPluginProcessGetData p
+      -- the handle is set otherwise opening the plugin would fail already
+      -- likewise we could assume the data is set as well and use fromJust, but lets stay functional
+      maybe (ksNew 0) (\i -> elektraInvoke2Args i "get" prelude baseKey >> ksDup prelude) ini
 
 keyInterpreter :: FilePath -> InterpreterT IO ()
 keyInterpreter specFile = do
@@ -128,33 +126,38 @@ errorString (WontCompile es) = intercalate "\n" (header : map unbox es)
     unbox (GhcError e) = e
 errorString e = show e
 
-isCheckingPrelude :: Key -> IO Bool
-isCheckingPrelude k = do
-  bn1 <- keyBaseName k
-  keyDeleteBaseName k
-  bn2 <- keyBaseName k
-  return $ bn1 == "spec" && bn2 == "elektra"
-
 say :: String -> Interpreter ()
 say = liftIO . logDebugT
 
 logDebugT :: MonadIO m => String -> m ()
 logDebugT = logDebug . T.pack
 
+openIni :: Plugin -> Key -> IO PluginStatus
+openIni p k = do
+  logDebugT "Opening ini"
+  elektraInvokeOpen "ini" Nothing (Just k) >>= ifHandle (return Error) (\i -> elektraPluginProcessSetData p i >> return Success)
+  
+closeIni :: Plugin -> Key -> IO PluginStatus
+closeIni p k = do
+  logDebugT "Closing ini"
+  elektraPluginProcessGetData p >>= maybe (return Success) closeHandle
+  where
+    closeHandle = ifHandle (return Success) (\i -> elektraInvokeClose i (Just k) >> return Success)
+  
 elektraTypecheckerOpen :: Plugin -> Key -> IO PluginStatus
-elektraTypecheckerOpen _ _ = return Success
+elektraTypecheckerOpen = openIni
 hs_elektraHaskellOpen = elektraPluginOpenWith elektraTypecheckerOpen
 
 elektraTypecheckerClose :: Plugin -> Key -> IO PluginStatus
-elektraTypecheckerClose _ _ = return Success
+elektraTypecheckerClose = closeIni
 hs_elektraHaskellClose = elektraPluginCloseWith elektraTypecheckerClose
 
 elektraTypecheckerGet :: Plugin -> KeySet -> Key -> IO PluginStatus
-elektraTypecheckerGet p ks k = isCheckingPrelude k >>= bool (typecheck p ks k Get >> return NoUpdate) (return NoUpdate)
+elektraTypecheckerGet p ks k = const NoUpdate <$> typecheck p ks k Get
 hs_elektraHaskellGet = elektraPluginGetWith elektraTypecheckerGet
 
 elektraTypecheckerSet :: Plugin -> KeySet -> Key -> IO PluginStatus
-elektraTypecheckerSet p ks k = isCheckingPrelude k >>= bool (bool NoUpdate Error <$> typecheck p ks k Set) (return NoUpdate)
+elektraTypecheckerSet p ks k = bool NoUpdate Error <$> typecheck p ks k Set
 hs_elektraHaskellSet = elektraPluginSetWith elektraTypecheckerSet
 
 elektraTypecheckerError :: Plugin -> KeySet -> Key -> IO PluginStatus
