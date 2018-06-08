@@ -25,8 +25,8 @@ extern "C" {
 
 int elektraTclGet (Plugin *, KeySet * returned, Key * parentKey)
 {
-	std::string cur = keyName (parentKey);
-	if (cur == "system/elektra/modules/tcl")
+	kdb::Key parent (parentKey);
+	if (parent.getName () == "system/elektra/modules/tcl")
 	{
 		/* get config */
 		KeySet * n;
@@ -46,11 +46,12 @@ int elektraTclGet (Plugin *, KeySet * returned, Key * parentKey)
 	/* get all keys */
 
 	int errnosave = errno;
-	std::ifstream in (keyString (parentKey), std::ios::binary); // we get our input from this file
+	std::ifstream in (parent.getString (), std::ios::binary); // we get our input from this file
 	if (!in.is_open ())
 	{
-		ELEKTRA_SET_ERROR_GET (parentKey);
+		ELEKTRA_SET_ERROR_GET (*parent);
 		errno = errnosave;
+		parent.release ();
 		return -1;
 	}
 
@@ -63,8 +64,8 @@ int elektraTclGet (Plugin *, KeySet * returned, Key * parentKey)
 	}
 	catch (boost::spirit::qi::expectation_failure<boost::spirit::istream_iterator> const & e)
 	{
-		ELEKTRA_SET_ERROR (61, parentKey,
-				   std::string (std::string ("file: ") + keyString (parentKey) +
+		ELEKTRA_SET_ERROR (61, *parent,
+				   std::string (std::string ("file: ") + parent.getString () +
 						" could not be parsed because: " + std::string (e.first, e.last))
 					   .c_str ());
 		ret = -1;
@@ -72,12 +73,12 @@ int elektraTclGet (Plugin *, KeySet * returned, Key * parentKey)
 	catch (std::exception const & e)
 	{
 		ELEKTRA_SET_ERROR (
-			61, parentKey,
-			std::string (std::string ("file: ") + keyString (parentKey) + " could not be parsed because: " + e.what ())
-				.c_str ());
+			61, *parent,
+			std::string (std::string ("file: ") + parent.getString () + " could not be parsed because: " + e.what ()).c_str ());
 		ret = -1;
 	}
 	input.release ();
+	parent.release ();
 
 	return ret;
 }
@@ -87,10 +88,11 @@ int elektraTclSet (Plugin *, KeySet * returned, Key * parentKey)
 	/* set all keys */
 
 	int errnosave = errno;
-	std::ofstream ofs (keyString (parentKey), std::ios::binary);
+	kdb::Key parent (parentKey);
+	std::ofstream ofs (parent.getString (), std::ios::binary);
 	if (!ofs.is_open ())
 	{
-		ELEKTRA_SET_ERROR_SET (parentKey);
+		ELEKTRA_SET_ERROR_SET (*parent);
 		errno = errnosave;
 		return -1;
 	}
@@ -98,6 +100,7 @@ int elektraTclSet (Plugin *, KeySet * returned, Key * parentKey)
 	kdb::KeySet output (returned);
 
 	elektra::serialise (ofs, output);
+	parent.release ();
 	output.release ();
 
 	return 1; /* success */
