@@ -16,6 +16,7 @@ before_cache:
   - cabal sandbox hc-pkg unregister specelektra > /dev/null; true
   - cabal sandbox hc-pkg unregister libfa > /dev/null; true
   - cabal sandbox hc-pkg unregister libelektra-haskell > /dev/null; true
+  - rm -rf .cabal-sandbox/logs
   - rm -f .cabal-sandbox/add-source-timestamps
 
 #
@@ -173,8 +174,6 @@ before_install:
       PATH=$PATH:"$HOME/.cabal/bin"
       which happy || cabal install happy
       which alex || cabal install alex
-      # language-c-0.8 fails to parse libfa, use 0.7.2 instead
-      cabal install language-c-0.7.2
       which c2hs || cabal install c2hs
       export HASKELL_SHARED_SANDBOX=$HOME/elektra-cabal-sandbox
       mkdir -p $HASKELL_SHARED_SANDBOX
