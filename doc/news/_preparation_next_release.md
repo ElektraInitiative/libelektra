@@ -224,7 +224,9 @@ Try it out now on: http://webui.libelektra.org:33334/
 - Port `debian-multiconfig-gcc-stable` to new build system. *(Lukas Winkler)*
 - Port `elektra-ini-mergerequests` to new build system. *(Lukas Winkler)*
 - Port `elektra-gcc-configure-debian-nokdbtest` to new build system. *(Lukas Winkler)*
+- Port `elektra-gcc-configure-xdg`to new build system. *(Lukas Winkler)*
 - Docker Registry is cleaned up by our daily buildserver task. *(Lukas Winkler)*
+
 
 ### Travis
 

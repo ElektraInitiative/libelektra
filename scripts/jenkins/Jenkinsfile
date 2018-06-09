@@ -348,6 +348,16 @@ def generateFullBuildStages() {
         ,
         [TEST.ALL, TEST.MEM]
     )
+    def xdgResolver = 'resolver_mf_xp_x'
+    tasks << buildAndTest(
+        "debian-stable-full-xdg",
+        DOCKER_IMAGES.stretch,
+        [
+            'PLUGINS': "${xdgResolver};dump;sync;ini;dini;base64;spec;error;list;timeofday;profile;mathcheck;tracer;hosts;network;glob",
+            'KDB_DEFAULT_RESOLVER': xdgResolver
+        ],
+        [TEST.ALL, TEST.MEM]
+    )
     tasks << buildAndTest(
         "debian-stable-nokdb",
         DOCKER_IMAGES.stretch,
