@@ -50,6 +50,7 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.8.
 
 ## Plugins
 
+The following section lists news about the [modules](https://www.libelektra.org/plugins/readme) we updated in this release.
 
 ### <<Plugin1>>
 
@@ -62,6 +63,8 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.8.
 
 ## Libraries
 
+The text below summarizes updates to the [C (and C++) based interface](https://www.libelektra.org/libraries/readme) of Elektra.
+
 ### <<Library1>>
 
 
@@ -72,6 +75,9 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.8.
 
 
 ## Bindings
+
+Bindings allow you to utilize Elektra using [various programming languages](https://www.libelektra.org/bindings/readme). This section keeps
+you up to date with the multi-language support provided by Elektra.
 
 ### <<Binding1>>
 
