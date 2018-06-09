@@ -12,6 +12,7 @@
 
 #include <kdbhelper.h>
 
+#include <kdblogger.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -47,6 +48,7 @@ int elektraCcodeOpen (Plugin * handle, Key * key ELEKTRA_UNUSED)
 
 		d->escape = res & 255;
 	}
+	ELEKTRA_LOG_DEBUG ("Use “%c” as escape character", d->escape);
 
 	Key * root = ksLookupByName (config, "/chars", 0);
 
