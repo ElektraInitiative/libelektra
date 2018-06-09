@@ -140,6 +140,9 @@ Thanks to Armin Wurzinger.
 
 - We improved the formatting of our [compilation guide](/doc/COMPILE.md). *(René Schwaiger)*
 - We fixed various minor spelling mistakes in the documentation. *(René Schwaiger)*
+- The man pages for [`kdb change-resolver-symlink`](https://www.libelektra.org/manpages/kdb-change-resolver-symlink) and
+   [`kdb change-storage-symlink`](https://www.libelektra.org/manpages/kdb-change-storage-symlink) referenced the wrong command.
+   *(Lukas Winkler, René Schwaiger)*
 
 ## Tests
 
