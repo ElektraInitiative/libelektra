@@ -23,6 +23,8 @@ for C strings (e.g. `\n` for newline, `\t` for tab). You can also configure the 
 
 ## Examples
 
+### Default Configuration
+
 ```sh
 # Mount `tcl` storage plugin together with the required `base64` plugin.
 # We use the `ccode` plugin to escape special characters.
@@ -45,6 +47,25 @@ kdb get user/tests/ccode/multiline
 kdb set user/tests/ccode/tab 'Tab	Fabulous'
 kdb get user/tests/ccode/tab
 #> Tab	Fabulous
+
+# Undo modifications to database
+kdb rm -r user/tests/ccode
+sudo kdb umount user/tests/ccode
+```
+
+### Custom Configuration
+
+```sh
+# We use `%` as escape character and map the space character (hex: `20`) to the character `_`.
+sudo kdb mount config.tcl user/tests/ccode tcl base64 ccode escape=`bash -c 'printf %x \"%'` chars= chars/20=`bash -c 'printf %x \"_'`
+
+kdb set user/tests/ccode/spaces 'one two three'
+
+grep 'space' `kdb file user/tests/ccode/spaces` | sed 's/[[:space:]]*//'
+#> spaces = one%_two%_three
+
+kdb get user/tests/ccode/spaces
+#> one two three
 
 # Undo modifications to database
 kdb rm -r user/tests/ccode
