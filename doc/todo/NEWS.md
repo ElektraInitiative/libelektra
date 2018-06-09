@@ -48,39 +48,24 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.8.
 ### <<HIGHLIGHT2>>
 
 
-## Other New Features
+## Plugins
 
-We added even more functionality, which could not make it to the highlights:
+The following section lists news about the [modules](https://www.libelektra.org/plugins/readme) we updated in this release.
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+### <<Plugin1>>
 
 
-## New Plugins
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+### <<Plugin2>>
 
 
-## Other News
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+### <<Plugin3>>
 
 
-## Documentation
+## Libraries
 
-We improved the documentation in the following ways:
+The text below summarizes updates to the [C (and C++) based interface](https://www.libelektra.org/libraries/readme) of Elektra.
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-
-## Compatibility
+### Compatibility
 
 As always, the ABI and API of kdb.h is fully compatible, i.e. programs
 compiled against an older 0.8 version of Elektra will continue to work
@@ -90,10 +75,65 @@ compiled against an older 0.8 version of Elektra will continue to work
 - <<TODO>>
 - <<TODO>>
 
+### <<Library1>>
 
-## Notes for Maintainer
 
-These notes are of interest for people maintaining packages of Elektra:
+### <<Library2>>
+
+
+### <<Library3>>
+
+
+## Bindings
+
+Bindings allow you to utilize Elektra using [various programming languages](https://www.libelektra.org/bindings/readme). This section keeps
+you up to date with the multi-language support provided by Elektra.
+
+### <<Binding1>>
+
+
+### <<Binding2>>
+
+
+### <<Binding3>>
+
+
+## Tools
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+
+## Scripts
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+
+## Documentation
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+## Tests
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+
+## Build
+
+### CMake
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### Docker
 
 - <<TODO>>
 - <<TODO>>
@@ -101,6 +141,14 @@ These notes are of interest for people maintaining packages of Elektra:
 
 
 ## Infrastructure
+
+### Jenkins
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+### Travis
 
 - <<TODO>>
 - <<TODO>>
@@ -111,24 +159,6 @@ These notes are of interest for people maintaining packages of Elektra:
 
 The website is generated from the repository, so all information about
 plugins, bindings and tools are always up to date. Furthermore, we changed:
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-
-## Notes for Elektra's Developers
-
-These notes are of interest for people developing Elektra:
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-
-## Fixes
-
-Many problems were resolved with the following fixes:
 
 - <<TODO>>
 - <<TODO>>
