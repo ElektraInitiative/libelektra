@@ -9,7 +9,9 @@
 #include <stdio.h>
 #include <string.h>
 
+// clang-format off
 static const char * excludedPlugins[] = { @SHARED_ONLY_PLUGINS_ARRAY@ };
+// clang-format on
 
 static int includePluginSymbol (char * pluginName)
 {
