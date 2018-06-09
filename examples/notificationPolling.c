@@ -1,7 +1,13 @@
 /**
  * @file
  *
- * @brief Implementation of notification functions as defined in kdbnotification.h
+ * @brief Example for notification library which repeatedly reads some keys and
+ * reacts to them; see "example_notification_async" for an example without polling
+ *
+ * Ideas for this example:
+ *   - /sw/tests/example_notification/#0/current/value: Set to any integer value
+ *   - /sw/tests/example_notification/#0/current/color: Set the text color. Possible
+ *     values are "red", "green" and "blue".
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
@@ -94,7 +100,7 @@ int main (void)
 	int result = elektraNotificationOpen (kdb);
 	if (!result)
 	{
-		printf ("could init notification. aborting\n");
+		printf ("could not init notification. aborting\n");
 		return -1;
 	}
 
@@ -121,7 +127,7 @@ int main (void)
 	while (!keepRunning)
 	{
 		// After this kdbGet the integer variable is updated and the callback was called.
-		// TODO remove polling or make it optional when "transport plugins" are available
+		// see "example_notification_async" for an example without polling
 		kdbGet (kdb, config, key);
 
 		// Print values

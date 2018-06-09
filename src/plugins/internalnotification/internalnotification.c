@@ -313,6 +313,10 @@ void elektraInternalnotificationUpdateRegisteredKeys (Plugin * plugin, KeySet * 
 			// Invoke callback
 			ElektraNotificationChangeCallback callback = *(ElektraNotificationChangeCallback) registeredKey->callback;
 			callback (key, registeredKey->context);
+			if (registeredKey->sameOrBelow)
+			{
+				keyDel (key);
+			}
 		}
 
 		// proceed with next registered key

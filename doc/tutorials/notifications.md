@@ -257,6 +257,116 @@ int main (void)
 }
 ```
 
+### How-To: Reload KDB when Elektra's configuration has changed
+
+This section shows how the notification feature can be used to reload an
+application's KDB instance when Elektra's configuration has changed.
+This enables applications to apply changes to mount points or globally mounted
+plugins without restarting.
+
+**Step 1: Register for changes to Elektra's configuration**
+
+To achieve reloading on Elektra configuration changes we register for changes
+below the key `system/elektra` using
+`elektraNotificationRegisterCallbackSameOrBelow()`.
+
+```C
+Key * elektraKey = keyNew ("system/elektra", KEY_END);
+elektraNotificationRegisterCallbackSameOrBelow (kdb, elektraKey, elektraChangedCallback, NULL))
+keyDel (elektraKey);
+```
+
+**Step 2: Create a function for reloading KDB**
+
+Since our application needs to repeatedly initialize KDB on
+configuration changes we need to create a function which cleans
+up and reinitializates KDB.
+
+```C
+void initKdb (void)
+{
+	if (kdb != NULL)
+	{
+		// Cleanup notifications and close KDB
+		elektraNotificationClose (kdb);
+		kdbClose (kdb, parentKey);
+	}
+
+	kdb = kdbOpen (parentKey);
+	elektraIoSetBinding (kdb, binding);
+	elektraNotificationOpen (kdb);
+
+  // registration code from snippet before
+	Key * elektraKey = keyNew ("system/elektra", KEY_END);
+	elektraNotificationRegisterCallbackSameOrBelow (kdb, elektraKey, elektraChangedCallback, NULL);
+	keyDel (elektraKey);
+
+  // TODO: add application specific registrations
+
+	// Get configuration
+	kdbGet (kdb, config, parentKey);
+}
+```
+
+**Step 3: Handle configuration changes**
+
+The last step is to connect the registration for changes to the
+(re-)initialization function.
+Directly calling the function is discouraged due to tight coupling (see
+guidelines in the next section) and also results in an application crash since
+the notification API is closed while processing notification callbacks.
+Therefore we suggest to add a timer operation with a sufficiently small interval
+which is enabled only on configuration changes.
+This timer will then call the initialization function.
+
+First, we create the timer in the main loop setup of the application.
+
+```C
+// (global declaration)
+ElektraIoTimerOperation * reload;
+
+// main loop setup (e.g. main())
+reload = elektraIoNewTimerOperation (100, 0, initKdb, NULL);
+elektraIoBindingAddTimer (binding, reload);
+```
+
+Now we add the callback function for the registration from step 1:
+
+```C
+void elektraChangedCallback (Key * changedKey, void * context)
+{
+	// Enable operation to reload KDB as soon as possible
+	elektraIoTimerSetEnabled (reload, 1);
+	elektraIoBindingUpdateTimer (reload);
+}
+```
+
+Finally we disable the timer in the initialization function:
+
+```C
+void initKdb (void)
+{
+  // Stop reload task
+  elektraIoTimerSetEnabled (reload, 0);
+  elektraIoBindingUpdateTimer (reload);
+
+	if (kdb != NULL)
+	{
+		// Cleanup notifications and close KDB
+    elektraNotificationClose (kdb);
+		kdbClose (kdb, parentKey);
+	}
+
+  // ...
+}
+```
+
+By following these three steps any application can react to changes to Elektra's
+configuration.
+The snippets above omit error handling for brevity. The complete code including
+error handling is available in the
+["notification reload" example](https://www.libelektra.org/examples/notificationreload).
+
 ## Emergent Behavior Guidelines
 
 When applications react to configuration changes made by other applications this
@@ -331,7 +441,7 @@ changes at regular time intervals and react to changes the coupling is not as
 tight as with callbacks.
 
 ### Guideline 2: Wait before reacting to changes
-> Waiting decouples an application from changes and reduces the risk for unwanted ***synchronization***.
+> Waiting after receiving a notification decouples an application from changes and reduces the risk for unwanted ***synchronization***.
 
 In applications where applying changes has impact on resource usage (e.g. CPU or
 disk) applying a time delay as suggested by this Guideline is a
@@ -347,7 +457,7 @@ Callbacks set the flag and when the control flow is in the main loop again, the
 pending updates are applied and the flag is cleared.
 
 ### Guideline 3: Avoid updates as reaction to change
-> Avoid changing the configuration as reaction to a change especially in callbacks.
+> Avoid changing the configuration as reaction to a change.
 > This reduces the risk for unwanted ***oscillation***.
 
 While this guideline does not forbid updating the key database using `kdbSet()`
@@ -356,6 +466,9 @@ If we recall the example from before we see how updating as reaction to change
 leads to unwanted oscillation.
 If necessary, the function `kdbSet()` should be temporally decoupled as
 suggested in [Guideline 2](#guideline-2-wait-before-reacting-to-changes).
+
+This guideline applies especially to callbacks but is also relevant when variables
+are polled for changes by the application.
 
 ### Guideline 4: Do not use notifications for synchronization
 > Applications should not use notifications for synchronization as this can lead to ***phase change***.

@@ -16,8 +16,6 @@ else ()
 
 	install (FILES "${CMAKE_CURRENT_BINARY_DIR}/${LIBRARY_NAME}.pc" DESTINATION lib${LIB_SUFFIX}/${TARGET_PKGCONFIG_FOLDER})
 
-	add_subdirectory (example)
-
 	if (ENABLE_TESTING)
 		add_subdirectory (tests)
 	endif (ENABLE_TESTING)
