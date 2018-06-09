@@ -50,17 +50,36 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.8.
 
 ## Plugins
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
+### <<Plugin1>>
+
+
+### <<Plugin2>>
+
+
+### <<Plugin3>>
+
+
+## Libraries
+
+### <<Library1>>
+
+
+### <<Library2>>
+
+
+### <<Library3>>
 
 
 ## Bindings
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+### <<Binding1>>
+
+
+### <<Binding2>>
+
+
+### <<Binding3>>
 
 
 ## Tools
