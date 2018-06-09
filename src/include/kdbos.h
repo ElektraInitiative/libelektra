@@ -117,6 +117,14 @@
 #include <inttypes.h>
 #include <sys/types.h>
 
+#ifndef SSIZE_MAX
+#ifdef _POSIX_SSIZE_MAX
+#define SSIZE_MAX _POSIX_SSIZE_MAX
+#else
+#define SSIZE_MAX ((ssize_t) (SIZE_MAX / 2U))
+#endif
+#endif
+
 
 /**KDB_MAX_PATH_LENGTH will be the value for longest
  * possible filenames on the system.*/
