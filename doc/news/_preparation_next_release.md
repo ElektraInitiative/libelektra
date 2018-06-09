@@ -214,7 +214,8 @@ Thanks to Michael Zronek and Vanessa Kos.
   - [`ccode`](https://www.libelektra.org/plugins/ccode),
   - [`file`](https://www.libelektra.org/plugins/file),
   - [`iconv`](https://www.libelektra.org/plugins/iconv),
-  - [`ni`](https://www.libelektra.org/plugins/ni), and
+  - [`ni`](https://www.libelektra.org/plugins/ni),
+  - [`rename`](https://www.libelektra.org/plugins/rename), and
   - [`uname`](https://www.libelektra.org/plugins/uname)
   plugin. *(René Schwaiger)*
 - (Markdown) Shell Recorder tests now save test data below `/tests` (see issue [#1887][]). *(René Schwaiger)*
