@@ -121,7 +121,7 @@ that two incompatible checks can be used for a single key.
 Create a sample configuration specification with three keys. As it is valid, there will be no error
 issued. We rely on the existence of [prelude.ini](/src/plugins/typechecker/typechecker/prelude.ini), which already
 contains the type definitions for `check/range`, `check/long` and `fallback/#` and mount it along.
-Please note not to mount prelude below the specification. We use kdb shell to delay the typechecking 
+Please note not to mount prelude below the specification. We use kdb shell to delay the type checking 
 until we have finished writing the whole specification.
 
 ```sh
