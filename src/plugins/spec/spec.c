@@ -57,7 +57,7 @@ static char * keyNameToMatchingString (const Key * key)
 {
 	uint8_t arrayCount = 0;
 	char * name = strchr (keyName (key), '/');
-	if (!name) return strdup (keyName (key));
+	if (!name) return elektraStrDup (keyName (key));
 	for (char * ptr = name; *ptr != '\0'; ++ptr)
 		if (*ptr == '#') ++arrayCount;
 	char * pattern = elektraMalloc (elektraStrLen (name) + arrayCount);
