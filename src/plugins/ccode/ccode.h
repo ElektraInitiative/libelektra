@@ -13,8 +13,8 @@
 
 typedef struct
 {
-	char encode[256];
-	char decode[256];
+	unsigned char encode[256];
+	unsigned char decode[256];
 
 	char escape;
 
