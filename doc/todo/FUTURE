@@ -35,16 +35,20 @@ Start arrays with _ (and not with #)?
 make KEY_END, ELEKTRA_PLUGIN_END also pointers and check them with
 sentinel, have a single way how to terminate vaargs
 
-remove obsolete key/keyset flags
+remove key/keyset flags
+- that are obsolete/deprecated
+- KDB_O_NOCASE (because it needs POSIX-only elektraStrCaseCmp)
 
 _t is reserved by POSIX, so cursor_t, keyswitch_t and option_t
 should be renamed to something elektra specific
+
 
 internal APIs: malloc, realloc should use 2 parameters and
 	check for multiplication overflow
 
 size_t, ssize_t are not fixed size, use uint32_t.. to have no
 problems on binary serialisation + unified behaviour (array sizes..)
+-> remove SSIZE_T (only POSIX)
 
 empty/invalid keys should lead to an error in kdbGet
 
