@@ -12,7 +12,19 @@
 #
 # Symbols of libelektratools will be treaded specially.
 # ~~~
-add_executable (elektra-export-symbols exportsymbols.c)
+get_property (SHARED_ONLY_PLUGINS GLOBAL PROPERTY SHARED_ONLY_PLUGINS)
+set (SHARED_ONLY_PLUGINS_ARRAY "")
+# convert to c array initialization syntax
+foreach (SHARED_ONLY_PLUGIN ${SHARED_ONLY_PLUGINS})
+	if (SHARED_ONLY_PLUGINS_ARRAY STREQUAL "")
+		set (SHARED_ONLY_PLUGINS_ARRAY "\"${SHARED_ONLY_PLUGIN}\"")
+	else (SHARED_ONLY_PLUGINS_ARRAY STREQUAL "")
+		set (SHARED_ONLY_PLUGINS_ARRAY "${SHARED_ONLY_PLUGINS_ARRAY}, \"${SHARED_ONLY_PLUGIN}\"")
+	endif (SHARED_ONLY_PLUGINS_ARRAY STREQUAL "")
+endforeach ()
+configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/exportsymbols.c.in" "${CMAKE_CURRENT_BINARY_DIR}/exportsymbols.c" @ONLY)
+
+add_executable (elektra-export-symbols "${CMAKE_CURRENT_BINARY_DIR}/exportsymbols.c")
 
 if (INSTALL_BUILD_TOOLS)
 	install (TARGETS elektra-export-symbols DESTINATION bin)

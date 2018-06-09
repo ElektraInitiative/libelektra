@@ -17,11 +17,11 @@ library
   hs-source-dirs:    "@CMAKE_CURRENT_SOURCE_DIR@"
   exposed-modules:   Elektra.RegexDispatcher
   other-modules:     Elektra.Dispatch
-                   , Elektra.RangeDispatcher
                    , Elektra.EnumDispatcher
-                   , Elektra.ValidationDispatcher
-                   , Elektra.Range
                    , Elektra.Parsers
+                   , Elektra.RangeDispatcher
+                   , Elektra.Range
+                   , Elektra.ValidationDispatcher
   build-depends:     base >= 4.7 && < 4.12
                    , libelektra-haskell == @KDB_VERSION@
                    , libfa == 1.@KDB_VERSION@
