@@ -125,6 +125,7 @@ Try it out now on: http://webui.libelektra.org:33334/
   are loaded by applications.
   The new option can be used for logging application behavior when using
   [notifications](https://www.libelektra.org/tutorials/notifications). *(Thomas Wahringer)*
+- <<TODO>>
 
 ## Bindings
 
@@ -188,6 +189,12 @@ Try it out now on: http://webui.libelektra.org:33334/
   this has to be done beforehand like it is the case with all other dependencies. The main
   reason is that the build servers shouldn't compile the dependencies over and over again,
   only if something changes. See the [readme](https://www.libelektra.org/bindings/haskell). *(Armin Wurzinger)*
+- Plugins can be specified to be only built for `BUILD_SHARED` builds, but to be excluded 
+  from any `BUILD_FULL` or `BUILD_STATIC` builds using the new optional argument `ONLY_SHARED`
+  for our cmake macro `add_plugin`. This way `BUILD_SHARED` can be combined with the other 
+  options without excluding such plugins. The cmake messages about plugin inclusion have 
+  been updated to indicate this behavior. This behavior has been applied for the haskell 
+  plugins- and bindings as they currently don't support full or static builds. *(Armin Wurzinger)*
 - We now import the current version of [Google Test][] as external project at configuration time using
    [DownloadProject](https://github.com/Crascit/DownloadProject). If you want to use a local installation of
    [Google Test][] instead, please set the value of `GTEST_ROOT` to the path of you local copy of the
@@ -225,7 +232,27 @@ Try it out now on: http://webui.libelektra.org:33334/
 - Docker artifacts are now cleaned up in our daily build job. *(Lukas Winkler)*
 - `clang` tests have been ported to the new build system *(Lukas Winkler et al)*
 - `icheck` build server job has been ported to our new build system. *(Lukas Winkler)*
+<<<<<<< HEAD
 - Port `elektra-gcc-configure-debian-optimizations` to new build system.
+=======
+- The script [`check_formatting.sh`](https://master.libelektra.org/tests/shell/check_formatting.sh) now also checks the formatting of CMake
+  code if you installed [`sponge`](https://joeyh.name/code/moreutils) and [`cmake-format`][]. *(René Schwaiger)*
+- Our Travis build job now
+  - builds all (applicable) bindings by default again, and
+  - checks the formatting of CMake code via [`cmake-format`][]
+
+  . *(René Schwaiger)*
+- Some cache issues on the Travis build job for cached haskell sandboxes have been resolved. *(Armin Wurzinger)*
+- (Markdown) Shell Recorder tests now save test data below `/tests` (see issue [#1887][]). *(René Schwaiger)*
+- The Markdown Shell Recorder checks `kdb set` commands to ensure we only add tests that store data below `/tests`. *(René Schwaiger)*
+- We disabled the test `testlib_notification` on ASAN enabled builds, since Clang reports that the test leaks memory. *(René Schwaiger)*
+- Docker Registry is cleaned up by our daily buildserver task. *(Lukas Winkler)*
+- We now import the current version of [Google Test][] as external project at configuration time using
+   [DownloadProject](https://github.com/Crascit/DownloadProject). If you want to use a local installation of
+   [Google Test][] instead, please set the value of `GTEST_ROOT` to the path of you local copy of the
+   [Google Test][] framework. *(René Schwaiger)*
+- [Google Test][] is installed in Docker images used by the build system. *(Lukas Winkler)*
+>>>>>>> haskell-build-fixes: add complete ONLY_SHARED support into both cmake and the haskell things
 - Port `elektra-gcc-configure-mingw-w64` to new build system. *(Lukas Winkler)*
 - Port `debian-multiconfig-gcc-stable` to new build system. *(Lukas Winkler)*
 - Port `elektra-ini-mergerequests` to new build system. *(Lukas Winkler)*
@@ -250,6 +277,7 @@ compiled against an older 0.8 version of Elektra will continue to work
 
 - <<TODO>>
 - <<TODO>>
+<<<<<<< HEAD
 - <<TODO>>
 
 ## Website
@@ -260,6 +288,28 @@ plugins, bindings and tools are always up to date. Furthermore, we changed:
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+=======
+- An issue when building haskell plugins with a cached sandbox is fixed in case an haskell library bundled with elektra
+  gets changed has been resolved. *(Armin Wurzinger)*
+- We fixed a memory leak in the [mINI plugin](https://libelektra.org/plugins/mini) by requiring the plugin
+  [`ccode`](https://libelektra.org/plugins/ccode) instead of the “provider” `code`. *(René Schwaiger)*
+- The script [`check_bashisms.sh`](https://master.libelektra.org/tests/shell/check_bashisms.sh) should now work correctly again, if the
+  system uses the GNU version `find`. *(René Schwaiger)*
+- The Markdown Shell Recorder now supports indented code blocks. *(René Schwaiger)*
+- The Markdown Shell Recorder now also tests if a command prints nothing to `stdout` if you add the check `#>`. *(René Schwaiger)*
+- We fixed some problems in the [Markdown Shell Recorder](https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper) test
+  of [`kdb ls`](https://master.libelektra.org/doc/help/kdb-ls.md). *(René Schwaiger)*
+- The script [`reformat-cmake`](https://master.libelektra.org/scripts/reformat-cmake) now checks if `cmake-format` works before it reformats CMake files. Thank you to Klemens Böswirth for the [detailed description of the problem](https://github.com/ElektraInitiative/libelektra/pull/1903#discussion_r189332987). *(René Schwaiger)*
+- `scripts/run_icheck` now no longer leaves the base directory of the project
+  when checking if the ABI changed. *(Lukas Winkler)*
+- You can now build the [Qt-GUI](https://www.libelektra.org/tools/qt-gui) using Qt `5.11`. *(René Schwaiger)*
+- We fixed various minor spelling mistakes in the documentation. *(René Schwaiger)*
+- The [`list` plugin](http://libelektra.org/plugins/list) which is responsible
+  for global mounting had a bug which prevented globally mounted plugins from
+  being configurable. *(Thomas Wahringer)*
+- Disable Markdown Shell Recorder test `validation.md` for ASAN builds.
+  It leaks memory and thus fails the test during spec mount. *(Lukas Winkler)*
+>>>>>>> haskell-build-fixes: add complete ONLY_SHARED support into both cmake and the haskell things
 
 ## Outlook
 

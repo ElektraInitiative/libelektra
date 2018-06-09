@@ -239,10 +239,15 @@ endfunction ()
 # INCLUDE_DIRECTORIES:
 #  Append to include path (globally+plugin specific).
 #
-# INCLUDE_SYSTEM_DIRECTORIES
+# INCLUDE_SYSTEM_DIRECTORIES:
 #  Same as INCLUDE_DIRECTORIES, but avoids warnings and dependency calculation
 #  for these include folders. (TODO currently allows only a single argument because
 #  ; -> " " is not yet implemented)
+#
+# ONLY_SHARED:
+#  Add this plugin only to shared builds of elektra (BUILD_SHARED) and not to full or
+#  static builds in case both BUILD_SHARED and one or both of BUILD_FULL and BUILD_STATIC
+#  is enabled.
 #
 # ADD_TEST:
 #  Add a plugin test case written in C (alternatively you can use add_gtest)
@@ -277,7 +282,7 @@ function (add_plugin PLUGIN_SHORT_NAME)
 	     TEST_ENVIRONMENT
 	     TEST_REQUIRED_PLUGINS)
 	cmake_parse_arguments (ARG
-			       "CPP;ADD_TEST;TEST_README;INSTALL_TEST_DATA" # optional keywords
+			       "CPP;ADD_TEST;TEST_README;INSTALL_TEST_DATA;ONLY_SHARED" # optional keywords
 			       "INCLUDE_SYSTEM_DIRECTORIES" # one value keywords
 			       "${MULTI_VALUE_KEYWORDS}" # multi value keywords
 			       ${ARGN})
@@ -298,6 +303,7 @@ function (add_plugin PLUGIN_SHORT_NAME)
 	restore_variable (${PLUGIN_NAME} ARG_TEST_ENVIRONMENT)
 	restore_variable (${PLUGIN_NAME} ARG_TEST_REQUIRED_PLUGINS)
 	restore_variable (${PLUGIN_NAME} ARG_INSTALL_TEST_DATA)
+	restore_variable (${PLUGIN_NAME} ARG_ONLY_SHARED)
 
 	if (ARG_UNPARSED_ARGUMENTS)
 		message (FATAL_ERROR "Parsed a wrong argument to plugin ${PLUGIN_SHORT_NAME}: ${ARG_UNPARSED_ARGUMENTS}")
@@ -394,7 +400,19 @@ function (add_plugin PLUGIN_SHORT_NAME)
 	# message (STATUS "system incl are: ${ARG_INCLUDE_SYSTEM_DIRECTORIES}")
 	# message (STATUS "current bin ${CMAKE_CURRENT_BINARY_DIR}")
 
-	message (STATUS "Include Plugin ${PLUGIN_SHORT_NAME}")
+	if (ARG_ONLY_SHARED AND NOT BUILD_SHARED)
+		remove_plugin ("${PLUGIN_SHORT_NAME}"
+			       "it can only be built if BUILD_SHARED is enabled, both BUILD_FULL or BUILD_STATIC may be enabled as well")
+		return ()
+	endif (ARG_ONLY_SHARED AND NOT BUILD_SHARED)
+
+	set (STATUS_MESSAGE "Include Plugin ${PLUGIN_SHORT_NAME}")
+	if (ARG_ONLY_SHARED)
+		set (STATUS_MESSAGE "${STATUS_MESSAGE} for shared builds")
+		# also add it to the list of ONLY_SHARED plugins for exportsymbols.c configuration
+		set_property (GLOBAL APPEND PROPERTY SHARED_ONLY_PLUGINS "${PLUGIN_SHORT_NAME}")
+	endif (ARG_ONLY_SHARED)
+	message (STATUS "${STATUS_MESSAGE}")
 
 	add_headers (ARG_SOURCES)
 	if (ARG_CPP)
@@ -480,8 +498,11 @@ function (add_plugin PLUGIN_SHORT_NAME)
 		endif ()
 	endif ()
 
-	# message (STATUS "added ${PLUGIN_TARGET_OBJS}")
-	set_property (GLOBAL APPEND PROPERTY "elektra-full_SRCS" ${PLUGIN_TARGET_OBJS} ${ARG_OBJECT_SOURCES})
+	if (NOT ARG_ONLY_SHARED)
 
-	set_property (GLOBAL APPEND PROPERTY "elektra-full_LIBRARIES" "${ARG_LINK_LIBRARIES}")
+		# message (STATUS "added ${PLUGIN_TARGET_OBJS}")
+		set_property (GLOBAL APPEND PROPERTY "elektra-full_SRCS" ${PLUGIN_TARGET_OBJS} ${ARG_OBJECT_SOURCES})
+
+		set_property (GLOBAL APPEND PROPERTY "elektra-full_LIBRARIES" "${ARG_LINK_LIBRARIES}")
+	endif (NOT ARG_ONLY_SHARED)
 endfunction (add_plugin)
