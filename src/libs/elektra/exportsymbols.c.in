@@ -13,7 +13,7 @@ static const char * excludedPlugins[] = { @SHARED_ONLY_PLUGINS_ARRAY@ };
 
 static int includePluginSymbol (char * pluginName)
 {
-	for (unsigned long i = 0; i < sizeof (excludedPlugins) / sizeof (const char *); i++)
+	for (unsigned int i = 0; i < sizeof (excludedPlugins) / sizeof (const char *); ++i)
 	{
 		if (strcmp (pluginName, excludedPlugins[i]) == 0)
 		{
