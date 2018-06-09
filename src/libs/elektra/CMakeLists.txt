@@ -22,8 +22,7 @@ foreach (SHARED_ONLY_PLUGIN ${SHARED_ONLY_PLUGINS})
 		set (SHARED_ONLY_PLUGINS_ARRAY "${SHARED_ONLY_PLUGINS_ARRAY}, \"${SHARED_ONLY_PLUGIN}\"")
 	endif (SHARED_ONLY_PLUGINS_ARRAY STREQUAL "")
 endforeach ()
-if (SHARED_ONLY_PLUGINS_ARRAY STREQUAL "")
-	# empty arrays are not allowed in c but every plugin has a name so this works
+if (SHARED_ONLY_PLUGINS_ARRAY STREQUAL "") # empty arrays are not allowed in c but every plugin has a name so this works
 	set (SHARED_ONLY_PLUGINS_ARRAY "\"\"")
 endif (SHARED_ONLY_PLUGINS_ARRAY STREQUAL "")
 configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/exportsymbols.c.in" "${CMAKE_CURRENT_BINARY_DIR}/exportsymbols.c" @ONLY)

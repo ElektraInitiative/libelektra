@@ -408,8 +408,9 @@ function (add_plugin PLUGIN_SHORT_NAME)
 
 	set (STATUS_MESSAGE "Include Plugin ${PLUGIN_SHORT_NAME}")
 	if (ARG_ONLY_SHARED)
-		set (STATUS_MESSAGE "${STATUS_MESSAGE} for shared builds")
+
 		# also add it to the list of ONLY_SHARED plugins for exportsymbols.c configuration
+		set (STATUS_MESSAGE "${STATUS_MESSAGE} for shared builds")
 		set_property (GLOBAL APPEND PROPERTY SHARED_ONLY_PLUGINS "${PLUGIN_SHORT_NAME}")
 	endif (ARG_ONLY_SHARED)
 	message (STATUS "${STATUS_MESSAGE}")
