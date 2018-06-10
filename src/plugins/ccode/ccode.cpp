@@ -67,6 +67,22 @@ inline KeySet * contract (void)
 }
 
 /**
+ * @brief Retrieve the mapping data and initialize the buffer if it is empty.
+ *
+ * @return The mapping data stored by this plugin.
+ */
+CCodeData * retrieveMapping (Plugin * handle)
+{
+	CCodeData * mapping = static_cast<CCodeData *> (elektraPluginGetData (handle));
+	if (!mapping->buffer)
+	{
+		mapping->bufferSize = 1000;
+		mapping->buffer = new unsigned char[mapping->bufferSize];
+	}
+	return mapping;
+}
+
+/**
  * @brief This function sets default values for the encoding and decoding character mapping.
  *
  * @param mapping This parameter stores the encoding and decoding table this function fills with default values.
@@ -262,12 +278,7 @@ int elektraCcodeGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
-	CCodeData * mapping = static_cast<CCodeData *> (elektraPluginGetData (handle));
-	if (!mapping->buffer)
-	{
-		mapping->bufferSize = 1000;
-		mapping->buffer = new unsigned char[mapping->bufferSize];
-	}
+	CCodeData * mapping = retrieveMapping (handle);
 
 	Key * key;
 	ksRewind (returned);
@@ -289,12 +300,7 @@ int elektraCcodeGet (Plugin * handle, KeySet * returned, Key * parentKey)
 /** @see elektraDocSet */
 int elektraCcodeSet (Plugin * handle, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
 {
-	CCodeData * mapping = static_cast<CCodeData *> (elektraPluginGetData (handle));
-	if (!mapping->buffer)
-	{
-		mapping->bufferSize = 1000;
-		mapping->buffer = new unsigned char[mapping->bufferSize];
-	}
+	CCodeData * mapping = retrieveMapping (handle);
 
 	Key * key;
 	ksRewind (returned);
