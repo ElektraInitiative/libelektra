@@ -142,12 +142,15 @@ void elektraCcodeDecode (Key * key, CCodeData * mapping)
 	keySetRaw (key, mapping->buffer, out + 1);
 }
 
-/** Reads the value of the key and encodes it in
- * c-style in the buffer.
+/**
+ * @brief This function replaces unescaped character in a key value with escaped characters.
  *
- * @param cur the key which value is to encode
- * @param mapping the buffer
- * @pre the buffer needs to have twice as much space as the value's size
+ * The function stores the escaped result value both in `mapping->buffer` and the given key.
+ *
+ * @pre The variable `mapping->buffer` needs to be twice as large as the key value’s size.
+ *
+ * @param cur This key stores the value this function escapes.
+ * @param mapping This variable stores the buffer and the character mapping this function uses to encode the value of the given key.
  */
 void elektraCcodeEncode (Key * cur, CCodeData * mapping)
 {
