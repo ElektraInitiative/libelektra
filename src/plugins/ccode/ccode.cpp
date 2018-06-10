@@ -138,7 +138,7 @@ void elektraCcodeDecode (Key * cur, CCodeData * d)
 	for (size_t in = 0; in < valsize - 1; ++in)
 	{
 		unsigned char c = val[in];
-		char * n = d->buf + out;
+		unsigned char * n = d->buf + out;
 
 		if (c == d->escape)
 		{
@@ -184,7 +184,7 @@ int elektraCcodeGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	if (!d->buf)
 	{
 		d->bufalloc = 1000;
-		d->buf = new char[d->bufalloc];
+		d->buf = new unsigned char[d->bufalloc];
 	}
 
 	Key * cur;
@@ -195,7 +195,7 @@ int elektraCcodeGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		if (valsize > d->bufalloc)
 		{
 			d->bufalloc = valsize;
-			d->buf = new char[d->bufalloc];
+			d->buf = new unsigned char[d->bufalloc];
 		}
 
 		elektraCcodeDecode (cur, d);
@@ -223,7 +223,7 @@ void elektraCcodeEncode (Key * cur, CCodeData * d)
 	for (size_t in = 0; in < valsize - 1; ++in)
 	{
 		unsigned char c = val[in];
-		char * n = d->buf + out + 1;
+		unsigned char * n = d->buf + out + 1;
 
 		if (d->encode[c])
 		{
@@ -255,7 +255,7 @@ int elektraCcodeSet (Plugin * handle, KeySet * returned, Key * parentKey ELEKTRA
 	if (!d->buf)
 	{
 		d->bufalloc = 1000;
-		d->buf = new char[d->bufalloc];
+		d->buf = new unsigned char[d->bufalloc];
 	}
 
 	Key * cur;
@@ -266,7 +266,7 @@ int elektraCcodeSet (Plugin * handle, KeySet * returned, Key * parentKey ELEKTRA
 		if (valsize * 2 > d->bufalloc)
 		{
 			d->bufalloc = valsize * 2;
-			d->buf = new char[d->bufalloc];
+			d->buf = new unsigned char[d->bufalloc];
 		}
 
 		elektraCcodeEncode (cur, d);
