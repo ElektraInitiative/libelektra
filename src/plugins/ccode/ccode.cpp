@@ -220,7 +220,7 @@ int elektraCcodeOpen (Plugin * handle, Key * key ELEKTRA_UNUSED)
 		setDefaultConfig (mapping);
 	}
 
-	return 0;
+	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 }
 
 /** @see elektraDocClose */
@@ -231,7 +231,7 @@ int elektraCcodeClose (Plugin * handle, Key * key ELEKTRA_UNUSED)
 	delete[](mapping->buffer);
 	delete (mapping);
 
-	return 0;
+	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 }
 
 /** @see elektraDocGet */
@@ -252,7 +252,7 @@ int elektraCcodeGet (Plugin * handle, KeySet * returned, Key * parentKey)
 			       keyNew ("system/elektra/modules/ccode/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, pluginConfig);
 		ksDel (pluginConfig);
-		return 1;
+		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
 	CCodeData * mapping = static_cast<CCodeData *> (elektraPluginGetData (handle));
@@ -276,7 +276,7 @@ int elektraCcodeGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		elektraCcodeDecode (key, mapping);
 	}
 
-	return 1; /* success */
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
 /** @see elektraDocSet */
@@ -304,7 +304,7 @@ int elektraCcodeSet (Plugin * handle, KeySet * returned, Key * parentKey ELEKTRA
 		elektraCcodeEncode (key, mapping);
 	}
 
-	return 1; /* success */
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (ccode)
