@@ -109,25 +109,25 @@ void readConfig (CCodeData * const mapping, KeySet * const config, Key const * c
  *
  * @pre The variable `mapping->buffer` needs to be as large as the key value’s size.
  *
- * @param cur This key holds the value this function decodes.
+ * @param key This key holds the value this function decodes.
  * @param mapping This variable stores the buffer and the character mapping this function uses to decode the value of the given key.
  */
-void elektraCcodeDecode (Key * cur, CCodeData * mapping)
+void elektraCcodeDecode (Key * key, CCodeData * mapping)
 {
-	size_t valsize = keyGetValueSize (cur);
-	const char * val = static_cast<const char *> (keyValue (cur));
+	size_t size = keyGetValueSize (key);
+	const char * value = static_cast<const char *> (keyValue (key));
 
-	if (!val) return;
+	if (!value) return;
 
 	size_t out = 0;
-	for (size_t in = 0; in < valsize - 1; ++in)
+	for (size_t in = 0; in < size - 1; ++in)
 	{
-		unsigned char character = val[in];
+		unsigned char character = value[in];
 
 		if (character == mapping->escape)
 		{
 			++in; /* Advance twice */
-			character = val[in];
+			character = value[in];
 
 			mapping->buffer[out] = mapping->decode[character & 255];
 		}
@@ -140,7 +140,7 @@ void elektraCcodeDecode (Key * cur, CCodeData * mapping)
 
 	mapping->buffer[out] = 0; // null termination for keyString()
 
-	keySetRaw (cur, mapping->buffer, out + 1);
+	keySetRaw (key, mapping->buffer, out + 1);
 }
 
 /** Reads the value of the key and encodes it in
