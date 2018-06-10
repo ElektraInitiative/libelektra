@@ -12,7 +12,7 @@
 #
 # Symbols of libelektratools will be treaded specially.
 # ~~~
-add_executable (elektra-export-symbols "${CMAKE_CURRENT_BINARY_DIR}/exportsymbols.c")
+add_executable (elektra-export-symbols "exportsymbols.c")
 
 if (INSTALL_BUILD_TOOLS)
 	install (TARGETS elektra-export-symbols DESTINATION bin)
