@@ -176,7 +176,7 @@ All options have a helptext next to them explaining what the settings do.
 Most of the default settings should be ok, however some settings need to be
 verified or added:
 * In Branch Sources under Behaviours `Filter by name` should be
-    added to exclude the `debian` branch from beeing build.
+    added to exclude the `debian` branch from being build.
 * `Advanced clone behaviours` should be added and the path to the git mirror
     needs to be specified: `/home/jenkins/git_mirrors/libelektra`
 * Under Property strategy you can add `Trigger build on pull request comment`.
