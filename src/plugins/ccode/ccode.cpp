@@ -16,8 +16,19 @@ inline constexpr unsigned char operator"" _uc (char character) noexcept
 }
 
 /**
- * Gives the integer number 0-15 to a corresponding
- * hex character '0'-'9', 'a'-'f' or 'A'-'F'.
+ * @brief This function maps hex characters to integer numbers.
+ *
+ * @pre The specified character has to be between
+ *
+ *      - `'0'`–`'9'`,
+ *      - `'a'`-`'f'`, or
+ *      - `'A'`-`'F'`
+ *
+ *     .
+ *
+ * @param character This argument specifies the (hexadecimal) character this function converts.
+ *
+ * @return An integer number between `0` and `15` if the precondition is valid or `0` otherwise
  */
 static inline int elektraHexcodeConvFromHex (char character)
 {
