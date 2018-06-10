@@ -125,6 +125,10 @@ and tests for Elektra.
 This allows us to run tests independent of which nodes are available (as the
 environment is portable).
 
+To see which Docker image was used to build a test you have to expand one of
+the first steps in the BlueOcean interface.
+![Docker Image used](https://master.libelektra.org/doc/images/blueocean_docker_find_image.png)
+
 The Jenkinsfile describes the steps used to run tests.
 Helper functions for easily adding new tests are available
 (buildAndTest, BuildAndTestAsan, ...).
