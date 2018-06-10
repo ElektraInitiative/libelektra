@@ -313,10 +313,10 @@ def generateMainBuildStages() {
         [TEST.ALL, TEST.MEM, TEST.INSTALL]
     )
 
-    // run Icheck
+    // Check the ABI and API compatibility of Elektra
     tasks << buildIcheck()
 
-    // check if release notes have been updated
+    // Check if release notes have been updated
     tasks << buildCheckReleaseNotes()
 
     return tasks
