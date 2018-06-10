@@ -14,11 +14,9 @@
 #include <kdbassert.h>
 #include <kdbease.h>
 #include <kdberrors.h>
-#include <kdbhelper.h>
 #include <kdblogger.h>
 #include <kdbutility.h>
 #include <stdio.h>
-#include <stdlib.h>
 
 /* -- Functions ------------------------------------------------------------------------------------------------------------------------- */
 
