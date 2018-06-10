@@ -212,6 +212,9 @@ Try it out now on: http://webui.libelektra.org:33334/
 - The man pages for [`kdb change-resolver-symlink`](https://www.libelektra.org/manpages/kdb-change-resolver-symlink) and
    [`kdb change-storage-symlink`](https://www.libelektra.org/manpages/kdb-change-storage-symlink) referenced the wrong command.
    *(Lukas Winkler, René Schwaiger)*
+- We added documentation for our build system in
+    [BUILDSERVER.md](https://master.libelektra.org/doc/BUILDSERVER.md).
+    *(Lukas Winkler)*
 
 ## Tests
 
