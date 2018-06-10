@@ -284,10 +284,10 @@ int elektraCcodeGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	ksRewind (returned);
 	while ((key = ksNext (returned)) != 0)
 	{
-		size_t const valsize = keyGetValueSize (key);
-		if (valsize > mapping->bufferSize)
+		size_t const size = keyGetValueSize (key);
+		if (size > mapping->bufferSize)
 		{
-			mapping->bufferSize = valsize;
+			mapping->bufferSize = size;
 			mapping->buffer = new unsigned char[mapping->bufferSize];
 		}
 
@@ -306,10 +306,10 @@ int elektraCcodeSet (Plugin * handle, KeySet * returned, Key * parentKey ELEKTRA
 	ksRewind (returned);
 	while ((key = ksNext (returned)) != 0)
 	{
-		size_t const valsize = keyGetValueSize (key);
-		if (valsize * 2 > mapping->bufferSize)
+		size_t const size = keyGetValueSize (key) * 2;
+		if (size > mapping->bufferSize)
 		{
-			mapping->bufferSize = valsize * 2;
+			mapping->bufferSize = size;
 			mapping->buffer = new unsigned char[mapping->bufferSize];
 		}
 
