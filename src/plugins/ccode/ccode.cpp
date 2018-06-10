@@ -59,7 +59,7 @@ extern "C" {
  *
  * @param mapping This parameter stores the encoding and decoding table this function fills with default values.
  */
-void setDefaultConfig (CCodeData * mapping)
+void setDefaultConfig (CCodeData * const mapping)
 {
 	unsigned char pairs[][2] = { { '\b'_uc, 'b'_uc }, { '\t'_uc, 't'_uc }, { '\n'_uc, 'n'_uc },  { '\v'_uc, 'v'_uc },
 				     { '\f'_uc, 'f'_uc }, { '\r'_uc, 'r'_uc }, { '\\'_uc, '\\'_uc }, { '\''_uc, '\''_uc },
