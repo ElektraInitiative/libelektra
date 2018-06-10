@@ -50,6 +50,23 @@ inline int elektraHexcodeConvFromHex (char character)
 }
 
 /**
+ * @brief This function returns a key set containing the contract of this plugin.
+ *
+ * @return A contract describing the functionality of this plugin.
+ */
+inline KeySet * contract (void)
+{
+	return ksNew (30, keyNew ("system/elektra/modules/ccode", KEY_VALUE, "ccode plugin waits for your orders", KEY_END),
+		      keyNew ("system/elektra/modules/ccode/exports", KEY_END),
+		      keyNew ("system/elektra/modules/ccode/exports/open", KEY_FUNC, elektraCcodeOpen, KEY_END),
+		      keyNew ("system/elektra/modules/ccode/exports/close", KEY_FUNC, elektraCcodeClose, KEY_END),
+		      keyNew ("system/elektra/modules/ccode/exports/get", KEY_FUNC, elektraCcodeGet, KEY_END),
+		      keyNew ("system/elektra/modules/ccode/exports/set", KEY_FUNC, elektraCcodeSet, KEY_END),
+#include "readme_ccode.c"
+		      keyNew ("system/elektra/modules/ccode/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+}
+
+/**
  * @brief This function sets default values for the encoding and decoding character mapping.
  *
  * @param mapping This parameter stores the encoding and decoding table this function fills with default values.
@@ -239,15 +256,7 @@ int elektraCcodeGet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
 	if (!strcmp (keyName (parentKey), "system/elektra/modules/ccode"))
 	{
-		KeySet * pluginConfig =
-			ksNew (30, keyNew ("system/elektra/modules/ccode", KEY_VALUE, "ccode plugin waits for your orders", KEY_END),
-			       keyNew ("system/elektra/modules/ccode/exports", KEY_END),
-			       keyNew ("system/elektra/modules/ccode/exports/open", KEY_FUNC, elektraCcodeOpen, KEY_END),
-			       keyNew ("system/elektra/modules/ccode/exports/close", KEY_FUNC, elektraCcodeClose, KEY_END),
-			       keyNew ("system/elektra/modules/ccode/exports/get", KEY_FUNC, elektraCcodeGet, KEY_END),
-			       keyNew ("system/elektra/modules/ccode/exports/set", KEY_FUNC, elektraCcodeSet, KEY_END),
-#include "readme_ccode.c"
-			       keyNew ("system/elektra/modules/ccode/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+		KeySet * pluginConfig = contract ();
 		ksAppend (returned, pluginConfig);
 		ksDel (pluginConfig);
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
