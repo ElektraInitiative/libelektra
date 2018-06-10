@@ -41,7 +41,7 @@ void test_encode (void)
 
 	CCodeData * d = get_data ();
 
-	char buf[1000];
+	unsigned char buf[1000];
 	d->buf = buf;
 	Key * test = keyNew ("user/test", KEY_VALUE, decoded_string, KEY_END);
 	elektraCcodeEncode (test, d);
@@ -57,7 +57,7 @@ void test_decode (void)
 
 	CCodeData * d = get_data ();
 
-	char buf[1000];
+	unsigned char buf[1000];
 	d->buf = buf;
 	Key * test = keyNew ("user/test", KEY_SIZE, sizeof (encoded_string) - 1, KEY_VALUE, encoded_string, KEY_END);
 	elektraCcodeDecode (test, d);
@@ -70,7 +70,7 @@ void test_decode (void)
 void check_reversibility (const char * msg)
 {
 	CCodeData * d = get_data ();
-	char buf[1000];
+	unsigned char buf[1000];
 	d->buf = buf;
 	Key * decode = keyNew ("user/test", KEY_VALUE, msg, KEY_END);
 
@@ -110,7 +110,7 @@ void test_decodeescape (void)
 	d->encode['\\'] = '\\';
 	d->decode['\\'] = '\\';
 
-	char buf[1000];
+	unsigned char buf[1000];
 	d->buf = buf;
 	Key * test = keyNew ("user/test", KEY_SIZE, 2, KEY_VALUE, "\\\\", KEY_END);
 	elektraCcodeDecode (test, d);
