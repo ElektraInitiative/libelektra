@@ -176,7 +176,6 @@ void elektraCcodeEncode (Key * key, CCodeData * mapping)
 			mapping->buffer[out] = value[in];
 			// advance out cursor
 			out++;
-			// go to next char
 		}
 	}
 
