@@ -12,23 +12,23 @@
 
 CCodeData * get_data (void)
 {
-	CCodeData * d = calloc (1, sizeof (CCodeData));
-	d->escape = '\\';
+	CCodeData * mapping = calloc (1, sizeof (CCodeData));
+	mapping->escape = '\\';
 
-	d->encode[' '] = 'w';
-	d->encode['\n'] = 'n';
-	d->encode['='] = 'e';
-	d->encode[';'] = 's';
-	d->encode['#'] = 'r';
-	d->encode['\\'] = 'b';
+	mapping->encode[' '] = 'w';
+	mapping->encode['\n'] = 'n';
+	mapping->encode['='] = 'e';
+	mapping->encode[';'] = 's';
+	mapping->encode['#'] = 'r';
+	mapping->encode['\\'] = 'b';
 
-	d->decode['w'] = ' ';
-	d->decode['n'] = '\n';
-	d->decode['e'] = '=';
-	d->decode['s'] = ';';
-	d->decode['r'] = '#';
-	d->decode['b'] = '\\';
-	return d;
+	mapping->decode['w'] = ' ';
+	mapping->decode['n'] = '\n';
+	mapping->decode['e'] = '=';
+	mapping->decode['s'] = ';';
+	mapping->decode['r'] = '#';
+	mapping->decode['b'] = '\\';
+	return mapping;
 }
 
 const char encoded_string[] = "a\\wvalue\\nwith\\e\\s\\r\\wand\\w\\b\\witself";
@@ -39,15 +39,15 @@ void test_encode (void)
 {
 	printf ("test encode\n");
 
-	CCodeData * d = get_data ();
+	CCodeData * mapping = get_data ();
 
 	unsigned char buf[1000];
-	d->buf = buf;
+	mapping->buf = buf;
 	Key * test = keyNew ("user/test", KEY_VALUE, decoded_string, KEY_END);
-	elektraCcodeEncode (test, d);
-	succeed_if (!memcmp (keyValue (test), encoded_string, sizeof (encoded_string) - 1), "string not correctly encoded");
+	elektraCcodeEncode (test, mapping);
+	succeed_if (memcmp (keyValue (test), encoded_string, sizeof (encoded_string) - 1) == 0, "string not correctly encoded");
 
-	elektraFree (d);
+	elektraFree (mapping);
 	keyDel (test);
 }
 
@@ -55,32 +55,37 @@ void test_decode (void)
 {
 	printf ("test decode\n");
 
-	CCodeData * d = get_data ();
+	CCodeData * mapping = get_data ();
 
 	unsigned char buf[1000];
-	d->buf = buf;
+	mapping->buf = buf;
 	Key * test = keyNew ("user/test", KEY_SIZE, sizeof (encoded_string) - 1, KEY_VALUE, encoded_string, KEY_END);
-	elektraCcodeDecode (test, d);
-	succeed_if (!memcmp (keyValue (test), decoded_string, sizeof (decoded_string) - 1), "string not correctly encoded");
+	elektraCcodeDecode (test, mapping);
+	succeed_if (memcmp (keyValue (test), decoded_string, sizeof (decoded_string) - 1) == 0, "string not correctly encoded");
 
-	elektraFree (d);
+	elektraFree (mapping);
 	keyDel (test);
 }
 
 void check_reversibility (const char * msg)
+#ifdef __llvm__
+	__attribute__ ((annotate ("oclint:suppress[deep nested block]"), annotate ("oclint:suppress[high cyclomatic complexity]"),
+			annotate ("oclint:suppress[high ncss method]")))
+#endif
+
 {
-	CCodeData * d = get_data ();
+	CCodeData * mapping = get_data ();
 	unsigned char buf[1000];
-	d->buf = buf;
+	mapping->buf = buf;
 	Key * decode = keyNew ("user/test", KEY_VALUE, msg, KEY_END);
 
 	Key * encode = keyDup (decode);
-	elektraCcodeEncode (encode, d);
+	elektraCcodeEncode (encode, mapping);
 
-	elektraCcodeDecode (encode, d);
-	compare_key (encode, decode);
+	elektraCcodeDecode (encode, mapping);
+	compare_key (encode, decode); //! OCLint (Constant conditional operator)
 
-	elektraFree (d);
+	elektraFree (mapping);
 	keyDel (decode);
 	keyDel (encode);
 }
@@ -106,17 +111,17 @@ void test_decodeescape (void)
 {
 	printf ("test decode escape\n");
 
-	CCodeData * d = get_data ();
-	d->encode['\\'] = '\\';
-	d->decode['\\'] = '\\';
+	CCodeData * mapping = get_data ();
+	mapping->encode['\\'] = '\\';
+	mapping->decode['\\'] = '\\';
 
 	unsigned char buf[1000];
-	d->buf = buf;
+	mapping->buf = buf;
 	Key * test = keyNew ("user/test", KEY_SIZE, 2, KEY_VALUE, "\\\\", KEY_END);
-	elektraCcodeDecode (test, d);
-	succeed_if (!memcmp (keyValue (test), "\\", 2), "string not correctly encoded");
+	elektraCcodeDecode (test, mapping);
+	succeed_if (memcmp (keyValue (test), "\\", 2) == 0, "string not correctly encoded");
 
-	elektraFree (d);
+	elektraFree (mapping);
 	keyDel (test);
 }
 
@@ -134,21 +139,21 @@ void test_config (void)
 
 	KeySet * returned = ksNew (20, keyNew ("user/something", KEY_VALUE, decoded_string, KEY_END), KS_END);
 
-	Plugin * p = calloc (1, sizeof (Plugin));
-	p->config = config;
+	Plugin * plugin = calloc (1, sizeof (Plugin));
+	plugin->config = config;
 
-	elektraCcodeOpen (p, 0);
+	elektraCcodeOpen (plugin, 0);
 
-	elektraCcodeSet (p, returned, 0);
+	elektraCcodeSet (plugin, returned, 0);
 
 	Key * test = ksLookupByName (returned, "user/something", 0);
-	succeed_if (!memcmp (keyValue (test), encoded_string, sizeof (encoded_string) - 1), "string not correctly encoded");
+	succeed_if (memcmp (keyValue (test), encoded_string, sizeof (encoded_string) - 1) == 0, "string not correctly encoded");
 
-	elektraCcodeClose (p, 0);
+	elektraCcodeClose (plugin, 0);
 
 	ksDel (returned);
-	ksDel (p->config);
-	elektraFree (p);
+	ksDel (plugin->config);
+	elektraFree (plugin);
 }
 
 void test_otherescape (void)
@@ -166,21 +171,21 @@ void test_otherescape (void)
 
 	KeySet * returned = ksNew (20, keyNew ("user/something", KEY_VALUE, decoded_string, KEY_END), KS_END);
 
-	Plugin * p = calloc (1, sizeof (Plugin));
-	p->config = config;
+	Plugin * plugin = calloc (1, sizeof (Plugin));
+	plugin->config = config;
 
-	elektraCcodeOpen (p, 0);
+	elektraCcodeOpen (plugin, 0);
 
-	elektraCcodeSet (p, returned, 0);
+	elektraCcodeSet (plugin, returned, 0);
 
 	Key * test = ksLookupByName (returned, "user/something", 0);
-	succeed_if (!memcmp (keyValue (test), other_encoded_string, sizeof (other_encoded_string) - 1), "string not correctly encoded");
+	succeed_if (memcmp (keyValue (test), other_encoded_string, sizeof (other_encoded_string) - 1) == 0, "string not correctly encoded");
 
-	elektraCcodeClose (p, 0);
+	elektraCcodeClose (plugin, 0);
 
 	ksDel (returned);
-	ksDel (p->config);
-	elektraFree (p);
+	ksDel (plugin->config);
+	elektraFree (plugin);
 }
 
 
