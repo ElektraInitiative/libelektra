@@ -299,6 +299,9 @@ def buildImageStage(image) {
  */
 def generateMainBuildStages() {
     def tasks = [:]
+
+    // Add a task that should build the whole project to catch all test errors
+    // in a standard environment
     tasks << buildAndTest(
         "debian-stable-full",
         DOCKER_IMAGES.stretch,
@@ -309,8 +312,13 @@ def generateMainBuildStages() {
         ,
         [TEST.ALL, TEST.MEM, TEST.INSTALL]
     )
+
+    // run Icheck
     tasks << buildIcheck()
+
+    // check if release notes have been updated
     tasks << buildCheckReleaseNotes()
+
     return tasks
 }
 
@@ -318,31 +326,48 @@ def generateMainBuildStages() {
  */
 def generateFullBuildStages() {
     def tasks = [:]
+
+    // Run the open tasks plugin
     tasks << buildTodo()
+
+    // Build doc and upload
     tasks << buildDoc()
+
+    // Build elektra with ASAN enabled
+    // Detects memory leaks
     tasks << buildAndTestAsan(
         "debian-stable-asan",
         DOCKER_IMAGES.stretch,
         CMAKE_FLAGS_BUILD_ALL
     )
+
+    // Build elektra with clang and ASAN
+    // Detects memory leaks
     tasks << buildAndTestAsan(
         "debian-unstable-clang-asan",
         DOCKER_IMAGES.sid,
         CMAKE_FLAGS_BUILD_ALL +
             CMAKE_FLAGS_CLANG
     )
+
+    // Build elektra on oldstable to see if we are backwards compatible
     tasks << buildAndTest(
         "debian-oldstable-full",
         DOCKER_IMAGES.jessie,
         CMAKE_FLAGS_BUILD_ALL,
         [TEST.ALL, TEST.MEM, TEST.INSTALL]
     )
+
+    // Build elektra on debian-unstable for compatibility tests
     tasks << buildAndTest(
         "debian-unstable-full",
         DOCKER_IMAGES.sid,
         CMAKE_FLAGS_BUILD_ALL,
         [TEST.ALL, TEST.MEM, TEST.INSTALL]
     )
+
+    // Build elektra with clang. We use unstable for easy access to clang-5.0
+    // Detects issues with gcc vs clang
     tasks << buildAndTest(
         "debian-stable-full-i386",
         DOCKER_IMAGES.stretch_i386,
@@ -359,19 +384,27 @@ def generateFullBuildStages() {
         ,
         [TEST.ALL, TEST.MEM, TEST.INSTALL]
     )
+
+    // Build elektra via mingw for windows
     tasks << buildAndTestMingwW64()
+
+    // Build elektra on ubuntu-xenial
     tasks << buildAndTest(
         "ubuntu-xenial",
         DOCKER_IMAGES.xenial,
         CMAKE_FLAGS_BUILD_ALL,
         [TEST.ALL]
     )
+
+    // Build elektra on a minimal Debian stable Docker image
     tasks << buildAndTest(
         "debian-stable-minimal",
         DOCKER_IMAGES.stretch_minimal,
         [:],
         [TEST.ALL]
     )
+
+    // Build elektra with the ini backend instead of the default
     tasks << buildAndTest(
         "debian-stable-full-ini",
         DOCKER_IMAGES.stretch,
@@ -393,6 +426,10 @@ def generateFullBuildStages() {
         ],
         [TEST.ALL, TEST.MEM]
     )
+
+    // Build elektra but set paths to be nonwriteable
+    // Detect if tests are not flagged witn nokdbtests even though they
+    // should be.
     tasks << buildAndTest(
         "debian-stable-nokdb",
         DOCKER_IMAGES.stretch,
@@ -418,6 +455,9 @@ def generateFullBuildStages() {
         [TEST.ALL, TEST.MEM]
     )
     */
+
+    // Generate tests for different release types
+    // Detects issues with debug modules enabled or disabled
     for(plugins in ['ALL', 'NODEP']) {
         for(buildType in ['Debug', 'Release', 'RelWithDebInfo']) {
             if (plugins == 'ALL' && buildType == 'RelWithDebInfo') {
@@ -436,6 +476,7 @@ def generateFullBuildStages() {
             )
         }
     }
+
     return tasks
 }
 
