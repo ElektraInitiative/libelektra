@@ -195,6 +195,8 @@ A `jenkins` user with 47000:47000 ids should be created as this is what is
 expected in Docker images.
 Additionally a public key authentification should be set up so the jenkins
 master can establish an ssh connection with the node.
+If the node should be able to interact with Docker the jenkins user should be
+added to the `docker` group.
 
 Nodes should be set to only build jobs matching their labels and to be online
 as much as possible.
