@@ -154,11 +154,10 @@ void elektraCcodeDecode (Key * key, CCodeData * mapping)
  */
 void elektraCcodeEncode (Key * cur, CCodeData * mapping)
 {
-	size_t valsize = keyGetValueSize (cur);
 	const char * val = static_cast<const char *> (keyValue (cur));
-
 	if (!val) return;
 
+	size_t valsize = keyGetValueSize (cur);
 	size_t out = 0;
 	for (size_t in = 0; in < valsize - 1; ++in)
 	{
