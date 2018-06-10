@@ -84,23 +84,21 @@ void setDefaultConfig (CCodeData * const mapping)
  */
 void readConfig (CCodeData * const mapping, KeySet * const config, Key const * const root)
 {
-	Key const * cur = 0;
-	while ((cur = ksNext (config)) != 0)
+	Key const * key = 0;
+	while ((key = ksNext (config)) != 0)
 	{
 		/* Ignore keys that are not directly below the config root key or have an incorrect size */
-		if (keyRel (root, cur) != 1 || keyGetBaseNameSize (cur) != 3 || keyGetValueSize (cur) != 3) continue;
+		if (keyRel (root, key) != 1 || keyGetBaseNameSize (key) != 3 || keyGetValueSize (key) != 3) continue;
 
-		int res;
-		res = elektraHexcodeConvFromHex (keyBaseName (cur)[1]);
-		res += elektraHexcodeConvFromHex (keyBaseName (cur)[0]) * 16;
+		int character = elektraHexcodeConvFromHex (keyBaseName (key)[1]);
+		character += elektraHexcodeConvFromHex (keyBaseName (key)[0]) * 16;
 
-		int val;
-		val = elektraHexcodeConvFromHex (keyString (cur)[1]);
-		val += elektraHexcodeConvFromHex (keyString (cur)[0]) * 16;
+		int replacement = elektraHexcodeConvFromHex (keyString (key)[1]);
+		replacement += elektraHexcodeConvFromHex (keyString (key)[0]) * 16;
 
 		/* Hexencode this character! */
-		mapping->encode[res & 255] = val;
-		mapping->decode[val & 255] = res;
+		mapping->encode[character & 255] = replacement;
+		mapping->decode[replacement & 255] = character;
 	}
 }
 
