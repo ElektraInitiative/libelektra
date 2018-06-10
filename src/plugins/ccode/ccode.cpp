@@ -237,8 +237,6 @@ int elektraCcodeClose (Plugin * handle, Key * key ELEKTRA_UNUSED)
 /** @see elektraDocGet */
 int elektraCcodeGet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
-	/* get all keys */
-
 	if (!strcmp (keyName (parentKey), "system/elektra/modules/ccode"))
 	{
 		KeySet * pluginConfig =
@@ -282,7 +280,6 @@ int elektraCcodeGet (Plugin * handle, KeySet * returned, Key * parentKey)
 /** @see elektraDocSet */
 int elektraCcodeSet (Plugin * handle, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
 {
-	/* set all keys */
 	CCodeData * mapping = static_cast<CCodeData *> (elektraPluginGetData (handle));
 	if (!mapping->buffer)
 	{
