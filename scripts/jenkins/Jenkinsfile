@@ -859,7 +859,9 @@ def withDockerEnv(image, opts=[], cl) {
             timeout(activity: true, time: 5, unit: 'MINUTES') {
                 def cpu_count = cpuCount()
                 withEnv(["MAKEFLAGS='-j${cpu_count+2} -l${cpu_count*2}'",
-                         "CTEST_PARALLEL_LEVEL='${cpu_count+2}'"]) {
+                         "CTEST_PARALLEL_LEVEL='${cpu_count+2}'",
+                         "XDG_CONFIG_HOME='${WORKSPACE}/xdg/user'",
+                         "XDG_CONFIG_DIRS='${WORKSPACE}/xdg/system'"]) {
                     echo "Starting ${env.STAGE_NAME} on ${env.NODE_NAME}"
                     checkout scm
                     docker.image(image.id)
