@@ -39,7 +39,7 @@ extern "C" {
 
 int elektraCcodeOpen (Plugin * handle, Key * key ELEKTRA_UNUSED)
 {
-	CCodeData * d = static_cast<CCodeData *> (elektraCalloc (sizeof (CCodeData)));
+	CCodeData * d = new CCodeData ();
 
 	/* Store for later use...*/
 	elektraPluginSetData (handle, d);
@@ -115,8 +115,8 @@ int elektraCcodeClose (Plugin * handle, Key * key ELEKTRA_UNUSED)
 {
 	CCodeData * d = static_cast<CCodeData *> (elektraPluginGetData (handle));
 
-	elektraFree (d->buf);
-	elektraFree (d);
+	delete[](d->buf);
+	delete (d);
 
 	return 0;
 }
@@ -183,8 +183,8 @@ int elektraCcodeGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	CCodeData * d = static_cast<CCodeData *> (elektraPluginGetData (handle));
 	if (!d->buf)
 	{
-		d->buf = static_cast<char *> (elektraMalloc (1000));
 		d->bufalloc = 1000;
+		d->buf = new char[d->bufalloc];
 	}
 
 	Key * cur;
@@ -195,7 +195,7 @@ int elektraCcodeGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		if (valsize > d->bufalloc)
 		{
 			d->bufalloc = valsize;
-			d->buf = static_cast<char *> (realloc (d->buf, d->bufalloc));
+			d->buf = new char[d->bufalloc];
 		}
 
 		elektraCcodeDecode (cur, d);
@@ -254,8 +254,8 @@ int elektraCcodeSet (Plugin * handle, KeySet * returned, Key * parentKey ELEKTRA
 	CCodeData * d = static_cast<CCodeData *> (elektraPluginGetData (handle));
 	if (!d->buf)
 	{
-		d->buf = static_cast<char *> (elektraMalloc (1000));
 		d->bufalloc = 1000;
+		d->buf = new char[d->bufalloc];
 	}
 
 	Key * cur;
@@ -266,7 +266,7 @@ int elektraCcodeSet (Plugin * handle, KeySet * returned, Key * parentKey ELEKTRA
 		if (valsize * 2 > d->bufalloc)
 		{
 			d->bufalloc = valsize * 2;
-			d->buf = static_cast<char *> (realloc (d->buf, d->bufalloc));
+			d->buf = new char[d->bufalloc];
 		}
 
 		elektraCcodeEncode (cur, d);
