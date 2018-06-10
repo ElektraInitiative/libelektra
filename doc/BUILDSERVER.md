@@ -178,7 +178,9 @@ verified or added:
 * In Branch Sources under Behaviours `Filter by name` should be
     added to exclude the `debian` branch from being build.
 * `Advanced clone behaviours` should be added and the path to the git mirror
-    needs to be specified: `/home/jenkins/git_mirrors/libelektra`
+    needs to be specified: `/home/jenkins/git_mirrors/libelektra`.
+    This reference repository is created and maintained by our
+    [daily buildjob](https://build.libelektra.org/jenkins/job/libelektra-daily/).
 * Under Property strategy you can add `Trigger build on pull request comment`.
     `jenkins build (libelektra|all) please` is a good starting point.
 * For Build Configuration you want to specify `by Jenkinsfile` and add the
