@@ -348,6 +348,8 @@ def generateFullBuildStages() {
         ,
         [TEST.ALL, TEST.MEM]
     )
+
+    // Build Elektra with xdg resolver to see if we are compliant
     def xdgResolver = 'resolver_mf_xp_x'
     tasks << buildAndTest(
         "debian-stable-full-xdg",
