@@ -21,20 +21,15 @@ endif (INSTALL_BUILD_TOOLS)
 include (LibAddMacros)
 find_util (elektra-export-symbols EXE_SYM_LOC EXE_SYM_ARG)
 
-# do not include plugins configured with SHARED_ONLY in the exported symbols
-# as those are only used for the FULL and STATIC builds
+# do not include plugins configured with SHARED_ONLY in the exported symbols as those are only used for the FULL and STATIC builds
 get_property (SHARED_ONLY_PLUGINS GLOBAL PROPERTY SHARED_ONLY_PLUGINS)
 set (ADDED_PLUGINS_WITHOUT_ONLY_SHARED ${ADDED_PLUGINS})
-list(REMOVE_ITEM ADDED_PLUGINS_WITHOUT_ONLY_SHARED ${SHARED_ONLY_PLUGINS})
+list (REMOVE_ITEM ADDED_PLUGINS_WITHOUT_ONLY_SHARED ${SHARED_ONLY_PLUGINS})
 set (ARG ${KDB_DEFAULT_RESOLVER} ${KDB_DEFAULT_STORAGE} ${ADDED_PLUGINS_WITHOUT_ONLY_SHARED})
 
-add_custom_command (OUTPUT exported_symbols.h
-		    DEPENDS elektra-export-symbols
-		    COMMAND ${EXE_SYM_LOC} ARGS ${EXE_SYM_ARG} ${ARG})
+add_custom_command (OUTPUT exported_symbols.h DEPENDS elektra-export-symbols COMMAND ${EXE_SYM_LOC} ARGS ${EXE_SYM_ARG} ${ARG})
 
-add_custom_command (OUTPUT exported_symbols.c
-		    DEPENDS elektra-export-symbols
-		    COMMAND ${EXE_SYM_LOC} ARGS ${EXE_SYM_ARG} ${ARG})
+add_custom_command (OUTPUT exported_symbols.c DEPENDS elektra-export-symbols COMMAND ${EXE_SYM_LOC} ARGS ${EXE_SYM_ARG} ${ARG})
 
 # Include the shared header files of the elektra project
 include (LibAddMacros)
