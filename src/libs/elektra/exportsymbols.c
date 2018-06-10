@@ -9,22 +9,6 @@
 #include <stdio.h>
 #include <string.h>
 
-// clang-format off
-static const char * excludedPlugins[] = { @SHARED_ONLY_PLUGINS_ARRAY@ };
-// clang-format on
-
-static int includePluginSymbol (char * pluginName)
-{
-	for (unsigned int i = 0; i < sizeof (excludedPlugins) / sizeof (const char *); ++i)
-	{
-		if (strcmp (pluginName, excludedPlugins[i]) == 0)
-		{
-			return 0;
-		}
-	}
-	return 1;
-}
-
 int main (int argc, char ** argv)
 {
 	int i;
@@ -65,10 +49,7 @@ int main (int argc, char ** argv)
 
 	for (i = 1; i < argc; ++i)
 	{
-		if (includePluginSymbol (argv[i]))
-		{
-			fprintf (f, "extern void libelektra_%s_LTX_elektraPluginSymbol (void);\n", argv[i]);
-		}
+		fprintf (f, "extern void libelektra_%s_LTX_elektraPluginSymbol (void);\n", argv[i]);
 	}
 
 	fclose (f);
@@ -92,12 +73,9 @@ int main (int argc, char ** argv)
 	printf ("Exporting symbols for ");
 	for (i = 2; i < argc; ++i)
 	{
-		if (includePluginSymbol (argv[i]))
-		{
-			printf ("%s ", argv[i]);
-			fprintf (f, "\t{\"%s\", 0},\n", argv[i]);
-			fprintf (f, "\t{\"elektraPluginSymbol\", &libelektra_%s_LTX_elektraPluginSymbol},\n", argv[i]);
-		}
+		printf ("%s ", argv[i]);
+		fprintf (f, "\t{\"%s\", 0},\n", argv[i]);
+		fprintf (f, "\t{\"elektraPluginSymbol\", &libelektra_%s_LTX_elektraPluginSymbol},\n", argv[i]);
 	}
 	printf ("\n");
 

@@ -12,21 +12,6 @@
 #
 # Symbols of libelektratools will be treaded specially.
 # ~~~
-get_property (SHARED_ONLY_PLUGINS GLOBAL PROPERTY SHARED_ONLY_PLUGINS)
-set (SHARED_ONLY_PLUGINS_ARRAY "")
-# convert to c array initialization syntax
-foreach (SHARED_ONLY_PLUGIN ${SHARED_ONLY_PLUGINS})
-	if (SHARED_ONLY_PLUGINS_ARRAY STREQUAL "")
-		set (SHARED_ONLY_PLUGINS_ARRAY "\"${SHARED_ONLY_PLUGIN}\"")
-	else (SHARED_ONLY_PLUGINS_ARRAY STREQUAL "")
-		set (SHARED_ONLY_PLUGINS_ARRAY "${SHARED_ONLY_PLUGINS_ARRAY}, \"${SHARED_ONLY_PLUGIN}\"")
-	endif (SHARED_ONLY_PLUGINS_ARRAY STREQUAL "")
-endforeach ()
-if (SHARED_ONLY_PLUGINS_ARRAY STREQUAL "") # empty arrays are not allowed in c but every plugin has a name so this works
-	set (SHARED_ONLY_PLUGINS_ARRAY "\"\"")
-endif (SHARED_ONLY_PLUGINS_ARRAY STREQUAL "")
-configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/exportsymbols.c.in" "${CMAKE_CURRENT_BINARY_DIR}/exportsymbols.c" @ONLY)
-
 add_executable (elektra-export-symbols "${CMAKE_CURRENT_BINARY_DIR}/exportsymbols.c")
 
 if (INSTALL_BUILD_TOOLS)
@@ -36,12 +21,18 @@ endif (INSTALL_BUILD_TOOLS)
 include (LibAddMacros)
 find_util (elektra-export-symbols EXE_SYM_LOC EXE_SYM_ARG)
 
-set (ARG ${KDB_DEFAULT_RESOLVER} ${KDB_DEFAULT_STORAGE} ${ADDED_PLUGINS})
-add_custom_command (OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/exported_symbols.h
+# do not include plugins configured with SHARED_ONLY in the exported symbols
+# as those are only used for the FULL and STATIC builds
+get_property (SHARED_ONLY_PLUGINS GLOBAL PROPERTY SHARED_ONLY_PLUGINS)
+set (ADDED_PLUGINS_WITHOUT_ONLY_SHARED ${ADDED_PLUGINS})
+list(REMOVE_ITEM ADDED_PLUGINS_WITHOUT_ONLY_SHARED ${SHARED_ONLY_PLUGINS})
+set (ARG ${KDB_DEFAULT_RESOLVER} ${KDB_DEFAULT_STORAGE} ${ADDED_PLUGINS_WITHOUT_ONLY_SHARED})
+
+add_custom_command (OUTPUT exported_symbols.h
 		    DEPENDS elektra-export-symbols
 		    COMMAND ${EXE_SYM_LOC} ARGS ${EXE_SYM_ARG} ${ARG})
 
-add_custom_command (OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/exported_symbols.c
+add_custom_command (OUTPUT exported_symbols.c
 		    DEPENDS elektra-export-symbols
 		    COMMAND ${EXE_SYM_LOC} ARGS ${EXE_SYM_ARG} ${ARG})
 
