@@ -75,6 +75,13 @@ void setDefaultConfig (CCodeData * const mapping)
 	}
 }
 
+/**
+ * @brief This function sets values for the encoding and decoding character mapping.
+ *
+ * @param mapping This parameter stores the encoding and decoding table this function fills with the values specified in `config`.
+ * @param config This key set stores the character mappings this function stores inside `mappings`.
+ * @param root This key stores the root key for the character mapping stored in `config`.
+ */
 void readConfig (CCodeData * const mapping, KeySet * const config, Key const * const root)
 {
 	Key * cur = 0;
