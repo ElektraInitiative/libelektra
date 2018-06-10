@@ -8,7 +8,13 @@
 
 #include "ccode.hpp"
 
+
+#include <kdb.hpp>
 #include <kdblogger.h>
+
+using namespace ckdb;
+using CppKey = kdb::Key;
+using CppKeySet = kdb::KeySet;
 
 namespace
 {
@@ -132,7 +138,6 @@ void readConfig (CCodeData * const mapping, KeySet * const config, Key const * c
 
 } // end namespace
 
-using namespace ckdb;
 extern "C" {
 
 /**
@@ -302,20 +307,20 @@ int elektraCcodeSet (Plugin * handle, KeySet * returned, Key * parentKey ELEKTRA
 {
 	CCodeData * const mapping = retrieveMapping (handle);
 
-	Key * key;
-	ksRewind (returned);
-	while ((key = ksNext (returned)) != 0)
+	CppKeySet keys{ returned };
+	for (auto key : keys)
 	{
-		size_t const size = keyGetValueSize (key) * 2;
+		size_t const size = key.getBinarySize () * 2;
 		if (size > mapping->bufferSize)
 		{
 			mapping->bufferSize = size;
 			mapping->buffer = new unsigned char[mapping->bufferSize];
 		}
 
-		elektraCcodeEncode (key, mapping);
+		elektraCcodeEncode (*key, mapping);
 	}
 
+	keys.release ();
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
