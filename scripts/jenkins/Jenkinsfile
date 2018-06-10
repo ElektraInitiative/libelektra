@@ -457,7 +457,7 @@ def generateFullBuildStages() {
     */
 
     // Generate tests for different release types
-    // Detects issues with debug modules enabled or disabled
+    // Detects problems with debug modules enabled or disabled
     for(plugins in ['ALL', 'NODEP']) {
         for(buildType in ['Debug', 'Release', 'RelWithDebInfo']) {
             if (plugins == 'ALL' && buildType == 'RelWithDebInfo') {
