@@ -102,6 +102,88 @@ void readConfig (CCodeData * const mapping, KeySet * const config, Key const * c
 	}
 }
 
+/** Reads the value of the key and decodes all escaping
+ * codes into the buffer.
+ * @pre the buffer needs to be as large as value's size.
+ * @param cur the key holding the value to decode
+ * @param mapping the buffer to write to
+ */
+void elektraCcodeDecode (Key * cur, CCodeData * mapping)
+{
+	size_t valsize = keyGetValueSize (cur);
+	const char * val = static_cast<const char *> (keyValue (cur));
+
+	if (!val) return;
+
+	size_t out = 0;
+	for (size_t in = 0; in < valsize - 1; ++in)
+	{
+		unsigned char character = val[in];
+
+		if (character == mapping->escape)
+		{
+			++in; /* Advance twice */
+			character = val[in];
+
+			mapping->buf[out] = mapping->decode[character & 255];
+		}
+		else
+		{
+			mapping->buf[out] = character;
+		}
+		++out; /* Only one char is written */
+	}
+
+	mapping->buf[out] = 0; // null termination for keyString()
+
+	keySetRaw (cur, mapping->buf, out + 1);
+}
+
+/** Reads the value of the key and encodes it in
+ * c-style in the buffer.
+ *
+ * @param cur the key which value is to encode
+ * @param mapping the buffer
+ * @pre the buffer needs to have twice as much space as the value's size
+ */
+void elektraCcodeEncode (Key * cur, CCodeData * mapping)
+{
+	size_t valsize = keyGetValueSize (cur);
+	const char * val = static_cast<const char *> (keyValue (cur));
+
+	if (!val) return;
+
+	size_t out = 0;
+	for (size_t in = 0; in < valsize - 1; ++in)
+	{
+		unsigned char character = val[in];
+
+		if (mapping->encode[character])
+		{
+			mapping->buf[out + 1] = mapping->encode[character];
+			// Escape char
+			mapping->buf[out] = mapping->escape;
+			out += 2;
+		}
+		else
+		{
+			// just copy one character
+			mapping->buf[out] = val[in];
+			// advance out cursor
+			out++;
+			// go to next char
+		}
+	}
+
+	mapping->buf[out] = 0; // null termination for keyString()
+
+	keySetRaw (cur, mapping->buf, out + 1);
+}
+
+// ====================
+// = Plugin Interface =
+// ====================
+
 int elektraCcodeOpen (Plugin * handle, Key * key ELEKTRA_UNUSED)
 {
 	CCodeData * mapping = new CCodeData ();
@@ -145,43 +227,6 @@ int elektraCcodeClose (Plugin * handle, Key * key ELEKTRA_UNUSED)
 	delete (mapping);
 
 	return 0;
-}
-
-/** Reads the value of the key and decodes all escaping
- * codes into the buffer.
- * @pre the buffer needs to be as large as value's size.
- * @param cur the key holding the value to decode
- * @param mapping the buffer to write to
- */
-void elektraCcodeDecode (Key * cur, CCodeData * mapping)
-{
-	size_t valsize = keyGetValueSize (cur);
-	const char * val = static_cast<const char *> (keyValue (cur));
-
-	if (!val) return;
-
-	size_t out = 0;
-	for (size_t in = 0; in < valsize - 1; ++in)
-	{
-		unsigned char character = val[in];
-
-		if (character == mapping->escape)
-		{
-			++in; /* Advance twice */
-			character = val[in];
-
-			mapping->buf[out] = mapping->decode[character & 255];
-		}
-		else
-		{
-			mapping->buf[out] = character;
-		}
-		++out; /* Only one char is written */
-	}
-
-	mapping->buf[out] = 0; // null termination for keyString()
-
-	keySetRaw (cur, mapping->buf, out + 1);
 }
 
 
@@ -228,49 +273,6 @@ int elektraCcodeGet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 	return 1; /* success */
 }
-
-
-/** Reads the value of the key and encodes it in
- * c-style in the buffer.
- *
- * @param cur the key which value is to encode
- * @param mapping the buffer
- * @pre the buffer needs to have twice as much space as the value's size
- */
-void elektraCcodeEncode (Key * cur, CCodeData * mapping)
-{
-	size_t valsize = keyGetValueSize (cur);
-	const char * val = static_cast<const char *> (keyValue (cur));
-
-	if (!val) return;
-
-	size_t out = 0;
-	for (size_t in = 0; in < valsize - 1; ++in)
-	{
-		unsigned char character = val[in];
-
-		if (mapping->encode[character])
-		{
-			mapping->buf[out + 1] = mapping->encode[character];
-			// Escape char
-			mapping->buf[out] = mapping->escape;
-			out += 2;
-		}
-		else
-		{
-			// just copy one character
-			mapping->buf[out] = val[in];
-			// advance out cursor
-			out++;
-			// go to next char
-		}
-	}
-
-	mapping->buf[out] = 0; // null termination for keyString()
-
-	keySetRaw (cur, mapping->buf, out + 1);
-}
-
 
 int elektraCcodeSet (Plugin * handle, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
 {
