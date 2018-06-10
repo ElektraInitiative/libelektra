@@ -117,9 +117,9 @@ void elektraCcodeDecode (Key * key, CCodeData * mapping)
 	const char * value = static_cast<const char *> (keyValue (key));
 	if (!value) return;
 
-	size_t size = keyGetValueSize (key);
+	size_t const SIZE = keyGetValueSize (key) - 1;
 	size_t out = 0;
-	for (size_t in = 0; in < size - 1; ++in)
+	for (size_t in = 0; in < SIZE; ++in)
 	{
 		unsigned char character = value[in];
 
