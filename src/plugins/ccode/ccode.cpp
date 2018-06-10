@@ -8,13 +8,7 @@
 
 #include "ccode.hpp"
 
-#include "kdbconfig.h"
-
-#include <kdbhelper.h>
-
 #include <kdblogger.h>
-#include <stdlib.h>
-#include <string.h>
 
 inline constexpr unsigned char operator"" _uc (char character) noexcept
 {
