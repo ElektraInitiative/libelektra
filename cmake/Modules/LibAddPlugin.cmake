@@ -245,9 +245,7 @@ endfunction ()
 #  ; -> " " is not yet implemented)
 #
 # ONLY_SHARED:
-#  Add this plugin only to shared builds of elektra (BUILD_SHARED) and not to full or
-#  static builds in case both BUILD_SHARED and one or both of BUILD_FULL and BUILD_STATIC
-#  is enabled.
+#  Do not include this plugin in FULL or STATIC builds.
 #
 # ADD_TEST:
 #  Add a plugin test case written in C (alternatively you can use add_gtest)
