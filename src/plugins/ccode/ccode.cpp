@@ -10,6 +10,9 @@
 
 #include <kdblogger.h>
 
+namespace
+{
+
 /**
  * @brief Cast a character to an unsigned character.
  *
@@ -37,7 +40,7 @@ inline constexpr unsigned char operator"" _uc (char character) noexcept
  *
  * @return An integer number between `0` and `15` if the precondition is valid or `0` otherwise
  */
-static inline int elektraHexcodeConvFromHex (char character)
+inline int elektraHexcodeConvFromHex (char character)
 {
 	if (character >= '0' && character <= '9') return character - '0';
 	if (character >= 'a' && character <= 'f') return character - 'a' + 10;
@@ -45,6 +48,8 @@ static inline int elektraHexcodeConvFromHex (char character)
 
 	return 0; /* Unknown escape char */
 }
+
+} // end namespace
 
 using namespace ckdb;
 extern "C" {
