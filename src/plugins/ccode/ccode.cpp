@@ -25,11 +25,11 @@ inline constexpr unsigned char operator"" _uc (char character) noexcept
  * Gives the integer number 0-15 to a corresponding
  * hex character '0'-'9', 'a'-'f' or 'A'-'F'.
  */
-static inline int elektraHexcodeConvFromHex (char c)
+static inline int elektraHexcodeConvFromHex (char character)
 {
-	if (c >= '0' && c <= '9') return c - '0';
-	if (c >= 'a' && c <= 'f') return c - 'a' + 10;
-	if (c >= 'A' && c <= 'F') return c - 'A' + 10;
+	if (character >= '0' && character <= '9') return character - '0';
+	if (character >= 'a' && character <= 'f') return character - 'a' + 10;
+	if (character >= 'A' && character <= 'F') return character - 'A' + 10;
 
 	return 0; /* Unknown escape char */
 }
@@ -37,55 +37,57 @@ static inline int elektraHexcodeConvFromHex (char c)
 using namespace ckdb;
 extern "C" {
 
+void setDefaultConfig (CCodeData * mapping)
+{
+	mapping->encode['\b'_uc] = 'b'_uc;
+	mapping->encode['\t'_uc] = 't'_uc;
+	mapping->encode['\n'_uc] = 'n'_uc;
+	mapping->encode['\v'_uc] = 'v'_uc;
+	mapping->encode['\f'_uc] = 'f'_uc;
+	mapping->encode['\r'_uc] = 'r'_uc;
+	mapping->encode['\\'_uc] = '\\'_uc;
+	mapping->encode['\''_uc] = '\''_uc;
+	mapping->encode['\"'_uc] = '"'_uc;
+	mapping->encode['\0'_uc] = '0'_uc;
+
+	mapping->decode['b'_uc] = '\b'_uc;
+	mapping->decode['t'_uc] = '\t'_uc;
+	mapping->decode['n'_uc] = '\n'_uc;
+	mapping->decode['v'_uc] = '\v'_uc;
+	mapping->decode['f'_uc] = '\f'_uc;
+	mapping->decode['r'_uc] = '\r'_uc;
+	mapping->decode['\\'_uc] = '\\'_uc;
+	mapping->decode['\''_uc] = '\''_uc;
+	mapping->decode['"'_uc] = '\"'_uc;
+	mapping->decode['0'_uc] = '\0'_uc;
+}
+
 int elektraCcodeOpen (Plugin * handle, Key * key ELEKTRA_UNUSED)
 {
-	CCodeData * d = new CCodeData ();
+	CCodeData * mapping = new CCodeData ();
 
 	/* Store for later use...*/
-	elektraPluginSetData (handle, d);
+	elektraPluginSetData (handle, mapping);
 
 	KeySet * config = elektraPluginGetConfig (handle);
 
 	Key * escape = ksLookupByName (config, "/escape", 0);
-	d->escape = '\\';
+	mapping->escape = '\\';
 	if (escape && keyGetBaseNameSize (escape) && keyGetValueSize (escape) == 3)
 	{
 		int res;
 		res = elektraHexcodeConvFromHex (keyString (escape)[1]);
 		res += elektraHexcodeConvFromHex (keyString (escape)[0]) * 16;
 
-		d->escape = res & 255;
+		mapping->escape = res & 255;
 	}
-	ELEKTRA_LOG_DEBUG ("Use “%c” as escape character", d->escape);
+	ELEKTRA_LOG_DEBUG ("Use “%c” as escape character", mapping->escape);
 
 	Key * root = ksLookupByName (config, "/chars", 0);
 
 	if (!root)
 	{
-		/* Some default config */
-
-		d->encode['\b'_uc] = 'b'_uc;
-		d->encode['\t'_uc] = 't'_uc;
-		d->encode['\n'_uc] = 'n'_uc;
-		d->encode['\v'_uc] = 'v'_uc;
-		d->encode['\f'_uc] = 'f'_uc;
-		d->encode['\r'_uc] = 'r'_uc;
-		d->encode['\\'_uc] = '\\'_uc;
-		d->encode['\''_uc] = '\''_uc;
-		d->encode['\"'_uc] = '"'_uc;
-		d->encode['\0'_uc] = '0'_uc;
-
-		d->decode['b'_uc] = '\b'_uc;
-		d->decode['t'_uc] = '\t'_uc;
-		d->decode['n'_uc] = '\n'_uc;
-		d->decode['v'_uc] = '\v'_uc;
-		d->decode['f'_uc] = '\f'_uc;
-		d->decode['r'_uc] = '\r'_uc;
-		d->decode['\\'_uc] = '\\'_uc;
-		d->decode['\''_uc] = '\''_uc;
-		d->decode['"'_uc] = '\"'_uc;
-		d->decode['0'_uc] = '\0'_uc;
-
+		setDefaultConfig (mapping);
 		return 0;
 	}
 
@@ -104,8 +106,8 @@ int elektraCcodeOpen (Plugin * handle, Key * key ELEKTRA_UNUSED)
 		val += elektraHexcodeConvFromHex (keyString (cur)[0]) * 16;
 
 		/* Hexencode this character! */
-		d->encode[res & 255] = val;
-		d->decode[val & 255] = res;
+		mapping->encode[res & 255] = val;
+		mapping->decode[val & 255] = res;
 	}
 
 	return 0;
@@ -113,10 +115,10 @@ int elektraCcodeOpen (Plugin * handle, Key * key ELEKTRA_UNUSED)
 
 int elektraCcodeClose (Plugin * handle, Key * key ELEKTRA_UNUSED)
 {
-	CCodeData * d = static_cast<CCodeData *> (elektraPluginGetData (handle));
+	CCodeData * mapping = static_cast<CCodeData *> (elektraPluginGetData (handle));
 
-	delete[](d->buf);
-	delete (d);
+	delete[](mapping->buf);
+	delete (mapping);
 
 	return 0;
 }
@@ -125,9 +127,9 @@ int elektraCcodeClose (Plugin * handle, Key * key ELEKTRA_UNUSED)
  * codes into the buffer.
  * @pre the buffer needs to be as large as value's size.
  * @param cur the key holding the value to decode
- * @param buf the buffer to write to
+ * @param mapping the buffer to write to
  */
-void elektraCcodeDecode (Key * cur, CCodeData * d)
+void elektraCcodeDecode (Key * cur, CCodeData * mapping)
 {
 	size_t valsize = keyGetValueSize (cur);
 	const char * val = static_cast<const char *> (keyValue (cur));
@@ -137,25 +139,25 @@ void elektraCcodeDecode (Key * cur, CCodeData * d)
 	size_t out = 0;
 	for (size_t in = 0; in < valsize - 1; ++in)
 	{
-		unsigned char c = val[in];
+		unsigned char character = val[in];
 
-		if (c == d->escape)
+		if (character == mapping->escape)
 		{
 			++in; /* Advance twice */
-			c = val[in];
+			character = val[in];
 
-			d->buf[out] = d->decode[c & 255];
+			mapping->buf[out] = mapping->decode[character & 255];
 		}
 		else
 		{
-			d->buf[out] = c;
+			mapping->buf[out] = character;
 		}
 		++out; /* Only one char is written */
 	}
 
-	d->buf[out] = 0; // null termination for keyString()
+	mapping->buf[out] = 0; // null termination for keyString()
 
-	keySetRaw (cur, d->buf, out + 1);
+	keySetRaw (cur, mapping->buf, out + 1);
 }
 
 
@@ -179,11 +181,11 @@ int elektraCcodeGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		return 1;
 	}
 
-	CCodeData * d = static_cast<CCodeData *> (elektraPluginGetData (handle));
-	if (!d->buf)
+	CCodeData * mapping = static_cast<CCodeData *> (elektraPluginGetData (handle));
+	if (!mapping->buf)
 	{
-		d->bufalloc = 1000;
-		d->buf = new unsigned char[d->bufalloc];
+		mapping->bufalloc = 1000;
+		mapping->buf = new unsigned char[mapping->bufalloc];
 	}
 
 	Key * cur;
@@ -191,13 +193,13 @@ int elektraCcodeGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	while ((cur = ksNext (returned)) != 0)
 	{
 		size_t valsize = keyGetValueSize (cur);
-		if (valsize > d->bufalloc)
+		if (valsize > mapping->bufalloc)
 		{
-			d->bufalloc = valsize;
-			d->buf = new unsigned char[d->bufalloc];
+			mapping->bufalloc = valsize;
+			mapping->buf = new unsigned char[mapping->bufalloc];
 		}
 
-		elektraCcodeDecode (cur, d);
+		elektraCcodeDecode (cur, mapping);
 	}
 
 	return 1; /* success */
@@ -208,10 +210,10 @@ int elektraCcodeGet (Plugin * handle, KeySet * returned, Key * parentKey)
  * c-style in the buffer.
  *
  * @param cur the key which value is to encode
- * @param buf the buffer
+ * @param mapping the buffer
  * @pre the buffer needs to have twice as much space as the value's size
  */
-void elektraCcodeEncode (Key * cur, CCodeData * d)
+void elektraCcodeEncode (Key * cur, CCodeData * mapping)
 {
 	size_t valsize = keyGetValueSize (cur);
 	const char * val = static_cast<const char *> (keyValue (cur));
@@ -221,39 +223,39 @@ void elektraCcodeEncode (Key * cur, CCodeData * d)
 	size_t out = 0;
 	for (size_t in = 0; in < valsize - 1; ++in)
 	{
-		unsigned char c = val[in];
+		unsigned char character = val[in];
 
-		if (d->encode[c])
+		if (mapping->encode[character])
 		{
-			d->buf[out + 1] = d->encode[c];
+			mapping->buf[out + 1] = mapping->encode[character];
 			// Escape char
-			d->buf[out] = d->escape;
+			mapping->buf[out] = mapping->escape;
 			out += 2;
 		}
 		else
 		{
 			// just copy one character
-			d->buf[out] = val[in];
+			mapping->buf[out] = val[in];
 			// advance out cursor
 			out++;
 			// go to next char
 		}
 	}
 
-	d->buf[out] = 0; // null termination for keyString()
+	mapping->buf[out] = 0; // null termination for keyString()
 
-	keySetRaw (cur, d->buf, out + 1);
+	keySetRaw (cur, mapping->buf, out + 1);
 }
 
 
 int elektraCcodeSet (Plugin * handle, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
 {
 	/* set all keys */
-	CCodeData * d = static_cast<CCodeData *> (elektraPluginGetData (handle));
-	if (!d->buf)
+	CCodeData * mapping = static_cast<CCodeData *> (elektraPluginGetData (handle));
+	if (!mapping->buf)
 	{
-		d->bufalloc = 1000;
-		d->buf = new unsigned char[d->bufalloc];
+		mapping->bufalloc = 1000;
+		mapping->buf = new unsigned char[mapping->bufalloc];
 	}
 
 	Key * cur;
@@ -261,13 +263,13 @@ int elektraCcodeSet (Plugin * handle, KeySet * returned, Key * parentKey ELEKTRA
 	while ((cur = ksNext (returned)) != 0)
 	{
 		size_t valsize = keyGetValueSize (cur);
-		if (valsize * 2 > d->bufalloc)
+		if (valsize * 2 > mapping->bufalloc)
 		{
-			d->bufalloc = valsize * 2;
-			d->buf = new unsigned char[d->bufalloc];
+			mapping->bufalloc = valsize * 2;
+			mapping->buf = new unsigned char[mapping->bufalloc];
 		}
 
-		elektraCcodeEncode (cur, d);
+		elektraCcodeEncode (cur, mapping);
 	}
 
 	return 1; /* success */

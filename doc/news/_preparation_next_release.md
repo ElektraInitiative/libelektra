@@ -104,6 +104,10 @@ Thanks to Michael Zronek and Vanessa Kos.
 
 ## Plugins
 
+### CCode
+
+- We fixed various warnings in the source code reported by [OCLint](http://oclint.org). *(René Schwaiger)*
+
 ### Crypto
 
 - The `crypto` plugin now uses Elektra's `libinvoke` and the `base64` plugin in order to encode and decode Base64 strings. This improvement reduces code duplication between the two plugins. *(Peter Nirschl)*
