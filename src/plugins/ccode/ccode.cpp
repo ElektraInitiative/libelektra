@@ -62,6 +62,28 @@ void setDefaultConfig (CCodeData * mapping)
 	mapping->decode['0'_uc] = '\0'_uc;
 }
 
+void readConfig (CCodeData * const mapping, KeySet * const config, Key const * const root)
+{
+	Key * cur = 0;
+	while ((cur = ksNext (config)) != 0)
+	{
+		/* Ignore keys that are not directly below the config root key or have an incorrect size */
+		if (keyRel (root, cur) != 1 || keyGetBaseNameSize (cur) != 3 || keyGetValueSize (cur) != 3) continue;
+
+		int res;
+		res = elektraHexcodeConvFromHex (keyBaseName (cur)[1]);
+		res += elektraHexcodeConvFromHex (keyBaseName (cur)[0]) * 16;
+
+		int val;
+		val = elektraHexcodeConvFromHex (keyString (cur)[1]);
+		val += elektraHexcodeConvFromHex (keyString (cur)[0]) * 16;
+
+		/* Hexencode this character! */
+		mapping->encode[res & 255] = val;
+		mapping->decode[val & 255] = res;
+	}
+}
+
 int elektraCcodeOpen (Plugin * handle, Key * key ELEKTRA_UNUSED)
 {
 	CCodeData * mapping = new CCodeData ();
@@ -85,29 +107,13 @@ int elektraCcodeOpen (Plugin * handle, Key * key ELEKTRA_UNUSED)
 
 	Key * root = ksLookupByName (config, "/chars", 0);
 
-	if (!root)
+	if (root)
+	{
+		readConfig (mapping, config, root);
+	}
+	else
 	{
 		setDefaultConfig (mapping);
-		return 0;
-	}
-
-	Key * cur = 0;
-	while ((cur = ksNext (config)) != 0)
-	{
-		/* Ignore keys that are not directly below the config root key or have an incorrect size */
-		if (keyRel (root, cur) != 1 || keyGetBaseNameSize (cur) != 3 || keyGetValueSize (cur) != 3) continue;
-
-		int res;
-		res = elektraHexcodeConvFromHex (keyBaseName (cur)[1]);
-		res += elektraHexcodeConvFromHex (keyBaseName (cur)[0]) * 16;
-
-		int val;
-		val = elektraHexcodeConvFromHex (keyString (cur)[1]);
-		val += elektraHexcodeConvFromHex (keyString (cur)[0]) * 16;
-
-		/* Hexencode this character! */
-		mapping->encode[res & 255] = val;
-		mapping->decode[val & 255] = res;
 	}
 
 	return 0;
