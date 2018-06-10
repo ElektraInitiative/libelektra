@@ -193,9 +193,8 @@ For Docker nodes Docker has to be installed as well.
 
 A `jenkins` user with 47000:47000 ids should be created as this is what is
 expected in Docker images.
-
-Either set a password or better generate a key to add to the Jenkins master for
-authentification.
+Additionally a public key authentification should be set up so the jenkins
+master can establish an ssh connection with the node.
 
 Nodes should be set to only build jobs matching their labels and to be online
 as much as possible.
