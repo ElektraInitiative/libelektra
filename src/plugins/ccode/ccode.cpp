@@ -102,11 +102,15 @@ void readConfig (CCodeData * const mapping, KeySet * const config, Key const * c
 	}
 }
 
-/** Reads the value of the key and decodes all escaping
- * codes into the buffer.
- * @pre the buffer needs to be as large as value's size.
- * @param cur the key holding the value to decode
- * @param mapping the buffer to write to
+/**
+ * @brief This function replaces escaped character in a key value with unescaped characters.
+ *
+ * The function stores the unescaped result value both in `mapping->buffer` and the given key.
+ *
+ * @pre The variable `mapping->buffer` needs to be as large as the key value’s size.
+ *
+ * @param cur This key holds the value this function decodes.
+ * @param mapping This variable stores the buffer and the character mapping this function uses to decode the value of the given key.
  */
 void elektraCcodeDecode (Key * cur, CCodeData * mapping)
 {
