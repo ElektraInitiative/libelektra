@@ -47,7 +47,6 @@ CMAKE_FLAGS_BASE = [
     'SITE': '${STAGE_NAME}',
     'KDB_DB_SYSTEM': '${HOME}/.config/kdb/system',
     'KDB_DB_SPEC': '${HOME}/.config/kdb/spec',
-    'XDG_CONFIG_DIRS': '${HOME}/.config/xdg/system',
     'CMAKE_INSTALL_PREFIX': '${WORKSPACE}/system',
     'INSTALL_SYSTEM_FILES': 'OFF',
     'BUILD_DOCUMENTATION': 'OFF'
