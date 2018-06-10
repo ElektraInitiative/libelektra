@@ -23,7 +23,7 @@ typedef struct
 
 	char escape;
 
-	unsigned char * buf;
+	unsigned char * buffer;
 	size_t bufalloc;
 } CCodeData;
 
