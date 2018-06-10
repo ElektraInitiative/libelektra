@@ -149,19 +149,19 @@ void elektraCcodeDecode (Key * key, CCodeData * mapping)
  *
  * @pre The variable `mapping->buffer` needs to be twice as large as the key value’s size.
  *
- * @param cur This key stores the value this function escapes.
+ * @param key This key stores the value this function escapes.
  * @param mapping This variable stores the buffer and the character mapping this function uses to encode the value of the given key.
  */
-void elektraCcodeEncode (Key * cur, CCodeData * mapping)
+void elektraCcodeEncode (Key * key, CCodeData * mapping)
 {
-	const char * val = static_cast<const char *> (keyValue (cur));
-	if (!val) return;
+	const char * value = static_cast<const char *> (keyValue (key));
+	if (!value) return;
 
-	size_t valsize = keyGetValueSize (cur);
+	size_t size = keyGetValueSize (key);
 	size_t out = 0;
-	for (size_t in = 0; in < valsize - 1; ++in)
+	for (size_t in = 0; in < size - 1; ++in)
 	{
-		unsigned char character = val[in];
+		unsigned char character = value[in];
 
 		if (mapping->encode[character])
 		{
@@ -173,7 +173,7 @@ void elektraCcodeEncode (Key * cur, CCodeData * mapping)
 		else
 		{
 			// just copy one character
-			mapping->buffer[out] = val[in];
+			mapping->buffer[out] = value[in];
 			// advance out cursor
 			out++;
 			// go to next char
@@ -182,7 +182,7 @@ void elektraCcodeEncode (Key * cur, CCodeData * mapping)
 
 	mapping->buffer[out] = 0; // null termination for keyString()
 
-	keySetRaw (cur, mapping->buffer, out + 1);
+	keySetRaw (key, mapping->buffer, out + 1);
 }
 
 // ====================
