@@ -17,6 +17,8 @@ set (INFO_PLUGINS_DOC "only for informational purposes. Modify PLUGINS to change
 set (ADDED_PLUGINS_DOC "List of plugins already added, ${INFO_PLUGINS_DOC}")
 set (ADDED_PLUGINS "" CACHE STRING ${PLUGINS_DOC} FORCE)
 
+set (SHARED_ONLY_PLUGINS_DOC "List of plugins already added with the ONLY_SHARED configuration enabled, ${INFO_PLUGINS_DOC}")
+
 set (REMOVED_PLUGINS_DOC "List of plugins removed, ${INFO_PLUGINS_DOC} ")
 set (REMOVED_PLUGINS "" CACHE STRING ${PLUGINS_DOC} FORCE)
 
