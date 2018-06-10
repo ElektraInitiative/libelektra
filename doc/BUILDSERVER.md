@@ -186,9 +186,6 @@ verified or added:
 * For Build Configuration you want to specify `by Jenkinsfile` and add the
     script path: `scripts/jenkins/Jenkinsfile`.
 
-You can also specify `Orphaning Strategies` but they are not essential to the
-functinality of the build job.
-
 ### Add a Jenkins node
 A node needs to have a JRE (Java Runtime Environment) installed.
 Further it should run an SSH (Secure SHell) server.
