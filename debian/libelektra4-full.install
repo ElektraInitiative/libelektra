@@ -1,0 +1,3 @@
+usr/bin/kdb-full
+usr/lib/*/libelektra-full.so*
+usr/lib/*/libelektratools-full.so*

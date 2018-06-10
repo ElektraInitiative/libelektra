@@ -79,6 +79,29 @@ Description: Elektra configuration store, main library
  .
  This package contains the main elektra library, and most of the core plugins.
 
+Package: libelektra4-full
+Section: libs
+Architecture: any
+Multi-Arch: same
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${shlibs:Depends},
+ ${misc:Depends}
+Breaks: elektra-bin (<< 0.8.14-5~), libelektra-core4 (<< 0.8.19-1), libelektra-full4 (<< 0.8.19-1)
+Replaces: elektra-bin (<< 0.8.14-5~), libelelektra-core4 (<< 0.8.19-1), libelektra-full4 (<< 0.8.19-1)
+Suggests: elektra-doc, ${elektra:allPlugins}
+Description: Elektra configuration store, main library
+ Elektra provides a universal and secure framework to store configuration
+ parameters in a hierarchical key-value pair mechanism, instead of each
+ program using its own text configuration files. This allows any program
+ to read and save its configuration with a consistent API, and allows
+ them to be aware of other applications' configurations, permitting
+ easy application integration. While architecturally similar to other OS
+ registries, Elektra does not have most of the problems found in those
+ implementations.
+ .
+ This package contains an variant of the Elektra library in which all plugins
+ are linked together to a full library. The package is only needed for testing.
+
 Package: libelektra4-experimental
 Section: libs
 Architecture: any
@@ -401,12 +424,12 @@ Package: elektra-tests
 Priority: extra
 Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
-Depends: libelektra4 (= ${binary:Version}),
+Depends: libelektra4-full (= ${binary:Version}),
  elektra-bin (= ${binary:Version}),
  ${shlibs:Depends},
  ${misc:Depends}
-Replaces: libelektra-test (<< 0.8.19-1)
-Breaks: libelektra-test (<< 0.8.19-1)
+Replaces: libelektra-test (<< 0.8.19-1), libelektra-full4 (<< 0.8.19-1)
+Breaks: libelektra-test (<< 0.8.19-1), libelektra-full4 (<< 0.8.19-1)
 Description: Elektra configuration store, tests
  Elektra provides a universal and secure framework to store configuration
  parameters in a hierarchical key-value pair mechanism, instead of each

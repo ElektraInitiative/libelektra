@@ -79,7 +79,6 @@ usr/lib/*/libelektra-notification.so*
 usr/lib/*/libelektra-core.so*
 usr/lib/*/libelektra-invoke.so*
 usr/lib/*/libelektra-ease.so*
-usr/lib/*/libelektra-full.so*
 usr/lib/*/libelektragetenv.so*
 usr/lib/*/libelektra-utility.so*
 usr/lib/*/libelektraintercept-env.so*
@@ -91,7 +90,6 @@ usr/lib/*/libelektra-plugin.so*
 usr/lib/*/libelektra-proposal.so*
 usr/lib/*/libelektra.so.0.*
 usr/lib/*/libelektra.so.4
-usr/lib/*/libelektratools-full.so*
 usr/lib/*/libelektra-utility.so*
 usr/lib/*/libelektra-pluginprocess.so*
 usr/share/doc/elektra
