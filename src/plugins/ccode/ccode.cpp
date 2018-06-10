@@ -61,27 +61,18 @@ extern "C" {
  */
 void setDefaultConfig (CCodeData * mapping)
 {
-	mapping->encode['\b'_uc] = 'b'_uc;
-	mapping->encode['\t'_uc] = 't'_uc;
-	mapping->encode['\n'_uc] = 'n'_uc;
-	mapping->encode['\v'_uc] = 'v'_uc;
-	mapping->encode['\f'_uc] = 'f'_uc;
-	mapping->encode['\r'_uc] = 'r'_uc;
-	mapping->encode['\\'_uc] = '\\'_uc;
-	mapping->encode['\''_uc] = '\''_uc;
-	mapping->encode['\"'_uc] = '"'_uc;
-	mapping->encode['\0'_uc] = '0'_uc;
+	unsigned char pairs[][2] = { { '\b'_uc, 'b'_uc }, { '\t'_uc, 't'_uc }, { '\n'_uc, 'n'_uc },  { '\v'_uc, 'v'_uc },
+				     { '\f'_uc, 'f'_uc }, { '\r'_uc, 'r'_uc }, { '\\'_uc, '\\'_uc }, { '\''_uc, '\''_uc },
+				     { '\"'_uc, '"'_uc }, { '\0'_uc, '0'_uc } };
 
-	mapping->decode['b'_uc] = '\b'_uc;
-	mapping->decode['t'_uc] = '\t'_uc;
-	mapping->decode['n'_uc] = '\n'_uc;
-	mapping->decode['v'_uc] = '\v'_uc;
-	mapping->decode['f'_uc] = '\f'_uc;
-	mapping->decode['r'_uc] = '\r'_uc;
-	mapping->decode['\\'_uc] = '\\'_uc;
-	mapping->decode['\''_uc] = '\''_uc;
-	mapping->decode['"'_uc] = '\"'_uc;
-	mapping->decode['0'_uc] = '\0'_uc;
+	for (size_t pair = 0; pair < sizeof (pairs) / sizeof (pairs[0]); pair++)
+	{
+		unsigned char character = pairs[pair][0];
+		unsigned char replacement = pairs[pair][1];
+
+		mapping->encode[character] = replacement;
+		mapping->decode[replacement] = character;
+	}
 }
 
 void readConfig (CCodeData * const mapping, KeySet * const config, Key const * const root)
