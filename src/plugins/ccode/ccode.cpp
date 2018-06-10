@@ -114,11 +114,10 @@ void readConfig (CCodeData * const mapping, KeySet * const config, Key const * c
  */
 void elektraCcodeDecode (Key * key, CCodeData * mapping)
 {
-	size_t size = keyGetValueSize (key);
 	const char * value = static_cast<const char *> (keyValue (key));
-
 	if (!value) return;
 
+	size_t size = keyGetValueSize (key);
 	size_t out = 0;
 	for (size_t in = 0; in < size - 1; ++in)
 	{
