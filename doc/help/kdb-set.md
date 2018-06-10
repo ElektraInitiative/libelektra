@@ -18,7 +18,7 @@ To set a key to an empty value, `""` should be passed for the `value` argument.
 
 ## NEGATIVE VALUES
 
-To set a key to a negative value, `--` has to be used to stop option processing. (example below)
+To set a key to a negative value, `--` has to be used to stop option processing. (see example below)
 
 ## OPTIONS
 
@@ -57,20 +57,27 @@ To set a key to a negative value, `--` has to be used to stop option processing.
 ## EXAMPLES
 
 To set a Key to the value `Hello World!`:
+
 `kdb set user/example/key "Hello World!"`
 
 To create a new key with a null value:
+
 `kdb set user/example/key`
 
 To set a key to an empty value:
+
 `kdb set user/example/key ""`
 
 To set a key to a negative value:
+
 `kdb set -- /tests/neg -3`
 
 To create bookmarks:
+
 `kdb set user/sw/elektra/kdb/#0/current/bookmarks`
+
 followed by:
+
 `kdb set user/sw/elektra/kdb/#0/current/bookmarks/kdb user/sw/elektra/kdb/#0/current`
 
 
