@@ -54,6 +54,11 @@ inline int elektraHexcodeConvFromHex (char character)
 using namespace ckdb;
 extern "C" {
 
+/**
+ * @brief This function sets default values for the encoding and decoding character mapping.
+ *
+ * @param mapping This parameter stores the encoding and decoding table this function fills with default values.
+ */
 void setDefaultConfig (CCodeData * mapping)
 {
 	mapping->encode['\b'_uc] = 'b'_uc;
