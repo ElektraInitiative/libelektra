@@ -188,6 +188,7 @@ void elektraCcodeEncode (Key * key, CCodeData * mapping)
 // = Plugin Interface =
 // ====================
 
+/** @see elektraDocOpen */
 int elektraCcodeOpen (Plugin * handle, Key * key ELEKTRA_UNUSED)
 {
 	CCodeData * mapping = new CCodeData ();
@@ -223,6 +224,7 @@ int elektraCcodeOpen (Plugin * handle, Key * key ELEKTRA_UNUSED)
 	return 0;
 }
 
+/** @see elektraDocClose */
 int elektraCcodeClose (Plugin * handle, Key * key ELEKTRA_UNUSED)
 {
 	CCodeData * mapping = static_cast<CCodeData *> (elektraPluginGetData (handle));
@@ -233,7 +235,7 @@ int elektraCcodeClose (Plugin * handle, Key * key ELEKTRA_UNUSED)
 	return 0;
 }
 
-
+/** @see elektraDocGet */
 int elektraCcodeGet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
 	/* get all keys */
@@ -278,6 +280,7 @@ int elektraCcodeGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	return 1; /* success */
 }
 
+/** @see elektraDocSet */
 int elektraCcodeSet (Plugin * handle, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
 {
 	/* set all keys */
