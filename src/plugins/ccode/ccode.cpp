@@ -84,7 +84,7 @@ void setDefaultConfig (CCodeData * const mapping)
  */
 void readConfig (CCodeData * const mapping, KeySet * const config, Key const * const root)
 {
-	Key * cur = 0;
+	Key const * cur = 0;
 	while ((cur = ksNext (config)) != 0)
 	{
 		/* Ignore keys that are not directly below the config root key or have an incorrect size */
