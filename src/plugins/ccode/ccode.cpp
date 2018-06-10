@@ -49,11 +49,6 @@ inline int elektraHexcodeConvFromHex (char character)
 	return 0; /* Unknown escape char */
 }
 
-} // end namespace
-
-using namespace ckdb;
-extern "C" {
-
 /**
  * @brief This function sets default values for the encoding and decoding character mapping.
  *
@@ -101,6 +96,11 @@ void readConfig (CCodeData * const mapping, KeySet * const config, Key const * c
 		mapping->decode[replacement & 255] = character;
 	}
 }
+
+} // end namespace
+
+using namespace ckdb;
+extern "C" {
 
 /**
  * @brief This function replaces escaped character in a key value with unescaped characters.
