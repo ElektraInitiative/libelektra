@@ -163,3 +163,43 @@ If you have issues that are related to the build system you can open a normal
 issue and tag it with `build` and `question`.
 If you feel like your inquiry does not warrent a issue on its own, please use
 [our buildserver issue](https://issues.libelektra.org/160).
+
+## Jenkins
+
+### Jenkins libelektra configuration
+The `libelektra` build job is a multibranch pipeline job.
+It is easiest to add via the BlueOcean interface.
+
+The newly added job can afterwards configured.
+All options have a helptext next to them explaining what the settings do.
+
+Most of the default settings should be ok, however some settings need to be
+verified or added:
+* In Branch Sources under Behaviours `Filter by name` should be
+    added to exclude the `debian` branch from beeing build.
+* `Advanced clone behaviours` should be added and the path to the git mirror
+    needs to be specified: `/home/jenkins/git_mirrors/libelektra`
+* Under Property strategy you can add `Trigger build on pull request comment`.
+    `jenkins build (libelektra|all) please` is a good starting point.
+* For Build Configuration you want to specify `by Jenkinsfile` and add the
+    script path: `scripts/jenkins/Jenkinsfile`.
+
+You can also specify `Orphaning Strategies` but they are not essential to the
+functinality of the build job.
+
+### Add a Jenkins node
+A node needs to have a JRE (Java Runtime Environment) installed.
+Further it should run an SSH (Secure SHell) server.
+For Docker nodes Docker has to be installed as well.
+
+A `jenkins` user with 47000:47000 ids should be created as this is what is
+expected in Docker images.
+
+Either set a password or better generate a key to add to the Jenkins master for
+authentification.
+
+Nodes should be set to only build jobs matching their labels and to be online
+as much as possible.
+As for labels `gitmirror` should be if you want to cache repositories on this
+node.
+If Docker is available the `docker` label should be set.
