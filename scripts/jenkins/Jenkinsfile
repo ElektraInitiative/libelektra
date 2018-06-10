@@ -45,8 +45,8 @@ REGISTRY = 'hub.libelektra.org'
  */
 CMAKE_FLAGS_BASE = [
     'SITE': '${STAGE_NAME}',
-    'KDB_DB_SYSTEM': '${HOME}/.config/kdb/system',
-    'KDB_DB_SPEC': '${HOME}/.config/kdb/spec',
+    'KDB_DB_SYSTEM': '${WORKSPACE}/config/kdb/system',
+    'KDB_DB_SPEC': '${WORKSPACE}/config/kdb/spec',
     'CMAKE_INSTALL_PREFIX': '${WORKSPACE}/system',
     'INSTALL_SYSTEM_FILES': 'OFF',
     'BUILD_DOCUMENTATION': 'OFF'
