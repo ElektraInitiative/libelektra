@@ -73,7 +73,7 @@ inline KeySet * contract (void)
  */
 CCodeData * retrieveMapping (Plugin * handle)
 {
-	CCodeData * mapping = static_cast<CCodeData *> (elektraPluginGetData (handle));
+	CCodeData * const mapping = static_cast<CCodeData *> (elektraPluginGetData (handle));
 	if (!mapping->buffer)
 	{
 		mapping->bufferSize = 1000;
@@ -224,14 +224,14 @@ void elektraCcodeEncode (Key * key, CCodeData * mapping)
 /** @see elektraDocOpen */
 int elektraCcodeOpen (Plugin * handle, Key * key ELEKTRA_UNUSED)
 {
-	CCodeData * mapping = new CCodeData ();
+	CCodeData * const mapping = new CCodeData ();
 
 	/* Store for later use...*/
 	elektraPluginSetData (handle, mapping);
 
-	KeySet * config = elektraPluginGetConfig (handle);
+	KeySet * const config = elektraPluginGetConfig (handle);
 
-	Key * escape = ksLookupByName (config, "/escape", 0);
+	Key const * const escape = ksLookupByName (config, "/escape", 0);
 	mapping->escape = '\\';
 	if (escape && keyGetBaseNameSize (escape) && keyGetValueSize (escape) == 3)
 	{
@@ -242,7 +242,7 @@ int elektraCcodeOpen (Plugin * handle, Key * key ELEKTRA_UNUSED)
 	}
 	ELEKTRA_LOG_DEBUG ("Use “%c” as escape character", mapping->escape);
 
-	Key * root = ksLookupByName (config, "/chars", 0);
+	Key const * const root = ksLookupByName (config, "/chars", 0);
 
 	if (root)
 	{
@@ -259,7 +259,7 @@ int elektraCcodeOpen (Plugin * handle, Key * key ELEKTRA_UNUSED)
 /** @see elektraDocClose */
 int elektraCcodeClose (Plugin * handle, Key * key ELEKTRA_UNUSED)
 {
-	CCodeData * mapping = static_cast<CCodeData *> (elektraPluginGetData (handle));
+	CCodeData * const mapping = static_cast<CCodeData *> (elektraPluginGetData (handle));
 
 	delete[](mapping->buffer);
 	delete (mapping);
@@ -272,19 +272,19 @@ int elektraCcodeGet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
 	if (!strcmp (keyName (parentKey), "system/elektra/modules/ccode"))
 	{
-		KeySet * pluginConfig = contract ();
+		KeySet * const pluginConfig = contract ();
 		ksAppend (returned, pluginConfig);
 		ksDel (pluginConfig);
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
-	CCodeData * mapping = retrieveMapping (handle);
+	CCodeData * const mapping = retrieveMapping (handle);
 
 	Key * key;
 	ksRewind (returned);
 	while ((key = ksNext (returned)) != 0)
 	{
-		size_t valsize = keyGetValueSize (key);
+		size_t const valsize = keyGetValueSize (key);
 		if (valsize > mapping->bufferSize)
 		{
 			mapping->bufferSize = valsize;
@@ -300,13 +300,13 @@ int elektraCcodeGet (Plugin * handle, KeySet * returned, Key * parentKey)
 /** @see elektraDocSet */
 int elektraCcodeSet (Plugin * handle, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
 {
-	CCodeData * mapping = retrieveMapping (handle);
+	CCodeData * const mapping = retrieveMapping (handle);
 
 	Key * key;
 	ksRewind (returned);
 	while ((key = ksNext (returned)) != 0)
 	{
-		size_t valsize = keyGetValueSize (key);
+		size_t const valsize = keyGetValueSize (key);
 		if (valsize * 2 > mapping->bufferSize)
 		{
 			mapping->bufferSize = valsize * 2;
