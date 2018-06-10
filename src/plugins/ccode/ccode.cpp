@@ -202,11 +202,10 @@ int elektraCcodeOpen (Plugin * handle, Key * key ELEKTRA_UNUSED)
 	mapping->escape = '\\';
 	if (escape && keyGetBaseNameSize (escape) && keyGetValueSize (escape) == 3)
 	{
-		int res;
-		res = elektraHexcodeConvFromHex (keyString (escape)[1]);
-		res += elektraHexcodeConvFromHex (keyString (escape)[0]) * 16;
+		int escapeChar = elektraHexcodeConvFromHex (keyString (escape)[1]);
+		escapeChar += elektraHexcodeConvFromHex (keyString (escape)[0]) * 16;
 
-		mapping->escape = res & 255;
+		mapping->escape = escapeChar & 255;
 	}
 	ELEKTRA_LOG_DEBUG ("Use “%c” as escape character", mapping->escape);
 
@@ -259,22 +258,22 @@ int elektraCcodeGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	CCodeData * mapping = static_cast<CCodeData *> (elektraPluginGetData (handle));
 	if (!mapping->buffer)
 	{
-		mapping->bufalloc = 1000;
-		mapping->buffer = new unsigned char[mapping->bufalloc];
+		mapping->bufferSize = 1000;
+		mapping->buffer = new unsigned char[mapping->bufferSize];
 	}
 
-	Key * cur;
+	Key * key;
 	ksRewind (returned);
-	while ((cur = ksNext (returned)) != 0)
+	while ((key = ksNext (returned)) != 0)
 	{
-		size_t valsize = keyGetValueSize (cur);
-		if (valsize > mapping->bufalloc)
+		size_t valsize = keyGetValueSize (key);
+		if (valsize > mapping->bufferSize)
 		{
-			mapping->bufalloc = valsize;
-			mapping->buffer = new unsigned char[mapping->bufalloc];
+			mapping->bufferSize = valsize;
+			mapping->buffer = new unsigned char[mapping->bufferSize];
 		}
 
-		elektraCcodeDecode (cur, mapping);
+		elektraCcodeDecode (key, mapping);
 	}
 
 	return 1; /* success */
@@ -287,22 +286,22 @@ int elektraCcodeSet (Plugin * handle, KeySet * returned, Key * parentKey ELEKTRA
 	CCodeData * mapping = static_cast<CCodeData *> (elektraPluginGetData (handle));
 	if (!mapping->buffer)
 	{
-		mapping->bufalloc = 1000;
-		mapping->buffer = new unsigned char[mapping->bufalloc];
+		mapping->bufferSize = 1000;
+		mapping->buffer = new unsigned char[mapping->bufferSize];
 	}
 
-	Key * cur;
+	Key * key;
 	ksRewind (returned);
-	while ((cur = ksNext (returned)) != 0)
+	while ((key = ksNext (returned)) != 0)
 	{
-		size_t valsize = keyGetValueSize (cur);
-		if (valsize * 2 > mapping->bufalloc)
+		size_t valsize = keyGetValueSize (key);
+		if (valsize * 2 > mapping->bufferSize)
 		{
-			mapping->bufalloc = valsize * 2;
-			mapping->buffer = new unsigned char[mapping->bufalloc];
+			mapping->bufferSize = valsize * 2;
+			mapping->buffer = new unsigned char[mapping->bufferSize];
 		}
 
-		elektraCcodeEncode (cur, mapping);
+		elektraCcodeEncode (key, mapping);
 	}
 
 	return 1; /* success */

@@ -24,7 +24,7 @@ typedef struct
 	char escape;
 
 	unsigned char * buffer;
-	size_t bufalloc;
+	size_t bufferSize;
 } CCodeData;
 
 ssize_t keySetRaw (Key * key, const void * newBinary, size_t dataSize);
