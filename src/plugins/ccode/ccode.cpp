@@ -138,18 +138,17 @@ void elektraCcodeDecode (Key * cur, CCodeData * d)
 	for (size_t in = 0; in < valsize - 1; ++in)
 	{
 		unsigned char c = val[in];
-		unsigned char * n = d->buf + out;
 
 		if (c == d->escape)
 		{
 			++in; /* Advance twice */
 			c = val[in];
 
-			*n = d->decode[c & 255];
+			d->buf[out] = d->decode[c & 255];
 		}
 		else
 		{
-			*n = c;
+			d->buf[out] = c;
 		}
 		++out; /* Only one char is written */
 	}
@@ -223,11 +222,10 @@ void elektraCcodeEncode (Key * cur, CCodeData * d)
 	for (size_t in = 0; in < valsize - 1; ++in)
 	{
 		unsigned char c = val[in];
-		unsigned char * n = d->buf + out + 1;
 
 		if (d->encode[c])
 		{
-			*n = d->encode[c];
+			d->buf[out + 1] = d->encode[c];
 			// Escape char
 			d->buf[out] = d->escape;
 			out += 2;
