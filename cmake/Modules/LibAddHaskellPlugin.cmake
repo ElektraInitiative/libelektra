@@ -162,10 +162,14 @@ macro (prepare_and_compile_haskell_plugin target PLUGIN_NAME PLUGIN_NAME_CAPITAL
 	set (GHC_PRIM_PATH "${GHC_LIB_DIR}/${GHC_PRIM_NAME}")
 	find_library (GHC_PRIM_LIB "HS${GHC_PRIM_NAME}${GHC_DYNAMIC_SUFFIX}" PATHS ${GHC_PRIM_PATH})
 
+	set (PLUGIN_HASKELL_NAME "${CMAKE_CURRENT_BINARY_DIR}/libHS${target}${GHC_DYNAMIC_SUFFIX}${GHC_DYNAMIC_ENDING}")
+	set (GHC_LIBS ${GHC_RTS_LIB} ${GHC_BASE_LIB} ${GHC_GMP_LIB} gmp ${GHC_PRIM_LIB} ${PLUGIN_HASKELL_NAME})
+
 	# GHC's structure differs between OSX and Linux
 	# On OSX we need to link iconv and Cffi additionally
 	if (APPLE)
 		find_library (GHC_FFI_LIB Cffi PATHS "${GHC_LIB_DIR}/rts")
+		set (GHC_LIBS ${GHC_LIBS} ${GHC_FFI_LIB} iconv)
 	endif (APPLE)
 
 	set (HASKELL_RPATH
@@ -176,27 +180,20 @@ macro (prepare_and_compile_haskell_plugin target PLUGIN_NAME PLUGIN_NAME_CAPITAL
 	     "${CMAKE_INSTALL_RPATH}"
 	     "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/elektra/haskell")
 
-	set (PLUGIN_HASKELL_NAME "${CMAKE_CURRENT_BINARY_DIR}/libHS${target}${GHC_DYNAMIC_SUFFIX}${GHC_DYNAMIC_ENDING}")
 	if (GHC_RTS_LIB)
 		if (GHC_BASE_LIB)
 			if (GHC_GMP_LIB)
 				if (GHC_PRIM_LIB)
-					if (GHC_FFI_LIB)
+					if (GHC_FFI_LIB OR NOT APPLE)
 						compile_haskell_plugin (${target}
 									${PLUGIN_HASKELL_NAME}
-									${GHC_RTS_LIB}
-									${GHC_BASE_LIB}
-									${GHC_GMP_LIB}
-									${GHC_PRIM_LIB}
-									GHC_FFI_LIB
-									${GHC_FFI_LIB}
 									SANDBOX_ADD_SOURCES
 									${ARG_SANDBOX_ADD_SOURCES}
 									ADDITIONAL_SOURCES
 									${ARG_ADDITIONAL_SOURCES})
-					else (GHC_FFI_LIB)
+					else (GHC_FFI_LIB OR NOT APPLE)
 						remove_plugin (${target} "GHC_FFI_LIB not found")
-					endif (GHC_FFI_LIB)
+					endif (GHC_FFI_LIB OR NOT APPLE)
 				else (GHC_PRIM_LIB)
 					remove_plugin (${target} "GHC_PRIM_LIB not found")
 				endif (GHC_PRIM_LIB)
@@ -211,13 +208,8 @@ macro (prepare_and_compile_haskell_plugin target PLUGIN_NAME PLUGIN_NAME_CAPITAL
 	endif (GHC_RTS_LIB)
 endmacro (prepare_and_compile_haskell_plugin)
 
-macro (compile_haskell_plugin target PLUGIN_HASKELL_NAME GHC_RTS_LIB GHC_BASE_LIB GHC_GMP_LIB GHC_PRIM_LIB)
-	cmake_parse_arguments (ARG "GHC_FFI_LIB" "" "SANDBOX_ADD_SOURCES ADDITIONAL_SOURCES" ${ARGN})
-
-	set (GHC_LIBS ${GHC_RTS_LIB} ${GHC_BASE_LIB} ${GHC_GMP_LIB} gmp ${GHC_PRIM_LIB} ${PLUGIN_HASKELL_NAME})
-	if (APPLE)
-		set (GHC_LIBS ${GHC_LIBS} ${GHC_FFI_LIB} iconv)
-	endif (APPLE)
+macro (compile_haskell_plugin target PLUGIN_HASKELL_NAME)
+	cmake_parse_arguments (ARG "" "" "SANDBOX_ADD_SOURCES ADDITIONAL_SOURCES" ${ARGN})
 
 	# configure include paths
 	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/${target}.cabal.in" "${CMAKE_CURRENT_BINARY_DIR}/${target}.cabal" @ONLY)
