@@ -87,6 +87,12 @@ endfunction (check_binding_included)
 #    add_binding ("anynameyouwant")
 # ~~~
 function (add_binding BINDING_NAME)
+	cmake_parse_arguments (ARG
+			       "ONLY_SHARED" # optional keywords
+			       "" # one value keywords
+			       "" # multi value keywords
+			       ${ARGN})
+
 	if (ADDED_BINDINGS)
 		set (TMP "${ADDED_BINDINGS};${BINDING_NAME}")
 		list (SORT TMP)
@@ -96,7 +102,11 @@ function (add_binding BINDING_NAME)
 		set (ADDED_BINDINGS "${BINDING_NAME}" CACHE STRING "${ADDED_BINDINGS_DOC}" FORCE)
 	endif ()
 
-	message (STATUS "Include Binding ${BINDING_NAME}")
+	set (STATUS_MESSAGE "Include Binding ${BINDING_NAME}")
+	if (ARG_ONLY_SHARED)
+		set (STATUS_MESSAGE "${STATUS_MESSAGE} for shared builds")
+	endif (ARG_ONLY_SHARED)
+	message (STATUS "${STATUS_MESSAGE}")
 endfunction (add_binding)
 
 # ~~~

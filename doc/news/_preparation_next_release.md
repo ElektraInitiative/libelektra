@@ -109,6 +109,9 @@ Thanks to Armin Wurzinger.
   are loaded by applications.
   The new option can be used for logging application behavior when using
   [notifications](https://www.libelektra.org/tutorials/notifications). *(Thomas Wahringer)*
+- An issue when building Haskell plugins with a cached sandbox is fixed in case 
+  a Haskell library bundled with elektra gets changed. *(Armin Wurzinger)*
+- <<TODO>>
 
 ## Bindings
 
@@ -172,6 +175,12 @@ Thanks to Armin Wurzinger.
   this has to be done beforehand like it is the case with all other dependencies. The main
   reason is that the build servers shouldn't compile the dependencies over and over again,
   only if something changes. See the [readme](https://www.libelektra.org/bindings/haskell). *(Armin Wurzinger)*
+- Plugins can be specified to be only built for `BUILD_SHARED` builds, but to be excluded 
+  from any `BUILD_FULL` or `BUILD_STATIC` builds using the new optional argument `ONLY_SHARED`
+  for our cmake macro `add_plugin`. This way `BUILD_SHARED` can be combined with the other 
+  options without excluding such plugins. The cmake messages about plugin inclusion have 
+  been updated to indicate this behavior. This behavior has been applied for the Haskell 
+  plugins- and bindings as they currently don't support full or static builds. *(Armin Wurzinger)*
 - We now import the current version of [Google Test][] as external project at configuration time using
    [DownloadProject](https://github.com/Crascit/DownloadProject). If you want to use a local installation of
    [Google Test][] instead, please set the value of `GTEST_ROOT` to the path of you local copy of the
@@ -181,6 +190,9 @@ Thanks to Armin Wurzinger.
 - We disabled the test `testlib_notification` on ASAN enabled builds, since Clang reports that the test leaks memory. *(René Schwaiger)*
 - Disable Markdown Shell Recorder test `validation.md` for ASAN builds.
   It leaks memory and thus fails the test during spec mount. *(Lukas Winkler)*
+- Haskell plugins and bindings are now correctly excluded when using BUILD_FULL or BUILD_STATIC
+  as this is currently unsupported. Another issue when building Haskell plugins with a cached sandbox
+  is fixed as well. *(Armin Wurzinger)*
 
 [Google Test]: https://github.com/google/googletest
 
@@ -206,7 +218,7 @@ Thanks to Armin Wurzinger.
 - Docker artifacts are now cleaned up in our daily build job. *(Lukas Winkler)*
 - `clang` tests have been ported to the new build system *(Lukas Winkler et al)*
 - `icheck` build server job has been ported to our new build system. *(Lukas Winkler)*
-- Port `elektra-gcc-configure-debian-optimizations` to new build system.
+- Port `elektra-gcc-configure-debian-optimizations` to new build system. *(Lukas Winkler)*
 - Port `elektra-gcc-configure-mingw-w64` to new build system. *(Lukas Winkler)*
 - Port `debian-multiconfig-gcc-stable` to new build system. *(Lukas Winkler)*
 - Port `elektra-ini-mergerequests` to new build system. *(Lukas Winkler)*
@@ -220,6 +232,7 @@ Thanks to Armin Wurzinger.
   - builds all (applicable) bindings by default again, and
   - checks the formatting of CMake code via [`cmake-format`][]
   . *(René Schwaiger)*
+- Some cache issues on the Travis build job for cached haskell sandboxes have been resolved. *(Armin Wurzinger)*
 
 ## Compatibility
 
