@@ -269,7 +269,7 @@ Thanks to Michael Zronek and Vanessa Kos.
 - We disabled the test `testlib_notification` on ASAN enabled builds, since Clang reports that the test leaks memory. *(René Schwaiger)*
 - Disable Markdown Shell Recorder test `validation.md` for ASAN builds.
   It leaks memory and thus fails the test during spec mount. *(Lukas Winkler)*
-- Haskell plugins and bindings are now correctly excluded when using BUILD_FULL or BUILD_STATIC
+- Haskell plugins and bindings are now correctly excluded when using `BUILD_FULL` or `BUILD_STATIC`
   as this is currently unsupported. Another issue when building Haskell plugins with a cached sandbox
   is fixed as well. *(Armin Wurzinger)*
 - Fix compilation with `BUILD_TESTING=OFF` when `spec` or `list` plugins are not selected.
