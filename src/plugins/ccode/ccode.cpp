@@ -219,6 +219,33 @@ size_t encode (char const * const value, size_t const size, CCodeData * mapping)
 }
 
 /**
+ * @brief This function replaces escaped characters in a key name with unescaped characters.
+ *
+ * @pre The variable `mapping->buffer` needs to be as large as the size of the name of `key`.
+ *
+ * @param key This `Key` stores a name possibly containing escaped special characters.
+ * @param mapping This variable stores the buffer and the character mapping this function uses to decode the name of `key`.
+ *
+ * @return A copy of `key` containing an unescaped version of the name of `key`
+ */
+CppKey decodeName (CppKey const & key, CCodeData * const mapping)
+{
+	CppKey unescaped{ key.dup () };
+	unescaped.setName (key.getNamespace ());
+	auto keyIterator = key.begin ();
+
+	while (++keyIterator != key.end ())
+	{
+		string part = *keyIterator;
+		size_t length = decode (part.c_str (), part.length () + 1, mapping);
+		string decoded = string (reinterpret_cast<char *> (mapping->buffer), length);
+		unescaped.addBaseName (decoded);
+	}
+	ELEKTRA_LOG_DEBUG ("Decoded name of “%s” is “%s”", key.getName ().c_str (), unescaped.getName ().c_str ());
+	return unescaped;
+}
+
+/**
  * @brief This function replaces unescaped characters in a key name with escaped characters.
  *
  * @pre The variable `mapping->buffer` needs to be twice as large as the size of the name of `key`.
@@ -348,20 +375,25 @@ int elektraCcodeGet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 	CCodeData * const mapping = retrieveMapping (handle);
 
-	Key * key;
-	ksRewind (returned);
-	while ((key = ksNext (returned)) != 0)
+	CppKeySet keys{ returned };
+	CppKeySet unescaped{};
+	for (auto key : keys)
 	{
-		size_t const size = keyGetValueSize (key);
+		size_t const size = max (key.getBinarySize (), key.getNameSize ());
 		if (size > mapping->bufferSize)
 		{
 			mapping->bufferSize = size;
 			mapping->buffer = new unsigned char[mapping->bufferSize];
 		}
 
-		decodeKey (key, mapping);
+		CppKey decoded = decodeName (key, mapping);
+		decodeKey (*decoded, mapping);
+		unescaped.append (decoded);
 	}
 
+	keys.release ();
+	ksCopy (returned, unescaped.getKeySet ());
+	ksDel (unescaped.release ());
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
