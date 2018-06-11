@@ -260,7 +260,6 @@ compiled against an older 0.8 version of Elektra will continue to work
 
 - <<TODO>>
 - <<TODO>>
-<<<<<<< HEAD
 - <<TODO>>
 
 ## Website
