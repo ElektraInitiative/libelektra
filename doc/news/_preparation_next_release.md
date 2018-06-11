@@ -170,6 +170,19 @@ Thanks to Michael Zronek and Vanessa Kos.
   like for other plugins
 - The KeySet has a new flag `KS_FLAG_REBUILD_OPMPHM`, this flag will be used by the hybrid search
   that combines binary search and [OPMPHM](https://master.libelektra.org/doc/dev/data-structures.md#order-preserving-minimal-perfect-hash-map-aka-opmphm) *(Kurt Micheli)*
+- We updated the `infos/status` clause of the following plugins:
+
+  - [`boolean`](http://libelektra.org/plugins/boolean),
+  - [`constants`](http://libelektra.org/plugins/constants),
+  - [`csvstorage`](http://libelektra.org/plugins/csvstorage),
+  - [`hexnumber`](http://libelektra.org/plugins/hexnumber),
+  - [`internalnotification`](http://libelektra.org/plugins/internalnotification),
+  - [`ruby`](http://libelektra.org/plugins/ruby),
+  - [`simpleini`](http://libelektra.org/plugins/simpleini),
+  - [`uname`](http://libelektra.org/plugins/uname), and
+  - [`xerces`](http://libelektra.org/plugins/xerces)
+
+  . *(René Schwaiger)*
 
 ## Bindings
 
