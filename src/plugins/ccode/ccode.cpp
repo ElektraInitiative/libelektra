@@ -9,12 +9,16 @@
 #include "ccode.hpp"
 
 
+#include <kdb.h>
 #include <kdb.hpp>
 #include <kdblogger.h>
 
 using namespace ckdb;
 using CppKey = kdb::Key;
 using CppKeySet = kdb::KeySet;
+
+using std::max;
+using std::string;
 
 namespace
 {
@@ -214,6 +218,33 @@ size_t encode (char const * const value, size_t const size, CCodeData * mapping)
 	return out + 1;
 }
 
+/**
+ * @brief This function replaces unescaped characters in a key name with escaped characters.
+ *
+ * @pre The variable `mapping->buffer` needs to be twice as large as the size of the name of `key`.
+ *
+ * @param key This `Key` stores a name possibly containing unescaped special characters.
+ * @param mapping This variable stores the buffer and the character mapping this function uses to encode the name of `key`.
+ *
+ * @return A copy of `key` containing an escaped version of the name of `key`
+ */
+CppKey encodeName (CppKey const & key, CCodeData * const mapping)
+{
+	CppKey escaped{ key.dup () };
+	escaped.setName (key.getNamespace ());
+	auto keyIterator = key.begin ();
+
+	while (++keyIterator != key.end ())
+	{
+		string part = *keyIterator;
+		size_t length = encode (part.c_str (), part.length () + 1, mapping);
+		string encoded = string (reinterpret_cast<char *> (mapping->buffer), length);
+		escaped.addBaseName (encoded);
+	}
+	ELEKTRA_LOG_DEBUG ("Encoded name of “%s” is “%s”", key.getName ().c_str (), escaped.getName ().c_str ());
+	return escaped;
+}
+
 } // end namespace
 
 extern "C" {
@@ -340,19 +371,24 @@ int elektraCcodeSet (Plugin * handle, KeySet * returned, Key * parentKey ELEKTRA
 	CCodeData * const mapping = retrieveMapping (handle);
 
 	CppKeySet keys{ returned };
+	CppKeySet escaped{};
 	for (auto key : keys)
 	{
-		size_t const size = key.getBinarySize () * 2;
+		size_t const size = max (key.getBinarySize (), key.getNameSize ()) * 2;
 		if (size > mapping->bufferSize)
 		{
 			mapping->bufferSize = size;
 			mapping->buffer = new unsigned char[mapping->bufferSize];
 		}
 
-		elektraCcodeEncode (*key, mapping);
+		CppKey encoded = encodeName (key, mapping);
+		elektraCcodeEncode (*encoded, mapping);
+		escaped.append (encoded);
 	}
 
 	keys.release ();
+	ksCopy (returned, escaped.getKeySet ());
+	ksDel (escaped.release ());
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
