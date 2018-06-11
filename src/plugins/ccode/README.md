@@ -8,6 +8,8 @@
 - infos/status = maintained unittest nodep libc configurable
 - infos/description = Decoding/Encoding engine which escapes unwanted characters.
 
+# CCode
+
 ## Introduction
 
 The `ccode` plugin replaces (escapes) any special characters with two characters:
