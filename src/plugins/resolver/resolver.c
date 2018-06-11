@@ -893,11 +893,9 @@ static void elektraModifyFileTime (resolverHandle * pk)
 /* Update timestamp of old file to provoke conflicts in
  * stalling processes that might still wait with the old
  * filedescriptor */
-static void elektraUpdateFileTime (resolverHandle * pk ELEKTRA_UNUSED,
-                                   int fd ELEKTRA_UNUSED,
-                                   Key * parentKey ELEKTRA_UNUSED)
-{
 #ifdef HAVE_FUTIMENS
+static void elektraUpdateFileTime (resolverHandle * pk, int fd, Key * parentKey)
+{
 	const struct timespec times[2] = { pk->mtime,   // atime
 					   pk->mtime }; // mtime
 
@@ -906,7 +904,9 @@ static void elektraUpdateFileTime (resolverHandle * pk ELEKTRA_UNUSED,
 		ELEKTRA_ADD_WARNINGF (99, parentKey, "Could not update time stamp of \"%s\", because %s",
 				      fd == pk->fd ? pk->filename : pk->tempfile, strerror (errno));
 	}
+}
 #elif defined(HAVE_FUTIMES)
+static void elektraUpdateFileTime (resolverHandle * pk, int fd, Key * parentKey)
 	const struct timeval times[2] = { { pk->mtime.tv_sec, pk->mtime.tv_nsec / 1000 },   // atime
 					  { pk->mtime.tv_sec, pk->mtime.tv_nsec / 1000 } }; // mtime
 
@@ -915,8 +915,8 @@ static void elektraUpdateFileTime (resolverHandle * pk ELEKTRA_UNUSED,
 		ELEKTRA_ADD_WARNINGF (99, parentKey, "Could not update time stamp of \"%s\", because %s",
 				      fd == pk->fd ? pk->filename : pk->tempfile, strerror (errno));
 	}
-#endif
 }
+#endif
 
 /**
  * @brief Now commit the temporary file to be final
