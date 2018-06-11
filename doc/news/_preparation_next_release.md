@@ -243,8 +243,6 @@ Thanks to Michael Zronek and Vanessa Kos.
 - The OPMPHM has a new test case *(Kurt Micheli)*
 - Do not execute `fcrypt` and `crypto` unit tests if the `gpg` binary is not available. *(Peter Nirschl)*
 
-## Compatibility
-
 [#1887]: https://github.com/ElektraInitiative/libelektra/issues/1887
 
 ## Build
