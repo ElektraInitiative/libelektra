@@ -243,7 +243,7 @@ macro (compile_haskell_plugin target PLUGIN_HASKELL_NAME GHC_RTS_LIB GHC_BASE_LI
 	# compile or install anything
 	execute_process (COMMAND ${CABAL_EXECUTABLE} sandbox init --sandbox "${HASKELL_SHARED_SANDBOX}" -v0
 			 WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
-	foreach (SANDBOX_ADD_SOURCE ${SANDBOX_ADD_SOURCES})
+	foreach (SANDBOX_ADD_SOURCE ${ARG_SANDBOX_ADD_SOURCES})
 
 		# our custom libs are all to be processed by cmake before we can add them, so enforce that,
 		# the build is more stable this way
