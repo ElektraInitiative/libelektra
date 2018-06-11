@@ -116,6 +116,11 @@ Thanks to Michael Zronek and Vanessa Kos.
 
 - The `fstab` plugin now passes tests on musl builds. *(Lukas Winkler)*
 
+### Haskell
+
+- An issue when building Haskell plugins with a cached sandbox is fixed in case
+  a Haskell library bundled with elektra gets changed. *(Armin Wurzinger)*
+
 ### HexNumber
 
 - The plugin [hexnumber](https://www.libelektra.org/plugins/hexnumber) has been added. It can be used
@@ -164,8 +169,6 @@ Thanks to Michael Zronek and Vanessa Kos.
   are loaded by applications.
   The new option can be used for logging application behavior when using
   [notifications](https://www.libelektra.org/tutorials/notifications). *(Thomas Wahringer)*
-- An issue when building Haskell plugins with a cached sandbox is fixed in case
-  a Haskell library bundled with elektra gets changed. *(Armin Wurzinger)*
 - Do not exclude `simpleini` silently on non-glibc systems but output a message
   like for other plugins
 - The KeySet has a new flag `KS_FLAG_REBUILD_OPMPHM`, this flag will be used by the hybrid search
