@@ -107,6 +107,7 @@ Thanks to Michael Zronek and Vanessa Kos.
 ### CCode
 
 - We fixed various warnings in the source code reported by [OCLint](http://oclint.org). *(René Schwaiger)*
+- The plugin now also encodes and decodes key names in addition to key values. *(René Schwaiger)*
 
 ### Crypto
 
