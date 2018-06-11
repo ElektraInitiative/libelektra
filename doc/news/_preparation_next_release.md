@@ -159,7 +159,7 @@ Thanks to Michael Zronek and Vanessa Kos.
   retrieve the plugin contract. *(René Schwaiger)*
 - The plugin now uses relative key names. This update addresses issue [#51][]. *(René Schwaiger)*
 
-[51]: https://github.com/ElektraInitiative/libelektra/issues/51
+[#51]: https://github.com/ElektraInitiative/libelektra/issues/51
 
 ### Misc
 
