@@ -219,7 +219,7 @@ size_t encode (char const * const value, size_t const size, CCodeData * mapping)
 extern "C" {
 
 /**
- * @brief This function replaces escaped character in a key value with unescaped characters.
+ * @brief This function replaces escaped characters in a key value with unescaped characters.
  *
  * The function stores the unescaped result value both in `mapping->buffer` and the given key.
  *
@@ -237,7 +237,7 @@ void elektraCcodeDecode (Key * key, CCodeData * mapping)
 }
 
 /**
- * @brief This function replaces unescaped character in a key value with escaped characters.
+ * @brief This function replaces unescaped characters in a key value with escaped characters.
  *
  * The function stores the escaped result value both in `mapping->buffer` and the given key.
  *
