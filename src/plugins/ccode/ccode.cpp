@@ -136,28 +136,23 @@ void readConfig (CCodeData * const mapping, KeySet * const config, Key const * c
 	}
 }
 
-} // end namespace
-
-extern "C" {
-
 /**
- * @brief This function replaces escaped character in a key value with unescaped characters.
+ * @brief This function replaces escaped characters in a string with unescaped characters.
  *
- * The function stores the unescaped result value both in `mapping->buffer` and the given key.
+ * The function stores the unescaped result in `mapping->buffer`.
  *
- * @pre The variable `mapping->buffer` needs to be as large as the key value’s size.
+ * @pre The variable `mapping->buffer` needs to be as large as `size`.
  *
- * @param key This key holds the value this function decodes.
- * @param mapping This variable stores the buffer and the character mapping this function uses to decode the value of the given key.
+ * @param value This string stores the string this function decodes.
+ * @param size This number specifies the size of `value` including the trailing `'\0'` character.
+ * @param mapping This variable stores the buffer and the character mapping this function uses to decode `value`.
+ *
+ * @return The size of the decoded string including the trailing `'\0'` character
  */
-void elektraCcodeDecode (Key * key, CCodeData * mapping)
+size_t decode (char const * const value, size_t const size, CCodeData * mapping)
 {
-	const char * value = static_cast<const char *> (keyValue (key));
-	if (!value) return;
-
-	size_t const size = keyGetValueSize (key) - 1;
 	size_t out = 0;
-	for (size_t in = 0; in < size; ++in)
+	for (size_t in = 0; in < size - 1; ++in)
 	{
 		unsigned char character = value[in];
 
@@ -176,26 +171,24 @@ void elektraCcodeDecode (Key * key, CCodeData * mapping)
 	}
 
 	mapping->buffer[out] = 0; // null termination for keyString()
-
-	keySetRaw (key, mapping->buffer, out + 1);
+	return out + 1;
 }
 
 /**
- * @brief This function replaces unescaped character in a key value with escaped characters.
+ * @brief This function replaces unescaped characters in a string with escaped characters.
  *
- * The function stores the escaped result value both in `mapping->buffer` and the given key.
+ * The function stores the escaped result value in `mapping->buffer`.
  *
- * @pre The variable `mapping->buffer` needs to be twice as large as the key value’s size.
+ * @pre The variable `mapping->buffer` needs to be twice as large as size.
  *
- * @param key This key stores the value this function escapes.
- * @param mapping This variable stores the buffer and the character mapping this function uses to encode the value of the given key.
+ * @param value This variable stores the string this function escapes.
+ * @param size This number specifies the size of `value` including the trailing `'\0'` character.
+ * @param mapping This variable stores the buffer and the character mapping this function uses to encode `value`.
+ *
+ * @return The size of the encoded string including the trailing `'\0'` character
  */
-void elektraCcodeEncode (Key * key, CCodeData * mapping)
+size_t encode (char const * const value, size_t const size, CCodeData * mapping)
 {
-	const char * value = static_cast<const char *> (keyValue (key));
-	if (!value) return;
-
-	size_t const size = keyGetValueSize (key);
 	size_t out = 0;
 	for (size_t in = 0; in < size - 1; ++in)
 	{
@@ -218,8 +211,47 @@ void elektraCcodeEncode (Key * key, CCodeData * mapping)
 	}
 
 	mapping->buffer[out] = 0; // null termination for keyString()
+	return out + 1;
+}
 
-	keySetRaw (key, mapping->buffer, out + 1);
+} // end namespace
+
+extern "C" {
+
+/**
+ * @brief This function replaces escaped character in a key value with unescaped characters.
+ *
+ * The function stores the unescaped result value both in `mapping->buffer` and the given key.
+ *
+ * @pre The variable `mapping->buffer` needs to be as large as the key value’s size.
+ *
+ * @param key This key holds the value this function decodes.
+ * @param mapping This variable stores the buffer and the character mapping this function uses to decode the value of the given key.
+ */
+void elektraCcodeDecode (Key * key, CCodeData * mapping)
+{
+	const char * value = static_cast<const char *> (keyValue (key));
+	if (!value) return;
+
+	keySetRaw (key, mapping->buffer, decode (value, keyGetValueSize (key), mapping));
+}
+
+/**
+ * @brief This function replaces unescaped character in a key value with escaped characters.
+ *
+ * The function stores the escaped result value both in `mapping->buffer` and the given key.
+ *
+ * @pre The variable `mapping->buffer` needs to be twice as large as the key value’s size.
+ *
+ * @param key This key stores the value this function escapes.
+ * @param mapping This variable stores the buffer and the character mapping this function uses to encode the value of the given key.
+ */
+void elektraCcodeEncode (Key * key, CCodeData * mapping)
+{
+	const char * value = static_cast<const char *> (keyValue (key));
+	if (!value) return;
+
+	keySetRaw (key, mapping->buffer, encode (value, keyGetValueSize (key), mapping));
 }
 
 // ====================
