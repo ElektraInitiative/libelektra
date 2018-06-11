@@ -44,7 +44,7 @@ void test_encode (void)
 	unsigned char buffer[1000];
 	mapping->buffer = buffer;
 	Key * test = keyNew ("user/test", KEY_VALUE, decoded_string, KEY_END);
-	elektraCcodeEncode (test, mapping);
+	encodeKey (test, mapping);
 	succeed_if (memcmp (keyValue (test), encoded_string, sizeof (encoded_string) - 1) == 0, "string not correctly encoded");
 
 	elektraFree (mapping);
@@ -60,7 +60,7 @@ void test_decode (void)
 	unsigned char buffer[1000];
 	mapping->buffer = buffer;
 	Key * test = keyNew ("user/test", KEY_SIZE, sizeof (encoded_string) - 1, KEY_VALUE, encoded_string, KEY_END);
-	elektraCcodeDecode (test, mapping);
+	decodeKey (test, mapping);
 	succeed_if (memcmp (keyValue (test), decoded_string, sizeof (decoded_string) - 1) == 0, "string not correctly encoded");
 
 	elektraFree (mapping);
@@ -80,9 +80,9 @@ void check_reversibility (const char * msg)
 	Key * decode = keyNew ("user/test", KEY_VALUE, msg, KEY_END);
 
 	Key * encode = keyDup (decode);
-	elektraCcodeEncode (encode, mapping);
+	encodeKey (encode, mapping);
 
-	elektraCcodeDecode (encode, mapping);
+	decodeKey (encode, mapping);
 	compare_key (encode, decode); //! OCLint (Constant conditional operator)
 
 	elektraFree (mapping);
@@ -118,7 +118,7 @@ void test_decodeescape (void)
 	unsigned char buffer[1000];
 	mapping->buffer = buffer;
 	Key * test = keyNew ("user/test", KEY_SIZE, 2, KEY_VALUE, "\\\\", KEY_END);
-	elektraCcodeDecode (test, mapping);
+	decodeKey (test, mapping);
 	succeed_if (memcmp (keyValue (test), "\\", 2) == 0, "string not correctly encoded");
 
 	elektraFree (mapping);

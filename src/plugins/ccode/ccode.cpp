@@ -259,7 +259,7 @@ extern "C" {
  * @param key This key holds the value this function decodes.
  * @param mapping This variable stores the buffer and the character mapping this function uses to decode the value of the given key.
  */
-void elektraCcodeDecode (Key * key, CCodeData * mapping)
+void decodeKey (Key * key, CCodeData * mapping)
 {
 	const char * value = static_cast<const char *> (keyValue (key));
 	if (!value) return;
@@ -277,7 +277,7 @@ void elektraCcodeDecode (Key * key, CCodeData * mapping)
  * @param key This key stores the value this function escapes.
  * @param mapping This variable stores the buffer and the character mapping this function uses to encode the value of the given key.
  */
-void elektraCcodeEncode (Key * key, CCodeData * mapping)
+void encodeKey (Key * key, CCodeData * mapping)
 {
 	const char * value = static_cast<const char *> (keyValue (key));
 	if (!value) return;
@@ -359,7 +359,7 @@ int elektraCcodeGet (Plugin * handle, KeySet * returned, Key * parentKey)
 			mapping->buffer = new unsigned char[mapping->bufferSize];
 		}
 
-		elektraCcodeDecode (key, mapping);
+		decodeKey (key, mapping);
 	}
 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
@@ -382,7 +382,7 @@ int elektraCcodeSet (Plugin * handle, KeySet * returned, Key * parentKey ELEKTRA
 		}
 
 		CppKey encoded = encodeName (key, mapping);
-		elektraCcodeEncode (*encoded, mapping);
+		encodeKey (*encoded, mapping);
 		escaped.append (encoded);
 	}
 

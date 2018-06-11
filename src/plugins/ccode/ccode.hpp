@@ -29,8 +29,8 @@ typedef struct
 
 ssize_t keySetRaw (Key * key, const void * newBinary, size_t dataSize);
 
-void elektraCcodeEncode (Key * cur, CCodeData * h);
-void elektraCcodeDecode (Key * cur, CCodeData * h);
+void encodeKey (Key * cur, CCodeData * h);
+void decodeKey (Key * cur, CCodeData * h);
 
 int elektraCcodeOpen (Plugin * handle, Key * k);
 int elektraCcodeClose (Plugin * handle, Key * k);
