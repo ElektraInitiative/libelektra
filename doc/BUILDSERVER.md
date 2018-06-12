@@ -167,7 +167,7 @@ If you feel like your inquiry does not warrent a issue on its own, please use
 [our buildserver issue](https://issues.libelektra.org/160).
 
 ## Jenkins
-This section describes how to replicate the current jenkins configuration.
+This section describes how to replicate the current Jenkins configuration.
 
 ### Jenkins libelektra configuration
 The `libelektra` build job is a multibranch pipeline job.
