@@ -91,6 +91,7 @@ kdb ls /tests/examples/kdb-ls/ -v
 #> user/tests/examples/kdb-ls/tost
 #> user/tests/examples/kdb-ls/tost/level
 
+kdb rm -r /tests/examples
 kdb umount /tests/examples
 ```
 
