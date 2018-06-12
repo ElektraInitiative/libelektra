@@ -41,7 +41,7 @@ This command will list the name of all keys below a given path.
 
 # We use `dump` as storage format here, since storage plugins such as INI
 # automatically add keys between levels (e.g. `/tests/examples/kdb-ls/test/foo`).
-kdb mount ls.ecf /tests/examples dump
+sudo kdb mount ls.ecf /tests/examples dump
 
 # Create the keys we use for the examples
 kdb set /tests/examples/kdb-ls/test val1
@@ -92,7 +92,7 @@ kdb ls /tests/examples/kdb-ls/ -v
 #> user/tests/examples/kdb-ls/tost/level
 
 kdb rm -r /tests/examples
-kdb umount /tests/examples
+sudo kdb umount /tests/examples
 ```
 
 ## SEE ALSO
