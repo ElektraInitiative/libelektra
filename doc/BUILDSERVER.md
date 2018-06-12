@@ -173,13 +173,12 @@ This section describes how to replicate the current Jenkins configuration.
 The `libelektra` build job is a multibranch pipeline job.
 It is easiest to add via the BlueOcean interface.
 
-The newly added job can afterwards configured.
-All options have a helptext next to them explaining what the settings do.
-
 Most of the default settings should be ok, however some settings need to be
-verified or added:
+verified or added to build Elektra correctly:
 * In Branch Sources under Behaviours `Filter by name` should be
     added to exclude the `debian` branch from being build.
+    The reason for this is that the `debian` branch is not providing a
+    Jenkinsfile.
 * `Advanced clone behaviours` should be added and the path to the git mirror
     needs to be specified: `/home/jenkins/git_mirrors/libelektra`.
     This reference repository is created and maintained by our
