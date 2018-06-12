@@ -232,7 +232,7 @@ Thanks to Michael Zronek and Vanessa Kos.
 
 ## Tests
 
-- We added new [Markdown Shell Recorder](https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper) tests for the
+- We added new [Markdown Shell Recorder][] tests for the
   - [`ccode`](https://www.libelektra.org/plugins/ccode),
   - [`file`](https://www.libelektra.org/plugins/file),
   - [`iconv`](https://www.libelektra.org/plugins/iconv),
@@ -252,6 +252,7 @@ Thanks to Michael Zronek and Vanessa Kos.
   at the end of the test. *(René Schwaiger)*
 - The [Shell Recorder](https://master.libelektra.org/tests/shell/shell_recorder) now properly unmounts any additional mountpoints created
     during a test. *(René Schwaiger)*
+- We removed the broken auto unmounting feature from the [Markdown Shell Recorder][]. *(René Schwaiger)*
 - Plugins added with the flag `SHARED_ONLY` no longer get tested in the script `check_kdb_internal_check.sh` if executed with kdb-full or kdb-static. *(Armin Wurzinger)*
 - Add `compare_regex_to_line_files` which allows to compare a file made of
     regex patterns to be compared with a text file line by line.
@@ -260,6 +261,7 @@ Thanks to Michael Zronek and Vanessa Kos.
 - Do not execute `fcrypt` and `crypto` unit tests if the `gpg` binary is not available. *(Peter Nirschl)*
 
 [#1887]: https://github.com/ElektraInitiative/libelektra/issues/1887
+[Markdown Shell Recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
 
 ## Build
 

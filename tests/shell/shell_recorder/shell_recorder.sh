@@ -308,26 +308,6 @@ MOUNTPOINTS_BACKUP=$("$KDB" mount)
 
 run_script
 
-MOUNTPOINTS=$("$KDB" mount)
-if [ "$MOUNTPOINTS_BACKUP" != "$MOUNTPOINT" ];
-then
-	IFS=$(printf '\n')
-	MOUNTPOINTS_BACKUP_FILE=$(mktempfile_elektra)
-	printf '%s' "$MOUNTPOINTS_BACKUP" > "$MOUNTPOINTS_BACKUP_FILE"
-	MOUNTPOINTS_FILE=$(mktempfile_elektra)
-	printf '%s' "$MOUNTPOINTS" > "$MOUNTPOINTS_FILE"
-
-	TOUMOUNT=$(diff "$MOUNTPOINTS_BACKUP_FILE" "$MOUNTPOINTS_FILE" | grep -Eo '^>.*')
-	for line in $TOUMOUNT;
-	do
-		mp=$(printf '%s' "$line" | sed -n 's/.*with name \(.*\)/\1/p')
-		"$KDB" umount "$mp"
-	done
-
-	rm "$MOUNTPOINTS_BACKUP_FILE" "$MOUNTPOINTS_FILE"
-	IFS=$(printf '\t\n ')
-fi
-
 "$KDB" rm -r "$MountpointRoot" 2>/dev/null
 "$KDB" import "$MountpointRoot" dump 2>/dev/null < "$TMPFILE"
 
