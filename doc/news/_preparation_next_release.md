@@ -228,7 +228,8 @@ Thanks to Michael Zronek and Vanessa Kos.
 - We added documentation for our build system in
     [BUILDSERVER.md](https://master.libelektra.org/doc/BUILDSERVER.md).
     *(Lukas Winkler)*
-- The documentation for `kdb` and `kdb set` now mention the `--` option to stop option processing. This is useful for setting negative values among other things. *(Klemens Böswirth)*
+- The documentation for `kdb` and `kdb set` now mentions the `--` argument that stops processing of command line switches. This is useful
+  for setting negative values among other things. *(Klemens Böswirth)*
 
 ## Tests
 
