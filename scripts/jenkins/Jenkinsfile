@@ -567,7 +567,7 @@ def buildFormatChecks() {
 tail -n +3 '../tests/shell/check_formatting.sh' > './check_formatting.sh'
 chmod +x ./check_formatting.sh"""
                 }
-                sh "tmp/check_formatting.sh"
+                sh "${tmpDir}/check_formatting.sh"
                 dir(tmpDir) {
                     deleteDir()
                 }
