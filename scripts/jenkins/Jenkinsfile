@@ -706,7 +706,7 @@ def buildAndTest(testName, image, extraCmakeFlags = [:],
                             if(testAll) {
                                 ctest()
                             }
-                            if(testMem) {
+                            if(testMem && !testNokdb) {
                                 cmemcheck()
                             }
                             if(testNokdb) {
