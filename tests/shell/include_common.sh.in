@@ -51,6 +51,7 @@ else
 	USER_FOLDER=@KDB_DB_HOME@/$USER/@KDB_DB_USER@
 fi
 PLUGINS=`echo "@ADDED_PLUGINS@" | tr ';' ' '`
+ADDED_PLUGINS_WITHOUT_ONLY_SHARED=`echo "@ADDED_PLUGINS_WITHOUT_ONLY_SHARED@" | tr ';' ' '`
 PLUGINS_NEWLINES=`echo "@ADDED_PLUGINS@" | tr ';' '\n'`
 
 DATE=`date "+%b %d %H:%M"`
