@@ -14,7 +14,7 @@ if (CMAKE_COMPILER_IS_GNUCXX AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.9)
 	message (STATUS "Excluding Markdown Shell Recorder test for `kdb find`, since GCC ${CMAKE_CXX_COMPILER_VERSION} "
 			"does not support regular expressions properly")
 else (CMAKE_COMPILER_IS_GNUCXX AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.9)
-	add_msr_test (kdb_find "${CMAKE_SOURCE_DIR}/doc/help/kdb-find.md")
+	add_msr_test (kdb_find "${CMAKE_SOURCE_DIR}/doc/help/kdb-find.md" REQUIRED_PLUGINS sync)
 endif (CMAKE_COMPILER_IS_GNUCXX AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.9)
 
 if (ENABLE_ASAN)
