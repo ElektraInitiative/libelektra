@@ -334,7 +334,7 @@ def generateFullBuildStages() {
     tasks << buildDoc()
 
     // Build Elektra with ASAN enabled
-    // Detects memory leaks
+    // Detects memory leaks via ASAN
     tasks << buildAndTestAsan(
         "debian-stable-asan",
         DOCKER_IMAGES.stretch,
@@ -342,7 +342,7 @@ def generateFullBuildStages() {
     )
 
     // Build Elektra with clang and ASAN
-    // Detects memory leaks
+    // Detects memory leaks via ASAN
     tasks << buildAndTestAsan(
         "debian-unstable-clang-asan",
         DOCKER_IMAGES.sid,
