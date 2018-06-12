@@ -162,47 +162,82 @@ def dockerInit() {
     node("master") {
         echo "Processing DOCKER_IMAGES"
         checkout scm
+
+        /* We use the sid image for testing if we are compatible with Debian
+         * unstable.
+         * Additionally we use it for tests with Clang-5.0 and for source
+         * formatting checks (as they depend on Clang-5.0).
+         */
         DOCKER_IMAGES.sid = createDockerImageDesc(
             "debian-sid", this.&idTesting,
             "./scripts/docker/debian/sid",
             "./scripts/docker/debian/sid/Dockerfile"
         )
+
+        /* Our main target for compatibility is Debian stable (currently
+         * stretch).
+         * Hence we try to build all parts of Elektra via this image.
+         * Most of the tests defined below use this image.
+         * Especially noteworthy is that this image is also used for Debian
+         * package building
+         */
         DOCKER_IMAGES.stretch = createDockerImageDesc(
             "debian-stretch", this.&idTesting,
             "./scripts/docker/debian/stretch",
             "./scripts/docker/debian/stretch/Dockerfile"
         )
+
+        /* A minimal Debian stable image used to test Elektra without any
+         * additional requirements introduced by optional plugins, bindings,
+         * ...
+         */
         DOCKER_IMAGES.stretch_minimal = createDockerImageDesc(
             "debian-stretch-minimal", this.&idTesting,
             "./scripts/docker/debian/stretch",
             "./scripts/docker/debian/stretch/Dockerfile.minimal"
         )
+
+        /* A Docker image for crossbuilding i386
+         */
         DOCKER_IMAGES.stretch_i386 = createDockerImageDesc(
             "debian-stretch-i386", this.&idTesting,
             "./scripts/docker/debian/stretch",
             "./scripts/docker/debian/stretch/Dockerfile.i386"
         )
+
+        /* Build Elektra's documentation with this image.
+         * Also contains latex for pdf creation.
+         */
         DOCKER_IMAGES.stretch_doc = createDockerImageDesc(
             "debian-stretch-doc", this.&idTesting,
             "./scripts/docker/debian/stretch",
             "./scripts/docker/debian/stretch/Dockerfile.doc"
         )
+
+        /* A Debian oldstable image used for testing backwards compatibility.
+         */
         DOCKER_IMAGES.jessie = createDockerImageDesc(
             "debian-jessie", this.&idTesting,
             "./scripts/docker/debian/jessie",
             "./scripts/docker/debian/jessie/Dockerfile"
         )
+
+        /* Ubuntu xenial image used to test compatibility with Ubuntu.
         DOCKER_IMAGES.xenial = createDockerImageDesc(
             "ubuntu-xenial", this.&idTesting,
             "./scripts/docker/ubuntu/xenial",
             "./scripts/docker/ubuntu/xenial/Dockerfile"
         )
+
+        /* Image building the libelektra.org frontend */
         DOCKER_IMAGES.homepage_frontend = createDockerImageDesc(
             "homepage-frontend", this.&idHomepage,
             ".",
             "./scripts/docker/homepage/frontend/Dockerfile",
             false
         )
+
+        /* Image building the libelektra.org backend */
         DOCKER_IMAGES.homepage_backend = createDockerImageDesc(
             "homepage-backend", this.&idHomepage,
             ".",
