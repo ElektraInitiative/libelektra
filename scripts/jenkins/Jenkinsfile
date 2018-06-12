@@ -350,7 +350,7 @@ def generateMainBuildStages() {
             CMAKE_FLAGS_BUILD_STATIC +
             CMAKE_FLAGS_COVERAGE
         ,
-        [TEST.ALL, TEST.MEM, TEST.INSTALL]
+        [TEST.ALL, TEST.MEM, TEST.NOKDB, TEST.INSTALL]
     )
 
     // Check the ABI and API compatibility of Elektra
@@ -467,22 +467,6 @@ def generateFullBuildStages() {
         [TEST.ALL, TEST.MEM]
     )
 
-    // Build Elektra but set paths to be nonwriteable
-    // Detect if tests are not flagged witn nokdbtests even though they
-    // should be.
-    tasks << buildAndTest(
-        "debian-stable-nokdb",
-        DOCKER_IMAGES.stretch,
-        // Set extra flags to make sure we are not allowed to write
-        // in system + spec + home
-        [
-            'KDB_DB_SYSTEM': '/system',
-            'KDB_DB_SPEC': '/spec',
-            'KDB_DB_HOME': '/local',
-            'KDB_DEFAULT_RESOLVER': 'resolver_fm_b_b'
-        ],
-        [TEST.NOKDB]
-    )
     /*
     tasks << buildAndTest(
         "debian-stable-full-optimizations-off",
@@ -711,6 +695,7 @@ def buildAndTest(testName, image, extraCmakeFlags = [:],
         stage(testName) {
             withDockerEnv(image, dockerOpts) {
                 try {
+                    ensureDirsExist(getElektraWritableFiles())
                     // we use a space in the directory to test if paths are
                     // properly escaped
                     dir('build directory') {
@@ -720,11 +705,17 @@ def buildAndTest(testName, image, extraCmakeFlags = [:],
                         trackCoverage(testCoverage) {
                             if(testAll) {
                                 ctest()
-                            } else if(testNokdb) {
-                                cnokdbtest()
                             }
                             if(testMem) {
-                                cmemcheck(testNokdb)
+                                cmemcheck()
+                            }
+                            if(testNokdb) {
+                                withPermissions(getElektraWriteableFiles(), "000") {
+                                    cnokdbtest()
+                                    if(testMem) {
+                                        cmemcheck(testNokdb)
+                                    }
+                                }
                             }
                         }
                         if(install) {
@@ -1017,7 +1008,9 @@ def cmemcheck(kdbtests) {
     }
 }
 
-/* Helper for ctest to run tests without tests tagged as kdbtests
+/* Helper for ctest to run tests without tests tagged as kdbtests.
+ * Also sets permissions on folders to be nonwriteable to see if any test
+ * non flagged with kdbtests tries to write to them.
  */
 def cnokdbtest() {
     ctest("Test -LE kdbtests")
@@ -1198,5 +1191,75 @@ def abortPreviousRun() {
               "Aborted by Build#${currentBuild.number}"
             )
         )
+    }
+}
+
+/* Helper that modifies file permissions before executing the passed closure.
+ * Restores the permissions after the closure has run.
+ * @param listOfFiles List representing directories and files that should be
+ *                    made unwriteable.
+ *                    Files must exist or it will fail.
+ * @param perm target permissions in a form that can be passed to chmod
+ * @param cl The closure that should be run
+ */
+def withPermissions(listOfFiles, perm, cl) {
+    echo "Entering withPermissions"
+    permissionsMap = [:]
+    listOfFiles.each {
+        if(fileExists(it)) {
+            def permOld = getPermissions(it)
+            permissionsMap[it] = permOld
+            setPermissions(it, perm)
+        } else {
+            error "File $it does not exist. Can not set permissions"
+        }
+    }
+    try {
+        cl()
+    } catch (all) {
+        // rethrow to mark as failed
+        throw all
+    } finally {
+        // always restore permissions
+        permissionsMap.each {
+            setPermissions(it.key, it.value)
+        }
+        echo "Leaving withPermissions"
+    }
+}
+
+/* Returns the permissions of a file via stat
+ * @param file The file to get the permissions for
+ */
+def getPermissions(file) {
+    return sh(returnStdout: true, script: "stat -c &a $file").trim()
+}
+
+/* Set permissions of a file
+ * @param file The file to set the permissions for
+ * @param mode permissions to set for the file
+ */
+def setPermissions(file, mode) {
+    return sh(returnStdout: true, script: "chmod $mode $file")
+}
+
+/* Helper that returns files and directories elektra tests could write to
+ */
+def getElektraWritableFiles() {
+    return [
+        CMAKE_FLAGS_BASE.get('KDB_DB_SYSTEM'),
+        CMAKE_FLAGS_BASE.get('KDB_DB_SPEC'),
+        CMAKE_FLAGS_BASE.get('KDB_DB_HOME')
+    ]
+}
+
+/* Create directoris in listOfDirs
+ * @param listOfDirs a List of directory paths to be created
+ */
+def ensureDirsExist(listOfDirs) {
+    listofDirs.each {
+        if(!fileExists(it)) {
+            sh "mkdir $it"
+        }
     }
 }
