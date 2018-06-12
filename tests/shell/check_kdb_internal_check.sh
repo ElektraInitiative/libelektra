@@ -12,7 +12,16 @@ cleanup()
 	rm -f "$FILE"
 }
 
-for PLUGIN in $PLUGINS
+
+ACTUAL_PLUGINS=$PLUGINS
+# Otherwise the test would fail as SHARED_ONLY plugins are not
+# available in full and static builds
+echo "$KDB" | grep -qE "(full|static)\$"
+if [ $? == "0" ]; then
+	ACTUAL_PLUGINS=$ADDED_PLUGINS_WITHOUT_ONLY_SHARED
+fi
+
+for PLUGIN in $ACTUAL_PLUGINS
 do
 	case "$PLUGIN" in
 	"tracer")
