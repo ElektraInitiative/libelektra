@@ -1257,7 +1257,7 @@ def getElektraWritableFiles() {
  * @param listOfDirs a List of directory paths to be created
  */
 def ensureDirsExist(listOfDirs) {
-    listofDirs.each {
+    listOfDirs.each {
         if(!fileExists(it)) {
             sh "mkdir $it"
         }
