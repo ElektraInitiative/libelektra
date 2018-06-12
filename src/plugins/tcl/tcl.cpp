@@ -42,6 +42,7 @@ int elektraTclGet (Plugin *, KeySet * returned, Key * parentKey)
 #include "readme_tcl.c"
 				     keyNew ("system/elektra/modules/tcl/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END));
 		ksDel (n);
+		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 	/* get all keys */
 

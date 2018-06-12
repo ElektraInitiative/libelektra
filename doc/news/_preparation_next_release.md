@@ -142,6 +142,11 @@ Thanks to Michael Zronek and Vanessa Kos.
   commonly used specification keywords to be used with the [typechecker](https://www.libelektra.org/plugins/typechecker). Currently the
   keywords `check/range`, `check/enum` and `check/validation` are supported. *(Armin Wurzinger)*
 
+### Tcl
+
+- The [`tcl`](http://libelektra.org/plugins/tcl) plugin does not fail anymore, if its configuration file does not exist and you try to
+  retrieve the plugin contract. *(René Schwaiger)*
+
 ### Misc
 
 - The logging plugins ["syslog"](https://www.libelektra.org/plugins/syslog),
