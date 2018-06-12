@@ -339,6 +339,8 @@ def buildImageStage(image) {
  */
 def generateMainBuildStages() {
     def tasks = [:]
+    // We want fo fail fast (i.e. abort parallel stages if one fails
+    tasks.failFast = true
 
     // Add a task that should build the whole project to catch all test errors
     // in a standard environment
