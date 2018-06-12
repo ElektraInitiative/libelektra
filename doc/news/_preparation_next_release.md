@@ -231,6 +231,8 @@ Thanks to Michael Zronek and Vanessa Kos.
   of [`kdb ls`](https://master.libelektra.org/doc/help/kdb-ls.md). *(René Schwaiger)*
 - The `add_plugin` helper now respects `ENABLE_KDB_TESTING` when adding
     Markdown Shell Recorder tests. *(Lukas Winkler)*
+- The Markdown Shell Recorder test for [`kdb find`](https://master.libelektra.org/doc/help/kdb-find.md) now removes the configuration file
+  at the end of the test. *(René Schwaiger)*
 - The documentation for `kdb` and `kdb set` now mention the `--` option to stop option processing. This is useful for setting negative values among other things. *(Klemens Böswirth)*
 - Plugins added with the flag `SHARED_ONLY` no longer get tested in the script `check_kdb_internal_check.sh` if executed with kdb-full or kdb-static. *(Armin Wurzinger)*
 - Add `compare_regex_to_line_files` which allows to compare a file made of
