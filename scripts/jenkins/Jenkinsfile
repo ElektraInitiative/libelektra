@@ -733,6 +733,7 @@ kill `pidof dbus-daemon`
 '''
                     }
                 } catch(e) {
+                    println "Caught the following exception: ${e.message}"
                     // rethrow to mark as failed
                     throw e
                 } finally {
