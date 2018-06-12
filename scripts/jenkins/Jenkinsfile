@@ -918,7 +918,7 @@ def publishCoverage() {
     def uploadDir = "coverage/${env.BRANCH_NAME}/${env.STAGE_NAME}"
 
     sh "mkdir -p ${uploadDir}"
-    sh "mv -v -T build/coverage ${uploadDir}"
+    sh "mv -v -T build/coverage ${uploadDir} || /bin/true"
 
     sshPublisher(
         publishers: [
