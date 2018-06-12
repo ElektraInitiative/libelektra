@@ -102,7 +102,7 @@ enum TEST {
 // Define DOCKER_OPTS enum which is used in withDockerEnv
 enum DOCKER_OPTS {
     MOUNT_MIRROR, PTRACE
-    public DOCKER_OPTS() {} // WORKAROUND see TEST
+    public DOCKER_OPTS()  {} // WORKAROUND see TEST
 }
 
 NOW = new Date()
