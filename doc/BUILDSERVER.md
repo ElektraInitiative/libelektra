@@ -191,7 +191,7 @@ verified or added to build Elektra correctly:
 ### Add a Jenkins node
 A node needs to have a JRE (Java Runtime Environment) installed.
 Further it should run an SSH (Secure SHell) server.
-For Docker nodes Docker has to be installed as well.
+If you want to provide environments via Docker you need to install that as well.
 
 A `jenkins` user with 47000:47000 ids should be created as this is what is
 expected in Docker images.
