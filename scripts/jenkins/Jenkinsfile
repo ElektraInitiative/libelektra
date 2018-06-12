@@ -711,7 +711,9 @@ def buildAndTest(testName, image, extraCmakeFlags = [:],
         stage(testName) {
             withDockerEnv(image, dockerOpts) {
                 try {
-                    dir('build') {
+                    // we use a space in the directory to test if paths are
+                    // properly escaped
+                    dir('build directory') {
                         deleteDir()
                         cmake(env.WORKSPACE, cmakeFlags)
                         sh "make"
