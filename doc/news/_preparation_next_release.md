@@ -203,6 +203,7 @@ Thanks to Michael Zronek and Vanessa Kos.
 ## Tests
 
 - We added new [Markdown Shell Recorder](https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper) tests for the
+  - [`ccode`](https://www.libelektra.org/plugins/ccode),
   - [`file`](https://www.libelektra.org/plugins/file),
   - [`iconv`](https://www.libelektra.org/plugins/iconv),
   - [`ni`](https://www.libelektra.org/plugins/ni), and

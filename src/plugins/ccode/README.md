@@ -16,6 +16,36 @@ The ccode plugin allows us to map any single escaped
 character to be replaced by another single character and vice versa.
 The user can configure this mapping.
 
+## Examples
+
+```sh
+# Mount `tcl` storage plugin together with the required `base64` plugin.
+# We use the `ccode` plugin to escape special characters.
+sudo kdb mount config.tcl user/tests/ccode tcl ccode base64
+
+# Add a key value containing newline characters
+kdb set user/tests/ccode/multiline "`printf 'one\ntwo\nthree'`"
+# By default the plugin uses `\n` to escape newline characters
+grep 'multiline' `kdb file user/tests/ccode/multiline` | sed 's/[[:space:]]*//'
+#> user/tests/ccode/multiline = one\ntwo\nthree
+
+# The `ccode` plugin escapes and unescapes the data. The `tcl` plugin
+# returns the unescaped values.
+kdb get user/tests/ccode/multiline
+#> one
+#> two
+#> three
+
+# Write and read a key value containing a tab character
+kdb set user/tests/ccode/tab 'Tab	Fabulous'
+kdb get user/tests/ccode/tab
+#> Tab	Fabulous
+
+# Undo modifications to database
+kdb rm -r user/tests/ccode
+sudo kdb umount user/tests/ccode
+```
+
 ## Restrictions
 
 This method of encoding characters is not as powerful as the hexcode plugin in terms of reduction.
