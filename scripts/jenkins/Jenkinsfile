@@ -96,13 +96,17 @@ CMAKE_FLAGS_BUILD_STATIC = ['BUILD_STATIC': 'ON']
 
 // Define TEST enum used in buildAndTest helper
 enum TEST {
-    MEM, NOKDB, ALL, INSTALL
+    MEM,        // Test for memoryleaks via valgrind
+    NOKDB,      // Only run tests that do not write to disk
+    ALL,        // Run all tests
+    INSTALL     // Run all tests on an installed version of Elektra
     public TEST() {}  // WORKAROUND https://issues.jenkins-ci.org/browse/JENKINS-33023
 }
 
 // Define DOCKER_OPTS enum which is used in withDockerEnv
 enum DOCKER_OPTS {
-    MOUNT_MIRROR, PTRACE
+    MOUNT_MIRROR,       // Mount the git repository mirror into the container
+    PTRACE              // Allow ptraces in the container
     public DOCKER_OPTS()  {} // WORKAROUND see TEST
 }
 
