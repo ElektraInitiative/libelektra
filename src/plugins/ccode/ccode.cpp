@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include "ccode.h"
+#include "ccode.hpp"
 
 #include "kdbconfig.h"
 
@@ -15,6 +15,11 @@
 #include <kdblogger.h>
 #include <stdlib.h>
 #include <string.h>
+
+inline constexpr unsigned char operator"" _uc (char character) noexcept
+{
+	return static_cast<unsigned char> (character);
+}
 
 /**
  * Gives the integer number 0-15 to a corresponding
@@ -29,9 +34,12 @@ static inline int elektraHexcodeConvFromHex (char c)
 	return 0; /* Unknown escape char */
 }
 
+using namespace ckdb;
+extern "C" {
+
 int elektraCcodeOpen (Plugin * handle, Key * key ELEKTRA_UNUSED)
 {
-	CCodeData * d = elektraCalloc (sizeof (CCodeData));
+	CCodeData * d = static_cast<CCodeData *> (elektraCalloc (sizeof (CCodeData)));
 
 	/* Store for later use...*/
 	elektraPluginSetData (handle, d);
@@ -56,27 +64,27 @@ int elektraCcodeOpen (Plugin * handle, Key * key ELEKTRA_UNUSED)
 	{
 		/* Some default config */
 
-		d->encode['\b'] = 'b';
-		d->encode['\t'] = 't';
-		d->encode['\n'] = 'n';
-		d->encode['\v'] = 'v';
-		d->encode['\f'] = 'f';
-		d->encode['\r'] = 'r';
-		d->encode['\\'] = '\\';
-		d->encode['\''] = '\'';
-		d->encode['\"'] = '"';
-		d->encode['\0'] = '0';
+		d->encode['\b'_uc] = 'b'_uc;
+		d->encode['\t'_uc] = 't'_uc;
+		d->encode['\n'_uc] = 'n'_uc;
+		d->encode['\v'_uc] = 'v'_uc;
+		d->encode['\f'_uc] = 'f'_uc;
+		d->encode['\r'_uc] = 'r'_uc;
+		d->encode['\\'_uc] = '\\'_uc;
+		d->encode['\''_uc] = '\''_uc;
+		d->encode['\"'_uc] = '"'_uc;
+		d->encode['\0'_uc] = '0'_uc;
 
-		d->decode['b'] = '\b';
-		d->decode['t'] = '\t';
-		d->decode['n'] = '\n';
-		d->decode['v'] = '\v';
-		d->decode['f'] = '\f';
-		d->decode['r'] = '\r';
-		d->decode['\\'] = '\\';
-		d->decode['\''] = '\'';
-		d->decode['"'] = '\"';
-		d->decode['0'] = '\0';
+		d->decode['b'_uc] = '\b'_uc;
+		d->decode['t'_uc] = '\t'_uc;
+		d->decode['n'_uc] = '\n'_uc;
+		d->decode['v'_uc] = '\v'_uc;
+		d->decode['f'_uc] = '\f'_uc;
+		d->decode['r'_uc] = '\r'_uc;
+		d->decode['\\'_uc] = '\\'_uc;
+		d->decode['\''_uc] = '\''_uc;
+		d->decode['"'_uc] = '\"'_uc;
+		d->decode['0'_uc] = '\0'_uc;
 
 		return 0;
 	}
@@ -105,7 +113,7 @@ int elektraCcodeOpen (Plugin * handle, Key * key ELEKTRA_UNUSED)
 
 int elektraCcodeClose (Plugin * handle, Key * key ELEKTRA_UNUSED)
 {
-	CCodeData * d = elektraPluginGetData (handle);
+	CCodeData * d = static_cast<CCodeData *> (elektraPluginGetData (handle));
 
 	elektraFree (d->buf);
 	elektraFree (d);
@@ -122,7 +130,7 @@ int elektraCcodeClose (Plugin * handle, Key * key ELEKTRA_UNUSED)
 void elektraCcodeDecode (Key * cur, CCodeData * d)
 {
 	size_t valsize = keyGetValueSize (cur);
-	const char * val = keyValue (cur);
+	const char * val = static_cast<const char *> (keyValue (cur));
 
 	if (!val) return;
 
@@ -172,10 +180,10 @@ int elektraCcodeGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		return 1;
 	}
 
-	CCodeData * d = elektraPluginGetData (handle);
+	CCodeData * d = static_cast<CCodeData *> (elektraPluginGetData (handle));
 	if (!d->buf)
 	{
-		d->buf = elektraMalloc (1000);
+		d->buf = static_cast<char *> (elektraMalloc (1000));
 		d->bufalloc = 1000;
 	}
 
@@ -187,7 +195,7 @@ int elektraCcodeGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		if (valsize > d->bufalloc)
 		{
 			d->bufalloc = valsize;
-			d->buf = realloc (d->buf, d->bufalloc);
+			d->buf = static_cast<char *> (realloc (d->buf, d->bufalloc));
 		}
 
 		elektraCcodeDecode (cur, d);
@@ -207,7 +215,7 @@ int elektraCcodeGet (Plugin * handle, KeySet * returned, Key * parentKey)
 void elektraCcodeEncode (Key * cur, CCodeData * d)
 {
 	size_t valsize = keyGetValueSize (cur);
-	const char * val = keyValue (cur);
+	const char * val = static_cast<const char *> (keyValue (cur));
 
 	if (!val) return;
 
@@ -243,10 +251,10 @@ void elektraCcodeEncode (Key * cur, CCodeData * d)
 int elektraCcodeSet (Plugin * handle, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
 {
 	/* set all keys */
-	CCodeData * d = elektraPluginGetData (handle);
+	CCodeData * d = static_cast<CCodeData *> (elektraPluginGetData (handle));
 	if (!d->buf)
 	{
-		d->buf = elektraMalloc (1000);
+		d->buf = static_cast<char *> (elektraMalloc (1000));
 		d->bufalloc = 1000;
 	}
 
@@ -258,7 +266,7 @@ int elektraCcodeSet (Plugin * handle, KeySet * returned, Key * parentKey ELEKTRA
 		if (valsize * 2 > d->bufalloc)
 		{
 			d->bufalloc = valsize * 2;
-			d->buf = realloc (d->buf, d->bufalloc);
+			d->buf = static_cast<char *> (realloc (d->buf, d->bufalloc));
 		}
 
 		elektraCcodeEncode (cur, d);
@@ -278,3 +286,4 @@ Plugin * ELEKTRA_PLUGIN_EXPORT (ccode)
 		ELEKTRA_PLUGIN_END);
 }
 
+} // end extern "C"

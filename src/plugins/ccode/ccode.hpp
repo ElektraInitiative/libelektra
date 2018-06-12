@@ -11,6 +11,11 @@
 
 #include <kdbplugin.h>
 
+#ifdef __cplusplus
+using namespace ckdb;
+extern "C" {
+#endif
+
 typedef struct
 {
 	unsigned char encode[256];
@@ -33,5 +38,8 @@ int elektraCcodeGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraCcodeSet (Plugin * handle, KeySet * ks, Key * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (ccode);
+#ifdef __cplusplus
+} // end extern "C"
+#endif
 
 #endif

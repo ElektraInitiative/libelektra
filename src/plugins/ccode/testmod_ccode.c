@@ -18,7 +18,7 @@
 #include <string.h>
 #endif
 
-#include "ccode.h"
+#include "ccode.hpp"
 
 #include <tests_internal.h>
 
