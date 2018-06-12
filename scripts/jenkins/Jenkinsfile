@@ -1249,7 +1249,7 @@ def withPermissions(listOfFiles, perm, cl) {
  * @param file The file to get the permissions for
  */
 def getPermissions(file) {
-    return sh(returnStdout: true, script: "stat -c &a $file").trim()
+    return sh(returnStdout: true, script: "stat -c %a $file").trim()
 }
 
 /* Set permissions of a file
