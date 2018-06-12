@@ -871,7 +871,7 @@ def archive(paths) {
         paths.each { path ->
             sh "cp -v ${path} ${dest} || true"
         }
-        archiveArtifacts artifacts: "${prefix}**", fingerprint: true
+        archiveArtifacts artifacts: "${prefix}**", fingerprint: true, allowEmptyArchive: true
     } else {
         echo "No Artifacts to archive"
     }
