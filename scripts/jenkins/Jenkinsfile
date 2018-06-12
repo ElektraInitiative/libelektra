@@ -359,6 +359,9 @@ def generateMainBuildStages() {
     // Check if release notes have been updated
     tasks << buildCheckReleaseNotes()
 
+    // Check formatting of c and CMake files
+    tasks << buildFormatChecks()
+
     return tasks
 }
 
@@ -548,6 +551,26 @@ def buildIcheck() {
             withDockerEnv(DOCKER_IMAGES.stretch, [DOCKER_OPTS.MOUNT_MIRROR]) {
                 sh "scripts/run_icheck"
                 deleteDir()
+            }
+        }
+    }]
+}
+
+def buildFormatChecks() {
+    def stageName = "formatting-check"
+    return [(stageName): {
+        stage(stageName) {
+            withDockerEnv(DOCKER_IMAGES.sid, [DOCKER_OPTS.MOUNT_MIRROR]) {
+                def tmpDir = 'build'
+                dir(tmpDir) {
+                    sh """\
+tail -n +3 '../tests/shell/check_formatting.sh' > './check_formatting.sh'
+chmod +x ./check_formatting.sh"""
+                }
+                sh "tmp/check_formatting.sh"
+                dir(tmpDir) {
+                    deleteDir()
+                }
             }
         }
     }]
