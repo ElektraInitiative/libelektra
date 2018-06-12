@@ -728,7 +728,7 @@ def buildAndTest(testName, image, extraCmakeFlags = [:],
                                 cmemcheck()
                             }
                             if(testNokdb) {
-                                withPermissions(getElektraWriteableFiles(), "000") {
+                                withPermissions(getElektraWritableFiles(), "000") {
                                     cnokdbtest()
                                     if(testMem) {
                                         cmemcheck(testNokdb)
