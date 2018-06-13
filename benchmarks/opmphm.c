@@ -1045,7 +1045,7 @@ static size_t benchmarkOPMPHMBuildTimeMeasure (KeySet * ks, size_t * repeats, si
 		repeats[repeatsI] = (end.tv_sec - start.tv_sec) * 1000000 + (end.tv_usec - start.tv_usec);
 
 		// sanity check
-		if (!ks->opmphm || !opmphmIsBuild (ks->opmphm))
+		if (!opmphmIsBuild (ks->opmphm))
 		{
 			printExit ("Sanity Check Failed: OPMPHM not used");
 		}
@@ -1243,12 +1243,12 @@ static size_t benchmarkSearchTimeMeasure (KeySet * ks, size_t searches, int32_t 
 	if (option & KDB_O_OPMPHM)
 	{
 		// trigger OPMPHM build if not build
-		if (!ks->opmphm || !opmphmIsBuild (ks->opmphm))
+		if (!opmphmIsBuild (ks->opmphm))
 		{
 			// set seed to return by elektraRandGetInitSeed () in the lookup
 			elektraRandBenchmarkInitSeed = searchSeed;
 			(void) ksLookup (ks, ks->array[0], KDB_O_OPMPHM | KDB_O_NOCASCADING);
-			if (!ks->opmphm || !opmphmIsBuild (ks->opmphm))
+			if (!opmphmIsBuild (ks->opmphm))
 			{
 				printExit ("trigger OPMPHM build");
 			}
@@ -1259,7 +1259,7 @@ static size_t benchmarkSearchTimeMeasure (KeySet * ks, size_t searches, int32_t 
 		// sanity checks
 		if (option & KDB_O_OPMPHM)
 		{
-			if (!ks->opmphm || !opmphmIsBuild (ks->opmphm))
+			if (!opmphmIsBuild (ks->opmphm))
 			{
 				printExit ("Sanity Check Failed: OPMPHM not here");
 			}
@@ -1301,7 +1301,7 @@ static size_t benchmarkSearchTimeMeasure (KeySet * ks, size_t searches, int32_t 
 		// sanity checks
 		if (option & KDB_O_OPMPHM)
 		{
-			if (!ks->opmphm || !opmphmIsBuild (ks->opmphm))
+			if (!opmphmIsBuild (ks->opmphm))
 			{
 				printExit ("Sanity Check Failed: OPMPHM not here");
 			}
