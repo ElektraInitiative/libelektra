@@ -937,7 +937,7 @@ def publishCoverage(source = 'build/coverage') {
                 transfers: [
                     sshTransfer(
                         sourceFiles: archiveName,
-                        execCommand: "tar -zxvf ${archiveName} && rm ${archiveName}"
+                        execCommand: "cd /srv/libelektra && tar -zxvf ${archiveName} && rm ${archiveName}"
                     )
                 ]
             )
