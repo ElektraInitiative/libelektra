@@ -482,7 +482,7 @@ def generateFullBuildStages() {
         [TEST.ALL, TEST.MEM]
     )
 
-    /*
+    // Build Elektra without optimizations
     tasks << buildAndTest(
         "debian-stable-full-optimizations-off",
         DOCKER_IMAGES.stretch,
@@ -493,7 +493,6 @@ def generateFullBuildStages() {
         ,
         [TEST.ALL, TEST.MEM]
     )
-    */
 
     // Generate tests for different release types
     // Detects problems with debug modules enabled or disabled
