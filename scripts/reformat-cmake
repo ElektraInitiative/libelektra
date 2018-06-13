@@ -32,15 +32,15 @@ fi
 
 for file in $(find . \( -name 'CMakeLists.txt' -or -name '*.cmake' \) -and \
 			\(                                                 \
-			-regex '.*benchmarks/.*'                           \
-			-or -regex '.*cmake/.*'                            \
-			-or -regex '.*doc/.*'                              \
-			-or -regex '.*examples/.*'                         \
-			-or -regex '.*scripts/.*'                          \
-			-or -regex '.*src/.*'                              \
-			-or -regex '.*tests/.*'                            \
-			\) -and \(                                         \
-			-not -regex '.*cmake/Modules/FindHaskell.cmake$'   \
+			-path './benchmarks/*'                             \
+			-or -path './cmake/*'                              \
+			-or -path './doc/*'                                \
+			-or -path './examples/*'                           \
+			-or -path './scripts/*'                            \
+			-or -path './src/*'                                \
+			-or -path './tests/*'                              \
+			\) -and -not \(                                    \
+			-regex '.*cmake/Modules/FindHaskell.cmake$'        \
 			\)                                                 \
 );
 do
