@@ -714,12 +714,12 @@ def buildAndTest(testName, image, extraCmakeFlags = [:],
     return [(testName): {
         stage(testName) {
             withDockerEnv(image, dockerOpts) {
+                // we use a space in the directory to test if paths are
+                // properly escaped
+                def buildDir='build directory'
+
                 try {
                     ensureDirsExist(getElektraWritableFiles())
-
-                    // we use a space in the directory to test if paths are
-                    // properly escaped
-                    def buildDir='build directory'
 
                     dir(buildDir) {
                         deleteDir()
