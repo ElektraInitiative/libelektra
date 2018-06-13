@@ -1021,7 +1021,7 @@ def ctest(target = "Test") {
 /* Helper for ctest to run MemCheck without memleak tagged tests
  * @param kdbtests If true run tests tagged as kdbtests
  */
-def cmemcheck(kdbtests) {
+def cmemcheck(kdbtests=true) {
     if(kdbtests) {
         ctest("MemCheck -LE memleak")
     } else {
