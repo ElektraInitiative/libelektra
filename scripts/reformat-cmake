@@ -31,10 +31,18 @@ fi
 
 
 for file in $(find . \( -name 'CMakeLists.txt' -or -name '*.cmake' \) -and \
-		     \(                                                    \
-			-not -regex '.*build/.*'                           \
+			\(                                                 \
+			-regex '.*benchmarks/.*'                           \
+			-or -regex '.*cmake/.*'                            \
+			-or -regex '.*doc/.*'                              \
+			-or -regex '.*examples/.*'                         \
+			-or -regex '.*scripts/.*'                          \
+			-or -regex '.*src/.*'                              \
+			-or -regex '.*tests/.*'                            \
+			\) -and \(                                         \
 			-not -regex '.*cmake/Modules/FindHaskell.cmake$'   \
-                     \));
+			\)                                                 \
+);
 do
 	$CMAKE_FORMAT "$file" | unexpand | sponge "$file"
 done
