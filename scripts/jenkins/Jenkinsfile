@@ -725,14 +725,14 @@ def buildAndTest(testName, image, extraCmakeFlags = [:],
                         trackCoverage(testCoverage) {
                             if(testAll) {
                                 ctest()
-                            }
-                            if(testMem && !testNokdb) {
-                                cmemcheck()
+                                if(testMem) {
+                                    cmemcheck()
+                                }
                             }
                             if(testNokdb) {
                                 withPermissions(getElektraWritableFiles(), "000") {
                                     cnokdbtest()
-                                    if(testMem) {
+                                    if(testMem && !testAll) {
                                         cmemcheck(testNokdb)
                                     }
                                 }
