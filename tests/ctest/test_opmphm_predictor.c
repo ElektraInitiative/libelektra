@@ -146,36 +146,36 @@ void test_internal_change_whitebox (void)
 	opmphmPredictorDel (op);
 }
 
-void test_ks (void)
-{
-	KeySet * ks = ksNew (10, keyNew ("/a", KEY_END), keyNew ("/b", KEY_END), keyNew ("/c", KEY_END), keyNew ("/d", KEY_END),
-			     keyNew ("/e", KEY_END), keyNew ("/f", KEY_END), keyNew ("/g", KEY_END), keyNew ("/h", KEY_END),
-			     keyNew ("/i", KEY_END), keyNew ("/j", KEY_END), KS_END);
+//~ void test_ks (void)
+//~ {
+//~ KeySet * ks = ksNew (10, keyNew ("/a", KEY_END), keyNew ("/b", KEY_END), keyNew ("/c", KEY_END), keyNew ("/d", KEY_END),
+//~ keyNew ("/e", KEY_END), keyNew ("/f", KEY_END), keyNew ("/g", KEY_END), keyNew ("/h", KEY_END),
+//~ keyNew ("/i", KEY_END), keyNew ("/j", KEY_END), KS_END);
 
-	exit_if_fail (ks->opmphmPredictor, "no predictor here");
+//~ exit_if_fail (ks->opmphmPredictor, "no predictor here");
 
-	// overrule with binary search
-	Key * found = ksLookupByName (ks, "/a", KDB_O_BINSEARCH);
-	succeed_if (found, "key found");
+//~ // overrule with binary search
+//~ Key * found = ksLookupByName (ks, "/a", KDB_O_BINSEARCH);
+//~ succeed_if (found, "key found");
 
-	succeed_if (ks->opmphmPredictor->lookupCount == 0, "predictor touched");
-	succeed_if (ks->opmphmPredictor->history == 0, "predictor touched");
+//~ succeed_if (ks->opmphmPredictor->lookupCount == 0, "predictor touched");
+//~ succeed_if (ks->opmphmPredictor->history == 0, "predictor touched");
 
-	// overrule with OPMPHM
-	found = ksLookupByName (ks, "/a", KDB_O_OPMPHM);
-	succeed_if (found, "key found");
+//~ // overrule with OPMPHM
+//~ found = ksLookupByName (ks, "/a", KDB_O_OPMPHM);
+//~ succeed_if (found, "key found");
 
-	succeed_if (ks->opmphmPredictor->lookupCount == 0, "predictor touched");
-	succeed_if (ks->opmphmPredictor->history == 0, "predictor touched");
+//~ succeed_if (ks->opmphmPredictor->lookupCount == 0, "predictor touched");
+//~ succeed_if (ks->opmphmPredictor->history == 0, "predictor touched");
 
-	// use predictor
-	found = ksLookupByName (ks, "/a", KDB_O_NONE);
-	succeed_if (found, "key found");
+//~ // use predictor
+//~ found = ksLookupByName (ks, "/a", KDB_O_NONE);
+//~ succeed_if (found, "key found");
 
-	succeed_if (ks->opmphmPredictor->lookupCount != 0, "predictor not touched");
+//~ succeed_if (ks->opmphmPredictor->lookupCount != 0, "predictor not touched");
 
-	ksDel (ks);
-}
+//~ ksDel (ks);
+//~ }
 
 int main (int argc, char ** argv)
 {
@@ -187,7 +187,7 @@ int main (int argc, char ** argv)
 	test_internal_basic ();
 	test_internal_nochange ();
 	test_internal_change_whitebox ();
-	test_ks ();
+	//~ test_ks ();
 
 	printf ("\ntest_opmphm_predictor RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
