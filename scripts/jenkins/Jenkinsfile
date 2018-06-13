@@ -1038,16 +1038,16 @@ def cnokdbtest() {
 }
 
 /* Uploads ctest results
+ * @param p Pattern to scan for
  */
-def xunitUpload() {
+def xunitUpload(p = 'build/Testing/**/*.xml') {
     step([$class: 'XUnitBuilder',
           thresholds: [
             [$class: 'SkippedThreshold', failureThreshold: '0'],
             [$class: 'FailedThreshold', failureThreshold: '0']
           ],
           tools: [
-            [$class: 'CTestType',
-                pattern: 'build/Testing/**/*.xml']
+            [$class: 'CTestType', pattern: p]
         ]
     ])
 }
