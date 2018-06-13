@@ -293,7 +293,10 @@ Thanks to Michael Zronek and Vanessa Kos.
 - Remove `elektra-gcc-configure-debian-withspace` test. We now test for
     compatibility of spaced build paths during normal tests. *(Lukas Winkler)*
 - Check for source formatting during early test stages. *(Lukas Winkler)*
-
+- Remove the amount of spawned tests via not running a full multiconfig setup for
+  the `PLUGINS=NODEP` config. They did not provide any additional coverage.
+  Instead we added a new test checking if `PLUGINS=NODEP` builds in an minimal
+  Docker image. *(Lukas Winkler)*
 
 ### Travis
 
