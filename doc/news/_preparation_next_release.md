@@ -287,6 +287,9 @@ Thanks to Michael Zronek and Vanessa Kos.
 - Port `elektra-gcc-configure-xdg`to new build system. *(Lukas Winkler)*
 - Port `elektra-gcc-i386` to new build system. *(Lukas Winkler)*
 - Docker Registry is cleaned up by our daily buildserver task. *(Lukas Winkler)*
+- Remove dedicated nokdb test. Instead we are now removing write permissions
+    of Elektra's paths to detect if we write to the filesystem even though the
+    test is not tagged as such. *(Lukas Winkler)*
 
 
 ### Travis
