@@ -302,6 +302,7 @@ Try it out now on: http://webui.libelektra.org:33334/
 - Port `elektra-gcc-configure-debian-nokdbtest` to new build system. *(Lukas Winkler)*
 - Port `elektra-gcc-configure-xdg`to new build system. *(Lukas Winkler)*
 - Port `elektra-gcc-i386` to new build system. *(Lukas Winkler)*
+- Port `elektra-gcc-configure-debian-musl` to new build system. *(Lukas Winkler)*
 - Docker Registry is cleaned up by our daily buildserver task. *(Lukas Winkler)*
 - Remove `elektra-gcc-configure-debian-nokdbtest` test. Instead we are now
     removing write permissions of Elektra's paths to detect if we write to the

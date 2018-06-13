@@ -434,6 +434,9 @@ def generateFullBuildStages() {
     // Build Elektra via mingw for Windows
     tasks << buildAndTestMingwW64()
 
+    // Build Elektra with musl
+    tasks << buildAndTestMusl()
+
     // Build Elektra on ubuntu-xenial
     tasks << buildAndTest(
         "ubuntu-xenial",
@@ -685,6 +688,30 @@ def buildAndTestMingwW64() {
                     }
                     sh "zip -r elektra.zip ${destdir}"
                     archive(['elektra.zip'])
+                }
+            }
+        }
+    }]
+}
+
+
+/* Helper to generate musl test */
+def buildAndTestMusl() {
+    def testName = "debian-stable-musl"
+    return [(testName): {
+        stage(testName) {
+            withDockerEnv(DOCKER_IMAGES.stretch) {
+                dir('build') {
+                    deleteDir()
+                    sh '''\
+../scripts/configure-debian-musl \
+-DINSTALL_SYSTEM_FILES=OFF \
+-DCMAKE_INSTALL_PREFIX=$WORKSPACE/local \
+-DKDB_DB_SYSTEM=$WORKSPACE/system \
+-DBUILD_DOCUMENTATION=OFF \
+..'''
+                    sh 'make'
+                    ctest()
                 }
             }
         }
