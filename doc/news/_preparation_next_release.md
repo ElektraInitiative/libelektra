@@ -306,6 +306,8 @@ Try it out now on: http://webui.libelektra.org:33334/
 - Remove dedicated nokdb test. Instead we are now removing write permissions
     of Elektra's paths to detect if we write to the filesystem even though the
     test is not tagged as such. *(Lukas Winkler)*
+- Remove `elektra-gcc-configure-debian-withspace` test. We now test for
+    compatibility of spaced build paths during normal tests. *(Lukas Winkler)*
 - Check for source formatting during early test stages *(Lukas Winkler)*
 
 
