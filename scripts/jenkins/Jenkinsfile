@@ -449,6 +449,15 @@ def generateFullBuildStages() {
         [TEST.ALL]
     )
 
+    // Build Elektra on a minimal Debian stable Docker image
+    // specify NODEP and see if plugins are properly included/excluded
+    tasks << buildAndTest(
+        "debian-stable-minimal",
+        DOCKER_IMAGES.stretch_minimal,
+        ['PLUGINS': 'NODEP'],
+        [TEST.ALL]
+    )
+
     // Build Elektra with the ini backend instead of the default
     tasks << buildAndTest(
         "debian-stable-full-ini",
@@ -487,23 +496,17 @@ def generateFullBuildStages() {
 
     // Generate tests for different release types
     // Detects problems with debug modules enabled or disabled
-    for(plugins in ['ALL', 'NODEP']) {
-        for(buildType in ['Debug', 'Release', 'RelWithDebInfo']) {
-            if (plugins == 'ALL' && buildType == 'RelWithDebInfo') {
-                // Skip as it tested via "debian-stable-full"
-                continue
-            }
-            def testName = "debian-stable-multiconf[plugins=${plugins},buildType=${buildType}]"
-            tasks << buildAndTest(
-                testName,
-                DOCKER_IMAGES.stretch,
-                [
-                    'PLUGINS': plugins,
-                    'CMAKE_BUILD_TYPE': buildType
-                ],
-                [TEST.ALL, TEST.MEM]
-            )
-        }
+    // 'RelWithDebInfo' is build in the debian-stable-full build
+    for(buildType in ['Debug', 'Release']) {
+        def testName = "debian-stable-multiconf[buildType=${buildType}]"
+        tasks << buildAndTest(
+            testName,
+            DOCKER_IMAGES.stretch,
+            CMAKE_FLAGS_BUILD_ALL + [
+                'CMAKE_BUILD_TYPE': buildType
+            ],
+            [TEST.ALL, TEST.MEM]
+        )
     }
 
     return tasks
