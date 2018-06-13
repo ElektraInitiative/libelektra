@@ -927,7 +927,7 @@ def publishCoverage(source = 'build/coverage') {
     def archiveName = "cov_${env.BRANCH_NAME}_${env.STAGE_NAME}.tar.gz"
 
     sh "mkdir -p ${uploadDir}"
-    sh "mv -v -T ${source} ${uploadDir} || /bin/true"
+    sh "mv -v -T '${source}' ${uploadDir} || /bin/true"
     sh "tar -czvf ${archiveName} ${uploadDir}"
 
     sshPublisher(
