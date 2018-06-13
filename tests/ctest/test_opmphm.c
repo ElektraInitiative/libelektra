@@ -20,6 +20,17 @@ const size_t maxComponentSize = 273;
 const uint8_t minRUniPar = 2;
 const uint8_t maxRUniPar = 10;
 
+static void test_basic (void)
+{
+	Opmphm * opmphm = opmphmNew ();
+	exit_if_fail (opmphm, "opmphmNew");
+	succeed_if (!opmphmIsBuild (opmphm), "isBuild");
+	succeed_if (!opmphmIsBuild (NULL), "isBuild");
+	opmphm->size = 1;
+	succeed_if (opmphmIsBuild (opmphm), "isBuild");
+	opmphm->size = 0;
+	opmphmDel (opmphm);
+}
 
 static void test_opmphmGraphNew (void)
 {
@@ -374,6 +385,7 @@ int main (int argc, char ** argv)
 
 	init (argc, argv);
 
+	test_basic ();
 	test_opmphmGraphNew ();
 	test_minComponentSize ();
 	test_cyclicMultipleEdges ();
