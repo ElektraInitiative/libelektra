@@ -228,6 +228,7 @@ def dockerInit() {
         )
 
         /* Ubuntu xenial image used to test compatibility with Ubuntu.
+         */
         DOCKER_IMAGES.xenial = createDockerImageDesc(
             "ubuntu-xenial", this.&idTesting,
             "./scripts/docker/ubuntu/xenial",
