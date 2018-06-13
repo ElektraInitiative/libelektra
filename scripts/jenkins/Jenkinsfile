@@ -705,9 +705,7 @@ def buildAndTest(testName, image, extraCmakeFlags = [:],
                    tests = [], extraArtifacts = []) {
     def cmakeFlags = CMAKE_FLAGS_BASE + extraCmakeFlags
     def artifacts = []
-    if(tests) {
-        artifacts.add("build/Testing/*/*.xml")
-    }
+
     def testCoverage = cmakeFlags.intersect(CMAKE_FLAGS_COVERAGE)
                                   .equals(CMAKE_FLAGS_COVERAGE)
     def testMem = tests.contains(TEST.MEM)
@@ -721,6 +719,10 @@ def buildAndTest(testName, image, extraCmakeFlags = [:],
                 // we use a space in the directory to test if paths are
                 // properly escaped
                 def buildDir='build directory'
+
+                if(tests) {
+                    artifacts.add("${buildDir}/Testing/*/*.xml")
+                }
 
                 try {
                     ensureDirsExist(getElektraWritableFiles())
