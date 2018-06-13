@@ -313,6 +313,7 @@ Try it out now on: http://webui.libelektra.org:33334/
   the `PLUGINS=NODEP` config. They did not provide any additional coverage.
   Instead we added a new test checking if `PLUGINS=NODEP` builds in an minimal
   Docker image. *(Lukas Winkler)*
+- Speed up coverage data upload. *(Lukas Winkler)*
 
 ### Travis
 
