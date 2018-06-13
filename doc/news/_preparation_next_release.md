@@ -290,6 +290,7 @@ Thanks to Michael Zronek and Vanessa Kos.
 - Remove dedicated nokdb test. Instead we are now removing write permissions
     of Elektra's paths to detect if we write to the filesystem even though the
     test is not tagged as such. *(Lukas Winkler)*
+- Check for source formatting during early test stages *(Lukas Winkler)*
 
 
 ### Travis
