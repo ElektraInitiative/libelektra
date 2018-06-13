@@ -230,6 +230,7 @@ Try it out now on: http://webui.libelektra.org:33334/
 - Add `compare_regex_to_line_files` which allows to compare a file made of
     regex patterns to be compared with a text file line by line.
     *(Lukas Winkler)*
+- The OPMPHM has a new test case *(Kurt Micheli)*
 
 ## Compatibility
 
