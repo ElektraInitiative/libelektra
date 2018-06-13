@@ -1043,8 +1043,6 @@ def cmemcheck(kdbtests=true) {
 }
 
 /* Helper for ctest to run tests without tests tagged as kdbtests.
- * Also sets permissions on folders to be nonwriteable to see if any test
- * non flagged with kdbtests tries to write to them.
  */
 def cnokdbtest() {
     ctest("Test -LE kdbtests")
