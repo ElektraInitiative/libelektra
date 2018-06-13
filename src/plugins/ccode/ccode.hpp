@@ -13,7 +13,6 @@
 
 namespace
 {
-
 /**
  * @brief Cast a character to an unsigned character.
  *
@@ -25,7 +24,6 @@ inline constexpr unsigned char operator"" _uc (char character) noexcept
 {
 	return static_cast<unsigned char> (character);
 }
-
 }
 
 using namespace ckdb;

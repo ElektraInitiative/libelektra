@@ -1,4 +1,3 @@
-include (LibAddMacros)
 if (DEPENDENCY_PHASE)
 	include (LibAddTest)
 	add_gtest (testmod_ccode
