@@ -11,10 +11,25 @@
 
 #include <kdbplugin.h>
 
-#ifdef __cplusplus
+namespace
+{
+
+/**
+ * @brief Cast a character to an unsigned character.
+ *
+ * @param character This parameter specifies the character this function casts to an unsigned value.
+ *
+ * @return A unsigned character corresponding to the given argument
+ */
+inline constexpr unsigned char operator"" _uc (char character) noexcept
+{
+	return static_cast<unsigned char> (character);
+}
+
+}
+
 using namespace ckdb;
 extern "C" {
-#endif
 
 typedef struct
 {
@@ -38,8 +53,6 @@ int elektraCcodeGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraCcodeSet (Plugin * handle, KeySet * ks, Key * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (ccode);
-#ifdef __cplusplus
 } // end extern "C"
-#endif
 
 #endif

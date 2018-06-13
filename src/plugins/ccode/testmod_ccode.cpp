@@ -8,26 +8,28 @@
 
 #include "ccode.hpp"
 
-#include <tests_plugin.h>
+#include <kdbprivate.h> // For plugin handle (struct _Plugin)
+
+#include <tests.hpp>
 
 CCodeData * get_data (void)
 {
-	CCodeData * mapping = calloc (1, sizeof (CCodeData));
-	mapping->escape = '\\';
+	CCodeData * mapping = static_cast<CCodeData *> (calloc (1, sizeof (CCodeData)));
+	mapping->escape = '\\'_uc;
 
-	mapping->encode[' '] = 'w';
-	mapping->encode['\n'] = 'n';
-	mapping->encode['='] = 'e';
-	mapping->encode[';'] = 's';
-	mapping->encode['#'] = 'r';
-	mapping->encode['\\'] = 'b';
+	mapping->encode[' '_uc] = 'w'_uc;
+	mapping->encode['\n'_uc] = 'n'_uc;
+	mapping->encode['='_uc] = 'e'_uc;
+	mapping->encode[';'_uc] = 's'_uc;
+	mapping->encode['#'_uc] = 'r'_uc;
+	mapping->encode['\\'_uc] = 'b'_uc;
 
-	mapping->decode['w'] = ' ';
-	mapping->decode['n'] = '\n';
-	mapping->decode['e'] = '=';
-	mapping->decode['s'] = ';';
-	mapping->decode['r'] = '#';
-	mapping->decode['b'] = '\\';
+	mapping->decode['w'_uc] = ' '_uc;
+	mapping->decode['n'_uc] = '\n'_uc;
+	mapping->decode['e'_uc] = '='_uc;
+	mapping->decode['s'_uc] = ';'_uc;
+	mapping->decode['r'_uc] = '#'_uc;
+	mapping->decode['b'_uc] = '\\'_uc;
 	return mapping;
 }
 
@@ -35,7 +37,7 @@ const char encoded_string[] = "a\\wvalue\\nwith\\e\\s\\r\\wand\\w\\b\\witself";
 const char other_encoded_string[] = "a%wvalue%nwith%e%s%r%wand%w%b%witself";
 const char decoded_string[] = "a value\nwith=;# and \\ itself";
 
-void test_encode (void)
+TEST (type, encode)
 {
 	printf ("test encode\n");
 
@@ -43,7 +45,7 @@ void test_encode (void)
 
 	unsigned char buffer[1000];
 	mapping->buffer = buffer;
-	Key * test = keyNew ("user/test", KEY_VALUE, decoded_string, KEY_END);
+	ckdb::Key * test = keyNew ("user/test", KEY_VALUE, decoded_string, KEY_END);
 	encodeKey (test, mapping);
 	succeed_if (memcmp (keyValue (test), encoded_string, sizeof (encoded_string) - 1) == 0, "string not correctly encoded");
 
@@ -51,7 +53,7 @@ void test_encode (void)
 	keyDel (test);
 }
 
-void test_decode (void)
+TEST (type, decode)
 {
 	printf ("test decode\n");
 
@@ -59,7 +61,7 @@ void test_decode (void)
 
 	unsigned char buffer[1000];
 	mapping->buffer = buffer;
-	Key * test = keyNew ("user/test", KEY_SIZE, sizeof (encoded_string) - 1, KEY_VALUE, encoded_string, KEY_END);
+	ckdb::Key * test = keyNew ("user/test", KEY_SIZE, sizeof (encoded_string) - 1, KEY_VALUE, encoded_string, KEY_END);
 	decodeKey (test, mapping);
 	succeed_if (memcmp (keyValue (test), decoded_string, sizeof (decoded_string) - 1) == 0, "string not correctly encoded");
 
@@ -77,9 +79,9 @@ void check_reversibility (const char * msg)
 	CCodeData * mapping = get_data ();
 	unsigned char buffer[1000];
 	mapping->buffer = buffer;
-	Key * decode = keyNew ("user/test", KEY_VALUE, msg, KEY_END);
+	ckdb::Key * decode = keyNew ("user/test", KEY_VALUE, msg, KEY_END);
 
-	Key * encode = keyDup (decode);
+	ckdb::Key * encode = keyDup (decode);
 	encodeKey (encode, mapping);
 
 	decodeKey (encode, mapping);
@@ -90,7 +92,7 @@ void check_reversibility (const char * msg)
 	keyDel (encode);
 }
 
-void test_reversibility (void)
+TEST (type, test_reversibility)
 {
 	printf ("test reversibility\n");
 
@@ -107,17 +109,17 @@ void test_reversibility (void)
 	check_reversibility ("\n\\");
 }
 
-void test_decodeescape (void)
+TEST (type, decodeescape)
 {
 	printf ("test decode escape\n");
 
 	CCodeData * mapping = get_data ();
-	mapping->encode['\\'] = '\\';
-	mapping->decode['\\'] = '\\';
+	mapping->encode['\\'_uc] = '\\'_uc;
+	mapping->decode['\\'_uc] = '\\'_uc;
 
 	unsigned char buffer[1000];
 	mapping->buffer = buffer;
-	Key * test = keyNew ("user/test", KEY_SIZE, 2, KEY_VALUE, "\\\\", KEY_END);
+	ckdb::Key * test = keyNew ("user/test", KEY_SIZE, 2, KEY_VALUE, "\\\\", KEY_END);
 	decodeKey (test, mapping);
 	succeed_if (memcmp (keyValue (test), "\\", 2) == 0, "string not correctly encoded");
 
@@ -125,28 +127,29 @@ void test_decodeescape (void)
 	keyDel (test);
 }
 
-void test_config (void)
+TEST (type, config)
 {
 	printf ("test with config\n");
 
-	KeySet * config = ksNew (20, keyNew ("user/chars", KEY_END), keyNew ("user/chars/0A", KEY_VALUE, "6E", KEY_END), // new line -> n
-				 keyNew ("user/chars/20", KEY_VALUE, "77", KEY_END),					 // space -> w
-				 keyNew ("user/chars/23", KEY_VALUE, "72", KEY_END),					 // # -> r
-				 keyNew ("user/chars/5C", KEY_VALUE, "62", KEY_END), // \\ (backslash) -> b
-				 keyNew ("user/chars/3D", KEY_VALUE, "65", KEY_END), // = -> e
-				 keyNew ("user/chars/3B", KEY_VALUE, "73", KEY_END), // ; -> s
-				 KS_END);
+	ckdb::KeySet * config =
+		ksNew (20, keyNew ("user/chars", KEY_END), keyNew ("user/chars/0A", KEY_VALUE, "6E", KEY_END), // new line -> n
+		       keyNew ("user/chars/20", KEY_VALUE, "77", KEY_END),				       // space -> w
+		       keyNew ("user/chars/23", KEY_VALUE, "72", KEY_END),				       // # -> r
+		       keyNew ("user/chars/5C", KEY_VALUE, "62", KEY_END),				       // \\ (backslash) -> b
+		       keyNew ("user/chars/3D", KEY_VALUE, "65", KEY_END),				       // = -> e
+		       keyNew ("user/chars/3B", KEY_VALUE, "73", KEY_END),				       // ; -> s
+		       KS_END);
 
-	KeySet * returned = ksNew (20, keyNew ("user/something", KEY_VALUE, decoded_string, KEY_END), KS_END);
+	ckdb::KeySet * returned = ksNew (20, keyNew ("user/something", KEY_VALUE, decoded_string, KEY_END), KS_END);
 
-	Plugin * plugin = calloc (1, sizeof (Plugin));
+	Plugin * plugin = static_cast<Plugin *> (calloc (1, sizeof (Plugin)));
 	plugin->config = config;
 
 	elektraCcodeOpen (plugin, 0);
 
 	elektraCcodeSet (plugin, returned, 0);
 
-	Key * test = ksLookupByName (returned, "user/something", 0);
+	ckdb::Key * test = ksLookupByName (returned, "user/something", 0);
 	succeed_if (memcmp (keyValue (test), encoded_string, sizeof (encoded_string) - 1) == 0, "string not correctly encoded");
 
 	elektraCcodeClose (plugin, 0);
@@ -156,29 +159,30 @@ void test_config (void)
 	elektraFree (plugin);
 }
 
-void test_otherescape (void)
+TEST (type, otherescape)
 {
 	printf ("test with config with other escape\n");
 
-	KeySet * config = ksNew (20, keyNew ("user/chars", KEY_END), keyNew ("user/chars/0A", KEY_VALUE, "6E", KEY_END), // new line -> n
-				 keyNew ("user/chars/20", KEY_VALUE, "77", KEY_END),					 // space -> w
-				 keyNew ("user/chars/23", KEY_VALUE, "72", KEY_END),					 // # -> r
-				 keyNew ("user/chars/5C", KEY_VALUE, "62", KEY_END), // \\ (backslash) -> b
-				 keyNew ("user/chars/3D", KEY_VALUE, "65", KEY_END), // = -> e
-				 keyNew ("user/chars/3B", KEY_VALUE, "73", KEY_END), // ; -> s
-				 keyNew ("user/escape", KEY_VALUE, "25", KEY_END),   // use % as escape character
-				 KS_END);
+	ckdb::KeySet * config =
+		ksNew (20, keyNew ("user/chars", KEY_END), keyNew ("user/chars/0A", KEY_VALUE, "6E", KEY_END), // new line -> n
+		       keyNew ("user/chars/20", KEY_VALUE, "77", KEY_END),				       // space -> w
+		       keyNew ("user/chars/23", KEY_VALUE, "72", KEY_END),				       // # -> r
+		       keyNew ("user/chars/5C", KEY_VALUE, "62", KEY_END),				       // \\ (backslash) -> b
+		       keyNew ("user/chars/3D", KEY_VALUE, "65", KEY_END),				       // = -> e
+		       keyNew ("user/chars/3B", KEY_VALUE, "73", KEY_END),				       // ; -> s
+		       keyNew ("user/escape", KEY_VALUE, "25", KEY_END),				       // use % as escape character
+		       KS_END);
 
-	KeySet * returned = ksNew (20, keyNew ("user/something", KEY_VALUE, decoded_string, KEY_END), KS_END);
+	ckdb::KeySet * returned = ksNew (20, keyNew ("user/something", KEY_VALUE, decoded_string, KEY_END), KS_END);
 
-	Plugin * plugin = calloc (1, sizeof (Plugin));
+	Plugin * plugin = static_cast<Plugin *> (calloc (1, sizeof (Plugin)));
 	plugin->config = config;
 
 	elektraCcodeOpen (plugin, 0);
 
 	elektraCcodeSet (plugin, returned, 0);
 
-	Key * test = ksLookupByName (returned, "user/something", 0);
+	ckdb::Key * test = ksLookupByName (returned, "user/something", 0);
 	succeed_if (memcmp (keyValue (test), other_encoded_string, sizeof (other_encoded_string) - 1) == 0, "string not correctly encoded");
 
 	elektraCcodeClose (plugin, 0);
@@ -186,24 +190,4 @@ void test_otherescape (void)
 	ksDel (returned);
 	ksDel (plugin->config);
 	elektraFree (plugin);
-}
-
-
-int main (int argc, char ** argv)
-{
-	printf ("CCODE   TESTS\n");
-	printf ("=============\n\n");
-
-	init (argc, argv);
-
-	test_encode ();
-	test_decode ();
-	test_reversibility ();
-	test_decodeescape ();
-	test_config ();
-	test_otherescape ();
-
-	print_result ("testmod_ccode");
-
-	return nbError;
 }

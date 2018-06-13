@@ -24,18 +24,6 @@ namespace
 {
 
 /**
- * @brief Cast a character to an unsigned character.
- *
- * @param character This parameter specifies the character this function casts to an unsigned value.
- *
- * @return A unsigned character corresponding to the given argument
- */
-inline constexpr unsigned char operator"" _uc (char character) noexcept
-{
-	return static_cast<unsigned char> (character);
-}
-
-/**
  * @brief This function maps hex characters to integer numbers.
  *
  * @pre The specified character has to be between
