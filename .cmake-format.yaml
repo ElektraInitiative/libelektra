@@ -16,6 +16,7 @@ additional_commands:
       - NO_MAIN
       - LINK_TOOLS
     kwargs:
+      INCLUDE_DIRECTORIES: "*"
       LINK_LIBRARIES: "*"
       LINK_ELEKTRA: "*"
       SOURCES: "*"

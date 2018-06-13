@@ -10,11 +10,17 @@
 
 find_package (Threads)
 
+# ~~~
+# Add a Google Test for a list of specified source files.
+#
+# INCLUDE_DIRECTORIES:
+# 	This optional variable specifies a list of include paths for the test.
+# ~~~
 macro (add_gtest source)
 	cmake_parse_arguments (ARG
 			       "MEMLEAK;KDBTESTS;NO_MAIN;LINK_TOOLS" # optional keywords
 			       "" # one value keywords
-			       "LINK_LIBRARIES;LINK_ELEKTRA;SOURCES" # multi value keywords
+			       "INCLUDE_DIRECTORIES;LINK_LIBRARIES;LINK_ELEKTRA;SOURCES" # multi value keywords
 			       ${ARGN})
 
 	if (BUILD_TESTING)
@@ -46,6 +52,7 @@ macro (add_gtest source)
 		endif (INSTALL_TESTING)
 
 		set_target_properties (${source} PROPERTIES COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
+		set_property (TARGET ${source} APPEND PROPERTY INCLUDE_DIRECTORIES ${ARG_INCLUDE_DIRECTORIES})
 
 		add_test (${source} "${CMAKE_BINARY_DIR}/bin/${source}" "${CMAKE_CURRENT_BINARY_DIR}/")
 		set_property (TEST ${source} PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
