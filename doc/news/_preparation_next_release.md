@@ -214,6 +214,7 @@ Thanks to Michael Zronek and Vanessa Kos.
 - Add `compare_regex_to_line_files` which allows to compare a file made of
     regex patterns to be compared with a text file line by line.
     *(Lukas Winkler)*
+- The OPMPHM has a new test case *(Kurt Micheli)*
 
 ## Compatibility
 
