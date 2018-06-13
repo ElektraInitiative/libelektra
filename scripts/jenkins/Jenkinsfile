@@ -716,9 +716,12 @@ def buildAndTest(testName, image, extraCmakeFlags = [:],
             withDockerEnv(image, dockerOpts) {
                 try {
                     ensureDirsExist(getElektraWritableFiles())
+
                     // we use a space in the directory to test if paths are
                     // properly escaped
-                    dir('build directory') {
+                    def buildDir='build directory'
+
+                    dir(buildDir) {
                         deleteDir()
                         cmake(env.WORKSPACE, cmakeFlags)
                         sh "make"
@@ -764,10 +767,10 @@ kill `pidof dbus-daemon`
                     */
                     archive(artifacts)
                     if(testCoverage) {
-                        publishCoverage()
+                        publishCoverage("${buildDir}/coverage")
                     }
                     if(testMem || testNokdb || testAll) {
-                        xunitUpload()
+                        xunitUpload("${buildDir}/Testing/**/*.xml")
                     }
                     deleteDir()
                 }
@@ -912,13 +915,14 @@ def cmake(String directory, Map argsMap) {
 }
 
 /* Publishes coverage reports
+ * @param source dir where coverage reports are located
  */
-def publishCoverage() {
+def publishCoverage(source = 'build/coverage') {
     echo "Start publication of coverage data"
     def uploadDir = "coverage/${env.BRANCH_NAME}/${env.STAGE_NAME}"
 
     sh "mkdir -p ${uploadDir}"
-    sh "mv -v -T build/coverage ${uploadDir} || /bin/true"
+    sh "mv -v -T ${source} ${uploadDir} || /bin/true"
 
     sshPublisher(
         publishers: [
