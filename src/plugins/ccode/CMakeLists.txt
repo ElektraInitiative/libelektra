@@ -7,4 +7,4 @@ if (DEPENDENCY_PHASE)
 				       "${CMAKE_SOURCE_DIR}/src/bindings/cpp/tests")
 endif (DEPENDENCY_PHASE)
 
-add_plugin (ccode CPP SOURCES ccode.hpp ccode.cpp TEST_README TEST_REQUIRED_PLUGINS tcl base64)
+add_plugin (ccode CPP SOURCES ccode.hpp ccode.cpp coder.hpp TEST_README TEST_REQUIRED_PLUGINS tcl base64)
