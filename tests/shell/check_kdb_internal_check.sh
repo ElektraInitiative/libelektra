@@ -16,8 +16,7 @@ cleanup()
 ACTUAL_PLUGINS=$PLUGINS
 # Otherwise the test would fail as SHARED_ONLY plugins are not
 # available in full and static builds
-echo "$KDB" | grep -qE "(full|static)\$"
-if [ $? == "0" ]; then
+if contains $KDB "full" || contains $KDB "static"; then
 	ACTUAL_PLUGINS=$ADDED_PLUGINS_WITHOUT_ONLY_SHARED
 fi
 
