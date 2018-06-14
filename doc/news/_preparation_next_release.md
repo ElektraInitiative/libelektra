@@ -169,6 +169,8 @@ Try it out now on: http://webui.libelektra.org:33334/
   [notifications](https://www.libelektra.org/tutorials/notifications). *(Thomas Wahringer)*
 - An issue when building Haskell plugins with a cached sandbox is fixed in case
   a Haskell library bundled with elektra gets changed. *(Armin Wurzinger)*
+- Do not exclude `simpleini` silently on non-glibc systems but output a message
+  like for other plugins
 - <<TODO>>
 
 ## Bindings
