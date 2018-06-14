@@ -710,7 +710,7 @@ def buildAndTestMusl() {
 -DKDB_DB_SYSTEM=$WORKSPACE/system \
 -DBUILD_DOCUMENTATION=OFF \
 ..'''
-                    sh 'make'
+                    sh 'VERBOSE=1 make'
                     ctest()
                 }
             }
