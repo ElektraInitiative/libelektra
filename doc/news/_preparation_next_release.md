@@ -38,7 +38,7 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.8.
 ## Highlights
 
 - Type system preview
-- <<HIGHLIGHT2>>
+- Chef Cookbook
 - <<HIGHLIGHT3>>
 
 
@@ -62,6 +62,39 @@ For more details see the
 [typechecker readme](https://www.libelektra.org/plugins/typechecker)
 
 Thanks to Armin Wurzinger.
+
+
+### Chef Cookbook
+
+Next to the [Puppet Resource Type](http://puppet.libelektra.org/)
+we now also prepared a [Chef Cookbook](https://supermarket.chef.io/cookbooks/kdb)
+which allows us to use Elektra from within chef.
+
+For example, to set mount a configuration file, you can use:
+
+```
+kdbmount 'system/hosts' do
+	file '/etc/hosts'
+	plugins 'hosts'
+	action :create
+end
+```
+
+And to add an hosts entry, you can use:
+
+```
+kdbset '/hosts/ipv4/showthatitworks' do
+	namespace 'system'
+	value '127.0.0.33'
+	action :create
+end
+```
+
+> Note that currently `kdb` is invoked
+> and Elektra needs to be installed for
+> managed systems.
+
+Thanks to Michael Zronek and Vanessa Kos.
 
 ### <<HIGHLIGHT2>>
 
@@ -119,6 +152,8 @@ Thanks to Armin Wurzinger.
   added.
   It can be used to integrate the notification feature with applications based
   on [ev](http://libev.schmorp.de) main loops. *(Thomas Wahringer)*
+
+
 
 ## Tools
 
