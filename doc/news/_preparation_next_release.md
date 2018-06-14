@@ -245,6 +245,7 @@ Thanks to Michael Zronek and Vanessa Kos.
 - Haskell plugins and bindings are now correctly excluded when using BUILD_FULL or BUILD_STATIC
   as this is currently unsupported. Another issue when building Haskell plugins with a cached sandbox
   is fixed as well. *(Armin Wurzinger)*
+- Fix compilation with `BUILD_TESTING=OFF` when `spec` or `list` plugins are not selected.
 
 [Google Test]: https://github.com/google/googletest
 
