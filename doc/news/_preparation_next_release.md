@@ -219,6 +219,9 @@ Try it out now on: http://webui.libelektra.org:33334/
   of [`kdb ls`](https://master.libelektra.org/doc/help/kdb-ls.md). *(René Schwaiger)*
 - The documentation for `kdb` and `kdb set` now mention the `--` option to stop option processing. This is useful for setting negative values among other things. *(Klemens Böswirth)*
 - Plugins added with the flag `SHARED_ONLY` no longer get tested in the script `check_kdb_internal_check.sh` if executed with kdb-full or kdb-static. *(Armin Wurzinger)*
+- Add `compare_regex_to_line_files` which allows to compare a file made of
+    regex patterns to be compared with a text file line by line.
+    *(Lukas Winkler)*
 
 ## Compatibility
 

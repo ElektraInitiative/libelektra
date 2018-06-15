@@ -276,6 +276,7 @@ int init (int argc, char ** argv);
 
 int compare_files (const char * filename);
 int compare_line_files (const char * filename, const char * genfilename);
+int compare_regex_to_line_files (const char * filename, const char * genfilename);
 
 char * srcdir_file (const char * fileName);
 const char * elektraFilename (void);
