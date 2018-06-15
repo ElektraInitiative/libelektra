@@ -127,6 +127,11 @@ Thanks to Michael Zronek and Vanessa Kos.
 - We fixed a memory leak in the [mINI plugin](https://libelektra.org/plugins/mini) by requiring the plugin
   [`ccode`](https://libelektra.org/plugins/ccode) instead of the “provider” `code`. *(René Schwaiger)*
 
+### network
+
+- Fixed an error in network plugin that prevented it from working on non glibc
+    platforms. *(Lukas Winkler)*
+
 ### Regex Dispatcher
 
 - The plugin [regexdispatcher](https://www.libelektra.org/plugins/regexdispatcher) has been added. It calculates regex representations for
