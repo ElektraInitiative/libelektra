@@ -915,7 +915,7 @@ def archive(paths) {
         def dest = "${prefix}${env.STAGE_NAME}/"
         sh "mkdir -p ${dest}"
         paths.each { path ->
-            sh "cp -v ${path} ${dest} || true"
+            sh "cp -v \"${path}\" ${dest} || true"
         }
         archiveArtifacts artifacts: "${prefix}**", fingerprint: true, allowEmptyArchive: true
     } else {
