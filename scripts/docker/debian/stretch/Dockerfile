@@ -55,7 +55,6 @@ RUN apt-get update \
         libgirepository1.0-dev \
         systemd \
         libsystemd-dev \
-        musl-tools \
         mingw-w64 \
         wine \
         llvm \
