@@ -446,7 +446,9 @@ def generateFullBuildStages() {
     tasks << buildAndTest(
         "alpine",
         DOCKER_IMAGES.alpine,
-        CMAKE_FLAGS_BUILD_ALL,
+        CMAKE_FLAGS_BUILD_ALL + [
+            'BUILD_STATIC': 'ON'
+        ],
         [TEST.all]
     )
 
