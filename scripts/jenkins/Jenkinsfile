@@ -89,6 +89,10 @@ CMAKE_FLAGS_DEBUG = ['ENABLE_DEBUG': 'ON']
 CMAKE_FLAGS_LOGGER = ['ENABLE_LOGGER': 'ON']
 CMAKE_FLAGS_OPTIMIZATIONS_OFF = ['ENABLE_OPTIMIZATIONS': 'OFF']
 
+// CMAKE_FLAGS_BUILD_SHARED = ['BUILD_SHARED': 'ON']  is ON per default
+CMAKE_FLAGS_BUILD_FULL = ['BUILD_FULL': 'ON']
+CMAKE_FLAGS_BUILD_STATIC = ['BUILD_STATIC': 'ON']
+
 // Define TEST enum used in buildAndTest helper
 enum TEST {
     MEM, NOKDB, ALL, INSTALL
@@ -299,7 +303,10 @@ def generateMainBuildStages() {
         "debian-stable-full",
         DOCKER_IMAGES.stretch,
         CMAKE_FLAGS_BUILD_ALL +
-            CMAKE_FLAGS_COVERAGE,
+            CMAKE_FLAGS_BUILD_FULL +
+            CMAKE_FLAGS_BUILD_STATIC +
+            CMAKE_FLAGS_COVERAGE
+        ,
         [TEST.ALL, TEST.MEM, TEST.INSTALL]
     )
     tasks << buildIcheck()
@@ -348,7 +355,8 @@ def generateFullBuildStages() {
         "debian-unstable-full-clang",
         DOCKER_IMAGES.sid,
         CMAKE_FLAGS_BUILD_ALL +
-            CMAKE_FLAGS_CLANG,
+            CMAKE_FLAGS_CLANG
+        ,
         [TEST.ALL, TEST.MEM, TEST.INSTALL]
     )
     tasks << buildAndTestMingwW64()

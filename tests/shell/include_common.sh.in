@@ -72,6 +72,17 @@ export RUBYLIB="@CMAKE_SOURCE_DIR@/src/bindings/swig/ruby:@CMAKE_BINARY_DIR@/src
 export SAVE=0 # some Rubies do not accept RUBYLIB if SAVE is not 0
 
 #
+# HELPER
+#
+
+# POSIX way to test if string contains substring
+contains() {
+    string="$1"
+    substring="$2"
+    test "${string#*$substring}" != "$string"
+}
+
+#
 # ASSERTIONS
 #
 
@@ -393,18 +404,6 @@ export_check()
 		check_failed "$EXPORTS" "$TESTNAME" mount
 	fi
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
