@@ -185,6 +185,8 @@ Try it out now on: http://webui.libelektra.org:33334/
 
 - The script [`check_formatting.sh`](https://master.libelektra.org/tests/shell/check_formatting.sh) now also checks the formatting of CMake
   code if you installed [`sponge`](https://joeyh.name/code/moreutils) and [`cmake-format`][]. *(René Schwaiger)*
+- The script [`check_formatting.sh`](https://master.libelektra.org/tests/shell/check_formatting.sh) now no longer writes to stdout if clang-format5.0
+    can not be found. *(Lukas Winkler)*
 - The script [`check_bashisms.sh`](https://master.libelektra.org/tests/shell/check_bashisms.sh) should now work correctly again, if the
   system uses the GNU version `find`. *(René Schwaiger)*
 - The script [`reformat-cmake`](https://master.libelektra.org/scripts/reformat-cmake) now checks if `cmake-format` works before it reformats CMake files. Thank you to Klemens Böswirth for the [detailed description of the problem](https://github.com/ElektraInitiative/libelektra/pull/1903#discussion_r189332987). *(René Schwaiger)*
