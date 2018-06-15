@@ -449,7 +449,7 @@ def generateFullBuildStages() {
         CMAKE_FLAGS_BUILD_ALL + [
             'BUILD_STATIC': 'ON'
         ],
-        [TEST.all]
+        [TEST.ALL]
     )
 
     // Build Elektra on ubuntu-xenial
