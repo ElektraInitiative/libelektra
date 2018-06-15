@@ -10,8 +10,6 @@
 #include <kdbio_adapter_zeromq.h>
 #include <kdblogger.h>
 
-#include <zmq.h>
-
 #include <stdlib.h>
 #include <string.h>
 

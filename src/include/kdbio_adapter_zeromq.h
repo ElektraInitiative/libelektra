@@ -8,9 +8,9 @@
 #ifndef __ELEKTAR_IO_ADAPTER_ZEROMQ_H__
 #define __ELEKTAR_IO_ADAPTER_ZEROMQ_H__
 
-//#include <zmq.h>
 #include <stdlib.h>
 #include <string.h>
+#include <zmq.h>
 
 #include <kdbio.h>
 
