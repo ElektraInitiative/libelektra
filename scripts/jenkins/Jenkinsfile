@@ -1303,8 +1303,6 @@ def getElektraWritableFiles() {
  */
 def ensureDirsExist(listOfDirs) {
     listOfDirs.each {
-        if(!fileExists(it)) {
-            sh "mkdir -p $it"
-        }
+        sh "mkdir -p $it || /bin/true"
     }
 }
