@@ -79,12 +79,7 @@ export SAVE=0 # some Rubies do not accept RUBYLIB if SAVE is not 0
 contains() {
     string="$1"
     substring="$2"
-    if test "${string#*$substring}" != "$string"
-    then
-        return 0    # $substring is in $string
-    else
-        return 1    # $substring is not in $string
-    fi
+    test "${string#*$substring}" != "$string"
 }
 
 #
@@ -409,6 +404,11 @@ export_check()
 		check_failed "$EXPORTS" "$TESTNAME" mount
 	fi
 }
+
+
+
+
+
 
 
 
