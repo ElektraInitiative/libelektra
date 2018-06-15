@@ -20,6 +20,7 @@
 #include <sys/types.h>
 
 #define ID_MAX_CHARACTERS 11
+#define PWD_DELIMITER ":\r\n"
 
 typedef enum
 {
@@ -47,6 +48,44 @@ static int validatepwent (struct passwd * pwd)
 	if (!pwd->pw_dir) return -1;
 	if (!pwd->pw_shell) return -1;
 	return 0;
+}
+
+static struct passwd * strToPasswd (char * line)
+{
+	char * ptoken;
+	struct passwd * pwd = elektraMalloc (sizeof (struct passwd));
+
+	// username
+	ptoken = strtok (line, PWD_DELIMITER);
+	pwd->pw_name = elektraStrDup (ptoken);
+
+	// passwd
+	// TODO if x check /etc/shadow
+	ptoken = strtok (NULL, PWD_DELIMITER);
+	pwd->pw_passwd = elektraStrDup (ptoken);
+
+	// uid
+	ptoken = strtok (NULL, PWD_DELIMITER);
+	sscanf (ptoken, "%u", &pwd->pw_uid); // XXX check retval
+
+
+	// gid
+	ptoken = strtok (NULL, PWD_DELIMITER);
+	sscanf (ptoken, "%u", &pwd->pw_gid); // XXX checkretval
+
+	// gecos
+	ptoken = strtok (NULL, PWD_DELIMITER);
+	pwd->pw_gecos = elektraStrDup (ptoken);
+
+	// dir
+	ptoken = strtok (NULL, PWD_DELIMITER);
+	pwd->pw_dir = elektraStrDup (ptoken);
+
+	// shell
+	ptoken = strtok (NULL, PWD_DELIMITER);
+	pwd->pw_shell = elektraStrDup (ptoken);
+
+	return pwd;
 }
 
 static KeySet * pwentToKS (struct passwd * pwd, Key * parentKey, SortBy index)
@@ -130,26 +169,39 @@ int elektraPasswdGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_
 	else
 		index = UID;
 	struct passwd * pwd;
-#if HAS_FGETPWENT
 	FILE * pwfile = fopen (keyString (parentKey), "r");
 	if (!pwfile)
 	{
 		ELEKTRA_SET_ERRORF (110, parentKey, "Failed to open configuration file %s\n", keyString (parentKey));
 		return -1;
 	}
+#if defined(_GNU_SOURCE)
 	while ((pwd = fgetpwent (pwfile)) != NULL)
-#else
-	while ((pwd = getpwent ()) != NULL)
-#endif
 	{
 		KeySet * ks = pwentToKS (pwd, parentKey, index);
 		ksAppend (returned, ks);
 		ksDel (ks);
 	}
 	endpwent ();
-#if HAS_FGETPWENT
-	fclose (pwfile);
+#elif _POSIX_C_SOURCE >= 200809L
+	char * line = NULL;
+	size_t len = 0;
+	while (getline (&line, &len, pwfile) != -1)
+	{
+		pwd = strToPasswd (line);
+		KeySet * ks = pwentToKS (pwd, parentKey, index);
+		ksAppend (returned, ks);
+		ksDel (ks);
+		elektraFree (pwd);
+	}
+	if (line)
+	{
+		elektraFree (line);
+	}
+#else
+#error Configuration error in CMakeLists.txt. Neither _GNU_SOURCE nor _POSIX_C_SOURCE >= 200809L were provided. Please open an issue at https://issue.libelektra.org.
 #endif
+	fclose (pwfile);
 	return 1; // success
 }
 
@@ -246,7 +298,7 @@ static int writeKS (KeySet * returned, Key * parentKey, SortBy index)
 		}
 		else
 		{
-#if HAS_PUTPWENT
+#if defined(_GNU_SOURCE)
 			putpwent (pwd, pwfile);
 #else
 			fprintf (pwfile, "%s:%s:%u:%u:%s:%s:%s\n", pwd->pw_name, pwd->pw_passwd, pwd->pw_uid, pwd->pw_gid, pwd->pw_gecos,
@@ -288,7 +340,7 @@ int elektraPasswdSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_
 Plugin * ELEKTRA_PLUGIN_EXPORT (passwd)
 {
 	// clang-format off
-    return elektraPluginExport ("passwd",
+	return elektraPluginExport ("passwd",
 	    ELEKTRA_PLUGIN_GET,	&elektraPasswdGet,
 	    ELEKTRA_PLUGIN_SET,	&elektraPasswdSet,
 	    ELEKTRA_PLUGIN_END);

@@ -146,13 +146,11 @@ compiled against an older 0.8 version of Elektra will continue to work
 - <<TODO>>
 - <<TODO>>
 
+### passwd
 
-### <<Library2>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
+- We fixed an issue with the passwd plugin not properly setting compile flags.
+    This resolves a problem with undefined functions when building with musl.
+    *(Lukas Winkler)*
 
 ### <<Library3>>
 

@@ -536,6 +536,10 @@ Currently the installed system files are as following:
 
 In order to keep the binaries as small as possible this flag allows to trade memory for speed.
 
+#### `ALLOW_GNU_SOURCE`
+
+Allows the use of non-POSIX functionality if it is available.
+
 ## Building
 
 ### Without IDE

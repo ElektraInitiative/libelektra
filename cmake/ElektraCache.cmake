@@ -245,6 +245,8 @@ option (INSTALL_BUILD_TOOLS "Install build tools for cross-compilation" OFF)
 
 option (ENABLE_OPTIMIZATIONS "Turn on optimizations that trade memory for speed" ON)
 
+option (ALLOW_GNU_SOURCE "Use non-POSIX functions if they are available" ON)
+
 #
 # Developer builds
 #

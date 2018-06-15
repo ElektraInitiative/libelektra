@@ -1,20 +1,25 @@
+include (CheckFunctionExists)
 include (LibAddMacros)
 
-if (DEPENDENCY_PHASE)
-	try_compile (TEST_FGETPWENT "${CMAKE_BINARY_DIR}" "${PROJECT_SOURCE_DIR}/src/plugins/passwd/hasfgetpwent.c")
-	try_compile (TEST_PUTPWENT "${CMAKE_BINARY_DIR}" "${PROJECT_SOURCE_DIR}/src/plugins/passwd/hasputpwent.c")
+set (plugin passwd)
 
-	if (TEST_PUTPWENT)
-		set (PUTPWENT 1)
+if (DEPENDENCY_PHASE)
+	check_function_exists (fgetpwent TEST_FGETPWENT)
+	check_function_exists (getline TEST_GETLINE)
+	check_function_exists (putpwent TEST_PUTPWENT)
+
+	if (TEST_FGETPWENT AND ALLOW_GNU_SOURCE)
+		add_definitions (-D_GNU_SOURCE)
+	elseif (TEST_GETLINE)
+		add_definitions (-D_POSIX_C_SOURCE=200809L)
 	else ()
-		set (PUTPWENT 0)
+		remove_plugin (${plugin} "could not find required functions: fgetpwent || getline")
 	endif ()
-	if (TEST_FGETPWENT)
-		set (FGETPWENT 1)
-	else ()
-		set (FGETPWENT 0)
-	endif ()
-	set (PASSWD_COMPILE_DEFS "HAS_PUTPWENT=${PUTPWENT};HAS_FGETPWENT=${FGETPWENT}")
+
+	# no need to remove the plugin as our fallback has no deps
+	if (TEST_PUTPWENT AND ALLOW_GNU_SOURCE)
+		add_definitions (-D_GNU_SOURCE)
+	endif (TEST_PUTPWENT AND ALLOW_GNU_SOURCE)
 endif ()
 
 add_plugin (passwd
