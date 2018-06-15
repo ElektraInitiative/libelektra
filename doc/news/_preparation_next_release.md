@@ -108,6 +108,10 @@ Thanks to Michael Zronek and Vanessa Kos.
 
 - The `crypto` plugin now uses Elektra's `libinvoke` and the `base64` plugin in order to encode and decode Base64 strings. This improvement reduces code duplication between the two plugins. *(Peter Nirschl)*
 
+### fstab
+
+- The `fstab` plugin now passes tests on musl builds. *(Lukas Winkler)*
+
 ### HexNumber
 
 - The plugin [hexnumber](https://www.libelektra.org/plugins/hexnumber) has been added. It can be used
@@ -169,6 +173,8 @@ Thanks to Michael Zronek and Vanessa Kos.
 
 - The script [`check_formatting.sh`](https://master.libelektra.org/tests/shell/check_formatting.sh) now also checks the formatting of CMake
   code if you installed [`sponge`](https://joeyh.name/code/moreutils) and [`cmake-format`][]. *(René Schwaiger)*
+- The script [`check_formatting.sh`](https://master.libelektra.org/tests/shell/check_formatting.sh) now no longer writes to stdout if clang-format5.0
+    can not be found. *(Lukas Winkler)*
 - The script [`check_bashisms.sh`](https://master.libelektra.org/tests/shell/check_bashisms.sh) should now work correctly again, if the
   system uses the GNU version `find`. *(René Schwaiger)*
 - The script [`reformat-cmake`](https://master.libelektra.org/scripts/reformat-cmake) now checks if `cmake-format` works before it reformats CMake files. Thank you to Klemens Böswirth for the [detailed description of the problem](https://github.com/ElektraInitiative/libelektra/pull/1903#discussion_r189332987). *(René Schwaiger)*
@@ -203,6 +209,9 @@ Thanks to Michael Zronek and Vanessa Kos.
   of [`kdb ls`](https://master.libelektra.org/doc/help/kdb-ls.md). *(René Schwaiger)*
 - The documentation for `kdb` and `kdb set` now mention the `--` option to stop option processing. This is useful for setting negative values among other things. *(Klemens Böswirth)*
 - Plugins added with the flag `SHARED_ONLY` no longer get tested in the script `check_kdb_internal_check.sh` if executed with kdb-full or kdb-static. *(Armin Wurzinger)*
+- Add `compare_regex_to_line_files` which allows to compare a file made of
+    regex patterns to be compared with a text file line by line.
+    *(Lukas Winkler)*
 
 ## Compatibility
 

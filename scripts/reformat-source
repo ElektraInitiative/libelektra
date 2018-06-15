@@ -8,7 +8,7 @@
 SCRIPTS_DIR=$(dirname "$0")
 . "${SCRIPTS_DIR}/include-common"
 
-CLANG_FORMAT=$(which clang-format-5.0)
+CLANG_FORMAT=$(which clang-format-5.0 2> /dev/null)
 
 if [ -z "${CLANG_FORMAT}" ]; then
 	CLANG_FORMAT=$(which clang-format)
