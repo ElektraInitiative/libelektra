@@ -124,6 +124,10 @@ Try it out now on: http://webui.libelektra.org:33334/
 
 - The `crypto` plugin now uses Elektra's `libinvoke` and the `base64` plugin in order to encode and decode Base64 strings. This improvement reduces code duplication between the two plugins. *(Peter Nirschl)*
 
+### fstab
+
+- The `fstab` plugin now passes tests on musl builds. *(Lukas Winkler)*
+
 ### HexNumber
 
 - The plugin [hexnumber](https://www.libelektra.org/plugins/hexnumber) has been added. It can be used
