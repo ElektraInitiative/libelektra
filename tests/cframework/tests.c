@@ -21,6 +21,8 @@
 #include <locale.h>
 #endif
 
+#include <regex.h>
+
 #include <kdbinternal.h>
 
 
@@ -115,16 +117,7 @@ KeySet * create_conf (const char * filename)
 }
 
 
-/**
- * @brief Compare two files line by line
- *
- * @param filename first file
- * @param genfilename file to compare with
- *
- * @retval 0 on errors (succeed_if already executed)
- * @retval 1 on success
- */
-int compare_line_files (const char * filename, const char * genfilename)
+int compare_line_files_fun (const char * filename, const char * genfilename, int (*cmpFun) (const char *, const char *, size_t n))
 {
 	FILE *forg, *fgen;
 	char bufferorg[BUFFER_LENGTH + 1];
@@ -150,7 +143,7 @@ int compare_line_files (const char * filename, const char * genfilename)
 	while ((org = fgets (bufferorg, BUFFER_LENGTH, forg)) && (gen = fgets (buffergen, BUFFER_LENGTH, fgen)))
 	{
 		line++;
-		if (strncmp (bufferorg, buffergen, BUFFER_LENGTH))
+		if ((*cmpFun) (bufferorg, buffergen, BUFFER_LENGTH))
 		{
 			printf ("Compare <%s>, with <%s>\n", bufferorg, buffergen);
 			printf ("in file %s, line %d.\n", filename, line);
@@ -174,6 +167,60 @@ error:
 	fclose (forg);
 	fclose (fgen);
 	return 0;
+}
+
+
+/**
+ * @brief Compare two files line by line
+ *
+ * @param filename first file
+ * @param genfilename file to compare with
+ *
+ * @retval 0 on errors (succeed_if already executed)
+ * @retval 1 on success
+ */
+int compare_line_files (const char * filename, const char * genfilename)
+{
+	return compare_line_files_fun (filename, genfilename, &strncmp);
+}
+
+
+/**
+ * @brief Compare regex in pattern to str
+ *
+ * @param pattern char * representing a regex pattern
+ * @param str char * we compare the pattern to
+ *
+ * @retval 1 if pattern is invalid or does not match str
+ * @retval 0 on success
+ */
+int regexcmp (const char * pattern, const char * str, size_t n ELEKTRA_UNUSED)
+{
+	int status;
+	regex_t re;
+
+	if (regcomp (&re, pattern, REG_EXTENDED | REG_NOSUB) != 0)
+	{
+		return (1);
+	}
+	status = regexec (&re, str, (size_t) 0, NULL, 0);
+	regfree (&re);
+	return status;
+}
+
+/**
+ * @brief Compare two files line by line where the original file is made up of
+ *        regex
+ *
+ * @param filename first file, containing regex patterns
+ * @param genfilename file to compare with
+ *
+ * @retval 0 on errors (succeed_if already executed)
+ * @retval 1 on success
+ */
+int compare_regex_to_line_files (const char * filename, const char * genfilename)
+{
+	return compare_line_files_fun (filename, genfilename, &regexcmp);
 }
 
 
