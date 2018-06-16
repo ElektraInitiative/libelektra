@@ -27,15 +27,8 @@ using ckdb::ksDel;
 
 using ckdb::Plugin;
 
-void testRoundTrip (string const decodedString, string const encodedString = "")
-#ifdef __llvm__
-	__attribute__ ((annotate ("oclint:suppress[empty if statement]"), annotate ("oclint:suppress[high cyclomatic complexity]"),
-			annotate ("oclint:suppress[high ncss method]"), annotate ("oclint:suppress[too few branches in switch statement]")))
-#endif
+CppKeySet defaultConfig ()
 {
-	CppKeySet modules{ 0, KS_END };
-	elektraModulesInit (modules.getKeySet (), NULL);
-
 	CppKeySet config{ 20,
 			  keyNew ("user/chars", KEY_END),
 			  keyNew ("user/chars/0A", KEY_VALUE, "6E", KEY_END), // new line -> n
@@ -45,6 +38,33 @@ void testRoundTrip (string const decodedString, string const encodedString = "")
 			  keyNew ("user/chars/3D", KEY_VALUE, "65", KEY_END), // = -> e
 			  keyNew ("user/chars/3B", KEY_VALUE, "73", KEY_END), // ; -> s
 			  KS_END };
+	return config;
+}
+
+CppKeySet percentConfig ()
+{
+	CppKeySet config{ 20,
+			  keyNew ("user/chars", KEY_END),
+			  keyNew ("user/chars/0A", KEY_VALUE, "6E", KEY_END), // new line -> n
+			  keyNew ("user/chars/20", KEY_VALUE, "77", KEY_END), // space -> w
+			  keyNew ("user/chars/23", KEY_VALUE, "72", KEY_END), // # -> r
+			  keyNew ("user/chars/5C", KEY_VALUE, "62", KEY_END), // \\ (backslash) -> b
+			  keyNew ("user/chars/3D", KEY_VALUE, "65", KEY_END), // = -> e
+			  keyNew ("user/chars/3B", KEY_VALUE, "73", KEY_END), // ; -> s
+			  keyNew ("user/escape", KEY_VALUE, "25", KEY_END),   // use % as escape character
+			  KS_END };
+	return config;
+}
+
+void testRoundTrip (string const decodedString, string const encodedString = "", CppKeySet config = defaultConfig ())
+#ifdef __llvm__
+	__attribute__ ((annotate ("oclint:suppress[empty if statement]"), annotate ("oclint:suppress[high cyclomatic complexity]"),
+			annotate ("oclint:suppress[high ncss method]"), annotate ("oclint:suppress[too few branches in switch statement]")))
+#endif
+{
+	CppKeySet modules{ 0, KS_END };
+	elektraModulesInit (modules.getKeySet (), NULL);
+
 	CppKey parent{ "system/elektra/modules/type", KEY_END };
 	Plugin * plugin = elektraPluginOpen ("ccode", modules.getKeySet (), config.getKeySet (), *parent);
 	exit_if_fail (plugin != NULL, "Could not open ccode plugin");
@@ -85,4 +105,5 @@ TEST (type, roundtrip)
 	testRoundTrip (" =;#");
 	testRoundTrip ("\n\\");
 	testRoundTrip ("");
+	testRoundTrip ("a value\nwith=;# and \\ itself", "a%wvalue%nwith%e%s%r%wand%w%b%witself", percentConfig ());
 }
