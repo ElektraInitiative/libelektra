@@ -22,21 +22,6 @@ using CppKeySet = kdb::KeySet;
 using std::string;
 using std::vector;
 
-namespace
-{
-/**
- * @brief Cast a character to an unsigned character.
- *
- * @param character This parameter specifies the character this function casts to an unsigned value.
- *
- * @return A unsigned character corresponding to the given argument
- */
-inline constexpr unsigned char operator"" _uc (char character) noexcept
-{
-	return static_cast<unsigned char> (character);
-}
-}
-
 namespace elektra
 {
 class Coder
@@ -75,9 +60,8 @@ class Coder
 	 */
 	void setDefaultConfig ()
 	{
-		unsigned char pairs[][2] = { { '\b'_uc, 'b'_uc }, { '\t'_uc, 't'_uc }, { '\n'_uc, 'n'_uc },  { '\v'_uc, 'v'_uc },
-					     { '\f'_uc, 'f'_uc }, { '\r'_uc, 'r'_uc }, { '\\'_uc, '\\'_uc }, { '\''_uc, '\''_uc },
-					     { '\"'_uc, '"'_uc }, { '\0'_uc, '0'_uc } };
+		unsigned char pairs[][2] = { { '\b', 'b' }, { '\t', 't' },  { '\n', 'n' },  { '\v', 'v' }, { '\f', 'f' },
+					     { '\r', 'r' }, { '\\', '\\' }, { '\'', '\'' }, { '\"', '"' }, { '\0', '0' } };
 
 		for (size_t pair = 0; pair < sizeof (pairs) / sizeof (pairs[0]); pair++)
 		{
