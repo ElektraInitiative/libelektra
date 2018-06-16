@@ -83,3 +83,4 @@ usr/share/man/man1/kdb-change-storage-symlink.1
 usr/share/man/man1/kdb-check-env-dep.1
 usr/share/man/man1/kdb-mount-list-all-files.1
 usr/share/man/man1/kdb-mountpoint-info.1
+usr/share/man/man1/kdb-find.1
