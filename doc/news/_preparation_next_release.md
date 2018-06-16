@@ -151,7 +151,7 @@ Thanks to Michael Zronek and Vanessa Kos.
   are loaded by applications.
   The new option can be used for logging application behavior when using
   [notifications](https://www.libelektra.org/tutorials/notifications). *(Thomas Wahringer)*
-- An issue when building Haskell plugins with a cached sandbox is fixed in case 
+- An issue when building Haskell plugins with a cached sandbox is fixed in case
   a Haskell library bundled with elektra gets changed. *(Armin Wurzinger)*
 - Do not exclude `simpleini` silently on non-glibc systems but output a message
   like for other plugins
@@ -227,11 +227,11 @@ Thanks to Michael Zronek and Vanessa Kos.
   this has to be done beforehand like it is the case with all other dependencies. The main
   reason is that the build servers shouldn't compile the dependencies over and over again,
   only if something changes. See the [readme](https://www.libelektra.org/bindings/haskell). *(Armin Wurzinger)*
-- Plugins can be specified to be only built for `BUILD_SHARED` builds, but to be excluded 
+- Plugins can be specified to be only built for `BUILD_SHARED` builds, but to be excluded
   from any `BUILD_FULL` or `BUILD_STATIC` builds using the new optional argument `ONLY_SHARED`
-  for our cmake macro `add_plugin`. This way `BUILD_SHARED` can be combined with the other 
-  options without excluding such plugins. The cmake messages about plugin inclusion have 
-  been updated to indicate this behavior. This behavior has been applied for the Haskell 
+  for our cmake macro `add_plugin`. This way `BUILD_SHARED` can be combined with the other
+  options without excluding such plugins. The cmake messages about plugin inclusion have
+  been updated to indicate this behavior. This behavior has been applied for the Haskell
   plugins- and bindings as they currently don't support full or static builds. *(Armin Wurzinger)*
 - We now import the current version of [Google Test][] as external project at configuration time using
    [DownloadProject](https://github.com/Crascit/DownloadProject). If you want to use a local installation of
