@@ -27,10 +27,11 @@ using ckdb::ksDel;
 
 using ckdb::Plugin;
 
-string const encodedString = "a\\wvalue\\nwith\\e\\s\\r\\wand\\w\\b\\witself";
-string const decodedString = "a value\nwith=;# and \\ itself";
-
-TEST (type, config)
+void testRoundTrip (string const decodedString, string const encodedString = "")
+#ifdef __llvm__
+	__attribute__ ((annotate ("oclint:suppress[empty if statement]"), annotate ("oclint:suppress[high cyclomatic complexity]"),
+			annotate ("oclint:suppress[high ncss method]"), annotate ("oclint:suppress[too few branches in switch statement]")))
+#endif
 {
 	CppKeySet modules{ 0, KS_END };
 	elektraModulesInit (modules.getKeySet (), NULL);
@@ -48,15 +49,40 @@ TEST (type, config)
 	Plugin * plugin = elektraPluginOpen ("ccode", modules.getKeySet (), config.getKeySet (), *parent);
 	exit_if_fail (plugin != NULL, "Could not open ccode plugin");
 
-	CppKeySet keys{ 20, keyNew ("user/tests/ccode/encoded", KEY_VALUE, encodedString.c_str (), KEY_END), KS_END };
+	CppKeySet keys{ 20, keyNew ("user/tests/ccode/key", KEY_VALUE, decodedString.c_str (), KEY_END), KS_END };
+	succeed_if_same (plugin->kdbSet (plugin, keys.getKeySet (), *parent), ELEKTRA_PLUGIN_STATUS_SUCCESS,
+			 "Call of `kdbset` was not successful");
+
+	if (!encodedString.empty ())
+	{
+		CppKey encoded = keys.lookup ("user/tests/ccode/key");
+		succeed_if_same (encoded.getString (), encodedString, "String not correctly encoded");
+	}
+
 	succeed_if_same (plugin->kdbGet (plugin, keys.getKeySet (), *parent), ELEKTRA_PLUGIN_STATUS_SUCCESS,
 			 "Call of `kdbGet` was not successful");
-
-	CppKey decoded = keys.lookup ("user/tests/ccode/encoded");
+	CppKey decoded = keys.lookup ("user/tests/ccode/key");
 	succeed_if_same (decoded.getString (), decodedString, "String not correctly decoded");
 
 	elektraPluginClose (plugin, 0);
 	ksDel (modules.release ());
 	config.release ();
 	elektraModulesClose (modules.getKeySet (), 0);
+}
+
+TEST (type, roundtrip)
+{
+	testRoundTrip ("a value\nwith=;# and \\ itself", "a\\wvalue\\nwith\\e\\s\\r\\wand\\w\\b\\witself");
+	testRoundTrip ("hello world");
+	testRoundTrip ("hello world!\nnew line");
+	testRoundTrip ("\0");
+	testRoundTrip ("\n");
+	testRoundTrip ("\\");
+	testRoundTrip (" ");
+	testRoundTrip ("=");
+	testRoundTrip (";");
+	testRoundTrip ("#");
+	testRoundTrip (" =;#");
+	testRoundTrip ("\n\\");
+	testRoundTrip ("");
 }
