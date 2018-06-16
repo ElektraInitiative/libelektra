@@ -443,11 +443,15 @@ def generateFullBuildStages() {
     tasks << buildAndTestMingwW64()
 
     // Build Elektra on alpine
+    // TODO: Remove bash after #2077 is resolved
+    // TODO: Add more deps to test them with musl
+    // TODO: add date + fcrypt when their issues are resolved
     tasks << buildAndTest(
         "alpine",
         DOCKER_IMAGES.alpine,
         CMAKE_FLAGS_BUILD_ALL + [
-            'BUILD_STATIC': 'ON'
+            'BUILD_STATIC': 'ON',
+            'PLUGINS': 'ALL;-date;-fcrypt;-passwd'
         ],
         [TEST.ALL]
     )
