@@ -274,6 +274,13 @@ public:
 		return escaped;
 	}
 
+	/**
+	 * @brief This function unescapes characters in key names and values.
+	 *
+	 * @param keys This key set stores keys that possibly contain escaped special characters.
+	 *
+	 * @return A copy of the given KeySet containing unescaped keys
+	 */
 	CppKeySet decodeKeySet (CppKeySet const & keys)
 	{
 		CppKeySet unescaped{};
