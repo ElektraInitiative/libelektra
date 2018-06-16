@@ -203,8 +203,6 @@ class Coder
 	/**
 	 * @brief This function replaces escaped characters in a key name with unescaped characters.
 	 *
-	 * @pre The variable `buffer` needs to be as large as the size of the name of `key`.
-	 *
 	 * @param key This `Key` stores a name possibly containing escaped special characters.
 	 *
 	 * @return A copy of `key` containing an unescaped version of the name of `key`
