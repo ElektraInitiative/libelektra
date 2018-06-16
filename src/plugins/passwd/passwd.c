@@ -60,18 +60,16 @@ static struct passwd * strToPasswd (char * line)
 	pwd->pw_name = elektraStrDup (ptoken);
 
 	// passwd
-	// TODO if x check /etc/shadow
 	ptoken = strtok (NULL, PWD_DELIMITER);
 	pwd->pw_passwd = elektraStrDup (ptoken);
 
 	// uid
 	ptoken = strtok (NULL, PWD_DELIMITER);
-	sscanf (ptoken, "%u", &pwd->pw_uid); // XXX check retval
-
+	if (sscanf (ptoken, "%u", &pwd->pw_uid) != 1) return NULL;
 
 	// gid
 	ptoken = strtok (NULL, PWD_DELIMITER);
-	sscanf (ptoken, "%u", &pwd->pw_gid); // XXX checkretval
+	if (sscanf (ptoken, "%u", &pwd->pw_gid) != 1) return NULL;
 
 	// gecos
 	ptoken = strtok (NULL, PWD_DELIMITER);
@@ -189,6 +187,11 @@ int elektraPasswdGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_
 	while (getline (&line, &len, pwfile) != -1)
 	{
 		pwd = strToPasswd (line);
+		if (!pwd)
+		{
+			ELEKTRA_SET_ERRORF (110, parentKey, "Failed to parse line '%s' of passwd file\n", line);
+			return -1;
+		}
 		KeySet * ks = pwentToKS (pwd, parentKey, index);
 		ksAppend (returned, ks);
 		ksDel (ks);
