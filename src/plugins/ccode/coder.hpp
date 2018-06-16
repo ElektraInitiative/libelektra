@@ -158,11 +158,9 @@ class Coder
 	/**
 	 * @brief This function replaces unescaped characters in a key value with escaped characters.
 	 *
-	 * The function stores the escaped result value both in `buffer` and the given key.
+	 * The function only modifies the key value if it has type `string`.
 	 *
-	 * @pre The variable `buffer` needs to be twice as large as the key value’s size.
-	 *
-	 * @param key This key stores the value this function escapes.
+	 * @param key This key stores the value this function encodes.
 	 */
 	void encodeValue (CppKey & key)
 	{
