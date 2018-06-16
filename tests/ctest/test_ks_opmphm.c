@@ -6,10 +6,25 @@
  * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
  */
 
-#include "../../src/libs/elektra/opmphm.c"
+#include <opmphm.c>
 #include <tests_internal.h>
 
 ssize_t ksCopyInternal (KeySet * ks, size_t to, size_t from);
+
+void test_keyNotFound (void)
+{
+	KeySet * ks = ksNew (10, keyNew ("/a", KEY_END), keyNew ("/b", KEY_END), keyNew ("/c", KEY_END), keyNew ("/d", KEY_END),
+			     keyNew ("/e", KEY_END), keyNew ("/f", KEY_END), keyNew ("/g", KEY_END), keyNew ("/h", KEY_END),
+			     keyNew ("/i", KEY_END), keyNew ("/j", KEY_END), KS_END);
+
+	Key * found = ksLookupByName (ks, "/nothere", KDB_O_OPMPHM);
+	succeed_if (!found, "key found");
+
+	exit_if_fail (ks->opmphm, "build opmphm");
+	succeed_if (opmphmIsBuild (ks->opmphm), "build opmphm");
+
+	ksDel (ks);
+}
 
 void test_Copy (void)
 {
@@ -340,10 +355,11 @@ int main (int argc, char ** argv)
 
 	init (argc, argv);
 
+	test_keyNotFound ();
 	test_Copy ();
 	test_Invalidate ();
 
-	printf ("\ntest_opmphm RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("test_ks_opmphm");
 
 	return nbError;
 }

@@ -12,6 +12,19 @@
 #include <stdlib.h>
 
 /**
+ * Order Preserving Minimal Perfect Hash Map
+ *
+ * Based on the work of
+ *
+ * Fabiano C. Botelho and Nivio Ziviani
+ * "Near-Optimal Space Perfect Hashing Algorithms"
+ *
+ * and
+ *
+ * Zbigniew J. Czech, George Havas, and Bohdan S. Majewski
+ * "An Optimal Algorithm for Generating Minimal Perfect Hash Functions"
+ * In: Information Processing Letters 43 (1992), pp. 257–264
+ *
  * For usage look in [datastructures.md](/doc/dev/datastructures.md)
  *
  * Theoretical limit of elements:

@@ -155,6 +155,8 @@ Thanks to Michael Zronek and Vanessa Kos.
   a Haskell library bundled with elektra gets changed. *(Armin Wurzinger)*
 - Do not exclude `simpleini` silently on non-glibc systems but output a message
   like for other plugins
+- The KeySet has a new flag `KS_FLAG_REBUILD_OPMPHM`, this flag will be used by the hybrid search
+  that combines binary search and [OPMPHM](https://master.libelektra.org/doc/dev/data-structures.md#order-preserving-minimal-perfect-hash-map-aka-opmphm) *(Kurt Micheli)*
 - <<TODO>>
 
 ## Bindings
@@ -214,6 +216,7 @@ Thanks to Michael Zronek and Vanessa Kos.
 - Add `compare_regex_to_line_files` which allows to compare a file made of
     regex patterns to be compared with a text file line by line.
     *(Lukas Winkler)*
+- The OPMPHM has a new test case *(Kurt Micheli)*
 
 ## Compatibility
 
@@ -314,7 +317,9 @@ plugins, bindings and tools are always up to date. Furthermore, we changed:
 
 We are currently working on following topics:
 
-- <<TODO>>
+- The hybrid search algorithm for the Key search `ksLookup (...)` is now in preparation. The hybrid search combines the best properties of the
+  binary search and the [OPMPHM](https://master.libelektra.org/doc/dev/data-structures.md#order-preserving-minimal-perfect-hash-map-aka-opmphm).
+  The hybrid search uses a modified branch predictor to predicts KeySet changes and decides if binary search or OPMPHM would be faster.
 - <<TODO>>
 - <<TODO>>
 
