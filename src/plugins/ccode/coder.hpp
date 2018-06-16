@@ -26,10 +26,10 @@ namespace elektra
 {
 class Coder
 {
-	vector<char> encode;
-	vector<char> decode;
+	vector<unsigned char> encode;
+	vector<unsigned char> decode;
 
-	char escapeCharacter;
+	unsigned char escapeCharacter;
 
 	/**
 	 * @brief This function maps hex characters to integer numbers.
@@ -107,9 +107,9 @@ class Coder
 	 */
 	string encodeString (string const & text)
 	{
-		vector<char> encoded;
+		vector<unsigned char> encoded;
 
-		for (auto character : text)
+		for (unsigned char character : text)
 		{
 			if (encode[character])
 			{
@@ -232,8 +232,8 @@ class Coder
 public:
 	explicit Coder (CppKeySet config)
 	{
-		encode = vector<char> (256);
-		decode = vector<char> (256);
+		encode = vector<unsigned char> (256);
+		decode = vector<unsigned char> (256);
 
 		escapeCharacter = '\\';
 		CppKey const escape = config.lookup ("/escape", 0);
