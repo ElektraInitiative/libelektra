@@ -1,0 +1,3 @@
+usr/lib/*/elektra4/libelektra-crypto_botan.so
+usr/lib/*/elektra4/libelektra-crypto_gcrypt.so
+usr/lib/*/elektra4/libelektra-crypto_openssl.so

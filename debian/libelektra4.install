@@ -18,7 +18,6 @@ usr/lib/*/elektra4/libelektra-hosts.so*
 usr/lib/*/elektra4/libelektra-iconv.so*
 usr/lib/*/elektra4/libelektra-dini.so*
 usr/lib/*/elektra4/libelektra-ini.so*
-usr/lib/*/elektra4/libelektra-journald.so*
 usr/lib/*/elektra4/libelektra-keytometa.so*
 usr/lib/*/elektra4/libelektra-lineendings.so*
 usr/lib/*/elektra4/libelektra-line.so*
@@ -32,14 +31,9 @@ usr/lib/*/elektra4/libelektra-noresolver.so*
 usr/lib/*/elektra4/libelektra-null.so*
 usr/lib/*/elektra4/libelektra-path.so*
 usr/lib/*/elektra4/libelektra-profile.so*
-usr/lib/*/elektra4/libelektra-python2.so*
 usr/lib/*/elektra4/libelektra-regexstore.so*
 usr/lib/*/elektra4/libelektra-rename.so*
 usr/lib/*/elektra4/libelektra-required.so*
-usr/lib/*/elektra4/libelektra-crypto_botan.so
-usr/lib/*/elektra4/libelektra-crypto_gcrypt.so
-usr/lib/*/elektra4/libelektra-curlget.so
-usr/lib/*/elektra4/libelektra-crypto_openssl.so
 usr/lib/*/elektra4/libelektra-resolver_fm_b_b.so*
 usr/lib/*/elektra4/libelektra-resolver_fm_hb_b.so*
 usr/lib/*/elektra4/libelektra-resolver_fm_hp_b.so*
