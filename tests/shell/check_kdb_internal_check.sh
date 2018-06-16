@@ -12,6 +12,7 @@ cleanup()
 	rm -f "$FILE"
 }
 
+printf "Running checks with >%s<\n" "$KDB"
 
 ACTUAL_PLUGINS=$PLUGINS
 # Otherwise the test would fail as SHARED_ONLY plugins are not
@@ -19,6 +20,8 @@ ACTUAL_PLUGINS=$PLUGINS
 if contains $KDB "full" || contains $KDB "static"; then
 	ACTUAL_PLUGINS=$ADDED_PLUGINS_WITHOUT_ONLY_SHARED
 fi
+
+printf "Checking %s\n" "$ACTUAL_PLUGINS"
 
 for PLUGIN in $ACTUAL_PLUGINS
 do
