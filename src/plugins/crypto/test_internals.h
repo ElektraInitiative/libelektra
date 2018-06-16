@@ -30,6 +30,10 @@
 		test_init (PLUGIN_NAME);                                                                                                   \
 		test_incomplete_config (PLUGIN_NAME);                                                                                      \
 		test_crypto_operations (PLUGIN_NAME);                                                                                      \
+	}                                                                                                                                  \
+	else                                                                                                                               \
+	{                                                                                                                                  \
+		printf ("The test was disabled because gpg could not be found on the system.\n");                                          \
 	}
 
 typedef int (*checkConfPtr) (Key *, KeySet *);
