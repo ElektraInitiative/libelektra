@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief Implementation of data type checker
+ * @brief Definition of string encoding and decoding class
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
