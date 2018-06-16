@@ -217,6 +217,7 @@ Thanks to Michael Zronek and Vanessa Kos.
     regex patterns to be compared with a text file line by line.
     *(Lukas Winkler)*
 - The OPMPHM has a new test case *(Kurt Micheli)*
+- Do not execute `fcrypt` and `crypto` unit tests if the `gpg` binary is not available. *(Peter Nirschl)*
 
 ## Compatibility
 

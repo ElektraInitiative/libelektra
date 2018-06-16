@@ -18,6 +18,7 @@
 #include <gpg.h>
 #include <test_key.h>
 
+#include "../crypto/common_gpg_tests.c"
 #include "fcrypt.h"
 
 #define PLUGIN_NAME "fcrypt"
@@ -287,6 +288,12 @@ int main (int argc, char ** argv)
 	printf ("==================\n\n");
 
 	init (argc, argv);
+
+	if (!gpg_available (newPluginConfiguration ()))
+	{
+		printf ("The test was disabled because gpg could not be found on the system.\n");
+		return nbError;
+	}
 
 	test_gpg ();
 	test_init ();
