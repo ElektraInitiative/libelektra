@@ -6,7 +6,8 @@ RUN apk update \
         cmake \
         git \
         file \
-        curl
+        curl \
+        bash
 
 # Google Test
 ENV GTEST_ROOT=/opt/gtest
