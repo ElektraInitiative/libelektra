@@ -12,9 +12,6 @@
 #include <kdberrors.h>
 #include <kdbplugin.hpp>
 
-using ckdb::Key;
-using ckdb::KeySet;
-
 using elektra::Coder;
 
 namespace
