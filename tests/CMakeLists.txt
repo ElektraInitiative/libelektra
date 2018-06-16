@@ -36,7 +36,7 @@ if (ENABLE_TESTING)
 	# Prevent GoogleTest from overriding our compiler/linker options when building with Visual Studio
 	set (gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 
-	add_subdirectory (${googletest_SOURCE_DIR} ${googletest_BINARY_DIR})
+	add_subdirectory (${googletest_SOURCE_DIR} ${googletest_BINARY_DIR} EXCLUDE_FROM_ALL)
 
 	# Old versions of Google Test do not include Google Mock
 	if (TARGET gmock)
