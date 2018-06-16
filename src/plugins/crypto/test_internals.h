@@ -24,10 +24,13 @@
 #define TEST_KEY_ID "DDEBEF9EE2DC931701338212DAF635B17F230E8D"
 
 #define TEST_SUITE(PLUGIN_NAME)                                                                                                            \
-	test_gpg ();                                                                                                                       \
-	test_init (PLUGIN_NAME);                                                                                                           \
-	test_incomplete_config (PLUGIN_NAME);                                                                                              \
-	test_crypto_operations (PLUGIN_NAME);
+	if (gpg_available ())                                                                                                              \
+	{                                                                                                                                  \
+		test_gpg ();                                                                                                               \
+		test_init (PLUGIN_NAME);                                                                                                   \
+		test_incomplete_config (PLUGIN_NAME);                                                                                      \
+		test_crypto_operations (PLUGIN_NAME);                                                                                      \
+	}
 
 typedef int (*checkConfPtr) (Key *, KeySet *);
 
@@ -102,6 +105,28 @@ static KeySet * newPluginConfiguration (void)
 {
 	return ksNew (2, keyNew (ELEKTRA_RECIPIENT_KEY, KEY_VALUE, TEST_KEY_ID, KEY_END),
 		      keyNew (ELEKTRA_CRYPTO_PARAM_GPG_UNIT_TEST, KEY_VALUE, "1", KEY_END), KS_END);
+}
+
+static int gpg_available (void)
+{
+	int available = 0;
+	char * gpgPath = NULL;
+	KeySet * conf = newPluginConfiguration ();
+	Key * parentKey = keyNew ("system", KEY_END);
+
+	int gpg_search_result = CRYPTO_PLUGIN_FUNCTION (gpgGetBinary) (&gpgPath, conf, parentKey);
+	if (gpg_search_result == 1)
+	{
+		available = 1;
+	}
+
+	if (gpgPath)
+	{
+		elektraFree (gpgPath);
+	}
+	keyDel (parentKey);
+	ksDel (conf);
+	return available;
 }
 
 static void test_init (const char * pluginName)

@@ -195,7 +195,7 @@ static int searchPathForBin (Key * errorKey, const char * bin, char ** result)
  * @retval 1 on success.
  * @retval -1 on error. In this case errorkey holds an error description.
  */
-static int getGpgBinary (char ** gpgBin, KeySet * conf, Key * errorKey)
+int CRYPTO_PLUGIN_FUNCTION (gpgGetBinary) (char ** gpgBin, KeySet * conf, Key * errorKey)
 {
 	*gpgBin = NULL;
 
@@ -204,7 +204,7 @@ static int getGpgBinary (char ** gpgBin, KeySet * conf, Key * errorKey)
 	if (k)
 	{
 		const char * configPath = keyString (k);
-		const size_t configPathLen = strlen (configPath);
+		const size_t configPathLen = strlen (configPath) + 1; // NULL-terminator
 		if (configPathLen > 0)
 		{
 			*gpgBin = elektraMalloc (configPathLen + 1);
@@ -733,7 +733,7 @@ int CRYPTO_PLUGIN_FUNCTION (gpgCall) (KeySet * conf, Key * errorKey, Key * msgKe
 	}
 
 	// sanitize the argument vector
-	if (getGpgBinary (&argv[0], conf, errorKey) != 1)
+	if (CRYPTO_PLUGIN_FUNCTION (gpgGetBinary) (&argv[0], conf, errorKey) != 1)
 	{
 		return -1;
 	}
