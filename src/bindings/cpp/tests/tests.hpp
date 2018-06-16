@@ -24,8 +24,6 @@
 using namespace std;
 using namespace kdb;
 
-#define BUFFER_LENGTH 4096
-
 #define succeed_if(x, y)                                                                                                                   \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
