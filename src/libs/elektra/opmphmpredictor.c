@@ -10,6 +10,7 @@
 #include <kdbhelper.h>
 #include <kdblogger.h>
 #include <kdbopmphmpredictor.h>
+#include <stdlib.h>
 #include <string.h>
 
 /**
@@ -31,7 +32,9 @@ static uint8_t predictionAutomata[4][2] = {
 /**
  * @brief Heuristic function above the OPMPHM usage is worth.
  *
- * Tells how many ksLookup (...) invocations without alteration of the KeySet need to be made to justify the OPMPHM usage.
+ * This easy and fast computable heuristic function tells how many ksLookup (...) invocations without alteration
+ * of the KeySet need to be made to justify the OPMPHM usage.
+ * This heuristic function is developed and measured by benchmarks.
  *
  * @param n the number of elements in the KeySet
  *
@@ -70,14 +73,7 @@ inline int opmphmPredictorIncCountBinarySearch (OpmphmPredictor * op, size_t n)
 	++op->lookupCount;
 	size_t worthOpmphm = opmphmPredictorWorthOpmphm (n);
 	worthOpmphm = worthOpmphm + worthOpmphm + worthOpmphm; // 3 * worthOpmphm
-	if (op->lookupCount > worthOpmphm)
-	{
-		return 1;
-	}
-	else
-	{
-		return 0;
-	}
+	return op->lookupCount > worthOpmphm;
 }
 
 /**
@@ -105,7 +101,7 @@ int opmphmPredictor (OpmphmPredictor * op, size_t n)
 	size_t worthOpmphm = opmphmPredictorWorthOpmphm (n);
 	uint8_t wasItWorth = op->lookupCount > worthOpmphm ? 1 : 0;
 	// find position in array
-	uint16_t pos = op->history & OPMPHM_PREDICTOR_HISTORY_EXTRACTION_MASK;
+	uint16_t pos = op->history & opmphmPredictorHistoryMask;
 	uint8_t * state = &(op->patternTable[pos >> 2]); // (pos * 2) / 8 == pos >> 2
 	// extract 2 bit state
 	uint8_t newState = (*state >> ((pos & 0x3) << 1)) & 0x3; // ((pos & 0x3) << 1) == (pos % 4) * 2), 0x3 is 2 bit mask
@@ -119,28 +115,21 @@ int opmphmPredictor (OpmphmPredictor * op, size_t n)
 	 * predict with updated history
 	 */
 	// add the worth information to the history
-	op->history = ((op->history << 1) | wasItWorth) & OPMPHM_PREDICTOR_HISTORY_EXTRACTION_MASK;
-	pos = op->history & OPMPHM_PREDICTOR_HISTORY_EXTRACTION_MASK;
+	op->history = ((op->history << 1) | wasItWorth) & opmphmPredictorHistoryMask;
+	pos = op->history & opmphmPredictorHistoryMask;
 	state = &(op->patternTable[pos >> 2]); // (pos * 2) / 8 == pos >> 2
 	// extract 2 bit state
 	uint8_t prediction = (*state >> ((pos & 0x3) << 1)) & 0x3; // ((pos & 0x3) << 1) == (pos % 4) * 2), 0x3 is 2 bit mask
 	// reset lookupCount
 	op->lookupCount = 1;
 	// determine prediction
-	if (prediction > 1)
-	{
-		return 1;
-	}
-	else
-	{
-		return 0;
-	}
+	return prediction > 1;
 }
 
 /**
  * @brief Allocates and initializes the OpmphmPredictor.
  *
- * Reserves for all possible values of OPMPHM_PREDICTOR_HISTORY_EXTRACTION_MASK two bits
+ * Reserves for all possible values of opmphmPredictorHistoryMask two bits
  * to store all 4 states of the Prediction Automata A2.
  * Sets the initial state to 0.
  *
@@ -154,7 +143,8 @@ OpmphmPredictor * opmphmPredictorNew (void)
 	{
 		return NULL;
 	}
-	uint16_t bytesInPatternTable = (OPMPHM_PREDICTOR_HISTORY_EXTRACTION_MASK + 1) >> 2; // x >> 2 == (x * 2) / 8
+	// per 1 bit in opmphmPredictorHistoryMask 2 bits in the patternTable are needed
+	uint16_t bytesInPatternTable = (opmphmPredictorHistoryMask + 1) >> 2; // x >> 2 == (x * 2) / 8
 	if (!bytesInPatternTable)
 	{
 		bytesInPatternTable = 1;

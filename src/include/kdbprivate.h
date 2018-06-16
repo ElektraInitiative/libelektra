@@ -133,15 +133,17 @@ typedef enum {
  * @ingroup backend
  */
 typedef enum {
-	KS_FLAG_SYNC = 1, /*!<
+	KS_FLAG_SYNC = 1 /*!<
 		 KeySet need sync.
 		 If keys were popped from the Keyset
 		 this flag will be set, so that the backend will sync
 		 the keys to database.*/
-	KS_FLAG_REBUILD_OPMPHM = 1 << 1 /*!<
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+	,KS_FLAG_REBUILD_OPMPHM = 1 << 1 /*!<
 		 The OPMPHM needs to be rebuild.
 		 Every Key add, Key removal or Key name change operation
 		 sets this flag.*/
+#endif
 } ksflag_t;
 
 
