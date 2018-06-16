@@ -384,8 +384,7 @@ Architecture: any
 Multi-Arch: foreign
 Depends: libelektra4 (= ${binary:Version}),
  ${shlibs:Depends},
- ${misc:Depends},
- python-all
+ ${misc:Depends}
 Replaces: libelektra-bin (<< 0.8.19-1), libelektra-full4 (<< 0.8.19-1)
 Breaks: libelektra-bin (<< 0.8.19-1), libelektra-full4 (<< 0.8.19-1)
 Conflicts: kernel-patch-kdb
@@ -400,6 +399,27 @@ Description: Elektra configuration store, binaries
  implementations.
  .
  This package contains command line utilities for Elektra.
+
+Package: elektra-bin-extra
+Architecture: any
+Multi-Arch: foreign
+Conflicts: elektra-bin (<< ${binary:Version})
+Depends: libelektra4 (= ${binary:Version}),
+ ${shlibs:Depends},
+ ${misc:Depends},
+ python-all
+Description: Elektra configuration store, binaries
+ Elektra provides a universal and secure framework to store configuration
+ parameters in a hierarchical key-value pair mechanism, instead of each
+ program using its own text configuration files. This allows any program
+ to read and save its configuration with a consistent API, and allows
+ them to be aware of other applications' configurations, permitting
+ easy application integration. While architecturally similar to other OS
+ registries, Elektra does not have most of the problems found in those
+ implementations.
+ .
+ This package contains extra command line utilities for Elektra
+ written in non-shell languages like python.
 
 Package: elektra-qt-gui
 Architecture: any

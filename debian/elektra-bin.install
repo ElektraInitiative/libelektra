@@ -24,7 +24,6 @@ usr/lib/*/elektra/tool_exec/ffconfig/setupConfig
 usr/lib/*/elektra/tool_exec/ffconfig/setupHomepage
 usr/lib/*/elektra/tool_exec/ffconfig/setupProxy
 usr/lib/*/elektra/tool_exec/ffconfig/writeConfigFiles
-usr/lib/*/elektra/tool_exec/find-tools
 usr/lib/*/elektra/tool_exec/generate_data
 usr/lib/*/elektra/tool_exec/getenv
 usr/lib/*/elektra/tool_exec/install-sh-completion
@@ -47,7 +46,6 @@ usr/share/man/man1/kdb-cp.1
 usr/share/man/man1/kdb-editor.1
 usr/share/man/man1/kdb-export.1
 usr/share/man/man1/kdb-file.1
-usr/share/man/man1/kdb-find-tools.1
 usr/share/man/man1/kdb-fstab.1
 usr/share/man/man1/kdb-get.1
 usr/share/man/man1/kdb-getmeta.1
