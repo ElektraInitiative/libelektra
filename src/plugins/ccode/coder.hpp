@@ -273,6 +273,19 @@ public:
 		ELEKTRA_LOG_DEBUG ("Encoded name of “%s” is “%s”", key.getName ().c_str (), escaped.getName ().c_str ());
 		return escaped;
 	}
+
+
+	CppKeySet encodeKeySet (CppKeySet const & keys)
+	{
+		CppKeySet escaped{};
+		for (auto key : keys)
+		{
+			CppKey encoded = encodeName (*key);
+			encodeValue (encoded);
+			escaped.append (encoded);
+		}
+		return escaped;
+	}
 };
 
 } // end namespace elektra

@@ -88,17 +88,12 @@ int elektraCcodeGet (Plugin * handle, KeySet * returned, Key * parentKey)
 int elektraCcodeSet (Plugin * handle, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
 {
 	CppKeySet keys{ returned };
-	CppKeySet escaped{};
-	for (auto key : keys)
-	{
-		CppKey encoded = coderDelegator::get (handle)->encodeName (*key);
-		coderDelegator::get (handle)->encodeValue (encoded);
-		escaped.append (encoded);
-	}
 
+	CppKeySet encoded = coderDelegator::get (handle)->encodeKeySet (keys);
 	keys.release ();
-	ksCopy (returned, escaped.getKeySet ());
-	ksDel (escaped.release ());
+	ksCopy (returned, encoded.getKeySet ());
+	ksDel (encoded.release ());
+
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
