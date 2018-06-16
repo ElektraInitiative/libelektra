@@ -170,9 +170,7 @@ class Coder
 	/**
 	 * @brief This function replaces escaped characters in a key value with unescaped characters.
 	 *
-	 * The function stores the unescaped result value both in `buffer` and the given key.
-	 *
-	 * @pre The variable `buffer` needs to be as large as the key value’s size.
+	 * The function only modifies the key value if it has type `string`.
 	 *
 	 * @param key This key holds the value this function decodes.
 	 */
