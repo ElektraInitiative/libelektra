@@ -255,6 +255,13 @@ public:
 		}
 	}
 
+	/**
+	 * @brief This function escapes special characters in key names and values.
+	 *
+	 * @param keys This key set stores keys that possibly contain special characters.
+	 *
+	 * @return A copy of the given KeySet containing only escaped keys
+	 */
 	CppKeySet encodeKeySet (CppKeySet const & keys)
 	{
 		CppKeySet escaped{};
