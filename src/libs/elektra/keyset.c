@@ -1975,8 +1975,8 @@ static const char * elektraOpmphmGetString (void * data)
  *
  * @param ks the KeySet which OPMPHM is to build
  *
- * @return 0 on success
- * @return -1 on memory error or to many mapping invocations
+ * @retval 0 on success
+ * @retval -1 on memory error or to many mapping invocations
  */
 static int elektraLookupBuildOpmphm (KeySet * ks)
 {
@@ -1992,7 +1992,7 @@ static int elektraLookupBuildOpmphm (KeySet * ks)
 			return -1;
 		}
 	}
-	ELEKTRA_ASSERT (!opmphmIsBuild (ks->opmphm), "build already build OPMPHM");
+	ELEKTRA_ASSERT (!opmphmIsBuild (ks->opmphm), "OPMPHM already build");
 	// make graph
 	uint8_t r = opmphmOptR (ks->size);
 	double c = opmphmMinC (r);

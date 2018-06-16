@@ -6,7 +6,7 @@
  * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
  */
 
-#include "../../src/libs/elektra/opmphm.c"
+#include <opmphm.c>
 #include <tests_internal.h>
 
 ssize_t ksCopyInternal (KeySet * ks, size_t to, size_t from);
@@ -359,7 +359,7 @@ int main (int argc, char ** argv)
 	test_Copy ();
 	test_Invalidate ();
 
-	printf ("\ntest_opmphm RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("test_ks_opmphm");
 
 	return nbError;
 }

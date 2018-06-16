@@ -7,7 +7,7 @@
  */
 
 #define OPMPHM_TEST
-#include "../../src/libs/elektra/opmphm.c"
+#include <opmphm.c>
 #include <tests_internal.h>
 
 // dummy for testing
@@ -24,10 +24,10 @@ static void test_basic (void)
 {
 	Opmphm * opmphm = opmphmNew ();
 	exit_if_fail (opmphm, "opmphmNew");
-	succeed_if (!opmphmIsBuild (opmphm), "isBuild");
-	succeed_if (!opmphmIsBuild (NULL), "isBuild");
+	succeed_if (!opmphmIsBuild (opmphm), "opmphm is build but should be not build");
+	succeed_if (!opmphmIsBuild (NULL), "isBuild NULL returned true");
 	opmphm->size = 1;
-	succeed_if (opmphmIsBuild (opmphm), "isBuild");
+	succeed_if (opmphmIsBuild (opmphm), "opmphm is not build but should be build");
 	opmphm->size = 0;
 	opmphmDel (opmphm);
 }
@@ -394,7 +394,7 @@ int main (int argc, char ** argv)
 	test_acyclicDefaultOrder ();
 	test_acyclicReverseOrder ();
 
-	printf ("\ntest_opmphm RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("test_opmphm");
 
 	return nbError;
 }

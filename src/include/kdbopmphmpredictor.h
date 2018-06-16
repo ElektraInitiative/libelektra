@@ -9,7 +9,6 @@
 #define OPMPHM_PREDICTOR_H
 
 #include <stdint.h>
-#include <stdlib.h>
 
 /**
  * Order Preserving Minimal Perfect Hash Map Predictor
@@ -27,10 +26,10 @@
  */
 
 /**
- * OPMPHM_PREDICTOR_HISTORY_EXTRACTION_MASK defines the length and extraction mask of the global history register
+ * opmphmPredictorHistoryMask defines the length and extraction mask of the global history register
  * interpreted binary it must be a series of 1, with a minimum value of 0x3 and a maximum value of 0x7FFF.
  */
-#define OPMPHM_PREDICTOR_HISTORY_EXTRACTION_MASK 0x7FF // 11 bit history
+const uint16_t opmphmPredictorHistoryMask = 0x7FF; // 11 bit history
 
 typedef struct
 {

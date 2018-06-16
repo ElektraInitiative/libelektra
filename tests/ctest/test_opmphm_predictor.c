@@ -6,7 +6,7 @@
  * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
  */
 
-#include "../../src/libs/elektra/opmphmpredictor.c"
+#include <opmphmpredictor.c>
 #include <tests_internal.h>
 
 void test_internal_basic (void)
@@ -80,7 +80,7 @@ static void test_internal_change_whitebox_set_to_state (uint8_t oldState, uint8_
 	/*
 	 * Set every entry in pattern table to state
 	 */
-	for (uint16_t testHistory = 0; testHistory <= OPMPHM_PREDICTOR_HISTORY_EXTRACTION_MASK; ++testHistory)
+	for (uint16_t testHistory = 0; testHistory <= opmphmPredictorHistoryMask; ++testHistory)
 	{
 		op->history = testHistory;
 		// set not worth to hash
@@ -146,36 +146,6 @@ void test_internal_change_whitebox (void)
 	opmphmPredictorDel (op);
 }
 
-//~ void test_ks (void)
-//~ {
-//~ KeySet * ks = ksNew (10, keyNew ("/a", KEY_END), keyNew ("/b", KEY_END), keyNew ("/c", KEY_END), keyNew ("/d", KEY_END),
-//~ keyNew ("/e", KEY_END), keyNew ("/f", KEY_END), keyNew ("/g", KEY_END), keyNew ("/h", KEY_END),
-//~ keyNew ("/i", KEY_END), keyNew ("/j", KEY_END), KS_END);
-
-//~ exit_if_fail (ks->opmphmPredictor, "no predictor here");
-
-//~ // overrule with binary search
-//~ Key * found = ksLookupByName (ks, "/a", KDB_O_BINSEARCH);
-//~ succeed_if (found, "key found");
-
-//~ succeed_if (ks->opmphmPredictor->lookupCount == 0, "predictor touched");
-//~ succeed_if (ks->opmphmPredictor->history == 0, "predictor touched");
-
-//~ // overrule with OPMPHM
-//~ found = ksLookupByName (ks, "/a", KDB_O_OPMPHM);
-//~ succeed_if (found, "key found");
-
-//~ succeed_if (ks->opmphmPredictor->lookupCount == 0, "predictor touched");
-//~ succeed_if (ks->opmphmPredictor->history == 0, "predictor touched");
-
-//~ // use predictor
-//~ found = ksLookupByName (ks, "/a", KDB_O_NONE);
-//~ succeed_if (found, "key found");
-
-//~ succeed_if (ks->opmphmPredictor->lookupCount != 0, "predictor not touched");
-
-//~ ksDel (ks);
-//~ }
 
 int main (int argc, char ** argv)
 {
@@ -187,9 +157,8 @@ int main (int argc, char ** argv)
 	test_internal_basic ();
 	test_internal_nochange ();
 	test_internal_change_whitebox ();
-	//~ test_ks ();
 
-	printf ("\ntest_opmphm_predictor RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("test_opmphm_predictor");
 
 	return nbError;
 }
