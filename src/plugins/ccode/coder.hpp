@@ -171,35 +171,6 @@ class Coder
 		return { decoded.begin (), decoded.end () };
 	}
 
-public:
-	explicit Coder (CppKeySet config)
-	{
-		encode = vector<char> (256);
-		decode = vector<char> (256);
-
-		escapeCharacter = '\\';
-		CppKey const escape = config.lookup ("/escape", 0);
-		if (escape && escape.getBaseNameSize () && escape.getBinarySize () == 3)
-		{
-			int escapeChar = elektraHexcodeConvFromHex (escape.get<string> ()[1]);
-			escapeChar += elektraHexcodeConvFromHex (escape.get<string> ()[0]) * 16;
-
-			escapeCharacter = escapeChar & 255;
-		}
-		ELEKTRA_LOG_DEBUG ("Use “%c” as escape character", escapeCharacter);
-
-		CppKey const root = config.lookup ("/chars", 0);
-
-		if (root)
-		{
-			readConfig (config, root);
-		}
-		else
-		{
-			setDefaultConfig ();
-		}
-	}
-
 	/**
 	 * @brief This function replaces unescaped characters in a key value with escaped characters.
 	 *
@@ -229,29 +200,6 @@ public:
 	}
 
 	/**
-	 * @brief This function replaces escaped characters in a key name with unescaped characters.
-	 *
-	 * @pre The variable `buffer` needs to be as large as the size of the name of `key`.
-	 *
-	 * @param key This `Key` stores a name possibly containing escaped special characters.
-	 *
-	 * @return A copy of `key` containing an unescaped version of the name of `key`
-	 */
-	CppKey decodeName (CppKey const & key)
-	{
-		CppKey unescaped{ key.dup () };
-		unescaped.setName (key.getNamespace ());
-		auto keyIterator = key.begin ();
-
-		while (++keyIterator != key.end ())
-		{
-			unescaped.addBaseName (decodeString (*keyIterator));
-		}
-		ELEKTRA_LOG_DEBUG ("Decoded name of “%s” is “%s”", key.getName ().c_str (), unescaped.getName ().c_str ());
-		return unescaped;
-	}
-
-	/**
 	 * @brief This function replaces unescaped characters in a key name with escaped characters.
 	 *
 	 * @pre The variable `buffer` needs to be twice as large as the size of the name of `key`.
@@ -274,6 +222,57 @@ public:
 		return escaped;
 	}
 
+	/**
+	 * @brief This function replaces escaped characters in a key name with unescaped characters.
+	 *
+	 * @pre The variable `buffer` needs to be as large as the size of the name of `key`.
+	 *
+	 * @param key This `Key` stores a name possibly containing escaped special characters.
+	 *
+	 * @return A copy of `key` containing an unescaped version of the name of `key`
+	 */
+	CppKey decodeName (CppKey const & key)
+	{
+		CppKey unescaped{ key.dup () };
+		unescaped.setName (key.getNamespace ());
+		auto keyIterator = key.begin ();
+
+		while (++keyIterator != key.end ())
+		{
+			unescaped.addBaseName (decodeString (*keyIterator));
+		}
+		ELEKTRA_LOG_DEBUG ("Decoded name of “%s” is “%s”", key.getName ().c_str (), unescaped.getName ().c_str ());
+		return unescaped;
+	}
+
+public:
+	explicit Coder (CppKeySet config)
+	{
+		encode = vector<char> (256);
+		decode = vector<char> (256);
+
+		escapeCharacter = '\\';
+		CppKey const escape = config.lookup ("/escape", 0);
+		if (escape && escape.getBaseNameSize () && escape.getBinarySize () == 3)
+		{
+			int escapeChar = elektraHexcodeConvFromHex (escape.get<string> ()[1]);
+			escapeChar += elektraHexcodeConvFromHex (escape.get<string> ()[0]) * 16;
+
+			escapeCharacter = escapeChar & 255;
+		}
+		ELEKTRA_LOG_DEBUG ("Use “%c” as escape character", escapeCharacter);
+
+		CppKey const root = config.lookup ("/chars", 0);
+
+		if (root)
+		{
+			readConfig (config, root);
+		}
+		else
+		{
+			setDefaultConfig ();
+		}
+	}
 
 	CppKeySet encodeKeySet (CppKeySet const & keys)
 	{
@@ -285,6 +284,19 @@ public:
 			escaped.append (encoded);
 		}
 		return escaped;
+	}
+
+	CppKeySet decodeKeySet (CppKeySet const & keys)
+	{
+		CppKeySet unescaped{};
+		for (auto key : keys)
+		{
+			CppKey decoded = decodeName (*key);
+			decodeValue (decoded);
+			unescaped.append (decoded);
+		}
+
+		return unescaped;
 	}
 };
 
