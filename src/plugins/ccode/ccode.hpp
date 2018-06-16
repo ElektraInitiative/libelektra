@@ -16,10 +16,10 @@ using ckdb::KeySet;
 using ckdb::Plugin;
 
 extern "C" {
-int elektraCcodeOpen (Plugin * handle, Key * k);
-int elektraCcodeClose (Plugin * handle, Key * k);
-int elektraCcodeGet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraCcodeSet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraCcodeOpen (Plugin * handle, Key * key);
+int elektraCcodeClose (Plugin * handle, Key * key);
+int elektraCcodeGet (Plugin * handle, KeySet * keySet, Key * parentKey);
+int elektraCcodeSet (Plugin * handle, KeySet * keySet, Key * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (ccode);
 } // end extern "C"
