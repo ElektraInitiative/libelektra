@@ -34,6 +34,9 @@ usr/include/elektra/keyset.hpp
 usr/include/elektra/keysetio.hpp
 usr/include/elektra/kdbutility.h
 usr/include/elektra/kdbinvoke.h
+usr/include/elektra/kdbnotification.h
+usr/include/elektra/kdbpluginprocess.h
+usr/include/elektra/kdbio.h
 usr/include/elektra/merging/automergeconfiguration.hpp
 usr/include/elektra/merging/automergestrategy.hpp
 usr/include/elektra/merging/importmergeconfiguration.hpp
@@ -64,3 +67,5 @@ usr/lib/*/cmake/Elektra/ElektraTargetsLibelektra-*.cmake
 usr/lib/*/cmake/Elektra/ElektraTargetsLibelektra.cmake
 usr/lib/*/libelektra.so
 usr/lib/*/pkgconfig/elektra.pc
+usr/lib/*/pkgconfig/elektra-notification.pc
+usr/lib/*/pkgconfig/elektra-io.pc
