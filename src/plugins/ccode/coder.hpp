@@ -222,6 +222,11 @@ class Coder
 	}
 
 public:
+	/**
+	 * @brief This constructor creates a new object used to decode and encode key sets.
+	 *
+	 * @param config This key set contains configuration values for decoding and encoding such as mapping data and the escape character.
+	 */
 	explicit Coder (CppKeySet config)
 	{
 		encode = vector<unsigned char> (256);
