@@ -424,7 +424,10 @@ int ksDel (KeySet * ks)
 		opmphmDel (ks->opmphm);
 	}
 #endif
-
+	if (ks->mmapInfo)
+	{
+		set_bit (ks->mmapInfo->flags, MMAP_FLAG_DELETED);
+	}
 	if (test_bit (ks->flags, KS_FLAG_MMAP_STRUCT) != KS_FLAG_MMAP_STRUCT)
 	{
 		elektraFree (ks);
@@ -2612,6 +2615,7 @@ int ksInit (KeySet * ks)
 	ks->size = 0;
 	ks->alloc = 0;
 	ks->flags = 0;
+	ks->mmapInfo = 0;
 
 	ksRewind (ks);
 
@@ -2649,11 +2653,6 @@ int ksClose (KeySet * ks)
 	if (ks->array && !arrayInMmap)
 	{
 		elektraFree (ks->array);
-	}
-	else
-	{
-		ks->array = NULL;
-		clear_bit (ks->flags, KS_FLAG_MMAP_ARRAY);
 	}
 	ks->array = 0;
 	ks->alloc = 0;

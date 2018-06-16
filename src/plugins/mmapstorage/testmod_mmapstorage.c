@@ -488,16 +488,19 @@ static void test_mmap_double_get (const char * tmpFile)
 
 	compare_keyset (first, ks);
 	compare_keyset (ks, first);
+	compare_keyset (second, ks);
+	compare_keyset (ks, second);
 
 	ksDel (ks);
 	ks = metaTestKeySet();
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 
-	compare_keyset (first, second);
-	compare_keyset (second, first);
+	KeySet * simple = simpleTestKeySet ();
+	compare_keyset (first, simple);
+	compare_keyset (second, simple);
 	ksDel (first);
 	ksDel (second);
-
+	ksDel (simple);
 	ksDel (ks);
 	keyDel (parentKey);
 	PLUGIN_CLOSE ();

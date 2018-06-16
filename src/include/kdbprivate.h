@@ -22,6 +22,7 @@
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 #include <kdbopmphm.h>
 #endif
+#include <kdbmmap.h>
 #include <kdbglobal.h>
 
 #include <limits.h>
@@ -270,6 +271,12 @@ struct _KeySet
 	 * Some control and internal flags.
 	 */
 	ksflag_t flags;
+
+	/**
+	 * Mmap information struct
+	 */
+	MmapHeader * mmapInfo;
+
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 	/**
 	 * The Order Preserving Minimal Perfect Hash Map.
