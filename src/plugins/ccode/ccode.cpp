@@ -50,7 +50,7 @@ int elektraCcodeOpen (Plugin * handle, Key * key)
 }
 
 /** @see elektraDocClose */
-int elektraCcodeClose (Plugin * handle ELEKTRA_UNUSED, Key * key ELEKTRA_UNUSED)
+int elektraCcodeClose (Plugin * handle ELEKTRA_UNUSED, Key * key)
 {
 	return coderDelegator::close (handle, key);
 }
