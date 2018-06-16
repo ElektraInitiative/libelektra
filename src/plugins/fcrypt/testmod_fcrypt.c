@@ -18,6 +18,7 @@
 #include <gpg.h>
 #include <test_key.h>
 
+#include "../crypto/common_gpg_tests.c"
 #include "fcrypt.h"
 
 #define PLUGIN_NAME "fcrypt"
@@ -112,28 +113,6 @@ static int isTestFileCorrect (const char * file)
 
 	fclose (f);
 	return returnValue;
-}
-
-static int gpg_available (void)
-{
-	int available = 0;
-	char * gpgPath = NULL;
-	KeySet * conf = newPluginConfiguration ();
-	Key * parentKey = keyNew ("system", KEY_END);
-
-	int gpg_search_result = CRYPTO_PLUGIN_FUNCTION (gpgGetBinary) (&gpgPath, conf, parentKey);
-	if (gpg_search_result == 1)
-	{
-		available = 1;
-	}
-
-	if (gpgPath)
-	{
-		elektraFree (gpgPath);
-	}
-	keyDel (parentKey);
-	ksDel (conf);
-	return available;
 }
 
 static void test_init (void)
@@ -310,7 +289,7 @@ int main (int argc, char ** argv)
 
 	init (argc, argv);
 
-	if (!gpg_available ())
+	if (!gpg_available (newPluginConfiguration ()))
 	{
 		printf ("The test was disabled because gpg could not be found on the system.\n");
 		return nbError;
