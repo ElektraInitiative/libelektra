@@ -310,14 +310,17 @@ int main (int argc, char ** argv)
 
 	init (argc, argv);
 
-	if (gpg_available ())
+	if (!gpg_available ())
 	{
-		test_gpg ();
-		test_init ();
-		test_file_crypto_operations ();
-		test_file_signature_operations ();
-		test_file_faulty_signature ();
+		printf ("The test was disabled because gpg could not be found on the system.\n");
+		return nbError;
 	}
+
+	test_gpg ();
+	test_init ();
+	test_file_crypto_operations ();
+	test_file_signature_operations ();
+	test_file_faulty_signature ();
 
 	print_result (ELEKTRA_PLUGIN_NAME);
 	return nbError;
