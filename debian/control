@@ -88,6 +88,7 @@ Depends: ${shlibs:Depends},
  ${misc:Depends}
 Breaks: elektra-bin (<< 0.8.14-5~), libelektra-core4 (<< 0.8.19-1), libelektra-full4 (<< 0.8.19-1)
 Replaces: elektra-bin (<< 0.8.14-5~), libelelektra-core4 (<< 0.8.19-1), libelektra-full4 (<< 0.8.19-1)
+Conflicts: libelektra4 (<< ${binary:Version}), elektra-tests (<< ${binary:Version})
 Suggests: elektra-doc, ${elektra:allPlugins}
 Description: Elektra configuration store, main library
  Elektra provides a universal and secure framework to store configuration
