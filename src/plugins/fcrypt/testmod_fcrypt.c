@@ -114,6 +114,28 @@ static int isTestFileCorrect (const char * file)
 	return returnValue;
 }
 
+static int gpg_available (void)
+{
+	int available = 0;
+	char * gpgPath = NULL;
+	KeySet * conf = newPluginConfiguration ();
+	Key * parentKey = keyNew ("system", KEY_END);
+
+	int gpg_search_result = CRYPTO_PLUGIN_FUNCTION (gpgGetBinary) (&gpgPath, conf, parentKey);
+	if (gpg_search_result == 1)
+	{
+		available = 1;
+	}
+
+	if (gpgPath)
+	{
+		elektraFree (gpgPath);
+	}
+	keyDel (parentKey);
+	ksDel (conf);
+	return available;
+}
+
 static void test_init (void)
 {
 	Plugin * plugin = NULL;
@@ -288,11 +310,14 @@ int main (int argc, char ** argv)
 
 	init (argc, argv);
 
-	test_gpg ();
-	test_init ();
-	test_file_crypto_operations ();
-	test_file_signature_operations ();
-	test_file_faulty_signature ();
+	if (gpg_available ())
+	{
+		test_gpg ();
+		test_init ();
+		test_file_crypto_operations ();
+		test_file_signature_operations ();
+		test_file_faulty_signature ();
+	}
 
 	print_result (ELEKTRA_PLUGIN_NAME);
 	return nbError;
