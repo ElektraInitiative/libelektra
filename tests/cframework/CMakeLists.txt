@@ -8,8 +8,11 @@ check_function_exists (setenv HAVE_SETENV)
 if (HAVE_MKDTEMP AND HAVE_SETENV)
 	add_definitions (-D_POSIX_C_SOURCE=200809L)
 else (HAVE_MKDTEMP AND HAVE_SETENV)
-	message (WARNING "mkdtemp and setenv unavailable, disabling cframework")
-	return ()
+
+	# XCode 9.2 on travis can not find the functions, but seems to work anyway.
+	# Hence we progress forward with just a warning and do not disable
+	# anything.
+	message (WARNING "mkdtemp and setenv could not be found")
 endif (HAVE_MKDTEMP AND HAVE_SETENV)
 
 if (HAVE_NFTW)
