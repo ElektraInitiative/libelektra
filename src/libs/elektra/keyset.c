@@ -151,7 +151,7 @@ static void elektraOpmphmCopy (KeySet * dest ELEKTRA_UNUSED, const KeySet * sour
  *
  * Objects created with ksNew() must be destroyed with ksDel().
  *
- * You can use a various long list of parameters to preload the keyset
+ * You can use a arbitrary long list of parameters to preload the keyset
  * with a list of keys. Either your first and only parameter is 0 or
  * your last parameter must be KEY_END.
  *
