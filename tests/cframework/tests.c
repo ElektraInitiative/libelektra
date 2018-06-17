@@ -21,7 +21,7 @@
 #include <locale.h>
 #endif
 
-#ifdef HAVE_NFTW
+#ifdef USE_NFTW
 #include <ftw.h>
 #include <stdlib.h>
 #define NOPENFD 20
@@ -36,10 +36,6 @@ int nbTest;
 
 char file[KDB_MAX_PATH_LENGTH];
 char srcdir[KDB_MAX_PATH_LENGTH];
-
-#ifdef HAVE_CLEARENV
-int clearenv (void);
-#endif
 
 char * tmpfilename;
 char * tempHome;
@@ -486,7 +482,7 @@ int output_error (Key * errorKey)
 	return 0;
 }
 
-#ifdef HAVE_NFTW
+#ifdef USE_NFTW
 static int rm_all (const char * fpath, const struct stat * sb ELEKTRA_UNUSED, int tflag, struct FTW * ftwbuf ELEKTRA_UNUSED)
 {
 	if (tflag == FTW_F)
@@ -525,7 +521,7 @@ static void clean_temp_home (void)
 
 	if (tempHome)
 	{
-#ifdef HAVE_NFTW
+#ifdef USE_NFTW
 		int nftw_flags = FTW_DEPTH | FTW_PHYS;
 		succeed_if (nftw (tempHome, rm_all, NOPENFD, nftw_flags) == 0, "Could not delete TMPHOME via nftw");
 #else
