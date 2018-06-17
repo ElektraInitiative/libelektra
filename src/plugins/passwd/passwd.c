@@ -173,7 +173,7 @@ int elektraPasswdGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_
 		ELEKTRA_SET_ERRORF (110, parentKey, "Failed to open configuration file %s\n", keyString (parentKey));
 		return -1;
 	}
-#if defined(_GNU_SOURCE)
+#if defined(USE_FGETPWENT)
 	while ((pwd = fgetpwent (pwfile)) != NULL)
 	{
 		KeySet * ks = pwentToKS (pwd, parentKey, index);
@@ -181,7 +181,7 @@ int elektraPasswdGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_
 		ksDel (ks);
 	}
 	endpwent ();
-#elif _POSIX_C_SOURCE >= 200809L
+#elif defined(USE_GETLINE)
 	char * line = NULL;
 	size_t len = 0;
 	while (getline (&line, &len, pwfile) != -1)
@@ -202,7 +202,7 @@ int elektraPasswdGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_
 		elektraFree (line);
 	}
 #else
-#error Configuration error in CMakeLists.txt. Neither _GNU_SOURCE nor _POSIX_C_SOURCE >= 200809L were provided. Please open an issue at https://issue.libelektra.org.
+#error Configuration error in CMakeLists.txt. Neither fgetpwent nor getline were provided. Please open an issue at https://issue.libelektra.org.
 #endif
 	fclose (pwfile);
 	return 1; // success
@@ -301,7 +301,7 @@ static int writeKS (KeySet * returned, Key * parentKey, SortBy index)
 		}
 		else
 		{
-#if defined(_GNU_SOURCE)
+#if defined(USE_PUTPWENT)
 			putpwent (pwd, pwfile);
 #else
 			fprintf (pwfile, "%s:%s:%u:%u:%s:%s:%s\n", pwd->pw_name, pwd->pw_passwd, pwd->pw_uid, pwd->pw_gid, pwd->pw_gecos,
