@@ -111,3 +111,5 @@ add_custom_target (elektra_config_headers
 		   DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/kdb.h
 			   ${CMAKE_CURRENT_BINARY_DIR}/kdbconfig.h
 			   ${CMAKE_CURRENT_BINARY_DIR}/kdbversion.h)
+
+add_subdirectory (kdbio)

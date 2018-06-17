@@ -8,7 +8,7 @@
 #ifndef KDB_IOWRAPPER_GLIB_H_
 #define KDB_IOWRAPPER_GLIB_H_
 
-#include "kdbio.h"
+#include "../kdbio.h"
 #include <glib.h>
 
 /**
