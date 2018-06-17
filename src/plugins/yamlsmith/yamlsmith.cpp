@@ -15,7 +15,6 @@
 #include "yamlsmith.hpp"
 
 #include <kdb.hpp>
-#include <kdbease.h>
 #include <kdberrors.h>
 
 using std::endl;
@@ -25,7 +24,6 @@ using std::string;
 using ckdb::Key;
 using ckdb::KeySet;
 
-using ckdb::elektraKeyGetRelativeName;
 using ckdb::keyNew;
 
 using CppKey = kdb::Key;
