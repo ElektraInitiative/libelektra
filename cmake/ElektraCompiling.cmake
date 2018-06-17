@@ -117,6 +117,9 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
 	set (CMAKE_INCLUDE_SYSTEM_FLAG_CXX "-isystem ")
 endif ()
 
+#
+# ASAN
+#
 if (ENABLE_ASAN)
 	set (EXTRA_FLAGS "${EXTRA_FLAGS} -fsanitize=undefined -fsanitize=address -fno-omit-frame-pointer")
 	set (ASAN_LIBRARY "-lasan") # this is needed for GIR to put asan in front
