@@ -1,3 +1,11 @@
+include (CheckSymbolExists)
+
+check_symbol_exists (strcasecmp "strings.h" HAVE_STRCASECMP)
+check_symbol_exists (strncasecmp "strings.h" HAVE_STRNCASECMP)
+if (HAVE_STRCASECMP AND HAVE_STRNCASECMP)
+    add_definitions (-DUSE_STRINGS_H)
+endif ()
+
 # ~~~
 # For static inclusion of libraries we need a list
 # of symbols to make the static runtime linker work.
