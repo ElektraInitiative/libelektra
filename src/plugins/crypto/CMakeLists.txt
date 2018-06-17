@@ -1,4 +1,13 @@
+include (CheckSymbolExists)
 include (LibAddPlugin)
+
+check_symbol_exists (strsep "string.h" HAVE_STRSEP)
+if (NOT HAVE_STRSEP)
+	remove_plugin (fcrypt "requires strsep")
+	remove_plugin (crypto_openssl "requires strsep")
+	remove_plugin (crypto_gcrypt "requires strsep")
+	remove_plugin (crypto_botan "requires strsep")
+endif ()
 
 if (DEPENDENCY_PHASE)
 
