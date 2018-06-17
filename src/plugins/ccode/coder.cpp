@@ -229,11 +229,19 @@ Coder::Coder (CppKeySet config)
 	}
 	ELEKTRA_LOG_DEBUG ("Use “%c” as escape character", escapeCharacter);
 
-	CppKey const root = config.lookup ("/chars", 0);
+	CppKey const root = CppKey{ "/chars", KEY_END };
+	CppKeySet mappingConfig{ config.cut (root) };
 
-	if (root)
+#ifdef HAVE_LOGGER
+	for (auto key : mappingConfig)
 	{
-		readConfig (config, root);
+		ELEKTRA_LOG_DEBUG ("Decode 0x%s as 0x%s ", key->getBaseName ().c_str (), key.getString ().c_str ());
+	}
+#endif
+
+	if (mappingConfig.size () > 0)
+	{
+		readConfig (mappingConfig, root);
 	}
 	else
 	{

@@ -64,7 +64,7 @@ sudo kdb umount user/tests/ccode
 
 ```sh
 # We use `%` as escape character and map the space character (hex: `20`) to the character `_`.
-sudo kdb mount config.tcl user/tests/ccode tcl base64 ccode escape=`bash -c 'printf %x \"%'` chars= chars/20=`bash -c 'printf %x \"_'`
+sudo kdb mount config.tcl user/tests/ccode tcl base64 ccode escape=`bash -c 'printf %x \"%'` chars/20=`bash -c 'printf %x \"_'`
 
 kdb set user/tests/ccode/spaces 'one two three'
 
