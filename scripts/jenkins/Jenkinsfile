@@ -728,6 +728,7 @@ def buildPackageDebianStretch() {
                         sh "gbp buildpackage -sa"
                     }
                 }
+                publishDebianPackages()
             }
         }
     }]
@@ -1051,51 +1052,47 @@ def isMaster() {
  * @param remote where the repository is located
  */
 def publishDebianPackages(remote="a7") {
-    if(isMaster()) {
-        // This path must coincide with the incoming dir on a7
-        def remotedir = 'compose/frontend/volumes/incoming'
-        sshPublisher(
-          publishers: [
-            sshPublisherDesc(
-              configName: remote,
-              transfers: [
-                sshTransfer(
-                  sourceFiles: '*.deb',
-                  remoteDirectory: remotedir
-                ),
-                sshTransfer(
-                  sourceFiles: '*.build',
-                  remoteDirectory: remotedir
-                ),
-                sshTransfer(
-                  sourceFiles: '*.buildinfo',
-                  remoteDirectory: remotedir
-                ),
-                sshTransfer(
-                  sourceFiles: '*.dsc',
-                  remoteDirectory: remotedir
-                ),
-                sshTransfer(
-                  sourceFiles: '*.tar.xz',
-                  remoteDirectory: remotedir
-                ),
-                sshTransfer(
-                  sourceFiles: '*.tar.gz',
-                  remoteDirectory: remotedir
-                ),
-                sshTransfer(
-                  sourceFiles: '*.changes',
-                  remoteDirectory: remotedir
-                )
-              ]
+    // This path must coincide with the incoming dir on a7
+    def remotedir = 'compose/frontend/volumes/incoming'
+    sshPublisher(
+      publishers: [
+        sshPublisherDesc(
+          configName: remote,
+          transfers: [
+            sshTransfer(
+              sourceFiles: '*.deb',
+              remoteDirectory: remotedir
+            ),
+            sshTransfer(
+              sourceFiles: '*.build',
+              remoteDirectory: remotedir
+            ),
+            sshTransfer(
+              sourceFiles: '*.buildinfo',
+              remoteDirectory: remotedir
+            ),
+            sshTransfer(
+              sourceFiles: '*.dsc',
+              remoteDirectory: remotedir
+            ),
+            sshTransfer(
+              sourceFiles: '*.tar.xz',
+              remoteDirectory: remotedir
+            ),
+            sshTransfer(
+              sourceFiles: '*.tar.gz',
+              remoteDirectory: remotedir
+            ),
+            sshTransfer(
+              sourceFiles: '*.changes',
+              remoteDirectory: remotedir
             )
-          ],
-          verbose: true,
-          failOnError: true
+          ]
         )
-    } else {
-        echo "Skipping package publish because we are not on master"
-    }
+      ],
+      verbose: true,
+      failOnError: true
+    )
 }
 
 /* Run apiary
