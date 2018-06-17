@@ -450,7 +450,8 @@ def generateFullBuildStages() {
     DOCKER_IMAGES.alpine,
     CMAKE_FLAGS_BUILD_ALL + [
       'BUILD_STATIC': 'ON',
-      'PLUGINS': 'ALL;-date;-passwd'
+      'PLUGINS': 'ALL;-date;-passwd',
+      'ENABLE_KDB_TESTING': 'OFF'
     ],
     [TEST.ALL]
   )
