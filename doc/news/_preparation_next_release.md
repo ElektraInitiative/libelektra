@@ -239,6 +239,9 @@ Try it out now on: http://webui.libelektra.org:33334/
     *(Lukas Winkler)*
 - The OPMPHM has a new test case *(Kurt Micheli)*
 - Do not execute `fcrypt` and `crypto` unit tests if the `gpg` binary is not available. *(Peter Nirschl)*
+- Resolved an issue where tests did not cleanup properly after they ran.
+    This was especially noticable for `gpg` tests as the `gpg-agents` that were
+    spawned did not get cleaned up afterwards. *(Lukas Winkler)*
 
 ## Compatibility
 
