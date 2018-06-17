@@ -175,7 +175,11 @@ def dockerImages() {
 }
 
 def retainNewestImages(image, n) {
-  sh "docker images ${image} --format \"{{.Repository}} {{.Tag}}\" | sort -k 2,2 | head -n -${n} | awk \'BEGIN{OFS=\":\"} {print \$1,\$2}' | xargs -r -n1 docker rmi"
+  sh """docker images ${image} --format \"{{.Repository}} {{.Tag}}\" \
+| sort -k 2,2 \
+| head -n -${n} \
+| awk \'BEGIN{OFS=\":\"} {print \$1,\$2}' \
+| xargs -r -n1 docker rmi -f"""
 }
 
 def syncRepository(Map repo) {
