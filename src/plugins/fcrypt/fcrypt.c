@@ -80,6 +80,24 @@ static char * getTemporaryFileName (KeySet * conf, const char * file, int * fd)
 
 	if (!tmpDir)
 	{
+		// check the environment; returns NULL if no match is found
+		tmpDir = getenv ("TMP");
+	}
+
+	if (!tmpDir)
+	{
+		// check the environment; returns NULL if no match is found
+		tmpDir = getenv ("TEMP");
+	}
+
+	if (!tmpDir)
+	{
+		// check the environment; returns NULL if no match is found
+		tmpDir = getenv ("TEMPDIR");
+	}
+
+	if (!tmpDir)
+	{
 		// fallback
 		tmpDir = ELEKTRA_FCRYPT_DEFAULT_TMPDIR;
 	}
