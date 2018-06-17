@@ -99,7 +99,7 @@ if (APPLE)
 	# https://boringssl.googlesource.com/boringssl/+/63a0797ff247f13870b649c3f6239d80be202752
 	# https://charm.cs.illinois.edu/redmine/issues/1743
 	add_definitions (-D_DARWIN_C_SOURCE)
-endif(APPLE)
+endif (APPLE)
 
 if (WIN32)
 	set (HAVE_WIN32 "1")
