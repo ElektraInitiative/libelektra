@@ -88,14 +88,12 @@ build:
 * jenkins build [gcc-configure-debian](https://build.libelektra.org/job/elektra-gcc-configure-debian/) please
 * jenkins build [gcc-configure-debian-debug](https://build.libelektra.org/job/elektra-gcc-configure-debian-debug) please
 * jenkins build [gcc-configure-debian-intree](https://build.libelektra.org/job/elektra-gcc-configure-debian-intree/) please
-* jenkins build [gcc-configure-debian-musl](https://build.libelektra.org/job/elektra-gcc-configure-debian-musl/) please
 * jenkins build [gcc-configure-debian-shared](https://build.libelektra.org/job/elektra-gcc-configure-debian-shared/) please
 * jenkins build [gcc-configure-debian-withspace](https://build.libelektra.org/job/elektra-gcc-configure-debian-withspace/) please
 * jenkins build [git-buildpackage-jessie](https://build.libelektra.org/job/elektra-git-buildpackage-jessie/) please
 * jenkins build [icc](https://build.libelektra.org/job/elektra-icc/) please
 * jenkins build [libelektra](https://build.libelektra.org/jenkins/job/libelektra/) please
 * jenkins build [local-installation](https://build.libelektra.org/job/elektra-local-installation/) please
-* jenkins build [source-package-test](https://build.libelektra.org/job/elektra-source-package-test/) please
 
 Additionally `jenkins build all please` can be used to trigger all build jobs
 relevant for PR's.
@@ -129,6 +127,12 @@ The Jenkinsfile describes the steps used to run tests.
 Helper functions for easily adding new tests are available
 (buildAndTest, BuildAndTestAsan, ...).
 
+The `withDockerEnv` helper makes sure to print the following information at the
+start of a test branch:
+* branch name
+* build machine
+* docker image id
+
 Coverage reports are generated automatically when using the buildAndTest helper
 and the appropriate Cmake flags for coverage generation have been set. They are
 uploaded to https://doc.libelektra.org/coverage/.
@@ -159,3 +163,43 @@ If you have issues that are related to the build system you can open a normal
 issue and tag it with `build` and `question`.
 If you feel like your inquiry does not warrent a issue on its own, please use
 [our buildserver issue](https://issues.libelektra.org/160).
+
+## Jenkins
+This section describes how to replicate the current Jenkins configuration.
+
+### Jenkins libelektra configuration
+The `libelektra` build job is a multibranch pipeline job.
+It is easiest to add via the BlueOcean interface.
+
+Most of the default settings should be ok, however some settings need to be
+verified or added to build Elektra correctly:
+* In Branch Sources under Behaviours `Filter by name` should be
+    added to exclude the `debian` branch from being build.
+    The reason for this is that the `debian` branch is not providing a
+    Jenkinsfile.
+* `Advanced clone behaviours` should be added and the path to the git mirror
+    needs to be specified: `/home/jenkins/git_mirrors/libelektra`.
+    This reference repository is created and maintained by our
+    [daily buildjob](https://build.libelektra.org/jenkins/job/libelektra-daily/).
+* Under Property strategy you can add `Trigger build on pull request comment`.
+    `jenkins build (libelektra|all) please` is a good starting point.
+* For Build Configuration you want to specify `by Jenkinsfile` and add the
+    script path: `scripts/jenkins/Jenkinsfile`.
+
+### Add a Jenkins node
+A node needs to have a JRE (Java Runtime Environment) installed.
+Further it should run an SSH (Secure SHell) server.
+If you want to provide environments via Docker you need to install that as well.
+
+A `jenkins` user with 47000:47000 ids should be created as this is what is
+expected in Docker images.
+Additionally a public key authentification should be set up so the jenkins
+master can establish an ssh connection with the node.
+If the node should be able to interact with Docker the jenkins user should be
+added to the `docker` group.
+
+Nodes should be set to only build jobs matching their labels and to be online
+as much as possible.
+As for labels `gitmirror` should be if you want to cache repositories on this
+node.
+If Docker is available the `docker` label should be set.

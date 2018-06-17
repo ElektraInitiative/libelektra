@@ -196,6 +196,9 @@ Thanks to Michael Zronek and Vanessa Kos.
 - The man pages for [`kdb change-resolver-symlink`](https://www.libelektra.org/manpages/kdb-change-resolver-symlink) and
    [`kdb change-storage-symlink`](https://www.libelektra.org/manpages/kdb-change-storage-symlink) referenced the wrong command.
    *(Lukas Winkler, René Schwaiger)*
+- We added documentation for our build system in
+    [BUILDSERVER.md](https://master.libelektra.org/doc/BUILDSERVER.md).
+    *(Lukas Winkler)*
 
 ## Tests
 
@@ -211,6 +214,8 @@ Thanks to Michael Zronek and Vanessa Kos.
 - The Markdown Shell Recorder now also tests if a command prints nothing to `stdout` if you add the check `#>`. *(René Schwaiger)*
 - We fixed some problems in the [Markdown Shell Recorder](https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper) test
   of [`kdb ls`](https://master.libelektra.org/doc/help/kdb-ls.md). *(René Schwaiger)*
+- The `add_plugin` helper now respects `ENABLE_KDB_TESTING` when adding
+    Markdown Shell Recorder tests. *(Lukas Winkler)*
 - The documentation for `kdb` and `kdb set` now mention the `--` option to stop option processing. This is useful for setting negative values among other things. *(Klemens Böswirth)*
 - Plugins added with the flag `SHARED_ONLY` no longer get tested in the script `check_kdb_internal_check.sh` if executed with kdb-full or kdb-static. *(Armin Wurzinger)*
 - Add `compare_regex_to_line_files` which allows to compare a file made of
@@ -283,8 +288,19 @@ Thanks to Michael Zronek and Vanessa Kos.
 - Port `elektra-gcc-configure-debian-nokdbtest` to new build system. *(Lukas Winkler)*
 - Port `elektra-gcc-configure-xdg`to new build system. *(Lukas Winkler)*
 - Port `elektra-gcc-i386` to new build system. *(Lukas Winkler)*
+- Port `elektra-gcc-configure-debian-musl` to new build system. *(Lukas Winkler)*
 - Docker Registry is cleaned up by our daily buildserver task. *(Lukas Winkler)*
-
+- Remove `elektra-gcc-configure-debian-nokdbtest` test. Instead we are now
+    removing write permissions of Elektra's paths to detect if we write to the
+    filesystem even though tests are not tagged as such. *(Lukas Winkler)*
+- Remove `elektra-gcc-configure-debian-withspace` test. We now test for
+    compatibility of spaced build paths during normal tests. *(Lukas Winkler)*
+- Check for source formatting during early test stages. *(Lukas Winkler)*
+- Remove the amount of spawned tests via not running a full multiconfig setup for
+  the `PLUGINS=NODEP` config. They did not provide any additional coverage.
+  Instead we added a new test checking if `PLUGINS=NODEP` builds in an minimal
+  Docker image. *(Lukas Winkler)*
+- Speed up coverage data upload. *(Lukas Winkler)*
 
 ### Travis
 
