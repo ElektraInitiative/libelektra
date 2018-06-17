@@ -21,10 +21,15 @@
 #include <locale.h>
 #endif
 
+#ifdef HAVE_NFTW
+#include <ftw.h>
+#include <stdlib.h>
+#define NOPENFD 20
+#endif
+
 #include <regex.h>
 
 #include <kdbinternal.h>
-
 
 int nbError;
 int nbTest;
@@ -481,6 +486,27 @@ int output_error (Key * errorKey)
 	return 0;
 }
 
+#ifdef HAVE_NFTW
+static int rm_all (const char * fpath, const struct stat * sb ELEKTRA_UNUSED, int tflag, struct FTW * ftwbuf ELEKTRA_UNUSED)
+{
+	if (tflag == FTW_F)
+	{
+		unlink (fpath);
+	}
+	else if (tflag == FTW_D || tflag == FTW_DP)
+	{
+		rmdir (fpath);
+	}
+	else
+	{
+		// not a file or dir we can delete
+		printf ("unexpected flag: %d\n", tflag);
+		return 1;
+	}
+	return 0;
+}
+#endif
+
 static void clean_temp_home (void)
 {
 	if (tmpfilename)
@@ -499,6 +525,10 @@ static void clean_temp_home (void)
 
 	if (tempHome)
 	{
+#ifdef HAVE_NFTW
+		int nftw_flags = FTW_DEPTH | FTW_PHYS;
+		succeed_if (nftw (tempHome, rm_all, NOPENFD, nftw_flags) == 0, "Could not delete TMPHOME via nftw");
+#else
 		size_t fileToCleanLen = tempHomeLen + 30;
 		char * fileToClean = elektraMalloc (fileToCleanLen);
 		snprintf (fileToClean, fileToCleanLen, "%s/.gnupg/random_seed", tempHome);
@@ -513,7 +543,8 @@ static void clean_temp_home (void)
 		rmdir (fileToClean);
 		elektraFree (fileToClean);
 
-		rmdir (tempHome);
+		succeed_if (rmdir (tempHome) == 0, "Could not delete TMPHOME manually");
+#endif
 		elektraFree (tempHome);
 		tempHome = NULL;
 		tempHomeLen = 0;
