@@ -50,6 +50,7 @@ static int validatepwent (struct passwd * pwd)
 	return 0;
 }
 
+#if defined(USE_GETLINE)
 static struct passwd * strToPasswd (char * line)
 {
 	char * ptoken;
@@ -85,6 +86,7 @@ static struct passwd * strToPasswd (char * line)
 
 	return pwd;
 }
+#endif
 
 static KeySet * pwentToKS (struct passwd * pwd, Key * parentKey, SortBy index)
 {
