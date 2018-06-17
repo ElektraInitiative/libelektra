@@ -280,7 +280,7 @@ keyDel (elektraKey);
 
 Since our application needs to repeatedly initialize KDB on
 configuration changes we need to create a function which cleans
-up and reinitializates KDB.
+up and reinitializes KDB.
 
 ```C
 void initKdb (void)
@@ -296,7 +296,7 @@ void initKdb (void)
 	elektraIoSetBinding (kdb, binding);
 	elektraNotificationOpen (kdb);
 
-  // registration code from snippet before
+  // Code for registration from snippet before
 	Key * elektraKey = keyNew ("system/elektra", KEY_END);
 	elektraNotificationRegisterCallbackSameOrBelow (kdb, elektraKey, elektraChangedCallback, NULL);
 	keyDel (elektraKey);
