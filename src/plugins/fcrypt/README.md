@@ -134,10 +134,11 @@ Textmode can be disabled by setting `fcrypt/textmode` to `0` in the plugin confi
 ### Temporary Directory
 
 `fcrypt` uses the configuration option `fcrypt/tmpdir` to generate paths for temporary files during encryption and decryption.
-The path is forwarded to GPG via the `-o` option, so GPG will output to this path.
-The directory must be readable and writable by the user.
+If no such configuration option is provided, `fcrypt` will try to use the environment variable `TMPDIR`.
+If `TMPDIR` is not set in the environment, `/tmp` is used as default directory.
 
-`/tmp` is used as default value.
+The path of the temporary directory is forwarded to GPG via the `-o` option, so GPG will output to this path.
+The directory must be readable and writable by the user.
 
 We recommend to specify a path that is mounted to a RAM disk.
 It is advisable to set restrictive access rules to this path, so that other users on the system can not access it.
