@@ -16,12 +16,9 @@
  * https://build.libelektra.org/jenkins/job/elektra-jenkinsfile/pipeline-syntax/.
  */
 
-// FIXME sloc publish errors
-// XXX add missing jobs
 // TODO have a per plugin/binding deps in Dockerfile for easier maintenance
 // TODO add warnings plugins to scan for compiler warnings
-// TODO maybe intend with 2 lines to not waste so much ws
-
+//      Does appear to be not working for multiple runs in one job
 
 // Imports
 import java.text.SimpleDateFormat
