@@ -124,6 +124,10 @@ Try it out now on: http://webui.libelektra.org:33334/
 
 - The `crypto` plugin now uses Elektra's `libinvoke` and the `base64` plugin in order to encode and decode Base64 strings. This improvement reduces code duplication between the two plugins. *(Peter Nirschl)*
 
+### fcrypt
+
+- The `fcrypt` plugin will consider the environment variable `TMPDIR` in order to detect its temporary directory. See [#1973] *(Peter Nirschl)*
+
 ### fstab
 
 - The `fstab` plugin now passes tests on musl builds. *(Lukas Winkler)*
