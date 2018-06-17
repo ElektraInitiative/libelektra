@@ -142,6 +142,7 @@ set (COMMON_FLAGS "${COMMON_FLAGS} -Wformat -Wformat-security")
 set (COMMON_FLAGS "${COMMON_FLAGS} -Wshadow")
 set (COMMON_FLAGS "${COMMON_FLAGS} -Wcomments -Wtrigraphs -Wundef")
 set (COMMON_FLAGS "${COMMON_FLAGS} -Wuninitialized -Winit-self")
+set (COMMON_FLAGS "${COMMON_FLAGS} -Werror")
 set (C_EXTRA_FLAGS "${C_EXTRA_FLAGS} -Wstrict-prototypes")
 
 # Not every compiler understands -Wmaybe-uninitialized
