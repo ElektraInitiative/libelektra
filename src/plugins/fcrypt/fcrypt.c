@@ -65,7 +65,7 @@ static char * getTemporaryFileName (KeySet * conf, const char * file, int * fd)
 {
 	// read the temporary directory to use from the plugin configuration
 	// NOTE the string contained in tmpDir must not be modified!
-	char * tmpDir = NULL;
+	const char * tmpDir = NULL;
 	Key * k = ksLookupByName (conf, ELEKTRA_FCRYPT_CONFIG_TMPDIR, 0);
 	if (k)
 	{
