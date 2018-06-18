@@ -241,7 +241,16 @@ export default class TreeItem extends Component {
                   <ActionButton icon={<ContentEdit />} onClick={this.handleOpen('edit')} tooltip="edit value" />
                 }
                 <EditDialog
-                  field={renderedField}
+                  renderField={({ onKeyPress }) => (
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      <div style={{ flex: 'initial' }}>
+                        {this.renderValue('editValueField', { ...data, onKeyPress })}
+                      </div>
+                      <div style={{ flex: 'initial' }}>
+                        <SavedIcon saved={this.state.saved} />
+                      </div>
+                    </div>
+                  )}
                   item={item}
                   meta={meta}
                   value={data && data.value}

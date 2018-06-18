@@ -27,7 +27,7 @@ export default class EditDialog extends Component {
   }
 
   render () {
-    const { item, open, field, onClose, meta } = this.props
+    const { item, open, renderField, onClose, meta } = this.props
     const { path } = item
 
     const actions = [
@@ -66,7 +66,11 @@ export default class EditDialog extends Component {
         >
             <h1>Value of <b>{path}</b></h1>
             <div style={{ display: 'block' }} tabIndex={isDisabled && '0'}>
-                {field}
+                {renderField({ onKeyPress: e => {
+                  if (e.key === 'Enter') {
+                    onClose()
+                  }
+                }})}
             </div>
         </FocusTrapDialog>
     )
