@@ -93,7 +93,7 @@ const trimNewline = (str) =>
 
 // execute a script while catching and parsing errors
 const safeExec = (script) => new Promise((resolve, reject) =>
-  exec(script, (err, stdout, stderr) => {
+  exec(script, { maxBuffer: Infinity }, (err, stdout, stderr) => {
     if (err) {
       const errors = err.message.split('\n')
       // ignore error if it's "key not found"
