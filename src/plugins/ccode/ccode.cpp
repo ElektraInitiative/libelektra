@@ -14,6 +14,8 @@
 
 using elektra::Coder;
 
+using CppKeySet = kdb::KeySet;
+
 namespace
 {
 typedef Delegator<Coder> coderDelegator;

@@ -16,17 +16,17 @@
 
 #include <keyset.hpp>
 
-using CppKeySet = kdb::KeySet;
-using CppKey = kdb::Key;
+namespace elektra
+{
 
 using std::string;
 using std::vector;
 
-namespace elektra
-{
-
 class Coder
 {
+	using CppKeySet = kdb::KeySet;
+	using CppKey = kdb::Key;
+
 	vector<unsigned char> encode;
 	vector<unsigned char> decode;
 

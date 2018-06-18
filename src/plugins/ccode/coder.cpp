@@ -11,8 +11,6 @@
 
 #include "coder.hpp"
 
-using CppKey = kdb::Key;
-
 namespace
 {
 /**
@@ -42,6 +40,9 @@ int elektraHexcodeConvFromHex (char const character)
 
 namespace elektra
 {
+using CppKeySet = kdb::KeySet;
+using CppKey = kdb::Key;
+
 /**
  * @brief This function sets default values for the encoding and decoding character mapping.
  */
