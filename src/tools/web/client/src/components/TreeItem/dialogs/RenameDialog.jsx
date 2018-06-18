@@ -28,7 +28,7 @@ export default class RenameDialog extends Component {
   }
 
   render () {
-    const { item, open, renderField, onClose, meta } = this.props
+    const { item, open, onClose } = this.props
     const { path } = item
     const { name } = this.state
     const nameEmpty = !name || name.trim().length <= 0
