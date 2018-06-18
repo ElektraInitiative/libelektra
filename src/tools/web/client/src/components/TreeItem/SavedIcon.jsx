@@ -8,9 +8,10 @@
 
 import React from 'react'
 
-import ActionDone from 'material-ui/svg-icons/action/done'
+import DoneIcon from 'material-ui/svg-icons/action/done'
+import ErrorIcon from 'material-ui/svg-icons/navigation/close'
 
-const SavedIcon = ({ saved, style }) => {
+const SavedIcon = ({ saved, err, style }) => {
   const savedIconBaseStyle = {
     width: 16,
     height: 16,
@@ -20,14 +21,28 @@ const SavedIcon = ({ saved, style }) => {
     transition: 'opacity 0.5s',
   }
 
+  const errorIconBaseStyle = {
+    ...savedIconBaseStyle,
+    color: '#FF4081',
+  }
+
   const savedIconActiveStyle = saved
     ? { opacity: 1 }
     : { opacity: 0 }
 
   const savedIconStyle = { ...savedIconBaseStyle, ...savedIconActiveStyle, ...style }
+  const errorIconStyle = { ...errorIconBaseStyle, opacity: 1, ...style }
+
+  console.log('error', err)
+
+  if (err) {
+    return (
+        <ErrorIcon className="savedIcon" style={errorIconStyle} />
+    )
+  }
 
   return (
-      <ActionDone className="savedIcon" style={savedIconStyle} />
+      <DoneIcon className="savedIcon" style={savedIconStyle} />
   )
 }
 

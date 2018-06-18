@@ -40,6 +40,7 @@ export default class TreeItem extends Component {
         remove: false,
       },
       saved: false,
+      err: false,
       savedTimeout: false,
     }
   }
@@ -89,9 +90,13 @@ export default class TreeItem extends Component {
     const { instanceId, setKey, item } = this.props
     const { path } = item
     return setKey(instanceId, path, value)
-      .then(() => {
+      .then(res => {
+        if (res && res.error) {
+          return this.setState({ err: true })
+        }
         if (savedTimeout) clearTimeout(savedTimeout)
         this.setState({
+          err: false,
           saved: true,
           savedTimeout: setTimeout(() => {
             this.setState({ saved: false })
@@ -177,7 +182,7 @@ export default class TreeItem extends Component {
           {this.renderValue(item.path, data || {})}
         </div>
         <div style={{ flex: 'initial' }}>
-          <SavedIcon saved={this.state.saved} />
+          <SavedIcon saved={this.state.saved} err={this.state.err} />
         </div>
       </div>
     )
@@ -217,7 +222,7 @@ export default class TreeItem extends Component {
                 </b>
             }
             <span className="actions">
-                <SavedIcon saved={this.state.saved} />
+                <SavedIcon saved={this.state.saved} err={this.state.err} />
                 {valueVisible &&
                   <CopyToClipboard text={(data && data.value) || ''} onCopy={() => sendNotification('Copied value of ' + item.path + ' to clipboard!')}>
                     <ActionButton icon={<ContentPaste />} tooltip="copy value" />
@@ -247,7 +252,7 @@ export default class TreeItem extends Component {
                         {this.renderValue('editValueField', { ...data, onKeyPress })}
                       </div>
                       <div style={{ flex: 'initial' }}>
-                        <SavedIcon saved={this.state.saved} />
+                        <SavedIcon saved={this.state.saved} err={this.state.err} />
                       </div>
                     </div>
                   )}
