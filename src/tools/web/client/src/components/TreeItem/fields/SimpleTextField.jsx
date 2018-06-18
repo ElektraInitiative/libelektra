@@ -45,7 +45,7 @@ export default class SimpleTextField extends Component {
           hintText: (meta && meta.example) ? `e.g. ${meta.example}` : false,
           onChange: debounce
             ? value => this.setState({ value })
-            : evt => (evt && evt.target && evt.target.value) && onChange(evt.target.value),
+            : evt => (evt && evt.target && evt.target.value) ? onChange(evt.target.value) : onChange(''),
           onDebounced: debounce && (currentValue => {
             const validationError = validateType(meta, currentValue)
             if (validationError) {
