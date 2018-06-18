@@ -742,7 +742,7 @@ def buildAndTest(testName, image, extraCmakeFlags = [:],
         def buildDir='build directory'
 
         if(tests) {
-          artifacts.add("${buildDir}/Testing/*/*.xml")
+          artifacts.add("\"${buildDir}\"/Testing/*/*.xml")
         }
 
         try {
@@ -919,9 +919,9 @@ def archive(paths) {
     def dest = "${prefix}${env.STAGE_NAME}/"
     sh "mkdir -p ${dest}"
     paths.each { path ->
-        sh "cp -v \"${path}\" ${dest} || true"
+        sh "cp -v ${path} ${dest} || true"
     }
-    archiveArtifacts artifacts: "${prefix}**", fingerprint: true, allowEmptyArchive: true
+    archiveArtifacts artifacts: "${prefix}**", fingerprint: true
   } else {
     echo "No Artifacts to archive"
   }
