@@ -54,7 +54,7 @@ export default class AddDialog extends Component {
   }
 
   handleCreate = (arrayKey = false) => {
-    const { item, onAdd, keyExists, setMetaByPath } = this.props
+    const { item, onAdd, keyExists, setMetaByPath, arrayKeyLength } = this.props
     const { path } = item
     const { name, value, type } = this.state
     const v = this.state.visibility
@@ -82,7 +82,12 @@ export default class AddDialog extends Component {
         if (v !== 'user') {
           setMetaByPath(path + '/' + name, 'visibility', v)
         }
+        if (arrayKeyLength) { // is child of array key
+          // update array metakey in parent
+          setMetaByPath(path, 'array', String(arrayKeyLength + 1))
+        }
         if (arrayKey === true) {
+          setMetaByPath(path + '/' + name, 'array', '1')
           setTimeout(() => onAdd(path + '/' + name, '#0', ''), 250)
         }
         this.handleClose()
