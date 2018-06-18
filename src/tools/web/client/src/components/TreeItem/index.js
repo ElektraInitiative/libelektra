@@ -60,10 +60,8 @@ export default class TreeItem extends Component {
   handleDelete = (item) => {
     const { instanceId, deleteKey, setMetaKey, deleteMetaKey, sendNotification } = this.props
 
-    console.log('parent', item.parent)
     if (item && item.parent) {
       const arrayKeyLength = this.getArrayKeyLength(item.parent)
-      console.log('arrayKeyLength', arrayKeyLength)
       if (!arrayKeyLength || arrayKeyLength <= 1) { // not an array (anymore)
         deleteMetaKey(instanceId, item.parent.path, 'array')
       } else {

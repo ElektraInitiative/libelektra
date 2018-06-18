@@ -33,8 +33,6 @@ const SavedIcon = ({ saved, err, style }) => {
   const savedIconStyle = { ...savedIconBaseStyle, ...savedIconActiveStyle, ...style }
   const errorIconStyle = { ...errorIconBaseStyle, opacity: 1, ...style }
 
-  console.log('error', err)
-
   if (err) {
     return (
         <ErrorIcon className="savedIcon" style={errorIconStyle} />
