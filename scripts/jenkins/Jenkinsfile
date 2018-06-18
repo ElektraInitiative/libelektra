@@ -1049,7 +1049,7 @@ def cpuCount() {
  */
 def ctest(target = "Test") {
   sh """ctest -j ${env.CTEST_PARALLEL_LEVEL} --force-new-ctest-process \
-          --output-on-failure --no-compress-output -T ${target}"""
+        --output-on-failure --no-compress-output -T ${target}"""
 }
 
 /* Helper for ctest to run MemCheck without memleak tagged tests
