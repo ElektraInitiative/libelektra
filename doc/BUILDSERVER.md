@@ -85,15 +85,8 @@ The following phrases can be used as comments to manually trigger a specific
 build:
 
 * jenkins build [daily](https://build.libelektra.org/jenkins/job/libelektra-daily/) please
-* jenkins build [gcc-configure-debian](https://build.libelektra.org/job/elektra-gcc-configure-debian/) please
-* jenkins build [gcc-configure-debian-debug](https://build.libelektra.org/job/elektra-gcc-configure-debian-debug) please
-* jenkins build [gcc-configure-debian-intree](https://build.libelektra.org/job/elektra-gcc-configure-debian-intree/) please
-* jenkins build [gcc-configure-debian-shared](https://build.libelektra.org/job/elektra-gcc-configure-debian-shared/) please
-* jenkins build [gcc-configure-debian-withspace](https://build.libelektra.org/job/elektra-gcc-configure-debian-withspace/) please
 * jenkins build [git-buildpackage-jessie](https://build.libelektra.org/job/elektra-git-buildpackage-jessie/) please
-* jenkins build [icc](https://build.libelektra.org/job/elektra-icc/) please
 * jenkins build [libelektra](https://build.libelektra.org/jenkins/job/libelektra/) please
-* jenkins build [local-installation](https://build.libelektra.org/job/elektra-local-installation/) please
 
 Additionally `jenkins build all please` can be used to trigger all build jobs
 relevant for PR's.
