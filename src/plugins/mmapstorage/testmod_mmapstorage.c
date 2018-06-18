@@ -492,7 +492,7 @@ static void test_mmap_double_get (const char * tmpFile)
 	compare_keyset (ks, second);
 
 	ksDel (ks);
-	ks = metaTestKeySet();
+	ks = metaTestKeySet ();
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 
 	KeySet * simple = simpleTestKeySet ();
@@ -550,8 +550,8 @@ static void test_mmap_ksAppend (const char * tmpFile)
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
 
 	KeySet * toAppend = ksNew (10, keyNew ("user/tests/mmapstorage/zzzz", KEY_VALUE, "root key", KEY_END),
-				keyNew ("user/tests/mmapstorage/simpleKey/c", KEY_VALUE, "c value", KEY_END),
-				keyNew ("user/tests/mmapstorage/simpleKey/d", KEY_VALUE, "d value", KEY_END), KS_END);
+				   keyNew ("user/tests/mmapstorage/simpleKey/c", KEY_VALUE, "c value", KEY_END),
+				   keyNew ("user/tests/mmapstorage/simpleKey/d", KEY_VALUE, "d value", KEY_END), KS_END);
 	if (ksAppend (ks, toAppend) == -1)
 	{
 		yield_error ("ksAppend failed");

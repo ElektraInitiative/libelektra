@@ -18,9 +18,9 @@
 //#include <fcntl.h>	// open()
 #include <assert.h>
 #include <errno.h>
-#include <stdio.h> // fopen(), fileno()
-#include <stdlib.h>    // strtol()
 #include <limits.h>    // SSIZE_MAX
+#include <stdio.h>     // fopen(), fileno()
+#include <stdlib.h>    // strtol()
 #include <sys/mman.h>  // mmap()
 #include <sys/stat.h>  // stat()
 #include <sys/types.h> // ftruncate ()
@@ -276,12 +276,12 @@ static void mmapDataSize (DestType destType, MmapHeader * mmapHeader, KeySet * r
 	size_t keyArraySize = (returned->size) * SIZEOF_KEY;
 	size_t keyPtrArraySize = (returned->alloc) * SIZEOF_KEY_PTR;
 
-	size_t allocSize = SIZEOF_KEYSET + keyPtrArraySize + keyArraySize + dataBlocksSize +
-			  (metaKeySets * SIZEOF_KEYSET) + (metaKsAlloc * SIZEOF_KEY_PTR) + (dynArray->size * SIZEOF_KEY);
+	size_t allocSize = SIZEOF_KEYSET + keyPtrArraySize + keyArraySize + dataBlocksSize + (metaKeySets * SIZEOF_KEYSET) +
+			   (metaKsAlloc * SIZEOF_KEY_PTR) + (dynArray->size * SIZEOF_KEY);
 
 	if (destType == TYPE_MMAP)
 	{
- 		allocSize += SIZEOF_MMAPHEADER; 
+		allocSize += SIZEOF_MMAPHEADER;
 	}
 	mmapHeader->allocSize = allocSize;
 	mmapHeader->numKeySets = 1 + metaKeySets;
@@ -600,7 +600,7 @@ void * hexStringToAddress (const char * hexString)
 	long int val = strtol (hexString, &endptr, hexBase);
 
 	/* Check for various possible errors */
-	if ( ( errno == ERANGE && ( val == LONG_MAX || val == LONG_MIN ) ) || ( errno != 0 && val == 0 ) || endptr == hexString)
+	if ((errno == ERANGE && (val == LONG_MAX || val == LONG_MIN)) || (errno != 0 && val == 0) || endptr == hexString)
 	{
 		ELEKTRA_LOG_WARNING ("strerror: %s", strerror (errno));
 		errno = errnosave;
@@ -744,20 +744,20 @@ int elektraMmapstorageGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 	munmap (mappedRegion, mmapHeader.mmapSize);
 	*/
 	fclose (fp);
-	
+
 	char mmapAddrString[SIZEOF_ADDR_STRING];
-	snprintf (mmapAddrString, SIZEOF_ADDR_STRING-1, "%p", (void *) (mappedRegion));
-	mmapAddrString[SIZEOF_ADDR_STRING-1] = '\0';
+	snprintf (mmapAddrString, SIZEOF_ADDR_STRING - 1, "%p", (void *) (mappedRegion));
+	mmapAddrString[SIZEOF_ADDR_STRING - 1] = '\0';
 	ELEKTRA_LOG_WARNING ("mappedRegion ptr as string: %s", mmapAddrString);
 	char ksAddrString[SIZEOF_ADDR_STRING];
-	snprintf (ksAddrString, SIZEOF_ADDR_STRING-1, "%p", (void *) returned);
-	ksAddrString[SIZEOF_ADDR_STRING-1] = '\0';
+	snprintf (ksAddrString, SIZEOF_ADDR_STRING - 1, "%p", (void *) returned);
+	ksAddrString[SIZEOF_ADDR_STRING - 1] = '\0';
 	ELEKTRA_LOG_WARNING ("KeySet ptr as string: %s", ksAddrString);
 	keySetMeta (found, mmapAddrString, ksAddrString);
 	ksAppendKey (mappedFiles, found);
 	elektraPluginSetData (handle, mappedFiles);
 	m_output_key (found);
-	
+
 	ELEKTRA_LOG_WARNING ("returned keyset:");
 	m_output_keyset (returned);
 
@@ -766,11 +766,9 @@ int elektraMmapstorageGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 
 KeySet * copyKeySet (MmapHeader * mmapInfo, KeySet * unlinkKs, MmapHeader * mmapHeader)
 {
-	if (!mmapInfo)
-		return 0;
-	
-	if (test_bit(mmapInfo->flags, MMAP_FLAG_DELETED) == MMAP_FLAG_DELETED)
-		return 0;
+	if (!mmapInfo) return 0;
+
+	if (test_bit (mmapInfo->flags, MMAP_FLAG_DELETED) == MMAP_FLAG_DELETED) return 0;
 
 	// TODO: ultimately, use this function everywhere
 	DynArray dynArray;
@@ -779,13 +777,13 @@ KeySet * copyKeySet (MmapHeader * mmapInfo, KeySet * unlinkKs, MmapHeader * mmap
 	dynArray.size = 0;
 	dynArray.alloc = 1;
 
-	//ksDeepDup (toCopy);
-	
+	// ksDeepDup (toCopy);
+
 	mmapDataSize (TYPE_ALLOC, mmapHeader, unlinkKs, &dynArray);
 	mmapHeader->mmapMagicNumber = ELEKTRA_MAGIC_MMAP_NUMBER;
 
 	size_t copySize = mmapHeader->allocSize;
-	//char * dest = elektraCalloc (copySize);
+	// char * dest = elektraCalloc (copySize);
 
 	// TODO: if have MAP_ANONYMOUS
 	char * dest = mmap ((void *) 0, copySize, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
@@ -815,21 +813,21 @@ int elektraMmapstorageSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 	{
 		ELEKTRA_LOG_WARNING ("unlink: need to unlink old mapped memory from file");
 		m_output_key (found);
-		//m_output_meta (found);
-		//keyDel (parentCopy);
-		
+		// m_output_meta (found);
+		// keyDel (parentCopy);
+
 		const Key * cur;
 		keyRewindMeta (found);
 		while ((cur = keyNextMeta (found)) != 0)
 		{
-			void * toUnlinkMmap = hexStringToAddress(keyName (cur));
+			void * toUnlinkMmap = hexStringToAddress (keyName (cur));
 			ELEKTRA_LOG_WARNING ("unlink: unlinking mmap str: %s", keyName (cur));
 			ELEKTRA_LOG_WARNING ("unlink: unlinking mmap ptr: %p", toUnlinkMmap);
 
-			void * toUnlinkKS = hexStringToAddress(keyString (cur));
+			void * toUnlinkKS = hexStringToAddress (keyString (cur));
 			ELEKTRA_LOG_WARNING ("unlink: unlinking KeySet str: %s", keyString (cur));
 			ELEKTRA_LOG_WARNING ("unlink: unlinking KeySet ptr: %p", toUnlinkKS);
-			
+
 			MmapHeader mmapHeader;
 			mmapHeader.flags = 0;
 			KeySet * copy = copyKeySet (toUnlinkMmap, toUnlinkKS, &mmapHeader);
@@ -837,10 +835,10 @@ int elektraMmapstorageSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 			{
 				ksClose (toUnlinkKS);
 				updatePointers (TYPE_ALLOC, &mmapHeader, (char *) copy);
-				mmapToKeySet (TYPE_ALLOC, (char *)copy, (KeySet *) toUnlinkKS);
-				//elektraFree (copy); // not if MAP_ANONYMOUS
+				mmapToKeySet (TYPE_ALLOC, (char *) copy, (KeySet *) toUnlinkKS);
+				// elektraFree (copy); // not if MAP_ANONYMOUS
 			}
-			//keySetMeta (found, keyName (cur), ""); // delete
+			// keySetMeta (found, keyName (cur), ""); // delete
 		}
 		keyDel (found);
 	}

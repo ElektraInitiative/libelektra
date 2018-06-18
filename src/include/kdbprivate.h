@@ -22,8 +22,8 @@
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 #include <kdbopmphm.h>
 #endif
-#include <kdbmmap.h>
 #include <kdbglobal.h>
+#include <kdbmmap.h>
 
 #include <limits.h>
 

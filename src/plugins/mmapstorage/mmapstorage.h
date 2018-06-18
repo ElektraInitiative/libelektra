@@ -10,8 +10,8 @@
 #ifndef ELEKTRA_PLUGIN_MMAPSTORAGE_H
 #define ELEKTRA_PLUGIN_MMAPSTORAGE_H
 
-#include <kdbplugin.h>
 #include <kdbmmap.h>
+#include <kdbplugin.h>
 
 
 typedef struct _dynArray DynArray;
