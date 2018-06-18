@@ -19,6 +19,10 @@ if (C_STD)
 	message (STATUS "use C_STD as given by user: ${C_STD}")
 else ()
 	set (C_STD "-std=gnu99")
+
+	# gnu99 does not restrict useage of _GNU_SOURCE provided functions
+	# MUSL needs it to be set explicitly to enable functionality
+	set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_GNU_SOURCE")
 endif ()
 
 if (CXX_STD)
