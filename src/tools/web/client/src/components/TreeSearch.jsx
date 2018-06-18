@@ -9,13 +9,14 @@
 import React from 'react'
 import debounce from './debounce'
 
-const SearchInput = ({ value, onChange, state }) => (
+const SearchInput = ({ value, onChange, onKeyPress, state }) => (
   <input
     type="search"
     class={'search ' + state}
     placeholder="Search keys..."
     value={value}
     onChange={onChange}
+    onKeyPress={onKeyPress}
   />
 )
 const DebouncedSearchInput = debounce(SearchInput)
@@ -58,6 +59,11 @@ export default class TreeSearch extends React.Component {
         value={value}
         onChange={this.handleChange}
         onDebounced={this.handleFind}
+        onKeyPress={e => {
+          if (e.key === 'Enter') {
+            this.handleFind(value)
+          }
+        }}
       />
     )
   }
