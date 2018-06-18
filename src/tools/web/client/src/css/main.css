@@ -60,3 +60,13 @@ h1 b {
   padding-left: 0.5em;
   font-size: small;
 }
+
+@keyframes fade {
+  from { opacity: 1 }
+  to { opacity: 0.6 }
+}
+
+.errorSnackbar {
+  animation-name: fade;
+  animation-duration: 30s;
+}
