@@ -69,6 +69,7 @@ export default class ErrorSnackbar extends React.Component {
         onRequestClose={() => {/* do nothing */}}
         action={action}
         onActionClick={onClick}
+        className="errorSnackbar"
       />,
       <Dialog
         actions={actions}
