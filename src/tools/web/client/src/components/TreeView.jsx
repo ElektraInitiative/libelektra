@@ -76,11 +76,15 @@ export default class TreeView extends React.Component {
   }
 
   handleDrop = (target, evt, inputs) => {
-    const { instanceId, moveKey } = this.props
+    const { instanceId, moveKey, copyKey } = this.props
     const { selection } = inputs
 
+    const action = (evt && evt.altKey) // alt pressed -> copy
+      ? copyKey
+      : moveKey
+
     selection.map(
-      sel => moveKey(instanceId, sel.path, target.path + '/' + sel.name)
+      sel => action(instanceId, sel.path, target.path + '/' + sel.name)
     )
     this.setState({ selection: [] })
   }
