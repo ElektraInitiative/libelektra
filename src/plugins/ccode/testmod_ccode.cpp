@@ -56,18 +56,8 @@ CppKeySet percentConfig ()
 	return config;
 }
 
-void testRoundTrip (string const decodedString, string const encodedString = "", CppKeySet config = defaultConfig ())
-#ifdef __llvm__
-	__attribute__ ((annotate ("oclint:suppress[high cyclomatic complexity]"), annotate ("oclint:suppress[high ncss method]")))
-#endif
+void testEnocdingDecoding (Plugin * const plugin, CppKey const & parent, string const decodedString, string const encodedString = "")
 {
-	CppKeySet modules{ 0, KS_END };
-	elektraModulesInit (modules.getKeySet (), NULL);
-
-	CppKey parent{ "system/elektra/modules/type", KEY_END };
-	Plugin * plugin = elektraPluginOpen ("ccode", modules.getKeySet (), config.getKeySet (), *parent);
-	exit_if_fail (plugin != NULL, "Could not open ccode plugin"); //! OCLint (empty if, too few branches switch)
-
 	CppKeySet keys{ 20, keyNew ("user/tests/ccode/key", KEY_VALUE, decodedString.c_str (), KEY_END), KS_END };
 	succeed_if_same (plugin->kdbSet (plugin, keys.getKeySet (), *parent), //! OCLint (empty if, too few branches switch)
 			 ELEKTRA_PLUGIN_STATUS_SUCCESS, "Call of `kdbset` was not successful");
@@ -84,6 +74,18 @@ void testRoundTrip (string const decodedString, string const encodedString = "",
 	CppKey decoded = keys.lookup ("user/tests/ccode/key");
 	succeed_if_same (decoded.getString (), decodedString, //! OCLint (empty if, too few branches switch)
 			 "String not correctly decoded");
+}
+
+void testRoundTrip (string const decodedString, string const encodedString = "", CppKeySet config = defaultConfig ())
+{
+	CppKeySet modules{ 0, KS_END };
+	elektraModulesInit (modules.getKeySet (), NULL);
+
+	CppKey parent{ "system/elektra/modules/type", KEY_END };
+	Plugin * plugin = elektraPluginOpen ("ccode", modules.getKeySet (), config.getKeySet (), *parent);
+	exit_if_fail (plugin != NULL, "Could not open ccode plugin"); //! OCLint (empty if, too few branches switch)
+
+	testEnocdingDecoding (plugin, parent, decodedString, encodedString);
 
 	elektraPluginClose (plugin, 0);
 	ksDel (modules.release ());
