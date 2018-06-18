@@ -271,6 +271,7 @@ Thanks to Michael Zronek and Vanessa Kos.
 ### Jenkins
 
 - A build job checks if PRs modify the release notes. *(Markus Raab)*
+- Create a new build job that checks for `C99` compliancy *(Lukas Winkler)*
 - Several improvements to the build system have been implemented *(Lukas Winkler)*:
   - Better Docker image handling.
   - Abort of previously queued but unfinished runs on new commits.
