@@ -38,10 +38,8 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.8.
 ## Highlights
 
 - Type system preview
-- Elektra Web 1.5
 - Chef Cookbook
 - Elektra Web 1.5
-- <<HIGHLIGHT3>>
 
 
 ### Type system preview
@@ -117,6 +115,7 @@ Try it out now on: http://webui.libelektra.org:33334/
   - remove metakeys when they are set to the default value or empty/0
   - improved keyboard support
   - fixed many small issues (#2037)
+
 
 
 ## Plugins
