@@ -57,9 +57,21 @@ export default class TreeItem extends Component {
     this.setState({ dialogs: { ...dialogs, [dialog]: false } })
   }
 
-  handleDelete = (path) => {
-    const { instanceId, item, deleteKey, sendNotification } = this.props
-    deleteKey(instanceId, path)
+  handleDelete = (item) => {
+    const { instanceId, deleteKey, setMetaKey, deleteMetaKey, sendNotification } = this.props
+
+    console.log('parent', item.parent)
+    if (item && item.parent) {
+      const arrayKeyLength = this.getArrayKeyLength(item.parent)
+      console.log('arrayKeyLength', arrayKeyLength)
+      if (!arrayKeyLength || arrayKeyLength <= 1) { // not an array (anymore)
+        deleteMetaKey(instanceId, item.parent.path, 'array')
+      } else {
+        setMetaKey(instanceId, item.parent.path, 'array', String(arrayKeyLength - 1))
+      }
+    }
+
+    deleteKey(instanceId, item.path)
       .then(() => {
         if (Array.isArray(item.children) && item.children.length > 0) {
           return Promise.all(item.children.map(
@@ -67,7 +79,7 @@ export default class TreeItem extends Component {
           ))
         }
       })
-      .then(() => sendNotification('successfully deleted key: ' + path))
+      .then(() => sendNotification('successfully deleted key: ' + item.path))
   }
 
   handleAdd = (path, addKeyName, addKeyValue) => {
@@ -214,7 +226,7 @@ export default class TreeItem extends Component {
                 )
               : <b style={{ ...titleStyle, opacity: keyExists ? 1 : 0.4 }}>
                   <span style={{ flex: 'initial', marginTop: -2 }}>{prettyPrintArrayIndex(item.name)}</span>
-                  {arrayKeyLength &&
+                  {(arrayKeyLength || (item && item.meta && item.meta['array'])) &&
                     <span style={{ flex: 'initial', marginLeft: 8 }}>
                       <ArrayIcon />
                     </span>
@@ -301,7 +313,7 @@ export default class TreeItem extends Component {
                 />
                 {!rootLevel && !(meta && meta['restrict/remove'] === '1') &&
                   <ActionButton icon={<ActionDelete />} onClick={e => {
-                    this.handleDelete(item.path)
+                    this.handleDelete(item)
                     e.preventDefault()
                   }} tooltip="delete key" />
                 }
