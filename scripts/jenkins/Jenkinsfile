@@ -739,7 +739,7 @@ def buildAndTest(testName, image, extraCmakeFlags = [:],
       withDockerEnv(image, dockerOpts) {
         // we use a space in the directory to test if paths are
         // properly escaped
-        def buildDir='"build directory"'
+        def buildDir='build directory'
 
         if(tests) {
           artifacts.add("${buildDir}/Testing/*/*.xml")
@@ -919,7 +919,7 @@ def archive(paths) {
     def dest = "${prefix}${env.STAGE_NAME}/"
     sh "mkdir -p ${dest}"
     paths.each { path ->
-        sh "cp -v ${path} ${dest} || true"
+        sh "cp -v \"${path}\" ${dest} || true"
     }
     archiveArtifacts artifacts: "${prefix}**", fingerprint: true, allowEmptyArchive: true
   } else {
