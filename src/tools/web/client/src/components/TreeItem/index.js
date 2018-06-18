@@ -26,8 +26,15 @@ import AddDialog from './dialogs/AddDialog.jsx'
 import SettingsDialog from './dialogs/SettingsDialog.jsx'
 import DuplicateDialog from './dialogs/DuplicateDialog.jsx'
 import EditDialog from './dialogs/EditDialog.jsx'
+import RenameDialog from './dialogs/RenameDialog.jsx'
 import { parseEnum } from './utils'
 import { ARRAY_KEY_REGEX, prettyPrintArrayIndex } from '../../utils'
+
+const getParentPath = (path) => {
+  const pp = path.split('/')
+  pp.pop()
+  return pp.join('/')
+}
 
 export default class TreeItem extends Component {
   constructor (...args) {
@@ -38,6 +45,7 @@ export default class TreeItem extends Component {
         edit: false,
         settings: false,
         remove: false,
+        rename: false,
       },
       saved: false,
       err: false,
@@ -168,7 +176,7 @@ export default class TreeItem extends Component {
   render () {
     const {
       data, item, instanceId, instanceVisibility, batchUndo, onUndo, onRedo,
-      setMetaKey, deleteMetaKey, sendNotification, refreshPath,
+      setMetaKey, deleteMetaKey, sendNotification, refreshPath, moveKey,
     } = this.props
 
     const rootLevel = (item && item.path)
@@ -213,7 +221,7 @@ export default class TreeItem extends Component {
             {valueVisible
               ? (
                   <span style={{ display: 'flex', alignItems: 'center', height: 48, opacity: keyExists ? 1 : 0.4 }}>
-                      <b style={titleStyle}>{prettyPrintArrayIndex(item.name)}: </b>
+                      <b style={titleStyle} onClick={this.handleOpen('rename')}>{prettyPrintArrayIndex(item.name)}: </b>
                       <span
                         style={{ marginLeft: 6 }}
                         onClick={onClickHandler}
@@ -222,7 +230,7 @@ export default class TreeItem extends Component {
                       </span>
                   </span>
                 )
-              : <b style={{ ...titleStyle, opacity: keyExists ? 1 : 0.4 }}>
+              : <b style={{ ...titleStyle, opacity: keyExists ? 1 : 0.4 }} onClick={this.handleOpen('rename')}>
                   <span style={{ flex: 'initial', marginTop: -2 }}>{prettyPrintArrayIndex(item.name)}</span>
                   {(arrayKeyLength || (item && item.meta && item.meta['array'])) &&
                     <span style={{ flex: 'initial', marginLeft: 8 }}>
@@ -255,6 +263,12 @@ export default class TreeItem extends Component {
                 {!rootLevel && !valueVisible && !(meta && meta['restrict/write'] === '1') &&
                   <ActionButton icon={<ContentEdit />} onClick={this.handleOpen('edit')} tooltip="edit value" />
                 }
+                <RenameDialog
+                  item={item}
+                  open={this.state.dialogs.rename}
+                  onRename={name => moveKey(instanceId, item.path, getParentPath(item.path) + '/' + name)}
+                  onClose={this.handleClose('rename')}
+                />
                 <EditDialog
                   renderField={({ onKeyPress }) => (
                     <div style={{ display: 'flex', alignItems: 'center' }}>
