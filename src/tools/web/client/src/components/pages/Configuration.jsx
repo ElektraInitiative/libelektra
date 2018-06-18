@@ -197,7 +197,7 @@ export default class Configuration extends Component {
 
     const title = (
         <h1>
-            <b>{name}</b>{' instance'}
+            <b>{name}</b>
             <IconButton
               className="hoverEffect"
               style={{ marginLeft: 6, width: 28, height: 28, padding: 6 }}
