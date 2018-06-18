@@ -290,6 +290,11 @@ export default class SettingsDialog extends Component {
                       onChange={this.handleEdit('description', IMMEDIATE)}
                       onDebounced={this.handleEdit('description', DEBOUNCED)}
                       value={this.getMeta('description', '')}
+                      onKeyPress={e => {
+                        if (e.key === 'Enter') {
+                          onClose()
+                        }
+                      }}
                     />
                     <SavedIcon saved={this.getSaved('description')} />
                 </div>
@@ -303,6 +308,11 @@ export default class SettingsDialog extends Component {
                         this.setState({ paused: false })
                       }}
                       value={visibility}
+                      onKeyPress={e => {
+                        if (e.key === 'Enter') {
+                          onClose()
+                        }
+                      }}
                     >
                         {Object.keys(VISIBILITY_LEVELS).map(lvl =>
                           <MenuItem key={lvl} value={lvl} primaryText={lvl} />
@@ -321,6 +331,11 @@ export default class SettingsDialog extends Component {
                       onChange={this.handleEdit('example', IMMEDIATE)}
                       onDebounced={this.handleEdit('example', DEBOUNCED)}
                       value={this.getMeta('example', '')}
+                      onKeyPress={e => {
+                        if (e.key === 'Enter') {
+                          onClose()
+                        }
+                      }}
                     />
                     <SavedIcon saved={this.getSaved('example')} />
                 </div>
@@ -332,6 +347,11 @@ export default class SettingsDialog extends Component {
                       onChange={this.handleEdit('default', IMMEDIATE)}
                       onDebounced={this.handleEdit('default', DEBOUNCED)}
                       value={this.getMeta('default', '')}
+                      onKeyPress={e => {
+                        if (e.key === 'Enter') {
+                          onClose()
+                        }
+                      }}
                     />
                     <SavedIcon saved={this.getSaved('default')} />
                 </div>
@@ -345,6 +365,11 @@ export default class SettingsDialog extends Component {
                     onCheck={this.handleBinary}
                     label="binary"
                     disabled={this.getMeta('restrict/binary', '0') === '1'}
+                    onKeyPress={e => {
+                      if (e.key === 'Enter') {
+                        onClose()
+                      }
+                    }}
                   />
                   <SavedIcon saved={this.getSaved('binary')} />
               </div>
@@ -355,6 +380,11 @@ export default class SettingsDialog extends Component {
                     onCheck={(e, val) => this.handleEdit('restrict/binary')(toElektraBool(val))}
                     label="restrict/binary"
                     disabled={!!isBinary}
+                    onKeyPress={e => {
+                      if (e.key === 'Enter') {
+                        onClose()
+                      }
+                    }}
                   />
                   <SavedIcon saved={this.getSaved('restrict/binary')} />
               </div>
@@ -366,6 +396,11 @@ export default class SettingsDialog extends Component {
                   checked={fromElektraBool(this.getMeta('restrict/write', false))}
                   onCheck={(e, val) => this.handleEdit('restrict/write')(toElektraBool(val))}
                   label="restrict/write"
+                  onKeyPress={e => {
+                    if (e.key === 'Enter') {
+                      onClose()
+                    }
+                  }}
                 />
                 <SavedIcon saved={this.getSaved('restrict/write')} />
               </div>
@@ -375,6 +410,11 @@ export default class SettingsDialog extends Component {
                   checked={fromElektraBool(this.getMeta('restrict/remove', false))}
                   onCheck={(e, val) => this.handleEdit('restrict/remove')(toElektraBool(val))}
                   label="restrict/remove"
+                  onKeyPress={e => {
+                    if (e.key === 'Enter') {
+                      onClose()
+                    }
+                  }}
                 />
                 <SavedIcon saved={this.getSaved('restrict/remove')} />
               </div>
@@ -410,6 +450,11 @@ export default class SettingsDialog extends Component {
                             }
                           }}
                           value={type}
+                          onKeyPress={e => {
+                            if (e.key === 'Enter') {
+                              onClose()
+                            }
+                          }}
                         >
                             {KEY_TYPES.map(({ type, name }) =>
                               <MenuItem key={type} value={type} primaryText={name} />
@@ -440,6 +485,11 @@ export default class SettingsDialog extends Component {
                             onChange={this.handleEdit('check/validation', IMMEDIATE)}
                             onDebounced={this.handleEdit('check/validation', DEBOUNCED)}
                             value={this.getMeta('check/validation', '')}
+                            onKeyPress={e => {
+                              if (e.key === 'Enter') {
+                                onClose()
+                              }
+                            }}
                           />
                           <SavedIcon saved={this.getSaved('check/validation')} />
                       </div>
@@ -452,6 +502,11 @@ export default class SettingsDialog extends Component {
                             onChange={this.handleEdit('check/validation/message', IMMEDIATE)}
                             onDebounced={this.handleEdit('check/validation/message', DEBOUNCED)}
                             value={this.getMeta('check/validation/message', '')}
+                            onKeyPress={e => {
+                              if (e.key === 'Enter') {
+                                onClose()
+                              }
+                            }}
                           />
                           <SavedIcon saved={this.getSaved('check/validation/message')} />
                       </div>

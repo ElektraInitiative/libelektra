@@ -29,7 +29,7 @@ export default class SimpleTextField extends Component {
   }
 
   render () {
-    const { id, meta, label, debounce = true, onChange, onError } = this.props
+    const { id, meta, label, debounce = true, onChange, onError, onKeyPress } = this.props
     const val = this.state.value
     const comp = debounce ? DebouncedTextField : TextField
     const isBinary = meta && meta.hasOwnProperty('binary')
@@ -60,6 +60,7 @@ export default class SimpleTextField extends Component {
           disabled: isBinary || fromElektraBool(meta && meta['restrict/write']),
           floatingLabelText: label,
           floatingLabelFixed: !!label,
+          onKeyPress: onKeyPress,
         })}
       </div>
     )

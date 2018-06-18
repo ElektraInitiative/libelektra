@@ -71,7 +71,6 @@ export default class AddDialog extends Component {
     }
     keyExists(path, name)
       .then(res => {
-        console.log('res', res)
         if (res && res.exists) {
           alert('A key with the name "' + name + '" at path "' + path + '" already exists! Please choose a different name.')
           return
