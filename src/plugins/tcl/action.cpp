@@ -19,7 +19,7 @@
 
 #include "action.hpp"
 
-#include <kdbease.h>
+#include <kdbease.h> // elektraKeyGetRelativeName
 
 using namespace std;
 
