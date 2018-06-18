@@ -58,8 +58,7 @@ CppKeySet percentConfig ()
 
 void testRoundTrip (string const decodedString, string const encodedString = "", CppKeySet config = defaultConfig ())
 #ifdef __llvm__
-	__attribute__ ((annotate ("oclint:suppress[empty if statement]"), annotate ("oclint:suppress[high cyclomatic complexity]"),
-			annotate ("oclint:suppress[high ncss method]"), annotate ("oclint:suppress[too few branches in switch statement]")))
+	__attribute__ ((annotate ("oclint:suppress[high cyclomatic complexity]"), annotate ("oclint:suppress[high ncss method]")))
 #endif
 {
 	CppKeySet modules{ 0, KS_END };
@@ -67,22 +66,24 @@ void testRoundTrip (string const decodedString, string const encodedString = "",
 
 	CppKey parent{ "system/elektra/modules/type", KEY_END };
 	Plugin * plugin = elektraPluginOpen ("ccode", modules.getKeySet (), config.getKeySet (), *parent);
-	exit_if_fail (plugin != NULL, "Could not open ccode plugin");
+	exit_if_fail (plugin != NULL, "Could not open ccode plugin"); //! OCLint (empty if, too few branches switch)
 
 	CppKeySet keys{ 20, keyNew ("user/tests/ccode/key", KEY_VALUE, decodedString.c_str (), KEY_END), KS_END };
-	succeed_if_same (plugin->kdbSet (plugin, keys.getKeySet (), *parent), ELEKTRA_PLUGIN_STATUS_SUCCESS,
-			 "Call of `kdbset` was not successful");
+	succeed_if_same (plugin->kdbSet (plugin, keys.getKeySet (), *parent), //! OCLint (empty if, too few branches switch)
+			 ELEKTRA_PLUGIN_STATUS_SUCCESS, "Call of `kdbset` was not successful");
 
 	if (!encodedString.empty ())
 	{
 		CppKey encoded = keys.lookup ("user/tests/ccode/key");
-		succeed_if_same (encoded.getString (), encodedString, "String not correctly encoded");
+		succeed_if_same (encoded.getString (), encodedString, //! OCLint (empty if, too few branches switch)
+				 "String not correctly encoded");
 	}
 
-	succeed_if_same (plugin->kdbGet (plugin, keys.getKeySet (), *parent), ELEKTRA_PLUGIN_STATUS_SUCCESS,
-			 "Call of `kdbGet` was not successful");
+	succeed_if_same (plugin->kdbGet (plugin, keys.getKeySet (), *parent), //! OCLint (empty if, too few branches switch)
+			 ELEKTRA_PLUGIN_STATUS_SUCCESS, "Call of `kdbGet` was not successful");
 	CppKey decoded = keys.lookup ("user/tests/ccode/key");
-	succeed_if_same (decoded.getString (), decodedString, "String not correctly decoded");
+	succeed_if_same (decoded.getString (), decodedString, //! OCLint (empty if, too few branches switch)
+			 "String not correctly decoded");
 
 	elektraPluginClose (plugin, 0);
 	ksDel (modules.release ());
