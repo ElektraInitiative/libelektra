@@ -38,7 +38,7 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.8.
 ## Highlights
 
 - Type system preview
-- <<HIGHLIGHT2>>
+- Elektra Web 1.5
 - <<HIGHLIGHT3>>
 
 
@@ -63,8 +63,24 @@ For more details see the
 
 Thanks to Armin Wurzinger.
 
-### <<HIGHLIGHT2>>
+### Elektra Web 1.5
 
+The new release of Elektra Web features many UX improvements from the usability test!
+
+Try it out now on: http://webui.libelektra.org:33334/
+
+- search completely reworked - it does not act as a filter on already opened keys anymore, and instead searches the whole key database - feedback from the search was also greatly improved (pulsating while searching, glowing blue when done)
+- added "abort" buttons to dialogs to revert actions
+- added "create array" button to easily create arrays
+- removed confirmation dialog before deletion (undo can be used instead)
+- created a docker image: `elektra/web`
+- small fixes:
+  - updated visibility levels
+  - removed "done" button in main view
+  - fixed issues with the opener click area
+  - remove metakeys when they are set to the default value or empty/0
+  - improved keyboard support
+  - fixed many small issues (#2037)
 
 ### <<HIGHLIGHT2>>
 
