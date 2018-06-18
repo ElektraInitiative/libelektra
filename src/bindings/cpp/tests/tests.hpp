@@ -24,8 +24,8 @@
 using namespace std;
 using namespace kdb;
 
-#define succeed_if(x, y) ASSERT_TRUE (x) << y;
-#define exit_if_fail(x, y) ASSERT_TRUE (x) << y;
-#define succeed_if_same(x, y, message) ASSERT_EQ (x, y) << message;
+#define succeed_if(x, y) ASSERT_TRUE (x) << y
+#define exit_if_fail(x, y) ASSERT_TRUE (x) << y
+#define succeed_if_same(x, y, message) ASSERT_EQ (x, y) << message
 
 #endif
