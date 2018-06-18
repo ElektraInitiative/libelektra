@@ -40,6 +40,7 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.8.
 - Type system preview
 - Elektra Web 1.5
 - Chef Cookbook
+- Elektra Web 1.5
 - <<HIGHLIGHT3>>
 
 
