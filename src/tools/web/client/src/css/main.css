@@ -51,3 +51,12 @@ h1 b {
 .hoverEffect:hover {
   opacity: 1;
 }
+
+.titleText {
+  display: inline-flex;
+}
+
+.titleText small {
+  padding-left: 0.5em;
+  font-size: small;
+}

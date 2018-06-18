@@ -64,6 +64,10 @@ export default class Menu extends React.Component {
       addInstance,
     } = this.props
 
+    const titleText = (
+      <span className="titleText">elektra-web <small>v1.5</small></span>
+    )
+
     const title = (
         <ToolbarGroup>
           <div style={{ display: 'flex' }}>
@@ -72,7 +76,7 @@ export default class Menu extends React.Component {
             <Link style={{ textDecoration: 'none' }} to="/" tabIndex="-1">
               <ToolbarTitle
                 style={{ fontFamily: 'Roboto Light', fontSize: 22, letterSpacing: 0.79, color: 'rgba(0,0,0,0.40)' }}
-                text="elektra-web"
+                text={titleText}
               />
             </Link>
             {subpage && // show breadcrumb on subpages
