@@ -52,6 +52,10 @@ export default class ErrorSnackbar extends React.Component {
 
     const actions = [
       <FlatButton
+        label="report issue"
+        onClick={() => window.open('http://issues.libelektra.org/new', '_blank')}
+      />,
+      <FlatButton
         label="dismiss"
         primary={true}
         onClick={this.handleClose}
