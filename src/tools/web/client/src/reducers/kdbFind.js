@@ -8,7 +8,7 @@
 
 import {
   FIND_KEY_REQUEST, FIND_KEY_SUCCESS, FIND_KEY_FAILURE,
-  CLEAR_SEARCH, CLEAR_SEARCH_FINAL,
+  CLEAR_SEARCH, CLEAR_SEARCH_FINAL, DELETE_KEY_SUCCESS,
 } from '../actions'
 
 const initialState = {
@@ -35,6 +35,11 @@ export default function batchUndoReducer (state = initialState, action) {
 
     case CLEAR_SEARCH_FINAL:
       return initialState
+
+    case DELETE_KEY_SUCCESS: {
+      const { path } = action.request
+      return { ...state, results: state.results.filter(p => !p.startsWith(path)) }
+    }
 
     default:
       return state
