@@ -54,7 +54,7 @@ export default class AddDialog extends Component {
   }
 
   handleCreate = (arrayKey = false) => {
-    const { item, onAdd, setMetaByPath } = this.props
+    const { item, onAdd, keyExists, setMetaByPath } = this.props
     const { path } = item
     const { name, value, type } = this.state
     const v = this.state.visibility
@@ -69,17 +69,25 @@ export default class AddDialog extends Component {
         if (!confirmed) return
       }
     }
-    onAdd(path, name, value)
-    if (type !== 'any') {
-      setMetaByPath(path + '/' + name, 'check/type', type)
-    }
-    if (v !== 'user') {
-      setMetaByPath(path + '/' + name, 'visibility', v)
-    }
-    if (arrayKey === true) {
-      setTimeout(() => onAdd(path + '/' + name, '#0', ''), 250)
-    }
-    this.handleClose()
+    keyExists(path, name)
+      .then(res => {
+        console.log('res', res)
+        if (res && res.exists) {
+          alert('A key with the name "' + name + '" at path "' + path + '" already exists! Please choose a different name.')
+          return
+        }
+        onAdd(path, name, value)
+        if (type !== 'any') {
+          setMetaByPath(path + '/' + name, 'check/type', type)
+        }
+        if (v !== 'user') {
+          setMetaByPath(path + '/' + name, 'visibility', v)
+        }
+        if (arrayKey === true) {
+          setTimeout(() => onAdd(path + '/' + name, '#0', ''), 250)
+        }
+        this.handleClose()
+      })
   }
 
   handleCreateArrayKey = () => {

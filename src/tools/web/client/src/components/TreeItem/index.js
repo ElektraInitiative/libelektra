@@ -144,6 +144,12 @@ export default class TreeItem extends Component {
       : false
   }
 
+  keyExists = (path, name) => {
+    const { instanceId, getKey } = this.props
+    return getKey(instanceId, path + '/' + name)
+      .then(res => res && res.result)
+  }
+
   render () {
     const {
       data, item, instanceId, instanceVisibility, batchUndo, onUndo, onRedo,
@@ -228,6 +234,7 @@ export default class TreeItem extends Component {
                   renderField={({ value, meta, debounce, onChange, onKeyPress, label, onError }) =>
                     this.renderValue('addValueField', { value, meta, debounce, onChange, onKeyPress, label, onError })
                   }
+                  keyExists={this.keyExists}
                   setMetaByPath={(path, key, value) => setMetaKey(instanceId, path, key, value)}
                 />
                 {!rootLevel && !valueVisible && !(meta && meta['restrict/write'] === '1') &&
