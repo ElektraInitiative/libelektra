@@ -24,11 +24,17 @@ import RadioButtons from './fields/RadioButtons.jsx'
 import ToggleButton from './fields/ToggleButton.jsx'
 import AddDialog from './dialogs/AddDialog.jsx'
 import SettingsDialog from './dialogs/SettingsDialog.jsx'
-import RemoveDialog from './dialogs/RemoveDialog.jsx'
 import DuplicateDialog from './dialogs/DuplicateDialog.jsx'
 import EditDialog from './dialogs/EditDialog.jsx'
+import RenameDialog from './dialogs/RenameDialog.jsx'
 import { parseEnum } from './utils'
 import { ARRAY_KEY_REGEX, prettyPrintArrayIndex } from '../../utils'
+
+const getParentPath = (path) => {
+  const pp = path.split('/')
+  pp.pop()
+  return pp.join('/')
+}
 
 export default class TreeItem extends Component {
   constructor (...args) {
@@ -39,8 +45,10 @@ export default class TreeItem extends Component {
         edit: false,
         settings: false,
         remove: false,
+        rename: false,
       },
       saved: false,
+      err: false,
       savedTimeout: false,
     }
   }
@@ -48,6 +56,7 @@ export default class TreeItem extends Component {
   handleOpen = (dialog) => (e) => {
     e.stopPropagation()
     const { dialogs } = this.state
+    this.props.resetBatchUndo()
     this.setState({ dialogs: { ...dialogs, [dialog]: true } })
   }
 
@@ -56,9 +65,19 @@ export default class TreeItem extends Component {
     this.setState({ dialogs: { ...dialogs, [dialog]: false } })
   }
 
-  handleDelete = (path) => {
-    const { instanceId, item, deleteKey, sendNotification } = this.props
-    deleteKey(instanceId, path)
+  handleDelete = (item) => {
+    const { instanceId, deleteKey, setMetaKey, deleteMetaKey, sendNotification } = this.props
+
+    if (item && item.parent) {
+      const arrayKeyLength = this.getArrayKeyLength(item.parent)
+      if (!arrayKeyLength || arrayKeyLength <= 1) { // not an array (anymore)
+        deleteMetaKey(instanceId, item.parent.path, 'array')
+      } else {
+        setMetaKey(instanceId, item.parent.path, 'array', String(arrayKeyLength - 1))
+      }
+    }
+
+    deleteKey(instanceId, item.path)
       .then(() => {
         if (Array.isArray(item.children) && item.children.length > 0) {
           return Promise.all(item.children.map(
@@ -66,7 +85,7 @@ export default class TreeItem extends Component {
           ))
         }
       })
-      .then(() => sendNotification('successfully deleted key: ' + path))
+      .then(() => sendNotification('successfully deleted key: ' + item.path))
   }
 
   handleAdd = (path, addKeyName, addKeyValue) => {
@@ -89,9 +108,13 @@ export default class TreeItem extends Component {
     const { instanceId, setKey, item } = this.props
     const { path } = item
     return setKey(instanceId, path, value)
-      .then(() => {
+      .then(res => {
+        if (res && res.error) {
+          return this.setState({ err: true })
+        }
         if (savedTimeout) clearTimeout(savedTimeout)
         this.setState({
+          err: false,
           saved: true,
           savedTimeout: setTimeout(() => {
             this.setState({ saved: false })
@@ -144,10 +167,16 @@ export default class TreeItem extends Component {
       : false
   }
 
+  keyExists = (path, name) => {
+    const { instanceId, getKey } = this.props
+    return getKey(instanceId, path + '/' + name)
+      .then(res => res && res.result)
+  }
+
   render () {
     const {
-      data, item, instanceId, instanceVisibility,
-      setMetaKey, deleteMetaKey, sendNotification, refreshPath,
+      data, item, instanceId, instanceVisibility, batchUndo, onUndo, onRedo,
+      setMetaKey, deleteMetaKey, sendNotification, refreshPath, moveKey,
     } = this.props
 
     const rootLevel = (item && item.path)
@@ -171,7 +200,7 @@ export default class TreeItem extends Component {
           {this.renderValue(item.path, data || {})}
         </div>
         <div style={{ flex: 'initial' }}>
-          <SavedIcon saved={this.state.saved} />
+          <SavedIcon saved={this.state.saved} err={this.state.err} />
         </div>
       </div>
     )
@@ -192,7 +221,7 @@ export default class TreeItem extends Component {
             {valueVisible
               ? (
                   <span style={{ display: 'flex', alignItems: 'center', height: 48, opacity: keyExists ? 1 : 0.4 }}>
-                      <b style={titleStyle}>{prettyPrintArrayIndex(item.name)}: </b>
+                      <b style={titleStyle} onClick={this.handleOpen('rename')}>{prettyPrintArrayIndex(item.name)}: </b>
                       <span
                         style={{ marginLeft: 6 }}
                         onClick={onClickHandler}
@@ -201,9 +230,9 @@ export default class TreeItem extends Component {
                       </span>
                   </span>
                 )
-              : <b style={{ ...titleStyle, opacity: keyExists ? 1 : 0.4 }}>
+              : <b style={{ ...titleStyle, opacity: keyExists ? 1 : 0.4 }} onClick={this.handleOpen('rename')}>
                   <span style={{ flex: 'initial', marginTop: -2 }}>{prettyPrintArrayIndex(item.name)}</span>
-                  {arrayKeyLength &&
+                  {(arrayKeyLength || (item && item.meta && item.meta['array'])) &&
                     <span style={{ flex: 'initial', marginLeft: 8 }}>
                       <ArrayIcon />
                     </span>
@@ -211,7 +240,7 @@ export default class TreeItem extends Component {
                 </b>
             }
             <span className="actions">
-                <SavedIcon saved={this.state.saved} />
+                <SavedIcon saved={this.state.saved} err={this.state.err} />
                 {valueVisible &&
                   <CopyToClipboard text={(data && data.value) || ''} onCopy={() => sendNotification('Copied value of ' + item.path + ' to clipboard!')}>
                     <ActionButton icon={<ContentPaste />} tooltip="copy value" />
@@ -228,18 +257,40 @@ export default class TreeItem extends Component {
                   renderField={({ value, meta, debounce, onChange, onKeyPress, label, onError }) =>
                     this.renderValue('addValueField', { value, meta, debounce, onChange, onKeyPress, label, onError })
                   }
+                  keyExists={this.keyExists}
                   setMetaByPath={(path, key, value) => setMetaKey(instanceId, path, key, value)}
                 />
                 {!rootLevel && !valueVisible && !(meta && meta['restrict/write'] === '1') &&
                   <ActionButton icon={<ContentEdit />} onClick={this.handleOpen('edit')} tooltip="edit value" />
                 }
-                <EditDialog
-                  field={renderedField}
+                <RenameDialog
                   item={item}
+                  open={this.state.dialogs.rename}
+                  onRename={name => moveKey(instanceId, item.path, getParentPath(item.path) + '/' + name)}
+                  onClose={this.handleClose('rename')}
+                />
+                <EditDialog
+                  renderField={({ onKeyPress }) => (
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      <div style={{ flex: 'initial' }}>
+                        {this.renderValue('editValueField', { ...data, onKeyPress })}
+                      </div>
+                      <div style={{ flex: 'initial' }}>
+                        <SavedIcon saved={this.state.saved} err={this.state.err} />
+                      </div>
+                    </div>
+                  )}
+                  item={item}
+                  meta={meta}
                   value={data && data.value}
                   open={this.state.dialogs.edit}
                   onEdit={this.handleEdit}
                   onClose={this.handleClose('edit')}
+                  refreshKey={() => refreshPath(item.path)}
+                  sendNotification={sendNotification}
+                  batchUndo={batchUndo}
+                  onUndo={onUndo}
+                  onRedo={onRedo}
                 />
                 {!rootLevel &&
                   <ActionButton icon={<ContentCopy />} onClick={this.handleOpen('duplicate')} tooltip="duplicate key" />
@@ -258,6 +309,10 @@ export default class TreeItem extends Component {
                 <SettingsDialog
                   field={renderedField}
                   item={item}
+                  sendNotification={sendNotification}
+                  batchUndo={batchUndo}
+                  onUndo={onUndo}
+                  onRedo={onRedo}
                   meta={data && data.meta}
                   data={data && data.value}
                   open={this.state.dialogs.settings}
@@ -270,16 +325,10 @@ export default class TreeItem extends Component {
                 />
                 {!rootLevel && !(meta && meta['restrict/remove'] === '1') &&
                   <ActionButton icon={<ActionDelete />} onClick={e => {
-                    this.handleOpen('remove')(e)
+                    this.handleDelete(item)
                     e.preventDefault()
                   }} tooltip="delete key" />
                 }
-                <RemoveDialog
-                  item={item}
-                  open={this.state.dialogs.remove}
-                  onDelete={this.handleDelete}
-                  onClose={this.handleClose('remove')}
-                />
                 <i>
                   {!isCheckbox && meta && meta.description}
                 </i>

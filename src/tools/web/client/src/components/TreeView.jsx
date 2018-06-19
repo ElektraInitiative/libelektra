@@ -34,7 +34,7 @@ export default class TreeView extends React.Component {
     }
 
     const { unfolded } = this.state
-    if (unfolded.length <= 0) {
+    if (unfolded.length <= 0 || nextProps.searching) {
       const { instance } = nextProps
       if (instance && instance.unfolded && instance.unfolded.length > 0) {
         this.setState({ unfolded: instance.unfolded })
@@ -43,9 +43,11 @@ export default class TreeView extends React.Component {
   }
 
   updateUnfolded = (unfolded) => {
-    const { instanceId, updateInstance } = this.props
+    const { instanceId, updateInstance, searching } = this.props
     this.setState({ unfolded })
-    updateInstance(instanceId, { unfolded })
+    if (!searching) {
+      updateInstance(instanceId, { unfolded })
+    }
   }
 
   refreshPath = (path) => {
@@ -74,11 +76,15 @@ export default class TreeView extends React.Component {
   }
 
   handleDrop = (target, evt, inputs) => {
-    const { instanceId, moveKey } = this.props
+    const { instanceId, moveKey, copyKey } = this.props
     const { selection } = inputs
 
+    const action = (evt && evt.altKey) // alt pressed -> copy
+      ? copyKey
+      : moveKey
+
     selection.map(
-      sel => moveKey(instanceId, sel.path, target.path + '/' + sel.name)
+      sel => action(instanceId, sel.path, target.path + '/' + sel.name)
     )
     this.setState({ selection: [] })
   }

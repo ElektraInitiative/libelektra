@@ -39,7 +39,7 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.8.
 
 - Type system preview
 - Chef Cookbook
-- <<HIGHLIGHT3>>
+- Elektra Web 1.5
 
 
 ### Type system preview
@@ -96,10 +96,28 @@ end
 
 Thanks to Michael Zronek and Vanessa Kos.
 
-### <<HIGHLIGHT2>>
 
+### Elektra Web 1.5
 
-### <<HIGHLIGHT2>>
+The new release of Elektra Web features many UX improvements from the usability test!
+
+[![Elektra Web 1.5 video](https://img.youtube.com/vi/lLg9sk6Hx-E/0.jpg)](https://www.youtube.com/watch?v=lLg9sk6Hx-E)
+
+Try it out now on: http://webui.libelektra.org:33334/
+
+- search completely reworked - it does not act as a filter on already opened keys anymore, and instead searches the whole key database - feedback from the search was also greatly improved (pulsating while searching, glowing blue when done)
+- added "abort" buttons to dialogs to revert actions
+- added "create array" button to easily create arrays
+- removed confirmation dialog before deletion (undo can be used instead)
+- created a docker image: `elektra/web`
+- small fixes:
+  - updated visibility levels
+  - removed "done" button in main view
+  - fixed issues with the opener click area
+  - remove metakeys when they are set to the default value or empty/0
+  - improved keyboard support
+  - fixed many small issues (#2037)
+
 
 
 ## Plugins
