@@ -111,6 +111,12 @@ export default class AdditionalMetakeysSubDialog extends Component {
       )
     }
 
+    if (this.state.items.find(item => name === item.key)) {
+      return alert(
+        "Cannot add metakey '" + name + "' because it already exists. Please choose a different name."
+      )
+    }
+
     const { handleEdit } = this.props
     return handleEdit(name)('')
   }

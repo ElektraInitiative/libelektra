@@ -64,6 +64,10 @@ export default class Menu extends React.Component {
       addInstance,
     } = this.props
 
+    const titleText = (
+      <span className="titleText">elektra-web <small>v1.5</small></span>
+    )
+
     const title = (
         <ToolbarGroup>
           <div style={{ display: 'flex' }}>
@@ -72,7 +76,7 @@ export default class Menu extends React.Component {
             <Link style={{ textDecoration: 'none' }} to="/" tabIndex="-1">
               <ToolbarTitle
                 style={{ fontFamily: 'Roboto Light', fontSize: 22, letterSpacing: 0.79, color: 'rgba(0,0,0,0.40)' }}
-                text="elektra-web"
+                text={titleText}
               />
             </Link>
             {subpage && // show breadcrumb on subpages
@@ -90,7 +94,7 @@ export default class Menu extends React.Component {
               icon={<ContentAddIcon />}
               label="instance"
               primary={true}
-              onTouchTap={addInstance}
+              onClick={addInstance}
               disabled={(status && status.addingInstance) || !instances || instances.length <= 0}
             />
         </ToolbarGroup>
@@ -102,14 +106,14 @@ export default class Menu extends React.Component {
               tabIndex={0}
               icon={<ContentUndoIcon />}
               label="undo"
-              onTouchTap={onUndo}
+              onClick={onUndo}
               disabled={!canUndo}
             />
             <RaisedButton
               tabIndex={0}
               icon={<ContentRedoIcon />}
               label="redo"
-              onTouchTap={onRedo}
+              onClick={onRedo}
               disabled={!canRedo}
             />
         </ToolbarGroup>

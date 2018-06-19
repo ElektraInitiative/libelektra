@@ -29,7 +29,7 @@ export default class SimpleTextField extends Component {
   }
 
   render () {
-    const { id, meta, label, debounce = true, onChange, onError } = this.props
+    const { id, meta, label, debounce = true, onChange, onError, onKeyPress } = this.props
     const val = this.state.value
     const comp = debounce ? DebouncedTextField : TextField
     const isBinary = meta && meta.hasOwnProperty('binary')
@@ -45,7 +45,7 @@ export default class SimpleTextField extends Component {
           hintText: (meta && meta.example) ? `e.g. ${meta.example}` : false,
           onChange: debounce
             ? value => this.setState({ value })
-            : evt => (evt && evt.target && evt.target.value) && onChange(evt.target.value),
+            : evt => (evt && evt.target && evt.target.value) ? onChange(evt.target.value) : onChange(''),
           onDebounced: debounce && (currentValue => {
             const validationError = validateType(meta, currentValue)
             if (validationError) {
@@ -60,6 +60,7 @@ export default class SimpleTextField extends Component {
           disabled: isBinary || fromElektraBool(meta && meta['restrict/write']),
           floatingLabelText: label,
           floatingLabelFixed: !!label,
+          onKeyPress: onKeyPress,
         })}
       </div>
     )
