@@ -101,6 +101,8 @@ Thanks to Michael Zronek and Vanessa Kos.
 
 The new release of Elektra Web features many UX improvements from the usability test!
 
+[![Elektra Web 1.5 video](https://img.youtube.com/vi/lLg9sk6Hx-E/0.jpg)](https://www.youtube.com/watch?v=lLg9sk6Hx-E)
+
 Try it out now on: http://webui.libelektra.org:33334/
 
 - search completely reworked - it does not act as a filter on already opened keys anymore, and instead searches the whole key database - feedback from the search was also greatly improved (pulsating while searching, glowing blue when done)
