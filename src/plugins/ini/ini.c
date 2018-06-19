@@ -148,7 +148,7 @@ static void keyAddUnescapedBasePath (Key * key, const char * path)
 
 static Key * createUnescapedKey (Key * key, const char * name)
 {
-	char * dupName = strdup (name);
+	char * dupName = elektraStrDup (name);
 	keyAddUnescapedBasePath (key, dupName);
 	free (dupName);
 	return key;
@@ -257,7 +257,7 @@ static int iniKeyToElektraArray (CallbackHandle * handle, Key * existingKey, Key
 		// creating a new array
 		Key * sectionKey = keyDup (appendKey);
 		keyAddName (sectionKey, "..");
-		char * origVal = strdup (keyString (existingKey));
+		char * origVal = elektraStrDup (keyString (existingKey));
 		keySetString (appendKey, "");
 		keySetMeta (appendKey, "internal/ini/array", "#1");
 		setOrderNumber (handle->parentKey, appendKey);
@@ -540,11 +540,11 @@ int elektraIniOpen (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 
 	if (!contStringKey)
 	{
-		pluginConfig->continuationString = strdup ("\t");
+		pluginConfig->continuationString = elektraStrDup ("\t");
 	}
 	else
 	{
-		pluginConfig->continuationString = strdup (keyString (contStringKey));
+		pluginConfig->continuationString = elektraStrDup (keyString (contStringKey));
 	}
 	pluginConfig->mergeSections = mergeSectionsKey != 0;
 	pluginConfig->array = arrayKey != 0;
@@ -661,7 +661,7 @@ static char * findParent (Key * parentKey, Key * searchkey, KeySet * ks)
 	}
 	lookedUp = ksLookup (ks, key, KDB_O_NONE);
 	if (!lookedUp) lookedUp = parentKey;
-	char * parentName = strdup (keyName (lookedUp));
+	char * parentName = elektraStrDup (keyName (lookedUp));
 	keyDel (key);
 	ksDel (ks);
 	return parentName;
@@ -786,7 +786,7 @@ int elektraIniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	ksDel (cbHandle.result);
 	if (pluginConfig->lastOrder) elektraFree (pluginConfig->lastOrder);
 	incOrder (parentKey);
-	pluginConfig->lastOrder = strdup (keyString (keyGetMeta (parentKey, "internal/ini/order")));
+	pluginConfig->lastOrder = elektraStrDup (keyString (keyGetMeta (parentKey, "internal/ini/order")));
 	elektraPluginSetData (handle, pluginConfig);
 	return ret; /* success */
 }
@@ -877,10 +877,10 @@ void writeMultilineKey (Key * key, const char * iniName, FILE * fh, IniPluginCon
  */
 static char * getIniName (Key * section, Key * key)
 {
-	if (!strcmp (keyName (section), keyName (key))) return strdup (keyBaseName (key));
+	if (!strcmp (keyName (section), keyName (key))) return elektraStrDup (keyBaseName (key));
 	if (keyName (section)[0] == '/')
 	{
-		if (!strcmp (keyName (section), strchr (keyName (key) + 1, '/'))) return strdup (keyBaseName (key));
+		if (!strcmp (keyName (section), strchr (keyName (key) + 1, '/'))) return elektraStrDup (keyBaseName (key));
 	}
 	int slashCount = 0;
 	char * slashCounter = (char *) keyName (key);
@@ -908,7 +908,7 @@ static char * getIniName (Key * section, Key * key)
 	}
 
 	size_t size = 0;
-	char * tmp = strdup (ptr);
+	char * tmp = elektraStrDup (ptr);
 	char * p = keyNameGetOneLevel (tmp + size, &size);
 	while (*p)
 	{
@@ -1444,7 +1444,7 @@ static void stripInternalData (Key * parentKey ELEKTRA_UNUSED, KeySet * ks)
 		if (strstr (keyName (cur), INTERNAL_ROOT_SECTION))
 		{
 			Key * newKey = keyDup (cur);
-			char * oldName = strdup (keyName (cur));
+			char * oldName = elektraStrDup (keyName (cur));
 			char * newName = elektraCalloc (elektraStrLen (keyName (cur)));
 			char * token = strtok (oldName, "/");
 			strcat (newName, token);
@@ -1613,7 +1613,7 @@ int elektraIniSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	fclose (fh);
 	errno = errnosave;
 	if (pluginConfig->lastOrder) elektraFree (pluginConfig->lastOrder);
-	pluginConfig->lastOrder = strdup (keyString (keyGetMeta (parentKey, "internal/ini/order")));
+	pluginConfig->lastOrder = elektraStrDup (keyString (keyGetMeta (parentKey, "internal/ini/order")));
 	elektraPluginSetData (handle, pluginConfig);
 
 

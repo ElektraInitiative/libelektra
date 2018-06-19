@@ -85,7 +85,7 @@ static char * getTemporaryFileName (KeySet * conf, const char * file, int * fd)
 	}
 
 	// extract the file name (base name) from the path
-	char * fileDup = strdup (file);
+	char * fileDup = elektraStrDup (file);
 	if (!fileDup) goto error;
 	const char * baseName = basename (fileDup);
 
@@ -466,7 +466,7 @@ static int fcryptDecrypt (KeySet * pluginConfig, Key * parentKey, fcryptState * 
 	int result = CRYPTO_PLUGIN_FUNCTION (gpgCall) (pluginConfig, parentKey, NULL, argv, argc);
 	if (result == 1)
 	{
-		state->originalFilePath = strdup (keyString (parentKey));
+		state->originalFilePath = elektraStrDup (keyString (parentKey));
 		state->tmpFilePath = tmpFile;
 		state->tmpFileFd = tmpFileFd;
 		keySetString (parentKey, tmpFile);

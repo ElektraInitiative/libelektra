@@ -568,7 +568,7 @@ static CondResult parseCondition (Key * key, const char * condition, const Key *
 		return ERROR;
 	}
 
-	char * localCondition = strdup (condition);
+	char * localCondition = elektraStrDup (condition);
 	int subMatches = 4;
 	regmatch_t m[subMatches];
 	char * ptr = localCondition;

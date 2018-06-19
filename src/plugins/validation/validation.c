@@ -54,7 +54,7 @@ static int validateKey (Key * key, Key * parentKey)
 	if (invertMeta) invertValidation = 1;
 	if (matchMeta)
 	{
-		char * matchCopy = strdup (keyString (matchMeta));
+		char * matchCopy = elektraStrDup (keyString (matchMeta));
 		char * ptr = matchCopy;
 		while (*ptr)
 		{
@@ -76,7 +76,7 @@ static int validateKey (Key * key, Key * parentKey)
 	if (lineValidation) cflags |= REG_NEWLINE;
 	if (typeMeta)
 	{
-		char * typeCopy = strdup (keyString (typeMeta));
+		char * typeCopy = elektraStrDup (keyString (typeMeta));
 		char * ptr = typeCopy;
 		while (*ptr)
 		{
