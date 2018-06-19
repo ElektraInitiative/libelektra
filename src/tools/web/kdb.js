@@ -93,7 +93,7 @@ const trimNewline = (str) =>
 
 // execute a script while catching and parsing errors
 const safeExec = (script) => new Promise((resolve, reject) =>
-  exec(script, (err, stdout, stderr) => {
+  exec(script, { maxBuffer: Infinity }, (err, stdout, stderr) => {
     if (err) {
       const errors = err.message.split('\n')
       // ignore error if it's "key not found"
@@ -166,6 +166,11 @@ const version = () =>
 // list available paths under a given `path`
 const ls = (path) =>
   safeExec(escapeValues`${KDB_COMMAND} ls -0 ${path}`)
+    .then(stdout => stdout && stdout.split('\0'))
+
+// find paths given a search query
+const find = (query) =>
+  safeExec(escapeValues`${KDB_COMMAND} find -0 ${query}`)
     .then(stdout => stdout && stdout.split('\0'))
 
 // get value from given `path`
@@ -270,5 +275,5 @@ const getAndLs = (path, { preload = 0 }) =>
 // export kdb functions as `kdb` object
 module.exports = {
   version, ls, get, getAndLs, set, mv, cp, rm, export: _export, import: _import,
-  getmeta, setmeta, rmmeta, lsmeta, getAllMeta, KDB_COMMAND,
+  getmeta, setmeta, rmmeta, lsmeta, getAllMeta, find, KDB_COMMAND,
 }
