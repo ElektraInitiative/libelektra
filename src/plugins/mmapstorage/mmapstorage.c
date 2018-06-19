@@ -538,7 +538,7 @@ static void mmapToKeySet (DestType destType, char * mappedRegion, KeySet * retur
 
 static int readMmapHeader (FILE * fp, MmapHeader * mmapHeader)
 {
-	memset (mmapHeader, 0, SIZEOF_MMAPHEADER * (sizeof (char)));
+	memset (mmapHeader, 0, SIZEOF_MMAPHEADER);
 	fread (mmapHeader, SIZEOF_MMAPHEADER, (sizeof (char)), fp);
 
 	if (mmapHeader->mmapMagicNumber == ELEKTRA_MAGIC_MMAP_NUMBER) return 0;
@@ -829,7 +829,7 @@ int elektraMmapstorageSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 			ELEKTRA_LOG_WARNING ("unlink: unlinking KeySet ptr: %p", toUnlinkKS);
 
 			MmapHeader mmapHeader;
-			mmapHeader.flags = 0;
+			memset (&mmapHeader, 0, SIZEOF_MMAPHEADER);
 			KeySet * copy = copyKeySet (toUnlinkMmap, toUnlinkKS, &mmapHeader);
 			if (copy)
 			{
@@ -861,7 +861,7 @@ int elektraMmapstorageSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 	dynArray.alloc = 1;
 
 	MmapHeader mmapHeader;
-	mmapHeader.flags = 0;
+	memset (&mmapHeader, 0, SIZEOF_MMAPHEADER);
 	mmapDataSize (TYPE_MMAP, &mmapHeader, returned, &dynArray);
 	mmapHeader.mmapMagicNumber = ELEKTRA_MAGIC_MMAP_NUMBER;
 	ELEKTRA_LOG_WARNING ("elektraMmapstorageSet -------> mmapsize: %zu", mmapHeader.allocSize);
