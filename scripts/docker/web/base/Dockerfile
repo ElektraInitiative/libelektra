@@ -14,7 +14,8 @@ RUN apt-get install -y nodejs
 # pull latest libelektra
 RUN mkdir /home/elektra
 WORKDIR /home/elektra
-RUN git clone --depth 1 https://github.com/ElektraInitiative/libelektra.git
+ARG ELEKTRA_VER=master
+RUN git clone -b ${ELEKTRA_VER} --depth 1 https://github.com/ElektraInitiative/libelektra.git
 WORKDIR /home/elektra/libelektra
 
 # build & install libelektra
