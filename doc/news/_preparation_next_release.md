@@ -301,6 +301,7 @@ Thanks to Michael Zronek and Vanessa Kos.
   Instead we added a new test checking if `PLUGINS=NODEP` builds in an minimal
   Docker image. *(Lukas Winkler)*
 - Speed up coverage data upload. *(Lukas Winkler)*
+- Make coverage output more readable *(Lukas Winkler)*
 - Fix an issue where file archivation did not happen because of surpressed shell
     expansion *(Lukas Winkler)*
 
