@@ -317,6 +317,7 @@ Try it out now on: http://webui.libelektra.org:33334/
 - Fix compilation with `BUILD_TESTING=OFF` when `spec` or `list` plugins are not selected.
 - Set coverage prefix to `PROJECT_SOURCE_DIR`, resulting in easier readable
     coverage reports. *(Lukas Winkler)*
+- The functions `add_plugintest` and `add_plugin` now also support adding a C++ test instead of a C test. *(René Schwaiger)*
 
 [Google Test]: https://github.com/google/googletest
 
