@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+for file in $(git ls-files -m); do
+	if echo "$file" | egrep -q '\.[17]$' && \
+		test $(git diff --numstat "$file" | cut -f1) -le 1 && \
+		git diff "$file" | grep -q '^-.TH'; then
+		git checkout "$file"
+	fi
+done
