@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 #
 # @author René Schwaiger <sanssecours@me.com>
-# @brief Checkouts ronn files
+# @brief Checkout man pages produced by ronn, where only the date was changed
 # @date 19.06.2018
 # @tags helper, development
 
