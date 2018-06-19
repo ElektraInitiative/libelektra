@@ -17,15 +17,18 @@
 # Add some key-value pairs to the database
 kdb set user/tests/yamlsmith/key value
 kdb set user/tests/yamlsmith/time 'will die and love will burrow it'
-kdb set user/tests/yamlsmith/level1/level2 'nested'
+kdb set user/tests/yamlsmith/level1/one 'I'
+kdb set user/tests/yamlsmith/level1/two 'II'
 
 # Export data using YAML Smith
 kdb export user/tests/yamlsmith yamlsmith
 #> key:
 #>   value
 #> level1:
-#>   level2:
-#>     nested
+#>   one:
+#>     I
+#>   two:
+#>     II
 #> time:
 #>   will die and love will burrow it
 

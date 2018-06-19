@@ -72,6 +72,14 @@ NameIterator relativeKeyIterator (CppKey const & key, CppKey const & parent)
 	return keyIterator;
 }
 
+bool sameLevel (CppKey const & key1, CppKey const & key2)
+{
+	if (!key1 || !key2) return false;
+
+	return key1.getFullName ().substr (0, key1.getFullNameSize () - key1.getBaseNameSize ()) ==
+	       key2.getFullName ().substr (0, key2.getFullNameSize () - key2.getBaseNameSize ());
+}
+
 /**
  * @brief This class provides additional functionality for the key set class.
  */
@@ -151,17 +159,27 @@ int elektraYamlsmithSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 	ofstream file{ parent.getString () };
 	if (file.is_open ())
 	{
-		for (auto key : keys.leaves ())
+		keys.rewind ();
+		CppKey last = nullptr;
+		CppKey current = keys.next ();
+		while (current)
 		{
 			string indent;
-			auto relative = relativeKeyIterator (*key, parent);
-			while (relative != key.end ())
+			bool sameLevelAsLast = sameLevel (current, last);
+			auto relative = relativeKeyIterator (current, parent);
+			auto baseName = current.rbegin ();
+
+			while (*relative != *baseName)
 			{
-				file << indent << *relative << ":" << endl;
+				if (!sameLevelAsLast) file << indent << *relative << ":" << endl;
 				relative++;
 				indent += "  ";
 			}
-			file << indent << key.getString () << endl;
+
+			file << indent << *baseName << ":" << endl;
+			file << indent << "  " << current.getString () << endl;
+			last = current;
+			current = keys.next ();
 		}
 	}
 	else
