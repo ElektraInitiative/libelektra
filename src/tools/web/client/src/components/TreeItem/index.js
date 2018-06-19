@@ -158,6 +158,15 @@ export default class TreeItem extends Component {
   }
 
   getArrayKeyLength (item) {
+    if (!item || !item.path) return false
+    const { kdbState, instanceId } = this.props
+    const data = kdbState[instanceId]
+    if (data && data[item.path] && data[item.path].meta) {
+      const meta = data[item.path].meta
+      if (meta && meta['array'] && meta['array'] > 0) {
+        return Number(meta['array'])
+      }
+    }
     return (item && Array.isArray(item.children))
       ? item.children.reduce((res, i) => {
           if (res === false) return false
