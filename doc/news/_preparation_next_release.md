@@ -191,7 +191,7 @@ Try it out now on: http://webui.libelektra.org:33334/
   The new option can be used for logging application behavior when using
   [notifications](https://www.libelektra.org/tutorials/notifications). *(Thomas Wahringer)*
 - Do not exclude `simpleini` silently on non-glibc systems but output a message
-  like for other plugins
+  like for other plugins *(Markus Raab)*
 
 ## Libraries
 
@@ -215,7 +215,7 @@ Try it out now on: http://webui.libelektra.org:33334/
 
 ### General
 
-- replaced strdup with elektraStrDup (for C99 compatibility)
+- replaced strdup with elektraStrDup (for C99 compatibility) *(Markus Raab)*
 
 - <<TODO>>
 
