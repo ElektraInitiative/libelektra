@@ -1,3 +1,5 @@
+# base image for elektra web, all other images build upon this (builds elektra with `yajl` and `kdb`)
+
 FROM ubuntu:16.04
 
 # elektra deps
@@ -26,4 +28,3 @@ RUN make install
 # prepare user and home dir
 RUN groupadd -r elektra && useradd --no-log-init -r -g elektra elektra
 RUN chown -R elektra:elektra /home/elektra
-

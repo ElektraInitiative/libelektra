@@ -1,3 +1,5 @@
+# same as `elektrad`, but with a KDB config set up (for demo)
+
 FROM elektra/web-base:latest
 
 WORKDIR /home/elektra
@@ -49,4 +51,3 @@ RUN kdb setmeta user/app/running restrict/write "1"
 # run elektrad
 EXPOSE 33333
 CMD ["kdb","run-elektrad"]
-

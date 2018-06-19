@@ -1,3 +1,5 @@
+# image that starts elektrad & webd (for quickstart with elektra web)
+
 FROM elektra/web-base:latest
 
 WORKDIR /home/elektra
@@ -11,4 +13,3 @@ RUN chmod +x start
 EXPOSE 33333
 EXPOSE 33334
 CMD ["/home/elektra/start"]
-
