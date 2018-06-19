@@ -66,6 +66,11 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 - The `gpgme` plugin was brought into existence to provide cryptographic functions using GnuGP via the `libgpgme` library. See [#896] *(Peter Nirschl)*
 
+### mmapstorage
+
+- Added a new, binary and fast storage plugin called [mmapstorage](https://libelektra.org/plugins/mmapstorage).
+  It leverages the `mmap()` syscall and supports full Elektra semantics. *(Mihael Pranjić)*
+
 
 ### <<Plugin1>>
 
