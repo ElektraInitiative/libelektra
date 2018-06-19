@@ -9,11 +9,15 @@ include (LibAddTest)
 # They need to be absolute or relative to the plugin dir.
 #
 # The testname must be the pluginname.
-# By convention the source file needs to be called testmod_${pluginname}.c
+# By convention the source file needs to be called `testmod_${pluginname}.c`
+# or `testmod_${pluginname}.cpp`, if you specify the optional keyword `CPP`.
 #
 # Prefer to use ADD_TEST of add_plugin which takes care
 # of properly set all arguments so that the test is built
 # in the same way as the plugin.
+#
+# CPP:
+#  Build a C++ test instead of a C test.
 #
 # LINK_PLUGIN:
 #  Link against a different plugin (not the test name itself).
@@ -39,7 +43,7 @@ function (add_plugintest testname)
 		     WORKING_DIRECTORY)
 
 		cmake_parse_arguments (ARG
-				       "MEMLEAK;INSTALL_TEST_DATA" # optional keywords
+				       "MEMLEAK;INSTALL_TEST_DATA;CPP" # optional keywords
 				       "INCLUDE_SYSTEM_DIRECTORIES" # one value keywords
 				       "${MULTI_VALUE_KEYWORDS}" # multi value keywords
 				       ${ARGN})
@@ -66,6 +70,7 @@ function (add_plugintest testname)
 		restore_variable (${PLUGIN_NAME} ARG_LINK_ELEKTRA)
 		restore_variable (${PLUGIN_NAME} ARG_ADD_TEST)
 		restore_variable (${PLUGIN_NAME} ARG_INSTALL_TEST_DATA)
+		restore_variable (${PLUGIN_NAME} ARG_CPP)
 		restore_variable (${PLUGIN_NAME} ARG_OBJECT_SOURCES)
 		restore_variable (${PLUGIN_NAME} ARG_TEST_LINK_LIBRARIES)
 		restore_variable (${PLUGIN_NAME} ARG_TEST_LINK_ELEKTRA)
@@ -83,7 +88,14 @@ function (add_plugintest testname)
 		add_headers (TEST_SOURCES)
 		add_testheaders (TEST_SOURCES)
 		include_directories ("${CMAKE_SOURCE_DIR}/tests/cframework")
-		list (APPEND TEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/testmod_${testname}.c")
+
+		if (ARG_CPP)
+			list (APPEND TEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/testmod_${testname}.cpp")
+			include_directories (${CMAKE_SOURCE_DIR}/src/bindings/cpp/tests ${CMAKE_SOURCE_DIR}/src/bindings/cpp/include)
+		else (ARG_CPP)
+			list (APPEND TEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/testmod_${testname}.c")
+		endif (ARG_CPP)
+
 		if (BUILD_SHARED)
 			set (PLUGIN_TARGET_OBJS "")
 			if (ARG_LINK_PLUGIN)
@@ -111,6 +123,10 @@ function (add_plugintest testname)
 		endif (INSTALL_TESTING)
 
 		target_link_elektra (${testexename} elektra-kdb elektra-plugin ${ARG_LINK_ELEKTRA} ${ARG_TEST_LINK_ELEKTRA})
+
+		if (ARG_CPP)
+			target_link_libraries (${testexename} gtest_main)
+		endif (ARG_CPP)
 
 		target_link_libraries (${testexename} ${ARG_LINK_LIBRARIES} ${ARG_TEST_LINK_LIBRARIES})
 		set_target_properties (${testexename}

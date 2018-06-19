@@ -43,6 +43,7 @@ additional_commands:
     flags:
       - MEMLEAK
       - INSTALL_TEST_DATA
+      - CPP
     kwargs:
       INCLUDE_SYSTEM_DIRECTORIES: 1
       COMPILE_DEFINITIONS: "*"
