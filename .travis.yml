@@ -5,6 +5,7 @@ cache:
     $HOME/.m2
     $HOME/.cabal
     $HOME/elektra-cabal-sandbox
+    $HOME/Library/Caches/Homebrew
 
 # don't cache our own libraries generated in the build
 # so they always get rebuilt properly and to avoid init issues

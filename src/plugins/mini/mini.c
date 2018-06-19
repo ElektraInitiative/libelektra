@@ -14,11 +14,9 @@
 #include <kdbassert.h>
 #include <kdbease.h>
 #include <kdberrors.h>
-#include <kdbhelper.h>
 #include <kdblogger.h>
 #include <kdbutility.h>
 #include <stdio.h>
-#include <stdlib.h>
 
 /* -- Functions ------------------------------------------------------------------------------------------------------------------------- */
 
@@ -39,8 +37,6 @@ static inline KeySet * elektraMiniContract (void)
 		      keyNew ("system/elektra/modules/mini/exports/set", KEY_FUNC, elektraMiniSet, KEY_END),
 #include ELEKTRA_README (mini)
 		      keyNew ("system/elektra/modules/mini/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
-		      keyNew ("system/elektra/modules/mini/config/needs", KEY_END),
-		      keyNew ("system/elektra/modules/mini/config/needs/chars", KEY_END),
 		      keyNew ("system/elektra/modules/mini/config/needs/chars/23", KEY_VALUE, "23", KEY_END), // 23 ↔︎ `#`
 		      keyNew ("system/elektra/modules/mini/config/needs/chars/3B", KEY_VALUE, "3B", KEY_END), // 3B ↔︎ `;`
 		      keyNew ("system/elektra/modules/mini/config/needs/chars/3D", KEY_VALUE, "3D", KEY_END), // 3D ↔︎ `=`

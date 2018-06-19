@@ -113,37 +113,56 @@ Note that the names refer to the representation as KeySet. For example, if you h
 
 you can use `tolower=0` to get the keys `key` and `other/key`.
 
-#### Example
+#### Examples
 
-    % kdb mount caseconversion.ini /rename ini rename toupper=1,tolower=3
+```sh
+sudo kdb mount caseconversion.ini user/tests/rename mini rename toupper=1,tolower=3
 
-    % kdb set /rename/MIXED/CASE/conversion 1
+kdb set user/tests/rename/MIXED/CASE/conversion 1
 
-    % kdb ls /rename
-    user/rename
-    user/rename/mixed/case/CONVERSION
+kdb ls user/tests/rename
+#> user/tests/rename/mixed/case/CONVERSION
 
-    % cat renameTest.ini
-    test/removed/key = test
+# Undo modifications
+kdb rm -r user/tests/rename
+sudo kdb umount user/tests/rename
+```
 
-    % kdb mount renameTest.ini /rename ini rename get/case=toupper,set/case=keyname,/cut=REMOVED
-    % kdb ls /rename
-    user/rename/TEST/KEY
+```sh
+sudo kdb mount renameTest.ini user/tests/rename mini rename get/case=toupper,set/case=keyname,/cut=REMOVED
 
-    % kdb set /rename
-    Using name user/rename
-    Create a new key user/rename with null value
-    % cat renameTest.ini
-    TEST/KEY = test
+printf 'removed/key=test' > `kdb file user/tests/rename`
 
-If you always want the keys in the configuration file upper case,
-but for your application lower case you would use:
+kdb ls user/tests/rename
+#> user/tests/rename/KEY
 
-    % kdb mount caseconversion.ini /rename ini rename get/case=tolower,set/case=toupper
-    % kdb set user/rename/section/key value
-    % cat ~/.config/caseconversion.ini
-    [SECTION]
-    KEY = value
+kdb set user/tests/rename
+
+cat "`kdb file user/tests/rename`" | tail -n1
+#> KEY=test
+
+# Undo modifications
+kdb rm -r user/tests/rename
+sudo kdb umount user/tests/rename
+```
+
+
+```sh
+# If you always want the keys in the configuration file upper case,
+# but for your application lower case you would use:
+sudo kdb mount caseconversion.ini user/tests/rename mini rename get/case=tolower,set/case=toupper
+
+kdb set user/tests/rename/section/key value
+kdb get user/tests/rename/section/key
+#> value
+
+cat "`kdb file user/tests/rename`"
+#> SECTION/KEY=value
+
+# Undo modifications
+kdb rm -r user/tests/rename
+sudo kdb umount user/tests/rename
+```
 
 ## Planned Operations
 

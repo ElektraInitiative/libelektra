@@ -55,6 +55,7 @@ kdb find 'fizz'
 #> user/tests/find/tests/fizz/buzz
 #> user/tests/find/tostfizz
 
+kdb rm -r /tests/find
 sudo kdb umount /tests/find
 ```
 

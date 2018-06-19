@@ -104,6 +104,11 @@ Thanks to Michael Zronek and Vanessa Kos.
 
 ## Plugins
 
+### CCode
+
+- We fixed various warnings in the source code reported by [OCLint](http://oclint.org). *(René Schwaiger)*
+- The plugin now also encodes and decodes key names in addition to key values. *(René Schwaiger)*
+
 ### Crypto
 
 - The `crypto` plugin now uses Elektra's `libinvoke` and the `base64` plugin in order to encode and decode Base64 strings. This improvement reduces code duplication between the two plugins. *(Peter Nirschl)*
@@ -115,6 +120,11 @@ Thanks to Michael Zronek and Vanessa Kos.
 ### fstab
 
 - The `fstab` plugin now passes tests on musl builds. *(Lukas Winkler)*
+
+### Haskell
+
+- An issue when building Haskell plugins with a cached sandbox is fixed in case
+  a Haskell library bundled with elektra gets changed. *(Armin Wurzinger)*
 
 ### HexNumber
 
@@ -134,6 +144,7 @@ Thanks to Michael Zronek and Vanessa Kos.
 
 - We fixed a memory leak in the [mINI plugin](https://libelektra.org/plugins/mini) by requiring the plugin
   [`ccode`](https://libelektra.org/plugins/ccode) instead of the “provider” `code`. *(René Schwaiger)*
+- Removed unused header files. *(René Schwaiger)*
 
 ### network
 
@@ -146,6 +157,12 @@ Thanks to Michael Zronek and Vanessa Kos.
   commonly used specification keywords to be used with the [typechecker](https://www.libelektra.org/plugins/typechecker). Currently the
   keywords `check/range`, `check/enum` and `check/validation` are supported. *(Armin Wurzinger)*
 
+### Tcl
+
+- The [`tcl`](http://libelektra.org/plugins/tcl) plugin does not fail anymore, if its configuration file does not exist and you try to
+  retrieve the plugin contract. *(René Schwaiger)*
+- The plugin now uses relative key names. This update addresses issue [#51](https://issues.libelektra.org/51). *(René Schwaiger)*
+
 ### Misc
 
 - The logging plugins ["syslog"](https://www.libelektra.org/plugins/syslog),
@@ -155,13 +172,23 @@ Thanks to Michael Zronek and Vanessa Kos.
   are loaded by applications.
   The new option can be used for logging application behavior when using
   [notifications](https://www.libelektra.org/tutorials/notifications). *(Thomas Wahringer)*
-- An issue when building Haskell plugins with a cached sandbox is fixed in case
-  a Haskell library bundled with elektra gets changed. *(Armin Wurzinger)*
 - Do not exclude `simpleini` silently on non-glibc systems but output a message
   like for other plugins
 - The KeySet has a new flag `KS_FLAG_REBUILD_OPMPHM`, this flag will be used by the hybrid search
   that combines binary search and [OPMPHM](https://master.libelektra.org/doc/dev/data-structures.md#order-preserving-minimal-perfect-hash-map-aka-opmphm) *(Kurt Micheli)*
-- <<TODO>>
+- We updated the `infos/status` clause of the following plugins:
+
+  - [`boolean`](http://libelektra.org/plugins/boolean),
+  - [`constants`](http://libelektra.org/plugins/constants),
+  - [`csvstorage`](http://libelektra.org/plugins/csvstorage),
+  - [`hexnumber`](http://libelektra.org/plugins/hexnumber),
+  - [`internalnotification`](http://libelektra.org/plugins/internalnotification),
+  - [`ruby`](http://libelektra.org/plugins/ruby),
+  - [`simpleini`](http://libelektra.org/plugins/simpleini),
+  - [`uname`](http://libelektra.org/plugins/uname), and
+  - [`xerces`](http://libelektra.org/plugins/xerces)
+
+  . *(René Schwaiger)*
 
 ## Bindings
 
@@ -203,13 +230,17 @@ Thanks to Michael Zronek and Vanessa Kos.
 - We added documentation for our build system in
     [BUILDSERVER.md](https://master.libelektra.org/doc/BUILDSERVER.md).
     *(Lukas Winkler)*
+- The documentation for `kdb` and `kdb set` now mentions the `--` argument that stops processing of command line switches. This is useful
+  for setting negative values among other things. *(Klemens Böswirth)*
 
 ## Tests
 
-- We added new [Markdown Shell Recorder](https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper) tests for the
+- We added new [Markdown Shell Recorder][] tests for the
+  - [`ccode`](https://www.libelektra.org/plugins/ccode),
   - [`file`](https://www.libelektra.org/plugins/file),
   - [`iconv`](https://www.libelektra.org/plugins/iconv),
-  - [`ni`](https://www.libelektra.org/plugins/ni), and
+  - [`ni`](https://www.libelektra.org/plugins/ni),
+  - [`rename`](https://www.libelektra.org/plugins/rename), and
   - [`uname`](https://www.libelektra.org/plugins/uname)
   plugin. *(René Schwaiger)*
 - (Markdown) Shell Recorder tests now save test data below `/tests` (see issue [#1887][]). *(René Schwaiger)*
@@ -220,7 +251,11 @@ Thanks to Michael Zronek and Vanessa Kos.
   of [`kdb ls`](https://master.libelektra.org/doc/help/kdb-ls.md). *(René Schwaiger)*
 - The `add_plugin` helper now respects `ENABLE_KDB_TESTING` when adding
     Markdown Shell Recorder tests. *(Lukas Winkler)*
-- The documentation for `kdb` and `kdb set` now mention the `--` option to stop option processing. This is useful for setting negative values among other things. *(Klemens Böswirth)*
+- The Markdown Shell Recorder test for [`kdb find`](https://master.libelektra.org/doc/help/kdb-find.md) now removes the configuration file
+  at the end of the test. *(René Schwaiger)*
+- The [Shell Recorder](https://master.libelektra.org/tests/shell/shell_recorder) now properly unmounts any additional mountpoints created
+    during a test. *(René Schwaiger)*
+- We removed the broken auto unmounting feature from the [Markdown Shell Recorder][]. *(René Schwaiger)*
 - Plugins added with the flag `SHARED_ONLY` no longer get tested in the script `check_kdb_internal_check.sh` if executed with kdb-full or kdb-static. *(Armin Wurzinger)*
 - Add `compare_regex_to_line_files` which allows to compare a file made of
     regex patterns to be compared with a text file line by line.
@@ -231,9 +266,8 @@ Thanks to Michael Zronek and Vanessa Kos.
     This was especially noticable for `gpg` tests as the `gpg-agents` that were
     spawned did not get cleaned up afterwards. *(Lukas Winkler)*
 
-## Compatibility
-
 [#1887]: https://github.com/ElektraInitiative/libelektra/issues/1887
+[Markdown Shell Recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
 
 ## Build
 
@@ -259,7 +293,7 @@ Thanks to Michael Zronek and Vanessa Kos.
 - We disabled the test `testlib_notification` on ASAN enabled builds, since Clang reports that the test leaks memory. *(René Schwaiger)*
 - Disable Markdown Shell Recorder test `validation.md` for ASAN builds.
   It leaks memory and thus fails the test during spec mount. *(Lukas Winkler)*
-- Haskell plugins and bindings are now correctly excluded when using BUILD_FULL or BUILD_STATIC
+- Haskell plugins and bindings are now correctly excluded when using `BUILD_FULL` or `BUILD_STATIC`
   as this is currently unsupported. Another issue when building Haskell plugins with a cached sandbox
   is fixed as well. *(Armin Wurzinger)*
 - Fix compilation with `BUILD_TESTING=OFF` when `spec` or `list` plugins are not selected.
@@ -319,6 +353,7 @@ Thanks to Michael Zronek and Vanessa Kos.
   - checks the formatting of CMake code via [`cmake-format`][]
   . *(René Schwaiger)*
 - Some cache issues on the Travis build job for cached haskell sandboxes have been resolved. *(Armin Wurzinger)*
+- Travis caches downloaded Homebrew packages to improve the reliability of macOS build jobs. *(René Schwaiger)*
 
 ## Compatibility
 

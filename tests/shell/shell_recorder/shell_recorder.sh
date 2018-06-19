@@ -304,6 +304,7 @@ BACKUP=1
 
 EXPORT_DIR="$(mktempdir_elektra)"
 export_config "$EXPORT_DIR"
+MOUNTPOINTS_BACKUP=$("$KDB" mount)
 
 run_script
 

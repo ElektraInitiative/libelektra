@@ -613,7 +613,7 @@ inline Key::Key (const char * keyName, ...)
  * @throw bad_alloc if key could not be constructed (allocation problems)
  *
  * @warning Not supported on some compilers, e.g.
- * clang which require you to only pass non-POD
+ * clang which requires you to only pass non-POD
  * in varg lists.
  *
  * @param keyName the name of the new key

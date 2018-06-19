@@ -49,7 +49,7 @@ kdb getmeta user/tests/tcl/key comment
 kdb export user/tests/tcl tcl
 #> {
 #> 	{
-#> 		user/tests/tcl/key = value
+#> 		key = value
 #> 		{
 #> 			comment = Thiskeycontainsexampledata.
 #> 		}

@@ -118,8 +118,6 @@ SHELL_RECORDER_ERROR=0
 INBLOCK=0
 IFS=''
 
-MOUNTPOINTS_BACKUP=$("$KDB" mount)
-
 while read -r line;
 do
 	grep -Eq '\s*```sh$' <<< "$line" && { INBLOCK=1; continue; }
@@ -129,19 +127,5 @@ do
 done <<< "$BLOCKS"
 
 translate
-
-MOUNTPOINTS=$("$KDB" mount)
-
-if [ "$MOUNTPOINTS_BACKUP" != "$MOUNTPOINT" ];
-then
-IFS='
-'
-	TOUMOUNT=$(diff <(printf '%s' "$MOUNTPOINTS_BACKUP") <(printf '%s' "$MOUNTPOINTS") | grep -Eo "^>.*")
-	for line in $TOUMOUNT;
-	do
-		mp=$(sed -n 's/.*with name \(.*\)/\1/p' <<< "$line")
-		"$KDB" umount "$mp"
-	done
-fi
 
 exit "$SHELL_RECORDER_ERROR"
