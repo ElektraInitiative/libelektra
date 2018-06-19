@@ -26,6 +26,10 @@ const getPath = (host, path, query = '') =>
 const get = (host, path, query) =>
   path ? getPath(host, path, query) : getRoot(host, query)
 
+const find = (host, query) =>
+  fetch(`${host}/kdbFind/${encodeURIComponent(query)}`)
+    .then(res => res.json())
+
 const set = (host, path, value) =>
   fetch(`${host}/kdb/${encodePath(path)}`,
     {
@@ -100,4 +104,4 @@ const rmmeta = (host, path, key) =>
       return { status: res.status }
     })
 
-export default { version, get, set, rm, mv, cp, setmeta, rmmeta }
+export default { version, get, set, rm, mv, cp, setmeta, rmmeta, find }

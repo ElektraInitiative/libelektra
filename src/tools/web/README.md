@@ -32,6 +32,12 @@ To build Elektra with the elektra-web tool:
  * You can now access the client on: [http://localhost:33334](http://localhost:33334)
 
 
+## Getting started (docker)
+
+ * Create and run a new docker container: `docker run -d -it -p 33333:33333 -p 33334:33334 elektra/web`
+ * You can now access the client on: [http://localhost:33334](http://localhost:33334)
+
+
 ## Running from source
 
  * Install dependencies (see above)
@@ -153,3 +159,79 @@ authenticate users, e.g. by [username/password auth](https://www.digitalocean.co
   - `src/containers/` - contains components that are connected to Redux
   - `src/css/` - contains CSS styles
   - `src/reducers/` - contains Redux reducers (used to process actions)
+
+
+## Development Guides
+
+### Updating dependencies
+
+Lockfiles (`package-lock.json`) can be updated by simply deleting the current
+lock file and running `npm install`, which creates a new lock file.
+
+Check for outdated dependencies via `npm outdated`. Dependencies can then be
+updated by running `npm update`.
+
+### Building docker image
+
+Run the following command in the `scripts/docker/web/` directory, replacing `1.5.0` with the latest version:
+
+```
+docker build -t elektra/web:1.5.0 -t elektra/web:latest .
+```
+
+Test the image:
+
+```
+docker run -d -it -p 33333:33333 -p 33334:33334 elektra/web:1.5.0
+```
+
+Publish it to the docker registry:
+
+```
+docker push elektra/web:1.5.0
+```
+
+### Adding support for new metadata
+
+- Create a new sub dialog by, for example, copying the `NumberSubDialog.jsx`
+  file (or similar) to a new file in the
+  `client/src/components/TreeItem/dialogs` folder.
+
+- Include the sub dialog by adding it to the `SettingsDialog.jsx` file in the
+  same folder. For example, it could be added before the
+  AdditionalMetakeysSubDialog at the end of the file:
+
+```diff
++     <NewSubDialog
++       onChange={this.handleEdit('check/something')}
++       value={this.getMeta('check/something', '')}
++       saved={this.getSaved('check/something')}
++     />
+      <AdditionalMetakeysSubDialog
+        handleEdit={this.handleEdit.bind(this)}
+        getMeta={this.getMeta.bind(this)}
+        getSaved={this.getSaved.bind(this)}
+        meta={this.props.meta}
+        deleteMeta={this.props.deleteMeta}
+      />
+    </FocusTrapDialog>
+```
+
+- Mark the meta keys as handled by adding them to the `HANDLED_METADATA` array
+  in `client/src/components/TreeItem/dialogs/utils.js`:
+
+```diff
+export const HANDLED_METADATA = [
+  ...,
+  'visibility',
+  'binary',
++ 'check/something',
+]
+```
+
+- Validation can then be added by handling metadata in the
+  `client/src/components/TreeItem/fields/validateType.js` file to the
+  `validateType` function.
+
+- Rendering fields in a special way when certain metakeys are present can be
+  done by adjusting the `renderSpecialValue` function in the `client/src/components/TreeItem/index.js` file.
