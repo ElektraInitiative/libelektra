@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+#
+# @author René Schwaiger <sanssecours@me.com>
+# @brief Checkouts ronn files
+# @date 19.06.2018
+# @tags helper, development
 
 for file in $(git ls-files -m); do
 	if echo "$file" | egrep -q '\.[17]$' && \
