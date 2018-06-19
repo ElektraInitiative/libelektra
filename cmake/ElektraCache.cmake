@@ -187,7 +187,7 @@ option (ENABLE_OPTIMIZATIONS "Turn on optimizations that trade memory for speed"
 option (ENABLE_ASAN "Activate sanitizers, see doc/TESTING.md.")
 
 set (ENABLE_COVERAGE OFF CACHE BOOL "Enable coverage analysis (using gcov), see doc/TESTING.md.")
-set (COVERAGE_PREFIX "${PROJECT_SOURCE_DIR}/.." CACHE FILEPATH "Full path to common prefix of build+source directory")
+set (COVERAGE_PREFIX "${PROJECT_SOURCE_DIR}" CACHE FILEPATH "Full path to common prefix of build+source directory")
 
 option (ENABLE_DEBUG "Build with assertions and optimize for developing with Elektra.")
 if (ENABLE_DEBUG)

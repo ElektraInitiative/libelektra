@@ -297,6 +297,8 @@ Thanks to Michael Zronek and Vanessa Kos.
   as this is currently unsupported. Another issue when building Haskell plugins with a cached sandbox
   is fixed as well. *(Armin Wurzinger)*
 - Fix compilation with `BUILD_TESTING=OFF` when `spec` or `list` plugins are not selected.
+- Set coverage prefix to `PROJECT_SOURCE_DIR`, resulting in easier readable
+    coverage reports. *(Lukas Winkler)*
 
 [Google Test]: https://github.com/google/googletest
 
