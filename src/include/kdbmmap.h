@@ -10,6 +10,8 @@
 #ifndef KDBMMAP_H
 #define KDBMMAP_H
 
+#include <stddef.h>
+#include <stdint.h>
 
 #define ELEKTRA_MAGIC_MMAP_NUMBER (0x0A6172746B656C45)
 

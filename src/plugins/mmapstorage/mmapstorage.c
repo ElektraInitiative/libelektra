@@ -290,7 +290,7 @@ static void mmapDataSize (DestType destType, MmapHeader * mmapHeader, KeySet * r
 	mmapHeader->dataSize = dataBlocksSize;
 }
 
-static void writeKeySet (DestType destType, MmapHeader * mmapHeader, KeySet * keySet, KeySet * dest, DynArray * dynArray)
+static void writeKeySet (DestType destType ELEKTRA_UNUSED, MmapHeader * mmapHeader, KeySet * keySet, KeySet * dest, DynArray * dynArray)
 {
 	KeySet * ksPtr = dest;
 	char * metaKsPtr = (char *) ksPtr + SIZEOF_KEYSET; // meta keysets directly after the original keyset
