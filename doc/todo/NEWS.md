@@ -54,16 +54,31 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 ### <<Plugin1>>
 
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
+
 
 ### <<Plugin2>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
 
 
 ### <<Plugin3>>
 
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
 
 ## Libraries
 
-The text below summarizes updates to the [C (and C++) based interface](https://www.libelektra.org/libraries/readme) of Elektra.
+The text below summarizes updates to the [C (and C++)-based libraries](https://www.libelektra.org/libraries/readme) of Elektra.
+
 
 ### Compatibility
 
@@ -75,13 +90,31 @@ compiled against an older 0.8 version of Elektra will continue to work
 - <<TODO>>
 - <<TODO>>
 
+### Core
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
 ### <<Library1>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 
 ### <<Library2>>
 
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
 
 ### <<Library3>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 
 ## Bindings
