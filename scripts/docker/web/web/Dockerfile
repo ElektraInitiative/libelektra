@@ -8,5 +8,7 @@ RUN printf "#!/bin/bash\nkdb run-elektrad &\nkdb run-web" > start
 RUN chmod +x start
 
 # run elektrad and webd in one container
+EXPOSE 33333
+EXPOSE 33334
 CMD ["/home/elektra/start"]
 
