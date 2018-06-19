@@ -160,14 +160,12 @@ int elektraYamlsmithSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 	if (file.is_open ())
 	{
 		keys.rewind ();
-		CppKey last = nullptr;
-		CppKey current = keys.next ();
-		while (current)
+		for (CppKey last = nullptr; keys.next (); last = keys.current ())
 		{
 			string indent;
-			bool sameLevelAsLast = sameLevel (current, last);
-			auto relative = relativeKeyIterator (current, parent);
-			auto baseName = current.rbegin ();
+			bool sameLevelAsLast = sameLevel (keys.current (), last);
+			auto relative = relativeKeyIterator (keys.current (), parent);
+			auto baseName = keys.current ().rbegin ();
 
 			while (*relative != *baseName)
 			{
@@ -177,9 +175,7 @@ int elektraYamlsmithSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 			}
 
 			file << indent << *baseName << ":" << endl;
-			file << indent << "  " << current.getString () << endl;
-			last = current;
-			current = keys.next ();
+			file << indent << "  " << keys.current ().getString () << endl;
 		}
 	}
 	else
