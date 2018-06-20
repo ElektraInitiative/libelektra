@@ -28,7 +28,11 @@ endmacro (do_benchmark)
 do_benchmark (large)
 do_benchmark (cmp)
 do_benchmark (createkeys)
-do_benchmark (storage)
+
+# exclude storage benchmark from mingw
+if (NOT WIN32)
+	do_benchmark (storage)
+endif (NOT WIN32)
 
 # exclude the OPMPHM benchmarks from mingw
 if (ENABLE_OPTIMIZATIONS AND NOT WIN32)
