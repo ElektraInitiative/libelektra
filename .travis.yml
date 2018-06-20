@@ -262,7 +262,7 @@ before_script:
       export PATH=$PATH:"$PWD/install/bin"
     fi
   - |
-    if [[ "$TRAVIS_OS_NAME" == "osx" && "$MMAP" != "ON" ]]; then
+    if [[ "$TRAVIS_OS_NAME" == "osx" && "$MMAP" == "ON" ]]; then
       CMAKE_OPT+=("-DKDB_DEFAULT_STORAGE=mmapstorage -DKDB_DB_FILE='default.mmap' -DKDB_DB_INIT='elektra.mmap'")
     fi
   - SYSTEM_DIR="$PWD/kdbsystem"
