@@ -72,6 +72,15 @@ NameIterator relativeKeyIterator (CppKey const & key, CppKey const & parent)
 	return keyIterator;
 }
 
+/**
+ * @brief This function compares the structure of two key names.
+ *
+ * @param key1 The function returns `true` if this `Key` is below or at the same level as `key2`.
+ * @param key2 The function returns `true` if this `Key` is above or at the same level as `key1`.
+ *
+ * @retval true If `key1` is below or on the same level as `key2`
+ * @retval false Otherwise
+ */
 bool sameLevelOrBelow (CppKey const & key1, CppKey const & key2)
 {
 	if (!key1 || !key2) return false;
