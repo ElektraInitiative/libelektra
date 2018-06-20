@@ -79,7 +79,8 @@ export default class TreeView extends React.Component {
     const { instanceId, moveKey, copyKey } = this.props
     const { selection } = inputs
 
-    const action = (evt && evt.altKey) // alt pressed -> copy
+    // alt or ctrl pressed -> copy
+    const action = (evt && (evt.altKey || evt.ctrlKey))
       ? copyKey
       : moveKey
 
