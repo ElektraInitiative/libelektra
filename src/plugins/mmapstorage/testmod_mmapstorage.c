@@ -697,6 +697,27 @@ static void test_mmap_ksLookupByName (const char * tmpFile, option_t options)
 }
 
 /* -- Key operation tests --------------------------------------------------------------------------------------------------------------- */
+
+static void test_mmap_keyFlags (const char * tmpFile)
+{
+	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("mmapstorage");
+
+	KeySet * ks = ksNew (10, keyNew ("user/tests/mmapstorage/testKey",
+					 KEY_FLAGS, KEY_BINARY, KEY_VALUE, "test key", KEY_END), KS_END);
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
+
+	Key * found = ksLookupByName (ks, "user/tests/mmapstorage/testKey", 0);
+	succeed_if (found, "did not find key");
+	succeed_if (keyIsBinary(found) == 1, "Key is not binary.");
+
+	keyDel (parentKey);
+	ksDel (ks);
+	PLUGIN_CLOSE ();
+}
+
 /* -- Key name operation tests ---------------------------------------------------------------------------------------------------------- */
 /* -- Key value operation tests --------------------------------------------------------------------------------------------------------- */
 
@@ -741,7 +762,7 @@ int main (int argc, char ** argv)
 	clearStorage (tmpFile);
 	test_mmap_ks_copy_with_meta (tmpFile);
 
-	// KeySet operation tests
+	// KeySet API tests
 	clearStorage (tmpFile);
 	test_mmap_ksDupFun (tmpFile, ksDup);
 
@@ -783,6 +804,10 @@ int main (int argc, char ** argv)
 
 	clearStorage (tmpFile);
 	test_mmap_ksLookupByName (tmpFile, KDB_O_POP);
+
+	// Key API tests
+	clearStorage (tmpFile);
+	test_mmap_keyFlags (tmpFile);
 
 	printf ("\ntestmod_mmapstorage RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
