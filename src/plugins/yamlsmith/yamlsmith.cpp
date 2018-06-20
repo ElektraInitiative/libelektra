@@ -175,7 +175,7 @@ int elektraYamlsmithSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 			}
 
 			file << indent << *baseName << ":" << endl;
-			file << indent << "  " << keys.current ().getString () << endl;
+			if (keys.current ().getStringSize () > 1) file << indent << "  " << keys.current ().getString () << endl;
 		}
 	}
 	else
