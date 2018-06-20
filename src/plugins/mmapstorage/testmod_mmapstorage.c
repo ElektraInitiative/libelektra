@@ -577,8 +577,8 @@ static void test_mmap_ksCut (const char * tmpFile)
 	// create keyset with some folder 'other' that we will then cut
 	KeySet * ks = simpleTestKeySet ();
 	KeySet * other = ksNew (10, keyNew ("user/tests/mmapstorage/other", KEY_VALUE, "other key", KEY_END),
-		      keyNew ("user/tests/mmapstorage/other/a", KEY_VALUE, "other a value", KEY_END),
-		      keyNew ("user/tests/mmapstorage/other/b", KEY_VALUE, "other b value", KEY_END), KS_END);
+				keyNew ("user/tests/mmapstorage/other/a", KEY_VALUE, "other a value", KEY_END),
+				keyNew ("user/tests/mmapstorage/other/b", KEY_VALUE, "other b value", KEY_END), KS_END);
 	if (ksAppend (ks, other) == -1)
 	{
 		yield_error ("ksAppend failed");
@@ -616,15 +616,15 @@ static void test_mmap_ksPop (const char * tmpFile)
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
 
 	KeySet * poppedKeys = ksNew (0, KS_END);
-	succeed_if (ksAppendKey (poppedKeys, ksPop(ks)) != -1, "ksAppendKey failed");
-	succeed_if (ksAppendKey (poppedKeys, ksPop(ks)) != -1, "ksAppendKey failed");
+	succeed_if (ksAppendKey (poppedKeys, ksPop (ks)) != -1, "ksAppendKey failed");
+	succeed_if (ksAppendKey (poppedKeys, ksPop (ks)) != -1, "ksAppendKey failed");
 	succeed_if (ksGetSize (ks) == 1, "ksGetSize after ksPop should be decremented");
-	succeed_if (ksAppendKey (poppedKeys, ksPop(ks)) != -1, "ksAppendKey failed");
+	succeed_if (ksAppendKey (poppedKeys, ksPop (ks)) != -1, "ksAppendKey failed");
 	succeed_if (ksGetSize (poppedKeys) == 3, "expecting three keys to be in ks");
 	succeed_if (ksPop (ks) == 0, "ks should be empty");
-	succeed_if (ksAppendKey (poppedKeys, ksPop(ks)) == -1, "ks should be empty, but is not");
+	succeed_if (ksAppendKey (poppedKeys, ksPop (ks)) == -1, "ks should be empty, but is not");
 
-	KeySet * test = simpleTestKeySet();
+	KeySet * test = simpleTestKeySet ();
 	compare_keyset (poppedKeys, test);
 	ksDel (test);
 
@@ -704,14 +704,13 @@ static void test_mmap_keyFlags (const char * tmpFile)
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("mmapstorage");
 
-	KeySet * ks = ksNew (10, keyNew ("user/tests/mmapstorage/testKey",
-					 KEY_FLAGS, KEY_BINARY, KEY_VALUE, "test key", KEY_END), KS_END);
+	KeySet * ks = ksNew (10, keyNew ("user/tests/mmapstorage/testKey", KEY_FLAGS, KEY_BINARY, KEY_VALUE, "test key", KEY_END), KS_END);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
 
 	Key * found = ksLookupByName (ks, "user/tests/mmapstorage/testKey", 0);
 	succeed_if (found, "did not find key");
-	succeed_if (keyIsBinary(found) == 1, "Key is not binary.");
+	succeed_if (keyIsBinary (found) == 1, "Key is not binary.");
 
 	keyDel (parentKey);
 	ksDel (ks);
