@@ -72,12 +72,12 @@ NameIterator relativeKeyIterator (CppKey const & key, CppKey const & parent)
 	return keyIterator;
 }
 
-bool sameLevel (CppKey const & key1, CppKey const & key2)
+bool sameLevelOrBelow (CppKey const & key1, CppKey const & key2)
 {
 	if (!key1 || !key2) return false;
 
-	return key1.getFullName ().substr (0, key1.getFullNameSize () - key1.getBaseNameSize ()) ==
-	       key2.getFullName ().substr (0, key2.getFullNameSize () - key2.getBaseNameSize ());
+	return key2.isBelow (key1) || key1.getFullName ().substr (0, key1.getFullNameSize () - key1.getBaseNameSize ()) ==
+					      key2.getFullName ().substr (0, key2.getFullNameSize () - key2.getBaseNameSize ());
 }
 
 /**
@@ -163,13 +163,13 @@ int elektraYamlsmithSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 		for (CppKey last = nullptr; keys.next (); last = keys.current ())
 		{
 			string indent;
-			bool sameLevelAsLast = sameLevel (keys.current (), last);
+			bool sameOrBelowLast = sameLevelOrBelow (last, keys.current ());
 			auto relative = relativeKeyIterator (keys.current (), parent);
 			auto baseName = keys.current ().rbegin ();
 
 			while (*relative != *baseName)
 			{
-				if (!sameLevelAsLast) file << indent << *relative << ":" << endl;
+				if (!sameOrBelowLast) file << indent << *relative << ":" << endl;
 				relative++;
 				indent += "  ";
 			}
