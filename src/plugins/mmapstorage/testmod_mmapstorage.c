@@ -666,6 +666,36 @@ static void test_mmap_ksLookup (const char * tmpFile, option_t options)
 	PLUGIN_CLOSE ();
 }
 
+static void test_mmap_ksLookupByName (const char * tmpFile, option_t options)
+{
+	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("mmapstorage");
+
+	KeySet * ks = simpleTestKeySet ();
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
+
+	const char * name = "user/tests/mmapstorage/simpleKey/a";
+	Key * found = ksLookupByName (ks, name, options);
+	succeed_if (found, "did not find key");
+	if (options == KDB_O_POP)
+	{
+		// make sure key is really popped
+		keyDel (found);
+		found = ksLookupByName (ks, name, 0);
+		succeed_if (!found, "found key that should not exist");
+	}
+
+	name = "user/tests/mmapstorage/simpleKey/foo";
+	found = ksLookupByName (ks, name, options);
+	succeed_if (!found, "found key that should not exist");
+
+	keyDel (parentKey);
+	ksDel (ks);
+	PLUGIN_CLOSE ();
+}
+
 /* -- Key operation tests --------------------------------------------------------------------------------------------------------------- */
 /* -- Key name operation tests ---------------------------------------------------------------------------------------------------------- */
 /* -- Key value operation tests --------------------------------------------------------------------------------------------------------- */
@@ -747,6 +777,12 @@ int main (int argc, char ** argv)
 
 	clearStorage (tmpFile);
 	test_mmap_ksLookup (tmpFile, KDB_O_POP);
+
+	clearStorage (tmpFile);
+	test_mmap_ksLookupByName (tmpFile, 0);
+
+	clearStorage (tmpFile);
+	test_mmap_ksLookupByName (tmpFile, KDB_O_POP);
 
 	printf ("\ntestmod_mmapstorage RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
