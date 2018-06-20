@@ -33,7 +33,7 @@ static int unescape (Key * key, Key * parent)
 	if (strlen (strVal) < 2 || strncmp (strVal, escapedPrefix, 2) != 0) return 0;
 
 	// Discard the first escape character
-	char * unescaped = strdup (&strVal[1]);
+	char * unescaped = elektraStrDup (&strVal[1]);
 	if (!unescaped)
 	{
 		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_MALLOC, parent, "Memory allocation failed");

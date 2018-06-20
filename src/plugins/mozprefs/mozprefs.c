@@ -33,7 +33,7 @@ static Key * prefToKey (Key * parentKey, PrefType type, const char * pref)
 {
 	Key * key = keyNew (keyName (parentKey), KEY_END);
 	keyAddBaseName (key, prefix[type]);
-	char * localString = strdup (pref);
+	char * localString = elektraStrDup (pref);
 	char * cPtr = strstr (localString, ",");
 	*cPtr = '\0';
 	char * sPtr = localString;
@@ -185,7 +185,7 @@ static char * prefArgToString (const Key * key)
 	char * buffer = NULL;
 	if (!strcmp (keyString (typeMeta), "boolean"))
 	{
-		buffer = strdup (keyString (key));
+		buffer = elektraStrDup (keyString (key));
 	}
 	else if (!strcmp (keyString (typeMeta), "string"))
 	{
@@ -195,7 +195,7 @@ static char * prefArgToString (const Key * key)
 	}
 	else if (!strcmp (keyString (typeMeta), "integer"))
 	{
-		buffer = strdup (keyString (key));
+		buffer = elektraStrDup (keyString (key));
 	}
 	else
 	{

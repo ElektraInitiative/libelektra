@@ -191,7 +191,12 @@ Try it out now on: http://webui.libelektra.org:33334/
   The new option can be used for logging application behavior when using
   [notifications](https://www.libelektra.org/tutorials/notifications). *(Thomas Wahringer)*
 - Do not exclude `simpleini` silently on non-glibc systems but output a message
-  like for other plugins
+  like for other plugins *(Markus Raab)*
+
+## Libraries
+
+### Core
+
 - The KeySet has a new flag `KS_FLAG_REBUILD_OPMPHM`, this flag will be used by the hybrid search
   that combines binary search and [OPMPHM](https://master.libelektra.org/doc/dev/data-structures.md#order-preserving-minimal-perfect-hash-map-aka-opmphm) *(Kurt Micheli)*
 - We updated the `infos/status` clause of the following plugins:
@@ -207,6 +212,12 @@ Try it out now on: http://webui.libelektra.org:33334/
   - [`xerces`](http://libelektra.org/plugins/xerces)
 
   . *(René Schwaiger)*
+
+### General
+
+- replaced strdup with elektraStrDup (for C99 compatibility) *(Markus Raab)*
+
+- <<TODO>>
 
 ## Bindings
 

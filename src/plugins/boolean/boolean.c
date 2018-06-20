@@ -167,7 +167,7 @@ static void strToArray (Key * key, char *** array)
 		++ptr;
 	}
 	*array = elektraCalloc ((count + 1) * sizeof (char *));
-	char * localString = strdup (values);
+	char * localString = elektraStrDup (values);
 	char * saveptr = 0;
 	char * token = 0;
 	token = strtok_r (localString, ";", &saveptr);
@@ -182,13 +182,13 @@ static void strToArray (Key * key, char *** array)
 		ptr = token;
 		while (*ptr == ' ')
 			++ptr;
-		(*array)[index++] = strdup (ptr);
+		(*array)[index++] = elektraStrDup (ptr);
 		while ((token = strtok_r (0, ";", &saveptr)) != NULL)
 		{
 			ptr = token;
 			while (*ptr == ' ')
 				++ptr;
-			(*array)[index++] = strdup (ptr);
+			(*array)[index++] = elektraStrDup (ptr);
 		}
 	}
 	elektraFree (localString);

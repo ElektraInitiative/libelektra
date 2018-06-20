@@ -285,7 +285,7 @@ static char * getPluginPlacementList (Plugin * plugin)
 		ELEKTRA_LOG_WARNING ("could not read placements from plugin");
 		return 0;
 	}
-	char * placementList = strdup (keyString (placements));
+	char * placementList = elektraStrDup (keyString (placements));
 
 	keyDel (pluginInfo);
 	keyDel (placementsKey);
