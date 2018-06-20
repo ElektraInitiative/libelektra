@@ -38,7 +38,8 @@ export default class AddDialog extends Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    if (this.state.name.length === 0 && nextProps.arrayKeyLength) {
+    const wasOpened = this.props.open === false && nextProps.open === true
+    if (wasOpened && nextProps.arrayKeyLength) {
       this.setState({ name: this.generateArrayKey(nextProps.arrayKeyLength) })
     }
   }
