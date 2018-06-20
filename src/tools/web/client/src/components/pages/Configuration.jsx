@@ -181,6 +181,17 @@ export default class Configuration extends Component {
     const { instance, match, instanceError, search } = this.props
     const { data } = this.state
 
+    if (instanceError) {
+      return (
+          <Card>
+              <CardHeader title={<h1><b>404</b> instance not found</h1>} />
+              <CardText>
+                  <InstanceError instance={instance} error={instanceError} refresh={this.refresh} />
+              </CardText>
+          </Card>
+      )
+    }
+
     if (!instance) {
       const title = (
           <h1><b>Loading instance...</b> please wait</h1>
