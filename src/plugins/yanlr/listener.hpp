@@ -56,9 +56,9 @@ public:
 		CppKey key = parent.dup ();
 
 		// Calculate the current key name from `parent` + `path`
-		key = accumulate (path.begin (), path.end (), key, [](CppKey & key, string part) {
-			key.addBaseName (part);
-			return key;
+		key = accumulate (path.begin (), path.end (), key, [](CppKey & current, string part) {
+			current.addBaseName (part);
+			return current;
 		});
 		key.setString (context->getText ());
 		keys.append (key);
