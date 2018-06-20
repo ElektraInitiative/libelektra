@@ -51,9 +51,6 @@ const parseDataSet = (getKey, sendNotification, instanceId, tree, path, parent) 
       ? (notify = true) => {
         return new Promise(resolve => {
           getKey(instanceId, newPath, true)
-          if (notify) {
-            sendNotification('finished (re-)loading \'' + newPath + '\' keyset')
-          }
           resolve(children)
         })
       } : false
