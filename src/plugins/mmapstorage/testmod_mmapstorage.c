@@ -568,6 +568,89 @@ static void test_mmap_ksAppend (const char * tmpFile)
 	PLUGIN_CLOSE ();
 }
 
+static void test_mmap_ksCut (const char * tmpFile)
+{
+	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("mmapstorage");
+
+	// create keyset with some folder 'other' that we will then cut
+	KeySet * ks = simpleTestKeySet ();
+	KeySet * other = ksNew (10, keyNew ("user/tests/mmapstorage/other", KEY_VALUE, "other key", KEY_END),
+		      keyNew ("user/tests/mmapstorage/other/a", KEY_VALUE, "other a value", KEY_END),
+		      keyNew ("user/tests/mmapstorage/other/b", KEY_VALUE, "other b value", KEY_END), KS_END);
+	if (ksAppend (ks, other) == -1)
+	{
+		yield_error ("ksAppend failed");
+	}
+
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
+
+	// now cut the 'other' folder
+	Key * cutKey = keyNew ("user/tests/mmapstorage/other", KEY_END);
+	KeySet * returned = ksCut (ks, cutKey);
+	succeed_if (returned, "keyset is empty (does not contain the cut keyset)");
+
+	KeySet * simple = simpleTestKeySet ();
+	compare_keyset (simple, ks);
+	compare_keyset (other, returned);
+
+	ksDel (other);
+	ksDel (returned);
+	ksDel (simple);
+	keyDel (cutKey);
+	keyDel (parentKey);
+	ksDel (ks);
+	PLUGIN_CLOSE ();
+}
+
+static void test_mmap_ksPop (const char * tmpFile)
+{
+	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("mmapstorage");
+
+	KeySet * ks = simpleTestKeySet ();
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
+
+	KeySet * poppedKeys = ksNew (0, KS_END);
+	succeed_if (ksAppendKey (poppedKeys, ksPop(ks)) != -1, "ksAppendKey failed");
+	succeed_if (ksAppendKey (poppedKeys, ksPop(ks)) != -1, "ksAppendKey failed");
+	succeed_if (ksGetSize (ks) == 1, "ksGetSize after ksPop should be decremented");
+	succeed_if (ksAppendKey (poppedKeys, ksPop(ks)) != -1, "ksAppendKey failed");
+	succeed_if (ksGetSize (poppedKeys) == 3, "expecting three keys to be in ks");
+	succeed_if (ksPop (ks) == 0, "ks should be empty");
+	succeed_if (ksAppendKey (poppedKeys, ksPop(ks)) == -1, "ks should be empty, but is not");
+
+	KeySet * test = simpleTestKeySet();
+	compare_keyset (poppedKeys, test);
+	ksDel (test);
+
+	ksDel (poppedKeys);
+	keyDel (parentKey);
+	ksDel (ks);
+	PLUGIN_CLOSE ();
+}
+
+static void test_mmap_ksLookup (const char * tmpFile)
+{
+	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("mmapstorage");
+
+	KeySet * ks = simpleTestKeySet ();
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
+
+	// TODO
+
+	keyDel (parentKey);
+	ksDel (ks);
+	PLUGIN_CLOSE ();
+}
+
 /* -- Key operation tests --------------------------------------------------------------------------------------------------------------- */
 /* -- Key name operation tests ---------------------------------------------------------------------------------------------------------- */
 /* -- Key value operation tests --------------------------------------------------------------------------------------------------------- */
@@ -637,6 +720,12 @@ int main (int argc, char ** argv)
 
 	clearStorage (tmpFile);
 	test_mmap_ksAppend (tmpFile);
+
+	clearStorage (tmpFile);
+	test_mmap_ksCut (tmpFile);
+
+	clearStorage (tmpFile);
+	test_mmap_ksPop (tmpFile);
 
 	printf ("\ntestmod_mmapstorage RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
