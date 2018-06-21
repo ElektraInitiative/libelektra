@@ -1,7 +1,7 @@
 - infos = Information about the yamlsmith plugin is in keys below
 - infos/author = René Schwaiger <sanssecours@me.com>
 - infos/licence = BSD
-- infos/needs =
+- infos/needs = directoryvalue
 - infos/provides = conv
 - infos/recommends =
 - infos/placements = setstorage
