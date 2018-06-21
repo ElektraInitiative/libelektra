@@ -65,7 +65,7 @@ export default class Menu extends React.Component {
     } = this.props
 
     const titleText = (
-      <span className="titleText">elektra-web <small>v1.5</small></span>
+      <span className="titleText">elektra-web <small>v1.6</small></span>
     )
 
     const title = (
