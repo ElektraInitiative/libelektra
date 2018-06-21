@@ -31,10 +31,8 @@ class KeyListener : public YAMLBaseListener
 {
 	/** This variable stores a key set representing the textual input. */
 	CppKeySet keys;
-	/** The key `parent` stores the common path of all keys. */
-	CppKey parent;
-	/** This stack stores each level of of the current key name. */
-	deque<string> path;
+	/** This stack stores a key for each level of the current key name below parent. */
+	deque<CppKey> parents;
 
 public:
 	/**
@@ -42,8 +40,9 @@ public:
 	 *
 	 * @param parent This key specifies the parent of all keys stored in the object.
 	 */
-	KeyListener (CppKey parent) : keys{}, parent{ parent.dup () }
+	KeyListener (CppKey parent) : keys{}
 	{
+		parents.push_back (parent);
 	}
 
 	/**
@@ -53,13 +52,7 @@ public:
 	 */
 	virtual void exitValue (ValueContext * context) override
 	{
-		CppKey key = parent.dup ();
-
-		// Calculate the current key name from `parent` + `path`
-		key = accumulate (path.begin (), path.end (), key, [](CppKey & current, string part) {
-			current.addBaseName (part);
-			return current;
-		});
+		CppKey key = parents.back ();
 		key.setString (context->getText ());
 		keys.append (key);
 	}
@@ -71,9 +64,10 @@ public:
 	 */
 	virtual void enterMapping (MappingContext * context) override
 	{
-		// Entering a mapping such as `part: …` means that we need need to add `part` to the key name
-		string part = context->key ()->getText ();
-		path.push_back (part);
+		// Entering a mapping such as `part: …` means that we need to add `part` to the key name
+		CppKey child{ parents.back ().getName (), KEY_END };
+		child.addBaseName (context->key ()->getText ());
+		parents.push_back (child);
 	}
 
 	/**
@@ -83,8 +77,8 @@ public:
 	 */
 	virtual void exitMapping (MappingContext * context ELEKTRA_UNUSED) override
 	{
-		// Returning from a mapping such as `part: …` means that we need need to remove `part` from the key name
-		path.pop_back ();
+		// Returning from a mapping such as `part: …` means that we need need to remove the key for `part` from the stack.
+		parents.pop_back ();
 	}
 
 	/**
