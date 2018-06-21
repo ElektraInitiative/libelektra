@@ -54,6 +54,7 @@ function parseError (message) {
 function KDBError (message) {
     this.name = 'KDBError'
     let isError = false
+    this.details = message
     for (let line of message.split('\n')) {
       let res
       if (res = line.match(ERROR_REGEX)) {
