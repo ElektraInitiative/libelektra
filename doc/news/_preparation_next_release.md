@@ -385,6 +385,7 @@ Try it out now on: http://webui.libelektra.org:33334/
   . *(René Schwaiger)*
 - Some cache issues on the Travis build job for cached haskell sandboxes have been resolved. *(Armin Wurzinger)*
 - Travis caches downloaded Homebrew packages to improve the reliability of macOS build jobs. *(René Schwaiger)*
+- Travis is now using Xcode 9.4.1 on macOS 10.13 for most macOS build jobs. *(Mihael Pranjić)*
 
 ## Compatibility
 
