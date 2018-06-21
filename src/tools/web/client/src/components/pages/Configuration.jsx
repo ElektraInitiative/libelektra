@@ -220,6 +220,7 @@ export default class Configuration extends Component {
 
     const isSearching = search && search.done
     const hasResults = search && search.results && search.results.length > 0
+    const searchError = search && search.error
 
     const filteredData = (isSearching && hasResults)
       ? this.generateData({ ...this.props, ls: search.results })
@@ -247,17 +248,21 @@ export default class Configuration extends Component {
                   : (data && Array.isArray(data) && data.length > 0)
                     ? [
                         <TreeSearch instanceId={id} />,
-                        (isSearching && !hasResults)
+                        searchError
                           ? <div style={{ fontSize: '1.1em', color: 'rgba(0, 0, 0, 0.4)', marginTop: '1.5em', padingLeft: '0.5em' }}>
-                                No results found for "{search.query}".
+                                <b>{searchError.name}:</b> {searchError.message}
                             </div>
-                          : <TreeView
-                              searching={isSearching || (search && search.clearing)}
-                              instance={filteredInstance}
-                              instanceId={id}
-                              data={filteredData}
-                              instanceVisibility={visibility}
-                            />,
+                          : (isSearching && !hasResults)
+                            ? <div style={{ fontSize: '1.1em', color: 'rgba(0, 0, 0, 0.4)', marginTop: '1.5em', padingLeft: '0.5em' }}>
+                                  No results found for "{search.query}".
+                              </div>
+                            : <TreeView
+                                searching={isSearching || (search && search.clearing)}
+                                instance={filteredInstance}
+                                instanceId={id}
+                                data={filteredData}
+                                instanceVisibility={visibility}
+                              />,
                       ]
                     : <div style={{ fontSize: '1.1em', color: 'rgba(0, 0, 0, 0.4)' }}>
                           Loading configuration data...

@@ -19,9 +19,12 @@ export const thunkCreator = (action) => {
 
     return promise
       .then(
-        (result) => result && result.error // `error` is only returned in error messages
-          ? dispatch({ ...rest, type: REJECTED, error: result.error }) // if error, dispatch it
-          : dispatch({ ...rest, type: RESOLVED, result }) // otherwise, dispatch result
+        (result) => {
+          const error = (result && result.error) || (result && result.result && result.result.error)
+          return error
+            ? dispatch({ ...rest, type: REJECTED, error }) // `error` is only returned in error messages
+            : dispatch({ ...rest, type: RESOLVED, result }) // otherwise, dispatch result
+        }
       )
       .catch(
         (error) => dispatch({ ...rest, type: REJECTED, error })
