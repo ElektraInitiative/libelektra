@@ -199,6 +199,7 @@ const rm = (path) => {
           if (!p.startsWith('user/sw/elektra/web')) rm(p)
         }))
       })
+      .catch(err => { throw err }) // re-throw error
   }
   return safeExec(escapeValues`${KDB_COMMAND} rm -r ${path}`)
 }
