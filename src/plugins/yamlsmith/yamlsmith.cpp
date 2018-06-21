@@ -132,6 +132,37 @@ public:
 	}
 };
 
+/**
+ * @brief This function converts a `KeySet` into the YAML serialization format.
+ *
+ * @pre The parameter `output` must be a valid and open output stream.
+ *
+ * @param output This parameter specifies where this function should emit the serialized YAML data.
+ * @param keys This parameter stores the key set which this function converts to YAML data.
+ * @param parent This value represents the root key of `keys`.
+ */
+void writeYAML (ofstream & output, CppKeySet & keys, CppKey const & parent)
+{
+	keys.rewind ();
+	for (CppKey last = nullptr; keys.next (); last = keys.current ())
+	{
+		string indent;
+		bool sameOrBelowLast = sameLevelOrBelow (last, keys.current ());
+		auto relative = relativeKeyIterator (keys.current (), parent);
+		auto baseName = keys.current ().rbegin ();
+
+		while (*relative != *baseName)
+		{
+			if (!sameOrBelowLast) output << indent << *relative << ":" << endl;
+			relative++;
+			indent += "  ";
+		}
+
+		output << indent << *baseName << ":" << endl;
+		if (keys.current ().getStringSize () > 1) output << indent << "  " << keys.current ().getString () << endl;
+	}
+}
+
 } // end namespace
 
 extern "C" {
@@ -168,24 +199,7 @@ int elektraYamlsmithSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 	ofstream file{ parent.getString () };
 	if (file.is_open ())
 	{
-		keys.rewind ();
-		for (CppKey last = nullptr; keys.next (); last = keys.current ())
-		{
-			string indent;
-			bool sameOrBelowLast = sameLevelOrBelow (last, keys.current ());
-			auto relative = relativeKeyIterator (keys.current (), parent);
-			auto baseName = keys.current ().rbegin ();
-
-			while (*relative != *baseName)
-			{
-				if (!sameOrBelowLast) file << indent << *relative << ":" << endl;
-				relative++;
-				indent += "  ";
-			}
-
-			file << indent << *baseName << ":" << endl;
-			if (keys.current ().getStringSize () > 1) file << indent << "  " << keys.current ().getString () << endl;
-		}
+		writeYAML (file, keys, parent);
 	}
 	else
 	{
