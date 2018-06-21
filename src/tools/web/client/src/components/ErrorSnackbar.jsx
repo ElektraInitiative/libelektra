@@ -15,7 +15,7 @@ import MoreIcon from 'material-ui/svg-icons/navigation/chevron-right'
 export default class ErrorSnackbar extends React.Component {
   constructor (...args) {
     super(...args)
-    this.state = { dialogOpen: false, showDetails: false }
+    this.state = { dialogOpen: false, details: false }
   }
 
   handleOpen = () => {
