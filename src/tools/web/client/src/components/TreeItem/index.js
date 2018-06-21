@@ -332,7 +332,7 @@ export default class TreeItem extends Component {
                   instanceVisibility={instanceVisibility}
                   refreshKey={() => refreshPath(item.path)}
                 />
-                {!rootLevel && !(meta && meta['restrict/remove'] === '1') &&
+                {!(meta && meta['restrict/remove'] === '1') &&
                   <ActionButton icon={<ActionDelete />} onClick={e => {
                     this.handleDelete(item)
                     e.preventDefault()

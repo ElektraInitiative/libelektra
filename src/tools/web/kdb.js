@@ -190,8 +190,17 @@ const cp = (path, destination) =>
   safeExec(escapeValues`${KDB_COMMAND} cp -r ${path} ${destination}`)
 
 // remove value at given `path`
-const rm = (path) =>
-  safeExec(escapeValues`${KDB_COMMAND} rm -r ${path}`)
+const rm = (path) => {
+  if (path === 'user') {
+    return ls('user')
+      .then(paths => {
+        return Promise.all(paths.map(p => {
+          if (!p.startsWith('user/sw/elektra/web')) rm(p)
+        }))
+      })
+  }
+  return safeExec(escapeValues`${KDB_COMMAND} rm -r ${path}`)
+}
 
 // list meta values at given `path`
 const lsmeta = (path) =>
