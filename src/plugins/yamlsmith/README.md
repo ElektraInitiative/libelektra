@@ -11,7 +11,9 @@
 
 # YAML Smith
 
-## Example
+## Examples
+
+### Mappings
 
 ```sh
 # Add some key-value pairs to the database
@@ -31,6 +33,27 @@ kdb export user/tests/yamlsmith yamlsmith
 #>     II
 #> time:
 #>   will die and love will burrow it
+
+# Undo modifications
+kdb rm -r user/tests/yamlsmith
+```
+
+## Arrays
+
+```sh
+kdb set user/tests/yamlsmith/low
+kdb set user/tests/yamlsmith/low/#0 'You bought some sweet, sweet, sweet, sweet sunflowers'
+kdb set user/tests/yamlsmith/low/#1 'And gave them'
+kdb set user/tests/yamlsmith/low/#2 'To the night'
+
+kdb export user/tests/yamlsmith yamlsmith
+#> low:
+#>   -
+#>     You bought some sweet, sweet, sweet, sweet sunflowers
+#>   -
+#>     And gave them
+#>   -
+#>     To the night
 
 # Undo modifications
 kdb rm -r user/tests/yamlsmith

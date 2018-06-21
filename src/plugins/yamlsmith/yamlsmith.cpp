@@ -15,6 +15,7 @@
 #include "yamlsmith.hpp"
 
 #include <kdb.hpp>
+#include <kdbease.h>
 #include <kdberrors.h>
 
 using std::endl;
@@ -133,6 +134,28 @@ public:
 };
 
 /**
+ * @brief This function writes a YAML collection entry (either mapping key or array element) to the given stream.
+ *
+ * @pre The parameter `output` must be a valid and open output stream.
+ *
+ * @param output This parameter specifies where this function should put the serialized YAML data.
+ * @param key The function uses the basename of this key to decide if the entry is an array element or a mapping key.
+ * @param indent This string specifies the indentation for the collection entry.
+ */
+inline void writeCollectionEntry (ofstream & output, CppKey const & key, string const & indent)
+{
+	output << indent;
+	if (elektraArrayValidateName (*key) == 1)
+	{
+		output << "-" << endl;
+	}
+	else
+	{
+		output << key.getBaseName () << ":" << endl;
+	}
+}
+
+/**
  * @brief This function converts a `KeySet` into the YAML serialization format.
  *
  * @pre The parameter `output` must be a valid and open output stream.
@@ -150,15 +173,17 @@ void writeYAML (ofstream & output, CppKeySet & keys, CppKey const & parent)
 		bool sameOrBelowLast = sameLevelOrBelow (last, keys.current ());
 		auto relative = relativeKeyIterator (keys.current (), parent);
 		auto baseName = keys.current ().rbegin ();
+		CppKey current{ keys.current ().getName (), KEY_END };
 
 		while (*relative != *baseName)
 		{
-			if (!sameOrBelowLast) output << indent << *relative << ":" << endl;
+			current.addBaseName (*relative);
+			ELEKTRA_LOG_DEBUG ("Current name: %s", current.getName ().c_str ());
+			if (!sameOrBelowLast) writeCollectionEntry (output, *current, indent);
 			relative++;
 			indent += "  ";
 		}
-
-		output << indent << *baseName << ":" << endl;
+		writeCollectionEntry (output, *keys.current (), indent);
 		if (keys.current ().getStringSize () > 1) output << indent << "  " << keys.current ().getString () << endl;
 	}
 }
