@@ -81,7 +81,7 @@ public:
 	 *
 	 * @param context The context specifies data matched by the rule.
 	 */
-	virtual void exitMapping (MappingContext * context __attribute__ ((unused))) override
+	virtual void exitMapping (MappingContext * context ELEKTRA_UNUSED) override
 	{
 		// Returning from a mapping such as `part: …` means that we need need to remove `part` from the key name
 		path.pop_back ();
