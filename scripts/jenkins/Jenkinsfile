@@ -261,6 +261,14 @@ def dockerInit() {
       false
     )
 
+    /* Image building elektra web base image */
+    DOCKER_IMAGES.webui_base = createDockerImageDesc(
+      "elektra/web-base", this.&idHomepage,
+      ".",
+      "./scripts/docker/webui/base/Dockerfile",
+      false
+    )
+
     /* Image building elektrad */
     DOCKER_IMAGES.webui_elektrad = createDockerImageDesc(
       "elektra/elektrad-demo", this.&idHomepage,
@@ -939,6 +947,7 @@ def deployWebUI() {
 
 def buildWebUI() {
   def webuiTasks = [:]
+  webuiTasks << buildImageStage(DOCKER_IMAGES.webui_base)
   webuiTasks << buildImageStage(DOCKER_IMAGES.webui_elektrad)
   webuiTasks << buildImageStage(DOCKER_IMAGES.webui_webd)
   return webuiTasks
