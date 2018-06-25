@@ -224,8 +224,11 @@ export default class TreeItem extends Component {
               'Configure metadata of this key to remove the binary flag.')
     }
 
+    // make namespaces a bit larger
+    const rootStyle = rootLevel ? { fontSize: 'medium' } : {}
+
     return (
-        <a style={{ display: 'flex', alignItems: 'center' }}>
+        <a style={{ display: 'flex', alignItems: 'center', ...rootStyle }}>
             {valueVisible
               ? (
                   <span style={{ display: 'flex', alignItems: 'center', height: 48, opacity: keyExists ? 1 : 0.4 }}>
