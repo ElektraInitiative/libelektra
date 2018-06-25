@@ -263,7 +263,7 @@ def dockerInit() {
 
     /* Image building elektrad */
     DOCKER_IMAGES.webui_elektrad = createDockerImageDesc(
-      "elektra/elektrad-demo", this.&idWebUI,
+      "elektra/elektrad-demo", this.&idHomepage,
       ".",
       "./scripts/docker/web/elektrad-demo/Dockerfile",
       false
@@ -271,7 +271,7 @@ def dockerInit() {
 
     /* Image building webd */
     DOCKER_IMAGES.webui_webd = createDockerImageDesc(
-      "elektra/webd-demo", this.&idWebUI,
+      "elektra/webd-demo", this.&idHomepage,
       ".",
       "./scripts/docker/web/webd-demo/Dockerfile",
       false
@@ -1194,15 +1194,6 @@ def idTesting(imageMap) {
  * @param imageMap Map identifying an docker image
  */
 def idHomepage(imageMap) {
-  imageMap.id = "${imageMap.name}:${BRANCH_NAME}_${BUILD_NUMBER}"
-  return imageMap
-}
-
-/* Build id for Web UI
- *
- * @param imageMap Map identifying an docker image
- */
-def idWebUI(imageMap) {
   imageMap.id = "${imageMap.name}:${BRANCH_NAME}_${BUILD_NUMBER}"
   return imageMap
 }
