@@ -35,8 +35,12 @@ export default class TreeSearch extends React.Component {
     const { instanceId, findKey, clearSearch, sendNotification } = this.props
     if (value && value.length > 0) {
       findKey(instanceId, value)
-        .then(() => sendNotification('search completed successfully!'))
-        .catch(() => sendNotification('error while searching!'))
+        .then(res => {
+          if (res && res.type === 'FIND_KEY_SUCCESS') {
+            return sendNotification('search completed successfully!')
+          }
+          return sendNotification('error while searching!')
+        })
     } else {
       clearSearch()
       setTimeout(() => sendNotification('search cleared!'), 200)

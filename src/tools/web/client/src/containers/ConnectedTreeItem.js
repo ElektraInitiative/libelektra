@@ -19,7 +19,7 @@ import {
 import { actions as undoActions } from 'redux-undo-redo-middleware'
 
 const mapStateToProps = (state) => {
-  return { batchUndo: state.batchUndo }
+  return { batchUndo: state.batchUndo, kdbState: state.kdb }
 }
 
 const mapDispatchToProps = (dispatch) =>

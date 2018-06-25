@@ -51,9 +51,6 @@ const parseDataSet = (getKey, sendNotification, instanceId, tree, path, parent) 
       ? (notify = true) => {
         return new Promise(resolve => {
           getKey(instanceId, newPath, true)
-          if (notify) {
-            sendNotification('finished (re-)loading \'' + newPath + '\' keyset')
-          }
           resolve(children)
         })
       } : false
@@ -181,6 +178,17 @@ export default class Configuration extends Component {
     const { instance, match, instanceError, search } = this.props
     const { data } = this.state
 
+    if (instanceError) {
+      return (
+          <Card>
+              <CardHeader title={<h1><b>404</b> instance not found</h1>} />
+              <CardText>
+                  <InstanceError instance={instance} error={instanceError} refresh={this.refresh} />
+              </CardText>
+          </Card>
+      )
+    }
+
     if (!instance) {
       const title = (
           <h1><b>Loading instance...</b> please wait</h1>
@@ -212,12 +220,16 @@ export default class Configuration extends Component {
 
     const isSearching = search && search.done
     const hasResults = search && search.results && search.results.length > 0
+    const searchError = search && search.error
 
     const filteredData = (isSearching && hasResults)
       ? this.generateData({ ...this.props, ls: search.results })
       : data
 
-    const filteredInstance = (isSearching && hasResults)
+    const autoUnfold = isSearching && hasResults && search.results &&
+      search.results.length <= 10
+
+    const filteredInstance = autoUnfold
       ? { ...instance, unfolded: getUnfolded(search.results) }
       : instance
 
@@ -239,17 +251,21 @@ export default class Configuration extends Component {
                   : (data && Array.isArray(data) && data.length > 0)
                     ? [
                         <TreeSearch instanceId={id} />,
-                        (isSearching && !hasResults)
+                        searchError
                           ? <div style={{ fontSize: '1.1em', color: 'rgba(0, 0, 0, 0.4)', marginTop: '1.5em', padingLeft: '0.5em' }}>
-                                No results found for "{search.query}".
+                                <b>{searchError.name}:</b> {searchError.message}
                             </div>
-                          : <TreeView
-                              searching={isSearching || (search && search.clearing)}
-                              instance={filteredInstance}
-                              instanceId={id}
-                              data={filteredData}
-                              instanceVisibility={visibility}
-                            />,
+                          : (isSearching && !hasResults)
+                            ? <div style={{ fontSize: '1.1em', color: 'rgba(0, 0, 0, 0.4)', marginTop: '1.5em', padingLeft: '0.5em' }}>
+                                  No results found for "{search.query}".
+                              </div>
+                            : <TreeView
+                                searching={isSearching || (search && search.clearing)}
+                                instance={filteredInstance}
+                                instanceId={id}
+                                data={filteredData}
+                                instanceVisibility={visibility}
+                              />,
                       ]
                     : <div style={{ fontSize: '1.1em', color: 'rgba(0, 0, 0, 0.4)' }}>
                           Loading configuration data...

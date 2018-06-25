@@ -72,8 +72,11 @@ export default function keyReducer (state = {}, action) {
         ...state,
         [id]: state[id] && Object.keys(state[id]).reduce(
           (res, key) => {
-            if (key !== path) {
-              res[key] = state[id][key]
+            const data = state[id][key]
+            const restricted = data && data.meta && data.meta['restrict/remove']
+              && data.meta['restrict/remove'] === '1'
+            if (key !== path || restricted) {
+              res[key] = data
             }
             return res
           }, {}

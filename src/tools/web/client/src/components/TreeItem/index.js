@@ -66,22 +66,20 @@ export default class TreeItem extends Component {
   }
 
   handleDelete = (item) => {
-    const { instanceId, deleteKey, setMetaKey, deleteMetaKey, sendNotification } = this.props
+    const { instanceId, deleteKey, setMetaKey, sendNotification, kdbState } = this.props
 
     if (item && item.parent) {
       const arrayKeyLength = this.getArrayKeyLength(item.parent)
-      if (!arrayKeyLength || arrayKeyLength <= 1) { // not an array (anymore)
-        deleteMetaKey(instanceId, item.parent.path, 'array')
-      } else {
+      if (arrayKeyLength && arrayKeyLength > 0) {
         setMetaKey(instanceId, item.parent.path, 'array', String(arrayKeyLength - 1))
       }
     }
 
-    deleteKey(instanceId, item.path)
+    deleteKey(instanceId, item.path, kdbState && kdbState[instanceId])
       .then(() => {
         if (Array.isArray(item.children) && item.children.length > 0) {
           return Promise.all(item.children.map(
-            child => deleteKey(instanceId, child.path)
+            child => deleteKey(instanceId, child.path, kdbState && kdbState[instanceId])
           ))
         }
       })
@@ -89,9 +87,9 @@ export default class TreeItem extends Component {
   }
 
   handleAdd = (path, addKeyName, addKeyValue) => {
-    const { instanceId, createKey, sendNotification } = this.props
+    const { instanceId, createKey, sendNotification, kdbState } = this.props
     const fullPath = path + '/' + addKeyName
-    createKey(instanceId, fullPath, addKeyValue).then(() =>
+    createKey(instanceId, fullPath, addKeyValue, kdbState && kdbState[instanceId]).then(() =>
       sendNotification('successfully created key: ' + fullPath)
     )
   }
@@ -158,6 +156,15 @@ export default class TreeItem extends Component {
   }
 
   getArrayKeyLength (item) {
+    if (!item || !item.path) return false
+    const { kdbState, instanceId } = this.props
+    const data = kdbState[instanceId]
+    if (data && data[item.path] && data[item.path].meta) {
+      const meta = data[item.path].meta
+      if (meta && meta['array'] && meta['array'] >= 0) {
+        return Number(meta['array'])
+      }
+    }
     return (item && Array.isArray(item.children))
       ? item.children.reduce((res, i) => {
           if (res === false) return false
@@ -187,12 +194,13 @@ export default class TreeItem extends Component {
 
     const meta = data && data.meta
     const isCheckbox = meta && meta['check/type'] && meta['check/type'] === 'boolean'
-    const valueVisible = !rootLevel && data && !item.children
      // we return no value property if the key doesn't exist, otherwise we return an *empty* value
     const keyExists = rootLevel || (data && data.exists)
 
     const arrayKeyLength = this.getArrayKeyLength(item)
     const parentArrayKeyLength = this.getArrayKeyLength(item.parent)
+
+    const valueVisible = !rootLevel && data && !item.children && arrayKeyLength === false
 
     const renderedField = (
       <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -216,8 +224,11 @@ export default class TreeItem extends Component {
               'Configure metadata of this key to remove the binary flag.')
     }
 
+    // make namespaces a bit larger
+    const rootStyle = rootLevel ? { fontSize: 'medium' } : {}
+
     return (
-        <a style={{ display: 'flex', alignItems: 'center' }}>
+        <a style={{ display: 'flex', alignItems: 'center', ...rootStyle }}>
             {valueVisible
               ? (
                   <span style={{ display: 'flex', alignItems: 'center', height: 48, opacity: keyExists ? 1 : 0.4 }}>
@@ -232,7 +243,7 @@ export default class TreeItem extends Component {
                 )
               : <b style={{ ...titleStyle, opacity: keyExists ? 1 : 0.4 }} onClick={this.handleOpen('rename')}>
                   <span style={{ flex: 'initial', marginTop: -2 }}>{prettyPrintArrayIndex(item.name)}</span>
-                  {(arrayKeyLength || (item && item.meta && item.meta['array'])) &&
+                  {(arrayKeyLength !== false) &&
                     <span style={{ flex: 'initial', marginLeft: 8 }}>
                       <ArrayIcon />
                     </span>
@@ -241,6 +252,7 @@ export default class TreeItem extends Component {
             }
             <span className="actions">
                 <SavedIcon saved={this.state.saved} err={this.state.err} />
+                {(!valueVisible && data && data.value) && <span>{data.value}</span>}
                 {valueVisible &&
                   <CopyToClipboard text={(data && data.value) || ''} onCopy={() => sendNotification('Copied value of ' + item.path + ' to clipboard!')}>
                     <ActionButton icon={<ContentPaste />} tooltip="copy value" />
@@ -323,7 +335,7 @@ export default class TreeItem extends Component {
                   instanceVisibility={instanceVisibility}
                   refreshKey={() => refreshPath(item.path)}
                 />
-                {!rootLevel && !(meta && meta['restrict/remove'] === '1') &&
+                {!(meta && meta['restrict/remove'] === '1') &&
                   <ActionButton icon={<ActionDelete />} onClick={e => {
                     this.handleDelete(item)
                     e.preventDefault()

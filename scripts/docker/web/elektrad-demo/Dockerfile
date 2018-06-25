@@ -20,6 +20,10 @@ RUN cp /etc/hosts /home/elektra/.config/hosts
 COPY --chown=elektra:elektra demo.kdb /home/elektra/
 RUN kdb import user/app < /home/elektra/demo.kdb
 
+# create user/realworld structure
+COPY --chown=elektra:elektra realworld.ini /home/elektra/
+RUN kdb import user/realworld ini < /home/elektra/realworld.ini
+
 # run elektrad
 EXPOSE 33333
 CMD ["kdb","run-elektrad"]

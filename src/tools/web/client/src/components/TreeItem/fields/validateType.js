@@ -43,6 +43,36 @@ const validateType = (metadata, value) => {
   if (!metadata) return false // no metadata, no validation
   const type = metadata['check/type'] || 'any'
 
+  if (type === 'boolean') {
+    if (value !== '0' && value !== '1') {
+      return 'invalid boolean, 0 or 1 expected'
+    }
+  }
+
+  if (type === 'enum') {
+    let done = false
+    let valid = false
+    let i = 0
+    let values = []
+    while (!done) {
+      const v = metadata[`check/enum/#${i}`]
+      if (!v) {
+        done = true
+        break
+      }
+      values.push(v)
+      if (value === v) {
+        done = true
+        valid = true
+        break
+      }
+      i++
+    }
+    if (!valid) {
+      return 'invalid value, expected one of: ' + values.join(', ')
+    }
+  }
+
   if (FLOAT_TYPES.includes(type)) {
     if (!isNumber(value)) {
       return 'invalid number, float expected'

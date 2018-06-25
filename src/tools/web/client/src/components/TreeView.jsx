@@ -76,16 +76,23 @@ export default class TreeView extends React.Component {
   }
 
   handleDrop = (target, evt, inputs) => {
-    const { instanceId, moveKey, copyKey } = this.props
+    const { instanceId, moveKey, copyKey, sendNotification } = this.props
     const { selection } = inputs
 
-    const action = (evt && evt.altKey) // alt pressed -> copy
+    // alt or ctrl pressed -> copy
+    const action = (evt && (evt.altKey || evt.ctrlKey))
       ? copyKey
       : moveKey
 
-    selection.map(
-      sel => action(instanceId, sel.path, target.path + '/' + sel.name)
-    )
+    const actionName = (evt && (evt.altKey || evt.ctrlKey))
+      ? 'copied'
+      : 'moved'
+
+    Promise.all(
+      selection.map(
+        sel => action(instanceId, sel.path, target.path + '/' + sel.name)
+      )
+    ).then(() => sendNotification(`successfully ${actionName} key(s) to ${target.path}`))
     this.setState({ selection: [] })
   }
 

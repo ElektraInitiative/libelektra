@@ -33,14 +33,14 @@ const undoMiddleware = createUndoMiddleware({
       action: ({ id, path, value }) => setKey(id, path, value),
     },
     'DELETE_KEY_SUCCESS': {
-      action: ({ id, path }, { previousValue, from, to }) =>
+      action: ({ id, path, kdb }, { previousValue, from, to }) =>
         (from && to) // we are reverting a copy action
           ? copyKey(id, from, to)
-          : createKey(id, path, previousValue),
+          : createKey(id, path, previousValue, kdb),
       createArgs: storePreviousValue,
     },
     'CREATE_KEY_SUCCESS': {
-      action: ({ id, path }) => deleteKey(id, path),
+      action: ({ id, path, kdb }) => deleteKey(id, path, kdb),
       createArgs: (state, { value }) => ({ previousValue: value }),
     },
     'SET_META_SUCCESS': {

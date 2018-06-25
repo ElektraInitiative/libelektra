@@ -10,26 +10,31 @@ import React from 'react'
 import Snackbar from 'material-ui/Snackbar'
 import Dialog from 'material-ui/Dialog'
 import FlatButton from 'material-ui/FlatButton'
+import MoreIcon from 'material-ui/svg-icons/navigation/chevron-right'
 
 export default class ErrorSnackbar extends React.Component {
   constructor (...args) {
     super(...args)
-    this.state = { dialogOpen: false }
+    this.state = { dialogOpen: false, details: false }
   }
 
   handleOpen = () => {
-    this.setState({ dialogOpen: true })
+    this.setState({ dialogOpen: true, details: false })
   }
 
   handleClose = () => {
     const { dismissError } = this.props
-    this.setState({ dialogOpen: false })
+    this.setState({ dialogOpen: false, details: false })
     dismissError()
+  }
+
+  showDetails = () => {
+    this.setState({ details: true })
   }
 
   render () {
     const { error, dismissError } = this.props
-    const { dialogOpen } = this.state
+    const { dialogOpen, details } = this.state
 
     if (error) console.error(error)
 
@@ -81,6 +86,19 @@ export default class ErrorSnackbar extends React.Component {
         <pre style={{ whiteSpace: 'pre-wrap' }}>
           {message}
         </pre>
+        {details
+          ? <div>
+              <h3>Error Details</h3>
+              <pre style={{ whiteSpace: 'pre-wrap' }}>
+                {error.details}
+              </pre>
+            </div>
+          : <FlatButton
+              label="show details"
+              icon={<MoreIcon />}
+              onClick={this.showDetails}
+            />
+        }
       </Dialog>
     ]
   }
