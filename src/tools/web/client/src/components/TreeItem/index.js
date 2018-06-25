@@ -161,7 +161,7 @@ export default class TreeItem extends Component {
     const data = kdbState[instanceId]
     if (data && data[item.path] && data[item.path].meta) {
       const meta = data[item.path].meta
-      if (meta && meta['array'] && meta['array'] > 0) {
+      if (meta && meta['array'] && meta['array'] >= 0) {
         return Number(meta['array'])
       }
     }
@@ -194,12 +194,13 @@ export default class TreeItem extends Component {
 
     const meta = data && data.meta
     const isCheckbox = meta && meta['check/type'] && meta['check/type'] === 'boolean'
-    const valueVisible = !rootLevel && data && !item.children
      // we return no value property if the key doesn't exist, otherwise we return an *empty* value
     const keyExists = rootLevel || (data && data.exists)
 
     const arrayKeyLength = this.getArrayKeyLength(item)
     const parentArrayKeyLength = this.getArrayKeyLength(item.parent)
+
+    const valueVisible = !rootLevel && data && !item.children && arrayKeyLength === false
 
     const renderedField = (
       <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -239,7 +240,7 @@ export default class TreeItem extends Component {
                 )
               : <b style={{ ...titleStyle, opacity: keyExists ? 1 : 0.4 }} onClick={this.handleOpen('rename')}>
                   <span style={{ flex: 'initial', marginTop: -2 }}>{prettyPrintArrayIndex(item.name)}</span>
-                  {(arrayKeyLength || (item && item.meta && item.meta['array'])) &&
+                  {(arrayKeyLength !== false) &&
                     <span style={{ flex: 'initial', marginLeft: 8 }}>
                       <ArrayIcon />
                     </span>

@@ -39,7 +39,7 @@ export default class AddDialog extends Component {
 
   componentWillReceiveProps (nextProps) {
     const wasOpened = this.props.open === false && nextProps.open === true
-    if (wasOpened && nextProps.arrayKeyLength) {
+    if (wasOpened && nextProps.arrayKeyLength !== false) {
       this.setState({ name: this.generateArrayKey(nextProps.arrayKeyLength) })
     }
   }
@@ -83,7 +83,7 @@ export default class AddDialog extends Component {
         if (v !== 'user') {
           setMetaByPath(path + '/' + name, 'visibility', v)
         }
-        if (arrayKeyLength) { // is child of array key
+        if (arrayKeyLength !== false) { // is child of array key
           // update array metakey in parent
           setMetaByPath(path, 'array', String(arrayKeyLength + 1))
         }
