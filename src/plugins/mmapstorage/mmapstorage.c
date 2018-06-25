@@ -192,17 +192,27 @@ static int findOrInsert (Key * key, DynArray * dynArray)
 		ELEKTRA_LOG_WARNING ("m: %zu", m);
 
 		if (dynArray->keyArray[m] > key)
+		{
 			h = m;
+		}
 		else if (dynArray->keyArray[m] < key)
+		{
 			l = ++m;
+		}
 		else
+		{
 			return 1; // found
+		}
 	}
 	// insert key at index l
 	if (dynArray->size == dynArray->alloc)
 	{
 		// doubling the array size to keep reallocations logarithmic
 		size_t oldAllocSize = dynArray->alloc;
+		if (oldAllocSize > (SIZE_MAX / 2))
+		{
+			return -1; // error
+		}
 		Key ** new = elektraCalloc ((2 * oldAllocSize) * sizeof (Key *));
 		memcpy (new, dynArray->keyArray, dynArray->size * sizeof (Key *));
 		elektraFree (dynArray->keyArray);
@@ -214,10 +224,10 @@ static int findOrInsert (Key * key, DynArray * dynArray)
 	dynArray->keyArray[l] = key;
 	dynArray->size += 1;
 
-	return 0;
+	return 0; // inserted
 }
 
-static size_t find (Key * key, DynArray * dynArray)
+static ssize_t find (Key * key, DynArray * dynArray)
 {
 	size_t l = 0;
 	size_t h = dynArray->size;
@@ -233,11 +243,24 @@ static size_t find (Key * key, DynArray * dynArray)
 		ELEKTRA_LOG_WARNING ("m: %zu", m);
 
 		if (dynArray->keyArray[m] > key)
+		{
 			h = m;
+		}
 		else if (dynArray->keyArray[m] < key)
+		{
 			l = ++m;
+		}
 		else
-			return m; // found
+		{
+			if (m < SSIZE_MAX)
+			{
+				return m; // found
+			}
+			else
+			{
+				return -1;
+			}
+		}
 	}
 
 	return -1;
@@ -263,7 +286,7 @@ static void mmapDataSize (DestType destType, MmapHeader * mmapHeader, KeySet * r
 			ksRewind (cur->meta);
 			while ((curMeta = ksNext (cur->meta)) != 0)
 			{
-				if (findOrInsert (curMeta, dynArray) != 1)
+				if (findOrInsert (curMeta, dynArray) == 0)
 				{
 					// key was just inserted
 					dataBlocksSize += (curMeta->keySize + curMeta->keyUSize + curMeta->dataSize);
@@ -428,7 +451,10 @@ static void writeKeySet (DestType destType ELEKTRA_UNUSED, MmapHeader * mmapHead
 				mappedMetaKey = dynArray->mappedKeyArray[find ((Key *) metaKey, dynArray)];
 				ELEKTRA_LOG_WARNING ("mappedMetaKey: %p", (void *) mappedMetaKey);
 				newMeta->array[metaKeyIndex] = mappedMetaKey;
-				if (mappedMetaKey->ksReference < SSIZE_MAX) ++(mappedMetaKey->ksReference);
+				if (mappedMetaKey->ksReference < SSIZE_MAX)
+				{
+					++(mappedMetaKey->ksReference);
+				}
 				++metaKeyIndex;
 			}
 			newMeta->array[oldMeta->size] = 0;
@@ -541,7 +567,10 @@ static int readMmapHeader (FILE * fp, MmapHeader * mmapHeader)
 	memset (mmapHeader, 0, SIZEOF_MMAPHEADER);
 	fread (mmapHeader, SIZEOF_MMAPHEADER, (sizeof (char)), fp);
 
-	if (mmapHeader->mmapMagicNumber == ELEKTRA_MAGIC_MMAP_NUMBER) return 0;
+	if (mmapHeader->mmapMagicNumber == ELEKTRA_MAGIC_MMAP_NUMBER)
+	{
+		return 0;
+	}
 
 	return -1;
 }
@@ -574,7 +603,10 @@ static void updatePointers (DestType destType, MmapHeader * mmapHeader, char * d
 			ks->array = (Key **) ((char *) ks->array - sourceInt + destInt);
 			for (size_t j = 0; j < ks->size; ++j)
 			{
-				if (ks->array[j]) ks->array[j] = (Key *) ((char *) (ks->array[j]) - sourceInt + destInt);
+				if (ks->array[j])
+				{
+					ks->array[j] = (Key *) ((char *) (ks->array[j]) - sourceInt + destInt);
+				}
 			}
 		}
 	}
@@ -584,9 +616,18 @@ static void updatePointers (DestType destType, MmapHeader * mmapHeader, char * d
 	{
 		key = (Key *) keyPtr;
 		keyPtr += SIZEOF_KEY;
-		if (key->data.v) key->data.v = (void *) ((char *) (key->data.v) - sourceInt + destInt);
-		if (key->key) key->key = ((char *) (key->key) - sourceInt + destInt);
-		if (key->meta) key->meta = (KeySet *) ((char *) (key->meta) - sourceInt + destInt);
+		if (key->data.v)
+		{
+			key->data.v = (void *) ((char *) (key->data.v) - sourceInt + destInt);
+		}
+		if (key->key)
+		{
+			key->key = ((char *) (key->key) - sourceInt + destInt);
+		}
+		if (key->meta)
+		{
+			key->meta = (KeySet *) ((char *) (key->meta) - sourceInt + destInt);
+		}
 	}
 }
 
@@ -624,6 +665,7 @@ int elektraMmapstorageClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEK
 {
 	// free all plugin resources and shut it down
 	KeySet * mappedFiles = (KeySet *) elektraPluginGetData (handle);
+	// TODO: unlink all remaining files!
 	ksDel (mappedFiles);
 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
@@ -766,9 +808,15 @@ int elektraMmapstorageGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 
 KeySet * copyKeySet (MmapHeader * mmapInfo, KeySet * unlinkKs, MmapHeader * mmapHeader)
 {
-	if (!mmapInfo) return 0;
+	if (!mmapInfo)
+	{
+		return 0;
+	}
 
-	if (test_bit (mmapInfo->flags, MMAP_FLAG_DELETED) == MMAP_FLAG_DELETED) return 0;
+	if (test_bit (mmapInfo->flags, MMAP_FLAG_DELETED) == MMAP_FLAG_DELETED)
+	{
+		return 0;
+	}
 
 	// TODO: ultimately, use this function everywhere
 	DynArray dynArray;
@@ -797,8 +845,14 @@ KeySet * copyKeySet (MmapHeader * mmapInfo, KeySet * unlinkKs, MmapHeader * mmap
 	mmapHeader->destAddr = (char *) unlinkKs; // set old address
 	ksWrite (TYPE_ALLOC, dest, unlinkKs, mmapHeader, &dynArray);
 
-	if (dynArray.keyArray) elektraFree (dynArray.keyArray);
-	if (dynArray.mappedKeyArray) elektraFree (dynArray.mappedKeyArray);
+	if (dynArray.keyArray)
+	{
+		elektraFree (dynArray.keyArray);
+	}
+	if (dynArray.mappedKeyArray)
+	{
+		elektraFree (dynArray.mappedKeyArray);
+	}
 
 	return (KeySet *) dest;
 }
@@ -894,8 +948,14 @@ int elektraMmapstorageSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 	}
 	munmap (mappedRegion, mmapHeader.allocSize);
 
-	if (dynArray.keyArray) elektraFree (dynArray.keyArray);
-	if (dynArray.mappedKeyArray) elektraFree (dynArray.mappedKeyArray);
+	if (dynArray.keyArray)
+	{
+		elektraFree (dynArray.keyArray);
+	}
+	if (dynArray.mappedKeyArray)
+	{
+		elektraFree (dynArray.mappedKeyArray);
+	}
 	fclose (fp);
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
