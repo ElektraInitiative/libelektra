@@ -112,6 +112,7 @@ Try it out now on: http://webui.libelektra.org:33334/
 - added "create array" button to easily create arrays
 - removed confirmation dialog before deletion (undo can be used instead)
 - created a docker image: `elektra/web`
+- created a task to deploy the demo
 - small fixes:
   - updated visibility levels
   - removed "done" button in main view
