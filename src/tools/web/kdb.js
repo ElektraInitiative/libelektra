@@ -200,7 +200,9 @@ const rm = (path) => {
     .then(paths => Promise.all(
       paths.map(p => {
         if (p.startsWith('user/sw/elektra/web')) return { p, r: '1' } // always restricted
-        return getmeta(p, 'restrict/remove').then(r => ({ p, r }))
+        return getmeta(p, 'restrict/remove')
+          .then(r => ({ p, r }))
+          .catch(err => ({ p, r: '0' })) // restrict/remove key not present
       })
     ))
     .then(restricted => Promise.all(
