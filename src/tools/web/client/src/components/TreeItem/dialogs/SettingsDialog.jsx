@@ -79,11 +79,9 @@ export default class SettingsDialog extends Component {
   }
 
   ensureDefaultValue = (defaultStr) => {
-    console.log('ensure default', defaultStr)
     const { meta } = this.props
     if (defaultStr) {
       const err = validateType(meta, defaultStr)
-      console.log('err', err)
       if (err) {
         return this.setState({ defaultError: err, defaultStr })
       }
