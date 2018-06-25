@@ -152,7 +152,7 @@ maybeStage("Deploy Homepage", isMaster()) {
   deployHomepage()
 }
 
-maybeStage("Deploy Web UI", isMaster()) {
+stage("Deploy Web UI") {
   deployWebUI()
 }
 
