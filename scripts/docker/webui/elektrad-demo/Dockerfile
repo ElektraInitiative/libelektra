@@ -1,6 +1,6 @@
 # same as `elektrad`, but with a KDB config set up (for demo)
 
-FROM elektra/web-base:latest
+FROM web-base:latest
 
 WORKDIR /home/elektra
 

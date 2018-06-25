@@ -263,7 +263,7 @@ def dockerInit() {
 
     /* Image building elektra web base image */
     DOCKER_IMAGES.webui_base = createDockerImageDesc(
-      "elektra/web-base", this.&idHomepage,
+      "web-base", this.&idHomepage,
       ".",
       "./scripts/docker/webui/base/Dockerfile",
       false
@@ -271,7 +271,7 @@ def dockerInit() {
 
     /* Image building elektrad */
     DOCKER_IMAGES.webui_elektrad = createDockerImageDesc(
-      "elektra/elektrad-demo", this.&idHomepage,
+      "elektrad-demo", this.&idHomepage,
       ".",
       "./scripts/docker/webui/elektrad-demo/Dockerfile",
       false
@@ -279,7 +279,7 @@ def dockerInit() {
 
     /* Image building webd */
     DOCKER_IMAGES.webui_webd = createDockerImageDesc(
-      "elektra/webd-demo", this.&idHomepage,
+      "webd-demo", this.&idHomepage,
       ".",
       "./scripts/docker/webui/webd-demo/Dockerfile",
       false
