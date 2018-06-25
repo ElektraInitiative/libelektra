@@ -70,9 +70,7 @@ export default class TreeItem extends Component {
 
     if (item && item.parent) {
       const arrayKeyLength = this.getArrayKeyLength(item.parent)
-      if (!arrayKeyLength || arrayKeyLength <= 1) { // not an array (anymore)
-        deleteMetaKey(instanceId, item.parent.path, 'array')
-      } else {
+      if (arrayKeyLength && arrayKeyLength > 0) {
         setMetaKey(instanceId, item.parent.path, 'array', String(arrayKeyLength - 1))
       }
     }
