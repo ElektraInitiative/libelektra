@@ -107,28 +107,28 @@ Try it out now on: http://webdemo.libelektra.org/
 
 1.5 changelog:
 
-- search completely reworked - it does not act as a filter on already opened keys anymore, and instead searches the whole key database - feedback from the search was also greatly improved (pulsating while searching, glowing blue when done)
-- added "abort" buttons to dialogs to revert actions
-- added "create array" button to easily create arrays
-- removed confirmation dialog before deletion (undo can be used instead)
-- created a docker image: `elektra/web`
-- implemented auto-deployment of webdemo.libelektra.org
-- small fixes:
-  - updated visibility levels
-  - removed "done" button in main view
-  - fixed issues with the opener click area
-  - remove metakeys when they are set to the default value or empty/0
-  - improved keyboard support
-  - fixed many small issues (#2037)
+- search completely reworked - it does not act as a filter on already opened keys anymore, and instead searches the whole key database - feedback from the search was also greatly improved (pulsating while searching, glowing blue when done) *(Daniel Bugl)*
+- added "abort" buttons to dialogs to revert actions *(Daniel Bugl)*
+- added "create array" button to easily create arrays *(Daniel Bugl)*
+- removed confirmation dialog before deletion (undo can be used instead) *(Daniel Bugl)*
+- created a docker image: `elektra/web` *(Daniel Bugl)*
+- implemented auto-deployment of webdemo.libelektra.org *(Daniel Bugl)*
+- small fixes: *(Daniel Bugl)*
+  - updated visibility levels *(Daniel Bugl)*
+  - removed "done" button in main view *(Daniel Bugl)*
+  - fixed issues with the opener click area *(Daniel Bugl)*
+  - remove metakeys when they are set to the default value or empty/0 *(Daniel Bugl)*
+  - improved keyboard support *(Daniel Bugl)*
+  - fixed many small issues (#2037) *(Daniel Bugl)*
 
 1.6 changelog:
 
-- fixed bugs related to arrays (#2103)
-- improved performance of search for many results
-- added 404 page for invalid instance ids
-- implement drag & copy by holding the Ctrl or Alt key
-- add button to show error details
-- allow deleting all keys in a namespace
+- fixed bugs related to arrays (#2103) *(Daniel Bugl)*
+- improved performance of search for many results *(Daniel Bugl)*
+- added 404 page for invalid instance ids *(Daniel Bugl)*
+- implement drag & copy by holding the Ctrl or Alt key *(Daniel Bugl)*
+- add button to show error details *(Daniel Bugl)*
+- allow deleting all keys in a namespace *(Daniel Bugl)*
 
 
 ## Plugins
