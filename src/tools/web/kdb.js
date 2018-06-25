@@ -190,18 +190,24 @@ const mv = (path, destination) =>
 const cp = (path, destination) =>
   safeExec(escapeValues`${KDB_COMMAND} cp -r ${path} ${destination}`)
 
+// remove single value at `path`
+const rmSingle = (path) =>
+  safeExec(escapeValues`${KDB_COMMAND} rm ${path}`)
+
 // remove value at given `path`
 const rm = (path) => {
-  if (path === 'user') {
-    return ls('user')
-      .then(paths => {
-        return Promise.all(paths.map(p => {
-          if (!p.startsWith('user/sw/elektra/web')) rm(p)
-        }))
+  return ls(path)
+    .then(paths => Promise.all(
+      paths.map(p => {
+        if (p.startsWith('user/sw/elektra/web')) return { p, r: '1' } // always restricted
+        return getmeta(p, 'restrict/remove').then(r => ({ p, r }))
       })
-      .catch(err => { throw err }) // re-throw error
-  }
-  return safeExec(escapeValues`${KDB_COMMAND} rm -r ${path}`)
+    ))
+    .then(restricted => Promise.all(
+      restricted.map(({ p, r }) => {
+        if (r !== '1') return rmSingle(p)
+      })
+    ))
 }
 
 // list meta values at given `path`

@@ -66,7 +66,7 @@ export default class TreeItem extends Component {
   }
 
   handleDelete = (item) => {
-    const { instanceId, deleteKey, setMetaKey, deleteMetaKey, sendNotification } = this.props
+    const { instanceId, deleteKey, setMetaKey, deleteMetaKey, sendNotification, kdbState } = this.props
 
     if (item && item.parent) {
       const arrayKeyLength = this.getArrayKeyLength(item.parent)
@@ -75,11 +75,11 @@ export default class TreeItem extends Component {
       }
     }
 
-    deleteKey(instanceId, item.path)
+    deleteKey(instanceId, item.path, kdbState && kdbState[instanceId])
       .then(() => {
         if (Array.isArray(item.children) && item.children.length > 0) {
           return Promise.all(item.children.map(
-            child => deleteKey(instanceId, child.path)
+            child => deleteKey(instanceId, child.path, kdbState && kdbState[instanceId])
           ))
         }
       })
@@ -87,9 +87,9 @@ export default class TreeItem extends Component {
   }
 
   handleAdd = (path, addKeyName, addKeyValue) => {
-    const { instanceId, createKey, sendNotification } = this.props
+    const { instanceId, createKey, sendNotification, kdbState } = this.props
     const fullPath = path + '/' + addKeyName
-    createKey(instanceId, fullPath, addKeyValue).then(() =>
+    createKey(instanceId, fullPath, addKeyValue, kdbState && kdbState[instanceId]).then(() =>
       sendNotification('successfully created key: ' + fullPath)
     )
   }
