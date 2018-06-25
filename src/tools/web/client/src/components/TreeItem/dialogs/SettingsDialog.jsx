@@ -23,7 +23,7 @@ import AdditionalMetakeysSubDialog from './AdditionalMetakeysSubDialog.jsx'
 import debounce from '../../debounce'
 import { VISIBILITY_LEVELS, visibility, toElektraBool, fromElektraBool, isNumberType } from '../../../utils'
 import { KEY_TYPES } from './utils'
-import { validateRange } from '../fields/validateType'
+import validateType, { validateRange } from '../fields/validateType'
 
 const DebouncedTextField = debounce(TextField)
 
@@ -33,11 +33,11 @@ const DEBOUNCED = 'DEBOUNCED'
 export default class SettingsDialog extends Component {
   constructor (...args) {
     super(...args)
-    this.state = { regexError: false, rangeError: false, regexStr: false, rangeStr: false, paused: false }
+    this.state = { regexError: false, rangeError: false, regexStr: false, rangeStr: false, defaultError: false, defaultStr: false, paused: false }
   }
 
   componentWillReceiveProps (nextProps) {
-    const { regexError, rangeError, regexStr, rangeStr } = this.state
+    const { regexError, rangeError, regexStr, rangeStr, defaultError, defaultStr } = this.state
     if (regexError) {
       this.handleEdit('check/validation', IMMEDIATE)(regexStr)
       setTimeout(() => this.handleEdit('check/validation', DEBOUNCED)(regexStr), 500)
@@ -45,6 +45,10 @@ export default class SettingsDialog extends Component {
     if (rangeError) {
       this.handleEdit('check/range', IMMEDIATE)(rangeStr)
       setTimeout(() => this.handleEdit('check/range', DEBOUNCED)(rangeStr), 500)
+    }
+    if (defaultError) {
+      this.handleEdit('default', IMMEDIATE)(defaultStr)
+      setTimeout(() => this.handleEdit('default', DEBOUNCED)(defaultStr), 500)
     }
   }
 
@@ -74,6 +78,19 @@ export default class SettingsDialog extends Component {
     this.setState({ rangeError: false, rangeStr: false })
   }
 
+  ensureDefaultValue = (defaultStr) => {
+    console.log('ensure default', defaultStr)
+    const { meta } = this.props
+    if (defaultStr) {
+      const err = validateType(meta, defaultStr)
+      console.log('err', err)
+      if (err) {
+        return this.setState({ defaultError: err, defaultStr })
+      }
+    }
+    this.setState({ defaultError: false, defaultStr: false })
+  }
+
   handleEdit = (key, debounced = false) => (value) => {
     const { data, setMeta, deleteMeta } = this.props
 
@@ -88,6 +105,10 @@ export default class SettingsDialog extends Component {
       if (key === 'check/range') {
         this.ensureRange(value, data)
       }
+
+      if (key === 'default') {
+        this.ensureDefaultValue(value)
+      }
     }
 
     if (!debounced || debounced === DEBOUNCED) {
@@ -95,6 +116,9 @@ export default class SettingsDialog extends Component {
         return // do not save regex that does not match
       }
       if (key === 'check/range' && this.state.rangeError) {
+        return // do not save range that does not match
+      }
+      if (key === 'default' && this.state.defaultError) {
         return // do not save range that does not match
       }
       // persist value to kdb and show notification
@@ -344,6 +368,7 @@ export default class SettingsDialog extends Component {
                       floatingLabelText="default value"
                       floatingLabelFixed={true}
                       tabIndex="0"
+                      errorText={this.state.defaultError}
                       onChange={this.handleEdit('default', IMMEDIATE)}
                       onDebounced={this.handleEdit('default', DEBOUNCED)}
                       value={this.getMeta('default', '')}
