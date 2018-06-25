@@ -1,6 +1,7 @@
 # same as `elektrad`, but with a KDB config set up (for demo)
 
-FROM web-base:latest
+ARG BASE_IMG
+FROM $BASE_IMG
 
 WORKDIR /home/elektra
 

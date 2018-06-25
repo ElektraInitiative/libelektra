@@ -353,6 +353,7 @@ def buildImageStage(image) {
 --build-arg JENKINS_GROUPID=${gid} \
 --build-arg JENKINS_USERID=${uid} \
 --build-arg PARALLEL=${cpus} \
+--build-arg BASE_IMG=${DOCKER_IMAGES.webui_base.id} \
 -f ${image.file} ${image.context}"""
           )
           i.push()
