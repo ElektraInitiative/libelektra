@@ -249,6 +249,7 @@ export default class TreeItem extends Component {
             }
             <span className="actions">
                 <SavedIcon saved={this.state.saved} err={this.state.err} />
+                {(!valueVisible && data && data.value) && <span>{data.value}</span>}
                 {valueVisible &&
                   <CopyToClipboard text={(data && data.value) || ''} onCopy={() => sendNotification('Copied value of ' + item.path + ' to clipboard!')}>
                     <ActionButton icon={<ContentPaste />} tooltip="copy value" />

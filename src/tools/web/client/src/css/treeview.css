@@ -25,17 +25,25 @@
   opacity: 1;
 }
 .ExplorerView ul > li a .actions > button,
-.ExplorerView ul > li a .actions > i {
+.ExplorerView ul > li a .actions > i,
+.ExplorerView ul > li a .actions > span {
   opacity: 0;
   transition: opacity 0.2s;
 }
 .ExplorerView ul > li a .actions > i {
   margin-left: 1.5em;
 }
+.ExplorerView ul > li a .actions > i,
+.ExplorerView ul > li a .actions > span {
+  position: relative;
+  bottom: 3px;
+  margin-right: 1em;
+}
 
 /* when root element is hovered with mouse */
 .ExplorerView ul > li a:hover .actions > button,
-.ExplorerView ul > li a:hover .actions > i {
+.ExplorerView ul > li a:hover .actions > i,
+.ExplorerView ul > li a:hover .actions > span {
   opacity: 0.5;
 }
 /* when action button is focussed with keyboard or hovered with mouse */
