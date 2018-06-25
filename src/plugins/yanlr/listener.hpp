@@ -35,7 +35,7 @@ class KeyListener : public YAMLBaseListener
 	/** This variable stores a key set representing the textual input. */
 	CppKeySet keys;
 	/** This stack stores a key for each level of the current key name below parent. */
-	deque<CppKey> parents;
+	stack<CppKey> parents;
 
 public:
 	/**
@@ -45,7 +45,7 @@ public:
 	 */
 	KeyListener (CppKey parent) : keys{}
 	{
-		parents.push_back (parent);
+		parents.push (parent);
 	}
 
 	/**
@@ -55,7 +55,7 @@ public:
 	 */
 	virtual void exitValue (ValueContext * context) override
 	{
-		CppKey key = parents.back ();
+		CppKey key = parents.top ();
 		key.setString (context->getText ());
 		ELEKTRA_LOG_DEBUG ("Add new key “%s” with value “%s”", key.getName ().c_str (), key.getString ().c_str ());
 		keys.append (key);
@@ -69,9 +69,9 @@ public:
 	virtual void enterMapping (MappingContext * context) override
 	{
 		// Entering a mapping such as `part: …` means that we need to add `part` to the key name
-		CppKey child{ parents.back ().getName (), KEY_END };
+		CppKey child{ parents.top ().getName (), KEY_END };
 		child.addBaseName (context->key ()->getText ());
-		parents.push_back (child);
+		parents.push (child);
 	}
 
 	/**
@@ -82,7 +82,7 @@ public:
 	virtual void exitMapping (MappingContext * context ELEKTRA_UNUSED) override
 	{
 		// Returning from a mapping such as `part: …` means that we need need to remove the key for `part` from the stack.
-		parents.pop_back ();
+		parents.pop ();
 	}
 
 	/**
@@ -92,7 +92,7 @@ public:
 	 */
 	virtual void enterSequence (SequenceContext * context ELEKTRA_UNUSED) override
 	{
-		parents.back ().setMeta ("array", ""); // We start with an empty array
+		parents.top ().setMeta ("array", ""); // We start with an empty array
 	}
 
 	/**
@@ -103,7 +103,7 @@ public:
 	virtual void exitSequence (SequenceContext * context ELEKTRA_UNUSED) override
 	{
 		// We add the parent key of all array elements after we leave the sequence
-		keys.append (parents.back ());
+		keys.append (parents.top ());
 	}
 
 	/**
@@ -113,19 +113,19 @@ public:
 	 */
 	virtual void enterElement (ElementContext * context ELEKTRA_UNUSED) override
 	{
-		CppKeySet arrayEntries{ elektraArrayGet (*parents.back (), keys.getKeySet ()) };
+		CppKeySet arrayEntries{ elektraArrayGet (*parents.top (), keys.getKeySet ()) };
 
 		if (arrayEntries.size () <= 0)
 		{
-			CppKey first{ parents.back ().getName (), KEY_END };
+			CppKey first{ parents.top ().getName (), KEY_END };
 			first.addBaseName ("#");
 			arrayEntries.append (first);
 		}
 
 		CppKey key{ elektraArrayGetNextKey (arrayEntries.getKeySet ()) };
-		parents.back ().setMeta ("array", key.getBaseName ());
-		parents.push_back (key);
-		ELEKTRA_LOG_DEBUG ("New array element “%s”", parents.back ().getName ().c_str ());
+		parents.top ().setMeta ("array", key.getBaseName ());
+		parents.push (key);
+		ELEKTRA_LOG_DEBUG ("New array element “%s”", parents.top ().getName ().c_str ());
 	}
 
 	/**
@@ -135,7 +135,7 @@ public:
 	 */
 	virtual void exitElement (ElementContext * context ELEKTRA_UNUSED) override
 	{
-		parents.pop_back (); // Remove the key for the current array entry
+		parents.pop (); // Remove the key for the current array entry
 	}
 
 	/**
