@@ -10,6 +10,11 @@ WORKDIR /home/elektra
 
 # mount as root user
 RUN kdb mount --with-recommends hosts user/hosts hosts
+RUN kdb mount /etc/networks system/networks hosts
+RUN kdb mount /etc/ssh/ssh_config system/ssh line
+RUN kdb mount /etc/ldap/ldap.conf system/ldap line
+RUN kdb mount /var/lib/dpkg/available system/dpkg/available dpkg
+RUN kdb mount /var/lib/dpkg/status system/dpkg/status dpkg
 
 # then switch to elektra user
 USER elektra
