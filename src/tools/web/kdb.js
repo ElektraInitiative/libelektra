@@ -173,6 +173,7 @@ const ls = (path) =>
 const find = (query) =>
   safeExec(escapeValues`${KDB_COMMAND} find -0 ${query}`)
     .then(stdout => stdout && stdout.split('\0'))
+    .then(res => res || [])
 
 // get value from given `path`
 const get = (path) =>
