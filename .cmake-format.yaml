@@ -25,6 +25,7 @@ additional_commands:
     flags:
       - CPP
       - ADD_TEST
+      - CPP_TEST
       - INSTALL_TEST_DATA
       - TEST_README
     kwargs:
@@ -43,6 +44,7 @@ additional_commands:
     flags:
       - MEMLEAK
       - INSTALL_TEST_DATA
+      - CPP
     kwargs:
       INCLUDE_SYSTEM_DIRECTORIES: 1
       COMPILE_DEFINITIONS: "*"
