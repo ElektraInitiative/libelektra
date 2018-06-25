@@ -265,7 +265,7 @@ def dockerInit() {
     DOCKER_IMAGES.webui_elektrad = createDockerImageDesc(
       "elektra/elektrad-demo", this.&idHomepage,
       ".",
-      "./scripts/docker/web/elektrad-demo/Dockerfile",
+      "./scripts/docker/webui/elektrad-demo/Dockerfile",
       false
     )
 
@@ -273,7 +273,7 @@ def dockerInit() {
     DOCKER_IMAGES.webui_webd = createDockerImageDesc(
       "elektra/webd-demo", this.&idHomepage,
       ".",
-      "./scripts/docker/web/webd-demo/Dockerfile",
+      "./scripts/docker/webui/webd-demo/Dockerfile",
       false
     )
   }
