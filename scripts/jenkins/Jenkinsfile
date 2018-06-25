@@ -152,6 +152,10 @@ maybeStage("Deploy Homepage", isMaster()) {
   deployHomepage()
 }
 
+maybeStage("Deploy Web UI", isMaster()) {
+  deployWebUI()
+}
+
 /*****************************************************************************
  * Stage Generators
  *****************************************************************************/
@@ -254,6 +258,22 @@ def dockerInit() {
       "homepage-backend", this.&idHomepage,
       ".",
       "./scripts/docker/homepage/backend/Dockerfile",
+      false
+    )
+
+    /* Image building elektrad */
+    DOCKER_IMAGES.webui_elektrad = createDockerImageDesc(
+      "elektra/elektrad-demo", this.&idWebUI,
+      ".",
+      "./scripts/docker/web/elektrad-demo/Dockerfile",
+      false
+    )
+
+    /* Image building webd */
+    DOCKER_IMAGES.webui_webd = createDockerImageDesc(
+      "elektra/webd-demo", this.&idWebUI,
+      ".",
+      "./scripts/docker/web/webd-demo/Dockerfile",
       false
     )
   }
@@ -812,6 +832,7 @@ def generateArtifactStages() {
   def tasks = [:]
   tasks << buildPackageDebianStretch()
   tasks << buildHomepage()
+  tasks << buildWebUI()
   return tasks
 }
 
@@ -900,6 +921,49 @@ def buildHomepage() {
   homepageTasks << buildImageStage(DOCKER_IMAGES.homepage_frontend)
   homepageTasks << buildImageStage(DOCKER_IMAGES.homepage_backend)
   return homepageTasks
+}
+
+def deployWebUI() {
+  node("elektrad") {
+    docker.withRegistry("https://${REGISTRY}",
+                        'docker-hub-elektra-jenkins') {
+      def backendName = "elektrad"
+      def frontendName = "webd"
+      def backend = docker.image(DOCKER_IMAGES.webui_elektrad.id)
+      def frontend = docker.image(DOCKER_IMAGES.webui_webd.id)
+      backend.pull()
+      frontend.pull()
+
+      sh "docker stop -t 5 ${backendName} || /bin/true"
+      sh "docker rm ${backendName} || /bin/true"
+      backend.run("""\
+        -e VIRTUAL_HOST=elektrad-demo.libelektra.org \
+        -e LETSENCRYPT_HOST=elektrad-demo.libelektra.org \
+        -e LETSENCRYPT_EMAIL=jenkins@hub.libelektra.org \
+        --name ${backendName} \
+        --network=frontend_default \
+        --restart=always"""
+      )
+
+      sh "docker stop -t 5 ${frontendName} || /bin/true"
+      sh "docker rm ${frontendName} || /bin/true"
+      frontend.run("""\
+        -e VIRTUAL_HOST=webui.libelektra.org \
+        -e LETSENCRYPT_HOST=webui.libelektra.org \
+        -e LETSENCRYPT_EMAIL=jenkins@hub.libelektra.org \
+        --name ${frontendName} \
+        --network=frontend_default \
+        --restart=always"""
+      )
+    }
+  }
+}
+
+def buildWebUI() {
+  def webuiTasks = [:]
+  webuiTasks << buildImageStage(DOCKER_IMAGES.webui_elektrad)
+  webuiTasks << buildImageStage(DOCKER_IMAGES.webui_webd)
+  return webuiTasks
 }
 
 /*****************************************************************************
@@ -1130,6 +1194,15 @@ def idTesting(imageMap) {
  * @param imageMap Map identifying an docker image
  */
 def idHomepage(imageMap) {
+  imageMap.id = "${imageMap.name}:${BRANCH_NAME}_${BUILD_NUMBER}"
+  return imageMap
+}
+
+/* Build id for Web UI
+ *
+ * @param imageMap Map identifying an docker image
+ */
+def idWebUI(imageMap) {
   imageMap.id = "${imageMap.name}:${BRANCH_NAME}_${BUILD_NUMBER}"
   return imageMap
 }
