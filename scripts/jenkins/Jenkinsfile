@@ -138,12 +138,7 @@ stage("Main builds") {
   parallel generateMainBuildStages()
 }
 
-stage("Full builds") {
-  milestone label: "Full builds"
-  parallel generateFullBuildStages()
-}
-
-maybeStage("Build artifacts", isMaster()) {
+maybeStage("Build artifacts", true) {
   milestone label: "artifacts"
   parallel generateArtifactStages()
 }
@@ -152,7 +147,7 @@ maybeStage("Deploy Homepage", isMaster()) {
   deployHomepage()
 }
 
-maybeStage("Deploy Web UI", isMaster()) {
+maybeStage("Deploy Web UI", true) {
   deployWebUI()
 }
 
