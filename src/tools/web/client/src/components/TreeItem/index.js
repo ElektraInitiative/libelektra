@@ -66,7 +66,7 @@ export default class TreeItem extends Component {
   }
 
   handleDelete = (item) => {
-    const { instanceId, deleteKey, setMetaKey, deleteMetaKey, sendNotification, kdbState } = this.props
+    const { instanceId, deleteKey, setMetaKey, sendNotification, kdbState } = this.props
 
     if (item && item.parent) {
       const arrayKeyLength = this.getArrayKeyLength(item.parent)
