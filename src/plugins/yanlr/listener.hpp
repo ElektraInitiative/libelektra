@@ -12,11 +12,14 @@
 #include <numeric>
 
 #include <kdb.hpp>
+#include <kdbease.h>
 
 #include "YAMLBaseListener.h"
 
 using antlr::YAMLBaseListener;
+using ElementContext = antlr::YAMLParser::ElementContext;
 using MappingContext = antlr::YAMLParser::MappingContext;
+using SequenceContext = antlr::YAMLParser::SequenceContext;
 using ValueContext = antlr::YAMLParser::ValueContext;
 
 using CppKey = kdb::Key;
@@ -54,6 +57,7 @@ public:
 	{
 		CppKey key = parents.back ();
 		key.setString (context->getText ());
+		ELEKTRA_LOG_DEBUG ("Add new key “%s” with value “%s”", key.getName ().c_str (), key.getString ().c_str ());
 		keys.append (key);
 	}
 
@@ -78,6 +82,38 @@ public:
 	virtual void exitMapping (MappingContext * context ELEKTRA_UNUSED) override
 	{
 		// Returning from a mapping such as `part: …` means that we need need to remove the key for `part` from the stack.
+		parents.pop_back ();
+	}
+
+	virtual void enterSequence (SequenceContext * context ELEKTRA_UNUSED) override
+	{
+		parents.back ().setMeta ("array", "");
+	}
+
+	virtual void exitSequence (SequenceContext * context ELEKTRA_UNUSED) override
+	{
+		keys.append (parents.back ());
+	}
+
+	virtual void enterElement (ElementContext * context ELEKTRA_UNUSED) override
+	{
+		CppKeySet arrayEntries{ elektraArrayGet (*parents.back (), keys.getKeySet ()) };
+
+		if (arrayEntries.size () <= 0)
+		{
+			CppKey first{ parents.back ().getName (), KEY_END };
+			first.addBaseName ("#");
+			arrayEntries.append (first);
+		}
+
+		CppKey key{ elektraArrayGetNextKey (arrayEntries.getKeySet ()) };
+		parents.back ().setMeta ("array", key.getBaseName ());
+		parents.push_back (key);
+		ELEKTRA_LOG_DEBUG ("New array element “%s”", parents.back ().getName ().c_str ());
+	}
+
+	virtual void exitElement (ElementContext * context ELEKTRA_UNUSED) override
+	{
 		parents.pop_back ();
 	}
 

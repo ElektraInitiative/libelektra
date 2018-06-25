@@ -11,7 +11,9 @@
 
 # Yan LR
 
-## Example
+## Examples
+
+### Mappings
 
 ```sh
 # Mount plugin to cascading namespace `/tests/yanlr`
@@ -47,6 +49,33 @@ kdb get user/tests/yanlr/brand
 #> new
 kdb get /tests/yanlr/dance/gavin
 #> Dance!
+
+# Undo modifications to the key database
+kdb rm -r user/tests/yanlr
+sudo kdb umount user/tests/yanlr
+```
+
+### Arrays
+
+```sh
+# Mount plugin to cascading namespace `/tests/yanlr`
+sudo kdb mount config.yaml user/tests/yanlr yanlr
+
+# Manually add a sequences to the configuration file
+printf 'primes:\n'   >  `kdb file user/tests/yanlr`
+printf '  - two\n'   >> `kdb file user/tests/yanlr`
+printf '  - three\n' >> `kdb file user/tests/yanlr`
+printf '  - five\n'  >> `kdb file user/tests/yanlr`
+
+kdb ls user/tests/yanlr
+#> user/tests/yanlr/primes
+#> user/tests/yanlr/primes/#0
+#> user/tests/yanlr/primes/#1
+#> user/tests/yanlr/primes/#2
+
+# Retrieve index of last array element
+kdb getmeta user/tests/yanlr/primes array
+#> #2
 
 # Undo modifications to the key database
 kdb rm -r user/tests/yanlr

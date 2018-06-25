@@ -38,6 +38,7 @@ add_plugin (yanlr
 	    SOURCES ${SOURCE_FILES}
 	    INCLUDE_DIRECTORIES ${ANTLR4CPP_INCLUDE_DIRS}
 	    LINK_LIBRARIES ${ANTLR4CPP_LIBRARIES}
+	    LINK_ELEKTRA elektra-ease
 	    ADD_TEST
 	    TEST_README
 	    TEST_ENVIRONMENT "ASAN_OPTIONS=detect_container_overflow=0" # Unfortunately it looks like ANTLR’s code causes a container-

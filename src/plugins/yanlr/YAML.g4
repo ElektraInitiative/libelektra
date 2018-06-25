@@ -102,7 +102,7 @@ child : INDENT (sequence | map) NEWLINE* DEDENT
       | INDENT value NEWLINE* DEDENT;
 
 sequence : element (NEWLINE element)*  ;
-element : C_SEQUENCE_ENTRY S_SPACE (scalar | map)
+element : C_SEQUENCE_ENTRY S_SPACE (value | map)
         | C_SEQUENCE_ENTRY S_SPACE? NEWLINE child ;
 
 map : mapping (NEWLINE* mapping)* ;
