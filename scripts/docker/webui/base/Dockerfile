@@ -12,11 +12,9 @@ RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
 RUN apt-get install -y nodejs
 
 # pull latest libelektra
-RUN mkdir /home/elektra
-WORKDIR /home/elektra
-ARG ELEKTRA_VER=master
-RUN git clone -b ${ELEKTRA_VER} --depth 1 https://github.com/ElektraInitiative/libelektra.git
+RUN mkdir -p /home/elektra
 WORKDIR /home/elektra/libelektra
+ADD . /home/elektra/libelektra/
 
 # build & install libelektra
 RUN mkdir /home/elektra/libelektra/build
