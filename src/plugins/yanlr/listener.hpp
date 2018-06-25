@@ -85,16 +85,32 @@ public:
 		parents.pop_back ();
 	}
 
+	/**
+	 * @brief This function will be called after the parser enters a sequence.
+	 *
+	 * @param context The context specifies data matched by the rule.
+	 */
 	virtual void enterSequence (SequenceContext * context ELEKTRA_UNUSED) override
 	{
-		parents.back ().setMeta ("array", "");
+		parents.back ().setMeta ("array", ""); // We start with an empty array
 	}
 
+	/**
+	 * @brief This function will be called after the parser exits a sequence.
+	 *
+	 * @param context The context specifies data matched by the rule.
+	 */
 	virtual void exitSequence (SequenceContext * context ELEKTRA_UNUSED) override
 	{
+		// We add the parent key of all array elements after we leave the sequence
 		keys.append (parents.back ());
 	}
 
+	/**
+	 * @brief This function will be called after the parser recognizes an element of a sequence.
+	 *
+	 * @param context The context specifies data matched by the rule.
+	 */
 	virtual void enterElement (ElementContext * context ELEKTRA_UNUSED) override
 	{
 		CppKeySet arrayEntries{ elektraArrayGet (*parents.back (), keys.getKeySet ()) };
@@ -112,9 +128,14 @@ public:
 		ELEKTRA_LOG_DEBUG ("New array element “%s”", parents.back ().getName ().c_str ());
 	}
 
+	/**
+	 * @brief This function will be called after the parser read an element of a sequence.
+	 *
+	 * @param context The context specifies data matched by the rule.
+	 */
 	virtual void exitElement (ElementContext * context ELEKTRA_UNUSED) override
 	{
-		parents.pop_back ();
+		parents.pop_back (); // Remove the key for the current array entry
 	}
 
 	/**
