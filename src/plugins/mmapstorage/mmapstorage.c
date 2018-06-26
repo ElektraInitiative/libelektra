@@ -313,8 +313,10 @@ static void mmapDataSize (DestType destType, MmapHeader * mmapHeader, KeySet * r
 	mmapHeader->dataSize = dataBlocksSize;
 }
 
-static void writeKeySet (DestType destType ELEKTRA_UNUSED, MmapHeader * mmapHeader, KeySet * keySet, KeySet * dest, DynArray * dynArray)
+static void writeKeySet (DestType destType, MmapHeader * mmapHeader, KeySet * keySet, KeySet * dest, DynArray * dynArray)
 {
+	size_t mmapAddrInt = (size_t) mmapHeader->destAddr;
+
 	KeySet * ksPtr = dest;
 	char * metaKsPtr = (char *) ksPtr + SIZEOF_KEYSET; // meta keysets directly after the original keyset
 	char * ksArrayPtr = (((char *) ksPtr) + (SIZEOF_KEYSET * mmapHeader->numKeySets));
@@ -331,21 +333,15 @@ static void writeKeySet (DestType destType ELEKTRA_UNUSED, MmapHeader * mmapHead
 
 
 	// first write the meta keys into place
-	ELEKTRA_LOG_WARNING ("writing META keys");
 	Key * mmapMetaKey;
 	Key * curMeta;
 	void * metaKeyNamePtr;
 	void * metaKeyValuePtr;
 	for (size_t i = 0; i < dynArray->size; ++i)
 	{
-		ELEKTRA_LOG_WARNING ("index: %zu", i);
 		curMeta = dynArray->keyArray[i]; // old key location
 		mmapMetaKey = (Key *) keyPtr;    // new key location
 		keyPtr += SIZEOF_KEY;
-
-		ELEKTRA_LOG_WARNING ("meta mmap location ptr: %p", (void *) mmapMetaKey);
-		ELEKTRA_LOG_WARNING ("meta old location ptr: %p", (void *) curMeta);
-		ELEKTRA_LOG_WARNING ("%p key: %s, string: %s", (void *) curMeta, keyName (curMeta), keyString (curMeta));
 
 		size_t keyNameSize = curMeta->keySize + curMeta->keyUSize;
 		size_t keyValueSize = curMeta->dataSize;
@@ -376,8 +372,22 @@ static void writeKeySet (DestType destType ELEKTRA_UNUSED, MmapHeader * mmapHead
 
 		// move Key itself
 		mmapMetaKey->flags = KEY_FLAG_MMAP_STRUCT | KEY_FLAG_MMAP_KEY | KEY_FLAG_MMAP_DATA;
-		mmapMetaKey->key = metaKeyNamePtr;
-		mmapMetaKey->data.v = metaKeyValuePtr;
+		if (destType == TYPE_MMAP && metaKeyNamePtr)
+		{
+			mmapMetaKey->key = ((char *) metaKeyNamePtr - mmapAddrInt);
+		}
+		else
+		{
+			mmapMetaKey->key = metaKeyNamePtr;
+		}
+		if (destType == TYPE_MMAP && metaKeyValuePtr)
+		{
+			mmapMetaKey->data.v = (void *) ((char *) metaKeyValuePtr - mmapAddrInt);
+		}
+		else
+		{
+			mmapMetaKey->data.v = metaKeyValuePtr;
+		}
 		mmapMetaKey->meta = 0;
 		mmapMetaKey->ksReference = 0;
 		mmapMetaKey->dataSize = curMeta->dataSize;
@@ -385,8 +395,6 @@ static void writeKeySet (DestType destType ELEKTRA_UNUSED, MmapHeader * mmapHead
 		mmapMetaKey->keyUSize = curMeta->keyUSize;
 
 		dynArray->mappedKeyArray[i] = mmapMetaKey;
-		ELEKTRA_LOG_WARNING ("NEW MMAP META KEY:");
-		m_output_key (mmapMetaKey);
 	}
 
 
@@ -433,7 +441,6 @@ static void writeKeySet (DestType destType ELEKTRA_UNUSED, MmapHeader * mmapHead
 		KeySet * newMeta = 0;
 		if (oldMeta)
 		{
-			ELEKTRA_LOG_WARNING ("this key has meta info");
 			newMeta = (KeySet *) metaKsPtr;
 			metaKsPtr += SIZEOF_KEYSET;
 
@@ -449,8 +456,14 @@ static void writeKeySet (DestType destType ELEKTRA_UNUSED, MmapHeader * mmapHead
 			{
 				// get address of mapped key and store it in the new array
 				mappedMetaKey = dynArray->mappedKeyArray[find ((Key *) metaKey, dynArray)];
-				ELEKTRA_LOG_WARNING ("mappedMetaKey: %p", (void *) mappedMetaKey);
-				newMeta->array[metaKeyIndex] = mappedMetaKey;
+				if (destType == TYPE_MMAP)
+				{
+					newMeta->array[metaKeyIndex] = (Key *) ((char *) mappedMetaKey - mmapAddrInt);
+				}
+				else
+				{
+					newMeta->array[metaKeyIndex] = mappedMetaKey;
+				}
 				if (mappedMetaKey->ksReference < SSIZE_MAX)
 				{
 					++(mappedMetaKey->ksReference);
@@ -458,29 +471,56 @@ static void writeKeySet (DestType destType ELEKTRA_UNUSED, MmapHeader * mmapHead
 				++metaKeyIndex;
 			}
 			newMeta->array[oldMeta->size] = 0;
+			if (destType == TYPE_MMAP)
+			{
+				newMeta->array = (Key **) ((char *) newMeta->array - mmapAddrInt);
+			}
 			newMeta->alloc = oldMeta->alloc;
 			newMeta->size = oldMeta->size;
 			newMeta->cursor = 0;
 			newMeta->current = 0;
 		}
-		ELEKTRA_LOG_WARNING ("INSERT META INTO REAL KEY, HERE IS THE META KS:");
-		m_output_keyset (newMeta);
-
 
 		// move Key itself
 		mmapKey->flags = KEY_FLAG_MMAP_STRUCT | KEY_FLAG_MMAP_KEY | KEY_FLAG_MMAP_DATA;
-		mmapKey->key = keyNamePtr;
+		if (destType == TYPE_MMAP && keyNamePtr)
+		{
+			mmapKey->key = ((char *) keyNamePtr - mmapAddrInt);
+		}
+		else
+		{
+			mmapKey->key = keyNamePtr;
+		}
 		mmapKey->keySize = cur->keySize;
 		mmapKey->keyUSize = cur->keyUSize;
-		mmapKey->data.v = keyValuePtr;
+		if (destType == TYPE_MMAP && keyValuePtr)
+		{
+			mmapKey->data.v = (void *) ((char *) keyValuePtr - mmapAddrInt);
+		}
+		else
+		{
+			mmapKey->data.v = keyValuePtr;
+		}
 		mmapKey->dataSize = cur->dataSize;
-		mmapKey->meta = newMeta;
+		if (destType == TYPE_MMAP && newMeta)
+		{
+			mmapKey->meta = (KeySet *) ((char *) newMeta - mmapAddrInt);
+		}
+		else
+		{
+			mmapKey->meta = newMeta;
+		}
 		mmapKey->ksReference = 1;
 
-		ELEKTRA_LOG_WARNING ("wrote new Key and meta KS is at: %p", (void *) newMeta);
-
 		// write the Key pointer into the KeySet array
-		((Key **) ksArrayPtr)[keyIndex] = mmapKey;
+		if (destType == TYPE_MMAP)
+		{
+			((Key **) ksArrayPtr)[keyIndex] = (Key *) ((char *) mmapKey - mmapAddrInt);
+		}
+		else
+		{
+			((Key **) ksArrayPtr)[keyIndex] = mmapKey;
+		}
 
 		++keyIndex;
 	}
@@ -488,6 +528,7 @@ static void writeKeySet (DestType destType ELEKTRA_UNUSED, MmapHeader * mmapHead
 	ksPtr->flags = KS_FLAG_MMAP_STRUCT | KS_FLAG_MMAP_ARRAY;
 	ksPtr->array = (Key **) ksArrayPtrOrig;
 	ksPtr->array[keySet->size] = 0;
+	if (destType == TYPE_MMAP) ksPtr->array = (Key **) ((char *) ksPtr->array - mmapAddrInt);
 	ksPtr->alloc = keySet->alloc;
 	ksPtr->size = keySet->size;
 	ksPtr->cursor = 0;
@@ -501,6 +542,7 @@ static void ksWrite (DestType destType, char * dest, KeySet * keySet, MmapHeader
 	//		* memcpy () to continuous region and then fwrite () only once
 	//		* use mmap to write to temp file and msync () after all data is written, then rename file
 	mmapHeader->destAddr = dest;
+	size_t mmapAddrInt = (size_t) mmapHeader->destAddr;
 
 	KeySet * ksPtr;
 	if (destType == TYPE_MMAP)
@@ -518,6 +560,7 @@ static void ksWrite (DestType destType, char * dest, KeySet * keySet, MmapHeader
 		ksPtr->flags = KS_FLAG_MMAP_STRUCT | KS_FLAG_MMAP_ARRAY;
 		ksPtr->array = (Key **) ksArrayPtr;
 		ksPtr->array[0] = 0;
+		if (destType == TYPE_MMAP) ksPtr->array = (Key **) (ksArrayPtr - mmapAddrInt);
 		ksPtr->alloc = keySet->alloc;
 		ksPtr->size = 0;
 		ksPtr->cursor = 0;
@@ -587,7 +630,7 @@ static void updatePointers (DestType destType, MmapHeader * mmapHeader, char * d
 	}
 	else
 	{
-		ksPtr = dest;
+		ksPtr = dest - sourceInt + destInt;
 	}
 
 	char * ksArrayPtr = ksPtr + SIZEOF_KEYSET * mmapHeader->numKeySets;
@@ -600,12 +643,27 @@ static void updatePointers (DestType destType, MmapHeader * mmapHeader, char * d
 		ksPtr += SIZEOF_KEYSET;
 		if (ks->array)
 		{
-			ks->array = (Key **) ((char *) ks->array - sourceInt + destInt);
+			if (destType == TYPE_MMAP)
+			{
+				ks->array = (Key **) ((char *) ks->array + destInt);
+			}
+			else
+			{
+				ks->array = (Key **) ((char *) ks->array - sourceInt + destInt);
+			}
+
 			for (size_t j = 0; j < ks->size; ++j)
 			{
 				if (ks->array[j])
 				{
-					ks->array[j] = (Key *) ((char *) (ks->array[j]) - sourceInt + destInt);
+					if (destType == TYPE_MMAP)
+					{
+						ks->array[j] = (Key *) ((char *) (ks->array[j]) + destInt);
+					}
+					else
+					{
+						ks->array[j] = (Key *) ((char *) (ks->array[j]) - sourceInt + destInt);
+					}
 				}
 			}
 		}
@@ -618,15 +676,36 @@ static void updatePointers (DestType destType, MmapHeader * mmapHeader, char * d
 		keyPtr += SIZEOF_KEY;
 		if (key->data.v)
 		{
-			key->data.v = (void *) ((char *) (key->data.v) - sourceInt + destInt);
+			if (destType == TYPE_MMAP)
+			{
+				key->data.v = (void *) ((char *) (key->data.v) + destInt);
+			}
+			else
+			{
+				key->data.v = (void *) ((char *) (key->data.v) - sourceInt + destInt);
+			}
 		}
 		if (key->key)
 		{
-			key->key = ((char *) (key->key) - sourceInt + destInt);
+			if (destType == TYPE_MMAP)
+			{
+				key->key = ((char *) (key->key) + destInt);
+			}
+			else
+			{
+				key->key = ((char *) (key->key) - sourceInt + destInt);
+			}
 		}
 		if (key->meta)
 		{
-			key->meta = (KeySet *) ((char *) (key->meta) - sourceInt + destInt);
+			if (destType == TYPE_MMAP)
+			{
+				key->meta = (KeySet *) ((char *) (key->meta) + destInt);
+			}
+			else
+			{
+				key->meta = (KeySet *) ((char *) (key->meta) - sourceInt + destInt);
+			}
 		}
 	}
 }
@@ -799,9 +878,6 @@ int elektraMmapstorageGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 	ksAppendKey (mappedFiles, found);
 	elektraPluginSetData (handle, mappedFiles);
 	m_output_key (found);
-
-	ELEKTRA_LOG_WARNING ("returned keyset:");
-	m_output_keyset (returned);
 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
