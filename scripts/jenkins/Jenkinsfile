@@ -261,7 +261,7 @@ def dockerInit() {
       "web-base", this.&idHomepage,
       ".",
       "./scripts/docker/webui/base/Dockerfile",
-      false
+      true
     )
 
     /* Image building elektrad */
