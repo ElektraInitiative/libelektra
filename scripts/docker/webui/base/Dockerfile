@@ -1,0 +1,23 @@
+# base image for elektra web, all other images build upon this (builds elektra with `yajl` and `kdb`)
+
+FROM ubuntu:16.04
+
+# elektra deps
+RUN apt-get update -y && apt-get install -y cmake git build-essential libyajl-dev curl nodejs-legacy npm
+
+# elektra web deps
+RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
+RUN apt-get install -y nodejs
+
+# pull latest libelektra
+RUN mkdir -p /home/elektra
+WORKDIR /home/elektra/libelektra
+ADD . /home/elektra/libelektra/
+
+# build & install libelektra
+RUN mkdir /home/elektra/libelektra/build
+WORKDIR /home/elektra/libelektra/build
+RUN cmake .. -DTOOLS="kdb;web" && make && make install
+
+# prepare user and home dir
+RUN groupadd -r elektra && useradd --no-log-init -r -g elektra elektra && chown -R elektra:elektra /home/elektra

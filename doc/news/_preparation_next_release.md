@@ -103,7 +103,7 @@ The new release of Elektra Web features many UX improvements from the usability 
 
 [![Elektra Web 1.6 video](https://img.youtube.com/vi/lLg9sk6Hx-E/0.jpg)](https://www.youtube.com/watch?v=lLg9sk6Hx-E)
 
-Try it out now on: http://webui.libelektra.org:33334/
+Try it out now on: http://webdemo.libelektra.org/
 
 1.5 changelog:
 
@@ -112,6 +112,7 @@ Try it out now on: http://webui.libelektra.org:33334/
 - added "create array" button to easily create arrays
 - removed confirmation dialog before deletion (undo can be used instead)
 - created a docker image: `elektra/web`
+- implemented auto-deployment of webdemo.libelektra.org
 - small fixes:
   - updated visibility levels
   - removed "done" button in main view
@@ -128,6 +129,8 @@ Try it out now on: http://webui.libelektra.org:33334/
 - implement drag & copy by holding the Ctrl or Alt key
 - add button to show error details
 - allow deleting all keys in a namespace
+
+Thanks to Daniel Bugl.
 
 
 ## Plugins

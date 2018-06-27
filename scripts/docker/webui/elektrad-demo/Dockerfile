@@ -1,6 +1,7 @@
 # same as `elektrad`, but with a KDB config set up (for demo)
 
-FROM elektra/web-base:latest
+ARG BASE_IMG
+FROM $BASE_IMG
 
 WORKDIR /home/elektra
 
@@ -9,12 +10,16 @@ WORKDIR /home/elektra
 # mount copy of /etc/hosts to user/hosts
 
 # mount as root user
-RUN kdb mount --with-recommends hosts user/hosts hosts
+RUN kdb mount --with-recommends hosts user/hosts hosts && \
+    kdb mount /etc/networks system/networks hosts && \
+    kdb mount /etc/ssh/ssh_config system/ssh line && \
+    kdb mount /etc/ldap/ldap.conf system/ldap line && \
+    kdb mount /var/lib/dpkg/available system/dpkg/available dpkg && \
+    kdb mount /var/lib/dpkg/status system/dpkg/status dpkg
 
 # then switch to elektra user
 USER elektra
-RUN mkdir /home/elektra/.config
-RUN cp /etc/hosts /home/elektra/.config/hosts
+RUN mkdir /home/elektra/.config && cp /etc/hosts /home/elektra/.config/hosts
 
 # create user/app structure
 COPY --chown=elektra:elektra demo.kdb /home/elektra/

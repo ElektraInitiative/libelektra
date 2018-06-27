@@ -152,6 +152,10 @@ maybeStage("Deploy Homepage", isMaster()) {
   deployHomepage()
 }
 
+maybeStage("Deploy Web UI", isMaster()) {
+  deployWebUI()
+}
+
 /*****************************************************************************
  * Stage Generators
  *****************************************************************************/
@@ -256,6 +260,30 @@ def dockerInit() {
       "./scripts/docker/homepage/backend/Dockerfile",
       false
     )
+
+    /* Image building elektra web base image */
+    DOCKER_IMAGES.webui_base = createDockerImageDesc(
+      "web-base", this.&idHomepage,
+      ".",
+      "./scripts/docker/webui/base/Dockerfile",
+      isMaster()
+    )
+
+    /* Image building elektrad */
+    DOCKER_IMAGES.webui_elektrad = createDockerImageDesc(
+      "elektrad-demo", this.&idHomepage,
+      "./scripts/docker/webui/elektrad-demo/",
+      "./scripts/docker/webui/elektrad-demo/Dockerfile",
+      false
+    )
+
+    /* Image building webd */
+    DOCKER_IMAGES.webui_webd = createDockerImageDesc(
+      "webd-demo", this.&idHomepage,
+      "./scripts/docker/webui/webd-demo/",
+      "./scripts/docker/webui/webd-demo/Dockerfile",
+      false
+    )
   }
 }
 
@@ -330,6 +358,7 @@ def buildImageStage(image) {
 --build-arg JENKINS_GROUPID=${gid} \
 --build-arg JENKINS_USERID=${uid} \
 --build-arg PARALLEL=${cpus} \
+--build-arg BASE_IMG=${DOCKER_IMAGES.webui_base.id} \
 -f ${image.file} ${image.context}"""
           )
           i.push()
@@ -812,6 +841,7 @@ def generateArtifactStages() {
   def tasks = [:]
   tasks << buildPackageDebianStretch()
   tasks << buildHomepage()
+  tasks << buildWebUI()
   return tasks
 }
 
@@ -859,35 +889,20 @@ def buildPackageDebianStretch() {
   }]
 }
 
-def deployHomepage() {
+def deployDockerContainer(name, imageDesc, hostName) {
   node("frontend") {
     docker.withRegistry("https://${REGISTRY}",
                         'docker-hub-elektra-jenkins') {
-      def backendName = "elektra-backend"
-      def frontendName = "elektra-frontend"
-      def backend = docker.image(DOCKER_IMAGES.homepage_backend.id)
-      def frontend = docker.image(DOCKER_IMAGES.homepage_frontend.id)
-      backend.pull()
-      frontend.pull()
+      def img = docker.image(imageDesc.id)
+      img.pull()
 
-      sh "docker stop -t 5 ${backendName} || /bin/true"
-      sh "docker rm ${backendName} || /bin/true"
-      backend.run("""\
-        -e VIRTUAL_HOST=restapi.libelektra.org \
-        -e LETSENCRYPT_HOST=restapi.libelektra.org \
+      sh "docker stop -t 5 ${name} || /bin/true"
+      sh "docker rm ${name} || /bin/true"
+      img.run("""\
+        -e VIRTUAL_HOST=${hostName} \
+        -e LETSENCRYPT_HOST=${hostName} \
         -e LETSENCRYPT_EMAIL=jenkins@hub.libelektra.org \
-        --name ${backendName} \
-        --network=frontend_default \
-        --restart=always"""
-      )
-
-      sh "docker stop -t 5 ${frontendName} || /bin/true"
-      sh "docker rm ${frontendName} || /bin/true"
-      frontend.run("""\
-        -e VIRTUAL_HOST=www.libelektra.org \
-        -e LETSENCRYPT_HOST=www.libelektra.org \
-        -e LETSENCRYPT_EMAIL=jenkins@hub.libelektra.org \
-        --name ${frontendName} \
+        --name ${name} \
         --network=frontend_default \
         --restart=always"""
       )
@@ -895,11 +910,44 @@ def deployHomepage() {
   }
 }
 
+def deployHomepage() {
+  deployDockerContainer(
+    "elektra-backend",
+    DOCKER_IMAGES.homepage_backend,
+    "restapi.libelektra.org"
+  )
+  deployDockerContainer(
+    "elektra-frontend",
+    DOCKER_IMAGES.homepage_frontend,
+    "www.libelektra.org"
+  )
+}
+
 def buildHomepage() {
   def homepageTasks = [:]
   homepageTasks << buildImageStage(DOCKER_IMAGES.homepage_frontend)
   homepageTasks << buildImageStage(DOCKER_IMAGES.homepage_backend)
   return homepageTasks
+}
+
+def deployWebUI() {
+  deployDockerContainer(
+    "elektrad",
+    DOCKER_IMAGES.webui_elektrad,
+    "elektrad-demo.libelektra.org"
+  )
+  deployDockerContainer(
+    "webd",
+    DOCKER_IMAGES.webui_webd,
+    "webdemo.libelektra.org"
+  )
+}
+
+def buildWebUI() {
+  def webuiTasks = [:]
+  webuiTasks << buildImageStage(DOCKER_IMAGES.webui_elektrad)
+  webuiTasks << buildImageStage(DOCKER_IMAGES.webui_webd)
+  return webuiTasks
 }
 
 /*****************************************************************************
