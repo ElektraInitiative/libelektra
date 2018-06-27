@@ -889,33 +889,20 @@ def buildPackageDebianStretch() {
   }]
 }
 
-def deployDockerContainer(backendName, frontendName, backendImageId, frontendImageId, backendHost, frontendHost) {
+def deployDockerContainer(name, imageId, host) {
   node("frontend") {
     docker.withRegistry("https://${REGISTRY}",
                         'docker-hub-elektra-jenkins') {
-      def backend = docker.image(backendImageId)
-      def frontend = docker.image(frontendImageId)
-      backend.pull()
-      frontend.pull()
+      def img = docker.image(imageId)
+      img.pull()
 
-      sh "docker stop -t 5 ${backendName} || /bin/true"
-      sh "docker rm ${backendName} || /bin/true"
+      sh "docker stop -t 5 ${name} || /bin/true"
+      sh "docker rm ${name} || /bin/true"
       backend.run("""\
-        -e VIRTUAL_HOST=${backendHost} \
-        -e LETSENCRYPT_HOST=${backendHost} \
+        -e VIRTUAL_HOST=${host} \
+        -e LETSENCRYPT_HOST=${host} \
         -e LETSENCRYPT_EMAIL=jenkins@hub.libelektra.org \
-        --name ${backendName} \
-        --network=frontend_default \
-        --restart=always"""
-      )
-
-      sh "docker stop -t 5 ${frontendName} || /bin/true"
-      sh "docker rm ${frontendName} || /bin/true"
-      frontend.run("""\
-        -e VIRTUAL_HOST=${frontendHost} \
-        -e LETSENCRYPT_HOST=${frontendHost} \
-        -e LETSENCRYPT_EMAIL=jenkins@hub.libelektra.org \
-        --name ${frontendName} \
+        --name ${name} \
         --network=frontend_default \
         --restart=always"""
       )
@@ -925,9 +912,14 @@ def deployDockerContainer(backendName, frontendName, backendImageId, frontendIma
 
 def deployHomepage() {
   deployDockerContainer(
-    "elektra-backend", "elektra-frontend",
-    DOCKER_IMAGES.homepage_backend.id, DOCKER_IMAGES.homepage_frontend.id,
-    "restapi.libelektra.org", "www.libelektra.org"
+    "elektra-backend",
+    DOCKER_IMAGES.homepage_backend.id,
+    "restapi.libelektra.org"
+  )
+  deployDockerContainer(
+    "elektra-frontend",
+    DOCKER_IMAGES.homepage_frontend.id,
+    "www.libelektra.org"
   )
 }
 
@@ -940,15 +932,19 @@ def buildHomepage() {
 
 def deployWebUI() {
   deployDockerContainer(
-    "elektrad", "webd",
-    DOCKER_IMAGES.webui_elektrad.id, DOCKER_IMAGES.webui_webd.id,
-    "elektrad-demo.libelektra.org", "webdemo.libelektra.org"
+    "elektrad",
+    DOCKER_IMAGES.webui_elektrad.id,
+    "elektrad-demo.libelektra.org"
+  )
+  deployDockerContainer(
+    "webd",
+    DOCKER_IMAGES.webui_webd.id,
+    "webdemo.libelektra.org"
   )
 }
 
 def buildWebUI() {
   def webuiTasks = [:]
-  webuiTasks << buildImageStage(DOCKER_IMAGES.webui_base)
   webuiTasks << buildImageStage(DOCKER_IMAGES.webui_elektrad)
   webuiTasks << buildImageStage(DOCKER_IMAGES.webui_webd)
   return webuiTasks
