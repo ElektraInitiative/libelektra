@@ -898,7 +898,7 @@ def deployDockerContainer(name, imageId, host) {
 
       sh "docker stop -t 5 ${name} || /bin/true"
       sh "docker rm ${name} || /bin/true"
-      backend.run("""\
+      img.run("""\
         -e VIRTUAL_HOST=${host} \
         -e LETSENCRYPT_HOST=${host} \
         -e LETSENCRYPT_EMAIL=jenkins@hub.libelektra.org \
