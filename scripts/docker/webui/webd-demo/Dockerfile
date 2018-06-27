@@ -1,6 +1,7 @@
 # same as `webd`, but with 2 instances already created, they both connect to http://elektrad-demo.libelektra.org with different visibility levels (for demo)
 
-FROM elektra/web-base:latest
+ARG BASE_IMG
+FROM $BASE_IMG
 
 WORKDIR /home/elektra
 USER elektra
