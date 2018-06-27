@@ -19,8 +19,7 @@ RUN kdb mount --with-recommends hosts user/hosts hosts && \
 
 # then switch to elektra user
 USER elektra
-RUN mkdir /home/elektra/.config
-RUN cp /etc/hosts /home/elektra/.config/hosts
+RUN mkdir /home/elektra/.config && cp /etc/hosts /home/elektra/.config/hosts
 
 # create user/app structure
 COPY --chown=elektra:elektra demo.kdb /home/elektra/
