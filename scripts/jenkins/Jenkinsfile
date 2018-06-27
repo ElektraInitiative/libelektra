@@ -258,7 +258,7 @@ def dockerInit() {
 
     /* Image building elektra web base image */
     DOCKER_IMAGES.webui_base = createDockerImageDesc(
-      "web-base", this.&idHomepage,
+      "elektra/web-base", this.&idHomepage,
       ".",
       "./scripts/docker/webui/base/Dockerfile",
       true
@@ -266,7 +266,7 @@ def dockerInit() {
 
     /* Image building elektrad */
     DOCKER_IMAGES.webui_elektrad = createDockerImageDesc(
-      "elektrad-demo", this.&idHomepage,
+      "elektra/elektrad-demo", this.&idHomepage,
       "./scripts/docker/webui/elektrad-demo/",
       "./scripts/docker/webui/elektrad-demo/Dockerfile",
       false
@@ -274,7 +274,7 @@ def dockerInit() {
 
     /* Image building webd */
     DOCKER_IMAGES.webui_webd = createDockerImageDesc(
-      "webd-demo", this.&idHomepage,
+      "elektra/webd-demo", this.&idHomepage,
       "./scripts/docker/webui/webd-demo/",
       "./scripts/docker/webui/webd-demo/Dockerfile",
       false
@@ -353,7 +353,6 @@ def buildImageStage(image) {
 --build-arg JENKINS_GROUPID=${gid} \
 --build-arg JENKINS_USERID=${uid} \
 --build-arg PARALLEL=${cpus} \
---build-arg BASE_IMG=${DOCKER_IMAGES.webui_base.id} \
 -f ${image.file} ${image.context}"""
           )
           i.push()
