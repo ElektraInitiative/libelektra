@@ -9,7 +9,17 @@ RUN apt-get update -y && apt-get install -y cmake git build-essential libyajl-de
 RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
 RUN apt-get install -y nodejs
 
-# pull latest libelektra
+# Google Test
+ENV GTEST_ROOT=/opt/gtest
+ARG GTEST_VER=4e4df226fc197c0dda6e37f5c8c3845ca1e73a49
+RUN mkdir -p ${GTEST_ROOT} \
+    && cd /tmp \
+    && curl -o gtest.tar.gz \
+      -L https://github.com/google/googletest/archive/${GTEST_VER}.tar.gz \
+    && tar -zxvf gtest.tar.gz --strip-components=1 -C ${GTEST_ROOT} \
+    && rm gtest.tar.gz
+
+# add elektra
 RUN mkdir -p /home/elektra
 WORKDIR /home/elektra/libelektra
 ADD . /home/elektra/libelektra/
