@@ -27,7 +27,7 @@ ADD . /home/elektra/libelektra/
 # build & install libelektra
 RUN mkdir /home/elektra/libelektra/build
 WORKDIR /home/elektra/libelektra/build
-RUN cmake .. -DTOOLS="kdb;web" && make && make install
+RUN cmake .. -DTOOLS="kdb;web" && make -j ${PARALLEL} && make install
 
 # prepare user and home dir
 RUN groupadd -r elektra && useradd --no-log-init -r -g elektra elektra && chown -R elektra:elektra /home/elektra
