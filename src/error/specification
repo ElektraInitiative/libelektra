@@ -1230,3 +1230,17 @@ severity:warning
 ingroup:plugin
 module:zeromqsend
 macro:ZEROMQSEND_ERROR
+
+number:197
+description:GPGME reported an error.
+severity:error
+ingroup:plugin
+module:gpgme
+macro:GPGME
+
+number:198
+description:Invalid configuration.
+severity:error
+ingroup:plugin
+module:gpgme
+macro:GPGME_CONFIG

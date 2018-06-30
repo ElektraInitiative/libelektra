@@ -30,7 +30,6 @@ static void init_gpgme (void)
 	gpgme_error_t err;
 
 	gpgme_check_version (NULL);
-	setlocale (LC_ALL, "");
 	gpgme_set_locale (NULL, LC_CTYPE, setlocale (LC_CTYPE, NULL));
 #ifndef HAVE_W32_SYSTEM
 	gpgme_set_locale (NULL, LC_MESSAGES, setlocale (LC_MESSAGES, NULL));
