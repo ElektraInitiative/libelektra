@@ -1237,3 +1237,17 @@ severity:warning
 ingroup:plugin
 module:process
 macro:PROCESS_INITIALIZATION
+
+number: 198
+description:GPGME reported an error.
+severity:error
+ingroup:plugin
+module:gpgme
+macro:GPGME
+
+number:199
+description:Invalid configuration.
+severity:error
+ingroup:plugin
+module:gpgme
+macro:GPGME_CONFIG
