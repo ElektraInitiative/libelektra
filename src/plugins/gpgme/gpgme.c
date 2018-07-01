@@ -110,6 +110,9 @@ static int keylistAdd (keylist_t * list, gpgme_key_t key)
 		list->iterator = list->head;
 	}
 	list->size++;
+	// instruct gpgme to not release the key handle until we are done with it
+	// NOTE do not forget to invoke gpgme_key_unref when releasing the key list
+	gpgme_key_ref (key);
 	return 1; // success
 }
 
@@ -188,9 +191,6 @@ static gpgme_key_t * extractRecipientFromPluginConfig (KeySet * config, Key * er
 
 		if (key)
 		{
-			// TODO remove debug fuckup
-			fprintf (stdout, "extracted key %p sizeof %lu\n", (void *) key, sizeof (gpgme_key_t));
-
 			if (!keylistAdd (&list, key))
 			{
 				ELEKTRA_SET_ERROR (87, errorKey, "Memory allocation failed");
@@ -221,9 +221,6 @@ static gpgme_key_t * extractRecipientFromPluginConfig (KeySet * config, Key * er
 
 				if (key)
 				{
-					// TODO remove debug fuckup
-					fprintf (stdout, "extracted key %p sizeof %lu\n", (void *) key, sizeof (gpgme_key_t));
-
 					if (!keylistAdd (&list, key))
 					{
 						ELEKTRA_SET_ERROR (87, errorKey, "Memory allocation failed");
@@ -324,8 +321,6 @@ static int gpgEncrypt (Plugin * handle, KeySet * data, Key * errorKey)
 	gpgme_ctx_t ctx;
 	gpgme_error_t err;
 
-	fprintf (stdout, "encrypt\n"); // TODO remove debug stuff
-
 	err = gpgme_new (&ctx);
 	if (err)
 	{
@@ -353,13 +348,8 @@ static int gpgEncrypt (Plugin * handle, KeySet * data, Key * errorKey)
 		gpgme_data_t ciphertext;
 		gpgme_encrypt_result_t result;
 
-		fprintf (stdout, "checking %s\n", keyName (k)); // TODO remove debug stuff
-
 		if (!isMarkedForEncryption (k) || isSpecNamespace (k))
 		{
-			// TODO remove debugging stuff
-			fprintf (stdout, "%s spec namespace? %d\n", keyName (k), isSpecNamespace (k));
-			fprintf (stdout, "%s marked for enc? %d\n", keyName (k), isMarkedForEncryption (k));
 			continue;
 		}
 
@@ -381,18 +371,6 @@ static int gpgEncrypt (Plugin * handle, KeySet * data, Key * errorKey)
 			goto cleanup;
 		}
 
-		//////////////////////////////////////////////////////////////////////////////////////
-		fprintf (stdout, "gonna encrypt %s\n", keyName (k)); // TODO remove debug stuff
-		int i = 0;
-		gpgme_key_t x = recipients[i++];
-		while (x)
-		{
-			fprintf (stdout, "will use address %p\n", (void *) x);
-			fprintf (stdout, "using key: %s\n", x->fpr);
-			x = recipients[i++];
-		}
-		//////////////////////////////////////////////////////////////////////////////////////
-
 		err = gpgme_op_encrypt (ctx, recipients, GPGME_ENCRYPT_NO_ENCRYPT_TO, input, ciphertext);
 		if (err)
 		{
@@ -409,8 +387,6 @@ static int gpgEncrypt (Plugin * handle, KeySet * data, Key * errorKey)
 			// TODO add warning to error key
 		}
 
-		fprintf (stdout, "gonna transfer the results to %s\n", keyName (k)); // TODO remove debug stuff
-
 		// update Elektra key to encrypted value
 		if (transferGpgmeDataToElektraKey (ciphertext, k, errorKey) != 1)
 		{
@@ -420,8 +396,6 @@ static int gpgEncrypt (Plugin * handle, KeySet * data, Key * errorKey)
 			gpgme_data_release (input);
 			goto cleanup;
 		}
-
-		fprintf (stdout, "key value = %s\n", keyString (k)); // TODO remove debugging stuff
 
 		gpgme_data_release (ciphertext);
 		gpgme_data_release (input);
@@ -453,8 +427,6 @@ static int gpgDecrypt (ELEKTRA_UNUSED Plugin * handle, KeySet * data, ELEKTRA_UN
 
 	gpgme_ctx_t ctx;
 	gpgme_error_t err;
-
-	fprintf (stdout, "decrypt\n"); // TODO remove debug stuff
 
 	err = gpgme_new (&ctx);
 	if (err)
