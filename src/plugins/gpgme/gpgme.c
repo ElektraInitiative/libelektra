@@ -160,6 +160,23 @@ static void keylistRelease (keylist_t * list)
 	list->size = 0;
 }
 
+/*
+ * @brief invoke gpgme_key_unref on all keys and free the array.
+ * @param recipients the array to be released.
+ */
+static void freeRecipientArray (gpgme_key_t * recipients)
+{
+	unsigned long index = 0;
+	if (recipients)
+	{
+		while (recipients[index])
+		{
+			gpgme_key_unref (recipients[index++]);
+		}
+		elektraFree (recipients);
+	}
+}
+
 /**
  * @brief extract all GPG recipients that shall be used for encryption.
  * @param config holds the plugin configuration
@@ -402,10 +419,7 @@ static int gpgEncrypt (Plugin * handle, KeySet * data, Key * errorKey)
 	}
 
 cleanup:
-	if (recipients)
-	{
-		elektraFree (recipients);
-	}
+	freeRecipientArray (recipients);
 	gpgme_release (ctx);
 	return returnValue;
 }
@@ -558,12 +572,13 @@ int elektraGpgmeCheckconf (Key * errorKey, KeySet * conf)
 
 	if (recipients)
 	{
-		elektraFree (recipients);
+		freeRecipientArray (recipients);
 	}
 	else
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_GPGME_CONFIG, errorKey,
-				   "No valid recipients were specified. Please provide at least one valid GPG key.");
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_GPGME_CONFIG, errorKey,
+				    "No valid recipients were specified. Please provide at least one valid GPG key as %s.",
+				    ELEKTRA_RECIPIENT_KEY);
 		return -1; // failure
 	}
 	return 1; // success
