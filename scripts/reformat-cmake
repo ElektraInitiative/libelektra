@@ -13,7 +13,7 @@ CMAKE_FORMAT=$(which cmake-format)
 cd "$SOURCE"
 
 if [ -z "${CMAKE_FORMAT}" ]; then
-	2>&1 printf 'Please install `cmake-format`'
+	2>&1 printf 'Please install `cmake-format`\n'
 	exit 0
 fi
 
