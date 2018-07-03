@@ -10,4 +10,4 @@ fi
 
 cd "$SOURCE"
 
-$($CLANG_TIDY -fix-errors -checks="readability-braces-around-statements"  `find . -name '*.[ch]' -or -name '*.[ch]pp' -or -name '*.[ch].in' | egrep -v "^(./src/tools/gen|./tests/gtest-1.7.0)"`)
+$($CLANG_TIDY -fix-errors -checks="readability-braces-around-statements"  `find . -name '*.[ch]' -or -name '*.[ch]pp' -or -name '*.[ch].in' | egrep -v "^(./src/tools/gen)"`)
