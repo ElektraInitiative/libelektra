@@ -1001,7 +1001,7 @@ static void benchmarkMappingAllSeeds (char * name)
  *
  * n;ks;time
  *
- * The number of needed seeds for this benchmarks is: numberOfShapes * ( numberOfSeeds + nCount * ksPerN )
+ * The number of needed seeds for this benchmarks is: (numberOfShapes - 1) * ( numberOfSeeds + nCount * ksPerN )
  */
 
 /**
@@ -1124,9 +1124,13 @@ void benchmarkOPMPHMBuildTime (char * name)
 
 	printf ("Run Benchmark %s:\n", name);
 
-	// for all KeySet shapes
+	// for all KeySet shapes except 6
 	for (size_t shapeI = 0; shapeI < numberOfShapes; ++shapeI)
 	{
+		if (shapeI == 6)
+		{
+			continue;
+		}
 		// get seeds for mapping step in ksLookup (...)
 		for (size_t i = 0; i < numberOfSeeds; ++i)
 		{
@@ -1220,7 +1224,7 @@ void benchmarkOPMPHMBuildTime (char * name)
  *
  * n;search_1;search_2;...;search_(numberOfSearches)
  *
- * The number of needed seeds for this benchmarks is: numberOfShapes * nCount * ksPerN * (1  + searchesCount )
+ * The number of needed seeds for this benchmarks is: (numberOfShapes - 1) * nCount * ksPerN * (1  + searchesCount )
  */
 
 /**
@@ -1396,9 +1400,13 @@ static void benchmarkSearchTime (char * name, char * outFileName, option_t optio
 
 	printf ("Run Benchmark %s:\n", name);
 
-	// for all KeySet shapes
+	// for all KeySet shapes except 6
 	for (size_t shapeI = 0; shapeI < numberOfShapes; ++shapeI)
 	{
+		if (shapeI == 6)
+		{
+			continue;
+		}
 		KeySetShape * usedKeySetShape = &keySetShapes[shapeI];
 
 		// for all Ns
@@ -1502,7 +1510,7 @@ void benchmarkOPMPHMSearchTime (char * name)
  *
  * n;search_1;search_2;...;search_(numberOfSearches)
  *
- * The number of needed seeds for this benchmarks is: numberOfShapes * nCount * ksPerN * (1  + searchesCount )
+ * The number of needed seeds for this benchmarks is: (numberOfShapes - 1) * nCount * ksPerN * (1  + searchesCount )
  */
 
 static void benchmarkBinarySearchTime (char * name)
@@ -1524,7 +1532,7 @@ static void benchmarkBinarySearchTime (char * name)
  *
  * n;ks;load;time
  *
- * The number of needed seeds for this benchmarks is: numberOfShapesUsed * nCount * ksPerN
+ * The number of needed seeds for this benchmarks is: (numberOfShapes - 1) * nCount * ksPerN
  */
 
 // where does hsearch stores the strings??? no out of mem but speed loosing
@@ -1676,9 +1684,13 @@ void benchmarkHsearchBuildTime (char * name)
 
 	printf ("Run Benchmark %s:\n", name);
 
-	// for all KeySet shapes
+	// for all KeySet shapes except 6
 	for (size_t shapeI = 0; shapeI < numberOfShapes; ++shapeI)
 	{
+		if (shapeI == 6)
+		{
+			continue;
+		}
 		KeySetShape * usedKeySetShape = &keySetShapes[shapeI];
 		size_t strikes = 0;
 
@@ -1852,23 +1864,23 @@ int main (int argc, char ** argv)
 	char * benchmarkNameOpmphmBuildTime = "opmphmbuildtime";
 	benchmarks[5].name = benchmarkNameOpmphmBuildTime;
 	benchmarks[5].benchmarkF = benchmarkOPMPHMBuildTime;
-	benchmarks[5].numberOfSeedsNeeded = 2008;
+	benchmarks[5].numberOfSeedsNeeded = 1757;
 	// opmphmsearchtime
 	char * benchmarkNameOpmphmSearchTime = "opmphmsearchtime";
 	benchmarks[6].name = benchmarkNameOpmphmSearchTime;
 	benchmarks[6].benchmarkF = benchmarkOPMPHMSearchTime;
-	benchmarks[6].numberOfSeedsNeeded = 72800;
+	benchmarks[6].numberOfSeedsNeeded = 54600;
 	// binarysearchtime
 	char * benchmarkNameBinarySearchTime = "binarysearchtime";
 	benchmarks[7].name = benchmarkNameBinarySearchTime;
 	benchmarks[7].benchmarkF = benchmarkBinarySearchTime;
-	benchmarks[7].numberOfSeedsNeeded = 72800;
+	benchmarks[7].numberOfSeedsNeeded = 54600;
 #ifdef HAVE_HSEARCHR
 	// hsearchbuildtime
 	char * benchmarkNameHsearchBuildTime = "hsearchbuildtime";
 	benchmarks[benchmarksCount - 1].name = benchmarkNameHsearchBuildTime;
 	benchmarks[benchmarksCount - 1].benchmarkF = benchmarkHsearchBuildTime;
-	benchmarks[benchmarksCount - 1].numberOfSeedsNeeded = 800;
+	benchmarks[benchmarksCount - 1].numberOfSeedsNeeded = 1400;
 #endif
 
 	// run benchmark
