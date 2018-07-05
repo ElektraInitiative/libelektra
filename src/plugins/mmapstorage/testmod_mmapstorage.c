@@ -379,7 +379,7 @@ static void testDynArray1 (void)
 }
 #endif
 
-/* -- KeySet operation tests ------------------------------------------------------------------------------------------------------------ */
+/* -- KeySet API tests ------------------------------------------------------------------------------------------------------------------ */
 
 static void test_mmap_ksDupFun (const char * tmpFile, KeySet * copyFunction (const KeySet * source))
 {
@@ -696,7 +696,7 @@ static void test_mmap_ksLookupByName (const char * tmpFile, option_t options)
 	PLUGIN_CLOSE ();
 }
 
-/* -- Key operation tests --------------------------------------------------------------------------------------------------------------- */
+/* -- Key API tests --------------------------------------------------------------------------------------------------------------------- */
 
 static void test_mmap_keyFlags (const char * tmpFile)
 {
@@ -717,8 +717,202 @@ static void test_mmap_keyFlags (const char * tmpFile)
 	PLUGIN_CLOSE ();
 }
 
-/* -- Key name operation tests ---------------------------------------------------------------------------------------------------------- */
-/* -- Key value operation tests --------------------------------------------------------------------------------------------------------- */
+static void test_mmap_keyDup (const char * tmpFile)
+{
+	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("mmapstorage");
+
+	KeySet * ks = metaTestKeySet ();
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
+
+	Key * found = ksLookupByName (ks, "user/tests/mmapstorage/b", 0);
+	succeed_if (found, "did not find key");
+
+	Key * duplicate = keyDup (found);
+
+	// check that keyDup has not changed KeySet
+	KeySet * expected = metaTestKeySet ();
+	compare_keyset (ks, expected);
+
+	// check that KeySet is intact after deleting duplicate Key
+	keyDel (duplicate);
+	compare_keyset (ks, expected);
+
+	ksDel (expected);
+	keyDel (parentKey);
+	ksDel (ks);
+	PLUGIN_CLOSE ();
+}
+
+static void test_mmap_keyCopy_newKey (const char * tmpFile)
+{
+	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("mmapstorage");
+
+	KeySet * ks = metaTestKeySet ();
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
+
+	Key * found = ksLookupByName (ks, "user/tests/mmapstorage/b", 0);
+	succeed_if (found, "did not find key");
+
+	Key * copy = keyNew (0, KEY_END);
+	succeed_if (keyCopy (copy, found) != -1, "keyCopy failed");
+
+	compare_key (found, copy);
+
+	// check that keyCopy has not changed KeySet
+	KeySet * expected = metaTestKeySet ();
+	compare_keyset (ks, expected);
+
+	// check that KeySet is intact after deleting Key copy
+	keyDel (copy);
+	compare_keyset (ks, expected);
+
+	ksDel (expected);
+	keyDel (parentKey);
+	ksDel (ks);
+	PLUGIN_CLOSE ();
+}
+
+static void test_mmap_keyCopy_clearOverwriteKey (const char * tmpFile)
+{
+	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("mmapstorage");
+
+	KeySet * ks = metaTestKeySet ();
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
+
+	Key * toCopy = keyNew ("user/tests/mmapstorage/newnewkey", KEY_VALUE, "new key", KEY_END);
+
+	Key * found = ksLookupByName (ks, "user/tests/mmapstorage/b", 0);
+	succeed_if (found, "did not find key");
+
+	// overwrite Key in KeySet
+	succeed_if (keyCopy (found, 0) == 0, "keyCopy: clear destination failed");
+	succeed_if (keyCopy (found, toCopy) == 1, "keyCopy failed");
+	compare_key (found, toCopy);
+	keyDel (toCopy);
+
+	// write KeySet back
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
+
+	found = ksLookupByName (ks, "user/tests/mmapstorage/newnewkey", 0);
+	succeed_if (found, "did not find key");
+
+	keyDel (parentKey);
+	ksDel (ks);
+	PLUGIN_CLOSE ();
+}
+
+static void test_mmap_keyDel (const char * tmpFile)
+{
+	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("mmapstorage");
+
+	KeySet * ks = metaTestKeySet ();
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
+
+	Key * found = ksLookupByName (ks, "user/tests/mmapstorage/b", 0);
+	succeed_if (found, "did not find key");
+
+	succeed_if (keyDel (found) > 0, "Key was NULL or free()'d unexpectedly");
+
+	// check that keyDel has not changed KeySet
+	KeySet * expected = metaTestKeySet ();
+	compare_keyset (ks, expected);
+
+	ksDel (expected);
+	keyDel (parentKey);
+	ksDel (ks);
+	PLUGIN_CLOSE ();
+}
+
+static void test_mmap_keyClear (const char * tmpFile)
+{
+	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("mmapstorage");
+
+	KeySet * ks = metaTestKeySet ();
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
+
+	Key * found = ksLookupByName (ks, "user/tests/mmapstorage/a", 0);
+	succeed_if (found, "did not find key");
+
+	succeed_if (keyClear (found) == 0, "Key was NULL, keyClear failed");
+
+	keySetString (found, "new key value");
+
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
+
+	keyDel (parentKey);
+	ksDel (ks);
+	PLUGIN_CLOSE ();
+}
+
+/* -- Key name API tests ---------------------------------------------------------------------------------------------------------------- */
+
+static void test_mmap_keyName (const char * tmpFile)
+{
+	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("mmapstorage");
+
+	KeySet * ks = metaTestKeySet ();
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
+
+	const char * name = "user/tests/mmapstorage/a";
+	Key * found = ksLookupByName (ks, name, 0);
+	succeed_if (found, "did not find key");
+
+	ssize_t nameSize = keyGetNameSize (found);
+	succeed_if (elektraStrNCmp (name, keyName (found), nameSize) == 0, "wrong Key name");
+
+	keyDel (parentKey);
+	ksDel (ks);
+	PLUGIN_CLOSE ();
+}
+
+static void test_mmap_keySetName (const char * tmpFile)
+{
+	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("mmapstorage");
+
+	KeySet * ks = metaTestKeySet ();
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
+
+	Key * found = ksLookupByName (ks, "user/tests/mmapstorage/b", 0);
+	succeed_if (found, "did not find key");
+
+	Key * duplicate = keyDup (found);
+	keySetName (duplicate, "user/tests/mmapstorage/z");
+	keySetString (duplicate, "zzz");
+
+	KeySet * expected = metaTestKeySet ();
+	compare_keyset (ks, expected);
+
+	ksDel (expected);
+	keyDel (duplicate);
+	keyDel (parentKey);
+	ksDel (ks);
+	PLUGIN_CLOSE ();
+}
+
+/* -- Key value API tests --------------------------------------------------------------------------------------------------------------- */
 
 
 /* -- Main ------------------------------------------------------------------------------------------------------------------------------ */
@@ -807,6 +1001,28 @@ int main (int argc, char ** argv)
 	// Key API tests
 	clearStorage (tmpFile);
 	test_mmap_keyFlags (tmpFile);
+
+	clearStorage (tmpFile);
+	test_mmap_keyDup (tmpFile);
+
+	clearStorage (tmpFile);
+	test_mmap_keyCopy_newKey (tmpFile);
+
+	clearStorage (tmpFile);
+	test_mmap_keyCopy_clearOverwriteKey (tmpFile);
+
+	clearStorage (tmpFile);
+	test_mmap_keyDel (tmpFile);
+
+	clearStorage (tmpFile);
+	test_mmap_keyClear (tmpFile);
+
+	// Key Name tests
+	clearStorage (tmpFile);
+	test_mmap_keyName (tmpFile);
+
+	clearStorage (tmpFile);
+	test_mmap_keySetName (tmpFile);
 
 	printf ("\ntestmod_mmapstorage RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
