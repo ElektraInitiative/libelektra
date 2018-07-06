@@ -7,7 +7,7 @@
 -- 
 {-# LANGUAGE TypeInType, TypeFamilies, ConstraintKinds, UndecidableInstances #-}
 
-module Elektra.RegexType (RegexContains, RegexIntersection, RegexIntersects, Key (..)) where
+module Elektra.RegexType (RegexContains, RegexIntersection, RegexIntersects, Intersectable, Key (..), intersect) where
 
 import GHC.TypeLits
 import GHC.Exts (Constraint)
@@ -17,17 +17,19 @@ import GHC.Exts (Constraint)
 -- just contradicting RegexContains directly
 
 -- Is the regex a contained in regex b?
-type family RegexContains (a :: Symbol) (b :: Symbol) :: Constraint where
-    RegexContains a b = RegexContains' a b ~ 'True
-type family RegexContains' (a :: Symbol) (b :: Symbol) :: Bool
+type family RegexContains (a :: Symbol) (b :: Symbol) :: Constraint
 
 -- Can the two regexes be intersected together without becoming empty?
-type family RegexIntersects (a :: Symbol) (b :: Symbol) :: Constraint where
-    RegexIntersects a b = RegexIntersects' a b ~ 'True
-type family RegexIntersects' (a :: Symbol) (b :: Symbol) :: Bool
+type family RegexIntersects (a :: Symbol) (b :: Symbol) :: Constraint
+
+-- Is the given regex non empty?
+type family Intersectable (a :: Symbol) :: Constraint
+
+intersect :: Intersectable (RegexIntersection a b) => Key a -> Key b -> Key (RegexIntersection a b)
+intersect = undefined
 
 -- Calculate the regex that represents the intersection of the regexes a and b
 type family RegexIntersection (a :: Symbol) (b :: Symbol) :: Symbol
 
 -- A key which may hold a value
-newtype Key (a :: Symbol) = Key (Maybe String) deriving Show
+data Key (a :: Symbol) = Key deriving Show
