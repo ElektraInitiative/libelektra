@@ -1251,3 +1251,10 @@ severity:error
 ingroup:plugin
 module:gpgme
 macro:GPGME_CONFIG
+
+number:196
+description:The given GPG recipient is not valid.
+severity:warning
+ingroup:plugin
+module:gpgme
+macro:GPGME_INVALID_RECIPIENT

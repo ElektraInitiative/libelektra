@@ -18,6 +18,7 @@
 // plugin configuration
 #define ELEKTRA_SIGNATURE_KEY "/sign/key"
 #define ELEKTRA_RECIPIENT_KEY "/encrypt/key"
+#define ELEKTRA_GPGME_CONFIG_TEXTMODE "/gpgme/textmode"
 
 // kdb functions
 int elektraGpgmeOpen (Plugin * handle, Key * errorKey);

@@ -66,6 +66,24 @@ static inline int isSpecNamespace (const Key * k)
 }
 
 /**
+ * @brief lookup if the text mode is disabled in the plugin config.
+ * Text mode is enabled per default.
+ * @param conf KeySet holding the plugin configuration.
+ * @retval 0 text mode is not enabled
+ * @retval 1 text mode is enabled
+ */
+static int isTextMode (KeySet * conf)
+{
+	Key * k = ksLookupByName (conf, ELEKTRA_GPGME_CONFIG_TEXTMODE, 0);
+	if (k && !strcmp (keyString (k), "0"))
+	{
+		return 0;
+	}
+	return 1;
+}
+
+
+/**
  * @brief initializes the internal key list
  * @param list the list
  */
@@ -345,10 +363,13 @@ static int gpgEncrypt (Plugin * handle, KeySet * data, Key * errorKey)
 		return -1; // at this point nothing has been initialized
 	}
 
-	// TODO make it possible to enable/disable text mode
-	gpgme_set_armor (ctx, 1);
-
 	KeySet * pluginConfig = elektraPluginGetConfig (handle);
+
+	if (isTextMode (pluginConfig))
+	{
+		gpgme_set_armor (ctx, 1);
+	}
+
 	recipients = extractRecipientFromPluginConfig (pluginConfig, errorKey, ctx);
 	if (!recipients)
 	{
@@ -364,6 +385,7 @@ static int gpgEncrypt (Plugin * handle, KeySet * data, Key * errorKey)
 		gpgme_data_t input;
 		gpgme_data_t ciphertext;
 		gpgme_encrypt_result_t result;
+		gpgme_invalid_key_t invalidKey;
 
 		if (!isMarkedForEncryption (k) || isSpecNamespace (k))
 		{
@@ -399,9 +421,11 @@ static int gpgEncrypt (Plugin * handle, KeySet * data, Key * errorKey)
 		}
 
 		result = gpgme_op_encrypt_result (ctx);
-		if (result->invalid_recipients)
+		invalidKey = result->invalid_recipients;
+		while (invalidKey)
 		{
-			// TODO add warning to error key
+			ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_GPGME_INVALID_RECIPIENT, errorKey, "Invalid GPG key ID: %s", invalidKey->fpr);
+			invalidKey = invalidKey->next;
 		}
 
 		// update Elektra key to encrypted value
@@ -433,11 +457,10 @@ cleanup:
  * @retval 1 on success.
  * @retval -1 on failure. In this case errorKey will provide a description.
  */
-static int gpgDecrypt (ELEKTRA_UNUSED Plugin * handle, KeySet * data, ELEKTRA_UNUSED Key * errorKey)
+static int gpgDecrypt (ELEKTRA_UNUSED Plugin * handle, KeySet * data, Key * errorKey)
 {
 	int returnValue = 1; // success
 	Key * k;
-	KeySet * pluginConfig = elektraPluginGetConfig (handle);
 
 	gpgme_ctx_t ctx;
 	gpgme_error_t err;
