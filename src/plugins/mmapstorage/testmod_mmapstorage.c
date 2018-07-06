@@ -929,7 +929,7 @@ static void test_mmap_keyGetFullName (const char * tmpFile)
 	ssize_t fullNameSize = keyGetFullNameSize (found);
 	char * fullName = elektraMalloc (fullNameSize);
 	ssize_t ret = keyGetFullName (found, fullName, fullNameSize);
-	if (ret < 0)
+	if (ret < 1)
 	{
 		yield_error ("Key full name NULL or size error");
 	}
@@ -944,8 +944,97 @@ static void test_mmap_keyGetFullName (const char * tmpFile)
 	PLUGIN_CLOSE ();
 }
 
+static void test_mmap_keyGetBaseName (const char * tmpFile)
+{
+	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("mmapstorage");
+
+	KeySet * ks = metaTestKeySet ();
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
+
+	const char * name = "user/tests/mmapstorage/a";
+	Key * found = ksLookupByName (ks, name, 0);
+	succeed_if (found, "did not find key");
+
+	const char * constBaseName = "a";
+	size_t constBaseNameSize = elektraStrLen (constBaseName);
+	ssize_t baseNameSize = keyGetFullNameSize (found);
+	char * baseName = elektraMalloc (baseNameSize);
+	ssize_t ret = keyGetBaseName (found, baseName, baseNameSize);
+	if (ret < 1)
+	{
+		yield_error ("Key base name NULL or size error");
+	}
+	else
+	{
+		succeed_if ((size_t) ret == elektraStrLen (constBaseName), "Key base name has wrong size");
+	}
+
+	succeed_if (elektraStrNCmp (constBaseName, baseName, constBaseNameSize) == 0, "Key base name is wrong");
+
+	elektraFree (baseName);
+	keyDel (parentKey);
+	ksDel (ks);
+	PLUGIN_CLOSE ();
+}
+
 /* -- Key value API tests --------------------------------------------------------------------------------------------------------------- */
 
+static void test_mmap_keyValue (const char * tmpFile)
+{
+	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("mmapstorage");
+
+	KeySet * ks = metaTestKeySet ();
+	const char * name = "user/tests/mmapstorage/specialkey";
+	size_t valueSize = 42;
+	void * value = elektraMalloc (valueSize);
+	memset (value, 42, valueSize);
+
+	Key * key = keyNew (name, KEY_END);
+	keySetBinary (key, value, valueSize);
+	ksAppendKey (ks, key);
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
+
+	Key * found = ksLookupByName (ks, name, 0);
+	succeed_if (found, "did not find key");
+
+	succeed_if (elektraStrNCmp (value, keyValue (found), valueSize) == 0, "Key binary value is wrong");
+
+	elektraFree (value);
+	keyDel (parentKey);
+	ksDel (ks);
+	PLUGIN_CLOSE ();
+}
+
+static void test_mmap_keyString (const char * tmpFile)
+{
+	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("mmapstorage");
+
+	KeySet * ks = metaTestKeySet ();
+	const char * name = "user/tests/mmapstorage/specialkey";
+	const char * value = "special value";
+	size_t valueSize = elektraStrLen (value);
+	Key * key = keyNew (name, KEY_VALUE, value, KEY_END);
+	ksAppendKey (ks, key);
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
+
+	Key * found = ksLookupByName (ks, name, 0);
+	succeed_if (found, "did not find key");
+
+	succeed_if (elektraStrNCmp (value, keyString (found), valueSize) == 0, "Key value is wrong");
+
+	keyDel (parentKey);
+	ksDel (ks);
+	PLUGIN_CLOSE ();
+}
 
 /* -- Main ------------------------------------------------------------------------------------------------------------------------------ */
 
@@ -1049,7 +1138,7 @@ int main (int argc, char ** argv)
 	clearStorage (tmpFile);
 	test_mmap_keyClear (tmpFile);
 
-	// Key Name tests
+	// Key Name API tests
 	clearStorage (tmpFile);
 	test_mmap_keyName (tmpFile);
 
@@ -1058,6 +1147,16 @@ int main (int argc, char ** argv)
 
 	clearStorage (tmpFile);
 	test_mmap_keyGetFullName (tmpFile);
+
+	clearStorage (tmpFile);
+	test_mmap_keyGetBaseName (tmpFile);
+
+	// Key Value API tests
+	clearStorage (tmpFile);
+	test_mmap_keyValue (tmpFile);
+
+	clearStorage (tmpFile);
+	test_mmap_keyString (tmpFile);
 
 	printf ("\ntestmod_mmapstorage RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
