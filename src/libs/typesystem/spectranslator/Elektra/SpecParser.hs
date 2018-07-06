@@ -15,18 +15,15 @@ import Elektra.Key
 import Elektra.KeySet
 import Elektra.Ease
 
-import Control.Applicative (pure, liftA2)
-import Control.Monad       (filterM, liftM2, join, void)
+import Control.Applicative (liftA2)
+import Control.Monad       (filterM)
 import Data.List           (isPrefixOf, sort)
 import System.IO.Unsafe    (unsafePerformIO)
 
 import Elektra.Specifications
 import Elektra.Parsers
-import Elektra.Range
-import FiniteAutomata
 
 import qualified Data.Text       as T
-import qualified Data.Text.Read  as T
 
 type RootKey = Key
 
@@ -34,7 +31,7 @@ type RootKey = Key
 resolvePath :: String -> String -> String
 resolvePath k s = unsafePerformIO $ do
   d <- keyNew $ "/" ++ k
-  keyAddBaseName d s
+  _ <- keyAddBaseName d s
   keyName d
 
 specPrefix :: String -> String
@@ -105,7 +102,7 @@ parseSpecifications :: RootKey -> KeySet -> (Key -> IO a) -> (Key -> KeySet -> I
 parseSpecifications k ks parser keySelector = keySelector k ks >>= ksList >>= mapM parser
 
 parseKeySpecifications :: RootKey -> KeySet -> IO [KeySpecification]
-parseKeySpecifications k ks = parseSpecifications k ks (parseKeySpecification k) (\k ks -> cutSpecElektra k ks >> return ks)
+parseKeySpecifications k ks = parseSpecifications k ks (parseKeySpecification k) (\k' ks' -> cutSpecElektra k' ks' >> return ks')
 
 parseTypeSpecifications :: RootKey -> KeySet -> IO [TypeSpecification]
 parseTypeSpecifications k ks = do
@@ -114,9 +111,6 @@ parseTypeSpecifications k ks = do
 
 cutSpecElektra :: Key -> KeySet -> IO KeySet
 cutSpecElektra k ks = keyName k >>= specPrefixKey >>= ksCut ks
-
-dt :: (T.Text -> T.Text) -> String -> String
-dt fn = T.unpack . fn . T.pack
 
 (!=<<) :: Monad m => (a -> m b) -> m a -> m a
 a !=<< b = b >>= (\b' -> do _ <- a b'; return b')

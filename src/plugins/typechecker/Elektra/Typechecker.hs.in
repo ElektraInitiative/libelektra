@@ -3,20 +3,18 @@ module Elektra.Typechecker () where
 
 import Elektra.Key
 import Elektra.KeySet
-import Elektra.KDB
 import Elektra.Plugin
 import Elektra.PluginProcess
-import Elektra.Ease
 import Elektra.Invoke
 import Elektra.SpecTranslator
 import Elektra.SpecParser
 import Elektra.Errors
 
-import Control.Monad                (mapM_, forM_, (>=>), join)
+import Control.Monad                (mapM_, forM_, join)
 import Control.Logger.Simple
 import Data.Bool                    (bool)
 import Data.List                    (intercalate, isPrefixOf)
-import Data.Maybe                   (fromJust, listToMaybe)
+import Data.Maybe                   (fromMaybe, listToMaybe)
 import Foreign.Ptr
 import System.IO.Temp               (writeTempFile)
 import System.Directory             (removeFile, doesFileExist)
@@ -66,7 +64,7 @@ typecheck p ks k c = withGlobalLogging (LogConfig Nothing ("@ENABLE_LOGGER@" == 
   logDebugT $ "Loading prelude located at " ++ show preludePath ++ " to " ++ name
   ps <- maybe (ksNew 0) (readPrelude p name) preludePath
   logDebugT $ "Prelude contained " ++ show ps
-  ksAppend ps kscc
+  _ <- ksAppend ps kscc
   logDebugT $ "Combined specifications are " ++ show ps
 
   typeSpecs <- parseTypeSpecifications k ps
@@ -86,7 +84,7 @@ typecheck p ks k c = withGlobalLogging (LogConfig Nothing ("@ENABLE_LOGGER@" == 
 
   -- So we can override it for the build tests
   pdb <- lookupEnv "SANDBOX_PACKAGEDB"
-  let args = filter (not . null) ["-package-db=" ++ maybe "@TYPECHECKER_GHC_PLUGIN@" id pdb, "-fplugin=Elektra.RegexTypeChecker", "-v"]
+  let args = filter (not . null) ["-package-db=" ++ fromMaybe "@TYPECHECKER_GHC_PLUGIN@" pdb, "-fplugin=Elektra.RegexTypeChecker", "-v"]
   r <- unsafeRunInterpreterWithArgs args (keyInterpreter specFile)
   removeFile specFile
   case r of

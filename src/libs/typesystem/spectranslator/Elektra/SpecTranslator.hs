@@ -12,7 +12,6 @@ module Elektra.SpecTranslator (
 
 import Elektra.Specifications
 import Elektra.Parsers
-import Elektra.Range
 
 import Data.Char           (isAlphaNum, toUpper)
 import Data.Map            (Map)
