@@ -38,81 +38,6 @@
 
 typedef enum _DestType { TYPE_MMAP = 0, TYPE_ALLOC } DestType;
 
-static void m_output_meta (Key * k)
-{
-	const Key * meta;
-
-	if (!k->meta)
-	{
-		ELEKTRA_LOG_WARNING ("Meta is NULL");
-		return;
-	}
-	if (k->meta->size == 0)
-	{
-		ELEKTRA_LOG_WARNING ("Meta is empty");
-	}
-
-	ELEKTRA_LOG_WARNING ("Meta size: %zu", k->meta->size);
-
-	keyRewindMeta (k);
-	while ((meta = keyNextMeta (k)) != 0)
-	{
-		// ELEKTRA_LOG_WARNING ("Meta KeySet size: %zu", k->meta->size);
-		if (!meta)
-		{
-			ELEKTRA_LOG_WARNING ("Meta Key is NULL");
-		}
-		ELEKTRA_LOG_WARNING (", %s: %s", keyName (meta), (const char *) keyValue (meta));
-	}
-	ELEKTRA_LOG_WARNING ("\n");
-}
-
-static void m_output_key (Key * k)
-{
-	// output_meta will print endline
-	if (!k)
-	{
-		ELEKTRA_LOG_WARNING ("Key is NULL");
-	}
-
-	ELEKTRA_LOG_WARNING ("Key ptr: %p", (void *) k);
-	ELEKTRA_LOG_WARNING ("keyname ptr: %p", (void *) k->key);
-	ELEKTRA_LOG_WARNING ("keyname: %s", keyName (k));
-	ELEKTRA_LOG_WARNING ("keystring ptr: %p", (void *) k->data.v);
-	ELEKTRA_LOG_WARNING ("keystring: %s", keyString (k));
-	m_output_meta (k);
-}
-
-static void m_output_keyset (KeySet * ks)
-{
-	ELEKTRA_LOG_WARNING ("-------------------> output keyset start");
-	if (!ks)
-	{
-
-		ELEKTRA_LOG_WARNING ("KeySet is NULL");
-		return;
-	}
-	if (ks->size == 0)
-	{
-		ELEKTRA_LOG_WARNING ("KeySet is empty");
-	}
-
-	ELEKTRA_LOG_WARNING ("KeySet size: %zu", ks->size);
-
-	Key * k;
-	ksRewind (ks);
-	size_t ks_iterations = 0;
-	while ((k = ksNext (ks)) != 0)
-	{
-		ELEKTRA_LOG_WARNING ("Key:");
-		m_output_key (k);
-		++ks_iterations;
-	}
-	ELEKTRA_LOG_WARNING ("KeySet iteration: %zu", ks_iterations);
-	ELEKTRA_LOG_WARNING ("KeySet current: %zu", ks->current);
-	ELEKTRA_LOG_WARNING ("KeySet size: %zu", ks->size);
-	ELEKTRA_LOG_WARNING ("-------------------> output keyset done");
-}
 
 static FILE * mmapOpenFile (Key * parentKey, const char * mode)
 {
@@ -771,16 +696,10 @@ int elektraMmapstorageGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 	// get all keys
 	KeySet * mappedFiles = (KeySet *) elektraPluginGetData (handle);
 	Key * found = ksLookup (mappedFiles, parentKey, 0);
-	if (found)
-	{
-		ELEKTRA_LOG_WARNING ("unlink: found key");
-		m_output_key (found);
-	}
-	else
+	if (!found)
 	{
 		ELEKTRA_LOG_WARNING ("unlink: new file, adding to my list");
 		found = keyDup (parentKey);
-		m_output_key (found);
 	}
 
 	int errnosave = errno;
@@ -866,6 +785,7 @@ int elektraMmapstorageGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 	*/
 	fclose (fp);
 
+	// save keyset information to list of currently mmaped files
 	char mmapAddrString[SIZEOF_ADDR_STRING];
 	snprintf (mmapAddrString, SIZEOF_ADDR_STRING - 1, "%p", (void *) (mappedRegion));
 	mmapAddrString[SIZEOF_ADDR_STRING - 1] = '\0';
@@ -877,7 +797,6 @@ int elektraMmapstorageGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 	keySetMeta (found, mmapAddrString, ksAddrString);
 	ksAppendKey (mappedFiles, found);
 	elektraPluginSetData (handle, mappedFiles);
-	m_output_key (found);
 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
@@ -942,9 +861,6 @@ int elektraMmapstorageSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 	if (found)
 	{
 		ELEKTRA_LOG_WARNING ("unlink: need to unlink old mapped memory from file");
-		m_output_key (found);
-		// m_output_meta (found);
-		// keyDel (parentCopy);
 
 		const Key * cur;
 		keyRewindMeta (found);
