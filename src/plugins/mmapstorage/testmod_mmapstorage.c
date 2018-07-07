@@ -1029,8 +1029,166 @@ static void test_mmap_keyString (const char * tmpFile)
 	Key * found = ksLookupByName (ks, name, 0);
 	succeed_if (found, "did not find key");
 
-	succeed_if (elektraStrNCmp (value, keyString (found), valueSize) == 0, "Key value is wrong");
+	succeed_if (elektraStrNCmp (value, keyString (found), valueSize) == 0, "Key string value is wrong");
 
+	keyDel (parentKey);
+	ksDel (ks);
+	PLUGIN_CLOSE ();
+}
+
+static void test_mmap_keyGetBinary (const char * tmpFile)
+{
+	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("mmapstorage");
+
+	KeySet * ks = metaTestKeySet ();
+	const char * name = "user/tests/mmapstorage/specialkey";
+	size_t realValueSize = 42;
+	void * value = elektraMalloc (realValueSize);
+	memset (value, 42, realValueSize);
+
+	Key * key = keyNew (name, KEY_END);
+	keySetBinary (key, value, realValueSize);
+	ksAppendKey (ks, key);
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
+
+	Key * found = ksLookupByName (ks, name, 0);
+	succeed_if (found, "did not find key");
+
+	ssize_t apiValueSize = keyGetValueSize (found);
+	char * apiValue = elektraMalloc (apiValueSize);
+	succeed_if (keyGetBinary (found, apiValue, apiValueSize) == (ssize_t) realValueSize, "Key binary has wrong size");
+
+	succeed_if (elektraStrNCmp (value, apiValue, realValueSize) == 0, "Key binary value is wrong");
+
+	elektraFree (apiValue);
+	elektraFree (value);
+	keyDel (parentKey);
+	ksDel (ks);
+	PLUGIN_CLOSE ();
+}
+
+static void test_mmap_keyGetString (const char * tmpFile)
+{
+	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("mmapstorage");
+
+	KeySet * ks = metaTestKeySet ();
+	const char * name = "user/tests/mmapstorage/specialkey";
+	const char * value = "special value";
+	size_t realValueSize = elektraStrLen (value);
+	Key * key = keyNew (name, KEY_VALUE, value, KEY_END);
+	ksAppendKey (ks, key);
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
+
+	Key * found = ksLookupByName (ks, name, 0);
+	succeed_if (found, "did not find key");
+
+	ssize_t apiValueSize = keyGetValueSize (found);
+	char * apiString = elektraMalloc (apiValueSize);
+	succeed_if (keyGetString (found, apiString, apiValueSize) == (ssize_t) realValueSize, "Key string has wrong size");
+
+	succeed_if (elektraStrNCmp (value, apiString, realValueSize) == 0, "Key string value is wrong");
+
+	elektraFree (apiString);
+	keyDel (parentKey);
+	ksDel (ks);
+	PLUGIN_CLOSE ();
+}
+
+static void test_mmap_keySetBinary (const char * tmpFile)
+{
+	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("mmapstorage");
+
+	KeySet * ks = metaTestKeySet ();
+	const char * name = "user/tests/mmapstorage/specialkey";
+	size_t realValueSize = 42;
+	void * value = elektraMalloc (realValueSize);
+	memset (value, 42, realValueSize);
+
+	Key * key = keyNew (name, KEY_END);
+	keySetBinary (key, value, realValueSize);
+	ksAppendKey (ks, key);
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
+
+	Key * found = ksLookupByName (ks, name, KDB_O_POP);
+	succeed_if (found, "did not find key");
+
+	// now set a new key value to the Key _after_ kdbGet
+	size_t newValueSize = 4096;
+	void * newValue = elektraMalloc (newValueSize);
+	memset (newValue, 253, newValueSize);
+
+	succeed_if (keySetBinary (found, newValue, newValueSize) == (ssize_t) newValueSize, "Key binary could not be set");
+
+	ksAppendKey (ks, found);
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
+
+	found = ksLookupByName (ks, name, 0);
+	succeed_if (found, "did not find key");
+
+	ssize_t apiValueSize = keyGetValueSize (found);
+	char * apiValue = elektraMalloc (apiValueSize);
+	succeed_if (keyGetBinary (found, apiValue, apiValueSize) == (ssize_t) newValueSize, "Key binary has wrong size");
+
+	succeed_if (elektraStrNCmp (value, apiValue, realValueSize) != 0, "Key binary value is wrong");
+	succeed_if (elektraStrNCmp (newValue, apiValue, newValueSize) == 0, "Key binary value is wrong");
+
+	elektraFree (newValue);
+	elektraFree (apiValue);
+	elektraFree (value);
+	keyDel (parentKey);
+	ksDel (ks);
+	PLUGIN_CLOSE ();
+}
+
+static void test_mmap_keySetString (const char * tmpFile)
+{
+	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("mmapstorage");
+
+	KeySet * ks = metaTestKeySet ();
+	const char * name = "user/tests/mmapstorage/specialkey";
+	const char * value = "special value";
+	size_t realValueSize = elektraStrLen (value);
+	Key * key = keyNew (name, KEY_VALUE, value, KEY_END);
+	ksAppendKey (ks, key);
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
+
+	Key * found = ksLookupByName (ks, name, KDB_O_POP);
+	succeed_if (found, "did not find key");
+
+	// now set a new key string to the Key _after_ kdbGet
+	const char * newValue = "some new special value";
+	size_t newValueSize = elektraStrLen (newValue);
+
+	succeed_if (keySetString (found, newValue) == (ssize_t) newValueSize, "Key string could not be set");
+
+	ksAppendKey (ks, found);
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
+
+	found = ksLookupByName (ks, name, 0);
+	succeed_if (found, "did not find key");
+
+	ssize_t apiValueSize = keyGetValueSize (found);
+	char * apiValue = elektraMalloc (apiValueSize);
+	succeed_if (keyGetString (found, apiValue, apiValueSize) == (ssize_t) newValueSize, "Key string has wrong size");
+
+	succeed_if (elektraStrNCmp (value, apiValue, realValueSize) != 0, "Key string value is wrong");
+	succeed_if (elektraStrNCmp (newValue, apiValue, newValueSize) == 0, "Key string value is wrong");
+
+	elektraFree (apiValue);
 	keyDel (parentKey);
 	ksDel (ks);
 	PLUGIN_CLOSE ();
@@ -1157,6 +1315,18 @@ int main (int argc, char ** argv)
 
 	clearStorage (tmpFile);
 	test_mmap_keyString (tmpFile);
+
+	clearStorage (tmpFile);
+	test_mmap_keyGetBinary (tmpFile);
+
+	clearStorage (tmpFile);
+	test_mmap_keyGetString (tmpFile);
+
+	clearStorage (tmpFile);
+	test_mmap_keySetBinary (tmpFile);
+
+	clearStorage (tmpFile);
+	test_mmap_keySetString (tmpFile);
 
 	printf ("\ntestmod_mmapstorage RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
