@@ -49,7 +49,9 @@ string (REGEX REPLACE "\n" ";" files "${files}")
 foreach (file ${files})
 	message (STATUS "Uninstalling $ENV{DESTDIR}${file}")
 	if (IS_SYMLINK "$ENV{DESTDIR}${file}" OR EXISTS "$ENV{DESTDIR}${file}")
-		exec_program ("${CMAKE_COMMAND}" ARGS "-E remove \"$ENV{DESTDIR}${file}\"" OUTPUT_VARIABLE rm_out RETURN_VALUE rm_retval)
+		execute_process (COMMAND "${CMAKE_COMMAND}" -E remove "$ENV{DESTDIR}${file}"
+				 OUTPUT_VARIABLE rm_out
+				 RESULT_VARIABLE rm_retval)
 		if (NOT "${rm_retval}" STREQUAL 0)
 			message (FATAL_ERROR "Problem when removing $ENV{DESTDIR}${file}")
 		endif (NOT "${rm_retval}" STREQUAL 0)
@@ -67,8 +69,9 @@ function (remove_directories directories)
 		set (dir "$ENV{DESTDIR}${directory}")
 		if (EXISTS "${dir}")
 			message (STATUS "Uninstalling directory ${dir}")
-			exec_program (
-				"${CMAKE_COMMAND}" ARGS "-E remove_directory \"${dir}\"" OUTPUT_VARIABLE rm_out RETURN_VALUE rm_retval)
+			execute_process (COMMAND "${CMAKE_COMMAND}" -E remove_directory "${dir}"
+					 OUTPUT_VARIABLE rm_out
+					 RESULT_VARIABLE rm_retval)
 
 			if (NOT "${rm_retval}" STREQUAL 0)
 				message (FATAL_ERROR "Problem when removing ${dir}")
