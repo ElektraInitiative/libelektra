@@ -5,12 +5,14 @@
 
 set (MANIFEST "${CMAKE_BINARY_DIR}/install_manifest.txt")
 
-if (NOT EXISTS "${MANIFEST}")
+if (NOT EXISTS
+	"${MANIFEST}")
 	message (FATAL_ERROR "Cannot find install manifest: ${MANIFEST}")
 endif (NOT EXISTS "${MANIFEST}")
 
 # message (MANIFEST IS ${MANIFEST})
-file (READ "${MANIFEST}" files)
+file (READ "${MANIFEST}"
+	   files)
 
 # ==========
 # = Python =
@@ -45,14 +47,23 @@ endif (PYTHONINTERP_FOUND)
 # = Files =
 # =========
 
-string (REGEX REPLACE "\n" ";" files "${files}")
+string (REGEX
+	REPLACE "\n"
+		";"
+		files
+		"${files}")
 foreach (file ${files})
 	message (STATUS "Uninstalling $ENV{DESTDIR}${file}")
-	if (IS_SYMLINK "$ENV{DESTDIR}${file}" OR EXISTS "$ENV{DESTDIR}${file}")
+	if (IS_SYMLINK
+	    "$ENV{DESTDIR}${file}"
+	    OR EXISTS
+	       "$ENV{DESTDIR}${file}")
 		execute_process (COMMAND "${CMAKE_COMMAND}" -E remove "$ENV{DESTDIR}${file}"
 				 OUTPUT_VARIABLE rm_out
 				 RESULT_VARIABLE rm_retval)
-		if (NOT "${rm_retval}" STREQUAL 0)
+		if (NOT "${rm_retval}"
+			STREQUAL
+			0)
 			message (FATAL_ERROR "Problem when removing $ENV{DESTDIR}${file}")
 		endif (NOT "${rm_retval}" STREQUAL 0)
 	else (IS_SYMLINK "$ENV{DESTDIR}${file}" OR EXISTS "$ENV{DESTDIR}${file}")
@@ -73,7 +84,9 @@ function (remove_directories directories)
 					 OUTPUT_VARIABLE rm_out
 					 RESULT_VARIABLE rm_retval)
 
-			if (NOT "${rm_retval}" STREQUAL 0)
+			if (NOT "${rm_retval}"
+				STREQUAL
+				0)
 				message (FATAL_ERROR "Problem when removing ${dir}")
 			endif (NOT "${rm_retval}" STREQUAL 0)
 		endif (EXISTS "${dir}")
@@ -89,10 +102,12 @@ set (DIRECTORIES
      "${CMAKE_INSTALL_PREFIX}/share/elektra"
      "${CMAKE_INSTALL_PREFIX}/share/share/elektra")
 if (${PYTHON2_SITE_PACKAGES})
-	list (APPEND DIRECTORIES "${PYTHON2_SITE_PACKAGES}/support")
+	list (APPEND DIRECTORIES
+		     "${PYTHON2_SITE_PACKAGES}/support")
 endif (${PYTHON2_SITE_PACKAGES})
 if (${PYTHON_SITE_PACKAGES})
-	list (APPEND DIRECTORIES "${PYTHON_SITE_PACKAGES}/support")
+	list (APPEND DIRECTORIES
+		     "${PYTHON_SITE_PACKAGES}/support")
 endif (${PYTHON_SITE_PACKAGES})
 
 remove_directories ("${DIRECTORIES}")
@@ -129,8 +144,10 @@ set (REMOVAL_CANDIDATES
 
 foreach (directory ${REMOVAL_CANDIDATES})
 	set (dir "$ENV{DESTDIR}${directory}")
-	file (GLOB content "${dir}/*")
-	list (LENGTH content size)
+	file (GLOB content
+		   "${dir}/*")
+	list (LENGTH content
+		     size)
 	if (size EQUAL 0)
 		remove_directories ("${directory}")
 	endif (size EQUAL 0)

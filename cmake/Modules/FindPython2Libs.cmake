@@ -46,8 +46,16 @@ set (_PYTHON23_VERSIONS 3.3 3.2 3.1 3.0)
 
 if (Python2Libs_FIND_VERSION)
 	if (Python2Libs_FIND_VERSION MATCHES "^[0-9]+\\.[0-9]+(\\.[0-9]+.*)?$")
-		string (REGEX REPLACE "^([0-9]+\\.[0-9]+).*" "\\1" _PYTHON2_FIND_MAJ_MIN "${Python2Libs_FIND_VERSION}")
-		string (REGEX REPLACE "^([0-9]+).*" "\\1" _PYTHON2_FIND_MAJ "${_PYTHON2_FIND_MAJ_MIN}")
+		string (REGEX
+			REPLACE "^([0-9]+\\.[0-9]+).*"
+				"\\1"
+				_PYTHON2_FIND_MAJ_MIN
+				"${Python2Libs_FIND_VERSION}")
+		string (REGEX
+			REPLACE "^([0-9]+).*"
+				"\\1"
+				_PYTHON2_FIND_MAJ
+				"${_PYTHON2_FIND_MAJ_MIN}")
 		unset (_PYTHON2_FIND_OTHER_VERSIONS)
 		if (Python2Libs_FIND_VERSION_EXACT)
 			if (_PYTHON2_FIND_MAJ_MIN STREQUAL Python2Libs_FIND_VERSION)
@@ -57,8 +65,11 @@ if (Python2Libs_FIND_VERSION)
 			endif (_PYTHON2_FIND_MAJ_MIN STREQUAL Python2Libs_FIND_VERSION)
 		else (Python2Libs_FIND_VERSION_EXACT)
 			foreach (_PYTHON2_V ${_PYTHON2${_PYTHON2_FIND_MAJ}_VERSIONS})
-				if (NOT _PYTHON2_V VERSION_LESS _PYTHON2_FIND_MAJ_MIN)
-					list (APPEND _PYTHON2_FIND_OTHER_VERSIONS ${_PYTHON2_V})
+				if (NOT _PYTHON2_V
+					VERSION_LESS
+					_PYTHON2_FIND_MAJ_MIN)
+					list (APPEND _PYTHON2_FIND_OTHER_VERSIONS
+						     ${_PYTHON2_V})
 				endif ()
 			endforeach ()
 		endif (Python2Libs_FIND_VERSION_EXACT)
@@ -80,7 +91,10 @@ unset (_PYTHON22_VERSIONS)
 unset (_PYTHON23_VERSIONS)
 
 foreach (_CURRENT_VERSION ${_Python2_VERSIONS})
-	string (REPLACE "." "" _CURRENT_VERSION_NO_DOTS ${_CURRENT_VERSION})
+	string (REPLACE "."
+			""
+			_CURRENT_VERSION_NO_DOTS
+			${_CURRENT_VERSION})
 	if (WIN32)
 		find_library (PYTHON2_DEBUG_LIBRARY
 			      NAMES python${_CURRENT_VERSION_NO_DOTS}_d
@@ -91,6 +105,8 @@ foreach (_CURRENT_VERSION ${_Python2_VERSIONS})
 				    [HKEY_CURRENT_USER\\SOFTWARE\\Python\\PythonCore\\${_CURRENT_VERSION}\\InstallPath]/libs)
 	endif (WIN32)
 
+	# Unfortunately cmake format 0.4 breaks the following code
+	# cmake-format: off
 	find_library (PYTHON2_LIBRARY
 		      NAMES python${_CURRENT_VERSION_NO_DOTS}
 			    python${_CURRENT_VERSION}mu
@@ -109,11 +125,19 @@ foreach (_CURRENT_VERSION ${_Python2_VERSIONS})
 		      NO_SYSTEM_ENVIRONMENT_PATH # Avoid finding the .dll in the PATH.  We want the .lib.
 		      PATH_SUFFIXES python${_CURRENT_VERSION}/config # This is where the static library is usually located
 		      )
+	# cmake-format: on
 
-	# For backward compatibility, honour value of PYTHON2_INCLUDE_PATH, if
-	# PYTHON2_INCLUDE_DIR is not set.
-	if (DEFINED PYTHON2_INCLUDE_PATH AND NOT DEFINED PYTHON2_INCLUDE_DIR)
-		set (PYTHON2_INCLUDE_DIR "${PYTHON2_INCLUDE_PATH}" CACHE PATH "Path to where Python.h is found" FORCE)
+	# For backward compatibility, honour value of PYTHON2_INCLUDE_PATH, if PYTHON2_INCLUDE_DIR is not set.
+	if (DEFINED
+	    PYTHON2_INCLUDE_PATH
+	    AND
+	    NOT DEFINED
+		PYTHON2_INCLUDE_DIR)
+		set (PYTHON2_INCLUDE_DIR
+		     "${PYTHON2_INCLUDE_PATH}"
+		     CACHE PATH
+			   "Path to where Python.h is found"
+		     FORCE)
 	endif (DEFINED PYTHON2_INCLUDE_PATH AND NOT DEFINED PYTHON2_INCLUDE_DIR)
 
 	set (PYTHON2_FRAMEWORK_INCLUDES)
@@ -138,8 +162,12 @@ foreach (_CURRENT_VERSION ${_Python2_VERSIONS})
 	# For backward compatibility, set PYTHON2_INCLUDE_PATH.
 	set (PYTHON2_INCLUDE_PATH "${PYTHON2_INCLUDE_DIR}")
 
-	if (PYTHON2_INCLUDE_DIR AND EXISTS "${PYTHON2_INCLUDE_DIR}/patchlevel.h")
-		file (STRINGS "${PYTHON2_INCLUDE_DIR}/patchlevel.h" python_version_str REGEX "^#define[ \t]+PY_VERSION[ \t]+\"[^\"]+\"")
+	if (PYTHON2_INCLUDE_DIR
+	    AND EXISTS
+		"${PYTHON2_INCLUDE_DIR}/patchlevel.h")
+		file (STRINGS "${PYTHON2_INCLUDE_DIR}/patchlevel.h"
+			      python_version_str
+		      REGEX "^#define[ \t]+PY_VERSION[ \t]+\"[^\"]+\"")
 		string (REGEX
 			REPLACE "^#define[ \t]+PY_VERSION[ \t]+\"([^\"]+)\".*"
 				"\\1"
@@ -188,16 +216,26 @@ function (PYTHON2_ADD_MODULE _NAME)
 			set (PY_MODULE_TYPE MODULE)
 		else (PYTHON2_MODULE_${_NAME}_BUILD_SHARED)
 			set (PY_MODULE_TYPE STATIC)
-			set_property (GLOBAL APPEND PROPERTY PY_STATIC_MODULES_LIST ${_NAME})
+			set_property (GLOBAL
+				      APPEND
+				      PROPERTY PY_STATIC_MODULES_LIST
+					       ${_NAME})
 		endif (PYTHON2_MODULE_${_NAME}_BUILD_SHARED)
 
-		set_property (GLOBAL APPEND PROPERTY PY_MODULES_LIST ${_NAME})
+		set_property (GLOBAL
+			      APPEND
+			      PROPERTY PY_MODULES_LIST
+				       ${_NAME})
 		add_library (${_NAME} ${PY_MODULE_TYPE} ${ARGN}) # TARGET_LINK_LIBRARIES(${_NAME} ${PYTHON2_LIBRARIES})
 
 		if (PYTHON2_MODULE_${_NAME}_BUILD_SHARED)
-			set_target_properties (${_NAME} PROPERTIES PREFIX "${PYTHON2_MODULE_PREFIX}")
+			set_target_properties (${_NAME}
+					       PROPERTIES PREFIX
+							  "${PYTHON2_MODULE_PREFIX}")
 			if (WIN32 AND NOT CYGWIN)
-				set_target_properties (${_NAME} PROPERTIES SUFFIX ".pyd")
+				set_target_properties (${_NAME}
+						       PROPERTIES SUFFIX
+								  ".pyd")
 			endif (WIN32 AND NOT CYGWIN)
 		endif (PYTHON2_MODULE_${_NAME}_BUILD_SHARED)
 
@@ -209,16 +247,19 @@ function (PYTHON2_WRITE_MODULES_HEADER _filename)
 	get_property (PY_STATIC_MODULES_LIST GLOBAL PROPERTY PY_STATIC_MODULES_LIST)
 
 	get_filename_component (_name "${_filename}" NAME)
-	string (REPLACE "." "_" _name "${_name}")
-	string (TOUPPER ${_name} _nameUpper)
+	string (REPLACE "."
+			"_"
+			_name
+			"${_name}")
+	string (TOUPPER ${_name}
+			_nameUpper)
 	set (_filename ${CMAKE_CURRENT_BINARY_DIR}/${_filename})
 
 	set (_filenameTmp "${_filename}.in")
-	file (WRITE ${_filenameTmp} "/*Created by cmake, do not edit, changes will be lost*/\n")
-	file (
-		APPEND
-			${_filenameTmp}
-			"#ifndef ${_nameUpper}
+	file (WRITE ${_filenameTmp}
+		    "/*Created by cmake, do not edit, changes will be lost*/\n")
+	file (APPEND ${_filenameTmp}
+		     "#ifndef ${_nameUpper}
 #define ${_nameUpper}
 
 #include <Python.h>
@@ -227,14 +268,15 @@ function (PYTHON2_WRITE_MODULES_HEADER _filename)
 extern \"C\" {
 #endif /* __cplusplus */
 
-"
-		)
+")
 
 	foreach (_currentModule ${PY_STATIC_MODULES_LIST})
-		file (APPEND ${_filenameTmp} "extern void init${PYTHON2_MODULE_PREFIX}${_currentModule}(void);\n\n")
+		file (APPEND ${_filenameTmp}
+			     "extern void init${PYTHON2_MODULE_PREFIX}${_currentModule}(void);\n\n")
 	endforeach (_currentModule ${PY_STATIC_MODULES_LIST})
 
-	file (APPEND ${_filenameTmp} "#ifdef __cplusplus
+	file (APPEND ${_filenameTmp}
+		     "#ifdef __cplusplus
 }
 #endif /* __cplusplus */
 
@@ -248,11 +290,14 @@ extern \"C\" {
 			)
 	endforeach (_currentModule ${PY_STATIC_MODULES_LIST})
 
-	file (APPEND ${_filenameTmp} "void ${_name}_LoadAllPythonModules(void)\n{\n")
+	file (APPEND ${_filenameTmp}
+		     "void ${_name}_LoadAllPythonModules(void)\n{\n")
 	foreach (_currentModule ${PY_STATIC_MODULES_LIST})
-		file (APPEND ${_filenameTmp} "  ${_name}_${_currentModule}();\n")
+		file (APPEND ${_filenameTmp}
+			     "  ${_name}_${_currentModule}();\n")
 	endforeach (_currentModule ${PY_STATIC_MODULES_LIST})
-	file (APPEND ${_filenameTmp} "}\n\n")
+	file (APPEND ${_filenameTmp}
+		     "}\n\n")
 	file (
 		APPEND
 			${_filenameTmp}
@@ -260,6 +305,8 @@ extern \"C\" {
 		)
 
 	# with CONFIGURE_FILE() cmake complains that you may not use a file created using FILE(WRITE) as input file for CONFIGURE_FILE()
-	execute_process (COMMAND ${CMAKE_COMMAND} -E copy_if_different "${_filenameTmp}" "${_filename}" OUTPUT_QUIET ERROR_QUIET)
+	execute_process (COMMAND ${CMAKE_COMMAND} -E copy_if_different "${_filenameTmp}" "${_filename}"
+			 OUTPUT_QUIET
+			 ERROR_QUIET)
 
 endfunction (PYTHON2_WRITE_MODULES_HEADER)

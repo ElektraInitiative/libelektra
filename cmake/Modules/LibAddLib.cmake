@@ -17,14 +17,23 @@ function (add_lib name)
 		target_link_libraries (elektra-${name} elektra-core ${ARG_LINK_ELEKTRA})
 	endif (BUILD_SHARED)
 
-	set_property (GLOBAL APPEND PROPERTY "elektra-full_SRCS" ${ARG_SOURCES})
+	set_property (GLOBAL
+		      APPEND
+		      PROPERTY "elektra-full_SRCS"
+			       ${ARG_SOURCES})
 
-	set_property (GLOBAL APPEND PROPERTY "elektra-extension_LIBRARIES" elektra-${name})
+	set_property (GLOBAL
+		      APPEND
+		      PROPERTY "elektra-extension_LIBRARIES"
+			       elektra-${name})
 
 	if (BUILD_SHARED)
 		target_link_libraries (elektra-${name} ${ARG_LINK_LIBRARIES})
 
-		install (TARGETS elektra-${name} DESTINATION lib${LIB_SUFFIX} EXPORT ElektraTargetsLibelektra)
+		install (TARGETS elektra-${name}
+				 DESTINATION
+				 lib${LIB_SUFFIX}
+			 EXPORT ElektraTargetsLibelektra)
 	endif (BUILD_SHARED)
 
 endfunction ()

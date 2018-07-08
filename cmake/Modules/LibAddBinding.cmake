@@ -48,11 +48,14 @@ include (LibAddMacros)
 #   endif ()
 # ~~~
 function (check_binding_included BINDING_NAME OUTVARIABLE)
+	# Unfortunately cmake format 0.4 breaks the following code
+	# cmake-format: off
 	cmake_parse_arguments (ARG
 			       "SILENT" # optional keywords
 			       "" # one value keywords
 			       "" # multi value keywords
 			       ${ARGN})
+	# cmake-format: on
 
 	check_item_is_excluded (IS_EXCLUDED
 				BINDINGS
@@ -87,19 +90,30 @@ endfunction (check_binding_included)
 #    add_binding ("anynameyouwant")
 # ~~~
 function (add_binding BINDING_NAME)
+	# Unfortunately cmake format 0.4 breaks the following code
+	# cmake-format: off
 	cmake_parse_arguments (ARG
 			       "ONLY_SHARED" # optional keywords
 			       "" # one value keywords
 			       "" # multi value keywords
 			       ${ARGN})
+	# cmake-format: on
 
 	if (ADDED_BINDINGS)
 		set (TMP "${ADDED_BINDINGS};${BINDING_NAME}")
 		list (SORT TMP)
 		list (REMOVE_DUPLICATES TMP)
-		set (ADDED_BINDINGS "${TMP}" CACHE STRING "${ADDED_BINDINGS_DOC}" FORCE)
+		set (ADDED_BINDINGS
+		     "${TMP}"
+		     CACHE STRING
+			   "${ADDED_BINDINGS_DOC}"
+		     FORCE)
 	else ()
-		set (ADDED_BINDINGS "${BINDING_NAME}" CACHE STRING "${ADDED_BINDINGS_DOC}" FORCE)
+		set (ADDED_BINDINGS
+		     "${BINDING_NAME}"
+		     CACHE STRING
+			   "${ADDED_BINDINGS_DOC}"
+		     FORCE)
 	endif ()
 
 	set (STATUS_MESSAGE "Include Binding ${BINDING_NAME}")
@@ -129,23 +143,35 @@ endfunction (add_binding)
 #  exclude_binding (fstab "mntent is missing")
 # ~~~
 function (exclude_binding name reason)
+	# Unfortunately cmake format 0.4 breaks the following code
+	# cmake-format: off
 	cmake_parse_arguments (ARG
 			       "REMOVE" # optional keywords
 			       "" # one value keywords
 			       "" # multi value keywords
 			       ${ARGN})
+	# cmake-format: on
 
-	if (NOT ${reason} STREQUAL "silent")
+	if (NOT ${reason}
+		STREQUAL
+		"silent")
 		message (STATUS "Exclude Binding ${name} because ${reason}")
 	endif ()
 	if (ARG_REMOVE)
 		if (ADDED_BINDINGS)
 			set (TMP ${ADDED_BINDINGS})
-			list (REMOVE_ITEM TMP ${name})
-			set (ADDED_BINDINGS ${TMP} CACHE STRING ${ADDED_BINDINGS_DOC} FORCE)
+			list (REMOVE_ITEM TMP
+					  ${name})
+			set (ADDED_BINDINGS
+			     ${TMP}
+			     CACHE STRING
+				   ${ADDED_BINDINGS_DOC}
+			     FORCE)
 		endif ()
 	else ()
-		list (FIND ADDED_BINDINGS "${name}" FOUND_NAME)
+		list (FIND ADDED_BINDINGS
+			   "${name}"
+			   FOUND_NAME)
 		if (FOUND_NAME GREATER -1)
 			message (WARNING "Internal inconsistency: REMOVE_NOT_NECESSARY given but ${name} is present in bindings!")
 		endif ()
@@ -173,7 +199,9 @@ endfunction (exclude_binding)
 #   endif ()
 # ~~~
 function (check_binding_was_added BINDING_NAME OUTVARIABLE)
-	list (FIND ADDED_BINDINGS ${BINDING_NAME} FINDEX)
+	list (FIND ADDED_BINDINGS
+		   ${BINDING_NAME}
+		   FINDEX)
 	if (FINDEX GREATER -1)
 		set (${OUTVARIABLE} "YES" PARENT_SCOPE)
 	else ()
@@ -222,14 +250,18 @@ function (check_item_is_excluded OUTVARIABLE LIST ITEM_NAME)
 			       ${ARGN})
 	set (${OUTVARIABLE} "NO" PARENT_SCOPE)
 
-	list (FIND ${LIST} "-${ITEM_NAME}" FOUND_EXCLUDE_NAME)
+	list (FIND ${LIST}
+		   "-${ITEM_NAME}"
+		   FOUND_EXCLUDE_NAME)
 	if (FOUND_EXCLUDE_NAME GREATER -1)
 		set (${OUTVARIABLE} "explicitly excluded" PARENT_SCOPE) # let explicit exclusion win
 
 		return ()
 	endif ()
 
-	list (FIND ${LIST} "${ITEM_NAME}" FOUND_NAME)
+	list (FIND ${LIST}
+		   "${ITEM_NAME}"
+		   FOUND_NAME)
 	if (FOUND_NAME EQUAL -1)
 		set (${OUTVARIABLE} "silent" PARENT_SCOPE) # maybe it is included by category
 
@@ -251,30 +283,59 @@ function (check_item_is_excluded OUTVARIABLE LIST ITEM_NAME)
 	else ()
 		set (README_FILE ${ARG_BASEDIRECTORY}/${ARG_SUBDIRECTORY}/README.md)
 	endif ()
-	if (NOT EXISTS ${README_FILE})
+	if (NOT EXISTS
+		${README_FILE})
 
 		# we need README.md for extracting categories
 		message (WARNING "readme file does not exist at ${README_FILE}")
 	else ()
-		file (READ ${README_FILE} contents)
-		string (REGEX MATCH "- +infos/status *= *([-a-zA-Z0-9 ]*)" CATEGORIES "${contents}")
-		string (REGEX REPLACE "- +infos/status *= *([-a-zA-Z0-9 ]*)" "\\1" CATEGORIES "${CATEGORIES}")
-		string (REGEX REPLACE " " ";" CATEGORIES "${CATEGORIES}")
+		file (READ ${README_FILE}
+			   contents)
+		string (REGEX MATCH
+			      "- +infos/status *= *([-a-zA-Z0-9 ]*)"
+			      CATEGORIES
+			      "${contents}")
+		string (REGEX
+			REPLACE "- +infos/status *= *([-a-zA-Z0-9 ]*)"
+				"\\1"
+				CATEGORIES
+				"${CATEGORIES}")
+		string (REGEX
+			REPLACE " "
+				";"
+				CATEGORIES
+				"${CATEGORIES}")
 
 		if (ARG_ENABLE_PROVIDES)
-			string (REGEX MATCH "- +infos/provides *= *([a-zA-Z0-9/ ]*)" PROVIDES "${contents}")
-			string (REGEX REPLACE "- +infos/provides *= *([a-zA-Z0-9/ ]*)" "\\1" PROVIDES "${PROVIDES}")
-			string (REGEX REPLACE " " ";" PROVIDES "${PROVIDES}")
+			string (REGEX MATCH
+				      "- +infos/provides *= *([a-zA-Z0-9/ ]*)"
+				      PROVIDES
+				      "${contents}")
+			string (REGEX
+				REPLACE "- +infos/provides *= *([a-zA-Z0-9/ ]*)"
+					"\\1"
+					PROVIDES
+					"${PROVIDES}")
+			string (REGEX
+				REPLACE " "
+					";"
+					PROVIDES
+					"${PROVIDES}")
 			split_plugin_providers (PROVIDES)
-			list (APPEND CATEGORIES "${PROVIDES}")
+			list (APPEND CATEGORIES
+				     "${PROVIDES}")
 		endif ()
 	endif ()
-	list (APPEND CATEGORIES "ALL")
+	list (APPEND CATEGORIES
+		     "ALL")
 
-	string (TOUPPER "${CATEGORIES}" CATEGORIES) # message (STATUS "CATEGORIES FOUND FOR ${ITEM_NAME}: ${CATEGORIES}")
+	string (TOUPPER "${CATEGORIES}"
+			CATEGORIES) # message (STATUS "CATEGORIES FOUND FOR ${ITEM_NAME}: ${CATEGORIES}")
 
 	foreach (CAT ${CATEGORIES})
-		list (FIND ${LIST} "-${CAT}" FOUND_EXCLUDE_CATEGORY)
+		list (FIND ${LIST}
+			   "-${CAT}"
+			   FOUND_EXCLUDE_CATEGORY)
 		if (FOUND_EXCLUDE_CATEGORY GREATER -1)
 			set (${OUTVARIABLE} "excluded by category ${CAT}" PARENT_SCOPE)
 			return ()
@@ -282,7 +343,9 @@ function (check_item_is_excluded OUTVARIABLE LIST ITEM_NAME)
 	endforeach ()
 
 	foreach (CAT ${CATEGORIES})
-		list (FIND ${LIST} "${CAT}" FOUND_CATEGORY)
+		list (FIND ${LIST}
+			   "${CAT}"
+			   FOUND_CATEGORY)
 		if (FOUND_CATEGORY GREATER -1)
 			set (${OUTVARIABLE} "" PARENT_SCOPE)
 			return ()

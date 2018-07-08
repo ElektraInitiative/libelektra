@@ -23,8 +23,8 @@ if (LIBFA_FOUND)
 			    TEST_REQUIRED_PLUGINS
 			    "ini;regexdispatcher")
 
-	# if haskell was not found, the target will not be created and a message was already printed
-	# so we can skip the extra installation procedures
+	# if haskell was not found, the target will not be created and a message was already printed so we can skip the extra installation
+	# procedures
 	if (TARGET typechecker)
 
 		if (DEPENDENCY_PHASE)
@@ -38,7 +38,9 @@ if (LIBFA_FOUND)
 						    "${CMAKE_BINARY_DIR}/src/libs/typesystem/libfa"
 					    COMMAND ${CABAL_EXECUTABLE} sandbox add-source -v0
 						    "${CMAKE_BINARY_DIR}/src/libs/typesystem/specelektra"
-					    COMMAND ${CABAL_EXECUTABLE} install --only-dependencies --offline -v0
+					    COMMAND ${CABAL_EXECUTABLE} install
+						    --only-dependencies
+						    --offline -v0
 					    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/sandbox/")
 			add_custom_target ("typechecker-ghc-plugin"
 					   ALL
@@ -46,11 +48,15 @@ if (LIBFA_FOUND)
 						   "${CMAKE_CURRENT_BINARY_DIR}/sandbox/cabal.sandbox.config")
 		endif (DEPENDENCY_PHASE)
 
-		# copy our small typechecker sandbox to the library dir so it can be easily deployed and use the dependencies
-		# for hint from there
-		install (DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/sandbox/.cabal-sandbox/" DESTINATION ${TYPECHECKER_GHC_PLUGIN_PATH})
+		# copy our small typechecker sandbox to the library dir so it can be easily deployed and use the dependencies for hint from
+		# there
+		install (DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/sandbox/.cabal-sandbox/"
+				   DESTINATION
+				   ${TYPECHECKER_GHC_PLUGIN_PATH})
 		# copy our prelude library so it can be always used for mounting typechecker specifications
-		install (FILES "${CMAKE_CURRENT_SOURCE_DIR}/typechecker/prelude.ini" DESTINATION ${KDB_DB_SPEC})
+		install (FILES "${CMAKE_CURRENT_SOURCE_DIR}/typechecker/prelude.ini"
+			       DESTINATION
+			       ${KDB_DB_SPEC})
 
 	endif (TARGET typechecker)
 

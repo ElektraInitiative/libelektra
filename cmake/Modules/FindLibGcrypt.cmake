@@ -30,8 +30,7 @@ set (LIBGCRYPT_CFLAGS)
 # if libgcrypt-config has been found
 if (LIBGCRYPTCONFIG_EXECUTABLE)
 
-	# workaround for MinGW/MSYS
-	# CMake can't starts shell scripts on windows so it need to use sh.exe
+	# workaround for MinGW/MSYS: CMake can't starts shell scripts on windows so it need to use sh.exe
 	execute_process (COMMAND sh ${LIBGCRYPTCONFIG_EXECUTABLE} --libs
 			 RESULT_VARIABLE _return_VALUE
 			 OUTPUT_VARIABLE LIBGCRYPT_LIBRARIES
@@ -57,9 +56,13 @@ if (LIBGCRYPT_FOUND)
 	endif (NOT LibGcrypt_FIND_QUIETLY)
 
 	# parse include directory from C-Flags
-	string (LENGTH "${LIBGCRYPT_CFLAGS}" LIBGCRYPT_CFLAGS_LEN)
+	string (LENGTH "${LIBGCRYPT_CFLAGS}"
+		       LIBGCRYPT_CFLAGS_LEN)
 	if (${LIBGCRYPT_CFLAGS_LEN} GREATER 1)
-		string (REPLACE "-I" "" LIBGCRYPT_INCLUDE_DIR "${LIBGCRYPT_CFLAGS}")
+		string (REPLACE "-I"
+				""
+				LIBGCRYPT_INCLUDE_DIR
+				"${LIBGCRYPT_CFLAGS}")
 	endif ()
 	unset (LIBGCRYPT_CFLAGS_LEN)
 

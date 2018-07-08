@@ -3,8 +3,7 @@ find_package (LibRt)
 
 if (APPLE)
 
-	# macOS does not provide pthread_barrier_t and all related functions are not to be found.
-	# Thus we exclude the race test from macOS.
+	# macOS does not provide pthread_barrier_t and all related functions are not to be found. Thus we exclude the race test from macOS.
 	remove_tool (race "race tool does not compile under macOS")
 else ()
 	if (NOT LIBRT_FOUND)
@@ -19,5 +18,7 @@ else ()
 	target_link_libraries (race ${CMAKE_THREAD_LIBS_INIT})
 	target_link_libraries (race ${LIBRT_LIBRARIES})
 
-	install (TARGETS race DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
+	install (TARGETS race
+			 DESTINATION
+			 ${TARGET_TOOL_EXEC_FOLDER})
 endif ()

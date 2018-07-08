@@ -29,7 +29,8 @@ if (IS_INCLUDED AND LIBUV_FOUND AND NOT ENABLE_ASAN)
 	set (SOURCES ${SRC_FILES} ${ELEKTRA_HEADERS})
 	if (BUILD_FULL OR BUILD_STATIC)
 
-		list (APPEND SOURCES $<TARGET_OBJECTS:OBJ_elektra-io-uv>) # add sources for elektra-io-uv for static and full builds
+		list (APPEND SOURCES
+			     $<TARGET_OBJECTS:OBJ_elektra-io-uv>) # add sources for elektra-io-uv for static and full builds
 	endif ()
 
 	add_executable (${EXAMPLE} ${SOURCES})

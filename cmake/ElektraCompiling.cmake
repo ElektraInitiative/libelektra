@@ -38,7 +38,8 @@ endif (NOT HAS_CXX_STD)
 # different
 #
 set (__symbols_file "${CMAKE_CURRENT_BINARY_DIR}/test-symbols.map")
-file (WRITE ${__symbols_file} "{ local: *; };\n")
+file (WRITE ${__symbols_file}
+	    "{ local: *; };\n")
 set (CMAKE_REQUIRED_FLAGS "-Wl,--version-script=${__symbols_file}")
 check_cxx_compiler_flag ("" LD_ACCEPTS_VERSION_SCRIPT)
 unset (CMAKE_REQUIRED_FLAGS)
@@ -48,9 +49,11 @@ unset (CMAKE_REQUIRED_FLAGS)
 #
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 
+	# ~~~
 	# older clang did not support non-pod-varargs (will compile, but crash if used)
 	# so simply avoid to use it
 	# icc also crashes (but just warns, no error)
+	# ~~~
 	# set (EXTRA_FLAGS "${EXTRA_FLAGS} -Wno-error=non-pod-varargs")
 
 	# not supported by icc:
@@ -61,7 +64,8 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif ()
 
 if (CMAKE_COMPILER_IS_GNUCXX)
-	execute_process (COMMAND ${CMAKE_C_COMPILER} -dumpversion OUTPUT_VARIABLE GCC_VERSION)
+	execute_process (COMMAND ${CMAKE_C_COMPILER} -dumpversion
+			 OUTPUT_VARIABLE GCC_VERSION)
 	if (WIN32)
 		message (STATUS "mingw detected")
 
@@ -100,8 +104,10 @@ endif ()
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
 
+	# ~~~
 	# statically link in libimf.so libsvml.so libirng.so libintlc.so.5
 	# and fix warning #10237: -lcilkrts linked in dynamically, # static library not available
+	# ~~~
 	set (EXTRA_FLAGS "${EXTRA_FLAGS} -static-intel -wd10237")
 	message (STATUS "ICC detected")
 

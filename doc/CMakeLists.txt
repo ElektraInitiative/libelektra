@@ -20,7 +20,9 @@ macro (do_doc target folder file install)
 	add_custom_target (${target} ALL DEPENDS ${folder}/${file})
 
 	if (INSTALL_DOCUMENTATION)
-		install (DIRECTORY ${folder} DESTINATION ${install})
+		install (DIRECTORY ${folder}
+				   DESTINATION
+				   ${install})
 	endif (INSTALL_DOCUMENTATION)
 endmacro (do_doc)
 
@@ -40,7 +42,9 @@ if (DOXYGEN_FOUND)
 	endif (BUILD_PDF)
 
 	if (BUILD_DOCSET)
-		execute_process (COMMAND make ARGS -v RESULT_VARIABLE MAKE_NOT_AVAILABLE OUTPUT_QUIET)
+		execute_process (COMMAND make ARGS -v
+				 RESULT_VARIABLE MAKE_NOT_AVAILABLE
+				 OUTPUT_QUIET)
 		if (MAKE_NOT_AVAILABLE)
 			set (WITH_DOCSET NO)
 			message (WARNING "Sorry, since Make is not available I can not build the DocSet.")
@@ -59,8 +63,7 @@ if (DOXYGEN_FOUND)
 
 	add_executable (markdownlinkconverter markdownlinkconverter/markdownlinkconverter.c)
 
-	# fix usage with wine
-	# https://github.com/ElektraInitiative/libelektra/pull/340#discussion_r44044444
+	# fix usage with wine: https://github.com/ElektraInitiative/libelektra/pull/340#discussion_r44044444
 	find_util (markdownlinkconverter MARKDOWN_LINK_CONVERTER "")
 	if (DOXYGEN_VERSION VERSION_GREATER "1.8.11")
 		set (MARKDOWN_LINK_CONVERTER "\\\"${MARKDOWN_LINK_CONVERTER}\\\"")
@@ -77,7 +80,8 @@ if (DOXYGEN_FOUND)
 	if (WITH_LATEX)
 		do_doc (latex ${OUTPUT_DIRECTORY}/latex/ refman.tex ${TARGET_DOCUMENTATION_LATEX_FOLDER})
 		add_dependencies (latex man3 html)
-		list (APPEND outputs ${OUTPUT_DIRECTORY}/latex/refman.tex)
+		list (APPEND outputs
+			     ${OUTPUT_DIRECTORY}/latex/refman.tex)
 
 		file (COPY
 		      "${CMAKE_CURRENT_SOURCE_DIR}/markdownlinkconverter/elektraSpecialCharacters.sty"
@@ -85,9 +89,15 @@ if (DOXYGEN_FOUND)
 		      "${OUTPUT_DIRECTORY}/latex/")
 
 		add_custom_command (OUTPUT ${OUTPUT_DIRECTORY}/latex/refman.pdf
-				    COMMAND ${PDFLATEX_COMPILER} ARGS ${PDFLATEX_COMPILER_OPTIONS} ${OUTPUT_DIRECTORY}/latex/refman.tex
-				    COMMAND ${PDFLATEX_COMPILER} ARGS ${PDFLATEX_COMPILER_OPTIONS} ${OUTPUT_DIRECTORY}/latex/refman.tex
-				    COMMAND ${PDFLATEX_COMPILER} ARGS ${PDFLATEX_COMPILER_OPTIONS} ${OUTPUT_DIRECTORY}/latex/refman.tex
+				    COMMAND ${PDFLATEX_COMPILER}
+					    ARGS ${PDFLATEX_COMPILER_OPTIONS}
+						 ${OUTPUT_DIRECTORY}/latex/refman.tex
+				    COMMAND ${PDFLATEX_COMPILER}
+					    ARGS ${PDFLATEX_COMPILER_OPTIONS}
+						 ${OUTPUT_DIRECTORY}/latex/refman.tex
+				    COMMAND ${PDFLATEX_COMPILER}
+					    ARGS ${PDFLATEX_COMPILER_OPTIONS}
+						 ${OUTPUT_DIRECTORY}/latex/refman.tex
 				    DEPENDS ${OUTPUT_DIRECTORY}/latex/refman.tex
 					    markdownlinkconverter
 				    WORKING_DIRECTORY ${OUTPUT_DIRECTORY}/latex/)
@@ -101,9 +111,13 @@ if (DOXYGEN_FOUND)
 		set (DOCSET_PATH ${OUTPUT_DIRECTORY}/html/org.libelektra.docset)
 		add_custom_command (OUTPUT ${DOCSET_PATH}
 				    COMMAND make
-				    COMMAND ${CMAKE_COMMAND} ARGS -D DOCSET_PATH=${DOCSET_PATH} -D
-					    ICON_PATH=${CMAKE_SOURCE_DIR}/doc/images/icon.png -P
-					    ${CMAKE_SOURCE_DIR}/cmake/ElektraDocSet.cmake
+				    COMMAND ${CMAKE_COMMAND}
+					    ARGS -D
+						 DOCSET_PATH=${DOCSET_PATH}
+						 -D
+						 ICON_PATH=${CMAKE_SOURCE_DIR}/doc/images/icon.png
+						 -P
+						 ${CMAKE_SOURCE_DIR}/cmake/ElektraDocSet.cmake
 				    DEPENDS ${OUTPUT_DIRECTORY}/html/index.html
 					    markdownlinkconverter
 				    WORKING_DIRECTORY ${OUTPUT_DIRECTORY}/html)
@@ -111,7 +125,8 @@ if (DOXYGEN_FOUND)
 	endif (WITH_DOCSET)
 
 	add_custom_command (OUTPUT ${outputs}
-			    COMMAND ${DOXYGEN_EXECUTABLE} ARGS ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
+			    COMMAND ${DOXYGEN_EXECUTABLE}
+				    ARGS ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
 			    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
 				    markdownlinkconverter
 			    WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
@@ -120,21 +135,40 @@ else (DOXYGEN_FOUND)
 endif (DOXYGEN_FOUND)
 
 if (INSTALL_DOCUMENTATION)
-	install (FILES BIGPICTURE.md DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER})
-	install (FILES GOALS.md DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER})
-	install (FILES METADATA.ini DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER})
-	install (FILES SECURITY.md DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER})
-	install (FILES AUTHORS.md DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER})
-	install (FILES CONTRACT.ini DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER})
+	install (FILES BIGPICTURE.md
+		       DESTINATION
+		       ${TARGET_DOCUMENTATION_TEXT_FOLDER})
+	install (FILES GOALS.md
+		       DESTINATION
+		       ${TARGET_DOCUMENTATION_TEXT_FOLDER})
+	install (FILES METADATA.ini
+		       DESTINATION
+		       ${TARGET_DOCUMENTATION_TEXT_FOLDER})
+	install (FILES SECURITY.md
+		       DESTINATION
+		       ${TARGET_DOCUMENTATION_TEXT_FOLDER})
+	install (FILES AUTHORS.md
+		       DESTINATION
+		       ${TARGET_DOCUMENTATION_TEXT_FOLDER})
+	install (FILES CONTRACT.ini
+		       DESTINATION
+		       ${TARGET_DOCUMENTATION_TEXT_FOLDER})
 	set (news ${CMAKE_CURRENT_BINARY_DIR}/NEWS.md)
-	file (GLOB files "news/*.md")
+	file (GLOB files
+		   "news/*.md")
 	file (REMOVE ${news})
 	foreach (file ${files})
-		file (READ ${file} content)
-		file (APPEND ${news} "\n\n\n\n\n${content}")
+		file (READ ${file}
+			   content)
+		file (APPEND ${news}
+			     "\n\n\n\n\n${content}")
 	endforeach ()
-	install (FILES ${news} DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER})
-	install (FILES WHY.md DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER})
+	install (FILES ${news}
+		       DESTINATION
+		       ${TARGET_DOCUMENTATION_TEXT_FOLDER})
+	install (FILES WHY.md
+		       DESTINATION
+		       ${TARGET_DOCUMENTATION_TEXT_FOLDER})
 
 endif ()
 

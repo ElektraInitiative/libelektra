@@ -15,8 +15,7 @@ else () # Build library
 
 	set (IO_VARIANT_LIBRARY elektra-io-${BINDING_VARIANT})
 
-	# create object library so that executables can use
-	# $<TARGET_OBJECTS:OBJ_${IO_VARIANT_LIBRARY}>
+	# create object library so that executables can use $<TARGET_OBJECTS:OBJ_${IO_VARIANT_LIBRARY}>
 	add_library (OBJ_${IO_VARIANT_LIBRARY} OBJECT ${SOURCES})
 	target_include_directories (OBJ_${IO_VARIANT_LIBRARY} SYSTEM PUBLIC ${LIBEV_INCLUDE_DIRS})
 
@@ -33,26 +32,34 @@ else () # Build library
 			"${CMAKE_CURRENT_BINARY_DIR}/${IO_VARIANT_LIBRARY}.pc"
 			@ONLY)
 
-	install (FILES "${CMAKE_CURRENT_BINARY_DIR}/${IO_VARIANT_LIBRARY}.pc" DESTINATION lib${LIB_SUFFIX}/${TARGET_PKGCONFIG_FOLDER})
+	install (FILES "${CMAKE_CURRENT_BINARY_DIR}/${IO_VARIANT_LIBRARY}.pc"
+		       DESTINATION
+		       lib${LIB_SUFFIX}/${TARGET_PKGCONFIG_FOLDER})
 
 	# Build test
 	set (testexename testio_${BINDING_VARIANT})
 
 	set (TEST_SOURCES $<TARGET_OBJECTS:cframework>)
 	add_headers (TEST_SOURCES)
-	file (GLOB IO_TEST_SRC_FILES "${CMAKE_SOURCE_DIR}/src/bindings/io/test/test*.c")
-	list (APPEND TEST_SOURCES ${IO_TEST_SRC_FILES})
-	list (APPEND TEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/testio_${BINDING_VARIANT}.c")
+	file (GLOB IO_TEST_SRC_FILES
+		   "${CMAKE_SOURCE_DIR}/src/bindings/io/test/test*.c")
+	list (APPEND TEST_SOURCES
+		     ${IO_TEST_SRC_FILES})
+	list (APPEND TEST_SOURCES
+		     "${CMAKE_CURRENT_SOURCE_DIR}/testio_${BINDING_VARIANT}.c")
 
 	if (BUILD_FULL OR BUILD_STATIC) # add sources for elektra-io-ev for static and full builds
-		list (APPEND TEST_SOURCES $<TARGET_OBJECTS:OBJ_${IO_VARIANT_LIBRARY}>)
+		list (APPEND TEST_SOURCES
+			     $<TARGET_OBJECTS:OBJ_${IO_VARIANT_LIBRARY}>)
 	endif ()
 
 	add_executable (${testexename} ${TEST_SOURCES})
 	add_dependencies (${testexename} kdberrors_generated)
 
 	target_include_directories (${testexename} PUBLIC "${CMAKE_SOURCE_DIR}/tests/cframework")
-	target_include_directories (${testexename} PUBLIC SYSTEM ${LIBEV_INCLUDE_DIRS})
+	target_include_directories (${testexename}
+				    PUBLIC SYSTEM
+					   ${LIBEV_INCLUDE_DIRS})
 
 	target_link_elektra (${testexename} elektra-kdb elektra-plugin elektra-io ${IO_VARIANT_LIBRARY} m)
 	if (BUILD_FULL OR BUILD_STATIC)

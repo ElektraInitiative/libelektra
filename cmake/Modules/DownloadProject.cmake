@@ -118,9 +118,8 @@ function (download_project)
 		message (STATUS "Downloading/updating ${DL_ARGS_PROJ}")
 	endif ()
 
-	# Set up where we will put our temporary CMakeLists.txt file and also
-	# the base point below which the default source and binary dirs will be.
-	# The prefix must always be an absolute path.
+	# Set up where we will put our temporary CMakeLists.txt file and also the base point below which the default source and binary dirs
+	# will be. The prefix must always be an absolute path.
 	if (NOT DL_ARGS_PREFIX)
 		set (DL_ARGS_PREFIX "${CMAKE_BINARY_DIR}")
 	else ()
@@ -140,21 +139,15 @@ function (download_project)
 	set (${DL_ARGS_PROJ}_SOURCE_DIR "${DL_ARGS_SOURCE_DIR}" PARENT_SCOPE)
 	set (${DL_ARGS_PROJ}_BINARY_DIR "${DL_ARGS_BINARY_DIR}" PARENT_SCOPE)
 
-	# The way that CLion manages multiple configurations, it causes a copy of
-	# the CMakeCache.txt to be copied across due to it not expecting there to
-	# be a project within a project.  This causes the hard-coded paths in the
-	# cache to be copied and builds to fail.  To mitigate this, we simply
-	# remove the cache if it exists before we configure the new project.  It
-	# is safe to do so because it will be re-generated.  Since this is only
-	# executed at the configure step, it should not cause additional builds or
-	# downloads.
+	# The way that CLion manages multiple configurations, it causes a copy of the CMakeCache.txt to be copied across due to it not
+	# expecting there to be a project within a project.  This causes the hard-coded paths in the cache to be copied and builds to fail.
+	# To mitigate this, we simply remove the cache if it exists before we configure the new project.  It is safe to do so because it
+	# will be re-generated.  Since this is only executed at the configure step, it should not cause additional builds or downloads.
 	file (REMOVE "${DL_ARGS_DOWNLOAD_DIR}/CMakeCache.txt")
 
-	# Create and build a separate CMake project to carry out the download.
-	# If we've already previously done these steps, they will not cause
-	# anything to be updated, so extra rebuilds of the project won't occur.
-	# Make sure to pass through CMAKE_MAKE_PROGRAM in case the main project
-	# has this set to something not findable on the PATH.
+	# Create and build a separate CMake project to carry out the download. If we've already previously done these steps, they will not
+	# cause anything to be updated, so extra rebuilds of the project won't occur. Make sure to pass through CMAKE_MAKE_PROGRAM in case
+	# the main project has this set to something not findable on the PATH.
 	configure_file ("${_DownloadProjectDir}/DownloadProject.CMakeLists.cmake.in" "${DL_ARGS_DOWNLOAD_DIR}/CMakeLists.txt")
 	execute_process (COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" -D "CMAKE_MAKE_PROGRAM:FILE=${CMAKE_MAKE_PROGRAM}" .
 			 RESULT_VARIABLE result

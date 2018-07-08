@@ -5,7 +5,11 @@ if (NOT NPM_EXECUTABLE)
 else ()
 
 	# create simplified tool name without special characters
-	string (REGEX REPLACE "[^a-zA-Z]" "" tool_name_simplified ${tool})
+	string (REGEX
+		REPLACE "[^a-zA-Z]"
+			""
+			tool_name_simplified
+			${tool})
 
 	# define configuration path
 	set (config_root "/sw/elektra/${tool_name_simplified}/#0/")
@@ -26,7 +30,10 @@ else ()
 	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/README.md" "${CMAKE_CURRENT_BINARY_DIR}/README.md")
 
 	# install files to destination
-	install (DIRECTORY public resources DESTINATION ${install_directory})
+	install (DIRECTORY public
+			   resources
+			   DESTINATION
+			   ${install_directory})
 	install (FILES package.json
 		       README.md
 		       ${CMAKE_CURRENT_BINARY_DIR}/Gruntfile.js

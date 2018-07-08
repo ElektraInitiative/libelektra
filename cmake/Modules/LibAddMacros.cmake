@@ -16,17 +16,22 @@ endmacro (copy_file)
 # ~~~
 macro (create_lib_symlink src dest)
 
+	# Unfortunately cmake format 4.0 breaks the following code
+	# cmake-format: off
 	cmake_parse_arguments (ARG
 			       "PLUGIN" # optional keywords
 			       "" # one value keywords
 			       "" # multi value keywords
 			       ${ARGN})
+	# cmake-format: on
 
 	execute_process (COMMAND ${CMAKE_COMMAND} -E create_symlink "${src}" "${dest}"
 			 WORKING_DIRECTORY "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
 
-	if (NOT EXISTS "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${dest}")
-		file (WRITE "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${dest}" "to be overwritten, file needs to exists for some IDEs.")
+	if (NOT EXISTS
+		"${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${dest}")
+		file (WRITE "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${dest}"
+			    "to be overwritten, file needs to exists for some IDEs.")
 	endif ()
 
 	if (ARG_PLUGIN)
@@ -35,9 +40,7 @@ macro (create_lib_symlink src dest)
 		set (LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}")
 	endif ()
 
-	install (
-		CODE
-		"
+	install (CODE "
 		message (STATUS \"Installing symlink: \$ENV{DESTDIR}${LIB_INSTALL_DIR}/${dest} -> ${src}\")
 		execute_process (COMMAND \"${CMAKE_COMMAND}\" -E make_directory
 			\"\$ENV{DESTDIR}${LIB_INSTALL_DIR}\"
@@ -55,8 +58,7 @@ macro (create_lib_symlink src dest)
 		if (RET)
 			message (WARNING \"Could not install symlink\")
 		endif ()
-		"
-		)
+		")
 endmacro (create_lib_symlink src dest)
 
 # ~~~
@@ -70,8 +72,10 @@ endmacro (mkdir)
 
 macro (add_testheaders HDR_FILES)
 	include_directories ("${PROJECT_SOURCE_DIR}/tests/cframework")
-	file (GLOB BIN_HDR_FILES "${PROJECT_SOURCE_DIR}/tests/cframework/*.h")
-	list (APPEND ${HDR_FILES} ${BIN_HDR_FILES})
+	file (GLOB BIN_HDR_FILES
+		   "${PROJECT_SOURCE_DIR}/tests/cframework/*.h")
+	list (APPEND ${HDR_FILES}
+		     ${BIN_HDR_FILES})
 endmacro (add_testheaders HDR_FILES)
 
 # for generic targets (not tools) use this function to link against elektra
@@ -168,7 +172,9 @@ function (find_util util output_loc output_arg)
 			if (${util}_EXE_LOC)
 				set (ARG_LOC "${CMAKE_BINARY_DIR}/bin/${util}.exe")
 			else ()
-				find_program (${util}_EXE_LOC HINTS ${CMAKE_BINARY_DIR} ${util}.exe)
+				find_program (${util}_EXE_LOC
+					      HINTS ${CMAKE_BINARY_DIR}
+						    ${util}.exe)
 			endif ()
 		else ()
 			find_program (${util}_EXE_LOC ${util})
@@ -200,15 +206,20 @@ macro (add_headers HDR_FILES)
 	set (SOURCE_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/src/include")
 
 	include_directories (BEFORE "${BINARY_INCLUDE_DIR}")
-	file (GLOB BIN_HDR_FILES ${BINARY_INCLUDE_DIR}/*.h)
-	list (APPEND ${HDR_FILES} ${BIN_HDR_FILES})
+	file (GLOB BIN_HDR_FILES
+		   ${BINARY_INCLUDE_DIR}/*.h)
+	list (APPEND ${HDR_FILES}
+		     ${BIN_HDR_FILES})
 
 	include_directories (AFTER ${SOURCE_INCLUDE_DIR})
-	file (GLOB SRC_HDR_FILES ${SOURCE_INCLUDE_DIR}/*.h)
-	list (APPEND ${HDR_FILES} ${SRC_HDR_FILES})
+	file (GLOB SRC_HDR_FILES
+		   ${SOURCE_INCLUDE_DIR}/*.h)
+	list (APPEND ${HDR_FILES}
+		     ${SRC_HDR_FILES})
 
 	set_source_files_properties (${BINARY_INCLUDE_DIR}/kdberrors.h PROPERTIES GENERATED ON SKIP_AUTOMOC ON)
-	list (APPEND ${HDR_FILES} "${BINARY_INCLUDE_DIR}/kdberrors.h")
+	list (APPEND ${HDR_FILES}
+		     "${BINARY_INCLUDE_DIR}/kdberrors.h")
 endmacro (add_headers)
 
 # ~~~
@@ -216,22 +227,30 @@ endmacro (add_headers)
 # ~~~
 macro (add_cppheaders HDR_FILES)
 	include_directories ("${PROJECT_BINARY_DIR}/src/bindings/cpp/include")
-	file (GLOB BIN_HDR_FILES ${PROJECT_BINARY_DIR}/src/bindings/cpp/include/*.hpp)
-	list (APPEND ${HDR_FILES} ${BIN_HDR_FILES})
+	file (GLOB BIN_HDR_FILES
+		   ${PROJECT_BINARY_DIR}/src/bindings/cpp/include/*.hpp)
+	list (APPEND ${HDR_FILES}
+		     ${BIN_HDR_FILES})
 
 	include_directories ("${PROJECT_SOURCE_DIR}/src/bindings/cpp/include")
-	file (GLOB SRC_HDR_FILES ${PROJECT_SOURCE_DIR}/src/bindings/cpp/include/*.hpp)
-	list (APPEND ${HDR_FILES} ${SRC_HDR_FILES})
+	file (GLOB SRC_HDR_FILES
+		   ${PROJECT_SOURCE_DIR}/src/bindings/cpp/include/*.hpp)
+	list (APPEND ${HDR_FILES}
+		     ${SRC_HDR_FILES})
 endmacro (add_cppheaders)
 
 macro (add_toolheaders HDR_FILES)
 	include_directories ("${PROJECT_BINARY_DIR}/src/libs/tools/include")
-	file (GLOB_RECURSE BIN_HDR_FILES ${PROJECT_BINARY_DIR}/src/libtools/include/*)
-	list (APPEND ${HDR_FILES} ${BIN_HDR_FILES})
+	file (GLOB_RECURSE BIN_HDR_FILES
+			   ${PROJECT_BINARY_DIR}/src/libtools/include/*)
+	list (APPEND ${HDR_FILES}
+		     ${BIN_HDR_FILES})
 
 	include_directories ("${PROJECT_SOURCE_DIR}/src/libs/tools/include")
-	file (GLOB_RECURSE SRC_HDR_FILES ${PROJECT_SOURCE_DIR}/src/libs/tools/include/*)
-	list (APPEND ${HDR_FILES} ${SRC_HDR_FILES})
+	file (GLOB_RECURSE SRC_HDR_FILES
+			   ${PROJECT_SOURCE_DIR}/src/libs/tools/include/*)
+	list (APPEND ${HDR_FILES}
+		     ${SRC_HDR_FILES})
 endmacro (add_toolheaders)
 
 # ~~~
@@ -244,34 +263,59 @@ endmacro (add_toolheaders)
 #
 # ~~~
 macro (remove_plugin name reason)
-	if (NOT ${reason} STREQUAL "silent")
+	if (NOT ${reason}
+		STREQUAL
+		"silent")
 		message (STATUS "Exclude Plugin ${name} because ${reason}")
 	endif ()
 
 	if (ADDED_PLUGINS)
 		set (TMP ${ADDED_PLUGINS})
-		list (REMOVE_ITEM TMP ${name})
-		set (ADDED_PLUGINS ${TMP} CACHE STRING "${ADDED_PLUGINS_DOC}" FORCE)
+		list (REMOVE_ITEM TMP
+				  ${name})
+		set (ADDED_PLUGINS
+		     ${TMP}
+		     CACHE STRING
+			   "${ADDED_PLUGINS_DOC}"
+		     FORCE)
 	endif (ADDED_PLUGINS)
 
 	if (ADDED_DIRECTORIES)
 		set (TMP ${ADDED_DIRECTORIES})
-		list (REMOVE_ITEM TMP ${name})
-		set (ADDED_DIRECTORIES ${TMP} CACHE STRING "${ADDED_DIRECTORIES_DOC}" FORCE)
+		list (REMOVE_ITEM TMP
+				  ${name})
+		set (ADDED_DIRECTORIES
+		     ${TMP}
+		     CACHE STRING
+			   "${ADDED_DIRECTORIES_DOC}"
+		     FORCE)
 	endif (ADDED_DIRECTORIES)
 
 	if (REMOVED_PLUGINS)
-		set (REMOVED_PLUGINS "${REMOVED_PLUGINS};${name}" CACHE STRING "${REMOVED_PLUGINS_DOC}" FORCE)
+		set (REMOVED_PLUGINS
+		     "${REMOVED_PLUGINS};${name}"
+		     CACHE STRING
+			   "${REMOVED_PLUGINS_DOC}"
+		     FORCE)
 	else ()
-		set (REMOVED_PLUGINS "${name}" CACHE STRING "${REMOVED_PLUGINS_DOC}" FORCE)
+		set (REMOVED_PLUGINS
+		     "${name}"
+		     CACHE STRING
+			   "${REMOVED_PLUGINS_DOC}"
+		     FORCE)
 	endif ()
 endmacro (remove_plugin)
 
 macro (remove_tool name reason)
 	set (TMP ${TOOLS})
 	message (STATUS "Exclude tool ${name} because ${reason}")
-	list (REMOVE_ITEM TMP ${name})
-	set (TOOLS ${TMP} CACHE STRING ${TOOLS_DOC} FORCE)
+	list (REMOVE_ITEM TMP
+			  ${name})
+	set (TOOLS
+	     ${TMP}
+	     CACHE STRING
+		   ${TOOLS_DOC}
+	     FORCE)
 endmacro (remove_tool)
 
 # ~~~
@@ -293,8 +337,10 @@ function (list_filter result regex)
 	set (newlist)
 	foreach (r ${${result}})
 		if (r MATCHES ${${regex}})
+
 		else ()
-			list (APPEND newlist ${r})
+			list (APPEND newlist
+				     ${r})
 		endif ()
 	endforeach ()
 	set (${result} ${newlist} PARENT_SCOPE)
@@ -369,12 +415,17 @@ function (add_sources target) # define the <target>_SRCS properties if necessary
 	endif (NOT prop_defined) # create list of sources (absolute paths)
 	set (SRCS)
 	foreach (src ${ARGN})
-		if (NOT IS_ABSOLUTE "${src}")
+		if (NOT IS_ABSOLUTE
+			"${src}")
 			get_filename_component (src "${src}" ABSOLUTE)
 		endif (NOT IS_ABSOLUTE "${src}")
-		list (APPEND SRCS "${src}")
+		list (APPEND SRCS
+			     "${src}")
 	endforeach (src ${ARGN}) # append to global property
-	set_property (GLOBAL APPEND PROPERTY "${target}_SRCS" "${SRCS}")
+	set_property (GLOBAL
+		      APPEND
+		      PROPERTY "${target}_SRCS"
+			       "${SRCS}")
 endfunction (add_sources)
 
 # ~~~
@@ -397,9 +448,13 @@ function (add_includes target) # define the <target>_INCLUDES properties if nece
 	endif (NOT prop_defined) # create list of sources (absolute paths)
 	set (INCLUDES)
 	foreach (src ${ARGN})
-		list (APPEND INCLUDES "${src}")
+		list (APPEND INCLUDES
+			     "${src}")
 	endforeach (src ${ARGN}) # append to global property
-	set_property (GLOBAL APPEND PROPERTY "${target}_INCLUDES" "${INCLUDES}")
+	set_property (GLOBAL
+		      APPEND
+		      PROPERTY "${target}_INCLUDES"
+			       "${INCLUDES}")
 endfunction (add_includes)
 
 # ~~~
@@ -423,9 +478,13 @@ function (add_libraries target) # define the <target>_LIBRARIES properties if ne
 	endif (NOT prop_defined) # create list of sources (absolute paths)
 	set (LIBRARIES)
 	foreach (src ${ARGN})
-		list (APPEND LIBRARIES "${src}")
+		list (APPEND LIBRARIES
+			     "${src}")
 	endforeach (src ${ARGN}) # append to global property
-	set_property (GLOBAL APPEND PROPERTY "${target}_LIBRARIES" "${LIBRARIES}")
+	set_property (GLOBAL
+		      APPEND
+		      PROPERTY "${target}_LIBRARIES"
+			       "${LIBRARIES}")
 endfunction (add_libraries)
 
 # ~~~
@@ -453,11 +512,17 @@ macro (remember_for_removal ELEMENTS TO_REMOVE_ELEMENTS)
 	set (MY_REMOVE_ELEMENTS "")
 	foreach (B ${MY_ELEMENTS})
 		if (B MATCHES "^-.*") # remove pseudo "-element"
-			list (REMOVE_ITEM MY_ELEMENTS ${B})
-			string (LENGTH ${B} B_LENGTH)
+			list (REMOVE_ITEM MY_ELEMENTS
+					  ${B})
+			string (LENGTH ${B}
+				       B_LENGTH)
 			math (EXPR L ${B_LENGTH}-1)
-			string (SUBSTRING ${B} 1 ${L} B_OUT)
-			list (APPEND MY_REMOVE_ELEMENTS ${B_OUT})
+			string (SUBSTRING ${B}
+					  1
+					  ${L}
+					  B_OUT)
+			list (APPEND MY_REMOVE_ELEMENTS
+				     ${B_OUT})
 		endif ()
 	endforeach (B)
 	set (${TO_REMOVE_ELEMENTS} ${MY_REMOVE_ELEMENTS})
@@ -469,7 +534,8 @@ macro (removal ELEMENTS TO_REMOVE_ELEMENTS)
 		set (MY_ELEMENTS ${${ELEMENTS}})
 		list (REMOVE_DUPLICATES MY_ELEMENTS)
 		foreach (B ${${TO_REMOVE_ELEMENTS}})
-			list (REMOVE_ITEM MY_ELEMENTS ${B})
+			list (REMOVE_ITEM MY_ELEMENTS
+					  ${B})
 		endforeach (B)
 		set (${ELEMENTS} ${MY_ELEMENTS})
 	endif ()
@@ -477,11 +543,14 @@ endmacro ()
 
 function (generate_manpage NAME)
 	if (BUILD_DOCUMENTATION)
+		# Unfortunately cmake format 0.4 breaks the following code
+		# cmake-format: off
 		cmake_parse_arguments (ARG
 				       "" # optional keywords
 				       "SECTION;FILENAME" # one value keywords
 				       "" # multi value keywords
 				       ${ARGN})
+		# cmake-format: on
 
 		if (ARG_SECTION)
 			set (SECTION ${ARG_SECTION})
@@ -500,24 +569,37 @@ function (generate_manpage NAME)
 		if (RONN_LOC)
 			add_custom_command (OUTPUT ${OUTFILE}
 					    DEPENDS ${MDFILE}
-					    COMMAND export RUBYOPT="-Eutf-8" && ${RONN_LOC} ARGS -r --pipe ${MDFILE} > ${OUTFILE})
+					    COMMAND export RUBYOPT="-Eutf-8" && ${RONN_LOC}
+						    ARGS -r
+						    --pipe ${MDFILE} > ${OUTFILE})
 			add_custom_target (man-${NAME} ALL DEPENDS ${OUTFILE})
 			add_dependencies (man man-${NAME})
 		endif (RONN_LOC)
 
 		if (INSTALL_DOCUMENTATION)
-			install (FILES ${OUTFILE} DESTINATION share/man/man${SECTION})
+			install (FILES ${OUTFILE}
+				       DESTINATION
+				       share/man/man${SECTION})
 		endif ()
 	endif (BUILD_DOCUMENTATION)
 endfunction ()
 
 macro (split_plugin_providers PROVIDES)
 	foreach (PROVIDER "${${PROVIDES}}")
-		string (REGEX MATCH "([a-zA-Z0-9]+)/([a-zA-Z0-9]+)" PROVIDER_PARTS "${PROVIDER}")
-		string (LENGTH "${PROVIDER_PARTS}" PROVIDER_PARTS_LENGTH)
+		string (REGEX MATCH
+			      "([a-zA-Z0-9]+)/([a-zA-Z0-9]+)"
+			      PROVIDER_PARTS
+			      "${PROVIDER}")
+		string (LENGTH "${PROVIDER_PARTS}"
+			       PROVIDER_PARTS_LENGTH)
 		if (PROVIDER_PARTS_LENGTH GREATER 0)
-			string (REGEX REPLACE "([a-zA-Z0-9]+)/([a-zA-Z0-9]+)" "\\1;\\2" PROVIDER_PARTS "${PROVIDER_PARTS}")
-			list (APPEND ${PROVIDES} "${PROVIDER_PARTS}")
+			string (REGEX
+				REPLACE "([a-zA-Z0-9]+)/([a-zA-Z0-9]+)"
+					"\\1;\\2"
+					PROVIDER_PARTS
+					"${PROVIDER_PARTS}")
+			list (APPEND ${PROVIDES}
+				     "${PROVIDER_PARTS}")
 		endif ()
 	endforeach ()
 endmacro ()
@@ -539,10 +621,23 @@ function (generate_readme p) # rerun cmake when README.md is changed  also allow
 	configure_file (${CMAKE_CURRENT_SOURCE_DIR}/README.md ${CMAKE_CURRENT_BINARY_DIR}/README.out)
 
 	# read
-	file (READ ${CMAKE_CURRENT_BINARY_DIR}/README.out contents)
-	string (REGEX REPLACE "\\\\" "\\\\\\\\" contents "${contents}")
-	string (REGEX REPLACE "\"" "\\\\\"" contents "${contents}")
-	string (REGEX REPLACE "\n" "\\\\n\"\n\"" contents "${contents}")
+	file (READ ${CMAKE_CURRENT_BINARY_DIR}/README.out
+		   contents)
+	string (REGEX
+		REPLACE "\\\\"
+			"\\\\\\\\"
+			contents
+			"${contents}")
+	string (REGEX
+		REPLACE "\""
+			"\\\\\""
+			contents
+			"${contents}")
+	string (REGEX
+		REPLACE "\n"
+			"\\\\n\"\n\""
+			contents
+			"${contents}")
 	string (REGEX
 		REPLACE "- infos = ([a-zA-Z0-9 ]*)\\\\n\""
 			"keyNew(\"system/elektra/modules/${p}/infos\",\nKEY_VALUE, \"\\1\", KEY_END),"
@@ -559,11 +654,26 @@ function (generate_readme p) # rerun cmake when README.md is changed  also allow
 			contents
 			"${contents}")
 
-	string (REGEX MATCH "\"- +infos/provides *= *([a-zA-Z0-9/ ]*)\\\\n\"" PROVIDES "${contents}")
-	string (REGEX REPLACE "\"- +infos/provides *= *([a-zA-Z0-9/ ]*)\\\\n\"" "\\1" PROVIDES "${PROVIDES}")
-	string (REGEX REPLACE " " ";" PROVIDES "${PROVIDES}")
+	string (REGEX MATCH
+		      "\"- +infos/provides *= *([a-zA-Z0-9/ ]*)\\\\n\""
+		      PROVIDES
+		      "${contents}")
+	string (REGEX
+		REPLACE "\"- +infos/provides *= *([a-zA-Z0-9/ ]*)\\\\n\""
+			"\\1"
+			PROVIDES
+			"${PROVIDES}")
+	string (REGEX
+		REPLACE " "
+			";"
+			PROVIDES
+			"${PROVIDES}")
 	split_plugin_providers (PROVIDES)
-	string (REGEX REPLACE ";" " " PROVIDES "${PROVIDES}")
+	string (REGEX
+		REPLACE ";"
+			" "
+			PROVIDES
+			"${PROVIDES}")
 	string (REGEX
 		REPLACE "\"- +infos/provides *= *([a-zA-Z0-9/ ]*)\\\\n\""
 			"keyNew(\"system/elektra/modules/${p}/infos/provides\",\nKEY_VALUE, \"${PROVIDES}\", KEY_END),"
@@ -595,7 +705,12 @@ function (generate_readme p) # rerun cmake when README.md is changed  also allow
 			"keyNew(\"system/elektra/modules/${p}/infos/needs\",\nKEY_VALUE, \"\\1\", KEY_END),"
 			contents
 			"${contents}")
-	if (p STREQUAL ${KDB_DEFAULT_STORAGE} OR p STREQUAL KDB_DEFAULT_RESOLVER)
+	if (p
+	    STREQUAL
+	    ${KDB_DEFAULT_STORAGE}
+	    OR p
+	       STREQUAL
+	       KDB_DEFAULT_RESOLVER)
 		string (REGEX
 			REPLACE "\"- +infos/status *= *([-a-zA-Z0-9 ]*)\\\\n\""
 				"keyNew(\"system/elektra/modules/${p}/infos/status\",\nKEY_VALUE, \"\\1 default\", KEY_END),"
@@ -623,9 +738,26 @@ function (generate_readme p) # rerun cmake when README.md is changed  also allow
 			"keyNew(\"system/elektra/modules/${p}/infos/description\",\nKEY_VALUE, \"\\1\", KEY_END),"
 			contents
 			"${contents}") # allow macros:
-	string (REGEX REPLACE "\" *#ifdef ([^\\]*)\\\\n\"" "#ifdef \\1" contents "${contents}")
-	string (REGEX REPLACE "\" *#ifndef ([^\\]*)\\\\n\"" "#ifndef \\1" contents "${contents}")
-	string (REGEX REPLACE "\" *#else\\\\n\"" "#else" contents "${contents}")
-	string (REGEX REPLACE "\" *#endif\\\\n\"" "#endif" contents "${contents}")
-	file (WRITE ${CMAKE_CURRENT_BINARY_DIR}/readme_${p}.c "${contents}\n")
+	string (REGEX
+		REPLACE "\" *#ifdef ([^\\]*)\\\\n\""
+			"#ifdef \\1"
+			contents
+			"${contents}")
+	string (REGEX
+		REPLACE "\" *#ifndef ([^\\]*)\\\\n\""
+			"#ifndef \\1"
+			contents
+			"${contents}")
+	string (REGEX
+		REPLACE "\" *#else\\\\n\""
+			"#else"
+			contents
+			"${contents}")
+	string (REGEX
+		REPLACE "\" *#endif\\\\n\""
+			"#endif"
+			contents
+			"${contents}")
+	file (WRITE ${CMAKE_CURRENT_BINARY_DIR}/readme_${p}.c
+		    "${contents}\n")
 endfunction ()

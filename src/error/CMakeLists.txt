@@ -1,7 +1,9 @@
 add_executable (elektra-export-errors exporterrors.cpp parser.hpp parser.cpp)
 
 if (INSTALL_BUILD_TOOLS)
-	install (TARGETS elektra-export-errors DESTINATION bin)
+	install (TARGETS elektra-export-errors
+			 DESTINATION
+			 bin)
 endif (INSTALL_BUILD_TOOLS)
 
 set_source_files_properties (elektra-export-errors OBJECT_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/specification)
@@ -11,7 +13,10 @@ set (BINARY_INCLUDE_DIR "${PROJECT_BINARY_DIR}/src/include")
 add_custom_command (OUTPUT ${BINARY_INCLUDE_DIR}/kdberrors.h
 		    DEPENDS elektra-export-errors
 			    ${CMAKE_CURRENT_SOURCE_DIR}/specification
-		    COMMAND ${EXE_ERR_LOC} ARGS ${EXE_ERR_ARG} ${CMAKE_CURRENT_SOURCE_DIR}/specification ${BINARY_INCLUDE_DIR}/kdberrors.h)
+		    COMMAND ${EXE_ERR_LOC}
+			    ARGS ${EXE_ERR_ARG}
+				 ${CMAKE_CURRENT_SOURCE_DIR}/specification
+				 ${BINARY_INCLUDE_DIR}/kdberrors.h)
 add_custom_target (kdberrors_generated ALL DEPENDS ${BINARY_INCLUDE_DIR}/kdberrors.h)
 
 add_executable (exporttranslations exporttranslations.cpp parser.hpp parser.cpp)

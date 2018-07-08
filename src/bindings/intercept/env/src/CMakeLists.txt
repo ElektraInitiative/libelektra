@@ -3,7 +3,8 @@ include (LibAddMacros)
 add_headers (HDR_FILES)
 add_cppheaders (HDR_FILES)
 
-file (GLOB_RECURSE SRC_FILES *.cpp)
+file (GLOB_RECURSE SRC_FILES
+		   *.cpp)
 
 set (SOURCES ${SRC_FILES} ${HDR_FILES})
 
@@ -25,7 +26,9 @@ set_target_properties (elektraintercept-env
 				  LINKER_LANGUAGE
 				  CXX)
 
-install (TARGETS elektraintercept-env DESTINATION lib${LIB_SUFFIX})
+install (TARGETS elektraintercept-env
+		 DESTINATION
+		 lib${LIB_SUFFIX})
 
 mkdir (${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
 create_lib_symlink (libelektraintercept-env.so libelektragetenv.so)

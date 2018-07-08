@@ -15,7 +15,8 @@ else ()
 	add_binding (swig_python2)
 
 	if (${SWIG_VERSION} MATCHES "^2\\.")
-		message (WARNING "Python bindings might crash if generated with SWIG 2." " Please upgrade to SWIG 3 or later.")
+		message (WARNING "Python bindings might crash if generated with SWIG 2."
+				 " Please upgrade to SWIG 3 or later.")
 	endif ()
 
 	add_headers (HDR_FILES)
@@ -36,7 +37,9 @@ else ()
 		swig_add_library (swig-python2 LANGUAGE python SOURCES kdb.i TYPE MODULE)
 	endif (CMAKE_VERSION VERSION_LESS 3.8)
 	swig_link_libraries (swig-python2 elektra-core elektra-kdb ${PYTHON2_LIBRARIES})
-	set_target_properties (_swig-python2 PROPERTIES OUTPUT_NAME _kdb)
+	set_target_properties (_swig-python2
+			       PROPERTIES OUTPUT_NAME
+					  _kdb)
 
 	# Unfortunately compiling the generated code produces warnings.
 	if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -54,7 +57,9 @@ else ()
 			 OUTPUT_VARIABLE PYTHON_SITE_PACKAGES
 			 OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-	install (FILES ${CMAKE_CURRENT_BINARY_DIR}/kdb.py DESTINATION ${PYTHON_SITE_PACKAGES})
+	install (FILES ${CMAKE_CURRENT_BINARY_DIR}/kdb.py
+		       DESTINATION
+		       ${PYTHON_SITE_PACKAGES})
 
 	install (TARGETS _swig-python2 LIBRARY DESTINATION ${PYTHON_SITE_PACKAGES})
 

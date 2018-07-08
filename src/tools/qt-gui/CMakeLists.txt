@@ -3,7 +3,9 @@ set (CMAKE_INCLUDE_CURRENT_DIR ON)
 set (DISCOUNT_FIND_QUIETLY ON)
 
 if (APPLE)
-	list (APPEND CMAKE_PREFIX_PATH "/usr/local/opt/qt5" "/usr/local/opt/qt@5.5") # Provide list of default paths for Homebrew’s Qt
+	list (APPEND CMAKE_PREFIX_PATH
+		     "/usr/local/opt/qt5"
+		     "/usr/local/opt/qt@5.5") # Provide list of default paths for Homebrew’s Qt
 endif (APPLE)
 
 set (QCOMPONENTS Core Quick Gui Qml Widgets Test)
@@ -41,16 +43,23 @@ else ()
 			     ${Qt5Svg_INCLUDE_DIRS}
 			     src/markdownconverter)
 
-	file (GLOB qt-gui_HDRS "src/markdownconverter/*.h" "src/markdownconverter/template/*.h")
+	file (GLOB qt-gui_HDRS
+		   "src/markdownconverter/*.h"
+		   "src/markdownconverter/template/*.h")
 
 	add_headers (qt-gui_HDRS)
 	add_cppheaders (qt-gui_HDRS)
 	add_toolheaders (qt-gui_HDRS)
 
-	file (GLOB qt-gui_SRCS "src/*.cpp" "src/markdownconverter/*.cpp" "src/markdownconverter/template/*.cpp")
+	file (GLOB qt-gui_SRCS
+		   "src/*.cpp"
+		   "src/markdownconverter/*.cpp"
+		   "src/markdownconverter/template/*.cpp")
 
 	set (qt-gui_RSCS resources.qrc)
-	set_property (SOURCE qrc_resources.cpp PROPERTY SKIP_AUTOMOC ON)
+	set_property (SOURCE qrc_resources.cpp
+		      PROPERTY SKIP_AUTOMOC
+			       ON)
 
 	qt5_add_resources (RSCS ${qt-gui_RSCS})
 
@@ -73,13 +82,27 @@ else ()
 			       ${Qt5DBus_LIBRARIES})
 	tool_link_elektratools (qt-gui elektra-ease)
 
-	install (TARGETS qt-gui DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
+	install (TARGETS qt-gui
+			 DESTINATION
+			 ${TARGET_TOOL_EXEC_FOLDER})
 	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/elektra-qt-editor.in" "${CMAKE_CURRENT_BINARY_DIR}/elektra-qt-editor")
-	install (PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/elektra-qt-editor" DESTINATION bin)
-	install (FILES org.libelektra.elektra-qt-editor.desktop DESTINATION share/applications)
-	install (FILES org.libelektra.elektra-qt-editor.appdata.xml DESTINATION share/appdata)
-	install (FILES ../../../doc/images/logo/logo_color.svg DESTINATION share/icons/hicolor/scalable/apps RENAME elektra.svg)
-	install (FILES ../../../doc/images/logo/logo_gray.svg DESTINATION share/icons/hicolor/scalable/apps RENAME elektra-symbolic.svg)
+	install (PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/elektra-qt-editor"
+			  DESTINATION
+			  bin)
+	install (FILES org.libelektra.elektra-qt-editor.desktop
+		       DESTINATION
+		       share/applications)
+	install (FILES org.libelektra.elektra-qt-editor.appdata.xml
+		       DESTINATION
+		       share/appdata)
+	install (FILES ../../../doc/images/logo/logo_color.svg
+		       DESTINATION
+		       share/icons/hicolor/scalable/apps
+		 RENAME elektra.svg)
+	install (FILES ../../../doc/images/logo/logo_gray.svg
+		       DESTINATION
+		       share/icons/hicolor/scalable/apps
+		 RENAME elektra-symbolic.svg)
 
 	generate_manpage (kdb-qt-gui FILENAME ${CMAKE_CURRENT_SOURCE_DIR}/README.md)
 

@@ -64,13 +64,18 @@ function (set_lua_version_vars)
 		endif ()
 	elseif (Lua_FIND_VERSION)
 
-		if (NOT Lua_FIND_VERSION_MAJOR GREATER 5) # once there is a different major version supported this should become a loop
+		if (NOT Lua_FIND_VERSION_MAJOR
+			GREATER
+			5) # once there is a different major version supported this should become a loop
 			if (Lua_FIND_VERSION_COUNT EQUAL 1)
 				set (lua_append_versions ${LUA_VERSIONS5})
 			else ()
 				foreach (subver IN LISTS LUA_VERSIONS5)
-					if (NOT subver VERSION_LESS ${Lua_FIND_VERSION})
-						list (APPEND lua_append_versions ${subver})
+					if (NOT subver
+						VERSION_LESS
+						${Lua_FIND_VERSION})
+						list (APPEND lua_append_versions
+							     ${subver})
 					endif ()
 				endforeach ()
 			endif ()
@@ -80,7 +85,10 @@ function (set_lua_version_vars)
 	endif ()
 
 	foreach (ver IN LISTS lua_append_versions)
-		string (REGEX MATCH "^([0-9]+)\\.([0-9]+)$" _ver "${ver}")
+		string (REGEX MATCH
+			      "^([0-9]+)\\.([0-9]+)$"
+			      _ver
+			      "${ver}")
 		list (APPEND _lua_include_subdirs
 			     include/lua${CMAKE_MATCH_1}${CMAKE_MATCH_2}
 			     include/lua${CMAKE_MATCH_1}.${CMAKE_MATCH_2}
@@ -116,8 +124,14 @@ function (verify_lua_executable_version)
 	if (LUA_EXECUTABLE AND (NOT LUABIN_VERSION_STRING STREQUAL ""))
 
 		# Compare only MAJOR.MINOR
-		string (SUBSTRING ${LUABIN_VERSION_STRING} "4" "3" LUABIN_VERSION_STRING)
-		string (COMPARE EQUAL ${LUABIN_VERSION_STRING} "${_LUA_VERSION_MAJOR}.${_LUA_VERSION_MINOR}" VERSION_MATCHES)
+		string (SUBSTRING ${LUABIN_VERSION_STRING}
+				  "4"
+				  "3"
+				  LUABIN_VERSION_STRING)
+		string (COMPARE EQUAL
+				${LUABIN_VERSION_STRING}
+				"${_LUA_VERSION_MAJOR}.${_LUA_VERSION_MINOR}"
+				VERSION_MATCHES)
 
 		if (NOT VERSION_MATCHES)
 			message (WARNING "Lua executable does not match lua library version")
@@ -171,11 +185,12 @@ if (LUA_LIBRARY)
 	endif ()
 endif ()
 
-if (LUA_INCLUDE_DIR AND EXISTS "${LUA_INCLUDE_DIR}/lua.h")
+if (LUA_INCLUDE_DIR
+    AND EXISTS
+	"${LUA_INCLUDE_DIR}/lua.h")
 
-	# At least 5.[012] have different ways to express the version
-	# so all of them need to be tested. Lua 5.2 defines LUA_VERSION
-	# and LUA_RELEASE as joined by the C preprocessor, so avoid those.
+	# At least 5.[012] have different ways to express the version so all of them need to be tested. Lua 5.2 defines LUA_VERSION and
+	# LUA_RELEASE as joined by the C preprocessor, so avoid those.
 	file (STRINGS "${LUA_INCLUDE_DIR}/lua.h"
 		      lua_version_strings
 	      REGEX "^#define[ \t]+LUA_(RELEASE[ \t]+\"Lua [0-9]|VERSION([ \t]+\"Lua [0-9]|_[MR])).*")
@@ -203,16 +218,30 @@ if (LUA_INCLUDE_DIR AND EXISTS "${LUA_INCLUDE_DIR}/lua.h")
 				"\\1"
 				LUA_VERSION_STRING
 				";${lua_version_strings};")
-		if (NOT LUA_VERSION_STRING MATCHES "^[0-9.]+$")
+		if (NOT LUA_VERSION_STRING
+			MATCHES
+			"^[0-9.]+$")
 			string (REGEX
 				REPLACE ".*;#define[ \t]+LUA_VERSION[ \t]+\"Lua ([0-9.]+)\"[ \t]*;.*"
 					"\\1"
 					LUA_VERSION_STRING
 					";${lua_version_strings};")
 		endif ()
-		string (REGEX REPLACE "^([0-9]+)\\.[0-9.]*$" "\\1" LUA_VERSION_MAJOR "${LUA_VERSION_STRING}")
-		string (REGEX REPLACE "^[0-9]+\\.([0-9]+)[0-9.]*$" "\\1" LUA_VERSION_MINOR "${LUA_VERSION_STRING}")
-		string (REGEX REPLACE "^[0-9]+\\.[0-9]+\\.([0-9]).*" "\\1" LUA_VERSION_PATCH "${LUA_VERSION_STRING}")
+		string (REGEX
+			REPLACE "^([0-9]+)\\.[0-9.]*$"
+				"\\1"
+				LUA_VERSION_MAJOR
+				"${LUA_VERSION_STRING}")
+		string (REGEX
+			REPLACE "^[0-9]+\\.([0-9]+)[0-9.]*$"
+				"\\1"
+				LUA_VERSION_MINOR
+				"${LUA_VERSION_STRING}")
+		string (REGEX
+			REPLACE "^[0-9]+\\.[0-9]+\\.([0-9]).*"
+				"\\1"
+				LUA_VERSION_PATCH
+				"${LUA_VERSION_STRING}")
 	endif ()
 	set (_LUA_VERSION_MAJOR "${LUA_VERSION_MAJOR}")
 	set (_LUA_VERSION_MINOR "${LUA_VERSION_MINOR}")
