@@ -9,7 +9,7 @@ if (DEPENDENCY_PHASE)
 
 endif ()
 
-set(GPGME_SOURCE_FILES gpgme.h gpgme.c)
+set(GPGME_SOURCE_FILES keylist.h keylist.c gpgme.h gpgme.c)
 
 #
 # Compile Variant: OpenSSL

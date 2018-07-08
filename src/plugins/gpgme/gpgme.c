@@ -11,6 +11,7 @@
 #include "kdbconfig.h"
 #endif
 #include "gpgme.h"
+#include "keylist.h"
 #include <gpgme.h>
 #include <kdb.h>
 #include <kdberrors.h>
@@ -18,22 +19,6 @@
 #include <locale.h>
 #include <stdlib.h>
 #include <string.h>
-
-// define linked list of gpgme_key_t elements
-struct internal_keylist
-{
-	gpgme_key_t key;
-	struct internal_keylist * next;
-};
-
-struct keylist
-{
-	struct internal_keylist * head;
-	struct internal_keylist * iterator;
-	unsigned long size;
-};
-
-typedef struct keylist keylist_t;
 
 /**
  * @brief checks if a Key has been marked for encryption by checking the Key's metadata.
@@ -82,102 +67,6 @@ static int isTextMode (KeySet * conf)
 	return 1;
 }
 
-
-/**
- * @brief initializes the internal key list
- * @param list the list
- */
-static void keylistInit (keylist_t * list)
-{
-	list->head = NULL;
-	list->iterator = NULL;
-	list->size = 0;
-}
-
-/**
- * @brief add key to the list
- * @param list the key list
- * @param key the element to be added to the list
- * @retval 0 in case of insufficient memory (malloc failed)
- * @retval 1 in case of success
- */
-static int keylistAdd (keylist_t * list, gpgme_key_t key)
-{
-	if (list->iterator)
-	{
-		// append key to existing list
-		list->iterator->next = elektraMalloc (sizeof (struct internal_keylist));
-		if (!list->iterator->next)
-		{
-			return 0; // not enough memory
-		}
-		list->iterator->next->key = key;
-		list->iterator->next->next = NULL;
-		list->iterator = list->iterator->next;
-	}
-	else
-	{
-		// first element in empty list
-		list->head = elektraMalloc (sizeof (struct internal_keylist));
-		if (!list->head)
-		{
-			return 0; // not enough memory
-		}
-		list->head->key = key;
-		list->head->next = NULL;
-		list->iterator = list->head;
-	}
-	list->size++;
-	// instruct gpgme to not release the key handle until we are done with it
-	// NOTE do not forget to invoke gpgme_key_unref when releasing the key list
-	gpgme_key_ref (key);
-	return 1; // success
-}
-
-/**
- * @brief reset the iterator of the list to the head of the list.
- */
-static void keylistRewind (keylist_t * list)
-{
-	list->iterator = list->head;
-}
-
-/**
- * @brief get the next gpgme_key_t of the list.
- * @return the next element or NULL if no such element exists.
- */
-static gpgme_key_t keylistNext (keylist_t * list)
-{
-	if (!list->iterator)
-	{
-		return NULL;
-	}
-	gpgme_key_t key = list->iterator->key;
-	list->iterator = list->iterator->next;
-	return key;
-}
-
-/**
- * @brief release the key list
- * @param list the list to be released
- */
-static void keylistRelease (keylist_t * list)
-{
-	struct internal_keylist * iterator = list->head;
-	struct internal_keylist * next;
-
-	while (iterator)
-	{
-		next = iterator->next;
-		gpgme_key_unref (iterator->key);
-		elektraFree (iterator);
-		iterator = next;
-	}
-	list->head = NULL;
-	list->iterator = NULL;
-	list->size = 0;
-}
-
 /*
  * @brief invoke gpgme_key_unref on all keys and free the array.
  * @param recipients the array to be released.
@@ -210,7 +99,7 @@ static gpgme_key_t * extractRecipientFromPluginConfig (KeySet * config, Key * er
 	keylist_t list;
 	Key * gpgRecipientRoot = ksLookupByName (config, ELEKTRA_RECIPIENT_KEY, 0);
 
-	keylistInit (&list);
+	elektraGpgmeKeylistInit (&list);
 
 	// append root (gpg/key) as recipient
 	if (gpgRecipientRoot && strlen (keyString (gpgRecipientRoot)) > 0)
@@ -220,16 +109,16 @@ static gpgme_key_t * extractRecipientFromPluginConfig (KeySet * config, Key * er
 		{
 			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_GPGME, errorKey, "Failed to receive the GPG key because: %s",
 					    gpgme_strerror (err));
-			keylistRelease (&list);
+			elektraGpgmeKeylistRelease (&list);
 			return NULL;
 		}
 
 		if (key)
 		{
-			if (!keylistAdd (&list, key))
+			if (!elektraGpgmeKeylistAdd (&list, key))
 			{
 				ELEKTRA_SET_ERROR (87, errorKey, "Memory allocation failed");
-				keylistRelease (&list);
+				elektraGpgmeKeylistRelease (&list);
 				return NULL;
 			}
 		}
@@ -250,16 +139,16 @@ static gpgme_key_t * extractRecipientFromPluginConfig (KeySet * config, Key * er
 				{
 					ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_GPGME, errorKey, "Failed to receive the GPG key because: %s",
 							    gpgme_strerror (err));
-					keylistRelease (&list);
+					elektraGpgmeKeylistRelease (&list);
 					return NULL;
 				}
 
 				if (key)
 				{
-					if (!keylistAdd (&list, key))
+					if (!elektraGpgmeKeylistAdd (&list, key))
 					{
 						ELEKTRA_SET_ERROR (87, errorKey, "Memory allocation failed");
-						keylistRelease (&list);
+						elektraGpgmeKeylistRelease (&list);
 						return NULL;
 					}
 				}
@@ -277,21 +166,21 @@ static gpgme_key_t * extractRecipientFromPluginConfig (KeySet * config, Key * er
 		if (!keyArray)
 		{
 			ELEKTRA_SET_ERROR (87, errorKey, "Memory allocation failed");
-			keylistRelease (&list);
+			elektraGpgmeKeylistRelease (&list);
 			return NULL;
 		}
 
-		keylistRewind (&list);
-		while ((tempKey = keylistNext (&list)))
+		elektraGpgmeKeylistRewind (&list);
+		while ((tempKey = elektraGpgmeKeylistNext (&list)))
 		{
 			keyArray[index++] = tempKey;
 		}
 		keyArray[index] = NULL;
 
-		keylistRelease (&list);
+		elektraGpgmeKeylistRelease (&list);
 		return keyArray;
 	}
-	keylistRelease (&list);
+	elektraGpgmeKeylistRelease (&list);
 	return NULL;
 }
 
