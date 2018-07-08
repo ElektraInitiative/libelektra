@@ -274,6 +274,7 @@ Thanks to Daniel Bugl.
     *(Lukas Winkler)*
 - The documentation for `kdb` and `kdb set` now mentions the `--` argument that stops processing of command line switches. This is useful
   for setting negative values among other things. *(Klemens Böswirth)*
+- GitHub now detects the license of the repository correctly again. *(René Schwaiger)*
 
 ## Tests
 
