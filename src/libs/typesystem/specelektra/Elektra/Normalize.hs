@@ -11,8 +11,8 @@
 
 module Elektra.Normalize (normalize) where
 
-import Control.Monad (mapM, foldM)
-import Data.Maybe (maybe, catMaybes)
+import Control.Monad (foldM)
+import Data.Maybe (maybe)
 import Data.Either (either)
 import Data.List (nub, sort)
 
@@ -28,29 +28,28 @@ normalize :: RegexType -> IO RegexType
 normalize i@(RegexIntersection _ _) = either return fold $ collect i ([], [])
   where
     fold (ts, ss) = do
-      putStrLn $ "collected " ++ show (length ts) ++ " vars and " ++ show (length ss) ++ " strings"
       b <- FA.makeBasic FA.Total
-      s <- mapM (fmap rightToMaybe . FA.compile) ss >>= foldM FA.intersect b . catMaybes
+      s <- foldM FA.intersect b $ map (\(Regex _ x) -> x) ss
       e <- FA.makeBasic FA.Empty
       isEmpty <- (\case x | x <= 0    -> False
                           | otherwise -> True)
                  <$> FA.equals e s
       -- intersection with "total" equals to the original result, in that case we can omit that
-      ss' <- if isEmpty then return EmptyRegex else maybe EmptyRegex Regex . rightToMaybe <$> FA.asRegexp s
-      maybe EmptyRegex (finalize (sort $ nub ts, ss'))
+      ss' <- if isEmpty then return EmptyRegex else maybe EmptyRegex (flip Regex s) . rightToMaybe <$> FA.asRegexp s
+      maybe (return EmptyRegex) (finalize (sort $ nub ts, ss'))
             . (\case x | x < 0     -> Nothing
                        | x == 0    -> Just False
                        | otherwise -> Just True)
-            <$> FA.equals b s
+            =<< FA.equals b s
     finalize (ts, _) True = foldTyVars ts  
-    finalize ([], sr) False = sr
-    finalize (_, EmptyRegex) False = EmptyRegex
-    finalize (ts, sr) False = RegexIntersection (foldTyVars ts) sr
-    foldTyVars [] = Regex ".*"
-    foldTyVars [x] = RegexVar x
-    foldTyVars (t:ts) = RegexIntersection (RegexVar t) $ foldTyVars ts
+    finalize ([], sr) False = return sr
+    finalize (_, EmptyRegex) False = return EmptyRegex
+    finalize (ts, sr) False = flip RegexIntersection sr <$> foldTyVars ts
+    foldTyVars [] = Regex ".*" <$> FA.makeBasic FA.Total
+    foldTyVars [x] = return $ RegexVar x
+    foldTyVars (t:ts) = RegexIntersection (RegexVar t) <$> foldTyVars ts
     collect (RegexIntersection l r) p = collect r =<< collect l p
-    collect (Regex r) (ts, ss) = Right (ts, r : ss)
+    collect r@(Regex _ _) (ts, ss) = Right (ts, r : ss)
     collect (RegexVar v) (ts, ss) = Right (v : ts, ss)
     collect EmptyRegex _ = Left EmptyRegex
 normalize r = return r

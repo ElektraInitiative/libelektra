@@ -83,7 +83,6 @@ getTyCon m p t = lookupModule regexModule regexPackage
 -- D -> additional facts for error message backtracking
 -- W -> facts that the compiler wants us to prove or disprove
 solveRegex :: RgxData -> [Ct] -> [Ct] -> [Ct] -> TcPluginM TcPluginResult
-
 solveRegex rd [] _ w  = do
   (rcs, rcf, rcn) <- partitionSolutions . catMaybes <$> pRgxContains
   (ris, rif, rin) <- partitionSolutions . catMaybes . (:[]) <$> pRgxIntersects
@@ -94,11 +93,10 @@ solveRegex rd [] _ w  = do
   where
     -- Filter and solve or disprove the type constrains introduced by RegexContains 
     wRgxContains   = filter (hasTyCon $ rgxContainsTyCon rd) w
-    pRgxContains   = return [] --mapM (solve regexContains) wRgxContains
+    pRgxContains   = mapM (regexContains (rgxContainsTyCon rd) (rgxIntersectionTyCon rd)) wRgxContains
     -- Filter and solve or disprove the type constrains introduced by RegexIntersects 
     wRgxIntersects = filter (hasTyCon $ rgxIntersectableTyCon rd) w
     pRgxIntersects = regexIntersections (rgxIntersectableTyCon rd) (rgxIntersectionTyCon rd) wRgxIntersects
-
 -- Ok, nothing we can do
 solveRegex _ _ _ _  = return $ TcPluginOk [] []
 
@@ -107,9 +105,6 @@ hasTyCon wtc ct = case classifyPredType $ ctEvPred $ ctEvidence ct of
     EqPred _  (TyConApp tc _) _ -> tc == wtc
     IrredPred (TyConApp tc _)   -> tc == wtc
     _                           -> False
-
-regexContains :: Ct -> Type -> TcPluginM (Maybe SolveResult)
-regexContains c x = return Nothing
 
 evRegexConstraint :: Ct -> Maybe EvTerm
 evRegexConstraint ct = case classifyPredType $ ctEvPred $ ctEvidence ct of
