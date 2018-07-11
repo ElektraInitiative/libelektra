@@ -16,10 +16,10 @@ additional_commands:
       - NO_MAIN
       - LINK_TOOLS
     kwargs:
-      INCLUDE_DIRECTORIES: "*"
-      LINK_LIBRARIES: "*"
-      LINK_ELEKTRA: "*"
-      SOURCES: "*"
+      INCLUDE_DIRECTORIES: +
+      LINK_LIBRARIES: +
+      LINK_ELEKTRA: +
+      SOURCES: +
 
   add_plugin:
     flags:
@@ -28,17 +28,18 @@ additional_commands:
       - CPP_TEST
       - INSTALL_TEST_DATA
       - TEST_README
+      - ONLY_SHARED
     kwargs:
-      COMPILE_DEFINITIONS: "*"
-      DEPENDS: "*"
-      INCLUDE_DIRECTORIES: "*"
+      COMPILE_DEFINITIONS: +
+      DEPENDS: +
+      INCLUDE_DIRECTORIES: +
       INCLUDE_SYSTEM_DIRECTORIES: 1
-      LINK_ELEKTRA: "*"
-      LINK_LIBRARIES: "*"
-      OBJECT_SOURCES: "*"
-      SOURCES: "*"
-      TEST_ENVIRONMENT: "*"
-      TEST_REQUIRED_PLUGINS: "*"
+      LINK_ELEKTRA: +
+      LINK_LIBRARIES: +
+      OBJECT_SOURCES: +
+      SOURCES: +
+      TEST_ENVIRONMENT: +
+      TEST_REQUIRED_PLUGINS: +
 
   add_plugintest:
     flags:
@@ -47,15 +48,15 @@ additional_commands:
       - CPP
     kwargs:
       INCLUDE_SYSTEM_DIRECTORIES: 1
-      COMPILE_DEFINITIONS: "*"
+      COMPILE_DEFINITIONS: +
       ENVIRONMENT: +
-      INCLUDE_DIRECTORIES: "*"
-      LINK_LIBRARIES: "*"
-      LINK_ELEKTRA: "*"
-      TEST_LINK_LIBRARIES: "*"
-      TEST_LINK_ELEKTRA: "*"
-      LINK_PLUGIN: "*"
-      WORKING_DIRECTORY: "*"
+      INCLUDE_DIRECTORIES: +
+      LINK_LIBRARIES: +
+      LINK_ELEKTRA: +
+      TEST_LINK_LIBRARIES: +
+      TEST_LINK_ELEKTRA: +
+      LINK_PLUGIN: +
+      WORKING_DIRECTORY: +
 
   download_project:
     kwargs:
