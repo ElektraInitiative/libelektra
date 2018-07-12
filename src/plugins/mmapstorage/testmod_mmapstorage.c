@@ -10,10 +10,15 @@
 
 /* -- Imports --------------------------------------------------------------------------------------------------------------------------- */
 
+#include <stdio.h> // fopen(), fileno()
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>  // stat()
+#include <sys/types.h> // ftruncate ()
+#include <unistd.h>    // ftruncate()
 
 #include <kdbconfig.h>
+#include <kdbmmap.h>
 #include <kdbprivate.h>
 
 #include <tests_plugin.h>
@@ -109,6 +114,60 @@ static void test_mmap_get_set (const char * tmpFile)
 	keyDel (parentKey);
 	ksDel (ks);
 	PLUGIN_CLOSE ();
+}
+
+static void test_mmap_truncated_file (const char * tmpFile)
+{
+	// first write a mmap file
+	{
+		Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+		KeySet * conf = ksNew (0, KS_END);
+		PLUGIN_OPEN ("mmapstorage");
+
+		KeySet * ks = simpleTestKeySet ();
+		succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+
+		keyDel (parentKey);
+		ksDel (ks);
+		PLUGIN_CLOSE ();
+	}
+
+	// now truncate the mmap file by the size of the mmap footer
+	FILE * fp;
+	if ((fp = fopen (tmpFile, "r+")) == 0)
+	{
+		yield_error ("error opening file");
+	}
+	struct stat sbuf;
+	if (stat (tmpFile, &sbuf) == -1)
+	{
+		yield_error ("stat error");
+	}
+
+	int fd = fileno (fp);
+	if ((ftruncate (fd, sbuf.st_size - sizeof (MmapFooter))) == -1)
+	{
+		yield_error ("ftruncate error");
+	}
+	if (fp)
+	{
+		fclose (fp);
+	}
+
+	// truncated file should be detected by mmapstorage
+	{
+		// after the file was truncated, we expect an error here
+		Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+		KeySet * conf = ksNew (0, KS_END);
+		PLUGIN_OPEN ("mmapstorage");
+
+		KeySet * ks = ksNew (0, KS_END);
+		succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbGet did not detect truncated file");
+
+		keyDel (parentKey);
+		ksDel (ks);
+		PLUGIN_CLOSE ();
+	}
 }
 
 static void test_mmap_set_get (const char * tmpFile)
@@ -1210,6 +1269,9 @@ int main (int argc, char ** argv)
 
 	// call once before clearStorage, to test non existent file
 	test_mmap_get_set (tmpFile);
+
+	clearStorage (tmpFile);
+	test_mmap_truncated_file (tmpFile);
 
 	clearStorage (tmpFile);
 	test_mmap_get_set_empty (tmpFile);

@@ -34,6 +34,7 @@
 #define SIZEOF_KEYSET (sizeof (KeySet))
 #define SIZEOF_KEYSET_PTR (sizeof (KeySet *))
 #define SIZEOF_MMAPHEADER (sizeof (MmapHeader))
+#define SIZEOF_MMAPFOOTER (sizeof (MmapFooter))
 #define SIZEOF_ADDR_STRING (19) // format: 0xADDR -> ADDR in hex, for 64bit addr: 2 bytes (0x) + 16 bytes (ADDR) + 1 byte (ending null)
 
 typedef enum _DestType { TYPE_MMAP = 0, TYPE_ALLOC } DestType;
@@ -191,6 +192,10 @@ static ssize_t find (Key * key, DynArray * dynArray)
 	return -1;
 }
 
+static void initMmapFooter (MmapFooter * mmapFooter)
+{
+	mmapFooter->mmapMagicNumber = ELEKTRA_MAGIC_MMAP_NUMBER;
+}
 
 static void mmapDataSize (DestType destType, MmapHeader * mmapHeader, KeySet * returned, DynArray * dynArray)
 {
@@ -229,7 +234,7 @@ static void mmapDataSize (DestType destType, MmapHeader * mmapHeader, KeySet * r
 
 	if (destType == TYPE_MMAP)
 	{
-		allocSize += SIZEOF_MMAPHEADER;
+		allocSize += SIZEOF_MMAPHEADER + SIZEOF_MMAPFOOTER;
 	}
 	mmapHeader->allocSize = allocSize;
 	mmapHeader->numKeySets = 1 + metaKeySets;
@@ -460,7 +465,7 @@ static void writeKeySet (DestType destType, MmapHeader * mmapHeader, KeySet * ke
 	ksPtr->current = 0;
 }
 
-static void ksWrite (DestType destType, char * dest, KeySet * keySet, MmapHeader * mmapHeader, DynArray * dynArray)
+static void ksWrite (DestType destType, char * dest, KeySet * keySet, MmapHeader * mmapHeader, MmapFooter * mmapFooter, DynArray * dynArray)
 {
 	// multiple options for writing the KeySet:
 	//		* fwrite () directly from the structs (needs multiple fwrite () calls)
@@ -506,6 +511,7 @@ static void ksWrite (DestType destType, char * dest, KeySet * keySet, MmapHeader
 	if (destType == TYPE_MMAP)
 	{
 		memcpy (dest, mmapHeader, SIZEOF_MMAPHEADER);
+		memcpy ((dest + mmapHeader->allocSize - SIZEOF_MMAPFOOTER), mmapFooter, SIZEOF_MMAPFOOTER);
 	}
 }
 
@@ -536,6 +542,18 @@ static int readMmapHeader (FILE * fp, MmapHeader * mmapHeader)
 	fread (mmapHeader, SIZEOF_MMAPHEADER, (sizeof (char)), fp);
 
 	if (mmapHeader->mmapMagicNumber == ELEKTRA_MAGIC_MMAP_NUMBER)
+	{
+		return 0;
+	}
+
+	return -1;
+}
+
+static int readMmapFooter (char * mappedRegion, MmapHeader * mmapHeader)
+{
+	MmapFooter * mmapFooter = (MmapFooter *) (mappedRegion + mmapHeader->allocSize - SIZEOF_MMAPFOOTER);
+
+	if (mmapFooter->mmapMagicNumber == ELEKTRA_MAGIC_MMAP_NUMBER)
 	{
 		return 0;
 	}
@@ -757,6 +775,17 @@ int elektraMmapstorageGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 	ELEKTRA_LOG_WARNING ("mappedRegion size: %zu", sbuf.st_size);
 	ELEKTRA_LOG_WARNING ("mappedRegion ptr: %p", (void *) mappedRegion);
 
+	if (readMmapFooter (mappedRegion, &mmapHeader) == -1)
+	{
+		// config file was corrupt/truncated
+		// TODO: check which error to set here
+		ELEKTRA_LOG ("could not read mmap information footer: file was altered");
+		ELEKTRA_SET_ERROR_GET (parentKey);
+		errno = errnosave;
+		fclose (fp);
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+
 	/* disable CRC
 	char * ksPtr = (char *) (mappedRegion + SIZEOF_MMAPHEADER);
 	uint32_t checksum = crc32 (0L, Z_NULL, 0);
@@ -838,7 +867,7 @@ KeySet * copyKeySet (MmapHeader * mmapInfo, KeySet * unlinkKs, MmapHeader * mmap
 		return 0;
 	}
 	mmapHeader->destAddr = (char *) unlinkKs; // set old address
-	ksWrite (TYPE_ALLOC, dest, unlinkKs, mmapHeader, &dynArray);
+	ksWrite (TYPE_ALLOC, dest, unlinkKs, mmapHeader, 0, &dynArray);
 
 	if (dynArray.keyArray)
 	{
@@ -929,7 +958,9 @@ int elektraMmapstorageSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
-	ksWrite (TYPE_MMAP, mappedRegion, returned, &mmapHeader, &dynArray);
+	MmapFooter mmapFooter;
+	initMmapFooter (&mmapFooter);
+	ksWrite (TYPE_MMAP, mappedRegion, returned, &mmapHeader, &mmapFooter, &dynArray);
 	if (msync ((void *) mappedRegion, mmapHeader.allocSize, MS_SYNC) != 0)
 	{
 		ELEKTRA_LOG ("could not msync");

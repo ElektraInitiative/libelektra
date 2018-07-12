@@ -16,6 +16,7 @@
 #define ELEKTRA_MAGIC_MMAP_NUMBER (0x0A6172746B656C45)
 
 typedef struct _mmapHeader MmapHeader;
+typedef struct _mmapFooter MmapFooter;
 
 /**
  * Flags for mmap
@@ -40,6 +41,13 @@ struct _mmapHeader
 	char * destAddr;		/**<Base pointer to allocated destination */
 	uint32_t checksum;		/**<Checksum of the data */
 	mmapflag_t flags;		/**<Control flags for mmap */
+	// clang-format on
+};
+
+struct _mmapFooter
+{
+	// clang-format off
+	uint64_t mmapMagicNumber;	/**<Magic number for consistency check */
 	// clang-format on
 };
 
