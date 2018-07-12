@@ -217,6 +217,7 @@ static int transferGpgmeDataToElektraKey (gpgme_data_t src, Key * dst, Key * err
 		goto cleanup;
 	}
 
+	// TODO set according to data type
 	keySetString (dst, buffer);
 
 cleanup:
