@@ -15,9 +15,7 @@
 add_executable (elektra-export-symbols "exportsymbols.c")
 
 if (INSTALL_BUILD_TOOLS)
-	install (TARGETS elektra-export-symbols
-			 DESTINATION
-			 bin)
+	install (TARGETS elektra-export-symbols DESTINATION bin)
 endif (INSTALL_BUILD_TOOLS)
 
 include (LibAddMacros)
@@ -169,8 +167,7 @@ if (BUILD_SHARED)
 	install (TARGETS elektra-core
 			 elektra-kdb
 			 elektra
-			 DESTINATION
-			 lib${LIB_SUFFIX}
+		 DESTINATION lib${LIB_SUFFIX}
 		 EXPORT ElektraTargetsLibelektra)
 
 	list (APPEND targets_built
@@ -219,10 +216,7 @@ if (BUILD_FULL)
 						  "-Wl,--version-script=${__symbols_file}")
 	endif ()
 
-	install (TARGETS elektra-full
-			 DESTINATION
-			 lib${LIB_SUFFIX}
-		 EXPORT ElektraTargetsLibelektra)
+	install (TARGETS elektra-full DESTINATION lib${LIB_SUFFIX} EXPORT ElektraTargetsLibelektra)
 
 	list (APPEND targets_built
 		     elektra-full)
@@ -251,10 +245,7 @@ if (BUILD_STATIC)
 						  "-Wl,--version-script=${__symbols_file}")
 	endif ()
 
-	install (TARGETS elektra-static
-			 DESTINATION
-			 lib${LIB_SUFFIX}
-		 EXPORT ElektraTargetsLibelektra)
+	install (TARGETS elektra-static DESTINATION lib${LIB_SUFFIX} EXPORT ElektraTargetsLibelektra)
 
 	list (APPEND targets_built
 		     elektra-static)

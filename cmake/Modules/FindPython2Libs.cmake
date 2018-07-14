@@ -65,9 +65,7 @@ if (Python2Libs_FIND_VERSION)
 			endif (_PYTHON2_FIND_MAJ_MIN STREQUAL Python2Libs_FIND_VERSION)
 		else (Python2Libs_FIND_VERSION_EXACT)
 			foreach (_PYTHON2_V ${_PYTHON2${_PYTHON2_FIND_MAJ}_VERSIONS})
-				if (NOT _PYTHON2_V
-					VERSION_LESS
-					_PYTHON2_FIND_MAJ_MIN)
+				if (NOT _PYTHON2_V VERSION_LESS _PYTHON2_FIND_MAJ_MIN)
 					list (APPEND _PYTHON2_FIND_OTHER_VERSIONS
 						     ${_PYTHON2_V})
 				endif ()
@@ -105,8 +103,6 @@ foreach (_CURRENT_VERSION ${_Python2_VERSIONS})
 				    [HKEY_CURRENT_USER\\SOFTWARE\\Python\\PythonCore\\${_CURRENT_VERSION}\\InstallPath]/libs)
 	endif (WIN32)
 
-	# Unfortunately cmake format 0.4 breaks the following code
-	# cmake-format: off
 	find_library (PYTHON2_LIBRARY
 		      NAMES python${_CURRENT_VERSION_NO_DOTS}
 			    python${_CURRENT_VERSION}mu
@@ -125,14 +121,9 @@ foreach (_CURRENT_VERSION ${_Python2_VERSIONS})
 		      NO_SYSTEM_ENVIRONMENT_PATH # Avoid finding the .dll in the PATH.  We want the .lib.
 		      PATH_SUFFIXES python${_CURRENT_VERSION}/config # This is where the static library is usually located
 		      )
-	# cmake-format: on
 
 	# For backward compatibility, honour value of PYTHON2_INCLUDE_PATH, if PYTHON2_INCLUDE_DIR is not set.
-	if (DEFINED
-	    PYTHON2_INCLUDE_PATH
-	    AND
-	    NOT DEFINED
-		PYTHON2_INCLUDE_DIR)
+	if (DEFINED PYTHON2_INCLUDE_PATH AND NOT DEFINED PYTHON2_INCLUDE_DIR)
 		set (PYTHON2_INCLUDE_DIR
 		     "${PYTHON2_INCLUDE_PATH}"
 		     CACHE PATH
@@ -162,9 +153,7 @@ foreach (_CURRENT_VERSION ${_Python2_VERSIONS})
 	# For backward compatibility, set PYTHON2_INCLUDE_PATH.
 	set (PYTHON2_INCLUDE_PATH "${PYTHON2_INCLUDE_DIR}")
 
-	if (PYTHON2_INCLUDE_DIR
-	    AND EXISTS
-		"${PYTHON2_INCLUDE_DIR}/patchlevel.h")
+	if (PYTHON2_INCLUDE_DIR AND EXISTS "${PYTHON2_INCLUDE_DIR}/patchlevel.h")
 		file (STRINGS "${PYTHON2_INCLUDE_DIR}/patchlevel.h"
 			      python_version_str
 		      REGEX "^#define[ \t]+PY_VERSION[ \t]+\"[^\"]+\"")

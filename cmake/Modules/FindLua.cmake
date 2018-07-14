@@ -64,16 +64,12 @@ function (set_lua_version_vars)
 		endif ()
 	elseif (Lua_FIND_VERSION)
 
-		if (NOT Lua_FIND_VERSION_MAJOR
-			GREATER
-			5) # once there is a different major version supported this should become a loop
+		if (NOT Lua_FIND_VERSION_MAJOR GREATER 5) # once there is a different major version supported this should become a loop
 			if (Lua_FIND_VERSION_COUNT EQUAL 1)
 				set (lua_append_versions ${LUA_VERSIONS5})
 			else ()
 				foreach (subver IN LISTS LUA_VERSIONS5)
-					if (NOT subver
-						VERSION_LESS
-						${Lua_FIND_VERSION})
+					if (NOT subver VERSION_LESS ${Lua_FIND_VERSION})
 						list (APPEND lua_append_versions
 							     ${subver})
 					endif ()
@@ -185,9 +181,7 @@ if (LUA_LIBRARY)
 	endif ()
 endif ()
 
-if (LUA_INCLUDE_DIR
-    AND EXISTS
-	"${LUA_INCLUDE_DIR}/lua.h")
+if (LUA_INCLUDE_DIR AND EXISTS "${LUA_INCLUDE_DIR}/lua.h")
 
 	# At least 5.[012] have different ways to express the version so all of them need to be tested. Lua 5.2 defines LUA_VERSION and
 	# LUA_RELEASE as joined by the C preprocessor, so avoid those.
@@ -218,9 +212,7 @@ if (LUA_INCLUDE_DIR
 				"\\1"
 				LUA_VERSION_STRING
 				";${lua_version_strings};")
-		if (NOT LUA_VERSION_STRING
-			MATCHES
-			"^[0-9.]+$")
+		if (NOT LUA_VERSION_STRING MATCHES "^[0-9.]+$")
 			string (REGEX
 				REPLACE ".*;#define[ \t]+LUA_VERSION[ \t]+\"Lua ([0-9.]+)\"[ \t]*;.*"
 					"\\1"

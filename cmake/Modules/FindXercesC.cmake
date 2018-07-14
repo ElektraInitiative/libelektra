@@ -72,19 +72,13 @@ function (_XercesC_GET_VERSION version_hdr)
 				XercesC_PATCH
 				"${_contents}")
 
-		if (NOT XercesC_MAJOR
-			MATCHES
-			"^[0-9]+$")
+		if (NOT XercesC_MAJOR MATCHES "^[0-9]+$")
 			message (FATAL_ERROR "Version parsing failed for XERCES_VERSION_MAJOR!")
 		endif ()
-		if (NOT XercesC_MINOR
-			MATCHES
-			"^[0-9]+$")
+		if (NOT XercesC_MINOR MATCHES "^[0-9]+$")
 			message (FATAL_ERROR "Version parsing failed for XERCES_VERSION_MINOR!")
 		endif ()
-		if (NOT XercesC_PATCH
-			MATCHES
-			"^[0-9]+$")
+		if (NOT XercesC_PATCH MATCHES "^[0-9]+$")
 			message (FATAL_ERROR "Version parsing failed for XERCES_VERSION_REVISION!")
 		endif ()
 
@@ -135,8 +129,7 @@ if (XercesC_FOUND)
 	set (XercesC_LIBRARIES "${XercesC_LIBRARY}")
 
 	# For header-only libraries
-	if (NOT TARGET
-		XercesC::XercesC)
+	if (NOT TARGET XercesC::XercesC)
 		add_library (XercesC::XercesC UNKNOWN IMPORTED)
 		if (XercesC_INCLUDE_DIRS)
 			set_target_properties (XercesC::XercesC

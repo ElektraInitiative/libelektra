@@ -65,19 +65,13 @@ else ()
 	target_link_libraries (${tool} ${CPPCMS_LIBRARY} ${Boost_LIBRARIES} ${LIBJWT_LIBRARY} ${OPENSSL_LIBRARIES})
 	target_link_libraries (${tool} elektra-core elektratools)
 
-	install (TARGETS ${tool}
-			 DESTINATION
-			 ${install_directory})
+	install (TARGETS ${tool} DESTINATION ${install_directory})
 	install (PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/run-${tool}
 			  ${CMAKE_CURRENT_BINARY_DIR}/stop-${tool}
 			  ${CMAKE_CURRENT_BINARY_DIR}/mount-${tool}-config
-			  DESTINATION
-			  ${TARGET_TOOL_EXEC_FOLDER})
+		 DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
-	install (FILES ${CMAKE_CURRENT_BINARY_DIR}/config-specification.ini
-		       DESTINATION
-		       ${KDB_DB_SPEC}
-		 RENAME ${tool}-spec.ini)
+	install (FILES ${CMAKE_CURRENT_BINARY_DIR}/config-specification.ini DESTINATION ${KDB_DB_SPEC} RENAME ${tool}-spec.ini)
 
 	generate_manpage (kdb-run-${tool} FILENAME ${CMAKE_CURRENT_BINARY_DIR}/README.md)
 

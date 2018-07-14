@@ -549,15 +549,12 @@ function (add_plugin PLUGIN_SHORT_NAME)
 			       "PLUGIN_SHORT_NAME=${PLUGIN_SHORT_NAME}"
 			       "README=readme_${PLUGIN_SHORT_NAME}.c")
 
-	# Unfortunately cmake format 0.4 breaks the following code
-	# cmake-format: off
 	set_property (TARGET ${PLUGIN_OBJS}
 		      APPEND
 		      PROPERTY INCLUDE_DIRECTORIES
 			       ${ARG_INCLUDE_DIRECTORIES}
 			       ${CMAKE_CURRENT_BINARY_DIR} # for readme
 		      )
-	# cmake-format: on
 
 	if (ARG_INCLUDE_SYSTEM_DIRECTORIES AND NOT ARG_INCLUDE_SYSTEM_DIRECTORIES STREQUAL "/usr/include")
 		set_property (TARGET ${PLUGIN_OBJS}
@@ -565,14 +562,11 @@ function (add_plugin PLUGIN_SHORT_NAME)
 			      PROPERTY COMPILE_FLAGS
 				       "${CMAKE_INCLUDE_SYSTEM_FLAG_CXX} ${ARG_INCLUDE_SYSTEM_DIRECTORIES} ${CMAKE_PIC_FLAGS}")
 	else ()
-		# Unfortunately cmake format 0.4 breaks the following code
-		# cmake-format: off
 		set_property (TARGET ${PLUGIN_OBJS}
 			      APPEND
 			      PROPERTY COMPILE_FLAGS
 				       ${CMAKE_PIC_FLAGS} # needed for shared libraries
 			      )
-		# cmake-format: on
 	endif ()
 
 	set_property (TARGET ${PLUGIN_OBJS}
@@ -599,15 +593,12 @@ function (add_plugin PLUGIN_SHORT_NAME)
 				       "HAVE_KDBCONFIG_H"
 				       "PLUGIN_SHORT_NAME=${PLUGIN_SHORT_NAME}"
 				       "README=readme_${PLUGIN_SHORT_NAME}.c")
-		# Unfortunately cmake format 0.4 breaks the following code
-		# cmake-format: off
 		set_property (TARGET ${PLUGIN_NAME}
 			      APPEND
 			      PROPERTY INCLUDE_DIRECTORIES
 				       ${ARG_INCLUDE_DIRECTORIES}
 				       ${CMAKE_CURRENT_BINARY_DIR} # for readme
 			      )
-		# cmake-format: on
 		if (ARG_INCLUDE_SYSTEM_DIRECTORIES AND NOT ARG_INCLUDE_SYSTEM_DIRECTORIES STREQUAL "/usr/include")
 			set_property (TARGET ${PLUGIN_NAME}
 				      APPEND

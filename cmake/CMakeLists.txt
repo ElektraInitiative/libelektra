@@ -13,15 +13,12 @@ write_basic_package_version_file ("${CMAKE_CURRENT_BINARY_DIR}/ElektraConfigVers
 
 install (FILES "${CMAKE_CURRENT_BINARY_DIR}/ElektraConfig.cmake"
 	       "${CMAKE_CURRENT_BINARY_DIR}/ElektraConfigVersion.cmake"
-	       DESTINATION
-	       ${TARGET_CMAKE_FOLDER})
+	 DESTINATION ${TARGET_CMAKE_FOLDER})
 
 # pkg-config files
 configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/elektra.pc.in" "${CMAKE_CURRENT_BINARY_DIR}/elektra.pc" @ONLY)
 
-install (FILES "${CMAKE_CURRENT_BINARY_DIR}/elektra.pc"
-	       DESTINATION
-	       lib${LIB_SUFFIX}/${TARGET_PKGCONFIG_FOLDER})
+install (FILES "${CMAKE_CURRENT_BINARY_DIR}/elektra.pc" DESTINATION lib${LIB_SUFFIX}/${TARGET_PKGCONFIG_FOLDER})
 
 add_custom_target (uninstall
 		   COMMAND "${CMAKE_COMMAND}" -D KDB_VERSION=${KDB_VERSION} -D CMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -D

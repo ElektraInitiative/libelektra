@@ -9,9 +9,7 @@ macro (do_example source)
 	set (SOURCES ${HDR_FILES} ${source}.c)
 	add_executable (${source} ${SOURCES})
 	add_dependencies (${source} kdberrors_generated)
-	install (TARGETS ${source}
-			 DESTINATION
-			 ${TARGET_TOOL_EXEC_FOLDER})
+	install (TARGETS ${source} DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
 	set_target_properties (${source}
 			       PROPERTIES COMPILE_DEFINITIONS

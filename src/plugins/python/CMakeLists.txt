@@ -52,9 +52,7 @@ if (ADDTESTING_PHASE)
 			add_plugintest (python MEMLEAK WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../../bindings/swig/python/)
 
 			if (INSTALL_TESTING)
-				install (DIRECTORY python
-						   DESTINATION
-						   ${TARGET_TEST_DATA_FOLDER})
+				install (DIRECTORY python DESTINATION ${TARGET_TEST_DATA_FOLDER})
 			endif ()
 
 		else ()

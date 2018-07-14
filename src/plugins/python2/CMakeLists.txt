@@ -69,8 +69,7 @@ if (ADDTESTING_PHASE)
 
 			if (INSTALL_TESTING)
 				install (DIRECTORY ${CMAKE_SOURCE_DIR}/src/plugins/python/python/
-						   DESTINATION
-						   "${TARGET_TEST_DATA_FOLDER}/python2")
+					 DESTINATION "${TARGET_TEST_DATA_FOLDER}/python2")
 			endif ()
 
 		else ()

@@ -88,16 +88,15 @@ macro (compile_haskell_binding CABAL_EXECUTABLE GHC_VERSION HASKELL_SHARED_SANDB
 					)
 			endforeach (HASKELL_TEST ${HASKELL_TESTS})
 			install (FILES ${HASKELL_TESTS}
-				       DESTINATION
-				       ${TARGET_TOOL_EXEC_FOLDER}
-				       PERMISSIONS
-				       OWNER_READ
-				       OWNER_WRITE
-				       OWNER_EXECUTE
-				       GROUP_READ
-				       GROUP_EXECUTE
-				       WORLD_READ
-				       WORLD_EXECUTE)
+				 DESTINATION ${TARGET_TOOL_EXEC_FOLDER}
+				 PERMISSIONS
+				 OWNER_READ
+				 OWNER_WRITE
+				 OWNER_EXECUTE
+				 GROUP_READ
+				 GROUP_EXECUTE
+				 WORLD_READ
+				 WORLD_EXECUTE)
 		endif (INSTALL_TESTING)
 
 		add_test (testhaskell_basic "${CMAKE_CURRENT_BINARY_DIR}/dist/build/testhaskell_basic/testhaskell_basic")
@@ -175,9 +174,7 @@ set (GHC_MIN_VERSION "8.0.1")
 if (BUILD_SHARED)
 	if (NOT ENABLE_ASAN)
 		if (HASKELL_FOUND)
-			if (NOT GHC_VERSION
-				VERSION_LESS
-				${GHC_MIN_VERSION})
+			if (NOT GHC_VERSION VERSION_LESS ${GHC_MIN_VERSION})
 				compile_haskell_binding (${CABAL_EXECUTABLE} ${GHC_VERSION} ${HASKELL_SHARED_SANDBOX})
 			else (NOT GHC_VERSION VERSION_LESS ${GHC_MIN_VERSION})
 				exclude_binding (haskell "ghc: ${GHC_VERSION} found, but ${GHC_MIN_VERSION} required")

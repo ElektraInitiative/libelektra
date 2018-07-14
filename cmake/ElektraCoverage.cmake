@@ -4,10 +4,7 @@
 
 find_program (COVERAGE_LCOV lcov)
 find_program (COVERAGE_AWK awk)
-if (EXISTS
-    ${COVERAGE_LCOV}
-    AND EXISTS
-	${COVERAGE_AWK})
+if (EXISTS ${COVERAGE_LCOV} AND EXISTS ${COVERAGE_AWK})
 
 	# make all invocations of lcov and genhtml quiet
 	set (COMMON_FLAGS "-q")

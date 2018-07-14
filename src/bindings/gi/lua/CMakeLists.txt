@@ -25,9 +25,7 @@ macro (do_gi_lua_test source)
 	endif ()
 endmacro (do_gi_lua_test)
 
-install (DIRECTORY lgi
-		   DESTINATION
-		   ${TARGET_LUA_LMOD_FOLDER})
+install (DIRECTORY lgi DESTINATION ${TARGET_LUA_LMOD_FOLDER})
 
 # we're searching for the lua interpreter however FindLua only searches for the library. But that's better than nothing.
 find_package (Lua 5.1)

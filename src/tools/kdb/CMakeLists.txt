@@ -21,9 +21,7 @@ if (BUILD_SHARED)
 
 	target_link_libraries (kdb elektra-core elektra-kdb elektratools)
 
-	install (TARGETS kdb
-			 DESTINATION
-			 bin)
+	install (TARGETS kdb DESTINATION bin)
 endif (BUILD_SHARED)
 
 if (BUILD_FULL)
@@ -32,9 +30,7 @@ if (BUILD_FULL)
 
 	target_link_libraries (kdb-full elektra-full elektratools-full)
 
-	install (TARGETS kdb-full
-			 DESTINATION
-			 bin)
+	install (TARGETS kdb-full DESTINATION bin)
 endif (BUILD_FULL)
 
 if (BUILD_STATIC)
@@ -58,7 +54,5 @@ if (BUILD_STATIC)
 						  ${CMAKE_STATIC_FLAGS})
 	endif ()
 
-	install (TARGETS kdb-static
-			 DESTINATION
-			 bin)
+	install (TARGETS kdb-static DESTINATION bin)
 endif (BUILD_STATIC)

@@ -48,14 +48,11 @@ include (LibAddMacros)
 #   endif ()
 # ~~~
 function (check_binding_included BINDING_NAME OUTVARIABLE)
-	# Unfortunately cmake format 0.4 breaks the following code
-	# cmake-format: off
 	cmake_parse_arguments (ARG
 			       "SILENT" # optional keywords
 			       "" # one value keywords
 			       "" # multi value keywords
 			       ${ARGN})
-	# cmake-format: on
 
 	check_item_is_excluded (IS_EXCLUDED
 				BINDINGS
@@ -90,14 +87,11 @@ endfunction (check_binding_included)
 #    add_binding ("anynameyouwant")
 # ~~~
 function (add_binding BINDING_NAME)
-	# Unfortunately cmake format 0.4 breaks the following code
-	# cmake-format: off
 	cmake_parse_arguments (ARG
 			       "ONLY_SHARED" # optional keywords
 			       "" # one value keywords
 			       "" # multi value keywords
 			       ${ARGN})
-	# cmake-format: on
 
 	if (ADDED_BINDINGS)
 		set (TMP "${ADDED_BINDINGS};${BINDING_NAME}")
@@ -143,18 +137,13 @@ endfunction (add_binding)
 #  exclude_binding (fstab "mntent is missing")
 # ~~~
 function (exclude_binding name reason)
-	# Unfortunately cmake format 0.4 breaks the following code
-	# cmake-format: off
 	cmake_parse_arguments (ARG
 			       "REMOVE" # optional keywords
 			       "" # one value keywords
 			       "" # multi value keywords
 			       ${ARGN})
-	# cmake-format: on
 
-	if (NOT ${reason}
-		STREQUAL
-		"silent")
+	if (NOT ${reason} STREQUAL "silent")
 		message (STATUS "Exclude Binding ${name} because ${reason}")
 	endif ()
 	if (ARG_REMOVE)
@@ -283,8 +272,7 @@ function (check_item_is_excluded OUTVARIABLE LIST ITEM_NAME)
 	else ()
 		set (README_FILE ${ARG_BASEDIRECTORY}/${ARG_SUBDIRECTORY}/README.md)
 	endif ()
-	if (NOT EXISTS
-		${README_FILE})
+	if (NOT EXISTS ${README_FILE})
 
 		# we need README.md for extracting categories
 		message (WARNING "readme file does not exist at ${README_FILE}")

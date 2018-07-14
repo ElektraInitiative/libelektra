@@ -5,8 +5,7 @@
 
 set (MANIFEST "${CMAKE_BINARY_DIR}/install_manifest.txt")
 
-if (NOT EXISTS
-	"${MANIFEST}")
+if (NOT EXISTS "${MANIFEST}")
 	message (FATAL_ERROR "Cannot find install manifest: ${MANIFEST}")
 endif (NOT EXISTS "${MANIFEST}")
 
@@ -54,16 +53,11 @@ string (REGEX
 		"${files}")
 foreach (file ${files})
 	message (STATUS "Uninstalling $ENV{DESTDIR}${file}")
-	if (IS_SYMLINK
-	    "$ENV{DESTDIR}${file}"
-	    OR EXISTS
-	       "$ENV{DESTDIR}${file}")
+	if (IS_SYMLINK "$ENV{DESTDIR}${file}" OR EXISTS "$ENV{DESTDIR}${file}")
 		execute_process (COMMAND "${CMAKE_COMMAND}" -E remove "$ENV{DESTDIR}${file}"
 				 OUTPUT_VARIABLE rm_out
 				 RESULT_VARIABLE rm_retval)
-		if (NOT "${rm_retval}"
-			STREQUAL
-			0)
+		if (NOT "${rm_retval}" STREQUAL 0)
 			message (FATAL_ERROR "Problem when removing $ENV{DESTDIR}${file}")
 		endif (NOT "${rm_retval}" STREQUAL 0)
 	else (IS_SYMLINK "$ENV{DESTDIR}${file}" OR EXISTS "$ENV{DESTDIR}${file}")
@@ -84,9 +78,7 @@ function (remove_directories directories)
 					 OUTPUT_VARIABLE rm_out
 					 RESULT_VARIABLE rm_retval)
 
-			if (NOT "${rm_retval}"
-				STREQUAL
-				0)
+			if (NOT "${rm_retval}" STREQUAL 0)
 				message (FATAL_ERROR "Problem when removing ${dir}")
 			endif (NOT "${rm_retval}" STREQUAL 0)
 		endif (EXISTS "${dir}")

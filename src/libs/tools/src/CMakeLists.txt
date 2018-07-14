@@ -45,9 +45,7 @@ if (BUILD_SHARED)
 						  "-Wl,--version-script=${__symbols_file}")
 	endif ()
 
-	install (TARGETS elektratools
-			 DESTINATION
-			 lib${LIB_SUFFIX})
+	install (TARGETS elektratools DESTINATION lib${LIB_SUFFIX})
 endif (BUILD_SHARED)
 
 if (BUILD_FULL)
@@ -74,9 +72,7 @@ if (BUILD_FULL)
 						  "-Wl,--version-script=${__symbols_file}")
 	endif ()
 
-	install (TARGETS elektratools-full
-			 DESTINATION
-			 lib${LIB_SUFFIX})
+	install (TARGETS elektratools-full DESTINATION lib${LIB_SUFFIX})
 endif (BUILD_FULL)
 
 if (BUILD_STATIC)
@@ -106,7 +102,5 @@ if (BUILD_STATIC)
 						  "-Wl,--version-script=${__symbols_file}")
 	endif ()
 
-	install (TARGETS elektratools-static
-			 DESTINATION
-			 lib${LIB_SUFFIX})
+	install (TARGETS elektratools-static DESTINATION lib${LIB_SUFFIX})
 endif (BUILD_STATIC)

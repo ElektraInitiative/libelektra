@@ -348,9 +348,7 @@ set (TARGET_LUA_LMOD_FOLDER
      CACHE STRING
 	   "Directory to install Lua source modules, should be in LUA_PATH)")
 
-if (NOT TARGET_PLUGIN_FOLDER
-	STREQUAL
-	"")
+if (NOT TARGET_PLUGIN_FOLDER STREQUAL "")
 	if (CMAKE_SKIP_INSTALL_RPATH)
 		message (
 			WARNING

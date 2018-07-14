@@ -115,9 +115,7 @@ macro (add_haskell_plugin target)
 		    DEPENDS ${target}
 			    c2hs_haskell)
 
-	if (DEPENDENCY_PHASE
-	    AND TARGET
-		elektra-${target})
+	if (DEPENDENCY_PHASE AND TARGET elektra-${target})
 		set_target_properties (elektra-${target}
 				       PROPERTIES INSTALL_RPATH
 						  "${HASKELL_RPATH}"
@@ -125,9 +123,7 @@ macro (add_haskell_plugin target)
 						  "${SANDBOX_PACKAGEDB}")
 	endif (DEPENDENCY_PHASE AND TARGET elektra-${target})
 
-	if (ADDTESTING_PHASE
-	    AND TARGET
-		elektra-${target})
+	if (ADDTESTING_PHASE AND TARGET elektra-${target})
 		set (PLUGINTEST_ARGS "")
 		if (ARG_INSTALL_TEST_DATA)
 			list (APPEND PLUGINTEST_ARGS
@@ -257,8 +253,7 @@ macro (compile_haskell_plugin target PLUGIN_HASKELL_NAME)
 
 	# same for the setup logic, depending on wheter a custom one exists use the default suitable for almost everything
 	set (CABAL_CUSTOM_SETUP_FILE "${CMAKE_CURRENT_SOURCE_DIR}/Setup.hs.in")
-	if (NOT EXISTS
-		${CABAL_CUSTOM_SETUP_FILE})
+	if (NOT EXISTS ${CABAL_CUSTOM_SETUP_FILE})
 		set (CABAL_CUSTOM_SETUP_FILE "${CMAKE_SOURCE_DIR}/src/plugins/haskell/Setup.hs.in")
 	endif (NOT EXISTS ${CABAL_CUSTOM_SETUP_FILE})
 	configure_file (${CABAL_CUSTOM_SETUP_FILE} "${CMAKE_CURRENT_BINARY_DIR}/Setup.hs" @ONLY)
@@ -270,8 +265,7 @@ macro (compile_haskell_plugin target PLUGIN_HASKELL_NAME)
 
 		# our custom libs are all to be processed by cmake before we can add them, so enforce that, the build is more stable this
 		# way
-		if (NOT IS_DIRECTORY
-			"${CMAKE_BINARY_DIR}/${SANDBOX_ADD_SOURCE}")
+		if (NOT IS_DIRECTORY "${CMAKE_BINARY_DIR}/${SANDBOX_ADD_SOURCE}")
 			add_subdirectory ("${CMAKE_SOURCE_DIR}/${SANDBOX_ADD_SOURCE}" "${CMAKE_BINARY_DIR}/${SANDBOX_ADD_SOURCE}")
 		endif (NOT IS_DIRECTORY "${CMAKE_BINARY_DIR}/${SANDBOX_ADD_SOURCE}")
 		execute_process (COMMAND ${CABAL_EXECUTABLE} sandbox add-source "${CMAKE_BINARY_DIR}/${SANDBOX_ADD_SOURCE}" -v0
@@ -288,9 +282,7 @@ macro (compile_haskell_plugin target PLUGIN_HASKELL_NAME)
 	# exclude the dist directory
 	set (PLUGIN_SOURCE_FILES)
 	foreach (file ${PLUGIN_SOURCE_FILES_UNFILTERED})
-		if (NOT file
-			MATCHES
-			"${CMAKE_CURRENT_BINARY_DIR}/dist/")
+		if (NOT file MATCHES "${CMAKE_CURRENT_BINARY_DIR}/dist/")
 			list (APPEND PLUGIN_SOURCE_FILES
 				     ${file})
 		endif ()
@@ -337,7 +329,5 @@ macro (compile_haskell_plugin target PLUGIN_HASKELL_NAME)
 			    APPEND)
 	add_custom_target (${target} ALL DEPENDS ${PLUGIN_HASKELL_NAME})
 
-	install (DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/haskell"
-			   DESTINATION
-			   "lib${LIB_SUFFIX}/elektra/")
+	install (DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/haskell" DESTINATION "lib${LIB_SUFFIX}/elektra/")
 endmacro (compile_haskell_plugin)

@@ -30,10 +30,7 @@ function (add_lib name)
 	if (BUILD_SHARED)
 		target_link_libraries (elektra-${name} ${ARG_LINK_LIBRARIES})
 
-		install (TARGETS elektra-${name}
-				 DESTINATION
-				 lib${LIB_SUFFIX}
-			 EXPORT ElektraTargetsLibelektra)
+		install (TARGETS elektra-${name} DESTINATION lib${LIB_SUFFIX} EXPORT ElektraTargetsLibelektra)
 	endif (BUILD_SHARED)
 
 endfunction ()

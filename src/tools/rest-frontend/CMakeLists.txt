@@ -32,20 +32,17 @@ else ()
 	# install files to destination
 	install (DIRECTORY public
 			   resources
-			   DESTINATION
-			   ${install_directory})
+		 DESTINATION ${install_directory})
 	install (FILES package.json
 		       README.md
 		       ${CMAKE_CURRENT_BINARY_DIR}/Gruntfile.js
 		       application-config.json.tpl
-		       DESTINATION
-		       ${install_directory})
+		 DESTINATION ${install_directory})
 	install (PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/run-${tool}
 			  ${CMAKE_CURRENT_BINARY_DIR}/stop-${tool}
 			  ${CMAKE_CURRENT_BINARY_DIR}/build-${tool}
 			  ${CMAKE_CURRENT_BINARY_DIR}/mount-${tool}-config
-			  DESTINATION
-			  ${TARGET_TOOL_EXEC_FOLDER})
+		 DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
 	# attempt to install npm dependencies
 	install (

@@ -16,20 +16,16 @@ endmacro (copy_file)
 # ~~~
 macro (create_lib_symlink src dest)
 
-	# Unfortunately cmake format 4.0 breaks the following code
-	# cmake-format: off
 	cmake_parse_arguments (ARG
 			       "PLUGIN" # optional keywords
 			       "" # one value keywords
 			       "" # multi value keywords
 			       ${ARGN})
-	# cmake-format: on
 
 	execute_process (COMMAND ${CMAKE_COMMAND} -E create_symlink "${src}" "${dest}"
 			 WORKING_DIRECTORY "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
 
-	if (NOT EXISTS
-		"${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${dest}")
+	if (NOT EXISTS "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${dest}")
 		file (WRITE "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${dest}"
 			    "to be overwritten, file needs to exists for some IDEs.")
 	endif ()
@@ -263,9 +259,7 @@ endmacro (add_toolheaders)
 #
 # ~~~
 macro (remove_plugin name reason)
-	if (NOT ${reason}
-		STREQUAL
-		"silent")
+	if (NOT ${reason} STREQUAL "silent")
 		message (STATUS "Exclude Plugin ${name} because ${reason}")
 	endif ()
 
@@ -415,8 +409,7 @@ function (add_sources target) # define the <target>_SRCS properties if necessary
 	endif (NOT prop_defined) # create list of sources (absolute paths)
 	set (SRCS)
 	foreach (src ${ARGN})
-		if (NOT IS_ABSOLUTE
-			"${src}")
+		if (NOT IS_ABSOLUTE "${src}")
 			get_filename_component (src "${src}" ABSOLUTE)
 		endif (NOT IS_ABSOLUTE "${src}")
 		list (APPEND SRCS
@@ -543,14 +536,11 @@ endmacro ()
 
 function (generate_manpage NAME)
 	if (BUILD_DOCUMENTATION)
-		# Unfortunately cmake format 0.4 breaks the following code
-		# cmake-format: off
 		cmake_parse_arguments (ARG
 				       "" # optional keywords
 				       "SECTION;FILENAME" # one value keywords
 				       "" # multi value keywords
 				       ${ARGN})
-		# cmake-format: on
 
 		if (ARG_SECTION)
 			set (SECTION ${ARG_SECTION})
@@ -577,9 +567,7 @@ function (generate_manpage NAME)
 		endif (RONN_LOC)
 
 		if (INSTALL_DOCUMENTATION)
-			install (FILES ${OUTFILE}
-				       DESTINATION
-				       share/man/man${SECTION})
+			install (FILES ${OUTFILE} DESTINATION share/man/man${SECTION})
 		endif ()
 	endif (BUILD_DOCUMENTATION)
 endfunction ()
@@ -705,12 +693,7 @@ function (generate_readme p) # rerun cmake when README.md is changed  also allow
 			"keyNew(\"system/elektra/modules/${p}/infos/needs\",\nKEY_VALUE, \"\\1\", KEY_END),"
 			contents
 			"${contents}")
-	if (p
-	    STREQUAL
-	    ${KDB_DEFAULT_STORAGE}
-	    OR p
-	       STREQUAL
-	       KDB_DEFAULT_RESOLVER)
+	if (p STREQUAL ${KDB_DEFAULT_STORAGE} OR p STREQUAL KDB_DEFAULT_RESOLVER)
 		string (REGEX
 			REPLACE "\"- +infos/status *= *([-a-zA-Z0-9 ]*)\\\\n\""
 				"keyNew(\"system/elektra/modules/${p}/infos/status\",\nKEY_VALUE, \"\\1 default\", KEY_END),"

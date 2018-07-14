@@ -10,17 +10,7 @@ foreach (plugin ${PLUGINS})
 	if (${plugin} MATCHES "^resolver_.*")
 		set (RESOLVERS "${RESOLVERS}" "${plugin}")
 	endif ()
-	if (${plugin}
-	    MATCHES
-	    "ALL"
-	    OR ${plugin}
-	       MATCHES
-	       "DEFAULT"
-	    OR ${plugin}
-	       MATCHES
-	       "NODEP")
-		# Unfortunately cmake format 0.4 breaks the following code
-		# cmake-format: off
+	if (${plugin} MATCHES "ALL" OR ${plugin} MATCHES "DEFAULT" OR ${plugin} MATCHES "NODEP")
 		set (RESOLVERS
 		     "${RESOLVERS}"
 		     resolver_fm_b_b
@@ -34,7 +24,6 @@ foreach (plugin ${PLUGINS})
 		     resolver_fm_uhb_xb
 		     resolver_fm_hpu_b # default
 		     )
-		# cmake-format: on
 	endif ()
 endforeach ()
 
@@ -72,18 +61,14 @@ foreach (plugin ${RESOLVERS})
 		string (FIND "${variant_base}"
 			     "f"
 			     out_var_n)
-		if (NOT "${out_var_n}"
-			EQUAL
-			"-1")
+		if (NOT "${out_var_n}" EQUAL "-1")
 			set (FURTHER_DEFINITIONS ${FURTHER_DEFINITIONS} "ELEKTRA_LOCK_FILE")
 		endif ()
 
 		string (FIND "${variant_base}"
 			     "m"
 			     out_var_n)
-		if (NOT "${out_var_n}"
-			EQUAL
-			"-1")
+		if (NOT "${out_var_n}" EQUAL "-1")
 			set (FURTHER_DEFINITIONS ${FURTHER_DEFINITIONS} "ELEKTRA_LOCK_MUTEX")
 			set (FURTHER_LIBRARIES ${FURTHER_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${CMAKE_REALTIME_LIBS_INIT})
 		endif ()

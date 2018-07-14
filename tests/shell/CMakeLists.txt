@@ -33,8 +33,7 @@ function (add_scripttest testname)
 	get_filename_component (testname_we ${testname} NAME_WE)
 
 	set (filename ${CMAKE_CURRENT_SOURCE_DIR}/${testname})
-	if (NOT EXISTS
-		${filename})
+	if (NOT EXISTS ${filename})
 		message (SEND_ERROR "add_scripttest: given file ${filename} does not exists")
 	endif (NOT EXISTS ${filename})
 
@@ -62,25 +61,22 @@ function (add_scripttest testname)
 					     "${INCLUDE_COMMON_INSTALLED_FILE}if [ -z \"$KDB\" ]; then KDB=${KDB_COMMAND}; fi")
 					configure_file ("${filename}" "${CMAKE_CURRENT_BINARY_DIR}/${testname}" @ONLY)
 					install (FILES "${CMAKE_CURRENT_BINARY_DIR}/${testname}"
-						       DESTINATION
-						       ${TARGET_TOOL_EXEC_FOLDER}
-						       PERMISSIONS
-						       OWNER_READ
-						       OWNER_WRITE
-						       OWNER_EXECUTE
-						       GROUP_READ
-						       GROUP_EXECUTE
-						       WORLD_READ
-						       WORLD_EXECUTE
+						 DESTINATION ${TARGET_TOOL_EXEC_FOLDER}
+						 PERMISSIONS
+						 OWNER_READ
+						 OWNER_WRITE
+						 OWNER_EXECUTE
+						 GROUP_READ
+						 GROUP_EXECUTE
+						 WORLD_READ
+						 WORLD_EXECUTE
 						 RENAME ${testname_we})
 				endif (index_exluded EQUAL -1)
 
 			endif (INSTALL_TESTING)
 		else (TARGET)
 			if (ENABLE_KDB_TESTING)
-				if (NOT ${testname_we}
-					STREQUAL
-					"run_all")
+				if (NOT ${testname_we} STREQUAL "run_all")
 					if (BUILD_FULL)
 						set (KDB_COMMAND "${CMAKE_BINARY_DIR}/bin/kdb-full")
 					elseif (BUILD_STATIC)
@@ -115,9 +111,7 @@ function (add_scripttest testname)
 endfunction (add_scripttest)
 
 if (INSTALL_TESTING)
-	install (DIRECTORY "shell"
-			   DESTINATION
-			   ${TARGET_TEST_DATA_FOLDER})
+	install (DIRECTORY "shell" DESTINATION ${TARGET_TEST_DATA_FOLDER})
 endif (INSTALL_TESTING)
 
 file (GLOB SCRIPT_TESTS

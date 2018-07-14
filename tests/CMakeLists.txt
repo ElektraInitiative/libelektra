@@ -72,9 +72,7 @@ macro (do_test source)
 	add_dependencies (${source} kdberrors_generated)
 
 	if (INSTALL_TESTING)
-		install (TARGETS ${source}
-				 DESTINATION
-				 ${TARGET_TOOL_EXEC_FOLDER})
+		install (TARGETS ${source} DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 	endif (INSTALL_TESTING)
 
 	target_link_elektra (${source})
@@ -91,9 +89,7 @@ macro (do_test source)
 			       "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
 endmacro (do_test)
 
-if (NOT CMAKE_VERSION
-	VERSION_LESS
-	3.2)
+if (NOT CMAKE_VERSION VERSION_LESS 3.2)
 	set (USES_TERMINAL USES_TERMINAL)
 endif (NOT CMAKE_VERSION VERSION_LESS 3.2)
 
