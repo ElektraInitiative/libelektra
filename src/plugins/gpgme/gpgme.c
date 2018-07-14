@@ -87,6 +87,16 @@ static inline int isSpecNamespace (const Key * k)
 }
 
 /**
+ * @brief checks if a given key holds a null value.
+ * @retval 0 if the Key k does not hold a null value.
+ * @retval 1 if the Key k holds a null value.
+ */
+static inline int isNullValue (const Key * k)
+{
+	return keyGetValueSize (k) == 0;
+}
+
+/**
  * @brief lookup if the text mode is disabled in the plugin config.
  * Text mode is enabled per default.
  * @param conf KeySet holding the plugin configuration.
@@ -329,7 +339,7 @@ static int gpgEncrypt (Plugin * handle, KeySet * data, Key * errorKey)
 		gpgme_invalid_key_t invalidKey;
 		int keyDataType;
 
-		if (!isMarkedForEncryption (k) || isSpecNamespace (k))
+		if (!isMarkedForEncryption (k) || isSpecNamespace (k) || isNullValue (k))
 		{
 			continue;
 		}
@@ -427,7 +437,7 @@ static int gpgDecrypt (ELEKTRA_UNUSED Plugin * handle, KeySet * data, Key * erro
 	ksRewind (data);
 	while ((k = ksNext (data)) != 0)
 	{
-		if (!isMarkedForEncryption (k) || isSpecNamespace (k))
+		if (!isMarkedForEncryption (k) || isSpecNamespace (k) || isNullValue (k))
 		{
 			continue;
 		}
