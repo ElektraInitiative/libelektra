@@ -54,8 +54,9 @@ static void init_gpgme (void)
 
 static KeySet * newPluginConfiguration (void)
 {
-	return ksNew (2, keyNew (ELEKTRA_RECIPIENT_KEY, KEY_VALUE, TEST_KEY_ID, KEY_END),
-		      keyNew (ELEKTRA_GPGME_CONFIG_TEXTMODE, KEY_VALUE, "0", KEY_END), KS_END);
+	return ksNew (3, keyNew (ELEKTRA_RECIPIENT_KEY, KEY_VALUE, TEST_KEY_ID, KEY_END),
+		      keyNew (ELEKTRA_GPGME_CONFIG_TEXTMODE, KEY_VALUE, "0", KEY_END),
+		      keyNew (ELEKTRA_GPGME_UNIT_TEST, KEY_VALUE, "1", KEY_END), KS_END);
 }
 
 static KeySet * newTestdataKeySet (void)
@@ -179,7 +180,8 @@ static void test_encryption_decryption (void)
 		KeySet * original = ksDup (data);
 
 		// test encryption with kdb set
-		succeed_if (plugin->kdbSet (plugin, data, parentKey) == 1, "kdb set failed");
+		int result = plugin->kdbSet (plugin, data, parentKey);
+		succeed_if (result == 1, "kdb set failed");
 
 		// - unchanged
 		k = ksLookupByName (data, KEYNAME_UNCHANGED, 0);

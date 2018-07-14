@@ -14,11 +14,13 @@
 
 // meta-keys
 #define ELEKTRA_GPGME_META_ENCRYPT "gpg/encrypt"
+#define ELEKTRA_GPGME_META_BINARY "gpg/binary"
 
 // plugin configuration
 #define ELEKTRA_SIGNATURE_KEY "/sign/key"
 #define ELEKTRA_RECIPIENT_KEY "/encrypt/key"
 #define ELEKTRA_GPGME_CONFIG_TEXTMODE "/gpgme/textmode"
+#define ELEKTRA_GPGME_UNIT_TEST "/gpgme/unit_test"
 
 // kdb functions
 int elektraGpgmeOpen (Plugin * handle, Key * errorKey);
