@@ -68,7 +68,7 @@ static KeySet * newTestdataKeySet (void)
 
 	keySetString (kUnchanged, strVal);
 
-	keySetBinary (kNull, 0, 0);
+	keySetBinary (kNull, NULL, 0);
 	keySetMeta (kNull, ELEKTRA_GPGME_META_ENCRYPT, "1");
 
 	keySetString (kString, strVal);
@@ -180,8 +180,7 @@ static void test_encryption_decryption (void)
 		KeySet * original = ksDup (data);
 
 		// test encryption with kdb set
-		int result = plugin->kdbSet (plugin, data, parentKey);
-		succeed_if (result == 1, "kdb set failed");
+		succeed_if (plugin->kdbSet (plugin, data, parentKey) == 1, "kdb set failed");
 
 		// - unchanged
 		k = ksLookupByName (data, KEYNAME_UNCHANGED, 0);
@@ -210,6 +209,14 @@ static void test_encryption_decryption (void)
 			succeed_if (keyIsBinary (k), "key type not set to binary during encryption");
 			succeed_if (memcmp (keyValue (k), binVal, MIN (keyGetValueSize (k), sizeof (binVal))) != 0,
 				    "key content did not change during encryption");
+		}
+
+		// - null value
+		k = ksLookupByName (data, KEYNAME_NULL, 0);
+		succeed_if (k, "missing key " KEYNAME_NULL " in dataset");
+		if (k)
+		{
+			succeed_if (keyGetValueSize (k) == 0, "null value was changed unexpectedly");
 		}
 
 		// test decryption with kdb get
@@ -241,6 +248,14 @@ static void test_encryption_decryption (void)
 			succeed_if (keyIsBinary (k), "key type not restored to binary during decryption");
 			succeed_if (memcmp (keyValue (k), binVal, MIN (keyGetValueSize (k), sizeof (binVal))) == 0,
 				    "key content not restored during decryption");
+		}
+
+		// - null value
+		k = ksLookupByName (data, KEYNAME_NULL, 0);
+		succeed_if (k, "missing key " KEYNAME_NULL " in dataset");
+		if (k)
+		{
+			succeed_if (keyGetValueSize (k) == 0, "null value was changed unexpectedly");
 		}
 
 		ksDel (original);
