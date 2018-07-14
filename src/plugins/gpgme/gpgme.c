@@ -41,6 +41,42 @@ static int isMarkedForEncryption (const Key * k)
 }
 
 /**
+ * @brief checks if a Key contained a binary value before its value has been encrypted by the gpgme plugin.
+ *
+ * If the metakey ELEKTRA_GPGME_META_BINARY has the value "1" it is considered to be true.
+ * Every other value or the non-existence of the metakey is considered to be false.
+ *
+ * @param k the Key to be checked
+ * @retval 0 if the Key contained a string value before encryption
+ * @retval 1 if the Key contained a binary value before encryption
+ */
+static int isOriginallyBinary (const Key * k)
+{
+	const Key * metaEncrypt = keyGetMeta (k, ELEKTRA_GPGME_META_BINARY);
+	if (metaEncrypt && strcmp (keyString (metaEncrypt), "1") == 0)
+	{
+		return 1;
+	}
+	return 0;
+}
+
+/**
+ * @brief lookup if the test mode for unit testing is enabled.
+ * @param conf KeySet holding the plugin configuration.
+ * @retval 0 test mode is not enabled
+ * @retval 1 test mode is enabled
+ */
+static int inTestMode (KeySet * conf)
+{
+	Key * k = ksLookupByName (conf, ELEKTRA_GPGME_UNIT_TEST, 0);
+	if (k && !strcmp (keyString (k), "1"))
+	{
+		return 1;
+	}
+	return 0;
+}
+
+/**
  * @brief checks if a given Key k is in the spec namespace.
  * @retval 0 if the Key k is in the spec namespace.
  * @retval 1 if the Key k is NOT in the spec namespace.
@@ -189,10 +225,11 @@ static gpgme_key_t * extractRecipientFromPluginConfig (KeySet * config, Key * er
  * @param src the source of type gpgme_data_t
  * @param dst the Elektra key of type Key
  * @param errorKey will hold an error description in case of failure
+ * @param textMode set to 1 if the text mode is enabled.
  * @retval 1 on success
  * @retval -1 on failure
  */
-static int transferGpgmeDataToElektraKey (gpgme_data_t src, Key * dst, Key * errorKey)
+static int transferGpgmeDataToElektraKey (gpgme_data_t src, Key * dst, Key * errorKey, int textMode)
 {
 	int returnValue = 1; // success
 	off_t ciphertextLen;
@@ -217,8 +254,14 @@ static int transferGpgmeDataToElektraKey (gpgme_data_t src, Key * dst, Key * err
 		goto cleanup;
 	}
 
-	// TODO set according to data type
-	keySetString (dst, buffer);
+	if (textMode)
+	{
+		keySetString (dst, buffer);
+	}
+	else
+	{
+		keySetBinary (dst, buffer, ciphertextLen);
+	}
 
 cleanup:
 	if (buffer)
@@ -240,11 +283,13 @@ cleanup:
 static int gpgEncrypt (Plugin * handle, KeySet * data, Key * errorKey)
 {
 	int returnValue = 1; // success per default
+	int textMode;
 	Key * k;
 
 	gpgme_key_t * recipients;
 	gpgme_ctx_t ctx;
 	gpgme_error_t err;
+	gpgme_encrypt_flags_t encryptFlags = GPGME_ENCRYPT_NO_ENCRYPT_TO;
 
 	err = gpgme_new (&ctx);
 	if (err)
@@ -255,7 +300,8 @@ static int gpgEncrypt (Plugin * handle, KeySet * data, Key * errorKey)
 
 	KeySet * pluginConfig = elektraPluginGetConfig (handle);
 
-	if (isTextMode (pluginConfig))
+	textMode = isTextMode (pluginConfig);
+	if (textMode)
 	{
 		gpgme_set_armor (ctx, 1);
 	}
@@ -269,6 +315,11 @@ static int gpgEncrypt (Plugin * handle, KeySet * data, Key * errorKey)
 		goto cleanup;
 	}
 
+	if (inTestMode (pluginConfig))
+	{
+		encryptFlags |= GPGME_ENCRYPT_ALWAYS_TRUST;
+	}
+
 	ksRewind (data);
 	while ((k = ksNext (data)))
 	{
@@ -276,14 +327,24 @@ static int gpgEncrypt (Plugin * handle, KeySet * data, Key * errorKey)
 		gpgme_data_t ciphertext;
 		gpgme_encrypt_result_t result;
 		gpgme_invalid_key_t invalidKey;
+		int keyDataType;
 
 		if (!isMarkedForEncryption (k) || isSpecNamespace (k))
 		{
 			continue;
 		}
 
-		// TODO preserve the data type of k (string, binary, null)
-		err = gpgme_data_new_from_mem (&input, keyString (k), keyGetValueSize (k), 0);
+		// preserve the data type of k (string, binary)
+		keyDataType = keyIsBinary (k);
+		if (!keyIsBinary (k))
+		{
+			err = gpgme_data_new_from_mem (&input, keyString (k), strlen (keyString (k)) + 1, 0);
+		}
+		else
+		{
+			keySetMeta (k, ELEKTRA_GPGME_META_BINARY, "1");
+			err = gpgme_data_new_from_mem (&input, keyValue (k), keyGetValueSize (k), 0);
+		}
 		if (err)
 		{
 			returnValue = -1;
@@ -300,7 +361,8 @@ static int gpgEncrypt (Plugin * handle, KeySet * data, Key * errorKey)
 			goto cleanup;
 		}
 
-		err = gpgme_op_encrypt (ctx, recipients, GPGME_ENCRYPT_NO_ENCRYPT_TO, input, ciphertext);
+
+		err = gpgme_op_encrypt (ctx, recipients, encryptFlags, input, ciphertext);
 		if (err)
 		{
 			returnValue = -1;
@@ -319,7 +381,7 @@ static int gpgEncrypt (Plugin * handle, KeySet * data, Key * errorKey)
 		}
 
 		// update Elektra key to encrypted value
-		if (transferGpgmeDataToElektraKey (ciphertext, k, errorKey) != 1)
+		if (transferGpgmeDataToElektraKey (ciphertext, k, errorKey, textMode) != 1)
 		{
 			// error description has been set by transferGpgmeDataToElektraKey()
 			returnValue = -1;
@@ -373,6 +435,7 @@ static int gpgDecrypt (ELEKTRA_UNUSED Plugin * handle, KeySet * data, Key * erro
 		gpgme_data_t ciphertext;
 		gpgme_data_t plaintext;
 		gpgme_decrypt_result_t dec_result;
+		int originallyBinary = isOriginallyBinary (k);
 
 		err = gpgme_data_new_from_mem (&ciphertext, keyValue (k), keyGetValueSize (k), 0);
 		if (err)
@@ -403,8 +466,7 @@ static int gpgDecrypt (ELEKTRA_UNUSED Plugin * handle, KeySet * data, Key * erro
 
 		dec_result = gpgme_op_decrypt_result (ctx);
 
-		// TODO consider original data type (string, binary, null)
-		if (transferGpgmeDataToElektraKey (plaintext, k, errorKey) != 1)
+		if (transferGpgmeDataToElektraKey (plaintext, k, errorKey, !originallyBinary) != 1)
 		{
 			// error description has been set by transferGpgmeDataToElektraKey()
 			returnValue = -1;
