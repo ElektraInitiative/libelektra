@@ -307,6 +307,8 @@ Thanks to Daniel Bugl.
 - Resolved an issue where tests did not cleanup properly after they ran.
     This was especially noticable for `gpg` tests as the `gpg-agents` that were
     spawned did not get cleaned up afterwards. *(Lukas Winkler)*
+- We disabled the general plugin test (`testkdb_allplugins`) for the [`semlock` plugin](https://libelektra.org/plugins/mini), since the
+  test reported [memory leaks](https://issues.libelektra.org/2113) on the latest version of Debian Unstable. *(René Schwaiger)*
 
 [#1887]: https://github.com/ElektraInitiative/libelektra/issues/1887
 [Markdown Shell Recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
