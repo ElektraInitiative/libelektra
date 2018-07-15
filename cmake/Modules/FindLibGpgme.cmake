@@ -1,14 +1,11 @@
-# 
+#
 # Detect the "GnuPG Made Easy" (GPGME) library on the system.
 #
-# LIBGPGME_FOUND - set if GPGME is detected
-# LIBGPGME_CFLAGS - GPGME compiler flags
-# LIBGPGME_LIBRARIES - GPGME linker flags
+# LIBGPGME_FOUND - set if GPGME is detected LIBGPGME_CFLAGS - GPGME compiler flags LIBGPGME_LIBRARIES - GPGME linker flags
 #
 # Copyright (c) 2018 Peter Nirschl.
 #
-# Redistribution and use is allowed according to the terms of the BSD license.
-# For details see the accompanying COPYING-CMAKE-SCRIPTS file.
+# Redistribution and use is allowed according to the terms of the BSD license. For details see the accompanying COPYING-CMAKE-SCRIPTS ile.
 #
 
 find_program (GPGME_EXECUTABLE NAMES gpgme-config)
