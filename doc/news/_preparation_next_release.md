@@ -52,6 +52,10 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.8.
 
 The following section lists news about the [modules](https://www.libelektra.org/plugins/readme) we updated in this release.
 
+### gpgme
+
+- The `gpgme` plugin was brought into existence to provide cryptographic functions using GnuGP via the `libgpgme` library. See [#896] *(Peter Nirschl)*
+
 ### <<Plugin1>>
 
 - <<TODO>>
@@ -86,9 +90,12 @@ As always, the ABI and API of kdb.h is fully compatible, i.e. programs
 compiled against an older 0.8 version of Elektra will continue to work
 (ABI) and you will be able to recompile programs without errors (API).
 
+<<<<<<< HEAD
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+
+### Haskell
 
 ### Core
 
