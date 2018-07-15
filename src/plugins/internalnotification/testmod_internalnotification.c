@@ -591,6 +591,20 @@ static void test_doUpdateShouldNotUpdateUnregisteredKey (void)
 #define INVALID_VALUE "AA446744073709551615"
 #include "macros/create_type_tests.h"
 
+#define TYPE long long
+#define TYPE_NAME LongLong
+#define FORMAT_STRING "%lld"
+#define TEST_VALUE LLONG_MAX
+#define INVALID_VALUE "322337abc6854775807"
+#include "macros/create_type_tests.h"
+
+#define TYPE unsigned long long
+#define TYPE_NAME UnsignedLongLong
+#define FORMAT_STRING "%llu"
+#define TEST_VALUE ULLONG_MAX
+#define INVALID_VALUE "AA3223372036854775807"
+#include "macros/create_type_tests.h"
+
 #define TYPE float
 #define TYPE_NAME Float
 #define FORMAT_STRING "%f"

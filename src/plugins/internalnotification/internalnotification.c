@@ -352,6 +352,18 @@ void elektraInternalnotificationUpdateRegisteredKeys (Plugin * plugin, KeySet * 
 #define CHECK_CONVERSION ELEKTRA_TYPE_CHECK_CONVERSION
 #include "macros/add_type.h"
 
+#define TYPE long long
+#define TYPE_NAME LongLong
+#define TO_VALUE (strtoll (string, &end, 10))
+#define CHECK_CONVERSION ELEKTRA_TYPE_CHECK_CONVERSION
+#include "macros/add_type.h"
+
+#define TYPE unsigned long long
+#define TYPE_NAME UnsignedLongLong
+#define TO_VALUE (strtoull (string, &end, 10))
+#define CHECK_CONVERSION ELEKTRA_TYPE_CHECK_CONVERSION
+#include "macros/add_type.h"
+
 #define TYPE float
 #define TYPE_NAME Float
 #define TO_VALUE (strtof (string, &end))
@@ -509,6 +521,7 @@ int elektraInternalnotificationGet (Plugin * handle, KeySet * returned, Key * pa
 			// Export register* functions
 			INTERNALNOTIFICATION_EXPORT_FUNCTION (Int), INTERNALNOTIFICATION_EXPORT_FUNCTION (UnsignedInt),
 			INTERNALNOTIFICATION_EXPORT_FUNCTION (Long), INTERNALNOTIFICATION_EXPORT_FUNCTION (UnsignedLong),
+			INTERNALNOTIFICATION_EXPORT_FUNCTION (LongLong), INTERNALNOTIFICATION_EXPORT_FUNCTION (UnsignedLongLong),
 			INTERNALNOTIFICATION_EXPORT_FUNCTION (Float), INTERNALNOTIFICATION_EXPORT_FUNCTION (Double),
 
 			// Export register* functions for kdb_*_t types
