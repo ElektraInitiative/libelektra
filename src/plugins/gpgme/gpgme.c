@@ -150,7 +150,7 @@ static gpgme_key_t * extractRecipientFromPluginConfig (KeySet * config, Key * er
 	// append root (gpg/key) as recipient
 	if (gpgRecipientRoot && strlen (keyString (gpgRecipientRoot)) > 0)
 	{
-		err = gpgme_get_key (ctx, (char *) keyString (gpgRecipientRoot), &key, 0);
+		err = gpgme_get_key (ctx, keyString (gpgRecipientRoot), &key, 0);
 		if (err)
 		{
 			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_GPGME, errorKey, "Failed to receive the GPG key because: %s",
@@ -180,7 +180,7 @@ static gpgme_key_t * extractRecipientFromPluginConfig (KeySet * config, Key * er
 		{
 			if (keyIsBelow (k, gpgRecipientRoot))
 			{
-				err = gpgme_get_key (ctx, (char *) keyString (k), &key, 0);
+				err = gpgme_get_key (ctx, keyString (k), &key, 0);
 				if (err)
 				{
 					ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_GPGME, errorKey, "Failed to receive the GPG key because: %s",
@@ -370,7 +370,6 @@ static int gpgEncrypt (Plugin * handle, KeySet * data, Key * errorKey)
 			gpgme_data_release (input);
 			goto cleanup;
 		}
-
 
 		err = gpgme_op_encrypt (ctx, recipients, encryptFlags, input, ciphertext);
 		if (err)
