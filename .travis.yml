@@ -205,7 +205,7 @@ before_install:
       sudo apt-get install libev-dev
       sudo apt-get install libxerces-c-dev
       sudo apt-get install moreutils # contains `sponge` required by `reformat-cmake`
-      sudo pip install --upgrade cmake_format==0.3.6 pyyaml
+      sudo pip install --upgrade cmake_format==0.4.1 pyyaml
     fi
 
 #
