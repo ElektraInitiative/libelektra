@@ -1,5 +1,7 @@
 /**
- * Add a type to the internalnotification plugin.
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ *
+ * @brief Add a type to the internalnotification plugin.
  *
  * Additional required steps:
  * - Export the register function using INTERNALNOTIFICATION_EXPORT_FUNCTION in elektraInternalnotificationGet()

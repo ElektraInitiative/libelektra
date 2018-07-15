@@ -8,8 +8,8 @@
 #ifndef KDB_IOWRAPPER_GLIB_H_
 #define KDB_IOWRAPPER_GLIB_H_
 
-#include "../kdbio.h"
 #include <glib.h>
+#include <kdbio.h>
 
 /**
  * Create and initialize a new I/O binding.

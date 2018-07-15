@@ -8,9 +8,9 @@
  *   - io_uv binding
  *   - Transport plugins (e.g. kdb global-mount dbus announce=once dbusrecv)
  *
- * Ideas for this example:
- *   - /sw/tests/example_notification/#0/current/value: Set to any integer value
- *   - /sw/tests/example_notification/#0/current/color: Set the text color. Possible
+ * Relevant keys for this example:
+ *   - /sw/elektra/example_notification/#0/current/value: Set to any integer value
+ *   - /sw/elektra/example_notification/#0/current/color: Set the text color. Possible
  *     values are "red", "green" and "blue".
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
@@ -95,11 +95,11 @@ int main (void)
 
 	KeySet * config = ksNew (20, KS_END);
 
-	Key * key = keyNew ("/sw/tests/example_notification/#0/current", KEY_END);
+	Key * key = keyNew ("/sw/elektra/example_notification/#0/current", KEY_END);
 	KDB * kdb = kdbOpen (key);
 	if (kdb == NULL)
 	{
-		printf ("could not open KDB. aborting\n");
+		printf ("could not open KDB, aborting\n");
 		return -1;
 	}
 
@@ -110,24 +110,24 @@ int main (void)
 	int result = elektraNotificationOpen (kdb);
 	if (!result)
 	{
-		printf ("could not init notification. aborting\n");
+		printf ("could not init notification, aborting\n");
 		return -1;
 	}
 
 	int value = 0;
-	Key * intKeyToWatch = keyNew ("/sw/tests/example_notification/#0/current/value", KEY_END);
+	Key * intKeyToWatch = keyNew ("/sw/elektra/example_notification/#0/current/value", KEY_END);
 	result = elektraNotificationRegisterInt (kdb, intKeyToWatch, &value);
 	if (!result)
 	{
-		printf ("could not register variable. aborting\n");
+		printf ("could not register variable, aborting\n");
 		return -1;
 	}
 
-	Key * callbackKeyToWatch = keyNew ("/sw/tests/example_notification/#0/current/color", KEY_END);
+	Key * callbackKeyToWatch = keyNew ("/sw/elektra/example_notification/#0/current/color", KEY_END);
 	result = elektraNotificationRegisterCallback (kdb, callbackKeyToWatch, &setTerminalColor, NULL);
 	if (!result)
 	{
-		printf ("could not register callback. aborting!");
+		printf ("could not register callback, aborting!");
 		return -1;
 	}
 

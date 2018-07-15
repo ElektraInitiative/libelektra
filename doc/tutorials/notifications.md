@@ -259,7 +259,7 @@ int main (void)
 
 ### How-To: Reload KDB when Elektra's configuration has changed
 
-This section shows how the notification feature can be used to reload an
+This section shows how the notification feature is used to reload an
 application's KDB instance when Elektra's configuration has changed.
 This enables applications to apply changes to mount points or globally mounted
 plugins without restarting.
@@ -267,11 +267,11 @@ plugins without restarting.
 **Step 1: Register for changes to Elektra's configuration**
 
 To achieve reloading on Elektra configuration changes we register for changes
-below the key `system/elektra` using
+below the key `/elektra` using
 `elektraNotificationRegisterCallbackSameOrBelow()`.
 
 ```C
-Key * elektraKey = keyNew ("system/elektra", KEY_END);
+Key * elektraKey = keyNew ("/elektra", KEY_END);
 elektraNotificationRegisterCallbackSameOrBelow (kdb, elektraKey, elektraChangedCallback, NULL))
 keyDel (elektraKey);
 ```
@@ -283,7 +283,7 @@ configuration changes we need to create a function which cleans
 up and reinitializes KDB.
 
 ```C
-void initKdb (void)
+void initKdb (ElektraIoTimerOperation * timerOp ELEKTRA_UNUSED)
 {
 	if (kdb != NULL)
 	{
@@ -296,12 +296,12 @@ void initKdb (void)
 	elektraIoSetBinding (kdb, binding);
 	elektraNotificationOpen (kdb);
 
-  // Code for registration from snippet before
+	// Code for registration from snippet before
 	Key * elektraKey = keyNew ("system/elektra", KEY_END);
 	elektraNotificationRegisterCallbackSameOrBelow (kdb, elektraKey, elektraChangedCallback, NULL);
 	keyDel (elektraKey);
 
-  // TODO: add application specific registrations
+	// TODO: add application specific registrations
 
 	// Get configuration
 	kdbGet (kdb, config, parentKey);
@@ -326,6 +326,7 @@ First, we create the timer in the main loop setup of the application.
 ElektraIoTimerOperation * reload;
 
 // main loop setup (e.g. main())
+// the timer operation will reload KDB after 100 milliseconds
 reload = elektraIoNewTimerOperation (100, 0, initKdb, NULL);
 elektraIoBindingAddTimer (binding, reload);
 ```
@@ -346,14 +347,14 @@ Finally we disable the timer in the initialization function:
 ```C
 void initKdb (void)
 {
-  // Stop reload task
-  elektraIoTimerSetEnabled (reload, 0);
-  elektraIoBindingUpdateTimer (reload);
+	// Stop reload task
+	elektraIoTimerSetEnabled (reload, 0);
+	elektraIoBindingUpdateTimer (reload);
 
 	if (kdb != NULL)
 	{
 		// Cleanup notifications and close KDB
-    elektraNotificationClose (kdb);
+		elektraNotificationClose (kdb);
 		kdbClose (kdb, parentKey);
 	}
 
@@ -361,8 +362,8 @@ void initKdb (void)
 }
 ```
 
-By following these three steps any application can react to changes to Elektra's
-configuration.
+By correct application of these three steps any application can react to changes
+to Elektra's configuration.
 The snippets above omit error handling for brevity. The complete code including
 error handling is available in the
 ["notification reload" example](https://www.libelektra.org/examples/notificationreload).

@@ -1,5 +1,7 @@
 /**
- * Create test cases for internalnotification type.
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ *
+ * @brief Create test cases for internalnotification type.
  *
  * This supermacro creates the following functions:
  * - int internalnotificationRegisterTYPE_NAME (Plugin * plugin, Key * key, TYPE * variable)

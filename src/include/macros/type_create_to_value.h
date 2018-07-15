@@ -1,5 +1,7 @@
 /**
- * Create key to type conversion function.
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ *
+ * @brief Create key to type conversion function.
  *
  * This supermacro creates the following functions:
  * - int NAME_MACRO (TYPE_NAME) (Key * key, TYPE * variable)

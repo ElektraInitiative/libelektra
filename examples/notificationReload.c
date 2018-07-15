@@ -8,10 +8,10 @@
  *   - io_glib binding
  *   - Transport plugins (e.g. kdb global-mount zeromqsend zeromqrecv && kdb run-hub-zeromq)
  *
- * Ideas for this example:
- *   - /sw/tests/example_notification/#0/current/value: Set to any integer value
- *   - Try to add additional transport plugins and remove the original pair afterwards
- *   - Mount a file which sets the key above to a different value and unmount it
+ * Relevant keys for this example:
+ *   - /sw/elektra/example_notification/#0/current/value: Set to any integer value
+ *   Add additional transport plugins and remove the original pair afterwards or
+ *   mount a file which sets the key above to a different value and unmount it again
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
@@ -29,6 +29,9 @@
 #include <signal.h> // signal()
 #include <stdio.h>  // printf() & co
 #include <stdlib.h> // exit()
+
+#define TWO_SECONDS 2000
+#define RELOAD_INTERVAL 100
 
 GMainLoop * loop;
 
@@ -69,8 +72,8 @@ static void initKdb (ElektraIoTimerOperation * timerOp ELEKTRA_UNUSED)
 	kdb = kdbOpen (parentKey);
 	if (kdb == NULL)
 	{
-		printf ("could not open KDB. aborting\n");
-		exit (-1);
+		printf ("could not open KDB, aborting\n");
+		exit (1);
 	}
 
 	elektraIoSetBinding (kdb, binding);
@@ -78,22 +81,22 @@ static void initKdb (ElektraIoTimerOperation * timerOp ELEKTRA_UNUSED)
 	int result = elektraNotificationOpen (kdb);
 	if (!result)
 	{
-		printf ("could not init notification. aborting\n");
-		exit (-1);
+		printf ("could not init notification, aborting\n");
+		exit (1);
 	}
 
 	result = elektraNotificationRegisterInt (kdb, intKeyToWatch, &valueToPrint);
 	if (!result)
 	{
-		printf ("could not register variable. aborting\n");
-		exit (-1);
+		printf ("could not register variable, aborting\n");
+		exit (1);
 	}
 
-	Key * elektraKey = keyNew ("system/elektra", KEY_END);
+	Key * elektraKey = keyNew ("/elektra", KEY_END);
 	if (!elektraNotificationRegisterCallbackSameOrBelow (kdb, elektraKey, elektraChangedCallback, NULL))
 	{
-		printf ("could not register for changes to Elektra's configuration. aborting\n");
-		exit (-1);
+		printf ("could not register for changes to Elektra's configuration, aborting\n");
+		exit (1);
 	}
 	keyDel (elektraKey);
 
@@ -155,15 +158,15 @@ int main (void)
 	g_unix_signal_add (SIGINT, onSIGNAL, NULL);
 
 	config = ksNew (20, KS_END);
-	parentKey = keyNew ("/sw/tests/example_notification/#0/current", KEY_END);
-	intKeyToWatch = keyNew ("/sw/tests/example_notification/#0/current/value", KEY_END);
+	parentKey = keyNew ("/sw/elektra/example_notification/#0/current", KEY_END);
+	intKeyToWatch = keyNew ("/sw/elektra/example_notification/#0/current/value", KEY_END);
 
 	// Setup timer that repeatedly prints the variable
-	timer = elektraIoNewTimerOperation (2000, 1, printVariable, &valueToPrint);
+	timer = elektraIoNewTimerOperation (TWO_SECONDS, 1, printVariable, &valueToPrint);
 	elektraIoBindingAddTimer (binding, timer);
 
 	// Setup timer for reloading Elektra's configuration
-	reload = elektraIoNewTimerOperation (100, 0, initKdb, NULL);
+	reload = elektraIoNewTimerOperation (RELOAD_INTERVAL, 0, initKdb, NULL);
 	elektraIoBindingAddTimer (binding, reload);
 
 	printf ("Reloading Notification Example Application\n");
