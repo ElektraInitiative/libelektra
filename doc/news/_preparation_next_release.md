@@ -362,12 +362,6 @@ Thanks to Daniel Bugl.
 - replaced strdup with elektraStrDup (for C99 compatibility) *(Markus Raab)*
 - You can now remove the basename of a key via the C++ API by calling `key.delBaseName()`. *(René Schwaiger)*
 - The function `elektraArrayGetNextKey` now uses `NULL` instead of the empty string as init value for the returned key. *(René Schwaiger)*
-- The
-  [notification API](https://doc.libelektra.org/api/current/html/group__kdbnotification.html)
-  was extended.
-  The API now supports contexts for callbacks, the types `int`, `unsigned int`,
-  `long`, `unsigned long`, `float` and `double`.
-  It also supports all of Elektra's `kdb_*_t` types defined in `kdbtypes.h`. *(Thomas Wahringer)*
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -395,6 +389,14 @@ Thanks to Daniel Bugl.
   It can be used to integrate the notification feature with applications based
   on [ev](http://libev.schmorp.de) main loops. *(Thomas Wahringer)*
 
+## Notifications
+
+- The
+  [notification API](https://doc.libelektra.org/api/current/html/group__kdbnotification.html)
+  was extended.
+  The API now supports contexts for callbacks, the types `int`, `unsigned int`,
+  `long`, `unsigned long`, `long long`, `unsinged long long`, `float` and `double`.
+  It also supports all of Elektra's `kdb_*_t` types defined in `kdbtypes.h`. *(Thomas Wahringer)*
 
 ## Tools
 
