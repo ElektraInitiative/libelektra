@@ -30,6 +30,7 @@ normalize i@(RegexIntersection _ _) = either return fold $ collect i ([], [])
     fold (ts, ss) = do
       b <- FA.makeBasic FA.Total
       s <- foldM FA.intersect b $ map (\(Regex _ x) -> x) ss
+      _ <- FA.minimize s
       e <- FA.makeBasic FA.Empty
       isEmpty <- (\case x | x <= 0    -> False
                           | otherwise -> True)

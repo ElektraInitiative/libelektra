@@ -44,7 +44,6 @@ regexPlugin = TcPlugin {
 data RgxData = RgxData {
   keyTyCon              :: TyCon,
   rgxContainsTyCon      :: TyCon,
-  rgxIntersectsTyCon    :: TyCon,
   rgxIntersectableTyCon :: TyCon,
   rgxIntersectionTyCon  :: TyCon
 }
@@ -56,13 +55,11 @@ initTyCons = do
     let getRgxTyCon = getTyCon "Elektra.RegexType" "specelektra"
     ktc   <- getRgxTyCon "Key"
     rctc  <- getRgxTyCon "RegexContains"
-    ritc  <- getRgxTyCon "RegexIntersects"
     riitc <- getRgxTyCon "Intersectable"
     rixtc <- getRgxTyCon "RegexIntersection"
     return RgxData {
       keyTyCon              = ktc,
       rgxContainsTyCon      = rctc,
-      rgxIntersectsTyCon    = ritc,
       rgxIntersectableTyCon = riitc,
       rgxIntersectionTyCon  = rixtc
     }
@@ -108,8 +105,10 @@ hasTyCon wtc ct = case classifyPredType $ ctEvPred $ ctEvidence ct of
 
 evRegexConstraint :: Ct -> Maybe EvTerm
 evRegexConstraint ct = case classifyPredType $ ctEvPred $ ctEvidence ct of
-    EqPred _ (TyConApp _ [x]) _ -> Just (evByFiat "specelektra" x x)
-    IrredPred (TyConApp _ [x])  -> Just (evByFiat "specelektra" x x)
+    EqPred _ (TyConApp _ [a]) _ -> Just (evByFiat "specelektra" a a)
+    IrredPred (TyConApp _ [a])  -> Just (evByFiat "specelektra" a a)
+    EqPred _ (TyConApp _ [a, b]) _ -> Just (evByFiat "specelektra" a b)
+    IrredPred (TyConApp _ [a, b])  -> Just (evByFiat "specelektra" a b)
     _                              -> Nothing
 
 partitionSolutions :: [SolveResult] -> ([Ct], [Ct], [Ct])

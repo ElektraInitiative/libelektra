@@ -39,7 +39,8 @@ regexIntersections rtc1 rtc2 cs = do
         -- unify all constraints and calculate a normal form if possible
         n <- tcPluginIO $ normalize t
         -- check if it was already in normal form
-        if t == n then return Nothing else case n of
+        eq <- tcPluginIO $ t === n
+        if eq then return Nothing else case n of
           -- Normalization failed
           EmptyRegex -> return $ Just $ Failure cs
           _          -> finalize ts n
@@ -56,7 +57,8 @@ regexIntersections rtc1 rtc2 cs = do
     normalizationConstraints (c, t) = do
       -- Introduce possible coercion constraints
       n <- tcPluginIO $ normalize t
-      if n == t then return Nothing else do
+      eq <- tcPluginIO $ t === n
+      if eq then return Nothing else do
         let n' = toAST rtc2 n
         let ct'@(TyConApp _ [ct]) = ctEvPred $ ctEvidence c
         evRgxTypesCoerce <- newGiven (ctLoc c) (mkPrimEqPred ct n') (evByFiat "specElektra" ct n')
@@ -78,15 +80,21 @@ regexContains rctc ritc c = do
     bn <- tcPluginIO $ normalize b
     if an == EmptyRegex || bn == EmptyRegex then return . Just $ Failure [c] else do
       isContainmentPossible <- tcPluginIO $ containmentPossible an bn
-      if not isContainmentPossible then return . Just $ Failure [c] else
-        if a == an && b == bn then return Nothing else
+      if not isContainmentPossible then return . Just $ Failure [c] else do
+        aEq <- tcPluginIO $ a === an
+        bEq <- tcPluginIO $ b === bn
+        if aEq && bEq then do
+          pac <- tcPluginIO $ primitiveAndContained an bn
+          if pac then return . Just $ Solved [c]
+          else return Nothing
+        else
           let a'  = toAST ritc a
               b'  = toAST ritc b
               an' = toAST ritc an
               bn' = toAST ritc bn
           in do
-            af <- if a == an then return Nothing else normalizationConstraint (a, a', an')
-            bf <- if b == bn then return Nothing else normalizationConstraint (b, b', bn')
+            af <- if aEq then return Nothing else normalizationConstraint (a, a', an')
+            bf <- if bEq then return Nothing else normalizationConstraint (b, b', bn')
             evNormalized <- newWanted (ctLoc c) (TyConApp rctc [toAST ritc an, toAST ritc bn])
             let original = (ctEvPred $ ctEvidence c)
             let new      = TyConApp rctc [an', bn']
@@ -109,3 +117,5 @@ regexContains rctc ritc c = do
       evRgxTypesCoerce <- newGiven (ctLoc c) (mkPrimEqPred a n) (evByFiat "specElektra" a n)
       fsk <- unsafeTcPluginTcM $ newFskTyVar typeSymbolKind
       return $ Just $ CFunEqCan evRgxTypesCoerce ritc [typeSymbolKind] fsk
+    primitiveAndContained (Regex _ l) (Regex _ r) = contained l r
+    primitiveAndContained _ _ = return False

@@ -28,6 +28,7 @@ fromAST (LitTy (StrTyLit s)) = fmap (maybe EmptyRegex (uncurry Regex)) . normali
     normalizeRegex :: String -> IO (Maybe (String, FA.FiniteAutomata))
     normalizeRegex r = do
       n <- rightToMaybe <$> FA.compile r
+      mapM_ FA.minimize n
       n' <- join <$> mapM (fmap rightToMaybe . FA.asRegexp) n
       return $ liftA2 (,) n' n
 
