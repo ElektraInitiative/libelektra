@@ -396,6 +396,7 @@ static void clearStorage (const char * tmpFile)
 	PLUGIN_CLOSE ();
 }
 
+/*
 #ifdef DEBUG
 int cmpfunc (const void * a, const void * b)
 {
@@ -437,6 +438,7 @@ static void testDynArray1 (void)
 	elektraFree (dynArray.keyArray);
 }
 #endif
+*/
 
 /* -- KeySet API tests ------------------------------------------------------------------------------------------------------------------ */
 
@@ -1262,11 +1264,11 @@ int main (int argc, char ** argv)
 
 	init (argc, argv);
 	const char * tmpFile = elektraFilename ();
-
-#ifdef DEBUG
-	testDynArray1 ();
-#endif
-
+	/*
+	#ifdef DEBUG
+		testDynArray1 ();
+	#endif
+	*/
 	// call once before clearStorage, to test non existent file
 	test_mmap_get_set (tmpFile);
 

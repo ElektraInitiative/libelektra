@@ -14,21 +14,6 @@
 #include <kdbplugin.h>
 
 
-typedef struct _dynArray DynArray;
-
-struct _dynArray
-{
-	size_t size;
-	size_t alloc;
-	Key ** keyArray;
-	Key ** mappedKeyArray;
-};
-
-#ifdef DEBUG
-int findOrInsert (Key * key, DynArray * dynArray);
-#endif
-
-
 int elektraMmapstorageOpen (Plugin * handle, Key * errorKey);
 int elektraMmapstorageClose (Plugin * handle, Key * errorKey);
 int elektraMmapstorageGet (Plugin * handle, KeySet * ks, Key * parentKey);
