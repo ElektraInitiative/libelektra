@@ -12,9 +12,9 @@
 module Elektra.Normalize (normalize) where
 
 import Control.Monad (foldM)
-import Data.Maybe (maybe)
-import Data.Either (either)
-import Data.List (nub, sort)
+import Data.Maybe    (maybe)
+import Data.Either   (either)
+import Data.List     (nub, sort)
 
 import Elektra.Types
 import qualified FiniteAutomata as FA
@@ -42,15 +42,15 @@ normalize i@(RegexIntersection _ _) = either return fold $ collect i ([], [])
                        | x == 0    -> Just False
                        | otherwise -> Just True)
             =<< FA.equals b s
-    finalize (ts, _) True = foldTyVars ts  
-    finalize ([], sr) False = return sr
+    finalize (ts, _) True          = foldTyVars ts  
+    finalize ([], sr) False        = return sr
     finalize (_, EmptyRegex) False = return EmptyRegex
-    finalize (ts, sr) False = flip RegexIntersection sr <$> foldTyVars ts
-    foldTyVars [] = Regex ".*" <$> FA.makeBasic FA.Total
-    foldTyVars [x] = return $ RegexVar x
+    finalize (ts, sr) False        = RegexIntersection <$> foldTyVars ts <*> pure sr
+    foldTyVars []     = Regex ".*" <$> FA.makeBasic FA.Total
+    foldTyVars [x]    = return $ RegexVar x
     foldTyVars (t:ts) = RegexIntersection (RegexVar t) <$> foldTyVars ts
     collect (RegexIntersection l r) p = collect r =<< collect l p
-    collect r@(Regex _ _) (ts, ss) = Right (ts, r : ss)
-    collect (RegexVar v) (ts, ss) = Right (v : ts, ss)
-    collect EmptyRegex _ = Left EmptyRegex
+    collect r@(Regex _ _) (ts, ss)    = Right (ts, r : ss)
+    collect (RegexVar v)  (ts, ss)    = Right (v : ts, ss)
+    collect EmptyRegex _              = Left EmptyRegex
 normalize r = return r

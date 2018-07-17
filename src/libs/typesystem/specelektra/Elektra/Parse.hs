@@ -7,7 +7,7 @@
 -- 
 module Elektra.Parse (fromAST, toAST) where
 
-import Control.Applicative (liftA2)
+import Data.Maybe    (fromMaybe)
 import Control.Monad (mapM, join)
 
 import Elektra.Types
@@ -21,22 +21,22 @@ fromAST :: Type -> IO RegexType
 fromAST (TyConApp _ [l, r]) = do
   l' <- fromAST l
   r' <- fromAST r
-  if l' == EmptyRegex || r' == EmptyRegex then return EmptyRegex else return $ RegexIntersection l' r'
+  return $ if l' == EmptyRegex || r' == EmptyRegex then EmptyRegex else RegexIntersection l' r'
 -- Normalize the regex representation here using FA minimization
-fromAST (LitTy (StrTyLit s)) = fmap (maybe EmptyRegex (uncurry Regex)) . normalizeRegex $ unpackFS s
+fromAST (LitTy (StrTyLit s)) = fromMaybe EmptyRegex <$> normalizeRegex (unpackFS s)
   where
-    normalizeRegex :: String -> IO (Maybe (String, FA.FiniteAutomata))
+    normalizeRegex :: String -> IO (Maybe RegexType)
     normalizeRegex r = do
       n <- rightToMaybe <$> FA.compile r
       mapM_ FA.minimize n
       n' <- join <$> mapM (fmap rightToMaybe . FA.asRegexp) n
-      return $ liftA2 (,) n' n
+      return $ Regex <$> n' <*> n
 
 fromAST (TyVarTy v) = return $ RegexVar v
 fromAST _ = return EmptyRegex
 
 toAST :: TyCon -> RegexType -> Type
 toAST tc (RegexIntersection l r) = TyConApp tc [toAST tc l, toAST tc r]
-toAST _ (Regex r _) = LitTy $ StrTyLit $ mkFastString r
-toAST _ (RegexVar v) = TyVarTy v
-toAST _ EmptyRegex = error "toAST called EmptyRegex"
+toAST _ (Regex r _)              = LitTy . StrTyLit $ mkFastString r
+toAST _ (RegexVar v)             = TyVarTy v
+toAST _ EmptyRegex               = error "toAST called EmptyRegex"

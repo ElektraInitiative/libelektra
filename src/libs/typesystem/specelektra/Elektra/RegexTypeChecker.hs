@@ -30,14 +30,14 @@ import TyCoRep    (Type(..))
 -- GHC Plugin Interface definition
 plugin :: Plugin
 plugin = defaultPlugin {
-  tcPlugin = const $ Just $ tracePlugin "yo" regexPlugin
+  tcPlugin = const . Just $ tracePlugin "RegexTypeChecker" regexPlugin
   }
 
 regexPlugin :: TcPlugin
 regexPlugin = TcPlugin {
   tcPluginInit  = initTyCons,
   tcPluginSolve = solveRegex,
-  tcPluginStop  = const (return ())
+  tcPluginStop  = const $ return ()
   }
 
 -- Container for holding the type constructors defined in Elektra.RegexType
@@ -51,18 +51,11 @@ data RgxData = RgxData {
 -- Get the type constructor definitions from this package to filter for them
 -- during the typechecking phase
 initTyCons :: TcPluginM RgxData
-initTyCons = do
-    let getRgxTyCon = getTyCon "Elektra.RegexType" "specelektra"
-    ktc   <- getRgxTyCon "Key"
-    rctc  <- getRgxTyCon "RegexContains"
-    riitc <- getRgxTyCon "Intersectable"
-    rixtc <- getRgxTyCon "RegexIntersection"
-    return RgxData {
-      keyTyCon              = ktc,
-      rgxContainsTyCon      = rctc,
-      rgxIntersectableTyCon = riitc,
-      rgxIntersectionTyCon  = rixtc
-    }
+initTyCons = let getRgxTyCon = getTyCon "Elektra.RegexType" "specelektra" in
+    RgxData <$> getRgxTyCon "Key"
+            <*> getRgxTyCon "RegexContains"
+            <*> getRgxTyCon "Intersectable"
+            <*> getRgxTyCon "RegexIntersection"
 
 getTyCon :: String -> String -> String -> TcPluginM TyCon
 getTyCon m p t = lookupModule regexModule regexPackage
@@ -105,16 +98,16 @@ hasTyCon wtc ct = case classifyPredType $ ctEvPred $ ctEvidence ct of
 
 evRegexConstraint :: Ct -> Maybe EvTerm
 evRegexConstraint ct = case classifyPredType $ ctEvPred $ ctEvidence ct of
-    EqPred _ (TyConApp _ [a]) _ -> Just (evByFiat "specelektra" a a)
-    IrredPred (TyConApp _ [a])  -> Just (evByFiat "specelektra" a a)
-    EqPred _ (TyConApp _ [a, b]) _ -> Just (evByFiat "specelektra" a b)
-    IrredPred (TyConApp _ [a, b])  -> Just (evByFiat "specelektra" a b)
-    _                              -> Nothing
+    EqPred _  (TyConApp _ [a]) _    -> Just (evByFiat "specelektra" a a)
+    IrredPred (TyConApp _ [a])      -> Just (evByFiat "specelektra" a a)
+    EqPred _  (TyConApp _ [a, b]) _ -> Just (evByFiat "specelektra" a b)
+    IrredPred (TyConApp _ [a, b])   -> Just (evByFiat "specelektra" a b)
+    _                               -> Nothing
 
 partitionSolutions :: [SolveResult] -> ([Ct], [Ct], [Ct])
 partitionSolutions = foldl collect ([], [], [])
   where
     collect (s, f, n) r = case r of
-      (Solved ss)       -> (ss ++ s, f, n)
-      (Failure fs)      -> (s, fs ++ f, n)
-      (New ss ns)       -> (ss ++ s, f, ns ++ n)
+      (Solved ss)  -> (ss ++ s, f, n)
+      (Failure fs) -> (s, fs ++ f, n)
+      (New ss ns)  -> (ss ++ s, f, ns ++ n)

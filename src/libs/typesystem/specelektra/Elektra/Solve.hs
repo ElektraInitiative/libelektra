@@ -9,7 +9,6 @@
 
 module Elektra.Solve (regexIntersections, regexContains) where
 
-import Control.Applicative (liftA2)
 import Data.Maybe (catMaybes)
 
 import Elektra.Parse
@@ -34,7 +33,7 @@ regexIntersections rtc1 rtc2 cs = do
     let t = foldl1 RegexIntersection ts
     case t of
       -- Intersectable (Regex) is trivially true
-      Regex _ _ -> return $ Just $ Solved cs
+      Regex _ _ -> return . Just $ Solved cs
       _         -> do
         -- unify all constraints and calculate a normal form if possible
         n <- tcPluginIO $ normalize t
@@ -51,7 +50,7 @@ regexIntersections rtc1 rtc2 cs = do
     -- normal form possible, aggregate all possible coercions and emit the result
     finalize ts n = do
       evNormalized <- newWanted (ctLoc $ head cs) (TyConApp rtc1 [toAST rtc2 n])
-      coercions <- catMaybes <$> mapM normalizationConstraints (zip cs ts)
+      coercions    <- catMaybes <$> mapM normalizationConstraints (zip cs ts)
       return . Just . New cs $ CNonCanonical evNormalized : concat coercions
     normalizationConstraints (_, Regex _ _) = return Nothing
     normalizationConstraints (c, t) = do
@@ -76,14 +75,17 @@ regexIntersections rtc1 rtc2 cs = do
 regexContains :: TyCon -> TyCon -> Ct -> TcPluginM (Maybe SolveResult)
 regexContains rctc ritc c = do
     (a, b) <- tcPluginIO $ extract c
-    an <- tcPluginIO $ normalize a
-    bn <- tcPluginIO $ normalize b
+    an     <- tcPluginIO $ normalize a
+    bn     <- tcPluginIO $ normalize b
+    -- normalization failed, unsatisfiable
     if an == EmptyRegex || bn == EmptyRegex then return . Just $ Failure [c] else do
       isContainmentPossible <- tcPluginIO $ containmentPossible an bn
+      -- normalization succeeded but the containment can already be decided as unsatisfiable
       if not isContainmentPossible then return . Just $ Failure [c] else do
         aEq <- tcPluginIO $ a === an
         bEq <- tcPluginIO $ b === bn
         if aEq && bEq then do
+          -- Both sides already in normal form, check if satisfied
           pac <- tcPluginIO $ primitiveAndContained an bn
           if pac then return . Just $ Solved [c]
           else return Nothing
@@ -93,17 +95,19 @@ regexContains rctc ritc c = do
               an' = toAST ritc an
               bn' = toAST ritc bn
           in do
+            -- Otherwise normalize both sides first
             af <- if aEq then return Nothing else normalizationConstraint (a, a', an')
             bf <- if bEq then return Nothing else normalizationConstraint (b, b', bn')
             evNormalized <- newWanted (ctLoc c) (TyConApp rctc [toAST ritc an, toAST ritc bn])
-            let original = (ctEvPred $ ctEvidence c)
+            let original = ctEvPred $ ctEvidence c
             let new      = TyConApp rctc [an', bn']
             evNormalizedCoerce <- newGiven (ctLoc c) (mkPrimEqPred original new) (evByFiat "specElektra" original new)
             fsk <- unsafeTcPluginTcM $ newFskTyVar typeSymbolKind
-            return . Just $ New [c] (catMaybes [Just $ CNonCanonical evNormalized, Just $ CFunEqCan evNormalizedCoerce rctc [constraintKind] fsk, af, bf])
+            return . Just $ New [c] (catMaybes [Just $ CNonCanonical evNormalized
+                                               ,Just $ CFunEqCan evNormalizedCoerce rctc [constraintKind] fsk, af, bf])
   where    
-    extract ct = case classifyPredType $ ctEvPred $ ctEvidence ct of
-      IrredPred (TyConApp _ [a, b]) -> liftA2 (,) (fromAST a) (fromAST b)
+    extract ct = case classifyPredType . ctEvPred $ ctEvidence ct of
+      IrredPred (TyConApp _ [a, b]) -> (,) <$> fromAST a <*> fromAST b
       _                             -> error "Expected an IrredPred of RegexContains but got something else instead"
     containmentPossible (RegexIntersection _ (Regex _ l)) (RegexIntersection _ (Regex _ r)) = contained l r
     containmentPossible (RegexIntersection _ (Regex _ l)) (Regex _ r) = contained l r
