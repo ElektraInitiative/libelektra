@@ -714,6 +714,79 @@ static void * hexStringToAddress (const char * hexString)
 	return (void *) val;
 }
 
+
+KeySet * copyKeySet (MmapHeader * mmapInfo, KeySet * ks, MmapHeader * mmapHeader)
+{
+	if (!mmapInfo)
+	{
+		return 0;
+	}
+
+	if (test_bit (mmapInfo->flags, MMAP_FLAG_DELETED) == MMAP_FLAG_DELETED)
+	{
+		return 0;
+	}
+
+	// TODO: ultimately, use this function everywhere
+	DynArray * dynArray = newDynArray ();
+
+	// ksDeepDup (toCopy);
+
+	calculateDataSize (TYPE_ALLOC, mmapHeader, ks, dynArray);
+	mmapHeader->mmapMagicNumber = ELEKTRA_MAGIC_MMAP_NUMBER;
+
+	size_t copySize = mmapHeader->allocSize;
+	// char * dest = elektraCalloc (copySize);
+
+	// TODO: if have MAP_ANONYMOUS
+	char * dest = mmap ((void *) 0, copySize, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+	if (dest == MAP_FAILED)
+	{
+		ELEKTRA_LOG_WARNING ("error mapping MAP_ANONYMOUS");
+		ELEKTRA_LOG_WARNING ("mmapSize: %zu", copySize);
+		ELEKTRA_LOG_WARNING ("strerror: %s", strerror (errno));
+		return 0;
+	}
+	mmapHeader->destAddr = (char *) ks; // set old address
+	ksWrite (TYPE_ALLOC, dest, ks, mmapHeader, 0, dynArray);
+
+	delDynArray (dynArray);
+
+	return (KeySet *) dest;
+}
+
+static void unlinkFile (Key * parentKey)
+{
+	ELEKTRA_LOG_WARNING ("unlink: need to unlink old mapped memory from file");
+
+	const Key * cur;
+	keyRewindMeta (parentKey);
+	while ((cur = keyNextMeta (parentKey)) != 0)
+	{
+		void * toUnlinkMmap = hexStringToAddress (keyName (cur));
+		ELEKTRA_LOG_WARNING ("unlink: unlinking mmap str: %s", keyName (cur));
+		ELEKTRA_LOG_WARNING ("unlink: unlinking mmap ptr: %p", toUnlinkMmap);
+
+		void * toUnlinkKS = hexStringToAddress (keyString (cur));
+		ELEKTRA_LOG_WARNING ("unlink: unlinking KeySet str: %s", keyString (cur));
+		ELEKTRA_LOG_WARNING ("unlink: unlinking KeySet ptr: %p", toUnlinkKS);
+
+		MmapHeader mmapHeader;
+		memset (&mmapHeader, 0, SIZEOF_MMAPHEADER);
+		KeySet * copy = copyKeySet (toUnlinkMmap, toUnlinkKS, &mmapHeader);
+		if (copy)
+		{
+			ksClose (toUnlinkKS);
+			updatePointers (TYPE_ALLOC, &mmapHeader, (char *) copy);
+			mmapToKeySet (TYPE_ALLOC, (char *) copy, (KeySet *) toUnlinkKS);
+			// elektraFree (copy); // not if MAP_ANONYMOUS
+		}
+		// keySetMeta (found, keyName (cur), ""); // delete
+	}
+}
+
+/* -- Exported Elektra Plugin Functions ------------------------------------------------------------------------------------------------- */
+
 int elektraMmapstorageOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 {
 	// plugin initialization logic
@@ -727,7 +800,14 @@ int elektraMmapstorageClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEK
 {
 	// free all plugin resources and shut it down
 	KeySet * mappedFiles = (KeySet *) elektraPluginGetData (handle);
-	// TODO: unlink all remaining files!
+
+	// unlink all remaining files!
+	Key * cur = 0;
+	ksRewind (mappedFiles);
+	while ((cur = ksNext (mappedFiles)) != 0)
+	{
+		unlinkFile (cur);
+	}
 	ksDel (mappedFiles);
 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
@@ -872,76 +952,6 @@ error:
 	fclose (fp);
 	errno = errnosave;
 	return ELEKTRA_PLUGIN_STATUS_ERROR;
-}
-
-KeySet * copyKeySet (MmapHeader * mmapInfo, KeySet * unlinkKs, MmapHeader * mmapHeader)
-{
-	if (!mmapInfo)
-	{
-		return 0;
-	}
-
-	if (test_bit (mmapInfo->flags, MMAP_FLAG_DELETED) == MMAP_FLAG_DELETED)
-	{
-		return 0;
-	}
-
-	// TODO: ultimately, use this function everywhere
-	DynArray * dynArray = newDynArray ();
-
-	// ksDeepDup (toCopy);
-
-	calculateDataSize (TYPE_ALLOC, mmapHeader, unlinkKs, dynArray);
-	mmapHeader->mmapMagicNumber = ELEKTRA_MAGIC_MMAP_NUMBER;
-
-	size_t copySize = mmapHeader->allocSize;
-	// char * dest = elektraCalloc (copySize);
-
-	// TODO: if have MAP_ANONYMOUS
-	char * dest = mmap ((void *) 0, copySize, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
-	if (dest == MAP_FAILED)
-	{
-		ELEKTRA_LOG_WARNING ("error mapping MAP_ANONYMOUS");
-		ELEKTRA_LOG_WARNING ("mmapSize: %zu", copySize);
-		ELEKTRA_LOG_WARNING ("strerror: %s", strerror (errno));
-		return 0;
-	}
-	mmapHeader->destAddr = (char *) unlinkKs; // set old address
-	ksWrite (TYPE_ALLOC, dest, unlinkKs, mmapHeader, 0, dynArray);
-
-	delDynArray (dynArray);
-
-	return (KeySet *) dest;
-}
-
-static void unlinkFile (Key * parentKey)
-{
-	ELEKTRA_LOG_WARNING ("unlink: need to unlink old mapped memory from file");
-
-	const Key * cur;
-	keyRewindMeta (parentKey);
-	while ((cur = keyNextMeta (parentKey)) != 0)
-	{
-		void * toUnlinkMmap = hexStringToAddress (keyName (cur));
-		ELEKTRA_LOG_WARNING ("unlink: unlinking mmap str: %s", keyName (cur));
-		ELEKTRA_LOG_WARNING ("unlink: unlinking mmap ptr: %p", toUnlinkMmap);
-
-		void * toUnlinkKS = hexStringToAddress (keyString (cur));
-		ELEKTRA_LOG_WARNING ("unlink: unlinking KeySet str: %s", keyString (cur));
-		ELEKTRA_LOG_WARNING ("unlink: unlinking KeySet ptr: %p", toUnlinkKS);
-
-		MmapHeader mmapHeader;
-		memset (&mmapHeader, 0, SIZEOF_MMAPHEADER);
-		KeySet * copy = copyKeySet (toUnlinkMmap, toUnlinkKS, &mmapHeader);
-		if (copy)
-		{
-			ksClose (toUnlinkKS);
-			updatePointers (TYPE_ALLOC, &mmapHeader, (char *) copy);
-			mmapToKeySet (TYPE_ALLOC, (char *) copy, (KeySet *) toUnlinkKS);
-			// elektraFree (copy); // not if MAP_ANONYMOUS
-		}
-		// keySetMeta (found, keyName (cur), ""); // delete
-	}
 }
 
 int elektraMmapstorageSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
