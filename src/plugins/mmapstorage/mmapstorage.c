@@ -7,6 +7,7 @@
  *
  */
 
+/* -- Imports --------------------------------------------------------------------------------------------------------------------------- */
 
 #include "mmapstorage.h"
 
@@ -28,6 +29,7 @@
 
 //#include <zlib.h> // crc32()
 
+/* -- Macros & Definitions -------------------------------------------------------------------------------------------------------------- */
 
 #define SIZEOF_KEY (sizeof (Key))
 #define SIZEOF_KEY_PTR (sizeof (Key *))
@@ -39,6 +41,7 @@
 
 typedef enum _DestType { TYPE_MMAP = 0, TYPE_ALLOC } DestType;
 
+/* -- File handling --------------------------------------------------------------------------------------------------------------------- */
 
 static FILE * mmapOpenFile (Key * parentKey, const char * mode)
 {
@@ -96,6 +99,35 @@ static char * mmapMapFile (void * addr, FILE * fp, size_t mmapSize, int mapOpts,
 		return MAP_FAILED;
 	}
 	return mappedRegion;
+}
+
+/* -- DynArray -------------------------------------------------------------------------------------------------------------------------- */
+
+static DynArray * newDynArray (void)
+{
+	DynArray * dynArray = elektraCalloc (sizeof (DynArray));
+	dynArray->keyArray = elektraCalloc (sizeof (Key *) * 8);
+	dynArray->mappedKeyArray = 0;
+	dynArray->size = 0;
+	dynArray->alloc = 8;
+	return dynArray;
+}
+
+static void delDynArray (DynArray * dynArray)
+{
+	if (!dynArray)
+	{
+		return;
+	}
+	if (dynArray->keyArray)
+	{
+		elektraFree (dynArray->keyArray);
+	}
+	if (dynArray->mappedKeyArray)
+	{
+		elektraFree (dynArray->mappedKeyArray);
+	}
+	elektraFree (dynArray);
 }
 
 #ifdef DEBUG
@@ -847,15 +879,11 @@ KeySet * copyKeySet (MmapHeader * mmapInfo, KeySet * unlinkKs, MmapHeader * mmap
 	}
 
 	// TODO: ultimately, use this function everywhere
-	DynArray dynArray;
-	dynArray.keyArray = elektraCalloc (sizeof (Key *));
-	dynArray.mappedKeyArray = 0;
-	dynArray.size = 0;
-	dynArray.alloc = 1;
+	DynArray * dynArray = newDynArray ();
 
 	// ksDeepDup (toCopy);
 
-	mmapDataSize (TYPE_ALLOC, mmapHeader, unlinkKs, &dynArray);
+	mmapDataSize (TYPE_ALLOC, mmapHeader, unlinkKs, dynArray);
 	mmapHeader->mmapMagicNumber = ELEKTRA_MAGIC_MMAP_NUMBER;
 
 	size_t copySize = mmapHeader->allocSize;
@@ -871,16 +899,9 @@ KeySet * copyKeySet (MmapHeader * mmapInfo, KeySet * unlinkKs, MmapHeader * mmap
 		return 0;
 	}
 	mmapHeader->destAddr = (char *) unlinkKs; // set old address
-	ksWrite (TYPE_ALLOC, dest, unlinkKs, mmapHeader, 0, &dynArray);
+	ksWrite (TYPE_ALLOC, dest, unlinkKs, mmapHeader, 0, dynArray);
 
-	if (dynArray.keyArray)
-	{
-		elektraFree (dynArray.keyArray);
-	}
-	if (dynArray.mappedKeyArray)
-	{
-		elektraFree (dynArray.mappedKeyArray);
-	}
+	delDynArray (dynArray);
 
 	return (KeySet *) dest;
 }
@@ -889,6 +910,7 @@ int elektraMmapstorageSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 {
 	// set all keys
 	int errnosave = errno;
+	DynArray * dynArray = 0;
 
 	KeySet * mappedFiles = (KeySet *) elektraPluginGetData (handle);
 	Key * parentCopy = keyDup (parentKey);
@@ -932,15 +954,11 @@ int elektraMmapstorageSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 		goto error;
 	}
 
-	DynArray dynArray;
-	dynArray.keyArray = elektraCalloc (sizeof (Key *));
-	dynArray.mappedKeyArray = 0;
-	dynArray.size = 0;
-	dynArray.alloc = 1;
+	dynArray = newDynArray ();
 
 	MmapHeader mmapHeader;
 	memset (&mmapHeader, 0, SIZEOF_MMAPHEADER);
-	mmapDataSize (TYPE_MMAP, &mmapHeader, returned, &dynArray);
+	mmapDataSize (TYPE_MMAP, &mmapHeader, returned, dynArray);
 	mmapHeader.mmapMagicNumber = ELEKTRA_MAGIC_MMAP_NUMBER;
 	ELEKTRA_LOG_WARNING ("elektraMmapstorageSet -------> mmapsize: %zu", mmapHeader.allocSize);
 
@@ -959,7 +977,7 @@ int elektraMmapstorageSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 
 	MmapFooter mmapFooter;
 	initMmapFooter (&mmapFooter);
-	ksWrite (TYPE_MMAP, mappedRegion, returned, &mmapHeader, &mmapFooter, &dynArray);
+	ksWrite (TYPE_MMAP, mappedRegion, returned, &mmapHeader, &mmapFooter, dynArray);
 	if (msync ((void *) mappedRegion, mmapHeader.allocSize, MS_SYNC) != 0)
 	{
 		ELEKTRA_LOG_WARNING ("could not msync");
@@ -972,28 +990,23 @@ int elektraMmapstorageSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 		goto error;
 	}
 
-	// TODO: add dynarray to error handling (memleak)
-	if (dynArray.keyArray)
-	{
-		elektraFree (dynArray.keyArray);
-	}
-	if (dynArray.mappedKeyArray)
-	{
-		elektraFree (dynArray.mappedKeyArray);
-	}
-
 	if (fclose (fp) != 0)
 	{
 		ELEKTRA_LOG_WARNING ("could not fclose");
 		goto error;
 	}
 
+	delDynArray (dynArray);
+
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 
 error:
 	ELEKTRA_LOG_WARNING ("strerror: %s", strerror (errno));
 	ELEKTRA_SET_ERROR_SET (parentKey);
+
 	fclose (fp);
+	delDynArray (dynArray);
+
 	errno = errnosave;
 	return ELEKTRA_PLUGIN_STATUS_ERROR;
 }
