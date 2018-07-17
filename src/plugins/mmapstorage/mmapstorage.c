@@ -906,43 +906,49 @@ KeySet * copyKeySet (MmapHeader * mmapInfo, KeySet * unlinkKs, MmapHeader * mmap
 	return (KeySet *) dest;
 }
 
+static void unlinkFile (Key * parentKey)
+{
+	ELEKTRA_LOG_WARNING ("unlink: need to unlink old mapped memory from file");
+
+	const Key * cur;
+	keyRewindMeta (parentKey);
+	while ((cur = keyNextMeta (parentKey)) != 0)
+	{
+		void * toUnlinkMmap = hexStringToAddress (keyName (cur));
+		ELEKTRA_LOG_WARNING ("unlink: unlinking mmap str: %s", keyName (cur));
+		ELEKTRA_LOG_WARNING ("unlink: unlinking mmap ptr: %p", toUnlinkMmap);
+
+		void * toUnlinkKS = hexStringToAddress (keyString (cur));
+		ELEKTRA_LOG_WARNING ("unlink: unlinking KeySet str: %s", keyString (cur));
+		ELEKTRA_LOG_WARNING ("unlink: unlinking KeySet ptr: %p", toUnlinkKS);
+
+		MmapHeader mmapHeader;
+		memset (&mmapHeader, 0, SIZEOF_MMAPHEADER);
+		KeySet * copy = copyKeySet (toUnlinkMmap, toUnlinkKS, &mmapHeader);
+		if (copy)
+		{
+			ksClose (toUnlinkKS);
+			updatePointers (TYPE_ALLOC, &mmapHeader, (char *) copy);
+			mmapToKeySet (TYPE_ALLOC, (char *) copy, (KeySet *) toUnlinkKS);
+			// elektraFree (copy); // not if MAP_ANONYMOUS
+		}
+		// keySetMeta (found, keyName (cur), ""); // delete
+	}
+}
+
 int elektraMmapstorageSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 	// set all keys
 	int errnosave = errno;
 	DynArray * dynArray = 0;
 
+	// check if file has open mappings and unlink them
 	KeySet * mappedFiles = (KeySet *) elektraPluginGetData (handle);
 	Key * parentCopy = keyDup (parentKey);
 	Key * found = ksLookup (mappedFiles, parentCopy, KDB_O_POP);
 	if (found)
 	{
-		ELEKTRA_LOG_WARNING ("unlink: need to unlink old mapped memory from file");
-
-		const Key * cur;
-		keyRewindMeta (found);
-		while ((cur = keyNextMeta (found)) != 0)
-		{
-			void * toUnlinkMmap = hexStringToAddress (keyName (cur));
-			ELEKTRA_LOG_WARNING ("unlink: unlinking mmap str: %s", keyName (cur));
-			ELEKTRA_LOG_WARNING ("unlink: unlinking mmap ptr: %p", toUnlinkMmap);
-
-			void * toUnlinkKS = hexStringToAddress (keyString (cur));
-			ELEKTRA_LOG_WARNING ("unlink: unlinking KeySet str: %s", keyString (cur));
-			ELEKTRA_LOG_WARNING ("unlink: unlinking KeySet ptr: %p", toUnlinkKS);
-
-			MmapHeader mmapHeader;
-			memset (&mmapHeader, 0, SIZEOF_MMAPHEADER);
-			KeySet * copy = copyKeySet (toUnlinkMmap, toUnlinkKS, &mmapHeader);
-			if (copy)
-			{
-				ksClose (toUnlinkKS);
-				updatePointers (TYPE_ALLOC, &mmapHeader, (char *) copy);
-				mmapToKeySet (TYPE_ALLOC, (char *) copy, (KeySet *) toUnlinkKS);
-				// elektraFree (copy); // not if MAP_ANONYMOUS
-			}
-			// keySetMeta (found, keyName (cur), ""); // delete
-		}
+		unlinkFile (found);
 		keyDel (found);
 	}
 	keyDel (parentCopy);
