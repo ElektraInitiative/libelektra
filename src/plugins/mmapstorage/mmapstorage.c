@@ -16,7 +16,6 @@
 #include <kdblogger.h>
 #include <kdbprivate.h>
 
-//#include <fcntl.h>	// open()
 #include <assert.h>
 #include <errno.h>
 #include <limits.h>    // SSIZE_MAX
@@ -27,7 +26,9 @@
 #include <sys/types.h> // ftruncate ()
 #include <unistd.h>    // close(), ftruncate()
 
-//#include <zlib.h> // crc32()
+#ifdef ENABLE_MMAP_CHECKSUM
+#include <zlib.h> // crc32()
+#endif
 
 /* -- Macros & Definitions -------------------------------------------------------------------------------------------------------------- */
 
@@ -569,13 +570,13 @@ static void ksWrite (DestType destType, char * dest, KeySet * keySet, MmapHeader
 		writeKeySet (destType, mmapHeader, keySet, ksPtr, dynArray);
 	}
 
-	/* disable CRC
+#ifdef ENABLE_MMAP_CHECKSUM
 	char * ksCharPtr = (char *) ksPtr;
 	uint32_t checksum = crc32 (0L, Z_NULL, 0);
-	checksum = crc32 (checksum, ksCharPtr, (mmapHeader->mmapSize - SIZEOF_MMAPHEADER));
-
+	checksum = crc32 (checksum, ksCharPtr, (mmapHeader->allocSize - SIZEOF_MMAPHEADER - SIZEOF_MMAPFOOTER));
 	mmapHeader->checksum = checksum;
-	*/
+#endif
+
 	if (destType == TYPE_MMAP)
 	{
 		memcpy (dest, mmapHeader, SIZEOF_MMAPHEADER);
@@ -717,6 +718,22 @@ static void * hexStringToAddress (const char * hexString)
 	return (void *) val;
 }
 
+#ifdef ENABLE_MMAP_CHECKSUM
+static int verifyChecksum (char * mappedRegion, MmapHeader * mmapHeader)
+{
+	char * ksPtr = (char *) (mappedRegion + SIZEOF_MMAPHEADER);
+	uint32_t checksum = crc32 (0L, Z_NULL, 0);
+	checksum = crc32 (checksum, ksPtr, mmapHeader->allocSize - SIZEOF_MMAPHEADER - SIZEOF_MMAPFOOTER);
+
+	if (checksum != mmapHeader->checksum)
+	{
+		ELEKTRA_LOG_WARNING ("old checksum: %ul", mmapHeader->checksum);
+		ELEKTRA_LOG_WARNING ("new checksum: %ul", checksum);
+		return -1;
+	}
+	return 0;
+}
+#endif
 
 KeySet * copyKeySet (MmapHeader * mmapInfo, KeySet * ks, MmapHeader * mmapHeader)
 {
@@ -902,21 +919,13 @@ int elektraMmapstorageGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 		goto error;
 	}
 
-	/* disable CRC
-	char * ksPtr = (char *) (mappedRegion + SIZEOF_MMAPHEADER);
-	uint32_t checksum = crc32 (0L, Z_NULL, 0);
-	checksum = crc32 (checksum, ksPtr, mmapHeader.mmapSize - SIZEOF_MMAPHEADER);
-
-	ELEKTRA_LOG_WARNING ("old checksum: %ul", mmapHeader.checksum);
-	ELEKTRA_LOG_WARNING ("new checksum: %ul", checksum);
-	if (checksum != mmapHeader.checksum)
+#ifdef ENABLE_MMAP_CHECKSUM
+	if (verifyChecksum (mappedRegion, &mmapHeader) != 0)
 	{
-		ELEKTRA_SET_ERROR_GET (parentKey);
-		errno = errnosave;
-		ELEKTRA_LOG ("checksum failed");
-		return ELEKTRA_PLUGIN_STATUS_ERROR;
+		ELEKTRA_LOG_WARNING ("checksum failed");
+		goto error;
 	}
-	*/
+#endif
 
 	ksClose (returned);
 	updatePointers (TYPE_MMAP, &mmapHeader, mappedRegion);
@@ -952,14 +961,12 @@ int elektraMmapstorageSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 
 	// check if file has open mappings and unlink them
 	KeySet * mappedFiles = (KeySet *) elektraPluginGetData (handle);
-	Key * parentCopy = keyDup (parentKey);
-	Key * found = ksLookup (mappedFiles, parentCopy, KDB_O_POP);
+	Key * found = ksLookup (mappedFiles, parentKey, KDB_O_POP);
 	if (found)
 	{
 		unlinkFile (found);
 		keyDel (found);
 	}
-	keyDel (parentCopy);
 
 	FILE * fp;
 

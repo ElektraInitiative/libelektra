@@ -245,6 +245,11 @@ option (INSTALL_BUILD_TOOLS "Install build tools for cross-compilation" OFF)
 
 option (ENABLE_OPTIMIZATIONS "Turn on optimizations that trade memory for speed" ON)
 
+option (ENABLE_CHECKSUM "Turn on checksum for mmapstorage." OFF)
+if (ENABLE_CHECKSUM)
+	set (MMAP_CHECKSUM "1")
+endif (ENABLE_CHECKSUM)
+
 #
 # Developer builds
 #

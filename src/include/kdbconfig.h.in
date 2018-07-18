@@ -105,6 +105,12 @@
 /* ASAN */
 #cmakedefine ENABLE_ASAN
 
+/* enable mmap checksum */
+#cmakedefine MMAP_CHECKSUM
+#ifdef MMAP_CHECKSUM
+#define ENABLE_MMAP_CHECKSUM @ENABLE_MMAP_CHECKSUM@
+#endif
+
 /* debug mode */
 #define DEBUG @DEBUG@
 

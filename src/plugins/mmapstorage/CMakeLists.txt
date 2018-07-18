@@ -11,5 +11,13 @@ if (DEPENDENCY_PHASE)
 	unset (plugin)
 endif ()
 
-# for zlib/crc: INCLUDE_DIRECTORIES ${ZLIB_INCLUDE_DIRS} LINK_LIBRARIES ${ZLIB_LIBRARIES}
-add_plugin (mmapstorage SOURCES mmapstorage.h mmapstorage.c ADD_TEST)
+if (ENABLE_CHECKSUM)
+	add_plugin (mmapstorage
+		    SOURCES mmapstorage.h
+			    mmapstorage.c
+		    INCLUDE_DIRECTORIES ${ZLIB_INCLUDE_DIRS}
+		    LINK_LIBRARIES ${ZLIB_LIBRARIES}
+		    ADD_TEST)
+else (ENABLE_CHECKSUM)
+	add_plugin (mmapstorage SOURCES mmapstorage.h mmapstorage.c ADD_TEST)
+endif (ENABLE_CHECKSUM)
