@@ -307,7 +307,8 @@ static void calculateDataSize (DestType destType, MmapHeader * mmapHeader, KeySe
 
 	if (destType == TYPE_MMAP)
 	{
-		allocSize += SIZEOF_MMAPHEADER + SIZEOF_MMAPFOOTER;
+		size_t padding = sizeof (uint64_t) - (allocSize % sizeof (uint64_t)); // alignment for MMAP Footer at end of mapping
+		allocSize += SIZEOF_MMAPHEADER + SIZEOF_MMAPFOOTER + padding;
 	}
 	mmapHeader->allocSize = allocSize;
 	mmapHeader->numKeySets = 1 + metaKeySets;
