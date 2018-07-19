@@ -2654,6 +2654,12 @@ int ksClose (KeySet * ks)
 	{
 		elektraFree (ks->array);
 	}
+
+	if (arrayInMmap)
+	{
+		clear_bit (ks->flags, KS_FLAG_MMAP_ARRAY);
+	}
+
 	ks->array = 0;
 	ks->alloc = 0;
 
