@@ -912,6 +912,7 @@ static void test_mmap_keyClear (const char * tmpFile)
 
 	succeed_if (keyClear (found) == 0, "Key was NULL, keyClear failed");
 
+	keySetName (found, "user/tests/mmapstorage/foo");
 	keySetString (found, "new key value");
 
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
