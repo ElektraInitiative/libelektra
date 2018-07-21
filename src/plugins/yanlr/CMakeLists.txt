@@ -12,8 +12,14 @@ if (DEPENDENCY_PHASE)
 	# Disable warnings caused by ANTLR’s source code
 	if (APPLE AND CMAKE_COMPILER_IS_GNUCXX)
 		set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-attributes")
-		string (REPLACE "-Woverloaded-virtual" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-		string (REPLACE "-Wshadow" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+		string (REPLACE "-Woverloaded-virtual"
+				""
+				CMAKE_CXX_FLAGS
+				"${CMAKE_CXX_FLAGS}")
+		string (REPLACE "-Wshadow"
+				""
+				CMAKE_CXX_FLAGS
+				"${CMAKE_CXX_FLAGS}")
 	endif (APPLE AND CMAKE_COMPILER_IS_GNUCXX)
 
 	set (GRAMMAR_NAME YAML)
@@ -22,7 +28,8 @@ if (DEPENDENCY_PHASE)
 	foreach (file ${GENERATED_SOURCE_FILES_NAMES})
 		set (filepath ${CMAKE_CURRENT_BINARY_DIR}/${GRAMMAR_NAME}${file}.cpp)
 		set_source_files_properties (${filepath} PROPERTIES GENERATED TRUE)
-		list (APPEND GENERATED_SOURCE_FILES ${filepath})
+		list (APPEND GENERATED_SOURCE_FILES
+			     ${filepath})
 	endforeach (file ${GENERATED_SOURCE_FILES_NAMES})
 	set_source_files_properties (${GRAMMAR_NAME}Lexer.cpp PROPERTIES COMPILE_FLAGS "-Wno-unused-parameter")
 
@@ -42,5 +49,5 @@ add_plugin (yanlr
 	    ADD_TEST
 	    TEST_README
 	    TEST_ENVIRONMENT "ASAN_OPTIONS=detect_container_overflow=0" # Unfortunately it looks like ANTLR’s code causes a container-
-									 # overflow
+									# overflow
 	    TEST_REQUIRED_PLUGINS yamlsmith)
