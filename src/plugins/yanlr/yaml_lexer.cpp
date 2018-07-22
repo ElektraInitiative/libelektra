@@ -49,11 +49,13 @@ unique_ptr<Token> YAMLLexer::nextToken ()
 	while ((tokens.empty () || simpleKey.first != nullptr) && input->LA (1) != Token::EOF)
 	{
 		fetchTokens ();
+#ifdef HAVE_LOGGER
 		ELEKTRA_LOG_DEBUG ("Tokens:");
 		for (unique_ptr<CommonToken> const & token : tokens)
 		{
 			ELEKTRA_LOG_DEBUG ("\t %s", token->toString ().c_str ());
 		}
+#endif
 	}
 
 	unique_ptr<CommonToken> token = move (tokens.front ());
