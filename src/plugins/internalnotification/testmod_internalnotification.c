@@ -741,6 +741,8 @@ int main (int argc, char ** argv)
 	RUN_TYPE_TESTS (UnsignedInt)
 	RUN_TYPE_TESTS (Long)
 	RUN_TYPE_TESTS (UnsignedLong)
+	RUN_TYPE_TESTS (LongLong)
+	RUN_TYPE_TESTS (UnsignedLongLong)
 
 	RUN_TYPE_TESTS (Float)
 	RUN_TYPE_TESTS (Double)
