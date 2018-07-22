@@ -32,7 +32,16 @@ if (DEPENDENCY_PHASE)
 			     ${filepath})
 	endforeach (file ${GENERATED_SOURCE_FILES_NAMES})
 
-	set (SOURCE_FILES "${GENERATED_SOURCE_FILES}" listener.hpp listener.cpp yaml_lexer.hpp yaml_lexer.cpp yanlr.hpp yanlr.cpp)
+	set (SOURCE_FILES
+	     "${GENERATED_SOURCE_FILES}"
+	     listener.hpp
+	     listener.cpp
+	     error_listener.hpp
+	     error_listener.cpp
+	     yaml_lexer.hpp
+	     yaml_lexer.cpp
+	     yanlr.hpp
+	     yanlr.cpp)
 
 	add_custom_command (OUTPUT ${GENERATED_SOURCE_FILES}
 			    COMMAND antlr4 -Werror -Dlanguage=Cpp -o ${CMAKE_CURRENT_BINARY_DIR} -package antlr ${GRAMMAR_FILE}

@@ -17,6 +17,7 @@
 #include <antlr4-runtime.h>
 
 #include "YAML.h"
+#include "error_listener.hpp"
 #include "listener.hpp"
 #include "yaml_lexer.hpp"
 #include "yanlr.hpp"
@@ -50,6 +51,44 @@ KeySet * contractYanlr (void)
 #include ELEKTRA_README (yanlr)
 		      keyNew ("system/elektra/modules/yanlr/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 }
+
+/**
+ * @brief This function parses the content of a YAML file and saves the result in the given key set.
+ *
+ * @param file This file contains the YAML content this function should parse.
+ * @param keys The function adds the key set representing `file` in this key set, if the parsing process finished successfully.
+ * @param parent The function uses this parameter to emit error information.
+ *
+ * @retval ELEKTRA_PLUGIN_STATUS_NO_UPDATE If parsing was successful and `keys` was not updated
+ * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS If parsing was successful and `keys` was updated
+ * @retval ELEKTRA_PLUGIN_STATUS_ERROR If there was an error parsing `file`
+ */
+int parseYAML (ifstream & file, CppKeySet & keys, CppKey & parent)
+{
+	ANTLRInputStream input{ file };
+	YAMLLexer lexer{ &input };
+	CommonTokenStream tokens{ &lexer };
+	YAML parser{ &tokens };
+	ParseTreeWalker walker{};
+	KeyListener listener{ parent };
+
+	ErrorListener errorListener{};
+	parser.removeErrorListeners ();
+	parser.addErrorListener (&errorListener);
+
+	ParseTree * tree = parser.yaml ();
+	if (parser.getNumberOfSyntaxErrors () > 0)
+	{
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_PARSE, parent.getKey (), errorListener.message ());
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+	walker.walk (&listener, tree);
+
+	auto readKeys = listener.keySet ();
+	keys.append (readKeys);
+	return readKeys.size () <= 0 ? ELEKTRA_PLUGIN_STATUS_NO_UPDATE : ELEKTRA_PLUGIN_STATUS_SUCCESS;
+}
+
 } // end namespace
 
 extern "C" {
@@ -80,24 +119,14 @@ int elektraYanlrGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
-	ANTLRInputStream input (file);
-	YAMLLexer lexer (&input);
-	CommonTokenStream tokens (&lexer);
-	YAML parser (&tokens);
-	ParseTreeWalker walker{};
-	KeyListener listener{ parent };
+	auto keys = CppKeySet{ returned };
 
-	ParseTree * tree = parser.yaml ();
-	walker.walk (&listener, tree);
-
-	auto keys = CppKeySet (returned);
-	auto readKeys = listener.keySet ();
-	keys.append (readKeys);
+	int status = parseYAML (file, keys, parent);
 
 	keys.release ();
 	parent.release ();
 
-	return readKeys.size () <= 0 ? ELEKTRA_PLUGIN_STATUS_NO_UPDATE : ELEKTRA_PLUGIN_STATUS_SUCCESS;
+	return status;
 }
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (yanlr)

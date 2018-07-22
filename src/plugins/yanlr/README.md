@@ -87,6 +87,4 @@ sudo kdb umount user/tests/yanlr
 ## Limitations
 
 - The plugin does **not support key-value pairs with empty key**, such as `key:`
-- The plugin currently does not react properly to invalid or unsupported input. Instead of printing a descriptive error message, the plugin
-  will fail with a **segmentation fault**.
 - Yan LR does not provide write support for data
