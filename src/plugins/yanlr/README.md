@@ -86,5 +86,20 @@ sudo kdb umount user/tests/yanlr
 
 ## Limitations
 
-- The plugin does **not support key-value pairs with empty key**, such as `key:`
-- Yan LR does not provide write support for data
+- The plugin does **not support**
+
+  - key-value pairs with **empty key**, such as `key:`,
+  - **comments**,
+  - **single quoted scalars**,
+  - plain scalar keys that span **multiple lines**,
+  - **special characters** inside double quoted scalars,
+  - **block scalars**,
+  - **flow collections**,
+  - **tags**,
+  - **anchors & aliases**,
+  - **multiple documents**, and
+  - document **start and end markers**
+
+  .
+
+- Yan LR does not provide write support for data. Please use the [YAML Smith](../yamlsmith/) plugin for that purpose.
