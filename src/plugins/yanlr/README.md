@@ -62,8 +62,7 @@ sudo kdb umount user/tests/yanlr
 sudo kdb mount config.yaml user/tests/yanlr yanlr
 
 # Manually add a sequences to the configuration file
-printf 'primes:\n'   >  `kdb file user/tests/yanlr`
-printf '  - two\n'   >> `kdb file user/tests/yanlr`
+printf 'primes:\n  - two\n'   >  `kdb file user/tests/yanlr`
 printf '  - three\n' >> `kdb file user/tests/yanlr`
 printf '  - five\n'  >> `kdb file user/tests/yanlr`
 

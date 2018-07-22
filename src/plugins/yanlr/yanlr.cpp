@@ -16,16 +16,15 @@
 
 #include <antlr4-runtime.h>
 
-#include "YAMLLexer.h"
-#include "YAMLParser.h"
+#include "YAML.h"
 #include "listener.hpp"
+#include "yaml_lexer.hpp"
 #include "yanlr.hpp"
 
 using CppKey = kdb::Key;
 using CppKeySet = kdb::KeySet;
 
-using antlr::YAMLLexer;
-using antlr::YAMLParser;
+using antlr::YAML;
 
 using antlr4::ANTLRInputStream;
 using antlr4::CommonTokenStream;
@@ -84,7 +83,7 @@ int elektraYanlrGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	ANTLRInputStream input (file);
 	YAMLLexer lexer (&input);
 	CommonTokenStream tokens (&lexer);
-	YAMLParser parser (&tokens);
+	YAML parser (&tokens);
 	ParseTreeWalker walker{};
 	KeyListener listener{ parent };
 

@@ -24,20 +24,20 @@ if (DEPENDENCY_PHASE)
 
 	set (GRAMMAR_NAME YAML)
 	set (GRAMMAR_FILE ${CMAKE_CURRENT_SOURCE_DIR}/${GRAMMAR_NAME}.g4)
-	set (GENERATED_SOURCE_FILES_NAMES Lexer Parser BaseListener Listener)
-	foreach (file ${GENERATED_SOURCE_FILES_NAMES})
+	set (GENERATED_SOURCE_FILES_NAMES BaseListener Listener)
+	foreach (file ${GENERATED_SOURCE_FILES_NAMES} "")
 		set (filepath ${CMAKE_CURRENT_BINARY_DIR}/${GRAMMAR_NAME}${file}.cpp)
 		set_source_files_properties (${filepath} PROPERTIES GENERATED TRUE)
 		list (APPEND GENERATED_SOURCE_FILES
 			     ${filepath})
 	endforeach (file ${GENERATED_SOURCE_FILES_NAMES})
-	set_source_files_properties (${GRAMMAR_NAME}Lexer.cpp PROPERTIES COMPILE_FLAGS "-Wno-unused-parameter")
 
-	set (SOURCE_FILES "${GENERATED_SOURCE_FILES}" listener.hpp yanlr.hpp yanlr.cpp)
+	set (SOURCE_FILES "${GENERATED_SOURCE_FILES}" listener.hpp listener.cpp yaml_lexer.hpp yaml_lexer.cpp yanlr.hpp yanlr.cpp)
 
 	add_custom_command (OUTPUT ${GENERATED_SOURCE_FILES}
 			    COMMAND antlr4 -Werror -Dlanguage=Cpp -o ${CMAKE_CURRENT_BINARY_DIR} -package antlr ${GRAMMAR_FILE}
-			    DEPENDS ${GRAMMAR_FILE})
+			    DEPENDS ${GRAMMAR_FILE}
+			    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 endif (DEPENDENCY_PHASE)
 
 add_plugin (yanlr
