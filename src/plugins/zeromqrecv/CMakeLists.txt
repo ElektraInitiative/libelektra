@@ -34,8 +34,7 @@ if (ADDTESTING_PHASE)
 			target_compile_definitions (testmod_zeromqrecv PRIVATE "HAVE_LIBUV1")
 		endif ()
 
-		# add sources manually because add_plugintest does not support generator
-		# expressions for additional source files
+		# add sources manually because add_plugintest does not support generator expressions for additional source files
 		if (BUILD_FULL OR BUILD_STATIC) # add sources for elektra-io-uv for static and full builds
 			target_sources (testmod_zeromqrecv PRIVATE $<TARGET_OBJECTS:OBJ_elektra-io-uv>)
 		endif ()

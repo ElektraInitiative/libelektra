@@ -31,8 +31,7 @@ else () # find installation path
 	# install files to destination
 	install (PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/run-${tool}
 			  ${CMAKE_CURRENT_BINARY_DIR}/stop-${tool}
-			  DESTINATION
-			  ${TARGET_TOOL_EXEC_FOLDER})
+		 DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
 	generate_manpage (kdb-run-${tool} FILENAME ${CMAKE_CURRENT_BINARY_DIR}/README.md)
 endif ()

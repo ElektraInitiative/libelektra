@@ -29,7 +29,9 @@ if (ZMQ_FOUND)
 
 		# NOTE CMAKE_POSITION_INDEPENDENT_CODE does not seem to work (e.g. CMake 3.9.2 on Travis)
 		target_compile_options (${ADAPTER_OBJECT} PRIVATE "-fPIC")
-		set_property (TARGET ${ADAPTER_OBJECT} PROPERTY CMAKE_POSITION_INDEPENDENT_CODE ON)
+		set_property (TARGET ${ADAPTER_OBJECT}
+			      PROPERTY CMAKE_POSITION_INDEPENDENT_CODE
+				       ON)
 	endif ()
 
 endif ()
