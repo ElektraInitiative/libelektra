@@ -38,7 +38,9 @@ target_link_elektra (set_key elektra-kdb)
 # Notification examples
 
 # Cannot build examples without notification library which requires the internalnotification plugin
-list (FIND ADDED_PLUGINS "internalnotification" FOUND_NAME)
+list (FIND ADDED_PLUGINS
+	   "internalnotification"
+	   FOUND_NAME)
 if (FOUND_NAME GREATER -1)
 
 	# Build notification polling example
@@ -62,7 +64,8 @@ if (FOUND_NAME GREATER -1)
 		set (SRC_FILES notificationAsync.c)
 		set (SOURCES ${SRC_FILES} ${HDR_FILES})
 		if (BUILD_FULL OR BUILD_STATIC)
-			list (APPEND SOURCES $<TARGET_OBJECTS:OBJ_elektra-io-uv>) # add sources for elektra-io-uv for static and full builds
+			list (APPEND SOURCES
+				     $<TARGET_OBJECTS:OBJ_elektra-io-uv>) # add sources for elektra-io-uv for static and full builds
 		endif ()
 
 		add_executable (${EXAMPLE} ${SOURCES})
@@ -90,8 +93,8 @@ if (FOUND_NAME GREATER -1)
 		set (SRC_FILES notificationReload.c)
 		set (SOURCES ${SRC_FILES} ${HDR_FILES})
 		if (BUILD_FULL OR BUILD_STATIC)
-			list (APPEND SOURCES $<TARGET_OBJECTS:OBJ_elektra-io-glib>) # add sources for elektra-io-uv for static and full
-										    # builds
+			list (APPEND SOURCES
+				     $<TARGET_OBJECTS:OBJ_elektra-io-glib>) # add sources for elektra-io-uv for static and full builds
 		endif ()
 
 		add_executable (${EXAMPLE} ${SOURCES})
