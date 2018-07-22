@@ -72,9 +72,11 @@ kdb ls user/tests/yanlr
 #> user/tests/yanlr/primes/#1
 #> user/tests/yanlr/primes/#2
 
+kdb set user/tests/yanlr/primes/#3 seven
+
 # Retrieve index of last array element
 kdb getmeta user/tests/yanlr/primes array
-#> #2
+#> #3
 
 # Undo modifications to the key database
 kdb rm -r user/tests/yanlr
