@@ -585,14 +585,13 @@ static void * hexStringToAddress (const char * hexString)
 	char * endptr;
 	errno = 0;
 
-	long int val = strtol (hexString, &endptr, hexBase);
+	unsigned long int val = strtoul (hexString, &endptr, hexBase);
 
-	/* Check for various possible errors */
-	if ((errno == ERANGE && (val == LONG_MAX || val == LONG_MIN)) || (errno != 0 && val == 0) || endptr == hexString)
+	if ((errno != 0) || (endptr == hexString))
 	{
 		ELEKTRA_LOG_WARNING ("strerror: %s", strerror (errno));
 		errno = errnosave;
-		return 0;
+		return (void *) 0;
 	}
 
 	errno = errnosave;
@@ -826,7 +825,7 @@ int elektraMmapstorageGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 	}
 
 	char * mappedRegion = MAP_FAILED;
-	mappedRegion = mmapFile ((void *) 0, fp, sbuf.st_size, MAP_PRIVATE, parentKey);
+	mappedRegion = mmapFile ((void *) 0, fp, sbuf.st_size, MAP_PRIVATE, parentKey); // TODO: save or unmap linked file on error
 
 	if (mappedRegion == MAP_FAILED)
 	{
