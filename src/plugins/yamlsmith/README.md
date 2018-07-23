@@ -61,4 +61,11 @@ kdb rm -r user/tests/yamlsmith
 
 ## Limitations
 
-This plugin supports only **a very limited** subset of YAML.
+- This plugin supports only **a very limited** subset of YAML.
+- YAML Smith **does not support**
+
+  - **binary values**,
+  - **non-contiguous arrays** and
+  - **special characters**
+
+  .
