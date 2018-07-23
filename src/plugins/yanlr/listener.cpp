@@ -105,6 +105,12 @@ void KeyListener::enterPair (PairContext * context)
 	CppKey child{ parents.top ().getName (), KEY_END };
 	child.addBaseName (scalarToText (context->key ()->getText ()));
 	parents.push (child);
+	if (!context->child ())
+	{
+		// Add key with empty value
+		// The parser does not visit `exitValue` in that case
+		keys.append (child);
+	}
 }
 
 /**

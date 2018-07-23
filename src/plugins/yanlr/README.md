@@ -88,7 +88,6 @@ sudo kdb umount user/tests/yanlr
 
 - The plugin does **not support**
 
-  - key-value pairs with **empty key**, such as `key:`,
   - **comments**,
   - **single quoted scalars**,
   - plain scalar keys that span **multiple lines**,

@@ -14,7 +14,7 @@ scalar : PLAIN_SCALAR
 
 map : MAPPING_START pairs BLOCK_END ;
 pairs : pair+ ;
-pair : KEY key VALUE child ;
+pair : KEY key VALUE child? ;
 key : scalar ;
 
 sequence : SEQUENCE_START elements BLOCK_END ;
