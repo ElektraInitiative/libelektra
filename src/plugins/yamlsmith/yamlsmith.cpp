@@ -175,10 +175,10 @@ void writeYAML (ofstream & output, CppKeySet & keys, CppKey const & parent)
 		string indent;
 		bool sameOrBelowLast = sameLevelOrBelow (last, keys.current ());
 		auto relative = relativeKeyIterator (keys.current (), parent);
-		auto baseName = keys.current ().rbegin ();
-		CppKey current{ keys.current ().getName (), KEY_END };
+		auto baseName = --keys.current ().end ();
+		CppKey current{ parent.getName (), KEY_END };
 
-		while (*relative != *baseName)
+		while (relative != baseName)
 		{
 			current.addBaseName (*relative);
 			ELEKTRA_LOG_DEBUG ("Current name: %s", current.getName ().c_str ());
