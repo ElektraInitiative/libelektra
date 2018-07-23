@@ -38,6 +38,20 @@ YAMLLexer::YAMLLexer (CharStream * input)
 }
 
 /**
+ * @brief This function checks if the lexer needs to scan additional tokens.
+ *
+ * @retval true If the lexer should fetch additional tokens
+ *         false Otherwise
+ */
+bool YAMLLexer::needMoreTokens () const
+{
+	if (done) return false;
+
+	bool keyCandidateExists = simpleKey.first != nullptr;
+	return keyCandidateExists || tokens.empty ();
+}
+
+/**
  * @brief This method retrieves the current (not already emitted) token
  *        produced by the lexer.
  *
@@ -46,7 +60,7 @@ YAMLLexer::YAMLLexer (CharStream * input)
 unique_ptr<Token> YAMLLexer::nextToken ()
 {
 	ELEKTRA_LOG_DEBUG ("Retrieve next token");
-	while ((tokens.empty () || simpleKey.first != nullptr) && input->LA (1) != Token::EOF)
+	while (needMoreTokens ())
 	{
 		fetchTokens ();
 #ifdef HAVE_LOGGER
@@ -357,6 +371,7 @@ void YAMLLexer::scanEnd ()
 	addBlockEnd (-1);
 	tokens.push_back (commonToken (STREAM_END, input->index (), input->index (), "END"));
 	tokens.push_back (commonToken (Token::EOF, input->index (), input->index (), "EOF"));
+	done = true;
 }
 
 /**
