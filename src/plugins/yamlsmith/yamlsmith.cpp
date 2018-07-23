@@ -166,9 +166,12 @@ inline void writeCollectionEntry (ofstream & output, CppKey const & key, string 
  */
 void writeYAML (ofstream & output, CppKeySet & keys, CppKey const & parent)
 {
+	ELEKTRA_LOG_DEBUG ("Convert %zu key%s", keys.size (), keys.size () == 1 ? "" : "s");
 	keys.rewind ();
 	for (CppKey last = nullptr; keys.next (); last = keys.current ())
 	{
+		ELEKTRA_LOG_DEBUG ("Convert key “%s: %s”", keys.current ().getName ().c_str (), keys.current ().getString ().c_str ());
+
 		string indent;
 		bool sameOrBelowLast = sameLevelOrBelow (last, keys.current ());
 		auto relative = relativeKeyIterator (keys.current (), parent);
