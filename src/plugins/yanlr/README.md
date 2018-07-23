@@ -92,6 +92,7 @@ sudo kdb umount user/tests/yanlr
   - **single quoted scalars**,
   - plain scalar keys that span **multiple lines**,
   - **special characters** inside double quoted scalars,
+  - other **line endings** than `\n` (Unix line endings),
   - **block scalars**,
   - **flow collections**,
   - **tags**,
