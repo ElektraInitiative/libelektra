@@ -391,6 +391,17 @@ def generateMainBuildStages() {
     [TEST.ALL, TEST.MEM, TEST.NOKDB, TEST.INSTALL]
   )
 
+  tasks << buildAndTest(
+    "debian-stable-c99",
+    DOCKER_IMAGES.stretch,
+    CMAKE_FLAGS_BUILD_ALL +
+      CMAKE_FLAGS_COVERAGE + [
+      'C_STD': '-std=c99',
+      'COMMON_FLAGS': '-Werror'
+    ],
+    []
+  )
+
   // Check the ABI and API compatibility of Elektra
   tasks << buildIcheck()
 
@@ -1102,7 +1113,7 @@ def cpuCount() {
  */
 def ctest(target = "Test") {
   sh """ctest -j ${env.CTEST_PARALLEL_LEVEL} --force-new-ctest-process \
-          --output-on-failure --no-compress-output -T ${target}"""
+        --output-on-failure --no-compress-output -T ${target}"""
 }
 
 /* Helper for ctest to run MemCheck without memleak tagged tests
