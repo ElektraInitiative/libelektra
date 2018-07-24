@@ -23,14 +23,7 @@ fromAST (TyConApp _ [l, r]) = do
   r' <- fromAST r
   return $ if l' == EmptyRegex || r' == EmptyRegex then EmptyRegex else RegexIntersection l' r'
 -- Normalize the regex representation here using FA minimization
-fromAST (LitTy (StrTyLit s)) = fromMaybe EmptyRegex <$> normalizeRegex (unpackFS s)
-  where
-    normalizeRegex :: String -> IO (Maybe RegexType)
-    normalizeRegex r = do
-      n <- rightToMaybe <$> FA.compile r
-      mapM_ FA.minimize n
-      n' <- join <$> mapM (fmap rightToMaybe . FA.asRegexp) n
-      return $ Regex <$> n' <*> n
+fromAST (LitTy (StrTyLit s)) = let r = (unpackFS s) in fromMaybe EmptyRegex <$> fmap (Regex r) . rightToMaybe <$> FA.compile r
 
 fromAST (TyVarTy v) = return $ RegexVar v
 fromAST _ = return EmptyRegex

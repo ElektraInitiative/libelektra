@@ -12,9 +12,10 @@
 module Elektra.Normalize (normalize) where
 
 import Control.Monad (foldM)
-import Data.Maybe    (maybe)
+import Data.Maybe    (maybe, fromJust, fromMaybe)
 import Data.Either   (either)
-import Data.List     (nub, sort)
+import Data.List     (nub, sortBy)
+import Data.Function (on)
 
 import Elektra.Types
 import qualified FiniteAutomata as FA
@@ -28,29 +29,32 @@ normalize :: RegexType -> IO RegexType
 normalize i@(RegexIntersection _ _) = either return fold $ collect i ([], [])
   where
     fold (ts, ss) = do
-      b <- FA.makeBasic FA.Total
-      s <- foldM FA.intersect b $ map (\(Regex _ x) -> x) ss
-      _ <- FA.minimize s
+      b <- (\(Right r) -> r) <$> FA.compile ".*"
       e <- FA.makeBasic FA.Empty
-      isEmpty <- (\case x | x <= 0    -> False
-                          | otherwise -> True)
-                 <$> FA.equals e s
-      -- intersection with "total" equals to the original result, in that case we can omit that
-      ss' <- if isEmpty then return EmptyRegex else maybe EmptyRegex (flip Regex s) . rightToMaybe <$> FA.asRegexp s
-      maybe (return EmptyRegex) (finalize (sort $ nub ts, ss'))
-            . (\case x | x < 0     -> Nothing
-                       | x == 0    -> Just False
-                       | otherwise -> Just True)
-            =<< FA.equals b s
-    finalize (ts, _) True          = foldTyVars ts  
-    finalize ([], sr) False        = return sr
-    finalize (_, EmptyRegex) False = return EmptyRegex
-    finalize (ts, sr) False        = RegexIntersection <$> foldTyVars ts <*> pure sr
-    foldTyVars []     = Regex ".*" <$> FA.makeBasic FA.Total
-    foldTyVars [x]    = return $ RegexVar x
-    foldTyVars (t:ts) = RegexIntersection (RegexVar t) <$> foldTyVars ts
+      s <- case length ss of
+           0 -> return Nothing
+           1 -> return . Just $ head ss
+           _ -> let ss' = map (\(Regex _ r) -> r) ss in do
+            s' <- foldM (FA.intersect) (head ss') (tail ss')
+            FA.minimize s'
+            isEmpty <- (\case
+                          x | x <= 0    -> False
+                            | otherwise -> True) <$> FA.equals e s'
+            if isEmpty then return $ Just EmptyRegex else Just . maybe EmptyRegex (flip Regex s') . rightToMaybe <$> FA.asRegexp s'
+      return $ finalize (sortBy (compare `on` \(RegexVar v) -> v) ts, s)
+    finalize (_,  Just EmptyRegex) = EmptyRegex
+    finalize ([], Just sr)         = sr
+    finalize (ts, Nothing)         = foldTyVars ts
+    finalize (ts, Just sr)         = RegexIntersection (foldTyVars ts) sr 
+    foldTyVars []     = EmptyRegex
+    foldTyVars [x]    = x
+    foldTyVars (t:ts) = RegexIntersection t (foldTyVars ts)
     collect (RegexIntersection l r) p = collect r =<< collect l p
-    collect r@(Regex _ _) (ts, ss)    = Right (ts, r : ss)
-    collect (RegexVar v)  (ts, ss)    = Right (v : ts, ss)
+    collect r@(Regex _ _)   (ts, ss)  = Right (ts, r : ss)
+    collect v@(RegexVar _)  (ts, ss)  = Right (v : ts, ss)
     collect EmptyRegex _              = Left EmptyRegex
 normalize r = return r
+
+fromRight :: Either a b -> b
+fromRight (Right b) = b
+fromRight _ = error "fromRight without right value"

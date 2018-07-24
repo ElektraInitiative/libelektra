@@ -37,11 +37,11 @@ regexIntersections rtc1 rtc2 cs = do
       _         -> do
         -- unify all constraints and calculate a normal form if possible
         n <- tcPluginIO $ normalize t
-        -- check if it was already in normal form
+        -- check if it was already in normal form, we ignore semantic regex differences
         eq <- tcPluginIO $ t === n
         if eq then return Nothing else case n of
           -- Normalization failed
-          EmptyRegex -> return $ Just $ Failure cs
+          EmptyRegex -> return . Just $ Failure cs
           _          -> finalize ts n
   where
     extract ct = case classifyPredType $ ctEvPred $ ctEvidence ct of

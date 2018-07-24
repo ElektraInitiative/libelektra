@@ -9,6 +9,8 @@
 
 module Elektra.Types (SolveResult (..), RegexType (..), rightToMaybe, RegexEq (..)) where
 
+import Data.Bool (bool)
+
 import qualified FiniteAutomata as FA
 
 import GhcPlugins (TyVar)
@@ -35,10 +37,8 @@ instance Eq RegexType where
   _ == _ = False
 
 instance RegexEq RegexType where
-  Regex _ a === Regex _ b = do
-    (\case x | x <= 0    -> False
-             | otherwise -> True)
-                 <$> FA.equals a b
+  Regex _ a === Regex _ b = bool False True . (== 1) <$> FA.equals a b
+  RegexIntersection l1 r1 === RegexIntersection l2 r2 = (&&) <$> l1 === l2 <*> r1 === r2
   a === b = return $ a == b
 
 rightToMaybe :: Either a b -> Maybe b
