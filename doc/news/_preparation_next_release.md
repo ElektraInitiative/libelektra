@@ -309,6 +309,7 @@ Thanks to Daniel Bugl.
     spawned did not get cleaned up afterwards. *(Lukas Winkler)*
 - We disabled the general plugin test (`testkdb_allplugins`) for the [`semlock` plugin](https://libelektra.org/plugins/mini), since the
   test reported [memory leaks](https://issues.libelektra.org/2113) on the latest version of Debian Unstable. *(René Schwaiger)*
+- The [CFramework](https://master.libelektra.org/tests/cframework) macro `compare_keyset` now supports the comparison of two empty key sets. *(René Schwaiger)*
 
 [#1887]: https://github.com/ElektraInitiative/libelektra/issues/1887
 [Markdown Shell Recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
