@@ -8,8 +8,10 @@
 module Elektra.Specifications (
   Path, Implementation, FunctionCandidate (..), TypeName, PathVariable (..), Function (..),
   TypeSpecification (..), TypeSignature (..), RegexTypeParam (..), RegexType (..),
-  RegexConstraint (..), TransformationSpecification (..), KeySpecification (..), functionBaseName
+  RegexConstraint (..), KeySpecification (..), functionBaseName
 ) where
+
+import Data.Function (on)
 
 type Path = String
 type Implementation = String
@@ -44,11 +46,6 @@ instance Show PathVariable
     show (Path p)  = "@PATH@" ++ p
     show (Dispatched d) = "@DISPATCHED@" ++ d
 
-data TransformationSpecification = TransformationSpecification {
-  transformFrom   :: Path,
-  transformToType :: String
-} deriving (Show, Eq)
-
 data KeySpecification = KeySpecification {
   path               :: Path,
   defaultValue       :: Maybe String,
@@ -56,6 +53,10 @@ data KeySpecification = KeySpecification {
   functionCandidates :: [FunctionCandidate],
   typeSpecification  :: TypeSpecification
 } deriving (Show, Eq)
+
+instance Ord KeySpecification where
+  compare = compare `on` typeSpecification
+
 
 data TypeSignature = TypeSignature [RegexConstraint] [RegexTypeParam] deriving (Show, Eq)
 
@@ -72,5 +73,9 @@ data TypeSpecification = TypeSpecification {
   tySpecName     :: String,
   tyPathVar      :: Maybe Path,
   signature      :: Maybe TypeSignature,
-  implementation :: Maybe [Implementation]
+  implementation :: Maybe [Implementation],
+  order          :: Int
 } deriving (Show, Eq)
+
+instance Ord TypeSpecification where
+  compare = compare `on` order

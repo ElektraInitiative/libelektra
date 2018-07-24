@@ -17,13 +17,12 @@ import Elektra.Ease
 
 import Control.Applicative (liftA2)
 import Control.Monad       (filterM)
-import Data.List           (isPrefixOf, sort)
+import Data.List           (isPrefixOf)
 import System.IO.Unsafe    (unsafePerformIO)
+import qualified Data.Text as T
 
 import Elektra.Specifications
 import Elektra.Parsers
-
-import qualified Data.Text       as T
 
 type RootKey = Key
 
@@ -43,55 +42,43 @@ specPrefixKey = keyNew . specPrefix
 keyFilterMeta :: Key -> (String -> Bool) -> IO [Key]
 keyFilterMeta k p = keyListMeta k >>= filterM (fmap p . keyName) 
 
--- TODO presorted for now, but we really need to find some kind of general way
-links :: [String]
-links = ["fallback/#", "override/#"]
-instance Ord FunctionCandidate
-  where
-    a <= b = let n1 = functionBaseName $ fncFun a
-                 n2 = functionBaseName $ fncFun b
-             in  if n1 `elem` links then
-                   if n2 `elem` links then 
-                     n1 <= n2
-                   else
-                     True
-                  else
-                    False
-
 parseKeySpecification :: RootKey -> Key -> IO KeySpecification
-parseKeySpecification r k = do
-  pPath               <- keyGetRelativeName k r
-  pDefaultValue       <- keyGetMeta k "default" >>= ifKey (return Nothing) (fmap Just . keyString)
-  pKeyType            <- keyGetMeta k "type" >>= ifKey (return $ Right ".*") (fmap parseType . keyString)
-  pFunctionCandidates <- let notReserved = liftA2 (&&) (/= "default") (/= "type") in mapM parseFunctionCandidate =<< keyFilterMeta k notReserved
-  pTypeSpecification  <- parseTypeSpecification r k
-  return $ KeySpecification pPath pDefaultValue pKeyType (sort pFunctionCandidates) pTypeSpecification
+parseKeySpecification r k = KeySpecification
+    <$> keyGetRelativeName k r
+    <*> pDefault
+    <*> (keyGetMeta k "type" >>= ifKey (return $ Right ".*") (fmap parseType . keyString))
+    <*> pFunctionCandidates
+    <*> parseTypeSpecification r k
   where
-    parseFunctionCandidate fk = do
-      str     <- keyString fk
-      pth     <- keyNew str >>= flip keyGetRelativeName r
-      isArray <- arrayValidateName fk
+    pDefault = keyGetMeta k "default" >>= ifKey (return Nothing) (fmap Just . keyString)
+    pFunctionCandidates = let notReserved = liftA2 (&&) (/= "default") (/= "type")
+                          in keyFilterMeta k notReserved >>= mapM parseFunctionCandidate
+    functionName fk = arrayValidateName fk >>= \isArray ->
       if isArray == Invalid
-      then do
-        name <- keyName fk
-        return $ FunctionCandidate (Function name) pth str
+      then Function <$> keyName fk
       else do
         bfk          <- flip keyAddName "#" !=<< keyDeleteBaseName !=<< keyDup fk
         baseName     <- fmap T.pack (keyGetRelativeName bfk r)
         let splitted = T.splitAt (T.length baseName) baseName
-        let arrFn    = ArrayFunction (T.unpack $ fst splitted) (T.unpack $ snd splitted)
-        return $ FunctionCandidate arrFn pth str
+        return $ ArrayFunction (T.unpack $ fst splitted) (T.unpack $ snd splitted)
+    parseFunctionCandidate fk = let str = keyString fk in FunctionCandidate 
+        <$> functionName fk
+        <*> (str >>= keyNew >>= flip keyGetRelativeName r)
+        <*> str
 
 parseTypeSpecification :: RootKey -> Key -> IO TypeSpecification
-parseTypeSpecification r k = do
-  pName  <- keyGetRelativeName k r
-  --pVar   <- parsePathVariable . T.pack <$> keyString k
-  pImpl  <- let isSeparator s = s == '\n' || s == ';'
+parseTypeSpecification r k = TypeSpecification
+    <$> keyGetRelativeName k r
+    <*> pure Nothing
+    <*> pTypeSig
+    <*> pImpl
+    <*> pOrder
+  where
+    pTypeSig = keyGetMeta k "elektra/spec/type" >>= ifKey (return Nothing) (fmap parseTypeSignature . keyString)
+    pImpl = let isSeparator s = s == '\n' || s == ';'
                 parseImpl = fmap (Just . fmap T.unpack . T.split isSeparator . T.pack) . keyString
-            in  keyGetMeta k "elektra/spec/impl" >>= ifKey (return Nothing) parseImpl
-  pType  <- keyGetMeta k "elektra/spec/type" >>= ifKey (return Nothing) (fmap parseTypeSignature . keyString)
-  -- TODO: improve error handling
-  return $ TypeSpecification pName Nothing pType pImpl
+            in  (keyGetMeta k "elektra/spec/impl" >>= ifKey (return Nothing) parseImpl)
+    pOrder = keyGetMeta k "elektra/spec/order" >>= ifKey (return 0) (fmap read . keyString)
 
 parseType :: String -> Either Path String
 parseType t

@@ -73,12 +73,12 @@ pathL = lexeme $ many (try alphaNumChar <|> try punctuationChar) <* notFollowedB
 
 -- Read string so everything between two "", dealing with escaped quotes as well
 escapeL :: Parser String
-escapeL = choice (zipWith decode "bnfrt\\\"/" "\b\n\f\r\t\\\"/")
+escapeL = many $ choice (zipWith decode "bnfrt\\\"/" "\b\n\f\r\t\\\"/")
     where decode c r = r <$ char c
 
 regexL :: Parser String
-regexL = between (char '\"') (char '\"') (many chars)
-    where chars = char '\\' *> escapeL <|> satisfy (`notElem` ("\"\\" :: String))
+regexL = between (char '\"') (char '\"') chars
+    where chars = char '\\' *> escapeL <|> many (satisfy (`notElem` ("\"\\" :: String)))
 
 integerL :: Parser Int
 integerL = lexeme L.decimal
