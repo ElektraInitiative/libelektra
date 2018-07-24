@@ -181,6 +181,18 @@ class YAMLLexer : public TokenSource
 	bool isElement () const;
 
 	/**
+	 * @brief This method checks if the input at the specified offset starts a
+	 *        line comment.
+	 *
+	 * @param offset This parameter specifies an offset to the current position,
+	 *               where this function will look for a comment token.
+	 *
+	 * @retval true If the input matches a comment token
+	 *         false Otherwise
+	 */
+	bool isComment (size_t const offset) const;
+
+	/**
 	 * @brief This method saves a token for a simple key candidate located at the
 	 *        current input position.
 	 */
@@ -233,6 +245,11 @@ class YAMLLexer : public TokenSource
 	size_t countPlainSpace () const;
 
 	/**
+	 * @brief This method scans a comment and adds it to the token queue.
+	 */
+	void scanComment ();
+
+	/**
 	 * @brief This method scans a double quoted scalar and adds it to the token
 	 *        queue.
 	 */
@@ -271,6 +288,8 @@ public:
 	static const size_t SEQUENCE_START = 9;
 	/** This token type specifies that the token stores a double quoted scalar. */
 	static const size_t DOUBLE_QUOTED_SCALAR = 10;
+	/** This token type specifies that the token stores a (line) comment. */
+	static const size_t COMMENT = 11;
 
 	/**
 	 * @brief This constructor creates a new YAML lexer for the given input.

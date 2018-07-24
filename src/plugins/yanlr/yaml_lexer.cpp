@@ -236,6 +236,11 @@ void YAMLLexer::fetchTokens ()
 		scanDoubleQuotedScalar ();
 		return;
 	}
+	else if (input->LA (1) == '#')
+	{
+		scanComment ();
+		return;
+	}
 
 	scanPlainScalar ();
 }
@@ -320,6 +325,21 @@ bool YAMLLexer::isValue (size_t const offset) const
 bool YAMLLexer::isElement () const
 {
 	return (input->LA (1) == '-') && (input->LA (2) == '\n' || input->LA (2) == ' ');
+}
+
+/**
+ * @brief This method checks if the input at the specified offset starts a line
+ *        comment.
+ *
+ * @param offset This parameter specifies an offset to the current position,
+ *               where this function will look for a comment token.
+ *
+ * @retval true If the input matches a comment token
+ *         false Otherwise
+ */
+bool YAMLLexer::isComment (size_t const offset) const
+{
+	return (input->LA (offset) == '#') && (input->LA (offset + 1) == '\n' || input->LA (offset + 1) == ' ');
 }
 
 /**
@@ -437,7 +457,8 @@ size_t YAMLLexer::countPlainNonSpace (size_t const offset) const
 	string const stop = " \n";
 
 	size_t lookahead = offset + 1;
-	while (stop.find (input->LA (lookahead)) == string::npos && input->LA (lookahead) != Token::EOF && !isValue (lookahead))
+	while (stop.find (input->LA (lookahead)) == string::npos && input->LA (lookahead) != Token::EOF && !isValue (lookahead) &&
+	       !isComment (lookahead))
 	{
 		lookahead++;
 	}
@@ -462,6 +483,21 @@ size_t YAMLLexer::countPlainSpace () const
 	}
 	ELEKTRA_LOG_DEBUG ("Found %zu space characters", lookahead - 1);
 	return lookahead - 1;
+}
+
+/**
+ * @brief This method scans a comment and adds it to the token queue.
+ */
+void YAMLLexer::scanComment ()
+{
+	ELEKTRA_LOG_DEBUG ("Scan comment");
+	size_t start = input->index ();
+
+	while (input->LA (1) != '\n')
+	{
+		forward ();
+	}
+	tokens.push_back (commonToken (COMMENT, start, input->index () - 1));
 }
 
 /**

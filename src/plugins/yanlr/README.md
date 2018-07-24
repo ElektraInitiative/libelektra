@@ -11,6 +11,10 @@
 
 # Yan LR
 
+## Comments
+
+The [lexer](yaml_lexer.cpp) does currently tokenize comments. Consequently the [plugin grammar](YAML.g4) of the plugin does also match comments. However, the [listener](listener.cpp) does currently **ignore comments**.
+
 ## Examples
 
 ### Mappings
@@ -88,7 +92,6 @@ sudo kdb umount user/tests/yanlr
 
 - The plugin does **not support**
 
-  - **comments**,
   - **single quoted scalars**,
   - plain scalar keys that span **multiple lines**,
   - **special characters** inside double quoted scalars,
