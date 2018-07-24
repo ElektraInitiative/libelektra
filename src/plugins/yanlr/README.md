@@ -11,6 +11,16 @@
 
 # Yan LR
 
+## Introduction
+
+This plugin uses ANTLR to generate a parser for the [YAML](http://yaml.org) serialization format. Apart from the hand written [lexer](yaml_lexer.cpp), all other parts of the plugin use standard ANTLR tools, such as
+
+- an ANTLR [parser grammar](YAML.g4),
+- a [listener](listener.cpp), that reacts to matches in the grammar building a key set, and
+- an [error listener](error_listener.cpp) that reacts to syntax errors
+
+.
+
 ## Comments
 
 The [lexer](yaml_lexer.cpp) does currently tokenize comments. Consequently the [plugin grammar](YAML.g4) of the plugin does also match comments. However, the [listener](listener.cpp) does currently **ignore comments**.
