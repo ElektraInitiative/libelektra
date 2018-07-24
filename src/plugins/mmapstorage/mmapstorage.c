@@ -587,7 +587,7 @@ static void * hexStringToAddress (const char * hexString)
 
 	unsigned long int val = strtoul (hexString, &endptr, hexBase);
 
-	if ((errno != 0) || (endptr == hexString))
+	if ((errno != 0) || (endptr == hexString) || (*endptr != '\0'))
 	{
 		ELEKTRA_LOG_WARNING ("strerror: %s", strerror (errno));
 		errno = errnosave;
