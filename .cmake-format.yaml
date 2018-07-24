@@ -48,6 +48,7 @@ additional_commands:
     kwargs:
       INCLUDE_SYSTEM_DIRECTORIES: 1
       COMPILE_DEFINITIONS: "*"
+      ENVIRONMENT: +
       INCLUDE_DIRECTORIES: "*"
       LINK_LIBRARIES: "*"
       LINK_ELEKTRA: "*"

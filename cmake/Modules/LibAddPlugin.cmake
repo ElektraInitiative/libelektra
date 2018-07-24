@@ -19,6 +19,9 @@ include (LibAddTest)
 # CPP:
 #  Build a C++ test instead of a C test.
 #
+# ENVIRONMENT:
+#   Specifies environment variables set while the build system executes the test
+#
 # LINK_PLUGIN:
 #  Link against a different plugin (not the test name itself).
 #  If you want to avoid linking against a plugin, use the string <no>.
@@ -40,6 +43,7 @@ function (add_plugintest testname)
 		     TEST_LINK_LIBRARIES
 		     TEST_LINK_ELEKTRA
 		     LINK_PLUGIN
+		     ENVIRONMENT
 		     WORKING_DIRECTORY)
 
 		cmake_parse_arguments (ARG
@@ -74,6 +78,7 @@ function (add_plugintest testname)
 		restore_variable (${PLUGIN_NAME} ARG_OBJECT_SOURCES)
 		restore_variable (${PLUGIN_NAME} ARG_TEST_LINK_LIBRARIES)
 		restore_variable (${PLUGIN_NAME} ARG_TEST_LINK_ELEKTRA)
+		restore_variable (${PLUGIN_NAME} ARG_ENVIRONMENT)
 
 		set (TEST_SOURCES $<TARGET_OBJECTS:cframework> ${ARG_OBJECT_SOURCES})
 
@@ -149,7 +154,8 @@ function (add_plugintest testname)
 		add_test (NAME ${testexename}
 			  COMMAND "${CMAKE_BINARY_DIR}/bin/${testexename}" "${CMAKE_CURRENT_SOURCE_DIR}"
 			  WORKING_DIRECTORY "${WORKING_DIRECTORY}")
-		set_property (TEST ${testexename} PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
+		set_property (TEST ${testexename} PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib" "${ARG_ENVIRONMENT}")
+
 		if (ARG_MEMLEAK)
 			set_property (TEST ${testexename} PROPERTY LABELS memleak)
 		endif (ARG_MEMLEAK)
@@ -278,7 +284,7 @@ endfunction ()
 #  Add a Markdown Shell Recorder test for the ReadMe of the plugin
 #
 # TEST_ENVIRONMENT:
-#   Specifies environment variables for the **Markdown Shell Recorder** test
+#   Specifies environment variables set while the build system executes the plugin tests
 #
 # TEST_REQUIRED_PLUGINS:
 #   Specifies a list of required plugins for the **Markdown Shell Recorder** test
@@ -355,6 +361,7 @@ function (add_plugin PLUGIN_SHORT_NAME)
 					COMPILE_DEFINITIONS "${ARG_COMPILE_DEFINITIONS}"
 					INCLUDE_DIRECTORIES "${ARG_INCLUDE_DIRECTORIES}"
 					INCLUDE_SYSTEM_DIRECTORIES "${ARG_INCLUDE_SYSTEM_DIRECTORIES}"
+					ENVIRONMENT "${ARG_TEST_ENVIRONMENT}"
 					LINK_ELEKTRA "${ARG_LINK_ELEKTRA}"
 						     "${HAS_INSTALL_TEST_DATA}"
 						     ${CPP_TEST})
