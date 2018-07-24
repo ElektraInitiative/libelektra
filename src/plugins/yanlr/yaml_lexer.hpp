@@ -220,6 +220,12 @@ class YAMLLexer : public TokenSource
 	void scanEnd ();
 
 	/**
+	 * @brief This method scans a single quoted scalar and adds it to the token
+	 *        queue.
+	 */
+	void scanSingleQuotedScalar ();
+
+	/**
 	 * @brief This method scans a plain scalar and adds it to the token queue.
 	 */
 	void scanPlainScalar ();
@@ -290,6 +296,8 @@ public:
 	static const size_t DOUBLE_QUOTED_SCALAR = 10;
 	/** This token type specifies that the token stores a (line) comment. */
 	static const size_t COMMENT = 11;
+	/** This token type specifies that the token stores a single quoted scalar. */
+	static const size_t SINGLE_QUOTED_SCALAR = 12;
 
 	/**
 	 * @brief This constructor creates a new YAML lexer for the given input.

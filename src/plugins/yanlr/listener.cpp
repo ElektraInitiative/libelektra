@@ -48,7 +48,7 @@ string scalarToText (string const & text)
 	{
 		return text;
 	}
-	if (*(text.begin ()) == '"')
+	if (*(text.begin ()) == '"' || *(text.begin ()) == '\'')
 	{
 		return text.substr (1, text.length () - 2);
 	}

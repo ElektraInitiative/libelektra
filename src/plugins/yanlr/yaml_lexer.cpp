@@ -236,6 +236,11 @@ void YAMLLexer::fetchTokens ()
 		scanDoubleQuotedScalar ();
 		return;
 	}
+	else if (input->LA (1) == '\'')
+	{
+		scanSingleQuotedScalar ();
+		return;
+	}
 	else if (input->LA (1) == '#')
 	{
 		scanComment ();
@@ -392,6 +397,27 @@ void YAMLLexer::scanEnd ()
 	tokens.push_back (commonToken (STREAM_END, input->index (), input->index (), "END"));
 	tokens.push_back (commonToken (Token::EOF, input->index (), input->index (), "EOF"));
 	done = true;
+}
+
+/**
+ * @brief This method scans a single quoted scalar and adds it to the token
+ *        queue.
+ */
+void YAMLLexer::scanSingleQuotedScalar ()
+{
+	ELEKTRA_LOG_DEBUG ("Scan single quoted scalar");
+
+	size_t start = input->index ();
+	// A single quoted scalar can start a simple key
+	addSimpleKeycCandidate ();
+
+	forward (); // Include initial single quote
+	while (input->LA (1) != '\'' || input->LA (2) == '\'')
+	{
+		forward ();
+	}
+	forward (); // Include closing single quote
+	tokens.push_back (commonToken (SINGLE_QUOTED_SCALAR, start, input->index () - 1));
 }
 
 /**

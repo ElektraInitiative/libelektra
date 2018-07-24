@@ -9,6 +9,7 @@ child : comment* (value | map | sequence) comment*;
 
 value : scalar ;
 scalar : PLAIN_SCALAR
+       | SINGLE_QUOTED_SCALAR
        | DOUBLE_QUOTED_SCALAR
        ;
 
