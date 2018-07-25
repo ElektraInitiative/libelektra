@@ -344,6 +344,7 @@ Thanks to Daniel Bugl.
 - Set coverage prefix to `PROJECT_SOURCE_DIR`, resulting in easier readable
     coverage reports. *(Lukas Winkler)*
 - The functions `add_plugintest` and `add_plugin` now also support adding a C++ test instead of a C test. *(René Schwaiger)*
+- The function `add_plugintest` now also supports setting environment variables for C/C++ based tests. *(René Schwaiger)*
 
 [Google Test]: https://github.com/google/googletest
 
