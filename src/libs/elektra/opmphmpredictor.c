@@ -98,7 +98,7 @@ int opmphmPredictor (OpmphmPredictor * op, size_t n)
 	 * update patterTable with worth information
 	 */
 	// check if previos lookup sequence was worth hashing
-	size_t worthOpmphm = opmphmPredictorWorthOpmphm (n);
+	size_t worthOpmphm = opmphmPredictorWorthOpmphm (op->ksSize);
 	uint8_t wasItWorth = op->lookupCount > worthOpmphm ? 1 : 0;
 	// find position in array
 	uint16_t pos = op->history & opmphmPredictorHistoryMask;
@@ -122,6 +122,8 @@ int opmphmPredictor (OpmphmPredictor * op, size_t n)
 	uint8_t prediction = (*state >> ((pos & 0x3) << 1)) & 0x3; // ((pos & 0x3) << 1) == (pos % 4) * 2), 0x3 is 2 bit mask
 	// reset lookupCount
 	op->lookupCount = 1;
+	// set new keyset size
+	op->ksSize = n;
 	// determine prediction
 	return prediction > 1;
 }

@@ -15,6 +15,7 @@ void test_internal_basic (void)
 	exit_if_fail (op, "opmphmPredictorNew");
 	succeed_if (!op->history, "history init");
 	succeed_if (!op->lookupCount, "lookupCount init");
+	succeed_if (!op->ksSize, "lookupCount init");
 	succeed_if (op->size, "size init");
 	for (size_t i = 0; i < op->size; ++i)
 	{
@@ -28,7 +29,7 @@ void test_internal_nochange (void)
 	OpmphmPredictor * op = opmphmPredictorNew ();
 	exit_if_fail (op, "opmphmPredictorNew");
 	const size_t n = 1000;
-	opmphmPredictorIncCountOpmphm (op);
+	succeed_if (!opmphmPredictor (op, n), "first prediction");
 	succeed_if (op->lookupCount == 1, "lookupCount");
 	for (size_t i = 1; i < opmphmPredictorWorthOpmphm (n) * 3; ++i)
 	{
@@ -132,6 +133,8 @@ void test_internal_change_whitebox (void)
 	OpmphmPredictor * op = opmphmPredictorNew ();
 	exit_if_fail (op, "opmphmPredictorNew");
 	const size_t n = 1000;
+	// inform predictor about size
+	op->ksSize = n;
 	// start state is 0
 	test_internal_change_whitebox_set_to_state (0, 0, op, n);
 	test_internal_change_whitebox_set_to_state (0, 1, op, n);
