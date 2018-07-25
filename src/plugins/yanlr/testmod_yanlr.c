@@ -64,6 +64,9 @@ static void test_empty ()
 	test_read ("yanlr/null.yaml",
 #include "yanlr/null.h"
 	);
+	test_read ("yanlr/comment.yaml",
+#include "yanlr/null.h"
+	);
 }
 
 // -- Main ---------------------------------------------------------------------------------------------------------------------------------
