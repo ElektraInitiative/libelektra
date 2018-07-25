@@ -574,14 +574,21 @@ def generateFullBuildStages() {
   )
 
   // Build Elektra with the mmap backend instead of the default
-  tasks << buildAndTestAsan(
-    "debian-stable-full-mmap-asan",
+  tasks << buildAndTest(
+    "debian-stable-full-mmap",
     DOCKER_IMAGES.stretch,
     CMAKE_FLAGS_BUILD_ALL +
       CMAKE_FLAGS_MMAP +
       CMAKE_FLAGS_COVERAGE
     ,
     [TEST.ALL, TEST.MEM]
+  )
+
+  tasks << buildAndTestAsan(
+    "debian-stable-full-mmap-asan",
+    DOCKER_IMAGES.stretch,
+    CMAKE_FLAGS_BUILD_ALL +
+      CMAKE_FLAGS_MMAP
   )
 
   // Build Elektra with xdg resolver to see if we are compliant
