@@ -150,6 +150,30 @@ void test_internal_change_whitebox (void)
 }
 
 
+void test_ks_flag (void)
+{
+	KeySet * ks = ksNew (10, KS_END);
+	succeed_if (ks->flags & KS_FLAG_NAME_CHANGE, "flag not set at fresh ks");
+
+	KeySet * copy = ksDup (ks);
+	exit_if_fail (copy, "copy");
+	succeed_if (copy->flags & KS_FLAG_NAME_CHANGE, "flag not set at copy ks");
+	ksDel (copy);
+
+	copy = ksDeepDup (ks);
+	exit_if_fail (copy, "copy");
+	succeed_if (copy->flags & KS_FLAG_NAME_CHANGE, "flag not set at copy ks");
+	ksDel (copy);
+
+	copy = ksNew (0, KS_END);
+	succeed_if (ksCopy (copy, ks) == 1, "copy");
+	succeed_if (copy->flags & KS_FLAG_NAME_CHANGE, "flag not set at copy ks");
+	ksDel (copy);
+
+	ksDel (ks);
+}
+
+
 int main (int argc, char ** argv)
 {
 	printf ("OPMPHM PREDICTOR      TESTS\n");
@@ -160,6 +184,7 @@ int main (int argc, char ** argv)
 	test_internal_basic ();
 	test_internal_nochange ();
 	test_internal_change_whitebox ();
+	test_ks_flag ();
 
 	print_result ("test_opmphm_predictor");
 

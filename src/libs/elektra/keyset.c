@@ -43,14 +43,14 @@
  *
  * Must be invoked by every function that changes a Key name in a KeySet, adds a Key or
  * removes a Key.
- * Set also the KS_FLAG_REBUILD_OPMPHM KeySet flag.
+ * Set also the KS_FLAG_NAME_CHANGE KeySet flag.
  *
  * @param ks the KeySet
  */
 static void elektraOpmphmInvalidate (KeySet * ks ELEKTRA_UNUSED)
 {
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
-	ks->flags |= KS_FLAG_REBUILD_OPMPHM;
+	ks->flags |= KS_FLAG_NAME_CHANGE;
 	if (ks && ks->opmphm) opmphmClear (ks->opmphm);
 #endif
 }
@@ -2593,6 +2593,8 @@ int ksInit (KeySet * ks)
 
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 	ks->opmphm = NULL;
+	// first lookup should predict so invalidate it
+	elektraOpmphmInvalidate (ks);
 #endif
 
 	return 0;

@@ -210,7 +210,7 @@ Thanks to Daniel Bugl.
 
 ### Core
 
-- The KeySet has a new flag `KS_FLAG_REBUILD_OPMPHM`, this flag will be used by the hybrid search
+- The KeySet has a new flag `KS_FLAG_NAME_CHANGE`, this flag will be used by the hybrid search
   that combines binary search and [OPMPHM](https://master.libelektra.org/doc/dev/data-structures.md#order-preserving-minimal-perfect-hash-map-aka-opmphm) *(Kurt Micheli)*
 - We updated the `infos/status` clause of the following plugins:
 
