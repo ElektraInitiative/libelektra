@@ -227,7 +227,8 @@ int elektraYamlsmithSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 	ofstream file{ parent.getString () };
 	if (file.is_open ())
 	{
-		writeYAML (file, keys, parent);
+		CppKeySet leaves = keys.leaves ();
+		writeYAML (file, leaves, parent);
 	}
 	else
 	{
