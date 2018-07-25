@@ -6,6 +6,7 @@
  * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
  *
  */
+#define _POSIX_C_SOURCE 200112L
 
 /* -- Imports --------------------------------------------------------------------------------------------------------------------------- */
 
@@ -509,7 +510,7 @@ static void copyKeySetToMmap (char * dest, KeySet * keySet, MmapHeader * mmapHea
 #ifdef ENABLE_MMAP_CHECKSUM
 	char * ksCharPtr = (char *) ksPtr;
 	uint32_t checksum = crc32 (0L, Z_NULL, 0);
-	checksum = crc32 (checksum, ksCharPtr, (mmapHeader->allocSize - SIZEOF_MMAPHEADER - SIZEOF_MMAPFOOTER));
+	checksum = crc32 (checksum, (const unsigned char *) ksCharPtr, (mmapHeader->allocSize - SIZEOF_MMAPHEADER - SIZEOF_MMAPFOOTER));
 	mmapHeader->checksum = checksum;
 #endif
 
@@ -603,7 +604,7 @@ static int verifyChecksum (char * mappedRegion, MmapHeader * mmapHeader)
 {
 	char * ksPtr = (char *) (mappedRegion + SIZEOF_MMAPHEADER);
 	uint32_t checksum = crc32 (0L, Z_NULL, 0);
-	checksum = crc32 (checksum, ksPtr, mmapHeader->allocSize - SIZEOF_MMAPHEADER - SIZEOF_MMAPFOOTER);
+	checksum = crc32 (checksum, (const unsigned char *) ksPtr, mmapHeader->allocSize - SIZEOF_MMAPHEADER - SIZEOF_MMAPFOOTER);
 
 	if (checksum != mmapHeader->checksum)
 	{
