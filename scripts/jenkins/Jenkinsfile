@@ -80,6 +80,7 @@ CMAKE_FLAGS_INI = [
 ]
 
 CMAKE_FLAGS_MMAP = [
+  'ENABLE_CHECKSUM': 'ON',
   'KDB_DB_FILE': 'default.mmap',
   'KDB_DB_INIT': 'elektra.mmap',
   'KDB_DEFAULT_STORAGE': 'mmapstorage'
@@ -573,12 +574,10 @@ def generateFullBuildStages() {
   )
 
   // Build Elektra with the mmap backend instead of the default
-  // TODO: currently not compatible with OPMPHM optimizations
-  tasks << buildAndTest(
-    "debian-stable-full-mmap",
+  tasks << buildAndTestAsan(
+    "debian-stable-full-mmap-asan",
     DOCKER_IMAGES.stretch,
     CMAKE_FLAGS_BUILD_ALL +
-      CMAKE_FLAGS_OPTIMIZATIONS_OFF +
       CMAKE_FLAGS_MMAP +
       CMAKE_FLAGS_COVERAGE
     ,

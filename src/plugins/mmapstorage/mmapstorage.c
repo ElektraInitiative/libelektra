@@ -69,7 +69,6 @@ static int truncateFile (FILE * fp, size_t mmapsize, Key * parentKey ELEKTRA_UNU
 {
 	ELEKTRA_LOG_DEBUG ("truncating file %s", keyString (parentKey));
 
-	// TODO: does it matter whether we use truncate or ftruncate?
 	int fd = fileno (fp);
 	if ((ftruncate (fd, mmapsize)) == -1)
 	{
@@ -454,6 +453,9 @@ static void deepCopyKeySetToMmap (MmapHeader * mmapHeader, KeySet * keySet, KeyS
 			newMeta->size = oldMeta->size;
 			newMeta->cursor = 0;
 			newMeta->current = 0;
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+			newMeta->opmphm = 0;
+#endif
 			newMeta = (KeySet *) ((char *) newMeta - mmapAddrInt);
 		}
 
@@ -481,6 +483,9 @@ static void deepCopyKeySetToMmap (MmapHeader * mmapHeader, KeySet * keySet, KeyS
 	ksPtr->size = keySet->size;
 	ksPtr->cursor = 0;
 	ksPtr->current = 0;
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+	ksPtr->opmphm = 0;
+#endif
 }
 
 static void copyKeySetToMmap (char * dest, KeySet * keySet, MmapHeader * mmapHeader, MmapFooter * mmapFooter, DynArray * dynArray)
@@ -501,6 +506,9 @@ static void copyKeySetToMmap (char * dest, KeySet * keySet, MmapHeader * mmapHea
 		ksPtr->size = 0;
 		ksPtr->cursor = 0;
 		ksPtr->current = 0;
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+		ksPtr->opmphm = 0;
+#endif
 	}
 	else
 	{
@@ -527,6 +535,9 @@ static void mmapToKeySet (char * mappedRegion, KeySet * returned)
 	returned->cursor = 0;
 	returned->current = 0;
 	returned->mmapInfo = (MmapHeader *) mappedRegion;
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+	returned->opmphm = 0;
+#endif
 	// to be able to free() the returned KeySet, just set the array flag here
 	returned->flags = KS_FLAG_MMAP_ARRAY;
 }
@@ -718,6 +729,9 @@ static void unlinkFile (Key * parentKey)
 			keySet->current = 0;
 			keySet->mmapInfo = 0;
 			keySet->flags = 0;
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+			keySet->opmphm = copy->opmphm;
+#endif
 			elektraFree (copy);
 		}
 	}

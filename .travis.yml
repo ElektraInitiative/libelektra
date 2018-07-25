@@ -263,7 +263,7 @@ before_script:
     fi
   - |
     if [[ "$TRAVIS_OS_NAME" == "osx" && "$MMAP" == "ON" ]]; then
-      CMAKE_OPT+=("-DKDB_DEFAULT_STORAGE=mmapstorage -DKDB_DB_FILE='default.mmap' -DKDB_DB_INIT='elektra.mmap'")
+      CMAKE_OPT+=("-DENABLE_CHECKSUM=ON -DKDB_DEFAULT_STORAGE=mmapstorage -DKDB_DB_FILE='default.mmap' -DKDB_DB_INIT='elektra.mmap'")
     fi
   - SYSTEM_DIR="$PWD/kdbsystem"
   - mkdir build
