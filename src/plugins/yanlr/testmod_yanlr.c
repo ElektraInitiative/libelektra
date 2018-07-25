@@ -69,6 +69,13 @@ static void test_empty ()
 	);
 }
 
+static void test_scalar ()
+{
+	test_read ("yanlr/double_quoted_scalar.yaml",
+#include "yanlr/double_quoted_scalar.h"
+	);
+}
+
 // -- Main ---------------------------------------------------------------------------------------------------------------------------------
 
 int main (int argc, char ** argv)
@@ -81,6 +88,7 @@ int main (int argc, char ** argv)
 	test_contract ();
 
 	test_empty ();
+	test_scalar ();
 
 	print_result ("testmod_yanlr");
 
