@@ -23,6 +23,7 @@ provides.
 - [Plugins Introduction](plugins.md)
 - [Compilation Variants of plugins](compilation-variants.md) (advanced topic)
 - [Python Bindings](python-kdb.md)
+- [Java Bindings](java-kdb.md)
 - [Ruby Bindings](/src/bindings/swig/ruby/README.md)
 - [Code Generation](/src/tools/gen/README.md)
 - [Notifications](notifications.md)
