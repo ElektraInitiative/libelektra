@@ -102,7 +102,7 @@ sudo kdb umount user/tests/yanlr
 
 - The plugin does **not support**
 
-  - plain scalar keys that span **multiple lines**,
+  - plain scalars that span **multiple lines**,
   - **special characters** inside double quoted scalars,
   - other **line endings** than `\n` (Unix line endings),
   - **block scalars**,
