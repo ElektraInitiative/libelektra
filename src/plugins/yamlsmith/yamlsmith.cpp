@@ -91,47 +91,35 @@ bool sameLevelOrBelow (CppKey const & key1, CppKey const & key2)
 }
 
 /**
- * @brief This class provides additional functionality for the key set class.
+ * @brief This function collects leaf keys (keys without any key below) for a given key set.
+ *
+ * @param keys This parameter stores the key set for which this function retrieves all leaf keys.
+ *
+ * @return A key set containing only leaf keys
  */
-class CppKeySetPlus : public CppKeySet
+CppKeySet leaves (CppKeySet const & keys)
 {
-public:
-	/**
-	 * @copydoc KeySet::KeySet(ckdb::KeySet)
-	 */
-	CppKeySetPlus (ckdb::KeySet * keys) : CppKeySet (keys)
+	CppKeySet leaves;
+
+	auto current = keys.begin ();
+	if (current == keys.end ()) return leaves;
+
+	CppKey previous = *current;
+	while (++current != keys.end ())
 	{
-	}
-
-	/**
-	 * @brief Collect leaf keys (keys without any key below) for this key set.
-	 *
-	 * @return A key set containing all leaf keys
-	 */
-	CppKeySet leaves ()
-	{
-		CppKeySet leaves;
-
-		auto current = this->begin ();
-		if (current == this->end ()) return leaves;
-
-		CppKey previous = *current;
-		while (++current != this->end ())
+		bool isLeaf = !current->isBelow (previous);
+		if (isLeaf)
 		{
-			bool isLeaf = !current->isBelow (previous);
-			if (isLeaf)
-			{
-				leaves.append (previous);
-			}
-
-			previous = *current;
+			leaves.append (previous);
 		}
-		// The last key is always a leaf
-		leaves.append (previous);
 
-		return leaves;
+		previous = *current;
 	}
-};
+	// The last key is always a leaf
+	leaves.append (previous);
+
+	return leaves;
+}
 
 /**
  * @brief This function writes a YAML collection entry (either mapping key or array element) to the given stream.
@@ -164,7 +152,7 @@ inline void writeCollectionEntry (ofstream & output, CppKey const & key, string 
  * @param keys This parameter stores the key set which this function converts to YAML data.
  * @param parent This value represents the root key of `keys`.
  */
-void writeYAML (ofstream & output, CppKeySet & keys, CppKey const & parent)
+void writeYAML (ofstream & output, CppKeySet && keys, CppKey const & parent)
 {
 	ELEKTRA_LOG_DEBUG ("Convert %zu key%s", keys.size (), keys.size () == 1 ? "" : "s");
 	keys.rewind ();
@@ -222,13 +210,12 @@ int elektraYamlsmithGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 int elektraYamlsmithSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 	CppKey parent{ parentKey };
-	CppKeySetPlus keys{ returned };
+	CppKeySet keys{ returned };
 
 	ofstream file{ parent.getString () };
 	if (file.is_open ())
 	{
-		CppKeySet leaves = keys.leaves ();
-		writeYAML (file, leaves, parent);
+		writeYAML (file, leaves (keys), parent);
 	}
 	else
 	{
