@@ -53,6 +53,15 @@ static void test_read (char const * const filepath, KeySet * const expected)
 
 	INIT_PLUGIN_GET ("user/tests/yanlr", srcdir_file (filepath), "Unable to open or parse file");
 
+	// We replace the value of the parent key of expected keyset, if the header file specifies the value @CONFIG_FILEPATH@.
+	// We could also do that via CMake, but the current solution should be easier for now.
+	Key * root = ksLookupByName (expected, "user/tests/yanlr", KDB_O_POP);
+	if (root)
+	{
+		if (elektraStrCmp (keyString (root), "@CONFIG_FILEPATH@") == 0) keySetString (root, srcdir_file (filepath));
+		ksAppendKey (expected, root);
+	}
+
 	compare_keyset (keySet, expected);
 
 	ksDel (expected);
