@@ -23,6 +23,8 @@
  *
  * Maps the event of branch taken or not to a sequence of ksLookup (...) invocations
  * without KeySet alteration that is worth using the OPMPHM or not.
+ * The predictor looks at past events to predict the future, to keep track of past events
+ * the `lookupCount` and the `ksSize` must be stored.
  */
 
 /**
@@ -37,6 +39,7 @@ typedef struct
 	uint8_t * patternTable; /*!< the global pattern history table */
 	size_t size;		/*!< size of patternTable in bytes */
 	size_t lookupCount;     /*!< number of lookups made without alteration of the KeySet */
+	size_t ksSize;		/*!< number of keys in the KeySet */
 } OpmphmPredictor;
 
 /**
