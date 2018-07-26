@@ -1,13 +1,16 @@
 include (LibAddMacros)
 
-file (GLOB HDR_FILES *.h)
-file (GLOB SRC_FILES *.c)
+file (GLOB HDR_FILES
+	   *.h)
+file (GLOB SRC_FILES
+	   *.c)
 
 add_headers (ELEKTRA_HEADERS)
 set (SOURCES ${SRC_FILES} ${HDR_FILES} ${ELEKTRA_HEADERS})
 
 if (BUILD_FULL OR BUILD_STATIC) # add sources for elektra-io-ev for static and full builds
-	list (APPEND SOURCES $<TARGET_OBJECTS:OBJ_elektra-io-ev>)
+	list (APPEND SOURCES
+		     $<TARGET_OBJECTS:OBJ_elektra-io-ev>)
 endif ()
 
 # Build test

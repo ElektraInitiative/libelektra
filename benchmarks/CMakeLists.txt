@@ -10,14 +10,17 @@ macro (do_benchmark source)
 
 	target_link_elektra (benchmark_${source} elektra-kdb elektra-meta)
 
-	set_target_properties (benchmark_${source} PROPERTIES COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
+	set_target_properties (benchmark_${source}
+			       PROPERTIES COMPILE_DEFINITIONS
+					  HAVE_KDBCONFIG_H)
 
 	# ~~~
 	# Useful for debugging: COMMAND strace -o strace.out "${command}"
 	# ~~~
 	add_custom_target (benchmark_${source}_callgrind
 			   COMMAND rm -f *.out
-			   COMMAND valgrind --tool=callgrind
+			   COMMAND valgrind
+				   --tool=callgrind
 				   --callgrind-out-file=callgrind.out "$<TARGET_FILE:benchmark_${source}>" > output.out
 			   WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
 endmacro (do_benchmark)
@@ -40,4 +43,3 @@ if (ENABLE_OPTIMIZATIONS AND NOT WIN32)
 	endif (USE_OPENMP)
 	do_benchmark (opmphm)
 endif (ENABLE_OPTIMIZATIONS AND NOT WIN32)
-

@@ -33,23 +33,41 @@ endif ()
 
 foreach (plugin ${RESOLVERS})
 	if (${plugin} MATCHES "^resolver_.*")
-		string (REGEX REPLACE "resolver_" "" variant ${plugin})
-		string (REGEX REPLACE "_" ";" variantlist ${variant})
+		string (REGEX
+			REPLACE "resolver_"
+				""
+				variant
+				${plugin})
+		string (REGEX
+			REPLACE "_"
+				";"
+				variantlist
+				${variant})
 
-		list (GET variantlist 0 variant_base)
-		list (GET variantlist 1 variant_user)
-		list (GET variantlist 2 variant_system)
+		list (GET variantlist
+			  0
+			  variant_base)
+		list (GET variantlist
+			  1
+			  variant_user)
+		list (GET variantlist
+			  2
+			  variant_system)
 
 		# don't forget near-global scope for CMake variables
 		set (FURTHER_DEFINITIONS "")
 		set (FURTHER_LIBRARIES "")
 
-		string (FIND "${variant_base}" "f" out_var_n)
+		string (FIND "${variant_base}"
+			     "f"
+			     out_var_n)
 		if (NOT "${out_var_n}" EQUAL "-1")
 			set (FURTHER_DEFINITIONS ${FURTHER_DEFINITIONS} "ELEKTRA_LOCK_FILE")
 		endif ()
 
-		string (FIND "${variant_base}" "m" out_var_n)
+		string (FIND "${variant_base}"
+			     "m"
+			     out_var_n)
 		if (NOT "${out_var_n}" EQUAL "-1")
 			set (FURTHER_DEFINITIONS ${FURTHER_DEFINITIONS} "ELEKTRA_LOCK_MUTEX")
 			set (FURTHER_LIBRARIES ${FURTHER_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${CMAKE_REALTIME_LIBS_INIT})

@@ -15,7 +15,8 @@ else ()
 	add_binding (swig_python)
 
 	if (${SWIG_VERSION} MATCHES "^2\\.")
-		message (WARNING "Python bindings might crash if generated with SWIG 2." " Please upgrade to SWIG 3 or later.")
+		message (WARNING "Python bindings might crash if generated with SWIG 2."
+				 " Please upgrade to SWIG 3 or later.")
 	endif ()
 
 	add_headers (HDR_FILES)
@@ -36,7 +37,9 @@ else ()
 		swig_add_library (swig-python LANGUAGE python SOURCES kdb.i TYPE MODULE)
 	endif (CMAKE_VERSION VERSION_LESS 3.8)
 	swig_link_libraries (swig-python elektra-core elektra-kdb ${PYTHON_LIBRARIES})
-	set_target_properties (_swig-python PROPERTIES OUTPUT_NAME _kdb)
+	set_target_properties (_swig-python
+			       PROPERTIES OUTPUT_NAME
+					  _kdb)
 
 	# Unfortunately the generated code produces warnings.
 	if (CMAKE_COMPILER_IS_GNUCXX)

@@ -170,7 +170,7 @@ verified or added to build Elektra correctly:
     added to exclude the `debian` branch from being build.
     The reason for this is that the `debian` branch is not providing a
     Jenkinsfile.
-* `Advanced clone behaviours` should be added and the path to the git mirror
+* `Advanced clone behaviors` should be added and the path to the git mirror
     needs to be specified: `/home/jenkins/git_mirrors/libelektra`.
     This reference repository is created and maintained by our
     [daily buildjob](https://build.libelektra.org/jenkins/job/libelektra-daily/).

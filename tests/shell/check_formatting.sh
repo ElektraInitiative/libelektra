@@ -23,7 +23,7 @@ fi
 
 if which sponge > /dev/null || which cmake-format > /dev/null
 then
-	scripts/reformat-cmake
+	scripts/reformat-cmake || exit 1
 else
 	echo 'Warning: Since either `sponge` or `cmake-format` is not available I will not check the formatting of the CMake code.'
 fi

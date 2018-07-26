@@ -51,18 +51,31 @@ macro (add_gtest source)
 			install (TARGETS ${source} DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 		endif (INSTALL_TESTING)
 
-		set_target_properties (${source} PROPERTIES COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
-		set_property (TARGET ${source} APPEND PROPERTY INCLUDE_DIRECTORIES ${ARG_INCLUDE_DIRECTORIES})
+		set_target_properties (${source}
+				       PROPERTIES COMPILE_DEFINITIONS
+						  HAVE_KDBCONFIG_H)
+		set_property (TARGET ${source}
+			      APPEND
+			      PROPERTY INCLUDE_DIRECTORIES
+				       ${ARG_INCLUDE_DIRECTORIES})
 
 		add_test (${source} "${CMAKE_BINARY_DIR}/bin/${source}" "${CMAKE_CURRENT_BINARY_DIR}/")
-		set_property (TEST ${source} PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
+		set_property (TEST ${source}
+			      PROPERTY ENVIRONMENT
+				       "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
 
 		if (ARG_MEMLEAK)
-			set_property (TEST ${source} PROPERTY LABELS memleak)
+			set_property (TEST ${source}
+				      PROPERTY LABELS
+					       memleak)
 		endif (ARG_MEMLEAK)
 		if (ARG_KDBTESTS)
-			set_property (TEST ${name} PROPERTY LABELS kdbtests)
-			set_property (TEST ${name} PROPERTY RUN_SERIAL TRUE)
+			set_property (TEST ${name}
+				      PROPERTY LABELS
+					       kdbtests)
+			set_property (TEST ${name}
+				      PROPERTY RUN_SERIAL
+					       TRUE)
 		endif (ARG_KDBTESTS)
 	endif (BUILD_TESTING)
 endmacro (add_gtest)
@@ -85,7 +98,9 @@ function (add_msr_test NAME FILE)
 	cmake_parse_arguments (ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
 	foreach (plugin ${ARG_REQUIRED_PLUGINS})
-		list (FIND REMOVED_PLUGINS ${plugin} plugin_index)
+		list (FIND REMOVED_PLUGINS
+			   ${plugin}
+			   plugin_index)
 		if (plugin_index GREATER -1)
 			return ()
 		endif (plugin_index GREATER -1)
@@ -94,9 +109,17 @@ function (add_msr_test NAME FILE)
 	add_test (NAME testshell_markdown_${NAME}
 		  COMMAND "${CMAKE_BINARY_DIR}/tests/shell/shell_recorder/tutorial_wrapper/markdown_shell_recorder.sh" "${FILE}"
 		  WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
-	set_property (TEST ${TEST_NAME} PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib" "${ARG_ENVIRONMENT}")
-	set_property (TEST ${TEST_NAME} PROPERTY LABELS memleak kdbtests)
-	set_property (TEST ${TEST_NAME} PROPERTY RUN_SERIAL TRUE)
+	set_property (TEST ${TEST_NAME}
+		      PROPERTY ENVIRONMENT
+			       "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib"
+			       "${ARG_ENVIRONMENT}")
+	set_property (TEST ${TEST_NAME}
+		      PROPERTY LABELS
+			       memleak
+			       kdbtests)
+	set_property (TEST ${TEST_NAME}
+		      PROPERTY RUN_SERIAL
+			       TRUE)
 endfunction ()
 
 # ~~~
@@ -113,6 +136,7 @@ endfunction ()
 function (add_msr_test_plugin PLUGIN)
 	set (multiValueArgs REQUIRED_PLUGINS)
 	cmake_parse_arguments (ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
-	list (APPEND ARG_REQUIRED_PLUGINS ${PLUGIN})
+	list (APPEND ARG_REQUIRED_PLUGINS
+		     ${PLUGIN})
 	add_msr_test (${PLUGIN} "${CMAKE_SOURCE_DIR}/src/plugins/${PLUGIN}/README.md" ${ARGN} REQUIRED_PLUGINS ${ARG_REQUIRED_PLUGINS})
 endfunction ()

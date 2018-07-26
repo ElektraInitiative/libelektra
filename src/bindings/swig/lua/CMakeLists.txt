@@ -25,8 +25,12 @@ else ()
 		swig_add_library (swig-lua LANGUAGE lua SOURCES kdb.i TYPE MODULE)
 	endif (CMAKE_VERSION VERSION_LESS 3.8)
 	swig_link_libraries (swig-lua elektra-core elektra-kdb ${LUA_LIBRARIES})
-	set_target_properties (swig-lua PROPERTIES OUTPUT_NAME kdb)
-	set_target_properties (${SWIG_MODULE_swig-lua_REAL_NAME} PROPERTIES PREFIX "")
+	set_target_properties (swig-lua
+			       PROPERTIES OUTPUT_NAME
+					  kdb)
+	set_target_properties (${SWIG_MODULE_swig-lua_REAL_NAME}
+			       PROPERTIES PREFIX
+					  "")
 
 	set_source_files_properties (${swig_generated_file_fullname} PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -DSWIG_TYPE_TABLE=kdb")
 

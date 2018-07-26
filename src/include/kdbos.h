@@ -132,7 +132,7 @@
 /*Some systems have even longer pathnames*/
 #ifdef PATH_MAX
 #define KDB_MAX_PATH_LENGTH PATH_MAX
-/*This value is garanteed on any Posixsystem*/
+/*This value is guaranteed on any POSIX system*/
 #elif defined __USE_POSIX
 #define KDB_MAX_PATH_LENGTH _POSIX_PATH_MAX
 #else

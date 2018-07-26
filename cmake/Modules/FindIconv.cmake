@@ -31,16 +31,34 @@ if (ICONV_INCLUDE_DIR)
 	set (ICONV_FIND_QUIETLY TRUE)
 endif ()
 
-find_path (ICONV_INCLUDE_DIR iconv.h PATHS /usr/include /usr/local/include /opt/local/include /sw/include)
+find_path (ICONV_INCLUDE_DIR
+	   iconv.h
+	   PATHS /usr/include
+		 /usr/local/include
+		 /opt/local/include
+		 /sw/include)
 
 set (POTENTIAL_ICONV_LIBS iconv libiconv libiconv2)
 
-find_library (ICONV_LIBRARY NAMES ${POTENTIAL_ICONV_LIBS} PATHS /usr/lib /usr/local/lib /opt/local/lib /sw/lib)
+find_library (ICONV_LIBRARY
+	      NAMES ${POTENTIAL_ICONV_LIBS}
+	      PATHS /usr/lib
+		    /usr/local/lib
+		    /opt/local/lib
+		    /sw/lib)
 
 if (WIN32)
 	set (ICONV_DLL_NAMES iconv.dll libiconv.dll libiconv2.dll)
-	find_file (ICONV_DLL NAMES ${ICONV_DLL_NAMES} PATHS ENV PATH NO_DEFAULT_PATH)
-	find_file (ICONV_DLL_HELP NAMES ${ICONV_DLL_NAMES} PATHS ENV PATH ${ICONV_INCLUDE_DIR}/../bin)
+	find_file (ICONV_DLL
+		   NAMES ${ICONV_DLL_NAMES}
+		   PATHS ENV
+			 PATH
+		   NO_DEFAULT_PATH)
+	find_file (ICONV_DLL_HELP
+		   NAMES ${ICONV_DLL_NAMES}
+		   PATHS ENV
+			 PATH
+			 ${ICONV_INCLUDE_DIR}/../bin)
 	if (ICONV_FIND_REQUIRED)
 		if (NOT ICONV_DLL AND NOT ICONV_DLL_HELP)
 			message (FATAL_ERROR "Could not find iconv.dll, please add correct your PATH environment variable")
@@ -62,7 +80,10 @@ else ()
 	check_function_exists (iconv HAVE_ICONV_IN_LIBC)
 	if (ICONV_INCLUDE_DIR AND HAVE_ICONV_IN_LIBC)
 		set (ICONV_FOUND TRUE)
-		set (ICONV_LIBRARY CACHE TYPE STRING FORCE)
+		set (ICONV_LIBRARY
+		     CACHE TYPE
+			   STRING
+		     FORCE)
 	endif ()
 	if (ICONV_INCLUDE_DIR AND ICONV_LIBRARY)
 		set (ICONV_FOUND TRUE)

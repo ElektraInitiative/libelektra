@@ -24,7 +24,9 @@ set (COLLECTION_PHASE ON)
 set (DEPENDENCY_PHASE OFF)
 set (ADDTESTING_PHASE OFF)
 
-file (GLOB DIRECTORIES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/*)
+file (GLOB DIRECTORIES
+      RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+	       ${CMAKE_CURRENT_SOURCE_DIR}/*)
 
 foreach (plugin ${DIRECTORIES})
 
@@ -58,7 +60,9 @@ foreach (plugin ${ADDED_DIRECTORIES})
 	endif ()
 endforeach (plugin)
 
-list (FIND ADDED_PLUGINS ${KDB_DEFAULT_STORAGE} output)
+list (FIND ADDED_PLUGINS
+	   ${KDB_DEFAULT_STORAGE}
+	   output)
 if (output EQUAL -1)
 	message (
 		SEND_ERROR
@@ -66,7 +70,9 @@ if (output EQUAL -1)
 		)
 endif ()
 
-list (FIND ADDED_PLUGINS ${KDB_DEFAULT_RESOLVER} output)
+list (FIND ADDED_PLUGINS
+	   ${KDB_DEFAULT_RESOLVER}
+	   output)
 if (output EQUAL -1)
 	message (
 		SEND_ERROR
@@ -74,12 +80,16 @@ if (output EQUAL -1)
 		)
 endif ()
 
-list (FIND ADDED_PLUGINS list output)
+list (FIND ADDED_PLUGINS
+	   list
+	   output)
 if (output EQUAL -1 AND ENABLE_TESTING AND BUILD_TESTING)
 	message (SEND_ERROR "The required plugin `list` is not selected in PLUGINS but needed for testing, please add `list` to PLUGINS")
 endif ()
 
-list (FIND ADDED_PLUGINS spec output)
+list (FIND ADDED_PLUGINS
+	   spec
+	   output)
 if (output EQUAL -1 AND (NOT MINGW) AND ENABLE_TESTING AND BUILD_TESTING)
 	message (SEND_ERROR "The required plugin `spec` is not selected in PLUGINS but needed for testing, please add `spec` to PLUGINS")
 endif ()

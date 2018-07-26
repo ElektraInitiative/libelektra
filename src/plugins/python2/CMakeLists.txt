@@ -10,7 +10,8 @@ if (DEPENDENCY_PHASE)
 	elseif (PYTHON2LIBS_FOUND AND SWIG_FOUND AND BINDING_WAS_ADDED)
 		include (LibAddMacros)
 
-		add_custom_command (OUTPUT runtime.h COMMAND ${SWIG_EXECUTABLE} -c++ -python -external-runtime runtime.h)
+		add_custom_command (OUTPUT runtime.h
+				    COMMAND ${SWIG_EXECUTABLE} -c++ -python -external-runtime runtime.h)
 
 		# we call this SWIG_COMPILE_FLAGS because we have the same variable in our swig bindings
 		set (SWIG_COMPILE_FLAGS "-Wno-shadow -Wno-old-style-cast -Wno-unused-variable")
@@ -43,8 +44,7 @@ add_plugin (python2
 
 if (DEPENDENCY_PHASE)
 
-	# generate readme from pythons3 README.md
-	# it will overwrite previously generated file of add_plugin directly above
+	# generate readme from pythons3 README.md it will overwrite previously generated file of add_plugin directly above
 	set (CMAKE_CURRENT_SOURCE_DIR_SAFE ${CMAKE_CURRENT_SOURCE_DIR})
 	if (CMAKE_VERSION VERSION_LESS "2.8.12")
 		get_filename_component (CMAKE_CURRENT_SOURCE_PARENT_DIR ${CMAKE_CURRENT_SOURCE_DIR} PATH)
@@ -63,15 +63,13 @@ if (ADDTESTING_PHASE)
 
 		if (BUILD_TESTING AND BINDING_WAS_ADDED)
 
-			# test environment clears env so setting PYTHONPATH is no option
-			# we workaround this by changing the current directory to our bindings
-			# output directory + our test adds the current directory to pythons sys.path
+			# test environment clears env so setting PYTHONPATH is no option we workaround this by changing the current
+			# directory to our bindings output directory + our test adds the current directory to pythons sys.path
 			add_plugintest (python2 MEMLEAK WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../../bindings/swig/python2/)
 
 			if (INSTALL_TESTING)
 				install (DIRECTORY ${CMAKE_SOURCE_DIR}/src/plugins/python/python/
-						   DESTINATION
-						   "${TARGET_TEST_DATA_FOLDER}/python2")
+					 DESTINATION "${TARGET_TEST_DATA_FOLDER}/python2")
 			endif ()
 
 		else ()

@@ -44,7 +44,7 @@ int elektraKeyNameReverseNext (keyNameReverseIterator * it)
 
 	if (*real == KDB_PATH_ESCAPE)
 	{
-		++real; // we skipped to much
+		++real; // we skipped too much
 	}
 
 	const char * currentEnd = real; // now we know where the string will end

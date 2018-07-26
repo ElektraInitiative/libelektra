@@ -1,6 +1,8 @@
 include (LibAddPlugin)
 
-list (FIND ADDED_PLUGINS "internalnotification" FOUND_NAME)
+list (FIND ADDED_PLUGINS
+	   "internalnotification"
+	   FOUND_NAME)
 if (FOUND_NAME EQUAL -1)
 	message (STATUS "Exclude Library notification because internalnotification plugin excluded")
 else ()

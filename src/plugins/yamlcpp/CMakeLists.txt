@@ -17,7 +17,10 @@ if (DEPENDENCY_PHASE)
 
 			# Disable warnings about shadow declarations in yaml-cpp source code
 			if (APPLE AND CMAKE_COMPILER_IS_GNUCXX)
-				string (REPLACE "-Wshadow" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+				string (REPLACE "-Wshadow"
+						""
+						CMAKE_CXX_FLAGS
+						"${CMAKE_CXX_FLAGS}")
 			endif (APPLE AND CMAKE_COMPILER_IS_GNUCXX)
 			set (YAML_PLUGIN_INCLUDE_DIRS ${Boost_INCLUDE_DIR})
 		endif (YAML-CPP_VERSION VERSION_LESS "0.6.0")

@@ -272,6 +272,7 @@ Thanks to Daniel Bugl.
     *(Lukas Winkler)*
 - The documentation for `kdb` and `kdb set` now mentions the `--` argument that stops processing of command line switches. This is useful
   for setting negative values among other things. *(Klemens Böswirth)*
+- GitHub now detects the license of the repository correctly again. *(René Schwaiger)*
 
 ## Tests
 
@@ -303,7 +304,7 @@ Thanks to Daniel Bugl.
 - The OPMPHM has a new test case *(Kurt Micheli)*
 - Do not execute `fcrypt` and `crypto` unit tests if the `gpg` binary is not available. *(Peter Nirschl)*
 - Resolved an issue where tests did not cleanup properly after they ran.
-    This was especially noticable for `gpg` tests as the `gpg-agents` that were
+    This was especially noticeable for `gpg` tests as the `gpg-agents` that were
     spawned did not get cleaned up afterwards. *(Lukas Winkler)*
 - We disabled the general plugin test (`testkdb_allplugins`) for the [`semlock` plugin](https://libelektra.org/plugins/mini), since the
   test reported [memory leaks](https://issues.libelektra.org/2113) on the latest version of Debian Unstable. *(René Schwaiger)*
