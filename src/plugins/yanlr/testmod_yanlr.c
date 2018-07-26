@@ -80,8 +80,46 @@ static void test_empty ()
 
 static void test_scalar ()
 {
+	test_read ("yanlr/plain_scalar-word_chars.yaml",
+#include "yanlr/plain_scalar-word_chars.h"
+	);
+	test_read ("yanlr/plain_scalar-word_chars_space.yaml",
+#include "yanlr/plain_scalar-word_chars_space.h"
+	);
+	test_read ("yanlr/single_quoted_scalar.yaml",
+#include "yanlr/single_quoted_scalar.h"
+	);
 	test_read ("yanlr/double_quoted_scalar.yaml",
 #include "yanlr/double_quoted_scalar.h"
+	);
+}
+
+static void test_list ()
+{
+	test_read ("yanlr/list-plain_scalars.yaml",
+#include "yanlr/list-plain_scalars.h"
+	);
+	test_read ("yanlr/list-list_map-mixed_scalars.yaml",
+#include "yanlr/list-list_map-mixed_scalars.h"
+	);
+}
+
+static void test_map ()
+{
+	test_read ("yanlr/map-null.yaml",
+#include "yanlr/map-null.h"
+	);
+	test_read ("yanlr/map-plain_scalar.yaml",
+#include "yanlr/map-plain_scalar.h"
+	);
+	test_read ("yanlr/map-plain_scalars.yaml",
+#include "yanlr/map-plain_scalars.h"
+	);
+	test_read ("yanlr/map-list-plain_scalars.yaml",
+#include "yanlr/map-list-plain_scalars.h"
+	);
+	test_read ("yanlr/map-map-plain_scalars.yaml",
+#include "yanlr/map-map-plain_scalars.h"
 	);
 }
 
@@ -98,6 +136,8 @@ int main (int argc, char ** argv)
 
 	test_empty ();
 	test_scalar ();
+	test_map ();
+	test_list ();
 
 	print_result ("testmod_yanlr");
 
