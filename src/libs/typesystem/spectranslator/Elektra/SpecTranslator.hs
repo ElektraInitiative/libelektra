@@ -61,23 +61,21 @@ translateKeySpecification f k = [specTranslation]
         kt = ignoreEither $ keyType k
         ignoreEither (Right r) = r
         ignoreEither _         = ".*"
-        e  = Con () (translateUnqual "Key")
-        t  = TyCon () (translateUnqual "Key") <-> TyPromoted () (PromotedString () kt kt)
-    -- TODO default value by fallback
+        e  = Con () key
+        t  = TyCon () key <-> TyPromoted () (PromotedString () kt kt)
     specTranslation   = let specs  = functionCandidates k
                             conv (_, v) = foldl (<=>) (Var () (translateUnqualPath . functionBaseName $ fncFun v)) . catMaybes $ [translateFunctionParameter v]
                             sigs   = map (flip M.lookup f . functionBaseName . fncFun) specs
                             repack Nothing  _ = Nothing
                             repack (Just a) b = Just (a, b)
                             transl = conv <$> sortBy (flip compare `on` (order . fst)) (catMaybes $ zipWith repack sigs specs)
-                            --rawKeyTranslation
                         in nameBind (specificationKeyName k) $ foldr (<=>) rawKeyTranslation transl
     translateFunctionParameter v = case fncPath v of
       "" -> case fncStr v of
         "" -> Nothing
         _  -> let rgx = fncStr v
-                  vr  = Var   () (translateUnqual "Key")
-                  ty  = TyCon () (translateUnqual "Key") <-> TyPromoted () (PromotedString () rgx rgx)
+                  vr  = Var   () key
+                  ty  = TyCon () key <-> TyPromoted () (PromotedString () rgx rgx)
               in  Just $ ExpTypeSig () vr ty
       _  -> Just $ Var () (translateUnqualPath $ fncPath v)
     translateUnqualPath = translateUnqual . pathToDeclName
@@ -86,7 +84,7 @@ mkModule :: [Decl ()] -> Module ()
 mkModule = Module ()
   (Just $
     ModuleHead () (ModuleName () "TestSpecification") Nothing Nothing)
-  [LanguagePragma () [name "TypeInType", name "NoImplicitPrelude"]]
+  [LanguagePragma () [name "DataKinds", name "NoImplicitPrelude"]]
   [ImportDecl {importAnn = (),
                importModule = ModuleName () "Elektra.RegexType",
                importQualified = False, importSrc = False, importSafe = False,
@@ -97,6 +95,9 @@ mkModule = Module ()
                importPkg = Nothing, importAs = Nothing, importSpecs = Nothing}]
 
 -- AST related utilities
+
+key :: QName ()
+key = translateUnqual "Key" 
 
 specificationKeyName :: KeySpecification -> Name ()
 specificationKeyName = name . pathToDeclName . path

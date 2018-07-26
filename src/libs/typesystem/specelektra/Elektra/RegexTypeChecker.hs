@@ -75,7 +75,7 @@ getTyCon m p t = lookupModule regexModule regexPackage
 solveRegex :: RgxData -> [Ct] -> [Ct] -> [Ct] -> TcPluginM TcPluginResult
 solveRegex rd [] _ w  = do
   (rcs, rcf, rcn) <- partitionSolutions . catMaybes <$> pRgxContains
-  (ris, rif, rin) <- partitionSolutions . catMaybes . (:[]) <$> pRgxIntersects
+  (ris, rif, rin) <- partitionSolutions . catMaybes <$> pRgxIntersects
   let (slvd, fld, new) = (rcs ++ ris, rcf ++ rif, rcn ++ rin)
   case fld of
     [] -> return $ TcPluginOk (mapMaybe (\c -> (,c) <$> evRegexConstraint c) slvd) new
@@ -86,7 +86,7 @@ solveRegex rd [] _ w  = do
     pRgxContains   = mapM (regexContains (rgxContainsTyCon rd) (rgxIntersectionTyCon rd)) wRgxContains
     -- Filter and solve or disprove the type constrains introduced by RegexIntersects 
     wRgxIntersects = filter (hasTyCon $ rgxIntersectableTyCon rd) w
-    pRgxIntersects = regexIntersections (rgxIntersectableTyCon rd) (rgxIntersectionTyCon rd) wRgxIntersects
+    pRgxIntersects = mapM (regexIntersections (rgxIntersectableTyCon rd) (rgxIntersectionTyCon rd)) wRgxIntersects
 -- Ok, nothing we can do
 solveRegex _ _ _ _  = return $ TcPluginOk [] []
 

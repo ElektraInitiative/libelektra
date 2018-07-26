@@ -22,18 +22,16 @@ import GhcPlugins
 import TcPluginM  (TcPluginM, tcPluginIO, newWanted, newGiven)
 import TcRnTypes  (Ct(..), ctEvidence, ctEvPred, ctLoc, unsafeTcPluginTcM)
 import TyCoRep    (Type(..))
-import TcMType    (newFskTyVar)
+import TcMType    (newFskTyVar, newFlexiTyVar)
 
 -- Intersection solving works by using intersection commutativity to normalize
 -- everything to one big intersection constraint
-regexIntersections :: TyCon -> TyCon -> [Ct] -> TcPluginM (Maybe SolveResult)
-regexIntersections _ _ [] = return Nothing
-regexIntersections rtc1 rtc2 cs = do
-    ts <- tcPluginIO $ mapM (fromAST . extract) cs
-    let t = foldl1 RegexIntersection ts
+regexIntersections :: TyCon -> TyCon -> Ct -> TcPluginM (Maybe SolveResult)
+regexIntersections rtc1 rtc2 c = do
+    t <- tcPluginIO . fromAST $ extract c
     case t of
       -- Intersectable (Regex) is trivially true
-      Regex _ _ -> return . Just $ Solved cs
+      Regex _ _ -> return . Just $ Solved [c]
       _         -> do
         -- unify all constraints and calculate a normal form if possible
         n <- tcPluginIO $ normalize t
@@ -41,17 +39,17 @@ regexIntersections rtc1 rtc2 cs = do
         eq <- tcPluginIO $ t === n
         if eq then return Nothing else case n of
           -- Normalization failed
-          EmptyRegex -> return . Just $ Failure cs
-          _          -> finalize ts n
+          EmptyRegex -> return . Just $ Failure []
+          _          -> finalize t n
   where
     extract ct = case classifyPredType $ ctEvPred $ ctEvidence ct of
       IrredPred (TyConApp _ [t]) -> t
       _                          -> error "Expected an IrredPred of Intersectable but got something else instead"
     -- normal form possible, aggregate all possible coercions and emit the result
-    finalize ts n = do
-      evNormalized <- newWanted (ctLoc $ head cs) (TyConApp rtc1 [toAST rtc2 n])
-      coercions    <- catMaybes <$> mapM normalizationConstraints (zip cs ts)
-      return . Just . New cs $ CNonCanonical evNormalized : concat coercions
+    finalize t n = do
+      evNormalized <- newWanted (ctLoc c) (TyConApp rtc1 [toAST rtc2 n])
+      coercions    <- normalizationConstraints (c, t)
+      return . Just . New [c] $ CNonCanonical evNormalized : concat coercions
     normalizationConstraints (_, Regex _ _) = return Nothing
     normalizationConstraints (c, t) = do
       -- Introduce possible coercion constraints
@@ -65,8 +63,8 @@ regexIntersections rtc1 rtc2 cs = do
         evIntersectableCoerce <- newGiven (ctLoc c) (mkPrimEqPred ct' i) (evByFiat "specElektra" ct' i)
         fsk  <- unsafeTcPluginTcM $ newFskTyVar typeSymbolKind
         fsk2 <- unsafeTcPluginTcM $ newFskTyVar constraintKind
-        return $ Just [CFunEqCan evRgxTypesCoerce rtc2 [typeSymbolKind] fsk
-                      ,CFunEqCan evIntersectableCoerce rtc1 [constraintKind] fsk2]    
+        return $  Just [CFunEqCan evRgxTypesCoerce rtc2 [typeSymbolKind] fsk
+                       ,CFunEqCan evIntersectableCoerce rtc1 [constraintKind] fsk2]
 
 -- Containment solving works by reducing both sides of the containment and checking whether
 -- it is solvable for any known regexes when it comes to intersections, otherwise it has to
@@ -78,10 +76,10 @@ regexContains rctc ritc c = do
     an     <- tcPluginIO $ normalize a
     bn     <- tcPluginIO $ normalize b
     -- normalization failed, unsatisfiable
-    if an == EmptyRegex || bn == EmptyRegex then return . Just $ Failure [c] else do
+    if an == EmptyRegex || bn == EmptyRegex then return . Just $ Failure [] else do
       isContainmentPossible <- tcPluginIO $ containmentPossible an bn
       -- normalization succeeded but the containment can already be decided as unsatisfiable
-      if not isContainmentPossible then return . Just $ Failure [c] else do
+      if not isContainmentPossible then return . Just $ Failure [] else do
         aEq <- tcPluginIO $ a === an
         bEq <- tcPluginIO $ b === bn
         if aEq && bEq then do
