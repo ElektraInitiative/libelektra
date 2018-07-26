@@ -273,9 +273,9 @@ struct _KeySet
 	ksflag_t flags;
 
 	/**
-	 * Mmap information struct
+	 * Mmap meta-data struct
 	 */
-	MmapHeader * mmapInfo;
+	MmapMetaData * mmapMetaData;
 
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 	/**
