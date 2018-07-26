@@ -995,7 +995,9 @@ static void benchmarkMappingAllSeeds (char * name)
  * START ================================================== OPMPHM Build Time ======================================================== START
  *
  * This benchmark measures the time of the OPMPHM build.
- * Uses all KeySet shapes, for all n (KeySet size) a fixed set of seeds is used to build the OPMPHM.
+ * Uses all KeySet shapes except 6, for all n (KeySet size) a fixed set of seeds is used to build the OPMPHM.
+ * The keyset shape 6 is excluded, because previous evaluation had show that the results with that keyset shape
+ * where unusable, due to the unnatural long key names.
  * For one n (KeySet size) ksPerN KeySets are used.
  * The results are written out in the following format:
  *
@@ -1217,7 +1219,9 @@ void benchmarkOPMPHMBuildTime (char * name)
  * START ================================================== OPMPHM Search Time ======================================================= START
  *
  * This benchmark measures the time of the OPMPHM search.
- * Uses all KeySet shapes, for one n (KeySet size) ksPerN KeySets are used.
+ * Uses all KeySet shapes except 6, for one n (KeySet size) ksPerN KeySets are used.
+ * The keyset shape 6 is excluded, because previous evaluation had show that the results with that keyset shape
+ * where unusable, due to the unnatural long key names.
  * Each measurement done with one KeySet is repeated numberOfRepeats time and summarized with the median.
  * For one n (KeySet size) the ksPerN results are also summarized with the median.
  * The results are written out in the following format:
@@ -1503,7 +1507,9 @@ void benchmarkOPMPHMSearchTime (char * name)
  * START ================================================= Binary search Time ======================================================== START
  *
  * This benchmark measures the time of the binary search.
- * Uses all KeySet shapes, for one n (KeySet size) ksPerN KeySets are used.
+ * Uses all KeySet shapes except 6, for one n (KeySet size) ksPerN KeySets are used.
+ * The keyset shape 6 is excluded, because previous evaluation had show that the results with that keyset shape
+ * where unusable, due to the unnatural long key names.
  * Each measurement done with one KeySet is repeated numberOfRepeats time and summarized with the median.
  * For one n (KeySet size) the ksPerN results are also summarized with the median.
  * The results are written out in the following format:

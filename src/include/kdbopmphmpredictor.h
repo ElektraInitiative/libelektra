@@ -23,6 +23,8 @@
  *
  * Maps the event of branch taken or not to a sequence of ksLookup (...) invocations
  * without KeySet alteration that is worth using the OPMPHM or not.
+ * The predictor looks at past events to predict the future, to keep track of past events
+ * the `lookupCount` and the `ksSize` must be stored.
  */
 
 /**
