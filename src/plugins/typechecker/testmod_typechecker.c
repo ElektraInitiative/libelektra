@@ -30,15 +30,14 @@ static KeySet * keysetWithStandardFunctions (void)
 {
 	KeySet * ks = ksNew (0, KS_END);
 
-	ksAppendKey (ks, keyNew (PARENT_KEY_NAME "/elektra/spec/fallback/#", KEY_META, "elektra/spec/order", "10", 
-				KEY_META, "elektra/spec/impl", "fallback a b = link a b", KEY_END));
+	ksAppendKey (ks, keyNew (PARENT_KEY_NAME "/elektra/spec/fallback/#", KEY_META, "elektra/spec/order", "10", KEY_META,
+				 "elektra/spec/impl", "fallback a b = link a b", KEY_END));
 
-	ksAppendKey (ks, keyNew (PARENT_KEY_NAME "/elektra/spec/override/#", KEY_META, "elektra/spec/order", "10", 
-				KEY_META, "elektra/spec/impl",
-				 "override a b = link a b", KEY_END));
+	ksAppendKey (ks, keyNew (PARENT_KEY_NAME "/elektra/spec/override/#", KEY_META, "elektra/spec/order", "10", KEY_META,
+				 "elektra/spec/impl", "override a b = link a b", KEY_END));
 
 	ksAppendKey (ks, keyNew (PARENT_KEY_NAME "/elektra/spec/check/validation", KEY_META, "elektra/spec/impl",
-		         "checkvalidation a b = intersect a b", KEY_END));
+				 "checkvalidation a b = intersect a b", KEY_END));
 
 	ksAppendKey (ks, keyNew (PARENT_KEY_NAME "/elektra/spec/check/long", KEY_META, "elektra/spec/impl",
 				 "checklong a = intersect a (Key :: Key \"" LONG_REGEX "\")", KEY_END));
@@ -92,8 +91,8 @@ static void test_invalid_ranges_override (void)
 	ksAppendKey (ks, keyNew (KEY1_NAME, KEY_VALUE, "2500", KEY_META, "check/validation",
 				 "[0-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-4][0-9][0-9][0-9]|5000", KEY_END));
 
-	ksAppendKey (ks, keyNew (KEY2_NAME, KEY_VALUE, "500", KEY_META, "override/#1", KEY1_NAME, KEY_META,
-				 "check/validation", "[7-9][2-9][0-9][0-9]|10000", KEY_END));
+	ksAppendKey (ks, keyNew (KEY2_NAME, KEY_VALUE, "500", KEY_META, "override/#1", KEY1_NAME, KEY_META, "check/validation",
+				 "[7-9][2-9][0-9][0-9]|10000", KEY_END));
 
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "call to kdbSet was not successful");
 	succeed_if (!output_error (parentKey), "no errors found but one is expected");
