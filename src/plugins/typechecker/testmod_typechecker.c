@@ -30,10 +30,11 @@ static KeySet * keysetWithStandardFunctions (void)
 {
 	KeySet * ks = ksNew (0, KS_END);
 
-	ksAppendKey (ks, keyNew (PARENT_KEY_NAME "/elektra/spec/fallback/#", KEY_META, "elektra/spec/impl",
-				 "fallback a b = link a b", KEY_END));
+	ksAppendKey (ks, keyNew (PARENT_KEY_NAME "/elektra/spec/fallback/#", KEY_META, "elektra/spec/order", "10", 
+				KEY_META, "elektra/spec/impl", "fallback a b = link a b", KEY_END));
 
-	ksAppendKey (ks, keyNew (PARENT_KEY_NAME "/elektra/spec/override/#", KEY_META, "elektra/spec/impl",
+	ksAppendKey (ks, keyNew (PARENT_KEY_NAME "/elektra/spec/override/#", KEY_META, "elektra/spec/order", "10", 
+				KEY_META, "elektra/spec/impl",
 				 "override a b = link a b", KEY_END));
 
 	ksAppendKey (ks, keyNew (PARENT_KEY_NAME "/elektra/spec/check/validation", KEY_META, "elektra/spec/impl",
