@@ -63,8 +63,8 @@ regexIntersections rtc1 rtc2 c = do
         evIntersectableCoerce <- newGiven (ctLoc c) (mkPrimEqPred ct' i) (evByFiat "specElektra" ct' i)
         fsk  <- unsafeTcPluginTcM $ newFskTyVar typeSymbolKind
         fsk2 <- unsafeTcPluginTcM $ newFskTyVar constraintKind
-        return $  Just [CFunEqCan evRgxTypesCoerce rtc2 [typeSymbolKind] fsk
-                       ,CFunEqCan evIntersectableCoerce rtc1 [constraintKind] fsk2]
+        return $ Just [CFunEqCan evRgxTypesCoerce rtc2 [typeSymbolKind] fsk
+                      ,CFunEqCan evIntersectableCoerce rtc1 [constraintKind] fsk2]
 
 -- Containment solving works by reducing both sides of the containment and checking whether
 -- it is solvable for any known regexes when it comes to intersections, otherwise it has to

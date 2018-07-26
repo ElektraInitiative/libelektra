@@ -7,7 +7,7 @@
 -- 
 {-# LANGUAGE DataKinds, TypeFamilies, ConstraintKinds #-}
 
-module Elektra.RegexType (RegexContains, RegexIntersection, Intersectable, Key (..), intersect, link) where
+module Elektra.RegexType (RegexContains, RegexIntersection, Intersectable, Key (..),  Regex, intersect, link) where
 
 import GHC.TypeLits
 import GHC.Exts (Constraint)
@@ -40,3 +40,4 @@ type family RegexIntersection (a :: Symbol) (b :: Symbol) :: Symbol
 
 -- A key
 data Key (a :: Symbol) = Key deriving Show
+type Regex = Key

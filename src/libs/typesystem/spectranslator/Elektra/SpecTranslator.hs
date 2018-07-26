@@ -84,7 +84,7 @@ mkModule :: [Decl ()] -> Module ()
 mkModule = Module ()
   (Just $
     ModuleHead () (ModuleName () "TestSpecification") Nothing Nothing)
-  [LanguagePragma () [name "DataKinds", name "NoImplicitPrelude"]]
+  [LanguagePragma () [name "DataKinds", name "TypeApplications", name "NoImplicitPrelude"]]
   [ImportDecl {importAnn = (),
                importModule = ModuleName () "Elektra.RegexType",
                importQualified = False, importSrc = False, importSafe = False,
