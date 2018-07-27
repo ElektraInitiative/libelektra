@@ -159,6 +159,9 @@ static unsigned open_cnt = 0;
 
 static void Python_Shutdown (moduleData * data)
 {
+	if (!data->shutdown)
+		return;
+
 	/* destroy python if plugin isn't used anymore */
 	if (Py_IsInitialized ())
 	{
