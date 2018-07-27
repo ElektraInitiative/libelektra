@@ -157,6 +157,11 @@ Thanks to Daniel Bugl.
 - An issue when building Haskell plugins with a cached sandbox is fixed in case
   a Haskell library bundled with elektra gets changed. *(Armin Wurzinger)*
 
+### Interpreter Plugins
+
+- The plugins ruby, python and jni can now also be mounted as global plugin.
+- Fix crash in python plugin. *(Markus Raab)*
+
 ### HexNumber
 
 - The plugin [hexnumber](https://www.libelektra.org/plugins/hexnumber) has been added. It can be used

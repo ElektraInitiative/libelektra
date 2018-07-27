@@ -4,7 +4,7 @@
 - infos/provides =
 - infos/needs =
 - infos/placements = getstorage setstorage
-- infos/status = maintained unittest configurable memleak
+- infos/status = maintained unittest configurable global memleak
 - infos/description = proxy that calls other plugins (scripts) written in python
 
 ## Introduction
