@@ -77,20 +77,29 @@ public class KeySet implements java.lang.Iterable<Key> {
 
 	/**
 	 * Basic constructor for key set
-	 *
-	 * @param alloc
-	 *            Length of key set (key count) to be allocated
-	 * @param args
-	 *            List of initial keys for the key set.
-	 * @return New key set with the given initial data
+     *
+	 * @return New key set with a preallocated space of 16
 	 */
-	public static KeySet create(final int alloc, final Key... args) {
-		if (args == null)
-			return create(alloc);
-		final Object[] keys = Arrays.copyOf(args, args.length + 1, Object[].class);
-		keys[args.length] = KS_END;
-		return create(alloc, keys);
+	public static KeySet create() {
+		return create(16);
 	}
+
+	/**
+    	 * Basic constructor for key set
+    	 *
+    	 * @param alloc
+    	 *            Length of key set (key count) to be allocated
+    	 * @param args
+    	 *            List of initial keys for the key set.
+    	 * @return New key set with the given initial data
+    	 */
+    	public static KeySet create(final int alloc, final Key... args) {
+    		if (args == null)
+    			return create(alloc);
+    		final Object[] keys = Arrays.copyOf(args, args.length + 1, Object[].class);
+    		keys[args.length] = KS_END;
+    		return create(alloc, keys);
+    	}
 
 	/**
 	 * Clean-up method to release keyset reference
