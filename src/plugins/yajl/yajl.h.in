@@ -32,8 +32,6 @@
 
 #include <kdbplugin.h>
 
-#cmakedefine ELEKTRA_YAJL_VERBOSE
-
 #cmakedefine YAJL_NO_VERSION
 
 #ifdef YAJL_NO_VERSION
