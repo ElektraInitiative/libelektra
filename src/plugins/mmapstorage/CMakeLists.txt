@@ -1,4 +1,4 @@
-include (LibAddPlugin)
+include (LibAddMacros)
 
 if (DEPENDENCY_PHASE)
 	set (plugin mmapstorage)
@@ -9,11 +9,7 @@ if (DEPENDENCY_PHASE)
 
 	# clean up for dependency phase
 	unset (plugin)
-endif ()
-
-if (ENABLE_OPTIMIZATIONS)
-	set (ELEKTRA_ENABLE_OPTIMIZATIONS "1")
-endif (ENABLE_OPTIMIZATIONS)
+endif (DEPENDENCY_PHASE)
 
 if (ENABLE_CHECKSUM)
 	add_plugin (mmapstorage
@@ -23,5 +19,8 @@ if (ENABLE_CHECKSUM)
 		    LINK_LIBRARIES ${ZLIB_LIBRARIES}
 		    ADD_TEST)
 else (ENABLE_CHECKSUM)
-	add_plugin (mmapstorage SOURCES mmapstorage.h mmapstorage.c ADD_TEST)
+	add_plugin (mmapstorage
+		    SOURCES mmapstorage.h
+			    mmapstorage.c
+		    ADD_TEST)
 endif (ENABLE_CHECKSUM)
