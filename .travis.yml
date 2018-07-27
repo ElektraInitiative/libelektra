@@ -142,7 +142,9 @@ before_install:
         # Use latest version of LLVM to translate the code
         brew install llvm
         export CC=/usr/local/opt/llvm/bin/clang CXX=/usr/local/opt/llvm/bin/clang++
-        # Linking the Homebrew versions of Botan and yaml-cpp using `gcc` fails on macOS
+        # Linking Botan, ANTLR’s C++ runtime, and yaml-cpp using `gcc` fails on macOS
+        brew install antlr
+        brew install antlr4-cpp-runtime
         brew install botan
         brew install yaml-cpp
         # Unfortunately Xerces 3.2 causes multiple problems if we translate Elektra with GCC on macOS
