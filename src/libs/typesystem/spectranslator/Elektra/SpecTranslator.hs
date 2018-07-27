@@ -11,7 +11,7 @@ import Elektra.Specifications
 
 import Data.Char     (isAlphaNum)
 import Data.Map      (Map)
-import Data.Maybe    (catMaybes, isJust)
+import Data.Maybe    (catMaybes, isJust, fromMaybe)
 import Data.List     (sortBy)
 import Data.Function (on)
 import Unsafe.Coerce
@@ -37,13 +37,13 @@ translateTypeSpecification t = catMaybes [typeSig, impl <$> implementation t]
   where
     typeSig       = typeSig' <$> signature t
     impl          = let repack = foldl1 (\(FunBind () x) (FunBind _ y) -> FunBind () (x ++ y))
-                        parseMode = defaultParseMode { parseFilename = tySpecName t, extensions = [EnableExtension DataKinds]}
+                        parseMode = defaultParseMode { parseFilename = renamedTySpecName t, extensions = [EnableExtension DataKinds]}
                     in  repack . map (unsafeCoerce . fromParseResult . parseDeclWithMode parseMode)
     funTypes      = foldr1 (TyFun ()) . map convertRegexTypeParameter
     constraint [] = Nothing
     constraint c  = Just $ CxTuple () (map asst c)
     asst (RegexConstraint a p)   = AppA () (name a) [convertRegexType p]
-    typeSig' (TypeSignature c p) = TypeSig () [name . pathToDeclName $ tySpecName t] $ TyForall () Nothing (constraint c) (funTypes p)
+    typeSig' (TypeSignature c p) = TypeSig () [name . pathToDeclName $ renamedTySpecName t] $ TyForall () Nothing (constraint c) (funTypes p)
 
 convertRegexTypeParameter :: RegexTypeParam -> Type ()
 convertRegexTypeParameter (RegexTypeParam r _) = convertRegexType r
@@ -61,10 +61,10 @@ translateKeySpecification f k = [specTranslation]
         kt = ignoreEither $ keyType k
         ignoreEither (Right r) = r
         ignoreEither _         = ".*"
-        e  = Con () key
-        t  = TyCon () key <-> TyPromoted () (PromotedString () kt kt)
+        e = Con () key
+        t = TyCon () regex <-> TyPromoted () (PromotedString () kt kt)
     specTranslation   = let specs  = functionCandidates k
-                            conv (_, v) = foldl (<=>) (Var () (translateUnqualPath . functionBaseName $ fncFun v)) . catMaybes $ [translateFunctionParameter v]
+                            conv (t, v) = foldl (<=>) (Var () (translateUnqualPath $ renamedTySpecName t)) . catMaybes $ [translateFunctionParameter v]
                             sigs   = map (flip M.lookup f . functionBaseName . fncFun) specs
                             repack Nothing  _ = Nothing
                             repack (Just a) b = Just (a, b)
@@ -75,7 +75,7 @@ translateKeySpecification f k = [specTranslation]
         "" -> Nothing
         _  -> let rgx = fncStr v
                   vr  = Var   () key
-                  ty  = TyCon () key <-> TyPromoted () (PromotedString () rgx rgx)
+                  ty  = TyCon () regex <-> TyPromoted () (PromotedString () rgx rgx)
               in  Just $ ExpTypeSig () vr ty
       _  -> Just $ Var () (translateUnqualPath $ fncPath v)
     translateUnqualPath = translateUnqual . pathToDeclName
@@ -84,7 +84,7 @@ mkModule :: [Decl ()] -> Module ()
 mkModule = Module ()
   (Just $
     ModuleHead () (ModuleName () "TestSpecification") Nothing Nothing)
-  [LanguagePragma () [name "DataKinds", name "TypeApplications", name "NoImplicitPrelude"]]
+  [LanguagePragma () [name "DataKinds", name "NoImplicitPrelude"]]
   [ImportDecl {importAnn = (),
                importModule = ModuleName () "Elektra.RegexType",
                importQualified = False, importSrc = False, importSafe = False,
@@ -94,10 +94,16 @@ mkModule = Module ()
                importQualified = False, importSrc = False, importSafe = False,
                importPkg = Nothing, importAs = Nothing, importSpecs = Nothing}]
 
+renamedTySpecName :: TypeSpecification -> String
+renamedTySpecName ts = fromMaybe (tySpecName ts) (rename ts)
+
 -- AST related utilities
 
 key :: QName ()
-key = translateUnqual "Key" 
+key = translateUnqual "Key"
+
+regex :: QName ()
+regex = translateUnqual "Regex"
 
 specificationKeyName :: KeySpecification -> Name ()
 specificationKeyName = name . pathToDeclName . path

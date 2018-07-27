@@ -74,7 +74,8 @@ data TypeSpecification = TypeSpecification {
   tyPathVar      :: Maybe Path,
   signature      :: Maybe TypeSignature,
   implementation :: Maybe [Implementation],
-  order          :: Int
+  order          :: Int,
+  rename         :: Maybe String
 } deriving (Show, Eq)
 
 instance Ord TypeSpecification where

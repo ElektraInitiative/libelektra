@@ -110,11 +110,11 @@ unsigned short value, corresponding to the range 0-65535, or rewritten as a rege
 `([0-9]|[1-8][0-9]|9[0-9]|[1-8][0-9]{2}|9[0-8][0-9]|99[0-9]|[1-8][0-9]{3}|9[0-8][0-9]{2}|99[0-8][0-9]|999[0-9]|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])`
 
 ```
-#@META elektra/spec/impl = checkunsignedshort a = intersects a (@Regex "([0-9]|[1-8][0-9]|9[0-9]|[1-8][0-9]{2}|9[0-8][0-9]|99[0-9]|[1-8][0-9]{3}|9[0-8][0-9]{2}|99[0-8][0-9]|999[0-9]|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])")
+#@META elektra/spec/impl = checkunsignedshort a = intersect a (Key :: Regex "([0-9]|[1-8][0-9]|9[0-9]|[1-8][0-9]{2}|9[0-8][0-9]|99[0-9]|[1-8][0-9]{3}|9[0-8][0-9]{2}|99[0-8][0-9]|999[0-9]|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])")
 [check/unsignedshort]
 ```
 
-This signature means "If the regex represented by the type variable a, which in that case refers
+This function means "If the regex represented by the type variable a, which in that case refers
 to the current key's regex, can be intersected with the regex depicting the range, the check
 passes successfully and the resulting type is the intersection between the two regexes." This
 approach is typically used with checker plugins which further restrict what kind of contents
@@ -127,7 +127,7 @@ result of the function. For instance the following example defines a transformat
 that can be used on keys representing letters, and outputs a number:
 
 ```
-#@META elektra/spec/order = 5
+#@META elektra/spec/order = 0
 #@META elektra/spec/type = RegexContains a "[a-zA-Z]*" => Key a -> Key "[1-9][0-9]*|0"
 #@META elektra/spec/impl = transformcountletters a = undefined
 [transform/countLetters]

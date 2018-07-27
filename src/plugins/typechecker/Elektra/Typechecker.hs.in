@@ -10,15 +10,15 @@ import Elektra.SpecTranslator
 import Elektra.SpecParser
 import Elektra.Errors
 
-import Control.Monad                (mapM_, forM_, join)
+import Control.Monad         (mapM_, forM_, join)
 import Control.Logger.Simple
-import Data.Bool                    (bool)
-import Data.List                    (intercalate, isPrefixOf)
-import Data.Maybe                   (fromMaybe, listToMaybe)
+import Data.Bool             (bool)
+import Data.List             (intercalate, isPrefixOf)
+import Data.Maybe            (fromMaybe, listToMaybe)
 import Foreign.Ptr
-import System.IO.Temp               (writeTempFile)
-import System.Directory             (removeFile, doesFileExist)
-import System.Environment           (lookupEnv)
+import System.IO.Temp        (writeTempFile)
+import System.Directory      (removeFile, doesFileExist)
+import System.Environment    (lookupEnv)
 import Text.PrettyPrint
 
 import Language.Haskell.Exts.Pretty
@@ -89,7 +89,7 @@ typecheck p ks k c = withGlobalLogging (LogConfig Nothing ("@ENABLE_LOGGER@" == 
   removeFile specFile
   case r of
     Left err -> do
-      let errStr = errorString err
+      let errStr = errorString specFile err
       case c of
         Set -> triggerError 193 k errStr
         Get -> triggerWarnings 192 k errStr
@@ -117,12 +117,15 @@ keyInterpreter specFile = do
     isFun (Fun _) = True
     isFun _ = False
 
-errorString :: InterpreterError -> String
-errorString (WontCompile es) = intercalate "\n" (header : map unbox es)
+errorString :: String -> InterpreterError -> String
+errorString f (WontCompile es) = intercalate "\n" (header : filterErrors es)
   where
-    header = "ERROR: Won't compile:"
+    header = "Typechecking or compilation failed:"
     unbox (GhcError e) = e
-errorString e = show e
+    filterErrors = nub . filter relevantErrors . map unbox
+    -- relevant errors start with the filename, the rest is internal ghc output that doesn't tell us much
+    relevantErrors = isPrefixOf f
+errorString _ e = show e
 
 say :: String -> Interpreter ()
 say = liftIO . logDebugT

@@ -45,20 +45,19 @@ keyFilterMeta k p = keyListMeta k >>= filterM (fmap p . keyName)
 parseKeySpecification :: RootKey -> Key -> IO KeySpecification
 parseKeySpecification r k = KeySpecification
     <$> keyGetRelativeName k r
-    <*> pDefault
-    <*> (keyGetMeta k "type" >>= ifKey (return $ Right ".*") (fmap parseType . keyString))
+    <*> getMeta k "default" Nothing      Just
+    <*> getMeta k "type"    (Right ".*") parseType
     <*> pFunctionCandidates
     <*> parseTypeSpecification r k
   where
-    pDefault = keyGetMeta k "default" >>= ifKey (return Nothing) (fmap Just . keyString)
     pFunctionCandidates = let notReserved = liftA2 (&&) (/= "default") (/= "type")
-                          in keyFilterMeta k notReserved >>= mapM parseFunctionCandidate
+                          in  keyFilterMeta k notReserved >>= mapM parseFunctionCandidate
     functionName fk = arrayValidateName fk >>= \isArray ->
       if isArray == Invalid
       then Function <$> keyName fk
       else do
-        bfk          <- flip keyAddName "#" !=<< keyDeleteBaseName !=<< keyDup fk
-        baseName     <- fmap T.pack (keyGetRelativeName bfk r)
+        bfk         <- flip keyAddName "#" !=<< keyDeleteBaseName !=<< keyDup fk
+        baseName    <- fmap T.pack (keyGetRelativeName bfk r)
         let splitted = T.splitAt (T.length baseName) baseName
         return $ ArrayFunction (T.unpack $ fst splitted) (T.unpack $ snd splitted)
     parseFunctionCandidate fk = let str = keyString fk in FunctionCandidate 
@@ -70,15 +69,16 @@ parseTypeSpecification :: RootKey -> Key -> IO TypeSpecification
 parseTypeSpecification r k = TypeSpecification
     <$> keyGetRelativeName k r
     <*> pure Nothing
-    <*> pTypeSig
-    <*> pImpl
-    <*> pOrder
+    <*> getMeta k "elektra/spec/type"   Nothing parseTypeSignature
+    <*> getMeta k "elektra/spec/impl"   Nothing parseImpl
+    <*> getMeta k "elektra/spec/order"  5       read
+    <*> getMeta k "elektra/spec/rename" Nothing Just 
   where
-    pTypeSig = keyGetMeta k "elektra/spec/type" >>= ifKey (return Nothing) (fmap parseTypeSignature . keyString)
-    pImpl = let isSeparator s = s == '\n' || s == ';'
-                parseImpl = fmap (Just . fmap T.unpack . T.split isSeparator . T.pack) . keyString
-            in  (keyGetMeta k "elektra/spec/impl" >>= ifKey (return Nothing) parseImpl)
-    pOrder = keyGetMeta k "elektra/spec/order" >>= ifKey (return 0) (fmap read . keyString)
+    isSeparator s = s == '\n' || s == ';'
+    parseImpl = Just . fmap T.unpack . T.split isSeparator . T.pack
+
+getMeta :: Key -> String -> a -> (String -> a) -> IO a
+getMeta k m d p = keyGetMeta k m >>= ifKey (return d) (fmap p . keyString)
 
 parseType :: String -> Either Path String
 parseType t

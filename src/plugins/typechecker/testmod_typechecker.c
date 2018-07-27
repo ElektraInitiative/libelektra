@@ -40,7 +40,7 @@ static KeySet * keysetWithStandardFunctions (void)
 				 "checkvalidation a b = intersect a b", KEY_END));
 
 	ksAppendKey (ks, keyNew (PARENT_KEY_NAME "/elektra/spec/check/long", KEY_META, "elektra/spec/impl",
-				 "checklong a = intersect a (Key :: Key \"" LONG_REGEX "\")", KEY_END));
+				 "checklong a = intersect a (Key :: Regex \"" LONG_REGEX "\")", KEY_END));
 
 	return ks;
 }
