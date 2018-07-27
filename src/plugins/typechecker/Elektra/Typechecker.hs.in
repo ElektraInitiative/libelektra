@@ -13,7 +13,7 @@ import Elektra.Errors
 import Control.Monad         (mapM_, forM_, join)
 import Control.Logger.Simple
 import Data.Bool             (bool)
-import Data.List             (intercalate, isPrefixOf)
+import Data.List             (intercalate, isPrefixOf, nub)
 import Data.Maybe            (fromMaybe, listToMaybe)
 import Foreign.Ptr
 import System.IO.Temp        (writeTempFile)
