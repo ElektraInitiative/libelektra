@@ -164,9 +164,10 @@ void writeYAML (ofstream & output, CppKeySet && keys, CppKey const & parent)
 		bool sameOrBelowLast = sameLevelOrBelow (last, keys.current ());
 		auto relative = relativeKeyIterator (keys.current (), parent);
 		auto baseName = --keys.current ().end ();
+		bool isCollection = relative != keys.current ().end ();
 		CppKey current{ parent.getName (), KEY_END };
 
-		while (relative != baseName)
+		while (isCollection && relative != baseName)
 		{
 			current.addBaseName (*relative);
 			ELEKTRA_LOG_DEBUG ("Current name: %s", current.getName ().c_str ());
@@ -174,8 +175,13 @@ void writeYAML (ofstream & output, CppKeySet && keys, CppKey const & parent)
 			relative++;
 			indent += "  ";
 		}
-		writeCollectionEntry (output, *keys.current (), indent);
-		if (keys.current ().getStringSize () > 1) output << indent << "  " << keys.current ().getString () << endl;
+
+		if (isCollection)
+		{
+			writeCollectionEntry (output, *keys.current (), indent);
+			indent += "  ";
+		}
+		if (keys.current ().getStringSize () > 1) output << indent << keys.current ().getString () << endl;
 	}
 }
 

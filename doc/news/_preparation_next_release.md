@@ -415,7 +415,7 @@ Thanks to Daniel Bugl.
   Instead we added a new test checking if `PLUGINS=NODEP` builds in an minimal
   Docker image. *(Lukas Winkler)*
 - Speed up coverage data upload. *(Lukas Winkler)*
-- Fix an issue where file archivation did not happen because of surpressed shell
+- Fix an issue where file archiving did not happen because of suppressed shell
     expansion *(Lukas Winkler)*
 
 ### Travis

@@ -13,6 +13,20 @@
 
 ## Examples
 
+### Scalar
+
+```sh
+# Save a single key-value pair
+kdb set user/tests/yamlsmith 'Pattern Against User'
+
+# Only export the value
+kdb export user/tests/yamlsmith yamlsmith
+#> Pattern Against User
+
+# Undo modifications
+kdb rm -r user/tests/yamlsmith
+```
+
 ### Mappings
 
 ```sh
