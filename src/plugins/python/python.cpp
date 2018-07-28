@@ -309,6 +309,7 @@ error:
 	/* destroy python */
 	Python_Shutdown (data);
 	delete data;
+	elektraPluginSetData (handle, nullptr);
 	return -1;
 }
 
@@ -322,6 +323,7 @@ int PYTHON_PLUGIN_FUNCTION (Close) (ckdb::Plugin * handle, ckdb::Key * errorKey)
 	/* destroy python */
 	Python_Shutdown (data);
 	delete data;
+	elektraPluginSetData (handle, nullptr);
 	return ret;
 }
 
