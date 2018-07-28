@@ -76,6 +76,8 @@ Arrays are mapped to Elektra’s array convention #0, #1,..
 - Comments of various JSON-dialects are discarded.
 - Mixing of arrays and maps is not detected and leads to corrupted
   JSON files. Please specify arrays to avoid such situations.
+- The plugin creates adds an empty root key to the database, even if you
+  did not add this key (see http://issues.libelektra.org/2132).
 
 Because of these potential problems a type checker
 and comments filter are highly recommended.
@@ -109,8 +111,14 @@ kdb get /tests/yajl/key
 #> value
 
 # Check the format of the configuration file
+# The Directory Value plugin creates the entry
+#     "___dirdata": "",
+# , since the plugin added an empty root key
+# (`user/tests/yajl/`).
+# See also: http://issues.libelektra.org/2132
 kdb file user/tests/yajl/ | xargs cat
 #> {
+#>     "___dirdata": "",
 #>     "key": "value",
 #>     "number": 1337
 #> }
@@ -127,6 +135,7 @@ kdb get user/tests/yajl/piggy/#2
 # Check the format of the configuration file
 kdb file user/tests/yajl | xargs cat
 #> {
+#>     "___dirdata": "",
 #>     "key": "value",
 #>     "number": 1337,
 #>     "piggy": [
