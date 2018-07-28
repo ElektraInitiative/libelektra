@@ -520,18 +520,14 @@ static int convertDirectoriesToLeaves (KeySet * directories, Key * error)
 	while ((key = ksNext (directories)) != NULL)
 	{
 		Key * dataKey = keyDup (key);
-		// Only add extra leaf key for non-empty directory values
-		if ((keyIsBinary (key) && keyGetValueSize (key) > 0) || keyGetValueSize (key) > 1)
+		Key * directoryKey = keyNew (keyName (key), KEY_END);
+		if (keyAddBaseName (dataKey, DIRECTORY_POSTFIX) < 0)
 		{
-			Key * directoryKey = keyNew (keyName (key), KEY_END);
-			if (keyAddBaseName (dataKey, DIRECTORY_POSTFIX) < 0)
-			{
-				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_DIRECTORY_VALUE_APPEND, error,
-						    "Could not append directory postfix to “%s”", keyName (dataKey));
-				return ELEKTRA_PLUGIN_STATUS_ERROR;
-			}
-			ksAppendKey (result, directoryKey);
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_DIRECTORY_VALUE_APPEND, error, "Could not append directory postfix to “%s”",
+					    keyName (dataKey));
+			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
+		ksAppendKey (result, directoryKey);
 		ksAppendKey (result, dataKey);
 	}
 	ksCopy (directories, result);
