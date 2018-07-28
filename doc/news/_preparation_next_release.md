@@ -144,6 +144,10 @@ Thanks to Daniel Bugl.
 
 - The `crypto` plugin now uses Elektra's `libinvoke` and the `base64` plugin in order to encode and decode Base64 strings. This improvement reduces code duplication between the two plugins. *(Peter Nirschl)*
 
+### Directory Value
+
+- The plugin now also adds leafs for a key, if its value is null or the empty string. *(René Schwaiger)*
+
 ### fcrypt
 
 - The `fcrypt` plugin will consider the environment variable `TMPDIR` in order to detect its temporary directory. See [#1973] *(Peter Nirschl)*
