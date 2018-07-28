@@ -66,7 +66,7 @@ static int elektraYajlParseNull (void * ctx)
 
 	keySetBinary (current, NULL, 0);
 
-	ELEKTRA_LOG_DEBUG ("elektraYajlParseNull");
+	ELEKTRA_LOG_DEBUG ("");
 
 	return 1;
 }
@@ -88,7 +88,7 @@ static int elektraYajlParseBoolean (void * ctx, int boolean)
 	}
 	keySetMeta (current, "type", "boolean");
 
-	ELEKTRA_LOG_DEBUG ("elektraYajlParseBoolean %d", boolean);
+	ELEKTRA_LOG_DEBUG ("%d", boolean);
 
 	return 1;
 }
@@ -104,7 +104,7 @@ static int elektraYajlParseNumber (void * ctx, const char * stringVal, yajl_size
 	char * stringValue = (char *) stringVal;
 	stringValue[stringLen] = '\0';
 
-	ELEKTRA_LOG_DEBUG ("elektraYajlParseNumber %s %zu", stringVal, stringLen);
+	ELEKTRA_LOG_DEBUG ("%s %zu", stringVal, stringLen);
 
 	keySetString (current, stringVal);
 	keySetMeta (current, "type", "double");
@@ -126,7 +126,7 @@ static int elektraYajlParseString (void * ctx, const unsigned char * stringVal, 
 	char * stringValue = (char *) stringVal;
 	stringValue[stringLen] = '\0';
 
-	ELEKTRA_LOG_DEBUG ("elektraYajlParseString %s %zu", stringVal, stringLen);
+	ELEKTRA_LOG_DEBUG ("%s %zu", stringVal, stringLen);
 
 	keySetString (current, stringValue);
 
@@ -147,7 +147,7 @@ static int elektraYajlParseMapKey (void * ctx, const unsigned char * stringVal, 
 	char * stringValue = (char *) stringVal;
 	stringValue[stringLen] = '\0';
 
-	ELEKTRA_LOG_DEBUG ("elektraYajlParseMapKey stringValue: %s currentKey: %s", stringValue, keyName (currentKey));
+	ELEKTRA_LOG_DEBUG ("stringValue: %s currentKey: %s", stringValue, keyName (currentKey));
 	if (currentKey && !strcmp (keyBaseName (currentKey), "___empty_map"))
 	{
 		// remove old key
@@ -180,7 +180,7 @@ static int elektraYajlParseStartMap (void * ctx)
 	keyAddBaseName (newKey, "___empty_map");
 	ksAppendKey (ks, newKey);
 
-	ELEKTRA_LOG_DEBUG ("elektraYajlParseStartMap with new key %s", keyName (newKey));
+	ELEKTRA_LOG_DEBUG ("with new key %s", keyName (newKey));
 
 	return 1;
 }
@@ -199,11 +199,11 @@ static int elektraYajlParseEnd (void * ctx)
 #ifdef HAVE_LOGGER
 	if (foundKey)
 	{
-		ELEKTRA_LOG_DEBUG ("elektraYajlParseEnd %s", keyName (foundKey));
+		ELEKTRA_LOG_DEBUG ("%s", keyName (foundKey));
 	}
 	else
 	{
-		ELEKTRA_LOG_DEBUG ("elektraYajlParseEnd did not find key!");
+		ELEKTRA_LOG_DEBUG ("did not find key!");
 	}
 #else
 	(void) foundKey; // foundKey is not used, but lookup is needed
@@ -226,7 +226,7 @@ static int elektraYajlParseStartArray (void * ctx)
 	keyAddName (newKey, "###empty_array");
 	ksAppendKey (ks, newKey);
 
-	ELEKTRA_LOG_DEBUG ("elektraYajlParseStartArray with new key %s", keyName (newKey));
+	ELEKTRA_LOG_DEBUG ("with new key %s", keyName (newKey));
 
 	return 1;
 }
