@@ -2,10 +2,11 @@ include (LibAddBinding)
 
 if (DEPENDENCY_PHASE)
 	find_package (PythonLibs 3 QUIET)
+	find_package (Pluginprocess)
 	find_swig ()
 	check_binding_included ("swig_python" BINDING_WAS_ADDED SUBDIRECTORY "swig/python" SILENT)
 
-	if (PYTHONLIBS_FOUND AND SWIG_FOUND AND BINDING_WAS_ADDED)
+	if (PYTHONLIBS_FOUND AND SWIG_FOUND AND BINDING_WAS_ADDED AND PLUGINPROCESS_FOUND)
 		include (LibAddMacros)
 
 		add_custom_command (OUTPUT runtime.h
@@ -23,6 +24,8 @@ if (DEPENDENCY_PHASE)
 		remove_plugin (python "python 3 libs (libpython3-dev) not found")
 	elseif (NOT BINDING_WAS_ADDED)
 		remove_plugin (python "swig_python binding is required")
+	elseif (NOT PLUGINPROCESS_FOUND)
+		remove_plugin (python "Elektra's pluginprocess library is required")
 	else ()
 		remove_plugin (python "swig not found")
 	endif ()
@@ -35,28 +38,26 @@ add_plugin (python
 		    ${CMAKE_CURRENT_BINARY_DIR}/runtime.h
 	    INCLUDE_DIRECTORIES ${PYTHON_INCLUDE_DIR}
 	    LINK_LIBRARIES ${PYTHON_LIBRARIES}
+	    LINK_ELEKTRA elektra-pluginprocess
 	    COMPILE_DEFINITIONS SWIG_TYPE_TABLE=kdb
 				SWIG_RUNTIME=\"runtime.h\"
 				PYTHON_PLUGIN_NAME=python
 				PYTHON_PLUGIN_SYMBOL_NAME=Python)
 
 if (ADDTESTING_PHASE)
-	if (ENABLE_BROKEN_TESTS)
+	# bindings are required for tests
+	check_binding_was_added ("swig_python" BINDING_WAS_ADDED)
+	if (BUILD_TESTING AND BINDING_WAS_ADDED)
 
-		# bindings are required for tests
-		check_binding_was_added ("swig_python" BINDING_WAS_ADDED)
-		if (BUILD_TESTING AND BINDING_WAS_ADDED)
+		# test environment clears env so setting PYTHONPATH is no option we workaround this by changing the current directory to our
+		# bindings output directory + our test adds the current directory to pythons sys.path
+		add_plugintest (python MEMLEAK WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../../bindings/swig/python/)
 
-			# test environment clears env so setting PYTHONPATH is no option we workaround this by changing the current
-			# directory to our bindings output directory + our test adds the current directory to pythons sys.path
-			add_plugintest (python MEMLEAK WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../../bindings/swig/python/)
-
-			if (INSTALL_TESTING)
-				install (DIRECTORY python DESTINATION ${TARGET_TEST_DATA_FOLDER})
-			endif ()
-
-		else ()
-			message (WARNING "BUILD_STATIC or BUILD_FULL and swig_python bindings are required for testing, test deactivated")
+		if (INSTALL_TESTING)
+			install (DIRECTORY python DESTINATION ${TARGET_TEST_DATA_FOLDER})
 		endif ()
-	endif (ENABLE_BROKEN_TESTS)
+
+	else ()
+		message (WARNING "The swig_python binding is required for testing, test deactivated")
+	endif ()
 endif ()
