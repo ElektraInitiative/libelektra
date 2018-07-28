@@ -207,6 +207,8 @@ Thanks to Daniel Bugl.
 
 - The [YAJL Plugin](http://libelektra.org/plugins/yajl) now uses the internal logger functionality instead of `printf` statements.
   *(René Schwaiger)*
+- We fixed a problem with negative values reported by the
+  [UndefinedBehaviorSanitizer](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html). *(René Schwaiger)*
 
 ### Yan LR
 
