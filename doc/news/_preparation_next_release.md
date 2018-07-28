@@ -210,6 +210,28 @@ Thanks to Daniel Bugl.
   basic [YAML][] data. The plugin only converts YAML data to Elektra’s `KeySet` data structure. If you want to write data in the YAML
   format please take a look at the [YAML Smith plugin](http://libelektra.org/plugins/yamlsmith).
 
+### YAML CPP
+
+- The plugin does not save empty intermediate keys anymore. The example below shows the old and the new behavior of the plugin:
+
+   ```sh
+   # Mount plugin
+   kdb mount config.yaml /tests/yamlcpp yamlcpp
+   # Store single key-value pair
+   kdb set /tests/yamlcpp/level1/level2/level3 value
+
+   # Old behavior
+   kdb ls /tests/yamlcpp
+   #> user/tests/yamlcpp/level1
+   #> user/tests/yamlcpp/level1/level2
+   #> user/tests/yamlcpp/level1/level2/level3
+
+   # New behavior
+   kdb ls /tests/yamlcpp
+   user/tests/yamlcpp/level1/level2/level3
+   ```
+   .
+
 ### YAML Smith
 
 - [YAML Smith](http://libelektra.org/plugins/yamlsmith) is a plugin that converts Elektra’s `KeySet` data structure to a textual

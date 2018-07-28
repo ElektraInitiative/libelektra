@@ -125,7 +125,6 @@ kdb set /tests/yamlcpp/array/#1/🔑 🙈
 kdb ls /tests/yamlcpp
 #> user/tests/yamlcpp/array
 #> user/tests/yamlcpp/array/#0
-#> user/tests/yamlcpp/array/#1
 #> user/tests/yamlcpp/array/#1/key
 #> user/tests/yamlcpp/array/#1/🔑
 #> user/tests/yamlcpp/key
@@ -138,9 +137,6 @@ kdb get /tests/yamlcpp/array/#1/key
 # - which represent the array - does not store a value!
 echo "/tests/yamlcpp/array: “`kdb get /tests/yamlcpp/array`”"
 #> /tests/yamlcpp/array: “”
-kdb get /tests/yamlcpp/array/#1
-echo "/tests/yamlcpp/array/#1: “`kdb get /tests/yamlcpp/array/#1`”"
-#> /tests/yamlcpp/array/#1: “”
 
 # Remove part of an array value
 kdb rm /tests/yamlcpp/array/#1/key
@@ -148,7 +144,6 @@ kdb rm /tests/yamlcpp/array/#1/key
 kdb ls /tests/yamlcpp
 #> user/tests/yamlcpp/array
 #> user/tests/yamlcpp/array/#0
-#> user/tests/yamlcpp/array/#1
 #> user/tests/yamlcpp/array/#1/🔑
 #> user/tests/yamlcpp/key
 
