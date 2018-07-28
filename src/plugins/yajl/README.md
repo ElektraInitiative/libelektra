@@ -210,31 +210,43 @@ to it.
 
 Mount the plugin:
 
-    kdb mount --resolver=resolver_fm_xhp_x color/settings/openicc-devices.json /org/freedesktop/openicc yajl rename cut=org/freedesktop/openicc
+```bash
+kdb mount --resolver=resolver_fm_xhp_x color/settings/openicc-devices.json \
+  /org/freedesktop/openicc yajl rename cut=org/freedesktop/openicc
+```
 
 or:
 
-    kdb mount-openicc
+```bash
+kdb mount-openicc
+```
 
-Then you can copy the OpenICC_device_config_DB.json
+Then you can copy the `OpenICC_device_config_DB.json`
 to systemwide or user config, e.g.
 
-    cp src/plugins/yajl/examples/OpenICC_device_config_DB.json /etc/xdg
-    cp src/plugins/yajl/examples/OpenICC_device_config_DB.json ~/.config
+```bash
+cp src/plugins/yajl/examples/OpenICC_device_config_DB.json /etc/xdg
+cp src/plugins/yajl/examples/OpenICC_device_config_DB.json ~/.config
 
-    kdb ls system/org/freedesktop/openicc
+kdb ls system/org/freedesktop/openicc
+```
 
 prints out then all device entries available in the config
 
-    kdb get system/org/freedesktop/openicc/device/camera/0/EXIF_manufacturer
+```bash
+kdb get system/org/freedesktop/openicc/device/camera/0/EXIF_manufacturer
+```
 
 prints out "Glasshuette" with the example config in source
 
 You can export the whole system openicc config to ini with:
 
-    kdb export system/org/freedesktop/openicc simpleini > dump.ini
+```bash
+kdb export system/org/freedesktop/openicc simpleini > dump.ini
+```
 
 or import it:
 
-    kdb import system/org/freedesktop/openicc ini < dump.ini
-
+```bash
+kdb import system/org/freedesktop/openicc ini < dump.ini
+```
