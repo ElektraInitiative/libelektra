@@ -413,7 +413,7 @@ void elektraGenOpen (yajl_gen g, const Key * cur, const Key * next)
 
 	// calculate levels which are neither already handled
 	// nor the last one
-	int levels = nextLevels - equalLevels - levelsToSkip;
+	int levels = (int) nextLevels - (int) (equalLevels + levelsToSkip);
 
 	int actionRequired = equalLevels + 1 < nextLevels;
 
