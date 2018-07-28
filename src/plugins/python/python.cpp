@@ -71,6 +71,7 @@ typedef struct
 	PyObject * instance;
 	int printError;
 	int shutdown;
+	int subinterpreter;
 } moduleData;
 
 static int Python_AppendToSysPath (const char * path)
