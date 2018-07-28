@@ -17,10 +17,12 @@ if (ENABLE_CHECKSUM)
 			    mmapstorage.c
 		    INCLUDE_DIRECTORIES ${ZLIB_INCLUDE_DIRS}
 		    LINK_LIBRARIES ${ZLIB_LIBRARIES}
+		    LINK_ELEKTRA elektra-core
 		    ADD_TEST)
 else (ENABLE_CHECKSUM)
 	add_plugin (mmapstorage
 		    SOURCES mmapstorage.h
 			    mmapstorage.c
+		    LINK_ELEKTRA elektra-core
 		    ADD_TEST)
 endif (ENABLE_CHECKSUM)

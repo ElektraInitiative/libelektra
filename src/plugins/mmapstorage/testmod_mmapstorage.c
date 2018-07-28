@@ -1,4 +1,3 @@
-#include <kdbprivate.h>
 /**
  * @file
  *
@@ -7,6 +6,7 @@
  * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
  *
  */
+#define _POSIX_C_SOURCE 200112L
 
 /* -- Imports --------------------------------------------------------------------------------------------------------------------------- */
 
@@ -378,6 +378,35 @@ static void test_mmap_ks_copy_with_meta (const char * tmpFile)
 	ksDel (expected);
 	ksDel (returned);
 
+	keyDel (parentKey);
+	PLUGIN_CLOSE ();
+}
+
+static void test_mmap_opmphm (const char * tmpFile)
+{
+	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("mmapstorage");
+	KeySet * ks = largeTestKeySet ();
+
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+	ksDel (ks);
+
+	ks = ksNew (0, KS_END);
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
+
+	const char * name = "user/tests/mmapstorage/dir7/key3";
+	Key * found = ksLookupByName (ks, name, KDB_O_OPMPHM);
+
+	if (!found)
+	{
+		yield_error ("Key not found.")
+	}
+
+	// write keyset with OPMPHM structures
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+
+	ksDel (ks);
 	keyDel (parentKey);
 	PLUGIN_CLOSE ();
 }
@@ -1298,6 +1327,9 @@ int main (int argc, char ** argv)
 
 	clearStorage (tmpFile);
 	test_mmap_ks_copy_with_meta (tmpFile);
+
+	clearStorage (tmpFile);
+	test_mmap_opmphm (tmpFile);
 
 	// KeySet API tests
 	clearStorage (tmpFile);

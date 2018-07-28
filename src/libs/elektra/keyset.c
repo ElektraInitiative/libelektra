@@ -337,6 +337,7 @@ KeySet * ksDeepDup (const KeySet * source)
 	}
 
 	elektraOpmphmCopy (keyset, source);
+
 	return keyset;
 }
 

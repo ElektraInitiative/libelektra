@@ -17,6 +17,10 @@
 #include <kdblogger.h>
 #include <kdbprivate.h>
 
+#ifdef HAVE_KDBCONFIG_H
+#include "kdbconfig.h"
+#endif
+
 #include <assert.h>
 #include <errno.h>
 #include <limits.h>    // SSIZE_MAX
@@ -550,11 +554,9 @@ static void mmapToKeySet (char * mappedRegion, KeySet * returned)
 	returned->cursor = 0;
 	returned->current = 0;
 	returned->mmapMetaData = (MmapMetaData *) (mappedRegion + SIZEOF_MMAPHEADER);
-#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
-	returned->opmphm = 0;
-#endif
 	// to be able to free() the returned KeySet, just set the array flag here
 	returned->flags = KS_FLAG_MMAP_ARRAY;
+	// we intentionally to not change the KeySet->opmphm here!
 }
 
 static void updatePointers (MmapMetaData * mmapMetaData, char * dest)
@@ -730,8 +732,7 @@ static void unlinkFile (Key * parentKey)
 		ELEKTRA_LOG_DEBUG ("unlink: unlinking mmap ptr: %p", toUnlinkMmap);
 
 		void * toUnlinkMmapMetaData = (char *) toUnlinkMmap + SIZEOF_MMAPHEADER;
-		ELEKTRA_LOG_DEBUG ("unlink: unlinking mmap str: %s", keyName (cur));
-		ELEKTRA_LOG_DEBUG ("unlink: unlinking mmap ptr: %p", toUnlinkMmapMetaData);
+		ELEKTRA_LOG_DEBUG ("unlink: unlinking mmap meta-data ptr: %p", toUnlinkMmapMetaData);
 
 		void * toUnlinkKS = hexStringToAddress (keyString (cur));
 		ELEKTRA_LOG_DEBUG ("unlink: unlinking KeySet str: %s", keyString (cur));
@@ -750,6 +751,10 @@ static void unlinkFile (Key * parentKey)
 			keySet->mmapMetaData = 0;
 			keySet->flags = 0;
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+			if (keySet->opmphm != 0)
+			{
+				opmphmDel (keySet->opmphm);
+			}
 			keySet->opmphm = copy->opmphm;
 #endif
 			elektraFree (copy);
