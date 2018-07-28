@@ -5,6 +5,7 @@
 		kdb*;
 		key*;
 		ks*;
+		opmphm*;
 
 		extern "C++" {
 			*elektra::*;
