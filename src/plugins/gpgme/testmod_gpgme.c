@@ -103,6 +103,7 @@ static void test_import_key (void)
 		succeed_if (result->imported + result->unchanged == 1, "the GPG import failed");
 	}
 
+	gpgme_data_release (keydata);
 	gpgme_release (ctx);
 }
 
