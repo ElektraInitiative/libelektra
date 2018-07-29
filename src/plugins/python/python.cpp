@@ -394,7 +394,7 @@ int PYTHON_PLUGIN_FUNCTION (Set) (ckdb::Plugin * handle, ckdb::KeySet * returned
 	moduleData * data = static_cast<moduleData *> (elektraPluginGetData (handle));
 	if (data == nullptr) return 0;
 	if (elektraPluginProcessIsParent (data->pp))
-		return elektraPluginProcessSend (data->pp, ELEKTRA_PLUGINPROCESS_GET, returned, parentKey);
+		return elektraPluginProcessSend (data->pp, ELEKTRA_PLUGINPROCESS_SET, returned, parentKey);
 	return Python_CallFunction_Helper2 (data, "set", returned, parentKey);
 }
 
@@ -403,7 +403,7 @@ int PYTHON_PLUGIN_FUNCTION (Error) (ckdb::Plugin * handle, ckdb::KeySet * return
 	moduleData * data = static_cast<moduleData *> (elektraPluginGetData (handle));
 	if (data == nullptr) return 0;
 	if (elektraPluginProcessIsParent (data->pp))
-		return elektraPluginProcessSend (data->pp, ELEKTRA_PLUGINPROCESS_GET, returned, parentKey);
+		return elektraPluginProcessSend (data->pp, ELEKTRA_PLUGINPROCESS_ERROR, returned, parentKey);
 	return Python_CallFunction_Helper2 (data, "error", returned, parentKey);
 }
 
