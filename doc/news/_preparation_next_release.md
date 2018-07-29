@@ -238,9 +238,13 @@ Thanks to Daniel Bugl.
    ```
    .
 
-- [YAML CPP](http://libelektra.org/plugins/yamlcpp) now requires at least `yaml-cpp 0.5.2`, since the current
-  [MSR test for the plugin](https://master.libelektra.org/src/plugins/yamlcpp/README.md) triggers
-  [a bug](https://github.com/jbeder/yaml-cpp/issues/247) in earlier versions of the yaml-cpp library.
+- [YAML CPP](http://libelektra.org/plugins/yamlcpp) now requires at least `yaml-cpp 0.6`, since the current
+  [MSR test for the plugin](https://master.libelektra.org/src/plugins/yamlcpp/README.md) triggers two bugs:
+
+  - https://github.com/jbeder/yaml-cpp/issues/247
+  - https://github.com/jbeder/yaml-cpp/issues/289
+
+  in earlier versions of the [yaml-cpp library](https://github.com/jbeder/yaml-cpp).
 
 ### YAML Smith
 
