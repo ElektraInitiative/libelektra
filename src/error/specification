@@ -1089,7 +1089,7 @@ number:176
 description:Neither a GPG recipient (specified as encrypt/key) nor a GPG signature key (specified as sign/key) has been provided. Please provide at least one key.
 severity:error
 ingroup:plugin
-macro:FCRYPT_OPERATION_MODE
+macro:NO_GPG_RECIPIENTS
 module:fcrypt
 
 number:177
@@ -1252,7 +1252,7 @@ ingroup:plugin
 module:gpgme
 macro:GPGME_CONFIG
 
-number:196
+number:200
 description:The given GPG recipient is not valid.
 severity:warning
 ingroup:plugin
