@@ -153,7 +153,7 @@ static gpgme_key_t * extractRecipientFromPluginConfig (KeySet * config, Key * er
 		err = gpgme_get_key (ctx, keyString (gpgRecipientRoot), &key, 0);
 		if (err)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_GPGME, errorKey, "Failed to receive the GPG key because: %s",
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INTERNAL_ERROR, errorKey, "Failed to receive the GPG key because: %s",
 					    gpgme_strerror (err));
 			elektraGpgmeKeylistRelease (&list);
 			return NULL;
@@ -183,8 +183,8 @@ static gpgme_key_t * extractRecipientFromPluginConfig (KeySet * config, Key * er
 				err = gpgme_get_key (ctx, keyString (k), &key, 0);
 				if (err)
 				{
-					ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_GPGME, errorKey, "Failed to receive the GPG key because: %s",
-							    gpgme_strerror (err));
+					ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INTERNAL_ERROR, errorKey,
+							    "Failed to receive the GPG key because: %s", gpgme_strerror (err));
 					elektraGpgmeKeylistRelease (&list);
 					return NULL;
 				}
@@ -259,7 +259,7 @@ static int transferGpgmeDataToElektraKey (gpgme_data_t src, Key * dst, Key * err
 	readCount = gpgme_data_read (src, buffer, ciphertextLen);
 	if (readCount != ciphertextLen)
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_GPGME, errorKey, "An error during occured during the data transfer.");
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_INTERNAL_ERROR, errorKey, "An error during occured during the data transfer.");
 		returnValue = -1; // failure
 		goto cleanup;
 	}
@@ -279,6 +279,52 @@ cleanup:
 		elektraFree (buffer);
 	}
 	return returnValue;
+}
+
+/**
+ * @brief Concatenate the key IDs held by the argument invalidKeys.
+ * @param result will hold a pointer to the allocated list of key IDs. Must be freed by the caller. Will be set to NULL if the memory
+ * allocation fails.
+ * @param invalidKeys the list of gpgme_invalid_key_t elements to concatenate.
+ */
+static void generateInvalidKeyErrorMsg (char ** result, gpgme_invalid_key_t invalidKeys)
+{
+	size_t length = 0;
+	gpgme_invalid_key_t iterator = invalidKeys;
+
+	while (iterator)
+	{
+		// + 2 characters: coma and blank -> <keyID>, <keyID>, ...
+		length += strlen (iterator->fpr) + 2;
+		iterator = iterator->next;
+	}
+
+	if (length == 0)
+	{
+		*result = NULL;
+		return;
+	}
+
+	// +1 for the NULL terminator
+	*result = elektraMalloc (length + 1);
+	if (!result)
+	{
+		// memory allocation error must be handled by the caller
+		return;
+	}
+
+	iterator = invalidKeys;
+	while (iterator)
+	{
+		strncat (*result, iterator->fpr, length);
+		length -= strlen (iterator->fpr);
+		if (iterator->next)
+		{
+			strncat (*result, ", ", length);
+			length -= 2;
+		}
+		iterator = iterator->next;
+	}
 }
 
 /**
@@ -304,7 +350,8 @@ static int gpgEncrypt (Plugin * handle, KeySet * data, Key * errorKey)
 	err = gpgme_new (&ctx);
 	if (err)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_GPGME, errorKey, "Failed to create the gpgme context because: %s", gpgme_strerror (err));
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INIT, errorKey, "Failed to create the gpgme context because: %s",
+				    gpgme_strerror (err));
 		return -1; // at this point nothing has been initialized
 	}
 
@@ -319,8 +366,7 @@ static int gpgEncrypt (Plugin * handle, KeySet * data, Key * errorKey)
 	recipients = extractRecipientFromPluginConfig (pluginConfig, errorKey, ctx);
 	if (!recipients)
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_GPGME_CONFIG, errorKey,
-				   "No valid recipients were specified. Please provide at least one valid GPG key.");
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_NO_GPG_RECIPIENTS, errorKey, "No valid recipients were specified.");
 		returnValue = -1;
 		goto cleanup;
 	}
@@ -358,7 +404,7 @@ static int gpgEncrypt (Plugin * handle, KeySet * data, Key * errorKey)
 		if (err)
 		{
 			returnValue = -1;
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_GPGME, errorKey, "Internal error: %s", gpgme_strerror (err));
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_ENCRYPT_FAIL, errorKey, "Internal error: %s", gpgme_strerror (err));
 			goto cleanup;
 		}
 
@@ -366,7 +412,7 @@ static int gpgEncrypt (Plugin * handle, KeySet * data, Key * errorKey)
 		if (err)
 		{
 			returnValue = -1;
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_GPGME, errorKey, "Internal error: %s", gpgme_strerror (err));
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_ENCRYPT_FAIL, errorKey, "Internal error: %s", gpgme_strerror (err));
 			gpgme_data_release (input);
 			goto cleanup;
 		}
@@ -375,7 +421,7 @@ static int gpgEncrypt (Plugin * handle, KeySet * data, Key * errorKey)
 		if (err)
 		{
 			returnValue = -1;
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_GPGME, errorKey, "Internal error: %s", gpgme_strerror (err));
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_ENCRYPT_FAIL, errorKey, "Internal error: %s", gpgme_strerror (err));
 			gpgme_data_release (ciphertext);
 			gpgme_data_release (input);
 			goto cleanup;
@@ -383,10 +429,23 @@ static int gpgEncrypt (Plugin * handle, KeySet * data, Key * errorKey)
 
 		result = gpgme_op_encrypt_result (ctx);
 		invalidKey = result->invalid_recipients;
-		while (invalidKey)
+		if (invalidKey)
 		{
-			ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_GPGME_INVALID_RECIPIENT, errorKey, "Invalid GPG key ID: %s", invalidKey->fpr);
-			invalidKey = invalidKey->next;
+			char * errorMsg = NULL;
+			returnValue = -1;
+			generateInvalidKeyErrorMsg (&errorMsg, invalidKey);
+			if (errorMsg)
+			{
+				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_GPG_KEY_INVALID, errorKey, "Invalid key ID(s): %s", errorMsg);
+				elektraFree (errorMsg);
+			}
+			else
+			{
+				ELEKTRA_SET_ERROR (87, errorKey, "Memory allocation failed");
+			}
+			gpgme_data_release (ciphertext);
+			gpgme_data_release (input);
+			goto cleanup;
 		}
 
 		// update Elektra key to encrypted value
@@ -429,7 +488,7 @@ static int gpgDecrypt (ELEKTRA_UNUSED Plugin * handle, KeySet * data, Key * erro
 	err = gpgme_new (&ctx);
 	if (err)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_GPGME, errorKey, "Failed to the gpgme context because: %s", gpgme_strerror (err));
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INIT, errorKey, "Failed to the gpgme context because: %s", gpgme_strerror (err));
 		return -1; // at this point nothing has been initialized
 	}
 
@@ -449,7 +508,7 @@ static int gpgDecrypt (ELEKTRA_UNUSED Plugin * handle, KeySet * data, Key * erro
 		err = gpgme_data_new_from_mem (&ciphertext, keyValue (k), keyGetValueSize (k), 0);
 		if (err)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_GPGME, errorKey, "Internal error: %s", gpgme_strerror (err));
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_DECRYPT_FAIL, errorKey, "Internal error: %s", gpgme_strerror (err));
 			returnValue = -1;
 			goto cleanup;
 		}
@@ -457,7 +516,7 @@ static int gpgDecrypt (ELEKTRA_UNUSED Plugin * handle, KeySet * data, Key * erro
 		err = gpgme_data_new (&plaintext);
 		if (err)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_GPGME, errorKey, "Internal error: %s", gpgme_strerror (err));
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_DECRYPT_FAIL, errorKey, "Internal error: %s", gpgme_strerror (err));
 			returnValue = -1;
 			gpgme_data_release (ciphertext);
 			goto cleanup;
@@ -466,7 +525,7 @@ static int gpgDecrypt (ELEKTRA_UNUSED Plugin * handle, KeySet * data, Key * erro
 		err = gpgme_op_decrypt (ctx, ciphertext, plaintext);
 		if (err)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_GPGME, errorKey, "Internal error: %s", gpgme_strerror (err));
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_DECRYPT_FAIL, errorKey, "Internal error: %s", gpgme_strerror (err));
 			returnValue = -1;
 			gpgme_data_release (plaintext);
 			gpgme_data_release (ciphertext);
@@ -506,7 +565,7 @@ int elektraGpgmeOpen (ELEKTRA_UNUSED Plugin * handle, ELEKTRA_UNUSED Key * error
 	err = gpgme_engine_check_version (GPGME_PROTOCOL_OpenPGP);
 	if (err)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_GPGME, errorKey, "Internal error: %s", gpgme_strerror (err));
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INIT, errorKey, "Internal error: %s", gpgme_strerror (err));
 		return -1; // failure
 	}
 	return 1; // success
@@ -547,7 +606,8 @@ int elektraGpgmeCheckconf (Key * errorKey, KeySet * conf)
 	err = gpgme_new (&ctx);
 	if (err)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_GPGME, errorKey, "Failed to create the gpgme context because: %s", gpgme_strerror (err));
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INIT, errorKey, "Failed to create the gpgme context because: %s",
+				    gpgme_strerror (err));
 		return -1; // at this point nothing has been initialized
 	}
 
@@ -560,9 +620,7 @@ int elektraGpgmeCheckconf (Key * errorKey, KeySet * conf)
 	}
 	else
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_GPGME_CONFIG, errorKey,
-				    "No valid recipients were specified. Please provide at least one valid GPG key as %s.",
-				    ELEKTRA_RECIPIENT_KEY);
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_NO_GPG_RECIPIENTS, errorKey, "No valid recipients were specified.");
 		return -1; // failure
 	}
 	return 1; // success
