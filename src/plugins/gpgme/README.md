@@ -6,7 +6,7 @@
 - infos/recommends =
 - infos/placements = postgetstorage presetstorage
 - infos/status = unittest configurable unfinished experimental
-- infos/metadata = gpg/encrypt gpg/binary
+- infos/metadata = crypto/encrypt gpg/binary
 - infos/description = Cryptographic operations wit GnuPG Made Easy (GPGME)
 
 ## Introduction
@@ -34,7 +34,7 @@ You can mount the plugin like this:
 Now you can specify a key `user/t/a` and protect its content by using:
 
     kdb set user/t/a
-    kdb setmeta user/t/a gpg/encrypt 1
+    kdb setmeta user/t/a crypt/encrypt 1
     kdb set user/t/a "secret"
 
 The value of `user/t/a` (for this example: "secret") will be stored encrypted.
