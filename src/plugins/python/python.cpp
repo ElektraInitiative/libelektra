@@ -166,6 +166,7 @@ static void Python_Shutdown (moduleData * data)
 	/* destroy python if plugin isn't used anymore */
 	if (Py_IsInitialized ())
 	{
+		// Do we have a sub interpreter?
 		if (data->tstate)
 		{
 			Python_LockSwap pylock (data->tstate);
@@ -210,12 +211,6 @@ static moduleData * createModuleData (ckdb::Plugin * handle)
 extern "C" {
 int PYTHON_PLUGIN_FUNCTION (Open) (ckdb::Plugin * handle, ckdb::Key * errorKey)
 {
-	KeySet * config = elektraPluginGetConfig (handle);
-	if (ksLookupByName (config, "/module", 0) != nullptr)
-	{
-		return 0; // by convention: success if /module exists
-	}
-
 	if (!elektraPluginGetData (handle))
 	{
 		ElektraPluginProcess * pp = elektraPluginProcessInit (errorKey);
@@ -223,6 +218,11 @@ int PYTHON_PLUGIN_FUNCTION (Open) (ckdb::Plugin * handle, ckdb::Key * errorKey)
 		moduleData * md = createModuleData (handle);
 		if (!md)
 		{
+			if (ksLookupByName (elektraPluginGetConfig (handle), "/module", 0) != nullptr)
+			{
+				return 0; // by convention: success if /module exists
+			}
+
 			ELEKTRA_SET_ERROR (111, errorKey, "No python script set, please pass a filename via /script");
 			return -1;
 		}
@@ -258,7 +258,7 @@ int PYTHON_PLUGIN_FUNCTION (Open) (ckdb::Plugin * handle, ckdb::Key * errorKey)
 		/* acquire GIL */
 		Python_LockSwap pylock (nullptr);
 
-		/* create a new sub-interpreter */
+		/* create a new sub interpreter */
 		data->tstate = Py_NewInterpreter ();
 		if (data->tstate == nullptr)
 		{
@@ -281,7 +281,7 @@ int PYTHON_PLUGIN_FUNCTION (Open) (ckdb::Plugin * handle, ckdb::Key * errorKey)
 		const char * dname = dirname (tmpScript);
 		if (!Python_AppendToSysPath (dname))
 		{
-			ELEKTRA_SET_ERROR (111, errorKey, "Unable to extend sys.path");
+			ELEKTRA_SET_ERRORF (111, errorKey, "Unable to extend sys.path with %s", dname);
 			elektraFree (tmpScript);
 			goto error;
 		}
@@ -328,7 +328,7 @@ int PYTHON_PLUGIN_FUNCTION (Open) (ckdb::Plugin * handle, ckdb::Key * errorKey)
 	elektraPluginSetData (handle, data);
 
 	/* call python function */
-	return Python_CallFunction_Helper2 (data, "open", config, errorKey);
+	return Python_CallFunction_Helper2 (data, "open", elektraPluginGetConfig (handle), errorKey);
 
 error_print:
 	if (data->printError) PyErr_Print ();
