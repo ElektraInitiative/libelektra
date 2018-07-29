@@ -5,7 +5,7 @@
 - infos/needs =
 - infos/recommends =
 - infos/placements = postgetstorage presetstorage
-- infos/status = unittest configurable unfinished discouraged
+- infos/status = unittest configurable unfinished experimental
 - infos/metadata = gpg/encrypt gpg/binary
 - infos/description = Cryptographic operations wit GnuPG Made Easy (GPGME)
 
@@ -19,8 +19,11 @@ The cryptographic operations are performed by GnuPG via the `libgpgme` library.
 
 ## Dependencies
 
-- `libgpgme`
-- `gpg` or `gpg2`
+- `libgpgme11` version 1.10 or later
+
+## Build Information
+
+The plugin has been tested on Ubuntu 18.04 with `libgpgme` version 1.10.
 
 ## Examples
 
@@ -42,7 +45,7 @@ You can still access the original value by using `kdb get`:
 
 ## Configuration
 
-## GnuPG Keys
+### GnuPG Keys
 
 The GPG recipient keys can be specified in two ways:
 
@@ -60,3 +63,9 @@ The following example illustrates how multiple GPG recipient keys can be specifi
 `gpgme` operates in textmode per default. In textmode the output of GPG is ASCII armored.
 
 Textmode can be disabled by setting `/gpgme/textmode` to `0` in the plugin configuration.
+
+## Technical Details
+
+### Message Format
+
+The encrypted values are valid PGP messages, that can be decrypted and read solely by the GnuPG binary without Elektra.

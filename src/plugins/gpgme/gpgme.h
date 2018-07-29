@@ -13,7 +13,7 @@
 #include <kdbplugin.h>
 
 // meta-keys
-#define ELEKTRA_GPGME_META_ENCRYPT "gpg/encrypt"
+#define ELEKTRA_GPGME_META_ENCRYPT "crypto/encrypt"
 #define ELEKTRA_GPGME_META_BINARY "gpg/binary"
 
 // plugin configuration
