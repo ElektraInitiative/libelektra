@@ -17,8 +17,7 @@ set (LIBGPGME_CFLAGS)
 # if gpgme-config has been found
 if (GPGME_EXECUTABLE)
 
-	# workaround for MinGW/MSYS
-	# CMake can't starts shell scripts on windows so it need to use sh.exe
+	# workaround for MinGW/MSYS CMake can't starts shell scripts on windows so it needs to use sh.exe
 	execute_process (COMMAND sh ${GPGME_EXECUTABLE} --libs
 			 RESULT_VARIABLE _return_VALUE
 			 OUTPUT_VARIABLE LIBGPGME_LIBRARIES
@@ -45,9 +44,13 @@ if (LIBGPGME_FOUND)
 	endif (NOT LibGpgme_FIND_QUIETLY)
 
 	# parse include directory from C-Flags
-	string (LENGTH "${LIBGPGME_CFLAGS}" LIBGPGME_CFLAGS_LEN)
+	string (LENGTH "${LIBGPGME_CFLAGS}"
+		       LIBGPGME_CFLAGS_LEN)
 	if (${LIBGPGME_CFLAGS_LEN} GREATER 1)
-		string (REPLACE "-I" "" LIBGPGME_INCLUDE_DIR "${LIBGPGME_CFLAGS}")
+		string (REPLACE "-I"
+				""
+				LIBGPGME_INCLUDE_DIR
+				"${LIBGPGME_CFLAGS}")
 	endif ()
 	unset (LIBGPGME_CFLAGS_LEN)
 
