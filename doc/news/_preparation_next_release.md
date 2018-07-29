@@ -238,6 +238,10 @@ Thanks to Daniel Bugl.
    ```
    .
 
+- [YAML CPP](http://libelektra.org/plugins/yamlcpp) now requires at least `yaml-cpp 0.5.2`, since the current
+  [MSR test for the plugin](https://master.libelektra.org/src/plugins/yamlcpp/README.md) triggers
+  [a bug](https://github.com/jbeder/yaml-cpp/issues/247) in earlier versions of the yaml-cpp library.
+
 ### YAML Smith
 
 - [YAML Smith](http://libelektra.org/plugins/yamlsmith) is a plugin that converts Elektra’s `KeySet` data structure to a textual

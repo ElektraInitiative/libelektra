@@ -1,7 +1,8 @@
 if (DEPENDENCY_PHASE)
-	find_package (yaml-cpp QUIET 0.5)
+	find_package (yaml-cpp QUIET 0.5.2)
 	if (NOT YAML-CPP_FOUND)
-		remove_plugin (yamlcpp "yaml-cpp (libyaml-cpp-dev >= 0.5) not found")
+		# The MSR test for version 0.5.1 fails, because of a bug in yaml-cpp: https://github.com/jbeder/yaml-cpp/issues/247
+		remove_plugin (yamlcpp "yaml-cpp (libyaml-cpp-dev >= 0.5.2) not found")
 	else (NOT YAML-CPP_FOUND)
 		if (YAML-CPP_VERSION VERSION_LESS "0.6.0")
 			if (ENABLE_ASAN AND CMAKE_COMPILER_IS_GNUCXX)
