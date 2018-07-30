@@ -305,24 +305,6 @@ Description: Elektra configuration store, xerces plugin
  .
  This package contains the 'xerces' plugin.
 
-Package: libelektra4-yamlcpp
-Section: libs
-Architecture: any
-Depends: libelektra4 (= ${binary:Version}),
- ${shlibs:Depends},
- ${misc:Depends}
-Description: Elektra configuration store, yamlcpp plugin
- Elektra provides a universal and secure framework to store configuration
- parameters in a hierarchical key-value pair mechanism, instead of each
- program using its own text configuration files. This allows any program
- to read and save its configuration with a consistent API, and allows
- them to be aware of other applications' configurations, permitting
- easy application integration. While architecturally similar to other OS
- registries, Elektra does not have most of the problems found in those
- implementations.
- .
- This package contains the 'yamlcpp' plugin.
-
 Package: libelektra4-yajl
 Section: libs
 Architecture: any
