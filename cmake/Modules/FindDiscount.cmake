@@ -46,23 +46,31 @@ if (NOT DISCOUNT_FOUND)
 		set (DISCOUNT_ROOT_DIR ${CMAKE_INSTALL_PREFIX})
 	endif (NOT DISCOUNT_ROOT_DIR)
 
-	# ____________________________________________________________________________
-	# Check for the header files
+	# ____________________________________________________________________________ Check for the header files
 
-	find_path (DISCOUNT_INCLUDES NAMES mkdio.h HINTS ${DISCOUNT_ROOT_DIR} ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES include)
+	find_path (DISCOUNT_INCLUDES
+		   NAMES mkdio.h
+		   HINTS ${DISCOUNT_ROOT_DIR}
+			 ${CMAKE_INSTALL_PREFIX}
+		   PATH_SUFFIXES include)
 
-	# ____________________________________________________________________________
-	# Check for the library
+	# ____________________________________________________________________________ Check for the library
 
-	find_library (DISCOUNT_LIBRARIES markdown HINTS ${DISCOUNT_ROOT_DIR} ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES lib)
+	find_library (DISCOUNT_LIBRARIES
+		      markdown
+		      HINTS ${DISCOUNT_ROOT_DIR}
+			    ${CMAKE_INSTALL_PREFIX}
+		      PATH_SUFFIXES lib)
 
-	# ____________________________________________________________________________
-	# Check for the executable
+	# ____________________________________________________________________________ Check for the executable
 
-	find_program (MARKDOWN_EXECUTABLE markdown HINTS ${DISCOUNT_ROOT_DIR} ${CMAKE_INSTALL_PREFIX} PATH_SUFFIXES bin)
+	find_program (MARKDOWN_EXECUTABLE
+		      markdown
+		      HINTS ${DISCOUNT_ROOT_DIR}
+			    ${CMAKE_INSTALL_PREFIX}
+		      PATH_SUFFIXES bin)
 
-	# ____________________________________________________________________________
-	# Actions taken when all components have been found
+	# ____________________________________________________________________________ Actions taken when all components have been found
 
 	find_package_handle_standard_args (DISCOUNT DEFAULT_MSG DISCOUNT_LIBRARIES DISCOUNT_INCLUDES MARKDOWN_EXECUTABLE)
 
@@ -70,7 +78,11 @@ if (NOT DISCOUNT_FOUND)
 
 		# Update DISCOUNT_ROOT DIR
 		get_filename_component (_name ${MARKDOWN_EXECUTABLE} NAME)
-		string (REGEX REPLACE "/bin/${_name}" "" DISCOUNT_ROOT_DIR ${MARKDOWN_EXECUTABLE}) # Display variables
+		string (REGEX
+			REPLACE "/bin/${_name}"
+				""
+				DISCOUNT_ROOT_DIR
+				${MARKDOWN_EXECUTABLE}) # Display variables
 		if (NOT DISCOUNT_FIND_QUIETLY)
 			message (STATUS "Found components for DISCOUNT")
 			message (STATUS "DISCOUNT_ROOT_DIR   = ${DISCOUNT_ROOT_DIR}")
@@ -84,8 +96,7 @@ if (NOT DISCOUNT_FOUND)
 		endif (DISCOUNT_FIND_REQUIRED)
 	endif (DISCOUNT_FOUND)
 
-	# ____________________________________________________________________________
-	# Mark advanced variables
+	# ____________________________________________________________________________ Mark advanced variables
 
 	mark_as_advanced (DISCOUNT_ROOT_DIR DISCOUNT_INCLUDES DISCOUNT_LIBRARIES MARKDOWN_EXECUTABLE)
 

@@ -8,15 +8,25 @@ if (DEPENDENCY_PHASE)
 	find_swig ()
 	check_binding_included ("swig_ruby" BINDING_WAS_ADDED SUBDIRECTORY "swig/ruby" SILENT)
 
+	# ~~~
 	# Disable on GCC 4 and earlier:
 	# - https://build.libelektra.org/jenkins/job/elektra-gcc47-all
 	# - https://build.libelektra.org/jenkins/job/elektra-gcc-configure-debian-wheezy
-	set (SUPPORTED_COMPILER (NOT ("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU" AND ${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 5)))
+	# ~~~
+	set (SUPPORTED_COMPILER
+	     (NOT
+	      ("${CMAKE_CXX_COMPILER_ID}"
+	       MATCHES
+	       "GNU"
+	       AND ${CMAKE_CXX_COMPILER_VERSION}
+		   VERSION_LESS
+		   5)))
 
 	if (RUBY_FOUND AND SWIG_FOUND AND BINDING_WAS_ADDED AND ${SUPPORTED_COMPILER})
 		include (LibAddMacros)
 
-		add_custom_command (OUTPUT runtime.h COMMAND ${SWIG_EXECUTABLE} -c++ -ruby -external-runtime runtime.h)
+		add_custom_command (OUTPUT runtime.h
+				    COMMAND ${SWIG_EXECUTABLE} -c++ -ruby -external-runtime runtime.h)
 
 		# we call this SWIG_COMPILE_FLAGS because we have the same variable in our swig bindings
 		set (SWIG_COMPILE_FLAGS

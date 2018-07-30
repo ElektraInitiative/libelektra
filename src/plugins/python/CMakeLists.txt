@@ -8,7 +8,8 @@ if (DEPENDENCY_PHASE)
 	if (PYTHONLIBS_FOUND AND SWIG_FOUND AND BINDING_WAS_ADDED)
 		include (LibAddMacros)
 
-		add_custom_command (OUTPUT runtime.h COMMAND ${SWIG_EXECUTABLE} -c++ -python -py3 -external-runtime runtime.h)
+		add_custom_command (OUTPUT runtime.h
+				    COMMAND ${SWIG_EXECUTABLE} -c++ -python -py3 -external-runtime runtime.h)
 
 		# we call this SWIG_COMPILE_FLAGS because we have the same variable in our swig bindings
 		set (SWIG_COMPILE_FLAGS "-Wno-shadow -Wno-old-style-cast -Wno-unused-variable -Wno-missing-field-initializers")
@@ -46,9 +47,8 @@ if (ADDTESTING_PHASE)
 		check_binding_was_added ("swig_python" BINDING_WAS_ADDED)
 		if (BUILD_TESTING AND BINDING_WAS_ADDED)
 
-			# test environment clears env so setting PYTHONPATH is no option
-			# we workaround this by changing the current directory to our bindings
-			# output directory + our test adds the current directory to pythons sys.path
+			# test environment clears env so setting PYTHONPATH is no option we workaround this by changing the current
+			# directory to our bindings output directory + our test adds the current directory to pythons sys.path
 			add_plugintest (python MEMLEAK WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../../bindings/swig/python/)
 
 			if (INSTALL_TESTING)

@@ -121,7 +121,7 @@ int elektraSemlockClose (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 	return 1;
 }
 
-int elektraSemlockGet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraSemlockGet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
 	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/semlock"))
 	{

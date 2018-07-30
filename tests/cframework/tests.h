@@ -233,7 +233,8 @@ int init (int argc, char ** argv);
 		nbTest++;                                                                                                                  \
 		KeySet * mmks1 = (KeySet *) pks1;                                                                                          \
 		KeySet * mmks2 = (KeySet *) pks2;                                                                                          \
-		if (mmks1 != mmks2)                                                                                                        \
+		int bothEmpty = ksGetSize (mmks1) == 0 && ksGetSize (mmks1) == ksGetSize (mmks2);                                          \
+		if (mmks1 != mmks2 && !bothEmpty)                                                                                          \
 		{                                                                                                                          \
 			Key * cmmk1 = 0;                                                                                                   \
 			Key * cmmk2 = 0;                                                                                                   \

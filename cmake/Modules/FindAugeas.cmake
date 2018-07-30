@@ -28,7 +28,11 @@ else (LIBAUGEAS_INCLUDE_DIR)
 	if (NOT _LIBAUGEAS_PREFIX)
 		set (_LIBAUGEAS_PREFIX "/usr")
 	endif ()
-	set (LIBAUGEAS_PREFIX "${_LIBAUGEAS_PREFIX}" CACHE INTERNAL "prefix path of libaugeas" FORCE)
+	set (LIBAUGEAS_PREFIX
+	     "${_LIBAUGEAS_PREFIX}"
+	     CACHE INTERNAL
+		   "prefix path of libaugeas"
+	     FORCE)
 
 	find_library (LIBAUGEAS_LIBRARIES NAMES augeas PATHS ${_LIBAUGEAS_PC_LIBDIR})
 

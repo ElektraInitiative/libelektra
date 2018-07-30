@@ -71,6 +71,7 @@ typedef struct
 	PyObject * instance;
 	int printError;
 	int shutdown;
+	int subinterpreter;
 } moduleData;
 
 static int Python_AppendToSysPath (const char * path)
@@ -162,6 +163,7 @@ static void Python_Shutdown (moduleData * data)
 	/* destroy python if plugin isn't used anymore */
 	if (Py_IsInitialized ())
 	{
+		// Do we have a sub-interpreter?
 		if (data->tstate)
 		{
 			Python_LockSwap pylock (data->tstate);
@@ -205,6 +207,8 @@ int PYTHON_PLUGIN_FUNCTION (Open) (ckdb::Plugin * handle, ckdb::Key * errorKey)
 	 * expected behaviour without worring about default values
 	 */
 	data->shutdown = (ksLookupByName (config, "/shutdown", 0) && !!strcmp (keyString (ksLookupByName (config, "/shutdown", 0)), "0"));
+	data->subinterpreter = (ksLookupByName (config, "/subinterpreter", 0) &&
+				!!strcmp (keyString (ksLookupByName (config, "/subinterpreter", 0)), "0"));
 
 	{
 		/* initialize python interpreter if necessary */
@@ -229,14 +233,19 @@ int PYTHON_PLUGIN_FUNCTION (Open) (ckdb::Plugin * handle, ckdb::Key * errorKey)
 		/* acquire GIL */
 		Python_LockSwap pylock (nullptr);
 
-		/* create a new sub-interpreter */
-		data->tstate = Py_NewInterpreter ();
-		if (data->tstate == nullptr)
+		if (data->subinterpreter)
 		{
-			ELEKTRA_SET_ERROR (111, errorKey, "Unable to create sub interpreter");
-			goto error;
+			/* Create a new sub-interpreter.
+			This is incompatible with PyGILState_Ensure, see directly above
+			https://docs.python.org/3/c-api/init.html#c.PyGILState_Ensure */
+			data->tstate = Py_NewInterpreter ();
+			if (data->tstate == nullptr)
+			{
+				ELEKTRA_SET_ERROR (111, errorKey, "Unable to create sub interpreter");
+				goto error;
+			}
+			PyThreadState_Swap (data->tstate);
 		}
-		PyThreadState_Swap (data->tstate);
 
 		/* import kdb */
 		PyObject * kdbModule = PyImport_ImportModule ("kdb");
@@ -307,6 +316,7 @@ error:
 	/* destroy python */
 	Python_Shutdown (data);
 	delete data;
+	elektraPluginSetData (handle, nullptr);
 	return -1;
 }
 
@@ -320,6 +330,7 @@ int PYTHON_PLUGIN_FUNCTION (Close) (ckdb::Plugin * handle, ckdb::Key * errorKey)
 	/* destroy python */
 	Python_Shutdown (data);
 	delete data;
+	elektraPluginSetData (handle, nullptr);
 	return ret;
 }
 

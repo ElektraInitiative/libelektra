@@ -8,14 +8,19 @@ check_symbol_exists (clearenv "stdlib.h" HAVE_CLEARENV)
 check_symbol_exists (setenv "stdlib.h" HAVE_SETENV)
 check_symbol_exists (futimens "sys/stat.h" HAVE_FUTIMENS)
 
-list (APPEND CMAKE_REQUIRED_DEFINITIONS -D_GNU_SOURCE) # look for hsearch_r function family
+list (APPEND CMAKE_REQUIRED_DEFINITIONS
+	     -D_GNU_SOURCE) # look for hsearch_r function family
 check_symbol_exists (hsearch_r "search.h" HAVE_HSEARCHR)
-list (REMOVE_ITEM CMAKE_REQUIRED_DEFINITIONS -D_GNU_SOURCE)
+list (REMOVE_ITEM CMAKE_REQUIRED_DEFINITIONS
+		  -D_GNU_SOURCE)
 
 # Work around a bug on macOS where `futimes` can not be located if we specify the compiler switch `-Werror`
 if (APPLE)
 	set (CMAKE_C_FLAGS_OLD ${CMAKE_C_FLAGS})
-	string (REPLACE "-Werror" "" CMAKE_C_FLAGS ${CMAKE_C_FLAGS})
+	string (REPLACE "-Werror"
+			""
+			CMAKE_C_FLAGS
+			${CMAKE_C_FLAGS})
 	check_symbol_exists (futimes "sys/time.h" HAVE_FUTIMES)
 	set (CMAKE_C_FLAGS ${CMAKE_C_FLAGS_OLD})
 else (APPLE)
@@ -99,8 +104,7 @@ install (FILES "${CMAKE_CURRENT_BINARY_DIR}/kdbconfig.h"
 	       kdbio.h
 	       kdbnotification.h
 	       "${CMAKE_CURRENT_BINARY_DIR}/kdbversion.h"
-	       DESTINATION
-	       include/${TARGET_INCLUDE_FOLDER})
+	 DESTINATION include/${TARGET_INCLUDE_FOLDER})
 
 check_binding_included ("io_uv" IO_UV_INCLUDED SUBDIRECTORY "io/uv" SILENT)
 if (IO_UV_INCLUDED)

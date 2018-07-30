@@ -20,15 +20,11 @@ static void elektraGenCloseLast (yajl_gen g, const Key * key)
 	keyNameReverseIterator last = elektraKeyNameGetReverseIterator (key);
 	elektraKeyNameReverseNext (&last);
 
-#ifdef ELEKTRA_YAJL_VERBOSE
-	printf ("last startup entry: \"%.*s\"\n", (int) last.size, last.current);
-#endif
+	ELEKTRA_LOG_DEBUG ("last startup entry: \"%.*s\"", (int) last.size, last.current);
 
 	if (last.current[0] == '#' && strcmp (last.current, "###empty_array"))
 	{
-#ifdef ELEKTRA_YAJL_VERBOSE
-		printf ("GEN array close last\n");
-#endif
+		ELEKTRA_LOG_DEBUG ("GEN array close last");
 		yajl_gen_array_close (g);
 	}
 }
@@ -87,30 +83,22 @@ static void elektraGenCloseIterate (yajl_gen g, const Key * cur, int levels)
 		{
 			if (lookahead == LOOKAHEAD_MAP)
 			{
-#ifdef ELEKTRA_YAJL_VERBOSE
-				printf ("GEN (C1) anon map close\n");
-#endif
+				ELEKTRA_LOG_DEBUG ("GEN (C1) anon map close");
 				yajl_gen_map_close (g);
 			}
-#ifdef ELEKTRA_YAJL_VERBOSE
-			printf ("GEN (C3) array close\n");
-#endif
+			ELEKTRA_LOG_DEBUG ("GEN (C3) array close");
 			yajl_gen_array_close (g);
 		}
 		else
 		{
 			if (lookahead == LOOKAHEAD_MAP)
 			{
-#ifdef ELEKTRA_YAJL_VERBOSE
-				printf ("GEN (C4) map close\n");
-#endif
+				ELEKTRA_LOG_DEBUG ("GEN (C4) map close");
 				yajl_gen_map_close (g);
 			}
 			else
 			{
-#ifdef ELEKTRA_YAJL_VERBOSE
-				printf ("(C2) lookahead not a map: nothing to do\n");
-#endif
+				ELEKTRA_LOG_DEBUG ("(C2) lookahead not a map: nothing to do");
 			}
 		}
 	}
@@ -167,53 +155,39 @@ static void elektraGenCloseIterate (yajl_gen g, const Key * cur, int levels)
 static void elektraGenCloseFirst (yajl_gen g, const char * pcur, size_t csize, const char * pnext, int levels)
 {
 	lookahead_t lookahead = elektraLookahead (pcur, csize);
-#ifdef ELEKTRA_YAJL_VERBOSE
-	printf ("elektraGenCloseFirst %s -> %s, levels: %d, lookahead: %d\n", pcur, pnext, levels, lookahead);
-#endif
+	ELEKTRA_LOG_DEBUG ("elektraGenCloseFirst %s -> %s, levels: %d, lookahead: %d", pcur, pnext, levels, lookahead);
 	if (*pcur == '#' && *pnext == '#')
 	{
 		if (levels <= 0 && lookahead == LOOKAHEAD_ARRAY)
 		{
-#ifdef ELEKTRA_YAJL_VERBOSE
-			printf ("GEN (X1) closing array in array\n");
-#endif
+			ELEKTRA_LOG_DEBUG ("GEN (X1) closing array in array");
 			yajl_gen_array_close (g);
 		}
 		else if (lookahead == LOOKAHEAD_MAP)
 		{
-#ifdef ELEKTRA_YAJL_VERBOSE
-			printf ("GEN (X2) next anon-map\n");
-#endif
+			ELEKTRA_LOG_DEBUG ("GEN (X2) next anon-map");
 			yajl_gen_map_close (g);
 		}
 		else
 		{
-#ifdef ELEKTRA_YAJL_VERBOSE
-			printf ("(X3) array iteration\n");
-#endif
+			ELEKTRA_LOG_DEBUG ("(X3) array iteration");
 		}
 	}
 	else if (*pcur != '#')
 	{
 		if (levels <= 0 && lookahead == LOOKAHEAD_ARRAY)
 		{
-#ifdef ELEKTRA_YAJL_VERBOSE
-			printf ("GEN (X4) closing array\n");
-#endif
+			ELEKTRA_LOG_DEBUG ("GEN (X4) closing array");
 			yajl_gen_array_close (g);
 		}
 		else if (lookahead == LOOKAHEAD_MAP)
 		{
-#ifdef ELEKTRA_YAJL_VERBOSE
-			printf ("GEN (X5) closing map\n");
-#endif
+			ELEKTRA_LOG_DEBUG ("GEN (X5) closing map");
 			yajl_gen_map_close (g);
 		}
 		else
 		{
-#ifdef ELEKTRA_YAJL_VERBOSE
-			printf ("(X6) same level iteration\n");
-#endif
+			ELEKTRA_LOG_DEBUG ("(X6) same level iteration");
 		}
 	}
 }
@@ -276,7 +250,7 @@ static void elektraGenCloseFirst (yajl_gen g, const char * pcur, size_t csize, c
 void elektraGenClose (yajl_gen g, const Key * cur, const Key * next)
 {
 	int curLevels = elektraKeyCountLevel (cur);
-#ifdef ELEKTRA_YAJL_VERBOSE
+#ifdef HAVE_LOGGER
 	int nextLevels = elektraKeyCountLevel (next);
 #endif
 	int equalLevels = elektraKeyCountEqualLevel (cur, next);
@@ -294,11 +268,11 @@ void elektraGenClose (yajl_gen g, const Key * cur, const Key * next)
 		pnext = keyNameGetOneLevel (pnext + nsize, &nsize);
 	}
 
-#ifdef ELEKTRA_YAJL_VERBOSE
-	printf ("elektraGenClose, eq: %d, cur: %s %d, next: %s %d, "
-		"levels: %d\n",
+
+	ELEKTRA_LOG_DEBUG (
+		"elektraGenClose, eq: %d, cur: %s %d, next: %s %d, "
+		"levels: %d",
 		equalLevels, pcur, curLevels, pnext, nextLevels, levels);
-#endif
 
 	if (levels > 0)
 	{
@@ -322,7 +296,7 @@ void elektraGenClose (yajl_gen g, const Key * cur, const Key * next)
 void elektraGenCloseFinally (yajl_gen g, const Key * cur, const Key * next)
 {
 	int curLevels = elektraKeyCountLevel (cur);
-#ifdef ELEKTRA_YAJL_VERBOSE
+#ifdef HAVE_LOGGER
 	int nextLevels = elektraKeyCountLevel (next);
 #endif
 	int equalLevels = elektraKeyCountEqualLevel (cur, next);
@@ -340,11 +314,10 @@ void elektraGenCloseFinally (yajl_gen g, const Key * cur, const Key * next)
 		pnext = keyNameGetOneLevel (pnext + nsize, &nsize);
 	}
 
-#ifdef ELEKTRA_YAJL_VERBOSE
-	printf ("elektraGenFinally, eq: %d, cur: %s %d, next: %s %d, "
-		"levels: %d\n",
+	ELEKTRA_LOG_DEBUG (
+		"elektraGenFinally, eq: %d, cur: %s %d, next: %s %d, "
+		"levels: %d",
 		equalLevels, pcur, curLevels, pnext, nextLevels, levels);
-#endif
 	// fixes elektraGenCloseIterate for the special handling of
 	// arrays finally
 	elektraGenCloseLast (g, cur);
@@ -356,15 +329,11 @@ void elektraGenCloseFinally (yajl_gen g, const Key * cur, const Key * next)
 	// this is the very last element we are about to close
 	if (pcur && *pcur == '#')
 	{
-#ifdef ELEKTRA_YAJL_VERBOSE
-		printf ("array close FINAL\n");
-#endif
+		ELEKTRA_LOG_DEBUG ("array close FINAL");
 	}
 	else
 	{
-#ifdef ELEKTRA_YAJL_VERBOSE
-		printf ("GEN map close FINAL\n");
-#endif
+		ELEKTRA_LOG_DEBUG ("GEN map close FINAL");
 		yajl_gen_map_close (g);
 	}
 }

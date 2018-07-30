@@ -142,7 +142,9 @@ before_install:
         # Use latest version of LLVM to translate the code
         brew install llvm
         export CC=/usr/local/opt/llvm/bin/clang CXX=/usr/local/opt/llvm/bin/clang++
-        # Linking the Homebrew versions of Botan and yaml-cpp using `gcc` fails on macOS
+        # Linking Botan, ANTLR’s C++ runtime, and yaml-cpp using `gcc` fails on macOS
+        brew install antlr
+        brew install antlr4-cpp-runtime
         brew install botan
         brew install yaml-cpp
         # Unfortunately Xerces 3.2 causes multiple problems if we translate Elektra with GCC on macOS
@@ -205,7 +207,7 @@ before_install:
       sudo apt-get install libev-dev
       sudo apt-get install libxerces-c-dev
       sudo apt-get install moreutils # contains `sponge` required by `reformat-cmake`
-      sudo pip install --upgrade cmake_format==0.3.6
+      sudo pip install --upgrade cmake_format==0.4.1 pyyaml
     fi
 
 #

@@ -22,7 +22,13 @@ if (DEPENDENCY_PHASE)
 	if (NOT BOTAN_FOUND)
 		remove_plugin (${plugin} "botan development files not found")
 	endif ()
-	if (ENABLE_ASAN AND (CMAKE_C_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU"))
+	if (ENABLE_ASAN
+	    AND (CMAKE_C_COMPILER_ID
+		 STREQUAL
+		 "GNU"
+		 OR CMAKE_CXX_COMPILER_ID
+		    STREQUAL
+		    "GNU"))
 		remove_plugin (${plugin} "ENABLE_ASAN + GNU not supported by botan")
 	endif ()
 

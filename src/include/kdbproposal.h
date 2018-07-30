@@ -73,9 +73,9 @@ typedef enum {
 	ELEKTRA_REL_DIRECT_BELOW_SAME_NS = 1 << 3,      // Direct Below Same Namespace
 	ELEKTRA_REL_DIRECT_BELOW_IGNORE_NS = 1 << 4,    // Direct Below Ignore Namespace
 	ELEKTRA_REL_DIRECT_BELOW_CASCADING_NS = 1 << 5, // Direct Below (allow) Cascading Namespace
-	ELEKTRA_REL_SILBLING_SAME_NS = 1 << 6,		// Silbling Same Namespace
-	ELEKTRA_REL_SILBLING_IGNORE_NS = 1 << 7,	// Silbling Ignore Namespace
-	ELEKTRA_REL_SILBLING_CASCADING_NS = 1 << 8,     // Silbling (allow) Cascading Namespace
+	ELEKTRA_REL_SILBLING_SAME_NS = 1 << 6,		// Sibling Same Namespace
+	ELEKTRA_REL_SILBLING_IGNORE_NS = 1 << 7,	// Sibling Ignore Namespace
+	ELEKTRA_REL_SILBLING_CASCADING_NS = 1 << 8,     // Sibling (allow) Cascading Namespace
 	ELEKTRA_REL_NEPHEW_SAME_NS = 1 << 9,		// Nephew Same Namespace
 	ELEKTRA_REL_NEPHEW_IGNORE_NS = 1 << 10,		// Nephew Ignore Namespace
 	ELEKTRA_REL_NEPHEW_CASCADING_NS = 1 << 11,      // Nephew (allow) Cascading Namespace

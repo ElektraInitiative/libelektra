@@ -19,16 +19,21 @@ if (EXISTS ${COVERAGE_LCOV} AND EXISTS ${COVERAGE_AWK})
 	configure_file ("${PROJECT_SOURCE_DIR}/scripts/filter-coverage.awk.in" "${COVERAGE_FILTER}" @ONLY)
 
 	add_custom_target (coverage-start
-			   COMMAND ${COVERAGE_LCOV} ${COMMON_FLAGS} --directory . --zerocounters
 			   COMMAND ${COVERAGE_LCOV} ${COMMON_FLAGS}
-				   --directory . --initial --capture
+				   --directory .
+				   --zerocounters
+			   COMMAND ${COVERAGE_LCOV} ${COMMON_FLAGS}
+				   --directory .
+				   --initial
+				   --capture
 				   --output-file ${COVERAGE_DIR}/coverage-base.info
 			   WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
 			   COMMENT "Start capturing data for coverage.")
 
 	add_custom_target (coverage-stop
 			   COMMAND ${COVERAGE_LCOV} ${COMMON_FLAGS}
-				   --directory . --capture
+				   --directory .
+				   --capture
 				   --output-file ${COVERAGE_DIR}/coverage-test.info
 			   COMMAND ${COVERAGE_LCOV} ${COMMON_FLAGS}
 				   --add-tracefile ${COVERAGE_DIR}/coverage-test.info

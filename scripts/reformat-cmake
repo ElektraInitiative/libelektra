@@ -13,7 +13,7 @@ CMAKE_FORMAT=$(which cmake-format)
 cd "$SOURCE"
 
 if [ -z "${CMAKE_FORMAT}" ]; then
-	2>&1 printf 'Please install `cmake-format`'
+	2>&1 printf 'Please install `cmake-format`\n'
 	exit 0
 fi
 
@@ -21,7 +21,7 @@ output=$(2>&1 "${CMAKE_FORMAT}" CMakeLists.txt)
 
 if [ $? != 0 ]; then
 	2>&1 printf 'It seems your local installation of `cmake-format` is broken:\n\n%s' "$output"
-	exit 0
+	exit 1
 fi
 
 if [ -z "$(which sponge)" ]; then
