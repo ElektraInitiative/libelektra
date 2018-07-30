@@ -111,7 +111,7 @@ keyInterpreter specFile = do
   loadModules [specFile]
   say "Loaded our rendered specification, now we can infer the stuff in it."
   setTopLevelModules ["TestSpecification"]
-  getModuleExports "TestSpecification" >>= mapM_ showTypes . filter isFun . filter (not . isPrefixOf "specElektraRawKey" . name)
+  getModuleExports "TestSpecification" >>= mapM_ showTypes . filter isFun
   where
     showTypes c = typeOf (name c) >>= say . ((name c ++ " has an infered type of ") ++)
     isFun (Fun _) = True

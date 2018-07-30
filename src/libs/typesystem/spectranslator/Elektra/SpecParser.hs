@@ -50,8 +50,7 @@ parseKeySpecification r k = KeySpecification
     <*> pFunctionCandidates
     <*> parseTypeSpecification r k
   where
-    pFunctionCandidates = let notReserved = liftA2 (&&) (/= "default") (/= "type")
-                          in  keyFilterMeta k notReserved >>= mapM parseFunctionCandidate
+    pFunctionCandidates = keyListMeta k >>= mapM parseFunctionCandidate
     functionName fk = arrayValidateName fk >>= \isArray ->
       if isArray == Invalid
       then Function <$> keyName fk
