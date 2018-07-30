@@ -95,11 +95,12 @@ static void test_defaultdispatcher (void)
 	const Key * defaultValue = keyGetMeta (pKey, "defaultValue");
 
 	succeed_if (defaultValue, "the default value regex hasn't been generated");
-	succeed_if (0 == strcmp (keyString (defaultValue), "\\.\\\\\\+\\*\\?\\[\\^\\]\\$\\(\\)\\{\\}\\=\\!\\<\\>\\|\\:\\-asfdjklö123"), "the default value regex is invalid");
+	succeed_if (0 == strcmp (keyString (defaultValue), "\\.\\\\\\+\\*\\?\\[\\^\\]\\$\\(\\)\\{\\}\\=\\!\\<\\>\\|\\:\\-asfdjklö123"),
+		    "the default value regex is invalid");
 
 	keyDel (parentKey);
 	ksDel (ks);
-	
+
 	PLUGIN_CLOSE ();
 }
 
