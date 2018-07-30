@@ -7,7 +7,8 @@ RUN apk update \
         git \
         file \
         curl \
-        bash
+        bash \
+        yaml-cpp-dev
 
 # Google Test
 ENV GTEST_ROOT=/opt/gtest
