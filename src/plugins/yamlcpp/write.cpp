@@ -127,6 +127,21 @@ YAML::Node createLeafNode (Key & key)
 }
 
 /**
+ * @brief This function adds `null` elements to the given YAML collection.
+ *
+ * @param sequence This node stores the collection to which this function adds `numberOfElements` empty elements.
+ * @param numberOfElements This parameter specifies the number of empty element this function adds to `sequence`.
+ */
+void addEmptyArrayElements (YAML::Node & sequence, unsigned long long const numberOfElements)
+{
+	ELEKTRA_LOG_DEBUG ("Add %lld empty array elements", numberOfElements);
+	for (auto missingFields = numberOfElements; missingFields > 0; missingFields--)
+	{
+		sequence.push_back (YAML::Node ());
+	}
+}
+
+/**
  * @brief This function adds a key to a YAML node.
  *
  * @param data This node stores the data specified via `keyIterator`.
@@ -157,7 +172,8 @@ void addKey (YAML::Node & data, NameIterator & keyIterator, Key & key)
 	{
 		if (isArray)
 		{
-			data[arrayIndex] = createLeafNode (key);
+			addEmptyArrayElements (data, arrayIndex - data.size ());
+			data.push_back (createLeafNode (key));
 		}
 		else
 		{

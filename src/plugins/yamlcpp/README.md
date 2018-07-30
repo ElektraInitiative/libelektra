@@ -101,9 +101,16 @@ kdb set user/tests/yamlcpp/sunny/#2 Dennis
 kdb set user/tests/yamlcpp/sunny/#3 Frank
 kdb set user/tests/yamlcpp/sunny/#4 Mac
 
+# The plugin supports empty array fields
+kdb set user/tests/yamlcpp/sunny/#_10 'The Waitress'
+kdb getmeta user/tests/yamlcpp/sunny array
+#> #_10
+kdb get user/tests/yamlcpp/sunny/#_9
+# RET: 11
+
 # Retrieve the last array entry
 kdb get user/tests/yamlcpp/sunny/$(kdb getmeta user/tests/yamlcpp/sunny array)
-#> Mac
+#> The Waitress
 
 # Undo modifications to the key database
 kdb rm -r /tests/yamlcpp
