@@ -1,7 +1,5 @@
 include (LibAddBinding)
 
-set (PYTHON_PLUGIN_FOLDER "${TARGET_TEST_DATA_FOLDER}/python")
-
 if (DEPENDENCY_PHASE)
 	find_package (PythonLibs 3 QUIET)
 	find_package (Pluginprocess)
@@ -11,8 +9,8 @@ if (DEPENDENCY_PHASE)
 	if (PYTHONLIBS_FOUND AND SWIG_FOUND AND BINDING_WAS_ADDED AND PLUGINPROCESS_FOUND)
 		include (LibAddMacros)
 
-		add_custom_command (OUTPUT runtime.h
-				    COMMAND ${SWIG_EXECUTABLE} -c++ -python -py3 -external-runtime runtime.h)
+		add_custom_command (OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/runtime.h
+				    COMMAND ${SWIG_EXECUTABLE} -c++ -python -py3 -external-runtime ${CMAKE_CURRENT_BINARY_DIR}/runtime.h)
 
 		# we call this SWIG_COMPILE_FLAGS because we have the same variable in our swig bindings
 		set (SWIG_COMPILE_FLAGS "-Wno-shadow -Wno-old-style-cast -Wno-unused-variable -Wno-missing-field-initializers")
@@ -23,6 +21,7 @@ if (DEPENDENCY_PHASE)
 
 		set_source_files_properties ("python.cpp" PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS}")
 
+		set (PYTHON_PLUGIN_FOLDER "${CMAKE_INSTALL_PREFIX}/${TARGET_TEST_DATA_FOLDER}/python")
 		set (PYTHON_GET_MODULES_DIR_COMMAND
 		     "from distutils.sysconfig import get_python_lib; print(get_python_lib(True, prefix='${CMAKE_INSTALL_PREFIX}'))")
 		execute_process (COMMAND ${PYTHON_EXECUTABLE} -c "${PYTHON_GET_MODULES_DIR_COMMAND}"
@@ -65,7 +64,8 @@ if (ADDTESTING_PHASE)
 		add_plugintest (python MEMLEAK WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../../bindings/swig/python/)
 
 		if (INSTALL_TESTING)
-			install (DIRECTORY ${CMAKE_SOURCE_DIR}/src/plugins/python/python/ DESTINATION "${PYTHON_PLUGIN_FOLDER}")
+
+			install (DIRECTORY ${CMAKE_SOURCE_DIR}/src/plugins/python/python/ DESTINATION "${TARGET_TEST_DATA_FOLDER}/python")
 		endif ()
 
 	else ()
