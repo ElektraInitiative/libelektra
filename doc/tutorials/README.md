@@ -9,6 +9,7 @@ Read this first to get the basic concepts of Elektra.
 
 - [Namespaces](namespaces.md)
 - [Cascading](cascading.md)
+- [Arrays](arrays.md)
 - [Mount Configuration Files](mount.md)
 
 ## Developers

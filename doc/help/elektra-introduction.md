@@ -44,7 +44,7 @@ The configuration files that represent key databases can have binary
 or humanly-readable formats.  From the latter, an unmanageable number
 is established.  Developers of programs tend to document the format of
 the configuration file extensively.  The configuration file may give a
-special flavour to a specific program and users frequently need it.
+special flavor to a specific program and users frequently need it.
 
 Sometimes limitations in the configuration file even lead to rewrites
 of software.  For example, inetd has a non-modular flat configuration
