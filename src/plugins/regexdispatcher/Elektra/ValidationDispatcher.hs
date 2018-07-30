@@ -28,7 +28,7 @@ validationDispatch ks = ksList ks >>= fmap catMaybes . mapM dispatch
     dispatch' k m = do
         rgx <- keyString m
         compiledRgx <- either (const Nothing) Just <$> compile rgx
-        fmap (k, ) <$> processAdditionalMetakeys compiledRgx
+        fmap (k, "check/validation", ) <$> processAdditionalMetakeys compiledRgx
       where
         processAdditionalMetakeys Nothing = return Nothing
         processAdditionalMetakeys (Just rgx) = do

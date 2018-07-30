@@ -14,7 +14,7 @@ import Elektra.KeySet
 import Data.List (isPrefixOf)
 import Control.Monad (filterM)
 
-type GeneratedRegex = (Key, String)
+type GeneratedRegex = (Key, String, String)
 type Dispatcher = KeySet -> IO [GeneratedRegex]
 
 filterMeta :: String -> Key -> IO [Key]

@@ -28,7 +28,7 @@ enumDispatch ks = ksList ks >>= fmap catMaybes . mapM dispatch
       if null es then return Nothing else 
         keyGetMeta k "check/enum/multi" >>=
         ifKey (singleEnum es) (multiEnum es) >>=
-        return . Just . (k, )
+        return . Just . (k, "check/validation", )
     multiEnum es s = do
       s <- keyString s
       let group = ('(' :) . (++ ")") . intercalate s

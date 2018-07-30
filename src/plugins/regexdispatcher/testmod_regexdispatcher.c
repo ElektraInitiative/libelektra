@@ -76,6 +76,33 @@ static void test_enumdispatcher (void)
 	PLUGIN_CLOSE ();
 }
 
+static void test_defaultdispatcher (void)
+{
+	printf ("test_defaultdispatcher\n");
+
+	Key * parentKey = keyNew ("user/tests/regexdispatcher", KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+
+	PLUGIN_OPEN ("regexdispatcher");
+
+	KeySet * ks = ksNew (1, KS_END);
+	Key * key = keyNew ("/key", KEY_META, "default", ".\\+*?[^]$(){}=!<>|:-asfdjklö123", KEY_END);
+	ksAppendKey (ks, key);
+
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
+
+	const Key * pKey = ksLookupByName (ks, "/key", KDB_O_NONE);
+	const Key * defaultValue = keyGetMeta (pKey, "defaultValue");
+
+	succeed_if (defaultValue, "the default value regex hasn't been generated");
+	succeed_if (0 == strcmp (keyString (defaultValue), "\\.\\\\\\+\\*\\?\\[\\^\\]\\$\\(\\)\\{\\}\\=\\!\\<\\>\\|\\:\\-asfdjklö123"), "the default value regex is invalid");
+
+	keyDel (parentKey);
+	ksDel (ks);
+	
+	PLUGIN_CLOSE ();
+}
+
 int main (int argc, char ** argv)
 {
 	printf ("REGEXDISPATCHER     TESTS\n");
@@ -85,6 +112,7 @@ int main (int argc, char ** argv)
 
 	test_rangedispatcher ();
 	test_enumdispatcher ();
+	test_defaultdispatcher ();
 
 	print_result ("testmod_regexdispatcher");
 
