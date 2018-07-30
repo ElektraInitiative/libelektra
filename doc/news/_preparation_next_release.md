@@ -450,6 +450,7 @@ Thanks to Daniel Bugl.
 - Some cache issues on the Travis build job for cached haskell sandboxes have been resolved. *(Armin Wurzinger)*
 - Travis caches downloaded Homebrew packages to improve the reliability of macOS build jobs. *(René Schwaiger)*
 - Travis is now using Xcode 9.4.1 on macOS 10.13 for most macOS build jobs. *(Mihael Pranjić)*
+- We added a unique name to each build job, so you can see quickly which configuration caused problems. *(René Schwaiger)*
 
 ## Compatibility
 

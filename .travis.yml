@@ -31,12 +31,14 @@ matrix:
     # ASAN: Enable AddressSanitizer
 
     - os: osx
+      name: 🍏 Clang ASAN
       osx_image: xcode9.4
       compiler: clang
       env:
         - ASAN=ON
 
     - os: linux
+      name: 🐧 GCC ASAN
       compiler: gcc
       addons:
         apt:
@@ -50,6 +52,7 @@ matrix:
         - CXX_COMPILER=g++-8
 
     - os: linux
+      name: 🐧 Clang ASAN
       compiler: clang
       addons:
         apt:
@@ -66,6 +69,7 @@ matrix:
     # FULL: Build full version of Elektra (BUILD_FULL=ON)
 
     - os: linux
+      name: 🐧 FULL
       compiler: gcc
       addons:
         apt:
@@ -79,23 +83,27 @@ matrix:
         - CXX_COMPILER=g++-8
 
     - os: osx
+      name: 🍏 GCC
       # Translating the `syslog` plugin with GCC on macOS 10.13 does not work, since GCC is unable to compile `sys/syslog.h`.
       osx_image: xcode9.2
       compiler: gcc
 
     - os: osx
+      name: 🍏 Clang
       osx_image: xcode9.4
       compiler: clang
 
     # HASKELL: Only build Haskell binding and plugin
 
     - os: osx
+      name: 🍏 Haskell
       osx_image: xcode9.4
       compiler: clang
       env:
         - HASKELL=ON
 
     - os: linux
+      name: 🐧 GCC
       compiler: gcc
       addons:
         apt:
@@ -108,6 +116,7 @@ matrix:
         - CXX_COMPILER=g++-8
 
     - os: linux
+      name: 🐧 Clang
       compiler: clang
       addons:
         apt:
