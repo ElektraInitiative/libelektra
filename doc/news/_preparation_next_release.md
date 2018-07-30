@@ -246,6 +246,8 @@ Thanks to Daniel Bugl.
 
   in earlier versions of the [yaml-cpp library](https://github.com/jbeder/yaml-cpp).
 
+- The plugin does now support [arrays](https://www.libelektra.org/tutorials/arrays) containing empty fields. *(René Schwaiger)*
+
 ### YAML Smith
 
 - [YAML Smith](http://libelektra.org/plugins/yamlsmith) is a plugin that converts Elektra’s `KeySet` data structure to a textual
