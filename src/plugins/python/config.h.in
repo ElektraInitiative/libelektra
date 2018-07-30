@@ -1,0 +1,20 @@
+/**
+ * @file
+ *
+ * @brief Build system configuration for python plugins
+ *
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+ */
+
+// clang-format off
+
+@DISCLAMER@
+
+#ifndef ELEKTRA_PYTHON_CONFIG_H
+#define ELEKTRA_PYTHON_CONFIG_H
+
+#define ELEKTRA_PYTHON_SITE_PACKAGES "@PYTHON_SITE_PACKAGES@"
+
+#define ELEKTRA_PYTHON_PLUGIN_FOLDER "@PYTHON_PLUGIN_FOLDER@"
+
+#endif

@@ -1,5 +1,7 @@
 include (LibAddBinding)
 
+set (PYTHON_PLUGIN_FOLDER "${TARGET_TEST_DATA_FOLDER}/python")
+
 if (DEPENDENCY_PHASE)
 	find_package (PythonLibs 3 QUIET)
 	find_package (Pluginprocess)
@@ -20,6 +22,14 @@ if (DEPENDENCY_PHASE)
 		endif ()
 
 		set_source_files_properties ("python.cpp" PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS}")
+
+		set (PYTHON_GET_MODULES_DIR_COMMAND
+		     "from distutils.sysconfig import get_python_lib; print(get_python_lib(True, prefix='${CMAKE_INSTALL_PREFIX}'))")
+		execute_process (COMMAND ${PYTHON_EXECUTABLE} -c "${PYTHON_GET_MODULES_DIR_COMMAND}"
+				 OUTPUT_VARIABLE PYTHON_SITE_PACKAGES
+				 OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+		configure_file (config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 	elseif (NOT PYTHONLIBS_FOUND)
 		remove_plugin (python "python 3 libs (libpython3-dev) not found")
 	elseif (NOT BINDING_WAS_ADDED)
@@ -36,6 +46,7 @@ add_plugin (python
 	    SOURCES python.hpp
 		    python.cpp
 		    ${CMAKE_CURRENT_BINARY_DIR}/runtime.h
+		    ${CMAKE_CURRENT_BINARY_DIR}/config.h
 	    INCLUDE_DIRECTORIES ${PYTHON_INCLUDE_DIR}
 	    LINK_LIBRARIES ${PYTHON_LIBRARIES}
 	    LINK_ELEKTRA elektra-pluginprocess
@@ -54,7 +65,7 @@ if (ADDTESTING_PHASE)
 		add_plugintest (python MEMLEAK WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../../bindings/swig/python/)
 
 		if (INSTALL_TESTING)
-			install (DIRECTORY ${CMAKE_SOURCE_DIR}/src/plugins/python/python/ DESTINATION "${TARGET_TEST_DATA_FOLDER}/python")
+			install (DIRECTORY ${CMAKE_SOURCE_DIR}/src/plugins/python/python/ DESTINATION "${PYTHON_PLUGIN_FOLDER}")
 		endif ()
 
 	else ()

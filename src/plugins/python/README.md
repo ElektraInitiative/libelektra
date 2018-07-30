@@ -9,7 +9,7 @@
 
 ## Introduction
 
-The plugin uses Python to do magic things. It basically allows to call plugins written in Python.
+The plugin uses Python to do magic things. It allows plugins to be written in Python.
 
 What a Python script can do is not really limited by design, so any kind of plugin may be
 implemented. The python plugin is especially useful to write filter and logging scripts.
@@ -24,19 +24,22 @@ python script. The mount command would look like
 if the **ini** plugin should be used for storage and the python plugin only serves to invoke the
 filter script.
 
-For a Python script that serves as (JSON) storage plugin itself, one could also use
+For a Python script that serves as INI storage plugin itself, one uses
 
-    kdb mount file.json /python python script=/path/to/json_plugin.py
+    kdb mount file.json /python python script=python_configparser.py
 
 ### Plugin Configuration
 
 The python plugin supports following optional configuration values/flags:
 
+- `script` (string): The script to be executed.
 - `print` (flag): Make the plugin print engine errors, triggered by the calls of
   this plugin, to stderr. Mainly intended for diagnostic. Please note that the
   Python engine itself will print script errors to stderr regardless of this flag.
 - `shutdown` (value, 0 or 1): If enabled, the last call to `kdbClose()` will also
   shutdown Pythons engine. Default is 0.
+- `python/path` (string): Extends sys.path by this entry. Better then PYTHONPATH
+  it is always available, regardless of the context where a binary is executed.
 
 ### Python Scripts
 
