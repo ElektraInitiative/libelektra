@@ -13,7 +13,7 @@ import Elektra.Errors
 import Control.Monad         (mapM_, forM_, join)
 import Control.Logger.Simple
 import Data.Bool             (bool)
-import Data.List             (intercalate, isPrefixOf, nub)
+import Data.List             (intercalate, isPrefixOf, isInfixOf, nub)
 import Data.Maybe            (fromMaybe, listToMaybe)
 import Foreign.Ptr
 import System.IO.Temp        (writeTempFile)
@@ -118,11 +118,12 @@ keyInterpreter specFile = do
     isFun _ = False
 
 errorString :: String -> InterpreterError -> String
-errorString f (WontCompile es) = intercalate "\n" (header : filterErrors es)
+errorString f (WontCompile es) = intercalate "\n" (header : filteredErrors)
   where
-    header = "Typechecking or compilation failed:"
+    header = if isTypecheckError then "Typechecking failed:" else "Compilation failed:"
     unbox (GhcError e) = e
-    filterErrors = nub . filter relevantErrors . map unbox
+    filteredErrors = let filterErrors = nub . filter relevantErrors . map unbox in filterErrors es
+    isTypecheckError = any (isInfixOf "Could not deduce:") filteredErrors
     -- relevant errors start with the filename, the rest is internal ghc output that doesn't tell us much
     relevantErrors = isPrefixOf f
 errorString _ e = show e

@@ -16,15 +16,13 @@ import qualified FiniteAutomata as FA
 import GhcPlugins
 import TyCoRep (Type(..), TyLit(..))
 
--- This also ensures that every regex expression is a valid regex otherwise it returns EmptyRegex
+-- This that every regex expression is a valid regex otherwise it returns EmptyRegex
 fromAST :: Type -> IO RegexType
 fromAST (TyConApp _ [l, r]) = do
   l' <- fromAST l
   r' <- fromAST r
   return $ if l' == EmptyRegex || r' == EmptyRegex then EmptyRegex else RegexIntersection l' r'
--- Normalize the regex representation here using FA minimization
 fromAST (LitTy (StrTyLit s)) = let r = (unpackFS s) in fromMaybe EmptyRegex <$> fmap (Regex r) . rightToMaybe <$> FA.compile r
-
 fromAST (TyVarTy v) = return $ RegexVar v
 fromAST _ = return EmptyRegex
 

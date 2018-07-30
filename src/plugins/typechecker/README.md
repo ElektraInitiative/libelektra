@@ -65,7 +65,8 @@ In case a new plugin has been written which can be described using regular expre
 plugin developer may want to teach the type system about this plugin. In order to do that,
 each configuration specification may contain a section describing the effects of keywords.
 There are three metakeys that are interpreted by the typechecker, `elektra/spec/order`, 
-`elektra/spec/type` and `elektra/spec/impl`. Let's take the example of the fallback keyword,
+`elektra/spec/type` and `elektra/spec/impl`. These metakeys get explained and introduced
+along the following examples. Let's take the example of the fallback keyword,
 that would be formalized in the ini format as follows:
 
 ```
@@ -180,10 +181,40 @@ obviously cannot be linked together.
 ```sh
 kdb setmeta spec/tests/typechecker/key2 fallback/#1 spec/tests/typechecker/key1
 # RET: 5
-# STDERR-REGEX: .*Couldn't match type.*
+# STDERR-REGEX: .*Could not not deduce:*
 
 sudo kdb umount spec/tests/typechecker
 ```
+
+As indicated in the limitations, error messages are currently rather raw and haskell-focused:
+
+```
+Typechecking or compilation failed:
+ /tmp/testSpecification80690-1.hs:15:8: error:
+     • Could not deduce: RegexContains
+                           "[0-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-4][0-9][0-9][0-9]|5000"
+                           "[7-9][2-9][0-9][0-9]|10000"
+         arising from a use of ‘fallback’
+     • In the expression:
+         fallback
+           key1
+           (checkvalidation
+              (Key :: Regex "[7-9][2-9][0-9][0-9]|10000") (Key :: Regex ".*"))
+       In an equation for ‘key2’:
+           key2
+             = fallback
+                 key1
+                 (checkvalidation
+                    (Key :: Regex "[7-9][2-9][0-9][0-9]|10000") (Key :: Regex ".*"))
+```
+
+It is still fairly easy to map the error message back to the configuration
+specification. The above error message shows that there was an error when typechecking the
+specification of `key2` as indicated by the line "In an equation for ...". The line 
+"In the expression: ..." then shows the exact part where its happen. The incompatibility arises
+during checking the fallback from `key2` to `key1`. The regexes describing the contents of the 
+two keys are not compatible with each other. The first key contains numbers between 0 and 5000, 
+while the secondkey is restricted to numbers between 7200 and 10000.
 
 ## Debugging
 
@@ -212,5 +243,6 @@ cabal install 'base >=4.9 && <4.12' 'containers >=0.5 && <0.6' \
 
 ## Limitations
 
-- Type checking only happens when getting or setting a key in a mounted specification
-- Errors are currently raw and haskell-focused
+- Type checking only happens when getting or setting a key in a mounted specification.
+  This is also the case if cascading keys are used.
+- Errors are currently raw and haskell-focused.

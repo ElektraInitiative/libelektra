@@ -184,15 +184,19 @@ Thanks to Daniel Bugl.
 
 ### Regex Dispatcher
 
-- The plugin [regexdispatcher](https://www.libelektra.org/plugins/regexdispatcher) has been added. It calculates regex representations for
-  commonly used specification keywords to be used with the [typechecker](https://www.libelektra.org/plugins/typechecker). Currently the
-  keywords `check/range`, `check/enum` and `check/validation` are supported. *(Armin Wurzinger)*
+- The plugin [regexdispatcher](https://www.libelektra.org/plugins/regexdispatcher) has been added. 
+  It calculates regex representations for commonly used specification keywords to be used with the 
+  [typechecker](https://www.libelektra.org/plugins/typechecker). Currently the keywords `check/range`,
+  `check/enum` and `default` are supported. *(Armin Wurzinger)*
 
 ### Typechecker
 
-- The plugin [typechecker](https://www.libelektra.org/plugins/typechecker) has been improved under the hood. It now supports a more concise
-and efficient typechecking process including a greatly improved type inference scheme that allows generate specification files and thus
-generated errors to be easier to understand. *(Armin Wurzinger)*
+- The plugin [typechecker](https://www.libelektra.org/plugins/typechecker), used to validate
+  configuration specifications for Elektra statically, has been improved under the hood. It now 
+  supports a more concise and efficient typechecking process including a greatly 
+  improved type inference scheme that should make generated specification files and thus
+  generated errors to be easier to understand. An example of such error message is shown in the
+  [readme](https://www.libelektra.org/plugins/typechecker) *(Armin Wurzinger)*
 
 ### Tcl
 
