@@ -16,7 +16,7 @@ import qualified FiniteAutomata as FA
 import GhcPlugins
 import TyCoRep (Type(..), TyLit(..))
 
--- This that every regex expression is a valid regex otherwise it returns EmptyRegex
+-- fromAST ensures that every regex expression is a valid regex otherwise it returns EmptyRegex
 fromAST :: Type -> IO RegexType
 fromAST (TyConApp _ [l, r]) = do
   l' <- fromAST l
