@@ -76,6 +76,8 @@ Arrays are mapped to Elektra’s array convention #0, #1,..
 - Comments of various JSON-dialects are discarded.
 - Mixing of arrays and maps is not detected and leads to corrupted
   JSON files. Please specify arrays to avoid such situations.
+- The plugin creates adds an empty root key to the database, even if you
+  did not add this key (see http://issues.libelektra.org/2132).
 
 Because of these potential problems a type checker
 and comments filter are highly recommended.
@@ -109,8 +111,14 @@ kdb get /tests/yajl/key
 #> value
 
 # Check the format of the configuration file
+# The Directory Value plugin creates the entry
+#     "___dirdata": "",
+# , since the plugin added an empty root key
+# (`user/tests/yajl/`).
+# See also: http://issues.libelektra.org/2132
 kdb file user/tests/yajl/ | xargs cat
 #> {
+#>     "___dirdata": "",
 #>     "key": "value",
 #>     "number": 1337
 #> }
@@ -127,6 +135,7 @@ kdb get user/tests/yajl/piggy/#2
 # Check the format of the configuration file
 kdb file user/tests/yajl | xargs cat
 #> {
+#>     "___dirdata": "",
 #>     "key": "value",
 #>     "number": 1337,
 #>     "piggy": [
@@ -201,31 +210,43 @@ to it.
 
 Mount the plugin:
 
-    kdb mount --resolver=resolver_fm_xhp_x color/settings/openicc-devices.json /org/freedesktop/openicc yajl rename cut=org/freedesktop/openicc
+```bash
+kdb mount --resolver=resolver_fm_xhp_x color/settings/openicc-devices.json \
+  /org/freedesktop/openicc yajl rename cut=org/freedesktop/openicc
+```
 
 or:
 
-    kdb mount-openicc
+```bash
+kdb mount-openicc
+```
 
-Then you can copy the OpenICC_device_config_DB.json
+Then you can copy the `OpenICC_device_config_DB.json`
 to systemwide or user config, e.g.
 
-    cp src/plugins/yajl/examples/OpenICC_device_config_DB.json /etc/xdg
-    cp src/plugins/yajl/examples/OpenICC_device_config_DB.json ~/.config
+```bash
+cp src/plugins/yajl/examples/OpenICC_device_config_DB.json /etc/xdg
+cp src/plugins/yajl/examples/OpenICC_device_config_DB.json ~/.config
 
-    kdb ls system/org/freedesktop/openicc
+kdb ls system/org/freedesktop/openicc
+```
 
 prints out then all device entries available in the config
 
-    kdb get system/org/freedesktop/openicc/device/camera/0/EXIF_manufacturer
+```bash
+kdb get system/org/freedesktop/openicc/device/camera/0/EXIF_manufacturer
+```
 
 prints out "Glasshuette" with the example config in source
 
 You can export the whole system openicc config to ini with:
 
-    kdb export system/org/freedesktop/openicc simpleini > dump.ini
+```bash
+kdb export system/org/freedesktop/openicc simpleini > dump.ini
+```
 
 or import it:
 
-    kdb import system/org/freedesktop/openicc ini < dump.ini
-
+```bash
+kdb import system/org/freedesktop/openicc ini < dump.ini
+```

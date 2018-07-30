@@ -144,6 +144,10 @@ Thanks to Daniel Bugl.
 
 - The `crypto` plugin now uses Elektra's `libinvoke` and the `base64` plugin in order to encode and decode Base64 strings. This improvement reduces code duplication between the two plugins. *(Peter Nirschl)*
 
+### Directory Value
+
+- The plugin now also adds leafs for a key, if its value is null or the empty string. *(René Schwaiger)*
+
 ### fcrypt
 
 - The `fcrypt` plugin will consider the environment variable `TMPDIR` in order to detect its temporary directory. See [#1973] *(Peter Nirschl)*
@@ -203,6 +207,8 @@ Thanks to Daniel Bugl.
 
 - The [YAJL Plugin](http://libelektra.org/plugins/yajl) now uses the internal logger functionality instead of `printf` statements.
   *(René Schwaiger)*
+- We fixed a problem with negative values reported by the
+  [UndefinedBehaviorSanitizer](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html). *(René Schwaiger)*
 
 ### Yan LR
 
@@ -231,6 +237,14 @@ Thanks to Daniel Bugl.
    user/tests/yamlcpp/level1/level2/level3
    ```
    .
+
+- [YAML CPP](http://libelektra.org/plugins/yamlcpp) now requires at least `yaml-cpp 0.6`, since the current
+  [MSR test for the plugin](https://master.libelektra.org/src/plugins/yamlcpp/README.md) triggers two bugs:
+
+  - https://github.com/jbeder/yaml-cpp/issues/247
+  - https://github.com/jbeder/yaml-cpp/issues/289
+
+  in earlier versions of the [yaml-cpp library](https://github.com/jbeder/yaml-cpp).
 
 ### YAML Smith
 

@@ -91,7 +91,7 @@ static int elektraGenOpenValue (yajl_gen g, const Key * next)
 
 	int valueNeeded = 1;
 
-	ELEKTRA_LOG_DEBUG ("elektraGenOpenValue next: \"%.*s\"", (int) last.size, last.current);
+	ELEKTRA_LOG_DEBUG ("next: \"%.*s\"", (int) last.size, last.current);
 
 	if (!strcmp (last.current, "###empty_array"))
 	{

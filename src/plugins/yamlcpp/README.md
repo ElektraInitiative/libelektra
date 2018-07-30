@@ -273,6 +273,37 @@ kdb rm -r /tests/binary
 sudo kdb umount /tests/binary
 ```
 
+## Null & Empty
+
+Sometimes you only want to save a key without a value (null key) or a key with an empty value. The commands below show that YAML CPP supports this scenario properly.
+
+```sh
+# Mount YAML CPP plugin at cascading namespace `user/tests/yamlcpp`
+sudo kdb mount test.yaml user/tests/yamlcpp yamlcpp
+
+# Check if the plugin saves null keys correctly
+kdb set user/tests/yamlcpp/null
+kdb set user/tests/yamlcpp/null/level1/level2
+
+kdb ls user/tests/yamlcpp/null
+#> user/tests/yamlcpp/null
+#> user/tests/yamlcpp/null/level1/level2
+kdb get -v user/tests/yamlcpp/null | grep -q 'The key is null.'
+
+# Check if the plugin saves empty keys correctly
+kdb set user/tests/yamlcpp/empty ""
+kdb set user/tests/yamlcpp/empty/level1/level2
+
+kdb ls user/tests/yamlcpp/empty
+#> user/tests/yamlcpp/empty
+#> user/tests/yamlcpp/empty/level1/level2
+kdb get -v user/tests/yamlcpp/empty | grep -vq 'The key is null.'
+
+# Undo modifications to the database
+kdb rm -r user/tests/yamlcpp
+sudo kdb umount user/tests/yamlcpp
+```
+
 ## Dependencies
 
 This plugin requires [yaml-cpp][]. On a Debian based OS the package for the library is called `libyaml-cpp-dev` . On macOS you can install the package `yaml-cpp` via [HomeBrew](https://brew.sh).

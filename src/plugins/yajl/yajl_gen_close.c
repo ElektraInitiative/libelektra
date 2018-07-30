@@ -155,7 +155,7 @@ static void elektraGenCloseIterate (yajl_gen g, const Key * cur, int levels)
 static void elektraGenCloseFirst (yajl_gen g, const char * pcur, size_t csize, const char * pnext, int levels)
 {
 	lookahead_t lookahead = elektraLookahead (pcur, csize);
-	ELEKTRA_LOG_DEBUG ("elektraGenCloseFirst %s -> %s, levels: %d, lookahead: %d", pcur, pnext, levels, lookahead);
+	ELEKTRA_LOG_DEBUG ("%s -> %s, levels: %d, lookahead: %d", pcur, pnext, levels, lookahead);
 	if (*pcur == '#' && *pnext == '#')
 	{
 		if (levels <= 0 && lookahead == LOOKAHEAD_ARRAY)
@@ -269,10 +269,7 @@ void elektraGenClose (yajl_gen g, const Key * cur, const Key * next)
 	}
 
 
-	ELEKTRA_LOG_DEBUG (
-		"elektraGenClose, eq: %d, cur: %s %d, next: %s %d, "
-		"levels: %d",
-		equalLevels, pcur, curLevels, pnext, nextLevels, levels);
+	ELEKTRA_LOG_DEBUG ("eq: %d, cur: %s %d, next: %s %d, levels: %d", equalLevels, pcur, curLevels, pnext, nextLevels, levels);
 
 	if (levels > 0)
 	{
@@ -314,10 +311,7 @@ void elektraGenCloseFinally (yajl_gen g, const Key * cur, const Key * next)
 		pnext = keyNameGetOneLevel (pnext + nsize, &nsize);
 	}
 
-	ELEKTRA_LOG_DEBUG (
-		"elektraGenFinally, eq: %d, cur: %s %d, next: %s %d, "
-		"levels: %d",
-		equalLevels, pcur, curLevels, pnext, nextLevels, levels);
+	ELEKTRA_LOG_DEBUG ("eq: %d, cur: %s %d, next: %s %d, levels: %d", equalLevels, pcur, curLevels, pnext, nextLevels, levels);
 	// fixes elektraGenCloseIterate for the special handling of
 	// arrays finally
 	elektraGenCloseLast (g, cur);

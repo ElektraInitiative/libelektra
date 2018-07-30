@@ -49,7 +49,7 @@ static void elektraGenOpenIterate (yajl_gen g, const char * pnext, int levels)
 {
 	size_t size = 0;
 
-	ELEKTRA_LOG_DEBUG ("elektraGenOpenIterate levels: %d,  next: \"%s\"", levels, pnext);
+	ELEKTRA_LOG_DEBUG ("levels: %d,  next: \"%s\"", levels, pnext);
 
 	for (int i = 0; i < levels; ++i)
 	{
@@ -273,7 +273,7 @@ void elektraGenOpenInitial (yajl_gen g, Key * parentKey, const Key * first)
 static void elektraGenOpenFirst (yajl_gen g, const char * cur, const char * next, size_t nextSize)
 {
 	lookahead_t lookahead = elektraLookahead (next, nextSize);
-	ELEKTRA_LOG_DEBUG ("elektraGenOpenFirst cur: \"%s\" next: \"%s\", lookahead: %d", cur, next, lookahead);
+	ELEKTRA_LOG_DEBUG ("cur: \"%s\" next: \"%s\", lookahead: %d", cur, next, lookahead);
 
 	if (*cur == '#')
 	{
@@ -413,11 +413,11 @@ void elektraGenOpen (yajl_gen g, const Key * cur, const Key * next)
 
 	// calculate levels which are neither already handled
 	// nor the last one
-	int levels = nextLevels - equalLevels - levelsToSkip;
+	int levels = (int) nextLevels - (int) (equalLevels + levelsToSkip);
 
 	int actionRequired = equalLevels + 1 < nextLevels;
 
-	ELEKTRA_LOG_DEBUG ("elektraGenOpen %d: pcur: %s , pnext: %s, action: %d", (int) levels, pcur, pnext, actionRequired);
+	ELEKTRA_LOG_DEBUG ("%d: pcur: %s , pnext: %s, action: %d", (int) levels, pcur, pnext, actionRequired);
 
 	// check if anything needs to be done at all
 	if (actionRequired)
