@@ -101,6 +101,10 @@ matrix:
       compiler: clang
       env:
         - HASKELL=ON
+        # Use a minimal configuration for the haskell bindings to give it enough time to compile dependencies
+        - PLUGINS='resolver_fm_hpu_b;dump;dini;list;spec;haskell;typechecker;ini;sync;error;base64;regexdispatcher'
+        - BINDINGS=haskell
+        - TOOLS=kdb
 
     - os: linux
       name: 🐧 GCC
@@ -237,13 +241,6 @@ before_script:
     if [[ "$TRAVIS_OS_NAME" == "linux" && "$CC" == "clang" || "$TRAVIS_OS_NAME" == "osx" ]]; then
       CMAKE_OPT+=("-DCOMMON_FLAGS=-Werror")
     fi
-  # use a minimal configuration for the haskell bindings to give it enough time to compile dependencies
-  - |
-    if [[ $HASKELL == ON ]]; then
-      bindings="haskell"
-      plugins="resolver_fm_hpu_b;dump;dini;list;spec;haskell;typechecker;ini;sync;error;base64;regexdispatcher"
-      tools="kdb"
-    fi
   - |
     if [[ "$TRAVIS_OS_NAME" == "osx" && "$HASKELL" != "ON" ]]; then
       python2_ver=$(python2 -c 'import sys; print(".".join(map(str, sys.version_info[:2])))') &&                  \
@@ -256,10 +253,10 @@ before_script:
   - >
     cmake
     -GNinja
-    -DPLUGINS="${plugins:-ALL;-jni}"
-    -DBINDINGS="${bindings:-ALL}"
+    -DPLUGINS="${PLUGINS:-ALL;-jni}"
+    -DBINDINGS="${BINDINGS:-ALL}"
     -DENABLE_DEBUG=ON
-    -DTOOLS="${tools:-ALL;}"
+    -DTOOLS="${TOOLS:-ALL}"
     -DINSTALL_SYSTEM_FILES=OFF
     -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
     -DCMAKE_INSTALL_PREFIX="$INSTALL_DIR"
