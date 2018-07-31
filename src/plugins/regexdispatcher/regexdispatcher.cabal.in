@@ -17,6 +17,7 @@ library
   hs-source-dirs:    "@CMAKE_CURRENT_SOURCE_DIR@"
   exposed-modules:   Elektra.RegexDispatcher
   other-modules:     Elektra.Dispatch
+                   , Elektra.DefaultDispatcher
                    , Elektra.EnumDispatcher
                    , Elektra.Parsers
                    , Elektra.RangeDispatcher

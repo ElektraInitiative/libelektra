@@ -20,7 +20,6 @@ library
   other-extensions:  OverloadedStrings
   build-depends:     base >= 4.9 && < 4.12
                    , libelektra-haskell == @KDB_VERSION@
-                   , libfa == 1.@KDB_VERSION@
                    , specelektra == 1.@KDB_VERSION@
                    , haskell-src-exts
                    , pretty

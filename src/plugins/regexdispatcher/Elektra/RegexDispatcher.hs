@@ -15,8 +15,9 @@ import Elektra.Ease
 import Elektra.Plugin
 
 import Elektra.Dispatch
-import Elektra.RangeDispatcher
+import Elektra.DefaultDispatcher
 import Elektra.EnumDispatcher
+import Elektra.RangeDispatcher
 import Elektra.ValidationDispatcher
 
 import Foreign.Ptr
@@ -27,9 +28,12 @@ import qualified Data.Text as T
 
 dispatch :: KeySet -> Key -> IO Bool
 dispatch ks k = do
-  dispatched <- fmap concat . sequence $ map ($ ks) [rangeDispatch, enumDispatch]
-  forM_ dispatched . uncurry $ flip keySetMeta "check/validation"
+  dispatched <- fmap concat . sequence $ map ($ ks) [rangeDispatch, enumDispatch, defaultDispatch]
+  forM_ dispatched (uncurry3 keySetMeta)
   return . not $ null dispatched
+
+uncurry3 :: (a -> b -> c -> d) -> ((a,b,c) -> d)
+uncurry3 f = \(a, b, c) -> f a b c
 
 elektraRegexdispatcherOpen :: Plugin -> Key -> IO PluginStatus
 elektraRegexdispatcherOpen p k = keySetMeta k "/plugins/regexdispatcher" "elektraRegexdispatcherOpen" >> return Success

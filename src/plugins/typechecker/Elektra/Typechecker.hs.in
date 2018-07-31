@@ -3,24 +3,22 @@ module Elektra.Typechecker () where
 
 import Elektra.Key
 import Elektra.KeySet
-import Elektra.KDB
 import Elektra.Plugin
 import Elektra.PluginProcess
-import Elektra.Ease
 import Elektra.Invoke
 import Elektra.SpecTranslator
 import Elektra.SpecParser
 import Elektra.Errors
 
-import Control.Monad                (mapM_, forM_, (>=>), join)
+import Control.Monad         (mapM_, forM_, join)
 import Control.Logger.Simple
-import Data.Bool                    (bool)
-import Data.List                    (intercalate, isPrefixOf)
-import Data.Maybe                   (fromJust, listToMaybe)
+import Data.Bool             (bool)
+import Data.List             (intercalate, isPrefixOf, isInfixOf, nub)
+import Data.Maybe            (fromMaybe, listToMaybe)
 import Foreign.Ptr
-import System.IO.Temp               (writeTempFile)
-import System.Directory             (removeFile, doesFileExist)
-import System.Environment           (lookupEnv)
+import System.IO.Temp        (writeTempFile)
+import System.Directory      (removeFile, doesFileExist)
+import System.Environment    (lookupEnv)
 import Text.PrettyPrint
 
 import Language.Haskell.Exts.Pretty
@@ -66,7 +64,7 @@ typecheck p ks k c = withGlobalLogging (LogConfig Nothing ("@ENABLE_LOGGER@" == 
   logDebugT $ "Loading prelude located at " ++ show preludePath ++ " to " ++ name
   ps <- maybe (ksNew 0) (readPrelude p name) preludePath
   logDebugT $ "Prelude contained " ++ show ps
-  ksAppend ps kscc
+  _ <- ksAppend ps kscc
   logDebugT $ "Combined specifications are " ++ show ps
 
   typeSpecs <- parseTypeSpecifications k ps
@@ -86,12 +84,12 @@ typecheck p ks k c = withGlobalLogging (LogConfig Nothing ("@ENABLE_LOGGER@" == 
 
   -- So we can override it for the build tests
   pdb <- lookupEnv "SANDBOX_PACKAGEDB"
-  let args = filter (not . null) ["-package-db=" ++ maybe "@TYPECHECKER_GHC_PLUGIN@" id pdb, "-fplugin=Elektra.RegexTypeChecker", "-v"]
+  let args = filter (not . null) ["-package-db=" ++ fromMaybe "@TYPECHECKER_GHC_PLUGIN@" pdb, "-fplugin=Elektra.RegexTypeChecker", "-v"]
   r <- unsafeRunInterpreterWithArgs args (keyInterpreter specFile)
   removeFile specFile
   case r of
     Left err -> do
-      let errStr = errorString err
+      let errStr = errorString specFile err
       case c of
         Set -> triggerError 193 k errStr
         Get -> triggerWarnings 192 k errStr
@@ -113,18 +111,22 @@ keyInterpreter specFile = do
   loadModules [specFile]
   say "Loaded our rendered specification, now we can infer the stuff in it."
   setTopLevelModules ["TestSpecification"]
-  getModuleExports "TestSpecification" >>= mapM_ showTypes . filter isFun . filter (not . isPrefixOf "specElektraRawKey" . name)
+  getModuleExports "TestSpecification" >>= mapM_ showTypes . filter isFun
   where
     showTypes c = typeOf (name c) >>= say . ((name c ++ " has an infered type of ") ++)
     isFun (Fun _) = True
     isFun _ = False
 
-errorString :: InterpreterError -> String
-errorString (WontCompile es) = intercalate "\n" (header : map unbox es)
+errorString :: String -> InterpreterError -> String
+errorString f (WontCompile es) = intercalate "\n" (header : filteredErrors)
   where
-    header = "ERROR: Won't compile:"
+    header = if isTypecheckError then "Typechecking failed:" else "Compilation failed:"
     unbox (GhcError e) = e
-errorString e = show e
+    filteredErrors = let filterErrors = nub . filter relevantErrors . map unbox in filterErrors es
+    isTypecheckError = any (isInfixOf "Could not deduce:") filteredErrors
+    -- relevant errors start with the filename, the rest is internal ghc output that doesn't tell us much
+    relevantErrors = isPrefixOf f
+errorString _ e = show e
 
 say :: String -> Interpreter ()
 say = liftIO . logDebugT

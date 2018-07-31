@@ -16,9 +16,13 @@ build-type:          Simple
 cabal-version:       >=1.24
 
 library
-  exposed-modules:   Elektra.Range
-                   , Elektra.RegexType
+  exposed-modules:   Elektra.RegexType
                    , Elektra.RegexTypeChecker
+  other-modules:     Elektra.Parse
+                     Elektra.Normalize
+                     Elektra.Solve
+                     Elektra.Types
+                     Elektra.GhcPluginExtras
   other-extensions:  TypeInType
                    , TypeFamilies
                    , ConstraintKinds
