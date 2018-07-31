@@ -237,8 +237,11 @@ before_install:
 #
 before_script:
   - cd $TRAVIS_BUILD_DIR/..
-  - >
-    [[ "$TRAVIS_OS_NAME" == "linux" ]] && INSTALL_DIR="$PWD/install" || INSTALL_DIR="/usr/local"
+  - |
+    if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+      CMAKE_OPT+=(-DCMAKE_INSTALL_PREFIX="$PWD/install")
+      export PATH=$PATH:"$PWD/install/bin"
+    fi
   - SYSTEM_DIR="$PWD/kdbsystem"
   - mkdir build
   - cd build
@@ -263,11 +266,9 @@ before_script:
     -DENABLE_DEBUG=ON
     -DINSTALL_SYSTEM_FILES=OFF
     -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
-    -DCMAKE_INSTALL_PREFIX="$INSTALL_DIR"
     -DKDB_DB_SYSTEM="$SYSTEM_DIR"
     ${CMAKE_OPT[@]}
     $TRAVIS_BUILD_DIR
-  - export PATH=$PATH:"$INSTALL_DIR/bin"
 
 script:
   - ninja
