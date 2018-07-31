@@ -476,6 +476,16 @@ Thanks to Daniel Bugl.
 - Travis caches downloaded Homebrew packages to improve the reliability of macOS build jobs. *(René Schwaiger)*
 - Travis is now using Xcode 9.4.1 on macOS 10.13 for most macOS build jobs. *(Mihael Pranjić)*
 - We added a unique name to each build job, so you can see quickly which configuration caused problems. *(René Schwaiger)*
+- We now specify custom binding, plugin and tool configuration for jobs via the environment variables:
+
+  - `BINDINGS`,
+  - `PLUGINS`, and
+  - `TOOLS`
+
+  . *(René Schwaiger)*
+- The macOS ASAN build job now only builds the `kdb` tool, since we hit the
+  [job timeout for public repositories](https://docs.travis-ci.com/user/customizing-the-build/#build-timeouts) for this specific job quite
+  often. *(René Schwaiger)*
 
 ## Compatibility
 
