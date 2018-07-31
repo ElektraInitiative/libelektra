@@ -2,7 +2,7 @@
 
 ## Key-Value Pairs
 
-The main building block of Elektra’s database are hierarchical [key-value pairs](https://en.wikipedia.org/wiki/Key-value_database). You can create such a pair using [`kdb set`](../doc/help/kdb-set.md):
+The main building block of Elektra’s database are hierarchical [key-value pairs](https://en.wikipedia.org/wiki/Key-value_database). You can create such a pair using [`kdb set`](../help/kdb-set.md):
 
 ```sh
 kdb set user/tests/parent value
