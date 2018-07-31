@@ -221,6 +221,7 @@ int PYTHON_PLUGIN_FUNCTION (Open) (ckdb::Plugin * handle, ckdb::Key * errorKey)
 		{
 			if (ksLookupByName (elektraPluginGetConfig (handle), "/module", 0) != nullptr)
 			{
+				elektraPluginProcessClose (pp, errorKey);
 				return 0; // by convention: success if /module exists
 			}
 
@@ -370,19 +371,22 @@ int PYTHON_PLUGIN_FUNCTION (Close) (ckdb::Plugin * handle, ckdb::Key * errorKey)
 	moduleData * data = static_cast<moduleData *> (elektraPluginGetData (handle));
 	if (data == nullptr) return 0;
 
+	int ret = 0;
 	ElektraPluginProcess * pp = data->pp;
 	if (elektraPluginProcessIsParent (pp))
 	{
-		int result = elektraPluginProcessSend (pp, ELEKTRA_PLUGINPROCESS_CLOSE, NULL, errorKey);
-		if (elektraPluginProcessClose (pp, errorKey)) elektraPluginSetData (handle, NULL);
-		return result;
+		ret = elektraPluginProcessSend (pp, ELEKTRA_PLUGINPROCESS_CLOSE, NULL, errorKey);
+		elektraPluginProcessClose (pp, errorKey);
+	}
+	else
+	{
+		// TODO: free pp in child?
+		ret = Python_CallFunction_Helper1 (data, "close", errorKey);
+
+		/* destroy python */
+		Python_Shutdown (data);
 	}
 
-
-	int ret = Python_CallFunction_Helper1 (data, "close", errorKey);
-
-	/* destroy python */
-	Python_Shutdown (data);
 	delete data;
 	elektraPluginSetData (handle, nullptr);
 	return ret;
