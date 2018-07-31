@@ -36,6 +36,11 @@ matrix:
       compiler: clang
       env:
         - ASAN=ON
+        # We only translate the `kdb` tool to save a little bit of build time.
+        # Unfortunately this build job would hit the [timeout][] for public repositories
+        # quite often otherwise.
+        # [timeout]: https://docs.travis-ci.com/user/customizing-the-build/#build-timeouts
+        - TOOLS=kdb
 
     - os: linux
       name: 🐧 GCC ASAN
