@@ -35,7 +35,7 @@ matrix:
       osx_image: xcode9.4
       compiler: clang
       env:
-        - ASAN=ON
+        - ENABLE_ASAN=ON
         # We only translate the `kdb` tool to save a little bit of build time.
         # Unfortunately this build job would hit the [timeout][] for public repositories
         # quite often otherwise.
@@ -52,7 +52,8 @@ matrix:
           packages:
             - g++-8
       env:
-        - ASAN=ON
+        - ENABLE_ASAN=ON
+        - COMMON_FLAGS=-Wno-error
         - CC_COMPILER=gcc-8
         - CXX_COMPILER=g++-8
 
@@ -67,7 +68,7 @@ matrix:
           packages:
             - clang-6.0
       env:
-        - ASAN=ON
+        - ENABLE_ASAN=ON
         - CC_COMPILER=clang-6.0
         - CXX_COMPILER=clang++-6.0
 
@@ -83,7 +84,8 @@ matrix:
           packages:
             - g++-8
       env:
-        - FULL=ON
+        - BUILD_FULL=ON
+        - COMMON_FLAGS=-Wno-error
         - CC_COMPILER=gcc-8
         - CXX_COMPILER=g++-8
 
@@ -123,6 +125,7 @@ matrix:
       env:
         - CC_COMPILER=gcc-8
         - CXX_COMPILER=g++-8
+        - COMMON_FLAGS=-Wno-error
 
     - os: linux
       name: 🐧 Clang
@@ -239,13 +242,6 @@ before_script:
   - SYSTEM_DIR="$PWD/kdbsystem"
   - mkdir build
   - cd build
-  - >
-    [[ $ASAN == ON ]] && CMAKE_OPT=(-DENABLE_ASAN=ON) || CMAKE_OPT=()
-  - if [[ $FULL == ON ]]; then CMAKE_OPT+=(-DBUILD_FULL=ON); fi
-  - |
-    if [[ "$TRAVIS_OS_NAME" == "linux" && "$CC" == "clang" || "$TRAVIS_OS_NAME" == "osx" ]]; then
-      CMAKE_OPT+=("-DCOMMON_FLAGS=-Werror")
-    fi
   - |
     if [[ "$TRAVIS_OS_NAME" == "osx" && "$HASKELL" != "ON" ]]; then
       python2_ver=$(python2 -c 'import sys; print(".".join(map(str, sys.version_info[:2])))') &&                  \
@@ -260,8 +256,11 @@ before_script:
     -GNinja
     -DPLUGINS="${PLUGINS:-ALL;-jni}"
     -DBINDINGS="${BINDINGS:-ALL}"
-    -DENABLE_DEBUG=ON
     -DTOOLS="${TOOLS:-ALL}"
+    -DBUILD_FULL="${BUILD_FULL:-OFF}"
+    -DENABLE_ASAN="${ENABLE_ASAN:-OFF}"
+    -DCOMMON_FLAGS="${COMMON_FLAGS:--Werror}"
+    -DENABLE_DEBUG=ON
     -DINSTALL_SYSTEM_FILES=OFF
     -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
     -DCMAKE_INSTALL_PREFIX="$INSTALL_DIR"
@@ -273,7 +272,7 @@ before_script:
 script:
   - ninja
   - |
-    if [[ "$ASAN" = "ON" ]]; then
+    if [[ "$ENABLE_ASAN" = "ON" ]]; then
       ninja run_all
     else
       ninja install
