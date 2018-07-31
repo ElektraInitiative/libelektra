@@ -57,8 +57,8 @@ static void test_variable_passing (void)
 	Key * parentKey = keyNew ("user/from_c", KEY_END);
 	KeySet * ks = ksNew (0, KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
-	succeed_if (ksGetSize (ks) == 1, "keyset size is still 0");
-	succeed_if (ksGetSize (ks) == 1 && !strcmp (keyName (ksHead (ks)), "user/from_python"), "key in keyset has wrong name");
+	exit_if_fail (ksGetSize (ks) == 1, "keyset size is still 0");
+	succeed_if_same_string (keyName (ksHead (ks)), "user/from_python");
 
 	ksDel (ks);
 	keyDel (parentKey);
