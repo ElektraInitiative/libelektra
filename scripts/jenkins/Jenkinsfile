@@ -241,8 +241,8 @@ def dockerInit() {
      */
     DOCKER_IMAGES.alpine = createDockerImageDesc(
       "alpine", this.&idTesting,
-      "./scripts/docker/alpine/3.7",
-      "./scripts/docker/alpine/3.7/Dockerfile"
+      "./scripts/docker/alpine/3.8",
+      "./scripts/docker/alpine/3.8/Dockerfile"
     )
 
     /* Image building the libelektra.org frontend */
