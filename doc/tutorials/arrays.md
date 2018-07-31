@@ -47,7 +47,7 @@ Since Elektra sorts keys alphabetically we can use the key-value pair structure 
 
 ### Empty Arrays
 
-For an **empty array** (`[]`) we just add the [meta-key](../help/elektra-metadata.md) `array`:
+For an **empty array** (`[]`) we just add the [metakey](../help/elektra-metadata.md) `array`:
 
 ```sh
 # Create an empty array with the name `user/tests/sequence`
