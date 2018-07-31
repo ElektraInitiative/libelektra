@@ -8,7 +8,7 @@ if (DEPENDENCY_PHASE)
 
 	if (PYTHON2LIBS_VERSION_STRING MATCHES "^3\\.[0-9]+")
 		remove_plugin (python2 "python2 is for python 2.7 only and not ${PYTHON2LIBS_VERSION_STRING}")
-	elseif (PYTHON2LIBS_FOUND AND SWIG_FOUND AND BINDING_WAS_ADDED AND PLUGINPROCESS_FOUND)
+	elseif (PYTHON2LIBS_FOUND AND SWIG_FOUND AND BINDING_WAS_ADDED AND PLUGINPROCESS_FOUND AND NOT (APPLE AND CMAKE_COMPILER_IS_GNUCXX))
 		include (LibAddMacros)
 
 		add_custom_command (OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/runtime.h
@@ -31,6 +31,8 @@ if (DEPENDENCY_PHASE)
 				 OUTPUT_STRIP_TRAILING_WHITESPACE)
 
 		configure_file (config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
+	elseif (APPLE AND CMAKE_COMPILER_IS_GNUCXX)
+		remove_plugin (python2 "does not compile with GCC under Mac OS X")
 	elseif (NOT PYTHON2LIBS_FOUND)
 		remove_plugin (python2 "python 2 libs (libpython-dev) not found")
 	elseif (NOT BINDING_WAS_ADDED)
