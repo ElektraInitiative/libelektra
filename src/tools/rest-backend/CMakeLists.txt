@@ -50,7 +50,7 @@ else ()
 	include_directories (${CPPCMS_INCLUDE_DIR})
 	include_directories (${Boost_INCLUDE_DIRS})
 	include_directories (${LIBJWT_INCLUDE_DIR})
-	include_directories (${OPENSSL_INCLUDE_DIR})
+	include_directories (${OPENSSL_INCLUDE_DIRS})
 
 	file (GLOB rest-backend_SRCS
 		   *.cpp)
