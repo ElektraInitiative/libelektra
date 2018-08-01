@@ -179,7 +179,6 @@ before_install:
       brew install libev
       brew install lua
       brew install openssl
-      export PKG_CONFIG_PATH=/usr/local/opt/openssl/lib/pkgconfig
       brew install python@2; brew link --overwrite python@2
       brew install python || brew upgrade python
       brew install qt

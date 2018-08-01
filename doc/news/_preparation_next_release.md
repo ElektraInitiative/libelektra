@@ -421,6 +421,7 @@ Thanks to Daniel Bugl.
     coverage reports. *(Lukas Winkler)*
 - The functions `add_plugintest` and `add_plugin` now also support adding a C++ test instead of a C test. *(René Schwaiger)*
 - The function `add_plugintest` now also supports setting environment variables for C/C++ based tests. *(René Schwaiger)*
+- The build system now automatically detects Homebrew’s OpenSSL version on macOS. *(René Schwaiger)*
 
 [Google Test]: https://github.com/google/googletest
 
