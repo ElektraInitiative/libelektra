@@ -1,8 +1,18 @@
 # How-To: Write a Plugin
 
-This file serves as a tutorial on how to write a storage plugin. Storage plugins are used by Elektra in order to store data in the Elektra Key Database
-in an intelligent way. They act as a liaison between configuration files and the Key Database. Storage plugins are largely responsible for
-the functionality of Elektra and they allow many of its advanced features to work.
+This file serves as a tutorial on how to write a storage plugin (which includes all information to write filter plugins).
+
+## Types of Plugins
+
+- Storage plugins are used by Elektra in order to store data in the Elektra Key Database
+  in an intelligent way. They act as a liaison between configuration files and the Key Database. Storage plugins are largely responsible for
+  the functionality of Elektra and they allow many of its advanced features to work.
+  These plugins act as sources and destinations of configuration settings.
+- Filter plugins are simpler than storage plugins.
+  They receive configuration settings in the same way as storage plugins but they do not have the responsibility to serialize the configuration
+  settings to configuration files.
+- Resolver plugins are more complicated and not covered by this tutorial.
+
 
 ## Basics
 
@@ -36,9 +46,10 @@ that allow the plugin to work:
 - `elektraPluginOpen()` is designed to allow each plugin to do initialization if necessary.
 - `elektraPluginGet()` is designed to turn information from a configuration file into a usable `KeySet`, this is technically the only function that is **required** in a plugin.
 - `elektraPluginSet()` is designed to store the information from the keyset back into a configuration file.
-- `elektraPluginError()` is designed to allow proper rollback of operations if needed and is called if any plugin fails during the set operation. This allows exception-safety.
-- `elektraPluginClose()` is used to free resources that might be required for the plugin.
-- `ELEKTRA_PLUGIN_EXPORT(Plugin)` simply lets Elektra know that the plugin exists and what the name of the above functions are.
+- `elektraPluginError()` is designed to allow proper rollback of operations if needed and is called if any plugin fails during the set operation.
+  This is not needed for storage plugins as the resolver already takes care to unlink the configuration files in such situations.
+- `elektraPluginClose()` is used to free resources that might be required for the plug-in.
+- `ELEKTRA_PLUGIN_EXPORT(Plugin)` simply lets Elektra know that the plug-in exists and what the name of the above functions are.
 
 Most simply put: most plugins consist of five major functions, `elektraPluginOpen()`, `elektraPluginClose()`, `elektraPluginGet()`, `elektraPluginSet()`,
 and `ELEKTRA_EXPORT_PLUGIN(Plugin)`.
@@ -95,7 +106,7 @@ But prefer to use
 add_plugin(pluginname)
 ```
 
-where the readme (among many other things) are already done for you.
+where the generation of the readme (among many other things) are already done for you.
 More details about how to write the `CMakeLists.txt` will be discussed
 later in the tutorial.
 
@@ -114,20 +125,27 @@ The first lines must look like:
 - infos = Information about YAJL plugin is in keys below
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
-- infos/needs =
-- infos/provides = storage
+- infos/provides = storage/json
+- infos/needs = directoryvalue
+- infos/recommends = rebase comment type
 - infos/placements = getstorage setstorage
-- infos/recommends = rebase directoryvalue comment type
+- infos/status = maintained coverage unittest
 - infos/description = JSON using YAJL
 ```
 
-The information of these parts are limited to a single line.
-Only for the description an unlimited amount of lines can be used (until
-the end of the file).
+Every of these line represents a clause of the contract.
+All these clauses need to be present for every plugin.
 
-For the meaning (semantics) of those entries, please refer to [contract specification](/doc/CONTRACT.ini).
+The information of clauses are limited to a single line, starting with
+`-` (so that the file renders nicely in Markdown), followed by the clause
+itself separated with `=`.
+Only for the description an unlimited amount of lines can be
+used (until the end of the file).
 
-The already said `generate_readme` will produce a list of Keys using the
+For the meaning (semantics) of these clauses, please refer to [contract specification](/doc/CONTRACT.ini).
+The only difference for filter plugins is that their `infos/provides` and `infos/placements` are different.
+
+The already mentioned `generate_readme` will produce a list of Keys using the
 information in `README.md`. It would look like (for the third key):
 
 	keyNew ("system/elektra/modules/yajl/infos/licence",
@@ -253,6 +271,10 @@ The plugin will actually be added iff all of the `DEPENDENCIES` are true.
 
 Note that no code should be outside of `if (DEPENDENCY_PHASE)`. It would be executed twice otherwise. The only exception is
 `add_plugin` which *must* be called twice to successfully add a plugin.
+
+> Please note that the parameters passed to add_plugin need to be constant between all invocations.
+> Some `find_package` cache their variables, others do not, which might lead to toggling variables.
+> To avoid problem, make a variable containing all LINK_LIBRARIES or DEPENDENCIES within DEPENDENCY_PHASE.
 
 If your plugin makes use of [compilation variants](/doc/tutorials/compilation-variants.md)
 you should also read the information there.
