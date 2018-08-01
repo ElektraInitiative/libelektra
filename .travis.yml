@@ -257,7 +257,7 @@ before_script:
   - >
     cmake
     -GNinja
-    -DPLUGINS="${PLUGINS:-ALL;-jni}"
+    -DPLUGINS="${PLUGINS:-ALL}"
     -DBINDINGS="${BINDINGS:-ALL}"
     -DTOOLS="${TOOLS:-ALL}"
     -DBUILD_FULL="${BUILD_FULL:-OFF}"
