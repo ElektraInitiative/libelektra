@@ -56,7 +56,9 @@ kdb.set(set, key);
 
 If you try to save a key without fetching it beforehand, a `KDBException` will be thrown, telling you to call get before set.
 
-The *user* namespace is accessible without special rights, but if you try to write to *system* you will need to have the application run as root or give write access to `/etc/kdb` for the corresponding user which executes the application.
+The *user* namespace is accessible without special rights, but if you try to write to *system* you will need to have root 
+privileges. Check [this](doc/TESTING.md) to see how to run as non-root user. This should only be done in testing
+environments though as it is not intended for productive systems.
 
 ## Examples
 
@@ -66,12 +68,12 @@ The *user* namespace is accessible without special rights, but if you try to wri
 Key key = Key.create("user/errors");
 try (KDB kdb = KDB.open(key)) {
     KeySet set = KeySet.create();
-    Key namespace = Key.create("user");
-    kdb.get(set, namespace);
-    for (int i = 0; i < set.length(); i++) {
+    Key namespace = Key.create("user");       //Select a namespace from which all keys should be fetched
+    kdb.get(set, namespace);                  //Fetch all keys into the set object
+    for (int i = 0; i < set.length(); i++) {  //Traverse the set
         String keyAndValue = String.format("%s: %s",
-                set.at(i).getName(),
-                set.at(i).getString());
+                set.at(i).getName(),          //Fetch the key's name
+                set.at(i).getString());       //Fetch the key's value
         System.out.println(keyAndValue);
     }
 } catch (KDB.KDBException e) {
