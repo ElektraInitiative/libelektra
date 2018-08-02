@@ -119,41 +119,61 @@ DOCKER_IMAGES = [:]  // Containers docker image descriptions, populated during
  * if previous stage did not fail.
  *****************************************************************************/
 
-stage("Init docker images") {
-  dockerInit()
-}
+def main() {
+  stage("Init docker images") {
+    dockerInit()
+  }
 
-stage("Pull docker images") {
-  parallel generateDockerPullStages()
-}
+  stage("Pull docker images") {
+    parallel generateDockerPullStages()
+  }
 
-maybeStage("Build docker images", DOCKER_IMAGES.any {img -> !img.value.exists}) {
-  lock('docker-images') {
-      parallel generateDockerBuildStages()
+  maybeStage("Build docker images", DOCKER_IMAGES.any {img -> !img.value.exists}) {
+    lock('docker-images') {
+        parallel generateDockerBuildStages()
+    }
+  }
+
+  stage("Main builds") {
+    milestone label: "Main builds"
+    parallel generateMainBuildStages()
+  }
+
+  stage("Full builds") {
+    milestone label: "Full builds"
+    parallel generateFullBuildStages()
+  }
+
+  maybeStage("Build artifacts", isMaster()) {
+    milestone label: "artifacts"
+    parallel generateArtifactStages()
+  }
+
+  maybeStage("Deploy Homepage", isMaster()) {
+    deployHomepage()
+  }
+
+  maybeStage("Deploy Web UI", isMaster()) {
+    deployWebUI()
   }
 }
 
-stage("Main builds") {
-  milestone label: "Main builds"
-  parallel generateMainBuildStages()
-}
-
-stage("Full builds") {
-  milestone label: "Full builds"
-  parallel generateFullBuildStages()
-}
-
-maybeStage("Build artifacts", isMaster()) {
-  milestone label: "artifacts"
-  parallel generateArtifactStages()
-}
-
-maybeStage("Deploy Homepage", isMaster()) {
-  deployHomepage()
-}
-
-maybeStage("Deploy Web UI", isMaster()) {
-  deployWebUI()
+try {
+  main()
+} catch(e) {
+  if (isMaster()) {
+    // If master is failing we want to know ASAP so send a mail.
+    def id = "${JOB_NAME}:${BUILD_NUMBER}"
+    def message = """\
+Build ${id} failed with ${e.message}.
+> ${BUILD_URL} <
+"""
+    mail subject: "Build ${id} failed",
+         body: message,
+         replyTo: "noreply@libelektra.org",
+         to: "build@libelektra.org"
+  }
+  throw e
 }
 
 /*****************************************************************************
@@ -974,7 +994,9 @@ def archive(paths) {
     paths.each { path ->
         sh "cp -v ${path} ${dest} || true"
     }
-    archiveArtifacts artifacts: "${prefix}**", fingerprint: true
+    archiveArtifacts artifacts: "${prefix}**",
+                     fingerprint: true,
+                     allowEmptyArchive: true
   } else {
     echo "No Artifacts to archive"
   }

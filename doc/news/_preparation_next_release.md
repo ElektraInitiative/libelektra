@@ -464,6 +464,7 @@ Thanks to Daniel Bugl.
 - Speed up coverage data upload. *(Lukas Winkler)*
 - Fix an issue where file archiving did not happen because of suppressed shell
     expansion *(Lukas Winkler)*
+- Send notification mail when `master` build fails *(Lukas Winkler)*
 
 ### Travis
 
