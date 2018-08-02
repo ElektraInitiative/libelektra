@@ -122,7 +122,8 @@ void elektraPluginProcessStart (Plugin * handle, ElektraPluginProcess * pp)
 		errno = 0;
 		long payloadSize = strtol (keyString (payloadSizeKey), &endPtr, 10);
 		// in case the payload size fails to be transferred, that it shouldn't, we can only assume no payload
-		if (*endPtr == '\0' && errno != ERANGE && payloadSize >= 0) {
+		if (*endPtr == '\0' && errno != ERANGE && payloadSize >= 0)
+		{
 			keySet = ksNew (payloadSize, KS_END);
 			elektraInvoke2Args (pp->dump, "get", keySet, resultPipeKey);
 			ELEKTRA_LOG_DEBUG ("Child: We received a KeySet with %zd keys in it", ksGetSize (keySet));
@@ -253,7 +254,8 @@ int elektraPluginProcessSend (const ElektraPluginProcess * pp, pluginprocess_t c
 
 	// Some plugin functions don't use keysets, in that case don't send any actual payload, signal via flag
 	KeySet * keySet = originalKeySet != NULL ? ksDup (originalKeySet) : NULL;
-	ksAppendKey (commandKeySet, keyNew ("/pluginprocess/payload/size", KEY_VALUE, originalKeySet == NULL ? "-1" : intToStr (ksGetSize (originalKeySet)), KEY_END));
+	ksAppendKey (commandKeySet, keyNew ("/pluginprocess/payload/size", KEY_VALUE,
+					    originalKeySet == NULL ? "-1" : intToStr (ksGetSize (originalKeySet)), KEY_END));
 
 	// Serialize, currently statically use dump as our default format, this already writes everything out to the pipe
 	Key * commandPipeKey = keyNew ("/pluginprocess/pipe/command", KEY_VALUE, pp->commandPipe, KEY_END);
@@ -291,9 +293,28 @@ int elektraPluginProcessSend (const ElektraPluginProcess * pp, pluginprocess_t c
 	}
 	else
 	{
+		int parentKeyExistsInOriginalKeySet = keySet != NULL ? ksLookup (originalKeySet, key, KDB_O_POP) != NULL : 0;
 		// Copy everything back into the actual keysets
-		keyCopy (key, parentDeserializedKey);
-		if (keySet != NULL) ksCopy (originalKeySet, keySet);
+		// Unfortunately we can't use keyCopy here as ksAppendKey locks it so it will fail
+		// This is the case if the parent key is also contained in the originalKeySet / has been appended
+		// As an invariant we assume plugins don't change the parent key's name during a plugin call
+		// This would interfere with keyset memberships
+		keySetString (key, keyString (parentDeserializedKey));
+		// Clear metadata before, we allow children to modify it
+		keyRewindMeta (key);
+		const Key * currentMeta;
+		while ((currentMeta = keyNextMeta (key)) != NULL)
+		{
+			keySetMeta (key, keyName (currentMeta), 0);
+		}
+		keyCopyAllMeta (key, parentDeserializedKey);
+		if (keySet != NULL)
+		{
+			// in case originalKeySet contains key this would make it stuck
+			// thus remove it here and re-add it afterwards
+			ksCopy (originalKeySet, keySet);
+			if (parentKeyExistsInOriginalKeySet) ksAppendKey (originalKeySet, key);
+		}
 	}
 	errno = prevErrno;
 
