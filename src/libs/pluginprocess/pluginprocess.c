@@ -500,8 +500,12 @@ int elektraPluginClose (Plugin * handle, Key * errorKey)
  **/
 ElektraPluginProcessCloseResult elektraPluginProcessClose (ElektraPluginProcess * pp, Key * errorKey)
 {
-	pp->counter = pp->counter - 1;
-	int result = elektraPluginProcessSend (pp, ELEKTRA_PLUGINPROCESS_CLOSE, NULL, errorKey);
+	int result = ELEKTRA_PLUGIN_STATUS_SUCCESS;
+	if (pp->counter > 0)
+	{
+		pp->counter = pp->counter - 1;
+		result = elektraPluginProcessSend (pp, ELEKTRA_PLUGINPROCESS_CLOSE, NULL, errorKey);
+	}
 	int done = pp->counter <= 0;
 	if (done) cleanupPluginData (pp, errorKey);
 	ElektraPluginProcessCloseResult closeResult = { result, done };

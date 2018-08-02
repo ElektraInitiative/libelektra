@@ -207,7 +207,7 @@ static void test_reservedParentKeyName (void)
 
 static void test_keysetContainingParentKey (void)
 {
-	printf ("test reservedParentKeyName\n");
+	printf ("test keysetContainingParentKey\n");
 
 	Key * parentKey = keyNew ("user/tests/pluginprocess", KEY_END);
 	keySetMeta (parentKey, "/hello/from/parent", "value");
@@ -241,6 +241,39 @@ static void test_keysetContainingParentKey (void)
 	free (plugin);
 }
 
+static int elektraDummyOpenWithError (Plugin * handle, Key * errorKey)
+{
+	ElektraPluginProcess * pp = elektraPluginGetData (handle);
+	if (pp == NULL)
+	{
+		if ((pp = elektraPluginProcessInit (errorKey)) == NULL) return ELEKTRA_PLUGIN_STATUS_ERROR;
+		elektraPluginSetData (handle, pp);
+		// Assume some other initialization failed and thus close here without calling open
+		// to free the resources but without sending the command
+		elektraPluginProcessClose (pp, errorKey);
+	}
+
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+}
+
+static void test_closeWithoutOpen (void)
+{
+	printf ("test closeWithoutOpen\n");
+
+	Key * parentKey = keyNew ("user/tests/pluginprocess", KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	Plugin * plugin = createDummyPlugin (conf);
+	plugin->kdbOpen = &elektraDummyOpenWithError;
+	KeySet * ks = ksNew (0, KS_END);
+
+	succeed_if (plugin->kdbOpen (plugin, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbOpen was not successful");
+
+	keyDel (parentKey);
+	ksDel (ks);
+	ksDel (conf);
+	free (plugin);
+}
+
 int main (int argc, char ** argv)
 {
 	init (argc, argv);
@@ -249,6 +282,7 @@ int main (int argc, char ** argv)
 	test_emptyKeySet ();
 	test_reservedParentKeyName ();
 	test_keysetContainingParentKey ();
+	test_closeWithoutOpen ();
 
 	print_result ("pluginprocess");
 
