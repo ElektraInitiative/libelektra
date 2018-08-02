@@ -303,6 +303,19 @@ Thanks to Daniel Bugl.
 
 - <<TODO>>
 
+### pluginprocess
+
+- The library [`pluginprocess`](http://master.libelektra.org/src/libs/pluginprocess) that is used to
+  execute plugins run inside own processes has been improved. This is useful as some plugins like
+  haskell-based plugins or [`python`](http://libelektra.org/plugins/python) can only be started once
+  inside a single process, while libelektra may call a plugin several times. The library now uses an
+  improved communication protocol that separates between pluginprocess-related data and keysets 
+  passed to plugins. This avoids any possible name clashes between keys used by a plugin and keys
+  used by pluginprocess.
+  The documentation of the plugin has been improved as well, some mistakes were corrected and it 
+  should be more clear how to store plugin data besides pluginprocess's data structure.
+  Tests have been added to the library to ensure its correct functionality. *(Armin Wurzinger)*
+
 ## Bindings
 
 - A new I/O binding for [ev](https://www.libelektra.org/bindings/io_ev) has been
