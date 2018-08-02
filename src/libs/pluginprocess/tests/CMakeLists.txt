@@ -10,7 +10,6 @@ if (BUILD_TESTING)
 		get_filename_component (name ${file} NAME_WE)
 
 		set (TEST_SOURCES $<TARGET_OBJECTS:cframework>)
-		list (APPEND TEST_SOURCES ${HDR_FILES})
 		list (APPEND TEST_SOURCES
 			     ${name})
 		list (APPEND TEST_SOURCES
