@@ -1,4 +1,4 @@
-FROM alpine:3.7
+FROM alpine:3.8
 
 RUN apk update \
     && apk add --no-cache \
@@ -7,7 +7,8 @@ RUN apk update \
         git \
         file \
         curl \
-        bash
+        bash \
+        yaml-cpp-dev
 
 # Google Test
 ENV GTEST_ROOT=/opt/gtest

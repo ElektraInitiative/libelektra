@@ -233,7 +233,7 @@ static void updateArrays (KeySet * returned, KeySet * const arrays)
 			{
 				ksAppendKey (lastElements, element);
 				keySetMeta (updatedArray, "array", keyBaseName (updatedElement));
-				ELEKTRA_LOG_DEBUG ("New Last index of array “%s” is “%s”", keyName (array), keyBaseName (updatedElement));
+				ELEKTRA_LOG_DEBUG ("New last index of array “%s” is “%s”", keyName (array), keyBaseName (updatedElement));
 				ksAppendKey (updatedArrays, updatedArray);
 				last = false;
 			}
