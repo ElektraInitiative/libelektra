@@ -26,7 +26,7 @@
  *       a simple string indicating the version of this communication
  *       protocol
  * 3)  The parent sends over the commandKeySet over the commandPipe
- * 4)  For operations requiring a keyset, the parent sends the 
+ * 4)  For operations requiring a keyset, the parent sends the
  *     keyset (originalKeySet) that is passed to this plugin over the resultPipe
  * 5)  Child receives the commandKeySet
  * 6)  Child receives the keyset if one exists
@@ -125,7 +125,7 @@ void elektraPluginProcessStart (Plugin * handle, ElektraPluginProcess * pp)
 		Key * parentNameKey = ksLookupByName (commandKeySet, "/pluginprocess/parent/name", KDB_O_NONE);
 		Key * parentKey = ksLookupByName (commandKeySet, "/pluginprocess/parent", KDB_O_POP);
 		Key * key = keyDup (parentKey);
-		keySetName (key, keyString(parentNameKey));
+		keySetName (key, keyString (parentNameKey));
 		int result = ELEKTRA_PLUGIN_STATUS_ERROR;
 
 		char * endPtr;
@@ -206,7 +206,7 @@ void elektraPluginProcessStart (Plugin * handle, ElektraPluginProcess * pp)
 int elektraPluginSet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
 	ElektraPluginProcess * pp = elektraPluginGetData (handle);
-	if (elektraPluginProcessIsParent (pp)) return elektraPluginProcessSend (pp, ELEKTRA_PLUGIN_SET, returned, parentKey);
+	if (elektraPluginProcessIsParent (pp)) return elektraPluginProcessSend (pp, ELEKTRA_PLUGINPROCESS_SET, returned, parentKey);
 
 	// actual plugin functionality to be executed in a child process
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
@@ -214,7 +214,7 @@ int elektraPluginSet (Plugin * handle, KeySet * returned, Key * parentKey)
  * @endcode
  *
  * @param pp the data structure containing the plugin's process information
- * @param command the plugin command that should be executed, e.g. ELEKTRA_PLUGIN_GET
+ * @param command the plugin command that should be executed, e.g. ELEKTRA_PLUGINPROCESS_GET
  * @param originalKeySet the original key set that the parent process receives
  * @param key the original key the parent process receives
  * @retval ELEKTRA_PLUGIN_STATUS_ERROR if the child process communication failed
@@ -224,7 +224,6 @@ int elektraPluginSet (Plugin * handle, KeySet * returned, Key * parentKey)
  **/
 int elektraPluginProcessSend (const ElektraPluginProcess * pp, pluginprocess_t command, KeySet * originalKeySet, Key * key)
 {
-	ELEKTRA_LOG ("KEY IS CALLED WTF %s", keyName (key));
 	// Ensure we have a keyset when trying to call GET SET and ERROR
 	if ((command == ELEKTRA_PLUGINPROCESS_GET || command == ELEKTRA_PLUGINPROCESS_SET || command == ELEKTRA_PLUGINPROCESS_ERROR) &&
 	    originalKeySet == NULL)
@@ -382,7 +381,7 @@ int elektraPluginOpen (Plugin * handle, Key * errorKey)
 	ElektraPluginProcess * pp = elektraPluginGetData (handle);
 	if (pp == NULL)
 	{
-		if ((pp = elektraPluginProcessInit (handle, errorKey)) == NULL) return ELEKTRA_PLUGIN_STATUS_ERROR;
+		if ((pp = elektraPluginProcessInit (errorKey)) == NULL) return ELEKTRA_PLUGIN_STATUS_ERROR;
 		elektraPluginSetData (handle, pp);
 		if (!elektraPluginProcessIsParent (pp)) elektraPluginProcessStart (handle, pp);
 	}
@@ -482,6 +481,52 @@ ElektraPluginProcessCloseResult elektraPluginProcessClose (ElektraPluginProcess 
 }
 
 /** Store a pointer to any plugin related data that is being executed inside an own process.
+ *
+ * This is required in case additional arbitrary plugin data should be stored. Pluginprocess
+ * has to be stored using elektraPluginSetData. Plugin data for the child process
+ * has to be stored using this function like
+ * @code
+int elektraPluginOpen (Plugin * handle, Key * errorKey)
+{
+	ElektraPluginProcess * pp = elektraPluginGetData (handle);
+	if (pp == NULL)
+	{
+		if ((pp = elektraPluginProcessInit (errorKey)) == NULL) return ELEKTRA_PLUGIN_STATUS_ERROR;
+		ArbitraryPluginData * data = // initialize your plugin data
+		elektraPluginProcessSetData (handle, data);
+		elektraPluginSetData (handle, pp);
+		if (!elektraPluginProcessIsParent (pp)) elektraPluginProcessStart (handle, pp);
+	}
+	if (elektraPluginProcessIsParent (pp)) return elektraPluginProcessOpen (pp, errorKey);
+
+	// actual plugin functionality to be executed in a child process
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+}
+ * @endcode
+ *
+ * Furthermore ensure to cleanup the data after the plugin is done like
+ * @code
+int elektraPluginClose (Plugin * handle, Key * errorKey)
+{
+	ElektraPluginProcess * pp = elektraPluginGetData (handle);
+	if (elektraPluginProcessIsParent (pp)) {
+		ArbitraryPluginData * data = elektraPluginProcessGetData (handle);
+		ElektraPluginProcessCloseResult result = elektraPluginProcessClose (pp, errorKey);
+		if (result.cleanedUp)
+		{
+			elektraPluginSetData (handle, NULL);
+			// cleanup your plugin data here
+		}
+		return result.result;
+	}
+
+	// actual plugin functionality to be executed in a child process
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+}
+ * @endcode
+ *
+ * This way you can use elektraPluginProcessGetData (handle) in your child process
+ * to get the data you want your plugin to work with.
  *
  * @param plugin a pointer to the plugin
  * @param data the pointer to the data
