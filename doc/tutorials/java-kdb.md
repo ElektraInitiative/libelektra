@@ -39,12 +39,12 @@ Now we can simply fetch the desired key's value as follows:
 ```java
 String str = set.lookup("user/my/presaved/key").getString()
 ```
-So for example if you have executed before the application starts `kdb set user/my/test it_works!`, 
+So for example if you have executed before the application starts `kdb set user/my/test it_works!`,
 the method call `set.lookup("user/my/test").getString()` would return `it_works!`.
 
 ## Saving Keys
 
-Next I will show how to save a new key into the database. First we need need to create an empty `KeySet` again. We also **need to fetch** all keys for the namespace before we will be able to save a new key. 
+Next I will show how to save a new key into the database. First we need need to create an empty `KeySet` again. We also **need to fetch** all keys for the namespace before we will be able to save a new key.
 
 ```java
 KeySet set = KeySet.create();
@@ -56,7 +56,7 @@ kdb.set(set, key);
 
 If you try to save a key without fetching it beforehand, a `KDBException` will be thrown, telling you to call get before set.
 
-The *user* namespace is accessible without special rights, but if you try to write to *system* you will need to have root 
+The *user* namespace is accessible without special rights, but if you try to write to *system* you will need to have root
 privileges. Check [this](doc/TESTING.md) to see how to run as non-root user. This should only be done in testing
 environments though as it is not intended for productive systems.
 
