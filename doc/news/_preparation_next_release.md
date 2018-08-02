@@ -166,6 +166,12 @@ Thanks to Daniel Bugl.
 - The plugins ruby, python and jni can now also be mounted as global plugin.
 - Fix crash in python plugin. *(Markus Raab)*
 
+### JNI
+
+- We now disable the plugin if  `BUILD_STATIC` or `BUILD_FULL` are enabled, since otherwise the plugin breaks the `kdb` tool.
+  *(René Schwaiger)*
+- We disabled the internal check (`testscr_check_kdb_internal_check`) for the plugin, since it always fails. *(René Schwaiger)*
+
 ### HexNumber
 
 - The plugin [hexnumber](https://www.libelektra.org/plugins/hexnumber) has been added. It can be used
