@@ -163,12 +163,30 @@ try {
 } catch(e) {
   if (isMaster()) {
     // If master is failing we want to know ASAP so send a mail.
-    def id = "${JOB_NAME}:${BUILD_NUMBER}"
+    def changes = currentBuild.changeSets.collect() {
+      it.collect() {
+        "* ${it.getCommitId().take(7)} - ${it.getAuthor()} - ${it.getMsg().take(40)}"
+      }.join('\n')
+    }.join('\n')
+    if (!changes) {
+      changes = "* No new changes since last build"
+    }
+
     def message = """\
-Build ${id} failed with ${e.message}.
-> ${BUILD_URL} <
+Build ${JOB_NAME}:${BUILD_NUMBER} failed.
+Url: ${RUN_DISPLAY_URL}
+
+Changes: ${RUN_CHANGES_DISPLAY_URL}
+${changes}
+
+Logs: ${currentBuild.rawBuild.getLog(20).join('\n')}
+
+---
+Debug Information for mail step:
+currentResult: ${currentBuild.currentResult}
+Exception: ${e}
 """
-    mail subject: "Build ${id} failed",
+    mail subject: "Build ${JOB_NAME} failed",
          body: message,
          replyTo: "noreply@libelektra.org",
          to: "build@libelektra.org"
