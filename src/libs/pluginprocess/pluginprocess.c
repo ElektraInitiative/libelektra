@@ -6,6 +6,8 @@
  * Executes plugins in a separate process via fork and uses a simple
  * communication protocol based on the dump plugin via named pipes.
  *
+ * Plugin
+ *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
@@ -420,9 +422,9 @@ int elektraPluginClose (Plugin * handle, Key * errorKey)
 {
 	ElektraPluginProcess * pp = elektraPluginGetData (handle);
 	if (elektraPluginProcessIsParent (pp)) {
-		int result = elektraPluginProcessSend (pp, ELEKTRA_PLUGINPROCESS_CLOSE, NULL, errorKey);
-		if (elektraPluginProcessClose (pp, errorKey)) elektraPluginSetData (handle, NULL);
-		return result;
+		ElektraPluginProcessCloseResult result = elektraPluginProcessClose (pp, errorKey);
+		if (result.cleanedUp) elektraPluginSetData (handle, NULL);
+		return result.result;
 	}
 
 	// actual plugin functionality to be executed in a child process
@@ -435,12 +437,14 @@ int elektraPluginClose (Plugin * handle, Key * errorKey)
  * @retval 0 if the data structure is still used
  * @ingroup processplugin
  **/
-int elektraPluginProcessClose (ElektraPluginProcess * pp, Key * errorKey)
+ElektraPluginProcessCloseResult elektraPluginProcessClose (ElektraPluginProcess * pp, Key * errorKey)
 {
 	pp->counter = pp->counter - 1;
+	int result = elektraPluginProcessSend (pp, ELEKTRA_PLUGINPROCESS_CLOSE, NULL, errorKey);
 	int done = pp->counter <= 0;
 	if (done) cleanupPluginData (pp, errorKey);
-	return done;
+	ElektraPluginProcessCloseResult closeResult = { result, done };
+	return closeResult;
 }
 
 /** Store a pointer to any plugin related data that is being executed inside an own process.
