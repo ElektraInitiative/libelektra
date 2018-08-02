@@ -35,7 +35,12 @@ matrix:
       osx_image: xcode9.4
       compiler: clang
       env:
-        - ASAN=ON
+        - ENABLE_ASAN=ON
+        # We only translate the `kdb` tool to save a little bit of build time.
+        # Unfortunately this build job would hit the [timeout][] for public repositories
+        # quite often otherwise.
+        # [timeout]: https://docs.travis-ci.com/user/customizing-the-build/#build-timeouts
+        - TOOLS=kdb
 
     - os: linux
       name: 🐧 GCC ASAN
@@ -47,7 +52,8 @@ matrix:
           packages:
             - g++-8
       env:
-        - ASAN=ON
+        - ENABLE_ASAN=ON
+        - COMMON_FLAGS=-Wno-error
         - CC_COMPILER=gcc-8
         - CXX_COMPILER=g++-8
 
@@ -62,7 +68,7 @@ matrix:
           packages:
             - clang-6.0
       env:
-        - ASAN=ON
+        - ENABLE_ASAN=ON
         - CC_COMPILER=clang-6.0
         - CXX_COMPILER=clang++-6.0
 
@@ -78,7 +84,8 @@ matrix:
           packages:
             - g++-8
       env:
-        - FULL=ON
+        - BUILD_FULL=ON
+        - COMMON_FLAGS=-Wno-error
         - CC_COMPILER=gcc-8
         - CXX_COMPILER=g++-8
 
@@ -101,6 +108,10 @@ matrix:
       compiler: clang
       env:
         - HASKELL=ON
+        # Use a minimal configuration for the haskell bindings to give it enough time to compile dependencies
+        - PLUGINS='resolver_fm_hpu_b;dump;dini;list;spec;haskell;typechecker;ini;sync;error;base64;regexdispatcher'
+        - BINDINGS=haskell
+        - TOOLS=kdb
 
     - os: linux
       name: 🐧 GCC
@@ -114,6 +125,7 @@ matrix:
       env:
         - CC_COMPILER=gcc-8
         - CXX_COMPILER=g++-8
+        - COMMON_FLAGS=-Wno-error
 
     - os: linux
       name: 🐧 Clang
@@ -225,27 +237,16 @@ before_install:
 #
 before_script:
   - cd $TRAVIS_BUILD_DIR/..
-  - >
-    [[ "$TRAVIS_OS_NAME" == "linux" ]] && INSTALL_DIR="$PWD/install" || INSTALL_DIR="/usr/local"
+  - |
+    if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+      CMAKE_OPT+=(-DCMAKE_INSTALL_PREFIX="$PWD/install")
+      export PATH=$PATH:"$PWD/install/bin"
+    fi
   - SYSTEM_DIR="$PWD/kdbsystem"
   - mkdir build
   - cd build
-  - >
-    [[ $ASAN == ON ]] && CMAKE_OPT=(-DENABLE_ASAN=ON) || CMAKE_OPT=()
-  - if [[ $FULL == ON ]]; then CMAKE_OPT+=(-DBUILD_FULL=ON); fi
   - |
-    if [[ "$TRAVIS_OS_NAME" == "linux" && "$CC" == "clang" || "$TRAVIS_OS_NAME" == "osx" ]]; then
-      CMAKE_OPT+=("-DCOMMON_FLAGS=-Werror")
-    fi
-  # use a minimal configuration for the haskell bindings to give it enough time to compile dependencies
-  - |
-    if [[ $HASKELL == ON ]]; then
-      bindings="haskell"
-      plugins="resolver_fm_hpu_b;dump;dini;list;spec;haskell;typechecker;ini;sync;error;base64;regexdispatcher"
-      tools="kdb"
-    fi
-  - |
-    if [[ "$TRAVIS_OS_NAME" == "osx" && "$HASKELL" != "ON" ]]; then
+    if [[ "$TRAVIS_OS_NAME" == "osx" ]] && which -s python2 && which -s python3; then
       python2_ver=$(python2 -c 'import sys; print(".".join(map(str, sys.version_info[:2])))') &&                  \
         CMAKE_OPT+=("-DPYTHON2_INCLUDE_DIR:PATH=$(python2-config --prefix)/include/python${python2_ver}") &&      \
         CMAKE_OPT+=("-DPYTHON2_LIBRARY:FILEPATH=$(python2-config --prefix)/lib/libpython${python2_ver}.dylib") && \
@@ -256,22 +257,23 @@ before_script:
   - >
     cmake
     -GNinja
-    -DPLUGINS="${plugins:-ALL;-jni}"
-    -DBINDINGS="${bindings:-ALL}"
+    -DPLUGINS="${PLUGINS:-ALL;-jni}"
+    -DBINDINGS="${BINDINGS:-ALL}"
+    -DTOOLS="${TOOLS:-ALL}"
+    -DBUILD_FULL="${BUILD_FULL:-OFF}"
+    -DENABLE_ASAN="${ENABLE_ASAN:-OFF}"
+    -DCOMMON_FLAGS="${COMMON_FLAGS:--Werror}"
     -DENABLE_DEBUG=ON
-    -DTOOLS="${tools:-ALL;}"
     -DINSTALL_SYSTEM_FILES=OFF
     -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
-    -DCMAKE_INSTALL_PREFIX="$INSTALL_DIR"
     -DKDB_DB_SYSTEM="$SYSTEM_DIR"
     ${CMAKE_OPT[@]}
     $TRAVIS_BUILD_DIR
-  - export PATH=$PATH:"$INSTALL_DIR/bin"
 
 script:
   - ninja
   - |
-    if [[ "$ASAN" = "ON" ]]; then
+    if [[ "$ENABLE_ASAN" = "ON" ]]; then
       ninja run_all
     else
       ninja install
