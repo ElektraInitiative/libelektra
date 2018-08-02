@@ -45,7 +45,7 @@ add_plugin (crypto_gcrypt
 	    SOURCES gcrypt_operations.h
 		    gcrypt_operations.c
 		    ${CRYPTO_COMMON_FILES}
-	    INCLUDE_DIRECTORIES ${LIBGCRYPT_INCLUDE_DIR}
+	    INCLUDE_DIRECTORIES ${LIBGCRYPT_INCLUDE_DIRS}
 	    LINK_LIBRARIES ${LIBGCRYPT_LIBRARIES}
 	    LINK_ELEKTRA elektra-invoke
 	    COMPILE_DEFINITIONS ELEKTRA_PLUGIN_NAME=\"crypto_gcrypt\"
