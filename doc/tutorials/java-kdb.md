@@ -57,7 +57,7 @@ kdb.set(set, key);
 If you try to save a key without fetching it beforehand, a `KDBException` will be thrown, telling you to call get before set.
 
 The *user* namespace is accessible without special rights, but if you try to write to *system* you will need to have root
-privileges. Check [this](doc/TESTING.md) to see how to run as non-root user. This should only be done in testing
+privileges. Check [this](../TESTING.md) to see how to run as non-root user. This should only be done in testing
 environments though as it is not intended for productive systems.
 
 ## Examples
