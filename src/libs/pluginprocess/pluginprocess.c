@@ -71,18 +71,26 @@ void elektraPluginProcessStart (Plugin * handle, ElektraPluginProcess * pp)
 {
 	Key * commandPipeKey = keyNew ("/pluginprocess/pipe/command", KEY_VALUE, pp->commandPipe, KEY_END);
 	Key * resultPipeKey = keyNew ("/pluginprocess/pipe/result", KEY_VALUE, pp->resultPipe, KEY_END);
-	KeySet * keySet = ksNew (0, KS_END);
+	KeySet * commandKeySet = ksNew (6, KS_END);
 	int counter = 0;
 
 	do
 	{
-		ELEKTRA_LOG_DEBUG ("Child: Wait for a KeySet");
-		elektraInvoke2Args (pp->dump, "get", keySet, commandPipeKey);
-		ELEKTRA_LOG_DEBUG ("Child: We received a KeySet with %zd keys in it", ksGetSize (keySet));
+		KeySet * keySet = NULL;
+		ELEKTRA_LOG_DEBUG ("Child: Wait for commands");
+		elektraInvoke2Args (pp->dump, "get", commandKeySet, commandPipeKey);
+		if (elektraStrCmp (keyString (ksLookupByName (commandKeySet, "/pluginprocess/payload/exists", KDB_O_NONE)), "1") == 0)
+		{
+			keySet = ksNew (0, KS_END);
+			// We use the two pipes "interleaved" to avoid concurrency issues that can arise when sending another keyset
+			// while the pipe is currently being deserialized
+			elektraInvoke2Args (pp->dump, "get", keySet, resultPipeKey);
+			ELEKTRA_LOG_DEBUG ("Child: We received a KeySet with %zd keys in it", ksGetSize (keySet));
+		}
 
-		Key * commandKey = ksLookupByName (keySet, "/pluginprocess/command", KDB_O_POP);
-		Key * originalNameKey = ksLookupByName (keySet, "/pluginprocess/original", KDB_O_POP);
-		Key * originalKey = ksLookupByName (keySet, keyString (originalNameKey), KDB_O_NONE);
+		Key * commandKey = ksLookupByName (commandKeySet, "/pluginprocess/command", KDB_O_NONE);
+		Key * originalNameKey = ksLookupByName (commandKeySet, "/pluginprocess/original", KDB_O_NONE);
+		Key * originalKey = ksLookupByName (commandKeySet, keyString (originalNameKey), KDB_O_NONE);
 		int result = ELEKTRA_PLUGIN_STATUS_ERROR;
 
 		char * endPtr;
@@ -125,13 +133,16 @@ void elektraPluginProcessStart (Plugin * handle, ElektraPluginProcess * pp)
 		}
 		errno = prevErrno;
 		char * resultStr = intToStr (result);
-		ksAppendKey (keySet, keyNew ("/pluginprocess/result", KEY_VALUE, resultStr, KEY_END));
+		ksAppendKey (commandKeySet, keyNew ("/pluginprocess/result", KEY_VALUE, resultStr, KEY_END));
 		elektraFree (resultStr);
 
-		ELEKTRA_LOG_DEBUG ("Child: Writing the resulting KeySet back to the parent");
-		elektraInvoke2Args (pp->dump, "set", keySet, resultPipeKey);
-		keyDel (commandKey);
-		keyDel (originalNameKey);
+		ELEKTRA_LOG_DEBUG ("Child: Writing the results back to the parent");
+		elektraInvoke2Args (pp->dump, "set", commandKeySet, resultPipeKey);
+		if (keySet != NULL)
+		{
+			elektraInvoke2Args (pp->dump, "set", keySet, commandPipeKey);
+			ksDel (keySet);
+		}
 		ELEKTRA_LOG ("Child: Command handled, startup counter is at %d", counter);
 	} while (counter);
 
@@ -139,7 +150,7 @@ void elektraPluginProcessStart (Plugin * handle, ElektraPluginProcess * pp)
 	ELEKTRA_LOG_DEBUG ("Child: All done, exiting the child process now");
 	keyDel (commandPipeKey);
 	keyDel (resultPipeKey);
-	ksDel (keySet);
+	ksDel (commandKeySet);
 	cleanupPluginData (pp, 0);
 	// All done, exit the child process
 	_Exit (EXIT_SUCCESS);
@@ -175,28 +186,56 @@ int elektraPluginSet (Plugin * handle, KeySet * returned, Key * parentKey)
  **/
 int elektraPluginProcessSend (const ElektraPluginProcess * pp, pluginprocess_t command, KeySet * originalKeySet, Key * key)
 {
-	// Some plugin functions don't use keysets, but we need one for our
-	// simple communication protocol, so create a temporary one
-	KeySet * keySet = originalKeySet == NULL ? ksNew (3, KS_END) : ksDup (originalKeySet);
-	ksAppendKey (keySet, keyDup (key));
+	// Ensure we have a keyset when trying to call GET SET and ERROR
+	if ((command == ELEKTRA_PLUGINPROCESS_GET || command == ELEKTRA_PLUGINPROCESS_SET || command == ELEKTRA_PLUGINPROCESS_ERROR) &&
+	    originalKeySet == NULL)
+	{
+		ELEKTRA_SET_ERROR (191, key,
+				   "originalKeySet has to exist when calling GET SET and ERROR via pluginprocess; but it is NULL");
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+
+	// Construct the command set that controls the pluginprocess communication
+	KeySet * commandKeySet = ksNew (6, KS_END);
+	ksAppendKey (commandKeySet, keyNew ("/pluginprocess/original", KEY_VALUE, keyName (key), KEY_END));
+	ksAppendKey (commandKeySet, keyDup (key));
 	char * commandStr = intToStr (command);
-	ksAppendKey (keySet, keyNew ("/pluginprocess/command", KEY_VALUE, commandStr, KEY_END));
+	ksAppendKey (commandKeySet, keyNew ("/pluginprocess/command", KEY_VALUE, commandStr, KEY_END));
 	elektraFree (commandStr);
-	Key * originalKey = keyNew ("/pluginprocess/original", KEY_VALUE, keyName (key), KEY_END);
-	ksAppendKey (keySet, originalKey);
+	ksAppendKey (commandKeySet, keyNew ("/pluginprocess/version", KEY_VALUE, "1", KEY_END));
+
+	// Some plugin functions don't use keysets, in that case don't send any actual payload, signal via flag
+	KeySet * keySet = originalKeySet != NULL ? ksDup (originalKeySet) : NULL;
+	ksAppendKey (commandKeySet, keyNew ("/pluginprocess/payload/exists", KEY_VALUE, originalKeySet == NULL ? "0" : "1", KEY_END));
+	ELEKTRA_LOG ("Parent: preparing everything4 %s",
+		     keyString (ksLookupByName (commandKeySet, "/pluginprocess/payload/exists", KDB_O_NONE)));
 
 	// Serialize, currently statically use dump as our default format, this already writes everything out to the pipe
 	Key * commandPipeKey = keyNew ("/pluginprocess/pipe/command", KEY_VALUE, pp->commandPipe, KEY_END);
 	Key * resultPipeKey = keyNew ("/pluginprocess/pipe/result", KEY_VALUE, pp->resultPipe, KEY_END);
-	ELEKTRA_LOG ("Parent: We send %zd keys through the pipe now to issue command %d it", ksGetSize (keySet), command);
-	elektraInvoke2Args (pp->dump, "set", keySet, commandPipeKey);
+	ELEKTRA_LOG ("Parent: Sending data to issue command %u it", command);
+	elektraInvoke2Args (pp->dump, "set", commandKeySet, commandPipeKey);
+	if (keySet != NULL)
+	{
+		ELEKTRA_LOG ("Parent: Sending the payload keyset with %zd keys through the pipe now", ksGetSize (keySet));
+		// We use the two pipes "interleaved" to avoid concurrency issues that can arise when sending another keyset
+		// while the pipe is currently being deserialized
+		elektraInvoke2Args (pp->dump, "set", keySet, resultPipeKey);
+		ELEKTRA_LOG_DEBUG ("payload sending done");
+	}
+
+	// Deserialize
 	ELEKTRA_LOG_DEBUG ("Parent: Waiting for the result now");
-	elektraInvoke2Args (pp->dump, "get", keySet, resultPipeKey);
-	ELEKTRA_LOG ("Parent: We received %zd keys in return", ksGetSize (keySet));
+	elektraInvoke2Args (pp->dump, "get", commandKeySet, resultPipeKey);
+	if (keySet != NULL)
+	{
+		elektraInvoke2Args (pp->dump, "get", keySet, commandPipeKey);
+		ELEKTRA_LOG ("Parent: We received %zd keys in return", ksGetSize (keySet));
+	}
 
 	// Bring everything back in order by removing our process-related keys
-	Key * originalDeserializedKey = ksLookupByName (keySet, keyName (key), KDB_O_POP);
-	Key * resultKey = ksLookupByName (keySet, "/pluginprocess/result", KDB_O_POP);
+	Key * originalDeserializedKey = ksLookupByName (commandKeySet, keyName (key), KDB_O_NONE);
+	Key * resultKey = ksLookupByName (commandKeySet, "/pluginprocess/result", KDB_O_NONE);
 
 	// Parse the result value
 	char * endPtr;
@@ -205,24 +244,24 @@ int elektraPluginProcessSend (const ElektraPluginProcess * pp, pluginprocess_t c
 	long lresult = strtol (keyString (resultKey), &endPtr, 10);
 	if (*endPtr != '\0' || errno == ERANGE || lresult > INT_MAX || lresult < INT_MIN)
 	{
-		ELEKTRA_SET_ERRORF (191, originalKey, "Received invalid return code or no KeySet: %s", keyString (resultKey));
-		errno = prevErrno;
-		return ELEKTRA_PLUGIN_STATUS_ERROR;
+		ELEKTRA_SET_ERRORF (191, key, "Received invalid return code or no KeySet: %s", keyString (resultKey));
+		lresult = ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+	else
+	{
+		// Copy everything back into the actual keysets
+		keyCopy (key, originalDeserializedKey);
+		if (keySet != NULL) ksCopy (originalKeySet, keySet);
 	}
 	errno = prevErrno;
 
-	// Copy everything back into the actual keysets
-	keyCopy (key, originalDeserializedKey);
-	ksCopy (originalKeySet, keySet);
-
-	// Command finished, cleanup now
+	// Command finished, cleanup the remaining memory now
 	keyDel (commandPipeKey);
 	keyDel (resultPipeKey);
-	keyDel (originalDeserializedKey);
-	keyDel (resultKey);
-	ksDel (keySet);
+	ksDel (commandKeySet);
+	if (keySet != NULL) ksDel (keySet);
 
-	return lresult; // Safe now, we had a bound check before, and plugins should return values in the int range
+	return lresult; // Safe, we had a bound check before, and plugins should return values in the int range
 }
 
 /** Check if a given plugin process is the parent or the child process
@@ -381,7 +420,7 @@ int elektraPluginClose (Plugin * handle, Key * errorKey)
 {
 	ElektraPluginProcess * pp = elektraPluginGetData (handle);
 	if (elektraPluginProcessIsParent (pp)) {
-		int result = elektraPluginProcessSend (pp, ELEKTRA_PLUGIN_CLOSE, NULL, errorKey);
+		int result = elektraPluginProcessSend (pp, ELEKTRA_PLUGINPROCESS_CLOSE, NULL, errorKey);
 		if (elektraPluginProcessClose (pp, errorKey)) elektraPluginSetData (handle, NULL);
 		return result;
 	}
@@ -412,10 +451,7 @@ int elektraPluginProcessClose (ElektraPluginProcess * pp, Key * errorKey)
 void elektraPluginProcessSetData (Plugin * handle, void * data)
 {
 	ElektraPluginProcess * pp = elektraPluginGetData (handle);
-	if (pp)
-	{
-		pp->pluginData = data;
-	}
+	if (pp) pp->pluginData = data;
 }
 
 /** Get a pointer to any plugin related data stored before.
@@ -428,9 +464,6 @@ void elektraPluginProcessSetData (Plugin * handle, void * data)
 void * elektraPluginProcessGetData (Plugin * handle)
 {
 	ElektraPluginProcess * pp = elektraPluginGetData (handle);
-	if (pp)
-	{
-		return pp->pluginData;
-	}
+	if (pp) return pp->pluginData;
 	return NULL;
 }
