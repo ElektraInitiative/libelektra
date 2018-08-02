@@ -9,9 +9,9 @@
  * The communication protocol works as follows, where Child and Parent stand
  * for the child and the parent process:
  * 1)  Two named pipes are created, called commandPipe and resultPipe
-       commandPipe is used for a keyset containing metainformation about
+       - commandPipe is used for a keyset containing metainformation about
        the communicationprotocol
-       resultPipe is used for transferring the actual payload that gets passed
+       - resultPipe is used for transferring the actual payload that gets passed
        to a plugin
  * 2)  The parent constructs a keyset called commandKeySet, containing:
  *     - /pluginprocess/parent
@@ -20,10 +20,10 @@
  *       the name of the parent key passed to the plugin interface
  *     - /pluginprocess/command
  *       the command that should be executed by the child process
- *     - /pluginprocess/payload/exists
- *       1 if a keyset will be sent over the resultPipe, 0 otherwise
+ *     - /pluginprocess/payload/size
+ *       the size of the payload keyset, -1 if there is no payload
  *     - /pluginprocess/version
- *       a simple string indicating the version of this communication
+ *       a number indicating the version of this communication
  *       protocol
  * 3)  The parent sends over the commandKeySet over the commandPipe
  * 4)  For operations requiring a keyset, the parent sends the
@@ -114,12 +114,20 @@ void elektraPluginProcessStart (Plugin * handle, ElektraPluginProcess * pp)
 		KeySet * keySet = NULL;
 		ELEKTRA_LOG_DEBUG ("Child: Wait for commands");
 		elektraInvoke2Args (pp->dump, "get", commandKeySet, commandPipeKey);
-		if (elektraStrCmp (keyString (ksLookupByName (commandKeySet, "/pluginprocess/payload/exists", KDB_O_NONE)), "1") == 0)
-		{
-			keySet = ksNew (0, KS_END);
+
+		Key * payloadSizeKey = ksLookupByName (commandKeySet, "/pluginprocess/payload/size", KDB_O_NONE);
+		char * endPtr;
+		// We'll always write some int value into it, so this should be fine
+		int prevErrno = errno;
+		errno = 0;
+		long payloadSize = strtol (keyString (payloadSizeKey), &endPtr, 10);
+		// in case the payload size fails to be transferred, that it shouldn't, we can only assume no payload
+		if (*endPtr == '\0' && errno != ERANGE && payloadSize >= 0) {
+			keySet = ksNew (payloadSize, KS_END);
 			elektraInvoke2Args (pp->dump, "get", keySet, resultPipeKey);
 			ELEKTRA_LOG_DEBUG ("Child: We received a KeySet with %zd keys in it", ksGetSize (keySet));
 		}
+		errno = prevErrno;
 
 		Key * commandKey = ksLookupByName (commandKeySet, "/pluginprocess/command", KDB_O_NONE);
 		Key * parentNameKey = ksLookupByName (commandKeySet, "/pluginprocess/parent/name", KDB_O_NONE);
@@ -128,9 +136,8 @@ void elektraPluginProcessStart (Plugin * handle, ElektraPluginProcess * pp)
 		keySetName (key, keyString (parentNameKey));
 		int result = ELEKTRA_PLUGIN_STATUS_ERROR;
 
-		char * endPtr;
 		// We'll always write some int value into it, so this should be fine
-		int prevErrno = errno;
+		prevErrno = errno;
 		errno = 0;
 		long command = strtol (keyString (commandKey), &endPtr, 10);
 		if (*endPtr == '\0' && errno != ERANGE)
@@ -246,7 +253,7 @@ int elektraPluginProcessSend (const ElektraPluginProcess * pp, pluginprocess_t c
 
 	// Some plugin functions don't use keysets, in that case don't send any actual payload, signal via flag
 	KeySet * keySet = originalKeySet != NULL ? ksDup (originalKeySet) : NULL;
-	ksAppendKey (commandKeySet, keyNew ("/pluginprocess/payload/exists", KEY_VALUE, originalKeySet == NULL ? "0" : "1", KEY_END));
+	ksAppendKey (commandKeySet, keyNew ("/pluginprocess/payload/size", KEY_VALUE, originalKeySet == NULL ? "-1" : intToStr (ksGetSize (originalKeySet)), KEY_END));
 
 	// Serialize, currently statically use dump as our default format, this already writes everything out to the pipe
 	Key * commandPipeKey = keyNew ("/pluginprocess/pipe/command", KEY_VALUE, pp->commandPipe, KEY_END);
@@ -515,7 +522,7 @@ int elektraPluginClose (Plugin * handle, Key * errorKey)
 		if (result.cleanedUp)
 		{
 			elektraPluginSetData (handle, NULL);
-			// cleanup your plugin data here
+			// cleanup data here, this was the last call to the plugin
 		}
 		return result.result;
 	}
