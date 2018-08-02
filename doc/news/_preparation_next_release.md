@@ -345,8 +345,10 @@ Thanks to Daniel Bugl.
     *(Lukas Winkler)*
 - The documentation for `kdb` and `kdb set` now mentions the `--` argument that stops processing of command line switches. This is useful
   for setting negative values among other things. *(Klemens Böswirth)*
+- We added a new tutorial to use tha jna binding. The tutorial shows how to use the java library to interact with kdb *(Michael Zronek)*
 - GitHub now detects the license of the repository correctly again. *(René Schwaiger)*
 - We added a tutorial describing Elektra’s [array data type](https://www.libelektra.org/tutorials/arrays). *(René Schwaiger)*
+
 
 ## Tests
 
