@@ -7,27 +7,31 @@
  *
  */
 
-#include "cpptemplate.h"
+#include "cpptemplate.hpp"
+#include "cpptemplate_delegate.hpp"
 
 #include <kdbhelper.h>
 
+using elektra::CppTemplateDelegate;
 
-int elektraCpptemplateOpen (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
+extern "C" {
+
+typedef Delegator<CppTemplateDelegate> delegator;
+
+/** @see elektraDocOpen */
+int elektraCpptemplateOpen (Plugin * handle, Key * key)
 {
-	// plugin initialization logic
-	// this function is optional
-
-	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+	// After the call to `delegator::open` you can retrieve a pointer to the delegate via `coderDelegator::get (handle)`
+	return delegator::open (handle, key);
 }
 
-int elektraCpptemplateClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
+/** @see elektraDocClose */
+int elektraCpptemplateClose (Plugin * handle, Key * key)
 {
-	// free all plugin resources and shut it down
-	// this function is optional
-
-	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+	return delegator::close (handle, key);
 }
 
+/** @see elektraDocGet */
 int elektraCpptemplateGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/cpptemplate"))
@@ -48,32 +52,25 @@ int elektraCpptemplateGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
-	// get all keys
 
 	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 }
 
+/** @see elektraDocSet */
 int elektraCpptemplateSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
-	// set all keys
-	// this function is optional
-
 	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 }
 
+/** @see elektraDocError */
 int elektraCpptemplateError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
-	// handle errors (commit failed)
-	// this function is optional
-
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
+/** @see elektraDocCheckConf */
 int elektraCpptemplateCheckConfig (Key * errorKey ELEKTRA_UNUSED, KeySet * conf ELEKTRA_UNUSED)
 {
-	// validate plugin configuration
-	// this function is optional
-
 	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 }
 
@@ -88,3 +85,5 @@ Plugin * ELEKTRA_PLUGIN_EXPORT (cpptemplate)
 		ELEKTRA_PLUGIN_ERROR,	&elektraCpptemplateError,
 		ELEKTRA_PLUGIN_END);
 }
+
+} // end extern "C"

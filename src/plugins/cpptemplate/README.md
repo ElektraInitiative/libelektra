@@ -12,11 +12,11 @@
 ## Introduction
 
 Copy this cpptemplate if you want to start a new
-plugin written in C.
+plugin written in C++.
 
 ## Usage
 
-You can use `scripts/copy-cpptemplate`
+You can use `scripts/copy-template`
 to automatically rename everything to your
 plugin name:
 

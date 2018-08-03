@@ -1,7 +1,11 @@
 include (LibAddMacros)
 
 add_plugin (cpptemplate
-	    SOURCES cpptemplate.h
-		    cpptemplate.c
+	    CPP
 	    ADD_TEST
-	    TEST_README)
+	    CPP_TEST
+	    TEST_README
+	    SOURCES cpptemplate.hpp
+		    cpptemplate.cpp
+		    cpptemplate_delegate.hpp
+		    cpptemplate_delegate.cpp)
