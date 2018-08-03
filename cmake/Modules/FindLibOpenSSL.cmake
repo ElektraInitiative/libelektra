@@ -15,10 +15,10 @@
 
 if (NOT OPENSSL_FOUND)
 	include (FindPkgConfig)
-	if (APPLE)
+	if (APPLE AND NOT DEFINED ENV{PKG_CONFIG_PATH})
 		# Add default pkg-config path of Homebrew’s OpenSSL version
-		set (ENV{PKG_CONFIG_PATH} "$ENV{PKG_CONFIG_PATH}:/usr/local/opt/openssl/lib/pkgconfig")
-	endif (APPLE)
+		set (ENV{PKG_CONFIG_PATH} "/usr/local/opt/openssl/lib/pkgconfig")
+	endif (APPLE AND NOT DEFINED ENV{PKG_CONFIG_PATH})
 	pkg_search_module (OPENSSL QUIET openssl)
 endif ()
 
