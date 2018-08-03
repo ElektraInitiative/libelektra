@@ -527,7 +527,7 @@ int elektraPluginOpen (Plugin * handle, Key * errorKey)
 	{
 		if ((pp = elektraPluginProcessInit (errorKey)) == NULL) return ELEKTRA_PLUGIN_STATUS_ERROR;
 		ArbitraryPluginData * data = // initialize your plugin data
-		elektraPluginProcessSetData (handle, data);
+		elektraPluginProcessSetData (pp, data);
 		elektraPluginSetData (handle, pp);
 		if (!elektraPluginProcessIsParent (pp)) elektraPluginProcessStart (handle, pp);
 	}
@@ -544,7 +544,7 @@ int elektraPluginClose (Plugin * handle, Key * errorKey)
 {
 	ElektraPluginProcess * pp = elektraPluginGetData (handle);
 	if (elektraPluginProcessIsParent (pp)) {
-		ArbitraryPluginData * data = elektraPluginProcessGetData (handle);
+		ArbitraryPluginData * data = elektraPluginProcessGetData (pp);
 		ElektraPluginProcessCloseResult result = elektraPluginProcessClose (pp, errorKey);
 		if (result.cleanedUp)
 		{
@@ -562,12 +562,11 @@ int elektraPluginClose (Plugin * handle, Key * errorKey)
  * This way you can use elektraPluginProcessGetData (handle) in your child process
  * to get the data you want your plugin to work with.
  *
- * @param plugin a pointer to the plugin
+ * @param pp the data structure containing the plugin's process information
  * @param data the pointer to the data
  */
-void elektraPluginProcessSetData (Plugin * handle, void * data)
+void elektraPluginProcessSetData (ElektraPluginProcess * pp, void * data)
 {
-	ElektraPluginProcess * pp = elektraPluginGetData (handle);
 	if (pp) pp->pluginData = data;
 }
 
@@ -575,12 +574,11 @@ void elektraPluginProcessSetData (Plugin * handle, void * data)
  *
  * If elektraPluginProcessSetData was not called earlier, NULL will be returned.
  *
- * @param plugin a pointer to the plugin
+ * @param pp the data structure containing the plugin's process information
  * @retval a pointer to the data
  */
-void * elektraPluginProcessGetData (Plugin * handle)
+void * elektraPluginProcessGetData (const ElektraPluginProcess * pp)
 {
-	ElektraPluginProcess * pp = elektraPluginGetData (handle);
 	if (pp) return pp->pluginData;
 	return NULL;
 }

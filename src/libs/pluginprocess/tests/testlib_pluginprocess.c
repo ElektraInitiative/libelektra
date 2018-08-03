@@ -27,7 +27,7 @@ static int elektraDummyOpen (Plugin * handle, Key * errorKey)
 		// pass dummy plugin data over to the child
 		int * testData = (int *) malloc (sizeof (int));
 		*testData = 42;
-		elektraPluginProcessSetData (handle, testData);
+		elektraPluginProcessSetData (pp, testData);
 		if (!elektraPluginProcessIsParent (pp)) elektraPluginProcessStart (handle, pp);
 	}
 	if (elektraPluginProcessIsParent (pp)) return elektraPluginProcessOpen (pp, errorKey);
@@ -41,7 +41,7 @@ static int elektraDummyClose (Plugin * handle, Key * errorKey)
 	ElektraPluginProcess * pp = elektraPluginGetData (handle);
 	if (elektraPluginProcessIsParent (pp))
 	{
-		int * testData = (int *) elektraPluginProcessGetData (handle);
+		int * testData = (int *) elektraPluginProcessGetData (pp);
 		ElektraPluginProcessCloseResult result = elektraPluginProcessClose (pp, errorKey);
 		if (result.cleanedUp)
 		{
@@ -60,7 +60,7 @@ static int elektraDummyGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	ElektraPluginProcess * pp = elektraPluginGetData (handle);
 	if (elektraPluginProcessIsParent (pp)) return elektraPluginProcessSend (pp, ELEKTRA_PLUGINPROCESS_GET, returned, parentKey);
 
-	int * testData = (int *) elektraPluginProcessGetData (handle);
+	int * testData = (int *) elektraPluginProcessGetData (pp);
 
 	keySetMeta (parentKey, "user/tests/pluginprocess/get", "");
 	// Just check if the child can access its actual plugin data

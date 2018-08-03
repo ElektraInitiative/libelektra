@@ -45,8 +45,8 @@ int elektraPluginProcessSend (const ElektraPluginProcess *, pluginprocess_t, Key
 
 ElektraPluginProcessCloseResult elektraPluginProcessClose (ElektraPluginProcess *, Key *);
 
-void elektraPluginProcessSetData (Plugin * handle, void * data);
-void * elektraPluginProcessGetData (Plugin * handle);
+void elektraPluginProcessSetData (ElektraPluginProcess *, void *);
+void * elektraPluginProcessGetData (const ElektraPluginProcess *);
 
 #ifdef __cplusplus
 }
