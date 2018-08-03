@@ -525,6 +525,8 @@ int elektraPluginClose (Plugin * handle, Key * errorKey)
 }
  * @endcode
  *
+ * Note that pp might be null here if the initialization failed!
+ *
  * @param pp the data structure containing the plugin's process information
  * @retval 1 if the data structure got cleaned up
  * @retval 0 if the data structure is still used
