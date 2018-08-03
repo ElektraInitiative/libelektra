@@ -222,16 +222,17 @@ int PYTHON_PLUGIN_FUNCTION (Open) (ckdb::Plugin * handle, ckdb::Key * errorKey)
 			ELEKTRA_SET_ERROR (111, errorKey, "No python script set, please pass a filename via /script");
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
+		elektraPluginProcessSetData (pp, md);
 		elektraPluginSetData (handle, pp);
-		elektraPluginProcessSetData (handle, md);
 		if (!elektraPluginProcessIsParent (pp)) elektraPluginProcessStart (handle, pp);
 	}
 
 	if (elektraPluginProcessIsParent (pp)) return elektraPluginProcessOpen (pp, errorKey);
 
-	moduleData * data = static_cast<moduleData *> (elektraPluginProcessGetData (handle));
+	moduleData * data = static_cast<moduleData *> (elektraPluginProcessGetData (pp));
 
-	if (data->instance == nullptr) {
+	if (data->instance == nullptr)
+	{
 		/* initialize python interpreter if necessary */
 		if (!Py_IsInitialized ())
 		{
@@ -335,11 +336,8 @@ int PYTHON_PLUGIN_FUNCTION (Open) (ckdb::Plugin * handle, ckdb::Key * errorKey)
 			goto error_print;
 		}
 		data->instance = inst;
-
-		/* store module data after everything is set up */
-		// elektraPluginProcessSetData (handle, data);
 	}
-	
+
 	/* call python function */
 	return Python_CallFunction_Helper2 (data, "open", elektraPluginGetConfig (handle), errorKey);
 
@@ -349,15 +347,15 @@ error:
 	/* destroy python */
 	Python_Shutdown (data);
 	delete data;
-	elektraPluginProcessSetData (handle, nullptr);
+	elektraPluginProcessSetData (pp, nullptr);
 	return ELEKTRA_PLUGIN_STATUS_ERROR;
 }
 
 int PYTHON_PLUGIN_FUNCTION (Close) (ckdb::Plugin * handle, ckdb::Key * errorKey)
 {
 	ElektraPluginProcess * pp = static_cast<ElektraPluginProcess *> (elektraPluginGetData (handle));
-	moduleData * data = static_cast<moduleData *> (elektraPluginProcessGetData (handle));
-	if (elektraPluginProcessIsParent (pp))
+	moduleData * data = static_cast<moduleData *> (elektraPluginProcessGetData (pp));
+	if (pp && elektraPluginProcessIsParent (pp))
 	{
 		ElektraPluginProcessCloseResult result = elektraPluginProcessClose (pp, errorKey);
 		if (result.cleanedUp)
@@ -367,13 +365,13 @@ int PYTHON_PLUGIN_FUNCTION (Close) (ckdb::Plugin * handle, ckdb::Key * errorKey)
 		}
 		return result.result;
 	}
+
 	if (data == nullptr) return 0;
 
 	int ret = Python_CallFunction_Helper1 (data, "close", errorKey);
 	/* destroy python */
 	Python_Shutdown (data);
 	delete data;
-
 	return ret;
 }
 
@@ -399,7 +397,7 @@ int PYTHON_PLUGIN_FUNCTION (Get) (ckdb::Plugin * handle, ckdb::KeySet * returned
 	ElektraPluginProcess * pp = static_cast<ElektraPluginProcess *> (elektraPluginGetData (handle));
 	if (elektraPluginProcessIsParent (pp)) return elektraPluginProcessSend (pp, ELEKTRA_PLUGINPROCESS_GET, returned, parentKey);
 
-	moduleData * data = static_cast<moduleData *> (elektraPluginProcessGetData (handle));
+	moduleData * data = static_cast<moduleData *> (elektraPluginProcessGetData (pp));
 	if (data == nullptr) return 0;
 	return Python_CallFunction_Helper2 (data, "get", returned, parentKey);
 }
@@ -409,7 +407,7 @@ int PYTHON_PLUGIN_FUNCTION (Set) (ckdb::Plugin * handle, ckdb::KeySet * returned
 	ElektraPluginProcess * pp = static_cast<ElektraPluginProcess *> (elektraPluginGetData (handle));
 	if (elektraPluginProcessIsParent (pp)) return elektraPluginProcessSend (pp, ELEKTRA_PLUGINPROCESS_SET, returned, parentKey);
 
-	moduleData * data = static_cast<moduleData *> (elektraPluginProcessGetData (handle));
+	moduleData * data = static_cast<moduleData *> (elektraPluginProcessGetData (pp));
 	if (data == nullptr) return 0;
 	return Python_CallFunction_Helper2 (data, "set", returned, parentKey);
 }
@@ -419,7 +417,7 @@ int PYTHON_PLUGIN_FUNCTION (Error) (ckdb::Plugin * handle, ckdb::KeySet * return
 	ElektraPluginProcess * pp = static_cast<ElektraPluginProcess *> (elektraPluginGetData (handle));
 	if (elektraPluginProcessIsParent (pp)) return elektraPluginProcessSend (pp, ELEKTRA_PLUGINPROCESS_ERROR, returned, parentKey);
 
-	moduleData * data = static_cast<moduleData *> (elektraPluginProcessGetData (handle));
+	moduleData * data = static_cast<moduleData *> (elektraPluginProcessGetData (pp));
 	if (data == nullptr) return 0;
 	return Python_CallFunction_Helper2 (data, "error", returned, parentKey);
 }
