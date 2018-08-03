@@ -10,15 +10,7 @@ if (DEPENDENCY_PHASE)
 
 	find_package (JNI)
 
-	# ~~~
-	# Disable plugin if full and shared build are enabled, since otherwise `kdb test` will fail printing the following error message:
-	#
-	#     kdb-full: error while loading shared libraries: libjvm.so: cannot open shared object file: No such file or directory
-	# .
-	# ~~~
-	if (BUILD_FULL AND BUILD_SHARED)
-		remove_plugin (jni "the plugin breaks `kdb-full` if both the full and shared build are enabled")
-	elseif (JNI_FOUND)
+	if (JNI_FOUND)
 		include (CheckSymbolExists)
 		set (DIRS ${JNI_INCLUDE_DIRS} ${JAVA_INCLUDE_PATH} ${JAVA_INCLUDE_PATH2} ${JAVA_AWT_INCLUDE_PATH})
 		set (LIBS ${JAVA_MAWT_LIBRARY} ${JNI_LIBRARIES} ${JAVA_AWT_LIBRARY} ${JAVA_JVM_LIBRARY}) # for check_symbol_exists
@@ -34,7 +26,7 @@ if (DEPENDENCY_PHASE)
 	endif ()
 endif ()
 
-add_plugin (jni SOURCES jni.c INCLUDE_DIRECTORIES ${DIRS} LINK_LIBRARIES ${LIBS})
+add_plugin (jni SOURCES jni.c INCLUDE_DIRECTORIES ${DIRS} LINK_LIBRARIES ${LIBS} ONLY_SHARED)
 
 if (ADDTESTING_PHASE)
 	check_binding_was_added ("jna" BINDING_WAS_ADDED)
