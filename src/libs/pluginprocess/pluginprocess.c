@@ -307,13 +307,16 @@ int elektraPluginProcessSend (const ElektraPluginProcess * pp, pluginprocess_t c
 		ELEKTRA_SET_ERRORF (191, key, "Received invalid return code or no KeySet: %s", keyString (resultKey));
 		lresult = ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
-	else
+	else // Copy everything back into the actual keysets
 	{
 		Key * parentKeyInOriginalKeySet = keySet != NULL ? ksLookup (originalKeySet, key, KDB_O_NONE) : NULL;
 		// maybe there are just 2 keys with the same name, can happen in theory, so compare memory
 		int parentKeyExistsInOriginalKeySet = parentKeyInOriginalKeySet == key;
+		// if the child added the parent key to the keyset pop it from the keyset
+		// then reinsert key after we copied the data and delete this serialized copy
+		Key * parentKeyInKeySet = keySet != NULL ? ksLookup (keySet, key, KDB_O_POP) : NULL;
+		int childAddedParentKey = parentKeyInKeySet != NULL;
 
-		// Copy everything back into the actual keysets
 		// Unfortunately we can't use keyCopy here as ksAppendKey locks it so it will fail
 		// This is the case if the parent key is also contained in the originalKeySet / has been appended
 		// As an invariant we assume plugins don't change the parent key's name during a plugin call
@@ -328,6 +331,7 @@ int elektraPluginProcessSend (const ElektraPluginProcess * pp, pluginprocess_t c
 			keySetMeta (key, keyName (currentMeta), 0);
 		}
 		keyCopyAllMeta (key, parentDeserializedKey);
+		if (childAddedParentKey) keyCopyAllMeta (key, parentKeyInKeySet);
 
 		if (keySet != NULL)
 		{
@@ -335,7 +339,8 @@ int elektraPluginProcessSend (const ElektraPluginProcess * pp, pluginprocess_t c
 			// thus remove it here and re-add it afterwards
 			if (parentKeyExistsInOriginalKeySet) ksLookup (originalKeySet, parentKeyInOriginalKeySet, KDB_O_POP);
 			ksCopy (originalKeySet, keySet);
-			if (parentKeyExistsInOriginalKeySet) ksAppendKey (originalKeySet, key);
+			if (parentKeyExistsInOriginalKeySet || childAddedParentKey) ksAppendKey (originalKeySet, key);
+			if (childAddedParentKey) keyDel (parentKeyInKeySet);
 		}
 	}
 	errno = prevErrno;
