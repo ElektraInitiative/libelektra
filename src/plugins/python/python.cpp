@@ -208,20 +208,20 @@ int PYTHON_PLUGIN_FUNCTION (Open) (ckdb::Plugin * handle, ckdb::Key * errorKey)
 	ElektraPluginProcess * pp = static_cast<ElektraPluginProcess *> (elektraPluginGetData (handle));
 	if (pp == nullptr)
 	{
-		pp = elektraPluginProcessInit (errorKey);
-		if (pp == nullptr) return ELEKTRA_PLUGIN_STATUS_ERROR;
 		moduleData * md = createModuleData (handle);
 		if (!md)
 		{
 			if (ksLookupByName (elektraPluginGetConfig (handle), "/module", 0) != nullptr)
 			{
-				elektraPluginProcessClose (pp, errorKey);
 				return ELEKTRA_PLUGIN_STATUS_SUCCESS; // by convention: success if /module exists
 			}
 
 			ELEKTRA_SET_ERROR (111, errorKey, "No python script set, please pass a filename via /script");
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
+
+		if ((pp = elektraPluginProcessInit (errorKey)) == nullptr) return ELEKTRA_PLUGIN_STATUS_ERROR;
+
 		elektraPluginProcessSetData (pp, md);
 		elektraPluginSetData (handle, pp);
 		if (!elektraPluginProcessIsParent (pp)) elektraPluginProcessStart (handle, pp);
