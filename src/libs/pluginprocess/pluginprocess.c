@@ -257,14 +257,14 @@ int elektraPluginProcessSend (const ElektraPluginProcess * pp, pluginprocess_t c
 	char * payloadSize = intToStr (ksGetSize (originalKeySet));
 	ksAppendKey (commandKeySet,
 		     keyNew ("/pluginprocess/payload/size", KEY_VALUE, originalKeySet == NULL ? "-1" : payloadSize, KEY_END));
-	free (payloadSize);
+	elektraFree (payloadSize);
 
 	// Serialize, currently statically use dump as our default format, this already writes everything out to the pipe
 	Key * commandPipeKey = keyNew ("/pluginprocess/pipe/command", KEY_VALUE, pp->commandPipe, KEY_END);
 	Key * resultPipeKey = keyNew ("/pluginprocess/pipe/result", KEY_VALUE, pp->resultPipe, KEY_END);
 	ELEKTRA_LOG ("Parent: Sending data to issue command %u it", command);
 	elektraInvoke2Args (pp->dump, "set", commandKeySet, commandPipeKey);
-	if (keySet != NULL)
+	if (keySet != NULL) 
 	{
 		ELEKTRA_LOG ("Parent: Sending the payload keyset with %zd keys through the pipe now", ksGetSize (keySet));
 		elektraInvoke2Args (pp->dump, "set", keySet, resultPipeKey);
@@ -389,9 +389,11 @@ static char * makePipeDirectory (Key * errorKey)
 
 static char * getPipename (const char * directoryName, const char * suffix)
 {
-	char * pipename = elektraMalloc (strlen (directoryName) + strlen (suffix) + 1);
-	strncpy (pipename, directoryName, strlen (directoryName));
-	strncpy (pipename + strlen (directoryName), suffix, strlen (suffix) + 1);
+	const int directoryNameLength = strlen (directoryName);
+	const int suffixLength = strlen (suffix);
+	char * pipename = elektraMalloc (directoryNameLength + suffixLength + 1);
+	strncpy (pipename, directoryName, directoryNameLength);
+	strncpy (pipename + directoryNameLength, suffix, suffixLength + 1);
 	return pipename;
 }
 
@@ -433,12 +435,20 @@ ElektraPluginProcess * elektraPluginProcessInit (Key * errorKey)
 	// First time initialization
 	ElektraPluginProcess * pp;
 	pp = elektraMalloc (sizeof (ElektraPluginProcess));
-	pp->pipeDirectory = makePipeDirectory (errorKey);
-	pp->commandPipe = getPipename (pp->pipeDirectory, "/command");
-	pp->resultPipe = getPipename (pp->pipeDirectory, "/result");
-	pp->dump = elektraInvokeOpen ("dump", 0, errorKey);
 	pp->counter = 0;
 	pp->pluginData = NULL;
+	pp->pipeDirectory = NULL;
+	pp->commandPipe = NULL;
+	pp->resultPipe = NULL;
+	pp->dump = NULL;
+
+	pp->pipeDirectory = makePipeDirectory (errorKey);
+	if (pp -> pipeDirectory)
+	{
+		pp->commandPipe = getPipename (pp->pipeDirectory, "/command");
+		pp->resultPipe = getPipename (pp->pipeDirectory, "/result");
+		pp->dump = elektraInvokeOpen ("dump", 0, errorKey);
+	}
 
 	if (pp->pipeDirectory && pp->commandPipe && pp->resultPipe && pp->dump)
 	{
