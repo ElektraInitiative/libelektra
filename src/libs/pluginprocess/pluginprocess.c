@@ -255,8 +255,8 @@ int elektraPluginProcessSend (const ElektraPluginProcess * pp, pluginprocess_t c
 	// Some plugin functions don't use keysets, in that case don't send any actual payload, signal via flag
 	KeySet * keySet = originalKeySet != NULL ? ksDup (originalKeySet) : NULL;
 	char * payloadSize = intToStr (ksGetSize (originalKeySet));
-	ksAppendKey (commandKeySet, keyNew ("/pluginprocess/payload/size", KEY_VALUE,
-					    originalKeySet == NULL ? "-1" : payloadSize, KEY_END));
+	ksAppendKey (commandKeySet,
+		     keyNew ("/pluginprocess/payload/size", KEY_VALUE, originalKeySet == NULL ? "-1" : payloadSize, KEY_END));
 	free (payloadSize);
 
 	// Serialize, currently statically use dump as our default format, this already writes everything out to the pipe
