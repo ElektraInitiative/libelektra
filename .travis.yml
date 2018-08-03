@@ -153,6 +153,7 @@ matrix:
     # MMAP: Enable mmapstorage as default
 
     - os: osx
+      name: 🍏 mmap
       osx_image: xcode9.4
       compiler: clang
       env:
