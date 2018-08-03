@@ -158,9 +158,6 @@ static int Python_CallFunction_Helper2 (moduleData * data, const char * funcName
 	return ret;
 }
 
-static std::mutex mutex;
-static unsigned open_cnt = 0;
-
 static void Python_Shutdown (moduleData * data)
 {
 	/* destroy python if plugin isn't used anymore */
@@ -178,10 +175,7 @@ static void Python_Shutdown (moduleData * data)
 			/* destroy sub interpreter */
 			Py_EndInterpreter (data->tstate);
 		}
-		mutex.lock ();
-		if (open_cnt && !--open_cnt && data->shutdown) // order matters!
-			Py_Finalize ();
-		mutex.unlock ();
+		Py_Finalize ();
 	}
 }
 
@@ -222,37 +216,31 @@ int PYTHON_PLUGIN_FUNCTION (Open) (ckdb::Plugin * handle, ckdb::Key * errorKey)
 			if (ksLookupByName (elektraPluginGetConfig (handle), "/module", 0) != nullptr)
 			{
 				elektraPluginProcessClose (pp, errorKey);
-				return 0; // by convention: success if /module exists
+				return ELEKTRA_PLUGIN_STATUS_SUCCESS; // by convention: success if /module exists
 			}
 
 			ELEKTRA_SET_ERROR (111, errorKey, "No python script set, please pass a filename via /script");
-			return -1;
+			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
-		elektraPluginProcessSetData (handle, md);
 		elektraPluginSetData (handle, pp);
+		elektraPluginProcessSetData (handle, md);
 		if (!elektraPluginProcessIsParent (pp)) elektraPluginProcessStart (handle, pp);
 	}
 
-	moduleData * data = static_cast<moduleData *> (elektraPluginProcessGetData (handle));
 	if (elektraPluginProcessIsParent (pp)) return elektraPluginProcessOpen (pp, errorKey);
 
-	{
+	moduleData * data = static_cast<moduleData *> (elektraPluginProcessGetData (handle));
+
+	if (data->instance == nullptr) {
 		/* initialize python interpreter if necessary */
-		mutex.lock ();
 		if (!Py_IsInitialized ())
 		{
 			Py_Initialize ();
 			if (!Py_IsInitialized ())
 			{
-				mutex.unlock ();
 				goto error;
 			}
-			open_cnt++;
 		}
-		else if (open_cnt) // we have initialized python before
-			open_cnt++;
-		mutex.unlock ();
-
 		/* init threads */
 		PyEval_InitThreads ();
 
@@ -347,11 +335,11 @@ int PYTHON_PLUGIN_FUNCTION (Open) (ckdb::Plugin * handle, ckdb::Key * errorKey)
 			goto error_print;
 		}
 		data->instance = inst;
+
+		/* store module data after everything is set up */
+		// elektraPluginProcessSetData (handle, data);
 	}
 	
-	/* store module data after everything is set up */
-	elektraPluginProcessSetData (handle, data);
-
 	/* call python function */
 	return Python_CallFunction_Helper2 (data, "open", elektraPluginGetConfig (handle), errorKey);
 
@@ -361,8 +349,8 @@ error:
 	/* destroy python */
 	Python_Shutdown (data);
 	delete data;
-	elektraPluginSetData (handle, nullptr);
-	return -1;
+	elektraPluginProcessSetData (handle, nullptr);
+	return ELEKTRA_PLUGIN_STATUS_ERROR;
 }
 
 int PYTHON_PLUGIN_FUNCTION (Close) (ckdb::Plugin * handle, ckdb::Key * errorKey)
@@ -379,7 +367,6 @@ int PYTHON_PLUGIN_FUNCTION (Close) (ckdb::Plugin * handle, ckdb::Key * errorKey)
 		}
 		return result.result;
 	}
-
 	if (data == nullptr) return 0;
 
 	int ret = Python_CallFunction_Helper1 (data, "close", errorKey);
