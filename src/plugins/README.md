@@ -250,6 +250,7 @@ binding during run-time.
 - [doc](doc/) contains the documentation of the plugin interface
 - [error](error/) yields errors as described in metadata (handy for test purposes)
 - [template](template/) to be copied for new plugins
+- [cpptemplate](cpptemplate/) a template for C++ based plugins
 - [list](list/) loads other plugins
 - [iterate](iterate/) iterate over all keys and run exported functions on tagged keys
 - [semlock](semlock/) a semaphore based global locking logic
