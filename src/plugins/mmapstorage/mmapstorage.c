@@ -56,6 +56,30 @@ struct _dynArray
 
 typedef struct _dynArray DynArray;
 
+static KeySet magicKeySet = {
+	.array = (Key **) 0x00FF,
+	.size = SIZE_MAX,
+	.alloc = 0,
+	.cursor = (Key *) 0xFFFE,
+	.current = SIZE_MAX / 2,
+	.flags = KS_FLAG_MMAP_ARRAY | KS_FLAG_SYNC,
+	.mmapMetaData = (MmapMetaData *) 0xE1EF,
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+	.opmphm = (Opmphm *) 0xFFFE,
+#endif
+};
+
+static Key magicKey = {
+	.data.v = (void *) 0xE1EF,
+	.dataSize = SIZE_MAX,
+	.key = (char *) 0x00FF,
+	.keySize = UINT16_MAX,
+	.keyUSize = 42,
+	.flags = KEY_FLAG_MMAP_STRUCT | KEY_FLAG_MMAP_DATA | KEY_FLAG_MMAP_KEY | KEY_FLAG_SYNC,
+	.ksReference = SIZE_MAX / 2,
+	.meta = (KeySet *) 0xFFFE,
+};
+
 /* -- File handling --------------------------------------------------------------------------------------------------------------------- */
 
 static FILE * openFile (Key * parentKey, const char * mode)
@@ -282,6 +306,94 @@ static int readFooter (char * mappedRegion, MmapHeader * mmapHeader)
 	return -1;
 }
 
+static void writeMagicData (char * dest)
+{
+	KeySet * destKeySet = (KeySet *) (dest + SIZEOF_MMAPHEADER + SIZEOF_MMAPMETADATA);
+	Key * keyPtr = (Key *) ((char *) destKeySet + SIZEOF_KEYSET);
+	memcpy (destKeySet, &magicKeySet, SIZEOF_KEYSET);
+	memcpy (keyPtr, &magicKey, SIZEOF_KEY);
+}
+
+/* -- Verification Functions  ----------------------------------------------------------------------------------------------------------- */
+
+static int verifyMagicKeySet (KeySet * ks)
+{
+	if (!ks)
+	{
+		return -1;
+	}
+
+	int ret = 0;
+	if (ks->array != magicKeySet.array) --ret;
+	if (ks->size != magicKeySet.size) --ret;
+	if (ks->alloc != magicKeySet.alloc) --ret;
+	if (ks->cursor != magicKeySet.cursor) --ret;
+	if (ks->current != magicKeySet.current) --ret;
+	if (ks->flags != magicKeySet.flags) --ret;
+	if (ks->mmapMetaData != magicKeySet.mmapMetaData) --ret;
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+	if (ks->opmphm != magicKeySet.opmphm) --ret;
+#endif
+
+	return ret;
+}
+
+static int verifyMagicKey (Key * key)
+{
+	if (!key)
+	{
+		return -1;
+	}
+
+	int ret = 0;
+	if (key->data.v != magicKey.data.v) --ret;
+	if (key->dataSize != magicKey.dataSize) --ret;
+	if (key->key != magicKey.key) --ret;
+	if (key->keySize != magicKey.keySize) --ret;
+	if (key->keyUSize != magicKey.keyUSize) --ret;
+	if (key->flags != magicKey.flags) --ret;
+	if (key->ksReference != magicKey.ksReference) --ret;
+	if (key->meta != magicKey.meta) --ret;
+
+	return ret;
+}
+
+static int verifyMagicData (char * mappedRegion)
+{
+	KeySet * destKeySet = (KeySet *) (mappedRegion + SIZEOF_MMAPHEADER + SIZEOF_MMAPMETADATA);
+	Key * keyPtr = (Key *) ((char *) destKeySet + SIZEOF_KEYSET);
+
+	if (verifyMagicKey (keyPtr) != 0)
+	{
+		return -1;
+	}
+
+	if (verifyMagicKeySet (destKeySet) != 0)
+	{
+		return -1;
+	}
+
+	return 0;
+}
+
+#ifdef ENABLE_MMAP_CHECKSUM
+static int verifyChecksum (char * mappedRegion, MmapHeader * mmapHeader)
+{
+	char * ksPtr = (char *) (mappedRegion + SIZEOF_MMAPHEADER + SIZEOF_MMAPMETADATA);
+	uint32_t checksum = crc32 (0L, Z_NULL, 0);
+	checksum = crc32 (checksum, (const unsigned char *) ksPtr,
+			  (mmapHeader->allocSize - SIZEOF_MMAPHEADER - SIZEOF_MMAPMETADATA - SIZEOF_MMAPFOOTER));
+
+	if (checksum != mmapHeader->checksum)
+	{
+		ELEKTRA_LOG_WARNING ("old checksum: %ul", mmapHeader->checksum);
+		ELEKTRA_LOG_WARNING ("new checksum: %ul", checksum);
+		return -1;
+	}
+	return 0;
+}
+#endif
+
 static void calculateMmapDataSize (MmapHeader * mmapHeader, MmapMetaData * mmapMetaData, KeySet * returned, DynArray * dynArray)
 {
 	Key * cur;
@@ -311,10 +423,12 @@ static void calculateMmapDataSize (MmapHeader * mmapHeader, MmapMetaData * mmapM
 		}
 	}
 
-	size_t keyArraySize = (returned->size) * SIZEOF_KEY;
+	// TODO: add more docu about the size, magic KeySet, magic Key
+	size_t keyArraySize = (returned->size + 1) * SIZEOF_KEY; // +1 for magic Key
 	size_t keyPtrArraySize = (returned->alloc) * SIZEOF_KEY_PTR;
 
-	size_t allocSize = SIZEOF_KEYSET + keyPtrArraySize + keyArraySize + dataBlocksSize + (metaKeySets * SIZEOF_KEYSET) +
+	// SIZEOF_KEYSET * 2 : magic KeySet + main KeySet
+	size_t allocSize = (SIZEOF_KEYSET * 2) + keyPtrArraySize + keyArraySize + dataBlocksSize + (metaKeySets * SIZEOF_KEYSET) +
 			   (metaKsAlloc * SIZEOF_KEY_PTR) + (dynArray->size * SIZEOF_KEY);
 
 	size_t padding = sizeof (uint64_t) - (allocSize % sizeof (uint64_t)); // alignment for MMAP Footer at end of mapping
@@ -323,7 +437,7 @@ static void calculateMmapDataSize (MmapHeader * mmapHeader, MmapMetaData * mmapM
 	mmapHeader->sizeofKeySet = sizeof (KeySet);
 	mmapHeader->allocSize = allocSize;
 
-	mmapMetaData->numKeySets = 1 + metaKeySets;
+	mmapMetaData->numKeySets = 1 + metaKeySets; // 1: main KeySet
 	mmapMetaData->ksAlloc = returned->alloc + metaKsAlloc;
 	mmapMetaData->numKeys = returned->size + dynArray->size;
 	mmapMetaData->dataSize = dataBlocksSize;
@@ -510,7 +624,9 @@ static void copyKeySetToMmap (char * dest, KeySet * keySet, MmapHeader * mmapHea
 	mmapMetaData->destAddr = dest;
 	size_t mmapAddrInt = (size_t) mmapMetaData->destAddr;
 
-	KeySet * ksPtr = (KeySet *) (dest + SIZEOF_MMAPHEADER + SIZEOF_MMAPMETADATA);
+	writeMagicData (dest);
+
+	KeySet * ksPtr = (KeySet *) (dest + SIZEOF_MMAPHEADER + SIZEOF_MMAPMETADATA + SIZEOF_KEYSET + SIZEOF_KEY);
 
 	if (keySet->size < 1)
 	{
@@ -533,7 +649,7 @@ static void copyKeySetToMmap (char * dest, KeySet * keySet, MmapHeader * mmapHea
 	}
 
 #ifdef ENABLE_MMAP_CHECKSUM
-	char * ksCharPtr = (char *) ksPtr;
+	char * ksCharPtr = (char *) (dest + SIZEOF_MMAPHEADER + SIZEOF_MMAPMETADATA);
 	uint32_t checksum = crc32 (0L, Z_NULL, 0);
 	checksum = crc32 (checksum, (const unsigned char *) ksCharPtr,
 			  (mmapHeader->allocSize - SIZEOF_MMAPHEADER - SIZEOF_MMAPMETADATA - SIZEOF_MMAPFOOTER));
@@ -547,7 +663,7 @@ static void copyKeySetToMmap (char * dest, KeySet * keySet, MmapHeader * mmapHea
 
 static void mmapToKeySet (char * mappedRegion, KeySet * returned)
 {
-	KeySet * keySet = (KeySet *) (mappedRegion + SIZEOF_MMAPHEADER + SIZEOF_MMAPMETADATA);
+	KeySet * keySet = (KeySet *) (mappedRegion + SIZEOF_MMAPHEADER + SIZEOF_MMAPMETADATA + SIZEOF_KEYSET + SIZEOF_KEY);
 	returned->array = keySet->array;
 	returned->size = keySet->size;
 	returned->alloc = keySet->alloc;
@@ -563,7 +679,7 @@ static void updatePointers (MmapMetaData * mmapMetaData, char * dest)
 {
 	size_t destInt = (size_t) dest;
 
-	char * ksPtr = (dest + SIZEOF_MMAPHEADER + SIZEOF_MMAPMETADATA);
+	char * ksPtr = (dest + SIZEOF_MMAPHEADER + SIZEOF_MMAPMETADATA + SIZEOF_KEYSET + SIZEOF_KEY);
 
 	char * ksArrayPtr = ksPtr + SIZEOF_KEYSET * mmapMetaData->numKeySets;
 	char * keyPtr = ksArrayPtr + SIZEOF_KEY_PTR * mmapMetaData->ksAlloc;
@@ -626,24 +742,6 @@ static void * hexStringToAddress (const char * hexString)
 	errno = errnosave;
 	return (void *) val;
 }
-
-#ifdef ENABLE_MMAP_CHECKSUM
-static int verifyChecksum (char * mappedRegion, MmapHeader * mmapHeader)
-{
-	char * ksPtr = (char *) (mappedRegion + SIZEOF_MMAPHEADER + SIZEOF_MMAPMETADATA);
-	uint32_t checksum = crc32 (0L, Z_NULL, 0);
-	checksum = crc32 (checksum, (const unsigned char *) ksPtr,
-			  (mmapHeader->allocSize - SIZEOF_MMAPHEADER - SIZEOF_MMAPMETADATA - SIZEOF_MMAPFOOTER));
-
-	if (checksum != mmapHeader->checksum)
-	{
-		ELEKTRA_LOG_WARNING ("old checksum: %ul", mmapHeader->checksum);
-		ELEKTRA_LOG_WARNING ("new checksum: %ul", checksum);
-		return -1;
-	}
-	return 0;
-}
-#endif
 
 static KeySet * copyKeySet (KeySet * toCopy, MmapMetaData * mmapMetaData)
 {
@@ -889,6 +987,13 @@ int elektraMmapstorageGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 	}
 #endif
 
+	if (verifyMagicData (mappedRegion) != 0)
+	{
+		// magic data could not be read properly, indicating unreadable format or different architecture
+		ELEKTRA_LOG_WARNING ("mmap magic data could not be read properly");
+		goto error;
+	}
+
 	ksClose (returned);
 	updatePointers (&mmapMetaData, mappedRegion);
 	mmapToKeySet (mappedRegion, returned);
@@ -905,8 +1010,11 @@ int elektraMmapstorageGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 
 error:
-	ELEKTRA_LOG_WARNING ("strerror: %s", strerror (errno));
-	ELEKTRA_SET_ERROR_GET (parentKey);
+	if (errno != 0)
+	{
+		ELEKTRA_LOG_WARNING ("strerror: %s", strerror (errno));
+		ELEKTRA_SET_ERROR_GET (parentKey);
+	}
 
 	fclose (fp);
 	keyDel (found);
@@ -985,8 +1093,11 @@ int elektraMmapstorageSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 
 error:
-	ELEKTRA_LOG_WARNING ("strerror: %s", strerror (errno));
-	ELEKTRA_SET_ERROR_SET (parentKey);
+	if (errno != 0)
+	{
+		ELEKTRA_LOG_WARNING ("strerror: %s", strerror (errno));
+		ELEKTRA_SET_ERROR_SET (parentKey);
+	}
 
 	fclose (fp);
 	delDynArray (dynArray);
