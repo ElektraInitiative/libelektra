@@ -49,7 +49,7 @@ static int elektraDummyClose (Plugin * handle, Key * errorKey)
 			elektraFree (testData);
 		}
 		return result.result;
-	} 
+	}
 
 	keySetMeta (errorKey, "user/tests/pluginprocess/close", "");
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
@@ -121,7 +121,8 @@ static void test_communication (void)
 	succeed_if (plugin->kdbOpen (plugin, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbOpen was not successful");
 	ElektraPluginProcess * pp = elektraPluginGetData (plugin);
 	succeed_if (pp != NULL, "didn't store the pluginprocess struct in the plugin's data");
-	if (pp) {
+	if (pp)
+	{
 		succeed_if (keyGetMeta (parentKey, "user/tests/pluginprocess/open") != NULL,
 			    "child process didn't set the open metadata on the parent key");
 		succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
@@ -141,7 +142,8 @@ static void test_communication (void)
 			    "child process didn't set the get metadata on the parent key");
 		succeed_if (keyGetMeta (parentKey, "user/tests/pluginprocess/testdata") != NULL,
 			    "child process didn't receive the plugin data from the parent");
-		succeed_if (plugin->kdbError (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbError was not successful");
+		succeed_if (plugin->kdbError (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS,
+			    "call to kdbError was not successful");
 		succeed_if (keyGetMeta (parentKey, "user/tests/pluginprocess/error") != NULL,
 			    "child process didn't set the error metadata on the parent key");
 	}
@@ -272,7 +274,8 @@ static void test_childAddingParentKey (void)
 
 	const int opened = plugin->kdbOpen (plugin, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	succeed_if (opened, "call to kdbOpen was not successful");
-	if (opened) {
+	if (opened)
+	{
 		succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
 		Key * addedParentKey = ksLookup (ks, parentKey, KDB_O_NONE);
 		succeed_if (addedParentKey != NULL, "parent key was not added to keyset");
@@ -288,7 +291,8 @@ static void test_childAddingParentKey (void)
 			succeed_if (elektraStrCmp (keyString (childMeta), "value") == 0, "missing child metadata value on parent key");
 		}
 		succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
-		succeed_if (plugin->kdbError (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbError was not successful");
+		succeed_if (plugin->kdbError (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS,
+			    "call to kdbError was not successful");
 	}
 	succeed_if (plugin->kdbClose (plugin, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbClose was not successful");
 	succeed_if (ksLookupByName (ks, "user/tests/pluginprocess", KDB_O_NONE) != NULL,
@@ -339,9 +343,9 @@ int main (int argc, char ** argv)
 	test_communication ();
 	test_emptyKeySet ();
 	test_reservedParentKeyName ();
-	//test_keysetContainingParentKey ();
-	//test_closeWithoutOpen ();
-	//test_childAddingParentKey ();
+	test_keysetContainingParentKey ();
+	test_closeWithoutOpen ();
+	test_childAddingParentKey ();
 
 	print_result ("pluginprocess");
 
