@@ -170,12 +170,16 @@ static void test_emptyKeySet (void)
 	KeySet * ks = NULL;
 
 	succeed_if (plugin->kdbOpen (plugin, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbOpen was not successful");
-	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR,
-		    "call to kdbSet with null keyset was successful");
-	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR,
-		    "call to kdbGet with null keyset was successful");
-	succeed_if (plugin->kdbError (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR,
-		    "call to kdbError with null keyset was successful");
+	ElektraPluginProcess * pp = elektraPluginGetData (plugin);
+	if (pp)
+	{
+		succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR,
+			    "call to kdbSet with null keyset was successful");
+		succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR,
+			    "call to kdbGet with null keyset was successful");
+		succeed_if (plugin->kdbError (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR,
+			    "call to kdbError with null keyset was successful");
+	}
 	succeed_if (plugin->kdbClose (plugin, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbClose was not successful");
 
 	keyDel (parentKey);
@@ -201,7 +205,11 @@ static void test_reservedParentKeyName (void)
 	ksAppendKey (ks, keyNew ("/pluginprocess/result", KEY_END));
 
 	succeed_if (plugin->kdbOpen (plugin, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbOpen was not successful");
-	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
+	ElektraPluginProcess * pp = elektraPluginGetData (plugin);
+	if (pp)
+	{
+		succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
+	}
 	succeed_if (plugin->kdbClose (plugin, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbClose was not successful");
 
 	keyDel (parentKey);
@@ -223,20 +231,25 @@ static void test_keysetContainingParentKey (void)
 	ksAppendKey (ks, parentKey);
 
 	succeed_if (plugin->kdbOpen (plugin, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbOpen was not successful");
-	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
-	const Key * parentMeta = keyGetMeta (parentKey, "/hello/from/parent");
-	succeed_if (parentMeta != NULL, "missing parent metadata on parent key") if (parentMeta != NULL)
+	ElektraPluginProcess * pp = elektraPluginGetData (plugin);
+	if (pp)
 	{
-		succeed_if (elektraStrCmp (keyString (parentMeta), "value") == 0, "missing parent metadata value on parent key");
+		succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
+		const Key * parentMeta = keyGetMeta (parentKey, "/hello/from/parent");
+		succeed_if (parentMeta != NULL, "missing parent metadata on parent key") if (parentMeta != NULL)
+		{
+			succeed_if (elektraStrCmp (keyString (parentMeta), "value") == 0, "missing parent metadata value on parent key");
+		}
+		const Key * childMeta = keyGetMeta (parentKey, "user/tests/pluginprocess/set");
+		succeed_if (childMeta != NULL, "missing child metadata on parent key");
+		if (childMeta != NULL)
+		{
+			succeed_if (elektraStrCmp (keyString (childMeta), "value") == 0, "missing child metadata value on parent key");
+		}
+		succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
+		succeed_if (plugin->kdbError (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS,
+			    "call to kdbError was not successful");
 	}
-	const Key * childMeta = keyGetMeta (parentKey, "user/tests/pluginprocess/set");
-	succeed_if (childMeta != NULL, "missing child metadata on parent key");
-	if (childMeta != NULL)
-	{
-		succeed_if (elektraStrCmp (keyString (childMeta), "value") == 0, "missing child metadata value on parent key");
-	}
-	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
-	succeed_if (plugin->kdbError (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbError was not successful");
 	succeed_if (plugin->kdbClose (plugin, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbClose was not successful");
 	succeed_if (ksLookupByName (ks, "user/tests/pluginprocess", KDB_O_NONE) != NULL,
 		    "parent key got removed from the keyset by pluginprocess");
@@ -272,9 +285,9 @@ static void test_childAddingParentKey (void)
 
 	KeySet * ks = ksNew (0, KS_END);
 
-	const int opened = plugin->kdbOpen (plugin, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS;
-	succeed_if (opened, "call to kdbOpen was not successful");
-	if (opened)
+	succeed_if (plugin->kdbOpen (plugin, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbOpen was not successful");
+	ElektraPluginProcess * pp = elektraPluginGetData (plugin);
+	if (pp)
 	{
 		succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
 		Key * addedParentKey = ksLookup (ks, parentKey, KDB_O_NONE);
@@ -312,7 +325,16 @@ static int elektraDummyOpenWithError (Plugin * handle, Key * errorKey)
 		elektraPluginSetData (handle, pp);
 		// Assume some other initialization failed and thus close here without calling open
 		// to free the resources but without sending the command
-		elektraPluginProcessClose (pp, errorKey);
+		// Note that init didn't fail thus we have forked already
+		// so kill the child here and cleanup the parent
+		if (elektraPluginProcessIsParent (pp))
+		{
+			elektraPluginProcessClose (pp, errorKey);
+		}
+		else
+		{
+			_Exit (EXIT_SUCCESS);
+		}
 	}
 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
