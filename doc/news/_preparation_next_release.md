@@ -166,6 +166,12 @@ Thanks to Daniel Bugl.
 - The plugins ruby, python and jni can now also be mounted as global plugin.
 - Fix crash in python plugin. *(Markus Raab)*
 
+### JNI
+
+- We now disable the plugin if  `BUILD_STATIC` or `BUILD_FULL` are enabled, since otherwise the plugin breaks the `kdb` tool.
+  *(René Schwaiger)*
+- We disabled the internal check (`testscr_check_kdb_internal_check`) for the plugin, since it always fails. *(René Schwaiger)*
+
 ### HexNumber
 
 - The plugin [hexnumber](https://www.libelektra.org/plugins/hexnumber) has been added. It can be used
@@ -193,16 +199,16 @@ Thanks to Daniel Bugl.
 
 ### Regex Dispatcher
 
-- The plugin [regexdispatcher](https://www.libelektra.org/plugins/regexdispatcher) has been added. 
-  It calculates regex representations for commonly used specification keywords to be used with the 
+- The plugin [regexdispatcher](https://www.libelektra.org/plugins/regexdispatcher) has been added.
+  It calculates regex representations for commonly used specification keywords to be used with the
   [typechecker](https://www.libelektra.org/plugins/typechecker). Currently the keywords `check/range`,
   `check/enum` and `default` are supported. *(Armin Wurzinger)*
 
 ### Typechecker
 
 - The plugin [typechecker](https://www.libelektra.org/plugins/typechecker), used to validate
-  configuration specifications for Elektra statically, has been improved under the hood. It now 
-  supports a more concise and efficient typechecking process including a greatly 
+  configuration specifications for Elektra statically, has been improved under the hood. It now
+  supports a more concise and efficient typechecking process including a greatly
   improved type inference scheme that should make generated specification files and thus
   generated errors to be easier to understand. An example of such error message is shown in the
   [readme](https://www.libelektra.org/plugins/typechecker) *(Armin Wurzinger)*
@@ -421,6 +427,8 @@ Thanks to Daniel Bugl.
     coverage reports. *(Lukas Winkler)*
 - The functions `add_plugintest` and `add_plugin` now also support adding a C++ test instead of a C test. *(René Schwaiger)*
 - The function `add_plugintest` now also supports setting environment variables for C/C++ based tests. *(René Schwaiger)*
+- The build system now automatically detects Homebrew’s OpenSSL version on macOS. *(René Schwaiger)*
+- We improved the automatic detection of Libgcrypt and OpenSSL. *(René Schwaiger)*
 
 [Google Test]: https://github.com/google/googletest
 

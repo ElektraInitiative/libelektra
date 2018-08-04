@@ -26,6 +26,13 @@ printf "Checking %s\n" "$ACTUAL_PLUGINS"
 for PLUGIN in $ACTUAL_PLUGINS
 do
 	case "$PLUGIN" in
+	'jni')
+		# References:
+		#  - https://travis-ci.org/sanssecours/elektra/builds/410641048
+		#  - https://issues.libelektra.org/1466
+		#  - https://issues.libelektra.org/1963
+		continue
+		;;
 	"tracer")
 		# output on open/close
 		continue
@@ -56,9 +63,6 @@ do
 			continue
 			;;
 		'xerces')
-			continue
-			;;
-		'jni')
 			continue
 			;;
 		'ruby')

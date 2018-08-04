@@ -26,7 +26,7 @@ if (DEPENDENCY_PHASE)
 	endif ()
 endif ()
 
-add_plugin (jni SOURCES jni.c INCLUDE_DIRECTORIES ${DIRS} LINK_LIBRARIES ${LIBS})
+add_plugin (jni SOURCES jni.c INCLUDE_DIRECTORIES ${DIRS} LINK_LIBRARIES ${LIBS} ONLY_SHARED)
 
 if (ADDTESTING_PHASE)
 	check_binding_was_added ("jna" BINDING_WAS_ADDED)

@@ -15,6 +15,10 @@
 
 if (NOT OPENSSL_FOUND)
 	include (FindPkgConfig)
+	if (APPLE AND NOT DEFINED ENV{PKG_CONFIG_PATH})
+		# Add default pkg-config path of Homebrew’s OpenSSL version
+		set (ENV{PKG_CONFIG_PATH} "/usr/local/opt/openssl/lib/pkgconfig")
+	endif (APPLE AND NOT DEFINED ENV{PKG_CONFIG_PATH})
 	pkg_search_module (OPENSSL QUIET openssl)
 endif ()
 
@@ -24,7 +28,7 @@ if (OPENSSL_FOUND)
 	try_compile (HAS_OPENSSL_4SURE
 		     "${CMAKE_BINARY_DIR}"
 		     "${PROJECT_SOURCE_DIR}/src/plugins/crypto/compile_openssl.c"
-		     CMAKE_FLAGS -DINCLUDE_DIRECTORIES:STRING=${OPENSSL_INCLUDE_DIR}
+		     CMAKE_FLAGS -DINCLUDE_DIRECTORIES:STRING=${OPENSSL_INCLUDE_DIRS}
 				 -DLINK_LIBRARIES:PATH=${OPENSSL_LIBRARIES})
 
 	if (NOT HAS_OPENSSL_4SURE)
