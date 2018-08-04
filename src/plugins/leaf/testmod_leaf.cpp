@@ -17,25 +17,32 @@
 using CppKeySet = kdb::KeySet;
 using CppKey = kdb::Key;
 
+// -- Macros -------------------------------------------------------------------------------------------------------------------------------
+
+#define OPEN_PLUGIN(parentName, filepath)                                                                                                  \
+	CppKeySet modules{ 0, KS_END };                                                                                                    \
+	CppKeySet config{ 0, KS_END };                                                                                                     \
+	CppKeySet keys{ 0, KS_END };                                                                                                       \
+	elektraModulesInit (modules.getKeySet (), 0);                                                                                      \
+	CppKey parent{ parentName, KEY_VALUE, filepath, KEY_END };                                                                         \
+	Plugin * plugin = elektraPluginOpen ("leaf", modules.getKeySet (), config.getKeySet (), *parent);                                  \
+	exit_if_fail (plugin != NULL, "Could not open leaf plugin"); //! OCLint (empty if, too few branches switch)
+
+#define CLOSE_PLUGIN()                                                                                                                     \
+	ksDel (modules.release ());                                                                                                        \
+	config.release ();                                                                                                                 \
+	elektraPluginClose (plugin, 0);                                                                                                    \
+	elektraModulesClose (modules.getKeySet (), 0)
+
+// -- Tests --------------------------------------------------------------------------------------------------------------------------------
+
 TEST (leaf, basics)
 {
-	CppKeySet modules{ 0, KS_END };
-	CppKeySet config{ 0, KS_END };
-	CppKeySet keys{ 0, KS_END };
-	elektraModulesInit (modules.getKeySet (), 0);
-
-	CppKey parent{ "system/elektra/modules/leaf", KEY_END };
-	Plugin * plugin = elektraPluginOpen ("leaf", modules.getKeySet (), config.getKeySet (), *parent);
-	exit_if_fail (plugin != NULL, "Could not open leaf plugin"); //! OCLint (empty if, too few branches switch)
+	OPEN_PLUGIN ("system/elektra/modules/leaf", "")
 
 	succeed_if_same (plugin->kdbGet (plugin, keys.getKeySet (), *parent), ELEKTRA_PLUGIN_STATUS_SUCCESS,
 			 "Unable to retrieve plugin contract");
-
 	succeed_if_same (plugin->kdbSet (plugin, keys.getKeySet (), *parent), ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "Call of `kdbSet` failed");
 
-	elektraPluginClose (plugin, 0);
-	elektraModulesClose (modules.getKeySet (), 0);
-
-	ksDel (modules.release ());
-	config.release ();
+	CLOSE_PLUGIN ();
 }
