@@ -196,3 +196,71 @@ as much as possible.
 As for labels `gitmirror` should be if you want to cache repositories on this
 node.
 If Docker is available the `docker` label should be set.
+
+### Understand jenkins output
+Our jenkins build uses parallel steps inside a single build job to do most of
+the work.
+To reliable determine which stages failed it is best to look over the build
+results in the new Jenkins Blue Ocean view.
+It is the default View opened when accessing the build results from github.
+
+Failed stages are marked in red.
+On selecting a stage you can further expand all steps in the stage.
+Of interest should be one of the first steps which echos out the Docker image
+used to run the stage.
+You also want to look for whatever failed (which should be in a step also marked
+red to indicate failure).
+
+### Reproducing buildserver errors locally
+To reproduce the docker image used during the failing test you have to rebuild
+them locally.
+Determine which image is used as described above.
+
+Afterwards you can locate the image via the `DOCKER_IMAGES` map in the
+Jenkinsfile.
+It maps the stage that failed to the Dockerfile in the repository.
+Now you can build the image:
+
+```
+docker build --build-arg JENKINS_GROUPID=`id -g` \
+             --build-arg JENKINS_USERID=`id -u` \
+             -t libelektra-debian-stable \
+             scripts/docker/debian/stretch/
+```
+
+To run the build commands in the container run the following from libelektras
+base directory:
+```
+docker run -it \
+           -v `pwd`:/home/jenkins/ws \
+           -w /home/jenkins/ws \
+           libelektra-debian-stable
+```
+
+### Add new test stages
+Test stages are determined by the Jenkinsfile used by our build job.
+It currently is located at `scripts/jenkins/Jenkinsfile`.
+
+First you need to determine where and when it makes sense to run your desired
+test case.
+Keep in mind that resources are limited so you only want to use them if
+absolutly needed.
+Most additional tests run in the 'full' build stages.
+A good approach is to read similar test cases and adopt them to your needs.
+
+There are some helper functions defined in the Jenkinsfile which should make it
+easy to add new test cases.
+They are documented in the Jenkinsfile as well.
+
+### Modify test environments
+You can also modify the test environments (update a dependency, install a new
+dependency, ...) by editing the Dockerfiles checked into SCM.
+Determine which ones you need to modify by tracing which images are used for
+what stages via the `DOCKER_IMAGES` map used in our Jenkinsfile.
+The `dockerInit` function should be a good start point.
+
+Following docker best practises you should try to minimize layer count
+when possible.
+Our docker images are quite large and hence take a long time to build so make
+sure to test them locally first.
+
