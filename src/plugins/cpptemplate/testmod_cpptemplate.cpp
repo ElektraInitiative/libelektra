@@ -17,7 +17,7 @@
 using CppKeySet = kdb::KeySet;
 using CppKey = kdb::Key;
 
-TEST (type, basics)
+TEST (cpptemplate, basics)
 {
 	CppKeySet modules{ 0, KS_END };
 	CppKeySet config{ 0, KS_END };
