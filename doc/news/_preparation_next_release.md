@@ -336,6 +336,8 @@ Thanks to Daniel Bugl.
   when checking if the ABI changed. *(Lukas Winkler)*
 - The completion for [fish](http://fishshell.com) now also suggest the `info/` meta attributes of the
   [file plugin](https://www.libelektra.org/plugins/file). *(René Schwaiger)*
+- The script [`copy-template`](https://master.libelektra.org/scripts/copy-template) is now location independent. It will always create a
+  new plugin in `src/plugins`. *(René Schwaiger)*
 
 [`cmake-format`]: https://github.com/cheshirekow/cmake_format
 

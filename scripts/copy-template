@@ -7,6 +7,10 @@
 
 set -e
 
+SCRIPTS_DIR=$(dirname "$0")
+. "${SCRIPTS_DIR}/include-common"
+cd "$SOURCE/src/plugins"
+
 if [ $# -ne 1 ]; then
 	echo "Usage: $0 <new-pluginname>"
 	echo
