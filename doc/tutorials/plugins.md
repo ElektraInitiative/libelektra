@@ -55,8 +55,16 @@ important things are left to be done:
 After these two steps your plugin is ready to be compiled, installed and mounted for the first time. Have a look at
 [How-To: kdb mount](mount.md)
 
+#### C++ Based Plugins
 
+If you want to use C++ instead of C for plugin development you can use [`copy-template`](/scripts/copy-template) to create a plugin based
+on [`cpptemplate`](/src/plugins/cpptemplate/). For example, to create a new plugin called `pluginbaby` use the command:
 
+```sh
+scripts/copy-template -p pluginbaby
+```
+
+.
 
 ## Contract
 
