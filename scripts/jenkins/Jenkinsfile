@@ -119,6 +119,10 @@ DOCKER_IMAGES = [:]  // Containers docker image descriptions, populated during
  * if previous stage did not fail.
  *****************************************************************************/
 
+/* main function wrapping around all stages
+ *
+ * Added to improve readability.
+ */
 def main() {
   stage("Init docker images") {
     dockerInit()
