@@ -17,12 +17,8 @@ using ckdb::KeySet;
 using ckdb::Plugin;
 
 extern "C" {
-int elektraLeafOpen (Plugin * handle, Key * errorKey);
-int elektraLeafClose (Plugin * handle, Key * errorKey);
 int elektraLeafGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraLeafSet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraLeafError (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraLeafCheckConfig (Key * errorKey, KeySet * conf);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (leaf);
 } // end extern "C"

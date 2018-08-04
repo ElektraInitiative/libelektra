@@ -32,8 +32,6 @@ TEST (type, basics)
 
 	succeed_if_same (plugin->kdbSet (plugin, keys.getKeySet (), *parent), ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "Call of `kdbSet` failed");
 
-	succeed_if_same (plugin->kdbError (plugin, keys.getKeySet (), *parent), ELEKTRA_PLUGIN_STATUS_SUCCESS, "Call of `kdbError` failed");
-
 	elektraPluginClose (plugin, 0);
 	elektraModulesClose (modules.getKeySet (), 0);
 
