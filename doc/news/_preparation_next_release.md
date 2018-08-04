@@ -140,6 +140,17 @@ Thanks to Daniel Bugl.
 - We fixed various warnings in the source code reported by [OCLint](http://oclint.org). *(René Schwaiger)*
 - The plugin now also encodes and decodes key names in addition to key values. *(René Schwaiger)*
 
+### CPP Template
+
+- We added a new [template for C++ based plugins](https://www.libelektra.org/plugins/cpptemplate). To create a plugin based on this
+  template, please use the command
+
+  ```sh
+  scripts/copy-template -p pluginname
+  ```
+
+  , where `pluginname` specifies the name of your new plugin. *(René Schwaiger)*
+
 ### Crypto
 
 - The `crypto` plugin now uses Elektra's `libinvoke` and the `base64` plugin in order to encode and decode Base64 strings. This improvement reduces code duplication between the two plugins. *(Peter Nirschl)*
@@ -336,8 +347,13 @@ Thanks to Daniel Bugl.
   when checking if the ABI changed. *(Lukas Winkler)*
 - The completion for [fish](http://fishshell.com) now also suggest the `info/` meta attributes of the
   [file plugin](https://www.libelektra.org/plugins/file). *(René Schwaiger)*
+
+### Copy Template
+
 - The script [`copy-template`](https://master.libelektra.org/scripts/copy-template) is now location independent. It will always create a
   new plugin in `src/plugins`. *(René Schwaiger)*
+- The command now also supports the new [template for C++ based plugins](https://www.libelektra.org/plugins/cpptemplate). Please use the
+  command line switch `-p` to create a new plugin based on `cpptemplate`.
 
 [`cmake-format`]: https://github.com/cheshirekow/cmake_format
 
