@@ -609,7 +609,7 @@ static void test_mmap_ksAppendKey (const char * tmpFile)
 
 	ssize_t appendSize = 0;
 	Key * toAppend = keyNew ("user/my/new/key", KEY_END);
-	ELEKTRA_LOG_WARNING ("will now do ksAppendKey");
+
 	if ((appendSize = ksAppendKey (ks, toAppend)) == -1)
 	{
 		yield_error ("ksAppendKey failed");

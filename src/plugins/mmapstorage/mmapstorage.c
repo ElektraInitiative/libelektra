@@ -24,8 +24,9 @@
 #include <assert.h>
 #include <errno.h>
 #include <limits.h>    // SSIZE_MAX
-#include <stdio.h>     // fopen(), fileno()
+#include <stdio.h>     // fopen(), fileno(), fread()
 #include <stdlib.h>    // strtol()
+#include <string.h>    // memcmp()
 #include <sys/mman.h>  // mmap()
 #include <sys/stat.h>  // stat()
 #include <sys/types.h> // ftruncate ()
@@ -282,9 +283,11 @@ static int readHeader (FILE * fp, MmapHeader * mmapHeader, MmapMetaData * mmapMe
 	memset (mmapHeader, 0, SIZEOF_MMAPHEADER);
 	memset (mmapMetaData, 0, SIZEOF_MMAPMETADATA);
 
-	// TODO: fread/fseek error handling
-	fread (mmapHeader, SIZEOF_MMAPHEADER, (sizeof (char)), fp);
-	fread (mmapMetaData, SIZEOF_MMAPMETADATA, (sizeof (char)), fp);
+	if (fread (mmapHeader, SIZEOF_MMAPHEADER, 1, fp) != 1
+		|| fread (mmapMetaData, SIZEOF_MMAPMETADATA, 1, fp) != 1)
+	{
+		return -1;
+	}
 
 	if (mmapHeader->mmapMagicNumber == ELEKTRA_MAGIC_MMAP_NUMBER)
 	{
@@ -323,19 +326,7 @@ static int verifyMagicKeySet (KeySet * ks)
 		return -1;
 	}
 
-	int ret = 0;
-	if (ks->array != magicKeySet.array) --ret;
-	if (ks->size != magicKeySet.size) --ret;
-	if (ks->alloc != magicKeySet.alloc) --ret;
-	if (ks->cursor != magicKeySet.cursor) --ret;
-	if (ks->current != magicKeySet.current) --ret;
-	if (ks->flags != magicKeySet.flags) --ret;
-	if (ks->mmapMetaData != magicKeySet.mmapMetaData) --ret;
-#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
-	if (ks->opmphm != magicKeySet.opmphm) --ret;
-#endif
-
-	return ret;
+	return memcmp (ks, &magicKeySet, SIZEOF_KEYSET);
 }
 
 static int verifyMagicKey (Key * key)
@@ -345,17 +336,7 @@ static int verifyMagicKey (Key * key)
 		return -1;
 	}
 
-	int ret = 0;
-	if (key->data.v != magicKey.data.v) --ret;
-	if (key->dataSize != magicKey.dataSize) --ret;
-	if (key->key != magicKey.key) --ret;
-	if (key->keySize != magicKey.keySize) --ret;
-	if (key->keyUSize != magicKey.keyUSize) --ret;
-	if (key->flags != magicKey.flags) --ret;
-	if (key->ksReference != magicKey.ksReference) --ret;
-	if (key->meta != magicKey.meta) --ret;
-
-	return ret;
+	return memcmp (key, &magicKey, SIZEOF_KEY);
 }
 
 static int verifyMagicData (char * mappedRegion)
@@ -363,12 +344,7 @@ static int verifyMagicData (char * mappedRegion)
 	KeySet * destKeySet = (KeySet *) (mappedRegion + SIZEOF_MMAPHEADER + SIZEOF_MMAPMETADATA);
 	Key * keyPtr = (Key *) ((char *) destKeySet + SIZEOF_KEYSET);
 
-	if (verifyMagicKey (keyPtr) != 0)
-	{
-		return -1;
-	}
-
-	if (verifyMagicKeySet (destKeySet) != 0)
+	if ((verifyMagicKey (keyPtr) != 0) || (verifyMagicKeySet (destKeySet) != 0))
 	{
 		return -1;
 	}
