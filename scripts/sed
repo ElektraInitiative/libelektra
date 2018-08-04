@@ -46,6 +46,8 @@ s/\<name space\>/namespace/g
 
 s/\<meta[- ]data\>/metadata/g
 
+s/\<plug-in(s)?\>/plugin\1/g
+
 # s/\<key-name\>/key name/g
 # s/\<keyname\>/key name/g
 

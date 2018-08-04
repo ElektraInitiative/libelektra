@@ -11,7 +11,7 @@ and what various methods exists within one.
 
 ### The Interface
 
-All plug-ins use the same basic interface. This interface consists of five basic functions,
+All plugins use the same basic interface. This interface consists of five basic functions,
 [elektraPluginOpen](https://doc.libelektra.org/api/current/html/group__plugin.html#ga23c2eb3584e38a4d494eb8f91e5e3d8d),
 [elektraPluginGet](https://doc.libelektra.org/api/current/html/group__plugin.html#gacb69f3441c6d84241b4362f958fbe313),
 [elektraPluginSet](https://doc.libelektra.org/api/current/html/group__plugin.html#gae65781a1deb34efc79c8cb9d9174842c),
@@ -21,7 +21,7 @@ The developer replaces `Plugin` with the name of their plugin. So in the case of
 `elektraLineOpen()`, `elektraLineGet()`, `elektraLineSet()`, `elektraLineError()`, and `elektraLineClose()`.
 Additionally, there is one more function called
 [ELEKTRA_PLUGIN_EXPORT](https://doc.libelektra.org/api/current/html/group__plugin.html#ga8dd092048e972a3f0c9c9f54eb41576e),
-where once again `Plugin` should be replaced with the name of the plug-in, this time in uppercase. So for my line plugin this function would be
+where once again `Plugin` should be replaced with the name of the plugin, this time in uppercase. So for my line plugin this function would be
 `ELEKTRA_PLUGIN_EXPORT(line)`.
 The developer may define `elektraPluginCheckConf()` if configuration validation at mount-time is desired.
 
@@ -29,16 +29,16 @@ The KDB relies on the first five functions for interacting with configuration fi
 Calls to `kdbGet()` and `kdbClose()` will call the functions `elektraPluginGet()` and `elektraPluginClose()` respectively for the
 plugin that was used to mount the configuration data. `kdbSet()` calls `elektraPluginSet()` but also `elektraPluginError()` when an error occurs.
 `elektraPluginOpen()` is called before the first call to `elektraPluginGet()` or `elektraPluginSet()`. These functions serve different purposes
-that allow the plug-in to work:
+that allow the plugin to work:
 
-- `elektraPluginOpen()` is designed to allow each plug-in to do initialization if necessary.
-- `elektraPluginGet()` is designed to turn information from a configuration file into a usable `KeySet`, this is technically the only function that is **required** in a plug-in.
+- `elektraPluginOpen()` is designed to allow each plugin to do initialization if necessary.
+- `elektraPluginGet()` is designed to turn information from a configuration file into a usable `KeySet`, this is technically the only function that is **required** in a plugin.
 - `elektraPluginSet()` is designed to store the information from the keyset back into a configuration file.
 - `elektraPluginError()` is designed to allow proper rollback of operations if needed and is called if any plugin fails during the set operation. This allows exception-safety.
-- `elektraPluginClose()` is used to free resources that might be required for the plug-in.
-- `ELEKTRA_PLUGIN_EXPORT(Plugin)` simply lets Elektra know that the plug-in exists and what the name of the above functions are.
+- `elektraPluginClose()` is used to free resources that might be required for the plugin.
+- `ELEKTRA_PLUGIN_EXPORT(Plugin)` simply lets Elektra know that the plugin exists and what the name of the above functions are.
 
-Most simply put: most plug-ins consist of five major functions, `elektraPluginOpen()`, `elektraPluginClose()`, `elektraPluginGet()`, `elektraPluginSet()`,
+Most simply put: most plugins consist of five major functions, `elektraPluginOpen()`, `elektraPluginClose()`, `elektraPluginGet()`, `elektraPluginSet()`,
 and `ELEKTRA_EXPORT_PLUGIN(Plugin)`.
 
 Because remembering all these functions can be cumbersome, we provide a skeleton plugin in order to easily create a new plugin.
@@ -139,7 +139,7 @@ if (!strcmp (keyName(parentKey), "system/elektra/modules/plugin"))
 }
 ```
 
-The `elektraPluginContract()` is a method implemented by the plug-in developer
+The `elektraPluginContract()` is a method implemented by the plugin developer
 containing the parts of the contract not specified in `README.md`.
 An example of this function (taken from the `yajl` plugin):
 
@@ -258,7 +258,7 @@ and should serve as a rough guide on how to write a storage plugin that can read
 ### `elektraPluginGet`
 
 `elektraPluginGet` is the function responsible for turning information from a file into a usable `KeySet`.
-This function usually differs pretty greatly between each plug-in. This function should be of type `int`, it returns either `1` or on `0` on success.
+This function usually differs pretty greatly between each plugin. This function should be of type `int`, it returns either `1` or on `0` on success.
 
 - `1`: The function was successful (`ELEKTRA_PLUGIN_STATUS_SUCCESS`).
 - `0`: The function was successful and the given keyset/configuration was **not changed** (`ELEKTRA_PLUGIN_STATUS_NO_UPDATE`).
@@ -267,25 +267,25 @@ Any other return value indicates an error (`ELEKTRA_PLUGIN_STATUS_ERROR`). The f
 to the file that is mounted. For instance, if you run the command `kdb mount /etc/linetest system/linetest line` then `keyString(parentKey)`
 should be equal to `/etc/linetest`. At this point, you generally want to open the file so you can begin saving it into keys.
 Here is the trickier part to explain. Basically, at this point you will want to iterate through the file and create keys and store string values
-inside of them according to what your plug-in is supposed to do. I will give a few examples of different plug-ins to better explain.
+inside of them according to what your plugin is supposed to do. I will give a few examples of different plugins to better explain.
 
-The line plug-in was written to read files into a `KeySet` line by line using the newline character as a delimiter and naming the keys by their line
+The line plugin was written to read files into a `KeySet` line by line using the newline character as a delimiter and naming the keys by their line
 number such as `#1`, `#2`, .. `#_22` for a file with 22 lines. So once I open the file given by `parentKey`, every time as I read a line I create a new key,
 let's call it `new_key` using `dupKey(parentKey)`. Then I set `new_key`'s name to `lineNN` (where NN is the line number) using `keyAddBaseName` and
 store the string value of the line into the key using `keySetString`. Once the key is initialized, I append it to the `KeySet` that was passed into the
 `elektraPluginGet` function, let's call it `returned` for now, using `ksAppendKey(returned, new_key)`. Now the `KeySet` will contain `new_key` with the
 name `#N` properly saved where it should be according to the `kdb mount` command (in this case, `system/linetest/#N`), and a string value
-equal to the contents of that line in the file. The line plug-in repeats these steps as long as it hasn't reached end of file, thus saving the whole file
+equal to the contents of that line in the file. The line plugin repeats these steps as long as it hasn't reached end of file, thus saving the whole file
 into a `KeySet` line by line.
 
-The `simpleini` plug-in works similarly, but it parses for `ini` files instead of just line-by-line. At their most simple level, `ini` files are in the format of
-`name=value` with each pair taking one line. So for this plug-in, it makes a lot of sense to name each `Key` in the `KeySet` by the string to the left
+The `simpleini` plugin works similarly, but it parses for `ini` files instead of just line-by-line. At their most simple level, `ini` files are in the format of
+`name=value` with each pair taking one line. So for this plugin, it makes a lot of sense to name each `Key` in the `KeySet` by the string to the left
 of the `=` sign and store the value into each key as a string. For instance, the name of the key would be `name` and `keyGetString(name)`
 would return `value`.
 
-As you may have noticed, `simpleini` and line plug-ins work very similarly. However, they just parse the files differently. The `simpleini` plug-in parses
+As you may have noticed, `simpleini` and line plugins work very similarly. However, they just parse the files differently. The `simpleini` plugin parses
 the file in a way that is more natural to `ini` file (setting the key's name to the left side of the equals sign and the value to the right side of the equals sign).
-The `elektraPluginGet` function is the heart of a storage plug-in, it’s what allows Elektra to store configurations in its database. This function isn't
+The `elektraPluginGet` function is the heart of a storage plugin, it’s what allows Elektra to store configurations in its database. This function isn't
 just run when a file is first mounted, but whenever a file gets updated, this function is run to update the Elektra Key Database to match.
 
 ### `elektraPluginSet`
@@ -340,9 +340,9 @@ parentKey is available.
 
 ### `elektraPluginOpen` and `elektraPluginClose`
 
-The `elektraPluginOpen` and `elektraPluginClose` functions are not commonly used for storage plug-ins, but they can be useful and are worth
-reviewing. `elektraPluginOpen` function runs before `elektraPluginGet` and is useful to do initialization if necessary for the plug-in. On the other
-hand `elektraPluginClose` is run after other functions of the plug-in and can be useful for freeing up resources.
+The `elektraPluginOpen` and `elektraPluginClose` functions are not commonly used for storage plugins, but they can be useful and are worth
+reviewing. `elektraPluginOpen` function runs before `elektraPluginGet` and is useful to do initialization if necessary for the plugin. On the other
+hand `elektraPluginClose` is run after other functions of the plugin and can be useful for freeing up resources.
 
 ### `elektraPluginCheckConf`
 
@@ -384,8 +384,8 @@ int elektraLineCheckConfig (Key * errorKey, KeySet * conf)
 
 ### `ELEKTRA_PLUGIN_EXPORT`
 
-The last function, one that is always needed in a plug-in, is `ELEKTRA_PLUGIN_EXPORT`. This functions is responsible for letting Elektra know that
-the plug-in exists and which methods it implements. The code from the line plugin is a good example and pretty self-explanatory:
+The last function, one that is always needed in a plugin, is `ELEKTRA_PLUGIN_EXPORT`. This functions is responsible for letting Elektra know that
+the plugin exists and which methods it implements. The code from the line plugin is a good example and pretty self-explanatory:
 
 ```c
 Plugin *ELEKTRA_PLUGIN_EXPORT(line)
