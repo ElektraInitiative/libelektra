@@ -934,6 +934,7 @@ int elektraMmapstorageGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 	}
 
 	FILE * fp;
+	char * mappedRegion = MAP_FAILED;
 
 	if ((fp = openFile (parentKey, "r+")) == 0)
 	{
@@ -963,8 +964,14 @@ int elektraMmapstorageGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 		goto error;
 	}
 
-	char * mappedRegion = MAP_FAILED;
-	mappedRegion = mmapFile ((void *) 0, fp, sbuf.st_size, MAP_PRIVATE, parentKey); // TODO: save or unmap linked file on error
+	if (sbuf.st_size < 0 || (size_t) sbuf.st_size != mmapHeader.allocSize)
+	{
+		// config file size mismatch
+		ELEKTRA_LOG_WARNING ("mmap file size differs from metadata, file was altered");
+		goto error;
+	}
+
+	mappedRegion = mmapFile ((void *) 0, fp, sbuf.st_size, MAP_PRIVATE, parentKey);
 
 	if (mappedRegion == MAP_FAILED)
 	{
@@ -1016,6 +1023,10 @@ error:
 		ELEKTRA_SET_ERROR_GET (parentKey);
 	}
 
+	if (mappedRegion != MAP_FAILED)
+	{
+		munmap (mappedRegion, sbuf.st_size);
+	}
 	fclose (fp);
 	keyDel (found);
 
@@ -1039,6 +1050,7 @@ int elektraMmapstorageSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 	}
 
 	FILE * fp;
+	char * mappedRegion = MAP_FAILED;
 
 	if ((fp = openFile (parentKey, "w+")) == 0)
 	{
@@ -1059,7 +1071,7 @@ int elektraMmapstorageSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 		goto error;
 	}
 
-	char * mappedRegion = mmapFile ((void *) 0, fp, mmapHeader.allocSize, MAP_SHARED, parentKey);
+	mappedRegion = mmapFile ((void *) 0, fp, mmapHeader.allocSize, MAP_SHARED, parentKey);
 	ELEKTRA_LOG_DEBUG ("mappedRegion ptr: %p", (void *) mappedRegion);
 	if (mappedRegion == MAP_FAILED)
 	{
@@ -1099,6 +1111,10 @@ error:
 		ELEKTRA_SET_ERROR_SET (parentKey);
 	}
 
+	if (mappedRegion != MAP_FAILED)
+	{
+		munmap (mappedRegion, mmapHeader.allocSize);
+	}
 	fclose (fp);
 	delDynArray (dynArray);
 
