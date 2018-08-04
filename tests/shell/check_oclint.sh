@@ -16,6 +16,7 @@ oclint -p "@PROJECT_BINARY_DIR@" -enable-global-analysis -enable-clang-static-an
 	"src/plugins/base64/"*.c           \
 	"src/plugins/camel/camel.c"        \
 	"src/plugins/ccode/"*.cpp          \
+	"src/plugins/cpptemplate/"*.cpp    \
 	"src/plugins/directoryvalue/"*.c   \
 	"src/plugins/mini/mini.c"          \
 	"src/plugins/yamlcpp/"*.{c,cpp}    \
