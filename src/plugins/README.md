@@ -161,6 +161,7 @@ Rewrite unwanted characters with different techniques:
 Transformations:
 
 - [directoryvalue](directoryvalue/) converts directory values to leaf values
+- [leaf](leaf/) converts directory keys to leaf keys
 - [keytometa](keytometa/) transforms keys to metadata
 - [rename](rename/) renames keys according to different rules
 - [boolean](boolean/) canonicalizes boolean keys

@@ -1,0 +1,142 @@
+- infos = Information about the leaf plugin is in keys below
+- infos/author = Author Name <elektra@libelektra.org>
+- infos/licence = BSD
+- infos/needs =
+- infos/provides =
+- infos/recommends =
+- infos/placements = postgetstorage presetstorage
+- infos/status = maintained nodep preview experimental unfinished concept
+- infos/metadata =
+- infos/description = This plugin converts directory keys to leaf keys in the set direction
+
+# Leaf
+
+## Introduction
+
+The Leaf plugin converts
+
+1. directory (non-leaf) keys to leaf keys in the “set” direction, and
+2. converts them back to directory keys in the “get” direction.
+
+A directory key is a key that has children. For example in the key set:
+
+```
+user/grandparent                = Grandparent
+user/grandparent/leaf           = Leaf
+user/grandparent/parent         = Parent
+user/grandparent/parent/child   = Child
+user/mother                     = Mother
+user/mother/daughter            = Daughter
+user/mother/son                 = Son
+```
+
+the keys
+
+```
+user/grandparent
+user/grandparent/parent
+user/mother
+```
+
+represent directory keys, while the keys
+
+```
+user/grandparent/leaf
+user/grandparent/parent/child
+user/mother/daughter
+user/mother/son
+```
+
+are leaf keys. You can easily check this by drawing the key set in the form of a rooted tree:
+
+```
+             user
+      /               \
+  granparent        mother
+  /      |          /    \
+leaf  parent    daughter son
+         |
+       child
+```
+
+. The Leaf plugin converts all directory keys to leaf keys in the “set” direction by adding new keys with the postfix
+`___dirdata`. Theses keys then store the old value of their parent keys
+
+```
+user/grandparent                    =
+user/grandparent/___dirdata         = Grandparent
+user/grandparent/leaf               = Leaf
+user/grandparent/parent             =
+user/grandparent/parent/___dirdata  = Parent
+user/grandparent/parent/child       = Child
+user/mother                         =
+user/mother/___dirdata              = Mother
+user/mother/daughter                = Daugther
+user/mother/son                     = Son
+```
+
+. You might ask why we need the Leaf plugin at all. The reason why we created this plugin is that some storage plugins like
+[`yajl`](../yajl/README.md) or [`yamlcpp`](../yajl/README.md) are only able to save values inside leaf keys. By loading the Leaf
+plugin these storage plugins are also able to represent directory values properly.
+
+### Array Values
+
+The Leaf value plugin also converts array values. Let us take a look at an example key set:
+
+```
+user/array    = Array Value
+user/array/#0 = Firt Value
+user/array/#1 = Second Value
+user/array/#2 = Third Value
+```
+
+. The plugin **does not** convert this key set into:
+
+```
+user/array            =
+user/array/___dirdata = Array Value
+user/array/#0         = First Value
+user/array/#1         = Second Value
+user/array/#2         = Third Value
+```
+
+, since then `user/array` **would not be an array** any more. Instead the plugin inserts a new element at index 0 with the **value prefix**
+`___dirdata: `:
+
+```
+user/array            =
+user/array/#0         = ___dirdata: Array Value
+user/array/#1         = First Value
+user/array/#2         = Second Value
+user/array/#3         = Third Value
+```
+
+. This way a storage plugin such as YAJL or YAML CPP are still able to store `user/array` as an array.
+
+**Remark:** The plugin only converts array parents that store **string values**.
+
+## Usage
+
+To mount the plugin use the command:
+
+```sh
+# Mount plugin to cascading namespace `/tests/leaf`
+sudo kdb mount config.file /tests/leaf leaf
+```
+
+. To unmount the plugin use the command
+
+```sh
+sudo kdb umount /tests/leaf
+```
+
+.
+
+# Limitations
+
+**Escaping** is currently **not possible**. If you use the Directory Value plugin you can not
+
+- use the name `___dirdata` as the last part of a normal key,
+- use `___dirdata: ` at the beginning of a normal value in the first array element
+
+!
