@@ -14,8 +14,8 @@ cd "$SOURCE/src/plugins"
 if [ $# -ne 1 ]; then
 	echo "Usage: $0 <new-pluginname>"
 	echo
-	echo "allows you to copy templates and rename them properly"
-	echo "This was meant for creating new plugins"
+	echo "This script allows you to copy templates and rename them properly."
+	echo "We recommend you use this tool if you want to create new plugins."
 	exit 0
 fi
 
