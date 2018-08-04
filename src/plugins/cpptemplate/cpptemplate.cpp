@@ -19,32 +19,32 @@ extern "C" {
 typedef Delegator<CppTemplateDelegate> delegator;
 
 /** @see elektraDocOpen */
-int elektraCpptemplateOpen (Plugin * handle, Key * key)
+int elektraCppTemplateOpen (Plugin * handle, Key * key)
 {
 	// After the call to `delegator::open` you can retrieve a pointer to the delegate via `coderDelegator::get (handle)`
 	return delegator::open (handle, key);
 }
 
 /** @see elektraDocClose */
-int elektraCpptemplateClose (Plugin * handle, Key * key)
+int elektraCppTemplateClose (Plugin * handle, Key * key)
 {
 	return delegator::close (handle, key);
 }
 
 /** @see elektraDocGet */
-int elektraCpptemplateGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
+int elektraCppTemplateGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/cpptemplate"))
 	{
 		KeySet * contract = ksNew (
 			30, keyNew ("system/elektra/modules/cpptemplate", KEY_VALUE, "cpptemplate plugin waits for your orders", KEY_END),
 			keyNew ("system/elektra/modules/cpptemplate/exports", KEY_END),
-			keyNew ("system/elektra/modules/cpptemplate/exports/open", KEY_FUNC, elektraCpptemplateOpen, KEY_END),
-			keyNew ("system/elektra/modules/cpptemplate/exports/close", KEY_FUNC, elektraCpptemplateClose, KEY_END),
-			keyNew ("system/elektra/modules/cpptemplate/exports/get", KEY_FUNC, elektraCpptemplateGet, KEY_END),
-			keyNew ("system/elektra/modules/cpptemplate/exports/set", KEY_FUNC, elektraCpptemplateSet, KEY_END),
-			keyNew ("system/elektra/modules/cpptemplate/exports/error", KEY_FUNC, elektraCpptemplateError, KEY_END),
-			keyNew ("system/elektra/modules/cpptemplate/exports/checkconf", KEY_FUNC, elektraCpptemplateCheckConfig, KEY_END),
+			keyNew ("system/elektra/modules/cpptemplate/exports/open", KEY_FUNC, elektraCppTemplateOpen, KEY_END),
+			keyNew ("system/elektra/modules/cpptemplate/exports/close", KEY_FUNC, elektraCppTemplateClose, KEY_END),
+			keyNew ("system/elektra/modules/cpptemplate/exports/get", KEY_FUNC, elektraCppTemplateGet, KEY_END),
+			keyNew ("system/elektra/modules/cpptemplate/exports/set", KEY_FUNC, elektraCppTemplateSet, KEY_END),
+			keyNew ("system/elektra/modules/cpptemplate/exports/error", KEY_FUNC, elektraCppTemplateError, KEY_END),
+			keyNew ("system/elektra/modules/cpptemplate/exports/checkconf", KEY_FUNC, elektraCppTemplateCheckConfig, KEY_END),
 #include ELEKTRA_README (cpptemplate)
 			keyNew ("system/elektra/modules/cpptemplate/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
@@ -57,19 +57,19 @@ int elektraCpptemplateGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 }
 
 /** @see elektraDocSet */
-int elektraCpptemplateSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraCppTemplateSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
 	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 }
 
 /** @see elektraDocError */
-int elektraCpptemplateError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraCppTemplateError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
 /** @see elektraDocCheckConf */
-int elektraCpptemplateCheckConfig (Key * errorKey ELEKTRA_UNUSED, KeySet * conf ELEKTRA_UNUSED)
+int elektraCppTemplateCheckConfig (Key * errorKey ELEKTRA_UNUSED, KeySet * conf ELEKTRA_UNUSED)
 {
 	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 }
@@ -78,11 +78,11 @@ Plugin * ELEKTRA_PLUGIN_EXPORT (cpptemplate)
 {
 	// clang-format off
 	return elektraPluginExport ("cpptemplate",
-		ELEKTRA_PLUGIN_OPEN,	&elektraCpptemplateOpen,
-		ELEKTRA_PLUGIN_CLOSE,	&elektraCpptemplateClose,
-		ELEKTRA_PLUGIN_GET,	&elektraCpptemplateGet,
-		ELEKTRA_PLUGIN_SET,	&elektraCpptemplateSet,
-		ELEKTRA_PLUGIN_ERROR,	&elektraCpptemplateError,
+		ELEKTRA_PLUGIN_OPEN,	&elektraCppTemplateOpen,
+		ELEKTRA_PLUGIN_CLOSE,	&elektraCppTemplateClose,
+		ELEKTRA_PLUGIN_GET,	&elektraCppTemplateGet,
+		ELEKTRA_PLUGIN_SET,	&elektraCppTemplateSet,
+		ELEKTRA_PLUGIN_ERROR,	&elektraCppTemplateError,
 		ELEKTRA_PLUGIN_END);
 }
 

@@ -17,12 +17,12 @@ using ckdb::KeySet;
 using ckdb::Plugin;
 
 extern "C" {
-int elektraCpptemplateOpen (Plugin * handle, Key * errorKey);
-int elektraCpptemplateClose (Plugin * handle, Key * errorKey);
-int elektraCpptemplateGet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraCpptemplateSet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraCpptemplateError (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraCpptemplateCheckConfig (Key * errorKey, KeySet * conf);
+int elektraCppTemplateOpen (Plugin * handle, Key * errorKey);
+int elektraCppTemplateClose (Plugin * handle, Key * errorKey);
+int elektraCppTemplateGet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraCppTemplateSet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraCppTemplateError (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraCppTemplateCheckConfig (Key * errorKey, KeySet * conf);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (cpptemplate);
 } // end extern "C"
