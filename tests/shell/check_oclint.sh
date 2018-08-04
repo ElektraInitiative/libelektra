@@ -10,17 +10,17 @@ test -f "@PROJECT_BINARY_DIR@/compile_commands.json" || { echo "Compilation data
 
 cd "@CMAKE_SOURCE_DIR@" || exit
 oclint -p "@PROJECT_BINARY_DIR@" -enable-global-analysis -enable-clang-static-analyzer \
-	"@CMAKE_SOURCE_DIR@/src/libs/ease/array.c" \
-	"@CMAKE_SOURCE_DIR@/src/libs/ease/keyname.c" \
-	"@CMAKE_SOURCE_DIR@/src/libs/utility/text.c" \
-	"@CMAKE_SOURCE_DIR@/src/plugins/yanlr/"*.{c,cpp} \
-	"@CMAKE_SOURCE_DIR@/src/plugins/base64/"*.c \
-	"@CMAKE_SOURCE_DIR@/src/plugins/ccode/"*.cpp \
-	"@CMAKE_SOURCE_DIR@/src/plugins/camel/camel.c" \
-	"@CMAKE_SOURCE_DIR@/src/plugins/directoryvalue/"*.c \
-	"@CMAKE_SOURCE_DIR@/src/plugins/mini/mini.c" \
-	"@CMAKE_SOURCE_DIR@/src/plugins/yamlcpp/"*.{c,cpp} \
-	"@CMAKE_SOURCE_DIR@/src/plugins/yamlsmith/"*.{c,cpp}
+	"src/libs/ease/array.c"            \
+	"src/libs/ease/keyname.c"          \
+	"src/libs/utility/text.c"          \
+	"src/plugins/yanlr/"*.{c,cpp}      \
+	"src/plugins/base64/"*.c           \
+	"src/plugins/ccode/"*.cpp          \
+	"src/plugins/camel/camel.c"        \
+	"src/plugins/directoryvalue/"*.c   \
+	"src/plugins/mini/mini.c"          \
+	"src/plugins/yamlcpp/"*.{c,cpp}    \
+	"src/plugins/yamlsmith/"*.{c,cpp}
 exit_if_fail "OCLint found problematic code"
 
 end_script
