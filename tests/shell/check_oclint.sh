@@ -13,14 +13,14 @@ oclint -p "@PROJECT_BINARY_DIR@" -enable-global-analysis -enable-clang-static-an
 	"src/libs/ease/array.c"            \
 	"src/libs/ease/keyname.c"          \
 	"src/libs/utility/text.c"          \
-	"src/plugins/yanlr/"*.{c,cpp}      \
 	"src/plugins/base64/"*.c           \
-	"src/plugins/ccode/"*.cpp          \
 	"src/plugins/camel/camel.c"        \
+	"src/plugins/ccode/"*.cpp          \
 	"src/plugins/directoryvalue/"*.c   \
 	"src/plugins/mini/mini.c"          \
 	"src/plugins/yamlcpp/"*.{c,cpp}    \
-	"src/plugins/yamlsmith/"*.{c,cpp}
+	"src/plugins/yamlsmith/"*.{c,cpp}  \
+	"src/plugins/yanlr/"*.{c,cpp}
 exit_if_fail "OCLint found problematic code"
 
 end_script
