@@ -14,6 +14,8 @@
 
 #include <tests.hpp>
 
+using ckdb::keyNew;
+
 using CppKeySet = kdb::KeySet;
 using CppKey = kdb::Key;
 
@@ -33,6 +35,20 @@ using CppKey = kdb::Key;
 	elektraPluginClose (plugin, 0);                                                                                                    \
 	elektraModulesClose (modules.getKeySet (), 0)
 
+// -- Functions ----------------------------------------------------------------------------------------------------------------------------
+
+void test_set (CppKeySet keys, CppKeySet expected, int const status = ELEKTRA_PLUGIN_STATUS_SUCCESS)
+{
+	OPEN_PLUGIN ("user/tests/leaf", "file/path"); //! OCLint (too few branches switch, empty if statement)
+
+	succeed_if_same (plugin->kdbSet (plugin, keys.getKeySet (), *parent), //! OCLint (too few branches switch, empty if statement)
+			 status, "Call of `kdbSet` failed");
+
+	compare_keyset (keys, expected); //! OCLint (too few branches switch)
+
+	CLOSE_PLUGIN ();
+}
+
 // -- Tests --------------------------------------------------------------------------------------------------------------------------------
 
 TEST (leaf, basics)
@@ -44,4 +60,13 @@ TEST (leaf, basics)
 			 "Unable to retrieve plugin contract");
 
 	CLOSE_PLUGIN ();
+}
+
+TEST (leaf, set)
+{
+	test_set (
+#include "leaf/empty.hpp"
+		,
+#include "leaf/empty.hpp"
+		, ELEKTRA_PLUGIN_STATUS_NO_UPDATE);
 }
