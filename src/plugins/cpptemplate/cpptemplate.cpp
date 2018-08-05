@@ -10,7 +10,10 @@
 #include "cpptemplate.hpp"
 #include "cpptemplate_delegate.hpp"
 
+#include <kdberrors.h>
 #include <kdbhelper.h>
+
+using std::exception;
 
 using elektra::CppTemplateDelegate;
 
@@ -50,8 +53,19 @@ typedef Delegator<CppTemplateDelegate> delegator;
 /** @see elektraDocOpen */
 int elektraCppTemplateOpen (Plugin * handle, Key * key)
 {
-	// After the call to `delegator::open` you can retrieve a pointer to the delegate via `coderDelegator::get (handle)`
-	return delegator::open (handle, key);
+	int status = ELEKTRA_PLUGIN_STATUS_ERROR;
+
+	try
+	{
+		// After the call to `delegator::open` you can retrieve a pointer to the delegate via `coderDelegator::get (handle)`
+		status = delegator::open (handle, key);
+	}
+	catch (exception const & error)
+	{
+		ELEKTRA_ADD_WARNING (ELEKTRA_WARNING_OPEN, key, error.what ());
+	}
+
+	return status;
 }
 
 /** @see elektraDocClose */

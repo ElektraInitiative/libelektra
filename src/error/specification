@@ -83,6 +83,7 @@ number:11
 description:open of plugin returned unsuccessfully (reason contains plugin, see other warnings for details)
 severity:warning
 ingroup:kdb
+macro:OPEN
 
 number:12
 description:kdbClose() failed
