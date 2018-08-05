@@ -26,7 +26,7 @@ using CppKey = kdb::Key;
 	elektraModulesInit (modules.getKeySet (), 0);                                                                                      \
 	CppKey parent{ parentName, KEY_VALUE, filepath, KEY_END };                                                                         \
 	Plugin * plugin = elektraPluginOpen ("leaf", modules.getKeySet (), config.getKeySet (), *parent);                                  \
-	exit_if_fail (plugin != NULL, "Could not open leaf plugin"); //! OCLint (empty if, too few branches switch)
+	exit_if_fail (plugin != NULL, "Could not open leaf plugin");
 
 #define CLOSE_PLUGIN()                                                                                                                     \
 	ksDel (modules.release ());                                                                                                        \
