@@ -628,15 +628,15 @@ DEFAULT_BACKEND ->
 	(+ make it work)
 	good out-of-the-box behaviour
 
-## CPPPLUGIN ##
+## CPPTEMPLATE ##
 
-cppplugin:
-	make a nice and easy cpp solution for plugins
+cpptemplate:
+	make a nice and easy cpp solution for plugins (improve current template)
 	(integration into cpp binding)
 	assemble C symbols with macros
 	keep C->C++ problems at one place to be included
 
-C++: (FINISH cppplugin)
+C++: (FINISH cpptemplate)
 	how to write backends in C++
 	Exceptions propagations
 	(C++ Exceptions to error codes)
