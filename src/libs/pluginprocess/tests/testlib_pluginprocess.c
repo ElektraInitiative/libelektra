@@ -153,6 +153,9 @@ static void test_communication (void)
 	succeed_if (elektraPluginGetData (plugin) == NULL, "didn't free the pluginprocess struct in the plugin's data");
 	succeed_if (ksLookup (ks, parentKey, KDB_O_NONE) == NULL, "stored the parent key in the keyset");
 
+	output_warnings (parentKey);
+	output_error (parentKey);
+
 	keyDel (parentKey);
 	ksDel (ks);
 	ksDel (conf);
@@ -181,6 +184,9 @@ static void test_emptyKeySet (void)
 			    "call to kdbError with null keyset was successful");
 	}
 	succeed_if (plugin->kdbClose (plugin, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbClose was not successful");
+
+	output_warnings (parentKey);
+	output_error (parentKey);
 
 	keyDel (parentKey);
 	ksDel (ks);
@@ -211,6 +217,9 @@ static void test_reservedParentKeyName (void)
 		succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
 	}
 	succeed_if (plugin->kdbClose (plugin, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbClose was not successful");
+
+	output_warnings (parentKey);
+	output_error (parentKey);
 
 	keyDel (parentKey);
 	ksDel (ks);
@@ -253,6 +262,9 @@ static void test_keysetContainingParentKey (void)
 	succeed_if (plugin->kdbClose (plugin, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbClose was not successful");
 	succeed_if (ksLookupByName (ks, "user/tests/pluginprocess", KDB_O_NONE) != NULL,
 		    "parent key got removed from the keyset by pluginprocess");
+
+	output_warnings (parentKey);
+	output_error (parentKey);
 
 	ksDel (ks);
 	ksDel (conf);
@@ -311,6 +323,9 @@ static void test_childAddingParentKey (void)
 	succeed_if (ksLookupByName (ks, "user/tests/pluginprocess", KDB_O_NONE) != NULL,
 		    "parent key got removed from the keyset by pluginprocess");
 
+	output_warnings (parentKey);
+	output_error (parentKey);
+
 	ksDel (ks);
 	ksDel (conf);
 	elektraFree (plugin);
@@ -351,6 +366,9 @@ static void test_closeWithoutOpen (void)
 	KeySet * ks = ksNew (0, KS_END);
 
 	succeed_if (plugin->kdbOpen (plugin, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbOpen was not successful");
+
+	output_warnings (parentKey);
+	output_error (parentKey);
 
 	keyDel (parentKey);
 	ksDel (ks);
