@@ -120,7 +120,11 @@ endif ()
 #
 if (ENABLE_ASAN)
 	set (EXTRA_FLAGS "${EXTRA_FLAGS} -fsanitize=undefined -fsanitize=address -fno-omit-frame-pointer")
-	set (ASAN_LIBRARY "-lubsan") # this is needed for GIR to put asan in front
+	if (UNIX AND NOT APPLE)
+		set (ASAN_LIBRARY "-lubsan") # this is needed for GIR to put asan in front
+	else (UNIX AND NOT APPLE)
+		set (ASAN_LIBRARY "-lasan") # this is needed for GIR to put asan in front
+	endif (UNIX AND NOT APPLE)
 
 	if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 		set (EXTRA_FLAGS "${EXTRA_FLAGS} -fsanitize=integer")
