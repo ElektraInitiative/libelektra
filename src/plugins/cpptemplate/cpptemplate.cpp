@@ -75,21 +75,24 @@ int elektraCppTemplateClose (Plugin * handle, Key * key)
 }
 
 /** @see elektraDocGet */
-int elektraCppTemplateGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
+int elektraCppTemplateGet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
 	CppKeySet keys{ returned };
 	CppKey parent{ parentKey };
-	bool updated = false;
 
 	if (parent.getName () == "system/elektra/modules/cpptemplate")
 	{
 		keys.append (getContract ());
-		updated = true;
+	}
+	else
+	{
+		// This is only an example, to show you how to call a method of the delegate
+		keys.append (delegator::get (handle)->getConfig (parent));
 	}
 
 	parent.release ();
 	keys.release ();
-	return updated ? ELEKTRA_PLUGIN_STATUS_SUCCESS : ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
 /** @see elektraDocSet */
