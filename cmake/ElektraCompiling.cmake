@@ -120,11 +120,20 @@ endif ()
 #
 if (ENABLE_ASAN)
 	set (EXTRA_FLAGS "${EXTRA_FLAGS} -fsanitize=undefined -fsanitize=address -fno-omit-frame-pointer")
-	set (ASAN_LIBRARY "-lasan") # this is needed for GIR to put asan in front
+	if (UNIX AND NOT APPLE)
+		set (ASAN_LIBRARY "-lubsan") # this is needed for GIR to put asan in front
+	else (UNIX AND NOT APPLE)
+		set (ASAN_LIBRARY "-lasan") # this is needed for GIR to put asan in front
+	endif (UNIX AND NOT APPLE)
 
 	if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 		set (EXTRA_FLAGS "${EXTRA_FLAGS} -fsanitize=integer")
 		set (EXTRA_FLAGS "${EXTRA_FLAGS} -fsanitize-blacklist=\"${CMAKE_SOURCE_DIR}/tests/sanitizer.blacklist\"")
+
+		# in case the ubsan library exists, link it otherwise some tests will fail due to missing symbols on unix
+		if (UNIX AND NOT APPLE)
+			set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lubsan")
+		endif (UNIX AND NOT APPLE)
 	endif ()
 
 	if (CMAKE_COMPILER_IS_GNUCXX)

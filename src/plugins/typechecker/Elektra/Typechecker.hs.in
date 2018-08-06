@@ -14,7 +14,7 @@ import Control.Monad         (mapM_, forM_, join)
 import Control.Logger.Simple
 import Data.Bool             (bool)
 import Data.List             (intercalate, isPrefixOf, isInfixOf, nub)
-import Data.Maybe            (fromMaybe, listToMaybe)
+import Data.Maybe            (fromMaybe, listToMaybe, fromJust)
 import Foreign.Ptr
 import System.IO.Temp        (writeTempFile)
 import System.Directory      (removeFile, doesFileExist)
@@ -62,7 +62,9 @@ typecheck p ks k c = withGlobalLogging (LogConfig Nothing ("@ENABLE_LOGGER@" == 
     -- #4: nothing otherwise
     ]
   logDebugT $ "Loading prelude located at " ++ show preludePath ++ " to " ++ name
-  ps <- maybe (ksNew 0) (readPrelude p name) preludePath
+  -- This has to be set as this plugin is supposed to be executed via pluginprocess
+  pp <- fromJust <$> elektraPluginGetData p
+  ps <- maybe (ksNew 0) (readPrelude pp name) preludePath
   logDebugT $ "Prelude contained " ++ show ps
   _ <- ksAppend ps kscc
   logDebugT $ "Combined specifications are " ++ show ps
@@ -98,10 +100,10 @@ typecheck p ks k c = withGlobalLogging (LogConfig Nothing ("@ENABLE_LOGGER@" == 
     Right () -> return False
   where
     putStepLn s = logDebugT $ "\n" ++ s ++ "\n"
-    readPrelude p name location = do
+    readPrelude pp name location = do
       prelude <- ksNew 0
       baseKey <- keyNewWithValue (name ++ "/elektra/spec/") location
-      ini <- elektraPluginProcessGetData p
+      ini <- elektraPluginProcessGetData pp
       -- the handle is set otherwise opening the plugin would fail already
       -- likewise we could assume the data is set as well and use fromJust, but lets stay functional
       maybe (ksNew 0) (\i -> elektraInvoke2Args i "get" prelude baseKey >> ksDup prelude) ini
@@ -137,12 +139,15 @@ logDebugT = logDebug . T.pack
 openIni :: Plugin -> Key -> IO PluginStatus
 openIni p k = do
   logDebugT "Opening ini"
-  elektraInvokeOpen "ini" Nothing (Just k) >>= ifHandle (return Error) (\i -> elektraPluginProcessSetData p i >> return Success)
-  
+  -- This has to be set as this plugin is supposed to be executed via pluginprocess
+  pp <- fromJust <$> elektraPluginGetData p
+  elektraInvokeOpen "ini" Nothing (Just k) >>= ifHandle (return Error) (\i -> elektraPluginProcessSetData pp i >> return Success)
 closeIni :: Plugin -> Key -> IO PluginStatus
 closeIni p k = do
   logDebugT "Closing ini"
-  elektraPluginProcessGetData p >>= maybe (return Success) closeHandle
+  -- This has to be set as this plugin is supposed to be executed via pluginprocess
+  pp <- fromJust <$> elektraPluginGetData p
+  elektraPluginProcessGetData pp >>= maybe (return Success) closeHandle
   where
     closeHandle = ifHandle (return Success) (\i -> elektraInvokeClose i (Just k) >> return Success)
   
