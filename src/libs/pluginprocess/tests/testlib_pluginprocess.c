@@ -326,6 +326,7 @@ static void test_childAddingParentKey (void)
 	output_warnings (parentKey);
 	output_error (parentKey);
 
+	keyDel (parentKey);
 	ksDel (ks);
 	ksDel (conf);
 	elektraFree (plugin);
