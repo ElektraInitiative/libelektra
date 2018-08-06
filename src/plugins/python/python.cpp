@@ -392,6 +392,8 @@ int PYTHON_PLUGIN_FUNCTION (Get) (ckdb::Plugin * handle, ckdb::KeySet * returned
 #include ELEKTRA_README (PYTHON_PLUGIN_NAME)
 				     keyNew (_MODULE_CONFIG_PATH "/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END));
 		ksDel (n);
+		
+		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
 	ElektraPluginProcess * pp = static_cast<ElektraPluginProcess *> (elektraPluginGetData (handle));
