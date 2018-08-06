@@ -62,7 +62,7 @@ int elektraCppTemplateOpen (Plugin * handle, Key * key)
 	}
 	catch (exception const & error)
 	{
-		ELEKTRA_ADD_WARNING (ELEKTRA_WARNING_OPEN, key, error.what ());
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_UNCAUGHT_EXCEPTION, key, error.what ());
 	}
 
 	return status;

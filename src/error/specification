@@ -1210,3 +1210,9 @@ severity:error
 ingroup:plugin
 module:typechecker
 macro:PLUGIN_TYPECHECKER_SET
+
+number:194
+description:A plugin produced an uncaught C++ exception
+severity:error
+ingroup:plugin
+macro:UNCAUGHT_EXCEPTION
