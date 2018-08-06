@@ -189,7 +189,7 @@ sudo kdb umount spec/tests/typechecker
 As indicated in the limitations, error messages are currently rather raw and haskell-focused:
 
 ```
-Typechecking or compilation failed:
+Type checking or compilation failed:
  /tmp/testSpecification80690-1.hs:15:8: error:
      • Could not deduce: RegexContains
                            "[0-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-4][0-9][0-9][0-9]|5000"
@@ -209,7 +209,7 @@ Typechecking or compilation failed:
 ```
 
 It is still fairly easy to map the error message back to the configuration
-specification. The above error message shows that there was an error when typechecking the
+specification. The above error message shows that there was an error when type checking the
 specification of `key2` as indicated by the line "In an equation for ...". The line 
 "In the expression: ..." then shows the exact part where its happen. The incompatibility arises
 during checking the fallback from `key2` to `key1`. The regexes describing the contents of the 
