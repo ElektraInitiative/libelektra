@@ -57,7 +57,7 @@ int elektraCppTemplateOpen (Plugin * handle, Key * key)
 
 	try
 	{
-		// After the call to `delegator::open` you can retrieve a pointer to the delegate via `coderDelegator::get (handle)`
+		// After the call to `delegator::open` you can retrieve a pointer to the delegate via `delegator::get (handle)`
 		status = delegator::open (handle, key);
 	}
 	catch (exception const & error)
