@@ -57,7 +57,8 @@ int elektraCppTemplateOpen (Plugin * handle, Key * key)
 
 	try
 	{
-		// After the call to `delegator::open` you can retrieve a pointer to the delegate via `delegator::get (handle)`
+		// - The function below calls the constructor `CppTemplateDelegate(config)`.
+		// - After the call to `delegator::open` you can retrieve a pointer to the delegate via `delegator::get (handle)`.
 		status = delegator::open (handle, key);
 	}
 	catch (exception const & error)
@@ -71,6 +72,7 @@ int elektraCppTemplateOpen (Plugin * handle, Key * key)
 /** @see elektraDocClose */
 int elektraCppTemplateClose (Plugin * handle, Key * key)
 {
+	// The function `delegator::close` calls the destructor of `CppTemplateDelegate`.
 	return delegator::close (handle, key);
 }
 
