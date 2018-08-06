@@ -11,14 +11,13 @@
 
 namespace elektra
 {
-using CppKeySet = kdb::KeySet;
 
 /**
  * @brief This constructor creates a new delegate object used by the `cpptemplate` plugin
  *
  * @param config This key set contains configuration values provided by the `cpptemplate` plugin
  */
-CppTemplateDelegate::CppTemplateDelegate (CppKeySet config ELEKTRA_UNUSED)
+CppTemplateDelegate::CppTemplateDelegate (KeySet config ELEKTRA_UNUSED)
 {
 }
 } // end namespace elektra

@@ -18,10 +18,10 @@ namespace elektra
 
 class CppTemplateDelegate
 {
-	using CppKeySet = kdb::KeySet;
+	using KeySet = kdb::KeySet;
 
 public:
-	explicit CppTemplateDelegate (CppKeySet config);
+	explicit CppTemplateDelegate (KeySet config);
 };
 
 } // end namespace elektra
