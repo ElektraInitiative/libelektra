@@ -21,3 +21,5 @@ usr/share/libelektra-test/test-data/passwd/*
 usr/share/libelektra-test/test-data/file/*
 usr/share/libelektra-test/test-data/blockresolver/*
 usr/share/libelektra-test/test-data/xerces/*
+usr/share/libelektra-test/test-data/python/*
+usr/share/libelektra-test/test-data/python2/*
