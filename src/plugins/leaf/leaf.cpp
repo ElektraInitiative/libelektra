@@ -67,10 +67,7 @@ int elektraLeafSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key * par
 {
 	CppKeySet keys{ returned };
 
-	auto directoriesLeaves = delegator::get (handle)->splitDirectoriesLeaves (keys);
-	keys.clear ();
-	keys.append (directoriesLeaves.first);
-	keys.append (directoriesLeaves.second);
+	delegator::get (handle)->convertToLeaves (keys);
 
 	keys.release ();
 	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;

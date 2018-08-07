@@ -16,14 +16,9 @@ namespace elektra
 {
 using CppKey = kdb::Key;
 
-/**
- * @brief This constructor creates a new delegate object used by the `leaf` plugin
- *
- * @param config This key set contains configuration values provided by the `leaf` plugin
- */
-LeafDelegate::LeafDelegate (CppKeySet config ELEKTRA_UNUSED)
-{
-}
+// ===========
+// = Private =
+// ===========
 
 /**
  * @brief Split `keys` into two key sets, one for directories (keys without children) and one for all other keys.
@@ -50,6 +45,30 @@ pair<CppKeySet, CppKeySet> LeafDelegate::splitDirectoriesLeaves (CppKeySet const
 		}
 	}
 	return make_pair (directories, leaves);
+}
+
+// ==========
+// = Public =
+// ==========
+
+/**
+ * @brief This constructor creates a new delegate object used by the `leaf` plugin
+ *
+ * @param config This key set contains configuration values provided by the `leaf` plugin
+ */
+LeafDelegate::LeafDelegate (CppKeySet config ELEKTRA_UNUSED)
+{
+}
+
+/**
+ * @brief This method converts all directories keys in the given key set to leaf keys.
+ */
+void LeafDelegate::convertToLeaves (CppKeySet & keys)
+{
+	auto directoriesLeaves = splitDirectoriesLeaves (keys);
+	keys.clear ();
+	keys.append (directoriesLeaves.first);
+	keys.append (directoriesLeaves.second);
 }
 
 } // end namespace elektra

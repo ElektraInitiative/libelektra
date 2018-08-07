@@ -21,9 +21,6 @@ using CppKeySet = kdb::KeySet;
 
 class LeafDelegate
 {
-public:
-	explicit LeafDelegate (CppKeySet config);
-
 	/**
 	 * @brief Split `keys` into two key sets, one for directories (keys without children) and one for all other keys.
 	 *
@@ -32,6 +29,13 @@ public:
 	 * @return A pair of key sets, where the firs key set contains all directories and the second key set contains all leaves
 	 */
 	pair<CppKeySet, CppKeySet> splitDirectoriesLeaves (CppKeySet const & keys);
+public:
+	explicit LeafDelegate (CppKeySet config);
+
+	/**
+	 * @brief This method converts all directories keys in the given key set to leaf keys.
+	 */
+	void convertToLeaves (CppKeySet & keys);
 };
 
 } // end namespace elektra
