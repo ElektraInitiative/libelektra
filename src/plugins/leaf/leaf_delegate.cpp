@@ -25,6 +25,28 @@ using CppKey = kdb::Key;
 // ===========
 
 /**
+ * @brief This method copies directory leaves (marked with `DIRECTORY_POSTFIX`) from `input` to the returned key set.
+ *
+ * @param input The function searches for directory leaves in this key set.
+
+ * @return A key set containing all directory leaves from `input`
+ */
+CppKeySet LeafDelegate::getDirectoryLeaves (CppKeySet const & input)
+{
+	CppKeySet directoryLeaves;
+
+	for (auto key : input)
+	{
+		if (key.getBaseName () == DIRECTORY_POSTFIX)
+		{
+			directoryLeaves.append (key);
+		}
+	}
+
+	return directoryLeaves;
+}
+
+/**
  * @brief Split `keys` into two key sets, one for directories (keys without children) and one for all other keys.
  *
  * @param keys This parameter contains the key set this function splits.
