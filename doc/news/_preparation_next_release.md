@@ -461,6 +461,7 @@ Thanks to Daniel Bugl.
 - The build system now automatically detects Homebrew’s OpenSSL version on macOS. *(René Schwaiger)*
 - We improved the automatic detection of Libgcrypt and OpenSSL. *(René Schwaiger)*
 - Resolved an issue where cmake did not properly set test feature macros to detect and use libc functionality. *(Lukas Winkler)*
+- Improve the detection of `ftw.h`, if the current build use the compiler switch `-Werror`. *(René Schwaiger)*
 
 [Google Test]: https://github.com/google/googletest
 
