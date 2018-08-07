@@ -18,7 +18,6 @@
 static void init_env (void)
 {
 	setenv ("PYTHONDONTWRITEBYTECODE", "1", 1);
-	setenv ("PYTHONPATH", ".", 1);
 }
 
 char filebuf[KDB_MAX_PATH_LENGTH];
