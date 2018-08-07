@@ -40,6 +40,11 @@ class LeafDelegate
 	CppKeySet convertDirectoriesToLeaves (CppKeySet const & directories);
 
 public:
+	/**
+	 * @brief This constructor creates a new delegate object used by the `leaf` plugin
+	 *
+	 * @param config This key set contains configuration values provided by the `leaf` plugin
+	 */
 	explicit LeafDelegate (CppKeySet config);
 
 	/**
