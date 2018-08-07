@@ -460,6 +460,7 @@ Thanks to Daniel Bugl.
 - The function `add_plugintest` now also supports setting environment variables for C/C++ based tests. *(René Schwaiger)*
 - The build system now automatically detects Homebrew’s OpenSSL version on macOS. *(René Schwaiger)*
 - We improved the automatic detection of Libgcrypt and OpenSSL. *(René Schwaiger)*
+- Resolved an issue where cmake did not properly set test feature macros to detect and use libc functionality. *(Lukas Winkler)*
 
 [Google Test]: https://github.com/google/googletest
 
@@ -510,6 +511,7 @@ Thanks to Daniel Bugl.
 - Setup mailing for jenkins *(Lukas Winkler)*
   - send mail to build@libelektra.org when `master` fails *(Lukas Winkler)*
   - parse change list into mail *(Lukas Winkler)*
+  - do not send mails if pipeline run was aborted *(Lukas Winkler)*
 
 ### Travis
 
