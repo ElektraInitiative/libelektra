@@ -48,22 +48,31 @@ int elektraLeafGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 {
 	CppKeySet keys{ returned };
 	CppKey parent{ parentKey };
-	bool updated = false;
 
 	if (parent.getName () == "system/elektra/modules/leaf")
 	{
 		keys.append (getContract ());
-		updated = true;
+		parent.release ();
+		keys.release ();
+		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
 	parent.release ();
 	keys.release ();
-	return updated ? ELEKTRA_PLUGIN_STATUS_SUCCESS : ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 }
 
 /** @see elektraDocSet */
-int elektraLeafSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraLeafSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
+	CppKeySet keys{ returned };
+
+	auto directoriesLeaves = delegator::get (handle)->splitDirectoriesLeaves (keys);
+	keys.clear ();
+	keys.append (directoriesLeaves.first);
+	keys.append (directoriesLeaves.second);
+
+	keys.release ();
 	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 }
 

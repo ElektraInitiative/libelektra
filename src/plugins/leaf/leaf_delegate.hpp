@@ -15,13 +15,23 @@
 
 namespace elektra
 {
+using std::pair;
+
+using CppKeySet = kdb::KeySet;
 
 class LeafDelegate
 {
-	using CppKeySet = kdb::KeySet;
-
 public:
 	explicit LeafDelegate (CppKeySet config);
+
+	/**
+	 * @brief Split `keys` into two key sets, one for directories (keys without children) and one for all other keys.
+	 *
+	 * @param keys This parameter contains the key set this function splits.
+	 *
+	 * @return A pair of key sets, where the firs key set contains all directories and the second key set contains all leaves
+	 */
+	pair<CppKeySet, CppKeySet> splitDirectoriesLeaves (CppKeySet const & keys);
 };
 
 } // end namespace elektra

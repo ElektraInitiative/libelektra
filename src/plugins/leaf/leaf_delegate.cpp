@@ -9,9 +9,12 @@
 
 #include "leaf_delegate.hpp"
 
+using std::make_pair;
+using std::pair;
+
 namespace elektra
 {
-using CppKeySet = kdb::KeySet;
+using CppKey = kdb::Key;
 
 /**
  * @brief This constructor creates a new delegate object used by the `leaf` plugin
@@ -21,4 +24,32 @@ using CppKeySet = kdb::KeySet;
 LeafDelegate::LeafDelegate (CppKeySet config ELEKTRA_UNUSED)
 {
 }
+
+/**
+ * @brief Split `keys` into two key sets, one for directories (keys without children) and one for all other keys.
+ *
+ * @param keys This parameter contains the key set this function splits.
+ *
+ * @return A pair of key sets, where the firs key set contains all directories and the second key set contains all leaves
+ */
+pair<CppKeySet, CppKeySet> LeafDelegate::splitDirectoriesLeaves (CppKeySet const & keys)
+{
+	CppKeySet leaves;
+	CppKeySet directories;
+
+	keys.rewind ();
+	for (CppKey previous = nullptr; keys.next (); previous = keys.current ())
+	{
+		if (keys.current ()->isBelow (previous))
+		{
+			leaves.append (keys.current ());
+		}
+		else
+		{
+			directories.append (keys.current ());
+		}
+	}
+	return make_pair (directories, leaves);
+}
+
 } // end namespace elektra
