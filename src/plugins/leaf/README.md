@@ -132,6 +132,45 @@ sudo kdb umount /tests/leaf
 
 .
 
+## Example
+
+```sh
+# Mount plugin to cascading namespace `/tests/leaf`
+sudo kdb mount config.file /tests/leaf leaf
+
+# Add a directory value
+kdb set /tests/leaf/harold 'Father of SpongeBob SquarePants'
+# Add a leaf value
+kdb set /tests/leaf/harold/spongebob 'I am ready!'
+
+# Add an array
+kdb set /tests/leaf/patrick Star
+kdb set /tests/leaf/patrick/#0 'Being grown-up is boring. Besides, I don’t get Jazz.'
+
+# Since the plugin converts values back in the get direction
+# a user of the database will not notice any changes.
+
+kdb ls /tests/leaf
+#> user/tests/leaf/harold
+#> user/tests/leaf/harold/spongebob
+#> user/tests/leaf/patrick
+#> user/tests/leaf/patrick/#0
+
+kdb get /tests/leaf/harold
+#> Father of SpongeBob SquarePants
+kdb get /tests/leaf/harold/spongebob
+#> I am ready!
+
+kdb get /tests/leaf/patrick
+#> Star
+kdb get /tests/leaf/patrick/#0
+#> Being grown-up is boring. Besides, I don’t get Jazz.
+
+# Undo changes to the key database
+kdb rm -r /tests/leaf
+sudo kdb umount /tests/leaf
+```
+
 # Limitations
 
 **Escaping** is currently **not possible**. If you use the Directory Value plugin you can not
