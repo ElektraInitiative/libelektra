@@ -30,6 +30,8 @@ CppKeySet getContract ()
 	return CppKeySet{ 30,
 			  keyNew ("system/elektra/modules/leaf", KEY_VALUE, "leaf plugin waits for your orders", KEY_END),
 			  keyNew ("system/elektra/modules/leaf/exports", KEY_END),
+			  keyNew ("system/elektra/modules/leaf/exports/open", KEY_FUNC, elektraLeafOpen, KEY_END),
+			  keyNew ("system/elektra/modules/leaf/exports/close", KEY_FUNC, elektraLeafClose, KEY_END),
 			  keyNew ("system/elektra/modules/leaf/exports/get", KEY_FUNC, elektraLeafGet, KEY_END),
 			  keyNew ("system/elektra/modules/leaf/exports/set", KEY_FUNC, elektraLeafSet, KEY_END),
 #include ELEKTRA_README (leaf)
@@ -42,6 +44,19 @@ CppKeySet getContract ()
 extern "C" {
 
 typedef Delegator<LeafDelegate> delegator;
+
+/** @see elektraDocOpen */
+int elektraLeafOpen (Plugin * handle, Key * key)
+{
+	// After the call to `delegator::open` you can retrieve a pointer to the delegate via `coderDelegator::get (handle)`
+	return delegator::open (handle, key);
+}
+
+/** @see elektraDocClose */
+int elektraLeafClose (Plugin * handle, Key * key)
+{
+	return delegator::close (handle, key);
+}
 
 /** @see elektraDocGet */
 int elektraLeafGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
@@ -75,7 +90,13 @@ int elektraLeafSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key * par
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (leaf)
 {
-	return elektraPluginExport ("leaf", ELEKTRA_PLUGIN_GET, &elektraLeafGet, ELEKTRA_PLUGIN_SET, &elektraLeafSet, ELEKTRA_PLUGIN_END);
+	// clang-format off
+	return elektraPluginExport ("leaf",
+		ELEKTRA_PLUGIN_OPEN,	&elektraLeafOpen,
+		ELEKTRA_PLUGIN_CLOSE,	&elektraLeafClose,
+		ELEKTRA_PLUGIN_GET,	&elektraLeafGet,
+		ELEKTRA_PLUGIN_SET,	&elektraLeafSet,
+		ELEKTRA_PLUGIN_END);
 }
 
 } // end extern "C"
