@@ -6,7 +6,7 @@
  * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
  *
  */
-#define _POSIX_C_SOURCE 200112L
+#define _XOPEN_SOURCE 600
 
 /* -- Imports --------------------------------------------------------------------------------------------------------------------------- */
 
@@ -24,6 +24,7 @@
 #include <assert.h>
 #include <errno.h>
 #include <limits.h>    // SSIZE_MAX
+#include <stdint.h>
 #include <stdio.h>     // fopen(), fileno(), fread()
 #include <stdlib.h>    // strtol()
 #include <string.h>    // memcmp()
@@ -66,7 +67,7 @@ struct _mmapAddr
 	char * keyPtr;
 	char * dataPtr;
 
-	const size_t mmapAddrInt;
+	const uintptr_t mmapAddrInt;
 };
 
 typedef struct _mmapAddr MmapAddr;
@@ -608,7 +609,7 @@ static void copyKeySetToMmap (char * dest, KeySet * keySet, MmapHeader * mmapHea
 			      .metaKsArrayPtr = mmapAddr.ksArrayPtr + (SIZEOF_KEY_PTR * keySet->alloc),
 			      .keyPtr = (mmapAddr.ksArrayPtr + (SIZEOF_KEY_PTR * mmapMetaData->ksAlloc)),
 			      .dataPtr = ((char *) mmapAddr.keyPtr + (SIZEOF_KEY * mmapMetaData->numKeys)),
-			      .mmapAddrInt = (size_t) mmapMetaData->destAddr };
+			      .mmapAddrInt = (uintptr_t) mmapMetaData->destAddr };
 
 	if (keySet->size != 0)
 	{
@@ -660,7 +661,7 @@ static void mmapToKeySet (char * mappedRegion, KeySet * returned)
 
 static void updatePointers (MmapMetaData * mmapMetaData, char * dest)
 {
-	size_t destInt = (size_t) dest;
+	uintptr_t destInt = (uintptr_t) dest;
 
 	char * ksPtr = (dest + SIZEOF_MMAPHEADER + SIZEOF_MMAPMETADATA + SIZEOF_KEYSET + SIZEOF_KEY);
 
