@@ -1,6 +1,7 @@
 include (LibAddBinding)
 
 if (DEPENDENCY_PHASE)
+	find_package (Python2Interp 2.7)
 	find_package (Python2Libs 2.7 QUIET)
 	find_package (Pluginprocess)
 	find_swig ()
