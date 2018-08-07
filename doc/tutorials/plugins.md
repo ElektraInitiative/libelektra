@@ -48,8 +48,8 @@ that allow the plugin to work:
 - `elektraPluginSet()` is designed to store the information from the keyset back into a configuration file.
 - `elektraPluginError()` is designed to allow proper rollback of operations if needed and is called if any plugin fails during the set operation.
   This is not needed for storage plugins as the resolver already takes care to unlink the configuration files in such situations.
-- `elektraPluginClose()` is used to free resources that might be required for the plug-in.
-- `ELEKTRA_PLUGIN_EXPORT(Plugin)` simply lets Elektra know that the plug-in exists and what the name of the above functions are.
+- `elektraPluginClose()` is used to free resources that might be required for the plugin.
+- `ELEKTRA_PLUGIN_EXPORT(Plugin)` simply lets Elektra know that the plugin exists and what the name of the above functions are.
 
 Most simply put: most plugins consist of five major functions, `elektraPluginOpen()`, `elektraPluginClose()`, `elektraPluginGet()`, `elektraPluginSet()`,
 and `ELEKTRA_EXPORT_PLUGIN(Plugin)`.
