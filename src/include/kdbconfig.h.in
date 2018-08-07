@@ -10,13 +10,6 @@
 
 @DISCLAMER@
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the BSD License (revised).                      *
- *                                                                         *
- ***************************************************************************/
-
 #ifndef KDBCONFIG_H
 #define KDBCONFIG_H
 
