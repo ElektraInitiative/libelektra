@@ -2,7 +2,7 @@ include (CheckSymbolExists)
 include (LibAddMacros)
 include (CMakePushCheckState)
 
-# We need GNU_SOURCE and _XOEPN_SOURCE for full functinality
+# We need GNU_SOURCE and XOPEN_SOURCE for full functionality
 set (REQUIRED_FEATURE_MACROS -D_GNU_SOURCE -D_XOPEN_SOURCE=500 -D_DARWIN_C_SOURCE)
 add_definitions (${REQUIRED_FEATURE_MACROS})
 
