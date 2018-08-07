@@ -24,7 +24,7 @@
 #include <assert.h>
 #include <errno.h>
 #include <limits.h>    // SSIZE_MAX
-#include <stdint.h>
+#include <stdint.h>    // uintN_t, uintptr_t
 #include <stdio.h>     // fopen(), fileno(), fread()
 #include <stdlib.h>    // strtol()
 #include <string.h>    // memcmp()
@@ -727,6 +727,43 @@ static void * hexStringToAddress (const char * hexString)
 	return (void *) val;
 }
 
+/**
+ * @brief Deeply copies from source to dest.
+ *
+ * Creates a deep copy of the keyset, but does not duplicate
+ * the opmphm structures.
+ *
+ * @param source has to be an initialized source KeySet
+ * @return a deep copy of source on success
+ * @retval 0 on NULL pointer or a memory error happened
+ */
+KeySet * mmapKsDeepDup (const KeySet * source)
+{
+	if (!source) return 0;
+
+	size_t s = source->size;
+	size_t i = 0;
+	KeySet * keyset = 0;
+
+	keyset = ksNew (source->alloc, KS_END);
+	for (i = 0; i < s; ++i)
+	{
+		Key * k = source->array[i];
+		Key * d = keyDup (k);
+		if (!test_bit (k->flags, KEY_FLAG_SYNC))
+		{
+			keyClearSync (d);
+		}
+		if (ksAppendKey (keyset, d) == -1)
+		{
+			ksDel (keyset);
+			return 0;
+		}
+	}
+
+	return keyset;
+}
+
 static KeySet * copyKeySet (KeySet * toCopy, MmapMetaData * mmapMetaData)
 {
 	if (!mmapMetaData)
@@ -777,7 +814,7 @@ static KeySet * copyKeySet (KeySet * toCopy, MmapMetaData * mmapMetaData)
 	}
 
 	// duplicate keyset from mmap and replace meta keys with deep copy
-	KeySet * dest = ksDeepDup (toCopy);
+	KeySet * dest = mmapKsDeepDup (toCopy);
 	cur = 0;
 	ksRewind (dest);
 	while ((cur = ksNext (dest)) != 0)
@@ -832,13 +869,7 @@ static void unlinkFile (Key * parentKey)
 			keySet->current = 0;
 			keySet->mmapMetaData = 0;
 			keySet->flags = 0;
-#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
-			if (keySet->opmphm != 0)
-			{
-				opmphmDel (keySet->opmphm);
-			}
-			keySet->opmphm = copy->opmphm;
-#endif
+			// keySet->opmphm invalidated by ksClose already
 			elektraFree (copy);
 		}
 	}
