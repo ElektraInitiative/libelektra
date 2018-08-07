@@ -1435,3 +1435,9 @@ def detectInterruption(Closure c) {
     }
   }
 }
+
+class UserInterruptedException extends Exception {
+    UserInterruptedException(String message) {
+        super(message)
+    }
+}
