@@ -47,6 +47,21 @@ CppKeySet LeafDelegate::getDirectoryLeaves (CppKeySet const & input)
 }
 
 /**
+ * @brief This method removes the directory prefix (`DIRECTORY_POSTFIX`) from the name of all keys in `directoryLeaves`.
+ *
+ * @pre All key names in `directoryLeaves` must end with `DIRECTORY_POSTFIX`.
+ *
+ * @param directoryLeaves This parameter contains the keys from which this function removes `DIRECTORY_POSTFIX`
+ */
+void LeafDelegate::convertLeavesToDirectories (CppKeySet & directoryLeaves)
+{
+	for (auto key : directoryLeaves)
+	{
+		keySetBaseName (*key, 0);
+	}
+}
+
+/**
  * @brief Split `keys` into two key sets, one for directories (keys without children) and one for all other keys.
  *
  * @param keys This parameter contains the key set this function splits.
