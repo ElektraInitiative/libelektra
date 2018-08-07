@@ -511,6 +511,7 @@ Thanks to Daniel Bugl.
 - Setup mailing for jenkins *(Lukas Winkler)*
   - send mail to build@libelektra.org when `master` fails *(Lukas Winkler)*
   - parse change list into mail *(Lukas Winkler)*
+  - do not send mails if pipeline run was aborted *(Lukas Winkler)*
 
 ### Travis
 

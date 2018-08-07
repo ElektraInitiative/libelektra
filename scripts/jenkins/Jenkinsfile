@@ -163,8 +163,12 @@ def main() {
 }
 
 try {
-  main()
-} catch(e) {
+  detectInterruption {
+    main()
+  }
+} catch(UserInterruptedException uie) {
+  println "Caught ${uie}"
+} catch(Exception e) {
   if (isMaster()) {
     // If master is failing we want to know ASAP so send a mail.
     def changes = currentBuild.changeSets.collect() {
@@ -184,11 +188,6 @@ Changes: ${RUN_CHANGES_DISPLAY_URL}
 ${changes}
 
 Logs: ${currentBuild.rawBuild.getLog(20).join('\n')}
-
----
-Debug Information for mail step:
-currentResult: ${currentBuild.currentResult}
-Exception: ${e}
 """
     mail subject: "Build ${JOB_NAME} failed",
          body: message,
@@ -1405,5 +1404,34 @@ def getElektraWritableFiles() {
 def ensureDirsExist(listOfDirs) {
   listOfDirs.each {
     sh "mkdir -p $it || /bin/true"
+  }
+}
+
+
+/* Detect if pipeline was aborted
+ *
+ * Depending on which part of the pipeline was interrupted a different Exception
+ * is thrown. This wrapper makes sure a UserInterruptedException is thrown
+ * regardless of pipeline state.
+ *
+ * see: https://issues.jenkins-ci.org/browse/JENKINS-34376
+ */
+def detectInterruption(Closure c) {
+  try {
+    c()
+  } catch (org.jenkinsci.plugins.workflow.steps.FlowInterruptedException fie) {
+    // this ambiguous condition means a user probably aborted
+    if (fie.causes.size() == 0) {
+        throw new UserInterruptedException(fie)
+    } else {
+        throw fie
+    }
+  } catch (hudson.AbortException ae) {
+    // this ambiguous condition means during a shell step, user probably aborted
+    if (ae.getMessage().contains('script returned exit code 143')) {
+        throw new UserInterruptedException(ae)
+    } else {
+        throw ae
+    }
   }
 }
