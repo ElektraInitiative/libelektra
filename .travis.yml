@@ -41,6 +41,7 @@ matrix:
         # quite often otherwise.
         # [timeout]: https://docs.travis-ci.com/user/customizing-the-build/#build-timeouts
         - TOOLS=kdb
+        - BINDINGS=cpp
 
     - os: linux
       name: 🐧 GCC ASAN
@@ -56,6 +57,9 @@ matrix:
         - COMMON_FLAGS=-Wno-error
         - CC_COMPILER=gcc-8
         - CXX_COMPILER=g++-8
+        # Build less stuff so the build does not hit the timeout limit that often
+        - TOOLS=kdb
+        - BINDINGS=cpp
 
     - os: linux
       name: 🐧 Clang ASAN
