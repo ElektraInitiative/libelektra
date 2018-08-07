@@ -12,6 +12,10 @@
 using std::make_pair;
 using std::pair;
 
+// -- Macros -------------------------------------------------------------------------------------------------------------------------------
+
+#define DIRECTORY_POSTFIX "___dirdata"
+
 namespace elektra
 {
 using CppKey = kdb::Key;
@@ -45,6 +49,29 @@ pair<CppKeySet, CppKeySet> LeafDelegate::splitDirectoriesLeaves (CppKeySet const
 		}
 	}
 	return make_pair (directories, leaves);
+}
+
+/**
+ * @brief Convert all keys in `directories` to an empty key and a leaf key containing the data of the old key.
+ *
+ * @param directories This parameter contains a set of directory keys this function converts.
+ *
+ * @return A key set containing only empty directory keys and corresponding leaf keys storing the values of the old directory keys
+ */
+CppKeySet LeafDelegate::convertDirectoriesToLeaves (CppKeySet const & directories)
+{
+	CppKeySet directoryLeaves;
+
+	for (auto directory : directories)
+	{
+		CppKey emptyDirectory{ directory.getName (), KS_END };
+		CppKey leaf = directory;
+		leaf.addBaseName (DIRECTORY_POSTFIX);
+		directoryLeaves.append (leaf);
+		directoryLeaves.append (emptyDirectory);
+	}
+
+	return directoryLeaves;
 }
 
 // ==========

@@ -29,6 +29,16 @@ class LeafDelegate
 	 * @return A pair of key sets, where the firs key set contains all directories and the second key set contains all leaves
 	 */
 	pair<CppKeySet, CppKeySet> splitDirectoriesLeaves (CppKeySet const & keys);
+
+	/**
+	 * @brief Convert all keys in `directories` to an empty key and a leaf key containing the data of the old key.
+	 *
+	 * @param directories This parameter contains a set of directory keys this function converts.
+	 *
+	 * @return A key set containing only empty directory keys and corresponding leaf keys storing the values of the old directory keys
+	 */
+	CppKeySet convertDirectoriesToLeaves (CppKeySet const & directories);
+
 public:
 	explicit LeafDelegate (CppKeySet config);
 
