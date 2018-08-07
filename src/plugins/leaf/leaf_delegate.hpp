@@ -22,22 +22,24 @@ using CppKeySet = kdb::KeySet;
 class LeafDelegate
 {
 	/**
-	 * @brief This method copies directory leaves (marked with `DIRECTORY_POSTFIX`) from `input` to the returned key set.
+	 * @brief This method splits the given keyset into directory leaves (marked with `DIRECTORY_POSTFIX`) and other keys.
 	 *
 	 * @param input The function searches for directory leaves in this key set.
-
-	 * @return A key set containing all directory leaves from `input`
+	 *
+	 * @return A pair of key sets, where the first key set contains all directory leaves and the second key set contains all other keys
 	 */
-	CppKeySet getDirectoryLeaves (CppKeySet const & input);
+	pair<CppKeySet, CppKeySet> splitDirectoryLeavesOther (CppKeySet const & input);
 
 	/**
-	 * @brief This method removes the directory prefix (`DIRECTORY_POSTFIX`) from the name of all keys in `directoryLeaves`.
+	 * @brief This method removes the directory postfix (`DIRECTORY_POSTFIX`) from the name of all keys in `directoryLeaves`.
 	 *
 	 * @pre All key names in `directoryLeaves` must end with `DIRECTORY_POSTFIX`.
 	 *
-	 * @param directoryLeaves This parameter contains the keys from which this function removes `DIRECTORY_POSTFIX`
+	 * @param directoryLeaves This parameter contains the keys for which this function removes the directory postfix.
+	 *
+	 * @return A copy of the input, where each key name does not end with the directory postfix any more
 	 */
-	void convertLeavesToDirectories (CppKeySet & directoryLeaves);
+	CppKeySet convertLeavesToDirectories (CppKeySet const & directoryLeaves);
 
 	/**
 	 * @brief Split `keys` into two key sets, one for directories (keys without children) and one for all other keys.
@@ -64,6 +66,11 @@ public:
 	 * @param config This key set contains configuration values provided by the `leaf` plugin
 	 */
 	explicit LeafDelegate (CppKeySet config);
+
+	/**
+	 * @brief This method converts all leaf keys in the given key set to directory keys.
+	 */
+	void convertToDirectories (CppKeySet & keys);
 
 	/**
 	 * @brief This method converts all directories keys in the given key set to leaf keys.

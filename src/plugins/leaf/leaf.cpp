@@ -71,6 +71,7 @@ int elektraLeafGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 		keys.release ();
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
+	delegator::get (handle)->convertToDirectories (keys);
 
 	parent.release ();
 	keys.release ();

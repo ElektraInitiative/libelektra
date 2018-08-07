@@ -7,10 +7,13 @@
  *
  */
 
+#include <kdblogger.h>
+
 #include "leaf_delegate.hpp"
 
 using std::make_pair;
 using std::pair;
+using std::tie;
 
 // -- Macros -------------------------------------------------------------------------------------------------------------------------------
 
@@ -25,15 +28,16 @@ using CppKey = kdb::Key;
 // ===========
 
 /**
- * @brief This method copies directory leaves (marked with `DIRECTORY_POSTFIX`) from `input` to the returned key set.
+ * @brief This method splits the given keyset into directory leaves (marked with `DIRECTORY_POSTFIX`) and other keys.
  *
  * @param input The function searches for directory leaves in this key set.
-
- * @return A key set containing all directory leaves from `input`
+ *
+ * @return A pair of key sets, where the first key set contains all directory leaves and the second key set contains all other keys
  */
-CppKeySet LeafDelegate::getDirectoryLeaves (CppKeySet const & input)
+pair<CppKeySet, CppKeySet> LeafDelegate::splitDirectoryLeavesOther (CppKeySet const & input)
 {
 	CppKeySet directoryLeaves;
+	CppKeySet other;
 
 	for (auto key : input)
 	{
@@ -41,24 +45,34 @@ CppKeySet LeafDelegate::getDirectoryLeaves (CppKeySet const & input)
 		{
 			directoryLeaves.append (key);
 		}
+		else
+		{
+			other.append (key);
+		}
 	}
-
-	return directoryLeaves;
+	return make_pair (directoryLeaves, other);
 }
 
 /**
- * @brief This method removes the directory prefix (`DIRECTORY_POSTFIX`) from the name of all keys in `directoryLeaves`.
+ * @brief This method removes the directory postfix (`DIRECTORY_POSTFIX`) from the name of all keys in `directoryLeaves`.
  *
  * @pre All key names in `directoryLeaves` must end with `DIRECTORY_POSTFIX`.
  *
- * @param directoryLeaves This parameter contains the keys from which this function removes `DIRECTORY_POSTFIX`
+ * @param directoryLeaves This parameter contains the keys for which this function removes the directory postfix.
+ *
+ * @return A copy of the input, where each key name does not end with the directory postfix any more
  */
-void LeafDelegate::convertLeavesToDirectories (CppKeySet & directoryLeaves)
+CppKeySet LeafDelegate::convertLeavesToDirectories (CppKeySet const & directoryLeaves)
 {
+	CppKeySet directories;
+
 	for (auto key : directoryLeaves)
 	{
-		keySetBaseName (*key, 0);
+		CppKey directory = key.dup ();
+		keySetBaseName (*directory, 0);
+		directories.append (directory);
 	}
+	return directories;
 }
 
 /**
@@ -102,7 +116,7 @@ CppKeySet LeafDelegate::convertDirectoriesToLeaves (CppKeySet const & directorie
 	for (auto directory : directories)
 	{
 		CppKey emptyDirectory{ directory.getName (), KS_END };
-		CppKey leaf = directory;
+		CppKey leaf = directory.dup ();
 		leaf.addBaseName (DIRECTORY_POSTFIX);
 		directoryLeaves.append (leaf);
 		directoryLeaves.append (emptyDirectory);
@@ -125,14 +139,35 @@ LeafDelegate::LeafDelegate (CppKeySet config ELEKTRA_UNUSED)
 }
 
 /**
+ * @brief This method converts all leaf keys in the given key set to directory keys.
+ */
+void LeafDelegate::convertToDirectories (CppKeySet & keys)
+{
+	CppKeySet directoryLeaves;
+	CppKeySet nonDirectoryLeaves;
+	tie (directoryLeaves, nonDirectoryLeaves) = splitDirectoryLeavesOther (keys);
+
+	auto directories = convertLeavesToDirectories (directoryLeaves);
+
+	keys.clear ();
+	keys.append (nonDirectoryLeaves);
+	keys.append (directories);
+}
+
+/**
  * @brief This method converts all directories keys in the given key set to leaf keys.
  */
 void LeafDelegate::convertToLeaves (CppKeySet & keys)
 {
-	auto directoriesLeaves = splitDirectoriesLeaves (keys);
+	CppKeySet directories;
+	CppKeySet leaves;
+	tie (directories, leaves) = splitDirectoriesLeaves (keys);
+
+	auto directoryLeaves = convertDirectoriesToLeaves (directories);
+
 	keys.clear ();
-	keys.append (directoriesLeaves.first);
-	keys.append (directoriesLeaves.second);
+	keys.append (directoryLeaves);
+	keys.append (leaves);
 }
 
 } // end namespace elektra
