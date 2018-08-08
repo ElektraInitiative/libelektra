@@ -69,4 +69,10 @@ TEST (leaf, set)
 		,
 #include "leaf/empty.hpp"
 		, ELEKTRA_PLUGIN_STATUS_NO_UPDATE);
+
+	test_set (
+#include "leaf/simple_get.hpp"
+		,
+#include "leaf/simple_set.hpp"
+	);
 }
