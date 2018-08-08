@@ -10,7 +10,8 @@
 
 ## Introduction
 
-This plugin checks whether the value of a key is a valid file system path. 
+This plugin checks whether the value of a key is a valid file system path and optionally if 
+correct permissions are set for a certain user. 
 
 ## Purpose
 
@@ -24,9 +25,45 @@ is allowed to occur for both device and mountpoint. When checking for
 relative files, it is not enough to look at the first character if it is
 a `/`, because remote file systems and some special names are valid, too.
 
+If `check/permission = [permission], [user]` is also present it will check for the correct permissions
+of the file/directory. `check/permission = rw, tomcat` for example will check if the user `tomcat` has read and 
+write access to the path which was set in `check/path`.
+ 
+ Permissions available:
+ - `r`: **R**ead
+ - `w`: **W**rite
+ - `x`: e**X**ecute
+
 ## Usage
 
 If the metakey `check/path` is present, it is checked if the value is a
 valid absolute file system path. If a metavalue is present, an additional
 check will be done if it is a directory or device file.
 
+## Example
+```sh
+sudo kdb mount some_file.ecf /tests/path some_file dump
+
+# Assume user tomcat has read and write permissions on /var/log/application-file.log
+kdb set /tests/path/value /var/log/application-file.log
+
+#This checks if the file actually exists
+kdb setmeta user/tests/path/value check/path
+
+#This checks if the user has read and write permissions for the application-file.log file
+kdb setmeta user/tests/path/value check/permission "rw, tomcat"
+
+#Generate a file which is only accessable for root
+touch /var/log/application-file-restricted.log
+sudo chmod 700 /var/log/application-file-restricted.log
+sudo chown root:root /var/log/application-file-restricted.log
+
+#This should trigger the error
+kdb set /tests/path/value /var/log/application-file-restricted.log
+# RET:X
+# ERROR:XXX
+
+# cleanup
+kdb rm -r /tests/path
+sudo kdb umount /tests/path
+```
