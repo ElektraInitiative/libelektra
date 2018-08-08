@@ -119,11 +119,20 @@ TEST (leaf, set)
 		,
 #include "leaf/simple_set.hpp"
 	);
+
+	test_set (
+#include "leaf/extended_get.hpp"
+		,
+#include "leaf/extended_set.hpp"
+	);
 }
 
 TEST (leaf, roundtrip)
 {
 	test_roundtrip (
 #include "leaf/simple_get.hpp"
+	);
+	test_roundtrip (
+#include "leaf/extended_get.hpp"
 	);
 }
