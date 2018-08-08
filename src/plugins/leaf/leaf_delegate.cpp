@@ -86,17 +86,20 @@ pair<CppKeySet, CppKeySet> LeafDelegate::splitDirectoriesLeaves (CppKeySet const
 	CppKeySet directories;
 
 	keys.rewind ();
-	for (CppKey previous = nullptr; keys.next (); previous = keys.current ())
+	CppKey previous;
+	for (previous = keys.next (); keys.next (); previous = keys.current ())
 	{
-		if (keys.current ()->isBelow (previous))
+		if (keys.current ().isBelow (previous))
 		{
-			leaves.append (keys.current ());
+			directories.append (previous);
 		}
 		else
 		{
-			directories.append (keys.current ());
+			leaves.append (previous);
 		}
 	}
+	leaves.append (previous);
+
 	return make_pair (directories, leaves);
 }
 
