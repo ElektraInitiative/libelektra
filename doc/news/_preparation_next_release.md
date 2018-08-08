@@ -554,6 +554,7 @@ plugins, bindings and tools are always up to date. Furthermore, we changed:
 
 - <<TODO>>
 - <<TODO>>
+- We fixed a problem of color escape characters on non-terminals. *(Lukas Winkler)*
 - <<TODO>>
 
 ## Outlook
