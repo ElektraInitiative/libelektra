@@ -41,6 +41,8 @@ matrix:
         # quite often otherwise.
         # [timeout]: https://docs.travis-ci.com/user/customizing-the-build/#build-timeouts
         - TOOLS=kdb
+        - BINDINGS=cpp
+        - TEST_COMMAND='ctest --output-on-failure -E ''testscr_check_(formatting|oclint)'''
 
     - os: linux
       name: 🐧 GCC ASAN
@@ -56,6 +58,10 @@ matrix:
         - COMMON_FLAGS=-Wno-error
         - CC_COMPILER=gcc-8
         - CXX_COMPILER=g++-8
+        # Build less stuff so the build does not hit the timeout limit that often
+        - TOOLS=kdb
+        - BINDINGS=cpp
+        - TEST_COMMAND='ctest --output-on-failure -E ''testscr_check_(formatting|oclint)'''
 
     - os: linux
       name: 🐧 Clang ASAN
@@ -71,6 +77,7 @@ matrix:
         - ENABLE_ASAN=ON
         - CC_COMPILER=clang-6.0
         - CXX_COMPILER=clang++-6.0
+        - TEST_COMMAND='ninja run_all'
 
     # FULL: Build full version of Elektra (BUILD_FULL=ON)
 
@@ -271,10 +278,4 @@ before_script:
 
 script:
   - ninja
-  - |
-    if [[ "$ENABLE_ASAN" = "ON" ]]; then
-      ninja run_all
-    else
-      ninja install
-      ninja run_all && kdb run_all
-    fi
+  - ${TEST_COMMAND:-eval 'ninja install && ninja run_all && kdb run_all'}

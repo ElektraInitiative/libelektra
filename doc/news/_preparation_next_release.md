@@ -533,11 +533,11 @@ Thanks to Daniel Bugl.
   - `PLUGINS`, and
   - `TOOLS`
 
-  . We also added environment variables for the build configuration options `BUILD_FULL`, `COMMON_FLAGS`, and
-  `ENABLE_ASAN`. *(René Schwaiger)*
-- The macOS ASAN build job now only builds the `kdb` tool, since we hit the
-  [job timeout for public repositories](https://docs.travis-ci.com/user/customizing-the-build/#build-timeouts) for this specific job quite
-  often. *(René Schwaiger)*
+  . We also added environment variables for the build configuration options `BUILD_FULL`, `COMMON_FLAGS`, `ENABLE_ASAN` and the command
+  used to test the build (`TEST_COMMAND`). *(René Schwaiger)*
+- The ASAN build jobs `🍏 Clang ASAN` and `🐧 GCC ASAN` now only build the `kdb` tool and the `cpp` binding. This update ensures, that we
+  do not hit the [job timeout for public repositories](https://docs.travis-ci.com/user/customizing-the-build/#build-timeouts) that often.
+  *(René Schwaiger)*
 
 ## Compatibility
 
