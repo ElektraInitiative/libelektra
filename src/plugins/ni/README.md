@@ -49,7 +49,8 @@ For the metadata of the parent key use the following syntax:
 meta=foo
 ```
 
-Line continuation works by ending the line with `\\`.
+Line continuation works by ending the line with `\\` (a single backslash).
+If you want a line break at the end of the line, use `\\n\\`.
 
 To export a `KeySet` in the nickel format use:
 
