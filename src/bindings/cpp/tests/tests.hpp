@@ -10,6 +10,7 @@
 #define KDB_TESTS_HPP
 
 #include <kdb.hpp>
+#include <kdbmacros.h>
 #include <key.hpp>
 #include <keyset.hpp>
 
@@ -25,7 +26,19 @@ using namespace std;
 using namespace kdb;
 
 #define succeed_if(x, y) ASSERT_TRUE (x) << y
-#define exit_if_fail(x, y) ASSERT_TRUE (x) << y
+
+#define exit_if_fail(expression, message)                                                                                                  \
+	if (!(expression))                                                                                                                 \
+	{                                                                                                                                  \
+		cerr << __FILE__ << ":" << __LINE__ << ": Failure" << endl;                                                                \
+		cerr << "Value of: " << ELEKTRA_STRINGIFY (expression) << endl;                                                            \
+		cerr << "  Actual: false" << endl;                                                                                         \
+		cerr << "Expected: true" << endl;                                                                                          \
+		cerr << message << endl;                                                                                                   \
+		exit (1);                                                                                                                  \
+	}                                                                                                                                  \
+	SUCCEED () << message;
+
 #define succeed_if_same(x, y, message) ASSERT_EQ (x, y) << message
 
 #endif
