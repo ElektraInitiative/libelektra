@@ -71,7 +71,7 @@ user/grandparent/parent/___dirdata  = Parent
 user/grandparent/parent/child       = Child
 user/mother                         =
 user/mother/___dirdata              = Mother
-user/mother/daughter                = Daugther
+user/mother/daughter                = Daughter
 user/mother/son                     = Son
 ```
 
