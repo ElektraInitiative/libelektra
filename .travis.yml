@@ -277,7 +277,8 @@ script:
   - ninja
   - |
     if [[ "$ENABLE_ASAN" = "ON" ]]; then
-      ninja run_all
+      # We exclude some checks to improve the runtime of the ASAN build jobs
+      ctest --output-on-failure -E 'testscr_check_(formatting|oclint)'
     else
       ninja install
       ninja run_all && kdb run_all
