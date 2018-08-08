@@ -23,25 +23,37 @@ Users have to define recursive setting specifications in the following way:
 
 ```
 kdb mount config.dump /recursive dump recursion
-kdb setmeta user/recursive check/recursion/vertex "menu, submenu"
-kdb setmeta user/recursive check/recursion/leaf "param, menupoint"
+kdb setmeta user/recursive check/recursion/vertex "A, B"
+kdb setmeta user/recursive check/recursion/leaf "z, y"
 ```
 
-`check/recursion/vertex` basically means that keys containing `menu` or `submenu` after `/recursive`
-will have further configurations below them. So users would build up structures like this:
+`check/recursion/vertex` basically means that keys containing `A` or `B` after `/recursive`
+will have further configurations below them. `A` for example could stand for a Menu entry which can have
+Menu entries below. `B` could be some other form of Menu, but also having entries below. There could be 
+potentially more `vertices` which can have children.
+
+So users would build up structures like this:
 `/recursive/<vertex>/#[0-9]+/<vertex>/#[0-9]+/.....`
+
+`#[0-9]+` is used to declare children. So  
+
+- `/recursive/A/#0`
+- `/recursive/A/#1`
+
+for example both have A as their parent.
+
 
 `check/recursion/leaf` means that there is no subvertex allowed anymore. So this is not allowed:
 `/recursive/<vertex>/#[0-9]+/<leaf>/#0/<vertex>`.
 
 Now take this setting as an example:
 
-* menu
-    * menu1
-        * menupoint1
-    * menu2
-        * submenu
-        * menupoint2
+* A
+    * A1
+        * z
+    * A2
+        * B
+        * y
 
 Users will have to set this structure in the following way:
 

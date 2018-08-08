@@ -1209,3 +1209,9 @@ severity:error
 ingroup:plugin
 module:typechecker
 macro:PLUGIN_TYPECHECKER_SET
+
+number:194
+description:The given path does not meet the correct permissions
+severity:error
+ingroup:plugin
+module:path

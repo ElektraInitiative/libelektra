@@ -5,8 +5,9 @@
 - infos/needs =
 - infos/provides = check
 - infos/status = maintained nodep libc nodoc
-- infos/metadata = check/path
-- infos/description = Checks if keys enriched with appropriate metadata contain valid paths as values
+- infos/metadata = check/path check/permission
+- infos/description = Checks if keys enriched with appropriate metadata contain valid paths as values as well
+as correct permissions
 
 ## Introduction
 
@@ -26,7 +27,7 @@ relative files, it is not enough to look at the first character if it is
 a `/`, because remote file systems and some special names are valid, too.
 
 If `check/permission = [permission], [user]` is also present it will check for the correct permissions
-of the file/directory. `check/permission = rw, tomcat` for example will check if the user `tomcat` has read and 
+of the file/directory. `check/permission = rw` and `check/permission/user = tomcat` for example will check if the user `tomcat` has read and 
 write access to the path which was set in `check/path`.
  
  Permissions available:
@@ -48,10 +49,10 @@ sudo kdb mount some_file.ecf /tests/path some_file dump
 kdb set /tests/path/value /var/log/application-file.log
 
 #This checks if the file actually exists
-kdb setmeta user/tests/path/value check/path
+sudo kdb setmeta user/tests/path/value check/path
 
 #This checks if the user has read and write permissions for the application-file.log file
-kdb setmeta user/tests/path/value check/permission "rw, tomcat"
+sudo kdb setmeta user/tests/path/value check/permission "rw, tomcat"
 
 #Generate a file which is only accessable for root
 touch /var/log/application-file-restricted.log
@@ -60,10 +61,13 @@ sudo chown root:root /var/log/application-file-restricted.log
 
 #This should trigger the error
 kdb set /tests/path/value /var/log/application-file-restricted.log
-# RET:X
-# ERROR:XXX
+# ERROR:194
+# Reason: User tomcat has no permission to read the given file.
 
 # cleanup
 kdb rm -r /tests/path
 sudo kdb umount /tests/path
 ```
+
+## Future work
+Add a check which ensures that the given path is a file/directory/symbolic link/hard link/ etc.
