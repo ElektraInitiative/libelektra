@@ -40,45 +40,46 @@ using CppKey = kdb::Key;
 // -- Functions ----------------------------------------------------------------------------------------------------------------------------
 
 void test_set (CppKeySet keys, CppKeySet expected, int const status = ELEKTRA_PLUGIN_STATUS_SUCCESS)
+#ifdef __llvm__
+	__attribute__ ((annotate ("oclint:suppress[high ncss method]"), annotate ("oclint:suppress[empty if statement]"),
+			annotate ("oclint:suppress[too few branches in switch statement]")))
+#endif
 {
-	OPEN_PLUGIN (PREFIX, "file/path"); //! OCLint (too few branches switch, empty if statement)
+	OPEN_PLUGIN (PREFIX, "file/path");
 
-	succeed_if_same (plugin->kdbSet (plugin, keys.getKeySet (), *parent), //! OCLint (too few branches switch, empty if statement)
-			 status, "Call of `kdbSet` failed");
-
-	compare_keyset (keys, expected); //! OCLint (too few branches switch)
+	succeed_if_same (plugin->kdbSet (plugin, keys.getKeySet (), *parent), status, "Call of `kdbSet` failed");
+	compare_keyset (keys, expected);
 
 	CLOSE_PLUGIN ();
 }
 
 void test_get (CppKeySet keys, CppKeySet expected, int const status = ELEKTRA_PLUGIN_STATUS_SUCCESS)
+#ifdef __llvm__
+	__attribute__ ((annotate ("oclint:suppress[high ncss method]"), annotate ("oclint:suppress[empty if statement]"),
+			annotate ("oclint:suppress[too few branches in switch statement]")))
+#endif
 {
-	OPEN_PLUGIN (PREFIX, "file/path"); //! OCLint (too few branches switch, empty if statement)
+	OPEN_PLUGIN (PREFIX, "file/path");
 
-	succeed_if_same (plugin->kdbGet (plugin, keys.getKeySet (), *parent), //! OCLint (too few branches switch, empty if statement)
-			 status, "Call of `kdbGet` failed");
-
-	compare_keyset (keys, expected); //! OCLint (too few branches switch)
+	succeed_if_same (plugin->kdbGet (plugin, keys.getKeySet (), *parent), status, "Call of `kdbGet` failed");
+	compare_keyset (keys, expected);
 
 	CLOSE_PLUGIN ();
 }
 
 void test_roundtrip (CppKeySet keys, int const status = ELEKTRA_PLUGIN_STATUS_SUCCESS)
 #ifdef __llvm__
-	__attribute__ ((annotate ("oclint:suppress[high ncss method]")))
+	__attribute__ ((annotate ("oclint:suppress[high ncss method]"), annotate ("oclint:suppress[empty if statement]"),
+			annotate ("oclint:suppress[too few branches in switch statement]")))
 #endif
 {
 	CppKeySet input = keys.dup ();
 
-	OPEN_PLUGIN (PREFIX, "file/path"); //! OCLint (too few branches switch, empty if statement)
+	OPEN_PLUGIN (PREFIX, "file/path");
 
-	succeed_if_same (plugin->kdbSet (plugin, keys.getKeySet (), *parent), //! OCLint (too few branches switch, empty if statement)
-			 status, "Call of `kdbSet` failed");
-
-	succeed_if_same (plugin->kdbGet (plugin, keys.getKeySet (), *parent), //! OCLint (too few branches switch, empty if statement)
-			 status, "Call of `kdbGet` failed");
-
-	compare_keyset (input, keys); //! OCLint (too few branches switch)
+	succeed_if_same (plugin->kdbSet (plugin, keys.getKeySet (), *parent), status, "Call of `kdbSet` failed");
+	succeed_if_same (plugin->kdbGet (plugin, keys.getKeySet (), *parent), status, "Call of `kdbGet` failed");
+	compare_keyset (input, keys);
 
 	CLOSE_PLUGIN ();
 }
