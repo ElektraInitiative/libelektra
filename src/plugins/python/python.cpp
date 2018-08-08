@@ -349,6 +349,7 @@ error:
 int PYTHON_PLUGIN_FUNCTION (Close) (ckdb::Plugin * handle, ckdb::Key * errorKey)
 {
 	ElektraPluginProcess * pp = static_cast<ElektraPluginProcess *> (elektraPluginGetData (handle));
+	if (!pp) return 0;
 	moduleData * data = static_cast<moduleData *> (elektraPluginProcessGetData (pp));
 	if (pp && elektraPluginProcessIsParent (pp))
 	{
@@ -390,6 +391,7 @@ int PYTHON_PLUGIN_FUNCTION (Get) (ckdb::Plugin * handle, ckdb::KeySet * returned
 	}
 
 	ElektraPluginProcess * pp = static_cast<ElektraPluginProcess *> (elektraPluginGetData (handle));
+	if (!pp) return 0;
 	if (elektraPluginProcessIsParent (pp)) return elektraPluginProcessSend (pp, ELEKTRA_PLUGINPROCESS_GET, returned, parentKey);
 
 	moduleData * data = static_cast<moduleData *> (elektraPluginProcessGetData (pp));
@@ -400,6 +402,7 @@ int PYTHON_PLUGIN_FUNCTION (Get) (ckdb::Plugin * handle, ckdb::KeySet * returned
 int PYTHON_PLUGIN_FUNCTION (Set) (ckdb::Plugin * handle, ckdb::KeySet * returned, ckdb::Key * parentKey)
 {
 	ElektraPluginProcess * pp = static_cast<ElektraPluginProcess *> (elektraPluginGetData (handle));
+	if (!pp) return 0;
 	if (elektraPluginProcessIsParent (pp)) return elektraPluginProcessSend (pp, ELEKTRA_PLUGINPROCESS_SET, returned, parentKey);
 
 	moduleData * data = static_cast<moduleData *> (elektraPluginProcessGetData (pp));
@@ -410,6 +413,7 @@ int PYTHON_PLUGIN_FUNCTION (Set) (ckdb::Plugin * handle, ckdb::KeySet * returned
 int PYTHON_PLUGIN_FUNCTION (Error) (ckdb::Plugin * handle, ckdb::KeySet * returned, ckdb::Key * parentKey)
 {
 	ElektraPluginProcess * pp = static_cast<ElektraPluginProcess *> (elektraPluginGetData (handle));
+	if (!pp) return 0;
 	if (elektraPluginProcessIsParent (pp)) return elektraPluginProcessSend (pp, ELEKTRA_PLUGINPROCESS_ERROR, returned, parentKey);
 
 	moduleData * data = static_cast<moduleData *> (elektraPluginProcessGetData (pp));
