@@ -77,7 +77,7 @@ public:
 	/**
 	 * @brief This method converts all directories keys in the given key set to leaf keys.
 	 */
-	void convertToLeaves (CppKeySet & keys);
+	int convertToLeaves (CppKeySet & keys);
 };
 
 } // end namespace elektra

@@ -82,10 +82,10 @@ int elektraLeafSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key * par
 {
 	CppKeySet keys{ returned };
 
-	delegator::get (handle)->convertToLeaves (keys);
+	int status = delegator::get (handle)->convertToLeaves (keys);
 
 	keys.release ();
-	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+	return status;
 }
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (leaf)

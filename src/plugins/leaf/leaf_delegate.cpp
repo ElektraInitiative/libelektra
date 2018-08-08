@@ -155,17 +155,20 @@ void LeafDelegate::convertToDirectories (CppKeySet & keys)
 /**
  * @brief This method converts all directories keys in the given key set to leaf keys.
  */
-void LeafDelegate::convertToLeaves (CppKeySet & keys)
+int LeafDelegate::convertToLeaves (CppKeySet & keys)
 {
 	CppKeySet directories;
 	CppKeySet leaves;
 	tie (directories, leaves) = splitDirectoriesLeaves (keys);
+	bool status = directories.size () > 0 ? ELEKTRA_PLUGIN_STATUS_SUCCESS : ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 
 	auto directoryLeaves = convertDirectoriesToLeaves (directories);
 
 	keys.clear ();
 	keys.append (directoryLeaves);
 	keys.append (leaves);
+
+	return status;
 }
 
 } // end namespace elektra
