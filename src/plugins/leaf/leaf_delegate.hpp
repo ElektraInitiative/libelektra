@@ -71,8 +71,13 @@ public:
 
 	/**
 	 * @brief This method converts all leaf keys in the given key set to directory keys.
+	 *
+	 * @param keys This parameter specifies the key set this function converts.
+	 *
+	 * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if the plugin converted any value in the given key set
+	 * @retval ELEKTRA_PLUGIN_STATUS_NO_UPDATE if the plugin did not update `keys`
 	 */
-	void convertToDirectories (CppKeySet & keys);
+	int convertToDirectories (CppKeySet & keys);
 
 	/**
 	 * @brief This method converts all directory keys in the given key set to leaf keys.

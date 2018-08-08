@@ -70,11 +70,11 @@ int elektraLeafGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 		keys.release ();
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
-	delegator::get (handle)->convertToDirectories (keys);
+	int status = delegator::get (handle)->convertToDirectories (keys);
 
 	parent.release ();
 	keys.release ();
-	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+	return status;
 }
 
 /** @see elektraDocSet */

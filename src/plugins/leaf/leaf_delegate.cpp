@@ -138,18 +138,27 @@ LeafDelegate::LeafDelegate (CppKeySet config ELEKTRA_UNUSED)
 
 /**
  * @brief This method converts all leaf keys in the given key set to directory keys.
+ *
+ * @param keys This parameter specifies the key set this function converts.
+ *
+ * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if the plugin converted any value in the given key set
+ * @retval ELEKTRA_PLUGIN_STATUS_NO_UPDATE if the plugin did not update `keys`
  */
-void LeafDelegate::convertToDirectories (CppKeySet & keys)
+int LeafDelegate::convertToDirectories (CppKeySet & keys)
 {
 	CppKeySet directoryLeaves;
 	CppKeySet nonDirectoryLeaves;
 	tie (directoryLeaves, nonDirectoryLeaves) = splitDirectoryLeavesOther (keys);
+
+	bool status = directoryLeaves.size () > 0 ? ELEKTRA_PLUGIN_STATUS_SUCCESS : ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 
 	auto directories = convertLeavesToDirectories (directoryLeaves);
 
 	keys.clear ();
 	keys.append (nonDirectoryLeaves);
 	keys.append (directories);
+
+	return status;
 }
 
 /**
