@@ -12,6 +12,8 @@
 
 #include <kdbplugin.h>
 
+#include "leaf_delegate.hpp"
+
 using ckdb::Key;
 using ckdb::KeySet;
 using ckdb::Plugin;

@@ -17,8 +17,6 @@ using std::tie;
 
 // -- Macros -------------------------------------------------------------------------------------------------------------------------------
 
-#define DIRECTORY_POSTFIX "___dirdata"
-
 namespace elektra
 {
 using CppKey = kdb::Key;

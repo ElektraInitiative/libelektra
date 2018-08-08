@@ -13,6 +13,8 @@
 #include <kdberrors.h>
 #include <kdbplugin.hpp>
 
+#define DIRECTORY_POSTFIX "___dirdata"
+
 namespace elektra
 {
 using std::pair;

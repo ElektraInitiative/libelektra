@@ -8,7 +8,6 @@
  */
 
 #include "leaf.hpp"
-#include "leaf_delegate.hpp"
 
 #include <kdbhelper.h>
 
