@@ -92,6 +92,5 @@ Further examples can be found in the [python](python/) directory.
 ## Disclaimer
 
 Be aware that a Python script will never be as performant as a native C/C++ plugin.
-Spinning up the interpreter takes additional time and resources. The python plugin
-does also not cleanup resources and is not restartable.
+Spinning up the interpreter takes additional time and resources.
 
