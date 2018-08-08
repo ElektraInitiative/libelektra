@@ -51,6 +51,18 @@ void test_set (CppKeySet keys, CppKeySet expected, int const status = ELEKTRA_PL
 	CLOSE_PLUGIN ();
 }
 
+void test_get (CppKeySet keys, CppKeySet expected, int const status = ELEKTRA_PLUGIN_STATUS_SUCCESS)
+{
+	OPEN_PLUGIN (PREFIX, "file/path"); //! OCLint (too few branches switch, empty if statement)
+
+	succeed_if_same (plugin->kdbGet (plugin, keys.getKeySet (), *parent), //! OCLint (too few branches switch, empty if statement)
+			 status, "Call of `kdbGet` failed");
+
+	compare_keyset (keys, expected); //! OCLint (too few branches switch)
+
+	CLOSE_PLUGIN ();
+}
+
 // -- Tests --------------------------------------------------------------------------------------------------------------------------------
 
 TEST (leaf, basics)
@@ -62,6 +74,15 @@ TEST (leaf, basics)
 			 "Unable to retrieve plugin contract");
 
 	CLOSE_PLUGIN ();
+}
+
+TEST (leaf, get)
+{
+	test_get (
+#include "leaf/simple_set.hpp"
+		,
+#include "leaf/simple_get.hpp"
+	);
 }
 
 TEST (leaf, set)
