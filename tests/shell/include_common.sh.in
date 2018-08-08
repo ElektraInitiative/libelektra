@@ -280,7 +280,7 @@ check_failed()
 	CONFIGNAME=$3
 
 	echo "$TESTNAME did not leave $CONFIGNAME config in the same state at is was before!"
-	echo "This means the test itself is flawed!"
+	echo "This means the test itself is flawed or the KDB was externally modified while the tests were running!"
 	echo "You can inspect the original $CONFIGNAME config in $EXPORTS/$CONFIGNAME.export.dump"
 	echo "compared to situation now in $EXPORTS/$CONFIGNAME.check.dump"
 	echo
