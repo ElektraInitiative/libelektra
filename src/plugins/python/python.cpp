@@ -73,7 +73,6 @@ typedef struct
 	PyObject * instance;
 	Key * script;
 	int printError;
-	int shutdown;
 } moduleData;
 
 static int Python_AppendToSysPath (const char * path)
@@ -195,10 +194,6 @@ static moduleData * createModuleData (ckdb::Plugin * handle)
 	data->instance = nullptr;
 	data->script = script;
 	data->printError = (ksLookupByName (config, "/print", 0) != nullptr);
-	/* shutdown flag is integer by design. This way users can set the
-	 * expected behaviour without worring about default values
-	 */
-	data->shutdown = (ksLookupByName (config, "/shutdown", 0) && !!strcmp (keyString (ksLookupByName (config, "/shutdown", 0)), "0"));
 	return data;
 }
 
