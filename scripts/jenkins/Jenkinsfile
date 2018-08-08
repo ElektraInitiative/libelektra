@@ -171,6 +171,8 @@ try {
 } catch(Exception e) {
   if (isMaster()) {
     // If master is failing we want to know ASAP so send a mail.
+
+    // collect changes since last build
     def changes = currentBuild.changeSets.collect() {
       it.collect() {
         "* ${it.getCommitId().take(7)} - ${it.getAuthor()} - ${it.getMsg().take(40)}"
@@ -183,6 +185,7 @@ try {
     def message = """\
 Build ${JOB_NAME}:${BUILD_NUMBER} failed.
 Url: ${RUN_DISPLAY_URL}
+Reason: ${e}
 
 Changes: ${RUN_CHANGES_DISPLAY_URL}
 ${changes}
