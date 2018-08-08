@@ -43,7 +43,7 @@ public:
 
 	virtual std::string getShortHelpText () override
 	{
-		return "Mount a new backend by specification.";
+		return "Mount a new backend by specification. All necessary plugins will be loaded automatically, depending on the metadata.";
 	}
 
 	virtual std::string getLongHelpText () override
