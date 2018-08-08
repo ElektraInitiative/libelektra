@@ -66,7 +66,7 @@ static int elektraYajlParseNull (void * ctx)
 
 	keySetBinary (current, NULL, 0);
 
-	ELEKTRA_LOG_DEBUG ("");
+	ELEKTRA_LOG_DEBUG ("parse null");
 
 	return 1;
 }
