@@ -387,6 +387,14 @@ set (DISCLAMER "
 
 mark_as_advanced (FORCE # The following settings might be relevant to a few users:
 		  GTEST_ROOT
+		  ANTLR4CPP_DIR
+		  BUILD_GMOCK
+		  BUILD_GTEST
+		  INSTALL_GMOCK
+		  INSTALL_GTEST
+		  LIBFA_INCLUDE_DIR
+		  gmock_build_tests
+		  gtest_hide_internal_symbols
 		  COVERAGE_PREFIX
 		  CMAKE_PIC_FLAGS
 		  CMAKE_STATIC_FLAGS

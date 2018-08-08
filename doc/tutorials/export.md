@@ -24,8 +24,8 @@ Keys to a file.
 ### Format
 
 The format argument can be a very powerful option to use with kdb export.
-The format argument allows a user to specify which plug-in is used to export the
-keys from the key database. The user can specify any storage plug-in to serve as the
+The format argument allows a user to specify which plugin is used to export the
+keys from the key database. The user can specify any storage plugin to serve as the
 format for the exported Keys. For instance, if a user mounted their hosts file to `system/hosts`
 using `kdb mount /etc/hosts system/hosts hosts`, they would be able to export these keys using
 the hosts format by using the command `kdb export system/hosts hosts > hosts.ecf`.
