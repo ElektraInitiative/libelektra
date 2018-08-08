@@ -63,6 +63,26 @@ void test_get (CppKeySet keys, CppKeySet expected, int const status = ELEKTRA_PL
 	CLOSE_PLUGIN ();
 }
 
+void test_roundtrip (CppKeySet keys, int const status = ELEKTRA_PLUGIN_STATUS_SUCCESS)
+#ifdef __llvm__
+	__attribute__ ((annotate ("oclint:suppress[high ncss method]")))
+#endif
+{
+	CppKeySet input = keys.dup ();
+
+	OPEN_PLUGIN (PREFIX, "file/path"); //! OCLint (too few branches switch, empty if statement)
+
+	succeed_if_same (plugin->kdbSet (plugin, keys.getKeySet (), *parent), //! OCLint (too few branches switch, empty if statement)
+			 status, "Call of `kdbSet` failed");
+
+	succeed_if_same (plugin->kdbGet (plugin, keys.getKeySet (), *parent), //! OCLint (too few branches switch, empty if statement)
+			 status, "Call of `kdbGet` failed");
+
+	compare_keyset (input, keys); //! OCLint (too few branches switch)
+
+	CLOSE_PLUGIN ();
+}
+
 // -- Tests --------------------------------------------------------------------------------------------------------------------------------
 
 TEST (leaf, basics)
@@ -97,5 +117,12 @@ TEST (leaf, set)
 #include "leaf/simple_get.hpp"
 		,
 #include "leaf/simple_set.hpp"
+	);
+}
+
+TEST (leaf, roundtrip)
+{
+	test_roundtrip (
+#include "leaf/simple_get.hpp"
 	);
 }
