@@ -35,11 +35,13 @@ using CppKey = kdb::Key;
 	elektraPluginClose (plugin, 0);                                                                                                    \
 	elektraModulesClose (modules.getKeySet (), 0)
 
+#define PREFIX "user/tests/leaf/"
+
 // -- Functions ----------------------------------------------------------------------------------------------------------------------------
 
 void test_set (CppKeySet keys, CppKeySet expected, int const status = ELEKTRA_PLUGIN_STATUS_SUCCESS)
 {
-	OPEN_PLUGIN ("user/tests/leaf", "file/path"); //! OCLint (too few branches switch, empty if statement)
+	OPEN_PLUGIN (PREFIX, "file/path"); //! OCLint (too few branches switch, empty if statement)
 
 	succeed_if_same (plugin->kdbSet (plugin, keys.getKeySet (), *parent), //! OCLint (too few branches switch, empty if statement)
 			 status, "Call of `kdbSet` failed");

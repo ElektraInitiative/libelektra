@@ -1,7 +1,5 @@
 // clang-format off
 
-#define PREFIX "user/tests/leaf/"
-
 CppKeySet{ 10,
 	   keyNew (PREFIX "directory", KEY_VALUE, "Directory Value", KEY_END),
 	   keyNew (PREFIX "directory/leaf", KEY_VALUE, "Leaf Value", KEY_END),
