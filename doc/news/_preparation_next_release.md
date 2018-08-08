@@ -174,8 +174,9 @@ Thanks to Daniel Bugl.
 
 ### Interpreter Plugins
 
-- The plugins ruby, python and jni can now also be mounted as global plugin.
-- Fix crash in python plugin by using pluginprocess. *(Markus Raab)*
+- The plugins Ruby, Python and Jni can now also be mounted as global plugin.
+- Fix crashes in global Python plugin by using pluginprocess. *(Markus Raab and Armin Wurzinger)*
+- Python plugin can now shutdown properly again *(Markus Raab)*
 
 ### JNI
 
