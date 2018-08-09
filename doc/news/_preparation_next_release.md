@@ -463,7 +463,13 @@ Thanks to Daniel Bugl.
 - We improved the automatic detection of Libgcrypt and OpenSSL. *(René Schwaiger)*
 - Resolved an issue where cmake did not properly set test feature macros to detect and use libc functionality. *(Lukas Winkler)*
 - Improve the detection of `ftw.h`, if the current build use the compiler switch `-Werror`. *(René Schwaiger)*
-- We now ignore warnings about old style casts (Clang) and attribute warnings (GCC) in the Ruby binding. *(René Schwaiger)*
+- We now ignore warnings about
+
+  - old style casts (Clang),
+  - variadic macros (Clang, GCC), and
+  - attribute warnings (GCC)
+
+  in the Ruby binding and plugin. *(René Schwaiger)*
 
 [Google Test]: https://github.com/google/googletest
 
