@@ -269,6 +269,7 @@ Thanks to Daniel Bugl.
   in earlier versions of the [yaml-cpp library](https://github.com/jbeder/yaml-cpp). *(René Schwaiger)*
 
 - The plugin does now support [arrays](https://www.libelektra.org/tutorials/arrays) containing empty fields. *(René Schwaiger)*
+- YAML CPP now also adds `array` meta data for arrays containing arrays. *(René Schwaiger)*
 
 ### YAML Smith
 
