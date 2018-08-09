@@ -49,5 +49,4 @@ and listen on the given port.
 ## Future Work
 
 `check/port/ping` to check if the port can be pinged/reached (usually for clients).
-This potentially could prohibit users from setting correct settings as the server application
-might not have been started yet.
+If not reachable, users receive a warning. A correct timeout setting will be problematic though.

@@ -49,10 +49,10 @@ sudo kdb mount some_file.ecf /tests/path some_file dump
 kdb set /tests/path/value /var/log/application-file.log
 
 #This checks if the file actually exists
-sudo kdb setmeta user/tests/path/value check/path
+sudo kdb setmeta /tests/path/value check/path
 
 #This checks if the user has read and write permissions for the application-file.log file
-sudo kdb setmeta user/tests/path/value check/permission "rw, tomcat"
+sudo kdb setmeta /tests/path/value check/permission "rw, tomcat"
 
 #Generate a file which is only accessable for root
 touch /var/log/application-file-restricted.log
@@ -62,7 +62,9 @@ sudo chown root:root /var/log/application-file-restricted.log
 #This should trigger the error
 kdb set /tests/path/value /var/log/application-file-restricted.log
 # ERROR:194
-# Reason: User tomcat has no permission to read the given file.
+# Reason: 
+#    Expected: User tomcat has [read/write] permission for the given file /var/log/application-file-restricted.log.
+#    Actual: User tomcat has [] permission for var/log/application-file-restricted.log.
 
 # cleanup
 kdb rm -r /tests/path

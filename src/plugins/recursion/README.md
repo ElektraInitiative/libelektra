@@ -23,54 +23,75 @@ Users have to define recursive setting specifications in the following way:
 
 ```
 kdb mount config.dump /recursive dump recursion
-kdb setmeta user/recursive check/recursion/vertex "A, B"
-kdb setmeta user/recursive check/recursion/leaf "z, y"
+kdb setmeta user/recursive check/recursion/vertex "define"
+kdb setmeta user/recursive check/recursion/ref "ref"
 ```
 
-`check/recursion/vertex` basically means that keys containing `A` or `B` after `/recursive`
-will have further configurations below them. `A` for example could stand for a Menu entry which can have
-Menu entries below. `B` could be some other form of Menu, but also having entries below. There could be 
-potentially more `vertices` which can have children.
+`check/recursion/vertex` is the basic building block for any recursive structure.
+ 
+`define` in the the example above is the placeholder in they key name to declare a basic building block.
+For example `/recursive/define` would be such a declaration.
 
 So users would build up structures like this:
 `/recursive/<vertex>/#[0-9]+/<vertex>/#[0-9]+/.....`
 
-`#[0-9]+` is used to declare children. So  
+`#[0-9]+` is used to declare children. So
 
-- `/recursive/A/#0`
-- `/recursive/A/#1`
+- `/recursive/define/#0`
+- `/recursive/define/#1`
 
-for example both have A as their parent.
-
-
-`check/recursion/leaf` means that there is no subvertex allowed anymore. So this is not allowed:
-`/recursive/<vertex>/#[0-9]+/<leaf>/#0/<vertex>`.
+are both definitions of a recursive structure. Now assume you want to refer from `define/#0` to `define/#1`.
+This would work like this: `kdb set /recursive/define/#0/ref/#0 /recursive/define/#1`.
 
 Now take this setting as an example:
 
-* A
+* A0
     * A1
-        * z
+        * B0
     * A2
-        * B
-        * y
+        * B1
+        * B2
 
 Users will have to set this structure in the following way:
 
 ```
-kdb set /recursive/menu menu
-kdb set /recursive/menu/#0 menu1
-kdb set /recursive/menu/#1 menu2
-kdb set /recursive/menu/#0/menupoint1 menu2
-kdb set /recursive/menu/#1/menupoint1/#0 submenu
-kdb set /recursive/menu/#1/menupoint2/#1 menupoint2
+#First we define all entries
+kdb set /recursive/define/#0 A0
+kdb set /recursive/define/#1 A1
+kdb set /recursive/define/#2 A2
+kdb set /recursive/define/#3 B0
+kdb set /recursive/define/#4 B1
+kdb set /recursive/define/#5 B2
+
+#Next we link each entries toegether
+
+#For A:
+kdb set /recursive/define/#0/ref/#0 /recursive/define/#1
+kdb set /recursive/define/#0/ref/#1 /recursive/define/#2
+
+#For A1:
+kdb set /recursive/define/#1/ref/#0 /recursive/define/#3
+
+#For A2:
+kdb set /recursive/define/#2/ref/#0 /recursive/define/#4
+kdb set /recursive/define/#2/ref/#1 /recursive/define/#5
 ```
 
-Vertices without leafs are allowed (eg. submenu in this example).
 
-A command will fail if users want to set settings for non-existent vertices, eg. `kdb set /recursive/menu/#5/....`
+Arbitrary additional data can be saved too such as:
+`kdb set /recursive/define/#2/permission admin`
 
-The validation solely happens on the structure, not on the values of the keys.
+## Guarantees
 
-Users should also not be able to define endless recursions. If the value of a key though 
-tells where the submenu is, endless recursions are possible.
+1) References can only be set if the corresponding entry exists. This ensures that users do not set
+keys which lead into nothing
+
+2) Endless loops will be prohibited. eg. 
+`kdb set /recursive/define/#0/ref/#0 /recursive/define/#0`
+
+## Problems
+Users will be forced to declare building blocks first and then link them together.
+Loading data via plugin does not guarantee ordering.
+
+How to do that? eg. just emit warnings or introduce an "incomplete" state and users will have to call
+`kdb getmeta /recursive complete/recursion` to check if the configuration is complete?
