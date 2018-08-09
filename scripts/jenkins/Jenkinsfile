@@ -1427,10 +1427,7 @@ def detectInterruption(Closure c) {
     c()
   } catch (org.jenkinsci.plugins.workflow.steps.FlowInterruptedException fie) {
     // this ambiguous condition means a user probably aborted
-    println "causes size: ${fie.causes.size()}"
-    println "causes message: ${fie.message}"
-    println "causes message size: ${fie.message.size()}"
-    if (fie.causes.size() == 0) {
+    if (!fie.message) {
         throw new UserInterruptedException(fie)
     } else {
         throw fie
