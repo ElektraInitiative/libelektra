@@ -37,7 +37,7 @@ using namespace kdb;
 		cerr << message << endl;                                                                                                   \
 		exit (1);                                                                                                                  \
 	}                                                                                                                                  \
-	SUCCEED () << message;
+	SUCCEED () << message
 
 #define succeed_if_same(x, y, message) ASSERT_EQ (x, y) << message
 #define compare_keyset(keySet1, keySet2) ASSERT_EQ (keySet1, keySet2) << "Key sets are not equal"
