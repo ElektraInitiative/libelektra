@@ -62,6 +62,7 @@ else ()
 		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-catch-value")
 		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-class-memaccess")
 		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-maybe-uninitialized")
+		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-attributes")
 	elseif (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-dynamic-class-memaccess")
 

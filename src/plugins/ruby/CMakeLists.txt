@@ -38,6 +38,7 @@ if (DEPENDENCY_PHASE)
 			set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-reserved-user-defined-literal")
 		elseif (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 			set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-literal-suffix")
+			set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-attributes")
 		endif ()
 
 		set_source_files_properties ("ruby.cpp" PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS}")

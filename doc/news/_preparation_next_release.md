@@ -340,7 +340,6 @@ Thanks to Daniel Bugl.
   added.
   It can be used to integrate the notification feature with applications based
   on [ev](http://libev.schmorp.de) main loops. *(Thomas Wahringer)*
-- We now ignore warnings about old style casts in the Ruby binding, if you use Clang to compile Elektra. *(René Schwaiger)*
 
 
 ## Tools
@@ -464,6 +463,7 @@ Thanks to Daniel Bugl.
 - We improved the automatic detection of Libgcrypt and OpenSSL. *(René Schwaiger)*
 - Resolved an issue where cmake did not properly set test feature macros to detect and use libc functionality. *(Lukas Winkler)*
 - Improve the detection of `ftw.h`, if the current build use the compiler switch `-Werror`. *(René Schwaiger)*
+- We now ignore warnings about old style casts (Clang) and attribute warnings (GCC) in the Ruby binding. *(René Schwaiger)*
 
 [Google Test]: https://github.com/google/googletest
 
