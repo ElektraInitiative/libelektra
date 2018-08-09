@@ -340,7 +340,7 @@ Thanks to Daniel Bugl.
   added.
   It can be used to integrate the notification feature with applications based
   on [ev](http://libev.schmorp.de) main loops. *(Thomas Wahringer)*
-
+- We now ignore warnings about old style casts in the Ruby binding, if you use Clang to compile Elektra. *(René Schwaiger)*
 
 
 ## Tools
