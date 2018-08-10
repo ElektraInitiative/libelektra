@@ -467,7 +467,8 @@ Thanks to Daniel Bugl.
 
   - old style casts (Clang),
   - zero size arrays (Clang),
-  - variadic macros (Clang, GCC), and
+  - variadic macros (Clang, GCC),
+  - conversions to non-pointer type (GCC), and
   - attribute warnings (GCC),
 
   in the Ruby binding and plugin. *(René Schwaiger)*
