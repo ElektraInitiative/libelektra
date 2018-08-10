@@ -377,6 +377,42 @@ static void test_closeWithoutOpen (void)
 	elektraFree (plugin);
 }
 
+static int elektraDummyOpenAndDie (Plugin * handle, Key * errorKey)
+{
+	ElektraPluginProcess * pp = elektraPluginGetData (handle);
+	if (pp == NULL)
+	{
+		if ((pp = elektraPluginProcessInit (errorKey)) == NULL) return ELEKTRA_PLUGIN_STATUS_ERROR;
+		elektraPluginSetData (handle, pp);
+		if (!elektraPluginProcessIsParent (pp)) elektraPluginProcessStart (handle, pp);
+	}
+	if (elektraPluginProcessIsParent (pp)) return elektraPluginProcessOpen (pp, errorKey);
+
+	// simulate a dying child process to check if pipes get notified about it
+	_Exit (0);
+}
+
+static void test_childDies (void)
+{
+	printf ("test childDies\n");
+
+	Key * parentKey = keyNew ("user/tests/pluginprocess", KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	Plugin * plugin = createDummyPlugin (conf);
+	plugin->kdbOpen = &elektraDummyOpenAndDie;
+	KeySet * ks = ksNew (0, KS_END);
+
+	succeed_if (plugin->kdbOpen (plugin, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "call to kdbOpen was successful");
+
+	output_warnings (parentKey);
+	output_error (parentKey);
+
+	keyDel (parentKey);
+	ksDel (ks);
+	ksDel (conf);
+	elektraFree (plugin);
+}
+
 int main (int argc, char ** argv)
 {
 	init (argc, argv);
@@ -387,6 +423,7 @@ int main (int argc, char ** argv)
 	test_keysetContainingParentKey ();
 	test_closeWithoutOpen ();
 	test_childAddingParentKey ();
+	test_childDies ();
 
 	print_result ("pluginprocess");
 

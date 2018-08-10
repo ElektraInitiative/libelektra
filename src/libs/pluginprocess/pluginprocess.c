@@ -92,8 +92,8 @@ static void cleanupPluginData (ElektraPluginProcess * pp, Key * errorKey, int cl
 	// parent has 0, child has 1
 	for (int pipeIdx = !elektraPluginProcessIsParent (pp); pipeIdx <= cleanAllPipes; ++pipeIdx)
 	{
-		if (pp->parentCommandPipe[pipeIdx]) close (pp->parentCommandPipe[pipeIdx]);
-		if (pp->parentPayloadPipe[pipeIdx]) close (pp->parentPayloadPipe[pipeIdx]);
+		if (pp->parentCommandPipe[!pipeIdx]) close (pp->parentCommandPipe[!pipeIdx]);
+		if (pp->parentPayloadPipe[!pipeIdx]) close (pp->parentPayloadPipe[!pipeIdx]);
 		if (pp->childCommandPipe[pipeIdx]) close (pp->childCommandPipe[pipeIdx]);
 		if (pp->childPayloadPipe[pipeIdx]) close (pp->childPayloadPipe[pipeIdx]);
 	}
@@ -135,6 +135,7 @@ void elektraPluginProcessStart (Plugin * handle, ElektraPluginProcess * pp)
 
 		if (ksGetSize (commandKeySet) == 0)
 		{
+			ELEKTRA_LOG_DEBUG ("Child: Failed to read from parentCommandPipe, exiting");
 			ksDel (commandKeySet);
 			break;
 		}
@@ -222,7 +223,7 @@ void elektraPluginProcessStart (Plugin * handle, ElektraPluginProcess * pp)
 
 	// Final Cleanup
 	ELEKTRA_LOG_DEBUG ("Child: All done, exiting the child process now");
-	cleanupPluginData (pp, 0, 0);
+	cleanupPluginData (pp, 0, 1);
 	// All done, exit the child process so it won't do any actual effects in elektra
 	_Exit (EXIT_SUCCESS);
 }
@@ -294,10 +295,12 @@ int elektraPluginProcessSend (const ElektraPluginProcess * pp, pluginprocess_t c
 	}
 
 	// Deserialize
-	ELEKTRA_LOG_DEBUG ("Parent: Waiting for the result now");
+	ELEKTRA_LOG_DEBUG ("Parent: Waiting for the result now on %s", keyString (pp->childCommandPipeKey));
 	elektraInvoke2Args (pp->dump, "get", commandKeySet, pp->childCommandPipeKey);
+
 	if (keySet != NULL)
 	{
+		ELEKTRA_LOG_DEBUG ("READ CHILD RESULT NOW");
 		// clear the keyset before to avoid memleaks caused by dump
 		char * endPtr;
 		int prevErrno = errno;
@@ -312,6 +315,7 @@ int elektraPluginProcessSend (const ElektraPluginProcess * pp, pluginprocess_t c
 		elektraInvoke2Args (pp->dump, "get", keySet, pp->childPayloadPipeKey);
 		ELEKTRA_LOG ("Parent: We received %zd keys in return", ksGetSize (keySet));
 	}
+	ELEKTRA_LOG_DEBUG ("READ CHILD RESULT NOW DONE");
 
 	// Bring everything back in order by removing our process-related keys
 	Key * parentDeserializedKey = ksLookupByName (commandKeySet, "/pluginprocess/parent", KDB_O_NONE);
@@ -381,7 +385,7 @@ int elektraPluginProcessSend (const ElektraPluginProcess * pp, pluginprocess_t c
  **/
 int elektraPluginProcessIsParent (const ElektraPluginProcess * pp)
 {
-	return pp->pid;
+	return pp->pid != 0;
 }
 
 static char * concat (const char * str1, const char * str2)
@@ -491,21 +495,20 @@ ElektraPluginProcess * elektraPluginProcessInit (Key * errorKey)
 		return NULL;
 	}
 
-	// Parent uses pipe 0, child uses pipe 1, close unused ends
 	int pipeIdx = elektraPluginProcessIsParent (pp);
-	// close (pp->parentCommandPipe[pipeIdx]);
-	// close (pp->parentPayloadPipe[pipeIdx]);
-	// close (pp->childCommandPipe[pipeIdx]);
-	// close (pp->childPayloadPipe[pipeIdx]);
+	close (pp->parentCommandPipe[!pipeIdx]);
+	close (pp->parentPayloadPipe[!pipeIdx]);
+	close (pp->childCommandPipe[pipeIdx]);
+	close (pp->childPayloadPipe[pipeIdx]);
 
-	ELEKTRA_LOG_DEBUG ("parentCommandPipe[%d] has file descriptor %d", !pipeIdx, pp->parentCommandPipe[!pipeIdx]);
-	ELEKTRA_LOG_DEBUG ("parentPayloadPipe[%d] has file descriptor %d", !pipeIdx, pp->parentPayloadPipe[!pipeIdx]);
+	ELEKTRA_LOG_DEBUG ("parentCommandPipe[%d] has file descriptor %d", pipeIdx, pp->parentCommandPipe[pipeIdx]);
+	ELEKTRA_LOG_DEBUG ("parentPayloadPipe[%d] has file descriptor %d", pipeIdx, pp->parentPayloadPipe[pipeIdx]);
 	ELEKTRA_LOG_DEBUG ("childCommandPipe[%d] has file descriptor %d", !pipeIdx, pp->childCommandPipe[!pipeIdx]);
 	ELEKTRA_LOG_DEBUG ("childPayloadPipe[%d] has file descriptor %d", !pipeIdx, pp->childPayloadPipe[!pipeIdx]);
 
 	// Prepare the keys for the pipes to use with dump
-	pp->parentCommandPipeKey = makePipeKey ("parentCommandPipe", pp->parentCommandPipe[!pipeIdx]);
-	pp->parentPayloadPipeKey = makePipeKey ("parentPayloadPipe", pp->parentPayloadPipe[!pipeIdx]);
+	pp->parentCommandPipeKey = makePipeKey ("parentCommandPipe", pp->parentCommandPipe[pipeIdx]);
+	pp->parentPayloadPipeKey = makePipeKey ("parentPayloadPipe", pp->parentPayloadPipe[pipeIdx]);
 	pp->childCommandPipeKey = makePipeKey ("childCommandPipe", pp->childCommandPipe[!pipeIdx]);
 	pp->childPayloadPipeKey = makePipeKey ("childPayloadPipe", pp->childPayloadPipe[!pipeIdx]);
 
