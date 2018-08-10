@@ -103,6 +103,7 @@ bool isMetaDataEqual (kdb::Key & key1, kdb::Key & key2)
 	while (key1.nextMeta ())
 	{
 		key2.nextMeta ();
+		if (!key2.currentMeta ()) return false;
 		if (key1.currentMeta ().getName () != key2.currentMeta ().getName ()) return false;
 		if (key1.currentMeta ().getString () != key2.currentMeta ().getString ()) return false;
 	}
@@ -146,6 +147,7 @@ bool isKeySetEqual (kdb::KeySet & keys1, kdb::KeySet & keys2)
 	while (keys1.next ())
 	{
 		keys2.next ();
+		if (!keys2.current ()) return false;
 		kdb::Key key1 = keys1.current ();
 		kdb::Key key2 = keys2.current ();
 		if (!isKeyEqual (key1, key2)) return false;
