@@ -25,6 +25,8 @@
 using namespace std;
 using namespace kdb;
 
+// -- Macros -------------------------------------------------------------------------------------------------------------------------------
+
 #define succeed_if(x, y) ASSERT_TRUE (x) << y
 
 #define exit_if_fail(expression, message)                                                                                                  \
@@ -43,6 +45,16 @@ using namespace kdb;
 
 #define compare_keyset(keySet1, keySet2) ASSERT_TRUE (compareKeySet (keySet1, keySet2))
 
+// -- Functions ----------------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief This function adds the string representation of a key to an assertion result.
+ *
+ * @param stream This parameter specifies the assertion result to which this function adds a string representation of `key`.
+ * @param key This parameter stores the key this function converts to an assertion result.
+ *
+ * @returns An assertion result containing the string representation of `key`
+ */
 testing::AssertionResult & operator<< (testing::AssertionResult & stream, kdb::Key & key)
 {
 	stream << key.getName () << ": " << (key.isString () ? key.getString () : "binary value!") << endl;
@@ -58,6 +70,14 @@ testing::AssertionResult & operator<< (testing::AssertionResult & stream, kdb::K
 	return stream;
 }
 
+/**
+ * @brief This function adds the string representation of a key set to an assertion result.
+ *
+ * @param stream This parameter specifies the assertion result to which this function adds a string representation of `keys`.
+ * @param key This parameter stores the key set this function converts to an assertion result.
+ *
+ * @returns An assertion result containing the string representation of `keys`
+ */
 testing::AssertionResult & operator<< (testing::AssertionResult & stream, kdb::KeySet & keys)
 {
 	for (auto key : keys)
@@ -67,6 +87,15 @@ testing::AssertionResult & operator<< (testing::AssertionResult & stream, kdb::K
 	return stream;
 }
 
+/**
+ * @brief This function checks if the meta key set of two keys are equal.
+ *
+ * @param key1 This parameter stores the first meta key set this function uses for comparison.
+ * @param key2 This parameter stores the second meta key set this function uses for comparison.
+ *
+ * @retval true if all meta keys of `key1` and `key2` are equal
+ * @retval false otherwise
+ */
 bool isMetaDataEqual (kdb::Key & key1, kdb::Key & key2)
 {
 	key1.rewindMeta ();
@@ -82,6 +111,15 @@ bool isMetaDataEqual (kdb::Key & key1, kdb::Key & key2)
 	return key1.nextMeta () == key2.nextMeta ();
 }
 
+/**
+ * @brief This function checks if two keys are equal.
+ *
+ * @param key1 This parameter stores the first key this function compares.
+ * @param key2 This parameter stores the second key this function compares.
+ *
+ * @retval true if all attributes of `key1` and `key2` are equal
+ * @retval false otherwise
+ */
 bool isKeyEqual (kdb::Key & key1, kdb::Key & key2)
 {
 	if (key1.getName () != key2.getName ()) return false;
@@ -91,6 +129,15 @@ bool isKeyEqual (kdb::Key & key1, kdb::Key & key2)
 	return isMetaDataEqual (key1, key2);
 }
 
+/**
+ * @brief This function checks if two key sets are equal.
+ *
+ * @param keys1 This parameter stores the first key set this function compares.
+ * @param keys2 This parameter stores the second key set this function compares.
+ *
+ * @retval true if all keys of `keys1` and `keys2` are equal
+ * @retval false otherwise
+ */
 bool isKeySetEqual (kdb::KeySet & keys1, kdb::KeySet & keys2)
 {
 	if (keys1.size () != keys2.size ()) return false;
@@ -108,6 +155,15 @@ bool isKeySetEqual (kdb::KeySet & keys1, kdb::KeySet & keys2)
 	return true;
 }
 
+/**
+ * @brief This function compares the given key sets.
+ *
+ * @param keys1 This parameter stores the first key set this function compares.
+ * @param keys2 This parameter stores the second key set this function compares.
+ *
+ * @retval AssertionSuccess if all keys of `keys1` and `keys2` are equal
+ * @retval AssertionFailure otherwise
+ */
 testing::AssertionResult compareKeySet (kdb::KeySet & keys1, kdb::KeySet & keys2)
 {
 	if (isKeySetEqual (keys1, keys2))
