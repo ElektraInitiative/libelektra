@@ -78,7 +78,7 @@ CppKeySet LeafDelegate::convertLeavesToDirectories (CppKeySet const & directoryL
  *
  * @param keys This parameter contains the key set this function splits.
  *
- * @return A pair of key sets, where the firs key set contains all directories and the second key set contains all leaves
+ * @return A pair of key sets, where the first key set contains all directories and the second key set contains all leaves
  */
 pair<CppKeySet, CppKeySet> LeafDelegate::splitDirectoriesLeaves (CppKeySet const & keys)
 {
