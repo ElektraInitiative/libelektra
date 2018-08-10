@@ -465,7 +465,6 @@ Thanks to Daniel Bugl.
 - Improve the detection of `ftw.h`, if the current build use the compiler switch `-Werror`. *(René Schwaiger)*
 - We now ignore warnings about
 
-  - old style casts (Clang),
   - zero size arrays (Clang),
   - variadic macros (Clang, GCC),
   - conversions to non-pointer type (GCC), and
