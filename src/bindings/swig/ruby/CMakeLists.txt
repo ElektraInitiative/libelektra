@@ -91,7 +91,7 @@ else ()
 		swig_add_library (swig-ruby LANGUAGE ruby SOURCES kdb.i TYPE MODULE)
 	endif (CMAKE_VERSION VERSION_LESS 3.8) # set the compiler settings for the generated file  (has to be done for each module
 					       # separately)
-	set_source_files_properties (${swig_generated_sources} PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS}")
+	set_source_files_properties (${swig_generated_file_fullname} PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS}")
 
 	# add the 'kdbtools' module
 	if (CMAKE_VERSION VERSION_LESS 3.8)
@@ -99,7 +99,7 @@ else ()
 	else (CMAKE_VERSION VERSION_LESS 3.8)
 		swig_add_library (swig-ruby-tools LANGUAGE ruby SOURCES kdbtools.i TYPE MODULE)
 	endif (CMAKE_VERSION VERSION_LESS 3.8)
-	set_source_files_properties (${swig_generated_sources} PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS}")
+	set_source_files_properties (${swig_generated_file_fullname} PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS}")
 
 	swig_link_libraries (swig-ruby ${RUBY_LIBRARY} elektra-core elektra-kdb)
 	set_target_properties (swig-ruby
