@@ -479,6 +479,10 @@ ElektraPluginProcess * elektraPluginProcessInit (Key * errorKey)
 		return NULL;
 	}
 
+	// As generally recommended, ignore SIGPIPE because we will notice that the
+	// commandKeySet has been transferred incorrectly anyway to detect broken pipes
+	signal (SIGPIPE, SIG_IGN);
+
 	// Prepare the pipes
 	if (!makePipe (pp, errorKey, "parentCommandPipe", pp->parentCommandPipe) ||
 	    !makePipe (pp, errorKey, "parentPayloadPipe", pp->parentPayloadPipe) ||

@@ -403,6 +403,9 @@ static void test_childDies (void)
 	KeySet * ks = ksNew (0, KS_END);
 
 	succeed_if (plugin->kdbOpen (plugin, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "call to kdbOpen was successful");
+	// Child died, we still have to call close to cleanup the resources
+	// It is expected to fail as pluginprocess cannot communicate with the child anymore, but still cleans up resources
+	succeed_if (plugin->kdbClose (plugin, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "call to kdbClose was successful");
 
 	output_warnings (parentKey);
 	output_error (parentKey);
