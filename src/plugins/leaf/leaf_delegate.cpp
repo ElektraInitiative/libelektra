@@ -138,8 +138,8 @@ LeafDelegate::LeafDelegate (CppKeySet config ELEKTRA_UNUSED)
  *
  * @param keys This parameter specifies the key set this function converts.
  *
- * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if the plugin converted any value in the given key set
- * @retval ELEKTRA_PLUGIN_STATUS_NO_UPDATE if the plugin did not update `keys`
+ * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS If the plugin converted any value in the given key set
+ * @retval ELEKTRA_PLUGIN_STATUS_NO_UPDATE If the plugin did not update `keys`
  */
 int LeafDelegate::convertToDirectories (CppKeySet & keys)
 {
@@ -163,8 +163,8 @@ int LeafDelegate::convertToDirectories (CppKeySet & keys)
  *
  * @param keys This parameter specifies the key set this function converts.
  *
- * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if the plugin converted any value in the given key set
- * @retval ELEKTRA_PLUGIN_STATUS_NO_UPDATE if the plugin did not update `keys`
+ * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS If the plugin converted any value in the given key set
+ * @retval ELEKTRA_PLUGIN_STATUS_NO_UPDATE If the plugin did not update `keys`
  */
 int LeafDelegate::convertToLeaves (CppKeySet & keys)
 {
