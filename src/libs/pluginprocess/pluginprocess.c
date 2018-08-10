@@ -89,7 +89,8 @@ static void cleanupPluginData (ElektraPluginProcess * pp, Key * errorKey, int cl
 	if (pp->childCommandPipeKey) keyDel (pp->childCommandPipeKey);
 	if (pp->childPayloadPipeKey) keyDel (pp->childPayloadPipeKey);
 
-	// parent has 0, child has 1
+	// twisted way to clean either both ends if something failed upon or before forking
+	// and the used ends otherwise
 	for (int pipeIdx = !elektraPluginProcessIsParent (pp); pipeIdx <= cleanAllPipes; ++pipeIdx)
 	{
 		if (pp->parentCommandPipe[!pipeIdx]) close (pp->parentCommandPipe[!pipeIdx]);
@@ -130,7 +131,7 @@ void elektraPluginProcessStart (Plugin * handle, ElektraPluginProcess * pp)
 	{
 		KeySet * commandKeySet = ksNew (6, KS_END);
 		KeySet * keySet = NULL;
-		ELEKTRA_LOG_DEBUG ("Child: Wait for commands");
+		ELEKTRA_LOG_DEBUG ("Child: Wait for commands on pipe %s", keyString (pp->parentCommandPipeKey));
 		elektraInvoke2Args (pp->dump, "get", commandKeySet, pp->parentCommandPipeKey);
 
 		if (ksGetSize (commandKeySet) == 0)
@@ -286,21 +287,21 @@ int elektraPluginProcessSend (const ElektraPluginProcess * pp, pluginprocess_t c
 	elektraFree (payloadSizeStr);
 
 	// Serialize, currently statically use dump as our default format, this already writes everything out to the pipe
-	ELEKTRA_LOG ("Parent: Sending data to issue command %u it", command);
+	ELEKTRA_LOG ("Parent: Sending data to issue command %u it through pipe %s", command, keyString (pp->parentCommandPipeKey));
 	elektraInvoke2Args (pp->dump, "set", commandKeySet, pp->parentCommandPipeKey);
 	if (keySet != NULL)
 	{
-		ELEKTRA_LOG ("Parent: Sending the payload keyset with %zd keys through the pipe now", ksGetSize (keySet));
+		ELEKTRA_LOG ("Parent: Sending the payload keyset with %zd keys through the pipe %s", ksGetSize (keySet),
+			     keyString (pp->parentPayloadPipeKey));
 		elektraInvoke2Args (pp->dump, "set", keySet, pp->parentPayloadPipeKey);
 	}
 
 	// Deserialize
-	ELEKTRA_LOG_DEBUG ("Parent: Waiting for the result now on %s", keyString (pp->childCommandPipeKey));
+	ELEKTRA_LOG_DEBUG ("Parent: Waiting for the result now on pipe %s", keyString (pp->childCommandPipeKey));
 	elektraInvoke2Args (pp->dump, "get", commandKeySet, pp->childCommandPipeKey);
 
 	if (keySet != NULL)
 	{
-		ELEKTRA_LOG_DEBUG ("READ CHILD RESULT NOW");
 		// clear the keyset before to avoid memleaks caused by dump
 		char * endPtr;
 		int prevErrno = errno;
@@ -315,7 +316,6 @@ int elektraPluginProcessSend (const ElektraPluginProcess * pp, pluginprocess_t c
 		elektraInvoke2Args (pp->dump, "get", keySet, pp->childPayloadPipeKey);
 		ELEKTRA_LOG ("Parent: We received %zd keys in return", ksGetSize (keySet));
 	}
-	ELEKTRA_LOG_DEBUG ("READ CHILD RESULT NOW DONE");
 
 	// Bring everything back in order by removing our process-related keys
 	Key * parentDeserializedKey = ksLookupByName (commandKeySet, "/pluginprocess/parent", KDB_O_NONE);
