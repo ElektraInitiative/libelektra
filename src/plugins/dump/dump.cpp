@@ -212,8 +212,7 @@ public:
 	{
 		if (this->gptr () == this->egptr ())
 		{
-			// read from the pipe directly, using an ifstream on
-			// /dev/fd/<fd> fails on macOS
+			// read from the pipe directly into the buffer
 			ssize_t r = read (fd_, buffer_, 4096);
 			this->setg (this->buffer_, this->buffer_, this->buffer_ + r);
 		}
@@ -248,7 +247,7 @@ int elektraDumpGet (ckdb::Plugin *, ckdb::KeySet * returned, ckdb::Key * parentK
 	keyDel (root);
 	int errnosave = errno;
 
-	// We use dump for the processplugin library. Unfortunately on macOS reading from /dev/fd/<fd> via
+	// We use dump for the pluginprocess library. Unfortunately on macOS reading from /dev/fd/<fd> via
 	// ifstream fails, thus we read directly from unnamed pipes using a custom buffer and read
 	const char pipe[] = "/dev/fd/";
 	if (!strncmp (keyString (parentKey), pipe, strlen (pipe)))
