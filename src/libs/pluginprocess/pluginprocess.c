@@ -8,11 +8,15 @@
  *
  * The communication protocol works as follows, where Child and Parent stand
  * for the child and the parent process:
- * 1)  Two named pipes are created, called commandPipe and resultPipe
-       - commandPipe is used for a keyset containing metainformation about
-       the communicationprotocol
-       - resultPipe is used for transferring the actual payload that gets passed
-       to a plugin
+ * 1)  Four pipes are created to handle the communication in a reliable way
+       - parentCommandPipe is used for a keyset containing metainformation about
+       the communication protocol, going from Parent to Child
+       - parentPayloadPipe is used for transferring the actual payload that gets passed
+       to a plugin, going from Parent to Child
+       - childCommandPipe is used for a keyset containing metainformation about
+       the communication protocol, going from Child to Parent
+       - childPayloadPipe is used for transferring the actual payload that gets passed
+       to a plugin, going from Child to Parent
  * 2)  The parent constructs a keyset called commandKeySet, containing:
  *     - /pluginprocess/parent
  *       a copy of the parent key passed to the plugin interface
@@ -25,17 +29,17 @@
  *     - /pluginprocess/version
  *       a number indicating the version of this communication
  *       protocol
- * 3)  The parent sends over the commandKeySet over the commandPipe
+ * 3)  The parent sends over the commandKeySet over the parentCommandPipe
  * 4)  For operations requiring a keyset, the parent sends the
- *     keyset (originalKeySet) that is passed to this plugin over the resultPipe
+ *     keyset (originalKeySet) that is passed to this plugin over the parentPayloadPipe
  * 5)  Child receives the commandKeySet
  * 6)  Child receives the keyset if one exists
  * 7)  Child executes the plugin on the keyset with the originalKey
  * 8)  Child adds the result value of the plugin operation to the commandKeySet
        into the key /pluginprocess/result
- * 9)  Child sends the commandKeySet over the commandPipe
+ * 9)  Child sends the commandKeySet over the childCommandPipe
  * 10) For operations requiring a keyset, Child sends the keyset
- *    over the resultPipe
+ *    over the childPayloadPipe
  * 11) Parent receives the commandKeySet and interpretes /pluginprocess/result
  * 12) For operations requiring a keyset, Parent receives the keyset
  *     and copies it back to originalKeySet set
@@ -52,6 +56,7 @@
 
 #include <errno.h>
 #include <limits.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/stat.h>
@@ -60,24 +65,41 @@
 
 struct _ElektraPluginProcess
 {
-	char * pipeDirectory;
-	char * commandPipe;
-	char * resultPipe;
+	int parentCommandPipe[2];
+	int parentPayloadPipe[2];
+	int childCommandPipe[2];
+	int childPayloadPipe[2];
+
+	Key * parentCommandPipeKey;
+	Key * parentPayloadPipeKey;
+	Key * childCommandPipeKey;
+	Key * childPayloadPipeKey;
+
 	int pid;
 	int counter;
 	ElektraInvokeHandle * dump;
 	void * pluginData;
 };
 
-static void cleanupPluginData (ElektraPluginProcess * pp, Key * errorKey)
+static void cleanupPluginData (ElektraPluginProcess * pp, Key * errorKey, int cleanAllPipes)
 {
 	if (pp->dump) elektraInvokeClose (pp->dump, errorKey);
-	if (pp->pid && pp->commandPipe) unlink (pp->commandPipe);
-	elektraFree (pp->commandPipe);
-	if (pp->pid && pp->resultPipe) unlink (pp->resultPipe);
-	elektraFree (pp->resultPipe);
-	if (pp->pid && pp->pipeDirectory) rmdir (pp->pipeDirectory);
-	elektraFree (pp->pipeDirectory);
+
+	if (pp->parentCommandPipeKey) keyDel (pp->parentCommandPipeKey);
+	if (pp->parentPayloadPipeKey) keyDel (pp->parentPayloadPipeKey);
+	if (pp->childCommandPipeKey) keyDel (pp->childCommandPipeKey);
+	if (pp->childPayloadPipeKey) keyDel (pp->childPayloadPipeKey);
+
+	// twisted way to clean either both ends if something failed upon or before forking
+	// and the used ends otherwise
+	for (int pipeIdx = !elektraPluginProcessIsParent (pp); pipeIdx <= cleanAllPipes; ++pipeIdx)
+	{
+		if (pp->parentCommandPipe[!pipeIdx]) close (pp->parentCommandPipe[!pipeIdx]);
+		if (pp->parentPayloadPipe[!pipeIdx]) close (pp->parentPayloadPipe[!pipeIdx]);
+		if (pp->childCommandPipe[pipeIdx]) close (pp->childCommandPipe[pipeIdx]);
+		if (pp->childPayloadPipe[pipeIdx]) close (pp->childPayloadPipe[pipeIdx]);
+	}
+
 	elektraFree (pp);
 }
 
@@ -104,16 +126,21 @@ static char * longToStr (long i)
  **/
 void elektraPluginProcessStart (Plugin * handle, ElektraPluginProcess * pp)
 {
-	Key * commandPipeKey = keyNew ("/pluginprocess/pipe/command", KEY_VALUE, pp->commandPipe, KEY_END);
-	Key * resultPipeKey = keyNew ("/pluginprocess/pipe/result", KEY_VALUE, pp->resultPipe, KEY_END);
 	int counter = 0;
 
 	do
 	{
 		KeySet * commandKeySet = ksNew (6, KS_END);
 		KeySet * keySet = NULL;
-		ELEKTRA_LOG_DEBUG ("Child: Wait for commands");
-		elektraInvoke2Args (pp->dump, "get", commandKeySet, commandPipeKey);
+		ELEKTRA_LOG_DEBUG ("Child: Wait for commands on pipe %s", keyString (pp->parentCommandPipeKey));
+		elektraInvoke2Args (pp->dump, "get", commandKeySet, pp->parentCommandPipeKey);
+
+		if (ksGetSize (commandKeySet) == 0)
+		{
+			ELEKTRA_LOG_DEBUG ("Child: Failed to read from parentCommandPipe, exiting");
+			ksDel (commandKeySet);
+			break;
+		}
 
 		Key * payloadSizeKey = ksLookupByName (commandKeySet, "/pluginprocess/payload/size", KDB_O_NONE);
 		char * endPtr;
@@ -125,7 +152,7 @@ void elektraPluginProcessStart (Plugin * handle, ElektraPluginProcess * pp)
 		if (*endPtr == '\0' && errno != ERANGE && payloadSize >= 0)
 		{
 			keySet = ksNew (payloadSize, KS_END);
-			elektraInvoke2Args (pp->dump, "get", keySet, resultPipeKey);
+			elektraInvoke2Args (pp->dump, "get", keySet, pp->parentPayloadPipeKey);
 			ELEKTRA_LOG_DEBUG ("Child: We received a KeySet with %zd keys in it", ksGetSize (keySet));
 		}
 		errno = prevErrno;
@@ -183,13 +210,13 @@ void elektraPluginProcessStart (Plugin * handle, ElektraPluginProcess * pp)
 		keyDel (parentKey);
 
 		ELEKTRA_LOG_DEBUG ("Child: Writing the results back to the parent");
-		elektraInvoke2Args (pp->dump, "set", commandKeySet, commandPipeKey);
+		elektraInvoke2Args (pp->dump, "set", commandKeySet, pp->childCommandPipeKey);
 		if (keySet != NULL)
 		{
 			char * resultPayloadSize = longToStr (ksGetSize (keySet));
 			keySetString (payloadSizeKey, resultPayloadSize);
 			elektraFree (resultPayloadSize);
-			elektraInvoke2Args (pp->dump, "set", keySet, resultPipeKey);
+			elektraInvoke2Args (pp->dump, "set", keySet, pp->childPayloadPipeKey);
 			ksDel (keySet);
 		}
 		ksDel (commandKeySet);
@@ -198,9 +225,7 @@ void elektraPluginProcessStart (Plugin * handle, ElektraPluginProcess * pp)
 
 	// Final Cleanup
 	ELEKTRA_LOG_DEBUG ("Child: All done, exiting the child process now");
-	keyDel (commandPipeKey);
-	keyDel (resultPipeKey);
-	cleanupPluginData (pp, 0);
+	cleanupPluginData (pp, 0, 1);
 	// All done, exit the child process so it won't do any actual effects in elektra
 	_Exit (EXIT_SUCCESS);
 }
@@ -263,19 +288,19 @@ int elektraPluginProcessSend (const ElektraPluginProcess * pp, pluginprocess_t c
 	elektraFree (payloadSizeStr);
 
 	// Serialize, currently statically use dump as our default format, this already writes everything out to the pipe
-	Key * commandPipeKey = keyNew ("/pluginprocess/pipe/command", KEY_VALUE, pp->commandPipe, KEY_END);
-	Key * resultPipeKey = keyNew ("/pluginprocess/pipe/result", KEY_VALUE, pp->resultPipe, KEY_END);
-	ELEKTRA_LOG ("Parent: Sending data to issue command %u it", command);
-	elektraInvoke2Args (pp->dump, "set", commandKeySet, commandPipeKey);
+	ELEKTRA_LOG ("Parent: Sending data to issue command %u it through pipe %s", command, keyString (pp->parentCommandPipeKey));
+	elektraInvoke2Args (pp->dump, "set", commandKeySet, pp->parentCommandPipeKey);
 	if (keySet != NULL)
 	{
-		ELEKTRA_LOG ("Parent: Sending the payload keyset with %zd keys through the pipe now", ksGetSize (keySet));
-		elektraInvoke2Args (pp->dump, "set", keySet, resultPipeKey);
+		ELEKTRA_LOG ("Parent: Sending the payload keyset with %zd keys through the pipe %s", ksGetSize (keySet),
+			     keyString (pp->parentPayloadPipeKey));
+		elektraInvoke2Args (pp->dump, "set", keySet, pp->parentPayloadPipeKey);
 	}
 
 	// Deserialize
-	ELEKTRA_LOG_DEBUG ("Parent: Waiting for the result now");
-	elektraInvoke2Args (pp->dump, "get", commandKeySet, commandPipeKey);
+	ELEKTRA_LOG_DEBUG ("Parent: Waiting for the result now on pipe %s", keyString (pp->childCommandPipeKey));
+	elektraInvoke2Args (pp->dump, "get", commandKeySet, pp->childCommandPipeKey);
+
 	if (keySet != NULL)
 	{
 		// clear the keyset before to avoid memleaks caused by dump
@@ -289,7 +314,7 @@ int elektraPluginProcessSend (const ElektraPluginProcess * pp, pluginprocess_t c
 		errno = prevErrno;
 		ksDel (keySet);
 		keySet = ksNew (payloadSize, KS_END);
-		elektraInvoke2Args (pp->dump, "get", keySet, resultPipeKey);
+		elektraInvoke2Args (pp->dump, "get", keySet, pp->childPayloadPipeKey);
 		ELEKTRA_LOG ("Parent: We received %zd keys in return", ksGetSize (keySet));
 	}
 
@@ -346,8 +371,6 @@ int elektraPluginProcessSend (const ElektraPluginProcess * pp, pluginprocess_t c
 	errno = prevErrno;
 
 	// Command finished, cleanup the remaining memory now
-	keyDel (commandPipeKey);
-	keyDel (resultPipeKey);
 	ksDel (commandKeySet);
 	if (keySet != NULL) ksDel (keySet);
 
@@ -363,63 +386,45 @@ int elektraPluginProcessSend (const ElektraPluginProcess * pp, pluginprocess_t c
  **/
 int elektraPluginProcessIsParent (const ElektraPluginProcess * pp)
 {
-	return pp->pid;
+	return pp->pid != 0;
 }
 
-static int elektraPluginProcessFork (ElektraPluginProcess * pp, Key * errorKey)
+static char * concat (const char * str1, const char * str2)
 {
-	// Prepare a named pipe so the dump plugin can serialize to it
-	// Create one pipe per plugin instance / handle
-	int mkfifoRet;
-	if ((mkfifoRet = mkfifo (pp->commandPipe, S_IRUSR | S_IWUSR)) == -1)
-	{
-		ELEKTRA_SET_ERRORF (190, errorKey, "Failed to initialize the command pipe, mkfifo () returned %d", mkfifoRet);
-		return -1;
-	}
-	if ((mkfifoRet = mkfifo (pp->resultPipe, S_IRUSR | S_IWUSR)) == -1)
-	{
-		ELEKTRA_SET_ERRORF (190, errorKey, "Failed to initialize the result pipe, mkfifo () returned %d", mkfifoRet);
-		return -1;
-	}
-
-	pid_t pid = fork ();
-	if (pid < 0)
-	{
-		ELEKTRA_SET_ERRORF (190, errorKey, "Failed to fork the plugin process, fork () returned %d", pid);
-		return -1;
-	}
-
-	pp->pid = pid;
-	ELEKTRA_LOG_DEBUG ("The pluginprocess is set using the pipes %s and %s with the pid %d", pp->commandPipe, pp->resultPipe, pid);
-	return 0;
+	const int str1Len = strlen (str1);
+	const int str2Len = strlen (str2);
+	char * concat = elektraMalloc (str1Len + str2Len + 1);
+	strncpy (concat, str1, str1Len);
+	strncpy (concat + str1Len, str2, str2Len + 1);
+	return concat;
 }
 
-static char * makePipeDirectory (Key * errorKey)
+static int makePipe (ElektraPluginProcess * pp, Key * errorKey, const char * pipeName, int pipeRef[2])
 {
-	const char directoryNameTemplate[] = "/tmp/libelektra-pluginprocess-XXXXXX";
-	char * directoryName = elektraMalloc (sizeof (directoryNameTemplate));
-	strcpy (directoryName, directoryNameTemplate);
-
-	int prevErrno = errno;
-	if (mkdtemp (directoryName) == NULL || errno == ENOTDIR || errno == EINVAL)
+	int ret;
+	if ((ret = pipe (pipeRef)))
 	{
-		ELEKTRA_SET_ERRORF (190, errorKey, "Failed to generate a temporary directory, mkdtemp returned errno %d", errno);
-		elektraFree (directoryName);
-		errno = prevErrno;
-		return NULL;
+		cleanupPluginData (pp, errorKey, 1);
+		ELEKTRA_SET_ERRORF (190, errorKey, "Failed to initialize %s, pipe () returned %d", pipeName, ret);
+		return 0;
 	}
-	errno = prevErrno;
-	return directoryName;
+	return 1;
 }
 
-static char * getPipename (const char * directoryName, const char * suffix)
+static Key * makePipeKey (const char * pipeName, const int pipeFd)
 {
-	const int directoryNameLength = strlen (directoryName);
-	const int suffixLength = strlen (suffix);
-	char * pipename = elektraMalloc (directoryNameLength + suffixLength + 1);
-	strncpy (pipename, directoryName, directoryNameLength);
-	strncpy (pipename + directoryNameLength, suffix, suffixLength + 1);
-	return pipename;
+	// create the key for this pipe for the use with dump
+	Key * key;
+
+	char * pipeFdStr = longToStr (pipeFd);
+	char * pipeKeyValue = concat ("/dev/fd/", pipeFdStr);
+	elektraFree (pipeFdStr);
+	char * pipeKeyName = concat ("/pluginprocess/pipe/", pipeName);
+	key = keyNew (pipeKeyName, KEY_VALUE, pipeKeyValue, KEY_END);
+	elektraFree (pipeKeyName);
+	elektraFree (pipeKeyValue);
+
+	return key;
 }
 
 /** Initialize a plugin to be executed in its own process
@@ -462,33 +467,62 @@ ElektraPluginProcess * elektraPluginProcessInit (Key * errorKey)
 	pp = elektraMalloc (sizeof (ElektraPluginProcess));
 	pp->counter = 0;
 	pp->pluginData = NULL;
-	pp->pipeDirectory = NULL;
-	pp->commandPipe = NULL;
-	pp->resultPipe = NULL;
-	pp->dump = NULL;
+	pp->parentCommandPipeKey = NULL;
+	pp->parentPayloadPipeKey = NULL;
+	pp->childCommandPipeKey = NULL;
+	pp->childPayloadPipeKey = NULL;
 
-	pp->pipeDirectory = makePipeDirectory (errorKey);
-	if (pp->pipeDirectory)
+	pp->dump = elektraInvokeOpen ("dump", 0, errorKey);
+	if (!pp->dump)
 	{
-		pp->commandPipe = getPipename (pp->pipeDirectory, "/command");
-		pp->resultPipe = getPipename (pp->pipeDirectory, "/result");
-		pp->dump = elektraInvokeOpen ("dump", 0, errorKey);
-	}
-
-	if (pp->pipeDirectory && pp->commandPipe && pp->resultPipe && pp->dump)
-	{
-		if (elektraPluginProcessFork (pp, errorKey) < 0)
-		{
-			cleanupPluginData (pp, errorKey);
-			return NULL;
-		}
-	}
-	else
-	{
-		cleanupPluginData (pp, errorKey);
-		ELEKTRA_SET_ERROR (190, errorKey, "Failed to initialize the pipenames and the dump plugin");
+		cleanupPluginData (pp, errorKey, 0);
+		ELEKTRA_SET_ERROR (190, errorKey, "Failed to initialize the dump plugin");
 		return NULL;
 	}
+
+	// As generally recommended, ignore SIGPIPE because we will notice that the
+	// commandKeySet has been transferred incorrectly anyway to detect broken pipes
+	signal (SIGPIPE, SIG_IGN);
+
+	// Prepare the pipes
+	if (!makePipe (pp, errorKey, "parentCommandPipe", pp->parentCommandPipe) ||
+	    !makePipe (pp, errorKey, "parentPayloadPipe", pp->parentPayloadPipe) ||
+	    !makePipe (pp, errorKey, "childCommandPipe", pp->childCommandPipe) ||
+	    !makePipe (pp, errorKey, "childPayloadPipe", pp->childPayloadPipe))
+		return NULL;
+
+	pp->pid = fork ();
+
+	if (pp->pid < 0)
+	{
+		cleanupPluginData (pp, errorKey, 1);
+		ELEKTRA_SET_ERRORF (190, errorKey, "Failed to fork the plugin process, fork () returned %d", pp->pid);
+		return NULL;
+	}
+
+	int pipeIdx = elektraPluginProcessIsParent (pp);
+	close (pp->parentCommandPipe[!pipeIdx]);
+	close (pp->parentPayloadPipe[!pipeIdx]);
+	close (pp->childCommandPipe[pipeIdx]);
+	close (pp->childPayloadPipe[pipeIdx]);
+
+	ELEKTRA_LOG_DEBUG ("parentCommandPipe[%d] has file descriptor %d", pipeIdx, pp->parentCommandPipe[pipeIdx]);
+	ELEKTRA_LOG_DEBUG ("parentPayloadPipe[%d] has file descriptor %d", pipeIdx, pp->parentPayloadPipe[pipeIdx]);
+	ELEKTRA_LOG_DEBUG ("childCommandPipe[%d] has file descriptor %d", !pipeIdx, pp->childCommandPipe[!pipeIdx]);
+	ELEKTRA_LOG_DEBUG ("childPayloadPipe[%d] has file descriptor %d", !pipeIdx, pp->childPayloadPipe[!pipeIdx]);
+
+	// Prepare the keys for the pipes to use with dump
+	pp->parentCommandPipeKey = makePipeKey ("parentCommandPipe", pp->parentCommandPipe[pipeIdx]);
+	pp->parentPayloadPipeKey = makePipeKey ("parentPayloadPipe", pp->parentPayloadPipe[pipeIdx]);
+	pp->childCommandPipeKey = makePipeKey ("childCommandPipe", pp->childCommandPipe[!pipeIdx]);
+	pp->childPayloadPipeKey = makePipeKey ("childPayloadPipe", pp->childPayloadPipe[!pipeIdx]);
+
+	ELEKTRA_LOG_DEBUG ("parentCommandPipeKey is %s on %d", keyString (pp->parentCommandPipeKey), pp->pid);
+	ELEKTRA_LOG_DEBUG ("parentPayloadPipeKey is %s on %d", keyString (pp->parentPayloadPipeKey), pp->pid);
+	ELEKTRA_LOG_DEBUG ("childCommandPipeKey is %s on %d", keyString (pp->childCommandPipeKey), pp->pid);
+	ELEKTRA_LOG_DEBUG ("childPayloadPipeKey is %s on %d", keyString (pp->childPayloadPipeKey), pp->pid);
+
+	ELEKTRA_LOG_DEBUG ("The pluginprocess is set with the pid %d", pp->pid);
 	return pp;
 }
 
@@ -546,7 +580,7 @@ ElektraPluginProcessCloseResult elektraPluginProcessClose (ElektraPluginProcess 
 		result = elektraPluginProcessSend (pp, ELEKTRA_PLUGINPROCESS_CLOSE, NULL, errorKey);
 	}
 	int done = pp->counter <= 0;
-	if (done) cleanupPluginData (pp, errorKey);
+	if (done) cleanupPluginData (pp, errorKey, 0);
 	ElektraPluginProcessCloseResult closeResult = { result, done };
 	return closeResult;
 }

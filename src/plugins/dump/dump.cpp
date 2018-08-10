@@ -16,9 +16,10 @@ using namespace ckdb;
 #include <string>
 #include <vector>
 
+#include <unistd.h>
+
 #include <kdberrors.h>
 #include <kdblogger.h>
-
 
 namespace dump
 {
@@ -194,8 +195,33 @@ int unserialise (std::istream & is, ckdb::Key * errorKey, ckdb::KeySet * ks)
 	return 1;
 }
 
-} // namespace dump
+class pipebuf : public std::streambuf
+{
+	char * buffer_;
+	int fd_;
 
+public:
+	pipebuf (int fd) : buffer_ (new char[4096]), fd_ (fd)
+	{
+	}
+	~pipebuf ()
+	{
+		delete[] this->buffer_;
+	}
+	int underflow ()
+	{
+		if (this->gptr () == this->egptr ())
+		{
+			// read from the pipe directly into the buffer
+			ssize_t r = read (fd_, buffer_, 4096);
+			this->setg (this->buffer_, this->buffer_, this->buffer_ + r);
+		}
+		return this->gptr () == this->egptr () ? std::char_traits<char>::eof () :
+							 std::char_traits<char>::to_int_type (*this->gptr ());
+	}
+};
+
+} // namespace dump
 
 extern "C" {
 
@@ -221,16 +247,30 @@ int elektraDumpGet (ckdb::Plugin *, ckdb::KeySet * returned, ckdb::Key * parentK
 	keyDel (root);
 	int errnosave = errno;
 
-	// ELEKTRA_LOG (ELEKTRA_LOG_MODULE_DUMP, "opening file %s", keyString (parentKey));
-	std::ifstream ofs (keyString (parentKey), std::ios::binary);
-	if (!ofs.is_open ())
+	// We use dump for the pluginprocess library. Unfortunately on macOS reading from /dev/fd/<fd> via
+	// ifstream fails, thus we read directly from unnamed pipes using a custom buffer and read
+	const char pipe[] = "/dev/fd/";
+	if (!strncmp (keyString (parentKey), pipe, strlen (pipe)))
 	{
-		ELEKTRA_SET_ERROR_GET (parentKey);
-		errno = errnosave;
-		return -1;
+		int fd = std::stoi (std::string (keyString (parentKey) + strlen (pipe)));
+		dump::pipebuf pipebuf (fd);
+		std::istream is (&pipebuf);
+		return dump::unserialise (is, parentKey, returned);
 	}
+	else
+	{
+		// ELEKTRA_LOG (ELEKTRA_LOG_MODULE_DUMP, "opening file %s", keyString (parentKey));
+		std::ifstream is (keyString (parentKey), std::ios::binary);
 
-	return dump::unserialise (ofs, parentKey, returned);
+		if (!is.is_open ())
+		{
+			ELEKTRA_SET_ERROR_GET (parentKey);
+			errno = errnosave;
+			return -1;
+		}
+
+		return dump::unserialise (is, parentKey, returned);
+	}
 }
 
 int elektraDumpSet (ckdb::Plugin *, ckdb::KeySet * returned, ckdb::Key * parentKey)
