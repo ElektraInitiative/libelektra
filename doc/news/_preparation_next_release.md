@@ -546,6 +546,7 @@ Thanks to Daniel Bugl.
 - The ASAN build jobs `🍏 Clang ASAN` and `🐧 GCC ASAN` now only build the `kdb` tool and the `cpp` binding. This update ensures, that we
   do not hit the [job timeout for public repositories](https://docs.travis-ci.com/user/customizing-the-build/#build-timeouts) that often.
   *(René Schwaiger)*
+- We now use the latest version of Ruby (`2.5.1`) to build and test the Ruby binding/plugin. *(René Schwaiger)*
 
 ## Compatibility
 
