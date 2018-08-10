@@ -466,8 +466,9 @@ Thanks to Daniel Bugl.
 - We now ignore warnings about
 
   - old style casts (Clang),
+  - zero size arrays (Clang),
   - variadic macros (Clang, GCC), and
-  - attribute warnings (GCC)
+  - attribute warnings (GCC),
 
   in the Ruby binding and plugin. *(René Schwaiger)*
 
