@@ -96,7 +96,7 @@ void test_roundtrip (CppKeySet keys, int const status = ELEKTRA_PLUGIN_STATUS_SU
 TEST (leaf, splitArrayParentsOther)
 {
 	// clang-format off
-	kdb::KeySet input { 10,
+	CppKeySet input { 10,
 		  keyNew (PREFIX "key", KEY_END),
 		  keyNew (PREFIX "key/map", KEY_END),
 		  keyNew (PREFIX "key/array", KEY_END),
