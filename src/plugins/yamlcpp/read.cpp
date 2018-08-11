@@ -134,7 +134,7 @@ void convertNodeToKeySet (YAML::Node const & node, KeySet & mappings, Key & pare
 		{
 			Key key = node.IsMap () ? newKey (element.first.as<string> (), parent) : newArrayKey (mappings, parent);
 			// Add intermediate key for array parent
-			if (node.IsMap () && element.second.IsSequence ()) mappings.append (key);
+			if ((node.IsMap () ? element.second : element).IsSequence ()) mappings.append (key);
 			convertNodeToKeySet (node.IsMap () ? element.second : element, mappings, key);
 		}
 	}

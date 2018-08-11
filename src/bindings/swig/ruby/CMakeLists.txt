@@ -62,6 +62,9 @@ else ()
 		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-catch-value")
 		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-class-memaccess")
 		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-maybe-uninitialized")
+		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-attributes")
+		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-pedantic")
+		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-conversion-null")
 	elseif (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-dynamic-class-memaccess")
 
@@ -74,8 +77,8 @@ else ()
 		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-delete-non-virtual-dtor")
 
 		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-deprecated-register")
-		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-reserved-user-defined-literal")
-		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-macro-redefined")
+		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-gnu-zero-variadic-macro-arguments")
+		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-zero-length-array")
 	endif ()
 
 	# add 'kdb' module
@@ -85,7 +88,7 @@ else ()
 		swig_add_library (swig-ruby LANGUAGE ruby SOURCES kdb.i TYPE MODULE)
 	endif (CMAKE_VERSION VERSION_LESS 3.8) # set the compiler settings for the generated file  (has to be done for each module
 					       # separately)
-	set_source_files_properties (${swig_generated_sources} PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS}")
+	set_source_files_properties (${swig_generated_file_fullname} PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS}")
 
 	# add the 'kdbtools' module
 	if (CMAKE_VERSION VERSION_LESS 3.8)
@@ -93,7 +96,7 @@ else ()
 	else (CMAKE_VERSION VERSION_LESS 3.8)
 		swig_add_library (swig-ruby-tools LANGUAGE ruby SOURCES kdbtools.i TYPE MODULE)
 	endif (CMAKE_VERSION VERSION_LESS 3.8)
-	set_source_files_properties (${swig_generated_sources} PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS}")
+	set_source_files_properties (${swig_generated_file_fullname} PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS}")
 
 	swig_link_libraries (swig-ruby ${RUBY_LIBRARY} elektra-core elektra-kdb)
 	set_target_properties (swig-ruby

@@ -269,6 +269,7 @@ Thanks to Daniel Bugl.
   in earlier versions of the [yaml-cpp library](https://github.com/jbeder/yaml-cpp). *(René Schwaiger)*
 
 - The plugin does now support [arrays](https://www.libelektra.org/tutorials/arrays) containing empty fields. *(René Schwaiger)*
+- YAML CPP now also adds `array` meta data for arrays containing arrays. *(René Schwaiger)*
 
 ### YAML Smith
 
@@ -345,7 +346,6 @@ Thanks to Daniel Bugl.
   on [ev](http://libev.schmorp.de) main loops. *(Thomas Wahringer)*
 
 
-
 ## Tools
 
 - The new tool `kdb find` lists keys of the database matching a certain regular expression. *(Markus Raab)*
@@ -386,7 +386,7 @@ Thanks to Daniel Bugl.
     *(Lukas Winkler)*
 - The documentation for `kdb` and `kdb set` now mentions the `--` argument that stops processing of command line switches. This is useful
   for setting negative values among other things. *(Klemens Böswirth)*
-- We added a new tutorial to use tha jna binding. The tutorial shows how to use the java library to interact with kdb *(Michael Zronek)*
+- We added a new tutorial about the jna binding. The tutorial shows how to use the java library to interact with kdb *(Michael Zronek)*
 - GitHub now detects the license of the repository correctly again. *(René Schwaiger)*
 - We added a tutorial describing Elektra’s [array data type](https://www.libelektra.org/tutorials/arrays). *(René Schwaiger)*
 
@@ -467,6 +467,14 @@ Thanks to Daniel Bugl.
 - We improved the automatic detection of Libgcrypt and OpenSSL. *(René Schwaiger)*
 - Resolved an issue where cmake did not properly set test feature macros to detect and use libc functionality. *(Lukas Winkler)*
 - Improve the detection of `ftw.h`, if the current build use the compiler switch `-Werror`. *(René Schwaiger)*
+- We now ignore warnings about
+
+  - zero size arrays (Clang),
+  - variadic macros (Clang, GCC),
+  - conversions to non-pointer type (GCC), and
+  - attribute warnings (GCC),
+
+  in the Ruby binding and plugin. *(René Schwaiger)*
 
 [Google Test]: https://github.com/google/googletest
 
@@ -541,6 +549,7 @@ Thanks to Daniel Bugl.
 - The ASAN build jobs `🍏 Clang ASAN` and `🐧 GCC ASAN` now only build the `kdb` tool and the `cpp` binding. This update ensures, that we
   do not hit the [job timeout for public repositories](https://docs.travis-ci.com/user/customizing-the-build/#build-timeouts) that often.
   *(René Schwaiger)*
+- We now use the latest version of Ruby (`2.5.1`) to build and test the Ruby binding/plugin. *(René Schwaiger)*
 
 ## Compatibility
 
