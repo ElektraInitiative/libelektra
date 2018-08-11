@@ -129,7 +129,8 @@ just like vertices in a graph. `check/recursion/ref` is used to link together al
 `menu` and `menuref` are our defined keywords in this example.
 
 Each key definition in our example in the form of `/editor/menu` will now be treated as recursive entry (vertex). You can define arbitrary
-many menues like this: `/editor/menu/#[d]` where `[d]` stands for a positive number. Menues can be linked via `menuref` 
+many menues like this: `/editor/menu/#[d]` where `[d]` stands for a positive number. This notation is called the 
+the [array notation](https://www.libelektra.org/tutorials/arrays). Menues can be linked via `menuref` 
 like this: `/editor/menu/#[d]/menuref/#[d]` and is again in the array notation.
 
 Next we create all distinct vertices such as `File`, `Print` etc. Note that the `Settings`
