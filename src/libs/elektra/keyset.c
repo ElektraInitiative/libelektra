@@ -157,6 +157,9 @@ static void elektraOpmphmCopy (KeySet * dest ELEKTRA_UNUSED, const KeySet * sour
  *
  * So, terminate with ksNew(0, KS_END) or ksNew(20, ..., KS_END)
  *
+ * @warning Never use ksNew(0, keyNew(...), KS_END).
+ * If the first parameter is 0, other arguments are ignored.
+ *
  * For most uses
  *
  * @snippet ksNew.c Simple
@@ -169,12 +172,12 @@ static void elektraOpmphmCopy (KeySet * dest ELEKTRA_UNUSED, const KeySet * sour
  * read the next statements.
  *
  * If you want a keyset with length 15 (because you know of your
- * application that you normally need about 12 up to 15 keys), use:
+ * application that you only need up to 15 keys), use:
  *
  * @snippet ksNew.c Length 15
  *
  * If you start having 3 keys, and your application needs approximately
- * 200-500 keys, you can use:
+ * 200 up to 500 keys, you can use:
  *
  * @snippet ksNew.c Hint 500
  *
