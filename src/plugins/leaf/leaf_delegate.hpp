@@ -21,6 +21,19 @@ using std::pair;
 
 using CppKeySet = kdb::KeySet;
 
+// -- Functions ----------------------------------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Split `keys` into two key sets, one for array parents and one for all other keys.
+ *
+ * @param keys This parameter contains the key set this function splits.
+ *
+ * @return A pair of key sets, where the first key set contains all array parents and the second key set contains all other keys
+ */
+pair<CppKeySet, CppKeySet> splitArraysOther (CppKeySet const & keys);
+
+// -- Class --------------------------------------------------------------------------------------------------------------------------------
+
 class LeafDelegate
 {
 public:

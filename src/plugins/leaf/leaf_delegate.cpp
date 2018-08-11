@@ -7,10 +7,15 @@
  *
  */
 
+#include <numeric>
+
+#include <kdbassert.h>
+#include <kdbease.h>
 #include <kdblogger.h>
 
 #include "leaf_delegate.hpp"
 
+using std::accumulate;
 using std::make_pair;
 using std::pair;
 using std::tie;
@@ -67,6 +72,83 @@ CppKeySet convertLeavesToDirectories (CppKeySet const & directoryLeaves)
 		directories.append (directory);
 	}
 	return directories;
+}
+
+/**
+ * @brief This function returns a modified copy of `child`, where child is directly below `parent`.
+ *
+ * For example, if `child` has the name `user/parent/level1/level2/level3` and parent has the name `user/parent`, then the function will
+ * return a key with the name `user/parent/level1`.
+ *
+ * @pre The key `child` has to be below `parent`.
+ *
+ * @param parent This parameter specifies a parent key of `child`.
+ * @param keys This variable stores a child key of `parent`.
+ *
+ * @return A copy of `child` that is directly below `parent`
+ */
+CppKey convertToDirectChild (CppKey const & parent, CppKey const & child)
+{
+	ELEKTRA_ASSERT (child.isBelow (parent), "The key `child` is not located below `parent`");
+
+	CppKey directChild = child.dup ();
+	while (!directChild.isDirectBelow (parent))
+	{
+		keySetBaseName (*directChild, 0);
+	}
+	return directChild;
+}
+
+/**
+ * @brief This function determines if the given key is an array parent.
+ *
+ * @param parent This parameter specifies a possible array parent.
+ * @param keys This variable stores the key set of `parent`.
+ *
+ * @retval true If `parent` is the parent key of an array
+ * @retval false Otherwise
+ */
+bool isArrayParent (CppKey const & parent, CppKeySet const & keys)
+{
+	CppKeySet children = accumulate (keys.begin (), keys.end (), CppKeySet{}, [&parent](CppKeySet keys, CppKey key) {
+		if (key.isBelow (parent)) keys.append (key);
+		return keys;
+	});
+
+	for (auto child : children)
+	{
+		CppKey directChild = convertToDirectChild (parent, child);
+		if (elektraArrayValidateName (*directChild) < 0) return false;
+	}
+
+	return true;
+}
+
+/**
+ * @brief Split `keys` into two key sets, one for array parents and one for all other keys.
+ *
+ * @param keys This parameter contains the key set this function splits.
+ *
+ * @return A pair of key sets, where the first key set contains all array parents and the second key set contains all other keys
+ */
+pair<CppKeySet, CppKeySet> splitArraysOther (CppKeySet const & keys)
+{
+	CppKeySet arrays;
+	CppKeySet other;
+
+	keys.rewind ();
+	CppKey previous;
+	for (previous = keys.next (); keys.next (); previous = keys.current ())
+	{
+		bool previousIsArray =
+			previous.hasMeta ("array") ||
+			(keys.current ().isBelow (previous) && keys.current ().getBaseName ()[0] == '#' && isArrayParent (previous, keys));
+
+		(previousIsArray ? arrays : other).append (previous);
+	}
+	(keys.current ().hasMeta ("array") ? arrays : other).append (keys.current ());
+
+	return make_pair (arrays, other);
 }
 
 /**

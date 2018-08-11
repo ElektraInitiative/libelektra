@@ -9,15 +9,22 @@
 
 #include "leaf.hpp"
 
+#include <tuple>
+
 #include <kdbmodule.h>
 #include <kdbprivate.h>
 
 #include <tests.hpp>
 
+using std::ignore;
+using std::tie;
+
 using ckdb::keyNew;
 
 using CppKeySet = kdb::KeySet;
 using CppKey = kdb::Key;
+
+using elektra::splitArraysOther;
 
 // -- Macros -------------------------------------------------------------------------------------------------------------------------------
 
@@ -85,6 +92,34 @@ void test_roundtrip (CppKeySet keys, int const status = ELEKTRA_PLUGIN_STATUS_SU
 }
 
 // -- Tests --------------------------------------------------------------------------------------------------------------------------------
+
+TEST (leaf, splitArraysOther)
+{
+	// clang-format off
+	kdb::KeySet input { 10,
+		  keyNew (PREFIX "key", KEY_END),
+		  keyNew (PREFIX "key/map", KEY_END),
+		  keyNew (PREFIX "key/array", KEY_END),
+		  keyNew (PREFIX "key/array/#0", KEY_END),
+		  keyNew (PREFIX "key/array/#1", KEY_END),
+		  keyNew (PREFIX "key/array/#2/nested", KEY_END),
+		  keyNew (PREFIX "key/array/#2/nested/#0", KEY_END),
+		  keyNew (PREFIX "key/array/#2/nested/#1", KEY_END),
+		  keyNew (PREFIX "key/empty/array", KEY_META, "array", "", KEY_END),
+		  KS_END };
+
+	CppKeySet expected { 10,
+		  keyNew (PREFIX "key/array", KEY_END),
+		  keyNew (PREFIX "key/array/#2/nested", KEY_END),
+		  keyNew (PREFIX "key/empty/array", KEY_META, "array", "", KEY_END),
+		  KS_END };
+
+	// clang-format on
+
+	CppKeySet arrays;
+	tie (arrays, ignore) = splitArraysOther (input);
+	compare_keyset (expected, arrays);
+}
 
 TEST (leaf, basics)
 {

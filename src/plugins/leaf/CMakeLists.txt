@@ -8,4 +8,5 @@ add_plugin (leaf
 	    SOURCES leaf.hpp
 		    leaf.cpp
 		    leaf_delegate.hpp
-		    leaf_delegate.cpp)
+		    leaf_delegate.cpp
+	    LINK_ELEKTRA elektra-ease)
