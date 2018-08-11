@@ -153,7 +153,7 @@ bool isKeySetEqual (kdb::KeySet & keys1, kdb::KeySet & keys2)
 		if (!isKeyEqual (key1, key2)) return false;
 	}
 
-	return true;
+	return keys1.next () == keys2.next ();
 }
 
 /**
