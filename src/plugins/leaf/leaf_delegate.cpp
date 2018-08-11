@@ -131,7 +131,7 @@ bool isArrayParent (CppKey const & parent, CppKeySet const & keys)
  *
  * @return A pair of key sets, where the first key set contains all array parents and the second key set contains all other keys
  */
-pair<CppKeySet, CppKeySet> splitArraysOther (CppKeySet const & keys)
+pair<CppKeySet, CppKeySet> splitArrayParentsOther (CppKeySet const & keys)
 {
 	CppKeySet arrays;
 	CppKeySet other;

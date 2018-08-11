@@ -24,7 +24,7 @@ using ckdb::keyNew;
 using CppKeySet = kdb::KeySet;
 using CppKey = kdb::Key;
 
-using elektra::splitArraysOther;
+using elektra::splitArrayParentsOther;
 
 // -- Macros -------------------------------------------------------------------------------------------------------------------------------
 
@@ -93,7 +93,7 @@ void test_roundtrip (CppKeySet keys, int const status = ELEKTRA_PLUGIN_STATUS_SU
 
 // -- Tests --------------------------------------------------------------------------------------------------------------------------------
 
-TEST (leaf, splitArraysOther)
+TEST (leaf, splitArrayParentsOther)
 {
 	// clang-format off
 	kdb::KeySet input { 10,
@@ -117,7 +117,7 @@ TEST (leaf, splitArraysOther)
 	// clang-format on
 
 	CppKeySet arrays;
-	tie (arrays, ignore) = splitArraysOther (input);
+	tie (arrays, ignore) = splitArrayParentsOther (input);
 	compare_keyset (expected, arrays);
 }
 
