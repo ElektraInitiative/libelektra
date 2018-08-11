@@ -335,7 +335,7 @@ Thanks to Daniel Bugl.
   should be more clear how to store plugin data besides pluginprocess's data structure.
   Tests have been added to the library to ensure its correct functionality. *(Armin Wurzinger)*
 - Anonymous pipes are now used instead of named pipes for the communication as anonymous pipes get
-  terminated by the OS in case a child process dies before writing back data to the parent. 
+  terminated by the OS in case a child process dies before writing back data to the parent.
   Currently the parent process will freeze otherwise attempting to read from the child. *(Armin Wurzinger)*
 
 ## Bindings
