@@ -40,6 +40,7 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.8.
 - Type system preview
 - Chef Cookbook
 - Elektra Web 1.6
+- Make tests fail *(Markus Raab)*
 
 
 ### Type system preview
