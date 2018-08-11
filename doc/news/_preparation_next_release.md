@@ -475,7 +475,7 @@ Thanks to Daniel Bugl.
   - conversions to non-pointer type (GCC), and
   - attribute warnings (GCC),
 
-  in the Ruby binding and plugin. *(René Schwaiger)*
+  caused by code generated via [SWIG](http://www.swig.org) in the Ruby binding and plugin. *(René Schwaiger)*
 
 [Google Test]: https://github.com/google/googletest
 
