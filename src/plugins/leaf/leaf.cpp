@@ -11,6 +11,8 @@
 
 #include <kdbhelper.h>
 
+using std::exception;
+
 using elektra::LeafDelegate;
 
 using CppKey = kdb::Key;
@@ -70,7 +72,16 @@ int elektraLeafGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 		keys.release ();
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
-	int status = delegator::get (handle)->convertToDirectories (keys);
+
+	int status = ELEKTRA_PLUGIN_STATUS_ERROR;
+	try
+	{
+		status = delegator::get (handle)->convertToDirectories (keys);
+	}
+	catch (exception const & error)
+	{
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_UNCAUGHT_EXCEPTION, *parent, error.what ());
+	}
 
 	parent.release ();
 	keys.release ();
@@ -81,9 +92,19 @@ int elektraLeafGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 int elektraLeafSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
 	CppKeySet keys{ returned };
+	CppKey parent{ parentKey };
 
-	int status = delegator::get (handle)->convertToLeaves (keys);
+	int status = ELEKTRA_PLUGIN_STATUS_ERROR;
+	try
+	{
+		status = delegator::get (handle)->convertToLeaves (keys);
+	}
+	catch (exception const & error)
+	{
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_UNCAUGHT_EXCEPTION, *parent, error.what ());
+	}
 
+	parent.release ();
 	keys.release ();
 	return status;
 }
