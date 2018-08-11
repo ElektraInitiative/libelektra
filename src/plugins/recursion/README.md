@@ -10,18 +10,37 @@ Also I have no idea what your `struct` plugin actually does. There is no example
 the contract which doesn't help understanding the plugin.
 
 ## Problems
-1) We want to check if all recursions are non-cyclical
-2) We want to check if a recursive config actually leads to another correct config and not into NULL for example
-3) Forcing users to define non-recursive settings first on which they can build up 
-recursive settings is inconvenient and could lead to orphan settings.
-4) We can only check right after calling `kdb set` and not a whole config. 
-This means that user can have "unfinished" configurations while setting new values.
+1) We want to check if all recursion links are non-cyclical, eg. `a` -> `b` -> `c` -> `a`
+2) Imagine a structure like `a` -> `b`. A user sets `a` but forgets `b`. He links `a` to (yet non existent) `b`.
+Now there are two possibilties. Either we prohibit the linking and emit an error, forcing the user to define
+the `b` setting first or we just emit a warning and expect the user to declare `b` later. The latter one could lead to
+incomplete configurations.
+
+The first option would require a certain ordering which clashes with the fact that some storage plugins do not
+premain the ordering. An example:
+```
+[b]
+
+[a]
+ref = b
+```
+
+is a legal configuration. Loading and saving the configuration again could lead to a reversed structure
+
+```
+[a]
+ref = b
+
+[b]
+```
+
+which could cause an error since `a` cannot be loaded as `b` is yet non existent.
 
 ## Possible Solution
 
 Users have to define recursive setting specifications in the following way:
 
-```
+```sh
 kdb mount config.dump /recursive dump recursion
 kdb setmeta user/recursive check/recursion/vertex "define"
 kdb setmeta user/recursive check/recursion/ref "ref"
@@ -81,10 +100,10 @@ kdb set /recursive/define/#2/ref/#1 /recursive/define/#5
 Arbitrary additional data can be saved too such as:
 `kdb set /recursive/define/#2/permission admin`
 
-## A more real example
+## Another example
 
 In order to better show how this plugin can be used, a more sophisticated example will be given.
-Imagine that you want to create your own menu with arbitrary submenus possible. The following example
+Imagine that you want to create your own menu bar with arbitrary submenus possible. The following example
 is inspired from libreoffice and simplified.
 
 Imagine an editor with a `File` menu with a `Print` option as well as a submenu called `Settings`.
@@ -96,7 +115,7 @@ again is a menu and has `Macro Basics`.
 The following picture illustrates the menu tree:
 ![menu-example](example.png?raw=true "Example")
 
-So how can we map this into an elektra configuration?
+So how can we map the specification as well as configuration into elektra?
 
 First we create a config and mount it. Next we will set the specification for all menu entries as following:
 ```
@@ -104,14 +123,18 @@ kdb mount config.dump /editor dump recursion
 sudo kdb setmeta /editor check/recursion/vertex "menu"
 sudo kdb setmeta /editor check/recursion/ref "menuref"
 ```
-Each key definition in the form of `/editor/menu` will now be treated as recursive entry. You can define arbitrary
-many menues like this: `/editor/menu/#[d]` where `[d]` stands for a positive number.
 
-Menues can be linked via `menuref` like this: `/editor/menu/#[d]/menuref/#[d]` and is again in the array notation.
-Note that `menu` and `menuref` are our defined keywords in the setmeta command from above.
+The first metadata `check/recursion/vertex` is used to define the basic building block of our recursive stucture, 
+just like vertices in a graph. `check/recursion/ref` is used to link together all vertices. 
+`menu` and `menuref` are our defined keywords in this example.
 
-Next lets create all distinct menu entries such as `File`, `Print` etc. Note that the Settings
- menu appears twice but we will only need to declare it once. The order does not matter:
+Each key definition in our example in the form of `/editor/menu` will now be treated as recursive entry (vertex). You can define arbitrary
+many menues like this: `/editor/menu/#[d]` where `[d]` stands for a positive number. Menues can be linked via `menuref` 
+like this: `/editor/menu/#[d]/menuref/#[d]` and is again in the array notation.
+
+Next we create all distinct vertices such as `File`, `Print` etc. Note that the `Settings`
+ menu appears twice but we will only need to declare it once. The order of the array
+  or the `kdb set` commands does not matter:
 
 ```
 kdb set /editor/menu/#0 File
@@ -126,30 +149,30 @@ kdb set /editor/menu/#8 "Organize Macros"
 kdb set /editor/menu/#9 "Macro Basics"
 ```
 
-Now that we have defined we can link together all menues. Lets start with the `File` menu:
+Now that we have defined we can link together all vertices(menues). We start with the `File` menu:
 
 ```
 kdb set /editor/menu/#0/menuref/#0 /editor/menu/#2
 kdb set /editor/menu/#0/menuref/#1 /editor/menu/#3
 ```
 
-Next we link the `Settings` menu:
+Next we link the `Settings` vertex:
 
 ```
 kdb set /editor/menu/#3/menuref/#0 /editor/menu/#5
 kdb set /editor/menu/#3/menuref/#1 /editor/menu/#6
 ```
 
-Now we link the `Tools` section:
+Now we link the `Tools` vertex:
 ```
 kdb set /editor/menu/#1/menuref/#0 /editor/menu/#5
 kdb set /editor/menu/#1/menuref/#1 /editor/menu/#3
 kdb set /editor/menu/#1/menuref/#2 /editor/menu/#7
 ```
 
-Note that `Settings` is already linked. We do not need to do it for the `Tools` menu again.
+Note that `Settings` is already linked. We do not need to do it for the `Tools` vertex again.
 
-Finally we link all submenus of `Macros`:
+Finally we link all vetices of `Macros`:
 
 ```
 kdb set /editor/menu/#7/menuref/#0 /editor/menu/#8
@@ -163,13 +186,13 @@ In the above example the following settings will be rejected:
 ```
 #Link "Macro Basics" to the parent menu "Macros" and create an endless loop
 kdb set /editor/menu/#9/menuref/#0 /editor/menu/#7
-ERR: 198
-Reason: Cyclical reference detected: "Macro Basics" -> "Macros" -> Organize Macros" -> "Macro Basics"
+# ERR: 198
+# STDERR: Reason: Cyclical reference detected: "Macro Basics" -> "Macros" -> Organize Macros" -> "Macro Basics"
 
 #Link to something which does not exist
 kdb set /editor/menu/#9/menuref/#0 /editor/menu/#10
-ERR: 199
-Reason: Could not find vertex with #10. Maybe it does not exist yet?
+# ERR: 199
+# STDERR: Reason: Could not find vertex with #10. Maybe it does not exist yet?
 ```
 
 Sitenote: Maybe the last example here will just emit a warning so users are free in the order of declaration.
@@ -237,7 +260,7 @@ kdb set /editor/GlobalSettings/DisplayName "Global Settings"
 kdb set /editor/AutocorrectOptions/DisplayName "Autocorrect Options"
 ``` 
 
-This would at least guarantee reusability of settings.
+This would also guarantee reusability like in the array based approach.
 
 The plugin could theoretically support an arbitrary name instead of an array. But how does the 
 specification know what is actually a menu entry and what is just some arbitrary other setting.
