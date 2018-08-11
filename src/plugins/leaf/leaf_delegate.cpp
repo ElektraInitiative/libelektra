@@ -110,9 +110,9 @@ CppKey convertToDirectChild (CppKey const & parent, CppKey const & child)
  */
 bool isArrayParent (CppKey const & parent, CppKeySet const & keys)
 {
-	CppKeySet children = accumulate (keys.begin (), keys.end (), CppKeySet{}, [&parent](CppKeySet keys, CppKey key) {
-		if (key.isBelow (parent)) keys.append (key);
-		return keys;
+	CppKeySet children = accumulate (keys.begin (), keys.end (), CppKeySet{}, [&parent](CppKeySet collected, CppKey key) {
+		if (key.isBelow (parent)) collected.append (key);
+		return collected;
 	});
 
 	for (auto child : children)
