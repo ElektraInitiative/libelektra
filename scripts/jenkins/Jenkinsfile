@@ -857,6 +857,8 @@ export PATH=${WORKSPACE}/system/bin:$PATH
 export DBUS_SESSION_BUS_ADDRESS=`dbus-daemon --session --fork --print-address`
 export LUA_CPATH="${WORKSPACE}/system/lib/lua/5.2/?.so;"
 
+kdb gmount python script=${WORKSPACE}/src/plugins/python/python/python_filter.py
+
 env
 
 kdb run_all
