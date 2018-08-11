@@ -89,7 +89,7 @@ int elektraLeafGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 }
 
 /** @see elektraDocSet */
-int elektraLeafSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraLeafSet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
 	CppKeySet keys{ returned };
 	CppKey parent{ parentKey };
