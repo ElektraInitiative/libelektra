@@ -355,16 +355,25 @@ int LeafDelegate::convertToDirectories (CppKeySet & keys)
 int LeafDelegate::convertToLeaves (CppKeySet & keys)
 {
 	CppKeySet notArrayParents;
+	CppKeySet arrayParents;
+	CppKeySet arrays;
 	CppKeySet directories;
 	CppKeySet leaves;
 
-	tie (ignore, notArrayParents) = splitArrayParentsOther (keys);
+	tie (arrayParents, notArrayParents) = splitArrayParentsOther (keys);
+	tie (arrays, ignore) = splitArrayOther (arrayParents, keys);
+
+	CppKeySet updatedArrays = increaseArrayIndices (arrayParents, arrays);
+	CppKeySet updatedArrayParents = convertArrayParentsToLeaves (arrayParents);
+
 	tie (directories, leaves) = splitDirectoriesLeaves (notArrayParents);
-	bool status = directories.size () > 0 ? ELEKTRA_PLUGIN_STATUS_SUCCESS : ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+	bool status = directories.size () > 0 || arrayParents.size () > 0 ? ELEKTRA_PLUGIN_STATUS_SUCCESS : ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 
 	auto directoryLeaves = convertDirectoriesToLeaves (directories);
 
 	keys.clear ();
+	keys.append (updatedArrays);
+	keys.append (updatedArrayParents);
 	keys.append (directoryLeaves);
 	keys.append (leaves);
 
