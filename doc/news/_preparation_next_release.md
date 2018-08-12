@@ -155,6 +155,10 @@ Thanks to Daniel Bugl.
 
 - The `crypto` plugin now uses Elektra's `libinvoke` and the `base64` plugin in order to encode and decode Base64 strings. This improvement reduces code duplication between the two plugins. *(Peter Nirschl)*
 
+### CSVStorage 
+
+- Changed behaviour of export to validate the structure of exported keys only. *(Thomas Waser)*
+
 ### Directory Value
 
 - The plugin now also adds leafs for a key, if its value is null or the empty string. *(René Schwaiger)*
