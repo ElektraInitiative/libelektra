@@ -857,6 +857,10 @@ export PATH=${WORKSPACE}/system/bin:$PATH
 export DBUS_SESSION_BUS_ADDRESS=`dbus-daemon --session --fork --print-address`
 export LUA_CPATH="${WORKSPACE}/system/lib/lua/5.2/?.so;"
 
+kdb get system/elektra/version/constants/KDB_VERSION
+kdb get system/elektra/version/constants/SO_VERSION
+export CHECK_VERSION=NO
+
 kdb gmount python script=${WORKSPACE}/src/plugins/python/python/python_filter.py
 
 env
