@@ -195,6 +195,12 @@ TEST (leaf, set)
 		,
 #include "leaf/extended_set.hpp"
 	);
+
+	test_set (
+#include "leaf/arrays_get.hpp"
+		,
+#include "leaf/arrays_set.hpp"
+	);
 }
 
 TEST (leaf, roundtrip)
