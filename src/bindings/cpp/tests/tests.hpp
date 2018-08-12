@@ -58,7 +58,6 @@ using namespace kdb;
 testing::AssertionResult & operator<< (testing::AssertionResult & stream, kdb::Key & key)
 {
 	stream << key.getName () << ": " << (key.isString () ? key.getString () : (key.getBinarySize () == 0 ? "NULL" : "BINARY"));
-	key.rewindMeta ();
 
 	key.rewindMeta ();
 	while (key.nextMeta ())
