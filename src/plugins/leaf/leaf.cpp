@@ -12,6 +12,7 @@
 #include <kdbhelper.h>
 
 using std::exception;
+using std::range_error;
 
 using elektra::LeafDelegate;
 
@@ -78,6 +79,10 @@ int elektraLeafGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	{
 		status = delegator::get (handle)->convertToDirectories (keys);
 	}
+	catch (range_error const & error)
+	{
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_DIRECTORY_VALUE_ARRAY, *parent, error.what ());
+	}
 	catch (exception const & error)
 	{
 		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_UNCAUGHT_EXCEPTION, *parent, error.what ());
@@ -98,6 +103,10 @@ int elektraLeafSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	try
 	{
 		status = delegator::get (handle)->convertToLeaves (keys);
+	}
+	catch (range_error const & error)
+	{
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_DIRECTORY_VALUE_ARRAY, *parent, error.what ());
 	}
 	catch (exception const & error)
 	{
