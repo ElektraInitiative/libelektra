@@ -96,26 +96,20 @@ void test_roundtrip (CppKeySet keys, int const status = ELEKTRA_PLUGIN_STATUS_SU
 
 TEST (leaf, splitArrayParentsOther)
 {
-	// clang-format off
-	CppKeySet input { 10,
-		  keyNew (PREFIX "key", KEY_END),
-		  keyNew (PREFIX "key/map", KEY_END),
-		  keyNew (PREFIX "key/array", KEY_END),
-		  keyNew (PREFIX "key/array/#0", KEY_END),
-		  keyNew (PREFIX "key/array/#1", KEY_END),
-		  keyNew (PREFIX "key/array/#2/nested", KEY_END),
-		  keyNew (PREFIX "key/array/#2/nested/#0", KEY_END),
-		  keyNew (PREFIX "key/array/#2/nested/#1", KEY_END),
-		  keyNew (PREFIX "key/empty/array", KEY_META, "array", "", KEY_END),
-		  KS_END };
+	CppKeySet input{ 10,
+			 keyNew (PREFIX "key", KEY_END),
+			 keyNew (PREFIX "key/map", KEY_END),
+			 keyNew (PREFIX "key/array", KEY_END),
+			 keyNew (PREFIX "key/array/#0", KEY_END),
+			 keyNew (PREFIX "key/array/#1", KEY_END),
+			 keyNew (PREFIX "key/array/#2/nested", KEY_END),
+			 keyNew (PREFIX "key/array/#2/nested/#0", KEY_END),
+			 keyNew (PREFIX "key/array/#2/nested/#1", KEY_END),
+			 keyNew (PREFIX "key/empty/array", KEY_META, "array", "", KEY_END),
+			 KS_END };
 
-	CppKeySet expected { 10,
-		  keyNew (PREFIX "key/array", KEY_END),
-		  keyNew (PREFIX "key/array/#2/nested", KEY_END),
-		  keyNew (PREFIX "key/empty/array", KEY_META, "array", "", KEY_END),
-		  KS_END };
-
-	// clang-format on
+	CppKeySet expected{ 10, keyNew (PREFIX "key/array", KEY_END), keyNew (PREFIX "key/array/#2/nested", KEY_END),
+			    keyNew (PREFIX "key/empty/array", KEY_META, "array", "", KEY_END), KS_END };
 
 	CppKeySet arrays;
 	tie (arrays, ignore) = splitArrayParentsOther (input);
@@ -129,41 +123,33 @@ TEST (leaf, splitArrayParentsOther)
 
 TEST (leaf, increaseArrayIndices)
 {
-	// clang-format off
-	CppKeySet arrayParents { 10,
-		  keyNew (PREFIX "key/array", KEY_END),
-		  keyNew (PREFIX "key/array/#2/nested", KEY_END),
-		  KS_END };
+	CppKeySet arrayParents{ 10, keyNew (PREFIX "key/array", KEY_END), keyNew (PREFIX "key/array/#2/nested", KEY_END), KS_END };
 
-	CppKeySet expectedArrayParents { 10,
-		  keyNew (PREFIX "key/array", KEY_END),
-		  keyNew (PREFIX "key/array/#3/nested", KEY_END),
-		  KS_END };
+	CppKeySet expectedArrayParents{ 10, keyNew (PREFIX "key/array", KEY_END), keyNew (PREFIX "key/array/#3/nested", KEY_END), KS_END };
 
-	CppKeySet arrays { 10,
-		  keyNew (PREFIX "key/array", KEY_END),
-		  keyNew (PREFIX "key/array/#0", KEY_END),
-		  keyNew (PREFIX "key/array/#1", KEY_END),
-		  keyNew (PREFIX "key/array/#2/nested", KEY_END),
-		  keyNew (PREFIX "key/array/#2/nested/#0", KEY_END),
-		  keyNew (PREFIX "key/array/#2/nested/#1", KEY_END),
-		  keyNew (PREFIX "key/array", KEY_END),
-		  keyNew (PREFIX "key/array/#0", KEY_END),
-		  keyNew (PREFIX "key/array/#1", KEY_END),
-		  KS_END };
+	CppKeySet arrays{ 10,
+			  keyNew (PREFIX "key/array", KEY_END),
+			  keyNew (PREFIX "key/array/#0", KEY_END),
+			  keyNew (PREFIX "key/array/#1", KEY_END),
+			  keyNew (PREFIX "key/array/#2/nested", KEY_END),
+			  keyNew (PREFIX "key/array/#2/nested/#0", KEY_END),
+			  keyNew (PREFIX "key/array/#2/nested/#1", KEY_END),
+			  keyNew (PREFIX "key/array", KEY_END),
+			  keyNew (PREFIX "key/array/#0", KEY_END),
+			  keyNew (PREFIX "key/array/#1", KEY_END),
+			  KS_END };
 
-	CppKeySet expectedArrays { 10,
-		  keyNew (PREFIX "key/array", KEY_END),
-		  keyNew (PREFIX "key/array/#1", KEY_END),
-		  keyNew (PREFIX "key/array/#2", KEY_END),
-		  keyNew (PREFIX "key/array/#3/nested", KEY_END),
-		  keyNew (PREFIX "key/array/#3/nested/#1", KEY_END),
-		  keyNew (PREFIX "key/array/#3/nested/#2", KEY_END),
-		  keyNew (PREFIX "key/array", KEY_END),
-		  keyNew (PREFIX "key/array/#1", KEY_END),
-		  keyNew (PREFIX "key/array/#2", KEY_END),
-		  KS_END };
-	// clang-format on
+	CppKeySet expectedArrays{ 10,
+				  keyNew (PREFIX "key/array", KEY_END),
+				  keyNew (PREFIX "key/array/#1", KEY_END),
+				  keyNew (PREFIX "key/array/#2", KEY_END),
+				  keyNew (PREFIX "key/array/#3/nested", KEY_END),
+				  keyNew (PREFIX "key/array/#3/nested/#1", KEY_END),
+				  keyNew (PREFIX "key/array/#3/nested/#2", KEY_END),
+				  keyNew (PREFIX "key/array", KEY_END),
+				  keyNew (PREFIX "key/array/#1", KEY_END),
+				  keyNew (PREFIX "key/array/#2", KEY_END),
+				  KS_END };
 
 	tie (arrayParents, arrays) = increaseArrayIndices (arrayParents, arrays);
 	compare_keyset (expectedArrays, arrays);
