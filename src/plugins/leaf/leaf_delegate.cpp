@@ -371,14 +371,22 @@ int LeafDelegate::convertToLeaves (CppKeySet & keys)
 	CppKeySet notArrayParents;
 	CppKeySet arrayParents;
 	CppKeySet arrays;
+	CppKeySet nonArrays;
 	CppKeySet directories;
 	CppKeySet leaves;
 
-	tie (arrayParents, notArrayParents) = splitArrayParentsOther (keys);
-	tie (arrays, ignore) = splitArrayOther (arrayParents, keys);
+	tie (arrayParents, ignore) = splitArrayParentsOther (keys);
+	tie (arrays, nonArrays) = splitArrayOther (arrayParents, keys);
 
 	tie (arrayParents, arrays) = increaseArrayIndices (arrayParents, arrays);
-	CppKeySet updatedArrayParents = convertArrayParentsToLeaves (arrayParents);
+	notArrayParents.append (arrays);
+	notArrayParents.append (nonArrays);
+	notArrayParents = accumulate (notArrayParents.begin (), notArrayParents.end (), CppKeySet{},
+				      [&arrayParents](CppKeySet collected, CppKey key) {
+					      if (!arrayParents.lookup (key)) collected.append (key);
+					      return collected;
+				      });
+	arrayParents = convertArrayParentsToLeaves (arrayParents);
 
 	tie (directories, leaves) = splitDirectoriesLeaves (notArrayParents);
 	bool status = directories.size () > 0 || arrayParents.size () > 0 ? ELEKTRA_PLUGIN_STATUS_SUCCESS : ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
@@ -387,7 +395,7 @@ int LeafDelegate::convertToLeaves (CppKeySet & keys)
 
 	keys.clear ();
 	keys.append (arrays);
-	keys.append (updatedArrayParents);
+	keys.append (arrayParents);
 	keys.append (directoryLeaves);
 	keys.append (leaves);
 
