@@ -56,7 +56,7 @@ void test_set (CppKeySet keys, CppKeySet expected, int const status = ELEKTRA_PL
 	OPEN_PLUGIN (PREFIX, "file/path");
 
 	succeed_if_same (plugin->kdbSet (plugin, keys.getKeySet (), *parent), status, "Call of `kdbSet` failed");
-	compare_keyset (keys, expected);
+	compare_keyset (expected, keys);
 
 	CLOSE_PLUGIN ();
 }
@@ -70,7 +70,7 @@ void test_get (CppKeySet keys, CppKeySet expected, int const status = ELEKTRA_PL
 	OPEN_PLUGIN (PREFIX, "file/path");
 
 	succeed_if_same (plugin->kdbGet (plugin, keys.getKeySet (), *parent), status, "Call of `kdbGet` failed");
-	compare_keyset (keys, expected);
+	compare_keyset (expected, keys);
 
 	CLOSE_PLUGIN ();
 }
