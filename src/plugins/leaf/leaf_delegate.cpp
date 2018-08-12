@@ -201,6 +201,33 @@ CppKey increaseArrayIndex (CppKey const & parent, CppKey const & element)
 }
 
 /**
+ * @brief Increase the array index of array elements in `arrays` by one.
+ *
+ * @param parents This parameter contains the array parents for which this function increases the index by one.
+ * @param parents This variable stores the arrays elements this function modifies.
+ *
+ * @return A copy of `arrays`, where all indices specified by `parents` are increased by one.
+ */
+CppKeySet increaseArrayIndices (CppKeySet const & parents, CppKeySet const & arrays)
+{
+	CppKeySet arraysIncreasedIndex = arrays.dup ();
+	CppKeySet arrayParents = parents.dup ();
+
+	while (CppKey parent = arrayParents.pop ())
+	{
+		ELEKTRA_LOG_DEBUG ("Increase indices for array parent “%s”", parent.getName ().c_str ());
+
+		arraysIncreasedIndex = accumulate (arraysIncreasedIndex.begin (), arraysIncreasedIndex.end (), CppKeySet{},
+						   [&parent](CppKeySet keys, CppKey key) {
+							   keys.append (key.isBelow (parent) ? increaseArrayIndex (parent, key) : key);
+							   return keys;
+						   });
+	}
+
+	return arraysIncreasedIndex;
+}
+
+/**
  * @brief Split `keys` into two key sets, one for directories (keys without children) and one for all other keys.
  *
  * @param keys This parameter contains the key set this function splits.

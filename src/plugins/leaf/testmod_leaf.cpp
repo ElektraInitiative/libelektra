@@ -24,6 +24,7 @@ using ckdb::keyNew;
 using CppKeySet = kdb::KeySet;
 using CppKey = kdb::Key;
 
+using elektra::increaseArrayIndices;
 using elektra::splitArrayParentsOther;
 
 // -- Macros -------------------------------------------------------------------------------------------------------------------------------
@@ -119,6 +120,43 @@ TEST (leaf, splitArrayParentsOther)
 	CppKeySet arrays;
 	tie (arrays, ignore) = splitArrayParentsOther (input);
 	compare_keyset (expected, arrays);
+}
+
+TEST (leaf, increaseArrayIndices)
+{
+	// clang-format off
+	CppKeySet arrayParents { 10,
+		  keyNew (PREFIX "key/array", KEY_END),
+		  keyNew (PREFIX "key/array/#2/nested", KEY_END),
+		  KS_END };
+
+	CppKeySet arrays { 10,
+		  keyNew (PREFIX "key/array", KEY_END),
+		  keyNew (PREFIX "key/array/#0", KEY_END),
+		  keyNew (PREFIX "key/array/#1", KEY_END),
+		  keyNew (PREFIX "key/array/#2/nested", KEY_END),
+		  keyNew (PREFIX "key/array/#2/nested/#0", KEY_END),
+		  keyNew (PREFIX "key/array/#2/nested/#1", KEY_END),
+		  keyNew (PREFIX "key/array", KEY_END),
+		  keyNew (PREFIX "key/array/#0", KEY_END),
+		  keyNew (PREFIX "key/array/#1", KEY_END),
+		  KS_END };
+
+	CppKeySet expected { 10,
+		  keyNew (PREFIX "key/array", KEY_END),
+		  keyNew (PREFIX "key/array/#1", KEY_END),
+		  keyNew (PREFIX "key/array/#2", KEY_END),
+		  keyNew (PREFIX "key/array/#3/nested", KEY_END),
+		  keyNew (PREFIX "key/array/#3/nested/#1", KEY_END),
+		  keyNew (PREFIX "key/array/#3/nested/#2", KEY_END),
+		  keyNew (PREFIX "key/array", KEY_END),
+		  keyNew (PREFIX "key/array/#1", KEY_END),
+		  keyNew (PREFIX "key/array/#2", KEY_END),
+		  KS_END };
+	// clang-format on
+
+	CppKeySet arraysIncreasedIndex = increaseArrayIndices (arrayParents, arrays);
+	compare_keyset (expected, arraysIncreasedIndex);
 }
 
 TEST (leaf, basics)
