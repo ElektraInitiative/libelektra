@@ -169,15 +169,9 @@ testing::AssertionResult compareKeySet (kdb::KeySet & keys1, kdb::KeySet & keys2
 	if (isKeySetEqual (keys1, keys2))
 		return testing::AssertionSuccess ();
 	else
-		return testing::AssertionFailure () << endl
-						    << endl
-						    << "First key set:" << endl
-						    << endl
-						    << keys1 << endl
-						    << "——————————" << endl
-						    << endl
-						    << "Second key set:" << endl
-						    << endl
+		return testing::AssertionFailure () << "\n\nFirst key set:\n\n"
+						    << keys1 << "\n——————————"
+						    << "\n\nSecond key set:\n\n"
 						    << keys2 << endl;
 }
 
