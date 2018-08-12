@@ -222,11 +222,12 @@ CppKeySet increaseArrayIndices (CppKeySet const & parents, CppKeySet const & arr
 	{
 		ELEKTRA_LOG_DEBUG ("Increase indices for array parent “%s”", parent.getName ().c_str ());
 
-		arraysIncreasedIndex = accumulate (arraysIncreasedIndex.begin (), arraysIncreasedIndex.end (), CppKeySet{},
-						   [&parent](CppKeySet keys, CppKey key) {
-							   keys.append (key.isBelow (parent) ? increaseArrayIndex (parent, key) : key);
-							   return keys;
-						   });
+		CppKeySet newArrays;
+		for (auto key : arraysIncreasedIndex)
+		{
+			newArrays.append (key.isBelow (parent) ? increaseArrayIndex (parent, key) : key);
+		}
+		arraysIncreasedIndex = newArrays;
 	}
 
 	return arraysIncreasedIndex;
