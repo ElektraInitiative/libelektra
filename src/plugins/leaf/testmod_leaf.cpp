@@ -135,6 +135,11 @@ TEST (leaf, increaseArrayIndices)
 		  keyNew (PREFIX "key/array/#2/nested", KEY_END),
 		  KS_END };
 
+	CppKeySet expectedArrayParents { 10,
+		  keyNew (PREFIX "key/array", KEY_END),
+		  keyNew (PREFIX "key/array/#3/nested", KEY_END),
+		  KS_END };
+
 	CppKeySet arrays { 10,
 		  keyNew (PREFIX "key/array", KEY_END),
 		  keyNew (PREFIX "key/array/#0", KEY_END),
@@ -147,7 +152,7 @@ TEST (leaf, increaseArrayIndices)
 		  keyNew (PREFIX "key/array/#1", KEY_END),
 		  KS_END };
 
-	CppKeySet expected { 10,
+	CppKeySet expectedArrays { 10,
 		  keyNew (PREFIX "key/array", KEY_END),
 		  keyNew (PREFIX "key/array/#1", KEY_END),
 		  keyNew (PREFIX "key/array/#2", KEY_END),
@@ -160,8 +165,9 @@ TEST (leaf, increaseArrayIndices)
 		  KS_END };
 	// clang-format on
 
-	CppKeySet arraysIncreasedIndex = increaseArrayIndices (arrayParents, arrays);
-	compare_keyset (expected, arraysIncreasedIndex);
+	tie (arrayParents, arrays) = increaseArrayIndices (arrayParents, arrays);
+	compare_keyset (expectedArrays, arrays);
+	compare_keyset (expectedArrayParents, arrayParents);
 }
 
 TEST (leaf, basics)

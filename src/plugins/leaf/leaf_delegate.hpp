@@ -33,14 +33,17 @@ using CppKeySet = kdb::KeySet;
 pair<CppKeySet, CppKeySet> splitArrayParentsOther (CppKeySet const & keys);
 
 /**
- * @brief Increase the array index of array elements in `arrays` by one.
+ * @brief Increase the array index of array elements by one.
+ *
+ * Since it is also possible that one of the array parents is part of another array, this function also updates the indices of the given
+ * array parents.
  *
  * @param parents This parameter contains the array parents for which this function increases the index by one.
- * @param parents This variable stores the arrays elements this function modifies.
+ * @param parents This variable stores the arrays elements this function updates.
  *
- * @return A copy of `arrays`, where all indices specified by `parents` are increased by one.
+ * @return A pair containing a copy of `parents` and `arrays`, where all indices specified by `parents` are increased by one
  */
-CppKeySet increaseArrayIndices (CppKeySet const & parents, CppKeySet const & arrays);
+pair<CppKeySet, CppKeySet> increaseArrayIndices (CppKeySet const & parents, CppKeySet const & arrays);
 
 // -- Class --------------------------------------------------------------------------------------------------------------------------------
 

@@ -206,17 +206,21 @@ CppKey increaseArrayIndex (CppKey const & parent, CppKey const & element)
 }
 
 /**
- * @brief Increase the array index of array elements in `arrays` by one.
+ * @brief Increase the array index of array elements by one.
+ *
+ * Since it is also possible that one of the array parents is part of another array, this function also updates the indices of the given
+ * array parents.
  *
  * @param parents This parameter contains the array parents for which this function increases the index by one.
- * @param parents This variable stores the arrays elements this function modifies.
+ * @param parents This variable stores the arrays elements this function updates.
  *
- * @return A copy of `arrays`, where all indices specified by `parents` are increased by one.
+ * @return A pair containing a copy of `parents` and `arrays`, where all indices specified by `parents` are increased by one
  */
-CppKeySet increaseArrayIndices (CppKeySet const & parents, CppKeySet const & arrays)
+pair<CppKeySet, CppKeySet> increaseArrayIndices (CppKeySet const & parents, CppKeySet const & arrays)
 {
 	CppKeySet arraysIncreasedIndex = arrays.dup ();
 	CppKeySet arrayParents = parents.dup ();
+	CppKeySet updatedParents = parents.dup ();
 
 	while (CppKey parent = arrayParents.pop ())
 	{
@@ -225,12 +229,21 @@ CppKeySet increaseArrayIndices (CppKeySet const & parents, CppKeySet const & arr
 		CppKeySet newArrays;
 		for (auto key : arraysIncreasedIndex)
 		{
-			newArrays.append (key.isBelow (parent) ? increaseArrayIndex (parent, key) : key);
+			if (key.isBelow (parent))
+			{
+				auto updated = increaseArrayIndex (parent, key);
+				if (updatedParents.lookup (key, KDB_O_POP)) updatedParents.append (updated);
+				newArrays.append (updated);
+			}
+			else
+			{
+				newArrays.append (key);
+			}
 		}
 		arraysIncreasedIndex = newArrays;
 	}
 
-	return arraysIncreasedIndex;
+	return make_pair (updatedParents, arraysIncreasedIndex);
 }
 
 /**
@@ -364,7 +377,7 @@ int LeafDelegate::convertToLeaves (CppKeySet & keys)
 	tie (arrayParents, notArrayParents) = splitArrayParentsOther (keys);
 	tie (arrays, ignore) = splitArrayOther (arrayParents, keys);
 
-	CppKeySet updatedArrays = increaseArrayIndices (arrayParents, arrays);
+	tie (arrayParents, arrays) = increaseArrayIndices (arrayParents, arrays);
 	CppKeySet updatedArrayParents = convertArrayParentsToLeaves (arrayParents);
 
 	tie (directories, leaves) = splitDirectoriesLeaves (notArrayParents);
@@ -373,7 +386,7 @@ int LeafDelegate::convertToLeaves (CppKeySet & keys)
 	auto directoryLeaves = convertDirectoriesToLeaves (directories);
 
 	keys.clear ();
-	keys.append (updatedArrays);
+	keys.append (arrays);
 	keys.append (updatedArrayParents);
 	keys.append (directoryLeaves);
 	keys.append (leaves);
