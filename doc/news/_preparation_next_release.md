@@ -335,7 +335,7 @@ Thanks to Daniel Bugl.
   should be more clear how to store plugin data besides pluginprocess's data structure.
   Tests have been added to the library to ensure its correct functionality. *(Armin Wurzinger)*
 - Anonymous pipes are now used instead of named pipes for the communication as anonymous pipes get
-  terminated by the OS in case a child process dies before writing back data to the parent. 
+  terminated by the OS in case a child process dies before writing back data to the parent.
   Currently the parent process will freeze otherwise attempting to read from the child. *(Armin Wurzinger)*
 
 ## Bindings
@@ -427,6 +427,7 @@ Thanks to Daniel Bugl.
   test reported [memory leaks](https://issues.libelektra.org/2113) on the latest version of Debian Unstable. *(René Schwaiger)*
 - The [CFramework](https://master.libelektra.org/tests/cframework) macro `compare_keyset` now supports the comparison of two empty key sets. *(René Schwaiger)*
 - The C++ version of the macro `exit_if_fail` now really exits the test progamm if the test fails. *(René Schwaiger)*
+- The C++ testing framework now supports the macro `compare_keyset` that checks if two key sets are equal. *(René Schwaiger)*
 
 [#1887]: https://github.com/ElektraInitiative/libelektra/issues/1887
 [Markdown Shell Recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
@@ -474,7 +475,7 @@ Thanks to Daniel Bugl.
   - conversions to non-pointer type (GCC), and
   - attribute warnings (GCC),
 
-  in the Ruby binding and plugin. *(René Schwaiger)*
+  caused by code generated via [SWIG](http://www.swig.org) in the Ruby binding and plugin. *(René Schwaiger)*
 
 [Google Test]: https://github.com/google/googletest
 
