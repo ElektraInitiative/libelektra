@@ -262,6 +262,29 @@ pair<CppKeySet, CppKeySet> splitDirectoriesLeaves (CppKeySet const & keys)
 }
 
 /**
+ * @brief Convert all keys in `parents` to an empty array parent and an array element with index `#0` storing the data of the old key.
+ *
+ * @param parents This parameter contains the set of array parent this function converts.
+ *
+ * @return A key set containing only empty array parents and corresponding array elements storing the values of the old array parent
+ */
+CppKeySet convertArrayParentsToLeaves (CppKeySet const & parents)
+{
+	CppKeySet converted;
+
+	for (auto parent : parents)
+	{
+		CppKey directory{ parent.getName (), KS_END };
+		CppKey leaf = parent.dup ();
+		leaf.addBaseName ("#0");
+		converted.append (directory);
+		converted.append (leaf);
+	}
+
+	return converted;
+}
+
+/**
  * @brief Convert all keys in `directories` to an empty key and a leaf key containing the data of the old key.
  *
  * @param directories This parameter contains a set of directory keys this function converts.
