@@ -120,6 +120,11 @@ TEST (leaf, splitArrayParentsOther)
 	CppKeySet arrays;
 	tie (arrays, ignore) = splitArrayParentsOther (input);
 	compare_keyset (expected, arrays);
+
+	input = CppKeySet{ 10, keyNew (PREFIX "key", KEY_END), KS_END };
+	expected = input.dup ();
+	tie (ignore, input) = splitArrayParentsOther (input);
+	compare_keyset (expected, input);
 }
 
 TEST (leaf, increaseArrayIndices)

@@ -135,8 +135,8 @@ bool isArrayParent (CppKey const & parent, CppKeySet const & keys)
  */
 pair<CppKeySet, CppKeySet> splitArrayParentsOther (CppKeySet const & keys)
 {
-	CppKeySet arrays;
-	CppKeySet other;
+	CppKeySet arrayParents;
+	CppKeySet others;
 
 	keys.rewind ();
 	CppKey previous;
@@ -146,11 +146,15 @@ pair<CppKeySet, CppKeySet> splitArrayParentsOther (CppKeySet const & keys)
 			previous.hasMeta ("array") ||
 			(keys.current ().isBelow (previous) && keys.current ().getBaseName ()[0] == '#' && isArrayParent (previous, keys));
 
-		(previousIsArray ? arrays : other).append (previous);
+		(previousIsArray ? arrayParents : others).append (previous);
 	}
-	(keys.current ().hasMeta ("array") ? arrays : other).append (keys.current ());
+	(previous.hasMeta ("array") ? arrayParents : others).append (previous);
 
-	return make_pair (arrays, other);
+	ELEKTRA_ASSERT (arrayParents.size () + others.size () == keys.size (),
+			"Number of keys in split key sets: %zu ≠ number in given key set %zu", arrayParents.size () + others.size (),
+			keys.size ());
+
+	return make_pair (arrayParents, others);
 }
 
 /**
