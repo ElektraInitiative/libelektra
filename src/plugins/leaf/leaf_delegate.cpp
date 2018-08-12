@@ -16,6 +16,7 @@
 #include "leaf_delegate.hpp"
 
 using std::accumulate;
+using std::ignore;
 using std::make_pair;
 using std::pair;
 using std::range_error;
@@ -353,9 +354,12 @@ int LeafDelegate::convertToDirectories (CppKeySet & keys)
  */
 int LeafDelegate::convertToLeaves (CppKeySet & keys)
 {
+	CppKeySet notArrayParents;
 	CppKeySet directories;
 	CppKeySet leaves;
-	tie (directories, leaves) = splitDirectoriesLeaves (keys);
+
+	tie (ignore, notArrayParents) = splitArrayParentsOther (keys);
+	tie (directories, leaves) = splitDirectoriesLeaves (notArrayParents);
 	bool status = directories.size () > 0 ? ELEKTRA_PLUGIN_STATUS_SUCCESS : ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 
 	auto directoryLeaves = convertDirectoriesToLeaves (directories);
