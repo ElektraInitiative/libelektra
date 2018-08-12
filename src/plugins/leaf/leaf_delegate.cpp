@@ -152,6 +152,28 @@ pair<CppKeySet, CppKeySet> splitArrayParentsOther (CppKeySet const & keys)
 }
 
 /**
+ * @brief This function splits `keys` into two key sets, one for array parents and elements, and the other one for all other keys.
+ *
+ * @param arrayParents This key set contains a (copy) of all array parents of `keys`.
+ * @param keys This parameter contains the key set this function splits.
+ *
+ * @return A pair of key sets, where the first key set contains all array parents and elements,
+ *         and the second key set contains all other keys
+ */
+pair<CppKeySet, CppKeySet> splitArrayOther (CppKeySet const & arrayParents, CppKeySet const & keys)
+{
+	CppKeySet others = keys.dup ();
+	CppKeySet arrays;
+
+	for (auto parent : arrayParents)
+	{
+		arrays.append (others.cut (parent));
+	}
+
+	return make_pair (arrays, others);
+}
+
+/**
  * @brief Split `keys` into two key sets, one for directories (keys without children) and one for all other keys.
  *
  * @param keys This parameter contains the key set this function splits.
