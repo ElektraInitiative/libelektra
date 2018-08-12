@@ -18,6 +18,8 @@
 using std::accumulate;
 using std::make_pair;
 using std::pair;
+using std::range_error;
+using std::string;
 using std::tie;
 
 // -- Functions ----------------------------------------------------------------------------------------------------------------------------
@@ -171,6 +173,31 @@ pair<CppKeySet, CppKeySet> splitArrayOther (CppKeySet const & arrayParents, CppK
 	}
 
 	return make_pair (arrays, others);
+}
+
+/**
+ * @brief This function increases an array index of the given array element by one.
+ *
+ * @param parent This key set stores an array parent of `element`. The function will increase the index of `element` that is directly below
+ *               this key.
+ * @param element This parameter stores an array element.
+ *
+ * @return A copy of `element`, where the index below `parent` was increased by one
+ */
+CppKey increaseArrayIndex (CppKey const & parent, CppKey const & element)
+{
+	CppKey elementNewIndex = convertToDirectChild (parent, element);
+	string postfix = elektraKeyGetRelativeName (*element, *elementNewIndex);
+
+	if (elektraArrayIncName (*elementNewIndex))
+	{
+		throw range_error ("Unable to increase index of key “" + elementNewIndex.getName () + "”");
+	}
+	elementNewIndex.addName (postfix);
+
+	ELEKTRA_LOG_DEBUG ("New name of “%s” is “%s”", element.getName ().c_str (), elementNewIndex.getName ().c_str ());
+
+	return elementNewIndex;
 }
 
 /**
