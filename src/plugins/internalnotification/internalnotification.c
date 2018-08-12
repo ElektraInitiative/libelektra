@@ -337,7 +337,7 @@ void elektraInternalnotificationUpdateRegisteredKeys (Plugin * plugin, KeySet * 
 #define VALUE_TYPE unsigned long int
 #define TYPE_NAME UnsignedInt
 #define TO_VALUE (strtoul (string, &end, 10))
-#define CHECK_CONVERSION ELEKTRA_TYPE_CHECK_CONVERSION_RANGE (value <= UINT_MAX)
+#define CHECK_CONVERSION ELEKTRA_TYPE_CHECK_CONVERSION_RANGE (string[0] != '-' && value <= UINT_MAX)
 #include "macros/add_type.h"
 
 #define TYPE long
@@ -349,7 +349,7 @@ void elektraInternalnotificationUpdateRegisteredKeys (Plugin * plugin, KeySet * 
 #define TYPE unsigned long
 #define TYPE_NAME UnsignedLong
 #define TO_VALUE (strtoul (string, &end, 10))
-#define CHECK_CONVERSION ELEKTRA_TYPE_CHECK_CONVERSION
+#define CHECK_CONVERSION ELEKTRA_TYPE_CHECK_CONVERSION_RANGE (string[0] != '-')
 #include "macros/add_type.h"
 
 #define TYPE long long
@@ -361,7 +361,7 @@ void elektraInternalnotificationUpdateRegisteredKeys (Plugin * plugin, KeySet * 
 #define TYPE unsigned long long
 #define TYPE_NAME UnsignedLongLong
 #define TO_VALUE (strtoull (string, &end, 10))
-#define CHECK_CONVERSION ELEKTRA_TYPE_CHECK_CONVERSION
+#define CHECK_CONVERSION ELEKTRA_TYPE_CHECK_CONVERSION_RANGE (string[0] != '-')
 #include "macros/add_type.h"
 
 #define TYPE float
@@ -417,7 +417,7 @@ void elektraInternalnotificationUpdateRegisteredKeys (Plugin * plugin, KeySet * 
 #define TYPE kdb_unsigned_long_t
 #define TYPE_NAME KdbUnsignedLong
 #define TO_VALUE (strtoul (string, &end, 10))
-#define CHECK_CONVERSION ELEKTRA_TYPE_CHECK_CONVERSION
+#define CHECK_CONVERSION ELEKTRA_TYPE_CHECK_CONVERSION_RANGE (string[0] != '-')
 #include "macros/add_type.h"
 
 #define TYPE kdb_long_long_t
@@ -429,7 +429,7 @@ void elektraInternalnotificationUpdateRegisteredKeys (Plugin * plugin, KeySet * 
 #define TYPE kdb_unsigned_long_long_t
 #define TYPE_NAME KdbUnsignedLongLong
 #define TO_VALUE (ELEKTRA_UNSIGNED_LONG_LONG_S (string, &end, 10))
-#define CHECK_CONVERSION ELEKTRA_TYPE_CHECK_CONVERSION
+#define CHECK_CONVERSION ELEKTRA_TYPE_CHECK_CONVERSION_RANGE (string[0] != '-')
 #include "macros/add_type.h"
 
 #define TYPE kdb_float_t
