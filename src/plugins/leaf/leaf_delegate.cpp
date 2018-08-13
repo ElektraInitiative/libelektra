@@ -201,22 +201,24 @@ pair<CppKeySet, CppKeySet> splitArrayOther (CppKeySet const & arrayParents, CppK
 }
 
 /**
- * @brief This function increases an array index of the given array element by one.
+ * @brief This function changes an array index of the given array element by one.
  *
- * @param parent This key set stores an array parent of `element`. The function will increase the index of `element` that is directly below
+ * @param parent This key set stores an array parent of `element`. The function will change the index of `element` that is directly below
  *               this key.
  * @param element This parameter stores an array element.
+ * @param increment This boolean parameter specifies if the function should increase or decrease the index by one.
  *
- * @return A copy of `element`, where the index below `parent` was increased by one
+ * @return A copy of `element`, where the index below `parent` was increased or decreased by one
  */
-CppKey increaseArrayIndex (CppKey const & parent, CppKey const & element)
+CppKey changeArrayIndexByOne (CppKey const & parent, CppKey const & element, bool increment = true)
 {
 	CppKey elementNewIndex = convertToDirectChild (parent, element);
 	string postfix = elektraKeyGetRelativeName (*element, *elementNewIndex);
 
-	if (elektraArrayIncName (*elementNewIndex))
+	if (increment ? elektraArrayIncName (*elementNewIndex) : elektraArrayDecName (*elementNewIndex))
 	{
-		throw range_error ("Unable to increase index of key “" + elementNewIndex.getName () + "”");
+		throw range_error (string ("Unable to ") + (increment ? "increment" : "decrement") + " index of key “" +
+				   elementNewIndex.getName () + "”");
 	}
 	elementNewIndex.addName (postfix);
 
@@ -251,7 +253,7 @@ pair<CppKeySet, CppKeySet> increaseArrayIndices (CppKeySet const & parents, CppK
 		{
 			if (key.isBelow (parent))
 			{
-				auto updated = increaseArrayIndex (parent, key);
+				auto updated = changeArrayIndexByOne (parent, key);
 				if (updatedParents.lookup (key, KDB_O_POP)) updatedParents.append (updated);
 				newArrays.append (updated);
 			}
