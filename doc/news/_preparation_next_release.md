@@ -161,6 +161,8 @@ Thanks to Daniel Bugl.
 
 ### Directory Value
 
+- We rewrote the plugin using C++. *(René Schwaiger)*
+- [Directory Value](https://www.libelektra.org/plugins/directoryvalue) now also supports nested arrays. *(René Schwaiger)*
 - The plugin now also adds leafs for a key, if its value is null or the empty string. *(René Schwaiger)*
 
 ### fcrypt
