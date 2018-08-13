@@ -242,9 +242,12 @@ CppKeySet decreaseArrayIndices (CppKeySet const & parents, CppKeySet const & arr
 
 	while (CppKey parent = arrayParents.pop ())
 	{
+		ELEKTRA_LOG_DEBUG ("Decrease indices for array parent “%s”", parent.getName ().c_str ());
+
 		arraysIndexDecreased = accumulate (arraysIndexDecreased.begin (), arraysIndexDecreased.end (), CppKeySet{},
 						   [&parent](CppKeySet collected, CppKey key) {
-							   if (key.isBelow (parent)) changeArrayIndexByOne (parent, key, false);
+							   if (key.isBelow (parent)) key = changeArrayIndexByOne (parent, key, false);
+							   ELEKTRA_LOG_DEBUG ("Append key “%s”", key.getName ().c_str ());
 							   collected.append (key);
 							   return collected;
 						   });
