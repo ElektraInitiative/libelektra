@@ -38,7 +38,7 @@ void * context;
 /** timeout for tests in seconds */
 #define TEST_TIMEOUT 10
 
-#define TEST_ENDPOINT "ipc://testmod_zeromqsend"
+#define TEST_ENDPOINT "tcp://127.0.0.1:6002"
 
 /**
  * Create subscriber socket for tests.
