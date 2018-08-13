@@ -14,12 +14,16 @@
 #include <kdbplugin.hpp>
 
 #define DIRECTORY_POSTFIX "___dirdata"
+#define ARRAY_VALUE_PREFIX "___dirdata:"
 
 namespace elektra
 {
 using std::pair;
+using std::string;
 
 using CppKeySet = kdb::KeySet;
+
+constexpr ssize_t arrayValuePrefixSize = sizeof (ARRAY_VALUE_PREFIX) - 1;
 
 // -- Functions ----------------------------------------------------------------------------------------------------------------------------
 

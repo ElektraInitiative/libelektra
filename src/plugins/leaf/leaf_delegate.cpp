@@ -70,7 +70,9 @@ pair<CppKeySet, CppKeySet> splitArrayLeavesOther (CppKeySet const & arrayParents
 
 	for (auto key : keys)
 	{
-		(isFirstElement ? firstElements : others).append (key);
+		bool isArrayLeaf = isFirstElement && key.isString () && key.getStringSize () > arrayValuePrefixSize &&
+				   strncmp (key.getString ().c_str (), ARRAY_VALUE_PREFIX, arrayValuePrefixSize) == 0;
+		(isArrayLeaf ? firstElements : others).append (key);
 		isFirstElement = arrayParents.lookup (key);
 	}
 
@@ -93,6 +95,34 @@ CppKeySet removeBaseName (CppKeySet const & keys)
 		CppKey directory = key.dup ();
 		keySetBaseName (*directory, 0);
 		directories.append (directory);
+	}
+	return directories;
+}
+
+/**
+ * @brief This function converts the given array leaves to directory keys.
+ *
+ * @param arrayLeaves This parameter contains array leaves (that start with `ARRAY_VALUE_PREFIX` and have the baseName = `#0`).
+ *
+ * @return A copy of `arrayLeaves`, where key values does not start with `ARRAY_VALUE_PREFIX` any more and the baseName of each key (`#0`)
+ *         was removed
+ */
+CppKeySet convertArrayLeaves (CppKeySet const & arrayLeaves)
+{
+	CppKeySet directories = removeBaseName (arrayLeaves);
+	for (auto key : directories)
+	{
+		ELEKTRA_LOG_DEBUG ("Convert array leaf “%s”", key.getName ().c_str ());
+		if (key.getStringSize () == arrayValuePrefixSize + 1)
+		{
+			key.setBinary (0, 0);
+			ELEKTRA_LOG_DEBUG ("Set value of “%s” to NULL", key.getName ().c_str ());
+		}
+		else
+		{
+			key.setString (key.getString ().substr (arrayValuePrefixSize + 1));
+			ELEKTRA_LOG_DEBUG ("Set value of “%s” to “%s”", key.getName ().c_str (), key.getString ().c_str ());
+		}
 	}
 	return directories;
 }
@@ -358,6 +388,7 @@ CppKeySet convertArrayParentsToLeaves (CppKeySet const & parents)
 		CppKey leaf = parent.dup ();
 		leaf.delMeta ("array");
 		leaf.addBaseName ("#0");
+		leaf.setString (ARRAY_VALUE_PREFIX + (parent.isBinary () ? "" : (" " + parent.getString ())));
 		converted.append (directory);
 		converted.append (leaf);
 	}
@@ -429,7 +460,7 @@ int LeafDelegate::convertToDirectories (CppKeySet & keys)
 	tie (arrays, maps) = splitArrayOther (arrayParents, keys);
 	tie (arrayLeaves, arrays) = splitArrayLeavesOther (arrayParents, arrays);
 
-	arrayParents = removeBaseName (arrayLeaves);
+	arrayParents = convertArrayLeaves (arrayLeaves);
 	notArrayParents = decreaseArrayIndices (arrayParents, arrays);
 	notArrayParents.append (maps);
 
