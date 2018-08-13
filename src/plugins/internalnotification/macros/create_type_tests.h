@@ -13,20 +13,21 @@
  * @param  TEST_VALUE     value of type TYPE. Used for the "update" test case
  * @param  FORMAT_STRING  format to convert TEST_VALUE to string (passed to elektraFormat())
  * @param  CHECK_VALUE    optional, default is (value == TEST_VALUE). Boolean expression to check if `value` equals the test value
- * @param  INVALID_VALUE  optional. Value of type string. Used for the no update test case. If not defined, "no update" test case is omitted
+ * @param  INVALID_VALUE  optional. Value of type string. Used for the no update test case. If not defined, "no update" test case is
+ * omitted
  * @param  CHECK_INVALID  optioal, defaults to (value == 0). Check if the variable `value` has not been updated. Value should be 0.
  */
 #ifndef TYPE
-#error "You have to #define TYPE, TYPE_NAME, FORMAT_STRING, TEST_VALUE and CHECK_VALUE before including the testCreateTypeRegister supermacro"
+#error "You have to #define TYPE, TYPE_NAME, FORMAT_STRING, TEST_VALUE and CHECK_VALUE before including the create_type_tests supermacro"
 #endif
 #ifndef TYPE_NAME
-#error "You have to #define TYPE, TYPE_NAME, FORMAT_STRING, TEST_VALUE and CHECK_VALUE before including the testCreateTypeRegister supermacro"
+#error "You have to #define TYPE, TYPE_NAME, FORMAT_STRING, TEST_VALUE and CHECK_VALUE before including the create_type_tests supermacro"
 #endif
 #ifndef FORMAT_STRING
-#error "You have to #define TYPE, TYPE_NAME, FORMAT_STRING, TEST_VALUE and CHECK_VALUE before including the testCreateTypeRegister supermacro"
+#error "You have to #define TYPE, TYPE_NAME, FORMAT_STRING, TEST_VALUE and CHECK_VALUE before including the create_type_tests supermacro"
 #endif
 #ifndef TEST_VALUE
-#error "You have to #define TYPE, TYPE_NAME, FORMAT_STRING, TEST_VALUE and CHECK_VALUE before including the testCreateTypeRegister supermacro"
+#error "You have to #define TYPE, TYPE_NAME, FORMAT_STRING, TEST_VALUE and CHECK_VALUE before including the create_type_tests supermacro"
 #endif
 #ifndef CHECK_VALUE
 #define CHECK_VALUE (value == TEST_VALUE)
