@@ -345,6 +345,7 @@ int LeafDelegate::convertToDirectories (CppKeySet & keys)
 {
 	CppKeySet directoryLeaves;
 	CppKeySet nonDirectoryLeaves;
+	CppKeySet notArrayParents;
 
 	/**
 	 * - Split array parents
@@ -354,7 +355,9 @@ int LeafDelegate::convertToDirectories (CppKeySet & keys)
 	 * - Merge everything back together and convert directories to leaves
 	 */
 
-	tie (directoryLeaves, nonDirectoryLeaves) = splitDirectoryLeavesOther (keys);
+	tie (ignore, notArrayParents) = splitArrayParentsOther (keys);
+
+	tie (directoryLeaves, nonDirectoryLeaves) = splitDirectoryLeavesOther (notArrayParents);
 
 	bool status = directoryLeaves.size () > 0 ? ELEKTRA_PLUGIN_STATUS_SUCCESS : ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 
