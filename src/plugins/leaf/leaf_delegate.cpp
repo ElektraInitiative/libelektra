@@ -234,7 +234,7 @@ CppKey changeArrayIndexByOne (CppKey const & parent, CppKey const & element, boo
  * array parents.
  *
  * @param parents This parameter contains the array parents for which this function increases the index by one.
- * @param parents This variable stores the arrays elements this function updates.
+ * @param arrays This variable stores the arrays elements this function updates.
  *
  * @return A pair containing a copy of `parents` and `arrays`, where all indices specified by `parents` are increased by one
  */
