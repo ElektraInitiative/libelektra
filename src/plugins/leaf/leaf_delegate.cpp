@@ -56,6 +56,28 @@ pair<CppKeySet, CppKeySet> splitDirectoryLeavesOther (CppKeySet const & input)
 }
 
 /**
+ * @brief This function splits the given keyset into array leaves (first element of an array parent) and other keys.
+ *
+ * @param input The function searches for array leaves in this key set.
+ *
+ * @return A pair of key sets, where the first key set contains all array leaves and the second key set contains all other keys
+ */
+pair<CppKeySet, CppKeySet> splitArrayLeavesOther (CppKeySet const & arrayParents, CppKeySet const & keys)
+{
+	bool isFirstElement = false;
+	CppKeySet firstElements;
+	CppKeySet others;
+
+	for (auto key : keys)
+	{
+		(isFirstElement ? firstElements : others).append (key);
+		isFirstElement = arrayParents.lookup (key);
+	}
+
+	return make_pair (firstElements, others);
+}
+
+/**
  * @brief This function removes the directory postfix (`DIRECTORY_POSTFIX`) from the name of all keys in `directoryLeaves`.
  *
  * @pre All key names in `directoryLeaves` must end with `DIRECTORY_POSTFIX`.
@@ -345,7 +367,11 @@ int LeafDelegate::convertToDirectories (CppKeySet & keys)
 {
 	CppKeySet directoryLeaves;
 	CppKeySet nonDirectoryLeaves;
+	CppKeySet arrayParents;
 	CppKeySet notArrayParents;
+	CppKeySet arrays;
+	CppKeySet arrayLeaves;
+	CppKeySet maps;
 
 	/**
 	 * - Split array parents
@@ -355,7 +381,9 @@ int LeafDelegate::convertToDirectories (CppKeySet & keys)
 	 * - Merge everything back together and convert directories to leaves
 	 */
 
-	tie (ignore, notArrayParents) = splitArrayParentsOther (keys);
+	tie (arrayParents, notArrayParents) = splitArrayParentsOther (keys);
+	tie (arrays, maps) = splitArrayOther (arrayParents, keys);
+	tie (arrayLeaves, ignore) = splitArrayLeavesOther (arrayParents, arrays);
 
 	tie (directoryLeaves, nonDirectoryLeaves) = splitDirectoryLeavesOther (notArrayParents);
 
