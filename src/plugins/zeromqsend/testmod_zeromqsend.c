@@ -32,13 +32,18 @@ int receiveTimeout;
 /** zmq context for tests */
 void * context;
 
-/** time (100ms in microseconds) before a new socket is created. leaves the system some after binding a socket again */
-#define TIME_HOLDOFF (100 * 1000)
+/** time in microseconds before a new socket is created. leaves the system some after binding a socket again */
+#define TIME_HOLDOFF (1000 * 1000)
 
 /** timeout for tests in seconds */
 #define TEST_TIMEOUT 10
 
+/** endpoint for tests */
 #define TEST_ENDPOINT "tcp://127.0.0.1:6002"
+
+/** extended timeouts for tests */
+#define TESTCONFIG_CONNECT_TIMEOUT "5"
+#define TESTCONFIG_SUBSCRIBE_TIMEOUT "5000"
 
 /**
  * Create subscriber socket for tests.
@@ -183,7 +188,9 @@ static void test_commit (void)
 	Key * toAdd = keyNew ("system/tests/foo/bar", KEY_END);
 	KeySet * ks = ksNew (0, KS_END);
 
-	KeySet * conf = ksNew (1, keyNew ("/endpoint", KEY_VALUE, TEST_ENDPOINT, KEY_END), KS_END);
+	KeySet * conf = ksNew (3, keyNew ("/endpoint", KEY_VALUE, TEST_ENDPOINT, KEY_END),
+			       keyNew ("/connectTimeout", KEY_VALUE, TESTCONFIG_CONNECT_TIMEOUT, KEY_END),
+			       keyNew ("/subscribeTimeout", KEY_VALUE, TESTCONFIG_SUBSCRIBE_TIMEOUT, KEY_END), KS_END);
 	PLUGIN_OPEN ("zeromqsend");
 
 	// initial get to save current state
@@ -201,6 +208,7 @@ static void test_commit (void)
 	pthread_join (*thread, NULL);
 
 	succeed_if (receiveTimeout == 0, "receiving did time out");
+	succeed_if (!keyGetMeta (parentKey, "warnings"), "warning meta key was set");
 	succeed_if_same_string ("Commit", receivedChangeType);
 	succeed_if_same_string (keyName (parentKey), receivedKeyName);
 
@@ -220,7 +228,9 @@ static void test_timeoutConnect (void)
 	Key * toAdd = keyNew ("system/tests/foo/bar", KEY_END);
 	KeySet * ks = ksNew (0, KS_END);
 
-	KeySet * conf = ksNew (1, keyNew ("/endpoint", KEY_VALUE, TEST_ENDPOINT, KEY_END), KS_END);
+	KeySet * conf = ksNew (3, keyNew ("/endpoint", KEY_VALUE, TEST_ENDPOINT, KEY_END),
+			       keyNew ("/connectTimeout", KEY_VALUE, TESTCONFIG_CONNECT_TIMEOUT, KEY_END),
+			       keyNew ("/subscribeTimeout", KEY_VALUE, TESTCONFIG_SUBSCRIBE_TIMEOUT, KEY_END), KS_END);
 	PLUGIN_OPEN ("zeromqsend");
 
 	// initial get to save current state
@@ -249,7 +259,9 @@ static void test_timeoutSubscribe (void)
 	Key * toAdd = keyNew ("system/tests/foo/bar", KEY_END);
 	KeySet * ks = ksNew (0, KS_END);
 
-	KeySet * conf = ksNew (1, keyNew ("/endpoint", KEY_VALUE, TEST_ENDPOINT, KEY_END), KS_END);
+	KeySet * conf = ksNew (3, keyNew ("/endpoint", KEY_VALUE, TEST_ENDPOINT, KEY_END),
+			       keyNew ("/connectTimeout", KEY_VALUE, TESTCONFIG_CONNECT_TIMEOUT, KEY_END),
+			       keyNew ("/subscribeTimeout", KEY_VALUE, TESTCONFIG_SUBSCRIBE_TIMEOUT, KEY_END), KS_END);
 	PLUGIN_OPEN ("zeromqsend");
 
 	// initial get to save current state

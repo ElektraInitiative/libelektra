@@ -17,7 +17,14 @@
 
 #include <zmq.h>
 
+/** default endpoint for plugin */
 #define ELEKTRA_ZEROMQ_DEFAULT_PUB_ENDPOINT "tcp://localhost:6000"
+
+/** default connection timeout for plugin */
+#define ELEKTRA_ZEROMQ_DEFAULT_CONNECT_TIMEOUT 2
+
+/** default subscription timeout for plugin */
+#define ELEKTRA_ZEROMQ_DEFAULT_SUBSCRIBE_TIMEOUT 200
 
 /**
  * @internal
@@ -32,6 +39,10 @@ typedef struct
 
 	// endpoint for publish socket
 	const char * endpoint;
+
+	// timeouts
+	long connectTimeout;
+	long subscribeTimeout;
 
 	int hasSubscriber;
 } ElektraZeroMqSendPluginData;

@@ -18,17 +18,48 @@
 #include <kdbhelper.h>
 #include <kdblogger.h>
 
+#include <errno.h>  // errno
+#include <stdlib.h> // strtol()
+
+static long convertUnsignedLong (const char * string, long defaultValue)
+{
+	char * end;
+	errno = 0;
+	long value = strtol (string, &end, 10);
+	if (*end == 0 && errno == 0)
+	{
+		return value;
+	}
+	else
+	{
+		return defaultValue;
+	}
+}
+
 int elektraZeroMqSendOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 {
+	// read endpoint from configuration
 	Key * endpointKey = ksLookupByName (elektraPluginGetConfig (handle), "/endpoint", 0);
-	const char * endpoint;
+	const char * endpoint = ELEKTRA_ZEROMQ_DEFAULT_PUB_ENDPOINT;
 	if (endpointKey)
 	{
 		endpoint = keyString (endpointKey);
 	}
-	else
+
+	// read timeout for connections from plugin configuration
+	Key * connectTimeoutKey = ksLookupByName (elektraPluginGetConfig (handle), "/connectTimeout", 0);
+	long connectTimeout = ELEKTRA_ZEROMQ_DEFAULT_CONNECT_TIMEOUT;
+	if (connectTimeoutKey)
 	{
-		endpoint = ELEKTRA_ZEROMQ_DEFAULT_PUB_ENDPOINT;
+		connectTimeout = convertUnsignedLong (keyString (connectTimeoutKey), ELEKTRA_ZEROMQ_DEFAULT_CONNECT_TIMEOUT);
+	}
+
+	// read timeout for subscriptions from plugin configuration
+	Key * subscribeTimeoutKey = ksLookupByName (elektraPluginGetConfig (handle), "/subscribeTimeout", 0);
+	long subscribeTimeout = ELEKTRA_ZEROMQ_DEFAULT_SUBSCRIBE_TIMEOUT;
+	if (subscribeTimeoutKey)
+	{
+		subscribeTimeout = convertUnsignedLong (keyString (subscribeTimeoutKey), ELEKTRA_ZEROMQ_DEFAULT_SUBSCRIBE_TIMEOUT);
 	}
 
 	ElektraZeroMqSendPluginData * data = elektraPluginGetData (handle);
@@ -38,6 +69,8 @@ int elektraZeroMqSendOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 		data->zmqContext = NULL;
 		data->zmqPublisher = NULL;
 		data->endpoint = endpoint;
+		data->connectTimeout = connectTimeout;
+		data->subscribeTimeout = subscribeTimeout;
 		data->hasSubscriber = 0;
 	}
 	elektraPluginSetData (handle, data);
@@ -84,7 +117,7 @@ int elektraZeroMqSendSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key
 				     "could not connect to hub. Please start hub using `kdb run-hub-zeromq`.");
 		break;
 	case -2:
-		// subscription timeout - no application are listening for notifications, can be ignored
+		// subscription timeout - no applications are listening for notifications, can be ignored
 		break;
 	default:
 		ELEKTRA_ADD_WARNING (ELEKTRA_WARNING_ZEROMQSEND_ERROR, parentKey, "could not send notifications");

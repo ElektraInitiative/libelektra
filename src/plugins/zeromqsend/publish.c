@@ -17,15 +17,6 @@
 /** wait inside loop while waiting for messages (10ms)  */
 #define ELEKTRA_ZEROMQSEND_LOOPDELAY_NS (10 * 1000 * 1000)
 
-/** timeout for waiting for a connection (1 second) */
-#define ELEKTRA_ZEROMQSEND_CONNECT_TIMEOUT (1)
-
-/** timeout for waiting for a subscription (200 miliseconds) */
-#define ELEKTRA_ZEROMQSEND_SUBSCRIBE_TIMEOUT_NS (200 * 1000 * 1000)
-
-/** fallback timeout for waiting for a subscription (1 second) */
-#define ELEKTRA_ZEROMQSEND_SUBSCRIBE_TIMEOUT (1)
-
 /** first byte of a subscription message */
 #define ELEKTRA_ZEROMQSEND_SUBSCRIPTION_MESSAGE '\x01'
 
@@ -84,7 +75,7 @@ static int getMonitorEvent (void * monitor)
  * @retval -1 on timeout
  * @retval  0 on other errors
  */
-static int waitForConnection (void * monitorSocket)
+static int waitForConnection (void * monitorSocket, long connectTimeout)
 {
 	time_t start = time (NULL);
 	struct timespec wait;
@@ -100,7 +91,7 @@ static int waitForConnection (void * monitorSocket)
 
 		int event = getMonitorEvent (monitorSocket);
 
-		if (time (NULL) - start > ELEKTRA_ZEROMQSEND_CONNECT_TIMEOUT)
+		if (time (NULL) - start > connectTimeout)
 		{
 			ELEKTRA_LOG_WARNING ("connection timed out. could not publish notification");
 			zmq_close (monitorSocket);
@@ -138,16 +129,23 @@ static int waitForConnection (void * monitorSocket)
  * @retval -2 on timeout
  * @retval  0 on other errors
  */
-static int waitForSubscription (void * socket)
+static int waitForSubscription (void * socket, long subscribeTimeout)
 {
 	struct timespec start;
 	struct timespec now;
 	struct timespec wait;
 	time_t startFallback = -1;
+	long timeoutSec = (subscribeTimeout / (1000));
+	long timeoutNsec = (subscribeTimeout % (1000)) * (1000 * 1000 * 1000);
 	if (clock_gettime (CLOCK_MONOTONIC, &start) == -1)
 	{
 		ELEKTRA_LOG_WARNING ("Using slower fallback for timeout detection");
 		startFallback = time (NULL);
+		// minimum timeout is 1 second when using the fallback
+		if (timeoutSec == 0)
+		{
+			timeoutSec = 1;
+		}
 	}
 
 	// wait until we receive the first subscription message
@@ -173,11 +171,11 @@ static int waitForSubscription (void * socket)
 		if (startFallback == -1)
 		{
 			clock_gettime (CLOCK_MONOTONIC, &now);
-			timeout = now.tv_sec != start.tv_sec || now.tv_nsec - start.tv_nsec > ELEKTRA_ZEROMQSEND_SUBSCRIBE_TIMEOUT_NS;
+			timeout = now.tv_sec - start.tv_sec >= timeoutSec && now.tv_nsec - start.tv_nsec >= timeoutNsec;
 		}
 		else
 		{
-			timeout = time (NULL) - startFallback > ELEKTRA_ZEROMQSEND_SUBSCRIBE_TIMEOUT;
+			timeout = time (NULL) - startFallback >= timeoutSec;
 		}
 		if (timeout)
 		{
@@ -246,13 +244,13 @@ int elektraZeroMqSendConnect (ElektraZeroMqSendPluginData * data)
 		// setup socket monitor
 		if (zmq_socket_monitor (data->zmqPublisher, ELEKTRA_ZEROMQSEND_MONITOR_ENDPOINT, ZMQ_EVENT_CONNECTED) == -1)
 		{
-			ELEKTRA_LOG_WARNING ("creating socket monitor failed: %s\n", zmq_strerror (zmq_errno ()));
+			ELEKTRA_LOG_WARNING ("creating socket monitor failed: %s", zmq_strerror (zmq_errno ()));
 			return 0;
 		}
 		data->zmqPublisherMonitor = zmq_socket (data->zmqContext, ZMQ_PAIR);
 		if (zmq_connect (data->zmqPublisherMonitor, ELEKTRA_ZEROMQSEND_MONITOR_ENDPOINT) != 0)
 		{
-			ELEKTRA_LOG_WARNING ("connecting to socket monitor failed: %s\n", zmq_strerror (zmq_errno ()));
+			ELEKTRA_LOG_WARNING ("connecting to socket monitor failed: %s", zmq_strerror (zmq_errno ()));
 			return 0;
 		}
 
@@ -260,7 +258,7 @@ int elektraZeroMqSendConnect (ElektraZeroMqSendPluginData * data)
 		int result = zmq_connect (data->zmqPublisher, data->endpoint);
 		if (result != 0)
 		{
-			ELEKTRA_LOG_WARNING ("zmq_connect error: %s\n", zmq_strerror (zmq_errno ()));
+			ELEKTRA_LOG_WARNING ("zmq_connect error: %s", zmq_strerror (zmq_errno ()));
 			zmq_close (data->zmqPublisher);
 			data->zmqPublisher = NULL;
 			return 0;
@@ -301,12 +299,12 @@ int elektraZeroMqSendPublish (const char * changeType, const char * keyName, Ele
 		// and then wait for the first subscription message.
 		// A ZMQ_XPUB socket instead of a ZMQ_PUB socket allows us to receive
 		// subscription messages
-		int result = waitForConnection (data->zmqPublisherMonitor);
+		int result = waitForConnection (data->zmqPublisherMonitor, data->connectTimeout);
 		if (result != 1)
 		{
 			return result;
 		}
-		result = waitForSubscription (data->zmqPublisher);
+		result = waitForSubscription (data->zmqPublisher, data->subscribeTimeout);
 		if (result == 1)
 		{
 			data->hasSubscriber = 1;
