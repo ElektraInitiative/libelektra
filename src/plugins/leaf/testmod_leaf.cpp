@@ -216,4 +216,7 @@ TEST (leaf, roundtrip)
 	test_roundtrip (
 #include "leaf/extended_get.hpp"
 	);
+	test_roundtrip (
+#include "leaf/arrays_get.hpp"
+	);
 }
