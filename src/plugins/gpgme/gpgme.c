@@ -155,7 +155,7 @@ static gpgme_key_t * extractRecipientFromPluginConfig (KeySet * config, Key * er
 		{
 			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INTERNAL_ERROR, errorKey, "Failed to receive the GPG key because: %s",
 					    gpgme_strerror (err));
-			elektraGpgmeKeylistRelease (&list);
+			elektraGpgmeKeylistFree (&list);
 			return NULL;
 		}
 
@@ -164,7 +164,7 @@ static gpgme_key_t * extractRecipientFromPluginConfig (KeySet * config, Key * er
 			if (!elektraGpgmeKeylistAdd (&list, key))
 			{
 				ELEKTRA_SET_ERROR (87, errorKey, "Memory allocation failed");
-				elektraGpgmeKeylistRelease (&list);
+				elektraGpgmeKeylistFree (&list);
 				return NULL;
 			}
 		}
@@ -185,7 +185,7 @@ static gpgme_key_t * extractRecipientFromPluginConfig (KeySet * config, Key * er
 				{
 					ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INTERNAL_ERROR, errorKey,
 							    "Failed to receive the GPG key because: %s", gpgme_strerror (err));
-					elektraGpgmeKeylistRelease (&list);
+					elektraGpgmeKeylistFree (&list);
 					return NULL;
 				}
 
@@ -194,7 +194,7 @@ static gpgme_key_t * extractRecipientFromPluginConfig (KeySet * config, Key * er
 					if (!elektraGpgmeKeylistAdd (&list, key))
 					{
 						ELEKTRA_SET_ERROR (87, errorKey, "Memory allocation failed");
-						elektraGpgmeKeylistRelease (&list);
+						elektraGpgmeKeylistFree (&list);
 						return NULL;
 					}
 				}
@@ -212,7 +212,7 @@ static gpgme_key_t * extractRecipientFromPluginConfig (KeySet * config, Key * er
 		if (!keyArray)
 		{
 			ELEKTRA_SET_ERROR (87, errorKey, "Memory allocation failed");
-			elektraGpgmeKeylistRelease (&list);
+			elektraGpgmeKeylistFree (&list);
 			return NULL;
 		}
 
@@ -223,10 +223,10 @@ static gpgme_key_t * extractRecipientFromPluginConfig (KeySet * config, Key * er
 		}
 		keyArray[index] = NULL;
 
-		elektraGpgmeKeylistRelease (&list);
+		elektraGpgmeKeylistFree (&list);
 		return keyArray;
 	}
-	elektraGpgmeKeylistRelease (&list);
+	elektraGpgmeKeylistFree (&list);
 	return NULL;
 }
 

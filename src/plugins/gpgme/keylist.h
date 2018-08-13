@@ -33,6 +33,6 @@ void elektraGpgmeKeylistInit (keylist_t * list);
 int elektraGpgmeKeylistAdd (keylist_t * list, gpgme_key_t key);
 void elektraGpgmeKeylistRewind (keylist_t * list);
 gpgme_key_t elektraGpgmeKeylistNext (keylist_t * list);
-void elektraGpgmeKeylistRelease (keylist_t * list);
+void elektraGpgmeKeylistFree (keylist_t * list);
 
 #endif

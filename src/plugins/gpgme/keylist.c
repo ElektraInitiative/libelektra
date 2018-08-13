@@ -88,7 +88,7 @@ gpgme_key_t elektraGpgmeKeylistNext (keylist_t * list)
  * @brief release the key list
  * @param list the list to be released
  */
-void elektraGpgmeKeylistRelease (keylist_t * list)
+void elektraGpgmeKeylistFree (keylist_t * list)
 {
 	struct internal_keylist * iterator = list->head;
 	struct internal_keylist * next;
