@@ -407,11 +407,13 @@ int LeafDelegate::convertToDirectories (CppKeySet & keys)
 	 * - Merge everything back together and convert directories to leaves
 	 */
 
-	tie (arrayParents, notArrayParents) = splitArrayParentsOther (keys);
+	tie (arrayParents, ignore) = splitArrayParentsOther (keys);
 	tie (arrays, maps) = splitArrayOther (arrayParents, keys);
 	tie (arrayLeaves, arrays) = splitArrayLeavesOther (arrayParents, arrays);
 
 	arrayParents = removeBaseName (arrayLeaves);
+	notArrayParents = decreaseArrayIndices (arrayParents, arrays);
+	notArrayParents.append (maps);
 
 	tie (directoryLeaves, nonDirectoryLeaves) = splitDirectoryLeavesOther (notArrayParents);
 
