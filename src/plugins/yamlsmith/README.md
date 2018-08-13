@@ -21,7 +21,7 @@ kdb set user/tests/yamlsmith 'Pattern Against User'
 
 # Only export the value
 kdb export user/tests/yamlsmith yamlsmith
-#> Pattern Against User
+#> "Pattern Against User"
 
 # Undo modifications
 kdb rm -r user/tests/yamlsmith
@@ -39,14 +39,14 @@ kdb set user/tests/yamlsmith/level1/two 'II'
 # Export data using YAML Smith
 kdb export user/tests/yamlsmith yamlsmith
 #> key:
-#>   value
+#>   "value"
 #> level1:
 #>   one:
-#>     I
+#>     "I"
 #>   two:
-#>     II
+#>     "II"
 #> time:
-#>   will die and love will burrow it
+#>   "will die and love will burrow it"
 
 # Undo modifications
 kdb rm -r user/tests/yamlsmith
@@ -63,11 +63,11 @@ kdb set user/tests/yamlsmith/low/#2 'To the night'
 kdb export user/tests/yamlsmith yamlsmith
 #> low:
 #>   -
-#>     You bought some sweet, sweet, sweet, sweet sunflowers
+#>     "You bought some sweet, sweet, sweet, sweet sunflowers"
 #>   -
-#>     And gave them
+#>     "And gave them"
 #>   -
-#>     To the night
+#>     "To the night"
 
 # Undo modifications
 kdb rm -r user/tests/yamlsmith

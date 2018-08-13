@@ -181,7 +181,7 @@ void writeYAML (ofstream & output, CppKeySet && keys, CppKey const & parent)
 			writeCollectionEntry (output, *keys.current (), indent);
 			indent += "  ";
 		}
-		if (keys.current ().getStringSize () > 1) output << indent << keys.current ().getString () << endl;
+		if (keys.current ().getStringSize () > 1) output << indent << '"' << keys.current ().getString () << '"' << endl;
 	}
 }
 
