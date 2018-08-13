@@ -174,6 +174,11 @@ TEST (leaf, get)
 		,
 #include "leaf/simple_get.hpp"
 	);
+	test_get (
+#include "leaf/arrays_set.hpp"
+		,
+#include "leaf/arrays_get.hpp"
+	);
 }
 
 TEST (leaf, set)
@@ -197,7 +202,7 @@ TEST (leaf, set)
 	);
 
 	test_set (
-#include "leaf/arrays_get.hpp"
+#include "leaf/arrays.hpp"
 		,
 #include "leaf/arrays_set.hpp"
 	);
