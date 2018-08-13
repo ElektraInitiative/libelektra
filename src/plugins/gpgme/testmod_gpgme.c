@@ -21,7 +21,7 @@
 #include "gpgme.h"
 
 // GPG private key for importing and testing
-#include "test_key.h"
+#include "../crypto/test_key.h"
 
 #define TEST_KEY_ID "DDEBEF9EE2DC931701338212DAF635B17F230E8D"
 #define GPGME_PLUGIN_NAME "gpgme"
@@ -91,7 +91,7 @@ static void test_import_key (void)
 	err = gpgme_new (&ctx);
 	succeed_if (!err, "failed to initialize gpgme handle");
 
-	err = gpgme_data_new_from_mem (&keydata, test_key_asc, test_key_asc_len, 1);
+	err = gpgme_data_new_from_mem (&keydata, (const char *) test_key_asc, test_key_asc_len, 1);
 	succeed_if (!err, "failed to transform the test key to gpgme data structure");
 
 	err = gpgme_op_import (ctx, keydata);
