@@ -345,6 +345,15 @@ int LeafDelegate::convertToDirectories (CppKeySet & keys)
 {
 	CppKeySet directoryLeaves;
 	CppKeySet nonDirectoryLeaves;
+
+	/**
+	 * - Split array parents
+	 * - Split first array child containing directory value prefix, others
+	 * - Convert first array child back to array parent
+	 * - Decrease index of arrays
+	 * - Merge everything back together and convert directories to leaves
+	 */
+
 	tie (directoryLeaves, nonDirectoryLeaves) = splitDirectoryLeavesOther (keys);
 
 	bool status = directoryLeaves.size () > 0 ? ELEKTRA_PLUGIN_STATUS_SUCCESS : ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
