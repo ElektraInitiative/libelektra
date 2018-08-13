@@ -13,5 +13,5 @@ CppKeySet { 10,
 	    keyNew (PREFIX "key/array/#3/nested/#1", KEY_END),
 	    keyNew (PREFIX "key/array/#3/nested/#2", KEY_END),
 	    keyNew (PREFIX "key/empty/array", KEY_END),
-	    keyNew (PREFIX "key/empty/array/#0", KEY_META, "array", "", KEY_END),
+	    keyNew (PREFIX "key/empty/array/#0", KEY_END),
 	    KS_END }

@@ -356,6 +356,7 @@ CppKeySet convertArrayParentsToLeaves (CppKeySet const & parents)
 	{
 		CppKey directory{ parent.getName (), KS_END };
 		CppKey leaf = parent.dup ();
+		leaf.delMeta ("array");
 		leaf.addBaseName ("#0");
 		converted.append (directory);
 		converted.append (leaf);
