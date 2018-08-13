@@ -1,14 +1,14 @@
 /**
  * @file
  *
- * @brief Delegate definitions for the `leaf` plugin
+ * @brief Delegate definitions for the `directoryvalue` plugin
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
-#ifndef ELEKTRA_CPP_LEAF_DELEGATE_HPP
-#define ELEKTRA_CPP_LEAF_DELEGATE_HPP
+#ifndef ELEKTRA_CPP_DIRECTORY_VALUE_DELEGATE_HPP
+#define ELEKTRA_CPP_DIRECTORY_VALUE_DELEGATE_HPP
 
 #include <kdberrors.h>
 #include <kdbplugin.hpp>
@@ -51,15 +51,15 @@ pair<CppKeySet, CppKeySet> increaseArrayIndices (CppKeySet const & parents, CppK
 
 // -- Class --------------------------------------------------------------------------------------------------------------------------------
 
-class LeafDelegate
+class DirectoryValueDelegate
 {
 public:
 	/**
-	 * @brief This constructor creates a new delegate object used by the `leaf` plugin
+	 * @brief This constructor creates a new delegate object used by the `directoryvalue` plugin
 	 *
-	 * @param config This key set contains configuration values provided by the `leaf` plugin
+	 * @param config This key set contains configuration values provided by the `directoryvalue` plugin
 	 */
-	explicit LeafDelegate (CppKeySet config);
+	explicit DirectoryValueDelegate (CppKeySet config);
 
 	/**
 	 * @brief This method converts all leaf keys in the given key set to directory keys.

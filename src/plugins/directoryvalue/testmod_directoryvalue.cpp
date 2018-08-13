@@ -1,13 +1,13 @@
 /**
  * @file
  *
- * @brief Tests for leaf plugin
+ * @brief Tests for directoryvalue plugin
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
-#include "leaf.hpp"
+#include "directoryvalue.hpp"
 
 #include <tuple>
 
@@ -34,8 +34,8 @@ using elektra::splitArrayParentsOther;
 	CppKeySet config{ 0, KS_END };                                                                                                     \
 	elektraModulesInit (modules.getKeySet (), 0);                                                                                      \
 	CppKey parent{ parentName, KEY_VALUE, filepath, KEY_END };                                                                         \
-	Plugin * plugin = elektraPluginOpen ("leaf", modules.getKeySet (), config.getKeySet (), *parent);                                  \
-	exit_if_fail (plugin != NULL, "Could not open leaf plugin");
+	Plugin * plugin = elektraPluginOpen ("directoryvalue", modules.getKeySet (), config.getKeySet (), *parent);                        \
+	exit_if_fail (plugin != NULL, "Could not open directoryvalue plugin");
 
 #define CLOSE_PLUGIN()                                                                                                                     \
 	ksDel (modules.release ());                                                                                                        \
@@ -43,7 +43,7 @@ using elektra::splitArrayParentsOther;
 	elektraPluginClose (plugin, 0);                                                                                                    \
 	elektraModulesClose (modules.getKeySet (), 0)
 
-#define PREFIX "user/tests/leaf/"
+#define PREFIX "user/tests/directoryvalue/"
 
 // -- Functions ----------------------------------------------------------------------------------------------------------------------------
 
@@ -94,7 +94,7 @@ void test_roundtrip (CppKeySet keys, int const status = ELEKTRA_PLUGIN_STATUS_SU
 
 // -- Tests --------------------------------------------------------------------------------------------------------------------------------
 
-TEST (leaf, splitArrayParentsOther)
+TEST (directoryvalue, splitArrayParentsOther)
 {
 	CppKeySet input{ 10,
 			 keyNew (PREFIX "key", KEY_END),
@@ -121,7 +121,7 @@ TEST (leaf, splitArrayParentsOther)
 	compare_keyset (expected, input);
 }
 
-TEST (leaf, increaseArrayIndices)
+TEST (directoryvalue, increaseArrayIndices)
 {
 	CppKeySet arrayParents{ 10, keyNew (PREFIX "key/array", KEY_END), keyNew (PREFIX "key/array/#2/nested", KEY_END), KS_END };
 
@@ -156,9 +156,9 @@ TEST (leaf, increaseArrayIndices)
 	compare_keyset (expectedArrayParents, arrayParents);
 }
 
-TEST (leaf, basics)
+TEST (directoryvalue, basics)
 {
-	OPEN_PLUGIN ("system/elektra/modules/leaf", "")
+	OPEN_PLUGIN ("system/elektra/modules/directoryvalue", "")
 
 	CppKeySet keys{ 0, KS_END };
 	succeed_if_same (plugin->kdbGet (plugin, keys.getKeySet (), *parent), ELEKTRA_PLUGIN_STATUS_SUCCESS,
@@ -167,56 +167,56 @@ TEST (leaf, basics)
 	CLOSE_PLUGIN ();
 }
 
-TEST (leaf, get)
+TEST (directoryvalue, get)
 {
 	test_get (
-#include "leaf/simple_set.hpp"
+#include "directoryvalue/simple_set.hpp"
 		,
-#include "leaf/simple_get.hpp"
+#include "directoryvalue/simple_get.hpp"
 	);
 	test_get (
-#include "leaf/arrays_set.hpp"
+#include "directoryvalue/arrays_set.hpp"
 		,
-#include "leaf/arrays_get.hpp"
+#include "directoryvalue/arrays_get.hpp"
 	);
 }
 
-TEST (leaf, set)
+TEST (directoryvalue, set)
 {
 	test_set (
-#include "leaf/empty.hpp"
+#include "directoryvalue/empty.hpp"
 		,
-#include "leaf/empty.hpp"
+#include "directoryvalue/empty.hpp"
 		, ELEKTRA_PLUGIN_STATUS_NO_UPDATE);
 
 	test_set (
-#include "leaf/simple_get.hpp"
+#include "directoryvalue/simple_get.hpp"
 		,
-#include "leaf/simple_set.hpp"
+#include "directoryvalue/simple_set.hpp"
 	);
 
 	test_set (
-#include "leaf/extended_get.hpp"
+#include "directoryvalue/extended_get.hpp"
 		,
-#include "leaf/extended_set.hpp"
+#include "directoryvalue/extended_set.hpp"
 	);
 
 	test_set (
-#include "leaf/arrays.hpp"
+#include "directoryvalue/arrays.hpp"
 		,
-#include "leaf/arrays_set.hpp"
+#include "directoryvalue/arrays_set.hpp"
 	);
 }
 
-TEST (leaf, roundtrip)
+TEST (directoryvalue, roundtrip)
 {
 	test_roundtrip (
-#include "leaf/simple_get.hpp"
+#include "directoryvalue/simple_get.hpp"
 	);
 	test_roundtrip (
-#include "leaf/extended_get.hpp"
+#include "directoryvalue/extended_get.hpp"
 	);
 	test_roundtrip (
-#include "leaf/arrays_get.hpp"
+#include "directoryvalue/arrays_get.hpp"
 	);
 }

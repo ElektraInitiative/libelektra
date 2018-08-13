@@ -1,20 +1,20 @@
 /**
  * @file
  *
- * @brief Source for leaf plugin
+ * @brief Source for directoryvalue plugin
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
-#include "leaf.hpp"
+#include "directoryvalue.hpp"
 
 #include <kdbhelper.h>
 
 using std::exception;
 using std::range_error;
 
-using elektra::LeafDelegate;
+using elektra::DirectoryValueDelegate;
 
 using CppKey = kdb::Key;
 using CppKeySet = kdb::KeySet;
@@ -30,14 +30,15 @@ namespace
 CppKeySet getContract ()
 {
 	return CppKeySet{ 30,
-			  keyNew ("system/elektra/modules/leaf", KEY_VALUE, "leaf plugin waits for your orders", KEY_END),
-			  keyNew ("system/elektra/modules/leaf/exports", KEY_END),
-			  keyNew ("system/elektra/modules/leaf/exports/open", KEY_FUNC, elektraLeafOpen, KEY_END),
-			  keyNew ("system/elektra/modules/leaf/exports/close", KEY_FUNC, elektraLeafClose, KEY_END),
-			  keyNew ("system/elektra/modules/leaf/exports/get", KEY_FUNC, elektraLeafGet, KEY_END),
-			  keyNew ("system/elektra/modules/leaf/exports/set", KEY_FUNC, elektraLeafSet, KEY_END),
-#include ELEKTRA_README (leaf)
-			  keyNew ("system/elektra/modules/leaf/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
+			  keyNew ("system/elektra/modules/directoryvalue", KEY_VALUE, "directoryvalue plugin waits for your orders",
+				  KEY_END),
+			  keyNew ("system/elektra/modules/directoryvalue/exports", KEY_END),
+			  keyNew ("system/elektra/modules/directoryvalue/exports/open", KEY_FUNC, elektraDirectoryValueOpen, KEY_END),
+			  keyNew ("system/elektra/modules/directoryvalue/exports/close", KEY_FUNC, elektraDirectoryValueClose, KEY_END),
+			  keyNew ("system/elektra/modules/directoryvalue/exports/get", KEY_FUNC, elektraDirectoryValueGet, KEY_END),
+			  keyNew ("system/elektra/modules/directoryvalue/exports/set", KEY_FUNC, elektraDirectoryValueSet, KEY_END),
+#include ELEKTRA_README (directoryvalue)
+			  keyNew ("system/elektra/modules/directoryvalue/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
 			  KS_END };
 }
 
@@ -45,28 +46,27 @@ CppKeySet getContract ()
 
 extern "C" {
 
-typedef Delegator<LeafDelegate> delegator;
+typedef Delegator<DirectoryValueDelegate> delegator;
 
 /** @see elektraDocOpen */
-int elektraLeafOpen (Plugin * handle, Key * key)
+int elektraDirectoryValueOpen (Plugin * handle, Key * key)
 {
-	// After the call to `delegator::open` you can retrieve a pointer to the delegate via `coderDelegator::get (handle)`
 	return delegator::open (handle, key);
 }
 
 /** @see elektraDocClose */
-int elektraLeafClose (Plugin * handle, Key * key)
+int elektraDirectoryValueClose (Plugin * handle, Key * key)
 {
 	return delegator::close (handle, key);
 }
 
 /** @see elektraDocGet */
-int elektraLeafGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
+int elektraDirectoryValueGet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
 	CppKeySet keys{ returned };
 	CppKey parent{ parentKey };
 
-	if (parent.getName () == "system/elektra/modules/leaf")
+	if (parent.getName () == "system/elektra/modules/directoryvalue")
 	{
 		keys.append (getContract ());
 		parent.release ();
@@ -94,7 +94,7 @@ int elektraLeafGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 }
 
 /** @see elektraDocSet */
-int elektraLeafSet (Plugin * handle, KeySet * returned, Key * parentKey)
+int elektraDirectoryValueSet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
 	CppKeySet keys{ returned };
 	CppKey parent{ parentKey };
@@ -118,14 +118,14 @@ int elektraLeafSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	return status;
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (leaf)
+Plugin * ELEKTRA_PLUGIN_EXPORT (directoryvalue)
 {
 	// clang-format off
-	return elektraPluginExport ("leaf",
-		ELEKTRA_PLUGIN_OPEN,	&elektraLeafOpen,
-		ELEKTRA_PLUGIN_CLOSE,	&elektraLeafClose,
-		ELEKTRA_PLUGIN_GET,	&elektraLeafGet,
-		ELEKTRA_PLUGIN_SET,	&elektraLeafSet,
+	return elektraPluginExport ("directoryvalue",
+		ELEKTRA_PLUGIN_OPEN,	&elektraDirectoryValueOpen,
+		ELEKTRA_PLUGIN_CLOSE,	&elektraDirectoryValueClose,
+		ELEKTRA_PLUGIN_GET,	&elektraDirectoryValueGet,
+		ELEKTRA_PLUGIN_SET,	&elektraDirectoryValueSet,
 		ELEKTRA_PLUGIN_END);
 }
 

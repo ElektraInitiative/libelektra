@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief Delegate implementation for the `leaf` plugin
+ * @brief Delegate implementation for the `directoryvalue` plugin
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
@@ -13,7 +13,7 @@
 #include <kdbease.h>
 #include <kdblogger.h>
 
-#include "leaf_delegate.hpp"
+#include "directoryvalue_delegate.hpp"
 
 using std::accumulate;
 using std::ignore;
@@ -422,11 +422,11 @@ CppKeySet convertDirectoriesToLeaves (CppKeySet const & directories)
 // -- Class --------------------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief This constructor creates a new delegate object used by the `leaf` plugin
+ * @brief This constructor creates a new delegate object used by the `directoryvalue` plugin
  *
- * @param config This key set contains configuration values provided by the `leaf` plugin
+ * @param config This key set contains configuration values provided by the `directoryvalue` plugin
  */
-LeafDelegate::LeafDelegate (CppKeySet config ELEKTRA_UNUSED)
+DirectoryValueDelegate::DirectoryValueDelegate (CppKeySet config ELEKTRA_UNUSED)
 {
 }
 
@@ -438,7 +438,7 @@ LeafDelegate::LeafDelegate (CppKeySet config ELEKTRA_UNUSED)
  * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS If the plugin converted any value in the given key set
  * @retval ELEKTRA_PLUGIN_STATUS_NO_UPDATE If the plugin did not update `keys`
  */
-int LeafDelegate::convertToDirectories (CppKeySet & keys)
+int DirectoryValueDelegate::convertToDirectories (CppKeySet & keys)
 {
 	CppKeySet directoryLeaves;
 	CppKeySet nonDirectoryLeaves;
@@ -485,7 +485,7 @@ int LeafDelegate::convertToDirectories (CppKeySet & keys)
  * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS If the plugin converted any value in the given key set
  * @retval ELEKTRA_PLUGIN_STATUS_NO_UPDATE If the plugin did not update `keys`
  */
-int LeafDelegate::convertToLeaves (CppKeySet & keys)
+int DirectoryValueDelegate::convertToLeaves (CppKeySet & keys)
 {
 	CppKeySet notArrayParents;
 	CppKeySet arrayParents;
