@@ -208,9 +208,10 @@ pair<CppKeySet, CppKeySet> splitArrayOther (CppKeySet const & arrayParents, CppK
  * @param element This parameter stores an array element.
  * @param increment This boolean parameter specifies if the function should increase or decrease the index by one.
  *
- * @return A copy of `element`, where the index below `parent` was increased or decreased by one
+ * @return A key containing a copy of `element`, where the index below `parent` was increased or decreased by one and the value of the
+ *         updated index (e.g. `#_10`)
  */
-CppKey changeArrayIndexByOne (CppKey const & parent, CppKey const & element, bool increment = true)
+pair<CppKey, string> changeArrayIndexByOne (CppKey const & parent, CppKey const & element, bool increment = true)
 {
 	CppKey elementNewIndex = convertToDirectChild (parent, element);
 	string postfix = elektraKeyGetRelativeName (*element, *elementNewIndex);
@@ -220,11 +221,12 @@ CppKey changeArrayIndexByOne (CppKey const & parent, CppKey const & element, boo
 		throw range_error (string ("Unable to ") + (increment ? "increment" : "decrement") + " index of key “" +
 				   elementNewIndex.getName () + "”");
 	}
+	string newIndex = elementNewIndex.getBaseName ();
 	elementNewIndex.addName (postfix);
 
 	ELEKTRA_LOG_DEBUG ("New name of “%s” is “%s”", element.getName ().c_str (), elementNewIndex.getName ().c_str ());
 
-	return elementNewIndex;
+	return make_pair (elementNewIndex, newIndex);
 }
 
 /**
@@ -244,13 +246,24 @@ CppKeySet decreaseArrayIndices (CppKeySet const & parents, CppKeySet const & arr
 	{
 		ELEKTRA_LOG_DEBUG ("Decrease indices for array parent “%s”", parent.getName ().c_str ());
 
-		arraysIndexDecreased = accumulate (arraysIndexDecreased.begin (), arraysIndexDecreased.end (), CppKeySet{},
-						   [&parent](CppKeySet collected, CppKey key) {
-							   if (key.isBelow (parent)) key = changeArrayIndexByOne (parent, key, false);
-							   ELEKTRA_LOG_DEBUG ("Append key “%s”", key.getName ().c_str ());
-							   collected.append (key);
-							   return collected;
-						   });
+		parent.setMeta ("array", ""); // Set meta key for empty arrays
+
+		arraysIndexDecreased =
+			accumulate (arraysIndexDecreased.begin (), arraysIndexDecreased.end (), CppKeySet{},
+				    [&parent](CppKeySet collected, CppKey key) {
+					    if (key.isBelow (parent))
+					    {
+						    string newIndex;
+						    tie (key, newIndex) = changeArrayIndexByOne (parent, key, false);
+						    parent.setMeta ("array", newIndex);
+						    ELEKTRA_LOG_DEBUG ("New last index of “%s” is “%s”", parent.getName ().c_str (),
+								       parent.getMeta<string> ("array").c_str ());
+					    }
+					    collected.append (key);
+					    return collected;
+				    });
+
+		arraysIndexDecreased.append (parent); // Update meta data of parent key in `arrays`
 	}
 
 	return arraysIndexDecreased;
@@ -282,7 +295,8 @@ pair<CppKeySet, CppKeySet> increaseArrayIndices (CppKeySet const & parents, CppK
 		{
 			if (key.isBelow (parent))
 			{
-				auto updated = changeArrayIndexByOne (parent, key);
+				CppKey updated;
+				tie (updated, ignore) = changeArrayIndexByOne (parent, key);
 				if (updatedParents.lookup (key, KDB_O_POP)) updatedParents.append (updated);
 				newArrays.append (updated);
 			}
