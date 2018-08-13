@@ -228,6 +228,32 @@ CppKey changeArrayIndexByOne (CppKey const & parent, CppKey const & element, boo
 }
 
 /**
+ * @brief Decrease the array index of array elements by one.
+ *
+ * @param parents This parameter contains the array parents for which this function decrease the index by one.
+ * @param arrays This variable stores the arrays elements (and parents) this function updates.
+ *
+ * @return A copy of `arrays`, where all indices specified by `parents` are decreased by one
+ */
+CppKeySet decreaseArrayIndices (CppKeySet const & parents, CppKeySet const & arrays)
+{
+	CppKeySet arraysIndexDecreased = arrays.dup ();
+	CppKeySet arrayParents = parents.dup ();
+
+	while (CppKey parent = arrayParents.pop ())
+	{
+		arraysIndexDecreased = accumulate (arraysIndexDecreased.begin (), arraysIndexDecreased.end (), CppKeySet{},
+						   [&parent](CppKeySet collected, CppKey key) {
+							   if (key.isBelow (parent)) changeArrayIndexByOne (parent, key, false);
+							   collected.append (key);
+							   return collected;
+						   });
+	}
+
+	return arraysIndexDecreased;
+}
+
+/**
  * @brief Increase the array index of array elements by one.
  *
  * Since it is also possible that one of the array parents is part of another array, this function also updates the indices of the given
