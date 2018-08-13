@@ -78,19 +78,17 @@ pair<CppKeySet, CppKeySet> splitArrayLeavesOther (CppKeySet const & arrayParents
 }
 
 /**
- * @brief This function removes the directory postfix (`DIRECTORY_POSTFIX`) from the name of all keys in `directoryLeaves`.
+ * @brief This function removes the basename (last level) from the given keys.
  *
- * @pre All key names in `directoryLeaves` must end with `DIRECTORY_POSTFIX`.
+ * @param keys This parameter contains the keys for which this function removes the basename.
  *
- * @param directoryLeaves This parameter contains the keys for which this function removes the directory postfix.
- *
- * @return A copy of the input, where each key name does not end with the directory postfix any more
+ * @return A copy of the input, where the last level of each key was removed
  */
-CppKeySet convertLeavesToDirectories (CppKeySet const & directoryLeaves)
+CppKeySet removeBaseName (CppKeySet const & keys)
 {
 	CppKeySet directories;
 
-	for (auto key : directoryLeaves)
+	for (auto key : keys)
 	{
 		CppKey directory = key.dup ();
 		keySetBaseName (*directory, 0);
@@ -383,13 +381,15 @@ int LeafDelegate::convertToDirectories (CppKeySet & keys)
 
 	tie (arrayParents, notArrayParents) = splitArrayParentsOther (keys);
 	tie (arrays, maps) = splitArrayOther (arrayParents, keys);
-	tie (arrayLeaves, ignore) = splitArrayLeavesOther (arrayParents, arrays);
+	tie (arrayLeaves, arrays) = splitArrayLeavesOther (arrayParents, arrays);
+
+	arrayParents = removeBaseName (arrayLeaves);
 
 	tie (directoryLeaves, nonDirectoryLeaves) = splitDirectoryLeavesOther (notArrayParents);
 
 	bool status = directoryLeaves.size () > 0 ? ELEKTRA_PLUGIN_STATUS_SUCCESS : ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 
-	auto directories = convertLeavesToDirectories (directoryLeaves);
+	auto directories = removeBaseName (directoryLeaves);
 
 	keys.clear ();
 	keys.append (nonDirectoryLeaves);
