@@ -319,6 +319,7 @@ Thanks to Daniel Bugl.
 ### General
 
 - replaced strdup with elektraStrDup (for C99 compatibility) *(Markus Raab)*
+- Added opmphm to exported symbols. *(Mihael Pranjić)*
 
 - <<TODO>>
 
