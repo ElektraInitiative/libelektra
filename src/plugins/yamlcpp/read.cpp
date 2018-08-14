@@ -31,6 +31,8 @@ namespace
  */
 Key newKey (string const & name, Key const & parent)
 {
+	ELEKTRA_LOG_DEBUG ("Add new key with base name “%s”", name.c_str ());
+
 	Key key{ parent.getFullName (), KEY_BINARY, KEY_END };
 	key.addBaseName (name);
 
@@ -47,6 +49,8 @@ Key newKey (string const & name, Key const & parent)
  */
 Key newArrayKey (KeySet const & mappings, Key & arrayKey)
 {
+	ELEKTRA_LOG_DEBUG ("Add new array element to array parent “%s”", arrayKey.getName ().c_str ());
+
 	KeySet arrayEntries{ elektraArrayGet (arrayKey.getKey (), mappings.getKeySet ()) };
 
 	if (arrayEntries.size () <= 0)
