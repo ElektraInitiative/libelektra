@@ -357,14 +357,7 @@ KeySetPair splitDirectoriesLeaves (CppKeySet const & keys)
 	CppKey previous;
 	for (previous = keys.next (); keys.next (); previous = keys.current ())
 	{
-		if (keys.current ().isBelow (previous))
-		{
-			directories.append (previous);
-		}
-		else
-		{
-			leaves.append (previous);
-		}
+		(keys.current ().isBelow (previous) ? directories : leaves).append (previous);
 	}
 	leaves.append (previous);
 
