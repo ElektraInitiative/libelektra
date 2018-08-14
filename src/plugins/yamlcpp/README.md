@@ -112,6 +112,11 @@ kdb get user/tests/yamlcpp/sunny/#_9
 kdb get user/tests/yamlcpp/sunny/$(kdb getmeta user/tests/yamlcpp/sunny array)
 #> The Waitress
 
+# The plugin also supports empty arrays (arrays without any elements)
+kdb setmeta user/tests/yamlcpp/empty array ''
+kdb export user/tests/yamlcpp/empty yamlcpp
+#> []
+
 # Undo modifications to the key database
 kdb rm -r /tests/yamlcpp
 sudo kdb umount /tests/yamlcpp
