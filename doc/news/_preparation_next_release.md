@@ -426,11 +426,12 @@ Thanks to Daniel Bugl.
 - The Markdown Shell Recorder now also tests if a command prints nothing to `stdout` if you add the check `#>`. *(René Schwaiger)*
 - We fixed some problems in the [Markdown Shell Recorder](https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper) test
   of [`kdb ls`](https://master.libelektra.org/doc/help/kdb-ls.md). *(René Schwaiger)*
+- The [Shell Recorder][] now does not interpret `-` in checks as option character any more. *(René Schwaiger)*
 - The `add_plugin` helper now respects `ENABLE_KDB_TESTING` when adding
     Markdown Shell Recorder tests. *(Lukas Winkler)*
 - The Markdown Shell Recorder test for [`kdb find`](https://master.libelektra.org/doc/help/kdb-find.md) now removes the configuration file
   at the end of the test. *(René Schwaiger)*
-- The [Shell Recorder](https://master.libelektra.org/tests/shell/shell_recorder) now properly unmounts any additional mountpoints created
+- The [Shell Recorder][] now properly unmounts any additional mountpoints created
     during a test. *(René Schwaiger)*
 - We removed the broken auto unmounting feature from the [Markdown Shell Recorder][]. *(René Schwaiger)*
 - Plugins added with the flag `SHARED_ONLY` no longer get tested in the script `check_kdb_internal_check.sh` if executed with kdb-full or kdb-static. *(Armin Wurzinger)*
@@ -450,6 +451,7 @@ Thanks to Daniel Bugl.
 
 [#1887]: https://github.com/ElektraInitiative/libelektra/issues/1887
 [Markdown Shell Recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
+[Shell Recorder]: (https://master.libelektra.org/tests/shell/shell_recorder)
 
 ## Build
 
