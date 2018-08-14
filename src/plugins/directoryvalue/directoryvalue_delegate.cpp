@@ -231,6 +231,39 @@ KeySetPair splitArrayOther (CppKeySet const & arrayParents, CppKeySet const & ke
 }
 
 /**
+ * @brief This function splits `keys` into two key sets, one for empty array parents that do not contain a value and one for all other keys.
+ *
+ * @param arrayParents This key set contains array parents.
+ *
+ * @return A pair of key sets, where the first key set contains all array parents without values, and the second key set contains all other
+ *         keys
+ */
+pair<CppKeySet, CppKeySet> splitEmptyArrayParents (CppKeySet const & arrayParents)
+{
+	CppKeySet emptyParents;
+	CppKeySet nonEmptyParents;
+
+	for (auto arrayParent : arrayParents)
+	{
+		CppKey parent = arrayParent.dup ();
+
+		parent.rewindMeta ();
+		size_t metaSize = 0;
+		bool isEmpty = parent.getBinarySize () == 0;
+		while (isEmpty && parent.nextMeta ())
+		{
+			if (metaSize > 2 || parent.currentMeta ().getName () != "binary" || parent.currentMeta ().getName () != "array")
+			{
+				isEmpty = false;
+			}
+			metaSize++;
+		}
+		(isEmpty ? emptyParents : nonEmptyParents).append (arrayParent);
+	}
+	return make_pair (emptyParents, nonEmptyParents);
+}
+
+/**
  * @brief This function changes an array index of the given array element by one.
  *
  * @param parent This key set stores an array parent of `element`. The function will change the index of `element` that is directly below
@@ -482,6 +515,7 @@ int DirectoryValueDelegate::convertToLeaves (CppKeySet & keys)
 {
 	CppKeySet notArrayParents;
 	CppKeySet arrayParents;
+	CppKeySet emptyArrayParents;
 	CppKeySet arrays;
 	CppKeySet nonArrays;
 	CppKeySet directories;
@@ -490,12 +524,14 @@ int DirectoryValueDelegate::convertToLeaves (CppKeySet & keys)
 	tie (arrayParents, ignore) = splitArrayParentsOther (keys);
 	tie (arrays, nonArrays) = splitArrayOther (arrayParents, keys);
 
+	tie (emptyArrayParents, arrayParents) = splitEmptyArrayParents (arrayParents);
 	tie (arrayParents, arrays) = increaseArrayIndices (arrayParents, arrays);
+
 	notArrayParents.append (arrays);
 	notArrayParents.append (nonArrays);
 	notArrayParents = accumulate (notArrayParents.begin (), notArrayParents.end (), CppKeySet{},
-				      [&arrayParents](CppKeySet collected, CppKey key) {
-					      if (!arrayParents.lookup (key)) collected.append (key);
+				      [&arrayParents, &emptyArrayParents](CppKeySet collected, CppKey key) {
+					      if (!arrayParents.lookup (key) && !emptyArrayParents.lookup (key)) collected.append (key);
 					      return collected;
 				      });
 	arrayParents = convertArrayParentsToLeaves (arrayParents);
@@ -509,6 +545,7 @@ int DirectoryValueDelegate::convertToLeaves (CppKeySet & keys)
 	keys.clear ();
 	keys.append (arrays);
 	keys.append (arrayParents);
+	keys.append (emptyArrayParents);
 	keys.append (directoryLeaves);
 	keys.append (leaves);
 

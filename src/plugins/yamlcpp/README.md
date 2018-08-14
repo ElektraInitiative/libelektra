@@ -117,6 +117,14 @@ kdb setmeta user/tests/yamlcpp/empty array ''
 kdb export user/tests/yamlcpp/empty yamlcpp
 #> []
 
+# For arrays with at least one value we do not need to set the type `array`
+kdb set user/tests/yamlcpp/movies
+kdb set user/tests/yamlcpp/movies/#0 'A Silent Voice'
+kdb getmeta user/tests/yamlcpp/movies array
+#> #0
+kdb export user/tests/yamlcpp/movies yamlcpp
+#> - A Silent Voice
+
 # Undo modifications to the key database
 kdb rm -r /tests/yamlcpp
 sudo kdb umount /tests/yamlcpp
