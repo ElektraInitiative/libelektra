@@ -118,7 +118,8 @@ void convertNodeToKeySet (YAML::Node const & node, KeySet & mappings, Key & pare
 {
 	if (node.Tag () == "!elektra/meta")
 	{
-		Key key (parent.getFullName (), KEY_VALUE, node[0].as<string> ().c_str (), KEY_END);
+		auto key = node[0].IsNull () ? Key{ parent.getFullName (), KEY_END } :
+					       Key{ parent.getFullName (), KEY_VALUE, node[0].as<string> ().c_str (), KEY_END };
 		ELEKTRA_LOG_DEBUG ("Add key “%s: %s”", key.getName ().c_str (), key.get<string> ().c_str ());
 		mappings.append (key);
 		addMetadata (key, node[1]);
