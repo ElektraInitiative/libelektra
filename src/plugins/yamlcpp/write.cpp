@@ -87,14 +87,15 @@ std::pair<bool, unsigned long long> isArrayIndex (NameIterator const & nameItera
  */
 YAML::Node createLeafNode (Key & key)
 {
-	key.rewindMeta ();
 
 	YAML::Node metaNode{ YAML::Node (YAML::NodeType::Map) };
-	YAML::Node dataNode{ key.getBinarySize () == 0 ? YAML::Node (YAML::NodeType::Null) :
-							 YAML::Node (key.isBinary () ? "Unsupported binary value!" : key.getString ()) };
-	Key meta;
+	YAML::Node dataNode{ key.hasMeta ("array") ? YAML::Node (YAML::NodeType::Sequence) :
+						     key.getBinarySize () == 0 ?
+						     YAML::Node (YAML::NodeType::Null) :
+						     YAML::Node (key.isBinary () ? "Unsupported binary value!" : key.getString ()) };
 
-	while ((meta = key.nextMeta ()))
+	key.rewindMeta ();
+	while (Key meta = key.nextMeta ())
 	{
 		if (meta.getName () == "array") continue;
 		if (meta.getName () == "type" && meta.getString () == "binary")
@@ -108,7 +109,8 @@ YAML::Node createLeafNode (Key & key)
 
 	if (metaNode.size () <= 0)
 	{
-		ELEKTRA_LOG_DEBUG ("Return leaf node with value “%s”", dataNode.IsNull () ? "~" : dataNode.as<string> ().c_str ());
+		ELEKTRA_LOG_DEBUG ("Return leaf node with value “%s”",
+				   dataNode.IsNull () ? "~" : dataNode.IsSequence () ? "[]" : dataNode.as<string> ().c_str ());
 		return dataNode;
 	}
 
