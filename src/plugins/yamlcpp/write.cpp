@@ -112,7 +112,7 @@ YAML::Node createLeafNode (Key & key)
 	key.rewindMeta ();
 	while (Key meta = key.nextMeta ())
 	{
-		if (meta.getName () == "array") continue;
+		if (meta.getName () == "array" || meta.getName () == "binary") continue;
 		if (meta.getName () == "type" && meta.getString () == "binary")
 		{
 			dataNode.SetTag ("tag:yaml.org,2002:binary");
