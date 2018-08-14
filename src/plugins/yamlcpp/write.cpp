@@ -76,6 +76,24 @@ std::pair<bool, unsigned long long> isArrayIndex (NameIterator const & nameItera
 }
 
 /**
+ * @brief This function creates a YAML node representing a key value.
+ *
+ * @param key This key specifies the data that should be saved in the YAML node returned by this function.
+ *
+ * @note Since YAML does not support non-empty binary data directly this function replaces data stored in binary keys with the string
+ *       `Unsupported binary value!`. If you need support for binary data, please load the Base64 before you use YAML CPP.
+ *
+ * @returns A new YAML node containing the data specified in `key`
+ */
+YAML::Node createMetaDataNode (Key const & key)
+{
+	return key.hasMeta ("array") ?
+		       YAML::Node (YAML::NodeType::Sequence) :
+		       key.getBinarySize () == 0 ? YAML::Node (YAML::NodeType::Null) :
+						   YAML::Node (key.isBinary () ? "Unsupported binary value!" : key.getString ());
+}
+
+/**
  * @brief This function creates a YAML Node containing a key value and optionally metadata.
  *
  * @param key This key specifies the data that should be saved in the YAML node returned by this function.
@@ -89,10 +107,7 @@ YAML::Node createLeafNode (Key & key)
 {
 
 	YAML::Node metaNode{ YAML::Node (YAML::NodeType::Map) };
-	YAML::Node dataNode{ key.hasMeta ("array") ? YAML::Node (YAML::NodeType::Sequence) :
-						     key.getBinarySize () == 0 ?
-						     YAML::Node (YAML::NodeType::Null) :
-						     YAML::Node (key.isBinary () ? "Unsupported binary value!" : key.getString ()) };
+	YAML::Node dataNode = createMetaDataNode (key);
 
 	key.rewindMeta ();
 	while (Key meta = key.nextMeta ())

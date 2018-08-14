@@ -108,6 +108,22 @@ Key createLeafKey (YAML::Node const & node, string const & name)
 }
 
 /**
+ * @brief Convert the key value of a YAML meta node to a key
+ *
+ * @param node This YAML meta node stores the data this function stores in the returned key
+ * @param parent This key stores the prefix for the key name
+ *
+ * @return A key representing the key value stored in `node`
+ */
+Key convertMetaNodeToKey (YAML::Node const & node, Key & parent)
+{
+	auto key = node[0].IsNull () ? Key{ parent.getFullName (), KEY_END } :
+				       Key{ parent.getFullName (), KEY_VALUE, node[0].as<string> ().c_str (), KEY_END };
+	ELEKTRA_LOG_DEBUG ("Add key “%s: %s”", key.getName ().c_str (), key.get<string> ().c_str ());
+	return key;
+}
+
+/**
  * @brief Convert a YAML node to a key set
  *
  * @param node This YAML node stores the data that should be added to the keyset `mappings`
@@ -118,9 +134,7 @@ void convertNodeToKeySet (YAML::Node const & node, KeySet & mappings, Key & pare
 {
 	if (node.Tag () == "!elektra/meta")
 	{
-		auto key = node[0].IsNull () ? Key{ parent.getFullName (), KEY_END } :
-					       Key{ parent.getFullName (), KEY_VALUE, node[0].as<string> ().c_str (), KEY_END };
-		ELEKTRA_LOG_DEBUG ("Add key “%s: %s”", key.getName ().c_str (), key.get<string> ().c_str ());
+		auto key = convertMetaNodeToKey (node, parent);
 		mappings.append (key);
 		addMetadata (key, node[1]);
 	}
