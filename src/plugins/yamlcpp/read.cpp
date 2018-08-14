@@ -31,7 +31,7 @@ namespace
  */
 Key newKey (string const & name, Key const & parent)
 {
-	Key key{ parent.getFullName (), KEY_END };
+	Key key{ parent.getFullName (), KEY_BINARY, KEY_END };
 	key.addBaseName (name);
 
 	return key;
@@ -149,7 +149,11 @@ void convertNodeToKeySet (YAML::Node const & node, KeySet & mappings, Key & pare
 		{
 			Key key = node.IsMap () ? newKey (element.first.as<string> (), parent) : newArrayKey (mappings, parent);
 			// Add intermediate key for array parent
-			if ((node.IsMap () ? element.second : element).IsSequence ()) mappings.append (key);
+			if ((node.IsMap () ? element.second : element).IsSequence ())
+			{
+				key.setMeta ("array", "");
+				mappings.append (key);
+			}
 			convertNodeToKeySet (node.IsMap () ? element.second : element, mappings, key);
 		}
 	}
