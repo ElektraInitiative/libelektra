@@ -54,6 +54,10 @@ are:
 
 ## Decision
 
+Implementation delayed after 1.0.
+
+Best implementation candidate was:
+
 1. Provide a function `int genconf (KeySet * ks, Key * errorKey)` where `ks`
    is filled with a list of all variants with the essential configuration (subkeys `config`)
    and the changed parts of the contract (subkeys `infos`).
