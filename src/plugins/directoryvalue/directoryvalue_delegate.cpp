@@ -70,8 +70,8 @@ KeySetPair splitArrayLeavesOther (CppKeySet const & arrayParents, CppKeySet cons
 
 	for (auto key : keys)
 	{
-		bool isArrayLeaf = isFirstElement && key.isString () && key.getStringSize () > arrayValuePrefixSize &&
-				   strncmp (key.getString ().c_str (), ARRAY_VALUE_PREFIX, arrayValuePrefixSize) == 0;
+		bool const isArrayLeaf = isFirstElement && key.isString () && key.getStringSize () > arrayValuePrefixSize &&
+					 strncmp (key.getString ().c_str (), ARRAY_VALUE_PREFIX, arrayValuePrefixSize) == 0;
 		(isArrayLeaf ? firstElements : others).append (key);
 		isFirstElement = arrayParents.lookup (key);
 	}
@@ -193,7 +193,7 @@ KeySetPair splitArrayParentsOther (CppKeySet const & keys)
 	CppKey previous;
 	for (previous = keys.next (); keys.next (); previous = keys.current ())
 	{
-		bool previousIsArray =
+		bool const previousIsArray =
 			previous.hasMeta ("array") ||
 			(keys.current ().isBelow (previous) && keys.current ().getBaseName ()[0] == '#' && isArrayParent (previous, keys));
 
@@ -466,7 +466,7 @@ int DirectoryValueDelegate::convertToDirectories (CppKeySet & keys)
 
 	tie (directoryLeaves, nonDirectoryLeaves) = splitDirectoryLeavesOther (notArrayParents);
 
-	bool status = directoryLeaves.size () > 0 ? ELEKTRA_PLUGIN_STATUS_SUCCESS : ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+	bool const status = directoryLeaves.size () > 0 ? ELEKTRA_PLUGIN_STATUS_SUCCESS : ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 
 	auto directories = removeBaseName (directoryLeaves);
 
@@ -508,7 +508,8 @@ int DirectoryValueDelegate::convertToLeaves (CppKeySet & keys)
 	arrayParents = convertArrayParentsToLeaves (arrayParents);
 
 	tie (directories, leaves) = splitDirectoriesLeaves (notArrayParents);
-	bool status = directories.size () > 0 || arrayParents.size () > 0 ? ELEKTRA_PLUGIN_STATUS_SUCCESS : ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+	bool const status =
+		directories.size () > 0 || arrayParents.size () > 0 ? ELEKTRA_PLUGIN_STATUS_SUCCESS : ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 
 	auto directoryLeaves = convertDirectoriesToLeaves (directories);
 
