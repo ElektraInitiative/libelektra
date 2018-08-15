@@ -121,9 +121,9 @@ public:
 
 	inline void setName (const std::string & newName);
 	inline void addName (const std::string & addedName);
-	inline void setBaseName (char const * baseName);
 	inline void setBaseName (const std::string & baseName);
 	inline void addBaseName (const std::string & baseName);
+	inline void delBaseName ();
 
 	inline ssize_t getFullNameSize () const;
 	inline std::string getFullName () const;
@@ -891,20 +891,6 @@ inline void Key::addName (const std::string & addedName)
  *
  * @throw KeyInvalidName if the name is not valid
  */
-inline void Key::setBaseName (char const * baseName)
-{
-	if (ckdb::keySetBaseName (getKey (), baseName) == -1)
-	{
-		throw KeyInvalidName ();
-	}
-}
-
-/**Sets a base name for a key.
- *
- * @copydoc keySetBaseName
- *
- * @throw KeyInvalidName if the name is not valid
- */
 inline void Key::setBaseName (const std::string & baseName)
 {
 	if (ckdb::keySetBaseName (getKey (), baseName.c_str ()) == -1)
@@ -922,6 +908,18 @@ inline void Key::setBaseName (const std::string & baseName)
 inline void Key::addBaseName (const std::string & baseName)
 {
 	if (ckdb::keyAddBaseName (getKey (), baseName.c_str ()) == -1)
+	{
+		throw KeyInvalidName ();
+	}
+}
+
+/** Delete the baseName of a key.
+ *
+ * @throw KeyInvalidName if the name is not valid
+ */
+inline void Key::delBaseName ()
+{
+	if (ckdb::keySetBaseName (getKey (), 0) == -1)
 	{
 		throw KeyInvalidName ();
 	}
