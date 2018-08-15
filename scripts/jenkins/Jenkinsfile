@@ -1434,7 +1434,8 @@ def detectInterruption(Closure c) {
     }
   } catch (hudson.AbortException ae) {
     // this ambiguous condition means during a shell step, user probably aborted
-    if (ae.getMessage().contains('script returned exit code 143')) {
+    if (ae.getMessage().contains('script returned exit code 143') ||
+        ae.getMessage().contains('Queue task was cancelled')) {
         throw new UserInterruptedException(ae)
     } else {
         throw ae
