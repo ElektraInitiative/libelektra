@@ -93,12 +93,8 @@ void addMetadata (Key & key, YAML::Node const & node)
  */
 Key createLeafKey (YAML::Node const & node, string const & name)
 {
-	Key key (name, KEY_END);
-	if (node.IsNull ())
-	{
-		key.setMeta ("binary", "");
-	}
-	else
+	Key key{ name, KEY_BINARY, KEY_END };
+	if (!node.IsNull ())
 	{
 		key.setString (node.as<string> ());
 	}
