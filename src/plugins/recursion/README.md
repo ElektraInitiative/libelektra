@@ -42,25 +42,16 @@ Users have to define recursive setting specifications in the following way:
 
 ```sh
 kdb mount config.dump /recursive dump recursion
-kdb setmeta user/recursive check/recursion/vertex "define"
-kdb setmeta user/recursive check/recursion/ref "ref"
+kdb setmeta user/recursive check/recursion "ref"
 ```
 
-`check/recursion/vertex` is the basic building block for any recursive structure.
- 
-`define` in the the example above is the placeholder in they key name to declare a basic building block.
-For example `/recursive/define` would be such a declaration.
+`check/recursion` is the basic building block for any recursive structure such as a vertex in a graph.
+ Every key below `/recursive` in this example will be treated as vertex, such 
+ as `/recursive/rootkey` and `/recursive/childkey`.
+Furthermore the provided keyword (`ref` in the upper example) is used to refer to other recursive building blocks.
 
-So users would build up structures like this:
-`/recursive/<vertex>/#[0-9]+/<vertex>/#[0-9]+/.....`
-
-`#[0-9]+` is used to declare children. So
-
-- `/recursive/define/#0`
-- `/recursive/define/#1`
-
-are both definitions of a recursive structure. Now assume you want to refer from `define/#0` to `define/#1`.
-This would work like this: `kdb set /recursive/define/#0/ref/#0 /recursive/define/#1`.
+Note that you are only allowed to refer to vertices below the key on which the metadata is set (`/recursive` 
+in the example above).
 
 Now take this setting as an example:
 
@@ -75,30 +66,33 @@ Users will have to set this structure in the following way:
 
 ```
 #First we define all entries
-kdb set /recursive/define/#0 A0
-kdb set /recursive/define/#1 A1
-kdb set /recursive/define/#2 A2
-kdb set /recursive/define/#3 B0
-kdb set /recursive/define/#4 B1
-kdb set /recursive/define/#5 B2
+kdb set /recursive/A0
+kdb set /recursive/A1
+kdb set /recursive/A2
+kdb set /recursive/B0
+kdb set /recursive/B1
+kdb set /recursive/B2
 
 #Next we link each entries toegether
 
 #For A:
-kdb set /recursive/define/#0/ref/#0 /recursive/define/#1
-kdb set /recursive/define/#0/ref/#1 /recursive/define/#2
+kdb set /recursive/A0/ref/#0 A1
+kdb set /recursive/A0/ref/#1 A2
 
 #For A1:
-kdb set /recursive/define/#1/ref/#0 /recursive/define/#3
+kdb set /recursive/A1/ref/#0 B0
 
 #For A2:
-kdb set /recursive/define/#2/ref/#0 /recursive/define/#4
-kdb set /recursive/define/#2/ref/#1 /recursive/define/#5
+kdb set /recursive/A2/ref/#0 B1
+kdb set /recursive/A2/ref/#1 B2
 ```
 
+It is not needed to add `/recursive` before every key as it is only possible to choose keys
+below this rootkey anyway. Referring to other keys is done by 
+the [array notation](https://www.libelektra.org/tutorials/arrays).
 
 Arbitrary additional data can be saved too such as:
-`kdb set /recursive/define/#2/permission admin`
+`kdb set /recursive/A1/permission admin`
 
 ## Another example
 
@@ -120,55 +114,54 @@ So how can we map the specification as well as configuration into elektra?
 First we create a config and mount it. Next we will set the specification for all menu entries as following:
 ```
 kdb mount config.dump /editor dump recursion
-sudo kdb setmeta /editor check/recursion/vertex "menu"
-sudo kdb setmeta /editor check/recursion/ref "menuref"
+sudo kdb setmeta /editor check/recursion "menuref"
 ```
 
-The first metadata `check/recursion/vertex` is used to define the basic building block of our recursive stucture, 
-just like vertices in a graph. `check/recursion/ref` is used to link together all vertices. 
-`menu` and `menuref` are our defined keywords in this example.
+Keys below `check/recursion` are used to define the basic building block of our recursive structure, 
+just like vertices in a graph. The provided string (`menuref` in our example) is used to link together our defined
+building blocks. 
 
-Each key definition in our example in the form of `/editor/menu` will now be treated as recursive entry (vertex). You can define arbitrary
-many menues like this: `/editor/menu/#[d]` where `[d]` stands for a positive number. This notation is called the 
-the [array notation](https://www.libelektra.org/tutorials/arrays). Menues can be linked via `menuref` 
-like this: `/editor/menu/#[d]/menuref/#[d]` and is again in the array notation.
+Each subkey in our example below `/editor` will now be treated as recursive entry (vertex). You can define arbitrary
+many menues like this. Menues can be linked in our example via `menuref`, 
+like this: `/editor/<other_resursive_entry>/menuref/#[d]` and is 
+done in the [array notation](https://www.libelektra.org/tutorials/arrays).
 
-Next we create all distinct vertices such as `File`, `Print` etc. Note that the `Settings`
+Next we create all distinct recursive entries such as `File`, `Print` etc. Note that the `Settings`
  menu appears twice but we will only need to declare it once. The order of the array
   or the `kdb set` commands does not matter:
 
 ```
-kdb set /editor/menu/#0 File
-kdb set /editor/menu/#1 Tools
-kdb set /editor/menu/#2 Print
-kdb set /editor/menu/#3 Settings
-kdb set /editor/menu/#4 "Global Settings"
-kdb set /editor/menu/#5 "Autocorrect Options"
-kdb set /editor/menu/#6 "Extension Manager"
-kdb set /editor/menu/#7 "Macros"
-kdb set /editor/menu/#8 "Organize Macros"
-kdb set /editor/menu/#9 "Macro Basics"
+kdb set /editor/File
+kdb set /editor/Tools
+kdb set /editor/Print
+kdb set /editor/Settings
+kdb set /editor/GlobalSettings
+kdb set /editor/AutocorrectOptions
+kdb set /editor/ExtensionManager
+kdb set /editor/Macros
+kdb set /editor/OrganizeMacros
+kdb set /editor/MacroBasics
 ```
 
 Now that we have defined we can link together all vertices(menues). We start with the `File` menu:
 
 ```
-kdb set /editor/menu/#0/menuref/#0 /editor/menu/#2
-kdb set /editor/menu/#0/menuref/#1 /editor/menu/#3
+kdb set /editor/File/menuref/#0 Print
+kdb set /editor/File/menuref/#1 Settings
 ```
 
 Next we link the `Settings` vertex:
 
 ```
-kdb set /editor/menu/#3/menuref/#0 /editor/menu/#5
-kdb set /editor/menu/#3/menuref/#1 /editor/menu/#6
+kdb set /editor/Settings/menuref/#0 GlobalSettings
+kdb set /editor/Settings/menuref/#1 AutocorrectOptions
 ```
 
 Now we link the `Tools` vertex:
 ```
-kdb set /editor/menu/#1/menuref/#0 /editor/menu/#5
-kdb set /editor/menu/#1/menuref/#1 /editor/menu/#3
-kdb set /editor/menu/#1/menuref/#2 /editor/menu/#7
+kdb set /editor/Tools/menuref/#0 ExtensionManager
+kdb set /editor/Tools/menuref/#1 Settings
+kdb set /editor/Tools/menuref/#2 Macros
 ```
 
 Note that `Settings` is already linked. We do not need to do it for the `Tools` vertex again.
@@ -176,9 +169,12 @@ Note that `Settings` is already linked. We do not need to do it for the `Tools` 
 Finally we link all vetices of `Macros`:
 
 ```
-kdb set /editor/menu/#7/menuref/#0 /editor/menu/#8
-kdb set /editor/menu/#8/menuref/#0 /editor/menu/#9
+kdb set /editor/Macros/menuref/#0 OrganizeMacros
+kdb set /editor/OrganizeMacros/menuref/#0 MacroBasics
 ```
+
+Note that you can add arbitrary data to any key such as
+`kdb set /editor/File/highlight_color yellow`.
 
 ### Example of wrong settings
 
@@ -186,14 +182,16 @@ In the above example the following settings will be rejected:
 
 ```
 #Link "Macro Basics" to the parent menu "Macros" and create an endless loop
-kdb set /editor/menu/#9/menuref/#0 /editor/menu/#7
+kdb set /editor/MacroBasics/menuref/#0 Macros
 # ERR: 198
-# STDERR: Reason: Cyclical reference detected: "Macro Basics" -> "Macros" -> Organize Macros" -> "Macro Basics"
+# STDERR: Reason: Cyclical reference detected: "MacroBasics" -> 
+# "Macros" -> OrganizeMacros" -> "Macro Basics"
 
-#Link to something which does not exist
-kdb set /editor/menu/#9/menuref/#0 /editor/menu/#10
+#Link to something which does not exist or is potentially outside of the /editor rootkey
+kdb set /editor/MacroBasics/menuref/#0 AboutPage
 # ERR: 199
-# STDERR: Reason: Could not find vertex with #10. Maybe it does not exist yet?
+# STDERR: Reason: Could not find recursive entry with name "AboutPage".
+# Maybe it does not exist yet?
 ```
 
 Sitenote: Maybe the last example here will just emit a warning so users are free in the order of declaration.
@@ -228,56 +226,16 @@ referencing to it.
 
 [This](https://github.com/lcdproc/lcdproc/blob/master/clients/lcdexec/lcdexec.conf) is the current format in
 lcdexec.
+ 
+Their reference keyword (`check/recursion`) to other settings is `Entry`.
 
-Their approach is not array based but name based. 
-Their reference keyword (`check/recursion/ref`) to other settings is `Entry`.
+Their approach is easily adoptable with our current form and would not require any changes
+for LCDproc.
 
-They do not use an array based approach though but give names instead.
-So eg. instead of `menu/#0` they give it an arbitrary name such as `FileMenu`.
-
-Again taking the example from above for the `File` menu:
-
-```
-#Link to (yet non existent) menus
-kdb set /editor/MainMenu/Entry/#0 /editor/FileMenu
-
-#Give the displayname
-kdb set /editor/FileMenu/DisplayName File
-
-#Link to (yet non existent) menus
-kdb set /editor/FileMenu/Entry/#0 /editor/PrintMenu
-kdb set /editor/FileMenu/Entry/#1 /editor/SettingsMenu
-
-#Give the displaynames
-kdb set /editor/PrintMenu/DisplayName SettingsPrint
-kdb set /editor/SettingsMenu/DisplayName Settings
-
-#Link the Settings Menu
-kdb set /editor/SettingsMenu/Entry/#0 /editor/GlobalSettings
-kdb set /editor/SettingsMenu/Entry/#1 /editor/AutocorrectOptions
-
-#Give the displaynames
-kdb set /editor/GlobalSettings/DisplayName "Global Settings"
-kdb set /editor/AutocorrectOptions/DisplayName "Autocorrect Options"
-``` 
-
-This would also guarantee reusability like in the array based approach.
-
-The plugin could theoretically support an arbitrary name instead of an array. But how does the 
-specification know what is actually a menu entry and what is just some arbitrary other setting.
-
-Imagine you want to configure something completely Menu unrelated, eg. the Fonts for the editor:
-
-```
-kdb set /editor/SupportedFonts/Entry/#0 Verdana
-kdb set /editor/SupportedFonts/Entry/#1 TimesNewRoman
-```
-
-How can the plugin differentiate between settings it should check for and those who are not of any interest?
-We could say that for example we apply the recursive specification to another namespace, eg. 
-`/editor/menudeclarataion/FileMenu`.
-
-This though would at least require LCDproc to prepend the namespace infront.
+Nonetheless I would suggest that LCDproc provides its own namespace for the menubar entries as it
+ is much more clear which setting is meant.
+It is much more clear to have eg `/lcdexec/menubar/Server` which could refer to a Server settings menu entry rather
+than having it here: `/lcdexec/Server` which could be mistaken for the IPaddress to which the client connects to.
 
 
 ## Guarantees
@@ -287,7 +245,7 @@ keys which lead into nothing. If we do not want to restrict users in the order o
 if the setting does not exist yet.
 
 2) Endless loops will be prohibited. eg. 
-`kdb set /recursive/define/#0/ref/#0 /recursive/define/#0`
+`kdb set /recursive/Vertex/ref/#0 Vertex`
 
 ## Problems
 Users will be forced to declare building blocks first and then link them together.
