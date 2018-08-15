@@ -276,6 +276,16 @@ Thanks to Daniel Bugl.
 
 - The plugin does now support [arrays](https://www.libelektra.org/tutorials/arrays) containing empty fields. *(René Schwaiger)*
 - YAML CPP now also adds `array` meta data for arrays containing arrays. *(René Schwaiger)*
+- The plugin now also supports empty arrays:
+
+  ```sh
+  kdb mount test.yaml user/tests/yamlcpp yamlcpp
+  kdb setmeta user/tests/yamlcpp/array array ''
+  kdb export user/tests/yamlcpp/array yamlcpp
+  #> []
+  ```
+
+  .
 
 ### YAML Smith
 
