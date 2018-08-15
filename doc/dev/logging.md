@@ -72,6 +72,17 @@ If you want to only log messages below a specific directory prefix, then please 
    #endif
    ```
 
+   . To log messages from multiple source you can use the operator `&&` to chain multiple calls to `strncmp`. For example, to log messages
+   from the `directoryvalue` and `yamlcpp` plugin use the code:
+
+   ```c
+   #ifndef NO_FILTER
+   	if (strncmp (file, "src/plugins/directoryvalue/", sizeof ("src/plugins/directoryvalue")) &&
+   	    strncmp (file, "src/plugins/yamlcpp/", sizeof ("src/plugins/yamlcpp")))
+   		goto end;
+   #endif
+    ```
+
    .
 
 ### Compilation
