@@ -336,13 +336,6 @@ Thanks to Daniel Bugl.
   [notifications](https://www.libelektra.org/tutorials/notifications). *(Thomas Wahringer)*
 - Do not exclude `simpleini` silently on non-glibc systems but output a message
   like for other plugins *(Markus Raab)*
-
-[YAML]: http://yaml.org
-
-## Libraries
-
-### Core
-
 - We updated the `infos/status` clause of the following plugins:
 
   - [`boolean`](http://libelektra.org/plugins/boolean),
@@ -356,6 +349,13 @@ Thanks to Daniel Bugl.
   - [`xerces`](http://libelektra.org/plugins/xerces)
 
   . *(René Schwaiger)*
+
+[YAML]: http://yaml.org
+
+
+## Libraries
+
+### Core
 
 ### General
 
