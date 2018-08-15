@@ -262,7 +262,7 @@ Thanks to Daniel Bugl.
 
    # New behavior
    kdb ls /tests/yamlcpp
-   user/tests/yamlcpp/level1/level2/level3
+   #> user/tests/yamlcpp/level1/level2/level3
    ```
    . *(René Schwaiger)*
 
