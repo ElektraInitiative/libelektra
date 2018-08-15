@@ -36,7 +36,7 @@ using CppKey = kdb::Key;
  *
  * @return A pair of key sets, where the first key set contains all directory leaves and the second key set contains all other keys
  */
-pair<CppKeySet, CppKeySet> splitDirectoryLeavesOther (CppKeySet const & input)
+KeySetPair splitDirectoryLeavesOther (CppKeySet const & input)
 {
 	CppKeySet directoryLeaves;
 	CppKeySet other;
@@ -62,7 +62,7 @@ pair<CppKeySet, CppKeySet> splitDirectoryLeavesOther (CppKeySet const & input)
  *
  * @return A pair of key sets, where the first key set contains all array leaves and the second key set contains all other keys
  */
-pair<CppKeySet, CppKeySet> splitArrayLeavesOther (CppKeySet const & arrayParents, CppKeySet const & keys)
+KeySetPair splitArrayLeavesOther (CppKeySet const & arrayParents, CppKeySet const & keys)
 {
 	bool isFirstElement = false;
 	CppKeySet firstElements;
@@ -184,7 +184,7 @@ bool isArrayParent (CppKey const & parent, CppKeySet const & keys)
  *
  * @return A pair of key sets, where the first key set contains all array parents and the second key set contains all other keys
  */
-pair<CppKeySet, CppKeySet> splitArrayParentsOther (CppKeySet const & keys)
+KeySetPair splitArrayParentsOther (CppKeySet const & keys)
 {
 	CppKeySet arrayParents;
 	CppKeySet others;
@@ -217,7 +217,7 @@ pair<CppKeySet, CppKeySet> splitArrayParentsOther (CppKeySet const & keys)
  * @return A pair of key sets, where the first key set contains all array parents and elements,
  *         and the second key set contains all other keys
  */
-pair<CppKeySet, CppKeySet> splitArrayOther (CppKeySet const & arrayParents, CppKeySet const & keys)
+KeySetPair splitArrayOther (CppKeySet const & arrayParents, CppKeySet const & keys)
 {
 	CppKeySet others = keys.dup ();
 	CppKeySet arrays;
@@ -310,7 +310,7 @@ CppKeySet decreaseArrayIndices (CppKeySet const & parents, CppKeySet const & arr
  *
  * @return A pair containing a copy of `parents` and `arrays`, where all indices specified by `parents` are increased by one
  */
-pair<CppKeySet, CppKeySet> increaseArrayIndices (CppKeySet const & parents, CppKeySet const & arrays)
+KeySetPair increaseArrayIndices (CppKeySet const & parents, CppKeySet const & arrays)
 {
 	CppKeySet arraysIncreasedIndex = arrays.dup ();
 	CppKeySet arrayParents = parents.dup ();
@@ -348,7 +348,7 @@ pair<CppKeySet, CppKeySet> increaseArrayIndices (CppKeySet const & parents, CppK
  *
  * @return A pair of key sets, where the first key set contains all directories and the second key set contains all leaves
  */
-pair<CppKeySet, CppKeySet> splitDirectoriesLeaves (CppKeySet const & keys)
+KeySetPair splitDirectoriesLeaves (CppKeySet const & keys)
 {
 	CppKeySet leaves;
 	CppKeySet directories;

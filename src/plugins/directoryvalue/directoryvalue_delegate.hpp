@@ -25,6 +25,8 @@ using CppKeySet = kdb::KeySet;
 
 constexpr ssize_t arrayValuePrefixSize = sizeof (ARRAY_VALUE_PREFIX) - 1;
 
+typedef pair<CppKeySet, CppKeySet> KeySetPair;
+
 // -- Functions ----------------------------------------------------------------------------------------------------------------------------
 
 /**
@@ -34,7 +36,7 @@ constexpr ssize_t arrayValuePrefixSize = sizeof (ARRAY_VALUE_PREFIX) - 1;
  *
  * @return A pair of key sets, where the first key set contains all array parents and the second key set contains all other keys
  */
-pair<CppKeySet, CppKeySet> splitArrayParentsOther (CppKeySet const & keys);
+KeySetPair splitArrayParentsOther (CppKeySet const & keys);
 
 /**
  * @brief Increase the array index of array elements by one.
@@ -47,7 +49,7 @@ pair<CppKeySet, CppKeySet> splitArrayParentsOther (CppKeySet const & keys);
  *
  * @return A pair containing a copy of `parents` and `arrays`, where all indices specified by `parents` are increased by one
  */
-pair<CppKeySet, CppKeySet> increaseArrayIndices (CppKeySet const & parents, CppKeySet const & arrays);
+KeySetPair increaseArrayIndices (CppKeySet const & parents, CppKeySet const & arrays);
 
 // -- Class --------------------------------------------------------------------------------------------------------------------------------
 
