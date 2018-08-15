@@ -338,6 +338,7 @@ Thanks to Daniel Bugl.
 
 - replaced strdup with elektraStrDup (for C99 compatibility) *(Markus Raab)*
 - You can now remove the basename of a key via the C++ API by calling `key.delBaseName()`. *(René Schwaiger)*
+- The function `elektraArrayGetNextKey` now uses `NULL` instead of the empty string as init value for the returned key. *(René Schwaiger)*
 
 - <<TODO>>
 

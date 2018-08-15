@@ -249,7 +249,7 @@ Key * elektraArrayGetNextKey (KeySet * arrayKeys)
 
 	ksAppendKey (arrayKeys, last);
 	Key * newKey = keyDup (last);
-	keySetString (newKey, "");
+	keySetBinary (newKey, 0, 0);
 	int ret = elektraArrayIncName (newKey);
 
 	if (ret == -1)
