@@ -92,6 +92,8 @@ CppKeySet removeBaseName (CppKeySet const & keys)
 
 	for (auto key : keys)
 	{
+		ELEKTRA_LOG_DEBUG ("Remove basename from “%s”: “%s”", key.getName ().c_str (),
+				   key.getBinarySize () == 0 ? "NULL" : key.isBinary () ? "binary value!" : key.getString ().c_str ());
 		CppKey directory = key.dup ();
 		directory.delBaseName ();
 		directories.append (directory);

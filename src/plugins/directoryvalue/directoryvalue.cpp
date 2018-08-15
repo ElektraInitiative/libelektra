@@ -88,6 +88,14 @@ int elektraDirectoryValueGet (Plugin * handle, KeySet * returned, Key * parentKe
 		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_UNCAUGHT_EXCEPTION, *parent, error.what ());
 	}
 
+#ifdef HAVE_LOGGER
+	for (auto key : keys)
+	{
+		ELEKTRA_LOG_DEBUG ("\t“%s”: “%s”", key.getName ().c_str (),
+				   key.getBinarySize () == 0 ? "NULL" : key.isBinary () ? "binary value!" : key.getString ().c_str ());
+	}
+#endif
+
 	parent.release ();
 	keys.release ();
 	return status;
