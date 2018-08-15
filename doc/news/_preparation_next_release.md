@@ -565,7 +565,9 @@ As always, the ABI and API of kdb.h is fully compatible, i.e. programs
 compiled against an older 0.8 version of Elektra will continue to work
 (ABI) and you will be able to recompile programs without errors (API).
 
-- <<TODO>>
+Following changes were made:
+
+- The C++ API was extended with delBaseName()
 - <<TODO>>
 - <<TODO>>
 
