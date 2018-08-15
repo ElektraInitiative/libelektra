@@ -304,11 +304,13 @@ sudo kdb mount test.yaml user/tests/yamlcpp yamlcpp
 # Check if the plugin saves null keys correctly
 kdb set user/tests/yamlcpp/null
 kdb set user/tests/yamlcpp/null/level1/level2
+kdb setmeta user/tests/yamlcpp/null/level1/level2 comment 'Null key'
 
 kdb ls user/tests/yamlcpp/null
 #> user/tests/yamlcpp/null
 #> user/tests/yamlcpp/null/level1/level2
 kdb get -v user/tests/yamlcpp/null | grep -q 'The key is null.'
+kdb get -v user/tests/yamlcpp/null/level1/level2 | grep -q 'The key is null.'
 
 # Check if the plugin saves empty keys correctly
 kdb set user/tests/yamlcpp/empty ""

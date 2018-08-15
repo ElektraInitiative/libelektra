@@ -121,7 +121,7 @@ Key createLeafKey (YAML::Node const & node, string const & name)
  */
 Key convertMetaNodeToKey (YAML::Node const & node, Key & parent)
 {
-	auto key = node[0].IsNull () ? Key{ parent.getFullName (), KEY_END } :
+	auto key = node[0].IsNull () ? Key{ parent.getFullName (), KEY_BINARY, KEY_END } :
 				       Key{ parent.getFullName (), KEY_VALUE, node[0].as<string> ().c_str (), KEY_END };
 	ELEKTRA_LOG_DEBUG ("Add key “%s”: “%s”", key.getName ().c_str (),
 			   key.getBinarySize () == 0 ? "NULL" : key.isString () ? key.getString ().c_str () : "binary value!");

@@ -287,6 +287,19 @@ Thanks to Daniel Bugl.
 
   .
 
+- YAML CPP now handles null values containing meta data properly:
+
+   ```sh
+   kdb mount test.yaml user/tests/yamlcpp yamlcpp
+   kdb set user/tests/yamlcpp/null
+   kdb setmeta user/tests/yamlcpp/null comment 'Null Key'
+   kdb export user/tests/yamlcpp/null yamlcpp
+   #> !<!elektra/meta>
+   #> - ~
+   #> - comment: Null Key
+   ```
+   .
+
 ### YAML Smith
 
 - [YAML Smith](http://libelektra.org/plugins/yamlsmith) is a plugin that converts Elektra’s `KeySet` data structure to a textual
