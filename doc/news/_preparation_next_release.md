@@ -162,6 +162,10 @@ you up to date with the multi-language support provided by Elektra.
 - We fixed some minor spelling mistakes in the documentation. *(René Schwaiger)*
 - <<TODO>>
 - <<TODO>>
+- Go into more detail in
+    [BUILDSERVER.md](https://master.libelektra.org/doc/BUILDSERVER.md).
+    *(Lukas Winkler)*
+
 
 ## Tests
 
