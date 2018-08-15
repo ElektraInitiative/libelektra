@@ -1216,3 +1216,17 @@ description:A plugin produced an uncaught C++ exception
 severity:error
 ingroup:plugin
 macro:UNCAUGHT_EXCEPTION
+
+number:195
+description:Timeout while sending notifications.
+severity:warning
+ingroup:plugin
+module:zeromqsend
+macro:ZEROMQSEND_TIMEOUT
+
+number:196
+description:Unknown error while sending notifications.
+severity:warning
+ingroup:plugin
+module:zeromqsend
+macro:ZEROMQSEND_ERROR

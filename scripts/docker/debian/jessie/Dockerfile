@@ -35,6 +35,8 @@ RUN apt-get update && apt-get -y install \
     libyaml-cpp-dev \
     swig3.0 \
     libuv0.10-dev \
+    libev-dev \
+    libzmq3-dev \
     checkinstall \
     gobject-introspection \
     libgirepository1.0-dev \

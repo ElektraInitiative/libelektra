@@ -290,6 +290,18 @@ Thanks to Daniel Bugl.
   basic [YAML][] data. The plugin only converts YAML data to Elektra’s `KeySet` data structure. If you want to write data in the YAML
   format please take a look at the [YAML Smith plugin](http://libelektra.org/plugins/yamlsmith). *(René Schwaiger)*
 
+### ZeroMQ transport plugins
+
+- New notification transport plugins for [ZeroMQ](http://zeromq.org/) were added.
+  The new ["zeromqsend"](https://www.libelektra.org/plugins/zeromqsend) and ["zeromqrecv"](https://www.libelektra.org/plugins/zeromqrecv) plugins use
+  `ZMQ_PUB` and `ZMQ_SUB` sockets to send and receive notifications.
+  The plugins can be used instead or along with the
+  ["dbus"](https://www.libelektra.org/plugins/dbus) and
+  ["dbusrecv"](https://www.libelektra.org/plugins/dbusrecv) transport plugins.
+  Check out the
+  [plugin documentation](https://www.libelektra.org/plugins/zeromqrecv) for more
+  information. *(Thomas Wahringer)*
+
 ### Misc
 
 - The logging plugins ["syslog"](https://www.libelektra.org/plugins/syslog),

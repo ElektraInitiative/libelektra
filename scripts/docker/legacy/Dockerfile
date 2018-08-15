@@ -1,7 +1,5 @@
 FROM ubuntu:artful
 
-ARG SWIGVERSION="3.0.11"
-
 RUN apt-get -qq update && apt-get -qq -y install \
 	curl \
 	build-essential \
@@ -31,6 +29,7 @@ RUN apt-get -qq update && apt-get -qq -y install \
 	swig3.0 \
 	libuv1-dev \
 	libev-dev \
+	libzmq3-dev \
 	checkinstall \
 	valgrind \
 && gem install ronn \

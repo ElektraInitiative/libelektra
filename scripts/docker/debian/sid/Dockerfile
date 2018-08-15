@@ -37,6 +37,8 @@ RUN apt-get update && apt-get -y install \
         libyaml-cpp-dev \
         swig3.0 \
         libuv1-dev \
+        libev-dev \
+        libzmq3-dev \
         ghc \
         ghc-dynamic \
         cabal-install \
