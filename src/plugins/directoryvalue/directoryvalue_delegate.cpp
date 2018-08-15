@@ -93,7 +93,7 @@ CppKeySet removeBaseName (CppKeySet const & keys)
 	for (auto key : keys)
 	{
 		CppKey directory = key.dup ();
-		directory.setBaseName (0);
+		directory.delBaseName ();
 		directories.append (directory);
 	}
 	return directories;

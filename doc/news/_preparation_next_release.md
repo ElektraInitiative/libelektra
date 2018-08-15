@@ -325,7 +325,7 @@ Thanks to Daniel Bugl.
 ### General
 
 - replaced strdup with elektraStrDup (for C99 compatibility) *(Markus Raab)*
-- You can now remove the basename of a key via the C++ API by calling `key.setBaseName(0)`. *(René Schwaiger)*
+- You can now remove the basename of a key via the C++ API by calling `key.delBaseName()`. *(René Schwaiger)*
 
 - <<TODO>>
 
