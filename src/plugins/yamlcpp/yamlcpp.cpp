@@ -78,6 +78,14 @@ int elektraYamlcppGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 				    parent.getString ().c_str (), exception.what ());
 	}
 
+#ifdef HAVE_LOGGER
+	for (auto key : keys)
+	{
+		ELEKTRA_LOG_DEBUG ("\t“%s”: “%s”", key.getName ().c_str (),
+				   key.getBinarySize () == 0 ? "NULL" : key.isBinary () ? "binary value!" : key.getString ().c_str ());
+	}
+#endif
+
 	parent.release ();
 	keys.release ();
 

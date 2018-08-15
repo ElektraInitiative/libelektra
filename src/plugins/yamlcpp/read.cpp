@@ -98,12 +98,13 @@ Key createLeafKey (YAML::Node const & node, string const & name)
 	{
 		key.setString (node.as<string> ());
 	}
-	ELEKTRA_LOG_DEBUG ("Add key “%s: %s”", key.getName ().c_str (), key.getBinarySize () == 0 ? "NULL" : key.get<string> ().c_str ());
 	if (node.Tag () == "tag:yaml.org,2002:binary")
 	{
 		ELEKTRA_LOG_DEBUG ("Set metadata type of key to binary");
 		key.setMeta ("type", "binary");
 	}
+	ELEKTRA_LOG_DEBUG ("Add key “%s: %s”", key.getName ().c_str (),
+			   key.getBinarySize () == 0 ? "NULL" : key.isBinary () ? "binary value!" : key.get<string> ().c_str ());
 	return key;
 }
 
