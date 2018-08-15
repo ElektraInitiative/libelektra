@@ -51,7 +51,7 @@ Key newArrayKey (KeySet const & mappings, Key & arrayKey)
 {
 	ELEKTRA_LOG_DEBUG ("Add new array element to array parent “%s”", arrayKey.getName ().c_str ());
 
-	KeySet arrayEntries{ elektraArrayGet (arrayKey.getKey (), mappings.getKeySet ()) };
+	KeySet arrayEntries{ elektraArrayGet (*arrayKey, mappings.getKeySet ()) };
 
 	if (arrayEntries.size () <= 0)
 	{
