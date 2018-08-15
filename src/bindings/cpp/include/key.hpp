@@ -121,6 +121,7 @@ public:
 
 	inline void setName (const std::string & newName);
 	inline void addName (const std::string & addedName);
+	inline void setBaseName (char const * baseName);
 	inline void setBaseName (const std::string & baseName);
 	inline void addBaseName (const std::string & baseName);
 
@@ -879,6 +880,20 @@ inline void Key::setName (const std::string & newName)
 inline void Key::addName (const std::string & addedName)
 {
 	if (ckdb::keyAddName (getKey (), addedName.c_str ()) == -1)
+	{
+		throw KeyInvalidName ();
+	}
+}
+
+/**Sets a base name for a key.
+ *
+ * @copydoc keySetBaseName
+ *
+ * @throw KeyInvalidName if the name is not valid
+ */
+inline void Key::setBaseName (char const * baseName)
+{
+	if (ckdb::keySetBaseName (getKey (), baseName) == -1)
 	{
 		throw KeyInvalidName ();
 	}

@@ -155,12 +155,14 @@ Thanks to Daniel Bugl.
 
 - The `crypto` plugin now uses Elektra's `libinvoke` and the `base64` plugin in order to encode and decode Base64 strings. This improvement reduces code duplication between the two plugins. *(Peter Nirschl)*
 
-### CSVStorage 
+### CSVStorage
 
 - Changed behaviour of export to validate the structure of exported keys only. *(Thomas Waser)*
 
 ### Directory Value
 
+- We rewrote the plugin using C++. *(René Schwaiger)*
+- [Directory Value](https://www.libelektra.org/plugins/directoryvalue) now also supports nested arrays. *(René Schwaiger)*
 - The plugin now also adds leafs for a key, if its value is null or the empty string. *(René Schwaiger)*
 
 ### fcrypt
@@ -323,6 +325,7 @@ Thanks to Daniel Bugl.
 ### General
 
 - replaced strdup with elektraStrDup (for C99 compatibility) *(Markus Raab)*
+- You can now remove the basename of a key via the C++ API by calling `key.setBaseName(0)`. *(René Schwaiger)*
 
 - <<TODO>>
 

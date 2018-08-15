@@ -1,8 +1,12 @@
 include (LibAddMacros)
 
 add_plugin (directoryvalue
-	    SOURCES directoryvalue.h
-		    directoryvalue.c
-	    LINK_ELEKTRA elektra-ease
+	    CPP
 	    ADD_TEST
-	    TEST_README)
+	    CPP_TEST
+	    TEST_README
+	    SOURCES directoryvalue.hpp
+		    directoryvalue.cpp
+		    directoryvalue_delegate.hpp
+		    directoryvalue_delegate.cpp
+	    LINK_ELEKTRA elektra-ease)

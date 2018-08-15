@@ -9,7 +9,7 @@
 - infos/metadata =
 - infos/description = A minimal plugin for simple INI files
 
-## mINI
+# mINI
 
 The “maybe this is not INI” plugin (`mini`) is a very simple storage plugin loosely based on the [INI][] file format. Since this plugin **does not support sections** it might be more appropriate to say that it is based on the [.properties][] format, used in many Java applications.
 

@@ -163,6 +163,7 @@ kdb ls /tests/yamlcpp
 kdb rm /tests/yamlcpp/key
 kdb file /tests/yamlcpp | xargs cat
 #> array:
+#>   - "___dirdata: "
 #>   - scalar
 #>   - 🔑: 🙈
 

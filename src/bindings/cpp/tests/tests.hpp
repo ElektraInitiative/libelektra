@@ -57,12 +57,12 @@ using namespace kdb;
  */
 testing::AssertionResult & operator<< (testing::AssertionResult & stream, kdb::Key & key)
 {
-	stream << key.getName () << ": " << (key.isString () ? key.getString () : (key.getBinarySize () == 0 ? "NULL" : "BINARY"));
+	stream << key.getName () << ": “" << (key.isString () ? key.getString () : (key.getBinarySize () == 0 ? "NULL" : "BINARY")) << "”";
 
 	key.rewindMeta ();
 	while (key.nextMeta ())
 	{
-		stream << ", " << key.currentMeta ().getName () << ": " << key.currentMeta ().getString ();
+		stream << ", " << key.currentMeta ().getName () << ": “" << key.currentMeta ().getString () << "”";
 	}
 	stream << endl;
 	return stream;

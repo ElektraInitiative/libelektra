@@ -7,7 +7,7 @@
 - infos/placements = postgetstorage presetstorage
 - infos/status = maintained unittest nodep preview
 - infos/metadata =
-- infos/description = This plugin converts directory values to leaf values
+- infos/description = This plugin converts directory keys to leaf keys in the set direction
 
 # Directory Value
 
@@ -15,10 +15,10 @@
 
 The Directory Value plugin converts
 
-1. directory (non-leaf) values to leaf values in the “set” direction, and
-2. converts them back to directory values in the “get” direction.
+1. directory (non-leaf) keys to leaf keys in the “set” direction, and
+2. converts them back to directory keys in the “get” direction.
 
-A directory value is a key that contains children. For example in the key set:
+A directory key is a key that has children. For example in the key set:
 
 ```
 user/grandparent                = Grandparent
@@ -38,7 +38,7 @@ user/grandparent/parent
 user/mother
 ```
 
-represent directory values, while the keys
+represent directory keys, while the keys
 
 ```
 user/grandparent/leaf
@@ -47,7 +47,7 @@ user/mother/daughter
 user/mother/son
 ```
 
-specify leaf values. You can easily check this by drawing the key set in the form of a rooted tree:
+are leaf keys. You can easily check this by drawing the key set in the form of a rooted tree:
 
 ```
              user
@@ -59,7 +59,7 @@ leaf  parent    daughter son
        child
 ```
 
-. The Directory Value plugin converts all directory values to leaf values in the “set” direction by adding new keys with the postfix
+. The Directory Value plugin converts all directory keys to leaf keys in the “set” direction by adding new keys with the postfix
 `___dirdata`. Theses keys then store the old value of their parent keys
 
 ```
@@ -71,7 +71,7 @@ user/grandparent/parent/___dirdata  = Parent
 user/grandparent/parent/child       = Child
 user/mother                         =
 user/mother/___dirdata              = Mother
-user/mother/daughter                = Daugther
+user/mother/daughter                = Daughter
 user/mother/son                     = Son
 ```
 
