@@ -222,6 +222,11 @@ Thanks to Daniel Bugl.
   [typechecker](https://www.libelektra.org/plugins/typechecker). Currently the keywords `check/range`,
   `check/enum` and `default` are supported. *(Armin Wurzinger)*
 
+### Type
+
+- We extended the [Markdown Shell Recorder][] example inside the [ReadMe of the plugin](https://www.libelektra.org/plugins/type).
+  *(René Schwaiger)*
+
 ### Typechecker
 
 - The plugin [typechecker](https://www.libelektra.org/plugins/typechecker), used to validate

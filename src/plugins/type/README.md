@@ -41,13 +41,31 @@ plugin instead.
 ## Example
 
 ```sh
+# Mount the plugin
 sudo kdb mount typetest.dump user/tests/type dump type
-kdb set user/tests/type/key a
-kdb setmeta user/tests/type/key check/type char
 
+# Store a character value
+kdb set user/tests/type/key a
+
+# Only allow character values
+kdb setmeta user/tests/type/key check/type char
 kdb get user/tests/type/key
 #> a
 
+# If we store another character everything works fine
+kdb set user/tests/type/key b
+kdb get user/tests/type/key
+#> b
+
+# If we try to store a string Elektra will not change the value
+kdb set user/tests/type/key 'Not a char'
+# STDERR: .*Description: could not type check value of key.*
+# ERROR:  52
+# RET:    5
+kdb get user/tests/type/key
+#> b
+
+# Undo modifications to the database
 kdb rm user/tests/type/key
 sudo kdb umount user/tests/type
 ```
