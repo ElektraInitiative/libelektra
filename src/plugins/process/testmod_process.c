@@ -63,11 +63,11 @@ static void test_no_plugin_key (void)
 	Key * errorKey = keyNew ("", KEY_END);
 	Plugin * plugin = elektraPluginOpen ("process", modules, conf, errorKey);
 	succeed_if (!output_warnings (errorKey), "no warnings in kdbOpen for plugin process");
-	succeed_if (!output_error (errorKey), "no error in kdbOpen for plugin process");
+	succeed_if (output_error (errorKey), "error in kdbOpen for plugin process");
 
 	keyDel (errorKey);
 	keyDel (parentKey);
-	succeed_if (plugin == 0, "could open process plugin");
+	succeed_if (plugin != 0, "could not open process plugin");
 	PLUGIN_CLOSE ();
 }
 
