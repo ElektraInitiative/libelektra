@@ -1,7 +1,7 @@
 include (LibAddBinding)
 
 if (DEPENDENCY_PHASE)
-	find_package (PythonInterp 3)
+	find_package (PythonInterp 3 QUIET)
 	find_package (PythonLibs 3 QUIET)
 	find_package (Pluginprocess)
 	find_swig ()

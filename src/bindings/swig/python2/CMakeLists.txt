@@ -2,8 +2,8 @@ include (${SWIG_USE_FILE})
 include (LibAddMacros)
 
 # set (PythonInterp_FIND_VERSION_EXACT ON)
-find_package (Python2Interp 2.7)
-find_package (Python2Libs 2.7)
+find_package (Python2Interp 2.7 QUIET)
+find_package (Python2Libs 2.7 QUIET)
 
 if (NOT PYTHON2INTERP_FOUND)
 	exclude_binding (swig_python2 "python2 interpreter not found")

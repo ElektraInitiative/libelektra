@@ -1,6 +1,6 @@
 include (LibAddMacros)
 if (DEPENDENCY_PHASE)
-	find_package (LibGit2)
+	find_package (LibGit2 QUIET)
 	if (NOT LibGit2_FOUND)
 		remove_plugin (gitresolver "Cannot find libgit2-dev")
 	endif ()

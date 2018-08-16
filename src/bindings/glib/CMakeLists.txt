@@ -1,7 +1,7 @@
 include (LibAddMacros)
 
 find_package (PkgConfig)
-pkg_check_modules (GOBJECT gobject-2.0>=2.36)
+pkg_check_modules (GOBJECT QUIET gobject-2.0>=2.36)
 
 # Test if binding can be build
 if (NOT GOBJECT_FOUND)
