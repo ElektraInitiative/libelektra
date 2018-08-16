@@ -240,7 +240,7 @@ KeySetPair splitArrayOther (CppKeySet const & arrayParents, CppKeySet const & ke
  * @return A pair of key sets, where the first key set contains all array parents without values, and the second key set contains all other
  *         keys
  */
-pair<CppKeySet, CppKeySet> splitEmptyArrayParents (CppKeySet const & arrayParents)
+KeySetPair splitEmptyArrayParents (CppKeySet const & arrayParents)
 {
 	CppKeySet emptyParents;
 	CppKeySet nonEmptyParents;
