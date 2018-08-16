@@ -209,7 +209,7 @@ int elektraProcessGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		elektraInvoke2Args (contractHandle, "get", pluginContract, pluginParentKey);
 		elektraInvokeClose (contractHandle, pluginParentKey);
 		keyDel (pluginParentKey);
-		if (ksGetSize (contract) == 0)
+		if (ksGetSize (pluginContract) == 0)
 		{
 			ELEKTRA_SET_ERRORF (197, parentKey, "Failed to get the contract for %s", keyString (pluginName));
 			ksDel (pluginContract);
