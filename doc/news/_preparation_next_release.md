@@ -54,11 +54,11 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 ### Process
 
--  There is also a new plugin called [process](https://github.com/ElektraInitiative/libelektra/tree/master/src/plugins/process).
-   This plugin utilizes the pluginprocess library in order to execute arbitrary other
-   plugins in an own process, acting as a proxy itself. Therefore it is not required 
-   to explicitly change a plugin's implementation if it shall be executed in an own
-   process. *(Armin Wurzinger)*
+- There is a new plugin called [process](https://master.libelektra.org/src/plugins/process).
+  This plugin utilizes the pluginprocess library in order to execute other
+  plugins in an own process, acting as a proxy itself. Therefore it is not required 
+  to explicitly change a plugin's implementation if it shall be executed in an own
+  process. *(Armin Wurzinger)*
 
 ### <<Plugin1>>
 
