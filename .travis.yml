@@ -279,6 +279,5 @@ before_script:
     $TRAVIS_BUILD_DIR
 
 script:
-  - find /usr/ -name '*libclang_rt.asan-x86_64*'
   - ninja
   - ${TEST_COMMAND:-eval 'ninja install && ninja run_all && kdb run_all'}

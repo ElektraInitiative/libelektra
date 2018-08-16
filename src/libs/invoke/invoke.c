@@ -294,16 +294,14 @@ int elektraInvoke2Args (ElektraInvokeHandle * handle, const char * elektraPlugin
 {
 	if (!handle || !elektraPluginFunctionName) return -2;
 
-	// If we cast this right away it will hang if the function is not exported by the plugin
-	const void * uncastedFunc = elektraInvokeGetFunction (handle, elektraPluginFunctionName);
+	// If we cast this right away although the function wasn't found it will cause a deadlock
+	const void * rawFunc = elektraInvokeGetFunction (handle, elektraPluginFunctionName);
 
-	if (!uncastedFunc)
-	{
-		return -2;
-	}
+	if (!rawFunc) return -2;
 
 	typedef int (*elektra2Args) (Plugin *, KeySet *, Key *);
-	elektra2Args func = *(elektra2Args *)uncastedFunc;
+	elektra2Args func = *(elektra2Args *) rawFunc;
+
 	return func (handle->plugin, ks, k);
 }
 
