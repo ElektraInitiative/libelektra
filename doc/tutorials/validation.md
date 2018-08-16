@@ -248,7 +248,7 @@ So in this example the validation plugin will be loaded automatically for us.
 `spec-mount` basically does a normal mount except that it automatically selects plugins. As a result there is no
 `spec-umount`  command since the normal `umount` is sufficient.
 
-Please be aware that if you require many plugins for the same mount point, 
+Please be aware that if you require many plugins for the same mountpoint, 
 you can run into [this](https://github.com/ElektraInitiative/libelektra/issues/2133) error.
 
 ```sh
