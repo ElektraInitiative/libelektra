@@ -494,7 +494,8 @@ int DirectoryValueDelegate::convertToDirectories (CppKeySet & keys)
 
 	tie (directoryLeaves, nonDirectoryLeaves) = splitDirectoryLeavesOther (notArrayParents);
 
-	bool const status = directoryLeaves.size () > 0 ? ELEKTRA_PLUGIN_STATUS_SUCCESS : ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+	bool const status =
+		directoryLeaves.size () > 0 || arrayLeaves.size () > 0 ? ELEKTRA_PLUGIN_STATUS_SUCCESS : ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 
 	auto directories = removeBaseName (directoryLeaves);
 
