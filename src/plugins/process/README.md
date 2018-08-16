@@ -4,7 +4,7 @@
 - infos/needs =
 - infos/provides =
 - infos/recommends =
-- infos/placements = prerollback rollback postrollback getresolver pregetstorage getstorage postgetstorage setresolver presetstorage setstorage precommit commit postcommit
+- infos/placements = postcommit
 - infos/status = maintained unittest shelltest tested configurable experimental
 - infos/metadata = 
 - infos/description = executes other plugins inside an own process
@@ -15,6 +15,9 @@ The process plugin uses the `pluginprocess` library in order to execute other pl
 This is useful for plugins which cause memory leaks to be isolated in an own process. Furthermore 
 this is useful for runtimes or libraries that cannot be reinitialized in the same process after they 
 have been used.
+
+Note that the `infos/*` metakeys of this plugin are only a placeholder, infos will be replaced with
+the proxied plugin's contract when this plugin is actually used.
 
 ## Usage
 
@@ -46,4 +49,4 @@ sudo kdb umount /tests/process
 
 ## Limitations
 
-This plugin cannot act as a proxy for itself to prevent loops.+
+This plugin cannot act as a proxy for itself to prevent loops.

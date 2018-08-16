@@ -146,51 +146,92 @@ int elektraProcessClose (Plugin * handle, Key * errorKey)
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
+static void adjustContract (KeySet * pluginContract, KeySet * contract)
+{
+	ksRewind (pluginContract);
+	Key * cur;
+	while ((cur = ksNext (pluginContract)) != NULL)
+	{
+		Key * cpy = keyDup (cur);
+		const char * baseName = keyBaseName (cpy);
+		keySetBaseName (cpy, NULL);
+		if (!elektraStrCmp ("infos", keyBaseName (cpy)))
+		{
+			keySetBaseName (cpy, NULL);
+			keySetBaseName (cpy, NULL);
+			keyAddBaseName (cpy, "process");
+			keyAddBaseName (cpy, "infos");
+			keyAddBaseName (cpy, baseName);
+			Key * infoKey = ksLookup (contract, cpy, KDB_O_NONE);
+			keySetString (infoKey, keyString (cpy));
+		}
+		keyDel (cpy);
+	}
+}
+
+
 int elektraProcessGet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
-	Process * process = elektraPluginGetData (handle);
-	ElektraPluginProcess * pp = process->pp;
-
-	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/process") && elektraPluginProcessIsParent (pp))
+	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/process"))
 	{
-		// Get the missing info about the plugin we proxy from the child process by mimicking its proxied plugin's module key
-		Key * childKey = keyDup (parentKey);
-		keySetBaseName (childKey, keyString (process->pluginName));
-		KeySet * childReturned = ksDup (returned);
-		int ret = elektraPluginProcessSend (pp, ELEKTRA_PLUGINPROCESS_GET, childReturned, childKey);
+		KeySet * processConfig = elektraPluginGetConfig (handle);
+		Key * pluginName = ksLookupByName (processConfig, "/plugin", KDB_O_NONE);
 
-		if (ret != ELEKTRA_PLUGIN_STATUS_ERROR)
-		{
-			KeySet * contract = ksNew (
-				30, keyNew ("system/elektra/modules/process", KEY_VALUE, "process plugin waits for your orders", KEY_END),
-				keyNew ("system/elektra/modules/process/exports", KEY_END),
-				keyNew ("system/elektra/modules/process/exports/open", KEY_FUNC, elektraProcessOpen, KEY_END),
-				keyNew ("system/elektra/modules/process/exports/close", KEY_FUNC, elektraProcessClose, KEY_END),
-				keyNew ("system/elektra/modules/process/exports/get", KEY_FUNC, elektraProcessGet, KEY_END),
-				keyNew ("system/elektra/modules/process/exports/set", KEY_FUNC, elektraProcessSet, KEY_END),
-				keyNew ("system/elektra/modules/process/exports/error", KEY_FUNC, elektraProcessError, KEY_END),
-				keyNew ("system/elektra/modules/process/exports/checkconf", KEY_FUNC, elektraProcessCheckConfig, KEY_END),
+		KeySet * contract =
+			ksNew (30, keyNew ("system/elektra/modules/process", KEY_VALUE, "process plugin waits for your orders", KEY_END),
+			       keyNew ("system/elektra/modules/process/exports", KEY_END),
+			       keyNew ("system/elektra/modules/process/exports/open", KEY_FUNC, elektraProcessOpen, KEY_END),
+			       keyNew ("system/elektra/modules/process/exports/close", KEY_FUNC, elektraProcessClose, KEY_END),
+			       keyNew ("system/elektra/modules/process/exports/get", KEY_FUNC, elektraProcessGet, KEY_END),
+			       keyNew ("system/elektra/modules/process/exports/set", KEY_FUNC, elektraProcessSet, KEY_END),
+			       keyNew ("system/elektra/modules/process/exports/error", KEY_FUNC, elektraProcessError, KEY_END),
+			       keyNew ("system/elektra/modules/process/exports/checkconf", KEY_FUNC, elektraProcessCheckConfig, KEY_END),
 #include ELEKTRA_README (process)
-				keyNew ("system/elektra/modules/process/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system/elektra/modules/process/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+		ksAppend (returned, contract);
+		ksDel (contract);
 
-			// Now adjust the placements to whatever our proxied plugin says
-			Key * placementsKey = ksLookupByName (contract, "system/elektra/modules/process/infos/placements", KDB_O_NONE);
-			keyAddBaseName (childKey, "infos");
-			keyAddBaseName (childKey, "placements");
+		if (!validPluginName (pluginName, parentKey)) return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 
-			Key * childPlacementsKey = ksLookup (childReturned, childKey, KDB_O_NONE);
-			keySetString (placementsKey, keyString (childPlacementsKey));
-
-			ksAppend (returned, contract);
-			ksDel (contract);
+		// Otherwise invoke the get function with the adjusted module string to get the contract
+		ElektraInvokeHandle * contractHandle = elektraInvokeOpen (keyString (pluginName), processConfig, parentKey);
+		if (!contractHandle)
+		{
+			ELEKTRA_SET_ERRORF (197, parentKey, "Failed to open the handle for getting the contract for %s",
+					    keyString (pluginName));
+			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 
-		keyDel (childKey);
-		ksDel (childReturned);
-		return ret;
+		Key * pluginParentKey = keyDup (parentKey);
+		keySetBaseName (pluginParentKey, keyString (pluginName));
+
+		KeySet * pluginContract = ksNew (30, KS_END);
+		elektraInvoke2Args (contractHandle, "get", pluginContract, pluginParentKey);
+		elektraInvokeClose (contractHandle, pluginParentKey);
+		keyDel (pluginParentKey);
+		if (ksGetSize (contract) == 0)
+		{
+			ELEKTRA_SET_ERRORF (197, parentKey, "Failed to get the contract for %s", keyString (pluginName));
+			ksDel (pluginContract);
+			return ELEKTRA_PLUGIN_STATUS_ERROR;
+		}
+
+		// Now adjust the infos to the proxied plugin, the exports have to remain as it is so the proxy gets closed
+		Key * infosKey = keyNew ("system/elektra/modules/", KEY_END);
+		keyAddBaseName (infosKey, keyString (pluginName));
+		keyAddBaseName (infosKey, "infos");
+
+		adjustContract (pluginContract, returned);
+		ksDel (pluginContract);
+
+		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
 	// Otherwise business as usual
+
+	Process * process = elektraPluginGetData (handle);
+	ElektraPluginProcess * pp = process->pp;
+
 	if (elektraPluginProcessIsParent (pp)) return elektraPluginProcessSend (pp, ELEKTRA_PLUGINPROCESS_GET, returned, parentKey);
 
 	if (!process->plugin) return ELEKTRA_PLUGIN_STATUS_SUCCESS;
