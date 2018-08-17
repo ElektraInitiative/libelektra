@@ -95,12 +95,14 @@ translate()
 		then
 			[ -n "$COMMAND" ] && writeBlock "$TMPFILE"
 			COMMAND=$(printf '%s' "$line" | grep -Eo '[^ \t].*')
-			[ "${line: -1}" == '\' ] && COMMAND=$(printf '%s' "$COMMAND" | sed 's/.$//')
-			while [ "${line: -1}" == '\' ];
+			printf '%s' "$line" | egrep -q '\\$' && COMMAND=$(printf '%s' "$COMMAND" | sed 's/.$//')
+			while printf '%s' "$line" | egrep -q '\\$';
 			do
 				read -r line
-				if [ "${line: -1}" == '\' ]; then COMMAND=$(printf '%s\n%s' "$COMMAND" `printf '%s' "$line" | sed 's/.$//'`)
-				else COMMAND=$(printf '%s\n%s\n' "$COMMAND" "$line")
+				if printf '%s' "$line" | egrep -q '\\$'; then
+					COMMAND=$(printf '%s\n%s' "$COMMAND" `printf '%s' "$line" | sed 's/.$//'`)
+				else
+					COMMAND=$(printf '%s\n%s\n' "$COMMAND" "$line")
 				fi
 			done
 			continue
