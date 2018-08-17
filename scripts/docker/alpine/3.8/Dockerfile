@@ -7,7 +7,6 @@ RUN apk update \
         git \
         file \
         curl \
-        bash \
         yaml-cpp-dev
 
 # Google Test
