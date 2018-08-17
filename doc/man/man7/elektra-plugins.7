@@ -279,10 +279,16 @@ null \fInull/\fR takes care of null values and other binary specialities
 Log/Send out all changes to configuration to:
 .
 .IP "\(bu" 4
-dbus \fIdbus/\fR sends notifications for every change via dbus
+dbus \fIdbus/\fR sends notifications for every change via dbus \fBnotification\fR
 .
 .IP "\(bu" 4
-dbusrecv \fIdbusrecv/\fR receives notifications via dbus
+dbusrecv \fIdbusrecv/\fR receives notifications via dbus \fBnotification\fR
+.
+.IP "\(bu" 4
+zeromqsend \fIzeromqsend/\fR sends notifications for every change via ZeroMQ sockets \fBnotification\fR
+.
+.IP "\(bu" 4
+zeromqrecv \fIzeromqrecv/\fR receives notifications via ZeroMQ sockets \fBnotification\fR
 .
 .IP "\(bu" 4
 syslog \fIsyslog/\fR logs key database changes to syslog
