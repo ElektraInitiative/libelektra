@@ -8,8 +8,8 @@ The hub does not feature authentication or encryption.
 
 ## Usage
 
-The hub can be controlled using the CLI commands "kdb run-@tool@"" for
-starting and "kdb stop-@tool@" for stopping.
+The hub can be controlled using the CLI commands "kdb run-hub-zeromq" for
+starting and "kdb stop-hub-zeromq" for stopping.
 
 ## Configuration
 

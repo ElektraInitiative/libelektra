@@ -3,6 +3,7 @@
  *
  * @brief Example for notification library which reloads KDB when Elektra's
  * configuration (e.g. mount points or global plugins) has changed.
+ * This example also shows how to pass user data using elektraIo*GetData().
  *
  * Requires:
  *   - io_glib binding
@@ -33,19 +34,26 @@
 #define TWO_SECONDS 2000
 #define RELOAD_INTERVAL 100
 
-GMainLoop * loop;
+/**
+ * Data container for this example to demo
+ * usage of the elektraIo*GetData() functions.
+ *
+ * Members could also be globals.
+ */
+typedef struct ExampleUserData
+{
+	GMainLoop * loop;
+	KDB * kdb;
+	Key * parentKey;
+	KeySet * config;
+	ElektraIoInterface * binding;
+	Key * intKeyToWatch;
+	int valueToPrint;
+	ElektraIoTimerOperation * timer;
+	ElektraIoTimerOperation * reload;
+} ExampleUserData;
 
-KDB * kdb;
-Key * parentKey;
-KeySet * config;
-ElektraIoInterface * binding;
-Key * intKeyToWatch;
-int valueToPrint = 0;
-
-ElektraIoTimerOperation * timer;
-ElektraIoTimerOperation * reload;
-
-static void elektraChangedCallback (Key * changedKey ELEKTRA_UNUSED, void * context ELEKTRA_UNUSED);
+static void elektraChangedCallback (Key * changedKey ELEKTRA_UNUSED, void * context);
 
 /**
  * Initializes KDB on first call and performs cleanup before initialization on
@@ -55,37 +63,39 @@ static void elektraChangedCallback (Key * changedKey ELEKTRA_UNUSED, void * cont
  */
 static void initKdb (ElektraIoTimerOperation * timerOp ELEKTRA_UNUSED)
 {
+	ExampleUserData * data = (ExampleUserData *) elektraIoTimerGetData (timerOp);
+
 	int didReload = 0;
 
 	// Stop reload task
-	elektraIoTimerSetEnabled (reload, 0);
-	elektraIoBindingUpdateTimer (reload);
+	elektraIoTimerSetEnabled (data->reload, 0);
+	elektraIoBindingUpdateTimer (data->reload);
 
-	if (kdb != NULL)
+	if (data->kdb != NULL)
 	{
 		// Cleanup notifications and close KDB
-		elektraNotificationClose (kdb);
-		kdbClose (kdb, parentKey);
+		elektraNotificationClose (data->kdb);
+		kdbClose (data->kdb, data->parentKey);
 		didReload = 1;
 	}
 
-	kdb = kdbOpen (parentKey);
-	if (kdb == NULL)
+	data->kdb = kdbOpen (data->parentKey);
+	if (data->kdb == NULL)
 	{
 		printf ("could not open KDB, aborting\n");
 		exit (1);
 	}
 
-	elektraIoSetBinding (kdb, binding);
+	elektraIoSetBinding (data->kdb, data->binding);
 
-	int result = elektraNotificationOpen (kdb);
+	int result = elektraNotificationOpen (data->kdb);
 	if (!result)
 	{
 		printf ("could not init notification, aborting\n");
 		exit (1);
 	}
 
-	result = elektraNotificationRegisterInt (kdb, intKeyToWatch, &valueToPrint);
+	result = elektraNotificationRegisterInt (data->kdb, data->intKeyToWatch, &data->valueToPrint);
 	if (!result)
 	{
 		printf ("could not register variable, aborting\n");
@@ -93,7 +103,7 @@ static void initKdb (ElektraIoTimerOperation * timerOp ELEKTRA_UNUSED)
 	}
 
 	Key * elektraKey = keyNew ("/elektra", KEY_END);
-	if (!elektraNotificationRegisterCallbackSameOrBelow (kdb, elektraKey, elektraChangedCallback, NULL))
+	if (!elektraNotificationRegisterCallbackSameOrBelow (data->kdb, elektraKey, elektraChangedCallback, data))
 	{
 		printf ("could not register for changes to Elektra's configuration, aborting\n");
 		exit (1);
@@ -101,7 +111,7 @@ static void initKdb (ElektraIoTimerOperation * timerOp ELEKTRA_UNUSED)
 	keyDel (elektraKey);
 
 	// Get configuration
-	kdbGet (kdb, config, parentKey);
+	kdbGet (data->kdb, data->config, data->parentKey);
 
 	if (didReload)
 	{
@@ -109,18 +119,19 @@ static void initKdb (ElektraIoTimerOperation * timerOp ELEKTRA_UNUSED)
 	}
 }
 
-static gboolean onSIGNAL (gpointer user_data ELEKTRA_UNUSED)
+static gboolean onSIGNAL (gpointer user_data)
 {
+	ExampleUserData * data = (ExampleUserData *) user_data;
 	// Cleanup
-	elektraIoBindingRemoveTimer (timer);
-	elektraFree (timer);
-	elektraIoBindingRemoveTimer (reload);
-	elektraFree (reload);
-	elektraNotificationClose (kdb);
-	kdbClose (kdb, parentKey);
-	elektraIoBindingCleanup (binding);
+	elektraIoBindingRemoveTimer (data->timer);
+	elektraFree (data->timer);
+	elektraIoBindingRemoveTimer (data->reload);
+	elektraFree (data->reload);
+	elektraNotificationClose (data->kdb);
+	kdbClose (data->kdb, data->parentKey);
+	elektraIoBindingCleanup (data->binding);
 
-	g_main_loop_quit (loop);
+	g_main_loop_quit (data->loop);
 	return FALSE;
 }
 
@@ -132,59 +143,70 @@ static gboolean onSIGNAL (gpointer user_data ELEKTRA_UNUSED)
  * @param changedKey unused
  * @param context unused
  */
-static void elektraChangedCallback (Key * changedKey ELEKTRA_UNUSED, void * context ELEKTRA_UNUSED)
+static void elektraChangedCallback (Key * changedKey ELEKTRA_UNUSED, void * context)
 {
 	printf ("\nElektra's configuration has changed.\n");
 
 	// Enable operation to reload KDB as soon as possible
-	elektraIoTimerSetEnabled (reload, 1);
-	elektraIoBindingUpdateTimer (reload);
+	ExampleUserData * data = (ExampleUserData *) context;
+	elektraIoTimerSetEnabled (data->reload, 1);
+	elektraIoBindingUpdateTimer (data->reload);
 }
 
 static void printVariable (ElektraIoTimerOperation * timerOp)
 {
-	int value = *(int *) elektraIoTimerGetData (timerOp);
-	printf ("\nMy integer value is %d\n", value);
+	// int value = *(int *) elektraIoTimerGetData (timerOp);
+	ExampleUserData * data = (ExampleUserData *) elektraIoTimerGetData (timerOp);
+	printf ("\nMy integer value is %d\n", data->valueToPrint);
 }
 
 int main (void)
 {
+	ExampleUserData * data = elektraCalloc (sizeof (*data));
+	if (data == NULL)
+	{
+		printf ("elektraCalloc failed");
+		return 1;
+	}
+
 	// Create glib main loop
 	GMainContext * context = NULL; // use default context
-	loop = g_main_loop_new (context, 0);
-	binding = elektraIoGlibNew (context);
+	data->loop = g_main_loop_new (context, 0);
+	data->binding = elektraIoGlibNew (context);
 
 	// Signal Handling
-	g_unix_signal_add (SIGINT, onSIGNAL, NULL);
+	g_unix_signal_add (SIGINT, onSIGNAL, data);
 
-	config = ksNew (20, KS_END);
-	parentKey = keyNew ("/sw/elektra/example_notification/#0/current", KEY_END);
-	intKeyToWatch = keyNew ("/sw/elektra/example_notification/#0/current/value", KEY_END);
+	data->config = ksNew (20, KS_END);
+	data->parentKey = keyNew ("/sw/elektra/example_notification/#0/current", KEY_END);
+	data->intKeyToWatch = keyNew ("/sw/elektra/example_notification/#0/current/value", KEY_END);
 
 	// Setup timer that repeatedly prints the variable
-	timer = elektraIoNewTimerOperation (TWO_SECONDS, 1, printVariable, &valueToPrint);
-	elektraIoBindingAddTimer (binding, timer);
+	data->timer = elektraIoNewTimerOperation (TWO_SECONDS, 1, printVariable, data);
+	elektraIoBindingAddTimer (data->binding, data->timer);
 
 	// Setup timer for reloading Elektra's configuration
-	reload = elektraIoNewTimerOperation (RELOAD_INTERVAL, 0, initKdb, NULL);
-	elektraIoBindingAddTimer (binding, reload);
+	data->reload = elektraIoNewTimerOperation (RELOAD_INTERVAL, 0, initKdb, data);
+	elektraIoBindingAddTimer (data->binding, data->reload);
 
 	printf ("Reloading Notification Example Application\n");
-	printf ("- Set \"%s\" to any integer value\n", keyName (intKeyToWatch));
+	printf ("Please note that notification transport plugins are required see\n"
+		"  https://www.libelektra.org/tutorials/notifications#notification-configuration!\n");
+	printf ("- Set \"%s\" to any integer value\n", keyName (data->intKeyToWatch));
 	printf ("- Try to add additional transport plugins and remove the original pair afterwards\n");
 	printf ("- Mount a file which sets the key above to a different value and unmount it\n");
 	printf ("Send SIGINT (Ctl+C) to exit.\n\n");
 
 	// Initialize KDB
-	initKdb (reload);
-	printVariable (timer); // "value" was automatically updated
+	initKdb (data->reload);
+	printVariable (data->timer); // "value" was automatically updated
 
-	g_main_loop_run (loop);
+	g_main_loop_run (data->loop);
 
-	g_main_loop_unref (loop);
+	g_main_loop_unref (data->loop);
 
-	ksDel (config);
-	keyDel (intKeyToWatch);
-	keyDel (parentKey);
+	ksDel (data->config);
+	keyDel (data->intKeyToWatch);
+	keyDel (data->parentKey);
 	printf ("cleanup done!\n");
 }

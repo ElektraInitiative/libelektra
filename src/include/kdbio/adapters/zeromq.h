@@ -5,8 +5,8 @@
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
-#ifndef __ELEKTAR_IO_ADAPTER_ZEROMQ_H__
-#define __ELEKTAR_IO_ADAPTER_ZEROMQ_H__
+#ifndef ELEKTRA_IO_ADAPTER_ZEROMQ_H
+#define ELEKTRA_IO_ADAPTER_ZEROMQ_H
 
 #include <stdlib.h>
 #include <string.h>

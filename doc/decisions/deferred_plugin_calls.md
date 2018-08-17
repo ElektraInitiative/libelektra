@@ -15,8 +15,9 @@ required to be able to defer these calls until the plugins are loaded.
 
 For example when setting I/O bindings with `elektraIoSetBinding()` the exported
 function `setIoBinding` is called for all globally mounted plugins.
-Since global mounting is implemented using the "list" plugin the exported
-functions from the plugins are unavailable.
+Since global mounting is implemented using the "list" plugin which uses
+lazy-loading for its plugins the exported functions from the plugins are
+unavailable.
 
 Other examples are the "dini" and "multifile" plugins which use multiple plugins
 to support different file formats.
@@ -31,7 +32,8 @@ These plugins also "hide" functions exported by encapsulated plugins.
 
 ## Assumptions
 
-1. The called functions do not return a value (e.g. `set`, `open`, `close`, ...)
+1. The called functions do not return a value (e.g. `set`, `open`, `close`, ...).
+   Callbacks can be used as return channel (see "Implications")
 
 ## Considered Alternatives
 
@@ -92,7 +94,7 @@ While called functions could return data using the `parameters` KeySet (or a
 separate KeySet) there is no defined moment when the data can be collected.
 Defining such a moment would break the lazy-loading constraint.
 It is recommended to use callbacks passed as `parameters`.
-The callback function declaration is not affected by this decision.
+Callback function declarations are not limited by this decision.
 
 ## Related decisions
 
@@ -106,7 +108,7 @@ The callback function declaration is not affected by this decision.
 
 - Functions supporting deferred calls should allow for multiple calls (i.e.
   they should be idempotent).
-  This leaves state at affected plugins and does avoids duplicating state (e.g.
+  This leaves state at affected plugins and does avoid duplicating state (e.g.
   "was this function called for this plugin before?") in encapsulating
   plugins.
 

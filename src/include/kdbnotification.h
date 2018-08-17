@@ -23,6 +23,12 @@
  * For an introduction to notifications please see the
  * <a href="doc_tutorials_notifications_md.html">Notification Tutorial</a>.
  *
+ * Examples:
+ *
+ * - [Basic notifications using polling](https://www.libelektra.org/examples/notificationpolling)
+ * - [Using asynchronous I/O bindings](https://www.libelektra.org/examples/notificationasync)
+ * - [Reload KDB when Elektra's configuration has changed](https://www.libelektra.org/examples/notificationreload)
+ *
  * @par Global Mounting
  *
  * elektraNotificationOpen() loads and mounts the

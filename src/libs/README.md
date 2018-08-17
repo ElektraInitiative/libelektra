@@ -87,10 +87,17 @@ data structures.
 
     libelektra-io.so
 
-**[io](io/)** provides the common [I/O binding API](https://doc.libelektra.org/api/current/html/group__kdbio.html).
+**[io](io/)** provides the
+[common API](https://doc.libelektra.org/api/current/html/group__kdbio.html) for
+using asynchronous I/O bindings.
 
 ### Notification
 
     libelektra-notification.so
 
 **[notification](notification/)** provides the [notification API](https://doc.libelektra.org/api/current/html/group__kdbnotification.html).
+Usage examples:
+
+- [Basic notifications using polling](https://www.libelektra.org/examples/notificationpolling)
+- [Using asynchronous I/O bindings](https://www.libelektra.org/examples/notificationasync)
+- [Reload KDB when Elektra's configuration has changed](https://www.libelektra.org/examples/notificationreload)

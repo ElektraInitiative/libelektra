@@ -136,6 +136,8 @@ int main (void)
 	elektraIoBindingAddTimer (binding, timer);
 
 	printf ("Asynchronous Notification Example Application\n");
+	printf ("Please note that notification transport plugins are required see\n"
+		"  https://www.libelektra.org/tutorials/notifications#notification-configuration!\n");
 	printf ("- Set \"%s\" to red, blue or green to change the text color\n", keyName (callbackKeyToWatch));
 	printf ("- Set \"%s\" to any integer value\n", keyName (intKeyToWatch));
 	printf ("Send SIGINT (Ctl+C) to exit.\n\n");

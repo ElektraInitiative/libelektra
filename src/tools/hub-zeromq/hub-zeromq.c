@@ -97,7 +97,7 @@ int main (void)
 	}
 
 	printf ("listening on %s (XSUB for zeromqsend)\n", xSubEndpoint);
-	printf ("listening on %s (XPUB for zeromqrecv)\n", xPubEndpoint);
+	printf ("listening on %s (XPUB for zeromqrecv)\n\n", xPubEndpoint);
 	ksDel (config);
 
 	// forward messages between sockets

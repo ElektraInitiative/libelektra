@@ -102,7 +102,7 @@ static GlibBindingData * newBindingData (void)
 	GlibBindingData * bindingData = elektraCalloc (sizeof (*bindingData));
 	if (bindingData == NULL)
 	{
-		ELEKTRA_LOG_WARNING ("elektraMalloc failed");
+		ELEKTRA_LOG_WARNING ("elektraCalloc failed");
 		return NULL;
 	}
 

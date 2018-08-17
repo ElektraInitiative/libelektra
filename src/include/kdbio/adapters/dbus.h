@@ -5,8 +5,8 @@
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
-#ifndef __ELEKTAR_IO_ADAPTER_DBUS_H__
-#define __ELEKTAR_IO_ADAPTER_DBUS_H__
+#ifndef ELEKTRA_IO_ADAPTER_DBUS_H
+#define ELEKTRA_IO_ADAPTER_DBUS_H
 
 #include <dbus/dbus.h>
 #include <stdlib.h>

@@ -86,30 +86,30 @@ the initialization of an I/O binding.
 
 void main (void)
 {
-  KDB* repo;
+	KDB* repo;
 
-  // Open KDB
-  Key * key = keyNew ("/sw/myorg/myapp/#0/current", KEY_END);
-  KDB * kdb = kdbOpen (key);
+	// Open KDB
+	Key * key = keyNew ("/sw/myorg/myapp/#0/current", KEY_END);
+	KDB * kdb = kdbOpen (key);
 
-  // Create libuv event loop
-  uv_loop_t * loop = uv_default_loop ();
+	// Create libuv event loop
+	uv_loop_t * loop = uv_default_loop ();
 
-  // Initialize I/O binding tied to event loop
-  ElektraIoInterface * binding = elektraIoUvNew (loop);
+	// Initialize I/O binding tied to event loop
+	ElektraIoInterface * binding = elektraIoUvNew (loop);
 
-  // Use I/O binding for our kdb instance
-  elektraIoSetBinding (kdb, binding);
+	// Use I/O binding for our kdb instance
+	elektraIoSetBinding (kdb, binding);
 
-  // Normal application setup code ...
+	// Normal application setup code ...
 
-  // Start the event loop
-  uv_run (loop, UV_RUN_DEFAULT);
+	// Start the event loop
+	uv_run (loop, UV_RUN_DEFAULT);
 
-  // Cleanup
-  kdbClose (kdb, key);
-  elektraIoBindingCleanup (binding);
-  uv_loop_close (loop);
+	// Cleanup
+	kdbClose (kdb, key);
+	elektraIoBindingCleanup (binding);
+	uv_loop_close (loop);
 }
 ```
 
@@ -156,47 +156,47 @@ static void printVariable (ElektraIoTimerOperation * timerOp)
 
 void main (void)
 {
-  KDB* repo;
+	KDB* repo;
 
-  // Open KDB
-  Key * key = keyNew ("/sw/myorg/myapp/#0/current", KEY_END);
-  KDB * kdb = kdbOpen (key);
+	// Open KDB
+	Key * key = keyNew ("/sw/myorg/myapp/#0/current", KEY_END);
+	KDB * kdb = kdbOpen (key);
 
-  // Create libuv event loop
-  uv_loop_t * loop = uv_default_loop ();
+	// Create libuv event loop
+	uv_loop_t * loop = uv_default_loop ();
 
-  // Initialize I/O binding tied to event loop
-  ElektraIoInterface * binding = elektraIoUvNew (loop);
+	// Initialize I/O binding tied to event loop
+	ElektraIoInterface * binding = elektraIoUvNew (loop);
 
-  // Use I/O binding for our kdb instance
-  elektraIoSetBinding (kdb, binding);
+	// Use I/O binding for our kdb instance
+	elektraIoSetBinding (kdb, binding);
 
-  // Initialize notification wrapper
-  elektraNotificationOpen (kdb);
+	// Initialize notification wrapper
+	elektraNotificationOpen (kdb);
 
-  // Register "value" for updates
-  Key * registeredKey = keyNew ("/sw/myorg/myapp/#0/current/value", KEY_END);
-  int value;
-  elektraNotificationRegisterInt (repo, registeredKey, &value);
+	// Register "value" for updates
+	Key * registeredKey = keyNew ("/sw/myorg/myapp/#0/current/value", KEY_END);
+	int value;
+	elektraNotificationRegisterInt (repo, registeredKey, &value);
 
-  // Create a timer to repeatedly print "value"
-  ElektraIoTimerOperation * timer = elektraIoNewTimerOperation (2000, 1, printVariable, &value);
-  elektraIoBindingAddTimer (binding, timer);
+	// Create a timer to repeatedly print "value"
+	ElektraIoTimerOperation * timer = elektraIoNewTimerOperation (2000, 1, printVariable, &value);
+	elektraIoBindingAddTimer (binding, timer);
 
-  // Get configuration
-  KeySet * config = ksNew(0, KS_END);
-  kdbGet (kdb, config, key);
-  printVariable (timer);   // "value" was automatically updated
+	// Get configuration
+	KeySet * config = ksNew(0, KS_END);
+	kdbGet (kdb, config, key);
+	printVariable (timer);	 // "value" was automatically updated
 
-  // Start the event loop
-  uv_run (loop, UV_RUN_DEFAULT);
+	// Start the event loop
+	uv_run (loop, UV_RUN_DEFAULT);
 
-  // Cleanup
-  elektraNotificationClose (kdb);
-  kdbClose (kdb, key);
-  elektraIoBindingRemoveTimer (timer);
-  elektraIoBindingCleanup (binding);
-  uv_loop_close (loop);
+	// Cleanup
+	elektraNotificationClose (kdb);
+	kdbClose (kdb, key);
+	elektraIoBindingRemoveTimer (timer);
+	elektraIoBindingCleanup (binding);
+	uv_loop_close (loop);
 }
 ```
 
@@ -228,32 +228,32 @@ changed key needs further processing.
 
 void setTerminalColor (Key * color, void * context ELEKTRA_UNUSED)
 {
-  // context contains whatever was passed as 4th parameter
-  // to elektraNotificationRegisterCallback()
-  char * value = keyString (color);
+	// context contains whatever was passed as 4th parameter
+	// to elektraNotificationRegisterCallback()
+	char * value = keyString (color);
 
-  if (strcmp (value, "red") == 0)
-  {
-    printf (ANSI_COLOR_RED);
-  }
-  if (strcmp (value, "green") == 0)
-  {
-    printf (ANSI_COLOR_GREEN);
-  }
+	if (strcmp (value, "red") == 0)
+	{
+		printf (ANSI_COLOR_RED);
+	}
+	if (strcmp (value, "green") == 0)
+	{
+		printf (ANSI_COLOR_GREEN);
+	}
 }
 
 int main (void)
 {
-  KDB * repo;
+	KDB * repo;
 
-  // ... initialization of KDB, I/O binding and notifications
+	// ... initialization of KDB, I/O binding and notifications
 
-  Key * color = keyNew ("/sw/myorg/myapp/#0/current/color", KEY_END);
+	Key * color = keyNew ("/sw/myorg/myapp/#0/current/color", KEY_END);
 
-  // Re-Initialize on key changes
-  elektraNotificationRegisterCallback(repo, color, &setTerminalColor, NULL);
+	// Re-Initialize on key changes
+	elektraNotificationRegisterCallback(repo, color, &setTerminalColor, NULL);
 
-  // ... start loop, etc.
+	// ... start loop, etc.
 }
 ```
 
@@ -358,7 +358,7 @@ void initKdb (void)
 		kdbClose (kdb, parentKey);
 	}
 
-  // ...
+	// ...
 }
 ```
 
