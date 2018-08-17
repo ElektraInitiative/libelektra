@@ -82,7 +82,7 @@ def cleanupDocker(targetNode) {
         stage(taskname) {
             node(targetNode) {
                 dockerImages().each {
-                    retainNewestImages(it, 15)
+                    retainNewestImages(it, 5)
                 }
                 sh "docker system prune -f"
             }
