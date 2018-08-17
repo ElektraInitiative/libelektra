@@ -31,7 +31,9 @@ namespace
  */
 Key newKey (string const & name, Key const & parent)
 {
-	Key key{ parent.getFullName (), KEY_END };
+	ELEKTRA_LOG_DEBUG ("Add new key with base name “%s”", name.c_str ());
+
+	Key key{ parent.getFullName (), KEY_BINARY, KEY_END };
 	key.addBaseName (name);
 
 	return key;
@@ -47,7 +49,9 @@ Key newKey (string const & name, Key const & parent)
  */
 Key newArrayKey (KeySet const & mappings, Key & arrayKey)
 {
-	KeySet arrayEntries{ elektraArrayGet (arrayKey.getKey (), mappings.getKeySet ()) };
+	ELEKTRA_LOG_DEBUG ("Add new array element to array parent “%s”", arrayKey.getName ().c_str ());
+
+	KeySet arrayEntries{ elektraArrayGet (*arrayKey, mappings.getKeySet ()) };
 
 	if (arrayEntries.size () <= 0)
 	{
@@ -89,21 +93,35 @@ void addMetadata (Key & key, YAML::Node const & node)
  */
 Key createLeafKey (YAML::Node const & node, string const & name)
 {
-	Key key (name, KEY_END);
-	if (node.IsNull ())
-	{
-		key.setMeta ("binary", "");
-	}
-	else
+	Key key{ name, KEY_BINARY, KEY_END };
+	if (!node.IsNull ())
 	{
 		key.setString (node.as<string> ());
 	}
-	ELEKTRA_LOG_DEBUG ("Add key “%s: %s”", key.getName ().c_str (), key.getBinarySize () == 0 ? "NULL" : key.get<string> ().c_str ());
 	if (node.Tag () == "tag:yaml.org,2002:binary")
 	{
 		ELEKTRA_LOG_DEBUG ("Set metadata type of key to binary");
 		key.setMeta ("type", "binary");
 	}
+	ELEKTRA_LOG_DEBUG ("Add key “%s: %s”", key.getName ().c_str (),
+			   key.getBinarySize () == 0 ? "NULL" : key.isBinary () ? "binary value!" : key.get<string> ().c_str ());
+	return key;
+}
+
+/**
+ * @brief Convert the key value of a YAML meta node to a key
+ *
+ * @param node This YAML meta node stores the data this function stores in the returned key
+ * @param parent This key stores the prefix for the key name
+ *
+ * @return A key representing the key value stored in `node`
+ */
+Key convertMetaNodeToKey (YAML::Node const & node, Key & parent)
+{
+	auto key = node[0].IsNull () ? Key{ parent.getFullName (), KEY_BINARY, KEY_END } :
+				       Key{ parent.getFullName (), KEY_VALUE, node[0].as<string> ().c_str (), KEY_END };
+	ELEKTRA_LOG_DEBUG ("Add key “%s”: “%s”", key.getName ().c_str (),
+			   key.getBinarySize () == 0 ? "NULL" : key.isString () ? key.getString ().c_str () : "binary value!");
 	return key;
 }
 
@@ -118,8 +136,7 @@ void convertNodeToKeySet (YAML::Node const & node, KeySet & mappings, Key & pare
 {
 	if (node.Tag () == "!elektra/meta")
 	{
-		Key key (parent.getFullName (), KEY_VALUE, node[0].as<string> ().c_str (), KEY_END);
-		ELEKTRA_LOG_DEBUG ("Add key “%s: %s”", key.getName ().c_str (), key.get<string> ().c_str ());
+		auto key = convertMetaNodeToKey (node, parent);
 		mappings.append (key);
 		addMetadata (key, node[1]);
 	}
@@ -134,7 +151,11 @@ void convertNodeToKeySet (YAML::Node const & node, KeySet & mappings, Key & pare
 		{
 			Key key = node.IsMap () ? newKey (element.first.as<string> (), parent) : newArrayKey (mappings, parent);
 			// Add intermediate key for array parent
-			if ((node.IsMap () ? element.second : element).IsSequence ()) mappings.append (key);
+			if ((node.IsMap () ? element.second : element).IsSequence ())
+			{
+				key.setMeta ("array", "");
+				mappings.append (key);
+			}
 			convertNodeToKeySet (node.IsMap () ? element.second : element, mappings, key);
 		}
 	}

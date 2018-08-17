@@ -92,6 +92,8 @@ CppKeySet removeBaseName (CppKeySet const & keys)
 
 	for (auto key : keys)
 	{
+		ELEKTRA_LOG_DEBUG ("Remove basename from “%s”: “%s”", key.getName ().c_str (),
+				   key.getBinarySize () == 0 ? "NULL" : key.isBinary () ? "binary value!" : key.getString ().c_str ());
 		CppKey directory = key.dup ();
 		directory.delBaseName ();
 		directories.append (directory);
@@ -231,6 +233,39 @@ KeySetPair splitArrayOther (CppKeySet const & arrayParents, CppKeySet const & ke
 }
 
 /**
+ * @brief This function splits `keys` into two key sets, one for empty array parents that do not contain a value and one for all other keys.
+ *
+ * @param arrayParents This key set contains array parents.
+ *
+ * @return A pair of key sets, where the first key set contains all array parents without values, and the second key set contains all other
+ *         keys
+ */
+KeySetPair splitEmptyArrayParents (CppKeySet const & arrayParents)
+{
+	CppKeySet emptyParents;
+	CppKeySet nonEmptyParents;
+
+	for (auto arrayParent : arrayParents)
+	{
+		CppKey parent = arrayParent.dup ();
+
+		parent.rewindMeta ();
+		size_t metaSize = 0;
+		bool isEmpty = parent.getBinarySize () == 0;
+		while (isEmpty && parent.nextMeta ())
+		{
+			if (metaSize > 2 || parent.currentMeta ().getName () != "binary" || parent.currentMeta ().getName () != "array")
+			{
+				isEmpty = false;
+			}
+			metaSize++;
+		}
+		(isEmpty ? emptyParents : nonEmptyParents).append (arrayParent);
+	}
+	return make_pair (emptyParents, nonEmptyParents);
+}
+
+/**
  * @brief This function changes an array index of the given array element by one.
  *
  * @param parent This key set stores an array parent of `element`. The function will change the index of `element` that is directly below
@@ -357,14 +392,7 @@ KeySetPair splitDirectoriesLeaves (CppKeySet const & keys)
 	CppKey previous;
 	for (previous = keys.next (); keys.next (); previous = keys.current ())
 	{
-		if (keys.current ().isBelow (previous))
-		{
-			directories.append (previous);
-		}
-		else
-		{
-			leaves.append (previous);
-		}
+		(keys.current ().isBelow (previous) ? directories : leaves).append (previous);
 	}
 	leaves.append (previous);
 
@@ -466,7 +494,8 @@ int DirectoryValueDelegate::convertToDirectories (CppKeySet & keys)
 
 	tie (directoryLeaves, nonDirectoryLeaves) = splitDirectoryLeavesOther (notArrayParents);
 
-	bool const status = directoryLeaves.size () > 0 ? ELEKTRA_PLUGIN_STATUS_SUCCESS : ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+	bool const status =
+		directoryLeaves.size () > 0 || arrayLeaves.size () > 0 ? ELEKTRA_PLUGIN_STATUS_SUCCESS : ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 
 	auto directories = removeBaseName (directoryLeaves);
 
@@ -489,6 +518,7 @@ int DirectoryValueDelegate::convertToLeaves (CppKeySet & keys)
 {
 	CppKeySet notArrayParents;
 	CppKeySet arrayParents;
+	CppKeySet emptyArrayParents;
 	CppKeySet arrays;
 	CppKeySet nonArrays;
 	CppKeySet directories;
@@ -497,12 +527,14 @@ int DirectoryValueDelegate::convertToLeaves (CppKeySet & keys)
 	tie (arrayParents, ignore) = splitArrayParentsOther (keys);
 	tie (arrays, nonArrays) = splitArrayOther (arrayParents, keys);
 
+	tie (emptyArrayParents, arrayParents) = splitEmptyArrayParents (arrayParents);
 	tie (arrayParents, arrays) = increaseArrayIndices (arrayParents, arrays);
+
 	notArrayParents.append (arrays);
 	notArrayParents.append (nonArrays);
 	notArrayParents = accumulate (notArrayParents.begin (), notArrayParents.end (), CppKeySet{},
-				      [&arrayParents](CppKeySet collected, CppKey key) {
-					      if (!arrayParents.lookup (key)) collected.append (key);
+				      [&arrayParents, &emptyArrayParents](CppKeySet collected, CppKey key) {
+					      if (!arrayParents.lookup (key) && !emptyArrayParents.lookup (key)) collected.append (key);
 					      return collected;
 				      });
 	arrayParents = convertArrayParentsToLeaves (arrayParents);
@@ -516,6 +548,7 @@ int DirectoryValueDelegate::convertToLeaves (CppKeySet & keys)
 	keys.clear ();
 	keys.append (arrays);
 	keys.append (arrayParents);
+	keys.append (emptyArrayParents);
 	keys.append (directoryLeaves);
 	keys.append (leaves);
 

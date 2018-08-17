@@ -112,6 +112,19 @@ kdb get user/tests/yamlcpp/sunny/#_9
 kdb get user/tests/yamlcpp/sunny/$(kdb getmeta user/tests/yamlcpp/sunny array)
 #> The Waitress
 
+# The plugin also supports empty arrays (arrays without any elements)
+kdb setmeta user/tests/yamlcpp/empty array ''
+kdb export user/tests/yamlcpp/empty yamlcpp
+#> []
+
+# For arrays with at least one value we do not need to set the type `array`
+kdb set user/tests/yamlcpp/movies
+kdb set user/tests/yamlcpp/movies/#0 'A Silent Voice'
+kdb getmeta user/tests/yamlcpp/movies array
+#> #0
+kdb export user/tests/yamlcpp/movies yamlcpp
+#> - A Silent Voice
+
 # Undo modifications to the key database
 kdb rm -r /tests/yamlcpp
 sudo kdb umount /tests/yamlcpp
@@ -163,7 +176,6 @@ kdb ls /tests/yamlcpp
 kdb rm /tests/yamlcpp/key
 kdb file /tests/yamlcpp | xargs cat
 #> array:
-#>   - "___dirdata: "
 #>   - scalar
 #>   - 🔑: 🙈
 
@@ -292,11 +304,13 @@ sudo kdb mount test.yaml user/tests/yamlcpp yamlcpp
 # Check if the plugin saves null keys correctly
 kdb set user/tests/yamlcpp/null
 kdb set user/tests/yamlcpp/null/level1/level2
+kdb setmeta user/tests/yamlcpp/null/level1/level2 comment 'Null key'
 
 kdb ls user/tests/yamlcpp/null
 #> user/tests/yamlcpp/null
 #> user/tests/yamlcpp/null/level1/level2
 kdb get -v user/tests/yamlcpp/null | grep -q 'The key is null.'
+kdb get -v user/tests/yamlcpp/null/level1/level2 | grep -q 'The key is null.'
 
 # Check if the plugin saves empty keys correctly
 kdb set user/tests/yamlcpp/empty ""

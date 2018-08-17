@@ -262,7 +262,7 @@ Thanks to Daniel Bugl.
 
    # New behavior
    kdb ls /tests/yamlcpp
-   user/tests/yamlcpp/level1/level2/level3
+   #> user/tests/yamlcpp/level1/level2/level3
    ```
    . *(René Schwaiger)*
 
@@ -276,6 +276,29 @@ Thanks to Daniel Bugl.
 
 - The plugin does now support [arrays](https://www.libelektra.org/tutorials/arrays) containing empty fields. *(René Schwaiger)*
 - YAML CPP now also adds `array` meta data for arrays containing arrays. *(René Schwaiger)*
+- The plugin now also supports empty arrays:
+
+  ```sh
+  kdb mount test.yaml user/tests/yamlcpp yamlcpp
+  kdb setmeta user/tests/yamlcpp/array array ''
+  kdb export user/tests/yamlcpp/array yamlcpp
+  #> []
+  ```
+
+  .
+
+- YAML CPP now handles null values containing meta data properly:
+
+   ```sh
+   kdb mount test.yaml user/tests/yamlcpp yamlcpp
+   kdb set user/tests/yamlcpp/null
+   kdb setmeta user/tests/yamlcpp/null comment 'Null Key'
+   kdb export user/tests/yamlcpp/null yamlcpp
+   #> !<!elektra/meta>
+   #> - ~
+   #> - comment: Null Key
+   ```
+   .
 
 ### YAML Smith
 
@@ -313,13 +336,6 @@ Thanks to Daniel Bugl.
   [notifications](https://www.libelektra.org/tutorials/notifications). *(Thomas Wahringer)*
 - Do not exclude `simpleini` silently on non-glibc systems but output a message
   like for other plugins *(Markus Raab)*
-
-[YAML]: http://yaml.org
-
-## Libraries
-
-### Core
-
 - We updated the `infos/status` clause of the following plugins:
 
   - [`boolean`](http://libelektra.org/plugins/boolean),
@@ -334,10 +350,18 @@ Thanks to Daniel Bugl.
 
   . *(René Schwaiger)*
 
+[YAML]: http://yaml.org
+
+
+## Libraries
+
+### Core
+
 ### General
 
 - replaced strdup with elektraStrDup (for C99 compatibility) *(Markus Raab)*
 - You can now remove the basename of a key via the C++ API by calling `key.delBaseName()`. *(René Schwaiger)*
+- The function `elektraArrayGetNextKey` now uses `NULL` instead of the empty string as init value for the returned key. *(René Schwaiger)*
 
 - <<TODO>>
 
@@ -426,11 +450,12 @@ Thanks to Daniel Bugl.
 - The Markdown Shell Recorder now also tests if a command prints nothing to `stdout` if you add the check `#>`. *(René Schwaiger)*
 - We fixed some problems in the [Markdown Shell Recorder](https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper) test
   of [`kdb ls`](https://master.libelektra.org/doc/help/kdb-ls.md). *(René Schwaiger)*
+- The [Shell Recorder][] now does not interpret `-` in checks as option character any more. *(René Schwaiger)*
 - The `add_plugin` helper now respects `ENABLE_KDB_TESTING` when adding
     Markdown Shell Recorder tests. *(Lukas Winkler)*
 - The Markdown Shell Recorder test for [`kdb find`](https://master.libelektra.org/doc/help/kdb-find.md) now removes the configuration file
   at the end of the test. *(René Schwaiger)*
-- The [Shell Recorder](https://master.libelektra.org/tests/shell/shell_recorder) now properly unmounts any additional mountpoints created
+- The [Shell Recorder][] now properly unmounts any additional mountpoints created
     during a test. *(René Schwaiger)*
 - We removed the broken auto unmounting feature from the [Markdown Shell Recorder][]. *(René Schwaiger)*
 - Plugins added with the flag `SHARED_ONLY` no longer get tested in the script `check_kdb_internal_check.sh` if executed with kdb-full or kdb-static. *(Armin Wurzinger)*
@@ -450,6 +475,7 @@ Thanks to Daniel Bugl.
 
 [#1887]: https://github.com/ElektraInitiative/libelektra/issues/1887
 [Markdown Shell Recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
+[Shell Recorder]: (https://master.libelektra.org/tests/shell/shell_recorder)
 
 ## Build
 
