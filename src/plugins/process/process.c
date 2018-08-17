@@ -213,11 +213,6 @@ int elektraProcessGet (Plugin * handle, KeySet * returned, Key * parentKey)
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 
-		// Now adjust the infos to the proxied plugin, the exports have to remain as it is so the proxy gets closed
-		Key * infosKey = keyNew ("system/elektra/modules/", KEY_END);
-		keyAddBaseName (infosKey, keyString (pluginName));
-		keyAddBaseName (infosKey, "infos");
-
 		adjustContract (pluginContract, returned);
 		ksDel (pluginContract);
 
