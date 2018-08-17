@@ -19,12 +19,12 @@ resetGlobals()
 writeBlock()
 {
 	OUTFILE="$1"
-	[ -n "$RET" ] && printf 'RET: %s\n' $RET >> "$TMPFILE" || { [ -z "$ERROR" ] && printf 'RET: 0\n' >> "$TMPFILE"; }
-	[ -n "$ERROR" ] && printf 'ERROR: %s\n' "$ERROR" >> "$TMPFILE"
-	[ -n "$WARNINGS" ] && printf 'WARNINGS: %s\n' "$WARNINGS" >> "$TMPFILE"
-	[ -n "${STDERR+unset}" ] && printf 'STDERR: %s\n' "$STDERR" >> "$TMPFILE"
-	if [ -n "${STDOUT+unset}" ]; then printf 'STDOUT: %s\n' "$STDOUT" >> "$TMPFILE"
-	elif [ -n "$STDOUTRE" ]; then printf 'STDOUT-REGEX: %s\n' "$STDOUTRE" >> "$TMPFILE"
+	[ -n "$RET" ] && printf 'RET: %s\n' $RET >> "$OUTFILE" || { [ -z "$ERROR" ] && printf 'RET: 0\n' >> "$OUTFILE"; }
+	[ -n "$ERROR" ] && printf 'ERROR: %s\n' "$ERROR" >> "$OUTFILE"
+	[ -n "$WARNINGS" ] && printf 'WARNINGS: %s\n' "$WARNINGS" >> "$OUTFILE"
+	[ -n "${STDERR+unset}" ] && printf 'STDERR: %s\n' "$STDERR" >> "$OUTFILE"
+	if [ -n "${STDOUT+unset}" ]; then printf 'STDOUT: %s\n' "$STDOUT" >> "$OUTFILE"
+	elif [ -n "$STDOUTRE" ]; then printf 'STDOUT-REGEX: %s\n' "$STDOUTRE" >> "$OUTFILE"
 	fi
 	COMMAND=$(printf '%s' "$COMMAND" | sed s/sudo\ //g)
 	CMDFILE=$(mktempfile_elektra)
@@ -39,7 +39,7 @@ writeBlock()
 			printerr 'The command “%s” stores data outside of `/tests` at “%s”!\n' "$COMMAND" "$NAMESPACE"
 			SHELL_RECORDER_ERROR=1
 		fi
-		printf '< %s\n' "$cmd" >> "$TMPFILE"
+		printf '< %s\n' "$cmd" >> "$OUTFILE"
 	done < "$CMDFILE"
 	rm "$CMDFILE"
 	resetGlobals
