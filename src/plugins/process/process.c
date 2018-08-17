@@ -17,7 +17,6 @@
 
 typedef struct
 {
-	ElektraPluginProcess * pp;
 	ElektraInvokeHandle * plugin;
 	Key * pluginName;
 	KeySet * pluginConfig;
@@ -47,13 +46,12 @@ static int validPluginName (Key * pluginNameKey, Key * errorKey)
 	return 1;
 }
 
-static void cleanup (Plugin * handle, Process * process, Key * errorKey)
+static void cleanup (Process * process, Key * errorKey)
 {
 	if (process->plugin) elektraInvokeClose (process->plugin, errorKey);
-	keyDel (process->pluginName);
+	if (process->pluginName) keyDel (process->pluginName);
 	ksDel (process->pluginConfig);
 	elektraFree (process);
-	elektraPluginSetData (handle, NULL);
 }
 
 int elektraInvoke1Arg (ElektraInvokeHandle * handle, const char * elektraPluginFunctionName, Key * k)
@@ -70,52 +68,46 @@ int elektraInvoke1Arg (ElektraInvokeHandle * handle, const char * elektraPluginF
 	return func (k);
 }
 
+static int isContractKey (Key * key)
+{
+	return !elektraStrCmp (keyName (key), "system/elektra/modules/process");
+}
+
 int elektraProcessOpen (Plugin * handle, Key * errorKey)
 {
-	Process * process = elektraPluginGetData (handle);
-	ElektraPluginProcess * pp;
-
-	if (process == NULL)
+	ElektraPluginProcess * pp = elektraPluginGetData (handle);
+	if (pp == NULL)
 	{
 		// process initialization
-		process = elektraMalloc (sizeof (Process));
+		Process * process = elektraMalloc (sizeof (Process));
 		KeySet * processConfig = elektraPluginGetConfig (handle);
-
-		process->pluginName = ksLookupByName (processConfig, "/plugin", KDB_O_NONE);
-
+		process->pluginName = ksLookupByName (processConfig, "/plugin", KDB_O_POP);
 		process->pluginConfig = ksDup (processConfig);
-		ksLookup (process->pluginConfig, process->pluginName, KDB_O_DEL);
-
+		ksAppendKey (processConfig, process->pluginName);
 		process->plugin = NULL;
 
-		// pluginprocess initialization
 		if ((pp = elektraPluginProcessInit (errorKey)) == NULL) return ELEKTRA_PLUGIN_STATUS_ERROR;
-		process->pp = pp;
-		elektraPluginSetData (handle, process);
+
+		elektraPluginProcessSetData (pp, process);
+		elektraPluginSetData (handle, pp);
 		if (!elektraPluginProcessIsParent (pp)) elektraPluginProcessStart (handle, pp);
 	}
-	else
-	{
-		pp = process->pp;
-	}
+
 	if (elektraPluginProcessIsParent (pp)) return elektraPluginProcessOpen (pp, errorKey);
+
+	Process * process = elektraPluginProcessGetData (pp);
 
 	// First time child initialization
 	// elektraInvokeOpen will call the plugin's open function, this has to happen in the other process
-	if (process->plugin == NULL && validPluginName (process->pluginName, errorKey))
+
+	if (process->plugin == NULL && !isContractKey (errorKey) && validPluginName (process->pluginName, errorKey))
 	{
-		if (elektraProcessCheckConfig (errorKey, elektraPluginGetConfig (handle)) == ELEKTRA_PLUGIN_STATUS_ERROR)
-		{
-			return ELEKTRA_PLUGIN_STATUS_ERROR;
-		}
 		process->plugin = elektraInvokeOpen (keyString (process->pluginName), process->pluginConfig, errorKey);
 		if (!process->plugin)
 		{
 			ELEKTRA_SET_ERRORF (197, errorKey, "Failed to open the proxied plugin %s", keyString (process->pluginName));
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
-		// The plugin will be only opened on the child side, so set the data again
-		elektraPluginSetData (handle, process);
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
@@ -129,14 +121,20 @@ int elektraProcessOpen (Plugin * handle, Key * errorKey)
 
 int elektraProcessClose (Plugin * handle, Key * errorKey)
 {
-	Process * process = elektraPluginGetData (handle);
-	ElektraPluginProcess * pp = process->pp;
-	if (pp != NULL && elektraPluginProcessIsParent (pp))
+	ElektraPluginProcess * pp = elektraPluginGetData (handle);
+	if (!pp) return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+	Process * process = elektraPluginProcessGetData (pp);
+	if (elektraPluginProcessIsParent (pp))
 	{
 		ElektraPluginProcessCloseResult result = elektraPluginProcessClose (pp, errorKey);
-		if (result.cleanedUp) cleanup (handle, process, errorKey);
+		if (result.cleanedUp)
+		{
+			cleanup (process, errorKey);
+			elektraPluginSetData (handle, NULL);
+		}
 		return result.result;
 	}
+
 
 	// Handle may be null if initialization failed in the child, ignore that it will exit anyway afterwards
 	if (process->plugin == NULL) return ELEKTRA_PLUGIN_STATUS_SUCCESS;
@@ -153,7 +151,6 @@ static void adjustContract (KeySet * pluginContract, KeySet * contract)
 	while ((cur = ksNext (pluginContract)) != NULL)
 	{
 		Key * cpy = keyDup (cur);
-		const char * baseName = keyBaseName (cpy);
 		keySetBaseName (cpy, NULL);
 		if (!elektraStrCmp ("infos", keyBaseName (cpy)))
 		{
@@ -161,7 +158,7 @@ static void adjustContract (KeySet * pluginContract, KeySet * contract)
 			keySetBaseName (cpy, NULL);
 			keyAddBaseName (cpy, "process");
 			keyAddBaseName (cpy, "infos");
-			keyAddBaseName (cpy, baseName);
+			keyAddBaseName (cpy, keyBaseName (cur));
 			Key * infoKey = ksLookup (contract, cpy, KDB_O_NONE);
 			keySetString (infoKey, keyString (cpy));
 		}
@@ -172,7 +169,7 @@ static void adjustContract (KeySet * pluginContract, KeySet * contract)
 
 int elektraProcessGet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/process"))
+	if (isContractKey (parentKey))
 	{
 		KeySet * processConfig = elektraPluginGetConfig (handle);
 		Key * pluginName = ksLookupByName (processConfig, "/plugin", KDB_O_NONE);
@@ -229,8 +226,8 @@ int elektraProcessGet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 	// Otherwise business as usual
 
-	Process * process = elektraPluginGetData (handle);
-	ElektraPluginProcess * pp = process->pp;
+	ElektraPluginProcess * pp = elektraPluginGetData (handle);
+	Process * process = elektraPluginProcessGetData (pp);
 
 	if (elektraPluginProcessIsParent (pp)) return elektraPluginProcessSend (pp, ELEKTRA_PLUGINPROCESS_GET, returned, parentKey);
 
@@ -243,8 +240,9 @@ int elektraProcessGet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 int elektraProcessSet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
-	Process * process = elektraPluginGetData (handle);
-	ElektraPluginProcess * pp = process->pp;
+	ElektraPluginProcess * pp = elektraPluginGetData (handle);
+	Process * process = elektraPluginProcessGetData (pp);
+
 	if (elektraPluginProcessIsParent (pp)) return elektraPluginProcessSend (pp, ELEKTRA_PLUGINPROCESS_SET, returned, parentKey);
 
 	if (!process->plugin) return ELEKTRA_PLUGIN_STATUS_SUCCESS;
@@ -256,8 +254,9 @@ int elektraProcessSet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 int elektraProcessError (Plugin * handle, KeySet * returned, Key * parentKey)
 {
-	Process * process = elektraPluginGetData (handle);
-	ElektraPluginProcess * pp = process->pp;
+	ElektraPluginProcess * pp = elektraPluginGetData (handle);
+	Process * process = elektraPluginProcessGetData (pp);
+
 	if (elektraPluginProcessIsParent (pp)) return elektraPluginProcessSend (pp, ELEKTRA_PLUGINPROCESS_ERROR, returned, parentKey);
 
 	if (!process->plugin) return ELEKTRA_PLUGIN_STATUS_SUCCESS;
