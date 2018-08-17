@@ -26,7 +26,9 @@ writeBlock()
 	if [ -n "${STDOUT+unset}" ]; then printf 'STDOUT: %s\n' "$STDOUT" >> "$TMPFILE"
 	elif [ -n "$STDOUTRE" ]; then printf 'STDOUT-REGEX: %s\n' "$STDOUTRE" >> "$TMPFILE"
 	fi
-	COMMAND=$(sed s/sudo\ //g <<< "$COMMAND")
+	COMMAND=$(printf '%s' "$COMMAND" | sed s/sudo\ //g)
+	CMDFILE=$(mktempfile_elektra)
+	printf '%s\n' "$COMMAND" > "$CMDFILE"
 	while read -r cmd; do
 		MATCH_COMMAND='(kdb[ \t]+(set(meta)?|rm)|kdbSet|keySetName)'
 		MATCH_OPTIONS='([ \t]+-[-a-zA-Z]+)*'
@@ -38,7 +40,8 @@ writeBlock()
 			SHELL_RECORDER_ERROR=1
 		fi
 		printf '< %s\n' "$cmd" >> "$TMPFILE"
-	done <<< "$COMMAND"
+	done < "$CMDFILE"
+	rm "$CMDFILE"
 	resetGlobals
 }
 
@@ -46,24 +49,26 @@ translate()
 {
 	TMPFILE=$(mktemp)
 	MOUNTPOINT=$(printf '%s' "$BUF" | head -n 1)
-	if grep -Eq 'Backup-and-Restore:' <<< "$MOUNTPOINT"; then
-		printf 'Mountpoint: %s\n' "$(cut -d ':' -f2 <<< "$MOUNTPOINT" | sed 's/^[[:space:]]*//')" >> "$TMPFILE"
+	if printf '%s' "$MOUNTPOINT" | grep -Eq 'Backup-and-Restore:'; then
+		printf 'Mountpoint: %s\n' "$(printf '%s' "$MOUNTPOINT" | cut -d ':' -f2 | sed 's/^[[:space:]]*//')" >> "$TMPFILE"
 	else
 		printf 'Mountpoint: /tests\n' >> "$TMPFILE"
 	fi
 
 	resetGlobals
+	BUFFILE=$(mktempfile_elektra)
+	printf '%s\n' "$BUF" > "$BUFFILE"
 	while read -r line;
 	do
-		if grep -Eq '^\s*#>' <<< "$line"; then
-			output=$(sed -E -e 's/([ ]*#>$)/\1 /' -e 's/[ ]*#> (.*)/\1/' <<< "$line")
+		if printf '%s' "$line" | grep -Eq '^\s*#>'; then
+			output=$(printf '%s' "$line" | sed -E -e 's/([ ]*#>$)/\1 /' -e 's/[ ]*#> (.*)/\1/')
 			[ -z "$STDOUT" ] && STDOUT="$output" || STDOUT="${STDOUT}⏎$output"
 		fi
 
-		if grep -Eq "^(\s*)#" <<< "$line"; then
-			directive=$(sed -E 's/[ ]*# (.*)/\1/' <<< "$line")
-			cmd=$(cut -d ':' -f1 <<< "$directive")
-			arg=$(cut -d ':' -f2- <<< "$directive" | sed 's/[[:space:]]*//')
+		if printf '%s' "$line" | grep -Eq "^(\s*)#"; then
+			directive=$(printf '%s' "$line" | sed -E 's/[ ]*# (.*)/\1/')
+			cmd=$(printf '%s' "$directive" | cut -d ':' -f1 )
+			arg=$(printf '%s' "$directive" | cut -d ':' -f2- | sed 's/[[:space:]]*//')
 
 			case "$cmd" in
 				RET)
@@ -89,7 +94,7 @@ translate()
 		if [ -n "$line" ];
 		then
 			[ -n "$COMMAND" ] && writeBlock "$TMPFILE"
-			COMMAND=$(grep -Eo '[^ \t].*' <<< "$line")
+			COMMAND=$(printf '%s' "$line" | grep -Eo '[^ \t].*')
 			[ "${line: -1}" == '\' ] && COMMAND="${COMMAND%?}"
 			while [ "${line: -1}" == '\' ];
 			do
@@ -100,7 +105,8 @@ translate()
 			done
 			continue
 		fi
-	done <<< "$BUF"
+	done < "$BUFFILE"
+	rm "$BUFFILE"
 	writeBlock "$TMPFILE"
 	"@CMAKE_CURRENT_BINARY_DIR@"/shell_recorder.sh "$TMPFILE" || SHELL_RECORDER_ERROR=1
 	rm "$TMPFILE"
@@ -118,13 +124,16 @@ SHELL_RECORDER_ERROR=0
 INBLOCK=0
 IFS=''
 
+BLOCKSFILE=$(mktempfile_elektra)
+printf '%s\n' "$BLOCKS" > "$BLOCKSFILE"
 while read -r line;
 do
-	grep -Eq '\s*```sh$' <<< "$line" && { INBLOCK=1; continue; }
-	grep -Eq '\s*```$' <<< "$line" && INBLOCK=0
+	printf '%s' "$line" | grep -Eq '\s*```sh$' && { INBLOCK=1; continue; }
+	printf '%s' "$line" | grep -Eq '\s*```$' && INBLOCK=0
 	[ $INBLOCK -eq 0 ] && continue
 	[ -z "$BUF" ] && BUF="$line" || BUF=$(printf '%s\n%s' "$BUF" "$line")
-done <<< "$BLOCKS"
+done < "$BLOCKSFILE"
+rm "$BLOCKSFILE"
 
 translate
 
