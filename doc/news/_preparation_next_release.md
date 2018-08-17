@@ -465,6 +465,7 @@ Thanks to Daniel Bugl.
 - The [Shell Recorder][] now properly unmounts any additional mountpoints created
     during a test. *(René Schwaiger)*
 - We removed the broken auto unmounting feature from the [Markdown Shell Recorder][]. *(René Schwaiger)*
+- The [Markdown Shell Recorder][] does not require a `bash` compatible shell anymore. *(René Schwaiger)*
 
 [#1887]: https://github.com/ElektraInitiative/libelektra/issues/1887
 [Markdown Shell Recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
