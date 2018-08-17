@@ -222,6 +222,11 @@ Thanks to Daniel Bugl.
   [typechecker](https://www.libelektra.org/plugins/typechecker). Currently the keywords `check/range`,
   `check/enum` and `default` are supported. *(Armin Wurzinger)*
 
+### Type
+
+- We extended the [Markdown Shell Recorder][] example inside the [ReadMe of the plugin](https://www.libelektra.org/plugins/type).
+  *(René Schwaiger)*
+
 ### Typechecker
 
 - The plugin [typechecker](https://www.libelektra.org/plugins/typechecker), used to validate
@@ -436,6 +441,8 @@ Thanks to Daniel Bugl.
 
 ## Tests
 
+### (Markdown) Shell Recorder
+
 - We added new [Markdown Shell Recorder][] tests for the
   - [`ccode`](https://www.libelektra.org/plugins/ccode),
   - [`file`](https://www.libelektra.org/plugins/file),
@@ -458,6 +465,14 @@ Thanks to Daniel Bugl.
 - The [Shell Recorder][] now properly unmounts any additional mountpoints created
     during a test. *(René Schwaiger)*
 - We removed the broken auto unmounting feature from the [Markdown Shell Recorder][]. *(René Schwaiger)*
+- The [Markdown Shell Recorder][] does not require a `bash` compatible shell anymore. *(René Schwaiger)*
+
+[#1887]: https://github.com/ElektraInitiative/libelektra/issues/1887
+[Markdown Shell Recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
+[Shell Recorder]: (https://master.libelektra.org/tests/shell/shell_recorder)
+
+### General
+
 - Plugins added with the flag `SHARED_ONLY` no longer get tested in the script `check_kdb_internal_check.sh` if executed with kdb-full or kdb-static. *(Armin Wurzinger)*
 - Add `compare_regex_to_line_files` which allows to compare a file made of
     regex patterns to be compared with a text file line by line.
@@ -473,9 +488,6 @@ Thanks to Daniel Bugl.
 - The C++ version of the macro `exit_if_fail` now really exits the test progamm if the test fails. *(René Schwaiger)*
 - The C++ testing framework now supports the macro `compare_keyset` that checks if two key sets are equal. *(René Schwaiger)*
 
-[#1887]: https://github.com/ElektraInitiative/libelektra/issues/1887
-[Markdown Shell Recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
-[Shell Recorder]: (https://master.libelektra.org/tests/shell/shell_recorder)
 
 ## Build
 
