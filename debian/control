@@ -9,6 +9,7 @@ Build-Depends: debhelper (>= 9),
  pkg-config (>= 0.9.0),
  libboost-dev,
  libdbus-1-dev,
+ libczmq-dev,
  libyajl-dev,
  libxml2-dev,
  libaugeas-dev (>= 1.0.0),
@@ -40,9 +41,9 @@ Testsuite: autopkgtest
 Package: libelektra4-all
 Architecture: any
 Depends: libelektra4, libelektra4-experimental, libelektra4-gen,
-  libelektra4-augeas, libelektra4-dbus, libelektra4-lua, libelektra4-python,
-  libelektra4-xmltool, libelektra4-xerces, libelektra4-yajl, lua-elektra,
-  libelektra4-python2, elektra-bin, elektra-qt-gui,
+  libelektra4-augeas, libelektra4-dbus, libelektra4-zmq, libelektra4-lua,
+  libelektra4-python, libelektra4-xmltool, libelektra4-xerces, libelektra4-yajl,
+  lua-elektra, libelektra4-python2, elektra-bin, elektra-qt-gui,
   libelektra4-crypto, libelektra4-curl, libelektra4-journald
 Recommends: elektra-tests, elektra-doc, elektra-dbg, libelektra-dev
 Description: Elektra configuration store
@@ -203,7 +204,25 @@ Description: Elektra configuration store, dbus plugin
  registries, Elektra does not have most of the problems found in those
  implementations.
  .
- This package contains the 'dbus' plugin.
+ This package contains the 'dbus' plugins.
+
+Package: libelektra4-zeromq
+Section: libs
+Architecture: any
+Depends: libelektra4 (= ${binary:Version}),
+ ${shlibs:Depends},
+ ${misc:Depends}
+Description: Elektra configuration store, zeromq plugins
+ Elektra provides a universal and secure framework to store configuration
+ parameters in a hierarchical key-value pair mechanism, instead of each
+ program using its own text configuration files. This allows any program
+ to read and save its configuration with a consistent API, and allows
+ them to be aware of other applications' configurations, permitting
+ easy application integration. While architecturally similar to other OS
+ registries, Elektra does not have most of the problems found in those
+ implementations.
+ .
+ This package contains the 'zeromq' plugins.
 
 Package: libelektra4-lua
 Section: libs
