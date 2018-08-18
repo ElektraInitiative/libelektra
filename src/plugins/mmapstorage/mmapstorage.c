@@ -73,29 +73,9 @@ struct _mmapAddr
 
 typedef struct _mmapAddr MmapAddr;
 
-static KeySet magicKeySet = {
-	.array = (Key **) 0x00FF,
-	.size = SIZE_MAX,
-	.alloc = 0,
-	.cursor = (Key *) 0xFFFE,
-	.current = SIZE_MAX / 2,
-	.flags = KS_FLAG_MMAP_ARRAY | KS_FLAG_SYNC,
-	.mmapMetaData = (MmapMetaData *) 0xE1EF,
-#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
-	.opmphm = (Opmphm *) 0xFFFE,
-#endif
-};
+static KeySet magicKeySet;
+static Key magicKey;
 
-static Key magicKey = {
-	.data.v = (void *) 0xE1EF,
-	.dataSize = SIZE_MAX,
-	.key = (char *) 0x00FF,
-	.keySize = UINT16_MAX,
-	.keyUSize = 42,
-	.flags = KEY_FLAG_MMAP_STRUCT | KEY_FLAG_MMAP_DATA | KEY_FLAG_MMAP_KEY | KEY_FLAG_SYNC,
-	.ksReference = SIZE_MAX / 2,
-	.meta = (KeySet *) 0xFFFE,
-};
 
 /* -- File handling --------------------------------------------------------------------------------------------------------------------- */
 
@@ -333,6 +313,54 @@ static void writeMagicData (char * dest)
 }
 
 /* -- Verification Functions  ----------------------------------------------------------------------------------------------------------- */
+
+/**
+ * @brief Generate magic number depending on pointer size.
+ *
+ * Generates magic number to detect arbitrary byte swaps.
+ * For each byte of the number, a different value is assigned.
+ * E.g.: Systems with 8-byte pointers will have the magic number 0x0706050403020100.
+ *
+ * @return generated magic number
+ */
+static uintptr_t generateMagicNumber (void)
+{
+	uintptr_t ret = 0;
+
+	size_t ptrBytes = sizeof (void *);
+	for (uintptr_t i = 0; i < ptrBytes; ++i)
+	{
+		ret |= (i << (i * 8));
+	}
+
+	return ret;
+}
+
+static void initMagicKeySet (const uintptr_t magicNumber)
+{
+	magicKeySet.array = (Key **) magicNumber;
+	magicKeySet.size = SIZE_MAX;
+	magicKeySet.alloc = 0;
+	magicKeySet.cursor = (Key *) ~magicNumber;
+	magicKeySet.current = SIZE_MAX / 2;
+	magicKeySet.flags = KS_FLAG_MMAP_ARRAY | KS_FLAG_SYNC;
+	magicKeySet.mmapMetaData = (MmapMetaData *) 0xE1EF;
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+	magicKeySet.opmphm = (Opmphm *) 0xFFFE;
+#endif
+}
+
+static void initMagicKey (const uintptr_t magicNumber)
+{
+	magicKey.data.v = (void *) ~magicNumber;
+	magicKey.dataSize = SIZE_MAX;
+	magicKey.key = (char *) magicNumber;
+	magicKey.keySize = UINT16_MAX;
+	magicKey.keyUSize = 42;
+	magicKey.flags = KEY_FLAG_MMAP_STRUCT | KEY_FLAG_MMAP_DATA | KEY_FLAG_MMAP_KEY | KEY_FLAG_SYNC;
+	magicKey.ksReference = SIZE_MAX / 2;
+	magicKey.meta = (KeySet *) 0xFFFE;
+}
 
 static int verifyMagicKeySet (KeySet * ks)
 {
@@ -898,6 +926,10 @@ int elektraMmapstorageOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 	// plugin initialization logic
 	KeySet * mappedFiles = ksNew (0, KS_END);
 	elektraPluginSetData (handle, mappedFiles);
+
+	const uintptr_t magicNumber = generateMagicNumber ();
+	if (magicKeySet.array == 0) initMagicKeySet (magicNumber);
+	if (magicKey.data.v == 0) initMagicKey (magicNumber);
 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
