@@ -188,7 +188,7 @@ int unserialise (std::istream & is, ckdb::Key * errorKey, ckdb::KeySet * ks)
 		}
 		else
 		{
-			ELEKTRA_SET_ERRORF (49, errorKey, "found command %s", command.c_str ());
+			ELEKTRA_SET_ERROR (49, errorKey, command.c_str ());
 			return -1;
 		}
 	}
