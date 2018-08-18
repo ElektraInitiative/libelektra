@@ -537,6 +537,9 @@ and notification examples ([polling](https://www.libelektra.org/examples/notific
 
 ## Build
 
+Debian Wheezy is not supported anymore. As written in the previous release notes:
+Jessie (oldstable) with gcc 4.8.4 is now the oldest supported platform.
+
 ### CMake
 
 - The build system no longer installs Haskell dependencies from hackage by itself, instead

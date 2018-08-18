@@ -134,14 +134,8 @@ https://build.libelektra.org/
 |   Compiler        |         Version             |      Target       |
 |-------------------|-----------------------------|-------------------|
 |      gcc          | gcc (Debian 6.3.0-18) 6.3.0 |      amd64        |
-|      gcc          | gcc (Debian 4.7.2-5) 4.7.2  |      i386         |
-|      gcc          | gcc (Debian 4.7.2-5) 4.7.2  |      amd64        |
 |      gcc          | gcc 4.8                     |      amd64        |
 |      gcc          | gcc 4.9                     |      amd64        |
-|      gcc          | (Debian 4.4.5-8) 4.4.5      |      amd64        |
-|      gcc          | (Debian 4.4.5-8) 4.3        |      amd64        |
-|      gcc          | 4.6                         |      armhf        |
-|      mingw        | 4.6                         |      i386         |
 |      clang        | 3.8                         |x86_64-pc-linux-gnu|
 |      clang        | 5.0                         |x86_64-pc-linux-gnu|
 |      clang        | 6.0                         |x86_64-pc-linux-gnu|
