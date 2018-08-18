@@ -88,6 +88,17 @@ cabal install 'base >=4.9 && <4.12' 'containers >=0.5 && <0.6' \
 
 Now everything should be ready and awaits compilation.
 
+### Generating the dependencies
+
+For developers building Haskell plugins, we provide a [script](/scripts/generate-haskell-dependencies)
+in order to create list of dependencies that have to be installed into the sandbox.
+This script output the required dependencies per plugin/library, and also sums up all
+required dependencies into a single command.
+In case your plugin adds additional Haskell dependencies, please use the script to generate
+a complete list of dependencies and update them in this readme. Also consider the other
+places listed in the comments on top of the script, e.g. the list of dependencies have
+to be updated for the Docker containers used in the build server as well.
+
 ## Limitations
 
 - no binary keys
