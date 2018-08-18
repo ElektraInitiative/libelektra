@@ -93,8 +93,23 @@ static struct timespec ts_diff (struct timespec now, struct timespec start)
  */
 static int waitForConnection (void * monitorSocket, long connectTimeout)
 {
-	time_t start = time (NULL);
 	struct timespec wait;
+	struct timespec start;
+	struct timespec now;
+	struct timespec diff;
+	time_t startFallback = -1;
+	long timeoutSec = (connectTimeout / (1000));
+	long timeoutNsec = (connectTimeout % (1000)) * (1000 * 1000);
+	if (clock_gettime (CLOCK_MONOTONIC, &start) == -1)
+	{
+		ELEKTRA_LOG_WARNING ("Using slower fallback for timeout detection");
+		startFallback = time (NULL);
+		// minimum timeout is 1 second when using the fallback
+		if (timeoutSec == 0)
+		{
+			timeoutSec = 1;
+		}
+	}
 
 	// wait for connection established event
 	int connected = 0;
@@ -107,7 +122,18 @@ static int waitForConnection (void * monitorSocket, long connectTimeout)
 
 		int event = getMonitorEvent (monitorSocket);
 
-		if (time (NULL) - start > connectTimeout)
+		int timeout = 0;
+		if (startFallback == -1)
+		{
+			clock_gettime (CLOCK_MONOTONIC, &now);
+			diff = ts_diff (now, start);
+			timeout = diff.tv_sec >= timeoutSec && diff.tv_nsec >= timeoutNsec;
+		}
+		else
+		{
+			timeout = time (NULL) - startFallback >= timeoutSec;
+		}
+		if (timeout)
 		{
 			ELEKTRA_LOG_WARNING ("connection timed out. could not publish notification");
 			zmq_close (monitorSocket);

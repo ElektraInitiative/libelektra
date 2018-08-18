@@ -21,7 +21,7 @@
 #define ELEKTRA_ZEROMQ_DEFAULT_PUB_ENDPOINT "tcp://localhost:6000"
 
 /** default connection timeout for plugin */
-#define ELEKTRA_ZEROMQ_DEFAULT_CONNECT_TIMEOUT 2
+#define ELEKTRA_ZEROMQ_DEFAULT_CONNECT_TIMEOUT 1000
 
 /** default subscription timeout for plugin */
 #define ELEKTRA_ZEROMQ_DEFAULT_SUBSCRIBE_TIMEOUT 200
