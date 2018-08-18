@@ -9,8 +9,8 @@
  *   - Transport plugins (e.g. kdb global-mount dbus announce=once dbusrecv)
  *
  * Relevant keys for this example:
- *   - /sw/elektra/example_notification/#0/current/value: Set to any integer value
- *   - /sw/elektra/example_notification/#0/current/color: Set the text color. Possible
+ *   - /sw/example/notification/#0/current/value: Set to any integer value
+ *   - /sw/example/notification/#0/current/color: Set the text color. Possible
  *     values are "red", "green" and "blue".
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
@@ -95,7 +95,7 @@ int main (void)
 
 	KeySet * config = ksNew (20, KS_END);
 
-	Key * key = keyNew ("/sw/elektra/example_notification/#0/current", KEY_END);
+	Key * key = keyNew ("/sw/example/notification/#0/current", KEY_END);
 	KDB * kdb = kdbOpen (key);
 	if (kdb == NULL)
 	{
@@ -115,7 +115,7 @@ int main (void)
 	}
 
 	int value = 0;
-	Key * intKeyToWatch = keyNew ("/sw/elektra/example_notification/#0/current/value", KEY_END);
+	Key * intKeyToWatch = keyNew ("/sw/example/notification/#0/current/value", KEY_END);
 	result = elektraNotificationRegisterInt (kdb, intKeyToWatch, &value);
 	if (!result)
 	{
@@ -123,7 +123,7 @@ int main (void)
 		return -1;
 	}
 
-	Key * callbackKeyToWatch = keyNew ("/sw/elektra/example_notification/#0/current/color", KEY_END);
+	Key * callbackKeyToWatch = keyNew ("/sw/example/notification/#0/current/color", KEY_END);
 	result = elektraNotificationRegisterCallback (kdb, callbackKeyToWatch, &setTerminalColor, NULL);
 	if (!result)
 	{
@@ -137,7 +137,7 @@ int main (void)
 
 	printf ("Asynchronous Notification Example Application\n");
 	printf ("Please note that notification transport plugins are required see\n"
-		"  https://www.libelektra.org/tutorials/notifications#notification-configuration!\n");
+		" https://www.libelektra.org/tutorials/notifications#notification-configuration!\n");
 	printf ("- Set \"%s\" to red, blue or green to change the text color\n", keyName (callbackKeyToWatch));
 	printf ("- Set \"%s\" to any integer value\n", keyName (intKeyToWatch));
 	printf ("Send SIGINT (Ctl+C) to exit.\n\n");

@@ -10,7 +10,7 @@
  *   - Transport plugins (e.g. kdb global-mount zeromqsend zeromqrecv && kdb run-hub-zeromq)
  *
  * Relevant keys for this example:
- *   - /sw/elektra/example_notification/#0/current/value: Set to any integer value
+ *   - /sw/example/notification/#0/current/value: Set to any integer value
  *   Add additional transport plugins and remove the original pair afterwards or
  *   mount a file which sets the key above to a different value and unmount it again
  *
@@ -178,8 +178,8 @@ int main (void)
 	g_unix_signal_add (SIGINT, onSIGNAL, data);
 
 	data->config = ksNew (20, KS_END);
-	data->parentKey = keyNew ("/sw/elektra/example_notification/#0/current", KEY_END);
-	data->intKeyToWatch = keyNew ("/sw/elektra/example_notification/#0/current/value", KEY_END);
+	data->parentKey = keyNew ("/sw/example/notification/#0/current", KEY_END);
+	data->intKeyToWatch = keyNew ("/sw/example/notification/#0/current/value", KEY_END);
 
 	// Setup timer that repeatedly prints the variable
 	data->timer = elektraIoNewTimerOperation (TWO_SECONDS, 1, printVariable, data);
@@ -191,7 +191,7 @@ int main (void)
 
 	printf ("Reloading Notification Example Application\n");
 	printf ("Please note that notification transport plugins are required see\n"
-		"  https://www.libelektra.org/tutorials/notifications#notification-configuration!\n");
+		" https://www.libelektra.org/tutorials/notifications#notification-configuration!\n");
 	printf ("- Set \"%s\" to any integer value\n", keyName (data->intKeyToWatch));
 	printf ("- Try to add additional transport plugins and remove the original pair afterwards\n");
 	printf ("- Mount a file which sets the key above to a different value and unmount it\n");
@@ -208,5 +208,6 @@ int main (void)
 	ksDel (data->config);
 	keyDel (data->intKeyToWatch);
 	keyDel (data->parentKey);
+	elektraFree (data);
 	printf ("cleanup done!\n");
 }

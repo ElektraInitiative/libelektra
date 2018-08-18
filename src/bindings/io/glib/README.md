@@ -36,7 +36,6 @@ Populated I/O interface
 ## Example
 
 ```C
-
 #include <elektra/kdb.h>
 #include <elektra/kdbio.h>
 #include <elektra/kdbio/glib.h>
@@ -65,5 +64,7 @@ void main (void)
 	elektraIoBindingCleanup (binding);
 	g_main_loop_unref (loop);
 }
-
 ```
+
+Please check out the ["notificationReload" example](https://www.libelektra.org/examples/notificationreload)
+which uses this I/O binding.

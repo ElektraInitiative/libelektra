@@ -137,8 +137,8 @@ Values of registered variables are automatically updated when the value of the
 assigned key has changed.
 In the following example we will register an integer variable.
 
-The following examples are shortened for tangibility. The complete example is available in
-[src/libs/notification/example/example_notification_async.c](https://github.com/ElektraInitiative/libelektra/blob/master/src/libs/notification/example/example_notification_async.c).
+The following examples are shortened for tangibility. The complete code is available in
+["notificationAsync" example](https://www.libelektra.org/examples/notificationasync).
 
 ```C
 #include <elektra/kdb.h>
@@ -297,7 +297,7 @@ void initKdb (ElektraIoTimerOperation * timerOp ELEKTRA_UNUSED)
 	elektraNotificationOpen (kdb);
 
 	// Code for registration from snippet before
-	Key * elektraKey = keyNew ("system/elektra", KEY_END);
+	Key * elektraKey = keyNew ("/elektra", KEY_END);
 	elektraNotificationRegisterCallbackSameOrBelow (kdb, elektraKey, elektraChangedCallback, NULL);
 	keyDel (elektraKey);
 
@@ -326,7 +326,8 @@ First, we create the timer in the main loop setup of the application.
 ElektraIoTimerOperation * reload;
 
 // main loop setup (e.g. main())
-// the timer operation will reload KDB after 100 milliseconds
+// the timer operation is disabled for now and
+// will reload KDB after 100 milliseconds
 reload = elektraIoNewTimerOperation (100, 0, initKdb, NULL);
 elektraIoBindingAddTimer (binding, reload);
 ```
@@ -367,6 +368,8 @@ to Elektra's configuration.
 The snippets above omit error handling for brevity. The complete code including
 error handling is available in the
 ["notification reload" example](https://www.libelektra.org/examples/notificationreload).
+This example also omits globals by passing them as user data using the
+`elektraIo*GetData()` functions.
 
 ## Emergent Behavior Guidelines
 
