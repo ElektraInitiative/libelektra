@@ -1,25 +1,33 @@
-# 0.8.<<VERSION>> Release
+# 0.8.24 Release
 
 This release did not happen yet.
 
-Please update this file within every PR:
+- guid: 889b700d-9eac-4eff-9a3d-f6fb15c3d9da
+- author: Markus Raab
+- pubDate: Sat, 18 Aug 2018 18:13:40 +0200
+- shortDesc:
 
-- For non-trivial changes, you can choose to be
-  part of the highlighted changes.
-- Please make sure to add some short tutorial, asciinema,
-  or how-to-use for highlighted items.
-- Please add your name in parentheses and italics
-  to every contribution,
-  i.e., syntax: "*(<myname>)*".
-  Note: No change is irrelevant but similar contributions might
-  be summarized shortly before the release.
+We are proud to release Elektra 0.8.24.
 
-
-<<`scripts/generate-news-entry`>>
-
-We are proud to release Elektra 0.8.<<VERSION>>.
-
-<<`scripts/git-release-stats 0.8.<<VERSION>>`>>
+Number commits: 1734
+      1 Author: Mihael Pranjic <mpranj@limun.org>
+      1 Author: Peter Nirschl <petermax2@users.noreply.github.com>
+      2 Author: Michael Zronek <Michael.Zronek@gmail.com>
+      2 Author: Thomas Waser <thomas.waser@libelektra.org>
+      4 Author: René Schwaiger <sanssecours@me.com>
+      5 Author: Michael Zronek <michael.zronek@gmail.com>
+     12 Author: Kurt Micheli <e1026558@student.tuwien.ac.at>
+     16 Author: Peter Nirschl <peter.nirschl@gmail.com>
+     21 Author: Klemens Böswirth <k.boeswirth+git@gmail.com>
+     22 Author: winlu <derwinlu+git@gmail.com>
+     96 Author: Markus Raab <elektra@markus-raab.org>
+    101 Author: markus2330 <markus2330@users.noreply.github.com>
+    102 Author: Thomas Wahringer <thomas.wahringer@libelektra.org>
+    117 Author: Daniel Bugl <me@omnidan.net>
+    243 Author: derwinlu <derwinlu+git@gmail.com>
+    249 Author: e1528532 <e1528532@student.tuwien.ac.at>
+    740 Author: René Schwaiger <sanssecours@me.com>
+ 792 files changed, 27677 insertions(+), 39176 deletions(-)
 
 ## What is Elektra?
 
@@ -31,7 +39,7 @@ For a small demo see here:
 
 [![asciicast](https://asciinema.org/a/cantr04assr4jkv8v34uz9b8r.png)](https://asciinema.org/a/cantr04assr4jkv8v34uz9b8r)
 
-You can also read the news [on our website](https://www.libelektra.org/news/0.8.<<VERSION>>-release)
+You can also read the news [on our website](https://www.libelektra.org/news/0.8.24-release)
 
 
 
@@ -666,12 +674,24 @@ compiled against an older 0.8 version of Elektra will continue to work
 
 Following changes were made:
 
-- The C++ API was extended with delBaseName()
+- The C++ API was extended with `delBaseName()`.
+  This does not affect ABI compatibility, also C++ programs compiled against 0.8.24 and using `delBaseName()` will work with Elektra 0.8.23 or older.
 - `kdbtypes.h` now comes with support for C99 types
 - We added the private headerfiles `kdbnotificationinternal.h`, `kdbioplugin.h`. *(Thomas Wahringer)*
 - The I/O binding header files have been moved a new directory called `kdbio`.
   For example, instead of including `elektra/kdbio_ev.h` users of the binding now include `elektra/kdbio/ev.h`. *(Thomas Wahringer)*
-- <<TODO>>
+- directoryvalue has changed its behavior, see above
+- the list plugin changed its configuration, see above
+- The yamlcpp plugin now gets excluded with too old versions of yamlcpp (Debian Stretch is affected)
+
+New plugins:
+
+- hexnumber
+- yamlsmith
+- zeromqrecv
+- zeromqsend
+
+New tool: kdb-find
 
 ## Website
 
@@ -696,20 +716,20 @@ We are currently working on following topics:
 
 ## Get It!
 
-You can download the release from [here](https://www.libelektra.org/ftp/elektra/releases/elektra-0.8.<<VERSION>>.tar.gz)
-or [GitHub](https://github.com/ElektraInitiative/ftp/blob/master/releases/elektra-0.8.<<VERSION>>.tar.gz?raw=true)
+You can download the release from [here](https://www.libelektra.org/ftp/elektra/releases/elektra-0.8.24.tar.gz)
+or [GitHub](https://github.com/ElektraInitiative/ftp/blob/master/releases/elektra-0.8.24.tar.gz?raw=true)
 
 
-The [hashsums are:](https://github.com/ElektraInitiative/ftp/blob/master/releases/elektra-0.8.<<VERSION>>.tar.gz.hashsum?raw=true)
+The [hashsums are:](https://github.com/ElektraInitiative/ftp/blob/master/releases/elektra-0.8.24.tar.gz.hashsum?raw=true)
 
 <<`scripts/generate-hashsums`>>
 
 The release tarball is also available signed by me using GnuPG from
-[here](https://www.libelektra.org/ftp/elektra/releases/elektra-0.8.<<VERSION>>.tar.gz.gpg) or
-[GitHub](https://github.com/ElektraInitiative/ftp/blob/master/releases//elektra-0.8.<<VERSION>>.tar.gz.gpg?raw=true)
+[here](https://www.libelektra.org/ftp/elektra/releases/elektra-0.8.24.tar.gz.gpg) or
+[GitHub](https://github.com/ElektraInitiative/ftp/blob/master/releases//elektra-0.8.24.tar.gz.gpg?raw=true)
 
-Already built API-Docu can be found [online](https://doc.libelektra.org/api/0.8.<<VERSION>>/html/)
-or [GitHub](https://github.com/ElektraInitiative/doc/tree/master/api/0.8.<<VERSION>>).
+Already built API-Docu can be found [online](https://doc.libelektra.org/api/0.8.24/html/)
+or [GitHub](https://github.com/ElektraInitiative/doc/tree/master/api/0.8.24).
 
 
 ## Stay tuned!
@@ -722,7 +742,7 @@ For any questions and comments, please contact the
 issue tracker [on GitHub](http://issues.libelektra.org)
 or Markus Raab by email using elektra@markus-raab.org.
 
-[Permalink to this NEWS entry](https://www.libelektra.org/news/0.8.<<VERSION>>-release)
+[Permalink to this NEWS entry](https://www.libelektra.org/news/0.8.24-release)
 
 For more information, see [https://libelektra.org](https://libelektra.org)
 
