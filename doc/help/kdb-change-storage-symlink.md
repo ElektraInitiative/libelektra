@@ -13,7 +13,7 @@ This command updates the symlink pointing to the default storage if `storage` is
 
 ## EXAMPLES
 
-Set default storage plugin to ini:
+Set default storage plugin to ini:<br>
 `kdb change-storage-symlink ini`
 
 ## SEE ALSO

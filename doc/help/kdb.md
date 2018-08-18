@@ -133,8 +133,8 @@ They are only recognized by the `kdb` tool or tools that explicit have
 support for it. Your applications should not depend on the presence of a
 bookmark.
 
-Bookmarks are stored below:
-	`/sw/elektra/kdb/#0/current/bookmarks`
+Bookmarks are stored below:<br>
+`/sw/elektra/kdb/#0/current/bookmarks`
 
 For every key found there, a new bookmark will be introduced.
 

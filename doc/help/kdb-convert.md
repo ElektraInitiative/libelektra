@@ -38,13 +38,13 @@ If either `import-file` or `export-file` are not specified, `stdin` and `stdout`
 
 ## EXAMPLES
 
-To convert an Elektra dump file to xml:
+To convert an Elektra dump file to xml:<br>
 `cat sw.ecf | kdb convert dump xmltool > sw.xml`
 
-Another way to convert an Elektra dump file to xml:
+Another way to convert an Elektra dump file to xml:<br>
 `kdb convert dump xmltool /home/user/dump_file.ecf /home/user/xml_file.xml`
 
-To print an xml file using the `line` format:
-`cat ../tests/xml_file.xml | kdb convert xmltool line`
+To print an xml file using the `line` format:<br>
+`cat ../tests/xml_file.xml | kdb convert xmltool line`<br>
 Note that this command won't save the output, it will just display it to `stdout`.
 

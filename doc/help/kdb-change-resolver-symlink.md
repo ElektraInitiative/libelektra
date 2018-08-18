@@ -13,7 +13,7 @@ This command updates the symlink pointing to the default resolver if `resolver` 
 
 ## EXAMPLES
 
-Set default resolver plugin to resolver_fm_hpu_b:
+Set default resolver plugin to resolver_fm_hpu_b:<br>
 `kdb change-resolver-symlink resolver_fm_hpu_b`
 
 ## SEE ALSO
