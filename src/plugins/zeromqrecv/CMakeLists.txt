@@ -5,7 +5,7 @@ if (DEPENDENCY_PHASE)
 	pkg_check_modules (ZMQ QUIET libzmq)
 
 	if (NOT ZMQ_FOUND)
-		remove_plugin (zeromqrecv "package libzmq (libczmq-dev) not found")
+		remove_plugin (zeromqrecv "package libzmq (libzmq3-dev) not found")
 	endif ()
 endif ()
 
