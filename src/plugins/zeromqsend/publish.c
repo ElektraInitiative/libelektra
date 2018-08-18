@@ -67,6 +67,22 @@ static int getMonitorEvent (void * monitor)
 	return event;
 }
 
+static struct timespec ts_diff (struct timespec now, struct timespec start)
+{
+	struct timespec diff;
+	if ((now.tv_nsec - start.tv_nsec) < 0)
+	{
+		diff.tv_sec = now.tv_sec - start.tv_sec - 1;
+		diff.tv_nsec = 1000000000 + now.tv_nsec - start.tv_nsec;
+	}
+	else
+	{
+		diff.tv_sec = now.tv_sec - start.tv_sec;
+		diff.tv_nsec = now.tv_nsec - start.tv_nsec;
+	}
+	return diff;
+}
+
 /**
  * Wait for connection message from ZeroMQ monitor socket.
  *
@@ -134,9 +150,10 @@ static int waitForSubscription (void * socket, long subscribeTimeout)
 	struct timespec start;
 	struct timespec now;
 	struct timespec wait;
+	struct timespec diff;
 	time_t startFallback = -1;
 	long timeoutSec = (subscribeTimeout / (1000));
-	long timeoutNsec = (subscribeTimeout % (1000)) * (1000 * 1000 * 1000);
+	long timeoutNsec = (subscribeTimeout % (1000)) * (1000 * 1000);
 	if (clock_gettime (CLOCK_MONOTONIC, &start) == -1)
 	{
 		ELEKTRA_LOG_WARNING ("Using slower fallback for timeout detection");
@@ -171,7 +188,8 @@ static int waitForSubscription (void * socket, long subscribeTimeout)
 		if (startFallback == -1)
 		{
 			clock_gettime (CLOCK_MONOTONIC, &now);
-			timeout = now.tv_sec - start.tv_sec >= timeoutSec && now.tv_nsec - start.tv_nsec >= timeoutNsec;
+			diff = ts_diff (now, start);
+			timeout = diff.tv_sec >= timeoutSec && diff.tv_nsec >= timeoutNsec;
 		}
 		else
 		{
