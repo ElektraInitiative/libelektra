@@ -28,6 +28,8 @@ RUN apt-get update && apt-get -y install \
         valgrind \
         checkinstall \
         swig \
+        libgmp-dev \
+        wget \
     && rm -rf /var/lib/apt/lists/*
 
 # Google Test
@@ -56,4 +58,21 @@ RUN useradd \
     --shell "/bin/bash" \
     jenkins
 
+# Handle Haskell dependencies
+# We use ghc8.2.2 from the haskell platform website here, as xenial only provides ghc7
+RUN wget https://haskell.org/platform/download/8.2.2/haskell-platform-8.2.2-unknown-posix--core-x86_64.tar.gz \
+    && tar -xf haskell-platform-8.2.2-unknown-posix--core-x86_64.tar.gz \
+    && ./install-haskell-platform.sh
+
 USER ${JENKINS_USERID}
+
+ENV HASKELL_SHARED_SANDBOX /home/jenkins/elektra-cabal-sandbox
+RUN mkdir -p $HASKELL_SHARED_SANDBOX \
+    && cd $HASKELL_SHARED_SANDBOX \
+    && cabal update \
+    && cabal sandbox init \
+    && cabal install 'base >=4.9 && <4.12' 'containers >=0.5 && <0.6' \
+        'directory >=1.2 && <1.4' 'process >=1.4 && <1.7' 'binary >=0.8 && <0.9' \
+        'haskell-src-exts-any' 'pretty -any' 'hint >=0.7.0 && <0.8.0' 'temporary -any' \
+        'exceptions -any' 'text -any' 'simple-logger -any' 'megaparsec -any' \
+        'hspec -any' 'QuickCheck-any' --avoid-reinstalls

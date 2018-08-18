@@ -168,6 +168,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Docker
 
+- The Ubuntu:xenial build now also tests Haskell bindings and plugins. *(Armin Wurzinger)*
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
