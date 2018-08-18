@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "KDB\-GET" "1" "May 2018" "" ""
+.TH "KDB\-GET" "1" "August 2018" "" ""
 .
 .SH "NAME"
 \fBkdb\-get\fR \- Get the value of a key stored in the key database
@@ -67,19 +67,34 @@ Suppress the newline at the end of the output\.
 Explain what is happening\. Gives a complete trace of all tried keys\. Very useful to debug fallback and overrides\.
 .
 .SH "EXAMPLES"
-To get the value of a key: \fBkdb get user/example/key\fR
+To get the value of a key:
+.
+.br
+\fBkdb get user/example/key\fR
 .
 .P
-To get the value of a key using a cascading lookup: \fBkdb get /example/key\fR
+To get the value of a key using a cascading lookup:
+.
+.br
+\fBkdb get /example/key\fR
 .
 .P
-To get the value of a key without adding a newline to the end of it: \fBkdb get \-n /example/key\fR
+To get the value of a key without adding a newline to the end of it:
+.
+.br
+\fBkdb get \-n /example/key\fR
 .
 .P
-To explain why a specific key was used (for cascading keys): \fBkdb get \-v /example/key\fR
+To explain why a specific key was used (for cascading keys):
+.
+.br
+\fBkdb get \-v /example/key\fR
 .
 .P
-To use bookmarks: \fBkdb get +kdb/format\fR
+To use bookmarks:
+.
+.br
+\fBkdb get +kdb/format\fR
 .
 .P
 This command will actually get \fBuser/sw/elektra/kdb/#0/current/format\fR if the bookmarks commands from kdb\-set(1) \fIkdb\-set\.md\fR man pages are executed before\.
