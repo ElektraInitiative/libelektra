@@ -1223,13 +1223,13 @@ ingroup:plugin
 module:path
 
 number:196
-description:The given port is not in a valid range (0-65535)
+description:The given port is not in a valid range
 severity:error
 ingroup:plugin
 module:network
 
 number:196
-description:The desired port is already in use.
+description:The desired port is already in use
 severity:error
 ingroup:plugin
 module:network
@@ -1238,10 +1238,10 @@ number:197
 description:Referring to the desired key would lead to an endless loop
 severity:error
 ingroup:plugin
-module:network
+module:recursion
 
 number:198
 description:Cannot refer to non-existent recursive entry. Please create it first
 severity:error
 ingroup:plugin
-module:network
+module:recursion

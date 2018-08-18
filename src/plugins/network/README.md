@@ -14,7 +14,9 @@ This plugin is a check plugin that checks if a key contains a valid ip
 address. It uses the `POSIX.1-2001` interface `getaddrinfo()` in order
 to check if an ip address is valid.
 
-The plugin can also check for valid port numbers and if the set port is free to use.
+Furthermore `getaddrinfo()` is used in `check/port` to resolve a port by its service name
+which is defined under `/etc/services`.
+The plugin can be used to check for valid port numbers and if the set port is free to use.
 
 ## Purpose
 
@@ -48,5 +50,5 @@ and listen on the given port.
 
 ## Future Work
 
-`check/port/ping` to check if the port can be pinged/reached (usually for clients).
+`check/port/connect` to check if the port can be pinged/reached (usually for clients).
 If not reachable, users receive a warning. A correct timeout setting will be problematic though.
