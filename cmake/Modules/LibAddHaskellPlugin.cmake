@@ -53,18 +53,24 @@ macro (add_haskell_plugin target)
 		if (NOT ENABLE_ASAN)
 			if (PLUGINPROCESS_FOUND)
 				if (HASKELL_FOUND)
-					check_binding_included ("haskell" HAVE_HASKELL_BINDING)
-					if (HAVE_HASKELL_BINDING)
-						if (BUILD_SHARED)
-							prepare_and_compile_haskell_plugin (${target}
-											    ${PLUGIN_NAME}
-											    ${PLUGIN_NAME_CAPITALIZED}
-											    ${ARG_SANDBOX_ADD_SOURCES}
-											    ${ARG_ADDITIONAL_SOURCES})
-						endif (BUILD_SHARED)
-					else (HAVE_HASKELL_BINDING)
-						remove_plugin (${target} "haskell bindings are not included in the cmake configuration")
-					endif (HAVE_HASKELL_BINDING)
+					set (GHC_MIN_VERSION "8.0.1")
+					if (NOT GHC_VERSION VERSION_LESS ${GHC_MIN_VERSION})
+						check_binding_included ("haskell" HAVE_HASKELL_BINDING)
+						if (HAVE_HASKELL_BINDING)
+							if (BUILD_SHARED)
+								prepare_and_compile_haskell_plugin (${target}
+												    ${PLUGIN_NAME}
+												    ${PLUGIN_NAME_CAPITALIZED}
+												    ${ARG_SANDBOX_ADD_SOURCES}
+												    ${ARG_ADDITIONAL_SOURCES})
+							endif (BUILD_SHARED)
+						else (HAVE_HASKELL_BINDING)
+							remove_plugin (${target}
+								       "haskell bindings are not included in the cmake configuration")
+						endif (HAVE_HASKELL_BINDING)
+					else (NOT GHC_VERSION VERSION_LESS ${GHC_MIN_VERSION})
+						remove_plugin (${target} "ghc: ${GHC_VERSION} found, but ${GHC_MIN_VERSION} required")
+					endif (NOT GHC_VERSION VERSION_LESS ${GHC_MIN_VERSION})
 				else (HASKELL_FOUND)
 					remove_plugin (${target} ${HASKELL_NOTFOUND_INFO})
 				endif (HASKELL_FOUND)

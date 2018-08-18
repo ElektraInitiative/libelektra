@@ -57,10 +57,12 @@ if (GHC-PKG_EXECUTABLE)
 		OUTPUT_VARIABLE GHC_TARGET_PLATFORM OUTPUT_STRIP_TRAILING_WHITESPACE
 	)
 
-	# correct the mapping..
-	string (REPLACE "apple-darwin" "osx" GHC_TARGET_PLATFORM ${GHC_TARGET_PLATFORM})
-	string (REPLACE "unknown-linux" "linux" GHC_TARGET_PLATFORM ${GHC_TARGET_PLATFORM})
-
+	# correct the mapping, if there is any
+	if (GHC_TARGET_PLATFORM)
+		string (REPLACE "apple-darwin" "osx" GHC_TARGET_PLATFORM ${GHC_TARGET_PLATFORM})
+		string (REPLACE "unknown-linux" "linux" GHC_TARGET_PLATFORM ${GHC_TARGET_PLATFORM})
+	endif (GHC_TARGET_PLATFORM)
+	
 	# normalize the result variables, 0 means success which corresponds to 1 in cmake booleans
 	if (GHC_HSPEC_FOUND EQUAL 0)
 		set (GHC_HSPEC_FOUND 1)
