@@ -18,5 +18,5 @@ if (PLUGINPROCESS_FOUND)
 		    LINK_ELEKTRA elektra-pluginprocess
 				 elektra-invoke)
 else (PLUGINPROCESS_FOUND)
-	exclude_plugin (process "${PLUGINPROCESS_NOTFOUND_INFO}, pluginprocess library excluded, thus also excluding the process plugin")
+	remove_plugin (process "${PLUGINPROCESS_NOTFOUND_INFO}, pluginprocess library excluded, thus also excluding the process plugin")
 endif (PLUGINPROCESS_FOUND)
