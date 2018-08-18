@@ -15,7 +15,7 @@ address. It uses the `POSIX.1-2001` interface `getaddrinfo()` in order
 to check if an ip address is valid.
 
 Furthermore `getaddrinfo()` is used in `check/port` to resolve a port by its service name
-which is defined under `/etc/services`.
+which is defined under `/etc/services`. The portname is translated to the respective portnumber.
 The plugin can be used to check for valid port numbers and if the set port is free to use.
 
 ## Purpose
