@@ -58,7 +58,9 @@ The following section lists news about the [modules](https://www.libelektra.org/
    This plugin utilizes the pluginprocess library in order to execute arbitrary other
    plugins in an own process, acting as a proxy itself. Therefore it is not required 
    to explicitly change a plugin's implementation if it shall be executed in an own
-   process. *(Armin Wurzinger)*
+   process. This plugin is not completely finished yet, as currently there is no way
+   for it to mimick the proxied plugin's contract in Elektra. It can be used with simple
+   plugins like `dump` however, check the limitations in the readme for more details.  *(Armin Wurzinger)*
 
 ### <<Plugin1>>
 

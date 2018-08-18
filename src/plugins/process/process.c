@@ -26,21 +26,21 @@ static int validPluginName (Key * pluginNameKey, Key * errorKey)
 {
 	if (pluginNameKey == NULL)
 	{
-		ELEKTRA_ADD_WARNING (198, errorKey, "Missing plugin configuration parameter plugin=<name of plugin to be proxied>");
+		ELEKTRA_ADD_WARNING (197, errorKey, "Missing plugin configuration parameter plugin=<name of plugin to be proxied>");
 		return 0;
 	}
 
 	// and this key should obviously contain the plugin's name, so check for any name
 	// furthermore by invoking process in a process we'd create a deadloop, check that too
 	const char * pluginName = keyString (pluginNameKey);
-	if (elektraStrCmp (pluginName, "(null)") == 0 || elektraStrCmp (pluginName, "(binary)") == 0)
+	if (elektraStrCmp (pluginName, "(null)") == 0 || keyIsBinary (pluginNameKey))
 	{
-		ELEKTRA_ADD_WARNINGF (198, errorKey, "Plugin configuration parameter plugin has an invalid value: %s", pluginName);
+		ELEKTRA_ADD_WARNINGF (197, errorKey, "Plugin configuration parameter plugin has an invalid value: %s", pluginName);
 		return 0;
 	}
 	else if (elektraStrCmp (pluginName, "process") == 0)
 	{
-		ELEKTRA_ADD_WARNING (198, errorKey, "Cannot proxy the process plugin itself");
+		ELEKTRA_ADD_WARNING (197, errorKey, "Cannot proxy the process plugin itself");
 		return 0;
 	}
 	return 1;
@@ -105,7 +105,7 @@ int elektraProcessOpen (Plugin * handle, Key * errorKey)
 		process->plugin = elektraInvokeOpen (keyString (process->pluginName), process->pluginConfig, errorKey);
 		if (!process->plugin)
 		{
-			ELEKTRA_SET_ERRORF (197, errorKey, "Failed to open the proxied plugin %s", keyString (process->pluginName));
+			ELEKTRA_SET_ERRORF (190, errorKey, "Failed to open the proxied plugin %s", keyString (process->pluginName));
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
@@ -169,6 +169,11 @@ static void adjustContract (KeySet * pluginContract, KeySet * contract)
 
 int elektraProcessGet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
+	ElektraPluginProcess * pp = elektraPluginGetData (handle);
+	Process * process = elektraPluginProcessGetData (pp);
+
+	if (elektraPluginProcessIsParent (pp)) return elektraPluginProcessSend (pp, ELEKTRA_PLUGINPROCESS_GET, returned, parentKey);
+
 	if (isContractKey (parentKey))
 	{
 		KeySet * processConfig = elektraPluginGetConfig (handle);
@@ -188,27 +193,17 @@ int elektraProcessGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		ksAppend (returned, contract);
 		ksDel (contract);
 
-		if (!validPluginName (pluginName, parentKey)) return ELEKTRA_PLUGIN_STATUS_SUCCESS;
-
-		// Otherwise invoke the get function with the adjusted module string to get the contract
-		ElektraInvokeHandle * contractHandle = elektraInvokeOpen (keyString (pluginName), processConfig, parentKey);
-		if (!contractHandle)
-		{
-			ELEKTRA_SET_ERRORF (197, parentKey, "Failed to open the handle for getting the contract for %s",
-					    keyString (pluginName));
-			return ELEKTRA_PLUGIN_STATUS_ERROR;
-		}
+		if (!validPluginName (pluginName, parentKey) || !process->plugin) return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 
 		Key * pluginParentKey = keyDup (parentKey);
 		keySetBaseName (pluginParentKey, keyString (pluginName));
 
 		KeySet * pluginContract = ksNew (30, KS_END);
-		elektraInvoke2Args (contractHandle, "get", pluginContract, pluginParentKey);
-		elektraInvokeClose (contractHandle, pluginParentKey);
+		elektraInvoke2Args (process->plugin, "get", pluginContract, pluginParentKey);
 		keyDel (pluginParentKey);
 		if (ksGetSize (pluginContract) == 0)
 		{
-			ELEKTRA_SET_ERRORF (197, parentKey, "Failed to get the contract for %s", keyString (pluginName));
+			ELEKTRA_SET_ERRORF (190, parentKey, "Failed to get the contract for %s", keyString (pluginName));
 			ksDel (pluginContract);
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
@@ -218,13 +213,6 @@ int elektraProcessGet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
-
-	// Otherwise business as usual
-
-	ElektraPluginProcess * pp = elektraPluginGetData (handle);
-	Process * process = elektraPluginProcessGetData (pp);
-
-	if (elektraPluginProcessIsParent (pp)) return elektraPluginProcessSend (pp, ELEKTRA_PLUGINPROCESS_GET, returned, parentKey);
 
 	if (!process->plugin) return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 
@@ -279,7 +267,7 @@ Plugin * ELEKTRA_PLUGIN_EXPORT (process)
 	return elektraPluginExport ("process",
 		ELEKTRA_PLUGIN_OPEN,	&elektraProcessOpen,
 		ELEKTRA_PLUGIN_CLOSE,	&elektraProcessClose,
-		ELEKTRA_PLUGIN_GET,		&elektraProcessGet,
+		ELEKTRA_PLUGIN_GET,	&elektraProcessGet,
 		ELEKTRA_PLUGIN_SET,		&elektraProcessSet,
 		ELEKTRA_PLUGIN_ERROR,	&elektraProcessError,
 		ELEKTRA_PLUGIN_END);
