@@ -36,20 +36,32 @@ int elektraSyslogClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 	return 0; /* success */
 }
 
-int elektraSyslogGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
+int elektraSyslogGet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
-	KeySet * n;
-	ksAppend (returned,
-		  n = ksNew (30, keyNew ("system/elektra/modules/syslog", KEY_VALUE, "syslog plugin waits for your orders", KEY_END),
-			     keyNew ("system/elektra/modules/syslog/exports", KEY_END),
-			     keyNew ("system/elektra/modules/syslog/exports/open", KEY_FUNC, elektraSyslogOpen, KEY_END),
-			     keyNew ("system/elektra/modules/syslog/exports/close", KEY_FUNC, elektraSyslogClose, KEY_END),
-			     keyNew ("system/elektra/modules/syslog/exports/get", KEY_FUNC, elektraSyslogGet, KEY_END),
-			     keyNew ("system/elektra/modules/syslog/exports/set", KEY_FUNC, elektraSyslogSet, KEY_END),
-			     keyNew ("system/elektra/modules/syslog/exports/error", KEY_FUNC, elektraSyslogError, KEY_END),
+	if (!strcmp (keyName (parentKey), "system/elektra/modules/syslog"))
+	{
+		KeySet * n;
+		ksAppend (returned,
+			  n = ksNew (30,
+				     keyNew ("system/elektra/modules/syslog", KEY_VALUE, "syslog plugin waits for your orders", KEY_END),
+				     keyNew ("system/elektra/modules/syslog/exports", KEY_END),
+				     keyNew ("system/elektra/modules/syslog/exports/open", KEY_FUNC, elektraSyslogOpen, KEY_END),
+				     keyNew ("system/elektra/modules/syslog/exports/close", KEY_FUNC, elektraSyslogClose, KEY_END),
+				     keyNew ("system/elektra/modules/syslog/exports/get", KEY_FUNC, elektraSyslogGet, KEY_END),
+				     keyNew ("system/elektra/modules/syslog/exports/set", KEY_FUNC, elektraSyslogSet, KEY_END),
+				     keyNew ("system/elektra/modules/syslog/exports/error", KEY_FUNC, elektraSyslogError, KEY_END),
 #include "readme_syslog.c"
-			     keyNew ("system/elektra/modules/syslog/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END));
-	ksDel (n);
+				     keyNew ("system/elektra/modules/syslog/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END));
+		ksDel (n);
+
+		return 1;
+	}
+
+	if (strncmp (keyString (ksLookupByName (elektraPluginGetConfig (handle), "/log/get", 0)), "1", 1) == 0)
+	{
+		syslog (LOG_NOTICE, "loading configuration %s", keyName (parentKey));
+	}
+
 	return 1;
 }
 
@@ -82,7 +94,7 @@ int elektraSyslogError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key *
 Plugin * ELEKTRA_PLUGIN_EXPORT (syslog)
 {
 	// clang-format off
-	return elektraPluginExport(BACKENDNAME,
+	return elektraPluginExport("syslog",
 		ELEKTRA_PLUGIN_OPEN,	&elektraSyslogOpen,
 		ELEKTRA_PLUGIN_CLOSE,	&elektraSyslogClose,
 		ELEKTRA_PLUGIN_GET,	&elektraSyslogGet,
@@ -90,4 +102,3 @@ Plugin * ELEKTRA_PLUGIN_EXPORT (syslog)
 		ELEKTRA_PLUGIN_ERROR,	&elektraSyslogError,
 		ELEKTRA_PLUGIN_END);
 }
-

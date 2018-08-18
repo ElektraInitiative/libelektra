@@ -41,6 +41,8 @@ main = hspec $ do
       _ <- keyAddBaseName key s2
       keyBaseName key >>= (`shouldBe` s2)
       keyName key >>= (`shouldBe` accepted s1 s2)
+    let keySetMetaOp k = keySetMeta k "1" "1" >> keySetMeta k "2" "2" >> keySetMeta k "3" "3" >> return k
+    it "lists metadata correctly" $ testKeyModOp name keySetMetaOp (fmap length . keyListMeta) 3
 
   describe "KeySet" $ do
     it "creates a new empty keyset" $ testSingleKeySetOp 5 ksGetSize 0
@@ -52,6 +54,11 @@ main = hspec $ do
       join $ liftM2 shouldBe (ksGetSize ks) (ksGetSize ks2)
       _ <- ksPop ks
       join $ liftM2 shouldNotBe (ksGetSize ks) (ksGetSize ks2)
+    it "can list it successfully" $ do
+      key <- keyNew name
+      ks <- ksNew 1
+      _ <- ksAppendKey ks key
+      ksList ks >>= (`shouldBe` [key])
   where
     name = "/tests/testhaskell_cabal"
     otherName = "/tests/testhaskell_cabal/other"

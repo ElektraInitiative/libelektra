@@ -51,6 +51,7 @@ else
 	USER_FOLDER=@KDB_DB_HOME@/$USER/@KDB_DB_USER@
 fi
 PLUGINS=`echo "@ADDED_PLUGINS@" | tr ';' ' '`
+ADDED_PLUGINS_WITHOUT_ONLY_SHARED=`echo "@ADDED_PLUGINS_WITHOUT_ONLY_SHARED@" | tr ';' ' '`
 PLUGINS_NEWLINES=`echo "@ADDED_PLUGINS@" | tr ';' '\n'`
 
 DATE=`date "+%b %d %H:%M"`
@@ -69,6 +70,17 @@ fi
 # (require both the src and the build dir)
 export RUBYLIB="@CMAKE_SOURCE_DIR@/src/bindings/swig/ruby:@CMAKE_BINARY_DIR@/src/bindings/swig/ruby"
 export SAVE=0 # some Rubies do not accept RUBYLIB if SAVE is not 0
+
+#
+# HELPER
+#
+
+# POSIX way to test if string contains substring
+contains() {
+    string="$1"
+    substring="$2"
+    test "${string#*$substring}" != "$string"
+}
 
 #
 # ASSERTIONS
@@ -268,7 +280,7 @@ check_failed()
 	CONFIGNAME=$3
 
 	echo "$TESTNAME did not leave $CONFIGNAME config in the same state at is was before!"
-	echo "This means the test itself is flawed!"
+	echo "This means the test itself is flawed or the KDB was externally modified while the tests were running!"
 	echo "You can inspect the original $CONFIGNAME config in $EXPORTS/$CONFIGNAME.export.dump"
 	echo "compared to situation now in $EXPORTS/$CONFIGNAME.check.dump"
 	echo
@@ -392,18 +404,6 @@ export_check()
 		check_failed "$EXPORTS" "$TESTNAME" mount
 	fi
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

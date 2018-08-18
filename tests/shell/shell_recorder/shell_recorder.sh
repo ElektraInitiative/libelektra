@@ -114,10 +114,11 @@ execute()
 	STDOUT=$(cat ./stdout)
 
 	[ -n "$STDOUT" ] && printf '%s\n' "STDOUT: $STDOUT" >> "$OutFile"
-	if [ -n "$STDOUTCMP" ];
+	if [ -n "${STDOUTCMP+unset}" ];
 	then
 		executedTests=$(( executedTests + 1 ))
-		if ! printf '%s' "$STDOUT" | replace_newline_return | grep -Fqx --text "$STDOUTCMP";
+		if ! printf '%s' "$STDOUT" | replace_newline_return | grep -Fqx --text -- "$STDOUTCMP" || \
+		   test -z "$STDOUTCMP" -a -n "$STDOUT";
 		then
 			printerr '\nERROR - STDOUT:\n“%s”\ndoes not match\n“%s”\n\n' "$STDOUT" "$STDOUTCMP"
 			printf '=== FAILED stdout does not match expected pattern %s\n' "$STDOUTCMP" >> "$OutFile"
@@ -132,7 +133,7 @@ execute()
 	if [ -n "$STDOUTRECMP" ];
 	then
 		executedTests=$(( executedTests + 1 ))
-		if !  printf '%s' "$STDOUT" | replace_newline_return | grep -Eq --text "$STDOUTRECMP";
+		if !  printf '%s' "$STDOUT" | replace_newline_return | grep -Eq --text -- "$STDOUTRECMP";
 		then
 			printerr '\nERROR - STDOUT:\n“%s”\ndoes not match\n“%s”\n\n' "$STDOUT" "$STDOUTRECMP"
 			printf '=== FAILED stdout does not match expected pattern %s\n' "$STDOUTRECMP" >> "$OutFile"
@@ -150,7 +151,7 @@ execute()
 	if [ -n "$WARNINGSCMP" ];
 	then
 		executedTests=$(( executedTests + 1 ))
-		if ! printf '%s' "$WARNINGS" | replace_newline_return | grep -Eq --text "$WARNINGSCMP";
+		if ! printf '%s' "$WARNINGS" | replace_newline_return | grep -Eq --text -- "$WARNINGSCMP";
 		then
 			printerr '\nERROR - WARNINGS:\n“%s”\ndoes not match\n“%s”\n\n' "$WARNINGS" "$WARNINGSCMP"
 			printf '=== FAILED Warnings do not match expected pattern %s\n' "$WARNINGSCMP" >> "$OutFile"
@@ -168,7 +169,7 @@ execute()
 	if [ -n "$ERRORCMP" ];
 	then
 		executedTests=$(( executedTests + 1 ))
-		if ! printf '%s' "$ERROR" | replace_newline_return | grep -Eq --text "$ERRORCMP";
+		if ! printf '%s' "$ERROR" | replace_newline_return | grep -Eq --text -- "$ERRORCMP";
 		then
 			printerr '\nERROR - ERROR:\n“%s”\ndoes not match\n“%s”\n\n' "$ERROR" "$ERRORCMP"
 			printf '=== FAILED Errors do not match expected pattern %s\n' "$ERRORCMP" >> "$OutFile"
@@ -246,7 +247,7 @@ run_script()
 		RETCMP=
 		ERRORCMP=
 		WARNINGSCMP=
-		STDOUTCMP=
+		unset STDOUTCMP
 		STDOUTRECMP=
 		unset STDERRCMP
 		ARG=
@@ -281,7 +282,7 @@ OutFile=$(mktempfile_elektra)
 RETCMP=
 ERRORCMP=
 WARNINGSCMP=
-STDOUTCMP=
+unset STDOUTCMP
 STDOUTRECMP=
 
 BACKUP=0
@@ -303,6 +304,7 @@ BACKUP=1
 
 EXPORT_DIR="$(mktempdir_elektra)"
 export_config "$EXPORT_DIR"
+MOUNTPOINTS_BACKUP=$("$KDB" mount)
 
 run_script
 

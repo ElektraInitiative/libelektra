@@ -118,8 +118,10 @@ int elektraArrayIncName (Key * key)
 	int arrayElement = elektraArrayValidateName (key);
 	if (arrayElement == -1) return -1;
 
-	while (*(++baseName) == '_') // jump over initial `#` and all `_`
+	// jump over initial `#` and all `_`
+	while (*(++baseName) == '_') //! \internal
 		;		     //! OCLint
+	//! \endinternal
 
 	kdb_long_long_t oldIndex = 0;
 	if (arrayElement && elektraReadArrayNumber (baseName, &oldIndex) == -1) return -1;
@@ -151,8 +153,10 @@ int elektraArrayDecName (Key * key)
 	int arrayElement = elektraArrayValidateName (key);
 	if (arrayElement == -1) return -1;
 
-	while (*(++baseName) == '_') // jump over initial `#` and all `_`
+	// jump over initial `#` and all `_`
+	while (*(++baseName) == '_') //! \internal
 		;		     //! OCLint
+	//! \endinternal
 
 	kdb_long_long_t oldIndex = 0;
 	if (elektraReadArrayNumber (baseName, &oldIndex) == -1 || oldIndex == 0) return -1;
@@ -245,7 +249,7 @@ Key * elektraArrayGetNextKey (KeySet * arrayKeys)
 
 	ksAppendKey (arrayKeys, last);
 	Key * newKey = keyDup (last);
-	keySetString (newKey, "");
+	keySetBinary (newKey, 0, 0);
 	int ret = elektraArrayIncName (newKey);
 
 	if (ret == -1)

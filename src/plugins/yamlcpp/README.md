@@ -20,53 +20,53 @@ The YAML CPP plugin reads and writes configuration data via the [yaml-cpp][] lib
 You can mount this plugin via `kdb mount`:
 
 ```sh
-sudo kdb mount config.yaml /examples/yamlcpp yamlcpp
+sudo kdb mount config.yaml /tests/yamlcpp yamlcpp
 ```
 
 . To unmount the plugin use  `kdb umount`:
 
 ```sh
-sudo kdb umount /examples/yamlcpp
+sudo kdb umount /tests/yamlcpp
 ```
 
 . The following examples show how you can store and retrieve data via `yamlcpp`.
 
 ```sh
-# Mount yamlcpp plugin to cascading namespace `/examples/yamlcpp`
-sudo kdb mount config.yaml /examples/yamlcpp yamlcpp
+# Mount yamlcpp plugin to cascading namespace `/tests/yamlcpp`
+sudo kdb mount config.yaml /tests/yamlcpp yamlcpp
 
 # Manually add a mapping to the database
-echo "🔑 : 🐳"               > `kdb file /examples/yamlcpp`
+echo "🔑 : 🐳"               > `kdb file /tests/yamlcpp`
 # Retrieve the value of the manually added key
-kdb get /examples/yamlcpp/🔑
+kdb get /tests/yamlcpp/🔑
 #> 🐳
 
 # Manually add syntactically incorrect data
-echo "some key: @some  value" >> `kdb file /examples/yamlcpp`
-kdb get "/examples/yamlcpp/some key"
+echo "some key: @some  value" >> `kdb file /tests/yamlcpp`
+kdb get "/tests/yamlcpp/some key"
 # STDERR: .*yaml-cpp: error at line 2, column 11: unknown token.*
 # ERROR: 10
 # RET: 5
 
 # Overwrite incorrect data
-echo "🔑: value" >  `kdb file /examples/yamlcpp`
+echo "🔑: value" >  `kdb file /tests/yamlcpp`
 
 # Add some values via `kdb set`
-kdb set /examples/yamlcpp 🎵
-kdb set /examples/yamlcpp/fleetwood mac
-kdb set /examples/yamlcpp/the chain
+kdb set /tests/yamlcpp 🎵
+kdb set /tests/yamlcpp/fleetwood mac
+kdb set /tests/yamlcpp/the chain
 
 # Retrieve the new values
-kdb get /examples/yamlcpp
+kdb get /tests/yamlcpp
 #> 🎵
-kdb get /examples/yamlcpp/the
+kdb get /tests/yamlcpp/the
 #> chain
-kdb get /examples/yamlcpp/fleetwood
+kdb get /tests/yamlcpp/fleetwood
 #> mac
 
 # Undo modifications
-kdb rm -r /examples/yamlcpp
-sudo kdb umount /examples/yamlcpp
+kdb rm -r /tests/yamlcpp
+sudo kdb umount /tests/yamlcpp
 ```
 
 ## Arrays
@@ -74,83 +74,98 @@ sudo kdb umount /examples/yamlcpp
 YAML CPP provides basic support for Elektra’s array data type.
 
 ```sh
-# Mount yamlcpp plugin to cascading namespace `/examples/yamlcpp`
-sudo kdb mount config.yaml /examples/yamlcpp yamlcpp
+# Mount yamlcpp plugin to cascading namespace `/tests/yamlcpp`
+sudo kdb mount config.yaml /tests/yamlcpp yamlcpp
 
 # Manually add an array to the database
-echo 'sunny:'       >  `kdb file /examples/yamlcpp`
-echo '  - Charlie'  >> `kdb file /examples/yamlcpp`
-echo '  - Dee'      >> `kdb file /examples/yamlcpp`
+echo 'sunny:'       >  `kdb file /tests/yamlcpp`
+echo '  - Charlie'  >> `kdb file /tests/yamlcpp`
+echo '  - Dee'      >> `kdb file /tests/yamlcpp`
 
 # List the array entries
-kdb ls /examples/yamlcpp
-#> user/examples/yamlcpp/sunny
-#> user/examples/yamlcpp/sunny/#0
-#> user/examples/yamlcpp/sunny/#1
+kdb ls /tests/yamlcpp
+#> user/tests/yamlcpp/sunny
+#> user/tests/yamlcpp/sunny/#0
+#> user/tests/yamlcpp/sunny/#1
 
 # Read an array entry
-kdb get user/examples/yamlcpp/sunny/#1
+kdb get user/tests/yamlcpp/sunny/#1
 #> Dee
 
 # You can retrieve the last index of an array by reading the metakey `array`
-kdb getmeta /examples/yamlcpp/sunny array
+kdb getmeta /tests/yamlcpp/sunny array
 # 1
 
 # Extend the array
-kdb set user/examples/yamlcpp/sunny/#2 Dennis
-kdb set user/examples/yamlcpp/sunny/#3 Frank
-kdb set user/examples/yamlcpp/sunny/#4 Mac
+kdb set user/tests/yamlcpp/sunny/#2 Dennis
+kdb set user/tests/yamlcpp/sunny/#3 Frank
+kdb set user/tests/yamlcpp/sunny/#4 Mac
+
+# The plugin supports empty array fields
+kdb set user/tests/yamlcpp/sunny/#_10 'The Waitress'
+kdb getmeta user/tests/yamlcpp/sunny array
+#> #_10
+kdb get user/tests/yamlcpp/sunny/#_9
+# RET: 11
 
 # Retrieve the last array entry
-kdb get user/examples/yamlcpp/sunny/$(kdb getmeta user/examples/yamlcpp/sunny array)
-#> Mac
+kdb get user/tests/yamlcpp/sunny/$(kdb getmeta user/tests/yamlcpp/sunny array)
+#> The Waitress
+
+# The plugin also supports empty arrays (arrays without any elements)
+kdb setmeta user/tests/yamlcpp/empty array ''
+kdb export user/tests/yamlcpp/empty yamlcpp
+#> []
+
+# For arrays with at least one value we do not need to set the type `array`
+kdb set user/tests/yamlcpp/movies
+kdb set user/tests/yamlcpp/movies/#0 'A Silent Voice'
+kdb getmeta user/tests/yamlcpp/movies array
+#> #0
+kdb export user/tests/yamlcpp/movies yamlcpp
+#> - A Silent Voice
 
 # Undo modifications to the key database
-kdb rm -r /examples/yamlcpp
-sudo kdb umount /examples/yamlcpp
+kdb rm -r /tests/yamlcpp
+sudo kdb umount /tests/yamlcpp
 ```
 
 The plugin also supports nested arrays.
 
 ```sh
-# Mount yamlcpp plugin to cascading namespace `/examples/yamlcpp`
-sudo kdb mount config.yaml /examples/yamlcpp yamlcpp
+# Mount yamlcpp plugin to cascading namespace `/tests/yamlcpp`
+sudo kdb mount config.yaml /tests/yamlcpp yamlcpp
 
 # Add some key value pairs
-kdb set /examples/yamlcpp/key value
-kdb set /examples/yamlcpp/array/#0 scalar
-kdb set /examples/yamlcpp/array/#1/key value
-kdb set /examples/yamlcpp/array/#1/🔑 🙈
+kdb set /tests/yamlcpp/key value
+kdb set /tests/yamlcpp/array/#0 scalar
+kdb set /tests/yamlcpp/array/#1/key value
+kdb set /tests/yamlcpp/array/#1/🔑 🙈
 
-kdb ls /examples/yamlcpp
-#> user/examples/yamlcpp/array
-#> user/examples/yamlcpp/array/#0
-#> user/examples/yamlcpp/array/#1
-#> user/examples/yamlcpp/array/#1/key
-#> user/examples/yamlcpp/array/#1/🔑
-#> user/examples/yamlcpp/key
+kdb ls /tests/yamlcpp
+#> user/tests/yamlcpp/array
+#> user/tests/yamlcpp/array/#0
+#> user/tests/yamlcpp/array/#1/key
+#> user/tests/yamlcpp/array/#1/🔑
+#> user/tests/yamlcpp/key
 
 # Retrieve part of an array value
-kdb get /examples/yamlcpp/array/#1/key
+kdb get /tests/yamlcpp/array/#1/key
 #> value
 
 # Since an array saves a list of values, an array parent
 # - which represent the array - does not store a value!
-echo "/examples/yamlcpp/array: “`kdb get /examples/yamlcpp/array`”"
-#> /examples/yamlcpp/array: “”
-kdb get /examples/yamlcpp/array/#1
-echo "/examples/yamlcpp/array/#1: “`kdb get /examples/yamlcpp/array/#1`”"
-#> /examples/yamlcpp/array/#1: “”
+echo "/tests/yamlcpp/array: “`kdb get /tests/yamlcpp/array`”"
+#> /tests/yamlcpp/array: “”
 
 # Remove part of an array value
-kdb rm /examples/yamlcpp/array/#1/key
+kdb rm /tests/yamlcpp/array/#1/key
 
-kdb ls /examples/yamlcpp
-#> user/examples/yamlcpp/array
-#> user/examples/yamlcpp/array/#0
-#> user/examples/yamlcpp/array/#1
-#> user/examples/yamlcpp/array/#1/🔑
-#> user/examples/yamlcpp/key
+kdb ls /tests/yamlcpp
+#> user/tests/yamlcpp/array
+#> user/tests/yamlcpp/array/#0
+#> user/tests/yamlcpp/array/#1/🔑
+#> user/tests/yamlcpp/key
 
 # The plugin stores array keys using YAML sequences.
 # Since yaml-cpp stores keys in arbitrary order -
@@ -158,15 +173,15 @@ kdb ls /examples/yamlcpp
 # we remove `key` before we retrieve the data. This way
 # we make sure that the output below will always look
 # the same.
-kdb rm /examples/yamlcpp/key
-kdb file /examples/yamlcpp | xargs cat
+kdb rm /tests/yamlcpp/key
+kdb file /tests/yamlcpp | xargs cat
 #> array:
 #>   - scalar
 #>   - 🔑: 🙈
 
 # Undo modifications to the key database
-kdb rm -r /examples/yamlcpp
-sudo kdb umount /examples/yamlcpp
+kdb rm -r /tests/yamlcpp
+sudo kdb umount /tests/yamlcpp
 ```
 
 ## Metadata
@@ -195,51 +210,51 @@ key with metadata:
 . The example below shows how we can read and write metadata using the `yamlcpp` plugin via `kdb`.
 
 ```sh
-# Mount yamlcpp plugin to cascading namespace `/examples/yamlcpp`
-sudo kdb mount config.yaml user/examples/yamlcpp yamlcpp
+# Mount yamlcpp plugin to cascading namespace `/tests/yamlcpp`
+sudo kdb mount config.yaml user/tests/yamlcpp yamlcpp
 
 # Manually add a key including metadata to the database
-echo "🔑: !elektra/meta [🦄, {comment: Unicorn}]" >  `kdb file user/examples/yamlcpp`
-kdb lsmeta user/examples/yamlcpp/🔑
+echo "🔑: !elektra/meta [🦄, {comment: Unicorn}]" >  `kdb file user/tests/yamlcpp`
+kdb lsmeta user/tests/yamlcpp/🔑
 #> comment
-kdb getmeta user/examples/yamlcpp/🔑 comment
+kdb getmeta user/tests/yamlcpp/🔑 comment
 #> Unicorn
 
 # Add a new key and add some metadata to the new key
-kdb set user/examples/yamlcpp/brand new
-kdb setmeta user/examples/yamlcpp/brand comment "The Devil And God Are Raging Inside Me"
-kdb setmeta user/examples/yamlcpp/brand rationale "Because I Love It"
+kdb set user/tests/yamlcpp/brand new
+kdb setmeta user/tests/yamlcpp/brand comment "The Devil And God Are Raging Inside Me"
+kdb setmeta user/tests/yamlcpp/brand rationale "Because I Love It"
 
 # Retrieve metadata
-kdb lsmeta user/examples/yamlcpp/brand
+kdb lsmeta user/tests/yamlcpp/brand
 #> comment
 #> rationale
-kdb getmeta user/examples/yamlcpp/brand rationale
+kdb getmeta user/tests/yamlcpp/brand rationale
 #> Because I Love It
 
 # Undo modifications to the key database
-kdb rm -r user/examples/yamlcpp
-sudo kdb umount user/examples/yamlcpp
+kdb rm -r user/tests/yamlcpp
+sudo kdb umount user/tests/yamlcpp
 ```
 
 We can also invoke additional plugins that use metadata like `type`.
 
 ```sh
-sudo kdb mount config.yaml /examples/yamlcpp yamlcpp type
-kdb set /examples/yamlcpp/typetest/number 21
-kdb setmeta /examples/yamlcpp/typetest/number check/type short
+sudo kdb mount config.yaml /tests/yamlcpp yamlcpp type
+kdb set /tests/yamlcpp/typetest/number 21
+kdb setmeta /tests/yamlcpp/typetest/number check/type short
 
-kdb set /examples/yamlcpp/typetest/number "One"
+kdb set /tests/yamlcpp/typetest/number "One"
 # RET: 5
 # STDERR: .*The type short failed to match for .*/number with string: One.*
 # ERROR: 52
 
-kdb get /examples/yamlcpp/typetest/number
+kdb get /tests/yamlcpp/typetest/number
 #> 21
 
 # Undo modifications to the key database
-kdb rm -r /examples/yamlcpp
-sudo kdb umount /examples/yamlcpp
+kdb rm -r /tests/yamlcpp
+sudo kdb umount /tests/yamlcpp
 ```
 
 ## Binary Data
@@ -247,35 +262,68 @@ sudo kdb umount /examples/yamlcpp
 YAML CPP also supports [base64](https://tools.ietf.org/html/rfc4648) encoded data via the [Base64](../base64) plugin.
 
 ```sh
-# Mount YAML CPP plugin at cascading namespace `/examples/binary`
-sudo kdb mount test.yaml /examples/binary yamlcpp
+# Mount YAML CPP plugin at cascading namespace `/tests/binary`
+sudo kdb mount test.yaml /tests/binary yamlcpp
 # Manually add binary data
-echo 'bin: !!binary aGk=' > `kdb file /examples/binary`
+echo 'bin: !!binary aGk=' > `kdb file /tests/binary`
 
 # Base 64 decodes the data `aGk=` to `hi` and stores the value in binary form.
 # The command `kdb get` prints the data as hexadecimal byte values.
-kdb get /examples/binary/bin
+kdb get /tests/binary/bin
 #> \x68\x69
 
 # We can use `bash` to convert the hexadecimal value returned by `kdb get`
 # to its ASCII representation.
-bash -c 'printf `kdb get /examples/binary/bin`'
+bash -c 'printf `kdb get /tests/binary/bin`'
 #> hi
 
 # Add a string value to the database
-kdb set /examples/binary/text mate
+kdb set /tests/binary/text mate
 # Base 64 does not modify textual values
-kdb get /examples/binary/text
+kdb get /tests/binary/text
 #> mate
 
 # The Base 64 plugin re-encodes binary data before YAML CPP stores the key set. Hence the
 # configuration file contains the value `aGk=` even after YAML CPP wrote a new configuration.
-grep -q 'bin: !.* aGk=' `kdb file user/examples/binary`
+grep -q 'bin: !.* aGk=' `kdb file user/tests/binary`
 # RET: 0
 
 # Undo modifications to the database
-kdb rm -r /examples/binary
-sudo kdb umount /examples/binary
+kdb rm -r /tests/binary
+sudo kdb umount /tests/binary
+```
+
+## Null & Empty
+
+Sometimes you only want to save a key without a value (null key) or a key with an empty value. The commands below show that YAML CPP supports this scenario properly.
+
+```sh
+# Mount YAML CPP plugin at cascading namespace `user/tests/yamlcpp`
+sudo kdb mount test.yaml user/tests/yamlcpp yamlcpp
+
+# Check if the plugin saves null keys correctly
+kdb set user/tests/yamlcpp/null
+kdb set user/tests/yamlcpp/null/level1/level2
+kdb setmeta user/tests/yamlcpp/null/level1/level2 comment 'Null key'
+
+kdb ls user/tests/yamlcpp/null
+#> user/tests/yamlcpp/null
+#> user/tests/yamlcpp/null/level1/level2
+kdb get -v user/tests/yamlcpp/null | grep -q 'The key is null.'
+kdb get -v user/tests/yamlcpp/null/level1/level2 | grep -q 'The key is null.'
+
+# Check if the plugin saves empty keys correctly
+kdb set user/tests/yamlcpp/empty ""
+kdb set user/tests/yamlcpp/empty/level1/level2
+
+kdb ls user/tests/yamlcpp/empty
+#> user/tests/yamlcpp/empty
+#> user/tests/yamlcpp/empty/level1/level2
+kdb get -v user/tests/yamlcpp/empty | grep -vq 'The key is null.'
+
+# Undo modifications to the database
+kdb rm -r user/tests/yamlcpp
+sudo kdb umount user/tests/yamlcpp
 ```
 
 ## Dependencies
@@ -301,18 +349,18 @@ stores all of the values (`🍂`, `leaf` and `🍁`) in the leaves of the mappin
 
 ![Tree](./yamlcpp/Tree.pdf)
 
-The key set that this plugin creates using the data above looks like this (assuming we mount the plugin to `user/examples/yamlcpp`):
+The key set that this plugin creates using the data above looks like this (assuming we mount the plugin to `user/tests/yamlcpp`):
 
 |     Name                                      | Value |
 |-----------------------------------------------|-------|
-| user/examples/yamlcpp/level                   |       |
-| user/examples/yamlcpp/level 1/level 2         |       |
-| user/examples/yamlcpp/level 1/level 2/level 3 | 🍁    |
-| user/examples/yamlcpp/root                    |       |
-| user/examples/yamlcpp/root/below root         | leaf  |
-| user/examples/yamlcpp/root/subtree            | 🍂    |
+| user/tests/yamlcpp/level                      |       |
+| user/tests/yamlcpp/level 1/level 2            |       |
+| user/tests/yamlcpp/level 1/level 2/level 3    | 🍁    |
+| user/tests/yamlcpp/root                       |       |
+| user/tests/yamlcpp/root/below root            | leaf  |
+| user/tests/yamlcpp/root/subtree               | 🍂    |
 
-. Now why is this plugin unable to store values outside leaf nodes? For example, why can we not store a value inside `user/examples/yamlcpp/level 1/level 2`? To answer this question we need to look at the YAML representation:
+. Now why is this plugin unable to store values outside leaf nodes? For example, why can we not store a value inside `user/tests/yamlcpp/level 1/level 2`? To answer this question we need to look at the YAML representation:
 
 ```yaml
 level 1:
@@ -367,27 +415,27 @@ directory:
 . A user of the YAML plugin will not notice this feature unless he edits the configuration file by hand, as the following example shows:
 
 ```sh
-# Mount YAML CPP plugin at `user/examples/yamlcpp`
-sudo kdb mount test.yaml user/examples/yamlcpp yamlcpp
+# Mount YAML CPP plugin at `user/tests/yamlcpp`
+sudo kdb mount test.yaml user/tests/yamlcpp yamlcpp
 
-kdb set user/examples/yamlcpp/directory 'Directory Data'
-kdb setmeta user/examples/yamlcpp/directory comment 'Directory Metadata'
-kdb set user/examples/yamlcpp/directory/file 'Leaf Data'
+kdb set user/tests/yamlcpp/directory 'Directory Data'
+kdb setmeta user/tests/yamlcpp/directory comment 'Directory Metadata'
+kdb set user/tests/yamlcpp/directory/file 'Leaf Data'
 
-kdb ls user/examples/yamlcpp/directory
-#> user/examples/yamlcpp/directory
-#> user/examples/yamlcpp/directory/file
+kdb ls user/tests/yamlcpp/directory
+#> user/tests/yamlcpp/directory
+#> user/tests/yamlcpp/directory/file
 
-kdb get user/examples/yamlcpp/directory
+kdb get user/tests/yamlcpp/directory
 #> Directory Data
-kdb getmeta user/examples/yamlcpp/directory comment
+kdb getmeta user/tests/yamlcpp/directory comment
 #> Directory Metadata
-kdb get user/examples/yamlcpp/directory/file
+kdb get user/tests/yamlcpp/directory/file
 #> Leaf Data
 
 # Undo modifications to the database
-kdb rm -r user/examples/yamlcpp
-sudo kdb umount user/examples/yamlcpp
+kdb rm -r user/tests/yamlcpp
+sudo kdb umount user/tests/yamlcpp
 ```
 
 .

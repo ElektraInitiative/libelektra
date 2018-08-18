@@ -23,11 +23,12 @@ struct Printer
 	int nr_meta;
 
 	kdb::KeySet & current;
+	kdb::Key & parent;
 
 	std::string keyname;
 	std::string metaname;
 
-	Printer (kdb::KeySet & ks);
+	Printer (kdb::KeySet & ks, kdb::Key & parent);
 
 	void add_key (std::vector<char> const & c);
 	void add_val (std::vector<char> const & c);

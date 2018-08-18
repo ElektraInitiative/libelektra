@@ -41,13 +41,25 @@ are still properly encoded for anyone.
 
 ## Example
 
-For example `~/.config/iconv.ini` should be `latin1`, but all users
+For example `iconv/iconv.ini` should be `latin1`, but all users
 have `UTF-8` settings:
 
 ```sh
-sudo kdb mount iconv.ini /example/iconv ini iconv from=UTF-8,to=ISO-8859-1
-file ~/.config/iconv.ini             # iconv.ini: ISO-8859 text
-kdb get user/example/iconv/a         # converts ISO-8859 to UTF-8
-kdb set user/example/iconv/a öäß     # converts UTF-8 to ISO-8859
-```
+# Mount the file `iconv/iconv.ini` using the `ini` plugin together with `iconv`
+sudo kdb mount "$PWD/src/plugins/iconv/iconv/iconv.ini" system/tests/iconv ini iconv from=UTF-8,to=ISO-8859-1
 
+# Check the file type of the mounted file
+file -b "`kdb file system/tests/iconv`"
+#> ISO-8859 text
+
+kdb get system/tests/iconv/a         # converts ISO-8859 to UTF-8
+#> hellö
+
+kdb set system/tests/iconv/a öäß     # converts UTF-8 to ISO-8859
+kdb get system/tests/iconv/a
+#> öäß
+
+# Cleanup
+kdb set system/tests/iconv/a hellö
+sudo kdb umount system/tests/iconv
+```

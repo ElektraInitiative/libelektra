@@ -14,4 +14,5 @@ add_plugin (tcl
 		    action.cpp
 		    printer.hpp
 		    printer.cpp
+	    LINK_ELEKTRA elektra-ease
 	    TEST_README)

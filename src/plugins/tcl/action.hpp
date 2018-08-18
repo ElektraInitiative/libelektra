@@ -35,7 +35,7 @@ namespace unicode = boost::spirit::standard;
 template <typename Iterator>
 struct Action : qi::grammar<Iterator, unicode::space_type>
 {
-	Action (kdb::KeySet & ks) : Action::base_type (query), p (ks)
+	Action (kdb::KeySet & ks, kdb::Key & parent) : Action::base_type (query), p (ks, parent)
 	{
 		query = '{' >> *(pair) > '}';
 		pair = '{' >> key > '=' >> val >> *('{' >> metakey > '=' >> metaval > '}') > '}';

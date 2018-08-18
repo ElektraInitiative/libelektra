@@ -5,7 +5,7 @@
 - infos/needs =
 - infos/recommends =
 - infos/placements = getstorage setstorage
-- infos/status = maintained unittest nodep libc configurable limited nodoc
+- infos/status = maintained unittest nodep libc configurable limited
 - infos/description = parses csv files
 
 ## Introduction
@@ -50,70 +50,70 @@ First line should determine the headers:
 The example below shows how you can use this plugin to read and write CSV files.
 
 ```sh
-# Mount plugin to cascading namespace `/examples/csv`
+# Mount plugin to cascading namespace `/tests/csv`
 # We use the column names from the first line of the
 # config file as key names
-sudo kdb mount config.csv /examples/csv csvstorage  "header=colname,columns/names/#0=col0Name,columns/names/#1=col1Name"
+sudo kdb mount config.csv /tests/csv csvstorage  "header=colname,columns/names/#0=col0Name,columns/names/#1=col1Name"
 
 # Add some data
-printf 'band,album\n'                           >> `kdb file /examples/csv`
-printf 'Converge,All We Love We Leave Behind\n' >> `kdb file /examples/csv`
-printf 'mewithoutYou,Pale Horses\n'             >> `kdb file /examples/csv`
-printf 'Kate Tempest,Everybody Down\n'          >> `kdb file /examples/csv`
+printf 'band,album\n'                           >> `kdb file /tests/csv`
+printf 'Converge,All We Love We Leave Behind\n' >> `kdb file /tests/csv`
+printf 'mewithoutYou,Pale Horses\n'             >> `kdb file /tests/csv`
+printf 'Kate Tempest,Everybody Down\n'          >> `kdb file /tests/csv`
 
-kdb ls /examples/csv
-#> user/examples/csv/#0
-#> user/examples/csv/#0/album
-#> user/examples/csv/#0/band
-#> user/examples/csv/#1
-#> user/examples/csv/#1/album
-#> user/examples/csv/#1/band
-#> user/examples/csv/#2
-#> user/examples/csv/#2/album
-#> user/examples/csv/#2/band
-#> user/examples/csv/#3
-#> user/examples/csv/#3/album
-#> user/examples/csv/#3/band
+kdb ls /tests/csv
+#> user/tests/csv/#0
+#> user/tests/csv/#0/album
+#> user/tests/csv/#0/band
+#> user/tests/csv/#1
+#> user/tests/csv/#1/album
+#> user/tests/csv/#1/band
+#> user/tests/csv/#2
+#> user/tests/csv/#2/album
+#> user/tests/csv/#2/band
+#> user/tests/csv/#3
+#> user/tests/csv/#3/album
+#> user/tests/csv/#3/band
 
 # The first array element contains the column names
-kdb get /examples/csv/#0/band
+kdb get /tests/csv/#0/band
 #> band
-kdb get /examples/csv/#0/album
+kdb get /tests/csv/#0/album
 #> album
 
 # Retrieve data from the last entry
-kdb get /examples/csv/#3/album
+kdb get /tests/csv/#3/album
 #> Everybody Down
-kdb get /examples/csv/#3/band
+kdb get /tests/csv/#3/band
 #> Kate Tempest
 
 # Change an existing item
-kdb set /examples/csv/#1/album 'You Fail Me'
+kdb set /tests/csv/#1/album 'You Fail Me'
 # Retrieve the new item
-kdb get /examples/csv/#1/album
+kdb get /tests/csv/#1/album
 #> You Fail Me
 
 # The plugin stores the index of the last column
 # in all of the parent keys.
-kdb get user/examples/csv/#0
+kdb get user/tests/csv/#0
 #> #1
-kdb get user/examples/csv/#1
+kdb get user/tests/csv/#1
 #> #1
-kdb get user/examples/csv/#2
+kdb get user/tests/csv/#2
 #> #1
-kdb get user/examples/csv/#3
+kdb get user/tests/csv/#3
 #> #1
 
 # The configuration file reflects the changes
-kdb file /examples/csv | xargs cat
+kdb file /tests/csv | xargs cat
 #> album,band
 #> You Fail Me,Converge
 #> Pale Horses,mewithoutYou
 #> Everybody Down,Kate Tempest
 
 # Undo changes to the key database
-kdb rm -r /examples/csv
-sudo kdb umount /examples/csv
+kdb rm -r /tests/csv
+sudo kdb umount /tests/csv
 ```
 
 # Directory Values
@@ -122,100 +122,100 @@ By default the `csvstorage` plugin saves the name of the last column in each par
 so using the [Directory Value](../directoryvalue/) plugin.
 
 ```sh
-# Mount plugin together with `directoryvalue` to cascading namespace `/examples/csv`
-kdb mount config.csv /examples/csv csvstorage directoryvalue
+# Mount plugin together with `directoryvalue` to cascading namespace `/tests/csv`
+kdb mount config.csv /tests/csv csvstorage directoryvalue
 
 # Add some data
-printf 'Schindler’s List,1993,8.9\n'       >> `kdb file /examples/csv`
-printf 'Léon: The Professional,1994,8.5\n' >> `kdb file /examples/csv`
+printf 'Schindler’s List,1993,8.9\n'       >> `kdb file /tests/csv`
+printf 'Léon: The Professional,1994,8.5\n' >> `kdb file /tests/csv`
 
 # Retrieve data
-kdb ls /examples/csv
-#> user/examples/csv/#0
-#> user/examples/csv/#0/#0
-#> user/examples/csv/#0/#1
-#> user/examples/csv/#0/#2
-#> user/examples/csv/#1
-#> user/examples/csv/#1/#0
-#> user/examples/csv/#1/#1
-#> user/examples/csv/#1/#2
+kdb ls /tests/csv
+#> user/tests/csv/#0
+#> user/tests/csv/#0/#0
+#> user/tests/csv/#0/#1
+#> user/tests/csv/#0/#2
+#> user/tests/csv/#1
+#> user/tests/csv/#1/#0
+#> user/tests/csv/#1/#1
+#> user/tests/csv/#1/#2
 
-kdb get user/examples/csv/#0/#0
+kdb get user/tests/csv/#0/#0
 #> Schindler’s List
-kdb get user/examples/csv/#1/#2
+kdb get user/tests/csv/#1/#2
 #> 8.5
 
 # The plugin stores the index of the last column in the parent keys
-kdb get user/examples/csv/#0
+kdb get user/tests/csv/#0
 #> #2
-kdb get user/examples/csv/#1
+kdb get user/tests/csv/#1
 #> #2
 
 # Since we use the Directory Value plugin we can also change the data in a parent key
-kdb set user/examples/csv/#0 'Movie – Year – Rating'
-kdb set user/examples/csv/#1 'It’s a Me.'
+kdb set user/tests/csv/#0 'Movie – Year – Rating'
+kdb set user/tests/csv/#1 'It’s a Me.'
 
 # Retrieve data stored in parent keys
-kdb get user/examples/csv/#0
+kdb get user/tests/csv/#0
 #> Movie – Year – Rating
-kdb get user/examples/csv/#1
+kdb get user/tests/csv/#1
 #> It’s a Me.
 
 # Undo changes to the key database
-kdb rm -r /examples/csv
-sudo kdb umount /examples/csv
+kdb rm -r /tests/csv
+sudo kdb umount /tests/csv
 ```
 
 # Column as index
 
 ```
-kdb mount config.csv /examples/csv csvstorage "delimiter=;,header=colname,columns/index=IMDB"
+kdb mount config.csv /tests/csv csvstorage "delimiter=;,header=colname,columns/index=IMDB"
 
-printf 'IMDB;Title;Year\n'                          >> `kdb file /examples/csv`
-printf 'tt0108052;Schindler´s List;1993\n'          >> `kdb file /examples/csv`
-printf 'tt0110413;Léon: The Professional;1994\n'    >> `kdb file /examples/csv`
+printf 'IMDB;Title;Year\n'                          >> `kdb file /tests/csv`
+printf 'tt0108052;Schindler´s List;1993\n'          >> `kdb file /tests/csv`
+printf 'tt0110413;Léon: The Professional;1994\n'    >> `kdb file /tests/csv`
 
-kdb ls /examples/csv
-#> user/examples/csv/tt0108052
-#> user/examples/csv/tt0108052/IMDB
-#> user/examples/csv/tt0108052/Title
-#> user/examples/csv/tt0108052/Year
-#> user/examples/csv/tt0110413
-#> user/examples/csv/tt0110413/IMDB
-#> user/examples/csv/tt0110413/Title
-#> user/examples/csv/tt0110413/Year
+kdb ls /tests/csv
+#> user/tests/csv/tt0108052
+#> user/tests/csv/tt0108052/IMDB
+#> user/tests/csv/tt0108052/Title
+#> user/tests/csv/tt0108052/Year
+#> user/tests/csv/tt0110413
+#> user/tests/csv/tt0110413/IMDB
+#> user/tests/csv/tt0110413/Title
+#> user/tests/csv/tt0110413/Year
 
-kdb get /examples/csv/tt0108052/Title
+kdb get /tests/csv/tt0108052/Title
 #> Schindler´s List
 
-kdb rm -r /examples/csv
-sudo kdb umount /examples/csv
+kdb rm -r /tests/csv
+sudo kdb umount /tests/csv
 
 ```
 
 # Export filter
 
 ```
-kdb mount config.csv /examples/csv csvstorage "delimiter=;,header=colname,columns/index=IMDB"
+kdb mount config.csv /tests/csv csvstorage "delimiter=;,header=colname,columns/index=IMDB"
 
-printf 'IMDB;Title;Year\n'                          >> `kdb file /examples/csv`
-printf 'tt0108052;Schindler´s List;1993\n'          >> `kdb file /examples/csv`
-printf 'tt0110413;Léon: The Professional;1994\n'    >> `kdb file /examples/csv`
+printf 'IMDB;Title;Year\n'                          >> `kdb file /tests/csv`
+printf 'tt0108052;Schindler´s List;1993\n'          >> `kdb file /tests/csv`
+printf 'tt0110413;Léon: The Professional;1994\n'    >> `kdb file /tests/csv`
 
-kdb export /examples/csv csvstorage -c "delimiter=;,header=colname,columns/index=IMDB,export=,export/IMDB=,export/Title="
+kdb export /tests/csv csvstorage -c "delimiter=;,header=colname,columns/index=IMDB,export=,export/IMDB=,export/Title="
 #> IMDB;Title
 #> tt0108052;Schindler´s List
 #> tt0110413;Léon: The Professional
 
 
-kdb export /examples/csv csvstorage -c "delimiter=;,header=colname,columns/index=IMDB,export=,export/IMDB=,export/Year="
+kdb export /tests/csv csvstorage -c "delimiter=;,header=colname,columns/index=IMDB,export=,export/IMDB=,export/Year="
 #> IMDB;Year
 #> tt0108052;1993
 #> tt0110413;1994
 
 
-kdb rm -r /examples/csv
-sudo kdb umount /examples/csv
+kdb rm -r /tests/csv
+sudo kdb umount /tests/csv
 
 ```
 

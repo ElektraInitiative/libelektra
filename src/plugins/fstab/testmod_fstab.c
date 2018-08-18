@@ -84,7 +84,7 @@ void test_writefstab (const char * file)
 	succeed_if (output_error (parentKey), "error in kdbSet");
 	succeed_if (output_warnings (parentKey), "warnings in kdbSet");
 
-	succeed_if (compare_line_files (srcdir_file (file), keyString (parentKey)), "files do not match as expected");
+	succeed_if (compare_regex_to_line_files (srcdir_file (file), keyString (parentKey)), "files do not match as expected");
 
 	elektraUnlink (keyString (parentKey));
 	keyDel (parentKey);

@@ -1,21 +1,21 @@
-kdb-change-resolver-symlink -- Changes the default resolver symlink
+kdb-change-storage-symlink -- Changes the default storage symlink
 ===================================================================
 
 ## SYNOPSIS
 
-`kdb change-resolver-symlink <resolver>`
+`kdb change-storage-symlink <storage>`
 
-Where `resolver` is the name of the new default resolver plugin.
+Where `storage` is the name of the new default storage plugin.
 
 ## DESCRIPTION
 
-This command updates the symlink pointing to the default resolver if `resolver` is a valid resolver plugin.
+This command updates the symlink pointing to the default storage if `storage` is a valid storage plugin.
 
 ## EXAMPLES
 
-Set default resolver plugin to resolver_fm_hpu_b:
-`kdb change-resolver-symlink resolver_fm_hpu_b`
+Set default storage plugin to ini:<br>
+`kdb change-storage-symlink ini`
 
 ## SEE ALSO
 
-- [kdb-change-storage-symlink(7)](kdb-change-storage-symlink.md)
+- [kdb-change-resolver-symlink(7)](kdb-change-resolver-symlink.md)

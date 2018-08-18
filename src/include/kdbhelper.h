@@ -41,7 +41,9 @@ char * elektraVFormat (const char * format, va_list arg_list);
 
 /* Compare */
 int elektraStrCmp (const char * s1, const char * s2);
+int elektraStrNCmp (const char * s1, const char * s2, size_t n);
 int elektraStrCaseCmp (const char * s1, const char * s2);
+int elektraStrNCaseCmp (const char * s1, const char * s2, size_t n);
 int elektraMemCaseCmp (const char * s1, const char * s2, size_t size);
 
 /* Len */

@@ -1016,40 +1016,47 @@ ssize_t keyAddName (Key * key, const char * newName)
  *
  * Only the baseName will be affected and no other part of the key.
  *
- * All text after the last @c '/' in the @p key keyname is erased and
- * @p baseName is appended.
- *
- * So let us suppose @p key has name @c "system/dir1/dir2/key1". If @p baseName
- * is @c "key2", the resulting key name will be @c "system/dir1/dir2/key2".
- * If @p baseName is empty or NULL, the resulting key name will
- * be @c "system/dir1/dir2".
- *
- * This function does proper escaping on the supplied name argument.
- *
- * You can use all names to set as basename (e.g. . (dot), ..
- * (dot-dot), % and "" (empty)). They will be properly escaped.
- *
  * A simple example is:
  * @snippet keyBasename.c set base basic
+ *
+ * All text after the last @c '/' in the @p key keyname is erased and
+ * @p baseName is appended.
+ * If @p baseName is 0 (NULL), then the last part of the keyname is
+ * removed without replacement.
+ *
+ * Let us suppose @p key has name @c "system/dir1/dir2/key1". If @p baseName
+ * is @c "key2", the resulting key name will be @c "system/dir1/dir2/key2".
+ * If @p baseName is 0 (NULL), the resulting key name will
+ * be @c "system/dir1/dir2".
+ * If @p baseName is empty, the resulting key name will
+ * be @c "system/dir1/dir2/%", where @c "%" denotes an empty base name,
+ * as also shown in the following code:
+ *
+ * @snippet testabi_key.c base2
+ *
+ * keySetBaseName() does proper escaping on the supplied name argument.
+ *
+ * You can use character sequences as @c baseName (e.g. @c "." (dot), @c ".."
+ * (dot-dot), @c "%" (empty basename)). They will be properly escaped
+ * and will not have their usual meaning.
+ *
+ * @see keyname for more details on special names
  *
  * If you want to add and not change the basename, use keyAddBaseName()
  * instead. If you do not want escaping, use keyAddName() instead.
  *
+ * @see keyAddBaseName() to add a basename instead of changing it
+ * @see keyAddName() to add a name without escaping
+ * @see keySetName() to set a completely new name
+ *
  * To add an inactive key name, use:
  * @snippet testabi_key.c base1
- *
- * When you want to add an array item, use:
- * @snippet testabi_key.c base2
- *
- * @see keyname for more details on special names
  *
  * @param key the key object to work with
  * @param baseName the string used to overwrite the basename of the key
  * @return the size in bytes of the new key name
- * @retval -1 on NULL pointers
+ * @retval -1 on NULL pointers in key
  * @retval -1 if key was inserted to a keyset before
- * @see keyAddBaseName()
- * @see keySetName() to set a new name
  * @ingroup keyname
  */
 ssize_t keySetBaseName (Key * key, const char * baseName)

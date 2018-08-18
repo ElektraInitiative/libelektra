@@ -17,6 +17,7 @@ RUN apt-get update && apt-get -y install \
         tclcl-dev \
         libaugeas-dev \
         libyajl-dev \
+        git \
         libgit2-dev \
         libboost-all-dev \
         libssl-dev \
@@ -28,6 +29,16 @@ RUN apt-get update && apt-get -y install \
         checkinstall \
         swig \
     && rm -rf /var/lib/apt/lists/*
+
+# Google Test
+ENV GTEST_ROOT=/opt/gtest
+ARG GTEST_VER=4e4df226fc197c0dda6e37f5c8c3845ca1e73a49
+RUN mkdir -p ${GTEST_ROOT} \
+    && cd /tmp \
+    && curl -o gtest.tar.gz \
+      -L https://github.com/google/googletest/archive/${GTEST_VER}.tar.gz \
+    && tar -zxvf gtest.tar.gz --strip-components=1 -C ${GTEST_ROOT} \
+    && rm gtest.tar.gz
 
 # Create User:Group
 # The id is important as jenkins docker agents use the same id that is running

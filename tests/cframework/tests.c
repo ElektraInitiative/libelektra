@@ -21,18 +21,21 @@
 #include <locale.h>
 #endif
 
-#include <kdbinternal.h>
+#ifdef USE_NFTW
+#include <ftw.h>
+#include <stdlib.h>
+#define NOPENFD 20
+#endif
 
+#include <regex.h>
+
+#include <kdbinternal.h>
 
 int nbError;
 int nbTest;
 
 char file[KDB_MAX_PATH_LENGTH];
 char srcdir[KDB_MAX_PATH_LENGTH];
-
-#ifdef HAVE_CLEARENV
-int clearenv (void);
-#endif
 
 char * tmpfilename;
 char * tempHome;
@@ -115,16 +118,7 @@ KeySet * create_conf (const char * filename)
 }
 
 
-/**
- * @brief Compare two files line by line
- *
- * @param filename first file
- * @param genfilename file to compare with
- *
- * @retval 0 on errors (succeed_if already executed)
- * @retval 1 on success
- */
-int compare_line_files (const char * filename, const char * genfilename)
+int compare_line_files_fun (const char * filename, const char * genfilename, int (*cmpFun) (const char *, const char *, size_t n))
 {
 	FILE *forg, *fgen;
 	char bufferorg[BUFFER_LENGTH + 1];
@@ -150,7 +144,7 @@ int compare_line_files (const char * filename, const char * genfilename)
 	while ((org = fgets (bufferorg, BUFFER_LENGTH, forg)) && (gen = fgets (buffergen, BUFFER_LENGTH, fgen)))
 	{
 		line++;
-		if (strncmp (bufferorg, buffergen, BUFFER_LENGTH))
+		if ((*cmpFun) (bufferorg, buffergen, BUFFER_LENGTH))
 		{
 			printf ("Compare <%s>, with <%s>\n", bufferorg, buffergen);
 			printf ("in file %s, line %d.\n", filename, line);
@@ -174,6 +168,60 @@ error:
 	fclose (forg);
 	fclose (fgen);
 	return 0;
+}
+
+
+/**
+ * @brief Compare two files line by line
+ *
+ * @param filename first file
+ * @param genfilename file to compare with
+ *
+ * @retval 0 on errors (succeed_if already executed)
+ * @retval 1 on success
+ */
+int compare_line_files (const char * filename, const char * genfilename)
+{
+	return compare_line_files_fun (filename, genfilename, &strncmp);
+}
+
+
+/**
+ * @brief Compare regex in pattern to str
+ *
+ * @param pattern char * representing a regex pattern
+ * @param str char * we compare the pattern to
+ *
+ * @retval 1 if pattern is invalid or does not match str
+ * @retval 0 on success
+ */
+int regexcmp (const char * pattern, const char * str, size_t n ELEKTRA_UNUSED)
+{
+	int status;
+	regex_t re;
+
+	if (regcomp (&re, pattern, REG_EXTENDED | REG_NOSUB) != 0)
+	{
+		return (1);
+	}
+	status = regexec (&re, str, (size_t) 0, NULL, 0);
+	regfree (&re);
+	return status;
+}
+
+/**
+ * @brief Compare two files line by line where the original file is made up of
+ *        regex
+ *
+ * @param filename first file, containing regex patterns
+ * @param genfilename file to compare with
+ *
+ * @retval 0 on errors (succeed_if already executed)
+ * @retval 1 on success
+ */
+int compare_regex_to_line_files (const char * filename, const char * genfilename)
+{
+	return compare_line_files_fun (filename, genfilename, &regexcmp);
 }
 
 
@@ -366,37 +414,37 @@ int output_warnings (Key * warningKey)
 		buffer[10] = i / 10 % 10 + '0';
 		buffer[11] = i % 10 + '0';
 		printf ("buffer is: %s\n", buffer);
-		strncat (buffer, "/number", sizeof (buffer) - 1);
+		strncat (buffer, "/number", sizeof (buffer) - strlen (buffer) - 1);
 		printf ("number: %s\n", keyString (keyGetMeta (warningKey, buffer)));
 		buffer[12] = '\0';
-		strncat (buffer, "/description", sizeof (buffer) - 1);
+		strncat (buffer, "/description", sizeof (buffer) - strlen (buffer) - 1);
 		printf ("description: %s\n", keyString (keyGetMeta (warningKey, buffer)));
 		buffer[12] = '\0';
-		strncat (buffer, "/ingroup", sizeof (buffer) - 1);
+		strncat (buffer, "/ingroup", sizeof (buffer) - strlen (buffer) - 1);
 		keyGetMeta (warningKey, buffer);
 		printf ("ingroup: %s\n", keyString (keyGetMeta (warningKey, buffer)));
 		buffer[12] = '\0';
-		strncat (buffer, "/module", sizeof (buffer) - 1);
+		strncat (buffer, "/module", sizeof (buffer) - strlen (buffer) - 1);
 		keyGetMeta (warningKey, buffer);
 		printf ("module: %s\n", keyString (keyGetMeta (warningKey, buffer)));
 		buffer[12] = '\0';
-		strncat (buffer, "/file", sizeof (buffer) - 1);
+		strncat (buffer, "/file", sizeof (buffer) - strlen (buffer) - 1);
 		keyGetMeta (warningKey, buffer);
 		printf ("file: %s\n", keyString (keyGetMeta (warningKey, buffer)));
 		buffer[12] = '\0';
-		strncat (buffer, "/line", sizeof (buffer) - 1);
+		strncat (buffer, "/line", sizeof (buffer) - strlen (buffer) - 1);
 		keyGetMeta (warningKey, buffer);
 		printf ("line: %s\n", keyString (keyGetMeta (warningKey, buffer)));
 		buffer[12] = '\0';
-		strncat (buffer, "/reason", sizeof (buffer) - 1);
+		strncat (buffer, "/reason", sizeof (buffer) - strlen (buffer) - 1);
 		keyGetMeta (warningKey, buffer);
 		printf ("reason: %s\n", keyString (keyGetMeta (warningKey, buffer)));
 		buffer[12] = '\0';
-		strncat (buffer, "/mountpoint", sizeof (buffer) - 1);
+		strncat (buffer, "/mountpoint", sizeof (buffer) - strlen (buffer) - 1);
 		keyGetMeta (warningKey, buffer);
 		printf ("reason: %s\n", keyString (keyGetMeta (warningKey, buffer)));
 		buffer[12] = '\0';
-		strncat (buffer, "/configfile", sizeof (buffer) - 1);
+		strncat (buffer, "/configfile", sizeof (buffer) - strlen (buffer) - 1);
 		keyGetMeta (warningKey, buffer);
 		printf ("reason: %s\n", keyString (keyGetMeta (warningKey, buffer)));
 	}
@@ -434,6 +482,27 @@ int output_error (Key * errorKey)
 	return 0;
 }
 
+#ifdef USE_NFTW
+static int rm_all (const char * fpath, const struct stat * sb ELEKTRA_UNUSED, int tflag, struct FTW * ftwbuf ELEKTRA_UNUSED)
+{
+	if (tflag == FTW_F)
+	{
+		unlink (fpath);
+	}
+	else if (tflag == FTW_D || tflag == FTW_DP)
+	{
+		rmdir (fpath);
+	}
+	else
+	{
+		// not a file or dir we can delete
+		printf ("unexpected flag: %d\n", tflag);
+		return 1;
+	}
+	return 0;
+}
+#endif
+
 static void clean_temp_home (void)
 {
 	if (tmpfilename)
@@ -452,6 +521,10 @@ static void clean_temp_home (void)
 
 	if (tempHome)
 	{
+#ifdef USE_NFTW
+		int nftw_flags = FTW_DEPTH | FTW_PHYS;
+		succeed_if (nftw (tempHome, rm_all, NOPENFD, nftw_flags) == 0, "Could not delete TMPHOME via nftw");
+#else
 		size_t fileToCleanLen = tempHomeLen + 30;
 		char * fileToClean = elektraMalloc (fileToCleanLen);
 		snprintf (fileToClean, fileToCleanLen, "%s/.gnupg/random_seed", tempHome);
@@ -466,7 +539,8 @@ static void clean_temp_home (void)
 		rmdir (fileToClean);
 		elektraFree (fileToClean);
 
-		rmdir (tempHome);
+		succeed_if (rmdir (tempHome) == 0, "Could not delete TMPHOME manually");
+#endif
 		elektraFree (tempHome);
 		tempHome = NULL;
 		tempHomeLen = 0;

@@ -4,7 +4,8 @@ add_headers (HDR_FILES)
 add_cppheaders (HDR_FILES)
 add_toolheaders (HDR_FILES)
 
-file (GLOB_RECURSE SRC_FILES *.cpp)
+file (GLOB_RECURSE SRC_FILES
+		   *.cpp)
 
 # ~~~
 # TODO: Reenable the following warning after we add a virtual destructor to `PluginDatabase`, and its subclasses.
@@ -39,7 +40,9 @@ if (BUILD_SHARED)
 					  CXX)
 
 	if (${LD_ACCEPTS_VERSION_SCRIPT})
-		set_target_properties (elektratools PROPERTIES LINK_FLAGS "-Wl,--version-script=${__symbols_file}")
+		set_target_properties (elektratools
+				       PROPERTIES LINK_FLAGS
+						  "-Wl,--version-script=${__symbols_file}")
 	endif ()
 
 	install (TARGETS elektratools DESTINATION lib${LIB_SUFFIX})
@@ -64,7 +67,9 @@ if (BUILD_FULL)
 					  CXX)
 
 	if (${LD_ACCEPTS_VERSION_SCRIPT})
-		set_target_properties (elektratools-full PROPERTIES LINK_FLAGS "-Wl,--version-script=${__symbols_file}")
+		set_target_properties (elektratools-full
+				       PROPERTIES LINK_FLAGS
+						  "-Wl,--version-script=${__symbols_file}")
 	endif ()
 
 	install (TARGETS elektratools-full DESTINATION lib${LIB_SUFFIX})
@@ -88,9 +93,13 @@ if (BUILD_STATIC)
 					  LINKER_LANGUAGE
 					  CXX)
 
-	set_target_properties (elektratools-static PROPERTIES LINKER_LANGUAGE CXX)
+	set_target_properties (elektratools-static
+			       PROPERTIES LINKER_LANGUAGE
+					  CXX)
 	if (${LD_ACCEPTS_VERSION_SCRIPT})
-		set_target_properties (elektratools-static PROPERTIES LINK_FLAGS "-Wl,--version-script=${__symbols_file}")
+		set_target_properties (elektratools-static
+				       PROPERTIES LINK_FLAGS
+						  "-Wl,--version-script=${__symbols_file}")
 	endif ()
 
 	install (TARGETS elektratools-static DESTINATION lib${LIB_SUFFIX})

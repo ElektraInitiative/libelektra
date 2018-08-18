@@ -1,6 +1,8 @@
 find_program (NPM_EXECUTABLE "npm")
 
-list (FIND REMOVED_PLUGINS "yajl" yajl_index)
+list (FIND REMOVED_PLUGINS
+	   "yajl"
+	   yajl_index)
 if (NOT yajl_index EQUAL -1)
 	remove_tool (${tool} "yajl plugin not available")
 else ()
@@ -26,20 +28,18 @@ else ()
 		install (DIRECTORY elektrad
 				   webd
 				   client
-				   DESTINATION
-				   ${install_directory}
-				   PATTERN
-				   "node_modules"
-				   EXCLUDE
-				   PATTERN
-				   "build"
-				   EXCLUDE)
-		install (FILES README.md kdb.js DESTINATION ${install_directory})
+			 DESTINATION ${install_directory}
+			 PATTERN "node_modules"
+			 EXCLUDE
+			 PATTERN "build"
+			 EXCLUDE)
+		install (FILES README.md
+			       kdb.js
+			 DESTINATION ${install_directory})
 		install (PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/run-${tool}
 				  ${CMAKE_CURRENT_BINARY_DIR}/run-elektrad
 				  ${CMAKE_CURRENT_BINARY_DIR}/build-${tool}
-				  DESTINATION
-				  ${TARGET_TOOL_EXEC_FOLDER})
+			 DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
 		# build elektra-web
 		install (CODE "message (\"-- Installing: elektra-web > elektrad\")")
@@ -92,7 +92,9 @@ else ()
 
 			# testing is possible
 			add_test (NAME elektra-web COMMAND ./test.sh WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-			set_property (TEST elektra-web PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
+			set_property (TEST elektra-web
+				      PROPERTY ENVIRONMENT
+					       "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
 		endif ()
 
 	endif ()

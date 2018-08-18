@@ -27,13 +27,22 @@ Kai-Uwe Behrmann kindly provides packages [for download](http://software.opensus
 
 ### Debian
 
-To use the debian repository of the latest builds from master put following files in
-`/etc/apt/sources.list`.
+To use the debian repository of the latest builds from master put following lines in
+`/etc/apt/sources.list`:
 
 For Stretch:
 
         deb     [trusted=yes] https://debian-stretch-repo.libelektra.org/ stretch main
         deb-src [trusted=yes] https://debian-stretch-repo.libelektra.org/ stretch main
+
+Which can also be done using:
+
+        echo "deb     [trusted=yes] https://debian-stretch-repo.libelektra.org/ stretch main" | sudo tee /etc/apt/sources.list.d/elektra.list
+
+Or alternatively, you can use (if you do not mind many dependences just to add one line to a config file):
+
+        sudo apt-get install software-properties-common apt-transport-https
+        sudo add-apt-repository "deb     [trusted=yes] https://debian-stretch-repo.libelektra.org/ stretch main"
 
 For Jessie:
 
@@ -45,6 +54,13 @@ For Wheezy (not updated anymore, contains 0.8.19-8121 packages):
         deb     [trusted=yes] https://build.libelektra.org/debian/ wheezy main
         deb-src [trusted=yes] https://build.libelektra.org/debian/ wheezy main
 
+To get all packaged plugins, bindings and tools install:
+
+	apt-get install libelektra4-all
+
+For a small installation with command-line tools available use:
+
+	apt-get install elektra-bin
 
 If you want to rebuild Elektra from Debian unstable or
 our repositories, add a `deb-src` entry to `/etc/apt/sources.list`

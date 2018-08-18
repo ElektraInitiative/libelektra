@@ -21,6 +21,7 @@ ShellCommand::ShellCommand ()
 : supportedCommands (
 	  "kdbGet <name> .. get conf into current keyset\n"
 	  "kdbSet <name> .. set conf from current keyset\n"
+	  "keyClear .. clears the current key\n"
 	  "keySetName <name> .. set name of current key (without bookmarks!)\n"
 	  "keySetMeta <name> <string> .. set meta of current key\n"
 	  "keySetString <string> .. set string of current key\n"
@@ -58,6 +59,10 @@ int ShellCommand::execute (Cmdline const &)
 			is >> parent;
 			Key parentKey (parent, KEY_END);
 			cout << "return value: " << kdb.set (current, parentKey) << endl;
+		}
+		else if (command == "keyClear")
+		{
+			currentKey.clear ();
 		}
 		else if (command == "keySetName")
 		{

@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 #include <kdbhelper.h>
-#include <kdbio_adapter_dbus.h>
+#include <kdbio/adapters/dbus.h>
 #include <kdblogger.h>
 
 #include <stdlib.h>

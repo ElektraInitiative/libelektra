@@ -11,7 +11,9 @@ function (add_kdb_test suffix)
 	cmake_parse_arguments (ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
 	foreach (plugin ${ARG_REQUIRED_PLUGINS})
-		list (FIND REMOVED_PLUGINS ${plugin} plugin_index)
+		list (FIND REMOVED_PLUGINS
+			   ${plugin}
+			   plugin_index)
 		if (plugin_index GREATER -1)
 			return ()
 		endif (plugin_index GREATER -1)

@@ -9,6 +9,11 @@ if (IS_PYTHON_INCLUDED OR IS_LUA_INCLUDED)
 
 	if (INTROSPECTION_FOUND)
 
+		if (ENABLE_ASAN AND UNIX AND NOT APPLE)
+			set (ASAN_LIBRARY "-lubsan") # this is needed for GIR to put asan in front
+			set (DISABLE_LSAN "LSAN_OPTIONS=detect_leaks=0") # this is needed so ASAN is not used during GIR compilation
+		endif (ENABLE_ASAN AND UNIX AND NOT APPLE)
+
 		# make sure glib bindings are built
 		check_binding_was_added ("glib" IS_GLIB_INCLUDED)
 		if (NOT IS_GLIB_INCLUDED)
@@ -26,16 +31,27 @@ if (IS_PYTHON_INCLUDED OR IS_LUA_INCLUDED)
 		get_filename_component (GELEKTRA_LIBRARY_DIR ${CMAKE_BINARY_DIR}/lib REALPATH)
 		set (GI_TYPELIB_DIR ${CMAKE_CURRENT_BINARY_DIR})
 
-		string (TOLOWER ${GIR_NS} GIR_SYMBOL_PREFIX)
-		file (GLOB GIR_INPUT "../glib/*.[hc]")
+		string (TOLOWER ${GIR_NS}
+				GIR_SYMBOL_PREFIX)
+		file (GLOB GIR_INPUT
+			   "../glib/*.[hc]")
 
 		get_directory_property (incdirs INCLUDE_DIRECTORIES)
-		string (REPLACE ";" ";-I" GIR_INCDIRS "${incdirs}")
+		string (REPLACE ";"
+				";-I"
+				GIR_INCDIRS
+				"${incdirs}")
 
 		add_custom_command (OUTPUT ${GIR_FILE}
-				    COMMAND ${DISABLE_LSAN} ${INTROSPECTION_SCANNER} --warn-all --warn-error --namespace=${GIR_NS}
-					    --symbol-prefix=${GIR_SYMBOL_PREFIX} --nsversion=${SO_VERSION}.0 --no-libtool
-					    --library-path=${GELEKTRA_LIBRARY_DIR} ${ASAN_LIBRARY} --library=${GELEKTRA_LIBRARY}
+				    COMMAND ${DISABLE_LSAN} ${INTROSPECTION_SCANNER}
+					    --warn-all
+					    --warn-error
+					    --namespace=${GIR_NS}
+					    --symbol-prefix=${GIR_SYMBOL_PREFIX}
+					    --nsversion=${SO_VERSION}.0
+					    --no-libtool
+					    --library-path=${GELEKTRA_LIBRARY_DIR} ${ASAN_LIBRARY}
+					    --library=${GELEKTRA_LIBRARY}
 					    --include=GObject-2.0 -I${GIR_INCDIRS}
 					    --output=${GIR_FILE} ${GELEKTRA_HEADER_DIR}/*.h ${GIR_INPUT}
 				    DEPENDS ${GIR_INPUT}
@@ -43,12 +59,16 @@ if (IS_PYTHON_INCLUDED OR IS_LUA_INCLUDED)
 				    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
 		add_custom_command (OUTPUT ${GIR_TYPELIB}
-				    COMMAND ${INTROSPECTION_COMPILER} --output=${GIR_TYPELIB} ${GIR_FILE}
+				    COMMAND ${INTROSPECTION_COMPILER}
+					    --output=${GIR_TYPELIB} ${GIR_FILE}
 				    DEPENDS ${GIR_FILE}
 					    ${GELEKTRA_LIBRARY}
 				    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
-		add_custom_target (gir ALL DEPENDS ${GIR_FILE} ${GIR_TYPELIB})
+		add_custom_target (gir
+				   ALL
+				   DEPENDS ${GIR_FILE}
+					   ${GIR_TYPELIB})
 		add_dependencies (gir ${GELEKTRA_LIBRARY})
 
 		if (INSTALL_SYSTEM_FILES)

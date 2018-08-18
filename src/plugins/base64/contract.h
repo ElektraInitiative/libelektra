@@ -10,5 +10,7 @@ keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME, KEY_VALUE, "base64 plugin
 	keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports", KEY_END),
 	keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/get", KEY_FUNC, PLUGIN_FUNCTION (get), KEY_END),
 	keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/set", KEY_FUNC, PLUGIN_FUNCTION (set), KEY_END),
+	keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/base64Encode", KEY_FUNC, base64Encode, KEY_END),
+	keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/base64Decode", KEY_FUNC, base64Decode, KEY_END),
 #include ELEKTRA_README (base64)
 	keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),

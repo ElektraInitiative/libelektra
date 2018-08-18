@@ -7,7 +7,7 @@
 - infos/placements = postgetstorage presetstorage
 - infos/status = maintained unittest nodep preview
 - infos/metadata =
-- infos/description = This plugin converts directory values to leaf values
+- infos/description = This plugin converts directory keys to leaf keys in the set direction
 
 # Directory Value
 
@@ -15,10 +15,10 @@
 
 The Directory Value plugin converts
 
-1. directory (non-leaf) values to leaf values in the “set” direction, and
-2. converts them back to directory values in the “get” direction.
+1. directory (non-leaf) keys to leaf keys in the “set” direction, and
+2. converts them back to directory keys in the “get” direction.
 
-A directory value is a key that contains children. For example in the key set:
+A directory key is a key that has children. For example in the key set:
 
 ```
 user/grandparent                = Grandparent
@@ -38,7 +38,7 @@ user/grandparent/parent
 user/mother
 ```
 
-represent directory values, while the keys
+represent directory keys, while the keys
 
 ```
 user/grandparent/leaf
@@ -47,7 +47,7 @@ user/mother/daughter
 user/mother/son
 ```
 
-specify leaf values. You can easily check this by drawing the key set in the form of a rooted tree:
+are leaf keys. You can easily check this by drawing the key set in the form of a rooted tree:
 
 ```
              user
@@ -59,7 +59,7 @@ leaf  parent    daughter son
        child
 ```
 
-. The Directory Value plugin converts all directory values to leaf values in the “set” direction by adding new keys with the postfix
+. The Directory Value plugin converts all directory keys to leaf keys in the “set” direction by adding new keys with the postfix
 `___dirdata`. Theses keys then store the old value of their parent keys
 
 ```
@@ -71,7 +71,7 @@ user/grandparent/parent/___dirdata  = Parent
 user/grandparent/parent/child       = Child
 user/mother                         =
 user/mother/___dirdata              = Mother
-user/mother/daughter                = Daugther
+user/mother/daughter                = Daughter
 user/mother/son                     = Son
 ```
 
@@ -120,14 +120,14 @@ user/array/#3         = Third Value
 To mount the plugin use the command:
 
 ```sh
-# Mount plugin to cascading namespace `/examples/directoryvalue`
-sudo kdb mount config.file /examples/directoryvalue directoryvalue
+# Mount plugin to cascading namespace `/tests/directoryvalue`
+sudo kdb mount config.file /tests/directoryvalue directoryvalue
 ```
 
 . To unmount the plugin use the command
 
 ```sh
-sudo kdb umount /examples/directoryvalue
+sudo kdb umount /tests/directoryvalue
 ```
 
 .
@@ -135,45 +135,45 @@ sudo kdb umount /examples/directoryvalue
 ## Example
 
 ```sh
-# Mount plugin to cascading namespace `/examples/directoryvalue`
-sudo kdb mount config.file /examples/directoryvalue directoryvalue
+# Mount plugin to cascading namespace `/tests/directoryvalue`
+sudo kdb mount config.file /tests/directoryvalue directoryvalue
 
 # Add a directory value
-kdb set /examples/directoryvalue/harold 'Father of SpongeBob SquarePants'
+kdb set /tests/directoryvalue/harold 'Father of SpongeBob SquarePants'
 # Add a leaf value
-kdb set /examples/directoryvalue/harold/spongebob 'I am ready!'
+kdb set /tests/directoryvalue/harold/spongebob 'I am ready!'
 
 # Add an array
-kdb set /examples/directoryvalue/patrick Star
-kdb set /examples/directoryvalue/patrick/#0 'Being grown-up is boring. Besides, I don’t get Jazz.'
+kdb set /tests/directoryvalue/patrick Star
+kdb set /tests/directoryvalue/patrick/#0 'Being grown-up is boring. Besides, I don’t get Jazz.'
 
 # Since the plugin converts values back in the get direction
 # a user of the database will not notice any changes.
 
-kdb ls /examples/directoryvalue
-#> user/examples/directoryvalue/harold
-#> user/examples/directoryvalue/harold/spongebob
-#> user/examples/directoryvalue/patrick
-#> user/examples/directoryvalue/patrick/#0
+kdb ls /tests/directoryvalue
+#> user/tests/directoryvalue/harold
+#> user/tests/directoryvalue/harold/spongebob
+#> user/tests/directoryvalue/patrick
+#> user/tests/directoryvalue/patrick/#0
 
-kdb get /examples/directoryvalue/harold
+kdb get /tests/directoryvalue/harold
 #> Father of SpongeBob SquarePants
-kdb get /examples/directoryvalue/harold/spongebob
+kdb get /tests/directoryvalue/harold/spongebob
 #> I am ready!
 
-kdb get /examples/directoryvalue/patrick
+kdb get /tests/directoryvalue/patrick
 #> Star
-kdb get /examples/directoryvalue/patrick/#0
+kdb get /tests/directoryvalue/patrick/#0
 #> Being grown-up is boring. Besides, I don’t get Jazz.
 
 # Retrieve index of last element in array.
 # This also works if the storage plugin does not store this index.
-kdb getmeta /examples/directoryvalue/patrick array
+kdb getmeta /tests/directoryvalue/patrick array
 #> #0
 
 # Undo changes to the key database
-kdb rm -r /examples/directoryvalue
-sudo kdb umount /examples/directoryvalue
+kdb rm -r /tests/directoryvalue
+sudo kdb umount /tests/directoryvalue
 ```
 
 # Limitations

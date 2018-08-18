@@ -66,9 +66,7 @@ static int elektraYajlParseNull (void * ctx)
 
 	keySetBinary (current, NULL, 0);
 
-#ifdef ELEKTRA_YAJL_VERBOSE
-	printf ("elektraYajlParseNull\n");
-#endif
+	ELEKTRA_LOG_DEBUG ("parse null");
 
 	return 1;
 }
@@ -90,9 +88,7 @@ static int elektraYajlParseBoolean (void * ctx, int boolean)
 	}
 	keySetMeta (current, "type", "boolean");
 
-#ifdef ELEKTRA_YAJL_VERBOSE
-	printf ("elektraYajlParseBoolean %d\n", boolean);
-#endif
+	ELEKTRA_LOG_DEBUG ("%d", boolean);
 
 	return 1;
 }
@@ -108,9 +104,7 @@ static int elektraYajlParseNumber (void * ctx, const char * stringVal, yajl_size
 	char * stringValue = (char *) stringVal;
 	stringValue[stringLen] = '\0';
 
-#ifdef ELEKTRA_YAJL_VERBOSE
-	printf ("elektraYajlParseNumber %s %d\n", stringVal, stringLen);
-#endif
+	ELEKTRA_LOG_DEBUG ("%s %zu", stringVal, stringLen);
 
 	keySetString (current, stringVal);
 	keySetMeta (current, "type", "double");
@@ -132,9 +126,7 @@ static int elektraYajlParseString (void * ctx, const unsigned char * stringVal, 
 	char * stringValue = (char *) stringVal;
 	stringValue[stringLen] = '\0';
 
-#ifdef ELEKTRA_YAJL_VERBOSE
-	printf ("elektraYajlParseString %s %d\n", stringVal, stringLen);
-#endif
+	ELEKTRA_LOG_DEBUG ("%s %zu", stringVal, stringLen);
 
 	keySetString (current, stringValue);
 
@@ -155,9 +147,7 @@ static int elektraYajlParseMapKey (void * ctx, const unsigned char * stringVal, 
 	char * stringValue = (char *) stringVal;
 	stringValue[stringLen] = '\0';
 
-#ifdef ELEKTRA_YAJL_VERBOSE
-	printf ("elektraYajlParseMapKey stringValue: %s currentKey: %s\n", stringValue, keyName (currentKey));
-#endif
+	ELEKTRA_LOG_DEBUG ("stringValue: %s currentKey: %s", stringValue, keyName (currentKey));
 	if (currentKey && !strcmp (keyBaseName (currentKey), "___empty_map"))
 	{
 		// remove old key
@@ -190,9 +180,7 @@ static int elektraYajlParseStartMap (void * ctx)
 	keyAddBaseName (newKey, "___empty_map");
 	ksAppendKey (ks, newKey);
 
-#ifdef ELEKTRA_YAJL_VERBOSE
-	printf ("elektraYajlParseStartMap with new key %s\n", keyName (newKey));
-#endif
+	ELEKTRA_LOG_DEBUG ("with new key %s", keyName (newKey));
 
 	return 1;
 }
@@ -208,14 +196,14 @@ static int elektraYajlParseEnd (void * ctx)
 	// lets point current to the correct place
 	Key * foundKey = ksLookup (ks, lookupKey, 0);
 
-#ifdef ELEKTRA_YAJL_VERBOSE
+#ifdef HAVE_LOGGER
 	if (foundKey)
 	{
-		printf ("elektraYajlParseEnd %s\n", keyName (foundKey));
+		ELEKTRA_LOG_DEBUG ("%s", keyName (foundKey));
 	}
 	else
 	{
-		printf ("elektraYajlParseEnd did not find key!\n");
+		ELEKTRA_LOG_DEBUG ("did not find key!");
 	}
 #else
 	(void) foundKey; // foundKey is not used, but lookup is needed
@@ -238,9 +226,7 @@ static int elektraYajlParseStartArray (void * ctx)
 	keyAddName (newKey, "###empty_array");
 	ksAppendKey (ks, newKey);
 
-#ifdef ELEKTRA_YAJL_VERBOSE
-	printf ("elektraYajlParseStartArray with new key %s\n", keyName (newKey));
-#endif
+	ELEKTRA_LOG_DEBUG ("with new key %s", keyName (newKey));
 
 	return 1;
 }
@@ -259,10 +245,10 @@ static void elektraYajlParseSuppressEmpty (KeySet * returned, Key * parentKey)
 		keyAddBaseName (lookupKey, "___empty_map");
 		Key * toRemove = ksLookup (returned, lookupKey, KDB_O_POP);
 
-#ifdef ELEKTRA_YAJL_VERBOSE
+#ifdef HAVE_LOGGER
 		if (toRemove)
 		{
-			printf ("remove %s\n", keyName (toRemove));
+			ELEKTRA_LOG_DEBUG ("remove %s", keyName (toRemove));
 		}
 		else
 		{
@@ -270,10 +256,10 @@ static void elektraYajlParseSuppressEmpty (KeySet * returned, Key * parentKey)
 			Key * cur;
 			while ((cur = ksNext (returned)) != 0)
 			{
-				printf ("key %s has value %s\n", keyName (cur), keyString (cur));
+				ELEKTRA_LOG_DEBUG ("key %s has value %s", keyName (cur), keyString (cur));
 			}
 
-			printf ("did not find %s\n", keyName (lookupKey));
+			ELEKTRA_LOG_DEBUG ("did not find %s", keyName (lookupKey));
 			ksRewind (returned);
 		}
 #endif

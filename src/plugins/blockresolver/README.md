@@ -33,27 +33,27 @@ Currently the identifier must be unique.
 
 ## Example
 ```sh
-# Backup-and-Restore:system/examples/blockresolver
+# Backup-and-Restore:system/tests/blockresolver
 
 # create testfile
-kdb set system/test/blockfile $(mktemp)
-echo 'text'                   >  $(kdb get system/test/blockfile)
-echo 'more text'              >> $(kdb get system/test/blockfile)
-echo 'some more text'         >> $(kdb get system/test/blockfile)
-echo '>>> block config start' >> $(kdb get system/test/blockfile)
-echo '[section1]'             >> $(kdb get system/test/blockfile)
-echo 'key1 = val1'            >> $(kdb get system/test/blockfile)
-echo '[section2]'             >> $(kdb get system/test/blockfile)
-echo 'key2 = val2'            >> $(kdb get system/test/blockfile)
-echo '>>> block config stop'  >> $(kdb get system/test/blockfile)
-echo 'text again'             >> $(kdb get system/test/blockfile)
-echo 'and more text'          >> $(kdb get system/test/blockfile)
-echo 'text'                   >> $(kdb get system/test/blockfile)
+kdb set system/tests/blockfile $(mktemp)
+echo 'text'                   >  $(kdb get system/tests/blockfile)
+echo 'more text'              >> $(kdb get system/tests/blockfile)
+echo 'some more text'         >> $(kdb get system/tests/blockfile)
+echo '>>> block config start' >> $(kdb get system/tests/blockfile)
+echo '[section1]'             >> $(kdb get system/tests/blockfile)
+echo 'key1 = val1'            >> $(kdb get system/tests/blockfile)
+echo '[section2]'             >> $(kdb get system/tests/blockfile)
+echo 'key2 = val2'            >> $(kdb get system/tests/blockfile)
+echo '>>> block config stop'  >> $(kdb get system/tests/blockfile)
+echo 'text again'             >> $(kdb get system/tests/blockfile)
+echo 'and more text'          >> $(kdb get system/tests/blockfile)
+echo 'text'                   >> $(kdb get system/tests/blockfile)
 
-sudo kdb mount -R blockresolver $(kdb get system/test/blockfile) system/examples/blockresolver -c identifier=">>> block config" ini
+sudo kdb mount -R blockresolver $(kdb get system/tests/blockfile) system/tests/blockresolver -c identifier=">>> block config" ini
 
 # check testfile
-cat $(kdb get system/test/blockfile)
+cat $(kdb get system/tests/blockfile)
 #> text
 #> more text
 #> some more text
@@ -68,16 +68,16 @@ cat $(kdb get system/test/blockfile)
 #> text
 
 # only the block between the tags is read!
-kdb export system/examples/blockresolver ini
+kdb export system/tests/blockresolver ini
 #> [section1]
 #> key1 = val1
 #> [section2]
 #> key2 = val2
 
 # add a new key to the resolved block
-kdb set system/examples/blockresolver/section1/key12 val12
+kdb set system/tests/blockresolver/section1/key12 val12
 
-cat $(kdb get system/test/blockfile)
+cat $(kdb get system/tests/blockfile)
 #> text
 #> more text
 #> some more text
@@ -93,8 +93,8 @@ cat $(kdb get system/test/blockfile)
 #> text
 
 # cleanup
-kdb rm -r system/examples/blockresolver
-rm $(kdb get system/test/blockfile)
-kdb rm system/test/blockfile
-sudo kdb umount system/examples/blockresolver
+kdb rm -r system/tests/blockresolver
+rm $(kdb get system/tests/blockfile)
+kdb rm system/tests/blockfile
+sudo kdb umount system/tests/blockresolver
 ```

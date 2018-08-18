@@ -12,7 +12,7 @@
 find_path (YAJL_INCLUDE_DIR yajl/yajl_common.h)
 
 set (YAJL_NAMES ${YAJL_NAMES} yajl libyajl)
-find_library (YAJL_LIBRARY NAMES ${YAJL_NAMES} PATH)
+find_library (YAJL_LIBRARY NAMES ${YAJL_NAMES})
 
 include (FindPackageHandleStandardArgs)
 find_package_handle_standard_args (Yajl DEFAULT_MSG YAJL_LIBRARY YAJL_INCLUDE_DIR)

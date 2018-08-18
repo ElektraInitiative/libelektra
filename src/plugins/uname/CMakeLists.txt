@@ -8,4 +8,9 @@ if (DEPENDENCY_PHASE)
 	endif ()
 endif ()
 
-add_plugin (uname SOURCES uname.h uname.c ADD_TEST)
+add_plugin (uname
+	    SOURCES uname.h
+		    uname.c
+	    ADD_TEST
+	    TEST_README
+	    TEST_REQUIRED_PLUGINS noresolver)

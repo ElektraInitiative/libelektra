@@ -8,22 +8,41 @@ if (DEPENDENCY_PHASE)
 	find_swig ()
 	check_binding_included ("swig_ruby" BINDING_WAS_ADDED SUBDIRECTORY "swig/ruby" SILENT)
 
+	# ~~~
 	# Disable on GCC 4 and earlier:
 	# - https://build.libelektra.org/jenkins/job/elektra-gcc47-all
 	# - https://build.libelektra.org/jenkins/job/elektra-gcc-configure-debian-wheezy
-	set (SUPPORTED_COMPILER (NOT ("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU" AND ${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 5)))
+	# ~~~
+	set (SUPPORTED_COMPILER
+	     (NOT
+	      ("${CMAKE_CXX_COMPILER_ID}"
+	       MATCHES
+	       "GNU"
+	       AND ${CMAKE_CXX_COMPILER_VERSION}
+		   VERSION_LESS
+		   5)))
 
 	if (RUBY_FOUND AND SWIG_FOUND AND BINDING_WAS_ADDED AND ${SUPPORTED_COMPILER})
 		include (LibAddMacros)
 
-		add_custom_command (OUTPUT runtime.h COMMAND ${SWIG_EXECUTABLE} -c++ -ruby -external-runtime runtime.h)
+		add_custom_command (OUTPUT runtime.h
+				    COMMAND ${SWIG_EXECUTABLE} -c++ -ruby -external-runtime runtime.h)
 
 		# we call this SWIG_COMPILE_FLAGS because we have the same variable in our swig bindings
-		set (SWIG_COMPILE_FLAGS
-		     "-Wno-shadow -Wno-old-style-cast -Wno-unused-variable -Wno-unused-parameter -Wno-reserved-user-defined-literal")
-		if (NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+		set (SWIG_COMPILE_FLAGS "-Wno-shadow -Wno-old-style-cast -Wno-unused-variable -Wno-unused-parameter")
+
+		# Disable warnings produced by generated code
+		if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+			set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-deprecated-register")
+			set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-macro-redefined")
+			set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-reserved-user-defined-literal")
+			set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-gnu-zero-variadic-macro-arguments")
+		elseif (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 			set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-literal-suffix")
+			set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-attributes")
+			set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-pedantic")
 		endif ()
+
 		set_source_files_properties ("ruby.cpp" PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS}")
 	elseif (NOT RUBY_FOUND)
 		remove_plugin (ruby "ruby not found")

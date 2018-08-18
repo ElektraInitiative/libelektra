@@ -9,11 +9,18 @@ include (LibAddTest)
 # They need to be absolute or relative to the plugin dir.
 #
 # The testname must be the pluginname.
-# By convention the source file needs to be called testmod_${pluginname}.c
+# By convention the source file needs to be called `testmod_${pluginname}.c`
+# or `testmod_${pluginname}.cpp`, if you specify the optional keyword `CPP`.
 #
 # Prefer to use ADD_TEST of add_plugin which takes care
 # of properly set all arguments so that the test is built
 # in the same way as the plugin.
+#
+# CPP:
+#  Build a C++ test instead of a C test.
+#
+# ENVIRONMENT:
+#   Specifies environment variables set while the build system executes the test
 #
 # LINK_PLUGIN:
 #  Link against a different plugin (not the test name itself).
@@ -36,15 +43,18 @@ function (add_plugintest testname)
 		     TEST_LINK_LIBRARIES
 		     TEST_LINK_ELEKTRA
 		     LINK_PLUGIN
+		     ENVIRONMENT
 		     WORKING_DIRECTORY)
 
 		cmake_parse_arguments (ARG
-				       "MEMLEAK;INSTALL_TEST_DATA" # optional keywords
+				       "MEMLEAK;INSTALL_TEST_DATA;CPP" # optional keywords
 				       "INCLUDE_SYSTEM_DIRECTORIES" # one value keywords
 				       "${MULTI_VALUE_KEYWORDS}" # multi value keywords
 				       ${ARGN})
 
-		list (FIND ADDED_PLUGINS "${testname}" FOUND_NAME)
+		list (FIND ADDED_PLUGINS
+			   "${testname}"
+			   FOUND_NAME)
 		if (FOUND_NAME EQUAL -1)
 			if (NOT ARG_LINK_PLUGIN)
 				message (
@@ -52,6 +62,9 @@ function (add_plugintest testname)
 						"Trying to add plugintest ${testname} but no such plugin was added (try to use LINK_PLUGIN)"
 					)
 			endif ()
+
+			# plugin for test was not added in previous phase or removed because of missing deps, exit quietly
+			return ()
 		endif ()
 
 		set (PLUGIN_NAME elektra-${testname})
@@ -62,24 +75,37 @@ function (add_plugintest testname)
 		restore_variable (${PLUGIN_NAME} ARG_LINK_ELEKTRA)
 		restore_variable (${PLUGIN_NAME} ARG_ADD_TEST)
 		restore_variable (${PLUGIN_NAME} ARG_INSTALL_TEST_DATA)
+		restore_variable (${PLUGIN_NAME} ARG_CPP)
 		restore_variable (${PLUGIN_NAME} ARG_OBJECT_SOURCES)
 		restore_variable (${PLUGIN_NAME} ARG_TEST_LINK_LIBRARIES)
 		restore_variable (${PLUGIN_NAME} ARG_TEST_LINK_ELEKTRA)
+		restore_variable (${PLUGIN_NAME} ARG_ENVIRONMENT)
 
 		set (TEST_SOURCES $<TARGET_OBJECTS:cframework> ${ARG_OBJECT_SOURCES})
 
 		foreach (A ${ARG_UNPARSED_ARGUMENTS})
 			if (EXISTS "${A}")
-				list (APPEND TEST_SOURCES "${A}")
+				list (APPEND TEST_SOURCES
+					     "${A}")
 			else ()
-				list (APPEND TEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/${A}")
+				list (APPEND TEST_SOURCES
+					     "${CMAKE_CURRENT_SOURCE_DIR}/${A}")
 			endif ()
 		endforeach ()
 
 		add_headers (TEST_SOURCES)
 		add_testheaders (TEST_SOURCES)
 		include_directories ("${CMAKE_SOURCE_DIR}/tests/cframework")
-		list (APPEND TEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/testmod_${testname}.c")
+
+		if (ARG_CPP)
+			list (APPEND TEST_SOURCES
+				     "${CMAKE_CURRENT_SOURCE_DIR}/testmod_${testname}.cpp")
+			include_directories (${CMAKE_SOURCE_DIR}/src/bindings/cpp/tests ${CMAKE_SOURCE_DIR}/src/bindings/cpp/include)
+		else (ARG_CPP)
+			list (APPEND TEST_SOURCES
+				     "${CMAKE_CURRENT_SOURCE_DIR}/testmod_${testname}.c")
+		endif (ARG_CPP)
+
 		if (BUILD_SHARED)
 			set (PLUGIN_TARGET_OBJS "")
 			if (ARG_LINK_PLUGIN)
@@ -90,14 +116,17 @@ function (add_plugintest testname)
 				set (PLUGIN_TARGET_OBJS "$<TARGET_OBJECTS:elektra-${testname}-objects>") # assume that testcase+plugin to be
 													 # tested have same name:
 			endif ()
-			list (APPEND TEST_SOURCES "${PLUGIN_TARGET_OBJS}")
+			list (APPEND TEST_SOURCES
+				     "${PLUGIN_TARGET_OBJS}")
 		endif ()
 		set (testexename testmod_${testname})
 		add_executable (${testexename} ${TEST_SOURCES})
 		add_dependencies (${testexename} kdberrors_generated)
 
+		# ~~~
 		# alternative approach to restore_variable
 		# get_target_property(TARGET_COMPILE_DEFINITIONS PLUGIN_TARGET_OBJS COMPILE_DEFINITIONS)
+		# ~~~
 
 		if (INSTALL_TESTING)
 			install (TARGETS ${testexename} DESTINATION "${TARGET_TOOL_EXEC_FOLDER}")
@@ -108,11 +137,18 @@ function (add_plugintest testname)
 
 		target_link_elektra (${testexename} elektra-kdb elektra-plugin ${ARG_LINK_ELEKTRA} ${ARG_TEST_LINK_ELEKTRA})
 
+		if (ARG_CPP)
+			target_link_libraries (${testexename} gtest_main)
+		endif (ARG_CPP)
+
 		target_link_libraries (${testexename} ${ARG_LINK_LIBRARIES} ${ARG_TEST_LINK_LIBRARIES})
 		set_target_properties (${testexename}
 				       PROPERTIES COMPILE_DEFINITIONS
 						  "HAVE_KDBCONFIG_H;ELEKTRA_PLUGIN_TEST;${ARG_COMPILE_DEFINITIONS}")
-		set_property (TARGET ${testexename} APPEND PROPERTY INCLUDE_DIRECTORIES ${ARG_INCLUDE_DIRECTORIES})
+		set_property (TARGET ${testexename}
+			      APPEND
+			      PROPERTY INCLUDE_DIRECTORIES
+				       ${ARG_INCLUDE_DIRECTORIES})
 		if (ARG_INCLUDE_SYSTEM_DIRECTORIES AND NOT ARG_INCLUDE_SYSTEM_DIRECTORIES STREQUAL "/usr/include")
 			set_property (TARGET ${testexename}
 				      APPEND
@@ -129,22 +165,32 @@ function (add_plugintest testname)
 		add_test (NAME ${testexename}
 			  COMMAND "${CMAKE_BINARY_DIR}/bin/${testexename}" "${CMAKE_CURRENT_SOURCE_DIR}"
 			  WORKING_DIRECTORY "${WORKING_DIRECTORY}")
-		set_property (TEST ${testexename} PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
+		set_property (TEST ${testexename}
+			      PROPERTY ENVIRONMENT
+				       "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib"
+				       "${ARG_ENVIRONMENT}")
+
 		if (ARG_MEMLEAK)
-			set_property (TEST ${testexename} PROPERTY LABELS memleak)
+			set_property (TEST ${testexename}
+				      PROPERTY LABELS
+					       memleak)
 		endif (ARG_MEMLEAK)
 	endif ()
 endfunction (add_plugintest)
 
 function (plugin_check_if_included PLUGIN_SHORT_NAME)
-	list (FIND PLUGINS "-${PLUGIN_SHORT_NAME}" FOUND_EXCLUDE_NAME)
+	list (FIND PLUGINS
+		   "-${PLUGIN_SHORT_NAME}"
+		   FOUND_EXCLUDE_NAME)
 	if (FOUND_EXCLUDE_NAME GREATER -1)
 		set (NOT_INCLUDED "explicitly excluded" PARENT_SCOPE) # let explicit exclusion win
 
 		return ()
 	endif ()
 
-	list (FIND PLUGINS "${PLUGIN_SHORT_NAME}" FOUND_NAME)
+	list (FIND PLUGINS
+		   "${PLUGIN_SHORT_NAME}"
+		   FOUND_NAME)
 	if (FOUND_NAME EQUAL -1)
 		set (NOT_INCLUDED "silent" PARENT_SCOPE) # maybe it is included by category
 
@@ -153,22 +199,50 @@ function (plugin_check_if_included PLUGIN_SHORT_NAME)
 		return () # plugin is given explicit
 	endif ()
 
-	file (READ ${CMAKE_CURRENT_SOURCE_DIR}/README.md contents)
-	string (REGEX MATCH "- +infos/status *= *([-a-zA-Z0-9 ]*)" CATEGORIES "${contents}")
-	string (REGEX REPLACE "- +infos/status *= *([-a-zA-Z0-9 ]*)" "\\1" CATEGORIES "${CATEGORIES}")
-	string (REGEX REPLACE " " ";" CATEGORIES "${CATEGORIES}")
+	file (READ ${CMAKE_CURRENT_SOURCE_DIR}/README.md
+		   contents)
+	string (REGEX MATCH
+		      "- +infos/status *= *([-a-zA-Z0-9 ]*)"
+		      CATEGORIES
+		      "${contents}")
+	string (REGEX
+		REPLACE "- +infos/status *= *([-a-zA-Z0-9 ]*)"
+			"\\1"
+			CATEGORIES
+			"${CATEGORIES}")
+	string (REGEX
+		REPLACE " "
+			";"
+			CATEGORIES
+			"${CATEGORIES}")
 
-	string (REGEX MATCH "- +infos/provides *= *([a-zA-Z0-9/ ]*)" PROVIDES "${contents}")
-	string (REGEX REPLACE "- +infos/provides *= *([a-zA-Z0-9/ ]*)" "\\1" PROVIDES "${PROVIDES}")
-	string (REGEX REPLACE " " ";" PROVIDES "${PROVIDES}")
-	list (APPEND CATEGORIES "ALL" "${PROVIDES}")
+	string (REGEX MATCH
+		      "- +infos/provides *= *([a-zA-Z0-9/ ]*)"
+		      PROVIDES
+		      "${contents}")
+	string (REGEX
+		REPLACE "- +infos/provides *= *([a-zA-Z0-9/ ]*)"
+			"\\1"
+			PROVIDES
+			"${PROVIDES}")
+	string (REGEX
+		REPLACE " "
+			";"
+			PROVIDES
+			"${PROVIDES}")
+	list (APPEND CATEGORIES
+		     "ALL"
+		     "${PROVIDES}")
 
 	split_plugin_providers (CATEGORIES)
 
-	string (TOUPPER "${CATEGORIES}" CATEGORIES) # message (STATUS "CATEGORIES ${CATEGORIES}")
+	string (TOUPPER "${CATEGORIES}"
+			CATEGORIES) # message (STATUS "CATEGORIES ${CATEGORIES}")
 
 	foreach (CAT ${CATEGORIES})
-		list (FIND PLUGINS "-${CAT}" FOUND_EXCLUDE_CATEGORY)
+		list (FIND PLUGINS
+			   "-${CAT}"
+			   FOUND_EXCLUDE_CATEGORY)
 		if (FOUND_EXCLUDE_CATEGORY GREATER -1)
 			set (NOT_INCLUDED "excluded by category ${CAT}" PARENT_SCOPE)
 			return ()
@@ -176,7 +250,9 @@ function (plugin_check_if_included PLUGIN_SHORT_NAME)
 	endforeach ()
 
 	foreach (CAT ${CATEGORIES})
-		list (FIND PLUGINS "${CAT}" FOUND_CATEGORY)
+		list (FIND PLUGINS
+			   "${CAT}"
+			   FOUND_CATEGORY)
 		if (FOUND_CATEGORY GREATER -1)
 			set (NOT_INCLUDED "" PARENT_SCOPE)
 			return ()
@@ -189,14 +265,16 @@ function (restore_variable PLUGIN_NAME VARIABLE)
 	get_property (VAR GLOBAL PROPERTY "${PROP_NAME}")
 	if (VAR)
 		if (DEFINED ${VARIABLE})
-
+			# ~~~
 			# both stored and given by user: do consistency check
 			# message (STATUS "consistency check, plugin ${PLUGIN_NAME} got ${VARIABLE} reset to ${VAR}")
+			# ~~~
 			if (NOT ${VARIABLE} STREQUAL "${VAR}")
 				message (
 					FATAL_ERROR
 						"Internally inconsistency, plugin ${PLUGIN_NAME} got different values for variable ${VARIABLE}: '${${VARIABLE}}' != '${VAR}'"
-					)
+						"Concatenate variables that contain the value of ${VARIABLE} in a single variable during the DEPENDENCY_PHASE."
+						"Make sure that only a single variable is passed to every argument of add_plugin.")
 			endif ()
 		else ()
 
@@ -207,7 +285,9 @@ function (restore_variable PLUGIN_NAME VARIABLE)
 		if (DEFINED ${VARIABLE})
 
 			# given by user, but not stored: store it
-			set_property (GLOBAL PROPERTY "${PROP_NAME}" "${${VARIABLE}}")
+			set_property (GLOBAL
+				      PROPERTY "${PROP_NAME}"
+					       "${${VARIABLE}}")
 		endif ()
 	endif ()
 endfunction ()
@@ -234,13 +314,21 @@ endfunction ()
 # INCLUDE_DIRECTORIES:
 #  Append to include path (globally+plugin specific).
 #
-# INCLUDE_SYSTEM_DIRECTORIES
+# INCLUDE_SYSTEM_DIRECTORIES:
 #  Same as INCLUDE_DIRECTORIES, but avoids warnings and dependency calculation
 #  for these include folders. (TODO currently allows only a single argument because
 #  ; -> " " is not yet implemented)
 #
+# ONLY_SHARED:
+#  Do not include this plugin in FULL or STATIC builds.
+#
 # ADD_TEST:
 #  Add a plugin test case written in C (alternatively you can use add_gtest)
+#
+# CPP_TEST:
+#  If you add this optional keyword, then the function will add
+#  a C++ test instead of a C test. This argument only makes sense if you also
+#  specified the keyword `ADD_TEST`.
 #
 # INSTALL_TEST_DATA:
 #  Install a directory with test data which has the same name as the plugin.
@@ -249,7 +337,7 @@ endfunction ()
 #  Add a Markdown Shell Recorder test for the ReadMe of the plugin
 #
 # TEST_ENVIRONMENT:
-#   Specifies environment variables for the **Markdown Shell Recorder** test
+#   Specifies environment variables set while the build system executes the plugin tests
 #
 # TEST_REQUIRED_PLUGINS:
 #   Specifies a list of required plugins for the **Markdown Shell Recorder** test
@@ -272,7 +360,7 @@ function (add_plugin PLUGIN_SHORT_NAME)
 	     TEST_ENVIRONMENT
 	     TEST_REQUIRED_PLUGINS)
 	cmake_parse_arguments (ARG
-			       "CPP;ADD_TEST;TEST_README;INSTALL_TEST_DATA" # optional keywords
+			       "CPP;CPP_TEST;ADD_TEST;TEST_README;INSTALL_TEST_DATA;ONLY_SHARED" # optional keywords
 			       "INCLUDE_SYSTEM_DIRECTORIES" # one value keywords
 			       "${MULTI_VALUE_KEYWORDS}" # multi value keywords
 			       ${ARGN})
@@ -289,10 +377,12 @@ function (add_plugin PLUGIN_SHORT_NAME)
 	restore_variable (${PLUGIN_NAME} ARG_INCLUDE_SYSTEM_DIRECTORIES)
 	restore_variable (${PLUGIN_NAME} ARG_LINK_ELEKTRA)
 	restore_variable (${PLUGIN_NAME} ARG_ADD_TEST)
+	restore_variable (${PLUGIN_NAME} ARG_CPP_TEST)
 	restore_variable (${PLUGIN_NAME} ARG_TEST_README)
 	restore_variable (${PLUGIN_NAME} ARG_TEST_ENVIRONMENT)
 	restore_variable (${PLUGIN_NAME} ARG_TEST_REQUIRED_PLUGINS)
 	restore_variable (${PLUGIN_NAME} ARG_INSTALL_TEST_DATA)
+	restore_variable (${PLUGIN_NAME} ARG_ONLY_SHARED)
 
 	if (ARG_UNPARSED_ARGUMENTS)
 		message (FATAL_ERROR "Parsed a wrong argument to plugin ${PLUGIN_SHORT_NAME}: ${ARG_UNPARSED_ARGUMENTS}")
@@ -302,8 +392,7 @@ function (add_plugin PLUGIN_SHORT_NAME)
 		if (ARG_INSTALL_TEST_DATA AND NOT ARG_ADD_TEST)
 			if (INSTALL_TESTING)
 				install (DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${PLUGIN_SHORT_NAME}"
-						   DESTINATION
-						   "${TARGET_TEST_DATA_FOLDER}")
+					 DESTINATION "${TARGET_TEST_DATA_FOLDER}")
 			endif (INSTALL_TESTING)
 		endif ()
 
@@ -313,20 +402,30 @@ function (add_plugin PLUGIN_SHORT_NAME)
 				set (HAS_INSTALL_TEST_DATA "INSTALL_TEST_DATA")
 			endif (ARG_INSTALL_TEST_DATA)
 
+			set (CPP_TEST "")
+			if (ARG_CPP_TEST)
+				set (CPP_TEST "CPP")
+			endif (ARG_CPP_TEST)
+
 			add_plugintest ("${PLUGIN_SHORT_NAME}"
 					LINK_LIBRARIES "${ARG_LINK_LIBRARIES}"
 					LINK_PLUGIN "${PLUGIN_SHORT_NAME}"
 					COMPILE_DEFINITIONS "${ARG_COMPILE_DEFINITIONS}"
 					INCLUDE_DIRECTORIES "${ARG_INCLUDE_DIRECTORIES}"
 					INCLUDE_SYSTEM_DIRECTORIES "${ARG_INCLUDE_SYSTEM_DIRECTORIES}"
+					ENVIRONMENT "${ARG_TEST_ENVIRONMENT}"
 					LINK_ELEKTRA "${ARG_LINK_ELEKTRA}"
-						     "${HAS_INSTALL_TEST_DATA}")
+						     "${HAS_INSTALL_TEST_DATA}"
+						     ${CPP_TEST})
 		endif ()
 
-		if (ARG_TEST_README)
-			add_msr_test_plugin (
-				${PLUGIN_SHORT_NAME} ENVIRONMENT ${ARG_TEST_ENVIRONMENT} REQUIRED_PLUGINS ${ARG_TEST_REQUIRED_PLUGINS})
-		endif (ARG_TEST_README)
+		if (ARG_TEST_README AND ENABLE_KDB_TESTING)
+			add_msr_test_plugin (${PLUGIN_SHORT_NAME}
+					     ENVIRONMENT
+					     ${ARG_TEST_ENVIRONMENT}
+					     REQUIRED_PLUGINS
+					     ${ARG_TEST_REQUIRED_PLUGINS})
+		endif (ARG_TEST_README AND ENABLE_KDB_TESTING)
 
 		return ()
 	endif ()
@@ -346,9 +445,17 @@ function (add_plugin PLUGIN_SHORT_NAME)
 			set (TMP "${ADDED_PLUGINS};${PLUGIN_SHORT_NAME}")
 			list (SORT TMP)
 			list (REMOVE_DUPLICATES TMP)
-			set (ADDED_PLUGINS "${TMP}" CACHE STRING "${ADDED_PLUGINS_DOC}" FORCE)
+			set (ADDED_PLUGINS
+			     "${TMP}"
+			     CACHE STRING
+				   "${ADDED_PLUGINS_DOC}"
+			     FORCE)
 		else ()
-			set (ADDED_PLUGINS "${PLUGIN_SHORT_NAME}" CACHE STRING "${ADDED_PLUGINS_DOC}" FORCE)
+			set (ADDED_PLUGINS
+			     "${PLUGIN_SHORT_NAME}"
+			     CACHE STRING
+				   "${ADDED_PLUGINS_DOC}"
+			     FORCE)
 		endif ()
 
 		# needed for variants where PLUGIN_SHORT_NAME != PLUGIN_FOLDER_NAME
@@ -357,17 +464,29 @@ function (add_plugin PLUGIN_SHORT_NAME)
 			set (TMP "${ADDED_DIRECTORIES};${PLUGIN_FOLDER_NAME}")
 			list (SORT TMP)
 			list (REMOVE_DUPLICATES TMP)
-			set (ADDED_DIRECTORIES "${TMP}" CACHE STRING "${ADDED_DIRECTORIES_DOC}" FORCE)
+			set (ADDED_DIRECTORIES
+			     "${TMP}"
+			     CACHE STRING
+				   "${ADDED_DIRECTORIES_DOC}"
+			     FORCE)
 		else ()
-			set (ADDED_DIRECTORIES "${PLUGIN_FOLDER_NAME}" CACHE STRING "${ADDED_DIRECTORIES_DOC}" FORCE)
+			set (ADDED_DIRECTORIES
+			     "${PLUGIN_FOLDER_NAME}"
+			     CACHE STRING
+				   "${ADDED_DIRECTORIES_DOC}"
+			     FORCE)
 		endif ()
 
 		return ()
 	endif ()
 
-	list (FIND ADDED_PLUGINS "${PLUGIN_SHORT_NAME}" FOUND_NAME)
+	list (FIND ADDED_PLUGINS
+		   "${PLUGIN_SHORT_NAME}"
+		   FOUND_NAME)
 	if (FOUND_NAME EQUAL -1)
-		list (FIND REMOVED_PLUGINS "${PLUGIN_SHORT_NAME}" FOUND_NAME)
+		list (FIND REMOVED_PLUGINS
+			   "${PLUGIN_SHORT_NAME}"
+			   FOUND_NAME)
 		if (FOUND_NAME EQUAL -1)
 			message (
 				FATAL_ERROR
@@ -381,6 +500,7 @@ function (add_plugin PLUGIN_SHORT_NAME)
 		message (FATAL_ERROR "Assert failed, should be in dependency phase")
 	endif ()
 
+	# ~~~
 	# message (STATUS "name: ${PLUGIN_NAME}")
 	# message (STATUS "srcs are: ${ARG_SOURCES}")
 	# message (STATUS "deps are: ${ARG_LINK_LIBRARIES}")
@@ -388,8 +508,25 @@ function (add_plugin PLUGIN_SHORT_NAME)
 	# message (STATUS "incl are: ${ARG_INCLUDE_DIRECTORIES}")
 	# message (STATUS "system incl are: ${ARG_INCLUDE_SYSTEM_DIRECTORIES}")
 	# message (STATUS "current bin ${CMAKE_CURRENT_BINARY_DIR}")
+	# ~~~
 
-	message (STATUS "Include Plugin ${PLUGIN_SHORT_NAME}")
+	if (ARG_ONLY_SHARED AND NOT BUILD_SHARED)
+		remove_plugin ("${PLUGIN_SHORT_NAME}"
+			       "it can only be built if BUILD_SHARED is enabled, both BUILD_FULL or BUILD_STATIC may be enabled as well")
+		return ()
+	endif (ARG_ONLY_SHARED AND NOT BUILD_SHARED)
+
+	set (STATUS_MESSAGE "Include Plugin ${PLUGIN_SHORT_NAME}")
+	if (ARG_ONLY_SHARED)
+
+		# also add it to the list of ONLY_SHARED plugins for exportsymbols.c configuration
+		set (STATUS_MESSAGE "${STATUS_MESSAGE} for shared builds")
+		set_property (GLOBAL
+			      APPEND
+			      PROPERTY SHARED_ONLY_PLUGINS
+				       "${PLUGIN_SHORT_NAME}")
+	endif (ARG_ONLY_SHARED)
+	message (STATUS "${STATUS_MESSAGE}")
 
 	add_headers (ARG_SOURCES)
 	if (ARG_CPP)
@@ -433,7 +570,9 @@ function (add_plugin PLUGIN_SHORT_NAME)
 			      )
 	endif ()
 
-	set_property (TARGET ${PLUGIN_OBJS} PROPERTY CMAKE_POSITION_INDEPENDENT_CODE ON)
+	set_property (TARGET ${PLUGIN_OBJS}
+		      PROPERTY CMAKE_POSITION_INDEPENDENT_CODE
+			       ON)
 
 	if (BUILD_SHARED)
 		add_library (${PLUGIN_NAME} MODULE ${ARG_SOURCES} ${ARG_OBJECT_SOURCES})
@@ -475,8 +614,18 @@ function (add_plugin PLUGIN_SHORT_NAME)
 		endif ()
 	endif ()
 
-	# message (STATUS "added ${PLUGIN_TARGET_OBJS}")
-	set_property (GLOBAL APPEND PROPERTY "elektra-full_SRCS" ${PLUGIN_TARGET_OBJS} ${ARG_OBJECT_SOURCES})
+	if (NOT ARG_ONLY_SHARED)
 
-	set_property (GLOBAL APPEND PROPERTY "elektra-full_LIBRARIES" "${ARG_LINK_LIBRARIES}")
+		# message (STATUS "added ${PLUGIN_TARGET_OBJS}")
+		set_property (GLOBAL
+			      APPEND
+			      PROPERTY "elektra-full_SRCS"
+				       ${PLUGIN_TARGET_OBJS}
+				       ${ARG_OBJECT_SOURCES})
+
+		set_property (GLOBAL
+			      APPEND
+			      PROPERTY "elektra-full_LIBRARIES"
+				       "${ARG_LINK_LIBRARIES}")
+	endif (NOT ARG_ONLY_SHARED)
 endfunction (add_plugin)

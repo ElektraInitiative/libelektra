@@ -1,4 +1,5 @@
-file (GLOB TESTS test_*.c)
+file (GLOB TESTS
+	   test_*.c)
 foreach (file ${TESTS})
 	get_filename_component (name ${file} NAME_WE)
 	if (ENABLE_OPTIMIZATIONS OR NOT ${name} MATCHES "opmphm")
@@ -6,6 +7,8 @@ foreach (file ${TESTS})
 		target_link_elektra (${name} elektra-kdb)
 	endif (ENABLE_OPTIMIZATIONS OR NOT ${name} MATCHES "opmphm")
 endforeach (file ${TESTS})
+
+include_directories ("${CMAKE_SOURCE_DIR}/src/libs/elektra")
 
 target_link_elektra (test_array elektra-ease)
 target_link_elektra (test_backend elektra-plugin)

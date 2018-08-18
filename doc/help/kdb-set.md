@@ -16,6 +16,10 @@ This command allows the user to set the value of an individual key.
 
 To set a key to an empty value, `""` should be passed for the `value` argument.
 
+## NEGATIVE VALUES
+
+To set a key to a negative value, `--` has to be used to stop option processing. (see example below)
+
 ## OPTIONS
 
 - `-H`, `--help`:
@@ -33,6 +37,8 @@ To set a key to an empty value, `""` should be passed for the `value` argument.
 - `-N`, `--namespace=NS`:
   Specify the namespace to use when writing cascading keys.
   See [below in KDB](#KDB).
+- `--`:
+  Do not process any following arguments starting with `-` as options.
 
 ## KDB
 
@@ -50,18 +56,22 @@ To set a key to an empty value, `""` should be passed for the `value` argument.
 
 ## EXAMPLES
 
-To set a Key to the value `Hello World!`:
+To set a Key to the value `Hello World!`:<br>
 `kdb set user/example/key "Hello World!"`
 
-To create a new key with a null value:
+To create a new key with a null value:<br>
 `kdb set user/example/key`
 
-To set a key to an empty value:
+To set a key to an empty value:<br>
 `kdb set user/example/key ""`
 
-To create bookmarks:
+To set a key to a negative value:<br>
+`kdb set -- /tests/neg -3`
+
+To create bookmarks:<br>
 `kdb set user/sw/elektra/kdb/#0/current/bookmarks`
-followed by:
+
+Followed by:<br>
 `kdb set user/sw/elektra/kdb/#0/current/bookmarks/kdb user/sw/elektra/kdb/#0/current`
 
 

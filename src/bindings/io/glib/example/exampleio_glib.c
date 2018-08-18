@@ -5,13 +5,18 @@
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
- * This program uses two I/O operations:
+ * For an example of how I/O bindings are used please see src/libs/notification/example.
+ *
+ * This example uses two I/O operations:
  * - The "input" operation is a file descriptor watcher that waits for
  *   STDIN_FILENO (stdin) to become readable.
  *   Since input is buffered, this typically happends when the user enters some
  *   text and presses return.
+ *   In practice code using the I/O binding will attach non-blocking file
+ *   descriptors (e.g. from sockets).
  * - The "output" operation is a timer that prints the last read data every
  *   second.
+ *
  */
 #include <errno.h>  // error handling
 #include <stdio.h>  // printf
@@ -21,7 +26,7 @@
 #include <kdbassert.h>  // assertions (ELEKTRA_NOT_NULL)
 #include <kdbhelper.h>  // malloc & free
 #include <kdbio.h>      // I/O binding functions (elektraIo*)
-#include <kdbio_glib.h> // I/O binding constructor for glib (elektraIoGlibNew)
+#include <kdbio/glib.h> // I/O binding constructor for glib (elektraIoGlibNew)
 
 #include <glib.h> // glib functions
 

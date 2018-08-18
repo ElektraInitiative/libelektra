@@ -54,6 +54,7 @@ function parseError (message) {
 function KDBError (message) {
     this.name = 'KDBError'
     let isError = false
+    this.details = message
     for (let line of message.split('\n')) {
       let res
       if (res = line.match(ERROR_REGEX)) {
@@ -93,7 +94,7 @@ const trimNewline = (str) =>
 
 // execute a script while catching and parsing errors
 const safeExec = (script) => new Promise((resolve, reject) =>
-  exec(script, (err, stdout, stderr) => {
+  exec(script, { maxBuffer: Infinity }, (err, stdout, stderr) => {
     if (err) {
       const errors = err.message.split('\n')
       // ignore error if it's "key not found"
@@ -168,6 +169,12 @@ const ls = (path) =>
   safeExec(escapeValues`${KDB_COMMAND} ls -0 ${path}`)
     .then(stdout => stdout && stdout.split('\0'))
 
+// find paths given a search query
+const find = (query) =>
+  safeExec(escapeValues`${KDB_COMMAND} find -0 ${query}`)
+    .then(stdout => stdout && stdout.split('\0'))
+    .then(res => res || [])
+
 // get value from given `path`
 const get = (path) =>
   safeExec(escapeValues`${KDB_COMMAND} get ${path}`)
@@ -184,9 +191,27 @@ const mv = (path, destination) =>
 const cp = (path, destination) =>
   safeExec(escapeValues`${KDB_COMMAND} cp -r ${path} ${destination}`)
 
+// remove single value at `path`
+const rmSingle = (path) =>
+  safeExec(escapeValues`${KDB_COMMAND} rm ${path}`)
+
 // remove value at given `path`
-const rm = (path) =>
-  safeExec(escapeValues`${KDB_COMMAND} rm -r ${path}`)
+const rm = (path) => {
+  return ls(path)
+    .then(paths => Promise.all(
+      paths.map(p => {
+        if (p.startsWith('user/sw/elektra/web')) return { p, r: '1' } // always restricted
+        return getmeta(p, 'restrict/remove')
+          .then(r => ({ p, r }))
+          .catch(err => ({ p, r: '0' })) // restrict/remove key not present
+      })
+    ))
+    .then(restricted => Promise.all(
+      restricted.map(({ p, r }) => {
+        if (r !== '1') return rmSingle(p)
+      })
+    ))
+}
 
 // list meta values at given `path`
 const lsmeta = (path) =>
@@ -270,5 +295,5 @@ const getAndLs = (path, { preload = 0 }) =>
 // export kdb functions as `kdb` object
 module.exports = {
   version, ls, get, getAndLs, set, mv, cp, rm, export: _export, import: _import,
-  getmeta, setmeta, rmmeta, lsmeta, getAllMeta, KDB_COMMAND,
+  getmeta, setmeta, rmmeta, lsmeta, getAllMeta, find, KDB_COMMAND,
 }

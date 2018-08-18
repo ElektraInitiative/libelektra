@@ -62,34 +62,34 @@ IPv4 address:
 
 
 ```sh
-# Backup-and-Restore:/examples/hosts
+# Backup-and-Restore:/tests/hosts
 
-sudo kdb mount --with-recommends hosts /examples/hosts hosts
+sudo kdb mount --with-recommends hosts /tests/hosts hosts
 
 # Create hosts file for testing
-echo '127.0.0.1	localhost' >  `kdb file /examples/hosts`
-echo '::1	localhost'	    >> `kdb file /examples/hosts`
+echo '127.0.0.1	localhost' >  `kdb file /tests/hosts`
+echo '::1	localhost'	    >> `kdb file /tests/hosts`
 
 # Check the file
-cat `kdb file /examples/hosts`
+cat `kdb file /tests/hosts`
 #> 127.0.0.1	localhost
 #> ::1	localhost
 
 # Check if the values are read correctly
-kdb get /examples/hosts/ipv4/localhost
+kdb get /tests/hosts/ipv4/localhost
 #> 127.0.0.1
-kdb get /examples/hosts/ipv6/localhost
+kdb get /tests/hosts/ipv6/localhost
 #> ::1
 
 # Should both fail with error 51 and return 5
-kdb set /examples/hosts/ipv4/localhost ::1
+kdb set /tests/hosts/ipv4/localhost ::1
 # RET:5
 # ERROR:51
-kdb set /examples/hosts/ipv6/localhost 127.0.0.1
+kdb set /tests/hosts/ipv6/localhost 127.0.0.1
 # RET:5
 # ERROR:51
 
 # cleanup
-kdb rm -r /examples/hosts
-sudo kdb umount /examples/hosts
+kdb rm -r /tests/hosts
+sudo kdb umount /tests/hosts
 ```

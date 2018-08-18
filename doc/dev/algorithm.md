@@ -372,7 +372,7 @@ To avoid this problem, locks are needed and protect cooperating processes
 Additionally modification time is used to detect if a file was modified.
 Unfortunately the modification time on some file systems has
 a resolution of one second.  So any changes within that time slot
-might not be recognised.
+might not be recognized.
 
 
 ### Errors

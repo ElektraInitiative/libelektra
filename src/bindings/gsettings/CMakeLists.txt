@@ -1,9 +1,3 @@
-if (CMAKE_MAJOR_VERSION LESS 3)
-	remove_binding (gsettings "Need at least CMake 3.0 for gsettings backend")
-	return ()
-endif ()
-
-cmake_minimum_required (VERSION 3.0)
 project (elektrasettings VERSION 0.1.1 LANGUAGES C)
 
 find_package (PkgConfig)
@@ -29,12 +23,6 @@ if (NOT GIO_FOUND)
 	return ()
 endif ()
 
-# make sure glib bindings are built
-check_binding_was_added ("glib" IS_GLIB_INCLUDED)
-if (NOT IS_GLIB_INCLUDED)
-	add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/../glib ${CMAKE_CURRENT_BINARY_DIR}/../glib)
-endif ()
-
 check_binding_was_added (glib IS_GLIB_INCLUDED)
 if (NOT IS_GLIB_INCLUDED)
 	exclude_binding (gsettings "gsettings depends on glib")
@@ -45,18 +33,23 @@ add_binding (gsettings)
 
 include_directories (${GLIB_INCLUDE_DIRS})
 add_library (elektrasettings SHARED elektrasettingsbackend.c ${ELEKTRA_HEADERS})
-set (GSETTINGS_MODULE_PRIORITY 200 CACHE STRING "GIO Module Priority. Lower than 100 means dconf backend will be default.")
+set (GSETTINGS_MODULE_PRIORITY
+     200
+     CACHE STRING
+	   "GIO Module Priority. Lower than 100 means dconf backend will be default.")
 target_compile_definitions (elektrasettings PRIVATE G_ELEKTRA_SETTINGS_MODULE_PRIORITY=${GSETTINGS_MODULE_PRIORITY})
 if (GELEKTRA_LIBRARY)
 	include (LibFindMacros)
 	pkg_get_variable (GIO_MODULE_DIR gio-2.0 giomoduledir)
 	add_dependencies (elektrasettings elektra_config_headers)
 	file (MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/include/elektra/)
-	file (GLOB GS_ELEKTRA_HEADERS ../glib/*.h)
+	file (GLOB GS_ELEKTRA_HEADERS
+		   ../glib/*.h)
 	foreach (filename ${GS_ELEKTRA_HEADERS})
 		configure_file (${filename} ${CMAKE_BINARY_DIR}/include/elektra/ COPYONLY)
 	endforeach ()
-	file (GLOB GS_KDB_HEADERS ${CMAKE_SOURCE_DIR}/src/include/*.h)
+	file (GLOB GS_KDB_HEADERS
+		   ${CMAKE_SOURCE_DIR}/src/include/*.h)
 	foreach (filename ${GS_KDB_HEADERS})
 		configure_file (${filename} ${CMAKE_BINARY_DIR}/include/ COPYONLY)
 	endforeach ()

@@ -44,6 +44,7 @@ int elektraDeferredCallAdd (ElektraDeferredCallList * list, const char * name, K
 ElektraDeferredCallList * elektraDeferredCallCreateList (void);
 void elektraDeferredCallDeleteList (ElektraDeferredCallList * list);
 void elektraDeferredCallsExecute (Plugin * plugin, ElektraDeferredCallList * list);
+int elektraDeferredCall (Plugin * handle, const char * elektraPluginFunctionName, KeySet * parameters);
 
 #ifdef __cplusplus
 }

@@ -19,6 +19,8 @@
 
 #include "action.hpp"
 
+#include <kdbease.h> // elektraKeyGetRelativeName
+
 using namespace std;
 
 namespace elektra
@@ -26,7 +28,7 @@ namespace elektra
 
 using namespace kdb;
 
-void serialise (ostream & ofs, KeySet & output)
+void serialise (ostream & ofs, KeySet & output, Key & parent)
 {
 
 	ofs << '{' << endl;
@@ -34,7 +36,8 @@ void serialise (ostream & ofs, KeySet & output)
 	while (Key k = output.next ())
 	{
 		ofs << "\t{" << endl;
-		ofs << "\t\t" << k.getName () << " = " << k.getString () << endl;
+		string const name = elektraKeyGetRelativeName (*k, *parent);
+		ofs << "\t\t" << name << " = " << k.getString () << endl;
 		k.rewindMeta ();
 		while (const Key m = k.nextMeta ())
 		{
@@ -47,7 +50,7 @@ void serialise (ostream & ofs, KeySet & output)
 	ofs << '}' << endl;
 }
 
-void unserialise (istream & in, KeySet & input)
+void unserialise (istream & in, KeySet & input, Key & parent)
 {
 	namespace qi = boost::spirit::qi;
 
@@ -57,7 +60,7 @@ void unserialise (istream & in, KeySet & input)
 	boost::spirit::istream_iterator begin (in);
 	boost::spirit::istream_iterator end;
 
-	Action<boost::spirit::istream_iterator> p (input);
+	Action<boost::spirit::istream_iterator> p (input, parent);
 
 	if (!boost::spirit::qi::phrase_parse (begin, end, p, space))
 	{

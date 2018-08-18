@@ -173,6 +173,22 @@ delete the key (and all its subkeys) on the specified `path` from the elektra ke
 + Response 404
 
 
+## find keys [GET /api/instances/{instance_id}/kdbFind/{+query}]
+
++ Request (application/json)
+    + Parameters
+        + instance_id: `46a288ae-7475-4cdd-a04c-3826c9a4b5f5` (string) - id of an instance
+        + query: `hello` (string) - search query
+
++ Response 200 (application/json; charset=utf-8)
+    + Body
+
+            [
+                "user/hello",
+                "user/helloWorld"
+            ]
+
+
 ## metakeys [/api/instances/{instance_id}/kdbMeta/{+path}]
 
 ### create metakey [POST]
@@ -204,7 +220,7 @@ delete the key (and all its subkeys) on the specified `path` from the elektra ke
     + Attributes (Error)
 
 
-## Move operation [POST /api/instances/{instance_id}/kdbMv/{+from}]
+## move operation [POST /api/instances/{instance_id}/kdbMv/{+from}]
 
 move a key (and all its subkeys) to a new path - works like `kdb mv -r`
 
@@ -223,7 +239,7 @@ move a key (and all its subkeys) to a new path - works like `kdb mv -r`
     + Attributes (Error)
 
 
-## Copy operation [POST /api/instances/{instance_id}/kdbCp/{+from}]
+## copy operation [POST /api/instances/{instance_id}/kdbCp/{+from}]
 
 copy a key (and all its subkeys) to a new path - works like `kdb cp -r`
 

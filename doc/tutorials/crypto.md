@@ -203,12 +203,12 @@ Having binary data in configuration files is hardly ever feasible.
 
 ### Marking Keys For Encryption
 
-To tell the `crypto` plugin which Keys it should process, the meta-key `crypto/encrypt` is used.
-The `crypto` plugin searches for the meta-key `crypto/encrypt`.
+To tell the `crypto` plugin which Keys it should process, the metakey `crypto/encrypt` is used.
+The `crypto` plugin searches for the metakey `crypto/encrypt`.
 If the value is equal to `1`, the value of the Key will be encrypted.
 
 We want to protect the password, that is stored under `user/test/password`.
-So we set the meta-key as follows:
+So we set the metakey as follows:
 
 	kdb setmeta user/test/password crypto/encrypt 1
 

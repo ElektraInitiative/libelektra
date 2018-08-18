@@ -36,7 +36,6 @@ static KeySet * contractYamlCpp (void)
 		      keyNew ("system/elektra/modules/yamlcpp/exports/set", KEY_FUNC, elektraYamlcppSet, KEY_END),
 #include ELEKTRA_README (yamlcpp)
 		      keyNew ("system/elektra/modules/yamlcpp/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
-		      keyNew ("system/elektra/modules/yamlcpp/config/needs", KEY_END),
 		      keyNew ("system/elektra/modules/yamlcpp/config/needs/binary/meta", KEY_VALUE, "true", KEY_END), KS_END);
 }
 
@@ -78,6 +77,14 @@ int elektraYamlcppGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_YAMLCPP_REPRESENTATION, parent.getKey (), "Unable to read data from file “%s”: %s",
 				    parent.getString ().c_str (), exception.what ());
 	}
+
+#ifdef HAVE_LOGGER
+	for (auto key : keys)
+	{
+		ELEKTRA_LOG_DEBUG ("\t“%s”: “%s”", key.getName ().c_str (),
+				   key.getBinarySize () == 0 ? "NULL" : key.isBinary () ? "binary value!" : key.getString ().c_str ());
+	}
+#endif
 
 	parent.release ();
 	keys.release ();

@@ -206,7 +206,9 @@ function __fish_kdb_print_metanames -d 'Print a list of possible meta-names'
     set metanames $metanames 'logs/_/_' 'warnings' 'error' 'struct' 'check/type' 'check/type/min' 'check/type/max' 'check/format'
     set metanames $metanames 'check/path' 'check/validation' 'check/validation/message' 'check/validation/match'
     set metanames $metanames 'check/validation/ignorecase' 'check/validation/invert' 'check/range' 'check/enum' 'check/calculate'
-    set metanames $metanames 'check/condition' 'deprecated' 'internal/<plugin>/*' 'source' 'dependency/control' 'dependency/value'
+    set metanames $metanames 'check/condition' 'deprecated'
+    set metanames $metanames 'info/atime' 'info/ctime' 'info/gid' 'info/inode' 'info/mode' 'info/mtime' 'info/size' 'info/uid'
+    set metanames $metanames 'internal/<plugin>/*' 'source' 'dependency/control' 'dependency/value'
     set metanames $metanames 'application/name' 'application/version' 'restrict/write' 'restrict/null' 'restrict/binary' 'restrict/remove'
     set metanames $metanames 'evaluate/<language>' 'uid' 'gid' 'mode' 'atime' 'mtime' 'ctime' 'spec' 'proc' 'dir' 'user' 'system'
     set metanames $metanames 'comment/#' 'comment/#/start' 'comment/#/space' 'csv/order' 'crypto/encrypt' 'crypto/salt'
@@ -297,7 +299,7 @@ function __fish_kdb_subcommand_supports_option_force -d 'Check if the current su
 end
 
 function __fish_kdb_subcommand_supports_option_null -d 'Check if the current subcommand supports binary null termination'
-    __fish_kdb_subcommand_includes complete list list-commands ls lsmeta mount
+    __fish_kdb_subcommand_includes complete find list list-commands ls lsmeta mount
 end
 
 function __fish_kdb_subcommand_supports_option_plugins_config -d 'Check if the current subcommand supports plugin configuration'

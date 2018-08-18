@@ -585,12 +585,11 @@ int opmphmCopy (Opmphm * dest, const Opmphm * source)
  * @param opmphm the OPMPHM
  *
  * @retval 0 on false
- * @retval -1 on true
+ * @retval -1 on true or NULL
  */
 int opmphmIsBuild (const Opmphm * opmphm)
 {
-	ELEKTRA_NOT_NULL (opmphm);
-	if (opmphm->size)
+	if (opmphm && opmphm->size)
 	{
 		return -1;
 	}

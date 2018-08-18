@@ -1,34 +1,72 @@
-# Trying out Elektra with Docker
+# Elektra Docker Artifacts
 
-This Dockerfile builds a dockerimage based on ubuntu:artful including all requirements to build Elektra.
+This folder contains all Docker related artifacts.
 
-If [Docker](https://www.docker.com/) is available on your machine change to the directory containing the file you are currently reading and build the image with
+A list of all Dockerfiles used by the build server can be found in the
+[Jenkinsfile](https://master.libelektra.org/scripts/jenkins/Jenkinsfile).
+
+> **Note:**
+> Any commands in this file are expected to be run from the root
+> of the repository.
+
+## Building Images locally
+
+If you want to run or test Elektra via our Docker images you currently have
+to build them yourself.
+You can do so by running the following command:
+
 ```sh
-$ docker build -t buildelektra .
+docker build -t buildelektra-stretch-full \
+    --build-arg JENKINS_USERID=`id -u` \
+    --build-arg JENKINS_GROUPID=`id -g` \
+    -f scripts/docker/debian/stretch/Dockerfile \
+    scripts/docker/debian/stretch/
 ```
 
-After the build process has completed you can create and run a Docker container that uses the image we just created.
-This runs bash in a container based on the buildelektra image and mounts the `./data` folder into the container.
+You can adapt the targetted Dockerfile via `-f`.
+You should also adjust the tag used via `-t` if you are building a different
+image.
+
+Please note that the complete images used to test Elektra are quite big
+(~3.7GB) and take a some time (15min+) to build.
+
+## Testing Elektra via Docker images
+
+To replicate errors on the test server you can build the image that ran the
+test as shown above.
+
+Afterwards you can start the container via the following command:
+
 ```sh
-$ mkdir data
-$ docker run --rm -v ${PWD}/data:/mnt/share -it buildelektra bash
+docker run -it --rm \
+    -v `pwd`:/home/jenkins/workspace \
+    -w /home/jenkins/workspace \
+    buildelektra-stretch-full
 ```
 
-The container contains a script that pulls a specified snapshot of Elektra from Github and either installs it in the container or builds a .deb package from it.
+Note since we used matching userid + groupid to your current user the container
+will write to your mounted directory with the correct permissions.
 
-Try it out from within the container with
-```sh
-# change into the mounted folder
-$ cd /mnt/share
-# this builds the commit with the tag "0.8.19"
-$ buildelektra "0.8.19"
-```
+Once you are running inside the container you can use the same commands as you
+would use normally to
+[configure/compile](https://master.libelektra.org/doc/COMPILE.md)
+and [test](https://master.libelektra.org/doc/TESTING.md) Elektra.
+There is also some information on how the
+[build server](https://master.libelektra.org/doc/BUILDSERVER.md) uses
+the Docker images as well as the actual instructions executed by the
+build server in our
+[Jenkinsfiles](https://master.libelektra.org/scripts/jenkins).
 
-After this command has finished you can safely test your specified Elektrasnapshot in the container.
 
-If you would like to build a .deb package run buildelektra like with the `-b` flag:
-```sh
-$ buildelektra -b elektra master
-```
+## Differences to the build server
 
-When you exit the container you will find the created .deb package and the downloaded snapshots of Elektra in the data directory.
+The build server does not create a bash shell inside the containers.
+Instead it runs a nonterminating command (usually `cat`) to keep the container
+open.
+
+Afterwards it executes each step via `docker exec`.
+
+There might be some more differences that might influence test outcomes.
+One such documented case is [#2008](https://issues.libelektra.org/2008) and
+[#1973](https://issues.libelektra.org/1973) where errors on the test
+server could not be replicated when running identical commands locally.

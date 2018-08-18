@@ -7,7 +7,6 @@
  *
  */
 #include <stdlib.h>
-#include <string.h>
 
 #include <glib.h>
 
@@ -103,7 +102,7 @@ static GlibBindingData * newBindingData (void)
 	GlibBindingData * bindingData = elektraCalloc (sizeof (*bindingData));
 	if (bindingData == NULL)
 	{
-		ELEKTRA_LOG_WARNING ("elektraMalloc failed");
+		ELEKTRA_LOG_WARNING ("elektraCalloc failed");
 		return NULL;
 	}
 
@@ -177,6 +176,17 @@ static int ioGlibBindingFdDispatch (GSource * source, GSourceFunc callback, void
 	elektraIoFdGetCallback (fdOp) (fdOp, flags);
 
 	return G_SOURCE_CONTINUE;
+}
+
+/**
+ * Cleanup after file descriptor has been detached
+ * @param  source glib source
+ */
+static void ioGlibBindingFdCleanup (GSource * source)
+{
+	FdSource * fdSource = (FdSource *) source;
+	elektraFree (fdSource->bindingData->fdFuncs);
+	elektraFree (fdSource->bindingData);
 }
 
 /**
@@ -283,7 +293,7 @@ static int ioGlibBindingAddFd (ElektraIoInterface * binding, ElektraIoFdOperatio
 	funcs->prepare = ioGlibBindingFdPrepare;
 	funcs->check = ioGlibBindingFdCheck;
 	funcs->dispatch = ioGlibBindingFdDispatch;
-	funcs->finalize = NULL;
+	funcs->finalize = ioGlibBindingFdCleanup;
 	bindingData->fdFuncs = funcs;
 	FdSource * fdSource = (FdSource *) g_source_new (funcs, sizeof *fdSource);
 	GSource * gSource = &fdSource->gSource;
@@ -321,8 +331,6 @@ static int ioGlibBindingRemoveFd (ElektraIoFdOperation * fdOp)
 	}
 	g_source_destroy (gSource);
 	g_source_unref (gSource);
-	elektraFree (bindingData->fdFuncs);
-	elektraFree (bindingData);
 
 	return 1;
 }

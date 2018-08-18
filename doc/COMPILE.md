@@ -7,15 +7,21 @@ For the base system you only need [cmake3](https://cmake.org/cmake/help/v3.0/),
 (make, gcc, and some standard Unix tools; alternatively ninja and
 clang are also supported but not described here):
 
-	sudo apt-get install cmake git build-essential
+```sh
+sudo apt-get install cmake git build-essential
+```
 
 Or on RPM based systems (CentOS):
 
-	sudo yum install -y cmake3 git gcc-c++
+```sh
+sudo yum install -y cmake3 git gcc-c++
+```
 
 Or on macOS Sierra, most of the build tools can be obtained by installing Xcode (from the App Store). Other required tools may be installed using [brew](http://brew.sh/). First install brew as described on their website. Then issue the following command to get cmake to complete the basic requirements:
 
-	brew install cmake git
+```sh
+brew install cmake git
+```
 
 
 ## Quick Guide
@@ -24,7 +30,7 @@ Run the following commands to compile Elektra with non-experimental
 parts where your system happens to fulfil the dependences (continue
 reading the rest of the document for details about these steps):
 
-```
+```sh
 git clone https://github.com/ElektraInitiative/libelektra.git
 cd libelektra
 mkdir build
@@ -50,29 +56,39 @@ installation of self-compiled Elektra (such as how to uninstall it).
 
 To build documentation you need doxygen (we recommend 1.8.8+), graphviz and [ronn](https://github.com/rtomayko/ronn/blob/master/INSTALLING#files):
 
-	apt-get install doxygen graphviz ruby-ronn
+```sh
+apt-get install doxygen graphviz ruby-ronn
+```
 
 Or on RPM based systems:
 
-	sudo yum install -y doxygen docbook-style-xsl graphviz ruby
-	gem install ronn
+```sh
+sudo yum install -y doxygen docbook-style-xsl graphviz ruby
+gem install ronn
+```
 
 Or on macOS Sierra using brew:
 
-	brew install doxygen graphviz
-	brew install ruby (in case ruby is not already installed)
-	gem install ronn
+```sh
+brew install doxygen graphviz
+brew install ruby # in case ruby is not already installed
+gem install ronn
+```
 
 To build PDF documentation you need `pdflatex` with
 
-	apt-get install pdflatex texlive-fonts-recommended texlive-latex-recommended texlive-latex-extra
+```sh
+apt-get install pdflatex texlive-fonts-recommended texlive-latex-recommended texlive-latex-extra
+```
 
 For the plugins, please refer to the README.md of the respective plugin.
 For example, for CentOS:
 
-	sudo yum install -y boost-devel libdb-devel GConf2-devel libxml2-devel yajl-devel   \
-	libcurl-devel augeas-devel libgit2-devel lua-devel swig python34-devel python-devel \
-	java-1.8.0-openjdk-devel jna ruby-devel byacc
+```sh
+sudo yum install -y boost-devel libdb-devel GConf2-devel libxml2-devel yajl-devel   \
+libcurl-devel augeas-devel libgit2-devel lua-devel swig python34-devel python-devel \
+java-1.8.0-openjdk-devel jna ruby-devel byacc
+```
 
 For the Debian package, please refer to debian/control (in the debian
 branch).
@@ -84,22 +100,28 @@ Tested are cmake version 3.0.2 and 3.7.2 among others.
 
 To configure Elektra graphically (with curses) run (`..` belongs to command):
 
-    mkdir build && cd build && ccmake ..
+```sh
+mkdir build && cd build && ccmake ..
+```
 
-and press 'c' to configure the cache (might be necessary multiple times, and once on the first time in case you don‘t see any settings).
-After applying the desired settings, press 'g' to generate the make file.
+and press `c` to configure the cache (might be necessary multiple times, and once on the first time in case you don‘t see any settings).
+After applying the desired settings, press `g` to generate the make file.
 
 
-All options described here, can also be used with cmake rather than
-ccmake (`..` does also here belong to the command):
+All options described here, can also be used with `cmake` rather than
+`ccmake` (`..` does also here belong to the command):
 
-    mkdir build && cd build && cmake -D<OPTION1>=<VAR1> -D<OPTION2>=<VAR2> ..
+```sh
+mkdir build && cd build && cmake -D<OPTION1>=<VAR1> -D<OPTION2>=<VAR2> ..
+```
 
 For information what you can use as `OPTION1` and `OPTION2`, see above.
 Note: You have to enclose a value with quotes `""` if it contains a semicolon (`;`).
 E.g.:
 
-    cmake -DPLUGINS="dump;resolver;yajl;list;spec" ..
+```sh
+cmake -DPLUGINS="dump;resolver;yajl;list;spec" ..
+```
 
 Some scripts in the folder of the same name may help you running cmake.
 
@@ -112,25 +134,19 @@ https://build.libelektra.org/
 |   Compiler        |         Version             |      Target       |
 |-------------------|-----------------------------|-------------------|
 |      gcc          | gcc (Debian 6.3.0-18) 6.3.0 |      amd64        |
-|      gcc          | gcc (Debian 4.7.2-5) 4.7.2  |      i386         |
-|      gcc          | gcc (Debian 4.7.2-5) 4.7.2  |      amd64        |
 |      gcc          | gcc 4.8                     |      amd64        |
 |      gcc          | gcc 4.9                     |      amd64        |
-|      gcc          | (Debian 4.4.5-8) 4.4.5      |      amd64        |
-|      gcc          | (Debian 4.4.5-8) 4.3        |      amd64        |
-|      gcc          | 4.6                         |      armhf        |
-|      mingw        | 4.6                         |      i386         |
 |      clang        | 3.8                         |x86_64-pc-linux-gnu|
 |      clang        | 5.0                         |x86_64-pc-linux-gnu|
 |      clang        | 6.0                         |x86_64-pc-linux-gnu|
 |      clang        | 8.1.0                       |      macOS        |
 |      icc          | 14.0.2 20140120             |x86_64-pc-linux-gnu|
-|      gcc/g++      |                             | openbsd 4.9.3 (*) |
+|      gcc/g++      |                             | openbsd 4.9.4 (*) |
 
 > (*) OpenBSD ships an old version of GCC per default, which can not compile Elektra.
 > A manual installation of egcc/eg++ is required. Note that not every OpenBSD
 > mirror provides the eg++ package. Elektra builds are confirmed with
-> egcc/eg++ 4.9.3 in OpenBSD 5.9.
+> egcc/eg++ 4.9.4 in OpenBSD 6.3.
 > The packages are called gcc and g++.
 > Compile with `CC=/usr/local/bin/egcc CXX=/usr/local/bin/eg++`.
 
@@ -138,9 +154,11 @@ To change the compiler, use cmake settings `CMAKE_C_COMPILER` and `CMAKE_CXX_COM
 
 To use gcc-4.3 for example
 
-    cmake -DCMAKE_C_COMPILER=gcc-4.3 -DCMAKE_CXX_COMPILER=g++-4.3 ..
+```sh
+cmake -DCMAKE_C_COMPILER=gcc-4.3 -DCMAKE_CXX_COMPILER=g++-4.3 ..
+```
 
-To change the compiler with ccmake, you may need to toggle advanced options (key 't').
+To change the compiler with `ccmake`, you may need to toggle advanced options (key `t`).
 
 ### Options
 
@@ -188,26 +206,36 @@ The minimal set of plugins you should add:
 By default nearly all plugins are added. Only experimental plugins
 will be omitted:
 
-    -DPLUGINS="ALL;-EXPERIMENTAL"
+```sh
+-DPLUGINS="ALL;-EXPERIMENTAL"
+```
 
 To add also experimental plugins, you can use:
 
-    -DPLUGINS=ALL
+```sh
+-DPLUGINS=ALL
+```
 
 > Note that plugins get dropped automatically if dependences are not satisfied.
 
 To add all plugins except some plugins you can use:
 
-    -DPLUGINS="ALL;-plugin1;-plugin2"
+```sh
+-DPLUGINS="ALL;-plugin1;-plugin2"
+```
 
 For example, if you want all plugins except the jni plugin you would use:
 
-    -DPLUGINS="ALL;-jni"
+```sh
+-DPLUGINS="ALL;-jni"
+```
 
 To add all plugins not having additional dependencies
 (they need only POSIX), you can use
 
-    -DPLUGINS=NODEP
+```sh
+-DPLUGINS=NODEP
+```
 
 Note, that every `infos/provides` and `infos/status` field written uppercase can
 be used to select plugins that way (see README of [individual plugins](/src/plugins)).
@@ -216,7 +244,9 @@ and add/remove other plugins to/from it, e.g. to include all plugins without dep
 that provide storage (except `yajl`) and are maintained, but not include all plugins
 that are experimental, you would use:
 
-    -DPLUGINS="NODEP;STORAGE;-yajl;MAINTAINED;-EXPERIMENTAL"
+```sh
+-DPLUGINS="NODEP;STORAGE;-yajl;MAINTAINED;-EXPERIMENTAL"
+```
 
 The inclusion is determined by following preferences:
 
@@ -230,18 +260,24 @@ The inclusion is determined by following preferences:
 Note, that changing `PLUGINS` will not modify the defaults used
 after Elektra was installed.  For this endeavour you need to change:
 
-    -DKDB_DEFAULT_RESOLVER=resolver
+```sh
+-DKDB_DEFAULT_RESOLVER=resolver
+```
 
 and
 
-    -DKDB_DEFAULT_STORAGE=dump
+```sh
+-DKDB_DEFAULT_STORAGE=dump
+```
 
 The default resolver and storage will write to `KDB_DB_FILE` and `KDB_DB_INIT`
 ([for bootstrapping](/doc/help/elektra-bootstrapping.md)).
 
 Obviously, you can pass the exact list of plugins you want, e.g.:
 
-    -DPLUGINS="resolver;sync;dump"
+```sh
+-DPLUGINS="resolver;sync;dump"
+```
 
 Some plugins are compile-time configurable. Then you can choose which
 features are compiled in or out. This is especially important in the
@@ -251,7 +287,9 @@ applies. To compile-time-configure a plugin, you just pass a underscore
 
 The resolver for example distinguish between 3 different kind of flags:
 
-    -DPLUGINS="resolver_baseflags_userflags_systemflags"
+```sh
+-DPLUGINS="resolver_baseflags_userflags_systemflags"
+```
 
 Following baseflags are available:
 
@@ -278,11 +316,15 @@ The system flags are (the order matters!):
 
 For example, one may use:
 
-    -DPLUGINS="resolver_lm_uhpb_b"
+```sh
+-DPLUGINS="resolver_lm_uhpb_b"
+```
 
 To add `resolver_l_h_b` you need to specify
 
-    -DPLUGINS="resolver;resolver_l_h_b"
+```sh
+-DPLUGINS="resolver;resolver_l_h_b"
+```
 
 You can add resolver with any combination of the flags, even if they are
 not available in `ALL`.
@@ -297,18 +339,24 @@ matter, because there are not so many tools).
 
 To add all non-experimental tools, you can use::
 
-    -DTOOLS=ALL
+```sh
+-DTOOLS=ALL
+```
 
 > Note that the behavior is different to PLUGINS
 > which includes all PLUGINS if ALL is used.
 
 To add all tools except of race, you can use:
 
-    -DTOOLS="ALL;-race"
+```sh
+-DTOOLS="ALL;-race"
+```
 
 To specify specific tools you can use, e.g.:
 
-    -DTOOLS=qt-gui;kdb
+```sh
+-DTOOLS=qt-gui;kdb
+```
 
 
 #### Bindings
@@ -317,19 +365,25 @@ Bindings are used in a like as `PLUGINS`.
 For example, to build all maintained bindings and exclude experimental bindings
 you can use:
 
-    -DBINDINGS=MAINTAINED;-EXPERIMENTAL
+```sh
+-DBINDINGS=MAINTAINED;-EXPERIMENTAL
+```
 
 Note that the same languages are sometimes available over GI and SWIG.
 In this case, the SWIG bindings are preferred.
 The SWIG executable may be specified with:
 
-    -DSWIG_EXECUTABLE=/usr/bin/swig3.0
+```sh
+-DSWIG_EXECUTABLE=/usr/bin/swig3.0
+```
 
 If this option is not used, cmake will find the first occurrence of
 `swig` in your environment's path.
 To build GI bindings (deprecated) and gsettings (experimental) use:
 
-    -DBINDINGS="GI;gsettings"
+```sh
+-DBINDINGS="GI;gsettings"
+```
 
 Some bindings provide different APIs (and not a different language), e.g:
 
@@ -339,23 +393,25 @@ Some bindings provide different APIs (and not a different language), e.g:
 
 To not add such APIs, but only `swig` bindings and `cpp`, you can use:
 
-    -DBINDINGS="SWIG;cpp"
+```sh
+-DBINDINGS="SWIG;cpp"
+```
 
 For a list of available bindings see
 [binding's README.md](/src/bindings/README.md).
 
-#### CMAKE_BUILD_TYPE
+#### `CMAKE_BUILD_TYPE`
 
 `Debug`, `Release` or `RelWithDebInfo`
-See help bar at bottom of ccmake for that option or:
+See help bar at bottom of `ccmake` for that option or:
 http://www.cmake.org/Wiki/CMake_Useful_Variables
 
 
-### BUILD_SHARED BUILD_FULL BUILD_STATIC
+### `BUILD_SHARED BUILD_FULL BUILD_STATIC`
 
 `BUILD_SHARED` is the typical build you want to have on systems that support `dlopen`.
 It can be used for desktop builds, but also embedded systems as long as they support
-`dlopen`, for example, `BUILD_SHARED` is used on OpenWRT with musl.
+`dlopen`, for example, `BUILD_SHARED` is used on OpenWRT with `musl`.
 Using `BUILD_SHARED` every plugin is its own shared object.
 
 `BUILD_FULL` links together all parts of Elektra as a single shared `.so` library.
@@ -372,9 +428,11 @@ All three forms of builds can be intermixed freely.
 For example, to enable shared and full build, but disable static build,
 one would use:
 
-    cmake -DBUILD_SHARED=ON -DBUILD_FULL=ON -DBUILD_STATIC=OFF ..
+```sh
+cmake -DBUILD_SHARED=ON -DBUILD_FULL=ON -DBUILD_STATIC=OFF ..
+```
 
-#### ELEKTRA_DEBUG_BUILD and ELEKTRA_VERBOSE_BUILD
+#### `ELEKTRA_DEBUG_BUILD` and `ELEKTRA_VERBOSE_BUILD`
 
 Only needed by Elektra developers.
 Make the library to output logging information.
@@ -393,7 +451,7 @@ for information about logging.
 Then continue reading [testing](/doc/TESTING.md) for options about
 testing.
 
-#### CMAKE_INSTALL_PREFIX
+#### `CMAKE_INSTALL_PREFIX`
 
 `CMAKE_INSTALL_PREFIX` defaults to `/usr/local`.
 So by default most files will installed below `/usr/local`.
@@ -405,7 +463,7 @@ Also called system prefix within the documentation.
 If you want to create a package afterwards it is ok to use
 paths that you can write to (e.g. `-DCMAKE_INSTALL_PREFIX=/home/username/`)
 
-#### LIB_SUFFIX
+#### `LIB_SUFFIX`
 
 Lets you install libraries into architecture specific folder.
 E.g. for 32/64 bit systems you might install libraries under
@@ -413,7 +471,7 @@ E.g. for 32/64 bit systems you might install libraries under
 So the system library folder will be `CMAKE_INSTALL_PREFIX/lib64`
 then.
 
-#### TARGET_INCLUDE_FOLDER
+#### `TARGET_INCLUDE_FOLDER`
 
 By default include folders will be installed below
 `CMAKE_INSTALL_PREFIX/include/elektra`.
@@ -421,31 +479,38 @@ This entry let you change the elektra.
 If the entry is empty, the include files will be
 installed directly to `CMAKE_INSTALL_PREFIX/include`.
 
-#### TARGET_PLUGIN_FOLDER
+#### `TARGET_PLUGIN_FOLDER`
 
 Similar to above, but with the plugins. Default is:
 `CMAKE_INSTALL_PREFIX/lib${LIB_SUFFIX}/elektra`
 It can be also left empty to install plugins next
 to other libraries.
 
-#### GTEST_ROOT
+#### `GTEST_ROOT`
 
-Specifies the root of the GoogleTest sources, to be used
-for some of the tests. A `CMakeLists.txt` inside `GTEST_ROOT`
-will be searched as way to detect a valid GoogleTest source
-directory.
-If it is empty (`""`), an internal version of gtest will be used.
+This value specifies the root directory of a local copy of the [Google Test][] framework.
 
-It is recommended that you browse through all of the options using ccmake.
-Afterwards press 'c' again (maybe multiple times until all variables are
-resolved) and then 'g' to generate.  Finally press 'e' to exit.
+- If it is empty (`""`), then the build system will download a copy of
+   [Google Test][] into the build directory.
+- Otherwise the build system will search for the file `CMakeLists.txt` in the
+  top level directory of `GTEST_ROOT`. If this file exists, then the build system
+  will use the sources files at `GTEST_ROOT` to translate tests that use [Google Test][].
 
-#### INSTALL_BUILD_TOOLS
+It can be provided as CMake or environment variable.
+If both options are provided the value passed via CMake takes precedence.
+
+[Google Test]: https://github.com/google/googletest
+
+It is recommended that you browse through all of the options using `ccmake`.
+Afterwards press `c` again (maybe multiple times until all variables are
+resolved) and then `g` to generate.  Finally press `e` to exit.
+
+#### `INSTALL_BUILD_TOOLS`
 
 Specifies that the build tools, i.e. `elektra-export-symbols` and `elektra-export-symbols`
 are installed (by default off). Is needed for cross-compilation.
 
-#### INSTALL_SYSTEM_FILES
+#### `INSTALL_SYSTEM_FILES`
 
 Some of Elektra’s targets require to be installed into specific folders in the
 file system hierarchy to work properly.
@@ -467,7 +532,7 @@ Currently the installed system files are as following:
 
 > (*) Or `/usr/share/bash-completion/completions` as fallback.
 
-#### ENABLE_OPTIMIZATIONS
+#### `ENABLE_OPTIMIZATIONS`
 
 In order to keep the binaries as small as possible this flag allows to trade memory for speed.
 
@@ -477,7 +542,9 @@ In order to keep the binaries as small as possible this flag allows to trade mem
 
 To build the source use:
 
-    make
+```sh
+make
+```
 
 You can pass:
 - `-j` for parallel builds
@@ -496,10 +563,12 @@ essential.
 
 For Most Linux system all you have to do is open up a console and
 
-    mkdir build
-    cd build
-    cmake .. -G 'CodeBlocks - Unix Makefiles'
-    make package
+```sh
+mkdir build
+cd build
+cmake .. -G 'CodeBlocks - Unix Makefiles'
+make package
+```
 
 Note  1:
     You can use other editor if you like just type cmake at the
@@ -507,7 +576,7 @@ Note  1:
     as a list of what code editor project cmake can create.
 
 Note 2:
-    For Unix if you have nCurses install you can run ccmake to set important option after
+    For Unix if you have nCurses install you can run `ccmake` to set important option after
     running cmake like to enable debug symbol.
 
 Note 3:
@@ -523,17 +592,20 @@ On multiarch (multiple architectures installed in one system), you need to set `
 For example, if you want to have the binaries in `lib64` and `lib32`, you
 would use for the libraries to be installed in `${CMAKE_INSTALL_PREFIX}/lib64`:
 
-	-DLIB_SUFFIX="64"
+```sh
+-DLIB_SUFFIX="64"
+```
 
 If there is a directory for different architectures, simply prepend an `/`.
 For example, for Debian:
 
-	-DLIB_SUFFIX="/$(DEB_HOST_MULTIARCH)"
+```sh
+-DLIB_SUFFIX="/$(DEB_HOST_MULTIARCH)"
+```
 
 
 
-
-### RPATH
+### `RPATH`
 
 By default Elektra uses `RPATH` to hide its plugins. This makes it obvious that
 external applications should *not* link against plugins. Instead every application
@@ -565,7 +637,9 @@ Unfortunately, there are also drawbacks:
 
 If you want Elektra to *not* use `RPATH`, you can add:
 
-	-DTARGET_PLUGIN_FOLDER="" -DCMAKE_SKIP_INSTALL_RPATH=ON
+```sh
+-DTARGET_PLUGIN_FOLDER="" -DCMAKE_SKIP_INSTALL_RPATH=ON
+```
 
 Then all plugins are directly installed to the library directory and loaded
 like other libraries (in any of `ld.so` paths).
@@ -582,7 +656,9 @@ applications to link against plugins.
 If you get errors that `libelektra-resolver.so` or `libelektra-storage.so` are missing,
 or the links do not work, you can use as workaround:
 
-	cmake -DBUILD_SHARED=OFF -DBUILD_FULL=ON ..
+```sh
+cmake -DBUILD_SHARED=OFF -DBUILD_FULL=ON ..
+```
 
 This issue was reported for:
 
@@ -594,11 +670,13 @@ This issue was reported for:
 
 Please enable EPEL https://fedoraproject.org/wiki/EPEL
 
-	# Install EPEL for RHEL 7
-	curl -o epel-release-7-8.noarch.rpm \
-	  http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-8.noarch.rpm
-	sudo rpm -ivh epel-release-7-8.noarch.rpm
-	sudo yum update
+```sh
+# Install EPEL for RHEL 7
+curl -o epel-release-7-8.noarch.rpm \
+  http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-8.noarch.rpm
+sudo rpm -ivh epel-release-7-8.noarch.rpm
+sudo yum update
+```
 
 For Bindings swig3 is recommended. swig2 only works on some distributions.
 E.g., for Debian Jessie the bindings will crash.
@@ -606,14 +684,18 @@ E.g., for Debian Jessie the bindings will crash.
 At time of writing, no swig 3 was available, not even in EPEL.
 Thus you need to install swig3 manually:
 
-	curl https://codeload.github.com/swig/swig/tar.gz/rel-3.0.10 | tar xz
-	cd swig-rel-3.0.10 && ./autogen.sh && ./configure && make
-	sudo make install
-	cd ..
+```sh
+curl https://codeload.github.com/swig/swig/tar.gz/rel-3.0.10 | tar xz
+cd swig-rel-3.0.10 && ./autogen.sh && ./configure && make
+sudo make install
+cd ..
+```
 
 Also, no ronn was available, thus you need to do:
 
-	gem install ronn
+```sh
+gem install ronn
+```
 
 
 ### Cross Compiling
@@ -624,12 +706,14 @@ In Elektra cross compiling needs two steps.  If you get errors like
 In the first step, you need to compile Elektra for the host architecture
 and install the build tools:
 
-	cmake -DINSTALL_BUILD_TOOLS=ON \
-	      -DINSTALL_SYSTEM_FILES=OFF \
-	      -DCMAKE_PREFIX_PATH=$(STAGING_DIR_HOST) \
-	      ..
-	make -j 5
-	make install -j 5
+```sh
+cmake -DINSTALL_BUILD_TOOLS=ON \
+      -DINSTALL_SYSTEM_FILES=OFF \
+      -DCMAKE_PREFIX_PATH=$(STAGING_DIR_HOST) \
+      ..
+make -j 5
+make install -j 5
+```
 
 Where `$(STAGING_DIR_HOST)` must be a directory to be found in the later
 build process.  In particular, `$(STAGING_DIR_HOST)/bin` must be in a
@@ -646,5 +730,6 @@ and the
 
 ## See also
 
-- [INSTALL](INSTALL.md).
-- [TESTING](TESTING.md).
+- [INSTALL](INSTALL.md)
+- [TESTING](TESTING.md)
+- [BUILDSERVER](BUILDSERVER.md)

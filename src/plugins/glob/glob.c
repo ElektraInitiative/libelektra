@@ -26,7 +26,7 @@ struct GlobFlagMap flagMaps[] = { { "noescape", FNM_NOESCAPE }, { "pathname", FN
 
 int elektraGlobMatch (Key * key, const Key * match, const char * globFlags)
 {
-	char * tokenList = strdup (globFlags);
+	char * tokenList = elektraStrDup (globFlags);
 	char delimiter[] = ",";
 	char * flagName = strtok (tokenList, delimiter);
 

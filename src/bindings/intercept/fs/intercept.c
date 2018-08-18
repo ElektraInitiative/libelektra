@@ -70,7 +70,7 @@ static void canonicalizePath (char * buffer, char * toAppend)
 static char * createAbsolutePath (const char * path, const char * cwd)
 {
 	if (path[0] == '/')
-		return strdup (path);
+		return elektraStrDup (path);
 	else
 	{
 		char * absPath = NULL;
@@ -150,12 +150,12 @@ void init (void)
 		if (found)
 		{
 			if (tmp->value == NULL) tmp->value = (char *) genTemporaryFilename ();
-			tmp->exportKey = strdup (keyString (found));
+			tmp->exportKey = elektraStrDup (keyString (found));
 			keyAddBaseName (lookupKey, "plugin");
 			found = ksLookup (ks, lookupKey, 0);
 			if (found)
 			{
-				tmp->exportType = strdup (keyString (found));
+				tmp->exportType = elektraStrDup (keyString (found));
 			}
 			else
 			{

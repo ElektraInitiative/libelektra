@@ -38,7 +38,8 @@ endif (NOT HAS_CXX_STD)
 # different
 #
 set (__symbols_file "${CMAKE_CURRENT_BINARY_DIR}/test-symbols.map")
-file (WRITE ${__symbols_file} "{ local: *; };\n")
+file (WRITE ${__symbols_file}
+	    "{ local: *; };\n")
 set (CMAKE_REQUIRED_FLAGS "-Wl,--version-script=${__symbols_file}")
 check_cxx_compiler_flag ("" LD_ACCEPTS_VERSION_SCRIPT)
 unset (CMAKE_REQUIRED_FLAGS)
@@ -48,9 +49,11 @@ unset (CMAKE_REQUIRED_FLAGS)
 #
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 
+	# ~~~
 	# older clang did not support non-pod-varargs (will compile, but crash if used)
 	# so simply avoid to use it
 	# icc also crashes (but just warns, no error)
+	# ~~~
 	# set (EXTRA_FLAGS "${EXTRA_FLAGS} -Wno-error=non-pod-varargs")
 
 	# not supported by icc:
@@ -61,9 +64,18 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif ()
 
 if (CMAKE_COMPILER_IS_GNUCXX)
-	execute_process (COMMAND ${CMAKE_C_COMPILER} -dumpversion OUTPUT_VARIABLE GCC_VERSION)
+	execute_process (COMMAND ${CMAKE_C_COMPILER} -dumpversion
+			 OUTPUT_VARIABLE GCC_VERSION)
 	if (WIN32)
 		message (STATUS "mingw detected")
+
+		# mingw builds need wine to be installed
+		find_program (WINE "wine")
+		if (WINE)
+			message (STATUS "wine detected")
+		else (WINE)
+			message (FATAL_ERROR "wine could not be found but is needed for mingw builds")
+		endif (WINE)
 	else (WIN32)
 
 		# not supported by icc:
@@ -82,6 +94,9 @@ if (CMAKE_COMPILER_IS_GNUCXX)
 	endif (WIN32)
 endif (CMAKE_COMPILER_IS_GNUCXX)
 
+#
+# Platform specific settings
+#
 if (WIN32)
 	set (HAVE_WIN32 "1")
 	message (STATUS "Win32 detected")
@@ -89,8 +104,10 @@ endif ()
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
 
+	# ~~~
 	# statically link in libimf.so libsvml.so libirng.so libintlc.so.5
 	# and fix warning #10237: -lcilkrts linked in dynamically, # static library not available
+	# ~~~
 	set (EXTRA_FLAGS "${EXTRA_FLAGS} -static-intel -wd10237")
 	message (STATUS "ICC detected")
 
@@ -98,13 +115,20 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
 	set (CMAKE_INCLUDE_SYSTEM_FLAG_CXX "-isystem ")
 endif ()
 
+#
+# ASAN
+#
 if (ENABLE_ASAN)
 	set (EXTRA_FLAGS "${EXTRA_FLAGS} -fsanitize=undefined -fsanitize=address -fno-omit-frame-pointer")
-	set (ASAN_LIBRARY "-lasan") # this is needed for GIR to put asan in front
 
 	if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 		set (EXTRA_FLAGS "${EXTRA_FLAGS} -fsanitize=integer")
 		set (EXTRA_FLAGS "${EXTRA_FLAGS} -fsanitize-blacklist=\"${CMAKE_SOURCE_DIR}/tests/sanitizer.blacklist\"")
+
+		# in case the ubsan library exists, link it otherwise some tests will fail due to missing symbols on unix
+		if (UNIX AND NOT APPLE)
+			set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lubsan")
+		endif (UNIX AND NOT APPLE)
 	endif ()
 
 	if (CMAKE_COMPILER_IS_GNUCXX)
@@ -118,8 +142,6 @@ if (ENABLE_ASAN)
 		set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${THREAD_LIBS_AS_NEEDED}")
 		set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${THREAD_LIBS_AS_NEEDED}")
 	endif ()
-
-	set (DISABLE_LSAN "LSAN_OPTIONS=detect_leaks=0") # this is needed so ASAN is not used during GIR compilation
 endif ()
 
 #

@@ -10,9 +10,76 @@
 #include "helper.h"
 #include "crypto.h"
 #include "gpg.h"
-#include <base64_functions.h>
 #include <kdberrors.h>
+#include <kdbinvoke.h>
 #include <stdlib.h>
+
+
+/**
+ * @brief Encodes arbitrary data using the Base64 schema by utilizing libinvoke.
+ * @param errorKey will hold an error description if libinvoke fails.
+ * @param input holds the data to be encoded
+ * @param inputLength tells how many bytes the input buffer is holding.
+ * @param output points to an allocated string holding the Base64 encoded input data or NULL if the string can not be allocated. Must be
+ * freed by the caller.
+ * @retval 1 on success
+ * @retval -1 if libinvoke reported an error (errorKey is being set).
+ */
+int CRYPTO_PLUGIN_FUNCTION (base64Encode) (Key * errorKey, const kdb_octet_t * input, const size_t inputLength, char ** output)
+{
+	ElektraInvokeHandle * handle = elektraInvokeOpen ("base64", 0, errorKey);
+	if (!handle)
+	{
+		return -1;
+	}
+
+	typedef char * (*base64EncodeFunction) (const kdb_octet_t * input, const size_t inputLength);
+	base64EncodeFunction encodingFunction = *(base64EncodeFunction *) elektraInvokeGetFunction (handle, "base64Encode");
+
+	if (!encodingFunction)
+	{
+		elektraInvokeClose (handle, 0);
+		return -1;
+	}
+
+	*output = encodingFunction (input, inputLength);
+	elektraInvokeClose (handle, 0);
+	return 1;
+}
+
+/**
+ * @brief decodes Base64 encoded data by utilizing libinvoke.
+ * @param input holds the Base64 encoded data string
+ * @param output will be set to an allocated buffer holding the decoded data or NULL if the allocation failed. Must be freed by the caller
+	  on success.
+ * @param outputLength will be set to the amount of decoded bytes.
+ * @param errorKey will hold an error description if libinvoke fails.
+ * @retval 1 on success
+ * @retval -1 if the provided string has not been encoded with Base64
+ * @retval -2 if the output buffer allocation failed
+ * @retval -3 if libinvoke reported an error (errorKey is being set).
+ */
+int CRYPTO_PLUGIN_FUNCTION (base64Decode) (Key * errorKey, const char * input, kdb_octet_t ** output, size_t * outputLength)
+{
+	ElektraInvokeHandle * handle = elektraInvokeOpen ("base64", 0, errorKey);
+	if (!handle)
+	{
+		return -3;
+	}
+
+	typedef int (*base64DecodeFunction) (const char * input, kdb_octet_t ** output, size_t * outputLength);
+	base64DecodeFunction decodingFunction = *(base64DecodeFunction *) elektraInvokeGetFunction (handle, "base64Decode");
+
+	if (!decodingFunction)
+	{
+		elektraInvokeClose (handle, 0);
+		return -3;
+	}
+
+	int result = decodingFunction (input, output, outputLength);
+	elektraInvokeClose (handle, 0);
+	return result;
+}
 
 /**
  * @brief parse the hex-encoded salt from the metakey.
@@ -34,7 +101,7 @@ int CRYPTO_PLUGIN_FUNCTION (getSaltFromMetakey) (Key * errorKey, Key * k, kdb_oc
 		return -1;
 	}
 
-	int result = ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, base64Decode) (keyString (meta), salt, &saltLenInternal);
+	int result = CRYPTO_PLUGIN_FUNCTION (base64Decode) (errorKey, keyString (meta), salt, &saltLenInternal);
 	if (result == -1)
 	{
 		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_INTERNAL_ERROR, errorKey, "Salt was not stored Base64 encoded.");
@@ -45,6 +112,12 @@ int CRYPTO_PLUGIN_FUNCTION (getSaltFromMetakey) (Key * errorKey, Key * k, kdb_oc
 		ELEKTRA_SET_ERROR (87, errorKey, "Memory allocation failed");
 		return -1;
 	}
+	else if (result < -2)
+	{
+		// errorKey has been set by base64Decode (...)
+		return -1;
+	}
+
 	*saltLen = saltLenInternal;
 	return 1;
 }

@@ -83,6 +83,7 @@ number:11
 description:open of plugin returned unsuccessfully (reason contains plugin, see other warnings for details)
 severity:warning
 ingroup:kdb
+macro:OPEN
 
 number:12
 description:kdbClose() failed
@@ -1195,3 +1196,37 @@ severity:error
 ingroup:plugin
 module:pluginprocess
 macro:PLUGIN_PROCESS_COMMAND
+
+number:192
+description:The mounted specification failed the typecheck
+severity:warning
+ingroup:plugin
+module:typechecker
+macro:PLUGIN_TYPECHECKER_GET
+
+number:193
+description:The modified specification failed the typecheck
+severity:error
+ingroup:plugin
+module:typechecker
+macro:PLUGIN_TYPECHECKER_SET
+
+number:194
+description:A plugin produced an uncaught C++ exception
+severity:error
+ingroup:plugin
+macro:UNCAUGHT_EXCEPTION
+
+number:195
+description:Timeout while sending notifications.
+severity:warning
+ingroup:plugin
+module:zeromqsend
+macro:ZEROMQSEND_TIMEOUT
+
+number:196
+description:Unknown error while sending notifications.
+severity:warning
+ingroup:plugin
+module:zeromqsend
+macro:ZEROMQSEND_ERROR

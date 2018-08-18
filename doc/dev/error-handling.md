@@ -217,7 +217,7 @@ to the applications.  To do so, a language binding of the plugin needs
 to catch every exception and transform it into error information and
 return an error code.
 
-Elektra recognises the error code, stops the processing of plugins,
+Elektra recognizes the error code, stops the processing of plugins,
 switches to a faulty state and gives all the plugins a chance to do the
 necessary cleanups.  The error information is passed to the application
 as usual.  If the application is written in C or does not want to

@@ -32,8 +32,7 @@ public class KeySet implements java.lang.Iterable<Key> {
 	/**
 	 * Helper constructor for duplication by pointer in long format
 	 *
-	 * @param p
-	 *            Pointer to another KeySet in long format
+	 * @param p Pointer to another KeySet in long format
 	 */
 	protected KeySet(final long p) {
 		ks = new Pointer(p);
@@ -42,8 +41,7 @@ public class KeySet implements java.lang.Iterable<Key> {
 	/**
 	 * Helper constructor for duplication by pointer
 	 *
-	 * @param p
-	 *            Pointer to another KeySet
+	 * @param p Pointer to another KeySet
 	 */
 	protected KeySet(final Pointer p) {
 		ks = p;
@@ -51,13 +49,14 @@ public class KeySet implements java.lang.Iterable<Key> {
 
 	/**
 	 * Basic constructor for key set
+	 * <p>
+	 * Example: KeySet keySet = KeySet.create(10, Key.create("A"), Key.create("B"));
 	 *
-	 * @param alloc
-	 *            Length of key set (key count) to be allocated
-	 * @param args
-	 *            List of initial arguments for the key set. Example:<br>
-	 *            new Key(...), new Key(...), existing_key_reference, KeySet.KS_END
+	 * @param alloc Length of key set (key count) to be allocated
+	 * @param args  List of initial arguments for the key set. Example:<br>
+	 *              new Key(...), new Key(...), existing_key_reference, KeySet.KS_END
 	 * @return New key set with the given initial data
+	 * @see #create()
 	 */
 	protected static KeySet create(final int alloc, final Object... args) {
 		int i = 0;
@@ -78,11 +77,19 @@ public class KeySet implements java.lang.Iterable<Key> {
 	/**
 	 * Basic constructor for key set
 	 *
-	 * @param alloc
-	 *            Length of key set (key count) to be allocated
-	 * @param args
-	 *            List of initial keys for the key set.
+	 * @return New key set
+	 */
+	public static KeySet create() {
+		return create(16);
+	}
+
+	/**
+	 * Basic constructor for key set
+	 *
+	 * @param alloc Length of key set (key count) to be allocated
+	 * @param args  List of initial keys for the key set.
 	 * @return New key set with the given initial data
+	 * @see #create()
 	 */
 	public static KeySet create(final int alloc, final Key... args) {
 		if (args == null)
@@ -156,8 +163,7 @@ public class KeySet implements java.lang.Iterable<Key> {
 	/**
 	 * Copies key references from other key set
 	 *
-	 * @param other
-	 *            Key set that is used as source
+	 * @param other Key set that is used as source
 	 * @return 1 in case of success, 0 if source was NULL and dest (this) was cleared successfully, -1 in case of an error (null pointer)
 	 */
 	public int copy(final KeySet other) {
@@ -187,8 +193,7 @@ public class KeySet implements java.lang.Iterable<Key> {
 	/**
 	 * Helper function to append key to key set. Does nothing if null is provided.
 	 *
-	 * @param k
-	 *            Key to append
+	 * @param k Key to append
 	 * @return Index of key in key set; starting from 1, -1 if null was provided
 	 */
 	public int append(final Key k) {
@@ -201,8 +206,7 @@ public class KeySet implements java.lang.Iterable<Key> {
 	/**
 	 * Helper function that appends keys of key set
 	 *
-	 * @param ks
-	 *            Key set to append
+	 * @param ks Key set to append
 	 * @return Highest new index of key in key set; starting from 1, -1 if null was provided
 	 */
 	public int append(final KeySet ks) {
@@ -221,8 +225,7 @@ public class KeySet implements java.lang.Iterable<Key> {
 	/**
 	 * Helper function that creates new key set with help of a cut point
 	 *
-	 * @param cutpoint
-	 *            Key that is used as cutting point
+	 * @param cutpoint Key that is used as cutting point
 	 * @return New KeySet containing all keys until the cutting point, this if null was provided
 	 */
 	public KeySet cut(final Key cutpoint) {
@@ -297,8 +300,7 @@ public class KeySet implements java.lang.Iterable<Key> {
 	/**
 	 * Helper function that sets the current cursor of the key set
 	 *
-	 * @param cursor
-	 *            Cursor position as integer
+	 * @param cursor Cursor position as integer
 	 * @return 1 in case of success
 	 */
 	public int setCursor(final int cursor) {
@@ -308,8 +310,7 @@ public class KeySet implements java.lang.Iterable<Key> {
 	/**
 	 * Helper function that gets the Key at the given cursor position
 	 *
-	 * @param cursor
-	 *            Cursor position used to fetch key; starting from 0
+	 * @param cursor Cursor position used to fetch key; starting from 0
 	 * @return Key at given cursor position
 	 */
 	public Key at(final int cursor) {
@@ -319,10 +320,8 @@ public class KeySet implements java.lang.Iterable<Key> {
 	/**
 	 * Helper function to search for a key in the key set
 	 *
-	 * @param find
-	 *            Key used in search
-	 * @param options
-	 *            Custom search options; concatenation of flags
+	 * @param find    Key used in search
+	 * @param options Custom search options; concatenation of flags
 	 * @return Key if search successful, null otherwise
 	 */
 	public Key lookup(final Key find, final int options) {
@@ -335,8 +334,7 @@ public class KeySet implements java.lang.Iterable<Key> {
 	/**
 	 * Helper function to search for a key in the key set
 	 *
-	 * @param find
-	 *            Key used in search
+	 * @param find Key used in search
 	 * @return Key if search successful, null otherwise
 	 */
 	public Key lookup(final Key find) {
@@ -349,10 +347,8 @@ public class KeySet implements java.lang.Iterable<Key> {
 	/**
 	 * Helper function to search for a key in the key set
 	 *
-	 * @param find
-	 *            Key name used in search
-	 * @param options
-	 *            Custom search options; concatenation of flags
+	 * @param find    Key name used in search
+	 * @param options Custom search options; concatenation of flags
 	 * @return Key if search successful, null otherwise
 	 */
 	public Key lookup(final String find, final int options) {
@@ -362,8 +358,7 @@ public class KeySet implements java.lang.Iterable<Key> {
 	/**
 	 * Helper function to search for a key in the key set
 	 *
-	 * @param find
-	 *            Key name used in search
+	 * @param find Key name used in search
 	 * @return Key if search successful, null otherwise
 	 */
 	public Key lookup(final String find) {

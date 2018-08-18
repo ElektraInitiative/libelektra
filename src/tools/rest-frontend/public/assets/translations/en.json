@@ -16,10 +16,10 @@
     "APP.AUTH.LOGIN.PANEL.HEADING": "Authentication",
     "APP.AUTH.LOGIN.PLACEHOLDER.USERNAME": "Please enter your username",
     "APP.AUTH.LOGIN.PLACEHOLDER.PASSWORD": "Please enter your password",
-    
+
     "APP.AUTH.LOGOUT.NOTIFICATION.HEADER": "Logout",
     "APP.AUTH.LOGOUT.NOTIFICATION.MESSAGE.SUCCESS": "Logout successful!",
-    
+
     "APP.AUTH.REGISTRATION.BUTTON.LOGIN": "Go to login",
     "APP.AUTH.REGISTRATION.BUTTON.SUBMIT": "Register account",
     "APP.AUTH.REGISTRATION.LABEL.EMAIL": "Email:",
@@ -53,7 +53,7 @@
     "APP.AUTH.REGISTRATION.PLACEHOLDER.PASSWORD": "Please enter a password",
     "APP.AUTH.REGISTRATION.PLACEHOLDER.PASSWORD_CONFIRMATION": "Please confirm your password",
     "APP.AUTH.REGISTRATION.PLACEHOLDER.USERNAME": "Please enter a username",
-    
+
     "APP.BREADCRUMBS.MAIN.ACCOUNT": "Account",
     "APP.BREADCRUMBS.MAIN.AUTH.LOGIN": "Login",
     "APP.BREADCRUMBS.MAIN.AUTH.REGISTER": "Register",
@@ -82,7 +82,7 @@
     "APP.BREADCRUMBS.MAIN.TUTORIALS": "Tutorials",
     "APP.BREADCRUMBS.MAIN.USERS.DETAILS": "User details",
     "APP.BREADCRUMBS.MAIN.USERS.SEARCH": "User search",
-    
+
     "APP.CONVERSION.ALTTEXT.FORMATCONF": "You can enter additional configuration settings for the plugin of the selected format here, they will be appended to the existing plugin configuration. If you enter unrelated configuration settings, they will be ignored.",
     "APP.CONVERSION.ALTTEXT.VALIDATED": "The configuration snippet has been re-imported to verify that no data gets lost when using this format.",
     "APP.CONVERSION.BUTTON.CLEAR": "Clear fields",
@@ -113,7 +113,7 @@
     "APP.CONVERSION.NOTIFICATION.MESSAGE.REQUEST_UNSUPPORTED_CONTENT_TYPE": "An error occured. Please contact the administrator, if the error persists.",
     "APP.CONVERSION.FORM.OPTIONS.FORMATS": "{{ format }} (plugin: {{ plugin.name }})",
     "APP.CONVERSION.PANEL.HEADING": "Configuration snippet converter",
-    
+
     "APP.ENTRIES.CREATE.BUTTON.HOWDOESITWORK": "How does it work?",
     "APP.ENTRIES.CREATE.LABEL.HOWDOESITWORK": "This form allows you to share a new configuration snippet. On the top you have to enter some information about the snippet, while on the bottom you get a chance to enter the actual snippet. In the list of formats you find plugins of which you can select one that fits (or sounds like it fits) your needs. We suggest you to use the <i>ini</i>, <i>ni</i> or <i>yajl</i> plugin if possible. If you cannot find a suitable plugin, then use the <i>line</i> plugin instead, it will basically store your snippet line by line as plain text.<br><br>Please be aware that you cannot change the fields on the top right (organization, application, scope and slug) later on.",
     "APP.ENTRIES.CREATE.NOTIFICATION.HEADER": "Create new snippet",
@@ -140,7 +140,7 @@
     "APP.ENTRIES.CREATE.NOTIFICATION.MESSAGE.REQUEST_MALFORMED_DATA": "An error occured. Please contact the administrator, if the error persists.",
     "APP.ENTRIES.CREATE.NOTIFICATION.MESSAGE.REQUEST_UNSUPPORTED_CONTENT_TYPE": "An error occured. Please contact the administrator, if the error persists.",
     "APP.ENTRIES.CREATE.PANEL.HEADING": "Create new configuration snippet",
-    
+
     "APP.ENTRIES.DELETE.BUTTON.ABORT": "No, abort.",
     "APP.ENTRIES.DELETE.BUTTON.DELETE": "Yes, delete snippet!",
     "APP.ENTRIES.DELETE.LABEL.BODY": "Do you really want to delete the snippet <b>{{ meta.title }}</b>?",
@@ -150,7 +150,7 @@
     "APP.ENTRIES.DELETE.NOTIFICATION.MESSAGE.ENTRY_DOES_NOT_EXIST": "The entry you are attempting to delete does not exist. Looks like it was deleted while you were looking at it.",
     "APP.ENTRIES.DELETE.NOTIFICATION.MESSAGE.NEED_AUTHENTICATION": "You have to be authenticated to perform this action. If the error remains, please refresh the page and login again if necessary.",
     "APP.ENTRIES.DELETE.NOTIFICATION.MESSAGE.USER_INSUFFICIENT_PERMISSIONS": "Your have insufficient permissions to perform this action. Only moderators and the owner of a snippet can change it.",
-    
+
     "APP.ENTRIES.DETAILS.ALTTEXT.CONFIGURATION.CLIPBOARD": "Copy to clipboard as {{ format }} (plugin: {{ plugin }})",
     "APP.ENTRIES.DETAILS.ALTTEXT.CONFIGURATION.DOWNLOAD": "Download as {{ format }} (plugin: {{ plugin }})",
     "APP.ENTRIES.DETAILS.ALTTEXT.CONFIGURATION.VALIDATED": "The configuration snippet has been re-imported to verify that no data gets lost when using this format.",
@@ -175,7 +175,7 @@
     "APP.ENTRIES.DETAILS.TABLE.HEADER.SCOPE": "Scope:",
     "APP.ENTRIES.DETAILS.TABLE.HEADER.SLUG": "Slug:",
     "APP.ENTRIES.DETAILS.TABLE.HEADER.TAGS": "Tags:",
-    
+
     "APP.ENTRIES.EDIT.NOTIFICATION.HEADER": "Edit configuration snippet",
     "APP.ENTRIES.EDIT.NOTIFICATION.MESSAGE.ENTRY_DOES_NOT_EXIST": "The entry you are attempting to change does not exist. Looks like it was deleted while you were looking at it.",
     "APP.ENTRIES.EDIT.NOTIFICATION.MESSAGE.ENTRY_INVALID_CONFIGURATION_FORMAT": "The submitted configuration format is not supported.",
@@ -193,7 +193,7 @@
     "APP.ENTRIES.EDIT.NOTIFICATION.MESSAGE.REQUEST_UNSUPPORTED_CONTENT_TYPE": "An error occured. Please contact the administrator, if the error persists.",
     "APP.ENTRIES.EDIT.NOTIFICATION.MESSAGE.USER_INSUFFICIENT_PERMISSIONS": "Your have insufficient permissions to perform this action. Only moderators and the owner of a snippet can change it.",
     "APP.ENTRIES.EDIT.PANEL.HEADING": "Edit configuration snippet",
-    
+
     "APP.ENTRIES.FORM.ALTTEXT.APPLICATION.HINT": "What is the name of the application you want to share a configuration snippet for? In case of an Apache Tomcat webserver snippet, you should use 'tomcat' here.",
     "APP.ENTRIES.FORM.ALTTEXT.ORGANIZATION.HINT": "Which organization builds the application you want to paste a snippet for? If you would like to share a snippet for the Apache Tomcat webserver for example, you could use either 'apache' or the reverse URL 'org.apache'.",
     "APP.ENTRIES.FORM.ALTTEXT.SCOPE.HINT": "The scope of a configuration should contain the version of the application (e.g. 'v1'). Additionally, it may contain the name of the configuration file in question, if multiple of these files exist for the application. The structure should be '(version)[.component]', e.g. 'v7.server.xml' for a Tomcat 7 server.xml configuration file.",
@@ -246,7 +246,7 @@
     "APP.ENTRIES.FORM.PLACEHOLDER.SCOPE": "Enter the application scope",
     "APP.ENTRIES.FORM.PLACEHOLDER.SLUG": "Enter a unique slug",
     "APP.ENTRIES.FORM.PLACEHOLDER.TITLE": "Enter a snippet title",
-    
+
     "APP.ENTRIES.SEARCH.ADVANCED.LABEL.ENTRIESPERPAGE": "Entries per page:",
     "APP.ENTRIES.SEARCH.ADVANCED.LABEL.FILTERBY": "Filter by:",
     "APP.ENTRIES.SEARCH.ADVANCED.FILTERBY.ALL": "All",
@@ -292,7 +292,7 @@
     "APP.GLOBAL.NOTIFICATION.HEADER.CONNECTION_ISSUE": "Connection issues",
     "APP.GLOBAL.NOTIFICATION.MESSAGE.SERVER_NOT_REACHABLE": "It seems as if the service is not reachable. This may be either due to a downtime of the service or because of your internet connection.",
     "APP.GLOBAL.TITLE": "Elektra Initiative",
-    
+
     "APP.HOME.BUTTON.GETSTARTED": "Get started",
     "APP.HOME.BUTTON.GITHUB": "GitHub",
     "APP.HOME.BUTTON.TUTORIALS": "Tutorials",
@@ -333,9 +333,9 @@
     "APP.HOME.LABEL.TOOL.OTHERS.HEADLINE": "Other Applications",
     "APP.HOME.LABEL.TOOL.QTGUI.DETAILS": "Elektra offers a GUI based on Qt Quick. It simplifies common tasks and offers easy access to the key database itself. A description for the GUI tool can be found <a href=\"/tools/qt-gui\">here</a>.",
     "APP.HOME.LABEL.TOOL.QTGUI.HEADLINE": "Graphical User Interface",
-    "APP.HOME.LABEL.TOOL.WEBGUI.DETAILS": "The Web UI will allow for remote configuration of systems.",
-    "APP.HOME.LABEL.TOOL.WEBGUI.HEADLINE": "Upcoming: Web UI",
-    
+    "APP.HOME.LABEL.TOOL.WEBGUI.DETAILS": "The Web UI allows remote configuration of multiple Elektra instances. Furthermore, the Web UI generates special input fields from metadata, making it harder to make mistakes when configuring programs. Try it out now on <a href=\"https://webdemo.libelektra.org\">webdemo.libelektra.org</a>!",
+    "APP.HOME.LABEL.TOOL.WEBGUI.HEADLINE": "Web UI",
+
     "APP.NAV.BUTTON.ACCOUNT": "Account",
     "APP.NAV.BUTTON.LOGIN": "Login",
     "APP.NAV.BUTTON.LOGOUT": "Logout",
@@ -349,7 +349,7 @@
     "APP.NAV.BUTTON.MYSNIPPETS": "My snippets",
     "APP.NAV.BUTTON.NEWNETRY": "New snippet",
     "APP.NAV.BUTTON.SHARESNIPPET": "Share Snippet",
-    
+
     "APP.USERS.DETAILS.BUTTON.CHANGE_EMAIL": "Change email",
     "APP.USERS.DETAILS.BUTTON.CHANGE_PASSWORD": "Change password",
     "APP.USERS.DETAILS.BUTTON.CHANGE_RANK": "Change rank",
@@ -396,7 +396,7 @@
     "APP.USERS.DETAILS.PLACEHOLDER.EMAILNEW": "Enter new email address",
     "APP.USERS.DETAILS.PLACEHOLDER.PASSWORDNEW": "Enter new password",
     "APP.USERS.DETAILS.PLACEHOLDER.PASSWORDNEWCONFIRM": "Confirm your input",
-    
+
     "APP.USERS.SEARCH.ADVANCED.LABEL.ENTRIESPERPAGE": "Entries per page:",
     "APP.USERS.SEARCH.ADVANCED.LABEL.FILTERBY": "Filter by:",
     "APP.USERS.SEARCH.ADVANCED.FILTERBY.ALL": "All",

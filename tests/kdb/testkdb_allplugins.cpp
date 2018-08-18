@@ -36,6 +36,10 @@ std::vector<std::string> getAllPlugins ()
 	plugins.erase (std::remove (plugins.begin (), plugins.end (), "crypto_gcrypt"), plugins.end ());
 	plugins.erase (std::remove (plugins.begin (), plugins.end (), "crypto_openssl"), plugins.end ());
 	plugins.erase (std::remove (plugins.begin (), plugins.end (), "crypto_botan"), plugins.end ());
+
+	// Valgrind reports memory leaks for the `semlock` plugin on Debian Unstable: http://issues.libelektra.org/2113
+	plugins.erase (std::remove (plugins.begin (), plugins.end (), "semlock"), plugins.end ());
+
 	return plugins;
 }
 
@@ -81,4 +85,4 @@ TEST_P (AllPlugins, modules)
 }
 
 
-INSTANTIATE_TEST_CASE_P (AllPlugins, AllPlugins, testing::ValuesIn (getAllPlugins ()));
+INSTANTIATE_TEST_CASE_P (AllPlugins, AllPlugins, testing::ValuesIn (getAllPlugins ()), );

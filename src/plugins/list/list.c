@@ -301,26 +301,31 @@ static int runPlugins (KeySet * pluginKS, KeySet * modules, KeySet * plugins, Ke
 			else
 			{
 				Key * userCutPoint = keyNew ("user", 0);
-				Key * sysConfCutPoint = keyNew ("system", 0);
+				Key * globalConfCutPoint = keyNew ("/config", 0);
 				KeySet * config = ksDup (configOrig);
-				KeySet * sysConfigAll = ksCut (config, sysConfCutPoint);
+				KeySet * globalConfigAll = ksCut (config, globalConfCutPoint);
 				KeySet * userConfigAll = ksCut (config, userCutPoint);
 				KeySet * pluginConfig = ksCut (userConfigAll, current);
-				realPluginConfig = elektraRenameKeys (pluginConfig, "user");
+				// replace "user/plugins/#X" with "user/"
+				KeySet * pluginConfigWithConfigPrefix = elektraRenameKeys (pluginConfig, "user");
 				ksDel (pluginConfig);
-				Key * toRemove = keyNew ("user/plugins", 0);
-				ksDel (ksCut (sysConfigAll, toRemove));
-				ksAppend (realPluginConfig, sysConfigAll);
-				keyDel (toRemove);
-				toRemove = keyNew ("user/placements", 0);
-				ksDel (ksCut (realPluginConfig, toRemove));
-				ksRewind (realPluginConfig);
-				ksDel (sysConfigAll);
+				// append config below "/config" to all plugins
+				KeySet * globalPluginConfig = elektraRenameKeys (globalConfigAll, "user/config");
+				ksAppend (pluginConfigWithConfigPrefix, globalPluginConfig);
+				ksDel (globalPluginConfig);
+				// remove "placements" from plugin config
+				Key * toRemove = keyNew ("user/placements", 0);
+				ksDel (ksCut (pluginConfigWithConfigPrefix, toRemove));
+				ksRewind (pluginConfigWithConfigPrefix);
+				ksDel (globalConfigAll);
 				ksDel (userConfigAll);
 				ksDel (config);
 				keyDel (userCutPoint);
-				keyDel (sysConfCutPoint);
+				keyDel (globalConfCutPoint);
 				keyDel (toRemove);
+				// replace "user/config/" with "user/"
+				realPluginConfig = elektraRenameKeys (pluginConfigWithConfigPrefix, "user");
+				ksDel (pluginConfigWithConfigPrefix);
 				slave = elektraPluginOpen (name, modules, ksDup (realPluginConfig), parentKey);
 				ksDel (realPluginConfig);
 				if (!slave)

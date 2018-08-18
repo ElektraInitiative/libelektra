@@ -4,7 +4,8 @@ include (LibAddBinding)
 if (DEPENDENCY_PHASE)
 	if (APPLE)
 		execute_process (COMMAND "/usr/libexec/java_home" OUTPUT_VARIABLE JAVA_HOME)
-		string (STRIP ${JAVA_HOME} JAVA_HOME)
+		string (STRIP ${JAVA_HOME}
+			      JAVA_HOME)
 	endif ()
 
 	find_package (JNI)
@@ -25,7 +26,7 @@ if (DEPENDENCY_PHASE)
 	endif ()
 endif ()
 
-add_plugin (jni SOURCES jni.c INCLUDE_DIRECTORIES ${DIRS} LINK_LIBRARIES ${LIBS})
+add_plugin (jni SOURCES jni.c INCLUDE_DIRECTORIES ${DIRS} LINK_LIBRARIES ${LIBS} ONLY_SHARED)
 
 if (ADDTESTING_PHASE)
 	check_binding_was_added ("jna" BINDING_WAS_ADDED)
@@ -38,10 +39,21 @@ if (ADDTESTING_PHASE)
 
 			# Generate header file
 			set (LIBELEKTRA4J_PATH ${CMAKE_BINARY_DIR}/src/bindings/jna/libelektra4j)
-			add_custom_command (COMMAND ${MAVEN_EXECUTABLE} ARGS dependency:build-classpath -q -Dmdep.outputFile=classpath.txt
-					    COMMAND ${CMAKE_COMMAND} ARGS -D SOURCE_PATH=${CMAKE_CURRENT_SOURCE_DIR} -D
-						    DESTINATION_PATH=${CMAKE_CURRENT_BINARY_DIR} -D LIBELEKTRA4J_PATH=${LIBELEKTRA4J_PATH}
-						    -D KDB_VERSION=${KDB_VERSION} -P ${CMAKE_SOURCE_DIR}/cmake/ElektraClasspath.cmake
+			add_custom_command (COMMAND ${MAVEN_EXECUTABLE}
+						    ARGS dependency:build-classpath
+							 -q
+							 -Dmdep.outputFile=classpath.txt
+					    COMMAND ${CMAKE_COMMAND}
+						    ARGS -D
+							 SOURCE_PATH=${CMAKE_CURRENT_SOURCE_DIR}
+							 -D
+							 DESTINATION_PATH=${CMAKE_CURRENT_BINARY_DIR}
+							 -D
+							 LIBELEKTRA4J_PATH=${LIBELEKTRA4J_PATH}
+							 -D
+							 KDB_VERSION=${KDB_VERSION}
+							 -P
+							 ${CMAKE_SOURCE_DIR}/cmake/ElektraClasspath.cmake
 					    OUTPUT "${LIBELEKTRA4J_PATH}/classpath.txt"
 						   "${CMAKE_CURRENT_BINARY_DIR}/testmod_jni.h"
 					    WORKING_DIRECTORY ${LIBELEKTRA4J_PATH}

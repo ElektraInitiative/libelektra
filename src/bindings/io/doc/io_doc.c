@@ -17,13 +17,31 @@
  *
  * @section async Asynchronous I/O with Elektra
  *
- * This section contains useful details for creating I/O bindings and using the
- * operations provided by these bindings.
+ * @subsection Overview
+ *
+ * I/O bindings allow Elektra and its plugins to integrate into different main
+ * loop APIs using a thin abstraction layer.
+ * For example, this is used for notification transport plugins which receive
+ * notifications using ZeroMQ, D-Bus, etc.
+ *
+ * I/O bindings are created using an initialization function for a specific main
+ * loop API.
+ * Please see [bindings](https://www.libelektra.org/bindings/readme)
+ * for available I/O bindings and their according READMEs for more details.
+ * After creating, an I/O binding is associated to a KDB instance using
+ * elektraIoSetBinding().
+ * Having different I/O bindings (e.g. same or different main loop APIs) for
+ * different KDB instances is supported.
+ *
+ * The remainder of this page contains useful details for creating I/O bindings
+ * and using the operations provided by these bindings.
  * Application developers are normally not required to do those
  * tasks.
  * For more information about using I/O bindings from an application developer
  * perspective please read the
  * <a href="doc_tutorials_notifications_md.html">Notification Tutorial</a>.
+ *
+ * @subsection Introduction
  *
  * An I/O binding needs to handle different types of operations.
  * These operations are used by plugins that require asynchronous I/O.

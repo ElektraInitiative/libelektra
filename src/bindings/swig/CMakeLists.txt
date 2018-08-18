@@ -6,6 +6,11 @@ if (NOT SWIG_FOUND)
 	return ()
 endif ()
 
+if (ENABLE_ASAN)
+	exclude_binding (swig "SWIG is not compatible with ENABLE_ASAN")
+	return ()
+endif (ENABLE_ASAN)
+
 check_binding_included ("swig_python2" IS_INCLUDED SUBDIRECTORY "swig/python2")
 if (IS_INCLUDED)
 	add_subdirectory (python2)
@@ -15,8 +20,11 @@ check_binding_included ("swig_python" IS_INCLUDED SUBDIRECTORY "swig/python")
 if (IS_INCLUDED)
 	add_subdirectory (python)
 else ()
-	check_binding_included ("swig_python3" IS_INCLUDED SUBDIRECTORY "swig/python" SILENT) # rename swig_python3 to swig_python - TODO
-											      # remove sometime in the future
+
+	# TODO rename swig_python3 to swig_python
+	check_binding_included ("swig_python3" IS_INCLUDED SUBDIRECTORY "swig/python" SILENT)
+
+	# remove sometime in the future
 	if (IS_INCLUDED)
 		exclude_binding ("swig_python3" "swig_python3 has been renamed to swig_python")
 		add_subdirectory (python)

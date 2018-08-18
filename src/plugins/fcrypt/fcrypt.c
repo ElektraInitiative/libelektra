@@ -64,15 +64,28 @@ typedef struct _fcryptState fcryptState;
 static char * getTemporaryFileName (KeySet * conf, const char * file, int * fd)
 {
 	// read the temporary directory to use from the plugin configuration
-	const char * tmpDir = ELEKTRA_FCRYPT_DEFAULT_TMPDIR;
+	// NOTE the string contained in tmpDir must not be modified!
+	const char * tmpDir = NULL;
 	Key * k = ksLookupByName (conf, ELEKTRA_FCRYPT_CONFIG_TMPDIR, 0);
 	if (k)
 	{
 		tmpDir = keyString (k);
 	}
 
+	if (!tmpDir)
+	{
+		// check the environment; returns NULL if no match is found
+		tmpDir = getenv ("TMPDIR");
+	}
+
+	if (!tmpDir)
+	{
+		// fallback
+		tmpDir = ELEKTRA_FCRYPT_DEFAULT_TMPDIR;
+	}
+
 	// extract the file name (base name) from the path
-	char * fileDup = strdup (file);
+	char * fileDup = elektraStrDup (file);
 	if (!fileDup) goto error;
 	const char * baseName = basename (fileDup);
 
@@ -453,7 +466,7 @@ static int fcryptDecrypt (KeySet * pluginConfig, Key * parentKey, fcryptState * 
 	int result = CRYPTO_PLUGIN_FUNCTION (gpgCall) (pluginConfig, parentKey, NULL, argv, argc);
 	if (result == 1)
 	{
-		state->originalFilePath = strdup (keyString (parentKey));
+		state->originalFilePath = elektraStrDup (keyString (parentKey));
 		state->tmpFilePath = tmpFile;
 		state->tmpFileFd = tmpFileFd;
 		keySetString (parentKey, tmpFile);

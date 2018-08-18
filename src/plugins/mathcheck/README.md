@@ -27,17 +27,17 @@ Keynames are all either relative to to-be-tested key (starting with `./` or `../
 
 Full example:
 ```sh
-# Backup-and-Restore:/examples/mathcheck
+# Backup-and-Restore:/tests/mathcheck
 
-sudo kdb mount mathcheck.dump /examples/mathcheck mathcheck
+sudo kdb mount mathcheck.dump /tests/mathcheck mathcheck
 
-kdb set /examples/mathcheck/a 3.1
-kdb set /examples/mathcheck/b 4.5
-kdb set /examples/mathcheck/k 7.6
-kdb setmeta user/examples/mathcheck/k check/math "== + ../a ../b"
+kdb set /tests/mathcheck/a 3.1
+kdb set /tests/mathcheck/b 4.5
+kdb set /tests/mathcheck/k 7.6
+kdb setmeta user/tests/mathcheck/k check/math "== + ../a ../b"
 
 # should fail
-kdb set /examples/mathcheck/k 7.7
+kdb set /tests/mathcheck/k 7.7
 # RET:5
 # ERROR:123
 # Set string to "7.7"
@@ -48,37 +48,37 @@ kdb set /examples/mathcheck/k 7.7
 # Module: mathcheck
 # At: /home/thomas/Dev/Elektra/libelektra/src/plugins/mathcheck/mathcheck.c:399
 # Reason: 7.7 != 7.6
-# Mountpoint: /examples/mathcheck
+# Mountpoint: /tests/mathcheck
 # Configfile: /home/thomas/.config/mathcheck.dump.25680:1478749409.938013.tmp
 ```
 To calculate values on-demand you can use:
 ```sh
-kdb setmeta user/examples/mathcheck/k check/math ":= + @/a @/b"
-kdb set /examples/mathcheck/a 8.0
-kdb set /examples/mathcheck/b 4.5
+kdb setmeta user/tests/mathcheck/k check/math ":= + @/a @/b"
+kdb set /tests/mathcheck/a 8.0
+kdb set /tests/mathcheck/b 4.5
 
-kdb get /examples/mathcheck/k
+kdb get /tests/mathcheck/k
 #> 12.5
 
-kdb set /examples/mathcheck/a 5.5
+kdb set /tests/mathcheck/a 5.5
 
-kdb get /examples/mathcheck/k
+kdb get /tests/mathcheck/k
 #> 10
 ```
 It also works with constants:
 ```sh
-kdb setmeta user/examples/mathcheck/k check/math ":= + ../a '5'"
-kdb set /examples/mathcheck/a 5.5
+kdb setmeta user/tests/mathcheck/k check/math ":= + ../a '5'"
+kdb set /tests/mathcheck/a 5.5
 
-kdb get /examples/mathcheck/k
+kdb get /tests/mathcheck/k
 #> 10.5
 
-kdb set /examples/mathcheck/a 8.0
+kdb set /tests/mathcheck/a 8.0
 
-kdb get /examples/mathcheck/k
+kdb get /tests/mathcheck/k
 #> 13
 
 #cleanup
-kdb rm -r /examples/mathcheck
-sudo kdb umount /examples/mathcheck
+kdb rm -r /tests/mathcheck
+sudo kdb umount /tests/mathcheck
 ```

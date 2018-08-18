@@ -43,6 +43,8 @@ Every core-tool has the following options:
   Use a different kdb profile, see below.
 - `-C`, `--color <when>`:
   Print never/auto(default)/always colored output.
+- `--`:
+  Do not process any following arguments starting with `-` as options.
 
 ## COMMON OPTIONS
 
@@ -131,8 +133,8 @@ They are only recognized by the `kdb` tool or tools that explicit have
 support for it. Your applications should not depend on the presence of a
 bookmark.
 
-Bookmarks are stored below:
-	`/sw/elektra/kdb/#0/current/bookmarks`
+Bookmarks are stored below:<br>
+`/sw/elektra/kdb/#0/current/bookmarks`
 
 For every key found there, a new bookmark will be introduced.
 

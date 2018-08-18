@@ -4,7 +4,7 @@
 - infos/provides = storage/xml
 - infos/needs =
 - infos/placements = getstorage setstorage
-- infos/status = recommended unittest
+- infos/status = recommended unittest memleak
 - infos/metadata = xerces/rootname
 - infos/description = Storage in the XML format.
 
@@ -80,24 +80,24 @@ XSD transformations, schemas or DTDs are not supported yet.
 ### Mounting, setting a key and exporting
 
 ```sh
-# Backup-and-Restore:user/examples/xercesfile
+# Backup-and-Restore:user/tests/xercesfile
 
-sudo kdb mount xerces.xml user/examples/xercesfile xerces
+sudo kdb mount xerces.xml user/tests/xercesfile xerces
 
-kdb set user/examples/xercesfile foo
-kdb setmeta user/examples/xercesfile xerces/rootname xerces
-kdb set user/examples/xercesfile/bar bar
-kdb setmeta user/examples/xercesfile/bar meta "da_ta"
+kdb set user/tests/xercesfile foo
+kdb setmeta user/tests/xercesfile xerces/rootname xerces
+kdb set user/tests/xercesfile/bar bar
+kdb setmeta user/tests/xercesfile/bar meta "da_ta"
 
-kdb getmeta user/examples/xercesfile xerces/rootname
+kdb getmeta user/tests/xercesfile xerces/rootname
 #> xerces
 
-kdb get user/examples/xercesfile/bar
+kdb get user/tests/xercesfile/bar
 #> bar
 
-kdb export user/examples/xercesfile xerces
+kdb export user/tests/xercesfile xerces
 # STDOUT-REGEX: <bar meta="da_ta">bar</bar>
 
-sudo kdb rm -r user/examples/xercesfile
-sudo kdb umount user/examples/xercesfile
+sudo kdb rm -r user/tests/xercesfile
+sudo kdb umount user/tests/xercesfile
 ```

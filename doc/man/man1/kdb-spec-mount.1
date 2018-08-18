@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "KDB\-SPEC\-MOUNT" "1" "December 2017" "" ""
+.TH "KDB\-SPEC\-MOUNT" "1" "August 2018" "" ""
 .
 .SH "NAME"
 \fBkdb\-spec\-mount\fR \- Mount a spec file to the key database
@@ -141,10 +141,16 @@ The resolver that will be added automatically, if \fB\-R\fR is not given\.
 It contains a space\-separated list of plugins and their configs which are added automatically (by default sync)\. The plugin\-configuration syntax is as described above in the \fIsynopsis\fR\.
 .
 .SH "EXAMPLES"
-To mount /example as described in \fBspec/example\fR: \fBkdb spec\-mount /example\fR
+To mount /example as described in \fBspec/example\fR:
+.
+.br
+\fBkdb spec\-mount /example\fR
 .
 .P
-Additionally, add \fBini\fR plugin (instead of some default resolver) with \fBsome\fR as config: \fBkdb spec\-mount /example ini some=value\fR
+Additionally, add \fBini\fR plugin (instead of some default resolver) with \fBsome\fR as config:
+.
+.br
+\fBkdb spec\-mount /example ini some=value\fR
 .
 .SH "SEE ALSO"
 .

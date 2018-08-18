@@ -11,6 +11,7 @@
 #include <kdbassert.h>
 #include <kdbease.h>
 #include <kdbinternal.h>
+#include <kdbinvoke.h>
 #include <kdbioprivate.h>
 #include <kdblogger.h>
 #include <kdbnotification.h>
@@ -285,7 +286,7 @@ static char * getPluginPlacementList (Plugin * plugin)
 		ELEKTRA_LOG_WARNING ("could not read placements from plugin");
 		return 0;
 	}
-	char * placementList = strdup (keyString (placements));
+	char * placementList = elektraStrDup (keyString (placements));
 
 	keyDel (pluginInfo);
 	keyDel (placementsKey);
@@ -662,22 +663,7 @@ static void pluginsOpenNotification (KDB * kdb, ElektraNotificationCallback call
 			}
 
 
-			size_t func = elektraPluginGetFunction (plugin, "openNotification");
-			if (func)
-			{
-				ElektraNotificationOpenNotification openNotification = (ElektraNotificationOpenNotification) func;
-				openNotification (plugin, parameters);
-			}
-			else
-			{
-				func = elektraPluginGetFunction (plugin, "deferredCall");
-				if (func)
-				{
-					typedef void (*DeferFunctionCall) (Plugin * handle, char * name, KeySet * parameters);
-					DeferFunctionCall defer = (DeferFunctionCall) func;
-					defer (plugin, "openNotification", parameters);
-				}
-			}
+			elektraDeferredCall (plugin, "openNotification", parameters);
 		}
 	}
 
@@ -699,24 +685,19 @@ static void pluginsCloseNotification (KDB * kdb)
 				continue;
 			}
 
-			size_t func = elektraPluginGetFunction (plugin, "closeNotification");
-			if (func)
-			{
-				ElektraNotificationCloseNotification closeNotification = (ElektraNotificationCloseNotification) func;
-				closeNotification (plugin, NULL);
-			}
-			else
-			{
-				func = elektraPluginGetFunction (plugin, "deferredCall");
-				if (func)
-				{
-					typedef void (*DeferFunctionCall) (Plugin * handle, char * name, KeySet * parameters);
-					DeferFunctionCall defer = (DeferFunctionCall) func;
-					defer (plugin, "closeNotification", NULL);
-				}
-			}
+			elektraDeferredCall (plugin, "closeNotification", NULL);
 		}
 	}
+}
+
+/**
+ * @see kdbnotificationinternal.h ::ElektraNotificationKdbUpdate
+ */
+static void elektraNotificationKdbUpdate (KDB * kdb, Key * changedKey)
+{
+	KeySet * ks = ksNew (0, KS_END);
+	kdbGet (kdb, ks, changedKey);
+	ksDel (ks);
 }
 
 int elektraNotificationOpen (KDB * kdb)
@@ -760,6 +741,7 @@ int elektraNotificationOpen (KDB * kdb)
 		return 0;
 	}
 	context->kdb = kdb;
+	context->kdbUpdate = &elektraNotificationKdbUpdate;
 	context->notificationPlugin = notificationPlugin;
 
 	// Get notification callback from notification plugin
@@ -850,34 +832,27 @@ static Plugin * getNotificationPlugin (KDB * kdb)
 	}
 }
 
-int elektraNotificationRegisterInt (KDB * kdb, Key * key, int * variable)
-{
-	if (!kdb || !key || !variable)
-	{
-		ELEKTRA_LOG_WARNING ("null pointer passed");
-		return 0;
-	}
+ELEKTRA_NOTIFICATION_TYPE_DEFINITION (int, Int)
+ELEKTRA_NOTIFICATION_TYPE_DEFINITION (unsigned int, UnsignedInt)
+ELEKTRA_NOTIFICATION_TYPE_DEFINITION (long, Long)
+ELEKTRA_NOTIFICATION_TYPE_DEFINITION (unsigned long, UnsignedLong)
+ELEKTRA_NOTIFICATION_TYPE_DEFINITION (float, Float)
+ELEKTRA_NOTIFICATION_TYPE_DEFINITION (double, Double)
 
-	// Find notification plugin
-	Plugin * notificationPlugin = getNotificationPlugin (kdb);
-	if (!notificationPlugin)
-	{
-		return 0;
-	}
+ELEKTRA_NOTIFICATION_TYPE_DEFINITION (kdb_boolean_t, KdbBoolean)
+ELEKTRA_NOTIFICATION_TYPE_DEFINITION (kdb_char_t, KdbChar)
+ELEKTRA_NOTIFICATION_TYPE_DEFINITION (kdb_octet_t, KdbOctet)
+ELEKTRA_NOTIFICATION_TYPE_DEFINITION (kdb_short_t, KdbShort)
+ELEKTRA_NOTIFICATION_TYPE_DEFINITION (kdb_unsigned_short_t, KdbUnsignedShort)
+ELEKTRA_NOTIFICATION_TYPE_DEFINITION (kdb_long_t, KdbLong)
+ELEKTRA_NOTIFICATION_TYPE_DEFINITION (kdb_unsigned_long_t, KdbUnsignedLong)
+ELEKTRA_NOTIFICATION_TYPE_DEFINITION (kdb_long_long_t, KdbLongLong)
+ELEKTRA_NOTIFICATION_TYPE_DEFINITION (kdb_unsigned_long_long_t, KdbUnsignedLongLong)
+ELEKTRA_NOTIFICATION_TYPE_DEFINITION (kdb_float_t, KdbFloat)
+ELEKTRA_NOTIFICATION_TYPE_DEFINITION (kdb_double_t, KdbDouble)
+ELEKTRA_NOTIFICATION_TYPE_DEFINITION (kdb_long_double_t, KdbLongDouble)
 
-	// Get register function from plugin
-	size_t func = elektraPluginGetFunction (notificationPlugin, "registerInt");
-	if (!func)
-	{
-		return 0;
-	}
-
-	// Call register function
-	ElektraNotificationPluginRegisterInt registerFunc = (ElektraNotificationPluginRegisterInt) func;
-	return registerFunc (notificationPlugin, key, variable);
-}
-
-int elektraNotificationRegisterCallback (KDB * kdb, Key * key, ElektraNotificationChangeCallback callback)
+int elektraNotificationRegisterCallback (KDB * kdb, Key * key, ElektraNotificationChangeCallback callback, void * context)
 {
 	if (!kdb || !key || !callback)
 	{
@@ -901,5 +876,60 @@ int elektraNotificationRegisterCallback (KDB * kdb, Key * key, ElektraNotificati
 
 	// Call register function
 	ElektraNotificationPluginRegisterCallback registerFunc = (ElektraNotificationPluginRegisterCallback) func;
-	return registerFunc (notificationPlugin, key, callback);
+	return registerFunc (notificationPlugin, key, callback, context);
+}
+
+int elektraNotificationRegisterCallbackSameOrBelow (KDB * kdb, Key * key, ElektraNotificationChangeCallback callback, void * context)
+{
+	if (!kdb || !key || !callback)
+	{
+		ELEKTRA_LOG_WARNING ("null pointer passed");
+		return 0;
+	}
+
+	// Find notification plugin
+	Plugin * notificationPlugin = getNotificationPlugin (kdb);
+	if (!notificationPlugin)
+	{
+		return 0;
+	}
+
+	// Get register function from plugin
+	size_t func = elektraPluginGetFunction (notificationPlugin, "registerCallbackSameOrBelow");
+	if (!func)
+	{
+		return 0;
+	}
+
+	// Call register function
+	ElektraNotificationPluginRegisterCallbackSameOrBelow registerFunc = (ElektraNotificationPluginRegisterCallbackSameOrBelow) func;
+	return registerFunc (notificationPlugin, key, callback, context);
+}
+
+int elektraNotificationSetConversionErrorCallback (KDB * kdb, ElektraNotificationConversionErrorCallback callback, void * context)
+{
+	if (!kdb || !callback)
+	{
+		ELEKTRA_LOG_WARNING ("null pointer passed");
+		return 0;
+	}
+
+	// Find notification plugin
+	Plugin * notificationPlugin = getNotificationPlugin (kdb);
+	if (!notificationPlugin)
+	{
+		return 0;
+	}
+
+	// Get register function from plugin
+	size_t func = elektraPluginGetFunction (notificationPlugin, "setConversionErrorCallback");
+	if (!func)
+	{
+		return 0;
+	}
+
+	// Call register function
+	ElektraNotificationSetConversionErrorCallback setCallbackFunc = (ElektraNotificationSetConversionErrorCallback) func;
+	setCallbackFunc (notificationPlugin, callback, context);
+	return 1;
 }

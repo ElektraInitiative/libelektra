@@ -995,13 +995,15 @@ static void benchmarkMappingAllSeeds (char * name)
  * START ================================================== OPMPHM Build Time ======================================================== START
  *
  * This benchmark measures the time of the OPMPHM build.
- * Uses all KeySet shapes, for all n (KeySet size) a fixed set of seeds is used to build the OPMPHM.
+ * Uses all KeySet shapes except 6, for all n (KeySet size) a fixed set of seeds is used to build the OPMPHM.
+ * The keyset shape 6 is excluded, because previous evaluation had show that the results with that keyset shape
+ * where unusable, due to the unnatural long key names.
  * For one n (KeySet size) ksPerN KeySets are used.
  * The results are written out in the following format:
  *
  * n;ks;time
  *
- * The number of needed seeds for this benchmarks is: numberOfShapes * ( numberOfSeeds + nCount * ksPerN )
+ * The number of needed seeds for this benchmarks is: (numberOfShapes - 1) * ( numberOfSeeds + nCount * ksPerN )
  */
 
 /**
@@ -1045,7 +1047,7 @@ static size_t benchmarkOPMPHMBuildTimeMeasure (KeySet * ks, size_t * repeats, si
 		repeats[repeatsI] = (end.tv_sec - start.tv_sec) * 1000000 + (end.tv_usec - start.tv_usec);
 
 		// sanity check
-		if (!ks->opmphm || !opmphmIsBuild (ks->opmphm))
+		if (!opmphmIsBuild (ks->opmphm))
 		{
 			printExit ("Sanity Check Failed: OPMPHM not used");
 		}
@@ -1124,9 +1126,13 @@ void benchmarkOPMPHMBuildTime (char * name)
 
 	printf ("Run Benchmark %s:\n", name);
 
-	// for all KeySet shapes
+	// for all KeySet shapes except 6
 	for (size_t shapeI = 0; shapeI < numberOfShapes; ++shapeI)
 	{
+		if (shapeI == 6)
+		{
+			continue;
+		}
 		// get seeds for mapping step in ksLookup (...)
 		for (size_t i = 0; i < numberOfSeeds; ++i)
 		{
@@ -1213,14 +1219,16 @@ void benchmarkOPMPHMBuildTime (char * name)
  * START ================================================== OPMPHM Search Time ======================================================= START
  *
  * This benchmark measures the time of the OPMPHM search.
- * Uses all KeySet shapes, for one n (KeySet size) ksPerN KeySets are used.
+ * Uses all KeySet shapes except 6, for one n (KeySet size) ksPerN KeySets are used.
+ * The keyset shape 6 is excluded, because previous evaluation had show that the results with that keyset shape
+ * where unusable, due to the unnatural long key names.
  * Each measurement done with one KeySet is repeated numberOfRepeats time and summarized with the median.
  * For one n (KeySet size) the ksPerN results are also summarized with the median.
  * The results are written out in the following format:
  *
  * n;search_1;search_2;...;search_(numberOfSearches)
  *
- * The number of needed seeds for this benchmarks is: numberOfShapes * nCount * ksPerN * (1  + searchesCount )
+ * The number of needed seeds for this benchmarks is: (numberOfShapes - 1) * nCount * ksPerN * (1  + searchesCount )
  */
 
 /**
@@ -1243,12 +1251,12 @@ static size_t benchmarkSearchTimeMeasure (KeySet * ks, size_t searches, int32_t 
 	if (option & KDB_O_OPMPHM)
 	{
 		// trigger OPMPHM build if not build
-		if (!ks->opmphm || !opmphmIsBuild (ks->opmphm))
+		if (!opmphmIsBuild (ks->opmphm))
 		{
 			// set seed to return by elektraRandGetInitSeed () in the lookup
 			elektraRandBenchmarkInitSeed = searchSeed;
 			(void) ksLookup (ks, ks->array[0], KDB_O_OPMPHM | KDB_O_NOCASCADING);
-			if (!ks->opmphm || !opmphmIsBuild (ks->opmphm))
+			if (!opmphmIsBuild (ks->opmphm))
 			{
 				printExit ("trigger OPMPHM build");
 			}
@@ -1259,7 +1267,7 @@ static size_t benchmarkSearchTimeMeasure (KeySet * ks, size_t searches, int32_t 
 		// sanity checks
 		if (option & KDB_O_OPMPHM)
 		{
-			if (!ks->opmphm || !opmphmIsBuild (ks->opmphm))
+			if (!opmphmIsBuild (ks->opmphm))
 			{
 				printExit ("Sanity Check Failed: OPMPHM not here");
 			}
@@ -1301,7 +1309,7 @@ static size_t benchmarkSearchTimeMeasure (KeySet * ks, size_t searches, int32_t 
 		// sanity checks
 		if (option & KDB_O_OPMPHM)
 		{
-			if (!ks->opmphm || !opmphmIsBuild (ks->opmphm))
+			if (!opmphmIsBuild (ks->opmphm))
 			{
 				printExit ("Sanity Check Failed: OPMPHM not here");
 			}
@@ -1396,9 +1404,13 @@ static void benchmarkSearchTime (char * name, char * outFileName, option_t optio
 
 	printf ("Run Benchmark %s:\n", name);
 
-	// for all KeySet shapes
+	// for all KeySet shapes except 6
 	for (size_t shapeI = 0; shapeI < numberOfShapes; ++shapeI)
 	{
+		if (shapeI == 6)
+		{
+			continue;
+		}
 		KeySetShape * usedKeySetShape = &keySetShapes[shapeI];
 
 		// for all Ns
@@ -1495,14 +1507,16 @@ void benchmarkOPMPHMSearchTime (char * name)
  * START ================================================= Binary search Time ======================================================== START
  *
  * This benchmark measures the time of the binary search.
- * Uses all KeySet shapes, for one n (KeySet size) ksPerN KeySets are used.
+ * Uses all KeySet shapes except 6, for one n (KeySet size) ksPerN KeySets are used.
+ * The keyset shape 6 is excluded, because previous evaluation had show that the results with that keyset shape
+ * where unusable, due to the unnatural long key names.
  * Each measurement done with one KeySet is repeated numberOfRepeats time and summarized with the median.
  * For one n (KeySet size) the ksPerN results are also summarized with the median.
  * The results are written out in the following format:
  *
  * n;search_1;search_2;...;search_(numberOfSearches)
  *
- * The number of needed seeds for this benchmarks is: numberOfShapes * nCount * ksPerN * (1  + searchesCount )
+ * The number of needed seeds for this benchmarks is: (numberOfShapes - 1) * nCount * ksPerN * (1  + searchesCount )
  */
 
 static void benchmarkBinarySearchTime (char * name)
@@ -1524,7 +1538,7 @@ static void benchmarkBinarySearchTime (char * name)
  *
  * n;ks;load;time
  *
- * The number of needed seeds for this benchmarks is: numberOfShapesUsed * nCount * ksPerN
+ * The number of needed seeds for this benchmarks is: (numberOfShapes - 1) * nCount * ksPerN
  */
 
 // where does hsearch stores the strings??? no out of mem but speed loosing
@@ -1676,9 +1690,13 @@ void benchmarkHsearchBuildTime (char * name)
 
 	printf ("Run Benchmark %s:\n", name);
 
-	// for all KeySet shapes
+	// for all KeySet shapes except 6
 	for (size_t shapeI = 0; shapeI < numberOfShapes; ++shapeI)
 	{
+		if (shapeI == 6)
+		{
+			continue;
+		}
 		KeySetShape * usedKeySetShape = &keySetShapes[shapeI];
 		size_t strikes = 0;
 
@@ -1852,23 +1870,23 @@ int main (int argc, char ** argv)
 	char * benchmarkNameOpmphmBuildTime = "opmphmbuildtime";
 	benchmarks[5].name = benchmarkNameOpmphmBuildTime;
 	benchmarks[5].benchmarkF = benchmarkOPMPHMBuildTime;
-	benchmarks[5].numberOfSeedsNeeded = 2008;
+	benchmarks[5].numberOfSeedsNeeded = 1757;
 	// opmphmsearchtime
 	char * benchmarkNameOpmphmSearchTime = "opmphmsearchtime";
 	benchmarks[6].name = benchmarkNameOpmphmSearchTime;
 	benchmarks[6].benchmarkF = benchmarkOPMPHMSearchTime;
-	benchmarks[6].numberOfSeedsNeeded = 72800;
+	benchmarks[6].numberOfSeedsNeeded = 54600;
 	// binarysearchtime
 	char * benchmarkNameBinarySearchTime = "binarysearchtime";
 	benchmarks[7].name = benchmarkNameBinarySearchTime;
 	benchmarks[7].benchmarkF = benchmarkBinarySearchTime;
-	benchmarks[7].numberOfSeedsNeeded = 72800;
+	benchmarks[7].numberOfSeedsNeeded = 54600;
 #ifdef HAVE_HSEARCHR
 	// hsearchbuildtime
 	char * benchmarkNameHsearchBuildTime = "hsearchbuildtime";
 	benchmarks[benchmarksCount - 1].name = benchmarkNameHsearchBuildTime;
 	benchmarks[benchmarksCount - 1].benchmarkF = benchmarkHsearchBuildTime;
-	benchmarks[benchmarksCount - 1].numberOfSeedsNeeded = 800;
+	benchmarks[benchmarksCount - 1].numberOfSeedsNeeded = 1400;
 #endif
 
 	// run benchmark

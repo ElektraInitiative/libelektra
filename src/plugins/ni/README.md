@@ -15,49 +15,92 @@ This plugin uses the nickel library in order to read/write
 used in the `spec`-namespace or when any metadata should be
 stored.
 
-For ini files for applications, e.g. smb.conf you should prefer the
+For other applications, e.g. modifying `smb.conf` you should prefer the
 [ini plugin](/src/plugins/ini).
 
 ## Usage
 
-To mount a ni plugin you can simply use:
+To mount the ni plugin you can simply use:
 
-    kdb mount file.ini spec/ni ni
+```bash
+kdb mount file.ini spec/ni ni
+```
 
-The strength and usage of this plugin is that it supports arbitrary meta
-data and is still human readable.
-E.g.
+The strength of this plugin is that it supports arbitrary meta
+data and the file format is still human readable.
+For example the following lines:
 
-    [key]
-    meta=foo
+```ini
+[key]
+meta=foo
+```
 
-creates the key with metadata key `meta` and metadata value `foo`:
+specify that `key` has a metadata key `meta` containing the metavalue `foo`:
 
-    $ kdb getmeta user/ni/key meta
-    foo
+```bash
+kdb getmeta user/ni/key meta
+#> foo
+```
 
-the metadata for the parent key has following syntax:
+For the metadata of the parent key use the following syntax:
 
-    []
-    meta=foo
+```ini
+[]
+meta=foo
+```
 
-Line continuation works by ending the line with `\\`.
+Line continuation works by ending the line with `\\` (a single backslash).
+If you want a line break at the end of the line, use `\\n\\`.
 
-Exporting a KeySet to the nickel format:
+To export a `KeySet` in the nickel format use:
 
-    kdb export spec/ni ni > example.ni
+```bash
+kdb export spec/ni ni > example.ni
+```
 
 For in-detail explanation of the syntax
-(nested keys are not supported by the plugin, however)
+(nested keys are not supported by the plugin)
 [see /src/plugins/ni/nickel-1.1.0/include/bohr/ni.h](/src/plugins/ni/nickel-1.1.0/include/bohr/ni.h)
+
+## Examples
+
+```sh
+# Mount the `ni` plugin at `spec/tests/ni`
+sudo kdb mount file.ini spec/tests/ni ni
+
+# Add some metadata
+kdb setmeta spec/tests/ni/key metakey metavalue
+kdb setmeta spec/tests/ni/key check/type char
+
+# Retrieve metadata
+kdb lsmeta spec/tests/ni/key
+#> check/type
+#> metakey
+kdb getmeta spec/tests/ni/key metakey
+#> metavalue
+
+# Add and retrieve key values
+kdb get spec/tests/ni/key
+#>
+kdb set spec/tests/ni/key value
+kdb set spec/tests/ni/key/to nothing
+kdb get spec/tests/ni/key
+#> value
+kdb get spec/tests/ni/key/to
+#> nothing
+
+# Undo modifications
+kdb rm -r spec/tests/ni
+sudo kdb umount spec/tests/ni
+```
 
 ## Limitations
 
 - Supports most KeySets, but `kdb test` currently reports some errors
   (likely because of the UTF-8 handling happening within ni).
 - Keys have a random order when written out.
-- No comments are preserved, they are simply removed.
-- Parse errors simply result to ignoring (and removing) these parts.
+- Comments are not preserved, they are simply removed.
+- Parse errors simply result in ignoring (and removing) these parts.
 
 ## Nickel
 
@@ -72,10 +115,10 @@ are possible, but limited in a keyname of a fixed size.
 The API of nickel is very suited for elektra, it can use
 `FILE*` pointers (using that elektra could open and lock
 files), the node-hierarchy can be transformed to
-keysets, but it lacks of many features like comments
+keysets, but it lacks many features like comments
 and types.
 
-The format is more general then the kde-ini format, it can
+The format is more general than the kde-ini format, it can
 handle their configuration well, when the section names
 do not exceed the specified length. Nesting is only required
 in the first depth, any deeper is not understood by kde config

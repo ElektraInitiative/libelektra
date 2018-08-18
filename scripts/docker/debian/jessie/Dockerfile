@@ -7,7 +7,6 @@ ENV LC_ALL C.UTF-8
 RUN apt-get update && apt-get -y install \
     curl \
     build-essential \
-    clang \
     autotools-dev \
     automake \
     cmake \
@@ -24,6 +23,7 @@ RUN apt-get update && apt-get -y install \
     libaugeas-dev \
     libbotan1.10-dev \
     libyajl-dev \
+    git \
     libgit2-dev \
     libboost-all-dev \
     libssl-dev \
@@ -35,9 +35,8 @@ RUN apt-get update && apt-get -y install \
     libyaml-cpp-dev \
     swig3.0 \
     libuv0.10-dev \
-    ghc \
-    cabal-install \
-    c2hs \
+    libev-dev \
+    libzmq3-dev \
     checkinstall \
     gobject-introspection \
     libgirepository1.0-dev \
@@ -48,8 +47,15 @@ RUN apt-get update && apt-get -y install \
     valgrind && \
     rm -rf /var/lib/apt/lists/*
 
-RUN cabal update && cabal install hspec QuickCheck
-
+# Google Test
+ENV GTEST_ROOT=/opt/gtest
+ARG GTEST_VER=4e4df226fc197c0dda6e37f5c8c3845ca1e73a49
+RUN mkdir -p ${GTEST_ROOT} \
+    && cd /tmp \
+    && curl -o gtest.tar.gz \
+      -L https://github.com/google/googletest/archive/${GTEST_VER}.tar.gz \
+    && tar -zxvf gtest.tar.gz --strip-components=1 -C ${GTEST_ROOT} \
+    && rm gtest.tar.gz
 
 # Create User:Group
 # The id is important as jenkins docker agents use the same id that is running

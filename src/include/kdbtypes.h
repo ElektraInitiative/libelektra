@@ -48,8 +48,32 @@ using octet_t = uint8_t; // default: 0
 
 // for C (and C++)
 
-typedef unsigned char kdb_boolean_t;
 typedef unsigned char kdb_char_t;
+
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
+// for C99+
+#include <inttypes.h>
+#include <stdbool.h>
+#include <stdint.h>
+
+typedef uint8_t kdb_octet_t;
+typedef bool kdb_boolean_t;
+typedef int16_t kdb_short_t;
+typedef int32_t kdb_long_t;
+typedef int64_t kdb_long_long_t;
+typedef uint16_t kdb_unsigned_short_t;
+typedef uint32_t kdb_unsigned_long_t;
+typedef uint64_t kdb_unsigned_long_long_t;
+
+#define ELEKTRA_LONG_F "%" PRIi32
+#define ELEKTRA_UNSIGNED_LONG_F "%" PRIu32
+#define ELEKTRA_LONG_LONG_F "%" PRIi64
+#define ELEKTRA_LONG_LONG_S strtoll
+#define ELEKTRA_UNSIGNED_LONG_LONG_F "%" PRIu64
+#define ELEKTRA_UNSIGNED_LONG_LONG_S strtoull
+
+#else // for C89
+typedef unsigned char kdb_boolean_t;
 typedef unsigned char kdb_octet_t;
 typedef signed short kdb_short_t;
 typedef unsigned short kdb_unsigned_short_t;
@@ -85,6 +109,8 @@ typedef long long kdb_long_long_t;
 #define ELEKTRA_UNSIGNED_LONG_LONG_S strtoull
 typedef unsigned long long kdb_unsigned_long_long_t;
 #endif
+
+#endif // for C89
 
 typedef float kdb_float_t;
 typedef double kdb_double_t;

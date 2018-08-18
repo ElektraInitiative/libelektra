@@ -41,13 +41,16 @@
  *
  * @brief KeySets OPMPHM cleaner.
  *
- * Should be invoked by every function changing a Key name in a KeySet.
+ * Must be invoked by every function that changes a Key name in a KeySet, adds a Key or
+ * removes a Key.
+ * Set also the KS_FLAG_NAME_CHANGE KeySet flag.
  *
  * @param ks the KeySet
  */
 static void elektraOpmphmInvalidate (KeySet * ks ELEKTRA_UNUSED)
 {
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+	ks->flags |= KS_FLAG_NAME_CHANGE;
 	if (ks && ks->opmphm) opmphmClear (ks->opmphm);
 #endif
 }
@@ -70,7 +73,7 @@ static void elektraOpmphmCopy (KeySet * dest ELEKTRA_UNUSED, const KeySet * sour
 		return;
 	}
 	// nothing to copy
-	if (!source->opmphm || !opmphmIsBuild (source->opmphm))
+	if (!opmphmIsBuild (source->opmphm))
 	{
 		return;
 	}
@@ -148,11 +151,14 @@ static void elektraOpmphmCopy (KeySet * dest ELEKTRA_UNUSED, const KeySet * sour
  *
  * Objects created with ksNew() must be destroyed with ksDel().
  *
- * You can use a various long list of parameters to preload the keyset
+ * You can use a arbitrary long list of parameters to preload the keyset
  * with a list of keys. Either your first and only parameter is 0 or
  * your last parameter must be KEY_END.
  *
  * So, terminate with ksNew(0, KS_END) or ksNew(20, ..., KS_END)
+ *
+ * @warning Never use ksNew(0, keyNew(...), KS_END).
+ * If the first parameter is 0, other arguments are ignored.
  *
  * For most uses
  *
@@ -166,12 +172,12 @@ static void elektraOpmphmCopy (KeySet * dest ELEKTRA_UNUSED, const KeySet * sour
  * read the next statements.
  *
  * If you want a keyset with length 15 (because you know of your
- * application that you normally need about 12 up to 15 keys), use:
+ * application that you only need up to 15 keys), use:
  *
  * @snippet ksNew.c Length 15
  *
  * If you start having 3 keys, and your application needs approximately
- * 200-500 keys, you can use:
+ * 200 up to 500 keys, you can use:
  *
  * @snippet ksNew.c Hint 500
  *
@@ -1948,11 +1954,33 @@ static Key * elektraLookupBinarySearch (KeySet * ks, Key const * key, option_t o
 
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 
+/**
+ * @internal
+ *
+ * @brief Extracts the Key name of Keys
+ *
+ * @param data the Key
+ *
+ * @return the Key name
+ */
 static const char * elektraOpmphmGetString (void * data)
 {
 	return keyName ((Key *) data);
 }
 
+/**
+ * @internal
+ *
+ * @brief Builds the OPMPHM
+ *
+ * Creates the OPMPHM when not here.
+ * The passed KeySet must have a not build OPMPHM.
+ *
+ * @param ks the KeySet which OPMPHM is to build
+ *
+ * @retval 0 on success
+ * @retval -1 on memory error or to many mapping invocations
+ */
 static int elektraLookupBuildOpmphm (KeySet * ks)
 {
 	if (ks->size > KDB_OPMPHM_MAX_N)
@@ -1967,6 +1995,7 @@ static int elektraLookupBuildOpmphm (KeySet * ks)
 			return -1;
 		}
 	}
+	ELEKTRA_ASSERT (!opmphmIsBuild (ks->opmphm), "OPMPHM already build");
 	// make graph
 	uint8_t r = opmphmOptR (ks->size);
 	double c = opmphmMinC (r);
@@ -2007,9 +2036,24 @@ static int elektraLookupBuildOpmphm (KeySet * ks)
 	return 0;
 }
 
+/**
+ * @internal
+ *
+ * @brief Searches for a Key in an already build OPMPHM.
+ *
+ * The OPMPHM must be build.
+ *
+ * @param ks the KeySet
+ * @param key the Key to search for
+ * @param options lookup options
+ *
+ * @return Key * when key found
+ * @return NULL when key not found
+ *
+ */
 static Key * elektraLookupOpmphmSearch (KeySet * ks, Key const * key, option_t options)
 {
-
+	ELEKTRA_ASSERT (opmphmIsBuild (ks->opmphm), "OPMPHM not build");
 	cursor_t cursor = 0;
 	cursor = ksGetCursor (ks);
 	size_t index = opmphmLookup (ks->opmphm, ks->size, keyName (key));
@@ -2071,7 +2115,7 @@ static Key * elektraLookupSearch (KeySet * ks, Key * key, option_t options)
 	{
 		// remove OPMPHM, due to callback stuff
 		options ^= KDB_O_OPMPHM;
-		if (!ks->opmphm || !opmphmIsBuild (ks->opmphm))
+		if (!opmphmIsBuild (ks->opmphm))
 		{
 			if (elektraLookupBuildOpmphm (ks))
 			{
@@ -2552,6 +2596,8 @@ int ksInit (KeySet * ks)
 
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 	ks->opmphm = NULL;
+	// first lookup should predict so invalidate it
+	elektraOpmphmInvalidate (ks);
 #endif
 
 	return 0;

@@ -74,8 +74,8 @@ export const CREATE_KEY_REQUEST = 'CREATE_KEY_REQUEST'
 export const CREATE_KEY_SUCCESS = 'CREATE_KEY_SUCCESS'
 export const CREATE_KEY_FAILURE = 'CREATE_KEY_FAILURE'
 
-export const createKey = (id, path, value) => thunkCreator({
-  id, path, value,
+export const createKey = (id, path, value, kdb) => thunkCreator({
+  id, path, value, kdb,
   request: { id, path, value },
   types: [CREATE_KEY_REQUEST, CREATE_KEY_SUCCESS, CREATE_KEY_FAILURE],
   promise: fetch(
@@ -97,8 +97,8 @@ export const DELETE_KEY_REQUEST = 'DELETE_KEY_REQUEST'
 export const DELETE_KEY_SUCCESS = 'DELETE_KEY_SUCCESS'
 export const DELETE_KEY_FAILURE = 'DELETE_KEY_FAILURE'
 
-export const deleteKey = (id, path) => thunkCreator({
-  id, path,
+export const deleteKey = (id, path, kdb) => thunkCreator({
+  id, path, kdb,
   request: { id, path },
   types: [DELETE_KEY_REQUEST, DELETE_KEY_SUCCESS, DELETE_KEY_FAILURE],
   promise: fetch(
@@ -109,6 +109,34 @@ export const deleteKey = (id, path) => thunkCreator({
     }
   ).then(parseJSONResponse),
 })
+
+// ~~~
+
+export const FIND_KEY_REQUEST = 'FIND_KEY_REQUEST'
+export const FIND_KEY_SUCCESS = 'FIND_KEY_SUCCESS'
+export const FIND_KEY_FAILURE = 'FIND_KEY_FAILURE'
+
+export const findKey = (id, query) => thunkCreator({
+  id, query,
+  request: { id, query },
+  types: [FIND_KEY_REQUEST, FIND_KEY_SUCCESS, FIND_KEY_FAILURE],
+  promise: fetch(
+    `/api/instances/${id}/kdbFind/${encodeURIComponent(query)}`,
+    { credentials: 'same-origin' }
+  )
+    .then(parseJSONResponse)
+    .then(result => {
+      return { result, id, query }
+    }),
+})
+
+export const CLEAR_SEARCH = 'CLEAR_SEARCH'
+export const CLEAR_SEARCH_FINAL = 'CLEAR_SEARCH_FINAL'
+
+export const clearSearch = () => dispatch => {
+  dispatch({ type: CLEAR_SEARCH })
+  setTimeout(() => dispatch({ type: CLEAR_SEARCH_FINAL }), 200)
+}
 
 // ~~~
 

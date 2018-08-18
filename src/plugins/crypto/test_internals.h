@@ -19,15 +19,25 @@
 #include <tests_internal.h>
 #include <tests_plugin.h>
 
+#include "common_gpg_tests.c"
 #include "test_key.h"
 
 #define TEST_KEY_ID "DDEBEF9EE2DC931701338212DAF635B17F230E8D"
 
+static KeySet * newPluginConfiguration (void);
+
 #define TEST_SUITE(PLUGIN_NAME)                                                                                                            \
-	test_gpg ();                                                                                                                       \
-	test_init (PLUGIN_NAME);                                                                                                           \
-	test_incomplete_config (PLUGIN_NAME);                                                                                              \
-	test_crypto_operations (PLUGIN_NAME);
+	if (gpg_available (newPluginConfiguration ()))                                                                                     \
+	{                                                                                                                                  \
+		test_gpg ();                                                                                                               \
+		test_init (PLUGIN_NAME);                                                                                                   \
+		test_incomplete_config (PLUGIN_NAME);                                                                                      \
+		test_crypto_operations (PLUGIN_NAME);                                                                                      \
+	}                                                                                                                                  \
+	else                                                                                                                               \
+	{                                                                                                                                  \
+		printf ("The test was disabled because gpg could not be found on the system.\n");                                          \
+	}
 
 typedef int (*checkConfPtr) (Key *, KeySet *);
 

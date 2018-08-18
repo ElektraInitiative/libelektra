@@ -28,17 +28,25 @@ install (PROGRAMS mountpoint-info DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 install (PROGRAMS mount-list-all-files DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 install (PROGRAMS check-env-dep DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
-file (READ "kdb_zsh_completion" CONTENT_OF_ZSH_COMP)
-file (READ "kdb-bash-completion" CONTENT_OF_BASH_COMP)
+file (READ "kdb_zsh_completion"
+	   CONTENT_OF_ZSH_COMP)
+file (READ "kdb-bash-completion"
+	   CONTENT_OF_BASH_COMP)
 configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/install-sh-completion.in" "${CMAKE_CURRENT_BINARY_DIR}/install-sh-completion" @ONLY)
 
 install (PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/install-sh-completion" DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
 if (INSTALL_SYSTEM_FILES)
 	if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-		set (BASH_COMPLETION_COMPLETIONSDIR "/usr/local/share/bash-completion/completions" CACHE INTERNAL "bash completions dir")
+		set (BASH_COMPLETION_COMPLETIONSDIR
+		     "/usr/local/share/bash-completion/completions"
+		     CACHE INTERNAL
+			   "bash completions dir")
 	else ()
-		set (BASH_COMPLETION_COMPLETIONSDIR "/usr/share/bash-completion/completions" CACHE INTERNAL "bash completions dir")
+		set (BASH_COMPLETION_COMPLETIONSDIR
+		     "/usr/share/bash-completion/completions"
+		     CACHE INTERNAL
+			   "bash completions dir")
 	endif ()
 	find_package (bash-completion QUIET)
 	unset (bash-completion_DIR CACHE)
@@ -70,9 +78,8 @@ if (INSTALL_SYSTEM_FILES)
 
 	if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 
-		# On macOS we need to copy this into another folder.
-		# Because of "System Integrity Protection", we need to
-		# use a /usr/local path
+		# On macOS we need to copy this into another folder. Because of "System Integrity Protection", we need to use a /usr/local
+		# path
 		install (FILES kdb_zsh_completion DESTINATION /usr/local/share/zsh/site-functions RENAME _kdb)
 	else ()
 

@@ -72,6 +72,17 @@ If you want to only log messages below a specific directory prefix, then please 
    #endif
    ```
 
+   . To log messages from multiple source you can use the operator `&&` to chain multiple calls to `strncmp`. For example, to log messages
+   from the `directoryvalue` and `yamlcpp` plugin use the code:
+
+   ```c
+   #ifndef NO_FILTER
+   	if (strncmp (file, "src/plugins/directoryvalue/", sizeof ("src/plugins/directoryvalue")) &&
+   	    strncmp (file, "src/plugins/yamlcpp/", sizeof ("src/plugins/yamlcpp")))
+   		goto end;
+   #endif
+    ```
+
    .
 
 ### Compilation
@@ -84,8 +95,8 @@ If you want to only log messages below a specific directory prefix, then please 
 
 There are four log levels (ERROR is reserved for aborts within `ELEKTRA_ASSERT`):
 
-- ELEKTRA_LOG_WARNING, something critical that should be shown to the user (e.g. API misuse), see #ELEKTRA_LOG_LEVEL_WARNING
-- ELEKTRA_LOG_NOTICE, something important developers are likely interested in, see #ELEKTRA_LOG_LEVEL_NOTICE
-- ELEKTRA_LOG, standard level gives information what the code is doing without flooding the log, see #ELEKTRA_LOG_LEVEL_INFO
-- ELEKTRA_LOG_DEBUG, for less important logs, see #ELEKTRA_LOG_LEVEL_DEBUG
+- `ELEKTRA_LOG_WARNING`, something critical that should be shown to the user (e.g. API misuse), see #ELEKTRA_LOG_LEVEL_WARNING
+- `ELEKTRA_LOG_NOTICE`, something important developers are likely interested in, see #ELEKTRA_LOG_LEVEL_NOTICE
+- `ELEKTRA_LOG`, standard level gives information what the code is doing without flooding the log, see #ELEKTRA_LOG_LEVEL_INFO
+- `ELEKTRA_LOG_DEBUG`, for less important logs, see #ELEKTRA_LOG_LEVEL_DEBUG
 

@@ -16,11 +16,27 @@ if (CPPCMS_INCLUDE_DIR)
 	set (CPPCMS_FIND_QUIETLY TRUE) # Already in cache, be silent.
 endif (CPPCMS_INCLUDE_DIR)
 
-find_path (CPPCMS_INCLUDE_DIR cppcms/application.h PATHS /usr/include /usr/local/include)
-find_path (BOOSTER_INCLUDE_DIR booster/assert.h PATHS /usr/include /usr/local/include)
+find_path (CPPCMS_INCLUDE_DIR
+	   cppcms/application.h
+	   PATHS /usr/include
+		 /usr/local/include)
+find_path (BOOSTER_INCLUDE_DIR
+	   booster/assert.h
+	   PATHS /usr/include
+		 /usr/local/include)
 
-find_library (CPPCMS_LIBRARY NAMES cppcms PATHS /usr/lib /usr/lib64 /usr/local/lib DOC "version 1.0 or greater is required")
-find_library (BOOSTER_LIBRARY NAMES booster PATHS /usr/lib /usr/lib64 /usr/local/lib DOC "version 1.45 or greater is required")
+find_library (CPPCMS_LIBRARY
+	      NAMES cppcms
+	      PATHS /usr/lib
+		    /usr/lib64
+		    /usr/local/lib
+	      DOC "version 1.0 or greater is required")
+find_library (BOOSTER_LIBRARY
+	      NAMES booster
+	      PATHS /usr/lib
+		    /usr/lib64
+		    /usr/local/lib
+	      DOC "version 1.45 or greater is required")
 
 # Handle the QUIETLY and REQUIRED arguments and set CPPCMS_FOUND to TRUE if all listed variables are TRUE.
 include (FindPackageHandleStandardArgs)

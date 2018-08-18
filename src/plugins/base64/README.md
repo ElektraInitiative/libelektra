@@ -25,13 +25,13 @@ The values are decoded back to their original value after `kdb get` has read fro
 To mount a simple backend that uses the Base64 encoding, you can use:
 
 ```sh
-sudo kdb mount test.ecf /examples/base64/test base64
+sudo kdb mount test.ecf /tests/base64/test base64
 ```
 
 . To unmount the plugin use the following command:
 
 ```sh
-sudo kdb umount /examples/base64/test
+sudo kdb umount /tests/base64/test
 ```
 
 . All encoded binary values will look something like this:
@@ -61,22 +61,22 @@ The following example shows how you can use this plugin together with the INI pl
 
 ```sh
 # Mount the INI and Base64 plugin
-kdb mount config.ini user/examples/base64 ini base64
+kdb mount config.ini user/tests/base64 ini base64
 
 # Copy binary data
-kdb cp system/elektra/modules/base64/exports/get user/examples/base64/binary
+kdb cp system/elektra/modules/base64/exports/get user/tests/base64/binary
 
 # Print binary data
-kdb get user/examples/base64/binary
+kdb get user/tests/base64/binary
 # STDOUT-REGEX: ^(\\x[0-9a-f]{1,2})+$
 
 # The value inside the configuration file is encoded by the Base64 plugin
-kdb file user/examples/base64 | xargs cat
+kdb file user/tests/base64 | xargs cat
 # STDOUT-REGEX: binary = "@BASE64[a-zA-Z0-9+/]+={0,2}"
 
 # Undo modifications
-kdb rm -r user/examples/base64
-kdb umount user/examples/base64
+kdb rm -r user/tests/base64
+kdb umount user/tests/base64
 ```
 
 ### Meta Mode
@@ -106,24 +106,24 @@ The diagram below shows how the Base64 conversion process works in conjunction w
 The following example shows you how you can use the INI plugin together with Base64’s meta mode.
 
 ```sh
-# Mount Ni and Base64 plugin (provides `binary`) with the configuration key `binary/meta`
-kdb mount config.ini user/examples/base64 ini binary binary/meta=
+# Mount INI and Base64 plugin (provides `binary`) with the configuration key `binary/meta`
+kdb mount config.ini user/tests/base64 ini base64 binary/meta=
 
 # Save base64 encoded data `"value"` (`0x76616c7565`)
-kdb set user/examples/base64/encoded dmFsdWUA
-kdb file user/examples/base64/encoded | xargs cat | grep encoded
+kdb set user/tests/base64/encoded dmFsdWUA
+kdb file user/tests/base64/encoded | xargs cat | grep encoded
 #> encoded = dmFsdWUA
 
 # Tell Base64 plugin to decode and encode key value
-kdb setmeta user/examples/base64/encoded type binary
+kdb setmeta user/tests/base64/encoded type binary
 
 # Receive key data (the `\x0` at the end marks the end of the string)
-kdb get user/examples/base64/encoded
+kdb get user/tests/base64/encoded
 #> \x76\x61\x6c\x75\x65\x0
 
 # Undo modifications
-kdb rm -r user/examples/base64
-kdb umount user/examples/base64
+kdb rm -r user/tests/base64
+kdb umount user/tests/base64
 ```
 
 For another usage example, please take a look at the ReadMe of the [YAML CPP plugin](../yamlcpp).

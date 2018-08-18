@@ -27,6 +27,10 @@ strict digraph G {
 	constants -> info;
 	tracing [shape=Mdiamond];
 	counter -> tracing;
+	storage [shape=Mdiamond];
+	cpptemplate -> storage;
+	info [shape=Mdiamond];
+	cpptemplate -> info;
 	crypto [shape=Mdiamond];
 	crypto -> crypto;
 	storage [shape=Mdiamond];
@@ -83,6 +87,10 @@ strict digraph G {
 	haskell [shape=Mdiamond];
 	code [shape=Mdiamond];
 	hexcode -> code;
+	conv [shape=Mdiamond];
+	hexnumber -> conv;
+	check [shape=Mdiamond];
+	hexnumber -> check;
 	hidden [shape=Mdiamond];
 	storage [shape=Mdiamond];
 	hosts -> storage;
@@ -184,6 +192,8 @@ strict digraph G {
 	tracer -> tracing;
 	check [shape=Mdiamond];
 	type -> check;
+	typechecker [shape=Mdiamond];
+	typechecker -> typechecker;
 	storage [shape=Mdiamond];
 	uname -> storage;
 	info [shape=Mdiamond];
@@ -208,5 +218,15 @@ strict digraph G {
 	yamlcpp -> storage;
 	yaml [shape=Mdiamond];
 	yamlcpp -> yaml;
+	conv [shape=Mdiamond];
+	yamlsmith -> conv;
+	storage [shape=Mdiamond];
+	yanlr -> storage;
+	yaml [shape=Mdiamond];
+	yanlr -> yaml;
+	notification [shape=Mdiamond];
+	zeromqrecv -> notification;
+	notification [shape=Mdiamond];
+	zeromqsend -> notification;
 }
 

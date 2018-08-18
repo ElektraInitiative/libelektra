@@ -43,6 +43,10 @@
  * Additionally, make sure that you write a contract in the README.md.
  * It is used by the build system and the mounting tools.
  *
+ * Plugins should not change the keyname of the key that is passed to
+ * the entry points (warningsKey and parentKey in this documentation).
+ * These keys might be members in keysets.
+ *
  * The names described here contain "Doc" within the method's name
  * just because the plugin described in this document is called doc
  * (the doxygen source was generated from src/plugins/doc/doc.h).

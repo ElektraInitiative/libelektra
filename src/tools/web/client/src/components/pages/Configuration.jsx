@@ -10,13 +10,12 @@
 
 import React, { Component } from 'react'
 
-import { Card, CardHeader, CardText, CardActions } from 'material-ui/Card'
-import FlatButton from 'material-ui/FlatButton'
+import { Card, CardHeader, CardText } from 'material-ui/Card'
 import IconButton from 'material-ui/IconButton'
 import NavigationRefresh from 'material-ui/svg-icons/navigation/refresh'
-import { Link } from 'react-router-dom'
 
 import TreeView from '../../containers/ConnectedTreeView'
+import TreeSearch from '../../containers/ConnectedTreeSearch'
 import InstanceError from '../InstanceError.jsx'
 
 const NAMESPACES = [ 'user', 'system', 'spec', 'dir' ]
@@ -52,9 +51,6 @@ const parseDataSet = (getKey, sendNotification, instanceId, tree, path, parent) 
       ? (notify = true) => {
         return new Promise(resolve => {
           getKey(instanceId, newPath, true)
-          if (notify) {
-            sendNotification('finished (re-)loading \'' + newPath + '\' keyset')
-          }
           resolve(children)
         })
       } : false
@@ -66,6 +62,21 @@ const parseData = (getKey, sendNotification, instanceId, ls, kdb) => {
   if (!Array.isArray(ls)) return
   const tree = createTree(ls)
   return parseDataSet(getKey, sendNotification, instanceId, tree)
+}
+
+const getUnfolded = (searchResults) => {
+  let unfolded = []
+  for (let r of searchResults) {
+    const parts = r.split('/')
+    let path = ''
+    for (let p of parts) {
+      path = path.length === 0 ? p : (path + '/' + p)
+      if (!unfolded.includes(path)) {
+        unfolded.push(path)
+      }
+    }
+  }
+  return unfolded
 }
 
 // configuration page
@@ -164,8 +175,19 @@ export default class Configuration extends Component {
   }
 
   render () {
-    const { instance, match, instanceError } = this.props
+    const { instance, match, instanceError, search } = this.props
     const { data } = this.state
+
+    if (instanceError) {
+      return (
+          <Card>
+              <CardHeader title={<h1><b>404</b> instance not found</h1>} />
+              <CardText>
+                  <InstanceError instance={instance} error={instanceError} refresh={this.refresh} />
+              </CardText>
+          </Card>
+      )
+    }
 
     if (!instance) {
       const title = (
@@ -183,7 +205,7 @@ export default class Configuration extends Component {
 
     const title = (
         <h1>
-            <b>{name}</b>{' instance'}
+            <b>{name}</b>
             <IconButton
               className="hoverEffect"
               style={{ marginLeft: 6, width: 28, height: 28, padding: 6 }}
@@ -195,6 +217,21 @@ export default class Configuration extends Component {
             </IconButton>
         </h1>
     )
+
+    const isSearching = search && search.done
+    const hasResults = search && search.results && search.results.length > 0
+    const searchError = search && search.error
+
+    const filteredData = (isSearching && hasResults)
+      ? this.generateData({ ...this.props, ls: search.results })
+      : data
+
+    const autoUnfold = isSearching && hasResults && search.results &&
+      search.results.length <= 10
+
+    const filteredInstance = autoUnfold
+      ? { ...instance, unfolded: getUnfolded(search.results) }
+      : instance
 
     return (
         <Card style={{ padding: '8px 16px' }}>
@@ -212,24 +249,29 @@ export default class Configuration extends Component {
                 {instanceError
                   ? <InstanceError instance={instance} error={instanceError} refresh={this.refresh} />
                   : (data && Array.isArray(data) && data.length > 0)
-                    ? <TreeView
-                        instance={instance}
-                        instanceId={id}
-                        data={data}
-                        instanceVisibility={visibility}
-                      />
+                    ? [
+                        <TreeSearch instanceId={id} />,
+                        searchError
+                          ? <div style={{ fontSize: '1.1em', color: 'rgba(0, 0, 0, 0.4)', marginTop: '1.5em', padingLeft: '0.5em' }}>
+                                <b>{searchError.name}:</b> {searchError.message}
+                            </div>
+                          : (isSearching && !hasResults)
+                            ? <div style={{ fontSize: '1.1em', color: 'rgba(0, 0, 0, 0.4)', marginTop: '1.5em', padingLeft: '0.5em' }}>
+                                  No results found for "{search.query}".
+                              </div>
+                            : <TreeView
+                                searching={isSearching || (search && search.clearing)}
+                                instance={filteredInstance}
+                                instanceId={id}
+                                data={filteredData}
+                                instanceVisibility={visibility}
+                              />,
+                      ]
                     : <div style={{ fontSize: '1.1em', color: 'rgba(0, 0, 0, 0.4)' }}>
                           Loading configuration data...
                       </div>
                 }
             </CardText>
-            {(id !== 'my') &&
-              <CardActions>
-                  <Link tabIndex="0" to="/" style={{ textDecoration: 'none' }}>
-                      <FlatButton primary label="done" />
-                  </Link>
-              </CardActions>
-            }
         </Card>
     )
   }

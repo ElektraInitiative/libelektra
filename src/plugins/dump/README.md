@@ -26,7 +26,7 @@ assembled similar to the ones present in Elektra’s API.
 The file starts with the magic word `kdbOpen` followed by a version
 number. Processing can be stopped immediately when it is not in
 Elektra’s dump format at all. A wrong version number most likely
-indicates that the version of the plugin is too old to recognise all
+indicates that the version of the plugin is too old to recognize all
 commands in the file. The basic idea of the dump plugin is to write
 out the way that the KeySet needs to be constructed. The dump plugin
 interprets such a file. The file also looks similar to C code that
@@ -40,7 +40,7 @@ an easy task.
 
 ### Format Examples
 
-The serialised configuration can look like (0 bytes at end of strings are
+The serialized configuration can look like (0 bytes at end of strings are
 omitted):
 
     kdbOpen 1
@@ -51,7 +51,7 @@ omitted):
     commentBelow are the mountpoints.
     keyEnd
     keyNew 32 19
-    system/elektra/mountpoints/dbusserialised Backend
+    system/elektra/mountpoints/dbusserialized Backend
     keyEnd keyNew 39 1
     system/elektra/mountpoints/dbus/config
     keyMeta 8 72

@@ -655,12 +655,12 @@ static int csvWrite (KeySet * returned, Key * parentKey, KeySet * exportKS, Key 
 			{
 				fprintf (fp, "%s", keyName (tmp) + strlen (keyName (cur)) + 1);
 				printDelim = 1;
+				++colCounter;
 			}
-			++colCounter;
 			while ((tmp = ksNext (headerKs)) != NULL)
 			{
-				++colCounter;
 				if (!isExportKey (tmp, cur, exportKS)) continue;
+				++colCounter;
 				if (printDelim) fprintf (fp, "%c", delim);
 				if ((strchr (keyName (tmp), '\n') != NULL) && (keyName (tmp)[0] != '"'))
 				{
@@ -691,7 +691,6 @@ static int csvWrite (KeySet * returned, Key * parentKey, KeySet * exportKS, Key 
 			if (!toWrite) break;
 			if (!isExportKey (toWrite, cur, exportKS))
 			{
-				++colCounter;
 				continue;
 			}
 			if (printDelim) fprintf (fp, "%c", delim);

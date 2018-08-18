@@ -14,7 +14,7 @@ const ArrayIcon = () =>
   <IconButton
     style={{ width: 24, height: 24, padding: 3, cursor: 'auto' }}
     iconStyle={{ width: 18, height: 18, opacity: 0.3 }}
-    tooltip="this is an array key"
+    tooltip="this is an array"
   >
     <ActionTOC />
   </IconButton>

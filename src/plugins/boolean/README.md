@@ -5,7 +5,7 @@
 - infos/provides = check
 - infos/recommends =
 - infos/placements = postgetstorage presetstorage
-- infos/status = recommended productive maintained reviewed conformant compatible coverage specific unittest tested nodep configurable nodoc
+- infos/status = recommended productive maintained reviewed conformant compatible coverage specific unittest tested nodep configurable
 - infos/metadata =
 - infos/description = canonicalizes boolean values
 
@@ -17,22 +17,22 @@ Different configurations might use different values for `TRUE`/`FALSE`. The `boo
 
 ```sh
 # Mount plugin
-kdb mount config.ecf user/examples/boolean dump boolean
+sudo kdb mount config.ecf user/tests/boolean dump boolean
 
 # By default the plugin uses `1` (true) and `0` (false) to represent boolean values
-kdb set user/examples/boolean/truthiness false
-kdb setmeta user/examples/boolean/truthiness type boolean
-kdb get user/examples/boolean/truthiness
+kdb set user/tests/boolean/truthiness false
+kdb setmeta user/tests/boolean/truthiness type boolean
+kdb get user/tests/boolean/truthiness
 #> 0
 
 # The plugin does not change ordinary values
-kdb set user/examples/boolean/key value
-kdb get user/examples/boolean/key
+kdb set user/tests/boolean/key value
+kdb get user/tests/boolean/key
 #> value
 
 # Undo changes
-kdb rm -r user/examples/boolean
-kdb umount user/examples/boolean
+kdb rm -r user/tests/boolean
+sudo kdb umount user/tests/boolean
 ```
 
 ## Configuration

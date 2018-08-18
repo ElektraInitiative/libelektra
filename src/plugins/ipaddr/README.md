@@ -18,39 +18,39 @@ This plugin validates IP addresses using regular expressions.
 ## Usage
 
 ```sh
-# Mount `ipaddr` plugin to cascading namespace `/examples/ipaddr`
-kdb mount config.dump /examples/ipaddr dump ipaddr
+# Mount `ipaddr` plugin to cascading namespace `/tests/ipaddr`
+kdb mount config.dump /tests/ipaddr dump ipaddr
 
-# Check the validity of the IP stored in `/examples/ipaddr/ipv4`
-kdb setmeta /examples/ipaddr/ipv4 check/ipaddr ipv4
+# Check the validity of the IP stored in `/tests/ipaddr/ipv4`
+kdb setmeta /tests/ipaddr/ipv4 check/ipaddr ipv4
 
 # Try to set an incorrect IP address
-kdb set /examples/ipaddr/ipv4 127.0.0.1337
+kdb set /tests/ipaddr/ipv4 127.0.0.1337
 # STDERR: .*value of key is not a valid IP Address.*
 # ERROR:  51
 # RET:    5
 
 # Set a correct IPv4 address
-kdb set /examples/ipaddr/ipv4 127.0.0.1
-kdb get /examples/ipaddr/ipv4
+kdb set /tests/ipaddr/ipv4 127.0.0.1
+kdb get /tests/ipaddr/ipv4
 #> 127.0.0.1
 
 # By default the plugin allows both IPv4 and IPv6 addresses
-kdb setmeta /examples/ipaddr/address check/ipaddr ""
+kdb setmeta /tests/ipaddr/address check/ipaddr ""
 
 # Set correct IP addresses
-kdb set /examples/ipaddr/address 1.2.3.4
-kdb set /examples/ipaddr/address ::1
+kdb set /tests/ipaddr/address 1.2.3.4
+kdb set /tests/ipaddr/address ::1
 
 # Try to set incorrect addresses
-kdb set /examples/ipaddr/address bad::ip
+kdb set /tests/ipaddr/address bad::ip
 # RET: 5
-kdb set /examples/ipaddr/address 1.2.-3.4
+kdb set /tests/ipaddr/address 1.2.-3.4
 # RET: 5
 
 # Undo modifications to the database
-kdb rm -r /examples/ipaddr
-kdb umount /examples/ipaddr
+kdb rm -r /tests/ipaddr
+kdb umount /tests/ipaddr
 ```
 
 ## Limitations

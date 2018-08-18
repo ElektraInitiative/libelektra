@@ -138,6 +138,12 @@ typedef enum {
 		 If keys were popped from the Keyset
 		 this flag will be set, so that the backend will sync
 		 the keys to database.*/
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+	,KS_FLAG_NAME_CHANGE = 1 << 1 /*!<
+		 The OPMPHM needs to be rebuild.
+		 Every Key add, Key removal or Key name change operation
+		 sets this flag.*/
+#endif
 } ksflag_t;
 
 

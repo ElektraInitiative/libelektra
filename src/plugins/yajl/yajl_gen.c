@@ -91,33 +91,25 @@ static int elektraGenOpenValue (yajl_gen g, const Key * next)
 
 	int valueNeeded = 1;
 
-#ifdef ELEKTRA_YAJL_VERBOSE
-	printf ("elektraGenOpenValue next: \"%.*s\"\n", (int) last.size, last.current);
-#endif
+	ELEKTRA_LOG_DEBUG ("next: \"%.*s\"", (int) last.size, last.current);
 
 	if (!strcmp (last.current, "###empty_array"))
 	{
-#ifdef ELEKTRA_YAJL_VERBOSE
-		printf ("GEN empty array in value\n");
-#endif
+		ELEKTRA_LOG_DEBUG ("GEN empty array in value");
 		yajl_gen_array_open (g);
 		yajl_gen_array_close (g);
 		valueNeeded = 0;
 	}
 	else if (!strcmp (last.current, "___empty_map"))
 	{
-#ifdef ELEKTRA_YAJL_VERBOSE
-		printf ("GEN empty map in value\n");
-#endif
+		ELEKTRA_LOG_DEBUG ("GEN empty map in value");
 		yajl_gen_map_open (g);
 		yajl_gen_map_close (g);
 		valueNeeded = 0;
 	}
 	else if (last.current[0] != '#')
 	{
-#ifdef ELEKTRA_YAJL_VERBOSE
-		printf ("GEN string (L1,3)\n");
-#endif
+		ELEKTRA_LOG_DEBUG ("GEN string (L1,3)");
 		yajl_gen_string (g, (const unsigned char *) last.current, last.size - 1);
 	}
 
@@ -143,15 +135,11 @@ static void elektraGenValue (yajl_gen g, Key * parentKey, const Key * cur)
 {
 	if (!elektraGenOpenValue (g, cur))
 	{
-#ifdef ELEKTRA_YAJL_VERBOSE
-		printf ("Do not yield value\n");
-#endif
+		ELEKTRA_LOG_DEBUG ("Do not yield value");
 		return;
 	}
 
-#ifdef ELEKTRA_YAJL_VERBOSE
-	printf ("GEN value %s for %s\n", keyString (cur), keyName (cur));
-#endif
+	ELEKTRA_LOG_DEBUG ("GEN value %s for %s", keyString (cur), keyName (cur));
 
 	const Key * type = keyGetMeta (cur, "type");
 	if (!type && keyGetValueSize (cur) == 0) // empty binary type is null
@@ -196,9 +184,7 @@ int elektraGenEmpty (yajl_gen g, KeySet * returned, Key * parentKey)
 	// TODO: do all these situations actually occur?
 	if (ksGetSize (returned) == 0) // we got nothing..
 	{
-#ifdef ELEKTRA_YAJL_VERBOSE
-		printf ("GEN empty map (got nothing)\n");
-#endif
+		ELEKTRA_LOG_DEBUG ("GEN empty map (got nothing)");
 		yajl_gen_map_open (g);
 		yajl_gen_map_close (g);
 		did_something = 1;
@@ -207,9 +193,7 @@ int elektraGenEmpty (yajl_gen g, KeySet * returned, Key * parentKey)
 	{
 		if (!strcmp (keyName (ksTail (returned)), keyName (parentKey)))
 		{
-#ifdef ELEKTRA_YAJL_VERBOSE
-			printf ("GEN empty map (got parent)\n");
-#endif
+			ELEKTRA_LOG_DEBUG ("GEN empty map (got parent)");
 			yajl_gen_map_open (g);
 			yajl_gen_map_close (g);
 			did_something = 1;
@@ -221,9 +205,7 @@ int elektraGenEmpty (yajl_gen g, KeySet * returned, Key * parentKey)
 		keyAddBaseName (toCheck, "###empty_array");
 		if (!strcmp (keyName (ksTail (returned)), keyName (toCheck)))
 		{
-#ifdef ELEKTRA_YAJL_VERBOSE
-			printf ("GEN empty array (got %s)\n", keyName (ksTail (returned)));
-#endif
+			ELEKTRA_LOG_DEBUG ("GEN empty array (got %s)", keyName (ksTail (returned)));
 			yajl_gen_array_open (g);
 			yajl_gen_array_close (g);
 			did_something = 1;
@@ -232,9 +214,7 @@ int elektraGenEmpty (yajl_gen g, KeySet * returned, Key * parentKey)
 		keySetBaseName (toCheck, "___empty_map");
 		if (!strcmp (keyName (ksTail (returned)), keyName (toCheck)))
 		{
-#ifdef ELEKTRA_YAJL_VERBOSE
-			printf ("GEN empty map (got %s)\n", keyName (ksTail (returned)));
-#endif
+			ELEKTRA_LOG_DEBUG ("GEN empty map (got %s)", keyName (ksTail (returned)));
 			yajl_gen_map_open (g);
 			yajl_gen_map_close (g);
 			did_something = 1;
@@ -296,9 +276,7 @@ int elektraYajlSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 		return 0;
 	}
 
-#ifdef ELEKTRA_YAJL_VERBOSE
-	printf ("parentKey: %s, cur: %s\n", keyName (parentKey), keyName (cur));
-#endif
+	ELEKTRA_LOG_DEBUG ("parentKey: %s, cur: %s", keyName (parentKey), keyName (cur));
 	elektraGenOpenInitial (g, parentKey, cur);
 
 	Key * next = 0;
@@ -307,17 +285,13 @@ int elektraYajlSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 		elektraGenValue (g, parentKey, cur);
 		elektraGenClose (g, cur, next);
 
-#ifdef ELEKTRA_YAJL_VERBOSE
-		printf ("\nITERATE: %s next: %s\n", keyName (cur), keyName (next));
-#endif
+		ELEKTRA_LOG_DEBUG ("ITERATE: %s next: %s", keyName (cur), keyName (next));
 		elektraGenOpen (g, cur, next);
 
 		cur = next;
 	}
 
-#ifdef ELEKTRA_YAJL_VERBOSE
-	printf ("\nleaving loop: %s\n", keyName (cur));
-#endif
+	ELEKTRA_LOG_DEBUG ("leaving loop: %s", keyName (cur));
 
 	elektraGenValue (g, parentKey, cur);
 

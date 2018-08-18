@@ -38,7 +38,8 @@ export default class AddDialog extends Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    if (this.state.name.length === 0 && nextProps.arrayKeyLength) {
+    const wasOpened = this.props.open === false && nextProps.open === true
+    if (wasOpened && nextProps.arrayKeyLength !== false) {
       this.setState({ name: this.generateArrayKey(nextProps.arrayKeyLength) })
     }
   }
@@ -53,8 +54,8 @@ export default class AddDialog extends Component {
     onClose()
   }
 
-  handleCreate = () => {
-    const { item, onAdd, setMetaByPath } = this.props
+  handleCreate = (arrayKey = false) => {
+    const { item, onAdd, keyExists, setMetaByPath, arrayKeyLength } = this.props
     const { path } = item
     const { name, value, type } = this.state
     const v = this.state.visibility
@@ -69,14 +70,33 @@ export default class AddDialog extends Component {
         if (!confirmed) return
       }
     }
-    onAdd(path, name, value)
-    if (type !== 'any') {
-      setMetaByPath(path + '/' + name, 'check/type', type)
-    }
-    if (v !== 'user') {
-      setMetaByPath(path + '/' + name, 'visibility', v)
-    }
-    this.handleClose()
+    keyExists(path, name)
+      .then(res => {
+        if (res && res.exists) {
+          alert('A key with the name "' + name + '" at path "' + path + '" already exists! Please choose a different name.')
+          return
+        }
+        onAdd(path, name, value)
+        if (type !== 'any') {
+          setMetaByPath(path + '/' + name, 'check/type', type)
+        }
+        if (v !== 'user') {
+          setMetaByPath(path + '/' + name, 'visibility', v)
+        }
+        if (arrayKeyLength !== false) { // is child of array key
+          // update array metakey in parent
+          setMetaByPath(path, 'array', String(arrayKeyLength + 1))
+        }
+        if (arrayKey === true) {
+          setMetaByPath(path + '/' + name, 'array', '1')
+          setTimeout(() => onAdd(path + '/' + name, '#0', ''), 250)
+        }
+        this.handleClose()
+      })
+  }
+
+  handleCreateArrayKey = () => {
+    this.handleCreate(true)
   }
 
   render () {
@@ -89,7 +109,7 @@ export default class AddDialog extends Component {
     const actions = [
       <FlatButton
         label="Cancel"
-        onTouchTap={this.handleClose}
+        onClick={this.handleClose}
         onKeyPress={e => {
           if (e.key === 'Enter') {
             this.handleClose()
@@ -97,9 +117,20 @@ export default class AddDialog extends Component {
         }}
       />,
       <FlatButton
+        label="Create array"
+        primary={true}
+        onClick={this.handleCreateArrayKey}
+        onKeyPress={e => {
+          if (e.key === 'Enter') {
+            this.handleCreateArrayKey()
+          }
+        }}
+        disabled={nameEmpty || error}
+      />,
+      <FlatButton
         label="Create"
         primary={true}
-        onTouchTap={this.handleCreate}
+        onClick={this.handleCreate}
         onKeyPress={e => {
           if (e.key === 'Enter') {
             this.handleCreate()
@@ -118,8 +149,8 @@ export default class AddDialog extends Component {
           onRequestClose={this.handleClose}
         >
           <h1>Creating new {arrayKeyLength ? 'array ' : ''}key at <b>{path}</b></h1>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <div style={{ flex: 'initial' }}>
+          <div style={{ display: 'flex' }}>
+            <div style={{ flex: 1 }}>
               <TextField
                 ref="nameField"
                 floatingLabelText="name"
@@ -134,66 +165,65 @@ export default class AddDialog extends Component {
                 }}
               />
             </div>
-            <div style={{ flex: 'initial', marginLeft: 48, marginTop: 12, fontSize: '0.75em' }}>
-              <i>Hint: create a #0 sub-key in a key without children to turn it into an array</i>
+            <div style={{ flex: 1 }}>
+                <SelectField
+                  floatingLabelText="type"
+                  floatingLabelFixed={true}
+                  onFocus={() => !this.state.paused && this.setState({ paused: true })}
+                  onChange={(e, _, val) => {
+                    this.setState({ type: val, paused: false })
+                  }}
+                  value={type}
+                >
+                    {KEY_TYPES.map(({ type, name }) =>
+                      <MenuItem key={type} value={type} primaryText={name} />
+                    )}
+                </SelectField>
             </div>
           </div>
-          <div style={{ display: 'block', marginTop: 8 }}>
+          <div style={{ display: 'flex' }}>
+            <div style={{ flex: 1 }}>
+                {type !== 'enum' && renderField({
+                  value,
+                  meta: { 'check/type': type },
+                  debounce: false,
+                  onChange: (value) => this.setState({ value }),
+                  onKeyPress: e => {
+                    if (!nameEmpty && !error && e.key === 'Enter') {
+                      this.handleCreate()
+                    }
+                  },
+                  onError: err => this.setState({ error: err }),
+                  label: 'value',
+                })}
+                {type === 'enum' && (
+                  <div style={{ display: 'block', marginTop: 16, color: 'rgba(0, 0, 0, 0.5)' }}>
+                      <b style={{ fontSize: '1.1em' }}>Please note:</b><br />
+                      You can only define options after the key is created.<br />
+                      Please create the key, then
+                      <i style={{ paddingLeft: 6, paddingRight: 8 }}>
+                        <ActionBuild style={{ width: 14, height: 14, marginRight: 4, color: 'rgba(0, 0, 0, 0.5)' }} />
+                        configure metadata
+                      </i>
+                      to define options.
+                  </div>
+                )}
+            </div>
+            <div style={{ flex: 1 }}>
               <SelectField
-                floatingLabelText="type"
+                floatingLabelText="visibility"
                 floatingLabelFixed={true}
                 onFocus={() => !this.state.paused && this.setState({ paused: true })}
                 onChange={(e, _, val) => {
-                  this.setState({ type: val, paused: false })
+                  this.setState({ visibility: val, paused: false })
                 }}
-                value={type}
+                value={visibility}
               >
-                  {KEY_TYPES.map(({ type, name }) =>
-                    <MenuItem key={type} value={type} primaryText={name} />
+                  {Object.keys(VISIBILITY_LEVELS).map(lvl =>
+                    <MenuItem key={lvl} value={lvl} primaryText={lvl} />
                   )}
               </SelectField>
-          </div>
-          <div style={{ display: 'block', marginTop: 8 }}>
-            <SelectField
-              floatingLabelText="visibility"
-              floatingLabelFixed={true}
-              onFocus={() => !this.state.paused && this.setState({ paused: true })}
-              onChange={(e, _, val) => {
-                this.setState({ visibility: val, paused: false })
-              }}
-              value={visibility}
-            >
-                {Object.keys(VISIBILITY_LEVELS).map(lvl =>
-                  <MenuItem key={lvl} value={lvl} primaryText={lvl} />
-                )}
-            </SelectField>
-          </div>
-          <div style={{ display: 'block', marginTop: 8 }}>
-              {type !== 'enum' && renderField({
-                value,
-                meta: { 'check/type': type },
-                debounce: false,
-                onChange: (value) => this.setState({ value }),
-                onKeyPress: e => {
-                  if (!nameEmpty && !error && e.key === 'Enter') {
-                    this.handleCreate()
-                  }
-                },
-                onError: err => this.setState({ error: err }),
-                label: 'value',
-              })}
-              {type === 'enum' && (
-                <div style={{ display: 'block', marginTop: 16, color: 'rgba(0, 0, 0, 0.5)' }}>
-                    <b style={{ fontSize: '1.1em' }}>Please note:</b><br />
-                    You can only define options after the key is created.<br />
-                    Please create the key, then
-                    <i style={{ paddingLeft: 6, paddingRight: 8 }}>
-                      <ActionBuild style={{ width: 14, height: 14, marginRight: 4, color: 'rgba(0, 0, 0, 0.5)' }} />
-                      configure metadata
-                    </i>
-                    to define options.
-                </div>
-              )}
+            </div>
           </div>
         </FocusTrapDialog>
     )

@@ -43,9 +43,9 @@ described in this tutorial, e.g.:
 The most direct way to validate keys is
 
 ```sh
-sudo kdb mount validation.dump user/tutorial/together dump validation
-kdb vset user/tutorial/together/test 123 "[1-9][0-9]*" "Not a number"
-kdb set user/tutorial/together/test abc
+sudo kdb mount validation.dump user/tests/together dump validation
+kdb vset user/tests/together/test 123 "[1-9][0-9]*" "Not a number"
+kdb set user/tests/together/test abc
 # STDERR: The command kdb.* set failed while accessing the key database .*
 # ERROR:  42
 # RET:5
@@ -55,7 +55,7 @@ For all other plugins (except `validation`) the convenience tool `kdb vset`
 is missing. Let us see what `kdb vset` actually did:
 
 ```sh
-kdb lsmeta user/tutorial/together/test
+kdb lsmeta user/tests/together/test
 #> check/validation
 #> check/validation/match
 #> check/validation/message
@@ -66,16 +66,16 @@ which we also could do by:
 
 ```sh
 # Following lines are (except for error conditions) identical to
-# kdb vset user/tutorial/together/test 123 "[1-9][0-9]*" "Not a number"
-kdb setmeta user/tutorial/together/test check/validation "[1-9][0-9]*"
-kdb setmeta user/tutorial/together/test check/validation/match LINE
-kdb setmeta user/tutorial/together/test check/validation/message "Not a number"
-kdb set user/tutorial/together/test 123
+# kdb vset user/tests/together/test 123 "[1-9][0-9]*" "Not a number"
+kdb setmeta user/tests/together/test check/validation "[1-9][0-9]*"
+kdb setmeta user/tests/together/test check/validation/match LINE
+kdb setmeta user/tests/together/test check/validation/message "Not a number"
+kdb set user/tests/together/test 123
 #> Set string to "123"
 
 # Undo modifications
-kdb rm -r user/tutorial/together
-sudo kdb umount user/tutorial/together
+kdb rm -r user/tests/together
+sudo kdb umount user/tests/together
 ```
 
 The approach is not limited to validation via regular expressions, but
@@ -114,63 +114,63 @@ globally (will be added by default and also with any `kdb global-mount` call).
 Before we start, let us make a backup of the current data in the spec and user namespace:
 
 ```sh
-kdb set system/examples/spec $(mktemp)
-kdb set system/examples/user $(mktemp)
-kdb export spec dump > $(kdb get system/examples/spec)
-kdb export user dump > $(kdb get system/examples/user)
+kdb set system/tests/spec $(mktemp)
+kdb set system/tests/user $(mktemp)
+kdb export spec dump > $(kdb get system/tests/spec)
+kdb export user dump > $(kdb get system/tests/user)
 ```
 
 We write metadata to the namespace `spec` and the plugin `spec` applies it to every cascading key:
 
 ```sh
-kdb setmeta spec/tutorial/spec/test hello world
-kdb set /tutorial/spec/test value
-#> Using name user/tutorial/spec/test
-#> Create a new key user/tutorial/spec/test with string "value"
-kdb lsmeta spec/tutorial/spec/test | grep -v '^internal/ini'
+kdb setmeta spec/tests/spec/test hello world
+kdb set /tests/spec/test value
+#> Using name user/tests/spec/test
+#> Create a new key user/tests/spec/test with string "value"
+kdb lsmeta spec/tests/spec/test | grep -v '^internal/ini'
 #> hello
-kdb lsmeta /tutorial/spec/test | grep -v '^internal/ini'
+kdb lsmeta /tests/spec/test | grep -v '^internal/ini'
 #> hello
-kdb getmeta /tutorial/spec/test hello
+kdb getmeta /tests/spec/test hello
 #> world
-kdb getmeta user/tutorial/spec/test hello
+kdb getmeta user/tests/spec/test hello
 #> world
 ```
 
 But it also supports globbing (`_` for any key, `?` for any char, `[]` for character classes):
 
 ```sh
-kdb setmeta "spec/tutorial/spec/_" new metaval
-kdb set /tutorial/spec/test value
-#> Using name user/tutorial/spec/test
+kdb setmeta "spec/tests/spec/_" new metaval
+kdb set /tests/spec/test value
+#> Using name user/tests/spec/test
 #> Set string to "value"
-kdb lsmeta /tutorial/spec/test | grep -v '^internal/ini'
+kdb lsmeta /tests/spec/test | grep -v '^internal/ini'
 #> hello
 #> new
 
 # Remove keys and metadata from the commands above
-kdb rm -r spec/tutorial/spec
-kdb rm -r user/tutorial/spec
+kdb rm -r spec/tests/spec
+kdb rm -r user/tests/spec
 ```
 
 So let us combine this functionality with validation plugins.
 So we would specify:
 
 ```sh
-kdb setmeta spec/tutorial/spec/test check/validation "[1-9][0-9]*"
-kdb setmeta spec/tutorial/spec/test check/validation/match LINE
-kdb setmeta spec/tutorial/spec/test check/validation/message "Not a number"
+kdb setmeta spec/tests/spec/test check/validation "[1-9][0-9]*"
+kdb setmeta spec/tests/spec/test check/validation/match LINE
+kdb setmeta spec/tests/spec/test check/validation/message "Not a number"
 ```
 
 If we now set a new key with
 ```sh
-kdb set /tutorial/spec/test "not a number"
-#> Using name user/tutorial/spec/test
-#> Create a new key user/tutorial/spec/test with string "not a number"
+kdb set /tests/spec/test "not a number"
+#> Using name user/tests/spec/test
+#> Create a new key user/tests/spec/test with string "not a number"
 ```
 this key has adopted all metadata from the spec namespace:
 ```sh
-kdb lsmeta /tutorial/spec/test | grep -v '^internal/ini'
+kdb lsmeta /tests/spec/test | grep -v '^internal/ini'
 #> check/validation
 #> check/validation/match
 #> check/validation/message
@@ -202,8 +202,8 @@ _schema_ of our configuration and therefore should be stored in the spec namespa
 
 ```sh
 # Undo modifications
-kdb rm -r spec/tutorial/spec/test
-kdb rm -r user/tutorial/spec/test
+kdb rm -r spec/tests/spec/test
+kdb rm -r user/tests/spec/test
 ```
 
 ### Specfiles
@@ -219,8 +219,8 @@ Let us create an example _Specfile_ in the dump format, which supports metadata
 (altough the specfile is stored in the dump format, we can still create it using
 the human readable [ni format](/src/plugins/ni/README.md) by using `kdb import`):
 ```sh
-sudo kdb mount tutorial.dump spec/tutorial dump
-cat << HERE | kdb import spec/tutorial ni  \
+sudo kdb mount tutorial.dump spec/tests/tutorial dump
+cat << HERE | kdb import spec/tests/tutorial ni  \
 []                                         \
  mountpoint = tutorial.dump                \
  infos/plugins = dump validation           \
@@ -231,23 +231,29 @@ check/validation/match = LINE              \
 check/validation/message = not a valid URL \
 description = A link to some website       \
 HERE
-kdb lsmeta spec/tutorial
+kdb lsmeta spec/tests/tutorial
 #> infos/plugins
 #> mountpoint
 ```
 We now have all the metadata that we need to mount and validate the data below
 `/tutorial` in one file.
 
-Now we apply this _Specfile_ to the key database to all keys below `tutorial`.
+Now we apply this _Specfile_ to the key database to all keys below `tests/tutorial`.
 ```sh
-kdb spec-mount /tutorial
+kdb spec-mount /tests/tutorial
 ```
-This command automatically mounts `/tutorial` to the backend `tutorial.dump` and
-loads the validation plugin.
+This command automatically mounts `/tests/tutorial` to the backend `tutorial.dump`.
+Furthermore it adds all plugins necessary for all metadata within the specification. 
+So in this example the validation plugin will be loaded automatically for us. 
+`spec-mount` basically does a normal mount except that it automatically selects plugins. As a result there is no
+`spec-umount`  command since the normal `umount` is sufficient.
+
+Please be aware that if you require many plugins for the same mountpoint, 
+you can run into [this](https://github.com/ElektraInitiative/libelektra/issues/2133) error.
 
 ```sh
-kdb set /tutorial/links/url "invalid url"
-#> Using name user/tutorial/links/url
+kdb set /tests/tutorial/links/url "invalid url"
+#> Using name user/tests/tutorial/links/url
 # STDERR: .*key value failed to validate.*not a valid URL.*
 # ERROR:  42
 # RET:    5
@@ -255,11 +261,11 @@ kdb set /tutorial/links/url "invalid url"
 
 Note that the backend `tutorial.dump` is mounted for all namespaces:
 ```sh
-kdb file user/tutorial
+kdb file user/tests/tutorial
 # STDOUT-REGEX: /.*/tutorial\.dump
-kdb file system/tutorial
+kdb file system/tests/tutorial
 # STDOUT-REGEX: /.*/tutorial\.dump
-kdb file dir/tutorial
+kdb file dir/tests/tutorial
 # STDOUT-REGEX: /.*/tutorial\.dump
 ```
 
@@ -267,9 +273,9 @@ If you want to set a key for another namespace and do not want to go without val
 consider that the spec plugin works only when you use cascading keys.
 You can work around that by setting the keys with the `-N` option:
 ```sh
-kdb set -N system /tutorial/links/elektra https://www.libelektra.org
-#> Using name system/tutorial/links/elektra
-#> Create a new key system/tutorial/links/elektra with string "https://www.libelektra.org"
+kdb set -N system /tests/tutorial/links/elektra https://www.libelektra.org
+#> Using name system/tests/tutorial/links/elektra
+#> Create a new key system/tests/tutorial/links/elektra with string "https://www.libelektra.org"
 ```
 
 ## Rejecting Configuration Keys
@@ -280,16 +286,16 @@ There are many ways to do so directly supported by [the spec plugin](/src/plugin
 Another way is to trigger errors with the [error plugin](/src/plugins/error):
 
 ```sh
-kdb setmeta /tutorial/spec/should_not_be_here trigger/error 10
-#> Using keyname spec/tutorial/spec/should_not_be_here
-kdb spec-mount /tutorial
-kdb set /tutorial/spec/should_not_be_here abc
-#> Using name user/tutorial/spec/should_not_be_here
+kdb setmeta /tests/tutorial/spec/should_not_be_here trigger/error 10
+#> Using keyname spec/tests/tutorial/spec/should_not_be_here
+kdb spec-mount /tests/tutorial
+kdb set /tests/tutorial/spec/should_not_be_here abc
+#> Using name user/tests/tutorial/spec/should_not_be_here
 # RET:    5
 # STDERR: .*error.*10.*occurred.*
-kdb get /tutorial/spec/should_not_be_here
+kdb get /tests/tutorial/spec/should_not_be_here
 # RET: 11
-# STDERR: Did not find key '/tutorial/spec/should_not_be_here'
+# STDERR: Did not find key '/tests/tutorial/spec/should_not_be_here'
 ```
 
 If we want to reject every optional key (and only want to allow required keys)
@@ -298,18 +304,18 @@ we can use the plugin `required` as further discussed below.
 Before we look further let us undo the modifications to the key database.
 
 ```sh
-kdb rm -r spec/tutorial
-kdb rm -r system/tutorial
-kdb umount spec/tutorial
-kdb umount /tutorial
+kdb rm -r spec/tests/tutorial
+kdb rm -r system/tests/tutorial
+kdb umount spec/tests/tutorial
+kdb umount /tests/tutorial
 kdb rm -rf spec
 kdb rm -rf user
-kdb import spec dump < $(kdb get system/examples/spec)
-kdb import user dump < $(kdb get system/examples/user)
-rm $(kdb get system/examples/spec)
-rm $(kdb get system/examples/user)
-kdb rm system/examples/spec
-kdb rm system/examples/user
+kdb import spec dump < $(kdb get system/tests/spec)
+kdb import user dump < $(kdb get system/tests/user)
+rm $(kdb get system/tests/spec)
+rm $(kdb get system/tests/user)
+kdb rm system/tests/spec
+kdb rm system/tests/user
 ```
 
 ## Customized Schemas

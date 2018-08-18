@@ -5,10 +5,12 @@ s/Electra/Elektra/g
 # ==============================
 
 s/behaviour/behavior/g
-s/favour/favor/g
+s/f(l?)avour/f\1avor/g
 s/generalises/generalizes/g
 s/organisation/organization/g
 s/realise/realize/g
+s/recognise/recognize/g
+s/serialise/serialize/g
 s/summarise/summarize/g
 s/synchronisation/synchronization/g
 s/synchronised/synchronized/g
@@ -43,6 +45,8 @@ s/\<meta[- ]value\>/metavalue/g
 s/\<name space\>/namespace/g
 
 s/\<meta[- ]data\>/metadata/g
+
+s/\<plug-in(s)?\>/plugin\1/g
 
 # s/\<key-name\>/key name/g
 # s/\<keyname\>/key name/g
@@ -114,7 +118,11 @@ s/\<middle[- ]ware/middleware/g
 # s/\</gcc/GCC/g
 
 # plural
-s/\<files-?ystem\>/file system/g
+s/\<files-?system\>/file system/g
 
 #s/\<dependencies/dependences/g
 #s/\<dependency/dependence/g
+
+s/type-?system/type system/g
+s/type-checker/type checker/g
+s/\<([Tt])ypecheck((s|ing)?)\>/\1ype check\2/g

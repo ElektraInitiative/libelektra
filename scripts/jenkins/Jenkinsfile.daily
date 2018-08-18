@@ -11,15 +11,27 @@ properties([
 
 // Stages
 stage("Maintain Reference Repositories") {
-    parallel generate_repository_maintanence_stages()
+    parallel generateRepositoryMaintanenceStages()
+}
+
+stage("Maintain docker nodes") {
+    parallel generateDockerMaintanenceStages()
 }
 
 stage("Maintain docker repositories") {
-    parallel generate_docker_maintanence_stages()
+    parallel generateDockerRepoMaintanenceStages()
 }
 
-// Generators
-def generate_repository_maintanence_stages() {
+stage("Cleanup Files") {
+    parallel generateFileCleanupStages()
+}
+
+/**************/
+/* Generators */
+/**************/
+
+/* Makes sure all 'gitmirror' nodes have up2date git repositories */
+def generateRepositoryMaintanenceStages() {
     // Get all nodes with label 'gitmirror' and the master
     // DO NOT TAG master WITH 'gitmirror' as it will only show up as (null)
     def nodes = nodesByLabel label:"gitmirror"
@@ -33,49 +45,129 @@ def generate_repository_maintanence_stages() {
     ]
 
     def tasks = [:]
-    nodes.each { target_node ->
-        repos.each { target_repo ->
-            tasks << mirror_repo_on_node(target_node, target_repo)
+    nodes.each { targetNode ->
+        repos.each { targetRepo ->
+            tasks << mirrorRepoOnNode(targetNode, targetRepo)
         }
     }
     return tasks
 }
 
-def mirror_repo_on_node(target_node, target_repo) {
-    def taskname = "git/${target_node}/${target_repo.dest}"
+def mirrorRepoOnNode(targetNode, targetRepo) {
+    def taskname = "git/${targetNode}/${targetRepo.dest}"
     return [(taskname): {
         stage(taskname) {
-            node(target_node) {
-                syncRepository target_repo
+            node(targetNode) {
+                syncRepository targetRepo
             }
         }
     }]
 }
 
-def generate_docker_maintanence_stages() {
+/* cleanup temp docker files on all docker nodes */
+def generateDockerMaintanenceStages() {
     def nodes = nodesByLabel label:"docker"
     def tasks = [:]
 
-    nodes.each { target_node ->
-        tasks << cleanup_docker_images(target_node)
+    nodes.each { targetNode ->
+        tasks << cleanupDocker(targetNode)
     }
     return tasks
 }
 
-def cleanup_docker_images(target_node) {
-    def taskname = "cleanupDocker/${target_node}"
+def cleanupDocker(targetNode) {
+    def taskname = "cleanupDocker/${targetNode}"
     return [(taskname): {
         stage(taskname) {
-            node(target_node) {
+            node(targetNode) {
                 dockerImages().each {
                     retainNewestImages(it, 15)
+                }
+                sh "docker system prune -f"
+            }
+        }
+    }]
+}
+
+/* Cleanup Docker registries */
+def generateDockerRepoMaintanenceStages() {
+    def nodes = nodesByLabel label:"docker&&registry"
+    def tasks = [:]
+
+    nodes.each { targetNode ->
+        tasks << cleanupDockerRegistry(targetNode)
+    }
+    return tasks
+}
+
+def cleanupDockerRegistry(targetNode) {
+    def taskname = "cleanupDockerRegistry/${targetNode}"
+    return [(taskname): {
+        stage(taskname) {
+            node(targetNode) {
+                withCredentials([usernameColonPassword(credentialsId:
+                'docker-hub-elektra-jenkins', variable: 'AUTH')]) {
+                    // Remove all but the latest 15 versions of each image in
+                    // the registry
+                    docker.image('anoxis/registry-cli')
+                          .run('--rm', '-l $AUTH -r https://hub.libelektra.org --delete')
+                }
+                def frontendFolder = "${env.HOME}/compose/frontend"
+                dir(frontendFolder){
+                    // Run garbage collect on the registry
+                    sh 'docker-compose run --rm registry bin/registry garbage-collect /etc/docker/registry/config.yml'
                 }
             }
         }
     }]
 }
 
-// Helpers
+def generateFileCleanupStages() {
+    def tasks = [:]
+    tasks << cleanupCoverage()
+    return tasks
+}
+
+def cleanupCoverage() {
+    def cleanupCommand = """
+find /srv/libelektra/coverage/ \
+    -mindepth 1 \
+    -maxdepth 1 \
+    -type d \
+    -ctime +30 \
+    -print0 \
+    | xargs -r -0 rm -R
+"""
+    def taskname = "cleanup-coverage"
+    return [(taskname): {
+        stage(taskname) {
+            node("master") {
+                sshExec(
+                    'doc.libelektra.org',
+                    cleanupCommand
+                )
+            }
+        }
+    }]
+}
+
+/***********/
+/* Helpers */
+/***********/
+def sshExec(remoteConfig, command) {
+    sshPublisher(publishers: [
+        sshPublisherDesc(
+            configName: remoteConfig,
+            transfers: [
+                sshTransfer(
+                    execCommand: command
+                )
+            ],
+            verbose: true
+        )
+    ])
+}
+
 def dockerImages() {
     def s = /docker images --format "{{.Repository}}" | awk '!seen[$0]++'/
     def r = sh returnStdout: true, script: s
@@ -83,7 +175,11 @@ def dockerImages() {
 }
 
 def retainNewestImages(image, n) {
-  sh "docker images ${image} --format \"{{.Repository}} {{.Tag}}\" | sort -k 2,2 | head -n -${n} | awk \'BEGIN{OFS=\":\"} {print \$1,\$2}' | xargs -r -n1 docker rmi"
+  sh """docker images ${image} --format \"{{.Repository}} {{.Tag}}\" \
+| sort -k 2,2 \
+| head -n -${n} \
+| awk \'BEGIN{OFS=\":\"} {print \$1,\$2}' \
+| xargs -r -n1 docker rmi -f"""
 }
 
 def syncRepository(Map repo) {

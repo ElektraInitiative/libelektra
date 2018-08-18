@@ -7,6 +7,9 @@
 
 # I/O binding for glib
 
+For the purpose of I/O bindings please read the
+[bindings readme](https://www.libelektra.org/bindings/readme#i-o-bindings).
+
 ## Requirements
 
 - glib (version 2.x)
@@ -23,7 +26,7 @@ Create and initialize a new I/O binding.
 
 *Parameters*
 
-- context Context to use for I/O operations. May be NULL to indicate the glib's
+- context: Context to use for I/O operations. May be NULL to indicate the glib's
   default context.
 
 *Returns*
@@ -33,15 +36,13 @@ Populated I/O interface
 ## Example
 
 ```C
-
 #include <elektra/kdb.h>
 #include <elektra/kdbio.h>
-#include <elektra/kdbio_glib.h>
+#include <elektra/kdbio/glib.h>
 
 #include <glib.h>
 
 void main (void)
-
 {
 	KDB* repo;
 	// ... open KDB
@@ -63,5 +64,7 @@ void main (void)
 	elektraIoBindingCleanup (binding);
 	g_main_loop_unref (loop);
 }
-
 ```
+
+Please check out the ["notificationReload" example](https://www.libelektra.org/examples/notificationreload)
+which uses this I/O binding.

@@ -31,13 +31,13 @@ Applications and plugins can choose to not link against it if they want to stay 
     libelektra-pluginprocess.so
 
 **[libpluginprocess](pluginprocess/)** contains functions aiding in executing plugins in a separate
-process and communicating with those child processes. This child process is forked from Elektra's 
+process and communicating with those child processes. This child process is forked from Elektra's
 main process each time such plugin is used and gets closed again afterwards. It uses a simple
-communication protocol based on a KeySet that gets serialized through a pipe via the dump plugin to 
+communication protocol based on a KeySet that gets serialized through a pipe via the dump plugin to
 orchestrate the processes.
 
-This is useful for plugins which cause memory leaks to be isolated in an own process. Furthermore 
-this is useful for runtimes or libraries that cannot be reinitialized in the same process after they 
+This is useful for plugins which cause memory leaks to be isolated in an own process. Furthermore
+this is useful for runtimes or libraries that cannot be reinitialized in the same process after they
 have been used.
 
 ### Libproposal
@@ -82,3 +82,22 @@ data structures.
     libelektra-invoke.so
 
 **[libinvoke](invoke/)** provides a simple API allowing us to call functions exported by plugins.
+
+### IO
+
+    libelektra-io.so
+
+**[io](io/)** provides the
+[common API](https://doc.libelektra.org/api/current/html/group__kdbio.html) for
+using asynchronous I/O bindings.
+
+### Notification
+
+    libelektra-notification.so
+
+**[notification](notification/)** provides the [notification API](https://doc.libelektra.org/api/current/html/group__kdbnotification.html).
+Usage examples:
+
+- [Basic notifications using polling](https://www.libelektra.org/examples/notificationpolling)
+- [Using asynchronous I/O bindings](https://www.libelektra.org/examples/notificationasync)
+- [Reload KDB when Elektra's configuration has changed](https://www.libelektra.org/examples/notificationreload)

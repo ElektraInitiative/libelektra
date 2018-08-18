@@ -5,6 +5,8 @@ pkg_check_modules (GLIB QUIET glib-2.0)
 
 if (NOT GLIB_FOUND)
 	exclude_binding (io_glib "glib-2.0 not found")
+elseif (ENABLE_ASAN)
+	exclude_binding (io_glib "io bindings are not compatible with ENABLE_ASAN")
 else ()
 
 	# Build library
@@ -19,8 +21,7 @@ else ()
 
 	set (IO_VARIANT_LIBRARY elektra-io-${BINDING_VARIANT})
 
-	# create object library so that executables can use
-	# $<TARGET_OBJECTS:OBJ_${IO_VARIANT_LIBRARY}>
+	# create object library so that executables can use $<TARGET_OBJECTS:OBJ_${IO_VARIANT_LIBRARY}>
 	add_library (OBJ_${IO_VARIANT_LIBRARY} OBJECT ${SOURCES})
 	target_include_directories (OBJ_${IO_VARIANT_LIBRARY} SYSTEM PUBLIC ${GLIB_INCLUDE_DIRS})
 
@@ -44,19 +45,25 @@ else ()
 
 	set (TEST_SOURCES $<TARGET_OBJECTS:cframework>)
 	add_headers (TEST_SOURCES)
-	file (GLOB IO_TEST_SRC_FILES "${CMAKE_SOURCE_DIR}/src/bindings/io/test/test*.c")
-	list (APPEND TEST_SOURCES ${IO_TEST_SRC_FILES})
-	list (APPEND TEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/testio_${BINDING_VARIANT}.c")
+	file (GLOB IO_TEST_SRC_FILES
+		   "${CMAKE_SOURCE_DIR}/src/bindings/io/test/test*.c")
+	list (APPEND TEST_SOURCES
+		     ${IO_TEST_SRC_FILES})
+	list (APPEND TEST_SOURCES
+		     "${CMAKE_CURRENT_SOURCE_DIR}/testio_${BINDING_VARIANT}.c")
 
 	if (BUILD_FULL OR BUILD_STATIC) # add sources for elektra-io-glib for static and full builds
-		list (APPEND TEST_SOURCES $<TARGET_OBJECTS:OBJ_${IO_VARIANT_LIBRARY}>)
+		list (APPEND TEST_SOURCES
+			     $<TARGET_OBJECTS:OBJ_${IO_VARIANT_LIBRARY}>)
 	endif ()
 
 	add_executable (${testexename} ${TEST_SOURCES})
 	add_dependencies (${testexename} kdberrors_generated)
 
 	target_include_directories (${testexename} PUBLIC "${CMAKE_SOURCE_DIR}/tests/cframework")
-	target_include_directories (${testexename} PUBLIC SYSTEM ${GLIB_INCLUDE_DIRS})
+	target_include_directories (${testexename}
+				    PUBLIC SYSTEM
+					   ${GLIB_INCLUDE_DIRS})
 
 	target_link_elektra (${testexename} elektra-kdb elektra-plugin elektra-io ${IO_VARIANT_LIBRARY} m)
 	if (BUILD_FULL OR BUILD_STATIC)
@@ -66,7 +73,9 @@ else ()
 	add_test (NAME ${testexename}
 		  COMMAND "${CMAKE_BINARY_DIR}/bin/${testexename}" "${CMAKE_CURRENT_SOURCE_DIR}"
 		  WORKING_DIRECTORY "${WORKING_DIRECTORY}")
-	set_property (TEST ${testexename} PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
+	set_property (TEST ${testexename}
+		      PROPERTY ENVIRONMENT
+			       "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
 
 	add_subdirectory (example)
 endif ()

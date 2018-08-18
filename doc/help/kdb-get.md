@@ -58,19 +58,19 @@ This command will return the following values as an exit status:
 
 ## EXAMPLES
 
-To get the value of a key:
+To get the value of a key:<br>
 `kdb get user/example/key`
 
-To get the value of a key using a cascading lookup:
+To get the value of a key using a cascading lookup:<br>
 `kdb get /example/key`
 
-To get the value of a key without adding a newline to the end of it:
+To get the value of a key without adding a newline to the end of it:<br>
 `kdb get -n /example/key`
 
-To explain why a specific key was used (for cascading keys):
+To explain why a specific key was used (for cascading keys):<br>
 `kdb get -v /example/key`
 
-To use bookmarks:
+To use bookmarks:<br>
 `kdb get +kdb/format`
 
 This command will actually get `user/sw/elektra/kdb/#0/current/format` if the bookmarks commands from

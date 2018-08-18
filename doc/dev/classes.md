@@ -7,7 +7,7 @@ This overview complements the introduction in
 
 A `Key` consists of a name, a value and metadata.
 It is the atomic unit in the key database. Its main purpose is that it
-can be serialised to be written out to permanent storage. It can be
+can be serialized to be written out to permanent storage. It can be
 added to several aggregates using reference counting.
 Putting `Key` objects into other data structures of supported
 programming languages presents no problem.

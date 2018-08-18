@@ -9,6 +9,7 @@ Read this first to get the basic concepts of Elektra.
 
 - [Namespaces](namespaces.md)
 - [Cascading](cascading.md)
+- [Arrays](arrays.md)
 - [Mount Configuration Files](mount.md)
 
 ## Developers
@@ -23,8 +24,10 @@ provides.
 - [Plugins Introduction](plugins.md)
 - [Compilation Variants of plugins](compilation-variants.md) (advanced topic)
 - [Python Bindings](python-kdb.md)
+- [Java Bindings](java-kdb.md)
 - [Ruby Bindings](/src/bindings/swig/ruby/README.md)
 - [Code Generation](/src/tools/gen/README.md)
+- [Notifications](notifications.md)
 
 ## System Administrators
 
@@ -52,4 +55,3 @@ These tutorials provide additional information on how to
 install and set up specific plugins and tools.
 
 - [Snippet Sharing REST-Service](snippet-sharing-rest-service.md)
-

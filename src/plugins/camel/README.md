@@ -9,6 +9,8 @@
 - infos/metadata =
 - infos/description = A very basic plugin that reads and writes a very small subset of YAML
 
+# Camel
+
 ## Introduction
 
 This plugin reads configuration data specified in a **very limited** subset of  the data serialization language [YAML](http://www.yaml.org).
@@ -18,28 +20,28 @@ This plugin reads configuration data specified in a **very limited** subset of  
 ### Basic Usage
 
 ```sh
-# Mount yaml plugin to cascading namespace `/examples/camel`
-sudo kdb mount config.yaml /examples/camel camel
+# Mount camel plugin to cascading namespace `/tests/camel`
+sudo kdb mount config.yaml /tests/camel camel
 
-kdb set /examples/camel/key value
-kdb get /examples/camel/key
+kdb set /tests/camel/key value
+kdb get /tests/camel/key
 #> value
 
-kdb set /examples/camel/kittens "warm & fuzzy"
-kdb get /examples/camel/kittens
+kdb set /tests/camel/kittens "warm & fuzzy"
+kdb get /tests/camel/kittens
 #> warm & fuzzy
 
-kdb set /examples/camel/empty ""
+kdb set /tests/camel/empty ""
 
-kdb export /examples/camel camel
+kdb export /tests/camel camel
 #> {
 #>   "empty" : ""
 #> , "key" : "value"
 #> , "kittens" : "warm & fuzzy"
 #> }
 
-kdb rm -r /examples/camel
-sudo kdb umount /examples/camel
+kdb rm -r /tests/camel
+sudo kdb umount /tests/camel
 ```
 
 ## Limitations

@@ -26,7 +26,7 @@ kdbOpen parentKey actions = do
   res <- actions kdb
   kdbClose kdb parentKey
   return res
-{#fun unsafe kdbOpen as kdbOpenRaw {`Key'} -> `KDB' #}
-{#fun unsafe kdbClose {`KDB', `Key'} -> `Int' #}
-{#fun unsafe kdbGet {`KDB', `KeySet', `Key'} -> `Int' #}
-{#fun unsafe kdbSet {`KDB', `KeySet', `Key'} -> `Int' #}
+{#fun kdbOpen as kdbOpenRaw {`Key'} -> `KDB' #}
+{#fun kdbClose {`KDB', `Key'} -> `Int' #}
+{#fun kdbGet {`KDB', `KeySet', `Key'} -> `Int' #}
+{#fun kdbSet {`KDB', `KeySet', `Key'} -> `Int' #}

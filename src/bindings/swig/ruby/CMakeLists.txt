@@ -24,19 +24,23 @@ else ()
 	# minimal replacement for Ruby's mkmf.create_makefile
 	execute_process (COMMAND ${RUBY_EXECUTABLE} -r rbconfig -e "print RbConfig::CONFIG['vendorarchdir']"
 			 OUTPUT_VARIABLE RUBY_VENDOR_ARCH_DIR)
-	execute_process (COMMAND ${RUBY_EXECUTABLE} -r rbconfig -e "print RbConfig::CONFIG['vendordir']" OUTPUT_VARIABLE RUBY_VENDOR_DIR)
+	execute_process (COMMAND ${RUBY_EXECUTABLE} -r rbconfig -e "print RbConfig::CONFIG['vendordir']"
+			 OUTPUT_VARIABLE RUBY_VENDOR_DIR)
 
 	execute_process (COMMAND ${RUBY_EXECUTABLE} -r rbconfig -e "print RbConfig::CONFIG['sitearchdir']"
 			 OUTPUT_VARIABLE RUBY_SITE_ARCH_DIR)
-	execute_process (COMMAND ${RUBY_EXECUTABLE} -r rbconfig -e "print RbConfig::CONFIG['sitedir']" OUTPUT_VARIABLE RUBY_SITE_DIR)
+	execute_process (COMMAND ${RUBY_EXECUTABLE} -r rbconfig -e "print RbConfig::CONFIG['sitedir']"
+			 OUTPUT_VARIABLE RUBY_SITE_DIR)
 
 	include_directories (${RUBY_VENDOR_ARCH_DIR})
 	include_directories (${RUBY_INCLUDE_DIRS})
 
+	# ~~~
 	# message (STATUS "Ruby executable: ${RUBY_EXECUTABLE}")
 	# message (STATUS "Ruby library: ${RUBY_LIBRARY}")
 	# message (STATUS "Ruby version: ${RUBY_VERSION}")
 	# to print RUBY_* variables for debugging build run cmake with -D_RUBY_DEBUG_OUTPUT=1
+	# ~~~
 
 	set_source_files_properties (kdb.i kdbtools.i PROPERTIES CPLUSPLUS ON)
 
@@ -53,10 +57,29 @@ else ()
 	# disable certain compiler warnings for SWIG generated files
 	set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-unused-parameter")
 	set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-sign-compare")
-	set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-dynamic-class-memaccess")
 	if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-unused-but-set-variable")
-	endif (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-catch-value")
+		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-class-memaccess")
+		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-maybe-uninitialized")
+		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-attributes")
+		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-pedantic")
+		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-conversion-null")
+	elseif (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-dynamic-class-memaccess")
+
+		# ~~~
+		# TODO: Reenable the following warning after we add a virtual destructor to `PluginDatabase`, and its subclasses.
+		# See also:
+		# - https://github.com/ElektraInitiative/libelektra/pull/1841
+		# - https://github.com/ElektraInitiative/libelektra/commit/15d67328
+		# ~~~
+		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-delete-non-virtual-dtor")
+
+		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-deprecated-register")
+		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-gnu-zero-variadic-macro-arguments")
+		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-zero-length-array")
+	endif ()
 
 	# add 'kdb' module
 	if (CMAKE_VERSION VERSION_LESS 3.8)
@@ -65,7 +88,7 @@ else ()
 		swig_add_library (swig-ruby LANGUAGE ruby SOURCES kdb.i TYPE MODULE)
 	endif (CMAKE_VERSION VERSION_LESS 3.8) # set the compiler settings for the generated file  (has to be done for each module
 					       # separately)
-	set_source_files_properties (${swig_generated_sources} PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS}")
+	set_source_files_properties (${swig_generated_file_fullname} PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS}")
 
 	# add the 'kdbtools' module
 	if (CMAKE_VERSION VERSION_LESS 3.8)
@@ -73,17 +96,27 @@ else ()
 	else (CMAKE_VERSION VERSION_LESS 3.8)
 		swig_add_library (swig-ruby-tools LANGUAGE ruby SOURCES kdbtools.i TYPE MODULE)
 	endif (CMAKE_VERSION VERSION_LESS 3.8)
-	set_source_files_properties (${swig_generated_sources} PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS}")
+	set_source_files_properties (${swig_generated_file_fullname} PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS}")
 
 	swig_link_libraries (swig-ruby ${RUBY_LIBRARY} elektra-core elektra-kdb)
-	set_target_properties (swig-ruby PROPERTIES OUTPUT_NAME _kdb PREFIX "")
+	set_target_properties (swig-ruby
+			       PROPERTIES OUTPUT_NAME
+					  _kdb
+					  PREFIX
+					  "")
 
 	swig_link_libraries (swig-ruby-tools ${RUBY_LIBRARY} elektra-core elektra-kdb elektratools)
-	set_target_properties (swig-ruby-tools PROPERTIES OUTPUT_NAME _kdbtools PREFIX "")
+	set_target_properties (swig-ruby-tools
+			       PROPERTIES OUTPUT_NAME
+					  _kdbtools
+					  PREFIX
+					  "")
 
+	# ~~~
 	# CMAKE_INSTALL_PREFIX dependent install location
 	# if we hit one of the usual cases (/usr/local or /usr) install the lib
 	# in Ruby default include path
+	# ~~~
 	if (${CMAKE_INSTALL_PREFIX} MATCHES "^/usr/local/?$") # should be under /usr/local/lib/...
 		set (RUBY_LIB_INSTALL_DIR "${RUBY_SITE_ARCH_DIR}")
 		set (RUBY_MODULE_INSTALL_DIR "${RUBY_SITE_DIR}")
@@ -100,8 +133,12 @@ else ()
 		message (STATUS "Ruby module install path: ${RUBY_MODULE_INSTALL_DIR}")
 	endif ()
 
-	install (TARGETS swig-ruby swig-ruby-tools LIBRARY DESTINATION ${RUBY_LIB_INSTALL_DIR})
-	install (FILES ${CMAKE_CURRENT_SOURCE_DIR}/kdb.rb ${CMAKE_CURRENT_SOURCE_DIR}/kdbtools.rb DESTINATION ${RUBY_MODULE_INSTALL_DIR})
+	install (TARGETS swig-ruby
+			 swig-ruby-tools
+		 LIBRARY DESTINATION ${RUBY_LIB_INSTALL_DIR})
+	install (FILES ${CMAKE_CURRENT_SOURCE_DIR}/kdb.rb
+		       ${CMAKE_CURRENT_SOURCE_DIR}/kdbtools.rb
+		 DESTINATION ${RUBY_MODULE_INSTALL_DIR})
 
 	include_directories (${CMAKE_CURRENT_SOURCE_DIR})
 	if (BUILD_TESTING)

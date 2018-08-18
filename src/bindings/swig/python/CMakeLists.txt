@@ -2,8 +2,8 @@ include (${SWIG_USE_FILE})
 include (LibAddMacros)
 
 # set (PythonInterp_FIND_VERSION_EXACT ON)
-find_package (PythonInterp 3)
-find_package (PythonLibs 3)
+find_package (PythonInterp 3 QUIET)
+find_package (PythonLibs 3 QUIET)
 
 if (NOT PYTHONINTERP_FOUND)
 	exclude_binding (swig_python "python3 interpreter not found")
@@ -15,7 +15,8 @@ else ()
 	add_binding (swig_python)
 
 	if (${SWIG_VERSION} MATCHES "^2\\.")
-		message (WARNING "Python bindings might crash if generated with SWIG 2." " Please upgrade to SWIG 3 or later.")
+		message (WARNING "Python bindings might crash if generated with SWIG 2."
+				 " Please upgrade to SWIG 3 or later.")
 	endif ()
 
 	add_headers (HDR_FILES)
@@ -36,8 +37,15 @@ else ()
 		swig_add_library (swig-python LANGUAGE python SOURCES kdb.i TYPE MODULE)
 	endif (CMAKE_VERSION VERSION_LESS 3.8)
 	swig_link_libraries (swig-python elektra-core elektra-kdb ${PYTHON_LIBRARIES})
-	set_target_properties (_swig-python PROPERTIES OUTPUT_NAME _kdb)
+	set_target_properties (_swig-python
+			       PROPERTIES OUTPUT_NAME
+					  _kdb)
 
+	# Unfortunately the generated code produces warnings.
+	if (CMAKE_COMPILER_IS_GNUCXX)
+		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-cast-function-type")
+		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-stringop-truncation")
+	endif (CMAKE_COMPILER_IS_GNUCXX)
 	set_source_files_properties (${swig_generated_file_fullname} PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -DSWIG_TYPE_TABLE=kdb")
 
 	set (PYTHON_GET_MODULES_DIR_COMMAND

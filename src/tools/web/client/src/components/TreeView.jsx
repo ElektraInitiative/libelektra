@@ -34,7 +34,7 @@ export default class TreeView extends React.Component {
     }
 
     const { unfolded } = this.state
-    if (unfolded.length <= 0) {
+    if (unfolded.length <= 0 || nextProps.searching) {
       const { instance } = nextProps
       if (instance && instance.unfolded && instance.unfolded.length > 0) {
         this.setState({ unfolded: instance.unfolded })
@@ -43,9 +43,11 @@ export default class TreeView extends React.Component {
   }
 
   updateUnfolded = (unfolded) => {
-    const { instanceId, updateInstance } = this.props
+    const { instanceId, updateInstance, searching } = this.props
     this.setState({ unfolded })
-    updateInstance(instanceId, { unfolded })
+    if (!searching) {
+      updateInstance(instanceId, { unfolded })
+    }
   }
 
   refreshPath = (path) => {
@@ -74,12 +76,23 @@ export default class TreeView extends React.Component {
   }
 
   handleDrop = (target, evt, inputs) => {
-    const { instanceId, moveKey } = this.props
+    const { instanceId, moveKey, copyKey, sendNotification } = this.props
     const { selection } = inputs
 
-    selection.map(
-      sel => moveKey(instanceId, sel.path, target.path + '/' + sel.name)
-    )
+    // alt or ctrl pressed -> copy
+    const action = (evt && (evt.altKey || evt.ctrlKey))
+      ? copyKey
+      : moveKey
+
+    const actionName = (evt && (evt.altKey || evt.ctrlKey))
+      ? 'copied'
+      : 'moved'
+
+    Promise.all(
+      selection.map(
+        sel => action(instanceId, sel.path, target.path + '/' + sel.name)
+      )
+    ).then(() => sendNotification(`successfully ${actionName} key(s) to ${target.path}`))
     this.setState({ selection: [] })
   }
 

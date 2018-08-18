@@ -147,7 +147,7 @@ int init (int argc, char ** argv);
 		ELEKTRA_DIAG_OFF (-Waddress)                                                                                               \
 		if (!s1)                                                                                                                   \
 			yield_error ("left hand side is null pointer") else if (!s2)                                                       \
-				yield_error ("right hand side is null pointer") else if (strcmp (s1, s2))                                  \
+				yield_error ("right hand side is null pointer") else if (strcmp (s1, s2) != 0)                             \
 			{                                                                                                                  \
 				char errorMsg[BUFFER_LENGTH];                                                                              \
                                                                                                                                            \
@@ -233,7 +233,8 @@ int init (int argc, char ** argv);
 		nbTest++;                                                                                                                  \
 		KeySet * mmks1 = (KeySet *) pks1;                                                                                          \
 		KeySet * mmks2 = (KeySet *) pks2;                                                                                          \
-		if (mmks1 != mmks2)                                                                                                        \
+		int bothEmpty = ksGetSize (mmks1) == 0 && ksGetSize (mmks1) == ksGetSize (mmks2);                                          \
+		if (mmks1 != mmks2 && !bothEmpty)                                                                                          \
 		{                                                                                                                          \
 			Key * cmmk1 = 0;                                                                                                   \
 			Key * cmmk2 = 0;                                                                                                   \
@@ -276,6 +277,7 @@ int init (int argc, char ** argv);
 
 int compare_files (const char * filename);
 int compare_line_files (const char * filename, const char * genfilename);
+int compare_regex_to_line_files (const char * filename, const char * genfilename);
 
 char * srcdir_file (const char * fileName);
 const char * elektraFilename (void);

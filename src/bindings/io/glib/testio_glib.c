@@ -16,9 +16,7 @@
 
 #include <glib.h>
 
-#include "kdbio_glib.h"
-
-#include <unistd.h> // pipe()
+#include <kdbio/glib.h>
 
 GMainLoop * loop;
 GMainContext * context;

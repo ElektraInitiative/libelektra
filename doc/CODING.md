@@ -166,7 +166,19 @@ file `CMakeLists.txt` in the root folder of the repository you can use the follo
 cmake-format CMakeLists.txt | unexpand | sponge CMakeLists.txt
 ```
 
-.
+. If you want to reformat the whole codebase you can use the script [`reformat-cmake`](/scripts/reformat-cmake).
+
+### Java / Groovy Guidelines
+
+Please follow
+[Google Java Style Guide](https://google.github.io/styleguide/javaguide.html)
+for Java and Groovy (used by Jenkins) files.
+
+Most notably use:
+
+- 2 spaces for indentation
+- Variable and function names in lowerCamelCase
+- K & R style brackets
 
 ### Markdown Guidelines
 

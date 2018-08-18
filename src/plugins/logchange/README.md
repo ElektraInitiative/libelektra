@@ -3,7 +3,7 @@
 - infos/licence = BSD
 - infos/needs =
 - infos/provides = tracing
-- infos/placements = postgetstorage postcommit
+- infos/placements = pregetstorage postgetstorage postcommit
 - infos/status = maintained nodep global nodoc
 - infos/description = demonstrates notification of key changes
 
@@ -19,3 +19,5 @@ To use it, add it during mounting:
 
     kdb mount logchange.dump user/logchange dump logchange
 
+Configure the plugin with `log/get=1` to enable printing when configuration is
+loaded. For example, `kdb gmount logchange log/get=1`.

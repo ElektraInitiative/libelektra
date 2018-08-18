@@ -13,13 +13,16 @@ import {
   CREATE_INSTANCE_FAILURE,
   GET_KEY_FAILURE, SET_KEY_FAILURE, CREATE_KEY_FAILURE,
   DISMISS_ERROR,
-  GET_KDB_FAILURE,
+  GET_KDB_FAILURE, GET_KDB_SUCCESS,
 } from '../actions'
 
 export default function errorReducer (state = false, action) {
   switch (action.type) {
     case GET_KDB_FAILURE:
       return { ...action.error, instanceError: true }
+
+    case GET_KDB_SUCCESS:
+      return false
 
     case INSTANCES_FAILURE:
     case INSTANCE_UPDATE_FAILURE:

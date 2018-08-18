@@ -7,9 +7,12 @@
 
 # I/O binding for libuv
 
+For the purpose of I/O bindings please read the
+[bindings readme](https://www.libelektra.org/bindings/readme#i-o-bindings).
+
 ## Requirements
 
-- libuv (version 1.x is recommended; 0.x is supported)
+- [libuv](http://libuv.org/) (version 1.x is recommended; 0.10 is supported)
 
 ## Usage
 
@@ -23,7 +26,7 @@ Create and initialize a new I/O binding.
 
 *Parameters*
 
-- loop Loop to use for I/O operations
+- loop: Loop to use for I/O operations
 
 *Returns*
 
@@ -32,15 +35,13 @@ Populated I/O interface
 ## Example
 
 ```C
-
 #include <elektra/kdb.h>
 #include <elektra/kdbio.h>
-#include <elektra/kdbio_uv.h>
+#include <elektra/kdbio/uv.h>
 
 #include <uv.h>
 
 void main (void)
-
 {
 	KDB* repo;
 	// ... open KDB
@@ -61,5 +62,7 @@ void main (void)
 	elektraIoBindingCleanup (binding);
 	uv_loop_close (loop);
 }
-
 ```
+
+Please check out the ["notificationAsync" example](https://www.libelektra.org/examples/notificationasync)
+which uses this I/O binding.

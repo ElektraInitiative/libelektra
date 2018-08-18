@@ -64,15 +64,33 @@ std::pair<bool, unsigned long long> isArrayIndex (NameIterator const & nameItera
 	{
 		return std::make_pair (true, stoull (name.substr (name.find_first_not_of ("#\\_"))));
 	}
-	catch (invalid_argument)
+	catch (invalid_argument const &)
 	{
 		return std::make_pair (false, 0);
 	}
-	catch (out_of_range)
+	catch (out_of_range const &)
 	{
 		errno = errnoValue;
 		return std::make_pair (false, 0);
 	}
+}
+
+/**
+ * @brief This function creates a YAML node representing a key value.
+ *
+ * @param key This key specifies the data that should be saved in the YAML node returned by this function.
+ *
+ * @note Since YAML does not support non-empty binary data directly this function replaces data stored in binary keys with the string
+ *       `Unsupported binary value!`. If you need support for binary data, please load the Base64 before you use YAML CPP.
+ *
+ * @returns A new YAML node containing the data specified in `key`
+ */
+YAML::Node createMetaDataNode (Key const & key)
+{
+	return key.hasMeta ("array") ?
+		       YAML::Node (YAML::NodeType::Sequence) :
+		       key.getBinarySize () == 0 ? YAML::Node (YAML::NodeType::Null) :
+						   YAML::Node (key.isBinary () ? "Unsupported binary value!" : key.getString ());
 }
 
 /**
@@ -87,16 +105,14 @@ std::pair<bool, unsigned long long> isArrayIndex (NameIterator const & nameItera
  */
 YAML::Node createLeafNode (Key & key)
 {
-	key.rewindMeta ();
 
 	YAML::Node metaNode{ YAML::Node (YAML::NodeType::Map) };
-	YAML::Node dataNode{ key.getBinarySize () == 0 ? YAML::Node (YAML::NodeType::Null) :
-							 YAML::Node (key.isBinary () ? "Unsupported binary value!" : key.getString ()) };
-	Key meta;
+	YAML::Node dataNode = createMetaDataNode (key);
 
-	while ((meta = key.nextMeta ()))
+	key.rewindMeta ();
+	while (Key meta = key.nextMeta ())
 	{
-		if (meta.getName () == "array") continue;
+		if (meta.getName () == "array" || meta.getName () == "binary") continue;
 		if (meta.getName () == "type" && meta.getString () == "binary")
 		{
 			dataNode.SetTag ("tag:yaml.org,2002:binary");
@@ -108,7 +124,8 @@ YAML::Node createLeafNode (Key & key)
 
 	if (metaNode.size () <= 0)
 	{
-		ELEKTRA_LOG_DEBUG ("Return leaf node with value “%s”", dataNode.IsNull () ? "~" : dataNode.as<string> ().c_str ());
+		ELEKTRA_LOG_DEBUG ("Return leaf node with value “%s”",
+				   dataNode.IsNull () ? "~" : dataNode.IsSequence () ? "[]" : dataNode.as<string> ().c_str ());
 		return dataNode;
 	}
 
@@ -124,6 +141,21 @@ YAML::Node createLeafNode (Key & key)
 #endif
 
 	return node;
+}
+
+/**
+ * @brief This function adds `null` elements to the given YAML collection.
+ *
+ * @param sequence This node stores the collection to which this function adds `numberOfElements` empty elements.
+ * @param numberOfElements This parameter specifies the number of empty element this function adds to `sequence`.
+ */
+void addEmptyArrayElements (YAML::Node & sequence, unsigned long long const numberOfElements)
+{
+	ELEKTRA_LOG_DEBUG ("Add %lld empty array elements", numberOfElements);
+	for (auto missingFields = numberOfElements; missingFields > 0; missingFields--)
+	{
+		sequence.push_back (YAML::Node ());
+	}
 }
 
 /**
@@ -157,7 +189,8 @@ void addKey (YAML::Node & data, NameIterator & keyIterator, Key & key)
 	{
 		if (isArray)
 		{
-			data[arrayIndex] = createLeafNode (key);
+			addEmptyArrayElements (data, arrayIndex - data.size ());
+			data.push_back (createLeafNode (key));
 		}
 		else
 		{
@@ -193,7 +226,8 @@ void addKeys (YAML::Node & data, KeySet const & mappings, Key const & parent)
 {
 	for (auto key : mappings)
 	{
-		ELEKTRA_LOG_DEBUG ("Convert key “%s: %s”", key.getName ().c_str (), key.isString () ? key.getString ().c_str () : "binary");
+		ELEKTRA_LOG_DEBUG ("Convert key “%s”: “%s”", key.getName ().c_str (),
+				   key.getBinarySize () == 0 ? "NULL" : key.isString () ? key.getString ().c_str () : "binary value!");
 		NameIterator keyIterator = relativeKeyIterator (key, parent);
 		addKey (data, keyIterator, key);
 

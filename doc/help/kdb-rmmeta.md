@@ -24,7 +24,7 @@ This command removes a metakey of a key from the Key database.
 
 ## EXAMPLES
 
-To remove metakey `metakey` of a key:
+To remove metakey `metakey` of a key:<br>
 `kdb rmmeta user/example metakey`
 
 ## SEE ALSO

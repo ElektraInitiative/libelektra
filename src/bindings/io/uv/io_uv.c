@@ -7,7 +7,6 @@
  *
  */
 #include <stdlib.h>
-//#include <string.h>
 
 #include <uv.h>
 
@@ -85,7 +84,7 @@ static UvBindingData * newBindingData (void)
 	UvBindingData * bindingData = elektraCalloc (sizeof (*bindingData));
 	if (bindingData == NULL)
 	{
-		ELEKTRA_LOG_WARNING ("elektraMalloc failed");
+		ELEKTRA_LOG_WARNING ("elektraCalloc failed");
 		return NULL;
 	}
 

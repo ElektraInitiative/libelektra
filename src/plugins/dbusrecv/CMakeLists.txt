@@ -24,14 +24,18 @@ plugin_check_if_included ("${PLUGIN_SHORT_NAME}")
 if (DEPENDENCY_PHASE AND NOT NOT_INCLUDED)
 	if (BUILD_SHARED)
 
+		# ~~~
 		# target_compile_options(elektra-dbusrecv PRIVATE "-fPIC")
 		# set_property (TARGET ${ADAPTER_OBJECT} PROPERTY CMAKE_POSITION_INDEPENDENT_CODE ON)
+		# ~~~
 
 	endif ()
 
+	# ~~~
 	# if (BUILD_FULL OR BUILD_STATIC)
 	#
 	# endif ()
+	# ~~~
 
 endif ()
 
@@ -49,8 +53,7 @@ if (ADDTESTING_PHASE)
 
 		add_plugintest (dbusrecv TEST_LINK_LIBRARIES ${STATIC_LIBRARIES} TEST_LINK_ELEKTRA elektra-io-uv)
 
-		# add sources manually because add_plugintest does not support generator
-		# expressions for additional source files
+		# add sources manually because add_plugintest does not support generator expressions for additional source files
 		if (BUILD_FULL OR BUILD_STATIC)
 
 			# add sources for elektra-io-uv for static and full builds
