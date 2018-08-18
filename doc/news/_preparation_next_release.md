@@ -37,12 +37,12 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.8.
 
 ## Highlights
 
-- Type system preview
+- Type system prototype
 - Chef Cookbook
 - Elektra Web 1.6
 
 
-### Type system preview
+### Type system prototype
 
 Elektra supports specifying the semantics of keys via metakeys in the `spec`
 namespace. An example is the metakey `check/range` which can be used to specify
@@ -56,7 +56,7 @@ possible contents are not compatible with each other.
 The type system is available as a plugin that gets mounted along with a
 configuration specification into the spec namespace. Furthermore we include a
 set of type definitions for commonly used metakeys such as `check/range`,
-`check/long`, `fallback` or `override`.
+`check/enum`, `check/validation`, `fallback` or `override`.
 
 For more details see the
 [typechecker readme](https://www.libelektra.org/plugins/typechecker)
@@ -177,6 +177,9 @@ Thanks to Daniel Bugl.
 
 - An issue when building Haskell plugins with a cached sandbox is fixed in case
   a Haskell library bundled with elektra gets changed. *(Armin Wurzinger)*
+- The [script](https://master.libelektra.org/scripts/generate-haskell-dependencies) that generates the list of haskell dependencies now also works on
+  ghc8.0.1 and older cabal versions. Furthermore one can specify the build directory as
+  a parameter if it is not located within the source directory. *(Armin Wurzinger)*
 
 ### Interpreter Plugins
 
@@ -234,7 +237,7 @@ Thanks to Daniel Bugl.
   supports a more concise and efficient typechecking process including a greatly
   improved type inference scheme that should make generated specification files and thus
   generated errors to be easier to understand. An example of such error message is shown in the
-  [readme](https://www.libelektra.org/plugins/typechecker) *(Armin Wurzinger)*
+  [readme](https://www.libelektra.org/plugins/typechecker). *(Armin Wurzinger)*
 
 ### Tcl
 
