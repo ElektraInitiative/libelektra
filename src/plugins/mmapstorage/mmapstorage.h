@@ -10,9 +10,7 @@
 #ifndef ELEKTRA_PLUGIN_MMAPSTORAGE_H
 #define ELEKTRA_PLUGIN_MMAPSTORAGE_H
 
-#include <kdbmmap.h>
 #include <kdbplugin.h>
-
 
 int elektraMmapstorageOpen (Plugin * handle, Key * errorKey);
 int elektraMmapstorageClose (Plugin * handle, Key * errorKey);
