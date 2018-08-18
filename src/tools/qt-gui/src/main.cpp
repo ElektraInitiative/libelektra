@@ -15,6 +15,7 @@
 #include <QtQml>
 #include <QtTest/qtestcase.h>
 #include <kdb.hpp>
+#include <kdblogger.h>
 #include <merging/mergingkdb.hpp>
 
 #include "QQuickThemeIconProvider.hpp"
@@ -38,9 +39,10 @@ int main (int argc, char * argv[])
 	qmlRegisterType<DataContainer> ("org.libelektra.qtgui", 1, 0, "DataContainer");
 
 	QString locale = QLocale::system ().name ();
+	ELEKTRA_LOG ("use locale %s", locale.toUtf8 ().constData ());
 
 	QTranslator translator;
-	translator.load (QString (":/qml/i18n/lang_") + locale + QString (".qm"));
+	translator.load (QLocale(), "elektra", ".");
 	app.installTranslator (&translator);
 
 	app.setOrganizationName ("Elektra Initiative");
