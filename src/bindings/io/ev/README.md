@@ -37,7 +37,7 @@ Populated I/O interface
 ```C
 #include <elektra/kdb.h>
 #include <elektra/kdbio.h>
-#include <elektra/kdbio_ev.h>
+#include <elektra/kdbio/ev.h>
 
 #include <ev.h>
 

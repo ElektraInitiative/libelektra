@@ -8,6 +8,7 @@
  */
 
 #include <kdbhelper.h>
+#include <kdbinvoke.h>
 #include <kdbio.h>
 #include <kdbioplugin.h>
 #include <kdbioprivate.h>
@@ -34,22 +35,7 @@ void elektraIoSetBinding (KDB * kdb, ElektraIoInterface * ioBinding)
 				continue;
 			}
 
-			size_t func = elektraPluginGetFunction (plugin, "setIoBinding");
-			if (func)
-			{
-				ElektraIoPluginSetBinding setIoBinding = (ElektraIoPluginSetBinding) func;
-				setIoBinding (plugin, parameters);
-			}
-			else
-			{
-				func = elektraPluginGetFunction (plugin, "deferredCall");
-				if (func)
-				{
-					typedef void (*DeferFunctionCall) (Plugin * handle, char * name, KeySet * parameters);
-					DeferFunctionCall defer = (DeferFunctionCall) func;
-					defer (plugin, "setIoBinding", parameters);
-				}
-			}
+			elektraDeferredCall (plugin, "setIoBinding", parameters);
 		}
 	}
 

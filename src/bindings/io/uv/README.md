@@ -35,10 +35,9 @@ Populated I/O interface
 ## Example
 
 ```C
-
 #include <elektra/kdb.h>
 #include <elektra/kdbio.h>
-#include <elektra/kdbio_uv.h>
+#include <elektra/kdbio/uv.h>
 
 #include <uv.h>
 
@@ -63,5 +62,7 @@ void main (void)
 	elektraIoBindingCleanup (binding);
 	uv_loop_close (loop);
 }
-
 ```
+
+Please check out the ["notificationAsync" example](https://www.libelektra.org/examples/notificationasync)
+which uses this I/O binding.

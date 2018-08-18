@@ -17,7 +17,7 @@
 
 #include <zmq.h>
 
-#include <kdbio_adapter_zeromq.h> // elektraIoAdapterZeroMq*()
+#include <kdbio/adapters/zeromq.h> // elektraIoAdapterZeroMq*()
 
 #define ELEKTRA_ZEROMQ_DEFAULT_SUB_ENDPOINT "tcp://localhost:6001"
 

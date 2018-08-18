@@ -40,7 +40,7 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.8.
 - Type system preview
 - Chef Cookbook
 - Elektra Web 1.6
-
+- Notifications
 
 ### Type system preview
 
@@ -132,6 +132,37 @@ Try it out now on: http://webdemo.libelektra.org/
 
 Thanks to Daniel Bugl.
 
+
+### Notifications
+
+Elektra's notification feature which allows applications to keep persistent
+configuration settings in sync with the key database and other applications was
+greatly improved with this release:
+
+- The [notification API](https://doc.libelektra.org/api/current/html/group__kdbnotification.html)
+  now supports more types and has improved support for callbacks.
+- With the addition of the [zeromqsend](https://www.libelektra.org/plugins/zeromqsend)
+  and [zeromqrecv](https://www.libelektra.org/plugins/zeromqrecv) plugins
+  together with the [hub-zeromq](https://www.libelektra.org/tools/hub-zeromq)
+  tool we have an alternative to the D-Bus transport plugins
+  ([dbus](https://www.libelektra.org/plugins/dbus) and
+  [dbusrecv](https://www.libelektra.org/plugins/dbusrecv)).
+- The new asynchronous I/O binding for [ev](https://www.libelektra.org/bindings/io_ev)
+  is the third I/O binding - so notifications can be used in applications using
+  [glib](https://www.libelektra.org/bindings/io_glib), [uv](https://www.libelektra.org/bindings/io_uv)
+  or [ev](https://www.libelektra.org/bindings/io_ev).
+  If your application uses a different library please check out the
+  ["How to create your own I/O binding" section](https://www.libelektra.org/tutorials/notifications#how-to-create-your-own-i-o-binding) in the [notification tutorial](https://www.libelektra.org/tutorials/notifications).
+- Notifications can be used to reload KDB after Elektra's configuration (e.g.
+  mountpoints or globally mounted plugins) has changed.
+  We added a [how-to to the notification tutorial](https://www.libelektra.org/tutorials/notifications#howto-reload-kdb-when-elektras-configuration-has-changed)
+  that explains the required steps and the ["notificationReload"](https://www.libelektra.org/examples/notificationreload) example with the complete code.
+
+More details can be [found](#zeromq-transport-plugins) [in](#misc) [this](#bindings) [news](#notifications).
+Check out the updated [notification tutorial](https://www.libelektra.org/tutorials/notifications)
+and notification examples ([polling](https://www.libelektra.org/examples/notificationpolling),
+[async](https://www.libelektra.org/examples/notificationasync) and
+[reload](https://www.libelektra.org/examples/notificationreload).
 
 ## Plugins
 
@@ -367,7 +398,8 @@ Thanks to Daniel Bugl.
 - replaced strdup with elektraStrDup (for C99 compatibility) *(Markus Raab)*
 - You can now remove the basename of a key via the C++ API by calling `key.delBaseName()`. *(René Schwaiger)*
 - The function `elektraArrayGetNextKey` now uses `NULL` instead of the empty string as init value for the returned key. *(René Schwaiger)*
-
+- <<TODO>>
+- <<TODO>>
 - <<TODO>>
 
 ### pluginprocess
@@ -393,6 +425,17 @@ Thanks to Daniel Bugl.
   It can be used to integrate the notification feature with applications based
   on [ev](http://libev.schmorp.de) main loops. *(Thomas Wahringer)*
 
+## Notifications
+
+- The
+  [notification API](https://doc.libelektra.org/api/current/html/group__kdbnotification.html)
+  was extended.
+  The API now supports more types: `int`, `unsigned int`,
+  `long`, `unsigned long`, `long long`, `unsinged long long`, `float` and `double`.
+  It also supports all of Elektra's `kdb_*_t` types defined in `kdbtypes.h`.
+  Also contexts for callbacks were added and
+  `elektraNotificationRegisterCallbackSameOrBelow()` allows for notifications
+  for the registered key or below. *(Thomas Wahringer)*
 
 ## Tools
 
@@ -618,7 +661,10 @@ compiled against an older 0.8 version of Elektra will continue to work
 Following changes were made:
 
 - The C++ API was extended with delBaseName()
-- <<TODO>>
+- `kdbtypes.h` now comes with support for C99 types
+- We added the private headerfiles `kdbnotificationinternal.h`, `kdbioplugin.h`. *(Thomas Wahringer)*
+- The I/O binding header files have been moved a new directory called `kdbio`.
+  For example, instead of including `elektra/kdbio_ev.h` users of the binding now include `elektra/kdbio/ev.h`. *(Thomas Wahringer)*
 - <<TODO>>
 
 ## Website

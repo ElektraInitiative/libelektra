@@ -35,7 +35,7 @@ static void onSignal (int signal)
 
 int main (void)
 {
-	printf ("lightweight zeromq message hub\n");
+	printf ("\nlightweight zeromq message hub\n");
 
 	// exit on SIGINT
 	signal (SIGINT, onSignal);
@@ -98,6 +98,7 @@ int main (void)
 
 	printf ("listening on %s (XSUB for zeromqsend)\n", xSubEndpoint);
 	printf ("listening on %s (XPUB for zeromqrecv)\n", xPubEndpoint);
+	printf ("hub is running\n");
 	ksDel (config);
 
 	// forward messages between sockets

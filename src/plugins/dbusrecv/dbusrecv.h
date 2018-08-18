@@ -19,7 +19,7 @@
 #include <string.h>
 
 // elektraIoDbus*()
-#include <kdbio_adapter_dbus.h>
+#include <kdbio/adapters/dbus.h>
 
 /**
  * @internal

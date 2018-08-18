@@ -7,7 +7,7 @@
  */
 #include <kdbassert.h>
 #include <kdbhelper.h>
-#include <kdbio_adapter_zeromq.h>
+#include <kdbio/adapters/zeromq.h>
 #include <kdblogger.h>
 
 #include <stdlib.h>

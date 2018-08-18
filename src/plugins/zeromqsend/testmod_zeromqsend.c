@@ -42,7 +42,7 @@ void * context;
 #define TEST_ENDPOINT "tcp://127.0.0.1:6002"
 
 /** extended timeouts for tests */
-#define TESTCONFIG_CONNECT_TIMEOUT "5"
+#define TESTCONFIG_CONNECT_TIMEOUT "5000"
 #define TESTCONFIG_SUBSCRIBE_TIMEOUT "5000"
 
 /**

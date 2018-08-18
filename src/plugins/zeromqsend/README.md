@@ -50,7 +50,7 @@ This plugin supports the following configuration options when mounting:
 [`ipc`](http://api.zeromq.org/4-2:zmq-ipc) and
 [`tcp`](http://api.zeromq.org/4-2:zmq-tcp) ZeroMQ transports are recommended.
 The default value is "tcp://localhost:6000".
-- **connectTimeout**: Timeout for establishing connections in seconds. The default value is "2".
+- **connectTimeout**: Timeout for establishing connections in miliseconds. The default value is "1000".
 - **subscribeTimeout**: Timeout for waiting for subscribers in miliseconds. The default value is "200".
 
 # Notification Format

@@ -31,6 +31,7 @@ RUN apt-get -y install \
   libgcrypt20-dev \
   libbotan1.10-dev \
   libev-dev \
+  libuv1-dev \
   libsystemd-dev \
   libuv1-dev \
 	libzmq3-dev \

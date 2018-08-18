@@ -11,8 +11,8 @@
 #define ELEKTRA_PLUGIN_INTERNALNOTIFICATION_H
 
 #include <kdbnotification.h>
+#include <kdbnotificationinternal.h>
 #include <kdbplugin.h>
-
 
 int elektraInternalnotificationGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraInternalnotificationSet (Plugin * handle, KeySet * ks, Key * parentKey);
@@ -23,5 +23,25 @@ Plugin * ELEKTRA_PLUGIN_EXPORT (internalnotification);
 
 // Not exported by plugin; used for testing
 void elektraInternalnotificationUpdateRegisteredKeys (Plugin * plugin, KeySet * keySet);
+void elektraInternalnotificationDoUpdate (Key * changedKey, ElektraNotificationCallbackContext * context);
+
+#define INTERNALNOTIFICATION_REGISTER_NAME(TYPE_NAME) elektraInternalnotificationRegister##TYPE_NAME
+
+#define INTERNALNOTIFICATION_EXPORT_FUNCTION(TYPE_NAME)                                                                                    \
+	keyNew ("system/elektra/modules/internalnotification/exports/register" #TYPE_NAME, KEY_FUNC,                                       \
+		INTERNALNOTIFICATION_REGISTER_NAME (TYPE_NAME), KEY_END)
+
+/**
+ * Structure containing conversion context
+ * @internal
+ */
+struct _ElektraInternalnotificationConversionContext
+{
+	void * variable;
+	ElektraNotificationConversionErrorCallback errorCallback;
+	void * errorCallbackContext;
+};
+typedef struct _ElektraInternalnotificationConversionContext _ElektraInternalnotificationConversionContext;
+
 
 #endif

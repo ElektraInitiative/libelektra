@@ -26,7 +26,7 @@
 #include <kdbassert.h> // assertions (ELEKTRA_NOT_NULL)
 #include <kdbhelper.h> // malloc & free
 #include <kdbio.h>     // I/O binding functions (elektraIo*)
-#include <kdbio_ev.h>  // I/O binding constructor for ev (elektraIoEvNew)
+#include <kdbio/ev.h>  // I/O binding constructor for ev (elektraIoEvNew)
 
 #include <ev.h> // ev functions
 

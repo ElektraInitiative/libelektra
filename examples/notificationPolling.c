@@ -1,13 +1,20 @@
 /**
  * @file
  *
- * @brief Implementation of notification functions as defined in kdbnotification.h
+ * @brief Example for notification library which repeatedly reads some keys and
+ * reacts to them; see "notificationAsync.c" for an example without polling
+ *
+ * Relevant keys for this example:
+ *   - /sw/example/notification/#0/current/value: Set to any integer value
+ *   - /sw/example/notification/#0/current/color: Set the text color. Possible
+ *     values are "red", "green" and "blue".
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
 #include <kdb.h>
+#include <kdbhelper.h> // ELEKTRA_UNUSED
 #include <kdbnotification.h>
 
 #include <signal.h>
@@ -23,7 +30,7 @@ static volatile int keepRunning = 0;
 #define ANSI_COLOR_GREEN "\x1b[32m"
 #define ANSI_COLOR_BLUE "\x1b[34m"
 
-static void setTerminalColor (Key * color)
+static void setTerminalColor (Key * color, void * context ELEKTRA_UNUSED)
 {
 	const char * value = keyString (color);
 	printf ("Callback called. Changing color to %s\n", value);
@@ -82,35 +89,35 @@ int main (void)
 
 	KeySet * config = ksNew (20, KS_END);
 
-	Key * key = keyNew ("/sw/tests/example_notification/#0/current", KEY_END);
+	Key * key = keyNew ("/sw/example/notification/#0/current", KEY_END);
 	KDB * kdb = kdbOpen (key);
 	if (kdb == NULL)
 	{
-		printf ("could not open KDB. aborting\n");
+		printf ("could not open KDB, aborting\n");
 		return -1;
 	}
 
 	int result = elektraNotificationOpen (kdb);
 	if (!result)
 	{
-		printf ("could init notification. aborting\n");
+		printf ("could not init notification, aborting\n");
 		return -1;
 	}
 
 	int value = 0;
-	Key * intKeyToWatch = keyNew ("/sw/tests/example_notification/#0/current/value", KEY_END);
+	Key * intKeyToWatch = keyNew ("/sw/example/notification/#0/current/value", KEY_END);
 	result = elektraNotificationRegisterInt (kdb, intKeyToWatch, &value);
 	if (!result)
 	{
-		printf ("could not register variable. aborting\n");
+		printf ("could not register variable, aborting\n");
 		return -1;
 	}
 
-	Key * callbackKeyToWatch = keyNew ("/sw/tests/example_notification/#0/current/color", KEY_END);
-	result = elektraNotificationRegisterCallback (kdb, callbackKeyToWatch, &setTerminalColor);
+	Key * callbackKeyToWatch = keyNew ("/sw/example/notification/#0/current/color", KEY_END);
+	result = elektraNotificationRegisterCallback (kdb, callbackKeyToWatch, &setTerminalColor, NULL);
 	if (!result)
 	{
-		printf ("could not register callback. aborting!");
+		printf ("could not register callback, aborting!");
 		return -1;
 	}
 
@@ -120,7 +127,7 @@ int main (void)
 	while (!keepRunning)
 	{
 		// After this kdbGet the integer variable is updated and the callback was called.
-		// TODO remove polling or make it optional when "transport plugins" are available
+		// see "notificationAsync" for an example without polling
 		kdbGet (kdb, config, key);
 
 		// Print values
