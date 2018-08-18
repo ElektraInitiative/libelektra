@@ -179,6 +179,17 @@ static int ioGlibBindingFdDispatch (GSource * source, GSourceFunc callback, void
 }
 
 /**
+ * Cleanup after file descriptor has been detached
+ * @param  source glib source
+ */
+static void ioGlibBindingFdCleanup (GSource * source)
+{
+	FdSource * fdSource = (FdSource *) source;
+	elektraFree (fdSource->bindingData->fdFuncs);
+	elektraFree (fdSource->bindingData);
+}
+
+/**
  * Calls the associated callback.
  * Called by glib whenever a timer has elapsed.
  *
@@ -282,7 +293,7 @@ static int ioGlibBindingAddFd (ElektraIoInterface * binding, ElektraIoFdOperatio
 	funcs->prepare = ioGlibBindingFdPrepare;
 	funcs->check = ioGlibBindingFdCheck;
 	funcs->dispatch = ioGlibBindingFdDispatch;
-	funcs->finalize = NULL;
+	funcs->finalize = ioGlibBindingFdCleanup;
 	bindingData->fdFuncs = funcs;
 	FdSource * fdSource = (FdSource *) g_source_new (funcs, sizeof *fdSource);
 	GSource * gSource = &fdSource->gSource;
@@ -320,8 +331,6 @@ static int ioGlibBindingRemoveFd (ElektraIoFdOperation * fdOp)
 	}
 	g_source_destroy (gSource);
 	g_source_unref (gSource);
-	elektraFree (bindingData->fdFuncs);
-	elektraFree (bindingData);
 
 	return 1;
 }
