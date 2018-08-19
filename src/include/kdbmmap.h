@@ -37,13 +37,9 @@ struct _mmapHeader
 	// clang-format off
 	uint64_t mmapMagicNumber;	/**<Magic number for consistency check */
 	uint64_t allocSize;		/**<Size of the complete allocation in bytes */
+	uint64_t cksumSize;		/**<Size of the critical data for checksum (structs, pointers, sizes)*/
+
 	uint32_t checksum;		/**<Checksum of the data */
-
-	uint8_t sizeofKeySet;
-	uint8_t sizeofKey;
-	uint8_t sizeofMmapMetaData;
-	uint8_t sizeofMmapFooter;
-
 	// clang-format on
 };
 
@@ -58,7 +54,6 @@ struct _mmapMetaData
 	size_t numKeySets;		/**<Number of KeySets inlcuding meta KS */
 	size_t ksAlloc;			/**<Sum of all KeySet->alloc sizes */
 	size_t numKeys;			/**<Number of Keys including meta Keys */
-	size_t dataSize;		/**<Size of the data block in bytes: dynamic properties like key name, value, etc. */
 
 	mmapflag_t flags;		/**<Control flags for mmap */
 	// clang-format on

@@ -398,10 +398,8 @@ static int verifyMagicData (char * mappedRegion)
 #ifdef ENABLE_MMAP_CHECKSUM
 static int verifyChecksum (char * mappedRegion, MmapHeader * mmapHeader)
 {
-	char * ksPtr = (char *) (mappedRegion + SIZEOF_MMAPHEADER + SIZEOF_MMAPMETADATA);
 	uint32_t checksum = crc32 (0L, Z_NULL, 0);
-	checksum = crc32 (checksum, (const unsigned char *) ksPtr,
-			  (mmapHeader->allocSize - SIZEOF_MMAPHEADER - SIZEOF_MMAPMETADATA - SIZEOF_MMAPFOOTER));
+	checksum = crc32 (checksum, (const unsigned char *) (mappedRegion + SIZEOF_MMAPHEADER), mmapHeader->cksumSize);
 
 	if (checksum != mmapHeader->checksum)
 	{
@@ -449,17 +447,15 @@ static void calculateMmapDataSize (MmapHeader * mmapHeader, MmapMetaData * mmapM
 	// SIZEOF_KEYSET * 2 : magic KeySet + main KeySet
 	size_t allocSize = (SIZEOF_KEYSET * 2) + keyPtrArraySize + keyArraySize + dataBlocksSize + (metaKeySets * SIZEOF_KEYSET) +
 			   (metaKsAlloc * SIZEOF_KEY_PTR) + (dynArray->size * SIZEOF_KEY);
+	mmapHeader->cksumSize = allocSize + SIZEOF_MMAPMETADATA; // cksumSize now contains size of all critical data
 
 	size_t padding = sizeof (uint64_t) - (allocSize % sizeof (uint64_t)); // alignment for MMAP Footer at end of mapping
 	allocSize += SIZEOF_MMAPHEADER + SIZEOF_MMAPMETADATA + SIZEOF_MMAPFOOTER + padding;
 
-	mmapHeader->sizeofKeySet = sizeof (KeySet);
 	mmapHeader->allocSize = allocSize;
-
 	mmapMetaData->numKeySets = 1 + metaKeySets; // 1: main KeySet
 	mmapMetaData->ksAlloc = returned->alloc + metaKsAlloc;
 	mmapMetaData->numKeys = returned->size + dynArray->size;
-	mmapMetaData->dataSize = dataBlocksSize;
 }
 
 static void writeMetaKeys (MmapAddr * mmapAddr, DynArray * dynArray)
@@ -660,17 +656,13 @@ static void copyKeySetToMmap (char * dest, KeySet * keySet, MmapHeader * mmapHea
 	mmapAddr.ksPtr->opmphm = 0;
 #endif
 
-
+	memcpy ((dest + SIZEOF_MMAPHEADER), mmapMetaData, SIZEOF_MMAPMETADATA);
 #ifdef ENABLE_MMAP_CHECKSUM
-	char * ksCharPtr = (char *) (dest + SIZEOF_MMAPHEADER + SIZEOF_MMAPMETADATA);
-	uint32_t checksum = crc32 (0L, Z_NULL, 0);
-	checksum = crc32 (checksum, (const unsigned char *) ksCharPtr,
-			  (mmapHeader->allocSize - SIZEOF_MMAPHEADER - SIZEOF_MMAPMETADATA - SIZEOF_MMAPFOOTER));
+	uint32_t checksum = checksum = crc32 (0L, Z_NULL, 0);
+	checksum = crc32 (checksum, (const unsigned char *) (dest + SIZEOF_MMAPHEADER), mmapHeader->cksumSize);
 	mmapHeader->checksum = checksum;
 #endif
-
 	memcpy (dest, mmapHeader, SIZEOF_MMAPHEADER);
-	memcpy ((dest + SIZEOF_MMAPHEADER), mmapMetaData, SIZEOF_MMAPMETADATA);
 	memcpy ((dest + mmapHeader->allocSize - SIZEOF_MMAPFOOTER), mmapFooter, SIZEOF_MMAPFOOTER);
 }
 
