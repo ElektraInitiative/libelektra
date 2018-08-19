@@ -151,7 +151,7 @@ export DVERSION=$VERSION-1
 
 Build deb:
  cd ~e && git-checkout debian
- git-merge --no-ff master -m "Merge for debian release $DVERSION"
+ git-merge --no-ff $VERSION -m "Merge for debian release $DVERSION"
 
 UNRELEASED -> unstable
 
