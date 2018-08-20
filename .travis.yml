@@ -42,7 +42,7 @@ matrix:
         # [timeout]: https://docs.travis-ci.com/user/customizing-the-build/#build-timeouts
         - TOOLS=kdb
         - BINDINGS=cpp
-        - TEST_COMMAND='ctest --output-on-failure -E ''testscr_check_(formatting|oclint)'''
+        - TEST_COMMAND="ctest --output-on-failure -E 'testscr_check_(formatting|oclint)'"
 
     - os: linux
       name: 🐧 GCC ASAN
@@ -61,7 +61,7 @@ matrix:
         # Build less stuff so the build does not hit the timeout limit that often
         - TOOLS=kdb
         - BINDINGS=cpp
-        - TEST_COMMAND='ctest --output-on-failure -E ''testscr_check_(formatting|oclint)'''
+        - TEST_COMMAND="ctest --output-on-failure -E 'testscr_check_(formatting|oclint)'"
 
     - os: linux
       name: 🐧 Clang ASAN
@@ -281,4 +281,4 @@ before_script:
 
 script:
   - ninja
-  - ${TEST_COMMAND:-eval 'ninja install && ninja run_all && kdb run_all'}
+  - sh -c "${TEST_COMMAND:-ninja install && ninja run_all && kdb run_all}"
