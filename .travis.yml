@@ -36,6 +36,7 @@ matrix:
       compiler: clang
       env:
         - ENABLE_ASAN=ON
+        - ASAN_OPTIONS=detect_leaks=1
         # We only translate the `kdb` tool to save a little bit of build time.
         # Unfortunately this build job would hit the [timeout][] for public repositories
         # quite often otherwise.
