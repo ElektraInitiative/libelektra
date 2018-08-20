@@ -3,7 +3,7 @@
  *
  * @brief Source for mmapstorage plugin
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 #define _XOPEN_SOURCE 600
@@ -79,6 +79,14 @@ static Key magicKey;
 
 /* -- File handling --------------------------------------------------------------------------------------------------------------------- */
 
+/**
+ * @brief Wrapper for fopen().
+ *
+ * @param parentKey containing the filename
+ * @param mode file open mode
+ *
+ * @return file pointer
+ */
 static FILE * openFile (Key * parentKey, const char * mode)
 {
 	FILE * fp;
@@ -91,6 +99,16 @@ static FILE * openFile (Key * parentKey, const char * mode)
 	return fp;
 }
 
+/**
+ * @brief Wrapper for ftruncate().
+ *
+ * @param fp the file pointer
+ * @param mmapsize size if the mapped region
+ * @param parentKey holding the filename, for debug purposes
+ *
+ * @retval 1 on success
+ * @retval -1 if ftruncate() failed
+ */
 static int truncateFile (FILE * fp, size_t mmapsize, Key * parentKey ELEKTRA_UNUSED)
 {
 	ELEKTRA_LOG_DEBUG ("truncating file %s", keyString (parentKey));
@@ -104,6 +122,15 @@ static int truncateFile (FILE * fp, size_t mmapsize, Key * parentKey ELEKTRA_UNU
 	return 1;
 }
 
+/**
+ * @brief Wrapper for stat().
+ *
+ * @param sbuf the stat structure
+ * @param parentKey holding the filename, for debug purposes
+ *
+ * @retval 1 on success
+ * @retval -1 if stat() failed
+ */
 static int statFile (struct stat * sbuf, Key * parentKey)
 {
 	ELEKTRA_LOG_DEBUG ("stat() on file %s", keyString (parentKey));
@@ -116,6 +143,17 @@ static int statFile (struct stat * sbuf, Key * parentKey)
 	return 1;
 }
 
+/**
+ * @brief Wrapper for mmap().
+ *
+ * @param addr address hint, where the mapping should start
+ * @param fp file pointer to the file to be mapped
+ * @param mmapSize size of the mapped region
+ * @param mapOpts mmap flags (MAP_PRIVATE, MAP_FIXED, ...)
+ * @param parentKey holding the filename, for debug purposes
+ *
+ * @return pointer to mapped region on success, MAP_FAILED on failure
+ */
 static char * mmapFile (void * addr, FILE * fp, size_t mmapSize, int mapOpts, Key * parentKey ELEKTRA_UNUSED)
 {
 	ELEKTRA_LOG_DEBUG ("mapping file %s", keyString (parentKey));
@@ -132,6 +170,11 @@ static char * mmapFile (void * addr, FILE * fp, size_t mmapSize, int mapOpts, Ke
 
 /* -- DynArray -------------------------------------------------------------------------------------------------------------------------- */
 
+/**
+ * @brief Allocator for DynArray.
+ *
+ * @return newly allocated DynArray
+ */
 static DynArray * newDynArray (void)
 {
 	DynArray * dynArray = elektraCalloc (sizeof (DynArray));
@@ -142,6 +185,11 @@ static DynArray * newDynArray (void)
 	return dynArray;
 }
 
+/**
+ * @brief Deallocator for DynArray.
+ *
+ * @param dynArray to be free()'d
+ */
 static void delDynArray (DynArray * dynArray)
 {
 	if (!dynArray)
@@ -159,13 +207,16 @@ static void delDynArray (DynArray * dynArray)
 	elektraFree (dynArray);
 }
 
-/*
-#ifdef DEBUG
-int findOrInsert (Key * key, DynArray * dynArray)
-#else
-static int findOrInsert (Key * key, DynArray * dynArray)
-#endif
-*/
+/**
+ * @brief Find position or insert Key pointer into DynArray.
+ *
+ * @param key to be found or inserted
+ * @param dynArray where the key should be searched for or inserted
+ *
+ * @retval -1 on memory error (malloc failed), or size exceeded
+ * @retval 0 if the key was inserted
+ * @retval 1 if the key was found
+ */
 static int findOrInsert (Key * key, DynArray * dynArray)
 {
 	size_t l = 0;
@@ -217,6 +268,14 @@ static int findOrInsert (Key * key, DynArray * dynArray)
 	return 0; // inserted
 }
 
+/**
+ * @brief Find Key pointer in the DynArray.
+ *
+ * @param key Key pointer to search for
+ * @param dynArray where the Key should be searched for
+ *
+ * @return position of the Key pointer in the DynArray, or -1 if not found or size exceeded
+ */
 static ssize_t find (Key * key, DynArray * dynArray)
 {
 	size_t l = 0;
@@ -258,22 +317,48 @@ static ssize_t find (Key * key, DynArray * dynArray)
 
 /* -- Internal Functions  --------------------------------------------------------------------------------------------------------------- */
 
+/**
+ * @brief MmapHeader initializer.
+ *
+ * @param mmapHeader to inizialize
+ */
 static void initHeader (MmapHeader * mmapHeader)
 {
 	memset (mmapHeader, 0, SIZEOF_MMAPHEADER);
 	mmapHeader->mmapMagicNumber = ELEKTRA_MAGIC_MMAP_NUMBER;
 }
 
+/**
+ * @brief MmapMetaData initializer.
+ *
+ * @param mmapMetaData to initialize
+ */
 static void initMetaData (MmapMetaData * mmapMetaData)
 {
 	memset (mmapMetaData, 0, SIZEOF_MMAPMETADATA);
 }
 
+/**
+ * @brief MmapFooter initializer.
+ *
+ * @param mmapFooter to initialize
+ */
 static void initFooter (MmapFooter * mmapFooter)
 {
+	memset (mmapFooter, 0, SIZEOF_MMAPFOOTER);
 	mmapFooter->mmapMagicNumber = ELEKTRA_MAGIC_MMAP_NUMBER;
 }
 
+/**
+ * @brief Reads the MmapHeader and MmapMetaData from a file.
+ *
+ * @param fp file pointer to read the data from
+ * @param mmapHeader buffer where the MmapHeader is stored
+ * @param mmapMetaData buffer where the MmapMetaData is stored
+ *
+ * @retval -1 if fread() failed, or magic number was wrong
+ * @retval 0 if read succeeded and the magic number was read correctly
+ */
 static int readHeader (FILE * fp, MmapHeader * mmapHeader, MmapMetaData * mmapMetaData)
 {
 	memset (mmapHeader, 0, SIZEOF_MMAPHEADER);
@@ -292,6 +377,15 @@ static int readHeader (FILE * fp, MmapHeader * mmapHeader, MmapMetaData * mmapMe
 	return -1;
 }
 
+/**
+ * @brief Reads the MmapFooter from the end of the mapped region.
+ *
+ * @param mappedRegion pointer to the mapped region
+ * @param mmapHeader the MmapHeader containing the size of the allocation
+ *
+ * @retval -1 if the magic number did not match
+ * @retval 0 if the magic number matched
+ */
 static int readFooter (char * mappedRegion, MmapHeader * mmapHeader)
 {
 	MmapFooter * mmapFooter = (MmapFooter *) (mappedRegion + mmapHeader->allocSize - SIZEOF_MMAPFOOTER);
@@ -304,6 +398,11 @@ static int readFooter (char * mappedRegion, MmapHeader * mmapHeader)
 	return -1;
 }
 
+/**
+ * @brief Writes the magic data for consistency checks.
+ *
+ * @param dest to write the data to.
+ */
 static void writeMagicData (char * dest)
 {
 	KeySet * destKeySet = (KeySet *) (dest + SIZEOF_MMAPHEADER + SIZEOF_MMAPMETADATA);
@@ -336,6 +435,11 @@ static uintptr_t generateMagicNumber (void)
 	return ret;
 }
 
+/**
+ * @brief Magic KeySet initializer.
+ *
+ * @param magicNumber to detect arbitrary byte-swaps
+ */
 static void initMagicKeySet (const uintptr_t magicNumber)
 {
 	magicKeySet.array = (Key **) magicNumber;
@@ -350,6 +454,11 @@ static void initMagicKeySet (const uintptr_t magicNumber)
 #endif
 }
 
+/**
+ * @brief Magic Key initializer.
+ *
+ * @param magicNumber to detect arbitrary byte-swaps
+ */
 static void initMagicKey (const uintptr_t magicNumber)
 {
 	magicKey.data.v = (void *) ~magicNumber;
@@ -362,6 +471,13 @@ static void initMagicKey (const uintptr_t magicNumber)
 	magicKey.meta = (KeySet *) 0xFFFE;
 }
 
+/**
+ * @brief Verify the magic KeySet.
+ *
+ * @param ks keyset to verify
+ *
+ * @return 0 if magic KeySet is correct
+ */
 static int verifyMagicKeySet (KeySet * ks)
 {
 	if (!ks)
@@ -372,6 +488,13 @@ static int verifyMagicKeySet (KeySet * ks)
 	return memcmp (ks, &magicKeySet, SIZEOF_KEYSET);
 }
 
+/**
+ * @brief Verify the magic Key.
+ *
+ * @param key to verify
+ *
+ * @return 0 if magic Key is correct
+ */
 static int verifyMagicKey (Key * key)
 {
 	if (!key)
@@ -382,6 +505,14 @@ static int verifyMagicKey (Key * key)
 	return memcmp (key, &magicKey, SIZEOF_KEY);
 }
 
+/**
+ * @brief Verify magic data in the mapped region.
+ *
+ * @param mappedRegion pointer to mapped region
+ *
+ * @retval 0 if magic data is consistent
+ * @retval -1 if magic data is inconsistent
+ */
 static int verifyMagicData (char * mappedRegion)
 {
 	KeySet * destKeySet = (KeySet *) (mappedRegion + SIZEOF_MMAPHEADER + SIZEOF_MMAPMETADATA);
@@ -396,6 +527,18 @@ static int verifyMagicData (char * mappedRegion)
 }
 
 #ifdef ENABLE_MMAP_CHECKSUM
+/**
+ * @brief Verify checksum of the critical mmap data.
+ *
+ * Verifies the CRC32 checksum of all KeySet and Key structs (including pointers/pointer arrays)
+ * as well as the MmapMetaData. Does not check Key name and value.
+ *
+ * @param mappedRegion pointer to mapped region
+ * @param mmapHeader containing the stored checksum and size of the checksum region
+ *
+ * @retval 0 if checksum was correct
+ * @retval -1 if there was a checksum mismatch
+ */
 static int verifyChecksum (char * mappedRegion, MmapHeader * mmapHeader)
 {
 	uint32_t checksum = crc32 (0L, Z_NULL, 0);
@@ -411,6 +554,23 @@ static int verifyChecksum (char * mappedRegion, MmapHeader * mmapHeader)
 }
 #endif
 
+/**
+ * @brief Calculates the size, in bytes, needed to store the KeySet in a mmap region.
+ *
+ * Iterates over the KeySet and calculates the complete size in bytes, needed to store the KeySet
+ * within a mapped region. The size includes all mmap meta-information, magic KeySet and Key for
+ * consistency checks, KeySets, meta-KeySets, Keys, meta-Keys, Key names and values.
+ * Copied meta-Keys are counted once for deduplication. If needed, padding is added to align the
+ * MmapFooter properly at the end of the mapping.
+ *
+ * The complete size and some other meta-information are stored in the MmapHeader and MmapMetaData.
+ * The DynArray stores the unique meta-Key pointers needed for deduplication.
+ *
+ * @param mmapHeader to store the allocation size
+ * @param mmapMetaData to store the number of KeySets and Keys
+ * @param returned the KeySet that should be stored
+ * @param dynArray to store meta-key pointers for deduplication
+ */
 static void calculateMmapDataSize (MmapHeader * mmapHeader, MmapMetaData * mmapMetaData, KeySet * returned, DynArray * dynArray)
 {
 	Key * cur;
@@ -440,7 +600,6 @@ static void calculateMmapDataSize (MmapHeader * mmapHeader, MmapMetaData * mmapM
 		}
 	}
 
-	// TODO: add more docu about the size, magic KeySet, magic Key
 	size_t keyArraySize = (returned->size + 1) * SIZEOF_KEY; // +1 for magic Key
 	size_t keyPtrArraySize = (returned->alloc) * SIZEOF_KEY_PTR;
 
@@ -458,9 +617,18 @@ static void calculateMmapDataSize (MmapHeader * mmapHeader, MmapMetaData * mmapM
 	mmapMetaData->numKeys = returned->size + dynArray->size;
 }
 
+/**
+ * @brief Write meta-keys to the mapped region.
+ *
+ * This function only writes all meta-keys to the mapped region.
+ * The meta-keys are later referenced in the meta-keysets.
+ *
+ * @param mmapAddr struct containing pointers to the mapped region
+ * @param dynArray containing deduplicated meta-keys
+ */
 static void writeMetaKeys (MmapAddr * mmapAddr, DynArray * dynArray)
 {
-	// allocate space in DynArray to remember the addresses of meta keys
+	// allocate space in DynArray to remember the addresses of mapped meta-keys
 	if (dynArray->size > 0)
 	{
 		dynArray->mappedKeyArray = elektraCalloc (dynArray->size * sizeof (Key *));
@@ -518,6 +686,15 @@ static void writeMetaKeys (MmapAddr * mmapAddr, DynArray * dynArray)
 	}
 }
 
+/**
+ * @brief Writes a meta keyset of a key to the mapped region.
+ *
+ * @param key holding the meta-keyset
+ * @param mmapAddr structure holding pointers to the mapped region
+ * @param dynArray holding deduplicated references to meta-keys
+ *
+ * @return pointer to the new meta keyset
+ */
 static KeySet * writeMetaKeySet (Key * key, MmapAddr * mmapAddr, DynArray * dynArray)
 {
 	// write the meta KeySet
@@ -562,6 +739,16 @@ static KeySet * writeMetaKeySet (Key * key, MmapAddr * mmapAddr, DynArray * dynA
 	return newMeta;
 }
 
+/**
+ * @brief Writes the keys of the keyset to the mapped region.
+ *
+ * For each key, the corresponding meta keyset is also written
+ * to the mapped region.
+ *
+ * @param keySet holding the keys to be written to the mapped region
+ * @param mmapAddr structure holding pointers to the mapped region
+ * @param dynArray holding deduplicated meta-key pointers
+ */
 static void writeKeys (KeySet * keySet, MmapAddr * mmapAddr, DynArray * dynArray)
 {
 	Key * cur;
@@ -622,6 +809,20 @@ static void writeKeys (KeySet * keySet, MmapAddr * mmapAddr, DynArray * dynArray
 	}
 }
 
+/**
+ * @brief Copies a keyset to a mapped region.
+ *
+ * Writes a keyset with all needed information to the mapped region and calculates
+ * the checksum. Everything is written to the mapped region, including keyset, keys,
+ * meta-information and data for consistency checks.
+ *
+ * @param dest address of the mapped region
+ * @param keySet to copy to the mapped region
+ * @param mmapHeader containing the size and checksum of the mapped region
+ * @param mmapMetaData containing meta-information of the mapped region
+ * @param mmapFooter containing a magic number for consistency checks
+ * @param dynArray containing deduplicated pointers to meta-keys
+ */
 static void copyKeySetToMmap (char * dest, KeySet * keySet, MmapHeader * mmapHeader, MmapMetaData * mmapMetaData, MmapFooter * mmapFooter,
 			      DynArray * dynArray)
 {
@@ -666,6 +867,15 @@ static void copyKeySetToMmap (char * dest, KeySet * keySet, MmapHeader * mmapHea
 	memcpy ((dest + mmapHeader->allocSize - SIZEOF_MMAPFOOTER), mmapFooter, SIZEOF_MMAPFOOTER);
 }
 
+/**
+ * @brief Replaces contents of a keyset with the keyset from the mapped region.
+ *
+ * The keyset members are replaced with data from a mapped keyset. The keyset
+ * array then points into the mapped region.
+ *
+ * @param mappedRegion pointer to mapped region, holding an already written keyset
+ * @param returned keyset to be replaced by the mapped keyset
+ */
 static void mmapToKeySet (char * mappedRegion, KeySet * returned)
 {
 	KeySet * keySet = (KeySet *) (mappedRegion + SIZEOF_MMAPHEADER + SIZEOF_MMAPMETADATA + SIZEOF_KEYSET + SIZEOF_KEY);
@@ -680,6 +890,17 @@ static void mmapToKeySet (char * mappedRegion, KeySet * returned)
 	// we intentionally to not change the KeySet->opmphm here!
 }
 
+/**
+ * @brief Updates pointers of a mapped keyset to a new location in memory.
+ *
+ * After mapping a file to a new location, all pointers have to be updated
+ * in order to be consistent. When the mapped keyset is written, we subtract
+ * the base address. Therefore, after mapping the keyset to a new memory location,
+ * we only have to add the new base address to all pointers.
+ *
+ * @param mmapMetaData meta-data of the old mapped region
+ * @param dest new mapped memory region
+ */
 static void updatePointers (MmapMetaData * mmapMetaData, char * dest)
 {
 	uintptr_t destInt = (uintptr_t) dest;
@@ -728,6 +949,12 @@ static void updatePointers (MmapMetaData * mmapMetaData, char * dest)
 	}
 }
 
+/**
+ * @brief Convert a string containing a pointer in hexadecimal notation to a void pointer.
+ *
+ * @param hexString containing a pointer in hexadecimal notation
+ * @return converted void pointer from the string
+ */
 static void * hexStringToAddress (const char * hexString)
 {
 	int hexBase = 16;
@@ -785,6 +1012,16 @@ KeySet * mmapKsDeepDup (const KeySet * source)
 	return keyset;
 }
 
+/**
+ * @brief Deeply copies a keyset from a mapped region to a newly allocated one.
+ *
+ * The new copied keyset is not within a mapped region any more.
+ *
+ * @param toCopy keyset to copy
+ * @param mmapMetaData containing meta-information
+ *
+ * @return pointer to the fresh copy of the keyset.
+ */
 static KeySet * copyKeySet (KeySet * toCopy, MmapMetaData * mmapMetaData)
 {
 	if (!mmapMetaData)
@@ -859,6 +1096,21 @@ static KeySet * copyKeySet (KeySet * toCopy, MmapMetaData * mmapMetaData)
 	return (KeySet *) dest;
 }
 
+/**
+ * @brief Unlink a mapped file.
+ *
+ * Before a mapped file can be altered, all mapped keysets have to be copied out
+ * from the mapped region. This approach is called unlinking a mapped file.
+ *
+ * To be able to unlink mapped keysets, the plugin data holds information with pointers
+ * of mapped keysets and the corresponding files. The Key names contain the filenames and
+ * mappings of a file are stored within meta-keys.
+ *
+ * Whether a keyset has been deleted has to be checked using keyset->mmapMetaData->flags
+ * (MMAP_FLAG_DELETED).
+ *
+ * @param parentKey holding the filename of the mapped file.
+ */
 static void unlinkFile (Key * parentKey)
 {
 	ELEKTRA_LOG_DEBUG ("unlink: need to unlink old mapped memory from file");
@@ -896,7 +1148,16 @@ static void unlinkFile (Key * parentKey)
 	}
 }
 
-static void saveLinkedFile (Key * found, KeySet * mappedFiles, KeySet * returned, Plugin * handle, char * mappedRegion)
+/**
+ * @brief Store a newly mapped file to the plugins list of linked files.
+ *
+ * @param key holding the filename
+ * @param mappedFiles keyset holding already mapped files
+ * @param returned keyset to be stored
+ * @param handle the plugin handle
+ * @param mappedRegion the pointer to the mapped region
+ */
+static void saveLinkedFile (Key * key, KeySet * mappedFiles, KeySet * returned, Plugin * handle, char * mappedRegion)
 {
 	char mmapAddrString[SIZEOF_ADDR_STRING];
 	snprintf (mmapAddrString, SIZEOF_ADDR_STRING - 1, "%p", (void *) (mappedRegion));
@@ -906,17 +1167,29 @@ static void saveLinkedFile (Key * found, KeySet * mappedFiles, KeySet * returned
 	snprintf (ksAddrString, SIZEOF_ADDR_STRING - 1, "%p", (void *) returned);
 	ksAddrString[SIZEOF_ADDR_STRING - 1] = '\0';
 	ELEKTRA_LOG_DEBUG ("KeySet ptr as string: %s", ksAddrString);
-	keySetMeta (found, mmapAddrString, ksAddrString);
-	ksAppendKey (mappedFiles, found);
+	keySetMeta (key, mmapAddrString, ksAddrString);
+	ksAppendKey (mappedFiles, key);
 	elektraPluginSetData (handle, mappedFiles);
 }
 
 /* -- Exported Elektra Plugin Functions ------------------------------------------------------------------------------------------------- */
 
+/**
+ * @brief Initializes the plugin data and magic keyset and key.
+ *
+ * @param handle The plugin handle.
+ * @param errorKey Unused.
+ *
+ * @retval ELEKTRA_PLUGIN_STATUS_ERROR on memory error (plugin data (keyset) could not be allocated).
+ * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if initialization was successfull.
+ */
 int elektraMmapstorageOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 {
 	// plugin initialization logic
 	KeySet * mappedFiles = ksNew (0, KS_END);
+
+	if (mappedFiles == 0) return ELEKTRA_PLUGIN_STATUS_ERROR;
+
 	elektraPluginSetData (handle, mappedFiles);
 
 	const uintptr_t magicNumber = generateMagicNumber ();
@@ -926,6 +1199,14 @@ int elektraMmapstorageOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
+/**
+ * @brief Cleans up the plugin data and unlinks all mapped files.
+ *
+ * @param handle The plugin handle.
+ * @param errorKey Unused.
+ *
+ * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS always.
+ */
 int elektraMmapstorageClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
 {
 	// free all plugin resources and shut it down
@@ -943,6 +1224,19 @@ int elektraMmapstorageClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEK
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
+/**
+ * @brief The mmapstorage get function loads a keyset from a file and returns it.
+ *
+ * On successful mapping the returned keyset is replaced by the mapped keyset.
+ * The returned keyset array then points to a mapped region.
+ *
+ * @param handle The plugin handle.
+ * @param returned The keyset which is replaced by the mapped keyset.
+ * @param parentKey Holding the filename or error message.
+ *
+ * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if the file was mapped successfully.
+ * @retval ELEKTRA_PLUGIN_STATUS_ERROR if the file could not be mapped successfully.
+ */
 int elektraMmapstorageGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 	// get all keys
@@ -1074,6 +1368,19 @@ error:
 	return ELEKTRA_PLUGIN_STATUS_ERROR;
 }
 
+/**
+ * @brief The mmapstorage set function writes a keyset to a new file.
+ *
+ * The keyset is written to a new file. If the file was mapped previously,
+ * all current mappings are unlinked.
+ *
+ * @param handle The plugin handle.
+ * @param returned The keyset to be written.
+ * @param parentKey Holding the filename or error message.
+ *
+ * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if the file was written successfully.
+ * @retval ELEKTRA_PLUGIN_STATUS_ERROR if any error occured.
+ */
 int elektraMmapstorageSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 	// set all keys
