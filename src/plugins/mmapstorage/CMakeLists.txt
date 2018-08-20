@@ -11,18 +11,15 @@ if (DEPENDENCY_PHASE)
 	unset (plugin)
 endif (DEPENDENCY_PHASE)
 
+set (MMAPSTORAGE_SOURCES dynarray.h dynarray.c mmapstorage.h mmapstorage.c)
+
 if (ENABLE_CHECKSUM)
 	add_plugin (mmapstorage
-		    SOURCES mmapstorage.h
-			    mmapstorage.c
+		    SOURCES ${MMAPSTORAGE_SOURCES}
 		    INCLUDE_DIRECTORIES ${ZLIB_INCLUDE_DIRS}
 		    LINK_LIBRARIES ${ZLIB_LIBRARIES}
 		    LINK_ELEKTRA elektra-core
 		    ADD_TEST)
 else (ENABLE_CHECKSUM)
-	add_plugin (mmapstorage
-		    SOURCES mmapstorage.h
-			    mmapstorage.c
-		    LINK_ELEKTRA elektra-core
-		    ADD_TEST)
+	add_plugin (mmapstorage SOURCES ${MMAPSTORAGE_SOURCES} LINK_ELEKTRA elektra-core ADD_TEST)
 endif (ENABLE_CHECKSUM)

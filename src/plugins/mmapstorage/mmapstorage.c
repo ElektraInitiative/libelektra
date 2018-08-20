@@ -11,6 +11,7 @@
 /* -- Imports --------------------------------------------------------------------------------------------------------------------------- */
 
 #include "mmapstorage.h"
+#include "dynarray.h"
 
 #include <kdberrors.h>
 #include <kdbhelper.h>
@@ -31,7 +32,7 @@
 #include <string.h>    // memcmp()
 #include <sys/mman.h>  // mmap()
 #include <sys/stat.h>  // stat()
-#include <sys/types.h> // ftruncate ()
+#include <sys/types.h> // ftruncate (), size_t
 #include <unistd.h>    // close(), ftruncate()
 
 #ifdef ENABLE_MMAP_CHECKSUM
@@ -48,16 +49,6 @@
 #define SIZEOF_MMAPMETADATA (sizeof (MmapMetaData))
 #define SIZEOF_MMAPFOOTER (sizeof (MmapFooter))
 #define SIZEOF_ADDR_STRING (19) // format: 0xADDR -> ADDR in hex, for 64bit addr: 2 bytes (0x) + 16 bytes (ADDR) + 1 byte (ending null)
-
-struct _dynArray
-{
-	size_t size;
-	size_t alloc;
-	Key ** keyArray;
-	Key ** mappedKeyArray;
-};
-
-typedef struct _dynArray DynArray;
 
 struct _mmapAddr
 {
@@ -166,153 +157,6 @@ static char * mmapFile (void * addr, FILE * fp, size_t mmapSize, int mapOpts, Ke
 		return MAP_FAILED;
 	}
 	return mappedRegion;
-}
-
-/* -- DynArray -------------------------------------------------------------------------------------------------------------------------- */
-
-/**
- * @brief Allocator for DynArray.
- *
- * @return newly allocated DynArray
- */
-static DynArray * newDynArray (void)
-{
-	DynArray * dynArray = elektraCalloc (sizeof (DynArray));
-	dynArray->keyArray = elektraCalloc (sizeof (Key *) * 8);
-	dynArray->mappedKeyArray = 0;
-	dynArray->size = 0;
-	dynArray->alloc = 8;
-	return dynArray;
-}
-
-/**
- * @brief Deallocator for DynArray.
- *
- * @param dynArray to be free()'d
- */
-static void delDynArray (DynArray * dynArray)
-{
-	if (!dynArray)
-	{
-		return;
-	}
-	if (dynArray->keyArray)
-	{
-		elektraFree (dynArray->keyArray);
-	}
-	if (dynArray->mappedKeyArray)
-	{
-		elektraFree (dynArray->mappedKeyArray);
-	}
-	elektraFree (dynArray);
-}
-
-/**
- * @brief Find position or insert Key pointer into DynArray.
- *
- * @param key to be found or inserted
- * @param dynArray where the key should be searched for or inserted
- *
- * @retval -1 on memory error (malloc failed), or size exceeded
- * @retval 0 if the key was inserted
- * @retval 1 if the key was found
- */
-static int findOrInsert (Key * key, DynArray * dynArray)
-{
-	size_t l = 0;
-	size_t h = dynArray->size;
-	size_t m;
-	ELEKTRA_LOG_DEBUG ("l: %zu", l);
-	ELEKTRA_LOG_DEBUG ("h: %zu", h);
-	ELEKTRA_LOG_DEBUG ("dynArray->size: %zu", dynArray->size);
-	ELEKTRA_LOG_DEBUG ("dynArray->alloc: %zu", dynArray->alloc);
-
-	while (l < h)
-	{
-		m = (l + h) >> 1;
-		ELEKTRA_LOG_DEBUG ("m: %zu", m);
-
-		if (dynArray->keyArray[m] > key)
-		{
-			h = m;
-		}
-		else if (dynArray->keyArray[m] < key)
-		{
-			l = ++m;
-		}
-		else
-		{
-			return 1; // found
-		}
-	}
-	// insert key at index l
-	if (dynArray->size == dynArray->alloc)
-	{
-		// doubling the array size to keep reallocations logarithmic
-		size_t oldAllocSize = dynArray->alloc;
-		if (oldAllocSize > (SIZE_MAX / 2))
-		{
-			return -1; // error
-		}
-		Key ** new = elektraCalloc ((2 * oldAllocSize) * sizeof (Key *));
-		memcpy (new, dynArray->keyArray, dynArray->size * sizeof (Key *));
-		elektraFree (dynArray->keyArray);
-		dynArray->keyArray = new;
-		dynArray->alloc = 2 * oldAllocSize;
-	}
-
-	memmove ((void *) (dynArray->keyArray + l + 1), (void *) (dynArray->keyArray + l), ((dynArray->size) - l) * (sizeof (size_t)));
-	dynArray->keyArray[l] = key;
-	dynArray->size += 1;
-
-	return 0; // inserted
-}
-
-/**
- * @brief Find Key pointer in the DynArray.
- *
- * @param key Key pointer to search for
- * @param dynArray where the Key should be searched for
- *
- * @return position of the Key pointer in the DynArray, or -1 if not found or size exceeded
- */
-static ssize_t find (Key * key, DynArray * dynArray)
-{
-	size_t l = 0;
-	size_t h = dynArray->size;
-	size_t m;
-	ELEKTRA_LOG_DEBUG ("l: %zu", l);
-	ELEKTRA_LOG_DEBUG ("h: %zu", h);
-	ELEKTRA_LOG_DEBUG ("dynArray->size: %zu", dynArray->size);
-	ELEKTRA_LOG_DEBUG ("dynArray->alloc: %zu", dynArray->alloc);
-
-	while (l < h)
-	{
-		m = (l + h) >> 1;
-		ELEKTRA_LOG_DEBUG ("m: %zu", m);
-
-		if (dynArray->keyArray[m] > key)
-		{
-			h = m;
-		}
-		else if (dynArray->keyArray[m] < key)
-		{
-			l = ++m;
-		}
-		else
-		{
-			if (m < SSIZE_MAX)
-			{
-				return m; // found
-			}
-			else
-			{
-				return -1;
-			}
-		}
-	}
-
-	return -1;
 }
 
 /* -- Internal Functions  --------------------------------------------------------------------------------------------------------------- */
@@ -590,7 +434,7 @@ static void calculateMmapDataSize (MmapHeader * mmapHeader, MmapMetaData * mmapM
 			ksRewind (cur->meta);
 			while ((curMeta = ksNext (cur->meta)) != 0)
 			{
-				if (findOrInsert (curMeta, dynArray) == 0)
+				if (elektraMmapDynArrayFindOrInsert (curMeta, dynArray) == 0)
 				{
 					// key was just inserted
 					dataBlocksSize += (curMeta->keySize + curMeta->keyUSize + curMeta->dataSize);
@@ -716,7 +560,7 @@ static KeySet * writeMetaKeySet (Key * key, MmapAddr * mmapAddr, DynArray * dynA
 		while ((metaKey = keyNextMeta (key)) != 0)
 		{
 			// get address of mapped key and store it in the new array
-			mappedMetaKey = dynArray->mappedKeyArray[find ((Key *) metaKey, dynArray)];
+			mappedMetaKey = dynArray->mappedKeyArray[elektraMmapDynArrayFind ((Key *) metaKey, dynArray)];
 			newMeta->array[metaKeyIndex] = (Key *) ((char *) mappedMetaKey - mmapAddr->mmapAddrInt);
 			if (mappedMetaKey->ksReference < SSIZE_MAX)
 			{
@@ -985,7 +829,7 @@ static void * hexStringToAddress (const char * hexString)
  * @return a deep copy of source on success
  * @retval 0 on NULL pointer or a memory error happened
  */
-KeySet * mmapKsDeepDup (const KeySet * source)
+static KeySet * mmapKsDeepDup (const KeySet * source)
 {
 	if (!source) return 0;
 
@@ -1034,7 +878,7 @@ static KeySet * copyKeySet (KeySet * toCopy, MmapMetaData * mmapMetaData)
 		return 0;
 	}
 
-	DynArray * dynArray = newDynArray ();
+	DynArray * dynArray = elektraMmapDynArrayNew ();
 
 	Key * cur = 0;
 	ksRewind (toCopy);
@@ -1046,7 +890,7 @@ static KeySet * copyKeySet (KeySet * toCopy, MmapMetaData * mmapMetaData)
 			ksRewind (cur->meta);
 			while ((curMetaKey = ksNext (cur->meta)) != 0)
 			{
-				if (findOrInsert (curMetaKey, dynArray) == 0)
+				if (elektraMmapDynArrayFindOrInsert (curMetaKey, dynArray) == 0)
 				{
 					// key was just inserted
 				}
@@ -1084,7 +928,8 @@ static KeySet * copyKeySet (KeySet * toCopy, MmapMetaData * mmapMetaData)
 			ksRewind (cur->meta);
 			for (size_t i = 0; i < cur->meta->size; ++i)
 			{
-				Key * newMetaKey = dynArray->mappedKeyArray[find ((Key *) cur->meta->array[i], dynArray)];
+				Key * newMetaKey =
+					dynArray->mappedKeyArray[elektraMmapDynArrayFind ((Key *) cur->meta->array[i], dynArray)];
 				ksAppendKey (newMetaKs, newMetaKey);
 			}
 			ksDel (cur->meta);
@@ -1092,7 +937,7 @@ static KeySet * copyKeySet (KeySet * toCopy, MmapMetaData * mmapMetaData)
 		}
 	}
 
-	delDynArray (dynArray);
+	elektraMmapDynArrayDelete (dynArray);
 	return (KeySet *) dest;
 }
 
@@ -1404,7 +1249,7 @@ int elektraMmapstorageSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 		goto error;
 	}
 
-	dynArray = newDynArray ();
+	dynArray = elektraMmapDynArrayNew ();
 
 	MmapHeader mmapHeader;
 	MmapMetaData mmapMetaData;
@@ -1447,7 +1292,7 @@ int elektraMmapstorageSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 		goto error;
 	}
 
-	delDynArray (dynArray);
+	elektraMmapDynArrayDelete (dynArray);
 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 
@@ -1463,7 +1308,7 @@ error:
 		munmap (mappedRegion, mmapHeader.allocSize);
 	}
 	fclose (fp);
-	delDynArray (dynArray);
+	elektraMmapDynArrayDelete (dynArray);
 
 	errno = errnosave;
 	return ELEKTRA_PLUGIN_STATUS_ERROR;
