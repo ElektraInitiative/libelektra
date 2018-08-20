@@ -41,7 +41,7 @@ Testsuite: autopkgtest
 Package: libelektra4-all
 Architecture: any
 Depends: libelektra4, libelektra4-experimental, libelektra4-gen,
-  libelektra4-augeas, libelektra4-dbus, libelektra4-zmq, libelektra4-lua,
+  libelektra4-augeas, libelektra4-dbus, libelektra4-zeromq, libelektra4-lua,
   libelektra4-python, libelektra4-xmltool, libelektra4-xerces, libelektra4-yajl,
   lua-elektra, libelektra4-python2, elektra-bin, elektra-qt-gui,
   libelektra4-crypto, libelektra4-curl, libelektra4-journald
