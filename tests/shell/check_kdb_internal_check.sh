@@ -62,6 +62,9 @@ do
 		'crypto_botan')
 			continue
 			;;
+		'gpgme')
+			continue
+			;;
 		'xerces')
 			continue
 			;;

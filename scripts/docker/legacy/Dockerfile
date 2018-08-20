@@ -22,6 +22,7 @@ RUN apt-get -qq update && apt-get -qq -y install \
 	libgit2-dev \
 	libboost-all-dev \
 	libssl-dev \
+	libgpgme-dev \
 	libdbus-1-dev \
 	libpcre3-dev \
 	libpcre++-dev \

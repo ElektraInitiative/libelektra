@@ -180,6 +180,7 @@ before_install:
       fi
       brew install dbus
       brew install discount
+      brew install gpgme
       brew install libgcrypt
       brew install libgit2
       brew install libuv
