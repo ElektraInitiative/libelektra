@@ -11,7 +11,6 @@ RUN apt-get update && apt-get -y install \
     automake \
     cmake \
     pkg-config \
-    bison \
     ruby \
     ruby-dev \
     python-dev \

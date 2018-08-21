@@ -13,7 +13,6 @@ RUN apt-get update && apt-get -y install \
         automake \
         cmake \
         pkg-config \
-        bison \
         ruby-dev \
         python-dev \
         python-pip \

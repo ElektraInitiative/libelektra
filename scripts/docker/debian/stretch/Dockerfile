@@ -12,7 +12,6 @@ RUN apt-get update \
         automake \
         cmake \
         pkg-config \
-        bison \
         ruby \
         ruby-dev \
         python-all \
