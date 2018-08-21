@@ -61,13 +61,21 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.8.
 
   In our benchmark, the `mmapstorage` plugin writes more than 14x faster,
   and reads more than 67x faster than the `dump` storage plugin. *(Mihael Pranjić)*
-- <<HIGHLIGHT1>>
+
+
+- Hybrid Search Algorithm for `ksLookup (...)`
+
 - <<HIGHLIGHT2>>
 - <<HIGHLIGHT3>>
 
 
-### <<HIGHLIGHT1>>
+### Hybrid Search Algorithm for `ksLookup (...)`
 
+The hybrid search algorithm is now implemented, this concludes the extension of the `ksLookup (...)` search with the
+[order preserving minimal perfect hash map (OPMPHM)](https://master.libelektra.org/doc/dev/data-structures.md#order-preserving-minimal-perfect-hash-map-aka-opmphm).
+The hybrid search combines the best properties of the binary search and the [OPMPHM](https://master.libelektra.org/doc/dev/data-structures.md#order-preserving-minimal-perfect-hash-map-aka-opmphm).
+The hybrid search decides dynamically which search algorithm to use, the API user can overrule the hybrid search by passing
+`KDB_O_OPMPHM` or `KDB_O_OPMPHM` to the `ksLookup (...)`. *(Kurt Micheli)*
 
 ### <<HIGHLIGHT2>>
 

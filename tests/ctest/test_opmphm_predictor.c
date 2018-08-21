@@ -173,6 +173,60 @@ void test_ks_flag (void)
 	ksDel (ks);
 }
 
+// will fail due to action limit
+void test_ks (void)
+{
+	KeySet * ks = ksNew (10, keyNew ("/a", KEY_END), keyNew ("/b", KEY_END), keyNew ("/c", KEY_END), keyNew ("/d", KEY_END),
+			     keyNew ("/e", KEY_END), keyNew ("/f", KEY_END), keyNew ("/g", KEY_END), keyNew ("/h", KEY_END),
+			     keyNew ("/i", KEY_END), keyNew ("/j", KEY_END), KS_END);
+
+	exit_if_fail (ks->opmphmPredictor, "no predictor here");
+
+	// overrule with binary search
+	Key * found = ksLookupByName (ks, "/a", KDB_O_BINSEARCH);
+	succeed_if (found, "key found");
+
+	succeed_if (ks->opmphmPredictor->lookupCount == 0, "predictor touched");
+	succeed_if (ks->opmphmPredictor->history == 0, "predictor touched");
+
+	// overrule with OPMPHM
+	found = ksLookupByName (ks, "/a", KDB_O_OPMPHM);
+	succeed_if (found, "key found");
+
+	succeed_if (ks->opmphmPredictor->lookupCount == 0, "predictor touched");
+	succeed_if (ks->opmphmPredictor->history == 0, "predictor touched");
+
+	// use predictor
+	found = ksLookupByName (ks, "/a", KDB_O_NONE);
+	succeed_if (found, "key found");
+
+	succeed_if (ks->opmphmPredictor->lookupCount != 0, "predictor not touched");
+
+	// copy
+	KeySet * copy = ksDup (ks);
+	exit_if_fail (copy, "copy");
+	succeed_if (copy->opmphmPredictor->lookupCount == ks->opmphmPredictor->lookupCount, "copy predictor lookupCount");
+	succeed_if (copy->opmphmPredictor->history == ks->opmphmPredictor->history, "copy predictor history");
+	succeed_if (copy->opmphmPredictor->ksSize == ks->opmphmPredictor->ksSize, "copy predictor ksSize");
+	ksDel (copy);
+
+	copy = ksDeepDup (ks);
+	exit_if_fail (copy, "copy");
+	succeed_if (copy->opmphmPredictor->lookupCount == ks->opmphmPredictor->lookupCount, "copy predictor lookupCount");
+	succeed_if (copy->opmphmPredictor->history == ks->opmphmPredictor->history, "copy predictor history");
+	succeed_if (copy->opmphmPredictor->ksSize == ks->opmphmPredictor->ksSize, "copy predictor ksSize");
+	ksDel (copy);
+
+	copy = ksNew (0, KS_END);
+	succeed_if (ksCopy (copy, ks) == 1, "copy");
+	succeed_if (copy->opmphmPredictor->lookupCount == ks->opmphmPredictor->lookupCount, "copy predictor lookupCount");
+	succeed_if (copy->opmphmPredictor->history == ks->opmphmPredictor->history, "copy predictor history");
+	succeed_if (copy->opmphmPredictor->ksSize == ks->opmphmPredictor->ksSize, "copy predictor ksSize");
+	ksDel (copy);
+
+	ksDel (ks);
+}
+
 
 int main (int argc, char ** argv)
 {
@@ -185,6 +239,7 @@ int main (int argc, char ** argv)
 	test_internal_nochange ();
 	test_internal_change_whitebox ();
 	test_ks_flag ();
+	test_ks ();
 
 	print_result ("test_opmphm_predictor");
 

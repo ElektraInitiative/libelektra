@@ -13,6 +13,15 @@
 #include <stdlib.h>
 #include <string.h>
 
+
+const uint16_t opmphmPredictorHistoryMask = 0x7FF; // 11 bit history
+//~ const uint16_t opmphmPredictorHistoryMask = 0x1FF; // 9 bit history
+//~ const uint16_t opmphmPredictorHistoryMask = 0x7F; // 7 bit history
+//~ const uint16_t opmphmPredictorHistoryMask = 0x1F; // 5 bit history
+
+
+const size_t opmphmPredictorActionLimit = 0;
+
 /**
  * Prediction Automata A2
  *
@@ -152,7 +161,6 @@ OpmphmPredictor * opmphmPredictorNew (void)
 		bytesInPatternTable = 1;
 	}
 	out->patternTable = elektraCalloc (bytesInPatternTable * sizeof (uint8_t));
-	//~ memset (out->patternTable, 0x0, bytesInPatternTable * sizeof (uint8_t));
 	if (!out->patternTable)
 	{
 		elektraFree (out);
@@ -176,6 +184,7 @@ void opmphmPredictorCopy (OpmphmPredictor * dest, OpmphmPredictor * source)
 	dest->history = source->history;
 	dest->size = source->size;
 	dest->lookupCount = source->lookupCount;
+	dest->ksSize = source->ksSize;
 	// copy patternTable
 	memcpy (dest->patternTable, source->patternTable, source->size * sizeof (uint8_t));
 }

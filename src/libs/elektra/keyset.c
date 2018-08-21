@@ -50,7 +50,7 @@
 static void elektraOpmphmInvalidate (KeySet * ks ELEKTRA_UNUSED)
 {
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
-	ks->flags |= KS_FLAG_NAME_CHANGE;
+	set_bit (ks->flags, KS_FLAG_NAME_CHANGE);
 	if (ks && ks->opmphm) opmphmClear (ks->opmphm);
 #endif
 }
@@ -58,7 +58,7 @@ static void elektraOpmphmInvalidate (KeySet * ks ELEKTRA_UNUSED)
 /**
  * @internal
  *
- * @brief KeySets OPMPHM copy.
+ * @brief KeySets OPMPHM and OPMPHM predictor copy.
  *
  * Should be invoked by every function making a copy of a KeySet.
  *
@@ -73,10 +73,23 @@ static void elektraOpmphmCopy (KeySet * dest ELEKTRA_UNUSED, const KeySet * sour
 		return;
 	}
 	// nothing to copy
+	// OPMPHM predictor
+	if (source->opmphmPredictor)
+	{
+		if (!dest->opmphmPredictor)
+		{
+			dest->opmphmPredictor = opmphmPredictorNew ();
+		}
+		if (dest->opmphmPredictor)
+		{
+			opmphmPredictorCopy (dest->opmphmPredictor, source->opmphmPredictor);
+		}
+	}
 	if (!opmphmIsBuild (source->opmphm))
 	{
 		return;
 	}
+	// OPMPHM
 	if (!dest->opmphm)
 	{
 		dest->opmphm = opmphmNew ();
@@ -421,6 +434,11 @@ int ksDel (KeySet * ks)
 	{
 		opmphmDel (ks->opmphm);
 	}
+	if (ks->opmphmPredictor)
+	{
+		opmphmPredictorDel (ks->opmphmPredictor);
+	}
+
 #endif
 
 	if (ks->mmapMetaData)
@@ -2111,38 +2129,97 @@ static Key * elektraLookupSearch (KeySet * ks, Key * key, option_t options)
 	Key * found = 0;
 
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
-	// KDB_O_WITHOWNER and KDB_O_NOCASE flags are not compatible with OPMPHM
-	if (((options & KDB_O_WITHOWNER) || (options & KDB_O_NOCASE)) && (options & KDB_O_OPMPHM))
+	// flags incompatible with OPMPHM
+	if (test_bit (options, (KDB_O_WITHOWNER | KDB_O_NOCASE)))
 	{
-		// remove OPMPHM
-		options ^= KDB_O_OPMPHM;
+		// remove KDB_O_OPMPHM and set KDB_O_BINSEARCH
+		clear_bit (options, KDB_O_OPMPHM);
+		set_bit (options, KDB_O_BINSEARCH);
 	}
 
-	if (options & KDB_O_OPMPHM)
+	if (!ks->opmphmPredictor && ks->size > opmphmPredictorActionLimit)
 	{
-		// remove OPMPHM, due to callback stuff
-		options ^= KDB_O_OPMPHM;
-		if (!opmphmIsBuild (ks->opmphm))
+		// lazy loading of predictor when over action limit
+		ks->opmphmPredictor = opmphmPredictorNew ();
+	}
+
+	// predictor
+	if (!test_bit (options, (KDB_O_BINSEARCH | KDB_O_OPMPHM)))
+	{
+		// predictor not overruled
+		if (ks->opmphmPredictor)
 		{
-			if (elektraLookupBuildOpmphm (ks))
+			if (test_bit (ks->flags, KS_FLAG_NAME_CHANGE))
 			{
-				// when OPMPHM build fails use binary search as backup
-				found = elektraLookupBinarySearch (ks, key, options);
+				// KeySet changed ask predictor
+				if (opmphmPredictor (ks->opmphmPredictor, ks->size))
+				{
+					set_bit (options, KDB_O_OPMPHM);
+				}
+				else
+				{
+					set_bit (options, KDB_O_BINSEARCH);
+				}
+				// resolve flag
+				clear_bit (ks->flags, KS_FLAG_NAME_CHANGE);
 			}
 			else
 			{
-				found = elektraLookupOpmphmSearch (ks, key, options);
+				if (opmphmIsBuild (ks->opmphm))
+				{
+					opmphmPredictorIncCountOpmphm (ks->opmphmPredictor);
+					set_bit (options, KDB_O_OPMPHM);
+				}
+				else if (opmphmPredictorIncCountBinarySearch (ks->opmphmPredictor, ks->size))
+				{
+					// endless binary search protection
+					set_bit (options, KDB_O_OPMPHM);
+				}
+				else
+				{
+					set_bit (options, KDB_O_BINSEARCH);
+				}
 			}
 		}
 		else
 		{
-			found = elektraLookupOpmphmSearch (ks, key, options);
+			// when predictor is not here use binary search as backup
+			set_bit (options, KDB_O_BINSEARCH);
 		}
 	}
-	else
+
+	// the actual lookup
+	if ((options & (KDB_O_BINSEARCH | KDB_O_OPMPHM)) == KDB_O_OPMPHM)
+	{
+		if (opmphmIsBuild (ks->opmphm) || !elektraLookupBuildOpmphm (ks))
+		{
+			found = elektraLookupOpmphmSearch (ks, key, options);
+		}
+		else
+		{
+			// when OPMPHM build fails use binary search as backup
+			found = elektraLookupBinarySearch (ks, key, options);
+		}
+	}
+	else if ((options & (KDB_O_BINSEARCH | KDB_O_OPMPHM)) == KDB_O_BINSEARCH)
 	{
 		found = elektraLookupBinarySearch (ks, key, options);
 	}
+	else
+	{
+		// both flags set, make the best out of it
+		if (opmphmIsBuild (ks->opmphm))
+		{
+			found = elektraLookupOpmphmSearch (ks, key, options);
+		}
+		else
+		{
+			found = elektraLookupBinarySearch (ks, key, options);
+		}
+	}
+
+	// remove flags to not interfere with callback
+	clear_bit (options, (KDB_O_OPMPHM | KDB_O_BINSEARCH));
 #else
 	found = elektraLookupBinarySearch (ks, key, options);
 #endif
@@ -2257,6 +2334,12 @@ static Key * elektraLookupCreateKey (KeySet * ks, Key * key, ELEKTRA_UNUSED opti
  *
  * @par KDB_O_NOCASE (deprecated)
  * Lookup ignoring case (needs ::KDB_O_NOALL).
+ *
+ *
+ * @par Hybrid search
+ * When Elektra is compiled with `ENABLE_OPTIMIZATIONS=ON` a hybrid search decides
+ * dynamically between the binary search and the [OPMPHM](https://master.libelektra.org/doc/dev/data-structures.md#order-preserving-minimal-perfect-hash-map-aka-opmphm).
+ * The hybrid search can be overruled by passing ::KDB_O_OPMPHM or ::KDB_O_BINSEARCH in the options to ksLookup().
  *
  *
  *
@@ -2620,6 +2703,7 @@ int ksInit (KeySet * ks)
 	ks->opmphm = NULL;
 	// first lookup should predict so invalidate it
 	elektraOpmphmInvalidate (ks);
+	ks->opmphmPredictor = NULL;
 #endif
 
 	return 0;
