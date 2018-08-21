@@ -24,6 +24,7 @@ RUN apt-get update \
         tclcl-dev \
         libaugeas-dev \
         libbotan1.10-dev \
+        libgpgme-dev \
         libyajl-dev \
         git \
         libgit2-dev \

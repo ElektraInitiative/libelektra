@@ -62,6 +62,11 @@ The following section lists news about the [modules](https://www.libelektra.org/
    for it to mimick the proxied plugin's contract in Elektra. It can be used with simple
    plugins like `dump` however, check the limitations in the readme for more details.  *(Armin Wurzinger)*
 
+### gpgme
+
+- The `gpgme` plugin was brought into existence to provide cryptographic functions using GnuGP via the `libgpgme` library. See [#896] *(Peter Nirschl)*
+
+
 ### <<Plugin1>>
 
 - <<TODO>>
@@ -73,6 +78,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+
 
 ### <<Plugin3>>
 
