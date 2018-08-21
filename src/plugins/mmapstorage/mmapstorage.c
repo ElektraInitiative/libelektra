@@ -517,7 +517,7 @@ static void writeMetaKeys (MmapAddr * mmapAddr, DynArray * dynArray)
 		}
 
 		// move Key itself
-		mmapMetaKey->flags = KEY_FLAG_MMAP_STRUCT | KEY_FLAG_MMAP_KEY | KEY_FLAG_MMAP_DATA;
+		mmapMetaKey->flags = curMeta->flags | KEY_FLAG_MMAP_STRUCT | KEY_FLAG_MMAP_KEY | KEY_FLAG_MMAP_DATA;
 		mmapMetaKey->key = (char *) metaKeyNamePtr;
 		mmapMetaKey->data.v = (void *) metaKeyValuePtr;
 		mmapMetaKey->meta = 0;
@@ -549,7 +549,7 @@ static KeySet * writeMetaKeySet (Key * key, MmapAddr * mmapAddr, DynArray * dynA
 		newMeta = (KeySet *) mmapAddr->metaKsPtr;
 		mmapAddr->metaKsPtr += SIZEOF_KEYSET;
 
-		newMeta->flags = KS_FLAG_MMAP_STRUCT | KS_FLAG_MMAP_ARRAY;
+		newMeta->flags = oldMeta->flags | KS_FLAG_MMAP_STRUCT | KS_FLAG_MMAP_ARRAY;
 		newMeta->array = (Key **) mmapAddr->metaKsArrayPtr;
 		mmapAddr->metaKsArrayPtr += SIZEOF_KEY_PTR * oldMeta->alloc;
 
@@ -637,7 +637,7 @@ static void writeKeys (KeySet * keySet, MmapAddr * mmapAddr, DynArray * dynArray
 		KeySet * newMeta = writeMetaKeySet (cur, mmapAddr, dynArray);
 
 		// move Key itself
-		mmapKey->flags = KEY_FLAG_MMAP_STRUCT | KEY_FLAG_MMAP_KEY | KEY_FLAG_MMAP_DATA;
+		mmapKey->flags = cur->flags | KEY_FLAG_MMAP_STRUCT | KEY_FLAG_MMAP_KEY | KEY_FLAG_MMAP_DATA;
 		mmapKey->key = (char *) keyNamePtr;
 		mmapKey->keySize = cur->keySize;
 		mmapKey->keyUSize = cur->keyUSize;
@@ -689,7 +689,7 @@ static void copyKeySetToMmap (char * dest, KeySet * keySet, MmapHeader * mmapHea
 		writeKeys (keySet, &mmapAddr, dynArray);
 	}
 
-	mmapAddr.ksPtr->flags = KS_FLAG_MMAP_STRUCT | KS_FLAG_MMAP_ARRAY;
+	mmapAddr.ksPtr->flags = keySet->flags | KS_FLAG_MMAP_STRUCT | KS_FLAG_MMAP_ARRAY;
 	mmapAddr.ksPtr->array = (Key **) mmapAddr.ksArrayPtr;
 	mmapAddr.ksPtr->array[keySet->size] = 0;
 	mmapAddr.ksPtr->array = (Key **) ((char *) mmapAddr.ksArrayPtr - mmapAddr.mmapAddrInt);

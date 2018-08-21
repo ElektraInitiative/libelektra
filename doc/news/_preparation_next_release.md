@@ -183,6 +183,9 @@ you up to date with the multi-language support provided by Elektra.
   *(René Schwaiger)*
 - The test `testscr_check_bashisms` does not print warnings about skipped files anymore. *(René Schwaiger)*
 -  We added a [Markdown Shell Recorder][] test for the [`shell` plugin ](https://www.libelektra.org/plugins/shell). *(René Schwaiger)*
+- Added many storage plugin tests. Most tests use the keyset, key name and value APIs.
+  Currently, the tests are only active for dump and mmapstorage. *(Mihael Pranjić)*
+- <<TODO>>
 
 [Markdown Shell Recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
 
