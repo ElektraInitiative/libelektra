@@ -1230,3 +1230,10 @@ severity:warning
 ingroup:plugin
 module:zeromqsend
 macro:ZEROMQSEND_ERROR
+
+number: 197
+description:Plugin name to proxy in a process is invalid, it will not be loaded
+severity:warning
+ingroup:plugin
+module:process
+macro:PROCESS_INITIALIZATION

@@ -256,5 +256,6 @@ binding during run-time.
 - [list](list/) loads other plugins
 - [iterate](iterate/) iterate over all keys and run exported functions on tagged keys
 - [semlock](semlock/) a semaphore based global locking logic
+- [process](process/) proxy plugin that executes other plugins in a separate process
 - [profile](profile/) links profile keys
 - [simplespeclang](simplespeclang/) simple configuration specification language

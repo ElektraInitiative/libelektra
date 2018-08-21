@@ -52,21 +52,27 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.8.
 
 The following section lists news about the [modules](https://www.libelektra.org/plugins/readme) we updated in this release.
 
+### Process
+
+-  There is also a new plugin called [process](https://libelektra.org/plugins/process).
+   This plugin utilizes the pluginprocess library in order to execute arbitrary other
+   plugins in an own process, acting as a proxy itself. Therefore it is not required 
+   to explicitly change a plugin's implementation if it shall be executed in an own
+   process. This plugin is not completely finished yet, as currently there is no way
+   for it to mimick the proxied plugin's contract in Elektra. It can be used with simple
+   plugins like `dump` however, check the limitations in the readme for more details.  *(Armin Wurzinger)*
+
 ### <<Plugin1>>
 
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
 
-
-
 ### <<Plugin2>>
 
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-
-
 
 ### <<Plugin3>>
 

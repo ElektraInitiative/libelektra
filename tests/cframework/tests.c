@@ -406,11 +406,11 @@ int output_warnings (Key * warningKey)
 	if (!metaWarnings) return 1; /* There are no current warnings */
 
 	int nrWarnings = atoi (keyString (metaWarnings));
-	char buffer[] = "warnings/#00\0description";
 
 	printf ("There are %d warnings\n", nrWarnings + 1);
 	for (int i = 0; i <= nrWarnings; ++i)
 	{
+		char buffer[] = "warnings/#00\0description";
 		buffer[10] = i / 10 % 10 + '0';
 		buffer[11] = i % 10 + '0';
 		printf ("buffer is: %s\n", buffer);

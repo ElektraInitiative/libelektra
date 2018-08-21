@@ -29,7 +29,6 @@ std::vector<std::string> getAllPlugins ()
 	std::vector<std::string> plugins = mpd.listAllPlugins ();
 
 	// remove known problems
-	plugins.erase (std::remove (plugins.begin (), plugins.end (), "haskell"), plugins.end ());
 	plugins.erase (std::remove (plugins.begin (), plugins.end (), "xerces"), plugins.end ());
 	plugins.erase (std::remove (plugins.begin (), plugins.end (), "ruby"), plugins.end ());
 	plugins.erase (std::remove (plugins.begin (), plugins.end (), "jni"), plugins.end ());

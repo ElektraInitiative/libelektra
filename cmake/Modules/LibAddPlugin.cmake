@@ -179,6 +179,7 @@ function (add_plugintest testname)
 endfunction (add_plugintest)
 
 function (plugin_check_if_included PLUGIN_SHORT_NAME)
+	set (NOT_INCLUDED "" PARENT_SCOPE)
 	list (FIND PLUGINS
 		   "-${PLUGIN_SHORT_NAME}"
 		   FOUND_EXCLUDE_NAME)
