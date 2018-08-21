@@ -28,7 +28,7 @@
 #endif
 
 #include "kdbprivate.h"
-#include <kdblogger.h>
+
 
 /**
  * @defgroup keyvalue Value Manipulation Methods
@@ -541,7 +541,6 @@ ssize_t keySetRaw (Key * key, const void * newBinary, size_t dataSize)
 		}
 
 		if (-1 == elektraRealloc ((void **) &key->data.v, key->dataSize)) return -1;
-
 		if (previous == key->data.v)
 		{
 			// In case the regions overlap, use memmove to stay safe

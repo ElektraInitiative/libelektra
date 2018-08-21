@@ -32,8 +32,6 @@
 #include <kdbassert.h>
 #include <kdbrand.h>
 
-#include <kdblogger.h>
-
 
 #define ELEKTRA_MAX_PREFIX_SIZE sizeof ("namespace/")
 #define ELEKTRA_MAX_NAMESPACE_SIZE sizeof ("system")
@@ -337,7 +335,6 @@ KeySet * ksDeepDup (const KeySet * source)
 	}
 
 	elektraOpmphmCopy (keyset, source);
-
 	return keyset;
 }
 
@@ -488,7 +485,6 @@ static int keyCompareByName (const void * p1, const void * p2)
 	size_t const nameSize1 = key1->keyUSize;
 	size_t const nameSize2 = key2->keyUSize;
 	int ret = 0;
-
 	if (nameSize1 == nameSize2)
 	{
 		ret = memcmp (name1, name2, nameSize2);
@@ -963,7 +959,6 @@ ssize_t ksAppend (KeySet * ks, const KeySet * toAppend)
 	/* Do only one resize in advance */
 	for (toAlloc = ks->alloc; ks->size + toAppend->size >= toAlloc; toAlloc *= 2)
 		;
-
 	ksResize (ks, toAlloc - 1);
 
 	/* TODO: here is lots of room for optimizations */
