@@ -132,6 +132,7 @@ static DBusConnection * getDbusConnection (DBusBusType type)
 		printf ("connect: Failed to open connection to %s message bus: %s\n", (type == DBUS_BUS_SYSTEM) ? "system" : "session",
 			error.message);
 		dbus_error_free (&error);
+		dbus_shutdown ();
 		return NULL;
 	}
 	dbus_error_free (&error);
