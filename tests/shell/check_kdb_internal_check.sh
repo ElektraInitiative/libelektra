@@ -56,6 +56,9 @@ do
 	ASAN='@ENABLE_ASAN@'
 	if [ "$ASAN" = 'ON' ]; then
 		case "$PLUGIN" in
+		'augeas') # Reference: https://travis-ci.org/sanssecours/elektra/jobs/418524229
+			continue
+			;;
 		'crypto_gcrypt')
 			continue
 			;;
