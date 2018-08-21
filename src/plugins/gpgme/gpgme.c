@@ -500,7 +500,6 @@ static int gpgDecrypt (ELEKTRA_UNUSED Plugin * handle, KeySet * data, Key * erro
 
 		gpgme_data_t ciphertext;
 		gpgme_data_t plaintext;
-		gpgme_decrypt_result_t dec_result;
 		int originallyBinary = isOriginallyBinary (k);
 
 		err = gpgme_data_new_from_mem (&ciphertext, keyValue (k), keyGetValueSize (k), 0);
@@ -529,8 +528,6 @@ static int gpgDecrypt (ELEKTRA_UNUSED Plugin * handle, KeySet * data, Key * erro
 			gpgme_data_release (ciphertext);
 			goto cleanup;
 		}
-
-		dec_result = gpgme_op_decrypt_result (ctx);
 
 		if (transferGpgmeDataToElektraKey (plaintext, k, errorKey, !originallyBinary) != 1)
 		{
