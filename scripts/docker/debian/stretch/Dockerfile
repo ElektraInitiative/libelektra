@@ -73,7 +73,6 @@ RUN apt-get update \
         graphviz \
         gawk \
         lcov \
-        icheck \
         valgrind \
     && rm -rf /var/lib/apt/lists/*
 
