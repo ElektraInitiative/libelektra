@@ -383,7 +383,6 @@ static int gpgEncrypt (Plugin * handle, KeySet * data, Key * errorKey)
 		gpgme_data_t ciphertext;
 		gpgme_encrypt_result_t result;
 		gpgme_invalid_key_t invalidKey;
-		int keyDataType;
 
 		if (!isMarkedForEncryption (k) || isSpecNamespace (k) || isNullValue (k))
 		{
@@ -391,7 +390,6 @@ static int gpgEncrypt (Plugin * handle, KeySet * data, Key * errorKey)
 		}
 
 		// preserve the data type of k (string, binary)
-		keyDataType = keyIsBinary (k);
 		if (!keyIsBinary (k))
 		{
 			err = gpgme_data_new_from_mem (&input, keyString (k), strlen (keyString (k)) + 1, 0);
