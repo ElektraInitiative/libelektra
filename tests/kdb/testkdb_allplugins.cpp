@@ -20,6 +20,7 @@
 
 #include <gtest/gtest.h>
 #include <kdb.hpp>
+#include <kdbconfig.h>
 
 std::vector<std::string> getAllPlugins ()
 {
@@ -42,6 +43,11 @@ std::vector<std::string> getAllPlugins ()
 
 	// Valgrind reports memory leaks for the `semlock` plugin on Debian Unstable: http://issues.libelektra.org/2113
 	plugins.erase (std::remove (plugins.begin (), plugins.end (), "semlock"), plugins.end ());
+
+#ifdef ENABLE_ASAN
+	// ASAN reports memory leaks for the Augeas plugin on macOS: https://travis-ci.org/sanssecours/elektra/jobs/418524229
+	plugins.erase (std::remove (plugins.begin (), plugins.end (), "augeas"), plugins.end ());
+#endif
 
 	return plugins;
 }

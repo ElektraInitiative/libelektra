@@ -102,6 +102,9 @@
 /* ENDIANNESS */
 #cmakedefine ELEKTRA_BIG_ENDIAN
 
+/* ASAN */
+#cmakedefine ENABLE_ASAN
+
 /* debug mode */
 #define DEBUG @DEBUG@
 
