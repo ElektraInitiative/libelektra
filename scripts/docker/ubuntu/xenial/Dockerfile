@@ -30,6 +30,9 @@ RUN apt-get update && apt-get -y install \
         swig \
         libgmp-dev \
         wget \
+        happy \
+        alex \
+        c2hs \
     && rm -rf /var/lib/apt/lists/*
 
 # Google Test
