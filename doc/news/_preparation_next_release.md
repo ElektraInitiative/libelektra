@@ -56,7 +56,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 -  There is also a new plugin called [process](https://libelektra.org/plugins/process).
    This plugin utilizes the pluginprocess library in order to execute arbitrary other
-   plugins in an own process, acting as a proxy itself. Therefore it is not required 
+   plugins in an own process, acting as a proxy itself. Therefore it is not required
    to explicitly change a plugin's implementation if it shall be executed in an own
    process. This plugin is not completely finished yet, as currently there is no way
    for it to mimick the proxied plugin's contract in Elektra. It can be used with simple
