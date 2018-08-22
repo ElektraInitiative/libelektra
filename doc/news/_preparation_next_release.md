@@ -218,6 +218,11 @@ We are currently working on following topics:
 - <<TODO>>
 - <<TODO>>
 
+## Finished Thesis
+
+- Daniel Bugl finished his [thesis](https://www.libelektra.org/ftp/elektra/publications/bugl2018web.pdf)
+- Thomas Wahringer finished his [thesis](https://www.libelektra.org/ftp/elektra/publications/wahringer2018notification.pdf)
+
 
 ## Get It!
 
@@ -233,7 +238,7 @@ The release tarball is also available signed by Markus Raab using GnuPG from
 [here](https://www.libelektra.org/ftp/elektra/releases/elektra-0.8.<<VERSION>>.tar.gz.gpg) or
 [GitHub](https://github.com/ElektraInitiative/ftp/blob/master/releases//elektra-0.8.<<VERSION>>.tar.gz.gpg?raw=true)
 
-Already built API-Docu can be found [online](https://doc.libelektra.org/api/0.8.<<VERSION>>/html/)
+Already built API-Docu can be found [here](https://doc.libelektra.org/api/0.8.<<VERSION>>/html/)
 or [GitHub](https://github.com/ElektraInitiative/doc/tree/master/api/0.8.<<VERSION>>).
 
 
