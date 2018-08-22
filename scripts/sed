@@ -63,7 +63,7 @@ s/([^\./`-])[Jj]son/\1JSON/
 
 s/\<look up/lookup/g
 
-s/([^[`/])mount-?point/\1mount point/g
+# s/([^[`/])mount-?point/\1mount point/g
 
 s/\<metaspecification/meta-specification/g
 s/\<metamodel/meta-model/g
