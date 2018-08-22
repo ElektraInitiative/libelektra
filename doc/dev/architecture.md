@@ -185,7 +185,8 @@ within the mountpoint configuration provided by the administrator.
 
 Example for a mountpoint configuration:
 
-	system/elektra/mountpoints system/elektra/mountpoints/fstab
+	system/elektra/mountpoints
+	system/elektra/mountpoints/fstab
 	system/elektra/mountpoints/fstab/config
 	system/elektra/mountpoints/fstab/config/path=fstab
 	system/elektra/mountpoints/fstab/config/struct=list FStab
