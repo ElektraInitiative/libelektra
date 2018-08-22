@@ -159,7 +159,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Documentation
 
-- <<TODO>>
+- We fixed some minor spelling mistakes in the documentation. *(René Schwaiger)*
 - <<TODO>>
 - <<TODO>>
 
