@@ -20,7 +20,7 @@ Unmount backend from key database.
 - `-C`, `--color <when>`:
   Print never/auto(default)/always colored output.
 - `-v`, `--verbose`:
-  Show which mountpoints were considered.
+  Show which mount points were considered.
 
 ## SEE ALSO
 

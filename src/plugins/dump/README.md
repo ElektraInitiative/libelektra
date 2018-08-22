@@ -48,7 +48,7 @@ omitted):
     keyNew 27 1
     system/elektra/mountpoints
     keyMeta 8 27
-    commentBelow are the mountpoints.
+    commentBelow are the mount points.
     keyEnd
     keyNew 32 19
     system/elektra/mountpoints/dbusserialized Backend
@@ -85,5 +85,5 @@ Import a KeySet using `dump`:
 Using grep/diff or other Unix tools on the dump file. Make sure that you
 treat it as text file, e.g.:
 
-    grep --text mountpoints example.ecf
+    grep --text 'mount points' example.ecf
 

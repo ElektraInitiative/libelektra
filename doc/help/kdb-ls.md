@@ -83,7 +83,7 @@ kdb ls /tests/examples/kdb-ls/test
 
 # list all keys under /tests/examples/kdb-ls in verbose mode
 kdb ls /tests/examples/kdb-ls/ -v
-#> size of all keys in mountpoint: 5
+#> size of all keys in mount point: 5
 #> size of requested keys: 5
 #> user/tests/examples/kdb-ls/test
 #> user/tests/examples/kdb-ls/test/fizz/buzz

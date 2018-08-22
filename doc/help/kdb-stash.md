@@ -7,7 +7,7 @@ kdb-stash -- Stash away KDB to be restored later
 
 ## DESCRIPTION
 
-This command will stash away the `system`, `user` and `spec` configuration, i.e. it releases all mountpoints and reset Elektra to a clean state.
+This command will stash away the `system`, `user` and `spec` configuration, i.e. it releases all mount points and reset Elektra to a clean state.
 Afterwards a timestamp which can be used to restore everything will be printed.
 
 The backup will be done in the `/var/tmp` directory, so make sure the backup is not deleted.

@@ -3,7 +3,7 @@
 ## Problem
 
 - Checker plugins see only part of the configuration and cannot check
-  constraints between keys of different mountpoints
+  constraints between keys of different mount points
 - Notification does not happen once after final commit, but for every
   plugin
 - Some plugins are not implementable, e.g. global locks (that lock
@@ -18,7 +18,7 @@
   as global plugins w/o any change in code (i.e. only changes
   in contract)
 - Global plugins might depend on specific applications or specific
-  mountpoints (it should be possible to enforce global plugins for specific
+  mount points (it should be possible to enforce global plugins for specific
   applications).
 
 ## Assumptions
@@ -61,7 +61,7 @@ With different semantics each:
 
 - `init` is always paired with `deinit` and can be used for locking purposes.
   It is guaranteed that `deinit` will be called, if `init` was called before.
-- `foreach` will be called for every single mountpoint.
+- `foreach` will be called for every single mount point.
 - `max once` (without any subposition) will be called maximum once per `kdbGet()/kdbSet()`
   outside the loop. It must be called after `init`, and before `deinit`.
 
@@ -168,7 +168,7 @@ For mmap it could work the following way:
 
 is responsible to check if all files resolved are still the same file (and same number of files),
 and if the `mtime` of the mmap file is newer than the resolved file.
-Iff this is the case for every mountpoint we will (try) to load the mmaped file in:
+Iff this is the case for every mount point we will (try) to load the mmaped file in:
 
         getresolver/after/once
 

@@ -184,8 +184,8 @@ this key with:
 ```
 kdb mount tutorial.dump user/tutorial dump validation
 ```
-This [mounts](/doc/tutorials/mount.md) the backend `tutorial.dump` to the mountpoint
-**user/tutorial** and activates the validation plugin for the keys below the mountpoint.
+This [mounts](/doc/tutorials/mount.md) the backend `tutorial.dump` to the mount point
+**user/tutorial** and activates the validation plugin for the keys below the mount point.
 The validation plugin now uses the metadata of the keys below **user/tutorial**
 to validate values before storing them in `tutorial.dump`.
 
@@ -211,7 +211,7 @@ We call the files, that contain a complete schema for configuration
 below a specific path in form of metadata, _Specfiles_.
 
 Particularly a _Specfile_ contains metadata that defines
-- the mountpoints of paths,
+- the mount points of paths,
 - the plugins to load and
 - the behavior of these plugins.
 
@@ -248,7 +248,7 @@ So in this example the validation plugin will be loaded automatically for us.
 `spec-mount` basically does a normal mount except that it automatically selects plugins. As a result there is no
 `spec-umount`  command since the normal `umount` is sufficient.
 
-Please be aware that if you require many plugins for the same mountpoint, 
+Please be aware that if you require many plugins for the same mount point, 
 you can run into [this](https://github.com/ElektraInitiative/libelektra/issues/2133) error.
 
 ```sh

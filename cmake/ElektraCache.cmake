@@ -134,7 +134,7 @@ set (KDB_DB_DIR
 set (KDB_DB_FILE
      "default.ecf"
      CACHE STRING
-	   "This configuration file will be used as default if no root mountpoint available.")
+	   "This configuration file will be used as default if no root mount point available.")
 
 set (KDB_DB_INIT
      "elektra.ecf"

@@ -96,7 +96,7 @@ severity:warning
 ingroup:kdb
 
 number:14
-description:given mountpoint not valid
+description:given mount point not valid
 severity:warning
 ingroup:kdb
 
@@ -152,7 +152,7 @@ severity:warning
 ingroup:trie
 
 number:25
-description:backend has no mountpoint
+description:backend has no mount point
 severity:warning
 ingroup:trie
 
@@ -639,7 +639,7 @@ module:dump
 
 number:107
 macro:STATE
-description:sync state is wrong, maybe kdbSet() is executed without prior kdbGet(). Reason states mountpoint.
+description:sync state is wrong, maybe kdbSet() is executed without prior kdbGet(). Reason states mount point.
 severity:error
 ingroup:kdb
 

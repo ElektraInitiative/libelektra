@@ -13,7 +13,7 @@ to calling `kdb complete ""`.
 
 Show suggestions how the current name could be completed.
 Suggestions will include existing key names, path segments of existing key names,
-namespaces and mountpoints.
+namespaces and mount points.
 Additionally, the output will indicate whether the given path is a node or a leaf
 in the hierarchy of keys, nodes end with '/' as opposed to leaves.
 It will also work for cascading keys, and will additionally display a cascading
@@ -69,7 +69,7 @@ kdb complete user --max-depth=1
 kdb complete user/ --max-depth=1
 # STDOUT-REGEX: .+
 
-# list all possible namespaces or mountpoints, only the current level
+# list all possible namespaces or mount points, only the current level
 kdb complete --max-depth=1
 # STDOUT-REGEX: .+
 
