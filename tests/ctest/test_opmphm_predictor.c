@@ -173,34 +173,52 @@ void test_ks_flag (void)
 	ksDel (ks);
 }
 
-// will fail due to action limit
+
 void test_ks (void)
 {
-	KeySet * ks = ksNew (10, keyNew ("/a", KEY_END), keyNew ("/b", KEY_END), keyNew ("/c", KEY_END), keyNew ("/d", KEY_END),
-			     keyNew ("/e", KEY_END), keyNew ("/f", KEY_END), keyNew ("/g", KEY_END), keyNew ("/h", KEY_END),
-			     keyNew ("/i", KEY_END), keyNew ("/j", KEY_END), KS_END);
+	Key * found;
 
-	exit_if_fail (ks->opmphmPredictor, "no predictor here");
+	// create keyset just under opmphmPredictorActionLimit
+	KeySet * ks = ksNew (opmphmPredictorActionLimit, KS_END);
+	char name[11]; // "/test" + "10000" + "\0"
+	for (size_t i = 0; i < opmphmPredictorActionLimit; ++i)
+	{
+		snprintf (name, 11, "/test%lu", i);
+		succeed_if (ksAppendKey (ks, keyNew (name, KEY_END)) > 0, "ksAppendKey failed");
+	}
+
+	// predictor under limit
+	found = ksLookupByName (ks, "/test0", KDB_O_NONE);
+	succeed_if (found, "key found");
+	exit_if_fail (!ks->opmphmPredictor, "predictor here");
+
+	// append to be over opmphmPredictorActionLimit
+	snprintf (name, 11, "/test%lu", opmphmPredictorActionLimit);
+	succeed_if (ksAppendKey (ks, keyNew (name, KEY_END)) > 0, "ksAppendKey failed");
+
+	// predictor over limit
+	found = ksLookupByName (ks, "/test0", KDB_O_NOCASCADING);
+	succeed_if (found, "key found");
+	exit_if_fail (ks->opmphmPredictor, "predictor not here");
 
 	// overrule with binary search
-	Key * found = ksLookupByName (ks, "/a", KDB_O_BINSEARCH);
+	found = ksLookupByName (ks, "/test0", KDB_O_BINSEARCH | KDB_O_NOCASCADING);
 	succeed_if (found, "key found");
 
-	succeed_if (ks->opmphmPredictor->lookupCount == 0, "predictor touched");
+	succeed_if (ks->opmphmPredictor->lookupCount == 1, "predictor touched");
 	succeed_if (ks->opmphmPredictor->history == 0, "predictor touched");
 
 	// overrule with OPMPHM
-	found = ksLookupByName (ks, "/a", KDB_O_OPMPHM);
+	found = ksLookupByName (ks, "/test0", KDB_O_OPMPHM);
 	succeed_if (found, "key found");
 
-	succeed_if (ks->opmphmPredictor->lookupCount == 0, "predictor touched");
+	succeed_if (ks->opmphmPredictor->lookupCount == 1, "predictor touched");
 	succeed_if (ks->opmphmPredictor->history == 0, "predictor touched");
 
-	// use predictor
-	found = ksLookupByName (ks, "/a", KDB_O_NONE);
+	// use predictor again
+	found = ksLookupByName (ks, "/test0", KDB_O_NONE | KDB_O_NOCASCADING);
 	succeed_if (found, "key found");
-
-	succeed_if (ks->opmphmPredictor->lookupCount != 0, "predictor not touched");
+	succeed_if (ks->opmphmPredictor->lookupCount == 2, "predictor not touched");
 
 	// copy
 	KeySet * copy = ksDup (ks);

@@ -20,7 +20,7 @@ const uint16_t opmphmPredictorHistoryMask = 0x7FF; // 11 bit history
 //~ const uint16_t opmphmPredictorHistoryMask = 0x1F; // 5 bit history
 
 
-const size_t opmphmPredictorActionLimit = 0;
+const size_t opmphmPredictorActionLimit = 1;
 
 /**
  * Prediction Automata A2
