@@ -12,20 +12,28 @@
 #include <tests_internal.h>
 #include <tests_plugin.h>
 
+#include <kdbconfig.h>
+
 /* -- Macros & Test Configuration ------------------------------------------------------------------------------------------------------- */
 
 #define TEST_ROOT_KEY "user/tests/storage"
 
-#define NUM_PLUGINS 2
-KeySet * modules[NUM_PLUGINS];
-Plugin * plugins[NUM_PLUGINS];
-char * pluginNames[] = { "mmapstorage", "dump" }; // remember to adjust NUM_PLUGINS if you add/remove a storage plugin
+// below are the plugins suggested for testing, but only compiled plugins are tested
+#define NUM_PLUGINS_SUGGESTED 2
+static const char * pluginsSuggested[] = { "mmapstorage",
+					   "dump" }; // remember to adjust NUM_PLUGINS_SUGGESTED if you add/remove a storage plugin
+
+// below is the list of available plugins truly tested.
+static size_t numPlugins = 0;
+static KeySet * modules[NUM_PLUGINS_SUGGESTED];
+static Plugin * plugins[NUM_PLUGINS_SUGGESTED];
+static const char * pluginNames[NUM_PLUGINS_SUGGESTED];
 
 #define open_storage_plugin(storagePlugin)                                                                                                 \
 	if (openStoragePlugin (storagePlugin) == -1)                                                                                       \
 	{                                                                                                                                  \
 		nbError++;                                                                                                                 \
-		printf ("Error opening storage plugin: %s\n", pluginNames[storagePlugin]);                                                 \
+		printf ("Error opening storage plugin: %s. Skipping test.\n", pluginNames[storagePlugin]);                                 \
 		return;                                                                                                                    \
 	}
 
@@ -46,6 +54,23 @@ static KeySet * metaTestKeySet (void)
 }
 
 /* -- Test helpers ---------------------------------------------------------------------------------------------------------------------- */
+
+static void initPlugins (void)
+{
+	// check if plugin is compiled, and only test if it is
+	for (size_t plugin = 0; plugin < NUM_PLUGINS_SUGGESTED; ++plugin)
+	{
+		if (strstr (ELEKTRA_PLUGINS, pluginsSuggested[plugin]) != NULL)
+		{
+			pluginNames[numPlugins] = pluginsSuggested[plugin];
+			numPlugins++;
+		}
+		else
+		{
+			printf ("Warning: Plugin %s is not compiled. Excuding from storage tests.\n", pluginsSuggested[plugin]);
+		}
+	}
+}
 
 static int openStoragePlugin (const size_t storagePlugin)
 {
@@ -910,7 +935,9 @@ int main (int argc, char ** argv)
 
 	init (argc, argv);
 
-	for (size_t plugin = 0; plugin < NUM_PLUGINS; ++plugin)
+	initPlugins ();
+
+	for (size_t plugin = 0; plugin < numPlugins; ++plugin)
 	{
 		const char * tmpFile = elektraFilename ();
 
