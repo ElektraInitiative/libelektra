@@ -165,7 +165,8 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Tests
 
-- <<TODO>>
+- The unit test for the [`dbus` plugin](https://www.libelektra.org/plugins/dbus) does not leak memory anymore, if it fails on macOS.
+  *(Thomas Wahringer)*
 - <<TODO>>
 - <<TODO>>
 
