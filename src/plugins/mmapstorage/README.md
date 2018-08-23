@@ -1,46 +1,81 @@
 - infos = Information about the mmapstorage plugin is in keys below
-- infos/author = Mihael Pranjic <elektra@libelektra.org>
+- infos/author = Mihael Pranjic <mpranj@limun.org>
 - infos/licence = BSD
 - infos/needs =
 - infos/provides = storage/mmapstorage
 - infos/recommends =
 - infos/placements = getstorage setstorage
-- infos/status = recommended productive maintained reviewed conformant compatible coverage specific unittest shelltest tested nodep libc configurable final preview memleak experimental difficult unfinished old nodoc concept orphan obsolete discouraged -1000000
+- infos/status = maintained unittest concept preview discouraged
 - infos/metadata =
 - infos/description = high performance storage using memory mapped files
 
 ## Introduction
 
-Copy this mmapstorage if you want to start a new
-plugin written in C.
+This is a high performance storage plugin that supports full Elektra semantics.
+
+## Format
+
+The storage format uses Elektra's in-memory data layout and employs the `mmap()` system call to read/write data.
+The format is not portable across different architectures/platforms. The format can be seen as a memory dump of a keyset.
+Therefore, the files must not be edited by hand. Files written by mmapstorage are not intended to be human-readable.
 
 ## Usage
 
-You can use `scripts/copy-mmapstorage`
-to automatically rename everything to your
-plugin name:
+Mount mmapstorage using `kdb mount`:
 
-	cd src/plugins
-	../../scripts/copy-mmapstorage yourplugin
+    sudo kdb mount config.mmap user/tests/mmapstorage mmapstorage
 
-Then update the README.md of your newly created plugin:
+Unmount mmapstorage using `kdb umount`:
 
-- enter your full name+email in `infos/author`
-- make sure `status` and other clauses conform to
-  descriptions in `doc/CONTRACT.ini`
-- update the one-line description above
-- add your plugin in `src/plugins/README.md`
-- and rewrite the rest of this `README.md` to give a great
-  explanation of what your plugin does
+    sudo kdb umount user/tests/mmapstorage
 
 ## Dependencies
 
-None.
+POSIX compliant system (including XSI extensions).
+
+#ifdef ENABLE_MMAP_CHECKSUM
+Additionally, zlib is needed for CRC32.
+
+- `zlib1g-dev` or `zlib-devel`
+
+#endif
+
+## Compiling
+
+Any external modification of a mmapstorage file could lead to a program crash. Therefore a CRC32 checksum of the critical data
+is done by default. To disable CRC32 checksumming, use the cmake directive `-DENABLE_CHECKSUM=OFF`.
 
 ## Examples
 
-None.
+```sh
+# Mount mmapstorage to `user/tests/mmapstorage`
+sudo kdb mount config.mmap user/tests/mmapstorage mmapstorage
 
-## Limitations
+# Add some values via `kdb set`
+kdb set user/tests/mmapstorage 'Some root key'
+kdb set user/tests/mmapstorage/dir 'Directory within the hierarchy.'
+kdb set user/tests/mmapstorage/dir/leaf 'A leaf node holding some valuable data.'
+kdb setmeta  user/tests/mmapstorage/dir/leaf superMetaKey 'Metadata is supported too.'
 
-None.
+# List the configuration tree below `user/tests/mmapstorage`
+kdb ls user/tests/mmapstorage
+#> user/tests/mmapstorage
+#> user/tests/mmapstorage/dir
+#> user/tests/mmapstorage/dir/leaf
+
+# Retrieve the new values
+kdb get user/tests/mmapstorage
+#> Some root key
+kdb get user/tests/mmapstorage/dir
+#> Directory within the hierarchy.
+kdb get user/tests/mmapstorage/dir/leaf
+#> A leaf node holding some valuable data.
+kdb getmeta  user/tests/mmapstorage/dir/leaf superMetaKey
+#> Metadata is supported too.
+
+# Undo modifications to the database
+kdb rm -r user/tests/mmapstorage
+
+# Unmount mmapstorage
+sudo kdb umount user/tests/mmapstorage
+```
