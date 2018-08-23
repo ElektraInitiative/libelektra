@@ -1,0 +1,7 @@
+resolver: lts-11.22
+packages:
+- .
+- ../../bindings/haskell
+- ../../libs/typesystem/specelektra
+- ../../libs/typesystem/spectranslator
+system-ghc: true

@@ -17,7 +17,8 @@ import Data.Maybe            (fromMaybe, listToMaybe, fromJust)
 import Foreign.Ptr
 import System.Directory      (removeFile, doesFileExist)
 import System.Environment    (lookupEnv)
-import System.IO.Temp        (writeTempFile)
+import System.IO             (hPutStr, hClose)
+import System.IO.Temp        (openTempFile)
 import System.Log.FastLogger
 import Text.PrettyPrint
 
@@ -81,11 +82,14 @@ typecheck p ks k c = withFastLogger logLevel $ \log -> do
   mapM_ (log . toLogStr . show) keySpecs
   let putStepLn = \s -> log . toLogStr $ "\n" ++ s ++ "\n"
   putStepLn "Done Parsing all Specifications, now translate them."
-  let rendered = renderStyle style {lineLength = 320} $ prettyPrim $ translateSpecifications typeSpecs keySpecs
+  let specs = translateSpecifications typeSpecs keySpecs
+  let rendered = renderStyle style {lineLength = 320} $ prettyPrim specs
   log . toLogStr $ rendered
 
   putStepLn "Done Translating all Specifications."
-  specFile <- writeTempFile "/tmp/" "testSpecification.hs" rendered
+  (specFile, handle) <- openTempFile "/tmp/" "testSpecification.hs"
+  hPutStr handle rendered
+  hClose handle
 
   -- So we can override it for the build tests
   pdb <- lookupEnv "SANDBOX_PACKAGEDB"
@@ -147,7 +151,7 @@ closeIni p k = withFastLogger logLevel $ \log -> do
   elektraPluginProcessGetData pp >>= maybe (return Success) closeHandle
   where
     closeHandle = ifHandle (return Success) (\i -> elektraInvokeClose i (Just k) >> return Success)
-  
+
 elektraTypecheckerOpen :: Plugin -> Key -> IO PluginStatus
 elektraTypecheckerOpen = openIni
 hs_elektraHaskellOpen = elektraPluginOpenWith elektraTypecheckerOpen

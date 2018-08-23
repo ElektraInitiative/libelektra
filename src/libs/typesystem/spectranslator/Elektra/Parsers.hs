@@ -11,19 +11,28 @@
 --
 -- @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
 --
+{-# LANGUAGE CPP, GADTs #-}
 module Elektra.Parsers (parseTypeSignature, parseRange, 
   regexTypeP, regexTypeParameterP, typeSignatureP, rangeP) where
 
 import Control.Applicative (empty)
-import Data.Void
 
 import Elektra.Specifications
 
 import Text.Megaparsec
 import Text.Megaparsec.Char
+#if MIN_VERSION_megaparsec(6,0,0)
 import qualified Text.Megaparsec.Char.Lexer as L
+#else
+import qualified Text.Megaparsec.Lexer as L
+#endif
 
+#if MIN_VERSION_megaparsec(6,0,0)
+import Data.Void
 type Parser = Parsec Void String
+#else
+type Parser = Parsec Dec String
+#endif
 
 -- Parse the given strings without further error analysis for now
 
@@ -36,7 +45,7 @@ parseRange = parseMaybe rangeP
 -- Lexer for the signatures
 
 sc :: Parser ()
-sc = L.space space1 empty empty
+sc = L.space (const () <$> spaceChar) empty empty
 
 lexeme :: Parser a -> Parser a
 lexeme = L.lexeme sc
@@ -81,7 +90,7 @@ regexL = between (char '\"') (char '\"') chars
     where chars = char '\\' *> escapeL <|> many (satisfy (`notElem` ("\"\\" :: String)))
 
 integerL :: Parser Int
-integerL = lexeme L.decimal
+integerL = fromIntegral <$> lexeme L.decimal
 
 signedIntegerL :: Parser Int
 signedIntegerL = L.signed sc integerL

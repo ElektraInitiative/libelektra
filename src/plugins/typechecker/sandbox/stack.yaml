@@ -1,0 +1,5 @@
+resolver: lts-11.22
+packages:
+- .
+- ../../libs/typesystem/specelektra
+system-ghc: true
