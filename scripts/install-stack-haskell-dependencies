@@ -1,0 +1,46 @@
+#!/bin/sh
+#
+# @author Armin Wurzinger <e1528532@libelektra.org>
+#
+# @brief Installs all the haskell dependencies using stack
+#
+# Please note that this is intended to be executed in the
+# build directory!
+#
+# @date 17.05.2018
+# @tags dependencies
+
+SCRIPTS_DIR=$(dirname "$0")
+. "${SCRIPTS_DIR}/include-common"
+
+mkdir -p haskell-deps
+# copy the cabal files to the build directory temporarily
+# so stack picks up the dependencies automatically from them
+BUILD_DIR=$(pwd)
+echo "${BUILD_DIR}"
+mkdir -p src
+
+cd ${SOURCE}/src
+CABAL_FILES=$(find . \( -name '*.cabal' -o -name '*.cabal.in' \))
+echo "${CABAL_FILES}" > "${BUILD_DIR}/haskell-cabal-files.txt"
+tar cvf - -T "${BUILD_DIR}/haskell-cabal-files.txt" | tar xvf - -C "${BUILD_DIR}/src"
+cd ${BUILD_DIR}
+rm haskell-cabal-files.txt
+
+# but it needs to parse the cabal files, so replace the version string with a fake number for that
+cd src
+echo "${CABAL_FILES}" | while read -r f
+do
+	# TODO make version dynamic somehow without needing cmake
+	sed -i '' 's/@KDB_VERSION@/0.8.24/g;' "$f";
+	sed -i '' 's/@CABAL_CUSTOM_SETUP@//g;' "$f";
+	mv "$f" "$(echo "$f" | sed s/.cabal.in/.cabal/)";
+done
+cd ${BUILD_DIR}
+
+# now install the dependencies via stack
+stack init --resolver lts-11.22 --system-ghc --force
+stack build --only-dependencies --system-ghc
+
+# TODO lts resolver
+# TODO system ghc

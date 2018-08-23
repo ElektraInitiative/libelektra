@@ -15,6 +15,7 @@
 #                           sanitized (darwin -> osx, unknown-linux -> linux)
 #  CABAL_DYNLIB_PATH      - The default path where cabal installs dynamic libraries
 #  CABAL_CUSTOM_TARGET    - The default dependencies of the custom Setup.hs for plugins
+#  STACK_EXECUTABLE       - Path to the stack executable
 #  HASKELL_SHARED_SANDBOX - The sandbox containing all required dependencies for haskell things
 #  HASKELL_FOUND          - True if the whole required haskell environment exists
 #    This variable is set to true if CABAL_EXECUTABLE, C2HS_EXECUTABLE, GHC_EXECUTABLE
@@ -28,9 +29,11 @@ find_program (CABAL_EXECUTABLE cabal)
 find_program (ALEX_EXECUTABLE alex)
 find_program (HAPPY_EXECUTABLE happy)
 find_program (C2HS_EXECUTABLE c2hs)
+find_program (STACK_EXECUTABLE stack)
 find_program (GHC-PKG_EXECUTABLE ghc-pkg)
 
 set (HASKELL_FOUND 0)
+if (STACK_EXECUTABLE)
 if (CABAL_EXECUTABLE)
 if (C2HS_EXECUTABLE)
 if (ALEX_EXECUTABLE)
@@ -113,12 +116,13 @@ if (GHC-PKG_EXECUTABLE)
     if (HASKELL_SHARED_SANDBOX AND IS_DIRECTORY "${HASKELL_SHARED_SANDBOX}")
 		set (HASKELL_FOUND 1)
     else (HASKELL_SHARED_SANDBOX AND IS_DIRECTORY "${HASKELL_SHARED_SANDBOX}")
-    	if (IS_DIRECTORY "${CMAKE_BINARY_DIR}/.cabal-sandbox")
-    		set (HASKELL_SHARED_SANDBOX "${CMAKE_BINARY_DIR}/.cabal-sandbox")
-			set (HASKELL_FOUND 1)
-    	else (IS_DIRECTORY "${CMAKE_BINARY_DIR}/.cabal-sandbox")
-    		set (HASKELL_NOTFOUND_INFO "cabal sandbox not found")
-    	endif (IS_DIRECTORY "${CMAKE_BINARY_DIR}/.cabal-sandbox")
+    	#if (IS_DIRECTORY "${CMAKE_BINARY_DIR}/.cabal-sandbox")
+    	#	set (HASKELL_SHARED_SANDBOX "${CMAKE_BINARY_DIR}/.cabal-sandbox")
+		#	set (HASKELL_FOUND 1)
+    	#else (IS_DIRECTORY "${CMAKE_BINARY_DIR}/.cabal-sandbox")
+    	#	set (HASKELL_NOTFOUND_INFO "cabal sandbox not found")
+    	#endif (IS_DIRECTORY "${CMAKE_BINARY_DIR}/.cabal-sandbox")
+		set (HASKELL_FOUND 1)
     endif (HASKELL_SHARED_SANDBOX AND IS_DIRECTORY "${HASKELL_SHARED_SANDBOX}")
 
 	# By using cabal sandboxes we can install hspec and QuickCheck to the sandbox without
@@ -142,6 +146,9 @@ endif (C2HS_EXECUTABLE)
 else (CABAL_EXECUTABLE)
 	set (HASKELL_NOTFOUND_INFO "cabal not found")
 endif (CABAL_EXECUTABLE)
+else (STACK_EXECUTABLE)
+	set (HASKELL_NOTFOUND_INFO "stack not found")
+endif (STACK_EXECUTABLE)
 
 set (HASKELL_NOTFOUND_INFO "${HASKELL_NOTFOUND_INFO}, please refer to the readme in src/bindings/haskell/README.md")
 
@@ -152,6 +159,7 @@ mark_as_advanced (
 	HAPPY_EXECUTABLE
 	C2HS_EXECUTABLE
 	CABAL_EXECUTABLE
+	STACK_EXECUTABLE
 	CABAL_DYNLIB_PATH
 	CABAL_CUSTOM_TARGET
 	GHC_VERSION
