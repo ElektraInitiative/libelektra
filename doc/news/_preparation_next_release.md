@@ -167,7 +167,8 @@ you up to date with the multi-language support provided by Elektra.
 
 - The unit test for the [`dbus` plugin](https://www.libelektra.org/plugins/dbus) does not leak memory anymore, if it fails on macOS.
   *(Thomas Wahringer)*
-- <<TODO>>
+- The tests `testkdb_allplugins` and `testscr_check_kdb_internal_check` do not test a plugin on an ASAN enabled build anymore, if you
+  specify the status tag `memleak` in the plugin contract. *(René Schwaiger)*
 - <<TODO>>
 
 
