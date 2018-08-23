@@ -29,7 +29,7 @@ library
                    , temporary
                    , exceptions
                    , text
-                   , simple-logger
+                   , fast-logger
   cpp-options:       -DENABLE_LOGGER_@ENABLE_LOGGER@
   default-language:  Haskell2010
   other-extensions:  ForeignFunctionInterface

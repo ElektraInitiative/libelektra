@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings, CPP #-}
+{-# LANGUAGE CPP #-}
 module Elektra.Typechecker () where
 
 import Elektra.Key
@@ -11,14 +11,14 @@ import Elektra.SpecParser
 import Elektra.Errors
 
 import Control.Monad         (mapM_, forM_, join)
-import Control.Logger.Simple
 import Data.Bool             (bool)
 import Data.List             (intercalate, isPrefixOf, isInfixOf, nub)
 import Data.Maybe            (fromMaybe, listToMaybe, fromJust)
 import Foreign.Ptr
-import System.IO.Temp        (writeTempFile)
 import System.Directory      (removeFile, doesFileExist)
 import System.Environment    (lookupEnv)
+import System.IO.Temp        (writeTempFile)
+import System.Log.FastLogger
 import Text.PrettyPrint
 
 import Language.Haskell.Exts.Pretty
@@ -29,20 +29,23 @@ import qualified Data.Text as T
 
 data CheckMode = Get | Set
 
+logLevel :: LogType
+logLevel = if "@ENABLE_LOGGER@" == "ON" then LogStdout defaultBufSize else LogNone
+
 typecheck :: Plugin -> KeySet -> Key -> CheckMode -> IO Bool
-typecheck p ks k c = withGlobalLogging (LogConfig Nothing ("@ENABLE_LOGGER@" == "ON")) $ do
+typecheck p ks k c = withFastLogger logLevel $ \log -> do 
   name <- keyName k
-  logDebugT $ "Parse Specifications at " ++ name
-  logDebugT $ "Where we have the keys "
+  log . toLogStr $ "Parse Specifications at " ++ name
+  log . toLogStr $ "Where we have the keys "
   keys <- ksList ks
   forM_ keys $ \dk -> do
-    logDebugT $ show dk
+    log . toLogStr $ show dk
     metakeys <- keyListMeta dk
-    forM_ metakeys (logDebugT . show)
+    forM_ metakeys (log . toLogStr . show)
 
-  logDebugT "getting config"
+  log . toLogStr $  "getting config"
   conf <- elektraPluginGetConfig p
-  logDebugT $ "the configuration is " ++ show conf
+  log . toLogStr $ "the configuration is " ++ show conf
 
   -- Otherwise ksCut would remove keys, we don't want that behavior here
   ksc <- ksDup ks
@@ -50,7 +53,7 @@ typecheck p ks k c = withGlobalLogging (LogConfig Nothing ("@ENABLE_LOGGER@" == 
 
   -- prelude handling
   -- We load it via invoke + ini plugin as kdbOpen in here leads to unpredicted behavior combined with the process plugin
-  logDebugT $ "the configuration is " ++ show conf
+  log . toLogStr $ "the configuration is " ++ show conf
   let globalSpecPrelude = "@KDB_DB_SPEC@/prelude.ini"
   preludePath <- join . listToMaybe <$> sequence [
     -- #1: Environment variable (tests)
@@ -61,25 +64,25 @@ typecheck p ks k c = withGlobalLogging (LogConfig Nothing ("@ENABLE_LOGGER@" == 
     bool Nothing (Just globalSpecPrelude) <$> doesFileExist globalSpecPrelude
     -- #4: nothing otherwise
     ]
-  logDebugT $ "Loading prelude located at " ++ show preludePath ++ " to " ++ name
+  log . toLogStr $ "Loading prelude located at " ++ show preludePath ++ " to " ++ name
   -- This has to be set as this plugin is supposed to be executed via pluginprocess
   pp <- fromJust <$> elektraPluginGetData p
   ps <- maybe (ksNew 0) (readPrelude pp name) preludePath
-  logDebugT $ "Prelude contained " ++ show ps
+  log . toLogStr $ "Prelude contained " ++ show ps
   _ <- ksAppend ps kscc
-  logDebugT $ "Combined specifications are " ++ show ps
+  log . toLogStr $ "Combined specifications are " ++ show ps
 
   typeSpecs <- parseTypeSpecifications k ps
-  logDebugT $ "Got " ++ show (length typeSpecs) ++ " function specifications"
-  mapM_ (logDebugT . show) typeSpecs
+  log . toLogStr $ "Got " ++ show (length typeSpecs) ++ " function specifications"
+  mapM_ (log . toLogStr . show) typeSpecs
 
   keySpecs <- parseKeySpecifications k ps
-  logDebugT $ "Got " ++ show (length keySpecs) ++ " key specifications"
-  mapM_ (logDebugT . show) keySpecs
-
+  log . toLogStr $ "Got " ++ show (length keySpecs) ++ " key specifications"
+  mapM_ (log . toLogStr . show) keySpecs
+  let putStepLn = \s -> log . toLogStr $ "\n" ++ s ++ "\n"
   putStepLn "Done Parsing all Specifications, now translate them."
   let rendered = renderStyle style {lineLength = 320} $ prettyPrim $ translateSpecifications typeSpecs keySpecs
-  logDebugT rendered
+  log . toLogStr $ rendered
 
   putStepLn "Done Translating all Specifications."
   specFile <- writeTempFile "/tmp/" "testSpecification.hs" rendered
@@ -87,7 +90,7 @@ typecheck p ks k c = withGlobalLogging (LogConfig Nothing ("@ENABLE_LOGGER@" == 
   -- So we can override it for the build tests
   pdb <- lookupEnv "SANDBOX_PACKAGEDB"
   let args = filter (not . null) ["-package-db=" ++ fromMaybe "@TYPECHECKER_GHC_PLUGIN@" pdb, "-fplugin=Elektra.RegexTypeChecker", "-v"]
-  r <- unsafeRunInterpreterWithArgs args (keyInterpreter specFile)
+  r <- unsafeRunInterpreterWithArgs args (keyInterpreter log specFile)
   removeFile specFile
   case r of
     Left err -> do
@@ -95,11 +98,10 @@ typecheck p ks k c = withGlobalLogging (LogConfig Nothing ("@ENABLE_LOGGER@" == 
       case c of
         Set -> triggerError 193 k errStr
         Get -> triggerWarnings 192 k errStr
-      logDebugT errStr
+      log $ toLogStr errStr
       return True
     Right () -> return False
   where
-    putStepLn s = logDebugT $ "\n" ++ s ++ "\n"
     readPrelude pp name location = do
       prelude <- ksNew 0
       baseKey <- keyNewWithValue (name ++ "/elektra/spec/") location
@@ -108,14 +110,14 @@ typecheck p ks k c = withGlobalLogging (LogConfig Nothing ("@ENABLE_LOGGER@" == 
       -- likewise we could assume the data is set as well and use fromJust, but lets stay functional
       maybe (ksNew 0) (\i -> elektraInvoke2Args i "get" prelude baseKey >> ksDup prelude) ini
 
-keyInterpreter :: FilePath -> InterpreterT IO ()
-keyInterpreter specFile = do
+keyInterpreter :: FastLogger -> FilePath -> InterpreterT IO ()
+keyInterpreter log specFile = do
   loadModules [specFile]
-  say "Loaded our rendered specification, now we can infer the stuff in it."
+  liftIO . log $ toLogStr "Loaded our rendered specification, now we can infer the stuff in it."
   setTopLevelModules ["TestSpecification"]
   getModuleExports "TestSpecification" >>= mapM_ showTypes . filter isFun
   where
-    showTypes c = typeOf (name c) >>= say . ((name c ++ " has an infered type of ") ++)
+    showTypes c = typeOf (name c) >>= liftIO . log . toLogStr . ((name c ++ " has an infered type of ") ++)
     isFun (Fun _) = True
     isFun _ = False
 
@@ -130,21 +132,16 @@ errorString f (WontCompile es) = intercalate "\n" (header : filteredErrors)
     relevantErrors = isPrefixOf f
 errorString _ e = show e
 
-say :: String -> Interpreter ()
-say = liftIO . logDebugT
-
-logDebugT :: MonadIO m => String -> m ()
-logDebugT = logDebug . T.pack
-
 openIni :: Plugin -> Key -> IO PluginStatus
-openIni p k = do
-  logDebugT "Opening ini"
+openIni p k = withFastLogger logLevel $ \log -> do
+  log $ toLogStr "Opening ini"
   -- This has to be set as this plugin is supposed to be executed via pluginprocess
   pp <- fromJust <$> elektraPluginGetData p
   elektraInvokeOpen "ini" Nothing (Just k) >>= ifHandle (return Error) (\i -> elektraPluginProcessSetData pp i >> return Success)
+
 closeIni :: Plugin -> Key -> IO PluginStatus
-closeIni p k = do
-  logDebugT "Closing ini"
+closeIni p k = withFastLogger logLevel $ \log -> do
+  log $ toLogStr  "Closing ini"
   -- This has to be set as this plugin is supposed to be executed via pluginprocess
   pp <- fromJust <$> elektraPluginGetData p
   elektraPluginProcessGetData pp >>= maybe (return Success) closeHandle
