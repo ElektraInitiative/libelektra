@@ -51,27 +51,13 @@ do
 		;;
 	esac
 
-	# The following checks fail on an ASAN enabled build
-	# See also: https://github.com/ElektraInitiative/libelektra/pull/1963
 	ASAN='@ENABLE_ASAN@'
 	if [ "$ASAN" = 'ON' ]; then
+		# Do not check plugins with known memory leaks in ASAN enabled build
+		"$KDB" info "$PLUGIN" status 2>/dev/null | egrep -q 'memleak' && continue
+
 		case "$PLUGIN" in
 		'augeas') # Reference: https://travis-ci.org/sanssecours/elektra/jobs/418524229
-			continue
-			;;
-		'crypto_gcrypt')
-			continue
-			;;
-		'crypto_botan')
-			continue
-			;;
-		'gpgme')
-			continue
-			;;
-		'xerces')
-			continue
-			;;
-		'ruby')
 			continue
 			;;
 		esac
