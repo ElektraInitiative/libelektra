@@ -22,6 +22,10 @@
 #include <kdb.hpp>
 #include <kdbconfig.h>
 
+#ifdef ENABLE_ASAN
+#include <sanitizer/lsan_interface.h>
+#endif
+
 std::vector<std::string> getAllPlugins ()
 {
 	using namespace kdb;
@@ -29,24 +33,34 @@ std::vector<std::string> getAllPlugins ()
 	ModulesPluginDatabase mpd;
 	std::vector<std::string> plugins = mpd.listAllPlugins ();
 
-	// remove known problems
-	plugins.erase (std::remove (plugins.begin (), plugins.end (), "xerces"), plugins.end ());
-	plugins.erase (std::remove (plugins.begin (), plugins.end (), "ruby"), plugins.end ());
+	// The JNI plugin causes segmentation faults
 	plugins.erase (std::remove (plugins.begin (), plugins.end (), "jni"), plugins.end ());
-	plugins.erase (std::remove (plugins.begin (), plugins.end (), "crypto_gcrypt"), plugins.end ());
-	plugins.erase (std::remove (plugins.begin (), plugins.end (), "crypto_openssl"), plugins.end ());
-	plugins.erase (std::remove (plugins.begin (), plugins.end (), "crypto_botan"), plugins.end ());
-
-	// The ASAN build for `gpgme` reports memory leak on Debian Stretch:
-	// https://build.libelektra.org/jenkins/blue/organizations/jenkins/libelektra/detail/PR-2116/15/pipeline
-	plugins.erase (std::remove (plugins.begin (), plugins.end (), "gpgme"), plugins.end ());
-
-	// Valgrind reports memory leaks for the `semlock` plugin on Debian Unstable: http://issues.libelektra.org/2113
-	plugins.erase (std::remove (plugins.begin (), plugins.end (), "semlock"), plugins.end ());
 
 #ifdef ENABLE_ASAN
 	// ASAN reports memory leaks for the Augeas plugin on macOS: https://travis-ci.org/sanssecours/elektra/jobs/418524229
 	plugins.erase (std::remove (plugins.begin (), plugins.end (), "augeas"), plugins.end ());
+
+	std::vector<std::string> pluginsWithMemoryLeaks;
+
+	for (auto plugin : plugins)
+	{
+		try
+		{
+			__lsan_disable ();
+			auto status = mpd.lookupInfo (PluginSpec (plugin), "status");
+			__lsan_enable ();
+			if (status.find ("memleak")) pluginsWithMemoryLeaks.push_back (plugin);
+		}
+		catch (std::exception const & error)
+		{
+			std::cerr << "Unable to determine status of plugin “" << plugin << "”: " << error.what () << std::endl;
+		}
+	}
+
+	for (auto plugin : pluginsWithMemoryLeaks)
+	{
+		plugins.erase (std::remove (plugins.begin (), plugins.end (), plugin), plugins.end ());
+	}
 #endif
 
 	return plugins;
