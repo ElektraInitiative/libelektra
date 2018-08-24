@@ -174,7 +174,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ### CMake
 
-- We improved the detection of Python 2 and Python 3 in the CMake code of the Python bindings. *(René Schwaiger)*
+- We improved the detection of Python 2 and Python 3 in the CMake code of the Python bindings/plugins. *(René Schwaiger)*
 - We restructured the code of the [CMake module](https://master.libelektra.org/cmake/Modules/FindHaskell.cmake) we use to detect Haskell
   tools . *(René Schwaiger)*
 - <<TODO>>
