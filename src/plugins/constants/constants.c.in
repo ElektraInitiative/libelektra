@@ -206,6 +206,10 @@ static void elektraAddConstants (KeySet * ks, Key * parentKey)
 	keySetString (key, "@CMAKE_INSTALL_PREFIX@");
 	ksAppendKey (ks, key);
 
+	key = keyDup (parentKey);
+	keyAddName (key, "cmake/HASKELL_USE_CABAL");
+	keySetString (key, "@HASKELL_USE_CABAL@");
+	ksAppendKey (ks, key);
 
 	key = keyDup (parentKey);
 	keyAddName (key, "compiler");

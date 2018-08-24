@@ -385,7 +385,10 @@ set (DISCLAMER "
  *                                                                         *
  ***************************************************************************/")
 
+option (HASKELL_USE_CABAL "Use cabal instead of stack for Haskell builds." OFF)
+
 mark_as_advanced (FORCE # The following settings might be relevant to a few users:
+		  HASKELL_USE_CABAL
 		  GTEST_ROOT
 		  ANTLR4CPP_DIR
 		  BUILD_GMOCK

@@ -5,42 +5,75 @@
 # @brief Installs all the haskell dependencies using stack
 #
 # Please note that this is intended to be executed in the
-# build directory!
+# build directory! It should make a developers life easier
+# by automatically installing everything needed for haskell
 #
-# @date 17.05.2018
+# Stack then automatically installs the newest appropriate
+# dependencies, based on snapshots found on https://stackage.org
+# Note that it will automatically install its own isolated ghc,
+# unless you specify the --system-ghc parameter and the best
+# snapshot matches your installed ghc version.
+#
+# At the time of writing, stack will pick ghc-8.2.2 with the
+# resolver lts-11.22 automatically.
+# If you want to use ghc-8.0.1 (e.g. on debian stretch) you'd
+# choose the resolver lts-7.24 instead. For a list of resolvers
+# and ghc versions check https://stackage.org. We tested those
+# two configurations mentioned above, otherwise configurations are
+# untested but lts-6.35 is already too old for the bindings.
+#
+# So to install everything picking the best snapshot and an 
+# isolated ghc (fire and forget solution):
+# cd ${BUILD_DIR}
+# ../scripts/install-stack-haskell-dependencies
+#
+# To use ghc-8.0.1 and thus the resolver lts-7.24:
+# ../scripts/install-stack-haskell-dependencies --resolver=lts-7.24
+#
+# If you have ghc-8.2.2 installed and want to use it explicitly:
+# ../scripts/install-stack-haskell-dependencies --resolver=lts-11.22 --system-ghc
+#
+# If you have ghc-8.0.1 installed and want to use it explicitly:
+# ../scripts/install-stack-haskell-dependencies --resolver=lts-7.24 --system-ghc
+#
+# Ensure that stack hasn't been initialized in the directory before,
+# so stack.yaml does not exit yet. Otherwise remove it + the folder .stack-work
+# Furthermore, the first parameter is always expected to be the resolver.
+#
+# @date 24.08.2018
 # @tags dependencies
 
 SCRIPTS_DIR=$(dirname "$0")
 . "${SCRIPTS_DIR}/include-common"
 
-mkdir -p haskell-deps
 # copy the cabal files to the build directory temporarily
 # so stack picks up the dependencies automatically from them
 BUILD_DIR=$(pwd)
 echo "${BUILD_DIR}"
 mkdir -p src
 
-cd ${SOURCE}/src
+cd ${SOURCE}
+# steal the version number from the CMakeLists.txt file
+KDB_VERSION=$(grep 'set (KDB_VERSION_' CMakeLists.txt | grep -o '[0-9]*' | paste -s -d. -)
+
+cd src
 CABAL_FILES=$(find . \( -name '*.cabal' -o -name '*.cabal.in' \))
 echo "${CABAL_FILES}" > "${BUILD_DIR}/haskell-cabal-files.txt"
 tar cvf - -T "${BUILD_DIR}/haskell-cabal-files.txt" | tar xvf - -C "${BUILD_DIR}/src"
 cd ${BUILD_DIR}
 rm haskell-cabal-files.txt
 
-# but it needs to parse the cabal files, so replace the version string with a fake number for that
+# but it needs to parse the cabal files, so replace the version string before
+
 cd src
 echo "${CABAL_FILES}" | while read -r f
 do
-	# TODO make version dynamic somehow without needing cmake
-	sed -i '' 's/@KDB_VERSION@/0.8.24/g;' "$f";
+	sed -i '' "s/@KDB_VERSION@/${KDB_VERSION}/g;" "$f";
 	sed -i '' 's/@CABAL_CUSTOM_SETUP@//g;' "$f";
 	mv "$f" "$(echo "$f" | sed s/.cabal.in/.cabal/)";
 done
 cd ${BUILD_DIR}
 
 # now install the dependencies via stack
-stack init --resolver lts-11.22 --system-ghc --force
-stack build --only-dependencies --system-ghc
-
-# TODO lts resolver
-# TODO system ghc
+stack init $1 $2
+stack build --only-dependencies --test $2

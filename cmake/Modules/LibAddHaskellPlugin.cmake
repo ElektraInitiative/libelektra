@@ -4,15 +4,11 @@ include (LibAddMacros)
 # Allows one to add plugins written in Haskell, setting up the include paths and
 # libraries automatically.
 #
-# Expects that plugins make use of Cabal as their build system.
+# Expects that plugins make use of Cabal or Stack as their build system.
 #
 # MODULES:
 #  the name of the Haskell modules to be compiled
 #  by default it assumes there is a single module called Elektra.<pluginName>
-# NO_SHARED_SANDBOX:
-#  By default all Haskell plugins and the bindings are compiled in a shared sandbox to
-#  speed up compilation times by only compiling commonly-used libraries once. Set this
-#  flag to use an independent sandbox instead in case there are e.g. library version conflicts
 # SANDBOX_ADD_SOURCES:
 #  additional source paths which should be added to the Cabal sandbox
 #  required if the build should depend on Haskell libraries not available on hackage
@@ -23,7 +19,7 @@ include (LibAddMacros)
 macro (add_haskell_plugin target)
 	set (MULTI_VALUE_KEYWORDS MODULES SANDBOX_ADD_SOURCES ADDITIONAL_SOURCES TEST_ENVIRONMENT TEST_REQUIRED_PLUGINS)
 	cmake_parse_arguments (ARG
-			       "NO_SHARED_SANDBOX;TEST_README;INSTALL_TEST_DATA" # optional keywords
+			       "TEST_README;INSTALL_TEST_DATA" # optional keywords
 			       "MODULE" # one value keywords
 			       "${MULTI_VALUE_KEYWORDS}" # multi value keywords
 			       ${ARGN})
@@ -261,6 +257,7 @@ macro (compile_haskell_plugin target PLUGIN_HASKELL_NAME)
 	# as we require the sandbox to exist we can do this during the configuration phase it doesn't compile or install anything
 	execute_process (COMMAND ${CABAL_EXECUTABLE} sandbox init --sandbox "${HASKELL_SHARED_SANDBOX}" -v0
 			 WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+
 	foreach (SANDBOX_ADD_SOURCE ${ARG_SANDBOX_ADD_SOURCES})
 
 		# our custom libs are all to be processed by cmake before we can add them, so enforce that, the build is more stable this
