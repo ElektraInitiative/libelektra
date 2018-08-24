@@ -15,7 +15,7 @@ add_plugin (zeromqsend
 	    LINK_LIBRARIES ${ZMQ_LIBRARIES})
 
 if (ADDTESTING_PHASE) # the test requires pthread
-	find_package (Threads)
+	find_package (Threads QUIET)
 
 	if (BUILD_TESTING)
 		add_plugintest (zeromqsend TEST_LINK_LIBRARIES ${CMAKE_THREAD_LIBS_INIT})

@@ -136,8 +136,8 @@ if (ENABLE_ASAN)
 		# Work around error “unrecognized option '--push-state'”
 		set (EXTRA_FLAGS "${EXTRA_FLAGS} -fuse-ld=gold")
 
-		find_package (Threads) # this is needed because of wrong pthread detection
-				       # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=69443
+		find_package (Threads QUIET) # this is needed because of wrong pthread detection
+					     # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=69443
 		set (THREAD_LIBS_AS_NEEDED "-Wl,--as-needed ${CMAKE_THREAD_LIBS_INIT}")
 		set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${THREAD_LIBS_AS_NEEDED}")
 		set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${THREAD_LIBS_AS_NEEDED}")
