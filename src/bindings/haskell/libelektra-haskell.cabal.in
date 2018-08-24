@@ -45,7 +45,7 @@ test-suite testhaskell_basic
   hs-source-dirs:    "@CMAKE_CURRENT_SOURCE_DIR@/test"
   main-is:           Elektra.hs
   build-depends:     base >= 4.9 && < 4.12
-                   , libelektra-haskell == @KDB_VERSION@
+                   , libelektra-haskell
                    , hspec
                    , QuickCheck
   ghc-options:       -O0 -j
@@ -56,7 +56,7 @@ test-suite testhaskell_basic_optimized
   hs-source-dirs:    "@CMAKE_CURRENT_SOURCE_DIR@/test"
   main-is:           Elektra.hs
   build-depends:     base >= 4.9 && < 4.12
-                   , libelektra-haskell == @KDB_VERSION@
+                   , libelektra-haskell
                    , hspec
                    , QuickCheck
   ghc-options:       -O1 -j
@@ -67,7 +67,7 @@ test-suite testhaskell_realworld
   hs-source-dirs:    "@CMAKE_CURRENT_SOURCE_DIR@/test"
   main-is:           ElektraRealWorld.hs
   build-depends:     base >= 4.9 && < 4.12
-                   , libelektra-haskell == @KDB_VERSION@
+                   , libelektra-haskell
                    , hspec
                    , QuickCheck
   ghc-options:       -O0 -j
@@ -78,7 +78,7 @@ test-suite testhaskell_realworld_optimized
   hs-source-dirs:    "@CMAKE_CURRENT_SOURCE_DIR@/test"
   main-is:           ElektraRealWorld.hs
   build-depends:     base >= 4.9 && < 4.12
-                   , libelektra-haskell == @KDB_VERSION@
+                   , libelektra-haskell
                    , hspec
                    , QuickCheck
   ghc-options:       -O1 -j

@@ -12,6 +12,7 @@ include (LibAddMacros)
 # SANDBOX_ADD_SOURCES:
 #  additional source paths which should be added to the Cabal sandbox
 #  required if the build should depend on Haskell libraries not available on hackage
+#  also used by stack to determine when to recompile
 # ADDITIONAL_SOURCES:
 #  in case your plugin depends on other files than *.hs and *.lhs Haskell files and the default
 #  Cabal file and c test file and setup file, you can specify them here
@@ -72,7 +73,15 @@ macro (add_haskell_plugin target)
 		endif (NOT ENABLE_ASAN)
 	endif (DEPENDENCY_PHASE)
 
-	set (SANDBOX_PACKAGEDB "${HASKELL_SHARED_SANDBOX}/${GHC_TARGET_PLATFORM}-ghc-${GHC_VERSION}-packages.conf.d/")
+	if (HASKELL_USE_CABAL)
+		set (SANDBOX_PACKAGEDB "${HASKELL_SHARED_SANDBOX}/${GHC_TARGET_PLATFORM}-ghc-${GHC_VERSION}-packages.conf.d/")
+	else (HASKELL_USE_CABAL)
+		execute_process (COMMAND ${STACK_EXECUTABLE} path --local-pkg-db
+				 OUTPUT_VARIABLE SANDBOX_PACKAGEDB
+				 OUTPUT_STRIP_TRAILING_WHITESPACE
+				 WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+	endif (HASKELL_USE_CABAL)
+
 	set (PLUGIN_LD_LIBRARY_PATH "${CMAKE_BINARY_DIR}/lib:${CMAKE_CURRENT_BINARY_DIR}/haskell")
 	set (PLUGIN_ARGS "")
 	if (ARG_TEST_README)
@@ -151,7 +160,16 @@ macro (prepare_and_compile_haskell_plugin target PLUGIN_NAME PLUGIN_NAME_CAPITAL
 			 OUTPUT_STRIP_TRAILING_WHITESPACE)
 
 	# for the haskell function stubs and HsFFI.h
-	set (GHC_INCLUDE_DIRS ${CMAKE_CURRENT_BINARY_DIR}/dist/build/Elektra ${GHC_LIB_DIR}/include)
+	if (HASKELL_USE_CABAL)
+		set (DIST_DIR "dist")
+	else (HASKELL_USE_CABAL)
+		execute_process (COMMAND ${STACK_EXECUTABLE} path --dist-dir
+				 OUTPUT_VARIABLE DIST_DIR
+				 OUTPUT_STRIP_TRAILING_WHITESPACE
+				 WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+	endif (HASKELL_USE_CABAL)
+
+	set (GHC_INCLUDE_DIRS ${CMAKE_CURRENT_BINARY_DIR}/${DIST_DIR}/build/Elektra ${GHC_LIB_DIR}/include)
 
 	# shared variants of ghc libraries have the ghc version as a suffix
 	set (GHC_DYNAMIC_SUFFIX "-ghc${GHC_VERSION}")
@@ -247,6 +265,9 @@ macro (compile_haskell_plugin target PLUGIN_HASKELL_NAME)
 	# copy the readme so the macro in haskell.c finds it
 	file (COPY "${CMAKE_CURRENT_SOURCE_DIR}/README.md" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
 
+	# stack configuration so it only compiles this part
+	file (COPY "${CMAKE_CURRENT_SOURCE_DIR}/stack.yaml" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
+
 	# same for the setup logic, depending on wheter a custom one exists use the default suitable for almost everything
 	set (CABAL_CUSTOM_SETUP_FILE "${CMAKE_CURRENT_SOURCE_DIR}/Setup.hs.in")
 	if (NOT EXISTS ${CABAL_CUSTOM_SETUP_FILE})
@@ -255,9 +276,12 @@ macro (compile_haskell_plugin target PLUGIN_HASKELL_NAME)
 	configure_file (${CABAL_CUSTOM_SETUP_FILE} "${CMAKE_CURRENT_BINARY_DIR}/Setup.hs" @ONLY)
 
 	# as we require the sandbox to exist we can do this during the configuration phase it doesn't compile or install anything
-	execute_process (COMMAND ${CABAL_EXECUTABLE} sandbox init --sandbox "${HASKELL_SHARED_SANDBOX}" -v0
-			 WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+	if (HASKELL_USE_CABAL)
+		execute_process (COMMAND ${CABAL_EXECUTABLE} sandbox init --sandbox "${HASKELL_SHARED_SANDBOX}" -v0
+				 WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+	endif (HASKELL_USE_CABAL)
 
+	set (SANDBOX_SOURCE_FILES "")
 	foreach (SANDBOX_ADD_SOURCE ${ARG_SANDBOX_ADD_SOURCES})
 
 		# our custom libs are all to be processed by cmake before we can add them, so enforce that, the build is more stable this
@@ -265,25 +289,22 @@ macro (compile_haskell_plugin target PLUGIN_HASKELL_NAME)
 		if (NOT IS_DIRECTORY "${CMAKE_BINARY_DIR}/${SANDBOX_ADD_SOURCE}")
 			add_subdirectory ("${CMAKE_SOURCE_DIR}/${SANDBOX_ADD_SOURCE}" "${CMAKE_BINARY_DIR}/${SANDBOX_ADD_SOURCE}")
 		endif (NOT IS_DIRECTORY "${CMAKE_BINARY_DIR}/${SANDBOX_ADD_SOURCE}")
-		execute_process (COMMAND ${CABAL_EXECUTABLE} sandbox add-source "${CMAKE_BINARY_DIR}/${SANDBOX_ADD_SOURCE}" -v0
-				 WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+
+		file (GLOB_RECURSE SANDBOX_CURRENT_SOURCE_FILES
+				   "${CMAKE_CURRENT_SOURCE_DIR}/*")
+		list (APPEND SANDBOX_SOURCE_FILES
+			     "${SANDBOX_CURRENT_SOURCE_FILES}")
+
+		if (HASKELL_USE_CABAL)
+			execute_process (COMMAND ${CABAL_EXECUTABLE} sandbox add-source "${CMAKE_BINARY_DIR}/${SANDBOX_ADD_SOURCE}" -v0
+					 WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+		endif (HASKELL_USE_CABAL)
 	endforeach ()
 
 	# Grab potential haskell source files
-	file (GLOB_RECURSE PLUGIN_SOURCE_FILES_UNFILTERED
+	file (GLOB_RECURSE PLUGIN_SOURCE_FILES
 			   "${CMAKE_CURRENT_SOURCE_DIR}/*.hs"
-			   "${CMAKE_CURRENT_SOURCE_DIR}/*.lhs"
-			   "${CMAKE_CURRENT_BINARY_DIR}/*.hs"
-			   "${CMAKE_CURRENT_BINARY_DIR}/*.lhs")
-
-	# exclude the dist directory
-	set (PLUGIN_SOURCE_FILES)
-	foreach (file ${PLUGIN_SOURCE_FILES_UNFILTERED})
-		if (NOT file MATCHES "${CMAKE_CURRENT_BINARY_DIR}/dist/")
-			list (APPEND PLUGIN_SOURCE_FILES
-				     ${file})
-		endif ()
-	endforeach ()
+			   "${CMAKE_CURRENT_SOURCE_DIR}/*.lhs")
 
 	set (PLUGIN_SOURCE_FILES
 	     "${PLUGIN_SOURCE_FILES}"
@@ -292,38 +313,49 @@ macro (compile_haskell_plugin target PLUGIN_HASKELL_NAME)
 	     "${CMAKE_SOURCE_DIR}/src/plugins/haskell/Setup.hs.in"
 	     "${ARG_ADDITIONAL_SOURCES}")
 
-	set (CABAL_OPTS "--prefix=${CMAKE_INSTALL_PREFIX};--enable-shared")
-	get_property (HASKELL_LAST_PLUGIN GLOBAL PROPERTY HASKELL_LAST_PLUGIN)
-	if (NOT HASKELL_LAST_PLUGIN)
-		set (HASKELL_LAST_PLUGIN ${target})
-		add_custom_command (OUTPUT ${PLUGIN_HASKELL_NAME}
-				    COMMAND ${CABAL_EXECUTABLE} install ${CABAL_OPTS}
-					    --only-dependencies
-					    --offline -v0 || true
-				    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-				    DEPENDS c2hs_haskell)
-	else (NOT HASKELL_LAST_PLUGIN)
-		add_custom_command (OUTPUT ${PLUGIN_HASKELL_NAME}
-				    COMMAND ${CABAL_EXECUTABLE} install ${CABAL_OPTS}
-					    --only-dependencies
-					    --offline -v0 || true
-				    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-				    DEPENDS ${HASKELL_LAST_PLUGIN})
-	endif (NOT HASKELL_LAST_PLUGIN)
-	set_property (GLOBAL
-		      PROPERTY HASKELL_LAST_PLUGIN
-			       "${target}")
+	if (HASKELL_USE_CABAL)
+		set (CABAL_OPTS "--prefix=${CMAKE_INSTALL_PREFIX};--enable-shared")
+		get_property (HASKELL_LAST_PLUGIN GLOBAL PROPERTY HASKELL_LAST_PLUGIN)
+		if (NOT HASKELL_LAST_PLUGIN)
+			set (HASKELL_LAST_PLUGIN ${target})
+			add_custom_command (OUTPUT ${PLUGIN_HASKELL_NAME}
+					    COMMAND ${CABAL_EXECUTABLE} install ${CABAL_OPTS}
+						    --only-dependencies
+						    --offline -v0 || true
+					    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+					    DEPENDS c2hs_haskell
+						    ${SANDBOX_SOURCE_FILES})
+		else (NOT HASKELL_LAST_PLUGIN)
+			add_custom_command (OUTPUT ${PLUGIN_HASKELL_NAME}
+					    COMMAND ${CABAL_EXECUTABLE} install ${CABAL_OPTS}
+						    --only-dependencies
+						    --offline -v0 || true
+					    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+					    DEPENDS ${HASKELL_LAST_PLUGIN}
+						    ${SANDBOX_SOURCE_FILES})
+		endif (NOT HASKELL_LAST_PLUGIN)
+		set_property (GLOBAL
+			      PROPERTY HASKELL_LAST_PLUGIN
+				       "${target}")
 
-	# reconfiguration due to Cabal library version issues on stretch
-	add_custom_command (OUTPUT ${PLUGIN_HASKELL_NAME}
-			    COMMAND ${CABAL_EXECUTABLE} configure ${CABAL_OPTS} -v0
-			    COMMAND ${CABAL_EXECUTABLE} build -v0 ||
-				    (${CABAL_EXECUTABLE} configure ${CABAL_OPTS} -v0 && ${CABAL_EXECUTABLE} build -v0)
-			    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-			    DEPENDS c2hs_haskell
-				    ${PLUGIN_SOURCE_FILES}
-				    ${HASKELL_ADD_SOURCES_TARGET}
-			    APPEND)
+		# reconfiguration due to Cabal library version issues on stretch
+		add_custom_command (OUTPUT ${PLUGIN_HASKELL_NAME}
+				    COMMAND ${CABAL_EXECUTABLE} configure ${CABAL_OPTS} -v0
+				    COMMAND ${CABAL_EXECUTABLE} build -v0 ||
+					    (${CABAL_EXECUTABLE} configure ${CABAL_OPTS} -v0 && ${CABAL_EXECUTABLE} build -v0)
+				    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+				    DEPENDS c2hs_haskell
+					    ${PLUGIN_SOURCE_FILES}
+					    ${HASKELL_ADD_SOURCES_TARGET}
+				    APPEND)
+	else (HASKELL_USE_CABAL)
+		add_custom_command (OUTPUT ${PLUGIN_HASKELL_NAME}
+				    COMMAND ${STACK_EXECUTABLE} build
+					    --silent
+				    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+				    DEPENDS c2hs_haskell
+					    ${PLUGIN_SOURCE_FILES})
+	endif (HASKELL_USE_CABAL)
 	add_custom_target (${target} ALL DEPENDS ${PLUGIN_HASKELL_NAME})
 
 	install (DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/haskell" DESTINATION "lib${LIB_SUFFIX}/elektra/")

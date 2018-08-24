@@ -45,9 +45,9 @@ mark_as_advanced (GHC_EXECUTABLE
 		  GHC_TARGET_PLATFORM)
 
 find_program (STACK_EXECUTABLE stack)
+find_program (CABAL_EXECUTABLE cabal)
 if (HASKELL_USE_CABAL)
 	find_program (GHC_EXECUTABLE ghc)
-	find_program (CABAL_EXECUTABLE cabal)
 	find_program (ALEX_EXECUTABLE alex)
 	find_program (HAPPY_EXECUTABLE happy)
 	find_program (C2HS_EXECUTABLE c2hs)
@@ -64,7 +64,6 @@ else (HASKELL_USE_CABAL)
 				${STACK_BIN_PATH})
 		# find the programs in stack's path instead
 		find_program (GHC_EXECUTABLE ghc PATHS ${STACK_BIN_PATH} NO_DEFAULT_PATH)
-		find_program (CABAL_EXECUTABLE cabal PATHS ${STACK_BIN_PATH} NO_DEFAULT_PATH)
 		find_program (ALEX_EXECUTABLE alex PATHS ${STACK_BIN_PATH} NO_DEFAULT_PATH)
 		find_program (HAPPY_EXECUTABLE happy PATHS ${STACK_BIN_PATH} NO_DEFAULT_PATH)
 		find_program (C2HS_EXECUTABLE c2hs PATHS ${STACK_BIN_PATH} NO_DEFAULT_PATH)

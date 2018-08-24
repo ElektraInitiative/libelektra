@@ -1,4 +1,5 @@
 resolver: lts-11.22
 packages:
 - .
+- ../../bindings/haskell
 system-ghc: true

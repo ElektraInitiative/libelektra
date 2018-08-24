@@ -31,20 +31,45 @@ if (LIBFA_FOUND)
 			configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/sandbox/sandbox.cabal.in"
 					"${CMAKE_CURRENT_BINARY_DIR}/sandbox/sandbox.cabal"
 					@ONLY) # no extra dependency required so we can inline it without needing a user sandbox
-			add_custom_command (OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/sandbox/cabal.sandbox.config"
-					    COMMAND ${CABAL_EXECUTABLE} sandbox delete -v0
-					    COMMAND ${CABAL_EXECUTABLE} sandbox init -v0
-					    COMMAND ${CABAL_EXECUTABLE} sandbox add-source -v0
-						    "${CMAKE_BINARY_DIR}/src/libs/typesystem/libfa"
-					    COMMAND ${CABAL_EXECUTABLE} sandbox add-source -v0
-						    "${CMAKE_BINARY_DIR}/src/libs/typesystem/specelektra"
-					    COMMAND ${CABAL_EXECUTABLE} install
-						    --only-dependencies
-						    --offline -v0
-					    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/sandbox/")
+
+			if (HASKELL_USE_CABAL)
+				add_custom_command (OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/sandbox/cabal.sandbox.config"
+						    COMMAND ${CABAL_EXECUTABLE} sandbox delete -v0
+						    COMMAND ${CABAL_EXECUTABLE} sandbox init -v0
+						    COMMAND ${CABAL_EXECUTABLE} sandbox add-source -v0
+							    "${CMAKE_BINARY_DIR}/src/libs/typesystem/libfa"
+						    COMMAND ${CABAL_EXECUTABLE} sandbox add-source -v0
+							    "${CMAKE_BINARY_DIR}/src/libs/typesystem/specelektra"
+						    COMMAND ${CABAL_EXECUTABLE} install
+							    --only-dependencies
+							    --offline -v0
+						    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/sandbox/")
+			else (HASKELL_USE_CABAL)
+				add_custom_command (OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/sandbox/cabal.sandbox.config"
+						    COMMAND ${STACK_EXECUTABLE} exec
+							    --no-ghc-package-path
+							    -- cabal sandbox delete -v0
+						    COMMAND ${STACK_EXECUTABLE} exec
+							    --no-ghc-package-path
+							    -- cabal sandbox init -v0
+						    COMMAND ${STACK_EXECUTABLE} exec
+							    --no-ghc-package-path
+							    -- cabal sandbox add-source -v0 "${CMAKE_BINARY_DIR}/src/libs/typesystem/libfa"
+						    COMMAND ${STACK_EXECUTABLE} exec
+							    --no-ghc-package-path
+							    -- cabal sandbox add-source -v0
+							       "${CMAKE_BINARY_DIR}/src/libs/typesystem/specelektra"
+						    COMMAND ${STACK_EXECUTABLE} exec
+							    --no-ghc-package-path
+							    -- cabal install
+							    --only-dependencies
+							    --offline -v0
+						    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/sandbox/")
+			endif (HASKELL_USE_CABAL)
 			add_custom_target ("typechecker-ghc-plugin"
 					   ALL
-					   DEPENDS c2hs_haskell
+					   DEPENDS typechecker
+						   "${CMAKE_CURRENT_SOURCE_DIR}/sandbox/sandbox.cabal.in"
 						   "${CMAKE_CURRENT_BINARY_DIR}/sandbox/cabal.sandbox.config")
 		endif (DEPENDENCY_PHASE)
 

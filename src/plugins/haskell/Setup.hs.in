@@ -10,7 +10,7 @@
 
 module Main (main) where
 
-import Control.Monad        (mapM_, when, filterM, sequence, unless)
+import Control.Monad        (mapM_, mapM, when, filterM, sequence, unless)
 import Control.Applicative  (liftA2)
 import Data.Foldable        (toList, traverse_)
 import Data.Maybe           (mapMaybe)
@@ -137,10 +137,11 @@ ghcLibs :: [String]
 ghcLibs = ["base", "ghc-prim", "integer-gmp", "rts"]
 
 isGlobalLibrary :: InstalledPackageInfo -> Bool
-isGlobalLibrary = liftA2 (||) blacklisted global
+isGlobalLibrary = liftA2 (&&) cabalGlobal stackGlobal
   where
     blacklisted = flip any ghcLibs . (==) . C.display . C.pkgName . IPI.sourcePackageId
-    global      = not . any (".cabal-sandbox" `isInfixOf`) . IPI.libraryDirs
+    cabalGlobal = not . any (".cabal-sandbox" `isInfixOf`) . IPI.libraryDirs
+    stackGlobal = not . any (".stack" `isInfixOf`) . IPI.libraryDirs
 
 findTransitiveDependencies :: PackageIndex a -> Set C.UnitId -> Set C.UnitId
 findTransitiveDependencies pkgIdx initial = go S.empty (S.toList initial)

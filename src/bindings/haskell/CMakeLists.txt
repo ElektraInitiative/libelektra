@@ -103,6 +103,7 @@ macro (compile_haskell_binding STACK_EXECUTABLE CABAL_EXECUTABLE GHC_VERSION HAS
 						    ${ELEKTRA_DEPENDENCY}
 						    c2hs_haskell)
 		else (HASKELL_USE_CABAL)
+
 			add_custom_command (OUTPUT ${HASKELL_TESTS}
 					    COMMAND ${STACK_EXECUTABLE} test
 						    --no-run-tests
