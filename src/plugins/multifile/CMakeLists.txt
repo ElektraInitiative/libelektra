@@ -2,6 +2,7 @@ include (LibAddMacros)
 
 if (DEPENDENCY_PHASE)
 	include (CheckIncludeFile)
+	set (CMAKE_REQUIRED_QUIET ON)
 	check_include_file (fts.h HAVE_FTS_H)
 
 	if (NOT HAVE_FTS_H)
