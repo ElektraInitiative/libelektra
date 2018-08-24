@@ -174,7 +174,9 @@ you up to date with the multi-language support provided by Elektra.
 
 ### CMake
 
-- <<TODO>>
+- We now support building haskell bindings and plugins using stack. Stack is an advanced build
+  tool aimed to create reliable builds. Alternatively, one can still use cabal for building by
+  specifying the `-DHASKELL_USE_CABAL` flag. *(Armin Wurzinger)*
 - <<TODO>>
 - <<TODO>>
 
