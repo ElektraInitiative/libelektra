@@ -5,7 +5,7 @@ if (APPLE)
 	set (CMAKE_FIND_FRAMEWORK "LAST") # try user environment first, then search for system libs  required on OSX under rvm
 endif ()
 
-find_package (Ruby)
+find_package (Ruby QUIET)
 
 if (NOT RUBY_FOUND)
 	exclude_binding (swig_ruby "ruby interpreter or ruby header files not found (package ruby-dev/ruby-devel installed?)")
