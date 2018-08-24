@@ -1,19 +1,21 @@
 include (${SWIG_USE_FILE})
 include (LibAddMacros)
 
+set (PYTHON2_VERSION 2.7)
+
 # set (PythonInterp_FIND_VERSION_EXACT ON)
-find_package (Python2Interp 2.7 QUIET)
+find_package (Python2Interp ${PYTHON2_VERSION} QUIET)
 
 # Make sure we use the correct Python version on macOS
 if (APPLE AND PYTHON2INTERP_FOUND)
 	execute_process (COMMAND ${PYTHON2_EXECUTABLE}-config --prefix
 			 OUTPUT_VARIABLE PYTHON2_LIBRARY_PREFIX
 			 OUTPUT_STRIP_TRAILING_WHITESPACE)
-	set (PYTHON2_LIBRARY ${PYTHON2_LIBRARY_PREFIX}/lib/libpython2.7${CMAKE_SHARED_LIBRARY_SUFFIX})
-	set (PYTHON2_INCLUDE_DIR ${PYTHON2_LIBRARY_PREFIX}/include/python2.7)
+	set (PYTHON2_LIBRARY ${PYTHON2_LIBRARY_PREFIX}/lib/libpython${PYTHON2_VERSION}${CMAKE_SHARED_LIBRARY_SUFFIX})
+	set (PYTHON2_INCLUDE_DIR ${PYTHON2_LIBRARY_PREFIX}/include/python${PYTHON2_VERSION})
 endif (APPLE AND PYTHON2INTERP_FOUND)
 
-find_package (Python2Libs 2.7 QUIET)
+find_package (Python2Libs ${PYTHON2_VERSION} QUIET)
 
 if (NOT PYTHON2INTERP_FOUND)
 	exclude_binding (swig_python2 "python2 interpreter not found")
