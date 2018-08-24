@@ -1,4 +1,4 @@
-find_package (Doxygen)
+find_package (Doxygen QUIET)
 
 # ~~~
 # do_doc
