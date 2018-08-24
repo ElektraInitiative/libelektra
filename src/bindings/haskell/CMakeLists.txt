@@ -57,10 +57,11 @@ macro (compile_haskell_binding STACK_EXECUTABLE CABAL_EXECUTABLE GHC_VERSION HAS
 					    ${ELEKTRA_DEPENDENCY})
 	else (HASKELL_USE_CABAL)
 		add_custom_command (OUTPUT ${BINDING_HASKELL_NAME}
-			    COMMAND ${STACK_EXECUTABLE} build --silent
-			    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-			    DEPENDS ${BINDING_HASKELL_DEPENDENCIES}
-				    ${ELEKTRA_DEPENDENCY})
+				    COMMAND ${STACK_EXECUTABLE} build
+					    --silent
+				    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+				    DEPENDS ${BINDING_HASKELL_DEPENDENCIES}
+					    ${ELEKTRA_DEPENDENCY})
 	endif (HASKELL_USE_CABAL)
 	add_custom_target (c2hs_haskell ALL DEPENDS "${BINDING_HASKELL_NAME}")
 
@@ -70,35 +71,42 @@ macro (compile_haskell_binding STACK_EXECUTABLE CABAL_EXECUTABLE GHC_VERSION HAS
 		# library already built - while for the haskell plugins it doesn't matter as a static build depends on the plugins but not
 		# on the bindings, this is the way we can resolve the circular dependency by treating the tests separately
 
-
 		if (HASKELL_USE_CABAL)
-			SET (HASKELL_TEST_DIR "${CMAKE_CURRENT_BINARY_DIR}/dist/build")
+			set (HASKELL_TEST_DIR "${CMAKE_CURRENT_BINARY_DIR}/dist/build")
 		else (HASKELL_USE_CABAL)
-			execute_process (COMMAND ${STACK_EXECUTABLE} path --dist-dir OUTPUT_VARIABLE STACK_DIST_DIR OUTPUT_STRIP_TRAILING_WHITESPACE
-				 WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
-			SET (HASKELL_TEST_DIR "${CMAKE_CURRENT_BINARY_DIR}/${STACK_DIST_DIR}/build")
+			execute_process (COMMAND ${STACK_EXECUTABLE} path --dist-dir
+					 OUTPUT_VARIABLE STACK_DIST_DIR
+					 OUTPUT_STRIP_TRAILING_WHITESPACE
+					 WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+			set (HASKELL_TEST_DIR "${CMAKE_CURRENT_BINARY_DIR}/${STACK_DIST_DIR}/build")
 		endif (HASKELL_USE_CABAL)
 
 		set (HASKELL_TEST_BASIC "${HASKELL_TEST_DIR}/testhaskell_basic/testhaskell_basic")
 		set (HASKELL_TEST_BASIC_OPTIMIZED "${HASKELL_TEST_DIR}/testhaskell_basic_optimized/testhaskell_basic_optimized")
 		set (HASKELL_TEST_REALWORLD "${HASKELL_TEST_DIR}/testhaskell_realworld/testhaskell_realworld")
 		set (HASKELL_TEST_REALWORLD_OPTIMIZED "${HASKELL_TEST_DIR}/testhaskell_realworld_optimized/testhaskell_realworld_optimized")
-		    
-		set (HASKELL_TESTS "${HASKELL_TEST_BASIC}" "${HASKELL_TEST_BASIC_OPTIMIZED}" "${HASKELL_TEST_REALWORLD}" "${HASKELL_TEST_REALWORLD_OPTIMIZED}")
+
+		set (HASKELL_TESTS
+		     "${HASKELL_TEST_BASIC}"
+		     "${HASKELL_TEST_BASIC_OPTIMIZED}"
+		     "${HASKELL_TEST_REALWORLD}"
+		     "${HASKELL_TEST_REALWORLD_OPTIMIZED}")
 
 		if (HASKELL_USE_CABAL)
-		# Sometimes building fails reporting an outdated package file. In this case we need to configure the package again.
-		add_custom_command (OUTPUT ${HASKELL_TESTS}
-				    COMMAND ${CABAL_EXECUTABLE} configure ${CABAL_OPTS}
-					    --enable-tests -v0
-				    COMMAND ${CABAL_EXECUTABLE} build -v0
-				    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-				    DEPENDS ${BINDING_HASKELL_DEPENDENCIES}
-					    ${ELEKTRA_DEPENDENCY}
-					    c2hs_haskell)
+			# Sometimes building fails reporting an outdated package file. In this case we need to configure the package again.
+			add_custom_command (OUTPUT ${HASKELL_TESTS}
+					    COMMAND ${CABAL_EXECUTABLE} configure ${CABAL_OPTS}
+						    --enable-tests -v0
+					    COMMAND ${CABAL_EXECUTABLE} build -v0
+					    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+					    DEPENDS ${BINDING_HASKELL_DEPENDENCIES}
+						    ${ELEKTRA_DEPENDENCY}
+						    c2hs_haskell)
 		else (HASKELL_USE_CABAL)
 			add_custom_command (OUTPUT ${HASKELL_TESTS}
-					    COMMAND ${STACK_EXECUTABLE} test --no-run-tests --silent
+					    COMMAND ${STACK_EXECUTABLE} test
+						    --no-run-tests
+						    --silent
 					    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 					    DEPENDS ${BINDING_HASKELL_DEPENDENCIES}
 						    ${ELEKTRA_DEPENDENCY}
@@ -140,8 +148,7 @@ macro (compile_haskell_binding STACK_EXECUTABLE CABAL_EXECUTABLE GHC_VERSION HAS
 			      PROPERTY ENVIRONMENT
 				       "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
 
-		add_test (testhaskell_basic_optimized
-			  "${HASKELL_TEST_BASIC_OPTIMIZED}")
+		add_test (testhaskell_basic_optimized "${HASKELL_TEST_BASIC_OPTIMIZED}")
 		set_property (TEST testhaskell_basic_optimized
 			      PROPERTY LABELS
 				       bindings)
@@ -154,8 +161,7 @@ macro (compile_haskell_binding STACK_EXECUTABLE CABAL_EXECUTABLE GHC_VERSION HAS
 				       "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
 
 		if (ENABLE_KDB_TESTING)
-			add_test (testhaskell_realworld
-				  "${HASKELL_TEST_REALWORLD}")
+			add_test (testhaskell_realworld "${HASKELL_TEST_REALWORLD}")
 			set_property (TEST testhaskell_realworld
 				      PROPERTY LABELS
 					       bindings)
@@ -174,8 +180,7 @@ macro (compile_haskell_binding STACK_EXECUTABLE CABAL_EXECUTABLE GHC_VERSION HAS
 				      PROPERTY ENVIRONMENT
 					       "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
 
-			add_test (testhaskell_realworld_optimized
-				  "${HASKELL_TEST_REALWORLD_OPTIMIZED}")
+			add_test (testhaskell_realworld_optimized "${HASKELL_TEST_REALWORLD_OPTIMIZED}")
 			set_property (TEST testhaskell_realworld_optimized
 				      PROPERTY LABELS
 					       bindings)

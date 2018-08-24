@@ -39,8 +39,6 @@ for file in $(find . \( -name 'CMakeLists.txt' -or -name '*.cmake' \) -and \
 			-or -path './scripts/*'                            \
 			-or -path './src/*'                                \
 			-or -path './tests/*'                              \
-			\) -and -not \(                                    \
-			-regex '.*cmake/Modules/FindHaskell.cmake$'        \
 			\)                                                 \
 );
 do
