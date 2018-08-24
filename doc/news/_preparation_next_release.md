@@ -184,6 +184,9 @@ you up to date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 
+### Vagrant
+
+- Added Vagrantfile for Ubuntu artful 32-bit. *(Mihael Pranjić)*
 
 ## Infrastructure
 
