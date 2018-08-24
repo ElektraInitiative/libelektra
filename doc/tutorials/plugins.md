@@ -241,7 +241,7 @@ So usually you would have:
 
 ```cmake
 if (DEPENDENCY_PHASE)
-	find_package (LibXml2)
+	find_package (LibXml2 QUIET)
 	if (LIBXML2_FOUND)
 		# add testdata, testcases...
 	else ()
