@@ -31,119 +31,6 @@ find_program (C2HS_EXECUTABLE c2hs)
 find_program (GHC-PKG_EXECUTABLE ghc-pkg)
 
 set (HASKELL_FOUND 0)
-if (CABAL_EXECUTABLE)
-if (C2HS_EXECUTABLE)
-if (ALEX_EXECUTABLE)
-if (HAPPY_EXECUTABLE)
-if (GHC_EXECUTABLE)
-if (GHC-PKG_EXECUTABLE)
-
-	# check for hspec and QuickCheck
-	# ghc-pkg return code is 0 on success, 1 otherwise
-	execute_process (
-		COMMAND ${GHC-PKG_EXECUTABLE} latest hspec
-		RESULT_VARIABLE GHC_HSPEC_FOUND
-		OUTPUT_QUIET ERROR_QUIET
-	)
-
-	execute_process (
-		COMMAND ${GHC-PKG_EXECUTABLE} latest QuickCheck
-		RESULT_VARIABLE GHC_QUICKCHECK_FOUND
-		OUTPUT_QUIET ERROR_QUIET
-	)
-
-	execute_process (
-		COMMAND ${GHC_EXECUTABLE} --print-target-platform
-		OUTPUT_VARIABLE GHC_TARGET_PLATFORM OUTPUT_STRIP_TRAILING_WHITESPACE
-	)
-
-	# correct the mapping..
-	string (REPLACE "apple-darwin" "osx" GHC_TARGET_PLATFORM ${GHC_TARGET_PLATFORM})
-	string (REPLACE "unknown-linux" "linux" GHC_TARGET_PLATFORM ${GHC_TARGET_PLATFORM})
-
-	# normalize the result variables, 0 means success which corresponds to 1 in cmake booleans
-	if (GHC_HSPEC_FOUND EQUAL 0)
-		set (GHC_HSPEC_FOUND 1)
-	else (GHC_HSPEC_FOUND EQUAL 0)
-		set (GHC_HSPEC_FOUND 0)
-	endif (GHC_HSPEC_FOUND EQUAL 0)
-
-	if (GHC_QUICKCHECK_FOUND EQUAL 0)
-		set (GHC_QUICKCHECK_FOUND 1)
-	else (GHC_QUICKCHECK_FOUND EQUAL 0)
-		set (GHC_QUICKCHECK_FOUND 0)
-	endif (GHC_QUICKCHECK_FOUND EQUAL 0)
-
-	execute_process (
-		COMMAND ${GHC_EXECUTABLE} --numeric-version
-		OUTPUT_VARIABLE GHC_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE
-	)
-
-	# find the default cabal installation path
-	# sort of hacky but i haven't found a uniform way of doing this
-	# first find the global cabal directory
-	execute_process (
-		COMMAND ${CABAL_EXECUTABLE} --ignore-sandbox help
-		COMMAND tail -n1
-		COMMAND xargs dirname
-		OUTPUT_VARIABLE CABAL_LOCATION OUTPUT_STRIP_TRAILING_WHITESPACE
-	)
-	# filter the library path matching our ghc version, ignoring architectures for now
-	execute_process (
-		COMMAND ls -F "${CABAL_LOCATION}/lib"
-		COMMAND grep ghc-${GHC_VERSION}
-		OUTPUT_VARIABLE GHC_DYNAMIC_LIBRARY_DIR OUTPUT_STRIP_TRAILING_WHITESPACE
-	)
-	set (CABAL_DYNLIB_PATH "${CABAL_LOCATION}/lib/${GHC_DYNAMIC_LIBRARY_DIR}")
-
-	# dependencies for the default cmake Setup.hs
-	# For cabal the system version should be used
-	set (CABAL_CUSTOM_SETUP
-"custom-setup
-  setup-depends:
-    Cabal      >= 1.24.0 && < 2.4  ,
-    base       >= 4.9    && < 4.12 ,
-    containers >= 0.5    && < 0.6  ,
-    directory  >= 1.2    && < 1.4  ,
-    process    >= 1.4    && < 1.7  ,
-    binary     >= 0.8    && < 0.9" )
-
-	set (HASKELL_SHARED_SANDBOX "$ENV{HASKELL_SHARED_SANDBOX}/.cabal-sandbox")
-	get_filename_component (HASKELL_SHARED_SANDBOX "${HASKELL_SHARED_SANDBOX}" REALPATH)
-    if (HASKELL_SHARED_SANDBOX AND IS_DIRECTORY "${HASKELL_SHARED_SANDBOX}")
-		set (HASKELL_FOUND 1)
-    else (HASKELL_SHARED_SANDBOX AND IS_DIRECTORY "${HASKELL_SHARED_SANDBOX}")
-    	if (IS_DIRECTORY "${CMAKE_BINARY_DIR}/.cabal-sandbox")
-    		set (HASKELL_SHARED_SANDBOX "${CMAKE_BINARY_DIR}/.cabal-sandbox")
-			set (HASKELL_FOUND 1)
-    	else (IS_DIRECTORY "${CMAKE_BINARY_DIR}/.cabal-sandbox")
-    		set (HASKELL_NOTFOUND_INFO "cabal sandbox not found")
-    	endif (IS_DIRECTORY "${CMAKE_BINARY_DIR}/.cabal-sandbox")
-    endif (HASKELL_SHARED_SANDBOX AND IS_DIRECTORY "${HASKELL_SHARED_SANDBOX}")
-
-	# By using cabal sandboxes we can install hspec and QuickCheck to the sandbox without
-	# any concerns as they are independent from the global environment. So they are not required.
-	# All set, have fun with haskell!
-else (GHC-PKG_EXECUTABLE)
-	set (HASKELL_NOTFOUND_INFO "ghc-pkg not found")
-endif (GHC-PKG_EXECUTABLE)
-else (GHC_EXECUTABLE)
-	set (HASKELL_NOTFOUND_INFO "GHC not found")
-endif (GHC_EXECUTABLE)
-else (HAPPY_EXECUTABLE)
-	set (HASKELL_NOTFOUND_INFO "happy not found")
-endif (HAPPY_EXECUTABLE)
-else (ALEX_EXECUTABLE)
-	set (HASKELL_NOTFOUND_INFO "alex not found")
-endif (ALEX_EXECUTABLE)
-else (C2HS_EXECUTABLE)
-	set (HASKELL_NOTFOUND_INFO "c2hs not found")
-endif (C2HS_EXECUTABLE)
-else (CABAL_EXECUTABLE)
-	set (HASKELL_NOTFOUND_INFO "cabal not found")
-endif (CABAL_EXECUTABLE)
-
-set (HASKELL_NOTFOUND_INFO "${HASKELL_NOTFOUND_INFO}, please refer to the readme in src/bindings/haskell/README.md")
 
 mark_as_advanced (
 	GHC_EXECUTABLE
@@ -159,3 +46,119 @@ mark_as_advanced (
 	GHC_QUICKCHECK_FOUND
 	GHC_TARGET_PLATFORM
 )
+
+if (NOT GHC_EXECUTABLE)
+	set (HASKELL_NOTFOUND_INFO "GHC not found")
+endif (NOT GHC_EXECUTABLE)
+
+if (NOT CABAL_EXECUTABLE)
+	set (HASKELL_NOTFOUND_INFO "cabal not found")
+endif (NOT CABAL_EXECUTABLE)
+
+if (NOT ALEX_EXECUTABLE)
+	set (HASKELL_NOTFOUND_INFO "alex not found")
+endif (NOT ALEX_EXECUTABLE)
+
+if (NOT HAPPY_EXECUTABLE)
+	set (HASKELL_NOTFOUND_INFO "happy not found")
+endif (NOT HAPPY_EXECUTABLE)
+
+if (NOT C2HS_EXECUTABLE)
+	set (HASKELL_NOTFOUND_INFO "c2hs not found")
+endif (NOT C2HS_EXECUTABLE)
+
+if (NOT GHC-PKG_EXECUTABLE)
+	set (HASKELL_NOTFOUND_INFO "ghc-pkg not found")
+endif (NOT GHC-PKG_EXECUTABLE)
+
+if (HASKELL_NOTFOUND_INFO)
+	set (HASKELL_NOTFOUND_INFO "${HASKELL_NOTFOUND_INFO}, please refer to the readme in src/bindings/haskell/README.md")
+	return ()
+endif (HASKELL_NOTFOUND_INFO)
+
+# check for hspec and QuickCheck
+# ghc-pkg return code is 0 on success, 1 otherwise
+execute_process (
+	COMMAND ${GHC-PKG_EXECUTABLE} latest hspec
+	RESULT_VARIABLE GHC_HSPEC_FOUND
+	OUTPUT_QUIET ERROR_QUIET
+)
+
+execute_process (
+	COMMAND ${GHC-PKG_EXECUTABLE} latest QuickCheck
+	RESULT_VARIABLE GHC_QUICKCHECK_FOUND
+	OUTPUT_QUIET ERROR_QUIET
+)
+
+execute_process (
+	COMMAND ${GHC_EXECUTABLE} --print-target-platform
+	OUTPUT_VARIABLE GHC_TARGET_PLATFORM OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+# correct the mapping..
+string (REPLACE "apple-darwin" "osx" GHC_TARGET_PLATFORM ${GHC_TARGET_PLATFORM})
+string (REPLACE "unknown-linux" "linux" GHC_TARGET_PLATFORM ${GHC_TARGET_PLATFORM})
+
+# normalize the result variables, 0 means success which corresponds to 1 in cmake booleans
+if (GHC_HSPEC_FOUND EQUAL 0)
+	set (GHC_HSPEC_FOUND 1)
+else (GHC_HSPEC_FOUND EQUAL 0)
+	set (GHC_HSPEC_FOUND 0)
+endif (GHC_HSPEC_FOUND EQUAL 0)
+
+if (GHC_QUICKCHECK_FOUND EQUAL 0)
+	set (GHC_QUICKCHECK_FOUND 1)
+else (GHC_QUICKCHECK_FOUND EQUAL 0)
+	set (GHC_QUICKCHECK_FOUND 0)
+endif (GHC_QUICKCHECK_FOUND EQUAL 0)
+
+execute_process (
+	COMMAND ${GHC_EXECUTABLE} --numeric-version
+	OUTPUT_VARIABLE GHC_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+# find the default cabal installation path
+# sort of hacky but i haven't found a uniform way of doing this
+# first find the global cabal directory
+execute_process (
+	COMMAND ${CABAL_EXECUTABLE} --ignore-sandbox help
+	COMMAND tail -n1
+	COMMAND xargs dirname
+	OUTPUT_VARIABLE CABAL_LOCATION OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+# filter the library path matching our ghc version, ignoring architectures for now
+execute_process (
+	COMMAND ls -F "${CABAL_LOCATION}/lib"
+	COMMAND grep ghc-${GHC_VERSION}
+	OUTPUT_VARIABLE GHC_DYNAMIC_LIBRARY_DIR OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+set (CABAL_DYNLIB_PATH "${CABAL_LOCATION}/lib/${GHC_DYNAMIC_LIBRARY_DIR}")
+
+# dependencies for the default cmake Setup.hs
+# For cabal the system version should be used
+set (CABAL_CUSTOM_SETUP
+"custom-setup
+  setup-depends:
+    Cabal      >= 1.24.0 && < 2.4  ,
+    base       >= 4.9    && < 4.12 ,
+    containers >= 0.5    && < 0.6  ,
+    directory  >= 1.2    && < 1.4  ,
+    process    >= 1.4    && < 1.7  ,
+    binary     >= 0.8    && < 0.9" )
+
+set (HASKELL_SHARED_SANDBOX "$ENV{HASKELL_SHARED_SANDBOX}/.cabal-sandbox")
+get_filename_component (HASKELL_SHARED_SANDBOX "${HASKELL_SHARED_SANDBOX}" REALPATH)
+if (HASKELL_SHARED_SANDBOX AND IS_DIRECTORY "${HASKELL_SHARED_SANDBOX}")
+	set (HASKELL_FOUND 1)
+else (HASKELL_SHARED_SANDBOX AND IS_DIRECTORY "${HASKELL_SHARED_SANDBOX}")
+if (IS_DIRECTORY "${CMAKE_BINARY_DIR}/.cabal-sandbox")
+	set (HASKELL_SHARED_SANDBOX "${CMAKE_BINARY_DIR}/.cabal-sandbox")
+		set (HASKELL_FOUND 1)
+else (IS_DIRECTORY "${CMAKE_BINARY_DIR}/.cabal-sandbox")
+	set (HASKELL_NOTFOUND_INFO "cabal sandbox not found")
+endif (IS_DIRECTORY "${CMAKE_BINARY_DIR}/.cabal-sandbox")
+endif (HASKELL_SHARED_SANDBOX AND IS_DIRECTORY "${HASKELL_SHARED_SANDBOX}")
+
+# By using cabal sandboxes we can install hspec and QuickCheck to the sandbox without
+# any concerns as they are independent from the global environment. So they are not required.
+# All set, have fun with haskell!
