@@ -2,7 +2,7 @@ include (LibAddPlugin)
 
 if (DEPENDENCY_PHASE)
 
-	find_package (LibGpgme)
+	find_package (LibGpgme QUIET)
 	if (NOT LIBGPGME_FOUND)
 		remove_plugin ("gpgme" "GPGME development files not found")
 	endif ()
