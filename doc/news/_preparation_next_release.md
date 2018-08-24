@@ -174,7 +174,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ### CMake
 
-- <<TODO>>
+- We improved the detection of Python 2 and Python 3 in the CMake code of the Python bindings. *(René Schwaiger)*
 - <<TODO>>
 - <<TODO>>
 
