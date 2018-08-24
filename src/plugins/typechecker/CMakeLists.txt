@@ -1,6 +1,6 @@
 include (LibAddHaskellPlugin)
 
-find_package (fa)
+find_package (LibFA QUIET)
 
 if (LIBFA_FOUND)
 
