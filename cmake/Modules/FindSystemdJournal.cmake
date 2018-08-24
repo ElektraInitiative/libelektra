@@ -14,7 +14,7 @@ if (LIBSYSTEMD_JOURNAL_INCLUDE_DIR AND LIBSYSTEMD_ID128_INCLUDE_DIR)
 else (LIBSYSTEMD_JOURNAL_INCLUDE_DIR AND LIBSYSTEMD_ID128_INCLUDE_DIR)
 
 	# try to find systemd-journal via pkg-config
-	find_package (PkgConfig)
+	find_package (PkgConfig QUIET)
 
 	if (PKG_CONFIG_FOUND)
 		pkg_check_modules (_LIBSYSTEMD_JOURNAL_PC QUIET "libsystemd-journal")

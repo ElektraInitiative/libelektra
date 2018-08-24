@@ -16,7 +16,7 @@ if (LIBAUGEAS_INCLUDE_DIR AND LIBAUGEAS_LIBRARIES AND LIBAUGEAS_PREFIX) # in cac
 else (LIBAUGEAS_INCLUDE_DIR)
 
 	# try to find libaugeas via pkg-config
-	find_package (PkgConfig)
+	find_package (PkgConfig QUIET)
 
 	if (PKG_CONFIG_FOUND)
 		pkg_check_modules (_LIBAUGEAS_PC QUIET "libaugeas")

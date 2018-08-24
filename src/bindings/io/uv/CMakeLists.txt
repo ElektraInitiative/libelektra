@@ -1,6 +1,6 @@
 include (LibAddMacros)
 
-find_package (PkgConfig)
+find_package (PkgConfig QUIET)
 pkg_check_modules (LIBUV QUIET libuv)
 
 if (${CMAKE_SYSTEM_NAME} STREQUAL "Windows")

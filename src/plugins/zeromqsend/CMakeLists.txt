@@ -1,5 +1,5 @@
 if (DEPENDENCY_PHASE)
-	find_package (PkgConfig)
+	find_package (PkgConfig QUIET)
 	pkg_check_modules (ZMQ QUIET libzmq)
 
 	if (NOT ZMQ_FOUND)

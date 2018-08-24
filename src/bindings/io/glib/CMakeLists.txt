@@ -1,6 +1,6 @@
 include (LibAddMacros)
 
-find_package (PkgConfig)
+find_package (PkgConfig QUIET)
 pkg_check_modules (GLIB QUIET glib-2.0)
 
 if (NOT GLIB_FOUND)
