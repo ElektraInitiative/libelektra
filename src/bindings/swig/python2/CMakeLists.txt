@@ -3,6 +3,16 @@ include (LibAddMacros)
 
 # set (PythonInterp_FIND_VERSION_EXACT ON)
 find_package (Python2Interp 2.7 QUIET)
+
+# Make sure we use the correct Python version on macOS
+if (APPLE AND PYTHON2INTERP_FOUND)
+	execute_process (COMMAND ${PYTHON2_EXECUTABLE}-config --prefix
+			 OUTPUT_VARIABLE PYTHON2_LIBRARY_PREFIX
+			 OUTPUT_STRIP_TRAILING_WHITESPACE)
+	set (PYTHON2_LIBRARY ${PYTHON2_LIBRARY_PREFIX}/lib/libpython2.7${CMAKE_SHARED_LIBRARY_SUFFIX})
+	set (PYTHON2_INCLUDE_DIR ${PYTHON2_LIBRARY_PREFIX}/include/python2.7)
+endif (APPLE AND PYTHON2INTERP_FOUND)
+
 find_package (Python2Libs 2.7 QUIET)
 
 if (NOT PYTHON2INTERP_FOUND)

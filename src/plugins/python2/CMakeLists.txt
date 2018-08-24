@@ -2,6 +2,16 @@ include (LibAddBinding)
 
 if (DEPENDENCY_PHASE)
 	find_package (Python2Interp 2.7 QUIET)
+
+	# Make sure we use the correct Python version on macOS
+	if (APPLE AND PYTHON2INTERP_FOUND)
+		execute_process (COMMAND ${PYTHON2_EXECUTABLE}-config --prefix
+				 OUTPUT_VARIABLE PYTHON2_LIBRARY_PREFIX
+				 OUTPUT_STRIP_TRAILING_WHITESPACE)
+		set (PYTHON2_LIBRARY ${PYTHON2_LIBRARY_PREFIX}/lib/libpython2.7${CMAKE_SHARED_LIBRARY_SUFFIX})
+		set (PYTHON2_INCLUDE_DIR ${PYTHON2_LIBRARY_PREFIX}/include/python2.7)
+	endif (APPLE AND PYTHON2INTERP_FOUND)
+
 	find_package (Python2Libs 2.7 QUIET)
 	find_package (Pluginprocess)
 	find_swig ()
@@ -32,6 +42,7 @@ if (DEPENDENCY_PHASE)
 				 OUTPUT_STRIP_TRAILING_WHITESPACE)
 
 		configure_file (config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
+
 	elseif (APPLE AND CMAKE_COMPILER_IS_GNUCXX)
 		remove_plugin (python2 "does not compile with GCC under Mac OS X")
 	elseif (NOT PYTHON2LIBS_FOUND)
