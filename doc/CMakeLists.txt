@@ -57,7 +57,7 @@ if (DOXYGEN_FOUND)
 		set (WITH_DOT NO)
 	endif (DOXYGEN_DOT_FOUND)
 
-	find_package (Perl)
+	find_package (Perl QUIET)
 
 	add_executable (markdownlinkconverter markdownlinkconverter/markdownlinkconverter.c)
 
