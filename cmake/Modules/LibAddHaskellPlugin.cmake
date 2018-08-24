@@ -43,6 +43,9 @@ macro (add_haskell_plugin target)
 				"${PLUGIN_NAME}")
 	endif (ARG_MODULE)
 
+	# stack configuration so it only compiles this part
+	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/stack.yaml.in" "${CMAKE_CURRENT_BINARY_DIR}/stack.yaml" @ONLY)
+
 	if (DEPENDENCY_PHASE)
 		find_package (Haskell)
 		find_package (Pluginprocess)
@@ -264,9 +267,6 @@ macro (compile_haskell_plugin target PLUGIN_HASKELL_NAME)
 
 	# copy the readme so the macro in haskell.c finds it
 	file (COPY "${CMAKE_CURRENT_SOURCE_DIR}/README.md" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
-
-	# stack configuration so it only compiles this part
-	file (COPY "${CMAKE_CURRENT_SOURCE_DIR}/stack.yaml" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
 
 	# same for the setup logic, depending on wheter a custom one exists use the default suitable for almost everything
 	set (CABAL_CUSTOM_SETUP_FILE "${CMAKE_CURRENT_SOURCE_DIR}/Setup.hs.in")

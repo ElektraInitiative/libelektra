@@ -68,12 +68,19 @@ rm haskell-cabal-files.txt
 cd src
 echo "${CABAL_FILES}" | while read -r f
 do
-	sed -i '' "s/@KDB_VERSION@/${KDB_VERSION}/g;" "$f";
-	sed -i '' 's/@CABAL_CUSTOM_SETUP@//g;' "$f";
+	sed -i.bak "s/@KDB_VERSION@/${KDB_VERSION}/g;" "$f";
+	sed -i.bak 's/@CABAL_CUSTOM_SETUP@//g;' "$f";
+	rm "$f.bak"
 	mv "$f" "$(echo "$f" | sed s/.cabal.in/.cabal/)";
 done
 cd ${BUILD_DIR}
 
 # now install the dependencies via stack
-stack init $1 $2
-stack build --only-dependencies --test $2
+stack $2 init $1
+if [ "$2" == "--system-ghc" ]
+then
+	stack $2 config set system-ghc true
+else
+	stack $2 config set system-ghc false
+fi 
+stack $2 build --only-dependencies --test

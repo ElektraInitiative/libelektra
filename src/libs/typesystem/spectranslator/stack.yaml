@@ -1,6 +1,0 @@
-resolver: lts-11.22
-packages:
-- .
-- ../../bindings/haskell
-- ../libfa
-system-ghc: true

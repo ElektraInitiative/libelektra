@@ -65,6 +65,8 @@ kdb ls user/tests/constants
 #> user/tests/constants/cmake/TARGET_TOOL_EXEC_FOLDER
 #> user/tests/constants/cmake/TOOLS
 #> user/tests/constants/cmake/HASKELL_USE_CABAL
+#> user/tests/constants/cmake/HASKELL_STACK_RESOLVER
+#> user/tests/constants/cmake/HASKELL_STACK_SYSTEM_GHC
 #> user/tests/constants/compiler
 #> user/tests/constants/compiler/c_flags
 #> user/tests/constants/compiler/coverage

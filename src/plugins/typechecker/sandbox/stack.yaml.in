@@ -1,0 +1,6 @@
+resolver: @HASKELL_STACK_RESOLVER@
+packages:
+- .
+- ../../libs/typesystem/libfa
+- ../../libs/typesystem/specelektra
+system-ghc: @HASKELL_STACK_SYSTEM_GHC@

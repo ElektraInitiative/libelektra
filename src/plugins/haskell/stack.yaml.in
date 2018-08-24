@@ -1,0 +1,5 @@
+resolver: @HASKELL_STACK_RESOLVER@
+packages:
+- .
+- ../../bindings/haskell
+system-ghc: @HASKELL_STACK_SYSTEM_GHC@

@@ -1,5 +1,0 @@
-resolver: lts-11.22
-packages:
-- .
-- ../libfa
-system-ghc: true

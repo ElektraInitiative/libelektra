@@ -1,0 +1,4 @@
+resolver: @HASKELL_STACK_RESOLVER@
+packages:
+- .
+system-ghc: @HASKELL_STACK_SYSTEM_GHC@

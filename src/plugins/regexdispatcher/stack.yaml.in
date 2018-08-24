@@ -1,0 +1,6 @@
+resolver: @HASKELL_STACK_RESOLVER@
+packages:
+- .
+- ../../bindings/haskell
+- ../../libs/typesystem/libfa
+system-ghc: @HASKELL_STACK_SYSTEM_GHC@

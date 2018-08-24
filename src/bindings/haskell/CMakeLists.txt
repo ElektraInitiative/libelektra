@@ -27,7 +27,7 @@ macro (compile_haskell_binding STACK_EXECUTABLE CABAL_EXECUTABLE GHC_VERSION HAS
 	# Use the post-build logic to glue the bindings together with cmake as its done for plugins
 	configure_file ("${CMAKE_SOURCE_DIR}/src/plugins/haskell/Setup.hs.in" "${CMAKE_CURRENT_BINARY_DIR}/Setup.hs" @ONLY)
 	file (COPY "${CMAKE_CURRENT_SOURCE_DIR}/src/c" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/src/")
-	file (COPY "${CMAKE_CURRENT_SOURCE_DIR}/stack.yaml" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
+	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/stack.yaml.in" "${CMAKE_CURRENT_BINARY_DIR}/stack.yaml" @ONLY)
 
 	set (BINDING_HASKELL_DEPENDENCIES
 	     "${CMAKE_CURRENT_SOURCE_DIR}/libelektra-haskell.cabal.in"
@@ -215,7 +215,7 @@ if (BUILD_SHARED)
 				exclude_binding (haskell "ghc: ${GHC_VERSION} found, but ${GHC_MIN_VERSION} required")
 			endif (NOT GHC_VERSION VERSION_LESS ${GHC_MIN_VERSION})
 		else (HASKELL_FOUND)
-			exclude_binding (haskell ${HASKELL_NOTFOUND_INFO})
+			exclude_binding (haskell "${HASKELL_NOTFOUND_INFO}")
 		endif (HASKELL_FOUND)
 	else (NOT ENABLE_ASAN)
 		exclude_binding (haskell "not compatible with ENABLE_ASAN")

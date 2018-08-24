@@ -3,9 +3,6 @@ include (LibAddHaskellPlugin)
 find_package (fa)
 
 if (LIBFA_FOUND)
-
-	find_package (Haskell)
-
 	set (TYPECHECKER_GHC_PLUGIN_PATH "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/elektra/typechecker-ghc-plugin")
 	set (TYPECHECKER_GHC_PLUGIN "${TYPECHECKER_GHC_PLUGIN_PATH}/${GHC_TARGET_PLATFORM}-ghc-${GHC_VERSION}-packages.conf.d/")
 
@@ -31,6 +28,9 @@ if (LIBFA_FOUND)
 			configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/sandbox/sandbox.cabal.in"
 					"${CMAKE_CURRENT_BINARY_DIR}/sandbox/sandbox.cabal"
 					@ONLY) # no extra dependency required so we can inline it without needing a user sandbox
+			configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/sandbox/stack.yaml.in"
+					"${CMAKE_CURRENT_BINARY_DIR}/sandbox/stack.yaml"
+					@ONLY)
 
 			if (HASKELL_USE_CABAL)
 				add_custom_command (OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/sandbox/cabal.sandbox.config"

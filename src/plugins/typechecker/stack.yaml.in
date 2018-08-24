@@ -1,8 +1,8 @@
-resolver: lts-11.22
+resolver: @HASKELL_STACK_RESOLVER@
 packages:
 - .
 - ../../bindings/haskell
 - ../../libs/typesystem/libfa
 - ../../libs/typesystem/specelektra
 - ../../libs/typesystem/spectranslator
-system-ghc: true
+system-ghc: @HASKELL_STACK_SYSTEM_GHC@

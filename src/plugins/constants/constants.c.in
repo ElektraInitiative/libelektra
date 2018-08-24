@@ -212,6 +212,16 @@ static void elektraAddConstants (KeySet * ks, Key * parentKey)
 	ksAppendKey (ks, key);
 
 	key = keyDup (parentKey);
+	keyAddName (key, "cmake/HASKELL_STACK_RESOLVER");
+	keySetString (key, "@HASKELL_STACK_RESOLVER@");
+	ksAppendKey (ks, key);
+
+	key = keyDup (parentKey);
+	keyAddName (key, "cmake/HASKELL_STACK_SYSTEM_GHC");
+	keySetString (key, "@HASKELL_STACK_SYSTEM_GHC@");
+	ksAppendKey (ks, key);
+
+	key = keyDup (parentKey);
 	keyAddName (key, "compiler");
 	keySetString (key, "Flags defined for compilers as defined in ElektraCompiling.cmake");
 	ksAppendKey (ks, key);
