@@ -11,7 +11,6 @@ apt-get -qq update && apt-get -qq -y install \
     pkg-config \
     doxygen \
     graphviz \
-    bison \
     ruby-ronn \
     ruby-dev \
     python-dev \

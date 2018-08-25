@@ -24,6 +24,13 @@
 #include <kdb.hpp>
 #include <kdbhelper.h>
 
+// We disable certain tests on ASAN enabled builds: https://travis-ci.org/sanssecours/elektra/jobs/418573941
+#ifdef ENABLE_ASAN
+#define GTEST_DISABLE_ASAN(name) DISABLED_##name
+#else
+#define GTEST_DISABLE_ASAN(name) name
+#endif
+
 TEST (BackendBuilder, withDatabase)
 {
 	using namespace kdb;
@@ -93,7 +100,7 @@ TEST (MountBackendBuilder, basicAddRem)
 	EXPECT_TRUE (bb.validated ());
 }
 
-TEST (MountBackendBuilder, basicSort)
+TEST (GTEST_DISABLE_ASAN (MountBackendBuilder), basicSort)
 {
 	using namespace kdb;
 	using namespace kdb::tools;
@@ -129,8 +136,7 @@ TEST (MountBackendBuilder, basicSort)
 	EXPECT_TRUE (bb.validated ()) << "Reordering not successful?";
 }
 
-
-TEST (MountBackendBuilder, allSort)
+TEST (GTEST_DISABLE_ASAN (MountBackendBuilder), allSort)
 {
 	using namespace kdb;
 	using namespace kdb::tools;
@@ -176,7 +182,6 @@ TEST (MountBackendBuilder, allSort)
 		EXPECT_TRUE (bb.validated ()) << "Reordering not successful?";
 	} while (std::next_permutation (permutation.begin (), permutation.end ()));
 }
-
 
 TEST (MountBackendBuilder, resolveNeeds)
 {

@@ -59,7 +59,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
    plugins in an own process, acting as a proxy itself. Therefore it is not required
    to explicitly change a plugin's implementation if it shall be executed in an own
    process. This plugin is not completely finished yet, as currently there is no way
-   for it to mimick the proxied plugin's contract in Elektra. It can be used with simple
+   for it to mimic the proxied plugin's contract in Elektra. It can be used with simple
    plugins like `dump` however, check the limitations in the readme for more details.  *(Armin Wurzinger)*
 
 ### gpgme
@@ -165,8 +165,10 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Tests
 
-- <<TODO>>
-- <<TODO>>
+- The unit test for the [`dbus` plugin](https://www.libelektra.org/plugins/dbus) does not leak memory anymore, if it fails on macOS.
+  *(Thomas Wahringer)*
+- The tests `testkdb_allplugins` and `testscr_check_kdb_internal_check` do not test a plugin on an ASAN enabled build anymore, if you
+  specify the status tag `memleak` in the plugin contract. *(René Schwaiger)*
 - <<TODO>>
 
 
@@ -199,7 +201,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Travis
 
-- <<TODO>>
+- Travis now also checks the code for memory leaks in the build job `🍏 Clang ASAN`. *(René Schwaiger)*
 - <<TODO>>
 - <<TODO>>
 

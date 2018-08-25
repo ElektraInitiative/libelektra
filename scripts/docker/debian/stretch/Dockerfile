@@ -12,7 +12,6 @@ RUN apt-get update \
         automake \
         cmake \
         pkg-config \
-        bison \
         ruby \
         ruby-dev \
         python-all \
@@ -73,7 +72,6 @@ RUN apt-get update \
         graphviz \
         gawk \
         lcov \
-        icheck \
         valgrind \
     && rm -rf /var/lib/apt/lists/*
 

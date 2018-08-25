@@ -27,7 +27,7 @@
 /** The folder to add for directory namespace */
 #define KDB_DB_DIR               "@KDB_DB_DIR@"
 
-/** Depending on the resolver this might be the root 
+/** Depending on the resolver this might be the root
   * to search for user configuration. */
 #define KDB_DB_HOME              "@KDB_DB_HOME@"
 
@@ -101,6 +101,9 @@
 
 /* ENDIANNESS */
 #cmakedefine ELEKTRA_BIG_ENDIAN
+
+/* ASAN */
+#cmakedefine ENABLE_ASAN
 
 /* debug mode */
 #define DEBUG @DEBUG@

@@ -10,7 +10,6 @@ RUN apt-get -qq update && apt-get -qq -y install \
 	pkg-config \
 	doxygen \
 	graphviz \
-	bison \
 	ruby-dev \
 	python-dev \
 	python3-dev \
