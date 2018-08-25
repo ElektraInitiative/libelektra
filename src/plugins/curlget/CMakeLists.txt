@@ -1,5 +1,5 @@
 if (DEPENDENCY_PHASE)
-	find_package (CURL)
+	find_package (CURL QUIET)
 	if (NOT CURL_FOUND)
 		remove_plugin (curlget "Curl-dev not found")
 	endif ()

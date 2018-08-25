@@ -25,7 +25,7 @@ if (DBUS_INCLUDE_DIR AND DBUS_ARCH_INCLUDE_DIR AND DBUS_LIBRARIES)
 else (DBUS_INCLUDE_DIR AND DBUS_ARCH_INCLUDE_DIR AND DBUS_LIBRARIES)
 
 	if (NOT WIN32)
-		find_package (PkgConfig)
+		find_package (PkgConfig QUIET)
 		if (PKG_CONFIG_FOUND)
 
 			# use pkg-config to get the directories and then use these values in the FIND_PATH() and FIND_LIBRARY() calls

@@ -1,6 +1,6 @@
 project (elektrasettings VERSION 0.1.1 LANGUAGES C)
 
-find_package (PkgConfig)
+find_package (PkgConfig QUIET)
 
 if (NOT PKG_CONFIG_FOUND)
 	exclude_binding (gsettings "Need PkgConfig needed to find dependencies for gsettings backend")

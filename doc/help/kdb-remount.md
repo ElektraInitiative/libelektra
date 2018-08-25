@@ -3,15 +3,15 @@ kdb-remount(1) - Use an existing backend to mount a new file
 
 ## SYNOPSIS
 
-`kdb remount <new path> <new mountpoint> <existing mountpoint>`
+`kdb remount <new path> <new mount point> <existing mount point>`
 
 Where `new path` is the path to the file the user wants to mount, (Absolute for system files, relative for user files)<br>
-`new mountpoint` is where in the key database the new configuration file should be mounted at, (For a cascading mount pount, `mountpoint` should start with `/`)<br>
-and `existing mountpoint` is the mountpoint where the existing backend is mounted.<br>
+`new mount point` is where in the key database the new configuration file should be mounted at, (For a cascading mount pount, `mountpoint` should start with `/`)<br>
+and `existing mount point` is the mount point where the existing backend is mounted.<br>
 
 ## DESCRIPTION
 
-This command allows a user to use an existing backend (such as one from a previous mount) to mount a new configuration file to a new mountpoint in the key database.<br>
+This command allows a user to use an existing backend (such as one from a previous mount) to mount a new configuration file to a new mount point in the key database.<br>
 
 ## OPTIONS
 

@@ -32,7 +32,7 @@ int LsCommand::execute (Cmdline const & cl)
 
 	kdb.get (ks, root);
 
-	if (cl.verbose) cout << "size of all keys in mountpoint: " << ks.size () << endl;
+	if (cl.verbose) cout << "size of all keys in mount point: " << ks.size () << endl;
 
 	KeySet part (ks.cut (root));
 

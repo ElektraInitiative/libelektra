@@ -30,6 +30,7 @@ if (ENABLE_TESTING)
 		download_project (PROJ googletest
 				  GIT_REPOSITORY https://github.com/google/googletest.git
 				  GIT_TAG 4e4df226fc197c0dda6e37f5c8c3845ca1e73a49
+				  QUIET
 				  ${UPDATE_DISCONNECTED_IF_AVAILABLE})
 	endif (DEFINED GOOGLETEST_ROOT)
 

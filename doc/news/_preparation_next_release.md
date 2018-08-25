@@ -56,7 +56,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 -  There is also a new plugin called [process](https://libelektra.org/plugins/process).
    This plugin utilizes the pluginprocess library in order to execute arbitrary other
-   plugins in an own process, acting as a proxy itself. Therefore it is not required 
+   plugins in an own process, acting as a proxy itself. Therefore it is not required
    to explicitly change a plugin's implementation if it shall be executed in an own
    process. This plugin is not completely finished yet, as currently there is no way
    for it to mimick the proxied plugin's contract in Elektra. It can be used with simple
@@ -159,7 +159,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Documentation
 
-- <<TODO>>
+- We fixed some minor spelling mistakes in the documentation. *(René Schwaiger)*
 - <<TODO>>
 - <<TODO>>
 
@@ -174,9 +174,10 @@ you up to date with the multi-language support provided by Elektra.
 
 ### CMake
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- We improved the detection of Python 2 and Python 3 in the CMake code of the Python bindings/plugins. *(René Schwaiger)*
+- We restructured the code of the [CMake module](https://master.libelektra.org/cmake/Modules/FindHaskell.cmake) we use to detect Haskell
+  tools . *(René Schwaiger)*
+- The CMake configuration step now displays less debug messages about found libraries. *(René Schwaiger)*
 
 ### Docker
 

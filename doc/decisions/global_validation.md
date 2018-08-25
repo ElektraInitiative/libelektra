@@ -15,7 +15,7 @@ with the respective `kdbGet`.
 
 - global plugin can register additional backends to load
 - split `kdbGet` into multiple steps:
-  0. do `kdbGet` on `system/elektra` to update mountpoints
+  0. do `kdbGet` on `system/elektra` to update mount points
   1. first do `kdbGet` on the `spec/`-namespace
   2. then calculate which backends are needed
   3. then fetch all backends as needed

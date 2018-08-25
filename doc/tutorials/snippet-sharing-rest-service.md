@@ -119,7 +119,7 @@ After the installation, the configuration specification of the backend has to be
 with the command `kdb mount-rest-backend-config`. You can check if the mounting was successful
 by issuing `kdb mount`. There should be an entry in the list with a path like
 `spec/sw/elektra/restbackend/#0` and a similar one without the leading `spec`.
-If you do not see this mountpoints, have a look at the mount script in the tool_exec
+If you do not see this mount points, have a look at the mount script in the tool_exec
 (which is defined during installation of Elektra). You can also run the commands manually.
 
 To complete the mounting, you also need to ensure that the `spec` plugin is used as

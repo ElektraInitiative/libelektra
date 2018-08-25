@@ -1,7 +1,7 @@
 include (LibAddBinding)
 
 if (DEPENDENCY_PHASE)
-	find_package (PkgConfig)
+	find_package (PkgConfig QUIET)
 	pkg_check_modules (ZMQ QUIET libzmq)
 
 	if (NOT ZMQ_FOUND)
@@ -22,7 +22,7 @@ if (ADDTESTING_PHASE)
 	check_binding_was_added ("io_uv" IS_INCLUDED)
 	if (BUILD_TESTING AND IS_INCLUDED)
 		if (BUILD_FULL OR BUILD_STATIC)
-			find_package (PkgConfig)
+			find_package (PkgConfig QUIET)
 			pkg_check_modules (LIBUV QUIET libuv>=1) # libuv is present; otherwise io_uv bindings would not be added
 			set (STATIC_LIBRARIES ${LIBUV_LIBRARIES})
 		endif ()

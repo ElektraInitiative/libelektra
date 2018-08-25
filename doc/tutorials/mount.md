@@ -21,7 +21,7 @@ sudo kdb mount --with-recommends /etc/hosts system/hosts hosts
 ```
 
 1. `/etc/hosts` is the configuration file we want to mount
-2. `system/hosts` is the path it should have in the key database, also known as **mountpoint**
+2. `system/hosts` is the path it should have in the key database, also known as **mount point**
 3. `hosts` is the _storage plugin_ that can read and write this configuration format.
 
 > Consider using mount with the option `--with-recommends`, which loads all plugins recommended by the _hosts_ plugin.
@@ -80,7 +80,7 @@ sudo kdb umount system/hosts
 
 > ###### Why do you Need Superuser Privileges to Mount Files? ######
 >
-> Elektra manages its mountpoints in configuration below **system/elektra/mountpoints**.
+> Elektra manages its mount points in configuration below **system/elektra/mountpoints**.
 > The file that holds this configuration is, in the same way as `/etc/hosts` before, only writable by administrators:
 >
 >     $ kdb file system/elektra/mountpoints
@@ -95,7 +95,7 @@ absolute or relative path in your file system, but gets resolved to one by Elekt
 The plugin that is responsible for this is the [_Resolver_](/src/plugins/resolver/README.md).
 
 When you mount a configuration file the resolver first looks at the namespace of
-your mountpoint. Based on that namespace and if the supplied path was relative or
+your mount point. Based on that namespace and if the supplied path was relative or
 absolute the resolver then resolves the supplied path to a path in the file system.
 The resolving happens dynamically for every `kdb` invocation.
 
@@ -233,16 +233,16 @@ If you want to find out more about validation I recommend reading [this](/doc/tu
 
 #### Backends
 
-The plugins together with the configuration file form a _backend_. The backend determines how Elektra stores data below a mountpoint.
-You can examine every mountpoints backend by looking at the configuration below `system/elektra/mountpoints/<mountpoint>/`.
+The plugins together with the configuration file form a _backend_. The backend determines how Elektra stores data below a mount point.
+You can examine every mount points backend by looking at the configuration below `system/elektra/mountpoints/<mount point>/`.
 
 ## Limitations
 
 One drawback of this approach is, that an application can bypass Elektra and change configuration files directly. If for example Elektra is configured to [validate](/doc/tutorials/validation.md) new configuration values before updating them, this is something you do not want to happen.
 
-Another drawback is that mounting is static. In a previous example we mounted the `/.git/config` file into `dir/git`. Now the `dir` namespace of every directory stores the configuration below `dir/git` in this directories `/.git/config` file. And this mountpoint is the same for all users and all directories.
-So you can't have different configuration files for the same mountpoints in other directories.
-Because of the same reason you cannot have different configuration file names or syntax for the same mountpoint in the `user` namespace.
+Another drawback is that mounting is static. In a previous example we mounted the `/.git/config` file into `dir/git`. Now the `dir` namespace of every directory stores the configuration below `dir/git` in this directories `/.git/config` file. And this mount point is the same for all users and all directories.
+So you can't have different configuration files for the same mount points in other directories.
+Because of the same reason you cannot have different configuration file names or syntax for the same mount point in the `user` namespace.
 
 This is one of the reasons why Elektra promotes this [naming convention](/doc/help/elektra-key-names.md) for keys:
 

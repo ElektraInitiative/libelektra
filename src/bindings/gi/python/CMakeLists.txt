@@ -25,7 +25,7 @@ macro (do_gi_python_test source)
 	endif ()
 endmacro (do_gi_python_test)
 
-find_package (PythonInterp 3)
+find_package (PythonInterp 3 QUIET)
 if (PYTHONINTERP_FOUND)
 	add_binding (gi_python)
 	message (DEPRECATION "GI bindings have been deprecated")

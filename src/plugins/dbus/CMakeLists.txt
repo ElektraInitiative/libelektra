@@ -1,5 +1,5 @@
 if (DEPENDENCY_PHASE)
-	find_package (DBus)
+	find_package (DBus QUIET)
 
 	if (NOT DBUS_FOUND)
 		remove_plugin (dbus "dbus package not found")

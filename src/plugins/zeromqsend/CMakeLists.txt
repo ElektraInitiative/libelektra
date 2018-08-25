@@ -1,5 +1,5 @@
 if (DEPENDENCY_PHASE)
-	find_package (PkgConfig)
+	find_package (PkgConfig QUIET)
 	pkg_check_modules (ZMQ QUIET libzmq)
 
 	if (NOT ZMQ_FOUND)
@@ -15,7 +15,7 @@ add_plugin (zeromqsend
 	    LINK_LIBRARIES ${ZMQ_LIBRARIES})
 
 if (ADDTESTING_PHASE) # the test requires pthread
-	find_package (Threads)
+	find_package (Threads QUIET)
 
 	if (BUILD_TESTING)
 		add_plugintest (zeromqsend TEST_LINK_LIBRARIES ${CMAKE_THREAD_LIBS_INIT})

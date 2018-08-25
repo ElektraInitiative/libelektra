@@ -1,5 +1,5 @@
 if (DEPENDENCY_PHASE)
-	find_package (LibXml2)
+	find_package (LibXml2 QUIET)
 
 	if (NOT LIBXML2_FOUND)
 		remove_plugin (xmltool "libxml2 not found")

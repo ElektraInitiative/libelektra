@@ -8,7 +8,7 @@ if (DEPENDENCY_PHASE)
 			      JAVA_HOME)
 	endif ()
 
-	find_package (JNI)
+	find_package (JNI QUIET)
 
 	if (JNI_FOUND)
 		include (CheckSymbolExists)

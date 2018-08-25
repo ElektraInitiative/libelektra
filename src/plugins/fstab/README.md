@@ -35,7 +35,7 @@ the directory `/` will be called `rootfs`
 
 all swap devices will be called `swapXX` with a number from 00 on for XX
 
-otherwise the mountpoint without the '/' character will be used.
+otherwise the mount point without the '/' character will be used.
 
 At the other point there is the issue with the pseudonames,
 you can't rely on the pseudoname you have set.
@@ -60,7 +60,7 @@ Specification:
 
     [/_]
     type = array
-    explanation = the name of the key is the mountpoint (so the former
+    explanation = the name of the key is the mount point (so the former
       mpoint is not needed); the value is the number of entries in the
       array
     [/_/#]
@@ -91,8 +91,8 @@ So when following line is added
 Implementation hint: use `keyAddBaseName()` to get escaping of `/`, then
 add array items below it
 
-If a mountpoint exists more than once (that could be proc, swap or
-overlay mountpoints) the array below gets incremented (otherwise #0 is
+If a mount point exists more than once (that could be proc, swap or
+overlay mount points) the array below gets incremented (otherwise #0 is
 used for every unique entry).
 
 The order of the array must, of course, be preserved. Other lines may

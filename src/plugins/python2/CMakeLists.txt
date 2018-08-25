@@ -1,8 +1,20 @@
 include (LibAddBinding)
 
+set (PYTHON2_VERSION 2.7)
+
 if (DEPENDENCY_PHASE)
-	find_package (Python2Interp 2.7 QUIET)
-	find_package (Python2Libs 2.7 QUIET)
+	find_package (Python2Interp ${PYTHON2_VERSION} QUIET)
+
+	# Make sure we use the correct Python version on macOS
+	if (APPLE AND PYTHON2INTERP_FOUND)
+		execute_process (COMMAND ${PYTHON2_EXECUTABLE}-config --prefix
+				 OUTPUT_VARIABLE PYTHON2_LIBRARY_PREFIX
+				 OUTPUT_STRIP_TRAILING_WHITESPACE)
+		set (PYTHON2_LIBRARY ${PYTHON2_LIBRARY_PREFIX}/lib/libpython${PYTHON2_VERSION}${CMAKE_SHARED_LIBRARY_SUFFIX})
+		set (PYTHON2_INCLUDE_DIR ${PYTHON2_LIBRARY_PREFIX}/include/python${PYTHON2_VERSION})
+	endif (APPLE AND PYTHON2INTERP_FOUND)
+
+	find_package (Python2Libs ${PYTHON2_VERSION} QUIET)
 	find_package (Pluginprocess)
 	find_swig ()
 	check_binding_included ("swig_python2" BINDING_WAS_ADDED SUBDIRECTORY "swig/python2" SILENT)
@@ -32,6 +44,7 @@ if (DEPENDENCY_PHASE)
 				 OUTPUT_STRIP_TRAILING_WHITESPACE)
 
 		configure_file (config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
+
 	elseif (APPLE AND CMAKE_COMPILER_IS_GNUCXX)
 		remove_plugin (python2 "does not compile with GCC under Mac OS X")
 	elseif (NOT PYTHON2LIBS_FOUND)
@@ -51,7 +64,7 @@ add_plugin (python2
 		    python.cpp
 		    ${CMAKE_CURRENT_BINARY_DIR}/runtime.h
 		    ${CMAKE_CURRENT_BINARY_DIR}/config.h
-	    INCLUDE_DIRECTORIES ${PYTHON2_INCLUDE_DIR}
+	    INCLUDE_DIRECTORIES ${PYTHON2_INCLUDE_DIRS}
 	    LINK_LIBRARIES ${PYTHON2_LIBRARIES}
 	    LINK_ELEKTRA elektra-pluginprocess
 	    COMPILE_DEFINITIONS SWIG_TYPE_TABLE=kdb

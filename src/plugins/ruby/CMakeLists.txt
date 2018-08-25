@@ -4,7 +4,7 @@ if (DEPENDENCY_PHASE)
 	if (APPLE)
 		set (CMAKE_FIND_FRAMEWORK "LAST")
 	endif ()
-	find_package (Ruby)
+	find_package (Ruby QUIET)
 	find_swig ()
 	check_binding_included ("swig_ruby" BINDING_WAS_ADDED SUBDIRECTORY "swig/ruby" SILENT)
 

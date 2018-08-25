@@ -92,7 +92,7 @@ else ()
 endif ()
 
 if (ICONV_FOUND)
-	if (NOT ICONV_FIND_QUIETLY)
+	if (NOT Iconv_FIND_QUIETLY)
 		message (STATUS "Found iconv library: ${ICONV_LIBRARY}") # message(STATUS "Found iconv   dll  : ${ICONV_DLL}")
 	endif ()
 else ()

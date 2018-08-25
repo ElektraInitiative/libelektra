@@ -19,7 +19,7 @@ This command is used to retrieve the value of a key\.
 If you enter a \fBkey name\fR starting with a leading \fB/\fR, then a cascading lookup will be performed in order to attempt to locate the key\. In this case, using the \fB\-v\fR option allows the user to see the full key name of the key if it is found\.
 .
 .SH "LIMITATIONS"
-Only keys within the mountpoint or below the \fB<key name>\fR will be considered during a cascading lookup\. A workaround is to pass the \fB\-a\fR option\. Use the command \fBkdb get \-v <key name>\fR to see if an override or a fallback was considered by the lookup\.
+Only keys within the mount point or below the \fB<key name>\fR will be considered during a cascading lookup\. A workaround is to pass the \fB\-a\fR option\. Use the command \fBkdb get \-v <key name>\fR to see if an override or a fallback was considered by the lookup\.
 .
 .SH "RETURN VALUES"
 This command will return the following values as an exit status:

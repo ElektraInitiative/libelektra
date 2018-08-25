@@ -12,7 +12,7 @@
 # This script is a modified version of the code available here: https://cmake.org/Wiki/CMake:How_To_Find_Libraries#Writing_find_modules
 # ~~~
 
-find_package (PkgConfig)
+find_package (PkgConfig QUIET)
 pkg_check_modules (PC_YAML-CPP QUIET yaml-cpp)
 
 find_path (YAML-CPP_INCLUDE_DIR

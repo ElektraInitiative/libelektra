@@ -44,7 +44,7 @@ macro (_GIR_GET_PKGCONFIG_VAR _outvar _varname)
 	endif ()
 endmacro (_GIR_GET_PKGCONFIG_VAR)
 
-find_package (PkgConfig)
+find_package (PkgConfig QUIET)
 if (PKG_CONFIG_FOUND)
 	if (GObjectIntrospection_FIND_VERSION_COUNT GREATER 0)
 		set (_gir_version_cmp ">=${GObjectIntrospection_FIND_VERSION}")

@@ -1,6 +1,6 @@
 include (LibAddPlugin)
 
-find_package (Threads)
+find_package (Threads QUIET)
 
 if (KDB_DEFAULT_RESOLVER MATCHES "resolver_.*")
 	set (RESOLVERS "${KDB_DEFAULT_RESOLVER}") # default resolver
