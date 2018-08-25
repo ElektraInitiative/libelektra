@@ -76,7 +76,7 @@ TEST_P (AllPlugins, backend)
 	using namespace kdb;
 	using namespace kdb::tools;
 	std::string p = GetParam ();
-	// std::cout << p << std::endl;
+	std::cout << p << std::endl;
 
 	try
 	{
