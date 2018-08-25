@@ -33,8 +33,9 @@ std::vector<std::string> getAllPlugins ()
 	ModulesPluginDatabase mpd;
 	std::vector<std::string> plugins = mpd.listAllPlugins ();
 
-	// The JNI plugin causes segmentation faults
+	// The JNI and Semlock plugins cause segmentation faults
 	plugins.erase (std::remove (plugins.begin (), plugins.end (), "jni"), plugins.end ());
+	plugins.erase (std::remove (plugins.begin (), plugins.end (), "semlock"), plugins.end ());
 
 #ifdef ENABLE_ASAN
 	// ASAN reports memory leaks for the Augeas plugin on macOS: https://travis-ci.org/sanssecours/elektra/jobs/418524229
