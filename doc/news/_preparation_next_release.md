@@ -198,6 +198,7 @@ you up to date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+- Build Artifacts for all PR's to detect issues before merging *(Lukas Winkler)*
 
 ### Travis
 

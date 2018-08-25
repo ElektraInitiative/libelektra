@@ -148,7 +148,7 @@ def main() {
     parallel generateFullBuildStages()
   }
 
-  maybeStage("Build artifacts", isMaster()) {
+  stage("Build artifacts") {
     milestone label: "artifacts"
     parallel generateArtifactStages()
   }
@@ -605,9 +605,7 @@ def generateFullBuildStages() {
   }
 
   // We need the webui_base image to build webui images later
-  if(isMaster()) {
-    tasks << buildImageStage(DOCKER_IMAGES.webui_base)
-  }
+  tasks << buildImageStage(DOCKER_IMAGES.webui_base)
 
   return tasks
 }
@@ -933,7 +931,9 @@ def buildPackageDebianStretch() {
 
               sh "gbp buildpackage -sa"
             }
-            publishDebianPackages()
+            if(isMaster()) {
+              publishDebianPackages()
+            }
           }
         }
       }
