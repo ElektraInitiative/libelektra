@@ -962,6 +962,7 @@ static void unlinkFile (Key * parentKey)
 
 	const Key * cur;
 	keyRewindMeta (parentKey);
+	ELEKTRA_LOG_DEBUG ("unlink: file: %s", keyString (parentKey));
 	while ((cur = keyNextMeta (parentKey)) != 0)
 	{
 		void * toUnlinkMmap = hexStringToAddress (keyName (cur));
@@ -974,6 +975,12 @@ static void unlinkFile (Key * parentKey)
 		void * toUnlinkKS = hexStringToAddress (keyString (cur));
 		ELEKTRA_LOG_DEBUG ("unlink: unlinking KeySet str: %s", keyString (cur));
 		ELEKTRA_LOG_DEBUG ("unlink: unlinking KeySet ptr: %p", toUnlinkKS);
+
+		if (!toUnlinkMmap || !toUnlinkKS)
+		{
+			ELEKTRA_LOG_DEBUG ("unlink: skipping unlinking, some pointers were invalid");
+			continue;
+		}
 
 		KeySet * copy = copyKeySet (toUnlinkKS, toUnlinkMmapMetaData);
 		if (copy)
@@ -1004,6 +1011,8 @@ static void unlinkFile (Key * parentKey)
  */
 static void saveLinkedFile (Key * key, KeySet * mappedFiles, KeySet * returned, Plugin * handle, char * mappedRegion)
 {
+	ELEKTRA_LOG_DEBUG ("unlink: new file, adding to my list. file: %s", keyString (key));
+
 	char mmapAddrString[SIZEOF_ADDR_STRING];
 	snprintf (mmapAddrString, SIZEOF_ADDR_STRING - 1, "%p", (void *) (mappedRegion));
 	mmapAddrString[SIZEOF_ADDR_STRING - 1] = '\0';
@@ -1108,8 +1117,9 @@ int elektraMmapstorageGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 	Key * found = ksLookup (mappedFiles, parentKey, 0);
 	if (!found)
 	{
-		ELEKTRA_LOG_DEBUG ("unlink: new file, adding to my list");
 		found = keyDup (parentKey);
+		ksDel (found->meta);
+		found->meta = 0;
 	}
 
 	FILE * fp;

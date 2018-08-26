@@ -188,6 +188,7 @@ int main (void)
 		}
 
 		benchmarkCleanTemp ();
+		keyDel (parentKey);
 		timePrint ("cleanup");
 	}
 
