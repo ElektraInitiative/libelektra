@@ -24,7 +24,8 @@
 #include "iterator.h"
 #include "name.h"
 
-typedef enum {
+typedef enum
+{
 	/**
 	 * We are at end of string, so no lookahead.
 	 */

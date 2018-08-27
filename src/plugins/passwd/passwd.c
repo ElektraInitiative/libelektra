@@ -21,7 +21,8 @@
 
 #define ID_MAX_CHARACTERS 11
 
-typedef enum {
+typedef enum
+{
 	NAME,
 	UID,
 } SortBy;

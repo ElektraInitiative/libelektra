@@ -41,7 +41,8 @@ class Template;
 class MarkdownConverter
 {
 public:
-	enum ConverterOption {
+	enum ConverterOption
+	{
 		NoLinksOption = 0x00000001,	  /* don't do link processing, block <a> tags  */
 		NoImagesOption = 0x00000002,	 /* don't do image processing, block <img> */
 		NoSmartypantsOption = 0x00000004,    /* don't run smartypants() */

@@ -31,7 +31,8 @@
 #define DEFAULT_CHECKOUT_LOCATION "/tmp/"
 #define REFSTRING "refs/heads/"
 
-typedef enum {
+typedef enum
+{
 	OBJECT,
 	HEAD,
 } Tracking;
@@ -446,7 +447,8 @@ static int fetchhead_ref_cb (const char * name, const char * url ELEKTRA_UNUSED,
 	return 0;
 }
 
-typedef enum {
+typedef enum
+{
 	ERROR,
 	NONE,
 	NORMAL,

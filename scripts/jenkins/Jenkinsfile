@@ -68,8 +68,8 @@ CMAKE_FLAGS_BUILD_ALL = [
 CMAKE_FLAGS_COVERAGE = ['ENABLE_COVERAGE': 'ON']
 
 CMAKE_FLAGS_CLANG = [
-  'CMAKE_C_COMPILER': 'clang-5.0',
-  'CMAKE_CXX_COMPILER': 'clang++-5.0'
+  'CMAKE_C_COMPILER': 'clang-6.0',
+  'CMAKE_CXX_COMPILER': 'clang++-6.0'
 ]
 
 CMAKE_FLAGS_INI = [
@@ -216,8 +216,8 @@ def dockerInit() {
 
     /* We use the sid image for testing if we are compatible with Debian
      * unstable.
-     * Additionally we use it for tests with Clang-5.0 and for source
-     * formatting checks (as they depend on Clang-5.0).
+     * Additionally we use it for tests with Clang-6.0 and for source
+     * formatting checks (as they depend on Clang-6.0).
      */
     DOCKER_IMAGES.sid = createDockerImageDesc(
       "debian-sid", this.&idTesting,
@@ -491,7 +491,7 @@ def generateFullBuildStages() {
     [TEST.ALL, TEST.MEM, TEST.INSTALL]
   )
 
-  // Build Elektra with clang. We use unstable for easy access to clang-5.0
+  // Build Elektra with clang. We use unstable for easy access to clang-6.0
   // Detects problems when using an alternative compiler (clang)
   tasks << buildAndTest(
     "debian-stable-full-i386",

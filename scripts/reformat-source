@@ -8,14 +8,14 @@
 SCRIPTS_DIR=$(dirname "$0")
 . "${SCRIPTS_DIR}/include-common"
 
-CLANG_FORMAT=$(which clang-format-5.0 2> /dev/null)
+CLANG_FORMAT=$(which clang-format-6.0 2> /dev/null)
 
 if [ -z "${CLANG_FORMAT}" ]; then
 	CLANG_FORMAT=$(which clang-format)
 fi
 
 if [ -z "${CLANG_FORMAT}" ]; then
-	echo "Please install clang-format 5, 6, or 7"
+	echo "Please install clang-format 6, or 7"
 	exit 0
 fi
 

@@ -54,7 +54,8 @@ int elektraGlobMatch (Key * key, const Key * match, const char * globFlags)
 	return 0;
 }
 
-enum GlobDirection {
+enum GlobDirection
+{
 	GET,
 	SET,
 };

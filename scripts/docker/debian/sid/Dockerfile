@@ -7,8 +7,8 @@ ENV LC_ALL C.UTF-8
 RUN apt-get update && apt-get -y install \
         curl \
         build-essential \
-        clang-5.0 \
-        clang-format-5.0 \
+        clang-6.0 \
+        clang-format-6.0 \
         autotools-dev \
         automake \
         cmake \

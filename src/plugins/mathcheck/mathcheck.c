@@ -25,7 +25,8 @@
 #define MIN_VALID_STACK 3
 #define EPSILON 0.00001
 
-typedef enum {
+typedef enum
+{
 	ERROR = 0,
 	ADD = 1,
 	SUB = 2,

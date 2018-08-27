@@ -6,7 +6,8 @@ typedef struct
 	char * tmpFile;
 } ElektraResolved;
 
-typedef enum {
+typedef enum
+{
 	ELEKTRA_RESOLVER_TEMPFILE_NONE,
 	ELEKTRA_RESOLVER_TEMPFILE_SAMEDIR,
 	ELEKTRA_RESOLVER_TEMPFILE_TMPDIR,

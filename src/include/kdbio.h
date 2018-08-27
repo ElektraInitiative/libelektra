@@ -62,7 +62,8 @@ typedef void (*ElektraIoTimerCallback) (ElektraIoTimerOperation * timerOp);
 /**
  * Available flags for file descriptors operation bitmask
  */
-typedef enum {
+typedef enum
+{
 
 	/** file descriptor is readable */
 	ELEKTRA_IO_READABLE = 1 << 0,

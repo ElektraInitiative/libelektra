@@ -10,7 +10,12 @@
 
 #include <stdio.h>
 
-typedef enum { INPUT_USE_OURS, INPUT_DO_MERGE, INPUT_USE_THEIRS } input;
+typedef enum
+{
+	INPUT_USE_OURS,
+	INPUT_DO_MERGE,
+	INPUT_USE_THEIRS
+} input;
 
 int showElektraErrorDialog (Key * parentKey, Key * problemKey)
 {

@@ -152,7 +152,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Scripts
 
-- <<TODO>>
+- We reformatted the codebase using [`clang-format`](https://clang.llvm.org/docs/ClangFormat.html) 6.0. *(René Schwaiger)*
 - <<TODO>>
 - <<TODO>>
 

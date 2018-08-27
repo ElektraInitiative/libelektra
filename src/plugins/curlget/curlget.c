@@ -34,8 +34,14 @@
 
 #define DEFAULT_POSTFIELDNAME "file"
 
-typedef enum { NA = 0, PUT, POST } HttpUploadMethods;
-typedef enum {
+typedef enum
+{
+	NA = 0,
+	PUT,
+	POST
+} HttpUploadMethods;
+typedef enum
+{
 	PROTO_INVALID = 0,
 	PROTO_HTTP,
 	PROTO_HTTPS,
@@ -45,7 +51,8 @@ typedef enum {
 	PROTO_SCP,
 	PROTO_SMB,
 } ElektraCurlProtocol;
-typedef enum {
+typedef enum
+{
 	SSH_ANY = 0,
 	SSH_AGENT,
 	SSH_PASSWORD,

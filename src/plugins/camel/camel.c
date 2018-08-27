@@ -30,7 +30,8 @@
 /* -- Data Structures ------------------------------------------------------------------------------------------------------------------- */
 
 /** This enum specifies the possible states of the recursive descent parser. */
-typedef enum {
+typedef enum
+{
 	/** Unable to open file */
 	ERROR_FILE_OPEN,
 	/** Unable to close file */

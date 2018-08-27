@@ -14,7 +14,7 @@ then
 	exit 0
 fi
 
-if which clang-format-5.0 > /dev/null || which clang-format > /dev/null
+if which clang-format-6.0 > /dev/null || which clang-format > /dev/null;
 then
 	scripts/reformat-source
 else

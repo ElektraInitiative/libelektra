@@ -17,7 +17,8 @@
  * List of flags that are put into the crypto payload header.
  * Used to identify the data type of the encrypted content.
  */
-enum ElektraCryptoHeaderFlags {
+enum ElektraCryptoHeaderFlags
+{
 
 	/** Regular binary data */
 	ELEKTRA_CRYPTO_FLAG_NONE = 0,
@@ -32,7 +33,8 @@ enum ElektraCryptoHeaderFlags {
 /**
  * Defines the modes of operation of the crypto plugin.
  */
-enum ElektraCryptoOperation {
+enum ElektraCryptoOperation
+{
 
 	/** Encryption mode */
 	ELEKTRA_CRYPTO_ENCRYPT = 0,

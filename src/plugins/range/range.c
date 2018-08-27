@@ -21,7 +21,8 @@
 #include <strings.h>
 
 
-typedef enum {
+typedef enum
+{
 	INT,
 	UINT,
 	FLOAT,

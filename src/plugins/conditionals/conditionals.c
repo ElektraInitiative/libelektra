@@ -31,7 +31,8 @@
 
 #define REGEX_FLAGS_CONDITION (REG_EXTENDED)
 
-typedef enum {
+typedef enum
+{
 	EQU,
 	NOT,
 	LT,
@@ -44,9 +45,14 @@ typedef enum {
 	OR,
 } Comparator;
 
-typedef enum { CONDITION, ASSIGN } Operation;
+typedef enum
+{
+	CONDITION,
+	ASSIGN
+} Operation;
 
-typedef enum {
+typedef enum
+{
 	TRUE = 1,
 	FALSE = 0,
 	ERROR = -1,
