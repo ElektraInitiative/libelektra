@@ -16,11 +16,7 @@ if ! git diff --exit-code; then
 	exit 0
 fi
 
-if which clang-format-6.0 > /dev/null || which clang-format > /dev/null; then
-	scripts/reformat-source
-else
-	echo 'Warning: clang-format not available, skipping reformat-source'
-fi
+scripts/reformat-source || echo 'Warning: clang-format not available, skipping reformat-source'
 
 if which sponge > /dev/null || which cmake-format > /dev/null; then
 	scripts/reformat-cmake || exit 1
