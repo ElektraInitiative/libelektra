@@ -153,7 +153,8 @@ you up to date with the multi-language support provided by Elektra.
 ## Scripts
 
 - We reformatted the codebase using [`clang-format`](https://clang.llvm.org/docs/ClangFormat.html) 6.0. *(René Schwaiger)*
-- <<TODO>>
+- The command [`reformat-source`](https://master.libelektra.org/scripts/reformat-source) now displays information about the installed
+  version of `clang-format`, if it is unable to locate a supported version of the tool. *(René Schwaiger)*
 - <<TODO>>
 
 
