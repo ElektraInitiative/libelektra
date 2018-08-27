@@ -18,11 +18,7 @@ fi
 
 scripts/reformat-source || echo 'Warning: clang-format not available, skipping reformat-source'
 
-if which sponge > /dev/null || which cmake-format > /dev/null; then
-	scripts/reformat-cmake || exit 1
-else
-	echo 'Warning: Since either `sponge` or `cmake-format` is not available I will not check the formatting of the CMake code.'
-fi
+scripts/reformat-cmake || echo 'Warning: Unable to reformat CMake code.'
 
 git diff --exit-code
 succeed_if "Please commit the reformatting changes before pushing"
