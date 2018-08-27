@@ -13,34 +13,32 @@ CMAKE_FORMAT=$(which cmake-format)
 cd "$SOURCE"
 
 if [ -z "${CMAKE_FORMAT}" ]; then
-	2>&1 printf 'Please install `cmake-format`\n'
+	printf 2>&1 'Please install `cmake-format`\n'
 	exit 0
 fi
 
-output=$(2>&1 "${CMAKE_FORMAT}" CMakeLists.txt)
+output=$("${CMAKE_FORMAT}" 2>&1 CMakeLists.txt)
 
 if [ $? != 0 ]; then
-	2>&1 printf 'It seems your local installation of `cmake-format` is broken:\n\n%s' "$output"
+	printf 2>&1 'It seems your local installation of `cmake-format` is broken:\n\n%s' "$output"
 	exit 1
 fi
 
 if [ -z "$(which sponge)" ]; then
-	2>&1 printf 'Please install `sponge`\n'
+	printf 2>&1 'Please install `sponge`\n'
 	exit 0
 fi
 
-
 for file in $(find . \( -name 'CMakeLists.txt' -or -name '*.cmake' \) -and \
-			\(                                                 \
-			-path './benchmarks/*'                             \
-			-or -path './cmake/*'                              \
-			-or -path './doc/*'                                \
-			-or -path './examples/*'                           \
-			-or -path './scripts/*'                            \
-			-or -path './src/*'                                \
-			-or -path './tests/*'                              \
-			\)
-);
-do
+	\( \
+	-path './benchmarks/*' \
+	-or -path './cmake/*' \
+	-or -path './doc/*' \
+	-or -path './examples/*' \
+	-or -path './scripts/*' \
+	-or -path './src/*' \
+	-or -path './tests/*' \
+	\)
+); do
 	$CMAKE_FORMAT "$file" | unexpand | sponge "$file"
 done
