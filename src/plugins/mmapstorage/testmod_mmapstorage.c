@@ -17,7 +17,7 @@
 #include <sys/stat.h>  // stat()
 #include <sys/types.h> // ftruncate ()
 #include <tests.h>
-#include <unistd.h> // ftruncate()
+#include <unistd.h> // ftruncate(), pipe()
 
 #include <kdbconfig.h>
 #include <kdbmmap.h>
@@ -571,6 +571,28 @@ static void test_mmap_unlink_dirty_plugindata (const char * tmpFile)
 	PLUGIN_CLOSE ();
 }
 
+static void test_mmap_open_pipe (void)
+{
+	// try writing to an invalid file, we simply use a pipe here
+	int pipefd[2];
+	pipe (pipefd);
+	char pipeFile[1024];
+	sprintf (pipeFile, "/dev/fd/%d", pipefd[1]);
+	pipeFile[1023] = '\0';
+
+	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, pipeFile, KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("mmapstorage");
+
+	KeySet * ks = simpleTestKeySet ();
+	// truncate inside mmap plugin should fail here, since the pipe cannot be truncated
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbSet did not detect error with the file");
+
+	keyDel (parentKey);
+	ksDel (ks);
+	PLUGIN_CLOSE ();
+}
+
 static void clearStorage (const char * tmpFile)
 {
 	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
@@ -682,6 +704,8 @@ int main (int argc, char ** argv)
 
 	clearStorage (tmpFile);
 	test_mmap_unlink_dirty_plugindata (tmpFile);
+
+	test_mmap_open_pipe ();
 
 	printf ("\ntestmod_mmapstorage RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
