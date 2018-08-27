@@ -13,7 +13,7 @@ CLANG_FORMAT=$(which clang-format-6.0 || which clang-format)
 if [ -n "$CLANG_FORMAT" ]; then
 	location="$CLANG_FORMAT"
 	version=$("$CLANG_FORMAT" --version 2> /dev/null)
-	majorVersion=$(printf '%s' "$version" | sed -E 's/.* ([6-9]+)\.[0-9].[0-9] .*/\1/')
+	majorVersion=$(printf '%s' "$version" | sed -E 's/.* ([6-9]+)\.[0-9].[0-9][ -].*/\1/')
 	[ "$majorVersion" -ge 6 ] 2> /dev/null || unset CLANG_FORMAT
 fi
 
