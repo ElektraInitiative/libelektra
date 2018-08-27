@@ -145,6 +145,7 @@ matrix:
             - ubuntu-toolchain-r-test
           packages:
             - clang-6.0
+            - clang-format-6.0
       env:
         - CC_COMPILER=clang-6.0
         - CXX_COMPILER=clang++-6.0
