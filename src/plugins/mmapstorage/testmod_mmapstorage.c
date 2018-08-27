@@ -13,9 +13,11 @@
 #include <stdio.h> // fopen(), fileno()
 #include <stdlib.h>
 #include <string.h>
+#include <sys/mman.h>  // mmap()
 #include <sys/stat.h>  // stat()
 #include <sys/types.h> // ftruncate ()
-#include <unistd.h>    // ftruncate()
+#include <tests.h>
+#include <unistd.h> // ftruncate()
 
 #include <kdbconfig.h>
 #include <kdbmmap.h>
@@ -164,6 +166,79 @@ static void test_mmap_truncated_file (const char * tmpFile)
 
 		KeySet * ks = ksNew (0, KS_END);
 		succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbGet did not detect truncated file");
+
+		keyDel (parentKey);
+		ksDel (ks);
+		PLUGIN_CLOSE ();
+	}
+}
+
+static void test_mmap_wrong_magic_number (const char * tmpFile)
+{
+	// first write a mmap file
+	{
+		Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+		KeySet * conf = ksNew (0, KS_END);
+		PLUGIN_OPEN ("mmapstorage");
+
+		KeySet * ks = simpleTestKeySet ();
+		succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+
+		keyDel (parentKey);
+		ksDel (ks);
+		PLUGIN_CLOSE ();
+	}
+
+	// now manipulate magic number inside the mmap header
+	FILE * fp;
+	if ((fp = fopen (tmpFile, "r+")) == 0)
+	{
+		yield_error ("fopen() error");
+	}
+	struct stat sbuf;
+	if (stat (tmpFile, &sbuf) == -1)
+	{
+		yield_error ("stat() error");
+	}
+
+	int fd = fileno (fp);
+	char * mappedRegion = mmap (0, sbuf.st_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+	if (mappedRegion == MAP_FAILED)
+	{
+		ELEKTRA_LOG_WARNING ("error mapping file %s\nmmapSize: %zu", tmpFile, sbuf.st_size);
+		yield_error ("mmap() error");
+		return;
+	}
+	if (fp)
+	{
+		fclose (fp);
+	}
+
+	MmapHeader * mmapHeader = (MmapHeader *) mappedRegion;
+	mmapHeader->mmapMagicNumber = ELEKTRA_MAGIC_MMAP_NUMBER - 1;
+
+	if (msync ((void *) mappedRegion, sbuf.st_size, MS_SYNC) != 0)
+	{
+		yield_error ("msync() error");
+		return;
+	}
+
+	if (munmap (mappedRegion, sbuf.st_size) != 0)
+	{
+		yield_error ("munmap() error");
+		return;
+	}
+
+	// manipulated magic number should be detected now
+	{
+		// we expect an error here
+		Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+		KeySet * conf = ksNew (0, KS_END);
+		PLUGIN_OPEN ("mmapstorage");
+
+		KeySet * ks = ksNew (0, KS_END);
+		succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR,
+			    "kdbGet did not detect wrong magic number");
 
 		keyDel (parentKey);
 		ksDel (ks);
@@ -461,6 +536,41 @@ static void test_mmap_ksCopy (const char * tmpFile)
 	PLUGIN_CLOSE ();
 }
 
+static void test_mmap_unlink_dirty_plugindata (const char * tmpFile)
+{
+	// insert dirty metadata into plugin data, regression test for unlinking error handling
+	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("mmapstorage");
+
+	KeySet * ks = simpleTestKeySet ();
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
+
+	// we know that plugin data has a key (the linked file from kdbGet above)
+	KeySet * mappedFiles = (KeySet *) elektraPluginGetData (plugin);
+	Key * found = ksLookup (mappedFiles, parentKey, 0);
+	if (found)
+	{
+		keySetMeta (found, "some erroneous key", "which should not exist here");
+		char tooLarge[1024];
+		sprintf (tooLarge, "%lu", UINTPTR_MAX);
+		tooLarge[1023] = '\0';
+		keySetMeta (found, tooLarge, "0xZZZZ");
+	}
+	else
+	{
+		yield_error ("test eror, missing key in plugin data for unlinking");
+	}
+
+	// trigger unlinking via kdbSet
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+
+	keyDel (parentKey);
+	ksDel (ks);
+	PLUGIN_CLOSE ();
+}
+
 static void clearStorage (const char * tmpFile)
 {
 	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
@@ -533,6 +643,8 @@ int main (int argc, char ** argv)
 	clearStorage (tmpFile);
 	test_mmap_truncated_file (tmpFile);
 
+	test_mmap_wrong_magic_number (tmpFile);
+
 	clearStorage (tmpFile);
 	test_mmap_get_set_empty (tmpFile);
 
@@ -567,6 +679,9 @@ int main (int argc, char ** argv)
 
 	clearStorage (tmpFile);
 	test_mmap_ksCopy (tmpFile);
+
+	clearStorage (tmpFile);
+	test_mmap_unlink_dirty_plugindata (tmpFile);
 
 	printf ("\ntestmod_mmapstorage RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

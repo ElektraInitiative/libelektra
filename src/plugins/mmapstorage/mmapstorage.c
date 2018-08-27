@@ -1085,13 +1085,13 @@ int elektraMmapstorageClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEK
  * The returned keyset array then points to a mapped region.
  *
  * @param handle The plugin handle.
- * @param returned The keyset which is replaced by the mapped keyset.
+ * @param ks The keyset which is replaced by the mapped keyset.
  * @param parentKey Holding the filename or error message.
  *
  * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if the file was mapped successfully.
  * @retval ELEKTRA_PLUGIN_STATUS_ERROR if the file could not be mapped successfully.
  */
-int elektraMmapstorageGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
+int elektraMmapstorageGet (Plugin * handle, KeySet * ks, Key * parentKey)
 {
 	// get all keys
 	int errnosave = errno;
@@ -1107,7 +1107,7 @@ int elektraMmapstorageGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 			keyNew ("system/elektra/modules/mmapstorage/exports/set", KEY_FUNC, elektraMmapstorageSet, KEY_END),
 #include ELEKTRA_README (mmapstorage)
 			keyNew ("system/elektra/modules/mmapstorage/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
-		ksAppend (returned, contract);
+		ksAppend (ks, contract);
 		ksDel (contract);
 
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
@@ -1190,9 +1190,9 @@ int elektraMmapstorageGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 		goto error;
 	}
 
-	ksClose (returned);
+	ksClose (ks);
 	updatePointers (&mmapMetaData, mappedRegion);
-	mmapToKeySet (mappedRegion, returned);
+	mmapToKeySet (mappedRegion, ks);
 
 	if (fclose (fp) != 0)
 	{
@@ -1201,7 +1201,7 @@ int elektraMmapstorageGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 	}
 
 	// save keyset information to list of currently mmaped files
-	saveLinkedFile (found, mappedFiles, returned, handle, mappedRegion);
+	saveLinkedFile (found, mappedFiles, ks, handle, mappedRegion);
 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 
@@ -1230,13 +1230,13 @@ error:
  * all current mappings are unlinked.
  *
  * @param handle The plugin handle.
- * @param returned The keyset to be written.
+ * @param ks The keyset to be written.
  * @param parentKey Holding the filename or error message.
  *
  * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if the file was written successfully.
  * @retval ELEKTRA_PLUGIN_STATUS_ERROR if any error occured.
  */
-int elektraMmapstorageSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
+int elektraMmapstorageSet (Plugin * handle, KeySet * ks, Key * parentKey)
 {
 	// set all keys
 	int errnosave = errno;
@@ -1265,7 +1265,7 @@ int elektraMmapstorageSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 	MmapMetaData mmapMetaData;
 	initHeader (&mmapHeader);
 	initMetaData (&mmapMetaData);
-	calculateMmapDataSize (&mmapHeader, &mmapMetaData, returned, dynArray);
+	calculateMmapDataSize (&mmapHeader, &mmapMetaData, ks, dynArray);
 	ELEKTRA_LOG_DEBUG ("mmapsize: %zu", mmapHeader.allocSize);
 
 	if (truncateFile (fp, mmapHeader.allocSize, parentKey) != 1)
@@ -1283,7 +1283,7 @@ int elektraMmapstorageSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 
 	MmapFooter mmapFooter;
 	initFooter (&mmapFooter);
-	copyKeySetToMmap (mappedRegion, returned, &mmapHeader, &mmapMetaData, &mmapFooter, dynArray);
+	copyKeySetToMmap (mappedRegion, ks, &mmapHeader, &mmapMetaData, &mmapFooter, dynArray);
 	if (msync ((void *) mappedRegion, mmapHeader.allocSize, MS_SYNC) != 0)
 	{
 		ELEKTRA_LOG_WARNING ("could not msync");
