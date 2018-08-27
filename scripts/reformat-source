@@ -22,7 +22,7 @@ if [ -z "${CLANG_FORMAT}" ]; then
 	printf 'Version Info:  %s\n' "$version"
 	printf 'Major Version: %s\n' "$majorVersion"
 	echo "Please install clang-format 6, or 7"
-	exit 0
+	exit 1
 fi
 
 cd "$SOURCE"
