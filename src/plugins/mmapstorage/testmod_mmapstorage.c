@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
-#define _POSIX_C_SOURCE 200112L
+#define _XOPEN_SOURCE 600
 
 /* -- Imports --------------------------------------------------------------------------------------------------------------------------- */
 
@@ -14,7 +14,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/mman.h>  // mmap()
-#include <sys/stat.h>  // stat()
+#include <sys/stat.h>  // stat(), chmod()
 #include <sys/types.h> // ftruncate ()
 #include <tests.h>
 #include <unistd.h> // ftruncate(), pipe()
@@ -666,6 +666,46 @@ static void test_mmap_open_pipe (void)
 	PLUGIN_CLOSE ();
 }
 
+static void test_mmap_bad_file_permissions (const char * tmpFile)
+{
+	// try writing to a file with bad permissions
+	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("mmapstorage");
+	KeySet * ks = ksNew (0, KS_END);
+
+	FILE * fp;
+	if ((fp = fopen (tmpFile, "r+")) == 0)
+	{
+		yield_error ("error opening file");
+	}
+
+	struct stat sbuf;
+	if (stat (tmpFile, &sbuf) == -1)
+	{
+		yield_error ("stat() error");
+	}
+	fclose (fp);
+
+	if (chmod (tmpFile, S_IRUSR) != 0)
+	{
+		yield_error ("chmod() failed");
+	}
+
+	// fopen() call should fail because file permissions were wrong
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbGet did not detect bad file permissions");
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbSet did not detect bad file permissions");
+
+	if (chmod (tmpFile, sbuf.st_mode) != 0)
+	{
+		yield_error ("chmod() failed");
+	}
+
+	keyDel (parentKey);
+	ksDel (ks);
+	PLUGIN_CLOSE ();
+}
+
 static void clearStorage (const char * tmpFile)
 {
 	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
@@ -779,6 +819,7 @@ int main (int argc, char ** argv)
 	test_mmap_unlink_dirty_plugindata (tmpFile);
 
 	test_mmap_open_pipe ();
+	test_mmap_bad_file_permissions (tmpFile);
 
 	printf ("\ntestmod_mmapstorage RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

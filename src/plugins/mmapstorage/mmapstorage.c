@@ -842,15 +842,7 @@ static KeySet * mmapKsDeepDup (const KeySet * source)
 	{
 		Key * k = source->array[i];
 		Key * d = keyDup (k);
-		if (!test_bit (k->flags, KEY_FLAG_SYNC))
-		{
-			keyClearSync (d);
-		}
-		if (ksAppendKey (keyset, d) == -1)
-		{
-			ksDel (keyset);
-			return 0;
-		}
+		ksAppendKey (keyset, d);
 	}
 
 	return keyset;
@@ -1212,11 +1204,8 @@ error:
 		ELEKTRA_SET_ERROR_GET (parentKey);
 	}
 
-	if (mappedRegion != MAP_FAILED)
-	{
-		munmap (mappedRegion, sbuf.st_size);
-	}
-	fclose (fp);
+	if (mappedRegion != MAP_FAILED) munmap (mappedRegion, sbuf.st_size);
+	if (fp) fclose (fp);
 	keyDel (found);
 
 	errno = errnosave;
@@ -1313,11 +1302,8 @@ error:
 		ELEKTRA_SET_ERROR_SET (parentKey);
 	}
 
-	if (mappedRegion != MAP_FAILED)
-	{
-		munmap (mappedRegion, mmapHeader.allocSize);
-	}
-	fclose (fp);
+	if (mappedRegion != MAP_FAILED) munmap (mappedRegion, mmapHeader.allocSize);
+	if (fp) fclose (fp);
 	elektraMmapDynArrayDelete (dynArray);
 
 	errno = errnosave;
