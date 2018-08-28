@@ -6,10 +6,11 @@
 # @tags reformat
 
 SCRIPTS_DIR=$(dirname "$0")
+# shellcheck disable=SC1091 source=include-common
 . "${SCRIPTS_DIR}/include-common"
 
 MIN_VERSION=6
-CLANG_FORMAT=$(which clang-format-$MIN_VERSION.0 || which clang-format)
+CLANG_FORMAT=$(command -v clang-format-$MIN_VERSION.0 || command -v clang-format)
 
 if [ -n "$CLANG_FORMAT" ]; then
 	location="$CLANG_FORMAT"
@@ -26,6 +27,11 @@ if [ -z "${CLANG_FORMAT}" ]; then
 	exit 1
 fi
 
-cd "$SOURCE"
+cd "$SOURCE" || {
+	printf 'Unable to change into source directory'
+	exit 1
+}
 
-$($CLANG_FORMAT -style=file -i $(find . -name '*.[ch]' -or -name '*.[ch]pp' -or -name '*.[ch].in' | egrep -v "^./src/tools/gen"))
+for file in $(find . -name '*.[ch]' -or -name '*.[ch]pp' -or -name '*.[ch].in' | grep -E -v '^./src/tools/gen'); do
+	"$CLANG_FORMAT" -style=file -i "$file"
+done
