@@ -20,9 +20,17 @@ find -version > /dev/null 2>&1 > /dev/null && FIND='find scripts -regextype egre
 #   `command -v` is probably the most portable solution to detect the location of a command.
 #   See also: https://stackoverflow.com/questions/592620
 scripts=$(
-	$FIND -type f \( -not -regex \
-		'.+(check-env-dep|gitignore|kdb_zsh_completion|run_dev_env|sed|reformat-source|(Docker|Jenkins|Vagrant)file).*' \
-		-and -not -regex '.+\.(cmake|fish|ini?|md|txt|hs)$' \) | xargs
+	$FIND -type f -not \( \
+		-path '*check-env-dep' -or \
+		-path '*gitignore' -or \
+		-path '*kdb_zsh_completion' -or \
+		-path '*reformat-source' -or \
+		-path '*run_dev_env' -or \
+		-path '*sed' -or \
+		-path '*zsh' -or \
+		-regex '.+(Docker|Jenkins|Vagrant)file.*' -or \
+		-regex '.+\.(cmake|fish|ini?|md|txt|hs)$' \
+		\) | xargs
 )
 exit_if_fail 'Unable to locate shell scripts via `find`'
 checkbashisms $scripts
