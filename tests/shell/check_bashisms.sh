@@ -22,7 +22,7 @@ find -version > /dev/null 2>&1 > /dev/null && FIND='find scripts -regextype egre
 scripts=$(
 	$FIND -type f \( -not -regex \
 		'.+(check-env-dep|gitignore|kdb_zsh_completion|run_dev_env|sed|reformat-source|(Docker|Jenkins|Vagrant)file).*' \
-		-and -not -regex '.+\.(cmake|fish|in|md|txt|hs)$' \) | xargs
+		-and -not -regex '.+\.(cmake|fish|ini?|md|txt|hs)$' \) | xargs
 )
 exit_if_fail 'Unable to locate shell scripts via `find`'
 checkbashisms $scripts
