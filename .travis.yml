@@ -43,7 +43,7 @@ matrix:
         # [timeout]: https://docs.travis-ci.com/user/customizing-the-build/#build-timeouts
         - TOOLS=kdb
         - BINDINGS=cpp
-        - TEST_COMMAND="ctest --output-on-failure -E 'testscr_check_(formatting|oclint)'"
+        - TEST_COMMAND="ctest --output-on-failure -E 'testscr_check_(bashisms|doc|formatting|meta|oclint|plugins)'"
 
     - os: linux
       name: 🐧 GCC ASAN
@@ -62,7 +62,7 @@ matrix:
         # Build less stuff so the build does not hit the timeout limit that often
         - TOOLS=kdb
         - BINDINGS=cpp
-        - TEST_COMMAND="ctest --output-on-failure -E 'testscr_check_(formatting|oclint)'"
+        - TEST_COMMAND="ctest --output-on-failure -E 'testscr_check_(bashisms|doc|formatting|meta|oclint|plugins)'"
 
     - os: linux
       name: 🐧 Clang ASAN
