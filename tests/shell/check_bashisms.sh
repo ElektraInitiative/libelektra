@@ -29,7 +29,7 @@ scripts=$(
 		-path '*sed' -or \
 		-path '*zsh' -or \
 		-regex '.+(Docker|Jenkins|Vagrant)file.*' -or \
-		-regex '.+\.(cmake|fish|ini?|md|txt|hs)$' \
+		-regex '.+\.(cmake|fish|ini?|kdb|md|txt|hs|rb)$' \
 		\) | xargs
 )
 exit_if_fail 'Unable to locate shell scripts via `find`'
