@@ -22,11 +22,14 @@ find -version > /dev/null 2>&1 > /dev/null && FIND='find scripts -regextype egre
 scripts=$(
 	$FIND -type f -not \( \
 		-path '*check-env-dep' -or \
+		-path '*find-tools' -or \
 		-path '*gitignore' -or \
 		-path '*kdb_zsh_completion' -or \
+		-path '*kdb-zsh-noglob' -or \
 		-path '*reformat-source' -or \
 		-path '*run_dev_env' -or \
 		-path '*sed' -or \
+		-path '*update-infos-status' -or \
 		-path '*zsh' -or \
 		-regex '.+(Docker|Jenkins|Vagrant)file.*' -or \
 		-regex '.+\.(cmake|fish|ini?|kdb|md|txt|hs|rb)$' \
