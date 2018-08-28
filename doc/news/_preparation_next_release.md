@@ -176,6 +176,7 @@ you up to date with the multi-language support provided by Elektra.
   specify the status tag `memleak` in the plugin contract. *(René Schwaiger)*
 - The [CFramework](https://master.libelektra.org/doc/TESTING.md) macro `compare_key` now also checks if the meta values of keys are equal.
   *(René Schwaiger)*
+- The test `testscr_check_bashisms` does not print warnings about skipped files anymore. *(René Schwaiger)*
 
 
 ## Build
