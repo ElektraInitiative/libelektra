@@ -24,7 +24,7 @@ fi
 succeed_if "could not mount root: $ROOT_FILE at $ROOT_MOUNTPOINT"
 
 "$KDB" set $ROOT/valueable_data important_unrecoverable_data > /dev/null
-succeed_if "cannot set valueable data"
+succeed_if "cannot set valuable data"
 
 "$KDB" setmeta $ROOT/valueable_data trigger/error 10
 succeed_if "cannot set metadata"
@@ -47,7 +47,7 @@ SYSTEM_ERROR_FILE=${SYSTEM_FOLDER}/${ERROR_FILE}
 ERROR_MOUNTPOINT=/test/script/error
 if is_plugin_available error
 then
-	echo "Testing operations on errornous backends"
+	echo "Testing operations on erroneous backends"
 
 	"$KDB" mount $ERROR_FILE $ERROR_MOUNTPOINT dump error > /dev/null 2>&1
 	succeed_if "could not mount error at $ERROR_MOUNTPOINT"
