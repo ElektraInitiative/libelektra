@@ -29,15 +29,25 @@ can be compared against the return values of the shell commandos.
 
 ## Example
 
-    % cat /tmp/log
-    cat: /tmp/log: No such file or directory
+```sh
+# Create temporary file
+kdb set system/tests/tempfile $(mktemp)
 
-    % kdb mount /tmp/test.ini system/shelltest ini array= shell 'execute/set=echo set >> /tmp/log,execute/get=echo get >> /tmp/log,execute/get/return=0'
+# Mount plugin and specify plugin configuration
+sudo kdb mount shell.ini system/tests/shell ini array= shell execute/set="echo set >> $(kdb get system/tests/tempfile)"
 
-    % kdb set system/shelltest
-    Create a new key system/shelltest with null value
+cat $(kdb get system/tests/tempfile)
+#>
 
-    % cat /tmp/log
-    get
-    set
+# Execute `set` command
+kdb set system/tests/shell
+#> Create a new key system/tests/shell with null value
 
+cat $(kdb get system/tests/tempfile)
+#> set
+
+# Undo modifications
+rm $(kdb get system/tests/tempfile)
+kdb rm -r system/tests/shell
+sudo kdb umount system/tests/shell
+```

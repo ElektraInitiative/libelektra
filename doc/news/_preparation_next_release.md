@@ -177,7 +177,9 @@ you up to date with the multi-language support provided by Elektra.
 - The [CFramework](https://master.libelektra.org/doc/TESTING.md) macro `compare_key` now also checks if the meta values of keys are equal.
   *(René Schwaiger)*
 - The test `testscr_check_bashisms` does not print warnings about skipped files anymore. *(René Schwaiger)*
+-  We added a [Markdown Shell Recorder][] test for the [`shell` plugin ](https://www.libelektra.org/plugins/shell). *(René Schwaiger)*
 
+[Markdown Shell Recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
 
 ## Build
 
