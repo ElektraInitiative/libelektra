@@ -155,7 +155,6 @@ before_install:
     if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
       brew update
       brew install ninja
-      brew install augeas
     fi
   - |
     if [[ "$TRAVIS_OS_NAME" == "osx" && "$HASKELL" != "ON" ]]; then
@@ -201,6 +200,7 @@ before_install:
     fi
   - |
     if [[ "$TRAVIS_OS_NAME" == "osx" && "$HASKELL" == "ON" ]] ; then
+      brew install augeas
       # 8.4 is currently not supported by hint which we use
       brew install ghc@8.2
       brew link ghc@8.2 --force
