@@ -34,6 +34,7 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.8.
 
 ## Highlights
 
+- Irrelevant change, just to test sporadic issues in the build system. *(Mihael Pranjić)*
 - <<HIGHLIGHT1>>
 - <<HIGHLIGHT2>>
 - <<HIGHLIGHT3>>
