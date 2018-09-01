@@ -196,7 +196,7 @@ class YAMLLexer : public TokenSource
 	 * @brief This method saves a token for a simple key candidate located at the
 	 *        current input position.
 	 */
-	void addSimpleKeycCandidate ();
+	void addSimpleKeyCandidate ();
 
 	/**
 	 * @brief This method adds block closing tokens to the token queue, if the

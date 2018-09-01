@@ -351,7 +351,7 @@ bool YAMLLexer::isComment (size_t const offset) const
  * @brief This method saves a token for a simple key candidate located at the
  *        current input position.
  */
-void YAMLLexer::addSimpleKeycCandidate ()
+void YAMLLexer::addSimpleKeyCandidate ()
 {
 	size_t position = tokens.size () + tokensEmitted;
 	size_t index = input->index ();
@@ -409,7 +409,7 @@ void YAMLLexer::scanSingleQuotedScalar ()
 
 	size_t start = input->index ();
 	// A single quoted scalar can start a simple key
-	addSimpleKeycCandidate ();
+	addSimpleKeyCandidate ();
 
 	forward (); // Include initial single quote
 	while (input->LA (1) != '\'' || input->LA (2) == '\'')
@@ -430,7 +430,7 @@ void YAMLLexer::scanDoubleQuotedScalar ()
 	size_t start = input->index ();
 
 	// A double quoted scalar can start a simple key
-	addSimpleKeycCandidate ();
+	addSimpleKeyCandidate ();
 
 	forward (); // Include initial double quote
 	while (input->LA (1) != '"')
@@ -449,7 +449,7 @@ void YAMLLexer::scanPlainScalar ()
 	ELEKTRA_LOG_DEBUG ("Scan plain scalar");
 	size_t start = input->index ();
 	// A plain scalar can start a simple key
-	addSimpleKeycCandidate ();
+	addSimpleKeyCandidate ();
 
 	size_t lengthSpace = 0;
 	size_t lengthNonSpace = 0;
