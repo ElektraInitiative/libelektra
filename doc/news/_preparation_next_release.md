@@ -183,7 +183,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Docker
 
-- <<TODO>>
+- Slim down Debian based docker images via `--no-install-recommends`. *(Lukas Winkler)*
 - <<TODO>>
 - <<TODO>>
 
