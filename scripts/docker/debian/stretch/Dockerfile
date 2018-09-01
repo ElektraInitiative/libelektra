@@ -5,7 +5,7 @@ ENV LANGUAGE C.UTF-8
 ENV LC_ALL C.UTF-8
 
 RUN apt-get update \
-    && apt-get -y install \
+    && apt-get -y --no-install-recommends install \
         curl \
         build-essential \
         autotools-dev \
