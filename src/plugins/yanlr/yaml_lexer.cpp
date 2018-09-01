@@ -200,7 +200,7 @@ bool YAMLLexer::addIndentation (size_t const lineIndex)
 {
 	if (static_cast<long long> (lineIndex) > indents.top ())
 	{
-		ELEKTRA_LOG_DEBUG ("Add indentation %zu", column);
+		ELEKTRA_LOG_DEBUG ("Add indentation %zu", lineIndex);
 		indents.push (lineIndex);
 		return true;
 	}
