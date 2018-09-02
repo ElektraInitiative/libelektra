@@ -222,7 +222,7 @@ This is described above in *Understanding Jenkins output*.
 
 Afterwards you can download it from our registry via `docker pull`.
 Pay attention that you have to use **hub-public.libelektra.org** as this vhost
-does not require authentification for GET operations used by the docker client..
+does not require authentification for GET operations used by the Docker client.
 As an example:
 ```
 docker pull hub-public.libelektra.org/build-elektra-alpine:201809-791f9f388cbdff0db544e02277c882ad6e8220fe280cda67e6ea6358767a065e
