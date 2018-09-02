@@ -188,7 +188,13 @@ you up to date with the multi-language support provided by Elektra.
 ### Docker
 
 - <<TODO>>
-- <<TODO>>
+- The docker images used by our build system are now available to download from
+    our systems without authentification.
+    Try it out and list available images via
+        `docker run --rm anoxis/registry-cli -r https://hub.libelektra.org` .
+    Afterwards pull your desired image as you would do from any public registry:
+        `docker pull hub.libelektra.org/build-elektra-alpine:201809-791f9f388cbdff0db544e02277c882ad6e8220fe280cda67e6ea6358767a065e`.
+    *(Lukas Winkler)*
 - <<TODO>>
 
 ### Vagrant

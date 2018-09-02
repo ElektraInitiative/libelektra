@@ -217,13 +217,17 @@ You also want to look for whatever failed (which should be in a step also marked
 red to indicate failure).
 
 ## Reproducing buildserver errors locally
-To reproduce the docker image used during the failing test you have to rebuild
-them locally.
-Determine which image is used as described above in
-*Understanding Jenkins output*.
+First you have to determine which image is used.
+This is described above in *Understanding Jenkins output*.
 
-Afterwards you can locate the image via the `DOCKER_IMAGES` map in the
-Jenkinsfile.
+Afterwards you can download it from our registry via `docker pull`.
+As an example:
+```
+docker pull hub.libelektra.org/build-elektra-alpine:201809-791f9f388cbdff0db544e02277c882ad6e8220fe280cda67e6ea6358767a065e
+```
+
+You can also rebuild the images locally.
+Locate the image in the `DOCKER_IMAGES` map in the Jenkinsfile.
 It maps the stage that failed to the Dockerfile in the repository.
 Now you can build the image:
 
