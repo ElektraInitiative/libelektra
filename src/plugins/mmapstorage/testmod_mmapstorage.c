@@ -669,6 +669,12 @@ static void test_mmap_open_pipe (void)
 static void test_mmap_bad_file_permissions (const char * tmpFile)
 {
 	// try writing to a file with bad permissions
+	if (getuid () == 0 || geteuid () == 0)
+	{
+		printf ("Skipping file permission test for root.\n");
+		return;
+	}
+
 	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("mmapstorage");
