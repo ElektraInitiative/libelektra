@@ -1,12 +1,19 @@
 include (LibAddMacros)
 
 if (DEPENDENCY_PHASE)
+	include (CheckIncludeFileCXX)
+	set (CMAKE_REQUIRED_QUIET ON)
+	check_include_file_cxx (codecvt HAVE_CODECVT)
+	if (NOT HAVE_CODECVT)
+		remove_plugin (yambi "because the current C++ library does not provide header file `codecvt`")
+		return ()
+	endif (NOT HAVE_CODECVT)
+
 	if (APPLE)
 		# Add path to Homebrew version of Bison
 		list (APPEND CMAKE_PREFIX_PATH
 			     "/usr/local/opt/bison")
 	endif (APPLE)
-
 	find_package (BISON 3 QUIET)
 
 	if (NOT BISON_FOUND)
