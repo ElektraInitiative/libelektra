@@ -2,7 +2,7 @@ include (LibAddMacros)
 
 if (DEPENDENCY_PHASE)
 	if (APPLE)
-		# Add Homebrew path to Homebrew version of Bison
+		# Add path to Homebrew version of Bison
 		list (APPEND CMAKE_PREFIX_PATH
 			     "/usr/local/opt/bison")
 	endif (APPLE)
