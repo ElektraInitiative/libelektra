@@ -16,12 +16,20 @@ if (DEPENDENCY_PHASE)
 	if (NOT BISON_YAMBI_DEFINED)
 		remove_plugin (yambi "Unable to generate parser")
 	endif (NOT BISON_YAMBI_DEFINED)
+
+	set (SOURCE_FILES
+	     convert.hpp
+	     convert.cpp
+	     driver.hpp
+	     driver.cpp
+	     input.hpp
+	     input.cpp
+	     lexer.hpp
+	     lexer.cpp
+	     yambi.hpp
+	     yambi.cpp
+	     ${BISON_YAMBI_OUTPUT_SOURCE}
+	     ${BISON_YAMBI_OUTPUT_HEADER})
 endif (DEPENDENCY_PHASE)
 
-add_plugin (yambi
-	    CPP
-	    ADD_TEST
-	    CPP_TEST
-	    TEST_README
-	    SOURCES yambi.hpp
-		    yambi.cpp)
+add_plugin (yambi CPP ADD_TEST CPP_TEST TEST_README SOURCES ${SOURCE_FILES} INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR})
