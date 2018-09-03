@@ -60,7 +60,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
    to explicitly change a plugin's implementation if it shall be executed in an own
    process. This plugin is not completely finished yet, as currently there is no way
    for it to mimic the proxied plugin's contract in Elektra. It can be used with simple
-   plugins like `dump` however, check the limitations in the readme for more details.  *(Armin Wurzinger)*
+   plugins like `dump` however, check the limitations in the readme for more details. *(Armin Wurzinger)*
 
 ### gpgme
 
