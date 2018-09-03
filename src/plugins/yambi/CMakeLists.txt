@@ -7,7 +7,7 @@ if (DEPENDENCY_PHASE)
 			     "/usr/local/opt/bison")
 	endif (APPLE)
 
-	find_package (Bison 3 QUIET)
+	find_package (BISON 3 QUIET)
 
 	if (NOT BISON_FOUND)
 		remove_plugin (yambi "Bison 3 (bison) not found")
