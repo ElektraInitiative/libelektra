@@ -9,14 +9,22 @@ if (DEPENDENCY_PHASE)
 
 	find_package (Bison 3 QUIET)
 
-	if (BISON_FOUND)
-		bison_target (YAMBI ${CMAKE_CURRENT_SOURCE_DIR}/parser.ypp ${CMAKE_CURRENT_BINARY_DIR}/parser.cpp)
-		if (NOT BISON_YAMBI_DEFINED)
-			remove_plugin (yambi "generating the parser code failed")
-		endif (NOT BISON_YAMBI_DEFINED)
-	else (BISON_FOUND)
+	if (NOT BISON_FOUND)
 		remove_plugin (yambi "Bison 3 (bison) not found")
-	endif (BISON_FOUND)
+		return ()
+	endif (NOT BISON_FOUND)
+
+	if (BISON_VERSION VERSION_LESS 3)
+		remove_plugin (yambi "Bison version 3 or later required (found version ${BISON_VERSION})")
+		return ()
+	endif (BISON_VERSION VERSION_LESS 3)
+
+	bison_target (YAMBI ${CMAKE_CURRENT_SOURCE_DIR}/parser.ypp ${CMAKE_CURRENT_BINARY_DIR}/parser.cpp)
+
+	if (NOT BISON_YAMBI_DEFINED)
+		remove_plugin (yambi "generating the parser code failed")
+		return ()
+	endif (NOT BISON_YAMBI_DEFINED)
 
 	set (SOURCE_FILES
 	     convert.hpp
