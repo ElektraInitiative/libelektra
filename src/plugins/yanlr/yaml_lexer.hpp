@@ -65,7 +65,7 @@ class YAMLLexer : public TokenSource
 	 * This number stores the current character position of the lexer inside of
 	 * `line`.
 	 */
-	size_t column = 0;
+	size_t column = 1;
 
 	/**
 	 * This counter stores the number of tokens already emitted by the lexer.
@@ -78,7 +78,7 @@ class YAMLLexer : public TokenSource
 	 * This stack stores the indentation (in number of characters) for each
 	 * block collection.
 	 */
-	stack<long long> indents{ deque<long long>{ -1 } };
+	stack<size_t> indents{ deque<size_t>{ 0 } };
 
 	/**
 	 * This boolean specifies if the lexer has already scanned the whole input or
@@ -210,7 +210,7 @@ class YAMLLexer : public TokenSource
 	 *                  of spaces) for which this method should add block end
 	 *                  tokens.
 	 */
-	void addBlockEnd (long long const lineIndex);
+	void addBlockEnd (size_t const lineIndex);
 
 	/**
 	 * @brief This method adds the token for the start of the YAML stream to

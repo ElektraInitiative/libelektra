@@ -202,7 +202,7 @@ unique_ptr<CommonToken> YAMLLexer::commonToken (size_t type, size_t start, size_
  */
 bool YAMLLexer::addIndentation (size_t const lineIndex)
 {
-	if (static_cast<long long> (lineIndex) > indents.top ())
+	if (lineIndex > indents.top ())
 	{
 		ELEKTRA_LOG_DEBUG ("Add indentation %zu", lineIndex);
 		indents.push (lineIndex);
@@ -276,7 +276,7 @@ void YAMLLexer::forward (size_t const characters = 1)
 		column++;
 		if (input->LA (1) == '\n')
 		{
-			column = 0;
+			column = 1;
 			line++;
 		}
 		input->consume ();
@@ -370,7 +370,7 @@ void YAMLLexer::addSimpleKeyCandidate ()
  *                  of spaces) for which this method should add block end
  *                  tokens.
  */
-void YAMLLexer::addBlockEnd (long long const lineIndex)
+void YAMLLexer::addBlockEnd (size_t const lineIndex)
 {
 	while (lineIndex < indents.top ())
 	{
@@ -397,7 +397,7 @@ void YAMLLexer::scanStart ()
  */
 void YAMLLexer::scanEnd ()
 {
-	addBlockEnd (-1);
+	addBlockEnd (0);
 	tokens.push_back (commonToken (STREAM_END, input->index (), input->index (), "END"));
 	tokens.push_back (commonToken (Token::EOF, input->index (), input->index (), "EOF"));
 	done = true;
