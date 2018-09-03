@@ -188,6 +188,7 @@ before_install:
         # Unfortunately Xerces 3.2 causes multiple problems if we translate Elektra with GCC on macOS
         brew install xerces-c
       fi
+      brew install bison
       brew install dbus
       brew install discount
       brew install gpgme
