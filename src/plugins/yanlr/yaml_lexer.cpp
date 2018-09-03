@@ -1,5 +1,9 @@
 /**
- * This lexer uses the same idea as the scanner of `libyaml` (and various other
+ * @file
+ *
+ * @brief This file specifies a lexer that scans a subset of YAML.
+ *
+ * The lexer uses the same idea as the scanner of `libyaml` (and various other
  * YAML libs) to detect simple keys (keys with no `?` prefix).
  *
  * For a detailed explanation of the algorithm, I recommend to take a look at
