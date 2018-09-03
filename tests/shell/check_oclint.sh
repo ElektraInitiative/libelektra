@@ -25,6 +25,7 @@ oclint -p "@PROJECT_BINARY_DIR@" -enable-global-analysis -enable-clang-static-an
 	"src/plugins/cpptemplate/"*.cpp \
 	"src/plugins/directoryvalue/"*.cpp \
 	"src/plugins/mini/mini.c" \
+	"src/plugins/yambi/"*.cpp \
 	"src/plugins/yamlcpp/"*.{c,cpp} \
 	"src/plugins/yamlsmith/"*.{c,cpp} \
 	"src/plugins/yanlr/"*.{c,cpp}
