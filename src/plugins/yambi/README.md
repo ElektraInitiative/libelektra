@@ -21,11 +21,38 @@ Currently this plugin requires that you install [Bison](https://www.gnu.org/soft
 
 ## Examples
 
+### Mappings
+
 ```sh
 # Mount plugin
 sudo kdb mount config.yaml user/tests/yambi yambi
 
-# Umount plugin
+kdb set user/tests/yambi/bambi 'Mule Deer'
+kdb get user/tests/yambi/bambi
+#> Mule Deer
+
+kdb set user/tests/yambi/thumper 'Rabbit'
+kdb get user/tests/yambi/thumper
+#> Rabbit
+
+kdb set user/tests/yambi/bambi/baby 'Bobby Stewart'
+kdb set user/tests/yambi/bambi/young 'Donnie Dunagan'
+kdb set user/tests/yambi/bambi/adolescent 'Hardie Albright'
+kdb set user/tests/yambi/bambi/adult 'John Sutherland'
+
+kdb get user/tests/yambi/bambi/baby
+#> Bobby Stewart
+
+kdb ls user/tests/yambi
+#> user/tests/yambi/bambi
+#> user/tests/yambi/bambi/adolescent
+#> user/tests/yambi/bambi/adult
+#> user/tests/yambi/bambi/baby
+#> user/tests/yambi/bambi/young
+#> user/tests/yambi/thumper
+
+# Undo modifications
+kdb rm -r user/tests/yambi
 sudo kdb umount user/tests/yambi
 ```
 
