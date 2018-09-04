@@ -135,7 +135,17 @@ KeySet Driver::getKeySet () const
  */
 void Driver::error (const location_type & location, const string & message)
 {
-	cerr << location << ": " << message << '\n';
+	errorMessage = filename + ":" + to_string (location.begin.line) + ":" + to_string (location.begin.column) + ": " + message;
+}
+
+/**
+ * @brief This function returns the last error message produced by the parser.
+ *
+ * @return A string containing an error message describing a syntax error
+ */
+string Driver::getErrorMessage ()
+{
+	return errorMessage;
 }
 
 // ===========

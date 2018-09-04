@@ -23,8 +23,8 @@
 using std::stack;
 using std::string;
 
-using kdb::Key;
-using kdb::KeySet;
+using CppKey = kdb::Key;
+using CppKeySet = kdb::KeySet;
 
 using location_type = yy::parser::location_type;
 
@@ -35,18 +35,23 @@ class Driver
 
 	/** This variable stores the key set the drive creates from the given YAML
 	    file */
-	KeySet keys;
+	CppKeySet keys;
 
 	/**
 	 * This stack stores a key for each level of the current key name below
 	 * parent.
 	 */
-	stack<Key> parents;
+	stack<CppKey> parents;
 
 	/**
 	 * This stack stores indices for the next array elements.
 	 */
 	stack<uintmax_t> indices;
+
+	/**
+	 * This variable stores the most recent error message produced by the parser.
+	 */
+	string errorMessage;
 
 public:
 	/** This variable stores the path of the YAML file the driver is parsing. */
@@ -58,7 +63,7 @@ public:
 	 * @param parent This key specifies the parent of the key set the parser
 	 *               creates.
 	 */
-	Driver (Key const & parent);
+	Driver (CppKey const & parent);
 
 	/**
 	 * @brief This function parses the current YAML file.
@@ -79,7 +84,7 @@ public:
 	 * @return A key set representing the YAML data produced by the last call of
 	 *         the method `parse`
 	 */
-	KeySet getKeySet () const;
+	CppKeySet getKeySet () const;
 
 	/**
 	 * @brief This function will be called by the Bison parser to indicate an
@@ -90,6 +95,13 @@ public:
 	 *                parser.
 	 */
 	void error (const location_type & location, const string & message);
+
+	/**
+	 * @brief This function returns the last error message produced by the parser.
+	 *
+	 * @return A string containing an error message describing a syntax error
+	 */
+	string getErrorMessage ();
 
 	// ===========
 	// = Actions =

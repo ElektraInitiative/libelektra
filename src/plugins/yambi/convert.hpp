@@ -15,8 +15,8 @@
 
 using std::string;
 
-using kdb::Key;
-using kdb::KeySet;
+using CppKey = kdb::Key;
+using CppKeySet = kdb::KeySet;
 
 // -- Function -----------------------------------------------------------------
 
@@ -37,6 +37,6 @@ using kdb::KeySet;
  *            given keyset
  *          1 if parsing was successful and the function did change `keySet`
  */
-int addToKeySet (KeySet & keySet, Key & parent, string const & filename);
+int addToKeySet (CppKeySet & keySet, CppKey & parent, string const & filename);
 
 #endif // CONVERTER_HPP

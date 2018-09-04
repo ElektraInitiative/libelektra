@@ -10,6 +10,7 @@
 #include <kdb.hpp>
 #include <kdbconfig.h>
 
+#include "convert.hpp"
 #include "yambi.hpp"
 
 using ckdb::keyNew;
@@ -50,11 +51,16 @@ int elektraYambiGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	if (parent.getName () == "system/elektra/modules/yambi")
 	{
 		keys.append (getContract ());
+		parent.release ();
+		keys.release ();
+		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
+
+	int status = addToKeySet (keys, parent, parent.getString ());
 
 	parent.release ();
 	keys.release ();
-	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+	return status < 0 ? ELEKTRA_PLUGIN_STATUS_ERROR : status;
 }
 
 /** @see elektraDocSet */

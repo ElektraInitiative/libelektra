@@ -8,11 +8,10 @@
 
 // -- Imports ------------------------------------------------------------------
 
+#include "kdberrors.h"
+
 #include "convert.hpp"
 #include "driver.hpp"
-
-using kdb::Key;
-using kdb::KeySet;
 
 // -- Function -----------------------------------------------------------------
 
@@ -33,7 +32,7 @@ using kdb::KeySet;
  *            given keyset
  *          1 if parsing was successful and the function did change `keySet`
  */
-int addToKeySet (KeySet & keySet, Key & parent, string const & filename)
+int addToKeySet (CppKeySet & keySet, CppKey & parent, string const & filename)
 {
 	Driver driver{ parent };
 
@@ -41,10 +40,23 @@ int addToKeySet (KeySet & keySet, Key & parent, string const & filename)
 
 	if (status < 0)
 	{
+		if (status == -3)
+		{
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_COULD_NOT_OPEN, parent.getKey (), "Unable to open file “%s”", filename.c_str ());
+		}
+		else if (status == -2)
+		{
+			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_PARSE, parent.getKey (), "Parsing failed due to memory exhaustion");
+		}
+		else if (status == -1)
+		{
+			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_PARSE, parent.getKey (), driver.getErrorMessage ().c_str ());
+		}
+
 		return status;
 	}
 
-	KeySet keys = driver.getKeySet ();
+	CppKeySet keys = driver.getKeySet ();
 	status = (keys.size () <= 0) ? 0 : 1;
 
 	keySet.append (keys);
