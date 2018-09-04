@@ -56,6 +56,30 @@ kdb rm -r user/tests/yambi
 sudo kdb umount user/tests/yambi
 ```
 
+### Arrays
+
+```sh
+# Mount plugin
+sudo kdb mount config.yaml user/tests/yambi yambi
+
+kdb set user/tests/yambi/friends
+kdb set user/tests/yambi/friends/#0 Thumper
+kdb set user/tests/yambi/friends/#1 Flower
+
+# Retrieve last array index
+kdb getmeta user/tests/yambi/friends array
+#> #1
+
+kdb get user/tests/yambi/friends/#0
+#> Thumper
+kdb get user/tests/yambi/friends/#1
+#> Flower
+
+# Undo modifications
+kdb rm -r user/tests/yambi
+sudo kdb umount user/tests/yambi
+```
+
 ## Limitations
 
 This plugin does not do anything useful yet.
