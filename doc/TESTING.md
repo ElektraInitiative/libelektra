@@ -95,7 +95,7 @@ For `make run_all` following development tools enable even more tests:
 - `pkg-config` must be available (`check_external.sh` and `check_gen.sh`).
 - A build environment including gcc (check_gen.sh).
 - The [Markdown Shell Recorder](https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper)
-  requires POSIX utilities (`awk`, `grep`, …) and the [Bourne Again Shell](https://www.gnu.org/software/bash).
+  requires POSIX utilities (`awk`, `grep`, …).
 
 
 
