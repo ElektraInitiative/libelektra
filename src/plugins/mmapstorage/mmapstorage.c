@@ -170,6 +170,7 @@ static void initHeader (MmapHeader * mmapHeader)
 {
 	memset (mmapHeader, 0, SIZEOF_MMAPHEADER);
 	mmapHeader->mmapMagicNumber = ELEKTRA_MAGIC_MMAP_NUMBER;
+	mmapHeader->formatVersion = ELEKTRA_MMAP_FORMAT_VERSION;
 }
 
 /**
@@ -200,8 +201,8 @@ static void initFooter (MmapFooter * mmapFooter)
  * @param mmapHeader buffer where the MmapHeader is stored
  * @param mmapMetaData buffer where the MmapMetaData is stored
  *
- * @retval -1 if fread() failed, or magic number was wrong
- * @retval 0 if read succeeded and the magic number was read correctly
+ * @retval -1 if fread() failed, magic number or format version was wrong
+ * @retval 0 if read succeeded, the magic number was read correctly and the format version matched
  */
 static int readHeader (FILE * fp, MmapHeader * mmapHeader, MmapMetaData * mmapMetaData)
 {
@@ -213,7 +214,7 @@ static int readHeader (FILE * fp, MmapHeader * mmapHeader, MmapMetaData * mmapMe
 		return -1;
 	}
 
-	if (mmapHeader->mmapMagicNumber == ELEKTRA_MAGIC_MMAP_NUMBER)
+	if (mmapHeader->mmapMagicNumber == ELEKTRA_MAGIC_MMAP_NUMBER && mmapHeader->formatVersion == ELEKTRA_MMAP_FORMAT_VERSION)
 	{
 		return 0;
 	}

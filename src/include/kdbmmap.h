@@ -14,6 +14,7 @@
 #include <stdint.h>
 
 #define ELEKTRA_MAGIC_MMAP_NUMBER (0x0A6172746B656C45)
+#define ELEKTRA_MMAP_FORMAT_VERSION (1)
 
 typedef struct _mmapHeader MmapHeader;
 typedef struct _mmapMetaData MmapMetaData;
@@ -40,6 +41,7 @@ struct _mmapHeader
 	uint64_t cksumSize;		/**<Size of the critical data for checksum (structs, pointers, sizes)*/
 
 	uint32_t checksum;		/**<Checksum of the data */
+	uint8_t formatVersion;		/**<Mmap format version */
 	// clang-format on
 };
 
