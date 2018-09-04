@@ -127,15 +127,17 @@ typedef enum {
 			 Needed for metakeys.*/
 	KEY_FLAG_MMAP_STRUCT = 1 << 4,	/*!<
 			 Key struct lies inside a mmap region.
-			 This flag is set once a Key struct has been moved to a mapped region.
+			 This flag is set for Keys inside a mapped region.
 			 It prevents erroneous free() calls on these keys. */
 	KEY_FLAG_MMAP_KEY = 1 << 5,	/*!<
 			 Key name lies inside a mmap region.
-			 This flag is set once a Key name has been moved to a mapped region.
+			 This flag is set once a Key name has been moved to a mapped region,
+			 and is removed if the name moves out of the mapped region.
 			 It prevents erroneous free() calls on these keys. */
 	KEY_FLAG_MMAP_DATA = 1 << 6	/*!<
 			 Key value lies inside a mmap region.
-			 This flag is set once a Key value has been moved to a mapped region.
+			 This flag is set once a Key value has been moved to a mapped region,
+			 and is removed if the value moves out of the mapped region.
 			 It prevents erroneous free() calls on these keys. */
 } keyflag_t;
 
@@ -162,11 +164,12 @@ typedef enum {
 #endif
 	,KS_FLAG_MMAP_STRUCT = 1 << 2	/*!<
 		 KeySet struct lies inside a mmap region.
-		 This flag is set once a KeySet has been moved to a mapped region.
+		 This flag is set for KeySets inside a mapped region.
 		 It prevents erroneous free() calls on these KeySets. */
 	,KS_FLAG_MMAP_ARRAY = 1 << 3	/*!<
 		 Array of the KeySet lies inside a mmap region.
-		 This flag is set for KeySets where the array is mmap'ed but the KeySet is not.
+		 This flag is set for KeySets where the array is in a mapped region,
+		 and is removed if the array is moved out from the mapped region.
 		 It prevents erroneous free() calls on these arrays. */
 } ksflag_t;
 

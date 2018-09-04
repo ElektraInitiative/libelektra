@@ -94,7 +94,7 @@ static FILE * openFile (Key * parentKey, const char * mode)
  * @brief Wrapper for ftruncate().
  *
  * @param fp the file pointer
- * @param mmapsize size if the mapped region
+ * @param mmapsize size of the mapped region
  * @param parentKey holding the filename, for debug purposes
  *
  * @retval 1 on success
@@ -117,7 +117,7 @@ static int truncateFile (FILE * fp, size_t mmapsize, Key * parentKey ELEKTRA_UNU
  * @brief Wrapper for stat().
  *
  * @param sbuf the stat structure
- * @param parentKey holding the filename, for debug purposes
+ * @param parentKey holding the filename
  *
  * @retval 1 on success
  * @retval -1 if stat() failed

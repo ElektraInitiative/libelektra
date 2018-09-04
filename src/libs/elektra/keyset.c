@@ -422,6 +422,7 @@ int ksDel (KeySet * ks)
 		opmphmDel (ks->opmphm);
 	}
 #endif
+
 	if (ks->mmapMetaData)
 	{
 		set_bit (ks->mmapMetaData->flags, MMAP_FLAG_DELETED);
@@ -2641,7 +2642,6 @@ int ksClose (KeySet * ks)
 	while ((k = ksNext (ks)) != 0)
 	{
 		keyDecRef (k);
-
 		keyDel (k);
 	}
 
