@@ -14,9 +14,6 @@
 
 #include "driver.hpp"
 
-using std::cerr;
-using std::endl;
-
 using kdb::Key;
 using kdb::KeySet;
 
@@ -102,11 +99,7 @@ int Driver::parse (const string & filepath)
 	filename = filepath;
 
 	ifstream input{ filename };
-	if (!input.good ())
-	{
-		perror (string ("Unable to open file “" + filename + "”").c_str ());
-		return -3;
-	}
+	if (!input.good ()) return -3;
 
 	Lexer lexer{ input };
 	parser parser{ lexer, *this };
