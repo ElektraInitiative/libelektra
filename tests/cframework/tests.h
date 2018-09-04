@@ -210,6 +210,15 @@ int init (int argc, char ** argv);
 						__FILE__, __LINE__, __func__, ELEKTRA_QUOTE (mmk1), ELEKTRA_QUOTE (mmk2), keyName (meta)); \
 					break;                                                                                             \
 				}                                                                                                          \
+				if (strcmp (keyString (meta), keyString (metaCmp)) != 0)                                                   \
+				{                                                                                                          \
+					nbError++;                                                                                         \
+					printf ("%s:%d: error in %s: Comparison of the keys with name \"%s\" failed. The value of the "    \
+						"metakey \"%s\" is not equal: \"%s\" ≠ \"%s\"",                                            \
+						__FILE__, __LINE__, __func__, keyName (mmk1), keyName (meta), keyString (meta),            \
+						keyString (metaCmp));                                                                      \
+					break;                                                                                             \
+				}                                                                                                          \
 			}                                                                                                                  \
                                                                                                                                            \
 			const Key * const metaCmp = keyNextMeta (mmk2);                                                                    \
