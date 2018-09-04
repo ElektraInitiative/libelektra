@@ -92,7 +92,7 @@ For `make run_all` following development tools enable even more tests:
 - The script `checkbashisms` is needed to check for bashism (tests/shell/check_bashisms.sh),
   it is part of `devscripts`.
 - `git`, `clang-format` (version 5 up to version 7), and [cmake-format](https://github.com/cheshirekow/cmake_format) to check formatting.
-- `pkg-config` must be available (check_external.sh and check_gen.sh).
+- `pkg-config` must be available (`check_external.sh` and `check_gen.sh`).
 - A build environment including gcc (check_gen.sh).
 - The [Markdown Shell Recorder](https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper)
   requires POSIX utilities (`awk`, `grep`, …) and the [Bourne Again Shell](https://www.gnu.org/software/bash).
