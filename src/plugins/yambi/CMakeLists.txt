@@ -33,17 +33,26 @@ if (DEPENDENCY_PHASE)
 		return ()
 	endif (NOT BISON_YAMBI_DEFINED)
 
+	set (SOURCE_FILES_INPUT input.hpp input.cpp)
+
+	if (ENABLE_ASAN AND CMAKE_COMPILER_IS_GNUCXX)
+		# ~~~
+		# Ignore runtime error about member call on address, which does not point to object of type `__codecvt_abstract_base`.
+		# See also: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=81068
+		# ~~~
+		set_source_files_properties (${SOURCE_FILES_INPUT} PROPERTIES COMPILE_FLAGS "-fno-sanitize=undefined")
+	endif (ENABLE_ASAN AND CMAKE_COMPILER_IS_GNUCXX)
+
 	set (SOURCE_FILES
 	     convert.hpp
 	     convert.cpp
 	     driver.hpp
 	     driver.cpp
-	     input.hpp
-	     input.cpp
 	     lexer.hpp
 	     lexer.cpp
 	     yambi.hpp
 	     yambi.cpp
+	     ${SOURCE_FILES_INPUT}
 	     ${BISON_YAMBI_OUTPUT_SOURCE}
 	     ${BISON_YAMBI_OUTPUT_HEADER})
 endif (DEPENDENCY_PHASE)
