@@ -82,4 +82,6 @@ sudo kdb umount user/tests/yambi
 
 ## Limitations
 
-This plugin does not do anything useful yet.
+The plugin supports the same limited YAML syntax as [Yan LR](../yanlr/).
+
+- The plugin always assumes **UTF-8** encoded data.
