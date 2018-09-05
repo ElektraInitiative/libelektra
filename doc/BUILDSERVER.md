@@ -92,6 +92,12 @@ list of currently available syntax can be seen in
 [pipeline
 syntax](https://build.libelektra.org/jenkins/job/libelektra/pipeline-syntax/)
 after a login to the build server.
+Some functionality is not covered by this page when the responsible plugin is
+not implementing it.
+Usually an approach similar to what is described on
+[stackoverflow](https://stackoverflow.com/questions/51103359/jenkins-pipeline-return-value-of-build-step)
+can be used to track down the responsible code inside the providing plugins
+source code.
 
 We also provide a number of helper functions in our Jenkinsfiles that are
 documented at the function head.
