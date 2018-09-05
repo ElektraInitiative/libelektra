@@ -7,8 +7,11 @@
  *
  */
 
+#include <stdexcept>
+
 #include <kdb.hpp>
 #include <kdbconfig.h>
+#include <kdberrors.h>
 
 #include "convert.hpp"
 #include "yambi.hpp"
@@ -17,6 +20,9 @@ using ckdb::keyNew;
 
 using CppKey = kdb::Key;
 using CppKeySet = kdb::KeySet;
+
+using std::exception;
+using std::runtime_error;
 
 namespace
 {
@@ -56,7 +62,19 @@ int elektraYambiGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
-	int status = addToKeySet (keys, parent, parent.getString ());
+	int status = ELEKTRA_PLUGIN_STATUS_ERROR;
+	try
+	{
+		status = addToKeySet (keys, parent, parent.getString ());
+	}
+	catch (runtime_error const & runtimeError)
+	{
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_PARSE, *parent, runtimeError.what ());
+	}
+	catch (exception const & error)
+	{
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_UNCAUGHT_EXCEPTION, *parent, error.what ());
+	}
 
 	parent.release ();
 	keys.release ();
