@@ -31,6 +31,10 @@
 
 #include <kdbinternal.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 int nbError;
 int nbTest;
 
@@ -544,3 +548,7 @@ void clean_temp_home (void)
 		tempHomeLen = 0;
 	}
 }
+
+#ifdef __cplusplus
+} // end extern "C"
+#endif
