@@ -42,11 +42,14 @@ benefits such as
 
 .
 
-This section aim to give an introduction into this new setup.
+This section aims to give an introduction into this new setup.
 
 ### Multibranch Pipeline Jobs (libelektra)
-We use the Jenkins Job type called Multibranch Pipeline for our main
-tests called `libelektra`.
+We use the Jenkins Job type called 
+[Multibranch Pipeline](https://jenkins.io/doc/book/pipeline/multibranch/#creating-a-multibranch-pipeline) 
+provided by the
+[Pipeline Multibranch  Plugin](https://wiki.jenkins.io/display/JENKINS/Pipeline+Multibranch+Plugin)
+for our CI tests called `libelektra`.
 
 Simplified a Multibranch Pipeline Job acts as an umbrella job that spawns
 child jobs depending on branch (hence multibranch).
@@ -54,8 +57,7 @@ The main purpose of the libelektra job is to scan the repository for
 changes to existing branches or to find new ones (for example branches
 that are used in PR's).
 It also contains the information on how to build the jobs in the form
-of a path that points to a Jenkinsfile containing more detailed instructions
-as well as some configuration that should be shared by all resulting jobs.
+of a path that points to a Jenkinsfile containing more detailed instructions.
 The job also takes care of handling build artifacts that are archived and
 cleaning them out once the PR's are closed and a grace period has expired.
 
@@ -175,8 +177,8 @@ verified or added to build Elektra correctly:
     [daily buildjob](https://build.libelektra.org/jenkins/job/libelektra-daily/).
 * Under Property strategy you can add `Trigger build on pull request comment`.
     `jenkins build (libelektra|all) please` is a good starting point.
-    It should be noted that this functionality is provided by a non standard
-    plugin and might not be available in a new installation.
+    This functionality is provided by the
+    [GitHub PR Comment Build Plugin](https://wiki.jenkins-ci.org/display/JENKINS/GitHub+PR+Comment+Build+Plugin).
 * For Build Configuration you want to specify `by Jenkinsfile` and add the
     script path: `scripts/jenkins/Jenkinsfile`.
 
@@ -203,8 +205,8 @@ Our jenkins build uses parallel steps inside a single build job to do most of
 the work.
 To reliable determine which stages failed it is best to look over the build
 results in the Jenkins Blue Ocean view.
-It is the default View opened when accessing the build results from github.
-For libelektra the Url's are
+It is the default View opened when accessing the build results from GitHub.
+For libelektra the URLs are
 https://build.libelektra.org/jenkins/job/libelektra/ and
 https://build.libelektra.org/jenkins/blue/organizations/jenkins/libelektra/branches/
 .
@@ -221,40 +223,26 @@ First you have to determine which image is used.
 This is described above in *Understanding Jenkins output*.
 
 Afterwards you can download it from our registry via `docker pull`.
-Pay attention that you have to use **hub-public.libelektra.org** as this vhost
+Pay attention that you have to use **hub-public.libelektra.org** as this subdomain
 does not require authentification for GET operations used by the Docker client.
 As an example:
 ```
 docker pull hub-public.libelektra.org/build-elektra-alpine:201809-791f9f388cbdff0db544e02277c882ad6e8220fe280cda67e6ea6358767a065e
 ```
 
-You can also rebuild the images locally.
-Locate the image in the `DOCKER_IMAGES` map in the Jenkinsfile.
-It maps the stage that failed to the Dockerfile in the repository.
-Now you can build the image:
+You can also rebuild the images locally, which is useful if you want to test changes
+you made to the Dockerfiles themselves.
+Locate which Dockerfile you need by looking up the reference the stage that used it in the Jenkinsfile.
+For *alpine* this would be `DOCKER_IMAGES.alpine`.
+You can search for this entry in the Jenkinsfile to find that this image is build from the
+context `./scripts/docker/alpine/3.8` and uses `./scripts/docker/alpine/3.8/Dockerfile` as a
+Dockerfile.
+Now you can build the image as described in
+[scripts/docker/README.md](https://master.libelektra.org/scripts/docker/README.md#building-images-locally).
 
-```
-docker build --build-arg JENKINS_GROUPID=`id -g` \
-             --build-arg JENKINS_USERID=`id -u` \
-             -t libelektra-debian-stable \
-             path/to/identified/Dockerfile/
-```
+You can find more information on how to use our images in
+[scripts/docker/README.md](https://master.libelektra.org/scripts/docker/README.md#testing-elektra-via-docker-images).
 
-In case the Filename deviates from the default `Dockerfile` you also
-have to supply the `-f` argument.
-Please consult the docker build --help output for more information.
-
-To run the build commands in the container run the following from libelektra's
-base directory:
-```
-docker run -it \
-           -v `pwd`:/home/jenkins/ws \
-           -w /home/jenkins/ws \
-           libelektra-debian-stable
-```
-
-Combined with the user arguments during the build this allows to use the
-usage of the source dirctory with the correct rights.
 
 ## Modify test environments
 You can also modify the test environments (update a dependency, install a new
@@ -291,12 +279,8 @@ build:
 
 Additionally `jenkins build all please` can be used to trigger all build jobs
 relevant for PR's.
-Since this needs a lot of resources please use it only if
+This is not necessary anymore as all relevant tests have been moved into the libelektra job.
 
-- all of the **standard PR jobs** were already **successful**, and
-- you are sure that you **do not want change anything** in your PR anymore
-
-.
 
 # Issues with the build environment
 If you have issues that are related to the build system you can open a normal
