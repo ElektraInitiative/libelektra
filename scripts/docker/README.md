@@ -9,11 +9,21 @@ A list of all Dockerfiles used by the build server can be found in the
 > Any commands in this file are expected to be run from the root
 > of the repository.
 
-## Building Images locally
+## Downloading prebuild images
 
-If you want to run or test Elektra via our Docker images you currently have
-to build them yourself.
-You can do so by running the following command:
+You can download prebuild images for local testing from our build environment.
+List available images via `docker run --rm anoxis/registry-cli -r https://hub-public.libelektra.org`.
+Afterwards pull your desired image as you would do from any public registry:
+`docker pull hub-public.libelektra.org/build-elektra-alpine:201809-791f9f388cbdff0db544e02277c882ad6e8220fe280cda67e6ea6358767a065e`.
+
+> **Note:**
+> We use *hub-public* instead of *hub.libelektra.org* which is in use by our
+> build server to bypass authentification.
+> Only GET requests are allowed on *hub-public*.
+
+
+## Building Images locally
+You can build images locally via the following command:
 
 ```sh
 docker build -t buildelektra-stretch-full \
