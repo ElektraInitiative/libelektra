@@ -101,6 +101,26 @@ source code.
 
 We also provide a number of helper functions in our Jenkinsfiles that are
 documented at the function head.
+Most common use cases, for example adding a new build with certain cmake flags,
+are easy to add because of them.
+For example, the configuration that is responsible for the `debian-stable-full`
+stage is generated completly by a single helper function called `buildAndTest`:
+
+```groovy
+tasks << buildAndTest(
+  "debian-stable-full",
+  DOCKER_IMAGES.stretch,
+  CMAKE_FLAGS_BUILD_ALL +
+    CMAKE_FLAGS_BUILD_FULL +
+    CMAKE_FLAGS_BUILD_STATIC +
+    CMAKE_FLAGS_COVERAGE
+  ,
+  [TEST.ALL, TEST.MEM, TEST.NOKDB, TEST.INSTALL]
+)
+```
+
+When adding new stages to the build chain it is generally a good idea to look up
+an existing stage which does something similar and adapt it to the new use case.
 
 ### Security
 Since a malicious PR could easily destroy the build server and slaves or expose
