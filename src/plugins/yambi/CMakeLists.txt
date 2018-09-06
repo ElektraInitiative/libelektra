@@ -63,5 +63,7 @@ add_plugin (yambi
 	    CPP_TEST
 	    INSTALL_TEST_DATA
 	    TEST_README
+	    TEST_REQUIRED_PLUGINS directoryvalue
+				  yamlsmith
 	    SOURCES ${SOURCE_FILES}
 	    INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR})
