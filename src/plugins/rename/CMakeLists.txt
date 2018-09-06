@@ -3,4 +3,4 @@ add_plugin (rename
 		    rename.c
 	    ADD_TEST
 	    TEST_README
-	    TEST_REQUIRED_PLUGINS ni)
+	    TEST_REQUIRED_PLUGINS mini)
