@@ -302,4 +302,6 @@ void output_keyset (KeySet * ks);
 int output_warnings (Key * errorKey);
 int output_error (Key * errorKey);
 
+void clean_temp_home (void);
+
 #endif

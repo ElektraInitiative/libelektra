@@ -10,6 +10,7 @@
 #include <stdlib.h>
 
 #include <benchmarks.h>
+#include <tests.h>
 
 #define NUM_PLUGINS 2
 #define NUM_RUNS 7
@@ -55,71 +56,6 @@ int benchmarkOpenPlugins (void)
 	return 0;
 }
 
-static void benchmarkCreateTemp (void)
-{
-	char * tmpvar;
-	int fd;
-
-	tmpvar = getenv ("TMPDIR");
-	if (!tmpvar)
-	{
-		tmpvar = "/tmp";
-	}
-	// check tempvar for trailing slash /
-	if (strlen (tmpvar) > 2)
-	{
-		if (tmpvar[strlen (tmpvar) - 1] == '/')
-		{
-			tmpvar[strlen (tmpvar) - 1] = '\0';
-		}
-	}
-
-	tempHomeLen = strlen (tmpvar) + 1 + 13 + 6 + 1;
-	tempHome = elektraMalloc (tempHomeLen);
-	tempHomeConf = elektraMalloc (tempHomeLen + strlen (KDB_DB_USER) + 2);
-	// succeed_if (tempHome != 0, "elektraMalloc failed");
-	snprintf (tempHome, tempHomeLen, "%s/elektra-test.XXXXXX", tmpvar);
-	snprintf (tempHomeConf, tempHomeLen, "%s/elektra-test.XXXXXX/" KDB_DB_USER, tmpvar);
-	mkdtemp (tempHome);
-	// succeed_if (mkdtemp (tempHome) != 0, "mkdtemp failed");
-	setenv ("HOME", tempHome, 1);
-
-	// atexit (clean_temp_home);
-
-	int tmpfilenameLen = tempHomeLen + 1 + 12 + 6 + 1;
-	tmpfilename = elektraMalloc (tmpfilenameLen);
-	// succeed_if (tmpfilenameLen != 0, "elektraMalloc failed");
-	snprintf (tmpfilename, tmpfilenameLen, "%s/elektra-tmp.XXXXXX", tempHome);
-	fd = mkstemp (tmpfilename);
-	// succeed_if (fd != -1, "mkstemp failed");
-	close (fd);
-}
-
-static void benchmarkCleanTemp (void)
-{
-	if (tmpfilename)
-	{
-		unlink (tmpfilename);
-		elektraFree (tmpfilename);
-		tmpfilename = NULL;
-	}
-
-	if (tempHomeConf)
-	{
-		rmdir (tempHomeConf);
-		elektraFree (tempHomeConf);
-		tempHomeConf = NULL;
-	}
-
-	if (tempHome)
-	{
-		rmdir (tempHome);
-		elektraFree (tempHome);
-		tempHome = NULL;
-		tempHomeLen = 0;
-	}
-}
-
 size_t benchmarkIterate (KeySet * ks)
 {
 	ksRewind (ks);
@@ -133,7 +69,7 @@ size_t benchmarkIterate (KeySet * ks)
 	return c;
 }
 
-int main (void)
+int main (int argc, char ** argv)
 {
 	// open all storage plugins
 	timeInit ();
@@ -150,7 +86,8 @@ int main (void)
 	for (size_t i = 0; i < NUM_PLUGINS; ++i)
 	{
 		printf ("Writing with plugin %s\n", pluginNames[i]);
-		benchmarkCreateTemp ();
+		init (argc, argv);
+
 		Plugin * plugin = plugins[i];
 		fprintf (stdout, "Tmp: %s\n", tmpfilename);
 		Key * parentKey = keyNew ("user/benchmarks/storage", KEY_VALUE, tmpfilename, KEY_END);
@@ -187,7 +124,7 @@ int main (void)
 			timePrint ("Re-read keyset");
 		}
 
-		benchmarkCleanTemp ();
+		clean_temp_home ();
 		keyDel (parentKey);
 		timePrint ("cleanup");
 	}
