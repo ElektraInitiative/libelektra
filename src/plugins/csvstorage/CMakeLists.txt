@@ -7,4 +7,5 @@ add_plugin (csvstorage
 			 elektra-proposal
 	    ADD_TEST
 	    INSTALL_TEST_DATA
-	    TEST_README)
+	    TEST_README
+	    TEST_REQUIRED_PLUGINS directoryvalue)
