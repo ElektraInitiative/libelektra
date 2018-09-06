@@ -173,7 +173,8 @@ you up to date with the multi-language support provided by Elektra.
   *(Thomas Wahringer)*
 - The tests `testkdb_allplugins` and `testscr_check_kdb_internal_check` do not test a plugin on an ASAN enabled build anymore, if you
   specify the status tag `memleak` in the plugin contract. *(René Schwaiger)*
-- <<TODO>>
+- The [CFramework](https://master.libelektra.org/doc/TESTING.md) macro `compare_key` now also checks if the meta values of keys are equal.
+  *(René Schwaiger)*
 
 
 ## Build
