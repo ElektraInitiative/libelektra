@@ -52,4 +52,5 @@ add_plugin (yanlr
 	    TEST_README
 	    TEST_ENVIRONMENT "ASAN_OPTIONS=detect_container_overflow=0" # Unfortunately it looks like ANTLR’s code causes a container-
 									# overflow
-	    TEST_REQUIRED_PLUGINS yamlsmith)
+	    TEST_REQUIRED_PLUGINS directoryvalue
+				  yamlsmith)
