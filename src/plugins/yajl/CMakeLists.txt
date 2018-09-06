@@ -19,6 +19,7 @@ add_plugin (yajl
 		    "${CMAKE_CURRENT_BINARY_DIR}/yajl.h"
 	    ADD_TEST
 	    TEST_README
+	    TEST_REQUIRED_PLUGINS directoryvalue
 	    INSTALL_TEST_DATA
 	    INCLUDE_DIRECTORIES "${INCL}"
 	    LINK_ELEKTRA elektra-ease
