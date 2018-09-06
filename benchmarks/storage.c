@@ -24,12 +24,12 @@ char * tempHome;
 int tempHomeLen;
 char * tempHomeConf;
 
-void benchmarkDel (void)
+static void benchmarkDel (void)
 {
 	ksDel (large);
 }
 
-int benchmarkOpenPlugins (void)
+static int benchmarkOpenPlugins (void)
 {
 	for (size_t i = 0; i < NUM_PLUGINS; ++i)
 	{
@@ -56,17 +56,40 @@ int benchmarkOpenPlugins (void)
 	return 0;
 }
 
-size_t benchmarkIterate (KeySet * ks)
+static void benchmarkIterate (KeySet * ks)
 {
 	ksRewind (ks);
 	Key * cur;
-	size_t c = 0;
 	while ((cur = ksNext (ks)))
 	{
-		// count to make sure the loop is executed
-		++c;
+		__asm__("");
 	}
-	return c;
+}
+
+static int benchmarkIterateName (KeySet * ks)
+{
+	ksRewind (ks);
+	Key * cur;
+	const char * test = "foo";
+	int i = 0;
+	while ((cur = ksNext (ks)))
+	{
+		i = strncmp (test, keyName (cur), 3);
+	}
+	return i;
+}
+
+static int benchmarkIterateValue (KeySet * ks)
+{
+	ksRewind (ks);
+	Key * cur;
+	const char * test = "bar";
+	int i = 0;
+	while ((cur = ksNext (ks)))
+	{
+		i = strncmp (test, keyString (cur), 3);
+	}
+	return i;
 }
 
 int main (int argc, char ** argv)
@@ -122,6 +145,28 @@ int main (int argc, char ** argv)
 			}
 			ksDel (returned2);
 			timePrint ("Re-read keyset");
+
+			KeySet * returned3 = ksNew (0, KS_END);
+			if (plugin->kdbGet (plugin, returned3, parentKey) != ELEKTRA_PLUGIN_STATUS_SUCCESS)
+			{
+				printf ("Error reading with plugin: %s\n", pluginNames[i]);
+				return -1;
+			}
+			timePrint ("Read keyset");
+			benchmarkIterateName (returned3);
+			ksDel (returned3);
+			timePrint ("Strcmp key names");
+
+			KeySet * returned4 = ksNew (0, KS_END);
+			if (plugin->kdbGet (plugin, returned4, parentKey) != ELEKTRA_PLUGIN_STATUS_SUCCESS)
+			{
+				printf ("Error reading with plugin: %s\n", pluginNames[i]);
+				return -1;
+			}
+			timePrint ("Read keyset");
+			benchmarkIterateValue (returned4);
+			ksDel (returned4);
+			timePrint ("Strcmp key values");
 		}
 
 		clean_temp_home ();
