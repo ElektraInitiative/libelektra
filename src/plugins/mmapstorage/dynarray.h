@@ -24,9 +24,9 @@ struct _dynArray
 typedef struct _dynArray DynArray;
 
 // DynArray functions
-DynArray * elektraMmapDynArrayNew (void);
-void elektraMmapDynArrayDelete (DynArray * dynArray);
-int elektraMmapDynArrayFindOrInsert (Key * key, DynArray * dynArray);
-ssize_t elektraMmapDynArrayFind (Key * key, DynArray * dynArray);
+DynArray * ELEKTRA_PLUGIN_FUNCTION (mmapstorage, dynArrayNew) (void);
+void ELEKTRA_PLUGIN_FUNCTION (mmapstorage, dynArrayDelete) (DynArray * dynArray);
+int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, dynArrayFindOrInsert) (Key * key, DynArray * dynArray);
+ssize_t ELEKTRA_PLUGIN_FUNCTION (mmapstorage, dynArrayFind) (Key * key, DynArray * dynArray);
 
 #endif

@@ -12,10 +12,10 @@
 
 #include <kdbplugin.h>
 
-int elektraMmapstorageOpen (Plugin * handle, Key * errorKey);
-int elektraMmapstorageClose (Plugin * handle, Key * errorKey);
-int elektraMmapstorageGet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraMmapstorageSet (Plugin * handle, KeySet * ks, Key * parentKey);
+int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, open) (Plugin * handle, Key * errorKey);
+int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, close) (Plugin * handle, Key * errorKey);
+int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, get) (Plugin * handle, KeySet * ks, Key * parentKey);
+int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, set) (Plugin * handle, KeySet * ks, Key * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (mmapstorage);
 

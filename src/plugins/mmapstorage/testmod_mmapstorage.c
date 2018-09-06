@@ -815,11 +815,11 @@ static void testDynArray (void)
 			      4405, 5021, 3416, 854,  4635, 9902, 5383, 7947, 5210, 8242, 1928, 3792, 7234, 759,  6571, 9514, 8451,
 			      918,  9958, 1577, 96,   8644, 6815, 5584, 8585, 1252, 808,  5695, 910,  4157, 701,  77 };
 
-	DynArray * dynArray = elektraMmapDynArrayNew ();
+	DynArray * dynArray = ELEKTRA_PLUGIN_FUNCTION (mmapstorage, dynArrayNew) ();
 
 	for (size_t i = 0; i < 100; ++i)
 	{
-		elektraMmapDynArrayFindOrInsert ((Key *) testData[i], dynArray);
+		ELEKTRA_PLUGIN_FUNCTION (mmapstorage, dynArrayFindOrInsert) ((Key *) testData[i], dynArray);
 	}
 
 	qsort (testData, 100, sizeof (size_t), cmpfunc);
@@ -835,7 +835,7 @@ static void testDynArray (void)
 
 	succeed_if (error == 0, "dynArray does not sort array properly");
 
-	elektraMmapDynArrayDelete (dynArray);
+	ELEKTRA_PLUGIN_FUNCTION (mmapstorage, dynArrayDelete) (dynArray);
 }
 
 /* -- Main ------------------------------------------------------------------------------------------------------------------------------ */

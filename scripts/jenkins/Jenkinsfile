@@ -80,7 +80,6 @@ CMAKE_FLAGS_INI = [
 ]
 
 CMAKE_FLAGS_MMAP = [
-  'ENABLE_CHECKSUM': 'ON',
   'KDB_DB_FILE': 'default.mmap',
   'KDB_DB_INIT': 'elektra.mmap',
   'KDB_DEFAULT_STORAGE': 'mmapstorage'

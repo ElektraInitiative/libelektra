@@ -29,21 +29,22 @@ Unmount mmapstorage using `kdb umount`:
 
     sudo kdb umount user/tests/mmapstorage
 
+## Compiling
+
+The mmapstorage has two compilation variants:
+
+1. mmapstorage
+2. mmapstorage_crc
+
+The `mmapstorage` will always be compiled on a supported system (see [Dependencies](#dependencies)). When zlib is available,
+we will additionally compile the `mmapstorage_crc` variant. The first variant does not do a CRC32 checksum of the critical data,
+while the second variant always checks the CRC32 checksum for additional security.
+
 ## Dependencies
 
 POSIX compliant system (including XSI extensions).
 
-#ifdef ENABLE_MMAP_CHECKSUM
-Additionally, zlib is needed for CRC32.
-
-- `zlib1g-dev` or `zlib-devel`
-
-#endif
-
-## Compiling
-
-Any external modification of a mmapstorage file could lead to a program crash. Therefore a CRC32 checksum of the critical data
-is done by default. To disable CRC32 checksumming, use the cmake directive `-DENABLE_CHECKSUM=OFF`.
+Additionally, zlib is needed for the `mmapstorage_crc` compilation variant: `zlib1g-dev` or `zlib-devel`.
 
 ## Examples
 

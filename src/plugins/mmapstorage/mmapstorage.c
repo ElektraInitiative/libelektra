@@ -435,7 +435,7 @@ static void calculateMmapDataSize (MmapHeader * mmapHeader, MmapMetaData * mmapM
 			ksRewind (cur->meta);
 			while ((curMeta = ksNext (cur->meta)) != 0)
 			{
-				if (elektraMmapDynArrayFindOrInsert (curMeta, dynArray) == 0)
+				if (ELEKTRA_PLUGIN_FUNCTION (mmapstorage, dynArrayFindOrInsert) (curMeta, dynArray) == 0)
 				{
 					// key was just inserted
 					dataBlocksSize += (curMeta->keySize + curMeta->keyUSize + curMeta->dataSize);
@@ -561,7 +561,8 @@ static KeySet * writeMetaKeySet (Key * key, MmapAddr * mmapAddr, DynArray * dynA
 		while ((metaKey = keyNextMeta (key)) != 0)
 		{
 			// get address of mapped key and store it in the new array
-			mappedMetaKey = dynArray->mappedKeyArray[elektraMmapDynArrayFind ((Key *) metaKey, dynArray)];
+			mappedMetaKey =
+				dynArray->mappedKeyArray[ELEKTRA_PLUGIN_FUNCTION (mmapstorage, dynArrayFind) ((Key *) metaKey, dynArray)];
 			newMeta->array[metaKeyIndex] = (Key *) ((char *) mappedMetaKey - mmapAddr->mmapAddrInt);
 			if (mappedMetaKey->ksReference < SSIZE_MAX)
 			{
@@ -871,7 +872,7 @@ static KeySet * copyKeySet (KeySet * toCopy, MmapMetaData * mmapMetaData)
 		return 0;
 	}
 
-	DynArray * dynArray = elektraMmapDynArrayNew ();
+	DynArray * dynArray = ELEKTRA_PLUGIN_FUNCTION (mmapstorage, dynArrayNew) ();
 
 	Key * cur = 0;
 	ksRewind (toCopy);
@@ -883,7 +884,7 @@ static KeySet * copyKeySet (KeySet * toCopy, MmapMetaData * mmapMetaData)
 			ksRewind (cur->meta);
 			while ((curMetaKey = ksNext (cur->meta)) != 0)
 			{
-				if (elektraMmapDynArrayFindOrInsert (curMetaKey, dynArray) == 0)
+				if (ELEKTRA_PLUGIN_FUNCTION (mmapstorage, dynArrayFindOrInsert) (curMetaKey, dynArray) == 0)
 				{
 					// key was just inserted
 				}
@@ -921,8 +922,8 @@ static KeySet * copyKeySet (KeySet * toCopy, MmapMetaData * mmapMetaData)
 			ksRewind (cur->meta);
 			for (size_t i = 0; i < cur->meta->size; ++i)
 			{
-				Key * newMetaKey =
-					dynArray->mappedKeyArray[elektraMmapDynArrayFind ((Key *) cur->meta->array[i], dynArray)];
+				Key * newMetaKey = dynArray->mappedKeyArray[ELEKTRA_PLUGIN_FUNCTION (mmapstorage, dynArrayFind) (
+					(Key *) cur->meta->array[i], dynArray)];
 				ksAppendKey (newMetaKs, newMetaKey);
 			}
 			ksDel (cur->meta);
@@ -930,7 +931,7 @@ static KeySet * copyKeySet (KeySet * toCopy, MmapMetaData * mmapMetaData)
 		}
 	}
 
-	elektraMmapDynArrayDelete (dynArray);
+	ELEKTRA_PLUGIN_FUNCTION (mmapstorage, dynArrayDelete) (dynArray);
 	return (KeySet *) dest;
 }
 
@@ -1030,7 +1031,7 @@ static void saveLinkedFile (Key * key, KeySet * mappedFiles, KeySet * returned, 
  * @retval ELEKTRA_PLUGIN_STATUS_ERROR on memory error (plugin data (keyset) could not be allocated).
  * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if initialization was successfull.
  */
-int elektraMmapstorageOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
+int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, open) (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 {
 	// plugin initialization logic
 	KeySet * mappedFiles = ksNew (0, KS_END);
@@ -1054,7 +1055,7 @@ int elektraMmapstorageOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
  *
  * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS always.
  */
-int elektraMmapstorageClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
+int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, close) (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
 {
 	// free all plugin resources and shut it down
 	KeySet * mappedFiles = (KeySet *) elektraPluginGetData (handle);
@@ -1084,27 +1085,22 @@ int elektraMmapstorageClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEK
  * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if the file was mapped successfully.
  * @retval ELEKTRA_PLUGIN_STATUS_ERROR if the file could not be mapped successfully.
  */
-int elektraMmapstorageGet (Plugin * handle, KeySet * ks, Key * parentKey)
+int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, get) (Plugin * handle, KeySet * ks, Key * parentKey)
 {
 	// get all keys
 	int errnosave = errno;
 
-	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/mmapstorage"))
+	Key * root = keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME, KEY_END);
+	if (keyRel (root, parentKey) >= 0)
 	{
-		KeySet * contract = ksNew (
-			30, keyNew ("system/elektra/modules/mmapstorage", KEY_VALUE, "mmapstorage plugin waits for your orders", KEY_END),
-			keyNew ("system/elektra/modules/mmapstorage/exports", KEY_END),
-			keyNew ("system/elektra/modules/mmapstorage/exports/open", KEY_FUNC, elektraMmapstorageOpen, KEY_END),
-			keyNew ("system/elektra/modules/mmapstorage/exports/close", KEY_FUNC, elektraMmapstorageClose, KEY_END),
-			keyNew ("system/elektra/modules/mmapstorage/exports/get", KEY_FUNC, elektraMmapstorageGet, KEY_END),
-			keyNew ("system/elektra/modules/mmapstorage/exports/set", KEY_FUNC, elektraMmapstorageSet, KEY_END),
-#include ELEKTRA_README (mmapstorage)
-			keyNew ("system/elektra/modules/mmapstorage/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
-		ksAppend (ks, contract);
+		keyDel (root);
+		KeySet * contract =
+#include "contract.h"
+			ksAppend (ks, contract);
 		ksDel (contract);
-
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
+	keyDel (root);
 
 	KeySet * mappedFiles = (KeySet *) elektraPluginGetData (handle);
 	Key * found = ksLookup (mappedFiles, parentKey, 0);
@@ -1226,7 +1222,7 @@ error:
  * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if the file was written successfully.
  * @retval ELEKTRA_PLUGIN_STATUS_ERROR if any error occured.
  */
-int elektraMmapstorageSet (Plugin * handle, KeySet * ks, Key * parentKey)
+int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, set) (Plugin * handle, KeySet * ks, Key * parentKey)
 {
 	// set all keys
 	int errnosave = errno;
@@ -1249,7 +1245,7 @@ int elektraMmapstorageSet (Plugin * handle, KeySet * ks, Key * parentKey)
 		goto error;
 	}
 
-	dynArray = elektraMmapDynArrayNew ();
+	dynArray = ELEKTRA_PLUGIN_FUNCTION (mmapstorage, dynArrayNew) ();
 
 	MmapHeader mmapHeader;
 	MmapMetaData mmapMetaData;
@@ -1292,7 +1288,7 @@ int elektraMmapstorageSet (Plugin * handle, KeySet * ks, Key * parentKey)
 		goto error;
 	}
 
-	elektraMmapDynArrayDelete (dynArray);
+	ELEKTRA_PLUGIN_FUNCTION (mmapstorage, dynArrayDelete) (dynArray);
 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 
@@ -1305,7 +1301,7 @@ error:
 
 	if (mappedRegion != MAP_FAILED) munmap (mappedRegion, mmapHeader.allocSize);
 	if (fp) fclose (fp);
-	elektraMmapDynArrayDelete (dynArray);
+	ELEKTRA_PLUGIN_FUNCTION (mmapstorage, dynArrayDelete) (dynArray);
 
 	errno = errnosave;
 	return ELEKTRA_PLUGIN_STATUS_ERROR;
@@ -1314,10 +1310,10 @@ error:
 Plugin * ELEKTRA_PLUGIN_EXPORT (mmapstorage)
 {
 	// clang-format off
-	return elektraPluginExport ("mmapstorage",
-		ELEKTRA_PLUGIN_OPEN,	&elektraMmapstorageOpen,
-		ELEKTRA_PLUGIN_CLOSE,	&elektraMmapstorageClose,
-		ELEKTRA_PLUGIN_GET,	&elektraMmapstorageGet,
-		ELEKTRA_PLUGIN_SET,	&elektraMmapstorageSet,
+	return elektraPluginExport (ELEKTRA_PLUGIN_NAME,
+		ELEKTRA_PLUGIN_OPEN,	&ELEKTRA_PLUGIN_FUNCTION(mmapstorage, open),
+		ELEKTRA_PLUGIN_CLOSE,	&ELEKTRA_PLUGIN_FUNCTION(mmapstorage, close),
+		ELEKTRA_PLUGIN_GET,	&ELEKTRA_PLUGIN_FUNCTION(mmapstorage, get),
+		ELEKTRA_PLUGIN_SET,	&ELEKTRA_PLUGIN_FUNCTION(mmapstorage, set),
 		ELEKTRA_PLUGIN_END);
 }

@@ -12,12 +12,12 @@
 #include <benchmarks.h>
 #include <tests.h>
 
-#define NUM_PLUGINS 2
+#define NUM_PLUGINS 3
 #define NUM_RUNS 7
 
 KeySet * modules[NUM_PLUGINS];
 Plugin * plugins[NUM_PLUGINS];
-char * pluginNames[] = { "mmapstorage", "dump" };
+char * pluginNames[] = { "dump", "mmapstorage_crc", "mmapstorage" };
 
 char * tmpfilename;
 char * tempHome;

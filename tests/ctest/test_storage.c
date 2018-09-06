@@ -19,8 +19,8 @@
 #define TEST_ROOT_KEY "user/tests/storage"
 
 // below are the plugins suggested for testing, but only compiled plugins are tested
-#define NUM_PLUGINS_SUGGESTED 2
-static const char * pluginsSuggested[] = { "mmapstorage",
+#define NUM_PLUGINS_SUGGESTED 3
+static const char * pluginsSuggested[] = { "mmapstorage_crc", "mmapstorage",
 					   "dump" }; // remember to adjust NUM_PLUGINS_SUGGESTED if you add/remove a storage plugin
 
 // below is the list of available plugins truly tested.
