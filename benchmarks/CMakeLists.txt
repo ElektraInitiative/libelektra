@@ -4,7 +4,7 @@ add_headers (HDR_FILES)
 
 macro (do_benchmark source)
 	include_directories ("${CMAKE_CURRENT_SOURCE_DIR}")
-	set (SOURCES ${HDR_FILES} $<TARGET_OBJECTS:cframework> benchmarks.c benchmarks.h ${source}.c)
+	set (SOURCES ${HDR_FILES} ${ADDITIONAL_SOURCES} benchmarks.c benchmarks.h ${source}.c)
 	add_executable (benchmark_${source} ${SOURCES})
 	add_dependencies (benchmark_${source} kdberrors_generated)
 
@@ -32,6 +32,7 @@ do_benchmark (createkeys)
 # exclude storage benchmark from mingw
 if (NOT WIN32)
 	include_directories ("${CMAKE_SOURCE_DIR}/tests/cframework")
+	set (ADDITIONAL_SOURCES $<TARGET_OBJECTS:cframework>)
 	do_benchmark (storage)
 endif (NOT WIN32)
 
