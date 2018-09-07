@@ -11,8 +11,6 @@
 
 #include <kdbprivate.h>
 
-#include <sys/types.h> // size_t
-
 struct _dynArray
 {
 	size_t size;

@@ -3,6 +3,13 @@
  *
  * @brief Source for DynArray, a simple dynamic array for meta-key deduplication.
  *
+ * The DynArray is used to store pointers of meta-keys. The dynArrayFindOrInsert function
+ * searches for a pointer in the structure. If it is not yet in the array, it will be inserted.
+ * If the underlying array is too small, it is resized such that it can accomodate further elements.
+ * The dynArrayFind function only searches for elements.
+ *
+ * The mmapstorage plugin uses the DynArray to deduplicate meta-keys.
+ *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
@@ -13,6 +20,8 @@
 
 /* -- DynArray Implementation ----------------------------------------------------------------------------------------------------------- */
 
+#define ELEKTRA_MMAP_DYNARRAY_MINSIZE (8)
+
 /**
  * @brief Allocator for DynArray.
  *
@@ -21,10 +30,10 @@
 DynArray * ELEKTRA_PLUGIN_FUNCTION (mmapstorage, dynArrayNew) (void)
 {
 	DynArray * dynArray = elektraCalloc (sizeof (DynArray));
-	dynArray->keyArray = elektraCalloc (sizeof (Key *) * 8);
+	dynArray->keyArray = elektraCalloc (sizeof (Key *) * ELEKTRA_MMAP_DYNARRAY_MINSIZE);
 	dynArray->mappedKeyArray = 0;
 	dynArray->size = 0;
-	dynArray->alloc = 8;
+	dynArray->alloc = ELEKTRA_MMAP_DYNARRAY_MINSIZE;
 	return dynArray;
 }
 
@@ -64,7 +73,6 @@ int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, dynArrayFindOrInsert) (Key * key, DynA
 {
 	size_t l = 0;
 	size_t h = dynArray->size;
-	size_t m;
 	ELEKTRA_LOG_DEBUG ("l: %zu", l);
 	ELEKTRA_LOG_DEBUG ("h: %zu", h);
 	ELEKTRA_LOG_DEBUG ("dynArray->size: %zu", dynArray->size);
@@ -72,7 +80,7 @@ int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, dynArrayFindOrInsert) (Key * key, DynA
 
 	while (l < h)
 	{
-		m = (l + h) >> 1;
+		size_t m = (l + h) >> 1;
 		ELEKTRA_LOG_DEBUG ("m: %zu", m);
 
 		if (dynArray->keyArray[m] > key)
@@ -123,7 +131,6 @@ ssize_t ELEKTRA_PLUGIN_FUNCTION (mmapstorage, dynArrayFind) (Key * key, DynArray
 {
 	size_t l = 0;
 	size_t h = dynArray->size;
-	size_t m;
 	ELEKTRA_LOG_DEBUG ("l: %zu", l);
 	ELEKTRA_LOG_DEBUG ("h: %zu", h);
 	ELEKTRA_LOG_DEBUG ("dynArray->size: %zu", dynArray->size);
@@ -131,7 +138,7 @@ ssize_t ELEKTRA_PLUGIN_FUNCTION (mmapstorage, dynArrayFind) (Key * key, DynArray
 
 	while (l < h)
 	{
-		m = (l + h) >> 1;
+		size_t m = (l + h) >> 1;
 		ELEKTRA_LOG_DEBUG ("m: %zu", m);
 
 		if (dynArray->keyArray[m] > key)

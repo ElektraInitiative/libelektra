@@ -13,6 +13,7 @@
 #include "mmapstorage.h"
 #include "dynarray.h"
 
+#include <kdbassert.h>
 #include <kdberrors.h>
 #include <kdbhelper.h>
 #include <kdblogger.h>
@@ -22,7 +23,6 @@
 #include "kdbconfig.h"
 #endif
 
-#include <assert.h>
 #include <errno.h>
 #include <limits.h>    // SSIZE_MAX
 #include <stdint.h>    // uintN_t, uintptr_t
