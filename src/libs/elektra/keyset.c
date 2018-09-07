@@ -427,7 +427,7 @@ int ksDel (KeySet * ks)
 	{
 		set_bit (ks->mmapMetaData->flags, MMAP_FLAG_DELETED);
 	}
-	if (test_bit (ks->flags, KS_FLAG_MMAP_STRUCT) != KS_FLAG_MMAP_STRUCT)
+	if (!test_bit (ks->flags, KS_FLAG_MMAP_STRUCT))
 	{
 		elektraFree (ks);
 	}
@@ -2550,7 +2550,7 @@ int ksResize (KeySet * ks, size_t alloc)
 	}
 	ks->alloc = alloc;
 
-	if (test_bit (ks->flags, KS_FLAG_MMAP_ARRAY) == KS_FLAG_MMAP_ARRAY)
+	if (test_bit (ks->flags, KS_FLAG_MMAP_ARRAY))
 	{
 		// need to move the ks->array out of mmap
 		Key ** new = elektraMalloc (sizeof (struct _Key *) * ks->alloc);
@@ -2645,16 +2645,11 @@ int ksClose (KeySet * ks)
 		keyDel (k);
 	}
 
-	int arrayInMmap = test_bit (ks->flags, KS_FLAG_MMAP_ARRAY) == KS_FLAG_MMAP_ARRAY;
-	if (ks->array && !arrayInMmap)
+	if (ks->array && !test_bit (ks->flags, KS_FLAG_MMAP_ARRAY))
 	{
 		elektraFree (ks->array);
 	}
-
-	if (arrayInMmap)
-	{
-		clear_bit (ks->flags, KS_FLAG_MMAP_ARRAY);
-	}
+	clear_bit (ks->flags, KS_FLAG_MMAP_ARRAY);
 
 	ks->array = 0;
 	ks->alloc = 0;

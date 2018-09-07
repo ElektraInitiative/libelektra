@@ -866,7 +866,7 @@ static KeySet * copyKeySet (KeySet * toCopy, MmapMetaData * mmapMetaData)
 		return 0;
 	}
 
-	if (test_bit (mmapMetaData->flags, MMAP_FLAG_DELETED) == MMAP_FLAG_DELETED)
+	if (test_bit (mmapMetaData->flags, MMAP_FLAG_DELETED))
 	{
 		return 0;
 	}
