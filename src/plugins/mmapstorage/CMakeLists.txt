@@ -23,7 +23,7 @@ add_plugin (mmapstorage_crc
 	    COMPILE_DEFINITIONS ELEKTRA_PLUGIN_NAME=\"mmapstorage_crc\"
 				ELEKTRA_PLUGIN_NAME_C=mmapstorage
 				ELEKTRA_VARIANT=crc
-				ENABLE_MMAP_CHECKSUM)
+				ELEKTRA_MMAP_CHECKSUM)
 
 # Plugin variant: mmapstorage
 add_plugin (mmapstorage

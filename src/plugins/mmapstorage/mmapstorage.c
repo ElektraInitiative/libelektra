@@ -35,7 +35,7 @@
 #include <sys/types.h> // ftruncate (), size_t
 #include <unistd.h>    // close(), ftruncate()
 
-#ifdef ENABLE_MMAP_CHECKSUM
+#ifdef ELEKTRA_MMAP_CHECKSUM
 #include <zlib.h> // crc32()
 #endif
 
@@ -371,7 +371,7 @@ static int verifyMagicData (char * mappedRegion)
 	return 0;
 }
 
-#ifdef ENABLE_MMAP_CHECKSUM
+#ifdef ELEKTRA_MMAP_CHECKSUM
 /**
  * @brief Verify checksum of the critical mmap data.
  *
@@ -704,7 +704,7 @@ static void copyKeySetToMmap (char * dest, KeySet * keySet, MmapHeader * mmapHea
 #endif
 
 	memcpy ((dest + SIZEOF_MMAPHEADER), mmapMetaData, SIZEOF_MMAPMETADATA);
-#ifdef ENABLE_MMAP_CHECKSUM
+#ifdef ELEKTRA_MMAP_CHECKSUM
 	uint32_t checksum = checksum = crc32 (0L, Z_NULL, 0);
 	checksum = crc32 (checksum, (const unsigned char *) (dest + SIZEOF_MMAPHEADER), mmapHeader->cksumSize);
 	mmapHeader->checksum = checksum;
@@ -1164,7 +1164,7 @@ int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, get) (Plugin * handle, KeySet * ks, Ke
 		goto error;
 	}
 
-#ifdef ENABLE_MMAP_CHECKSUM
+#ifdef ELEKTRA_MMAP_CHECKSUM
 	if (verifyChecksum (mappedRegion, &mmapHeader) != 0)
 	{
 		ELEKTRA_LOG_WARNING ("checksum failed");
