@@ -16,8 +16,7 @@
 #include <sys/mman.h>  // mmap()
 #include <sys/stat.h>  // stat(), chmod()
 #include <sys/types.h> // ftruncate ()
-#include <tests.h>
-#include <unistd.h> // ftruncate(), pipe()
+#include <unistd.h>    // ftruncate(), pipe()
 
 #include <kdbconfig.h>
 #include <kdbprivate.h>
@@ -800,7 +799,7 @@ static void clearStorage (const char * tmpFile)
 
 /* -- DynArray Tests -------------------------------------------------------------------------------------------------------------------- */
 
-int cmpfunc (const void * a, const void * b)
+static int cmpfunc (const void * a, const void * b)
 {
 	return (*(int *) a - *(int *) b);
 }

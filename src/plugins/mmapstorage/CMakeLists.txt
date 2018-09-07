@@ -20,6 +20,7 @@ add_plugin (mmapstorage_crc
 	    INCLUDE_DIRECTORIES ${ZLIB_INCLUDE_DIRS}
 	    LINK_LIBRARIES ${ZLIB_LIBRARIES}
 	    LINK_ELEKTRA elektra-core
+	    ADD_TEST
 	    COMPILE_DEFINITIONS ELEKTRA_PLUGIN_NAME=\"mmapstorage_crc\"
 				ELEKTRA_PLUGIN_NAME_C=mmapstorage
 				ELEKTRA_VARIANT=crc

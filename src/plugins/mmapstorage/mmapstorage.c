@@ -49,6 +49,8 @@
 #define SIZEOF_MMAPFOOTER (sizeof (MmapFooter))
 #define SIZEOF_ADDR_STRING (19) // format: 0xADDR -> ADDR in hex, for 64bit addr: 2 bytes (0x) + 16 bytes (ADDR) + 1 byte (ending null)
 
+#define ELEKTRA_MMAP_CHECKSUM_ON (1)
+
 struct _mmapAddr
 {
 	KeySet * const ksPtr;
@@ -170,6 +172,9 @@ static void initHeader (MmapHeader * mmapHeader)
 	memset (mmapHeader, 0, SIZEOF_MMAPHEADER);
 	mmapHeader->mmapMagicNumber = ELEKTRA_MAGIC_MMAP_NUMBER;
 	mmapHeader->formatVersion = ELEKTRA_MMAP_FORMAT_VERSION;
+#ifdef ELEKTRA_MMAP_CHECKSUM
+	mmapHeader->formatFlags = ELEKTRA_MMAP_CHECKSUM_ON;
+#endif
 }
 
 /**
@@ -385,6 +390,9 @@ static int verifyMagicData (char * mappedRegion)
  */
 static int verifyChecksum (char * mappedRegion, MmapHeader * mmapHeader)
 {
+	// if file was written without checksum, we skip the check
+	if (!test_bit (mmapHeader->formatFlags, ELEKTRA_MMAP_CHECKSUM_ON)) return 0;
+
 	uint32_t checksum = crc32 (0L, Z_NULL, 0);
 	checksum = crc32 (checksum, (const unsigned char *) (mappedRegion + SIZEOF_MMAPHEADER), mmapHeader->cksumSize);
 
