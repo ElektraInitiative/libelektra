@@ -4,8 +4,7 @@
 #      (and can be executed using `kdb run_all`)
 #      you will find it in tests/shell/run_all.sh
 
-if [ $# -ne 1 ]
-then
+if [ $# -ne 1 ]; then
 	echo "No build config. This script is supposed to run by using make run_all"
 	exit 1
 fi

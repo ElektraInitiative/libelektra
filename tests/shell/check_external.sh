@@ -4,8 +4,7 @@ echo
 echo ELEKTRA CHECK EXTERNAL
 echo
 
-if pkg-config elektra
-then
+if pkg-config elektra; then
 	echo "Installed Elektra will be used"
 	echo "We are assuming it is configured similarly"
 	echo "The test will fail if installed version does not use"
@@ -15,15 +14,13 @@ else
 	exit
 fi
 
-
 check_version
 
 EXTERNAL_FOLDER="@CMAKE_SOURCE_DIR@/examples/external"
 
 set -x
 
-do_tests()
-{
+do_tests() {
 	SKEY=system/test/myapp/key
 	UKEY=user/test/myapp/key
 
@@ -31,7 +28,7 @@ do_tests()
 	"$KDB" rm "$UKEY"
 
 	VALUE="Hello World"
-	"$KDB" set "$SKEY"  "$VALUE"
+	"$KDB" set "$SKEY" "$VALUE"
 	succeed_if "could not set key $SKEY"
 
 	./application
@@ -39,7 +36,7 @@ do_tests()
 	succeed_if "application did not output $VALUE"
 
 	VALUE="More world"
-	"$KDB" set "$UKEY"  "$VALUE"
+	"$KDB" set "$UKEY" "$VALUE"
 	succeed_if "could not set key $SKEY"
 
 	./application
@@ -49,8 +46,6 @@ do_tests()
 	"$KDB" rm "$SKEY"
 	"$KDB" rm "$UKEY"
 }
-
-
 
 echo "Testing build with cmake"
 
@@ -69,8 +64,6 @@ do_tests
 
 cd ..
 rm -r build
-
-
 
 echo "Testing build with pkgconfig"
 

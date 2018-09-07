@@ -6,6 +6,6 @@ SCRIPTS_DIR=$(dirname "$0")
 XDG_RESOLVER="resolver_mf_xp_x"
 
 cd "$BUILD"
-cmake	-DPLUGINS="$XDG_RESOLVER;dump;sync;ini;dini;base64;spec;error;list;timeofday;profile;mathcheck;tracer;hosts;network;glob" \
+cmake -DPLUGINS="$XDG_RESOLVER;dump;sync;ini;dini;base64;spec;error;list;timeofday;profile;mathcheck;tracer;hosts;network;glob" \
 	-DKDB_DEFAULT_RESOLVER="$XDG_RESOLVER" \
 	$*
