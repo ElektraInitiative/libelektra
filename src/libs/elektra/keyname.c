@@ -833,6 +833,7 @@ ssize_t keyGetBaseName (const Key * key, char * returned, size_t maxSize)
  * @retval -1 if the key had no name
  * @retval -1 on NULL pointers
  * @retval -1 if key was inserted to a keyset before
+ * @retval -1 on allocation errors
  * @ingroup keyname
  *
  */
@@ -863,7 +864,7 @@ ssize_t keyAddBaseName (Key * key, const char * baseName)
 	}
 	else
 	{
-		elektraRealloc ((void **) &key->key, key->keySize * 2);
+		if (-1 == elektraRealloc ((void **) &key->key, key->keySize * 2)) return -1;
 	}
 
 	if (!key->key)
@@ -982,7 +983,7 @@ ssize_t keyAddName (Key * key, const char * newName)
 	}
 	else
 	{
-		elektraRealloc ((void **) &key->key, newSize * 2);
+		if (-1 == elektraRealloc ((void **) &key->key, newSize * 2)) return -1;
 	}
 
 	if (!key->key) return -1;
@@ -1079,6 +1080,7 @@ ssize_t keyAddName (Key * key, const char * newName)
  * @return the size in bytes of the new key name
  * @retval -1 on NULL pointers in key
  * @retval -1 if key was inserted to a keyset before
+ * @retval -1 on allocation errors
  * @ingroup keyname
  */
 ssize_t keySetBaseName (Key * key, const char * baseName)
@@ -1128,7 +1130,7 @@ ssize_t keySetBaseName (Key * key, const char * baseName)
 	}
 	else
 	{
-		elektraRealloc ((void **) &key->key, (key->keySize + sizeEscaped) * 2);
+		if (-1 == elektraRealloc ((void **) &key->key, (key->keySize + sizeEscaped) * 2)) return -1;
 	}
 
 	if (!key->key)
