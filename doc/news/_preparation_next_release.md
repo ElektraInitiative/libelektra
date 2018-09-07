@@ -185,12 +185,13 @@ you up to date with the multi-language support provided by Elektra.
 - We restructured the code of the [CMake module](https://master.libelektra.org/cmake/Modules/FindHaskell.cmake) we use to detect Haskell
   tools . *(René Schwaiger)*
 - The CMake configuration step now displays less debug messages about found libraries. *(René Schwaiger)*
+- Building the Haskell binding should now work again. *(René Schwaiger)*
 
 ### Docker
 
 - <<TODO>>
 - The docker images used by our build system are now available to download from
-    our systems without authentification.
+    our systems without authentication.
     Try it out and list available images via
         `docker run --rm anoxis/registry-cli -r https://hub-public.libelektra.org` .
     Afterwards pull your desired image as you would do from any public registry:
