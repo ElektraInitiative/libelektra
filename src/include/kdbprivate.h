@@ -23,7 +23,6 @@
 #include <kdbopmphm.h>
 #endif
 #include <kdbglobal.h>
-#include <kdbmmap.h>
 
 #include <limits.h>
 
@@ -57,6 +56,12 @@
  * to which mountpoint. */
 #define KDB_SYSTEM_ELEKTRA "system/elektra"
 
+/** Magic number used in mmap format */
+#define ELEKTRA_MAGIC_MMAP_NUMBER (0x0A6172746B656C45)
+
+/** Mmap format version */
+#define ELEKTRA_MMAP_FORMAT_VERSION (1)
+
 
 #ifdef __cplusplus
 namespace ckdb
@@ -67,6 +72,11 @@ extern "C" {
 typedef struct _Trie Trie;
 typedef struct _Split Split;
 typedef struct _Backend Backend;
+
+/* Header, footer and metadata needed for mmap file format */
+typedef struct _mmapHeader MmapHeader;
+typedef struct _mmapMetaData MmapMetaData;
+typedef struct _mmapFooter MmapFooter;
 
 /* These define the type for pointers to all the kdb functions */
 typedef int (*kdbOpenPtr) (Plugin *, Key * errorKey);
@@ -173,6 +183,15 @@ typedef enum {
 		 It prevents erroneous free() calls on these arrays. */
 } ksflag_t;
 
+/**
+ * Mmap Flags.
+ *
+ * Control flags needed for mmap
+ */
+typedef enum {
+	MMAP_FLAG_DELETED = 1, /*!<
+		 KeySet was deleted, no need to unlink. */
+} mmapflag_t;
 
 /**
  * The private Key struct.
@@ -461,6 +480,52 @@ struct _Split
 				Is either the mountpoint of the backend
 				or "user", "system", "spec" for the split root/cascading backends */
 	splitflag_t * syncbits; /*!< Bits for various options, see #splitflag_t for documentation */
+};
+
+
+/**
+ * Mmap information header
+ *
+ * shall contain only fixed-width types
+ */
+struct _mmapHeader
+{
+	// clang-format off
+	uint64_t mmapMagicNumber;	/**<Magic number for consistency check */
+	uint64_t allocSize;		/**<Size of the complete allocation in bytes */
+	uint64_t cksumSize;		/**<Size of the critical data for checksum (structs, pointers, sizes)*/
+
+	uint32_t checksum;		/**<Checksum of the data */
+	uint8_t formatVersion;		/**<Mmap format version */
+	// clang-format on
+};
+
+/**
+ * Mmap meta-data
+ */
+struct _mmapMetaData
+{
+	// clang-format off
+	char * destAddr;		/**<Base pointer to allocated destination */
+
+	size_t numKeySets;		/**<Number of KeySets inlcuding meta KS */
+	size_t ksAlloc;			/**<Sum of all KeySet->alloc sizes */
+	size_t numKeys;			/**<Number of Keys including meta Keys */
+
+	mmapflag_t flags;		/**<Control flags for mmap */
+	// clang-format on
+};
+
+/**
+ * Mmap information footer
+ *
+ * shall contain only fixed-width types
+ */
+struct _mmapFooter
+{
+	// clang-format off
+	uint64_t mmapMagicNumber;	/**<Magic number for consistency check */
+	// clang-format on
 };
 
 // clang-format on

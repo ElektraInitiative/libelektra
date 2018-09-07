@@ -16,7 +16,6 @@
 #include <kdberrors.h>
 #include <kdbhelper.h>
 #include <kdblogger.h>
-#include <kdbmmap.h>
 #include <kdbprivate.h>
 
 #ifdef HAVE_KDBCONFIG_H

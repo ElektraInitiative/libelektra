@@ -20,7 +20,6 @@
 #include <unistd.h> // ftruncate(), pipe()
 
 #include <kdbconfig.h>
-#include <kdbmmap.h>
 #include <kdbprivate.h>
 
 #include <tests_plugin.h>
