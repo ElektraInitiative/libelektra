@@ -68,7 +68,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 ### mmapstorage
 
-- Added a new, binary and fast storage plugin called [mmapstorage](https://libelektra.org/plugins/mmapstorage).
+- Added a new, binary and fast storage plugin called [`mmapstorage`](https://libelektra.org/plugins/mmapstorage).
   It leverages the `mmap()` syscall and supports full Elektra semantics. *(Mihael Pranjić)*
 
 
@@ -150,7 +150,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Tools
 
-- <<TODO>>
+- Added benchmarks for storage plugins. The currently benchmarked plugins are `dump` and `mmapstorage`.  *(Mihael Pranjić)*
 - <<TODO>>
 - <<TODO>>
 
@@ -184,7 +184,7 @@ you up to date with the multi-language support provided by Elektra.
 - The test `testscr_check_bashisms` does not print warnings about skipped files anymore. *(René Schwaiger)*
 -  We added a [Markdown Shell Recorder][] test for the [`shell` plugin ](https://www.libelektra.org/plugins/shell). *(René Schwaiger)*
 - Added many storage plugin tests. Most tests use the keyset, key name and value APIs.
-  Currently, the tests are only active for dump and mmapstorage. *(Mihael Pranjić)*
+  Currently, the tests are only active for `dump` and `mmapstorage`. *(Mihael Pranjić)*
 - <<TODO>>
 
 [Markdown Shell Recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
@@ -224,12 +224,14 @@ you up to date with the multi-language support provided by Elektra.
 - The build jobs now print less non-relevant output. *(René Schwaiger)*
 - Build Artifacts for all PR's to detect issues before merging *(Lukas Winkler)*
 - Stricter removal of temporary docker images on docker nodes *(Lukas Winkler)*
+- Added jenkins build jobs `debian-stable-full-mmap` and `debian-stable-full-mmap-asan`
+  with `mmapstorage` as the default storage. *(Mihael Pranjić)*
 
 
 ### Travis
 
 - Travis now also checks the code for memory leaks in the build job `🍏 Clang ASAN`. *(René Schwaiger)*
-- <<TODO>>
+- Added travis build job `🍏 mmap` on macOS with `mmapstorage` as the default storage. *(Mihael Pranjić)*
 - <<TODO>>
 
 
