@@ -1,15 +1,10 @@
 include (LibAddPlugin)
 
 if (DEPENDENCY_PHASE)
-	# Plugin variant: mmapstorage_crc
-	set (plugin mmapstorage_crc)
 	find_package (ZLIB)
 	if (NOT ZLIB_FOUND)
-		remove_plugin (${plugin} "zlib development files not found")
+		remove_plugin (mmapstorage_crc "zlib development files not found")
 	endif ()
-
-	# clean up for dependency phase
-	unset (plugin)
 endif (DEPENDENCY_PHASE)
 
 set (MMAPSTORAGE_SOURCES dynarray.h dynarray.c mmapstorage.h mmapstorage.c)
