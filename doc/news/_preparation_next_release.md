@@ -185,6 +185,7 @@ you up to date with the multi-language support provided by Elektra.
 - We restructured the code of the [CMake module](https://master.libelektra.org/cmake/Modules/FindHaskell.cmake) we use to detect Haskell
   tools . *(René Schwaiger)*
 - The CMake configuration step now displays less debug messages about found libraries. *(René Schwaiger)*
+- Building the Haskell binding should now work again. *(René Schwaiger)*
 
 ### Docker
 
