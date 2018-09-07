@@ -191,7 +191,7 @@ you up to date with the multi-language support provided by Elektra.
 
 - <<TODO>>
 - The docker images used by our build system are now available to download from
-    our systems without authentification.
+    our systems without authentication.
     Try it out and list available images via
         `docker run --rm anoxis/registry-cli -r https://hub-public.libelektra.org` .
     Afterwards pull your desired image as you would do from any public registry:
