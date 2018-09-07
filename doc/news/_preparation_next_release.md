@@ -211,6 +211,8 @@ you up to date with the multi-language support provided by Elektra.
 - The command [`reformat-source`](https://master.libelektra.org/scripts/reformat-source) now displays information about the installed
   version of `clang-format`, if it is unable to locate a supported version of the tool. *(René Schwaiger)*
 - We now also check the POSIX compatibility of our scripts with [`shfmt`](https://github.com/mvdan/sh). *(René Schwaiger)*
+- The new command [`reformat-shfmt`](https://master.libelektra.org/scripts/reformat-shfmt) reformats Shell scripts using the tool
+  [`shfmt`](https://github.com/mvdan/sh). *(René Schwaiger)*
 
 
 ## Documentation
