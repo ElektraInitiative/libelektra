@@ -26,7 +26,7 @@
 #include <errno.h>
 #include <limits.h>    // SSIZE_MAX
 #include <stdint.h>    // uintN_t, uintptr_t
-#include <stdio.h>     // fopen(), fileno(), fread()
+#include <stdio.h>     // fopen(), fileno()
 #include <stdlib.h>    // strtol()
 #include <string.h>    // memcmp()
 #include <sys/mman.h>  // mmap()
@@ -43,10 +43,12 @@
 #define SIZEOF_KEY (sizeof (Key))
 #define SIZEOF_KEY_PTR (sizeof (Key *))
 #define SIZEOF_KEYSET (sizeof (KeySet))
-#define SIZEOF_KEYSET_PTR (sizeof (KeySet *))
 #define SIZEOF_MMAPHEADER (sizeof (MmapHeader))
 #define SIZEOF_MMAPMETADATA (sizeof (MmapMetaData))
 #define SIZEOF_MMAPFOOTER (sizeof (MmapFooter))
+
+/** Minimum size (lower bound) of mapped region (header, metadata, footer) */
+#define ELEKTRA_MMAP_MINSIZE (SIZEOF_MMAPHEADER + SIZEOF_MMAPMETADATA + SIZEOF_MMAPFOOTER)
 
 /** Size to store a 64-bit (max.) address.
  * format: 0xADDR -> ADDR in hex, for 64bit addr: 2 bytes (0x) + 16 bytes (ADDR) + 1 byte (ending null)
@@ -216,20 +218,15 @@ static void initFooter (MmapFooter * mmapFooter)
  * @param mmapHeader buffer where the MmapHeader is stored
  * @param mmapMetaData buffer where the MmapMetaData is stored
  *
- * @retval -1 if fread() failed, magic number or format version was wrong
+ * @retval -1 if magic number or format version was wrong
  * @retval 0 if read succeeded, the magic number was read correctly and the format version matched
  */
-static int readHeader (FILE * fp, MmapHeader * mmapHeader, MmapMetaData * mmapMetaData)
+static int readHeader (const char * mappedRegion, MmapHeader ** mmapHeader, MmapMetaData ** mmapMetaData)
 {
-	memset (mmapHeader, 0, SIZEOF_MMAPHEADER);
-	memset (mmapMetaData, 0, SIZEOF_MMAPMETADATA);
+	*mmapHeader = (MmapHeader *) mappedRegion;
+	*mmapMetaData = (MmapMetaData *) (mappedRegion + SIZEOF_MMAPHEADER);
 
-	if (fread (mmapHeader, SIZEOF_MMAPHEADER, 1, fp) != 1 || fread (mmapMetaData, SIZEOF_MMAPMETADATA, 1, fp) != 1)
-	{
-		return -1;
-	}
-
-	if (mmapHeader->mmapMagicNumber == ELEKTRA_MAGIC_MMAP_NUMBER && mmapHeader->formatVersion == ELEKTRA_MMAP_FORMAT_VERSION)
+	if ((*mmapHeader)->mmapMagicNumber == ELEKTRA_MAGIC_MMAP_NUMBER && (*mmapHeader)->formatVersion == ELEKTRA_MMAP_FORMAT_VERSION)
 	{
 		return 0;
 	}
@@ -1151,31 +1148,36 @@ int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, get) (Plugin * handle, KeySet * ks, Ke
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
-	MmapHeader mmapHeader;
-	MmapMetaData mmapMetaData;
-	if (readHeader (fp, &mmapHeader, &mmapMetaData) == -1)
+	if (sbuf.st_size < 0 || (size_t) sbuf.st_size < ELEKTRA_MMAP_MINSIZE)
 	{
-		// config file was corrupt
-		ELEKTRA_LOG_WARNING ("could not read mmap information header");
-		goto error;
-	}
-
-	if (sbuf.st_size < 0 || (size_t) sbuf.st_size != mmapHeader.allocSize)
-	{
-		// config file size mismatch
-		ELEKTRA_LOG_WARNING ("mmap file size differs from metadata, file was altered");
+		// file is smaller than minimum size
 		goto error;
 	}
 
 	mappedRegion = mmapFile ((void *) 0, fp, sbuf.st_size, MAP_PRIVATE, parentKey);
-
 	if (mappedRegion == MAP_FAILED)
 	{
 		ELEKTRA_LOG_WARNING ("mappedRegion == MAP_FAILED");
 		goto error;
 	}
 
-	if (readFooter (mappedRegion, &mmapHeader) == -1)
+	MmapHeader * mmapHeader;
+	MmapMetaData * mmapMetaData;
+	if (readHeader (mappedRegion, &mmapHeader, &mmapMetaData) == -1)
+	{
+		// config file was corrupt
+		ELEKTRA_LOG_WARNING ("could not read mmap information header");
+		goto error;
+	}
+
+	if (sbuf.st_size < 0 || (size_t) sbuf.st_size != mmapHeader->allocSize)
+	{
+		// config file size mismatch
+		ELEKTRA_LOG_WARNING ("mmap file size differs from metadata, file was altered");
+		goto error;
+	}
+
+	if (readFooter (mappedRegion, mmapHeader) == -1)
 	{
 		// config file was corrupt/truncated
 		ELEKTRA_LOG_WARNING ("could not read mmap information footer: file was altered");
@@ -1183,7 +1185,7 @@ int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, get) (Plugin * handle, KeySet * ks, Ke
 	}
 
 #ifdef ELEKTRA_MMAP_CHECKSUM
-	if (verifyChecksum (mappedRegion, &mmapHeader) != 0)
+	if (verifyChecksum (mappedRegion, mmapHeader) != 0)
 	{
 		ELEKTRA_LOG_WARNING ("checksum failed");
 		goto error;
@@ -1198,7 +1200,7 @@ int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, get) (Plugin * handle, KeySet * ks, Ke
 	}
 
 	ksClose (ks);
-	updatePointers (&mmapMetaData, mappedRegion);
+	updatePointers (mmapMetaData, mappedRegion);
 	mmapToKeySet (mappedRegion, ks);
 
 	if (fclose (fp) != 0)
