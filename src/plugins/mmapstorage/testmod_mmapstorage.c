@@ -358,7 +358,7 @@ static void test_mmap_wrong_magic_keyset (const char * tmpFile)
 		fclose (fp);
 	}
 
-	KeySet * magicKs = (KeySet *) (mappedRegion + sizeof (MmapHeader) + sizeof (MmapMetaData));
+	KeySet * magicKs = (KeySet *) (mappedRegion + sizeof (MmapHeader));
 	magicKs->size = 1234; // magic keyset contains SIZE_MAX here
 
 	if (msync ((void *) mappedRegion, sbuf.st_size, MS_SYNC) != 0)

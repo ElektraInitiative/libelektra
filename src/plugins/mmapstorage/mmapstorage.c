@@ -47,8 +47,15 @@
 #define SIZEOF_MMAPMETADATA (sizeof (MmapMetaData))
 #define SIZEOF_MMAPFOOTER (sizeof (MmapFooter))
 
+#define OFFSET_MAGIC_KEYSET (SIZEOF_MMAPHEADER)
+#define OFFSET_MAGIC_KEY (OFFSET_MAGIC_KEYSET + SIZEOF_KEYSET)
+#define OFFSET_MAGIC_MMAPMETADATA (OFFSET_MAGIC_KEY + SIZEOF_KEY)
+
+#define OFFSET_REAL_MMAPMETADATA (OFFSET_MAGIC_MMAPMETADATA + SIZEOF_MMAPMETADATA)
+#define OFFSET_REAL_KEYSET (OFFSET_REAL_MMAPMETADATA + SIZEOF_MMAPMETADATA)
+
 /** Minimum size (lower bound) of mapped region (header, metadata, footer) */
-#define ELEKTRA_MMAP_MINSIZE (SIZEOF_MMAPHEADER + SIZEOF_MMAPMETADATA + SIZEOF_MMAPFOOTER)
+#define ELEKTRA_MMAP_MINSIZE (SIZEOF_MMAPHEADER + (SIZEOF_MMAPMETADATA * 2) + SIZEOF_KEYSET + SIZEOF_KEY + SIZEOF_MMAPFOOTER)
 
 /** Size to store a 64-bit (max.) address.
  * format: 0xADDR -> ADDR in hex, for 64bit addr: 2 bytes (0x) + 16 bytes (ADDR) + 1 byte (ending null)
@@ -57,6 +64,9 @@
 
 /** Flag for mmap file format. Defines whether file was written with checksum on or off. */
 #define ELEKTRA_MMAP_CHECKSUM_ON (1)
+
+/** Magic byte order marker, as used by UTF. */
+#define ELEKTRA_MMAP_MAGIC_BOM (0xFEFF)
 
 /**
  * Internal MmapAddr structure.
@@ -82,6 +92,7 @@ typedef struct _mmapAddr MmapAddr;
 
 static KeySet magicKeySet;
 static Key magicKey;
+static MmapMetaData magicMmapMetaData;
 
 
 /* -- File handling --------------------------------------------------------------------------------------------------------------------- */
@@ -226,7 +237,7 @@ static void initFooter (MmapFooter * mmapFooter)
 static int readHeader (const char * mappedRegion, MmapHeader ** mmapHeader, MmapMetaData ** mmapMetaData)
 {
 	*mmapHeader = (MmapHeader *) mappedRegion;
-	*mmapMetaData = (MmapMetaData *) (mappedRegion + SIZEOF_MMAPHEADER);
+	*mmapMetaData = (MmapMetaData *) (mappedRegion + OFFSET_REAL_MMAPMETADATA);
 
 	if ((*mmapHeader)->mmapMagicNumber == ELEKTRA_MAGIC_MMAP_NUMBER && (*mmapHeader)->formatVersion == ELEKTRA_MMAP_FORMAT_VERSION)
 	{
@@ -245,7 +256,7 @@ static int readHeader (const char * mappedRegion, MmapHeader ** mmapHeader, Mmap
  * @retval -1 if the magic number did not match
  * @retval 0 if the magic number matched
  */
-static int readFooter (char * mappedRegion, MmapHeader * mmapHeader)
+static int readFooter (const char * mappedRegion, MmapHeader * mmapHeader)
 {
 	MmapFooter * mmapFooter = (MmapFooter *) (mappedRegion + mmapHeader->allocSize - SIZEOF_MMAPFOOTER);
 
@@ -262,12 +273,14 @@ static int readFooter (char * mappedRegion, MmapHeader * mmapHeader)
  *
  * @param dest to write the data to.
  */
-static void writeMagicData (char * dest)
+static void writeMagicData (const char * mappedRegion)
 {
-	KeySet * destKeySet = (KeySet *) (dest + SIZEOF_MMAPHEADER + SIZEOF_MMAPMETADATA);
-	Key * keyPtr = (Key *) ((char *) destKeySet + SIZEOF_KEYSET);
+	KeySet * destKeySet = (KeySet *) (mappedRegion + OFFSET_MAGIC_KEYSET);
+	Key * keyPtr = (Key *) (mappedRegion + OFFSET_MAGIC_KEY);
+	MmapMetaData * mmapMetaData = (MmapMetaData *) (mappedRegion + OFFSET_MAGIC_MMAPMETADATA);
 	memcpy (destKeySet, &magicKeySet, SIZEOF_KEYSET);
 	memcpy (keyPtr, &magicKey, SIZEOF_KEY);
+	memcpy (mmapMetaData, &magicMmapMetaData, SIZEOF_MMAPMETADATA);
 }
 
 /* -- Verification Functions  ----------------------------------------------------------------------------------------------------------- */
@@ -307,9 +320,9 @@ static void initMagicKeySet (const uintptr_t magicNumber)
 	magicKeySet.cursor = (Key *) ~magicNumber;
 	magicKeySet.current = SIZE_MAX / 2;
 	magicKeySet.flags = KS_FLAG_MMAP_ARRAY | KS_FLAG_SYNC;
-	magicKeySet.mmapMetaData = (MmapMetaData *) 0xE1EF;
+	magicKeySet.mmapMetaData = (MmapMetaData *) ELEKTRA_MMAP_MAGIC_BOM;
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
-	magicKeySet.opmphm = (Opmphm *) 0xFFFE;
+	magicKeySet.opmphm = (Opmphm *) ELEKTRA_MMAP_MAGIC_BOM;
 #endif
 }
 
@@ -324,10 +337,24 @@ static void initMagicKey (const uintptr_t magicNumber)
 	magicKey.dataSize = SIZE_MAX;
 	magicKey.key = (char *) magicNumber;
 	magicKey.keySize = UINT16_MAX;
-	magicKey.keyUSize = 42;
+	magicKey.keyUSize = 0;
 	magicKey.flags = KEY_FLAG_MMAP_STRUCT | KEY_FLAG_MMAP_DATA | KEY_FLAG_MMAP_KEY | KEY_FLAG_SYNC;
 	magicKey.ksReference = SIZE_MAX / 2;
-	magicKey.meta = (KeySet *) 0xFFFE;
+	magicKey.meta = (KeySet *) ELEKTRA_MMAP_MAGIC_BOM;
+}
+
+/**
+ * @brief Magic MmapMetaData initializer.
+ *
+ * @param magicNumber to detect arbitrary byte-swaps
+ */
+static void initMagicMmapMetaData (const uintptr_t magicNumber)
+{
+	magicMmapMetaData.destAddr = (char *) magicNumber;
+	magicMmapMetaData.numKeySets = SIZE_MAX;
+	magicMmapMetaData.ksAlloc = 0;
+	magicMmapMetaData.numKeys = SIZE_MAX / 2;
+	magicMmapMetaData.flags = MMAP_FLAG_DELETED;
 }
 
 /**
@@ -335,15 +362,12 @@ static void initMagicKey (const uintptr_t magicNumber)
  *
  * @param ks keyset to verify
  *
- * @return 0 if magic KeySet is correct
+ * @retval 0 if magic KeySet is consistent
+ * @retval -1 if magic KeySet is inconsistent
  */
 static int verifyMagicKeySet (KeySet * ks)
 {
-	if (!ks)
-	{
-		return -1;
-	}
-
+	if (!ks) return -1;
 	return memcmp (ks, &magicKeySet, SIZEOF_KEYSET);
 }
 
@@ -352,16 +376,27 @@ static int verifyMagicKeySet (KeySet * ks)
  *
  * @param key to verify
  *
- * @return 0 if magic Key is correct
+ * @retval 0 if magic Key is consistent
+ * @retval -1 if magic Key is inconsistent
  */
 static int verifyMagicKey (Key * key)
 {
-	if (!key)
-	{
-		return -1;
-	}
-
+	if (!key) return -1;
 	return memcmp (key, &magicKey, SIZEOF_KEY);
+}
+
+/**
+ * @brief Verify the magic MmapMetaData.
+ *
+ * @param mmapMetaData to verify
+ *
+ * @retval 0 if magic MmapMetaData is consistent
+ * @retval -1 if magic MmapMetaData is inconsistent
+ */
+static int verifyMagicMmapMetaData (MmapMetaData * mmapMetaData)
+{
+	if (!mmapMetaData) return -1;
+	return memcmp (mmapMetaData, &magicMmapMetaData, SIZEOF_MMAPMETADATA);
 }
 
 /**
@@ -374,10 +409,11 @@ static int verifyMagicKey (Key * key)
  */
 static int verifyMagicData (char * mappedRegion)
 {
-	KeySet * destKeySet = (KeySet *) (mappedRegion + SIZEOF_MMAPHEADER + SIZEOF_MMAPMETADATA);
-	Key * keyPtr = (Key *) ((char *) destKeySet + SIZEOF_KEYSET);
+	KeySet * destKeySet = (KeySet *) (mappedRegion + OFFSET_MAGIC_KEYSET);
+	Key * keyPtr = (Key *) (mappedRegion + OFFSET_MAGIC_KEY);
+	MmapMetaData * mmapMetaData = (MmapMetaData *) (mappedRegion + OFFSET_MAGIC_MMAPMETADATA);
 
-	if ((verifyMagicKey (keyPtr) != 0) || (verifyMagicKeySet (destKeySet) != 0))
+	if ((verifyMagicKey (keyPtr) != 0) || (verifyMagicKeySet (destKeySet) != 0) || (verifyMagicMmapMetaData (mmapMetaData) != 0))
 	{
 		return -1;
 	}
@@ -468,10 +504,10 @@ static void calculateMmapDataSize (MmapHeader * mmapHeader, MmapMetaData * mmapM
 	// SIZEOF_KEYSET * 2 : magic KeySet + main KeySet
 	size_t allocSize = (SIZEOF_KEYSET * 2) + keyPtrArraySize + keyArraySize + dataBlocksSize + (metaKeySets * SIZEOF_KEYSET) +
 			   (metaKsAlloc * SIZEOF_KEY_PTR) + (dynArray->size * SIZEOF_KEY);
-	mmapHeader->cksumSize = allocSize + SIZEOF_MMAPMETADATA; // cksumSize now contains size of all critical data
+	mmapHeader->cksumSize = allocSize + (SIZEOF_MMAPMETADATA * 2); // cksumSize now contains size of all critical data
 
 	size_t padding = sizeof (uint64_t) - (allocSize % sizeof (uint64_t)); // alignment for MMAP Footer at end of mapping
-	allocSize += SIZEOF_MMAPHEADER + SIZEOF_MMAPMETADATA + SIZEOF_MMAPFOOTER + padding;
+	allocSize += SIZEOF_MMAPHEADER + (SIZEOF_MMAPMETADATA * 2) + SIZEOF_MMAPFOOTER + padding;
 
 	mmapHeader->allocSize = allocSize;
 	mmapMetaData->numKeySets = 1 + metaKeySets; // 1: main KeySet
@@ -692,7 +728,7 @@ static void copyKeySetToMmap (char * dest, KeySet * keySet, MmapHeader * mmapHea
 	mmapMetaData->destAddr = dest;
 	writeMagicData (dest);
 
-	MmapAddr mmapAddr = { .ksPtr = (KeySet *) (dest + SIZEOF_MMAPHEADER + SIZEOF_MMAPMETADATA + SIZEOF_KEYSET + SIZEOF_KEY),
+	MmapAddr mmapAddr = { .ksPtr = (KeySet *) (dest + OFFSET_REAL_KEYSET),
 			      .metaKsPtr = (char *) mmapAddr.ksPtr + SIZEOF_KEYSET,
 			      .ksArrayPtr = (((char *) mmapAddr.ksPtr) + (SIZEOF_KEYSET * mmapMetaData->numKeySets)),
 			      .metaKsArrayPtr = mmapAddr.ksArrayPtr + (SIZEOF_KEY_PTR * keySet->alloc),
@@ -720,7 +756,7 @@ static void copyKeySetToMmap (char * dest, KeySet * keySet, MmapHeader * mmapHea
 	mmapAddr.ksPtr->opmphm = 0;
 #endif
 
-	memcpy ((dest + SIZEOF_MMAPHEADER), mmapMetaData, SIZEOF_MMAPMETADATA);
+	memcpy ((dest + OFFSET_REAL_MMAPMETADATA), mmapMetaData, SIZEOF_MMAPMETADATA);
 #ifdef ELEKTRA_MMAP_CHECKSUM
 	uint32_t checksum = checksum = crc32 (0L, Z_NULL, 0);
 	checksum = crc32 (checksum, (const unsigned char *) (dest + SIZEOF_MMAPHEADER), mmapHeader->cksumSize);
@@ -741,16 +777,16 @@ static void copyKeySetToMmap (char * dest, KeySet * keySet, MmapHeader * mmapHea
  */
 static void mmapToKeySet (char * mappedRegion, KeySet * returned)
 {
-	KeySet * keySet = (KeySet *) (mappedRegion + SIZEOF_MMAPHEADER + SIZEOF_MMAPMETADATA + SIZEOF_KEYSET + SIZEOF_KEY);
+	KeySet * keySet = (KeySet *) (mappedRegion + OFFSET_REAL_KEYSET);
 	returned->array = keySet->array;
 	returned->size = keySet->size;
 	returned->alloc = keySet->alloc;
 	returned->cursor = 0;
 	returned->current = 0;
-	returned->mmapMetaData = (MmapMetaData *) (mappedRegion + SIZEOF_MMAPHEADER);
+	returned->mmapMetaData = (MmapMetaData *) (mappedRegion + OFFSET_REAL_MMAPMETADATA);
 	// to be able to free() the returned KeySet, just set the array flag here
 	returned->flags = KS_FLAG_MMAP_ARRAY;
-	// we intentionally to not change the KeySet->opmphm here!
+	// we intentionally do not change the KeySet->opmphm here!
 }
 
 /**
@@ -768,7 +804,7 @@ static void updatePointers (MmapMetaData * mmapMetaData, char * dest)
 {
 	uintptr_t destInt = (uintptr_t) dest;
 
-	char * ksPtr = (dest + SIZEOF_MMAPHEADER + SIZEOF_MMAPMETADATA + SIZEOF_KEYSET + SIZEOF_KEY);
+	char * ksPtr = (dest + OFFSET_REAL_KEYSET);
 
 	char * ksArrayPtr = ksPtr + SIZEOF_KEYSET * mmapMetaData->numKeySets;
 	char * keyPtr = ksArrayPtr + SIZEOF_KEY_PTR * mmapMetaData->ksAlloc;
@@ -980,7 +1016,7 @@ static void unlinkFile (Key * parentKey)
 		ELEKTRA_LOG_DEBUG ("unlink: unlinking mmap str: %s", keyName (cur));
 		ELEKTRA_LOG_DEBUG ("unlink: unlinking mmap ptr: %p", toUnlinkMmap);
 
-		void * toUnlinkMmapMetaData = (char *) toUnlinkMmap + SIZEOF_MMAPHEADER;
+		void * toUnlinkMmapMetaData = (char *) toUnlinkMmap + OFFSET_REAL_MMAPMETADATA;
 		ELEKTRA_LOG_DEBUG ("unlink: unlinking mmap meta-data ptr: %p", toUnlinkMmapMetaData);
 
 		void * toUnlinkKS = hexStringToAddress (keyString (cur));
@@ -1060,6 +1096,7 @@ int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, open) (Plugin * handle, Key * errorKey
 	const uintptr_t magicNumber = generateMagicNumber ();
 	if (magicKeySet.array == 0) initMagicKeySet (magicNumber);
 	if (magicKey.data.v == 0) initMagicKey (magicNumber);
+	if (magicMmapMetaData.destAddr == 0) initMagicMmapMetaData (magicNumber);
 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
