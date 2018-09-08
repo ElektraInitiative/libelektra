@@ -9,7 +9,7 @@ Until now I haven't really gotten a sensible idea for that though. Maybe we coul
 Also I have no idea what your `struct` plugin actually does. There is no example, just some code snippet from 
 the contract which doesn't help understanding the plugin.
 
-## Problems
+## Basic Problem
 1) We want to check if all recursion links are non-cyclical, eg. `a` -> `b` -> `c` -> `a`
 2) Imagine a structure like `a` -> `b`. A user sets `a` but forgets `b`. He links `a` to (yet non existent) `b`.
 Now there are two possibilties. Either we prohibit the linking and emit an error, forcing the user to define
@@ -36,22 +36,20 @@ ref = b
 
 which could cause an error since `a` cannot be loaded as `b` is yet non existent.
 
-## Possible Solution
+## Solution (basic plugin functionality)
 
 Users have to define recursive setting specifications in the following way:
 
 ```sh
-kdb mount config.dump /recursive dump recursion
+kdb mount config.dump user/recursive dump recursion
 kdb setmeta user/recursive check/recursion "ref"
 ```
 
-`check/recursion` is the basic building block for any recursive structure such as a vertex in a graph.
- Every key below `/recursive` in this example will be treated as vertex, such 
- as `/recursive/rootkey` and `/recursive/childkey`.
-Furthermore the provided keyword (`ref` in the upper example) is used to refer to other recursive building blocks.
+The value of `check/recursion` defines the basename for _reference arrays_. In the example above any key which is below `user/recursive` and whose name ends in `ref` must be an [array](https://www.libelektra.org/tutorials/arrays). Additionally all elements in these arrays must have values referencing other keys. That means if `user/recursive/key1/ref/#0` had the value `key2` then the key `user/recursive/key2` must exist.
 
-Note that you are only allowed to refer to vertices below the key on which the metadata is set (`/recursive` 
-in the example above).
+In other words each of these reference arrays defines a list of edges of a graph. Continuing the example `user/recursive/key1/ref/#0 = key2` defines a directed edge between `user/recursive/key1` and `user/recursive/key2`. The graph resulting from these edges, must be a directed acyclic graph.
+
+All other keys will not be touched by this plugin.
 
 Now take this setting as an example:
 
@@ -87,12 +85,71 @@ kdb set /recursive/A2/ref/#0 B1
 kdb set /recursive/A2/ref/#1 B2
 ```
 
-It is not needed to add `/recursive` before every key as it is only possible to choose keys
-below this rootkey anyway. Referring to other keys is done by 
-the [array notation](https://www.libelektra.org/tutorials/arrays).
+### Additional functionality
+In addition to the functionality described above the plugin can be customized in a few ways.
 
-Arbitrary additional data can be saved too such as:
-`kdb set /recursive/A1/permission admin`
+1. By specifying the `check/recursion/restrict` metakey on a reference array key the allowed references can be restricted.
+2. By specifying the `check/recursion/override` metakey the name used for reference arrays can be overriden.
+
+#### Reference Restriction
+Let's start with a basic setup:
+```
+kdb setmeta /recursive check/recursion ref
+
+#entries
+kdb set /recursive/typeA/key1
+kdb set /recursive/typeA/key2
+kdb set /recursive/typeB/key1
+kdb set /recursive/typeB/key2
+```
+
+The value of the `check/recursion/restrict` metakey is a globbing expression. This globbing expression does not have to match the full key referenced, but the referenced key must be below a matching key. So by setting the following metadata we restrict the possible references from `/recursive/typeA/key1` to keys below `/recursive/typeB`:
+
+```
+kdb setmeta /recursive/typeA/key1/ref check/recursion/restrict typeB
+
+kdb set /recursive/typeA/key1/ref/#0 /recursive/typeB/key1 # works
+kdb set /recursive/typeA/key1/ref/#1 /recursive/typeB/key2 # works
+
+kdb set /recursive/typeA/key1/ref/#2 /recursive/typeB/key1 # ERROR!!
+```
+
+By setting the metakey `check/recursion/restrict` to an empty value `""` you can specify that there should not be any references at all, i.e. the node of the graph **must** be a leaf node.
+
+You can also specify multiple alternative restrictions by using an array:
+```
+kdb setmeta /recursive/typeA/key1/ref check/recursion/restrict/#0 typeB
+kdb setmeta /recursive/typeA/key1/ref check/recursion/restrict/#1 typeC
+
+kdb set /recursive/typeA/key1/ref/#0 /recursive/typeB/key1 # works
+kdb set /recursive/typeA/key1/ref/#1 /recursive/typeB/key2 # works
+
+kdb set /recursive/typeA/key1/ref/#2 /recursive/typeB/key1 # ERROR!!
+
+kdb set /recursive/typeA/key1/ref/#0 /recursive/typeC/key1 # works too as long as /recursive/typeB/key1 exists
+```
+NOTE: The value of `check/recursion/restrict` itself will always override any array sub-keys. So if you want to specify alternative restrictions do not set the metakey `check/recursion/restrict`. If you set `check/recursion/restrict` to an empty value and specify array elements, the value of `check/recursion/restrict` will still win and mark the node as a leaf node.
+
+
+#### Overriding
+We will use the same basic setup:
+```
+kdb setmeta /recursive check/recursion ref
+
+#entries
+kdb set /recursive/typeA/key1
+kdb set /recursive/typeA/key2
+kdb set /recursive/typeB/key1
+kdb set /recursive/typeB/key2
+```
+
+The value of `check/recursion/override`, as the name suggests, overrides the value of `check/recursion`.
+
+```
+kdb setmeta /recursive/typeA check/recursion/override altref
+```
+
+After executing the above line `/recursive/typeA/ref/#0` will no longer be considered a reference, but will be ignored like any other value. This because the metadata on `/recursive/typeA` tells the plugin to look for `altref` instead of `ref`, when looking at keys below `/recursive/typeA`. This allows giving the reference keys more expressive names instead of settling for a single name inside one structure.
 
 ## Another example
 
@@ -196,60 +253,10 @@ kdb set /editor/MacroBasics/menuref/#0 AboutPage
 
 Sitenote: Maybe the last example here will just emit a warning so users are free in the order of declaration.
 
-### Problems
-
-#### Klemens architecture
-Klemens exported the [ini file](https://github.com/Piankero/lcdproc-specification/blob/master/src/lcdexec/misc/lcdexec_elektra.ini) 
-and showed me his approach.
-
-First of all in his approach, he differs the `main` menu and the `menu` which are below the main menu differently. Also they have an additional attribute
-for the displayname.
-
-In the above example, the LCDproc variant would look like this in the current version:
-```
-kdb set /editor/menu/main/#0/displayname File
-kdb set /editor/menu/main/#1/displayname Tools
-```
-
-Additionally they refer to submenu's implicitly. Eg the `Print` and `Settings` menu would be set like this:
-
-```
-kdb set /editor/menu/main/#0/menu/#0/displayname Print
-kdb set /editor/menu/main/#0/menu/#1/displayname Settings
-```
-
-Note the difference between `main` and `menu` in the key. Additionally it would prohibit the reuse of the
-`Settings` substructure for the `Tools` menu. The user would need to define everything again instead of just
-referencing to it.
-
-#### LCDproc's current format
-
-[This](https://github.com/lcdproc/lcdproc/blob/master/clients/lcdexec/lcdexec.conf) is the current format in
-lcdexec.
- 
-Their reference keyword (`check/recursion`) to other settings is `Entry`.
-
-Their approach is easily adoptable with our current form and would not require any changes
-for LCDproc.
-
-Nonetheless I would suggest that LCDproc provides its own namespace for the menubar entries as it
- is much more clear which setting is meant.
-It is much more clear to have eg `/lcdexec/menubar/Server` which could refer to a Server settings menu entry rather
-than having it here: `/lcdexec/Server` which could be mistaken for the IPaddress to which the client connects to.
-
-
 ## Guarantees
 
 1) References can only be set if the corresponding entry exists. This ensures that users do not set
-keys which lead into nothing. If we do not want to restrict users in the order of declaration, we would emit a warning
-if the setting does not exist yet.
+keys which lead into nothing. If we do not want to restrict users in the order of declaration, we would emit a warning if the setting does not exist yet.
 
 2) Endless loops will be prohibited. eg. 
 `kdb set /recursive/Vertex/ref/#0 Vertex`
-
-## Problems
-Users will be forced to declare building blocks first and then link them together.
-Loading data via plugin does not guarantee ordering.
-
-How to do that? eg. just emit warnings or introduce an "incomplete" state and users will have to call
-`kdb getmeta /recursive complete/recursion` to check if the configuration is complete?
