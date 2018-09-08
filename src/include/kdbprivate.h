@@ -73,10 +73,8 @@ typedef struct _Trie Trie;
 typedef struct _Split Split;
 typedef struct _Backend Backend;
 
-/* Header, footer and metadata needed for mmap file format */
-typedef struct _mmapHeader MmapHeader;
+/* Metadata needed for mmap file format */
 typedef struct _mmapMetaData MmapMetaData;
-typedef struct _mmapFooter MmapFooter;
 
 /* These define the type for pointers to all the kdb functions */
 typedef int (*kdbOpenPtr) (Plugin *, Key * errorKey);

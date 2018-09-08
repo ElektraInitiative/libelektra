@@ -57,6 +57,10 @@ struct _mmapAddr
 
 typedef struct _mmapAddr MmapAddr;
 
+/* Header and footer needed for mmap file format */
+typedef struct _mmapHeader MmapHeader;
+typedef struct _mmapFooter MmapFooter;
+
 /**
  * Mmap information header
  *
