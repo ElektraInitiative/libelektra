@@ -17,8 +17,8 @@ if ! git diff --exit-code; then
 fi
 
 scripts/reformat-source || echo 'Warning: clang-format not available, skipping reformat-source'
-
 scripts/reformat-cmake || echo 'Warning: Unable to reformat CMake code.'
+scripts/reformat-shfmt || echo 'Warning: Unable to reformat Shell code.'
 
 git diff --exit-code
 succeed_if "Please commit the reformatting changes before pushing"

@@ -210,10 +210,10 @@ you up to date with the multi-language support provided by Elektra.
 - We now require [`clang-format`](https://clang.llvm.org/docs/ClangFormat.html) 6.0 for formatting C and C++ code. *(René Schwaiger)*
 - The command [`reformat-source`](https://master.libelektra.org/scripts/reformat-source) now displays information about the installed
   version of `clang-format`, if it is unable to locate a supported version of the tool. *(René Schwaiger)*
-- We now also check the POSIX compatibility of our scripts with [`shfmt`](https://github.com/mvdan/sh). *(René Schwaiger)*
-- The new command [`reformat-shfmt`](https://master.libelektra.org/scripts/reformat-shfmt) reformats Shell scripts using the tool
-  [`shfmt`](https://github.com/mvdan/sh). *(René Schwaiger)*
+- We now also check the POSIX compatibility of our scripts with [`shfmt`][]. *(René Schwaiger)*
+- The new command [`reformat-shfmt`][] reformats Shell scripts using the tool [`shfmt`](https://github.com/mvdan/sh). *(René Schwaiger)*
 
+[`shfmt`]: https://github.com/mvdan/sh
 
 ## Documentation
 
@@ -241,6 +241,9 @@ you up to date with the multi-language support provided by Elektra.
 - crypto, fcrypt and gpgme properly shut down the gpg-agent after the unit test is done. See #1973 . *(Peter Nirschl)*
 - The CMake targets for plugin tests (`testmod_[plugin]`) now depend on the respective CMake targets for the plugins themselves
   (`elektra-[plugin]`). *(Klemens Böswirth)*
+- The test [`testscr_check_formatting`](https://master.libelektra.org/tests/shell/check_formatting.sh) now also checks the formatting of
+  Shell code. *(René Schwaiger)*
+
 
 [Markdown Shell Recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
 
