@@ -725,8 +725,6 @@ static void mmapToKeySet (char * mappedRegion, KeySet * returned)
 	returned->array = keySet->array;
 	returned->size = keySet->size;
 	returned->alloc = keySet->alloc;
-	returned->cursor = 0;
-	returned->current = 0;
 	returned->mmapMetaData = (MmapMetaData *) (mappedRegion + OFFSET_REAL_MMAPMETADATA);
 	// to be able to free() the returned KeySet, just set the array flag here
 	returned->flags = KS_FLAG_MMAP_ARRAY;
@@ -979,8 +977,6 @@ static void unlinkFile (Key * parentKey)
 			keySet->array = copy->array;
 			keySet->size = copy->size;
 			keySet->alloc = copy->alloc;
-			keySet->cursor = 0;
-			keySet->current = 0;
 			keySet->mmapMetaData = 0;
 			keySet->flags = 0;
 			// keySet->opmphm invalidated by ksClose already
