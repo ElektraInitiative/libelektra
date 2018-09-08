@@ -856,15 +856,16 @@ ssize_t keyAddBaseName (Key * key, const char * baseName)
 		key->keySize += len + 1;
 	}
 
+	const size_t newSize = key->keySize * 2;
 	if (test_bit (key->flags, KEY_FLAG_MMAP_KEY))
 	{
 		// key was in mmap region, clear flag and trigger malloc instead of realloc
-		key->key = elektraMalloc (key->keySize * 2);
+		key->key = elektraMalloc (newSize);
 		clear_bit (key->flags, KEY_FLAG_MMAP_KEY);
 	}
 	else
 	{
-		if (-1 == elektraRealloc ((void **) &key->key, key->keySize * 2)) return -1;
+		if (-1 == elektraRealloc ((void **) &key->key, newSize)) return -1;
 	}
 
 	if (!key->key)
@@ -973,17 +974,17 @@ ssize_t keyAddName (Key * key, const char * newName)
 	if (!elektraValidateKeyName (newName, nameSize)) return -1;
 
 	const size_t origSize = key->keySize;
-	const size_t newSize = origSize + nameSize;
+	const size_t newSize = (origSize + nameSize) * 2;
 
 	if (test_bit (key->flags, KEY_FLAG_MMAP_KEY))
 	{
 		// key was in mmap region, clear flag and trigger malloc instead of realloc
-		key->key = elektraMalloc (newSize * 2);
+		key->key = elektraMalloc (newSize);
 		clear_bit (key->flags, KEY_FLAG_MMAP_KEY);
 	}
 	else
 	{
-		if (-1 == elektraRealloc ((void **) &key->key, newSize * 2)) return -1;
+		if (-1 == elektraRealloc ((void **) &key->key, newSize)) return -1;
 	}
 
 	if (!key->key) return -1;
@@ -1122,15 +1123,16 @@ ssize_t keySetBaseName (Key * key, const char * baseName)
 	elektraEscapeKeyNamePart (baseName, escaped);
 	size_t sizeEscaped = elektraStrLen (escaped);
 
+	const size_t newSize = (key->keySize + sizeEscaped) * 2;
 	if (test_bit (key->flags, KEY_FLAG_MMAP_KEY))
 	{
 		// key was in mmap region, clear flag and trigger malloc instead of realloc
-		key->key = elektraMalloc ((key->keySize + sizeEscaped) * 2);
+		key->key = elektraMalloc (newSize);
 		clear_bit (key->flags, KEY_FLAG_MMAP_KEY);
 	}
 	else
 	{
-		if (-1 == elektraRealloc ((void **) &key->key, (key->keySize + sizeEscaped) * 2)) return -1;
+		if (-1 == elektraRealloc ((void **) &key->key, newSize)) return -1;
 	}
 
 	if (!key->key)
