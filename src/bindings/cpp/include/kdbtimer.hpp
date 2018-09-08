@@ -23,7 +23,8 @@ class Timer
 {
 public:
 	// options what to do at cleanup
-	enum option_t {
+	enum option_t
+	{
 		raw_data_cerr, ///< print name,data\n (default!)
 		median_cerr,   ///< print name,median\n
 		quiet,	 ///< print nothing

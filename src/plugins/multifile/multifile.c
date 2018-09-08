@@ -34,18 +34,21 @@
 #define DEFAULT_PATTERN "*"
 #define DEFAULT_STORAGE "ini"
 
-typedef enum {
+typedef enum
+{
 	MULTI_SETRESOLVER = 0,
 	MULTI_SETSTORAGE,
 	MULTI_COMMIT,
 } SetPhases;
 
-typedef enum {
+typedef enum
+{
 	MULTI_GETRESOLVER = 0,
 	MULTI_GETSTORAGE,
 } GetPhases;
 
-typedef enum {
+typedef enum
+{
 	EMPTY = -2,
 	ERROR = -1,
 	NOUPDATE = 0,

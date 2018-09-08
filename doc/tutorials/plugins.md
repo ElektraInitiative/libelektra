@@ -272,9 +272,9 @@ The plugin will actually be added iff all of the `DEPENDENCIES` are true.
 Note that no code should be outside of `if (DEPENDENCY_PHASE)`. It would be executed twice otherwise. The only exception is
 `add_plugin` which *must* be called twice to successfully add a plugin.
 
-> Please note that the parameters passed to add_plugin need to be constant between all invocations.
+> Please note that the parameters passed to `add_plugin` need to be constant between all invocations.
 > Some `find_package` cache their variables, others do not, which might lead to toggling variables.
-> To avoid problem, make a variable containing all LINK_LIBRARIES or DEPENDENCIES within DEPENDENCY_PHASE.
+> To avoid problems, create a variable containing all `LINK_LIBRARIES` or `DEPENDENCIES` within `DEPENDENCY_PHASE`.
 
 If your plugin makes use of [compilation variants](/doc/tutorials/compilation-variants.md)
 you should also read the information there.

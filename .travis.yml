@@ -43,7 +43,7 @@ matrix:
         # [timeout]: https://docs.travis-ci.com/user/customizing-the-build/#build-timeouts
         - TOOLS=kdb
         - BINDINGS=cpp
-        - TEST_COMMAND="ctest --output-on-failure -E 'testscr_check_(formatting|oclint)'"
+        - TEST_COMMAND="ctest --output-on-failure -E 'testscr_check_(bashisms|doc|formatting|meta|oclint|plugins)'"
 
     - os: linux
       name: 🐧 GCC ASAN
@@ -62,7 +62,7 @@ matrix:
         # Build less stuff so the build does not hit the timeout limit that often
         - TOOLS=kdb
         - BINDINGS=cpp
-        - TEST_COMMAND="ctest --output-on-failure -E 'testscr_check_(formatting|oclint)'"
+        - TEST_COMMAND="ctest --output-on-failure -E 'testscr_check_(bashisms|doc|formatting|meta|oclint|plugins)'"
 
     - os: linux
       name: 🐧 Clang ASAN
@@ -145,6 +145,7 @@ matrix:
             - ubuntu-toolchain-r-test
           packages:
             - clang-6.0
+            - clang-format-6.0
       env:
         - CC_COMPILER=clang-6.0
         - CXX_COMPILER=clang++-6.0
@@ -154,7 +155,6 @@ before_install:
     if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
       brew update
       brew install ninja
-      brew install augeas
     fi
   - |
     if [[ "$TRAVIS_OS_NAME" == "osx" && "$HASKELL" != "ON" ]]; then
@@ -200,6 +200,7 @@ before_install:
     fi
   - |
     if [[ "$TRAVIS_OS_NAME" == "osx" && "$HASKELL" == "ON" ]] ; then
+      brew install augeas
       # 8.4 is currently not supported by hint which we use
       brew install ghc@8.2
       brew link ghc@8.2 --force

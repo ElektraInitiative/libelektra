@@ -33,7 +33,8 @@
 /**
  * @brief Defines the plugin state during the <code>kdb get</code> phase.
  */
-enum FcryptGetState {
+enum FcryptGetState
+{
 
 	/** Perform a decryption run before <code>kdb get</code> reads from the storage. */
 	PREGETSTORAGE = 0,

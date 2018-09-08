@@ -38,7 +38,12 @@ static int iniCmpOrder (const void * a, const void * b);
 #define DEFAULT_DELIMITER '='
 #define DEFAULT_COMMENT_CHAR '#'
 
-typedef enum { NONE, BINARY, ALWAYS } SectionHandling;
+typedef enum
+{
+	NONE,
+	BINARY,
+	ALWAYS
+} SectionHandling;
 
 typedef struct
 {

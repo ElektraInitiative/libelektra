@@ -24,13 +24,36 @@
 #include <string.h>
 
 
-typedef enum { preGetStorage = 0, postGetStorage, postGetCleanup, getEnd } GetPlacements;
+typedef enum
+{
+	preGetStorage = 0,
+	postGetStorage,
+	postGetCleanup,
+	getEnd
+} GetPlacements;
 
-typedef enum { preSetStorage = 0, preSetCleanup, preCommit, postCommit, setEnd } SetPlacements;
+typedef enum
+{
+	preSetStorage = 0,
+	preSetCleanup,
+	preCommit,
+	postCommit,
+	setEnd
+} SetPlacements;
 
-typedef enum { preRollback = 0, postRollback, errEnd } ErrPlacements;
+typedef enum
+{
+	preRollback = 0,
+	postRollback,
+	errEnd
+} ErrPlacements;
 
-typedef enum { GET, SET, ERR } OP;
+typedef enum
+{
+	GET,
+	SET,
+	ERR
+} OP;
 
 typedef struct
 {

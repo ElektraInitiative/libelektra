@@ -34,7 +34,15 @@ const uint8_t BOMS[BOM_COUNT][BOM_SIZE_MAX] = {
 	{ 0xFB, 0xEE, 0x28, INTERNAL_BOM_DELIMITER, 0x00 }, { 0x84, 0x31, 0x95, 0x33, INTERNAL_BOM_DELIMITER }
 };
 
-typedef enum { NA, CR, LF, CRLF, LFCR, NUM_TYPES } Lineending;
+typedef enum
+{
+	NA,
+	CR,
+	LF,
+	CRLF,
+	LFCR,
+	NUM_TYPES
+} Lineending;
 
 typedef struct
 {

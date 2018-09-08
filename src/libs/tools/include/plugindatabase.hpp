@@ -55,7 +55,8 @@ public:
 	// virtual void registerPlugin(PluginSpec) = 0;
 	// virtual std::vector<PluginSpec> listAllPlugins() const = 0;
 
-	enum Status {
+	enum Status
+	{
 		/// does not directly, but can be loaded via provides
 		provides,
 		/// exists and working as given

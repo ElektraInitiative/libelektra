@@ -14,10 +14,7 @@ BraceWrapping:
   BeforeCatch: true
   AfterClass: true
   AfterControlStatement: true
-  # We do not add a newline after `enum` since Clang-Format 5 **does not** add a
-  # newline after `typedef enum`, even if we set `AfterEnum` to true.
-  # TODO: Enable the option below after we switched to `clang-format-6` or newer.
-  # AfterEnum: true
+  AfterEnum: true
   AfterFunction: true
   AfterNamespace: true
   AfterStruct: true
@@ -33,8 +30,7 @@ ContinuationIndentWidth: 8
 Cpp11BracedListStyle: false
 DerivePointerAlignment: false
 DisableFormat: false
-#TODO: Set `FixNamespaceComments` to `true` after we switched to `clang-format-6` or newer.
-#FixNamespaceComments: true
+FixNamespaceComments: true
 FixNamespaceComments: false
 IndentCaseLabels: false
 IndentWidth: 8

@@ -43,7 +43,7 @@ static int executeCommand (const char * cmdline)
 	}
 }
 
-int elektraShellGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraShellGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/shell"))
 	{
@@ -86,7 +86,7 @@ int elektraShellGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_U
 	return 1; // success
 }
 
-int elektraShellSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraShellSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
 {
 	KeySet * config = elektraPluginGetConfig (handle);
 	Key * cmdKey = ksLookupByName (config, "/execute/set", KDB_O_NONE);
@@ -114,7 +114,7 @@ int elektraShellSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_U
 	return 1; // success
 }
 
-int elektraShellError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraShellError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
 {
 	KeySet * config = elektraPluginGetConfig (handle);
 	Key * cmdKey = ksLookupByName (config, "/execute/error", KDB_O_NONE);
