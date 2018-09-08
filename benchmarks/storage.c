@@ -12,12 +12,14 @@
 #include <benchmarks.h>
 #include <tests.h>
 
+#define CSV_STR_FMT "%s;%s;%d\n"
+
 #define NUM_PLUGINS 3
 #define NUM_RUNS 7
 
 KeySet * modules[NUM_PLUGINS];
 Plugin * plugins[NUM_PLUGINS];
-char * pluginNames[] = { "dump", "mmapstorage_crc", "mmapstorage" };
+char * pluginNames[NUM_PLUGINS] = { "dump", "mmapstorage_crc", "mmapstorage" };
 
 char * tmpfilename;
 char * tempHome;
@@ -95,35 +97,27 @@ static int benchmarkIterateValue (KeySet * ks)
 int main (int argc, char ** argv)
 {
 	// open all storage plugins
-	timeInit ();
 	if (benchmarkOpenPlugins () == -1) return -1;
-	timePrint ("Open storage plugins");
-
-	timeInit ();
 	benchmarkCreate ();
-	timePrint ("Created empty keyset");
-
 	benchmarkFillup ();
-	timePrint ("New large keyset");
 
+	fprintf (stdout, "%s;%s;%s\n", "plugin", "operation", "microseconds");
 	for (size_t i = 0; i < NUM_PLUGINS; ++i)
 	{
-		printf ("Writing with plugin %s\n", pluginNames[i]);
 		init (argc, argv);
 
 		Plugin * plugin = plugins[i];
-		fprintf (stdout, "Tmp: %s\n", tmpfilename);
 		Key * parentKey = keyNew ("user/benchmarks/storage", KEY_VALUE, tmpfilename, KEY_END);
-		timePrint ("init");
 
 		for (size_t run = 0; run < NUM_RUNS; ++run)
 		{
+			timeInit ();
 			if (plugin->kdbSet (plugin, large, parentKey) != ELEKTRA_PLUGIN_STATUS_SUCCESS)
 			{
 				printf ("Error writing with plugin: %s\n", pluginNames[i]);
 				return -1;
 			}
-			timePrint ("Write keyset");
+			fprintf (stdout, CSV_STR_FMT, pluginNames[i], "write keyset", timeGetDiffMicroseconds ());
 
 			KeySet * returned = ksNew (0, KS_END);
 			if (plugin->kdbGet (plugin, returned, parentKey) != ELEKTRA_PLUGIN_STATUS_SUCCESS)
@@ -131,11 +125,11 @@ int main (int argc, char ** argv)
 				printf ("Error reading with plugin: %s\n", pluginNames[i]);
 				return -1;
 			}
-			timePrint ("Read keyset");
-
+			fprintf (stdout, CSV_STR_FMT, pluginNames[i], "read keyset", timeGetDiffMicroseconds ());
 			benchmarkIterate (returned);
+			fprintf (stdout, CSV_STR_FMT, pluginNames[i], "iterate keyset", timeGetDiffMicroseconds ());
 			ksDel (returned);
-			timePrint ("Iterate over KS");
+			fprintf (stdout, CSV_STR_FMT, pluginNames[i], "delete keyset", timeGetDiffMicroseconds ());
 
 			KeySet * returned2 = ksNew (0, KS_END);
 			if (plugin->kdbGet (plugin, returned2, parentKey) != ELEKTRA_PLUGIN_STATUS_SUCCESS)
@@ -143,8 +137,9 @@ int main (int argc, char ** argv)
 				printf ("Error reading with plugin: %s\n", pluginNames[i]);
 				return -1;
 			}
+			fprintf (stdout, CSV_STR_FMT, pluginNames[i], "re-read keyset", timeGetDiffMicroseconds ());
 			ksDel (returned2);
-			timePrint ("Re-read keyset");
+			timeInit ();
 
 			KeySet * returned3 = ksNew (0, KS_END);
 			if (plugin->kdbGet (plugin, returned3, parentKey) != ELEKTRA_PLUGIN_STATUS_SUCCESS)
@@ -152,10 +147,11 @@ int main (int argc, char ** argv)
 				printf ("Error reading with plugin: %s\n", pluginNames[i]);
 				return -1;
 			}
-			timePrint ("Read keyset");
+			timeInit ();
 			benchmarkIterateName (returned3);
+			fprintf (stdout, CSV_STR_FMT, pluginNames[i], "strcmp key name", timeGetDiffMicroseconds ());
 			ksDel (returned3);
-			timePrint ("Strcmp key names");
+			timeInit ();
 
 			KeySet * returned4 = ksNew (0, KS_END);
 			if (plugin->kdbGet (plugin, returned4, parentKey) != ELEKTRA_PLUGIN_STATUS_SUCCESS)
@@ -163,17 +159,15 @@ int main (int argc, char ** argv)
 				printf ("Error reading with plugin: %s\n", pluginNames[i]);
 				return -1;
 			}
-			timePrint ("Read keyset");
+			timeInit ();
 			benchmarkIterateValue (returned4);
+			fprintf (stdout, CSV_STR_FMT, pluginNames[i], "strcmp key value", timeGetDiffMicroseconds ());
 			ksDel (returned4);
-			timePrint ("Strcmp key values");
+			timeInit ();
 		}
-
 		clean_temp_home ();
 		keyDel (parentKey);
-		timePrint ("cleanup");
 	}
 
 	benchmarkDel ();
-	timePrint ("Del large keyset");
 }
