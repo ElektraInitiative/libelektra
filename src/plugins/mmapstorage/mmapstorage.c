@@ -483,18 +483,17 @@ static void writeMetaKeys (MmapAddr * mmapAddr, DynArray * dynArray)
 	}
 
 	// write the meta keys into place
-	Key * mmapMetaKey;
-	Key * curMeta;
-	void * metaKeyNamePtr;
-	void * metaKeyValuePtr;
 	for (size_t i = 0; i < dynArray->size; ++i)
 	{
-		curMeta = dynArray->keyArray[i];	// old key location
-		mmapMetaKey = (Key *) mmapAddr->keyPtr; // new key location
+		Key * curMeta = dynArray->keyArray[i];	// old key location
+		Key * mmapMetaKey = (Key *) mmapAddr->keyPtr; // new key location
 		mmapAddr->keyPtr += SIZEOF_KEY;
 
 		size_t keyNameSize = curMeta->keySize + curMeta->keyUSize;
 		size_t keyValueSize = curMeta->dataSize;
+
+		void * metaKeyNamePtr;
+		void * metaKeyValuePtr;
 
 		// move Key name
 		if (curMeta->key)
@@ -546,45 +545,40 @@ static void writeMetaKeys (MmapAddr * mmapAddr, DynArray * dynArray)
 static KeySet * writeMetaKeySet (Key * key, MmapAddr * mmapAddr, DynArray * dynArray)
 {
 	// write the meta KeySet
-	KeySet * oldMeta = key->meta;
-	KeySet * newMeta = 0;
-	if (oldMeta)
+	if (!key->meta) return 0;
+
+	KeySet * newMeta = (KeySet *) mmapAddr->metaKsPtr;
+	mmapAddr->metaKsPtr += SIZEOF_KEYSET;
+
+	newMeta->flags = key->meta->flags | KS_FLAG_MMAP_STRUCT | KS_FLAG_MMAP_ARRAY;
+	newMeta->array = (Key **) mmapAddr->metaKsArrayPtr;
+	mmapAddr->metaKsArrayPtr += SIZEOF_KEY_PTR * key->meta->alloc;
+
+	keyRewindMeta (key);
+	size_t metaKeyIndex = 0;
+	Key * mappedMetaKey = 0;
+	const Key * metaKey;
+	while ((metaKey = keyNextMeta (key)) != 0)
 	{
-		newMeta = (KeySet *) mmapAddr->metaKsPtr;
-		mmapAddr->metaKsPtr += SIZEOF_KEYSET;
-
-		newMeta->flags = oldMeta->flags | KS_FLAG_MMAP_STRUCT | KS_FLAG_MMAP_ARRAY;
-		newMeta->array = (Key **) mmapAddr->metaKsArrayPtr;
-		mmapAddr->metaKsArrayPtr += SIZEOF_KEY_PTR * oldMeta->alloc;
-
-		keyRewindMeta (key);
-		size_t metaKeyIndex = 0;
-		Key * mappedMetaKey = 0;
-		const Key * metaKey;
-		while ((metaKey = keyNextMeta (key)) != 0)
+		// get address of mapped key and store it in the new array
+		mappedMetaKey = dynArray->mappedKeyArray[ELEKTRA_PLUGIN_FUNCTION (mmapstorage, dynArrayFind) ((Key *) metaKey, dynArray)];
+		newMeta->array[metaKeyIndex] = (Key *) ((char *) mappedMetaKey - mmapAddr->mmapAddrInt);
+		if (mappedMetaKey->ksReference < SSIZE_MAX)
 		{
-			// get address of mapped key and store it in the new array
-			mappedMetaKey =
-				dynArray->mappedKeyArray[ELEKTRA_PLUGIN_FUNCTION (mmapstorage, dynArrayFind) ((Key *) metaKey, dynArray)];
-			newMeta->array[metaKeyIndex] = (Key *) ((char *) mappedMetaKey - mmapAddr->mmapAddrInt);
-			if (mappedMetaKey->ksReference < SSIZE_MAX)
-			{
-				++(mappedMetaKey->ksReference);
-			}
-			++metaKeyIndex;
+			++(mappedMetaKey->ksReference);
 		}
-		newMeta->array[oldMeta->size] = 0;
-		newMeta->array = (Key **) ((char *) newMeta->array - mmapAddr->mmapAddrInt);
-		newMeta->alloc = oldMeta->alloc;
-		newMeta->size = oldMeta->size;
-		newMeta->cursor = 0;
-		newMeta->current = 0;
-#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
-		newMeta->opmphm = 0;
-#endif
-		newMeta = (KeySet *) ((char *) newMeta - mmapAddr->mmapAddrInt);
+		++metaKeyIndex;
 	}
-
+	newMeta->array[key->meta->size] = 0;
+	newMeta->array = (Key **) ((char *) newMeta->array - mmapAddr->mmapAddrInt);
+	newMeta->alloc = key->meta->alloc;
+	newMeta->size = key->meta->size;
+	newMeta->cursor = 0;
+	newMeta->current = 0;
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+	newMeta->opmphm = 0;
+#endif
+	newMeta = (KeySet *) ((char *) newMeta - mmapAddr->mmapAddrInt);
 	return newMeta;
 }
 
@@ -601,17 +595,17 @@ static KeySet * writeMetaKeySet (Key * key, MmapAddr * mmapAddr, DynArray * dynA
 static void writeKeys (KeySet * keySet, MmapAddr * mmapAddr, DynArray * dynArray)
 {
 	Key * cur;
-	Key * mmapKey;
-	void * keyNamePtr;
-	void * keyValuePtr;
 	size_t keyIndex = 0;
 	ksRewind (keySet);
 	while ((cur = ksNext (keySet)) != 0)
 	{
-		mmapKey = (Key *) mmapAddr->keyPtr; // new key location
+		Key * mmapKey = (Key *) mmapAddr->keyPtr; // new key location
 		mmapAddr->keyPtr += SIZEOF_KEY;
 		size_t keyNameSize = cur->keySize + cur->keyUSize;
 		size_t keyValueSize = cur->dataSize;
+
+		void * keyNamePtr;
+		void * keyValuePtr;
 
 		// move Key name
 		if (cur->key)
@@ -759,10 +753,9 @@ static void updatePointers (MmapMetaData * mmapMetaData, char * dest)
 	char * ksArrayPtr = ksPtr + SIZEOF_KEYSET * mmapMetaData->numKeySets;
 	char * keyPtr = ksArrayPtr + SIZEOF_KEY_PTR * mmapMetaData->ksAlloc;
 
-	KeySet * ks;
 	for (size_t i = 0; i < mmapMetaData->numKeySets; ++i)
 	{
-		ks = (KeySet *) ksPtr;
+		KeySet * ks = (KeySet *) ksPtr;
 		ksPtr += SIZEOF_KEYSET;
 		if (ks->array)
 		{
@@ -778,10 +771,9 @@ static void updatePointers (MmapMetaData * mmapMetaData, char * dest)
 		}
 	}
 
-	Key * key;
 	for (size_t i = 0; i < mmapMetaData->numKeys; ++i)
 	{
-		key = (Key *) keyPtr;
+		Key * key = (Key *) keyPtr;
 		keyPtr += SIZEOF_KEY;
 		if (key->data.v)
 		{
