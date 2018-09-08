@@ -699,7 +699,7 @@ static void test_mmap_unlink_dirty_plugindata (const char * tmpFile)
 	{
 		keySetMeta (found, "some erroneous key", "which should not exist here");
 		char tooLarge[1024];
-		sprintf (tooLarge, "%ju", UINTMAX_MAX);
+		sprintf (tooLarge, "%llu", ULLONG_MAX);
 		tooLarge[1023] = '\0';
 		keySetMeta (found, tooLarge, "0xZZZZ");
 	}
