@@ -484,22 +484,6 @@ struct _Split
 
 
 /**
- * Mmap information header
- *
- * shall contain only fixed-width types
- */
-struct _mmapHeader
-{
-	uint64_t mmapMagicNumber;	/**<Magic number for consistency check */
-	uint64_t allocSize;		/**<Size of the complete allocation in bytes */
-	uint64_t cksumSize;		/**<Size of the critical data for checksum (structs, pointers, sizes)*/
-
-	uint32_t checksum;		/**<Checksum of the data */
-	uint8_t formatFlags;		/**<Mmap format flags (e.g. checksum ON/OFF) */
-	uint8_t formatVersion;		/**<Mmap format version */
-};
-
-/**
  * Mmap meta-data
  */
 struct _mmapMetaData
@@ -513,15 +497,6 @@ struct _mmapMetaData
 	mmapflag_t flags;	/**<Control flags for mmap */
 };
 
-/**
- * Mmap information footer
- *
- * shall contain only fixed-width types
- */
-struct _mmapFooter
-{
-	uint64_t mmapMagicNumber;	/**<Magic number for consistency check */
-};
 
 // clang-format on
 

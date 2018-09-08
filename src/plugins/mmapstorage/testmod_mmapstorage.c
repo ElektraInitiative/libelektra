@@ -24,6 +24,7 @@
 #include <tests_plugin.h>
 
 #include "dynarray.h"
+#include "internal.h"
 #include "mmapstorage.h"
 
 /* -- Macros ---------------------------------------------------------------------------------------------------------------------------- */
