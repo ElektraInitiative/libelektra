@@ -490,7 +490,6 @@ struct _Split
  */
 struct _mmapHeader
 {
-	// clang-format off
 	uint64_t mmapMagicNumber;	/**<Magic number for consistency check */
 	uint64_t allocSize;		/**<Size of the complete allocation in bytes */
 	uint64_t cksumSize;		/**<Size of the critical data for checksum (structs, pointers, sizes)*/
@@ -498,7 +497,6 @@ struct _mmapHeader
 	uint32_t checksum;		/**<Checksum of the data */
 	uint8_t formatFlags;		/**<Mmap format flags (e.g. checksum ON/OFF) */
 	uint8_t formatVersion;		/**<Mmap format version */
-	// clang-format on
 };
 
 /**
@@ -506,15 +504,13 @@ struct _mmapHeader
  */
 struct _mmapMetaData
 {
-	// clang-format off
-	char * destAddr;		/**<Base pointer to allocated destination */
+	char * destAddr;	/**<Base pointer to allocated destination */
 
-	size_t numKeySets;		/**<Number of KeySets inlcuding meta KS */
-	size_t ksAlloc;			/**<Sum of all KeySet->alloc sizes */
-	size_t numKeys;			/**<Number of Keys including meta Keys */
+	size_t numKeySets;	/**<Number of KeySets inlcuding meta KS */
+	size_t ksAlloc;		/**<Sum of all KeySet->alloc sizes */
+	size_t numKeys;		/**<Number of Keys including meta Keys */
 
-	mmapflag_t flags;		/**<Control flags for mmap */
-	// clang-format on
+	mmapflag_t flags;	/**<Control flags for mmap */
 };
 
 /**
@@ -524,9 +520,7 @@ struct _mmapMetaData
  */
 struct _mmapFooter
 {
-	// clang-format off
 	uint64_t mmapMagicNumber;	/**<Magic number for consistency check */
-	// clang-format on
 };
 
 // clang-format on

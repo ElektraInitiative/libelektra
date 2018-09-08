@@ -66,14 +66,16 @@
  */
 struct _mmapAddr
 {
-	KeySet * const ksPtr; /**<Pointer to the (main) KeySet struct. */
-	char * metaKsPtr; /**<Pointer to the current meta KeySet structs. */
-	char * ksArrayPtr; /**<Pointer to the current KeySet->array. */
-	char * metaKsArrayPtr; /**<Pointer to the current meta KeySet->array. */
-	char * keyPtr; /**<Pointer to the current Key struct. */
-	char * dataPtr; /**<Pointer to the data region, where Key->key and Key->data is stored. */
+	// clang-format off
+	KeySet * const ksPtr;	/**<Pointer to the (main) KeySet struct. */
+	char * metaKsPtr;	/**<Pointer to the current meta KeySet structs. */
+	char * ksArrayPtr;	/**<Pointer to the current KeySet->array. */
+	char * metaKsArrayPtr;	/**<Pointer to the current meta KeySet->array. */
+	char * keyPtr;		/**<Pointer to the current Key struct. */
+	char * dataPtr;		/**<Pointer to the data region, where Key->key and Key->data is stored. */
 
 	const uintptr_t mmapAddrInt; /**<Address of the mapped region as integer. */
+	// clang-format on
 };
 
 typedef struct _mmapAddr MmapAddr;
