@@ -1379,7 +1379,7 @@ def abortPreviousRun() {
 /* Helper that modifies file permissions before executing the passed closure.
  * Restores the permissions after the closure has run.
  * @param listOfFiles List representing directories and files that should be
- *                    made unwriteable.
+ *                    made unwritable.
  *                    Files must exist or it will fail.
  * @param perm target permissions in a form that can be passed to chmod
  * @param cl The closure that should be run
@@ -1431,7 +1431,7 @@ def getElektraWritableFiles() {
   ]
 }
 
-/* Create directoris in listOfDirs
+/* Create directories in listOfDirs
  * @param listOfDirs a List of directory paths to be created
  */
 def ensureDirsExist(listOfDirs) {
