@@ -698,7 +698,7 @@ static void test_mmap_unlink_dirty_plugindata (const char * tmpFile)
 	{
 		keySetMeta (found, "some erroneous key", "which should not exist here");
 		char tooLarge[1024];
-		sprintf (tooLarge, "%lu", UINTPTR_MAX);
+		sprintf (tooLarge, "%ju", UINTMAX_MAX);
 		tooLarge[1023] = '\0';
 		keySetMeta (found, tooLarge, "0xZZZZ");
 	}
@@ -719,7 +719,10 @@ static void test_mmap_open_pipe (void)
 {
 	// try writing to an invalid file, we simply use a pipe here
 	int pipefd[2];
-	pipe (pipefd);
+	if (pipe (pipefd) != 0)
+	{
+		yield_error ("pipe() error");
+	}
 	char pipeFile[1024];
 	sprintf (pipeFile, "/dev/fd/%d", pipefd[1]);
 	pipeFile[1023] = '\0';
