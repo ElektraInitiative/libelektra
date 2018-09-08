@@ -34,6 +34,33 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.8.
 
 ## Highlights
 
+- Added a new, binary and fast storage plugin called [`mmapstorage`](https://libelektra.org/plugins/mmapstorage).
+  It leverages the `mmap()` syscall and supports full Elektra semantics.
+  We provide two compile variants: `mmapstorage` and `mmapstorage_crc`.
+  The `mmapstorage_crc` variant enables CRC32 checksums for critical data,
+  while the `mmapstorage` variant omits the checksum for maximum performance.
+
+  We ran a synthetic benchmark with 127 iterations using 40k keys in a keyset,
+  and compared the performance to the `dump` storage plugin.
+
+  Median write time in microseconds:
+
+  | Plugin | Time |
+  | --- | --- |
+  | `dump` | 63692 |
+  | `mmapstorage` | 4338 |
+  | `mmapstorage_crc` | 8813 |
+
+  Median read time in microseconds:
+
+  | Plugin | Time |
+  | --- | --- |
+  | `dump` | 74889 |
+  | `mmapstorage` | 1116 |
+  | `mmapstorage_crc` | 5250 |
+
+  In our benchmark, the `mmapstorage` plugin writes more than 14x faster,
+  and reads more than 67x faster than the `dump` storage plugin. *(Mihael Pranjić)*
 - <<HIGHLIGHT1>>
 - <<HIGHLIGHT2>>
 - <<HIGHLIGHT3>>
@@ -65,11 +92,6 @@ The following section lists news about the [modules](https://www.libelektra.org/
 ### gpgme
 
 - The `gpgme` plugin was brought into existence to provide cryptographic functions using GnuGP via the `libgpgme` library. See [#896] *(Peter Nirschl)*
-
-### mmapstorage
-
-- Added a new, binary and fast storage plugin called [`mmapstorage`](https://libelektra.org/plugins/mmapstorage).
-  It leverages the `mmap()` syscall and supports full Elektra semantics. *(Mihael Pranjić)*
 
 
 ### <<Plugin1>>
