@@ -61,7 +61,7 @@ void Lexer::forward (size_t const characters = 1)
  *                  function compares to the current indentation.
  *
  * @retval true If the function added an indentation value
- *         false Otherwise
+ * @retval false Otherwise
  */
 bool Lexer::addIndentation (size_t const lineIndex)
 {
@@ -78,7 +78,7 @@ bool Lexer::addIndentation (size_t const lineIndex)
  * @brief This function checks if the lexer needs to scan additional tokens.
  *
  * @retval true If the lexer should fetch additional tokens
- *         false Otherwise
+ * @retval false Otherwise
  */
 bool Lexer::needMoreTokens () const
 {
@@ -170,7 +170,7 @@ void Lexer::fetchTokens ()
  *               where this function will look for a key value token.
  *
  * @retval true If the input matches a key value token
- *         false Otherwise
+ * @retval false Otherwise
  */
 bool Lexer::isValue (size_t const offset) const
 {
@@ -181,7 +181,7 @@ bool Lexer::isValue (size_t const offset) const
  * @brief This method checks if the current input starts a list element.
  *
  * @retval true If the input matches a list element token
- *         false Otherwise
+ * @retval false Otherwise
  */
 bool Lexer::isElement () const
 {
@@ -196,7 +196,7 @@ bool Lexer::isElement () const
  *               where this function will look for a comment token.
  *
  * @retval true If the input matches a comment token
- *         false Otherwise
+ * @retval false Otherwise
  */
 bool Lexer::isComment (size_t const offset) const
 {

@@ -31,11 +31,10 @@ using CppKeySet = kdb::KeySet;
  *                 function converts.
  *
  * @retval -3 if the file could not be opened for reading
- *         -2 if parsing was unsuccessful due to memory exhaustion
- *         -1 if there was an syntax error converting the YAML file
- *          0 if parsing was successful and the function did not change the
- *            given keyset
- *          1 if parsing was successful and the function did change `keySet`
+ * @retval -2 if parsing was unsuccessful due to memory exhaustion
+ * @retval -1 if there was an syntax error converting the YAML file
+ * @retval  0 if parsing was successful and the function did not change the given keyset
+ * @retval  1 if parsing was successful and the function did change `keySet`
  */
 int addToKeySet (CppKeySet & keySet, CppKey & parent, string const & filename);
 

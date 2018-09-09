@@ -72,9 +72,9 @@ public:
 	 *                 should parse.
 	 *
 	 * @retval -3 if the given file could not be opened
-	 *         -2 if parsing was unsuccessful due to memory exhaustion
-	 *         -1 if the given file contains a syntax error
-	 *          0 if parsing was successful
+	 * @retval -2 if parsing was unsuccessful due to memory exhaustion
+	 * @retval -1 if the given file contains a syntax error
+	 * @retval  0 if parsing was successful
 	 */
 	int parse (const string & filepath);
 

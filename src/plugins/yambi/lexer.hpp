@@ -89,7 +89,7 @@ class Lexer
 	 *                  function compares to the current indentation.
 	 *
 	 * @retval true If the function added an indentation value
-	 *         false Otherwise
+	 * @retval false Otherwise
 	 */
 	bool addIndentation (size_t const column);
 
@@ -102,7 +102,7 @@ class Lexer
 	 * @brief This function checks if the lexer needs to scan additional tokens.
 	 *
 	 * @retval true If the lexer should fetch additional tokens
-	 *         false Otherwise
+	 * @retval false Otherwise
 	 */
 	bool needMoreTokens () const;
 
@@ -119,7 +119,7 @@ class Lexer
 	 *               where this function will look for a key value token.
 	 *
 	 * @retval true If the input matches a key value token
-	 *         false Otherwise
+	 * @retval false Otherwise
 	 */
 	bool isValue (size_t const offset = 1) const;
 
@@ -127,7 +127,7 @@ class Lexer
 	 * @brief This method checks if the current input starts a list element.
 	 *
 	 * @retval true If the input matches a list element token
-	 *         false Otherwise
+	 * @retval false Otherwise
 	 */
 	bool isElement () const;
 
@@ -139,7 +139,7 @@ class Lexer
 	 *               where this function will look for a comment token.
 	 *
 	 * @retval true If the input matches a comment token
-	 *         false Otherwise
+	 * @retval false Otherwise
 	 */
 	bool isComment (size_t const offset) const;
 
