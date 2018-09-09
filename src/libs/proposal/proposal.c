@@ -60,7 +60,7 @@ ssize_t keySetStringF (Key * key, const char * format, ...)
 		return -1;
 	}
 
-	if (key->data.c)
+	if (key->data.c && !test_bit (key->flags, KEY_FLAG_MMAP_DATA))
 	{
 		elektraFree (key->data.c);
 	}

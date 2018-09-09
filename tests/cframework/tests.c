@@ -42,8 +42,6 @@ char * tempHome;
 int tempHomeLen;
 char * tempHomeConf;
 
-static void clean_temp_home (void);
-
 /**Does some useful startup.
  */
 int init (int argc, char ** argv)
@@ -503,7 +501,7 @@ static int rm_all (const char * fpath, const struct stat * sb ELEKTRA_UNUSED, in
 }
 #endif
 
-static void clean_temp_home (void)
+void clean_temp_home (void)
 {
 	if (tmpfilename)
 	{

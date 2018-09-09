@@ -214,3 +214,11 @@ notification system, I/O bindings
 - email: waht@libelektra.org
 - github user: [waht](https://github.com/waht)
 - devel/test on: Debian
+
+## Mihael Pranjić
+
+development of the mmapstorage plugin
+
+- email: mpranj@limun.org
+- github user: [mpranj](https://github.com/mpranj)
+- devel/test on: Fedora, Debian, macOS

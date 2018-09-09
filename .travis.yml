@@ -150,6 +150,15 @@ matrix:
         - CC_COMPILER=clang-6.0
         - CXX_COMPILER=clang++-6.0
 
+    # MMAP: Enable mmapstorage as default
+
+    - os: osx
+      name: 🍏 mmap
+      osx_image: xcode9.4
+      compiler: clang
+      env:
+        - MMAP=ON
+
 before_install:
   - |
     if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
@@ -252,6 +261,10 @@ before_script:
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
       CMAKE_OPT+=(-DCMAKE_INSTALL_PREFIX="$PWD/install")
       export PATH=$PATH:"$PWD/install/bin"
+    fi
+  - |
+    if [[ "$TRAVIS_OS_NAME" == "osx" && "$MMAP" == "ON" ]]; then
+      CMAKE_OPT+=("-DKDB_DEFAULT_STORAGE=mmapstorage -DKDB_DB_FILE='default.mmap' -DKDB_DB_INIT='elektra.mmap'")
     fi
   - SYSTEM_DIR="$PWD/kdbsystem"
   - mkdir build

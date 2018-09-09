@@ -36,6 +36,18 @@ void timePrint (char * msg)
 	gettimeofday (&start, 0);
 }
 
+int timeGetDiffMicroseconds (void)
+{
+	struct timeval measure;
+	time_t diff;
+
+	gettimeofday (&measure, 0);
+	diff = (measure.tv_sec - start.tv_sec) * 1000000 + (measure.tv_usec - start.tv_usec);
+	gettimeofday (&start, 0);
+
+	return (int) diff;
+}
+
 void benchmarkCreate (void)
 {
 	large = ksNew (num_key * num_dir, KS_END);

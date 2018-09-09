@@ -420,7 +420,8 @@ static void elektraHandleUserName (Key * key, const char * newName)
 
 static void elektraRemoveKeyName (Key * key)
 {
-	if (key->key) elektraFree (key->key);
+	if (key->key && !test_bit (key->flags, KEY_FLAG_MMAP_KEY)) elektraFree (key->key);
+	clear_bit (key->flags, KEY_FLAG_MMAP_KEY);
 	key->key = 0;
 	key->keySize = 0;
 	key->keyUSize = 0;
@@ -832,6 +833,7 @@ ssize_t keyGetBaseName (const Key * key, char * returned, size_t maxSize)
  * @retval -1 if the key had no name
  * @retval -1 on NULL pointers
  * @retval -1 if key was inserted to a keyset before
+ * @retval -1 on allocation errors
  * @ingroup keyname
  *
  */
@@ -854,7 +856,18 @@ ssize_t keyAddBaseName (Key * key, const char * baseName)
 		key->keySize += len + 1;
 	}
 
-	elektraRealloc ((void **) &key->key, key->keySize * 2);
+	const size_t newSize = key->keySize * 2;
+	if (test_bit (key->flags, KEY_FLAG_MMAP_KEY))
+	{
+		// key was in mmap region, clear flag and trigger malloc instead of realloc
+		key->key = elektraMalloc (newSize);
+		clear_bit (key->flags, KEY_FLAG_MMAP_KEY);
+	}
+	else
+	{
+		if (-1 == elektraRealloc ((void **) &key->key, newSize)) return -1;
+	}
+
 	if (!key->key)
 	{
 		elektraFree (escaped);
@@ -961,8 +974,19 @@ ssize_t keyAddName (Key * key, const char * newName)
 	if (!elektraValidateKeyName (newName, nameSize)) return -1;
 
 	const size_t origSize = key->keySize;
-	const size_t newSize = origSize + nameSize;
-	elektraRealloc ((void **) &key->key, newSize * 2);
+	const size_t newSize = (origSize + nameSize) * 2;
+
+	if (test_bit (key->flags, KEY_FLAG_MMAP_KEY))
+	{
+		// key was in mmap region, clear flag and trigger malloc instead of realloc
+		key->key = elektraMalloc (newSize);
+		clear_bit (key->flags, KEY_FLAG_MMAP_KEY);
+	}
+	else
+	{
+		if (-1 == elektraRealloc ((void **) &key->key, newSize)) return -1;
+	}
+
 	if (!key->key) return -1;
 
 	size_t size = 0;
@@ -1057,6 +1081,7 @@ ssize_t keyAddName (Key * key, const char * newName)
  * @return the size in bytes of the new key name
  * @retval -1 on NULL pointers in key
  * @retval -1 if key was inserted to a keyset before
+ * @retval -1 on allocation errors
  * @ingroup keyname
  */
 ssize_t keySetBaseName (Key * key, const char * baseName)
@@ -1098,7 +1123,18 @@ ssize_t keySetBaseName (Key * key, const char * baseName)
 	elektraEscapeKeyNamePart (baseName, escaped);
 	size_t sizeEscaped = elektraStrLen (escaped);
 
-	elektraRealloc ((void **) &key->key, (key->keySize + sizeEscaped) * 2);
+	const size_t newSize = (key->keySize + sizeEscaped) * 2;
+	if (test_bit (key->flags, KEY_FLAG_MMAP_KEY))
+	{
+		// key was in mmap region, clear flag and trigger malloc instead of realloc
+		key->key = elektraMalloc (newSize);
+		clear_bit (key->flags, KEY_FLAG_MMAP_KEY);
+	}
+	else
+	{
+		if (-1 == elektraRealloc ((void **) &key->key, newSize)) return -1;
+	}
+
 	if (!key->key)
 	{
 		elektraFree (escaped);

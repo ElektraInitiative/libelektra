@@ -423,7 +423,14 @@ int ksDel (KeySet * ks)
 	}
 #endif
 
-	elektraFree (ks);
+	if (ks->mmapMetaData)
+	{
+		set_bit (ks->mmapMetaData->flags, MMAP_FLAG_DELETED);
+	}
+	if (!test_bit (ks->flags, KS_FLAG_MMAP_STRUCT))
+	{
+		elektraFree (ks);
+	}
 
 	return rc;
 }
@@ -2494,7 +2501,7 @@ Key * ksLookupByBinary (KeySet * ks, const void * value, size_t size, option_t o
  *
  * Resize keyset.
  *
- * For internal useage only.
+ * For internal usage only.
  *
  * Don't use that function to be portable. You can give an hint
  * how large the keyset should be in ksNew().
@@ -2534,6 +2541,7 @@ int ksResize (KeySet * ks, size_t alloc)
 		ks->alloc = alloc;
 		ks->size = 0;
 		ks->array = elektraMalloc (sizeof (struct _Key *) * ks->alloc);
+		clear_bit (ks->flags, KS_FLAG_MMAP_ARRAY);
 		if (!ks->array)
 		{
 			/*errno = KDB_ERR_NOMEM;*/
@@ -2542,6 +2550,19 @@ int ksResize (KeySet * ks, size_t alloc)
 	}
 	ks->alloc = alloc;
 
+	if (test_bit (ks->flags, KS_FLAG_MMAP_ARRAY))
+	{
+		// need to move the ks->array out of mmap
+		Key ** new = elektraMalloc (sizeof (struct _Key *) * ks->alloc);
+		if (!new)
+		{
+			/*errno = KDB_ERR_NOMEM;*/
+			return -1;
+		}
+		elektraMemcpy (new, ks->array, ks->size + 1); // copy including ending NULL
+		ks->array = new;
+		clear_bit (ks->flags, KS_FLAG_MMAP_ARRAY);
+	}
 
 	if (elektraRealloc ((void **) &ks->array, sizeof (struct _Key *) * ks->alloc) == -1)
 	{
@@ -2591,6 +2612,7 @@ int ksInit (KeySet * ks)
 	ks->size = 0;
 	ks->alloc = 0;
 	ks->flags = 0;
+	ks->mmapMetaData = 0;
 
 	ksRewind (ks);
 
@@ -2623,7 +2645,12 @@ int ksClose (KeySet * ks)
 		keyDel (k);
 	}
 
-	if (ks->array) elektraFree (ks->array);
+	if (ks->array && !test_bit (ks->flags, KS_FLAG_MMAP_ARRAY))
+	{
+		elektraFree (ks->array);
+	}
+	clear_bit (ks->flags, KS_FLAG_MMAP_ARRAY);
+
 	ks->array = 0;
 	ks->alloc = 0;
 

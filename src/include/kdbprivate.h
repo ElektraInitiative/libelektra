@@ -56,6 +56,12 @@
  * to which mountpoint. */
 #define KDB_SYSTEM_ELEKTRA "system/elektra"
 
+/** Magic number used in mmap format */
+#define ELEKTRA_MAGIC_MMAP_NUMBER (0x0A6172746B656C45)
+
+/** Mmap format version */
+#define ELEKTRA_MMAP_FORMAT_VERSION (1)
+
 
 #ifdef __cplusplus
 namespace ckdb
@@ -66,6 +72,9 @@ extern "C" {
 typedef struct _Trie Trie;
 typedef struct _Split Split;
 typedef struct _Backend Backend;
+
+/* Metadata needed for mmap file format */
+typedef struct _mmapMetaData MmapMetaData;
 
 /* These define the type for pointers to all the kdb functions */
 typedef int (*kdbOpenPtr) (Plugin *, Key * errorKey);
@@ -118,12 +127,26 @@ typedef enum {
 			 to be changed. All attempts to change the value
 			 will lead to an error.
 			 Needed for metakeys*/
-	KEY_FLAG_RO_META = 1 << 3	/*!<
+	KEY_FLAG_RO_META = 1 << 3,	/*!<
 			 Read only flag for meta.
 			 Key meta is read only and not allowed
 			 to be changed. All attempts to change the value
 			 will lead to an error.
 			 Needed for metakeys.*/
+	KEY_FLAG_MMAP_STRUCT = 1 << 4,	/*!<
+			 Key struct lies inside a mmap region.
+			 This flag is set for Keys inside a mapped region.
+			 It prevents erroneous free() calls on these keys. */
+	KEY_FLAG_MMAP_KEY = 1 << 5,	/*!<
+			 Key name lies inside a mmap region.
+			 This flag is set once a Key name has been moved to a mapped region,
+			 and is removed if the name moves out of the mapped region.
+			 It prevents erroneous free() calls on these keys. */
+	KEY_FLAG_MMAP_DATA = 1 << 6	/*!<
+			 Key value lies inside a mmap region.
+			 This flag is set once a Key value has been moved to a mapped region,
+			 and is removed if the value moves out of the mapped region.
+			 It prevents erroneous free() calls on these keys. */
 } keyflag_t;
 
 
@@ -147,8 +170,26 @@ typedef enum {
 		 Every Key add, Key removal or Key name change operation
 		 sets this flag.*/
 #endif
+	,KS_FLAG_MMAP_STRUCT = 1 << 2	/*!<
+		 KeySet struct lies inside a mmap region.
+		 This flag is set for KeySets inside a mapped region.
+		 It prevents erroneous free() calls on these KeySets. */
+	,KS_FLAG_MMAP_ARRAY = 1 << 3	/*!<
+		 Array of the KeySet lies inside a mmap region.
+		 This flag is set for KeySets where the array is in a mapped region,
+		 and is removed if the array is moved out from the mapped region.
+		 It prevents erroneous free() calls on these arrays. */
 } ksflag_t;
 
+/**
+ * Mmap Flags.
+ *
+ * Control flags needed for mmap
+ */
+typedef enum {
+	MMAP_FLAG_DELETED = 1, /*!<
+		 KeySet was deleted, no need to unlink. */
+} mmapflag_t;
 
 /**
  * The private Key struct.
@@ -246,6 +287,12 @@ struct _KeySet
 	 * Some control and internal flags.
 	 */
 	ksflag_t flags;
+
+	/**
+	 * Mmap meta-data struct
+	 */
+	MmapMetaData * mmapMetaData;
+
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 	/**
 	 * The Order Preserving Minimal Perfect Hash Map.
@@ -432,6 +479,22 @@ struct _Split
 				or "user", "system", "spec" for the split root/cascading backends */
 	splitflag_t * syncbits; /*!< Bits for various options, see #splitflag_t for documentation */
 };
+
+
+/**
+ * Mmap meta-data
+ */
+struct _mmapMetaData
+{
+	char * destAddr;	/**<Base pointer to allocated destination */
+
+	size_t numKeySets;	/**<Number of KeySets inlcuding meta KS */
+	size_t ksAlloc;		/**<Sum of all KeySet->alloc sizes */
+	size_t numKeys;		/**<Number of Keys including meta Keys */
+
+	mmapflag_t flags;	/**<Control flags for mmap */
+};
+
 
 // clang-format on
 

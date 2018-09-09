@@ -513,8 +513,9 @@ ssize_t keySetRaw (Key * key, const void * newBinary, size_t dataSize)
 	{
 		if (key->data.v)
 		{
-			elektraFree (key->data.v);
+			if (!test_bit (key->flags, KEY_FLAG_MMAP_DATA)) elektraFree (key->data.v);
 			key->data.v = NULL;
+			clear_bit (key->flags, KEY_FLAG_MMAP_DATA);
 		}
 		key->dataSize = 0;
 		set_bit (key->flags, KEY_FLAG_SYNC);
@@ -526,6 +527,18 @@ ssize_t keySetRaw (Key * key, const void * newBinary, size_t dataSize)
 	if (key->data.v)
 	{
 		char * previous = key->data.v;
+
+		if (test_bit (key->flags, KEY_FLAG_MMAP_DATA))
+		{
+			clear_bit (key->flags, KEY_FLAG_MMAP_DATA);
+			key->data.v = elektraMalloc (key->dataSize);
+			if (key->data.v == NULL) return -1;
+		}
+		else
+		{
+			if (-1 == elektraRealloc ((void **) &key->data.v, key->dataSize)) return -1;
+		}
+
 		if (-1 == elektraRealloc ((void **) &key->data.v, key->dataSize)) return -1;
 		if (previous == key->data.v)
 		{

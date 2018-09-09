@@ -34,6 +34,7 @@
 
 void timeInit (void);
 void timePrint (char * msg);
+int timeGetDiffMicroseconds (void);
 
 void benchmarkCreate (void);
 void benchmarkFillup (void);

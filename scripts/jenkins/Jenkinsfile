@@ -79,6 +79,12 @@ CMAKE_FLAGS_INI = [
   'KDB_DEFAULT_STORAGE': 'ini'
 ]
 
+CMAKE_FLAGS_MMAP = [
+  'KDB_DB_FILE': 'default.mmap',
+  'KDB_DB_INIT': 'elektra.mmap',
+  'KDB_DEFAULT_STORAGE': 'mmapstorage'
+]
+
 CMAKE_FLAGS_I386 = [
   'CMAKE_C_FLAGS': '-m32',
   'CMAKE_CXX_FLAGS': '-m32'
@@ -564,6 +570,24 @@ def generateFullBuildStages() {
       CMAKE_FLAGS_COVERAGE
     ,
     [TEST.ALL, TEST.MEM]
+  )
+
+  // Build Elektra with the mmap backend instead of the default
+  tasks << buildAndTest(
+    "debian-stable-full-mmap",
+    DOCKER_IMAGES.stretch,
+    CMAKE_FLAGS_BUILD_ALL +
+      CMAKE_FLAGS_MMAP +
+      CMAKE_FLAGS_COVERAGE
+    ,
+    [TEST.ALL, TEST.MEM]
+  )
+
+  tasks << buildAndTestAsan(
+    "debian-stable-full-mmap-asan",
+    DOCKER_IMAGES.stretch,
+    CMAKE_FLAGS_BUILD_ALL +
+      CMAKE_FLAGS_MMAP
   )
 
   // Build Elektra with xdg resolver to see if we are compliant
