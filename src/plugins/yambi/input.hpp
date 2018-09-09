@@ -15,6 +15,9 @@
 
 // -- Class --------------------------------------------------------------------
 
+/**
+ * @brief This class provides methods for a lexer to analyze textual input.
+ */
 class Input
 {
 
