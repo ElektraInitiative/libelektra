@@ -14,6 +14,10 @@
 
 #include "driver.hpp"
 
+using std::ifstream;
+using std::string;
+using std::to_string;
+
 using kdb::Key;
 using kdb::KeySet;
 

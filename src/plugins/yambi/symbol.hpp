@@ -13,16 +13,13 @@
 
 #include "parser.hpp"
 
-using std::string;
-using std::to_string;
+typedef yy::parser parser;
+typedef yy::position position;
 
-using yy::parser;
-using yy::position;
-
-using location_type = parser::location_type;
-using symbol_type = parser::symbol_type;
-using token_type = parser::token_type;
-using token = parser::token;
+typedef parser::location_type location_type;
+typedef parser::symbol_type symbol_type;
+typedef parser::token_type token_type;
+typedef parser::token token;
 
 // -- Macros -------------------------------------------------------------------
 
@@ -45,7 +42,7 @@ class Symbol
 	token_type tokenType;
 
 	/** This variable stores the actual value of the symbol. */
-	string text;
+	std::string text;
 
 public:
 	/**
@@ -55,7 +52,7 @@ public:
 	 * @param location This argument specifies the location of the symbol.
 	 * @param value This variable stores the value of this symbol.
 	 */
-	Symbol (token_type const & type, location_type const & location, string const & value = "")
+	Symbol (token_type const & type, location_type const & location, std::string const & value = "")
 	: placement{ location }, tokenType{ type }, text{ value }
 	{
 	}
@@ -101,10 +98,10 @@ public:
 	 *
 	 * @return A string representing this symbol
 	 */
-	string toString () const
+	std::string toString () const
 	{
-		return "<" + to_string (placement.begin.line) + ":" + to_string (placement.begin.column) + "," +
-		       to_string (placement.end.line) + ":" + to_string (placement.end.column) + "," + text + ">";
+		return "<" + std::to_string (placement.begin.line) + ":" + std::to_string (placement.begin.column) + "," +
+		       std::to_string (placement.end.line) + ":" + std::to_string (placement.end.column) + "," + text + ">";
 	}
 };
 

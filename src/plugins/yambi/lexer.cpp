@@ -15,8 +15,12 @@
 
 #include "lexer.hpp"
 
+using std::deque;
+using std::ifstream;
 using std::make_pair;
 using std::runtime_error;
+using std::string;
+using std::unique_ptr;
 
 using yy::parser;
 using location_type = parser::location_type;

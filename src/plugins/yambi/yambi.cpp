@@ -23,6 +23,7 @@ using CppKeySet = kdb::KeySet;
 
 using std::exception;
 using std::runtime_error;
+using std::string;
 
 namespace
 {

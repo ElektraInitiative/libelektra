@@ -13,11 +13,6 @@
 
 #include <kdb.hpp>
 
-using std::string;
-
-using CppKey = kdb::Key;
-using CppKeySet = kdb::KeySet;
-
 // -- Function -----------------------------------------------------------------
 
 /**
@@ -36,6 +31,6 @@ using CppKeySet = kdb::KeySet;
  * @retval  0 if parsing was successful and the function did not change the given keyset
  * @retval  1 if parsing was successful and the function did change `keySet`
  */
-int addToKeySet (CppKeySet & keySet, CppKey & parent, string const & filename);
+int addToKeySet (kdb::KeySet & keySet, kdb::Key & parent, std::string const & filename);
 
 #endif // ELEKTRA_PLUGIN_YAMBI_CONVERTER_HPP

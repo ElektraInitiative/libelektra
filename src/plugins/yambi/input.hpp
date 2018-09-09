@@ -13,17 +13,13 @@
 
 #include <fstream>
 
-using std::ifstream;
-using std::string;
-using std::u32string;
-
 // -- Class --------------------------------------------------------------------
 
 class Input
 {
 
 	/** This variable stores the input represented by this class. */
-	u32string input;
+	std::u32string input;
 
 	/** This variable stores the current position inside `input`. */
 	size_t position = 0;
@@ -34,7 +30,7 @@ public:
 	 *
 	 * @param stream This parameter stores the text this object operates on.
 	 */
-	Input (ifstream const & stream);
+	Input (std::ifstream const & stream);
 
 	/**
 	 * @brief This function returns a character that was not consumed yet.
@@ -70,7 +66,7 @@ public:
 	 * @return A UTF-8 encoded substring of input starting at `start` and ending
 	 *         one character before the current position in the input
 	 */
-	string getText (size_t const start) const;
+	std::string getText (size_t const start) const;
 };
 
 #endif // ELEKTRA_PLUGIN_YAMBI_INPUT_HPP

@@ -20,13 +20,7 @@
 #include "lexer.hpp"
 #include "parser.hpp"
 
-using std::stack;
-using std::string;
-
-using CppKey = kdb::Key;
-using CppKeySet = kdb::KeySet;
-
-using location_type = yy::parser::location_type;
+typedef yy::parser::location_type location_type;
 
 // -- Class --------------------------------------------------------------------
 
@@ -35,27 +29,27 @@ class Driver
 
 	/** This variable stores the key set the drive creates from the given YAML
 	    file */
-	CppKeySet keys;
+	kdb::KeySet keys;
 
 	/**
 	 * This stack stores a key for each level of the current key name below
 	 * parent.
 	 */
-	stack<CppKey> parents;
+	std::stack<kdb::Key> parents;
 
 	/**
 	 * This stack stores indices for the next array elements.
 	 */
-	stack<uintmax_t> indices;
+	std::stack<uintmax_t> indices;
 
 	/**
 	 * This variable stores the most recent error message produced by the parser.
 	 */
-	string errorMessage;
+	std::string errorMessage;
 
 public:
 	/** This variable stores the path of the YAML file the driver is parsing. */
-	string filename;
+	std::string filename;
 
 	/**
 	 * This constructor creates a new driver for the given parent key.
@@ -63,7 +57,7 @@ public:
 	 * @param parent This key specifies the parent of the key set the parser
 	 *               creates.
 	 */
-	Driver (CppKey const & parent);
+	Driver (kdb::Key const & parent);
 
 	/**
 	 * @brief This function parses the current YAML file.
@@ -76,7 +70,7 @@ public:
 	 * @retval -1 if the given file contains a syntax error
 	 * @retval  0 if parsing was successful
 	 */
-	int parse (const string & filepath);
+	int parse (const std::string & filepath);
 
 	/**
 	 * @brief This method retrieves the current key set produced by the driver.
@@ -84,7 +78,7 @@ public:
 	 * @return A key set representing the YAML data produced by the last call of
 	 *         the method `parse`
 	 */
-	CppKeySet getKeySet () const;
+	kdb::KeySet getKeySet () const;
 
 	/**
 	 * @brief This function will be called by the Bison parser to indicate an
@@ -94,14 +88,14 @@ public:
 	 * @param message This value stores the error message emitted by the Bison
 	 *                parser.
 	 */
-	void error (const location_type & location, const string & message);
+	void error (const location_type & location, const std::string & message);
 
 	/**
 	 * @brief This function returns the last error message produced by the parser.
 	 *
 	 * @return A string containing an error message describing a syntax error
 	 */
-	string getErrorMessage ();
+	std::string getErrorMessage ();
 
 	// ===========
 	// = Actions =
@@ -112,14 +106,14 @@ public:
 	 *
 	 * @param text This variable contains the text stored in the value.
 	 */
-	void exitValue (string const & text);
+	void exitValue (std::string const & text);
 
 	/**
 	 * @brief This function will be called after the parser found a key.
 	 *
 	 * @param text This variable contains the text of the key.
 	 */
-	void exitKey (string const & text);
+	void exitKey (std::string const & text);
 
 	/**
 	 * @brief This function will be called after the parser exits a key-value

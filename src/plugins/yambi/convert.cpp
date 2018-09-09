@@ -13,6 +13,11 @@
 #include "convert.hpp"
 #include "driver.hpp"
 
+using std::string;
+
+using CppKey = kdb::Key;
+using CppKeySet = kdb::KeySet;
+
 // -- Function -----------------------------------------------------------------
 
 /**

@@ -16,7 +16,9 @@
 #include "input.hpp"
 
 using std::codecvt_utf8;
+using std::ifstream;
 using std::out_of_range;
+using std::string;
 using std::stringstream;
 using std::wstring_convert;
 

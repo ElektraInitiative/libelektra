@@ -20,14 +20,8 @@
 #include "parser.hpp"
 #include "symbol.hpp"
 
-using std::deque;
-using std::ifstream;
-using std::pair;
-using std::stack;
-using std::unique_ptr;
-
-using symbol_type = yy::parser::symbol_type;
-using location_type = yy::parser::location_type;
+typedef yy::parser::symbol_type symbol_type;
+typedef yy::parser::location_type location_type;
 
 // -- Class --------------------------------------------------------------------
 
@@ -41,7 +35,7 @@ class Lexer
 	location_type location;
 
 	/** This queue stores the list of tokens produced by the lexer. */
-	deque<Symbol> tokens;
+	std::deque<Symbol> tokens;
 
 	/**
 	 * This counter stores the number of tokens already emitted by the lexer.
@@ -54,7 +48,7 @@ class Lexer
 	 * This stack stores the indentation (in number of characters) for each
 	 * block collection.
 	 */
-	stack<size_t> indents{ deque<size_t>{ 0 } };
+	std::stack<size_t> indents{ std::deque<size_t>{ 0 } };
 
 	/**
 	 * This boolean specifies if the lexer has already scanned the whole input or
@@ -70,7 +64,7 @@ class Lexer
 	 * use a single token here. If we need support for flow collections we have
 	 * to store a candidate for each flow level (block context = flow level 0).
 	 */
-	pair<unique_ptr<Symbol>, size_t> simpleKey;
+	std::pair<std::unique_ptr<Symbol>, size_t> simpleKey;
 
 	/**
 	 * @brief This method consumes characters from the input stream keeping
@@ -231,7 +225,7 @@ public:
 	 *
 	 * @param stream This stream specifies the text which this lexer analyzes.
 	 */
-	Lexer (ifstream & stream);
+	Lexer (std::ifstream & stream);
 
 	/**
 	 * @brief This method returns the next token the lexer produced from `input`.
