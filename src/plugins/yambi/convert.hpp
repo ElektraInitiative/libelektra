@@ -6,8 +6,8 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#ifndef CONVERTER_HPP
-#define CONVERTER_HPP
+#ifndef ELEKTRA_PLUGIN_YAMBI_CONVERTER_HPP
+#define ELEKTRA_PLUGIN_YAMBI_CONVERTER_HPP
 
 // -- Imports ------------------------------------------------------------------
 
@@ -39,4 +39,4 @@ using CppKeySet = kdb::KeySet;
  */
 int addToKeySet (CppKeySet & keySet, CppKey & parent, string const & filename);
 
-#endif // CONVERTER_HPP
+#endif // ELEKTRA_PLUGIN_YAMBI_CONVERTER_HPP

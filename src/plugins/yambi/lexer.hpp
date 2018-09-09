@@ -6,8 +6,8 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#ifndef LEXER_HPP
-#define LEXER_HPP
+#ifndef ELEKTRA_PLUGIN_YAMBI_LEXER_HPP
+#define ELEKTRA_PLUGIN_YAMBI_LEXER_HPP
 
 // -- Imports ------------------------------------------------------------------
 
@@ -241,4 +241,4 @@ public:
 	symbol_type nextToken ();
 };
 
-#endif // LEXER_HPP
+#endif // ELEKTRA_PLUGIN_YAMBI_LEXER_HPP

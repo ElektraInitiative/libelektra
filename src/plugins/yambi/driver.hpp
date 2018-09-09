@@ -7,8 +7,8 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#ifndef DRIVER_HPP
-#define DRIVER_HPP
+#ifndef ELEKTRA_PLUGIN_YAMBI_DRIVER_HPP
+#define ELEKTRA_PLUGIN_YAMBI_DRIVER_HPP
 
 // -- Imports ------------------------------------------------------------------
 
@@ -153,4 +153,4 @@ public:
 	void exitElement ();
 };
 
-#endif // DRIVER_HPP
+#endif // ELEKTRA_PLUGIN_YAMBI_DRIVER_HPP

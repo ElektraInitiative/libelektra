@@ -6,8 +6,8 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#ifndef SYMBOL_HPP
-#define SYMBOL_HPP
+#ifndef ELEKTRA_PLUGIN_YAMBI_SYMBOL_HPP
+#define ELEKTRA_PLUGIN_YAMBI_SYMBOL_HPP
 
 // -- Imports ------------------------------------------------------------------
 
@@ -108,4 +108,4 @@ public:
 	}
 };
 
-#endif // SYMBOL_HPP
+#endif // ELEKTRA_PLUGIN_YAMBI_SYMBOL_HPP

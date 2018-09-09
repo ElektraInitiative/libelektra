@@ -6,8 +6,8 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#ifndef INPUT_HPP
-#define INPUT_HPP
+#ifndef ELEKTRA_PLUGIN_YAMBI_INPUT_HPP
+#define ELEKTRA_PLUGIN_YAMBI_INPUT_HPP
 
 // -- Imports ------------------------------------------------------------------
 
@@ -73,4 +73,4 @@ public:
 	string getText (size_t const start) const;
 };
 
-#endif // INPUT_HPP
+#endif // ELEKTRA_PLUGIN_YAMBI_INPUT_HPP
