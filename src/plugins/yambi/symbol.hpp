@@ -13,7 +13,6 @@
 
 #include "parser.hpp"
 
-typedef yy::position position;
 typedef yy::Parser Parser;
 
 typedef Parser::location_type location_type;
@@ -88,7 +87,7 @@ public:
 	 *
 	 * @return The start position of this symbol
 	 */
-	position getStart () const
+	yy::position getStart () const
 	{
 		return placement.begin;
 	}
