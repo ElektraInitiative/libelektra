@@ -23,7 +23,7 @@ typedef parser::token token;
 
 // -- Macros -------------------------------------------------------------------
 
-#define switchToken(TOK)                                                                                                                   \
+#define ELEKTRA_SWITCH_TOKEN(TOK)                                                                                                          \
 	case token::TOKEN_##TOK:                                                                                                           \
 		return parser::make_##TOK (text, placement)
 
@@ -66,18 +66,18 @@ public:
 	{
 		switch (tokenType)
 		{
-			switchToken (STREAM_START);
-			switchToken (STREAM_END);
-			switchToken (COMMENT);
-			switchToken (PLAIN_SCALAR);
-			switchToken (SINGLE_QUOTED_SCALAR);
-			switchToken (DOUBLE_QUOTED_SCALAR);
-			switchToken (MAPPING_START);
-			switchToken (KEY);
-			switchToken (VALUE);
-			switchToken (SEQUENCE_START);
-			switchToken (ELEMENT);
-			switchToken (BLOCK_END);
+			ELEKTRA_SWITCH_TOKEN (STREAM_START);
+			ELEKTRA_SWITCH_TOKEN (STREAM_END);
+			ELEKTRA_SWITCH_TOKEN (COMMENT);
+			ELEKTRA_SWITCH_TOKEN (PLAIN_SCALAR);
+			ELEKTRA_SWITCH_TOKEN (SINGLE_QUOTED_SCALAR);
+			ELEKTRA_SWITCH_TOKEN (DOUBLE_QUOTED_SCALAR);
+			ELEKTRA_SWITCH_TOKEN (MAPPING_START);
+			ELEKTRA_SWITCH_TOKEN (KEY);
+			ELEKTRA_SWITCH_TOKEN (VALUE);
+			ELEKTRA_SWITCH_TOKEN (SEQUENCE_START);
+			ELEKTRA_SWITCH_TOKEN (ELEMENT);
+			ELEKTRA_SWITCH_TOKEN (BLOCK_END);
 		default:
 			return parser::make_END (placement);
 		}
