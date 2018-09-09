@@ -25,7 +25,7 @@
 #  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # ~~~
 
-include (CheckFunctionExists)
+include (SafeCheckSymbolExists)
 
 if (ICONV_INCLUDE_DIR)
 	set (ICONV_FIND_QUIETLY TRUE)
@@ -77,7 +77,7 @@ if (WIN32)
 		set (ICONV_FOUND TRUE)
 	endif ()
 else ()
-	check_function_exists (iconv HAVE_ICONV_IN_LIBC)
+	safe_check_symbol_exists (iconv "iconv.h" HAVE_ICONV_IN_LIBC)
 	if (ICONV_INCLUDE_DIR AND HAVE_ICONV_IN_LIBC)
 		set (ICONV_FOUND TRUE)
 		set (ICONV_LIBRARY

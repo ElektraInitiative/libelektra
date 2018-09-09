@@ -190,6 +190,8 @@ you up to date with the multi-language support provided by Elektra.
   tools . *(René Schwaiger)*
 - The CMake configuration step now displays less debug messages about found libraries. *(René Schwaiger)*
 - Building the Haskell binding should now work again. *(René Schwaiger)*
+- Provide a wrapper around `check_symbol_exists` that handles issues with
+  `-Werror -Wpedantic`. *(Lukas Winkler)*
 
 ### Docker
 
