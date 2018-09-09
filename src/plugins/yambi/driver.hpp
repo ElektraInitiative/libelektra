@@ -24,6 +24,10 @@ typedef yy::parser::location_type location_type;
 
 // -- Class --------------------------------------------------------------------
 
+/**
+ * @brief This class provides a communication interface between the
+ *        parser (`parser`) and the parser user (`convert`).
+ */
 class Driver
 {
 
