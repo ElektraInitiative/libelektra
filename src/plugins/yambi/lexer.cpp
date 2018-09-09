@@ -310,16 +310,11 @@ void Lexer::scanPlainScalar ()
 	addSimpleKeyCandidate ();
 
 	size_t lengthSpace = 0;
-	size_t lengthNonSpace = 0;
 	size_t start = input.index ();
 
-	while (true)
+	size_t lengthNonSpace;
+	while ((lengthNonSpace = countPlainNonSpace (lengthSpace)) > 0)
 	{
-		lengthNonSpace = countPlainNonSpace (lengthSpace);
-		if (lengthNonSpace == 0)
-		{
-			break;
-		}
 		forward (lengthSpace + lengthNonSpace);
 		lengthSpace = countPlainSpace ();
 	}
