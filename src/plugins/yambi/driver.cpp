@@ -11,10 +11,12 @@
 
 #include <cerrno>
 #include <fstream>
+#include <stdexcept>
 
 #include "driver.hpp"
 
 using std::ifstream;
+using std::overflow_error;
 using std::string;
 using std::to_string;
 
@@ -221,14 +223,13 @@ void Driver::enterElement ()
 {
 
 	Key key{ parents.top ().getName (), KEY_END };
+	if (indices.top () >= UINTMAX_MAX) throw overflow_error ("Unable to increase array index for array “" + key.getName () + "”");
+
 	key.addBaseName (indexToArrayBaseName (indices.top ()));
 
 	uintmax_t index = indices.top ();
 	indices.pop ();
-	if (index < UINTMAX_MAX)
-	{
-		index++;
-	}
+	index++;
 	indices.push (index);
 
 	parents.top ().setMeta ("array", key.getBaseName ());
