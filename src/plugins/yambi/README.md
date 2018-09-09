@@ -17,7 +17,7 @@ This plugin uses Bison to generate a parser for the [YAML](http://yaml.org) seri
 
 ## Dependencies
 
-Currently this plugin requires that you install [Bison](https://www.gnu.org/software/bison/) (3.0 or later).
+The plugin requires [Bison](https://www.gnu.org/software/bison/) (3.0 or later).
 
 ## Examples
 
