@@ -22,9 +22,9 @@ using std::runtime_error;
 using std::string;
 using std::unique_ptr;
 
-using yy::parser;
-using location_type = parser::location_type;
-using token = parser::token;
+using yy::Parser;
+using location_type = Parser::location_type;
+using token = Parser::token;
 
 // -- Class --------------------------------------------------------------------
 
@@ -439,7 +439,7 @@ Lexer::Lexer (ifstream & stream) : input{ stream }
  *
  * @return The next token the parser has not emitted yet
  */
-parser::symbol_type Lexer::nextToken ()
+Parser::symbol_type Lexer::nextToken ()
 {
 	while (needMoreTokens ())
 	{

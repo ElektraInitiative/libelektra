@@ -13,19 +13,19 @@
 
 #include "parser.hpp"
 
-typedef yy::parser parser;
 typedef yy::position position;
+typedef yy::Parser Parser;
 
-typedef parser::location_type location_type;
-typedef parser::symbol_type symbol_type;
-typedef parser::token_type token_type;
-typedef parser::token token;
+typedef Parser::location_type location_type;
+typedef Parser::symbol_type symbol_type;
+typedef Parser::token_type token_type;
+typedef Parser::token token;
 
 // -- Macros -------------------------------------------------------------------
 
 #define ELEKTRA_SWITCH_TOKEN(TOK)                                                                                                          \
 	case token::TOKEN_##TOK:                                                                                                           \
-		return parser::make_##TOK (text, placement)
+		return Parser::make_##TOK (text, placement)
 
 // -- Class --------------------------------------------------------------------
 
@@ -79,7 +79,7 @@ public:
 			ELEKTRA_SWITCH_TOKEN (ELEMENT);
 			ELEKTRA_SWITCH_TOKEN (BLOCK_END);
 		default:
-			return parser::make_END (placement);
+			return Parser::make_END (placement);
 		}
 	}
 

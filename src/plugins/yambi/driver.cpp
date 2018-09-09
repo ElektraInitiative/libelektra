@@ -23,7 +23,7 @@ using std::to_string;
 using kdb::Key;
 using kdb::KeySet;
 
-using yy::parser;
+using yy::Parser;
 
 // -- Macros -------------------------------------------------------------------
 
@@ -108,7 +108,7 @@ int Driver::parse (const string & filepath)
 	if (!input.good ()) return -3;
 
 	Lexer lexer{ input };
-	parser parser{ lexer, *this };
+	Parser parser{ lexer, *this };
 	parser.set_debug_level (DEBUG_LEVEL);
 
 	return -parser.parse ();

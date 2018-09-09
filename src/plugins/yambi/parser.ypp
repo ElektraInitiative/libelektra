@@ -8,6 +8,7 @@
 
 %skeleton "lalr1.cc"
 %defines
+%define parser_class_name { Parser }
 %define api.token.constructor
 %define api.value.type variant
 %define parse.assert
@@ -99,7 +100,7 @@ element : { driver.enterElement(); } ELEMENT child { driver.exitElement(); };
 
 %%
 
-void yy::parser::error (const location_type& location,
+void yy::Parser::error (const location_type& location,
                         const std::string& message)
 {
   driver.error (location, message);

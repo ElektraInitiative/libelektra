@@ -20,8 +20,8 @@
 #include "parser.hpp"
 #include "symbol.hpp"
 
-typedef yy::parser::symbol_type symbol_type;
-typedef yy::parser::location_type location_type;
+typedef yy::Parser::symbol_type symbol_type;
+typedef yy::Parser::location_type location_type;
 
 // -- Class --------------------------------------------------------------------
 
