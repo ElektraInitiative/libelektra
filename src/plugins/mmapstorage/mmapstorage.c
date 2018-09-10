@@ -141,7 +141,7 @@ static char * mmapFile (void * addr, FILE * fp, size_t mmapSize, int mapOpts, Ke
 /**
  * @brief MmapHeader initializer.
  *
- * @param mmapHeader to inizialize
+ * @param mmapHeader to initialize
  */
 static void initHeader (MmapHeader * mmapHeader)
 {
@@ -1020,7 +1020,7 @@ static void saveLinkedFile (Key * key, KeySet * mappedFiles, KeySet * returned, 
  * @param errorKey Unused.
  *
  * @retval ELEKTRA_PLUGIN_STATUS_ERROR on memory error (plugin data (keyset) could not be allocated).
- * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if initialization was successfull.
+ * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if initialization was successful.
  */
 int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, open) (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 {
@@ -1217,7 +1217,7 @@ error:
  * @param parentKey Holding the filename or error message.
  *
  * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if the file was written successfully.
- * @retval ELEKTRA_PLUGIN_STATUS_ERROR if any error occured.
+ * @retval ELEKTRA_PLUGIN_STATUS_ERROR if any error occurred.
  */
 int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, set) (Plugin * handle, KeySet * ks, Key * parentKey)
 {
