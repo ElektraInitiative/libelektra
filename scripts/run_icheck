@@ -48,7 +48,7 @@ canonify "$ICHECK_DIR/new_interface.h"
 while read line; do
 	printf '%s' "$line" | grep -q '^\s*//' && continue
 	printf 'Remove entry matching “%s” from new interface\n' "$line"
-	ex '+g/^.*'"$line"'.*$/d' -cwq "$ICHECK_DIR/new_interface.h"
+	printf 'H\ng/^.*%s.*$/d\nw\n' "$line" | ed -s "$ICHECK_DIR/new_interface.h"
 done < "tests/icheck.suppression"
 
 # Compare against the version we want to be ABI/API compatible with

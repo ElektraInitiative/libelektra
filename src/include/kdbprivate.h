@@ -21,6 +21,7 @@
 #include <kdbtypes.h>
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 #include <kdbopmphm.h>
+#include <kdbopmphmpredictor.h>
 #endif
 #include <kdbglobal.h>
 
@@ -298,6 +299,10 @@ struct _KeySet
 	 * The Order Preserving Minimal Perfect Hash Map.
 	 */
 	Opmphm * opmphm;
+	/**
+	 * The Order Preserving Minimal Perfect Hash Map Predictor.
+	 */
+	OpmphmPredictor * opmphmPredictor;
 #endif
 };
 

@@ -73,6 +73,7 @@ RUN apt-get update \
         gawk \
         lcov \
         valgrind \
+        ed \
     && rm -rf /var/lib/apt/lists/*
 
 RUN cabal update && cabal install hspec QuickCheck
