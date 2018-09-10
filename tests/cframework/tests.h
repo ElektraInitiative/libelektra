@@ -32,6 +32,10 @@
 #define BUFFER_LENGTH 4096
 #define ELEKTRA_TEST_ROOT "/tests/ckdb/"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 extern int nbError;
 extern int nbTest;
 
@@ -42,6 +46,8 @@ extern char * tempHome;
 extern int tempHomeLen;
 
 int init (int argc, char ** argv);
+
+#ifndef __cplusplus
 
 #define print_result(name)                                                                                                                 \
 	{                                                                                                                                  \
@@ -284,6 +290,8 @@ int init (int argc, char ** argv);
 		}                                                                                                                          \
 	}
 
+#endif // __cplusplus
+
 int compare_files (const char * filename);
 int compare_line_files (const char * filename, const char * genfilename);
 int compare_regex_to_line_files (const char * filename, const char * genfilename);
@@ -303,5 +311,9 @@ int output_warnings (Key * errorKey);
 int output_error (Key * errorKey);
 
 void clean_temp_home (void);
+
+#ifdef __cplusplus
+} // end extern "C"
+#endif
 
 #endif

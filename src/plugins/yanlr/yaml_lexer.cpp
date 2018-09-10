@@ -1,5 +1,9 @@
 /**
- * This lexer uses the same idea as the scanner of `libyaml` (and various other
+ * @file
+ *
+ * @brief This file specifies a lexer that scans a subset of YAML.
+ *
+ * The lexer uses the same idea as the scanner of `libyaml` (and various other
  * YAML libs) to detect simple keys (keys with no `?` prefix).
  *
  * For a detailed explanation of the algorithm, I recommend to take a look at
@@ -198,9 +202,9 @@ unique_ptr<CommonToken> YAMLLexer::commonToken (size_t type, size_t start, size_
  */
 bool YAMLLexer::addIndentation (size_t const lineIndex)
 {
-	if (static_cast<long long> (lineIndex) > indents.top ())
+	if (lineIndex > indents.top ())
 	{
-		ELEKTRA_LOG_DEBUG ("Add indentation %zu", column);
+		ELEKTRA_LOG_DEBUG ("Add indentation %zu", lineIndex);
 		indents.push (lineIndex);
 		return true;
 	}
@@ -272,7 +276,7 @@ void YAMLLexer::forward (size_t const characters = 1)
 		column++;
 		if (input->LA (1) == '\n')
 		{
-			column = 0;
+			column = 1;
 			line++;
 		}
 		input->consume ();
@@ -351,7 +355,7 @@ bool YAMLLexer::isComment (size_t const offset) const
  * @brief This method saves a token for a simple key candidate located at the
  *        current input position.
  */
-void YAMLLexer::addSimpleKeycCandidate ()
+void YAMLLexer::addSimpleKeyCandidate ()
 {
 	size_t position = tokens.size () + tokensEmitted;
 	size_t index = input->index ();
@@ -366,7 +370,7 @@ void YAMLLexer::addSimpleKeycCandidate ()
  *                  of spaces) for which this method should add block end
  *                  tokens.
  */
-void YAMLLexer::addBlockEnd (long long const lineIndex)
+void YAMLLexer::addBlockEnd (size_t const lineIndex)
 {
 	while (lineIndex < indents.top ())
 	{
@@ -393,7 +397,7 @@ void YAMLLexer::scanStart ()
  */
 void YAMLLexer::scanEnd ()
 {
-	addBlockEnd (-1);
+	addBlockEnd (0);
 	tokens.push_back (commonToken (STREAM_END, input->index (), input->index (), "END"));
 	tokens.push_back (commonToken (Token::EOF, input->index (), input->index (), "EOF"));
 	done = true;
@@ -409,7 +413,7 @@ void YAMLLexer::scanSingleQuotedScalar ()
 
 	size_t start = input->index ();
 	// A single quoted scalar can start a simple key
-	addSimpleKeycCandidate ();
+	addSimpleKeyCandidate ();
 
 	forward (); // Include initial single quote
 	while (input->LA (1) != '\'' || input->LA (2) == '\'')
@@ -430,7 +434,7 @@ void YAMLLexer::scanDoubleQuotedScalar ()
 	size_t start = input->index ();
 
 	// A double quoted scalar can start a simple key
-	addSimpleKeycCandidate ();
+	addSimpleKeyCandidate ();
 
 	forward (); // Include initial double quote
 	while (input->LA (1) != '"')
@@ -449,7 +453,7 @@ void YAMLLexer::scanPlainScalar ()
 	ELEKTRA_LOG_DEBUG ("Scan plain scalar");
 	size_t start = input->index ();
 	// A plain scalar can start a simple key
-	addSimpleKeycCandidate ();
+	addSimpleKeyCandidate ();
 
 	size_t lengthSpace = 0;
 	size_t lengthNonSpace = 0;

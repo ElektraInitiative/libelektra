@@ -72,7 +72,7 @@ fi
 
 DESKTOP_FILE=${FILE_SUFFIX}_desktop.yajl
 DESKTOP_MOUNTPOINT=/test/script/apps/desktop
-if is_plugin_available yajl
+if is_plugin_available yajl && is_plugin_available directoryvalue
 then
 	"$KDB" mount $DESKTOP_FILE $DESKTOP_MOUNTPOINT yajl
 	succeed_if "could not mount DESKTOP: $DESKTOP_FILE at $DESKTOP_MOUNTPOINT"
@@ -147,7 +147,7 @@ fi
 
 
 
-if is_plugin_available yajl
+if is_plugin_available yajl && is_plugin_available directoryvalue
 then
 	"$KDB" umount $DESKTOP_MOUNTPOINT >/dev/null
 	succeed_if "could not umount $DESKTOP_MOUNTPOINT"

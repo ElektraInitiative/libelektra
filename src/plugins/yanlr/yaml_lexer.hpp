@@ -1,5 +1,9 @@
 /**
- * This lexer uses the same idea as the scanner of `libyaml` (and various other
+ * @file
+ *
+ * @brief This file specifies a lexer that scans a subset of YAML.
+ *
+ * The lexer uses the same idea as the scanner of `libyaml` (and various other
  * YAML libs) to detect simple keys (keys with no `?` prefix).
  *
  * For a detailed explanation of the algorithm, I recommend to take a look at
@@ -61,7 +65,7 @@ class YAMLLexer : public TokenSource
 	 * This number stores the current character position of the lexer inside of
 	 * `line`.
 	 */
-	size_t column = 0;
+	size_t column = 1;
 
 	/**
 	 * This counter stores the number of tokens already emitted by the lexer.
@@ -74,7 +78,7 @@ class YAMLLexer : public TokenSource
 	 * This stack stores the indentation (in number of characters) for each
 	 * block collection.
 	 */
-	stack<long long> indents{ deque<long long>{ -1 } };
+	stack<size_t> indents{ deque<size_t>{ 0 } };
 
 	/**
 	 * This boolean specifies if the lexer has already scanned the whole input or
@@ -196,7 +200,7 @@ class YAMLLexer : public TokenSource
 	 * @brief This method saves a token for a simple key candidate located at the
 	 *        current input position.
 	 */
-	void addSimpleKeycCandidate ();
+	void addSimpleKeyCandidate ();
 
 	/**
 	 * @brief This method adds block closing tokens to the token queue, if the
@@ -206,7 +210,7 @@ class YAMLLexer : public TokenSource
 	 *                  of spaces) for which this method should add block end
 	 *                  tokens.
 	 */
-	void addBlockEnd (long long const lineIndex);
+	void addBlockEnd (size_t const lineIndex);
 
 	/**
 	 * @brief This method adds the token for the start of the YAML stream to

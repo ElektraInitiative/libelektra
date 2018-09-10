@@ -1,0 +1,107 @@
+/**
+ * @file
+ *
+ * @brief This file contains a Bison parser for YAML data.
+ *
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+ */
+
+%skeleton "lalr1.cc"
+%defines
+%define parser_class_name { Parser }
+%define api.token.constructor
+%define api.value.type variant
+%define parse.assert
+%code requires
+{
+#include <string>
+class Driver;
+class Lexer;
+}
+// The parsing context.
+%parse-param { Lexer& lexer }
+%parse-param { Driver& driver }
+%locations
+%initial-action
+{
+  // Initialize the initial location.
+  @$.begin.filename = @$.end.filename = &driver.filename;
+};
+%define parse.trace
+%define parse.error verbose
+%code
+{
+# include "driver.hpp"
+
+#undef yylex
+#define yylex lexer.nextToken
+}
+%define api.token.prefix {TOKEN_}
+%token
+  END  0  "end of file"
+;
+%token <std::string> STREAM_START
+%token <std::string> STREAM_END
+%token <std::string> COMMENT
+%token <std::string> PLAIN_SCALAR
+%token <std::string> SINGLE_QUOTED_SCALAR
+%token <std::string> DOUBLE_QUOTED_SCALAR
+%token <std::string> MAPPING_START
+%token <std::string> KEY
+%token <std::string> VALUE
+%token <std::string> SEQUENCE_START
+%token <std::string> ELEMENT
+%token <std::string> BLOCK_END
+
+%type <std::string> scalar
+
+// This boolean specifies if the rule matched a child or not
+%type <bool> child_comments_empty
+
+%%
+
+yaml : STREAM_START child_comments_empty STREAM_END ;
+child_comments_empty : child    { $$ = true; }
+                     | comments { $$ = false; }
+                     | %empty   { $$ = false; }
+                     ;
+
+child : comments_empty node comments_empty;
+node : value
+     | map
+     | sequence
+     ;
+
+comments_empty : comments | %empty ;
+comments: COMMENT
+        | comments COMMENT
+        ;
+
+value : scalar { driver.exitValue($1); } ;
+scalar : PLAIN_SCALAR { $$ = $1; }
+       | SINGLE_QUOTED_SCALAR { $$ = $1; }
+       | DOUBLE_QUOTED_SCALAR { $$ = $1; }
+       ;
+
+map : MAPPING_START pairs BLOCK_END ;
+pairs : pair
+      | pairs pair
+      ;
+pair : KEY key VALUE child_comments_empty { driver.exitPair($4); };
+key : scalar { driver.exitKey($1); } ;
+
+sequence : { driver.enterSequence(); }
+           SEQUENCE_START elements BLOCK_END
+           { driver.exitSequence(); }
+           ;
+elements : element
+         | elements element ;
+element : { driver.enterElement(); } ELEMENT child { driver.exitElement(); };
+
+%%
+
+void yy::Parser::error (const location_type& location,
+                        const std::string& message)
+{
+  driver.error (location, message);
+}

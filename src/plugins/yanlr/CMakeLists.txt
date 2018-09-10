@@ -11,15 +11,7 @@ if (DEPENDENCY_PHASE)
 
 	# Disable warnings caused by ANTLR’s source code
 	if (APPLE AND CMAKE_COMPILER_IS_GNUCXX)
-		set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-attributes")
-		string (REPLACE "-Woverloaded-virtual"
-				""
-				CMAKE_CXX_FLAGS
-				"${CMAKE_CXX_FLAGS}")
-		string (REPLACE "-Wshadow"
-				""
-				CMAKE_CXX_FLAGS
-				"${CMAKE_CXX_FLAGS}")
+		set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-attributes -Wno-overloaded-virtual -Wno-shadow")
 	endif (APPLE AND CMAKE_COMPILER_IS_GNUCXX)
 
 	set (GRAMMAR_NAME YAML)
@@ -60,4 +52,5 @@ add_plugin (yanlr
 	    TEST_README
 	    TEST_ENVIRONMENT "ASAN_OPTIONS=detect_container_overflow=0" # Unfortunately it looks like ANTLR’s code causes a container-
 									# overflow
-	    TEST_REQUIRED_PLUGINS yamlsmith)
+	    TEST_REQUIRED_PLUGINS directoryvalue
+				  yamlsmith)

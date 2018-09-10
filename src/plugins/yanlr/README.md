@@ -26,7 +26,7 @@ This plugin uses ANTLR to generate a parser for the [YAML](http://yaml.org) seri
 ### Mappings
 
 ```sh
-# Mount plugin to cascading namespace `/tests/yanlr`
+# Mount plugin to namespace `user/tests/yanlr`
 sudo kdb mount config.yaml user/tests/yanlr yanlr
 
 # Manually add some mappings to the configuration file
