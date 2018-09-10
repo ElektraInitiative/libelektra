@@ -258,16 +258,14 @@ before_install:
 # Build directory will be TRAVIS_BUILD_DIR/../build
 #
 before_script:
-  - cd $TRAVIS_BUILD_DIR/..
   - |
+    cd $TRAVIS_BUILD_DIR/..
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
       CMAKE_OPT+=(-DCMAKE_INSTALL_PREFIX="$PWD/install")
       export PATH=$PATH:"$PWD/install/bin"
     fi
-  - SYSTEM_DIR="$PWD/kdbsystem"
-  - mkdir build
-  - cd build
-  - |
+    SYSTEM_DIR="$PWD/kdbsystem"
+    mkdir build && cd build
     CMAKE_OPT+=(
       -GNinja
       -DPLUGINS="${PLUGINS:-ALL}"
@@ -285,6 +283,7 @@ before_script:
       -DKDB_DB_INIT="${KDB_DB_INIT:-elektra.ecf}"
       $TRAVIS_BUILD_DIR
     )
+  - |
     printf '—— CMake Config ——\n'
     for option in "${CMAKE_OPT[@]}"; do printf '%s\n' "$option"; done
   - cmake ${CMAKE_OPT[@]}
