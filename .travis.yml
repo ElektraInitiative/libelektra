@@ -157,7 +157,9 @@ matrix:
       osx_image: xcode9.4
       compiler: clang
       env:
-        - MMAP=ON
+        - KDB_DEFAULT_STORAGE=mmapstorage
+        - KDB_DB_FILE=default.mmap
+        - KDB_DB_INIT=elektra.mmap
 
 before_install:
   - |
@@ -262,10 +264,6 @@ before_script:
       CMAKE_OPT+=(-DCMAKE_INSTALL_PREFIX="$PWD/install")
       export PATH=$PATH:"$PWD/install/bin"
     fi
-  - |
-    if [[ "$TRAVIS_OS_NAME" == "osx" && "$MMAP" == "ON" ]]; then
-      CMAKE_OPT+=("-DKDB_DEFAULT_STORAGE=mmapstorage -DKDB_DB_FILE='default.mmap' -DKDB_DB_INIT='elektra.mmap'")
-    fi
   - SYSTEM_DIR="$PWD/kdbsystem"
   - mkdir build
   - cd build
@@ -282,6 +280,9 @@ before_script:
     -DINSTALL_SYSTEM_FILES=OFF
     -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
     -DKDB_DB_SYSTEM="$SYSTEM_DIR"
+    -DKDB_DEFAULT_STORAGE="${KDB_DEFAULT_STORAGE:-dump}"
+    -DKDB_DB_FILE="${KDB_DB_FILE:-default.ecf}"
+    -DKDB_DB_INIT="${KDB_DB_INIT:-elektra.ecf}"
     ${CMAKE_OPT[@]}
     $TRAVIS_BUILD_DIR
 
