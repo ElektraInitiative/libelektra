@@ -148,7 +148,7 @@ endif ()
 # Common flags can be used by both C and C++ and by all supported compilers (gcc, mingw, icc, clang)
 #
 set (COMMON_FLAGS "${COMMON_FLAGS} -Wno-long-long") # allow long long in C++ code
-set (COMMON_FLAGS "${COMMON_FLAGS} -pedantic -Wno-variadic-macros")
+set (COMMON_FLAGS "${COMMON_FLAGS} -Wpedantic -Wno-variadic-macros")
 set (COMMON_FLAGS "${COMMON_FLAGS} -Wall -Wextra")
 set (COMMON_FLAGS "${COMMON_FLAGS} -Wno-overlength-strings")
 set (COMMON_FLAGS "${COMMON_FLAGS} -Wsign-compare -Wfloat-equal")

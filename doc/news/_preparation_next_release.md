@@ -228,6 +228,8 @@ you up to date with the multi-language support provided by Elektra.
   tools . *(René Schwaiger)*
 - The CMake configuration step now displays less debug messages about found libraries. *(René Schwaiger)*
 - Building the Haskell binding should now work again. *(René Schwaiger)*
+- Provide a wrapper around `check_symbol_exists` that handles issues with
+  `-Werror -Wpedantic`. *(Lukas Winkler)*
 
 ### Docker
 
@@ -252,6 +254,7 @@ you up to date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 - The build jobs now print less non-relevant output. *(René Schwaiger)*
+- Enable `-Werror` in `debian-stable-full`. *(Lukas Winkler)
 - Build Artifacts for all PR's to detect issues before merging *(Lukas Winkler)*
 - Stricter removal of temporary docker images on docker nodes *(Lukas Winkler)*
 - Added jenkins build jobs `debian-stable-full-mmap` and `debian-stable-full-mmap-asan`

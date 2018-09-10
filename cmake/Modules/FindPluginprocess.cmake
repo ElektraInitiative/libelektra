@@ -8,10 +8,10 @@
 #  PLUGINPROCESS_NOTFOUND_INFO	- A string describing which pluginprocess dependency is missing
 #
 # ~~~
-include (CheckFunctionExists)
+include (SafeCheckSymbolExists)
 
-check_function_exists (mkfifo HAVE_MKFIFO)
-check_function_exists (fork HAVE_FORK)
+safe_check_symbol_exists (mkfifo "sys/types.h;sys/stat.h" HAVE_MKFIFO)
+safe_check_symbol_exists (fork "sys/types.h;unistd.h" HAVE_FORK)
 
 if (HAVE_MKFIFO)
 	if (HAVE_FORK)
