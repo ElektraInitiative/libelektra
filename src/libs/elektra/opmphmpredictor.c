@@ -13,14 +13,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-
-const uint16_t opmphmPredictorHistoryMask = 0x7FF; // 11 bit history
-//~ const uint16_t opmphmPredictorHistoryMask = 0x1FF; // 9 bit history
-//~ const uint16_t opmphmPredictorHistoryMask = 0x7F; // 7 bit history
-//~ const uint16_t opmphmPredictorHistoryMask = 0x1F; // 5 bit history
-
-
-const size_t opmphmPredictorActionLimit = 1;
+/**
+ * The benchmarked and evaluated values of the predictors configuration
+ */
+const uint16_t opmphmPredictorHistoryMask = 0x1FF; // 9 bit history
+const size_t opmphmPredictorActionLimit = 599;
 
 /**
  * Prediction Automata A2
