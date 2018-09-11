@@ -50,6 +50,7 @@ static int validatepwent (struct passwd * pwd)
 }
 
 #if defined(USE_FGETPWENT_LOCAL)
+// clang-format off
 /* Taken from musl libc
  *
  * https://github.com/ifduyue/musl/blob/b4b1e10364c8737a632be61582e05a8d3acf5690/src/passwd/getpwent_a.c
@@ -118,6 +119,7 @@ struct passwd *fgetpwent_l(FILE *f)
 	__getpwent_a(f, &pw, &line, &size, &res);
 	return res;
 }
+// clang-format on
 #endif
 
 static KeySet * pwentToKS (struct passwd * pwd, Key * parentKey, SortBy index)
