@@ -36,4 +36,7 @@ it to implement this plugin.
 
 Every key tagged with the metakey `check/ipaddr` will be checked
 using `getaddrinfo()`.  If additionally the values `ipv4` or `ipv6`
-are supplied, the address family will be specified.
+are supplied, the address family will be specified. If supplied only
+numerical hosts are allowed. If left empty, the plugin will resolve 
+domain names and look if it is reachable (i.e. "localhost" should most
+likely work on any system)
