@@ -1,7 +1,7 @@
 include (${SWIG_USE_FILE})
 include (LibAddMacros)
 
-find_package (Lua 5.1)
+find_package (Lua 5.1 QUIET)
 
 if (NOT LUA_FOUND)
 	exclude_binding (swig_lua "Lua libs >= 5.1 not found")

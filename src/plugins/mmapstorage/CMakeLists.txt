@@ -1,7 +1,7 @@
 include (LibAddPlugin)
 
 if (DEPENDENCY_PHASE)
-	find_package (ZLIB)
+	find_package (ZLIB QUIET)
 	if (NOT ZLIB_FOUND)
 		remove_plugin (mmapstorage_crc "zlib development files not found")
 	endif ()

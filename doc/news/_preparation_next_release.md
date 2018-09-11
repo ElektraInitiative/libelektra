@@ -262,7 +262,7 @@ you up to date with the multi-language support provided by Elektra.
 
 - Travis now also checks the code for memory leaks in the build job `🍏 Clang ASAN`. *(René Schwaiger)*
 - Added travis build job `🍏 mmap` on macOS with `mmapstorage` as the default storage. *(Mihael Pranjić)*
-- <<TODO>>
+- Travis now prints the CMake configuration for each build job. *(René Schwaiger)*
 
 
 ## Website

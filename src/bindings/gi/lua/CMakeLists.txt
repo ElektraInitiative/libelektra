@@ -28,7 +28,7 @@ endmacro (do_gi_lua_test)
 install (DIRECTORY lgi DESTINATION ${TARGET_LUA_LMOD_FOLDER})
 
 # we're searching for the lua interpreter however FindLua only searches for the library. But that's better than nothing.
-find_package (Lua 5.1)
+find_package (Lua 5.1 QUIET)
 if (LUA_FOUND AND LUA_EXECUTABLE_VERSION_MATCHED)
 	add_binding (gi_lua)
 	message (DEPRECATION "GI bindings have been deprecated")

@@ -154,11 +154,13 @@ matrix:
     # MMAP: Enable mmapstorage as default
 
     - os: osx
-      name: 🍏 mmap
+      name: 🍏 MMap
       osx_image: xcode9.4
       compiler: clang
       env:
-        - MMAP=ON
+        - KDB_DEFAULT_STORAGE=mmapstorage
+        - KDB_DB_FILE=default.mmap
+        - KDB_DB_INIT=elektra.mmap
 
 before_install:
   - |
@@ -258,34 +260,35 @@ before_install:
 # Build directory will be TRAVIS_BUILD_DIR/../build
 #
 before_script:
-  - cd $TRAVIS_BUILD_DIR/..
   - |
+    cd $TRAVIS_BUILD_DIR/..
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
       CMAKE_OPT+=(-DCMAKE_INSTALL_PREFIX="$PWD/install")
       export PATH=$PATH:"$PWD/install/bin"
     fi
+    SYSTEM_DIR="$PWD/kdbsystem"
+    mkdir build && cd build
+    CMAKE_OPT+=(
+      -GNinja
+      -DPLUGINS="${PLUGINS:-ALL}"
+      -DBINDINGS="${BINDINGS:-ALL}"
+      -DTOOLS="${TOOLS:-ALL}"
+      -DBUILD_FULL="${BUILD_FULL:-OFF}"
+      -DENABLE_ASAN="${ENABLE_ASAN:-OFF}"
+      -DCOMMON_FLAGS="${COMMON_FLAGS:--Werror}"
+      -DENABLE_DEBUG=ON
+      -DINSTALL_SYSTEM_FILES=OFF
+      -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+      -DKDB_DB_SYSTEM="$SYSTEM_DIR"
+      -DKDB_DEFAULT_STORAGE="${KDB_DEFAULT_STORAGE:-dump}"
+      -DKDB_DB_FILE="${KDB_DB_FILE:-default.ecf}"
+      -DKDB_DB_INIT="${KDB_DB_INIT:-elektra.ecf}"
+      $TRAVIS_BUILD_DIR
+    )
   - |
-    if [[ "$TRAVIS_OS_NAME" == "osx" && "$MMAP" == "ON" ]]; then
-      CMAKE_OPT+=("-DKDB_DEFAULT_STORAGE=mmapstorage -DKDB_DB_FILE='default.mmap' -DKDB_DB_INIT='elektra.mmap'")
-    fi
-  - SYSTEM_DIR="$PWD/kdbsystem"
-  - mkdir build
-  - cd build
-  - >
-    cmake
-    -GNinja
-    -DPLUGINS="${PLUGINS:-ALL}"
-    -DBINDINGS="${BINDINGS:-ALL}"
-    -DTOOLS="${TOOLS:-ALL}"
-    -DBUILD_FULL="${BUILD_FULL:-OFF}"
-    -DENABLE_ASAN="${ENABLE_ASAN:-OFF}"
-    -DCOMMON_FLAGS="${COMMON_FLAGS:--Werror}"
-    -DENABLE_DEBUG=ON
-    -DINSTALL_SYSTEM_FILES=OFF
-    -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
-    -DKDB_DB_SYSTEM="$SYSTEM_DIR"
-    ${CMAKE_OPT[@]}
-    $TRAVIS_BUILD_DIR
+    printf '—— CMake Config ——\n'
+    for option in "${CMAKE_OPT[@]}"; do printf '%s\n' "$option"; done
+  - cmake ${CMAKE_OPT[@]}
 
 script:
   - ninja

@@ -1,5 +1,5 @@
 find_program (MAVEN_EXECUTABLE mvn)
-find_package (Java)
+find_package (Java QUIET)
 
 if (Java_JAVAC_EXECUTABLE)
 
