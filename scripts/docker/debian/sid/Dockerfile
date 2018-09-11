@@ -58,7 +58,6 @@ RUN apt-get update && apt-get -y install \
         icheck \
         valgrind \
         moreutils \
-        golang-go \
     && rm -rf /var/lib/apt/lists/*
 
 RUN cabal update && cabal install hspec QuickCheck
@@ -100,9 +99,13 @@ RUN useradd \
 USER ${JENKINS_USERID}
 
 # shfmt
-ENV GOPATH=/home/jenkins/go
-ENV PATH="${GOPATH}/bin:${PATH}"
-RUN go get -u github.com/mvdan/sh/cmd/shfmt
+ENV SHFMT_PATH=/home/jenkins/bin
+ENV SHFMT_VERSION=v2.5.1
+ENV PATH="${SHFMT_PATH}:${PATH}"
+RUN mkdir -p "${SHFMT_PATH}" \
+    && cd "${SHFMT_PATH}" \
+    && curl -L "https://github.com/mvdan/sh/releases/download/${SHFMT_VERSION}/shfmt_${SHFMT_VERSION}_linux_amd64" -o shfmt \
+    && chmod a+x shfmt
 
 # Handle Haskell dependencies
 ENV HASKELL_SHARED_SANDBOX /home/jenkins/elektra-cabal-sandbox
