@@ -20,7 +20,6 @@
 #include <sys/types.h>
 
 #define ID_MAX_CHARACTERS 11
-#define PWD_DELIMITER ":\r\n"
 
 typedef enum
 {
