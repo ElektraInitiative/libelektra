@@ -63,6 +63,7 @@ matrix:
         # Build less stuff so the build does not hit the timeout limit that often
         - TOOLS=kdb
         - BINDINGS=cpp
+        - PLUGINS='ALL;-camel;-directoryvalue;-mini;-yambi;-yamlcpp;-yanlr'
         - TEST_COMMAND="ctest --output-on-failure -E 'testscr_check_(bashisms|doc|formatting|meta|oclint|plugins)'"
 
     - os: linux
