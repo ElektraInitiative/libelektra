@@ -50,41 +50,74 @@ static int validatepwent (struct passwd * pwd)
 	return 0;
 }
 
-#if defined(USE_GETLINE)
-static struct passwd * strToPasswd (char * line)
+#if defined(USE_FGETPWENT_LOCAL)
+/* Taken from musl libc
+ *
+ * https://github.com/ifduyue/musl/blob/b4b1e10364c8737a632be61582e05a8d3acf5690/src/passwd/getpwent_a.c
+ * https://github.com/ifduyue/musl/blob/b4b1e10364c8737a632be61582e05a8d3acf5690/src/passwd/fgetpwent.c
+ */
+#include <pthread.h>
+
+static unsigned atou(char **s)
 {
-	char * ptoken;
-	struct passwd * pwd = elektraMalloc (sizeof (struct passwd));
+	unsigned x;
+	for (x=0; **s-'0'<10U; ++*s) x=10*x+(**s-'0');
+	return x;
+}
 
-	// username
-	ptoken = strtok (line, PWD_DELIMITER);
-	pwd->pw_name = elektraStrDup (ptoken);
+int __getpwent_a(FILE *f, struct passwd *pw, char **line, size_t *size, struct passwd **res)
+{
+	ssize_t l;
+	char *s;
+	int rv = 0;
+	int cs;
+	pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, &cs);
+	for (;;) {
+		if ((l=getline(line, size, f)) < 0) {
+			rv = ferror(f) ? errno : 0;
+			free(*line);
+			*line = 0;
+			pw = 0;
+			break;
+		}
+		line[0][l-1] = 0;
 
-	// passwd
-	ptoken = strtok (NULL, PWD_DELIMITER);
-	pwd->pw_passwd = elektraStrDup (ptoken);
+		s = line[0];
+		pw->pw_name = s++;
+		if (!(s = strchr(s, ':'))) continue;
 
-	// uid
-	ptoken = strtok (NULL, PWD_DELIMITER);
-	if (sscanf (ptoken, "%u", &pwd->pw_uid) != 1) return NULL;
+		*s++ = 0; pw->pw_passwd = s;
+		if (!(s = strchr(s, ':'))) continue;
 
-	// gid
-	ptoken = strtok (NULL, PWD_DELIMITER);
-	if (sscanf (ptoken, "%u", &pwd->pw_gid) != 1) return NULL;
+		*s++ = 0; pw->pw_uid = atou(&s);
+		if (*s != ':') continue;
 
-	// gecos
-	ptoken = strtok (NULL, PWD_DELIMITER);
-	pwd->pw_gecos = elektraStrDup (ptoken);
+		*s++ = 0; pw->pw_gid = atou(&s);
+		if (*s != ':') continue;
 
-	// dir
-	ptoken = strtok (NULL, PWD_DELIMITER);
-	pwd->pw_dir = elektraStrDup (ptoken);
+		*s++ = 0; pw->pw_gecos = s;
+		if (!(s = strchr(s, ':'))) continue;
 
-	// shell
-	ptoken = strtok (NULL, PWD_DELIMITER);
-	pwd->pw_shell = elektraStrDup (ptoken);
+		*s++ = 0; pw->pw_dir = s;
+		if (!(s = strchr(s, ':'))) continue;
 
-	return pwd;
+		*s++ = 0; pw->pw_shell = s;
+		break;
+	}
+	pthread_setcancelstate(cs, 0);
+	*res = pw;
+	if (rv) errno = rv;
+	return rv;
+}
+
+struct passwd *fgetpwent_l(FILE *f)
+{
+	static char *line;
+	static struct passwd pw;
+	size_t size=0;
+	struct passwd *res;
+	__getpwent_a(f, &pw, &line, &size, &res);
+	return res;
 }
 #endif
 
@@ -177,35 +210,16 @@ int elektraPasswdGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_
 	}
 #if defined(USE_FGETPWENT)
 	while ((pwd = fgetpwent (pwfile)) != NULL)
-	{
-		KeySet * ks = pwentToKS (pwd, parentKey, index);
-		ksAppend (returned, ks);
-		ksDel (ks);
-	}
-	endpwent ();
-#elif defined(USE_GETLINE)
-	char * line = NULL;
-	size_t len = 0;
-	while (getline (&line, &len, pwfile) != -1)
-	{
-		pwd = strToPasswd (line);
-		if (!pwd)
-		{
-			ELEKTRA_SET_ERRORF (110, parentKey, "Failed to parse line '%s' of passwd file\n", line);
-			return -1;
-		}
-		KeySet * ks = pwentToKS (pwd, parentKey, index);
-		ksAppend (returned, ks);
-		ksDel (ks);
-		elektraFree (pwd);
-	}
-	if (line)
-	{
-		elektraFree (line);
-	}
+#elif defined(USE_FGETPWENT_LOCAL)
+	while ((pwd = fgetpwent_l (pwfile)) != NULL)
 #else
 #error Configuration error in CMakeLists.txt. Neither fgetpwent nor getline were provided. Please open an issue at https://issue.libelektra.org.
 #endif
+	{
+		KeySet * ks = pwentToKS (pwd, parentKey, index);
+		ksAppend (returned, ks);
+		ksDel (ks);
+	}
 	fclose (pwfile);
 	return 1; // success
 }
