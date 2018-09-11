@@ -1,12 +1,13 @@
-include (CheckSymbolExists)
+include (SafeCheckSymbolExists)
 include (LibAddMacros)
 
 set (plugin passwd)
 
 if (DEPENDENCY_PHASE)
-	check_symbol_exists (fgetpwent "stdio.h;sys/types.h;pwd.h" TEST_FGETPWENT)
-	check_symbol_exists (getline "stdio.h" TEST_GETLINE)
-	check_symbol_exists (putpwent "stdio.h;sys/types.h;pwd.h" TEST_PUTPWENT)
+	add_definitions (-D_GNU_SOURCE -D_DARWIN_C_SOURCE)
+	safe_check_symbol_exists (fgetpwent "stdio.h;sys/types.h;pwd.h" TEST_FGETPWENT)
+	safe_check_symbol_exists (getline "stdio.h" TEST_GETLINE)
+	safe_check_symbol_exists (putpwent "stdio.h;sys/types.h;pwd.h" TEST_PUTPWENT)
 
 	if (TEST_FGETPWENT)
 		add_definitions (-DUSE_FGETPWENT)
