@@ -1249,7 +1249,7 @@ int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, set) (Plugin * handle, KeySet * ks, Ke
 	initHeader (&mmapHeader);
 	initMetaData (&mmapMetaData);
 	calculateMmapDataSize (&mmapHeader, &mmapMetaData, ks, dynArray);
-	ELEKTRA_LOG_DEBUG ("mmapsize: %zu", mmapHeader.allocSize);
+	ELEKTRA_LOG_DEBUG ("mmapsize: %llu", mmapHeader.allocSize);
 
 	if (truncateFile (fp, mmapHeader.allocSize, parentKey) != 1)
 	{
