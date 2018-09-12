@@ -75,7 +75,17 @@ The hybrid search algorithm is now implemented, this concludes the extension of 
 [order preserving minimal perfect hash map (OPMPHM)](https://master.libelektra.org/doc/dev/data-structures.md#order-preserving-minimal-perfect-hash-map-aka-opmphm).
 The hybrid search combines the best properties of the binary search and the [OPMPHM](https://master.libelektra.org/doc/dev/data-structures.md#order-preserving-minimal-perfect-hash-map-aka-opmphm).
 The hybrid search decides dynamically which search algorithm to use, the API user can overrule the hybrid search by passing
-`KDB_O_OPMPHM` or `KDB_O_OPMPHM` to the `ksLookup (...)`. *(Kurt Micheli)*
+`KDB_O_OPMPHM` or `KDB_O_OPMPHM` to the `ksLookup (...)`. The constants are defined in [kdbproposal.h](https://master.libelektra.org/src/include/kdbproposal.h).*(Kurt Micheli)*
+
+#### Results
+
+The implemented randomized [OPMPHM](https://master.libelektra.org/doc/dev/data-structures.md#order-preserving-minimal-perfect-hash-map-aka-opmphm)
+algorithm is in 99.5% of the measured random cases optimal. However the randomization property of the algorithm leaves an uncertainty.
+
+The results made with random cases had shown that the hybrid search is except for small keyset sizes almost always faster
+compared to the standalone binary search. The performance increase strongly depended on the measured hardware. In the random cases
+where the hybrid search is faster, on average ~8.53% to ~20.92% of time was saved.
+The implemented hybrid search works only above a keyset size limit to exclude the small keyset sizes.
 
 ### <<HIGHLIGHT2>>
 
