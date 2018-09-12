@@ -502,7 +502,7 @@ static int elektraGetCheckUpdateNeeded (Split * split, Key * parentKey)
  * @retval -1 on error
  * @retval 0 on success
  */
-static int elektraGetDoUpdate (Split * split, Key * parentKey)
+static int elektraGetDoUpdate (Split * split, Key * parentKey, Key * initialParent)
 {
 	const int bypassedSplits = 1;
 	for (size_t i = 0; i < split->size - bypassedSplits; i++)
@@ -514,6 +514,7 @@ static int elektraGetDoUpdate (Split * split, Key * parentKey)
 		}
 		Backend * backend = split->handles[i];
 		ksRewind (split->keysets[i]);
+		keySetMeta (parentKey, "fullPath", keyName (initialParent));
 		keySetName (parentKey, keyName (split->parents[i]));
 		keySetString (parentKey, keyString (split->parents[i]));
 
@@ -590,6 +591,7 @@ static int elektraGetDoUpdateWithGlobalHooks (KDB * handle, Split * split, KeySe
 		Backend * backend = split->handles[i];
 		ksRewind (split->keysets[i]);
 		keySetName (parentKey, keyName (split->parents[i]));
+		keySetMeta (parentKey, "fullPath", keyName (initialParent));
 		keySetString (parentKey, keyString (split->parents[i]));
 		int start, end;
 		if (run == FIRST)
@@ -869,7 +871,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		/* Now do the real updating,
 		   but not for bypassed keys in split->size-1 */
 		clearError (parentKey);
-		if (elektraGetDoUpdate (split, parentKey) == -1)
+		if (elektraGetDoUpdate (split, parentKey, initialParent) == -1)
 		{
 			goto error;
 		}
