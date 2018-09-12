@@ -5,7 +5,10 @@
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
+ * some of the code is inspired by / taken from musl
  */
+
+
 
 #include "shadow.h"
 #include <stdio.h>
@@ -25,7 +28,6 @@ static long xatol (char ** s)
 		x = 10 * x + (**s - '0');
 	return x;
 }
-
 static struct spwd * strToShadow (char * line)
 {
 	struct spwd * sp = elektraMalloc (sizeof (struct spwd));

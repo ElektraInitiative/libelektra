@@ -5,6 +5,7 @@
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
+ * some of the code is inspired by / taken from musl
  */
 
 #include "chosts.h"
