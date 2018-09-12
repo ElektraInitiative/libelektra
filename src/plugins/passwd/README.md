@@ -15,7 +15,7 @@ This plugin parses `passwd` files, e.g. `/etc/passwd`.
 
 ## Implementation Details
 
-The not-POSIX function `fgetpwent` (GNU_SOURCE) will be used to
+The non-POSIX function `fgetpwent` (GNU_SOURCE) will be used to
 read the file supplied by the resolver.
 As a fallback we implemented our own version which might not behave correctly.
 

@@ -14,7 +14,7 @@ if (DEPENDENCY_PHASE)
 	elseif (TEST_GETLINE)
 		add_definitions (-DUSE_FGETPWENT_LOCAL)
 	else ()
-		remove_plugin (${plugin} "could not find required functions: fgetpwent || getline")
+		remove_plugin (${plugin} "could not find fgetpwent nor getline.")
 	endif ()
 
 	# no need to remove the plugin as our fallbacks have no deps
