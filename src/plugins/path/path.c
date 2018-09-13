@@ -62,7 +62,69 @@ static int validateKey (Key * key, Key * parentKey)
 			ELEKTRA_ADD_WARNING (55, parentKey, keyString (key));
 		}
 	}
+
+
+	//TODO: Integrate
+	//***** To externalize *******
+	const char *path = "/home/wespe";
+	const char *name = "";
+	const char *modes = "rwx";
+	//****************************
+
+
+	// Changing to specified user. Can only be done when executing user is root user
+	if (strlen(name) != 0) {
+		struct passwd *p;
+		if ((p = getpwnam(name)) == nullptr) {
+			printf("Could not find user `%s`. Does the user exist?", name);
+			return -2;
+		}
+
+		int err = seteuid((int) p->pw_uid);
+		if (err < 0) {
+			printf("Cannot change to user %s. Are you running kdb as root? \n", name);
+		}
+	}
+
+	int isRead = (strchr(modes, 'r') == nullptr) ? 0 : 1;
+	int isWrite = (strchr(modes, 'w') == nullptr) ? 0 : 1;
+	int isExecute = (strchr(modes, 'x') == nullptr) ? 0 : 1;
+
+	char errorMessage[20];
+	int isError = 0;
+
+	if (euidaccess(path, R_OK) != 0) {
+		isError = 1;
+		strcat(errorMessage, "read,");
+	}
+
+	if (euidaccess(path, W_OK) != 0) {
+		isError = 1;
+		strcat(errorMessage, "write,");
+	}
+
+	if (euidaccess(path, X_OK) != 0) {
+		isError = 1;
+		strcat(errorMessage, "execute,");
+	}
+
+	if (isError) {
+		printf("User %s does not have [%s] permission on %s", name, lastCharDel(errorMessage), path);
+	}
+
 	return 1;
+}
+
+char* lastCharDel(char* name)
+{
+	int i = 0;
+	while(name[i] != '\0')
+	{
+		i++;
+
+	}
+	name[i-1] = '\0';
+	return name;
 }
 
 int elektraPathGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
@@ -97,6 +159,8 @@ int elektraPathSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 
 	return 1; /* success */
 }
+
+
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (path)
 {
