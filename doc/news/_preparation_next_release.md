@@ -85,7 +85,7 @@ algorithm is in 99.5% of the measured random cases optimal. However the randomiz
 The results made with random cases had shown that the hybrid search is except for small keyset sizes almost always faster
 compared to the standalone binary search. The performance increase strongly depended on the measured hardware. In the random cases
 where the hybrid search is faster, on average ~8.53% to ~20.92% of time was saved.
-The implemented hybrid search works only above a keyset size limit to exclude the small keyset sizes.
+The implemented hybrid search works only above a keyset size of `599` to exclude the small keyset sizes.
 
 ### <<HIGHLIGHT2>>
 
