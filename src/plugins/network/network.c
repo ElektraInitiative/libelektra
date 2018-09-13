@@ -35,8 +35,8 @@ int elektraNetworkAddrInfo (Key * toCheck)
 		hints.ai_family = AF_INET6;
 		hints.ai_flags = AI_NUMERICHOST; /* Only accept numeric hosts */
 	}
-	hints.ai_socktype = SOCK_DGRAM;  /* Datagram socket */
-	hints.ai_protocol = 0;		 /* Any protocol */
+    hints.ai_socktype = SOCK_DGRAM; /* Datagram socket */
+    hints.ai_protocol = 0;		/* Any protocol */
 
 	s = getaddrinfo (keyString (toCheck), NULL, &hints, &result);
 
