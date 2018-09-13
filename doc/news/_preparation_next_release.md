@@ -203,6 +203,7 @@ you up to date with the multi-language support provided by Elektra.
 ## Documentation
 
 - We fixed some minor spelling mistakes in the documentation. *(René Schwaiger)*
+- Improved the plugins documentation. *(Michael Zronek)*
 - <<TODO>>
 - <<TODO>>
 - Go into more detail in
