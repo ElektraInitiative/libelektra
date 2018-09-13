@@ -338,7 +338,6 @@ before_install:
       [[ -n "$CC_COMPILER" ]] && export CC="$CC_COMPILER"
       [[ -n "$CXX_COMPILER" ]] && export CXX="$CXX_COMPILER"
       sudo apt-get -qq update
-      sudo apt-get install snapd # The Snap Store offers a recent version of Go required by `shfmt`
       sudo apt-get install ninja-build
       sudo apt-get install devscripts # contains `checkbashisms`
       sudo apt-get install libboost-all-dev
@@ -350,9 +349,9 @@ before_install:
       sudo apt-get install libxerces-c-dev
       sudo apt-get install moreutils # contains `sponge` required by `reformat-cmake`
       sudo pip install cmake-format==0.4.3 pyyaml
-      sudo snap install --classic go
-      export PATH=$PATH:"/snap/bin/go"
-      sudo go get -u github.com/mvdan/sh/cmd/shfmt
+      mkdir -p "$HOME/bin" && cd "$HOME/bin" && \
+        curl -L "https://github.com/mvdan/sh/releases/download/v2.5.1/shfmt_v2.5.1_linux_amd64" -o shfmt && \
+        chmod u+x shfmt && export PATH=$PATH:"$HOME/bin"
     fi
 
 #
