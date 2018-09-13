@@ -363,7 +363,8 @@ be called and the mounted file will be updated.
 
 We haven't discussed `ELEKTRA_SET_ERROR` yet. Because Elektra is a library, printing errors to stderr wouldn't be a good idea. Instead, errors
 and warnings can be appended to a key in the form of metadata. This is what `ELEKTRA_SET_ERROR` does. Because the parentKey always exists
-even if a critical error occurs, we append the error to the `parentKey`. The first parameter is an id specifying the general error that occurred.
+even if a critical error occurs, we append the error to the `parentKey`. If there are multiple errors in a configuration, only the first occurrence
+will be written to the metadata of the `parentKey`. The first parameter is an id specifying the general error that occurred.
 A listing of existing errors together with a short description and a categorization can be found at
 [error specification](https://github.com/ElektraInitiative/libelektra/blob/master/src/error/specification).
 The third parameter can be used to provide additional information about the error. In our case we simply supply the filename of the file that
@@ -430,3 +431,9 @@ Plugin *ELEKTRA_PLUGIN_EXPORT(line)
 ```
 
 For further information see [the API documentation](https://doc.libelektra.org/api/current/html/group__plugin.html).
+
+## Note on direct method calls via external integrations
+
+Some applications want to call Elektra methods directly via native access (eg. [JNA](https://github.com/java-native-access/jna) for Java).
+A `KeySet` is a data structure over which functions can iterate. If the last element is reached, you have to explicitly call `rewind()`
+to set the internal pointer to the start. Any plugin expects the passed `KeySet` to be **rewinded**.
