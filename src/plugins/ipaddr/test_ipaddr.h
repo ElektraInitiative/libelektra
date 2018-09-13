@@ -659,7 +659,6 @@ static void testIPAll (void)
 		testIPv6 ("::0:a:b:c:d:e:f", 1); // syntactically correct, but bad form (::0:... could be combined)
 		testIPv6 ("a:b:c:d:e:f:0::", 1);
 		testIPv6 ("':10.0.0.1", -1);
-
 	}
 	else
 	{
