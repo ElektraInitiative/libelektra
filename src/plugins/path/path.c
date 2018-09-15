@@ -10,7 +10,19 @@
 
 #ifndef HAVE_KDBCONFIG
 #include "kdbconfig.h"
+#include <pwd.h>
 #endif
+
+char* lastCharDel(char* name)
+{
+	int i = 0;
+	while(name[i] != '\0')
+	{
+		i++;
+	}
+	name[i-1] = '\0';
+	return name;
+}
 
 static int validateKey (Key * key, Key * parentKey)
 {
@@ -38,7 +50,7 @@ static int validateKey (Key * key, Key * parentKey)
 	if (stat (keyString (key), &buf) == -1)
 	{
 		char * errmsg = elektraMalloc (ERRORMSG_LENGTH + 1 + +keyGetNameSize (key) + keyGetValueSize (key) +
-					       sizeof ("name:  value:  message: "));
+						   sizeof ("name:  value:  message: "));
 		strerror_r (errno, errmsg, ERRORMSG_LENGTH);
 		strcat (errmsg, " from key: ");
 		strcat (errmsg, keyName (key));
@@ -62,69 +74,71 @@ static int validateKey (Key * key, Key * parentKey)
 			ELEKTRA_ADD_WARNING (55, parentKey, keyString (key));
 		}
 	}
+	return 1;
+}
 
+//I assume the path exists and only validate permission
+static int validatePermission(const char *path, Key * key, Key * parentKey)
+{
 
-	//TODO: Integrate
+	const Key * userMeta = keyGetMeta (key, "check/permission/user");
+	const Key * userTypes = keyGetMeta (key, "check/permission/types");
+
 	//***** To externalize *******
-	const char *path = "/home/wespe";
-	const char *name = "";
-	const char *modes = "rwx";
+	const char *validPath = keyString (key);
+	const char *name =  keyString (userMeta);
+	const char *modes = keyString(userTypes);
 	//****************************
 
-
 	// Changing to specified user. Can only be done when executing user is root user
-	if (strlen(name) != 0) {
-		struct passwd *p;
-		if ((p = getpwnam(name)) == nullptr) {
-			printf("Could not find user `%s`. Does the user exist?", name);
-			return -2;
+	if (name) {
+		struct passwd *p = getpwnam(name);
+		//Check if user exists
+		if (p == NULL) {
+			ELEKTRA_SET_ERRORF (205, parentKey, "Could not find user \"%s\" for key \"%s\". "
+									   "Does the user exist?\"", name, keyName(key));
+			return -1;
 		}
 
+		//Check if I can change the UID as root
 		int err = seteuid((int) p->pw_uid);
 		if (err < 0) {
-			printf("Cannot change to user %s. Are you running kdb as root? \n", name);
+			ELEKTRA_SET_ERRORF (206, parentKey, "Could not set uid of user \"%s\" for key \"%s\"."
+									   " Are you running kdb as root?\"", keyString (userMeta), keyName(key));
+			return -1;
 		}
 	}
 
-	int isRead = (strchr(modes, 'r') == nullptr) ? 0 : 1;
-	int isWrite = (strchr(modes, 'w') == nullptr) ? 0 : 1;
-	int isExecute = (strchr(modes, 'x') == nullptr) ? 0 : 1;
+	int isRead = (strchr(modes, 'r') == NULL) ? 0 : 1;
+	int isWrite = (strchr(modes, 'w') == NULL) ? 0 : 1;
+	int isExecute = (strchr(modes, 'x') == NULL) ? 0 : 1;
 
-	char errorMessage[20];
+	char errorMessage[30];
 	int isError = 0;
 
-	if (euidaccess(path, R_OK) != 0) {
+	if (euidaccess(validPath, R_OK) != 0) {
 		isError = 1;
 		strcat(errorMessage, "read,");
 	}
 
-	if (euidaccess(path, W_OK) != 0) {
+	if (euidaccess(validPath, W_OK) != 0) {
 		isError = 1;
 		strcat(errorMessage, "write,");
 	}
 
-	if (euidaccess(path, X_OK) != 0) {
+	if (euidaccess(validPath, X_OK) != 0) {
 		isError = 1;
 		strcat(errorMessage, "execute,");
 	}
 
 	if (isError) {
-		printf("User %s does not have [%s] permission on %s", name, lastCharDel(errorMessage), path);
+		ELEKTRA_SET_ERRORF (207, parentKey, "User %s does not have [%s] permission on %s", name,
+							lastCharDel(errorMessage),
+							validPath);
+		return -1;
 	}
 
 	return 1;
-}
-
-char* lastCharDel(char* name)
-{
-	int i = 0;
-	while(name[i] != '\0')
-	{
-		i++;
-
-	}
-	name[i-1] = '\0';
-	return name;
 }
 
 int elektraPathGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
@@ -132,12 +146,12 @@ int elektraPathGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	/* contract only */
 	KeySet * n;
 	ksAppend (returned, n = ksNew (30, keyNew ("system/elektra/modules/path", KEY_VALUE, "path plugin waits for your orders", KEY_END),
-				       keyNew ("system/elektra/modules/path/exports", KEY_END),
-				       keyNew ("system/elektra/modules/path/exports/get", KEY_FUNC, elektraPathGet, KEY_END),
-				       keyNew ("system/elektra/modules/path/exports/set", KEY_FUNC, elektraPathSet, KEY_END),
-				       keyNew ("system/elektra/modules/path/exports/validateKey", KEY_FUNC, validateKey, KEY_END),
+					   keyNew ("system/elektra/modules/path/exports", KEY_END),
+					   keyNew ("system/elektra/modules/path/exports/get", KEY_FUNC, elektraPathGet, KEY_END),
+					   keyNew ("system/elektra/modules/path/exports/set", KEY_FUNC, elektraPathSet, KEY_END),
+					   keyNew ("system/elektra/modules/path/exports/validateKey", KEY_FUNC, validateKey, KEY_END),
 #include "readme_path.c"
-				       keyNew ("system/elektra/modules/path/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END));
+					   keyNew ("system/elektra/modules/path/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END));
 	ksDel (n);
 
 	return 1; /* success */
@@ -151,16 +165,19 @@ int elektraPathSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	int rc = 1;
 	while ((cur = ksNext (returned)) != 0)
 	{
-		const Key * meta = keyGetMeta (cur, "check/path");
-		if (!meta) continue;
+		const Key * pathMeta = keyGetMeta (cur, "check/path");
+		if (!pathMeta) continue;
 		rc = validateKey (cur, parentKey);
+		if (!rc) return -1;
+
+		const Key * accessMeta = keyGetMeta (cur, "check/permission/types");
+		if (!accessMeta) continue;
+		rc = validatePermission(keyString(pathMeta), cur, parentKey);
 		if (!rc) return -1;
 	}
 
 	return 1; /* success */
 }
-
-
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (path)
 {

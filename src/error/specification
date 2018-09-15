@@ -1310,3 +1310,15 @@ description:The opts specification contains mistakes (see reason).
 severity:error
 ingroup:opts
 macro:OPTS_ILLEGAL_SPEC
+
+number:209
+description:Could not change to user. You might want to try as root (use sudo !!).
+severity:error
+ingroup:plugin
+module:path
+
+number:210
+description:Detected incorrect permissions for file/directory
+severity:error
+ingroup:plugin
+module:path
