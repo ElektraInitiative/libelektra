@@ -114,6 +114,7 @@ static int validatePermission(const char *path, Key * key, Key * parentKey)
 	int isExecute = (strchr(modes, 'x') == NULL) ? 0 : 1;
 
 	char errorMessage[30];
+	errorMessage[0] = '\0';	//strcat() searches for this, otherwise it will print garbage chars at start
 	int isError = 0;
 
 	if (euidaccess(validPath, R_OK) != 0) {
