@@ -1258,3 +1258,9 @@ severity:warning
 ingroup:plugin
 module:gpgme
 macro:GPGME_INVALID_RECIPIENT
+
+number:201
+description:Failed to parse record
+severity:warning
+ingroup:plugin
+module:storage

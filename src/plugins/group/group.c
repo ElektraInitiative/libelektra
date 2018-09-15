@@ -70,8 +70,8 @@ static KeySet * grpentToKS (struct group * grp, Key * parentKey, SortBy index)
 	}
 
 	Key * membersKey = keyNew (keyName (append), KEY_END);
-	keySetBaseName (membersKey, "members");
-	keySetBaseName (append, "members");
+	keyAddBaseName (membersKey, "members");
+	keyAddBaseName (append, "members");
 	keyAddBaseName (append, "#");
 	char * ptr = (char *) grp->gr_mem;
 	while (*ptr != '\0')
