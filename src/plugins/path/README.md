@@ -26,9 +26,14 @@ is allowed to occur for both device and mountpoint. When checking for
 relative files, it is not enough to look at the first character if it is
 a `/`, because remote file systems and some special names are valid, too.
 
-If `check/permission = [permission], [user]` is also present it will check for the correct permissions
-of the file/directory. `check/permission = rw` and `check/permission/user = tomcat` for example will check if the user `tomcat` has read and
-write access to the path which was set in `check/path`.
+If `check/permission/types = [permission]` is also present it will check for the correct permissions
+of the file/directory. Optionally, you can also add `check/permission/user = [user]"` which then checks the permissions
+for the given user. If `check/permission/user` is not used, the current user will be taken.
+
+ `check/permission/types = rw` and `check/permission/user = tomcat` for example will check if the user
+`tomcat` has read and write access to the path which was set in `check/path`. Please note that the file has to exist already
+and it is not checked if the user has the right to create a file with a specified name
+in the directory.
 
  Permissions available:
  - `r`: **R**ead
@@ -52,7 +57,8 @@ kdb set /tests/path/value /var/log/application-file.log
 sudo kdb setmeta /tests/path/value check/path
 
 #This checks if the user has read and write permissions for the application-file.log file
-sudo kdb setmeta /tests/path/value check/permission "rw, tomcat"
+sudo kdb setmeta /tests/path/value check/permission/user "tomcat"
+sudo kdb setmeta /tests/path/value check/permission/types "rw"
 
 #Generate a file which is only accessable for root
 touch /var/log/application-file-restricted.log

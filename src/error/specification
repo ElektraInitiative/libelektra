@@ -1258,3 +1258,21 @@ severity:warning
 ingroup:plugin
 module:gpgme
 macro:GPGME_INVALID_RECIPIENT
+
+number:201
+description:The user does not exist.
+severity:error
+ingroup:plugin
+module:path
+
+number:202
+description:Could not change to user. You might want to try as root (use sudo !!).
+severity:error
+ingroup:plugin
+module:path
+
+number:203
+description:Detected incorrect permissions for file/directory
+severity:error
+ingroup:plugin
+module:path
