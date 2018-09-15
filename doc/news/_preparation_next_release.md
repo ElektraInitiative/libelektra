@@ -237,6 +237,7 @@ you up to date with the multi-language support provided by Elektra.
 - Building the Haskell binding should now work again. *(René Schwaiger)*
 - Provide a wrapper around `check_symbol_exists` that handles issues with
   `-Werror -Wpedantic`. *(Lukas Winkler)*
+- We simplified the code that generates the the build configuration header `kdbconfig.h`. *(René Schwaiger)*
 
 ### Docker
 
