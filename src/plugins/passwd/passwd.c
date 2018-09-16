@@ -56,7 +56,6 @@ static int validatepwent (struct passwd * pwd)
  * https://github.com/ifduyue/musl/blob/b4b1e10364c8737a632be61582e05a8d3acf5690/src/passwd/getpwent_a.c
  * https://github.com/ifduyue/musl/blob/b4b1e10364c8737a632be61582e05a8d3acf5690/src/passwd/fgetpwent.c
  */
-#include <pthread.h>
 
 static unsigned atou(char **s)
 {
@@ -71,7 +70,6 @@ int __getpwent_a(FILE *f, struct passwd *pw, char **line, size_t *size, struct p
 	char *s;
 	int rv = 0;
 	int cs;
-	pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, &cs);
 	for (;;) {
 		if ((l=getline(line, size, f)) < 0) {
 			rv = ferror(f) ? errno : 0;
@@ -104,7 +102,6 @@ int __getpwent_a(FILE *f, struct passwd *pw, char **line, size_t *size, struct p
 		*s++ = 0; pw->pw_shell = s;
 		break;
 	}
-	pthread_setcancelstate(cs, 0);
 	*res = pw;
 	if (rv) errno = rv;
 	return rv;
