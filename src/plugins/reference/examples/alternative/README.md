@@ -1,9 +1,64 @@
 # Example: Alternative references
 
-For this example the file [alternative.ini](alternative.ini) will be used.
+For this example the following configuration is used:
+
+```ini
+; this example uses the ni plugin syntax
+; 1. metadata
+[rootkey/ref]
+check/reference = recursive
+
+[otherkey/newref]
+check/reference = alternative
+
+; 2. configuration data
+rootkey/ref/#0 = ../otherkey
+
+otherkey/ref/#0 = ../yetanotherkey
+otherkey/newref/#0 = ../otherotherkey
+
+otherotherkey/ref/#0 = ../nonexistent
+otherotherkey/newref/#0 = ../mergekey
+
+yetanotherkey/ref/#0 = ../mergekey
+yetanotherkey/newref/#0 = ../nonexistent
+
+mergekey/ref/#0 = ../finalkey
+mergekey/newref/#0 = ../finalkey
+
+finalkey = ""
+```
+
 We mount it by executing:
 
 ```sh
+cat << EOF > alternative.ini
+; this example uses the ni plugin syntax
+; 1. metadata
+[rootkey/ref]
+check/reference = recursive
+
+[otherkey/newref]
+check/reference = alternative
+
+; 2. configuration data
+rootkey/ref/#0 = ../otherkey
+
+otherkey/ref/#0 = ../yetanotherkey
+otherkey/newref/#0 = ../otherotherkey
+
+otherotherkey/ref/#0 = ../nonexistent
+otherotherkey/newref/#0 = ../mergekey
+
+yetanotherkey/ref/#0 = ../mergekey
+yetanotherkey/newref/#0 = ../nonexistent
+
+mergekey/ref/#0 = ../finalkey
+mergekey/newref/#0 = ../finalkey
+
+finalkey = ""
+EOF
+
 kdb mount alternative.ini user/tests/reference/alternative ni reference
 ```
 
@@ -34,3 +89,8 @@ As you can see, the plugin completely ignores `user/tests/reference/alternative/
 `user/tests/reference/alternative/nonexistent` does not exist. However, the plugin does still exhaustively check
 both of the alternative reference chains. If you want to prohibit this, you can set the metakey 
 `check/reference/restrict` to an empty value on whichever key you want to be a leaf node in the graph.
+
+After we are done we can unmount the example with:
+```sh
+kdb umount user/tests/reference/alternative
+```

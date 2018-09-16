@@ -1,4 +1,4 @@
-- infos = Information about the template plugin is in keys below
+- infos = Information about the reference plugin is in keys below
 - infos/author = Klemens Böswirth <k.boeswirth+git@gmail.com>
 - infos/licence = BSD
 - infos/needs =
@@ -7,7 +7,7 @@
 - infos/placements = presetstorage
 - infos/status = nodep libc preview experimental unfinished
 - infos/metadata = check/reference check/reference/restrict
-- infos/description = Useful plugin for validating singular or recursive references
+- infos/description = Plugin for validating singular or recursive references
 
 ## Introduction
 
@@ -27,25 +27,27 @@ In this reference graph each node corresponds to a key in the KDB, while each ed
 represents a reference between to keys. The plugin will produce an error, if this graph
 is not a directed acyclic graph or contains any invalid references.
 
-Additionally to this basic functionality the plugin allows one to restrict the set of valid
-references using the `check/reference/restrict` metakey. The exact mechanism for this is 
-described below.
-
 ### Resolution of references
 If the key `A` is interpreted as a reference by the plugin, it has to be an array. Each of 
 the array elements must contain a so called reference value. This reference value will be 
 resolved into a keyname, which will then be validated. The resolution goes as follows:
 
-* If the reference value starts with `/`, it is treated as absolute and interpreted as a 
-  keyname directly.
-* Otherwise the reference value will be interpreted as relative to the **parent** of `A`.
-  That means a reference which does not contain a `/` will also was refer to a sibling of `A`,
-  the reference array key.
-* `.` and `..` will be treated the same way as in UNIX paths. If these are used in an absolute
-  reference, the plugin will emit a warning, because their use in this case is unnecessary and 
-  might be a mistake. The same is true, if `.` is used anywhere, but at the start of the 
-  reference.
-
+* If the reference value starts with `./` or `../`, it will be interpreted as relative to 
+  the current key or the parent of the current key.
+* If the reference value starts with `@/`, it will be relative to the parent-key used in the
+  call to `kdbGet`.
+* All other values are treated as absolute and interpreted as a keyname directly.
+* `.` and `..` will be treated the same way as in UNIX paths. However, the plugin will emit 
+  warnings, if `.` is used anywhere other than before the first slash. Equally using `..` 
+  after a path segment other than `..` itself, will result in a warning. This is because these
+  use cases are redundant and might be (or result in) mistakes. Here are a few examples of what
+  results in warnings, and what doesn't:
+  * `./system/key` no warning
+  * `system/key` no warning
+  * `system/./key` warning, redundant use of `.`
+  * `../../../key` no warning
+  * `../key/../otherkey`warning, redundant use of `.`
+  
 ### Construction of the reference graph
 
 The process starts with a key `X`, which has the metakey `check/reference` set to the value
@@ -57,7 +59,7 @@ For each element in the array run the following process:
 2. If there is no node for `K` in the reference graph create one. If there is no node for 
    `R` in the reference graph create one. Insert an edge from `K` to `R` into the graph.
 3. Find a key `K1` directly below `R` that has the `refname` as its basename. Interpret this 
-   key as an array, if found. For each array element, start the process recursively from 1 
+   key as an array if found. For each array element, start the process recursively from 1 
    and then continue with 4.
 4. Find any key `K2` directly below `R` that has the metakey `check/reference` set to 
    `alternative`. Interpret any such key as an array. For each array element, start the 
