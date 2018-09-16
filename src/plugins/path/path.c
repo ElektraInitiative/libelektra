@@ -115,51 +115,56 @@ static int validatePermission(Key * key, Key * parentKey)
 									   "Does the user exist?\"", name, keyName(key));
 			return -1;
 		}
-
-		//TODO: for how much groups should I check?
-		int ngroups = 10;
-		gid_t *groups;
-		groups = (gid_t *) elektraMalloc(ngroups * sizeof (gid_t));
-		getgrouplist(name, (int) p->pw_gid, groups, &ngroups);
-
-		//Get groupID of file being checked
-		struct stat sb;
-		stat(validPath, &sb);
-		struct group  *gr = getgrgid(sb.st_gid);
-
-		bool isUserInGroupBool = isUserInGroup((int) gr->gr_gid, groups, ngroups);
-
-		//Check if fileGroup is in userGroup. If yes change egid to that group
-		if (isUserInGroupBool) {
-			ELEKTRA_LOG_DEBUG ("User “%s” has group of file %s", name, validPath);
-			int gidErr = setegid((int) gr->gr_gid);
-			if (gidErr < 0) {
-				ELEKTRA_SET_ERRORF (202, parentKey, "Could not set uid/gid of user \"%s\" for key \"%s\"."
-													" Are you running kdb as root?\"", keyString (userMeta), keyName(key));
-			}
-		}
+		name = p->pw_name;
 
 		//Check if I can change the UID as root
 		int err = seteuid((int) p->pw_uid);
 		if (err < 0) {
-			ELEKTRA_SET_ERRORF (202, parentKey, "Could not set uid/gid of user \"%s\" for key \"%s\"."
-									   " Are you running kdb as root?\"", keyString (userMeta), keyName(key));
+			ELEKTRA_SET_ERRORF (202, parentKey, "Could not set euid of user \"%s\" for key \"%s\"."
+									   " Are you running kdb as root?\"", name, keyName(key));
 			return -1;
 		}
-		elektraFree(groups);
 	} else {
 		uid_t uid = geteuid ();
 		p = getpwuid (uid);
 		name = p->pw_name;
+		if (uid != 0) {
+			ELEKTRA_SET_ERRORF (202, parentKey, "To check permissions for %s I need to be the root user."
+												" Are you running kdb as root?\"", keyName(key));
+			return -1;
+		}
 	}
 
+	//The following code changes the egid if a group from a user matches the filegroup
+	//TODO: Whats a good default value for ngroups
+	//If the relevant group is ngroups+1 then it wont get recognized
+	int ngroups = 30;
+	gid_t *groups;
+	groups = (gid_t *) elektraMalloc(ngroups * sizeof (gid_t));
+	getgrouplist(name, (int) p->pw_gid, groups, &ngroups);
+
+	//Get groupID of file being checked
+	struct stat sb;
+	stat(validPath, &sb);
+	struct group  *gr = getgrgid(sb.st_gid);
+
+	bool isUserInGroupBool = isUserInGroup((int) gr->gr_gid, groups, (unsigned int) ngroups);
+
+	//Check if fileGroup is in userGroup. If yes change egid to that group
+	if (isUserInGroupBool) {
+		ELEKTRA_LOG_DEBUG ("User “%s” has group of file %s", name, validPath);
+		int gidErr = setegid((int) gr->gr_gid);
+		if (gidErr < 0) {
+			ELEKTRA_SET_ERRORF (202, parentKey, "Could not set egid of user \"%s\" for key \"%s\"."
+												" Are you running kdb as root?\"", name, keyName(key));
+		}
+	}
+	elektraFree(groups);
+
+	//Actual checks are done
 	int isRead = (strchr(modes, 'r') == NULL) ? 0 : 1;
 	int isWrite = (strchr(modes, 'w') == NULL) ? 0 : 1;
 	int isExecute = (strchr(modes, 'x') == NULL) ? 0 : 1;
-
-	//Change back to initial effective IDs
-	seteuid(currentUID);
-	setegid(currentGID);
 
 	char errorMessage[30];
 	errorMessage[0] = '\0';	//strcat() searches for this, otherwise it will print garbage chars at start
@@ -179,6 +184,10 @@ static int validatePermission(Key * key, Key * parentKey)
 		isError = 1;
 		strcat(errorMessage, "execute,");
 	}
+
+	//Change back to initial effective IDs
+	seteuid(currentUID);
+	setegid(currentGID);
 
 	if (isError) {
 		ELEKTRA_SET_ERRORF (203, parentKey, "User %s does not have [%s] permission on %s", name,

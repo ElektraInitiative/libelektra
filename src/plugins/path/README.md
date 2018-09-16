@@ -28,12 +28,12 @@ a `/`, because remote file systems and some special names are valid, too.
 
 If `check/permission/types = [permission]` is also present it will check for the correct permissions
 of the file/directory. Optionally, you can also add `check/permission/user = [user]"` which then checks the permissions
-for the given user. If `check/permission/user` is not used, the current user will be taken.
+for the given user. When calling `kdb set` on the actual key, you have to run as `root` user
+or the file permissions cannot be checked (you will receive an error message).
 
  `check/permission/types = rw` and `check/permission/user = tomcat` for example will check if the user
-`tomcat` has read and write access to the path which was set in `check/path`. Please note that the file has to exist already
-and it is not checked if the user has the right to create a file with a specified name
-in the directory.
+`tomcat` has read and write access to the path which was set for the key. Please note that the file has to exist already
+and it is not checked if the user has the right to create a file in the directory.
 
  Permissions available:
  - `r`: **R**ead
