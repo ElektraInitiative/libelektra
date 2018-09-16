@@ -10,9 +10,11 @@
 
 #ifndef HAVE_KDBCONFIG
 #include "kdbconfig.h"
-#include <pwd.h>
+
+
 #endif
 
+//Used to delete last colon in error message
 char* lastCharDel(char* name)
 {
 	int i = 0;
@@ -22,6 +24,15 @@ char* lastCharDel(char* name)
 	}
 	name[i-1] = '\0';
 	return name;
+}
+
+bool isUserInGroup(unsigned int val, gid_t *groups, unsigned int size){
+	unsigned int i;
+	for (i=0; i < size; i++) {
+		if (groups[i] == val)
+			return true;
+	}
+	return false;
 }
 
 static int validateKey (Key * key, Key * parentKey)
@@ -56,9 +67,10 @@ static int validateKey (Key * key, Key * parentKey)
 		strcat (errmsg, keyName (key));
 		strcat (errmsg, " with path: ");
 		strcat (errmsg, keyValue (key));
-		ELEKTRA_ADD_WARNING (57, parentKey, errmsg);
+		ELEKTRA_SET_ERROR (57, parentKey, errmsg);
 		elektraFree (errmsg);
 		errno = errnosave;
+		return -1;
 	}
 	else if (!strcmp (keyString (meta), "device"))
 	{
@@ -78,37 +90,78 @@ static int validateKey (Key * key, Key * parentKey)
 }
 
 //I assume the path exists and only validate permission
-static int validatePermission(const char *path, Key * key, Key * parentKey)
+static int validatePermission(Key * key, Key * parentKey)
 {
+	__uid_t currentUID = geteuid();
+	__gid_t currentGID = getegid();
 
 	const Key * userMeta = keyGetMeta (key, "check/permission/user");
 	const Key * userTypes = keyGetMeta (key, "check/permission/types");
 
-	//***** To externalize *******
+	//***** central variables *******
 	const char *validPath = keyString (key);
 	const char *name =  keyString (userMeta);
 	const char *modes = keyString(userTypes);
 	//****************************
 
+	struct passwd *p;
+
 	// Changing to specified user. Can only be done when executing user is root user
-	if (name) {
-		struct passwd *p = getpwnam(name);
+	if (userMeta) {
+		p = getpwnam(name);
 		//Check if user exists
 		if (p == NULL) {
 			ELEKTRA_SET_ERRORF (201, parentKey, "Could not find user \"%s\" for key \"%s\". "
 									   "Does the user exist?\"", name, keyName(key));
 			return -1;
 		}
+		name = p->pw_name;
 
 		//Check if I can change the UID as root
 		int err = seteuid((int) p->pw_uid);
 		if (err < 0) {
-			ELEKTRA_SET_ERRORF (202, parentKey, "Could not set uid of user \"%s\" for key \"%s\"."
-									   " Are you running kdb as root?\"", keyString (userMeta), keyName(key));
+			ELEKTRA_SET_ERRORF (202, parentKey, "Could not set euid of user \"%s\" for key \"%s\"."
+									   " Are you running kdb as root?\"", name, keyName(key));
+			return -1;
+		}
+	} else {
+		uid_t uid = geteuid ();
+		p = getpwuid (uid);
+		name = p->pw_name;
+		if (uid != 0) {
+			ELEKTRA_SET_ERRORF (202, parentKey, "To check permissions for %s I need to be the root user."
+												" Are you running kdb as root?\"", keyName(key));
 			return -1;
 		}
 	}
 
+	//The following code changes the egid if a group from a user matches the filegroup
+	//TODO: Whats a good default value for ngroups
+	//If the relevant group is ngroups+1 then it wont get recognized
+	int ngroups = 30;
+	gid_t *groups;
+	groups = (gid_t *) elektraMalloc(ngroups * sizeof (gid_t));
+	getgrouplist(name, (int) p->pw_gid, groups, &ngroups);
+
+	//Get groupID of file being checked
+	struct stat sb;
+	stat(validPath, &sb);
+	struct group  *gr = getgrgid(sb.st_gid);
+
+	bool isUserInGroupBool = isUserInGroup((int) gr->gr_gid, groups, (unsigned int) ngroups);
+
+	//Check if fileGroup is in userGroup. If yes change egid to that group
+	if (isUserInGroupBool) {
+		ELEKTRA_LOG_DEBUG ("User “%s” has group of file %s", name, validPath);
+		int gidErr = setegid((int) gr->gr_gid);
+		if (gidErr < 0) {
+			ELEKTRA_SET_ERRORF (202, parentKey, "Could not set egid of user \"%s\" for key \"%s\"."
+												" Are you running kdb as root?\"", name, keyName(key));
+		}
+	}
+	elektraFree(groups);
+
+	//Actual checks are done
 	int isRead = (strchr(modes, 'r') == NULL) ? 0 : 1;
 	int isWrite = (strchr(modes, 'w') == NULL) ? 0 : 1;
 	int isExecute = (strchr(modes, 'x') == NULL) ? 0 : 1;
@@ -117,20 +170,24 @@ static int validatePermission(const char *path, Key * key, Key * parentKey)
 	errorMessage[0] = '\0';	//strcat() searches for this, otherwise it will print garbage chars at start
 	int isError = 0;
 
-	if (euidaccess(validPath, R_OK) != 0) {
+	if (isRead && euidaccess(validPath, R_OK) != 0) {
 		isError = 1;
 		strcat(errorMessage, "read,");
 	}
 
-	if (euidaccess(validPath, W_OK) != 0) {
+	if (isWrite && euidaccess(validPath, W_OK) != 0) {
 		isError = 1;
 		strcat(errorMessage, "write,");
 	}
 
-	if (euidaccess(validPath, X_OK) != 0) {
+	if (isExecute && euidaccess(validPath, X_OK) != 0) {
 		isError = 1;
 		strcat(errorMessage, "execute,");
 	}
+
+	//Change back to initial effective IDs
+	seteuid(currentUID);
+	setegid(currentGID);
 
 	if (isError) {
 		ELEKTRA_SET_ERRORF (203, parentKey, "User %s does not have [%s] permission on %s", name,
@@ -169,11 +226,11 @@ int elektraPathSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 		const Key * pathMeta = keyGetMeta (cur, "check/path");
 		if (!pathMeta) continue;
 		rc = validateKey (cur, parentKey);
-		if (!rc) return -1;
+		if (!rc || rc < 0) return -1;
 
 		const Key * accessMeta = keyGetMeta (cur, "check/permission/types");
 		if (!accessMeta) continue;
-		rc = validatePermission(keyString(pathMeta), cur, parentKey);
+		rc = validatePermission(cur, parentKey);
 		if (!rc) return -1;
 	}
 

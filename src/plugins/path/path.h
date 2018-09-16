@@ -17,6 +17,8 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <pwd.h>
+#include <grp.h>
 
 int elektraPathOpen (Plugin * handle, Key * errorKey);
 int elektraPathClose (Plugin * handle, Key * errorKey);
