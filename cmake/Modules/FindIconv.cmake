@@ -60,7 +60,10 @@ if (WIN32)
 			 PATH
 			 ${ICONV_INCLUDE_DIR}/../bin)
 	if (ICONV_FIND_REQUIRED)
-		if (NOT ICONV_DLL AND NOT ICONV_DLL_HELP)
+		if (NOT
+		    ICONV_DLL
+		    AND NOT
+			ICONV_DLL_HELP)
 			message (FATAL_ERROR "Could not find iconv.dll, please add correct your PATH environment variable")
 		endif ()
 		if (NOT ICONV_DLL AND ICONV_DLL_HELP)

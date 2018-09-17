@@ -123,7 +123,11 @@ foreach (_CURRENT_VERSION ${_Python2_VERSIONS})
 		      )
 
 	# For backward compatibility, honour value of PYTHON2_INCLUDE_PATH, if PYTHON2_INCLUDE_DIR is not set.
-	if (DEFINED PYTHON2_INCLUDE_PATH AND NOT DEFINED PYTHON2_INCLUDE_DIR)
+	if (DEFINED
+	    PYTHON2_INCLUDE_PATH
+	    AND NOT
+		DEFINED
+		PYTHON2_INCLUDE_DIR)
 		set (PYTHON2_INCLUDE_DIR
 		     "${PYTHON2_INCLUDE_PATH}"
 		     CACHE PATH
@@ -132,7 +136,9 @@ foreach (_CURRENT_VERSION ${_Python2_VERSIONS})
 	endif (DEFINED PYTHON2_INCLUDE_PATH AND NOT DEFINED PYTHON2_INCLUDE_DIR)
 
 	set (PYTHON2_FRAMEWORK_INCLUDES)
-	if (Python_FRAMEWORKS AND NOT PYTHON2_INCLUDE_DIR)
+	if (Python_FRAMEWORKS
+	    AND NOT
+		PYTHON2_INCLUDE_DIR)
 		foreach (dir ${Python_FRAMEWORKS})
 			set (PYTHON2_FRAMEWORK_INCLUDES
 			     ${PYTHON2_FRAMEWORK_INCLUDES}
@@ -153,7 +159,9 @@ foreach (_CURRENT_VERSION ${_Python2_VERSIONS})
 	# For backward compatibility, set PYTHON2_INCLUDE_PATH.
 	set (PYTHON2_INCLUDE_PATH "${PYTHON2_INCLUDE_DIR}")
 
-	if (PYTHON2_INCLUDE_DIR AND EXISTS "${PYTHON2_INCLUDE_DIR}/patchlevel.h")
+	if (PYTHON2_INCLUDE_DIR
+	    AND EXISTS
+		"${PYTHON2_INCLUDE_DIR}/patchlevel.h")
 		file (STRINGS "${PYTHON2_INCLUDE_DIR}/patchlevel.h"
 			      python_version_str
 		      REGEX "^#define[ \t]+PY_VERSION[ \t]+\"[^\"]+\"")
@@ -221,7 +229,9 @@ function (PYTHON2_ADD_MODULE _NAME)
 			set_target_properties (${_NAME}
 					       PROPERTIES PREFIX
 							  "${PYTHON2_MODULE_PREFIX}")
-			if (WIN32 AND NOT CYGWIN)
+			if (WIN32
+			    AND NOT
+				CYGWIN)
 				set_target_properties (${_NAME}
 						       PROPERTIES SUFFIX
 								  ".pyd")

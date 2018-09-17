@@ -61,7 +61,7 @@ RUN apt-get update && apt-get -y install \
     && rm -rf /var/lib/apt/lists/*
 
 RUN cabal update && cabal install hspec QuickCheck
-RUN pip install --upgrade cmake_format==0.4.1 pyyaml
+RUN pip install cmake-format==0.4.3 pyyaml
 
 # Google Test
 ENV GTEST_ROOT=/opt/gtest
