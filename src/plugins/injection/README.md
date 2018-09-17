@@ -1,13 +1,13 @@
-- infos = Information about the ipaddr plugin is in keys below
-- infos/author = Thomas Waser <thomas.waser@libelektra.org>
+- infos = Information about the injection plugin is below
+- infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
 - infos/needs =
-- infos/provides = check
+- infos/provides = inject
 - infos/recommends =
 - infos/placements = presetstorage
-- infos/status = maintained unittest nodep
-- infos/metadata = check/ipaddr
-- infos/description = Validation for IP addresses
+- infos/status = maintained nodep
+- infos/metadata = inject/randSeed inject/structure/sectionRemove inject/structure/sectionDuplicate inject/structure/sectionReallocate inject/semantic inject/resource inject/typo/transposition inject/typo/insertion inject/typo/caseToggle inject/typo/deletion inject/typo/changechar inject/typo/space inject/domain inject/limit/min inject/limit/max
+- infos/description = Injections for configurations
 
 # Injection Plugin
 
@@ -28,7 +28,7 @@ There up to 6 error types currently with injection types for each.
 6. Limits of specification (e.g. border cases in ranges)
 
 **All** injection types *can* have an additional metadata which is called `inject/randSeed` which should be an integer value between 1-1000.
-This value can be used to gaurantee reproducability of injected error. As an example, in an character insertion injection (i.e. from `true` to `trGue`)
+This value can be used to gaurantee reproducability of injected errors. As an example, in a character insertion injection (i.e. from `true` to `trGue`)
 you can be assured that if you run the plugin on the same keyset twice, the injected character will be the same.
 If you omit the `inject/randSeed` metadata, the plugin will generate its own random number.
 
@@ -36,7 +36,7 @@ Please note that you can only have **one injection** per setting. If you have mu
 
 ### Structural Errors
 
-Structural errors combine all injection types in which the correct structure and order of an configuration are not correct. So for example a expected setting under a certain section is actually appearing in another section in which it does not belong to.
+Structural errors combine all injection types in which the structure and location of an configuration are not correct. So for example an expected setting under a certain section is actually appearing in another section in which it does not belong to.
 
 * Section Remove
     * `inject/structure/sectionRemove`
@@ -62,7 +62,7 @@ Structural errors combine all injection types in which the correct structure and
 
 * Section Reallocator
     * `inject/structure/sectionReallocate`
-    * Removes a section and puts it on another place
+    * Removes a section and puts it in another place
         ```
         a:
             b1:
@@ -149,15 +149,16 @@ This injection type behaves equivalent to the semantic errors as it requires hum
         ```
         &downarrow;&downarrow;&downarrow;
         ```
+        [port] #assuming they are in use already
+        inject/resource/#0 = 22
+        inject/resource/#1 = 0
+        inject/resource/#2 = 80
+
         [logfile]
         inject/resource/#0 = /does/not/exist/application.log
         inject/resource/#1 = /root/application.log
         inject/resource/#2 = /full/partition/used/application.log
 
-        [port] #assuming they are in use already
-        inject/resource/#0 = 22
-        inject/resource/#1 = 0
-        inject/resource/#2 = 80
         ```
         &downarrow;&downarrow;&downarrow; (random)
         ```
@@ -267,7 +268,7 @@ These errors are likely to be the most occuring ones in configurations. They res
         ```
 ### Domain Errors
 
-Domain error come from misunderstandings about the actual domain of the concrete setting. One good example would be that the domain are IP representations and a user types in a DNS entry like localhost.
+Domain errors come from misunderstandings about the actual domain of the concrete setting. One good example would be that the domain are IP representations and a user types in a DNS entry like localhost.
 
 These errors must be configured the same way as semantic errors as they are difficult to automatically generate.
 
