@@ -73,13 +73,9 @@ int main (int argc, char ** argv)
 
 	init (argc, argv);
 
-#if HAS_FGETPWENT
 	test_read ();
-#endif
 	test_write ();
-#if HAS_FGETPWENT
 	test_read_write ();
-#endif
 
 	print_result ("testmod_passwd");
 
