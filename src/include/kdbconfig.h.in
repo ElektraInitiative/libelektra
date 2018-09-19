@@ -139,6 +139,9 @@
 #cmakedefine HAVE_ERRNO_H
 #endif
 
+/* Define the macro `HAVE_FEATURES_H` if the `features.h` header file was found. */
+#cmakedefine HAVE_FEATURES_H
+
 /* define if your system has the <locale.h> header file. */
 #ifndef HAVE_LOCALE_H
 #cmakedefine HAVE_LOCALE_H
