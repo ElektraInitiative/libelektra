@@ -25,6 +25,7 @@
 #endif
 
 #include <errno.h>
+#include <fcntl.h>     // fcntl()
 #include <limits.h>    // SSIZE_MAX
 #include <stdint.h>    // uintN_t, uintptr_t
 #include <stdio.h>     // fopen(), fileno()
@@ -48,40 +49,39 @@ static MmapMetaData magicMmapMetaData;
 /* -- File handling --------------------------------------------------------------------------------------------------------------------- */
 
 /**
- * @brief Wrapper for fopen().
+ * @brief Wrapper for open().
  *
  * @param parentKey containing the filename
- * @param mode file open mode
+ * @param flags file access mode
  *
- * @return file pointer
+ * @return file descriptor
  */
-static FILE * openFile (Key * parentKey, const char * mode)
+static int openFile (Key * parentKey, int flags)
 {
-	FILE * fp;
+	int fd;
 	ELEKTRA_LOG_DEBUG ("opening file %s", keyString (parentKey));
 
-	if ((fp = fopen (keyString (parentKey), mode)) == 0)
+	if ((fd = open (keyString (parentKey), flags, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH)) == -1)
 	{
 		ELEKTRA_LOG_WARNING ("error opening file %s", keyString (parentKey));
 	}
-	return fp;
+	return fd;
 }
 
 /**
  * @brief Wrapper for ftruncate().
  *
- * @param fp the file pointer
+ * @param fd the file descriptor
  * @param mmapsize size of the mapped region
  * @param parentKey holding the filename, for debug purposes
  *
  * @retval 1 on success
  * @retval -1 if ftruncate() failed
  */
-static int truncateFile (FILE * fp, size_t mmapsize, Key * parentKey ELEKTRA_UNUSED)
+static int truncateFile (int fd, size_t mmapsize, Key * parentKey ELEKTRA_UNUSED)
 {
 	ELEKTRA_LOG_DEBUG ("truncating file %s", keyString (parentKey));
 
-	int fd = fileno (fp);
 	if ((ftruncate (fd, mmapsize)) == -1)
 	{
 		ELEKTRA_LOG_WARNING ("error truncating file %s", keyString (parentKey));
@@ -115,18 +115,17 @@ static int statFile (struct stat * sbuf, Key * parentKey)
  * @brief Wrapper for mmap().
  *
  * @param addr address hint, where the mapping should start
- * @param fp file pointer to the file to be mapped
+ * @param fd file descriptor of the file to be mapped
  * @param mmapSize size of the mapped region
  * @param mapOpts mmap flags (MAP_PRIVATE, MAP_FIXED, ...)
  * @param parentKey holding the filename, for debug purposes
  *
  * @return pointer to mapped region on success, MAP_FAILED on failure
  */
-static char * mmapFile (void * addr, FILE * fp, size_t mmapSize, int mapOpts, Key * parentKey ELEKTRA_UNUSED)
+static char * mmapFile (void * addr, int fd, size_t mmapSize, int mapOpts, Key * parentKey ELEKTRA_UNUSED)
 {
 	ELEKTRA_LOG_DEBUG ("mapping file %s", keyString (parentKey));
 
-	int fd = fileno (fp);
 	char * mappedRegion = mmap (addr, mmapSize, PROT_READ | PROT_WRITE, mapOpts, fd, 0);
 	if (mappedRegion == MAP_FAILED)
 	{
@@ -134,6 +133,81 @@ static char * mmapFile (void * addr, FILE * fp, size_t mmapSize, int mapOpts, Ke
 		return MAP_FAILED;
 	}
 	return mappedRegion;
+}
+
+/**
+ * @brief Set exclusive lock for writing
+ *
+ * @param fd the file descriptor
+ * @param parentKey holding the filename, for debug purposes
+ *
+ * @retval 1 on success
+ * @retval -1 if acquiring the lock failed
+ */
+static int lockFileExclusive (int fd, Key * parentKey)
+{
+	struct flock l;
+	l.l_type = F_WRLCK;
+	l.l_whence = SEEK_SET;
+	l.l_start = 0;
+	l.l_len = 0;
+
+	if (fcntl (fd, F_SETLK, &l) == -1)
+	{
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CONFLICT, parentKey, "could not lock file: %s", strerror (errno));
+		return -1;
+	}
+	return 1;
+}
+
+/**
+ * @brief Set shared lock for reading
+ *
+ * @param fd the file descriptor
+ * @param parentKey holding the filename, for debug purposes
+ *
+ * @retval 1 on success
+ * @retval -1 if acquiring the lock failed
+ */
+static int lockFileShared (int fd, Key * parentKey)
+{
+	struct flock l;
+	l.l_type = F_RDLCK;
+	l.l_whence = SEEK_SET;
+	l.l_start = 0;
+	l.l_len = 0;
+
+	if (fcntl (fd, F_SETLK, &l) == -1)
+	{
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CONFLICT, parentKey, "could not lock file: %s", strerror (errno));
+		return -1;
+	}
+	return 1;
+}
+
+/**
+ * @brief Remove lock from file
+ *
+ * @param fd the file descriptor
+ * @param parentKey holding the filename, for debug purposes
+ *
+ * @retval 1 on success
+ * @retval -1 if releasing the lock failed
+ */
+static int unlockFile (int fd, Key * parentKey)
+{
+	struct flock l;
+	l.l_type = F_UNLCK;
+	l.l_whence = SEEK_SET;
+	l.l_start = 0;
+	l.l_len = 0;
+
+	if (fcntl (fd, F_SETLK, &l) == -1)
+	{
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CONFLICT, parentKey, "could not unlock file: %s", strerror (errno));
+		return -1;
+	}
+	return 1;
 }
 
 /* -- Internal Functions  --------------------------------------------------------------------------------------------------------------- */
@@ -983,6 +1057,12 @@ static void unlinkFile (Key * parentKey)
 			elektraFree (copy);
 		}
 	}
+
+	// remove the lock from the file
+	int fd = -1;
+	if ((fd = openFile (parentKey, O_RDWR)) == -1) return;
+	unlockFile (fd, parentKey);
+	close (fd);
 }
 
 /**
@@ -1103,10 +1183,15 @@ int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, get) (Plugin * handle, KeySet * ks, Ke
 		found->meta = 0;
 	}
 
-	FILE * fp;
+	int fd = -1;
 	char * mappedRegion = MAP_FAILED;
 
-	if ((fp = openFile (parentKey, "r+")) == 0)
+	if ((fd = openFile (parentKey, O_RDONLY)) == -1)
+	{
+		goto error;
+	}
+
+	if (lockFileShared (fd, parentKey) != 1)
 	{
 		goto error;
 	}
@@ -1120,7 +1205,7 @@ int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, get) (Plugin * handle, KeySet * ks, Ke
 	if (sbuf.st_size == 0)
 	{
 		// empty mmap file
-		fclose (fp);
+		close (fd);
 		keyDel (found);
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
@@ -1131,7 +1216,7 @@ int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, get) (Plugin * handle, KeySet * ks, Ke
 		goto error;
 	}
 
-	mappedRegion = mmapFile ((void *) 0, fp, sbuf.st_size, MAP_PRIVATE, parentKey);
+	mappedRegion = mmapFile ((void *) 0, fd, sbuf.st_size, MAP_PRIVATE, parentKey);
 	if (mappedRegion == MAP_FAILED)
 	{
 		ELEKTRA_LOG_WARNING ("mappedRegion == MAP_FAILED");
@@ -1180,11 +1265,7 @@ int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, get) (Plugin * handle, KeySet * ks, Ke
 	updatePointers (mmapMetaData, mappedRegion);
 	mmapToKeySet (mappedRegion, ks);
 
-	if (fclose (fp) != 0)
-	{
-		ELEKTRA_LOG_WARNING ("could not fclose");
-		goto error;
-	}
+	// we intentionally leave the file descriptor open, such that we do not lose our shared/read lock
 
 	// save keyset information to list of currently mmaped files
 	saveLinkedFile (found, mappedFiles, ks, handle, mappedRegion);
@@ -1199,7 +1280,7 @@ error:
 	}
 
 	if (mappedRegion != MAP_FAILED) munmap (mappedRegion, sbuf.st_size);
-	if (fp) fclose (fp);
+	if (fd != -1) close (fd);
 	keyDel (found);
 
 	errno = errnosave;
@@ -1234,10 +1315,20 @@ int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, set) (Plugin * handle, KeySet * ks, Ke
 		keyDel (found);
 	}
 
-	FILE * fp;
+	int fd = -1;
 	char * mappedRegion = MAP_FAILED;
 
-	if ((fp = openFile (parentKey, "w+")) == 0)
+	if ((fd = openFile (parentKey, O_RDWR | O_CREAT)) == -1)
+	{
+		goto error;
+	}
+
+	if (lockFileExclusive (fd, parentKey) != 1)
+	{
+		goto error;
+	}
+
+	if (truncateFile (fd, 0, parentKey) != 1)
 	{
 		goto error;
 	}
@@ -1251,12 +1342,12 @@ int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, set) (Plugin * handle, KeySet * ks, Ke
 	calculateMmapDataSize (&mmapHeader, &mmapMetaData, ks, dynArray);
 	ELEKTRA_LOG_DEBUG ("mmapsize: %llu", mmapHeader.allocSize);
 
-	if (truncateFile (fp, mmapHeader.allocSize, parentKey) != 1)
+	if (truncateFile (fd, mmapHeader.allocSize, parentKey) != 1)
 	{
 		goto error;
 	}
 
-	mappedRegion = mmapFile ((void *) 0, fp, mmapHeader.allocSize, MAP_SHARED, parentKey);
+	mappedRegion = mmapFile ((void *) 0, fd, mmapHeader.allocSize, MAP_SHARED, parentKey);
 	ELEKTRA_LOG_DEBUG ("mappedRegion ptr: %p", (void *) mappedRegion);
 	if (mappedRegion == MAP_FAILED)
 	{
@@ -1279,7 +1370,12 @@ int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, set) (Plugin * handle, KeySet * ks, Ke
 		goto error;
 	}
 
-	if (fclose (fp) != 0)
+	if (unlockFile (fd, parentKey) != 1)
+	{
+		goto error;
+	}
+
+	if (close (fd) != 0)
 	{
 		ELEKTRA_LOG_WARNING ("could not fclose");
 		goto error;
@@ -1297,7 +1393,7 @@ error:
 	}
 
 	if (mappedRegion != MAP_FAILED) munmap (mappedRegion, mmapHeader.allocSize);
-	if (fp) fclose (fp);
+	if (fd != -1) close (fd);
 	ELEKTRA_PLUGIN_FUNCTION (mmapstorage, dynArrayDelete) (dynArray);
 
 	errno = errnosave;
