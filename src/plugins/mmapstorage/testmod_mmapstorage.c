@@ -17,6 +17,7 @@
 #include <sys/mman.h>  // mmap()
 #include <sys/stat.h>  // stat(), chmod()
 #include <sys/types.h> // ftruncate ()
+#include <sys/wait.h>  // waitpit()
 #include <unistd.h>    // ftruncate(), pipe(), fork()
 
 #include <kdbconfig.h>
@@ -769,7 +770,7 @@ static void test_mmap_bad_file_permissions (const char * tmpFile)
 	}
 	fclose (fp);
 
-	if (chmod (tmpFile, S_IRUSR) != 0)
+	if (chmod (tmpFile, 0) != 0)
 	{
 		yield_error ("chmod() failed");
 	}
@@ -810,15 +811,100 @@ static void test_mmap_lock_mapped_file (const char * tmpFile)
 	{
 		// child: open a config file and leave it mapped
 		int devnull = open ("/dev/null", O_RDWR);
-		if (devnull == -1) exit (EXIT_FAILURE);
+		if (devnull == -1) _Exit (EXIT_FAILURE);
 
 		// redirect any communication on standard file descriptors to /dev/null
 		close (STDIN_FILENO);
 		close (STDOUT_FILENO);
 		close (STDERR_FILENO);
-		if (dup (devnull) == -1) exit (EXIT_FAILURE);
-		if (dup (devnull) == -1) exit (EXIT_FAILURE);
-		if (dup (devnull) == -1) exit (EXIT_FAILURE);
+		if (dup (devnull) == -1) _Exit (EXIT_FAILURE);
+		if (dup (devnull) == -1) _Exit (EXIT_FAILURE);
+		if (dup (devnull) == -1) _Exit (EXIT_FAILURE);
+		close (childPipe[0]);
+		close (parentPipe[1]);
+
+		Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+		KeySet * conf = ksNew (0, KS_END);
+		PLUGIN_OPEN ("mmapstorage");
+
+		KeySet * ks = ksNew (0, KS_END);
+		// succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+		succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
+
+		if (write (childPipe[1], "a", 1) != 1) _Exit (EXIT_FAILURE); // signal parent that we are ready
+		close (childPipe[1]);
+		if (read (parentPipe[0], &buf, 1) != 1) _Exit (EXIT_FAILURE); // wait for parent
+		close (parentPipe[0]);
+
+		KeySet * expected = ksNew (0, KS_END);
+		compare_keyset (expected, ks);
+		compare_keyset (ks, expected);
+		ksDel (expected);
+		keyDel (parentKey);
+		ksDel (ks);
+		PLUGIN_CLOSE ();
+
+		_Exit (EXIT_SUCCESS);
+	}
+	else
+	{
+		// parent: try and destroy the file that the child has mapped
+		close (childPipe[1]);
+		close (parentPipe[0]);
+		if (read (childPipe[0], &buf, 1) != 1) _Exit (EXIT_FAILURE); // wait for child
+		close (childPipe[0]);
+
+		Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+		KeySet * conf = ksNew (0, KS_END);
+		PLUGIN_OPEN ("mmapstorage");
+
+		KeySet * ks = metaTestKeySet ();
+		succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR,
+			    "kdbSet has overwritten a currently mapped file");
+		if (write (parentPipe[1], "a", 1) != 1) _Exit (EXIT_FAILURE); // signal child that we are done
+		close (parentPipe[1]);
+
+		int status;
+		waitpid (pid, &status, 0);
+		if (status != 0) yield_error ("child process did not exit successfully.");
+
+		keyDel (parentKey);
+		ksDel (ks);
+		PLUGIN_CLOSE ();
+	}
+}
+
+static void test_mmap_unlock_mapped_file (const char * tmpFile)
+{
+	int parentPipe[2];
+	int childPipe[2];
+	if (pipe (parentPipe) != 0 || pipe (childPipe) != 0)
+	{
+		yield_error ("pipe() error");
+	}
+
+	pid_t pid;
+	char buf;
+	pid = fork ();
+
+	if (pid == -1)
+	{
+		yield_error ("fork() error");
+		return;
+	}
+	else if (pid == 0)
+	{
+		// child: open a config file and close
+		int devnull = open ("/dev/null", O_RDWR);
+		if (devnull == -1) _Exit (EXIT_FAILURE);
+
+		// redirect any communication on standard file descriptors to /dev/null
+		close (STDIN_FILENO);
+		close (STDOUT_FILENO);
+		close (STDERR_FILENO);
+		if (dup (devnull) == -1) _Exit (EXIT_FAILURE);
+		if (dup (devnull) == -1) _Exit (EXIT_FAILURE);
+		if (dup (devnull) == -1) _Exit (EXIT_FAILURE);
 		close (childPipe[0]);
 		close (parentPipe[1]);
 
@@ -830,26 +916,27 @@ static void test_mmap_lock_mapped_file (const char * tmpFile)
 		succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 		succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
 
-		write (childPipe[1], "a", 1); // signal parent that we are ready
-		close (childPipe[1]);
-		read (parentPipe[0], &buf, 1); // wait for parent
-		close (parentPipe[0]);
-
 		KeySet * expected = simpleTestKeySet ();
 		compare_keyset (expected, ks);
 		compare_keyset (ks, expected);
-
+		ksDel (expected);
 		keyDel (parentKey);
 		ksDel (ks);
-		PLUGIN_CLOSE ();
-		exit (EXIT_SUCCESS);
+		PLUGIN_CLOSE (); // triggers unlinking of keyset and releases file lock
+
+		if (write (childPipe[1], "a", 1) != 1) _Exit (EXIT_FAILURE); // signal parent that we are ready
+		close (childPipe[1]);
+		if (read (parentPipe[0], &buf, 1) != 1)
+			_Exit (EXIT_FAILURE); // wait for parent (otherwise file lock is released implicitly)
+		close (parentPipe[0]);
+		_Exit (EXIT_SUCCESS);
 	}
 	else
 	{
-		// parent: try and destroy the file that the child has mapped
+		// parent: try to overwrite file (child should have unlocked it)
 		close (childPipe[1]);
 		close (parentPipe[0]);
-		read (childPipe[0], &buf, 1); // wait for child
+		if (read (childPipe[0], &buf, 1) != 1) _Exit (EXIT_FAILURE); // wait for child
 		close (childPipe[0]);
 
 		Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
@@ -857,14 +944,21 @@ static void test_mmap_lock_mapped_file (const char * tmpFile)
 		PLUGIN_OPEN ("mmapstorage");
 
 		KeySet * ks = metaTestKeySet ();
-		succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR,
-			    "kdbSet has overwritten a currently mapped file");
-		write (parentPipe[1], "a", 1); // signal child that we are done
-		close (parentPipe[1]);
+		succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet failed, mmap file was not unlocked properly");
 
+		KeySet * expected = metaTestKeySet ();
+		compare_keyset (expected, ks);
+		ksDel (expected);
 		keyDel (parentKey);
 		ksDel (ks);
 		PLUGIN_CLOSE ();
+
+		if (write (parentPipe[1], "a", 1) != 1) _Exit (EXIT_FAILURE); // signal child that we are done
+		close (parentPipe[1]);
+
+		int status;
+		waitpid (pid, &status, 0);
+		if (status != 0) yield_error ("child process did not exit successfully.");
 	}
 }
 
@@ -983,7 +1077,9 @@ int main (int argc, char ** argv)
 
 	test_mmap_open_pipe ();
 	test_mmap_bad_file_permissions (tmpFile);
+
 	test_mmap_lock_mapped_file (tmpFile);
+	test_mmap_unlock_mapped_file (tmpFile);
 
 	printf ("\ntestmod_mmapstorage RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
