@@ -10,11 +10,15 @@
 #ifndef ELEKTRA_PLUGIN_YAWN_HPP
 #define ELEKTRA_PLUGIN_YAWN_HPP
 
+// -- Imports ------------------------------------------------------------------------------------------------------------------------------
+
 #include <kdbplugin.h>
 
 using ckdb::Key;
 using ckdb::KeySet;
 using ckdb::Plugin;
+
+// -- Functions ----------------------------------------------------------------------------------------------------------------------------
 
 extern "C" {
 int elektraYawnGet (Plugin * handle, KeySet * returned, Key * parentKey);
