@@ -115,6 +115,11 @@ static int isTestFileCorrect (const char * file)
 	return returnValue;
 }
 
+static void test_teardown (void)
+{
+	succeed_if (system ("gpg-connect-agent --quiet KILLAGENT /bye") == 0, "failed to kill the gpg-agent");
+}
+
 static void test_init (void)
 {
 	Plugin * plugin = NULL;
@@ -300,6 +305,7 @@ int main (int argc, char ** argv)
 	test_file_crypto_operations ();
 	test_file_signature_operations ();
 	test_file_faulty_signature ();
+	test_teardown ();
 
 	print_result (ELEKTRA_PLUGIN_NAME);
 	return nbError;

@@ -81,6 +81,11 @@ static KeySet * newTestdataKeySet (void)
 	return ksNew (4, kUnchanged, kNull, kString, kBin, KS_END);
 }
 
+static void test_teardown (void)
+{
+	succeed_if (system ("gpg-connect-agent --quiet KILLAGENT /bye") == 0, "failed to kill the gpg-agent");
+}
+
 static void test_import_key (void)
 {
 	gpgme_error_t err;
@@ -282,6 +287,7 @@ int main (int argc, char ** argv)
 	test_init ();
 	test_incomplete_config ();
 	test_encryption_decryption ();
+	test_teardown ();
 
 	print_result ("gpgme");
 	return nbError;

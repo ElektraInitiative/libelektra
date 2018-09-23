@@ -33,6 +33,7 @@ static KeySet * newPluginConfiguration (void);
 		test_init (PLUGIN_NAME);                                                                                                   \
 		test_incomplete_config (PLUGIN_NAME);                                                                                      \
 		test_crypto_operations (PLUGIN_NAME);                                                                                      \
+		test_teardown ();                                                                                                          \
 	}                                                                                                                                  \
 	else                                                                                                                               \
 	{                                                                                                                                  \
@@ -147,6 +148,11 @@ static void test_init (const char * pluginName)
 	elektraModulesClose (modules, 0);
 	ksDel (modules);
 	keyDel (parentKey);
+}
+
+static void test_teardown (void)
+{
+	succeed_if (system ("gpg-connect-agent --quiet KILLAGENT /bye") == 0, "failed to kill the gpg-agent");
 }
 
 static void test_incomplete_config (const char * pluginName)
