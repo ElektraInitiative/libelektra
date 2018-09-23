@@ -1,54 +1,34 @@
 - infos = Information about the yawn plugin is in keys below
-- infos/author = Author Name <elektra@libelektra.org>
+- infos/author = René Schwaiger <sanssecours@me.com>
 - infos/licence = BSD
-- infos/needs =
-- infos/provides =
+- infos/needs = directoryvalue yamlsmith
+- infos/provides = storage/yaml
 - infos/recommends =
-- infos/placements = prerollback rollback postrollback getresolver pregetstorage getstorage postgetstorage setresolver presetstorage setstorage precommit commit postcommit
-- infos/status = recommended productive maintained reviewed conformant compatible coverage specific unittest shelltest tested nodep libc configurable final preview memleak experimental difficult unfinished old nodoc concept orphan obsolete discouraged -1000000
+- infos/placements = getstorage
+- infos/status = maintained unittest preview experimental unfinished nodoc concept discouraged
 - infos/metadata =
-- infos/description = one-line description of yawn
+- infos/description = This storage plugin use a Early parser to read YAML files
+
+# YAwn
 
 ## Introduction
 
-Copy this yawn if you want to start a new
-plugin written in C++.
-
-## Usage
-
-You can use `scripts/copy-yawn`
-to automatically rename everything to your
-plugin name:
-
-	cd src/plugins
-	../../scripts/copy-yawn yourplugin
-
-Then update the README.md of your newly created plugin:
-
-- enter your full name+email in `infos/author`
-- make sure `status`, `placements`, and other clauses conform to
-  descriptions in `doc/CONTRACT.ini`
-- update the one-line description above
-- add your plugin in `src/plugins/README.md`
-- and rewrite the rest of this `README.md` to give a great
-  explanation of what your plugin does
+This plugin uses [YAEP](https://github.com/vnmakarov/yaep) to  parse the [YAML](http://yaml.org) serialization format.
 
 ## Dependencies
 
-None.
+This plugin requires [YAEP](https://github.com/vnmakarov/yaep#installing).
 
 ## Examples
 
 ```sh
-# Backup-and-Restore: user/tests/yawn
+# Mount plugin
+sudo kdb mount config.yaml user/tests/yawn yawn
 
-kdb set user/tests/yawn/key value
-#> Create a new key user/tests/yawn/key with string "value"
-
-kdb get /tests/yawn/key
-#> value
+# Undo modifications
+sudo kdb umount user/tests/yawn
 ```
 
 ## Limitations
 
-None.
+This plugin does not do anything useful yet.
