@@ -17,12 +17,8 @@ using ckdb::KeySet;
 using ckdb::Plugin;
 
 extern "C" {
-int elektraYawnOpen (Plugin * handle, Key * errorKey);
-int elektraYawnClose (Plugin * handle, Key * errorKey);
 int elektraYawnGet (Plugin * handle, KeySet * returned, Key * parentKey);
 int elektraYawnSet (Plugin * handle, KeySet * returned, Key * parentKey);
-int elektraYawnError (Plugin * handle, KeySet * conf, Key * parentKey);
-int elektraYawnCheckConfig (Key * errorKey, KeySet * conf);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (yawn);
 } // end extern "C"

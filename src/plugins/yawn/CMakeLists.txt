@@ -6,6 +6,4 @@ add_plugin (yawn
 	    CPP_TEST
 	    TEST_README
 	    SOURCES yawn.hpp
-		    yawn.cpp
-		    yawn_delegate.hpp
-		    yawn_delegate.cpp)
+		    yawn.cpp)
