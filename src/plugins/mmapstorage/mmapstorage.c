@@ -1079,11 +1079,11 @@ static void saveLinkedFile (Key * key, KeySet * mappedFiles, KeySet * returned, 
 	ELEKTRA_LOG_DEBUG ("unlink: new file, adding to my list. file: %s", keyString (key));
 
 	char mmapAddrString[SIZEOF_ADDR_STRING];
-	snprintf (mmapAddrString, SIZEOF_ADDR_STRING - 1, "%p", (void *) (mappedRegion));
+	snprintf (mmapAddrString, SIZEOF_ADDR_STRING, "%p", (void *) (mappedRegion));
 	mmapAddrString[SIZEOF_ADDR_STRING - 1] = '\0';
 	ELEKTRA_LOG_DEBUG ("mappedRegion ptr as string: %s", mmapAddrString);
 	char ksAddrString[SIZEOF_ADDR_STRING];
-	snprintf (ksAddrString, SIZEOF_ADDR_STRING - 1, "%p", (void *) returned);
+	snprintf (ksAddrString, SIZEOF_ADDR_STRING, "%p", (void *) returned);
 	ksAddrString[SIZEOF_ADDR_STRING - 1] = '\0';
 	ELEKTRA_LOG_DEBUG ("KeySet ptr as string: %s", ksAddrString);
 	keySetMeta (key, mmapAddrString, ksAddrString);
