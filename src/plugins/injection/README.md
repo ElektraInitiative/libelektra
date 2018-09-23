@@ -1,12 +1,12 @@
 - infos = Information about the injection plugin is below
-- infos/author = Markus Raab <elektra@libelektra.org>
+- infos/author = Michael Zronek <elektra@libelektra.org>
 - infos/licence = BSD
 - infos/needs =
 - infos/provides = inject
 - infos/recommends =
 - infos/placements = presetstorage
 - infos/status = maintained nodep
-- infos/metadata = inject/randSeed inject/structure/sectionRemove inject/structure/sectionDuplicate inject/structure/sectionReallocate inject/semantic inject/resource inject/typo/transposition inject/typo/insertion inject/typo/caseToggle inject/typo/deletion inject/typo/changechar inject/typo/space inject/domain inject/limit/min inject/limit/max
+- infos/metadata = inject/rand/seed inject/structure/section/remove inject/structure/section/duplicate inject/structure/section/reallocate inject/semantic inject/resource inject/typo/transposition inject/typo/insertion inject/typo/case/toggle inject/typo/deletion inject/typo/change/char inject/typo/space inject/domain inject/limit/min inject/limit/max
 - infos/description = Injections for configurations
 
 # Injection Plugin
@@ -20,6 +20,7 @@ How the specific injection is carried out can either be random or, if desired, p
 ## Usage
 
 There up to 6 error types currently with injection types for each.
+
 1. Structural errors (e.g. missing sections, parameters in wrong sections, omission necessary parameters in section)
 2. Semantic errors (e.g. wrong version, documentation, confusing similar applications)
 3. Resource errors (e.g. filename not available)
@@ -27,10 +28,10 @@ There up to 6 error types currently with injection types for each.
 5. Domain-specific misunderstandings (e.g. not an URL in /browser/start_page)
 6. Limits of specification (e.g. border cases in ranges)
 
-**All** injection types *can* have an additional metadata which is called `inject/randSeed` which should be an integer value between 1-1000.
+**All** injection types *can* have an additional metadata which is called `inject/rand/seed` which should be an integer value between 1-1000.
 This value can be used to gaurantee reproducability of injected errors. As an example, in a character insertion injection (i.e. from `true` to `trGue`)
 you can be assured that if you run the plugin on the same keyset twice, the injected character will be the same.
-If you omit the `inject/randSeed` metadata, the plugin will generate its own random number.
+If you omit the `inject/rand/seed` metadata, the plugin will generate its own random number.
 
 Please note that you can only have **one injection** per setting. If you have multiple injection types on a key, only a single one is taken (which one depends on the order of the implementation in which it checks for the metakeys)
 
@@ -39,7 +40,7 @@ Please note that you can only have **one injection** per setting. If you have mu
 Structural errors combine all injection types in which the structure and location of an configuration are not correct. So for example an expected setting under a certain section is actually appearing in another section in which it does not belong to.
 
 * Section Remove
-    * `inject/structure/sectionRemove`
+    * `inject/structure/section/remove`
     * Removes a section from a configuration (does not require randomness)
         ```
         a:
@@ -51,7 +52,7 @@ Structural errors combine all injection types in which the structure and locatio
         &downarrow;&downarrow;&downarrow;
         ```
         [a/b1]
-        inject/structure/sectionRemove =
+        inject/structure/section/remove =
         ```
         &downarrow;&downarrow;&downarrow;
         ```
@@ -61,7 +62,7 @@ Structural errors combine all injection types in which the structure and locatio
         ```
 
 * Section Reallocator
-    * `inject/structure/sectionReallocate`
+    * `inject/structure/section/reallocate`
     * Removes a section and puts it in another place
         ```
         a:
@@ -73,7 +74,7 @@ Structural errors combine all injection types in which the structure and locatio
         &downarrow;&downarrow;&downarrow;
         ```
         [a/b1]
-        inject/structure/sectionReallocate =
+        inject/structure/section/reallocate =
         ```
         &downarrow;&downarrow;&downarrow; (random)
         ```
@@ -85,7 +86,7 @@ Structural errors combine all injection types in which the structure and locatio
         ```
 
 * Section Duplicator
-    * `inject/structure/sectionDuplicate`
+    * `inject/structure/section/duplicate`
     * Randomly duplicates a section somewhere else
         ```
         a:
@@ -97,7 +98,7 @@ Structural errors combine all injection types in which the structure and locatio
         &downarrow;&downarrow;&downarrow;
         ```
         [a/b1]
-        inject/structure/sectionDuplicate =
+        inject/structure/section/duplicate =
         ```
         &downarrow;&downarrow;&downarrow; (random)
         ```
@@ -203,7 +204,7 @@ These errors are likely to be the most occuring ones in configurations. They res
         logfile = trpue
         ```
 * Casetoggle injection
-    * `inject/typo/caseToggle`
+    * `inject/typo/case/toggle`
     * Takes the value and toggles a character to upper or lowercase (depending on the character)
     
         ```
@@ -212,7 +213,7 @@ These errors are likely to be the most occuring ones in configurations. They res
         &downarrow;&downarrow;&downarrow;
         ```
         [writeToSyslog]
-        inject/typo/caseToggle =
+        inject/typo/case/toggle =
         ```
         &downarrow;&downarrow;&downarrow; (random)
         ```
@@ -235,7 +236,7 @@ These errors are likely to be the most occuring ones in configurations. They res
         logfile = tre
         ```
 * Changecharacter injection
-    * `inject/typo/changechar`
+    * `inject/typo/change/char`
     * Takes the value subsitutes a random character
     
         ```
@@ -244,7 +245,7 @@ These errors are likely to be the most occuring ones in configurations. They res
         &downarrow;&downarrow;&downarrow;
         ```
         [writeToSyslog]
-        inject/typo/changechar =
+        inject/typo/change/char =
         ```
         &downarrow;&downarrow;&downarrow; (random)
         ```
@@ -323,3 +324,23 @@ These errors are set with `inject/limit/min` and `inject/limit/max` and one of b
         ```
         contrast = 500
         ```
+        
+## Logging of changes
+
+To see which changes were applied to the whole KeySet, additional metadata will be written to the rootkey.
+Assume you mounted a configuration to `user/my/config` and attached some metakeys to settings.
+All injections which were done are written in array notation to `inject/log/#[number]` and are continuous.
+So for example:
+```sh
+kdb lsmeta user/my/config
+#> inject/log/#0
+#> inject/log/#1
+...
+
+kdb getmeta user/my/config inject/log/#0 
+#> "Removed section user/my/config/some/section"
+
+kdb getmeta user/my/config inject/log/#1 
+#> "Changed value "true" to "truGe" on user/my/config/boolean/value"
+```
+
