@@ -47,20 +47,20 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.8.
 
   | Plugin | Time |
   | --- | --- |
-  | `dump` | 63692 |
-  | `mmapstorage` | 4338 |
-  | `mmapstorage_crc` | 8813 |
+  | `dump` | 63794 |
+  | `mmapstorage` | 4325 |
+  | `mmapstorage_crc` | 9072 |
 
   Median read time in microseconds:
 
   | Plugin | Time |
   | --- | --- |
-  | `dump` | 74889 |
-  | `mmapstorage` | 1116 |
-  | `mmapstorage_crc` | 5250 |
+  | `dump` | 76419 |
+  | `mmapstorage` | 1115 |
+  | `mmapstorage_crc` | 5338 |
 
   In our benchmark, the `mmapstorage` plugin writes more than 14x faster,
-  and reads more than 67x faster than the `dump` storage plugin. *(Mihael Pranjić)*
+  and reads more than 68x faster than the `dump` storage plugin. *(Mihael Pranjić)*
 
 
 - Hybrid Search Algorithm for `ksLookup (...)`
