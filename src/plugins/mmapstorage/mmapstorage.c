@@ -177,6 +177,12 @@ static int lockFileShared (int fd, Key * parentKey)
 	l.l_start = 0;
 	l.l_len = 0;
 
+	if (fcntl (fd, F_SETLK, &l) != -1)
+	{
+		return 1;
+	}
+
+	sleep (1);
 	if (fcntl (fd, F_SETLK, &l) == -1)
 	{
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CONFLICT, parentKey, "could not lock file: %s", strerror (errno));
@@ -202,6 +208,12 @@ static int unlockFile (int fd, Key * parentKey)
 	l.l_start = 0;
 	l.l_len = 0;
 
+	if (fcntl (fd, F_SETLK, &l) != -1)
+	{
+		return 1;
+	}
+
+	sleep (1);
 	if (fcntl (fd, F_SETLK, &l) == -1)
 	{
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CONFLICT, parentKey, "could not unlock file: %s", strerror (errno));
