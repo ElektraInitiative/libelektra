@@ -28,6 +28,8 @@ using std::unique_ptr;
 namespace
 {
 
+#ifdef HAVE_LOGGER
+
 /**
  * @brief This function returns the string representation of a tree node.
  *
@@ -67,6 +69,8 @@ string toString (yaep_tree_node const * const node, string const indent = "")
 
 	return representation;
 }
+
+#endif // HAVE_LOGGER
 
 /**
  * @brief This function will be called before the walker enters an abstract
@@ -164,9 +168,10 @@ void executeListenerMethods (Listener & listener, yaep_tree_node const * node)
  */
 void walk (Listener & listener, yaep_tree_node const * root)
 {
-	cout << "\n— Syntax Tree —\n\n";
-	cout << toString (root);
-	cout << endl;
+#ifdef HAVE_LOGGER
+	string tree = "\n— Syntax Tree —\n\n" + toString (root) + "\n";
+	ELEKTRA_LOG_DEBUG ("%s", tree.c_str ());
+#endif
 
 	executeListenerMethods (listener, root);
 }
