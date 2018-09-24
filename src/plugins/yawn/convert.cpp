@@ -15,6 +15,8 @@
 
 #include <yaep.h>
 
+#include <kdberrors.h>
+
 #include "convert.hpp"
 #include "error_listener.hpp"
 #include "lexer.hpp"
@@ -122,8 +124,8 @@ int addToKeySet (CppKeySet & keySet, CppKey & parent, string const & filename)
 	yaep parser;
 	if (parser.parse_grammar (1, grammar.c_str ()) != 0)
 	{
-		cerr << "Unable to parse grammar:" << parser.error_message () << endl;
-		return EXIT_FAILURE;
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_PARSE, parent.getKey (), "Unable to parse grammar: %s", parser.error_message ());
+		return -1;
 	}
 
 	Memory memory;
@@ -135,7 +137,7 @@ int addToKeySet (CppKeySet & keySet, CppKey & parent, string const & filename)
 	ifstream input{ filename };
 	if (!input.good ())
 	{
-		perror (string ("Unable to open file “" + filename + "”").c_str ());
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_COULD_NOT_OPEN, parent.getKey (), "Unable to open file “%s”", filename.c_str ());
 		return -2;
 	}
 
@@ -149,16 +151,17 @@ int addToKeySet (CppKeySet & keySet, CppKey & parent, string const & filename)
 
 	if (ambiguousOutput)
 	{
-		cerr << "The content of file “" + filename + "” showed that the grammar:\n" + grammar +
-				"\nproduces ambiguous output! Please fix the grammar to make "
-				"sure it produces only one unique syntax tree for every kind "
-				"of YAML input.";
+		ELEKTRA_SET_ERRORF (
+			ELEKTRA_ERROR_PARSE, parent.getKey (),
+			"The content of file “%s” showed that the grammar:\n%s\nproduces ambiguous output!\n"
+			"Please fix the grammar, to make sure it produces only one unique syntax tree for every kind of YAML input.",
+			filename.c_str (), grammar.c_str ());
 		return -1;
 	}
 
 	if (errorListener.getNumberOfErrors () > 0)
 	{
-		cerr << "Unable to parse input: " << errorListener.getErrorMessage () << endl;
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_PARSE, parent.getKey (), errorListener.getErrorMessage ().c_str ());
 		return -1;
 	}
 
