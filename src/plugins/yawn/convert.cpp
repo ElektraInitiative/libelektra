@@ -97,6 +97,80 @@ void * alloc (int size)
 	return parserMemoryAddress->allocate (size);
 }
 
+
+/**
+ * @brief This function parses the YAML grammar contained in `yaml.bnf`.
+ *
+ * @param parser This variable stores the YAEP parser that uses the YAML grammar contained in `yaml.bnf` to parse input.
+ * @param error This function stores error information in this key, if it was unable to parse the grammar.
+ *
+ * @return A string containing the content of `yaml.bnf`, if parsing of the grammar was successful, or an empty string otherwise
+ */
+string parseGrammar (yaep & parser, CppKey & error)
+{
+	string grammar =
+#include "yaml.h"
+		;
+
+	if (parser.parse_grammar (1, grammar.c_str ()) != 0)
+	{
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_PARSE, error.getKey (), "Unable to parse grammar: %s", parser.error_message ());
+		return "";
+	}
+	return grammar;
+}
+
+/**
+ * @brief This function creates a stream containing the content of a given file.
+ *
+ * @param filename This variable stores location of the file for which this function creates an input stream
+ * @param error This function stores an error message in this key, if it was unable to access `filename`.
+ *
+ * @return A input stream that contains the content of `filename`, if creating the stream was successful
+ */
+ifstream openFile (string const & filename, CppKey & error)
+{
+	ifstream input{ filename };
+	if (!input.good ())
+	{
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_COULD_NOT_OPEN, error.getKey (), "Unable to open file “%s”", filename.c_str ());
+	}
+	return input;
+}
+
+/**
+ * @brief This function stores error information in `error`, if parsing was unsuccessful.
+ *
+ * @param ambiguousOutput This variable is true, when YAEP was unable to create a unique syntax tree from the given input.
+ * @param errorListener This object stores information about errors that occurred while YAEP parsed the input.
+ * @param filename This variable stores the location of the file YAEP parsed.
+ * @param grammar This argument stores the YAML grammar used to parse the input.
+ * @param error This function will use this variable to store information about errors that occurred while parsing.
+ *
+ * @retval -1 If there was an error parsing the last input
+ * @retval  0 Otherwise
+ */
+int handleErrors (int const ambiguousOutput, ErrorListener const & errorListener, string const & filename, string const & grammar,
+		  CppKey & error)
+{
+	if (ambiguousOutput)
+	{
+		ELEKTRA_SET_ERRORF (
+			ELEKTRA_ERROR_PARSE, error.getKey (),
+			"The content of file “%s” showed that the grammar:\n%s\nproduces ambiguous output!\n"
+			"Please fix the grammar, to make sure it produces only one unique syntax tree for every kind of YAML input.",
+			filename.c_str (), grammar.c_str ());
+		return -1;
+	}
+
+	if (errorListener.getNumberOfErrors () > 0)
+	{
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_PARSE, error.getKey (), errorListener.getErrorMessage ().c_str ());
+		return -1;
+	}
+	return 0;
+}
+
 } // namespace
 
 /**
@@ -117,29 +191,19 @@ void * alloc (int size)
  */
 int addToKeySet (CppKeySet & keySet, CppKey & parent, string const & filename)
 {
-	string const grammar =
-#include "yaml.h"
-		;
-
 	yaep parser;
-	if (parser.parse_grammar (1, grammar.c_str ()) != 0)
-	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_PARSE, parent.getKey (), "Unable to parse grammar: %s", parser.error_message ());
-		return -1;
-	}
+
+	auto grammar = parseGrammar (parser, parent);
+	if (grammar.size () <= 0) return -1;
+
+	auto input = openFile (filename, parent);
+	if (!input.good ()) return -1;
 
 	Memory memory;
 	parserMemoryAddress = &memory;
 
 	ErrorListener errorListener;
 	errorListenerAdress = &errorListener;
-
-	ifstream input{ filename };
-	if (!input.good ())
-	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_COULD_NOT_OPEN, parent.getKey (), "Unable to open file “%s”", filename.c_str ());
-		return -2;
-	}
 
 	Lexer lexer{ input };
 	lexerAddress = &lexer;
@@ -149,21 +213,7 @@ int addToKeySet (CppKeySet & keySet, CppKey & parent, string const & filename)
 
 	parser.parse (nextToken, syntaxError, alloc, nullptr, &root, &ambiguousOutput);
 
-	if (ambiguousOutput)
-	{
-		ELEKTRA_SET_ERRORF (
-			ELEKTRA_ERROR_PARSE, parent.getKey (),
-			"The content of file “%s” showed that the grammar:\n%s\nproduces ambiguous output!\n"
-			"Please fix the grammar, to make sure it produces only one unique syntax tree for every kind of YAML input.",
-			filename.c_str (), grammar.c_str ());
-		return -1;
-	}
-
-	if (errorListener.getNumberOfErrors () > 0)
-	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_PARSE, parent.getKey (), errorListener.getErrorMessage ().c_str ());
-		return -1;
-	}
+	if (handleErrors (ambiguousOutput, errorListener, filename, grammar, parent) < 0) return -1;
 
 	Listener listener{ parent };
 	walk (listener, root);
