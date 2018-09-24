@@ -95,25 +95,6 @@ void * alloc (int size)
 	return parserMemoryAddress->allocate (size);
 }
 
-/**
- * @brief This function reads the content of a given grammar file.
- *
- * @param filename This variables stores the location of the grammar file.
- *
- * @return The content of the given grammar file
- */
-string readGrammar (string const & filename)
-{
-	ifstream grammar{ filename };
-	if (!grammar.good ())
-	{
-		throw ifstream::failure ("Unable to open grammar file “" + filename + "”: " + strerror (errno));
-	}
-	stringstream stringStream;
-	stringStream << grammar.rdbuf ();
-	return stringStream.str ();
-}
-
 } // namespace
 
 /**
@@ -134,7 +115,9 @@ string readGrammar (string const & filename)
  */
 int addToKeySet (CppKeySet & keySet, CppKey & parent, string const & filename)
 {
-	auto const grammar = readGrammar ("yaml.bnf");
+	string const grammar =
+#include "yaml.h"
+		;
 
 	yaep parser;
 	if (parser.parse_grammar (1, grammar.c_str ()) != 0)

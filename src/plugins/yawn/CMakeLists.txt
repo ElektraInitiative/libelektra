@@ -5,6 +5,7 @@ if (DEPENDENCY_PHASE)
 	endif (NOT YAEP_FOUND)
 
 	set (SOURCE_FILES_INPUT input.hpp input.cpp)
+	set (SOURCE_FILE_GRAMMAR ${CMAKE_CURRENT_BINARY_DIR}/yaml.h)
 
 	set (LIBSTDCPP CMAKE_COMPILER_IS_GNUCXX OR ${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 	if (ENABLE_ASAN AND ${LIBSTDCPP})
@@ -13,8 +14,28 @@ if (DEPENDENCY_PHASE)
 		set_source_files_properties (${SOURCE_FILES_INPUT} PROPERTIES COMPILE_FLAGS "-fno-sanitize=undefined")
 	endif (ENABLE_ASAN AND ${LIBSTDCPP})
 
+	file (READ yaml.bnf
+		   GRAMMAR_INPUT)
+	string (REGEX
+		REPLACE ";"
+			"\\\\\\\\;"
+			GRAMMAR_INPUT
+			"${GRAMMAR_INPUT}")
+	string (REGEX
+		REPLACE "\n"
+			";"
+			GRAMMAR_INPUT
+			"${GRAMMAR_INPUT}")
+	foreach (line ${GRAMMAR_INPUT})
+		string (APPEND GRAMMAR "\"${line}\\n\"\n")
+	endforeach (line ${GRAMMAR_INPUT})
+
+	file (WRITE ${SOURCE_FILE_GRAMMAR}
+		    ${GRAMMAR})
+
 	set (SOURCE_FILES
 	     ${SOURCE_FILES_INPUT}
+	     ${SOURCE_FILE_GRAMMAR}
 	     location.hpp
 	     position.hpp
 	     token.hpp
