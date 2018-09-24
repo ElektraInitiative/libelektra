@@ -117,7 +117,7 @@ static int isTestFileCorrect (const char * file)
 
 static void test_teardown (void)
 {
-	succeed_if (system ("gpg-connect-agent --quiet KILLAGENT /bye") == 0, "failed to kill the gpg-agent");
+	system ("gpg-connect-agent --quiet KILLAGENT /bye");
 }
 
 static void test_init (void)

@@ -152,7 +152,7 @@ static void test_init (const char * pluginName)
 
 static void test_teardown (void)
 {
-	succeed_if (system ("gpg-connect-agent --quiet KILLAGENT /bye") == 0, "failed to kill the gpg-agent");
+	system ("gpg-connect-agent --quiet KILLAGENT /bye");
 }
 
 static void test_incomplete_config (const char * pluginName)
