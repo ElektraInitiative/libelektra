@@ -4,6 +4,13 @@ if (DEPENDENCY_PHASE)
 		remove_plugin (yawn "YAEP could not be found")
 	endif (NOT YAEP_FOUND)
 
+	include (CheckIncludeFileCXX)
+	set (CMAKE_REQUIRED_QUIET ON)
+	check_include_file_cxx (codecvt HAVE_CODECVT)
+	if (NOT HAVE_CODECVT)
+		remove_plugin (yawn "because the current C++ library does not provide header file `codecvt`")
+	endif (NOT HAVE_CODECVT)
+
 	set (SOURCE_FILES_INPUT input.hpp input.cpp)
 	set (SOURCE_FILE_GRAMMAR ${CMAKE_CURRENT_BINARY_DIR}/yaml.h)
 
