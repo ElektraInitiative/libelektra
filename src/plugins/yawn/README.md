@@ -70,4 +70,4 @@ sudo kdb umount user/tests/yawn
 
 ## Limitations
 
-This plugin does not do anything useful yet.
+The plugin has the same limitations as [YAMBi ](../yambi/).
