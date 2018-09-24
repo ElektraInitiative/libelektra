@@ -5,7 +5,7 @@
 - infos/needs =
 - infos/placements = presetstorage
 - infos/status = maintained unittest nodep libc nodoc
-- infos/metadata = check/ipaddr
+- infos/metadata = check/ipaddr check/port check/port/listen
 - infos/description = Checks keys if they contain a valid ip address
 
 ## Introduction
@@ -13,6 +13,10 @@
 This plugin is a check plugin that checks if a key contains a valid ip
 address. It uses the `POSIX.1-2001` interface `getaddrinfo()` in order
 to check if an ip address is valid.
+
+Furthermore `getaddrinfo()` is used in `check/port` to resolve a port by its service name
+which is defined under `/etc/services`. The portname is translated to the respective portnumber.
+The plugin can be used to check for valid port numbers and if the set port is free to use.
 
 ## Purpose
 
@@ -36,7 +40,15 @@ it to implement this plugin.
 
 Every key tagged with the metakey `check/ipaddr` will be checked
 using `getaddrinfo()`.  If additionally the values `ipv4` or `ipv6`
-are supplied, the address family will be specified. If supplied only
-numerical hosts are allowed. If left empty, the plugin will resolve 
-domain names and look if it is reachable (i.e. "localhost" should most
-likely work on any system)
+are supplied, the address family will be specified.
+
+If `check/port` is specified on a given key, the plugin will validate if the port is a
+correct number between 1 and 65535.
+
+If `check/port/listen` is specified, the plugin will check if the application can be started
+and listen on the given port.
+
+## Future Work
+
+`check/port/connect` to check if the port can be pinged/reached (usually for clients).
+If not reachable, users receive a warning. A correct timeout setting will be problematic though.

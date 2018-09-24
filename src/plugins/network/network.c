@@ -50,6 +50,21 @@ int elektraNetworkAddrInfo (Key * toCheck)
 	return 0;
 }
 
+int elektraPortInfo(Key * toCheck) {
+	const Key * meta = keyGetMeta (toCheck, "check/port");
+	if (!meta) return 0; /* No check to do */
+	char *endptr = NULL;
+	long portNumber = strtol(keyString(meta), endptr, 10);
+
+	//strtol returns 0 if the port was actually invalid
+	//since 0 is a valid port we need to check explicitly if
+	if (portNumber >= 0 && portNumber <= 65535 && *endptr == 0) {
+		return 0;
+	}
+
+	return 0;
+}
+
 int elektraNetworkGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
 {
 	/* configuration only */
@@ -91,6 +106,10 @@ int elektraNetworkSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 			ELEKTRA_SET_ERROR (51, parentKey, errmsg);
 			elektraFree (errmsg);
 			return -1;
+		}
+		int p = elektraPortInfo(cur);
+		if (p != 0) {
+			ELEKTRA_SET_ERROR(51, parentKey, "Port failed");
 		}
 	}
 

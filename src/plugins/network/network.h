@@ -21,6 +21,7 @@
 #include <unistd.h>
 
 int elektraNetworkAddrInfo (Key * toCheck);
+int elektraPortInfo(Key * toCheck);
 
 int elektraNetworkGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraNetworkSet (Plugin * handle, KeySet * ks, Key * parentKey);
