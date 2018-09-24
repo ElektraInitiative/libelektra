@@ -67,6 +67,9 @@ string scalarToText (string const & text)
 
 // -- Class --------------------------------------------------------------------
 
+namespace yawn
+{
+
 /**
  * @brief This constructor creates a Listener using the given parent key.
  *
@@ -180,3 +183,5 @@ kdb::KeySet Listener::getKeySet () const
 {
 	return keys;
 }
+
+} // namespace yawn

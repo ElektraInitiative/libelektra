@@ -21,6 +21,9 @@ using std::string;
 
 // -- Class --------------------------------------------------------------------------------------------------------------------------------
 
+namespace yawn
+{
+
 /**
  * @brief This class contains methods to create a key set.
  *
@@ -104,5 +107,7 @@ public:
 	 */
 	kdb::KeySet getKeySet () const;
 };
+
+} // namespace yawn
 
 #endif // ELEKTRA_PLUGIN_YAWN_LISTENER_HPP

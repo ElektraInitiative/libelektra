@@ -17,6 +17,9 @@
 
 // -- Function -----------------------------------------------------------------------------------------------------------------------------
 
+namespace yawn
+{
+
 /**
  * @brief This function walks a syntax tree calling methods of the given
  *        listener.
@@ -26,5 +29,7 @@
  * @param root This variable stores the root of the tree this function visits.
  */
 void walk (Listener & listener, yaep_tree_node const * root);
+
+} // namespace yawn
 
 #endif // ELEKTRA_PLUGIN_YAWN_WALK_HPP

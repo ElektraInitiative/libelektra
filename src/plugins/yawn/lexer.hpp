@@ -21,6 +21,9 @@
 
 // -- Class --------------------------------------------------------------------------------------------------------------------------------
 
+namespace yawn
+{
+
 /** This class implements a basic lexer for the serialization format YAML. */
 class Lexer
 {
@@ -238,5 +241,7 @@ public:
 	 */
 	int nextToken (void ** attribute);
 };
+
+} // namespace yawn
 
 #endif // ELEKTRA_PLUGIN_YAWN_LEXER_HPP

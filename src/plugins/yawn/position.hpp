@@ -10,6 +10,9 @@
 
 // -- Class --------------------------------------------------------------------------------------------------------------------------------
 
+namespace yawn
+{
+
 /** This class represents a position inside a text. */
 class Position
 {
@@ -19,5 +22,7 @@ public:
 	/** This variables specifies the line of the position. */
 	size_t line = 1;
 };
+
+} // namespace yawn
 
 #endif // ELEKTRA_PLUGIN_YAWN_POSITION_HPP

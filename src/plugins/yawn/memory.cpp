@@ -16,6 +16,9 @@
 
 // -- Class --------------------------------------------------------------------------------------------------------------------------------
 
+namespace yawn
+{
+
 /**
  * This method allocates a memory region of the given size.
  *
@@ -34,3 +37,5 @@ void * Memory::allocate (int size)
 
 	return result;
 }
+
+} // namespace yawn

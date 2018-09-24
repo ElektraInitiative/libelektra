@@ -14,6 +14,9 @@
 
 // -- Class --------------------------------------------------------------------------------------------------------------------------------
 
+namespace yawn
+{
+
 /** This class contains a wrapper for a stack of memory objects. */
 class Memory
 {
@@ -31,5 +34,7 @@ public:
 	 */
 	void * allocate (int size);
 };
+
+} // namespace yawn
 
 #endif // ELEKTRA_PLUGIN_YAWN_MEMORY_HPP

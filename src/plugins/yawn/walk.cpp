@@ -23,6 +23,9 @@ using std::string;
 using std::to_string;
 using std::unique_ptr;
 
+using yawn::Listener;
+using yawn::Token;
+
 // -- Functions ----------------------------------------------------------------------------------------------------------------------------
 
 namespace
@@ -158,6 +161,9 @@ void executeListenerMethods (Listener & listener, yaep_tree_node const * node)
 
 } // namespace
 
+namespace yawn
+{
+
 /**
  * @brief This function walks a syntax tree calling methods of the given
  *        listener.
@@ -175,3 +181,5 @@ void walk (Listener & listener, yaep_tree_node const * root)
 
 	executeListenerMethods (listener, root);
 }
+
+} // namespace yawn

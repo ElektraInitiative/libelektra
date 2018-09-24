@@ -12,7 +12,8 @@
 #include "token.hpp"
 
 using std::string;
-using std::to_string;
+
+using yawn::Token;
 
 // -- Functions ----------------------------------------------------------------------------------------------------------------------------
 
@@ -67,6 +68,9 @@ string typeToString (int const type)
 
 // -- Class --------------------------------------------------------------------------------------------------------------------------------
 
+namespace yawn
+{
+
 /**
  * @brief This constructor creates a token from the given arguments.
  *
@@ -120,7 +124,11 @@ string Token::getText () const
  **/
 string to_string (Token const token)
 {
+	using std::to_string;
+
 	return "<Token, " + typeToString (token.getType ()) + ", " + token.getText () + ", " + to_string (token._location.begin.line) +
 	       ":" + to_string (token._location.begin.column) + "–" + to_string (token._location.end.line) + ":" +
 	       to_string (token._location.end.column) + ">";
 }
+
+} // namespace yawn

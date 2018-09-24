@@ -16,6 +16,9 @@
 
 // -- Class --------------------------------------------------------------------------------------------------------------------------------
 
+namespace yawn
+{
+
 /** This class represents the location of a token. */
 class Location
 {
@@ -58,5 +61,7 @@ public:
 		end.line++;
 	}
 };
+
+} // namespace yawn
 
 #endif // ELEKTRA_PLUGIN_YAWN_LOCATION_HPP

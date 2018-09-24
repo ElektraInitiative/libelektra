@@ -20,6 +20,9 @@ using std::runtime_error;
 using std::string;
 using std::unique_ptr;
 
+using yawn::Location;
+using yawn::Token;
+
 // -- Functions ----------------------------------------------------------------------------------------------------------------------------
 
 namespace
@@ -44,6 +47,9 @@ unique_ptr<Token> createToken (int const type, Location const & location, string
 } // namespace
 
 // -- Class --------------------------------------------------------------------------------------------------------------------------------
+
+namespace yawn
+{
 
 // ===========
 // = Private =
@@ -503,3 +509,5 @@ int Lexer::nextToken (void ** attribute)
 	*attribute = &emitted.back ();
 	return emitted.back ()->getType ();
 }
+
+} // namespace yawn

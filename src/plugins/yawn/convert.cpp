@@ -35,8 +35,13 @@ using CppKey = kdb::Key;
 using CppKeySet = kdb::KeySet;
 using ckdb::keyNew;
 
+using yawn::ErrorListener;
+using yawn::Lexer;
+using yawn::Memory;
+
 namespace
 {
+
 // -- Globals ------------------------------------------------------------------------------------------------------------------------------
 
 ErrorListener * errorListenerAdress;
@@ -173,6 +178,9 @@ int handleErrors (int const ambiguousOutput, ErrorListener const & errorListener
 
 } // namespace
 
+namespace yawn
+{
+
 /**
  * @brief This function converts the given YAML file to keys and adds the
  *        result to `keySet`.
@@ -221,3 +229,5 @@ int addToKeySet (CppKeySet & keySet, CppKey & parent, string const & filename)
 
 	return listener.getKeySet ().size () > 0;
 }
+
+} // namespace yawn

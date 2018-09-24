@@ -16,6 +16,9 @@
 
 // -- Function -----------------------------------------------------------------------------------------------------------------------------
 
+namespace yawn
+{
+
 /**
  * @brief This function converts the given YAML file to keys and adds the
  *        result to `keySet`.
@@ -33,5 +36,7 @@
  * @retval  1 if parsing was successful and the function did change `keySet`
  */
 int addToKeySet (kdb::KeySet & keySet, kdb::Key & parent, std::string const & filename);
+
+} // namespace yawn
 
 #endif // ELEKTRA_PLUGIN_YAWN_CONVER_HPP

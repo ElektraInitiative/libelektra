@@ -22,6 +22,9 @@ using std::unique_ptr;
 
 // -- Class --------------------------------------------------------------------------------------------------------------------------------
 
+namespace yawn
+{
+
 /**
  * @brief This method reacts to syntax errors reported by YAEP’s parsing
  *        engine.
@@ -72,3 +75,5 @@ size_t ErrorListener::getNumberOfErrors () const
 {
 	return errors;
 }
+
+} // namespace yawn

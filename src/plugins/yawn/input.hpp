@@ -16,6 +16,9 @@
 
 // -- Class --------------------------------------------------------------------------------------------------------------------------------
 
+namespace yawn
+{
+
 /**
  * @brief This class provides methods for a lexer to analyze textual input.
  */
@@ -71,5 +74,7 @@ public:
 	 */
 	std::string getText (size_t const start) const;
 };
+
+} // namespace yawn
 
 #endif // ELEKTRA_PLUGIN_YAWN_INPUT_HPP

@@ -57,6 +57,8 @@ extern "C" {
 /** @see elektraDocGet */
 int elektraYawnGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
+	using yawn::addToKeySet;
+
 	CppKeySet keys{ returned };
 	CppKey parent{ parentKey };
 

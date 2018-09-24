@@ -19,6 +19,9 @@
 
 // -- Class --------------------------------------------------------------------------------------------------------------------------------
 
+namespace yawn
+{
+
 /** This class represents a token emitted by a lexer. */
 class Token
 {
@@ -100,5 +103,7 @@ public:
 	 */
 	std::string getText () const;
 };
+
+} // namespace yawn
 
 #endif // ELEKTRA_PLUGIN_YAWN_TOKEN_HPP

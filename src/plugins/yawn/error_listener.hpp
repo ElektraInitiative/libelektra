@@ -15,6 +15,9 @@
 
 // -- Class --------------------------------------------------------------------------------------------------------------------------------
 
+namespace yawn
+{
+
 /** This class reacts to errors reported by the YAML parser. */
 class ErrorListener
 {
@@ -60,5 +63,7 @@ public:
 	 */
 	size_t getNumberOfErrors () const;
 };
+
+} // namespace yawn
 
 #endif // ELEKTRA_PLUGIN_YAWN_ERROR_LISTENER_HPP
