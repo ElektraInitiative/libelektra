@@ -25,6 +25,10 @@ This plugin requires [YAEP](https://github.com/vnmakarov/yaep#installing).
 # Mount plugin
 sudo kdb mount config.yaml user/tests/yawn yawn
 
+kdb set user/tests/yawn/ing 'keeps you alert'
+kdb get user/tests/yawn/ing
+#> keeps you alert
+
 # Undo modifications
 sudo kdb umount user/tests/yawn
 ```
