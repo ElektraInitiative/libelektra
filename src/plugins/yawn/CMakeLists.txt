@@ -63,6 +63,8 @@ add_plugin (yawn
 	    ADD_TEST
 	    CPP_TEST
 	    TEST_README
+	    TEST_REQUIRED_PLUGINS directoryvalue
+				  yamlsmith
 	    SOURCES ${SOURCE_FILES}
 	    INCLUDE_DIRECTORIES ${YAEP_INCLUDE_DIR}
 	    LINK_LIBRARIES ${YAEP_LIBRARIES_CPP})
