@@ -58,7 +58,7 @@ void ErrorListener::syntaxError (int errorTokenNumber, void * errorTokenData, in
  *
  * @return A text describing the last error
  */
-string ErrorListener::getErrorMessage ()
+string ErrorListener::getErrorMessage () const
 {
 	return message;
 }
@@ -68,7 +68,7 @@ string ErrorListener::getErrorMessage ()
  *
  * @return The number of syntax errors found in the parsed input
  */
-size_t ErrorListener::getNumberOfErrors ()
+size_t ErrorListener::getNumberOfErrors () const
 {
 	return errors;
 }

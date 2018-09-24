@@ -51,14 +51,14 @@ public:
 	 *
 	 * @return A text describing the last error
 	 */
-	std::string getErrorMessage ();
+	std::string getErrorMessage () const;
 
 	/**
 	 * @brief This method returns the number of syntax errors reported by YAEP.
 	 *
 	 * @return The number of syntax errors found in the parsed input
 	 */
-	size_t getNumberOfErrors ();
+	size_t getNumberOfErrors () const;
 };
 
 #endif // ELEKTRA_PLUGIN_YAWN_ERROR_LISTENER_HPP
