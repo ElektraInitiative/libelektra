@@ -102,7 +102,9 @@ struct _os_auxiliary_struct
 
 /* This macro is auxiliary.  Its value is aligned address nearest to `a'. */
 
-#define _OS_ALIGNED_ADDRESS(a) ((void *) ((size_t) ((char *) (a) + (_OS_ALIGNMENT - 1)) & (~(size_t) (_OS_ALIGNMENT - 1))))
+#define _OS_ALIGNED_ADDRESS(a)                                                                                                             \
+	(reinterpret_cast<void *> (reinterpret_cast<size_t> (static_cast<char *> (a) + (_OS_ALIGNMENT - 1)) &                              \
+				   (~static_cast<size_t> (_OS_ALIGNMENT - 1))))
 
 /* This macro value is default size of memory segments which will be
    allocated for OS when the stack is created (with zero initial
@@ -390,7 +392,7 @@ public:
 	inline void top_finish (void)
 	{
 		assert (os_top_object_start != NULL);
-		os_top_object_start = (char *) _OS_ALIGNED_ADDRESS (os_top_object_free);
+		os_top_object_start = static_cast<char *> (_OS_ALIGNED_ADDRESS (os_top_object_free));
 		os_top_object_free = os_top_object_start;
 	}
 
@@ -415,7 +417,7 @@ public:
 #ifndef NDEBUG
 		return (os_top_object_start != NULL ? (void *) os_top_object_start : (abort (), (void *) 0));
 #else
-		return ((void *) os_top_object_start);
+		return static_cast<void *> (os_top_object_start);
 #endif
 	}
 
@@ -428,7 +430,7 @@ public:
 #ifndef NDEBUG
 		return (os_top_object_start != NULL ? (void *) (os_top_object_free - 1) : (abort (), (void *) 0));
 #else
-		return ((void *) (os_top_object_free - 1));
+		return static_cast<void *> (os_top_object_free - 1);
 #endif
 	}
 
@@ -442,7 +444,7 @@ public:
 #ifndef NDEBUG
 		return (os_top_object_start != NULL ? (void *) os_top_object_free : (abort (), (void *) 0));
 #else
-		return ((void *) os_top_object_free);
+		return static_cast<void *> (os_top_object_free);
 #endif
 	}
 

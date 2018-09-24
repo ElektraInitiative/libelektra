@@ -5,8 +5,6 @@ if (DEPENDENCY_PHASE)
 	endif (NOT YAEP_FOUND)
 
 	set (SOURCE_FILES_INPUT input.hpp input.cpp)
-	set (SOURCE_FILES_MEMORY objstack.h memory.cpp memory.hpp convert.hpp convert.cpp)
-	set_source_files_properties (${SOURCE_FILES_MEMORY} PROPERTIES COMPILE_FLAGS "-Wno-old-style-cast")
 
 	set (LIBSTDCPP CMAKE_COMPILER_IS_GNUCXX OR ${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 	if (ENABLE_ASAN AND ${LIBSTDCPP})
@@ -17,11 +15,13 @@ if (DEPENDENCY_PHASE)
 
 	set (SOURCE_FILES
 	     ${SOURCE_FILES_INPUT}
-	     ${SOURCE_FILES_MEMORY}
 	     location.hpp
 	     position.hpp
 	     token.hpp
 	     token.cpp
+	     objstack.h
+	     memory.cpp
+	     memory.hpp
 	     error_listener.hpp
 	     error_listener.cpp
 	     lexer.hpp
@@ -30,6 +30,8 @@ if (DEPENDENCY_PHASE)
 	     walk.cpp
 	     listener.hpp
 	     listener.cpp
+	     convert.hpp
+	     convert.cpp
 	     yawn.hpp
 	     yawn.cpp)
 
