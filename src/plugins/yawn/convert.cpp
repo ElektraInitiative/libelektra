@@ -166,5 +166,5 @@ int addToKeySet (CppKeySet & keySet, CppKey & parent, string const & filename)
 	walk (listener, root);
 	keySet.append (listener.getKeySet ());
 
-	return 0;
+	return listener.getKeySet ().size () > 0;
 }

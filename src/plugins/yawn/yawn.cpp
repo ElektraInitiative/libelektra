@@ -84,7 +84,7 @@ int elektraYawnGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 
 	parent.release ();
 	keys.release ();
-	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+	return status < 0 ? ELEKTRA_PLUGIN_STATUS_ERROR : status;
 }
 
 /** @see elektraDocSet */
