@@ -50,17 +50,33 @@ int elektraNetworkAddrInfo (Key * toCheck)
 	return 0;
 }
 
-int elektraPortInfo(Key * toCheck) {
+int elektraPortInfo(Key * toCheck, Key * parentKey) {
 	const Key * meta = keyGetMeta (toCheck, "check/port");
 	if (!meta) return 0; /* No check to do */
 	char *endptr = NULL;
-	long portNumber = strtol(keyString(meta), endptr, 10);
+	long portNumber = strtol(keyString(toCheck), &endptr, 10);
+
+	if (*endptr == '\0') {
+		if (portNumber < 0 || portNumber > 65535 || *endptr != 0) {
+			ELEKTRA_SET_ERRORF(201, parentKey, "Port %d on key %s was not within 0 - 65535",
+							   portNumber, keyName(toCheck));
+			return -1;
+		}
+	} else {
+		ELEKTRA_LOG("Is String");
+		struct servent* service;
+		service = getservbyname(keyString(toCheck), NULL); //NULL means we accept both tcp and udp
+		if (service == NULL) {
+			ELEKTRA_SET_ERRORF(202, parentKey, "Could not find service with name %s on key %s",
+							   keyString(toCheck), keyName(toCheck));
+			return -1;
+		}
+		ELEKTRA_LOG("Was a valid Service");
+	}
 
 	//strtol returns 0 if the port was actually invalid
 	//since 0 is a valid port we need to check explicitly if
-	if (portNumber >= 0 && portNumber <= 65535 && *endptr == 0) {
-		return 0;
-	}
+
 
 	return 0;
 }
@@ -76,6 +92,8 @@ int elektraNetworkGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 			     keyNew ("system/elektra/modules/network/exports/set", KEY_FUNC, elektraNetworkSet, KEY_END),
 			     keyNew ("system/elektra/modules/network/exports/elektraNetworkAddrInfo", KEY_FUNC, elektraNetworkAddrInfo,
 				     KEY_END),
+				 keyNew ("system/elektra/modules/network/exports/elektraPortInfo", KEY_FUNC, elektraNetworkAddrInfo,
+					 KEY_END),
 #include "readme_network.c"
 			     keyNew ("system/elektra/modules/network/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END));
 	ksDel (n);
@@ -87,7 +105,6 @@ int elektraNetworkSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 {
 	/* check all keys */
 	Key * cur;
-
 	ksRewind (returned);
 	while ((cur = ksNext (returned)) != 0)
 	{
@@ -107,9 +124,10 @@ int elektraNetworkSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 			elektraFree (errmsg);
 			return -1;
 		}
-		int p = elektraPortInfo(cur);
+		int p = elektraPortInfo(cur, parentKey);
 		if (p != 0) {
 			ELEKTRA_SET_ERROR(51, parentKey, "Port failed");
+			return -1;
 		}
 	}
 
