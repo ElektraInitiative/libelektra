@@ -1286,3 +1286,15 @@ severity:error
 ingroup:plugin
 module:reference
 macro:REFERENCE_NOT_FOUND
+
+number:205
+description:The given port was not withing a valid range
+severity:error
+ingroup:plugin
+module:network
+
+number:206
+description:Could not find service name for port declaration
+severity:error
+ingroup:plugin
+module:network
