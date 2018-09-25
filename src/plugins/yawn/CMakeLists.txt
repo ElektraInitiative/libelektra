@@ -1,15 +1,40 @@
-if (DEPENDENCY_PHASE)
+# This functions checks if the dependencies for the YAwn plugin are available.
+#
+# If they are, the function sets the variable `FOUND_DEPENDENCIES` to `TRUE`. The function then also sets:
+#
+# - `YAEP_INCLUDE_DIRS` to the path of the include directory of YAEP, and
+# - `YAEP_LIBRARIES_CPP` to the path of the YAEP’s C++ library
+#
+# . If the function was unsuccessful it sets `FOUND_DEPENDENCIES` to `FALSE` and stores the reason for the failure in the variable
+# `FAILURE_MESSAGE`.
+function (check_dependencies)
+	set (FOUND_DEPENDENCIES FALSE PARENT_SCOPE)
+
 	find_package (YAEP QUIET)
 	if (NOT YAEP_FOUND)
-		remove_plugin (yawn "YAEP could not be found")
+		set (FAILURE_MESSAGE "YAEP could not be found" PARENT_SCOPE)
+		return ()
 	endif (NOT YAEP_FOUND)
 
 	include (CheckIncludeFileCXX)
 	set (CMAKE_REQUIRED_QUIET ON)
 	check_include_file_cxx (codecvt HAVE_CODECVT)
 	if (NOT HAVE_CODECVT)
-		remove_plugin (yawn "because the current C++ library does not provide header file `codecvt`")
+		set (FAILURE_MESSAGE "because the current C++ library does not provide header file `codecvt`" PARENT_SCOPE)
+		return ()
 	endif (NOT HAVE_CODECVT)
+
+	set (YAEP_INCLUDE_DIRS ${YAEP_INCLUDE_DIRS} PARENT_SCOPE)
+	set (YAEP_LIBRARIES_CPP ${YAEP_LIBRARIES_CPP} PARENT_SCOPE)
+
+	set (FOUND_DEPENDENCIES TRUE PARENT_SCOPE)
+endfunction (check_dependencies)
+
+if (DEPENDENCY_PHASE)
+	check_dependencies ()
+	if (NOT FOUND_DEPENDENCIES)
+		remove_plugin (yawn ${FAILURE_MESSAGE})
+	endif (NOT FOUND_DEPENDENCIES)
 
 	set (SOURCE_FILES_INPUT input.hpp input.cpp)
 	set (SOURCE_FILE_GRAMMAR ${CMAKE_CURRENT_BINARY_DIR}/yaml_grammar.h)
