@@ -34,7 +34,7 @@ if (DEPENDENCY_PHASE)
 			GRAMMAR_INPUT
 			"${GRAMMAR_INPUT}")
 	foreach (line ${GRAMMAR_INPUT})
-		string (APPEND GRAMMAR "\"${line}\\n\"\n")
+		set (GRAMMAR "${GRAMMAR}\"${line}\\n\"\n")
 	endforeach (line ${GRAMMAR_INPUT})
 
 	file (WRITE ${SOURCE_FILE_GRAMMAR}
