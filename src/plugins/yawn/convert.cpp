@@ -24,6 +24,10 @@
 #include "memory.hpp"
 #include "walk.hpp"
 
+#ifdef ENABLE_ASAN
+#include <sanitizer/lsan_interface.h>
+#endif
+
 using std::cerr;
 using std::cout;
 using std::endl;
@@ -199,7 +203,13 @@ namespace yawn
  */
 int addToKeySet (CppKeySet & keySet, CppKey & parent, string const & filename)
 {
+#ifdef ENABLE_ASAN
+	__lsan_disable ();
+#endif
 	yaep parser;
+#ifdef ENABLE_ASAN
+	__lsan_enable ();
+#endif
 
 	auto grammar = parseGrammar (parser, parent);
 	if (grammar.size () <= 0) return -1;
@@ -219,7 +229,13 @@ int addToKeySet (CppKeySet & keySet, CppKey & parent, string const & filename)
 	int ambiguousOutput;
 	struct yaep_tree_node * root = nullptr;
 
+#ifdef ENABLE_ASAN
+	__lsan_disable ();
+#endif
 	parser.parse (nextToken, syntaxError, alloc, nullptr, &root, &ambiguousOutput);
+#ifdef ENABLE_ASAN
+	__lsan_enable ();
+#endif
 
 	if (handleErrors (ambiguousOutput, errorListener, filename, grammar, parent) < 0) return -1;
 
