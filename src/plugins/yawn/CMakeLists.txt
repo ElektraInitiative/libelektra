@@ -2,8 +2,9 @@
 #
 # If they are, the function sets the variable `FOUND_DEPENDENCIES` to `TRUE`. The function then also sets:
 #
-# - `YAEP_INCLUDE_DIRS` to the path of the include directory of YAEP, and
-# - `YAEP_LIBRARIES_CPP` to the path of the YAEP’s C++ library
+# - `YAWN_INCLUDE_DIRS` to the path of the include directories needed by YAwn,
+# - `YAWN_LIBRARIES` to the path of the libraries needed to compile YAwn, and
+# - `SOURCE_FILES` to the list of source files of the YAwn plugin
 #
 # . If the function was unsuccessful it sets `FOUND_DEPENDENCIES` to `FALSE` and stores the reason for the failure in the variable
 # `FAILURE_MESSAGE`.
@@ -24,17 +25,8 @@ function (check_dependencies)
 		return ()
 	endif (NOT HAVE_CODECVT)
 
-	set (YAEP_INCLUDE_DIRS ${YAEP_INCLUDE_DIRS} PARENT_SCOPE)
-	set (YAEP_LIBRARIES_CPP ${YAEP_LIBRARIES_CPP} PARENT_SCOPE)
-
-	set (FOUND_DEPENDENCIES TRUE PARENT_SCOPE)
-endfunction (check_dependencies)
-
-if (DEPENDENCY_PHASE)
-	check_dependencies ()
-	if (NOT FOUND_DEPENDENCIES)
-		remove_plugin (yawn ${FAILURE_MESSAGE})
-	endif (NOT FOUND_DEPENDENCIES)
+	set (YAWN_INCLUDE_DIRS ${YAEP_INCLUDE_DIRS} PARENT_SCOPE)
+	set (YAWN_LIBRARIES_CPP ${YAEP_LIBRARIES_CPP} PARENT_SCOPE)
 
 	set (SOURCE_FILES_INPUT input.hpp input.cpp)
 	set (SOURCE_FILE_GRAMMAR ${CMAKE_CURRENT_BINARY_DIR}/yaml_grammar.h)
@@ -86,8 +78,17 @@ if (DEPENDENCY_PHASE)
 	     convert.hpp
 	     convert.cpp
 	     yawn.hpp
-	     yawn.cpp)
+	     yawn.cpp
+	     PARENT_SCOPE)
 
+	set (FOUND_DEPENDENCIES TRUE PARENT_SCOPE)
+endfunction (check_dependencies)
+
+if (DEPENDENCY_PHASE)
+	check_dependencies ()
+	if (NOT FOUND_DEPENDENCIES)
+		remove_plugin (yawn ${FAILURE_MESSAGE})
+	endif (NOT FOUND_DEPENDENCIES)
 endif (DEPENDENCY_PHASE)
 
 add_plugin (yawn
@@ -99,5 +100,5 @@ add_plugin (yawn
 	    TEST_REQUIRED_PLUGINS directoryvalue
 				  yamlsmith
 	    SOURCES ${SOURCE_FILES}
-	    INCLUDE_SYSTEM_DIRECTORIES ${YAEP_INCLUDE_DIRS}
-	    LINK_LIBRARIES ${YAEP_LIBRARIES_CPP})
+	    INCLUDE_SYSTEM_DIRECTORIES ${YAWN_INCLUDE_DIRS}
+	    LINK_LIBRARIES ${YAWN_LIBRARIES_CPP})
