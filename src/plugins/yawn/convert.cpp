@@ -114,7 +114,7 @@ void * alloc (int size)
 string parseGrammar (yaep & parser, CppKey & error)
 {
 	string grammar =
-#include "yaml.h"
+#include "yaml_grammar.h"
 		;
 
 	if (parser.parse_grammar (1, grammar.c_str ()) != 0)
