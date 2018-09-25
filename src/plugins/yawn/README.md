@@ -27,17 +27,18 @@ This plugin requires [YAEP](https://github.com/vnmakarov/yaep#installing).
 # Mount plugin
 sudo kdb mount config.yaml user/tests/yawn yawn
 
-kdb set user/tests/yawn/ing 'keeps you alert'
-kdb set user/tests/yawn/ing/fit 'Gähnkrampf'
+# Set and retrieve some basic values
+kdb set user/tests/yawn 'is obviously a move introduced in Generation III of Pokemon' # Source: Bulbapedia
+kdb set user/tests/yawn/ing 'is something similar'
 
+kdb get user/tests/yawn/
+#> is obviously a move introduced in Generation III of Pokemon
 kdb get user/tests/yawn/ing
-#> keeps you alert
-kdb get user/tests/yawn/ing/fit
-#> Gähnkrampf
+#> is something similar
 
 kdb ls user/tests/yawn
+#> user/tests/yawn
 #> user/tests/yawn/ing
-#> user/tests/yawn/ing/fit
 
 # Undo modifications
 kdb rm -r user/tests/yawn
