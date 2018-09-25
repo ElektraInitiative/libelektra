@@ -78,7 +78,7 @@ namespace yawn
  */
 Listener::Listener (Key const & parent)
 {
-	parents.push (parent);
+	parents.push (parent.dup ());
 }
 
 /**
