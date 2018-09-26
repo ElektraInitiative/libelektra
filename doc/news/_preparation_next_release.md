@@ -103,6 +103,11 @@ The following section lists news about the [modules](https://www.libelektra.org/
 - The build system does not print a warning about a deprecated directive any more, if you build the plugin with Bison `3.3` or later.
   *(René Schwaiger)*
 
+### path
+
+Enhanced the plugin to also check for concrete file or directory permissions such as `rwx`. *(Michael Zronek)*
+
+
 ### YAy PEG
 
 The new plugin [YAy PEG](https://www.libelektra.org/plugins/yaypeg) parses a subset of YAML using a parser based on
