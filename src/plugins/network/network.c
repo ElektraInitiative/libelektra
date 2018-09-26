@@ -59,7 +59,7 @@ int elektraPortInfo(Key * toCheck, Key * parentKey) {
 	int portNumberNetworkByteOrder;
 
 	if (*endptr == '\0') {
-		if (portNumber < 0 || portNumber > 65535 || *endptr != 0) {
+		if (portNumber < 0 || portNumber > 65535) {
 			ELEKTRA_SET_ERRORF(201, parentKey, "Port %d on key %s was not within 0 - 65535",
 							   portNumber, keyName(toCheck));
 			return -1;
