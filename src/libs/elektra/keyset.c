@@ -905,10 +905,8 @@ ssize_t ksAppendKey (KeySet * ks, Key * toAppend)
 		/* And use the other one instead */
 		if (test_bit (toAppend->flags, KEY_FLAG_MMAP_STRUCT))
 		{
-			Key * tmp;
-			keyflag_t flags = toAppend->flags;
-			tmp = keyDup (toAppend);
-			tmp->flags = flags;
+			Key * tmp = keyDup (toAppend);
+			clear_bit (tmp->flags, KEY_FLAG_SYNC);
 			if (keyGetRef (toAppend) == 0) keyDel (toAppend);
 			toAppend = tmp;
 		}
@@ -934,10 +932,8 @@ ssize_t ksAppendKey (KeySet * ks, Key * toAppend)
 
 		if (test_bit (toAppend->flags, KEY_FLAG_MMAP_STRUCT))
 		{
-			Key * tmp;
-			keyflag_t flags = toAppend->flags;
-			tmp = keyDup (toAppend);
-			tmp->flags = flags;
+			Key * tmp = keyDup (toAppend);
+			clear_bit (tmp->flags, KEY_FLAG_SYNC);
 			if (keyGetRef (toAppend) == 0) keyDel (toAppend);
 			toAppend = tmp;
 		}
