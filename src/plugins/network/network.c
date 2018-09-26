@@ -52,9 +52,11 @@ int elektraNetworkAddrInfo (Key * toCheck)
 
 int elektraPortInfo(Key * toCheck, Key * parentKey) {
 	const Key * meta = keyGetMeta (toCheck, "check/port");
-	if (!meta) return 0; /* No check to do */
+	const Key * listenMeta = keyGetMeta (toCheck, "check/port/listen");
+	if (!meta && !listenMeta) return 0; /* No check to do */
 	char *endptr = NULL;
 	long portNumber = strtol(keyString(toCheck), &endptr, 10);
+	int portNumberNetworkByteOrder;
 
 	if (*endptr == '\0') {
 		if (portNumber < 0 || portNumber > 65535 || *endptr != 0) {
@@ -62,8 +64,8 @@ int elektraPortInfo(Key * toCheck, Key * parentKey) {
 							   portNumber, keyName(toCheck));
 			return -1;
 		}
+		portNumberNetworkByteOrder = htons(portNumber);
 	} else {
-		ELEKTRA_LOG("Is String");
 		struct servent* service;
 		service = getservbyname(keyString(toCheck), NULL); //NULL means we accept both tcp and udp
 		if (service == NULL) {
@@ -71,12 +73,43 @@ int elektraPortInfo(Key * toCheck, Key * parentKey) {
 							   keyString(toCheck), keyName(toCheck));
 			return -1;
 		}
-		ELEKTRA_LOG("Was a valid Service");
+		portNumberNetworkByteOrder = service->s_port;
 	}
 
-	//strtol returns 0 if the port was actually invalid
-	//since 0 is a valid port we need to check explicitly if
+	//Check if we can connect to it
+	if (!listenMeta) return 0; /* No check to do */
 
+	char *hostname = "localhost";
+
+	int sockfd;
+	struct sockaddr_in serv_addr;
+	struct hostent *server;
+	sockfd = socket(AF_INET, SOCK_STREAM, 0);
+	if (sockfd < 0) {
+		ELEKTRA_SET_ERROR(204, parentKey, "Could not open a socket");
+	}
+
+	server = gethostbyname(hostname);
+	if (server == NULL) {
+		ELEKTRA_SET_ERRORF(204, parentKey, "Could not connect to %s: No such host",
+						   hostname);
+		return -1;
+	}
+
+	bzero((char *) &serv_addr, sizeof(serv_addr));
+	serv_addr.sin_family = AF_INET;
+	bcopy((char *)server->h_addr,
+		  (char *)&serv_addr.sin_addr.s_addr,
+		  server->h_length);
+
+	serv_addr.sin_port = (in_port_t) portNumberNetworkByteOrder;
+	if (connect(sockfd,(struct sockaddr *) &serv_addr,sizeof(serv_addr)) == 0) {
+		close(sockfd);
+		ELEKTRA_SET_ERRORF(203, parentKey, "Port %s is already in use which was specified on key %s",
+						   keyString(toCheck), keyName(toCheck));
+		return -1;
+	}
+	close(sockfd);
 
 	return 0;
 }
@@ -126,7 +159,6 @@ int elektraNetworkSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 		}
 		int p = elektraPortInfo(cur, parentKey);
 		if (p != 0) {
-			ELEKTRA_SET_ERROR(51, parentKey, "Port failed");
 			return -1;
 		}
 	}
