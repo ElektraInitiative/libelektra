@@ -353,9 +353,6 @@ before_install:
       sudo apt-get install moreutils # contains `sponge` required by `reformat-cmake`
       sudo pip install --upgrade cmake_format==0.4.1 pyyaml
     fi
-  - |
-    git clone https://github.com/vnmakarov/yaep.git
-    cd yaep && env CXXFLAGS='-fPIC' ./configure && sudo env "PATH=$PATH" make -C src install && cd ..
 
 #
 # Source is checked out in $TRAVIS_BUILD_DIR
