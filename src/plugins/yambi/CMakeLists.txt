@@ -60,13 +60,12 @@ if (DEPENDENCY_PHASE)
 
 	set (SOURCE_FILES_INPUT input.hpp input.cpp)
 
-	if (ENABLE_ASAN AND CMAKE_COMPILER_IS_GNUCXX)
-		# ~~~
-		# Ignore runtime error about member call on address, which does not point to object of type `__codecvt_abstract_base`.
-		# See also: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=81068
-		# ~~~
+	set (LIBSTDCPP CMAKE_COMPILER_IS_GNUCXX OR ${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+	if (ENABLE_ASAN AND ${LIBSTDCPP})
+		# Ignore runtime error about member call on address, which does not point to object of type `__codecvt_abstract_base` in
+		# `libstdc++`. See also: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=81068
 		set_source_files_properties (${SOURCE_FILES_INPUT} PROPERTIES COMPILE_FLAGS "-fno-sanitize=undefined")
-	endif (ENABLE_ASAN AND CMAKE_COMPILER_IS_GNUCXX)
+	endif (ENABLE_ASAN AND ${LIBSTDCPP})
 
 	set (SOURCE_FILES
 	     convert.hpp
