@@ -1313,9 +1313,10 @@ Key * ksPop (KeySet * ks)
 
 	if (test_bit (ret->flags, KEY_FLAG_MMAP_STRUCT))
 	{
-		keyflag_t flags = ret->flags;
-		ret = keyDup (ret);
-		ret->flags = flags;
+		Key * tmp = keyDup (ret);
+		clear_bit (tmp->flags, KEY_FLAG_SYNC);
+		if (keyGetRef (ret) == 0) keyDel (ret);
+		ret = tmp;
 	}
 
 	return ret;
