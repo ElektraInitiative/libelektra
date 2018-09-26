@@ -787,172 +787,6 @@ static void updatePointers (MmapMetaData * mmapMetaData, char * dest)
 	}
 }
 
-/**
- * @brief Convert a string containing a pointer in hexadecimal notation to a void pointer.
- *
- * @param hexString containing a pointer in hexadecimal notation
- * @return converted void pointer from the string
- */
-static void * hexStringToAddress (const char * hexString)
-{
-	int hexBase = 16;
-	int errnosave = errno;
-	char * endptr;
-	errno = 0;
-
-	unsigned long int val = strtoul (hexString, &endptr, hexBase);
-
-	if ((errno != 0) || (endptr == hexString) || (*endptr != '\0'))
-	{
-		ELEKTRA_LOG_WARNING ("strerror: %s", strerror (errno));
-		errno = errnosave;
-		return (void *) 0;
-	}
-
-	errno = errnosave;
-	return (void *) val;
-}
-
-/**
- * @brief Deeply copies from source to dest.
- *
- * Creates a deep copy of the keyset, but does not duplicate
- * the opmphm structures.
- *
- * @param source has to be an initialized source KeySet
- * @return a deep copy of source on success
- * @retval 0 on NULL pointer or a memory error happened
- */
-static KeySet * mmapKsDeepDup (const KeySet * source)
-{
-	if (!source) return 0;
-
-	size_t s = source->size;
-	size_t i = 0;
-	KeySet * keyset = 0;
-
-	keyset = ksNew (source->alloc, KS_END);
-	for (i = 0; i < s; ++i)
-	{
-		Key * k = source->array[i];
-		Key * d = keyDup (k);
-		ksAppendKey (keyset, d);
-	}
-
-	return keyset;
-}
-
-/**
- * @brief Deeply copies a keyset from a mapped region to a newly allocated one.
- *
- * The new copied keyset is not within a mapped region any more.
- *
- * @param toCopy keyset to copy
- * @param mmapMetaData containing meta-information
- *
- * @return pointer to the fresh copy of the keyset.
- */
-static KeySet * copyKeySet (KeySet * toCopy, MmapMetaData * mmapMetaData)
-{
-	if (!mmapMetaData)
-	{
-		return 0;
-	}
-
-	if (test_bit (mmapMetaData->flags, MMAP_FLAG_DELETED))
-	{
-		return 0;
-	}
-
-	DynArray * dynArray = ELEKTRA_PLUGIN_FUNCTION (mmapstorage, dynArrayNew) ();
-
-	Key * cur = 0;
-	ksRewind (toCopy);
-	while ((cur = ksNext (toCopy)) != 0)
-	{
-		if (cur->meta)
-		{
-			Key * curMetaKey;
-			ksRewind (cur->meta);
-			while ((curMetaKey = ksNext (cur->meta)) != 0)
-			{
-				if (ELEKTRA_PLUGIN_FUNCTION (mmapstorage, dynArrayFindOrInsert) (curMetaKey, dynArray) == 0)
-				{
-					// key was just inserted
-				}
-			}
-		}
-	}
-
-	// allocate space in DynArray to remember the addresses of meta keys
-	if (dynArray->size > 0)
-	{
-		dynArray->mappedKeyArray = elektraCalloc (dynArray->size * sizeof (Key *));
-	}
-
-	// duplicate all unique meta keys
-	Key * copy = 0;
-	cur = 0;
-	for (size_t i = 0; i < dynArray->size; ++i)
-	{
-		cur = dynArray->keyArray[i];
-		copy = keyDup (cur);
-
-		dynArray->mappedKeyArray[i] = copy;
-	}
-
-	// duplicate keyset from mmap and replace meta keys with deep copy
-	KeySet * dest = mmapKsDeepDup (toCopy);
-	cur = 0;
-	ksRewind (dest);
-	while ((cur = ksNext (dest)) != 0)
-	{
-		if (cur->meta)
-		{
-			KeySet * newMetaKs = ksNew (cur->meta->alloc, KS_END);
-
-			ksRewind (cur->meta);
-			for (size_t i = 0; i < cur->meta->size; ++i)
-			{
-				Key * newMetaKey = dynArray->mappedKeyArray[ELEKTRA_PLUGIN_FUNCTION (mmapstorage, dynArrayFind) (
-					(Key *) cur->meta->array[i], dynArray)];
-				ksAppendKey (newMetaKs, newMetaKey);
-			}
-			ksDel (cur->meta);
-			cur->meta = newMetaKs;
-		}
-	}
-
-	ELEKTRA_PLUGIN_FUNCTION (mmapstorage, dynArrayDelete) (dynArray);
-	return (KeySet *) dest;
-}
-
-/**
- * @brief Store a newly mapped file to the plugins list of linked files.
- *
- * @param key holding the filename
- * @param mappedFiles keyset holding already mapped files
- * @param returned keyset to be stored
- * @param handle the plugin handle
- * @param mappedRegion the pointer to the mapped region
- */
-static void saveLinkedFile (Key * key, KeySet * mappedFiles, KeySet * returned, Plugin * handle, char * mappedRegion)
-{
-	ELEKTRA_LOG_DEBUG ("unlink: new file, adding to my list. file: %s", keyString (key));
-
-	char mmapAddrString[SIZEOF_ADDR_STRING];
-	snprintf (mmapAddrString, SIZEOF_ADDR_STRING, "%p", (void *) (mappedRegion));
-	mmapAddrString[SIZEOF_ADDR_STRING - 1] = '\0';
-	ELEKTRA_LOG_DEBUG ("mappedRegion ptr as string: %s", mmapAddrString);
-	char ksAddrString[SIZEOF_ADDR_STRING];
-	snprintf (ksAddrString, SIZEOF_ADDR_STRING, "%p", (void *) returned);
-	ksAddrString[SIZEOF_ADDR_STRING - 1] = '\0';
-	ELEKTRA_LOG_DEBUG ("KeySet ptr as string: %s", ksAddrString);
-	keySetMeta (key, mmapAddrString, ksAddrString);
-	ksAppendKey (mappedFiles, key);
-	elektraPluginSetData (handle, mappedFiles);
-}
-
 /* -- Exported Elektra Plugin Functions ------------------------------------------------------------------------------------------------- */
 
 /**
@@ -964,7 +798,7 @@ static void saveLinkedFile (Key * key, KeySet * mappedFiles, KeySet * returned, 
  * @retval ELEKTRA_PLUGIN_STATUS_ERROR on memory error (plugin data (keyset) could not be allocated).
  * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if initialization was successful.
  */
-int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, open) (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
+int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, open) (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
 {
 	// plugin initialization logic
 
@@ -1004,7 +838,7 @@ int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, close) (Plugin * handle ELEKTRA_UNUSED
  * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if the file was mapped successfully.
  * @retval ELEKTRA_PLUGIN_STATUS_ERROR if the file could not be mapped successfully.
  */
-int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, get) (Plugin * handle, KeySet * ks, Key * parentKey)
+int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, get) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, Key * parentKey)
 {
 	// get all keys
 	int errnosave = errno;
@@ -1138,7 +972,7 @@ error:
  * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if the file was written successfully.
  * @retval ELEKTRA_PLUGIN_STATUS_ERROR if any error occurred.
  */
-int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, set) (Plugin * handle, KeySet * ks, Key * parentKey)
+int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, set) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, Key * parentKey)
 {
 	// set all keys
 	int errnosave = errno;
