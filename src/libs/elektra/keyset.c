@@ -905,10 +905,12 @@ ssize_t ksAppendKey (KeySet * ks, Key * toAppend)
 		/* And use the other one instead */
 		if (test_bit (toAppend->flags, KEY_FLAG_MMAP_STRUCT))
 		{
-			if (keyGetRef (toAppend) == 0) keyDel (toAppend);
+			Key * tmp;
 			keyflag_t flags = toAppend->flags;
-			toAppend = keyDup (toAppend);
-			toAppend->flags = flags;
+			tmp = keyDup (toAppend);
+			tmp->flags = flags;
+			if (keyGetRef (toAppend) == 0) keyDel (toAppend);
+			toAppend = tmp;
 		}
 		keyIncRef (toAppend);
 		ks->array[result] = toAppend;
@@ -932,10 +934,12 @@ ssize_t ksAppendKey (KeySet * ks, Key * toAppend)
 
 		if (test_bit (toAppend->flags, KEY_FLAG_MMAP_STRUCT))
 		{
-			if (keyGetRef (toAppend) == 0) keyDel (toAppend);
+			Key * tmp;
 			keyflag_t flags = toAppend->flags;
-			toAppend = keyDup (toAppend);
-			toAppend->flags = flags;
+			tmp = keyDup (toAppend);
+			tmp->flags = flags;
+			if (keyGetRef (toAppend) == 0) keyDel (toAppend);
+			toAppend = tmp;
 		}
 		keyIncRef (toAppend);
 
@@ -1308,6 +1312,8 @@ Key * ksPop (KeySet * ks)
 	--ks->size;
 	if (ks->size + 1 < ks->alloc / 2) ksResize (ks, ks->alloc / 2 - 1);
 	ret = ks->array[ks->size];
+	ks->array[ks->size] = 0;
+	keyDecRef (ret);
 
 	if (test_bit (ret->flags, KEY_FLAG_MMAP_STRUCT))
 	{
@@ -1315,9 +1321,6 @@ Key * ksPop (KeySet * ks)
 		ret = keyDup (ret);
 		ret->flags = flags;
 	}
-
-	ks->array[ks->size] = 0;
-	keyDecRef (ret);
 
 	return ret;
 }
