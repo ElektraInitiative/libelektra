@@ -444,6 +444,8 @@ int ksDel (KeySet * ks)
 	if (ks->mmapMetaData)
 	{
 		set_bit (ks->mmapMetaData->flags, MMAP_FLAG_DELETED);
+		elektraFree (ks->mmapMetaData->destAddr);
+		ks->mmapMetaData = 0;
 	}
 	if (!test_bit (ks->flags, KS_FLAG_MMAP_STRUCT))
 	{
@@ -901,6 +903,11 @@ ssize_t ksAppendKey (KeySet * ks, Key * toAppend)
 		keyDel (ks->array[result]);
 
 		/* And use the other one instead */
+		if (test_bit (toAppend->flags, KEY_FLAG_MMAP_STRUCT))
+		{
+			if (keyGetRef (toAppend) == 0) keyDel (toAppend);
+			toAppend = keyDup (toAppend);
+		}
 		keyIncRef (toAppend);
 		ks->array[result] = toAppend;
 		ksSetCursor (ks, result);
@@ -919,6 +926,12 @@ ssize_t ksAppendKey (KeySet * ks, Key * toAppend)
 				--ks->size;
 				return -1;
 			}
+		}
+
+		if (test_bit (toAppend->flags, KEY_FLAG_MMAP_STRUCT))
+		{
+			if (keyGetRef (toAppend) == 0) keyDel (toAppend);
+			toAppend = keyDup (toAppend);
 		}
 		keyIncRef (toAppend);
 
@@ -1291,6 +1304,12 @@ Key * ksPop (KeySet * ks)
 	--ks->size;
 	if (ks->size + 1 < ks->alloc / 2) ksResize (ks, ks->alloc / 2 - 1);
 	ret = ks->array[ks->size];
+
+	if (test_bit (ret->flags, KEY_FLAG_MMAP_STRUCT))
+	{
+		ret = keyDup (ret);
+	}
+
 	ks->array[ks->size] = 0;
 	keyDecRef (ret);
 
