@@ -27,6 +27,10 @@ The plugin requires [Bison](https://www.gnu.org/software/bison/) (3.0 or later).
 # Mount plugin
 sudo kdb mount config.yaml user/tests/yambi yambi
 
+kdb set user/tests/yambi 'Mount Point'
+kdb get user/tests/yambi
+#> Mount Point
+
 kdb set user/tests/yambi/bambi 'Mule Deer'
 kdb get user/tests/yambi/bambi
 #> Mule Deer
@@ -44,6 +48,7 @@ kdb get user/tests/yambi/bambi/baby
 #> Bobby Stewart
 
 kdb ls user/tests/yambi
+#> user/tests/yambi
 #> user/tests/yambi/bambi
 #> user/tests/yambi/bambi/adolescent
 #> user/tests/yambi/bambi/adult
