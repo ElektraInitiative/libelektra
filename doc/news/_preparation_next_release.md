@@ -89,6 +89,10 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 
 
+### path
+
+Enhanced the plugin to also check for concrete file or directory permissions such as `rwx`. *(Michael Zronek)*
+
 ### <<Plugin2>>
 
 - <<TODO>>
