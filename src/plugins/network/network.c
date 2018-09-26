@@ -60,7 +60,7 @@ int elektraPortInfo(Key * toCheck, Key * parentKey) {
 
 	if (*endptr == '\0') {
 		if (portNumber < 0 || portNumber > 65535) {
-			ELEKTRA_SET_ERRORF(205, parentKey, "Port %d on key %s was not within 0 - 65535",
+			ELEKTRA_SET_ERRORF(205, parentKey, "Port %ld on key %s was not within 0 - 65535",
 							   portNumber, keyName(toCheck));
 			return -1;
 		}
