@@ -89,6 +89,9 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 
 
+The `network` plugin also supports port declarations to check if a portnumber is valid
+or if the port is available to use. *(Michael Zronek)*
+
 ### <<Plugin2>>
 
 - <<TODO>>

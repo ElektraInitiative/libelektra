@@ -1298,3 +1298,15 @@ description:Could not find service name for port declaration
 severity:error
 ingroup:plugin
 module:network
+
+number:207
+description:Could not use port as it is already in use
+severity:error
+ingroup:plugin
+module:network
+
+number:208
+description:Connection Error occured
+severity:error
+ingroup:plugin
+module:network
