@@ -325,9 +325,13 @@ These errors are set with `inject/limit/min` and `inject/limit/max` and one of b
         contrast = 500
         ```
         
-## Logging of changes
+## Tracing of changes
 
 To see which changes were applied to the whole KeySet, additional metadata will be written to the rootkey.
+If the plugin applies a change to the keyset, it writes it to the next available free array spot under
+`inject/log/#[number]`. So if you have done 10 injections into a KeySet for example, there should be entries
+form `inject/log/#0` to `inject/log/#9`.
+
 Assume you mounted a configuration to `user/my/config` and attached some metakeys to settings.
 All injections which were done are written in array notation to `inject/log/#[number]` and are continuous.
 So for example:
