@@ -225,7 +225,7 @@ you up to date with the multi-language support provided by Elektra.
 -  We added a [Markdown Shell Recorder][] test for the [`shell` plugin ](https://www.libelektra.org/plugins/shell). *(René Schwaiger)*
 - Added many storage plugin tests. Most tests use the keyset, key name and value APIs.
   Currently, the tests are only active for `dump` and `mmapstorage`. *(Mihael Pranjić)*
-- <<TODO>>
+- The test `testcpp_contextual_basic` now compiles without warnings, if we use Clang 7 as compiler. *(René Schwaiger)*
 
 [Markdown Shell Recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
 
