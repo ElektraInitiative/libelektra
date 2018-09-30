@@ -68,7 +68,7 @@ string scalarToText (string const & text)
  */
 KeyListener::KeyListener (CppKey parent) : keys{}
 {
-	parents.push (parent);
+	parents.push (parent.dup ());
 }
 
 /**
