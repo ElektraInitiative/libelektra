@@ -24,7 +24,7 @@
 namespace yawn
 {
 
-/** This class implements a basic lexer for the serialization format YAML. */
+/** This class implements a basic YAML lexer. */
 class Lexer
 {
 	/** This attribute represents the input the lexer tokenizes. */
