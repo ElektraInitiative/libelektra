@@ -21,7 +21,7 @@ function (check_dependencies)
 	set (CMAKE_REQUIRED_QUIET ON)
 	check_include_file_cxx (codecvt HAVE_CODECVT)
 	if (NOT HAVE_CODECVT)
-		set (FAILURE_MESSAGE "because the current C++ library does not provide header file `codecvt`" PARENT_SCOPE)
+		set (FAILURE_MESSAGE "the current C++ library does not provide header file `codecvt`" PARENT_SCOPE)
 		return ()
 	endif (NOT HAVE_CODECVT)
 
