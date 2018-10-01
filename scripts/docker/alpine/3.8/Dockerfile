@@ -20,6 +20,13 @@ RUN mkdir -p ${GTEST_ROOT} \
     && tar -zxvf gtest.tar.gz --strip-components=1 -C ${GTEST_ROOT} \
     && rm gtest.tar.gz
 
+# YAEP
+RUN cd /tmp \
+    && git clone https://github.com/vnmakarov/yaep.git \
+    && cd yaep \
+    && env CXXFLAGS='-fPIC' ./configure \
+    && make -C src install
+
 # Create User:Group
 # The id is important as jenkins docker agents use the same id that is running
 # on the slaves to execute containers
