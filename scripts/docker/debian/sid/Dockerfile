@@ -109,3 +109,5 @@ RUN mkdir -p $HASKELL_SHARED_SANDBOX \
         'haskell-src-exts-any' 'pretty -any' 'hint >=0.7.0 && <0.8.0' 'temporary -any' \
         'exceptions -any' 'text -any' 'simple-logger -any' 'megaparsec -any' \
         'hspec -any' 'QuickCheck-any' --avoid-reinstalls
+
+RUN true
