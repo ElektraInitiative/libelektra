@@ -251,6 +251,7 @@ you up to date with the multi-language support provided by Elektra.
 - Building the Haskell binding should now work again. *(René Schwaiger)*
 - Provide a wrapper around `check_symbol_exists` that handles issues with
   `-Werror -Wpedantic`. *(Lukas Winkler)*
+- The argument `INCLUDE_SYSTEM_DIRECTORIES` of the function `add_plugin` now supports multiple include directories. *(René Schwaiger)*
 
 ### Docker
 
