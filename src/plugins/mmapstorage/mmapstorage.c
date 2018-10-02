@@ -272,6 +272,7 @@ static void initMagicKeySet (const uintptr_t magicNumber)
 	magicKeySet.mmapMetaData = (MmapMetaData *) ELEKTRA_MMAP_MAGIC_BOM;
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 	magicKeySet.opmphm = (Opmphm *) ELEKTRA_MMAP_MAGIC_BOM;
+	magicKeySet.opmphmPredictor = 0;
 #endif
 }
 
@@ -486,47 +487,30 @@ static void writeMetaKeys (MmapAddr * mmapAddr, DynArray * dynArray)
 	{
 		Key * curMeta = dynArray->keyArray[i];	// old key location
 		Key * mmapMetaKey = (Key *) mmapAddr->keyPtr; // new key location
+		*mmapMetaKey = *curMeta;
 		mmapAddr->keyPtr += SIZEOF_KEY;
-
-		size_t keyNameSize = curMeta->keySize + curMeta->keyUSize;
-		size_t keyValueSize = curMeta->dataSize;
-
-		void * metaKeyNamePtr;
-		void * metaKeyValuePtr;
 
 		// move Key name
 		if (curMeta->key)
 		{
+			size_t keyNameSize = curMeta->keySize + curMeta->keyUSize;
 			memcpy (mmapAddr->dataPtr, curMeta->key, keyNameSize);
-			metaKeyNamePtr = (mmapAddr->dataPtr - mmapAddr->mmapAddrInt);
+			mmapMetaKey->key = (mmapAddr->dataPtr - mmapAddr->mmapAddrInt);
 			mmapAddr->dataPtr += keyNameSize;
-		}
-		else
-		{
-			metaKeyNamePtr = 0;
 		}
 
 		// move Key value
 		if (curMeta->data.v)
 		{
-			memcpy (mmapAddr->dataPtr, curMeta->data.v, keyValueSize);
-			metaKeyValuePtr = (mmapAddr->dataPtr - mmapAddr->mmapAddrInt);
-			mmapAddr->dataPtr += keyValueSize;
-		}
-		else
-		{
-			metaKeyValuePtr = 0;
+			memcpy (mmapAddr->dataPtr, curMeta->data.v, curMeta->dataSize);
+			mmapMetaKey->data.v = (mmapAddr->dataPtr - mmapAddr->mmapAddrInt);
+			mmapAddr->dataPtr += curMeta->dataSize;
 		}
 
 		// move Key itself
-		mmapMetaKey->flags = curMeta->flags | KEY_FLAG_MMAP_STRUCT | KEY_FLAG_MMAP_KEY | KEY_FLAG_MMAP_DATA;
-		mmapMetaKey->key = (char *) metaKeyNamePtr;
-		mmapMetaKey->data.v = (void *) metaKeyValuePtr;
+		mmapMetaKey->flags |= KEY_FLAG_MMAP_STRUCT | KEY_FLAG_MMAP_KEY | KEY_FLAG_MMAP_DATA;
 		mmapMetaKey->meta = 0;
 		mmapMetaKey->ksReference = 0;
-		mmapMetaKey->dataSize = curMeta->dataSize;
-		mmapMetaKey->keySize = curMeta->keySize;
-		mmapMetaKey->keyUSize = curMeta->keyUSize;
 
 		dynArray->mappedKeyArray[i] = mmapMetaKey;
 	}
@@ -572,11 +556,6 @@ static KeySet * writeMetaKeySet (Key * key, MmapAddr * mmapAddr, DynArray * dynA
 	newMeta->array = (Key **) ((char *) newMeta->array - mmapAddr->mmapAddrInt);
 	newMeta->alloc = key->meta->alloc;
 	newMeta->size = key->meta->size;
-	newMeta->cursor = 0;
-	newMeta->current = 0;
-#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
-	newMeta->opmphm = 0;
-#endif
 	newMeta = (KeySet *) ((char *) newMeta - mmapAddr->mmapAddrInt);
 	return newMeta;
 }
@@ -600,47 +579,30 @@ static void writeKeys (KeySet * keySet, MmapAddr * mmapAddr, DynArray * dynArray
 	{
 		Key * mmapKey = (Key *) mmapAddr->keyPtr; // new key location
 		mmapAddr->keyPtr += SIZEOF_KEY;
-		size_t keyNameSize = cur->keySize + cur->keyUSize;
-		size_t keyValueSize = cur->dataSize;
-
-		void * keyNamePtr;
-		void * keyValuePtr;
+		*mmapKey = *cur;
 
 		// move Key name
 		if (cur->key)
 		{
+			size_t keyNameSize = cur->keySize + cur->keyUSize;
 			memcpy (mmapAddr->dataPtr, cur->key, keyNameSize);
-			keyNamePtr = (mmapAddr->dataPtr - mmapAddr->mmapAddrInt);
+			mmapKey->key = (mmapAddr->dataPtr - mmapAddr->mmapAddrInt);
 			mmapAddr->dataPtr += keyNameSize;
 		}
-		else
-		{
-			keyNamePtr = 0;
-		}
-
 
 		// move Key value
 		if (cur->data.v)
 		{
-			memcpy (mmapAddr->dataPtr, cur->data.v, keyValueSize);
-			keyValuePtr = (mmapAddr->dataPtr - mmapAddr->mmapAddrInt);
-			mmapAddr->dataPtr += keyValueSize;
-		}
-		else
-		{
-			keyValuePtr = 0;
+			memcpy (mmapAddr->dataPtr, cur->data.v, cur->dataSize);
+			mmapKey->data.v = (mmapAddr->dataPtr - mmapAddr->mmapAddrInt);
+			mmapAddr->dataPtr += cur->dataSize;
 		}
 
 		// write the meta KeySet
 		KeySet * newMeta = writeMetaKeySet (cur, mmapAddr, dynArray);
 
 		// move Key itself
-		mmapKey->flags = cur->flags | KEY_FLAG_MMAP_STRUCT | KEY_FLAG_MMAP_KEY | KEY_FLAG_MMAP_DATA;
-		mmapKey->key = (char *) keyNamePtr;
-		mmapKey->keySize = cur->keySize;
-		mmapKey->keyUSize = cur->keyUSize;
-		mmapKey->data.v = (void *) keyValuePtr;
-		mmapKey->dataSize = cur->dataSize;
+		mmapKey->flags |= KEY_FLAG_MMAP_STRUCT | KEY_FLAG_MMAP_KEY | KEY_FLAG_MMAP_DATA;
 		mmapKey->meta = newMeta;
 		mmapKey->ksReference = 1;
 
@@ -693,11 +655,6 @@ static void copyKeySetToMmap (char * dest, KeySet * keySet, MmapHeader * mmapHea
 	mmapAddr.ksPtr->array = (Key **) ((char *) mmapAddr.ksArrayPtr - mmapAddr.mmapAddrInt);
 	mmapAddr.ksPtr->alloc = keySet->alloc;
 	mmapAddr.ksPtr->size = keySet->size;
-	mmapAddr.ksPtr->cursor = 0;
-	mmapAddr.ksPtr->current = 0;
-#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
-	mmapAddr.ksPtr->opmphm = 0;
-#endif
 
 	memcpy ((dest + OFFSET_REAL_MMAPMETADATA), mmapMetaData, SIZEOF_MMAPMETADATA);
 #ifdef ELEKTRA_MMAP_CHECKSUM
@@ -970,19 +927,13 @@ int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, set) (Plugin * handle ELEKTRA_UNUSED, 
 {
 	// set all keys
 	int errnosave = errno;
-	DynArray * dynArray = 0;
-
 	int fd = -1;
 	char * mappedRegion = MAP_FAILED;
+	DynArray * dynArray = 0;
 
 	(void) unlink (keyString (parentKey));
 
-	if ((fd = openFile (parentKey, O_RDWR | O_CREAT)) == -1)
-	{
-		goto error;
-	}
-
-	if (truncateFile (fd, 0, parentKey) != 1)
+	if ((fd = openFile (parentKey, O_RDWR | O_CREAT | O_TRUNC)) == -1)
 	{
 		goto error;
 	}
