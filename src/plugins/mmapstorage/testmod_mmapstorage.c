@@ -10,13 +10,15 @@
 
 /* -- Imports --------------------------------------------------------------------------------------------------------------------------- */
 
+#include <fcntl.h> // fcntl(), open()
 #include <stdio.h> // fopen(), fileno()
 #include <stdlib.h>
 #include <string.h>
 #include <sys/mman.h>  // mmap()
 #include <sys/stat.h>  // stat(), chmod()
 #include <sys/types.h> // ftruncate ()
-#include <unistd.h>    // ftruncate(), pipe()
+#include <sys/wait.h>  // waitpit()
+#include <unistd.h>    // ftruncate(), pipe(), fork()
 
 #include <kdbconfig.h>
 #include <kdbprivate.h>
@@ -681,41 +683,6 @@ static void test_mmap_ksCopy (const char * tmpFile)
 	PLUGIN_CLOSE ();
 }
 
-static void test_mmap_unlink_dirty_plugindata (const char * tmpFile)
-{
-	// insert dirty metadata into plugin data, regression test for unlinking error handling
-	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
-	KeySet * conf = ksNew (0, KS_END);
-	PLUGIN_OPEN ("mmapstorage");
-
-	KeySet * ks = simpleTestKeySet ();
-	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
-	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
-
-	// we know that plugin data has a key (the linked file from kdbGet above)
-	KeySet * mappedFiles = (KeySet *) elektraPluginGetData (plugin);
-	Key * found = ksLookup (mappedFiles, parentKey, 0);
-	if (found)
-	{
-		keySetMeta (found, "some erroneous key", "which should not exist here");
-		char tooLarge[1024];
-		sprintf (tooLarge, "%llu", ULLONG_MAX);
-		tooLarge[1023] = '\0';
-		keySetMeta (found, tooLarge, "0xZZZZ");
-	}
-	else
-	{
-		yield_error ("test eror, missing key in plugin data for unlinking");
-	}
-
-	// trigger unlinking via kdbSet
-	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
-
-	keyDel (parentKey);
-	ksDel (ks);
-	PLUGIN_CLOSE ();
-}
-
 static void test_mmap_open_pipe (void)
 {
 	// try writing to an invalid file, we simply use a pipe here
@@ -768,7 +735,7 @@ static void test_mmap_bad_file_permissions (const char * tmpFile)
 	}
 	fclose (fp);
 
-	if (chmod (tmpFile, S_IRUSR) != 0)
+	if (chmod (tmpFile, 0) != 0)
 	{
 		yield_error ("chmod() failed");
 	}
@@ -898,8 +865,6 @@ int main (int argc, char ** argv)
 	test_mmap_ksCopy (tmpFile);
 
 	clearStorage (tmpFile);
-	test_mmap_unlink_dirty_plugindata (tmpFile);
-
 	test_mmap_open_pipe ();
 	test_mmap_bad_file_permissions (tmpFile);
 

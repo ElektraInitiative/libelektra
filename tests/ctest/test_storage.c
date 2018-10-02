@@ -850,6 +850,7 @@ static void test_keySetBinary (const size_t storagePlugin, const char * tmpFile)
 
 	found = ksLookupByName (ks, name, 0);
 	succeed_if (found, "did not find key");
+	if (!found) return;
 
 	ssize_t apiValueSize = keyGetValueSize (found);
 	char * apiValue = elektraMalloc (apiValueSize);
@@ -896,6 +897,7 @@ static void test_keySetString (const size_t storagePlugin, const char * tmpFile)
 
 	found = ksLookupByName (ks, name, 0);
 	succeed_if (found, "did not find key");
+	if (!found) return;
 
 	ssize_t apiValueSize = keyGetValueSize (found);
 	char * apiValue = elektraMalloc (apiValueSize);
