@@ -10,7 +10,7 @@
 #
 # .
 
-find_path (YAEP_INCLUDE_DIR NAMES yaep.h)
+find_path (YAEP_INCLUDE_DIR NAMES yaep.h PATH_SUFFIXES yaep)
 
 find_library (YAEP_LIBRARY NAMES yaep)
 find_library (YAEP_LIBRARY_CPP NAMES yaep++)
