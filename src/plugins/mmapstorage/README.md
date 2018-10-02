@@ -80,3 +80,8 @@ kdb rm -r user/tests/mmapstorage
 # Unmount mmapstorage
 sudo kdb umount user/tests/mmapstorage
 ```
+
+## Limitations
+
+Currently mapped files shall not be altered, otherwise the behaviour is undefined. Therefore we set an
+advisory lock with `flock()`, such that competing KDB instances can not overwrite mapped files.
