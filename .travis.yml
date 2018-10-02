@@ -132,7 +132,7 @@ matrix:
           -zeromqrecv;\
           -zeromqsend;\
           '"
-        - TEST_COMMAND="ctest --output-on-failure -E 'testscr_check_(bashisms|doc|formatting|meta|oclint|plugins)'"
+        - &testNoSourceCheck TEST_COMMAND="ctest --output-on-failure -E 'testscr_check_(bashisms|doc|formatting|meta|oclint|plugins)'"
 
     - os: linux
       name: 🐧 GCC ASAN
@@ -152,7 +152,7 @@ matrix:
         - TOOLS=kdb
         - BINDINGS=cpp
         - *minimalPluginList
-        - TEST_COMMAND="ctest --output-on-failure -E 'testscr_check_(bashisms|doc|formatting|meta|oclint|plugins)'"
+        - *testNoSourceCheck
 
     - os: linux
       name: 🐧 Clang ASAN
