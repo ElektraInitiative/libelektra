@@ -24,11 +24,6 @@
 /** Minimum size (lower bound) of mapped region (header, metadata, footer) */
 #define ELEKTRA_MMAP_MINSIZE (SIZEOF_MMAPHEADER + (SIZEOF_MMAPMETADATA * 2) + SIZEOF_KEYSET + SIZEOF_KEY + SIZEOF_MMAPFOOTER)
 
-/** Size to store a 64-bit (max.) address.
- * format: 0xADDR -> ADDR in hex, for 64bit addr: 2 bytes (0x) + 16 bytes (ADDR) + 1 byte (ending null)
- */
-#define SIZEOF_ADDR_STRING (3 + (sizeof (void *) * 2))
-
 /** Flag for mmap file format. Defines whether file was written with checksum on or off. */
 #define ELEKTRA_MMAP_CHECKSUM_ON (1)
 
