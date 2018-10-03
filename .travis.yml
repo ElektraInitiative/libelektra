@@ -197,6 +197,8 @@ matrix:
       name: 🍏 Clang
       osx_image: xcode10.0
       compiler: clang
+      env:
+        - *testNoSourceCheck
 
     # HASKELL: Only build Haskell binding and plugin
 
@@ -250,6 +252,7 @@ matrix:
         - KDB_DEFAULT_STORAGE=mmapstorage
         - KDB_DB_FILE=default.mmap
         - KDB_DB_INIT=elektra.mmap
+        - *testNoSourceCheck
 
 before_install:
   - |
