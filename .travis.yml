@@ -28,6 +28,13 @@ before_cache:
 matrix:
   include:
 
+    - os: osx
+      name: 🍏 Check Source
+      osx_image: xcode10.0
+      compiler: clang
+      env:
+        - TEST_COMMAND="ctest --output-on-failure -R 'testscr_check_(bashisms|doc|formatting|meta|oclint|plugins)'"
+
     # ASAN: Enable AddressSanitizer
 
     - os: osx
