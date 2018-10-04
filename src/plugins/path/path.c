@@ -178,6 +178,7 @@ static int validatePermission (Key * key, Key * parentKey)
 	}
 	elektraFree (groups);
 
+
 	int isRead = (strchr (modes, 'r') == NULL) ? 0 : 1;
 	int isWrite = (strchr (modes, 'w') == NULL) ? 0 : 1;
 	int isExecute = (strchr (modes, 'x') == NULL) ? 0 : 1;
@@ -186,7 +187,6 @@ static int validatePermission (Key * key, Key * parentKey)
 	errorMessage[0] = '\0'; // strcat() searches for this, otherwise it will print garbage chars at start
 	int isError = 0;
 
-	// Actual checks are done
 	if (isRead && euidaccess (validPath, R_OK) != 0)
 	{
 		isError = 1;
