@@ -24,7 +24,7 @@ static void testPorts ();
 
 #include "../ipaddr/test_ipaddr.h"
 
-int main (int argc, char **argv)
+int main (int argc, char ** argv)
 {
 	printf ("NETWORK   TESTS\n");
 	printf ("===============\n\n");
@@ -39,12 +39,12 @@ int main (int argc, char **argv)
 	return nbError;
 }
 
-static void testPort (char const *const port, const int ret, char const *const version, char const *const metaName)
+static void testPort (char const * const port, const int ret, char const * const version, char const * const metaName)
 {
-	Key *parentKey = keyNew ("user/tests/port", KEY_VALUE, "", KEY_END);
-	KeySet *conf = ksNew (0, KS_END);
-	KeySet *ks = ksNew (10, keyNew ("user/test/port/totest", KEY_VALUE, port, KEY_META, metaName, version, KEY_END),
-						KS_END);
+	Key * parentKey = keyNew ("user/tests/port", KEY_VALUE, "", KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	KeySet * ks = ksNew (10, keyNew ("user/test/port/totest", KEY_VALUE, port, KEY_META, metaName, version, KEY_END),
+						 KS_END);
 	PLUGIN_OPEN (PLUGIN_NAME);
 	const int pluginStatus = plugin->kdbSet (plugin, ks, parentKey);
 	char message[200];
@@ -57,12 +57,12 @@ static void testPort (char const *const port, const int ret, char const *const v
 	PLUGIN_CLOSE ();
 }
 
-static inline void testPortAny (char const *const port, int ret)
+static inline void testPortAny (char const * const port, int ret)
 {
 	testPort (port, ret, "", "check/port");
 }
 
-static inline void testListenPortAny (char const *const port, int ret)
+static inline void testListenPortAny (char const * const port, int ret)
 {
 	testPort (port, ret, "", "check/port/listen");
 }

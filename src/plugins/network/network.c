@@ -15,12 +15,12 @@
 #endif
 
 /* Obtain address(es) matching host/port */
-int elektraNetworkAddrInfo (Key *toCheck)
+int elektraNetworkAddrInfo (Key * toCheck)
 {
-	struct addrinfo *result;
+	struct addrinfo * result;
 	int s;
 
-	const Key *meta = keyGetMeta (toCheck, "check/ipaddr");
+	const Key * meta = keyGetMeta (toCheck, "check/ipaddr");
 
 	if (!meta) return 0; /* No check to do */
 
@@ -48,12 +48,12 @@ int elektraNetworkAddrInfo (Key *toCheck)
 	return 0;
 }
 
-int elektraPortInfo (Key *toCheck, Key *parentKey)
+int elektraPortInfo (Key * toCheck, Key * parentKey)
 {
-	const Key *meta = keyGetMeta (toCheck, "check/port");
-	const Key *listenMeta = keyGetMeta (toCheck, "check/port/listen");
+	const Key * meta = keyGetMeta (toCheck, "check/port");
+	const Key * listenMeta = keyGetMeta (toCheck, "check/port/listen");
 	if (!meta && !listenMeta) return 0; /* No check to do */
-	char *endptr = NULL;
+	char * endptr = NULL;
 	long portNumber = strtol (keyString (toCheck), &endptr, 10);
 	int portNumberNetworkByteOrder;
 
@@ -65,7 +65,7 @@ int elektraPortInfo (Key *toCheck, Key *parentKey)
 		}
 		portNumberNetworkByteOrder = htons (portNumber);
 	} else {
-		struct servent *service;
+		struct servent * service;
 		service = getservbyname (keyString (toCheck), NULL); //NULL means we accept both tcp and udp
 		if (service == NULL) {
 			ELEKTRA_SET_ERRORF(202, parentKey, "Could not find service with name %s on key %s",
@@ -78,11 +78,11 @@ int elektraPortInfo (Key *toCheck, Key *parentKey)
 	//Check if we can connect to it
 	if (!listenMeta) return 0; /* No check to do */
 
-	char *hostname = "localhost";
+	char * hostname = "localhost";
 
 	int sockfd;
 	struct sockaddr_in serv_addr;
-	struct hostent *server;
+	struct hostent * server;
 	sockfd = socket (AF_INET, SOCK_STREAM, 0);
 	if (sockfd < 0) {
 		ELEKTRA_SET_ERROR(204, parentKey, "Could not open a socket");
@@ -113,10 +113,10 @@ int elektraPortInfo (Key *toCheck, Key *parentKey)
 	return 0;
 }
 
-int elektraNetworkGet (Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey ELEKTRA_UNUSED)
+int elektraNetworkGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
 {
 	/* configuration only */
-	KeySet *n;
+	KeySet * n;
 	ksAppend (returned,
 			  n = ksNew (30,
 						 keyNew ("system/elektra/modules/network", KEY_VALUE, "network plugin waits for your orders",
@@ -140,17 +140,17 @@ int elektraNetworkGet (Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *par
 	return 1; /* success */
 }
 
-int elektraNetworkSet (Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey)
+int elektraNetworkSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 	/* check all keys */
-	Key *cur;
+	Key * cur;
 	ksRewind (returned);
 	while ((cur = ksNext (returned)) != 0) {
 		int s = elektraNetworkAddrInfo (cur);
 		if (s != 0) {
-			const char *gaimsg = gai_strerror (s);
-			char *errmsg = elektraMalloc (strlen (gaimsg) + keyGetNameSize (cur) + keyGetValueSize (cur) +
-										  sizeof ("name:  value:  message: "));
+			const char * gaimsg = gai_strerror (s);
+			char * errmsg = elektraMalloc (strlen (gaimsg) + keyGetNameSize (cur) + keyGetValueSize (cur) +
+										   sizeof ("name:  value:  message: "));
 			strcpy (errmsg, "name: ");
 			strcat (errmsg, keyName (cur));
 			strcat (errmsg, " value: ");
@@ -170,7 +170,7 @@ int elektraNetworkSet (Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *par
 	return 1; /* success */
 }
 
-Plugin *ELEKTRA_PLUGIN_EXPORT (network)
+Plugin * ELEKTRA_PLUGIN_EXPORT (network)
 {
 	// clang-format off
 	return elektraPluginExport ("network",
