@@ -140,5 +140,6 @@ TEST (yambi, map)
 int main (int argc, char * argv[])
 {
 	init (argc, argv); // Required for `srcdir_file` to work properly
-	return 0;
+	::testing::InitGoogleTest (&argc, argv);
+	return RUN_ALL_TESTS ();
 }

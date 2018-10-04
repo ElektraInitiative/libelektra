@@ -40,6 +40,11 @@ kdb ls /tests/yanlr
 kdb get user/tests/yanlr/all
 #> circles presuppose
 
+# Store value at root of mountpoint
+kdb set user/tests/yanlr 'Mount Eerie'
+kdb get user/tests/yanlr
+#> Mount Eerie
+
 # Add new key-value pairs
 # Yan LR actually uses the YAML Smith plugin to write data
 kdb set /tests/yanlr/brand new
@@ -47,6 +52,7 @@ kdb set /tests/yanlr/brand/new eyes
 kdb set /tests/yanlr/dance/gavin 'Dance!'
 
 kdb ls /tests/yanlr
+#> user/tests/yanlr
 #> user/tests/yanlr/all
 #> user/tests/yanlr/brand
 #> user/tests/yanlr/brand/new
