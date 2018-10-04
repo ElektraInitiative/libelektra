@@ -7,7 +7,9 @@
  */
 
 #ifdef HAVE_KDBCONFIG_H
+
 #include "kdbconfig.h"
+
 #endif
 
 #include <stdio.h>
@@ -18,7 +20,7 @@
 
 #define PLUGIN_NAME "network"
 
-static void testPorts() ;
+static void testPorts ();
 
 #include "../ipaddr/test_ipaddr.h"
 
@@ -41,11 +43,13 @@ static void testPort (char const * const port, const int ret, char const * const
 {
 	Key * parentKey = keyNew ("user/tests/port", KEY_VALUE, "", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
-	KeySet * ks = ksNew (10, keyNew ("user/test/port/totest", KEY_VALUE, port, KEY_META, metaName, version, KEY_END), KS_END);
+	KeySet * ks = ksNew (10, keyNew ("user/test/port/totest", KEY_VALUE, port, KEY_META, metaName, version, KEY_END),
+						 KS_END);
 	PLUGIN_OPEN (PLUGIN_NAME);
 	const int pluginStatus = plugin->kdbSet (plugin, ks, parentKey);
 	char message[200];
-	(void) snprintf (message, 200, "validation of %s “%s” returned %d instead of %d", version[0] == '\0' ? "Port" : version, port,
+	(void) snprintf (message, 200, "validation of %s “%s” returned %d instead of %d",
+					 version[0] == '\0' ? "Port" : version, port,
 					 pluginStatus, ret);
 	succeed_if (pluginStatus == ret, message);
 	ksDel (ks);
@@ -63,20 +67,21 @@ static inline void testListenPortAny (char const * const port, int ret)
 	testPort (port, ret, "", "check/port/listen");
 }
 
-static void testPorts() {
-	testPortAny("0", 1);
-	testPortAny("1234", 1);
-	testPortAny("65535", 1);
-	testPortAny("ssh", 1);
-	testPortAny("https", 1);
+static void testPorts ()
+{
+	testPortAny ("0", 1);
+	testPortAny ("1234", 1);
+	testPortAny ("65535", 1);
+	testPortAny ("ssh", 1);
+	testPortAny ("https", 1);
 
-	testPortAny("65536", -1);
-	testPortAny("-1", -1);
-	testPortAny("22d", -1);
-	testPortAny("myInvalidServiceName", -1);
+	testPortAny ("65536", -1);
+	testPortAny ("-1", -1);
+	testPortAny ("22d", -1);
+	testPortAny ("myInvalidServiceName", -1);
 
-	//These tests aren't portable I guess
-	testListenPortAny("http", -1);
-	testListenPortAny("8080", 1);
+	// These tests aren't portable I guess
+	testListenPortAny ("http", -1);
+	testListenPortAny ("8080", 1);
 
 }
