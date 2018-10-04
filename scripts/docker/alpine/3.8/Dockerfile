@@ -22,7 +22,7 @@ RUN mkdir -p ${GTEST_ROOT} \
 
 # YAEP
 RUN cd /tmp \
-    && git clone https://github.com/vnmakarov/yaep.git \
+    && git clone https://github.com/sanssecours/yaep.git \
     && cd yaep \
     && env CXXFLAGS='-fPIC' ./configure \
     && make -C src install
