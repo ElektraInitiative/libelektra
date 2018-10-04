@@ -53,15 +53,16 @@ static MmapMetaData magicMmapMetaData;
  *
  * @param parentKey containing the filename
  * @param flags file access mode
+ * @param mode file mode bits when file is created
  *
  * @return file descriptor
  */
-static int openFile (Key * parentKey, int flags)
+static int openFile (Key * parentKey, int flag, mode_t mode)
 {
 	int fd;
 	ELEKTRA_LOG_DEBUG ("opening file %s", keyString (parentKey));
 
-	if ((fd = open (keyString (parentKey), flags, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH)) == -1)
+	if ((fd = open (keyString (parentKey), flag, mode)) == -1)
 	{
 		ELEKTRA_LOG_WARNING ("error opening file %s", keyString (parentKey));
 	}
@@ -815,7 +816,7 @@ int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, get) (Plugin * handle ELEKTRA_UNUSED, 
 	int fd = -1;
 	char * mappedRegion = MAP_FAILED;
 
-	if ((fd = openFile (parentKey, O_RDONLY)) == -1)
+	if ((fd = openFile (parentKey, O_RDONLY, 0)) == -1)
 	{
 		goto error;
 	}
@@ -890,7 +891,7 @@ int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, get) (Plugin * handle ELEKTRA_UNUSED, 
 
 	if (close (fd) != 0)
 	{
-		ELEKTRA_LOG_WARNING ("could not fclose");
+		ELEKTRA_LOG_WARNING ("could not close");
 		goto error;
 	}
 
@@ -903,8 +904,14 @@ error:
 		ELEKTRA_SET_ERROR_GET (parentKey);
 	}
 
-	if (mappedRegion != MAP_FAILED) munmap (mappedRegion, sbuf.st_size);
-	if (fd != -1) close (fd);
+	if ((mappedRegion != MAP_FAILED) && (munmap (mappedRegion, sbuf.st_size) != 0))
+	{
+		ELEKTRA_LOG_WARNING ("could not munmap");
+	}
+	if ((fd != -1) && close (fd) != 0)
+	{
+		ELEKTRA_LOG_WARNING ("could not close");
+	}
 
 	errno = errnosave;
 	return ELEKTRA_PLUGIN_STATUS_ERROR;
@@ -931,9 +938,13 @@ int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, set) (Plugin * handle ELEKTRA_UNUSED, 
 	char * mappedRegion = MAP_FAILED;
 	DynArray * dynArray = 0;
 
-	(void) unlink (keyString (parentKey));
+	if (unlink (keyString (parentKey)) != 0 && errno != ENOENT)
+	{
+		ELEKTRA_LOG_WARNING ("could not unlink");
+		goto error;
+	}
 
-	if ((fd = openFile (parentKey, O_RDWR | O_CREAT | O_TRUNC)) == -1)
+	if ((fd = openFile (parentKey, O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR)) == -1)
 	{
 		goto error;
 	}
@@ -977,7 +988,7 @@ int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, set) (Plugin * handle ELEKTRA_UNUSED, 
 
 	if (close (fd) != 0)
 	{
-		ELEKTRA_LOG_WARNING ("could not fclose");
+		ELEKTRA_LOG_WARNING ("could not close");
 		goto error;
 	}
 
@@ -992,8 +1003,15 @@ error:
 		ELEKTRA_SET_ERROR_SET (parentKey);
 	}
 
-	if (mappedRegion != MAP_FAILED) munmap (mappedRegion, mmapHeader.allocSize);
-	if (fd != -1) close (fd);
+	if ((mappedRegion != MAP_FAILED) && (munmap (mappedRegion, mmapHeader.allocSize) != 0))
+	{
+		ELEKTRA_LOG_WARNING ("could not munmap");
+	}
+	if ((fd != -1) && close (fd) != 0)
+	{
+		ELEKTRA_LOG_WARNING ("could not close");
+	}
+
 	ELEKTRA_PLUGIN_FUNCTION (mmapstorage, dynArrayDelete) (dynArray);
 
 	errno = errnosave;
