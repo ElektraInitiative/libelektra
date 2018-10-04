@@ -18,7 +18,7 @@
 
 #define PLUGIN_NAME "network"
 
-static void testPorts() ;
+static void testPorts(void) ;
 
 #include "../ipaddr/test_ipaddr.h"
 
@@ -63,7 +63,7 @@ static inline void testListenPortAny (char const * const port, int ret)
 	testPort (port, ret, "", "check/port/listen");
 }
 
-static void testPorts() {
+static void testPorts(void) {
 	testPortAny("0", 1);
 	testPortAny("1234", 1);
 	testPortAny("65535", 1);
