@@ -15,7 +15,8 @@
 #endif
 
 /* Obtain address(es) matching host/port */
-int elektraNetworkAddrInfo (Key *toCheck) {
+int elektraNetworkAddrInfo (Key *toCheck)
+{
 	struct addrinfo *result;
 	int s;
 
@@ -47,7 +48,8 @@ int elektraNetworkAddrInfo (Key *toCheck) {
 	return 0;
 }
 
-int elektraPortInfo (Key *toCheck, Key *parentKey) {
+int elektraPortInfo (Key *toCheck, Key *parentKey)
+{
 	const Key *meta = keyGetMeta (toCheck, "check/port");
 	const Key *listenMeta = keyGetMeta (toCheck, "check/port/listen");
 	if (!meta && !listenMeta) return 0; /* No check to do */
@@ -111,7 +113,8 @@ int elektraPortInfo (Key *toCheck, Key *parentKey) {
 	return 0;
 }
 
-int elektraNetworkGet (Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey ELEKTRA_UNUSED) {
+int elektraNetworkGet (Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey ELEKTRA_UNUSED)
+{
 	/* configuration only */
 	KeySet *n;
 	ksAppend (returned,
@@ -137,7 +140,8 @@ int elektraNetworkGet (Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *par
 	return 1; /* success */
 }
 
-int elektraNetworkSet (Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey) {
+int elektraNetworkSet (Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey)
+{
 	/* check all keys */
 	Key *cur;
 	ksRewind (returned);
@@ -166,7 +170,8 @@ int elektraNetworkSet (Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *par
 	return 1; /* success */
 }
 
-Plugin *ELEKTRA_PLUGIN_EXPORT (network) {
+Plugin *ELEKTRA_PLUGIN_EXPORT (network)
+{
 	// clang-format off
 	return elektraPluginExport ("network",
 								ELEKTRA_PLUGIN_GET, &elektraNetworkGet,
