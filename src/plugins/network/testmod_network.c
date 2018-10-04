@@ -83,5 +83,4 @@ static void testPorts (void)
 	// These tests aren't portable I guess
 	testListenPortAny ("http", -1);
 	testListenPortAny ("8080", 1);
-
 }
