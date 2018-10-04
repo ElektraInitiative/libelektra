@@ -1,5 +1,10 @@
 # Install
 
+## Status
+
+The graph below shows an (incomplete) list of available packages for Elektra.
+
+[![Packaging status](https://repology.org/badge/vertical-allrepos/elektra.svg)](https://repology.org/metapackage/elektra/versions)
 
 ## Linux
 

@@ -61,7 +61,7 @@ public:
 
 	/**
 	 * @brief This method retrieves the text between `start` (inclusive) and the
-	 *         current position (exclusive).
+	 *        current position (exclusive).
 	 *
 	 * @param start This parameter specifies the start index of the string this
 	 *              functions returns.

@@ -123,12 +123,18 @@ resolve it via DNS. *(Michael Zronek)*
 The `network` plugin also supports port declarations to check if a portnumber is valid
 or if the port is available to use. *(Michael Zronek)*
 
-### <<Plugin2>>
+### Yan LR
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- The plugin does not modify the (original) parent key any more. As a consequence, setting values at the root of a mountpoint:
 
+  ```sh
+  sudo kdb mount config.yaml user/tests/yambi yambi
+  kdb set user/tests/yanlr 'Mount Point Value'
+  kdb get user/tests/yanlr
+  #> Mount Point Value
+  ```
+
+  now works correctly. *(René Schwaiger)*
 
 ### <<Plugin3>>
 
@@ -228,7 +234,8 @@ you up to date with the multi-language support provided by Elektra.
 -  We added a [Markdown Shell Recorder][] test for the [`shell` plugin ](https://www.libelektra.org/plugins/shell). *(René Schwaiger)*
 - Added many storage plugin tests. Most tests use the keyset, key name and value APIs.
   Currently, the tests are only active for `dump` and `mmapstorage`. *(Mihael Pranjić)*
-- <<TODO>>
+- The test `testcpp_contextual_basic` now compiles without warnings, if we use Clang 7 as compiler. *(René Schwaiger)*
+- crypto, fcrypt and gpgme properly shut down the gpg-agent after the unit test is done. See #1973 . *(Peter Nirschl)*
 
 [Markdown Shell Recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
 
