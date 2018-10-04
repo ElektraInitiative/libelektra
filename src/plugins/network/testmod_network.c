@@ -43,14 +43,12 @@ static void testPort (char const * const port, const int ret, char const * const
 {
 	Key * parentKey = keyNew ("user/tests/port", KEY_VALUE, "", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
-	KeySet * ks = ksNew (10, keyNew ("user/test/port/totest", KEY_VALUE, port, KEY_META, metaName, version, KEY_END),
-						 KS_END);
+	KeySet * ks = ksNew (10, keyNew ("user/test/port/totest", KEY_VALUE, port, KEY_META, metaName, version, KEY_END), KS_END);
 	PLUGIN_OPEN (PLUGIN_NAME);
 	const int pluginStatus = plugin->kdbSet (plugin, ks, parentKey);
 	char message[200];
-	(void) snprintf (message, 200, "validation of %s “%s” returned %d instead of %d",
-					 version[0] == '\0' ? "Port" : version, port,
-					 pluginStatus, ret);
+	(void) snprintf (message, 200, "validation of %s “%s” returned %d instead of %d", version[0] == '\0' ? "Port" : version, port,
+			 pluginStatus, ret);
 	succeed_if (pluginStatus == ret, message);
 	ksDel (ks);
 	keyDel (parentKey);

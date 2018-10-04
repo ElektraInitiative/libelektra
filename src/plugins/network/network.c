@@ -27,10 +27,13 @@ int elektraNetworkAddrInfo (Key * toCheck)
 	struct addrinfo hints;
 	memset (&hints, 0, sizeof (struct addrinfo));
 	hints.ai_family = AF_UNSPEC; /* Allow IPv4 or IPv6 */
-	if (!strcmp (keyString (meta), "ipv4")) {
+	if (!strcmp (keyString (meta), "ipv4"))
+	{
 		hints.ai_family = AF_INET;
 		hints.ai_flags = AI_NUMERICHOST; /* Only accept numeric hosts */
-	} else if (!strcmp (keyString (meta), "ipv6")) {
+	}
+	else if (!strcmp (keyString (meta), "ipv6"))
+	{
 		hints.ai_family = AF_INET6;
 		hints.ai_flags = AI_NUMERICHOST; /* Only accept numeric hosts */
 	}
@@ -39,7 +42,8 @@ int elektraNetworkAddrInfo (Key * toCheck)
 
 	s = getaddrinfo (keyString (toCheck), NULL, &hints, &result);
 
-	if (s != 0) {
+	if (s != 0)
+	{
 		return s;
 	}
 
@@ -57,19 +61,24 @@ int elektraPortInfo (Key * toCheck, Key * parentKey)
 	long portNumber = strtol (keyString (toCheck), &endptr, 10);
 	int portNumberNetworkByteOrder;
 
-	if (*endptr == '\0') {
-		if (portNumber < 0 || portNumber > 65535) {
+	if (*endptr == '\0')
+	{
+		if (portNumber < 0 || portNumber > 65535)
+		{
 			ELEKTRA_SET_ERRORF(201, parentKey, "Port %ld on key %s was not within 0 - 65535",
-							   portNumber, keyName (toCheck));
+					   portNumber, keyName (toCheck));
 			return -1;
 		}
 		portNumberNetworkByteOrder = htons (portNumber);
-	} else {
+	}
+	else
+	{
 		struct servent * service;
 		service = getservbyname (keyString (toCheck), NULL); //NULL means we accept both tcp and udp
-		if (service == NULL) {
+		if (service == NULL)
+		{
 			ELEKTRA_SET_ERRORF(202, parentKey, "Could not find service with name %s on key %s",
-							   keyString (toCheck), keyName (toCheck));
+					   keyString (toCheck), keyName (toCheck));
 			return -1;
 		}
 		portNumberNetworkByteOrder = service->s_port;
@@ -84,28 +93,31 @@ int elektraPortInfo (Key * toCheck, Key * parentKey)
 	struct sockaddr_in serv_addr;
 	struct hostent * server;
 	sockfd = socket (AF_INET, SOCK_STREAM, 0);
-	if (sockfd < 0) {
+	if (sockfd < 0)
+	{
 		ELEKTRA_SET_ERROR(204, parentKey, "Could not open a socket");
 	}
 
 	server = gethostbyname (hostname);
-	if (server == NULL) {
+	if (server == NULL)
+	{
 		ELEKTRA_SET_ERRORF(204, parentKey, "Could not connect to %s: No such host",
-						   hostname);
+				   hostname);
 		return -1;
 	}
 
 	bzero ((char *) &serv_addr, sizeof (serv_addr));
 	serv_addr.sin_family = AF_INET;
 	bcopy ((char *) server->h_addr,
-		   (char *) &serv_addr.sin_addr.s_addr,
-		   server->h_length);
+	       (char *) &serv_addr.sin_addr.s_addr,
+	       server->h_length);
 
 	serv_addr.sin_port = (in_port_t) portNumberNetworkByteOrder;
-	if (connect (sockfd, (struct sockaddr *) &serv_addr, sizeof (serv_addr)) == 0) {
+	if (connect (sockfd, (struct sockaddr *) &serv_addr, sizeof (serv_addr)) == 0)
+	{
 		close (sockfd);
 		ELEKTRA_SET_ERRORF(203, parentKey, "Port %s is already in use which was specified on key %s",
-						   keyString (toCheck), keyName (toCheck));
+				   keyString (toCheck), keyName (toCheck));
 		return -1;
 	}
 	close (sockfd);
@@ -118,23 +130,23 @@ int elektraNetworkGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 	/* configuration only */
 	KeySet * n;
 	ksAppend (returned,
-			  n = ksNew (30,
-						 keyNew ("system/elektra/modules/network", KEY_VALUE, "network plugin waits for your orders",
-								 KEY_END),
-						 keyNew ("system/elektra/modules/network/exports", KEY_END),
-						 keyNew ("system/elektra/modules/network/exports/get", KEY_FUNC, elektraNetworkGet, KEY_END),
-						 keyNew ("system/elektra/modules/network/exports/set", KEY_FUNC, elektraNetworkSet, KEY_END),
-						 keyNew ("system/elektra/modules/network/exports/elektraNetworkAddrInfo", KEY_FUNC,
-								 elektraNetworkAddrInfo,
-								 KEY_END),
-						 keyNew ("system/elektra/modules/network/exports/elektraPortInfo", KEY_FUNC,
-								 elektraNetworkAddrInfo,
-								 KEY_END),
+		  n = ksNew (30,
+			     keyNew ("system/elektra/modules/network", KEY_VALUE, "network plugin waits for your orders",
+				     KEY_END),
+			     keyNew ("system/elektra/modules/network/exports", KEY_END),
+			     keyNew ("system/elektra/modules/network/exports/get", KEY_FUNC, elektraNetworkGet, KEY_END),
+			     keyNew ("system/elektra/modules/network/exports/set", KEY_FUNC, elektraNetworkSet, KEY_END),
+			     keyNew ("system/elektra/modules/network/exports/elektraNetworkAddrInfo", KEY_FUNC,
+				     elektraNetworkAddrInfo,
+				     KEY_END),
+			     keyNew ("system/elektra/modules/network/exports/elektraPortInfo", KEY_FUNC,
+				     elektraNetworkAddrInfo,
+				     KEY_END),
 
 #include "readme_network.c"
 
-						 keyNew ("system/elektra/modules/network/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
-						 KS_END));
+			     keyNew ("system/elektra/modules/network/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
+			     KS_END));
 	ksDel (n);
 
 	return 1; /* success */
@@ -145,12 +157,14 @@ int elektraNetworkSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 	/* check all keys */
 	Key * cur;
 	ksRewind (returned);
-	while ((cur = ksNext (returned)) != 0) {
+	while ((cur = ksNext (returned)) != 0)
+	{
 		int s = elektraNetworkAddrInfo (cur);
-		if (s != 0) {
+		if (s != 0)
+		{
 			const char * gaimsg = gai_strerror (s);
 			char * errmsg = elektraMalloc (strlen (gaimsg) + keyGetNameSize (cur) + keyGetValueSize (cur) +
-										   sizeof ("name:  value:  message: "));
+						       sizeof ("name:  value:  message: "));
 			strcpy (errmsg, "name: ");
 			strcat (errmsg, keyName (cur));
 			strcat (errmsg, " value: ");
@@ -162,7 +176,8 @@ int elektraNetworkSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 			return -1;
 		}
 		int p = elektraPortInfo (cur, parentKey);
-		if (p != 0) {
+		if (p != 0)
+		{
 			return -1;
 		}
 	}
@@ -174,8 +189,8 @@ Plugin * ELEKTRA_PLUGIN_EXPORT (network)
 {
 	// clang-format off
 	return elektraPluginExport ("network",
-								ELEKTRA_PLUGIN_GET, &elektraNetworkGet,
-								ELEKTRA_PLUGIN_SET, &elektraNetworkSet,
-								ELEKTRA_PLUGIN_END);
+				    ELEKTRA_PLUGIN_GET, &elektraNetworkGet,
+				    ELEKTRA_PLUGIN_SET, &elektraNetworkSet,
+				    ELEKTRA_PLUGIN_END);
 }
 
