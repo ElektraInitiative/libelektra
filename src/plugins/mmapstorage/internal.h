@@ -30,6 +30,12 @@
 /** Magic byte order marker, as used by UTF. */
 #define ELEKTRA_MMAP_MAGIC_BOM (0xFEFF)
 
+/** Magic number used in mmap format */
+#define ELEKTRA_MAGIC_MMAP_NUMBER (0x0A6172746B656C45)
+
+/** Mmap format version */
+#define ELEKTRA_MMAP_FORMAT_VERSION (1)
+
 /**
  * Internal MmapAddr structure.
  * Used for functions passing around relevant pointers into the mmap region.
@@ -52,8 +58,9 @@ struct _mmapAddr
 
 typedef struct _mmapAddr MmapAddr;
 
-/* Header and footer needed for mmap file format */
+/* Header, metadata and footer needed for mmap file format */
 typedef struct _mmapHeader MmapHeader;
+typedef struct _mmapMetaData MmapMetaData;
 typedef struct _mmapFooter MmapFooter;
 
 /**
@@ -71,6 +78,20 @@ struct _mmapHeader
 	uint32_t checksum;		/**<Checksum of the data */
 	uint8_t formatFlags;		/**<Mmap format flags (e.g. checksum ON/OFF) */
 	uint8_t formatVersion;		/**<Mmap format version */
+	// clang-format on
+};
+
+/**
+ * Mmap meta-data
+ */
+struct _mmapMetaData
+{
+	// clang-format off
+	char * destAddr;	/**<Base pointer to allocated destination */
+
+	size_t numKeySets;	/**<Number of KeySets inlcuding meta KS */
+	size_t ksAlloc;		/**<Sum of all KeySet->alloc sizes */
+	size_t numKeys;		/**<Number of Keys including meta Keys */
 	// clang-format on
 };
 

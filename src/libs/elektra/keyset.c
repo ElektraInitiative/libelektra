@@ -441,10 +441,6 @@ int ksDel (KeySet * ks)
 
 #endif
 
-	if (ks->mmapMetaData)
-	{
-		set_bit (ks->mmapMetaData->flags, MMAP_FLAG_DELETED);
-	}
 	if (!test_bit (ks->flags, KS_FLAG_MMAP_STRUCT))
 	{
 		elektraFree (ks);
@@ -2695,7 +2691,6 @@ int ksInit (KeySet * ks)
 	ks->size = 0;
 	ks->alloc = 0;
 	ks->flags = 0;
-	ks->mmapMetaData = 0;
 
 	ksRewind (ks);
 

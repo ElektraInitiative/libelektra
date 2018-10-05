@@ -270,7 +270,6 @@ static void initMagicKeySet (const uintptr_t magicNumber)
 	magicKeySet.cursor = (Key *) ~magicNumber;
 	magicKeySet.current = SIZE_MAX / 2;
 	magicKeySet.flags = KS_FLAG_MMAP_ARRAY | KS_FLAG_SYNC;
-	magicKeySet.mmapMetaData = (MmapMetaData *) ELEKTRA_MMAP_MAGIC_BOM;
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 	magicKeySet.opmphm = (Opmphm *) ELEKTRA_MMAP_MAGIC_BOM;
 	magicKeySet.opmphmPredictor = 0;
@@ -305,7 +304,6 @@ static void initMagicMmapMetaData (const uintptr_t magicNumber)
 	magicMmapMetaData.numKeySets = SIZE_MAX;
 	magicMmapMetaData.ksAlloc = 0;
 	magicMmapMetaData.numKeys = SIZE_MAX / 2;
-	magicMmapMetaData.flags = MMAP_FLAG_DELETED;
 }
 
 /**
@@ -682,7 +680,6 @@ static void mmapToKeySet (char * mappedRegion, KeySet * returned)
 	returned->array = keySet->array;
 	returned->size = keySet->size;
 	returned->alloc = keySet->alloc;
-	returned->mmapMetaData = (MmapMetaData *) (mappedRegion + OFFSET_REAL_MMAPMETADATA);
 	// to be able to free() the returned KeySet, just set the array flag here
 	returned->flags = KS_FLAG_MMAP_ARRAY;
 	// we intentionally do not change the KeySet->opmphm here!
