@@ -57,12 +57,6 @@
  * to which mountpoint. */
 #define KDB_SYSTEM_ELEKTRA "system/elektra"
 
-/** Magic number used in mmap format */
-#define ELEKTRA_MAGIC_MMAP_NUMBER (0x0A6172746B656C45)
-
-/** Mmap format version */
-#define ELEKTRA_MMAP_FORMAT_VERSION (1)
-
 
 #ifdef __cplusplus
 namespace ckdb
@@ -74,8 +68,6 @@ typedef struct _Trie Trie;
 typedef struct _Split Split;
 typedef struct _Backend Backend;
 
-/* Metadata needed for mmap file format */
-typedef struct _mmapMetaData MmapMetaData;
 
 /* These define the type for pointers to all the kdb functions */
 typedef int (*kdbOpenPtr) (Plugin *, Key * errorKey);
@@ -182,15 +174,6 @@ typedef enum {
 		 It prevents erroneous free() calls on these arrays. */
 } ksflag_t;
 
-/**
- * Mmap Flags.
- *
- * Control flags needed for mmap
- */
-typedef enum {
-	MMAP_FLAG_DELETED = 1, /*!<
-		 KeySet was deleted, no need to unlink. */
-} mmapflag_t;
 
 /**
  * The private Key struct.
@@ -288,11 +271,6 @@ struct _KeySet
 	 * Some control and internal flags.
 	 */
 	ksflag_t flags;
-
-	/**
-	 * Mmap meta-data struct
-	 */
-	MmapMetaData * mmapMetaData;
 
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 	/**
@@ -483,21 +461,6 @@ struct _Split
 				Is either the mountpoint of the backend
 				or "user", "system", "spec" for the split root/cascading backends */
 	splitflag_t * syncbits; /*!< Bits for various options, see #splitflag_t for documentation */
-};
-
-
-/**
- * Mmap meta-data
- */
-struct _mmapMetaData
-{
-	char * destAddr;	/**<Base pointer to allocated destination */
-
-	size_t numKeySets;	/**<Number of KeySets inlcuding meta KS */
-	size_t ksAlloc;		/**<Sum of all KeySet->alloc sizes */
-	size_t numKeys;		/**<Number of Keys including meta Keys */
-
-	mmapflag_t flags;	/**<Control flags for mmap */
 };
 
 

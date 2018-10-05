@@ -40,27 +40,27 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.8.
   The `mmapstorage_crc` variant enables CRC32 checksums for critical data,
   while the `mmapstorage` variant omits the checksum for maximum performance.
 
-  We ran a synthetic benchmark with 127 iterations using 40k keys in a keyset,
+  We ran a synthetic benchmark with 257 iterations using 40k keys in a keyset,
   and compared the performance to the `dump` storage plugin.
 
   Median write time in microseconds:
 
   | Plugin | Time |
   | --- | --- |
-  | `dump` | 63692 |
-  | `mmapstorage` | 4338 |
-  | `mmapstorage_crc` | 8813 |
+  | `dump` | 71079 |
+  | `mmapstorage` | 2964 |
+  | `mmapstorage_crc` | 7644 |
 
   Median read time in microseconds:
 
   | Plugin | Time |
   | --- | --- |
-  | `dump` | 74889 |
-  | `mmapstorage` | 1116 |
-  | `mmapstorage_crc` | 5250 |
+  | `dump` | 82737 |
+  | `mmapstorage` | 1145 |
+  | `mmapstorage_crc` | 5744 |
 
-  In our benchmark, the `mmapstorage` plugin writes more than 14x faster,
-  and reads more than 67x faster than the `dump` storage plugin. *(Mihael Pranjić)*
+  In our benchmark, the `mmapstorage` plugin writes more than 23x faster,
+  and reads more than 72x faster than the `dump` storage plugin. *(Mihael Pranjić)*
 
 
 - Hybrid Search Algorithm for `ksLookup (...)`
