@@ -281,11 +281,15 @@ you up to date with the multi-language support provided by Elektra.
 ### Travis
 
 - Travis now also checks the code for memory leaks in the build job `🍏 Clang ASAN`. *(René Schwaiger)*
-- The Travis build job `🍏 Clang ASAN` now only translates a minimal set of plugins, since we had various timeout problems with this job
-  before. We explicitly excluded plugins, to make sure that the build job still tests newly added plugins. *(René Schwaiger)*
+- The Travis build jobs `🍏 Clang ASAN` and `🐧 GCC ASAN` now only translates a minimal set of plugins, since we had various timeout
+  problems with these jobs before. We explicitly excluded plugins, to make sure that the build jobs still test newly added plugins.
+  *(René Schwaiger)*
 - Added travis build job `🍏 mmap` on macOS with `mmapstorage` as the default storage. *(Mihael Pranjić)*
 - Travis now prints the CMake configuration for each build job. *(René Schwaiger)*
 - We now test Elektra using the latest version of Xcode (`10.0`). *(René Schwaiger)*
+- We added the build job `🍏 Check Source`, which only runs source code checks such as `testscr_check_oclint`. This update allows us to
+  remove the source code checks from the jobs `🍏 MMap` and `🍏 Clang`, which sometimes hit the
+  [timeout limit for public repositories](https://docs.travis-ci.com/user/customizing-the-build#build-timeouts) before.
 
 
 ## Website
