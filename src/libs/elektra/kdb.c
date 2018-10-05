@@ -456,7 +456,7 @@ int kdbClose (KDB * handle, Key * errorKey)
  * @retval 0 no update needed
  * @retval number of plugins which need update
  */
-static int elektraGetCheckUpdateNeeded (Split * split, Key * parentKey)
+static int elektraGetCheckUpdateNeeded (Split * split, Key * parentKey, KeySet * modTimes)
 {
 	int updateNeededOccurred = 0;
 	for (size_t i = 0; i < split->size; i++)
@@ -465,13 +465,16 @@ static int elektraGetCheckUpdateNeeded (Split * split, Key * parentKey)
 		Backend * backend = split->handles[i];
 		clear_bit (split->syncbits[i], 1);
 
-		if (backend->getplugins[RESOLVER_PLUGIN] && backend->getplugins[RESOLVER_PLUGIN]->kdbGet)
+		Plugin * resolver = backend->getplugins[RESOLVER_PLUGIN];
+		if (resolver && resolver->kdbGet)
 		{
 			ksRewind (split->keysets[i]);
 			keySetName (parentKey, keyName (split->parents[i]));
 			keySetString (parentKey, "");
-			ret = backend->getplugins[RESOLVER_PLUGIN]->kdbGet (backend->getplugins[RESOLVER_PLUGIN], split->keysets[i],
+			resolver->globalData = modTimes;
+			ret = resolver->kdbGet (resolver, split->keysets[i],
 									    parentKey);
+			resolver->globalData = 0;
 			// store resolved filename
 			keySetString (split->parents[i], keyString (parentKey));
 			// no keys in that backend
@@ -834,8 +837,10 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		goto error;
 	}
 
+	KeySet * modTimes = ksNew (0, KS_END);
+
 	// Check if a update is needed at all
-	switch (elektraGetCheckUpdateNeeded (split, parentKey))
+	switch (elektraGetCheckUpdateNeeded (split, parentKey, modTimes))
 	{
 	case 0: // We don't need an update so let's do nothing
 
