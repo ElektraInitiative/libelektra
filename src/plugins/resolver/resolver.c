@@ -548,6 +548,16 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * returned, Key * par
 	pk->mtime.tv_sec = ELEKTRA_STAT_SECONDS (buf);
 	pk->mtime.tv_nsec = ELEKTRA_STAT_NANO_SECONDS (buf);
 
+	/* Store the motification times for global caching plugins */
+	KeySet * modTimes;
+	if ((modTimes = elektraPluginGetGlobalData (handle)) != NULL)
+	{
+		ELEKTRA_LOG_DEBUG ("global-cache: adding file modufication times");
+		Key * time = keyNew (keyName (parentKey),
+						 KEY_BINARY, KEY_SIZE, sizeof (struct timespec), KEY_VALUE, &(pk->mtime), KEY_END);
+		ksAppendKey (modTimes, time);
+	}
+
 	errno = errnoSave;
 	return 1;
 }
