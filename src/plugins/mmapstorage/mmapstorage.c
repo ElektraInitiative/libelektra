@@ -827,7 +827,11 @@ int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, get) (Plugin * handle ELEKTRA_UNUSED, 
 	if (sbuf.st_size == 0)
 	{
 		// empty mmap file
-		close (fd);
+		if (close (fd) != 0)
+		{
+			ELEKTRA_LOG_WARNING ("could not close");
+			goto error;
+		}
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
