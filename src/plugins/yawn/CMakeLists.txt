@@ -64,8 +64,6 @@ function (check_dependencies)
 	     position.hpp
 	     token.hpp
 	     token.cpp
-	     memory.cpp
-	     memory.hpp
 	     error_listener.hpp
 	     error_listener.cpp
 	     lexer.hpp

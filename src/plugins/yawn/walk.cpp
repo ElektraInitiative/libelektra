@@ -11,6 +11,9 @@
 #include <iostream>
 #include <memory>
 
+#include <kdbassert.h>
+#include <kdblogger.h>
+
 #include "listener.hpp"
 #include "token.hpp"
 #include "walk.hpp"
@@ -143,7 +146,7 @@ void executeListenerMethods (Listener & listener, yaep_tree_node const * node)
 	{
 		return;
 	}
-	assert (node->type == yaep_tree_node_type::YAEP_ANODE && "Found unexpected node type");
+	ELEKTRA_ASSERT (node->type == yaep_tree_node_type::YAEP_ANODE, "Found unexpected node type");
 
 	// Node is abstract
 	yaep_anode anode = node->val.anode;

@@ -21,7 +21,6 @@
 #include "error_listener.hpp"
 #include "lexer.hpp"
 #include "listener.hpp"
-#include "memory.hpp"
 #include "walk.hpp"
 
 #ifdef ENABLE_ASAN
@@ -41,7 +40,6 @@ using ckdb::keyNew;
 
 using yawn::ErrorListener;
 using yawn::Lexer;
-using yawn::Memory;
 
 namespace
 {
@@ -50,7 +48,6 @@ namespace
 
 ErrorListener * errorListenerAdress;
 Lexer * lexerAddress;
-Memory * parserMemoryAddress;
 
 // -- Functions ----------------------------------------------------------------------------------------------------------------------------
 
@@ -101,9 +98,9 @@ void syntaxError (int errorToken, void * errorTokenData, int ignoredToken, void 
  *
  * @return A pointer to a memory region of the specified size
  */
-void * alloc (int size)
+inline void * alloc (int size)
 {
-	return parserMemoryAddress->allocate (size);
+	return malloc (size);
 }
 
 
@@ -216,9 +213,6 @@ int addToKeySet (CppKeySet & keySet, CppKey & parent, string const & filename)
 
 	auto input = openFile (filename, parent);
 	if (!input.good ()) return -1;
-
-	Memory memory;
-	parserMemoryAddress = &memory;
 
 	ErrorListener errorListener;
 	errorListenerAdress = &errorListener;
