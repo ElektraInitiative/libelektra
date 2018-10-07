@@ -9,7 +9,9 @@
 #ifndef ELEKTRA_PLUGIN_PATH_H
 #define ELEKTRA_PLUGIN_PATH_H
 
-#define _GNU_SOURCE        // For euidaccess
+#ifndef _GNU_SOURCE
+	#define _GNU_SOURCE        // For euidaccess
+#endif
 
 #include <unistd.h>
 
