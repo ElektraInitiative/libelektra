@@ -798,6 +798,12 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 	// get all keys
 	int errnosave = errno;
 
+	if (elektraPluginGetGlobalData (handle) != 0)
+	{
+		ELEKTRA_LOG_DEBUG ("mmapstorage global position called");
+		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+	}
+
 	Key * root = keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME, KEY_END);
 	if (keyRel (root, parentKey) >= 0)
 	{
@@ -934,6 +940,12 @@ error:
 int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, Key * parentKey)
 {
 	// set all keys
+	if (elektraPluginGetGlobalData(handle) != 0)
+	{
+		ELEKTRA_LOG_DEBUG ("mmapstorage global position called");
+		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+	}
+
 	int errnosave = errno;
 	int fd = -1;
 	char * mappedRegion = MAP_FAILED;

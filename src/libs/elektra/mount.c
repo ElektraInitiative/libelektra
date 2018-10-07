@@ -333,9 +333,11 @@ KeySet * elektraDefaultGlobalConfig (void)
 #endif
 		keyNew ("system/elektra/globalplugins/postgetcleanup", KEY_VALUE, "list", KEY_END),
 		keyNew ("system/elektra/globalplugins/postgetstorage", KEY_VALUE, "list", KEY_END),
+		keyNew ("system/elektra/globalplugins/postgetcache", KEY_VALUE, "mmapstorage", KEY_END),
 		keyNew ("system/elektra/globalplugins/postrollback", KEY_VALUE, "list", KEY_END),
 		keyNew ("system/elektra/globalplugins/precommit", KEY_VALUE, "list", KEY_END),
 		keyNew ("system/elektra/globalplugins/pregetstorage", KEY_VALUE, "list", KEY_END),
+		keyNew ("system/elektra/globalplugins/pregetcache", KEY_VALUE, "mmapstorage", KEY_END),
 		keyNew ("system/elektra/globalplugins/prerollback", KEY_VALUE, "list", KEY_END),
 		keyNew ("system/elektra/globalplugins/presetcleanup", KEY_VALUE, "list", KEY_END),
 		keyNew ("system/elektra/globalplugins/presetstorage", KEY_VALUE, "list", KEY_END),

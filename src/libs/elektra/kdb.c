@@ -838,6 +838,13 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	}
 
 	KeySet * modTimes = ksNew (0, KS_END);
+	if (handle->globalPlugins[PREGETCACHE][MAXONCE])
+	{
+		handle->globalPlugins[PREGETCACHE][MAXONCE]->globalData = modTimes;
+		elektraGlobalGet (handle, ks, parentKey, PREGETCACHE, MAXONCE);
+		handle->globalPlugins[PREGETCACHE][MAXONCE]->globalData = 0;
+	}
+
 
 	// Check if a update is needed at all
 	switch (elektraGetCheckUpdateNeeded (split, parentKey, modTimes))
@@ -938,6 +945,13 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, INIT);
 	elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, MAXONCE);
 	elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, DEINIT);
+
+	if (handle->globalPlugins[POSTGETCACHE][MAXONCE])
+	{
+		handle->globalPlugins[POSTGETCACHE][MAXONCE]->globalData = modTimes;
+		elektraGlobalSet (handle, ks, parentKey, POSTGETCACHE, MAXONCE);
+		handle->globalPlugins[POSTGETCACHE][MAXONCE]->globalData = 0;
+	}
 
 	ksRewind (ks);
 
