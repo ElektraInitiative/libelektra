@@ -5,7 +5,7 @@
 - infos/provides = storage/yaml
 - infos/recommends =
 - infos/placements = getstorage
-- infos/status = maintained unittest preview memleak experimental unfinished nodoc concept discouraged
+- infos/status = maintained unittest preview experimental unfinished nodoc concept discouraged
 - infos/metadata =
 - infos/description = This storage plugin use a Early parser to read YAML files
 

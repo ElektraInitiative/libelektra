@@ -91,20 +91,6 @@ void syntaxError (int errorToken, void * errorTokenData, int ignoredToken, void 
 }
 
 /**
- * This function allocates a memory region of the given size.
- *
- * @param size This variable specifies the amount of data this method should
- *             allocate.
- *
- * @return A pointer to a memory region of the specified size
- */
-inline void * alloc (int size)
-{
-	return elektraMalloc (size);
-}
-
-
-/**
  * @brief This function parses the YAML grammar contained in `yaml.bnf`.
  *
  * @param parser This variable stores the YAEP parser that uses the YAML grammar contained in `yaml.bnf` to parse input.
@@ -200,13 +186,7 @@ namespace yawn
  */
 int addToKeySet (CppKeySet & keySet, CppKey & parent, string const & filename)
 {
-#ifdef ENABLE_ASAN
-	__lsan_disable ();
-#endif
 	yaep parser;
-#ifdef ENABLE_ASAN
-	__lsan_enable ();
-#endif
 
 	auto grammar = parseGrammar (parser, parent);
 	if (grammar.size () <= 0) return -1;
@@ -223,20 +203,15 @@ int addToKeySet (CppKeySet & keySet, CppKey & parent, string const & filename)
 	int ambiguousOutput;
 	struct yaep_tree_node * root = nullptr;
 
-#ifdef ENABLE_ASAN
-	__lsan_disable ();
-#endif
-	// TODO: Free parse tree after YAEP provides a function to do that
-	parser.parse (nextToken, syntaxError, alloc, elektraFree, &root, &ambiguousOutput);
-#ifdef ENABLE_ASAN
-	__lsan_enable ();
-#endif
+	parser.parse (nextToken, syntaxError, nullptr, nullptr, &root, &ambiguousOutput);
 
 	if (handleErrors (ambiguousOutput, errorListener, filename, grammar, parent) < 0) return -1;
 
 	Listener listener{ parent };
 	walk (listener, root);
 	keySet.append (listener.getKeySet ());
+
+	yaep::free_tree (root, nullptr, nullptr);
 
 	return listener.getKeySet ().size () > 0;
 }
