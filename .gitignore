@@ -5,7 +5,6 @@
 
 #ignore backups
 *~
-cmake/**
 .idea/**
 CMakeCache.txt
 **/CMakeFiles/**
