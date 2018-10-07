@@ -9,8 +9,6 @@
 #ifndef ELEKTRA_PLUGIN_PATH_H
 #define ELEKTRA_PLUGIN_PATH_H
 
-#define _GNU_SOURCE        // For euidaccess
-
 #include <unistd.h>
 
 #include <kdberrors.h>
@@ -21,8 +19,8 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-#include <pwd.h>
 #include <grp.h>
+#include <pwd.h>
 
 int elektraPathOpen (Plugin * handle, Key * errorKey);
 
