@@ -226,7 +226,8 @@ int addToKeySet (CppKeySet & keySet, CppKey & parent, string const & filename)
 #ifdef ENABLE_ASAN
 	__lsan_disable ();
 #endif
-	parser.parse (nextToken, syntaxError, alloc, nullptr, &root, &ambiguousOutput);
+	// TODO: Free parse tree after YAEP provides a function to do that
+	parser.parse (nextToken, syntaxError, alloc, elektraFree, &root, &ambiguousOutput);
 #ifdef ENABLE_ASAN
 	__lsan_enable ();
 #endif
