@@ -100,7 +100,7 @@ void syntaxError (int errorToken, void * errorTokenData, int ignoredToken, void 
  */
 inline void * alloc (int size)
 {
-	return malloc (size);
+	return elektraMalloc (size);
 }
 
 
