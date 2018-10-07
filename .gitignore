@@ -10,7 +10,6 @@ CMakeCache.txt
 **/CMakeFiles/**
 DartConfiguration.tcl
 test-symbols.map
-tests/**
 
 
 #ignore debian patches
