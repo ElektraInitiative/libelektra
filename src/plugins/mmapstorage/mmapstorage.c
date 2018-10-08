@@ -187,7 +187,7 @@ static void initFooter (MmapFooter * mmapFooter)
 static int readHeader (const char * mappedRegion, MmapHeader ** mmapHeader, MmapMetaData ** mmapMetaData)
 {
 	*mmapHeader = (MmapHeader *) mappedRegion;
-	*mmapMetaData = (MmapMetaData *) (mappedRegion + OFFSET_REAL_MMAPMETADATA);
+	*mmapMetaData = (MmapMetaData *) (mappedRegion + OFFSET_MMAPMETADATA);
 
 	if ((*mmapHeader)->mmapMagicNumber == ELEKTRA_MAGIC_MMAP_NUMBER && (*mmapHeader)->formatVersion == ELEKTRA_MMAP_FORMAT_VERSION)
 	{
@@ -632,7 +632,7 @@ static void copyKeySetToMmap (char * dest, KeySet * keySet, MmapHeader * mmapHea
 	mmapMetaData->destAddr = dest;
 	writeMagicData (dest);
 
-	MmapAddr mmapAddr = { .ksPtr = (KeySet *) (dest + OFFSET_REAL_KEYSET),
+	MmapAddr mmapAddr = { .ksPtr = (KeySet *) (dest + OFFSET_KEYSET),
 			      .metaKsPtr = (char *) mmapAddr.ksPtr + SIZEOF_KEYSET,
 			      .ksArrayPtr = (((char *) mmapAddr.ksPtr) + (SIZEOF_KEYSET * mmapMetaData->numKeySets)),
 			      .metaKsArrayPtr = mmapAddr.ksArrayPtr + (SIZEOF_KEY_PTR * keySet->alloc),
@@ -655,7 +655,7 @@ static void copyKeySetToMmap (char * dest, KeySet * keySet, MmapHeader * mmapHea
 	mmapAddr.ksPtr->alloc = keySet->alloc;
 	mmapAddr.ksPtr->size = keySet->size;
 
-	memcpy ((dest + OFFSET_REAL_MMAPMETADATA), mmapMetaData, SIZEOF_MMAPMETADATA);
+	memcpy ((dest + OFFSET_MMAPMETADATA), mmapMetaData, SIZEOF_MMAPMETADATA);
 #ifdef ELEKTRA_MMAP_CHECKSUM
 	uint32_t checksum = crc32 (0L, Z_NULL, 0);
 	checksum = crc32 (checksum, (const unsigned char *) (dest + SIZEOF_MMAPHEADER), mmapHeader->cksumSize);
@@ -676,7 +676,7 @@ static void copyKeySetToMmap (char * dest, KeySet * keySet, MmapHeader * mmapHea
  */
 static void mmapToKeySet (char * mappedRegion, KeySet * returned)
 {
-	KeySet * keySet = (KeySet *) (mappedRegion + OFFSET_REAL_KEYSET);
+	KeySet * keySet = (KeySet *) (mappedRegion + OFFSET_KEYSET);
 	returned->array = keySet->array;
 	returned->size = keySet->size;
 	returned->alloc = keySet->alloc;
@@ -700,7 +700,7 @@ static void updatePointers (MmapMetaData * mmapMetaData, char * dest)
 {
 	uintptr_t destInt = (uintptr_t) dest;
 
-	char * ksPtr = (dest + OFFSET_REAL_KEYSET);
+	char * ksPtr = (dest + OFFSET_KEYSET);
 
 	char * ksArrayPtr = ksPtr + SIZEOF_KEYSET * mmapMetaData->numKeySets;
 	char * keyPtr = ksArrayPtr + SIZEOF_KEY_PTR * mmapMetaData->ksAlloc;
