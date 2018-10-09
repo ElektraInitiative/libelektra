@@ -1279,3 +1279,10 @@ severity:error
 ingroup:plugin
 module:reference
 macro:REFERENCE_RESTRICTION
+
+number:204
+description:The given key contains a non existent reference.
+severity:error
+ingroup:plugin
+module:reference
+macro:REFERENCE_NOT_FOUND
