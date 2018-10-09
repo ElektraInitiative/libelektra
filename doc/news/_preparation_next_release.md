@@ -212,7 +212,7 @@ you up to date with the multi-language support provided by Elektra.
 ## Documentation
 
 - We fixed some minor spelling mistakes in the documentation. *(René Schwaiger)*
-- <<TODO>>
+- The ReadMe now includes two badges that show the latest released version of Elektra and the status of the Travis build. *(René Schwaiger)*
 - <<TODO>>
 - Go into more detail in
     [BUILDSERVER.md](https://master.libelektra.org/doc/BUILDSERVER.md).
