@@ -1,5 +1,7 @@
 # Elektra
 
+[![Travis Build Status](https://travis-ci.org/ElektraInitiative/libelektra.svg?branch=master)](https://travis-ci.org/ElektraInitiative/libelektra)
+
 _Elektra serves as a universal and secure framework to access configuration
 settings in a global, hierarchical key database._
 
