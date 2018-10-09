@@ -1,5 +1,6 @@
 # Elektra
 
+[![Release](https://img.shields.io/github/release/ElektraInitiative/libelektra.svg)](https://github.com/ElektraInitiative/libelektra/releases/latest)
 [![Travis Build Status](https://travis-ci.org/ElektraInitiative/libelektra.svg?branch=master)](https://travis-ci.org/ElektraInitiative/libelektra)
 
 _Elektra serves as a universal and secure framework to access configuration
