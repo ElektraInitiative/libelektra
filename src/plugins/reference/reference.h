@@ -12,6 +12,12 @@
 
 #include <kdbplugin.h>
 
+#define CHECK_REFERENCE_KEYNAME ("check/reference")
+#define CHECK_REFERENCE_RESTRICT_KEYNAME ("check/reference/restrict")
+
+#define CHECK_REFERNCE_VALUE_SINGLE ("single")
+#define CHECK_REFERNCE_VALUE_RECURSIVE ("recursive")
+#define CHECK_REFERNCE_VALUE_ALTERNATIVE ("alternative")
 
 int elektraReferenceOpen (Plugin * handle, Key * errorKey);
 int elektraReferenceClose (Plugin * handle, Key * errorKey);

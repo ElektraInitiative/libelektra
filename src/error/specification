@@ -1258,3 +1258,24 @@ severity:warning
 ingroup:plugin
 module:gpgme
 macro:GPGME_INVALID_RECIPIENT
+
+number:201
+description:The given key contains a redundant reference.
+severity:warning
+ingroup:plugin
+module:reference
+macro:REFERENCE_REDUNDANT
+
+number:202
+description:The constructed reference graph contains cycles.
+severity:error
+ingroup:plugin
+module:reference
+macro:REFERENCE_CYCLIC_GRAPH
+
+number:203
+description:The given key contains reference that does not match the given restriction.
+severity:error
+ingroup:plugin
+module:reference
+macro:REFERENCE_RESTRICTION

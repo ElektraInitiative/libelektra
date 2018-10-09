@@ -31,8 +31,23 @@
  */
 int elektraArrayValidateName (const Key * key)
 {
-	const char * current;
-	if (!key || !(current = keyBaseName (key)) || *current != '#') return -1;
+	if (!key) return -1;
+	return elektraArrayValidateBaseNameString (keyBaseName (key));
+}
+
+/**
+ * @brief validate array syntax
+ *
+ * @param baseName the supposed array element basename
+ *
+ * @retval -1 if no array element/syntax error/no key
+ * @retval 0 if start
+ * @retval 1 if array element
+ */
+int elektraArrayValidateBaseNameString (const char * baseName)
+{
+	const char * current = baseName;
+	if (!current || *current != '#') return -1;
 	if (!strcmp (current, "#")) return 0;
 
 	current++;
