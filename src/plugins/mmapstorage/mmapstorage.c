@@ -420,12 +420,13 @@ static int verifyChecksum (char * mappedRegion, MmapHeader * mmapHeader)
  * @param timestamps the KeySet containing file timestamps from resolvers
  * @param dynArray to store meta-key pointers for deduplication
  */
-static void calculateMmapDataSize (MmapHeader * mmapHeader, MmapMetaData * mmapMetaData, KeySet * returned, KeySet * timestamps, DynArray * dynArray)
+static void calculateMmapDataSize (MmapHeader * mmapHeader, MmapMetaData * mmapMetaData, KeySet * returned, KeySet * timestamps,
+				   DynArray * dynArray)
 {
 	Key * cur;
 	ksRewind (returned);
-	size_t dataBlocksSize = 0; // sum of keyName and keyValue sizes
-	size_t numKeySets = 3; // include the magic, timestamp and main keyset
+	size_t dataBlocksSize = 0;	// sum of keyName and keyValue sizes
+	size_t numKeySets = 3;		  // include the magic, timestamp and main keyset
 	size_t ksAlloc = returned->alloc; // sum of allocation sizes for all meta-keysets
 	while ((cur = ksNext (returned)) != 0)
 	{
@@ -449,6 +450,17 @@ static void calculateMmapDataSize (MmapHeader * mmapHeader, MmapMetaData * mmapM
 		}
 	}
 
+	mmapMetaData->numKeys = returned->size + dynArray->size;
+	if (timestamps)
+	{
+		ksAlloc += timestamps->alloc;
+		mmapMetaData->numKeys += timestamps->size;
+		while ((cur = ksNext (timestamps)) != 0)
+		{
+			dataBlocksSize += (cur->keySize + cur->keyUSize + cur->dataSize);
+		}
+	}
+
 	size_t keyArraySize = (returned->size + dynArray->size + 1) * SIZEOF_KEY; // +1 for magic Key
 	size_t allocSize = (SIZEOF_KEYSET * numKeySets) + keyArraySize + dataBlocksSize + (ksAlloc * SIZEOF_KEY_PTR);
 	mmapHeader->cksumSize = allocSize + (SIZEOF_MMAPMETADATA * 2); // cksumSize now contains size of all critical data
@@ -459,7 +471,6 @@ static void calculateMmapDataSize (MmapHeader * mmapHeader, MmapMetaData * mmapM
 	mmapHeader->allocSize = allocSize;
 	mmapMetaData->numKeySets = numKeySets - 2; // don't include magic and timestamp KeySet
 	mmapMetaData->ksAlloc = ksAlloc;
-	mmapMetaData->numKeys = returned->size + dynArray->size;
 }
 
 /**

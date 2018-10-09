@@ -553,8 +553,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * returned, Key * par
 	if ((modTimes = elektraPluginGetGlobalData (handle)) != NULL)
 	{
 		ELEKTRA_LOG_DEBUG ("global-cache: adding file modufication times");
-		Key * time = keyNew (keyName (parentKey),
-						 KEY_BINARY, KEY_SIZE, sizeof (struct timespec), KEY_VALUE, &(pk->mtime), KEY_END);
+		Key * time = keyNew (keyName (parentKey), KEY_BINARY, KEY_SIZE, sizeof (struct timespec), KEY_VALUE, &(pk->mtime), KEY_END);
 		ksAppendKey (modTimes, time);
 	}
 

@@ -472,8 +472,7 @@ static int elektraGetCheckUpdateNeeded (Split * split, Key * parentKey, KeySet *
 			keySetName (parentKey, keyName (split->parents[i]));
 			keySetString (parentKey, "");
 			resolver->globalData = modTimes;
-			ret = resolver->kdbGet (resolver, split->keysets[i],
-									    parentKey);
+			ret = resolver->kdbGet (resolver, split->keysets[i], parentKey);
 			resolver->globalData = 0;
 			// store resolved filename
 			keySetString (split->parents[i], keyString (parentKey));
