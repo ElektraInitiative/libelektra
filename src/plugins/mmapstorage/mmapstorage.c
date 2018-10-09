@@ -408,7 +408,8 @@ static int verifyChecksum (char * mappedRegion, MmapHeader * mmapHeader)
  * within a mapped region. The size includes all mmap meta-information, magic KeySet and Key for
  * consistency checks, KeySets, meta-KeySets, Keys, meta-Keys, Key names and values.
  * Copied meta-Keys are counted once for deduplication. If needed, padding is added to align the
- * MmapFooter properly at the end of the mapping.
+ * MmapFooter properly at the end of the mapping. When the plugin is in a global position,
+ * acting as a cache, the calculated size includes the KeySet with the timestamps of configurations.
  *
  * The complete size and some other meta-information are stored in the MmapHeader and MmapMetaData.
  * The DynArray stores the unique meta-Key pointers needed for deduplication.
@@ -416,22 +417,23 @@ static int verifyChecksum (char * mappedRegion, MmapHeader * mmapHeader)
  * @param mmapHeader to store the allocation size
  * @param mmapMetaData to store the number of KeySets and Keys
  * @param returned the KeySet that should be stored
+ * @param timestamps the KeySet containing file timestamps from resolvers
  * @param dynArray to store meta-key pointers for deduplication
  */
-static void calculateMmapDataSize (MmapHeader * mmapHeader, MmapMetaData * mmapMetaData, KeySet * returned, DynArray * dynArray)
+static void calculateMmapDataSize (MmapHeader * mmapHeader, MmapMetaData * mmapMetaData, KeySet * returned, KeySet * timestamps, DynArray * dynArray)
 {
 	Key * cur;
 	ksRewind (returned);
-	size_t dataBlocksSize = 0; // keyName and keyValue
-	size_t metaKeySets = 0;
-	size_t metaKsAlloc = 0; // sum of allocation sizes for all meta-keysets
+	size_t dataBlocksSize = 0; // sum of keyName and keyValue sizes
+	size_t numKeySets = 3; // include the magic, timestamp and main keyset
+	size_t ksAlloc = returned->alloc; // sum of allocation sizes for all meta-keysets
 	while ((cur = ksNext (returned)) != 0)
 	{
 		dataBlocksSize += (cur->keySize + cur->keyUSize + cur->dataSize);
 
 		if (cur->meta)
 		{
-			++metaKeySets;
+			++numKeySets;
 
 			Key * curMeta;
 			ksRewind (cur->meta);
@@ -443,24 +445,20 @@ static void calculateMmapDataSize (MmapHeader * mmapHeader, MmapMetaData * mmapM
 					dataBlocksSize += (curMeta->keySize + curMeta->keyUSize + curMeta->dataSize);
 				}
 			}
-			metaKsAlloc += (cur->meta->alloc);
+			ksAlloc += (cur->meta->alloc);
 		}
 	}
 
-	size_t keyArraySize = (returned->size + 1) * SIZEOF_KEY; // +1 for magic Key
-	size_t keyPtrArraySize = (returned->alloc) * SIZEOF_KEY_PTR;
-
-	// SIZEOF_KEYSET * 2 : magic KeySet + main KeySet
-	size_t allocSize = (SIZEOF_KEYSET * 2) + keyPtrArraySize + keyArraySize + dataBlocksSize + (metaKeySets * SIZEOF_KEYSET) +
-			   (metaKsAlloc * SIZEOF_KEY_PTR) + (dynArray->size * SIZEOF_KEY);
+	size_t keyArraySize = (returned->size + dynArray->size + 1) * SIZEOF_KEY; // +1 for magic Key
+	size_t allocSize = (SIZEOF_KEYSET * numKeySets) + keyArraySize + dataBlocksSize + (ksAlloc * SIZEOF_KEY_PTR);
 	mmapHeader->cksumSize = allocSize + (SIZEOF_MMAPMETADATA * 2); // cksumSize now contains size of all critical data
 
 	size_t padding = sizeof (uint64_t) - (allocSize % sizeof (uint64_t)); // alignment for MMAP Footer at end of mapping
 	allocSize += SIZEOF_MMAPHEADER + (SIZEOF_MMAPMETADATA * 2) + SIZEOF_MMAPFOOTER + padding;
 
 	mmapHeader->allocSize = allocSize;
-	mmapMetaData->numKeySets = 1 + metaKeySets; // 1: main KeySet
-	mmapMetaData->ksAlloc = returned->alloc + metaKsAlloc;
+	mmapMetaData->numKeySets = numKeySets - 2; // don't include magic and timestamp KeySet
+	mmapMetaData->ksAlloc = ksAlloc;
 	mmapMetaData->numKeys = returned->size + dynArray->size;
 }
 
@@ -699,13 +697,13 @@ static void mmapToKeySet (char * mappedRegion, KeySet * returned)
 static void updatePointers (MmapMetaData * mmapMetaData, char * dest)
 {
 	uintptr_t destInt = (uintptr_t) dest;
+	size_t numKeySets = mmapMetaData->numKeySets + ADDITIONAL_KEYSETS;
 
-	char * ksPtr = (dest + OFFSET_KEYSET);
-
-	char * ksArrayPtr = ksPtr + SIZEOF_KEYSET * mmapMetaData->numKeySets;
+	char * ksPtr = (dest + OFFSET_TIMESTAMP_KEYSET);
+	char * ksArrayPtr = ksPtr + SIZEOF_KEYSET * numKeySets;
 	char * keyPtr = ksArrayPtr + SIZEOF_KEY_PTR * mmapMetaData->ksAlloc;
 
-	for (size_t i = 0; i < mmapMetaData->numKeySets; ++i)
+	for (size_t i = 0; i < numKeySets; ++i)
 	{
 		KeySet * ks = (KeySet *) ksPtr;
 		ksPtr += SIZEOF_KEYSET;
@@ -940,7 +938,8 @@ error:
 int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, Key * parentKey)
 {
 	// set all keys
-	if (elektraPluginGetGlobalData(handle) != 0)
+	KeySet * timeStamps;
+	if ((timeStamps = elektraPluginGetGlobalData (handle)) != 0)
 	{
 		ELEKTRA_LOG_DEBUG ("mmapstorage global position called");
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
@@ -968,7 +967,7 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 	MmapMetaData mmapMetaData;
 	initHeader (&mmapHeader);
 	initMetaData (&mmapMetaData);
-	calculateMmapDataSize (&mmapHeader, &mmapMetaData, ks, dynArray);
+	calculateMmapDataSize (&mmapHeader, &mmapMetaData, ks, timeStamps, dynArray);
 	ELEKTRA_LOG_DEBUG ("mmapsize: %" PRIu64, mmapHeader.allocSize);
 
 	if (truncateFile (fd, mmapHeader.allocSize, parentKey) != 1)
