@@ -124,6 +124,12 @@ function (add_plugintest testname)
 		add_executable (${testexename} ${TEST_SOURCES})
 		add_dependencies (${testexename} kdberrors_generated)
 
+		if (ARG_LINK_PLUGIN)
+			add_dependencies (${testexename} elektra-${ARG_LINK_PLUGIN})
+		else ()
+			add_dependencies (${testexename} elektra-${testname})
+		endif ()
+
 		# ~~~
 		# alternative approach to restore_variable
 		# get_target_property(TARGET_COMPILE_DEFINITIONS PLUGIN_TARGET_OBJS COMPILE_DEFINITIONS)
