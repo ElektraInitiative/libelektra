@@ -471,9 +471,9 @@ static int elektraGetCheckUpdateNeeded (Split * split, Key * parentKey, KeySet *
 			ksRewind (split->keysets[i]);
 			keySetName (parentKey, keyName (split->parents[i]));
 			keySetString (parentKey, "");
-			resolver->globalData = modTimes;
+// 			resolver->globalData = modTimes;
 			ret = resolver->kdbGet (resolver, split->keysets[i], parentKey);
-			resolver->globalData = 0;
+// 			resolver->globalData = 0;
 			// store resolved filename
 			keySetString (split->parents[i], keyString (parentKey));
 			// no keys in that backend
@@ -837,12 +837,12 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	}
 
 	KeySet * modTimes = ksNew (0, KS_END);
-	if (handle->globalPlugins[PREGETCACHE][MAXONCE])
-	{
-		handle->globalPlugins[PREGETCACHE][MAXONCE]->globalData = modTimes;
-		elektraGlobalGet (handle, ks, parentKey, PREGETCACHE, MAXONCE);
-		handle->globalPlugins[PREGETCACHE][MAXONCE]->globalData = 0;
-	}
+// 	if (handle->globalPlugins[PREGETCACHE][MAXONCE])
+// 	{
+// 		handle->globalPlugins[PREGETCACHE][MAXONCE]->globalData = modTimes;
+// 		elektraGlobalGet (handle, ks, parentKey, PREGETCACHE, MAXONCE);
+// 		handle->globalPlugins[PREGETCACHE][MAXONCE]->globalData = 0;
+// 	}
 
 
 	// Check if a update is needed at all
@@ -945,12 +945,12 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, MAXONCE);
 	elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, DEINIT);
 
-	if (handle->globalPlugins[POSTGETCACHE][MAXONCE])
-	{
-		handle->globalPlugins[POSTGETCACHE][MAXONCE]->globalData = modTimes;
-		elektraGlobalSet (handle, ks, parentKey, POSTGETCACHE, MAXONCE);
-		handle->globalPlugins[POSTGETCACHE][MAXONCE]->globalData = 0;
-	}
+// 	if (handle->globalPlugins[POSTGETCACHE][MAXONCE])
+// 	{
+// 		handle->globalPlugins[POSTGETCACHE][MAXONCE]->globalData = modTimes;
+// 		elektraGlobalSet (handle, ks, parentKey, POSTGETCACHE, MAXONCE);
+// 		handle->globalPlugins[POSTGETCACHE][MAXONCE]->globalData = 0;
+// 	}
 
 	ksRewind (ks);
 

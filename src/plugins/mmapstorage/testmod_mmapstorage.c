@@ -127,7 +127,13 @@ static void test_mmap_set_get_timestamps (const char * tmpFile)
 	PLUGIN_OPEN ("mmapstorage");
 	KeySet * ks = ksNew (0, KS_END);
 
-	plugin->globalData = simpleTestKeySet ();
+	plugin->globalData = 0;
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+
+	plugin->globalData = ksNew (0, KS_END);
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+
+	plugin->globalData = metaTestKeySet ();
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 	ksDel (ks);
 	ksDel (plugin->globalData);
@@ -136,7 +142,7 @@ static void test_mmap_set_get_timestamps (const char * tmpFile)
 	ks = ksNew (0, KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
 
-	KeySet * expected = simpleTestKeySet ();
+	KeySet * expected = metaTestKeySet ();
 	compare_keyset (expected, plugin->globalData);
 	compare_keyset (plugin->globalData, expected);
 
@@ -157,7 +163,7 @@ static void test_mmap_get_timestamps_after_reopen (const char * tmpFile)
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
 
-	KeySet * expected = simpleTestKeySet ();
+	KeySet * expected = metaTestKeySet ();
 	compare_keyset (expected, plugin->globalData);
 	compare_keyset (plugin->globalData, expected);
 

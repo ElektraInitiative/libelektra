@@ -31,9 +31,6 @@
 /** Minimum size (lower bound) of mapped region (header, metadata, footer) */
 #define ELEKTRA_MMAP_MINSIZE (SIZEOF_MMAPHEADER + (SIZEOF_MMAPMETADATA * 2) + (SIZEOF_KEYSET * 2) + SIZEOF_KEY + SIZEOF_MMAPFOOTER)
 
-/** Flag for mmap file format. Defines whether file was written with checksum on or off. */
-#define ELEKTRA_MMAP_CHECKSUM_ON (1)
-
 /** Magic byte order marker, as used by UTF. */
 #define ELEKTRA_MMAP_MAGIC_BOM (0xFEFF)
 
@@ -42,6 +39,16 @@
 
 /** Mmap format version */
 #define ELEKTRA_MMAP_FORMAT_VERSION (1)
+
+
+/** Flags for mmap file format. We intentionally do not use enums,
+	such that the flags can be fit into uint8_t. */
+
+/** Defines whether file was written with checksum on or off. */
+#define MMAP_FLAG_CHECKSUM (1)
+
+/** Defines whether file was written with config timestamps (global cache mode). */
+#define MMAP_FLAG_TIMESTAMPS (1 << 1)
 
 /**
  * Internal MmapAddr structure.
@@ -52,14 +59,17 @@
 struct _mmapAddr
 {
 	// clang-format off
-	KeySet * const ksPtr;	/**<Pointer to the (main) KeySet struct. */
-	char * metaKsPtr;	/**<Pointer to the current meta KeySet structs. */
-	char * ksArrayPtr;	/**<Pointer to the current KeySet->array. */
-	char * metaKsArrayPtr;	/**<Pointer to the current meta KeySet->array. */
-	char * keyPtr;		/**<Pointer to the current Key struct. */
-	char * dataPtr;		/**<Pointer to the data region, where Key->key and Key->data is stored. */
+	KeySet * const timeStampsPtr;	/**<Pointer to the timestamps KeySet struct. */
+	KeySet * const ksPtr;		/**<Pointer to the (main) KeySet struct. */
 
-	const uintptr_t mmapAddrInt; /**<Address of the mapped region as integer. */
+	char * metaKsPtr;		/**<Pointer to the current meta KeySet structs. */
+	char * timeStampsArrayPtr;	/**<Pointer to the current timestamp KeySet->array. */
+	char * ksArrayPtr;		/**<Pointer to the current KeySet->array. */
+	char * metaKsArrayPtr;		/**<Pointer to the current meta KeySet->array. */
+	char * keyPtr;			/**<Pointer to the current Key struct. */
+	char * dataPtr;			/**<Pointer to the data region, where Key->key and Key->data is stored. */
+
+	const uintptr_t mmapAddrInt;	/**<Address of the mapped region as integer. */
 	// clang-format on
 };
 
