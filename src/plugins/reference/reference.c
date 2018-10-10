@@ -143,8 +143,23 @@ static int checkSingleReference (const Key * key, KeySet * allKeys, Key * parent
 	}
 
 	const Key * restrictKey = keyGetMeta (key, CHECK_REFERENCE_RESTRICT_KEYNAME);
-	const char * restrictValue = restrictKey != NULL ? keyString (restrictKey) : NULL;
-	const char * restriction = resolveRestriction (restrictValue, keyName (key), parentKey);
+	KeySet * restrictions;
+	if (restrictKey != NULL)
+	{
+		const char * restrictValue = keyString (restrictKey);
+		if (elektraArrayValidateBaseNameString (restrictValue) >= 0)
+		{
+			restrictions = elektraArrayGet (restrictKey, allKeys);
+		}
+		else
+		{
+			restrictions = ksNew (1, keyNew ("/#0", KEY_VALUE, restrictValue, KEY_END), KS_END);
+		}
+	}
+	else
+	{
+		restrictions = ksNew (0, KS_END);
+	}
 
 	KeySet * refArray;
 	if (elektraArrayValidateBaseNameString (reference) >= 0)
@@ -177,12 +192,27 @@ static int checkSingleReference (const Key * key, KeySet * allKeys, Key * parent
 			error = true;
 		}
 
-		if (!checkRestriction (keyName (refKey), restriction))
+		if (ksGetSize (restrictions) > 0)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_REFERENCE_RESTRICTION, parentKey,
-					    "Reference '%s', set in key '%s', does not match restriction '%s'.", ref, elementName,
-					    restriction);
-			error = true;
+			ksRewind (restrictions);
+			Key * curRestriction;
+			bool anyMatch = false;
+			while ((curRestriction = ksNext (restrictions)) != NULL)
+			{
+				const char * restriction = resolveRestriction (keyString (curRestriction), keyName (key), parentKey);
+				if (checkRestriction (keyName (refKey), restriction))
+				{
+					anyMatch = true;
+				}
+			}
+
+			if (!anyMatch)
+			{
+				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_REFERENCE_RESTRICTION, parentKey,
+						    "Reference '%s', set in key '%s', does not any of the given restrictions.", ref,
+						    elementName);
+				error = true;
+			}
 		}
 
 		keyDel (refKey);
@@ -255,6 +285,7 @@ static int checkRecursiveReference (const Key * rootKey, KeySet * allKeys, Key *
 	}
 
 	RefGraph * referenceGraph = rgNew ();
+	KeySet * allRefnames = ksNew (0, KS_END);
 	KeySet * refnameRoots = ksNew (0, KS_END);
 
 	ksAppendKey (refnameRoots, keyNew (keyName (rootKey), KEY_END));
@@ -279,7 +310,11 @@ static int checkRecursiveReference (const Key * rootKey, KeySet * allKeys, Key *
 			Key * curAlternative;
 			while ((curAlternative = ksPop (alternatives)) != NULL)
 			{
-				ksAppendKey (refnameRoots, keyNew (keyName (curAlternative), KEY_END));
+				if (ksLookup (allRefnames, curAlternative, 0) == NULL)
+				{
+					ksAppendKey (refnameRoots, keyNew (keyName (curAlternative), KEY_END));
+					ksAppendKey (allRefnames, keyNew (keyName (curAlternative), KEY_END));
+				}
 				keyDel (curAlternative);
 			}
 			ksDel (alternatives);
@@ -298,8 +333,23 @@ static int checkRecursiveReference (const Key * rootKey, KeySet * allKeys, Key *
 			}
 
 			const Key * restrictKey = keyGetMeta (baseKey, CHECK_REFERENCE_RESTRICT_KEYNAME);
-			const char * restrictValue = restrictKey != NULL ? keyString (restrictKey) : NULL;
-			const char * restriction = resolveRestriction (restrictValue, keyName (baseKey), parentKey);
+			KeySet * restrictions;
+			if (restrictKey != NULL)
+			{
+				const char * restrictValue = keyString (restrictKey);
+				if (elektraArrayValidateBaseNameString (restrictValue) >= 0)
+				{
+					restrictions = elektraArrayGet (restrictKey, allKeys);
+				}
+				else
+				{
+					restrictions = ksNew (1, keyNew ("/#0", KEY_VALUE, restrictValue, KEY_END), KS_END);
+				}
+			}
+			else
+			{
+				restrictions = ksNew (0, KS_END);
+			}
 
 			KeySet * refArray;
 			if (elektraArrayValidateBaseNameString (reference) >= 0)
@@ -342,12 +392,30 @@ static int checkRecursiveReference (const Key * rootKey, KeySet * allKeys, Key *
 				}
 
 				const char * refKeyName = keyName (refKey);
-				if (!checkRestriction (refKeyName, restriction))
+
+				if (ksGetSize (restrictions) > 0)
 				{
-					ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_REFERENCE_RESTRICTION, parentKey,
-							    "Reference '%s', set in key '%s', does not match restriction '%s'.", ref,
-							    elementName, restriction);
-					error = true;
+					ksRewind (restrictions);
+					Key * curRestriction;
+					bool anyMatch = false;
+					while ((curRestriction = ksNext (restrictions)) != NULL)
+					{
+						const char * restriction =
+							resolveRestriction (keyString (curRestriction), keyName (baseKey), parentKey);
+						if (checkRestriction (refKeyName, restriction))
+						{
+							anyMatch = true;
+						}
+					}
+
+					if (!anyMatch)
+					{
+						ELEKTRA_SET_ERRORF (
+							ELEKTRA_ERROR_REFERENCE_RESTRICTION, parentKey,
+							"Reference '%s', set in key '%s', does not any of the given restrictions.", ref,
+							elementName);
+						error = true;
+					}
 				}
 
 				if (error)
@@ -355,6 +423,7 @@ static int checkRecursiveReference (const Key * rootKey, KeySet * allKeys, Key *
 					rgDel (referenceGraph);
 					ksDel (keysToCheck);
 					ksDel (refnameRoots);
+					ksDel (allRefnames);
 					ksDel (refArray);
 					keyDel (curRoot);
 					keyDel (refKey);
@@ -377,8 +446,9 @@ static int checkRecursiveReference (const Key * rootKey, KeySet * allKeys, Key *
 		keyDel (curRoot);
 	}
 	ksDel (refnameRoots);
+	ksDel (allRefnames);
 
-	char* rootName = elektraStrDup (keyName (rootKey));
+	char * rootName = elektraStrDup (keyName (rootKey));
 	*strrchr (rootName, '/') = '\0';
 	if (!checkReferenceGraphAcyclic (referenceGraph, rootName))
 	{

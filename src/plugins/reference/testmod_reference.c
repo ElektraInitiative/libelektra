@@ -18,11 +18,11 @@
 
 #define BASE_KEY "user/tests/reference"
 
-#define xstr(a) str(a)
+#define xstr(a) str (a)
 #define str(a) #a
-#define check_error(PARENT_KEY, ERROR_CODE, MESSAGE) succeed_if (check_error0(PARENT_KEY, xstr(ERROR_CODE)), MESSAGE)
+#define check_error(PARENT_KEY, ERROR_CODE, MESSAGE) succeed_if (check_error0 (PARENT_KEY, xstr (ERROR_CODE)), MESSAGE)
 
-static inline bool check_error0(const Key * parentKey, const char * expectedError)
+static inline bool check_error0 (const Key * parentKey, const char * expectedError)
 {
 	const Key * errorKey = keyGetMeta (parentKey, "error/number");
 	const char * actualError = errorKey != NULL ? keyString (errorKey) : NULL;
@@ -145,6 +145,58 @@ static void test_recursive_reference (void)
 			     keyNew (BASE_KEY "/element2/ref", KEY_VALUE, BASE_KEY "/element3", KEY_END),
 			     keyNew (BASE_KEY "/element3", KEY_VALUE, "element3", KEY_END), KS_END);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "linked-list: failed");
+	ksDel (ks);
+	keySetMeta (parentKey, "error", NULL);
+
+	ks = ksNew (15, keyNew (BASE_KEY "/head", KEY_VALUE, "head", KEY_END),
+		    keyNewReference (BASE_KEY "/head/ref", "#1", CHECK_REFERNCE_VALUE_RECURSIVE, NULL),
+		    keyNew (BASE_KEY "/head/ref/#0", KEY_VALUE, BASE_KEY "/element0", KEY_END),
+		    keyNew (BASE_KEY "/head/ref/#1", KEY_VALUE, BASE_KEY "/element1", KEY_END),
+		    keyNew (BASE_KEY "/element0", KEY_VALUE, "element0", KEY_END),
+		    keyNew (BASE_KEY "/element0/ref", KEY_VALUE, "#2", KEY_END),
+		    keyNew (BASE_KEY "/element0/ref/#0", KEY_VALUE, BASE_KEY "/element00", KEY_END),
+		    keyNew (BASE_KEY "/element0/ref/#1", KEY_VALUE, BASE_KEY "/element01", KEY_END),
+		    keyNew (BASE_KEY "/element0/ref/#2", KEY_VALUE, BASE_KEY "/element02", KEY_END),
+		    keyNew (BASE_KEY "/element1", KEY_VALUE, "element1", KEY_END),
+		    keyNew (BASE_KEY "/element00", KEY_VALUE, "element00", KEY_END),
+		    keyNew (BASE_KEY "/element01", KEY_VALUE, "element01", KEY_END),
+		    keyNew (BASE_KEY "/element02", KEY_VALUE, "element02", KEY_END),
+		    keyNew (BASE_KEY "/element02/ref", KEY_VALUE, BASE_KEY "/element020", KEY_END),
+		    keyNew (BASE_KEY "/element020", KEY_VALUE, "element020", KEY_END), KS_END);
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "tree: failed");
+	ksDel (ks);
+	keySetMeta (parentKey, "error", NULL);
+
+	ks = ksNew (9, keyNew (BASE_KEY "/head", KEY_VALUE, "head", KEY_END),
+		    keyNewReference (BASE_KEY "/head/ref", "#1", CHECK_REFERNCE_VALUE_RECURSIVE, NULL),
+		    keyNew (BASE_KEY "/head/ref/#0", KEY_VALUE, BASE_KEY "/element0", KEY_END),
+		    keyNew (BASE_KEY "/head/ref/#1", KEY_VALUE, BASE_KEY "/element1", KEY_END),
+		    keyNew (BASE_KEY "/element0", KEY_VALUE, "element0", KEY_END),
+		    keyNew (BASE_KEY "/element0/ref", KEY_VALUE, BASE_KEY"/element2", KEY_END),
+		    keyNew (BASE_KEY "/element1", KEY_VALUE, "element1", KEY_END),
+		    keyNew (BASE_KEY "/element1/ref", KEY_VALUE, BASE_KEY"/element2", KEY_END),
+		    keyNew (BASE_KEY "/element2", KEY_VALUE, "element2", KEY_END), KS_END);
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "merge: failed");
+	ksDel (ks);
+	keySetMeta (parentKey, "error", NULL);
+
+	ks = ksNew (16, keyNew (BASE_KEY "/head", KEY_VALUE, "head", KEY_END),
+		    keyNewReference (BASE_KEY "/head/ref", "#1", CHECK_REFERNCE_VALUE_RECURSIVE, NULL),
+		    keyNew (BASE_KEY "/head/ref/#0", KEY_VALUE, BASE_KEY "/element0", KEY_END),
+		    keyNew (BASE_KEY "/head/ref/#1", KEY_VALUE, BASE_KEY "/element1", KEY_END),
+		    keyNew (BASE_KEY "/element0", KEY_VALUE, "element0", KEY_END),
+		    keyNew (BASE_KEY "/element0/ref", KEY_VALUE, "#1", KEY_END),
+		    keyNew (BASE_KEY "/element0/ref/#0", KEY_VALUE, BASE_KEY"/element2", KEY_END),
+		    keyNew (BASE_KEY "/element0/ref/#1", KEY_VALUE, BASE_KEY"/element4", KEY_END),
+		    keyNew (BASE_KEY "/element1", KEY_VALUE, "element1", KEY_END),
+		    keyNewReference (BASE_KEY "/element1/altref", BASE_KEY"/element2", CHECK_REFERNCE_VALUE_ALTERNATIVE, NULL),
+		    keyNew (BASE_KEY "/element2", KEY_VALUE, "element2", KEY_END),
+		    keyNew (BASE_KEY "/element2/altref", KEY_VALUE, BASE_KEY"/element3", KEY_END),
+		    keyNew (BASE_KEY "/element3", KEY_VALUE, "element3", KEY_END),
+		    keyNew (BASE_KEY "/element4", KEY_VALUE, "element4", KEY_END),
+		    keyNew (BASE_KEY "/element4/ref", KEY_VALUE, BASE_KEY"/element5", KEY_END),
+		    keyNew (BASE_KEY "/element5", KEY_VALUE, "element5", KEY_END), KS_END);
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "alternative: failed");
 	ksDel (ks);
 	keySetMeta (parentKey, "error", NULL);
 
