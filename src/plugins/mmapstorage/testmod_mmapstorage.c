@@ -120,6 +120,54 @@ static void test_mmap_get_set (const char * tmpFile)
 	PLUGIN_CLOSE ();
 }
 
+static void test_mmap_set_get_timestamps (const char * tmpFile)
+{
+	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("mmapstorage");
+	KeySet * ks = ksNew (0, KS_END);
+
+	plugin->globalData = simpleTestKeySet ();
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+	ksDel (ks);
+	ksDel (plugin->globalData);
+
+	plugin->globalData = ksNew (0, KS_END);
+	ks = ksNew (0, KS_END);
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
+
+	KeySet * expected = simpleTestKeySet ();
+	compare_keyset (expected, plugin->globalData);
+	compare_keyset (plugin->globalData, expected);
+
+	ksDel (plugin->globalData);
+	ksDel (expected);
+	keyDel (parentKey);
+	ksDel (ks);
+	PLUGIN_CLOSE ();
+}
+
+static void test_mmap_get_timestamps_after_reopen (const char * tmpFile)
+{
+	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("mmapstorage");
+	KeySet * ks = ksNew (0, KS_END);
+	plugin->globalData = ksNew (0, KS_END);
+
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
+
+	KeySet * expected = simpleTestKeySet ();
+	compare_keyset (expected, plugin->globalData);
+	compare_keyset (plugin->globalData, expected);
+
+	ksDel (plugin->globalData);
+	ksDel (expected);
+	keyDel (parentKey);
+	ksDel (ks);
+	PLUGIN_CLOSE ();
+}
+
 static void test_mmap_truncated_file (const char * tmpFile)
 {
 	// first write a mmap file
@@ -906,6 +954,8 @@ int main (int argc, char ** argv)
 
 	// call once before clearStorage, to test non existent file
 	test_mmap_get_set (tmpFile);
+	test_mmap_set_get_timestamps (tmpFile);
+	test_mmap_get_timestamps_after_reopen (tmpFile);
 
 	clearStorage (tmpFile);
 	test_mmap_truncated_file (tmpFile);
