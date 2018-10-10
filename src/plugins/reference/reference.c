@@ -8,6 +8,7 @@
  */
 
 #include "reference.h"
+#include "referencegraph.h"
 
 #include <kdbease.h>
 #include <kdberrors.h>
@@ -43,7 +44,7 @@ static bool isReferenceRedundant (const char * reference)
 		cur += 3;
 	}
 
-	return strstr (reference, "/./") == NULL && strstr (cur, "/../") == NULL;
+	return strstr (reference, "/./") != NULL || strstr (cur, "/../") != NULL;
 }
 
 static Key * resolveReference (KeySet * allKeys, const char * reference, const char * baseKeyName, Key * parentKey)
@@ -198,65 +199,43 @@ static int checkSingleReference (const Key * key, KeySet * allKeys, Key * parent
 	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 }
 
-static bool isReferenceGraphAcyclic (const KeySet * referenceGraph)
+static bool checkReferenceGraphAcyclic (const RefGraph * referenceGraph, const char * root)
 {
-	KeySet * curGraph = ksDup (referenceGraph);
-	KeySet * nextGraph = ksNew (0, KS_END);
-
-	while (ksGetSize (curGraph) > 0)
+	if (rgEmpty (referenceGraph))
 	{
-		bool leafFound = false;
-		Key * cur;
-		ksRewind (curGraph);
-		while ((cur = ksNext (curGraph)) != NULL)
-		{
-			if (keyGetMeta (cur, "node") != NULL)
-			{
-				KeySet * edges = elektraArrayGet (cur, curGraph);
-				Key * curEdge;
-				bool edgeFound = false;
-				while ((curEdge = ksPop (edges)) != NULL)
-				{
-					Key * refKey = ksLookupByName (curGraph, keyString (curEdge), 0);
-					if (refKey != NULL)
-					{
-						edgeFound = true;
-						ksAppendKey (nextGraph, curEdge);
-					}
-					else
-					{
-						keyDel (curEdge);
-					}
-				}
-				ksDel (edges);
-
-				if (edgeFound)
-				{
-					ksAppendKey (nextGraph, keyDup (cur));
-				}
-				else
-				{
-					leafFound = true;
-				}
-			}
-			else
-			{
-				continue;
-			}
-		}
-		ksDel (curGraph);
-
-		if (!leafFound)
-		{
-			ksDel (nextGraph);
-			return false;
-		}
-
-		curGraph = nextGraph;
-		nextGraph = ksNew (0, KS_END);
+		return true;
 	}
 
-	return true;
+	if (!rgHasLeaf (referenceGraph))
+	{
+		return false;
+	}
+
+	RefGraph * curGraph = rgDup (referenceGraph);
+
+	while (rgHasLeaf (curGraph))
+	{
+		rgRemoveLeaves (curGraph);
+
+		if (rgEmpty (curGraph))
+		{
+			return true;
+		}
+	}
+
+	KeySet * nodes = ksNew (0, KS_END);
+	ELEKTRA_LOG_NOTICE ("start of path with cycle: %s", root);
+
+	const char * node = root;
+	while (ksGetSize (nodes) != ksAppendKey (nodes, keyNew (node, KEY_END)))
+	{
+		ELEKTRA_LOG_NOTICE ("refers to: %s", node);
+		node = rgGetEdge (curGraph, root, 0);
+	}
+
+	ELEKTRA_LOG_NOTICE ("already in chain!!");
+
+	return false;
 }
 
 static int filterAlternatives (const Key * key, void * argument)
@@ -265,37 +244,7 @@ static int filterAlternatives (const Key * key, void * argument)
 	const char * metaValue = metaKey != NULL ? keyString (metaKey) : NULL;
 
 	const Key * referenceParent = (const Key *) argument;
-	return keyIsDirectBelow (referenceParent, key) && strcmp (metaValue, CHECK_REFERNCE_VALUE_ALTERNATIVE) == 0;
-}
-
-static void logCycle (KeySet * cyclicGraph)
-{
-	ksRewind (cyclicGraph);
-	Key * start = ksNext (cyclicGraph);
-	while (keyGetMeta (start, "node") == NULL)
-	{
-		start = ksNext (cyclicGraph);
-	}
-
-	const char * startName = keyName (start);
-	ELEKTRA_LOG_NOTICE ("start of cycle: %s", startName);
-
-	Key * cur = start;
-	for (int i = 0; i < 15; ++i)
-	{
-		keyAddBaseName (cur, "#0");
-
-		const char * nextName = keyString (cur);
-		if (strcmp (nextName, startName) == 0)
-		{
-			ELEKTRA_LOG_NOTICE ("refers back to start");
-			return;
-		}
-
-		cur = ksLookupByName (cyclicGraph, nextName, 0);
-	}
-
-	ELEKTRA_LOG_NOTICE ("etc. (eventually refers back to start)");
+	return metaValue != NULL && keyIsDirectBelow (referenceParent, key) && strcmp (metaValue, CHECK_REFERNCE_VALUE_ALTERNATIVE) == 0;
 }
 
 static int checkRecursiveReference (const Key * rootKey, KeySet * allKeys, Key * parentKey)
@@ -305,7 +254,7 @@ static int checkRecursiveReference (const Key * rootKey, KeySet * allKeys, Key *
 		return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 	}
 
-	KeySet * referenceGraph = ksNew (0, KS_END);
+	RefGraph * referenceGraph = rgNew ();
 	KeySet * refnameRoots = ksNew (0, KS_END);
 
 	ksAppendKey (refnameRoots, keyNew (keyName (rootKey), KEY_END));
@@ -323,6 +272,7 @@ static int checkRecursiveReference (const Key * rootKey, KeySet * allKeys, Key *
 		Key * cur;
 		while ((cur = ksPop (keysToCheck)) != NULL)
 		{
+			const char * curName = keyName (cur);
 			KeySet * alternatives = ksNew (0, KS_END);
 			elektraKsFilter (alternatives, allKeys, filterAlternatives, cur);
 
@@ -334,34 +284,39 @@ static int checkRecursiveReference (const Key * rootKey, KeySet * allKeys, Key *
 			}
 			ksDel (alternatives);
 
-			keyAddBaseName (cur, refname);
+			Key * tmp = keyNew (curName, KEY_END);
+			keyAddBaseName (tmp, refname);
+			Key * baseKey = ksLookup (allKeys, tmp, 0);
+			keyDel (tmp);
 
-			const char * reference = keyString (cur);
+			const char * reference = keyString (baseKey);
 			if (reference == NULL || strlen (reference) == 0)
 			{
 				keyDel (cur);
+				keyDel (baseKey);
 				continue;
 			}
 
-			const Key * restrictKey = keyGetMeta (cur, CHECK_REFERENCE_RESTRICT_KEYNAME);
+			const Key * restrictKey = keyGetMeta (baseKey, CHECK_REFERENCE_RESTRICT_KEYNAME);
 			const char * restrictValue = restrictKey != NULL ? keyString (restrictKey) : NULL;
-			const char * restriction = resolveRestriction (restrictValue, keyName (cur), parentKey);
+			const char * restriction = resolveRestriction (restrictValue, keyName (baseKey), parentKey);
 
 			KeySet * refArray;
 			if (elektraArrayValidateBaseNameString (reference) >= 0)
 			{
-				ksAppendKey (referenceGraph, keyNew (keyName (cur), KEY_VALUE, reference, KEY_END));
-
-				refArray = elektraArrayGet (cur, allKeys);
+				refArray = elektraArrayGet (baseKey, allKeys);
 			}
 			else
 			{
-				ksAppendKey (referenceGraph, keyNew (keyName (cur), KEY_VALUE, "#0", KEY_END));
-
-				Key * element = keyDup (cur);
+				Key * element = keyDup (baseKey);
 				keyAddBaseName (element, "#0");
-
 				refArray = ksNew (1, element, KS_END);
+			}
+			keyDel (baseKey);
+
+			if (!rgContains (referenceGraph, curName))
+			{
+				rgAddNode (referenceGraph, curName);
 			}
 
 			ksRewind (refArray);
@@ -386,7 +341,8 @@ static int checkRecursiveReference (const Key * rootKey, KeySet * allKeys, Key *
 					error = true;
 				}
 
-				if (!checkRestriction (keyName (refKey), restriction))
+				const char * refKeyName = keyName (refKey);
+				if (!checkRestriction (refKeyName, restriction))
 				{
 					ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_REFERENCE_RESTRICTION, parentKey,
 							    "Reference '%s', set in key '%s', does not match restriction '%s'.", ref,
@@ -396,23 +352,25 @@ static int checkRecursiveReference (const Key * rootKey, KeySet * allKeys, Key *
 
 				if (error)
 				{
-					ksDel (referenceGraph);
+					rgDel (referenceGraph);
 					ksDel (keysToCheck);
 					ksDel (refnameRoots);
 					ksDel (refArray);
-					keyDel (cur);
 					keyDel (curRoot);
 					keyDel (refKey);
+					keyDel (cur);
 					return ELEKTRA_PLUGIN_STATUS_ERROR;
 				}
 
-				ksAppendKey (keysToCheck, keyDup (refKey));
-				ksAppendKey (referenceGraph,
-					     keyNew (keyName (arrayElement), KEY_VALUE, keyName (refKey), KEY_META, "node", "1", KEY_END));
+				if (!rgContains (referenceGraph, refKeyName))
+				{
+					ksAppendKey (keysToCheck, keyDup (refKey));
+					rgAddNode (referenceGraph, refKeyName);
+				}
+				rgAddEdge (referenceGraph, curName, refKeyName);
 				keyDel (refKey);
 			}
 			ksDel (refArray);
-
 			keyDel (cur);
 		}
 		ksDel (keysToCheck);
@@ -420,16 +378,17 @@ static int checkRecursiveReference (const Key * rootKey, KeySet * allKeys, Key *
 	}
 	ksDel (refnameRoots);
 
-	if (!isReferenceGraphAcyclic (referenceGraph))
+	char* rootName = elektraStrDup (keyName (rootKey));
+	*strrchr (rootName, '/') = '\0';
+	if (!checkReferenceGraphAcyclic (referenceGraph, rootName))
 	{
-
 		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_REFERENCE_CYCLIC_GRAPH, parentKey, "The configuration contains a cyclic reference.");
 
-		logCycle (referenceGraph);
-
-		ksDel (referenceGraph);
+		elektraFree (rootName);
+		rgDel (referenceGraph);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
+	elektraFree (rootName);
 
 	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 }
@@ -450,6 +409,7 @@ int elektraReferenceSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 
 		const char * metaValue = keyString (metaKey);
 
+		cursor_t cursor = ksGetCursor (returned);
 		if (strcmp (metaValue, CHECK_REFERNCE_VALUE_SINGLE) == 0)
 		{
 			status |= checkSingleReference (cur, returned, parentKey);
@@ -459,6 +419,7 @@ int elektraReferenceSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 		{
 			status |= checkRecursiveReference (cur, returned, parentKey);
 		}
+		ksSetCursor (returned, cursor);
 	}
 
 
