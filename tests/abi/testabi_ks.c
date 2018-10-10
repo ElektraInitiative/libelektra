@@ -1133,6 +1133,9 @@ static void test_ksLookupByName (void)
 }
 
 
+#ifdef __SANITIZE_ADDRESS__
+ELEKTRA_UNUSED
+#endif
 static void test_ksLookupName (void)
 {
 	Key * found;
@@ -1988,6 +1991,9 @@ static void test_ksFunctional (void)
 	ksDel (values_below_30);
 }
 
+#ifdef __SANITIZE_ADDRESS__
+ELEKTRA_UNUSED
+#endif
 static void test_ksLookupPop (void)
 {
 	printf ("Test ksLookup with KDB_O_POP\n");
