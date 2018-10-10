@@ -535,7 +535,7 @@ def generateFullBuildStages() {
       'BUILD_STATIC': 'ON',
       'PLUGINS': 'ALL;-date',
       'ENABLE_KDB_TESTING': 'OFF'
-    ],
+    ] + CMAKE_FLAGS_WERROR,
     [TEST.ALL]
   )
 
