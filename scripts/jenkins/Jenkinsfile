@@ -482,7 +482,8 @@ def generateFullBuildStages() {
     "debian-unstable-clang-asan",
     DOCKER_IMAGES.sid,
     CMAKE_FLAGS_BUILD_ALL +
-      CMAKE_FLAGS_CLANG
+      CMAKE_FLAGS_CLANG +
+      CMAKE_FLAGS_WERROR
   )
 
   // Build Elektra on oldstable to see if we are backwards compatible
