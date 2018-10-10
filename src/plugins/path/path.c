@@ -93,8 +93,8 @@ static int validateKey (Key * key, Key * parentKey)
 // I assume the path exists and only validate permission
 static int validatePermission (Key * key, Key * parentKey)
 {
-	__uid_t currentUID = geteuid ();
-	__gid_t currentGID = getegid ();
+	uid_t currentUID = geteuid ();
+	gid_t currentGID = getegid ();
 
 	const Key * userMeta = keyGetMeta (key, "check/permission/user");
 	const Key * userTypes = keyGetMeta (key, "check/permission/types");
