@@ -9,6 +9,7 @@
 #include <kdb.h>
 
 #include <stdio.h>
+#include <stdlib.h>
 
 typedef enum
 {
@@ -21,7 +22,11 @@ int showElektraErrorDialog (Key * parentKey, Key * problemKey)
 {
 	printf ("dialog for %s and %s\n", keyName (parentKey), keyName (problemKey));
 	int a;
-	scanf ("%d", &a);
+	if (scanf ("%d", &a) != 1)
+	{
+		fprintf (stderr, "Unable to convert input to integer number");
+		return EXIT_FAILURE;
+	}
 	return a;
 }
 
