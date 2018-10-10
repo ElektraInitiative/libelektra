@@ -472,7 +472,8 @@ def generateFullBuildStages() {
   tasks << buildAndTestAsan(
     "debian-stable-asan",
     DOCKER_IMAGES.stretch,
-    CMAKE_FLAGS_BUILD_ALL
+    CMAKE_FLAGS_BUILD_ALL +
+      CMAKE_FLAGS_WERROR
   )
 
   // Build Elektra with clang and ASAN
