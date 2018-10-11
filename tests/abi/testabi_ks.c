@@ -1133,6 +1133,9 @@ static void test_ksLookupByName (void)
 }
 
 
+#ifdef __SANITIZE_ADDRESS__
+ELEKTRA_UNUSED
+#endif
 static void test_ksLookupName (void)
 {
 	Key * found;
@@ -1951,17 +1954,17 @@ static void test_ksFunctional (void)
 	succeed_if (ksGetSize (ks) == 7, "initial size wrong");
 	succeed_if (ksGetSize (out) == 0, "initial size wrong");
 	ksFilter (out, ks, has_a);
-	succeed_if (ksGetSize (out) == 5, "has_a cutted more then the user/b");
+	succeed_if (ksGetSize (out) == 5, "has_a cut more than the user/b");
 	ksDel (out);
 
 	out = ksNew (0, KS_END);
 	ksFilter (out, ks, below_a);
-	succeed_if (ksGetSize (out) == 4, "below_a cutted more then the user/ab/2");
+	succeed_if (ksGetSize (out) == 4, "below_a cut more than the user/ab/2");
 	ksDel (out);
 
 	out = ksNew (0, KS_END);
 	ksFilter (out, ks, direct_below_a);
-	succeed_if (ksGetSize (out) == 2, "direct_below_a cutted more then the user/a/b/*");
+	succeed_if (ksGetSize (out) == 2, "direct_below_a cut more than the user/a/b/*");
 	ksDel (out);
 
 	ksDel (ks);
@@ -1988,6 +1991,9 @@ static void test_ksFunctional (void)
 	ksDel (values_below_30);
 }
 
+#ifdef __SANITIZE_ADDRESS__
+ELEKTRA_UNUSED
+#endif
 static void test_ksLookupPop (void)
 {
 	printf ("Test ksLookup with KDB_O_POP\n");
@@ -2020,7 +2026,7 @@ static void test_ksLookupPop (void)
 
 	succeed_if (ksGetSize (small) == 1, "could not append all keys");
 	found = ksLookupByName (small, "user/b", KDB_O_POP);
-	succeed_if (found == 0, "found something, but shouldnt");
+	succeed_if (found == 0, "found something, but should not");
 	succeed_if (ksCurrent (small) == 0, "current not set correctly");
 
 	succeed_if (ksGetSize (small) == 1, "could not append all keys");
@@ -2032,7 +2038,7 @@ static void test_ksLookupPop (void)
 
 	succeed_if (ksGetSize (small) == 0, "could not append all keys");
 	found = ksLookupByName (small, "user/d", KDB_O_POP);
-	succeed_if (found == 0, "found something, but shouldnt");
+	succeed_if (found == 0, "found something, but should not");
 	succeed_if (ksCurrent (small) == 0, "current not set correctly");
 
 	ksDel (small);
@@ -3069,7 +3075,7 @@ static void test_nsLookup (void)
 		keySetName (lookupKey, namespaces[i]);
 		keyAddName (lookupKey, "test/keyset/dir7/key1");
 		Key * k3 = ksLookup (ks, lookupKey, 0);
-		succeed_if (!k3, "we have a problem: found key cutted out");
+		succeed_if (!k3, "we have a problem: found key cut out");
 
 		keyDel (lookupKey);
 		keyDel (searchKey);

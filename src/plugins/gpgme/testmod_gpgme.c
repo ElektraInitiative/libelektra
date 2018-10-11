@@ -83,7 +83,11 @@ static KeySet * newTestdataKeySet (void)
 
 static void test_teardown (void)
 {
-	system ("gpg-connect-agent --quiet KILLAGENT /bye");
+	int status = system ("gpg-connect-agent --quiet KILLAGENT /bye");
+	if (status != 0)
+	{
+		fprintf (stderr, "Terminating gpg-agent returned with status “%d”", status);
+	}
 }
 
 static void test_import_key (void)
