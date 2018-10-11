@@ -132,4 +132,12 @@ typedef long double kdb_long_double_t;
 #define ELEKTRA_TIME_USEC_F "%d"
 #endif
 
+#if SIZEOF_STAT_ST_SIZE == 4
+#define ELEKTRA_STAT_ST_SIZE_F "%" PRIu32
+#elif SIZEOF_STAT_ST_SIZE == 8
+#define ELEKTRA_STAT_ST_SIZE_F "%" PRIu64
+#else
+#define ELEKTRA_STAT_ST_SIZE_F "%llu"
+#endif
+
 #endif
