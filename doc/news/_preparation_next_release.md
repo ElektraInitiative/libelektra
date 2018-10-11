@@ -210,7 +210,7 @@ you up to date with the multi-language support provided by Elektra.
 - We now require [`clang-format`](https://clang.llvm.org/docs/ClangFormat.html) 6.0 for formatting C and C++ code. *(René Schwaiger)*
 - The command [`reformat-source`](https://master.libelektra.org/scripts/reformat-source) now displays information about the installed
   version of `clang-format`, if it is unable to locate a supported version of the tool. *(René Schwaiger)*
-- <<TODO>>
+- We now also check the POSIX compatibility of our scripts with [`shfmt`](https://github.com/mvdan/sh). *(René Schwaiger)*
 
 
 ## Documentation
