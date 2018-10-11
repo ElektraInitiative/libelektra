@@ -634,7 +634,7 @@ def generateFullBuildStages() {
       DOCKER_IMAGES.stretch,
       CMAKE_FLAGS_BUILD_ALL + [
         'CMAKE_BUILD_TYPE': buildType
-      ],
+      ] + CMAKE_FLAGS_WERROR,
       [TEST.ALL, TEST.MEM]
     )
   }
