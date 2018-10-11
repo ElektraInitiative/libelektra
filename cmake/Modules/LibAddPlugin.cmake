@@ -159,7 +159,11 @@ function (add_plugintest testname)
 
 		foreach (DIR ${ARG_INCLUDE_SYSTEM_DIRECTORIES})
 
-			if (DIR AND NOT DIR STREQUAL "/usr/include")
+			if (DIR
+			    AND NOT
+				DIR
+				STREQUAL
+				"/usr/include")
 				set_property (TARGET ${testexename}
 					      APPEND_STRING
 					      PROPERTY COMPILE_FLAGS
@@ -401,7 +405,9 @@ function (add_plugin PLUGIN_SHORT_NAME)
 	endif ()
 
 	if (ADDTESTING_PHASE)
-		if (ARG_INSTALL_TEST_DATA AND NOT ARG_ADD_TEST)
+		if (ARG_INSTALL_TEST_DATA
+		    AND NOT
+			ARG_ADD_TEST)
 			if (INSTALL_TESTING)
 				install (DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${PLUGIN_SHORT_NAME}"
 					 DESTINATION "${TARGET_TEST_DATA_FOLDER}")
@@ -522,7 +528,9 @@ function (add_plugin PLUGIN_SHORT_NAME)
 	# message (STATUS "current bin ${CMAKE_CURRENT_BINARY_DIR}")
 	# ~~~
 
-	if (ARG_ONLY_SHARED AND NOT BUILD_SHARED)
+	if (ARG_ONLY_SHARED
+	    AND NOT
+		BUILD_SHARED)
 		remove_plugin ("${PLUGIN_SHORT_NAME}"
 			       "it can only be built if BUILD_SHARED is enabled, both BUILD_FULL or BUILD_STATIC may be enabled as well")
 		return ()
@@ -576,7 +584,11 @@ function (add_plugin PLUGIN_SHORT_NAME)
 		      )
 
 	foreach (DIR ${ARG_INCLUDE_SYSTEM_DIRECTORIES})
-		if (DIR AND NOT DIR STREQUAL "/usr/include")
+		if (DIR
+		    AND NOT
+			DIR
+			STREQUAL
+			"/usr/include")
 			set_property (TARGET ${PLUGIN_OBJS}
 				      APPEND_STRING
 				      PROPERTY COMPILE_FLAGS
@@ -615,7 +627,11 @@ function (add_plugin PLUGIN_SHORT_NAME)
 				       ${CMAKE_CURRENT_BINARY_DIR} # for readme
 			      )
 		foreach (DIR ${ARG_INCLUDE_SYSTEM_DIRECTORIES})
-			if (DIR AND NOT DIR STREQUAL "/usr/include")
+			if (DIR
+			    AND NOT
+				DIR
+				STREQUAL
+				"/usr/include")
 				set_property (TARGET ${PLUGIN_NAME}
 					      APPEND_STRING
 					      PROPERTY COMPILE_FLAGS

@@ -126,7 +126,9 @@ if (ENABLE_ASAN)
 		set (EXTRA_FLAGS "${EXTRA_FLAGS} -fsanitize-blacklist=\"${CMAKE_SOURCE_DIR}/tests/sanitizer.blacklist\"")
 
 		# in case the ubsan library exists, link it otherwise some tests will fail due to missing symbols on unix
-		if (UNIX AND NOT APPLE)
+		if (UNIX
+		    AND NOT
+			APPLE)
 			set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lubsan")
 		endif (UNIX AND NOT APPLE)
 	endif ()

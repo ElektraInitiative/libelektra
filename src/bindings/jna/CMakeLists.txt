@@ -48,7 +48,9 @@ if (Java_JAVAC_EXECUTABLE)
 				 DESTINATION "share/java")
 
 			# and add maven test to execute with ctest in the testing phase
-			if ((CMAKE_SYSTEM_NAME STREQUAL "Darwin") AND NOT (CMAKE_SYSTEM_VERSION VERSION_LESS 15))
+			if ((CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+			    AND NOT
+				(CMAKE_SYSTEM_VERSION VERSION_LESS 15))
 
 				# we cannot set DYLD_LIBRARY_PATH on new macOS versions, making the kdb tests fail if its not installed in
 				# the system
