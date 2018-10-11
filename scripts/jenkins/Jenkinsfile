@@ -545,7 +545,8 @@ def generateFullBuildStages() {
   tasks << buildAndTest(
     "ubuntu-xenial",
     DOCKER_IMAGES.xenial,
-    CMAKE_FLAGS_BUILD_ALL,
+    CMAKE_FLAGS_BUILD_ALL +
+      CMAKE_FLAGS_WERROR,
     [TEST.ALL]
   )
 
