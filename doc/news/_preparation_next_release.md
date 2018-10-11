@@ -237,7 +237,7 @@ you up to date with the multi-language support provided by Elektra.
   Currently, the tests are only active for `dump` and `mmapstorage`. *(Mihael Pranjić)*
 - The test `testcpp_contextual_basic` now compiles without warnings, if we use Clang 7 as compiler. *(René Schwaiger)*
 - crypto, fcrypt and gpgme properly shut down the gpg-agent after the unit test is done. See #1973 . *(Peter Nirschl)*
-- The CMake targets for plugin tests (`testmod_[plugin]`) now depend on the respective CMake targets for the plugins themselves 
+- The CMake targets for plugin tests (`testmod_[plugin]`) now depend on the respective CMake targets for the plugins themselves
   (`elektra-[plugin]`). *(Klemens Böswirth)*
 
 [Markdown Shell Recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
