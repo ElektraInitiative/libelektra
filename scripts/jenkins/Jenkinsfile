@@ -507,7 +507,7 @@ def generateFullBuildStages() {
     DOCKER_IMAGES.stretch_i386,
     CMAKE_FLAGS_I386 + [
       'PLUGINS': 'NODEP'
-    ],
+    ] + CMAKE_FLAGS_BUILD_ALL,
     [TEST.ALL]
   )
 

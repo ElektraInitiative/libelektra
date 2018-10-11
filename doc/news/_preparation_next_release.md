@@ -283,6 +283,7 @@ you up to date with the multi-language support provided by Elektra.
 - We added the compiler switch `-Werror` to the build jobs:
   - `debian-stable-asan`,
   - `debian-unstable-clang-asan`,
+  - `debian-stable-full-i386`,
   - `debian-unstable-full-clang`,
   - `alpine`,
   - `ubuntu-xenial`,
