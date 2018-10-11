@@ -608,7 +608,7 @@ def generateFullBuildStages() {
     [
       'PLUGINS': "${xdgResolver};dump;sync;ini;dini;base64;spec;error;list;timeofday;profile;mathcheck;tracer;hosts;network;glob",
       'KDB_DEFAULT_RESOLVER': xdgResolver
-    ],
+    ] + CMAKE_FLAGS_WERROR,
     [TEST.ALL, TEST.MEM]
   )
 
