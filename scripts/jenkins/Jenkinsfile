@@ -502,8 +502,6 @@ def generateFullBuildStages() {
     [TEST.ALL, TEST.MEM, TEST.INSTALL]
   )
 
-  // Build Elektra with clang. We use unstable for easy access to clang-6.0
-  // Detects problems when using an alternative compiler (clang)
   tasks << buildAndTest(
     "debian-stable-full-i386",
     DOCKER_IMAGES.stretch_i386,
@@ -512,6 +510,9 @@ def generateFullBuildStages() {
     ],
     [TEST.ALL]
   )
+
+  // Build Elektra with clang. We use unstable for easy access to clang-6.0
+  // Detects problems when using an alternative compiler (clang)
   tasks << buildAndTest(
     "debian-unstable-full-clang",
     DOCKER_IMAGES.sid,
