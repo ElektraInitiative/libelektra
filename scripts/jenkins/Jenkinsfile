@@ -619,7 +619,8 @@ def generateFullBuildStages() {
     CMAKE_FLAGS_BUILD_ALL +
       CMAKE_FLAGS_OPTIMIZATIONS_OFF +
       CMAKE_FLAGS_DEBUG +
-      CMAKE_FLAGS_LOGGER
+      CMAKE_FLAGS_LOGGER +
+      CMAKE_FLAGS_WERROR
     ,
     [TEST.ALL, TEST.MEM]
   )

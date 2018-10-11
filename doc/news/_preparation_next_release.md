@@ -290,6 +290,7 @@ you up to date with the multi-language support provided by Elektra.
   - `debian-stable-minimal`,
   - `debian-stable-full-mmap`,
   - `debian-stable-full-mmap-asan`,
+  - `debian-stable-full-optimizations-off`,
   - `debian-stable-full-xdg`, and
   - `debian-stable-multiconf`
   . *(René Schwaiger)*
