@@ -563,7 +563,8 @@ def generateFullBuildStages() {
   tasks << buildAndTest(
     "debian-stable-minimal",
     DOCKER_IMAGES.stretch_minimal,
-    ['PLUGINS': 'NODEP'],
+    ['PLUGINS': 'NODEP'] +
+      CMAKE_FLAGS_WERROR,
     [TEST.ALL]
   )
 
