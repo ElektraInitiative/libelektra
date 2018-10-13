@@ -210,11 +210,10 @@ static int validatePermission (Key * key, Key * parentKey)
 	int euidResult = seteuid (currentUID);
 	int egidResult = setegid (currentGID);
 
-	if ( euidResult != 0 || egidResult != 0 )
+	if (euidResult != 0 || egidResult != 0)
 	{
-		ELEKTRA_SET_ERRORF (202, parentKey,
-				    "Could not change back to user before. This case should not happen",
-				    name, keyName (key));
+		ELEKTRA_SET_ERRORF (202, parentKey, "Could not change back to user before. This case should not happen", name,
+				    keyName (key));
 		return -1;
 	}
 
