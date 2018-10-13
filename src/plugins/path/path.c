@@ -206,15 +206,8 @@ static int validatePermission (Key * key, Key * parentKey)
 	}
 
 	// Change back to initial effective IDs
-	int euidResult = seteuid (currentUID);
-	int egidResult = setegid (currentGID);
-
-	if (euidResult != 0 || egidResult != 0)
-	{
-		ELEKTRA_SET_ERRORF (206, parentKey, "Could not change back to user before. This case should not happen", name,
-				    keyName (key));
-		return -1;
-	}
+	(void) seteuid (currentUID);
+	(void) setegid (currentGID);
 
 	if (isError)
 	{
