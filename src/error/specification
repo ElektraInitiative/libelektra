@@ -1294,7 +1294,7 @@ ingroup:plugin
 module:path
 
 number:202
-description:Could not change to user. You might want to try as root (use sudo !!).
+description:Could not change to user.
 severity:error
 ingroup:plugin
 module:path
