@@ -63,7 +63,7 @@ static int validateKey (Key * key, Key * parentKey)
 	{
 		char * errmsg = elektraMalloc (ERRORMSG_LENGTH + 1 + +keyGetNameSize (key) + keyGetValueSize (key) +
 					       sizeof ("name:  value:  message: "));
-		(void) strerror_r (errno, errmsg, ERRORMSG_LENGTH);
+		strerror_r (errno, errmsg, ERRORMSG_LENGTH);
 		strcat (errmsg, " from key: ");
 		strcat (errmsg, keyName (key));
 		strcat (errmsg, " with path: ");
@@ -178,6 +178,7 @@ static int validatePermission (Key * key, Key * parentKey)
 	}
 	elektraFree (groups);
 
+	// Actual checks are done
 	int isRead = (strchr (modes, 'r') == NULL) ? 0 : 1;
 	int isWrite = (strchr (modes, 'w') == NULL) ? 0 : 1;
 	int isExecute = (strchr (modes, 'x') == NULL) ? 0 : 1;
@@ -217,7 +218,7 @@ static int validatePermission (Key * key, Key * parentKey)
 		return -1;
 	}
 
-	if (isError){}
+	if (isError)
 	{
 		ELEKTRA_SET_ERRORF (203, parentKey, "User %s does not have [%s] permission on %s", name, lastCharDel (errorMessage),
 				    validPath);
