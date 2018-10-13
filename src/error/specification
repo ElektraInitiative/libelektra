@@ -1260,25 +1260,7 @@ module:gpgme
 macro:GPGME_INVALID_RECIPIENT
 
 number:201
-description:The given port was not withing a valid range
-severity:error
-ingroup:plugin
-module:network
-
-number:202
-description:Could not find service name for port declaration
-severity:error
-ingroup:plugin
-module:network
-
-number:203
-description:Could not use port as it is already in use
-severity:error
-ingroup:plugin
-module:network
-
-number:204
-description:Connection Error occured
+description:Connection Error occurred
 severity:error
 ingroup:plugin
 module:network
