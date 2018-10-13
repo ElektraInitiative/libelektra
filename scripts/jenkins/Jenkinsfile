@@ -523,7 +523,6 @@ def generateFullBuildStages() {
   tasks << buildAndTestMingwW64()
 
   // Build Elektra on alpine
-  // TODO: Remove bash after #2077 is resolved
   // TODO: Add more deps to test them with musl
   // TODO: add date when their issues are resolved
   // TODO: reenable kdb testing once it is POSIX conformant

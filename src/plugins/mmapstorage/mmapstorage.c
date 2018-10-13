@@ -25,6 +25,7 @@
 #endif
 
 #include <errno.h>
+#include <fcntl.h>     // fcntl()
 #include <limits.h>    // SSIZE_MAX
 #include <stdint.h>    // uintN_t, uintptr_t
 #include <stdio.h>     // fopen(), fileno()
@@ -33,7 +34,7 @@
 #include <sys/mman.h>  // mmap()
 #include <sys/stat.h>  // stat()
 #include <sys/types.h> // ftruncate (), size_t
-#include <unistd.h>    // close(), ftruncate()
+#include <unistd.h>    // close(), ftruncate(), unlink()
 
 #ifdef ELEKTRA_MMAP_CHECKSUM
 #include <zlib.h> // crc32()
@@ -48,40 +49,40 @@ static MmapMetaData magicMmapMetaData;
 /* -- File handling --------------------------------------------------------------------------------------------------------------------- */
 
 /**
- * @brief Wrapper for fopen().
+ * @brief Wrapper for open().
  *
  * @param parentKey containing the filename
- * @param mode file open mode
+ * @param flags file access mode
+ * @param mode file mode bits when file is created
  *
- * @return file pointer
+ * @return file descriptor
  */
-static FILE * openFile (Key * parentKey, const char * mode)
+static int openFile (Key * parentKey, int flag, mode_t mode)
 {
-	FILE * fp;
+	int fd;
 	ELEKTRA_LOG_DEBUG ("opening file %s", keyString (parentKey));
 
-	if ((fp = fopen (keyString (parentKey), mode)) == 0)
+	if ((fd = open (keyString (parentKey), flag, mode)) == -1)
 	{
 		ELEKTRA_LOG_WARNING ("error opening file %s", keyString (parentKey));
 	}
-	return fp;
+	return fd;
 }
 
 /**
  * @brief Wrapper for ftruncate().
  *
- * @param fp the file pointer
+ * @param fd the file descriptor
  * @param mmapsize size of the mapped region
  * @param parentKey holding the filename, for debug purposes
  *
  * @retval 1 on success
  * @retval -1 if ftruncate() failed
  */
-static int truncateFile (FILE * fp, size_t mmapsize, Key * parentKey ELEKTRA_UNUSED)
+static int truncateFile (int fd, size_t mmapsize, Key * parentKey ELEKTRA_UNUSED)
 {
 	ELEKTRA_LOG_DEBUG ("truncating file %s", keyString (parentKey));
 
-	int fd = fileno (fp);
 	if ((ftruncate (fd, mmapsize)) == -1)
 	{
 		ELEKTRA_LOG_WARNING ("error truncating file %s", keyString (parentKey));
@@ -115,18 +116,17 @@ static int statFile (struct stat * sbuf, Key * parentKey)
  * @brief Wrapper for mmap().
  *
  * @param addr address hint, where the mapping should start
- * @param fp file pointer to the file to be mapped
+ * @param fd file descriptor of the file to be mapped
  * @param mmapSize size of the mapped region
  * @param mapOpts mmap flags (MAP_PRIVATE, MAP_FIXED, ...)
  * @param parentKey holding the filename, for debug purposes
  *
  * @return pointer to mapped region on success, MAP_FAILED on failure
  */
-static char * mmapFile (void * addr, FILE * fp, size_t mmapSize, int mapOpts, Key * parentKey ELEKTRA_UNUSED)
+static char * mmapFile (void * addr, int fd, size_t mmapSize, int mapOpts, Key * parentKey ELEKTRA_UNUSED)
 {
 	ELEKTRA_LOG_DEBUG ("mapping file %s", keyString (parentKey));
 
-	int fd = fileno (fp);
 	char * mappedRegion = mmap (addr, mmapSize, PROT_READ | PROT_WRITE, mapOpts, fd, 0);
 	if (mappedRegion == MAP_FAILED)
 	{
@@ -270,9 +270,9 @@ static void initMagicKeySet (const uintptr_t magicNumber)
 	magicKeySet.cursor = (Key *) ~magicNumber;
 	magicKeySet.current = SIZE_MAX / 2;
 	magicKeySet.flags = KS_FLAG_MMAP_ARRAY | KS_FLAG_SYNC;
-	magicKeySet.mmapMetaData = (MmapMetaData *) ELEKTRA_MMAP_MAGIC_BOM;
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 	magicKeySet.opmphm = (Opmphm *) ELEKTRA_MMAP_MAGIC_BOM;
+	magicKeySet.opmphmPredictor = 0;
 #endif
 }
 
@@ -304,7 +304,6 @@ static void initMagicMmapMetaData (const uintptr_t magicNumber)
 	magicMmapMetaData.numKeySets = SIZE_MAX;
 	magicMmapMetaData.ksAlloc = 0;
 	magicMmapMetaData.numKeys = SIZE_MAX / 2;
-	magicMmapMetaData.flags = MMAP_FLAG_DELETED;
 }
 
 /**
@@ -487,47 +486,30 @@ static void writeMetaKeys (MmapAddr * mmapAddr, DynArray * dynArray)
 	{
 		Key * curMeta = dynArray->keyArray[i];	// old key location
 		Key * mmapMetaKey = (Key *) mmapAddr->keyPtr; // new key location
+		*mmapMetaKey = *curMeta;
 		mmapAddr->keyPtr += SIZEOF_KEY;
-
-		size_t keyNameSize = curMeta->keySize + curMeta->keyUSize;
-		size_t keyValueSize = curMeta->dataSize;
-
-		void * metaKeyNamePtr;
-		void * metaKeyValuePtr;
 
 		// move Key name
 		if (curMeta->key)
 		{
+			size_t keyNameSize = curMeta->keySize + curMeta->keyUSize;
 			memcpy (mmapAddr->dataPtr, curMeta->key, keyNameSize);
-			metaKeyNamePtr = (mmapAddr->dataPtr - mmapAddr->mmapAddrInt);
+			mmapMetaKey->key = (mmapAddr->dataPtr - mmapAddr->mmapAddrInt);
 			mmapAddr->dataPtr += keyNameSize;
-		}
-		else
-		{
-			metaKeyNamePtr = 0;
 		}
 
 		// move Key value
 		if (curMeta->data.v)
 		{
-			memcpy (mmapAddr->dataPtr, curMeta->data.v, keyValueSize);
-			metaKeyValuePtr = (mmapAddr->dataPtr - mmapAddr->mmapAddrInt);
-			mmapAddr->dataPtr += keyValueSize;
-		}
-		else
-		{
-			metaKeyValuePtr = 0;
+			memcpy (mmapAddr->dataPtr, curMeta->data.v, curMeta->dataSize);
+			mmapMetaKey->data.v = (mmapAddr->dataPtr - mmapAddr->mmapAddrInt);
+			mmapAddr->dataPtr += curMeta->dataSize;
 		}
 
 		// move Key itself
-		mmapMetaKey->flags = curMeta->flags | KEY_FLAG_MMAP_STRUCT | KEY_FLAG_MMAP_KEY | KEY_FLAG_MMAP_DATA;
-		mmapMetaKey->key = (char *) metaKeyNamePtr;
-		mmapMetaKey->data.v = (void *) metaKeyValuePtr;
+		mmapMetaKey->flags |= KEY_FLAG_MMAP_STRUCT | KEY_FLAG_MMAP_KEY | KEY_FLAG_MMAP_DATA;
 		mmapMetaKey->meta = 0;
 		mmapMetaKey->ksReference = 0;
-		mmapMetaKey->dataSize = curMeta->dataSize;
-		mmapMetaKey->keySize = curMeta->keySize;
-		mmapMetaKey->keyUSize = curMeta->keyUSize;
 
 		dynArray->mappedKeyArray[i] = mmapMetaKey;
 	}
@@ -573,11 +555,6 @@ static KeySet * writeMetaKeySet (Key * key, MmapAddr * mmapAddr, DynArray * dynA
 	newMeta->array = (Key **) ((char *) newMeta->array - mmapAddr->mmapAddrInt);
 	newMeta->alloc = key->meta->alloc;
 	newMeta->size = key->meta->size;
-	newMeta->cursor = 0;
-	newMeta->current = 0;
-#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
-	newMeta->opmphm = 0;
-#endif
 	newMeta = (KeySet *) ((char *) newMeta - mmapAddr->mmapAddrInt);
 	return newMeta;
 }
@@ -601,47 +578,30 @@ static void writeKeys (KeySet * keySet, MmapAddr * mmapAddr, DynArray * dynArray
 	{
 		Key * mmapKey = (Key *) mmapAddr->keyPtr; // new key location
 		mmapAddr->keyPtr += SIZEOF_KEY;
-		size_t keyNameSize = cur->keySize + cur->keyUSize;
-		size_t keyValueSize = cur->dataSize;
-
-		void * keyNamePtr;
-		void * keyValuePtr;
+		*mmapKey = *cur;
 
 		// move Key name
 		if (cur->key)
 		{
+			size_t keyNameSize = cur->keySize + cur->keyUSize;
 			memcpy (mmapAddr->dataPtr, cur->key, keyNameSize);
-			keyNamePtr = (mmapAddr->dataPtr - mmapAddr->mmapAddrInt);
+			mmapKey->key = (mmapAddr->dataPtr - mmapAddr->mmapAddrInt);
 			mmapAddr->dataPtr += keyNameSize;
 		}
-		else
-		{
-			keyNamePtr = 0;
-		}
-
 
 		// move Key value
 		if (cur->data.v)
 		{
-			memcpy (mmapAddr->dataPtr, cur->data.v, keyValueSize);
-			keyValuePtr = (mmapAddr->dataPtr - mmapAddr->mmapAddrInt);
-			mmapAddr->dataPtr += keyValueSize;
-		}
-		else
-		{
-			keyValuePtr = 0;
+			memcpy (mmapAddr->dataPtr, cur->data.v, cur->dataSize);
+			mmapKey->data.v = (mmapAddr->dataPtr - mmapAddr->mmapAddrInt);
+			mmapAddr->dataPtr += cur->dataSize;
 		}
 
 		// write the meta KeySet
 		KeySet * newMeta = writeMetaKeySet (cur, mmapAddr, dynArray);
 
 		// move Key itself
-		mmapKey->flags = cur->flags | KEY_FLAG_MMAP_STRUCT | KEY_FLAG_MMAP_KEY | KEY_FLAG_MMAP_DATA;
-		mmapKey->key = (char *) keyNamePtr;
-		mmapKey->keySize = cur->keySize;
-		mmapKey->keyUSize = cur->keyUSize;
-		mmapKey->data.v = (void *) keyValuePtr;
-		mmapKey->dataSize = cur->dataSize;
+		mmapKey->flags |= KEY_FLAG_MMAP_STRUCT | KEY_FLAG_MMAP_KEY | KEY_FLAG_MMAP_DATA;
 		mmapKey->meta = newMeta;
 		mmapKey->ksReference = 1;
 
@@ -694,11 +654,6 @@ static void copyKeySetToMmap (char * dest, KeySet * keySet, MmapHeader * mmapHea
 	mmapAddr.ksPtr->array = (Key **) ((char *) mmapAddr.ksArrayPtr - mmapAddr.mmapAddrInt);
 	mmapAddr.ksPtr->alloc = keySet->alloc;
 	mmapAddr.ksPtr->size = keySet->size;
-	mmapAddr.ksPtr->cursor = 0;
-	mmapAddr.ksPtr->current = 0;
-#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
-	mmapAddr.ksPtr->opmphm = 0;
-#endif
 
 	memcpy ((dest + OFFSET_REAL_MMAPMETADATA), mmapMetaData, SIZEOF_MMAPMETADATA);
 #ifdef ELEKTRA_MMAP_CHECKSUM
@@ -725,7 +680,6 @@ static void mmapToKeySet (char * mappedRegion, KeySet * returned)
 	returned->array = keySet->array;
 	returned->size = keySet->size;
 	returned->alloc = keySet->alloc;
-	returned->mmapMetaData = (MmapMetaData *) (mappedRegion + OFFSET_REAL_MMAPMETADATA);
 	// to be able to free() the returned KeySet, just set the array flag here
 	returned->flags = KS_FLAG_MMAP_ARRAY;
 	// we intentionally do not change the KeySet->opmphm here!
@@ -788,229 +742,6 @@ static void updatePointers (MmapMetaData * mmapMetaData, char * dest)
 	}
 }
 
-/**
- * @brief Convert a string containing a pointer in hexadecimal notation to a void pointer.
- *
- * @param hexString containing a pointer in hexadecimal notation
- * @return converted void pointer from the string
- */
-static void * hexStringToAddress (const char * hexString)
-{
-	int hexBase = 16;
-	int errnosave = errno;
-	char * endptr;
-	errno = 0;
-
-	unsigned long int val = strtoul (hexString, &endptr, hexBase);
-
-	if ((errno != 0) || (endptr == hexString) || (*endptr != '\0'))
-	{
-		ELEKTRA_LOG_WARNING ("strerror: %s", strerror (errno));
-		errno = errnosave;
-		return (void *) 0;
-	}
-
-	errno = errnosave;
-	return (void *) val;
-}
-
-/**
- * @brief Deeply copies from source to dest.
- *
- * Creates a deep copy of the keyset, but does not duplicate
- * the opmphm structures.
- *
- * @param source has to be an initialized source KeySet
- * @return a deep copy of source on success
- * @retval 0 on NULL pointer or a memory error happened
- */
-static KeySet * mmapKsDeepDup (const KeySet * source)
-{
-	if (!source) return 0;
-
-	size_t s = source->size;
-	size_t i = 0;
-	KeySet * keyset = 0;
-
-	keyset = ksNew (source->alloc, KS_END);
-	for (i = 0; i < s; ++i)
-	{
-		Key * k = source->array[i];
-		Key * d = keyDup (k);
-		ksAppendKey (keyset, d);
-	}
-
-	return keyset;
-}
-
-/**
- * @brief Deeply copies a keyset from a mapped region to a newly allocated one.
- *
- * The new copied keyset is not within a mapped region any more.
- *
- * @param toCopy keyset to copy
- * @param mmapMetaData containing meta-information
- *
- * @return pointer to the fresh copy of the keyset.
- */
-static KeySet * copyKeySet (KeySet * toCopy, MmapMetaData * mmapMetaData)
-{
-	if (!mmapMetaData)
-	{
-		return 0;
-	}
-
-	if (test_bit (mmapMetaData->flags, MMAP_FLAG_DELETED))
-	{
-		return 0;
-	}
-
-	DynArray * dynArray = ELEKTRA_PLUGIN_FUNCTION (mmapstorage, dynArrayNew) ();
-
-	Key * cur = 0;
-	ksRewind (toCopy);
-	while ((cur = ksNext (toCopy)) != 0)
-	{
-		if (cur->meta)
-		{
-			Key * curMetaKey;
-			ksRewind (cur->meta);
-			while ((curMetaKey = ksNext (cur->meta)) != 0)
-			{
-				if (ELEKTRA_PLUGIN_FUNCTION (mmapstorage, dynArrayFindOrInsert) (curMetaKey, dynArray) == 0)
-				{
-					// key was just inserted
-				}
-			}
-		}
-	}
-
-	// allocate space in DynArray to remember the addresses of meta keys
-	if (dynArray->size > 0)
-	{
-		dynArray->mappedKeyArray = elektraCalloc (dynArray->size * sizeof (Key *));
-	}
-
-	// duplicate all unique meta keys
-	Key * copy = 0;
-	cur = 0;
-	for (size_t i = 0; i < dynArray->size; ++i)
-	{
-		cur = dynArray->keyArray[i];
-		copy = keyDup (cur);
-
-		dynArray->mappedKeyArray[i] = copy;
-	}
-
-	// duplicate keyset from mmap and replace meta keys with deep copy
-	KeySet * dest = mmapKsDeepDup (toCopy);
-	cur = 0;
-	ksRewind (dest);
-	while ((cur = ksNext (dest)) != 0)
-	{
-		if (cur->meta)
-		{
-			KeySet * newMetaKs = ksNew (cur->meta->alloc, KS_END);
-
-			ksRewind (cur->meta);
-			for (size_t i = 0; i < cur->meta->size; ++i)
-			{
-				Key * newMetaKey = dynArray->mappedKeyArray[ELEKTRA_PLUGIN_FUNCTION (mmapstorage, dynArrayFind) (
-					(Key *) cur->meta->array[i], dynArray)];
-				ksAppendKey (newMetaKs, newMetaKey);
-			}
-			ksDel (cur->meta);
-			cur->meta = newMetaKs;
-		}
-	}
-
-	ELEKTRA_PLUGIN_FUNCTION (mmapstorage, dynArrayDelete) (dynArray);
-	return (KeySet *) dest;
-}
-
-/**
- * @brief Unlink a mapped file.
- *
- * Before a mapped file can be altered, all mapped keysets have to be copied out
- * from the mapped region. This approach is called unlinking a mapped file.
- *
- * To be able to unlink mapped keysets, the plugin data holds information with pointers
- * of mapped keysets and the corresponding files. The Key names contain the filenames and
- * mappings of a file are stored within meta-keys.
- *
- * Whether a keyset has been deleted has to be checked using keyset->mmapMetaData->flags
- * (MMAP_FLAG_DELETED).
- *
- * @param parentKey holding the filename of the mapped file.
- */
-static void unlinkFile (Key * parentKey)
-{
-	ELEKTRA_LOG_DEBUG ("unlink: need to unlink old mapped memory from file");
-
-	const Key * cur;
-	keyRewindMeta (parentKey);
-	ELEKTRA_LOG_DEBUG ("unlink: file: %s", keyString (parentKey));
-	while ((cur = keyNextMeta (parentKey)) != 0)
-	{
-		void * toUnlinkMmap = hexStringToAddress (keyName (cur));
-		ELEKTRA_LOG_DEBUG ("unlink: unlinking mmap str: %s", keyName (cur));
-		ELEKTRA_LOG_DEBUG ("unlink: unlinking mmap ptr: %p", toUnlinkMmap);
-
-		void * toUnlinkMmapMetaData = (char *) toUnlinkMmap + OFFSET_REAL_MMAPMETADATA;
-		ELEKTRA_LOG_DEBUG ("unlink: unlinking mmap meta-data ptr: %p", toUnlinkMmapMetaData);
-
-		void * toUnlinkKS = hexStringToAddress (keyString (cur));
-		ELEKTRA_LOG_DEBUG ("unlink: unlinking KeySet str: %s", keyString (cur));
-		ELEKTRA_LOG_DEBUG ("unlink: unlinking KeySet ptr: %p", toUnlinkKS);
-
-		if (!toUnlinkMmap || !toUnlinkKS)
-		{
-			ELEKTRA_LOG_DEBUG ("unlink: skipping unlinking, some pointers were invalid");
-			continue;
-		}
-
-		KeySet * copy = copyKeySet (toUnlinkKS, toUnlinkMmapMetaData);
-		if (copy)
-		{
-			KeySet * keySet = (KeySet *) toUnlinkKS;
-			ksClose (keySet);
-			keySet->array = copy->array;
-			keySet->size = copy->size;
-			keySet->alloc = copy->alloc;
-			keySet->mmapMetaData = 0;
-			keySet->flags = 0;
-			// keySet->opmphm invalidated by ksClose already
-			elektraFree (copy);
-		}
-	}
-}
-
-/**
- * @brief Store a newly mapped file to the plugins list of linked files.
- *
- * @param key holding the filename
- * @param mappedFiles keyset holding already mapped files
- * @param returned keyset to be stored
- * @param handle the plugin handle
- * @param mappedRegion the pointer to the mapped region
- */
-static void saveLinkedFile (Key * key, KeySet * mappedFiles, KeySet * returned, Plugin * handle, char * mappedRegion)
-{
-	ELEKTRA_LOG_DEBUG ("unlink: new file, adding to my list. file: %s", keyString (key));
-
-	char mmapAddrString[SIZEOF_ADDR_STRING];
-	snprintf (mmapAddrString, SIZEOF_ADDR_STRING - 1, "%p", (void *) (mappedRegion));
-	mmapAddrString[SIZEOF_ADDR_STRING - 1] = '\0';
-	ELEKTRA_LOG_DEBUG ("mappedRegion ptr as string: %s", mmapAddrString);
-	char ksAddrString[SIZEOF_ADDR_STRING];
-	snprintf (ksAddrString, SIZEOF_ADDR_STRING - 1, "%p", (void *) returned);
-	ksAddrString[SIZEOF_ADDR_STRING - 1] = '\0';
-	ELEKTRA_LOG_DEBUG ("KeySet ptr as string: %s", ksAddrString);
-	keySetMeta (key, mmapAddrString, ksAddrString);
-	ksAppendKey (mappedFiles, key);
-	elektraPluginSetData (handle, mappedFiles);
-}
-
 /* -- Exported Elektra Plugin Functions ------------------------------------------------------------------------------------------------- */
 
 /**
@@ -1022,14 +753,9 @@ static void saveLinkedFile (Key * key, KeySet * mappedFiles, KeySet * returned, 
  * @retval ELEKTRA_PLUGIN_STATUS_ERROR on memory error (plugin data (keyset) could not be allocated).
  * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if initialization was successful.
  */
-int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, open) (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
+int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, open) (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
 {
 	// plugin initialization logic
-	KeySet * mappedFiles = ksNew (0, KS_END);
-
-	if (mappedFiles == 0) return ELEKTRA_PLUGIN_STATUS_ERROR;
-
-	elektraPluginSetData (handle, mappedFiles);
 
 	const uintptr_t magicNumber = generateMagicNumber ();
 	if (magicKeySet.array == 0) initMagicKeySet (magicNumber);
@@ -1050,16 +776,6 @@ int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, open) (Plugin * handle, Key * errorKey
 int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, close) (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
 {
 	// free all plugin resources and shut it down
-	KeySet * mappedFiles = (KeySet *) elektraPluginGetData (handle);
-
-	// unlink all remaining files!
-	Key * cur = 0;
-	ksRewind (mappedFiles);
-	while ((cur = ksNext (mappedFiles)) != 0)
-	{
-		unlinkFile (cur);
-	}
-	ksDel (mappedFiles);
 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
@@ -1077,7 +793,7 @@ int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, close) (Plugin * handle ELEKTRA_UNUSED
  * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if the file was mapped successfully.
  * @retval ELEKTRA_PLUGIN_STATUS_ERROR if the file could not be mapped successfully.
  */
-int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, get) (Plugin * handle, KeySet * ks, Key * parentKey)
+int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, get) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, Key * parentKey)
 {
 	// get all keys
 	int errnosave = errno;
@@ -1094,19 +810,10 @@ int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, get) (Plugin * handle, KeySet * ks, Ke
 	}
 	keyDel (root);
 
-	KeySet * mappedFiles = (KeySet *) elektraPluginGetData (handle);
-	Key * found = ksLookup (mappedFiles, parentKey, 0);
-	if (!found)
-	{
-		found = keyDup (parentKey);
-		ksDel (found->meta);
-		found->meta = 0;
-	}
-
-	FILE * fp;
+	int fd = -1;
 	char * mappedRegion = MAP_FAILED;
 
-	if ((fp = openFile (parentKey, "r+")) == 0)
+	if ((fd = openFile (parentKey, O_RDONLY, 0)) == -1)
 	{
 		goto error;
 	}
@@ -1120,8 +827,11 @@ int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, get) (Plugin * handle, KeySet * ks, Ke
 	if (sbuf.st_size == 0)
 	{
 		// empty mmap file
-		fclose (fp);
-		keyDel (found);
+		if (close (fd) != 0)
+		{
+			ELEKTRA_LOG_WARNING ("could not close");
+			goto error;
+		}
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
@@ -1131,7 +841,7 @@ int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, get) (Plugin * handle, KeySet * ks, Ke
 		goto error;
 	}
 
-	mappedRegion = mmapFile ((void *) 0, fp, sbuf.st_size, MAP_PRIVATE, parentKey);
+	mappedRegion = mmapFile ((void *) 0, fd, sbuf.st_size, MAP_PRIVATE, parentKey);
 	if (mappedRegion == MAP_FAILED)
 	{
 		ELEKTRA_LOG_WARNING ("mappedRegion == MAP_FAILED");
@@ -1180,14 +890,11 @@ int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, get) (Plugin * handle, KeySet * ks, Ke
 	updatePointers (mmapMetaData, mappedRegion);
 	mmapToKeySet (mappedRegion, ks);
 
-	if (fclose (fp) != 0)
+	if (close (fd) != 0)
 	{
-		ELEKTRA_LOG_WARNING ("could not fclose");
+		ELEKTRA_LOG_WARNING ("could not close");
 		goto error;
 	}
-
-	// save keyset information to list of currently mmaped files
-	saveLinkedFile (found, mappedFiles, ks, handle, mappedRegion);
 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 
@@ -1198,9 +905,14 @@ error:
 		ELEKTRA_SET_ERROR_GET (parentKey);
 	}
 
-	if (mappedRegion != MAP_FAILED) munmap (mappedRegion, sbuf.st_size);
-	if (fp) fclose (fp);
-	keyDel (found);
+	if ((mappedRegion != MAP_FAILED) && (munmap (mappedRegion, sbuf.st_size) != 0))
+	{
+		ELEKTRA_LOG_WARNING ("could not munmap");
+	}
+	if ((fd != -1) && close (fd) != 0)
+	{
+		ELEKTRA_LOG_WARNING ("could not close");
+	}
 
 	errno = errnosave;
 	return ELEKTRA_PLUGIN_STATUS_ERROR;
@@ -1219,25 +931,21 @@ error:
  * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if the file was written successfully.
  * @retval ELEKTRA_PLUGIN_STATUS_ERROR if any error occurred.
  */
-int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, set) (Plugin * handle, KeySet * ks, Key * parentKey)
+int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, set) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, Key * parentKey)
 {
 	// set all keys
 	int errnosave = errno;
+	int fd = -1;
+	char * mappedRegion = MAP_FAILED;
 	DynArray * dynArray = 0;
 
-	// check if file has open mappings and unlink them
-	KeySet * mappedFiles = (KeySet *) elektraPluginGetData (handle);
-	Key * found = ksLookup (mappedFiles, parentKey, KDB_O_POP);
-	if (found)
+	if (unlink (keyString (parentKey)) != 0 && errno != ENOENT)
 	{
-		unlinkFile (found);
-		keyDel (found);
+		ELEKTRA_LOG_WARNING ("could not unlink");
+		goto error;
 	}
 
-	FILE * fp;
-	char * mappedRegion = MAP_FAILED;
-
-	if ((fp = openFile (parentKey, "w+")) == 0)
+	if ((fd = openFile (parentKey, O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR)) == -1)
 	{
 		goto error;
 	}
@@ -1251,12 +959,12 @@ int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, set) (Plugin * handle, KeySet * ks, Ke
 	calculateMmapDataSize (&mmapHeader, &mmapMetaData, ks, dynArray);
 	ELEKTRA_LOG_DEBUG ("mmapsize: %llu", mmapHeader.allocSize);
 
-	if (truncateFile (fp, mmapHeader.allocSize, parentKey) != 1)
+	if (truncateFile (fd, mmapHeader.allocSize, parentKey) != 1)
 	{
 		goto error;
 	}
 
-	mappedRegion = mmapFile ((void *) 0, fp, mmapHeader.allocSize, MAP_SHARED, parentKey);
+	mappedRegion = mmapFile ((void *) 0, fd, mmapHeader.allocSize, MAP_SHARED, parentKey);
 	ELEKTRA_LOG_DEBUG ("mappedRegion ptr: %p", (void *) mappedRegion);
 	if (mappedRegion == MAP_FAILED)
 	{
@@ -1279,9 +987,9 @@ int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, set) (Plugin * handle, KeySet * ks, Ke
 		goto error;
 	}
 
-	if (fclose (fp) != 0)
+	if (close (fd) != 0)
 	{
-		ELEKTRA_LOG_WARNING ("could not fclose");
+		ELEKTRA_LOG_WARNING ("could not close");
 		goto error;
 	}
 
@@ -1296,8 +1004,15 @@ error:
 		ELEKTRA_SET_ERROR_SET (parentKey);
 	}
 
-	if (mappedRegion != MAP_FAILED) munmap (mappedRegion, mmapHeader.allocSize);
-	if (fp) fclose (fp);
+	if ((mappedRegion != MAP_FAILED) && (munmap (mappedRegion, mmapHeader.allocSize) != 0))
+	{
+		ELEKTRA_LOG_WARNING ("could not munmap");
+	}
+	if ((fd != -1) && close (fd) != 0)
+	{
+		ELEKTRA_LOG_WARNING ("could not close");
+	}
+
 	ELEKTRA_PLUGIN_FUNCTION (mmapstorage, dynArrayDelete) (dynArray);
 
 	errno = errnosave;

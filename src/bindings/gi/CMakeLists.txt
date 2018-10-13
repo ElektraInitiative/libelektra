@@ -9,7 +9,10 @@ if (IS_PYTHON_INCLUDED OR IS_LUA_INCLUDED)
 
 	if (INTROSPECTION_FOUND)
 
-		if (ENABLE_ASAN AND UNIX AND NOT APPLE)
+		if (ENABLE_ASAN
+		    AND UNIX
+		    AND NOT
+			APPLE)
 			set (ASAN_LIBRARY "-lubsan") # this is needed for GIR to put asan in front
 			set (DISABLE_LSAN "LSAN_OPTIONS=detect_leaks=0") # this is needed so ASAN is not used during GIR compilation
 		endif (ENABLE_ASAN AND UNIX AND NOT APPLE)

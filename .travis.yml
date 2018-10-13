@@ -28,6 +28,13 @@ before_cache:
 matrix:
   include:
 
+    - os: osx
+      name: 🍏 Check Source
+      osx_image: xcode10.0
+      compiler: clang
+      env:
+        - TEST_COMMAND="ctest --output-on-failure -R 'testscr_check_(bashisms|doc|formatting|meta|oclint|plugins)'"
+
     # ASAN: Enable AddressSanitizer
 
     - os: osx
@@ -43,7 +50,7 @@ matrix:
         # [timeout]: https://docs.travis-ci.com/user/customizing-the-build/#build-timeouts
         - TOOLS=kdb
         - BINDINGS=cpp
-        - "PLUGINS='\
+        - &minimalPluginList "PLUGINS='\
           ALL;\
           -augeas;\
           -base64;\
@@ -132,7 +139,7 @@ matrix:
           -zeromqrecv;\
           -zeromqsend;\
           '"
-        - TEST_COMMAND="ctest --output-on-failure -E 'testscr_check_(bashisms|doc|formatting|meta|oclint|plugins)'"
+        - &testNoSourceCheck TEST_COMMAND="ctest --output-on-failure -E 'testscr_check_(bashisms|doc|formatting|meta|oclint|plugins)'"
 
     - os: linux
       name: 🐧 GCC ASAN
@@ -145,14 +152,13 @@ matrix:
             - g++-8
       env:
         - ENABLE_ASAN=ON
-        - COMMON_FLAGS=-Wno-error
         - CC_COMPILER=gcc-8
         - CXX_COMPILER=g++-8
         # Build less stuff so the build does not hit the timeout limit that often
         - TOOLS=kdb
         - BINDINGS=cpp
-        - PLUGINS='ALL;-camel;-directoryvalue;-mini;-yambi;-yamlcpp;-yanlr'
-        - TEST_COMMAND="ctest --output-on-failure -E 'testscr_check_(bashisms|doc|formatting|meta|oclint|plugins)'"
+        - *minimalPluginList
+        - *testNoSourceCheck
 
     - os: linux
       name: 🐧 Clang ASAN
@@ -160,14 +166,14 @@ matrix:
       addons:
         apt:
           sources:
-            - llvm-toolchain-trusty-6.0
+            - llvm-toolchain-trusty-7
             - ubuntu-toolchain-r-test
           packages:
-            - clang-6.0
+            - clang-7
       env:
         - ENABLE_ASAN=ON
-        - CC_COMPILER=clang-6.0
-        - CXX_COMPILER=clang++-6.0
+        - CC_COMPILER=clang-7
+        - CXX_COMPILER=clang++-7
         - TEST_COMMAND='ninja run_all'
 
     # FULL: Build full version of Elektra (BUILD_FULL=ON)
@@ -183,7 +189,6 @@ matrix:
             - g++-8
       env:
         - BUILD_FULL=ON
-        - COMMON_FLAGS=-Wno-error
         - CC_COMPILER=gcc-8
         - CXX_COMPILER=g++-8
 
@@ -197,6 +202,8 @@ matrix:
       name: 🍏 Clang
       osx_image: xcode10.0
       compiler: clang
+      env:
+        - *testNoSourceCheck
 
     # HASKELL: Only build Haskell binding and plugin
 
@@ -223,7 +230,6 @@ matrix:
       env:
         - CC_COMPILER=gcc-8
         - CXX_COMPILER=g++-8
-        - COMMON_FLAGS=-Wno-error
 
     - os: linux
       name: 🐧 Clang
@@ -231,14 +237,14 @@ matrix:
       addons:
         apt:
           sources:
-            - llvm-toolchain-trusty-6.0
+            - llvm-toolchain-trusty-7
             - ubuntu-toolchain-r-test
           packages:
-            - clang-6.0
-            - clang-format-6.0
+            - clang-7
+            - clang-format-7
       env:
-        - CC_COMPILER=clang-6.0
-        - CXX_COMPILER=clang++-6.0
+        - CC_COMPILER=clang-7
+        - CXX_COMPILER=clang++-7
 
     # MMAP: Enable mmapstorage as default
 
@@ -250,6 +256,7 @@ matrix:
         - KDB_DEFAULT_STORAGE=mmapstorage
         - KDB_DB_FILE=default.mmap
         - KDB_DB_INIT=elektra.mmap
+        - *testNoSourceCheck
 
 before_install:
   - |
@@ -341,7 +348,7 @@ before_install:
       sudo apt-get install libzmq3-dev
       sudo apt-get install libxerces-c-dev
       sudo apt-get install moreutils # contains `sponge` required by `reformat-cmake`
-      sudo pip install --upgrade cmake_format==0.4.1 pyyaml
+      sudo pip install cmake-format==0.4.3 pyyaml
     fi
 
 #

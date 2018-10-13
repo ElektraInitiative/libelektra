@@ -24,16 +24,17 @@
 /** Minimum size (lower bound) of mapped region (header, metadata, footer) */
 #define ELEKTRA_MMAP_MINSIZE (SIZEOF_MMAPHEADER + (SIZEOF_MMAPMETADATA * 2) + SIZEOF_KEYSET + SIZEOF_KEY + SIZEOF_MMAPFOOTER)
 
-/** Size to store a 64-bit (max.) address.
- * format: 0xADDR -> ADDR in hex, for 64bit addr: 2 bytes (0x) + 16 bytes (ADDR) + 1 byte (ending null)
- */
-#define SIZEOF_ADDR_STRING (19)
-
 /** Flag for mmap file format. Defines whether file was written with checksum on or off. */
 #define ELEKTRA_MMAP_CHECKSUM_ON (1)
 
 /** Magic byte order marker, as used by UTF. */
 #define ELEKTRA_MMAP_MAGIC_BOM (0xFEFF)
+
+/** Magic number used in mmap format */
+#define ELEKTRA_MAGIC_MMAP_NUMBER (0x0A6172746B656C45)
+
+/** Mmap format version */
+#define ELEKTRA_MMAP_FORMAT_VERSION (1)
 
 /**
  * Internal MmapAddr structure.
@@ -57,8 +58,9 @@ struct _mmapAddr
 
 typedef struct _mmapAddr MmapAddr;
 
-/* Header and footer needed for mmap file format */
+/* Header, metadata and footer needed for mmap file format */
 typedef struct _mmapHeader MmapHeader;
+typedef struct _mmapMetaData MmapMetaData;
 typedef struct _mmapFooter MmapFooter;
 
 /**
@@ -76,6 +78,20 @@ struct _mmapHeader
 	uint32_t checksum;		/**<Checksum of the data */
 	uint8_t formatFlags;		/**<Mmap format flags (e.g. checksum ON/OFF) */
 	uint8_t formatVersion;		/**<Mmap format version */
+	// clang-format on
+};
+
+/**
+ * Mmap meta-data
+ */
+struct _mmapMetaData
+{
+	// clang-format off
+	char * destAddr;	/**<Base pointer to allocated destination */
+
+	size_t numKeySets;	/**<Number of KeySets inlcuding meta KS */
+	size_t ksAlloc;		/**<Sum of all KeySet->alloc sizes */
+	size_t numKeys;		/**<Number of Keys including meta Keys */
 	// clang-format on
 };
 
