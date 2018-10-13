@@ -329,22 +329,22 @@ These errors are set with `inject/limit/min` and `inject/limit/max` and one of b
 
 To see which changes were applied to the whole KeySet, additional metadata will be written to the rootkey.
 If the plugin applies a change to the keyset, it writes it to the next available free array spot under
-`inject/log/#[number]`. So if you have done 10 injections into a KeySet for example, there should be entries
-form `inject/log/#0` to `inject/log/#9`.
+`inject/change/#[number]`. So if you have done 10 injections into a KeySet for example, there should be entries
+form `inject/change/#0` to `inject/change/#9`.
 
 Assume you mounted a configuration to `user/my/config` and attached some metakeys to settings.
-All injections which were done are written in array notation to `inject/log/#[number]` and are continuous.
+All injections which were done are written in array notation to `inject/change/#[number]` and are continuous.
 So for example:
 ```sh
 kdb lsmeta user/my/config
-#> inject/log/#0
-#> inject/log/#1
+#> inject/change/#0
+#> inject/change/#1
 ...
 
-kdb getmeta user/my/config inject/log/#0 
+kdb getmeta user/my/config inject/change/#0
 #> "Removed section user/my/config/some/section"
 
-kdb getmeta user/my/config inject/log/#1 
+kdb getmeta user/my/config inject/change/#1
 #> "Changed value "true" to "truGe" on user/my/config/boolean/value"
 ```
 
