@@ -76,7 +76,7 @@ int elektraPortInfo (Key * toCheck, Key * parentKey)
 		service = getservbyname (keyString (toCheck), NULL); // NULL means we accept both tcp and udp
 		if (service == NULL)
 		{
-			ELEKTRA_SET_ERRORF (204, parentKey, "Could not find service with name %s on key %s", keyString (toCheck),
+			ELEKTRA_SET_ERRORF (201, parentKey, "Could not find service with name %s on key %s", keyString (toCheck),
 					    keyName (toCheck));
 			return -1;
 		}
@@ -98,23 +98,21 @@ int elektraPortInfo (Key * toCheck, Key * parentKey)
 	}
 
 	server = gethostbyname (hostname);
-	if ( server == NULL )
+	if (server == NULL)
 	{
-		if ( errno == HOST_NOT_FOUND )
+		if (errno == HOST_NOT_FOUND)
 		{
 			ELEKTRA_SET_ERRORF (201, parentKey, "Could not connect to %s: No such host", hostname);
 			return -1;
 		}
 		else
 		{
-			ELEKTRA_SET_ERRORF (201, parentKey, "There was an error when trying to connect to host %s . errno: %s",
-					    hostname, strerror(errno));
+			ELEKTRA_SET_ERRORF (201, parentKey, "There was an error when trying to connect to host %s . errno: %s", hostname,
+					    strerror (errno));
 			return -1;
 		}
-		//TODO: Maybe consider errno == TRY_AGAIN seperately and try to reconnect
+		// TODO: Maybe consider errno == TRY_AGAIN seperately and try to reconnect
 	}
-
-
 
 
 	bzero ((char *) &serv_addr, sizeof (serv_addr));
@@ -122,11 +120,19 @@ int elektraPortInfo (Key * toCheck, Key * parentKey)
 	bcopy ((char *) server->h_addr, (char *) &serv_addr.sin_addr.s_addr, server->h_length);
 
 	serv_addr.sin_port = (in_port_t) portNumberNetworkByteOrder;
-	if (bind (sockfd, (struct sockaddr *) &serv_addr, sizeof (serv_addr)) == 0)
+	if (bind (sockfd, (struct sockaddr *) &serv_addr, sizeof (serv_addr)) < 0)
 	{
 		close (sockfd);
-		ELEKTRA_SET_ERRORF (201, parentKey, "Port %s is already in use which was specified on key %s", keyString (toCheck),
-				    keyName (toCheck));
+		if (errno == EADDRINUSE)
+		{
+			ELEKTRA_SET_ERRORF (201, parentKey, "Port %s is already in use which was specified on key %s", keyString (toCheck),
+					    keyName (toCheck));
+		}
+		else
+		{
+			ELEKTRA_SET_ERRORF (201, parentKey, "Could not bind to port %s which was specified on key %s. Reason: %s",
+					    keyString (toCheck), keyName (toCheck), strerror (errno));
+		}
 		return -1;
 	}
 	close (sockfd);
