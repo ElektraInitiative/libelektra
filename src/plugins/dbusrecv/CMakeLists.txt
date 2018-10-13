@@ -21,7 +21,9 @@ add_plugin (dbusrecv
 
 set (NOT_INCLUDED "")
 plugin_check_if_included ("${PLUGIN_SHORT_NAME}")
-if (DEPENDENCY_PHASE AND NOT NOT_INCLUDED)
+if (DEPENDENCY_PHASE
+    AND NOT
+	NOT_INCLUDED)
 	if (BUILD_SHARED)
 
 		# ~~~

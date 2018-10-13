@@ -172,7 +172,11 @@ unset (_lua_library_names)
 
 if (LUA_LIBRARY)
 
-	if (UNIX AND NOT APPLE AND NOT BEOS) # include the math library for Unix
+	if (UNIX
+	    AND NOT
+		APPLE
+	    AND NOT
+		BEOS) # include the math library for Unix
 		find_library (LUA_MATH_LIBRARY m)
 		set (LUA_LIBRARIES "${LUA_LIBRARY};${LUA_MATH_LIBRARY}")
 
@@ -181,7 +185,9 @@ if (LUA_LIBRARY)
 	endif ()
 endif ()
 
-if (LUA_INCLUDE_DIR AND EXISTS "${LUA_INCLUDE_DIR}/lua.h")
+if (LUA_INCLUDE_DIR
+    AND EXISTS
+	"${LUA_INCLUDE_DIR}/lua.h")
 
 	# At least 5.[012] have different ways to express the version so all of them need to be tested. Lua 5.2 defines LUA_VERSION and
 	# LUA_RELEASE as joined by the C preprocessor, so avoid those.

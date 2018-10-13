@@ -7,3 +7,5 @@ src:*crypto/botan_operations.cpp
 src:*botan/*.h
 # Memory leaks in `libstdc++`
 src:*4.*/bits/stl_tree.h
+# Ignore undefined behavior caused by implicit conversion in `stringstream`’s `>>` operator
+src:*llvm/7.*/include/c\+\+/v1/sstream*

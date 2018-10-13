@@ -80,3 +80,7 @@ kdb rm -r user/tests/mmapstorage
 # Unmount mmapstorage
 sudo kdb umount user/tests/mmapstorage
 ```
+
+## Limitations
+
+Mapped files shall not be altered, otherwise the behaviour is undefined.
