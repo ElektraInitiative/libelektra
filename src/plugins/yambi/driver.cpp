@@ -86,7 +86,7 @@ string scalarToText (string const & text)
  */
 Driver::Driver (Key const & parent)
 {
-	parents.push (parent);
+	parents.push (parent.dup ());
 }
 
 /**
