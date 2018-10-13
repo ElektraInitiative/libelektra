@@ -83,7 +83,6 @@ int elektraPortInfo (Key * toCheck, Key * parentKey)
 		portNumberNetworkByteOrder = service->s_port;
 	}
 
-	// Check if we can connect to it
 	if (!listenMeta) return 0; /* No check to do */
 
 	char * hostname = "localhost";
