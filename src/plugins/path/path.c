@@ -63,7 +63,7 @@ static int validateKey (Key * key, Key * parentKey)
 	{
 		char * errmsg = elektraMalloc (ERRORMSG_LENGTH + 1 + +keyGetNameSize (key) + keyGetValueSize (key) +
 					       sizeof ("name:  value:  message: "));
-		strerror_r (errno, errmsg, ERRORMSG_LENGTH);
+		(void) strerror_r (errno, errmsg, ERRORMSG_LENGTH);
 		strcat (errmsg, " from key: ");
 		strcat (errmsg, keyName (key));
 		strcat (errmsg, " with path: ");
@@ -178,7 +178,6 @@ static int validatePermission (Key * key, Key * parentKey)
 	}
 	elektraFree (groups);
 
-	// Actual checks are done
 	int isRead = (strchr (modes, 'r') == NULL) ? 0 : 1;
 	int isWrite = (strchr (modes, 'w') == NULL) ? 0 : 1;
 	int isExecute = (strchr (modes, 'x') == NULL) ? 0 : 1;
@@ -187,6 +186,7 @@ static int validatePermission (Key * key, Key * parentKey)
 	errorMessage[0] = '\0'; // strcat() searches for this, otherwise it will print garbage chars at start
 	int isError = 0;
 
+	// Actual checks are done
 	if (isRead && euidaccess (validPath, R_OK) != 0)
 	{
 		isError = 1;
@@ -206,10 +206,18 @@ static int validatePermission (Key * key, Key * parentKey)
 	}
 
 	// Change back to initial effective IDs
-	seteuid (currentUID);
-	setegid (currentGID);
+	int euidResult = seteuid (currentUID);
+	int egidResult = setegid (currentGID);
 
-	if (isError)
+	if ( euidResult != 0 || egidResult != 0 )
+	{
+		ELEKTRA_SET_ERRORF (202, parentKey,
+				    "Could not change back to user before. This case should not happen",
+				    name, keyName (key));
+		return -1;
+	}
+
+	if (isError){}
 	{
 		ELEKTRA_SET_ERRORF (203, parentKey, "User %s does not have [%s] permission on %s", name, lastCharDel (errorMessage),
 				    validPath);
