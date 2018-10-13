@@ -63,7 +63,7 @@ int elektraPortInfo (Key * toCheck, Key * parentKey)
 	{
 		if (portNumber < 0 || portNumber > 65535)
 		{
-			ELEKTRA_SET_ERRORF (205, parentKey, "Port %ld on key %s was not within 0 - 65535", portNumber, keyName (toCheck));
+			ELEKTRA_SET_ERRORF (171, parentKey, "Port %ld on key %s was not within 0 - 65535", portNumber, keyName (toCheck));
 			return -1;
 		}
 		portNumberNetworkByteOrder = htons (portNumber);
@@ -74,7 +74,7 @@ int elektraPortInfo (Key * toCheck, Key * parentKey)
 		service = getservbyname (keyString (toCheck), NULL); // NULL means we accept both tcp and udp
 		if (service == NULL)
 		{
-			ELEKTRA_SET_ERRORF (206, parentKey, "Could not find service with name %s on key %s", keyString (toCheck),
+			ELEKTRA_SET_ERRORF (205, parentKey, "Could not find service with name %s on key %s", keyString (toCheck),
 					    keyName (toCheck));
 			return -1;
 		}
@@ -93,25 +93,38 @@ int elektraPortInfo (Key * toCheck, Key * parentKey)
 
 	if (sockfd < 0)
 	{
-		ELEKTRA_SET_ERROR (208, parentKey, "Could not open a socket");
+		ELEKTRA_SET_ERRORF (205, parentKey, "Could not open a socket: %s", strerror (errno));
 	}
 
 	server = gethostbyname (hostname);
-	if (server == NULL)
+	if ( server == NULL )
 	{
-		ELEKTRA_SET_ERRORF (208, parentKey, "Could not connect to %s: No such host", hostname);
-		return -1;
+		if ( errno == HOST_NOT_FOUND )
+		{
+			ELEKTRA_SET_ERRORF (205, parentKey, "Could not connect to %s: No such host", hostname);
+			return -1;
+		}
+		else
+		{
+			ELEKTRA_SET_ERRORF (205, parentKey, "There was an error when trying to connect to host %s . errno: %s",
+					    hostname, strerror(errno));
+			return -1;
+		}
+		//TODO: Maybe consider errno == TRY_AGAIN seperately and try to reconnect
 	}
+
+
+
 
 	bzero ((char *) &serv_addr, sizeof (serv_addr));
 	serv_addr.sin_family = AF_INET;
 	bcopy ((char *) server->h_addr, (char *) &serv_addr.sin_addr.s_addr, server->h_length);
 
 	serv_addr.sin_port = (in_port_t) portNumberNetworkByteOrder;
-	if (connect (sockfd, (struct sockaddr *) &serv_addr, sizeof (serv_addr)) == 0)
+	if (bind (sockfd, (struct sockaddr *) &serv_addr, sizeof (serv_addr)) == 0)
 	{
 		close (sockfd);
-		ELEKTRA_SET_ERRORF (207, parentKey, "Port %s is already in use which was specified on key %s", keyString (toCheck),
+		ELEKTRA_SET_ERRORF (205, parentKey, "Port %s is already in use which was specified on key %s", keyString (toCheck),
 				    keyName (toCheck));
 		return -1;
 	}
