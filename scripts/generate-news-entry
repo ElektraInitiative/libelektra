@@ -2,7 +2,7 @@
 
 # This script generates the required fields for NEWS.md entries
 # and fill them with useful information
-# e.g. the news id should be a UUID and the pubdate must be RFC822 conform 
+# e.g. the news id should be a UUID and the pubdate must be RFC822 conform
 
 export LANG="C"
 export LC_ALL="C"

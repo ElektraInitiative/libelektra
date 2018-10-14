@@ -11,36 +11,31 @@ cd "@CMAKE_INSTALL_PREFIX@/@TARGET_TOOL_EXEC_FOLDER@"
 nbTests="0"
 nbFailed=""
 
-cleanup()
-{
+cleanup() {
 	rm -rf "$EXPORT_DIR"
 }
 
 EXPORT_DIR="$(mktempdir_elektra)"
 export_config "$EXPORT_DIR"
 
-for t in test* check*
-do
+for t in test* check*; do
 	echo "--- running $t ---"
 	echo
 	echo
 
 	"$KDB" $t
 
-	if [ $? != "0" ]
-	then
-		nbError=$(( $nbError + 1 ))
+	if [ $? != "0" ]; then
+		nbError=$((nbError + 1))
 		nbFailed="$nbFailed\n$t"
 		echo error: $t
 	fi
-	nbTests=$(( $nbTests + 1 ))
+	nbTests=$((nbTests + 1))
 
 	export_check "$EXPORT_DIR" "$t"
 done
 
-
-if [ $nbError != "0" ]
-then
+if [ $nbError != "0" ]; then
 	echo "Following test cases failed: $nbFailed"
 fi
 

@@ -7,8 +7,7 @@ SCRIPTS_DIR=$(dirname "$0")
 SBUILD=$(pwd)
 BUILD=$(readlink -f "$SBUILD")
 
-if [ -d "$1" ]
-then
+if [ -d "$1" ]; then
 	SOURCE=$(readlink -f "$1")
 fi
 
@@ -22,10 +21,8 @@ fi
 #fi
 #echo "Using java home: $JAVA_HOME"
 
-if [ "$SOURCE" = "$BUILD" ]
-then
-	if echo $* | grep FORCE_IN_SOURCE_BUILD=ON
-	then
+if [ "$SOURCE" = "$BUILD" ]; then
+	if echo $* | grep FORCE_IN_SOURCE_BUILD=ON; then
 		echo "Warning: in source build!"
 		echo "It is recommended to create a new directory and run $SELF there"
 		echo "Proceeding as requested"
@@ -37,8 +34,7 @@ then
 	fi
 fi
 
-if [ "$SCRIPTS" = "$BUILD" ]
-then
+if [ "$SCRIPTS" = "$BUILD" ]; then
 	echo "You seem to be in the scripts directory, create a new directory and run $SELF there"
 	exit 1
 fi

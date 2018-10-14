@@ -7,7 +7,7 @@ SCRIPTS_DIR=$(dirname "$0")
 . "${SCRIPTS_DIR}/configure-common"
 
 cd $BUILD
-cmake	-DSWIG_EXECUTABLE=/usr/bin/swig3.0 \
+cmake -DSWIG_EXECUTABLE=/usr/bin/swig3.0 \
 	-DKDB_DEFAULT_STORAGE="ini" \
 	-DKDB_DB_FILE="default.ini" \
 	-DKDB_DB_INIT="elektra.ini" \
@@ -19,4 +19,4 @@ cmake	-DSWIG_EXECUTABLE=/usr/bin/swig3.0 \
 	-DBINDINGS="ALL;-swig_ruby" \
 	$*
 
-	#-DKDB_DB_SPEC="~/.config/kdb/spec" \ # see ##691
+#-DKDB_DB_SPEC="~/.config/kdb/spec" \ # see ##691

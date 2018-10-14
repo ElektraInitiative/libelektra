@@ -21,19 +21,17 @@
 ##
 ########################################################################
 
-
 [ -z "$RG" ] && RG="kdb"
 [ -z "$ROOT" ] && ROOT="system/network/hosts"
-
 
 cat /etc/hosts | sed /"#"/d | while read -a hosts; do
 
 	echo $RG set -c \"Hostname\" $ROOT/${hosts[0]}/hostname \'${hosts[1]}\'
-	
-	total_words=`echo ${hosts[*]} | wc -w`
-	for (( i=2; $((i < $total_words)); i++ )); do
-	num=$((i-2))
-	echo $RG set -c \"Hostname alias\" $ROOT/${hosts[0]}/host_alias$num \'${hosts[$i]}\'
+
+	total_words=$(echo ${hosts[*]} | wc -w)
+	for ((i = 2; $((i < total_words)); i++)); do
+		num=$((i - 2))
+		echo $RG set -c \"Hostname alias\" $ROOT/${hosts[0]}/host_alias$num \'${hosts[$i]}\'
 	done
-	
+
 done

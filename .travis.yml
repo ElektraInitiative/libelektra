@@ -33,7 +33,7 @@ matrix:
       osx_image: xcode10.0
       compiler: clang
       env:
-        - TEST_COMMAND="ctest --output-on-failure -R 'testscr_check_(bashisms|doc|formatting|meta|oclint|plugins)'"
+        - TEST_COMMAND="ctest --output-on-failure -R 'testscr_check'"
 
     # ASAN: Enable AddressSanitizer
 
@@ -139,7 +139,7 @@ matrix:
           -zeromqrecv;\
           -zeromqsend;\
           '"
-        - &testNoSourceCheck TEST_COMMAND="ctest --output-on-failure -E 'testscr_check_(bashisms|doc|formatting|meta|oclint|plugins)'"
+        - &testNoSourceCheck TEST_COMMAND="ctest --output-on-failure -E 'testscr_check'"
 
     - os: linux
       name: 🐧 GCC ASAN
@@ -349,6 +349,9 @@ before_install:
       sudo apt-get install libxerces-c-dev
       sudo apt-get install moreutils # contains `sponge` required by `reformat-cmake`
       sudo pip install cmake-format==0.4.3 pyyaml
+      mkdir -p "$HOME/bin" && cd "$HOME/bin" && \
+        curl -L "https://github.com/mvdan/sh/releases/download/v2.5.1/shfmt_v2.5.1_linux_amd64" -o shfmt && \
+        chmod u+x shfmt && export PATH=$PATH:"$HOME/bin"
     fi
 
 #
