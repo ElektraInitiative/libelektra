@@ -32,8 +32,8 @@ else ()
 	execute_process (COMMAND ${RUBY_EXECUTABLE} -r rbconfig -e "print RbConfig::CONFIG['sitedir']"
 			 OUTPUT_VARIABLE RUBY_SITE_DIR)
 
-	include_directories (${RUBY_VENDOR_ARCH_DIR})
-	include_directories (${RUBY_INCLUDE_DIRS})
+	include_directories (SYSTEM ${RUBY_VENDOR_ARCH_DIR})
+	include_directories (SYSTEM ${RUBY_INCLUDE_DIRS})
 
 	# ~~~
 	# message (STATUS "Ruby executable: ${RUBY_EXECUTABLE}")

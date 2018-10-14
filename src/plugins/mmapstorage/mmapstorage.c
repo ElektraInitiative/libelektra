@@ -957,7 +957,7 @@ int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, set) (Plugin * handle ELEKTRA_UNUSED, 
 	initHeader (&mmapHeader);
 	initMetaData (&mmapMetaData);
 	calculateMmapDataSize (&mmapHeader, &mmapMetaData, ks, dynArray);
-	ELEKTRA_LOG_DEBUG ("mmapsize: %llu", mmapHeader.allocSize);
+	ELEKTRA_LOG_DEBUG ("mmapsize: %" PRIu64, mmapHeader.allocSize);
 
 	if (truncateFile (fd, mmapHeader.allocSize, parentKey) != 1)
 	{

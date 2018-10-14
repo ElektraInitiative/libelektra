@@ -206,7 +206,7 @@ static void test_mmap_wrong_magic_number (const char * tmpFile)
 	char * mappedRegion = mmap (0, sbuf.st_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 	if (mappedRegion == MAP_FAILED)
 	{
-		ELEKTRA_LOG_WARNING ("error mapping file %s\nmmapSize: %lld", tmpFile, sbuf.st_size);
+		ELEKTRA_LOG_WARNING ("error mapping file %s\nmmapSize: " ELEKTRA_STAT_ST_SIZE_F, tmpFile, sbuf.st_size);
 		yield_error ("mmap() error");
 		return;
 	}
@@ -279,7 +279,7 @@ static void test_mmap_wrong_format_version (const char * tmpFile)
 	char * mappedRegion = mmap (0, sbuf.st_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 	if (mappedRegion == MAP_FAILED)
 	{
-		ELEKTRA_LOG_WARNING ("error mapping file %s\nmmapSize: %lld", tmpFile, sbuf.st_size);
+		ELEKTRA_LOG_WARNING ("error mapping file %s\nmmapSize: " ELEKTRA_STAT_ST_SIZE_F, tmpFile, sbuf.st_size);
 		yield_error ("mmap() error");
 		return;
 	}
@@ -352,7 +352,7 @@ static void test_mmap_wrong_magic_keyset (const char * tmpFile)
 	char * mappedRegion = mmap (0, sbuf.st_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 	if (mappedRegion == MAP_FAILED)
 	{
-		ELEKTRA_LOG_WARNING ("error mapping file %s\nmmapSize: %lld", tmpFile, sbuf.st_size);
+		ELEKTRA_LOG_WARNING ("error mapping file %s\nmmapSize: " ELEKTRA_STAT_ST_SIZE_F, tmpFile, sbuf.st_size);
 		yield_error ("mmap() error");
 		return;
 	}

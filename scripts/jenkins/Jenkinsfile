@@ -472,7 +472,8 @@ def generateFullBuildStages() {
   tasks << buildAndTestAsan(
     "debian-stable-asan",
     DOCKER_IMAGES.stretch,
-    CMAKE_FLAGS_BUILD_ALL
+    CMAKE_FLAGS_BUILD_ALL +
+      CMAKE_FLAGS_WERROR
   )
 
   // Build Elektra with clang and ASAN
@@ -481,7 +482,8 @@ def generateFullBuildStages() {
     "debian-unstable-clang-asan",
     DOCKER_IMAGES.sid,
     CMAKE_FLAGS_BUILD_ALL +
-      CMAKE_FLAGS_CLANG
+      CMAKE_FLAGS_CLANG +
+      CMAKE_FLAGS_WERROR
   )
 
   // Build Elektra on oldstable to see if we are backwards compatible
@@ -500,21 +502,23 @@ def generateFullBuildStages() {
     [TEST.ALL, TEST.MEM, TEST.INSTALL]
   )
 
-  // Build Elektra with clang. We use unstable for easy access to clang-6.0
-  // Detects problems when using an alternative compiler (clang)
   tasks << buildAndTest(
     "debian-stable-full-i386",
     DOCKER_IMAGES.stretch_i386,
     CMAKE_FLAGS_I386 + [
       'PLUGINS': 'NODEP'
-    ],
+    ] + CMAKE_FLAGS_BUILD_ALL,
     [TEST.ALL]
   )
+
+  // Build Elektra with clang. We use unstable for easy access to clang-6.0
+  // Detects problems when using an alternative compiler (clang)
   tasks << buildAndTest(
     "debian-unstable-full-clang",
     DOCKER_IMAGES.sid,
     CMAKE_FLAGS_BUILD_ALL +
-      CMAKE_FLAGS_CLANG
+      CMAKE_FLAGS_CLANG +
+      CMAKE_FLAGS_WERROR
     ,
     [TEST.ALL, TEST.MEM, TEST.INSTALL]
   )
@@ -533,7 +537,7 @@ def generateFullBuildStages() {
       'BUILD_STATIC': 'ON',
       'PLUGINS': 'ALL;-date',
       'ENABLE_KDB_TESTING': 'OFF'
-    ],
+    ] + CMAKE_FLAGS_WERROR,
     [TEST.ALL]
   )
 
@@ -541,7 +545,8 @@ def generateFullBuildStages() {
   tasks << buildAndTest(
     "ubuntu-xenial",
     DOCKER_IMAGES.xenial,
-    CMAKE_FLAGS_BUILD_ALL,
+    CMAKE_FLAGS_BUILD_ALL +
+      CMAKE_FLAGS_WERROR,
     [TEST.ALL]
   )
 
@@ -558,7 +563,8 @@ def generateFullBuildStages() {
   tasks << buildAndTest(
     "debian-stable-minimal",
     DOCKER_IMAGES.stretch_minimal,
-    ['PLUGINS': 'NODEP'],
+    ['PLUGINS': 'NODEP'] +
+      CMAKE_FLAGS_WERROR,
     [TEST.ALL]
   )
 
@@ -568,7 +574,8 @@ def generateFullBuildStages() {
     DOCKER_IMAGES.stretch,
     CMAKE_FLAGS_BUILD_ALL +
       CMAKE_FLAGS_INI +
-      CMAKE_FLAGS_COVERAGE
+      CMAKE_FLAGS_COVERAGE +
+      CMAKE_FLAGS_WERROR
     ,
     [TEST.ALL, TEST.MEM]
   )
@@ -579,7 +586,8 @@ def generateFullBuildStages() {
     DOCKER_IMAGES.stretch,
     CMAKE_FLAGS_BUILD_ALL +
       CMAKE_FLAGS_MMAP +
-      CMAKE_FLAGS_COVERAGE
+      CMAKE_FLAGS_COVERAGE +
+      CMAKE_FLAGS_WERROR
     ,
     [TEST.ALL, TEST.MEM]
   )
@@ -588,7 +596,8 @@ def generateFullBuildStages() {
     "debian-stable-full-mmap-asan",
     DOCKER_IMAGES.stretch,
     CMAKE_FLAGS_BUILD_ALL +
-      CMAKE_FLAGS_MMAP
+      CMAKE_FLAGS_MMAP +
+      CMAKE_FLAGS_WERROR
   )
 
   // Build Elektra with xdg resolver to see if we are compliant
@@ -599,7 +608,7 @@ def generateFullBuildStages() {
     [
       'PLUGINS': "${xdgResolver};dump;sync;ini;dini;base64;spec;error;list;timeofday;profile;mathcheck;tracer;hosts;network;glob",
       'KDB_DEFAULT_RESOLVER': xdgResolver
-    ],
+    ] + CMAKE_FLAGS_WERROR,
     [TEST.ALL, TEST.MEM]
   )
 
@@ -610,7 +619,8 @@ def generateFullBuildStages() {
     CMAKE_FLAGS_BUILD_ALL +
       CMAKE_FLAGS_OPTIMIZATIONS_OFF +
       CMAKE_FLAGS_DEBUG +
-      CMAKE_FLAGS_LOGGER
+      CMAKE_FLAGS_LOGGER +
+      CMAKE_FLAGS_WERROR
     ,
     [TEST.ALL, TEST.MEM]
   )
@@ -625,7 +635,7 @@ def generateFullBuildStages() {
       DOCKER_IMAGES.stretch,
       CMAKE_FLAGS_BUILD_ALL + [
         'CMAKE_BUILD_TYPE': buildType
-      ],
+      ] + CMAKE_FLAGS_WERROR,
       [TEST.ALL, TEST.MEM]
     )
   }

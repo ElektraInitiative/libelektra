@@ -107,9 +107,9 @@ static char * longToStr (long i)
 {
 	long size;
 	char * str;
-	size = snprintf (NULL, 0, "%zd", i);
+	size = snprintf (NULL, 0, "%ld", i);
 	str = elektraMalloc (size + 1);
-	size = snprintf (str, size + 1, "%zd", i);
+	size = snprintf (str, size + 1, "%ld", i);
 	return str;
 }
 
