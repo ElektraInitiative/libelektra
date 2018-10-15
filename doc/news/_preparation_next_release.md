@@ -319,6 +319,7 @@ you up to date with the multi-language support provided by Elektra.
   remove the source code checks from the jobs `🍏 MMap` and `🍏 Clang`, which sometimes hit the
   [timeout limit for public repositories](https://docs.travis-ci.com/user/customizing-the-build#build-timeouts) before. *(René Schwaiger)*
 - All Travis build jobs now use the compiler switch `-Werror`. *(René Schwaiger)*
+- We added basic support for coverage analysis via [Coveralls](http://coveralls.io). *(René Schwaiger)*
 
 
 ## Website
