@@ -395,4 +395,8 @@ before_script:
 script:
   - ninja
   - sh -c "${TEST_COMMAND:-ninja install && ninja run_all && kdb run_all}"
-  - if [[ "$ENABLE_COVERAGE" == ON ]]; then cd .. && coveralls -b build --gcov="$(which gcov-7)"; fi
+  - |
+    if [[ "$ENABLE_COVERAGE" == ON ]]; then
+      cd .. && coveralls -b build --gcov="$(which gcov-7)" -e benchmarks -e doc -e examples -e install -e tests \
+                         -E '.*build/(CMakeFiles|googletest-src|src).*\.(c|cc|cpp|h|hh|hpp)'
+    fi
