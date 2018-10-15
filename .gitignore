@@ -5,12 +5,6 @@
 
 #ignore backups
 *~
-.idea/**
-CMakeCache.txt
-**/CMakeFiles/**
-DartConfiguration.tcl
-test-symbols.map
-
 
 #ignore debian patches
 /.pc/
