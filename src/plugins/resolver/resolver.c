@@ -550,7 +550,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * returned, Key * par
 
 	/* Store the motification times for global caching plugins */
 	KeySet * modTimes;
-	if ((modTimes = elektraPluginGetGlobalData (handle)) != NULL)
+	if ((modTimes = elektraPluginGetGlobalKeySet (handle)) != NULL)
 	{
 		ELEKTRA_LOG_DEBUG ("global-cache: adding file modufication times");
 		Key * time = keyNew (keyName (parentKey), KEY_BINARY, KEY_SIZE, sizeof (struct timespec), KEY_VALUE, &(pk->mtime), KEY_END);
