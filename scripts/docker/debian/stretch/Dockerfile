@@ -76,6 +76,7 @@ RUN apt-get update \
         valgrind \
         ed \
         dnsutils \
+        virtualenv \
     && rm -rf /var/lib/apt/lists/*
 
 RUN cabal update && cabal install hspec QuickCheck
@@ -129,6 +130,16 @@ RUN mkdir -p "${SHFMT_PATH}" \
 # cmake-format
 ENV PATH="${PATH}:home/jenkins/.local/bin"
 RUN pip install cmake-format==0.4.3 pyyaml
+
+# Coveralls
+ENV COVERALLS_VIRTUALENV_PATH=/home/jenkins/coveralls
+RUN virtualenv "${COVERALLS_VIRTUALENV_PATH}" \
+    && cd "${COVERALLS_VIRTUALENV_PATH}" \
+    && . bin/activate \
+    && pip install "urllib3==1.22" \
+    && pip install cpp-coveralls \
+    && deactivate
+ENV PATH="${PATH}:${COVERALLS_VIRTUALENV_PATH}/bin"
 
 # Handle Haskell dependencies
 ENV HASKELL_SHARED_SANDBOX /home/jenkins/elektra-cabal-sandbox
