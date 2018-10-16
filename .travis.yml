@@ -226,11 +226,10 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test
           packages:
-            - g++-7
+            - g++-8
       env:
-        - CC_COMPILER=gcc-7
-        - CXX_COMPILER=g++-7
-        - ENABLE_COVERAGE=ON
+        - CC_COMPILER=gcc-8
+        - CXX_COMPILER=g++-8
 
     - os: linux
       name: 🐧 Clang
@@ -353,7 +352,6 @@ before_install:
       mkdir -p "$HOME/bin" && cd "$HOME/bin" && \
         curl -L "https://github.com/mvdan/sh/releases/download/v2.5.1/shfmt_v2.5.1_linux_amd64" -o shfmt && \
         chmod u+x shfmt && export PATH=$PATH:"$HOME/bin"
-      if [[ "$ENABLE_COVERAGE" == ON ]]; then pip install --user cpp-coveralls; fi
     fi
 
 #
@@ -378,7 +376,6 @@ before_script:
       -DENABLE_ASAN="${ENABLE_ASAN:-OFF}"
       -DCOMMON_FLAGS="${COMMON_FLAGS:--Werror}"
       -DENABLE_DEBUG=ON
-      -DENABLE_COVERAGE="${ENABLE_COVERAGE:-OFF}"
       -DINSTALL_SYSTEM_FILES=OFF
       -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
       -DKDB_DB_SYSTEM="$SYSTEM_DIR"
@@ -395,8 +392,3 @@ before_script:
 script:
   - ninja
   - sh -c "${TEST_COMMAND:-ninja install && ninja run_all && kdb run_all}"
-  - |
-    if [[ "$ENABLE_COVERAGE" == ON ]]; then
-      cd .. && coveralls -b build --gcov=gcov-7 -e benchmarks -e doc -e examples -e install -e tests \
-                         -E '.*build/(CMakeFiles|googletest-src|src).*\.(c|cc|cpp|h|hh|hpp)'
-    fi
