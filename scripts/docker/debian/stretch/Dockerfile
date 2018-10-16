@@ -15,6 +15,7 @@ RUN apt-get update \
         ruby \
         ruby-dev \
         python-all \
+        python-pip \
         python3-all \
         libpython3-dev \
         dh-exec \
@@ -124,6 +125,9 @@ RUN mkdir -p "${SHFMT_PATH}" \
     && cd "${SHFMT_PATH}" \
     && curl -L "https://github.com/mvdan/sh/releases/download/${SHFMT_VERSION}/shfmt_${SHFMT_VERSION}_linux_amd64" -o shfmt \
     && chmod a+x shfmt
+
+# cmake-format
+RUN pip install cmake-format==0.4.3 pyyaml
 
 # Handle Haskell dependencies
 ENV HASKELL_SHARED_SANDBOX /home/jenkins/elektra-cabal-sandbox
