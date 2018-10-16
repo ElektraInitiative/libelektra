@@ -74,6 +74,7 @@ RUN apt-get update \
         lcov \
         valgrind \
         ed \
+        dnsutils \
     && rm -rf /var/lib/apt/lists/*
 
 RUN cabal update && cabal install hspec QuickCheck
