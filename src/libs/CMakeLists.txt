@@ -6,6 +6,8 @@ add_subdirectory (tools)
 
 add_subdirectory (ease)
 
+add_subdirectory(globbing)
+
 add_subdirectory (proposal)
 
 add_subdirectory (meta)
