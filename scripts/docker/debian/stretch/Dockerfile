@@ -77,6 +77,7 @@ RUN apt-get update \
         ed \
         dnsutils \
         virtualenv \
+        bison \
     && rm -rf /var/lib/apt/lists/*
 
 RUN cabal update && cabal install hspec QuickCheck
