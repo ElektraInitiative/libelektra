@@ -127,6 +127,7 @@ RUN mkdir -p "${SHFMT_PATH}" \
     && chmod a+x shfmt
 
 # cmake-format
+ENV PATH="${PATH}:home/jenkins/.local/bin"
 RUN pip install cmake-format==0.4.3 pyyaml
 
 # Handle Haskell dependencies
