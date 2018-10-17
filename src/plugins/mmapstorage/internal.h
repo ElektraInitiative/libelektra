@@ -6,6 +6,8 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
+#ifndef ELEKTRA_MMAPSTORAGE_INTERNAL_H
+#define ELEKTRA_MMAPSTORAGE_INTERNAL_H
 
 #ifndef ELEKTRA_PLUGIN_MMAPSTORAGE_INTERNAL_H
 #define ELEKTRA_PLUGIN_MMAPSTORAGE_INTERNAL_H
@@ -22,8 +24,8 @@
 #define OFFSET_MAGIC_MMAPMETADATA (OFFSET_MAGIC_KEY + SIZEOF_KEY)
 
 #define OFFSET_MMAPMETADATA (OFFSET_MAGIC_MMAPMETADATA + SIZEOF_MMAPMETADATA)
-#define OFFSET_TIMESTAMP_KEYSET (OFFSET_MMAPMETADATA + SIZEOF_MMAPMETADATA)
-#define OFFSET_KEYSET (OFFSET_TIMESTAMP_KEYSET + SIZEOF_KEYSET)
+#define OFFSET_GLOBAL_KEYSET (OFFSET_MMAPMETADATA + SIZEOF_MMAPMETADATA)
+#define OFFSET_KEYSET (OFFSET_GLOBAL_KEYSET + SIZEOF_KEYSET)
 
 /** Minimum size (lower bound) of mapped region (header, metadata, footer) */
 #define ELEKTRA_MMAP_MINSIZE (SIZEOF_MMAPHEADER + (SIZEOF_MMAPMETADATA * 2) + (SIZEOF_KEYSET * 2) + SIZEOF_KEY + SIZEOF_MMAPFOOTER)
@@ -56,11 +58,11 @@
 struct _mmapAddr
 {
 	// clang-format off
-// 	KeySet * const timeStampsPtr;	/**<Pointer to the timestamps KeySet struct. */
+	KeySet * const globalKsPtr;	/**<Pointer to the global KeySet struct. */
 	KeySet * const ksPtr;		/**<Pointer to the (main) KeySet struct. */
 
 	char * metaKsPtr;		/**<Pointer to the current meta KeySet structs. */
-// 	char * timeStampsArrayPtr;	/**<Pointer to the current timestamp KeySet->array. */
+	char * globalKsArrayPtr;	/**<Pointer to the current global KeySet->array. */
 	char * ksArrayPtr;		/**<Pointer to the current KeySet->array. */
 	char * metaKsArrayPtr;		/**<Pointer to the current meta KeySet->array. */
 	char * keyPtr;			/**<Pointer to the current Key struct. */

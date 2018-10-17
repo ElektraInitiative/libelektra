@@ -1085,15 +1085,17 @@ int main (int argc, char ** argv)
 
 	init (argc, argv);
 
-	testDynArray ();
+	// testDynArray ();
 
 	const char * tmpFile = elektraFilename ();
 	printf ("%s\n", tmpFile);
 
 	// call once before clearStorage, to test non existent file
-	test_mmap_get_set (tmpFile);
-// 	test_mmap_set_get_timestamps (tmpFile);
-// 	test_mmap_get_timestamps_after_reopen (tmpFile);
+// 	test_mmap_get_set (tmpFile);
+	
+	test_mmap_set_get_timestamps (tmpFile);
+	_Exit (nbError);
+	test_mmap_get_timestamps_after_reopen (tmpFile);
 
 	clearStorage (tmpFile);
 	test_mmap_truncated_file (tmpFile);
