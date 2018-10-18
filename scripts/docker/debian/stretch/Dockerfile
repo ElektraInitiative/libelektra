@@ -138,6 +138,7 @@ RUN virtualenv "${COVERALLS_VIRTUALENV_PATH}" \
     && cd "${COVERALLS_VIRTUALENV_PATH}" \
     && . bin/activate \
     && pip install "urllib3==1.22" \
+    && pip install pyyaml \
     && pip install cpp-coveralls \
     && deactivate
 ENV PATH="${PATH}:${COVERALLS_VIRTUALENV_PATH}/bin"
