@@ -78,6 +78,7 @@ RUN apt-get update \
         dnsutils \
         virtualenv \
         bison \
+        uuid-dev \
     && rm -rf /var/lib/apt/lists/*
 
 RUN cabal update && cabal install hspec QuickCheck
@@ -97,6 +98,30 @@ RUN echo 'export JAVA_HOME=$(readlink -f /usr/bin/javac | sed "s:/bin/javac::")'
 RUN echo '\
 /usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64/\n\
 /usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64/server/\n' > /etc/ld.so.conf.d/jdk.conf
+
+# ANTLR
+RUN cd /usr/local/lib \
+    && curl -o antlr.jar -L https://www.antlr.org/download/antlr-4.7.1-complete.jar \
+    && cd /usr/local/bin \
+    && printf '\
+#!/usr/bin/env sh\n\
+CLASSPATH=.:/usr/local/lib/antlr.jar exec java -jar /usr/local/lib/antlr.jar "$@"' > antlr4 \
+    && printf '\
+#!/usr/bin/env sh\n\
+java -classpath .:/usr/local/lib/antlr.jar org.antlr.v4.gui.TestRig "$@"' > grun \
+    && chmod a+x antlr4 grun
+
+# ANTLR C++ runtime
+RUN cd /tmp \
+    && git clone --branch 4.7.1 --depth 1 https://github.com/antlr/antlr4.git \
+    && cd antlr4/runtime/Cpp \
+    && mkdir build \
+    && cd build \
+    && cmake -DANTLR_JAR_LOCATION=/usr/local/lib/antlr.jar -DCMAKE_BUILD_TYPE=Release .. \
+    && make \
+    && make install \
+    && cd /tmp \
+    && rm -r antlr4
 
 # YAEP
 RUN cd /tmp \
