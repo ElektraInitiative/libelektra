@@ -97,7 +97,6 @@ RUN echo 'export JAVA_HOME=$(readlink -f /usr/bin/javac | sed "s:/bin/javac::")'
 RUN echo '\
 /usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64/\n\
 /usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64/server/\n' > /etc/ld.so.conf.d/jdk.conf
-RUN ldconfig
 
 # YAEP
 RUN cd /tmp \
@@ -107,6 +106,21 @@ RUN cd /tmp \
     && make -C src install \
     && cd .. \
     && rm -r yaep
+
+# yaml-cpp
+RUN cd /tmp \
+    && git clone --branch yaml-cpp-0.6.2 --depth 1 https://github.com/jbeder/yaml-cpp.git \
+    && cd yaml-cpp \
+    && mkdir build \
+    && cd build \
+    && cmake -DYAML_CPP_BUILD_TESTS=OFF -DBUILD_SHARED_LIBS=ON .. \
+    && make \
+    && make install \
+    && cd ../.. \
+    && rm -r yaml-cpp
+
+# Update cache for shared libraries
+RUN ldconfig
 
 # Create User:Group
 # The id is important as jenkins docker agents use the same id that is running
