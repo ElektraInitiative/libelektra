@@ -366,18 +366,6 @@ static int verifyMagicData (char * mappedRegion)
 	Key * keyPtr = (Key *) (mappedRegion + OFFSET_MAGIC_KEY);
 	MmapMetaData * mmapMetaData = (MmapMetaData *) (mappedRegion + OFFSET_MAGIC_MMAPMETADATA);
 
-	if ((verifyMagicKey (keyPtr) != 0))
-	{
-		ELEKTRA_LOG_WARNING ("verifyMagicKey failed");
-	}
-	if ((verifyMagicKeySet (destKeySet) != 0))
-	{
-		ELEKTRA_LOG_WARNING ("verifyMagicKeySet failed");
-	}
-	if ((verifyMagicMmapMetaData (mmapMetaData) != 0))
-	{
-		ELEKTRA_LOG_WARNING ("verifyMagicMmapMetaData failed");
-	}
 	if ((verifyMagicKey (keyPtr) != 0) || (verifyMagicKeySet (destKeySet) != 0) || (verifyMagicMmapMetaData (mmapMetaData) != 0))
 	{
 		return -1;
@@ -488,8 +476,8 @@ static void calculateMmapDataSize (MmapHeader * mmapHeader, MmapMetaData * mmapM
 	size_t padding = sizeof (uint64_t) - (allocSize % sizeof (uint64_t)); // alignment for MMAP Footer at end of mapping
 	allocSize += SIZEOF_MMAPHEADER + (SIZEOF_MMAPMETADATA * 2) + SIZEOF_MMAPFOOTER + padding;
 
-	mmapMetaData->numKeys--;	// don't include magic Key
-	mmapMetaData->numKeySets--;	// don't include magic KeySet
+	mmapMetaData->numKeys = mmapMetaData->numKeys - 1;		// don't include magic Key
+	mmapMetaData->numKeySets = numKeySets - 1;	// don't include magic KeySet
 	mmapMetaData->ksAlloc = ksAlloc;
 	mmapHeader->allocSize = allocSize;
 }
@@ -659,6 +647,27 @@ static void writeKeys (KeySet * keySet, MmapAddr * mmapAddr, DynArray * dynArray
 	}
 }
 
+static void printMmapAddr (MmapAddr * mmapAddr)
+{
+	ELEKTRA_LOG_DEBUG ("globalKsPtr: \t\t %p", (void *) mmapAddr->globalKsPtr);
+	ELEKTRA_LOG_DEBUG ("ksPtr: \t\t %p", (void *) mmapAddr->ksPtr);
+	ELEKTRA_LOG_DEBUG ("metaKsPtr: \t\t %p", (void *) mmapAddr->metaKsPtr);
+	ELEKTRA_LOG_DEBUG ("globalKsArrayPtr: \t %p", (void *) mmapAddr->globalKsArrayPtr);
+	ELEKTRA_LOG_DEBUG ("ksArrayPtr: \t\t %p", (void *) mmapAddr->ksArrayPtr);
+	ELEKTRA_LOG_DEBUG ("metaKsArrayPtr: \t %p", (void *) mmapAddr->metaKsArrayPtr);
+	ELEKTRA_LOG_DEBUG ("keyPtr: \t\t %p", (void *) mmapAddr->keyPtr);
+	ELEKTRA_LOG_DEBUG ("dataPtr: \t\t %p", (void *) mmapAddr->dataPtr);
+	ELEKTRA_LOG_DEBUG ("mmapAddrInt: \t\t %llu", mmapAddr->mmapAddrInt);
+}
+
+static void printMmapMetaData (MmapMetaData * mmapMetaData)
+{
+	ELEKTRA_LOG_DEBUG ("numKeySets: \t %lu", mmapMetaData->numKeySets);
+	ELEKTRA_LOG_DEBUG ("ksAlloc: \t %lu", mmapMetaData->ksAlloc);
+	ELEKTRA_LOG_DEBUG ("numKeys: \t %lu", mmapMetaData->numKeys);
+}
+
+
 /**
  * @brief Copies a keyset to a mapped region.
  *
@@ -674,7 +683,7 @@ static void writeKeys (KeySet * keySet, MmapAddr * mmapAddr, DynArray * dynArray
  * @param mmapFooter containing a magic number for consistency checks
  * @param dynArray containing deduplicated pointers to meta-keys
  */
-static void copyKeySetToMmap (char * dest, KeySet * keySet, KeySet * global, MmapHeader * mmapHeader, MmapMetaData * mmapMetaData,
+static void copyKeySetToMmap (char * const dest, KeySet * keySet, KeySet * global, MmapHeader * mmapHeader, MmapMetaData * mmapMetaData,
 			      MmapFooter * mmapFooter, DynArray * dynArray)
 {
 	writeMagicData (dest);
@@ -685,16 +694,18 @@ static void copyKeySetToMmap (char * dest, KeySet * keySet, KeySet * global, Mma
 	MmapAddr mmapAddr = { .globalKsPtr = (KeySet *) (dest + OFFSET_GLOBAL_KEYSET),
 			      .ksPtr = (KeySet *) (dest + OFFSET_KEYSET),
 			      .metaKsPtr = (char *) mmapAddr.ksPtr + SIZEOF_KEYSET,
-			      .globalKsArrayPtr = (char *) mmapAddr.globalKsPtr + (SIZEOF_KEYSET * mmapMetaData->numKeySets),
+			      .globalKsArrayPtr = (dest + OFFSET_GLOBAL_KEYSET) + (SIZEOF_KEYSET * mmapMetaData->numKeySets),
 			      .ksArrayPtr = mmapAddr.globalKsArrayPtr + (SIZEOF_KEY_PTR * globalAlloc),
 			      .metaKsArrayPtr = mmapAddr.ksArrayPtr + (SIZEOF_KEY_PTR * keySet->alloc),
 			      .keyPtr = (mmapAddr.globalKsArrayPtr + (SIZEOF_KEY_PTR * mmapMetaData->ksAlloc)),
 			      .dataPtr = mmapAddr.keyPtr + (SIZEOF_KEY * mmapMetaData->numKeys),
 			      .mmapAddrInt = (uintptr_t) dest };
 
+	printMmapAddr (&mmapAddr);
+	printMmapMetaData (mmapMetaData);
 	if (global)
 	{
-		ELEKTRA_LOG_WARNING ("writing TIMESTAMPS");
+		ELEKTRA_LOG_WARNING ("writing GLOBAL KEYSET");
 		if (global->size != 0) writeKeys (global, &mmapAddr, 0, MODE_GLOBALCACHE);
 
 		set_bit (mmapHeader->formatFlags, MMAP_FLAG_TIMESTAMPS);
@@ -751,7 +762,7 @@ static void mmapToKeySet (Plugin * handle, char * mappedRegion, KeySet * returne
 	returned->flags = KS_FLAG_MMAP_ARRAY;
 	// we intentionally do not change the KeySet->opmphm here!
 
-	if (mode == MODE_GLOBALCACHE)
+	if (mode == MODE_GLOBALCACHE) // TODO: code duplication here
 	{
 		KeySet * global = elektraPluginGetGlobalKeySet (handle);
 		ksClose (global); // TODO: if we have a global keyset, maybe use ksAppend?
@@ -877,7 +888,6 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 	if (elektraPluginGetGlobalKeySet (handle) != 0)
 	{
 		ELEKTRA_LOG_DEBUG ("mmapstorage global position called");
-		// return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 		mode = MODE_GLOBALCACHE;
 	}
 
@@ -1025,7 +1035,6 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 	if ((global = elektraPluginGetGlobalKeySet (handle)) != 0)
 	{
 		ELEKTRA_LOG_DEBUG ("mmapstorage global position called");
-		// return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
 	int errnosave = errno;
@@ -1074,14 +1083,6 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 		ELEKTRA_LOG_WARNING ("could not msync");
 		goto error;
 	}
-	
-	// TODO: REMOVE THIS CRAP
-	if (verifyMagicData (mappedRegion) != 0)
-	{
-		// magic data could not be read properly, indicating unreadable format or different architecture
-		ELEKTRA_LOG_WARNING ("mmap magic data broken on SET already");
-	}
-	// TODO: END REMOVE THIS CRAP
 
 	if (munmap (mappedRegion, mmapHeader.allocSize) != 0)
 	{

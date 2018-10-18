@@ -80,137 +80,6 @@ static KeySet * largeTestKeySet (void)
 
 /* -- Functions ------------------------------------------------------------------------------------------------------------------------- */
 
-static void m_compare_key_name(Key * pk1, Key * pk2)                                                                                                   
-{                                                                                                                              
-	Key * nmmk1 = pk1;                                                                                                     
-	Key * nmmk2 = pk2;                                                                                                     
-	nbTest++;                                                                                                              
-	if (strcmp (keyName (nmmk1), keyName (nmmk2)))                                                                         
-	{                                                                                                                      
-		char errorMsg[BUFFER_LENGTH];                                                                                  
-                                                                                                                               
-		strcpy (errorMsg, "key name \"");                                                                              
-		strcat (errorMsg, keyName (nmmk1));                                                                            
-		strcat (errorMsg, "\" is not equal to \"");                                                                    
-		strcat (errorMsg, keyName (nmmk2));                                                                            
-		strcat (errorMsg, "\"");                                                                                       
-                                                                                                                               
-		yield_error (errorMsg);                                                                                        
-	}                                                                                                                      
-}
-
-static void m_compare_key_string(Key * pk1, Key * pk2)                                                                                             
-{                                                                                                                              
-	Key * smmk1 = pk1;                                                                                                     
-	Key * smmk2 = pk2;                                                                                                     
-	nbTest++;                                                                                                              
-	if (strcmp (keyString (smmk1), keyString (smmk2)))                                                                     
-	{                                                                                                                      
-		char errorMsg[BUFFER_LENGTH];                                                                                  
-                                                                                                                               
-		strcpy (errorMsg, "key value \"");                                                                             
-		strcat (errorMsg, keyString (smmk1));                                                                          
-		strcat (errorMsg, "\" is not equal to \"");                                                                    
-		strcat (errorMsg, keyString (smmk2));                                                                          
-		strcat (errorMsg, "\"");                                                                                       
-                                                                                                                               
-		yield_error (errorMsg);                                                                                        
-	}                                                                                                                      
-}
-
-static void m_compare_key(Key * pk1, Key * pk2)                                                                                                       
-{                                                                                                                                 
-	nbTest++;                                                                                                                 
-	Key * mmk1 = (Key *) pk1;                                                                                                 
-	Key * mmk2 = (Key *) pk2;                                                                                                 
-	if (mmk1 != mmk2)                                                                                                         
-	{                                                                                                                         
-		m_compare_key_name (mmk1, mmk2);                                                                                    
-                                                                                                                                  
-		m_compare_key_string (mmk1, mmk2);                                                                                  
-                                                                                                                                  
-		const Key * meta;                                                                                                 
-		keyRewindMeta (mmk1);                                                                                             
-		keyRewindMeta (mmk2);                                                                                             
-		while ((meta = keyNextMeta (mmk1)) != 0)                                                                          
-		{                                                                                                                 
-			const Key * const metaCmp = keyNextMeta (mmk2);                                                           
-			if (metaCmp == 0)                                                                                         
-			{                                                                                                         
-				nbError++;                                                                                        
-				printf ("%s:%d: error in %s: Compare key \"%s\" with \"%s\" failed, did not find corresponding "  
-					"metakey %s (k1 > k2)\n",                                                                 
-					__FILE__, __LINE__, __func__, ELEKTRA_QUOTE (mmk1), ELEKTRA_QUOTE (mmk2), keyName (meta));
-				break;                                                                                            
-			}                                                                                                         
-			if (strcmp (keyString (meta), keyString (metaCmp)) != 0)                                                  
-			{                                                                                                         
-				nbError++;                                                                                        
-				printf ("%s:%d: error in %s: Comparison of the keys with name \"%s\" failed. The value of the "   
-					"metakey \"%s\" is not equal: \"%s\" ≠ \"%s\"",                                           
-					__FILE__, __LINE__, __func__, keyName (mmk1), keyName (meta), keyString (meta),           
-					keyString (metaCmp));                                                                     
-				break;                                                                                            
-			}                                                                                                         
-		}                                                                                                                 
-                                                                                                                                  
-		const Key * const metaCmp = keyNextMeta (mmk2);                                                                   
-		if (metaCmp != 0)                                                                                                 
-		{                                                                                                                 
-			nbError++;                                                                                                
-			printf ("%s:%d: error in %s: Compare key \"%s\" with \"%s\" failed, too many metakeys found (k1 < k2)\n", 
-				__FILE__, __LINE__, __func__, ELEKTRA_QUOTE (mmk1), ELEKTRA_QUOTE (mmk2));                        
-		}                                                                                                                 
-	}                                                                                                                         
-}
-
-static void m_compare_keyset(KeySet * pks1, KeySet * pks2)
-{                                                                                                                                  
-	nbTest++;                                                                                                              
-	KeySet * mmks1 = (KeySet *) pks1;                                                                                      
-	KeySet * mmks2 = (KeySet *) pks2;                                                                                      
-	int bothEmpty = ksGetSize (mmks1) == 0 && ksGetSize (mmks1) == ksGetSize (mmks2);                                      
-	if (mmks1 != mmks2 && !bothEmpty)                                                                                      
-	{                                                                                                                      
-		Key * cmmk1 = 0;                                                                                               
-		Key * cmmk2 = 0;                                                                                               
-                                                                                                                               
-		if (ksGetSize (mmks1) == 0) yield_error ("real size of " ELEKTRA_QUOTE (mmks1) " was 0");                      
-		if (ksGetSize (mmks2) == 0) yield_error ("real size of " ELEKTRA_QUOTE (mmks2) " was 0");                      
-                                                                                                                               
-		if (ksGetSize (mmks1) != ksGetSize (mmks2))                                                                    
-		{                                                                                                              
-			nbError++;                                                                                             
-			printf ("%s:%d: error in %s: Compare keyset failed, size of keysets are not equal with size(%s): %d, " 
-				"size(%s): %d\n",                                                                              
-				__FILE__, __LINE__, __func__, ELEKTRA_QUOTE (mmks1), (int) ksGetSize (mmks1),                  
-				ELEKTRA_QUOTE (mmks2), (int) ksGetSize (mmks2));                                               
-			printf ("mmks1:\n");                                                                                   
-			output_keyset (mmks1);                                                                                 
-			printf ("mmks2:\n");                                                                                   
-			output_keyset (mmks2);                                                                                 
-		}                                                                                                              
-		else                                                                                                           
-		{                                                                                                              
-                                                                                                                               
-			ksRewind (mmks1);                                                                                      
-			ksRewind (mmks2);                                                                                      
-                                                                                                                               
-			while ((cmmk1 = ksNext (mmks1)) != 0)                                                                  
-			{                                                                                                      
-				cmmk2 = ksNext (mmks2);                                                                        
-				if (!cmmk2)                                                                                    
-				{                                                                                              
-					yield_error ("Compare keyset " ELEKTRA_QUOTE (mmks1) " with " ELEKTRA_QUOTE (          
-						mmks2) " failed, did not find corresponding key") break;                       
-				}                                                                                              
-                                                                                                                               
-				m_compare_key (cmmk1, cmmk2);                                                                    
-			}                                                                                                      
-		}                                                                                                              
-	}                                                                                                                      
-}
-
 static void test_mmap_get_set_empty (const char * tmpFile)
 {
 	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
@@ -263,7 +132,9 @@ static void test_mmap_set_get_timestamps (const char * tmpFile)
 
 	plugin->global = ksNew (0, KS_END);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+	ksDel (ks);
 
+	ks = metaTestKeySet ();
 	plugin->global = simpleTestKeySet ();
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 	ksDel (ks);
@@ -274,8 +145,8 @@ static void test_mmap_set_get_timestamps (const char * tmpFile)
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
 
 	KeySet * expected = simpleTestKeySet ();
-	m_compare_keyset (expected, plugin->global);
-	m_compare_keyset (plugin->global, expected);
+	compare_keyset (expected, plugin->global);
+	compare_keyset (plugin->global, expected);
 
 	ksDel (plugin->global);
 	ksDel (expected);
@@ -294,10 +165,15 @@ static void test_mmap_get_timestamps_after_reopen (const char * tmpFile)
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
 
-	KeySet * expected = simpleTestKeySet ();
-	m_compare_keyset (expected, plugin->global);
-	m_compare_keyset (plugin->global, expected);
+	KeySet * expected_global = simpleTestKeySet ();
+	compare_keyset (expected_global, plugin->global);
+	compare_keyset (plugin->global, expected_global);
 
+	KeySet * expected = metaTestKeySet ();
+	compare_keyset (expected, ks);
+	compare_keyset (ks, expected);
+
+	ksDel (expected_global);
 	ksDel (plugin->global);
 	ksDel (expected);
 	keyDel (parentKey);
@@ -1091,10 +967,9 @@ int main (int argc, char ** argv)
 	printf ("%s\n", tmpFile);
 
 	// call once before clearStorage, to test non existent file
-// 	test_mmap_get_set (tmpFile);
+	test_mmap_get_set (tmpFile);
 	
 	test_mmap_set_get_timestamps (tmpFile);
-	_Exit (nbError);
 	test_mmap_get_timestamps_after_reopen (tmpFile);
 
 	clearStorage (tmpFile);
