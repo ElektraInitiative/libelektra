@@ -99,6 +99,15 @@ RUN echo '\
 /usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64/server/\n' > /etc/ld.so.conf.d/jdk.conf
 RUN ldconfig
 
+# YAEP
+RUN cd /tmp \
+    && git clone --depth 1 https://github.com/sanssecours/yaep.git \
+    && cd yaep \
+    && env CXXFLAGS='-fPIC' ./configure \
+    && make -C src install \
+    && cd .. \
+    && rm -r yaep
+
 # Create User:Group
 # The id is important as jenkins docker agents use the same id that is running
 # on the slaves to execute containers
