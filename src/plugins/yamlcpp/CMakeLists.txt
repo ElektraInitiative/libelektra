@@ -18,6 +18,6 @@ add_plugin (yamlcpp
 		    read.cpp
 		    write.hpp
 		    write.cpp
-	    INCLUDE_DIRECTORIES ${YAML-CPP_INCLUDE_DIR}
+	    INCLUDE_DIRECTORIES ${YAML-CPP_INCLUDE_DIRS}
 	    LINK_LIBRARIES ${YAML-CPP_LIBRARIES}
 	    LINK_ELEKTRA elektra-ease)
