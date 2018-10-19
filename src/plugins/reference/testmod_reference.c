@@ -64,39 +64,39 @@ static bool check_error0 (const Key * parentKey, const char * expectedError)
 	const char * actualError = errorKey != NULL ? keyString (errorKey) : NULL;
 	return actualError != NULL && strcmp (actualError, expectedError) == 0;
 }
-static inline Key * keyNewReference (const char * name, const char * target, const char * type, const char * restriction)
+static inline Key * keyNewReference (const char * name, const char * target, const char * type)
 {
-	if (restriction != NULL)
-	{
-		return keyNew (name, KEY_VALUE, target, KEY_META, CHECK_REFERENCE_KEYNAME, type, KEY_META, CHECK_REFERENCE_RESTRICT_KEYNAME,
-			       restriction, KEY_END);
-	}
-	else
-	{
-		return keyNew (name, KEY_VALUE, target, KEY_META, CHECK_REFERENCE_KEYNAME, type, KEY_END);
-	}
+	return keyNew (name, KEY_VALUE, target, KEY_META, CHECK_REFERENCE_KEYNAME, type, KEY_END);
 }
 
 static void test_single_negative (void)
 {
 	SETUP (single positive)
 
-	WITH_KEYS (full, 2, keyNewReference (BASE_KEY "/ref/full", BASE_KEY "/target", CHECK_REFERNCE_VALUE_SINGLE, NULL),
+	WITH_KEYS (full, 2,
+		   keyNew (BASE_KEY "/ref/full", KEY_VALUE, BASE_KEY "/target", KEY_META, CHECK_REFERENCE_KEYNAME,
+			   CHECK_REFERNCE_VALUE_SINGLE, KEY_END),
 		   keyNew (BASE_KEY "/target", KEY_END))
 	TEST_SET (full, ELEKTRA_PLUGIN_STATUS_NO_UPDATE)
 	RESET (full)
 
-	WITH_KEYS (relative1, 2, keyNewReference (BASE_KEY "/ref/relative1", "../../target", CHECK_REFERNCE_VALUE_SINGLE, NULL),
+	WITH_KEYS (relative1, 2,
+		   keyNew (BASE_KEY "/ref/relative1", KEY_VALUE, "../../target", KEY_META, CHECK_REFERENCE_KEYNAME,
+			   CHECK_REFERNCE_VALUE_SINGLE, KEY_END),
 		   keyNew (BASE_KEY "/target", KEY_END))
 	TEST_SET (relative1, ELEKTRA_PLUGIN_STATUS_NO_UPDATE)
 	RESET (relative1)
 
-	WITH_KEYS (relative2, 2, keyNewReference (BASE_KEY "/ref/relative2", "./target", CHECK_REFERNCE_VALUE_SINGLE, NULL),
+	WITH_KEYS (relative2, 2,
+		   keyNew (BASE_KEY "/ref/relative2", KEY_VALUE, "./target", KEY_META, CHECK_REFERENCE_KEYNAME, CHECK_REFERNCE_VALUE_SINGLE,
+			   KEY_END),
 		   keyNew (BASE_KEY "/ref/relative2/target", KEY_END))
 	TEST_SET (relative2, ELEKTRA_PLUGIN_STATUS_NO_UPDATE)
 	RESET (relative2)
 
-	WITH_KEYS (relative3, 2, keyNewReference (BASE_KEY "/ref/relative3", "@/ref/target", CHECK_REFERNCE_VALUE_SINGLE, NULL),
+	WITH_KEYS (relative3, 2,
+		   keyNew (BASE_KEY "/ref/relative3", KEY_VALUE, "@/ref/target", KEY_META, CHECK_REFERENCE_KEYNAME,
+			   CHECK_REFERNCE_VALUE_SINGLE, KEY_END),
 		   keyNew (BASE_KEY "/ref/target", KEY_END))
 	TEST_SET (relative3, ELEKTRA_PLUGIN_STATUS_NO_UPDATE)
 	RESET (relative3)
@@ -116,27 +116,33 @@ static void test_single_positive (void)
 {
 	SETUP (single positive)
 
-	WITH_KEYS (full_negative, 2, keyNewReference (BASE_KEY "/ref/neg/full", BASE_KEY "/target", CHECK_REFERNCE_VALUE_SINGLE, NULL),
+	WITH_KEYS (full_negative, 2,
+		   keyNew (BASE_KEY "/ref/neg/full", KEY_VALUE, BASE_KEY "/target", KEY_META, CHECK_REFERENCE_KEYNAME,
+			   CHECK_REFERNCE_VALUE_SINGLE, KEY_END),
 		   keyNew (BASE_KEY "/hidden/target", KEY_END))
 	TEST_SET (full_negative, ELEKTRA_PLUGIN_STATUS_ERROR)
 	EXPECT_ERROR (full_negative, ELEKTRA_ERROR_REFERENCE_NOT_FOUND)
 	RESET (full_negative)
 
 	WITH_KEYS (relative1_negative, 2,
-		   keyNewReference (BASE_KEY "/ref/neg/relative1", "../../target", CHECK_REFERNCE_VALUE_SINGLE, NULL),
+		   keyNew (BASE_KEY "/ref/neg/relative1", KEY_VALUE, "../../target", KEY_META, CHECK_REFERENCE_KEYNAME,
+			   CHECK_REFERNCE_VALUE_SINGLE, KEY_END),
 		   keyNew (BASE_KEY "/hidden/target", KEY_END))
 	TEST_SET (relative1_negative, ELEKTRA_PLUGIN_STATUS_ERROR)
 	EXPECT_ERROR (relative1_negative, ELEKTRA_ERROR_REFERENCE_NOT_FOUND)
 	RESET (relative1_negative)
 
-	WITH_KEYS (relative2_negative, 2, keyNewReference (BASE_KEY "/ref/neg/relative2", "./target", CHECK_REFERNCE_VALUE_SINGLE, NULL),
+	WITH_KEYS (relative2_negative, 2,
+		   keyNew (BASE_KEY "/ref/neg/relative2", KEY_VALUE, "./target", KEY_META, CHECK_REFERENCE_KEYNAME,
+			   CHECK_REFERNCE_VALUE_SINGLE, KEY_END),
 		   keyNew (BASE_KEY "/hidden/ref/relative2/target", KEY_END))
 	TEST_SET (relative2_negative, ELEKTRA_PLUGIN_STATUS_ERROR)
 	EXPECT_ERROR (relative2_negative, ELEKTRA_ERROR_REFERENCE_NOT_FOUND)
 	RESET (relative2_negative)
 
 	WITH_KEYS (relative3_negative, 2,
-		   keyNewReference (BASE_KEY "/ref/neg/relative3", "@/ref/target", CHECK_REFERNCE_VALUE_SINGLE, NULL),
+		   keyNew (BASE_KEY "/ref/neg/relative3", KEY_VALUE, "@/ref/target", KEY_META, CHECK_REFERENCE_KEYNAME,
+			   CHECK_REFERNCE_VALUE_SINGLE, KEY_END),
 		   keyNew (BASE_KEY "/hidden/ref/target", KEY_END))
 	TEST_SET (relative3_negative, ELEKTRA_PLUGIN_STATUS_ERROR)
 	EXPECT_ERROR (relative3_negative, ELEKTRA_ERROR_REFERENCE_NOT_FOUND)
@@ -159,7 +165,8 @@ static void test_recursive_positive (void)
 	SETUP (recursive positive)
 
 	WITH_KEYS (linked_list, 9, keyNew (BASE_KEY "/head", KEY_VALUE, "head", KEY_END),
-		   keyNewReference (BASE_KEY "/head/ref", BASE_KEY "/element0", CHECK_REFERNCE_VALUE_RECURSIVE, NULL),
+		   keyNew (BASE_KEY "/head/ref", KEY_VALUE, BASE_KEY "/element0", KEY_META, CHECK_REFERENCE_KEYNAME,
+			   CHECK_REFERNCE_VALUE_RECURSIVE, KEY_END),
 		   keyNew (BASE_KEY "/element0", KEY_VALUE, "element0", KEY_END),
 		   keyNew (BASE_KEY "/element0/ref", KEY_VALUE, BASE_KEY "/element1", KEY_END),
 		   keyNew (BASE_KEY "/element1", KEY_VALUE, "element1", KEY_END),
@@ -170,52 +177,54 @@ static void test_recursive_positive (void)
 	TEST_SET (linked_list, ELEKTRA_PLUGIN_STATUS_NO_UPDATE)
 	RESET (linked_list)
 
-	WITH_KEYS (tree, 15, keyNew (BASE_KEY "/head", KEY_VALUE, "head", KEY_END),
-		   keyNewReference (BASE_KEY "/head/ref", "#1", CHECK_REFERNCE_VALUE_RECURSIVE, NULL),
-		   keyNew (BASE_KEY "/head/ref/#0", KEY_VALUE, BASE_KEY "/element0", KEY_END),
-		   keyNew (BASE_KEY "/head/ref/#1", KEY_VALUE, BASE_KEY "/element1", KEY_END),
-		   keyNew (BASE_KEY "/element0", KEY_VALUE, "element0", KEY_END),
-		   keyNew (BASE_KEY "/element0/ref", KEY_VALUE, "#2", KEY_END),
-		   keyNew (BASE_KEY "/element0/ref/#0", KEY_VALUE, BASE_KEY "/element00", KEY_END),
-		   keyNew (BASE_KEY "/element0/ref/#1", KEY_VALUE, BASE_KEY "/element01", KEY_END),
-		   keyNew (BASE_KEY "/element0/ref/#2", KEY_VALUE, BASE_KEY "/element02", KEY_END),
-		   keyNew (BASE_KEY "/element1", KEY_VALUE, "element1", KEY_END),
-		   keyNew (BASE_KEY "/element00", KEY_VALUE, "element00", KEY_END),
-		   keyNew (BASE_KEY "/element01", KEY_VALUE, "element01", KEY_END),
-		   keyNew (BASE_KEY "/element02", KEY_VALUE, "element02", KEY_END),
-		   keyNew (BASE_KEY "/element02/ref", KEY_VALUE, BASE_KEY "/element020", KEY_END),
-		   keyNew (BASE_KEY "/element020", KEY_VALUE, "element020", KEY_END))
+	WITH_KEYS (
+		tree, 15, keyNew (BASE_KEY "/head", KEY_VALUE, "head", KEY_END),
+		keyNew (BASE_KEY "/head/ref", KEY_VALUE, "#1", KEY_META, CHECK_REFERENCE_KEYNAME, CHECK_REFERNCE_VALUE_RECURSIVE, KEY_END),
+		keyNew (BASE_KEY "/head/ref/#0", KEY_VALUE, BASE_KEY "/element0", KEY_END),
+		keyNew (BASE_KEY "/head/ref/#1", KEY_VALUE, BASE_KEY "/element1", KEY_END),
+		keyNew (BASE_KEY "/element0", KEY_VALUE, "element0", KEY_END), keyNew (BASE_KEY "/element0/ref", KEY_VALUE, "#2", KEY_END),
+		keyNew (BASE_KEY "/element0/ref/#0", KEY_VALUE, BASE_KEY "/element00", KEY_END),
+		keyNew (BASE_KEY "/element0/ref/#1", KEY_VALUE, BASE_KEY "/element01", KEY_END),
+		keyNew (BASE_KEY "/element0/ref/#2", KEY_VALUE, BASE_KEY "/element02", KEY_END),
+		keyNew (BASE_KEY "/element1", KEY_VALUE, "element1", KEY_END),
+		keyNew (BASE_KEY "/element00", KEY_VALUE, "element00", KEY_END),
+		keyNew (BASE_KEY "/element01", KEY_VALUE, "element01", KEY_END),
+		keyNew (BASE_KEY "/element02", KEY_VALUE, "element02", KEY_END),
+		keyNew (BASE_KEY "/element02/ref", KEY_VALUE, BASE_KEY "/element020", KEY_END),
+		keyNew (BASE_KEY "/element020", KEY_VALUE, "element020", KEY_END))
 	TEST_SET (tree, ELEKTRA_PLUGIN_STATUS_NO_UPDATE)
 	RESET (tree)
 
-	WITH_KEYS (merge, 9, keyNew (BASE_KEY "/head", KEY_VALUE, "head", KEY_END),
-		   keyNewReference (BASE_KEY "/head/ref", "#1", CHECK_REFERNCE_VALUE_RECURSIVE, NULL),
-		   keyNew (BASE_KEY "/head/ref/#0", KEY_VALUE, BASE_KEY "/element0", KEY_END),
-		   keyNew (BASE_KEY "/head/ref/#1", KEY_VALUE, BASE_KEY "/element1", KEY_END),
-		   keyNew (BASE_KEY "/element0", KEY_VALUE, "element0", KEY_END),
-		   keyNew (BASE_KEY "/element0/ref", KEY_VALUE, BASE_KEY "/element2", KEY_END),
-		   keyNew (BASE_KEY "/element1", KEY_VALUE, "element1", KEY_END),
-		   keyNew (BASE_KEY "/element1/ref", KEY_VALUE, BASE_KEY "/element2", KEY_END),
-		   keyNew (BASE_KEY "/element2", KEY_VALUE, "element2", KEY_END))
+	WITH_KEYS (
+		merge, 9, keyNew (BASE_KEY "/head", KEY_VALUE, "head", KEY_END),
+		keyNew (BASE_KEY "/head/ref", KEY_VALUE, "#1", KEY_META, CHECK_REFERENCE_KEYNAME, CHECK_REFERNCE_VALUE_RECURSIVE, KEY_END),
+		keyNew (BASE_KEY "/head/ref/#0", KEY_VALUE, BASE_KEY "/element0", KEY_END),
+		keyNew (BASE_KEY "/head/ref/#1", KEY_VALUE, BASE_KEY "/element1", KEY_END),
+		keyNew (BASE_KEY "/element0", KEY_VALUE, "element0", KEY_END),
+		keyNew (BASE_KEY "/element0/ref", KEY_VALUE, BASE_KEY "/element2", KEY_END),
+		keyNew (BASE_KEY "/element1", KEY_VALUE, "element1", KEY_END),
+		keyNew (BASE_KEY "/element1/ref", KEY_VALUE, BASE_KEY "/element2", KEY_END),
+		keyNew (BASE_KEY "/element2", KEY_VALUE, "element2", KEY_END))
 	TEST_SET (merge, ELEKTRA_PLUGIN_STATUS_NO_UPDATE)
 	RESET (merge)
 
-	WITH_KEYS (alternative, 16, keyNew (BASE_KEY "/head", KEY_VALUE, "head", KEY_END),
-		   keyNewReference (BASE_KEY "/head/ref", "#1", CHECK_REFERNCE_VALUE_RECURSIVE, NULL),
-		   keyNew (BASE_KEY "/head/ref/#0", KEY_VALUE, BASE_KEY "/element0", KEY_END),
-		   keyNew (BASE_KEY "/head/ref/#1", KEY_VALUE, BASE_KEY "/element1", KEY_END),
-		   keyNew (BASE_KEY "/element0", KEY_VALUE, "element0", KEY_END),
-		   keyNew (BASE_KEY "/element0/ref", KEY_VALUE, "#1", KEY_END),
-		   keyNew (BASE_KEY "/element0/ref/#0", KEY_VALUE, BASE_KEY "/element2", KEY_END),
-		   keyNew (BASE_KEY "/element0/ref/#1", KEY_VALUE, BASE_KEY "/element4", KEY_END),
-		   keyNew (BASE_KEY "/element1", KEY_VALUE, "element1", KEY_END),
-		   keyNewReference (BASE_KEY "/element1/altref", BASE_KEY "/element2", CHECK_REFERNCE_VALUE_ALTERNATIVE, NULL),
-		   keyNew (BASE_KEY "/element2", KEY_VALUE, "element2", KEY_END),
-		   keyNew (BASE_KEY "/element2/altref", KEY_VALUE, BASE_KEY "/element3", KEY_END),
-		   keyNew (BASE_KEY "/element3", KEY_VALUE, "element3", KEY_END),
-		   keyNew (BASE_KEY "/element4", KEY_VALUE, "element4", KEY_END),
-		   keyNew (BASE_KEY "/element4/ref", KEY_VALUE, BASE_KEY "/element5", KEY_END),
-		   keyNew (BASE_KEY "/element5", KEY_VALUE, "element5", KEY_END))
+	WITH_KEYS (
+		alternative, 16, keyNew (BASE_KEY "/head", KEY_VALUE, "head", KEY_END),
+		keyNew (BASE_KEY "/head/ref", KEY_VALUE, "#1", KEY_META, CHECK_REFERENCE_KEYNAME, CHECK_REFERNCE_VALUE_RECURSIVE, KEY_END),
+		keyNew (BASE_KEY "/head/ref/#0", KEY_VALUE, BASE_KEY "/element0", KEY_END),
+		keyNew (BASE_KEY "/head/ref/#1", KEY_VALUE, BASE_KEY "/element1", KEY_END),
+		keyNew (BASE_KEY "/element0", KEY_VALUE, "element0", KEY_END), keyNew (BASE_KEY "/element0/ref", KEY_VALUE, "#1", KEY_END),
+		keyNew (BASE_KEY "/element0/ref/#0", KEY_VALUE, BASE_KEY "/element2", KEY_END),
+		keyNew (BASE_KEY "/element0/ref/#1", KEY_VALUE, BASE_KEY "/element4", KEY_END),
+		keyNew (BASE_KEY "/element1", KEY_VALUE, "element1", KEY_END),
+		keyNew (BASE_KEY "/element1/altref", KEY_VALUE, BASE_KEY "/element2", KEY_META, CHECK_REFERENCE_KEYNAME,
+			CHECK_REFERNCE_VALUE_ALTERNATIVE, KEY_END),
+		keyNew (BASE_KEY "/element2", KEY_VALUE, "element2", KEY_END),
+		keyNew (BASE_KEY "/element2/altref", KEY_VALUE, BASE_KEY "/element3", KEY_END),
+		keyNew (BASE_KEY "/element3", KEY_VALUE, "element3", KEY_END),
+		keyNew (BASE_KEY "/element4", KEY_VALUE, "element4", KEY_END),
+		keyNew (BASE_KEY "/element4/ref", KEY_VALUE, BASE_KEY "/element5", KEY_END),
+		keyNew (BASE_KEY "/element5", KEY_VALUE, "element5", KEY_END))
 	TEST_SET (alternative, ELEKTRA_PLUGIN_STATUS_NO_UPDATE)
 	RESET (alternative)
 
@@ -227,7 +236,8 @@ static void test_recursive_negative (void)
 	SETUP (recursive negative)
 
 	WITH_KEYS (linked_list_negative, 9, keyNew (BASE_KEY "/head", KEY_VALUE, "head", KEY_END),
-		   keyNewReference (BASE_KEY "/head/ref", BASE_KEY "/element0", CHECK_REFERNCE_VALUE_RECURSIVE, NULL),
+		   keyNew (BASE_KEY "/head/ref", KEY_VALUE, BASE_KEY "/element0", KEY_META, CHECK_REFERENCE_KEYNAME,
+			   CHECK_REFERNCE_VALUE_RECURSIVE, KEY_END),
 		   keyNew (BASE_KEY "/element0", KEY_VALUE, "element0", KEY_END),
 		   keyNew (BASE_KEY "/element0/ref", KEY_VALUE, BASE_KEY "/element4", KEY_END),
 		   keyNew (BASE_KEY "/element1", KEY_VALUE, "element1", KEY_END),
@@ -240,7 +250,8 @@ static void test_recursive_negative (void)
 	RESET (linked_list_negative)
 
 	WITH_KEYS (linked_list_negative2, 9, keyNew (BASE_KEY "/head", KEY_VALUE, "head", KEY_END),
-		   keyNewReference (BASE_KEY "/head/ref", BASE_KEY "/element0", CHECK_REFERNCE_VALUE_RECURSIVE, NULL),
+		   keyNew (BASE_KEY "/head/ref", KEY_VALUE, BASE_KEY "/element0", KEY_META, CHECK_REFERENCE_KEYNAME,
+			   CHECK_REFERNCE_VALUE_RECURSIVE, KEY_END),
 		   keyNew (BASE_KEY "/element0", KEY_VALUE, "element0", KEY_END),
 		   keyNew (BASE_KEY "/element0/ref", KEY_VALUE, BASE_KEY "/element1", KEY_END),
 		   keyNew (BASE_KEY "/element1", KEY_VALUE, "element1", KEY_END),
@@ -255,20 +266,27 @@ static void test_recursive_negative (void)
 	TEARDOWN ()
 }
 
-static void test_restriction_positive (void)
+static void test_restriction (void)
 {
 	SETUP (restriction positive)
 
+	WITH_KEYS (positive, 2,
+		   keyNew (BASE_KEY "/ref", KEY_VALUE, BASE_KEY "/yes/target", KEY_META, CHECK_REFERENCE_KEYNAME,
+			   CHECK_REFERNCE_VALUE_SINGLE, KEY_META, CHECK_REFERENCE_RESTRICT_KEYNAME, "../yes/**", KEY_END),
+		   keyNew (BASE_KEY "/yes/target", KEY_END), KS_END)
+	TEST_SET (positive, ELEKTRA_PLUGIN_STATUS_NO_UPDATE)
+	RESET (positive)
+
+	WITH_KEYS (negative, 2,
+		   keyNew (BASE_KEY "/ref", KEY_VALUE, BASE_KEY "/no/target", KEY_META, CHECK_REFERENCE_KEYNAME,
+			   CHECK_REFERNCE_VALUE_SINGLE, KEY_META, CHECK_REFERENCE_RESTRICT_KEYNAME, "../yes/**", KEY_END),
+		   keyNew (BASE_KEY "/no/target", KEY_END), KS_END)
+	TEST_SET (negative, ELEKTRA_PLUGIN_STATUS_ERROR)
+	EXPECT_ERROR (negative, ELEKTRA_ERROR_REFERENCE_RESTRICTION)
+	RESET (negative)
+
 	TEARDOWN ()
 }
-
-static void test_restriction_negative (void)
-{
-	SETUP (restriction negative)
-
-	TEARDOWN ()
-}
-
 
 static void test_basics (void)
 {
@@ -299,6 +317,8 @@ int main (int argc, char ** argv)
 
 	test_recursive_positive ();
 	test_recursive_negative ();
+
+	test_restriction ();
 
 	print_result ("testmod_reference");
 

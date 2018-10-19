@@ -14,6 +14,7 @@
 #include <kdberrors.h>
 #include <kdbhelper.h>
 #include <stdbool.h>
+#include <kdbglobbing.h>
 
 int elektraReferenceGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
@@ -123,10 +124,9 @@ static const char * resolveRestriction (const char * restriction, const char * b
 }
 
 
-static bool checkRestriction (const char * name, const char * restriction)
+static bool checkRestriction (const Key * key, const char * restriction)
 {
-	// TODO (kodebach): implement
-	return true;
+	return keyGlob (key, restriction) == 0;
 }
 
 static int checkSingleReference (const Key * key, KeySet * allKeys, Key * parentKey)
@@ -200,7 +200,7 @@ static int checkSingleReference (const Key * key, KeySet * allKeys, Key * parent
 			while ((curRestriction = ksNext (restrictions)) != NULL)
 			{
 				const char * restriction = resolveRestriction (keyString (curRestriction), keyName (key), parentKey);
-				if (checkRestriction (keyName (refKey), restriction))
+				if (checkRestriction (refKey, restriction))
 				{
 					anyMatch = true;
 				}
@@ -402,7 +402,7 @@ static int checkRecursiveReference (const Key * rootKey, KeySet * allKeys, Key *
 					{
 						const char * restriction =
 							resolveRestriction (keyString (curRestriction), keyName (baseKey), parentKey);
-						if (checkRestriction (refKeyName, restriction))
+						if (checkRestriction (refKey, restriction))
 						{
 							anyMatch = true;
 						}

@@ -6,5 +6,6 @@ add_plugin (reference
 			referencegraph.c
 			referencegraph.h
 		LINK_ELEKTRA elektra-ease
+			elektra-globbing
 	    ADD_TEST
 	    TEST_README)
