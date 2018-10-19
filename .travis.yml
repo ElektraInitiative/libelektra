@@ -198,7 +198,7 @@ matrix:
       compiler: clang
       env:
         - BUILD_FULL=ON
-        - TEST_COMMAND="ninja install && ctest --output-on-failure -E testscr_check && kdb run_all"
+        - &testInstallNoSourceCheck TEST_COMMAND="ninja install && ctest --output-on-failure -E testscr_check && kdb run_all"
 
     - os: osx
       name: 🍏 GCC
@@ -211,7 +211,7 @@ matrix:
       osx_image: xcode10.0
       compiler: clang
       env:
-        - *testNoSourceCheck
+        - *testInstallNoSourceCheck
 
     # HASKELL: Only build Haskell binding and plugin
 
@@ -264,7 +264,7 @@ matrix:
         - KDB_DEFAULT_STORAGE=mmapstorage
         - KDB_DB_FILE=default.mmap
         - KDB_DB_INIT=elektra.mmap
-        - *testNoSourceCheck
+        - *testInstallNoSourceCheck
 
 before_install:
   - |
