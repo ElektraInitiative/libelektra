@@ -10,9 +10,9 @@ if (DEPENDENCY_PHASE)
 	endif (NOT ANTLR4CPP_FOUND)
 
 	# Disable warnings caused by ANTLR’s source code
-	if (APPLE AND CMAKE_COMPILER_IS_GNUCXX)
+	if (CMAKE_COMPILER_IS_GNUCXX)
 		set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-attributes -Wno-overloaded-virtual -Wno-shadow")
-	endif (APPLE AND CMAKE_COMPILER_IS_GNUCXX)
+	endif (CMAKE_COMPILER_IS_GNUCXX)
 
 	set (GRAMMAR_NAME YAML)
 	set (GRAMMAR_FILE ${CMAKE_CURRENT_SOURCE_DIR}/${GRAMMAR_NAME}.g4)
