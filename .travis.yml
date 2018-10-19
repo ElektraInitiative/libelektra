@@ -193,6 +193,14 @@ matrix:
         - CXX_COMPILER=g++-8
 
     - os: osx
+      name: 🍏 FULL
+      osx_image: xcode10.0
+      compiler: clang
+      env:
+        - BUILD_FULL=ON
+        - TEST_COMMAND="ninja install && ctest --output-on-failure -E testscr_check && kdb run_all"
+
+    - os: osx
       name: 🍏 GCC
       # Translating the `syslog` plugin with GCC on macOS 10.13 does not work, since GCC is unable to compile `sys/syslog.h`.
       osx_image: xcode9.2
