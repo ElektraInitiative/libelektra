@@ -133,6 +133,7 @@ static void test_mmap_set_get_timestamps (const char * tmpFile)
 	plugin->global = ksNew (0, KS_END);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 	ksDel (ks);
+	ksDel (plugin->global);
 
 	ks = metaTestKeySet ();
 	plugin->global = simpleTestKeySet ();
@@ -961,14 +962,14 @@ int main (int argc, char ** argv)
 
 	init (argc, argv);
 
-	// testDynArray ();
+	testDynArray ();
 
 	const char * tmpFile = elektraFilename ();
 	printf ("%s\n", tmpFile);
 
 	// call once before clearStorage, to test non existent file
 	test_mmap_get_set (tmpFile);
-	
+
 	test_mmap_set_get_timestamps (tmpFile);
 	test_mmap_get_timestamps_after_reopen (tmpFile);
 

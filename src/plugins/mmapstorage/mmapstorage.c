@@ -46,7 +46,8 @@ static KeySet magicKeySet;
 static Key magicKey;
 static MmapMetaData magicMmapMetaData;
 
-typedef enum {
+typedef enum
+{
 	MODE_STORAGE,
 	MODE_GLOBALCACHE
 } PluginMode;
@@ -429,8 +430,8 @@ static void calculateMmapDataSize (MmapHeader * mmapHeader, MmapMetaData * mmapM
 {
 	Key * cur;
 	ksRewind (returned);
-	size_t dataBlocksSize = 0;	// sum of keyName and keyValue sizes
-	mmapMetaData->numKeySets = 3;		  // include the magic, global and main keyset
+	size_t dataBlocksSize = 0;		 // sum of keyName and keyValue sizes
+	mmapMetaData->numKeySets = 3;		 // include the magic, global and main keyset
 	mmapMetaData->ksAlloc = returned->alloc; // sum of allocation sizes for all meta-keysets
 	while ((cur = ksNext (returned)) != 0)
 	{
@@ -457,7 +458,7 @@ static void calculateMmapDataSize (MmapHeader * mmapHeader, MmapMetaData * mmapM
 	mmapMetaData->numKeys = returned->size + dynArray->size + 1; // +1 for magic Key
 	if (global)
 	{
-		ELEKTRA_LOG_WARNING ("calculate global keyset into size");
+		ELEKTRA_LOG_DEBUG ("calculate global keyset into size");
 		mmapMetaData->ksAlloc += global->alloc;
 		mmapMetaData->numKeys += global->size;
 
@@ -470,14 +471,15 @@ static void calculateMmapDataSize (MmapHeader * mmapHeader, MmapMetaData * mmapM
 	}
 
 	size_t keyArraySize = mmapMetaData->numKeys * SIZEOF_KEY;
-	mmapHeader->allocSize = (SIZEOF_KEYSET * mmapMetaData->numKeySets) + keyArraySize + dataBlocksSize + (mmapMetaData->ksAlloc * SIZEOF_KEY_PTR);
+	mmapHeader->allocSize =
+		(SIZEOF_KEYSET * mmapMetaData->numKeySets) + keyArraySize + dataBlocksSize + (mmapMetaData->ksAlloc * SIZEOF_KEY_PTR);
 	mmapHeader->cksumSize = mmapHeader->allocSize + (SIZEOF_MMAPMETADATA * 2); // cksumSize now contains size of all critical data
 
 	size_t padding = sizeof (uint64_t) - (mmapHeader->allocSize % sizeof (uint64_t)); // alignment for MMAP Footer at end of mapping
 	mmapHeader->allocSize += SIZEOF_MMAPHEADER + (SIZEOF_MMAPMETADATA * 2) + SIZEOF_MMAPFOOTER + padding;
 
-	mmapMetaData->numKeys--;	// don't include magic Key
-	mmapMetaData->numKeySets--;	// don't include magic KeySet
+	mmapMetaData->numKeys--;    // don't include magic Key
+	mmapMetaData->numKeySets--; // don't include magic KeySet
 }
 
 /**
@@ -695,7 +697,7 @@ static void copyKeySetToMmap (char * const dest, KeySet * keySet, KeySet * globa
 			      .globalKsArrayPtr = (dest + OFFSET_GLOBAL_KEYSET) + (SIZEOF_KEYSET * mmapMetaData->numKeySets),
 			      .ksArrayPtr = mmapAddr.globalKsArrayPtr + (SIZEOF_KEY_PTR * globalAlloc),
 			      .metaKsArrayPtr = mmapAddr.ksArrayPtr + (SIZEOF_KEY_PTR * keySet->alloc),
-			      .keyPtr = (mmapAddr.globalKsArrayPtr + (SIZEOF_KEY_PTR * mmapMetaData->ksAlloc)),
+			      .keyPtr = mmapAddr.globalKsArrayPtr + (SIZEOF_KEY_PTR * mmapMetaData->ksAlloc),
 			      .dataPtr = mmapAddr.keyPtr + (SIZEOF_KEY * mmapMetaData->numKeys),
 			      .mmapAddrInt = (uintptr_t) dest };
 
@@ -710,7 +712,7 @@ static void copyKeySetToMmap (char * const dest, KeySet * keySet, KeySet * globa
 		mmapAddr.globalKsPtr->flags = global->flags | KS_FLAG_MMAP_STRUCT | KS_FLAG_MMAP_ARRAY;
 		mmapAddr.globalKsPtr->array = (Key **) mmapAddr.globalKsArrayPtr;
 		mmapAddr.globalKsPtr->array[global->size] = 0;
-		mmapAddr.globalKsPtr->array = (Key **) ((char *) mmapAddr.globalKsArrayPtr - mmapAddr.mmapAddrInt);
+		mmapAddr.globalKsPtr->array = (Key **) (mmapAddr.globalKsArrayPtr - mmapAddr.mmapAddrInt);
 		mmapAddr.globalKsPtr->alloc = global->alloc;
 		mmapAddr.globalKsPtr->size = global->size;
 	}
@@ -726,7 +728,7 @@ static void copyKeySetToMmap (char * const dest, KeySet * keySet, KeySet * globa
 	mmapAddr.ksPtr->flags = keySet->flags | KS_FLAG_MMAP_STRUCT | KS_FLAG_MMAP_ARRAY;
 	mmapAddr.ksPtr->array = (Key **) mmapAddr.ksArrayPtr;
 	mmapAddr.ksPtr->array[keySet->size] = 0;
-	mmapAddr.ksPtr->array = (Key **) ((char *) mmapAddr.ksArrayPtr - mmapAddr.mmapAddrInt);
+	mmapAddr.ksPtr->array = (Key **) (mmapAddr.ksArrayPtr - mmapAddr.mmapAddrInt);
 	mmapAddr.ksPtr->alloc = keySet->alloc;
 	mmapAddr.ksPtr->size = keySet->size;
 
@@ -789,7 +791,7 @@ static void updatePointers (MmapMetaData * mmapMetaData, char * dest)
 {
 	uintptr_t destInt = (uintptr_t) dest;
 
- 	char * ksPtr = (dest + OFFSET_GLOBAL_KEYSET);
+	char * ksPtr = (dest + OFFSET_GLOBAL_KEYSET);
 	char * ksArrayPtr = ksPtr + SIZEOF_KEYSET * mmapMetaData->numKeySets;
 	char * keyPtr = ksArrayPtr + SIZEOF_KEY_PTR * mmapMetaData->ksAlloc;
 
@@ -811,13 +813,13 @@ static void updatePointers (MmapMetaData * mmapMetaData, char * dest)
 	{
 		Key * key = (Key *) keyPtr;
 		keyPtr += SIZEOF_KEY;
-		if (key->data.v)
+		if (key->data.c)
 		{
-			key->data.v = (void *) ((char *) (key->data.v) + destInt);
+			key->data.c = key->data.c + destInt;
 		}
 		if (key->key)
 		{
-			key->key = ((char *) (key->key) + destInt);
+			key->key = key->key + destInt;
 		}
 		if (key->meta)
 		{
@@ -842,7 +844,7 @@ int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * handle ELEKTRA_UNUSED, Key * errorK
 	// plugin initialization logic
 
 	const uintptr_t magicNumber = generateMagicNumber ();
-	if (magicKeySet.alloc == 0) initMagicKeySet (magicNumber);
+	if (magicKeySet.array == 0) initMagicKeySet (magicNumber);
 	if (magicKey.data.v == 0) initMagicKey (magicNumber);
 	if (magicMmapMetaData.numKeys == 0) initMagicMmapMetaData (magicNumber);
 
