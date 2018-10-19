@@ -68,7 +68,7 @@ static void test_read (char const * const filepath, KeySet * const expected)
 	CLOSE_PLUGIN ();
 }
 
-static void test_empty ()
+static void test_empty (void)
 {
 	test_read ("yanlr/null.yaml",
 #include "yanlr/null.h"
@@ -78,7 +78,7 @@ static void test_empty ()
 	);
 }
 
-static void test_scalar ()
+static void test_scalar (void)
 {
 	test_read ("yanlr/plain_scalar-word_chars.yaml",
 #include "yanlr/plain_scalar-word_chars.h"
@@ -94,7 +94,7 @@ static void test_scalar ()
 	);
 }
 
-static void test_list ()
+static void test_list (void)
 {
 	test_read ("yanlr/list-plain_scalars.yaml",
 #include "yanlr/list-plain_scalars.h"
@@ -104,7 +104,7 @@ static void test_list ()
 	);
 }
 
-static void test_map ()
+static void test_map (void)
 {
 	test_read ("yanlr/map-null.yaml",
 #include "yanlr/map-null.h"
