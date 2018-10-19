@@ -3,6 +3,21 @@ if (DEPENDENCY_PHASE)
 	if (NOT YAML-CPP_FOUND)
 		remove_plugin (yamlcpp "yaml-cpp (libyaml-cpp-dev >= 0.6) not found")
 	endif (NOT YAML-CPP_FOUND)
+
+	set (DISABLE_PLUGIN_ASAN
+	     ${ENABLE_ASAN}
+	     AND
+	     "${CMAKE_CXX_COMPILER_ID}"
+	     MATCHES
+	     "GNU"
+	     AND
+	     ${CMAKE_CXX_COMPILER_VERSION}
+	     VERSION_LESS
+	     7)
+
+	if (${DISABLE_PLUGIN_ASAN})
+		remove_plugin (yamlcpp "ASAN enabled GCC builds of the plugin report memory leaks")
+	endif (${DISABLE_PLUGIN_ASAN})
 endif (DEPENDENCY_PHASE)
 
 add_plugin (yamlcpp
