@@ -102,3 +102,10 @@ Usage examples:
 - [Basic notifications using polling](https://www.libelektra.org/examples/notificationpolling)
 - [Using asynchronous I/O bindings](https://www.libelektra.org/examples/notificationasync)
 - [Reload KDB when Elektra's configuration has changed](https://www.libelektra.org/examples/notificationreload)
+
+### Globbing
+
+    libelektra-globbing.so
+
+**[globbing](globbing/)** provides globbing functionality for Elektra. Take a look at 
+the documentation of `keyGlob()` and `ksGlob()` for more information.
