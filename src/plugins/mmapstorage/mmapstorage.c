@@ -430,15 +430,15 @@ static void calculateMmapDataSize (MmapHeader * mmapHeader, MmapMetaData * mmapM
 	Key * cur;
 	ksRewind (returned);
 	size_t dataBlocksSize = 0;	// sum of keyName and keyValue sizes
-	size_t numKeySets = 3;		  // include the magic, global and main keyset
-	size_t ksAlloc = returned->alloc; // sum of allocation sizes for all meta-keysets
+	mmapMetaData->numKeySets = 3;		  // include the magic, global and main keyset
+	mmapMetaData->ksAlloc = returned->alloc; // sum of allocation sizes for all meta-keysets
 	while ((cur = ksNext (returned)) != 0)
 	{
 		dataBlocksSize += (cur->keySize + cur->keyUSize + cur->dataSize);
 
 		if (cur->meta)
 		{
-			++numKeySets;
+			++mmapMetaData->numKeySets;
 
 			Key * curMeta;
 			ksRewind (cur->meta);
@@ -450,7 +450,7 @@ static void calculateMmapDataSize (MmapHeader * mmapHeader, MmapMetaData * mmapM
 					dataBlocksSize += (curMeta->keySize + curMeta->keyUSize + curMeta->dataSize);
 				}
 			}
-			ksAlloc += (cur->meta->alloc);
+			mmapMetaData->ksAlloc += (cur->meta->alloc);
 		}
 	}
 
@@ -458,7 +458,7 @@ static void calculateMmapDataSize (MmapHeader * mmapHeader, MmapMetaData * mmapM
 	if (global)
 	{
 		ELEKTRA_LOG_WARNING ("calculate global keyset into size");
-		ksAlloc += global->alloc;
+		mmapMetaData->ksAlloc += global->alloc;
 		mmapMetaData->numKeys += global->size;
 
 		Key * tsKey;
@@ -470,16 +470,14 @@ static void calculateMmapDataSize (MmapHeader * mmapHeader, MmapMetaData * mmapM
 	}
 
 	size_t keyArraySize = mmapMetaData->numKeys * SIZEOF_KEY;
-	size_t allocSize = (SIZEOF_KEYSET * numKeySets) + keyArraySize + dataBlocksSize + (ksAlloc * SIZEOF_KEY_PTR);
-	mmapHeader->cksumSize = allocSize + (SIZEOF_MMAPMETADATA * 2); // cksumSize now contains size of all critical data
+	mmapHeader->allocSize = (SIZEOF_KEYSET * mmapMetaData->numKeySets) + keyArraySize + dataBlocksSize + (mmapMetaData->ksAlloc * SIZEOF_KEY_PTR);
+	mmapHeader->cksumSize = mmapHeader->allocSize + (SIZEOF_MMAPMETADATA * 2); // cksumSize now contains size of all critical data
 
-	size_t padding = sizeof (uint64_t) - (allocSize % sizeof (uint64_t)); // alignment for MMAP Footer at end of mapping
-	allocSize += SIZEOF_MMAPHEADER + (SIZEOF_MMAPMETADATA * 2) + SIZEOF_MMAPFOOTER + padding;
+	size_t padding = sizeof (uint64_t) - (mmapHeader->allocSize % sizeof (uint64_t)); // alignment for MMAP Footer at end of mapping
+	mmapHeader->allocSize += SIZEOF_MMAPHEADER + (SIZEOF_MMAPMETADATA * 2) + SIZEOF_MMAPFOOTER + padding;
 
-	mmapMetaData->numKeys = mmapMetaData->numKeys - 1;		// don't include magic Key
-	mmapMetaData->numKeySets = numKeySets - 1;	// don't include magic KeySet
-	mmapMetaData->ksAlloc = ksAlloc;
-	mmapHeader->allocSize = allocSize;
+	mmapMetaData->numKeys--;	// don't include magic Key
+	mmapMetaData->numKeySets--;	// don't include magic KeySet
 }
 
 /**
@@ -762,7 +760,7 @@ static void mmapToKeySet (Plugin * handle, char * mappedRegion, KeySet * returne
 	returned->flags = KS_FLAG_MMAP_ARRAY;
 	// we intentionally do not change the KeySet->opmphm here!
 
-	if (mode == MODE_GLOBALCACHE) // TODO: code duplication here
+	if (mode == MODE_GLOBALCACHE) // TODO: remove code duplication here
 	{
 		KeySet * global = elektraPluginGetGlobalKeySet (handle);
 		ksClose (global); // TODO: if we have a global keyset, maybe use ksAppend?
