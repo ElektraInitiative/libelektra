@@ -100,7 +100,7 @@ RUN echo '\
 
 # YAEP
 RUN cd /tmp \
-    && git clone --depth 1 https://github.com/sanssecours/yaep.git \
+    && git clone --depth 1 https://github.com/ElektraInitiative/yaep.git \
     && cd yaep \
     && env CXXFLAGS='-fPIC' ./configure \
     && make -C src install \
