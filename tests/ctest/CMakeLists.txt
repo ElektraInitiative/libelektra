@@ -36,3 +36,5 @@ target_link_elektra (test_operation elektra-proposal)
 target_link_elektra (test_proposal elektra-proposal)
 
 target_link_elektra (test_utility elektra-utility)
+
+target_link_elektra(test_globbing elektra-globbing)
