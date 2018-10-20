@@ -19,6 +19,7 @@
 #include <test_key.h>
 
 #include "../crypto/common_gpg_tests.c"
+#include "../crypto/gpgagent_teardown.c"
 #include "fcrypt.h"
 
 #define PLUGIN_NAME "fcrypt"
@@ -113,15 +114,6 @@ static int isTestFileCorrect (const char * file)
 
 	fclose (f);
 	return returnValue;
-}
-
-static void test_teardown (void)
-{
-	int status = system ("gpg-connect-agent --quiet KILLAGENT /bye");
-	if (status != 0)
-	{
-		fprintf (stderr, "Terminating gpg-agent returned with status “%d”", status);
-	}
 }
 
 static void test_init (void)

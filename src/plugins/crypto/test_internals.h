@@ -20,6 +20,7 @@
 #include <tests_plugin.h>
 
 #include "common_gpg_tests.c"
+#include "gpgagent_teardown.c"
 #include "test_key.h"
 
 #define TEST_KEY_ID "DDEBEF9EE2DC931701338212DAF635B17F230E8D"
@@ -148,15 +149,6 @@ static void test_init (const char * pluginName)
 	elektraModulesClose (modules, 0);
 	ksDel (modules);
 	keyDel (parentKey);
-}
-
-static void test_teardown (void)
-{
-	int status = system ("gpg-connect-agent --quiet KILLAGENT /bye");
-	if (status != 0)
-	{
-		fprintf (stderr, "Terminating gpg-agent returned with status “%d”", status);
-	}
 }
 
 static void test_incomplete_config (const char * pluginName)
