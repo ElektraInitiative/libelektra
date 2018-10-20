@@ -261,6 +261,7 @@ you up to date with the multi-language support provided by Elektra.
 - minor refactoring of the unit tests for crypto, fcrypt, gpgme: moved shared code to separate module in order to avoid code duplication. *(Peter Nirschl)*
 - The CMake targets for plugin tests (`testmod_[plugin]`) now depend on the respective CMake targets for the plugins themselves
   (`elektra-[plugin]`). *(Klemens Böswirth)*
+- Fixed bug in CMake plugin tests, if only `BUILD_FULL` but not `BUILD_SHARED` is used. *(Klemens Böswirth)*
 - The test [`testscr_check_formatting`](https://master.libelektra.org/tests/shell/check_formatting.sh) now also checks the formatting of
   Shell code. *(René Schwaiger)*
 - We pumped version numbers in XML-test files. *(Markus Raab)*
