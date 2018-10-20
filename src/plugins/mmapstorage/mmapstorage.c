@@ -414,7 +414,7 @@ static int verifyChecksum (char * mappedRegion, MmapHeader * mmapHeader)
  * consistency checks, KeySets, meta-KeySets, Keys, meta-Keys, Key names and values.
  * Copied meta-Keys are counted once for deduplication. If needed, padding is added to align the
  * MmapFooter properly at the end of the mapping. When the plugin is in a global position,
- * acting as a cache, the calculated size includes the KeySet with the timestamps of configurations.
+ * acting as a cache, the calculated size includes the global KeySet.
  *
  * The complete size and some other meta-information are stored in the MmapHeader and MmapMetaData.
  * The DynArray stores the unique meta-Key pointers needed for deduplication.
@@ -422,7 +422,7 @@ static int verifyChecksum (char * mappedRegion, MmapHeader * mmapHeader)
  * @param mmapHeader to store the allocation size
  * @param mmapMetaData to store the number of KeySets and Keys
  * @param returned the KeySet that should be stored
- * @param timestamps the KeySet containing file timestamps from resolvers
+ * @param global the global KeySet
  * @param dynArray to store meta-key pointers for deduplication
  */
 static void calculateMmapDataSize (MmapHeader * mmapHeader, MmapMetaData * mmapMetaData, KeySet * returned, KeySet * global,
@@ -430,7 +430,8 @@ static void calculateMmapDataSize (MmapHeader * mmapHeader, MmapMetaData * mmapM
 {
 	Key * cur;
 	ksRewind (returned);
-	size_t dataBlocksSize = 0;		 // sum of keyName and keyValue sizes
+	size_t dataBlocksSize = 0; // sum of keyName and keyValue sizes
+	mmapMetaData->numKeys = 0;
 	mmapMetaData->numKeySets = 3;		 // include the magic, global and main keyset
 	mmapMetaData->ksAlloc = returned->alloc; // sum of allocation sizes for all meta-keysets
 	while ((cur = ksNext (returned)) != 0)
@@ -455,20 +456,37 @@ static void calculateMmapDataSize (MmapHeader * mmapHeader, MmapMetaData * mmapM
 		}
 	}
 
-	mmapMetaData->numKeys = returned->size + dynArray->size + 1; // +1 for magic Key
-	if (global)
+	if (global) // TODO: remove this code duplication
 	{
 		ELEKTRA_LOG_DEBUG ("calculate global keyset into size");
 		mmapMetaData->ksAlloc += global->alloc;
 		mmapMetaData->numKeys += global->size;
 
-		Key * tsKey;
+		Key * globalKey;
 		ksRewind (global);
-		while ((tsKey = ksNext (global)) != 0)
+		while ((globalKey = ksNext (global)) != 0)
 		{
-			dataBlocksSize += (tsKey->keySize + tsKey->keyUSize + tsKey->dataSize);
+			dataBlocksSize += (globalKey->keySize + globalKey->keyUSize + globalKey->dataSize);
+
+			if (globalKey->meta)
+			{
+				++mmapMetaData->numKeySets;
+
+				Key * curMeta;
+				ksRewind (globalKey->meta);
+				while ((curMeta = ksNext (globalKey->meta)) != 0)
+				{
+					if (ELEKTRA_PLUGIN_FUNCTION (mmapstorage, dynArrayFindOrInsert) (curMeta, dynArray) == 0)
+					{
+						// key was just inserted
+						dataBlocksSize += (curMeta->keySize + curMeta->keyUSize + curMeta->dataSize);
+					}
+				}
+				mmapMetaData->ksAlloc += (globalKey->meta->alloc);
+			}
 		}
 	}
+	mmapMetaData->numKeys += returned->size + dynArray->size + 1; // +1 for magic Key
 
 	size_t keyArraySize = mmapMetaData->numKeys * SIZEOF_KEY;
 	mmapHeader->allocSize =
@@ -493,11 +511,13 @@ static void calculateMmapDataSize (MmapHeader * mmapHeader, MmapMetaData * mmapM
  */
 static void writeMetaKeys (MmapAddr * mmapAddr, DynArray * dynArray)
 {
-	// allocate space in DynArray to remember the addresses of mapped meta-keys
-	if (dynArray->size > 0)
+	if (dynArray->size == 0)
 	{
-		dynArray->mappedKeyArray = elektraCalloc (dynArray->size * sizeof (Key *));
+		return;
 	}
+
+	// allocate space in DynArray to remember the addresses of mapped meta-keys
+	dynArray->mappedKeyArray = elektraCalloc (dynArray->size * sizeof (Key *));
 
 	// write the meta keys into place
 	for (size_t i = 0; i < dynArray->size; ++i)
@@ -627,14 +647,7 @@ static void writeKeys (KeySet * keySet, MmapAddr * mmapAddr, DynArray * dynArray
 		}
 
 		// write the meta KeySet
-		if (mode == MODE_STORAGE)
-		{
-			mmapKey->meta = writeMetaKeySet (cur, mmapAddr, dynArray);
-		}
-		else
-		{
-			mmapKey->meta = 0;
-		}
+		mmapKey->meta = writeMetaKeySet (cur, mmapAddr, dynArray);
 
 		// move Key itself
 		mmapKey->flags |= KEY_FLAG_MMAP_STRUCT | KEY_FLAG_MMAP_KEY | KEY_FLAG_MMAP_DATA;
@@ -703,10 +716,14 @@ static void copyKeySetToMmap (char * const dest, KeySet * keySet, KeySet * globa
 
 	printMmapAddr (&mmapAddr);
 	printMmapMetaData (mmapMetaData);
+
+	// first write the meta keys into place
+	writeMetaKeys (&mmapAddr, dynArray);
+
 	if (global)
 	{
-		ELEKTRA_LOG_WARNING ("writing GLOBAL KEYSET");
-		if (global->size != 0) writeKeys (global, &mmapAddr, 0, MODE_GLOBALCACHE);
+		ELEKTRA_LOG_DEBUG ("writing GLOBAL KEYSET");
+		if (global->size != 0) writeKeys (global, &mmapAddr, dynArray, MODE_GLOBALCACHE);
 
 		set_bit (mmapHeader->formatFlags, MMAP_FLAG_TIMESTAMPS);
 		mmapAddr.globalKsPtr->flags = global->flags | KS_FLAG_MMAP_STRUCT | KS_FLAG_MMAP_ARRAY;
@@ -719,9 +736,7 @@ static void copyKeySetToMmap (char * const dest, KeySet * keySet, KeySet * globa
 
 	if (keySet->size != 0)
 	{
-		// first write the meta keys into place
-		writeMetaKeys (&mmapAddr, dynArray);
-		// then write Keys including meta KeySets
+		// now write Keys including meta KeySets
 		writeKeys (keySet, &mmapAddr, dynArray, MODE_STORAGE);
 	}
 
