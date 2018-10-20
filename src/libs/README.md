@@ -19,6 +19,7 @@ loader functionality. The files are linked to **[libelektra](elektra/)**.
 
 **[libease](ease/)** contains data-structure operations on top of libcore which do not depend on internals.
 Applications and plugins can choose to not link against it if they want to stay minimal.
+Its main goal is to make programming with Elektra easier if some extra kB are not an issue.
 
 ### Libplugin
 
