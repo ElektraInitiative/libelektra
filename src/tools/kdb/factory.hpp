@@ -59,7 +59,7 @@
 class Instancer
 {
 public:
-	virtual Command * get () = 0;
+	virtual std::unique_ptr<Command> get () = 0;
 	virtual ~Instancer ()
 	{
 	}
@@ -68,15 +68,15 @@ public:
 template <class T>
 class Cnstancer : public Instancer
 {
-	virtual T * get () override
+	virtual std::unique_ptr<Command> get () override
 	{
-		return new T ();
+		return std::unique_ptr<Command> (new T ());
 	}
 };
 
 class Factory
 {
-	std::map<std::string, Instancer *> m_factory;
+	std::map<std::string, std::shared_ptr<Instancer>> m_factory;
 
 public:
 	Factory () : m_factory ()
@@ -120,14 +120,6 @@ public:
 		m_factory.insert (std::make_pair ("list-commands", new Cnstancer<ListCommandsCommand> ()));
 	}
 
-	~Factory ()
-	{
-		for (auto & elem : m_factory)
-		{
-			delete elem.second;
-		}
-	}
-
 	std::vector<std::string> getPrettyCommands () const
 	{
 		std::vector<std::string> ret;
@@ -137,9 +129,8 @@ public:
 			text += elem.first;
 			text += getStdColor (ANSI_COLOR::RESET);
 			text += "\t";
-			Command * cmd = elem.second->get ();
+			CommandPtr cmd = elem.second->get ();
 			text += cmd->getShortHelpText ();
-			delete cmd;
 			ret.push_back (text);
 		}
 		ret.push_back (getStdColor (ANSI_COLOR::BOLD) + "help" + getStdColor (ANSI_COLOR::RESET) + "\t" +
@@ -164,7 +155,7 @@ public:
 
 	CommandPtr get (std::string const & which)
 	{
-		Instancer * instancer = m_factory[which];
+		std::shared_ptr<Instancer> instancer = m_factory[which];
 		if (instancer)
 		{
 			CommandPtr ret (instancer->get ());
