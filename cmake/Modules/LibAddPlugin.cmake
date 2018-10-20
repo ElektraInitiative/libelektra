@@ -124,11 +124,13 @@ function (add_plugintest testname)
 		add_executable (${testexename} ${TEST_SOURCES})
 		add_dependencies (${testexename} kdberrors_generated)
 
-		if (ARG_LINK_PLUGIN)
-			add_dependencies (${testexename} elektra-${ARG_LINK_PLUGIN})
-		else ()
-			add_dependencies (${testexename} elektra-${testname})
-		endif ()
+		if(BUILD_SHARED)
+			if (ARG_LINK_PLUGIN)
+				add_dependencies (${testexename} elektra-${ARG_LINK_PLUGIN})
+			else ()
+				add_dependencies (${testexename} elektra-${testname})
+			endif ()
+		endif()
 
 		# ~~~
 		# alternative approach to restore_variable
