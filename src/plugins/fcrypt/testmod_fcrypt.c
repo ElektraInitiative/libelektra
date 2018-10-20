@@ -19,7 +19,7 @@
 #include <test_key.h>
 
 #include "../crypto/common_gpg_tests.c"
-#include "../crypto/gpgagent_teardown.c"
+#include "../crypto/gpgagent_teardown.h"
 #include "fcrypt.h"
 
 #define PLUGIN_NAME "fcrypt"

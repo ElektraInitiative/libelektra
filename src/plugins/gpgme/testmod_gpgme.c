@@ -20,7 +20,7 @@
 
 #include "gpgme.h"
 
-#include "../crypto/gpgagent_teardown.c"
+#include "../crypto/gpgagent_teardown.h"
 
 // GPG private key for importing and testing
 #include "../crypto/test_key.h"

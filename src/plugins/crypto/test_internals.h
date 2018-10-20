@@ -20,7 +20,7 @@
 #include <tests_plugin.h>
 
 #include "common_gpg_tests.c"
-#include "gpgagent_teardown.c"
+#include "gpgagent_teardown.h"
 #include "test_key.h"
 
 #define TEST_KEY_ID "DDEBEF9EE2DC931701338212DAF635B17F230E8D"
