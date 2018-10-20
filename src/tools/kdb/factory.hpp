@@ -39,6 +39,7 @@
 #include <list.hpp>
 #include <listcommands.hpp>
 #include <ls.hpp>
+#include <memory>
 #include <merge.hpp>
 #include <metaget.hpp>
 #include <metals.hpp>
@@ -82,42 +83,42 @@ public:
 	Factory () : m_factory ()
 	{
 		// TODO: to add a new command, 2.) add a line here  -> and you are done
-		m_factory.insert (std::make_pair ("get", new Cnstancer<GetCommand> ()));
-		m_factory.insert (std::make_pair ("set", new Cnstancer<SetCommand> ()));
-		m_factory.insert (std::make_pair ("rm", new Cnstancer<RemoveCommand> ()));
-		m_factory.insert (std::make_pair ("ls", new Cnstancer<LsCommand> ()));
-		m_factory.insert (std::make_pair ("complete", new Cnstancer<CompleteCommand> ()));
-		m_factory.insert (std::make_pair ("cp", new Cnstancer<CpCommand> ()));
-		m_factory.insert (std::make_pair ("mv", new Cnstancer<MvCommand> ()));
-		m_factory.insert (std::make_pair ("mount", new Cnstancer<MountCommand> ()));
-		m_factory.insert (std::make_pair ("remount", new Cnstancer<RemountCommand> ()));
-		m_factory.insert (std::make_pair ("shell", new Cnstancer<ShellCommand> ()));
-		m_factory.insert (std::make_pair ("find", new Cnstancer<FindCommand> ()));
-		m_factory.insert (std::make_pair ("getmeta", new Cnstancer<MetaGetCommand> ()));
-		m_factory.insert (std::make_pair ("rmmeta", new Cnstancer<MetaRemoveCommand> ()));
-		m_factory.insert (std::make_pair ("setmeta", new Cnstancer<MetaSetCommand> ()));
-		m_factory.insert (std::make_pair ("lsmeta", new Cnstancer<MetaLsCommand> ()));
-		m_factory.insert (std::make_pair ("info", new Cnstancer<InfoCommand> ()));
-		m_factory.insert (std::make_pair ("test", new Cnstancer<TestCommand> ()));
-		m_factory.insert (std::make_pair ("check", new Cnstancer<CheckCommand> ()));
-		m_factory.insert (std::make_pair ("vset", new Cnstancer<ValidationCommand> ()));
-		m_factory.insert (std::make_pair ("fstab", new Cnstancer<FstabCommand> ()));
-		m_factory.insert (std::make_pair ("export", new Cnstancer<ExportCommand> ()));
-		m_factory.insert (std::make_pair ("import", new Cnstancer<ImportCommand> ()));
-		m_factory.insert (std::make_pair ("convert", new Cnstancer<ConvertCommand> ()));
-		m_factory.insert (std::make_pair ("umount", new Cnstancer<UmountCommand> ()));
-		m_factory.insert (std::make_pair ("file", new Cnstancer<FileCommand> ()));
-		m_factory.insert (std::make_pair ("sget", new Cnstancer<ShellGetCommand> ()));
-		m_factory.insert (std::make_pair ("merge", new Cnstancer<MergeCommand> ()));
-		m_factory.insert (std::make_pair ("list", new Cnstancer<ListCommand> ()));
-		m_factory.insert (std::make_pair ("editor", new Cnstancer<EditorCommand> ()));
-		m_factory.insert (std::make_pair ("spec-mount", new Cnstancer<SpecMountCommand> ()));
-		m_factory.insert (std::make_pair ("smount", new Cnstancer<SpecMountCommand> ()));
-		m_factory.insert (std::make_pair ("global-mount", new Cnstancer<GlobalMountCommand> ()));
-		m_factory.insert (std::make_pair ("global-umount", new Cnstancer<GlobalUmountCommand> ()));
-		m_factory.insert (std::make_pair ("gmount", new Cnstancer<GlobalMountCommand> ()));
-		m_factory.insert (std::make_pair ("gumount", new Cnstancer<GlobalUmountCommand> ()));
-		m_factory.insert (std::make_pair ("list-commands", new Cnstancer<ListCommandsCommand> ()));
+		m_factory.insert (std::make_pair ("get", std::make_shared<Cnstancer<GetCommand>> ()));
+		m_factory.insert (std::make_pair ("set", std::make_shared<Cnstancer<SetCommand>> ()));
+		m_factory.insert (std::make_pair ("rm", std::make_shared<Cnstancer<RemoveCommand>> ()));
+		m_factory.insert (std::make_pair ("ls", std::make_shared<Cnstancer<LsCommand>> ()));
+		m_factory.insert (std::make_pair ("complete", std::make_shared<Cnstancer<CompleteCommand>> ()));
+		m_factory.insert (std::make_pair ("cp", std::make_shared<Cnstancer<CpCommand>> ()));
+		m_factory.insert (std::make_pair ("mv", std::make_shared<Cnstancer<MvCommand>> ()));
+		m_factory.insert (std::make_pair ("mount", std::make_shared<Cnstancer<MountCommand>> ()));
+		m_factory.insert (std::make_pair ("remount", std::make_shared<Cnstancer<RemountCommand>> ()));
+		m_factory.insert (std::make_pair ("shell", std::make_shared<Cnstancer<ShellCommand>> ()));
+		m_factory.insert (std::make_pair ("find", std::make_shared<Cnstancer<FindCommand>> ()));
+		m_factory.insert (std::make_pair ("getmeta", std::make_shared<Cnstancer<MetaGetCommand>> ()));
+		m_factory.insert (std::make_pair ("rmmeta", std::make_shared<Cnstancer<MetaRemoveCommand>> ()));
+		m_factory.insert (std::make_pair ("setmeta", std::make_shared<Cnstancer<MetaSetCommand>> ()));
+		m_factory.insert (std::make_pair ("lsmeta", std::make_shared<Cnstancer<MetaLsCommand>> ()));
+		m_factory.insert (std::make_pair ("info", std::make_shared<Cnstancer<InfoCommand>> ()));
+		m_factory.insert (std::make_pair ("test", std::make_shared<Cnstancer<TestCommand>> ()));
+		m_factory.insert (std::make_pair ("check", std::make_shared<Cnstancer<CheckCommand>> ()));
+		m_factory.insert (std::make_pair ("vset", std::make_shared<Cnstancer<ValidationCommand>> ()));
+		m_factory.insert (std::make_pair ("fstab", std::make_shared<Cnstancer<FstabCommand>> ()));
+		m_factory.insert (std::make_pair ("export", std::make_shared<Cnstancer<ExportCommand>> ()));
+		m_factory.insert (std::make_pair ("import", std::make_shared<Cnstancer<ImportCommand>> ()));
+		m_factory.insert (std::make_pair ("convert", std::make_shared<Cnstancer<ConvertCommand>> ()));
+		m_factory.insert (std::make_pair ("umount", std::make_shared<Cnstancer<UmountCommand>> ()));
+		m_factory.insert (std::make_pair ("file", std::make_shared<Cnstancer<FileCommand>> ()));
+		m_factory.insert (std::make_pair ("sget", std::make_shared<Cnstancer<ShellGetCommand>> ()));
+		m_factory.insert (std::make_pair ("merge", std::make_shared<Cnstancer<MergeCommand>> ()));
+		m_factory.insert (std::make_pair ("list", std::make_shared<Cnstancer<ListCommand>> ()));
+		m_factory.insert (std::make_pair ("editor", std::make_shared<Cnstancer<EditorCommand>> ()));
+		m_factory.insert (std::make_pair ("spec-mount", std::make_shared<Cnstancer<SpecMountCommand>> ()));
+		m_factory.insert (std::make_pair ("smount", std::make_shared<Cnstancer<SpecMountCommand>> ()));
+		m_factory.insert (std::make_pair ("global-mount", std::make_shared<Cnstancer<GlobalMountCommand>> ()));
+		m_factory.insert (std::make_pair ("global-umount", std::make_shared<Cnstancer<GlobalUmountCommand>> ()));
+		m_factory.insert (std::make_pair ("gmount", std::make_shared<Cnstancer<GlobalMountCommand>> ()));
+		m_factory.insert (std::make_pair ("gumount", std::make_shared<Cnstancer<GlobalUmountCommand>> ()));
+		m_factory.insert (std::make_pair ("list-commands", std::make_shared<Cnstancer<ListCommandsCommand>> ()));
 	}
 
 	std::vector<std::string> getPrettyCommands () const
