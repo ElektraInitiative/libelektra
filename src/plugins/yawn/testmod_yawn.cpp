@@ -75,8 +75,6 @@ TEST (yawn, basics)
 	CppKeySet keys;
 	succeed_if_same (plugin->kdbGet (plugin, keys.getKeySet (), *parent), ELEKTRA_PLUGIN_STATUS_SUCCESS, "Call of `kdbGet` failed");
 
-	succeed_if_same (plugin->kdbSet (plugin, keys.getKeySet (), *parent), ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "Call of `kdbSet` failed");
-
 	CLOSE_PLUGIN ();
 }
 
