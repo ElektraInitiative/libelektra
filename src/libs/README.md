@@ -107,5 +107,13 @@ Usage examples:
 
     libelektra-globbing.so
 
-**[globbing](globbing/)** provides globbing functionality for Elektra. Take a look at 
-the documentation of `keyGlob()` and `ksGlob()` for more information.
+**[globbing](globbing/)** provides globbing functionality for Elektra.
+
+The supported syntax is a superset of the syntax used by `glob(7)`. The following extensions are supported:
+
+- `#`, when used as `/#/` (or `/#"` at the end of the pattern), matches a valid array item
+- `_` is the exact opposite; it matches anything but a valid array item
+- if the pattern ends with `/__`, matching key names may contain arbitrary suffixes
+
+For more info take a look a the documentation of `elektraKeyGlob()` and `elektraKsGlob()`.
+

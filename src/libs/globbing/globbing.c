@@ -76,22 +76,52 @@ bool isArrayName (const char * name) // TODO: move? definitely useful elsewhere,
 	return digits + underscores + 2 <= ELEKTRA_MAX_ARRAY_SIZE && digits == underscores + 1;
 }
 
+static int checkElektraExtensions (const char * name, const char * pattern)
+{
+	const char * ptr = pattern;
+	const char * keyPtr = name;
+	while ((ptr = strchr (ptr + 1, '/')) != NULL && (keyPtr = strchr (keyPtr + 1, '/')) != NULL)
+	{
+		if (*(ptr + 2) == '/' || *(ptr + 2) == '\0')
+		{
+			if (*(ptr + 1) == '#' && !isArrayName (keyPtr + 1))
+			{
+				return ELEKTRA_GLOB_NOMATCH;
+			}
+
+			if (*(ptr + 1) == '_' && isArrayName (keyPtr + 1))
+			{
+				return ELEKTRA_GLOB_NOMATCH;
+			}
+		}
+	}
+
+	return 0;
+}
+
 /**
  * @brief checks whether a given Key matches a given globbing pattern
  *
- * The globbing patterns for this function are a superset of those from fnmatch(3)
+ * The globbing patterns for this function are a superset of those from glob(7)
  * used with the FNM_PATHNAME flag:
  * <ul>
  * 	<li> '*' matches any series of characters other than '/'</li>
  * 	<li> '?' matches any single character except '/' </li>
  * 	<li> '#', when used as "/#/" (or "/#" at the end of @p pattern), matches a valid array item </li>
  * 	<li> '_', when used as "/_/"(or "/_" at the end of @p pattern), matches a key part that is <b>not</b> a valid array item </li>
- * 	<li> if the pattern ends with "&#47;**", matching key names may contain arbitrary suffixes </li>
+ * 	<li>
+ * 		everything between '[' and ']' is treated as a character class, matching exactly one of the
+ * 		given characters (see glob(7) for details)
+ * 	</li>
+ * 	<li> if the pattern ends with "/__", matching key names may contain arbitrary suffixes </li>
  * </ul>
  *
  * @note '*' cannot match an empty key name part. This also means patterns like "something&#47;*" will
  * not match the key "something". This is because each slash ('/') in the pattern has to correspond to
  * a slash in the canonical key name, which neither end in a slash nor contain multiple slashes in sequence.
+ *
+ * @note use "[_]", "[#]", "[*]", "[?]" and "[[]" to match the literal characters '_', '#', '*', '?' and '['.
+ * Using backslash ('\') for escaping is not supported.
  *
  * @param key the Key to match against the globbing pattern
  * @param pattern the globbing pattern used
@@ -100,7 +130,7 @@ bool isArrayName (const char * name) // TODO: move? definitely useful elsewhere,
  *
  * @see isArrayName(), for info on valid array items
  */
-int keyGlob (const Key * key, const char * pattern)
+int elektraKeyGlob (const Key * key, const char * pattern)
 {
 	if (key == NULL || pattern == NULL)
 	{
@@ -111,10 +141,16 @@ int keyGlob (const Key * key, const char * pattern)
 	char * name = elektraMalloc (nameSize);
 	keyGetName (key, name, nameSize);
 
-	const size_t patternSlashes = strcnt (pattern, '/');
-
 	size_t len = strlen (pattern);
-	bool prefixMode = len >= 2 && elektraStrCmp (pattern + len - 3, "/**") == 0;
+	bool prefixMode = len >= 2 && elektraStrCmp (pattern + len - 3, "/__") == 0;
+
+	size_t patternSlashes = strcnt (pattern, '/');
+
+	if (prefixMode)
+	{
+		// last slash in pattern is treated specially
+		patternSlashes--;
+	}
 
 	char * patternEnd = name;
 	for (size_t i = 0; i < patternSlashes; ++i)
@@ -132,7 +168,11 @@ int keyGlob (const Key * key, const char * pattern)
 	if (prefixMode)
 	{
 		// mark end of relevant part
-		*(patternEnd + 1) = '\0';
+		char * next = strchr (patternEnd + 1, '/');
+		if (next != NULL)
+		{
+			*(next) = '\0';
+		}
 	}
 	else if (strchr (patternEnd + 1, '/') != NULL)
 	{
@@ -142,7 +182,13 @@ int keyGlob (const Key * key, const char * pattern)
 	}
 
 	char * fnmPattern = elektraToFnmatchGlob (elektraStrDup (pattern));
-	int rc = fnmatch (fnmPattern, name, FNM_PATHNAME);
+	if (prefixMode)
+	{
+		// remove __ from end
+		*(fnmPattern + len - 3) = '\0';
+	}
+
+	int rc = fnmatch (fnmPattern, name, FNM_PATHNAME | FNM_NOESCAPE);
 	elektraFree (fnmPattern);
 
 	if (rc == FNM_NOMATCH)
@@ -151,27 +197,11 @@ int keyGlob (const Key * key, const char * pattern)
 		return ELEKTRA_GLOB_NOMATCH;
 	}
 
-	const char * ptr = pattern;
-	const char * keyPtr = name;
-	while ((ptr = strchr (ptr + 1, '/')) != NULL && (keyPtr = strchr (keyPtr + 1, '/')) != NULL)
-	{
-		if (*(ptr + 2) == '/' || *(ptr + 2) == '\0')
-		{
-			if (*(ptr + 1) == '#' && !isArrayName (keyPtr + 1))
-			{
-				free (name);
-				return ELEKTRA_GLOB_NOMATCH;
-			}
+	rc = checkElektraExtensions (name, pattern);
 
-			if (*(ptr + 1) == '_' && isArrayName (keyPtr + 1))
-			{
-				free (name);
-				return ELEKTRA_GLOB_NOMATCH;
-			}
-		}
-	}
+	free (name);
 
-	return 0;
+	return rc;
 }
 
 /**
@@ -183,9 +213,9 @@ int keyGlob (const Key * key, const char * pattern)
  * @return the number of Keys appended to result or -1,
  * 	   if @p result, @p input or @p pattern are NULL
  *
- * @see keyGlob(), for explanation of globbing pattern
+ * @see elektraKeyGlob(), for explanation of globbing pattern
  */
-int ksGlob (KeySet * result, KeySet * input, const char * pattern)
+int elektraKsGlob (KeySet * result, KeySet * input, const char * pattern)
 {
 	if (!result) return ELEKTRA_GLOB_NOMATCH;
 
@@ -200,7 +230,7 @@ int ksGlob (KeySet * result, KeySet * input, const char * pattern)
 	ksRewind (input);
 	while ((current = ksNext (input)) != 0)
 	{
-		int rc = keyGlob (current, pattern);
+		int rc = elektraKeyGlob (current, pattern);
 		if (rc == 0)
 		{
 			++ret;

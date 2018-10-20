@@ -12,9 +12,9 @@
 
 #include <kdbease.h>
 #include <kdberrors.h>
+#include <kdbglobbing.h>
 #include <kdbhelper.h>
 #include <stdbool.h>
-#include <kdbglobbing.h>
 
 int elektraReferenceGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
@@ -126,7 +126,7 @@ static const char * resolveRestriction (const char * restriction, const char * b
 
 static bool checkRestriction (const Key * key, const char * restriction)
 {
-	return keyGlob (key, restriction) == 0;
+	return elektraKeyGlob (key, restriction) == 0;
 }
 
 static int checkSingleReference (const Key * key, KeySet * allKeys, Key * parentKey)

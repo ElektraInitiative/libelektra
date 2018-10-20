@@ -11,8 +11,8 @@ extern "C" {
 
 #define ELEKTRA_GLOB_NOMATCH (-1)
 
-int keyGlob (const Key * key, const char * pattern);
-int ksGlob (KeySet * result, KeySet * input, const char * pattern);
+int elektraKeyGlob (const Key * key, const char * pattern);
+int elektraKsGlob (KeySet * result, KeySet * input, const char * pattern);
 
 #ifdef __cplusplus
 }

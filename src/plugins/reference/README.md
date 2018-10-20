@@ -11,7 +11,7 @@
 
 ## Introduction
 
-This plugin serves one single purpose: the validation of reference values inside of keys.
+This plugin serves one single purpose: the validation of references from key to another inside the KDB.
 
 To specify a key as a reference add the metakey `check/reference`. Currently the metakey 
 supports the three values `single`, `recursive` and `alternative`. While the value 
@@ -19,7 +19,7 @@ supports the three values `single`, `recursive` and `alternative`. While the val
 two values define to different modes of operation for the plugin. 
 
 If a key has the metakey `check/reference` with value `single`, the plugin reads the value
-of the key and produces an error, if the value is not a valid reference.
+of the key and produces an error, if the value is not a valid (i.e. resolvable) reference.
 
 If a key has metakey `check/reference` with value `recursive`, the plugin constructs a 
 reference graph starting with the marked key. (for the exact construction see below) 
@@ -28,9 +28,12 @@ represents a reference between to keys. The plugin will produce an error, if thi
 is not a directed acyclic graph or contains any invalid references.
 
 ### Resolution of references
-If the key `A` is interpreted as a reference by the plugin, it has to be an array. Each of 
-the array elements must contain a so called reference value. This reference value will be 
-resolved into a keyname, which will then be validated. The resolution goes as follows:
+The plugin will try to resolve all keys marked with the metakey `check/reference` as references.
+The only exception to this rule is, if the value of such a key is a valid array name (i.e. `#0`, 
+`#_10`, ...). In that case, the plugin will try to resolve the values of the array elements, 
+directly below the marked key. And treats the marked key as referencing multiple other keys.
+
+The resolution of the references into key names goes as follows:
 
 * If the reference value starts with `./` or `../`, it will be interpreted as relative to 
   the current key or the parent of the current key.
@@ -84,19 +87,14 @@ Otherwise `check/reference/restrict` has to be a valid array and its elements wi
 as alternative restriction. Only one of these restriction has to be fulfilled for a reference to
 be valid.
 
-The restrictions themselves are UNIX-like pathname globbing expression, as defined by 
-[`fnmatch(3)`](http://man7.org/linux/man-pages/man3/fnmatch.3.html) using the `FNM_PATHNAME` 
-option. Path segments equal to `.` and `..` are interpreted like they are in UNIX-paths. If 
-the restriction starts with a `/` it will be treated as an absolute path, and the use of `.` 
-and `..` is unnecessary and discouraged. Therefore a warning will be emitted, if `.` or `..` 
-are encountered. The same is true if a path segment other then the first one is `.`.
+Each restriction is first resolved as if it was a reference itself (see 
+[Resolution of references](#resolution-of-references)). The resolved value is then used as an 
+Elektra-style globbing pattern. For the supported see [elektra-globbing](../../libs/README.md#globbing).
 
 If a keyname matches the globbing expression it will be considered a valid reference 
-(as long as the key actually exists). Additionally if the globbing expression ends in `...` every key
-below a matching key also matches. In other words: The globbing expression must only match a prefix
-of the actual keyname.
+(as long as the key actually exists).
 
-Lastly if the restriction is the empty string `""` **no** keyname will match, meaning
+Note: If the restriction is the empty string `""` **no** keyname will match, meaning
 the reference key annotated with this metadata has to be a leaf node in the reference graph,
 and therefore cannot have a value (other than the empty string `""`).
 
