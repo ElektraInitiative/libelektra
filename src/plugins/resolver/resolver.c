@@ -537,6 +537,32 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * returned, Key * par
 		pk->isMissing = 0;
 	}
 
+	/* Check if cache update needed */
+	KeySet * global;
+	if ((global = elektraPluginGetGlobalKeySet (handle)) != NULL)
+	{
+		ELEKTRA_LOG_DEBUG ("global-cache: check cache update needed?");
+		Key * time = ksLookup (global, parentKey, KDB_O_NONE);
+		if (time && keyGetValueSize (time) == sizeof (struct timespec))
+		{
+			struct timespec cached;
+			keyGetBinary (time, &cached, sizeof (struct timespec));
+			if (cached.tv_sec == ELEKTRA_STAT_SECONDS (buf) && cached.tv_nsec == ELEKTRA_STAT_NANO_SECONDS (buf))
+			{
+				ELEKTRA_LOG_DEBUG ("global-cache: no update needed, everything is fine");
+				ELEKTRA_LOG_DEBUG ("cached.tv_sec:\t%ld", cached.tv_sec);
+				ELEKTRA_LOG_DEBUG ("cached.tv_nsec:\t%ld", cached.tv_nsec);
+				ELEKTRA_LOG_DEBUG ("buf.tv_sec:\t%ld", ELEKTRA_STAT_SECONDS (buf));
+				ELEKTRA_LOG_DEBUG ("buf.tv_nsec:\t%ld", ELEKTRA_STAT_NANO_SECONDS (buf));
+				// update timestamp inside resolver
+				pk->mtime.tv_sec = ELEKTRA_STAT_SECONDS (buf);
+				pk->mtime.tv_nsec = ELEKTRA_STAT_NANO_SECONDS (buf);
+				errno = errnoSave;
+				return ELEKTRA_PLUGIN_STATUS_CACHE_HIT;
+			}
+		}
+	}
+
 	/* Check if update needed */
 	if (pk->mtime.tv_sec == ELEKTRA_STAT_SECONDS (buf) && pk->mtime.tv_nsec == ELEKTRA_STAT_NANO_SECONDS (buf))
 	{
@@ -548,13 +574,12 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * returned, Key * par
 	pk->mtime.tv_sec = ELEKTRA_STAT_SECONDS (buf);
 	pk->mtime.tv_nsec = ELEKTRA_STAT_NANO_SECONDS (buf);
 
-	/* Store the motification times for global caching plugins */
-	KeySet * modTimes;
-	if ((modTimes = elektraPluginGetGlobalKeySet (handle)) != NULL)
+	/* Persist modification times for cache */
+	if ((global = elektraPluginGetGlobalKeySet (handle)) != NULL)
 	{
 		ELEKTRA_LOG_DEBUG ("global-cache: adding file modufication times");
 		Key * time = keyNew (keyName (parentKey), KEY_BINARY, KEY_SIZE, sizeof (struct timespec), KEY_VALUE, &(pk->mtime), KEY_END);
-		ksAppendKey (modTimes, time);
+		ksAppendKey (global, time);
 	}
 
 	errno = errnoSave;

@@ -456,9 +456,10 @@ int kdbClose (KDB * handle, Key * errorKey)
  * @retval 0 no update needed
  * @retval number of plugins which need update
  */
-static int elektraGetCheckUpdateNeeded (Split * split, Key * parentKey, KeySet * modTimes)
+static int elektraGetCheckUpdateNeeded (Split * split, Key * parentKey, KeySet * global)
 {
 	int updateNeededOccurred = 0;
+	int cacheHits = 0;
 	for (size_t i = 0; i < split->size; i++)
 	{
 		int ret = -1;
@@ -471,9 +472,9 @@ static int elektraGetCheckUpdateNeeded (Split * split, Key * parentKey, KeySet *
 			ksRewind (split->keysets[i]);
 			keySetName (parentKey, keyName (split->parents[i]));
 			keySetString (parentKey, "");
-			// 			resolver->globalData = modTimes;
+			resolver->global = global;
 			ret = resolver->kdbGet (resolver, split->keysets[i], parentKey);
-			// 			resolver->globalData = 0;
+			resolver->global = 0;
 			// store resolved filename
 			keySetString (split->parents[i], keyString (parentKey));
 			// no keys in that backend
@@ -483,6 +484,10 @@ static int elektraGetCheckUpdateNeeded (Split * split, Key * parentKey, KeySet *
 
 		switch (ret)
 		{
+		case ELEKTRA_PLUGIN_STATUS_CACHE_HIT:
+			// Keys in cache are up-to-date
+			++cacheHits;
+			break;
 		case 1:
 			// Seems like we need to sync that
 			set_bit (split->syncbits[i], SPLIT_FLAG_SYNC);
@@ -498,6 +503,12 @@ static int elektraGetCheckUpdateNeeded (Split * split, Key * parentKey, KeySet *
 			// process.
 			return -1;
 		}
+	}
+
+	if (cacheHits == split->size)
+	{
+		ELEKTRA_LOG_DEBUG ("all backends report cache is up-to-date");
+		return -2;
 	}
 	return updateNeededOccurred;
 }
@@ -836,18 +847,31 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		goto error;
 	}
 
-	KeySet * modTimes = ksNew (0, KS_END);
-	// 	if (handle->globalPlugins[PREGETCACHE][MAXONCE])
-	// 	{
-	// 		handle->globalPlugins[PREGETCACHE][MAXONCE]->globalData = modTimes;
-	// 		elektraGlobalGet (handle, ks, parentKey, PREGETCACHE, MAXONCE);
-	// 		handle->globalPlugins[PREGETCACHE][MAXONCE]->globalData = 0;
-	// 	}
+	Key * cacheParent = keyNew ("/tmp/elektracache.mmap", KEY_VALUE, "/tmp/elektracache.mmap", KEY_END);
+	KeySet * cache = ksNew (0, KS_END);
+	KeySet * global = ksNew (0, KS_END);
+	if (handle->globalPlugins[PREGETCACHE][MAXONCE])
+	{
+		handle->globalPlugins[PREGETCACHE][MAXONCE]->global = global;
+		elektraGlobalGet (handle, cache, cacheParent, PREGETCACHE, MAXONCE);
+		handle->globalPlugins[PREGETCACHE][MAXONCE]->global = 0;
+	}
 
 
 	// Check if a update is needed at all
-	switch (elektraGetCheckUpdateNeeded (split, parentKey, modTimes))
+	switch (elektraGetCheckUpdateNeeded (split, parentKey, global))
 	{
+	case -2: // We have a cache hit
+		if (ks->size == 0) // TODO: implement else, if ks is not empty
+		{
+			ELEKTRA_LOG_DEBUG ("replacing keyset with cached keyset");
+			ksClose (ks);
+			ks->array = cache->array;
+			ks->size = cache->size;
+			ks->alloc = cache->alloc;
+			set_bit (ks->flags, KS_FLAG_MMAP_ARRAY);
+		}
+		// intentional fallthrough
 	case 0: // We don't need an update so let's do nothing
 
 		keySetName (parentKey, keyName (initialParent));
@@ -945,12 +969,12 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, MAXONCE);
 	elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, DEINIT);
 
-	// 	if (handle->globalPlugins[POSTGETCACHE][MAXONCE])
-	// 	{
-	// 		handle->globalPlugins[POSTGETCACHE][MAXONCE]->globalData = modTimes;
-	// 		elektraGlobalSet (handle, ks, parentKey, POSTGETCACHE, MAXONCE);
-	// 		handle->globalPlugins[POSTGETCACHE][MAXONCE]->globalData = 0;
-	// 	}
+	if (handle->globalPlugins[POSTGETCACHE][MAXONCE])
+	{
+		handle->globalPlugins[POSTGETCACHE][MAXONCE]->global = global;
+		elektraGlobalSet (handle, ks, cacheParent, POSTGETCACHE, MAXONCE);
+		handle->globalPlugins[POSTGETCACHE][MAXONCE]->global = 0;
+	}
 
 	ksRewind (ks);
 

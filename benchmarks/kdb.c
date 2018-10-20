@@ -29,7 +29,7 @@ int main (void)
 	fprintf (stdout, "%s;%s;%s\n", "plugin", "operation", "microseconds");
 	{
 		KeySet * returned = ksNew (0, KS_END);
-		Key * parentKey = keyNew ("user/benchmarks/kdb", KEY_VALUE);
+		Key * parentKey = keyNew ("user/benchmarks/kdb", KEY_END);
 
 		timeInit ();
 		KDB * handle = kdbOpen (parentKey);
@@ -38,8 +38,8 @@ int main (void)
 		kdbGet (handle, returned, parentKey);
 		fprintf (stdout, CSV_STR_FMT, "core", "kdbGet", timeGetDiffMicroseconds ());
 
-		ksAppend (returned, large);
-		kdbSet (handle, returned, parentKey);
+		// ksAppend (returned, large);
+		kdbSet (handle, large, parentKey);
 		fprintf (stdout, CSV_STR_FMT, "core", "kdbSet", timeGetDiffMicroseconds ());
 		kdbClose (handle, parentKey);
 		keyDel (parentKey);
