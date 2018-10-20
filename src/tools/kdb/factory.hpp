@@ -108,7 +108,7 @@ public:
 		m_factory.insert (std::make_pair ("umount", new Cnstancer<UmountCommand> ()));
 		m_factory.insert (std::make_pair ("file", new Cnstancer<FileCommand> ()));
 		m_factory.insert (std::make_pair ("sget", new Cnstancer<ShellGetCommand> ()));
-		m_factory.insert (std::make_pair ("merge", new Cnstancer<MergeCommand>));
+		m_factory.insert (std::make_pair ("merge", new Cnstancer<MergeCommand> ()));
 		m_factory.insert (std::make_pair ("list", new Cnstancer<ListCommand> ()));
 		m_factory.insert (std::make_pair ("editor", new Cnstancer<EditorCommand> ()));
 		m_factory.insert (std::make_pair ("spec-mount", new Cnstancer<SpecMountCommand> ()));
