@@ -16,6 +16,20 @@ if (DEPENDENCY_PHASE)
 		remove_plugin (yanlr "ANTLR 4 CPP runtime (antlr4-cpp-runtime) not found")
 	endif (NOT ANTLR4CPP_FOUND)
 
+	set (DISABLE_PLUGIN_ASAN
+	     ${ENABLE_ASAN}
+	     AND
+	     "${CMAKE_CXX_COMPILER_ID}"
+	     MATCHES
+	     "GNU"
+	     AND
+	     ${CMAKE_CXX_COMPILER_VERSION}
+	     VERSION_LESS
+	     7)
+	if (${DISABLE_PLUGIN_ASAN})
+		remove_plugin (yanlr "ASAN enabled GCC builds of the plugin report memory leaks")
+	endif (${DISABLE_PLUGIN_ASAN})
+
 	# Disable warnings caused by ANTLR’s source code
 	if (CMAKE_COMPILER_IS_GNUCXX)
 		set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-attributes -Wno-overloaded-virtual -Wno-shadow")
