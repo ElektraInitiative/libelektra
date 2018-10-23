@@ -77,7 +77,7 @@ if (Java_JAVAC_EXECUTABLE)
 					      APPEND
 					      PROPERTY LABELS
 						       kdbtests)
-					endif (NOT ENABLE_ASAN)
+			endif (NOT ENABLE_ASAN)
 		else (MAVEN_EXECUTABLE)
 			exclude_binding (jna "Maven Executable not found, but required to build the jna bindings")
 		endif (MAVEN_EXECUTABLE)
