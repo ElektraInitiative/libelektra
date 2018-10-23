@@ -216,7 +216,9 @@ you up to date with the multi-language support provided by Elektra.
 ## Tools
 
 - Added benchmarks for storage plugins. The currently benchmarked plugins are `dump` and `mmapstorage`.  *(Mihael Pranjić)*
-- Avoid raw pointers in kdb-tools. *(Markus Raab)*
+- Avoid raw pointers in KDB tools. *(Markus Raab)*
+- Improved error text of KDB tool `cp`. *(Markus Raab)*
+- Document hidden feature of KDB tool `mount`. *(Markus Raab)*
 - <<TODO>>
 - <<TODO>>
 
@@ -243,6 +245,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Tests
 
+- Fix potential parallel execution of maven tests, which write to KDB. *(Markus Raab)*
 - The unit test for the [`dbus` plugin](https://www.libelektra.org/plugins/dbus) does not leak memory anymore, if it fails on macOS.
   *(Thomas Wahringer)*
 - The tests `testkdb_allplugins` and `testscr_check_kdb_internal_check` do not test a plugin on an ASAN enabled build anymore, if you
