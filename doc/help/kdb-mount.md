@@ -59,6 +59,11 @@ Use `kdb file <path>` to determine where the file(s) are.
   Suppress non-error messages.
 - `-i`, `--interactive`:
   Instead of passing all mounting information by parameters ask the user interactively.
+- `-s`, `--strategy`:
+   (experimental, use with care)
+   By default mounting is rejected if the mountpoint already exists. With the strategy
+   *unchanged* you can change the behavior to be successful if *exactly* the same config
+    would be written (see #1306 why this does not always work correctly).
 - `-R`, `--resolver <resolver>`
   Specify the resolver plugin to use if no resolver is given, the default resolver is used.
   See also [below in KDB](#KDB).
