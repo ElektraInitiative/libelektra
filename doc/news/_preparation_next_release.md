@@ -259,7 +259,7 @@ you up to date with the multi-language support provided by Elektra.
   (`elektra-[plugin]`). *(Klemens Böswirth)*
 - The test [`testscr_check_formatting`](https://master.libelektra.org/tests/shell/check_formatting.sh) now also checks the formatting of
   Shell code. *(René Schwaiger)*
-
+- We pumped version numbers in XML-test files. *(Markus Raab)*
 
 [Markdown Shell Recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
 
