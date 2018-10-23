@@ -22,10 +22,12 @@ RUN mkdir -p ${GTEST_ROOT} \
 
 # YAEP
 RUN cd /tmp \
-    && git clone --depth 1 https://github.com/sanssecours/yaep.git \
+    && git clone --depth 1 https://github.com/ElektraInitiative/yaep.git \
     && cd yaep \
     && env CXXFLAGS='-fPIC' ./configure \
-    && make -C src install
+    && make -C src install \
+    && cd .. \
+    && rm -r yaep
 
 # Create User:Group
 # The id is important as jenkins docker agents use the same id that is running

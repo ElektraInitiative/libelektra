@@ -43,13 +43,15 @@ namespace
  *
  * @return A contract describing the functionality of this plugin.
  */
-KeySet * contractYanlr (void)
+CppKeySet getContract ()
 {
-	return ksNew (30, keyNew ("system/elektra/modules/yanlr", KEY_VALUE, "yanlr plugin waits for your orders", KEY_END),
-		      keyNew ("system/elektra/modules/yanlr/exports", KEY_END),
-		      keyNew ("system/elektra/modules/yanlr/exports/get", KEY_FUNC, elektraYanlrGet, KEY_END),
+	return CppKeySet{ 30,
+			  keyNew ("system/elektra/modules/yanlr", KEY_VALUE, "yanlr plugin waits for your orders", KEY_END),
+			  keyNew ("system/elektra/modules/yanlr/exports", KEY_END),
+			  keyNew ("system/elektra/modules/yanlr/exports/get", KEY_FUNC, elektraYanlrGet, KEY_END),
 #include ELEKTRA_README (yanlr)
-		      keyNew ("system/elektra/modules/yanlr/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			  keyNew ("system/elektra/modules/yanlr/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
+			  KS_END };
 }
 
 /**
@@ -99,13 +101,13 @@ extern "C" {
 /** @see elektraDocGet */
 int elektraYanlrGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
-	auto parent = CppKey (parentKey);
+	CppKey parent{ parentKey };
+	CppKeySet keys{ returned };
 
 	if (parent.getName () == "system/elektra/modules/yanlr")
 	{
-		KeySet * contract = contractYanlr ();
-		ksAppend (returned, contract);
-		ksDel (contract);
+		keys.append (getContract ());
+		keys.release ();
 		parent.release ();
 
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
@@ -118,8 +120,6 @@ int elektraYanlrGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 				    parent.getString ().c_str ());
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
-
-	auto keys = CppKeySet{ returned };
 
 	int status = parseYAML (file, keys, parent);
 
