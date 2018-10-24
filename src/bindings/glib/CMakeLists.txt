@@ -14,6 +14,11 @@ if (ENABLE_ASAN)
 	return ()
 endif (ENABLE_ASAN)
 
+if (NOT ENABLE_SHARED)
+	exclude_binding (glib "it can only be built if `BUILD_SHARED` is enabled")
+	return ()
+endif (NOT ENABLE_SHARED)
+
 # Add binding
 add_binding (glib)
 
