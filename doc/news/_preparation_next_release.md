@@ -216,6 +216,7 @@ you up to date with the multi-language support provided by Elektra.
 ## Tools
 
 - Added benchmarks for storage plugins. The currently benchmarked plugins are `dump` and `mmapstorage`.  *(Mihael Pranjić)*
+- Avoid raw pointers in kdb-tools. *(Markus Raab)*
 - <<TODO>>
 - <<TODO>>
 
