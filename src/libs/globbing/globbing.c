@@ -9,6 +9,7 @@
 #include <kdb.h>
 #include <kdbglobbing.h>
 #include <kdbhelper.h>
+#include <kdbease.h>
 
 #include <ctype.h>
 #include <fnmatch.h>
@@ -50,30 +51,9 @@ static char * elektraToFnmatchGlob (char * pattern)
  * @retval true if @p name is a valid array item
  * @retval false otherwise
  */
-bool isArrayName (const char * name) // TODO: move? definitely useful elsewhere, e.g. reference plugin, libease, etc.
+static bool isArrayName (const char * name)
 {
-	if (name == NULL || *name != '#')
-	{
-		return false;
-	}
-
-	++name;
-
-	int underscores = 0;
-	while (*name == '_')
-	{
-		name++;
-		underscores++;
-	}
-
-	int digits = 0;
-	while (isdigit ((unsigned char) *name))
-	{
-		name++;
-		digits++;
-	}
-
-	return digits + underscores + 2 <= ELEKTRA_MAX_ARRAY_SIZE && digits == underscores + 1;
+	return elektraArrayValidateBaseNameString (name) > 0;
 }
 
 static int checkElektraExtensions (const char * name, const char * pattern)

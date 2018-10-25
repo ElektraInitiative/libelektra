@@ -155,6 +155,10 @@ static void test_keyset (void)
 	}
 
 	succeed_if (curA == NULL && curE == NULL, "not same number of keys");
+
+	ksDel (test);
+	ksDel (expected);
+	ksDel (actual);
 }
 
 int main (int argc, char ** argv)
