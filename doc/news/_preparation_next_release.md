@@ -152,6 +152,10 @@ We updated the behavior, since otherwise the plugin will report memory leaks at 
 
 This new plugin parses a subset of YAML using the Earley Parser library [YAEP](https://github.com/vnmakarov/yaep). *(René Schwaiger)*
 
+### Reference
+
+This new plugin can be used to validate that the value of a key is a reference to another key. *(Klemens Böswirth)*
+
 ### <<Plugin3>>
 
 - <<TODO>>

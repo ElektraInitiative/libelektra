@@ -5,7 +5,7 @@
 - infos/provides =
 - infos/recommends =
 - infos/placements = presetstorage
-- infos/status = nodep libc preview experimental unfinished
+- infos/status = libc maintained unittest writeonly
 - infos/metadata = check/reference check/reference/restrict
 - infos/description = Plugin for validating singular or recursive references
 
@@ -109,12 +109,23 @@ kdb setmeta user/tests/reference/singleref check/reference single
 
 # Try setting an invalid reference
 kdb set user/tests/reference/singleref user/tests/reference/referred1
+# RET: 5
+# STDERR: .*Reason: Reference 'user/tests/reference/referred1', set in key 'user/tests/reference/singleref', does not reference an existing key.*
 
 # Create referred key ...
 kdb set user/tests/reference/referred1 ""
+#> Create a new key user/tests/reference/referred1 with string ""
 
 # ... and try again
 kdb set user/tests/reference/singleref user/tests/reference/referred1
+#> Set string to "user/tests/reference/referred1"
+
+# Cleanup
+kdb rm user/tests/reference/singleref
+kdb rm user/tests/reference/referred1
+
+# Unmount the plugin
+sudo kdb umount user/tests/reference
 ```
 
 ## Examples

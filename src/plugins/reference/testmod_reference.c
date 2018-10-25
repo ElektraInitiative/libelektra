@@ -64,10 +64,6 @@ static bool check_error0 (const Key * parentKey, const char * expectedError)
 	const char * actualError = errorKey != NULL ? keyString (errorKey) : NULL;
 	return actualError != NULL && strcmp (actualError, expectedError) == 0;
 }
-static inline Key * keyNewReference (const char * name, const char * target, const char * type)
-{
-	return keyNew (name, KEY_VALUE, target, KEY_META, CHECK_REFERENCE_KEYNAME, type, KEY_END);
-}
 
 static void test_single_negative (void)
 {

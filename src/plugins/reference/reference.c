@@ -85,7 +85,7 @@ static Key * resolveReference (KeySet * allKeys, const char * reference, const c
 	return ksLookup (allKeys, fullReference, KDB_O_DEL);
 }
 
-static const char * resolveRestriction (const char * restriction, const char * baseKeyName, Key * parentKey)
+static char * resolveRestriction (const char * restriction, const char * baseKeyName, Key * parentKey)
 {
 	if (restriction == NULL || strlen (restriction) == 0)
 	{
@@ -120,7 +120,12 @@ static const char * resolveRestriction (const char * restriction, const char * b
 		keySetName (fullReference, restriction);
 	}
 
-	return keyName (fullReference);
+	size_t resultSize = (size_t) keyGetNameSize (fullReference);
+	char * result = elektraMalloc (resultSize);
+	keyGetName (fullReference, result, resultSize);
+	keyDel (fullReference);
+
+	return result;
 }
 
 
@@ -199,11 +204,12 @@ static int checkSingleReference (const Key * key, KeySet * allKeys, Key * parent
 			bool anyMatch = false;
 			while ((curRestriction = ksNext (restrictions)) != NULL)
 			{
-				const char * restriction = resolveRestriction (keyString (curRestriction), keyName (key), parentKey);
+				char * restriction = resolveRestriction (keyString (curRestriction), keyName (key), parentKey);
 				if (checkRestriction (refKey, restriction))
 				{
 					anyMatch = true;
 				}
+				elektraFree (restriction);
 			}
 
 			if (!anyMatch)
@@ -219,10 +225,12 @@ static int checkSingleReference (const Key * key, KeySet * allKeys, Key * parent
 
 		if (error)
 		{
+			ksDel (restrictions);
 			ksDel (refArray);
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 	}
+	ksDel (restrictions);
 	ksDel (refArray);
 
 
@@ -249,6 +257,7 @@ static bool checkReferenceGraphAcyclic (const RefGraph * referenceGraph, const c
 
 		if (rgEmpty (curGraph))
 		{
+			rgDel (curGraph);
 			return true;
 		}
 	}
@@ -265,6 +274,7 @@ static bool checkReferenceGraphAcyclic (const RefGraph * referenceGraph, const c
 
 	ELEKTRA_LOG_NOTICE ("already in chain!!");
 
+	rgDel (curGraph);
 	return false;
 }
 
@@ -400,12 +410,13 @@ static int checkRecursiveReference (const Key * rootKey, KeySet * allKeys, Key *
 					bool anyMatch = false;
 					while ((curRestriction = ksNext (restrictions)) != NULL)
 					{
-						const char * restriction =
+						char * restriction =
 							resolveRestriction (keyString (curRestriction), keyName (baseKey), parentKey);
 						if (checkRestriction (refKey, restriction))
 						{
 							anyMatch = true;
 						}
+						elektraFree (restriction);
 					}
 
 					if (!anyMatch)
@@ -425,6 +436,7 @@ static int checkRecursiveReference (const Key * rootKey, KeySet * allKeys, Key *
 					ksDel (refnameRoots);
 					ksDel (allRefnames);
 					ksDel (refArray);
+					ksDel (restrictions);
 					keyDel (curRoot);
 					keyDel (refKey);
 					keyDel (cur);
@@ -440,6 +452,7 @@ static int checkRecursiveReference (const Key * rootKey, KeySet * allKeys, Key *
 				keyDel (refKey);
 			}
 			ksDel (refArray);
+			ksDel (restrictions);
 			keyDel (cur);
 		}
 		ksDel (keysToCheck);
@@ -458,6 +471,7 @@ static int checkRecursiveReference (const Key * rootKey, KeySet * allKeys, Key *
 		rgDel (referenceGraph);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
+	rgDel (referenceGraph);
 	elektraFree (rootName);
 
 	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
