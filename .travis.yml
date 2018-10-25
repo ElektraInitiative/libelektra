@@ -195,11 +195,20 @@ matrix:
         - BUILD_SHARED=OFF
         - CC_COMPILER=gcc-8
         - CXX_COMPILER=g++-8
-      script:
+      script: &testFull
         - ninja
         - ninja install
         - ninja run_all
         - kdb-full run_all
+
+    - os: osx
+      name: 🍏 FULL
+      compiler: clang
+      osx_image: xcode10.0
+      env:
+        - BUILD_FULL=ON
+        - BUILD_SHARED=OFF
+      script: *testFull
 
     - os: osx
       name: 🍏 GCC
