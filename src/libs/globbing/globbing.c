@@ -7,9 +7,9 @@
  */
 
 #include <kdb.h>
+#include <kdbease.h>
 #include <kdbglobbing.h>
 #include <kdbhelper.h>
-#include <kdbease.h>
 
 #include <ctype.h>
 #include <fnmatch.h>

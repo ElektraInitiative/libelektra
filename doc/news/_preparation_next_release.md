@@ -192,11 +192,9 @@ compiled against an older 0.8 version of Elektra will continue to work
     This resolves a problem with undefined functions when building with musl.
     *(Lukas Winkler)*
 
-### <<Library3>>
+### Globbing
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- A new library which can be used to match keys against globbing patterns was introduced.  *(Klemens Böswirth)*
 
 
 ## Bindings
