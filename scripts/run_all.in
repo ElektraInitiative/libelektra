@@ -13,4 +13,4 @@ fi
 #
 # also use `run make_memcheck` to check for memory issues (tests are complementary)
 
-ctest --force-new-ctest-process --output-on-failure --build-config $1
+ctest -j@PROCESSOR_COUNT@ --force-new-ctest-process --output-on-failure --build-config $1

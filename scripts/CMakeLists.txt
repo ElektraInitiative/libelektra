@@ -1,3 +1,10 @@
+include (ProcessorCount)
+
+processorcount (PROCESSOR_COUNT)
+if (PROCESSOR_COUNT EQUAL 0)
+	set (PROCESSOR_COUNT 1)
+endif (PROCESSOR_COUNT EQUAL 0)
+
 install (PROGRAMS benchmark-createtree DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
 install (PROGRAMS elektra-merge DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
@@ -33,6 +40,7 @@ file (READ "kdb_zsh_completion"
 file (READ "kdb-bash-completion"
 	   CONTENT_OF_BASH_COMP)
 configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/install-sh-completion.in" "${CMAKE_CURRENT_BINARY_DIR}/install-sh-completion" @ONLY)
+configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/run_all.in" "${CMAKE_CURRENT_BINARY_DIR}/run_all" @ONLY)
 
 install (PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/install-sh-completion" DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
