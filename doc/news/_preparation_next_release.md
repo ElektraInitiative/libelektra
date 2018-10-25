@@ -346,7 +346,8 @@ you up to date with the multi-language support provided by Elektra.
   remove the source code checks from the jobs `🍏 MMap` and `🍏 Clang`, which sometimes hit the
   [timeout limit for public repositories](https://docs.travis-ci.com/user/customizing-the-build#build-timeouts) before. *(René Schwaiger)*
 - All Travis build jobs now use the compiler switch `-Werror`. *(René Schwaiger)*
-
+- The new job `🍏 FULL` and the build job `🐧 FULL` build Elektra using the CMake options `BUILD_FULL=ON` and `BUILD_SHARED=OFF`.
+  *(René Schwaiger)*
 
 ## Website
 
