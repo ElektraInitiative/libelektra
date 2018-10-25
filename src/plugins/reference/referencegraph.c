@@ -1,13 +1,8 @@
 #include "referencegraph.h"
 #include <kdb.h>
+#include <kdbease.h>
 #include <kdbhelper.h>
-
-struct _EdgeList
-{
-	char ** toNodes;
-	size_t size;
-	size_t alloc;
-};
+#include <stdlib.h>
 
 struct _RefGraph
 {
@@ -46,53 +41,36 @@ bool rgEmpty (const RefGraph * graph)
 	return ksGetSize (graph->inner) == 0 && ksGetSize (graph->leaves) == 0;
 }
 
-ssize_t rgAddEdge (RefGraph * graph, const char * fromNode, const char * toNode)
+bool rgAddEdge (RefGraph * graph, const char * fromNode, const char * toNode)
 {
 	Key * node = ksLookupByName (graph->leaves, fromNode, KDB_O_POP);
-	if (node == NULL)
+	if (node != NULL)
 	{
-		node = ksLookupByName (graph->inner, fromNode, 0);
-	}
-	else
-	{
-		struct _EdgeList edges;
-		edges.size = 0;
-		edges.alloc = 2;
-		edges.toNodes = elektraCalloc (edges.alloc * sizeof (char *));
-		keySetBinary (node, &edges, sizeof (struct _EdgeList));
+		keySetMeta (node, "last", "#0");
+		keySetMeta (node, "#0", toNode);
 
 		ksAppendKey (graph->inner, node);
+		return true;
 	}
+
+	node = ksLookupByName (graph->inner, fromNode, 0);
 	if (node == NULL)
 	{
-		return -1;
+		return false;
 	}
 
-	struct _EdgeList edges;
-	keyGetBinary (node, &edges, sizeof (struct _EdgeList));
-
-	if (edges.size >= edges.alloc)
+	Key * lastKey = keyDup (keyGetMeta (node, "last"));
+	if (elektraArrayIncName (lastKey) < 0)
 	{
-		edges.alloc *= 2;
-		elektraRealloc ((void **) &edges.toNodes, edges.alloc);
-	}
-	edges.toNodes[edges.size] = elektraStrDup (toNode);
-
-	return edges.size++;
-}
-
-size_t rgGetEdgeCount (RefGraph * graph, const char * fromNode)
-{
-	Key * node = ksLookupByName (graph->inner, fromNode, 0);
-	if (node == NULL)
-	{
-		return 0;
+		keyDel (lastKey);
+		return false;
 	}
 
-	struct _EdgeList edges;
-	keyGetBinary (node, &edges, sizeof (struct _EdgeList));
+	keySetMeta (node, "last", keyName (lastKey));
+	keySetMeta (node, keyName (lastKey), toNode);
+	keyDel (lastKey);
 
-	return edges.size;
+	return true;
 }
 
 void rgAddNode (RefGraph * graph, const char * nodeName)
@@ -101,7 +79,7 @@ void rgAddNode (RefGraph * graph, const char * nodeName)
 	ksAppendKey (graph->leaves, node);
 }
 
-const char * rgGetEdge (RefGraph * graph, const char * fromNode, size_t index)
+const char * rgGetEdge (RefGraph * graph, const char * fromNode, int index)
 {
 	Key * node = ksLookupByName (graph->inner, fromNode, 0);
 	if (node == NULL)
@@ -109,10 +87,11 @@ const char * rgGetEdge (RefGraph * graph, const char * fromNode, size_t index)
 		return NULL;
 	}
 
-	struct _EdgeList edges;
-	keyGetBinary (node, &edges, sizeof (struct _EdgeList));
+	char elem[ELEKTRA_MAX_ARRAY_SIZE];
+	elektraWriteArrayNumber (elem, index);
 
-	return index < edges.size ? edges.toNodes[index] : NULL;
+	const Key * k = keyGetMeta (node, elem);
+	return k == NULL ? NULL : keyString (k);
 }
 
 void rgRemoveLeaves (RefGraph * graph)
@@ -123,36 +102,48 @@ void rgRemoveLeaves (RefGraph * graph)
 	Key * cur;
 	while ((cur = ksPop (graph->inner)) != NULL)
 	{
-		struct _EdgeList edges;
-		keyGetBinary (cur, &edges, sizeof (struct _EdgeList));
-
-		for (size_t i = 0; i < edges.size; ++i)
+		const char * last = keyString (keyGetMeta (cur, "last"));
+		last++;
+		while (*last == '_')
 		{
-			if (ksLookupByName (graph->leaves, edges.toNodes[i], 0) != NULL)
+			last++;
+		}
+		long size = strtol (last, NULL, 10);
+
+		char elem[ELEKTRA_MAX_ARRAY_SIZE];
+		for (int i = 0; i < size; ++i)
+		{
+			elektraWriteArrayNumber (elem, i);
+			const Key * toNode = keyGetMeta (cur, elem);
+			if (ksLookupByName (graph->leaves, keyString (toNode), 0) != NULL)
 			{
-				elektraFree (edges.toNodes[i]);
-				edges.toNodes[i] = NULL;
+				keySetMeta (cur, elem, NULL);
 			}
 		}
 
-		size_t write = 0;
-		for (size_t read = 0; read < edges.size; ++read, ++write)
+		int write = 0;
+		for (int read = 0; read < size; ++read, ++write)
 		{
-			while (edges.toNodes[read] == NULL && read < edges.size)
+			elektraWriteArrayNumber (elem, read);
+
+			const Key * toNode;
+			while ((toNode = keyGetMeta (cur, elem)) == NULL && read < size)
 			{
 				read++;
 			}
 
-			if (read >= edges.size)
+			if (read >= size)
 			{
 				break;
 			}
 
-			edges.toNodes[write] = edges.toNodes[read];
+			elektraWriteArrayNumber (elem, write);
+			keySetMeta (cur, elem, keyString (toNode));
 		}
-		edges.size = write;
+		elektraWriteArrayNumber (elem, write);
+		keySetMeta (cur, "last", elem);
 
-		if (edges.size == 0)
+		if (write == 0)
 		{
 			ksAppendKey (newLeaves, cur);
 		}
@@ -168,25 +159,14 @@ void rgRemoveLeaves (RefGraph * graph)
 	ksAppend (graph->leaves, newLeaves);
 	ksClear (graph->inner);
 	ksAppend (graph->inner, newInner);
+
+	ksDel (newLeaves);
+	ksDel (newInner);
 }
 
 void rgDel (RefGraph * graph)
 {
-	ksRewind (graph->inner);
-	Key * cur;
-	while ((cur = ksPop (graph->inner)) != NULL)
-	{
-		struct _EdgeList edges;
-		keyGetBinary (cur, &edges, sizeof (struct _EdgeList));
-
-		for (size_t i = 0; i < edges.size; ++i)
-		{
-			elektraFree (edges.toNodes[i]);
-		}
-
-		keyDel (cur);
-	}
 	ksDel (graph->inner);
-
 	ksDel (graph->leaves);
+	elektraFree (graph);
 }

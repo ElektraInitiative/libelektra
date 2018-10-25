@@ -20,9 +20,9 @@ bool rgContains (const RefGraph * graph, const char * nodeName);
 
 void rgAddNode (RefGraph * graph, const char * nodeName);
 
-ssize_t rgAddEdge (RefGraph * graph, const char * fromNode, const char * toNode);
+bool rgAddEdge (RefGraph * graph, const char * fromNode, const char * toNode);
 
-const char * rgGetEdge (RefGraph * graph, const char * fromNode, size_t index);
+const char * rgGetEdge (RefGraph * graph, const char * fromNode, int index);
 
 size_t rgGetEdgeCount (RefGraph * graph, const char * fromNode);
 
