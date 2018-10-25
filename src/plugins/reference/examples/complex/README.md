@@ -30,7 +30,7 @@ The specification used for such a structure is as follows (using the syntax of t
 ```INI
 [rootkey/ref]
 check/reference = recursive
-check/reference/restrict = ../typeA/*
+check/reference/restrict = ../typeA/_
 
 [typeA/_]
 default = ""
@@ -39,7 +39,7 @@ default = ""
 check/type = string
 
 [typeA/_/ref]
-check/reference/restrict = ../../typeB/*
+check/reference/restrict = ../../typeB/_
 
 [typeB/_]
 default = ""
@@ -48,7 +48,7 @@ default = ""
 check/type = long
 
 [typeB/_/ref]
-check/reference/restrict = ../../typeA/*
+check/reference/restrict = ../../typeA/_
 ```
 
 The basic idea is to use the keys `typeA` and `typeB` as a sort of 'directory', in which

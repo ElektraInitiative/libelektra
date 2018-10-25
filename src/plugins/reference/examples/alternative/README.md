@@ -12,19 +12,19 @@ check/reference = recursive
 check/reference = alternative
 
 ; 2. configuration data
-rootkey/ref/#0 = ../otherkey
+rootkey/ref = ../otherkey
 
-otherkey/ref/#0 = ../yetanotherkey
-otherkey/newref/#0 = ../otherotherkey
+otherkey/ref = ../yetanotherkey
+otherkey/newref = ../otherotherkey
 
-otherotherkey/ref/#0 = ../nonexistent
-otherotherkey/newref/#0 = ../mergekey
+otherotherkey/ref = ../nonexistent
+otherotherkey/newref = ../mergekey
 
-yetanotherkey/ref/#0 = ../mergekey
-yetanotherkey/newref/#0 = ../nonexistent
+yetanotherkey/ref = ../mergekey
+yetanotherkey/newref = ../nonexistent
 
-mergekey/ref/#0 = ../finalkey
-mergekey/newref/#0 = ../finalkey
+mergekey/ref = ../finalkey
+mergekey/newref = ../finalkey
 
 finalkey = ""
 ```
@@ -42,19 +42,19 @@ check/reference = recursive
 check/reference = alternative
 
 ; 2. configuration data
-rootkey/ref/#0 = ../otherkey
+rootkey/ref = ../otherkey
 
-otherkey/ref/#0 = ../yetanotherkey
-otherkey/newref/#0 = ../otherotherkey
+otherkey/ref = ../yetanotherkey
+otherkey/newref = ../otherotherkey
 
-otherotherkey/ref/#0 = ../nonexistent
-otherotherkey/newref/#0 = ../mergekey
+otherotherkey/ref = ../nonexistent
+otherotherkey/newref = ../mergekey
 
-yetanotherkey/ref/#0 = ../mergekey
-yetanotherkey/newref/#0 = ../nonexistent
+yetanotherkey/ref = ../mergekey
+yetanotherkey/newref = ../nonexistent
 
-mergekey/ref/#0 = ../finalkey
-mergekey/newref/#0 = ../finalkey
+mergekey/ref = ../finalkey
+mergekey/newref = ../finalkey
 
 finalkey = ""
 EOF
@@ -68,16 +68,16 @@ alternative reference.
 
 The actual configuration contains then a structure which is processed by the plugin like follows:
 
-1. `user/tests/reference/alternative/rootkey/ref/#0` is read and its reference validated.
-2. `user/tests/reference/alternative/otherkey/ref/#0` is read and its reference validated.
+1. `user/tests/reference/alternative/rootkey/ref` is read and its reference validated.
+2. `user/tests/reference/alternative/otherkey/ref` is read and its reference validated.
 2. `user/tests/reference/alternative/otherkey/newref` is discovered as an alternative reference and stored for later.
-3. `user/tests/reference/alternative/yetanotherkey/ref/#0` is read and its reference validated.
-4. `user/tests/reference/alternative/mergekey/ref/#0` is read and its reference validated.
+3. `user/tests/reference/alternative/yetanotherkey/ref` is read and its reference validated.
+4. `user/tests/reference/alternative/mergekey/ref` is read and its reference validated.
 5. `user/tests/reference/alternative/finalkey` does not contain a reference, so we stop here.
 6. Processing of the alternative reference chain from `user/tests/reference/alternative/otherkey/newref` starts.
-7. `user/tests/reference/alternative/otherkey/newref/#0` is read and its reference validated.
-8. `user/tests/reference/alternative/otherotherkey/newref/#0` is read and its reference validated.
-9. `user/tests/reference/alternative/mergekey/newref/#0` is read and its reference validated.
+7. `user/tests/reference/alternative/otherkey/newref` is read and its reference validated.
+8. `user/tests/reference/alternative/otherotherkey/newref` is read and its reference validated.
+9. `user/tests/reference/alternative/mergekey/newref` is read and its reference validated.
 10. `user/tests/reference/alternative/finalkey` does not contain a reference, so we stop here.
 
 The resulting reference graph looks like this:
