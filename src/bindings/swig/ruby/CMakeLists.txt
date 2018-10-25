@@ -12,6 +12,10 @@ if (NOT RUBY_FOUND)
 elseif (SWIG_VERSION MATCHES "^([12]\\.)|(3\\.0\\.[01234567])$")
 	exclude_binding (swig_ruby "found SWIG version (${SWIG_VERSION}) is not suitable. SWIG version >= 3.0.8 required")
 else ()
+	if (NOT BUILD_SHARED)
+		exclude_binding (swig_ruby "it can only be built if `BUILD_SHARED` is enabled")
+		return ()
+	endif (NOT BUILD_SHARED)
 
 	add_binding (swig_ruby)
 
