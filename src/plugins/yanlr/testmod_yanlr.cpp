@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief Tests for yawn plugin
+ * @brief Tests for yanlr plugin
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
@@ -9,7 +9,7 @@
 
 // -- Imports ------------------------------------------------------------------------------------------------------------------------------
 
-#include "yawn.hpp"
+#include "yanlr.hpp"
 
 #include <kdbmodule.h>
 #include <kdbprivate.h>
@@ -29,8 +29,8 @@ using CppKey = kdb::Key;
 	CppKeySet config{ 0, KS_END };                                                                                                     \
 	elektraModulesInit (modules.getKeySet (), 0);                                                                                      \
 	CppKey parent{ parentName, KEY_VALUE, filepath, KEY_END };                                                                         \
-	Plugin * plugin = elektraPluginOpen ("yawn", modules.getKeySet (), config.getKeySet (), *parent);                                  \
-	exit_if_fail (plugin != NULL, "Could not open yawn plugin")
+	Plugin * plugin = elektraPluginOpen ("yanlr", modules.getKeySet (), config.getKeySet (), *parent);                                 \
+	exit_if_fail (plugin != NULL, "Could not open yanlr plugin")
 
 #define CLOSE_PLUGIN()                                                                                                                     \
 	elektraPluginClose (plugin, 0);                                                                                                    \
@@ -38,9 +38,9 @@ using CppKey = kdb::Key;
 	ksDel (modules.release ());                                                                                                        \
 	config.release ()
 
-#define PREFIX "user/tests/yawn/"
+#define PREFIX "user/tests/yanlr/"
 
-// -- Functions ----------------------------------------------------------------------------------------------------------------------------
+// -- Functions  ---------------------------------------------------------------------------------------------------------------------------
 
 void test_read (string const & filepath, CppKeySet expected, int const status = ELEKTRA_PLUGIN_STATUS_SUCCESS)
 #ifdef __llvm__
@@ -68,69 +68,69 @@ void test_read (string const & filepath, CppKeySet expected, int const status = 
 
 // -- Tests --------------------------------------------------------------------------------------------------------------------------------
 
-TEST (yawn, basics)
+TEST (yanlr, basics)
 {
-	OPEN_PLUGIN ("system/elektra/modules/yawn", "file/path");
+	OPEN_PLUGIN ("system/elektra/modules/yanlr", "file/path");
 
 	CppKeySet keys;
-	succeed_if_same (plugin->kdbGet (plugin, keys.getKeySet (), *parent), ELEKTRA_PLUGIN_STATUS_SUCCESS, "Call of `kdbGet` failed");
+	succeed_if_same (plugin->kdbGet (plugin, keys.getKeySet (), *parent), ELEKTRA_PLUGIN_STATUS_SUCCESS,
+			 "Could not retrieve plugin contract");
 
 	CLOSE_PLUGIN ();
 }
 
-
-TEST (yawn, empty)
+TEST (yanlr, empty)
 {
-	test_read ("yawn/null.yaml",
-#include "yawn/null.hpp"
+	test_read ("yanlr/null.yaml",
+#include "yanlr/null.hpp"
 		   , ELEKTRA_PLUGIN_STATUS_NO_UPDATE);
-	test_read ("yawn/comment.yaml",
-#include "yawn/null.hpp"
+	test_read ("yanlr/comment.yaml",
+#include "yanlr/null.hpp"
 		   , ELEKTRA_PLUGIN_STATUS_NO_UPDATE);
 }
 
-TEST (yawn, scalar)
+TEST (yanlr, scalar)
 {
-	test_read ("yawn/plain_scalar-word_chars.yaml",
-#include "yawn/plain_scalar-word_chars.hpp"
+	test_read ("yanlr/plain_scalar-word_chars.yaml",
+#include "yanlr/plain_scalar-word_chars.hpp"
 	);
-	test_read ("yawn/plain_scalar-word_chars_space.yaml",
-#include "yawn/plain_scalar-word_chars_space.hpp"
+	test_read ("yanlr/plain_scalar-word_chars_space.yaml",
+#include "yanlr/plain_scalar-word_chars_space.hpp"
 	);
-	test_read ("yawn/single_quoted_scalar.yaml",
-#include "yawn/single_quoted_scalar.hpp"
+	test_read ("yanlr/single_quoted_scalar.yaml",
+#include "yanlr/single_quoted_scalar.hpp"
 	);
-	test_read ("yawn/double_quoted_scalar.yaml",
-#include "yawn/double_quoted_scalar.hpp"
+	test_read ("yanlr/double_quoted_scalar.yaml",
+#include "yanlr/double_quoted_scalar.hpp"
 	);
 }
 
-TEST (yawn, list)
+TEST (yanlr, list)
 {
-	test_read ("yawn/list-plain_scalars.yaml",
-#include "yawn/list-plain_scalars.hpp"
+	test_read ("yanlr/list-plain_scalars.yaml",
+#include "yanlr/list-plain_scalars.hpp"
 	);
-	test_read ("yawn/list-list_map-mixed_scalars.yaml",
-#include "yawn/list-list_map-mixed_scalars.hpp"
+	test_read ("yanlr/list-list_map-mixed_scalars.yaml",
+#include "yanlr/list-list_map-mixed_scalars.hpp"
 	);
 }
 
-TEST (yawn, map)
+TEST (yanlr, map)
 {
-	test_read ("yawn/map-null.yaml",
-#include "yawn/map-null.hpp"
+	test_read ("yanlr/map-null.yaml",
+#include "yanlr/map-null.hpp"
 	);
-	test_read ("yawn/map-plain_scalar.yaml",
-#include "yawn/map-plain_scalar.hpp"
+	test_read ("yanlr/map-plain_scalar.yaml",
+#include "yanlr/map-plain_scalar.hpp"
 	);
-	test_read ("yawn/map-plain_scalars.yaml",
-#include "yawn/map-plain_scalars.hpp"
+	test_read ("yanlr/map-plain_scalars.yaml",
+#include "yanlr/map-plain_scalars.hpp"
 	);
-	test_read ("yawn/map-list-plain_scalars.yaml",
-#include "yawn/map-list-plain_scalars.hpp"
+	test_read ("yanlr/map-list-plain_scalars.yaml",
+#include "yanlr/map-list-plain_scalars.hpp"
 	);
-	test_read ("yawn/map-map-plain_scalars.yaml",
-#include "yawn/map-map-plain_scalars.hpp"
+	test_read ("yanlr/map-map-plain_scalars.yaml",
+#include "yanlr/map-map-plain_scalars.hpp"
 	);
 }
 

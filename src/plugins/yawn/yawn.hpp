@@ -22,7 +22,6 @@ using ckdb::Plugin;
 
 extern "C" {
 int elektraYawnGet (Plugin * handle, KeySet * returned, Key * parentKey);
-int elektraYawnSet (Plugin * handle, KeySet * returned, Key * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (yawn);
 } // end extern "C"

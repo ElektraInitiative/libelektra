@@ -1,4 +1,9 @@
-src:.*boost/smart_ptr/detail/.*
+# YAML CPP
+# ========
+# We ignore warnings about member calls on addresses, which do not point to an object of type `_Sp_counted_base`.
+# It looks like this problem is caused by either `yaml-cpp` or `libstdc++`.
+src:.*include/c\+\+/6/bits/shared_ptr_base.h
+
 # memory leaks reported by asan due to xerces interfaces, no issue according to valgrind
 src:*xerces/*.cpp
 src:*xerces/*.hpp

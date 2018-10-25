@@ -841,6 +841,7 @@ def buildAndTest(testName, image, extraCmakeFlags = [:],
 
   def testCoverage = cmakeFlags.intersect(CMAKE_FLAGS_COVERAGE)
                                 .equals(CMAKE_FLAGS_COVERAGE)
+  def updateCoveralls = testName == 'debian-stable-full'
   def testMem = tests.contains(TEST.MEM)
   def testNokdb = tests.contains(TEST.NOKDB)
   def testAll = tests.contains(TEST.ALL)
@@ -910,6 +911,18 @@ kill `pidof dbus-daemon`
           archive(artifacts)
           if(testCoverage) {
             publishCoverage("${buildDir}/coverage")
+          }
+          if(updateCoveralls) {
+            withCredentials([string(credentialsId: 'coveralls-repo-token', variable: 'REPO_TOKEN')]) {
+              withEnv(["TRAVIS_JOB_ID=$BUILD_NUMBER"]) {
+                sh("""\
+coveralls -b '${buildDir}' \
+          -t $REPO_TOKEN \
+          -e benchmarks -e doc -e examples -e install -e system -e tests \
+          -E '.*${buildDir}/(CMakeFiles|googletest-src|include|src).*\\.(c|cc|cpp|h|hh|hpp)'
+""")
+              }
+            }
           }
           if(testMem || testNokdb || testAll) {
             xunitUpload("${buildDir}/Testing/**/*.xml")
