@@ -52,8 +52,8 @@ function (add_scripttest testname)
 
 				list (FIND excluded_tests
 					   "${testname_we}"
-					   index_exluded)
-				if (index_exluded EQUAL -1)
+					   index_excluded)
+				if (index_excluded EQUAL -1)
 					if (BUILD_FULL)
 						set (KDB_COMMAND "kdb-full")
 					else (BUILD_FULL)
@@ -78,7 +78,7 @@ function (add_scripttest testname)
 						 WORLD_READ
 						 WORLD_EXECUTE
 						 RENAME ${testname_we})
-				endif (index_exluded EQUAL -1)
+				endif (index_excluded EQUAL -1)
 
 			endif (INSTALL_TESTING)
 		else (TARGET)
