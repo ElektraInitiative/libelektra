@@ -5,7 +5,7 @@
 #      you will find it in tests/shell/run_all.sh
 
 if [ $# -ne 1 ]; then
-	echo "No build config. This script is supposed to run by using make run_all"
+	echo 'No build config. This script is supposed to run by using `@CMAKE_MAKE_PROGRAM_BASENAME@ run_all`'
 	exit 1
 fi
 
