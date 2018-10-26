@@ -11,6 +11,6 @@ fi
 
 # run all tests
 #
-# also use `run make_memcheck` to check for memory issues (tests are complementary)
+# also use `run_memcheck` to check for memory issues (tests are complementary)
 
 ctest -j@PROCESSOR_COUNT@ --force-new-ctest-process --output-on-failure --build-config $1
