@@ -17,6 +17,10 @@ if (Java_JAVAC_EXECUTABLE)
 
 			file (MAKE_DIRECTORY libelektra4j)
 
+			if (NOT APPLE)
+				set (USE_SYSTEM_CLASS_LOADER "<useSystemClassLoader>false</useSystemClassLoader>")
+			endif (NOT APPLE)
+
 			# first fill the elektra version in the pom file @ONLY to avoid replacing pom.xml placeholders which also use the
 			# format ${}
 			configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/libelektra4j/pom.xml.in"
