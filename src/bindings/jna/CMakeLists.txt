@@ -80,13 +80,9 @@ if (Java_JAVAC_EXECUTABLE)
 
 				set_property (TEST testjna_maven
 					      PROPERTY LABELS
+						       kdbtests
 						       bindings
 						       memleak)
-
-				set_property (TEST testjna_maven
-					      APPEND
-					      PROPERTY LABELS
-						       kdbtests)
 			endif (NOT ENABLE_ASAN)
 		else (MAVEN_EXECUTABLE)
 			exclude_binding (jna "Maven Executable not found, but required to build the jna bindings")
