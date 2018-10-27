@@ -264,6 +264,7 @@ you up to date with the multi-language support provided by Elektra.
 - The test [`testscr_check_formatting`](https://master.libelektra.org/tests/shell/check_formatting.sh) now also checks the formatting of
   Shell code. *(René Schwaiger)*
 - We pumped version numbers in XML-test files. *(Markus Raab)*
+- We fixed a crash in the unit test of the [JNA](https://www.libelektra.org/bindings/jna) binding. *(René Schwaiger)*
 
 [Markdown Shell Recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
 
