@@ -181,6 +181,7 @@ compiled against an older 0.8 version of Elektra will continue to work
 
 ### Core
 
+- Optimize elektraKsFilter to not duplicate keys *(Markus Raab)*
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
