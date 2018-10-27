@@ -542,7 +542,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * returned, Key * par
 	if ((global = elektraPluginGetGlobalKeySet (handle)) != NULL)
 	{
 		ELEKTRA_LOG_DEBUG ("global-cache: check cache update needed?");
-		Key * time = ksLookup (global, parentKey, KDB_O_NONE);
+		Key * time = ksLookupByName (global, pk->filename, KDB_O_NONE);
 		if (time && keyGetValueSize (time) == sizeof (struct timespec))
 		{
 			struct timespec cached;
@@ -578,7 +578,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * returned, Key * par
 	if ((global = elektraPluginGetGlobalKeySet (handle)) != NULL)
 	{
 		ELEKTRA_LOG_DEBUG ("global-cache: adding file modufication times");
-		Key * time = keyNew (keyName (parentKey), KEY_BINARY, KEY_SIZE, sizeof (struct timespec), KEY_VALUE, &(pk->mtime), KEY_END);
+		Key * time = keyNew (pk->filename, KEY_BINARY, KEY_SIZE, sizeof (struct timespec), KEY_VALUE, &(pk->mtime), KEY_END);
 		ksAppendKey (global, time);
 	}
 
@@ -991,6 +991,8 @@ static int elektraSetCommit (resolverHandle * pk, Key * parentKey)
 		ret = -1;
 	}
 
+	ELEKTRA_LOG_DEBUG ("old.tv_sec:\t%ld", pk->mtime.tv_sec);
+	ELEKTRA_LOG_DEBUG ("old.tv_nsec:\t%ld", pk->mtime.tv_nsec);
 	struct stat buf;
 	if (fstat (fd, &buf) == -1)
 	{
@@ -1021,6 +1023,8 @@ static int elektraSetCommit (resolverHandle * pk, Key * parentKey)
 	}
 
 	elektraUpdateFileTime (pk, pk->fd, parentKey);
+	ELEKTRA_LOG_DEBUG ("new.tv_sec:\t%ld", pk->mtime.tv_sec);
+	ELEKTRA_LOG_DEBUG ("new.tv_nsec:\t%ld", pk->mtime.tv_nsec);
 
 	if (buf.st_mode != pk->filemode)
 	{

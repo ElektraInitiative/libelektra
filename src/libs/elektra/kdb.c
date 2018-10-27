@@ -47,6 +47,40 @@
 
 #include <kdbinternal.h>
 
+// TODO: remove
+
+#include <unistd.h>
+
+void output_meta (Key * k)
+{
+	const Key * meta;
+
+	keyRewindMeta (k);
+	while ((meta = keyNextMeta (k)) != 0)
+	{
+		ELEKTRA_LOG_DEBUG (", %s: %s", keyName (meta), (const char *) keyValue (meta));
+	}
+	ELEKTRA_LOG_DEBUG ("\n");
+}
+
+void output_key (Key * k)
+{
+	// output_meta will print endline
+	ELEKTRA_LOG_DEBUG ("%p key: %s, string: %s", (void *) k, keyName (k), keyString (k));
+	output_meta (k);
+}
+
+void output_keyset (KeySet * ks)
+{
+	Key * k;
+	ksRewind (ks);
+	while ((k = ksNext (ks)) != 0)
+	{
+		output_key (k);
+	}
+}
+
+// TODO: remove end
 
 /**
  * @defgroup kdb KDB
@@ -459,7 +493,7 @@ int kdbClose (KDB * handle, Key * errorKey)
 static int elektraGetCheckUpdateNeeded (Split * split, Key * parentKey, KeySet * global)
 {
 	int updateNeededOccurred = 0;
-	int cacheHits = 0;
+	size_t cacheHits = 0;
 	for (size_t i = 0; i < split->size; i++)
 	{
 		int ret = -1;
@@ -473,6 +507,7 @@ static int elektraGetCheckUpdateNeeded (Split * split, Key * parentKey, KeySet *
 			keySetName (parentKey, keyName (split->parents[i]));
 			keySetString (parentKey, "");
 			resolver->global = global;
+			output_key (parentKey);
 			ret = resolver->kdbGet (resolver, split->keysets[i], parentKey);
 			resolver->global = 0;
 			// store resolved filename
@@ -505,7 +540,7 @@ static int elektraGetCheckUpdateNeeded (Split * split, Key * parentKey, KeySet *
 		}
 	}
 
-	if (cacheHits == split->size)
+	if (cacheHits == split->size && !updateNeededOccurred)
 	{
 		ELEKTRA_LOG_DEBUG ("all backends report cache is up-to-date");
 		return -2;
@@ -824,6 +859,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 
 	int errnosave = errno;
 	Key * initialParent = keyDup (parentKey);
+	// keySetName(parentKey, "/");
 
 	ELEKTRA_LOG ("now in new kdbGet (%s)", keyName (parentKey));
 
@@ -865,11 +901,13 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		if (ks->size == 0) // TODO: implement else, if ks is not empty
 		{
 			ELEKTRA_LOG_DEBUG ("replacing keyset with cached keyset");
-			ksClose (ks);
-			ks->array = cache->array;
-			ks->size = cache->size;
-			ks->alloc = cache->alloc;
-			set_bit (ks->flags, KS_FLAG_MMAP_ARRAY);
+// 			ksClose (ks);
+// 			ks->array = cache->array;
+// 			ks->size = cache->size;
+// 			ks->alloc = cache->alloc;
+// 			set_bit (ks->flags, KS_FLAG_MMAP_ARRAY);
+			ksAppend (ks, cache); // TODO: test ksAppend because correctness
+			output_keyset (global);
 		}
 		// intentional fallthrough
 	case 0: // We don't need an update so let's do nothing
@@ -985,6 +1023,9 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	keyDel (oldError);
 	splitDel (split);
 	errno = errnosave;
+	ELEKTRA_LOG_DEBUG (">>>>>>>>>>>>>> PRINT RETURNED KEYSET");
+	output_keyset (ks);
+	ELEKTRA_LOG_DEBUG (">>>>>>>>>>>>>> END RETURNED KEYSET");
 	return 1;
 
 error:
@@ -1289,6 +1330,7 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 		ELEKTRA_SET_ERROR (38, parentKey, "error in splitBuildup");
 		goto error;
 	}
+	ELEKTRA_LOG ("after splitBuildup");
 
 	// 1.) Search for syncbits
 	int syncstate = splitDivide (split, handle, ks);
@@ -1299,6 +1341,7 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 		goto error;
 	}
 	ELEKTRA_ASSERT (syncstate == 0 || syncstate == 1, "syncstate not 0 or 1, but %d", syncstate);
+	ELEKTRA_LOG ("after 1.) Search for syncbits");
 
 	// 2.) Search for changed sizes
 	syncstate |= splitSync (split);
@@ -1306,23 +1349,28 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 	if (syncstate != 1)
 	{
 		/* No update is needed */
+		ELEKTRA_LOG ("No update is needed");
 		keySetName (parentKey, keyName (initialParent));
 		if (syncstate < 0) clearError (parentKey); // clear previous error to set new one
 		if (syncstate == -1)
 		{
 			ELEKTRA_SET_ERROR (107, parentKey, "Assert failed: invalid namespace");
+			ELEKTRA_LOG ("syncstate == -1");
 		}
 		else if (syncstate < -1)
 		{
 			ELEKTRA_SET_ERROR (107, parentKey, keyName (split->parents[-syncstate - 2]));
+			ELEKTRA_LOG ("syncstate < -1");
 		}
 		keyDel (initialParent);
 		splitDel (split);
 		errno = errnosave;
 		keyDel (oldError);
+		ELEKTRA_LOG ("return: %d", syncstate == 0 ? 0 : -1);
 		return syncstate == 0 ? 0 : -1;
 	}
 	ELEKTRA_ASSERT (syncstate == 1, "syncstate not 1, but %d", syncstate);
+	ELEKTRA_LOG ("after 2.) Search for changed sizes");
 
 	splitPrepare (split);
 
@@ -1366,8 +1414,11 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 	keyDel (initialParent);
 	splitDel (split);
 
+	Key * cacheParent = keyNew ("/tmp/elektracache.mmap", KEY_VALUE, "/tmp/elektracache.mmap", KEY_END);
+	unlink (keyName(cacheParent));
 	keyDel (oldError);
 	errno = errnosave;
+	ELEKTRA_LOG ("before RETURN 1");
 	return 1;
 
 error:
