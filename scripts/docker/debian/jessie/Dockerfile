@@ -63,6 +63,7 @@ RUN mkdir -p ${GTEST_ROOT} \
 ARG JENKINS_GROUPID
 RUN groupadd \
     -g ${JENKINS_GROUPID} \
+    -f \
     jenkins
 
 ARG JENKINS_USERID

@@ -86,6 +86,7 @@ RUN ldconfig
 ARG JENKINS_GROUPID
 RUN groupadd \
     -g ${JENKINS_GROUPID} \
+    -f \
     jenkins
 
 ARG JENKINS_USERID
