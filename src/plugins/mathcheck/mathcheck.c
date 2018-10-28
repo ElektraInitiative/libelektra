@@ -385,9 +385,9 @@ int elektraMathcheckSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 		ELEKTRA_LOG_DEBUG ("Check key “%s” with value “%s”", keyName (cur), keyString (meta));
 		result = parsePrefixString (keyString (meta), cur, ksDup (returned), parentKey);
 		ELEKTRA_LOG_DEBUG ("Result: “%f”", result.value);
-		char val1[MAX_CHARS_DOUBLE];
+		char val1[MAX_CHARS_DOUBLE + 1]; // Include storage for trailing `\0` character
 		char val2[MAX_CHARS_DOUBLE];
-		strncpy (val1, keyString (cur), sizeof (val1));
+		strncpy (val1, keyString (cur), MAX_CHARS_DOUBLE);
 		elektraFtoA (val2, sizeof (val2), result.value);
 		if (result.op == ERROR)
 		{
