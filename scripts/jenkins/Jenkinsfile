@@ -498,7 +498,8 @@ def generateFullBuildStages() {
   tasks << buildAndTest(
     "debian-unstable-full",
     DOCKER_IMAGES.sid,
-    CMAKE_FLAGS_BUILD_ALL,
+    CMAKE_FLAGS_BUILD_ALL +
+      CMAKE_FLAGS_WERROR,
     [TEST.ALL, TEST.MEM, TEST.INSTALL]
   )
 

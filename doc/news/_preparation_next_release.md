@@ -324,9 +324,9 @@ you up to date with the multi-language support provided by Elektra.
   - `debian-stable-full-mmap`,
   - `debian-stable-full-mmap-asan`,
   - `debian-stable-full-optimizations-off`,
-  - `debian-stable-full-xdg`, and
-  - `debian-stable-multiconf`
-  . *(René Schwaiger)*
+  - `debian-stable-full-xdg`,
+  - `debian-stable-multiconf`, and
+  - `debian-unstable-full`. *(René Schwaiger)*
 - Build Artifacts for all PR's to detect issues before merging *(Lukas Winkler)*
 - Stricter removal of temporary docker images on docker nodes *(Lukas Winkler)*
 - Added jenkins build jobs `debian-stable-full-mmap` and `debian-stable-full-mmap-asan`
