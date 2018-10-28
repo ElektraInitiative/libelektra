@@ -46,6 +46,10 @@ add_custom_command (OUTPUT exported_symbols.c
 include (LibAddMacros)
 add_headers (HDR_FILES)
 
+if (CMAKE_C_COMPILER_ID STREQUAL "GNU")
+	set_source_files_properties (keyset.c PROPERTIES COMPILE_FLAGS "-Wno-stringop-truncation")
+endif (CMAKE_C_COMPILER_ID STREQUAL "GNU")
+
 # include the current binary directory to get exported_symbols.h
 include_directories ("${CMAKE_CURRENT_BINARY_DIR}")
 
