@@ -376,3 +376,12 @@
    fun:exit
    fun:(below main)
 }
+{
+   Binary: `testio_uv`, OS: Debian Sid, Type: Unitialized Bytes
+   Memcheck:Param
+   epoll_ctl(event)
+   ...
+   fun:elektraIoTestSuite
+   fun:main
+}
+
