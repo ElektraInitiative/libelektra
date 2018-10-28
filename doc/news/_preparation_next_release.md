@@ -107,6 +107,10 @@ The following section lists news about the [modules](https://www.libelektra.org/
    for it to mimic the proxied plugin's contract in Elektra. It can be used with simple
    plugins like `dump` however, check the limitations in the readme for more details. *(Armin Wurzinger)*
 
+### Directory Value
+
+We improved the performance of the plugin a little bit. *(René Schwaiger)*
+
 ### FSTab
 
 The detection of the `mntent` functions now also works correctly, if you use the compiler switch `-Werror`. *(René Schwaiger)*
