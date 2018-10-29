@@ -200,6 +200,11 @@ compiled against an older 0.8 version of Elektra will continue to work
 
 - A new library which can be used to match keys against globbing patterns was introduced.  *(Klemens Böswirth)*
 
+### Ease
+
+- `libease` now provides the function `elektraArrayValidateBaseNameString`, which can be used to validate that a
+    given string is an elektra array name. *(Klemens Böswirth)*
+
 
 ## Bindings
 

@@ -184,6 +184,18 @@ static void test_getArrayNext (void)
 	ksDel (array);
 }
 
+void test_baseName ()
+{
+	printf ("Test validate base name");
+
+	succeed_if (elektraArrayValidateBaseNameString ("#") == 0, "Start not detected correctly");
+	succeed_if (elektraArrayValidateBaseNameString ("#0") == 1, "#0 should be valid");
+	succeed_if (elektraArrayValidateBaseNameString ("#_10") == 0, "#_10 should be valid");
+	succeed_if (elektraArrayValidateBaseNameString ("#_________1234567890") == 0, "#_________1234567890 should be valid");
+	succeed_if (elektraArrayValidateBaseNameString ("#__________12345678901") == -1, "#__________12345678901 should not be valid");
+	succeed_if (elektraArrayValidateBaseNameString ("monkey") == -1, "monkey should not be valid");
+}
+
 int main (int argc, char ** argv)
 {
 	printf (" ARRAY   TESTS\n");
