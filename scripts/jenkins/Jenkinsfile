@@ -56,7 +56,8 @@ CMAKE_FLAGS_BASE = [
   'CMAKE_INSTALL_PREFIX': '${WORKSPACE}/system',
   'INSTALL_SYSTEM_FILES': 'OFF',
   'BUILD_DOCUMENTATION': 'OFF',
-  'CMAKE_RULE_MESSAGES': 'OFF'
+  'CMAKE_RULE_MESSAGES': 'OFF',
+  'COMMON_FLAGS': '-Werror'
 ]
 
 // TODO Remove -DEPRECATED after #1954 is resolved
@@ -94,7 +95,6 @@ CMAKE_FLAGS_ASAN = ['ENABLE_ASAN': 'ON']
 CMAKE_FLAGS_DEBUG = ['ENABLE_DEBUG': 'ON']
 CMAKE_FLAGS_LOGGER = ['ENABLE_LOGGER': 'ON']
 CMAKE_FLAGS_OPTIMIZATIONS_OFF = ['ENABLE_OPTIMIZATIONS': 'OFF']
-CMAKE_FLAGS_WERROR = ['COMMON_FLAGS': "-Werror"]
 
 // CMAKE_FLAGS_BUILD_SHARED = ['BUILD_SHARED': 'ON']  is ON per default
 CMAKE_FLAGS_BUILD_FULL = ['BUILD_FULL': 'ON']
@@ -438,7 +438,6 @@ def generateMainBuildStages() {
     CMAKE_FLAGS_BUILD_ALL +
       CMAKE_FLAGS_BUILD_FULL +
       CMAKE_FLAGS_BUILD_STATIC +
-      CMAKE_FLAGS_WERROR +
       CMAKE_FLAGS_COVERAGE
     ,
     [TEST.ALL, TEST.MEM, TEST.NOKDB, TEST.INSTALL]
@@ -472,8 +471,7 @@ def generateFullBuildStages() {
   tasks << buildAndTestAsan(
     "debian-stable-asan",
     DOCKER_IMAGES.stretch,
-    CMAKE_FLAGS_BUILD_ALL +
-      CMAKE_FLAGS_WERROR
+    CMAKE_FLAGS_BUILD_ALL
   )
 
   // Build Elektra with clang and ASAN
@@ -482,15 +480,16 @@ def generateFullBuildStages() {
     "debian-unstable-clang-asan",
     DOCKER_IMAGES.sid,
     CMAKE_FLAGS_BUILD_ALL +
-      CMAKE_FLAGS_CLANG +
-      CMAKE_FLAGS_WERROR
+      CMAKE_FLAGS_CLANG
   )
 
   // Build Elektra on oldstable to see if we are backwards compatible
   tasks << buildAndTest(
     "debian-oldstable-full",
     DOCKER_IMAGES.jessie,
-    CMAKE_FLAGS_BUILD_ALL,
+    CMAKE_FLAGS_BUILD_ALL +
+      ['COMMON_FLAGS': ''] // The build system can not compile Elektra on Debian Jessie, if we specify the compiler switch `-Werror`.
+    ,
     [TEST.ALL, TEST.MEM, TEST.INSTALL]
   )
 
@@ -498,8 +497,7 @@ def generateFullBuildStages() {
   tasks << buildAndTest(
     "debian-unstable-full",
     DOCKER_IMAGES.sid,
-    CMAKE_FLAGS_BUILD_ALL +
-      CMAKE_FLAGS_WERROR,
+    CMAKE_FLAGS_BUILD_ALL,
     [TEST.ALL, TEST.MEM, TEST.INSTALL]
   )
 
@@ -518,8 +516,7 @@ def generateFullBuildStages() {
     "debian-unstable-full-clang",
     DOCKER_IMAGES.sid,
     CMAKE_FLAGS_BUILD_ALL +
-      CMAKE_FLAGS_CLANG +
-      CMAKE_FLAGS_WERROR
+      CMAKE_FLAGS_CLANG
     ,
     [TEST.ALL, TEST.MEM, TEST.INSTALL]
   )
@@ -538,7 +535,7 @@ def generateFullBuildStages() {
     CMAKE_FLAGS_BUILD_STATIC + [
       'PLUGINS': 'ALL;-date',
       'ENABLE_KDB_TESTING': 'OFF'
-    ] + CMAKE_FLAGS_WERROR,
+    ],
     [TEST.ALL]
   )
 
@@ -546,8 +543,7 @@ def generateFullBuildStages() {
   tasks << buildAndTest(
     "ubuntu-xenial",
     DOCKER_IMAGES.xenial,
-    CMAKE_FLAGS_BUILD_ALL +
-      CMAKE_FLAGS_WERROR,
+    CMAKE_FLAGS_BUILD_ALL,
     [TEST.ALL]
   )
 
@@ -564,8 +560,7 @@ def generateFullBuildStages() {
   tasks << buildAndTest(
     "debian-stable-minimal",
     DOCKER_IMAGES.stretch_minimal,
-    ['PLUGINS': 'NODEP'] +
-      CMAKE_FLAGS_WERROR,
+    ['PLUGINS': 'NODEP'],
     [TEST.ALL]
   )
 
@@ -575,8 +570,7 @@ def generateFullBuildStages() {
     DOCKER_IMAGES.stretch,
     CMAKE_FLAGS_BUILD_ALL +
       CMAKE_FLAGS_INI +
-      CMAKE_FLAGS_COVERAGE +
-      CMAKE_FLAGS_WERROR
+      CMAKE_FLAGS_COVERAGE
     ,
     [TEST.ALL, TEST.MEM]
   )
@@ -587,8 +581,7 @@ def generateFullBuildStages() {
     DOCKER_IMAGES.stretch,
     CMAKE_FLAGS_BUILD_ALL +
       CMAKE_FLAGS_MMAP +
-      CMAKE_FLAGS_COVERAGE +
-      CMAKE_FLAGS_WERROR
+      CMAKE_FLAGS_COVERAGE
     ,
     [TEST.ALL, TEST.MEM]
   )
@@ -597,8 +590,7 @@ def generateFullBuildStages() {
     "debian-stable-full-mmap-asan",
     DOCKER_IMAGES.stretch,
     CMAKE_FLAGS_BUILD_ALL +
-      CMAKE_FLAGS_MMAP +
-      CMAKE_FLAGS_WERROR
+      CMAKE_FLAGS_MMAP
   )
 
   // Build Elektra with xdg resolver to see if we are compliant
@@ -609,7 +601,7 @@ def generateFullBuildStages() {
     [
       'PLUGINS': "${xdgResolver};dump;sync;ini;dini;base64;spec;error;list;timeofday;profile;mathcheck;tracer;hosts;network;glob",
       'KDB_DEFAULT_RESOLVER': xdgResolver
-    ] + CMAKE_FLAGS_WERROR,
+    ],
     [TEST.ALL, TEST.MEM]
   )
 
@@ -620,8 +612,7 @@ def generateFullBuildStages() {
     CMAKE_FLAGS_BUILD_ALL +
       CMAKE_FLAGS_OPTIMIZATIONS_OFF +
       CMAKE_FLAGS_DEBUG +
-      CMAKE_FLAGS_LOGGER +
-      CMAKE_FLAGS_WERROR
+      CMAKE_FLAGS_LOGGER
     ,
     [TEST.ALL, TEST.MEM]
   )
@@ -636,7 +627,7 @@ def generateFullBuildStages() {
       DOCKER_IMAGES.stretch,
       CMAKE_FLAGS_BUILD_ALL + [
         'CMAKE_BUILD_TYPE': buildType
-      ] + CMAKE_FLAGS_WERROR,
+      ],
       [TEST.ALL, TEST.MEM]
     )
   }
