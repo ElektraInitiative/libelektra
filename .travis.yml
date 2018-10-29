@@ -32,8 +32,7 @@ matrix:
       name: 🍏 Check Source
       osx_image: xcode10.0
       compiler: clang
-      env:
-        - TEST_COMMAND="ctest --output-on-failure -R 'testscr_check'"
+      script: ninja && ctest --output-on-failure -R testscr_check
 
     # ASAN: Enable AddressSanitizer
 
@@ -139,7 +138,9 @@ matrix:
           -zeromqrecv;\
           -zeromqsend;\
           '"
-        - &testNoSourceCheck TEST_COMMAND="ctest --output-on-failure -E 'testscr_check'"
+      script: &testNoSourceCheck
+        - ninja
+        - ctest --output-on-failure -E testscr_check
 
     - os: linux
       name: 🐧 GCC ASAN
@@ -158,7 +159,7 @@ matrix:
         - TOOLS=kdb
         - BINDINGS=cpp
         - *minimalPluginList
-        - *testNoSourceCheck
+      script: *testNoSourceCheck
 
     - os: linux
       name: 🐧 Clang ASAN
@@ -174,7 +175,9 @@ matrix:
         - ENABLE_ASAN=ON
         - CC_COMPILER=clang-7
         - CXX_COMPILER=clang++-7
-        - TEST_COMMAND='ninja run_all'
+      script:
+        - ninja
+        - ninja run_all
 
     # FULL: Build full version of Elektra (BUILD_FULL=ON)
 
@@ -189,8 +192,23 @@ matrix:
             - g++-8
       env:
         - BUILD_FULL=ON
+        - BUILD_SHARED=OFF
         - CC_COMPILER=gcc-8
         - CXX_COMPILER=g++-8
+      script: &testFull
+        - ninja
+        - ninja install
+        - ninja run_all
+        - kdb-full run_all
+
+    - os: osx
+      name: 🍏 FULL
+      compiler: clang
+      osx_image: xcode10.0
+      env:
+        - BUILD_FULL=ON
+        - BUILD_SHARED=OFF
+      script: *testFull
 
     - os: osx
       name: 🍏 GCC
@@ -202,8 +220,11 @@ matrix:
       name: 🍏 Clang
       osx_image: xcode10.0
       compiler: clang
-      env:
-        - &testInstallNoSourceCheck TEST_COMMAND="ninja install && ctest --output-on-failure -E testscr_check && kdb run_all"
+      script: &testInstallNoSourceCheck
+        - ninja
+        - ninja install
+        - ctest --output-on-failure -E testscr_check
+        - kdb run_all
 
     # HASKELL: Only build Haskell binding and plugin
 
@@ -256,7 +277,7 @@ matrix:
         - KDB_DEFAULT_STORAGE=mmapstorage
         - KDB_DB_FILE=default.mmap
         - KDB_DB_INIT=elektra.mmap
-        - *testInstallNoSourceCheck
+      script: *testInstallNoSourceCheck
 
 before_install:
   - |
@@ -373,6 +394,7 @@ before_script:
       -DBINDINGS="${BINDINGS:-ALL}"
       -DTOOLS="${TOOLS:-ALL}"
       -DBUILD_FULL="${BUILD_FULL:-OFF}"
+      -DBUILD_SHARED="${BUILD_SHARED:-ON}"
       -DENABLE_ASAN="${ENABLE_ASAN:-OFF}"
       -DCOMMON_FLAGS="${COMMON_FLAGS:--Werror}"
       -DENABLE_DEBUG=ON
@@ -391,4 +413,6 @@ before_script:
 
 script:
   - ninja
-  - sh -c "${TEST_COMMAND:-ninja install && ninja run_all && kdb run_all}"
+  - ninja install
+  - ninja run_all
+  - kdb run_all

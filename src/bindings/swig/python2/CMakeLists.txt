@@ -24,6 +24,11 @@ elseif (NOT PYTHON2LIBS_FOUND)
 elseif (PYTHON2LIBS_VERSION_STRING MATCHES "^3\\.[0-9]+")
 	exclude_binding (swig_python2 "python2 is for python 2.7 only and not ${PYTHON2LIBS_VERSION_STRING}")
 else ()
+	if (NOT BUILD_SHARED)
+		exclude_binding (swig_python2 "it can only be built if `BUILD_SHARED` is enabled")
+		return ()
+	endif (NOT BUILD_SHARED)
+
 	add_binding (swig_python2)
 
 	if (${SWIG_VERSION} MATCHES "^2\\.")
