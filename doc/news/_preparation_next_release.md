@@ -136,6 +136,11 @@ plugins. _(René Schwaiger)_
 ## Libraries
 
 The text below summarizes updates to the [C (and C++)-based libraries](https://www.libelektra.org/libraries/readme) of Elektra.
+### Ruby
+
+- Use the PluginProcess library to execute the Ruby VM in its own process. This avoids Ruby VM shutdown issues. *(Bernhard Denner)*
+
+### <<Plugin3>>
 
 ### Compatibility
 

@@ -13,6 +13,7 @@ if (DEPENDENCY_PHASE)
 		endforeach (directory ${RUBY_DIRECTORIES})
 	endif ()
 	find_package (Ruby QUIET)
+	find_package (Pluginprocess)
 	find_swig ()
 	check_binding_included ("swig_ruby"
 				BINDING_WAS_ADDED
@@ -27,7 +28,7 @@ if (DEPENDENCY_PHASE)
 	# ~~~
 	set (SUPPORTED_COMPILER (NOT ("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU" AND ${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 5)))
 
-	if (RUBY_FOUND AND SWIG_FOUND AND BINDING_WAS_ADDED AND ${SUPPORTED_COMPILER})
+	if (RUBY_FOUND AND SWIG_FOUND AND BINDING_WAS_ADDED AND ${SUPPORTED_COMPILER} AND PLUGINPROCESS_FOUND)
 		include (LibAddMacros)
 
 		add_custom_command (OUTPUT runtime.h
@@ -64,6 +65,8 @@ if (DEPENDENCY_PHASE)
 		remove_plugin (ruby "swig not found")
 	elseif (NOT BINDING_WAS_ADDED)
 		remove_plugin (ruby "swig_ruby binding is required")
+	elseif (NOT PLUGINPROCESS_FOUND)
+		remove_plugin (python "Elektra's pluginprocess library is required")
 	endif ()
 endif ()
 
@@ -71,6 +74,7 @@ add_plugin (ruby CPP
 	    SOURCES ruby.hpp ruby.cpp ${CMAKE_CURRENT_BINARY_DIR}/runtime.h
 	    INCLUDE_SYSTEM_DIRECTORIES ${RUBY_INCLUDE_DIRS}
 	    LINK_LIBRARIES ${RUBY_LIBRARY}
+	    LINK_ELEKTRA elektra-pluginprocess
 	    COMPILE_DEFINITIONS SWIG_TYPE_TABLE=kdb SWIG_RUNTIME=\"runtime.h\")
 
 if (ADDTESTING_PHASE)
