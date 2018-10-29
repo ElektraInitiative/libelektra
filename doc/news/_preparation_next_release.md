@@ -241,6 +241,7 @@ you up to date with the multi-language support provided by Elektra.
 
 - We fixed some minor spelling mistakes in the documentation. *(René Schwaiger)*
 - The ReadMe now includes two badges that show the latest released version of Elektra and the status of the Travis build. *(René Schwaiger)*
+- Fixed documenation error on Ruby plugin Readme. *(Bernhard Denner)*
 - <<TODO>>
 - Go into more detail in
     [BUILDSERVER.md](https://master.libelektra.org/doc/BUILDSERVER.md).
