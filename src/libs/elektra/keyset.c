@@ -1191,7 +1191,7 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 		++it;
 	}
 
-	// correct cursor if cursor is in cutted keyset
+	// correct cursor if cursor is in cut keyset
 	if (ks->current >= found && ks->current < it)
 	{
 		if (found == 0)
@@ -1205,7 +1205,7 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 		}
 	}
 
-	// correct the cursor for the keys after the cutted keyset
+	// correct the cursor for the keys after the cut keyset
 	if (ks->current >= it)
 	{
 		if (it >= ks->size)
