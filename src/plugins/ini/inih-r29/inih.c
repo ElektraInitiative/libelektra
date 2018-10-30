@@ -61,7 +61,14 @@ static char * find_char_or_comment (const char * s, char c)
 /* Version of strncpy that ensures dest (size bytes) is null-terminated. */
 static char * strncpy0 (char * dest, const char * src, size_t size)
 {
+#if defined(__GNUC__) && __GNUC__ >= 8 && !defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wstringop-truncation"
+#endif
 	strncpy (dest, src, size);
+#if defined(__GNUC__) && __GNUC__ >= 8 && !defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
 	dest[size - 1] = '\0';
 	return dest;
 }
