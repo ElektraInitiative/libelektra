@@ -53,7 +53,8 @@ Kdb::Plugin.define :somename do
   #  - -1      : error during initialization
   def open(errorKey)
 
-    # generally it is save to simply throw an exception. This has the same
+    # perform plugin initialization
+    # if an error occurs it is save to simply throw an exception. This has the same
     # semantic as returning -1
   end
 
@@ -123,7 +124,7 @@ Kdb::Plugin.define :somename do
   #  - nil or 1 : on success
   #           0 : on success with no action
   #          -1 : failure
-  def set(returned, parentKey)
+  def error(returned, parentKey)
 
   end
 
