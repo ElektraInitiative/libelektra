@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 # bash required for platform independent time
+#
+# @author Felix Berlakovich <elektra@berlakovich.net>
+# @tags benchmark
+# @date 21.02.2016
 
 if [ -z "$KDB" ]; then
 	KDB=kdb

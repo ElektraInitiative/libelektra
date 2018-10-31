@@ -3,7 +3,7 @@
 # @author Markus Raab <elektra@markus-raab.org>
 # @brief Configure a debian build with optimizations
 # @date 02.09.2014
-# @tags configure, debian, optimizations
+# @tags configure, debian
 
 SCRIPTS_DIR=$(dirname "$0")
 . "${SCRIPTS_DIR}/configure-common"

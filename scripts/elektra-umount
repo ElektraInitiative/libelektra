@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+#
+# @tags mount
 
 help() {
 	echo "Usage: $(basename $0) <elektra-path>>"

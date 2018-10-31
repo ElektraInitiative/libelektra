@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # This script is sourced on build server, shebang is for convenience
 # bash is used to have a predictable ulimit behavior
+#
+# @tags build
 
 set -e
 set -x
