@@ -23,8 +23,6 @@ for PLUGIN in $PLUGINS; do
 		;;
 	"yajl")
 		MOUNT_PLUGIN="$PLUGIN"
-		#TODO: add dir2leaf plugin to fix problem
-		DO_NOT_TEST_ROOT_VALUE="yes"
 		;;
 	"simpleini")
 		MOUNT_PLUGIN="simpleini ccode null"
@@ -70,14 +68,6 @@ for PLUGIN in $PLUGINS; do
 
 		[ "x$("$KDB" sget $ROOT/value defvalue 2> /dev/null)" = "xdefvalue" ]
 		succeed_if "Did not get default value"
-
-		if [ "x$DO_NOT_TEST_ROOT_VALUE" != "xyes" ]; then
-			[ "x$("$KDB" get $ROOT 2> /dev/null)" = "xroot" ]
-			succeed_if "could not get root"
-
-			[ "x$("$KDB" sget $ROOT default 2> /dev/null)" = "xroot" ]
-			succeed_if "could not shell get root"
-		fi
 
 		"$KDB" set "$ROOT/value" "$VALUE" 1> /dev/null
 		succeed_if "could not set value"
