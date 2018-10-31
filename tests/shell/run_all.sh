@@ -5,6 +5,7 @@ echo RUN ALL TESTS
 echo
 
 check_version
+echo
 
 cd "@CMAKE_INSTALL_PREFIX@/@TARGET_TOOL_EXEC_FOLDER@"
 
@@ -30,9 +31,7 @@ done
 shift "$((OPTIND - 1))"
 
 for t in test* check*; do
-	echo "--- running $t ---"
-	echo
-	echo
+	echo "Running $t"
 
 	OUTPUT="$("$KDB" $t 2>&1)"
 	status=$?
@@ -47,6 +46,7 @@ for t in test* check*; do
 		nbError=$((nbError + 1))
 		nbFailed="$nbFailed\n$t"
 		echo error: $t
+		echo
 	fi
 	nbTests=$((nbTests + 1))
 
@@ -54,7 +54,9 @@ for t in test* check*; do
 done
 
 if [ $nbError != "0" ]; then
+	echo
 	echo "Following test cases failed: $nbFailed"
+	echo
 fi
 
 # fake the number of tests:
