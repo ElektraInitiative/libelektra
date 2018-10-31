@@ -227,6 +227,7 @@ you up to date with the multi-language support provided by Elektra.
 - Avoid raw pointers in KDB tools. *(Markus Raab)*
 - Improved error text of KDB tool `cp`. *(Markus Raab)*
 - Document hidden feature of KDB tool `mount`. *(Markus Raab)*
+- Add more tags to the KDB tools to be used with `kdb find-tools`. *(Markus Raab)*
 - <<TODO>>
 - <<TODO>>
 
