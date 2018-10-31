@@ -274,6 +274,8 @@ you up to date with the multi-language support provided by Elektra.
   Shell code. *(René Schwaiger)*
 - We pumped version numbers in XML-test files. *(Markus Raab)*
 - We fixed a crash in the unit test of the [JNA](https://www.libelektra.org/bindings/jna) binding. *(René Schwaiger)*
+- The command [`kdb run_all`](https://master.libelektra.org/tests/README.md) now only prints the output of tests that failed. To print the
+  full output of all test, please use the option `-v`. *(René Schwaiger)*
 
 [Markdown Shell Recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
 

@@ -18,14 +18,32 @@ cleanup() {
 EXPORT_DIR="$(mktempdir_elektra)"
 export_config "$EXPORT_DIR"
 
+# Parse optional argument `-v`
+OPTIND=1
+while getopts "v" option; do
+	case "$option" in
+	v)
+		verbose=0
+		;;
+	esac
+done
+shift "$((OPTIND - 1))"
+
 for t in test* check*; do
 	echo "--- running $t ---"
 	echo
 	echo
 
-	"$KDB" $t
+	OUTPUT="$("$KDB" $t 2>&1)"
+	status=$?
 
-	if [ $? != "0" ]; then
+	if [ $status != 0 ] || [ $verbose ]; then
+		echo
+		printf '%s' "$OUTPUT"
+		echo
+	fi
+
+	if [ $status != "0" ]; then
 		nbError=$((nbError + 1))
 		nbFailed="$nbFailed\n$t"
 		echo error: $t
