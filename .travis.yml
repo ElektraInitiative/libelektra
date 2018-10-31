@@ -199,7 +199,7 @@ matrix:
         - CXX_COMPILER=g++-8
       script: &testFull
         - ninja
-        - ninja install
+        - output="$(ninja install 2>&1)" || printf '%s' "$output"
         - ninja run_all
         - kdb-full run_all
 
@@ -224,7 +224,7 @@ matrix:
       compiler: clang
       script: &testInstallNoSourceCheck
         - ninja
-        - ninja install
+        - output="$(ninja install 2>&1)" || printf '%s' "$output"
         - ctest --output-on-failure -E testscr_check
         - kdb run_all
 
@@ -415,6 +415,6 @@ before_script:
 
 script:
   - ninja
-  - ninja install
+  - output="$(ninja install 2>&1)" || printf '%s' "$output"
   - ninja run_all
   - kdb run_all
