@@ -317,19 +317,19 @@ you up to date with the multi-language support provided by Elektra.
 - The build jobs now print less non-relevant output. *(René Schwaiger)*
 - Enable `-Werror` in `debian-stable-full`. *(Lukas Winkler)
 - We added the compiler switch `-Werror` to the build jobs:
-  - `debian-stable-asan`,
-  - `debian-unstable-clang-asan`,
-  - `debian-stable-full-i386`,
-  - `debian-unstable-full-clang`,
   - `alpine`,
-  - `ubuntu-xenial`,
-  - `debian-stable-minimal`,
-  - `debian-stable-full-mmap`,
+  - `debian-stable-full-i386`,
   - `debian-stable-full-mmap-asan`,
+  - `debian-stable-full-mmap`,
   - `debian-stable-full-optimizations-off`,
   - `debian-stable-full-xdg`,
-  - `debian-stable-multiconf`, and
-  - `debian-unstable-full`. *(René Schwaiger)*
+  - `debian-stable-minimal`,
+  - `debian-stable-multiconf`,
+  - `debian-unstable-clang-asan`,
+  - `debian-unstable-full-clang`,
+  - `debian-unstable-full`,
+  - `ubuntu-xenial`, and
+  - `debian-stable-asan`. *(René Schwaiger)*
 - Build Artifacts for all PR's to detect issues before merging *(Lukas Winkler)*
 - Stricter removal of temporary docker images on docker nodes *(Lukas Winkler)*
 - Added jenkins build jobs `debian-stable-full-mmap` and `debian-stable-full-mmap-asan`
