@@ -29,7 +29,7 @@ matrix:
   include:
 
     - os: osx
-      name: 🍏 Check Source
+      name: 🍏 Check Shell
       osx_image: xcode10.0
       compiler: clang
       script:

@@ -350,8 +350,8 @@ you up to date with the multi-language support provided by Elektra.
 - Added travis build job `🍏 mmap` on macOS with `mmapstorage` as the default storage. *(Mihael Pranjić)*
 - Travis now prints the CMake configuration for each build job. *(René Schwaiger)*
 - We now test Elektra using the latest version of Xcode (`10.0`). *(René Schwaiger)*
-- We added the build job `🍏 Check Source`, which only runs source code checks such as `testscr_check_oclint`. This update allows us to
-  remove the source code checks from the jobs `🍏 MMap` and `🍏 Clang`, which sometimes hit the
+- We added the build job `🍏 Check Shell`, which only runs shell checks such as `testscr_check_oclint`. This update allows us to
+  remove the shell checks from the jobs `🍏 MMap` and `🍏 Clang`, which sometimes hit the
   [timeout limit for public repositories](https://docs.travis-ci.com/user/customizing-the-build#build-timeouts) before. *(René Schwaiger)*
 - All Travis build jobs now use the compiler switch `-Werror`. *(René Schwaiger)*
 - The new job `🍏 FULL` and the build job `🐧 FULL` build Elektra using the CMake options `BUILD_FULL=ON` and `BUILD_SHARED=OFF`.
