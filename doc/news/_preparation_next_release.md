@@ -276,8 +276,10 @@ you up to date with the multi-language support provided by Elektra.
 - We fixed a crash in the unit test of the [JNA](https://www.libelektra.org/bindings/jna) binding. *(René Schwaiger)*
 - The command [`kdb run_all`](https://master.libelektra.org/tests/README.md) now only prints the output of tests that failed. To print the
   full output of all test, please use the option `-v`. *(René Schwaiger)*
+- The [Shell Recorder][] does not use the non-POSIX grep option `--text` any more. *(René Schwaiger)*
 
 [Markdown Shell Recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
+[Shell Recorder]: https://master.libelektra.org/tests/shell/shell_recorder
 
 ## Build
 
