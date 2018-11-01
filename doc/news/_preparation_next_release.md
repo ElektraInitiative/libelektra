@@ -357,6 +357,8 @@ you up to date with the multi-language support provided by Elektra.
 - All Travis build jobs now use the compiler switch `-Werror`. *(René Schwaiger)*
 - The new job `🍏 FULL` and the build job `🐧 FULL` build Elektra using the CMake options `BUILD_FULL=ON` and `BUILD_SHARED=OFF`.
   *(René Schwaiger)*
+- The `script` stage of the build jobs print less non-relevant output. Usually the commands in this stage should now only print verbose
+  output if a test fails. *(René Schwaiger)*
 
 ## Website
 
