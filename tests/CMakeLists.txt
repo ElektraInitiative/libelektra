@@ -99,6 +99,11 @@ add_custom_target (run_all
 		   WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
 		   ${USES_TERMINAL})
 
+add_custom_target (run_checkshell
+		   COMMAND "${CMAKE_BINARY_DIR}/scripts/run_checkshell" "$<CONFIGURATION>"
+		   WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
+		   ${USES_TERMINAL})
+
 add_custom_target (run_nokdbtests
 		   COMMAND "${CMAKE_SOURCE_DIR}/scripts/run_nokdbtests" "$<CONFIGURATION>"
 		   WORKING_DIRECTORY "${CMAKE_BINARY_DIR}")

@@ -32,7 +32,9 @@ matrix:
       name: 🍏 Check Source
       osx_image: xcode10.0
       compiler: clang
-      script: ninja && ctest --output-on-failure -R testscr_check
+      script:
+        - ninja
+        - ninja run_checkshell
 
     # ASAN: Enable AddressSanitizer
 
