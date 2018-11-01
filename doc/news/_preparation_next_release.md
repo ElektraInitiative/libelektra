@@ -294,6 +294,7 @@ you up to date with the multi-language support provided by Elektra.
 - We reformatted all CMake source files with cmake-format 0.4.3. *(René Schwaiger)*
 - Generating coverage data (`ENABLE_COVERAGE=ON`) should now also work on macOS. *(René Schwaiger)*
 - You can use the new target `run_checkshell` to run all shell checks (`testscr_check.*`). *(René Schwaiger)*
+- The new target `run_nocheckshell` runs all tests except for shell checks. *(René Schwaiger)*
 
 ### Docker
 

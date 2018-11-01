@@ -142,7 +142,7 @@ matrix:
           '"
       script: &testNoSourceCheck
         - ninja
-        - ctest --output-on-failure -E testscr_check
+        - ninja run_nocheckshell
 
     - os: linux
       name: 🐧 GCC ASAN
@@ -225,7 +225,7 @@ matrix:
       script: &testInstallNoSourceCheck
         - ninja
         - output="$(ninja install 2>&1)" || printf '%s' "$output"
-        - ctest --output-on-failure -E testscr_check
+        - ninja run_nocheckshell
         - kdb run_all
 
     # HASKELL: Only build Haskell binding and plugin
