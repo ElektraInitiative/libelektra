@@ -295,6 +295,7 @@ you up to date with the multi-language support provided by Elektra.
 - Generating coverage data (`ENABLE_COVERAGE=ON`) should now also work on macOS. *(René Schwaiger)*
 - You can use the new target `run_checkshell` to run all shell checks (`testscr_check.*`). *(René Schwaiger)*
 - The new target `run_nocheckshell` runs all tests except for shell checks. *(René Schwaiger)*
+- The target `run_all` now runs tests that do not modify the key database in parallel. *(René Schwaiger)*
 
 ### Docker
 
