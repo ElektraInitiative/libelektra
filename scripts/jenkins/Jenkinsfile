@@ -527,14 +527,12 @@ def generateFullBuildStages() {
   // Build Elektra on alpine
   // TODO: Add more deps to test them with musl
   // TODO: add date when their issues are resolved
-  // TODO: reenable kdb testing once it is POSIX conformant
   tasks << buildAndTest(
     "alpine",
     DOCKER_IMAGES.alpine,
     CMAKE_FLAGS_BUILD_ALL +
     CMAKE_FLAGS_BUILD_STATIC + [
       'PLUGINS': 'ALL;-date',
-      'ENABLE_KDB_TESTING': 'OFF'
     ],
     [TEST.ALL]
   )

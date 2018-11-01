@@ -320,7 +320,7 @@ you up to date with the multi-language support provided by Elektra.
 ### Jenkins
 
 - <<TODO>>
-- <<TODO>>
+- We enabled tests that write to the hard disk on the build job `alpine`. *(René Schwaiger)*
 - The build jobs now print less non-relevant output. *(René Schwaiger)*
 - Enable `-Werror` in `debian-stable-full`. *(Lukas Winkler)
 - We added the compiler switch `-Werror` to the build jobs:
