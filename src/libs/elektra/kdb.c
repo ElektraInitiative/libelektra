@@ -908,6 +908,39 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 // 			set_bit (ks->flags, KS_FLAG_MMAP_ARRAY);
 			ksAppend (ks, cache); // TODO: test ksAppend because correctness
 			output_keyset (global);
+
+
+			// Appoint keys (some in the bypass)
+			if (splitAppoint (split, handle, ks) == -1)
+			{
+				clearError (parentKey);
+				ELEKTRA_SET_ERROR (38, parentKey, "error in splitAppoint");
+				goto error;
+			}
+
+			/* Now post-process the updated keysets */
+			if (splitGet (split, parentKey, handle) == -1)
+			{
+				ELEKTRA_ADD_WARNING (108, parentKey, keyName (ksCurrent (ks)));
+				// continue, because sizes are already updated
+			}
+
+//			splitMerge (split, ks);
+//			ksRewind (ks);
+
+			keySetName (parentKey, keyName (initialParent));
+			elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, INIT);
+			elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, MAXONCE);
+			elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, DEINIT);
+			splitUpdateFileName (split, handle, parentKey);
+			keyDel (initialParent);
+			keyDel (oldError);
+			splitDel (split);
+			errno = errnosave;
+//			ELEKTRA_LOG_DEBUG (">>>>>>>>>>>>>> PRINT RETURNED KEYSET");
+//			output_keyset (ks);
+//			ELEKTRA_LOG_DEBUG (">>>>>>>>>>>>>> END RETURNED KEYSET");
+			return 1;
 		}
 		// intentional fallthrough
 	case 0: // We don't need an update so let's do nothing
@@ -1023,9 +1056,9 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	keyDel (oldError);
 	splitDel (split);
 	errno = errnosave;
-	ELEKTRA_LOG_DEBUG (">>>>>>>>>>>>>> PRINT RETURNED KEYSET");
-	output_keyset (ks);
-	ELEKTRA_LOG_DEBUG (">>>>>>>>>>>>>> END RETURNED KEYSET");
+//	ELEKTRA_LOG_DEBUG (">>>>>>>>>>>>>> PRINT RETURNED KEYSET");
+//	output_keyset (ks);
+//	ELEKTRA_LOG_DEBUG (">>>>>>>>>>>>>> END RETURNED KEYSET");
 	return 1;
 
 error:
