@@ -507,7 +507,7 @@ static int elektraGetCheckUpdateNeeded (Split * split, Key * parentKey, KeySet *
 			keySetName (parentKey, keyName (split->parents[i]));
 			keySetString (parentKey, "");
 			resolver->global = global;
-			output_key (parentKey);
+// 			output_key (parentKey);
 			ret = resolver->kdbGet (resolver, split->keysets[i], parentKey);
 			resolver->global = 0;
 			// store resolved filename
@@ -907,8 +907,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 // 			ks->alloc = cache->alloc;
 // 			set_bit (ks->flags, KS_FLAG_MMAP_ARRAY);
 			ksAppend (ks, cache); // TODO: test ksAppend because correctness
-			output_keyset (global);
-
+// 			output_keyset (global);
 
 			// Appoint keys (some in the bypass)
 			if (splitAppoint (split, handle, ks) == -1)
@@ -918,11 +917,62 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 				goto error;
 			}
 
-			/* Now post-process the updated keysets */
-			if (splitGet (split, parentKey, handle) == -1)
+			if (handle->globalPlugins[POSTGETSTORAGE][FOREACH] || handle->globalPlugins[POSTGETCLEANUP][FOREACH])
 			{
-				ELEKTRA_ADD_WARNING (108, parentKey, keyName (ksCurrent (ks)));
-				// continue, because sizes are already updated
+				clearError (parentKey);
+				if (elektraGetDoUpdateWithGlobalHooks (NULL, split, NULL, parentKey, initialParent, FIRST) == -1)
+				{
+					goto error;
+				}
+				else
+				{
+					copyError (parentKey, oldError);
+				}
+
+				keySetName (parentKey, keyName (initialParent));
+
+				if (splitGet (split, parentKey, handle) == -1)
+				{
+					ELEKTRA_ADD_WARNING (108, parentKey, keyName (ksCurrent (ks)));
+					// continue, because sizes are already updated
+				}
+				ksClear (ks);
+				splitMerge (split, ks);
+
+				clearError (parentKey);
+				if (elektraGetDoUpdateWithGlobalHooks (handle, split, ks, parentKey, initialParent, LAST) == -1)
+				{
+					goto error;
+				}
+				else
+				{
+					copyError (parentKey, oldError);
+				}
+			}
+			else
+			{
+
+				/* Now do the real updating,
+				   but not for bypassed keys in split->size-1 */
+				clearError (parentKey);
+				if (elektraGetDoUpdate (split, parentKey) == -1)
+				{
+					goto error;
+				}
+				else
+				{
+					copyError (parentKey, oldError);
+				}
+				/* Now post-process the updated keysets */
+				if (splitGet (split, parentKey, handle) == -1)
+				{
+					ELEKTRA_ADD_WARNING (108, parentKey, keyName (ksCurrent (ks)));
+					// continue, because sizes are already updated
+				}
+				/* We are finished, now just merge everything to returned */
+				ksClear (ks);
+
+				splitMerge (split, ks);
 			}
 
 //			splitMerge (split, ks);
@@ -1317,6 +1367,7 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 	elektraNamespace ns = keyGetNamespace (parentKey);
 	if (ns == KEY_NS_NONE)
 	{
+		ELEKTRA_LOG ("ns == KEY_NS_NONE");
 		return -1;
 	}
 	Key * oldError = keyNew (keyName (parentKey), KEY_END);
@@ -1327,12 +1378,14 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 		clearError (parentKey); // clear previous error to set new one
 		ELEKTRA_SET_ERRORF (104, parentKey, "metakey with name \"%s\" passed to kdbSet", keyName (parentKey));
 		keyDel (oldError);
+		ELEKTRA_LOG ("ns == KEY_NS_META");
 		return -1;
 	}
 
 	if (ns == KEY_NS_EMPTY)
 	{
 		ELEKTRA_ADD_WARNING (105, parentKey, "invalid key name passed to kdbSet");
+		ELEKTRA_LOG ("ns == KEY_NS_EMPTY");
 	}
 
 	if (!handle || !ks)
@@ -1340,6 +1393,7 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 		clearError (parentKey); // clear previous error to set new one
 		ELEKTRA_SET_ERROR (37, parentKey, "handle or ks null pointer");
 		keyDel (oldError);
+		ELEKTRA_LOG ("!handle || !ks");
 		return -1;
 	}
 
