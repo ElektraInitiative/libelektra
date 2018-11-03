@@ -274,6 +274,8 @@ you up to date with the multi-language support provided by Elektra.
   Shell code. *(René Schwaiger)*
 - We pumped version numbers in XML-test files. *(Markus Raab)*
 - We fixed a crash in the unit test of the [JNA](https://www.libelektra.org/bindings/jna) binding. *(René Schwaiger)*
+- The command [`kdb run_all`](https://master.libelektra.org/tests/README.md) now only prints the output of tests that failed. To print the
+  full output of all test, please use the option `-v`. *(René Schwaiger)*
 
 [Markdown Shell Recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
 
@@ -291,6 +293,9 @@ you up to date with the multi-language support provided by Elektra.
 - The argument `INCLUDE_SYSTEM_DIRECTORIES` of the function `add_plugin` now supports multiple include directories. *(René Schwaiger)*
 - We reformatted all CMake source files with cmake-format 0.4.3. *(René Schwaiger)*
 - Generating coverage data (`ENABLE_COVERAGE=ON`) should now also work on macOS. *(René Schwaiger)*
+- You can use the new target `run_checkshell` to run all shell checks (`testscr_check.*`). *(René Schwaiger)*
+- The new target `run_nocheckshell` runs all tests except for shell checks. *(René Schwaiger)*
+- The target `run_all` now runs tests that do not modify the key database in parallel. *(René Schwaiger)*
 
 ### Docker
 
@@ -346,12 +351,14 @@ you up to date with the multi-language support provided by Elektra.
 - Added travis build job `🍏 mmap` on macOS with `mmapstorage` as the default storage. *(Mihael Pranjić)*
 - Travis now prints the CMake configuration for each build job. *(René Schwaiger)*
 - We now test Elektra using the latest version of Xcode (`10.0`). *(René Schwaiger)*
-- We added the build job `🍏 Check Source`, which only runs source code checks such as `testscr_check_oclint`. This update allows us to
-  remove the source code checks from the jobs `🍏 MMap` and `🍏 Clang`, which sometimes hit the
+- We added the build job `🍏 Check Shell`, which only runs shell checks such as `testscr_check_oclint`. This update allows us to
+  remove the shell checks from the jobs `🍏 MMap` and `🍏 Clang`, which sometimes hit the
   [timeout limit for public repositories](https://docs.travis-ci.com/user/customizing-the-build#build-timeouts) before. *(René Schwaiger)*
 - All Travis build jobs now use the compiler switch `-Werror`. *(René Schwaiger)*
 - The new job `🍏 FULL` and the build job `🐧 FULL` build Elektra using the CMake options `BUILD_FULL=ON` and `BUILD_SHARED=OFF`.
   *(René Schwaiger)*
+- The `script` stage of the build jobs print less non-relevant output. Usually the commands in this stage should now only print verbose
+  output if a test fails. *(René Schwaiger)*
 
 ## Website
 

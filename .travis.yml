@@ -29,10 +29,12 @@ matrix:
   include:
 
     - os: osx
-      name: 🍏 Check Source
+      name: 🍏 Check Shell
       osx_image: xcode10.0
       compiler: clang
-      script: ninja && ctest --output-on-failure -R testscr_check
+      script:
+        - ninja
+        - ninja run_checkshell
 
     # ASAN: Enable AddressSanitizer
 
@@ -140,7 +142,7 @@ matrix:
           '"
       script: &testNoSourceCheck
         - ninja
-        - ctest --output-on-failure -E testscr_check
+        - ninja run_nocheckshell
 
     - os: linux
       name: 🐧 GCC ASAN
@@ -197,7 +199,7 @@ matrix:
         - CXX_COMPILER=g++-8
       script: &testFull
         - ninja
-        - ninja install
+        - output="$(ninja install 2>&1)" || printf '%s' "$output"
         - ninja run_all
         - kdb-full run_all
 
@@ -222,8 +224,8 @@ matrix:
       compiler: clang
       script: &testInstallNoSourceCheck
         - ninja
-        - ninja install
-        - ctest --output-on-failure -E testscr_check
+        - output="$(ninja install 2>&1)" || printf '%s' "$output"
+        - ninja run_nocheckshell
         - kdb run_all
 
     # HASKELL: Only build Haskell binding and plugin
@@ -413,6 +415,6 @@ before_script:
 
 script:
   - ninja
-  - ninja install
+  - output="$(ninja install 2>&1)" || printf '%s' "$output"
   - ninja run_all
   - kdb run_all

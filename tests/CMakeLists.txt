@@ -95,7 +95,17 @@ if (NOT CMAKE_VERSION VERSION_LESS 3.2)
 endif (NOT CMAKE_VERSION VERSION_LESS 3.2)
 
 add_custom_target (run_all
-		   COMMAND "${CMAKE_SOURCE_DIR}/scripts/run_all" "$<CONFIGURATION>"
+		   COMMAND "${CMAKE_BINARY_DIR}/scripts/run_all" "$<CONFIGURATION>"
+		   WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
+		   ${USES_TERMINAL})
+
+add_custom_target (run_checkshell
+		   COMMAND "${CMAKE_BINARY_DIR}/scripts/run_checkshell" "$<CONFIGURATION>"
+		   WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
+		   ${USES_TERMINAL})
+
+add_custom_target (run_nocheckshell
+		   COMMAND "${CMAKE_BINARY_DIR}/scripts/run_nocheckshell" "$<CONFIGURATION>"
 		   WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
 		   ${USES_TERMINAL})
 

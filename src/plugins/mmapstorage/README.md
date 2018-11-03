@@ -83,4 +83,4 @@ sudo kdb umount user/tests/mmapstorage
 
 ## Limitations
 
-Mapped files shall not be altered, otherwise the behaviour is undefined.
+Mapped files shall not be altered, otherwise the behavior is undefined.

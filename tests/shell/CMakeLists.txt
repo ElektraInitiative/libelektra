@@ -107,9 +107,23 @@ function (add_scripttest testname)
 					set_property (TEST testscr_${testname_we}
 						      PROPERTY ENVIRONMENT
 							       "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
-					set_property (TEST testscr_${testname_we}
-						      PROPERTY RUN_SERIAL
-							       TRUE)
+
+					set (parallel_tests
+					     check_bashisms
+					     check_doc
+					     check_formatting
+					     check_oclint
+					     check_plugins
+					     check_posix)
+					list (FIND parallel_tests
+						   "${testname_we}"
+						   index_parallel)
+					if (index_parallel EQUAL -1)
+						set_property (TEST testscr_${testname_we}
+							      PROPERTY RUN_SERIAL
+								       TRUE)
+					endif (index_parallel EQUAL -1)
+
 				endif (NOT ${testname_we} STREQUAL "run_all")
 			endif (ENABLE_KDB_TESTING)
 		endif (TARGET)
