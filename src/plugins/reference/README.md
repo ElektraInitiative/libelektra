@@ -57,7 +57,7 @@ The process starts with a key `X`, which has the metakey `check/reference` set t
 `recursive`. This key `X` must be an array key. The basename of `X` will be called the `refname`.
 For each element in the array run the following process:
 
-1. Interpret the current key `K`s value as a referemce and throw an error, if the reference
+1. Interpret the current key `K`s value as a reference and throw an error, if the reference
    is not valid.
 2. If there is no node for `K` in the reference graph create one. If there is no node for
    `R` in the reference graph create one. Insert an edge from `K` to `R` into the graph.
