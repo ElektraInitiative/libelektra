@@ -8,4 +8,6 @@ add_plugin (reference
 	    LINK_ELEKTRA elektra-ease
 			 elektra-globbing
 	    ADD_TEST
-	    TEST_README)
+	    TEST_README
+	    TEST_REQUIRED_PLUGINS dump
+				  sync)
