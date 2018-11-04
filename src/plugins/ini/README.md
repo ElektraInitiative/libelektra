@@ -192,7 +192,7 @@ kdb file /tests/ini | xargs cat
 #> brand = new
 
 # Retrieve metadata
-kdb lsmeta user/tests/ini/brand | grep --invert-match 'internal'
+kdb lsmeta user/tests/ini/brand | grep -v 'internal'
 # rationale
 # description
 

@@ -87,7 +87,7 @@ execute() {
 	[ -n "$STDERR" ] && printf 'STDERR: %s\n' "$STDERR" >> "$OutFile"
 	if [ -n "${STDERRCMP+unset}" ]; then
 		executedTests=$((executedTests + 1))
-		if ! printf '%s' "$STDERR" | replace_newline_return | grep -Eq --text "^$STDERRCMP\$"; then
+		if ! printf '%s' "$STDERR" | replace_newline_return | grep -Eq "^$STDERRCMP\$"; then
 			printerr '\nERROR - STDERR:\n“%s”\ndoes not match\n“%s”\n\n' "$STDERR" "$STDERRCMP"
 			printf '=== FAILED stderr does not match expected pattern %s\n' "$STDERRCMP" >> "$OutFile"
 			numberErrors=$((numberErrors + 1))
@@ -103,7 +103,7 @@ execute() {
 	[ -n "$STDOUT" ] && printf '%s\n' "STDOUT: $STDOUT" >> "$OutFile"
 	if [ -n "${STDOUTCMP+unset}" ]; then
 		executedTests=$((executedTests + 1))
-		if ! printf '%s' "$STDOUT" | replace_newline_return | grep -Fqx --text -- "$STDOUTCMP" ||
+		if ! printf '%s' "$STDOUT" | replace_newline_return | grep -Fqx -- "$STDOUTCMP" ||
 			test -z "$STDOUTCMP" -a -n "$STDOUT"; then
 			printerr '\nERROR - STDOUT:\n“%s”\ndoes not match\n“%s”\n\n' "$STDOUT" "$STDOUTCMP"
 			printf '=== FAILED stdout does not match expected pattern %s\n' "$STDOUTCMP" >> "$OutFile"
@@ -117,7 +117,7 @@ execute() {
 
 	if [ -n "$STDOUTRECMP" ]; then
 		executedTests=$((executedTests + 1))
-		if ! printf '%s' "$STDOUT" | replace_newline_return | grep -Eq --text -- "$STDOUTRECMP"; then
+		if ! printf '%s' "$STDOUT" | replace_newline_return | grep -Eq -- "$STDOUTRECMP"; then
 			printerr '\nERROR - STDOUT:\n“%s”\ndoes not match\n“%s”\n\n' "$STDOUT" "$STDOUTRECMP"
 			printf '=== FAILED stdout does not match expected pattern %s\n' "$STDOUTRECMP" >> "$OutFile"
 			numberErrors=$((numberErrors + 1))
@@ -133,7 +133,7 @@ execute() {
 	[ -n "$WARNINGS" ] && printf 'WARNINGS: %s\n' "$WARNINGS" >> "$OutFile"
 	if [ -n "$WARNINGSCMP" ]; then
 		executedTests=$((executedTests + 1))
-		if ! printf '%s' "$WARNINGS" | replace_newline_return | grep -Eq --text -- "$WARNINGSCMP"; then
+		if ! printf '%s' "$WARNINGS" | replace_newline_return | grep -Eq -- "$WARNINGSCMP"; then
 			printerr '\nERROR - WARNINGS:\n“%s”\ndoes not match\n“%s”\n\n' "$WARNINGS" "$WARNINGSCMP"
 			printf '=== FAILED Warnings do not match expected pattern %s\n' "$WARNINGSCMP" >> "$OutFile"
 			numberErrors=$((numberErrors + 1))
@@ -149,7 +149,7 @@ execute() {
 	[ -n "$ERROR" ] && printf 'ERROR: %s\n' "$ERROR" >> "$OutFile"
 	if [ -n "$ERRORCMP" ]; then
 		executedTests=$((executedTests + 1))
-		if ! printf '%s' "$ERROR" | replace_newline_return | grep -Eq --text -- "$ERRORCMP"; then
+		if ! printf '%s' "$ERROR" | replace_newline_return | grep -Eq -- "$ERRORCMP"; then
 			printerr '\nERROR - ERROR:\n“%s”\ndoes not match\n“%s”\n\n' "$ERROR" "$ERRORCMP"
 			printf '=== FAILED Errors do not match expected pattern %s\n' "$ERRORCMP" >> "$OutFile"
 			numberErrors=$((numberErrors + 1))
