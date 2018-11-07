@@ -9,7 +9,8 @@
 #ifndef ELEKTRA_ERROR_PRIVATE_H
 #define ELEKTRA_ERROR_PRIVATE_H
 
-#include "elektra.h"
+#include "elektra_error.h"
+#include "kdb.h"
 
 struct _ElektraError
 {

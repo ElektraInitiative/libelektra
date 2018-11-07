@@ -9,12 +9,10 @@
 #ifndef ELEKTRA_H
 #define ELEKTRA_H
 
-#include "elektra_conversion.h"
 #include "elektra_error.h"
 #include "elektra_types.h"
 #include "kdb.h"
 #include "kdbtypes.h"
-#include <string.h>
 
 /**
  * \defgroup highlevel High-level API
@@ -158,14 +156,15 @@ void elektraClose (Elektra * elektra);
 
 size_t elektraArraySize (Elektra * elektra, const char * keyName);
 
-void elektraSetValue (Elektra * elektra, const char * name, const char * value, KDBType type, ElektraError ** error);
-Key * elektraFindKey (Elektra * elektra, const char * name, KDBType type);
 const char * elektraGetValue (Elektra * elektra, const char * name);
+const char * elektraGetArrayElementValue (Elektra * elektra, const char * name, size_t index);
 
+void elektraSetValue (Elektra * elektra, const char * name, const char * value, KDBType type, ElektraError ** error);
 void elektraSetArrayElementValue (Elektra * elektra, const char * name, size_t index, const char * value, KDBType type,
 				  ElektraError ** error);
+
+Key * elektraFindKey (Elektra * elektra, const char * name, KDBType type);
 Key * elektraFindArrayElementKey (Elektra * elektra, const char * name, size_t index, KDBType type);
-const char * elektraGetArrayElementValue (Elektra * elektra, const char * name, size_t index);
 
 /**
  * @param elektra The elektra instance initialized with the parent key.

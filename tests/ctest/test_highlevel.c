@@ -7,6 +7,7 @@
  */
 
 #include <elektra.h>
+#include <elektra_conversion.h>
 #include <tests_internal.h>
 
 static void setKeyValue (const char * parentKeyName, const char * type, const char * name, const char * value)

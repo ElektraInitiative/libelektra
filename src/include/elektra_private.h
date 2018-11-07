@@ -9,7 +9,8 @@
 #ifndef ELEKTRA_PRIVATE_H
 #define ELEKTRA_PRIVATE_H
 
-#include "kdb.h"
+#include "elektra.h"
+#include "elektra_error.h"
 
 struct _Elektra
 {
@@ -18,5 +19,10 @@ struct _Elektra
 	KeySet * config;
 	Key * lookupKey;
 };
+
+void elektraSaveKey (Elektra * elektra, Key * key, ElektraError ** error);
+
+void elektraSetLookupKey (Elektra * elektra, const char * name);
+void elektraSetArrayLookupKey (Elektra * elektra, const char * name, size_t index);
 
 #endif // ELEKTRA_PRIVATE_H
