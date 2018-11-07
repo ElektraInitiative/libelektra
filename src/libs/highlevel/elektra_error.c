@@ -20,7 +20,7 @@ ElektraError * elektraErrorCreate (ElektraErrorCode code, const char * descripti
 {
 	ElektraError * const error = elektraCalloc (sizeof (struct _ElektraError));
 	error->code = code;
-	error->description = description;
+	error->description = elektraStrDup (description);
 	error->severity = severity;
 	error->group = group;
 	error->module = module;
@@ -37,7 +37,8 @@ ElektraError * elektraErrorCreateFromKey (Key * key)
 		return NULL;
 	}
 
-	ElektraErrorCode code = KDB_STRING_TO_LONG (keyString (keyGetMeta (key, "error/number")));
+	ElektraErrorCode code;
+	elektraKeyToLong (keyGetMeta (key, "error/number"), &code);
 	const char * description = keyString (keyGetMeta (key, "error/description"));
 
 	const char * severityString = keyString (keyGetMeta (key, "error/severity"));
@@ -112,6 +113,11 @@ void elektraErrorReset (ElektraError ** error)
 	if (*error == NULL)
 	{
 		return;
+	}
+
+	if ((*error)->description != NULL)
+	{
+		elektraFree ((*error)->description);
 	}
 
 	elektraFree (*error);

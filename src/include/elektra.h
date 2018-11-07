@@ -11,6 +11,7 @@
 
 #include "elektra_conversion.h"
 #include "elektra_error.h"
+#include "elektra_types.h"
 #include "kdb.h"
 #include "kdbtypes.h"
 #include <string.h>
@@ -65,25 +66,53 @@ typedef struct _Elektra Elektra;
 	ELEKTRA_SET_ARRAY_ELEMENT_BY_TAG_SIGNATURE (cType, typeName);
 
 
-#define ELEKTRA_TAG_DEFINITIONS(cType, typeName, KDB_TYPE, TO_STRING, FROM_STRING)                                                         \
+#define ELEKTRA_TAG_DEFINITIONS(cType, typeName, KDB_TYPE, VALUE_TO_STRING, KEY_TO_VALUE)                                                  \
 	ELEKTRA_SET_BY_TAG_SIGNATURE (cType, typeName)                                                                                     \
 	{                                                                                                                                  \
-		elektraSetValue (elektra, tag->keyName, TO_STRING (value), KDB_TYPE, error);                                               \
+		char * string = VALUE_TO_STRING (value);                                                                                   \
+		if (string == 0)                                                                                                           \
+		{                                                                                                                          \
+			*error = elektraErrorConversionToString (KDB_TYPE, NULL);                                                          \
+			return;                                                                                                            \
+		}                                                                                                                          \
+		elektraSetValue (elektra, tag->keyName, string, KDB_TYPE, error);                                                          \
+		elektraFree (string);                                                                                                      \
 	}                                                                                                                                  \
                                                                                                                                            \
 	ELEKTRA_SET_ARRAY_ELEMENT_BY_TAG_SIGNATURE (cType, typeName)                                                                       \
 	{                                                                                                                                  \
-		elektraSetArrayElementValue (elektra, tag->keyName, index, TO_STRING (value), KDB_TYPE, error);                            \
+		char * string = VALUE_TO_STRING (value);                                                                                   \
+		if (string == 0)                                                                                                           \
+		{                                                                                                                          \
+			*error = elektraErrorConversionToString (KDB_TYPE, NULL);                                                          \
+			return;                                                                                                            \
+		}                                                                                                                          \
+		elektraSetArrayElementValue (elektra, tag->keyName, index, VALUE_TO_STRING (value), KDB_TYPE, error);                      \
+		elektraFree (string);                                                                                                      \
 	}                                                                                                                                  \
                                                                                                                                            \
 	ELEKTRA_GET_BY_TAG_SIGNATURE (cType, typeName)                                                                                     \
 	{                                                                                                                                  \
-		return FROM_STRING (elektraGetValue (elektra, tag->keyName, KDB_TYPE));                                                    \
+		cType result;                                                                                                              \
+		const Key * key = elektraFindKey (elektra, tag->keyName, KDB_TYPE);                                                        \
+		if (!KEY_TO_VALUE (key, &result))                                                                                          \
+		{                                                                                                                          \
+			ELEKTRA_LOG_DEBUG ("Could not convert key to %s: %s\n", KDB_TYPE, tag->keyName);                                   \
+			exit (EXIT_FAILURE);                                                                                               \
+		}                                                                                                                          \
+		return result;                                                                                                             \
 	}                                                                                                                                  \
                                                                                                                                            \
 	ELEKTRA_GET_ARRAY_ELEMENT_BY_TAG_SIGNATURE (cType, typeName)                                                                       \
 	{                                                                                                                                  \
-		return FROM_STRING (elektraGetArrayElementValue (elektra, tag->keyName, index, KDB_TYPE));                                 \
+		cType result;                                                                                                              \
+		const Key * key = elektraFindArrayElementKey (elektra, tag->keyName, index, KDB_TYPE);                                     \
+		if (!KEY_TO_VALUE (key, &result))                                                                                          \
+		{                                                                                                                          \
+			ELEKTRA_LOG_DEBUG ("Could not convert key to %s: %s\n", KDB_TYPE, tag->keyName);                                   \
+			exit (EXIT_FAILURE);                                                                                               \
+		}                                                                                                                          \
+		return result;                                                                                                             \
 	}
 
 #define ELEKTRA_TAG_NAME(tagName) ELEKTRA_TAG_##tagName
@@ -113,23 +142,6 @@ ELEKTRA_TAG_DECLARATIONS (kdb_double_t, Double)
 ELEKTRA_TAG_DECLARATIONS (kdb_long_double_t, LongDouble)
 ELEKTRA_TAG_DECLARATIONS (int, Enum)
 
-typedef const char * KDBType;
-
-extern KDBType KDB_TYPE_STRING;
-extern KDBType KDB_TYPE_BOOLEAN;
-extern KDBType KDB_TYPE_CHAR;
-extern KDBType KDB_TYPE_OCTET;
-extern KDBType KDB_TYPE_SHORT;
-extern KDBType KDB_TYPE_UNSIGNED_SHORT;
-extern KDBType KDB_TYPE_LONG;
-extern KDBType KDB_TYPE_UNSIGNED_LONG;
-extern KDBType KDB_TYPE_LONG_LONG;
-extern KDBType KDB_TYPE_UNSIGNED_LONG_LONG;
-extern KDBType KDB_TYPE_FLOAT;
-extern KDBType KDB_TYPE_LONG_DOUBLE;
-extern KDBType KDB_TYPE_DOUBLE;
-extern KDBType KDB_TYPE_ENUM;
-
 /**
  * Initializes a new Elektra instance.
  * @param application The parent key for your application.
@@ -147,11 +159,13 @@ void elektraClose (Elektra * elektra);
 size_t elektraArraySize (Elektra * elektra, const char * keyName);
 
 void elektraSetValue (Elektra * elektra, const char * name, const char * value, KDBType type, ElektraError ** error);
-const char * elektraGetValue (Elektra * elektra, const char * name, KDBType type);
+Key * elektraFindKey (Elektra * elektra, const char * name, KDBType type);
+const char * elektraGetValue (Elektra * elektra, const char * name);
 
 void elektraSetArrayElementValue (Elektra * elektra, const char * name, size_t index, const char * value, KDBType type,
 				  ElektraError ** error);
-const char * elektraGetArrayElementValue (Elektra * elektra, const char * name, size_t index, KDBType type);
+Key * elektraFindArrayElementKey (Elektra * elektra, const char * name, size_t index, KDBType type);
+const char * elektraGetArrayElementValue (Elektra * elektra, const char * name, size_t index);
 
 /**
  * @param elektra The elektra instance initialized with the parent key.
@@ -224,7 +238,7 @@ void elektraSetLongDouble (Elektra * elektra, const char * keyname, kdb_long_dou
 /**
  * @copydoc elektraSetString
  */
-void elektraSetEnum (Elektra * elektra, char * name, int value, ElektraError ** error);
+void elektraSetEnumInt (Elektra * elektra, char * name, int value, ElektraError ** error);
 
 
 // Getters
@@ -316,8 +330,7 @@ void elektraSetStringArrayElement (Elektra * elektra, const char * keyname, size
 /**
  * @copydoc elektraSetStringArrayElement
  */
-void elektraSetBooleanArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_boolean_t value,
-					   ElektraError ** error);
+void elektraSetBooleanArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_boolean_t value, ElektraError ** error);
 
 /**
  * @copydoc elektraSetStringArrayElement
@@ -338,7 +351,7 @@ void elektraSetShortArrayElement (Elektra * elektra, const char * keyname, size_
  * @copydoc elektraSetStringArrayElement
  */
 void elektraSetUnsignedShortArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_unsigned_short_t value,
-						 ElektraError ** error);
+					  ElektraError ** error);
 
 /**
  * @copydoc elektraSetStringArrayElement
@@ -349,19 +362,18 @@ void elektraSetLongArrayElement (Elektra * elektra, const char * keyname, size_t
  * @copydoc elektraSetStringArrayElement
  */
 void elektraSetUnsignedLongArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_unsigned_long_t value,
-						ElektraError ** error);
+					 ElektraError ** error);
 
 /**
  * @copydoc elektraSetStringArrayElement
  */
-void elektraSetLongLongArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_long_long_t value,
-					    ElektraError ** error);
+void elektraSetLongLongArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_long_long_t value, ElektraError ** error);
 
 /**
  * @copydoc elektraSetStringArrayElement
  */
 void elektraSetUnsignedLongLongArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_unsigned_long_long_t value,
-						    ElektraError ** error);
+					     ElektraError ** error);
 
 /**
  * @copydoc elektraSetStringArrayElement
@@ -377,9 +389,9 @@ void elektraSetDoubleArrayElement (Elektra * elektra, const char * keyname, size
  * @copydoc elektraSetStringArrayElement
  */
 void elektraSetLongDoubleArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_long_double_t value,
-					      ElektraError ** error);
+				       ElektraError ** error);
 
-void elektraSetEnumArrayElement (Elektra * elektra, char * name, size_t index, int value, ElektraError ** error);
+void elektraSetEnumIntArrayElement (Elektra * elektra, char * name, size_t index, int value, ElektraError ** error);
 
 // Array-Getters
 
@@ -452,9 +464,9 @@ kdb_double_t elektraGetDoubleArrayElement (Elektra * elektra, const char * keyna
  */
 kdb_long_double_t elektraGetLongDoubleArrayElement (Elektra * elektra, const char * keyname, size_t index);
 
-int elektraGetEnumArrayElementInt (Elektra * elektra, char * keyName, int index);
+int elektraGetEnumIntArrayElement (Elektra * elektra, char * keyName, size_t index);
 
-#define elektraGetEnumArrayElement(elektra, keyname, index, enumType) (enumType) elektraGetEnumArrayElementInt (elektra, keyname, index)
+#define elektraGetEnumArrayElement(elektra, keyname, index, enumType) (enumType) elektraGetEnumIntArrayElement (elektra, keyname, index)
 
 // Generic Setters and Getters
 
@@ -464,7 +476,7 @@ int elektraGetEnumArrayElementInt (Elektra * elektra, char * keyName, int index)
  * @param value The new value.
  * @param error Pass a reference to an ElektraError pointer.
  */
-#define elektraSet(elektra, tag, value, error) ((tag).set(elektra, &(tag), value, error))
+#define elektraSet(elektra, tag, value, error) ((tag).set (elektra, &(tag), value, error))
 
 /**
  * @param elektra The elektra instance initialized with the parent key.
@@ -472,7 +484,7 @@ int elektraGetEnumArrayElementInt (Elektra * elektra, char * keyName, int index)
  * @param value The new value.
  * @param error Pass a reference to an ElektraError pointer.
  */
-#define elektraSetArrayElement(elektra, tag, index, value, error) ((tag).setArrayElement(elektra, &(tag), index, value, error))
+#define elektraSetArrayElement(elektra, tag, index, value, error) ((tag).setArrayElement (elektra, &(tag), index, value, error))
 
 /**
  * @param elektra The elektra instance initialized with the parent key.
@@ -480,7 +492,7 @@ int elektraGetEnumArrayElementInt (Elektra * elektra, char * keyName, int index)
  * @param index The array index of the desired element, starting with 0.
  * @return The value stored at the given key and index.
  */
-#define elektraGet(elektra, tag) ((tag).get(elektra, &(tag)))
+#define elektraGet(elektra, tag) ((tag).get (elektra, &(tag)))
 
 /**
  * @param elektra The elektra instance initialized with the parent key.
@@ -489,7 +501,7 @@ int elektraGetEnumArrayElementInt (Elektra * elektra, char * keyName, int index)
  * @param index The array index of the desired element, starting with 0. \
  * @return The value stored at the given key and index.
  */
-#define elektraGetArrayElement(elektra, tag, index) ((tag).getArrayElement(elektra, &(tag), index))
+#define elektraGetArrayElement(elektra, tag, index) ((tag).getArrayElement (elektra, &(tag), index))
 /**
  * @}
  */

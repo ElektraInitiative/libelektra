@@ -9,37 +9,46 @@
 #ifndef ELEKTRA_CONVERSION_H
 #define ELEKTRA_CONVERSION_H
 
+#include "elektra_error.h"
+#include "elektra_types.h"
+#include "kdb.h"
 #include "kdbhelper.h"
 #include <stdlib.h>
 
-#define KDB_STRING_TO_STRING(value) value
+int elektraKeyToString (const Key * key, const char ** variable);
+int elektraKeyToBoolean (const Key * key, kdb_boolean_t * variable);
+int elektraKeyToChar (const Key * key, kdb_char_t * variable);
+int elektraKeyToOctet (const Key * key, kdb_octet_t * variable);
+int elektraKeyToShort (const Key * key, kdb_short_t * variable);
+int elektraKeyToUnsignedShort (const Key * key, kdb_unsigned_short_t * variable);
+int elektraKeyToLong (const Key * key, kdb_long_t * variable);
+int elektraKeyToUnsignedLong (const Key * key, kdb_unsigned_long_t * variable);
+int elektraKeyToLongLong (const Key * key, kdb_long_long_t * variable);
+int elektraKeyToUnsignedLongLong (const Key * key, kdb_unsigned_long_long_t * variable);
+int elektraKeyToFloat (const Key * key, kdb_float_t * variable);
+int elektraKeyToDouble (const Key * key, kdb_double_t * variable);
 
-#define KDB_STRING_TO_BOOLEAN(string) (kdb_boolean_t) !strcmp (string, "1")
-#define KDB_STRING_TO_CHAR(string) (kdb_char_t) (string)[0]
-#define KDB_STRING_TO_OCTET(string) (kdb_octet_t) strtoul (string, NULL, 10)
-#define KDB_STRING_TO_SHORT(string) (kdb_short_t) strtoul (string, NULL, 10)
-#define KDB_STRING_TO_UNSIGNED_SHORT(string) (kdb_unsigned_short_t) strtoul (string, NULL, 10)
-#define KDB_STRING_TO_LONG(string) (kdb_long_t) strtoul (string, NULL, 10)
-#define KDB_STRING_TO_UNSIGNED_LONG(string) (kdb_unsigned_long_t) strtoul (string, NULL, 10)
-#define KDB_STRING_TO_LONG_LONG(string) ELEKTRA_LONG_LONG_S (string, NULL, 10)
-#define KDB_STRING_TO_UNSIGNED_LONG_LONG(string) ELEKTRA_UNSIGNED_LONG_LONG_S (string, NULL, 10)
-#define KDB_STRING_TO_FLOAT(string) strtof (string, NULL)
-#define KDB_STRING_TO_DOUBLE(string) strtod (string, NULL)
-#define KDB_STRING_TO_LONG_DOUBLE(string) strtold (string, NULL)
-#define KDB_STRING_TO_ENUM(string) (int) strtol (string, NULL, 10)
+char * elektraBooleanToString (kdb_boolean_t value);
+char * elektraCharToString (kdb_char_t value);
+char * elektraOctetToString (kdb_octet_t value);
+char * elektraShortToString (kdb_short_t value);
+char * elektraUnsignedShortToString (kdb_unsigned_short_t value);
+char * elektraLongToString (kdb_long_t value);
+char * elektraUnsignedLongToString (kdb_unsigned_long_t value);
+char * elektraLongLongToString (kdb_long_long_t value);
+char * elektraUnsignedLongLongToString (kdb_unsigned_long_long_t value);
+char * elektraFloatToString (kdb_float_t value);
+char * elektraDoubleToString (kdb_double_t value);
 
-#define KDB_BOOLEAN_TO_STRING(value) (((value) ? "1" : "0"))
-#define KDB_CHAR_TO_STRING(value) elektraFormat ("%c", value)
-#define KDB_OCTET_TO_STRING(value) elektraFormat ("%d", value)
-#define KDB_SHORT_TO_STRING(value) elektraFormat ("%d", value)
-#define KDB_UNSIGNED_SHORT_TO_STRING(value) elektraFormat ("%d", value)
-#define KDB_LONG_TO_STRING(value) elektraFormat (ELEKTRA_LONG_F, value)
-#define KDB_UNSIGNED_LONG_TO_STRING(value) elektraFormat (ELEKTRA_UNSIGNED_LONG_F, value)
-#define KDB_LONG_LONG_TO_STRING(value) elektraFormat (ELEKTRA_LONG_LONG_F, value)
-#define KDB_UNSIGNED_LONG_LONG_TO_STRING(value) elektraFormat (ELEKTRA_UNSIGNED_LONG_LONG_F, value)
-#define KDB_FLOAT_TO_STRING(value) elektraFormat ("%f", value)
-#define KDB_DOUBLE_TO_STRING(value) elektraFormat ("%f", value)
-#define KDB_LONG_DOUBLE_TO_STRING(value) elektraFormat ("%Lf", value)
-#define KDB_ENUM_TO_STRING(string) elektraFormat ("%d", value)
+#ifdef HAVE_SIZEOF_LONG_DOUBLE
+
+int elektraKeyToLongDouble (const Key * key, kdb_long_double_t * variable);
+
+char * elektraLongDoubleToString (kdb_long_double_t value);
+
+#endif // HAVE_SIZEOF_LONG_DOUBLE
+
+ElektraError * elektraErrorConversionToString (KDBType sourceType, const char * moreDesc);
+ElektraError * elektraErrorConversionFromString (KDBType targetType, const char * sourceValue, const char * moreDesc);
 
 #endif // ELEKTRA_CONVERSION_H

@@ -31,34 +31,31 @@ KDBType KDB_TYPE_LONG_DOUBLE = "long_double";
 KDBType KDB_TYPE_DOUBLE = "double";
 KDBType KDB_TYPE_ENUM = "enum";
 
-static Key * generateLookupKey (Elektra * elektra, const char * name);
-static Key * generateArrayLookupKey (Elektra * elektra, const char * name, size_t index);
-
-static const char * getKeyValue (Elektra * elektra, Key * key, KDBType type);
-static void setKeyValue (Elektra * elektra, Key * key, KDBType type, const char * value, ElektraError ** error);
+static void setLookupKey (Elektra * elektra, const char * name);
+static void setArrayLookupKey (Elektra * elektra, const char * name, size_t index);
+static void saveKey (Elektra * elektra, Key * key, ElektraError ** error);
+static void checkType (Key * key, KDBType type);
 
 /**
  * \defgroup highlevel High-level API
  * @{
  */
 
-
-ELEKTRA_TAG_DEFINITIONS (const char *, String, KDB_TYPE_STRING, KDB_STRING_TO_STRING, KDB_STRING_TO_STRING)
-ELEKTRA_TAG_DEFINITIONS (kdb_boolean_t, Boolean, KDB_TYPE_BOOLEAN, KDB_BOOLEAN_TO_STRING, KDB_STRING_TO_BOOLEAN)
-ELEKTRA_TAG_DEFINITIONS (kdb_char_t, Char, KDB_TYPE_CHAR, KDB_CHAR_TO_STRING, KDB_STRING_TO_CHAR)
-ELEKTRA_TAG_DEFINITIONS (kdb_octet_t, Octet, KDB_TYPE_OCTET, KDB_OCTET_TO_STRING, KDB_STRING_TO_OCTET)
-ELEKTRA_TAG_DEFINITIONS (kdb_short_t, Short, KDB_TYPE_SHORT, KDB_SHORT_TO_STRING, KDB_STRING_TO_SHORT)
-ELEKTRA_TAG_DEFINITIONS (kdb_unsigned_short_t, UnsignedShort, KDB_TYPE_UNSIGNED_SHORT, KDB_UNSIGNED_SHORT_TO_STRING,
-			 KDB_STRING_TO_UNSIGNED_SHORT)
-ELEKTRA_TAG_DEFINITIONS (kdb_long_t, Long, KDB_TYPE_LONG, KDB_LONG_TO_STRING, KDB_STRING_TO_LONG)
-ELEKTRA_TAG_DEFINITIONS (kdb_unsigned_long_t, UnsignedLong, KDB_TYPE_UNSIGNED_LONG, KDB_UNSIGNED_LONG_TO_STRING,
-			 KDB_STRING_TO_UNSIGNED_LONG)
-ELEKTRA_TAG_DEFINITIONS (kdb_long_long_t, LongLong, KDB_TYPE_LONG_LONG, KDB_LONG_LONG_TO_STRING, KDB_STRING_TO_LONG_LONG)
-ELEKTRA_TAG_DEFINITIONS (kdb_unsigned_long_long_t, UnsignedLongLong, KDB_TYPE_UNSIGNED_LONG_LONG, KDB_UNSIGNED_LONG_LONG_TO_STRING,
-			 KDB_STRING_TO_UNSIGNED_LONG_LONG)
-ELEKTRA_TAG_DEFINITIONS (kdb_float_t, Float, KDB_TYPE_FLOAT, KDB_FLOAT_TO_STRING, KDB_STRING_TO_FLOAT)
-ELEKTRA_TAG_DEFINITIONS (kdb_double_t, Double, KDB_TYPE_DOUBLE, KDB_DOUBLE_TO_STRING, KDB_STRING_TO_DOUBLE)
-ELEKTRA_TAG_DEFINITIONS (kdb_long_double_t, LongDouble, KDB_TYPE_LONG_DOUBLE, KDB_LONG_DOUBLE_TO_STRING, KDB_STRING_TO_LONG_DOUBLE)
+ELEKTRA_TAG_DEFINITIONS (const char *, String, KDB_TYPE_STRING, elektraStrDup, elektraKeyToString)
+ELEKTRA_TAG_DEFINITIONS (kdb_boolean_t, Boolean, KDB_TYPE_BOOLEAN, elektraBooleanToString, elektraKeyToBoolean)
+ELEKTRA_TAG_DEFINITIONS (kdb_char_t, Char, KDB_TYPE_CHAR, elektraCharToString, elektraKeyToChar)
+ELEKTRA_TAG_DEFINITIONS (kdb_octet_t, Octet, KDB_TYPE_OCTET, elektraOctetToString, elektraKeyToOctet)
+ELEKTRA_TAG_DEFINITIONS (kdb_short_t, Short, KDB_TYPE_SHORT, elektraShortToString, elektraKeyToShort)
+ELEKTRA_TAG_DEFINITIONS (kdb_unsigned_short_t, UnsignedShort, KDB_TYPE_UNSIGNED_SHORT, elektraUnsignedShortToString,
+			 elektraKeyToUnsignedShort)
+ELEKTRA_TAG_DEFINITIONS (kdb_long_t, Long, KDB_TYPE_LONG, elektraLongToString, elektraKeyToLong)
+ELEKTRA_TAG_DEFINITIONS (kdb_unsigned_long_t, UnsignedLong, KDB_TYPE_UNSIGNED_LONG, elektraUnsignedLongToString, elektraKeyToUnsignedLong)
+ELEKTRA_TAG_DEFINITIONS (kdb_long_long_t, LongLong, KDB_TYPE_LONG_LONG, elektraLongLongToString, elektraKeyToLongLong)
+ELEKTRA_TAG_DEFINITIONS (kdb_unsigned_long_long_t, UnsignedLongLong, KDB_TYPE_UNSIGNED_LONG_LONG, elektraLongLongToString,
+			 elektraKeyToUnsignedLongLong)
+ELEKTRA_TAG_DEFINITIONS (kdb_float_t, Float, KDB_TYPE_FLOAT, elektraFloatToString, elektraKeyToFloat)
+ELEKTRA_TAG_DEFINITIONS (kdb_double_t, Double, KDB_TYPE_DOUBLE, elektraDoubleToString, elektraKeyToDouble)
+ELEKTRA_TAG_DEFINITIONS (kdb_long_double_t, LongDouble, KDB_TYPE_LONG_DOUBLE, elektraLongDoubleToString, elektraKeyToLongDouble)
 
 Elektra * elektraOpen (const char * application, KeySet * defaults, ElektraError ** error)
 {
@@ -114,388 +111,506 @@ void elektraClose (Elektra * elektra)
 
 size_t elektraArraySize (Elektra * elektra, const char * name)
 {
-	Key * const key = generateLookupKey (elektra, name);
-
-	KeySet * arrayKeys = elektraArrayGet (key, elektra->config);
+	setLookupKey (elektra, name);
+	KeySet * arrayKeys = elektraArrayGet (elektra->lookupKey, elektra->config);
 	size_t size = (size_t) ksGetSize (arrayKeys);
 	ksDel (arrayKeys);
 
 	return size;
 }
 
-const char * elektraGetValue (Elektra * elektra, const char * name, KDBType type)
+Key * elektraFindKey (Elektra * elektra, const char * name, KDBType type)
 {
-	Key * const key = generateLookupKey (elektra, name);
+	setLookupKey (elektra, name);
+	Key * const resultKey = ksLookup (elektra->config, elektra->lookupKey, 0);
+	if (resultKey == NULL)
+	{
+		ELEKTRA_LOG_DEBUG ("Key not found: %s\n", keyName (elektra->lookupKey));
+		exit (EXIT_FAILURE);
+	}
 
-	return getKeyValue (elektra, key, type);
+	if (type != NULL)
+	{
+		checkType (resultKey, type);
+	}
+
+	return resultKey;
 }
 
-const char * elektraGetArrayElementValue (Elektra * elektra, const char * name, size_t index, KDBType type)
+Key * elektraFindArrayElementKey (Elektra * elektra, const char * name, size_t index, KDBType type)
 {
-	Key * const key = generateArrayLookupKey (elektra, name, index);
+	setArrayLookupKey (elektra, name, index);
+	Key * const resultKey = ksLookup (elektra->config, elektra->lookupKey, 0);
+	if (resultKey == NULL)
+	{
+		ELEKTRA_LOG_DEBUG ("Key not found: %s\n", keyName (elektra->lookupKey));
+		exit (EXIT_FAILURE);
+	}
 
-	return getKeyValue (elektra, key, type);
+	if (type != NULL)
+	{
+		checkType (resultKey, type);
+	}
+
+	return resultKey;
+}
+
+const char * elektraGetValue (Elektra * elektra, const char * name)
+{
+	return keyString (elektraFindKey (elektra, name, NULL));
+}
+
+const char * elektraGetArrayElementValue (Elektra * elektra, const char * name, size_t index)
+{
+	return keyString (elektraFindArrayElementKey (elektra, name, index, NULL));
 }
 
 void elektraSetValue (Elektra * elektra, const char * name, const char * value, KDBType type, ElektraError ** error)
 {
-	Key * const key = keyDup (generateLookupKey (elektra, name));
-	setKeyValue (elektra, key, type, value, error);
+	setLookupKey (elektra, name);
+	Key * const key = keyDup (elektra->lookupKey);
+	keySetMeta (key, "type", type);
+	keySetString (key, value);
+
+	saveKey (elektra, key, error);
 }
 
 void elektraSetArrayElementValue (Elektra * elektra, const char * name, size_t index, const char * value, KDBType type,
 				  ElektraError ** error)
 {
-	Key * const key = keyDup (generateArrayLookupKey (elektra, name, index));
-	setKeyValue (elektra, key, type, value, error);
+	setArrayLookupKey (elektra, name, index);
+	Key * const key = keyDup (elektra->lookupKey);
+	keySetMeta (key, "type", type);
+	keySetString (key, value);
+
+	saveKey (elektra, key, error);
 }
 
-#define ELEKTRA_SET_VALUE(TO_STRING, KDB_TYPE, elektra, keyname, value, error)                                                             \
-	elektraSetValue (elektra, keyname, TO_STRING (value), KDB_TYPE, error)
+#define ELEKTRA_GET_VALUE(KEY_TO_VALUE, KDB_TYPE, elektra, keyname, result)                                                                \
+	const Key * key = elektraFindKey (elektra, keyname, KDB_TYPE);                                                                     \
+	if (!KEY_TO_VALUE (key, &result))                                                                                                  \
+	{                                                                                                                                  \
+		ELEKTRA_LOG_DEBUG ("Could not convert key to %s: %s\n", KDB_TYPE, keyname);                                                \
+		exit (EXIT_FAILURE);                                                                                                       \
+	}
 
-#define ELEKTRA_GET_VALUE(FROM_STRING, KDB_TYPE, elektra, keyname) FROM_STRING (elektraGetValue (elektra, keyname, KDB_TYPE))
 
+#define ELEKTRA_SET_VALUE(VALUE_TO_STRING, KDB_TYPE, elektra, keyname, value, error)                                                       \
+	char * string = VALUE_TO_STRING (value);                                                                                           \
+	if (string == 0)                                                                                                                   \
+	{                                                                                                                                  \
+		*error = elektraErrorConversionToString (KDB_TYPE, NULL);                                                                  \
+		return;                                                                                                                    \
+	}                                                                                                                                  \
+	elektraSetValue (elektra, keyname, string, KDB_TYPE, error);                                                                       \
+	elektraFree (string);
 
 void elektraSetString (Elektra * elektra, const char * keyName, const char * value, ElektraError ** error)
 {
-	ELEKTRA_SET_VALUE (KDB_STRING_TO_STRING, "string", elektra, keyName, value, error);
+	elektraSetValue (elektra, keyName, value, KDB_TYPE_STRING, error);
 }
 
 
 void elektraSetBoolean (Elektra * elektra, const char * keyname, kdb_boolean_t value, ElektraError ** error)
 {
-	ELEKTRA_SET_VALUE (KDB_BOOLEAN_TO_STRING, "boolean", elektra, keyname, value, error);
+	ELEKTRA_SET_VALUE (elektraBooleanToString, KDB_TYPE_BOOLEAN, elektra, keyname, value, error);
 }
-
 
 void elektraSetChar (Elektra * elektra, const char * keyname, kdb_char_t value, ElektraError ** error)
 {
-	ELEKTRA_SET_VALUE (KDB_CHAR_TO_STRING, "char", elektra, keyname, value, error);
+	ELEKTRA_SET_VALUE (elektraCharToString, KDB_TYPE_CHAR, elektra, keyname, value, error);
 }
 
 
 void elektraSetOctet (Elektra * elektra, const char * keyname, kdb_octet_t value, ElektraError ** error)
 {
-	ELEKTRA_SET_VALUE (KDB_OCTET_TO_STRING, "octet", elektra, keyname, value, error);
+	ELEKTRA_SET_VALUE (elektraOctetToString, KDB_TYPE_OCTET, elektra, keyname, value, error);
 }
 
 
 void elektraSetShort (Elektra * elektra, const char * keyname, kdb_short_t value, ElektraError ** error)
 {
-	ELEKTRA_SET_VALUE (KDB_SHORT_TO_STRING, "short", elektra, keyname, value, error);
+	ELEKTRA_SET_VALUE (elektraShortToString, KDB_TYPE_SHORT, elektra, keyname, value, error);
 }
 
 
 void elektraSetUnsignedShort (Elektra * elektra, const char * keyname, kdb_unsigned_short_t value, ElektraError ** error)
 {
-	ELEKTRA_SET_VALUE (KDB_UNSIGNED_SHORT_TO_STRING, "unsigned_short", elektra, keyname, value, error);
+	ELEKTRA_SET_VALUE (elektraUnsignedShortToString, KDB_TYPE_UNSIGNED_SHORT, elektra, keyname, value, error);
 }
 
 
 void elektraSetLong (Elektra * elektra, const char * keyname, kdb_long_t value, ElektraError ** error)
 {
-	ELEKTRA_SET_VALUE (KDB_LONG_TO_STRING, "long", elektra, keyname, value, error);
+	ELEKTRA_SET_VALUE (elektraLongToString, KDB_TYPE_LONG, elektra, keyname, value, error);
 }
 
 
 void elektraSetUnsignedLong (Elektra * elektra, const char * keyname, kdb_unsigned_long_t value, ElektraError ** error)
 {
-	ELEKTRA_SET_VALUE (KDB_UNSIGNED_LONG_TO_STRING, "unsigned_long", elektra, keyname, value, error);
+	ELEKTRA_SET_VALUE (elektraUnsignedLongToString, KDB_TYPE_UNSIGNED_LONG, elektra, keyname, value, error);
 }
 
 
 void elektraSetLongLong (Elektra * elektra, const char * keyname, kdb_long_long_t value, ElektraError ** error)
 {
-	ELEKTRA_SET_VALUE (KDB_LONG_LONG_TO_STRING, "long_long", elektra, keyname, value, error);
+	ELEKTRA_SET_VALUE (elektraLongLongToString, KDB_TYPE_LONG_LONG, elektra, keyname, value, error);
 }
 
 
 void elektraSetUnsignedLongLong (Elektra * elektra, const char * keyname, kdb_unsigned_long_long_t value, ElektraError ** error)
 {
-	ELEKTRA_SET_VALUE (KDB_UNSIGNED_LONG_LONG_TO_STRING, "unsigned_long_long", elektra, keyname, value, error);
+	ELEKTRA_SET_VALUE (elektraUnsignedLongLongToString, KDB_TYPE_UNSIGNED_LONG_LONG, elektra, keyname, value, error);
 }
 
 
 void elektraSetFloat (Elektra * elektra, const char * keyname, kdb_float_t value, ElektraError ** error)
 {
-	ELEKTRA_SET_VALUE (KDB_FLOAT_TO_STRING, "float", elektra, keyname, value, error);
+	ELEKTRA_SET_VALUE (elektraFloatToString, KDB_TYPE_FLOAT, elektra, keyname, value, error);
 }
 
 
 void elektraSetDouble (Elektra * elektra, const char * keyname, kdb_double_t value, ElektraError ** error)
 {
-	ELEKTRA_SET_VALUE (KDB_DOUBLE_TO_STRING, "double", elektra, keyname, value, error);
+	ELEKTRA_SET_VALUE (elektraDoubleToString, KDB_TYPE_DOUBLE, elektra, keyname, value, error);
 }
 
 
 void elektraSetLongDouble (Elektra * elektra, const char * keyname, kdb_long_double_t value, ElektraError ** error)
 {
-	ELEKTRA_SET_VALUE (KDB_LONG_DOUBLE_TO_STRING, "long_double", elektra, keyname, value, error);
+	ELEKTRA_SET_VALUE (elektraLongDoubleToString, KDB_TYPE_LONG_DOUBLE, elektra, keyname, value, error);
 }
 
-void elektraSetEnum (Elektra * elektra, char * keyName, int value, ElektraError ** error)
+void elektraSetEnumInt (Elektra * elektra, char * keyName, int value, ElektraError ** error)
 {
-	ELEKTRA_SET_VALUE (KDB_ENUM_TO_STRING, KDB_TYPE_ENUM, elektra, keyName, value, error);
+	ELEKTRA_SET_VALUE (elektraLongToString, KDB_TYPE_ENUM, elektra, keyName, value, error);
 }
 
 
 const char * elektraGetString (Elektra * elektra, const char * keyname)
 {
-	return ELEKTRA_GET_VALUE (KDB_STRING_TO_STRING, "string", elektra, keyname);
+	const char * result;
+	ELEKTRA_GET_VALUE (elektraKeyToString, KDB_TYPE_STRING, elektra, keyname, result);
+	return result;
 }
 
 
 kdb_boolean_t elektraGetBoolean (Elektra * elektra, const char * keyname)
 {
-	return ELEKTRA_GET_VALUE (KDB_STRING_TO_BOOLEAN, "boolean", elektra, keyname);
+	kdb_boolean_t result;
+	ELEKTRA_GET_VALUE (elektraKeyToBoolean, KDB_TYPE_BOOLEAN, elektra, keyname, result);
+	return result;
 }
 
 
 kdb_char_t elektraGetChar (Elektra * elektra, const char * keyname)
 {
-	return ELEKTRA_GET_VALUE (KDB_STRING_TO_CHAR, "char", elektra, keyname);
+	kdb_char_t result;
+	ELEKTRA_GET_VALUE (elektraKeyToChar, KDB_TYPE_CHAR, elektra, keyname, result);
+	return result;
 }
 
 
 kdb_octet_t elektraGetOctet (Elektra * elektra, const char * keyname)
 {
-	return ELEKTRA_GET_VALUE (KDB_STRING_TO_OCTET, "octet", elektra, keyname);
+	kdb_octet_t result;
+	ELEKTRA_GET_VALUE (elektraKeyToOctet, KDB_TYPE_OCTET, elektra, keyname, result);
+	return result;
 }
 
 
 kdb_short_t elektraGetShort (Elektra * elektra, const char * keyname)
 {
-	return ELEKTRA_GET_VALUE (KDB_STRING_TO_SHORT, "short", elektra, keyname);
+	kdb_short_t result;
+	ELEKTRA_GET_VALUE (elektraKeyToShort, KDB_TYPE_SHORT, elektra, keyname, result);
+	return result;
 }
 
 
 kdb_unsigned_short_t elektraGetUnsignedShort (Elektra * elektra, const char * keyname)
 {
-	return ELEKTRA_GET_VALUE (KDB_STRING_TO_UNSIGNED_SHORT, "unsigned_short", elektra, keyname);
+	kdb_unsigned_short_t result;
+	ELEKTRA_GET_VALUE (elektraKeyToUnsignedShort, KDB_TYPE_UNSIGNED_SHORT, elektra, keyname, result);
+	return result;
 }
 
 
 kdb_long_t elektraGetLong (Elektra * elektra, const char * keyname)
 {
-	return ELEKTRA_GET_VALUE (KDB_STRING_TO_LONG, "long", elektra, keyname);
+	kdb_long_t result;
+	ELEKTRA_GET_VALUE (elektraKeyToLong, KDB_TYPE_LONG, elektra, keyname, result);
+	return result;
 }
 
 
 kdb_unsigned_long_t elektraGetUnsignedLong (Elektra * elektra, const char * keyname)
 {
-	return ELEKTRA_GET_VALUE (KDB_STRING_TO_UNSIGNED_LONG, "unsigned_long", elektra, keyname);
+	kdb_unsigned_long_t result;
+	ELEKTRA_GET_VALUE (elektraKeyToUnsignedLong, KDB_TYPE_UNSIGNED_LONG, elektra, keyname, result);
+	return result;
 }
 
 
 kdb_long_long_t elektraGetLongLong (Elektra * elektra, const char * keyname)
 {
-	return ELEKTRA_GET_VALUE (KDB_STRING_TO_LONG_LONG, "long_long", elektra, keyname);
+	kdb_long_long_t result;
+	ELEKTRA_GET_VALUE (elektraKeyToLongLong, KDB_TYPE_LONG_LONG, elektra, keyname, result);
+	return result;
 }
 
 
 kdb_unsigned_long_long_t elektraGetUnsignedLongLong (Elektra * elektra, const char * keyname)
 {
-	return ELEKTRA_GET_VALUE (KDB_STRING_TO_UNSIGNED_LONG_LONG, "unsigned_long_long", elektra, keyname);
+	kdb_unsigned_long_long_t result;
+	ELEKTRA_GET_VALUE (elektraKeyToUnsignedLongLong, KDB_TYPE_UNSIGNED_LONG_LONG, elektra, keyname, result);
+	return result;
 }
 
 
 kdb_float_t elektraGetFloat (Elektra * elektra, const char * keyname)
 {
-	return ELEKTRA_GET_VALUE (KDB_STRING_TO_FLOAT, "float", elektra, keyname);
+	kdb_float_t result;
+	ELEKTRA_GET_VALUE (elektraKeyToFloat, KDB_TYPE_FLOAT, elektra, keyname, result);
+	return result;
 }
 
 
 kdb_double_t elektraGetDouble (Elektra * elektra, const char * keyname)
 {
-	return ELEKTRA_GET_VALUE (KDB_STRING_TO_DOUBLE, "double", elektra, keyname);
+	kdb_double_t result;
+	ELEKTRA_GET_VALUE (elektraKeyToDouble, KDB_TYPE_DOUBLE, elektra, keyname, result);
+	return result;
 }
 
 
 kdb_long_double_t elektraGetLongDouble (Elektra * elektra, const char * keyname)
 {
-	return ELEKTRA_GET_VALUE (KDB_STRING_TO_LONG_DOUBLE, "long_double", elektra, keyname);
+	kdb_long_double_t result;
+	ELEKTRA_GET_VALUE (elektraKeyToLongDouble, KDB_TYPE_LONG_DOUBLE, elektra, keyname, result);
+	return result;
 }
 
-int elektraGetEnumInt (Elektra * elektra, char * keyName)
+int elektraGetEnumInt (Elektra * elektra, char * keyname)
 {
-	return ELEKTRA_GET_VALUE (KDB_STRING_TO_ENUM, KDB_TYPE_ENUM, elektra, keyName);
+	int result;
+	ELEKTRA_GET_VALUE (elektraKeyToLong, KDB_TYPE_ENUM, elektra, keyname, result);
+	return result;
 }
 
 
-#define ELEKTRA_SET_ARRAY_ELEMENT_VALUE(TO_STRING, KDB_TYPE, elektra, keyname, index, value, error)                                        \
-	elektraSetArrayElementValue (elektra, keyname, index, TO_STRING (value), KDB_TYPE, error)
+#define ELEKTRA_SET_ARRAY_ELEMENT_VALUE(VALUE_TO_STRING, KDB_TYPE, elektra, keyname, index, value, error)                                  \
+	char * string = VALUE_TO_STRING (value);                                                                                           \
+	if (string == 0)                                                                                                                   \
+	{                                                                                                                                  \
+		*error = elektraErrorConversionToString (KDB_TYPE, NULL);                                                                  \
+		return;                                                                                                                    \
+	}                                                                                                                                  \
+	elektraSetArrayElementValue (elektra, keyname, index, string, KDB_TYPE, error);                                                    \
+	elektraFree (string);
 
 void elektraSetStringArrayElement (Elektra * elektra, const char * keyname, size_t index, const char * value, ElektraError ** error)
 {
-	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (KDB_STRING_TO_STRING, "string", elektra, keyname, index, value, error);
+	elektraSetArrayElementValue (elektra, keyname, index, value, KDB_TYPE_STRING, error);
 }
 
 
 void elektraSetBooleanArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_boolean_t value, ElektraError ** error)
 {
-	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (KDB_BOOLEAN_TO_STRING, "boolean", elektra, keyname, index, value, error);
+	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (elektraBooleanToString, KDB_TYPE_BOOLEAN, elektra, keyname, index, value, error);
 }
 
 
 void elektraSetCharArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_char_t value, ElektraError ** error)
 {
-	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (KDB_CHAR_TO_STRING, "char", elektra, keyname, index, value, error);
+	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (elektraCharToString, KDB_TYPE_CHAR, elektra, keyname, index, value, error);
 }
 
 
 void elektraSetOctetArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_octet_t value, ElektraError ** error)
 {
-	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (KDB_OCTET_TO_STRING, "octet", elektra, keyname, index, value, error);
+	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (elektraOctetToString, KDB_TYPE_OCTET, elektra, keyname, index, value, error);
 }
 
 
 void elektraSetShortArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_short_t value, ElektraError ** error)
 {
-	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (KDB_SHORT_TO_STRING, "short", elektra, keyname, index, value, error);
+	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (elektraShortToString, KDB_TYPE_SHORT, elektra, keyname, index, value, error);
 }
 
 
 void elektraSetUnsignedShortArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_unsigned_short_t value,
 					  ElektraError ** error)
 {
-	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (KDB_UNSIGNED_SHORT_TO_STRING, "unsigned_short", elektra, keyname, index, value, error);
+	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (elektraUnsignedShortToString, KDB_TYPE_UNSIGNED_SHORT, elektra, keyname, index, value, error);
 }
 
 
 void elektraSetLongArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_long_t value, ElektraError ** error)
 {
-	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (KDB_LONG_TO_STRING, "long", elektra, keyname, index, value, error);
+	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (elektraLongToString, KDB_TYPE_LONG, elektra, keyname, index, value, error);
 }
 
 
 void elektraSetUnsignedLongArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_unsigned_long_t value,
 					 ElektraError ** error)
 {
-	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (KDB_UNSIGNED_LONG_TO_STRING, "unsigned_long", elektra, keyname, index, value, error);
+	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (elektraUnsignedLongToString, KDB_TYPE_UNSIGNED_LONG, elektra, keyname, index, value, error);
 }
 
 
 void elektraSetLongLongArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_long_long_t value, ElektraError ** error)
 {
-	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (KDB_LONG_LONG_TO_STRING, "long_long", elektra, keyname, index, value, error);
+	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (elektraLongLongToString, KDB_TYPE_LONG_LONG, elektra, keyname, index, value, error);
 }
 
 
 void elektraSetUnsignedLongLongArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_unsigned_long_long_t value,
 					     ElektraError ** error)
 {
-	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (KDB_UNSIGNED_LONG_LONG_TO_STRING, "unsigned_long_long", elektra, keyname, index, value, error);
+	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (elektraUnsignedLongLongToString, KDB_TYPE_UNSIGNED_LONG_LONG, elektra, keyname, index, value,
+					 error);
 }
 
 
 void elektraSetFloatArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_float_t value, ElektraError ** error)
 {
-	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (KDB_FLOAT_TO_STRING, "float", elektra, keyname, index, value, error);
+	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (elektraFloatToString, KDB_TYPE_FLOAT, elektra, keyname, index, value, error);
 }
 
 
 void elektraSetDoubleArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_double_t value, ElektraError ** error)
 {
-	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (KDB_DOUBLE_TO_STRING, "double", elektra, keyname, index, value, error);
+	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (elektraDoubleToString, KDB_TYPE_DOUBLE, elektra, keyname, index, value, error);
 }
 
 
 void elektraSetLongDoubleArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_long_double_t value,
 				       ElektraError ** error)
 {
-	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (KDB_LONG_DOUBLE_TO_STRING, "long_double", elektra, keyname, index, value, error);
+	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (elektraLongDoubleToString, KDB_TYPE_LONG_DOUBLE, elektra, keyname, index, value, error);
 }
 
-void elektraSetEnumArrayElement (Elektra * elektra, char * keyName, size_t index, int value, ElektraError ** error)
+void elektraSetEnumIntArrayElement (Elektra * elektra, char * keyName, size_t index, int value, ElektraError ** error)
 {
-	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (KDB_ENUM_TO_STRING, KDB_TYPE_ENUM, elektra, keyName, index, value, error);
+	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (elektraLongToString, KDB_TYPE_ENUM, elektra, keyName, index, value, error);
 }
 
-
-#define ELEKTRA_GET_ARRAY_ELEMENT_VALUE(FROM_STRING, KDB_TYPE, elektra, keyname, index)                                                    \
-	FROM_STRING (elektraGetArrayElementValue (elektra, keyname, index, KDB_TYPE))
-
+#define ELEKTRA_GET_ARRAY_ELEMENT_VALUE(KEY_TO_VALUE, KDB_TYPE, elektra, keyname, index, result)                                           \
+	const Key * key = elektraFindArrayElementKey (elektra, keyname, index, KDB_TYPE);                                                  \
+	if (!KEY_TO_VALUE (key, &result))                                                                                                  \
+	{                                                                                                                                  \
+		ELEKTRA_LOG_DEBUG ("Could not convert key to %s: %s\n", KDB_TYPE, keyname);                                                \
+		exit (EXIT_FAILURE);                                                                                                       \
+	}
 
 const char * elektraGetStringArrayElement (Elektra * elektra, const char * keyname, size_t index)
 {
-	return ELEKTRA_GET_ARRAY_ELEMENT_VALUE (KDB_STRING_TO_STRING, "string", elektra, keyname, index);
+	const char * result;
+	ELEKTRA_GET_ARRAY_ELEMENT_VALUE (elektraKeyToString, KDB_TYPE_STRING, elektra, keyname, index, result);
+	return result;
 }
 
 
 kdb_boolean_t elektraGetBooleanArrayElement (Elektra * elektra, const char * keyname, size_t index)
 {
-	return ELEKTRA_GET_ARRAY_ELEMENT_VALUE (KDB_STRING_TO_BOOLEAN, "boolean", elektra, keyname, index);
+	kdb_boolean_t result;
+	ELEKTRA_GET_ARRAY_ELEMENT_VALUE (elektraKeyToBoolean, KDB_TYPE_BOOLEAN, elektra, keyname, index, result);
+	return result;
 }
 
 
 kdb_char_t elektraGetCharArrayElement (Elektra * elektra, const char * keyname, size_t index)
 {
-	return ELEKTRA_GET_ARRAY_ELEMENT_VALUE (KDB_STRING_TO_CHAR, "char", elektra, keyname, index);
+	kdb_char_t result;
+	ELEKTRA_GET_ARRAY_ELEMENT_VALUE (elektraKeyToChar, KDB_TYPE_CHAR, elektra, keyname, index, result);
+	return result;
 }
 
 
 kdb_octet_t elektraGetOctetArrayElement (Elektra * elektra, const char * keyname, size_t index)
 {
-	return ELEKTRA_GET_ARRAY_ELEMENT_VALUE (KDB_STRING_TO_OCTET, "octet", elektra, keyname, index);
+	kdb_octet_t result;
+	ELEKTRA_GET_ARRAY_ELEMENT_VALUE (elektraKeyToOctet, KDB_TYPE_OCTET, elektra, keyname, index, result);
+	return result;
 }
 
 
 kdb_short_t elektraGetShortArrayElement (Elektra * elektra, const char * keyname, size_t index)
 {
-	return ELEKTRA_GET_ARRAY_ELEMENT_VALUE (KDB_STRING_TO_SHORT, "short", elektra, keyname, index);
+	kdb_short_t result;
+	ELEKTRA_GET_ARRAY_ELEMENT_VALUE (elektraKeyToShort, KDB_TYPE_SHORT, elektra, keyname, index, result);
+	return result;
 }
 
 
 kdb_unsigned_short_t elektraGetUnsignedShortArrayElement (Elektra * elektra, const char * keyname, size_t index)
 {
-	return ELEKTRA_GET_ARRAY_ELEMENT_VALUE (KDB_STRING_TO_UNSIGNED_SHORT, "unsigned_short", elektra, keyname, index);
+	kdb_unsigned_short_t result;
+	ELEKTRA_GET_ARRAY_ELEMENT_VALUE (elektraKeyToUnsignedShort, KDB_TYPE_UNSIGNED_SHORT, elektra, keyname, index, result);
+	return result;
 }
 
 
 kdb_long_t elektraGetLongArrayElement (Elektra * elektra, const char * keyname, size_t index)
 {
-	return ELEKTRA_GET_ARRAY_ELEMENT_VALUE (KDB_STRING_TO_LONG, "long", elektra, keyname, index);
+	kdb_long_t result;
+	ELEKTRA_GET_ARRAY_ELEMENT_VALUE (elektraKeyToLong, KDB_TYPE_LONG, elektra, keyname, index, result);
+	return result;
 }
 
 
 kdb_unsigned_long_t elektraGetUnsignedLongArrayElement (Elektra * elektra, const char * keyname, size_t index)
 {
-	return ELEKTRA_GET_ARRAY_ELEMENT_VALUE (KDB_STRING_TO_UNSIGNED_LONG, "unsigned_long", elektra, keyname, index);
+	kdb_unsigned_long_t result;
+	ELEKTRA_GET_ARRAY_ELEMENT_VALUE (elektraKeyToUnsignedLong, KDB_TYPE_UNSIGNED_LONG, elektra, keyname, index, result);
+	return result;
 }
 
 
 kdb_long_long_t elektraGetLongLongArrayElement (Elektra * elektra, const char * keyname, size_t index)
 {
-	return ELEKTRA_GET_ARRAY_ELEMENT_VALUE (KDB_STRING_TO_LONG_LONG, "long_long", elektra, keyname, index);
+	kdb_long_long_t result;
+	ELEKTRA_GET_ARRAY_ELEMENT_VALUE (elektraKeyToLongLong, KDB_TYPE_LONG_LONG, elektra, keyname, index, result);
+	return result;
 }
 
 
 kdb_unsigned_long_long_t elektraGetUnsignedLongLongArrayElement (Elektra * elektra, const char * keyname, size_t index)
 {
-	return ELEKTRA_GET_ARRAY_ELEMENT_VALUE (KDB_STRING_TO_UNSIGNED_LONG_LONG, "unsigned_long_long", elektra, keyname, index);
+	kdb_unsigned_long_long_t result;
+	ELEKTRA_GET_ARRAY_ELEMENT_VALUE (elektraKeyToUnsignedLongLong, KDB_TYPE_UNSIGNED_LONG_LONG, elektra, keyname, index, result);
+	return result;
 }
 
 
 kdb_float_t elektraGetFloatArrayElement (Elektra * elektra, const char * keyname, size_t index)
 {
-	return ELEKTRA_GET_ARRAY_ELEMENT_VALUE (KDB_STRING_TO_FLOAT, "float", elektra, keyname, index);
+	kdb_float_t result;
+	ELEKTRA_GET_ARRAY_ELEMENT_VALUE (elektraKeyToFloat, KDB_TYPE_FLOAT, elektra, keyname, index, result);
+	return result;
 }
 
 
 kdb_double_t elektraGetDoubleArrayElement (Elektra * elektra, const char * keyname, size_t index)
 {
-	return ELEKTRA_GET_ARRAY_ELEMENT_VALUE (KDB_STRING_TO_DOUBLE, "double", elektra, keyname, index);
+	kdb_double_t result;
+	ELEKTRA_GET_ARRAY_ELEMENT_VALUE (elektraKeyToDouble, KDB_TYPE_DOUBLE, elektra, keyname, index, result);
+	return result;
 }
 
 
 kdb_long_double_t elektraGetLongDoubleArrayElement (Elektra * elektra, const char * keyname, size_t index)
 {
-	return ELEKTRA_GET_ARRAY_ELEMENT_VALUE (KDB_STRING_TO_LONG_DOUBLE, "long_double", elektra, keyname, index);
+	kdb_long_double_t result;
+	ELEKTRA_GET_ARRAY_ELEMENT_VALUE (elektraKeyToLongDouble, KDB_TYPE_LONG_DOUBLE, elektra, keyname, index, result);
+	return result;
 }
 
-int elektraGetEnumArrayElementInt (Elektra * elektra, char * keyName, int index)
+int elektraGetEnumIntArrayElement (Elektra * elektra, char * keyname, size_t index)
 {
-	return ELEKTRA_GET_ARRAY_ELEMENT_VALUE (KDB_STRING_TO_ENUM, KDB_TYPE_ENUM, elektra, keyName, index);
+	int result;
+	ELEKTRA_GET_ARRAY_ELEMENT_VALUE (elektraKeyToLong, KDB_TYPE_ENUM, elektra, keyname, index, result);
+	return result;
 }
 
 /**
@@ -504,7 +619,21 @@ int elektraGetEnumArrayElementInt (Elektra * elektra, char * keyName, int index)
 
 // Private functions
 
-static void saveKey (Elektra * elektra, Key * key, ElektraError ** error)
+static void setLookupKey (Elektra * elektra, const char * name)
+{
+	keySetName (elektra->lookupKey, keyName (elektra->parentKey));
+	keyAddName (elektra->lookupKey, name);
+}
+
+static void setArrayLookupKey (Elektra * elektra, const char * name, size_t index)
+{
+	setLookupKey (elektra, name);
+	char arrayPart[ELEKTRA_MAX_ARRAY_SIZE];
+	elektraWriteArrayNumber (arrayPart, index);
+	keyAddName (elektra->lookupKey, arrayPart);
+}
+
+void saveKey (Elektra * elektra, Key * key, ElektraError ** error)
 {
 	int ret = 0;
 	do
@@ -533,58 +662,11 @@ static void saveKey (Elektra * elektra, Key * key, ElektraError ** error)
 	} while (ret == -1);
 }
 
-static void checkType (Key * key, KDBType type)
+void checkType (Key * key, KDBType type)
 {
 	if (strcmp (keyString (keyGetMeta (key, "type")), type) != 0)
 	{
 		ELEKTRA_LOG_DEBUG ("Wrong type. Should be: %s\n", type);
 		exit (EXIT_FAILURE);
 	}
-}
-
-static Key * generateLookupKey (Elektra * elektra, const char * name)
-{
-	Key * const lookupKey = elektra->lookupKey;
-
-	keySetName (lookupKey, keyName (elektra->parentKey));
-	keyAddName (lookupKey, name);
-
-	return lookupKey;
-}
-
-static Key * generateArrayLookupKey (Elektra * elektra, const char * name, size_t index)
-{
-	Key * const lookupKey = generateLookupKey (elektra, name);
-
-	char arrayPart[ELEKTRA_MAX_ARRAY_SIZE];
-	elektraWriteArrayNumber (arrayPart, index);
-	keyAddName (lookupKey, arrayPart);
-
-	return lookupKey;
-}
-
-// Set values
-
-static void setKeyValue (Elektra * elektra, Key * key, KDBType type, const char * value, ElektraError ** error)
-{
-	keySetMeta (key, "type", type);
-	keySetString (key, value);
-
-	saveKey (elektra, key, error);
-}
-
-// Get values
-
-static const char * getKeyValue (Elektra * elektra, Key * key, KDBType type)
-{
-	Key * const resultKey = ksLookup (elektra->config, key, 0);
-	if (resultKey == NULL)
-	{
-		ELEKTRA_LOG_DEBUG ("Key not found: %s\n", keyName (key));
-		exit (EXIT_FAILURE);
-	}
-
-	checkType (resultKey, type);
-
-	return keyString (resultKey);
 }

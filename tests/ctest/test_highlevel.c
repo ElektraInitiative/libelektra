@@ -650,10 +650,26 @@ void test_generic (void)
 }
 
 
-typedef enum { ELEKTRA_ENUM_TEST_ON = 1, ELEKTRA_ENUM_TEST_OFF = 0, ELEKTRA_ENUM_TEST_BLANK = 2 } ElektraEnumTest;
+typedef enum
+{
+	ELEKTRA_ENUM_TEST_ON = 1,
+	ELEKTRA_ENUM_TEST_OFF = 0,
+	ELEKTRA_ENUM_TEST_BLANK = 2
+} ElektraEnumTest;
+
+static int __elektraKeyToElektraEnumTest (const Key * key, ElektraEnumTest * variable)
+{
+	kdb_long_t longVariable;
+	int result = elektraKeyToLong (key, &longVariable);
+	if (result)
+	{
+		*variable = (ElektraEnumTest) longVariable;
+	}
+	return result;
+}
 
 ELEKTRA_TAG_DECLARATIONS (ElektraEnumTest, EnumTest)
-ELEKTRA_TAG_DEFINITIONS (ElektraEnumTest, EnumTest, KDB_TYPE_ENUM, KDB_ENUM_TO_STRING, KDB_STRING_TO_ENUM)
+ELEKTRA_TAG_DEFINITIONS (ElektraEnumTest, EnumTest, KDB_TYPE_ENUM, elektraLongToString, __elektraKeyToElektraEnumTest)
 
 void test_enum (void)
 {
@@ -669,7 +685,7 @@ void test_enum (void)
 		elektraErrorReset (&error);
 	}
 
-	elektraSetEnum (elektra, "enumkey", ELEKTRA_ENUM_TEST_ON, &error);
+	elektraSetEnumInt (elektra, "enumkey", ELEKTRA_ENUM_TEST_ON, &error);
 
 	succeed_if (elektraGetEnum (elektra, "enumkey", ElektraEnumTest) == ELEKTRA_ENUM_TEST_ON, "Wrong key value.");
 }
@@ -688,11 +704,11 @@ void test_enumArray (void)
 		elektraErrorReset (&error);
 	}
 
-	elektraSetEnumArrayElement (elektra, "enumkey", 0, ELEKTRA_ENUM_TEST_ON, &error);
-	elektraSetEnumArrayElement (elektra, "enumkey", 1, ELEKTRA_ENUM_TEST_ON, &error);
-	elektraSetEnumArrayElement (elektra, "enumkey", 2, ELEKTRA_ENUM_TEST_OFF, &error);
-	elektraSetEnumArrayElement (elektra, "enumkey", 3, ELEKTRA_ENUM_TEST_OFF, &error);
-	elektraSetEnumArrayElement (elektra, "enumkey", 4, ELEKTRA_ENUM_TEST_BLANK, &error);
+	elektraSetEnumIntArrayElement (elektra, "enumkey", 0, ELEKTRA_ENUM_TEST_ON, &error);
+	elektraSetEnumIntArrayElement (elektra, "enumkey", 1, ELEKTRA_ENUM_TEST_ON, &error);
+	elektraSetEnumIntArrayElement (elektra, "enumkey", 2, ELEKTRA_ENUM_TEST_OFF, &error);
+	elektraSetEnumIntArrayElement (elektra, "enumkey", 3, ELEKTRA_ENUM_TEST_OFF, &error);
+	elektraSetEnumIntArrayElement (elektra, "enumkey", 4, ELEKTRA_ENUM_TEST_BLANK, &error);
 
 	succeed_if (elektraGetEnumArrayElement (elektra, "enumkey", 0, ElektraEnumTest) == ELEKTRA_ENUM_TEST_ON, "Wrong key value.");
 	succeed_if (elektraGetEnumArrayElement (elektra, "enumkey", 1, ElektraEnumTest) == ELEKTRA_ENUM_TEST_ON, "Wrong key value.");
