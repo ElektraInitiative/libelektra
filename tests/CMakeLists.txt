@@ -41,20 +41,7 @@ if (ENABLE_TESTING)
 
 	add_subdirectory (${googletest_SOURCE_DIR} ${googletest_BINARY_DIR} EXCLUDE_FROM_ALL)
 
-	# Old versions of Google Test do not include Google Mock
-	if (TARGET gmock)
-		set_property (TARGET gmock
-			      PROPERTY COMPILE_FLAGS
-				       "-Wno-undef -Wno-missing-field-initializers")
-		set_property (TARGET gmock_main
-			      PROPERTY COMPILE_FLAGS
-				       "-Wno-undef")
-	endif (TARGET gmock)
-
 	set_property (TARGET gtest
-		      PROPERTY COMPILE_FLAGS
-			       "-Wno-undef -Wno-missing-field-initializers")
-	set_property (TARGET gtest_main
 		      PROPERTY COMPILE_FLAGS
 			       "-Wno-undef")
 endif (ENABLE_TESTING)
