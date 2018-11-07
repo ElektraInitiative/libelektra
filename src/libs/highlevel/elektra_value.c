@@ -8,9 +8,12 @@
 
 #include "elektra.h"
 #include "elektra_conversion.h"
+#include "elektra_error_private.h"
 #include "elektra_private.h"
 #include "kdblogger.h"
+#include <elektra.h>
 #include <string.h>
+
 
 /**
  * \defgroup highlevel High-level API
@@ -23,16 +26,15 @@ Key * elektraFindKey (Elektra * elektra, const char * name, KDBType type)
 	Key * const resultKey = ksLookup (elektra->config, elektra->lookupKey, 0);
 	if (resultKey == NULL)
 	{
-		ELEKTRA_LOG_DEBUG ("Key not found: %s\n", keyName (elektra->lookupKey));
-		exit (EXIT_FAILURE);
+		elektraFatalError (elektra, elektraErrorKeyNotFound (keyName (elektra->lookupKey), NULL));
 	}
 
-	if (type != NULL)
+	if (!elektra->enforceType && type != NULL)
 	{
-		if (strcmp (keyString (keyGetMeta (resultKey, "type")), type) != 0)
+		const char * actualType = keyString (keyGetMeta (resultKey, "type"));
+		if (strcmp (actualType, type) != 0)
 		{
-			ELEKTRA_LOG_DEBUG ("Wrong type. Should be: %s\n", type);
-			exit (EXIT_FAILURE);
+			elektraFatalError (elektra, elektraErrorWrongType (keyName (elektra->lookupKey), actualType, type, NULL));
 		}
 	}
 
@@ -50,7 +52,6 @@ void elektraSetValue (Elektra * elektra, const char * name, const char * value, 
 	Key * const key = keyDup (elektra->lookupKey);
 	keySetMeta (key, "type", type);
 	keySetString (key, value);
-
 	elektraSaveKey (elektra, key, error);
 }
 
@@ -58,8 +59,7 @@ void elektraSetValue (Elektra * elektra, const char * name, const char * value, 
 	const Key * key = elektraFindKey (elektra, keyname, KDB_TYPE);                                                                     \
 	if (!KEY_TO_VALUE (key, &result))                                                                                                  \
 	{                                                                                                                                  \
-		ELEKTRA_LOG_DEBUG ("Could not convert key to %s: %s\n", KDB_TYPE, keyname);                                                \
-		exit (EXIT_FAILURE);                                                                                                       \
+		elektraFatalError (elektra, elektraErrorConversionFromString (KDB_TYPE, keyString (key), NULL));                           \
 	}
 
 const char * elektraGetString (Elektra * elektra, const char * keyname)

@@ -10,6 +10,7 @@
 #define ELEKTRA_ERROR_PRIVATE_H
 
 #include "elektra_error.h"
+#include "elektra_types.h"
 #include "kdb.h"
 
 struct _ElektraError
@@ -24,5 +25,8 @@ struct _ElektraError
 ElektraError * elektraErrorCreate (ElektraErrorCode code, const char * description, ElektraErrorSeverity severity, ElektraErrorGroup group,
 				   ElektraErrorModule module);
 ElektraError * elektraErrorCreateFromKey (Key * key);
+
+ElektraError * elektraErrorKeyNotFound (const char * keyname, const char * moreDesc);
+ElektraError * elektraErrorWrongType (const char * keyname, KDBType actualType, KDBType expectedType, const char * moreDesc);
 
 #endif // ELEKTRA_ERROR_PRIVATE_H

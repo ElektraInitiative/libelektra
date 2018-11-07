@@ -95,8 +95,7 @@ typedef struct _Elektra Elektra;
 		const Key * key = elektraFindKey (elektra, tag->keyName, KDB_TYPE);                                                        \
 		if (!KEY_TO_VALUE (key, &result))                                                                                          \
 		{                                                                                                                          \
-			ELEKTRA_LOG_DEBUG ("Could not convert key to %s: %s\n", KDB_TYPE, tag->keyName);                                   \
-			exit (EXIT_FAILURE);                                                                                               \
+			elektraFatalError (elektra, elektraErrorConversionFromString (KDB_TYPE, keyString (key), NULL));                   \
 		}                                                                                                                          \
 		return result;                                                                                                             \
 	}                                                                                                                                  \
@@ -107,8 +106,7 @@ typedef struct _Elektra Elektra;
 		const Key * key = elektraFindArrayElementKey (elektra, tag->keyName, index, KDB_TYPE);                                     \
 		if (!KEY_TO_VALUE (key, &result))                                                                                          \
 		{                                                                                                                          \
-			ELEKTRA_LOG_DEBUG ("Could not convert key to %s: %s\n", KDB_TYPE, tag->keyName);                                   \
-			exit (EXIT_FAILURE);                                                                                               \
+			elektraFatalError (elektra, elektraErrorConversionFromString (KDB_TYPE, keyString (key), NULL));                   \
 		}                                                                                                                          \
 		return result;                                                                                                             \
 	}
@@ -165,6 +163,11 @@ void elektraSetArrayElementValue (Elektra * elektra, const char * name, size_t i
 
 Key * elektraFindKey (Elektra * elektra, const char * name, KDBType type);
 Key * elektraFindArrayElementKey (Elektra * elektra, const char * name, size_t index, KDBType type);
+
+void elektraEnforceTypeMetadata (Elektra * elektra, bool enforceTypeMetadata);
+void elektraFatalErrorHandler (Elektra * elektra, ElektraErrorHandler fatalErrorHandler);
+
+void elektraFatalError (Elektra * elektra, ElektraError * fatalError);
 
 /**
  * @param elektra The elektra instance initialized with the parent key.

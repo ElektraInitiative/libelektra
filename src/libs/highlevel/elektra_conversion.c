@@ -624,7 +624,7 @@ ElektraError * elektraErrorConversionToString (KDBType sourceType, const char * 
 	{
 		errorString = elektraFormat ("Could not convert %s to string\n%s", sourceType, moreDesc);
 	}
-	ElektraError * error = elektraErrorCreate (0 /* TODO */, errorString, ELEKTRA_ERROR_SEVERITY_ERROR, NULL, "conversion");
+	ElektraError * error = elektraErrorCreate (0 /* TODO */, errorString, ELEKTRA_ERROR_SEVERITY_ERROR, "highlevel", "conversion");
 	elektraFree (errorString);
 	return error;
 }
@@ -648,7 +648,7 @@ ElektraError * elektraErrorConversionFromString (KDBType targetType, const char 
 	{
 		errorString = elektraFormat ("Could not convert key to %s: %s\n%s", targetType, sourceKeyName, moreDesc);
 	}
-	ElektraError * error = elektraErrorCreate (0 /* TODO */, errorString, ELEKTRA_ERROR_SEVERITY_ERROR, NULL, "conversion");
+	ElektraError * error = elektraErrorCreate (0 /* TODO */, errorString, ELEKTRA_ERROR_SEVERITY_ERROR, "highlevel", "conversion");
 	elektraFree (errorString);
 	return error;
 }

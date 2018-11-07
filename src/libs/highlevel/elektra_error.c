@@ -11,7 +11,9 @@
 #include "elektra_error_private.h"
 #include "kdbhelper.h"
 #include "kdbprivate.h"
+#include <elektra_error_private.h>
 #include <string.h>
+
 
 // elektra_error_private.h
 
@@ -58,6 +60,39 @@ ElektraError * elektraErrorCreateFromKey (Key * key)
 	return elektraErrorCreate (code, description, severity, group, module);
 }
 
+ElektraError * elektraErrorKeyNotFound (const char * keyname, const char * moreDesc)
+{
+	char * errorString;
+	if (moreDesc == NULL)
+	{
+		errorString = elektraFormat ("Could not find key %s", keyname);
+	}
+	else
+	{
+		errorString = elektraFormat ("Could not find key %s\n%s", keyname, moreDesc);
+	}
+	ElektraError * error = elektraErrorCreate (0 /* TODO */, errorString, ELEKTRA_ERROR_SEVERITY_FATAL, "highlevel", "get");
+	elektraFree (errorString);
+	return error;
+}
+
+ElektraError * elektraErrorWrongType (const char * keyname, KDBType actualType, KDBType expectedType, const char * moreDesc)
+{
+	char * errorString;
+	if (moreDesc == NULL)
+	{
+		errorString = elektraFormat ("Key %s has wrong type; expected: %s but got: %s", keyname, expectedType, actualType);
+	}
+	else
+	{
+		errorString =
+			elektraFormat ("Key %s has wrong type; expected: %s but got: %s\n%s", keyname, expectedType, actualType, moreDesc);
+	}
+	ElektraError * error = elektraErrorCreate (0 /* TODO */, errorString, ELEKTRA_ERROR_SEVERITY_FATAL, "highlevel", "get");
+	elektraFree (errorString);
+	return error;
+}
+
 // elektra_error.h
 
 /**
@@ -68,7 +103,7 @@ ElektraError * elektraErrorCreateFromKey (Key * key)
 /**
  * @return Code of the given error.
  */
-ElektraErrorCode elektraErrorCode (ElektraError * error)
+ElektraErrorCode elektraErrorCode (const ElektraError * error)
 {
 	return error->code;
 }
@@ -76,7 +111,7 @@ ElektraErrorCode elektraErrorCode (ElektraError * error)
 /**
  * @return Description for the given error.
  */
-const char * elektraErrorDescription (ElektraError * error)
+const char * elektraErrorDescription (const ElektraError * error)
 {
 	return error->description;
 }
@@ -84,7 +119,7 @@ const char * elektraErrorDescription (ElektraError * error)
 /**
  * @return Severity of the given error.
  */
-ElektraErrorSeverity elektraErrorSeverity (ElektraError * error)
+ElektraErrorSeverity elektraErrorSeverity (const ElektraError * error)
 {
 	return error->severity;
 }
@@ -92,7 +127,7 @@ ElektraErrorSeverity elektraErrorSeverity (ElektraError * error)
 /**
  * @return Group of the given error.
  */
-ElektraErrorGroup elektraErrorGroup (ElektraError * error)
+ElektraErrorGroup elektraErrorGroup (const ElektraError * error)
 {
 	return error->group;
 }
@@ -100,7 +135,7 @@ ElektraErrorGroup elektraErrorGroup (ElektraError * error)
 /**
  * @return Module of the given error.
  */
-ElektraErrorModule elektraErrorModule (ElektraError * error)
+ElektraErrorModule elektraErrorModule (const ElektraError * error)
 {
 	return error->module;
 }

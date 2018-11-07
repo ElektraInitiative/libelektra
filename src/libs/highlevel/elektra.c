@@ -13,6 +13,13 @@
 #include "elektra_types.h"
 #include "kdblogger.h"
 
+static void defaultFatalErrorHandler (ElektraError * error)
+{
+	ELEKTRA_LOG_DEBUG ("%s", error->description);
+	elektraFree (error);
+	exit (error->code);
+}
+
 /**
  * \defgroup highlevel High-level API
  * @{
@@ -72,8 +79,26 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, ElektraError
 	elektra->parentKey = parentKey;
 	elektra->config = config;
 	elektra->lookupKey = keyNew (NULL, KEY_END);
+	elektra->enforceType = true;
+	elektra->fatalErrorHandler = &defaultFatalErrorHandler;
 
 	return elektra;
+}
+
+void elektraFatalError (Elektra * elektra, ElektraError * fatalError)
+{
+	fatalError->severity = ELEKTRA_ERROR_SEVERITY_FATAL;
+	elektra->fatalErrorHandler (fatalError);
+}
+
+void elektraFatalErrorHandler (Elektra * elektra, ElektraErrorHandler fatalErrorHandler)
+{
+	elektra->fatalErrorHandler = fatalErrorHandler;
+}
+
+void elektraEnforceTypeMetadata (Elektra * elektra, bool enforceTypeMetadata)
+{
+	elektra->enforceType = enforceTypeMetadata;
 }
 
 void elektraClose (Elektra * elektra)

@@ -13,16 +13,23 @@
 
 typedef struct _ElektraError ElektraError;
 
-typedef enum { ELEKTRA_ERROR_SEVERITY_FATAL = 0, ELEKTRA_ERROR_SEVERITY_ERROR, ELEKTRA_ERROR_SEVERITY_WARNING } ElektraErrorSeverity;
+typedef enum
+{
+	ELEKTRA_ERROR_SEVERITY_FATAL = 0,
+	ELEKTRA_ERROR_SEVERITY_ERROR,
+	ELEKTRA_ERROR_SEVERITY_WARNING
+} ElektraErrorSeverity;
 
 typedef const char * ElektraErrorGroup;
 typedef const char * ElektraErrorModule;
 
-ElektraErrorCode elektraErrorCode (ElektraError * error);
-const char * elektraErrorDescription (ElektraError * error);
-ElektraErrorSeverity elektraErrorSeverity (ElektraError * error);
-ElektraErrorGroup elektraErrorGroup (ElektraError * error);
-ElektraErrorModule elektraErrorModule (ElektraError * error);
+typedef void (*ElektraErrorHandler) (ElektraError * error);
+
+ElektraErrorCode elektraErrorCode (const ElektraError * error);
+const char * elektraErrorDescription (const ElektraError * error);
+ElektraErrorSeverity elektraErrorSeverity (const ElektraError * error);
+ElektraErrorGroup elektraErrorGroup (const ElektraError * error);
+ElektraErrorModule elektraErrorModule (const ElektraError * error);
 
 void elektraErrorReset (ElektraError ** error);
 

@@ -12,6 +12,7 @@
 #include "kdbease.h"
 #include "kdblogger.h"
 
+#include <elektra_error_private.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -36,16 +37,15 @@ Key * elektraFindArrayElementKey (Elektra * elektra, const char * name, size_t i
 	Key * const resultKey = ksLookup (elektra->config, elektra->lookupKey, 0);
 	if (resultKey == NULL)
 	{
-		ELEKTRA_LOG_DEBUG ("Key not found: %s\n", keyName (elektra->lookupKey));
-		exit (EXIT_FAILURE);
+		elektraFatalError (elektra, elektraErrorKeyNotFound (keyName (elektra->lookupKey), NULL));
 	}
 
-	if (type != NULL)
+	if (!elektra->enforceType && type != NULL)
 	{
-		if (strcmp (keyString (keyGetMeta (resultKey, "type")), type) != 0)
+		const char * actualType = keyString (keyGetMeta (resultKey, "type"));
+		if (strcmp (actualType, type) != 0)
 		{
-			ELEKTRA_LOG_DEBUG ("Wrong type. Should be: %s\n", type);
-			exit (EXIT_FAILURE);
+			elektraFatalError (elektra, elektraErrorWrongType (keyName (elektra->lookupKey), actualType, type, NULL));
 		}
 	}
 
@@ -72,8 +72,7 @@ void elektraSetArrayElementValue (Elektra * elektra, const char * name, size_t i
 	const Key * key = elektraFindArrayElementKey (elektra, keyname, index, KDB_TYPE);                                                  \
 	if (!KEY_TO_VALUE (key, &result))                                                                                                  \
 	{                                                                                                                                  \
-		ELEKTRA_LOG_DEBUG ("Could not convert key to %s: %s\n", KDB_TYPE, keyname);                                                \
-		exit (EXIT_FAILURE);                                                                                                       \
+		elektraFatalError (elektra, elektraErrorConversionFromString (KDB_TYPE, keyString (key), NULL));                           \
 	}
 
 const char * elektraGetStringArrayElement (Elektra * elektra, const char * keyname, size_t index)
