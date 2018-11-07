@@ -25,11 +25,9 @@ if (ENABLE_TESTING)
 			set (UPDATE_DISCONNECTED_IF_AVAILABLE "UPDATE_DISCONNECTED 1")
 		endif ()
 
-		# Since the last released version of Google Test (`release-1.8.0`) is quite old, we download a more recent commit of the
-		# repository instead.
 		download_project (PROJ googletest
 				  GIT_REPOSITORY https://github.com/google/googletest.git
-				  GIT_TAG 4e4df226fc197c0dda6e37f5c8c3845ca1e73a49
+				  GIT_TAG release-1.8.1
 				  QUIET
 				  ${UPDATE_DISCONNECTED_IF_AVAILABLE})
 	endif (DEFINED GOOGLETEST_ROOT)
