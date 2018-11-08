@@ -21,13 +21,17 @@ RUN mkdir -p ${GTEST_ROOT} \
     && rm gtest.tar.gz
 
 # YAEP
+ARG YAEP_VERSION=0d6fda5755dc366c89dbeb9ef7619fb05c9bca89
 RUN cd /tmp \
-    && git clone --depth 1 https://github.com/ElektraInitiative/yaep.git \
+    && mkdir yaep \
+    && curl -o yaep.tar.gz \
+       -L https://github.com/vnmakarov/yaep/archive/${YAEP_VERSION}.tar.gz \
+    && tar -zxvf yaep.tar.gz --strip-components=1 -C yaep \
     && cd yaep \
     && env CXXFLAGS='-fPIC' ./configure \
     && make -C src install \
     && cd .. \
-    && rm -r yaep
+    && rm -r yaep yaep.tar.gz
 
 # Create User:Group
 # The id is important as jenkins docker agents use the same id that is running
