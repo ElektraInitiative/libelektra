@@ -155,7 +155,7 @@ We updated the behavior, since otherwise the plugin will report memory leaks at 
 
 ### YAwn
 
-This new plugin parses a subset of YAML using the Earley Parser library [YAEP](https://github.com/vnmakarov/yaep). *(René Schwaiger)*
+- This new plugin parses a subset of YAML using the Earley Parser library [YAEP](https://github.com/vnmakarov/yaep). *(René Schwaiger)*
 
 ### <<Plugin3>>
 
