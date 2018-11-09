@@ -75,6 +75,13 @@ void elektraSetArrayElementValue (Elektra * elektra, const char * name, size_t i
 		elektraFatalError (elektra, elektraErrorConversionFromString (KDB_TYPE, keyString (key), NULL));                           \
 	}
 
+/**
+ * @param elektra The elektra instance initialized with the parent key.
+ * @param keyName The keyname (or a codegenerated Tag) to look up. The keyname is appended to the parent key.
+ * @param value The new value.
+ * @param index The array index of the desired element, starting with 0. \
+ * @return The value stored at the given key and index.
+ */
 const char * elektraGetStringArrayElement (Elektra * elektra, const char * keyname, size_t index)
 {
 	const char * result;
@@ -183,6 +190,12 @@ int elektraGetEnumIntArrayElement (Elektra * elektra, char * keyname, size_t ind
 	elektraSetArrayElementValue (elektra, keyname, index, string, KDB_TYPE, error);                                                    \
 	elektraFree (string);
 
+/**
+ * @param elektra The elektra instance initialized with the parent key.
+ * @param keyname The keyname (or a codegenerated Tag) to write to. The keyname is appended to the parent key.
+ * @param value The new value.
+ * @param value Pass a reference to an ElektraError pointer.
+ */
 void elektraSetStringArrayElement (Elektra * elektra, const char * keyname, size_t index, const char * value, ElektraError ** error)
 {
 	elektraSetArrayElementValue (elektra, keyname, index, value, KDB_TYPE_STRING, error);

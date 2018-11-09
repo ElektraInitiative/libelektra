@@ -41,6 +41,12 @@ ELEKTRA_TAG_DEFINITIONS (kdb_float_t, Float, KDB_TYPE_FLOAT, elektraFloatToStrin
 ELEKTRA_TAG_DEFINITIONS (kdb_double_t, Double, KDB_TYPE_DOUBLE, elektraDoubleToString, elektraKeyToDouble)
 ELEKTRA_TAG_DEFINITIONS (kdb_long_double_t, LongDouble, KDB_TYPE_LONG_DOUBLE, elektraLongDoubleToString, elektraKeyToLongDouble)
 
+/**
+ * Initializes a new Elektra instance.
+ * @param application The parent key for your application.
+ * @param defaults A KeySet containing default values. Passing NULL means "no default values".
+ * @return An Elektra instance initialized with the application.
+ */
 Elektra * elektraOpen (const char * application, KeySet * defaults, ElektraError ** error)
 {
 	Key * const parentKey = keyNew (application, KEY_END);
@@ -101,6 +107,10 @@ void elektraEnforceTypeMetadata (Elektra * elektra, bool enforceTypeMetadata)
 	elektra->enforceType = enforceTypeMetadata;
 }
 
+/**
+ * Releases all ressources used by the given elektra instance. The elektra instance must not be used anymore after calling this.
+ * @param elektra An Elektra instance.
+ */
 void elektraClose (Elektra * elektra)
 {
 	kdbClose (elektra->kdb, elektra->parentKey);

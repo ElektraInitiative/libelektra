@@ -62,6 +62,11 @@ void elektraSetValue (Elektra * elektra, const char * name, const char * value, 
 		elektraFatalError (elektra, elektraErrorConversionFromString (KDB_TYPE, keyString (key), NULL));                           \
 	}
 
+/**
+ * @param elektra The elektra instance initialized with the parent key.
+ * @param keyname The (relative) keyname to look up. The keyname is appended to the parent key.
+ * @return The value stored at the given key and index.
+ */
 const char * elektraGetString (Elektra * elektra, const char * keyname)
 {
 	const char * result;
@@ -170,6 +175,12 @@ int elektraGetEnumInt (Elektra * elektra, char * keyname)
 	elektraSetValue (elektra, keyname, string, KDB_TYPE, error);                                                                       \
 	elektraFree (string);
 
+/**
+ * @param elektra The elektra instance initialized with the parent key.
+ * @param keyname The (relative) keyname to write to. The keyname is appended to the parent key.
+ * @param value The new value.
+ * @param error Pass a reference to an ElektraError pointer.
+ */
 void elektraSetString (Elektra * elektra, const char * keyName, const char * value, ElektraError ** error)
 {
 	elektraSetValue (elektra, keyName, value, KDB_TYPE_STRING, error);
