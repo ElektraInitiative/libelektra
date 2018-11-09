@@ -91,17 +91,41 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, ElektraError
 	return elektra;
 }
 
+/**
+ * Promote an ElektraError to fatal and call the fatal error handler.
+ *
+ * @param elektra    Elektra instance whose fatal error handler shall be used.
+ * @param fatalError The error that will be raised.
+ */
 void elektraFatalError (Elektra * elektra, ElektraError * fatalError)
 {
 	fatalError->severity = ELEKTRA_ERROR_SEVERITY_FATAL;
 	elektra->fatalErrorHandler (fatalError);
 }
 
+/**
+ * Sets the fatal error handler that will be called, whenever a fatal error occurs.
+ *
+ * Errors occurring in a function, which does not take a pointer to ElektraError,
+ * are always considered fatal.
+ *
+ * @param elektra           An Elektra instance.
+ * @param fatalErrorHandler The error handler that will be used henceforth.
+ */
 void elektraFatalErrorHandler (Elektra * elektra, ElektraErrorHandler fatalErrorHandler)
 {
 	elektra->fatalErrorHandler = fatalErrorHandler;
 }
 
+/**
+ * Sets whether type metadata should be enforced by this Elektra instance.
+ *
+ * Even if type metadata is not enforce, setting a value will always set the
+ * corresponding type metadata value too.
+ *
+ * @param elektra             An Elektra instance.
+ * @param enforceTypeMetadata Set to #true to enforce type metadata.
+ */
 void elektraEnforceTypeMetadata (Elektra * elektra, bool enforceTypeMetadata)
 {
 	elektra->enforceType = enforceTypeMetadata;
