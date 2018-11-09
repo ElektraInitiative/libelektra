@@ -16,7 +16,7 @@
 
 
 /**
- * \defgroup highlevel High-level API
+ * \addtogroup highlevel High-level API
  * @{
  */
 
