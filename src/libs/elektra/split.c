@@ -386,7 +386,12 @@ int splitDivide (Split * split, KDB * handle, KeySet * ks)
 		/* If key could be appended to any of the existing split keysets */
 		ssize_t curFound = splitSearchBackend (split, curHandle, curKey);
 
-		if (curFound == -1) continue; // key not relevant in this kdbSet
+		if (curFound == -1)
+		{
+			ELEKTRA_LOG_DEBUG ("SKIPPING NOT RELEVANT KEY: %p key: %s, string: %s",
+					   (void *) curKey, keyName (curKey), keyString (curKey));
+			continue; // key not relevant in this kdbSet
+		}
 
 		ksAppendKey (split->keysets[curFound], curKey);
 		if (keyNeedSync (curKey) == 1)

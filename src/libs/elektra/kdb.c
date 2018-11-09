@@ -79,6 +79,28 @@ void output_keyset (KeySet * ks)
 		output_key (k);
 	}
 }
+void logSplitDebug (KDB * handle)
+{
+	if (!handle->split)
+	{
+		ELEKTRA_LOG_DEBUG("!!!!! NO SPLIT in KDB");
+		return;
+	}
+	ELEKTRA_LOG_DEBUG(">>>> NEW KDB SPLIT");
+	ELEKTRA_LOG_DEBUG(">>>> alloc: %zu", handle->split->alloc);
+	ELEKTRA_LOG_DEBUG(">>>> size: %zu", handle->split->size);
+	ELEKTRA_LOG_DEBUG(">>>> syncbits: %d", (int) handle->split->syncbits);
+	
+	for (size_t i = 0; i < handle->split->size; i++)
+	{
+		ELEKTRA_LOG_DEBUG(">>>> NEW SPLIT: %zu", i);
+		ELEKTRA_LOG_DEBUG(">>>> parent: %s", keyString(handle->split->parents[i]));
+		ELEKTRA_LOG_DEBUG(">>>> backend: %zu", handle->split->alloc);
+		ELEKTRA_LOG_DEBUG(">>>> keyset size: %zu", ksGetSize(handle->split->keysets[i]));
+		output_keyset (handle->split->keysets[i]);
+		ELEKTRA_LOG_DEBUG(">>>> END SPLIT: %zu", i);
+	}
+}
 
 // TODO: remove end
 
@@ -909,71 +931,16 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 			ksAppend (ks, cache); // TODO: test ksAppend because correctness
 // 			output_keyset (global);
 
-			// Appoint keys (some in the bypass)
-			if (splitAppoint (split, handle, ks) == -1)
+			// restore syncbits
+			Key * syncKey = ksLookupByName (global, "specialkey/578f09ed-ee99-41e8-b62c-29368646c0a5", KDB_O_POP);
+			if (!syncKey)
 			{
-				clearError (parentKey);
-				ELEKTRA_SET_ERROR (38, parentKey, "error in splitAppoint");
+				ELEKTRA_LOG_DEBUG("syncKey not found");
 				goto error;
 			}
+			// TODO: test size of syncbits
+			keyGetBinary (syncKey, handle->split->syncbits, sizeof (splitflag_t));
 
-			if (handle->globalPlugins[POSTGETSTORAGE][FOREACH] || handle->globalPlugins[POSTGETCLEANUP][FOREACH])
-			{
-				clearError (parentKey);
-				if (elektraGetDoUpdateWithGlobalHooks (NULL, split, NULL, parentKey, initialParent, FIRST) == -1)
-				{
-					goto error;
-				}
-				else
-				{
-					copyError (parentKey, oldError);
-				}
-
-				keySetName (parentKey, keyName (initialParent));
-
-				if (splitGet (split, parentKey, handle) == -1)
-				{
-					ELEKTRA_ADD_WARNING (108, parentKey, keyName (ksCurrent (ks)));
-					// continue, because sizes are already updated
-				}
-				ksClear (ks);
-				splitMerge (split, ks);
-
-				clearError (parentKey);
-				if (elektraGetDoUpdateWithGlobalHooks (handle, split, ks, parentKey, initialParent, LAST) == -1)
-				{
-					goto error;
-				}
-				else
-				{
-					copyError (parentKey, oldError);
-				}
-			}
-			else
-			{
-
-				/* Now do the real updating,
-				   but not for bypassed keys in split->size-1 */
-				clearError (parentKey);
-				if (elektraGetDoUpdate (split, parentKey) == -1)
-				{
-					goto error;
-				}
-				else
-				{
-					copyError (parentKey, oldError);
-				}
-				/* Now post-process the updated keysets */
-				if (splitGet (split, parentKey, handle) == -1)
-				{
-					ELEKTRA_ADD_WARNING (108, parentKey, keyName (ksCurrent (ks)));
-					// continue, because sizes are already updated
-				}
-				/* We are finished, now just merge everything to returned */
-				ksClear (ks);
-
-				splitMerge (split, ks);
-			}
 
 //			splitMerge (split, ks);
 //			ksRewind (ks);
@@ -1092,6 +1059,8 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 
 	if (handle->globalPlugins[POSTGETCACHE][MAXONCE])
 	{
+		ksAppendKey(global, keyNew ("specialkey/578f09ed-ee99-41e8-b62c-29368646c0a5",
+					    KEY_BINARY, KEY_SIZE, sizeof (splitflag_t), KEY_VALUE, handle->split->syncbits, KEY_END));
 		handle->globalPlugins[POSTGETCACHE][MAXONCE]->global = global;
 		elektraGlobalSet (handle, ks, cacheParent, POSTGETCACHE, MAXONCE);
 		handle->globalPlugins[POSTGETCACHE][MAXONCE]->global = 0;
@@ -1105,10 +1074,12 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	keyDel (initialParent);
 	keyDel (oldError);
 	splitDel (split);
+	logSplitDebug (handle);
 	errno = errnosave;
 //	ELEKTRA_LOG_DEBUG (">>>>>>>>>>>>>> PRINT RETURNED KEYSET");
 //	output_keyset (ks);
 //	ELEKTRA_LOG_DEBUG (">>>>>>>>>>>>>> END RETURNED KEYSET");
+	
 	return 1;
 
 error:
