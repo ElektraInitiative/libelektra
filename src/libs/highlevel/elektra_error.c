@@ -17,6 +17,18 @@
 
 // elektra_error_private.h
 
+/**
+ * Creates a new ElektraError using the provided values.
+ * The returned value will be allocated with elektraCalloc().
+ * 
+ * @param code        The error code of the error.
+ * @param description The description of the error.
+ * @param severity    The severity of the error. Only use ELEKTRA_ERROR_SEVERITY_FATAL,
+ *                    if the error will be raised with elektraFatalError().
+ * @param group       The group to which this error belongs.
+ * @param module      The module from which this error originates.
+ * @return A newly allocated ElektraError (free with elektraFree()).
+ */
 ElektraError * elektraErrorCreate (ElektraErrorCode code, const char * description, ElektraErrorSeverity severity, ElektraErrorGroup group,
 				   ElektraErrorModule module)
 {
@@ -30,6 +42,12 @@ ElektraError * elektraErrorCreate (ElektraErrorCode code, const char * descripti
 	return error;
 }
 
+/**
+ * Creates a new ElektraError by using the values of the error metadata of a Key.
+ * 
+ * @param Key The key from which the error data shall be taken.
+ * @return A new ElektraError created with elektraErrorCreate().
+ */
 ElektraError * elektraErrorCreateFromKey (Key * key)
 {
 	const Key * metaKey = keyGetMeta (key, "error");
@@ -60,6 +78,13 @@ ElektraError * elektraErrorCreateFromKey (Key * key)
 	return elektraErrorCreate (code, description, severity, group, module);
 }
 
+/**
+ * Creates a new Key-Not-Found error.
+ * 
+ * @param keyname  The name of the key that could not be found.
+ * @param moreDesc May be NULL. Additional information about the error placed in the description.
+ * @return a new ElektraError created with elektraErrorCreate().
+ */
 ElektraError * elektraErrorKeyNotFound (const char * keyname, const char * moreDesc)
 {
 	char * errorString;
@@ -76,6 +101,16 @@ ElektraError * elektraErrorKeyNotFound (const char * keyname, const char * moreD
 	return error;
 }
 
+/**
+ * Creates a new Wrong-Type error.
+ * 
+ * @param keyname      The name of the Key that had unexpected type metadata
+ * @param actualType   The actual type set in the metadata of the Key.
+ * @param expectedType The expected type that did not match @p actualType.
+ * @param moreDesc     May be NULL. Additional information about the error placed
+ *                     in the description.
+ * @return a new ElektraError created with elektraErrorCreate().
+ */
 ElektraError * elektraErrorWrongType (const char * keyname, KDBType actualType, KDBType expectedType, const char * moreDesc)
 {
 	char * errorString;
@@ -101,7 +136,7 @@ ElektraError * elektraErrorWrongType (const char * keyname, KDBType actualType, 
  */
 
 /**
- * @return Code of the given error.
+ * @return the error code of the given error
  */
 ElektraErrorCode elektraErrorCode (const ElektraError * error)
 {
@@ -109,7 +144,7 @@ ElektraErrorCode elektraErrorCode (const ElektraError * error)
 }
 
 /**
- * @return Description for the given error.
+ * @return the description for the given error
  */
 const char * elektraErrorDescription (const ElektraError * error)
 {
@@ -117,7 +152,7 @@ const char * elektraErrorDescription (const ElektraError * error)
 }
 
 /**
- * @return Severity of the given error.
+ * @return the severity of the given error
  */
 ElektraErrorSeverity elektraErrorSeverity (const ElektraError * error)
 {
@@ -125,7 +160,7 @@ ElektraErrorSeverity elektraErrorSeverity (const ElektraError * error)
 }
 
 /**
- * @return Group of the given error.
+ * @return the group to which the given error belongs
  */
 ElektraErrorGroup elektraErrorGroup (const ElektraError * error)
 {
@@ -133,7 +168,7 @@ ElektraErrorGroup elektraErrorGroup (const ElektraError * error)
 }
 
 /**
- * @return Module of the given error.
+ * @return the module from which the given error originated
  */
 ElektraErrorModule elektraErrorModule (const ElektraError * error)
 {
@@ -141,7 +176,8 @@ ElektraErrorModule elektraErrorModule (const ElektraError * error)
 }
 
 /**
- * @brief Frees memory used by the error and sets the referenced error variable to NULL.
+ * Frees the memory used by the error and sets
+ * the referenced error variable to NULL.
  */
 void elektraErrorReset (ElektraError ** error)
 {
