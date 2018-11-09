@@ -21,6 +21,13 @@
  * @{
  */
 
+/**
+ * Gets the size of an array.
+ * 
+ * @param elektra The Elektra instance to use.
+ * @param name    The (relative) name of the array.
+ * @return the size of the array
+ */
 size_t elektraArraySize (Elektra * elektra, const char * name)
 {
 	elektraSetLookupKey (elektra, name);
@@ -31,6 +38,19 @@ size_t elektraArraySize (Elektra * elektra, const char * name)
 	return size;
 }
 
+/**
+ * Helper function for code generation.
+ * 
+ * Finds an array element Key from its relative name and index.
+ * Also checks type metadata, if type metadata is enforces for
+ * the given Elektra instance.
+ * 
+ * @param elektra The Elektra instance to use.
+ * @param name    The relative name of the array.
+ * @param index   The index of the array element.
+ * @param type    The expected type metadata value.
+ * @return the Key referenced by @p name
+ */
 Key * elektraFindArrayElementKey (Elektra * elektra, const char * name, size_t index, KDBType type)
 {
 	elektraSetArrayLookupKey (elektra, name, index);
@@ -52,11 +72,29 @@ Key * elektraFindArrayElementKey (Elektra * elektra, const char * name, size_t i
 	return resultKey;
 }
 
+/**
+ * Get the raw value of an array element key.
+ * 
+ * @param elektra The Elektra instance to use.
+ * @param name    The (relative) name of the array.
+ * @param index   The index of the array element.
+ * @return the raw value of the specified key
+ */
 const char * elektraGetArrayElementValue (Elektra * elektra, const char * name, size_t index)
 {
 	return keyString (elektraFindArrayElementKey (elektra, name, index, NULL));
 }
 
+/**
+ * Set the raw value of an array element key.
+ * 
+ * @param elektra The Elektra instance to use.
+ * @param name    The (relative) name of the array.
+ * @param index   The index of the array element.
+ * @param value   The raw value to set.
+ * @param type    The type to set in the metadata of the (array element) key.
+ * @param error   Pointer to an ElektraError. Will be set in case saving fails.
+ */
 void elektraSetArrayElementValue (Elektra * elektra, const char * name, size_t index, const char * value, KDBType type,
 				  ElektraError ** error)
 {
@@ -76,11 +114,12 @@ void elektraSetArrayElementValue (Elektra * elektra, const char * name, size_t i
 	}
 
 /**
- * @param elektra The elektra instance initialized with the parent key.
- * @param keyName The keyname (or a codegenerated Tag) to look up. The keyname is appended to the parent key.
- * @param value The new value.
- * @param index The array index of the desired element, starting with 0. \
- * @return The value stored at the given key and index.
+ * Gets a string value array element.
+ * 
+ * @param elektra The elektra instance to use.
+ * @param keyname The (relative) name of the array to look up.
+ * @param index   The index of the array element to look up.
+ * @return the string stored at the given array element
  */
 const char * elektraGetStringArrayElement (Elektra * elektra, const char * keyname, size_t index)
 {
@@ -89,6 +128,14 @@ const char * elektraGetStringArrayElement (Elektra * elektra, const char * keyna
 	return result;
 }
 
+/**
+ * Gets a boolean value array element.
+ * 
+ * @param elektra The elektra instance to use.
+ * @param keyname The (relative) name of the array to look up.
+ * @param index   The index of the array element to look up.
+ * @return the boolean stored at the given array element
+ */
 kdb_boolean_t elektraGetBooleanArrayElement (Elektra * elektra, const char * keyname, size_t index)
 {
 	kdb_boolean_t result;
@@ -96,6 +143,14 @@ kdb_boolean_t elektraGetBooleanArrayElement (Elektra * elektra, const char * key
 	return result;
 }
 
+/**
+ * Gets a char value array element.
+ * 
+ * @param elektra The elektra instance to use.
+ * @param keyname The (relative) name of the array to look up.
+ * @param index   The index of the array element to look up.
+ * @return the char stored at the given array element
+ */
 kdb_char_t elektraGetCharArrayElement (Elektra * elektra, const char * keyname, size_t index)
 {
 	kdb_char_t result;
@@ -103,6 +158,14 @@ kdb_char_t elektraGetCharArrayElement (Elektra * elektra, const char * keyname, 
 	return result;
 }
 
+/**
+ * Gets a octet value array element.
+ * 
+ * @param elektra The elektra instance to use.
+ * @param keyname The (relative) name of the array to look up.
+ * @param index   The index of the array element to look up.
+ * @return the octet stored at the given array element
+ */
 kdb_octet_t elektraGetOctetArrayElement (Elektra * elektra, const char * keyname, size_t index)
 {
 	kdb_octet_t result;
@@ -110,6 +173,14 @@ kdb_octet_t elektraGetOctetArrayElement (Elektra * elektra, const char * keyname
 	return result;
 }
 
+/**
+ * Gets a short value array element.
+ * 
+ * @param elektra The elektra instance to use.
+ * @param keyname The (relative) name of the array to look up.
+ * @param index   The index of the array element to look up.
+ * @return the short stored at the given array element
+ */
 kdb_short_t elektraGetShortArrayElement (Elektra * elektra, const char * keyname, size_t index)
 {
 	kdb_short_t result;
@@ -117,6 +188,14 @@ kdb_short_t elektraGetShortArrayElement (Elektra * elektra, const char * keyname
 	return result;
 }
 
+/**
+ * Gets a unsigned short value array element.
+ * 
+ * @param elektra The elektra instance to use.
+ * @param keyname The (relative) name of the array to look up.
+ * @param index   The index of the array element to look up.
+ * @return the unsigned short stored at the given array element
+ */
 kdb_unsigned_short_t elektraGetUnsignedShortArrayElement (Elektra * elektra, const char * keyname, size_t index)
 {
 	kdb_unsigned_short_t result;
@@ -124,6 +203,14 @@ kdb_unsigned_short_t elektraGetUnsignedShortArrayElement (Elektra * elektra, con
 	return result;
 }
 
+/**
+ * Gets a long value array element.
+ * 
+ * @param elektra The elektra instance to use.
+ * @param keyname The (relative) name of the array to look up.
+ * @param index   The index of the array element to look up.
+ * @return the long stored at the given array element
+ */
 kdb_long_t elektraGetLongArrayElement (Elektra * elektra, const char * keyname, size_t index)
 {
 	kdb_long_t result;
@@ -131,6 +218,14 @@ kdb_long_t elektraGetLongArrayElement (Elektra * elektra, const char * keyname, 
 	return result;
 }
 
+/**
+ * Gets a unsigned long value array element.
+ * 
+ * @param elektra The elektra instance to use.
+ * @param keyname The (relative) name of the array to look up.
+ * @param index   The index of the array element to look up.
+ * @return the unsigned long stored at the given array element
+ */
 kdb_unsigned_long_t elektraGetUnsignedLongArrayElement (Elektra * elektra, const char * keyname, size_t index)
 {
 	kdb_unsigned_long_t result;
@@ -138,6 +233,14 @@ kdb_unsigned_long_t elektraGetUnsignedLongArrayElement (Elektra * elektra, const
 	return result;
 }
 
+/**
+ * Gets a long long value array element.
+ * 
+ * @param elektra The elektra instance to use.
+ * @param keyname The (relative) name of the array to look up.
+ * @param index   The index of the array element to look up.
+ * @return the long long stored at the given array element
+ */
 kdb_long_long_t elektraGetLongLongArrayElement (Elektra * elektra, const char * keyname, size_t index)
 {
 	kdb_long_long_t result;
@@ -145,6 +248,14 @@ kdb_long_long_t elektraGetLongLongArrayElement (Elektra * elektra, const char * 
 	return result;
 }
 
+/**
+ * Gets a unsigned long long value array element.
+ * 
+ * @param elektra The elektra instance to use.
+ * @param keyname The (relative) name of the array to look up.
+ * @param index   The index of the array element to look up.
+ * @return the unsigned long long stored at the given array element
+ */
 kdb_unsigned_long_long_t elektraGetUnsignedLongLongArrayElement (Elektra * elektra, const char * keyname, size_t index)
 {
 	kdb_unsigned_long_long_t result;
@@ -152,6 +263,14 @@ kdb_unsigned_long_long_t elektraGetUnsignedLongLongArrayElement (Elektra * elekt
 	return result;
 }
 
+/**
+ * Gets a float value array element.
+ * 
+ * @param elektra The elektra instance to use.
+ * @param keyname The (relative) name of the array to look up.
+ * @param index   The index of the array element to look up.
+ * @return the float stored at the given array element
+ */
 kdb_float_t elektraGetFloatArrayElement (Elektra * elektra, const char * keyname, size_t index)
 {
 	kdb_float_t result;
@@ -159,6 +278,14 @@ kdb_float_t elektraGetFloatArrayElement (Elektra * elektra, const char * keyname
 	return result;
 }
 
+/**
+ * Gets a double value array element.
+ * 
+ * @param elektra The elektra instance to use.
+ * @param keyname The (relative) name of the array to look up.
+ * @param index   The index of the array element to look up.
+ * @return the double stored at the given array element
+ */
 kdb_double_t elektraGetDoubleArrayElement (Elektra * elektra, const char * keyname, size_t index)
 {
 	kdb_double_t result;
@@ -166,6 +293,14 @@ kdb_double_t elektraGetDoubleArrayElement (Elektra * elektra, const char * keyna
 	return result;
 }
 
+/**
+ * Gets a long double value array element.
+ * 
+ * @param elektra The elektra instance to use.
+ * @param keyname The (relative) name of the array to look up.
+ * @param index   The index of the array element to look up.
+ * @return the long double stored at the given array element
+ */
 kdb_long_double_t elektraGetLongDoubleArrayElement (Elektra * elektra, const char * keyname, size_t index)
 {
 	kdb_long_double_t result;
@@ -173,6 +308,14 @@ kdb_long_double_t elektraGetLongDoubleArrayElement (Elektra * elektra, const cha
 	return result;
 }
 
+/**
+ * Gets the int value of a stored enum array element.
+ * 
+ * @param elektra The elektra instance to use.
+ * @param keyname The (relative) name of the array to look up.
+ * @param index   The index of the array element to look up.
+ * @return the int value of the enum stored at the given array element
+ */
 int elektraGetEnumIntArrayElement (Elektra * elektra, char * keyname, size_t index)
 {
 	int result;
@@ -191,58 +334,152 @@ int elektraGetEnumIntArrayElement (Elektra * elektra, char * keyname, size_t ind
 	elektraFree (string);
 
 /**
- * @param elektra The elektra instance initialized with the parent key.
- * @param keyname The keyname (or a codegenerated Tag) to write to. The keyname is appended to the parent key.
- * @param value The new value.
- * @param value Pass a reference to an ElektraError pointer.
+ * Sets a string value array element.
+ * 
+ * @param elektra The elektra instance to use.
+ * @param keyname The (relative) name of the array to write to.
+ * @param index   The index of the array element to write to.
+ * @param value   The new string value.
+ * @param error   Pass a reference to an ElektraError pointer.
+ *                Will only be set in case of an error.
  */
 void elektraSetStringArrayElement (Elektra * elektra, const char * keyname, size_t index, const char * value, ElektraError ** error)
 {
 	elektraSetArrayElementValue (elektra, keyname, index, value, KDB_TYPE_STRING, error);
 }
 
+/**
+ * Sets a boolean value array element.
+ * 
+ * @param elektra The elektra instance to use.
+ * @param keyname The (relative) name of the array to write to.
+ * @param index   The index of the array element to write to.
+ * @param value   The new boolean value.
+ * @param error   Pass a reference to an ElektraError pointer.
+ *                Will only be set in case of an error.
+ */
 void elektraSetBooleanArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_boolean_t value, ElektraError ** error)
 {
 	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (elektraBooleanToString, KDB_TYPE_BOOLEAN, elektra, keyname, index, value, error);
 }
 
+/**
+ * Sets a char value array element.
+ * 
+ * @param elektra The elektra instance to use.
+ * @param keyname The (relative) name of the array to write to.
+ * @param index   The index of the array element to write to.
+ * @param value   The new char value.
+ * @param error   Pass a reference to an ElektraError pointer.
+ *                Will only be set in case of an error.
+ */
 void elektraSetCharArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_char_t value, ElektraError ** error)
 {
 	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (elektraCharToString, KDB_TYPE_CHAR, elektra, keyname, index, value, error);
 }
 
+/**
+ * Sets a octet value array element.
+ * 
+ * @param elektra The elektra instance to use.
+ * @param keyname The (relative) name of the array to write to.
+ * @param index   The index of the array element to write to.
+ * @param value   The new octet value.
+ * @param error   Pass a reference to an ElektraError pointer.
+ *                Will only be set in case of an error.
+ */
 void elektraSetOctetArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_octet_t value, ElektraError ** error)
 {
 	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (elektraOctetToString, KDB_TYPE_OCTET, elektra, keyname, index, value, error);
 }
 
+/**
+ * Sets a short value array element.
+ * 
+ * @param elektra The elektra instance to use.
+ * @param keyname The (relative) name of the array to write to.
+ * @param index   The index of the array element to write to.
+ * @param value   The new short value.
+ * @param error   Pass a reference to an ElektraError pointer.
+ *                Will only be set in case of an error.
+ */
 void elektraSetShortArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_short_t value, ElektraError ** error)
 {
 	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (elektraShortToString, KDB_TYPE_SHORT, elektra, keyname, index, value, error);
 }
 
+/**
+ * Sets a unsigned short value array element.
+ * 
+ * @param elektra The elektra instance to use.
+ * @param keyname The (relative) name of the array to write to.
+ * @param index   The index of the array element to write to.
+ * @param value   The new unsigned short value.
+ * @param error   Pass a reference to an ElektraError pointer.
+ *                Will only be set in case of an error.
+ */
 void elektraSetUnsignedShortArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_unsigned_short_t value,
 					  ElektraError ** error)
 {
 	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (elektraUnsignedShortToString, KDB_TYPE_UNSIGNED_SHORT, elektra, keyname, index, value, error);
 }
 
+/**
+ * Sets a long value array element.
+ * 
+ * @param elektra The elektra instance to use.
+ * @param keyname The (relative) name of the array to write to.
+ * @param index   The index of the array element to write to.
+ * @param value   The new long value.
+ * @param error   Pass a reference to an ElektraError pointer.
+ *                Will only be set in case of an error.
+ */
 void elektraSetLongArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_long_t value, ElektraError ** error)
 {
 	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (elektraLongToString, KDB_TYPE_LONG, elektra, keyname, index, value, error);
 }
 
+/**
+ * Sets a unsigned long value array element.
+ * 
+ * @param elektra The elektra instance to use.
+ * @param keyname The (relative) name of the array to write to.
+ * @param index   The index of the array element to write to.
+ * @param value   The new unsigned long value.
+ * @param error   Pass a reference to an ElektraError pointer.
+ *                Will only be set in case of an error.
+ */
 void elektraSetUnsignedLongArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_unsigned_long_t value,
 					 ElektraError ** error)
 {
 	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (elektraUnsignedLongToString, KDB_TYPE_UNSIGNED_LONG, elektra, keyname, index, value, error);
 }
 
+/**
+ * Sets a long long value array element.
+ * 
+ * @param elektra The elektra instance to use.
+ * @param keyname The (relative) name of the array to write to.
+ * @param index   The index of the array element to write to.
+ * @param value   The new long long value.
+ * @param error   Pass a reference to an ElektraError pointer.
+ *                Will only be set in case of an error.
+ */
 void elektraSetLongLongArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_long_long_t value, ElektraError ** error)
 {
 	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (elektraLongLongToString, KDB_TYPE_LONG_LONG, elektra, keyname, index, value, error);
 }
 
+/**
+ * Sets a unsigned long long value array element.
+ * 
+ * @param elektra The elektra instance to use.
+ * @param keyname The (relative) name of the array to write to.
+ * @param index   The index of the array element to write to.
+ * @param value   The new unsigned long long value.
+ * @param error   Pass a reference to an ElektraError pointer.
+ *                Will only be set in case of an error.
+ */
 void elektraSetUnsignedLongLongArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_unsigned_long_long_t value,
 					     ElektraError ** error)
 {
@@ -250,22 +487,63 @@ void elektraSetUnsignedLongLongArrayElement (Elektra * elektra, const char * key
 					 error);
 }
 
+/**
+ * Sets a float value array element.
+ * 
+ * @param elektra The elektra instance to use.
+ * @param keyname The (relative) name of the array to write to.
+ * @param index   The index of the array element to write to.
+ * @param value   The new float value.
+ * @param error   Pass a reference to an ElektraError pointer.
+ *                Will only be set in case of an error.
+ */
 void elektraSetFloatArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_float_t value, ElektraError ** error)
 {
 	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (elektraFloatToString, KDB_TYPE_FLOAT, elektra, keyname, index, value, error);
 }
 
+/**
+ * Sets a double value array element.
+ * 
+ * @param elektra The elektra instance to use.
+ * @param keyname The (relative) name of the array to write to.
+ * @param index   The index of the array element to write to.
+ * @param value   The new double value.
+ * @param error   Pass a reference to an ElektraError pointer.
+ *                Will only be set in case of an error.
+ */
 void elektraSetDoubleArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_double_t value, ElektraError ** error)
 {
 	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (elektraDoubleToString, KDB_TYPE_DOUBLE, elektra, keyname, index, value, error);
 }
 
+/**
+ * Sets a long double value array element.
+ * 
+ * @param elektra The elektra instance to use.
+ * @param keyname The (relative) name of the array to write to.
+ * @param index   The index of the array element to write to.
+ * @param value   The new long double value.
+ * @param error   Pass a reference to an ElektraError pointer.
+ *                Will only be set in case of an error.
+ */
 void elektraSetLongDoubleArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_long_double_t value,
 				       ElektraError ** error)
 {
 	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (elektraLongDoubleToString, KDB_TYPE_LONG_DOUBLE, elektra, keyname, index, value, error);
 }
 
+/**
+ * Sets an enum value array element. The corresponding int value will be
+ * stored with the type metadata set to "enum".
+ * 
+ * @param elektra The elektra instance to use.
+ * @param keyname The (relative) name of the array to write to.
+ * @param index   The index of the array element to write to.
+ * @param value   The new value.
+ * @param error   Pass a reference to an ElektraError pointer.
+ *                Will only be set in case of an error.
+ */
 void elektraSetEnumIntArrayElement (Elektra * elektra, char * keyName, size_t index, int value, ElektraError ** error)
 {
 	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (elektraLongToString, KDB_TYPE_ENUM, elektra, keyName, index, value, error);
