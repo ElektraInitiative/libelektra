@@ -82,6 +82,8 @@ static int checkElektraExtensions (const char * name, const char * pattern)
 /**
  * @brief checks whether a given Key matches a given globbing pattern
  *
+ * WARNING: this method will not work correctly, if key parts contain embedded (escaped) slashes.
+ *
  * The globbing patterns for this function are a superset of those from glob(7)
  * used with the FNM_PATHNAME flag:
  * <ul>
