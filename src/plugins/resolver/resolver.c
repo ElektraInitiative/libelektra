@@ -539,34 +539,49 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * returned, Key * par
 
 	/* Check if cache update needed */
 	KeySet * global;
-// 	if ((global = elektraPluginGetGlobalKeySet (handle)) != NULL)
-// 	{
-// 		ELEKTRA_LOG_DEBUG ("global-cache: check cache update needed?");
-// 		Key * time = ksLookupByName (global, pk->filename, KDB_O_NONE);
-// 		if (time && keyGetValueSize (time) == sizeof (struct timespec))
-// 		{
-// 			struct timespec cached;
-// 			keyGetBinary (time, &cached, sizeof (struct timespec));
-// 			if (cached.tv_sec == ELEKTRA_STAT_SECONDS (buf) && cached.tv_nsec == ELEKTRA_STAT_NANO_SECONDS (buf))
-// 			{
-// 				ELEKTRA_LOG_DEBUG ("global-cache: no update needed, everything is fine");
-// 				ELEKTRA_LOG_DEBUG ("cached.tv_sec:\t%ld", cached.tv_sec);
-// 				ELEKTRA_LOG_DEBUG ("cached.tv_nsec:\t%ld", cached.tv_nsec);
-// 				ELEKTRA_LOG_DEBUG ("buf.tv_sec:\t%ld", ELEKTRA_STAT_SECONDS (buf));
-// 				ELEKTRA_LOG_DEBUG ("buf.tv_nsec:\t%ld", ELEKTRA_STAT_NANO_SECONDS (buf));
-// 				// update timestamp inside resolver
-// 				pk->mtime.tv_sec = ELEKTRA_STAT_SECONDS (buf);
-// 				pk->mtime.tv_nsec = ELEKTRA_STAT_NANO_SECONDS (buf);
-// 				errno = errnoSave;
-// 				return ELEKTRA_PLUGIN_STATUS_CACHE_HIT;
-// 			}
-// 		}
-// 	}
+	char * name = 0;
+	const char * prefix = "/persistent/";
+	size_t len = strlen (prefix) + strlen (ELEKTRA_PLUGIN_NAME) + strlen (pk->filename) + 1;
+	name = elektraMalloc (len);
+	name = strcpy (name, prefix);
+	name = strcat (name, ELEKTRA_PLUGIN_NAME);
+	name = strcat (name, pk->filename);
+	ELEKTRA_LOG_DEBUG ("persistent chid key: %s", name);
+	
+	if ((global = elektraPluginGetGlobalKeySet (handle)) != NULL)
+	{
+		ELEKTRA_LOG_DEBUG ("global-cache: check cache update needed?");
+
+// 		name = pk->filename;
+
+		Key * time = ksLookupByName (global, name, KDB_O_NONE);
+		if (time && keyGetValueSize (time) == sizeof (struct timespec))
+		{
+			struct timespec cached;
+			keyGetBinary (time, &cached, sizeof (struct timespec));
+			if (cached.tv_sec == ELEKTRA_STAT_SECONDS (buf) && cached.tv_nsec == ELEKTRA_STAT_NANO_SECONDS (buf))
+			{
+				ELEKTRA_LOG_DEBUG ("global-cache: no update needed, everything is fine");
+				ELEKTRA_LOG_DEBUG ("cached.tv_sec:\t%ld", cached.tv_sec);
+				ELEKTRA_LOG_DEBUG ("cached.tv_nsec:\t%ld", cached.tv_nsec);
+				ELEKTRA_LOG_DEBUG ("buf.tv_sec:\t%ld", ELEKTRA_STAT_SECONDS (buf));
+				ELEKTRA_LOG_DEBUG ("buf.tv_nsec:\t%ld", ELEKTRA_STAT_NANO_SECONDS (buf));
+				// update timestamp inside resolver
+				pk->mtime.tv_sec = ELEKTRA_STAT_SECONDS (buf);
+				pk->mtime.tv_nsec = ELEKTRA_STAT_NANO_SECONDS (buf);
+				
+				if (name) elektraFree (name);
+				errno = errnoSave;
+				return ELEKTRA_PLUGIN_STATUS_CACHE_HIT;
+			}
+		}
+	}
 
 	/* Check if update needed */
 	if (pk->mtime.tv_sec == ELEKTRA_STAT_SECONDS (buf) && pk->mtime.tv_nsec == ELEKTRA_STAT_NANO_SECONDS (buf))
 	{
 		// no update, so storage has no job
+		if (name) elektraFree (name);
 		errno = errnoSave;
 		return 0;
 	}
@@ -578,10 +593,11 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * returned, Key * par
 	if ((global = elektraPluginGetGlobalKeySet (handle)) != NULL)
 	{
 		ELEKTRA_LOG_DEBUG ("global-cache: adding file modufication times");
-		Key * time = keyNew (pk->filename, KEY_BINARY, KEY_SIZE, sizeof (struct timespec), KEY_VALUE, &(pk->mtime), KEY_END);
+		Key * time = keyNew (name, KEY_BINARY, KEY_SIZE, sizeof (struct timespec), KEY_VALUE, &(pk->mtime), KEY_END);
 		ksAppendKey (global, time);
 	}
 
+	if (name) elektraFree (name);
 	errno = errnoSave;
 	return 1;
 }

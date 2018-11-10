@@ -89,14 +89,20 @@ void logSplitDebug (KDB * handle)
 	ELEKTRA_LOG_DEBUG(">>>> NEW KDB SPLIT");
 	ELEKTRA_LOG_DEBUG(">>>> alloc: %zu", handle->split->alloc);
 	ELEKTRA_LOG_DEBUG(">>>> size: %zu", handle->split->size);
-	ELEKTRA_LOG_DEBUG(">>>> syncbits: %d", (int) handle->split->syncbits);
+	ELEKTRA_LOG_DEBUG(">>>> syncbits: %p", (void *) handle->split->syncbits);
 	
 	for (size_t i = 0; i < handle->split->size; i++)
 	{
 		ELEKTRA_LOG_DEBUG(">>>> NEW SPLIT: %zu", i);
-		ELEKTRA_LOG_DEBUG(">>>> parent: %s", keyString(handle->split->parents[i]));
-		ELEKTRA_LOG_DEBUG(">>>> backend: %zu", handle->split->alloc);
+		Key * k = handle->split->parents[i];
+		ELEKTRA_LOG_DEBUG(">>>> backend handle specsize:\t%zu", handle->split->handles[i]->specsize);
+		ELEKTRA_LOG_DEBUG(">>>> backend handle dirsize:\t%zu", handle->split->handles[i]->dirsize);
+		ELEKTRA_LOG_DEBUG(">>>> backend handle usersize:\t%zu", handle->split->handles[i]->usersize);
+		ELEKTRA_LOG_DEBUG(">>>> backend handle systemsize:\t%zu", handle->split->handles[i]->systemsize);
+		
+		ELEKTRA_LOG_DEBUG(">>>> parent: %p key: %s, string: %s", (void *) k, keyName (k), keyString (k));
 		ELEKTRA_LOG_DEBUG(">>>> keyset size: %zu", ksGetSize(handle->split->keysets[i]));
+		
 		output_keyset (handle->split->keysets[i]);
 		ELEKTRA_LOG_DEBUG(">>>> END SPLIT: %zu", i);
 	}
@@ -782,6 +788,72 @@ static void clearError (Key * key)
 	keySetMeta (key, "error/mountpoint", 0);
 }
 
+static void kdbStoreSizes (KDB * handle, KeySet * global)
+{
+	for (size_t i = 0; i < handle->split->size - 1; ++i)
+	{
+		char * name = 0;
+		const char * prefix = "/persistent/kdb/backendsizes/";
+		size_t len = strlen (prefix) + strlen (keyName (handle->split->parents[i])) + 1;
+		name = elektraMalloc (len);
+		name = strcpy (name, prefix);
+		name = strcat (name, keyName (handle->split->parents[i]));
+		Key * key = keyNew (name, KEY_END);
+		
+		keyAddBaseName (key, "specsize");
+		keySetBinary (key, &(handle->split->handles[i]->specsize), sizeof (ssize_t));
+		ksAppendKey(global, key);
+		keySetBaseName (key, "dirsize");
+		keySetBinary (key, &(handle->split->handles[i]->dirsize), sizeof (ssize_t));
+		ksAppendKey(global, key);
+		keySetBaseName (key, "usersize");
+		keySetBinary (key, &(handle->split->handles[i]->usersize), sizeof (ssize_t));
+		ksAppendKey(global, key);
+		keySetBaseName (key, "systemsize");
+		keySetBinary (key, &(handle->split->handles[i]->systemsize), sizeof (ssize_t));
+		ksAppendKey(global, key);
+	}
+}
+
+static void kdbLoadSizes (KDB * handle, KeySet * global)
+{
+	for (size_t i = 0; i < handle->split->size - 1; ++i)
+	{
+		char * name = 0;
+		const char * prefix = "/persistent/kdb/backendsizes/";
+		size_t len = strlen (prefix) + strlen (keyName (handle->split->parents[i])) + 1;
+		name = elektraMalloc (len);
+		name = strcpy (name, prefix);
+		name = strcat (name, keyName (handle->split->parents[i]));
+		Key * key = keyNew (name, KEY_END);
+
+		keyAddBaseName (key, "specsize");
+		Key * found = ksLookup (global, key, KDB_O_NONE);
+		if (found && keyGetValueSize (found) == sizeof (ssize_t)) 
+		{
+			keyGetBinary (found, &(handle->split->handles[i]->specsize), sizeof (ssize_t));
+		}
+		keySetBaseName (key, "dirsize");
+		found = ksLookup (global, key, KDB_O_NONE);
+		if (found && keyGetValueSize (found) == sizeof (ssize_t)) 
+		{
+			keyGetBinary (found, &(handle->split->handles[i]->dirsize), sizeof (ssize_t));
+		}
+		keySetBaseName (key, "usersize");
+		found = ksLookup (global, key, KDB_O_NONE);
+		if (found && keyGetValueSize (found) == sizeof (ssize_t)) 
+		{
+			keyGetBinary (found, &(handle->split->handles[i]->usersize), sizeof (ssize_t));
+		}
+		keySetBaseName (key, "systemsize");
+		found = ksLookup (global, key, KDB_O_NONE);
+		if (found && keyGetValueSize (found) == sizeof (ssize_t)) 
+		{
+			keyGetBinary (found, &(handle->split->handles[i]->systemsize), sizeof (ssize_t));
+		}
+	}
+}
+
 /**
  * @brief Retrieve keys in an atomic and universal way.
  *
@@ -923,42 +995,35 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		if (ks->size == 0) // TODO: implement else, if ks is not empty
 		{
 			ELEKTRA_LOG_DEBUG ("replacing keyset with cached keyset");
-// 			ksClose (ks);
-// 			ks->array = cache->array;
-// 			ks->size = cache->size;
-// 			ks->alloc = cache->alloc;
-// 			set_bit (ks->flags, KS_FLAG_MMAP_ARRAY);
-			ksAppend (ks, cache); // TODO: test ksAppend because correctness
-// 			output_keyset (global);
-
-			// restore syncbits
-			Key * syncKey = ksLookupByName (global, "specialkey/578f09ed-ee99-41e8-b62c-29368646c0a5", KDB_O_POP);
-			if (!syncKey)
-			{
-				ELEKTRA_LOG_DEBUG("syncKey not found");
-				goto error;
-			}
-			// TODO: test size of syncbits
-			keyGetBinary (syncKey, handle->split->syncbits, sizeof (splitflag_t));
-
-
-//			splitMerge (split, ks);
-//			ksRewind (ks);
-
-			keySetName (parentKey, keyName (initialParent));
-			elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, INIT);
-			elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, MAXONCE);
-			elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, DEINIT);
-			splitUpdateFileName (split, handle, parentKey);
-			keyDel (initialParent);
-			keyDel (oldError);
-			splitDel (split);
-			errno = errnosave;
-//			ELEKTRA_LOG_DEBUG (">>>>>>>>>>>>>> PRINT RETURNED KEYSET");
-//			output_keyset (ks);
-//			ELEKTRA_LOG_DEBUG (">>>>>>>>>>>>>> END RETURNED KEYSET");
-			return 1;
+			ksClose (ks);
+			ks->array = cache->array;
+			ks->size = cache->size;
+			ks->alloc = cache->alloc;
+			set_bit (ks->flags, KS_FLAG_MMAP_ARRAY);
 		}
+		else
+		{
+			ELEKTRA_LOG_DEBUG ("appending cached keyset (ks was not empty)");
+			ksAppend (ks, cache);
+		}
+		
+		// clear syncbits & restore backend sizes
+		for (size_t i = 0; i < handle->split->size; ++i)
+		{
+			clear_bit (handle->split->syncbits[i], SPLIT_FLAG_SYNC);
+		}
+		kdbLoadSizes (handle, global);
+		
+		keySetName (parentKey, keyName (initialParent));
+		elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, INIT);
+		elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, MAXONCE);
+		elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, DEINIT);
+		splitUpdateFileName (split, handle, parentKey);
+		keyDel (initialParent);
+		splitDel (split);
+		errno = errnosave;
+		keyDel (oldError);
+		return 1;
 		// intentional fallthrough
 	case 0: // We don't need an update so let's do nothing
 
@@ -1059,11 +1124,14 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 
 	if (handle->globalPlugins[POSTGETCACHE][MAXONCE])
 	{
-		ksAppendKey(global, keyNew ("specialkey/578f09ed-ee99-41e8-b62c-29368646c0a5",
-					    KEY_BINARY, KEY_SIZE, sizeof (splitflag_t), KEY_VALUE, handle->split->syncbits, KEY_END));
+		// TODO: do not store/cache user supplied keys (bypass)
 		handle->globalPlugins[POSTGETCACHE][MAXONCE]->global = global;
+		kdbStoreSizes (handle, global);
 		elektraGlobalSet (handle, ks, cacheParent, POSTGETCACHE, MAXONCE);
 		handle->globalPlugins[POSTGETCACHE][MAXONCE]->global = 0;
+		ELEKTRA_LOG_DEBUG (">>>>>>>>>>>>>> PRINT GLOBAL KEYSET");
+		output_keyset (global);
+		ELEKTRA_LOG_DEBUG (">>>>>>>>>>>>>> END GLOBAL KEYSET");
 	}
 
 	ksRewind (ks);
@@ -1074,7 +1142,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	keyDel (initialParent);
 	keyDel (oldError);
 	splitDel (split);
-	logSplitDebug (handle);
+// 	logSplitDebug (handle);
 	errno = errnosave;
 //	ELEKTRA_LOG_DEBUG (">>>>>>>>>>>>>> PRINT RETURNED KEYSET");
 //	output_keyset (ks);
@@ -1389,6 +1457,7 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 		goto error;
 	}
 	ELEKTRA_LOG ("after splitBuildup");
+	logSplitDebug(handle);
 
 	// 1.) Search for syncbits
 	int syncstate = splitDivide (split, handle, ks);
