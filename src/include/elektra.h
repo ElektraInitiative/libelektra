@@ -18,11 +18,11 @@
 
 #define ELEKTRA_TAG(typeName) struct Elektra##typeName##Tag
 
-#define ELEKTRA_SET_BY_TAG(typeName) __elektraSet##typeName##ByTag
-#define ELEKTRA_SET_ARRAY_ELEMENT_BY_TAG(typeName) __elektraSet##typeName##ArrayElementByTag
+#define ELEKTRA_SET_BY_TAG(typeName) _elektraSet##typeName##ByTag
+#define ELEKTRA_SET_ARRAY_ELEMENT_BY_TAG(typeName) _elektraSet##typeName##ArrayElementByTag
 
-#define ELEKTRA_GET_BY_TAG(typeName) __elektraGet##typeName##ByTag
-#define ELEKTRA_GET_ARRAY_ELEMENT_BY_TAG(typeName) __elektraGet##typeName##ArrayElementByTag
+#define ELEKTRA_GET_BY_TAG(typeName) _elektraGet##typeName##ByTag
+#define ELEKTRA_GET_ARRAY_ELEMENT_BY_TAG(typeName) _elektraGet##typeName##ArrayElementByTag
 
 
 #define ELEKTRA_GET_BY_TAG_PARAMS(typeName) (Elektra * elektra, const ELEKTRA_TAG (typeName) * tag)

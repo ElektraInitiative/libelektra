@@ -658,7 +658,7 @@ typedef enum
 	ELEKTRA_ENUM_TEST_BLANK = 2
 } ElektraEnumTest;
 
-static int __elektraKeyToElektraEnumTest (const Key * key, ElektraEnumTest * variable)
+static int _elektraKeyToElektraEnumTest (const Key * key, ElektraEnumTest * variable)
 {
 	kdb_long_t longVariable;
 	int result = elektraKeyToLong (key, &longVariable);
@@ -670,7 +670,7 @@ static int __elektraKeyToElektraEnumTest (const Key * key, ElektraEnumTest * var
 }
 
 ELEKTRA_TAG_DECLARATIONS (ElektraEnumTest, EnumTest)
-ELEKTRA_TAG_DEFINITIONS (ElektraEnumTest, EnumTest, KDB_TYPE_ENUM, elektraLongToString, __elektraKeyToElektraEnumTest)
+ELEKTRA_TAG_DEFINITIONS (ElektraEnumTest, EnumTest, KDB_TYPE_ENUM, elektraLongToString, _elektraKeyToElektraEnumTest)
 
 void test_enum (void)
 {
