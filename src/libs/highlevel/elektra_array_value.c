@@ -61,7 +61,7 @@ Key * elektraFindArrayElementKey (Elektra * elektra, const char * name, size_t i
 		return NULL;
 	}
 
-	if (!elektra->enforceType && type != NULL)
+	if (elektra->enforceType && type != NULL)
 	{
 		const char * actualType = keyString (keyGetMeta (resultKey, "type"));
 		if (strcmp (actualType, type) != 0)
@@ -128,7 +128,7 @@ void elektraSetArrayElementValue (Elektra * elektra, const char * name, size_t i
 
 #define ELEKTRA_GET_ARRAY_ELEMENT_VALUE(KEY_TO_VALUE, KDB_TYPE, elektra, keyname, index, result)                                           \
 	const Key * key = elektraFindArrayElementKey (elektra, keyname, index, KDB_TYPE);                                                  \
-	if (!KEY_TO_VALUE (key, &result))                                                                                                  \
+	if (key == NULL || !KEY_TO_VALUE (key, &result))                                                                                   \
 	{                                                                                                                                  \
 		elektraFatalError (elektra, elektraErrorConversionFromString (KDB_TYPE, keyString (key), NULL));                           \
 		return 0;                                                                                                                  \

@@ -16,8 +16,9 @@
 static void defaultFatalErrorHandler (ElektraError * error)
 {
 	ELEKTRA_LOG_DEBUG ("FATAL ERROR [%d]: %s", error->code, error->description);
+	ElektraErrorCode code = error->code;
 	elektraFree (error);
-	exit (error->code);
+	exit (code);
 }
 
 /**

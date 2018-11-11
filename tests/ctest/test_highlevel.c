@@ -10,7 +10,34 @@
 #include <elektra_conversion.h>
 #include <tests_internal.h>
 
-static void setKeyValue (const char * parentKeyName, const char * type, const char * name, const char * value)
+static const char * parentKeyName = "user/tests/highlevel";
+static char * test_name = "";
+static int test_line = 0;
+
+static void fatalErrorHandler (ElektraError * error)
+{
+	nbError++;
+	printf ("%s:%d: fatal error in test %s: %s\n", __FILE__, test_line, test_name, elektraErrorDescription (error));
+	yield_error ("fatal");
+	ElektraErrorCode code = elektraErrorCode (error);
+	elektraFree (error);
+	exit (code);
+}
+
+#define SETUP_TEST(NAME)                                                                                                                   \
+	test_line = __LINE__ - 2;                                                                                                          \
+	test_name = "test_" #NAME;                                                                                                         \
+	resetKDB ();
+
+static Elektra * createElektra (KeySet * defaults, ElektraError ** error)
+{
+	Elektra * elektra = elektraOpen ("user/tests/highlevel", defaults, error);
+
+	elektraFatalErrorHandler (elektra, &fatalErrorHandler);
+	return elektra;
+}
+
+static void setKeyValue (KDBType type, const char * name, const char * value)
 {
 	// Open
 	KeySet * config = ksNew (0, KS_END);
@@ -33,26 +60,49 @@ static void setKeyValue (const char * parentKeyName, const char * type, const ch
 	keyDel (parentKey);
 }
 
+static void resetKDB (void)
+{
+	Key * parentKey = keyNew (parentKeyName, KEY_END);
+	KDB * handle = kdbOpen (parentKey);
+
+	KeySet * conf = ksNew (0, KS_END);
+	kdbGet (handle, conf, parentKey);
+
+	ksDel (ksCut (conf, parentKey));
+
+	kdbSet (handle, conf, parentKey);
+
+	ksDel (conf);
+
+	kdbClose (handle, parentKey);
+	keyDel (parentKey);
+}
+
 static void test_primitiveGetters (void)
 {
-	const char * parentKey = "user/tests/highlevel";
+	SETUP_TEST (primitiveGetters);
 
-	setKeyValue (parentKey, "string", "stringkey", "A string");
-	setKeyValue (parentKey, "boolean", "booleankey", "1");
-	setKeyValue (parentKey, "char", "charkey", "c");
-	setKeyValue (parentKey, "octet", "octetkey", "1");
-	setKeyValue (parentKey, "short", "shortkey", "1");
-	setKeyValue (parentKey, "unsigned_short", "unsignedshortkey", "1");
-	setKeyValue (parentKey, "long", "longkey", "1");
-	setKeyValue (parentKey, "unsigned_long", "unsignedlongkey", "1");
-	setKeyValue (parentKey, "long_long", "longlongkey", "1");
-	setKeyValue (parentKey, "unsigned_long_long", "unsignedlonglongkey", "1");
-	setKeyValue (parentKey, "float", "floatkey", "1.1");
-	setKeyValue (parentKey, "double", "doublekey", "1.1");
-	setKeyValue (parentKey, "long_double", "longdoublekey", "1.1");
+	setKeyValue (KDB_TYPE_STRING, "stringkey", "A string");
+	setKeyValue (KDB_TYPE_BOOLEAN, "booleankey", "1");
+	setKeyValue (KDB_TYPE_CHAR, "charkey", "c");
+	setKeyValue (KDB_TYPE_OCTET, "octetkey", "1");
+	setKeyValue (KDB_TYPE_SHORT, "shortkey", "1");
+	setKeyValue (KDB_TYPE_UNSIGNED_SHORT, "unsignedshortkey", "1");
+	setKeyValue (KDB_TYPE_LONG, "longkey", "1");
+	setKeyValue (KDB_TYPE_UNSIGNED_LONG, "unsignedlongkey", "1");
+	setKeyValue (KDB_TYPE_LONG_LONG, "longlongkey", "1");
+	setKeyValue (KDB_TYPE_UNSIGNED_LONG_LONG, "unsignedlonglongkey", "1");
+	setKeyValue (KDB_TYPE_FLOAT, "floatkey", "1.1");
+	setKeyValue (KDB_TYPE_DOUBLE, "doublekey", "1.1");
+
+#if defined(HAVE_SIZEOF_LONG_DOUBLE) && (SIZEOF_LONG_DOUBLE == 16 || SIZEOF_LONG_DOUBLE == 12)
+
+	setKeyValue (KDB_TYPE_LONG_DOUBLE, "longdoublekey", "1.1");
+
+#endif
 
 	ElektraError * error = NULL;
-	Elektra * elektra = elektraOpen (parentKey, NULL, &error);
+	Elektra * elektra = createElektra (NULL, &error);
 
 	if (error)
 	{
@@ -77,7 +127,12 @@ static void test_primitiveGetters (void)
 
 	succeed_if (elektraGetFloat (elektra, "floatkey") == 1.1f, "Wrong key value.");
 	succeed_if (elektraGetDouble (elektra, "doublekey") == 1.1, "Wrong key value.");
+
+#if defined(HAVE_SIZEOF_LONG_DOUBLE) && (SIZEOF_LONG_DOUBLE == 16 || SIZEOF_LONG_DOUBLE == 12)
+
 	succeed_if (elektraGetLongDouble (elektra, "longdoublekey") == 1.1L, "Wrong key value.");
+
+#endif
 
 	ELEKTRA_DIAG_RESTORE
 
@@ -86,49 +141,53 @@ static void test_primitiveGetters (void)
 
 static void test_arrayGetters (void)
 {
-	const char * parentKey = "user/tests/highlevel";
+	SETUP_TEST (arrayGetters);
 
-	setKeyValue (parentKey, "string", "stringarraykey/#0", "String 1");
-	setKeyValue (parentKey, "string", "stringarraykey/#1", "String 2");
+	setKeyValue (KDB_TYPE_STRING, "stringarraykey/#0", "String 1");
+	setKeyValue (KDB_TYPE_STRING, "stringarraykey/#1", "String 2");
 
-	setKeyValue (parentKey, "boolean", "booleanarraykey/#0", "0");
-	setKeyValue (parentKey, "boolean", "booleanarraykey/#1", "1");
+	setKeyValue (KDB_TYPE_BOOLEAN, "booleanarraykey/#0", "0");
+	setKeyValue (KDB_TYPE_BOOLEAN, "booleanarraykey/#1", "1");
 
-	setKeyValue (parentKey, "char", "chararraykey/#0", "c");
-	setKeyValue (parentKey, "char", "chararraykey/#1", "d");
+	setKeyValue (KDB_TYPE_CHAR, "chararraykey/#0", "c");
+	setKeyValue (KDB_TYPE_CHAR, "chararraykey/#1", "d");
 
-	setKeyValue (parentKey, "octet", "octetarraykey/#0", "1");
-	setKeyValue (parentKey, "octet", "octetarraykey/#1", "2");
+	setKeyValue (KDB_TYPE_OCTET, "octetarraykey/#0", "1");
+	setKeyValue (KDB_TYPE_OCTET, "octetarraykey/#1", "2");
 
-	setKeyValue (parentKey, "short", "shortarraykey/#0", "1");
-	setKeyValue (parentKey, "short", "shortarraykey/#1", "2");
+	setKeyValue (KDB_TYPE_SHORT, "shortarraykey/#0", "1");
+	setKeyValue (KDB_TYPE_SHORT, "shortarraykey/#1", "2");
 
-	setKeyValue (parentKey, "unsigned_short", "unsignedshortarraykey/#0", "1");
-	setKeyValue (parentKey, "unsigned_short", "unsignedshortarraykey/#1", "2");
+	setKeyValue (KDB_TYPE_UNSIGNED_SHORT, "unsignedshortarraykey/#0", "1");
+	setKeyValue (KDB_TYPE_UNSIGNED_SHORT, "unsignedshortarraykey/#1", "2");
 
-	setKeyValue (parentKey, "long", "longarraykey/#0", "1");
-	setKeyValue (parentKey, "long", "longarraykey/#1", "2");
+	setKeyValue (KDB_TYPE_LONG, "longarraykey/#0", "1");
+	setKeyValue (KDB_TYPE_LONG, "longarraykey/#1", "2");
 
-	setKeyValue (parentKey, "unsigned_long", "unsignedLongarraykey/#0", "1");
-	setKeyValue (parentKey, "unsigned_long", "unsignedLongarraykey/#1", "2");
+	setKeyValue (KDB_TYPE_UNSIGNED_LONG, "unsignedLongarraykey/#0", "1");
+	setKeyValue (KDB_TYPE_UNSIGNED_LONG, "unsignedLongarraykey/#1", "2");
 
-	setKeyValue (parentKey, "long_long", "longlongarraykey/#0", "1");
-	setKeyValue (parentKey, "long_long", "longlongarraykey/#1", "2");
+	setKeyValue (KDB_TYPE_LONG_LONG, "longlongarraykey/#0", "1");
+	setKeyValue (KDB_TYPE_LONG_LONG, "longlongarraykey/#1", "2");
 
-	setKeyValue (parentKey, "unsigned_long_long", "unsignedlonglongarraykey/#0", "1");
-	setKeyValue (parentKey, "unsigned_long_long", "unsignedlonglongarraykey/#1", "2");
+	setKeyValue (KDB_TYPE_UNSIGNED_LONG_LONG, "unsignedlonglongarraykey/#0", "1");
+	setKeyValue (KDB_TYPE_UNSIGNED_LONG_LONG, "unsignedlonglongarraykey/#1", "2");
 
-	setKeyValue (parentKey, "float", "floatarraykey/#0", "1.1");
-	setKeyValue (parentKey, "float", "floatarraykey/#1", "2.1");
+	setKeyValue (KDB_TYPE_FLOAT, "floatarraykey/#0", "1.1");
+	setKeyValue (KDB_TYPE_FLOAT, "floatarraykey/#1", "2.1");
 
-	setKeyValue (parentKey, "double", "doublearraykey/#0", "1.1");
-	setKeyValue (parentKey, "double", "doublearraykey/#1", "2.1");
+	setKeyValue (KDB_TYPE_DOUBLE, "doublearraykey/#0", "1.1");
+	setKeyValue (KDB_TYPE_DOUBLE, "doublearraykey/#1", "2.1");
 
-	setKeyValue (parentKey, "long_double", "longdoublearraykey/#0", "1.1");
-	setKeyValue (parentKey, "long_double", "longdoublearraykey/#1", "2.1");
+#if defined(HAVE_SIZEOF_LONG_DOUBLE) && (SIZEOF_LONG_DOUBLE == 16 || SIZEOF_LONG_DOUBLE == 12)
+
+	setKeyValue (KDB_TYPE_LONG_DOUBLE, "longdoublearraykey/#0", "1.1");
+	setKeyValue (KDB_TYPE_LONG_DOUBLE, "longdoublearraykey/#1", "2.1");
+
+#endif
 
 	ElektraError * error = NULL;
-	Elektra * elektra = elektraOpen (parentKey, NULL, &error);
+	Elektra * elektra = createElektra (NULL, &error);
 
 	if (error)
 	{
@@ -180,9 +239,13 @@ static void test_arrayGetters (void)
 	succeed_if (elektraGetDoubleArrayElement (elektra, "doublearraykey", 0) == 1.1, "Wrong key value.");
 	succeed_if (elektraGetDoubleArrayElement (elektra, "doublearraykey", 1) == 2.1, "Wrong key value.");
 
+#if defined(HAVE_SIZEOF_LONG_DOUBLE) && (SIZEOF_LONG_DOUBLE == 16 || SIZEOF_LONG_DOUBLE == 12)
+
 	succeed_if (elektraArraySize (elektra, "longdoublearraykey") == 2, "Wrong array size");
 	succeed_if (elektraGetLongDoubleArrayElement (elektra, "longdoublearraykey", 0) == 1.1L, "Wrong key value.");
 	succeed_if (elektraGetLongDoubleArrayElement (elektra, "longdoublearraykey", 1) == 2.1L, "Wrong key value.");
+
+#endif
 
 	ELEKTRA_DIAG_RESTORE
 
@@ -191,24 +254,29 @@ static void test_arrayGetters (void)
 
 static void test_primitiveSetters (void)
 {
-	const char * parentKey = "user/tests/highlevel";
+	SETUP_TEST (primitiveSetters);
 
-	setKeyValue (parentKey, "string", "stringkey", "");
-	setKeyValue (parentKey, "boolean", "booleankey", "");
-	setKeyValue (parentKey, "char", "charkey", "");
-	setKeyValue (parentKey, "octet", "octetkey", "");
-	setKeyValue (parentKey, "short", "shortkey", "1");
-	setKeyValue (parentKey, "unsigned_short", "unsignedshortkey", "1");
-	setKeyValue (parentKey, "long", "longkey", "1");
-	setKeyValue (parentKey, "unsigned_long", "unsignedlongkey", "1");
-	setKeyValue (parentKey, "long_long", "longlongkey", "1");
-	setKeyValue (parentKey, "unsigned_long_long", "unsignedlonglongkey", "1");
-	setKeyValue (parentKey, "float", "floatkey", "1.1");
-	setKeyValue (parentKey, "double", "doublekey", "1.1");
-	setKeyValue (parentKey, "long_double", "longdoublekey", "1.1");
+	setKeyValue (KDB_TYPE_STRING, "stringkey", "");
+	setKeyValue (KDB_TYPE_BOOLEAN, "booleankey", "");
+	setKeyValue (KDB_TYPE_CHAR, "charkey", "");
+	setKeyValue (KDB_TYPE_OCTET, "octetkey", "");
+	setKeyValue (KDB_TYPE_SHORT, "shortkey", "1");
+	setKeyValue (KDB_TYPE_UNSIGNED_SHORT, "unsignedshortkey", "1");
+	setKeyValue (KDB_TYPE_LONG, "longkey", "1");
+	setKeyValue (KDB_TYPE_UNSIGNED_LONG, "unsignedlongkey", "1");
+	setKeyValue (KDB_TYPE_LONG_LONG, "longlongkey", "1");
+	setKeyValue (KDB_TYPE_UNSIGNED_LONG_LONG, "unsignedlonglongkey", "1");
+	setKeyValue (KDB_TYPE_FLOAT, "floatkey", "1.1");
+	setKeyValue (KDB_TYPE_DOUBLE, "doublekey", "1.1");
+
+#if defined(HAVE_SIZEOF_LONG_DOUBLE) && (SIZEOF_LONG_DOUBLE == 16 || SIZEOF_LONG_DOUBLE == 12)
+
+	setKeyValue (KDB_TYPE_LONG_DOUBLE, "longdoublekey", "1.1");
+
+#endif
 
 	ElektraError * error = NULL;
-	Elektra * elektra = elektraOpen (parentKey, NULL, &error);
+	Elektra * elektra = createElektra (NULL, &error);
 
 	if (error)
 	{
@@ -230,7 +298,12 @@ static void test_primitiveSetters (void)
 	elektraSetUnsignedLongLong (elektra, "unsignedlonglongkey", 1, &error);
 	elektraSetFloat (elektra, "floatkey", 1.1, &error);
 	elektraSetDouble (elektra, "doublekey", 1.1, &error);
+
+#if defined(HAVE_SIZEOF_LONG_DOUBLE) && (SIZEOF_LONG_DOUBLE == 16 || SIZEOF_LONG_DOUBLE == 12)
+
 	elektraSetLongDouble (elektra, "longdoublekey", 1.1L, &error);
+
+#endif
 
 	// Add new keys.
 	elektraSetString (elektra, "newstringkey", "A string", &error);
@@ -245,7 +318,12 @@ static void test_primitiveSetters (void)
 	elektraSetUnsignedLongLong (elektra, "newunsignedlonglongkey", 1, &error);
 	elektraSetFloat (elektra, "newfloatkey", 1.1, &error);
 	elektraSetDouble (elektra, "newdoublekey", 1.1, &error);
+
+#if defined(HAVE_SIZEOF_LONG_DOUBLE) && (SIZEOF_LONG_DOUBLE == 16 || SIZEOF_LONG_DOUBLE == 12)
+
 	elektraSetLongDouble (elektra, "newlongdoublekey", 1.1L, &error);
+
+#endif
 
 	if (error)
 	{
@@ -271,7 +349,12 @@ static void test_primitiveSetters (void)
 
 	succeed_if (elektraGetFloat (elektra, "floatkey") == 1.1f, "Wrong key value.");
 	succeed_if (elektraGetDouble (elektra, "doublekey") == 1.1, "Wrong key value.");
+
+#if defined(HAVE_SIZEOF_LONG_DOUBLE) && (SIZEOF_LONG_DOUBLE == 16 || SIZEOF_LONG_DOUBLE == 12)
+
 	succeed_if (elektraGetLongDouble (elektra, "longdoublekey") == 1.1L, "Wrong key value.");
+
+#endif
 
 	ELEKTRA_DIAG_RESTORE
 
@@ -292,7 +375,12 @@ static void test_primitiveSetters (void)
 
 	succeed_if (elektraGetFloat (elektra, "newfloatkey") == 1.1f, "Wrong key value.");
 	succeed_if (elektraGetDouble (elektra, "newdoublekey") == 1.1, "Wrong key value.");
+
+#if defined(HAVE_SIZEOF_LONG_DOUBLE) && (SIZEOF_LONG_DOUBLE == 16 || SIZEOF_LONG_DOUBLE == 12)
+
 	succeed_if (elektraGetLongDouble (elektra, "newlongdoublekey") == 1.1L, "Wrong key value.");
+
+#endif
 
 	ELEKTRA_DIAG_RESTORE
 
@@ -301,49 +389,53 @@ static void test_primitiveSetters (void)
 
 static void test_arraySetters (void)
 {
-	const char * parentKey = "user/tests/highlevel";
+	SETUP_TEST (arraySetters);
 
-	setKeyValue (parentKey, "string", "stringarraykey/#0", "");
-	setKeyValue (parentKey, "string", "stringarraykey/#1", "");
+	setKeyValue (KDB_TYPE_STRING, "stringarraykey/#0", "");
+	setKeyValue (KDB_TYPE_STRING, "stringarraykey/#1", "");
 
-	setKeyValue (parentKey, "boolean", "booleanarraykey/#0", "");
-	setKeyValue (parentKey, "boolean", "booleanarraykey/#1", "");
+	setKeyValue (KDB_TYPE_BOOLEAN, "booleanarraykey/#0", "");
+	setKeyValue (KDB_TYPE_BOOLEAN, "booleanarraykey/#1", "");
 
-	setKeyValue (parentKey, "char", "chararraykey/#0", "");
-	setKeyValue (parentKey, "char", "chararraykey/#1", "");
+	setKeyValue (KDB_TYPE_CHAR, "chararraykey/#0", "");
+	setKeyValue (KDB_TYPE_CHAR, "chararraykey/#1", "");
 
-	setKeyValue (parentKey, "octet", "octetarraykey/#0", "");
-	setKeyValue (parentKey, "octet", "octetarraykey/#1", "");
+	setKeyValue (KDB_TYPE_OCTET, "octetarraykey/#0", "");
+	setKeyValue (KDB_TYPE_OCTET, "octetarraykey/#1", "");
 
-	setKeyValue (parentKey, "short", "shortarraykey/#0", "");
-	setKeyValue (parentKey, "short", "shortarraykey/#1", "");
+	setKeyValue (KDB_TYPE_SHORT, "shortarraykey/#0", "");
+	setKeyValue (KDB_TYPE_SHORT, "shortarraykey/#1", "");
 
-	setKeyValue (parentKey, "unsigned_short", "unsignedshortarraykey/#0", "");
-	setKeyValue (parentKey, "unsigned_short", "unsignedshortarraykey/#1", "");
+	setKeyValue (KDB_TYPE_UNSIGNED_SHORT, "unsignedshortarraykey/#0", "");
+	setKeyValue (KDB_TYPE_UNSIGNED_SHORT, "unsignedshortarraykey/#1", "");
 
-	setKeyValue (parentKey, "long", "longarraykey/#0", "");
-	setKeyValue (parentKey, "long", "longarraykey/#1", "");
+	setKeyValue (KDB_TYPE_LONG, "longarraykey/#0", "");
+	setKeyValue (KDB_TYPE_LONG, "longarraykey/#1", "");
 
-	setKeyValue (parentKey, "unsigned_long", "unsignedLongarraykey/#0", "");
-	setKeyValue (parentKey, "unsigned_long", "unsignedLongarraykey/#1", "");
+	setKeyValue (KDB_TYPE_UNSIGNED_LONG, "unsignedLongarraykey/#0", "");
+	setKeyValue (KDB_TYPE_UNSIGNED_LONG, "unsignedLongarraykey/#1", "");
 
-	setKeyValue (parentKey, "long_long", "longlongarraykey/#0", "");
-	setKeyValue (parentKey, "long_long", "longlongarraykey/#1", "");
+	setKeyValue (KDB_TYPE_LONG_LONG, "longlongarraykey/#0", "");
+	setKeyValue (KDB_TYPE_LONG_LONG, "longlongarraykey/#1", "");
 
-	setKeyValue (parentKey, "unsigned_long_long", "unsignedlonglongarraykey/#0", "");
-	setKeyValue (parentKey, "unsigned_long_long", "unsignedlonglongarraykey/#1", "");
+	setKeyValue (KDB_TYPE_UNSIGNED_LONG_LONG, "unsignedlonglongarraykey/#0", "");
+	setKeyValue (KDB_TYPE_UNSIGNED_LONG_LONG, "unsignedlonglongarraykey/#1", "");
 
-	setKeyValue (parentKey, "float", "floatarraykey/#0", "");
-	setKeyValue (parentKey, "float", "floatarraykey/#1", "");
+	setKeyValue (KDB_TYPE_FLOAT, "floatarraykey/#0", "");
+	setKeyValue (KDB_TYPE_FLOAT, "floatarraykey/#1", "");
 
-	setKeyValue (parentKey, "double", "doublearraykey/#0", "");
-	setKeyValue (parentKey, "double", "doublearraykey/#1", "");
+	setKeyValue (KDB_TYPE_DOUBLE, "doublearraykey/#0", "");
+	setKeyValue (KDB_TYPE_DOUBLE, "doublearraykey/#1", "");
 
-	setKeyValue (parentKey, "long_double", "longdoublearraykey/#0", "");
-	setKeyValue (parentKey, "long_double", "longdoublearraykey/#1", "");
+#if defined(HAVE_SIZEOF_LONG_DOUBLE) && (SIZEOF_LONG_DOUBLE == 16 || SIZEOF_LONG_DOUBLE == 12)
+
+	setKeyValue (KDB_TYPE_LONG_DOUBLE, "longdoublearraykey/#0", "");
+	setKeyValue (KDB_TYPE_LONG_DOUBLE, "longdoublearraykey/#1", "");
+
+#endif
 
 	ElektraError * error = NULL;
-	Elektra * elektra = elektraOpen (parentKey, NULL, &error);
+	Elektra * elektra = createElektra (NULL, &error);
 
 	if (error)
 	{
@@ -396,8 +488,12 @@ static void test_arraySetters (void)
 	elektraSetDoubleArrayElement (elektra, "doublearraykey", 0, 1.1, &error);
 	elektraSetDoubleArrayElement (elektra, "doublearraykey", 1, 2.1, &error);
 
+#if defined(HAVE_SIZEOF_LONG_DOUBLE) && (SIZEOF_LONG_DOUBLE == 16 || SIZEOF_LONG_DOUBLE == 12)
+
 	elektraSetLongDoubleArrayElement (elektra, "longdoublearraykey", 0, 1.1L, &error);
 	elektraSetLongDoubleArrayElement (elektra, "longdoublearraykey", 1, 2.1L, &error);
+
+#endif
 
 	// Add new keys.
 
@@ -443,8 +539,12 @@ static void test_arraySetters (void)
 	elektraSetDoubleArrayElement (elektra, "newdoublearraykey", 0, 1.1, &error);
 	elektraSetDoubleArrayElement (elektra, "newdoublearraykey", 1, 2.1, &error);
 
+#if defined(HAVE_SIZEOF_LONG_DOUBLE) && (SIZEOF_LONG_DOUBLE == 16 || SIZEOF_LONG_DOUBLE == 12)
+
 	elektraSetLongDoubleArrayElement (elektra, "newlongdoublearraykey", 0, 1.1L, &error);
 	elektraSetLongDoubleArrayElement (elektra, "newlongdoublearraykey", 1, 2.1L, &error);
+
+#endif
 
 	if (error)
 	{
@@ -506,9 +606,13 @@ static void test_arraySetters (void)
 	succeed_if (elektraGetDoubleArrayElement (elektra, "doublearraykey", 0) == 1.1, "Wrong key value.");
 	succeed_if (elektraGetDoubleArrayElement (elektra, "doublearraykey", 1) == 2.1, "Wrong key value.");
 
+#if defined(HAVE_SIZEOF_LONG_DOUBLE) && (SIZEOF_LONG_DOUBLE == 16 || SIZEOF_LONG_DOUBLE == 12)
+
 	succeed_if (elektraArraySize (elektra, "longdoublearraykey") == 2, "Wrong array size");
 	succeed_if (elektraGetLongDoubleArrayElement (elektra, "longdoublearraykey", 0) == 1.1L, "Wrong key value.");
 	succeed_if (elektraGetLongDoubleArrayElement (elektra, "longdoublearraykey", 1) == 2.1L, "Wrong key value.");
+
+#endif
 
 	ELEKTRA_DIAG_RESTORE
 
@@ -557,22 +661,27 @@ static void test_arraySetters (void)
 	succeed_if (elektraGetDoubleArrayElement (elektra, "newdoublearraykey", 0) == 1.1, "Wrong key value.");
 	succeed_if (elektraGetDoubleArrayElement (elektra, "newdoublearraykey", 1) == 2.1, "Wrong key value.");
 
+#if defined(HAVE_SIZEOF_LONG_DOUBLE) && (SIZEOF_LONG_DOUBLE == 16 || SIZEOF_LONG_DOUBLE == 12)
+
 	succeed_if (elektraArraySize (elektra, "newlongdoublearraykey") == 2, "Wrong array size");
 	succeed_if (elektraGetLongDoubleArrayElement (elektra, "newlongdoublearraykey", 0) == 1.1L, "Wrong key value.");
 	succeed_if (elektraGetLongDoubleArrayElement (elektra, "newlongdoublearraykey", 1) == 2.1L, "Wrong key value.");
+
+#endif
 
 	ELEKTRA_DIAG_RESTORE
 
 	elektraClose (elektra);
 }
 
-void test_defaultValues (void)
+static void test_defaultValues (void)
 {
-	KeySet * defaults =
-		ksNew (0, keyNew ("user/tests/highlevel/stringkey", KEY_VALUE, "A string", KEY_META, "type", "string", KEY_END), KS_END);
+	SETUP_TEST (defaultValues);
+
+	KeySet * defaults = ksNew (5, keyNew ("/stringkey", KEY_VALUE, "A string", KEY_META, "type", KDB_TYPE_STRING, KEY_END), KS_END);
 
 	ElektraError * error = NULL;
-	Elektra * elektra = elektraOpen ("/tests/highlevel", defaults, &error);
+	Elektra * elektra = createElektra (defaults, &error);
 
 	if (error)
 	{
@@ -581,17 +690,41 @@ void test_defaultValues (void)
 		elektraErrorReset (&error);
 	}
 
-	succeed_if (!elektraStrCmp (elektraGetString (elektra, "stringkey"), "A string"), "Wrong key value.");
+	succeed_if (elektraStrCmp (elektraGetString (elektra, "stringkey"), "A string") == 0, "Wrong key value.");
+
+	elektraSetString (elektra, "stringkey", "My string", &error);
+
+	if (error)
+	{
+		yield_error ("elektraSet* failed");
+		printf ("ElektraError: %s\n", elektraErrorDescription (error));
+		elektraErrorReset (&error);
+	}
+
+	succeed_if (elektraStrCmp (elektraGetString (elektra, "stringkey"), "My string") == 0, "Wrong key value.");
+
+	elektraClose (elektra);
+
+	elektra = createElektra (defaults, &error);
+
+	if (error)
+	{
+		yield_error ("elektraOpen failed");
+		printf ("ElektraError: %s\n", elektraErrorDescription (error));
+		elektraErrorReset (&error);
+	}
+
+	succeed_if (elektraStrCmp (elektraGetString (elektra, "stringkey"), "My string") == 0, "Wrong key value.");
 
 	elektraClose (elektra);
 }
 
-void test_generic (void)
+static void test_generic (void)
 {
-	const char * parentKey = "user/tests/highlevel";
+	SETUP_TEST (generic);
 
 	ElektraError * error = NULL;
-	Elektra * elektra = elektraOpen (parentKey, NULL, &error);
+	Elektra * elektra = createElektra (NULL, &error);
 
 	if (error)
 	{
@@ -612,7 +745,12 @@ void test_generic (void)
 	ELEKTRA_TAG_VALUE (TEST_UNSIGNED_LONG_LONG, "unsignedlonglongkey", UnsignedLongLong)
 	ELEKTRA_TAG_VALUE (TEST_FLOAT, "floatkey", Float)
 	ELEKTRA_TAG_VALUE (TEST_DOUBLE, "doublekey", Double)
+
+#if defined(HAVE_SIZEOF_LONG_DOUBLE) && (SIZEOF_LONG_DOUBLE == 16 || SIZEOF_LONG_DOUBLE == 12)
+
 	ELEKTRA_TAG_VALUE (TEST_LONG_DOUBLE, "longdoublekey", LongDouble)
+
+#endif
 
 	elektraSet (elektra, ELEKTRA_TAG_NAME (TEST_STRING), "A string", &error);
 	elektraSet (elektra, ELEKTRA_TAG_NAME (TEST_BOOLEAN), 1, &error);
@@ -621,12 +759,19 @@ void test_generic (void)
 	elektraSet (elektra, ELEKTRA_TAG_NAME (TEST_SHORT), 1, &error);
 	elektraSet (elektra, ELEKTRA_TAG_NAME (TEST_UNSIGNED_SHORT), 1, &error);
 	elektraSet (elektra, ELEKTRA_TAG_NAME (TEST_LONG), 1, &error);
-	elektraSet (elektra, ELEKTRA_TAG_NAME (TEST_UNSIGNED_LONG_LONG), 1, &error);
+	elektraSet (elektra, ELEKTRA_TAG_NAME (TEST_UNSIGNED_LONG), 1, &error);
 	elektraSet (elektra, ELEKTRA_TAG_NAME (TEST_LONG_LONG), 1, &error);
 	elektraSet (elektra, ELEKTRA_TAG_NAME (TEST_UNSIGNED_LONG_LONG), 1, &error);
 	elektraSet (elektra, ELEKTRA_TAG_NAME (TEST_FLOAT), 1.1, &error);
 	elektraSet (elektra, ELEKTRA_TAG_NAME (TEST_DOUBLE), 1.1, &error);
 	elektraSet (elektra, ELEKTRA_TAG_NAME (TEST_LONG_DOUBLE), 1.1, &error);
+
+	if (error)
+	{
+		yield_error ("elektraSet* failed");
+		printf ("ElektraError: %s\n", elektraErrorDescription (error));
+		elektraErrorReset (&error);
+	}
 
 	// Check values.
 	succeed_if (!elektraStrCmp (elektraGet (elektra, ELEKTRA_TAG_NAME (TEST_STRING)), "A string"), "Wrong key value.");
@@ -648,6 +793,8 @@ void test_generic (void)
 	succeed_if (elektraGet (elektra, ELEKTRA_TAG_NAME (TEST_LONG_DOUBLE)) == 1.1L, "Wrong key value.");
 
 	ELEKTRA_DIAG_RESTORE
+
+	elektraClose (elektra);
 }
 
 
@@ -672,12 +819,12 @@ static int _elektraKeyToElektraEnumTest (const Key * key, ElektraEnumTest * vari
 ELEKTRA_TAG_DECLARATIONS (ElektraEnumTest, EnumTest)
 ELEKTRA_TAG_DEFINITIONS (ElektraEnumTest, EnumTest, KDB_TYPE_ENUM, elektraLongToString, _elektraKeyToElektraEnumTest)
 
-void test_enum (void)
+static void test_enum (void)
 {
-	const char * parentKey = "user/tests/highlevel";
+	SETUP_TEST (enum);
 
 	ElektraError * error = NULL;
-	Elektra * elektra = elektraOpen (parentKey, NULL, &error);
+	Elektra * elektra = createElektra (NULL, &error);
 
 	if (error)
 	{
@@ -688,15 +835,26 @@ void test_enum (void)
 
 	elektraSetEnumInt (elektra, "enumkey", ELEKTRA_ENUM_TEST_ON, &error);
 
+	if (error)
+	{
+		yield_error ("elektraSet* failed");
+		printf ("ElektraError: %s\n", elektraErrorDescription (error));
+		elektraErrorReset (&error);
+	}
+
+	succeed_if (elektraGetEnumInt (elektra, "enumkey") == (int) ELEKTRA_ENUM_TEST_ON, "Wrong key value.");
+
 	succeed_if (elektraGetEnum (elektra, "enumkey", ElektraEnumTest) == ELEKTRA_ENUM_TEST_ON, "Wrong key value.");
+
+	elektraClose (elektra);
 }
 
-void test_enumArray (void)
+static void test_enumArray (void)
 {
-	const char * parentKey = "user/tests/highlevel";
+	SETUP_TEST (enumArray);
 
 	ElektraError * error = NULL;
-	Elektra * elektra = elektraOpen (parentKey, NULL, &error);
+	Elektra * elektra = createElektra (NULL, &error);
 
 	if (error)
 	{
@@ -711,19 +869,34 @@ void test_enumArray (void)
 	elektraSetEnumIntArrayElement (elektra, "enumkey", 3, ELEKTRA_ENUM_TEST_OFF, &error);
 	elektraSetEnumIntArrayElement (elektra, "enumkey", 4, ELEKTRA_ENUM_TEST_BLANK, &error);
 
+	if (error)
+	{
+		yield_error ("elektraSet* failed");
+		printf ("ElektraError: %s\n", elektraErrorDescription (error));
+		elektraErrorReset (&error);
+	}
+
+	succeed_if (elektraGetEnumIntArrayElement (elektra, "enumkey", 0) == (int) ELEKTRA_ENUM_TEST_ON, "Wrong key value.");
+	succeed_if (elektraGetEnumIntArrayElement (elektra, "enumkey", 1) == (int) ELEKTRA_ENUM_TEST_ON, "Wrong key value.");
+	succeed_if (elektraGetEnumIntArrayElement (elektra, "enumkey", 2) == (int) ELEKTRA_ENUM_TEST_OFF, "Wrong key value.");
+	succeed_if (elektraGetEnumIntArrayElement (elektra, "enumkey", 3) == (int) ELEKTRA_ENUM_TEST_OFF, "Wrong key value.");
+	succeed_if (elektraGetEnumIntArrayElement (elektra, "enumkey", 4) == (int) ELEKTRA_ENUM_TEST_BLANK, "Wrong key value.");
+
 	succeed_if (elektraGetEnumArrayElement (elektra, "enumkey", 0, ElektraEnumTest) == ELEKTRA_ENUM_TEST_ON, "Wrong key value.");
 	succeed_if (elektraGetEnumArrayElement (elektra, "enumkey", 1, ElektraEnumTest) == ELEKTRA_ENUM_TEST_ON, "Wrong key value.");
 	succeed_if (elektraGetEnumArrayElement (elektra, "enumkey", 2, ElektraEnumTest) == ELEKTRA_ENUM_TEST_OFF, "Wrong key value.");
 	succeed_if (elektraGetEnumArrayElement (elektra, "enumkey", 3, ElektraEnumTest) == ELEKTRA_ENUM_TEST_OFF, "Wrong key value.");
 	succeed_if (elektraGetEnumArrayElement (elektra, "enumkey", 4, ElektraEnumTest) == ELEKTRA_ENUM_TEST_BLANK, "Wrong key value.");
+
+	elektraClose (elektra);
 }
 
-void test_enum_generic (void)
+static void test_enum_generic (void)
 {
-	const char * parentKey = "user/tests/highlevel";
+	SETUP_TEST (enum_generic);
 
 	ElektraError * error = NULL;
-	Elektra * elektra = elektraOpen (parentKey, NULL, &error);
+	Elektra * elektra = createElektra (NULL, &error);
 
 	if (error)
 	{
@@ -736,15 +909,24 @@ void test_enum_generic (void)
 
 	elektraSet (elektra, ELEKTRA_TAG_NAME (TEST_ENUM), ELEKTRA_ENUM_TEST_BLANK, &error);
 
+	if (error)
+	{
+		yield_error ("elektraSet* failed");
+		printf ("ElektraError: %s\n", elektraErrorDescription (error));
+		elektraErrorReset (&error);
+	}
+
 	succeed_if (elektraGet (elektra, ELEKTRA_TAG_NAME (TEST_ENUM)) == ELEKTRA_ENUM_TEST_BLANK, "Wrong key value.");
+
+	elektraClose (elektra);
 }
 
-void test_enumArray_generic (void)
+static void test_enumArray_generic (void)
 {
-	const char * parentKey = "user/tests/highlevel";
+	SETUP_TEST (enumArray_generic);
 
 	ElektraError * error = NULL;
-	Elektra * elektra = elektraOpen (parentKey, NULL, &error);
+	Elektra * elektra = createElektra (NULL, &error);
 
 	if (error)
 	{
@@ -761,11 +943,124 @@ void test_enumArray_generic (void)
 	elektraSetArrayElement (elektra, ELEKTRA_TAG_NAME (TEST_ENUM), 3, ELEKTRA_ENUM_TEST_OFF, &error);
 	elektraSetArrayElement (elektra, ELEKTRA_TAG_NAME (TEST_ENUM), 4, ELEKTRA_ENUM_TEST_BLANK, &error);
 
+	if (error)
+	{
+		yield_error ("elektraSet* failed");
+		printf ("ElektraError: %s\n", elektraErrorDescription (error));
+		elektraErrorReset (&error);
+	}
+
 	succeed_if (elektraGetArrayElement (elektra, ELEKTRA_TAG_NAME (TEST_ENUM), 0) == ELEKTRA_ENUM_TEST_ON, "Wrong key value.");
 	succeed_if (elektraGetArrayElement (elektra, ELEKTRA_TAG_NAME (TEST_ENUM), 1) == ELEKTRA_ENUM_TEST_ON, "Wrong key value.");
 	succeed_if (elektraGetArrayElement (elektra, ELEKTRA_TAG_NAME (TEST_ENUM), 2) == ELEKTRA_ENUM_TEST_OFF, "Wrong key value.");
 	succeed_if (elektraGetArrayElement (elektra, ELEKTRA_TAG_NAME (TEST_ENUM), 3) == ELEKTRA_ENUM_TEST_OFF, "Wrong key value.");
 	succeed_if (elektraGetArrayElement (elektra, ELEKTRA_TAG_NAME (TEST_ENUM), 4) == ELEKTRA_ENUM_TEST_BLANK, "Wrong key value.");
+
+	elektraClose (elektra);
+}
+
+static void test_raw (void)
+{
+	SETUP_TEST (raw);
+
+	ElektraError * error = NULL;
+	Elektra * elektra = createElektra (NULL, &error);
+
+	if (error)
+	{
+		yield_error ("elektraOpen failed");
+		printf ("ElektraError: %s\n", elektraErrorDescription (error));
+		elektraErrorReset (&error);
+	}
+
+	elektraSetLong (elektra, "longkey", 2, &error);
+	elektraSetFloat (elektra, "floatkey", 2.25f, &error);
+	elektraSetString (elektra, "stringkey", "abc", &error);
+	elektraSetLongArrayElement (elektra, "longarray", 0, 15, &error);
+	elektraSetLongArrayElement (elektra, "longarray", 1, 16, &error);
+	elektraSetLongArrayElement (elektra, "longarray", 2, 17, &error);
+	elektraSetLongArrayElement (elektra, "longarray", 3, 18, &error);
+
+	elektraSetValue (elektra, "rawshortkey", "2", "short", &error);
+	elektraSetValue (elektra, "rawdoublekey", "2.25", "double", &error);
+	elektraSetValue (elektra, "rawkey", "aaa", "araw", &error);
+	elektraSetArrayElementValue (elektra, "rawlongarray", 0, "15", "long", &error);
+	elektraSetArrayElementValue (elektra, "rawlongarray", 1, "16", "long", &error);
+	elektraSetArrayElementValue (elektra, "rawarray", 4, "aadd", "ttt", &error);
+
+	if (error)
+	{
+		yield_error ("elektraSet* failed");
+		printf ("ElektraError: %s\n", elektraErrorDescription (error));
+		elektraErrorReset (&error);
+	}
+
+	succeed_if (strcmp (elektraGetValue (elektra, "longkey"), "2") == 0, "Wrong key value.");
+	succeed_if (strncmp (elektraGetValue (elektra, "floatkey"), "2.25", 4) == 0, "Wrong key value.");
+	succeed_if (strcmp (elektraGetValue (elektra, "stringkey"), "abc") == 0, "Wrong key value.");
+
+	succeed_if (strcmp (elektraGetArrayElementValue (elektra, "longarray", 0), "15") == 0, "Wrong key value.");
+	succeed_if (strcmp (elektraGetArrayElementValue (elektra, "longarray", 1), "16") == 0, "Wrong key value.");
+	succeed_if (strcmp (elektraGetArrayElementValue (elektra, "longarray", 2), "17") == 0, "Wrong key value.");
+	succeed_if (strcmp (elektraGetArrayElementValue (elektra, "longarray", 3), "18") == 0, "Wrong key value.");
+
+	succeed_if (elektraGetShort (elektra, "rawshortkey") == 2, "Wrong key value.");
+
+	ELEKTRA_DIAG_STORE
+	ELEKTRA_DIAG_OFF_STR ("-Wfloat-equal")
+
+	succeed_if (elektraGetDouble (elektra, "rawdoublekey") == 2.25, "Wrong key value.");
+
+	ELEKTRA_DIAG_RESTORE
+
+	succeed_if (elektraGetLongArrayElement (elektra, "rawlongarray", 0) == 15, "Wrong key value.");
+	succeed_if (elektraGetLongArrayElement (elektra, "rawlongarray", 1) == 16, "Wrong key value.");
+
+	succeed_if (strcmp (elektraGetValue (elektra, "rawkey"), "aaa") == 0, "Wrong key value.");
+	succeed_if (strcmp (elektraGetType (elektra, "rawkey"), "araw") == 0, "Wrong key value.");
+
+	succeed_if (strcmp (elektraGetArrayElementType (elektra, "rawarray", 4), "ttt") == 0, "Wrong key value.");
+	succeed_if (strcmp (elektraGetArrayElementValue (elektra, "rawarray", 4), "aadd") == 0, "Wrong key value.");
+
+	elektraClose (elektra);
+}
+
+static bool enforce_failed = false;
+static void test_enforceMetadataHandler (ElektraError * error)
+{
+	elektraFree (error);
+	enforce_failed = true;
+}
+
+static void test_enforceMetadata (void)
+{
+	SETUP_TEST (enforceMetadata);
+
+	ElektraError * error = NULL;
+	Elektra * elektra = createElektra (NULL, &error);
+
+	elektraFatalErrorHandler (elektra, &test_enforceMetadataHandler);
+
+	if (error)
+	{
+		yield_error ("elektraOpen failed");
+		printf ("ElektraError: %s\n", elektraErrorDescription (error));
+		elektraErrorReset (&error);
+	}
+
+	elektraSetLong (elektra, "testkey", 2, &error);
+	elektraSetLong (elektra, "testkey2", 1, &error);
+
+	enforce_failed = false;
+	elektraGetBoolean (elektra, "testkey");
+	succeed_if (enforce_failed, "Didn't enforce type.");
+
+	elektraEnforceTypeMetadata (elektra, false);
+
+	succeed_if (elektraGetBoolean (elektra, "testkey") == false, "Wrong key value.");
+	succeed_if (elektraGetBoolean (elektra, "testkey2") == true, "Wrong key value.");
+
+	elektraClose (elektra);
 }
 
 int main (int argc, char ** argv)
@@ -787,6 +1082,10 @@ int main (int argc, char ** argv)
 
 	test_enum_generic ();
 	test_enumArray_generic ();
+
+	test_raw ();
+
+	test_enforceMetadata ();
 
 	printf ("\ntest_highlevel RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

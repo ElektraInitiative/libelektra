@@ -41,7 +41,7 @@ Key * elektraFindKey (Elektra * elektra, const char * name, KDBType type)
 		return NULL;
 	}
 
-	if (!elektra->enforceType && type != NULL)
+	if (elektra->enforceType && type != NULL)
 	{
 		const char * actualType = keyString (keyGetMeta (resultKey, "type"));
 		if (strcmp (actualType, type) != 0)
@@ -103,7 +103,7 @@ void elektraSetValue (Elektra * elektra, const char * name, const char * value, 
 
 #define ELEKTRA_GET_VALUE(KEY_TO_VALUE, KDB_TYPE, elektra, keyname, result)                                                                \
 	const Key * key = elektraFindKey (elektra, keyname, KDB_TYPE);                                                                     \
-	if (!KEY_TO_VALUE (key, &result))                                                                                                  \
+	if (key == NULL || !KEY_TO_VALUE (key, &result))                                                                                   \
 	{                                                                                                                                  \
 		elektraFatalError (elektra, elektraErrorConversionFromString (KDB_TYPE, keyString (key), NULL));                           \
 		result = 0;                                                                                                                \
