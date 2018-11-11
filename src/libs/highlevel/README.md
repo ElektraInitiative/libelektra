@@ -71,6 +71,9 @@ and therefore has no specified default value.
 The default callback simply logs the error with `ELEKTRA_LOG_DEBUG` and then calls `exit()` with the error code of the error. It is highly
 recommended you either use `atexit()` in you application or set a custom callback, to make sure you won't leak memory.
 
+The callback should interrupt the thread of execution in some way (e.g. by calling `exit()` or throwing an exception in C++). It should
+not return to the calling function. If it does, the behaviour is generally undefined, getter-functions will, however, most likely return 0,
+because that is the only option other than calling `exit()`, which is exactly what the callback should prevent.
 
 ### Struct `ElektraError`
 The library is designed to shield developers from the many errors one can encounter when using KDB directly. However it is not possible 

@@ -109,6 +109,10 @@ void elektraFatalError (Elektra * elektra, ElektraError * fatalError)
  * Errors occurring in a function, which does not take a pointer to ElektraError,
  * are always considered fatal.
  *
+ * If this function returns, i.e. it does not call exit() or interrupt the thread of
+ * execution in some other way, the behaviour of the function from which the error
+ * originated is generally undefined.
+ *
  * @param elektra           An Elektra instance.
  * @param fatalErrorHandler The error handler that will be used henceforth.
  */

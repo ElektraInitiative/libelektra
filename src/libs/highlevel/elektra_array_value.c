@@ -49,7 +49,7 @@ size_t elektraArraySize (Elektra * elektra, const char * name)
  * @param name    The relative name of the array.
  * @param index   The index of the array element.
  * @param type    The expected type metadata value.
- * @return the Key referenced by @p name
+ * @return the Key referenced by @p name or NULL, if a fatal error occurs and the fatal error handler returns to this function
  */
 Key * elektraFindArrayElementKey (Elektra * elektra, const char * name, size_t index, KDBType type)
 {
@@ -58,6 +58,7 @@ Key * elektraFindArrayElementKey (Elektra * elektra, const char * name, size_t i
 	if (resultKey == NULL)
 	{
 		elektraFatalError (elektra, elektraErrorKeyNotFound (keyName (elektra->lookupKey), NULL));
+		return NULL;
 	}
 
 	if (!elektra->enforceType && type != NULL)
@@ -66,6 +67,7 @@ Key * elektraFindArrayElementKey (Elektra * elektra, const char * name, size_t i
 		if (strcmp (actualType, type) != 0)
 		{
 			elektraFatalError (elektra, elektraErrorWrongType (keyName (elektra->lookupKey), actualType, type, NULL));
+			return NULL;
 		}
 	}
 
@@ -129,6 +131,7 @@ void elektraSetArrayElementValue (Elektra * elektra, const char * name, size_t i
 	if (!KEY_TO_VALUE (key, &result))                                                                                                  \
 	{                                                                                                                                  \
 		elektraFatalError (elektra, elektraErrorConversionFromString (KDB_TYPE, keyString (key), NULL));                           \
+		return 0;                                                                                                                  \
 	}
 
 /**

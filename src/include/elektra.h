@@ -122,6 +122,7 @@ typedef struct _Elektra Elektra;
 		if (!KEY_TO_VALUE (key, &result))                                                                                          \
 		{                                                                                                                          \
 			elektraFatalError (elektra, elektraErrorConversionFromString (KDB_TYPE, keyString (key), NULL));                   \
+			return (cType) 0;                                                                                                  \
 		}                                                                                                                          \
 		return result;                                                                                                             \
 	}                                                                                                                                  \
@@ -133,6 +134,7 @@ typedef struct _Elektra Elektra;
 		if (!KEY_TO_VALUE (key, &result))                                                                                          \
 		{                                                                                                                          \
 			elektraFatalError (elektra, elektraErrorConversionFromString (KDB_TYPE, keyString (key), NULL));                   \
+			return (cType) 0;                                                                                                  \
 		}                                                                                                                          \
 		return result;                                                                                                             \
 	}

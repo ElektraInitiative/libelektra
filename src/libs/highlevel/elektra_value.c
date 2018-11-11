@@ -29,7 +29,7 @@
  * @param elektra The Elektra instance to use.
  * @param name    The relative name of the key.
  * @param type    The expected type metadata value.
- * @return the Key referenced by @p name
+ * @return the Key referenced by @p name or NULL, if a fatal error occurs and the fatal error handler returns to this function
  */
 Key * elektraFindKey (Elektra * elektra, const char * name, KDBType type)
 {
@@ -38,6 +38,7 @@ Key * elektraFindKey (Elektra * elektra, const char * name, KDBType type)
 	if (resultKey == NULL)
 	{
 		elektraFatalError (elektra, elektraErrorKeyNotFound (keyName (elektra->lookupKey), NULL));
+		return NULL;
 	}
 
 	if (!elektra->enforceType && type != NULL)
@@ -46,6 +47,7 @@ Key * elektraFindKey (Elektra * elektra, const char * name, KDBType type)
 		if (strcmp (actualType, type) != 0)
 		{
 			elektraFatalError (elektra, elektraErrorWrongType (keyName (elektra->lookupKey), actualType, type, NULL));
+			return NULL;
 		}
 	}
 
@@ -104,6 +106,7 @@ void elektraSetValue (Elektra * elektra, const char * name, const char * value, 
 	if (!KEY_TO_VALUE (key, &result))                                                                                                  \
 	{                                                                                                                                  \
 		elektraFatalError (elektra, elektraErrorConversionFromString (KDB_TYPE, keyString (key), NULL));                           \
+		result = 0;                                                                                                                \
 	}
 
 /**
@@ -323,7 +326,7 @@ int elektraGetEnumInt (Elektra * elektra, char * keyname)
  */
 void elektraSetString (Elektra * elektra, const char * keyname, const char * value, ElektraError ** error)
 {
-	elektraSetValue (elektra, keyName, value, KDB_TYPE_STRING, error);
+	elektraSetValue (elektra, keyname, value, KDB_TYPE_STRING, error);
 }
 
 /**
