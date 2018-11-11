@@ -154,7 +154,7 @@ void addEmptyArrayElements (YAML::Node & sequence, unsigned long long const numb
 	ELEKTRA_LOG_DEBUG ("Add %lld empty array elements", numberOfElements);
 	for (auto missingFields = numberOfElements; missingFields > 0; missingFields--)
 	{
-		sequence.push_back (YAML::Node ());
+		sequence.push_back ({});
 	}
 }
 
