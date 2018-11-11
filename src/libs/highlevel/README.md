@@ -2,28 +2,34 @@
 
 ## Introduction
 
-The goal of the high-hevel API is to increase the usability of libelektra for developers who want to integrate Elektra into their applications. Projects usually do not want to use low-level APIs.
-`KDB` and `KeySet` are useful for plugins and to implement APIs but not to be directly used in applications. 
-The high-level API should be extremely easy to get started with and at the same time it should be hard to use it in a wrong way. 
-This tutorial gives an introduction for developers who want to elektrify their application using the high-level API.
+The goal of the high-hevel API is to increase the usability of libelektra for developers who want to integrate Elektra into their
+applications. Projects usually do not want to use low-level APIs. `KDB` and `KeySet` are useful for plugins and to implement APIs, but
+not to be directly used in applications. The high-level API should be extremely easy to get started with and at the same time it 
+should be hard to use it in a wrong way. This tutorial gives an introduction for developers who want to elektrify their application 
+using the high-level API.
 
 ## Setup
 
-First you have to add `elektra-highlevel` to the linked libraries of your application. NTo be able to use it in your source file, just include the main header with `#include <elektra.h>` at the top of your file.
+First you have to add `elektra-highlevel` to the linked libraries of your application. To be able to use it in your source file,
+just include the main header with `#include <elektra.h>` at the top of your file.
 
 ## Core Concepts
 
 ### Struct `Elektra`
-`Elektra` is the handle you use to access the underlying KDB (hierchical key database) that stores the configuration key-value pairs. All key-value read and write operations expect this handle to be passed as in as a parameter. To create the handle, you simply write:
+`Elektra` is the handle you use to access the underlying KDB (hierchical key database) that stores the configuration key-value pairs.
+All key-value read and write operations expect this handle to be passed as in as a parameter. To create the handle, you simply write:
 
 ```c
 ElektraError * error = NULL;
 Elektra * elektra = elektraOpen ("/sw/org/myapp/#0/current", NULL, &error);
 ```
 
-Please replace `"/sw/org/myapp/#0/current"` with an appropriate value for your application (see [Namespaces](/doc/tutorials/namespaces.md) for more information).
+Please replace `"/sw/org/myapp/#0/current"` with an appropriate value for your application (see [Namespaces](/doc/tutorials/namespaces.md)
+for more information). You can use the parameter `defaults` to pass a KDB `KeySet` containing `Key`s with default values to the `Elektra`
+instance. 
 
-The passed in `ElektraError` can be used to check for initialization errors. You can detect initialization errors by comparing it to NULL after calling `elektraOpen`:
+The passed in `ElektraError` can be used to check for initialization errors. You can detect initialization errors by comparing it to NULL
+after calling `elektraOpen`:
 
 ```c
 if (error != NULL) 
@@ -32,32 +38,63 @@ if (error != NULL)
 }
 ```
 
-In order to give Elektra the chance to clean up its all allocated ressources, you have to close your instance, when you are done using it, by calling:
+In order to give Elektra the chance to clean up all its allocated resources, you have to close your instance, when you are done using it,
+by calling:
 
 ```c
 elektraClose (elektra);
 ```
 
-Notice that Elektra is is only thread-safe when you use a handle per thread or protect your handle. If you have mutliple threads accessing key-values, create a separate handle for each thread to avoid concurrency issues.
+*NOTE:* Elektra is only thread-safe when you use one handle per thread or protect your handle. If you have multiple threads accessing
+key-values, create a separate handle for each thread to avoid concurrency issues.
+
+#### Configuration
+Currently there are two ways to configure an `Elektra` instance:
+
+```c
+void elektraEnforceTypeMetadata (Elektra * elektra, bool enforceTypeMetadata)
+```
+With this function you can set whether the value of the `type` metadata will be checked inside the getter-functions. Per default this 
+check is activated and it is generally recommended to leave it that way. Before you disable the type-check consider using 
+`elektraGetValue()` (see [below](#raw-values)) and `elektraGetType()` (see [here](#type-information)). When the check is activated,
+and the key has the wrong type metadata, a fatal error will be raised and the fatal error handler will be called.
+
+
+```c
+void elektraFatalErrorHandler (Elektra * elektra, ElektraErrorHandler fatalErrorHandler)
+```
+This allows you to set the callback called by Elektra, when a fatal error occurs. Technically a fatal error could occur any time, but
+the most common use case for this callback is inside of functions that do not take a separate `ElektraError` argument. For example,
+this function will be called, when any of the getter-functions is called on a non-existent key which is not part of any specification,
+and therefore has no specified default value.
+
+The default callback simply logs the error with `ELEKTRA_LOG_DEBUG` and then calls `exit()` with the error code of the error. It is highly
+recommended you either use `atexit()` in you application or set a custom callback, to make sure you won't leak memory.
+
 
 ### Struct `ElektraError`
-The library is designed to hide as many problems a developer can encounter when usign KDB directly. However it is not possible to hide all those issues. As with every library, things can go wrong and there needs to be a way react to errors once they have occurred at runtime. Therefore the high-level API introduces a simplified struct called `ElektraError`, which encapsulates all information neccessary for the developer to handle runtime-errors appropriately in the application.
+The library is designed to shield developers from the many errors one can encounter when using KDB directly. However it is not possible 
+to hide all those issues. As with every library, things can go wrong and there needs to be a way react to errors once they have occurred
+at runtime. Therefore the high-level API introduces a struct called `ElektraError`, which encapsulates all information necessary for the
+developer to handle runtime-errors appropriately in the application.
 
-Functions that can produce errors accept an ElektraError pointer as parameter, for example:
+Functions that can produce errors, during correct use of the API, accept an `ElektraError` pointer as parameter, for example:
 
 ```c
 Elektra * elektraOpen (const char * application, KeySet * defaults, ElektraError ** error);
 ```
 
-You can use the parameter `defaults` to pass a KDB `KeySet` containing `Key`s with default values to the elektra instance.
+In most cases you'll want to set the error variable to `NULL` before passing it to the function. You can do this either by declaring and
+initializing a new variable with `ElektraError * error = NULL` or by reusing an already existing error variable by resetting it with
+`elektraErrorReset (&error)`.
 
-In most cases you'll want to set the error variable to NULL before passing it to the function. You can do this either by declaring and initializing a new variable with `ElektraError * error = NULL` or by reusing an already existing error variable by resetting it with `elektraErrorReset (&error)`. 
+Notice, that you should always check if an error occurred by comparing it to `NULL` after the function call.
 
-Notice, that you should always check if an error occurred by comparing it to NULL after the function call. 
+If an error happened, it is often useful to show an error message to the user. A description of what went wrong is provided in the 
+`ElektraError` struct and can be accessed using `elektraErrorDescription (error)`. A complete list of the provided accessors for 
+error-details can be found in [elektra_error.h](/src/include/elektra_error.h).
 
-If an error happened, it is often useful to show an error message to the user. A description what went wrong is provided in the ElektraError struct and can be accessed by `elektraErrorDescription (error)`. A complete list of the provided accessors for error-details can be found in [elektra_error.h](/src/include/elektra_error.h).
-
-To avoid leakage of memory, you have to call `elektraErrorReset (&error)` a soon as you are finished resolving the error:
+To avoid leakage of memory, you have to call `elektraErrorReset (&error)` (ideally as soon as you are finished resolving the error):
 
 ```c
 ElektraError * error = NULL;
@@ -78,14 +115,22 @@ if (error != NULL)
 ## Reading and writing values
 
 ### Key names
-When using `KDB` and `KeySet` directly you would have to specify the whole key name to access a value. In the high-level API you do not have to do this everytime you access a value. Instead, you pass a parent key to `elektraOpen` and use getters and setters which get passed in only the part below that key in the KDB. For example, if you call `elektraOpen` with `"/sw/org/myapp/#0/current"`, you can access your applications configuration value for the key `"/sw/org/myapp/#0/current/message"` with the provided getters and setters by passing them only `"message"` as the name for the configuration value.
+When using `KDB` and `KeySet` directly you would have to specify the whole key name to access a value. In the high-level API you do not
+have to do this every time you access a value. Instead, you pass a parent key to `elektraOpen` and use getters and setters which get
+passed in only the part below that key in the KDB. For example, if you call `elektraOpen` with `"/sw/org/myapp/#0/current"`, you can
+access your applications configuration value for the key `"/sw/org/myapp/#0/current/message"` with the provided getters and setters by
+passing them only `"message"` as the name for the configuration value.
 
 ### Read values from the KDB
-A typical application will want to read some configuration values at start. This should be made as easy as possibible for the developer. Reading configuration data in most cases is not part of the business logic of the application and therefore should not "pollute" the applications source code with cumbersome setup and file-parsing code. This is exactly where Elektra comes in handy, because you can leave all the configuration file handling and parsing to the underlying layers of Elektra and just use the high-level API to access the desired data. Reading values from KDB can be done with elektra-getter functions that follow a simple naming scheme: 
+A typical application will want to read some configuration values at start. This should be made as easy as possible for the developer.
+Reading configuration data in most cases is not part of the business logic of the application and therefore should not "pollute" the
+applications source code with cumbersome setup and file-parsing code. This is exactly where Elektra comes in handy, because you can leave
+all the configuration file handling and parsing to the underlying layers of Elektra and just use the high-level API to access the desired
+data. Reading values from KDB can be done with elektra-getter functions that follow a simple naming scheme: 
 
 `elektraGet` + the type of the value you want to read.
 
-For example, you can get the value for the keyname "message" like this:
+For example, you can get the value for the key named "message" like this:
 
 ```c
 Elektra * elektra = elektraOpen ("/sw/org/myapp/#0/current", NULL, NULL);
@@ -93,7 +138,8 @@ const char * message = elektraGetString (elektra, "message");
 elektraClose (elektra);
 ```
 
-Sometimes you'll want to access arrays as well. You can access single elements of an array using the provided array-getters following again a simple naming scheme: 
+Sometimes you'll want to access arrays as well. You can access single elements of an array using the provided array-getters following
+again a simple naming scheme: 
 
 `elektraGet` + the type of the value you want to read + `ArrayElement`.
 
@@ -114,14 +160,19 @@ elektraClose (elektra);
 ```
 
 For some background information on arrays in Elektra see the [Application Integration](/doc/tutorials/application-integration.md) document.
-
-Notice that both the getters for primitive types and the getters for array types do not accept error parameters. The library relies on that you are running a correct Elektra setup. If the configuration is well specified, no runtime errors can occur when reading a value. Therefore the getters do not accept an error variable as argument. If there is however a severe internal error, or you try to access a key which you have not specified correctly, then the library will call `exit(EXIT_FAILURE)` to prevent data inconsistencies or exceptions further down in your application.
+Notice that both the getters for primitive types and the getters for array types do not accept error parameters. The library expects you to
+run a correct Elektra setup. If the configuration is well specified, no runtime errors can occur when reading a value. Therefore the
+getters do not accept an error variable as argument. If there is however a severe internal error, or you try to access a key which you have
+not specified correctly, then the library will call the error callback set with `elektraFatalErrorHandler` to prevent data inconsistencies
+or exceptions further down in your application.
 
 You can find the complete list of the available functions for all supported value types in [elektra.h](/src/include/elektra.h)
 
 ### Writing values to the KDB
 
-Sometimes, after having read a value from the KDB, you will want to write back a modified value. As descibed in [Read values from the KDB](#read-values-from-the-kdb) we follow a naming scheme for getters. The high-level API provides setters folling an analogous naming scheme as well. For example, to write back a modified "message", you can call `elektraSetString`:
+Sometimes, after having read a value from the KDB, you will want to write back a modified value. As described in
+[Read values from the KDB](#read-values-from-the-kdb) we follow a naming scheme for getters. The high-level API provides setters follow
+an analogous naming scheme as well. For example, to write back a modified "message", you can call `elektraSetString`:
 
 ```c
 Elektra * elektra = elektraOpen ("/sw/org/myapp/#0/current", NULL, NULL);
@@ -129,7 +180,7 @@ elektraSetString (elektra, "message", "This is the new message", NULL);
 elektraClose (elektra);
 ```
 
-The counterpart for array-gettes again follows the same naming scheme:
+The counterpart for array-getters again follows the same naming scheme:
 
 ```c
 Elektra * elektra = elektraOpen ("/sw/org/myapp/#0/current", NULL, NULL);
@@ -137,10 +188,16 @@ elektraSetStringArrayElement (elektra, "message", "This is the third new message
 elektraClose (elektra);
 ```
 
-Be sure not to access indexes outside of the arrays bounds. The same rules a described in [Read values from the KDB](#read-values-from-the-kdb) apply here, meaning, that you are responsible for providing a complete and correct specification (see [Application Integration](/doc/tutorials/application-integration.md)). If you try to access a key that you have not specified, the library will call `exit(EXIT_FAILURE)`.
+Because even the best specification and perfect usage as intended can not fully prevent an error from occurring, when saving the
+configuration, all setter-functions take an additional `ElektraError` argument, which will be set if an error occurs. Currently setters
+should not call the fatal error handler, however, there are no guarantees that this will remain as such. For example a valid reason for
+a setter to call the fatal error handler instead of returning an error, would be problems with memory allocation (from which an application
+is unlikely to recover).
 
-### Reading Enum Values
-Read enum values is a special case, because the compiler is not able to infer the enum type from the key alone. Therefore you can either use the function `int elektraGetEnumInt (Elektra * elektra, char * keyName)`, and deal with the raw integer yourself, or use the convenience macro `elektraGetEnum(elektra, keyname, enumType)`, which calls `elektraGetEnumInt` and then casts to `enumType`.
+### Enum Values
+Reading enum values is a special case, because the compiler is not able to infer the enum type from the key alone. Therefore you can
+either use the function `int elektraGetEnumInt (Elektra * elektra, char * keyName)`, and deal with the raw integer yourself, or use the 
+convenience macro `elektraGetEnum(elektra, keyname, enumType)`, which calls `elektraGetEnumInt` and then casts to `enumType`.
 
 ```c
 typedef enum { A, B, C } MyEnum;
@@ -155,6 +212,44 @@ MyEnum enumValue = elektraGetEnum(elektra, "message", MyEnum);
 
 elektraClose (elektra);
 ```
+
+To write an enum value use `void elektraSetEnumInt (Elektra * elektra, char * name, int value, ElektraError ** error)`. A convenience
+macro is not provided, because you can simply pass the enum value as an `int` argument.
+
+Similar functions and macros are provided for array elements:
+
+```c
+int elektraGetEnumIntArrayElement (Elektra * elektra, char * keyName, size_t index)
+
+elektraGetEnumArrayElement(elektra, keyname, index, enumType)
+
+void elektraSetEnumIntArrayElement (Elektra * elektra, char * name, size_t index, int value, ElektraError ** error)
+```
+
+### Raw Values
+You can use `const char * elektraGetValue (Elektra * elektra, const char * name)` to read the raw (string) value of a key. No type checking
+or type conversion will be attempted. Additionally this function is guaranteed to not call the fatal error handler. It will simply return
+`NULL`, if the key was not found.
+
+If you want to set a raw value (e.g. if you want to extend the API with your own custom types), use 
+`void elektraSetValue (Elektra * elektra, const char * name, const char * value, KDBType type, ElektraError ** error)`. Obviously you have
+to provide a type for the value you set, so that the API can perform type checking, when reading the value next time.
+
+Similar functions are provided for array elements:
+
+```c
+const char * elektraGetArrayElementValue (Elektra * elektra, const char * name, size_t index)
+
+void elektraSetArrayElementValue (Elektra * elektra, const char * name, size_t index, const char * value, KDBType type, ElektraError ** error)
+```
+
+#### Type Information
+The type information is stored in the `"type"` meta-key. `KDBType elektraGetType (Elektra * elektra, const char * keyname)` (or
+`KDBType elektraGetArrayElementType (Elektra * elektra, const char * name, size_t index)` for array elements) lets you access this
+information. A setter is not provided, because changing the type of a key without changing its value rarely, if ever, makes sense.
+
+### Binary Values
+The high-level API does not support binary key values at this time.
 
 ## Example
 
