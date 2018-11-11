@@ -39,7 +39,14 @@ ELEKTRA_TAG_DEFINITIONS (kdb_unsigned_long_long_t, UnsignedLongLong, KDB_TYPE_UN
 			 elektraKeyToUnsignedLongLong)
 ELEKTRA_TAG_DEFINITIONS (kdb_float_t, Float, KDB_TYPE_FLOAT, elektraFloatToString, elektraKeyToFloat)
 ELEKTRA_TAG_DEFINITIONS (kdb_double_t, Double, KDB_TYPE_DOUBLE, elektraDoubleToString, elektraKeyToDouble)
+
+#if defined(HAVE_SIZEOF_LONG_DOUBLE) && (SIZEOF_LONG_DOUBLE == 16 || SIZEOF_LONG_DOUBLE == 12)
+
 ELEKTRA_TAG_DEFINITIONS (kdb_long_double_t, LongDouble, KDB_TYPE_LONG_DOUBLE, elektraLongDoubleToString, elektraKeyToLongDouble)
+
+#endif // HAVE_SIZEOF_LONG_DOUBLE
+
+ELEKTRA_TAG_DEFINITIONS (int, Enum, KDB_TYPE_ENUM, elektraLongToString, elektraKeyToLong)
 
 /**
  * Initializes a new Elektra instance.

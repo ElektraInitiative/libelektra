@@ -51,6 +51,8 @@ int elektraKeyToString (const Key * key ELEKTRA_UNUSED, const char ** variable E
 /**
  * Converts a Key to boolean.
  *
+ * The value "1" is regarded as true, anything is as false.
+ *
  * The variable pointed to by @p variable is unchanged,
  * if an error occurs.
  *
@@ -402,7 +404,7 @@ int elektraKeyToDouble (const Key * key ELEKTRA_UNUSED, kdb_double_t * variable 
 }
 
 
-#ifdef HAVE_SIZEOF_LONG_DOUBLE
+#if defined(HAVE_SIZEOF_LONG_DOUBLE) && (SIZEOF_LONG_DOUBLE == 16 || SIZEOF_LONG_DOUBLE == 12)
 
 /**
  * Converts a Key to long_double.
@@ -589,7 +591,7 @@ char * elektraDoubleToString (kdb_double_t value)
 	return elektraFormat ("%f", value);
 }
 
-#ifdef HAVE_SIZEOF_LONG_DOUBLE
+#if defined(HAVE_SIZEOF_LONG_DOUBLE) && (SIZEOF_LONG_DOUBLE == 16 || SIZEOF_LONG_DOUBLE == 12)
 
 /**
  * Converts a long double to string
@@ -604,6 +606,8 @@ char * elektraLongDoubleToString (kdb_long_double_t value)
 {
 	return elektraFormat ("%Lf", value);
 }
+
+#endif // HAVE_SIZEOF_LONG_DOUBLE
 
 /**
  * Creates a newly allocated (free with elektraFree()) ElektraError,
@@ -652,6 +656,3 @@ ElektraError * elektraErrorConversionFromString (KDBType targetType, const char 
 	elektraFree (errorString);
 	return error;
 }
-
-
-#endif // HAVE_SIZEOF_LONG_DOUBLE

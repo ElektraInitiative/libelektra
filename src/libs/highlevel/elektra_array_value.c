@@ -314,6 +314,8 @@ kdb_double_t elektraGetDoubleArrayElement (Elektra * elektra, const char * keyna
 	return result;
 }
 
+#if defined(HAVE_SIZEOF_LONG_DOUBLE) && (SIZEOF_LONG_DOUBLE == 16 || SIZEOF_LONG_DOUBLE == 12)
+
 /**
  * Gets a long double value array element.
  *
@@ -328,6 +330,8 @@ kdb_long_double_t elektraGetLongDoubleArrayElement (Elektra * elektra, const cha
 	ELEKTRA_GET_ARRAY_ELEMENT_VALUE (elektraKeyToLongDouble, KDB_TYPE_LONG_DOUBLE, elektra, keyname, index, result);
 	return result;
 }
+
+#endif // HAVE_SIZEOF_LONG_DOUBLE
 
 /**
  * Gets the int value of a stored enum array element.
@@ -538,6 +542,8 @@ void elektraSetDoubleArrayElement (Elektra * elektra, const char * keyname, size
 	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (elektraDoubleToString, KDB_TYPE_DOUBLE, elektra, keyname, index, value, error);
 }
 
+#if defined(HAVE_SIZEOF_LONG_DOUBLE) && (SIZEOF_LONG_DOUBLE == 16 || SIZEOF_LONG_DOUBLE == 12)
+
 /**
  * Sets a long double value array element.
  *
@@ -553,6 +559,8 @@ void elektraSetLongDoubleArrayElement (Elektra * elektra, const char * keyname, 
 {
 	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (elektraLongDoubleToString, KDB_TYPE_LONG_DOUBLE, elektra, keyname, index, value, error);
 }
+
+#endif // HAVE_SIZEOF_LONG_DOUBLE
 
 /**
  * Sets an enum value array element. The corresponding int value will be

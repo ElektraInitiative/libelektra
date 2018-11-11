@@ -277,6 +277,8 @@ kdb_double_t elektraGetDouble (Elektra * elektra, const char * keyname)
 	return result;
 }
 
+#if defined(HAVE_SIZEOF_LONG_DOUBLE) && (SIZEOF_LONG_DOUBLE == 16 || SIZEOF_LONG_DOUBLE == 12)
+
 /**
  * Gets a long double value.
  *
@@ -290,6 +292,8 @@ kdb_long_double_t elektraGetLongDouble (Elektra * elektra, const char * keyname)
 	ELEKTRA_GET_VALUE (elektraKeyToLongDouble, KDB_TYPE_LONG_DOUBLE, elektra, keyname, result);
 	return result;
 }
+
+#endif // HAVE_SIZEOF_LONG_DOUBLE
 
 /**
  * Gets the int value of a stored enum value.
@@ -483,6 +487,8 @@ void elektraSetDouble (Elektra * elektra, const char * keyname, kdb_double_t val
 	ELEKTRA_SET_VALUE (elektraDoubleToString, KDB_TYPE_DOUBLE, elektra, keyname, value, error);
 }
 
+#if defined(HAVE_SIZEOF_LONG_DOUBLE) && (SIZEOF_LONG_DOUBLE == 16 || SIZEOF_LONG_DOUBLE == 12)
+
 /**
  * Sets a long double value.
  *
@@ -496,6 +502,8 @@ void elektraSetLongDouble (Elektra * elektra, const char * keyname, kdb_long_dou
 {
 	ELEKTRA_SET_VALUE (elektraLongDoubleToString, KDB_TYPE_LONG_DOUBLE, elektra, keyname, value, error);
 }
+
+#endif // HAVE_SIZEOF_LONG_DOUBLE
 
 /**
  * Sets an enum value. The corresponding int value will be

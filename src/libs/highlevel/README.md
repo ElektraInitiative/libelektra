@@ -8,6 +8,20 @@ not to be directly used in applications. The high-level API should be extremely 
 should be hard to use it in a wrong way. This tutorial gives an introduction for developers who want to elektrify their application 
 using the high-level API.
 
+The API supports the following types:
+
+* **String**: a string of characters, represented by `KDB_TYPE_STRING` in metadata
+* **Boolean**: a boolean value `true` or `false`, represented by `KDB_TYPE_BOOLEAN` in metadata, in the KDB the raw value `"1"` is 
+               regarded, as true, any other value is considered false
+* **Char**: a single character, represented by `KDB_TYPE_CHAR` in metadata
+* **Octet**: a single byte, represented by `KDB_TYPE_OCTET` in metadata
+* **(Unsigned) Short**: a 16-bit (unsigned) integer, represented by `KDB_TYPE_SHORT` (`KDB_TYPE_UNSIGNED_SHORT`) in metadata
+* **(Unsigned) Long**: a 32-bit (unsigned) integer, represented by `KDB_TYPE_LONG` (`KDB_TYPE_UNSIGNED_LONG`) in metadata
+* **(Unsigned) Long Long**: a 64-bit (unsigned) integer, represented by `KDB_TYPE_LONG_LONG` (`KDB_TYPE_UNSIGNED_LONG_LONG`) in metadata
+* **Float**: whatever your compiler treats as `float`, probably IEEE-754 single-precision, represented by `KDB_TYPE_FLOAT` in metadata
+* **Double**: whatever your compiler treats as `double`, probably IEEE-754 double-precision, represented by `KDB_TYPE_DOUBLE` in metadata
+* **Long Double**: whatever your compiler treats as `long double`, not always available, represented by `KDB_TYPE_LONG_DOUBLE` in metadata
+
 ## Setup
 
 First you have to add `elektra-highlevel` to the linked libraries of your application. To be able to use it in your source file,
