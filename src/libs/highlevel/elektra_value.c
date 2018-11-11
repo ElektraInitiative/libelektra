@@ -22,10 +22,10 @@
 
 /**
  * Helper function for code generation.
- * 
+ *
  * Finds a Key from its relative name. Also checks type metadata,
  * if type metadata is enforces for the given Elektra instance.
- * 
+ *
  * @param elektra The Elektra instance to use.
  * @param name    The relative name of the key.
  * @param type    The expected type metadata value.
@@ -53,20 +53,37 @@ Key * elektraFindKey (Elektra * elektra, const char * name, KDBType type)
 }
 
 /**
+ * Reads the type metadata of a given key.
+ *
+ * @param elektra An Elektra instance.
+ * @param keyname The name of the key whose type information shall be read.
+ * @return the KDBType of the key
+ */
+KDBType elektraGetType (Elektra * elektra, const char * keyname)
+{
+	elektraSetLookupKey (elektra, keyname);
+	const Key * key = elektraFindKey (elektra, keyname, NULL);
+	const Key * metaKey = keyGetMeta (key, "type");
+	return metaKey == NULL ? NULL : keyString (metaKey);
+}
+
+/**
  * Get the raw value of a key.
- * 
+ *
  * @param elektra The Elektra instance to use.
  * @param name    The (relative) name of the key.
- * @return the raw value of the specified key
+ * @return the raw value of the specified key or NULL, if the key was not found
  */
 const char * elektraGetValue (Elektra * elektra, const char * name)
 {
-	return keyString (elektraFindKey (elektra, name, NULL));
+	elektraSetLookupKey (elektra, name);
+	Key * const resultKey = ksLookup (elektra->config, elektra->lookupKey, 0);
+	return resultKey == NULL ? NULL : keyString (resultKey);
 }
 
 /**
  * Set the raw value of a key.
- * 
+ *
  * @param elektra The Elektra instance to use.
  * @param name    The (relative) name of the key.
  * @param value   The raw value to set.
@@ -91,7 +108,7 @@ void elektraSetValue (Elektra * elektra, const char * name, const char * value, 
 
 /**
  * Gets a string value.
- * 
+ *
  * @param elektra The elektra instance to use.
  * @param keyname The (relative) name of the key to look up.
  * @return the string stored at the given key
@@ -105,7 +122,7 @@ const char * elektraGetString (Elektra * elektra, const char * keyname)
 
 /**
  * Gets a boolean value.
- * 
+ *
  * @param elektra The elektra instance to use.
  * @param keyname The (relative) name of the key to look up.
  * @return the boolean stored at the given key
@@ -119,7 +136,7 @@ kdb_boolean_t elektraGetBoolean (Elektra * elektra, const char * keyname)
 
 /**
  * Gets a char value.
- * 
+ *
  * @param elektra The elektra instance to use.
  * @param keyname The (relative) name of the key to look up.
  * @return the char stored at the given key
@@ -133,7 +150,7 @@ kdb_char_t elektraGetChar (Elektra * elektra, const char * keyname)
 
 /**
  * Gets a octet value.
- * 
+ *
  * @param elektra The elektra instance to use.
  * @param keyname The (relative) name of the key to look up.
  * @return the octet stored at the given key
@@ -147,7 +164,7 @@ kdb_octet_t elektraGetOctet (Elektra * elektra, const char * keyname)
 
 /**
  * Gets a short value.
- * 
+ *
  * @param elektra The elektra instance to use.
  * @param keyname The (relative) name of the key to look up.
  * @return the short stored at the given key
@@ -161,7 +178,7 @@ kdb_short_t elektraGetShort (Elektra * elektra, const char * keyname)
 
 /**
  * Gets a unsigned short value.
- * 
+ *
  * @param elektra The elektra instance to use.
  * @param keyname The (relative) name of the key to look up.
  * @return the unsigned short stored at the given key
@@ -175,7 +192,7 @@ kdb_unsigned_short_t elektraGetUnsignedShort (Elektra * elektra, const char * ke
 
 /**
  * Gets a long value.
- * 
+ *
  * @param elektra The elektra instance to use.
  * @param keyname The (relative) name of the key to look up.
  * @return the long stored at the given key
@@ -189,7 +206,7 @@ kdb_long_t elektraGetLong (Elektra * elektra, const char * keyname)
 
 /**
  * Gets a unsigned long value.
- * 
+ *
  * @param elektra The elektra instance to use.
  * @param keyname The (relative) name of the key to look up.
  * @return the unsigned long stored at the given key
@@ -203,7 +220,7 @@ kdb_unsigned_long_t elektraGetUnsignedLong (Elektra * elektra, const char * keyn
 
 /**
  * Gets a long long value.
- * 
+ *
  * @param elektra The elektra instance to use.
  * @param keyname The (relative) name of the key to look up.
  * @return the long long stored at the given key
@@ -217,7 +234,7 @@ kdb_long_long_t elektraGetLongLong (Elektra * elektra, const char * keyname)
 
 /**
  * Gets a long long value.
- * 
+ *
  * @param elektra The elektra instance to use.
  * @param keyname The (relative) name of the key to look up.
  * @return the unsigned long long stored at the given key
@@ -231,7 +248,7 @@ kdb_unsigned_long_long_t elektraGetUnsignedLongLong (Elektra * elektra, const ch
 
 /**
  * Gets a float value.
- * 
+ *
  * @param elektra The elektra instance to use.
  * @param keyname The (relative) name of the key to look up.
  * @return the float stored at the given key
@@ -245,7 +262,7 @@ kdb_float_t elektraGetFloat (Elektra * elektra, const char * keyname)
 
 /**
  * Gets a double value.
- * 
+ *
  * @param elektra The elektra instance to use.
  * @param keyname The (relative) name of the key to look up.
  * @return the double stored at the given key
@@ -259,7 +276,7 @@ kdb_double_t elektraGetDouble (Elektra * elektra, const char * keyname)
 
 /**
  * Gets a long double value.
- * 
+ *
  * @param elektra The elektra instance to use.
  * @param keyname The (relative) name of the key to look up.
  * @return the long double stored at the given key
@@ -273,7 +290,7 @@ kdb_long_double_t elektraGetLongDouble (Elektra * elektra, const char * keyname)
 
 /**
  * Gets the int value of a stored enum value.
- * 
+ *
  * @param elektra The elektra instance to use.
  * @param keyname The (relative) name of the key to look up.
  * @return the int value of the enum stored at the given key
@@ -297,7 +314,7 @@ int elektraGetEnumInt (Elektra * elektra, char * keyname)
 
 /**
  * Sets a string value.
- * 
+ *
  * @param elektra The elektra instance to use.
  * @param keyname The (relative) name to write to.
  * @param value   The new string value.
@@ -311,7 +328,7 @@ void elektraSetString (Elektra * elektra, const char * keyname, const char * val
 
 /**
  * Sets a boolean value.
- * 
+ *
  * @param elektra The elektra instance to use.
  * @param keyname The (relative) name to write to.
  * @param value   The new boolean value.
@@ -325,7 +342,7 @@ void elektraSetBoolean (Elektra * elektra, const char * keyname, kdb_boolean_t v
 
 /**
  * Sets a char value.
- * 
+ *
  * @param elektra The elektra instance to use.
  * @param keyname The (relative) name to write to.
  * @param value   The new char value.
@@ -339,7 +356,7 @@ void elektraSetChar (Elektra * elektra, const char * keyname, kdb_char_t value, 
 
 /**
  * Sets a octet value.
- * 
+ *
  * @param elektra The elektra instance to use.
  * @param keyname The (relative) name to write to.
  * @param value   The new octet value.
@@ -353,7 +370,7 @@ void elektraSetOctet (Elektra * elektra, const char * keyname, kdb_octet_t value
 
 /**
  * Sets a short value.
- * 
+ *
  * @param elektra The elektra instance to use.
  * @param keyname The (relative) name to write to.
  * @param value   The new short value.
@@ -367,7 +384,7 @@ void elektraSetShort (Elektra * elektra, const char * keyname, kdb_short_t value
 
 /**
  * Sets a unsigned short value.
- * 
+ *
  * @param elektra The elektra instance to use.
  * @param keyname The (relative) name to write to.
  * @param value   The new unsigned short value.
@@ -381,7 +398,7 @@ void elektraSetUnsignedShort (Elektra * elektra, const char * keyname, kdb_unsig
 
 /**
  * Sets a long value.
- * 
+ *
  * @param elektra The elektra instance to use.
  * @param keyname The (relative) name to write to.
  * @param value   The new long value.
@@ -395,7 +412,7 @@ void elektraSetLong (Elektra * elektra, const char * keyname, kdb_long_t value, 
 
 /**
  * Sets a unsigned long value.
- * 
+ *
  * @param elektra The elektra instance to use.
  * @param keyname The (relative) name to write to.
  * @param value   The new unsigned long value.
@@ -409,7 +426,7 @@ void elektraSetUnsignedLong (Elektra * elektra, const char * keyname, kdb_unsign
 
 /**
  * Sets a long long value.
- * 
+ *
  * @param elektra The elektra instance to use.
  * @param keyname The (relative) name to write to.
  * @param value   The new long long value.
@@ -423,7 +440,7 @@ void elektraSetLongLong (Elektra * elektra, const char * keyname, kdb_long_long_
 
 /**
  * Sets a unsigned long long value.
- * 
+ *
  * @param elektra The elektra instance to use.
  * @param keyname The (relative) name to write to.
  * @param value   The new unsigned long long value.
@@ -437,7 +454,7 @@ void elektraSetUnsignedLongLong (Elektra * elektra, const char * keyname, kdb_un
 
 /**
  * Sets a float value.
- * 
+ *
  * @param elektra The elektra instance to use.
  * @param keyname The (relative) name to write to.
  * @param value   The new float value.
@@ -451,7 +468,7 @@ void elektraSetFloat (Elektra * elektra, const char * keyname, kdb_float_t value
 
 /**
  * Sets a double value.
- * 
+ *
  * @param elektra The elektra instance to use.
  * @param keyname The (relative) name to write to.
  * @param value   The new double value.
@@ -465,7 +482,7 @@ void elektraSetDouble (Elektra * elektra, const char * keyname, kdb_double_t val
 
 /**
  * Sets a long double value.
- * 
+ *
  * @param elektra The elektra instance to use.
  * @param keyname The (relative) name to write to.
  * @param value   The new long double value.
@@ -480,7 +497,7 @@ void elektraSetLongDouble (Elektra * elektra, const char * keyname, kdb_long_dou
 /**
  * Sets an enum value. The corresponding int value will be
  * stored with the type metadata set to "enum".
- * 
+ *
  * @param elektra The elektra instance to use.
  * @param keyname The (relative) name to write to.
  * @param value   The new value.

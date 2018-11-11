@@ -284,6 +284,13 @@ void elektraSetEnumIntArrayElement (Elektra * elektra, char * name, size_t index
 
 // endregion Array-Setters
 
+// region Type information
+
+KDBType elektraGetType (Elektra * elektra, const char * keyname);
+KDBType elektraGetArrayElementType (Elektra * elektra, const char * name, size_t index);
+
+// endregion
+
 // region Generic Getters and Setters
 
 /**

@@ -15,6 +15,9 @@ typedef struct _ElektraError ElektraError;
 
 typedef enum
 {
+	/**
+	 * Use only, if the error will be raised with elektraFatalError().
+	 */
 	ELEKTRA_ERROR_SEVERITY_FATAL = 0,
 	ELEKTRA_ERROR_SEVERITY_ERROR,
 	ELEKTRA_ERROR_SEVERITY_WARNING
