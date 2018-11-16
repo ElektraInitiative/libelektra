@@ -277,6 +277,7 @@ you up to date with the multi-language support provided by Elektra.
 - The command [`kdb run_all`](https://master.libelektra.org/tests/README.md) now only prints the output of tests that failed. To print the
   full output of all test, please use the option `-v`. *(René Schwaiger)*
 - The [Shell Recorder][] does not use the non-POSIX grep option `--text` any more. *(René Schwaiger)*
+- The test suite now uses [Google Test](https://github.com/google/googletest) `1.8.1`. *(René Schwaiger)*
 
 [Markdown Shell Recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
 [Shell Recorder]: https://master.libelektra.org/tests/shell/shell_recorder
