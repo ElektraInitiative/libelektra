@@ -157,6 +157,10 @@ We updated the behavior, since otherwise the plugin will report memory leaks at 
 
 - This new plugin parses a subset of YAML using the Earley Parser library [YAEP](https://github.com/vnmakarov/yaep). *(René Schwaiger)*
 
+### Reference
+
+This new plugin can be used to validate that the value of a key is a reference to another key. *(Klemens Böswirth)*
+
 ### <<Plugin3>>
 
 - <<TODO>>
@@ -197,11 +201,14 @@ compiled against an older 0.8 version of Elektra will continue to work
     This resolves a problem with undefined functions when building with musl.
     *(Lukas Winkler)*
 
-### <<Library3>>
+### Globbing
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- A new library which can be used to match keys against globbing patterns was introduced.  *(Klemens Böswirth)*
+
+### Ease
+
+- `libease` now provides the function `elektraArrayValidateBaseNameString`, which can be used to validate that a
+    given string is an elektra array name. *(Klemens Böswirth)*
 
 
 ## Bindings

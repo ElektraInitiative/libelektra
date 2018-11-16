@@ -15,6 +15,7 @@ int elektraArrayIncName (Key * key);
 int elektraArrayDecName (Key * key);
 
 int elektraArrayValidateName (const Key * key);
+int elektraArrayValidateBaseNameString (const char * baseName);
 
 const char * elektraKeyGetRelativeName (Key const * cur, Key const * parentKey);
 

@@ -230,6 +230,7 @@ copied by the `spec` plugin just before):
 - [required](required/) rejects non-required keys
 - [date](date/) validates date and time data
 - [range](range/) checks if a value is within a given range
+- [reference](reference/) checks if a value is a valid reference to another key
 
 **Other Validation**
 
