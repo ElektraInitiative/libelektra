@@ -221,7 +221,9 @@ you up to date with the multi-language support provided by Elektra.
 - Do not use private Elektra headers for Ruby bindings as preparation for a Ruby `libelektra` gem. *(Bernhard Denner)*
 
 
-### <<Binding2>>
+### Glib/Gi
+
+- Fix CMake inclusion logic *(Markus Raab)*
 
 
 ### <<Binding3>>
