@@ -790,8 +790,13 @@ static void clearError (Key * key)
 	keySetMeta (key, "error/mountpoint", 0);
 }
 
-static void kdbStoreSplitState (KDB * handle, KeySet * global)
+static void kdbStoreSplitState (KDB * handle, KeySet * global, Key * parentKey)
 {
+	Key * lastParentName = keyNew ("/persistent/lastParentName", KEY_VALUE, keyName (parentKey), KEY_END);
+	Key * lastParentValue = keyNew ("/persistent/lastParentValue", KEY_VALUE, keyString (parentKey), KEY_END);
+	ksAppendKey (global, lastParentName);
+	ksAppendKey (global, lastParentValue);
+
 	ELEKTRA_LOG_WARNING ("SIZE STORAGE STORE STUFF");
 	for (size_t i = 0; i < handle->split->size; ++i)
 	{
@@ -854,9 +859,25 @@ static void kdbStoreSplitState (KDB * handle, KeySet * global)
 	}
 }
 
+static int kdbCacheCheckParent (KeySet * global, Key * parentKey)
+{
+	// first check if parentkey matches
+	Key * lastParentName = ksLookupByName (global, "/persistent/lastParentName", KDB_O_NONE);
+	ELEKTRA_LOG_DEBUG ("LAST PARENT name: %s", keyString (lastParentName));
+	ELEKTRA_LOG_DEBUG ("KDBG PARENT name: %s", keyName (parentKey));
+	if (!lastParentName || strcmp (keyString (lastParentName), keyName (parentKey))) return -1;
+	Key * lastParentValue = ksLookupByName (global, "/persistent/lastParentValue", KDB_O_NONE);
+	ELEKTRA_LOG_DEBUG ("LAST PARENT value: %s", keyString (lastParentValue));
+	ELEKTRA_LOG_DEBUG ("KDBG PARENT value: %s", keyString (parentKey));
+	// if (!lastParentValue || strcmp (keyString (lastParentValue), keyString (parentKey))) return -1;
+
+	return 0;
+}
+
 static void kdbLoadSplitState (KDB * handle, KeySet * global)
 {
 	ELEKTRA_LOG_WARNING ("SIZE STORAGE LOAD STUFF");
+
 	for (size_t i = 0; i < handle->split->size; ++i)
 	{
 		char * name = 0;
@@ -1049,6 +1070,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 
 	int errnosave = errno;
 	Key * initialParent = keyDup (parentKey);
+	Key * cachedParent = keyDup (parentKey);
 // 	keySetName(parentKey, "/");
 
 	ELEKTRA_LOG ("now in new kdbGet (%s)", keyName (parentKey));
@@ -1073,14 +1095,21 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		goto error;
 	}
 
-	Key * cacheParent = keyNew ("/tmp/elektracache.mmap", KEY_VALUE, "/tmp/elektracache.mmap", KEY_END);
+	Key * cacheFile = keyNew ("/tmp/elektracache.mmap", KEY_VALUE, "/tmp/elektracache.mmap", KEY_END);
 	KeySet * cache = ksNew (0, KS_END);
 	KeySet * global = ksNew (0, KS_END);
 	if (handle->globalPlugins[PREGETCACHE][MAXONCE])
 	{
 		handle->globalPlugins[PREGETCACHE][MAXONCE]->global = global;
-		elektraGlobalGet (handle, cache, cacheParent, PREGETCACHE, MAXONCE);
+		elektraGlobalGet (handle, cache, cacheFile, PREGETCACHE, MAXONCE);
 		handle->globalPlugins[PREGETCACHE][MAXONCE]->global = 0;
+
+		if (kdbCacheCheckParent (global, cachedParent) != 0)
+		{
+			// parentKey in cache does not match, needs rebuild
+			ELEKTRA_LOG_DEBUG ("CACHE WRONG PARENTKEY");
+			ksClear (global);
+		}
 	}
 
 
@@ -1109,14 +1138,9 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 			ELEKTRA_LOG_DEBUG ("appending cached keyset (ks was not empty)");
 			ksAppend (ks, cache);
 		}
-		
-		// clear syncbits & restore backend sizes
-// 		for (size_t i = 0; i < handle->split->size; ++i)
-// 		{
-// 			set_bit (handle->split->syncbits[i], SPLIT_FLAG_SYNC);
-// 		}
-// 		splitRestore (split, handle, ks);
+
 		kdbLoadSplitState (handle, global);
+
 
 		ELEKTRA_LOG_DEBUG (">>>>>>>>>>>>>> SPLIT LOAD CACHE");
 		keySetName (parentKey, keyName (initialParent));
@@ -1233,8 +1257,8 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	{
 		// TODO: do not store/cache user supplied keys (bypass)
 		handle->globalPlugins[POSTGETCACHE][MAXONCE]->global = global;
-		kdbStoreSplitState (handle, global);
-		elektraGlobalSet (handle, ks, cacheParent, POSTGETCACHE, MAXONCE);
+		kdbStoreSplitState (handle, global, cachedParent);
+		elektraGlobalSet (handle, ks, cacheFile, POSTGETCACHE, MAXONCE);
 		handle->globalPlugins[POSTGETCACHE][MAXONCE]->global = 0;
 		ELEKTRA_LOG_DEBUG (">>>>>>>>>>>>>> PRINT GLOBAL KEYSET");
 		output_keyset (global);
@@ -1653,8 +1677,8 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 	keyDel (initialParent);
 	splitDel (split);
 
-	Key * cacheParent = keyNew ("/tmp/elektracache.mmap", KEY_VALUE, "/tmp/elektracache.mmap", KEY_END);
-	unlink (keyName(cacheParent));
+	Key * cacheFile = keyNew ("/tmp/elektracache.mmap", KEY_VALUE, "/tmp/elektracache.mmap", KEY_END);
+	unlink (keyName(cacheFile));
 	keyDel (oldError);
 	errno = errnosave;
 	ELEKTRA_LOG ("before RETURN 1");
