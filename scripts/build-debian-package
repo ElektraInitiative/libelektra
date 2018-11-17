@@ -1,6 +1,7 @@
 #!/bin/sh
 #
 # @author: Sebastian Bachmann
+# @tags: build
 #
 
 set -e

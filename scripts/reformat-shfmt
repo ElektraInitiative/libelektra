@@ -2,7 +2,7 @@
 #
 # @author René Schwaiger <sanssecours@me.com>
 # @brief Reformats Shell source code
-# @date 7.09.2018
+# @date 07.09.2018
 # @tags reformat
 
 SCRIPTS_DIR=$(dirname "$0")

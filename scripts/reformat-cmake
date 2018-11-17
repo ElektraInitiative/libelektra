@@ -2,7 +2,7 @@
 #
 # @author René Schwaiger <sanssecours@me.com>
 # @brief Reformats CMake source code
-# @date 7.05.2018
+# @date 07.05.2018
 # @tags reformat
 
 SCRIPTS_DIR=$(dirname "$0")

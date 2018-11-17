@@ -1,4 +1,6 @@
 #!/bin/sh
+#
+# @tags release
 
 # This script generates the required fields for NEWS.md entries
 # and fill them with useful information

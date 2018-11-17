@@ -1,4 +1,6 @@
 #!/bin/sh
+#
+# @tags org
 
 EXEC_PATH=@CMAKE_INSTALL_PREFIX@/@TARGET_TOOL_EXEC_FOLDER@
 

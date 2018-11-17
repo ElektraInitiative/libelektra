@@ -1,4 +1,6 @@
 #!/bin/sh
+#
+# @tags release
 
 echo -n "Number commits: "
 git log $1..master | grep "^commit" | wc -l

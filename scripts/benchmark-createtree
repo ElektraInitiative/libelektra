@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 # bash required for platform independent time
+#
+# @tags benchmark
 
 # $Id$
 
