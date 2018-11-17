@@ -490,6 +490,7 @@ void splitUpdateFileName (Split * split, KDB * handle, Key * key);
 
 /* for kdbGet() algorithm */
 int splitAppoint (Split * split, KDB * handle, KeySet * ks);
+int splitRestore (Split * split, KDB * handle, KeySet * ks);
 int splitGet (Split * split, Key * warningKey, KDB * handle);
 int splitMerge (Split * split, KeySet * dest);
 

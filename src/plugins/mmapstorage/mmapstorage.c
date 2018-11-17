@@ -645,6 +645,11 @@ static void writeKeys (KeySet * keySet, MmapAddr * mmapAddr, DynArray * dynArray
 			mmapKey->data.v = mmapAddr->dataPtr - mmapAddr->mmapAddrInt;
 			mmapAddr->dataPtr += cur->dataSize;
 		}
+		else
+		{
+			mmapKey->data.v = 0;
+			mmapKey->dataSize = 0;
+		}
 
 		// write the meta KeySet
 		mmapKey->meta = writeMetaKeySet (cur, mmapAddr, dynArray);
