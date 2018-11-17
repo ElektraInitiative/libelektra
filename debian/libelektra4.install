@@ -76,6 +76,7 @@ usr/lib/*/libelektra-notification.so*
 usr/lib/*/libelektra-core.so*
 usr/lib/*/libelektra-invoke.so*
 usr/lib/*/libelektra-ease.so*
+usr/lib/*/libelektra-globbing.so*
 usr/lib/*/libelektragetenv.so*
 usr/lib/*/libelektra-utility.so*
 usr/lib/*/libelektraintercept-env.so*
