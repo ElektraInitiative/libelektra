@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "ELEKTRA\-LIBS" "7" "October 2018" "" ""
+.TH "ELEKTRA\-LIBS" "7" "November 2018" "" ""
 .
 .SH "NAME"
 \fBelektra\-libs\fR \- libs overview
@@ -145,4 +145,31 @@ Using asynchronous I/O bindings \fIhttps://www\.libelektra\.org/examples/notific
 Reload KDB when Elektra\'s configuration has changed \fIhttps://www\.libelektra\.org/examples/notificationreload\fR
 .
 .IP "" 0
+.
+.SS "Globbing"
+.
+.nf
 
+libelektra\-globbing\.so
+.
+.fi
+.
+.P
+\fBglobbing \fIglobbing/\fR\fR provides globbing functionality for Elektra\.
+.
+.P
+The supported syntax is a superset of the syntax used by \fBglob(7)\fR\. The following extensions are supported:
+.
+.IP "\(bu" 4
+\fB#\fR, when used as \fB/#/\fR (or \fB/#"\fR at the end of the pattern), matches a valid array item
+.
+.IP "\(bu" 4
+\fB_\fR is the exact opposite; it matches anything but a valid array item
+.
+.IP "\(bu" 4
+if the pattern ends with \fB/__\fR, matching key names may contain arbitrary suffixes
+.
+.IP "" 0
+.
+.P
+For more info take a look a the documentation of \fBelektraKeyGlob()\fR and \fBelektraKsGlob()\fR\.
