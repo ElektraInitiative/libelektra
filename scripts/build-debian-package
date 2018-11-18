@@ -7,7 +7,7 @@
 set -e
 set -x
 
-VERSION="0.8.24"
+VERSION="0.8.25"
 BUILD_NUMBER="1337"
 
 [ -d tmpbuilddir ] && rm -rf tmpbuilddir
