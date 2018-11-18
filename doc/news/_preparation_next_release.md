@@ -1,8 +1,11 @@
 # 0.8.25 Release
 
-This release did not happen yet.
+This release did not happen yet but this hopefully will happen today.
 
-<<`scripts/generate-news-entry`>>
+- guid: 472392e0-cc4f-4826-a0a9-2764d90c5f89
+- author: Markus Raab
+- pubDate: Sun, 18 Nov 2018 14:30:34 +0100
+- shortDesc: mmapstorage, faster lookup
 
 We are proud to release Elektra 0.8.25.
 
@@ -22,41 +25,50 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.8.
 
 
 
-## Highlights
+## Highlight
 
-- Added a new, binary and fast storage plugin called [`mmapstorage`](https://libelektra.org/plugins/mmapstorage).
-  It leverages the `mmap()` syscall and supports full Elektra semantics.
-  We provide two compile variants: `mmapstorage` and `mmapstorage_crc`.
-  The `mmapstorage_crc` variant enables CRC32 checksums for critical data,
-  while the `mmapstorage` variant omits the checksum for maximum performance.
+This release is mostly dedicated to drastically
+improve the speed of Elektra. Two non-trivial
+features enable most of the improvement:
 
-  We ran a synthetic benchmark with 257 iterations using 40k keys in a keyset,
-  and compared the performance to the `dump` storage plugin.
-
-  Median write time in microseconds:
-
-  | Plugin | Time |
-  | --- | --- |
-  | `dump` | 71079 |
-  | `mmapstorage` | 2964 |
-  | `mmapstorage_crc` | 7644 |
-
-  Median read time in microseconds:
-
-  | Plugin | Time |
-  | --- | --- |
-  | `dump` | 82737 |
-  | `mmapstorage` | 1145 |
-  | `mmapstorage_crc` | 5744 |
-
-  In our benchmark, the `mmapstorage` plugin writes more than 23x faster,
-  and reads more than 72x faster than the `dump` storage plugin. *(Mihael Pranjić)*
+- mmap storage for very fast retrieval of configuration
+- Hybrid Search Algorithm for `ksLookup (...)` for very fast access of configuration
 
 
-- Hybrid Search Algorithm for `ksLookup (...)`
+### mmap storage
 
-- <<HIGHLIGHT2>>
-- <<HIGHLIGHT3>>
+Added a new, binary and fast storage plugin called [`mmapstorage`](https://libelektra.org/plugins/mmapstorage).
+It leverages the `mmap()` syscall and supports full Elektra semantics.
+We provide two compile variants: `mmapstorage` and `mmapstorage_crc`.
+The `mmapstorage_crc` variant enables CRC32 checksums for critical data,
+while the `mmapstorage` variant omits the checksum for maximum performance.
+
+We ran a synthetic benchmark with 257 iterations using 40k keys in a keyset,
+and compared the performance to the `dump` storage plugin.
+
+Median write time in microseconds:
+
+| Plugin | Time |
+| --- | --- |
+| `dump` | 71079 |
+| `mmapstorage` | 2964 |
+| `mmapstorage_crc` | 7644 |
+
+Median read time in microseconds:
+
+| Plugin | Time |
+| --- | --- |
+| `dump` | 82737 |
+| `mmapstorage` | 1145 |
+| `mmapstorage_crc` | 5744 |
+
+In our benchmark, the `mmapstorage` plugin writes more than 23x faster,
+and reads more than 72x faster than the `dump` storage plugin.
+
+For this release the plugin is marked as experimental,
+even though it is already used as default storage plugin in a build job on our [build server](https://build.libelektra.org).
+
+Thanks to Mihael Pranjić for this improvement.
 
 
 ### Hybrid Search Algorithm for `ksLookup (...)`
@@ -64,38 +76,37 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.8.
 The hybrid search algorithm is now implemented, this concludes the extension of the `ksLookup (...)` search with the
 [order preserving minimal perfect hash map (OPMPHM)](https://master.libelektra.org/doc/dev/data-structures.md#order-preserving-minimal-perfect-hash-map-aka-opmphm).
 The hybrid search combines the best properties of the binary search and the [OPMPHM](https://master.libelektra.org/doc/dev/data-structures.md#order-preserving-minimal-perfect-hash-map-aka-opmphm).
-The hybrid search decides dynamically which search algorithm to use, the API user can overrule the hybrid search by passing
-`KDB_O_OPMPHM` or `KDB_O_OPMPHM` to the `ksLookup (...)`. The constants are defined in [kdbproposal.h](https://master.libelektra.org/src/include/kdbproposal.h).*(Kurt Micheli)*
+The hybrid search decides dynamically which search algorithm to use.
 
-#### Results
+Because of the automatic decision, usually nothing needs to be done by API users.
+Advanced API user, however, can overrule the hybrid search by passing `KDB_O_OPMPHM` or `KDB_O_BINSEARCH` to `ksLookup (...)`.
+The constants are defined in [kdbproposal.h](https://master.libelektra.org/src/include/kdbproposal.h).
+For low-memory systems the building of the hash map can be disabled altogether at build-time by disabling the CMake variable `ENABLE_OPTIMIZATIONS` (by default enabled now).
 
 The implemented randomized [OPMPHM](https://master.libelektra.org/doc/dev/data-structures.md#order-preserving-minimal-perfect-hash-map-aka-opmphm)
 algorithm is in 99.5% of the measured random cases optimal. However the randomization property of the algorithm leaves an uncertainty.
 
-The results made with random cases had shown that the hybrid search is except for small keyset sizes almost always faster
+The results made with random cases had shown that the hybrid search is, except for small keyset sizes, almost always faster
 compared to the standalone binary search. The performance increase strongly depended on the measured hardware. In the random cases
 where the hybrid search is faster, on average ~8.53% to ~20.92% of time was saved.
 The implemented hybrid search works only above a keyset size of `599` to exclude the small keyset sizes.
 
-### <<HIGHLIGHT2>>
-
-
-### <<HIGHLIGHT2>>
+Thanks to Kurt Micheli for this improvement.
 
 
 ## Plugins
 
-The following section lists news about the [modules](https://www.libelektra.org/plugins/readme) we updated in this release.
+The following section lists news about the [plugins](https://www.libelektra.org/plugins/readme) we updated in this release.
 
 ### Process
 
--  There is also a new plugin called [process](https://libelektra.org/plugins/process).
-   This plugin utilizes the pluginprocess library in order to execute arbitrary other
-   plugins in an own process, acting as a proxy itself. Therefore it is not required
-   to explicitly change a plugin's implementation if it shall be executed in an own
-   process. This plugin is not completely finished yet, as currently there is no way
-   for it to mimic the proxied plugin's contract in Elektra. It can be used with simple
-   plugins like `dump` however, check the limitations in the readme for more details. *(Armin Wurzinger)*
+There is a new, experimental plugin called [process](https://libelektra.org/plugins/process).
+This plugin utilizes the pluginprocess library in order to execute arbitrary other
+plugins in an own process, acting as a proxy itself. Therefore it is not required
+to explicitly change a plugin's implementation if it shall be executed in an own
+process. This plugin is not completely finished yet, as currently there is no way
+for it to mimic the proxied plugin's contract in Elektra. It can be used with simple
+plugins like `dump` however, check the limitations in the readme for more details. *(Armin Wurzinger)*
 
 ### Directory Value
 
@@ -105,9 +116,14 @@ We improved the performance of the plugin a little bit. *(René Schwaiger)*
 
 The detection of the `mntent` functions now also works correctly, if you use the compiler switch `-Werror`. *(René Schwaiger)*
 
+### passwd
+
+We fixed an issue with the passwd plugin not properly setting compile flags.
+This resolves a problem with undefined functions when building with musl. *(Lukas Winkler)*
+
 ### gpgme
 
-- The `gpgme` plugin was brought into existence to provide cryptographic functions using GnuGP via the `libgpgme` library. See [#896] *(Peter Nirschl)*
+The experimental `gpgme` plugin was brought into existence to provide cryptographic functions using GnuGP via the `libgpgme` library. See [#896] *(Peter Nirschl)*
 
 ### network
 
@@ -145,23 +161,16 @@ We updated the behavior, since otherwise the plugin will report memory leaks at 
 
 ### YAwn
 
-- This new plugin parses a subset of YAML using the Earley Parser library [YAEP](https://github.com/vnmakarov/yaep). *(René Schwaiger)*
+This new plugin parses a subset of YAML using the Earley Parser library [YAEP](https://github.com/vnmakarov/yaep). *(René Schwaiger)*
 
 ### Reference
 
 This new plugin can be used to validate that the value of a key is a reference to another key. *(Klemens Böswirth)*
 
-### <<Plugin3>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
 
 ## Libraries
 
 The text below summarizes updates to the [C (and C++)-based libraries](https://www.libelektra.org/libraries/readme) of Elektra.
-
 
 ### Compatibility
 
@@ -169,37 +178,20 @@ As always, the ABI and API of kdb.h is fully compatible, i.e. programs
 compiled against an older 0.8 version of Elektra will continue to work
 (ABI) and you will be able to recompile programs without errors (API).
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
 ### Core
 
 - Optimize elektraKsFilter to not duplicate keys *(Markus Raab)*
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### <<Library1>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### passwd
-
-- We fixed an issue with the passwd plugin not properly setting compile flags.
-    This resolves a problem with undefined functions when building with musl.
-    *(Lukas Winkler)*
 
 ### Globbing
 
-- A new library which can be used to match keys against globbing patterns was introduced.  *(Klemens Böswirth)*
+A new library which can be used to match keys against globbing patterns was introduced.  *(Klemens Böswirth)*
+
+The API is still experimental, so it should not be used externally for now.
 
 ### Ease
 
-- `libease` now provides the function `elektraArrayValidateBaseNameString`, which can be used to validate that a
-    given string is an elektra array name. *(Klemens Böswirth)*
+`libease` provides the function `elektraArrayValidateBaseNameString`, which can be used to validate that a
+given string is an elektra array name. *(Klemens Böswirth)*
 
 
 ## Bindings
@@ -211,13 +203,10 @@ you up to date with the multi-language support provided by Elektra.
 
 - Do not use private Elektra headers for Ruby bindings as preparation for a Ruby `libelektra` gem. *(Bernhard Denner)*
 
-
 ### Glib/Gi
 
 - Fix CMake inclusion logic *(Markus Raab)*
 
-
-### <<Binding3>>
 
 
 ## Tools
@@ -227,8 +216,6 @@ you up to date with the multi-language support provided by Elektra.
 - Improved error text of KDB tool `cp`. *(Markus Raab)*
 - Document hidden feature of KDB tool `mount`. *(Markus Raab)*
 - Add more tags to the KDB tools to be used with `kdb find-tools`. *(Markus Raab)*
-- <<TODO>>
-- <<TODO>>
 
 
 ## Scripts
@@ -247,7 +234,6 @@ you up to date with the multi-language support provided by Elektra.
 - Improved the plugins documentation. *(Michael Zronek)*
 - The ReadMe now includes two badges that show the latest released version of Elektra and the status of the Travis build. *(René Schwaiger)*
 - Fixed documenation error on Ruby plugin Readme. *(Bernhard Denner)*
-- <<TODO>>
 - Go into more detail in
     [BUILDSERVER.md](https://master.libelektra.org/doc/BUILDSERVER.md).
     *(Lukas Winkler)*
@@ -312,7 +298,6 @@ you up to date with the multi-language support provided by Elektra.
     Afterwards pull your desired image as you would do from any public registry:
         `docker pull hub-public.libelektra.org/build-elektra-alpine:201809-791f9f388cbdff0db544e02277c882ad6e8220fe280cda67e6ea6358767a065e`.
     *(Lukas Winkler)*
-- <<TODO>>
 
 ### Vagrant
 
@@ -322,7 +307,6 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Jenkins
 
-- <<TODO>>
 - We enabled tests that write to the hard disk on the build job `alpine`. *(René Schwaiger)*
 - The build jobs now print less non-relevant output. *(René Schwaiger)*
 - Enable `-Werror` in `debian-stable-full`. *(Lukas Winkler)
@@ -368,25 +352,24 @@ you up to date with the multi-language support provided by Elektra.
 ## Website
 
 The website is generated from the repository, so all information about
-plugins, bindings and tools are always up to date. Furthermore, we changed:
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+plugins, bindings and tools are always up to date.
 
 
 ## Outlook
 
 We are currently working on following topics:
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- Global mmap cache: This feature will enable Elektra to return configuration without parsing configuration files or executing other plugins. *(Mihael Pranjić)*
+- Finish high-level API. *(Klemens Böswirth)*
+- Validation improvements. *(Michael Zronek)*
+- Improve YAML plugins. *(René Schwaiger)*
 
 ## Finished Thesis
 
-- Daniel Bugl finished his [thesis](https://www.libelektra.org/ftp/elektra/publications/bugl2018web.pdf)
-- Thomas Wahringer finished his [thesis](https://www.libelektra.org/ftp/elektra/publications/wahringer2018notification.pdf)
+- [Daniel Bugl](https://www.libelektra.org/ftp/elektra/publications/bugl2018web.pdf), see also [the web demo](https://webdemo.libelektra.org/).
+- [Thomas Wahringer](https://www.libelektra.org/ftp/elektra/publications/wahringer2018notification.pdf).
+- [Kurt Micheli](https://www.libelektra.org/ftp/elektra/publications/micheli2018hybrid.pdf)
+- [Armin Wurzinger](https://catalogplus.tuwien.ac.at/primo_library/libweb/action/display.do?tabs=detailsTab&ct=display&fn=search&doc=UTW_alma7181921030003336&indx=1&recIds=UTW_alma7181921030003336)
 
 
 ## Get It!
