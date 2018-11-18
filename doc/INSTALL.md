@@ -44,7 +44,7 @@ Or alternatively, you can use (if you do not mind many dependences just to add o
         sudo apt-get install software-properties-common apt-transport-https
         sudo add-apt-repository "deb     [trusted=yes] https://debian-stretch-repo.libelektra.org/ stretch main"
 
-For Jessie:
+For Jessie (not updated anymore, contains 0.8.24 packages which were created shortly before 0.8.25 release)
 
         deb     [trusted=yes] https://debian-stable.libelektra.org/elektra-stable/ jessie main
         deb-src [trusted=yes] https://debian-stable.libelektra.org/elektra-stable/ jessie main
