@@ -16,8 +16,6 @@ syntax: ", thanks to <myname>".
 
 We are proud to release Elektra 0.8.<<VERSION>>.
 
-<<`scripts/git-release-stats 0.8.<<VERSION>>`>>
-
 ## What is Elektra?
 
 Elektra serves as a universal and secure framework to access
@@ -206,6 +204,14 @@ We are currently working on following topics:
 - <<TODO>>
 - <<TODO>>
 
+## Statistics
+
+Following authors made this release possible:
+
+<<`scripts/git-release-stats 0.8.<<VERSION>>`>>
+
+We welcome new contributors!
+
 
 ## Get It!
 
@@ -231,9 +237,8 @@ Subscribe to the
 [RSS feed](https://www.libelektra.org/news/feed.rss)
 to always get the release notifications.
 
-For any questions and comments, please contact the
-issue tracker [on GitHub](http://issues.libelektra.org)
-or Markus Raab by email using elektra@markus-raab.org.
+If you also want to participate, or for any questions and comments
+please contact us via the issue tracker [on GitHub](http://issues.libelektra.org).
 
 [Permalink to this NEWS entry](https://www.libelektra.org/news/0.8.<<VERSION>>-release)
 
