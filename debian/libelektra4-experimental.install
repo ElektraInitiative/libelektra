@@ -1,6 +1,7 @@
 usr/lib/*/elektra4/libelektra-semlock.so
 usr/lib/*/elektra4/libelektra-iterate.so
 usr/lib/*/elektra4/libelektra-template.so
+usr/lib/*/elektra4/libelektra-cpptemplate.so
 usr/lib/*/elektra4/libelektra-blockresolver.so
 usr/lib/*/elektra4/libelektra-passwd.so
 usr/lib/*/elektra4/libelektra-doc.so
@@ -10,3 +11,9 @@ usr/lib/*/elektra4/libelektra-simplespeclang.so
 usr/lib/*/elektra4/libelektra-range.so
 usr/lib/*/elektra4/libelektra-file.so
 usr/lib/*/elektra4/libelektra-ipaddr.so
+usr/lib/*/elektra4/libelektra-process.so
+usr/lib/*/elektra4/libelektra-mmapstorage.so
+usr/lib/*/elektra4/libelektra-mmapstorage_crc.so
+usr/lib/*/elektra4/libelektra-reference.so
+usr/lib/*/elektra4/libelektra-yambi.so
+usr/lib/*/elektra4/libelektra-gpgme.so

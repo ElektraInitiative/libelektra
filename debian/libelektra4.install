@@ -69,8 +69,6 @@ usr/lib/*/elektra4/libelektra-directoryvalue.so
 usr/lib/*/elektra4/libelektra-internalnotification.so
 usr/lib/*/elektra4/libelektra-hexnumber.so
 usr/lib/*/elektra4/libelektra-yamlsmith.so
-usr/lib/*/elektra4/libelektra-process.so
-usr/lib/*/elektra4/libelektra-mmapstorage.so
 usr/lib/*/libelektra-io.so*
 usr/lib/*/libelektra-notification.so*
 usr/lib/*/libelektra-core.so*
