@@ -20,11 +20,6 @@ For the following Linux distributions and package managers 0.8 packages are avai
  - [LinuxBrew](https://github.com/Linuxbrew/homebrew-core/blob/master/Formula/elektra.rb)
  - [Alpine Linux](https://pkgs.alpinelinux.org/package/edge/testing/x86_64/elektra)
 
-Available, but not up-to-date:
-
- - [Mageia](http://svnweb.mageia.org/packages/updates/1/elektra/)
- - [Fedora](https://admin.fedoraproject.org/pkgdb/package/elektra/)
-
 For [OpenSUSE, CentOS, Fedora, RHEL and SLE](https://build.opensuse.org/package/show/home:bekun:devel/elektra)
 Kai-Uwe Behrmann kindly provides packages [for download](http://software.opensuse.org/download.html?project=home%3Abekun%3Adevel&package=libelektra4).
 
