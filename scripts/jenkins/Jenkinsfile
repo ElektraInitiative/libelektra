@@ -161,6 +161,7 @@ def main() {
     parallel generateArtifactStages()
   }
 
+  /*
   maybeStage("Deploy Homepage", isMaster()) {
     deployHomepage()
   }
@@ -168,6 +169,7 @@ def main() {
   maybeStage("Deploy Web UI", isMaster()) {
     deployWebUI()
   }
+  */
 }
 
 try {
