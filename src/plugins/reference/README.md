@@ -89,7 +89,7 @@ be valid.
 
 Each restriction is first resolved as if it was a reference itself (see
 [Resolution of references](#resolution-of-references)). The resolved value is then used as an
-Elektra-style globbing pattern. For the supported see [elektra-globbing](../../libs/README.md#globbing).
+Elektra-style globbing pattern. For the supported see [elektra-globbing](/src/libs/globbing).
 
 If a keyname matches the globbing expression it will be considered a valid reference
 (as long as the key actually exists).
@@ -132,8 +132,6 @@ sudo kdb umount user/tests/reference
 
 The [examples](examples/) directory contains a few examples:
 
-* [simple-rec](examples/simple-rec/) is a simple recursive example.
-* [restrict](examples/restrict/) is an example for using reference restrictions.
 * [alternative](examples/alternative/) shows how the `alternative` value of `check/reference` gets processed.
 * [complex](examples/complex/) shows how the plugin can be used together with the spec plugin, to
   validate complex recursive structures.
