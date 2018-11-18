@@ -36,7 +36,6 @@ RUN apt-get update \
         libpcre++-dev \
         libglib2.0-dev \
         libxerces-c-dev \
-        libyaml-cpp-dev \
         qtbase5-dev \
         qtdeclarative5-dev \
         libmarkdown2-dev \
