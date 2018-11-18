@@ -931,8 +931,10 @@ coveralls -b '${buildDir}' \
 def generateArtifactStages() {
   def tasks = [:]
   tasks << buildPackageDebianStretch()
+  /*
   tasks << buildHomepage()
   tasks << buildWebUI()
+  */
   return tasks
 }
 
