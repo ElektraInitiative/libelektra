@@ -88,7 +88,7 @@ If version numbers are correct in
 Rebuild cleanly, run all tests and also check for memleaks:
   cd ~build && ~e/scripts/configure-debian ~e && make -j5 && make run_all -j5 && make run_memcheck -j5
 
-Check if there are really >=135 or >=95 tests
+Check if there are really >=241 or >=131 tests
 
 - Log tests:
   kdb run_all -v > ~elektra/$VERSION/run_all 2>&1
