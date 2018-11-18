@@ -33,7 +33,8 @@
 /**
  * @brief Defines the plugin state during the <code>kdb get</code> phase.
  */
-enum FcryptGetState {
+enum FcryptGetState
+{
 
 	/** Perform a decryption run before <code>kdb get</code> reads from the storage. */
 	PREGETSTORAGE = 0,
@@ -276,7 +277,7 @@ static int fcryptEncrypt (KeySet * pluginConfig, Key * parentKey)
 	if (recipientCount == 0 && signatureCount == 0)
 	{
 		ELEKTRA_SET_ERRORF (
-			ELEKTRA_ERROR_FCRYPT_OPERATION_MODE, parentKey,
+			ELEKTRA_ERROR_NO_GPG_RECIPIENTS, parentKey,
 			"Missing GPG recipient key (specified as %s) or GPG signature key (specified as %s) in plugin configuration.",
 			ELEKTRA_RECIPIENT_KEY, ELEKTRA_SIGNATURE_KEY);
 		return -1;
@@ -657,7 +658,7 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, checkconf) (Key * errorKey, Ke
 	if (recipientCount == 0 && signatureCount == 0)
 	{
 		char * errorDescription = CRYPTO_PLUGIN_FUNCTION (getMissingGpgKeyErrorText) (conf);
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_FCRYPT_OPERATION_MODE, errorKey, errorDescription);
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_NO_GPG_RECIPIENTS, errorKey, errorDescription);
 		elektraFree (errorDescription);
 		return -1;
 	}

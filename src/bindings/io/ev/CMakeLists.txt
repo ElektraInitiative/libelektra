@@ -1,5 +1,5 @@
 include (LibAddMacros)
-include (FindLibEv)
+include (FindLibEv QUIET)
 
 if (NOT LIBEV_FOUND)
 	exclude_binding (io_ev "libev not found")

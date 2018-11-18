@@ -25,7 +25,7 @@
 #  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # ~~~
 
-include (CheckFunctionExists)
+include (SafeCheckSymbolExists)
 
 if (ICONV_INCLUDE_DIR)
 	set (ICONV_FIND_QUIETLY TRUE)
@@ -60,7 +60,10 @@ if (WIN32)
 			 PATH
 			 ${ICONV_INCLUDE_DIR}/../bin)
 	if (ICONV_FIND_REQUIRED)
-		if (NOT ICONV_DLL AND NOT ICONV_DLL_HELP)
+		if (NOT
+		    ICONV_DLL
+		    AND NOT
+			ICONV_DLL_HELP)
 			message (FATAL_ERROR "Could not find iconv.dll, please add correct your PATH environment variable")
 		endif ()
 		if (NOT ICONV_DLL AND ICONV_DLL_HELP)
@@ -77,7 +80,7 @@ if (WIN32)
 		set (ICONV_FOUND TRUE)
 	endif ()
 else ()
-	check_function_exists (iconv HAVE_ICONV_IN_LIBC)
+	safe_check_symbol_exists (iconv "iconv.h" HAVE_ICONV_IN_LIBC)
 	if (ICONV_INCLUDE_DIR AND HAVE_ICONV_IN_LIBC)
 		set (ICONV_FOUND TRUE)
 		set (ICONV_LIBRARY
@@ -92,7 +95,7 @@ else ()
 endif ()
 
 if (ICONV_FOUND)
-	if (NOT ICONV_FIND_QUIETLY)
+	if (NOT Iconv_FIND_QUIETLY)
 		message (STATUS "Found iconv library: ${ICONV_LIBRARY}") # message(STATUS "Found iconv   dll  : ${ICONV_DLL}")
 	endif ()
 else ()

@@ -236,7 +236,8 @@ typedef struct SomeIoLibHandle
 /**
  * Example I/O mangement library bitmask flags
  */
-typedef enum {
+typedef enum
+{
 
 	/** indicates that the file descriptor is readable */
 	SOME_IOLIB_READABLE = 1 << 0,

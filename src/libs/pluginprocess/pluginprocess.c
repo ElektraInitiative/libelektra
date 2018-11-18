@@ -107,9 +107,9 @@ static char * longToStr (long i)
 {
 	long size;
 	char * str;
-	size = snprintf (NULL, 0, "%zd", i);
+	size = snprintf (NULL, 0, "%ld", i);
 	str = elektraMalloc (size + 1);
-	size = snprintf (str, size + 1, "%zd", i);
+	size = snprintf (str, size + 1, "%ld", i);
 	return str;
 }
 
@@ -394,7 +394,7 @@ static char * concat (const char * str1, const char * str2)
 	const int str1Len = strlen (str1);
 	const int str2Len = strlen (str2);
 	char * concat = elektraMalloc (str1Len + str2Len + 1);
-	strncpy (concat, str1, str1Len);
+	strcpy (concat, str1);
 	strncpy (concat + str1Len, str2, str2Len + 1);
 	return concat;
 }

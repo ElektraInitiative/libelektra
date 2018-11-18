@@ -2,6 +2,17 @@ include (LibAddMacros)
 
 check_binding_included ("gi_python" IS_PYTHON_INCLUDED SUBDIRECTORY "gi/python")
 check_binding_included ("gi_lua" IS_LUA_INCLUDED SUBDIRECTORY "gi/lua")
+check_binding_was_added ("glib" IS_GLIB_INCLUDED)
+
+if (NOT IS_GLIB_ADDED)
+	if (IS_PYTHON_INCLUDED)
+		exclude_binding (gi_python "because gi_python depends on glib")
+	endif ()
+	if (IS_LUA_INCLUDED)
+		exclude_binding (gi_lua "because gi_lua depends on glib")
+	endif ()
+	return ()
+endif (NOT IS_GLIB_ADDED)
 
 if (IS_PYTHON_INCLUDED OR IS_LUA_INCLUDED)
 
@@ -9,16 +20,13 @@ if (IS_PYTHON_INCLUDED OR IS_LUA_INCLUDED)
 
 	if (INTROSPECTION_FOUND)
 
-		if (ENABLE_ASAN AND UNIX AND NOT APPLE)
+		if (ENABLE_ASAN
+		    AND UNIX
+		    AND NOT
+			APPLE)
 			set (ASAN_LIBRARY "-lubsan") # this is needed for GIR to put asan in front
 			set (DISABLE_LSAN "LSAN_OPTIONS=detect_leaks=0") # this is needed so ASAN is not used during GIR compilation
 		endif (ENABLE_ASAN AND UNIX AND NOT APPLE)
-
-		# make sure glib bindings are built
-		check_binding_was_added ("glib" IS_GLIB_INCLUDED)
-		if (NOT IS_GLIB_INCLUDED)
-			add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/../glib ${CMAKE_CURRENT_BINARY_DIR}/../glib)
-		endif ()
 
 		add_headers (NOT_USED)
 

@@ -349,9 +349,9 @@ error:
 int PYTHON_PLUGIN_FUNCTION (Close) (ckdb::Plugin * handle, ckdb::Key * errorKey)
 {
 	ElektraPluginProcess * pp = static_cast<ElektraPluginProcess *> (elektraPluginGetData (handle));
-	if (!pp) return 0;
+	if (!pp) return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	moduleData * data = static_cast<moduleData *> (elektraPluginProcessGetData (pp));
-	if (pp && elektraPluginProcessIsParent (pp))
+	if (elektraPluginProcessIsParent (pp))
 	{
 		ElektraPluginProcessCloseResult result = elektraPluginProcessClose (pp, errorKey);
 		if (result.cleanedUp)
@@ -362,7 +362,7 @@ int PYTHON_PLUGIN_FUNCTION (Close) (ckdb::Plugin * handle, ckdb::Key * errorKey)
 		return result.result;
 	}
 
-	if (data == nullptr) return 0;
+	if (data == nullptr) return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 
 	int ret = Python_CallFunction_Helper1 (data, "close", errorKey);
 	/* destroy python */

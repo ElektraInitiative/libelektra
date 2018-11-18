@@ -96,7 +96,7 @@ severity:warning
 ingroup:kdb
 
 number:14
-description:given mountpoint not valid
+description:given mount point not valid
 severity:warning
 ingroup:kdb
 
@@ -126,7 +126,7 @@ severity:warning
 ingroup:kdb
 
 number:20
-description:tried to set more plugins than definied in NR_OF_PLUGINS
+description:tried to set more plugins than defined in NR_OF_PLUGINS
 severity:warning
 ingroup:kdb
 
@@ -152,7 +152,7 @@ severity:warning
 ingroup:trie
 
 number:25
-description:backend has no mountpoint
+description:backend has no mount point
 severity:warning
 ingroup:trie
 
@@ -639,7 +639,7 @@ module:dump
 
 number:107
 macro:STATE
-description:sync state is wrong, maybe kdbSet() is executed without prior kdbGet(). Reason states mountpoint.
+description:sync state is wrong, maybe kdbSet() is executed without prior kdbGet(). Reason states mount point.
 severity:error
 ingroup:kdb
 
@@ -1089,7 +1089,7 @@ number:176
 description:Neither a GPG recipient (specified as encrypt/key) nor a GPG signature key (specified as sign/key) has been provided. Please provide at least one key.
 severity:error
 ingroup:plugin
-macro:FCRYPT_OPERATION_MODE
+macro:NO_GPG_RECIPIENTS
 module:fcrypt
 
 number:177
@@ -1230,3 +1230,59 @@ severity:warning
 ingroup:plugin
 module:zeromqsend
 macro:ZEROMQSEND_ERROR
+
+number: 197
+description:Plugin name to proxy in a process is invalid, it will not be loaded
+severity:warning
+ingroup:plugin
+module:process
+macro:PROCESS_INITIALIZATION
+
+number: 198
+description:GPGME reported an error.
+severity:error
+ingroup:plugin
+module:gpgme
+macro:GPGME
+
+number:199
+description:Invalid configuration.
+severity:error
+ingroup:plugin
+module:gpgme
+macro:GPGME_CONFIG
+
+number:200
+description:The given GPG recipient is not valid.
+severity:warning
+ingroup:plugin
+module:gpgme
+macro:GPGME_INVALID_RECIPIENT
+
+number:201
+description:The given key contains a redundant reference.
+severity:warning
+ingroup:plugin
+module:reference
+macro:REFERENCE_REDUNDANT
+
+number:202
+description:The constructed reference graph contains cycles.
+severity:error
+ingroup:plugin
+module:reference
+macro:REFERENCE_CYCLIC_GRAPH
+
+number:203
+description:The given key contains reference that does not match the given restriction.
+severity:error
+ingroup:plugin
+module:reference
+macro:REFERENCE_RESTRICTION
+
+number:204
+description:The given key contains a non existent reference.
+severity:error
+ingroup:plugin
+module:reference
+macro:REFERENCE_NOT_FOUND

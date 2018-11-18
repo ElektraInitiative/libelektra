@@ -152,7 +152,7 @@ static char * replaceStringFormatSpec (char * format, const char * replace)
 		// copy pre replacement
 		strncpy (result, format, preReplLen);
 		// copy replacement
-		strncpy (result + preReplLen, replace, replaceLen);
+		strcpy (result + preReplLen, replace);
 		// copy post replacement
 		strncpy (result + preReplLen + replaceLen, posRepl + needleLen, formatLen - needleLen - preReplLen);
 		result[formatLen + offset] = '\0';

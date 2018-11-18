@@ -84,6 +84,8 @@ strict digraph G {
 	gitresolver -> resolver;
 	apply [shape=Mdiamond];
 	glob -> apply;
+	crypto [shape=Mdiamond];
+	gpgme -> crypto;
 	haskell [shape=Mdiamond];
 	code [shape=Mdiamond];
 	hexcode -> code;
@@ -127,6 +129,10 @@ strict digraph G {
 	ini [shape=Mdiamond];
 	mini -> ini;
 	storage [shape=Mdiamond];
+	mmapstorage -> storage;
+	mmapstorage [shape=Mdiamond];
+	mmapstorage -> mmapstorage;
+	storage [shape=Mdiamond];
 	mozprefs -> storage;
 	resolver [shape=Mdiamond];
 	multifile -> resolver;
@@ -148,6 +154,7 @@ strict digraph G {
 	passwd -> passwd;
 	check [shape=Mdiamond];
 	path -> check;
+	process [shape=Mdiamond];
 	profile [shape=Mdiamond];
 	python [shape=Mdiamond];
 	python2 [shape=Mdiamond];
@@ -215,6 +222,10 @@ strict digraph G {
 	json [shape=Mdiamond];
 	yajl -> json;
 	storage [shape=Mdiamond];
+	yambi -> storage;
+	yaml [shape=Mdiamond];
+	yambi -> yaml;
+	storage [shape=Mdiamond];
 	yamlcpp -> storage;
 	yaml [shape=Mdiamond];
 	yamlcpp -> yaml;
@@ -224,6 +235,10 @@ strict digraph G {
 	yanlr -> storage;
 	yaml [shape=Mdiamond];
 	yanlr -> yaml;
+	storage [shape=Mdiamond];
+	yawn -> storage;
+	yaml [shape=Mdiamond];
+	yawn -> yaml;
 	notification [shape=Mdiamond];
 	zeromqrecv -> notification;
 	notification [shape=Mdiamond];

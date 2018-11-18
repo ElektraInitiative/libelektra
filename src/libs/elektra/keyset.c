@@ -50,7 +50,7 @@
 static void elektraOpmphmInvalidate (KeySet * ks ELEKTRA_UNUSED)
 {
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
-	ks->flags |= KS_FLAG_NAME_CHANGE;
+	set_bit (ks->flags, KS_FLAG_NAME_CHANGE);
 	if (ks && ks->opmphm) opmphmClear (ks->opmphm);
 #endif
 }
@@ -58,7 +58,7 @@ static void elektraOpmphmInvalidate (KeySet * ks ELEKTRA_UNUSED)
 /**
  * @internal
  *
- * @brief KeySets OPMPHM copy.
+ * @brief KeySets OPMPHM and OPMPHM predictor copy.
  *
  * Should be invoked by every function making a copy of a KeySet.
  *
@@ -73,10 +73,23 @@ static void elektraOpmphmCopy (KeySet * dest ELEKTRA_UNUSED, const KeySet * sour
 		return;
 	}
 	// nothing to copy
+	// OPMPHM predictor
+	if (source->opmphmPredictor)
+	{
+		if (!dest->opmphmPredictor)
+		{
+			dest->opmphmPredictor = opmphmPredictorNew ();
+		}
+		if (dest->opmphmPredictor)
+		{
+			opmphmPredictorCopy (dest->opmphmPredictor, source->opmphmPredictor);
+		}
+	}
 	if (!opmphmIsBuild (source->opmphm))
 	{
 		return;
 	}
+	// OPMPHM
 	if (!dest->opmphm)
 	{
 		dest->opmphm = opmphmNew ();
@@ -421,9 +434,17 @@ int ksDel (KeySet * ks)
 	{
 		opmphmDel (ks->opmphm);
 	}
+	if (ks->opmphmPredictor)
+	{
+		opmphmPredictorDel (ks->opmphmPredictor);
+	}
+
 #endif
 
-	elektraFree (ks);
+	if (!test_bit (ks->flags, KS_FLAG_MMAP_STRUCT))
+	{
+		elektraFree (ks);
+	}
 
 	return rc;
 }
@@ -1092,7 +1113,7 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 			switch (ns)
 			{
 			case KEY_NS_SPEC:
-				strncpy (newname + 2, "spec", 4);
+				strncpy (newname + 2, "spec", 5);
 				strcpy (newname + 6, name);
 				key->key = newname + 2;
 				key->keySize = length - 2;
@@ -1100,7 +1121,7 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 				elektraFinalizeName (key);
 				break;
 			case KEY_NS_PROC:
-				strncpy (newname + 2, "proc", 4);
+				strncpy (newname + 2, "proc", 5);
 				strcpy (newname + 6, name);
 				key->key = newname + 2;
 				key->keySize = length - 2;
@@ -1108,7 +1129,7 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 				elektraFinalizeName (key);
 				break;
 			case KEY_NS_DIR:
-				strncpy (newname + 3, "dir", 3);
+				strncpy (newname + 3, "dir", 4);
 				strcpy (newname + 6, name);
 				key->key = newname + 3;
 				key->keySize = length - 3;
@@ -1116,7 +1137,7 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 				elektraFinalizeName (key);
 				break;
 			case KEY_NS_USER:
-				strncpy (newname + 2, "user", 4);
+				strncpy (newname + 2, "user", 5);
 				strcpy (newname + 6, name);
 				key->key = newname + 2;
 				key->keySize = length - 2;
@@ -1124,7 +1145,7 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 				elektraFinalizeName (key);
 				break;
 			case KEY_NS_SYSTEM:
-				strncpy (newname, "system", 6);
+				strncpy (newname, "system", 7);
 				strcpy (newname + 6, name);
 				key->key = newname;
 				key->keySize = length;
@@ -1170,7 +1191,7 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 		++it;
 	}
 
-	// correct cursor if cursor is in cutted keyset
+	// correct cursor if cursor is in cut keyset
 	if (ks->current >= found && ks->current < it)
 	{
 		if (found == 0)
@@ -1184,7 +1205,7 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 		}
 	}
 
-	// correct the cursor for the keys after the cutted keyset
+	// correct the cursor for the keys after the cut keyset
 	if (ks->current >= it)
 	{
 		if (it >= ks->size)
@@ -1804,7 +1825,7 @@ static Key * elektraLookupByCascading (KeySet * ks, Key * key, option_t options)
 
 	if (!(options & KDB_O_NOSPEC))
 	{
-		strncpy (newname + 2, "spec", 4);
+		strncpy (newname + 2, "spec", 5);
 		strcpy (newname + 6, name);
 		key->key = newname + 2;
 		key->keySize = length - 2;
@@ -1835,7 +1856,7 @@ static Key * elektraLookupByCascading (KeySet * ks, Key * key, option_t options)
 	}
 
 	// default cascading:
-	strncpy (newname + 2, "proc", 4);
+	strncpy (newname + 2, "proc", 5);
 	strcpy (newname + 6, name);
 	key->key = newname + 2;
 	key->keySize = length - 2;
@@ -1844,7 +1865,7 @@ static Key * elektraLookupByCascading (KeySet * ks, Key * key, option_t options)
 
 	if (!found)
 	{
-		strncpy (newname + 3, "dir", 3);
+		strncpy (newname + 3, "dir", 4);
 		strcpy (newname + 6, name);
 		key->key = newname + 3;
 		key->keySize = length - 3;
@@ -1854,7 +1875,7 @@ static Key * elektraLookupByCascading (KeySet * ks, Key * key, option_t options)
 
 	if (!found)
 	{
-		strncpy (newname + 2, "user", 4);
+		strncpy (newname + 2, "user", 5);
 		strcpy (newname + 6, name);
 		key->key = newname + 2;
 		key->keySize = length - 2;
@@ -1864,7 +1885,7 @@ static Key * elektraLookupByCascading (KeySet * ks, Key * key, option_t options)
 
 	if (!found)
 	{
-		strncpy (newname, "system", 6);
+		strncpy (newname, "system", 7);
 		strcpy (newname + 6, name);
 		key->key = newname;
 		key->keySize = length;
@@ -2104,38 +2125,97 @@ static Key * elektraLookupSearch (KeySet * ks, Key * key, option_t options)
 	Key * found = 0;
 
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
-	// KDB_O_WITHOWNER and KDB_O_NOCASE flags are not compatible with OPMPHM
-	if (((options & KDB_O_WITHOWNER) || (options & KDB_O_NOCASE)) && (options & KDB_O_OPMPHM))
+	// flags incompatible with OPMPHM
+	if (test_bit (options, (KDB_O_WITHOWNER | KDB_O_NOCASE)))
 	{
-		// remove OPMPHM
-		options ^= KDB_O_OPMPHM;
+		// remove KDB_O_OPMPHM and set KDB_O_BINSEARCH
+		clear_bit (options, KDB_O_OPMPHM);
+		set_bit (options, KDB_O_BINSEARCH);
 	}
 
-	if (options & KDB_O_OPMPHM)
+	if (!ks->opmphmPredictor && ks->size > opmphmPredictorActionLimit)
 	{
-		// remove OPMPHM, due to callback stuff
-		options ^= KDB_O_OPMPHM;
-		if (!opmphmIsBuild (ks->opmphm))
+		// lazy loading of predictor when over action limit
+		ks->opmphmPredictor = opmphmPredictorNew ();
+	}
+
+	// predictor
+	if (!test_bit (options, (KDB_O_BINSEARCH | KDB_O_OPMPHM)))
+	{
+		// predictor not overruled
+		if (ks->opmphmPredictor)
 		{
-			if (elektraLookupBuildOpmphm (ks))
+			if (test_bit (ks->flags, KS_FLAG_NAME_CHANGE))
 			{
-				// when OPMPHM build fails use binary search as backup
-				found = elektraLookupBinarySearch (ks, key, options);
+				// KeySet changed ask predictor
+				if (opmphmPredictor (ks->opmphmPredictor, ks->size))
+				{
+					set_bit (options, KDB_O_OPMPHM);
+				}
+				else
+				{
+					set_bit (options, KDB_O_BINSEARCH);
+				}
+				// resolve flag
+				clear_bit (ks->flags, KS_FLAG_NAME_CHANGE);
 			}
 			else
 			{
-				found = elektraLookupOpmphmSearch (ks, key, options);
+				if (opmphmIsBuild (ks->opmphm))
+				{
+					opmphmPredictorIncCountOpmphm (ks->opmphmPredictor);
+					set_bit (options, KDB_O_OPMPHM);
+				}
+				else if (opmphmPredictorIncCountBinarySearch (ks->opmphmPredictor, ks->size))
+				{
+					// endless binary search protection
+					set_bit (options, KDB_O_OPMPHM);
+				}
+				else
+				{
+					set_bit (options, KDB_O_BINSEARCH);
+				}
 			}
 		}
 		else
 		{
-			found = elektraLookupOpmphmSearch (ks, key, options);
+			// when predictor is not here use binary search as backup
+			set_bit (options, KDB_O_BINSEARCH);
 		}
 	}
-	else
+
+	// the actual lookup
+	if ((options & (KDB_O_BINSEARCH | KDB_O_OPMPHM)) == KDB_O_OPMPHM)
+	{
+		if (opmphmIsBuild (ks->opmphm) || !elektraLookupBuildOpmphm (ks))
+		{
+			found = elektraLookupOpmphmSearch (ks, key, options);
+		}
+		else
+		{
+			// when OPMPHM build fails use binary search as backup
+			found = elektraLookupBinarySearch (ks, key, options);
+		}
+	}
+	else if ((options & (KDB_O_BINSEARCH | KDB_O_OPMPHM)) == KDB_O_BINSEARCH)
 	{
 		found = elektraLookupBinarySearch (ks, key, options);
 	}
+	else
+	{
+		// both flags set, make the best out of it
+		if (opmphmIsBuild (ks->opmphm))
+		{
+			found = elektraLookupOpmphmSearch (ks, key, options);
+		}
+		else
+		{
+			found = elektraLookupBinarySearch (ks, key, options);
+		}
+	}
+
+	// remove flags to not interfere with callback
+	clear_bit (options, (KDB_O_OPMPHM | KDB_O_BINSEARCH));
 #else
 	found = elektraLookupBinarySearch (ks, key, options);
 #endif
@@ -2250,6 +2330,12 @@ static Key * elektraLookupCreateKey (KeySet * ks, Key * key, ELEKTRA_UNUSED opti
  *
  * @par KDB_O_NOCASE (deprecated)
  * Lookup ignoring case (needs ::KDB_O_NOALL).
+ *
+ *
+ * @par Hybrid search
+ * When Elektra is compiled with `ENABLE_OPTIMIZATIONS=ON` a hybrid search decides
+ * dynamically between the binary search and the [OPMPHM](https://master.libelektra.org/doc/dev/data-structures.md#order-preserving-minimal-perfect-hash-map-aka-opmphm).
+ * The hybrid search can be overruled by passing ::KDB_O_OPMPHM or ::KDB_O_BINSEARCH in the options to ksLookup().
  *
  *
  *
@@ -2494,7 +2580,7 @@ Key * ksLookupByBinary (KeySet * ks, const void * value, size_t size, option_t o
  *
  * Resize keyset.
  *
- * For internal useage only.
+ * For internal usage only.
  *
  * Don't use that function to be portable. You can give an hint
  * how large the keyset should be in ksNew().
@@ -2534,6 +2620,7 @@ int ksResize (KeySet * ks, size_t alloc)
 		ks->alloc = alloc;
 		ks->size = 0;
 		ks->array = elektraMalloc (sizeof (struct _Key *) * ks->alloc);
+		clear_bit (ks->flags, KS_FLAG_MMAP_ARRAY);
 		if (!ks->array)
 		{
 			/*errno = KDB_ERR_NOMEM;*/
@@ -2542,6 +2629,19 @@ int ksResize (KeySet * ks, size_t alloc)
 	}
 	ks->alloc = alloc;
 
+	if (test_bit (ks->flags, KS_FLAG_MMAP_ARRAY))
+	{
+		// need to move the ks->array out of mmap
+		Key ** new = elektraMalloc (sizeof (struct _Key *) * ks->alloc);
+		if (!new)
+		{
+			/*errno = KDB_ERR_NOMEM;*/
+			return -1;
+		}
+		elektraMemcpy (new, ks->array, ks->size + 1); // copy including ending NULL
+		ks->array = new;
+		clear_bit (ks->flags, KS_FLAG_MMAP_ARRAY);
+	}
 
 	if (elektraRealloc ((void **) &ks->array, sizeof (struct _Key *) * ks->alloc) == -1)
 	{
@@ -2598,6 +2698,7 @@ int ksInit (KeySet * ks)
 	ks->opmphm = NULL;
 	// first lookup should predict so invalidate it
 	elektraOpmphmInvalidate (ks);
+	ks->opmphmPredictor = NULL;
 #endif
 
 	return 0;
@@ -2623,7 +2724,12 @@ int ksClose (KeySet * ks)
 		keyDel (k);
 	}
 
-	if (ks->array) elektraFree (ks->array);
+	if (ks->array && !test_bit (ks->flags, KS_FLAG_MMAP_ARRAY))
+	{
+		elektraFree (ks->array);
+	}
+	clear_bit (ks->flags, KS_FLAG_MMAP_ARRAY);
+
 	ks->array = 0;
 	ks->alloc = 0;
 

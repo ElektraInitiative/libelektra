@@ -1,4 +1,4 @@
-find_package (Threads)
+find_package (Threads QUIET)
 
 add_headers (HDR_FILES)
 add_cppheaders (HDR_FILES)

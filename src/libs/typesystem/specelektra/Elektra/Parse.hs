@@ -1,10 +1,10 @@
 --
 -- @file
 --
--- @brief Parses GHC's internal type reprentation to an intermediate data structure and vice versa
+-- @brief Parses GHC's internal type representation to an intermediate data structure and vice versa
 --
 -- @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
--- 
+--
 module Elektra.Parse (fromAST, toAST) where
 
 import Data.Maybe    (fromMaybe)

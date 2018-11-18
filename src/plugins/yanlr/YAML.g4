@@ -5,7 +5,7 @@ options {
 }
 
 yaml : STREAM_START child? comment* STREAM_END EOF ;
-child : comment* (value | map | sequence) comment*;
+child : comment* (value | map | sequence) comment* ;
 
 value : scalar ;
 scalar : PLAIN_SCALAR
@@ -19,7 +19,7 @@ pair : KEY key
        VALUE
        comment* // Match possible comment, even if there is no value (child)
        child?
-      ;
+     ;
 key : scalar ;
 
 sequence : SEQUENCE_START elements BLOCK_END ;

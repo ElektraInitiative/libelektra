@@ -32,6 +32,10 @@
 #define BUFFER_LENGTH 4096
 #define ELEKTRA_TEST_ROOT "/tests/ckdb/"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 extern int nbError;
 extern int nbTest;
 
@@ -42,6 +46,8 @@ extern char * tempHome;
 extern int tempHomeLen;
 
 int init (int argc, char ** argv);
+
+#ifndef __cplusplus
 
 #define print_result(name)                                                                                                                 \
 	{                                                                                                                                  \
@@ -210,6 +216,15 @@ int init (int argc, char ** argv);
 						__FILE__, __LINE__, __func__, ELEKTRA_QUOTE (mmk1), ELEKTRA_QUOTE (mmk2), keyName (meta)); \
 					break;                                                                                             \
 				}                                                                                                          \
+				if (strcmp (keyString (meta), keyString (metaCmp)) != 0)                                                   \
+				{                                                                                                          \
+					nbError++;                                                                                         \
+					printf ("%s:%d: error in %s: Comparison of the keys with name \"%s\" failed. The value of the "    \
+						"metakey \"%s\" is not equal: \"%s\" ≠ \"%s\"",                                            \
+						__FILE__, __LINE__, __func__, keyName (mmk1), keyName (meta), keyString (meta),            \
+						keyString (metaCmp));                                                                      \
+					break;                                                                                             \
+				}                                                                                                          \
 			}                                                                                                                  \
                                                                                                                                            \
 			const Key * const metaCmp = keyNextMeta (mmk2);                                                                    \
@@ -275,6 +290,8 @@ int init (int argc, char ** argv);
 		}                                                                                                                          \
 	}
 
+#endif // __cplusplus
+
 int compare_files (const char * filename);
 int compare_line_files (const char * filename, const char * genfilename);
 int compare_regex_to_line_files (const char * filename, const char * genfilename);
@@ -292,5 +309,11 @@ void output_keyset (KeySet * ks);
 
 int output_warnings (Key * errorKey);
 int output_error (Key * errorKey);
+
+void clean_temp_home (void);
+
+#ifdef __cplusplus
+} // end extern "C"
+#endif
 
 #endif

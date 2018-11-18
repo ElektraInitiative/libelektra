@@ -404,8 +404,8 @@ int keyCopy (Key * dest, const Key * source)
 	dest->dataSize = source->dataSize;
 
 	// free old resources of destination
-	elektraFree (destKey);
-	elektraFree (destData);
+	if (!test_bit (dest->flags, KEY_FLAG_MMAP_KEY)) elektraFree (destKey);
+	if (!test_bit (dest->flags, KEY_FLAG_MMAP_DATA)) elektraFree (destData);
 	ksDel (destMeta);
 
 	return 1;
@@ -428,7 +428,7 @@ memerror:
  * Every key created by keyNew() must be
  * deleted with keyDel().
  *
- * It is save to delete keys which are
+ * It is safe to delete keys which are
  * in a keyset, the number of references
  * will be returned then.
  *
@@ -460,8 +460,14 @@ int keyDel (Key * key)
 		return key->ksReference;
 	}
 
+	int keyInMmap = test_bit (key->flags, KEY_FLAG_MMAP_STRUCT);
+
 	rc = keyClear (key);
-	elektraFree (key);
+
+	if (!keyInMmap)
+	{
+		elektraFree (key);
+	}
 
 	return rc;
 }
@@ -505,12 +511,16 @@ int keyClear (Key * key)
 	size_t ref = 0;
 
 	ref = key->ksReference;
-	if (key->key) elektraFree (key->key);
-	if (key->data.v) elektraFree (key->data.v);
+
+	int keyStructInMmap = test_bit (key->flags, KEY_FLAG_MMAP_STRUCT);
+
+	if (key->key && !test_bit (key->flags, KEY_FLAG_MMAP_KEY)) elektraFree (key->key);
+	if (key->data.v && !test_bit (key->flags, KEY_FLAG_MMAP_DATA)) elektraFree (key->data.v);
 	if (key->meta) ksDel (key->meta);
 
 	keyInit (key);
 
+	if (keyStructInMmap) key->flags |= KEY_FLAG_MMAP_STRUCT;
 
 	/* Set reference properties */
 	key->ksReference = ref;

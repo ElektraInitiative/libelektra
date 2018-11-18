@@ -72,7 +72,8 @@
  *
  * @ingroup backend
  */
-typedef enum {
+typedef enum
+{
 	// clang-format off
 	ELEKTRA_PLUGIN_OPEN=1,		/*!< Next arg is backend for kdbOpen() */
 	ELEKTRA_PLUGIN_CLOSE=1<<1,	/*!< Next arg is backend for kdbClose() */

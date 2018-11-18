@@ -38,6 +38,7 @@ function (add_plugintest testname)
 		set (MULTI_VALUE_KEYWORDS
 		     COMPILE_DEFINITIONS
 		     INCLUDE_DIRECTORIES
+		     INCLUDE_SYSTEM_DIRECTORIES
 		     LINK_LIBRARIES
 		     LINK_ELEKTRA
 		     TEST_LINK_LIBRARIES
@@ -48,7 +49,7 @@ function (add_plugintest testname)
 
 		cmake_parse_arguments (ARG
 				       "MEMLEAK;INSTALL_TEST_DATA;CPP" # optional keywords
-				       "INCLUDE_SYSTEM_DIRECTORIES" # one value keywords
+				       "" # one value keywords
 				       "${MULTI_VALUE_KEYWORDS}" # multi value keywords
 				       ${ARGN})
 
@@ -106,22 +107,29 @@ function (add_plugintest testname)
 				     "${CMAKE_CURRENT_SOURCE_DIR}/testmod_${testname}.c")
 		endif (ARG_CPP)
 
-		if (BUILD_SHARED)
-			set (PLUGIN_TARGET_OBJS "")
-			if (ARG_LINK_PLUGIN)
-				if (NOT ARG_LINK_PLUGIN STREQUAL "<no>")
-					set (PLUGIN_TARGET_OBJS "$<TARGET_OBJECTS:elektra-${ARG_LINK_PLUGIN}-objects>")
-				endif ()
-			else ()
-				set (PLUGIN_TARGET_OBJS "$<TARGET_OBJECTS:elektra-${testname}-objects>") # assume that testcase+plugin to be
-													 # tested have same name:
+		set (PLUGIN_TARGET_OBJS "")
+		if (ARG_LINK_PLUGIN)
+			if (NOT ARG_LINK_PLUGIN STREQUAL "<no>")
+				set (PLUGIN_TARGET_OBJS "$<TARGET_OBJECTS:elektra-${ARG_LINK_PLUGIN}-objects>")
 			endif ()
-			list (APPEND TEST_SOURCES
-				     "${PLUGIN_TARGET_OBJS}")
+		else ()
+			set (PLUGIN_TARGET_OBJS "$<TARGET_OBJECTS:elektra-${testname}-objects>") # assume that testcase+plugin to be tested
+												 # have same name:
 		endif ()
+		list (APPEND TEST_SOURCES
+			     "${PLUGIN_TARGET_OBJS}")
+
 		set (testexename testmod_${testname})
 		add_executable (${testexename} ${TEST_SOURCES})
 		add_dependencies (${testexename} kdberrors_generated)
+
+		if (BUILD_SHARED)
+			if (ARG_LINK_PLUGIN)
+				add_dependencies (${testexename} elektra-${ARG_LINK_PLUGIN})
+			else ()
+				add_dependencies (${testexename} elektra-${testname})
+			endif ()
+		endif ()
 
 		# ~~~
 		# alternative approach to restore_variable
@@ -149,12 +157,20 @@ function (add_plugintest testname)
 			      APPEND
 			      PROPERTY INCLUDE_DIRECTORIES
 				       ${ARG_INCLUDE_DIRECTORIES})
-		if (ARG_INCLUDE_SYSTEM_DIRECTORIES AND NOT ARG_INCLUDE_SYSTEM_DIRECTORIES STREQUAL "/usr/include")
-			set_property (TARGET ${testexename}
-				      APPEND
-				      PROPERTY COMPILE_FLAGS
-					       "${CMAKE_INCLUDE_SYSTEM_FLAG_CXX} ${ARG_INCLUDE_SYSTEM_DIRECTORIES}")
-		endif ()
+
+		foreach (DIR ${ARG_INCLUDE_SYSTEM_DIRECTORIES})
+
+			if (DIR
+			    AND NOT
+				DIR
+				STREQUAL
+				"/usr/include")
+				set_property (TARGET ${testexename}
+					      APPEND_STRING
+					      PROPERTY COMPILE_FLAGS
+						       " ${CMAKE_INCLUDE_SYSTEM_FLAG_CXX} \"${DIR}\"")
+			endif ()
+		endforeach (DIR)
 
 		if (ARG_WORKING_DIRECTORY)
 			set (WORKING_DIRECTORY "${ARG_WORKING_DIRECTORY}")
@@ -179,6 +195,7 @@ function (add_plugintest testname)
 endfunction (add_plugintest)
 
 function (plugin_check_if_included PLUGIN_SHORT_NAME)
+	set (NOT_INCLUDED "" PARENT_SCOPE)
 	list (FIND PLUGINS
 		   "-${PLUGIN_SHORT_NAME}"
 		   FOUND_EXCLUDE_NAME)
@@ -316,8 +333,7 @@ endfunction ()
 #
 # INCLUDE_SYSTEM_DIRECTORIES:
 #  Same as INCLUDE_DIRECTORIES, but avoids warnings and dependency calculation
-#  for these include folders. (TODO currently allows only a single argument because
-#  ; -> " " is not yet implemented)
+#  for these include folders.
 #
 # ONLY_SHARED:
 #  Do not include this plugin in FULL or STATIC builds.
@@ -355,13 +371,14 @@ function (add_plugin PLUGIN_SHORT_NAME)
 	     LINK_LIBRARIES
 	     COMPILE_DEFINITIONS
 	     INCLUDE_DIRECTORIES
+	     INCLUDE_SYSTEM_DIRECTORIES
 	     LINK_ELEKTRA
 	     DEPENDS
 	     TEST_ENVIRONMENT
 	     TEST_REQUIRED_PLUGINS)
 	cmake_parse_arguments (ARG
 			       "CPP;CPP_TEST;ADD_TEST;TEST_README;INSTALL_TEST_DATA;ONLY_SHARED" # optional keywords
-			       "INCLUDE_SYSTEM_DIRECTORIES" # one value keywords
+			       "" # one value keywords
 			       "${MULTI_VALUE_KEYWORDS}" # multi value keywords
 			       ${ARGN})
 
@@ -389,7 +406,9 @@ function (add_plugin PLUGIN_SHORT_NAME)
 	endif ()
 
 	if (ADDTESTING_PHASE)
-		if (ARG_INSTALL_TEST_DATA AND NOT ARG_ADD_TEST)
+		if (ARG_INSTALL_TEST_DATA
+		    AND NOT
+			ARG_ADD_TEST)
 			if (INSTALL_TESTING)
 				install (DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${PLUGIN_SHORT_NAME}"
 					 DESTINATION "${TARGET_TEST_DATA_FOLDER}")
@@ -510,7 +529,9 @@ function (add_plugin PLUGIN_SHORT_NAME)
 	# message (STATUS "current bin ${CMAKE_CURRENT_BINARY_DIR}")
 	# ~~~
 
-	if (ARG_ONLY_SHARED AND NOT BUILD_SHARED)
+	if (ARG_ONLY_SHARED
+	    AND NOT
+		BUILD_SHARED)
 		remove_plugin ("${PLUGIN_SHORT_NAME}"
 			       "it can only be built if BUILD_SHARED is enabled, both BUILD_FULL or BUILD_STATIC may be enabled as well")
 		return ()
@@ -557,18 +578,24 @@ function (add_plugin PLUGIN_SHORT_NAME)
 			       ${CMAKE_CURRENT_BINARY_DIR} # for readme
 		      )
 
-	if (ARG_INCLUDE_SYSTEM_DIRECTORIES AND NOT ARG_INCLUDE_SYSTEM_DIRECTORIES STREQUAL "/usr/include")
-		set_property (TARGET ${PLUGIN_OBJS}
-			      APPEND
-			      PROPERTY COMPILE_FLAGS
-				       "${CMAKE_INCLUDE_SYSTEM_FLAG_CXX} ${ARG_INCLUDE_SYSTEM_DIRECTORIES} ${CMAKE_PIC_FLAGS}")
-	else ()
-		set_property (TARGET ${PLUGIN_OBJS}
-			      APPEND
-			      PROPERTY COMPILE_FLAGS
-				       ${CMAKE_PIC_FLAGS} # needed for shared libraries
-			      )
-	endif ()
+	set_property (TARGET ${PLUGIN_OBJS}
+		      APPEND_STRING
+		      PROPERTY COMPILE_FLAGS
+			       "${CMAKE_PIC_FLAGS}" # needed for shared libraries
+		      )
+
+	foreach (DIR ${ARG_INCLUDE_SYSTEM_DIRECTORIES})
+		if (DIR
+		    AND NOT
+			DIR
+			STREQUAL
+			"/usr/include")
+			set_property (TARGET ${PLUGIN_OBJS}
+				      APPEND_STRING
+				      PROPERTY COMPILE_FLAGS
+					       " ${CMAKE_INCLUDE_SYSTEM_FLAG_CXX} \"${DIR}\"")
+		endif (DIR AND NOT DIR STREQUAL "/usr/include")
+	endforeach (DIR)
 
 	set_property (TARGET ${PLUGIN_OBJS}
 		      PROPERTY CMAKE_POSITION_INDEPENDENT_CODE
@@ -600,12 +627,18 @@ function (add_plugin PLUGIN_SHORT_NAME)
 				       ${ARG_INCLUDE_DIRECTORIES}
 				       ${CMAKE_CURRENT_BINARY_DIR} # for readme
 			      )
-		if (ARG_INCLUDE_SYSTEM_DIRECTORIES AND NOT ARG_INCLUDE_SYSTEM_DIRECTORIES STREQUAL "/usr/include")
-			set_property (TARGET ${PLUGIN_NAME}
-				      APPEND
-				      PROPERTY COMPILE_FLAGS
-					       "${CMAKE_INCLUDE_SYSTEM_FLAG_CXX} ${ARG_INCLUDE_SYSTEM_DIRECTORIES}")
-		endif ()
+		foreach (DIR ${ARG_INCLUDE_SYSTEM_DIRECTORIES})
+			if (DIR
+			    AND NOT
+				DIR
+				STREQUAL
+				"/usr/include")
+				set_property (TARGET ${PLUGIN_NAME}
+					      APPEND_STRING
+					      PROPERTY COMPILE_FLAGS
+						       " ${CMAKE_INCLUDE_SYSTEM_FLAG_CXX} \"${DIR}\"")
+			endif ()
+		endforeach (DIR)
 		if (${LD_ACCEPTS_VERSION_SCRIPT})
 			set_property (TARGET ${PLUGIN_NAME}
 				      APPEND

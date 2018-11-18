@@ -1,6 +1,6 @@
 include (LibAddMacros)
 
-find_package (PkgConfig)
+find_package (PkgConfig QUIET)
 pkg_check_modules (ZMQ QUIET libzmq)
 
 if (ZMQ_FOUND)

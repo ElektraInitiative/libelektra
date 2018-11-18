@@ -1,4 +1,6 @@
 #!/bin/sh
+#
+# @tags mount
 
 if [ -z "$KDB" ]; then
 	KDB=kdb

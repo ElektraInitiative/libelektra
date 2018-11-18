@@ -1,5 +1,5 @@
 find_program (MAVEN_EXECUTABLE mvn)
-find_package (Java)
+find_package (Java QUIET)
 
 if (Java_JAVAC_EXECUTABLE)
 
@@ -12,10 +12,20 @@ if (Java_JAVAC_EXECUTABLE)
 	# as 9.x.x > 1.8 and 1.8.x > 1.8 and 1.9.x > 1.8
 	# ~~~
 	if ((${Java_VERSION} VERSION_GREATER "1.8.0") OR (${Java_VERSION} VERSION_EQUAL "1.8.0"))
+		if (NOT BUILD_SHARED)
+			# See also: https://travis-ci.org/sanssecours/elektra/jobs/445840045
+			exclude_binding (jna "it can only be built if `BUILD_SHARED` is enabled")
+			return ()
+		endif (NOT BUILD_SHARED)
+
 		if (MAVEN_EXECUTABLE) # set by find_program
 			add_binding (jna)
 
 			file (MAKE_DIRECTORY libelektra4j)
+
+			if (NOT APPLE)
+				set (USE_SYSTEM_CLASS_LOADER "<useSystemClassLoader>false</useSystemClassLoader>")
+			endif (NOT APPLE)
 
 			# first fill the elektra version in the pom file @ONLY to avoid replacing pom.xml placeholders which also use the
 			# format ${}
@@ -48,7 +58,9 @@ if (Java_JAVAC_EXECUTABLE)
 				 DESTINATION "share/java")
 
 			# and add maven test to execute with ctest in the testing phase
-			if ((CMAKE_SYSTEM_NAME STREQUAL "Darwin") AND NOT (CMAKE_SYSTEM_VERSION VERSION_LESS 15))
+			if ((CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+			    AND NOT
+				(CMAKE_SYSTEM_VERSION VERSION_LESS 15))
 
 				# we cannot set DYLD_LIBRARY_PATH on new macOS versions, making the kdb tests fail if its not installed in
 				# the system
@@ -68,6 +80,7 @@ if (Java_JAVAC_EXECUTABLE)
 
 				set_property (TEST testjna_maven
 					      PROPERTY LABELS
+						       kdbtests
 						       bindings
 						       memleak)
 			endif (NOT ENABLE_ASAN)

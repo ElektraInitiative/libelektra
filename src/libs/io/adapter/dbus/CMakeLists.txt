@@ -1,4 +1,4 @@
-find_package (DBus)
+find_package (DBus QUIET)
 
 if (DBUS_FOUND)
 

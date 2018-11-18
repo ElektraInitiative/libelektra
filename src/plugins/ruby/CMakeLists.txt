@@ -4,7 +4,7 @@ if (DEPENDENCY_PHASE)
 	if (APPLE)
 		set (CMAKE_FIND_FRAMEWORK "LAST")
 	endif ()
-	find_package (Ruby)
+	find_package (Ruby QUIET)
 	find_swig ()
 	check_binding_included ("swig_ruby" BINDING_WAS_ADDED SUBDIRECTORY "swig/ruby" SILENT)
 
@@ -60,7 +60,7 @@ add_plugin (ruby
 	    SOURCES ruby.hpp
 		    ruby.cpp
 		    ${CMAKE_CURRENT_BINARY_DIR}/runtime.h
-	    INCLUDE_DIRECTORIES ${RUBY_INCLUDE_DIRS}
+	    INCLUDE_SYSTEM_DIRECTORIES ${RUBY_INCLUDE_DIRS}
 	    LINK_LIBRARIES ${RUBY_LIBRARY}
 	    COMPILE_DEFINITIONS SWIG_TYPE_TABLE=kdb
 				SWIG_RUNTIME=\"runtime.h\")

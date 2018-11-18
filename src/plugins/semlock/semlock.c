@@ -13,7 +13,11 @@
 #include <kdbhelper.h>
 
 
-typedef enum { PRE = 0, POST } State;
+typedef enum
+{
+	PRE = 0,
+	POST
+} State;
 
 typedef struct
 {

@@ -30,7 +30,8 @@
 /**
  * List of states for the state machine that parses the gpg key list output.
  */
-enum gpgKeyListState {
+enum gpgKeyListState
+{
 	GPG_KEYLIST_STATE_START,
 	GPG_KEYLIST_STATE_FPR2,
 	GPG_KEYLIST_STATE_FPR3,
@@ -42,7 +43,8 @@ enum gpgKeyListState {
  * Return codes for the forked child process that starts the gpg binary.
  * List of possible errors.
  */
-enum gpgCallErrorCode {
+enum gpgCallErrorCode
+{
 
 	/** Failed to duplicate the stdin pipe */
 	GPG_CALL_DUP_STDIN = 0x4200,

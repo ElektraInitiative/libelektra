@@ -88,10 +88,10 @@ If version numbers are correct in
 Rebuild cleanly, run all tests and also check for memleaks:
   cd ~build && ~e/scripts/configure-debian ~e && make -j5 && make run_all -j5 && make run_memcheck -j5
 
-Check if there are really >=135 or >=95 tests
+Check if there are really >=241 or >=131 tests
 
 - Log tests:
-  kdb run_all > ~elektra/$VERSION/run_all 2>&1
+  kdb run_all -v > ~elektra/$VERSION/run_all 2>&1
 
 - Check binary compatibility
   Install libelektra-test of the previous version and run again:
@@ -151,7 +151,7 @@ export DVERSION=$VERSION-1
 
 Build deb:
  cd ~e && git-checkout debian
- git-merge --no-ff master -m "Merge for debian release $DVERSION"
+ git-merge --no-ff $VERSION -m "Merge for debian release $DVERSION"
 
 UNRELEASED -> unstable
 
@@ -185,13 +185,13 @@ Strace what tools are doing:
 
 Run tests:
 
- kdb run_all | tee ~elektra/$VERSION/run_all 2>&1
+ kdb run_all -v | tee ~elektra/$VERSION/run_all 2>&1
  KDB=kdb-static kdb-static run_all | tee ~elektra/$VERSION/run_all_static 2>&1
  KDB=kdb-full kdb-full run_all | tee ~elektra/$VERSION/run_all_full 2>&1
 
 Install libelektra-test of the previous version and run again:
 
- CHECK_VERSION=NO kdb run_all > ~elektra/$VERSION/run_all_abi 2>&1
+ CHECK_VERSION=NO kdb run_all -v > ~elektra/$VERSION/run_all_abi 2>&1
 
 
 == Test external tools ==

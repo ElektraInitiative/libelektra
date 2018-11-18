@@ -1,4 +1,6 @@
 #!/bin/sh
+#
+# @tags mount
 
 if [ -z "$KDB" ]; then
 	KDB=kdb
@@ -6,107 +8,91 @@ fi
 
 PREFIX="system/elektra/mountpoints/"
 MP=
-MOUNTPOINT= 
-if [ "$#" -eq 1 ];
-then
-    MP="$1"
-    MOUNTPOINT=$(echo "$1" | sed 's:/:\\/:g')
-    MOUNTPOINT="${PREFIX}${MOUNTPOINT}"
+MOUNTPOINT=
+if [ "$#" -eq 1 ]; then
+	MP="$1"
+	MOUNTPOINT=$(echo "$1" | sed 's:/:\\/:g')
+	MOUNTPOINT="${PREFIX}${MOUNTPOINT}"
 fi
 
-$KDB get "${PREFIX}system\\/info\\/elektra\\/constants" >/dev/null 2>/dev/null 
+$KDB get "${PREFIX}system\\/info\\/elektra\\/constants" > /dev/null 2> /dev/null
 HASCONSTANT=$?
 UMOUNTCONSTANT=0
-if [ "$HASCONSTANT" -ne 0 ];
-then
-    $KDB mount -c assume/unchanged=1 --resolver noresolver none system/info/elektra/constants constants >/dev/null 2>/dev/null
-    if [ "$?" -eq 0 ];
-    then
-	HASCONSTANT=1
-	UMOUNTCONSTANT=1
-    fi
+if [ "$HASCONSTANT" -ne 0 ]; then
+	$KDB mount -c assume/unchanged=1 --resolver noresolver none system/info/elektra/constants constants > /dev/null 2> /dev/null
+	if [ "$?" -eq 0 ]; then
+		HASCONSTANT=1
+		UMOUNTCONSTANT=1
+	fi
 else
-    HASCONSTANT=1
+	HASCONSTANT=1
 fi
 
-
-KDB_VERSION=$($KDB sget system/elektra/version/constants/KDB_VERSION "NA" 2>/dev/null)
+KDB_VERSION=$($KDB sget system/elektra/version/constants/KDB_VERSION "NA" 2> /dev/null)
 echo "Version: $KDB_VERSION"
 
-if [ "$HASCONSTANT" -eq 1 ];
-then
-    RESOLVER=$($KDB sget system/info/elektra/constants/cmake/KDB_DEFAULT_RESOLVER "NA" 2>/dev/null)
-    STORAGE=$($KDB sget system/info/elektra/constants/cmake/KDB_DEFAULT_STORAGE "NA" 2>/dev/null)
-    echo "Default resolver: $RESOLVER"
-    echo "Default storage: $STORAGE"
+if [ "$HASCONSTANT" -eq 1 ]; then
+	RESOLVER=$($KDB sget system/info/elektra/constants/cmake/KDB_DEFAULT_RESOLVER "NA" 2> /dev/null)
+	STORAGE=$($KDB sget system/info/elektra/constants/cmake/KDB_DEFAULT_STORAGE "NA" 2> /dev/null)
+	echo "Default resolver: $RESOLVER"
+	echo "Default storage: $STORAGE"
 fi
 
-if [ "$UMOUNTCONSTANT" -eq 1 ];
-then
-    $KDB umount system/info/elektra/constants >/dev/null 2>/dev/null
+if [ "$UMOUNTCONSTANT" -eq 1 ]; then
+	$KDB umount system/info/elektra/constants > /dev/null 2> /dev/null
 fi
 
-
-output_plugins()
-{
-    PLUGINS=$($KDB complete "${MOUNTPOINT}/${1}/" --max-depth=1)    
-    if [ -z "$PLUGINS" ];
-    then
-	return
-    fi
-    echo "$1:"
-    OLD_IFS="$IFS"
-    IFS="$(printf '\n+')"
-    for p in $PLUGINS;
-    do
-	printf "\t%s\n" $(basename "$p")
-	#echo "\t`basename \"$p\"`"
-	output_config "${p%?}/config" 2
-    done
-    IFS="$OLD_IFS"
-    return
-}
-
-output_config()
-{
-    CPATH="${1}"
-    ECPATH=$(echo "$CPATH" | sed 's:\\:\\\\\\\\:g')
-    CONFIG=$($KDB complete "$CPATH")
-    if [ -z "$CONFIG" ];
-    then
-	return
-    fi
-    OLD_IFS="$IFS"
-    IFS="$(printf '\n+')"
-    DEPTH=$(printf "%${2}s" | tr ' ' '\t')
-    echo "${DEPTH}config:"
-    for c in $CONFIG;
-    do
-	v=$($KDB get "$c" 2> /dev/null)
-	k=$(echo "$c" | sed 's:\\:\\\\:g'| sed "s:$ECPATH/::")
-	if [ ! -z "$v" ];
-	then
-	    echo "${DEPTH}$k = $v"
+output_plugins() {
+	PLUGINS=$($KDB complete "${MOUNTPOINT}/${1}/" --max-depth=1)
+	if [ -z "$PLUGINS" ]; then
+		return
 	fi
-    done
-    IFS="$OLD_IFS"
-    return
+	echo "$1:"
+	OLD_IFS="$IFS"
+	IFS="$(printf '\n+')"
+	for p in $PLUGINS; do
+		printf "\t%s\n" $(basename "$p")
+		#echo "\t`basename \"$p\"`"
+		output_config "${p%?}/config" 2
+	done
+	IFS="$OLD_IFS"
+	return
+}
 
+output_config() {
+	CPATH="${1}"
+	ECPATH=$(echo "$CPATH" | sed 's:\\:\\\\\\\\:g')
+	CONFIG=$($KDB complete "$CPATH")
+	if [ -z "$CONFIG" ]; then
+		return
+	fi
+	OLD_IFS="$IFS"
+	IFS="$(printf '\n+')"
+	DEPTH=$(printf "%${2}s" | tr ' ' '\t')
+	echo "${DEPTH}config:"
+	for c in $CONFIG; do
+		v=$($KDB get "$c" 2> /dev/null)
+		k=$(echo "$c" | sed 's:\\:\\\\:g' | sed "s:$ECPATH/::")
+		if [ ! -z "$v" ]; then
+			echo "${DEPTH}$k = $v"
+		fi
+	done
+	IFS="$OLD_IFS"
+	return
 
 }
-if [ ! -z "$MOUNTPOINT" ];
-then
-    $KDB get "$MOUNTPOINT" >/dev/null 2>/dev/null
-    if [ "$?" -ne 0 ];
-    then
-	echo "Mountpoint \"$MP\" doesn't exist"
-	exit 1
-    fi
-    MOUNTPATH=$($KDB sget "${MOUNTPOINT}/config/path" "NA" 2>/dev/null)
-    echo "Mountpoint: $MP"
-    echo "File: $MOUNTPATH"
-    output_config "${MOUNTPOINT}/config" 1
-    output_plugins "getplugins"
-    output_plugins "setplugins"
-    output_plugins "errorplugins"
+
+if [ ! -z "$MOUNTPOINT" ]; then
+	$KDB get "$MOUNTPOINT" > /dev/null 2> /dev/null
+	if [ "$?" -ne 0 ]; then
+		echo "Mountpoint \"$MP\" doesn't exist"
+		exit 1
+	fi
+	MOUNTPATH=$($KDB sget "${MOUNTPOINT}/config/path" "NA" 2> /dev/null)
+	echo "Mountpoint: $MP"
+	echo "File: $MOUNTPATH"
+	output_config "${MOUNTPOINT}/config" 1
+	output_plugins "getplugins"
+	output_plugins "setplugins"
+	output_plugins "errorplugins"
 fi

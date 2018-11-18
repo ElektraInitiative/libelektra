@@ -12,6 +12,11 @@ elseif (NOT PYTHONLIBS_FOUND)
 elseif (PYTHONLIBS_VERSION_STRING MATCHES "^2\\.[0-9]+")
 	exclude_binding (swig_python "python3 is for python 3 only and not ${PYTHONLIBS_VERSION_STRING}")
 else ()
+	if (NOT BUILD_SHARED)
+		exclude_binding (swig_python "it can only be built if `BUILD_SHARED` is enabled")
+		return ()
+	endif (NOT BUILD_SHARED)
+
 	add_binding (swig_python)
 
 	if (${SWIG_VERSION} MATCHES "^2\\.")
@@ -22,7 +27,7 @@ else ()
 	add_headers (HDR_FILES)
 	add_cppheaders (HDR_FILES)
 
-	include_directories (${PYTHON_INCLUDE_DIR})
+	include_directories (${PYTHON_INCLUDE_DIRS})
 	include_directories (${CMAKE_CURRENT_SOURCE_DIR})
 
 	set (CMAKE_SWIG_OUTDIR "${CMAKE_CURRENT_BINARY_DIR}")

@@ -21,7 +21,15 @@
 #define LF_BYTE 0x0A
 #define CR_BYTE 0x0D
 
-typedef enum { NA, CR, LF, CRLF, LFCR, NUM_TYPES } Lineending;
+typedef enum
+{
+	NA,
+	CR,
+	LF,
+	CRLF,
+	LFCR,
+	NUM_TYPES
+} Lineending;
 
 static inline char * LEString (Lineending index)
 {

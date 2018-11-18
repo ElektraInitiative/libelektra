@@ -1,7 +1,7 @@
 include (LibAddBinding)
 
 if (DEPENDENCY_PHASE)
-	find_package (DBus)
+	find_package (DBus QUIET)
 
 	if (NOT DBUS_FOUND)
 		remove_plugin (dbusrecv "dbus package not found")
@@ -21,7 +21,9 @@ add_plugin (dbusrecv
 
 set (NOT_INCLUDED "")
 plugin_check_if_included ("${PLUGIN_SHORT_NAME}")
-if (DEPENDENCY_PHASE AND NOT NOT_INCLUDED)
+if (DEPENDENCY_PHASE
+    AND NOT
+	NOT_INCLUDED)
 	if (BUILD_SHARED)
 
 		# ~~~
@@ -45,7 +47,7 @@ if (ADDTESTING_PHASE)
 	check_binding_was_added ("io_uv" IS_INCLUDED)
 	if (BUILD_TESTING AND IS_INCLUDED)
 		if (BUILD_FULL OR BUILD_STATIC)
-			find_package (PkgConfig)
+			find_package (PkgConfig QUIET)
 			pkg_check_modules (LIBUV QUIET libuv)
 
 			set (STATIC_LIBRARIES ${LIBUV_LIBRARIES}) # libuv is present; otherwise io_uv bindings would not be added

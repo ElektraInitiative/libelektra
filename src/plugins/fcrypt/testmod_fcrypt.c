@@ -19,6 +19,7 @@
 #include <test_key.h>
 
 #include "../crypto/common_gpg_tests.c"
+#include "../crypto/gpgagent_teardown.h"
 #include "fcrypt.h"
 
 #define PLUGIN_NAME "fcrypt"
@@ -300,6 +301,7 @@ int main (int argc, char ** argv)
 	test_file_crypto_operations ();
 	test_file_signature_operations ();
 	test_file_faulty_signature ();
+	test_teardown ();
 
 	print_result (ELEKTRA_PLUGIN_NAME);
 	return nbError;

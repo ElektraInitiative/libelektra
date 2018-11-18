@@ -21,7 +21,8 @@
 #define DEFAULT_TRUE_VALUE "1"
 #define DEFAULT_FALSE_VALUE "0"
 
-typedef enum {
+typedef enum
+{
 	TRUE = 1 << 0,
 	FALSE = 1 << 1,
 	WARNING = 1 << 2,

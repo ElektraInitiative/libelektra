@@ -1,13 +1,11 @@
 #!/bin/sh
 
-if [ "$#" -eq 0 ]
-then
-	MP=`kdb mount -13`
+if [ "$#" -eq 0 ]; then
+	MP=$(kdb mount -13)
 else
 	MP=$*
 fi
 
-for i in $MP
-do
+for i in $MP; do
 	kdb umount "$i"
 done

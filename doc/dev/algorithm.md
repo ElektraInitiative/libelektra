@@ -17,7 +17,7 @@ frees all previously allocated data structures.
 
 ### kdbOpen
 
-`kdbOpen()` retrieves the *mountpoint configuration* with
+`kdbOpen()` retrieves the *mount point configuration* with
 `kdbGet()` using the *default backend*.  During this process,
 the function sets up the data structures which are needed for later
 invocations of `kdbGet()` or `kdbSet()`.  All backends are opened and
@@ -25,7 +25,7 @@ mounted in the appropriate parts of the key hierarchy.  The resulting
 backends are added both to the `Split` and the `Trie` object.  `kdbOpen()`
 finally returns a `KDB` object that contains all this information.
 
-The reading of the mountpoint configuration and the consequential self
+The reading of the mount point configuration and the consequential self
 configuring of the system is called *bootstrapping*.  Elektra builds
 itself up with a default backend (consisting of `libelektra-resolver`
 and `libelektra-storage`).
@@ -35,19 +35,19 @@ and `libelektra-storage`).
 `parentKeys` during bootstrapping.  So the buildup of the `Split` object
 takes place once.  The resulting object is then used for both `kdbGet()`
 and `kdbSet()`.  This approach is much better testable because the
-`Split` object is first initialised using the mountpoint configuration --
+`Split` object is first initialised using the mount point configuration --
 separated from the filtering of the backends for every specific `kdbGet()`
 and `kdbSet()` request.
 
 Afterwards the key hierarchy is static.  Every application using Elektra
-will build up the same key database.  Application-specific mountpoints
-are prohibited because changes of mountpoints would destroy the global
+will build up the same key database.  Application-specific mount points
+are prohibited because changes of mount points would destroy the global
 key database.  Elektra could not guarantee that every application
 retrieves the same configuration with the same key names any longer.
 
 In `kdbOpen()`, nearly no checks are done regarding the expected
 behavior of the backend.  The contract checker guarantees that only
-appropriate mountpoints are written into the mountpoint configuration.
+appropriate mount points are written into the mount point configuration.
 `kdbOpen()` checks only if the opening of plugin was successful.  If not,
 the backend enclosing the plugin is not mounted at all.
 
@@ -173,7 +173,7 @@ resulting key set:
 	user/sw/generator/dir/new (B)
 	user/sw/generator/dir/outside1 (B)
 
-Note that the key exactly at the mountpoint comes from the backend mounted
+Note that the key exactly at the mount point comes from the backend mounted
 at `user/sw/generator/dir`.
 
 

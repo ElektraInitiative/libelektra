@@ -10,7 +10,6 @@ RUN apt-get -qq update && apt-get -qq -y install \
 	pkg-config \
 	doxygen \
 	graphviz \
-	bison \
 	ruby-dev \
 	python-dev \
 	python3-dev \
@@ -22,6 +21,7 @@ RUN apt-get -qq update && apt-get -qq -y install \
 	libgit2-dev \
 	libboost-all-dev \
 	libssl-dev \
+	libgpgme-dev \
 	libdbus-1-dev \
 	libpcre3-dev \
 	libpcre++-dev \

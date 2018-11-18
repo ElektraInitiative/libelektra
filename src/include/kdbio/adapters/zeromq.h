@@ -16,7 +16,8 @@
 
 
 /** callback types  */
-typedef enum {
+typedef enum
+{
 
 	/** callback is called when socket is readable */
 	ELEKTRA_IO_ADAPTER_ZEROMQCB_READ = 1 << 0,

@@ -376,3 +376,11 @@
    fun:exit
    fun:(below main)
 }
+{
+   Binary: `testio_uv`, `testmod_zeromqrecv` | OS: Debian Sid | Type: Unitialized Bytes
+   Memcheck:Param
+   epoll_ctl(event)
+   ...
+   fun:main
+}
+

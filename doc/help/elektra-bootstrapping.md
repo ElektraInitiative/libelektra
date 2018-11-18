@@ -17,9 +17,9 @@ The **default backend** stores configuration in `KDB_DB_FILE`. One can easily av
 usage of the default backend by simple mounting another backend to `/`.
 
 The mounting configuration (the configuration how to mount the
-mountpoints) also needs to be stored somewhere.
+mount points) also needs to be stored somewhere.
 The so called **init backend** is responsible for fetching configuration
-from `system/elektra`, where the mountpoints are stored.
+from `system/elektra`, where the mount points are stored.
 Again `KDB_STORAGE` and `KDB_RESOLVER` is used, but now
 they write into the configuration file `KDB_DB_INIT` (elektra.ecf by default).
 

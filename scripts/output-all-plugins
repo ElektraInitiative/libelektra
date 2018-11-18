@@ -1,9 +1,7 @@
 #!/bin/sh
 
-for i in `ls src/plugins`
-do
-	if [ -d "src/plugins/$i" ]
-	then
+for i in $(ls src/plugins); do
+	if [ -d "src/plugins/$i" ]; then
 		printf "%s;" $i
 		#echo "--- $i ---"
 	fi

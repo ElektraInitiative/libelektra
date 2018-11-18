@@ -1,5 +1,5 @@
-find_package (Threads)
-find_package (LibRt)
+find_package (Threads QUIET)
+find_package (LibRt QUIET)
 
 if (APPLE)
 

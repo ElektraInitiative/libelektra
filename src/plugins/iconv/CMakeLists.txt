@@ -1,5 +1,5 @@
 if (DEPENDENCY_PHASE)
-	find_package (Iconv)
+	find_package (Iconv QUIET)
 
 	if (NOT ICONV_FOUND)
 		remove_plugin (iconv "Cannot find iconv library")

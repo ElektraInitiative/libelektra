@@ -1,4 +1,4 @@
-find_package (Python2Interp 2.7)
+find_package (Python2Interp 2.7 QUIET)
 
 if (PYTHON2INTERP_FOUND)
 

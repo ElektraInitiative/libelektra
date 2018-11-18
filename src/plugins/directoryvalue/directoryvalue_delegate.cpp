@@ -155,6 +155,40 @@ CppKey convertToDirectChild (CppKey const & parent, CppKey const & child)
 }
 
 /**
+ * @brief This function checks if `element` is an array element of `parent`.
+ *
+ * @pre The key `child` must be below `parent`.
+ *
+ * @param parent This parameter specifies a parent key.
+ * @param keys This variable stores a direct or indirect child of `parent`.
+ *
+ * @retval true If `element` is an array element
+ * @retval false Otherwise
+ */
+bool inline isArrayElementOf (CppKey const & parent, CppKey const & child)
+{
+	char const * relative = elektraKeyGetRelativeName (*child, *parent);
+	if (relative[0] != '#') return false;
+	relative++; // Skip leading `#`
+	size_t underscores = 0;
+	while (relative[underscores] == '_')
+	{
+		underscores++;
+	}
+	relative = &relative[underscores]; // Skip underscores
+	// Check index
+	for (size_t digit = 0; digit <= underscores; digit++)
+	{
+		if (relative[digit] < '0' || relative[digit] > '9') return false;
+	}
+	relative = &relative[underscores + 1]; // Skip index
+	// The next character has to be the separation char (`/`) or end of string
+	if (relative[0] != '\0' && relative[0] != '/') return false;
+
+	return true;
+}
+
+/**
  * @brief This function determines if the given key is an array parent.
  *
  * @param parent This parameter specifies a possible array parent.
@@ -165,15 +199,10 @@ CppKey convertToDirectChild (CppKey const & parent, CppKey const & child)
  */
 bool isArrayParent (CppKey const & parent, CppKeySet const & keys)
 {
-	CppKeySet children = accumulate (keys.begin (), keys.end (), CppKeySet{}, [&parent](CppKeySet collected, CppKey key) {
-		if (key.isBelow (parent)) collected.append (key);
-		return collected;
-	});
-
-	for (auto child : children)
+	for (auto const & key : keys)
 	{
-		CppKey directChild = convertToDirectChild (parent, child);
-		if (elektraArrayValidateName (*directChild) < 0) return false;
+		if (!key.isBelow (parent)) continue;
+		if (!isArrayElementOf (parent, key)) return false;
 	}
 
 	return true;

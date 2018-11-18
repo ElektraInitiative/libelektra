@@ -65,7 +65,7 @@ they receive the keys in `elektraPluginSet()`.
 In `config/needs`, the plugin declares which keys should obtain which
 metadata.
 If the glob expression starts
-with a slash, the contract checker will automatically prepend the mountpoint.
+with a slash, the contract checker will automatically prepend the mount point.
 
 For example, the hosts plugin contract contains:
 

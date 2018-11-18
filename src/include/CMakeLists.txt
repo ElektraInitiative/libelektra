@@ -1,37 +1,23 @@
 include (CheckIncludeFile)
-include (CheckSymbolExists)
+include (SafeCheckSymbolExists)
 include (CheckTypeSize)
 include (TestBigEndian)
 include (LibAddBinding)
 
-check_symbol_exists (clearenv "stdlib.h" HAVE_CLEARENV)
-check_symbol_exists (setenv "stdlib.h" HAVE_SETENV)
-check_symbol_exists (futimens "sys/stat.h" HAVE_FUTIMENS)
+safe_check_symbol_exists (clearenv "stdlib.h" HAVE_CLEARENV)
+safe_check_symbol_exists (setenv "stdlib.h" HAVE_SETENV)
+safe_check_symbol_exists (futimens "sys/stat.h" HAVE_FUTIMENS)
 
-list (APPEND CMAKE_REQUIRED_DEFINITIONS
-	     -D_GNU_SOURCE) # look for hsearch_r function family
-check_symbol_exists (hsearch_r "search.h" HAVE_HSEARCHR)
-list (REMOVE_ITEM CMAKE_REQUIRED_DEFINITIONS
-		  -D_GNU_SOURCE)
+add_definitions (-D_GNU_SOURCE -D_DARWIN_C_SOURCE)
+safe_check_symbol_exists (hsearch_r "search.h" HAVE_HSEARCHR)
 
-# Work around a bug on macOS where `futimes` can not be located if we specify the compiler switch `-Werror`
-if (APPLE)
-	set (CMAKE_C_FLAGS_OLD ${CMAKE_C_FLAGS})
-	string (REPLACE "-Werror"
-			""
-			CMAKE_C_FLAGS
-			${CMAKE_C_FLAGS})
-	check_symbol_exists (futimes "sys/time.h" HAVE_FUTIMES)
-	set (CMAKE_C_FLAGS ${CMAKE_C_FLAGS_OLD})
-else (APPLE)
-	check_symbol_exists (futimes "sys/time.h" HAVE_FUTIMES)
-endif (APPLE)
-
-check_symbol_exists (glob "glob.h" HAVE_GLOB)
-check_symbol_exists (clock_gettime "time.h" HAVE_CLOCK_GETTIME)
+safe_check_symbol_exists (futimes "sys/time.h" HAVE_FUTIMES)
+safe_check_symbol_exists (glob "glob.h" HAVE_GLOB)
+safe_check_symbol_exists (clock_gettime "time.h" HAVE_CLOCK_GETTIME)
 
 check_include_file (ctype.h HAVE_CTYPE_H)
 check_include_file (errno.h HAVE_ERRNO_H)
+check_include_file (features.h HAVE_FEATURES_H)
 check_include_file (locale.h HAVE_LOCALE_H)
 check_include_file (stdio.h HAVE_STDIO_H)
 check_include_file (stdlib.h HAVE_STDLIB_H)
@@ -48,6 +34,10 @@ check_type_size (mode_t SIZEOF_MODE_T)
 
 set (CMAKE_EXTRA_INCLUDE_FILES "sys/time.h")
 check_type_size ("((struct timeval*)0)->tv_usec" SIZEOF_TV_USEC)
+set (CMAKE_EXTRA_INCLUDE_FILES)
+
+set (CMAKE_EXTRA_INCLUDE_FILES "sys/stat.h")
+check_type_size ("((struct stat*)0)->st_size" SIZEOF_STAT_ST_SIZE)
 set (CMAKE_EXTRA_INCLUDE_FILES)
 
 set (BUILTIN_EXEC_FOLDER "${CMAKE_INSTALL_PREFIX}/${TARGET_TOOL_EXEC_FOLDER}")

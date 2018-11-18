@@ -11,7 +11,7 @@ Most importantly it:
 1. describes which keys are of interest to the application
 2. describes the metadata to be copied to every key
 3. describes how the cascading lookup works
-4. describes the mountpoints including the plugins needed for them
+4. describes the mount points including the plugins needed for them
 
 It is, however, not limited to this but can express any other
 key database semantics (new plugins might be necessary, though).
@@ -93,7 +93,7 @@ check/validation/message = def does not start with abc
 
 ## Mounting
 
-In the spec namespace you can also specify mountpoints.
+In the spec namespace you can also specify mount points.
 First you need the metakey `mountpoint` and a configuration file name.
 Otherwise, it basically works in the same way as the contracts
 in plugins using `infos` and `config`:

@@ -257,7 +257,7 @@ void MountCommand::appendPlugins (MountBackendInterface & backend)
 		{
 			std::ostringstream os;
 			backend.status (os);
-			throw CommandAbortException (os.str ().c_str ());
+			throw CommandAbortException (os.str ());
 		}
 	}
 }

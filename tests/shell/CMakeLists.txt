@@ -41,12 +41,19 @@ function (add_scripttest testname)
 		if (TARGET)
 			if (INSTALL_TESTING)
 
-				set (excluded_tests check_bashisms check_external check_formatting check_gen check_oclint check_plugins)
+				set (excluded_tests
+				     check_bashisms
+				     check_posix
+				     check_external
+				     check_formatting
+				     check_gen
+				     check_oclint
+				     check_plugins)
 
 				list (FIND excluded_tests
 					   "${testname_we}"
-					   index_exluded)
-				if (index_exluded EQUAL -1)
+					   index_excluded)
+				if (index_excluded EQUAL -1)
 					if (BUILD_FULL)
 						set (KDB_COMMAND "kdb-full")
 					else (BUILD_FULL)
@@ -71,7 +78,7 @@ function (add_scripttest testname)
 						 WORLD_READ
 						 WORLD_EXECUTE
 						 RENAME ${testname_we})
-				endif (index_exluded EQUAL -1)
+				endif (index_excluded EQUAL -1)
 
 			endif (INSTALL_TESTING)
 		else (TARGET)
@@ -100,9 +107,23 @@ function (add_scripttest testname)
 					set_property (TEST testscr_${testname_we}
 						      PROPERTY ENVIRONMENT
 							       "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
-					set_property (TEST testscr_${testname_we}
-						      PROPERTY RUN_SERIAL
-							       TRUE)
+
+					set (parallel_tests
+					     check_bashisms
+					     check_doc
+					     check_formatting
+					     check_oclint
+					     check_plugins
+					     check_posix)
+					list (FIND parallel_tests
+						   "${testname_we}"
+						   index_parallel)
+					if (index_parallel EQUAL -1)
+						set_property (TEST testscr_${testname_we}
+							      PROPERTY RUN_SERIAL
+								       TRUE)
+					endif (index_parallel EQUAL -1)
+
 				endif (NOT ${testname_we} STREQUAL "run_all")
 			endif (ENABLE_KDB_TESTING)
 		endif (TARGET)

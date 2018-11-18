@@ -38,7 +38,12 @@ static int iniCmpOrder (const void * a, const void * b);
 #define DEFAULT_DELIMITER '='
 #define DEFAULT_COMMENT_CHAR '#'
 
-typedef enum { NONE, BINARY, ALWAYS } SectionHandling;
+typedef enum
+{
+	NONE,
+	BINARY,
+	ALWAYS
+} SectionHandling;
 
 typedef struct
 {
@@ -104,7 +109,7 @@ static int elektraKeyAppendLine (Key * target, const char * line)
 
 	keyGetString (target, buffer, keyGetValueSize (target));
 	strcat (buffer, "\n");
-	strncat (buffer, line, strlen (line));
+	strncat (buffer, line, elektraStrLen (line));
 
 	keySetString (target, buffer);
 	elektraFree (buffer);

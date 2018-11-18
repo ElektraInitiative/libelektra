@@ -9,12 +9,10 @@ check_version
 #override for specific testing
 #PLUGINS="ini"
 
-for PLUGIN in $PLUGINS
-do
-	if is_not_rw_storage
-	then
+for PLUGIN in $PLUGINS; do
+	if is_not_rw_storage; then
 		echo "$PLUGIN not a read-write storage"
-		continue;
+		continue
 	fi
 
 	case "$PLUGIN" in
@@ -52,30 +50,28 @@ do
 
 	check_remaining_files $FILE
 
-	"$KDB" mount $FILE $MOUNTPOINT $MOUNT_PLUGIN 1>/dev/null
+	"$KDB" mount $FILE $MOUNTPOINT $MOUNT_PLUGIN 1> /dev/null
 	exit_if_fail "could not mount $FILE at $MOUNTPOINT using $MOUNT_PLUGIN"
 
-	cleanup()
-	{
-		"$KDB" umount $MOUNTPOINT >/dev/null
+	cleanup() {
+		"$KDB" umount $MOUNTPOINT > /dev/null
 		succeed_if "could not umount $MOUNTPOINT"
 		rm -f $USER_FOLDER/$FILE
 		rm -f $SYSTEM_FOLDER/$FILE
 
 		echo "Cleanup for $PLUGIN"
 
-		USER_REMAINING="`find $USER_FOLDER -maxdepth 1 -name $FILE'*' -print -exec rm {} +`"
+		USER_REMAINING="$(find $USER_FOLDER -maxdepth 1 -name $FILE'*' -print -exec rm {} +)"
 		test -z "$USER_REMAINING"
 		succeed_if "found remaining files $USER_REMAINING in $USER_FOLDER"
 
-		SYSTEM_REMAINING="`find $SYSTEM_FOLDER -maxdepth 1 -name $FILE'*' -print -exec rm {} +`"
+		SYSTEM_REMAINING="$(find $SYSTEM_FOLDER -maxdepth 1 -name $FILE'*' -print -exec rm {} +)"
 		test -z "$SYSTEM_REMAINING"
 		succeed_if "found remaining files $SYSTEM_REMAINING in $SYSTEM_FOLDER"
 	}
 
 	echo "Running tests for $PLUGIN"
-	for ROOT in $USER_ROOT $SYSTEM_ROOT
-	do
+	for ROOT in $USER_ROOT $SYSTEM_ROOT; do
 		"$KDB" test "$ROOT" $TESTS
 		succeed_if "could not run test suite"
 	done

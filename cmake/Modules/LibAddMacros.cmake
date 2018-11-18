@@ -128,10 +128,10 @@ endmacro ()
 
 macro (find_swig)
 	if (NOT SWIG_FOUND)
-		find_package (SWIG 3)
+		find_package (SWIG 3 QUIET)
 		if (NOT SWIG_FOUND)
 			message (STATUS "Search for swig2 instead")
-			find_package (SWIG 2)
+			find_package (SWIG 2 QUIET)
 		endif ()
 	endif (NOT SWIG_FOUND)
 endmacro (find_swig)
@@ -693,7 +693,12 @@ function (generate_readme p) # rerun cmake when README.md is changed  also allow
 			"keyNew(\"system/elektra/modules/${p}/infos/needs\",\nKEY_VALUE, \"\\1\", KEY_END),"
 			contents
 			"${contents}")
-	if (p STREQUAL ${KDB_DEFAULT_STORAGE} OR p STREQUAL KDB_DEFAULT_RESOLVER)
+	if (p
+	    STREQUAL
+	    ${KDB_DEFAULT_STORAGE}
+	    OR p
+	       STREQUAL
+	       KDB_DEFAULT_RESOLVER)
 		string (REGEX
 			REPLACE "\"- +infos/status *= *([-a-zA-Z0-9 ]*)\\\\n\""
 				"keyNew(\"system/elektra/modules/${p}/infos/status\",\nKEY_VALUE, \"\\1 default\", KEY_END),"

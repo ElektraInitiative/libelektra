@@ -55,7 +55,9 @@ CMAKE_FLAGS_BASE = [
   'KDB_DB_HOME': '${WORKSPACE}/config/kdb/home',
   'CMAKE_INSTALL_PREFIX': '${WORKSPACE}/system',
   'INSTALL_SYSTEM_FILES': 'OFF',
-  'BUILD_DOCUMENTATION': 'OFF'
+  'BUILD_DOCUMENTATION': 'OFF',
+  'CMAKE_RULE_MESSAGES': 'OFF',
+  'COMMON_FLAGS': '-Werror'
 ]
 
 // TODO Remove -DEPRECATED after #1954 is resolved
@@ -68,14 +70,20 @@ CMAKE_FLAGS_BUILD_ALL = [
 CMAKE_FLAGS_COVERAGE = ['ENABLE_COVERAGE': 'ON']
 
 CMAKE_FLAGS_CLANG = [
-  'CMAKE_C_COMPILER': 'clang-5.0',
-  'CMAKE_CXX_COMPILER': 'clang++-5.0'
+  'CMAKE_C_COMPILER': 'clang-6.0',
+  'CMAKE_CXX_COMPILER': 'clang++-6.0'
 ]
 
 CMAKE_FLAGS_INI = [
   'KDB_DB_FILE': 'default.ini',
   'KDB_DB_INIT': 'elektra.ini',
   'KDB_DEFAULT_STORAGE': 'ini'
+]
+
+CMAKE_FLAGS_MMAP = [
+  'KDB_DB_FILE': 'default.mmap',
+  'KDB_DB_INIT': 'elektra.mmap',
+  'KDB_DEFAULT_STORAGE': 'mmapstorage'
 ]
 
 CMAKE_FLAGS_I386 = [
@@ -148,11 +156,12 @@ def main() {
     parallel generateFullBuildStages()
   }
 
-  maybeStage("Build artifacts", isMaster()) {
+  stage("Build artifacts") {
     milestone label: "artifacts"
     parallel generateArtifactStages()
   }
 
+  /*
   maybeStage("Deploy Homepage", isMaster()) {
     deployHomepage()
   }
@@ -160,6 +169,7 @@ def main() {
   maybeStage("Deploy Web UI", isMaster()) {
     deployWebUI()
   }
+  */
 }
 
 try {
@@ -216,8 +226,8 @@ def dockerInit() {
 
     /* We use the sid image for testing if we are compatible with Debian
      * unstable.
-     * Additionally we use it for tests with Clang-5.0 and for source
-     * formatting checks (as they depend on Clang-5.0).
+     * Additionally we use it for tests with Clang-6.0 and for source
+     * formatting checks (as they depend on Clang-6.0).
      */
     DOCKER_IMAGES.sid = createDockerImageDesc(
       "debian-sid", this.&idTesting,
@@ -479,7 +489,9 @@ def generateFullBuildStages() {
   tasks << buildAndTest(
     "debian-oldstable-full",
     DOCKER_IMAGES.jessie,
-    CMAKE_FLAGS_BUILD_ALL,
+    CMAKE_FLAGS_BUILD_ALL +
+      ['COMMON_FLAGS': ''] // The build system can not compile Elektra on Debian Jessie, if we specify the compiler switch `-Werror`.
+    ,
     [TEST.ALL, TEST.MEM, TEST.INSTALL]
   )
 
@@ -491,16 +503,17 @@ def generateFullBuildStages() {
     [TEST.ALL, TEST.MEM, TEST.INSTALL]
   )
 
-  // Build Elektra with clang. We use unstable for easy access to clang-5.0
-  // Detects problems when using an alternative compiler (clang)
   tasks << buildAndTest(
     "debian-stable-full-i386",
     DOCKER_IMAGES.stretch_i386,
     CMAKE_FLAGS_I386 + [
       'PLUGINS': 'NODEP'
-    ],
+    ] + CMAKE_FLAGS_BUILD_ALL,
     [TEST.ALL]
   )
+
+  // Build Elektra with clang. We use unstable for easy access to clang-6.0
+  // Detects problems when using an alternative compiler (clang)
   tasks << buildAndTest(
     "debian-unstable-full-clang",
     DOCKER_IMAGES.sid,
@@ -514,17 +527,14 @@ def generateFullBuildStages() {
   tasks << buildAndTestMingwW64()
 
   // Build Elektra on alpine
-  // TODO: Remove bash after #2077 is resolved
   // TODO: Add more deps to test them with musl
   // TODO: add date when their issues are resolved
-  // TODO: reenable kdb testing once it is POSIX conformant
   tasks << buildAndTest(
     "alpine",
     DOCKER_IMAGES.alpine,
-    CMAKE_FLAGS_BUILD_ALL + [
-      'BUILD_STATIC': 'ON',
-      'PLUGINS': 'ALL;-date;-passwd',
-      'ENABLE_KDB_TESTING': 'OFF'
+    CMAKE_FLAGS_BUILD_ALL +
+    CMAKE_FLAGS_BUILD_STATIC + [
+      'PLUGINS': 'ALL;-date',
     ],
     [TEST.ALL]
   )
@@ -563,6 +573,24 @@ def generateFullBuildStages() {
       CMAKE_FLAGS_COVERAGE
     ,
     [TEST.ALL, TEST.MEM]
+  )
+
+  // Build Elektra with the mmap backend instead of the default
+  tasks << buildAndTest(
+    "debian-stable-full-mmap",
+    DOCKER_IMAGES.stretch,
+    CMAKE_FLAGS_BUILD_ALL +
+      CMAKE_FLAGS_MMAP +
+      CMAKE_FLAGS_COVERAGE
+    ,
+    [TEST.ALL, TEST.MEM]
+  )
+
+  tasks << buildAndTestAsan(
+    "debian-stable-full-mmap-asan",
+    DOCKER_IMAGES.stretch,
+    CMAKE_FLAGS_BUILD_ALL +
+      CMAKE_FLAGS_MMAP
   )
 
   // Build Elektra with xdg resolver to see if we are compliant
@@ -605,9 +633,7 @@ def generateFullBuildStages() {
   }
 
   // We need the webui_base image to build webui images later
-  if(isMaster()) {
-    tasks << buildImageStage(DOCKER_IMAGES.webui_base)
-  }
+  tasks << buildImageStage(DOCKER_IMAGES.webui_base)
 
   return tasks
 }
@@ -807,6 +833,7 @@ def buildAndTest(testName, image, extraCmakeFlags = [:],
 
   def testCoverage = cmakeFlags.intersect(CMAKE_FLAGS_COVERAGE)
                                 .equals(CMAKE_FLAGS_COVERAGE)
+  def updateCoveralls = testName == 'debian-stable-full'
   def testMem = tests.contains(TEST.MEM)
   def testNokdb = tests.contains(TEST.NOKDB)
   def testAll = tests.contains(TEST.ALL)
@@ -877,6 +904,18 @@ kill `pidof dbus-daemon`
           if(testCoverage) {
             publishCoverage("${buildDir}/coverage")
           }
+          if(updateCoveralls) {
+            withCredentials([string(credentialsId: 'coveralls-repo-token', variable: 'REPO_TOKEN')]) {
+              withEnv(["TRAVIS_JOB_ID=$BUILD_NUMBER"]) {
+                sh("""\
+coveralls -b '${buildDir}' \
+          -t $REPO_TOKEN \
+          -e benchmarks -e doc -e examples -e install -e system -e tests \
+          -E '.*${buildDir}/(CMakeFiles|googletest-src|include|src).*\\.(c|cc|cpp|h|hh|hpp)'
+""")
+              }
+            }
+          }
           if(testMem || testNokdb || testAll) {
             xunitUpload("${buildDir}/Testing/**/*.xml")
           }
@@ -892,8 +931,10 @@ kill `pidof dbus-daemon`
 def generateArtifactStages() {
   def tasks = [:]
   tasks << buildPackageDebianStretch()
+  /*
   tasks << buildHomepage()
   tasks << buildWebUI()
+  */
   return tasks
 }
 
@@ -933,7 +974,9 @@ def buildPackageDebianStretch() {
 
               sh "gbp buildpackage -sa"
             }
-            publishDebianPackages()
+            if(isMaster()) {
+              publishDebianPackages()
+            }
           }
         }
       }
@@ -1352,7 +1395,7 @@ def abortPreviousRun() {
 /* Helper that modifies file permissions before executing the passed closure.
  * Restores the permissions after the closure has run.
  * @param listOfFiles List representing directories and files that should be
- *                    made unwriteable.
+ *                    made unwritable.
  *                    Files must exist or it will fail.
  * @param perm target permissions in a form that can be passed to chmod
  * @param cl The closure that should be run
@@ -1404,7 +1447,7 @@ def getElektraWritableFiles() {
   ]
 }
 
-/* Create directoris in listOfDirs
+/* Create directories in listOfDirs
  * @param listOfDirs a List of directory paths to be created
  */
 def ensureDirsExist(listOfDirs) {

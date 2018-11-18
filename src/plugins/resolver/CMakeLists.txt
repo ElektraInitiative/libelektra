@@ -1,6 +1,6 @@
 include (LibAddPlugin)
 
-find_package (Threads)
+find_package (Threads QUIET)
 
 if (KDB_DEFAULT_RESOLVER MATCHES "resolver_.*")
 	set (RESOLVERS "${KDB_DEFAULT_RESOLVER}") # default resolver
@@ -10,7 +10,15 @@ foreach (plugin ${PLUGINS})
 	if (${plugin} MATCHES "^resolver_.*")
 		set (RESOLVERS "${RESOLVERS}" "${plugin}")
 	endif ()
-	if (${plugin} MATCHES "ALL" OR ${plugin} MATCHES "DEFAULT" OR ${plugin} MATCHES "NODEP")
+	if (${plugin}
+	    MATCHES
+	    "ALL"
+	    OR ${plugin}
+	       MATCHES
+	       "DEFAULT"
+	    OR ${plugin}
+	       MATCHES
+	       "NODEP")
 		set (RESOLVERS
 		     "${RESOLVERS}"
 		     resolver_fm_b_b

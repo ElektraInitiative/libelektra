@@ -115,7 +115,9 @@ macro (add_haskell_plugin target)
 		    DEPENDS ${target}
 			    c2hs_haskell)
 
-	if (DEPENDENCY_PHASE AND TARGET elektra-${target})
+	if (DEPENDENCY_PHASE
+	    AND TARGET
+		elektra-${target})
 		set_target_properties (elektra-${target}
 				       PROPERTIES INSTALL_RPATH
 						  "${HASKELL_RPATH}"
@@ -123,7 +125,9 @@ macro (add_haskell_plugin target)
 						  "${SANDBOX_PACKAGEDB}")
 	endif (DEPENDENCY_PHASE AND TARGET elektra-${target})
 
-	if (ADDTESTING_PHASE AND TARGET elektra-${target})
+	if (ADDTESTING_PHASE
+	    AND TARGET
+		elektra-${target})
 		set (PLUGINTEST_ARGS "")
 		if (ARG_INSTALL_TEST_DATA)
 			list (APPEND PLUGINTEST_ARGS
@@ -212,7 +216,9 @@ macro (prepare_and_compile_haskell_plugin target PLUGIN_NAME PLUGIN_NAME_CAPITAL
 		if (GHC_BASE_LIB)
 			if (GHC_GMP_LIB)
 				if (GHC_PRIM_LIB)
-					if (GHC_FFI_LIB OR NOT APPLE)
+					if (GHC_FFI_LIB
+					    OR NOT
+					       APPLE)
 						compile_haskell_plugin (${target}
 									${PLUGIN_HASKELL_NAME}
 									SANDBOX_ADD_SOURCES

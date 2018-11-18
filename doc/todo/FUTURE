@@ -25,6 +25,8 @@ backslash:
 
 remove old metadata get/set
 
+change key name of a key that was popped from all keysets?
+
 remove null ptr checks? (see decision)
 
 C++:

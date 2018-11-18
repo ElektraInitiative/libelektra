@@ -178,6 +178,9 @@
     basename = property(_kdb.Key__getBaseName, _kdb.Key__setBaseName)
     fullname = property(_kdb.Key__getFullName)
 
+    def __hash__(self):
+      return hash(self.name)
+
     def __str__(self):
       return self.name
   %}

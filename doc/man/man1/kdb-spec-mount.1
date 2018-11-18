@@ -7,10 +7,10 @@
 \fBkdb\-spec\-mount\fR \- Mount a spec file to the key database
 .
 .SH "SYNOPSIS"
-\fBkdb spec\-mount [/<mountpoint>] [<plugin> [<config>] [\.\.]]\fR
+\fBkdb spec\-mount [/<mount point>] [<plugin> [<config>] [\.\.]]\fR
 .
 .IP "\(bu" 4
-\fBmountpoint\fR is where in the key database the new backend should be mounted to\. It must be a cascading mountpoint, i\.e\., \fBmountpoint\fR must start with \fB/\fR\.
+\fBmountpoint\fR is where in the key database the new backend should be mounted to\. It must be a cascading mount point, i\.e\., \fBmountpoint\fR must start with \fB/\fR\.
 .
 .IP "\(bu" 4
 \fBplugin\fR are extra Elektra plugins to be used (next to the one specified in \fBspec/\fR)\.
@@ -43,7 +43,7 @@ The idea of mounting is explained in elektra\-mounting(7) \fIelektra\-mounting\.
 During \fBspec\-mount\fR the \fBspec\fR keys are searched for relevant metadata:
 .
 .IP "\(bu" 4
-For every metadata \fBmountpoint\fR an additional cascading mountpoint will be mounted\.
+For every metadata \fBmountpoint\fR an additional cascading mount point will be mounted\.
 .
 .IP "\(bu" 4
 The \fBinfos/*\fR and \fBconfig/needs\fR from CONTRACT\.ini \fI/doc/CONTRACT\.ini\fR, that are tagged by \fBusedby = spec\fR, will work as described there\.
@@ -60,7 +60,7 @@ For example:
 .
 .nf
 
-kdb getmeta spec/example/mountpoint mountpoint  # verify that we have a mountpoint here
+kdb getmeta spec/example/mountpoint mountpoint  # verify that we have a mount point here
 kdb spec\-mount /example/mountpoint  # mounts /example/mountpoint according to specification
     # found at spec/example/mountpoint
 .

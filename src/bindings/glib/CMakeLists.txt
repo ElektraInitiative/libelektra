@@ -1,6 +1,6 @@
 include (LibAddMacros)
 
-find_package (PkgConfig)
+find_package (PkgConfig QUIET)
 pkg_check_modules (GOBJECT QUIET gobject-2.0>=2.36)
 
 # Test if binding can be build
@@ -13,6 +13,11 @@ if (ENABLE_ASAN)
 	exclude_binding (glib "glib is not compatible with ENABLE_ASAN")
 	return ()
 endif (ENABLE_ASAN)
+
+if (NOT BUILD_SHARED)
+	exclude_binding (glib "it can only be built if `BUILD_SHARED` is enabled")
+	return ()
+endif (NOT BUILD_SHARED)
 
 # Add binding
 add_binding (glib)

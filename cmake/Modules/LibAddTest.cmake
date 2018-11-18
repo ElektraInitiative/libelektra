@@ -8,7 +8,7 @@
 # which disables a feature that seems to be popup-blocker for Windows
 # ~~~
 
-find_package (Threads)
+find_package (Threads QUIET)
 
 # ~~~
 # Add a Google Test for a list of specified source files.

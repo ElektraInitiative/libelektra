@@ -87,7 +87,7 @@ STDOUT: Create a new key user/examples/shellrecorder/key with string "value"
 
 You can use the global values below at the start of Shell Recorder test. The basic syntax is `Variable: Value`.
 
-### Mountpoint
+### Mount Point
 
 This is the only configuration variable that has to be set. It is used to determine where the `shell_recorder` should look for changes.
 e.g. `Mountpoint: user/test` tells `shell_recorder` that you will be working under `user/test`.

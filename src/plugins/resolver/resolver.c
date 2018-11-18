@@ -283,7 +283,14 @@ static void elektraAddErrnoText (char * errorText)
 	{
 		strcpy (buffer, strerror (errno));
 	}
+#if defined(__GNUC__) && __GNUC__ >= 8 && !defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wstringop-truncation"
+#endif
 	strncat (errorText, buffer, ERROR_SIZE - 2 - strlen (errorText));
+#if defined(__GNUC__) && __GNUC__ >= 8 && !defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
 }
 
 static int needsMapping (Key * testKey, Key * errorKey)

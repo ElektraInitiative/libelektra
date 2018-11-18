@@ -1,6 +1,6 @@
 include (LibAddHaskellPlugin)
 
-find_package (fa)
+find_package (LibFA QUIET)
 
 if (LIBFA_FOUND)
 	add_haskell_plugin (regexdispatcher MODULE "RegexDispatcher" SANDBOX_ADD_SOURCES "src/libs/typesystem/libfa")

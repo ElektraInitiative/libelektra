@@ -1,4 +1,4 @@
-find_package (Threads)
+find_package (Threads QUIET)
 
 include (LibAddMacros)
 include (LibAddTest)

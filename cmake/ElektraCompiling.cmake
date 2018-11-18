@@ -126,7 +126,9 @@ if (ENABLE_ASAN)
 		set (EXTRA_FLAGS "${EXTRA_FLAGS} -fsanitize-blacklist=\"${CMAKE_SOURCE_DIR}/tests/sanitizer.blacklist\"")
 
 		# in case the ubsan library exists, link it otherwise some tests will fail due to missing symbols on unix
-		if (UNIX AND NOT APPLE)
+		if (UNIX
+		    AND NOT
+			APPLE)
 			set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lubsan")
 		endif (UNIX AND NOT APPLE)
 	endif ()
@@ -136,8 +138,8 @@ if (ENABLE_ASAN)
 		# Work around error “unrecognized option '--push-state'”
 		set (EXTRA_FLAGS "${EXTRA_FLAGS} -fuse-ld=gold")
 
-		find_package (Threads) # this is needed because of wrong pthread detection
-				       # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=69443
+		find_package (Threads QUIET) # this is needed because of wrong pthread detection
+					     # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=69443
 		set (THREAD_LIBS_AS_NEEDED "-Wl,--as-needed ${CMAKE_THREAD_LIBS_INIT}")
 		set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${THREAD_LIBS_AS_NEEDED}")
 		set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${THREAD_LIBS_AS_NEEDED}")
@@ -148,7 +150,7 @@ endif ()
 # Common flags can be used by both C and C++ and by all supported compilers (gcc, mingw, icc, clang)
 #
 set (COMMON_FLAGS "${COMMON_FLAGS} -Wno-long-long") # allow long long in C++ code
-set (COMMON_FLAGS "${COMMON_FLAGS} -pedantic -Wno-variadic-macros")
+set (COMMON_FLAGS "${COMMON_FLAGS} -Wpedantic -Wno-variadic-macros")
 set (COMMON_FLAGS "${COMMON_FLAGS} -Wall -Wextra")
 set (COMMON_FLAGS "${COMMON_FLAGS} -Wno-overlength-strings")
 set (COMMON_FLAGS "${COMMON_FLAGS} -Wsign-compare -Wfloat-equal")
@@ -168,7 +170,10 @@ endif (HAS_CFLAG_MAYBE_UNINITIALIZED)
 
 if (ENABLE_COVERAGE)
 	set (COMMON_FLAGS "${COMMON_FLAGS} -fprofile-arcs -ftest-coverage")
-	set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -fprofile-arcs -ftest-coverage -lgcov")
+	set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -fprofile-arcs -ftest-coverage")
+	if (NOT APPLE)
+		set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -lgcov")
+	endif (NOT APPLE)
 endif (ENABLE_COVERAGE)
 
 set (CXX_EXTRA_FLAGS "${CXX_EXTRA_FLAGS} -Wno-missing-field-initializers")

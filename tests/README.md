@@ -3,7 +3,16 @@ kdb-run-all(1) -- run all tests
 
 ## SYNOPSIS
 
-kdb run_all
+`kdb run_all`
+
+## DESCRIPTION
+
+This command runs all tests. By default the tool only prints the output of failed tests.
+
+## OPTIONS
+
+- `-v`:
+  Print the full output of each test.
 
 ## ENVIRONMENT
 

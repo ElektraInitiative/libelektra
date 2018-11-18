@@ -3,13 +3,13 @@ kdb-mount(1) - Mount a file to the key database
 
 ## SYNOPSIS
 
-`kdb mount [<path> <mountpoint>] [<plugin> [<config>] [..]]`<br>
+`kdb mount [<path> <mount point>] [<plugin> [<config>] [..]]`<br>
 
 - Where `path` is the path to the file the user wants to mount.
   See `kdb info resolver` for details what an absolute and relative path means.
   See also IMPORTANT below.
 - `mountpoint` is where in the key database the new backend should be mounted.
-  For a cascading mountpoint, `mountpoint` should start with `/`.
+  For a cascading mount point, `mountpoint` should start with `/`.
   See also IMPORTANT below.
 - A list of such plugins with a configuration for each of them can be given:
  - `plugin` should be an Elektra plugin.
@@ -33,11 +33,11 @@ This command writes into the `/etc` directory and as such it requires root permi
 Use `kdb file system/elektra/mountpoints` to find out where exactly it will write to.
 
 Absolute paths are still relative to their namespace (see `kdb info resolver`).
-Only system+spec mountpoints are actually absolute.
+Only system+spec mount points are actually absolute.
 Read [elektra-namespaces(7)](elektra-namespaces.md) for further information.
 
-For cascading mountpoints (starting with `/`) a mountpoint for the namespace
-`dir`, `user` and `system` is created. Each of this mountpoint uses a different
+For cascading mount points (starting with `/`) a mount point for the namespace
+`dir`, `user` and `system` is created. Each of this mount point uses a different
 configuration file, either below current directory, below home directory
 or anywhere in the system.
 Use `kdb file <path>` to determine where the file(s) are.
@@ -59,6 +59,11 @@ Use `kdb file <path>` to determine where the file(s) are.
   Suppress non-error messages.
 - `-i`, `--interactive`:
   Instead of passing all mounting information by parameters ask the user interactively.
+- `-s`, `--strategy`:
+   (experimental, use with care)
+   By default mounting is rejected if the mountpoint already exists. With the strategy
+   *unchanged* you can change the behavior to be successful if *exactly* the same config
+    would be written (see #1306 why this does not always work correctly).
 - `-R`, `--resolver <resolver>`
   Specify the resolver plugin to use if no resolver is given, the default resolver is used.
   See also [below in KDB](#KDB).
@@ -75,7 +80,7 @@ Use `kdb file <path>` to determine where the file(s) are.
 - `-W`, `--with-recommends`:
   Also add recommended plugins and warn if they are not available.
 - `-f`, `--force`:
-  Unmount before mounting: Does not fail on already existing mountpoints.
+  Unmount before mounting: Does not fail on already existing mount points.
 
 
 

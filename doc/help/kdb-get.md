@@ -18,7 +18,7 @@ In this case, using the `-v` option allows the user to see the full key name of 
 
 ## LIMITATIONS
 
-Only keys within the mountpoint or below the `<key name>` will be considered during a cascading lookup.
+Only keys within the mount point or below the `<key name>` will be considered during a cascading lookup.
 A workaround is to pass the `-a` option.
 Use the command `kdb get -v <key name>` to see if an override or a fallback was considered by the lookup.
 

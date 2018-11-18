@@ -195,7 +195,7 @@ GElektraKey * gelektra_keyset_pop (GElektraKeySet * ks)
  * gelektra_keyset_cut:
  * @ks: A #GElektraKeySet
  *
- * Returns: (transfer full): Cutted #GElektraKeySet
+ * Returns: (transfer full): Cut #GElektraKeySet
  * see ksCut
  */
 GElektraKeySet * gelektra_keyset_cut (GElektraKeySet * ks, const GElektraKey * point)

@@ -31,18 +31,20 @@
 
 #include <kdbinternal.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 int nbError;
 int nbTest;
 
 char file[KDB_MAX_PATH_LENGTH];
-char srcdir[KDB_MAX_PATH_LENGTH];
+char srcdir[KDB_MAX_PATH_LENGTH + 1];
 
 char * tmpfilename;
 char * tempHome;
 int tempHomeLen;
 char * tempHomeConf;
-
-static void clean_temp_home (void);
 
 /**Does some useful startup.
  */
@@ -53,11 +55,11 @@ int init (int argc, char ** argv)
 
 	if (argc > 1)
 	{
-		strncpy (srcdir, argv[1], sizeof (srcdir));
+		strncpy (srcdir, argv[1], sizeof (srcdir) - 1);
 	}
 	else
 	{
-		strncpy (srcdir, BUILTIN_DATA_FOLDER, sizeof (srcdir));
+		strncpy (srcdir, BUILTIN_DATA_FOLDER, sizeof (srcdir) - 1);
 	}
 
 	tmpvar = getenv ("TMPDIR");
@@ -406,11 +408,11 @@ int output_warnings (Key * warningKey)
 	if (!metaWarnings) return 1; /* There are no current warnings */
 
 	int nrWarnings = atoi (keyString (metaWarnings));
-	char buffer[] = "warnings/#00\0description";
 
 	printf ("There are %d warnings\n", nrWarnings + 1);
 	for (int i = 0; i <= nrWarnings; ++i)
 	{
+		char buffer[] = "warnings/#00\0description";
 		buffer[10] = i / 10 % 10 + '0';
 		buffer[11] = i % 10 + '0';
 		printf ("buffer is: %s\n", buffer);
@@ -503,7 +505,7 @@ static int rm_all (const char * fpath, const struct stat * sb ELEKTRA_UNUSED, in
 }
 #endif
 
-static void clean_temp_home (void)
+void clean_temp_home (void)
 {
 	if (tmpfilename)
 	{
@@ -546,3 +548,7 @@ static void clean_temp_home (void)
 		tempHomeLen = 0;
 	}
 }
+
+#ifdef __cplusplus
+} // end extern "C"
+#endif

@@ -241,7 +241,7 @@ So usually you would have:
 
 ```cmake
 if (DEPENDENCY_PHASE)
-	find_package (LibXml2)
+	find_package (LibXml2 QUIET)
 	if (LIBXML2_FOUND)
 		# add testdata, testcases...
 	else ()
@@ -272,9 +272,9 @@ The plugin will actually be added iff all of the `DEPENDENCIES` are true.
 Note that no code should be outside of `if (DEPENDENCY_PHASE)`. It would be executed twice otherwise. The only exception is
 `add_plugin` which *must* be called twice to successfully add a plugin.
 
-> Please note that the parameters passed to add_plugin need to be constant between all invocations.
+> Please note that the parameters passed to `add_plugin` need to be constant between all invocations.
 > Some `find_package` cache their variables, others do not, which might lead to toggling variables.
-> To avoid problem, make a variable containing all LINK_LIBRARIES or DEPENDENCIES within DEPENDENCY_PHASE.
+> To avoid problems, create a variable containing all `LINK_LIBRARIES` or `DEPENDENCIES` within `DEPENDENCY_PHASE`.
 
 If your plugin makes use of [compilation variants](/doc/tutorials/compilation-variants.md)
 you should also read the information there.
@@ -363,7 +363,10 @@ be called and the mounted file will be updated.
 
 We haven't discussed `ELEKTRA_SET_ERROR` yet. Because Elektra is a library, printing errors to stderr wouldn't be a good idea. Instead, errors
 and warnings can be appended to a key in the form of metadata. This is what `ELEKTRA_SET_ERROR` does. Because the parentKey always exists
-even if a critical error occurs, we append the error to the `parentKey`. The first parameter is an id specifying the general error that occurred.
+even if a critical error occurs, we write the error to the parentKey. The error does not necessarily have to be in a configuration. 
+If there are multiple errors in a configuration, only the first occurrence will be written to the metadata of the `parentKey`. 
+
+The first parameter of `ELEKTRA_SET_ERROR` is an id specifying the general error that occurred.
 A listing of existing errors together with a short description and a categorization can be found at
 [error specification](https://github.com/ElektraInitiative/libelektra/blob/master/src/error/specification).
 The third parameter can be used to provide additional information about the error. In our case we simply supply the filename of the file that
@@ -430,3 +433,10 @@ Plugin *ELEKTRA_PLUGIN_EXPORT(line)
 ```
 
 For further information see [the API documentation](https://doc.libelektra.org/api/current/html/group__plugin.html).
+
+## Note on Direct Method Calls via External Integrations
+
+Some applications want to call Elektra methods directly via native access.
+A `KeySet` is a data structure over which functions can iterate. If you want to start again from to first element, 
+you have to explicitly call `rewind()` to set the internal pointer to the start. 
+Any plugin expects the passed `KeySet` to be **rewinded**.

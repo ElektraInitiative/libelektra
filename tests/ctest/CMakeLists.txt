@@ -2,7 +2,11 @@ file (GLOB TESTS
 	   test_*.c)
 foreach (file ${TESTS})
 	get_filename_component (name ${file} NAME_WE)
-	if (ENABLE_OPTIMIZATIONS OR NOT ${name} MATCHES "opmphm")
+	if (ENABLE_OPTIMIZATIONS
+	    OR NOT
+	       ${name}
+	       MATCHES
+	       "opmphm")
 		do_test (${name})
 		target_link_elektra (${name} elektra-kdb)
 	endif (ENABLE_OPTIMIZATIONS OR NOT ${name} MATCHES "opmphm")
@@ -32,3 +36,5 @@ target_link_elektra (test_operation elektra-proposal)
 target_link_elektra (test_proposal elektra-proposal)
 
 target_link_elektra (test_utility elektra-utility)
+
+target_link_elektra (test_globbing elektra-globbing)

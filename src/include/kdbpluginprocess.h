@@ -17,7 +17,8 @@ extern "C" {
  * allow this library to possibly be extended to further commands in
  * the future
  */
-typedef enum {
+typedef enum
+{
 	// clang-format off
 ELEKTRA_PLUGINPROCESS_OPEN=1,		/*!< Call the plugin's open function */
 ELEKTRA_PLUGINPROCESS_CLOSE=1<<1,	/*!< Call the plugin's close function */

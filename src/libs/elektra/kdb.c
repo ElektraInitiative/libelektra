@@ -536,7 +536,11 @@ static int elektraGetDoUpdate (Split * split, Key * parentKey)
 	return 0;
 }
 
-typedef enum { FIRST, LAST } UpdatePass;
+typedef enum
+{
+	FIRST,
+	LAST
+} UpdatePass;
 
 static KeySet * prepareGlobalKS (KeySet * ks, Key * parentKey)
 {

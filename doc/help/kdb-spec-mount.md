@@ -3,10 +3,10 @@ kdb-spec-mount(1) - Mount a spec file to the key database
 
 ## SYNOPSIS
 
-`kdb spec-mount [/<mountpoint>] [<plugin> [<config>] [..]]`
+`kdb spec-mount [/<mount point>] [<plugin> [<config>] [..]]`
 
 - `mountpoint` is where in the key database the new backend should be mounted to.
-  It must be a cascading mountpoint, i.e., `mountpoint` must start with `/`.
+  It must be a cascading mount point, i.e., `mountpoint` must start with `/`.
 - `plugin` are extra Elektra plugins to be used (next to the one specified in `spec/`).
 - Plugins may be followed by a `,` separated list of `keys=values` pairs which will be used as plugin configuration.
 
@@ -26,13 +26,13 @@ The metadata used for the specification is described in [METADATA.ini](/doc/META
 
 During `spec-mount` the `spec` keys are searched for relevant metadata:
 
-- For every metadata `mountpoint` an additional cascading mountpoint will be mounted.
+- For every metadata `mountpoint` an additional cascading mount point will be mounted.
 - The `infos/*` and `config/needs` from [CONTRACT.ini](/doc/CONTRACT.ini), that are tagged by `usedby = spec`, will work as described there.
 - For other metadata suitable plugins are searched and mounted additionally.
 
 For example:
 
-	kdb getmeta spec/example/mountpoint mountpoint  # verify that we have a mountpoint here
+	kdb getmeta spec/example/mountpoint mountpoint  # verify that we have a mount point here
 	kdb spec-mount /example/mountpoint  # mounts /example/mountpoint according to specification
 		# found at spec/example/mountpoint
 

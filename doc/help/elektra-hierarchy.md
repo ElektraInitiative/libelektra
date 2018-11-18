@@ -1,9 +1,9 @@
 elektra-hierarchy(7) -- standard hierarchy
 ==========================================
 
-# Integrated Mountpoints
+# Integrated Mount Points
 
-These mountpoints are always available.
+These mount points are always available.
 
 
 ## system/elektra/modules
@@ -13,7 +13,7 @@ Information about currently loaded modules.
 
 ## system/elektra/mountpoints
 
-The mountpoints present in the system.
+The mount points present in the system.
 
 
 ## system/elektra/version
@@ -22,9 +22,9 @@ Version information.
 
 
 
-# Info mountpoints
+# Info mount points
 
-Use `kdb mount-info` to mount these mountpoints.
+Use `kdb mount-info` to mount these mount points.
 
 ## system/info/elektra/constants
 
