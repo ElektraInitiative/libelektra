@@ -56,23 +56,9 @@ NameIterator relativeKeyIterator (Key const & key, Key const & parent)
 std::pair<bool, unsigned long long> isArrayIndex (NameIterator const & nameIterator)
 {
 	string const name = *nameIterator;
-	if (name.size () < 2 || name.front () != '#') return std::make_pair (false, 0);
-
-	auto errnoValue = errno;
-
-	try
-	{
-		return std::make_pair (true, stoull (name.substr (name.find_first_not_of ("#\\_"))));
-	}
-	catch (invalid_argument const &)
-	{
-		return std::make_pair (false, 0);
-	}
-	catch (out_of_range const &)
-	{
-		errno = errnoValue;
-		return std::make_pair (false, 0);
-	}
+	auto const offsetIndex = ckdb::elektraArrayValidateBaseNameString (name.c_str ());
+	auto const isArrayElement = offsetIndex >= 1;
+	return { isArrayElement, isArrayElement ? stoull (name.substr (offsetIndex)) : 0 };
 }
 
 /**
