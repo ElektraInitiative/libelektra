@@ -1,4 +1,5 @@
 language: cpp
+osx_image: xcode10.1
 
 cache:
   directories:
@@ -30,7 +31,6 @@ matrix:
 
     - os: osx
       name: 🍏 Check Shell
-      osx_image: xcode10.1
       compiler: clang
       script:
         - ninja
@@ -40,7 +40,6 @@ matrix:
 
     - os: osx
       name: 🍏 Clang ASAN
-      osx_image: xcode10.1
       compiler: clang
       env:
         - ENABLE_ASAN=ON
@@ -206,7 +205,6 @@ matrix:
     - os: osx
       name: 🍏 FULL
       compiler: clang
-      osx_image: xcode10.1
       env:
         - BUILD_FULL=ON
         - BUILD_SHARED=OFF
@@ -220,7 +218,6 @@ matrix:
 
     - os: osx
       name: 🍏 Clang
-      osx_image: xcode10.1
       compiler: clang
       script: &testInstallNoSourceCheck
         - ninja
@@ -232,7 +229,6 @@ matrix:
 
     - os: osx
       name: 🍏 Haskell
-      osx_image: xcode10.1
       compiler: clang
       env:
         - HASKELL=ON
@@ -273,7 +269,6 @@ matrix:
 
     - os: osx
       name: 🍏 MMap
-      osx_image: xcode10.1
       compiler: clang
       env:
         - KDB_DEFAULT_STORAGE=mmapstorage
