@@ -352,11 +352,23 @@ before_install:
       # there is some strange cache bug where it complains that one of our own library's
       # directory doesn't exist though it gets properly unregistered. Apparently ignoring
       # that works anyway.
-      cabal install 'base >=4.9 && <4.12' 'containers >=0.5 && <0.6' \
-        'directory >=1.2 && <1.4' 'process >=1.4 && <1.7' 'binary >=0.8 && <0.9' \
-        'haskell-src-exts-any' 'pretty -any' 'hint >=0.7.0 && <0.8.0' 'temporary -any' \
-        'exceptions -any' 'text -any' 'simple-logger -any' 'megaparsec -any' \
-        'hspec -any' 'QuickCheck-any' --avoid-reinstalls || true
+      cabal install --avoid-reinstalls \
+        'base >=4.9 && <4.12' \
+        'binary >=0.8 && <0.9' \
+        'containers >=0.5 && <0.6' \
+        'directory >=1.2 && <1.4' \
+        'exceptions -any' \
+        'haskell-src-exts-any' \
+        'hint >=0.7.0 && <0.8.0' \
+        'hspec -any' \
+        'megaparsec -any' \
+        'pretty -any' \
+        'process >=1.4 && <1.7' \
+        'QuickCheck-any' \
+        'simple-logger -any' \
+        'temporary -any' \
+        'text -any' \
+        || true
     fi
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
