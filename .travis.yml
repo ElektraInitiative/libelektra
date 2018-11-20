@@ -309,6 +309,8 @@ before_install:
         brew install yaml-cpp
         # Unfortunately Xerces 3.2 causes multiple problems if we translate Elektra with GCC on macOS
         brew install xerces-c
+        # OCLint complains about unknown compiler warning options, if we use GCC as compiler.
+        brew cask install oclint
       fi
       brew install bison
       brew install dbus
