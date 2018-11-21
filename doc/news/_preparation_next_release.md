@@ -94,9 +94,34 @@ compiled against an older 0.8 version of Elektra will continue to work
 - <<TODO>>
 - <<TODO>>
 
-### <<Library1>>
+### Libease
 
-- <<TODO>>
+- The function `elektraArrayValidateBaseNameString` now returns the offset to the first digit of the array index, if the given string
+  represents an array element containing an index. This update enhances the behavior of the function. Now it not only tells you if a name
+  represents a valid array element, but also the start position of the array index.
+
+  ```c
+  elektraArrayValidateBaseNameString ("#_10");
+  //                                     ~~^ Returns `2` (instead of `1`)
+
+  elektraArrayValidateBaseNameString ("#___1337");
+  //                                   ~~~~^ Returns `4` (instead of `1`)
+  ```
+
+  If your program already used `elektraArrayValidateBaseNameString` and you check for a valid array element using the equality operator
+  (`== 1`), then please use (`>= 1`) instead. For example, if you code that looks like this:
+
+  ```c
+  if (elektraArrayValidateBaseNameString(baseName) == 1) …;
+  ```
+
+  , please update your code to check for a valid array element name like this:
+
+  ```c
+  if (elektraArrayValidateBaseNameString(baseName) >= 1) …;
+  ```
+
+  . *(René Schwaiger)*
 - <<TODO>>
 - <<TODO>>
 
