@@ -971,6 +971,72 @@ static void kdbLoadSplitState (KDB * handle, KeySet * global)
 	}
 }
 
+static char * elektraStrConcat (const char * a, const char * b)
+{
+	size_t len = strlen (a) + strlen (b) + 1;
+	char * ret = elektraMalloc (len);
+	ret = strcpy (ret, a);
+	ret = strcat (ret, b);
+	return ret;
+}
+
+#include <sys/stat.h>
+#include <sys/types.h>
+static int elektraMkdirParents (const char * pathname)
+{
+	if (mkdir (pathname, KDB_FILE_MODE | KDB_DIR_MODE) == -1)
+	{
+		if (errno != ENOENT)
+		{
+			// hopeless, give it up
+			return -1;
+		}
+
+		// last part of filename component (basename)
+		char * p = strrchr (pathname, '/');
+
+		/* nothing found */
+		if (p == NULL)
+		{
+			// set any errno, corrected in
+			// elektraAddErrnoText
+			errno = E2BIG;
+			return -1;
+		}
+
+		/* absolute path */
+		if (p == pathname)
+		{
+			// set any errno, corrected in
+			// elektraAddErrnoText
+			errno = EINVAL;
+			return -1;
+		}
+
+		/* Cut path at last /. */
+		*p = 0;
+
+		/* Now call ourselves recursively */
+		if (elektraMkdirParents (pathname) == -1)
+		{
+			// do not yield an error, was already done
+			// before
+			*p = '/';
+			return -1;
+		}
+
+		/* Restore path. */
+		*p = '/';
+
+		if (mkdir (pathname, KDB_FILE_MODE | KDB_DIR_MODE) == -1)
+		{
+			return -1;
+		}
+	}
+
+	return 0;
+}
+
 /**
  * @brief Retrieve keys in an atomic and universal way.
  *
@@ -1095,7 +1161,10 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		goto error;
 	}
 
-	Key * cacheFile = keyNew ("/tmp/elektracache.mmap", KEY_VALUE, "/tmp/elektracache.mmap", KEY_END);
+	char * cacheFileName = elektraStrConcat ("/tmp/elektracache/", keyName (mountGetMountpoint (handle, parentKey)));
+	elektraMkdirParents (cacheFileName);
+	cacheFileName = elektraStrConcat (cacheFileName, "cache.mmap");
+	Key * cacheFile = keyNew (cacheFileName, KEY_VALUE, cacheFileName, KEY_END);
 	KeySet * cache = ksNew (0, KS_END);
 	KeySet * global = ksNew (0, KS_END);
 	if (handle->globalPlugins[PREGETCACHE][MAXONCE])
@@ -1677,7 +1746,9 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 	keyDel (initialParent);
 	splitDel (split);
 
-	Key * cacheFile = keyNew ("/tmp/elektracache.mmap", KEY_VALUE, "/tmp/elektracache.mmap", KEY_END);
+	char * cacheFileName = elektraStrConcat ("/tmp/elektracache/", keyName (mountGetMountpoint (handle, parentKey)));
+	cacheFileName = elektraStrConcat (cacheFileName, "cache.mmap");
+	Key * cacheFile = keyNew (cacheFileName, KEY_VALUE, cacheFileName, KEY_END);
 	unlink (keyName(cacheFile));
 	keyDel (oldError);
 	errno = errnosave;
