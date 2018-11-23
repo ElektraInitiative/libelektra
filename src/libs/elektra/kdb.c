@@ -1037,6 +1037,37 @@ static int elektraMkdirParents (const char * pathname)
 	return 0;
 }
 
+static char * kdbCacheFileName (KDB * handle, Key * parentKey)
+{
+	char * cacheFileName = 0;
+	const char * name = keyName (mountGetMountpoint (handle, parentKey));
+	const char * value = keyString (mountGetMountpoint (handle, parentKey));
+	ELEKTRA_LOG_DEBUG ("mountpoint name: %s", name);
+	if (strlen(name) != 0)
+	{
+		cacheFileName = elektraStrConcat ("/tmp/elektracache/backend/", name);
+	}
+	else if (strcmp(value, "default") == 0)
+	{
+		cacheFileName = elektraStrConcat ("/tmp/elektracache/default/", keyName (parentKey));
+	}
+	else
+	{
+		ELEKTRA_LOG_DEBUG ("mountpoint empty, invalid cache file name");
+	}
+	// cacheFileName = elektraStrConcat ("/tmp/elektracache/", keyName (parentKey));
+	ELEKTRA_LOG_DEBUG ("cache dir: %s", cacheFileName);
+	
+	if(cacheFileName)
+	{
+		elektraMkdirParents (cacheFileName);
+		cacheFileName = elektraStrConcat (cacheFileName, "/cache.mmap");
+		ELEKTRA_LOG_DEBUG ("cache file: %s", cacheFileName);
+	}
+
+	return cacheFileName;
+}
+
 /**
  * @brief Retrieve keys in an atomic and universal way.
  *
@@ -1161,23 +1192,25 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		goto error;
 	}
 
-	char * cacheFileName = elektraStrConcat ("/tmp/elektracache/", keyName (mountGetMountpoint (handle, parentKey)));
-	elektraMkdirParents (cacheFileName);
-	cacheFileName = elektraStrConcat (cacheFileName, "cache.mmap");
-	Key * cacheFile = keyNew (cacheFileName, KEY_VALUE, cacheFileName, KEY_END);
 	KeySet * cache = ksNew (0, KS_END);
 	KeySet * global = ksNew (0, KS_END);
-	if (handle->globalPlugins[PREGETCACHE][MAXONCE])
+	Key * cacheFile = 0;
+	char * cacheFileName;
+	if ((cacheFileName = kdbCacheFileName (handle, parentKey)) != 0)
 	{
-		handle->globalPlugins[PREGETCACHE][MAXONCE]->global = global;
-		elektraGlobalGet (handle, cache, cacheFile, PREGETCACHE, MAXONCE);
-		handle->globalPlugins[PREGETCACHE][MAXONCE]->global = 0;
-
-		if (kdbCacheCheckParent (global, cachedParent) != 0)
+		cacheFile = keyNew (cacheFileName, KEY_VALUE, cacheFileName, KEY_END);
+		if (handle->globalPlugins[PREGETCACHE][MAXONCE])
 		{
-			// parentKey in cache does not match, needs rebuild
-			ELEKTRA_LOG_DEBUG ("CACHE WRONG PARENTKEY");
-			ksClear (global);
+			handle->globalPlugins[PREGETCACHE][MAXONCE]->global = global;
+			elektraGlobalGet (handle, cache, cacheFile, PREGETCACHE, MAXONCE);
+			handle->globalPlugins[PREGETCACHE][MAXONCE]->global = 0;
+
+			if (kdbCacheCheckParent (global, cachedParent) != 0)
+			{
+				// parentKey in cache does not match, needs rebuild
+				ELEKTRA_LOG_DEBUG ("CACHE WRONG PARENTKEY");
+				ksClear (global);
+			}
 		}
 	}
 
@@ -1191,7 +1224,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		Key * cur;
 		while ((cur = ksNext(cache)) != NULL)
 		{
-			keyClearSync (cur); // TODO: don't do this
+			// keyClearSync (cur); // TODO: don't do this
 		}
 		if (ks->size == 0)
 		{
@@ -1322,16 +1355,19 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, MAXONCE);
 	elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, DEINIT);
 
-	if (handle->globalPlugins[POSTGETCACHE][MAXONCE])
+	if ((cacheFileName = kdbCacheFileName (handle, parentKey)) != 0)
 	{
-		// TODO: do not store/cache user supplied keys (bypass)
-		handle->globalPlugins[POSTGETCACHE][MAXONCE]->global = global;
-		kdbStoreSplitState (handle, global, cachedParent);
-		elektraGlobalSet (handle, ks, cacheFile, POSTGETCACHE, MAXONCE);
-		handle->globalPlugins[POSTGETCACHE][MAXONCE]->global = 0;
-		ELEKTRA_LOG_DEBUG (">>>>>>>>>>>>>> PRINT GLOBAL KEYSET");
-		output_keyset (global);
-		ELEKTRA_LOG_DEBUG (">>>>>>>>>>>>>> END GLOBAL KEYSET");
+		if (handle->globalPlugins[POSTGETCACHE][MAXONCE])
+		{
+			// TODO: do not store/cache user supplied keys (bypass)
+			handle->globalPlugins[POSTGETCACHE][MAXONCE]->global = global;
+			kdbStoreSplitState (handle, global, cachedParent);
+			elektraGlobalSet (handle, ks, cacheFile, POSTGETCACHE, MAXONCE);
+			handle->globalPlugins[POSTGETCACHE][MAXONCE]->global = 0;
+			ELEKTRA_LOG_DEBUG (">>>>>>>>>>>>>> PRINT GLOBAL KEYSET");
+			output_keyset (global);
+			ELEKTRA_LOG_DEBUG (">>>>>>>>>>>>>> END GLOBAL KEYSET");
+		}
 	}
 
 	ksRewind (ks);
@@ -1746,10 +1782,14 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 	keyDel (initialParent);
 	splitDel (split);
 
-	char * cacheFileName = elektraStrConcat ("/tmp/elektracache/", keyName (mountGetMountpoint (handle, parentKey)));
-	cacheFileName = elektraStrConcat (cacheFileName, "cache.mmap");
-	Key * cacheFile = keyNew (cacheFileName, KEY_VALUE, cacheFileName, KEY_END);
-	unlink (keyName(cacheFile));
+
+	char * cacheFileName;
+	if ((cacheFileName = kdbCacheFileName (handle, parentKey)) != 0)
+	{
+		Key * cacheFile = keyNew (cacheFileName, KEY_VALUE, cacheFileName, KEY_END);
+		unlink (keyName(cacheFile));
+	}
+
 	keyDel (oldError);
 	errno = errnosave;
 	ELEKTRA_LOG ("before RETURN 1");
