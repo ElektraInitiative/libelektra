@@ -21,16 +21,18 @@ RUN mkdir -p ${GTEST_ROOT} \
     && rm gtest.tar.gz
 
 # YAEP
-ARG YAEP_VERSION=0d6fda5755dc366c89dbeb9ef7619fb05c9bca89
+ARG YAEP_VERSION=550de4cc5600d5f6109c7ebcfbacec51bf80d8d3
 RUN cd /tmp \
     && mkdir yaep \
     && curl -o yaep.tar.gz \
        -L https://github.com/vnmakarov/yaep/archive/${YAEP_VERSION}.tar.gz \
     && tar -zxvf yaep.tar.gz --strip-components=1 -C yaep \
     && cd yaep \
-    && env CXXFLAGS='-fPIC' ./configure \
-    && make -C src install \
-    && cd .. \
+    && mkdir build \
+    && cd build \
+    && env CFLAGS='-fPIC' CXXFLAGS='-fPIC' cmake -DCMAKE_BUILD_TYPE=Release .. \
+    && make install \
+    && cd ../.. \
     && rm -r yaep yaep.tar.gz
 
 # Create User:Group
