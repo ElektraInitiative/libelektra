@@ -123,16 +123,18 @@ RUN cd /tmp \
     && rm -r antlr4
 
 # YAEP
-ARG YAEP_VERSION=0d6fda5755dc366c89dbeb9ef7619fb05c9bca89
+ARG YAEP_VERSION=550de4cc5600d5f6109c7ebcfbacec51bf80d8d3
 RUN cd /tmp \
     && mkdir yaep \
     && curl -o yaep.tar.gz \
        -L https://github.com/vnmakarov/yaep/archive/${YAEP_VERSION}.tar.gz \
     && tar -zxvf yaep.tar.gz --strip-components=1 -C yaep \
     && cd yaep \
-    && env CXXFLAGS='-fPIC' ./configure \
-    && make -C src install \
-    && cd .. \
+    && mkdir build \
+    && cd build \
+    && env CFLAGS='-fPIC' CXXFLAGS='-fPIC' cmake -DCMAKE_BUILD_TYPE=Release .. \
+    && make install \
+    && cd ../.. \
     && rm -r yaep yaep.tar.gz
 
 # yaml-cpp
@@ -173,7 +175,7 @@ RUN git config --global user.email 'Jenkins <autobuilder@libelektra.org>' \
 
 # shfmt
 ENV SHFMT_PATH=/home/jenkins/bin
-ENV SHFMT_VERSION=v2.5.1
+ENV SHFMT_VERSION=v2.6.1
 ENV PATH="${SHFMT_PATH}:${PATH}"
 RUN mkdir -p "${SHFMT_PATH}" \
     && cd "${SHFMT_PATH}" \

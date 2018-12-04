@@ -206,7 +206,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Travis
 
-- <<TODO>>
+- We now test Elektra on [Ubuntu Xenial Xerus](https://docs.travis-ci.com/user/reference/xenial). *(René Schwaiger)*
 - <<TODO>>
 - <<TODO>>
 
