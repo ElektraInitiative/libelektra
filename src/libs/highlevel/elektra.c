@@ -11,7 +11,9 @@
 #include "elektra_error_private.h"
 #include "elektra_private.h"
 #include "elektra_types.h"
+#include "kdbhelper.h"
 #include "kdblogger.h"
+#include <stdlib.h>
 
 static void defaultFatalErrorHandler (ElektraError * error)
 {

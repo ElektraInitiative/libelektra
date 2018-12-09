@@ -10,6 +10,7 @@
 #define ELEKTRA_H
 
 #include "elektra_error.h"
+#include "elektra_errors.h"
 #include "elektra_types.h"
 #include "kdb.h"
 #include "kdbtypes.h"
@@ -96,7 +97,7 @@ typedef struct _Elektra Elektra;
 		char * string = VALUE_TO_STRING (value);                                                                                   \
 		if (string == 0)                                                                                                           \
 		{                                                                                                                          \
-			*error = elektraErrorConversionToString (KDB_TYPE, NULL);                                                          \
+			*error = elektraErrorConversionToString (KDB_TYPE);                                                                \
 			return;                                                                                                            \
 		}                                                                                                                          \
 		elektraSetValue (elektra, tag->keyName, string, KDB_TYPE, error);                                                          \
@@ -108,7 +109,7 @@ typedef struct _Elektra Elektra;
 		char * string = VALUE_TO_STRING (value);                                                                                   \
 		if (string == 0)                                                                                                           \
 		{                                                                                                                          \
-			*error = elektraErrorConversionToString (KDB_TYPE, NULL);                                                          \
+			*error = elektraErrorConversionToString (KDB_TYPE);                                                                \
 			return;                                                                                                            \
 		}                                                                                                                          \
 		elektraSetArrayElementValue (elektra, tag->keyName, index, VALUE_TO_STRING (value), KDB_TYPE, error);                      \
@@ -121,7 +122,7 @@ typedef struct _Elektra Elektra;
 		const Key * key = elektraFindKey (elektra, tag->keyName, KDB_TYPE);                                                        \
 		if (!KEY_TO_VALUE (key, &result))                                                                                          \
 		{                                                                                                                          \
-			elektraFatalError (elektra, elektraErrorConversionFromString (KDB_TYPE, keyString (key), NULL));                   \
+			elektraFatalError (elektra, elektraErrorConversionFromString (KDB_TYPE, keyString (key)));                         \
 			return (cType) 0;                                                                                                  \
 		}                                                                                                                          \
 		return result;                                                                                                             \
@@ -133,7 +134,7 @@ typedef struct _Elektra Elektra;
 		const Key * key = elektraFindArrayElementKey (elektra, tag->keyName, index, KDB_TYPE);                                     \
 		if (!KEY_TO_VALUE (key, &result))                                                                                          \
 		{                                                                                                                          \
-			elektraFatalError (elektra, elektraErrorConversionFromString (KDB_TYPE, keyString (key), NULL));                   \
+			elektraFatalError (elektra, elektraErrorConversionFromString (KDB_TYPE, keyString (key)));                         \
 			return (cType) 0;                                                                                                  \
 		}                                                                                                                          \
 		return result;                                                                                                             \

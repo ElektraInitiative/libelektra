@@ -10,7 +10,6 @@
 #define ELEKTRA_PRIVATE_H
 
 #include "elektra.h"
-#include "elektra_error.h"
 
 struct _Elektra
 {

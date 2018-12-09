@@ -9,11 +9,8 @@
 #ifndef ELEKTRA_CONVERSION_H
 #define ELEKTRA_CONVERSION_H
 
-#include "elektra_error.h"
 #include "elektra_types.h"
 #include "kdb.h"
-#include "kdbhelper.h"
-#include <stdlib.h>
 
 int elektraKeyToString (const Key * key, const char ** variable);
 int elektraKeyToBoolean (const Key * key, kdb_boolean_t * variable);
@@ -47,8 +44,5 @@ int elektraKeyToLongDouble (const Key * key, kdb_long_double_t * variable);
 char * elektraLongDoubleToString (kdb_long_double_t value);
 
 #endif // HAVE_SIZEOF_LONG_DOUBLE
-
-ElektraError * elektraErrorConversionToString (KDBType sourceType, const char * moreDesc);
-ElektraError * elektraErrorConversionFromString (KDBType targetType, const char * sourceValue, const char * moreDesc);
 
 #endif // ELEKTRA_CONVERSION_H

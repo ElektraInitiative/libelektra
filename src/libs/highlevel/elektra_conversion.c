@@ -7,13 +7,13 @@
  */
 
 #include "elektra_conversion.h"
+#include "elektra_errors.h"
+#include "kdbhelper.h"
 #include <ctype.h>
-#include <elektra_conversion.h>
-#include <elektra_error_private.h>
 #include <errno.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include <string.h>
-
 
 #define CAT(X, Y) CAT_ (X, Y)
 #define CAT_(X, Y) X##Y
@@ -608,51 +608,3 @@ char * elektraLongDoubleToString (kdb_long_double_t value)
 }
 
 #endif // HAVE_SIZEOF_LONG_DOUBLE
-
-/**
- * Creates a newly allocated (free with elektraFree()) ElektraError,
- * indicating a problem while converting from @p sourceType to string.
- *
- * @param sourceType the type from which a value should have been converted
- * @param moreDesc   additional information appended to the generated description, can be null
- * @return a newly allocated ElektraError
- */
-ElektraError * elektraErrorConversionToString (KDBType sourceType, const char * moreDesc)
-{
-	char * errorString;
-	if (moreDesc == NULL)
-	{
-		errorString = elektraFormat ("Could not convert %s to string", sourceType);
-	}
-	else
-	{
-		errorString = elektraFormat ("Could not convert %s to string\n%s", sourceType, moreDesc);
-	}
-	ElektraError * error = elektraErrorCreate (0 /* TODO */, errorString, ELEKTRA_ERROR_SEVERITY_ERROR, "highlevel", "conversion");
-	elektraFree (errorString);
-	return error;
-}
-
-/**
- * Creates a newly allocated (free with elektraFree()) ElektraError,
- * indicating a problem while converting the value @p sourceValue to @p targetType to string.
- *
- * @param sourceType the type from which a value should have been converted
- * @param moreDesc   additional information appended to the generated description, can be null
- * @return a newly allocated ElektraError
- */
-ElektraError * elektraErrorConversionFromString (KDBType targetType, const char * sourceKeyName, const char * moreDesc)
-{
-	char * errorString;
-	if (moreDesc == NULL)
-	{
-		errorString = elektraFormat ("Could not convert key to %s: %s", targetType, sourceKeyName);
-	}
-	else
-	{
-		errorString = elektraFormat ("Could not convert key to %s: %s\n%s", targetType, sourceKeyName, moreDesc);
-	}
-	ElektraError * error = elektraErrorCreate (0 /* TODO */, errorString, ELEKTRA_ERROR_SEVERITY_ERROR, "highlevel", "conversion");
-	elektraFree (errorString);
-	return error;
-}

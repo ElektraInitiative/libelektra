@@ -96,7 +96,8 @@ install (FILES "${CMAKE_CURRENT_BINARY_DIR}/kdbconfig.h"
 	       "${CMAKE_CURRENT_BINARY_DIR}/kdbversion.h"
 	       elektra.h
 	       elektra_error.h
-	       elektra_error_codes.h
+	       "${CMAKE_CURRENT_BINARY_DIR}/elektra_error_codes.h"
+	       "${CMAKE_CURRENT_BINARY_DIR}/elektra_errors.h"
 	       elektra_conversion.h
 	       elektra_types.h
 	 DESTINATION include/${TARGET_INCLUDE_FOLDER})

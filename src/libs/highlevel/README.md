@@ -91,7 +91,7 @@ because that is the only option other than calling `exit()`, which is exactly wh
 
 ### Struct `ElektraError`
 The library is designed to shield developers from the many errors one can encounter when using KDB directly. However it is not possible 
-to hide all those issues. As with every library, things can go wrong and there needs to be a way react to errors once they have occurred
+to hide all those issues. As with every library, things can go wrong and there needs to be a way to react to errors once they have occurred
 at runtime. Therefore the high-level API introduces a struct called `ElektraError`, which encapsulates all information necessary for the
 developer to handle runtime-errors appropriately in the application.
 
@@ -128,6 +128,9 @@ if (error != NULL)
   elektraErrorReset (&error);
 }
 ```
+
+#### Low-level Errors
+Errors which do not originate inside the high-level API itself
 
 ## Reading and writing values
 

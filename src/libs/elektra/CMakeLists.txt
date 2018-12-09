@@ -180,7 +180,10 @@ if (BUILD_FULL OR BUILD_STATIC)
 	get_property (elektra-full_SRCS GLOBAL PROPERTY elektra-full_SRCS)
 	list (APPEND SOURCES
 		     ${elektra-full_SRCS}
-		     ${BINARY_INCLUDE_DIR}/kdberrors.h)
+		     ${BINARY_INCLUDE_DIR}/kdberrors.h
+		     ${BINARY_INCLUDE_DIR}/elektra_error_codes.h
+		     ${BINARY_INCLUDE_DIR}/elektra_errors.h
+		     ${BINARY_INCLUDE_DIR}/elektra_errors_private.h)
 	list (APPEND SOURCES
 		     "${CMAKE_CURRENT_BINARY_DIR}/exported_symbols.c")
 

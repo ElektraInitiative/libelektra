@@ -6,14 +6,12 @@
  * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
-#include "elektra.h"
 #include "elektra_conversion.h"
+#include "elektra_errors.h"
+#include "elektra_errors_private.h"
 #include "elektra_private.h"
 #include "kdbease.h"
-#include "kdblogger.h"
-
-#include <elektra_error_private.h>
-#include <stdlib.h>
+#include "kdbhelper.h"
 #include <string.h>
 
 /**
@@ -57,7 +55,7 @@ Key * elektraFindArrayElementKey (Elektra * elektra, const char * name, size_t i
 	Key * const resultKey = ksLookup (elektra->config, elektra->lookupKey, 0);
 	if (resultKey == NULL)
 	{
-		elektraFatalError (elektra, elektraErrorKeyNotFound (keyName (elektra->lookupKey), NULL));
+		elektraFatalError (elektra, elektraErrorKeyNotFound (keyName (elektra->lookupKey)));
 		return NULL;
 	}
 
@@ -66,7 +64,7 @@ Key * elektraFindArrayElementKey (Elektra * elektra, const char * name, size_t i
 		const char * actualType = keyString (keyGetMeta (resultKey, "type"));
 		if (strcmp (actualType, type) != 0)
 		{
-			elektraFatalError (elektra, elektraErrorWrongType (keyName (elektra->lookupKey), actualType, type, NULL));
+			elektraFatalError (elektra, elektraErrorWrongType (keyName (elektra->lookupKey), type, actualType));
 			return NULL;
 		}
 	}
@@ -130,7 +128,7 @@ void elektraSetArrayElementValue (Elektra * elektra, const char * name, size_t i
 	const Key * key = elektraFindArrayElementKey (elektra, keyname, index, KDB_TYPE);                                                  \
 	if (key == NULL || !KEY_TO_VALUE (key, &result))                                                                                   \
 	{                                                                                                                                  \
-		elektraFatalError (elektra, elektraErrorConversionFromString (KDB_TYPE, keyString (key), NULL));                           \
+		elektraFatalError (elektra, elektraErrorConversionFromString (KDB_TYPE, keyString (key)));                                 \
 		return 0;                                                                                                                  \
 	}
 
@@ -352,7 +350,7 @@ int elektraGetEnumIntArrayElement (Elektra * elektra, char * keyname, size_t ind
 	char * string = VALUE_TO_STRING (value);                                                                                           \
 	if (string == 0)                                                                                                                   \
 	{                                                                                                                                  \
-		*error = elektraErrorConversionToString (KDB_TYPE, NULL);                                                                  \
+		*error = elektraErrorConversionToString (KDB_TYPE);                                                                        \
 		return;                                                                                                                    \
 	}                                                                                                                                  \
 	elektraSetArrayElementValue (elektra, keyname, index, string, KDB_TYPE, error);                                                    \

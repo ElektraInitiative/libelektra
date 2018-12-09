@@ -1,10 +1,13 @@
 add_executable (elektra-export-errors exporterrors.cpp parser.hpp parser.cpp)
+add_executable (elektra-export-errors-highlevel exporterrors_highlevel.cpp parser.hpp parser.cpp)
 
 if (INSTALL_BUILD_TOOLS)
 	install (TARGETS elektra-export-errors DESTINATION bin)
+	install (TARGETS elektra-export-errors-highlevel DESTINATION bin)
 endif (INSTALL_BUILD_TOOLS)
 
 set_source_files_properties (elektra-export-errors OBJECT_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/specification)
+set_source_files_properties (elektra-export-errors-highlevel OBJECT_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/specification_highlevel)
 
 find_util (elektra-export-errors EXE_ERR_LOC EXE_ERR_ARG)
 set (BINARY_INCLUDE_DIR "${PROJECT_BINARY_DIR}/src/include")
@@ -16,6 +19,28 @@ add_custom_command (OUTPUT ${BINARY_INCLUDE_DIR}/kdberrors.h
 				 ${CMAKE_CURRENT_SOURCE_DIR}/specification
 				 ${BINARY_INCLUDE_DIR}/kdberrors.h)
 add_custom_target (kdberrors_generated ALL DEPENDS ${BINARY_INCLUDE_DIR}/kdberrors.h)
+
+find_util (elektra-export-errors-highlevel EXE_ERR_LOC EXE_ERR_ARG)
+set (BINARY_INCLUDE_DIR "${PROJECT_BINARY_DIR}/src/include")
+add_custom_command (OUTPUT ${BINARY_INCLUDE_DIR}/elektra_error_codes.h
+			   ${BINARY_INCLUDE_DIR}/elektra_errors.h
+			   ${BINARY_INCLUDE_DIR}/elektra_errors_private.h
+			   ${CMAKE_CURRENT_BINARY_DIR}/elektra_errors.c
+		    DEPENDS elektra-export-errors-highlevel
+			    ${CMAKE_CURRENT_SOURCE_DIR}/specification_highlevel
+		    COMMAND ${EXE_ERR_LOC}
+			    ARGS ${EXE_ERR_ARG}
+				 ${CMAKE_CURRENT_SOURCE_DIR}/specification_highlevel
+				 ${BINARY_INCLUDE_DIR}/elektra_error_codes.h
+				 ${BINARY_INCLUDE_DIR}/elektra_errors.h
+				 ${BINARY_INCLUDE_DIR}/elektra_errors_private.h
+				 ${CMAKE_CURRENT_BINARY_DIR}/elektra_errors.c)
+add_custom_target (elektra_error_codes_generated
+		   ALL
+		   DEPENDS ${BINARY_INCLUDE_DIR}/elektra_error_codes.h
+			   ${BINARY_INCLUDE_DIR}/elektra_errors.h
+			   ${BINARY_INCLUDE_DIR}/elektra_errors_private.h
+			   ${PROJECT_BINARY_DIR}/src/error/elektra_errors.c)
 
 add_executable (exporttranslations exporttranslations.cpp parser.hpp parser.cpp)
 

@@ -18,15 +18,23 @@ struct _ElektraError
 	ElektraErrorCode code;
 	char * description;
 	ElektraErrorSeverity severity;
-	ElektraErrorGroup group;
-	ElektraErrorModule module;
+	ElektraKDBError * lowLevelError;
 };
 
-ElektraError * elektraErrorCreate (ElektraErrorCode code, const char * description, ElektraErrorSeverity severity, ElektraErrorGroup group,
-				   ElektraErrorModule module);
-ElektraError * elektraErrorCreateFromKey (Key * key);
+struct _ElektraKDBError
+{
+	int code;
+	const char * description;
+	ElektraErrorSeverity severity;
+	ElektraKDBErrorGroup group;
+	ElektraKDBErrorModule module;
+	const char * reason;
+	int warningCount;
+	ElektraKDBError ** warnings;
+	Key * errorKey;
+};
 
-ElektraError * elektraErrorKeyNotFound (const char * keyname, const char * moreDesc);
-ElektraError * elektraErrorWrongType (const char * keyname, KDBType actualType, KDBType expectedType, const char * moreDesc);
+ElektraError * elektraErrorCreate (ElektraErrorCode code, const char * description, ElektraErrorSeverity severity);
+ElektraError * elektraErrorCreateFromKey (Key * key);
 
 #endif // ELEKTRA_ERROR_PRIVATE_H

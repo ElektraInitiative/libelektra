@@ -214,6 +214,9 @@ macro (add_headers HDR_FILES)
 		     ${SRC_HDR_FILES})
 
 	set_source_files_properties (${BINARY_INCLUDE_DIR}/kdberrors.h PROPERTIES GENERATED ON SKIP_AUTOMOC ON)
+	set_source_files_properties (${BINARY_INCLUDE_DIR}/elektra_error_codes.h PROPERTIES GENERATED ON SKIP_AUTOMOC ON)
+	set_source_files_properties (${BINARY_INCLUDE_DIR}/elektra_errors.h PROPERTIES GENERATED ON SKIP_AUTOMOC ON)
+	set_source_files_properties (${BINARY_INCLUDE_DIR}/elektra_errors_private.h PROPERTIES GENERATED ON SKIP_AUTOMOC ON)
 	list (APPEND ${HDR_FILES}
 		     "${BINARY_INCLUDE_DIR}/kdberrors.h")
 endmacro (add_headers)

@@ -17,7 +17,39 @@ static int test_line = 0;
 static void fatalErrorHandler (ElektraError * error)
 {
 	nbError++;
-	printf ("%s:%d: fatal error in test %s: %s\n", __FILE__, test_line, test_name, elektraErrorDescription (error));
+	printf ("%s:%d: fatal error in test %s: %s \n", __FILE__, test_line, test_name, elektraErrorDescription (error));
+	ElektraKDBError * kdbError = elektraErrorLowLevelError (error);
+	if (kdbError != NULL)
+	{
+		const char * severityString;
+		switch (elektraKDBErrorSeverity (kdbError))
+		{
+		case ELEKTRA_ERROR_SEVERITY_ERROR:
+			severityString = "ERROR";
+			break;
+		case ELEKTRA_ERROR_SEVERITY_WARNING:
+			severityString = "WARNING";
+			break;
+		default:
+		case ELEKTRA_ERROR_SEVERITY_FATAL:
+			severityString = "FATAL";
+			break;
+		}
+
+		printf ("\tKDB %s %d [%s/%s]: %s\n", severityString, elektraKDBErrorCode (kdbError), elektraKDBErrorGroup (kdbError),
+			elektraKDBErrorModule (kdbError), elektraKDBErrorDescription (kdbError));
+		printf ("\t\tReason: %s\n", elektraKDBErrorReason (kdbError));
+		int warningCount = elektraKDBErrorWarningCount (kdbError);
+		printf ("\t\t%d Warnings:\n", warningCount);
+		const ElektraKDBError ** warnings = elektraKDBErrorWarnings (kdbError);
+		for (int i = 0; i < warningCount; ++i)
+		{
+			printf ("\t\t - Warning %d [%s/%s]: %s\n", elektraKDBErrorCode (warnings[i]), elektraKDBErrorGroup (warnings[i]),
+				elektraKDBErrorModule (warnings[i]), elektraKDBErrorDescription (warnings[i]));
+		}
+		printf ("\t\tFrom Key: %s\n", keyName (elektraKDBErrorKey (kdbError)));
+	}
+
 	yield_error ("fatal");
 	ElektraErrorCode code = elektraErrorCode (error);
 	elektraFree (error);
@@ -33,7 +65,11 @@ static Elektra * createElektra (KeySet * defaults, ElektraError ** error)
 {
 	Elektra * elektra = elektraOpen ("user/tests/highlevel", defaults, error);
 
-	elektraFatalErrorHandler (elektra, &fatalErrorHandler);
+	if (error == NULL)
+	{
+		elektraFatalErrorHandler (elektra, &fatalErrorHandler);
+	}
+
 	return elektra;
 }
 
@@ -78,6 +114,20 @@ static void resetKDB (void)
 	keyDel (parentKey);
 }
 
+static inline const char * severityString (ElektraError * error)
+{
+	switch (elektraErrorSeverity (error))
+	{
+	case ELEKTRA_ERROR_SEVERITY_ERROR:
+		return "ERROR";
+	case ELEKTRA_ERROR_SEVERITY_WARNING:
+		return "WARNING";
+	default:
+	case ELEKTRA_ERROR_SEVERITY_FATAL:
+		return "FATAL";
+	}
+}
+
 static void test_primitiveGetters (void)
 {
 	SETUP_TEST (primitiveGetters);
@@ -107,7 +157,7 @@ static void test_primitiveGetters (void)
 	if (error)
 	{
 		yield_error ("elektraOpen failed");
-		printf ("ElektraError: %s\n", elektraErrorDescription (error));
+		printf ("ElektraError: [%s] %s\n", severityString (error), elektraErrorDescription (error));
 		elektraErrorReset (&error);
 	}
 
@@ -192,7 +242,7 @@ static void test_arrayGetters (void)
 	if (error)
 	{
 		yield_error ("elektraOpen failed");
-		printf ("ElektraError: %s\n", elektraErrorDescription (error));
+		printf ("ElektraError: [%s] %s\n", severityString (error), elektraErrorDescription (error));
 		elektraErrorReset (&error);
 	}
 
@@ -281,7 +331,7 @@ static void test_primitiveSetters (void)
 	if (error)
 	{
 		yield_error ("elektraOpen failed");
-		printf ("ElektraError: %s\n", elektraErrorDescription (error));
+		printf ("ElektraError: [%s] %s\n", severityString (error), elektraErrorDescription (error));
 		elektraErrorReset (&error);
 	}
 
@@ -328,7 +378,7 @@ static void test_primitiveSetters (void)
 	if (error)
 	{
 		yield_error ("A setter failed");
-		printf ("ElektraError: %s\n", elektraErrorDescription (error));
+		printf ("ElektraError: [%s] %s\n", severityString (error), elektraErrorDescription (error));
 		elektraErrorReset (&error);
 	}
 
@@ -440,7 +490,7 @@ static void test_arraySetters (void)
 	if (error)
 	{
 		yield_error ("elektraOpen failed");
-		printf ("ElektraError: %s\n", elektraErrorDescription (error));
+		printf ("ElektraError: [%s] %s\n", severityString (error), elektraErrorDescription (error));
 		elektraErrorReset (&error);
 	}
 
@@ -549,7 +599,7 @@ static void test_arraySetters (void)
 	if (error)
 	{
 		yield_error ("A setter failed");
-		printf ("ElektraError: %s\n", elektraErrorDescription (error));
+		printf ("ElektraError: [%s] %s\n", severityString (error), elektraErrorDescription (error));
 		elektraErrorReset (&error);
 	}
 
@@ -686,7 +736,7 @@ static void test_defaultValues (void)
 	if (error)
 	{
 		yield_error ("elektraOpen failed");
-		printf ("ElektraError: %s\n", elektraErrorDescription (error));
+		printf ("ElektraError: [%s] %s\n", severityString (error), elektraErrorDescription (error));
 		elektraErrorReset (&error);
 	}
 
@@ -697,7 +747,7 @@ static void test_defaultValues (void)
 	if (error)
 	{
 		yield_error ("elektraSet* failed");
-		printf ("ElektraError: %s\n", elektraErrorDescription (error));
+		printf ("ElektraError: [%s] %s\n", severityString (error), elektraErrorDescription (error));
 		elektraErrorReset (&error);
 	}
 
@@ -710,7 +760,7 @@ static void test_defaultValues (void)
 	if (error)
 	{
 		yield_error ("elektraOpen failed");
-		printf ("ElektraError: %s\n", elektraErrorDescription (error));
+		printf ("ElektraError: [%s] %s\n", severityString (error), elektraErrorDescription (error));
 		elektraErrorReset (&error);
 	}
 
@@ -729,7 +779,7 @@ static void test_generic (void)
 	if (error)
 	{
 		yield_error ("elektraOpen failed");
-		printf ("ElektraError: %s\n", elektraErrorDescription (error));
+		printf ("ElektraError: [%s] %s\n", severityString (error), elektraErrorDescription (error));
 		elektraErrorReset (&error);
 	}
 
@@ -769,7 +819,7 @@ static void test_generic (void)
 	if (error)
 	{
 		yield_error ("elektraSet* failed");
-		printf ("ElektraError: %s\n", elektraErrorDescription (error));
+		printf ("ElektraError: [%s] %s\n", severityString (error), elektraErrorDescription (error));
 		elektraErrorReset (&error);
 	}
 
@@ -829,7 +879,7 @@ static void test_enum (void)
 	if (error)
 	{
 		yield_error ("elektraOpen failed");
-		printf ("ElektraError: %s\n", elektraErrorDescription (error));
+		printf ("ElektraError: [%s] %s\n", severityString (error), elektraErrorDescription (error));
 		elektraErrorReset (&error);
 	}
 
@@ -838,7 +888,7 @@ static void test_enum (void)
 	if (error)
 	{
 		yield_error ("elektraSet* failed");
-		printf ("ElektraError: %s\n", elektraErrorDescription (error));
+		printf ("ElektraError: [%s] %s\n", severityString (error), elektraErrorDescription (error));
 		elektraErrorReset (&error);
 	}
 
@@ -859,7 +909,7 @@ static void test_enumArray (void)
 	if (error)
 	{
 		yield_error ("elektraOpen failed");
-		printf ("ElektraError: %s\n", elektraErrorDescription (error));
+		printf ("ElektraError: [%s] %s\n", severityString (error), elektraErrorDescription (error));
 		elektraErrorReset (&error);
 	}
 
@@ -872,7 +922,7 @@ static void test_enumArray (void)
 	if (error)
 	{
 		yield_error ("elektraSet* failed");
-		printf ("ElektraError: %s\n", elektraErrorDescription (error));
+		printf ("ElektraError: [%s] %s\n", severityString (error), elektraErrorDescription (error));
 		elektraErrorReset (&error);
 	}
 
@@ -901,7 +951,7 @@ static void test_enum_generic (void)
 	if (error)
 	{
 		yield_error ("elektraOpen failed");
-		printf ("ElektraError: %s\n", elektraErrorDescription (error));
+		printf ("ElektraError: [%s] %s\n", severityString (error), elektraErrorDescription (error));
 		elektraErrorReset (&error);
 	}
 
@@ -912,7 +962,7 @@ static void test_enum_generic (void)
 	if (error)
 	{
 		yield_error ("elektraSet* failed");
-		printf ("ElektraError: %s\n", elektraErrorDescription (error));
+		printf ("ElektraError: [%s] %s\n", severityString (error), elektraErrorDescription (error));
 		elektraErrorReset (&error);
 	}
 
@@ -931,7 +981,7 @@ static void test_enumArray_generic (void)
 	if (error)
 	{
 		yield_error ("elektraOpen failed");
-		printf ("ElektraError: %s\n", elektraErrorDescription (error));
+		printf ("ElektraError: [%s] %s\n", severityString (error), elektraErrorDescription (error));
 		elektraErrorReset (&error);
 	}
 
@@ -946,7 +996,7 @@ static void test_enumArray_generic (void)
 	if (error)
 	{
 		yield_error ("elektraSet* failed");
-		printf ("ElektraError: %s\n", elektraErrorDescription (error));
+		printf ("ElektraError: [%s] %s\n", severityString (error), elektraErrorDescription (error));
 		elektraErrorReset (&error);
 	}
 
@@ -969,7 +1019,7 @@ static void test_raw (void)
 	if (error)
 	{
 		yield_error ("elektraOpen failed");
-		printf ("ElektraError: %s\n", elektraErrorDescription (error));
+		printf ("ElektraError: [%s] %s\n", severityString (error), elektraErrorDescription (error));
 		elektraErrorReset (&error);
 	}
 
@@ -991,7 +1041,7 @@ static void test_raw (void)
 	if (error)
 	{
 		yield_error ("elektraSet* failed");
-		printf ("ElektraError: %s\n", elektraErrorDescription (error));
+		printf ("ElektraError: [%s] %s\n", severityString (error), elektraErrorDescription (error));
 		elektraErrorReset (&error);
 	}
 
@@ -1044,7 +1094,7 @@ static void test_enforceMetadata (void)
 	if (error)
 	{
 		yield_error ("elektraOpen failed");
-		printf ("ElektraError: %s\n", elektraErrorDescription (error));
+		printf ("ElektraError: [%s] %s\n", severityString (error), elektraErrorDescription (error));
 		elektraErrorReset (&error);
 	}
 

@@ -39,4 +39,4 @@ target_link_elektra (test_utility elektra-utility)
 
 target_link_elektra (test_globbing elektra-globbing)
 
-target_link_elektra(test_highlevel elektra-highlevel)
+target_link_elektra (test_highlevel elektra-highlevel)
