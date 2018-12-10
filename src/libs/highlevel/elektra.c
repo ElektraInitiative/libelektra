@@ -205,7 +205,14 @@ void elektraSaveKey (Elektra * elektra, Key * key, ElektraError ** error)
 		if (ret == -1)
 		{
 			ElektraError * kdbSetError = elektraErrorCreateFromKey (elektra->parentKey);
-			if (elektraErrorCode (kdbSetError) != 30) // ELEKTRA_ERROR_CONFLICT = 30
+			if (elektraErrorCode (kdbSetError) != ELEKTRA_ERROR_CODE_LOW_LEVEL)
+			{
+				*error = kdbSetError;
+				return;
+			}
+
+			ElektraKDBError * kdbError = elektraErrorLowLevelError (kdbSetError);
+			if (elektraKDBErrorCode (kdbError) != 30) // ELEKTRA_ERROR_CONFLICT = 30
 			{
 				*error = kdbSetError;
 				return;
