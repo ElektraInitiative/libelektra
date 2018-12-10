@@ -579,5 +579,3 @@ void elektraSetEnumIntArrayElement (Elektra * elektra, char * keyName, size_t in
 /**
  * @}
  */
-
-// Private functions

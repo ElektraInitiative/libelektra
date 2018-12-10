@@ -112,7 +112,7 @@ typedef struct _Elektra Elektra;
 			*error = elektraErrorConversionToString (KDB_TYPE);                                                                \
 			return;                                                                                                            \
 		}                                                                                                                          \
-		elektraSetArrayElementValue (elektra, tag->keyName, index, VALUE_TO_STRING (value), KDB_TYPE, error);                      \
+		elektraSetArrayElementValue (elektra, tag->keyName, index, string, KDB_TYPE, error);                                       \
 		elektraFree (string);                                                                                                      \
 	}                                                                                                                                  \
                                                                                                                                            \

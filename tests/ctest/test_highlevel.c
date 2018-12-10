@@ -94,6 +94,7 @@ static void setKeyValue (KDBType type, const char * name, const char * value)
 	// Close
 	kdbClose (handle, parentKey);
 	keyDel (parentKey);
+	ksDel (config);
 }
 
 static void resetKDB (void)
@@ -156,9 +157,9 @@ static void test_primitiveGetters (void)
 
 	if (error)
 	{
-		yield_error ("elektraOpen failed");
 		printf ("ElektraError: [%s] %s\n", severityString (error), elektraErrorDescription (error));
 		elektraErrorReset (&error);
+		exit_if_fail (0, "elektraOpen failed");
 	}
 
 	succeed_if (!elektraStrCmp (elektraGetString (elektra, "stringkey"), "A string"), "Wrong key value.");
@@ -241,9 +242,9 @@ static void test_arrayGetters (void)
 
 	if (error)
 	{
-		yield_error ("elektraOpen failed");
 		printf ("ElektraError: [%s] %s\n", severityString (error), elektraErrorDescription (error));
 		elektraErrorReset (&error);
+		exit_if_fail (0, "elektraOpen failed");
 	}
 
 	succeed_if (elektraArraySize (elektra, "stringarraykey") == 2, "Wrong array size");
@@ -330,9 +331,9 @@ static void test_primitiveSetters (void)
 
 	if (error)
 	{
-		yield_error ("elektraOpen failed");
 		printf ("ElektraError: [%s] %s\n", severityString (error), elektraErrorDescription (error));
 		elektraErrorReset (&error);
+		exit_if_fail (0, "elektraOpen failed");
 	}
 
 	// Overwrite existing values.
@@ -489,9 +490,9 @@ static void test_arraySetters (void)
 
 	if (error)
 	{
-		yield_error ("elektraOpen failed");
 		printf ("ElektraError: [%s] %s\n", severityString (error), elektraErrorDescription (error));
 		elektraErrorReset (&error);
+		exit_if_fail (0, "elektraOpen failed");
 	}
 
 	// Overwrite existing values.
@@ -735,9 +736,9 @@ static void test_defaultValues (void)
 
 	if (error)
 	{
-		yield_error ("elektraOpen failed");
 		printf ("ElektraError: [%s] %s\n", severityString (error), elektraErrorDescription (error));
 		elektraErrorReset (&error);
+		exit_if_fail (0, "elektraOpen failed");
 	}
 
 	succeed_if (elektraStrCmp (elektraGetString (elektra, "stringkey"), "A string") == 0, "Wrong key value.");
@@ -759,14 +760,15 @@ static void test_defaultValues (void)
 
 	if (error)
 	{
-		yield_error ("elektraOpen failed");
 		printf ("ElektraError: [%s] %s\n", severityString (error), elektraErrorDescription (error));
 		elektraErrorReset (&error);
+		exit_if_fail (0, "elektraOpen failed");
 	}
 
 	succeed_if (elektraStrCmp (elektraGetString (elektra, "stringkey"), "My string") == 0, "Wrong key value.");
 
 	elektraClose (elektra);
+	ksDel (defaults);
 }
 
 static void test_generic (void)
@@ -778,9 +780,9 @@ static void test_generic (void)
 
 	if (error)
 	{
-		yield_error ("elektraOpen failed");
 		printf ("ElektraError: [%s] %s\n", severityString (error), elektraErrorDescription (error));
 		elektraErrorReset (&error);
+		exit_if_fail (0, "elektraOpen failed");
 	}
 
 	ELEKTRA_TAG_VALUE (TEST_STRING, "stringkey", String)
@@ -878,9 +880,9 @@ static void test_enum (void)
 
 	if (error)
 	{
-		yield_error ("elektraOpen failed");
 		printf ("ElektraError: [%s] %s\n", severityString (error), elektraErrorDescription (error));
 		elektraErrorReset (&error);
+		exit_if_fail (0, "elektraOpen failed");
 	}
 
 	elektraSetEnumInt (elektra, "enumkey", ELEKTRA_ENUM_TEST_ON, &error);
@@ -908,9 +910,9 @@ static void test_enumArray (void)
 
 	if (error)
 	{
-		yield_error ("elektraOpen failed");
 		printf ("ElektraError: [%s] %s\n", severityString (error), elektraErrorDescription (error));
 		elektraErrorReset (&error);
+		exit_if_fail (0, "elektraOpen failed");
 	}
 
 	elektraSetEnumIntArrayElement (elektra, "enumkey", 0, ELEKTRA_ENUM_TEST_ON, &error);
@@ -950,9 +952,9 @@ static void test_enum_generic (void)
 
 	if (error)
 	{
-		yield_error ("elektraOpen failed");
 		printf ("ElektraError: [%s] %s\n", severityString (error), elektraErrorDescription (error));
 		elektraErrorReset (&error);
+		exit_if_fail (0, "elektraOpen failed");
 	}
 
 	ELEKTRA_TAG_VALUE (TEST_ENUM, "enumkey", EnumTest)
@@ -980,9 +982,9 @@ static void test_enumArray_generic (void)
 
 	if (error)
 	{
-		yield_error ("elektraOpen failed");
 		printf ("ElektraError: [%s] %s\n", severityString (error), elektraErrorDescription (error));
 		elektraErrorReset (&error);
+		exit_if_fail (0, "elektraOpen failed");
 	}
 
 	ELEKTRA_TAG_VALUE (TEST_ENUM, "enumkey", EnumTest)
@@ -1018,9 +1020,9 @@ static void test_raw (void)
 
 	if (error)
 	{
-		yield_error ("elektraOpen failed");
 		printf ("ElektraError: [%s] %s\n", severityString (error), elektraErrorDescription (error));
 		elektraErrorReset (&error);
+		exit_if_fail (0, "elektraOpen failed");
 	}
 
 	elektraSetLong (elektra, "longkey", 2, &error);
@@ -1078,7 +1080,7 @@ static void test_raw (void)
 static bool enforce_failed = false;
 static void test_enforceMetadataHandler (ElektraError * error)
 {
-	elektraFree (error);
+	elektraErrorReset (&error);
 	enforce_failed = true;
 }
 
@@ -1093,9 +1095,9 @@ static void test_enforceMetadata (void)
 
 	if (error)
 	{
-		yield_error ("elektraOpen failed");
 		printf ("ElektraError: [%s] %s\n", severityString (error), elektraErrorDescription (error));
 		elektraErrorReset (&error);
+		exit_if_fail (0, "elektraOpen failed");
 	}
 
 	elektraSetLong (elektra, "testkey", 2, &error);
