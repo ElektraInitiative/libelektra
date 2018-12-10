@@ -494,8 +494,9 @@ TYPED_TEST (test_contextual_basic, groups)
 	KeySet ks;
 	TypeParam c = this->context;
 	Value<int, ContextPolicyIs<TypeParam>> i (
-		ks, c, Key ("/%application%/%version profile thread module%/%manufacturer type family model%/serial_number",
-			    KEY_CASCADING_NAME, KEY_META, "default", s_value, KEY_END));
+		ks, c,
+		Key ("/%application%/%version profile thread module%/%manufacturer type family model%/serial_number", KEY_CASCADING_NAME,
+		     KEY_META, "default", s_value, KEY_END));
 	ASSERT_EQ (i.getName (), "/%/%/%/serial_number");
 	c.template activate<MainApplicationLayer> ();
 	String s (ks, c, Key ("/%x%", KEY_CASCADING_NAME, KEY_META, "default", "anonymous", KEY_END));
@@ -737,10 +738,12 @@ TEST (test_contextual_basic, evaluate)
 	ASSERT_EQ (c.evaluate ("/%language%%country%%dialect%/test"), "/%%%/test");
 
 	KeySet ks;
-	Integer i (ks, c, Key ("/%application%/%version%/%profile%/%thread%/%module%/%manufacturer%/%type%/%family%/%model%/serial_number",
-			       KEY_CASCADING_NAME, KEY_META, "default", s_value, KEY_END));
-	Integer j (ks, c, Key ("/%application version profile thread module manufacturer type family model%/serial_number",
-			       KEY_CASCADING_NAME, KEY_META, "default", s_value, KEY_END));
+	Integer i (ks, c,
+		   Key ("/%application%/%version%/%profile%/%thread%/%module%/%manufacturer%/%type%/%family%/%model%/serial_number",
+			KEY_CASCADING_NAME, KEY_META, "default", s_value, KEY_END));
+	Integer j (ks, c,
+		   Key ("/%application version profile thread module manufacturer type family model%/serial_number", KEY_CASCADING_NAME,
+			KEY_META, "default", s_value, KEY_END));
 	ASSERT_EQ (i.getName (), "/%/%/%/%/%/%/%/%/%/serial_number");
 	ASSERT_EQ (j.getName (), "/%/serial_number");
 	c.activate<MainApplicationLayer> ();

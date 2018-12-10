@@ -29,8 +29,9 @@ int elektraNoresolverCheckFile (const char * filename)
 static KeySet * elektraNoresolverModules (void)
 {
 	return ksNew (
-		50, keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "", KEY_VALUE,
-			    "" ELEKTRA_PLUGIN_NAME " plugin waits for your orders", KEY_END),
+		50,
+		keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "", KEY_VALUE, "" ELEKTRA_PLUGIN_NAME " plugin waits for your orders",
+			KEY_END),
 		keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports", KEY_END),
 		keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/get", KEY_FUNC, elektraNoresolverGet, KEY_END),
 		keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/set", KEY_FUNC, elektraNoresolverSet, KEY_END),

@@ -81,8 +81,8 @@ void MergeHelper::configureMerger (Cmdline const & cl, ThreeWayMerge & merger)
 	{
 		if (configurationMap.find (cl.strategy) == configurationMap.end ())
 		{
-			throw invalid_argument ("'" + cl.strategy + "' is not a valid strategy. Valid strategies are: " +
-						getConfigurationList ());
+			throw invalid_argument ("'" + cl.strategy +
+						"' is not a valid strategy. Valid strategies are: " + getConfigurationList ());
 		}
 
 		MergeConfiguration * configuration = configurationMap[cl.strategy];

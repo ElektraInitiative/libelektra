@@ -305,8 +305,9 @@ void TreeViewModel::exportConfiguration (TreeViewModel * parentModel, int idx, Q
 	errors = QString::fromStdString (es.str ());
 
 	if (errors.isEmpty () && !warnings.isEmpty ())
-		emit showMessage (tr ("Information"), tr ("Successfully exported configuration below %1 to %2, warnings were issued.")
-							      .arg (QString::fromStdString (root.getName ()), file),
+		emit showMessage (tr ("Information"),
+				  tr ("Successfully exported configuration below %1 to %2, warnings were issued.")
+					  .arg (QString::fromStdString (root.getName ()), file),
 				  "");
 	else if (!errors.isEmpty () && warnings.isEmpty ())
 		emit showMessage (

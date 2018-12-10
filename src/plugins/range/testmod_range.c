@@ -35,8 +35,9 @@ void testInt (const char * value, int ret, const char * rangeString)
 void testUInt (const char * value, int ret, const char * rangeString)
 {
 	Key * parentKey = keyNew ("user/tests/range", KEY_VALUE, "", KEY_END);
-	KeySet * ks = ksNew (10, keyNew ("user/tests/range/key", KEY_VALUE, value, KEY_META, "check/range", rangeString, KEY_META,
-					 "check/type", "unsigned long", KEY_END),
+	KeySet * ks = ksNew (10,
+			     keyNew ("user/tests/range/key", KEY_VALUE, value, KEY_META, "check/range", rangeString, KEY_META, "check/type",
+				     "unsigned long", KEY_END),
 			     KS_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("range");
@@ -52,8 +53,9 @@ void testUInt (const char * value, int ret, const char * rangeString)
 void testFloat (const char * value, int ret, const char * rangeString)
 {
 	Key * parentKey = keyNew ("user/tests/range", KEY_VALUE, "", KEY_END);
-	KeySet * ks = ksNew (10, keyNew ("user/tests/range/key", KEY_VALUE, value, KEY_META, "check/range", rangeString, KEY_META,
-					 "check/type", "float", KEY_END),
+	KeySet * ks = ksNew (10,
+			     keyNew ("user/tests/range/key", KEY_VALUE, value, KEY_META, "check/range", rangeString, KEY_META, "check/type",
+				     "float", KEY_END),
 			     KS_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("range");
@@ -69,8 +71,9 @@ void testFloat (const char * value, int ret, const char * rangeString)
 void testHex (const char * value, int ret, const char * rangeString)
 {
 	Key * parentKey = keyNew ("user/tests/range", KEY_VALUE, "", KEY_END);
-	KeySet * ks = ksNew (10, keyNew ("user/tests/range/key", KEY_VALUE, value, KEY_META, "check/range", rangeString, KEY_META,
-					 "check/type", "HEX", KEY_END),
+	KeySet * ks = ksNew (10,
+			     keyNew ("user/tests/range/key", KEY_VALUE, value, KEY_META, "check/range", rangeString, KEY_META, "check/type",
+				     "HEX", KEY_END),
 			     KS_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("range");
@@ -86,8 +89,9 @@ void testHex (const char * value, int ret, const char * rangeString)
 void testChar (const char * value, int ret, const char * rangeString)
 {
 	Key * parentKey = keyNew ("user/tests/range", KEY_VALUE, "", KEY_END);
-	KeySet * ks = ksNew (10, keyNew ("user/tests/range/key", KEY_VALUE, value, KEY_META, "check/range", rangeString, KEY_META,
-					 "check/type", "char", KEY_END),
+	KeySet * ks = ksNew (10,
+			     keyNew ("user/tests/range/key", KEY_VALUE, value, KEY_META, "check/range", rangeString, KEY_META, "check/type",
+				     "char", KEY_END),
 			     KS_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("range");
