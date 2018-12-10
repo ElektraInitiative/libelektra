@@ -243,7 +243,6 @@ module:dl
 number:40
 description:failed to open default backend (see warnings for more information)
 severity:fatal
-macro:OPEN_BACKEND_FAILED
 ingroup:kdb
 
 number:41
