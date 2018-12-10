@@ -32,12 +32,15 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.8.
 
 ## Highlights
 
-- <<HIGHLIGHT1>>
+- The new High-Level-API has been added. *(Klemens Böswirth)*
 - <<HIGHLIGHT2>>
 - <<HIGHLIGHT3>>
 
 
-### <<HIGHLIGHT1>>
+### High-Level-API
+TODO
+
+Take a look at the [README](/src/libs/highlevel/README.md) for more infos.
 
 
 ### <<HIGHLIGHT2>>
