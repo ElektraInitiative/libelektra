@@ -9,19 +9,14 @@
 #include "parser.hpp"
 
 #include <algorithm>
+#include <cstring>
 #include <fstream>
 #include <functional>
 #include <iostream>
 
 #ifndef _WIN32
-#include <errno.h>
 #include <fcntl.h>
-#include <stdio.h>
-#include <string.h>
-#include <sys/stat.h>
-#include <sys/types.h>
 #include <unistd.h>
-
 #endif
 
 using namespace std;
