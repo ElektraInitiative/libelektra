@@ -218,6 +218,8 @@ void elektraSaveKey (Elektra * elektra, Key * key, ElektraError ** error)
 				return;
 			}
 
+			elektraErrorReset (&kdbSetError);
+
 			Key * problemKey = ksCurrent (elektra->config);
 			if (problemKey != NULL)
 			{
