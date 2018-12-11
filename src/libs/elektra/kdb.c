@@ -1049,7 +1049,8 @@ static char * kdbCacheFileName (KDB * handle, Key * parentKey)
 	}
 	else if (strcmp(value, "default") == 0)
 	{
-		cacheFileName = elektraStrConcat ("/tmp/elektracache/default/", keyName (parentKey));
+		// cacheFileName = elektraStrConcat ("/tmp/elektracache/default/", keyName (parentKey));
+		cacheFileName = elektraStrConcat ("/tmp/elektracache/default/", "");
 	}
 	else
 	{
@@ -1346,7 +1347,22 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		}
 
 		ksClear (ks);
-		splitMerge (split, ks);
+		splitMergeBackends (split, ks);
+		if ((cacheFileName = kdbCacheFileName (handle, parentKey)) != 0)
+		{
+			if (handle->globalPlugins[POSTGETCACHE][MAXONCE])
+			{
+				// TODO: do not store/cache user supplied keys (bypass)
+				handle->globalPlugins[POSTGETCACHE][MAXONCE]->global = global;
+				kdbStoreSplitState (handle, global, cachedParent);
+				elektraGlobalSet (handle, ks, cacheFile, POSTGETCACHE, MAXONCE);
+				handle->globalPlugins[POSTGETCACHE][MAXONCE]->global = 0;
+				ELEKTRA_LOG_DEBUG (">>>>>>>>>>>>>> PRINT GLOBAL KEYSET");
+				output_keyset (global);
+				ELEKTRA_LOG_DEBUG (">>>>>>>>>>>>>> END GLOBAL KEYSET");
+			}
+		}
+		splitMergeDefault (split, ks);
 	}
 
 	keySetName (parentKey, keyName (initialParent));
@@ -1355,20 +1371,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, MAXONCE);
 	elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, DEINIT);
 
-	if ((cacheFileName = kdbCacheFileName (handle, parentKey)) != 0)
-	{
-		if (handle->globalPlugins[POSTGETCACHE][MAXONCE])
-		{
-			// TODO: do not store/cache user supplied keys (bypass)
-			handle->globalPlugins[POSTGETCACHE][MAXONCE]->global = global;
-			kdbStoreSplitState (handle, global, cachedParent);
-			elektraGlobalSet (handle, ks, cacheFile, POSTGETCACHE, MAXONCE);
-			handle->globalPlugins[POSTGETCACHE][MAXONCE]->global = 0;
-			ELEKTRA_LOG_DEBUG (">>>>>>>>>>>>>> PRINT GLOBAL KEYSET");
-			output_keyset (global);
-			ELEKTRA_LOG_DEBUG (">>>>>>>>>>>>>> END GLOBAL KEYSET");
-		}
-	}
+
 
 	ksRewind (ks);
 

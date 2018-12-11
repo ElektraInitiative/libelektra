@@ -702,6 +702,24 @@ int splitMerge (Split * split, KeySet * dest)
 	return 1;
 }
 
+int splitMergeBackends (Split * split, KeySet * dest)
+{
+	/* Bypass default split */
+	const int bypassedSplits = 1;
+	for (size_t i = 0; i < split->size - bypassedSplits; ++i)
+	{
+		ksAppend (dest, split->keysets[i]);
+	}
+	return 1;
+}
+
+int splitMergeDefault (Split * split, KeySet * dest)
+{
+	/* Merge default split */
+	ksAppend (dest, split->keysets[split->size - 1]);
+	return 1;
+}
+
 /** Add sync bits everywhere keys were removed/added.
  *
  * - checks if the size of a previous kdbGet() is unchanged.
