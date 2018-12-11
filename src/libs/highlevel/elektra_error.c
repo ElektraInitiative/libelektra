@@ -212,16 +212,21 @@ void elektraErrorReset (ElektraError ** error)
 		elektraFree (actualError->description);
 	}
 
-	if (actualError->lowLevelError != NULL && actualError->lowLevelError->warnings != NULL)
+	ElektraKDBError * kdbError = actualError->lowLevelError;
+	if (kdbError != NULL)
 	{
-		for (int i = 0; i < actualError->lowLevelError->warningCount; ++i)
+		if (kdbError->warnings != NULL)
 		{
-			elektraFree (actualError->lowLevelError->warnings[i]);
+			for (int i = 0; i < kdbError->warningCount; ++i)
+			{
+				elektraFree (kdbError->warnings[i]);
+			}
+			elektraFree (kdbError->warnings);
 		}
-		elektraFree (actualError->lowLevelError->warnings);
+		elektraFree (kdbError);
 	}
 
-	elektraFree (*error);
+	elektraFree (actualError);
 	*error = NULL;
 }
 
