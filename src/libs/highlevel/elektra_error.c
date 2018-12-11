@@ -264,8 +264,12 @@ static ElektraKDBError * elektraKDBErrorFromKey (Key * key)
 	error->reason = reason;
 	error->errorKey = key;
 
-	kdb_long_t warningCount;
-	elektraKeyToLong (keyGetMeta (key, "warnings"), &warningCount);
+	kdb_long_t warningCount = 0;
+	const Key * warningsKey = keyGetMeta (key, "warnings");
+	if (warningsKey != NULL)
+	{
+		elektraKeyToLong (warningsKey, &warningCount);
+	}
 
 	error->warningCount = warningCount;
 	if (warningCount > 0)
