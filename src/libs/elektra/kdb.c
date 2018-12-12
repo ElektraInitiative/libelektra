@@ -874,7 +874,7 @@ static int kdbCacheCheckParent (KeySet * global, Key * parentKey)
 	return 0;
 }
 
-static void kdbLoadSplitState (KDB * handle, KeySet * global)
+static int kdbLoadSplitState (KDB * handle, KeySet * global)
 {
 	ELEKTRA_LOG_WARNING ("SIZE STORAGE LOAD STUFF");
 
@@ -898,6 +898,7 @@ static void kdbLoadSplitState (KDB * handle, KeySet * global)
 		else
 		{
 			ELEKTRA_LOG_WARNING ("SIZE STORAGE KEY NOT FOUND");
+			return -1;
 		}
 		
 		keySetBaseName (key, "dirsize");
@@ -910,6 +911,7 @@ static void kdbLoadSplitState (KDB * handle, KeySet * global)
 		else
 		{
 			ELEKTRA_LOG_WARNING ("SIZE STORAGE KEY NOT FOUND");
+			return -1;
 		}
 		
 		keySetBaseName (key, "usersize");
@@ -922,6 +924,7 @@ static void kdbLoadSplitState (KDB * handle, KeySet * global)
 		else
 		{
 			ELEKTRA_LOG_WARNING ("SIZE STORAGE KEY NOT FOUND");
+			return -1;
 		}
 		
 		keySetBaseName (key, "systemsize");
@@ -934,6 +937,7 @@ static void kdbLoadSplitState (KDB * handle, KeySet * global)
 		else
 		{
 			ELEKTRA_LOG_WARNING ("SIZE STORAGE KEY NOT FOUND");
+			return -1;
 		}
 		
 		keySetBaseName (key, "syncbits");
@@ -946,6 +950,7 @@ static void kdbLoadSplitState (KDB * handle, KeySet * global)
 		else
 		{
 			ELEKTRA_LOG_WARNING ("SIZE STORAGE KEY NOT FOUND");
+			return -1;
 		}
 		
 		keySetBaseName (key, "stupidtestsize");
@@ -958,6 +963,7 @@ static void kdbLoadSplitState (KDB * handle, KeySet * global)
 			if (test != 1337)
 			{
 				ELEKTRA_LOG_WARNING ("SIZE STORAGE IS BORK: %zd", test);
+				return -1;
 			}
 			else
 			{
@@ -967,8 +973,11 @@ static void kdbLoadSplitState (KDB * handle, KeySet * global)
 		else
 		{
 			ELEKTRA_LOG_WARNING ("SIZE STORAGE KEY NOT FOUND");
+			return -1;
 		}
 	}
+
+	return 0;
 }
 
 static char * elektraStrConcat (const char * a, const char * b)
@@ -1242,7 +1251,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 			ksAppend (ks, cache);
 		}
 
-		kdbLoadSplitState (handle, global);
+		if (kdbLoadSplitState (handle, global) == -1) goto cachemiss;
 
 
 		ELEKTRA_LOG_DEBUG (">>>>>>>>>>>>>> SPLIT LOAD CACHE");
@@ -1326,6 +1335,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	else
 	{
 
+cachemiss:
 		/* Now do the real updating,
 		   but not for bypassed keys in split->size-1 */
 		clearError (parentKey);
