@@ -197,6 +197,7 @@ if (BUILD_FULL OR BUILD_STATIC)
 endif (BUILD_FULL OR BUILD_STATIC)
 
 if (BUILD_FULL)
+	set_source_files_properties (${PROJECT_BINARY_DIR}/src/error/elektra_errors.c PROPERTIES GENERATED ON)
 	add_library (elektra-full SHARED ${SOURCES})
 	add_dependencies (elektra-full kdberrors_generated)
 
