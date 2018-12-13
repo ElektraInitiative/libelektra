@@ -547,7 +547,16 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * returned, Key * par
 	name = strcat (name, ELEKTRA_PLUGIN_NAME);
 	name = strcat (name, pk->filename);
 	ELEKTRA_LOG_DEBUG ("persistent chid key: %s", name);
-	
+
+	/* Check if update needed */
+	if (pk->mtime.tv_sec == ELEKTRA_STAT_SECONDS (buf) && pk->mtime.tv_nsec == ELEKTRA_STAT_NANO_SECONDS (buf))
+	{
+		// no update, so storage has no job
+		if (name) elektraFree (name);
+		errno = errnoSave;
+		return 0;
+	}
+
 	if ((global = elektraPluginGetGlobalKeySet (handle)) != NULL)
 	{
 		ELEKTRA_LOG_DEBUG ("global-cache: check cache update needed?");
@@ -572,15 +581,6 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * returned, Key * par
 				return ELEKTRA_PLUGIN_STATUS_CACHE_HIT;
 			}
 		}
-	}
-
-	/* Check if update needed */
-	if (pk->mtime.tv_sec == ELEKTRA_STAT_SECONDS (buf) && pk->mtime.tv_nsec == ELEKTRA_STAT_NANO_SECONDS (buf))
-	{
-		// no update, so storage has no job
-		if (name) elektraFree (name);
-		errno = errnoSave;
-		return 0;
 	}
 
 	pk->mtime.tv_sec = ELEKTRA_STAT_SECONDS (buf);
