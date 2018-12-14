@@ -798,10 +798,14 @@ static char * elektraStrConcat (const char * a, const char * b)
 	return ret;
 }
 
-static void kdbStoreSplitState (Split * split, KeySet * global, Key * parentKey)
+static void kdbStoreSplitState (KDB * handle, Split * split, KeySet * global, Key * parentKey)
 {
-	Key * lastParentName = keyNew ("/persistent/lastParentName", KEY_VALUE, keyName (parentKey), KEY_END);
-	Key * lastParentValue = keyNew ("/persistent/lastParentValue", KEY_VALUE, keyString (parentKey), KEY_END);
+	const char * parentName = keyName (mountGetMountpoint (handle, parentKey));
+	const char * parentValue = keyString (mountGetMountpoint (handle, parentKey));
+	Key * lastParentName = keyNew ("/persistent/lastParentName", KEY_VALUE, parentName, KEY_END);
+	Key * lastParentValue = keyNew ("/persistent/lastParentValue", KEY_VALUE, parentValue, KEY_END);
+// 	Key * lastParentName = keyNew ("/persistent/lastParentName", KEY_VALUE, keyName (parentKey), KEY_END);
+// 	Key * lastParentValue = keyNew ("/persistent/lastParentValue", KEY_VALUE, keyString (parentKey), KEY_END);
 	ksAppendKey (global, lastParentName);
 	ksAppendKey (global, lastParentValue);
 
@@ -878,16 +882,20 @@ static void kdbStoreSplitState (Split * split, KeySet * global, Key * parentKey)
 	}
 }
 
-static int kdbCacheCheckParent (KeySet * global, Key * parentKey)
+static int kdbCacheCheckParent (KDB * handle, KeySet * global, Key * parentKey)
 {
+	const char * parentName = keyName (mountGetMountpoint (handle, parentKey));
+	const char * parentValue = keyString (mountGetMountpoint (handle, parentKey));
+	
+	
 	// first check if parentkey matches
 	Key * lastParentName = ksLookupByName (global, "/persistent/lastParentName", KDB_O_NONE);
 	ELEKTRA_LOG_DEBUG ("LAST PARENT name: %s", keyString (lastParentName));
-	ELEKTRA_LOG_DEBUG ("KDBG PARENT name: %s", keyName (parentKey));
-	if (!lastParentName || strcmp (keyString (lastParentName), keyName (parentKey))) return -1;
+	ELEKTRA_LOG_DEBUG ("KDBG PARENT name: %s", parentName);
+	if (!lastParentName || strcmp (keyString (lastParentName), parentName)) return -1;
 	Key * lastParentValue = ksLookupByName (global, "/persistent/lastParentValue", KDB_O_NONE);
 	ELEKTRA_LOG_DEBUG ("LAST PARENT value: %s", keyString (lastParentValue));
-	ELEKTRA_LOG_DEBUG ("KDBG PARENT value: %s", keyString (parentKey));
+	ELEKTRA_LOG_DEBUG ("KDBG PARENT value: %s", parentValue);
 	// if (!lastParentValue || strcmp (keyString (lastParentValue), keyString (parentKey))) return -1;
 
 	return 0;
@@ -1316,7 +1324,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 			elektraGlobalGet (handle, cache, cacheFile, PREGETCACHE, MAXONCE);
 			handle->globalPlugins[PREGETCACHE][MAXONCE]->global = 0;
 
-			if (kdbCacheCheckParent (global, cachedParent) != 0)
+			if (kdbCacheCheckParent (handle, global, cachedParent) != 0)
 			{
 				// parentKey in cache does not match, needs rebuild
 				ELEKTRA_LOG_DEBUG ("CACHE WRONG PARENTKEY");
@@ -1466,7 +1474,7 @@ cachefail:
 		if (handle->globalPlugins[POSTGETCACHE][MAXONCE])
 		{
 			handle->globalPlugins[POSTGETCACHE][MAXONCE]->global = global;
-			kdbStoreSplitState (split, global, cachedParent);
+			kdbStoreSplitState (handle, split, global, cachedParent);
 			elektraGlobalSet (handle, ks, cacheFile, POSTGETCACHE, MAXONCE);
 			handle->globalPlugins[POSTGETCACHE][MAXONCE]->global = 0;
 			ELEKTRA_LOG_DEBUG (">>>>>>>>>>>>>> PRINT GLOBAL KEYSET");
