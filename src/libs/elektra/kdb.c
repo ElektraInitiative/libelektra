@@ -905,80 +905,80 @@ static int kdbLoadSplitState (Split * split, KeySet * global)
 {
 	ELEKTRA_LOG_WARNING ("SIZE STORAGE LOAD STUFF");
 
-	for (size_t i = 0; i < split->size; ++i)
-	{
-		char * name = 0;
-		const char * backendName = 0;
-		if (strlen (keyName (split->handles[i]->mountpoint)) != 0)
-		{
-			backendName = keyName (split->handles[i]->mountpoint);
-		}
-		else
-		{
-			backendName = "default/";
-		}
-		name = elektraStrConcat ("/persistent/kdb/backendsizes/", backendName);
-		Key * key = keyNew (name, KEY_END);
-
-		keyAddBaseName (key, "specsize");
-		Key * found = ksLookup (global, key, KDB_O_NONE);
-		if (!(found && keyGetValueSize (found) == sizeof (ssize_t))) 
-		{
-			ELEKTRA_LOG_WARNING ("SIZE STORAGE KEY NOT FOUND");
-			return -1;
-		}
-		
-		keySetBaseName (key, "dirsize");
-		found = ksLookup (global, key, KDB_O_NONE);
-		if (!(found && keyGetValueSize (found) == sizeof (ssize_t))) 
-		{
-			ELEKTRA_LOG_WARNING ("SIZE STORAGE KEY NOT FOUND");
-			return -1;
-		}
-		
-		keySetBaseName (key, "usersize");
-		found = ksLookup (global, key, KDB_O_NONE);
-		if (!(found && keyGetValueSize (found) == sizeof (ssize_t))) 
-		{
-			ELEKTRA_LOG_WARNING ("SIZE STORAGE KEY NOT FOUND");
-			return -1;
-		}
-		
-		keySetBaseName (key, "systemsize");
-		found = ksLookup (global, key, KDB_O_NONE);
-		if (!(found && keyGetValueSize (found) == sizeof (ssize_t))) 
-		{
-			ELEKTRA_LOG_WARNING ("SIZE STORAGE KEY NOT FOUND");
-			return -1;
-		}
-
-		keySetBaseName (key, "syncbits");
-		found = ksLookup (global, key, KDB_O_NONE);
-		if (!(found && keyGetValueSize (found) == sizeof (splitflag_t))) 
-		{
-			ELEKTRA_LOG_WARNING ("SIZE STORAGE KEY NOT FOUND");
-			return -1;
-		}
-		
-		keySetBaseName (key, "stupidtestsize");
-		found = ksLookup (global, key, KDB_O_NONE);
-		if (found && keyGetValueSize (found) == sizeof (ssize_t)) 
-		{
-			ssize_t test = -1;
-			keyGetBinary (found, &(test), sizeof (ssize_t));
-			output_key (found);
-			if (test != 1337)
-			{
-				ELEKTRA_LOG_WARNING ("SIZE STORAGE IS BORK: %zd", test);
-				return -1;
-			}
-		}
-		else
-		{
-			ELEKTRA_LOG_WARNING ("SIZE STORAGE KEY NOT FOUND");
-			return -1;
-		}
-	}
+// 	for (size_t i = 0; i < split->size; ++i)
+// 	{
+// 		char * name = 0;
+// 		const char * backendName = 0;
+// 		if (strlen (keyName (split->handles[i]->mountpoint)) != 0)
+// 		{
+// 			backendName = keyName (split->handles[i]->mountpoint);
+// 		}
+// 		else
+// 		{
+// 			backendName = "default/";
+// 		}
+// 		name = elektraStrConcat ("/persistent/kdb/backendsizes/", backendName);
+// 		Key * key = keyNew (name, KEY_END);
+// 
+// 		keyAddBaseName (key, "specsize");
+// 		Key * found = ksLookup (global, key, KDB_O_NONE);
+// 		if (!(found && keyGetValueSize (found) == sizeof (ssize_t))) 
+// 		{
+// 			ELEKTRA_LOG_WARNING ("SIZE STORAGE KEY NOT FOUND");
+// 			return -1;
+// 		}
+// 		
+// 		keySetBaseName (key, "dirsize");
+// 		found = ksLookup (global, key, KDB_O_NONE);
+// 		if (!(found && keyGetValueSize (found) == sizeof (ssize_t))) 
+// 		{
+// 			ELEKTRA_LOG_WARNING ("SIZE STORAGE KEY NOT FOUND");
+// 			return -1;
+// 		}
+// 		
+// 		keySetBaseName (key, "usersize");
+// 		found = ksLookup (global, key, KDB_O_NONE);
+// 		if (!(found && keyGetValueSize (found) == sizeof (ssize_t))) 
+// 		{
+// 			ELEKTRA_LOG_WARNING ("SIZE STORAGE KEY NOT FOUND");
+// 			return -1;
+// 		}
+// 		
+// 		keySetBaseName (key, "systemsize");
+// 		found = ksLookup (global, key, KDB_O_NONE);
+// 		if (!(found && keyGetValueSize (found) == sizeof (ssize_t))) 
+// 		{
+// 			ELEKTRA_LOG_WARNING ("SIZE STORAGE KEY NOT FOUND");
+// 			return -1;
+// 		}
+// 
+// 		keySetBaseName (key, "syncbits");
+// 		found = ksLookup (global, key, KDB_O_NONE);
+// 		if (!(found && keyGetValueSize (found) == sizeof (splitflag_t))) 
+// 		{
+// 			ELEKTRA_LOG_WARNING ("SIZE STORAGE KEY NOT FOUND");
+// 			return -1;
+// 		}
+// 		
+// 		keySetBaseName (key, "stupidtestsize");
+// 		found = ksLookup (global, key, KDB_O_NONE);
+// 		if (found && keyGetValueSize (found) == sizeof (ssize_t)) 
+// 		{
+// 			ssize_t test = -1;
+// 			keyGetBinary (found, &(test), sizeof (ssize_t));
+// 			output_key (found);
+// 			if (test != 1337)
+// 			{
+// 				ELEKTRA_LOG_WARNING ("SIZE STORAGE IS BORK: %zd", test);
+// 				return -1;
+// 			}
+// 		}
+// 		else
+// 		{
+// 			ELEKTRA_LOG_WARNING ("SIZE STORAGE KEY NOT FOUND");
+// 			return -1;
+// 		}
+// 	}
 
 	for (size_t i = 0; i < split->size; ++i)
 	{
@@ -1432,10 +1432,10 @@ cachefail:
 		clearError (parentKey);
 		if (elektraGetDoUpdateWithGlobalHooks (handle, split, ks, parentKey, initialParent, LAST) == -1)
 		{
-			if ((cacheFile) != 0)
-			{
-				unlink (keyName(cacheFile));
-			}
+// 			if ((cacheFile) != 0)
+// 			{
+// 				unlink (keyName(cacheFile));
+// 			}
 			goto error;
 		}
 		else
