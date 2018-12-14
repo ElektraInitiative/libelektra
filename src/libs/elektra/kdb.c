@@ -536,7 +536,6 @@ static int elektraGetCheckUpdateNeeded (Split * split, Key * parentKey, KeySet *
 			keySetName (parentKey, keyName (split->parents[i]));
 			keySetString (parentKey, "");
 			resolver->global = global;
-// 			output_key (parentKey);
 			ret = resolver->kdbGet (resolver, split->keysets[i], parentKey);
 			resolver->global = 0;
 			// store resolved filename
@@ -551,11 +550,7 @@ static int elektraGetCheckUpdateNeeded (Split * split, Key * parentKey, KeySet *
 		case ELEKTRA_PLUGIN_STATUS_CACHE_HIT:
 			// Keys in cache are up-to-date
 			++cacheHits;
-			// set_bit (split->syncbits[i], SPLIT_FLAG_SYNC);
-			// ++updateNeededOccurred;
-			// break;
-
-			// intentional fallthrough
+			// Intentional fallthrough to set sync flag, needed in case of cache miss
 		case 1:
 			// Seems like we need to sync that
 			set_bit (split->syncbits[i], SPLIT_FLAG_SYNC);
@@ -1285,7 +1280,6 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	int errnosave = errno;
 	Key * initialParent = keyDup (parentKey);
 	Key * cachedParent = keyDup (parentKey);
-// 	keySetName(parentKey, "/");
 
 	ELEKTRA_LOG ("now in new kdbGet (%s)", keyName (parentKey));
 
@@ -1327,28 +1321,12 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 				// parentKey in cache does not match, needs rebuild
 				ELEKTRA_LOG_DEBUG ("CACHE WRONG PARENTKEY");
 				ksClear (global);
-// 				splitDel (split);
-// 				split = splitNew ();
-// 				if (splitBuildup (split, handle, parentKey) == -1)
-// 				{
-// 					clearError (parentKey);
-// 					ELEKTRA_SET_ERROR (38, parentKey, "error in splitBuildup");
-// 					goto error;
-// 				}
 				goto cachefail;
 			}
 			if (kdbLoadSplitState (split, global) == -1)
 			{
 				ELEKTRA_LOG_DEBUG ("FAIL, have to discard cache because split state / SIZE FAIL");
 				ksClear (global);
-// 				splitDel (split);
-// 				split = splitNew ();
-// 				if (splitBuildup (split, handle, parentKey) == -1)
-// 				{
-// 					clearError (parentKey);
-// 					ELEKTRA_SET_ERROR (38, parentKey, "error in splitBuildup");
-// 					goto error;
-// 				}
 				goto cachefail;
 			}
 		}
