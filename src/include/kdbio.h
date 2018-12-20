@@ -79,7 +79,7 @@ typedef enum
  * An operation may only be added to one binding.
  *
  * @param  binding I/O binding handle
- * @param  fdOp    file descriptor opertation handle
+ * @param  fdOp    file descriptor operation handle
  * @retval 1 on success
  * @retval 0 on error
  */
@@ -91,7 +91,7 @@ int elektraIoBindingAddFd (ElektraIoInterface * binding, ElektraIoFdOperation * 
  * An operation may only be added to one binding.
  *
  * @param  binding I/O binding handle
- * @param  fdOp    file descriptor opertation handle
+ * @param  fdOp    file descriptor operation handle
  * @retval 1 on success
  * @retval 0 on error
  */
@@ -100,7 +100,7 @@ typedef int ElektraIoBindingAddFd (ElektraIoInterface * binding, ElektraIoFdOper
 /**
  * Notify I/O binding about changes to file descriptor watch operation.
  *
- * @param  fdOp    file descriptor opertation handle
+ * @param  fdOp    file descriptor operation handle
  * @retval 1 on success
  * @retval 0 on error
  */
@@ -109,7 +109,7 @@ int elektraIoBindingUpdateFd (ElektraIoFdOperation * fdOp);
 /**
  * Notify I/O binding about changes to file descriptor watch operation.
  *
- * @param  fdOp    file descriptor opertation handle
+ * @param  fdOp    file descriptor operation handle
  * @retval 1 on success
  * @retval 0 on error
  */
@@ -118,7 +118,7 @@ typedef int ElektraIoBindingUpdateFd (ElektraIoFdOperation * fdOp);
 /**
  * Remove file descriptor from I/O binding.
  *
- * @param  fdOp    file descriptor opertation handle
+ * @param  fdOp    file descriptor operation handle
  * @retval 1 on success
  * @retval 0 on error
  */
@@ -127,7 +127,7 @@ int elektraIoBindingRemoveFd (ElektraIoFdOperation * fdOp);
 /**
  * Remove file descriptor from I/O binding.
  *
- * @param  fdOp    file descriptor opertation handle
+ * @param  fdOp    file descriptor operation handle
  * @retval 1 on success
  * @retval 0 on error
  */
