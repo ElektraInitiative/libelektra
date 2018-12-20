@@ -435,7 +435,7 @@ ElektraIoFdCallback elektraIoFdGetCallback (ElektraIoFdOperation * fdOp);
  *
  * Free returned data after use.
  *
- * @param  interval    timer interval in miliseconds
+ * @param  interval    timer interval in milliseconds
  * @param  enabled     0 to disable, any other value for enabled
  * @param  callback    Called when file descriptor state has changes
  * @param  data        Custom private data
@@ -466,7 +466,7 @@ int elektraIoTimerIsEnabled (ElektraIoTimerOperation * timerOp);
  * Update interval of timer operation.
  *
  * @param  timerOp  timer operation handle
- * @param  interval timer interval in miliseconds
+ * @param  interval timer interval in milliseconds
  * @retval 1 on success
  * @retval 0 on error
  */
@@ -476,7 +476,7 @@ int elektraIoTimerSetInterval (ElektraIoTimerOperation * timerOp, unsigned int i
  * Get interval of timer operation.
  *
  * @param  timerOp  timer operation handle
- * @return          timer interval in miliseconds, 0 on error
+ * @return          timer interval in milliseconds, 0 on error
  */
 unsigned int elektraIoTimerGetInterval (ElektraIoTimerOperation * timerOp);
 

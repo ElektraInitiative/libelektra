@@ -87,7 +87,7 @@
  *
  * Timer operations have the following additional properties:
  * - interval (elektraIoTimerGetInterval();elektraIoTimerSetInterval()) minimum
- *   interval in miliseconds after the user callback shall be fired
+ *   interval in milliseconds after the user callback shall be fired
  *
  * Idle operations have no additional properties.
  *
