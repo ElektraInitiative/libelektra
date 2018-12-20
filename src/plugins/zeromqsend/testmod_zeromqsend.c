@@ -36,7 +36,7 @@ void * context;
 #define TIME_HOLDOFF (1000 * 1000)
 
 /** timeout for tests in seconds */
-#define TEST_TIMEOUT 10
+#define TEST_TIMEOUT 20
 
 /** endpoint for tests */
 #define TEST_ENDPOINT "tcp://127.0.0.1:6002"
