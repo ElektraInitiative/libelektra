@@ -170,13 +170,14 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Documentation
 
-- <<TODO>>
+- We fixed various spelling mistakes. *(René Schwaiger)*
 - <<TODO>>
 - <<TODO>>
 
 ## Tests
 
-- <<TODO>>
+- The tests for the IO bindings and notification plugins now use increased timeout values to make sure the test suite fails less often on
+  machines with high load. *(René Schwaiger)*
 - <<TODO>>
 - <<TODO>>
 
