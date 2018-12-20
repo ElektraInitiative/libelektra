@@ -79,7 +79,7 @@ typedef enum
  * An operation may only be added to one binding.
  *
  * @param  binding I/O binding handle
- * @param  fdOp    file desciptor opertation handle
+ * @param  fdOp    file descriptor opertation handle
  * @retval 1 on success
  * @retval 0 on error
  */
@@ -91,7 +91,7 @@ int elektraIoBindingAddFd (ElektraIoInterface * binding, ElektraIoFdOperation * 
  * An operation may only be added to one binding.
  *
  * @param  binding I/O binding handle
- * @param  fdOp    file desciptor opertation handle
+ * @param  fdOp    file descriptor opertation handle
  * @retval 1 on success
  * @retval 0 on error
  */

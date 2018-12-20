@@ -80,7 +80,7 @@
  * `elektraIoIdle*`.
  * All `elektraIo*` utility functions are provided by the `elektra-io` library.
  *
- * File desciptor watch operations have the following additional properties:
+ * File descriptor watch operations have the following additional properties:
  * - fd (elektraIoFdGetFd();set by elektraIoNewFdOperation()) file descriptor
  * number to be watched
  * - flags (elektraIoFdGetFlags();elektraIoFdSetFlags()) flags bitmask

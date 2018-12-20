@@ -25,7 +25,7 @@ typedef struct _GlibBindingData GlibBindingData;
 typedef struct
 {
 	GSource gSource;	       /*!< FdSource and GSource start at the same address */
-	GPollFD pollFd;		       /*!< polling information: includes file desciptor and flags */
+	GPollFD pollFd;		       /*!< polling information: includes file descriptor and flags */
 	int isPolling;		       /*!< indicates wheter source is currently polling */
 	GlibBindingData * bindingData; /*!< backreference to binding data */
 } FdSource;
@@ -127,7 +127,7 @@ static int ioGlibBindingFdPrepare (GSource * source, gint * timeout)
 }
 
 /**
- * Check the file desciptor source after poll() was called.
+ * Check the file descriptor source after poll() was called.
  *
  * @param  source glib source
  * @return        G_SOURCE_CONTINUE if I/O operation is enabled and events are present
@@ -258,7 +258,7 @@ static int ioGlibBindingUpdateFd (ElektraIoFdOperation * fdOp)
 
 	if (!bindingData->enabled && fdSource->isPolling)
 	{
-		// Stop polling file desciptor
+		// Stop polling file descriptor
 		g_source_remove_poll (gSource, &fdSource->pollFd);
 		fdSource->isPolling = 0;
 	}
