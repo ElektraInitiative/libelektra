@@ -26,7 +26,7 @@ char * receivedChangeType;
 /** key name received by readNotificationFromTestSocket() */
 char * receivedKeyName;
 
-/** variable indicating that a timeout occured while receiving */
+/** variable indicating that a timeout occurred while receiving */
 int receiveTimeout;
 
 /** zmq context for tests */

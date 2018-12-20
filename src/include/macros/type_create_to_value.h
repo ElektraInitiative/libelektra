@@ -69,7 +69,7 @@
 /**
  * Convert string to TYPE.
  *
- * The variable is only changed if no conversion error occured
+ * The variable is only changed if no conversion error occurred
  *
  * Example:
  * int variable = 1234;

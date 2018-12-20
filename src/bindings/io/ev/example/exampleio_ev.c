@@ -77,7 +77,7 @@ void readText (ElektraIoFdOperation * fdOp, int flags ELEKTRA_UNUSED)
 		int error = errno;
 		if (error != EINTR)
 		{
-			printf ("input: I/O error occured - exiting\n");
+			printf ("input: I/O error occurred - exiting\n");
 			stopLoop ();
 		}
 	}
