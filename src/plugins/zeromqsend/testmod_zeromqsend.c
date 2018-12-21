@@ -49,7 +49,7 @@ void * context;
  * Create subscriber socket for tests.
  * @internal
  *
- * @param  subscribeFilter filter for subscribtions
+ * @param  subscribeFilter filter for subscriptions
  * @return                 new socket
  */
 static void * createTestSocket (char * subscribeFilter)
