@@ -99,8 +99,9 @@ RUN echo '\
 /usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64/server/\n' > /etc/ld.so.conf.d/jdk.conf
 
 # ANTLR
+ARG ANTLR_VERSION=4.7.2
 RUN cd /usr/local/lib \
-    && curl -o antlr.jar -L https://www.antlr.org/download/antlr-4.7.1-complete.jar \
+    && curl -o antlr.jar -L https://www.antlr.org/download/antlr-${ANTLR_VERSION}-complete.jar \
     && cd /usr/local/bin \
     && printf '\
 #!/usr/bin/env sh\n\
@@ -109,10 +110,9 @@ CLASSPATH=.:/usr/local/lib/antlr.jar exec java -jar /usr/local/lib/antlr.jar "$@
 #!/usr/bin/env sh\n\
 java -classpath .:/usr/local/lib/antlr.jar org.antlr.v4.gui.TestRig "$@"' > grun \
     && chmod a+x antlr4 grun
-
 # ANTLR C++ runtime
 RUN cd /tmp \
-    && git clone --branch 4.7.1 --depth 1 https://github.com/antlr/antlr4.git \
+    && git clone --branch ${ANTLR_VERSION} --depth 1 https://github.com/antlr/antlr4.git \
     && cd antlr4/runtime/Cpp \
     && mkdir build \
     && cd build \
