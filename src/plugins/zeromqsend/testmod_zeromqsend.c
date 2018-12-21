@@ -26,7 +26,7 @@ char * receivedChangeType;
 /** key name received by readNotificationFromTestSocket() */
 char * receivedKeyName;
 
-/** variable indicating that a timeout occured while receiving */
+/** variable indicating that a timeout occurred while receiving */
 int receiveTimeout;
 
 /** zmq context for tests */
@@ -36,7 +36,7 @@ void * context;
 #define TIME_HOLDOFF (1000 * 1000)
 
 /** timeout for tests in seconds */
-#define TEST_TIMEOUT 10
+#define TEST_TIMEOUT 20
 
 /** endpoint for tests */
 #define TEST_ENDPOINT "tcp://127.0.0.1:6002"
@@ -49,7 +49,7 @@ void * context;
  * Create subscriber socket for tests.
  * @internal
  *
- * @param  subscribeFilter filter for subscribtions
+ * @param  subscribeFilter filter for subscriptions
  * @return                 new socket
  */
 static void * createTestSocket (char * subscribeFilter)
