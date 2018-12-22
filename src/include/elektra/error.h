@@ -9,8 +9,13 @@
 #ifndef ELEKTRA_ERROR_H
 #define ELEKTRA_ERROR_H
 
-#include "elektra_error_codes.h"
-#include "kdb.h"
+#include <elektra/errorcodes.h>
+#include <kdb.h>
+
+#ifdef __cplusplus
+#define Key ckdb::Key
+extern "C" {
+#endif
 
 typedef struct _ElektraError ElektraError;
 typedef struct _ElektraKDBError ElektraKDBError;
@@ -46,5 +51,10 @@ const ElektraKDBError ** elektraKDBErrorWarnings (const ElektraKDBError * error)
 Key * elektraKDBErrorKey (const ElektraKDBError * error);
 
 void elektraErrorReset (ElektraError ** error);
+
+#ifdef __cplusplus
+}
+#undef Key
+#endif
 
 #endif // ELEKTRA_ERROR_H

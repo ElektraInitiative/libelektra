@@ -1,7 +1,11 @@
 #ifndef ELEKTRA_TYPES_H
 #define ELEKTRA_TYPES_H
 
-#include "kdbtypes.h"
+#include <kdbtypes.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 typedef const char * KDBType;
 
@@ -18,10 +22,14 @@ extern KDBType KDB_TYPE_UNSIGNED_LONG_LONG;
 extern KDBType KDB_TYPE_FLOAT;
 extern KDBType KDB_TYPE_DOUBLE;
 
-#if defined(HAVE_SIZEOF_LONG_DOUBLE) && (SIZEOF_LONG_DOUBLE == 16 || SIZEOF_LONG_DOUBLE == 12)
+#ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
 extern KDBType KDB_TYPE_LONG_DOUBLE;
 #endif
 
 extern KDBType KDB_TYPE_ENUM;
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // ELEKTRA_TYPES_H

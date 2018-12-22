@@ -3,12 +3,12 @@
 ## Introduction
 
 The goal of the high-hevel API is to increase the usability of libelektra for developers who want to integrate Elektra into their
-applications. Projects usually do not want to use low-level APIs. `KDB` and `KeySet` are useful for plugins and to implement APIs, but
+applications. Applications usually do not want to use low-level APIs. `KDB` and `KeySet` are useful for plugins and to implement APIs, but
 not to be directly used in applications. The high-level API should be extremely easy to get started with and at the same time it 
 should be hard to use it in a wrong way. This tutorial gives an introduction for developers who want to elektrify their application 
 using the high-level API.
 
-The API supports the following types:
+The API supports the following types, which are taken from the CORBA specification:
 
 * **String**: a string of characters, represented by `KDB_TYPE_STRING` in metadata
 * **Boolean**: a boolean value `true` or `false`, represented by `KDB_TYPE_BOOLEAN` in metadata, in the KDB the raw value `"1"` is 
@@ -42,15 +42,20 @@ Please replace `"/sw/org/myapp/#0/current"` with an appropriate value for your a
 for more information). You can use the parameter `defaults` to pass a KDB `KeySet` containing `Key`s with default values to the `Elektra`
 instance. 
 
-The passed in `ElektraError` can be used to check for initialization errors. You can detect initialization errors by comparing it to NULL
-after calling `elektraOpen`:
+The passed in `ElektraError` can be used to check for initialization errors. You can detect initialization errors by comparing the result of
+`elektraOpen` to NULL:
 
 ```c
-if (error != NULL) 
+if (elektra == NULL)
 {
-  // An error occured
+  // handle the error, e.g. print description
+  elektraErrorReset(&error);
 }
 ```
+
+If an error occurred, you MUST call `elektraErrorReset` before using the same error pointer in any other function calls (e.g. elektraSet*
+calls). It is also safe to call `elektraErrorReset`, if no error occurred.
+
 
 In order to give Elektra the chance to clean up all its allocated resources, you have to close your instance, when you are done using it,
 by calling:

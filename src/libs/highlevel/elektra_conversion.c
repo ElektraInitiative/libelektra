@@ -6,14 +6,18 @@
  * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
-#include "elektra_conversion.h"
-#include "elektra_errors.h"
+#include "elektra/conversion.h"
+#include "elektra/errors.h"
 #include "kdbhelper.h"
 #include <ctype.h>
 #include <errno.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #define CAT(X, Y) CAT_ (X, Y)
 #define CAT_(X, Y) X##Y
@@ -404,7 +408,7 @@ int elektraKeyToDouble (const Key * key ELEKTRA_UNUSED, kdb_double_t * variable 
 }
 
 
-#if defined(HAVE_SIZEOF_LONG_DOUBLE) && (SIZEOF_LONG_DOUBLE == 16 || SIZEOF_LONG_DOUBLE == 12)
+#ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
 
 /**
  * Converts a Key to long_double.
@@ -435,7 +439,7 @@ int elektraKeyToLongDouble (const Key * key ELEKTRA_UNUSED, kdb_long_double_t * 
 
 #undef KDB_TYPE
 }
-#endif // HAVE_SIZEOF_LONG_DOUBLE
+#endif // ELEKTRA_HAVE_KDB_LONG_DOUBLE
 
 /**
  * Converts a boolean to string
@@ -591,7 +595,7 @@ char * elektraDoubleToString (kdb_double_t value)
 	return elektraFormat ("%f", value);
 }
 
-#if defined(HAVE_SIZEOF_LONG_DOUBLE) && (SIZEOF_LONG_DOUBLE == 16 || SIZEOF_LONG_DOUBLE == 12)
+#ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
 
 /**
  * Converts a long double to string
@@ -607,4 +611,8 @@ char * elektraLongDoubleToString (kdb_long_double_t value)
 	return elektraFormat ("%Lf", value);
 }
 
-#endif // HAVE_SIZEOF_LONG_DOUBLE
+#endif // ELEKTRA_HAVE_KDB_LONG_DOUBLE
+
+#ifdef __cplusplus
+};
+#endif

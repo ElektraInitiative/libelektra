@@ -21,25 +21,27 @@ add_custom_command (OUTPUT ${BINARY_INCLUDE_DIR}/kdberrors.h
 add_custom_target (kdberrors_generated ALL DEPENDS ${BINARY_INCLUDE_DIR}/kdberrors.h)
 
 find_util (elektra-export-errors-highlevel EXE_ERR_LOC EXE_ERR_ARG)
-set (BINARY_INCLUDE_DIR "${PROJECT_BINARY_DIR}/src/include")
-add_custom_command (OUTPUT ${BINARY_INCLUDE_DIR}/elektra_error_codes.h
-			   ${BINARY_INCLUDE_DIR}/elektra_errors.h
-			   ${BINARY_INCLUDE_DIR}/elektra_errors_private.h
-			   ${CMAKE_CURRENT_BINARY_DIR}/elektra_errors.c
+file(MAKE_DIRECTORY ${BINARY_INCLUDE_DIR}/elektra)
+add_custom_command (OUTPUT ${BINARY_INCLUDE_DIR}/elektra/errorcodes.h
+			   ${BINARY_INCLUDE_DIR}/elektra/errors.h
+			   ${BINARY_INCLUDE_DIR}/elektra/errorsprivate.h
+			   ${PROJECT_BINARY_DIR}/src/error/elektra_errors.c
 		    DEPENDS elektra-export-errors-highlevel
 			    ${CMAKE_CURRENT_SOURCE_DIR}/specification_highlevel
 		    COMMAND ${EXE_ERR_LOC}
 			    ARGS ${EXE_ERR_ARG}
 				 ${CMAKE_CURRENT_SOURCE_DIR}/specification_highlevel
-				 ${BINARY_INCLUDE_DIR}/elektra_error_codes.h
-				 ${BINARY_INCLUDE_DIR}/elektra_errors.h
-				 ${BINARY_INCLUDE_DIR}/elektra_errors_private.h
-				 ${CMAKE_CURRENT_BINARY_DIR}/elektra_errors.c)
+				 ${BINARY_INCLUDE_DIR}/elektra/errorcodes.h
+				 ${BINARY_INCLUDE_DIR}/elektra/errors.h
+				 ${BINARY_INCLUDE_DIR}/elektra/errorsprivate.h
+				 ${PROJECT_BINARY_DIR}/src/error/elektra_errors.c
+				 elektra/errors.h
+				 elektra/errorsprivate.h)
 add_custom_target (elektra_error_codes_generated
 		   ALL
-		   DEPENDS ${BINARY_INCLUDE_DIR}/elektra_error_codes.h
-			   ${BINARY_INCLUDE_DIR}/elektra_errors.h
-			   ${BINARY_INCLUDE_DIR}/elektra_errors_private.h
+		   DEPENDS ${BINARY_INCLUDE_DIR}/elektra/errorcodes.h
+			   ${BINARY_INCLUDE_DIR}/elektra/errors.h
+			   ${BINARY_INCLUDE_DIR}/elektra/errorsprivate.h
 			   ${PROJECT_BINARY_DIR}/src/error/elektra_errors.c)
 
 add_executable (exporttranslations exporttranslations.cpp parser.hpp parser.cpp)

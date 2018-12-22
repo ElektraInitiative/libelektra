@@ -9,11 +9,11 @@
 #ifndef ELEKTRA_H
 #define ELEKTRA_H
 
-#include "elektra_error.h"
-#include "elektra_errors.h"
-#include "elektra_types.h"
-#include "kdb.h"
-#include "kdbtypes.h"
+#include <elektra/error.h>
+#include <elektra/errors.h>
+#include <elektra/types.h>
+#include <kdb.h>
+#include <kdbtypes.h>
 
 // region Helpers for Tag Macros
 
@@ -51,6 +51,11 @@
  * \defgroup highlevel High-level API
  * @{
  */
+#ifdef __cplusplus
+#define Key ckdb::Key
+#define KeySet ckdb::KeySet
+extern "C" {
+#endif
 
 typedef struct _Elektra Elektra;
 
@@ -66,7 +71,7 @@ typedef struct _Elektra Elektra;
 #define ELEKTRA_TAG_DECLARATIONS(cType, typeName)                                                                                          \
 	ELEKTRA_TAG (typeName)                                                                                                             \
 	{                                                                                                                                  \
-		char * keyName;                                                                                                            \
+		const char * keyName;                                                                                                      \
 		cType (*get) ELEKTRA_GET_BY_TAG_PARAMS (typeName);                                                                         \
 		cType (*getArrayElement) ELEKTRA_GET_ARRAY_ELEMENT_BY_TAG_PARAMS (typeName);                                               \
 		void(*set) ELEKTRA_SET_BY_TAG_PARAMS (cType, typeName);                                                                    \
@@ -150,11 +155,11 @@ typedef struct _Elektra Elektra;
  */
 #define ELEKTRA_TAG_VALUE(tagName, keyname, typeName)                                                                                      \
 	static const ELEKTRA_TAG (typeName) ELEKTRA_TAG_NAME (tagName) = {                                                                 \
-		.keyName = (keyname),                                                                                                      \
-		.get = ELEKTRA_GET_BY_TAG (typeName),                                                                                      \
-		.getArrayElement = ELEKTRA_GET_ARRAY_ELEMENT_BY_TAG (typeName),                                                            \
-		.set = ELEKTRA_SET_BY_TAG (typeName),                                                                                      \
-		.setArrayElement = ELEKTRA_SET_ARRAY_ELEMENT_BY_TAG (typeName),                                                            \
+		(keyname),                                                                                                                 \
+		ELEKTRA_GET_BY_TAG (typeName),                                                                                             \
+		ELEKTRA_GET_ARRAY_ELEMENT_BY_TAG (typeName),                                                                               \
+		ELEKTRA_SET_BY_TAG (typeName),                                                                                             \
+		ELEKTRA_SET_ARRAY_ELEMENT_BY_TAG (typeName),                                                                               \
 	};
 
 // endregion
@@ -174,11 +179,11 @@ ELEKTRA_TAG_DECLARATIONS (kdb_unsigned_long_long_t, UnsignedLongLong)
 ELEKTRA_TAG_DECLARATIONS (kdb_float_t, Float)
 ELEKTRA_TAG_DECLARATIONS (kdb_double_t, Double)
 
-#if defined(HAVE_SIZEOF_LONG_DOUBLE) && (SIZEOF_LONG_DOUBLE == 16 || SIZEOF_LONG_DOUBLE == 12)
+#ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
 
 ELEKTRA_TAG_DECLARATIONS (kdb_long_double_t, LongDouble)
 
-#endif // HAVE_SIZEOF_LONG_DOUBLE
+#endif // ELEKTRA_HAVE_KDB_LONG_DOUBLE
 
 ELEKTRA_TAG_DECLARATIONS (int, Enum)
 
@@ -220,15 +225,19 @@ kdb_unsigned_long_long_t elektraGetUnsignedLongLong (Elektra * elektra, const ch
 kdb_float_t elektraGetFloat (Elektra * elektra, const char * keyname);
 kdb_double_t elektraGetDouble (Elektra * elektra, const char * keyname);
 
-#if defined(HAVE_SIZEOF_LONG_DOUBLE) && (SIZEOF_LONG_DOUBLE == 16 || SIZEOF_LONG_DOUBLE == 12)
+#ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
 
 kdb_long_double_t elektraGetLongDouble (Elektra * elektra, const char * keyname);
 
 #endif
 
-int elektraGetEnumInt (Elektra * elektra, char * keyName);
+int elektraGetEnumInt (Elektra * elektra, const char * keyName);
 
+#ifdef __cplusplus
+#define elektraGetEnum(elektra, keyname, enumType) static_cast<enumType> (elektraGetEnumInt (elektra, keyname))
+#else
 #define elektraGetEnum(elektra, keyname, enumType) (enumType) elektraGetEnumInt (elektra, keyname)
+#endif
 
 // endregion Getters
 
@@ -248,13 +257,13 @@ void elektraSetUnsignedLongLong (Elektra * elektra, const char * keyname, kdb_un
 void elektraSetFloat (Elektra * elektra, const char * keyname, kdb_float_t value, ElektraError ** error);
 void elektraSetDouble (Elektra * elektra, const char * keyname, kdb_double_t value, ElektraError ** error);
 
-#if defined(HAVE_SIZEOF_LONG_DOUBLE) && (SIZEOF_LONG_DOUBLE == 16 || SIZEOF_LONG_DOUBLE == 12)
+#ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
 
 void elektraSetLongDouble (Elektra * elektra, const char * keyname, kdb_long_double_t value, ElektraError ** error);
 
 #endif
 
-void elektraSetEnumInt (Elektra * elektra, char * name, int value, ElektraError ** error);
+void elektraSetEnumInt (Elektra * elektra, const char * name, int value, ElektraError ** error);
 
 // endregion Setters
 
@@ -274,15 +283,20 @@ kdb_unsigned_long_long_t elektraGetUnsignedLongLongArrayElement (Elektra * elekt
 kdb_float_t elektraGetFloatArrayElement (Elektra * elektra, const char * keyname, size_t index);
 kdb_double_t elektraGetDoubleArrayElement (Elektra * elektra, const char * keyname, size_t index);
 
-#if defined(HAVE_SIZEOF_LONG_DOUBLE) && (SIZEOF_LONG_DOUBLE == 16 || SIZEOF_LONG_DOUBLE == 12)
+#ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
 
 kdb_long_double_t elektraGetLongDoubleArrayElement (Elektra * elektra, const char * keyname, size_t index);
 
 #endif
 
-int elektraGetEnumIntArrayElement (Elektra * elektra, char * keyName, size_t index);
+int elektraGetEnumIntArrayElement (Elektra * elektra, const char * keyName, size_t index);
 
+#ifdef __cplusplus
+#define elektraGetEnumArrayElement(elektra, keyname, index, enumType)                                                                      \
+	static_cast<enumType> (elektraGetEnumIntArrayElement (elektra, keyname, index))
+#else
 #define elektraGetEnumArrayElement(elektra, keyname, index, enumType) (enumType) elektraGetEnumIntArrayElement (elektra, keyname, index)
+#endif
 
 // endregion Array-Getters
 
@@ -306,14 +320,14 @@ void elektraSetUnsignedLongLongArrayElement (Elektra * elektra, const char * key
 void elektraSetFloatArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_float_t value, ElektraError ** error);
 void elektraSetDoubleArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_double_t value, ElektraError ** error);
 
-#if defined(HAVE_SIZEOF_LONG_DOUBLE) && (SIZEOF_LONG_DOUBLE == 16 || SIZEOF_LONG_DOUBLE == 12)
+#ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
 
 void elektraSetLongDoubleArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_long_double_t value,
 				       ElektraError ** error);
 
 #endif
 
-void elektraSetEnumIntArrayElement (Elektra * elektra, char * name, size_t index, int value, ElektraError ** error);
+void elektraSetEnumIntArrayElement (Elektra * elektra, const char * name, size_t index, int value, ElektraError ** error);
 
 // endregion Array-Setters
 
@@ -360,6 +374,12 @@ KDBType elektraGetArrayElementType (Elektra * elektra, const char * name, size_t
 #define elektraSetArrayElement(elektra, tag, index, value, error) ((tag).setArrayElement (elektra, &(tag), index, value, error))
 
 // endregion Generic Getters and Setters
+
+#ifdef __cplusplus
+}
+#undef Key
+#undef KeySet
+#endif
 
 /**
  * @}

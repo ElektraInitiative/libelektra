@@ -107,6 +107,7 @@ if (BUILD_SHARED)
 	get_property (elektra-shared_SRCS GLOBAL PROPERTY elektra-shared_SRCS)
 	add_library (elektra-core SHARED ${CORE_FILES} ${elektra-shared_SRCS})
 	add_dependencies (elektra-core kdberrors_generated)
+	add_dependencies (elektra-core elektra_error_codes_generated)
 
 	get_property (elektra-shared_LIBRARIES GLOBAL PROPERTY elektra-shared_LIBRARIES)
 	target_link_libraries (elektra-core ${elektra-shared_LIBRARIES})
@@ -180,10 +181,7 @@ if (BUILD_FULL OR BUILD_STATIC)
 	get_property (elektra-full_SRCS GLOBAL PROPERTY elektra-full_SRCS)
 	list (APPEND SOURCES
 		     ${elektra-full_SRCS}
-		     ${BINARY_INCLUDE_DIR}/kdberrors.h
-		     ${BINARY_INCLUDE_DIR}/elektra_error_codes.h
-		     ${BINARY_INCLUDE_DIR}/elektra_errors.h
-		     ${BINARY_INCLUDE_DIR}/elektra_errors_private.h)
+		     ${BINARY_INCLUDE_DIR}/kdberrors.h)
 	list (APPEND SOURCES
 		     "${CMAKE_CURRENT_BINARY_DIR}/exported_symbols.c")
 
@@ -197,9 +195,9 @@ if (BUILD_FULL OR BUILD_STATIC)
 endif (BUILD_FULL OR BUILD_STATIC)
 
 if (BUILD_FULL)
-	set_source_files_properties (${PROJECT_BINARY_DIR}/src/error/elektra_errors.c PROPERTIES GENERATED ON)
 	add_library (elektra-full SHARED ${SOURCES})
 	add_dependencies (elektra-full kdberrors_generated)
+	add_dependencies (elektra-full elektra_error_codes_generated)
 
 	target_link_libraries (elektra-full ${elektra-full_LIBRARIES})
 
@@ -229,6 +227,7 @@ endif (BUILD_FULL)
 if (BUILD_STATIC)
 	add_library (elektra-static STATIC ${SOURCES})
 	add_dependencies (elektra-static kdberrors_generated)
+	add_dependencies (elektra-static elektra_error_codes_generated)
 
 	target_link_libraries (elektra-static ${elektra-full_LIBRARIES})
 

@@ -6,13 +6,17 @@
  * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
-#include "elektra_conversion.h"
-#include "elektra_errors.h"
-#include "elektra_errors_private.h"
-#include "elektra_private.h"
+#include "elektra/conversion.h"
+#include "elektra/errors.h"
+#include "elektra/errorsprivate.h"
+#include "kdbprivate.h"
 #include "kdbease.h"
 #include "kdbhelper.h"
 #include <string.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * \addtogroup highlevel High-level API
@@ -312,7 +316,7 @@ kdb_double_t elektraGetDoubleArrayElement (Elektra * elektra, const char * keyna
 	return result;
 }
 
-#if defined(HAVE_SIZEOF_LONG_DOUBLE) && (SIZEOF_LONG_DOUBLE == 16 || SIZEOF_LONG_DOUBLE == 12)
+#ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
 
 /**
  * Gets a long double value array element.
@@ -329,7 +333,7 @@ kdb_long_double_t elektraGetLongDoubleArrayElement (Elektra * elektra, const cha
 	return result;
 }
 
-#endif // HAVE_SIZEOF_LONG_DOUBLE
+#endif // ELEKTRA_HAVE_KDB_LONG_DOUBLE
 
 /**
  * Gets the int value of a stored enum array element.
@@ -339,7 +343,7 @@ kdb_long_double_t elektraGetLongDoubleArrayElement (Elektra * elektra, const cha
  * @param index   The index of the array element to look up.
  * @return the int value of the enum stored at the given array element
  */
-int elektraGetEnumIntArrayElement (Elektra * elektra, char * keyname, size_t index)
+int elektraGetEnumIntArrayElement (Elektra * elektra, const char * keyname, size_t index)
 {
 	int result;
 	ELEKTRA_GET_ARRAY_ELEMENT_VALUE (elektraKeyToLong, KDB_TYPE_ENUM, elektra, keyname, index, result);
@@ -540,7 +544,7 @@ void elektraSetDoubleArrayElement (Elektra * elektra, const char * keyname, size
 	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (elektraDoubleToString, KDB_TYPE_DOUBLE, elektra, keyname, index, value, error);
 }
 
-#if defined(HAVE_SIZEOF_LONG_DOUBLE) && (SIZEOF_LONG_DOUBLE == 16 || SIZEOF_LONG_DOUBLE == 12)
+#ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
 
 /**
  * Sets a long double value array element.
@@ -558,7 +562,7 @@ void elektraSetLongDoubleArrayElement (Elektra * elektra, const char * keyname, 
 	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (elektraLongDoubleToString, KDB_TYPE_LONG_DOUBLE, elektra, keyname, index, value, error);
 }
 
-#endif // HAVE_SIZEOF_LONG_DOUBLE
+#endif // ELEKTRA_HAVE_KDB_LONG_DOUBLE
 
 /**
  * Sets an enum value array element. The corresponding int value will be
@@ -571,7 +575,7 @@ void elektraSetLongDoubleArrayElement (Elektra * elektra, const char * keyname, 
  * @param error   Pass a reference to an ElektraError pointer.
  *                Will only be set in case of an error.
  */
-void elektraSetEnumIntArrayElement (Elektra * elektra, char * keyName, size_t index, int value, ElektraError ** error)
+void elektraSetEnumIntArrayElement (Elektra * elektra, const char * keyName, size_t index, int value, ElektraError ** error)
 {
 	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (elektraLongToString, KDB_TYPE_ENUM, elektra, keyName, index, value, error);
 }
@@ -579,3 +583,7 @@ void elektraSetEnumIntArrayElement (Elektra * elektra, char * keyName, size_t in
 /**
  * @}
  */
+
+#ifdef __cplusplus
+};
+#endif
