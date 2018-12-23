@@ -17,6 +17,12 @@
 
 // region Helpers for Tag Macros
 
+#ifdef __cplusplus
+#define ELEKTRA_CAST(type, expression) static_cast<type> (expression)
+#else
+#define ELEKTRA_CAST(type, expression) (type) (expression)
+#endif
+
 #define ELEKTRA_TAG(typeName) struct Elektra##typeName##Tag
 
 #define ELEKTRA_SET_BY_TAG(typeName) _elektraSet##typeName##ByTag
@@ -128,7 +134,7 @@ typedef struct _Elektra Elektra;
 		if (!KEY_TO_VALUE (key, &result))                                                                                          \
 		{                                                                                                                          \
 			elektraFatalError (elektra, elektraErrorConversionFromString (KDB_TYPE, keyString (key)));                         \
-			return (cType) 0;                                                                                                  \
+			return ELEKTRA_CAST (cType, 0);                                                                                    \
 		}                                                                                                                          \
 		return result;                                                                                                             \
 	}                                                                                                                                  \
@@ -140,7 +146,7 @@ typedef struct _Elektra Elektra;
 		if (!KEY_TO_VALUE (key, &result))                                                                                          \
 		{                                                                                                                          \
 			elektraFatalError (elektra, elektraErrorConversionFromString (KDB_TYPE, keyString (key)));                         \
-			return (cType) 0;                                                                                                  \
+			return ELEKTRA_CAST (cType, 0);                                                                                    \
 		}                                                                                                                          \
 		return result;                                                                                                             \
 	}
