@@ -17,7 +17,7 @@ else () # find installation path
 	set (HUB hub-zeromq)
 
 	add_executable (${HUB} ${SOURCES})
-	add_dependencies (${HUB} kdberrors_generated)
+	add_dependencies (${HUB} kdberrors_generated elektra_error_codes_generated)
 	target_link_libraries (${HUB} ${ZMQ_LIBRARIES})
 	target_link_elektra (${HUB} elektra-kdb)
 	target_include_directories (${HUB} SYSTEM PUBLIC ${ZMQ_INCLUDE_DIRS})

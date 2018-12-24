@@ -17,7 +17,7 @@ endif ()
 set (EXAMPLE exampleio_uv)
 
 add_executable (${EXAMPLE} ${SOURCES})
-add_dependencies (${EXAMPLE} kdberrors_generated)
+add_dependencies (${EXAMPLE} kdberrors_generated elektra_error_codes_generated)
 
 target_include_directories (${EXAMPLE} SYSTEM PUBLIC ${LIBUV_INCLUDE_DIRS})
 

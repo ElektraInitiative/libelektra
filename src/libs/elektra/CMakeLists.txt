@@ -106,8 +106,7 @@ if (BUILD_SHARED)
 
 	get_property (elektra-shared_SRCS GLOBAL PROPERTY elektra-shared_SRCS)
 	add_library (elektra-core SHARED ${CORE_FILES} ${elektra-shared_SRCS})
-	add_dependencies (elektra-core kdberrors_generated)
-	add_dependencies (elektra-core elektra_error_codes_generated)
+	add_dependencies (elektra-core kdberrors_generated elektra_error_codes_generated)
 
 	get_property (elektra-shared_LIBRARIES GLOBAL PROPERTY elektra-shared_LIBRARIES)
 	target_link_libraries (elektra-core ${elektra-shared_LIBRARIES})
@@ -116,7 +115,7 @@ if (BUILD_SHARED)
 	include_directories (${elektra-shared_INCLUDES})
 
 	add_library (elektra-kdb SHARED ${KDB_FILES})
-	add_dependencies (elektra-kdb kdberrors_generated)
+	add_dependencies (elektra-kdb kdberrors_generated elektra_error_codes_generated)
 	target_link_libraries (elektra-kdb elektra-core)
 
 	# ~~~
@@ -124,7 +123,7 @@ if (BUILD_SHARED)
 	# add_library (elektra INTERFACE) # no SOVERSION?
 	# ~~~
 	add_library (elektra SHARED ${KDB_FILES} ${CORE_FILES} ${elektra-shared_SRCS})
-	add_dependencies (elektra kdberrors_generated)
+	add_dependencies (elektra kdberrors_generated elektra_error_codes_generated)
 	get_property (elektra-extension_LIBRARIES GLOBAL PROPERTY elektra-extension_LIBRARIES)
 	target_link_libraries (elektra ${elektra-shared_LIBRARIES})
 
@@ -197,8 +196,7 @@ endif (BUILD_FULL OR BUILD_STATIC)
 if (BUILD_FULL)
 	set_source_files_properties (${PROJECT_BINARY_DIR}/src/error/elektra_errors.c PROPERTIES GENERATED ON)
 	add_library (elektra-full SHARED ${SOURCES})
-	add_dependencies (elektra-full kdberrors_generated)
-	add_dependencies (elektra-full elektra_error_codes_generated)
+	add_dependencies (elektra-full kdberrors_generated elektra_error_codes_generated)
 
 	target_link_libraries (elektra-full ${elektra-full_LIBRARIES})
 
@@ -226,9 +224,9 @@ if (BUILD_FULL)
 endif (BUILD_FULL)
 
 if (BUILD_STATIC)
+	set_source_files_properties (${PROJECT_BINARY_DIR}/src/error/elektra_errors.c PROPERTIES GENERATED ON)
 	add_library (elektra-static STATIC ${SOURCES})
-	add_dependencies (elektra-static kdberrors_generated)
-	add_dependencies (elektra-static elektra_error_codes_generated)
+	add_dependencies (elektra-static kdberrors_generated elektra_error_codes_generated)
 
 	target_link_libraries (elektra-static ${elektra-full_LIBRARIES})
 

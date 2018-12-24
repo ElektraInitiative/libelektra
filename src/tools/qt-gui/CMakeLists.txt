@@ -64,7 +64,7 @@ else ()
 	qt5_add_resources (RSCS ${qt-gui_RSCS})
 
 	add_executable (qt-gui ${qt-gui_SRCS} ${qt-gui_HDRS} ${UIS} ${RSCS} ${TRS})
-	add_dependencies (qt-gui kdberrors_generated)
+	add_dependencies (qt-gui kdberrors_generated elektra_error_codes_generated)
 
 	target_link_libraries (qt-gui Qt5::Quick Qt5::Gui Qt5::Core Qt5::Qml Qt5::Widgets)
 
