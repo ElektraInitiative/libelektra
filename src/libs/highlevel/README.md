@@ -30,7 +30,7 @@ just include the main header with `#include <elektra.h>` at the top of your file
 ## Core Concepts
 
 ### Struct `Elektra`
-`Elektra` is the handle you use to access the underlying KDB (hierchical key database) that stores the configuration key-value pairs.
+`Elektra` is the handle you use to access the underlying KDB (hierarchical key database) that stores the configuration key-value pairs.
 All key-value read and write operations expect this handle to be passed as in as a parameter. To create the handle, you simply write:
 
 ```c
@@ -127,7 +127,7 @@ ElektraError * error = NULL;
 if (error != NULL)
 {
 
-  // An error occured, do something about it.
+  // An error occurred, do something about it.
   // ...
 
   elektraErrorReset (&error);
