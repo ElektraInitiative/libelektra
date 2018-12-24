@@ -21,7 +21,7 @@ add_custom_command (OUTPUT ${BINARY_INCLUDE_DIR}/kdberrors.h
 add_custom_target (kdberrors_generated ALL DEPENDS ${BINARY_INCLUDE_DIR}/kdberrors.h)
 
 find_util (elektra-export-errors-highlevel EXE_ERR_LOC EXE_ERR_ARG)
-file(MAKE_DIRECTORY ${BINARY_INCLUDE_DIR}/elektra)
+file (MAKE_DIRECTORY ${BINARY_INCLUDE_DIR}/elektra)
 add_custom_command (OUTPUT ${BINARY_INCLUDE_DIR}/elektra/errorcodes.h
 			   ${BINARY_INCLUDE_DIR}/elektra/errors.h
 			   ${BINARY_INCLUDE_DIR}/elektra/errorsprivate.h
