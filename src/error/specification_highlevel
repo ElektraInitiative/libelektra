@@ -6,7 +6,7 @@ description:Unknown error occurred.
 number:1
 severity:*
 name:LOW_LEVEL
-description:A low-level error/warning occured (code: %1$d, group: %3$s, module: %4$s).\n\n%2$s
+description:A low-level error/warning occurred (code: %1$d, group: %3$s, module: %4$s).\n\n%2$s
 args:4
 type1:kdb_long_t
 arg1:code
