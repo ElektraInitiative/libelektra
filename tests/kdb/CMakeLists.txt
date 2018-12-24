@@ -20,11 +20,7 @@ function (add_kdb_test suffix)
 	endforeach (plugin ${ARG_REQUIRED_PLUGINS})
 
 	set (name testkdb_${suffix})
-	add_gtest (${name}
-		   KDBTESTS
-		   LINK_TOOLS
-		   LINK_ELEKTRA elektra-kdb
-				${ARG_LINK_ELEKTRA})
+	add_gtest (${name} KDBTESTS LINK_TOOLS LINK_ELEKTRA ${ARG_LINK_ELEKTRA})
 endfunction (add_kdb_test suffix)
 
 add_kdb_test (allplugins)
