@@ -8,11 +8,11 @@
 
 #include "elektra.h"
 #include "elektra/conversion.h"
-#include "kdbprivate.h"
 #include "elektra/errorsprivate.h"
 #include "elektra/types.h"
 #include "kdbhelper.h"
 #include "kdblogger.h"
+#include "kdbprivate.h"
 #include <stdlib.h>
 
 #ifdef __cplusplus

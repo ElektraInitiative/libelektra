@@ -9,6 +9,8 @@
 #ifndef KDBPRIVATE_H
 #define KDBPRIVATE_H
 
+#include <elektra.h>
+#include <elektra/error.h>
 #include <kdb.h>
 #include <kdbconfig.h>
 #include <kdbextension.h>
@@ -19,8 +21,6 @@
 #include <kdbplugin.h>
 #include <kdbproposal.h>
 #include <kdbtypes.h>
-#include <elektra.h>
-#include <elektra/error.h>
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 #include <kdbopmphm.h>
 #include <kdbopmphmpredictor.h>
