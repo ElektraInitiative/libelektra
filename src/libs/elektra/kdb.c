@@ -800,12 +800,11 @@ static char * elektraStrConcat (const char * a, const char * b)
 
 static void kdbStoreSplitState (KDB * handle, Split * split, KeySet * global, Key * parentKey)
 {
-	const char * parentName = keyName (mountGetMountpoint (handle, parentKey));
-	const char * parentValue = keyString (mountGetMountpoint (handle, parentKey));
+	Key * mountPoint = mountGetMountpoint (handle, parentKey);
+	const char * parentName = keyName (mountPoint);
+	const char * parentValue = keyString (mountPoint);
 	Key * lastParentName = keyNew ("/persistent/lastParentName", KEY_VALUE, parentName, KEY_END);
 	Key * lastParentValue = keyNew ("/persistent/lastParentValue", KEY_VALUE, parentValue, KEY_END);
-// 	Key * lastParentName = keyNew ("/persistent/lastParentName", KEY_VALUE, keyName (parentKey), KEY_END);
-// 	Key * lastParentValue = keyNew ("/persistent/lastParentValue", KEY_VALUE, keyString (parentKey), KEY_END);
 	ksAppendKey (global, lastParentName);
 	ksAppendKey (global, lastParentValue);
 
@@ -884,10 +883,10 @@ static void kdbStoreSplitState (KDB * handle, Split * split, KeySet * global, Ke
 
 static int kdbCacheCheckParent (KDB * handle, KeySet * global, Key * parentKey)
 {
-	const char * parentName = keyName (mountGetMountpoint (handle, parentKey));
-	const char * parentValue = keyString (mountGetMountpoint (handle, parentKey));
-	
-	
+	Key * mountPoint = mountGetMountpoint (handle, parentKey);
+	const char * parentName = keyName (mountPoint);
+	const char * parentValue = keyString (mountPoint);
+
 	// first check if parentkey matches
 	Key * lastParentName = ksLookupByName (global, "/persistent/lastParentName", KDB_O_NONE);
 	ELEKTRA_LOG_DEBUG ("LAST PARENT name: %s", keyString (lastParentName));
@@ -896,7 +895,7 @@ static int kdbCacheCheckParent (KDB * handle, KeySet * global, Key * parentKey)
 	Key * lastParentValue = ksLookupByName (global, "/persistent/lastParentValue", KDB_O_NONE);
 	ELEKTRA_LOG_DEBUG ("LAST PARENT value: %s", keyString (lastParentValue));
 	ELEKTRA_LOG_DEBUG ("KDBG PARENT value: %s", parentValue);
-	// if (!lastParentValue || strcmp (keyString (lastParentValue), keyString (parentKey))) return -1;
+	if (!lastParentValue || strcmp (keyString (lastParentValue), parentValue)) return -1;
 
 	return 0;
 }
