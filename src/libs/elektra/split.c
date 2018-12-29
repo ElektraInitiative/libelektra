@@ -685,23 +685,14 @@ int splitUpdateSize (Split * split)
 }
 
 /**
- * Merges together all parts of split into dest.
+ * Merges together the backend based parts of split into dest,
+ * but bypasses the default split.
  *
  * @param split the split object to work with
  * @param dest the destination keyset where all keysets are appended.
  * @retval 1 on success
  * @ingroup split
  */
-int splitMerge (Split * split, KeySet * dest)
-{
-	/* Iterate everything */
-	for (size_t i = 0; i < split->size; ++i)
-	{
-		ksAppend (dest, split->keysets[i]);
-	}
-	return 1;
-}
-
 int splitMergeBackends (Split * split, KeySet * dest)
 {
 	/* Bypass default split */
@@ -713,6 +704,14 @@ int splitMergeBackends (Split * split, KeySet * dest)
 	return 1;
 }
 
+/**
+ * Merges the default split into dest.
+ *
+ * @param split the split object to work with
+ * @param dest the destination keyset where all keysets are appended.
+ * @retval 1 on success
+ * @ingroup split
+ */
 int splitMergeDefault (Split * split, KeySet * dest)
 {
 	/* Merge default split */
