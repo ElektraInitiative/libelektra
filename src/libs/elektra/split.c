@@ -642,6 +642,7 @@ int splitGet (Split * split, Key * warningKey, KDB * handle)
 		// reduce sizes
 		if (elektraSplitPostprocess (split, i, warningKey, handle) == -1) ret = -1;
 		// then we can set the size
+		ELEKTRA_LOG_DEBUG("splitGet : backendUpdateSize thingy");
 		if (backendUpdateSize (split->handles[i], split->parents[i], ksGetSize (split->keysets[i])) == -1) ret = -1;
 	}
 
@@ -699,6 +700,12 @@ int splitMergeBackends (Split * split, KeySet * dest)
 	const int bypassedSplits = 1;
 	for (size_t i = 0; i < split->size - bypassedSplits; ++i)
 	{
+		if (test_bit (split->syncbits[i], 0))
+		{
+			/* Dont process keysets which come from the user
+			   and not from the backends */
+			continue;
+		}
 		ksAppend (dest, split->keysets[i]);
 	}
 	return 1;
