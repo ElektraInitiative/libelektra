@@ -575,7 +575,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * returned, Key * par
 				// update timestamp inside resolver
 				pk->mtime.tv_sec = ELEKTRA_STAT_SECONDS (buf);
 				pk->mtime.tv_nsec = ELEKTRA_STAT_NANO_SECONDS (buf);
-				
+
 				if (name) elektraFree (name);
 				errno = errnoSave;
 				return ELEKTRA_PLUGIN_STATUS_CACHE_HIT;

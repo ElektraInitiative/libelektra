@@ -388,8 +388,8 @@ int splitDivide (Split * split, KDB * handle, KeySet * ks)
 
 		if (curFound == -1)
 		{
-			ELEKTRA_LOG_DEBUG ("SKIPPING NOT RELEVANT KEY: %p key: %s, string: %s",
-					   (void *) curKey, keyName (curKey), keyString (curKey));
+			ELEKTRA_LOG_DEBUG ("SKIPPING NOT RELEVANT KEY: %p key: %s, string: %s", (void *) curKey, keyName (curKey),
+					   keyString (curKey));
 			continue; // key not relevant in this kdbSet
 		}
 
@@ -642,7 +642,7 @@ int splitGet (Split * split, Key * warningKey, KDB * handle)
 		// reduce sizes
 		if (elektraSplitPostprocess (split, i, warningKey, handle) == -1) ret = -1;
 		// then we can set the size
-		ELEKTRA_LOG_DEBUG("splitGet : backendUpdateSize thingy");
+		ELEKTRA_LOG_DEBUG ("splitGet : backendUpdateSize thingy");
 		if (backendUpdateSize (split->handles[i], split->parents[i], ksGetSize (split->keysets[i])) == -1) ret = -1;
 	}
 
