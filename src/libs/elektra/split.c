@@ -466,28 +466,6 @@ int splitAppoint (Split * split, KDB * handle, KeySet * ks)
 	return 1;
 }
 
-int splitRestore (Split * split, KDB * handle, KeySet * ks)
-{
-	Key * curKey = 0;
-	ssize_t defFound = splitAppend (split, 0, 0, 0);
-
-	ksRewind (ks);
-	while ((curKey = ksNext (ks)) != 0)
-	{
-		Backend * curHandle = mountGetBackend (handle, curKey);
-		if (!curHandle) return -1;
-
-		/* If key could be appended to any of the existing split keysets */
-		ssize_t curFound = splitSearchBackend (split, curHandle, curKey);
-
-		if (curFound == -1) curFound = defFound;
-
-		ksAppendKey (split->keysets[curFound], curKey);
-	}
-
-	return 1;
-}
-
 static void elektraDropCurrentKey (KeySet * ks, Key * warningKey, const Backend * curHandle, const Backend * otherHandle, const char * msg)
 {
 	const Key * k = ksCurrent (ks);

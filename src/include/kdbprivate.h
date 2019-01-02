@@ -490,7 +490,6 @@ void splitUpdateFileName (Split * split, KDB * handle, Key * key);
 
 /* for kdbGet() algorithm */
 int splitAppoint (Split * split, KDB * handle, KeySet * ks);
-int splitRestore (Split * split, KDB * handle, KeySet * ks);
 int splitGet (Split * split, Key * warningKey, KDB * handle);
 int splitMergeBackends (Split * split, KeySet * dest);
 int splitMergeDefault (Split * split, KeySet * dest);
@@ -500,7 +499,6 @@ int splitDivide (Split * split, KDB * handle, KeySet * ks);
 int splitSync (Split * split);
 void splitPrepare (Split * split);
 int splitUpdateSize (Split * split);
-
 
 /*Backend handling*/
 Backend * backendOpen (KeySet * elektra_config, KeySet * modules, KeySet * global, Key * errorKey);
