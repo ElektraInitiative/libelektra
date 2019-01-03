@@ -40,9 +40,11 @@ Configuration will be in arrays below the keys:
                                  /rollback
                                  /postrollback
                                  /getresolver
+                                 /pregetcache
                                  /pregetstorage
                                  /getstorage
                                  /postgetstorage
+                                 /postgetcache
                                  /setresolver
                                  /presetstorage
                                  /setstorage
@@ -202,6 +204,17 @@ State diagrams of plugins need to be redrawn to also include global plugin
 states.
 
 ## Related decisions
+
+### Global KeySet handle
+
+Some global plugins need to communicate more data than is possible to do with metadata.
+This can limit the functionality of global plugins. One example is a global cache plugin,
+which needs to store internal information for the KDB, some of which is binary.
+
+To make the communication between global plugins easier, global plugins will additionally
+get a handle to a global keyset. The global keyset is initialized at the beginning of kdbGet() and
+kdbSet() and deinitialized at the end of the respective KDB function. In other words, the global
+keyset is tied to a KDB handle and is ksClear()-ed before the KDB function returns.
 
 ## Notes
 
