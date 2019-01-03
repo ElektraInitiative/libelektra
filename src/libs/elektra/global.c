@@ -14,29 +14,35 @@
  * Helper functions to execute global plugins
  */
 
-void elektraGlobalGet (KDB * handle, KeySet * ks, Key * parentKey, int position, int subPosition)
+int elektraGlobalGet (KDB * handle, KeySet * ks, Key * parentKey, int position, int subPosition)
 {
+	int ret = 0;
 	Plugin * plugin;
 	if (handle && (plugin = handle->globalPlugins[position][subPosition]))
 	{
-		plugin->kdbGet (plugin, ks, parentKey);
+		ret = plugin->kdbGet (plugin, ks, parentKey);
 	}
+	return ret;
 }
 
-void elektraGlobalSet (KDB * handle, KeySet * ks, Key * parentKey, int position, int subPosition)
+int elektraGlobalSet (KDB * handle, KeySet * ks, Key * parentKey, int position, int subPosition)
 {
+	int ret = 0;
 	Plugin * plugin;
 	if (handle && (plugin = handle->globalPlugins[position][subPosition]))
 	{
-		plugin->kdbSet (plugin, ks, parentKey);
+		ret = plugin->kdbSet (plugin, ks, parentKey);
 	}
+	return ret;
 }
 
-void elektraGlobalError (KDB * handle, KeySet * ks, Key * parentKey, int position, int subPosition)
+int elektraGlobalError (KDB * handle, KeySet * ks, Key * parentKey, int position, int subPosition)
 {
+	int ret = 0;
 	Plugin * plugin;
 	if (handle && (plugin = handle->globalPlugins[position][subPosition]))
 	{
-		plugin->kdbError (plugin, ks, parentKey);
+		ret = plugin->kdbError (plugin, ks, parentKey);
 	}
+	return ret;
 }

@@ -587,9 +587,9 @@ int keyNameIsSystem (const char * keyname);
 int keyNameIsUser (const char * keyname);
 
 /* global plugin calls */
-void elektraGlobalGet (KDB * handle, KeySet * ks, Key * parentKey, int position, int subPosition);
-void elektraGlobalSet (KDB * handle, KeySet * ks, Key * parentKey, int position, int subPosition);
-void elektraGlobalError (KDB * handle, KeySet * ks, Key * parentKey, int position, int subPosition);
+int elektraGlobalGet (KDB * handle, KeySet * ks, Key * parentKey, int position, int subPosition);
+int elektraGlobalSet (KDB * handle, KeySet * ks, Key * parentKey, int position, int subPosition);
+int elektraGlobalError (KDB * handle, KeySet * ks, Key * parentKey, int position, int subPosition);
 
 /** Test a bit. @see set_bit(), clear_bit() */
 #define test_bit(var, bit) ((var) & (bit))
