@@ -29,6 +29,7 @@ static void defaultFatalErrorHandler (ElektraError * error)
 
 static struct _ElektraKDBError * elektraKDBErrorFromKey (Key * key);
 static ElektraError * elektraErrorCreateFromKey (Key * key);
+static ElektraError * elektraErrorWarningFromKey (Key * key);
 
 /**
  * \defgroup highlevel High-level API
@@ -240,7 +241,7 @@ void elektraSaveKey (Elektra * elektra, Key * key, ElektraError ** error)
 }
 
 /**
- * Creates a new ElektraError by using the values of the error metadata of a Key.
+ * Creates a new ElektraError by using the values of the error/warning metadata of a Key.
  *
  * @param Key The key from which the error data shall be taken.
  * @return A new ElektraError created with elektraErrorCreate().
@@ -251,7 +252,7 @@ static ElektraError * elektraErrorCreateFromKey (Key * key)
 
 	if (NULL == metaKey)
 	{
-		return NULL;
+		return elektraErrorWarningFromKey (key);
 	}
 
 	kdb_long_t code;
@@ -280,6 +281,73 @@ static ElektraError * elektraErrorCreateFromKey (Key * key)
 	error->lowLevelError = elektraKDBErrorFromKey (key);
 	return error;
 }
+
+static ElektraError * elektraErrorWarningFromKey (Key * key)
+{
+	kdb_long_t warningCount = 0;
+	const Key * warningsKey = keyGetMeta (key, "warnings");
+	if (warningsKey != NULL)
+	{
+		elektraKeyToLong (warningsKey, &warningCount);
+	}
+
+	if (warningCount < 1)
+	{
+		return NULL;
+	}
+
+	ElektraError * error;
+	error = elektraErrorLowLevel (ELEKTRA_ERROR_SEVERITY_WARNING, -1, "One or more warnings were found.", "", "");
+	error->lowLevelError = elektraCalloc (sizeof (struct _ElektraKDBError));
+
+	error->lowLevelError->code = -1;
+	error->lowLevelError->description = "One or more warnings were found.";
+	error->lowLevelError->severity = ELEKTRA_ERROR_SEVERITY_WARNING;
+	error->lowLevelError->group = "";
+	error->lowLevelError->module = "";
+	error->lowLevelError->reason = "";
+	error->lowLevelError->errorKey = key;
+
+	error->lowLevelError->warningCount = warningCount;
+
+	struct _ElektraKDBError ** warnings = elektraCalloc (warningCount * sizeof (struct _ElektraKDBError *));
+
+	for (int i = 0; i < warningCount; ++i)
+	{
+		struct _ElektraKDBError * const warning = elektraCalloc (sizeof (struct _ElektraKDBError));
+		warning->severity = ELEKTRA_ERROR_SEVERITY_WARNING;
+
+		char * name = elektraFormat ("warnings/#%02d/number", i);
+		kdb_long_t warningCode;
+		elektraKeyToLong (keyGetMeta (key, name), &warningCode);
+		warning->code = warningCode;
+		elektraFree (name);
+
+		name = elektraFormat ("warnings/#%02d/description", i);
+		warning->description = keyString (keyGetMeta (key, name));
+		elektraFree (name);
+
+		name = elektraFormat ("warnings/#%02d/ingroup", i);
+		warning->group = keyString (keyGetMeta (key, name));
+		elektraFree (name);
+
+		name = elektraFormat ("warnings/#%02d/module", i);
+		warning->module = keyString (keyGetMeta (key, name));
+		elektraFree (name);
+
+		name = elektraFormat ("warnings/#%02d/reason", i);
+		warning->reason = keyString (keyGetMeta (key, name));
+		elektraFree (name);
+
+		warning->errorKey = key;
+		warnings[i] = warning;
+	}
+	error->lowLevelError->warnings = warnings;
+
+
+	return error;
+}
+
 
 static struct _ElektraKDBError * elektraKDBErrorFromKey (Key * key)
 {
