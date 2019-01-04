@@ -16,6 +16,11 @@
 #include <kdbtypes.h>
 
 // region Helpers for Tag Macros
+/**************************************
+ *
+ * Helpers for Tag Macros
+ *
+ **************************************/
 
 #ifdef __cplusplus
 #define ELEKTRA_CAST(type, expression) static_cast<type> (expression)
@@ -66,6 +71,11 @@ extern "C" {
 typedef struct _Elektra Elektra;
 
 // region Tag Macros
+/**************************************
+ *
+ * Tag Macros
+ *
+ **************************************/
 
 /**
  * Inserts the necessary declarations for a new Elektra Tag that can be used in combination with
@@ -171,6 +181,11 @@ typedef struct _Elektra Elektra;
 // endregion
 
 // region Tags for built-in types
+/**************************************
+ *
+ * Tags for built-in types
+ *
+ **************************************/
 
 ELEKTRA_TAG_DECLARATIONS (const char *, String)
 ELEKTRA_TAG_DECLARATIONS (kdb_boolean_t, Boolean)
@@ -195,18 +210,35 @@ ELEKTRA_TAG_DECLARATIONS (int, Enum)
 
 // endregion Tags for built-in types
 
-// region General
+// region Basics
+/**************************************
+ *
+ * Basics
+ *
+ **************************************/
 
 Elektra * elektraOpen (const char * application, KeySet * defaults, ElektraError ** error);
 void elektraClose (Elektra * elektra);
 
-size_t elektraArraySize (Elektra * elektra, const char * keyName);
+// endregion Basics
+
+// region Error-Handling
+/**************************************
+ *
+ * Error-Handling
+ *
+ **************************************/
 
 void elektraFatalErrorHandler (Elektra * elektra, ElektraErrorHandler fatalErrorHandler);
 
-// endregion General
+// endregion
 
 // region Helpers for code generation
+/**************************************
+ *
+ * Helpers for code generation
+ *
+ **************************************/
 
 Key * elektraFindKey (Elektra * elektra, const char * name, KDBType type);
 Key * elektraFindArrayElementKey (Elektra * elektra, const char * name, size_t index, KDBType type);
@@ -215,6 +247,11 @@ void elektraFatalError (Elektra * elektra, ElektraError * fatalError);
 // endregion Helpers for code generation
 
 // region Getters
+/**************************************
+ *
+ * Getters
+ *
+ **************************************/
 
 const char * elektraGetValue (Elektra * elektra, const char * name);
 const char * elektraGetString (Elektra * elektra, const char * keyname);
@@ -247,6 +284,11 @@ int elektraGetEnumInt (Elektra * elektra, const char * keyName);
 // endregion Getters
 
 // region Setters
+/**************************************
+ *
+ * Setters
+ *
+ **************************************/
 
 void elektraSetValue (Elektra * elektra, const char * name, const char * value, KDBType type, ElektraError ** error);
 void elektraSetString (Elektra * elektra, const char * keyName, const char * value, ElektraError ** error);
@@ -272,7 +314,23 @@ void elektraSetEnumInt (Elektra * elektra, const char * name, int value, Elektra
 
 // endregion Setters
 
+// region Array-Helpers
+/**************************************
+ *
+ * Array-Helpers
+ *
+ **************************************/
+
+size_t elektraArraySize (Elektra * elektra, const char * keyName);
+
+// endregion Array-Helpers
+
 // region Array-Getters
+/**************************************
+ *
+ * Array-Getters
+ *
+ **************************************/
 
 const char * elektraGetArrayElementValue (Elektra * elektra, const char * name, size_t index);
 const char * elektraGetStringArrayElement (Elektra * elektra, const char * keyname, size_t index);
@@ -306,6 +364,11 @@ int elektraGetEnumIntArrayElement (Elektra * elektra, const char * keyName, size
 // endregion Array-Getters
 
 // region Array-Setters
+/**************************************
+ *
+ * Array-Setters
+ *
+ **************************************/
 
 void elektraSetArrayElementValue (Elektra * elektra, const char * name, size_t index, const char * value, KDBType type,
 				  ElektraError ** error);
@@ -337,6 +400,11 @@ void elektraSetEnumIntArrayElement (Elektra * elektra, const char * name, size_t
 // endregion Array-Setters
 
 // region Type information
+/**************************************
+ *
+ * Type information
+ *
+ **************************************/
 
 KDBType elektraGetType (Elektra * elektra, const char * keyname);
 KDBType elektraGetArrayElementType (Elektra * elektra, const char * name, size_t index);
@@ -344,6 +412,11 @@ KDBType elektraGetArrayElementType (Elektra * elektra, const char * name, size_t
 // endregion
 
 // region Generic Getters and Setters
+/**************************************
+ *
+ * Generic Getters and Setters
+ *
+ **************************************/
 
 /**
  * @param elektra The elektra instance initialized with the parent key.
