@@ -11,6 +11,7 @@
 
 #include <elektra/errorcodes.h>
 #include <kdb.h>
+#include <stdbool.h>
 
 #ifdef __cplusplus
 #define Key ckdb::Key
@@ -18,7 +19,6 @@ extern "C" {
 #endif
 
 typedef struct _ElektraError ElektraError;
-typedef struct _ElektraKDBError ElektraKDBError;
 
 typedef enum
 {
@@ -38,17 +38,16 @@ typedef void (*ElektraErrorHandler) (ElektraError * error);
 ElektraErrorCode elektraErrorCode (const ElektraError * error);
 const char * elektraErrorDescription (const ElektraError * error);
 ElektraErrorSeverity elektraErrorSeverity (const ElektraError * error);
-ElektraKDBError * elektraErrorLowLevelError (const ElektraError * error);
 
-int elektraKDBErrorCode (const ElektraKDBError * error);
-const char * elektraKDBErrorDescription (const ElektraKDBError * error);
-ElektraErrorSeverity elektraKDBErrorSeverity (const ElektraKDBError * error);
-ElektraKDBErrorGroup elektraKDBErrorGroup (const ElektraKDBError * error);
-ElektraKDBErrorModule elektraKDBErrorModule (const ElektraKDBError * error);
-const char * elektraKDBErrorReason (const ElektraKDBError * error);
-int elektraKDBErrorWarningCount (const ElektraKDBError * error);
-const ElektraKDBError ** elektraKDBErrorWarnings (const ElektraKDBError * error);
-Key * elektraKDBErrorKey (const ElektraKDBError * error);
+int elektraKDBErrorCode (const ElektraError * error);
+const char * elektraKDBErrorDescription (const ElektraError * error);
+ElektraErrorSeverity elektraKDBErrorSeverity (const ElektraError * error);
+ElektraKDBErrorGroup elektraKDBErrorGroup (const ElektraError * error);
+ElektraKDBErrorModule elektraKDBErrorModule (const ElektraError * error);
+const char * elektraKDBErrorReason (const ElektraError * error);
+int elektraKDBErrorWarningCount (const ElektraError * error);
+ElektraError * elektraKDBErrorGetWarning (const ElektraError * error, int index);
+Key * elektraKDBErrorKey (const ElektraError * error);
 
 void elektraErrorReset (ElektraError ** error);
 

@@ -27,7 +27,7 @@ static void defaultFatalErrorHandler (ElektraError * error)
 	exit (code);
 }
 
-static ElektraKDBError * elektraKDBErrorFromKey (Key * key);
+static struct _ElektraKDBError * elektraKDBErrorFromKey (Key * key);
 static ElektraError * elektraErrorCreateFromKey (Key * key);
 
 /**
@@ -219,8 +219,7 @@ void elektraSaveKey (Elektra * elektra, Key * key, ElektraError ** error)
 				return;
 			}
 
-			ElektraKDBError * kdbError = elektraErrorLowLevelError (kdbSetError);
-			if (elektraKDBErrorCode (kdbError) != 30) // ELEKTRA_ERROR_CONFLICT = 30
+			if (elektraKDBErrorCode (kdbSetError) != 30) // ELEKTRA_ERROR_CONFLICT = 30
 			{
 				*error = kdbSetError;
 				return;
@@ -282,7 +281,7 @@ static ElektraError * elektraErrorCreateFromKey (Key * key)
 	return error;
 }
 
-static ElektraKDBError * elektraKDBErrorFromKey (Key * key)
+static struct _ElektraKDBError * elektraKDBErrorFromKey (Key * key)
 {
 	if (key == NULL)
 	{
@@ -308,7 +307,7 @@ static ElektraKDBError * elektraKDBErrorFromKey (Key * key)
 	const char * reason = keyString (keyGetMeta (key, "error/reason"));
 	const char * description = keyString (keyGetMeta (key, "error/description"));
 
-	ElektraKDBError * const error = elektraCalloc (sizeof (struct _ElektraKDBError));
+	struct _ElektraKDBError * const error = elektraCalloc (sizeof (struct _ElektraKDBError));
 	error->code = code;
 	error->description = description;
 	error->severity = severity;
@@ -327,11 +326,11 @@ static ElektraKDBError * elektraKDBErrorFromKey (Key * key)
 	error->warningCount = warningCount;
 	if (warningCount > 0)
 	{
-		ElektraKDBError ** warnings = elektraCalloc (warningCount * sizeof (ElektraKDBError *));
+		struct _ElektraKDBError ** warnings = elektraCalloc (warningCount * sizeof (struct _ElektraKDBError *));
 
 		for (int i = 0; i < warningCount; ++i)
 		{
-			ElektraKDBError * const warning = elektraCalloc (sizeof (struct _ElektraKDBError));
+			struct _ElektraKDBError * const warning = elektraCalloc (sizeof (struct _ElektraKDBError));
 			warning->severity = ELEKTRA_ERROR_SEVERITY_WARNING;
 
 			char * name = elektraFormat ("warnings/#%02d/number", i);

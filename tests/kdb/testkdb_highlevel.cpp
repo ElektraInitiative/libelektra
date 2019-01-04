@@ -23,51 +23,47 @@ static inline const char * severityString (ElektraError * error)
 	return severityString (elektraErrorSeverity (error));
 }
 
-static std::ostream & operator<< (std::ostream & os, ElektraKDBError * kdbError)
-{
-	if (kdbError != nullptr)
-	{
-		os << "\tKDB";
-		switch (elektraKDBErrorSeverity (kdbError))
-		{
-		case ELEKTRA_ERROR_SEVERITY_ERROR:
-			os << "ERROR";
-			break;
-		case ELEKTRA_ERROR_SEVERITY_WARNING:
-			os << "WARNING";
-			break;
-		default:
-		case ELEKTRA_ERROR_SEVERITY_FATAL:
-			os << "FATAL";
-			break;
-		}
-
-		os << " " << elektraKDBErrorCode (kdbError) << " [" << elektraKDBErrorGroup (kdbError) << "/"
-		   << elektraKDBErrorModule (kdbError) << "]"
-		   << ": " << elektraKDBErrorDescription (kdbError) << std::endl;
-		os << "\t\tReason: " << elektraKDBErrorReason (kdbError) << std::endl;
-
-		int warningCount = elektraKDBErrorWarningCount (kdbError);
-		os << "\t\t" << warningCount << " Warnings:" << std::endl;
-		const ElektraKDBError ** warnings = elektraKDBErrorWarnings (kdbError);
-		for (int i = 0; i < warningCount; ++i)
-		{
-			os << "\t\t - Warning " << elektraKDBErrorCode (warnings[i]) << " [" << elektraKDBErrorGroup (warnings[i]) << "/"
-			   << elektraKDBErrorModule (warnings[i]) << "]: " << elektraKDBErrorDescription (warnings[i]) << std::endl;
-		}
-		os << "\t\tFrom Key: " << ckdb::keyName (elektraKDBErrorKey (kdbError)) << std::endl;
-	}
-
-	return os;
-}
-
 static std::ostream & operator<< (std::ostream & os, ElektraError ** error)
 {
 	if (*error != nullptr)
 	{
 		os << "[" << severityString (*error) << "] (" << elektraErrorCode (*error) << ") " << elektraErrorDescription (*error)
 		   << std::endl;
-		os << elektraErrorLowLevelError (*error);
+
+		int kdbCode = elektraKDBErrorCode (*error);
+		if (kdbCode > 0)
+		{
+			os << "\tKDB";
+			switch (elektraKDBErrorSeverity (*error))
+			{
+			case ELEKTRA_ERROR_SEVERITY_ERROR:
+				os << "ERROR";
+				break;
+			case ELEKTRA_ERROR_SEVERITY_WARNING:
+				os << "WARNING";
+				break;
+			default:
+			case ELEKTRA_ERROR_SEVERITY_FATAL:
+				os << "FATAL";
+				break;
+			}
+
+			os << " " << kdbCode << " [" << elektraKDBErrorGroup (*error) << "/" << elektraKDBErrorModule (*error) << "]"
+			   << ": " << elektraKDBErrorDescription (*error) << std::endl;
+			os << "\t\tReason: " << elektraKDBErrorReason (*error) << std::endl;
+
+			int warningCount = elektraKDBErrorWarningCount (*error);
+			os << "\t\t" << warningCount << " Warnings:" << std::endl;
+			for (int i = 0; i < warningCount; ++i)
+			{
+				ElektraError * warning = elektraKDBErrorGetWarning (*error, i);
+				os << "\t\t - Warning " << elektraKDBErrorCode (warning) << " [" << elektraKDBErrorGroup (warning) << "/"
+				   << elektraKDBErrorModule (warning) << "]: " << elektraKDBErrorDescription (warning) << std::endl;
+				ckdb::elektraFree (warning);
+			}
+			os << "\t\tFrom Key: " << ckdb::keyName (elektraKDBErrorKey (*error)) << std::endl;
+		}
+
 		elektraErrorReset (error);
 	}
 	return os;

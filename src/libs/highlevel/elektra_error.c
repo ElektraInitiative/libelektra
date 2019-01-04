@@ -73,84 +73,140 @@ ElektraErrorSeverity elektraErrorSeverity (const ElektraError * error)
 }
 
 /**
- * @return the Key from which this error was extracted,
- * or NULL if the error was created by the high-level API
+ * @return the error code of the attached low-level error,
+ * or -1 if no low-level error is attached
  */
-ElektraKDBError * elektraErrorLowLevelError (const ElektraError * error)
+int elektraKDBErrorCode (const ElektraError * error)
 {
-	return error->lowLevelError;
+	if (error->lowLevelError == NULL)
+	{
+		return -1;
+	}
+
+	return error->lowLevelError->code;
 }
 
 /**
- * @return the error code of the given kdb error
+ * @return the description for the attached low-level error,
+ * or -1 if no low-level error is attached
  */
-int elektraKDBErrorCode (const ElektraKDBError * error)
+const char * elektraKDBErrorDescription (const ElektraError * error)
 {
-	return error->code;
+	if (error->lowLevelError == NULL)
+	{
+		return NULL;
+	}
+
+	return error->lowLevelError->description;
 }
 
 /**
- * @return the description for the given kdb error
+ * @return the severity of the attached low-level error,
+ * or #ELEKTRA_ERROR_SEVERITY_FATAL if no low-level error is attached
  */
-const char * elektraKDBErrorDescription (const ElektraKDBError * error)
+ElektraErrorSeverity elektraKDBErrorSeverity (const ElektraError * error)
 {
-	return error->description;
+	if (error->lowLevelError == NULL)
+	{
+		return ELEKTRA_ERROR_SEVERITY_FATAL;
+	}
+
+	return error->lowLevelError->severity;
 }
 
 /**
- * @return the severity of the given kdb error
+ * @return the group from which the attached low-level error originated,
+ * or NULL if no low-level error is attached
  */
-ElektraErrorSeverity elektraKDBErrorSeverity (const ElektraKDBError * error)
+ElektraKDBErrorGroup elektraKDBErrorGroup (const ElektraError * error)
 {
-	return error->severity;
+	if (error->lowLevelError == NULL)
+	{
+		return NULL;
+	}
+
+	return error->lowLevelError->group;
 }
 
 /**
- * @return the group from which the given kdb error originated
+ * @return the module from which the attached low-level error originated,
+ * or NULL if no low-level error is attached
  */
-ElektraKDBErrorGroup elektraKDBErrorGroup (const ElektraKDBError * error)
+ElektraKDBErrorModule elektraKDBErrorModule (const ElektraError * error)
 {
-	return error->group;
+	if (error->lowLevelError == NULL)
+	{
+		return NULL;
+	}
+
+	return error->lowLevelError->module;
 }
 
 /**
- * @return the module from which the given kdb error originated
+ * @return the reason for the attached low-level error,
+ * or NULL if no low-level error is attached
  */
-ElektraKDBErrorModule elektraKDBErrorModule (const ElektraKDBError * error)
+const char * elektraKDBErrorReason (const ElektraError * error)
 {
-	return error->module;
+	if (error->lowLevelError == NULL)
+	{
+		return NULL;
+	}
+
+	return error->lowLevelError->reason;
 }
 
 /**
- * @return the reason for the given kdb error
+ * @return the number of warnings associated with the attached low-level error,
+ * or -1 if no low-level error is attached
  */
-const char * elektraKDBErrorReason (const ElektraKDBError * error)
+int elektraKDBErrorWarningCount (const ElektraError * error)
 {
-	return error->reason;
+	if (error->lowLevelError == NULL)
+	{
+		return -1;
+	}
+
+	return error->lowLevelError->warningCount;
 }
 
 /**
- * @return the number of warnings associated with the given kdb error
+ * @return a newly allocated ElektraError representing the warning at the given index,
+ * or NULL if the index is out of range
+ *
+ * the returned error will always have the following properties:
+ * - error code is #ELEKTRA_ERROR_CODE_LOW_LEVEL
+ * - description is ""
+ * - severity is #ELEKTRA_ERROR_SEVERITY_WARNING
+ * - elektraErrorHasKDBError() returns true
+ * - the attached low-level error represents the warning in question
+ *
+ * NOTE: you have to free the memory allocated by this function using elektraFree()
  */
-int elektraKDBErrorWarningCount (const ElektraKDBError * error)
+ElektraError * elektraKDBErrorGetWarning (const ElektraError * error, int index)
 {
-	return error->warningCount;
+	if (index < 0 || index > error->lowLevelError->warningCount)
+	{
+		return NULL;
+	}
+
+	ElektraError * warning = elektraErrorCreate (ELEKTRA_ERROR_CODE_LOW_LEVEL, "", ELEKTRA_ERROR_SEVERITY_WARNING);
+	warning->lowLevelError = error->lowLevelError->warnings[index];
+	return warning;
 }
 
 /**
- * @return the array of warnings associated with the given kdb error
+ * @return the Key from which the given kdb error was extracted,
+ * or NULL if no low-level error is attached
  */
-const ElektraKDBError ** elektraKDBErrorWarnings (const ElektraKDBError * error)
+Key * elektraKDBErrorKey (const ElektraError * error)
 {
-	return (const ElektraKDBError **) error->warnings;
-}
+	if (error->lowLevelError == NULL)
+	{
+		return NULL;
+	}
 
-/**
- * @return the Key from which the given kdb error was extracted
- */
-Key * elektraKDBErrorKey (const ElektraKDBError * error)
-{
-	return error->errorKey;
+	return error->lowLevelError->errorKey;
 }
 
 /**
@@ -171,7 +227,7 @@ void elektraErrorReset (ElektraError ** error)
 		elektraFree (actualError->description);
 	}
 
-	ElektraKDBError * kdbError = actualError->lowLevelError;
+	struct _ElektraKDBError * kdbError = actualError->lowLevelError;
 	if (kdbError != NULL)
 	{
 		if (kdbError->warnings != NULL)

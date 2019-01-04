@@ -622,7 +622,7 @@ struct _ElektraError
 	ElektraErrorCode code;
 	char * description;
 	ElektraErrorSeverity severity;
-	ElektraKDBError * lowLevelError;
+	struct _ElektraKDBError * lowLevelError;
 };
 
 struct _ElektraKDBError
@@ -634,7 +634,7 @@ struct _ElektraKDBError
 	ElektraKDBErrorModule module;
 	const char * reason;
 	int warningCount;
-	ElektraKDBError ** warnings;
+	struct _ElektraKDBError ** warnings;
 	Key * errorKey;
 };
 
