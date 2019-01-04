@@ -68,16 +68,7 @@ elektraClose (elektra);
 key-values, create a separate handle for each thread to avoid concurrency issues.
 
 #### Configuration
-Currently there are two ways to configure an `Elektra` instance:
-
-```c
-void elektraEnforceTypeMetadata (Elektra * elektra, bool enforceTypeMetadata)
-```
-With this function you can set whether the value of the `type` metadata will be checked inside the getter-functions. Per default this
-check is activated and it is generally recommended to leave it that way. Before you disable the type-check consider using
-`elektraGetValue()` (see [below](#raw-values)) and `elektraGetType()` (see [here](#type-information)). When the check is activated,
-and the key has the wrong type metadata, a fatal error will be raised and the fatal error handler will be called.
-
+Currently there is only one way to configure an `Elektra` instance:
 
 ```c
 void elektraFatalErrorHandler (Elektra * elektra, ElektraErrorHandler fatalErrorHandler)
@@ -135,7 +126,9 @@ if (error != NULL)
 ```
 
 #### Low-level Errors
-Errors which do not originate inside the high-level API itself
+Errors which do not originate inside the high-level API itself are wrapped into a `ElektraError` struct with error code
+`ELEKTRA_ERROR_CODE_LOW_LEVEL`. The high-level Error API provides methods (`elektraKDBError*`) to access the properties of the low-level
+error. You can also access the key to which the error was originally attached, as well as any possible low-level warnings.
 
 ## Reading and writing values
 
