@@ -263,6 +263,7 @@ KDB * kdbOpen (Key * errorKey)
 	KDB * handle = elektraCalloc (sizeof (struct _KDB));
 	Key * initialParent = keyDup (errorKey);
 
+	handle->global = ksNew (0, KS_END);
 	handle->modules = ksNew (0, KS_END);
 	if (elektraModulesInit (handle->modules, errorKey) == -1)
 	{
@@ -432,6 +433,8 @@ int kdbClose (KDB * handle, Key * errorKey)
 	{
 		ELEKTRA_ADD_WARNING (47, errorKey, "modules were not open");
 	}
+
+	if (handle->global) ksDel (handle->global);
 
 	elektraFree (handle);
 

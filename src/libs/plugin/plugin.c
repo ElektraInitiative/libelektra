@@ -140,3 +140,35 @@ void * elektraPluginGetData (Plugin * plugin)
 {
 	return plugin->data;
 }
+
+/**
+ * @brief Store a pointer to the global keyset.
+ *
+ * Only initialized for global plugins.
+ *
+ * @see elektraPluginGetGlobal
+ * @param plugin a pointer to the plugin
+ * @param ks the pointer to the global keyset
+ * @ingroup plugin
+ */
+void elektraPluginSetGlobal (Plugin * plugin, KeySet * ks)
+{
+	plugin->global = ks;
+}
+
+/**
+ * @brief Get a pointer to the global keyset.
+ *
+ * Only initialized for global plugins.
+ *
+ * If elektraPluginSetGlobal() was not called earlier, NULL will be returned.
+ *
+ * @see elektraPluginSetGlobal
+ * @param plugin a pointer to the plugin
+ * @return a pointer to the global keyset
+ * @ingroup plugin
+ */
+KeySet * elektraPluginGetGlobal (Plugin * plugin)
+{
+	return plugin->global;
+}
