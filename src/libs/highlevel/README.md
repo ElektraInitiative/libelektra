@@ -287,7 +287,7 @@ int main ()
   ElektraError * error = NULL;
   Elektra * elektra = elektraOpen ("/sw/org/myapp/#0/current", NULL, &error);
 
-  if (error != NULL)
+  if (elektra == NULL)
   {
     printf ("Sorry, there seems to be an error with your Elektra setup: %s\n", elektraErrorDescription (error));
     elektraErrorReset (&error);

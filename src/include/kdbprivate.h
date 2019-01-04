@@ -614,7 +614,6 @@ struct _Elektra
 	Key * parentKey;
 	KeySet * config;
 	Key * lookupKey;
-	bool enforceType;
 	ElektraErrorHandler fatalErrorHandler;
 };
 

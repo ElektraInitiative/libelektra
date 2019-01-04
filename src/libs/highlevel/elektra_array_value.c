@@ -44,8 +44,7 @@ size_t elektraArraySize (Elektra * elektra, const char * name)
  * Helper function for code generation.
  *
  * Finds an array element Key from its relative name and index.
- * Also checks type metadata, if type metadata is enforces for
- * the given Elektra instance.
+ * Also checks type metadata, if @p type is not NULL.
  *
  * @param elektra The Elektra instance to use.
  * @param name    The relative name of the array.
@@ -63,7 +62,7 @@ Key * elektraFindArrayElementKey (Elektra * elektra, const char * name, size_t i
 		return NULL;
 	}
 
-	if (elektra->enforceType && type != NULL)
+	if (type != NULL)
 	{
 		const char * actualType = keyString (keyGetMeta (resultKey, "type"));
 		if (strcmp (actualType, type) != 0)

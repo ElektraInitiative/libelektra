@@ -105,12 +105,9 @@ protected:
 
 	static void fatalErrorHandler (ElektraError * error)
 	{
-		auto code = elektraErrorCode (error);
-		std::cout << "fatal error in test " << ::testing::UnitTest::GetInstance ()->current_test_info ()->name () << ": " << &error
-			  << std::endl;
-
 		std::stringstream msg;
-		msg << "fatal error " << code;
+		msg << "fatal error " << elektraErrorCode (error) << " in test "
+		    << ::testing::UnitTest::GetInstance ()->current_test_info ()->name () << ": " << &error << std::endl;
 
 		throw std::runtime_error (msg.str ());
 	}
@@ -895,27 +892,30 @@ TEST_F (Highlevel, EnforceMetadata)
 	ElektraError * error = nullptr;
 
 	elektraSetLong (elektra, "testkey", 2, &error);
-	elektraSetLong (elektra, "testkey2", 1, &error);
 
+	EXPECT_NE (elektraFindKey (elektra, "testkey", "long"), nullptr);
 
 	try
 	{
-		elektraGetBoolean (elektra, "testkey");
+		elektraFindKey (elektra, "testkey", "string");
 		ADD_FAILURE () << "expected std::runtime_error to be thrown";
 	}
 	catch (const std::runtime_error & err)
 	{
 		std::stringstream msg;
 		msg << "fatal error " << ELEKTRA_ERROR_CODE_WRONG_TYPE;
-		EXPECT_EQ (err.what (), msg.str ());
+
+		std::string errMsg = err.what ();
+
+		auto expected = msg.str ();
+		auto actual = errMsg.substr (0, expected.length ());
+
+		EXPECT_EQ (expected, actual);
 	}
 	catch (...)
 	{
 		ADD_FAILURE () << "expected std::runtime_error to be thrown";
 	}
 
-	elektraEnforceTypeMetadata (elektra, false);
-
-	EXPECT_FALSE (elektraGetBoolean (elektra, "testkey")) << "Wrong key value.";
-	EXPECT_TRUE (elektraGetBoolean (elektra, "testkey2")) << "Wrong key value.";
+	EXPECT_NE (elektraFindKey (elektra, "testkey", nullptr), nullptr);
 }

@@ -202,7 +202,6 @@ void elektraClose (Elektra * elektra);
 
 size_t elektraArraySize (Elektra * elektra, const char * keyName);
 
-void elektraEnforceTypeMetadata (Elektra * elektra, bool enforceTypeMetadata);
 void elektraFatalErrorHandler (Elektra * elektra, ElektraErrorHandler fatalErrorHandler);
 
 // endregion General

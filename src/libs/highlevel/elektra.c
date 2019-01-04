@@ -118,7 +118,6 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, ElektraError
 	elektra->parentKey = parentKey;
 	elektra->config = config;
 	elektra->lookupKey = keyNew (NULL, KEY_END);
-	elektra->enforceType = true;
 	elektra->fatalErrorHandler = &defaultFatalErrorHandler;
 
 	return elektra;
@@ -152,20 +151,6 @@ void elektraFatalError (Elektra * elektra, ElektraError * fatalError)
 void elektraFatalErrorHandler (Elektra * elektra, ElektraErrorHandler fatalErrorHandler)
 {
 	elektra->fatalErrorHandler = fatalErrorHandler;
-}
-
-/**
- * Sets whether type metadata should be enforced by this Elektra instance.
- *
- * Even if type metadata is not enforce, setting a value will always set the
- * corresponding type metadata value too.
- *
- * @param elektra             An Elektra instance.
- * @param enforceTypeMetadata Set to #true to enforce type metadata.
- */
-void elektraEnforceTypeMetadata (Elektra * elektra, bool enforceTypeMetadata)
-{
-	elektra->enforceType = enforceTypeMetadata;
 }
 
 /**

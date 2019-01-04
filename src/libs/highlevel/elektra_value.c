@@ -27,7 +27,7 @@ extern "C" {
  * Helper function for code generation.
  *
  * Finds a Key from its relative name. Also checks type metadata,
- * if type metadata is enforces for the given Elektra instance.
+ * if @p type is not NULL.
  *
  * @param elektra The Elektra instance to use.
  * @param name    The relative name of the key.
@@ -44,7 +44,7 @@ Key * elektraFindKey (Elektra * elektra, const char * name, KDBType type)
 		return NULL;
 	}
 
-	if (elektra->enforceType && type != NULL)
+	if (type != NULL)
 	{
 		const char * actualType = keyString (keyGetMeta (resultKey, "type"));
 		if (strcmp (actualType, type) != 0)
