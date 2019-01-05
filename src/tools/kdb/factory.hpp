@@ -75,6 +75,22 @@ class Cnstancer : public Instancer
 	}
 };
 
+namespace
+{
+int LevenshteinDistance (std::string first, std::string second)
+{
+	if (first.empty ()) return second.length ();
+	if (second.empty ()) return first.length ();
+
+	int costs = 1;
+	if (first[first.length () - 1] == second[second.length () - 1]) costs = 0;
+
+	return min (LevenshteinDistance (first.substr (0, first.length () - 1), second) + 1,
+		    min (LevenshteinDistance (first.substr (0, first.length () - 1), second.substr (0, second.length () - 1)) + costs,
+			 LevenshteinDistance (first, second.substr (0, second.length () - 1)) + 1));
+}
+}
+
 class Factory
 {
 	std::map<std::string, std::shared_ptr<Instancer>> m_factory;
@@ -139,6 +155,22 @@ public:
 		ret.push_back (getStdColor (ANSI_COLOR::BOLD) + "list-tools" + getStdColor (ANSI_COLOR::RESET) + "\t" +
 			       "List all external tools");
 		return ret;
+	}
+
+	std::string getNearestLevenshtein (std::string command) const
+	{
+		int min = INT_MAX;
+		std::string closestCommand;
+		for (auto & elem : getCommands ())
+		{
+			int ld = LevenshteinDistance (elem, command);
+			if (ld < min)
+			{
+				min = ld;
+				closestCommand = elem;
+			}
+		}
+		return closestCommand;
 	}
 
 	/**Returns a list of available commands */
