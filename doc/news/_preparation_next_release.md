@@ -199,6 +199,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Tools
 
+- Suggest a similar command if a command was mistyped. *(Markus Raab)*
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
