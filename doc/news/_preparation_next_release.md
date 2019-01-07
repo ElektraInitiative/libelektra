@@ -127,7 +127,8 @@ compiled against an older 0.8 version of Elektra will continue to work
 
 ### Core
 
-- <<TODO>>
+- Global plugins now get a handle to a global keyset. The keyset is available throughout a kdbGet() and kdbSet() function,
+  but is cleared before the function returns. This makes communication between global plugins easier. *(Mihael Pranjić)*
 - <<TODO>>
 - <<TODO>>
 
