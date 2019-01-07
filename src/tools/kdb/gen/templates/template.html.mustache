@@ -1,0 +1,57 @@
+<html>
+<head>
+</head>
+<body>
+{{#.}}
+<a name="{{name}}"></a>
+<h1>{{name}}</h1>
+<dl>
+    <dt>Name</dt><dd>{{name}}</dd>
+    <dt>Type</dt><dd>{{type}}</dd>
+    {{#unit}}
+    <dt>Unit</dt><dd>{{.}}</dd>
+    {{/unit}}
+    {{#default}}
+    <dt>Default</dt><dd>{{.}}</dd>
+    {{/default}}
+    {{#explanation}}
+    <dt>Explanation</dt><dd>{{.}}</dd>
+    {{/explanation}}
+    {{#rationale}}
+    <dt>Rationale</dt><dd>{{.}}</dd>
+    {{/rationale}}
+    {{#accessibility}}
+    <dt>Accessibility</dt><dd>{{.}}</dd>
+    {{/accessibility}}
+</dl>
+
+{{#has_override}}
+<h2>Override</h2>
+<ul>
+    {{#override}}
+    <li><a href="#{{.}}">{{.}}</a></li>
+    {{/override}}
+</ul>
+{{/has_override}}
+
+{{#has_fallback}}
+<h2>Fallback</h2>
+<ul>
+    {{#fallback}}
+    <li><a href="#{{.}}">{{.}}</a></li>
+    {{/fallback}}
+</ul>
+{{/has_fallback}}
+
+{{#has_see}}
+<h2>see</h2>
+<ul>
+    {{#see}}
+    <li><a href="#{{.}}">{{.}}</a></li>
+    {{/see}}
+</ul>
+{{/has_see}}
+
+{{/.}}
+</body>
+</html>
