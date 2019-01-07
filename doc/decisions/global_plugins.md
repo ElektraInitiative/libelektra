@@ -209,7 +209,8 @@ states.
 
 Some global plugins need to communicate more data than is possible to do with metadata.
 This can limit the functionality of global plugins. One example is a global cache plugin,
-which needs to store internal information for the KDB, some of which is binary.
+which needs to store internal information for the KDB. Some of the information is binary
+and can not be stored in metadata.
 
 To make the communication between global plugins easier, global plugins will additionally
 get a handle to a global keyset. The global keyset is initialized at the beginning of kdbGet() and
