@@ -1,24 +1,28 @@
 include (LibAddMacros)
 
 file (GLOB HDR_FILES
-	   *.hpp)
+	   *.hpp
+	   gen/*.hpp)
 add_headers (HDR_FILES)
 add_cppheaders (HDR_FILES)
 add_toolheaders (HDR_FILES)
 include_directories (${CMAKE_CURRENT_SOURCE_DIR})
 
 file (GLOB SRC_FILES
-	   *.cpp)
+	   *.cpp
+	   gen/*.cpp)
 set (SOURCES ${SRC_FILES} ${HDR_FILES})
+
+add_subdirectory (gen/templates)
 
 if (BUILD_SHARED OR BUILD_FULL)
 	add_library (kdb-objects OBJECT ${SRC_FILES})
-	add_dependencies (kdb-objects elektra_error_codes_generated)
+	add_dependencies (kdb-objects elektra_error_codes_generated kdb_gen_templates_generated)
 endif (BUILD_SHARED OR BUILD_FULL)
 
 if (BUILD_SHARED)
 	add_executable (kdb $<TARGET_OBJECTS:kdb-objects>)
-	add_dependencies (kdb kdberrors_generated elektra_error_codes_generated)
+	add_dependencies (kdb kdberrors_generated elektra_error_codes_generated kdb_gen_templates_generated)
 
 	target_link_libraries (kdb elektra-core elektra-kdb elektratools)
 
@@ -27,7 +31,7 @@ endif (BUILD_SHARED)
 
 if (BUILD_FULL)
 	add_executable (kdb-full $<TARGET_OBJECTS:kdb-objects>)
-	add_dependencies (kdb-full kdberrors_generated elektra_error_codes_generated)
+	add_dependencies (kdb-full kdberrors_generated elektra_error_codes_generated kdb_gen_templates_generated)
 
 	target_link_libraries (kdb-full elektra-full elektratools-full)
 
@@ -36,7 +40,7 @@ endif (BUILD_FULL)
 
 if (BUILD_STATIC)
 	add_executable (kdb-static ${SOURCES})
-	add_dependencies (kdb-static kdberrors_generated elektra_error_codes_generated)
+	add_dependencies (kdb-static kdberrors_generated elektra_error_codes_generated kdb_gen_templates_generated)
 
 	set_target_properties (kdb-static
 			       PROPERTIES LINKER_LANGUAGE
