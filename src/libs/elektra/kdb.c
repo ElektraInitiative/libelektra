@@ -784,6 +784,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 
 	int errnosave = errno;
 	Key * initialParent = keyDup (parentKey);
+	ksClear (handle->global);
 
 	ELEKTRA_LOG ("now in new kdbGet (%s)", keyName (parentKey));
 
@@ -815,6 +816,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, INIT);
 		elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, MAXONCE);
 		elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, DEINIT);
+		ksClear (handle->global);
 		splitUpdateFileName (split, handle, parentKey);
 		keyDel (initialParent);
 		splitDel (split);
@@ -901,6 +903,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	keySetName (parentKey, keyName (initialParent));
 
 	splitUpdateFileName (split, handle, parentKey);
+	ksClear (handle->global);
 	keyDel (initialParent);
 	keyDel (oldError);
 	splitDel (split);
@@ -913,6 +916,7 @@ error:
 	elektraGlobalError (handle, ks, parentKey, POSTGETSTORAGE, MAXONCE);
 	elektraGlobalError (handle, ks, parentKey, POSTGETSTORAGE, DEINIT);
 
+	ksClear (handle->global);
 	keySetName (parentKey, keyName (initialParent));
 	if (handle) splitUpdateFileName (split, handle, parentKey);
 	keyDel (initialParent);
@@ -1191,6 +1195,7 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 
 	int errnosave = errno;
 	Key * initialParent = keyDup (parentKey);
+	ksClear (handle->global);
 
 	ELEKTRA_LOG ("now in new kdbSet (%s) %p %zd", keyName (parentKey), (void *) handle, ksGetSize (ks));
 
@@ -1236,6 +1241,7 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 		{
 			ELEKTRA_SET_ERROR (107, parentKey, keyName (split->parents[-syncstate - 2]));
 		}
+		ksClear (handle->global);
 		keyDel (initialParent);
 		splitDel (split);
 		errno = errnosave;
@@ -1282,6 +1288,7 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 		clear_bit (ks->array[i]->flags, KEY_FLAG_SYNC);
 	}
 
+	ksClear (handle->global);
 	keySetName (parentKey, keyName (initialParent));
 	keyDel (initialParent);
 	splitDel (split);
@@ -1314,6 +1321,7 @@ error:
 	elektraGlobalError (handle, ks, parentKey, POSTROLLBACK, MAXONCE);
 	elektraGlobalError (handle, ks, parentKey, POSTROLLBACK, DEINIT);
 
+	ksClear (handle->global);
 	keySetName (parentKey, keyName (initialParent));
 	keyDel (initialParent);
 	splitDel (split);
