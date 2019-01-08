@@ -1292,3 +1292,33 @@ description:Connection Error occured
 severity:error
 ingroup:plugin
 module:network
+
+number:206
+description:An unknown option was found.
+severity:error
+ingroup:opts
+macro:OPTS_UNKNOWN_OPTION
+
+number:207
+description:An option is missing an argument.
+severity:error
+ingroup:opts
+macro:OPTS_MISSING_ARGUMENT
+
+number:208
+description:The flagvalue metadata can only be used, if the opt/arg metadata is set to 'none'.
+severity:error
+ingroup:opts
+macro:OPTS_FLAGVALUE_ARG
+
+number:209
+description:A non-repeatable option was repeated.
+severity:error
+ingroup:opts
+macro:OPTS_ILLEGAL_REPEAT
+
+number:210
+description:Duplicate option specified.
+severity:error
+ingroup:opts
+macro:OPTS_DUPLICATE
