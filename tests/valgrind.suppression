@@ -397,4 +397,30 @@
    obj:/usr/bin/gpg-agent
    fun:(below main)
 }
+{
+   PluginProcess child dies keyDup
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:elektraMalloc
+   fun:elektraKeyMalloc
+   fun:keyDup
+   fun:elektraPluginProcessStart
+   fun:elektraDummyOpenAndDie
+   fun:test_childDies
+   fun:main
+}
+{
+   PluginProcess child dies ksNew
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:elektraMalloc
+   fun:ksVNew
+   fun:ksNew
+   fun:elektraPluginProcessStart
+   fun:elektraDummyOpenAndDie
+   fun:test_childDies
+   fun:main
+}
 

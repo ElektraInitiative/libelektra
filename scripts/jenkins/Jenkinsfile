@@ -100,6 +100,9 @@ CMAKE_FLAGS_OPTIMIZATIONS_OFF = ['ENABLE_OPTIMIZATIONS': 'OFF']
 CMAKE_FLAGS_BUILD_FULL = ['BUILD_FULL': 'ON']
 CMAKE_FLAGS_BUILD_STATIC = ['BUILD_STATIC': 'ON']
 
+// TODO: just debug stuff
+CMAKE_FLAGS_BUILD_DEBUG = ['CMAKE_BUILD_TYPE': 'Debug', 'ENABLE_DEBUG': 'ON']
+
 // Define TEST enum used in buildAndTest helper
 enum TEST {
   MEM,        // Test for memoryleaks via valgrind
@@ -440,7 +443,8 @@ def generateMainBuildStages() {
     CMAKE_FLAGS_BUILD_ALL +
       CMAKE_FLAGS_BUILD_FULL +
       CMAKE_FLAGS_BUILD_STATIC +
-      CMAKE_FLAGS_COVERAGE
+      CMAKE_FLAGS_COVERAGE +
+      CMAKE_FLAGS_BUILD_DEBUG
     ,
     [TEST.ALL, TEST.MEM, TEST.NOKDB, TEST.INSTALL]
   )
@@ -848,6 +852,8 @@ def buildAndTest(testName, image, extraCmakeFlags = [:],
 
         if(tests) {
           artifacts.add("\"${buildDir}\"/Testing/*/*.xml")
+          // TODO: remove this later
+          artifacts.add("\"${buildDir}\"/Testing/*/*.log")
         }
 
         try {
