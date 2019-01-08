@@ -267,6 +267,7 @@ KDB * kdbOpen (Key * errorKey)
 	handle->modules = ksNew (0, KS_END);
 	if (elektraModulesInit (handle->modules, errorKey) == -1)
 	{
+		ksDel (handle->global);
 		ksDel (handle->modules);
 		elektraFree (handle);
 		ELEKTRA_SET_ERROR (94, errorKey, "elektraModulesInit returned with -1");
@@ -283,6 +284,7 @@ KDB * kdbOpen (Key * errorKey)
 	switch (elektraOpenBootstrap (handle, keys, errorKey))
 	{
 	case -1:
+		ksDel (handle->global);
 		ksDel (handle->modules);
 		elektraFree (handle);
 		ELEKTRA_SET_ERROR (40, errorKey, "could not open default backend");
@@ -784,7 +786,6 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 
 	int errnosave = errno;
 	Key * initialParent = keyDup (parentKey);
-	ksClear (handle->global);
 
 	ELEKTRA_LOG ("now in new kdbGet (%s)", keyName (parentKey));
 
@@ -796,6 +797,8 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		ELEKTRA_SET_ERROR (37, parentKey, "handle or ks null pointer");
 		goto error;
 	}
+
+	ksClear (handle->global);
 
 	elektraGlobalGet (handle, ks, parentKey, PREGETSTORAGE, INIT);
 	elektraGlobalGet (handle, ks, parentKey, PREGETSTORAGE, MAXONCE);
@@ -916,9 +919,12 @@ error:
 	elektraGlobalError (handle, ks, parentKey, POSTGETSTORAGE, MAXONCE);
 	elektraGlobalError (handle, ks, parentKey, POSTGETSTORAGE, DEINIT);
 
-	ksClear (handle->global);
 	keySetName (parentKey, keyName (initialParent));
-	if (handle) splitUpdateFileName (split, handle, parentKey);
+	if (handle)
+	{
+		splitUpdateFileName (split, handle, parentKey);
+		if (handle->global) ksClear (handle->global);
+	}
 	keyDel (initialParent);
 	keyDel (oldError);
 	splitDel (split);
@@ -1321,7 +1327,7 @@ error:
 	elektraGlobalError (handle, ks, parentKey, POSTROLLBACK, MAXONCE);
 	elektraGlobalError (handle, ks, parentKey, POSTROLLBACK, DEINIT);
 
-	ksClear (handle->global);
+	if (handle->global) ksClear (handle->global);
 	keySetName (parentKey, keyName (initialParent));
 	keyDel (initialParent);
 	splitDel (split);
