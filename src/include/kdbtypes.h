@@ -116,8 +116,10 @@ typedef float kdb_float_t;
 typedef double kdb_double_t;
 
 #if defined(HAVE_SIZEOF_LONG_DOUBLE) && (SIZEOF_LONG_DOUBLE == 16)
+#define ELEKTRA_HAVE_KDB_LONG_DOUBLE
 typedef long double kdb_long_double_t;
 #elif defined(HAVE_SIZEOF_LONG_DOUBLE) && (SIZEOF_LONG_DOUBLE == 12)
+#define ELEKTRA_HAVE_KDB_LONG_DOUBLE
 // the long double data type represents an IEEE double-extended
 // floating-point number, which has an exponent of at least 15 bits in
 // length and a signed fraction of at least 64 bits

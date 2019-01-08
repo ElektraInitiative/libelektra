@@ -8,7 +8,7 @@ macro (do_example source)
 	include_directories ("${CMAKE_CURRENT_SOURCE_DIR}")
 	set (SOURCES ${HDR_FILES} ${source}.c)
 	add_executable (${source} ${SOURCES})
-	add_dependencies (${source} kdberrors_generated)
+	add_dependencies (${source} kdberrors_generated elektra_error_codes_generated)
 
 	target_link_elektra (${source} elektra-kdb)
 
@@ -50,7 +50,7 @@ if (FOUND_NAME GREATER -1)
 	set (SOURCES ${SRC_FILES} ${HDR_FILES})
 
 	add_executable (${EXAMPLE} ${SOURCES})
-	add_dependencies (${EXAMPLE} kdberrors_generated)
+	add_dependencies (${EXAMPLE} kdberrors_generated elektra_error_codes_generated)
 
 	target_link_elektra (${EXAMPLE} elektra-kdb elektra-notification)
 
@@ -69,7 +69,7 @@ if (FOUND_NAME GREATER -1)
 		endif ()
 
 		add_executable (${EXAMPLE} ${SOURCES})
-		add_dependencies (${EXAMPLE} kdberrors_generated)
+		add_dependencies (${EXAMPLE} kdberrors_generated elektra_error_codes_generated)
 
 		target_link_elektra (${EXAMPLE} elektra-kdb elektra-notification elektra-io elektra-io-uv)
 		if (BUILD_FULL OR BUILD_STATIC)
@@ -109,7 +109,7 @@ if (FOUND_NAME GREATER -1)
 		endif ()
 
 		add_executable (${EXAMPLE} ${SOURCES})
-		add_dependencies (${EXAMPLE} kdberrors_generated)
+		add_dependencies (${EXAMPLE} kdberrors_generated elektra_error_codes_generated)
 
 		target_link_elektra (${EXAMPLE} elektra-kdb elektra-notification elektra-io elektra-io-glib)
 		if (BUILD_FULL OR BUILD_STATIC)

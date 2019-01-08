@@ -32,7 +32,7 @@ if (ADDTESTING_PHASE)
 	set (SOURCES ${SRC_FILES} ${HDR_FILES} ${ELEKTRA_HEADERS})
 
 	add_executable (${example} ${SOURCES})
-	add_dependencies (${example} kdberrors_generated)
+	add_dependencies (${example} kdberrors_generated elektra_error_codes_generated)
 
 	target_include_directories (${example}
 				    SYSTEM
