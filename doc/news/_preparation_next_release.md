@@ -218,6 +218,7 @@ you up to date with the multi-language support provided by Elektra.
 - We update some of the [Markdown Shell Recorder][] tests so they use an explicit namespace (like `system` or `user`). This has the advantage that the output of these tests [does not change depending on the user that executes them](https://issues.libelektra.org/1773). Before the update these tests used [cascading keys](https://www.libelektra.org/tutorials/namespaces). *(René Schwaiger)*
 - The [Shell Recorder][] now also works correctly on FreeBSD. *(René Schwaiger)*
 - Fix memcheck target to detect memory problems again. *(Mihael Pranjić)*
+- Fix memleak in pluginprocess tests. *(Mihael Pranjić)*
 
 [Shell Recorder]: https://master.libelektra.org/tests/shell/shell_recorder
 [Markdown Shell Recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
