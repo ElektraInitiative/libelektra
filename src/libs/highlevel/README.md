@@ -23,7 +23,7 @@ to use these functions directly, but the might still be useful sometimes (e.g. i
 The quickest way to get started is to adapt the following piece of code to your needs:
 
 ```c
-ElektraError * error;
+ElektraError * error = NULL;
 Elektra * elektra = elektraOpen ("/sw/org/myapp/#0/current", NULL, &error);
 if (elektra == NULL)
 {
@@ -193,9 +193,7 @@ data. Reading values from KDB can be done with elektra-getter functions that fol
 For example, you can get the value for the key named "message" like this:
 
 ```c
-Elektra * elektra = elektraOpen ("/sw/org/myapp/#0/current", NULL, NULL);
 const char * message = elektraGetString (elektra, "message");
-elektraClose (elektra);
 ```
 
 Sometimes you'll want to access arrays as well. You can access single elements of an array using the provided array-getters following
@@ -206,17 +204,13 @@ again a simple naming scheme:
 For example, you can get the third value for the array "message" like this:
 
 ```c
-Elektra * elektra = elektraOpen ("/sw/org/myapp/#0/current", NULL, NULL);
 const char * message = elektraGetStringArrayElement (elektra, "message", 3);
-elektraClose (elektra);
 ```
 
 To get the size of the array you would like to access you can use the function `elektraArraySize`:
 
 ```c
-Elektra * elektra = elektraOpen ("/sw/org/myapp/#0/current", NULL, NULL);
 size_t arraySize = elektraArraySize (elektra, "message");
-elektraClose (elektra);
 ```
 
 For some background information on arrays in Elektra see the [Application Integration](/doc/tutorials/application-integration.md) document.
@@ -235,17 +229,13 @@ Sometimes, after having read a value from the KDB, you will want to write back a
 an analogous naming scheme as well. For example, to write back a modified "message", you can call `elektraSetString`:
 
 ```c
-Elektra * elektra = elektraOpen ("/sw/org/myapp/#0/current", NULL, NULL);
 elektraSetString (elektra, "message", "This is the new message", NULL);
-elektraClose (elektra);
 ```
 
 The counterpart for array-getters again follows the same naming scheme:
 
 ```c
-Elektra * elektra = elektraOpen ("/sw/org/myapp/#0/current", NULL, NULL);
 elektraSetStringArrayElement (elektra, "message", "This is the third new message", NULL);
-elektraClose (elektra);
 ```
 
 Because even the best specification and perfect usage as intended can not fully prevent an error from occurring, when saving the
@@ -262,7 +252,8 @@ convenience macro `elektraGetEnum(elektra, keyname, enumType)`, which calls `ele
 ```c
 typedef enum { A, B, C } MyEnum;
 
-Elektra * elektra = elektraOpen ("/sw/org/myapp/#0/current", NULL, NULL);
+ElektraError * error = NULL;
+Elektra * elektra = elektraOpen ("/sw/org/myapp/#0/current", NULL, &error);
 
 // Read raw int value
 int value = elektraGetEnumInt (elektra, "message");
