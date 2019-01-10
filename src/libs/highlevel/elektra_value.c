@@ -18,6 +18,13 @@
 extern "C" {
 #endif
 
+#define CHECK_ERROR(elektra, error)                                                                                                        \
+	if (error == NULL)                                                                                                                 \
+	{                                                                                                                                  \
+		elektraFatalError (elektra, elektraErrorNullError (__func__));                                                             \
+		return;                                                                                                                    \
+	}
+
 /**
  * \addtogroup highlevel High-level API
  * @{
@@ -97,6 +104,7 @@ const char * elektraGetValue (Elektra * elektra, const char * name)
  */
 void elektraSetValue (Elektra * elektra, const char * name, const char * value, KDBType type, ElektraError ** error)
 {
+	CHECK_ERROR (elektra, error);
 	elektraSetLookupKey (elektra, name);
 	Key * const key = keyDup (elektra->lookupKey);
 	keySetMeta (key, "type", type);
@@ -313,6 +321,7 @@ int elektraGetEnumInt (Elektra * elektra, const char * keyname)
 }
 
 #define ELEKTRA_SET_VALUE(VALUE_TO_STRING, KDB_TYPE, elektra, keyname, value, error)                                                       \
+	CHECK_ERROR (elektra, error);                                                                                                      \
 	char * string = VALUE_TO_STRING (value);                                                                                           \
 	if (string == 0)                                                                                                                   \
 	{                                                                                                                                  \
@@ -333,6 +342,7 @@ int elektraGetEnumInt (Elektra * elektra, const char * keyname)
  */
 void elektraSetString (Elektra * elektra, const char * keyname, const char * value, ElektraError ** error)
 {
+	CHECK_ERROR (elektra, error);
 	elektraSetValue (elektra, keyname, value, KDB_TYPE_STRING, error);
 }
 

@@ -18,6 +18,13 @@
 extern "C" {
 #endif
 
+#define CHECK_ERROR(elektra, error)                                                                                                        \
+	if (error == NULL)                                                                                                                 \
+	{                                                                                                                                  \
+		elektraFatalError (elektra, elektraErrorNullError (__func__));                                                             \
+		return;                                                                                                                    \
+	}
+
 /**
  * \addtogroup highlevel High-level API
  * @{
@@ -119,6 +126,7 @@ const char * elektraGetArrayElementValue (Elektra * elektra, const char * name, 
 void elektraSetArrayElementValue (Elektra * elektra, const char * name, size_t index, const char * value, KDBType type,
 				  ElektraError ** error)
 {
+	CHECK_ERROR (elektra, error);
 	elektraSetArrayLookupKey (elektra, name, index);
 	Key * const key = keyDup (elektra->lookupKey);
 	keySetMeta (key, "type", type);
@@ -350,6 +358,7 @@ int elektraGetEnumIntArrayElement (Elektra * elektra, const char * keyname, size
 }
 
 #define ELEKTRA_SET_ARRAY_ELEMENT_VALUE(VALUE_TO_STRING, KDB_TYPE, elektra, keyname, index, value, error)                                  \
+	CHECK_ERROR (elektra, error);                                                                                                      \
 	char * string = VALUE_TO_STRING (value);                                                                                           \
 	if (string == 0)                                                                                                                   \
 	{                                                                                                                                  \
@@ -371,6 +380,7 @@ int elektraGetEnumIntArrayElement (Elektra * elektra, const char * keyname, size
  */
 void elektraSetStringArrayElement (Elektra * elektra, const char * keyname, size_t index, const char * value, ElektraError ** error)
 {
+	CHECK_ERROR (elektra, error);
 	elektraSetArrayElementValue (elektra, keyname, index, value, KDB_TYPE_STRING, error);
 }
 
