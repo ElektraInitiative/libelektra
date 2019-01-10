@@ -142,33 +142,19 @@ void * elektraPluginGetData (Plugin * plugin)
 }
 
 /**
- * @brief Store a pointer to the global keyset.
- *
- * Only initialized for global plugins.
- *
- * @see elektraPluginGetGlobal
- * @param plugin a pointer to the plugin
- * @param ks the pointer to the global keyset
- * @ingroup plugin
- */
-void elektraPluginSetGlobal (Plugin * plugin, KeySet * ks)
-{
-	plugin->global = ks;
-}
-
-/**
  * @brief Get a pointer to the global keyset.
  *
- * Only initialized for global plugins.
+ * Only initialized for global plugins and the resolver.
  *
- * If elektraPluginSetGlobal() was not called earlier, NULL will be returned.
+ * Plugins using this keyset are responsible for cleaning up
+ * their parts of the keyset which they do not need any more.
  *
- * @see elektraPluginSetGlobal
+ * If kdbOpen() was not called earlier, NULL will be returned.
  * @param plugin a pointer to the plugin
  * @return a pointer to the global keyset
  * @ingroup plugin
  */
-KeySet * elektraPluginGetGlobal (Plugin * plugin)
+KeySet * elektraPluginGetGlobalKeySet (Plugin * plugin)
 {
 	return plugin->global;
 }

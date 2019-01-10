@@ -213,9 +213,13 @@ which needs to store internal information for the KDB. Some of the information i
 and can not be stored in metadata.
 
 To make the communication between global plugins easier, global plugins will additionally
-get a handle to a global keyset. The global keyset is initialized at the beginning of kdbGet() and
-kdbSet() and deinitialized at the end of the respective KDB function. In other words, the global
-keyset is tied to a KDB handle and is ksClear()-ed before the KDB function returns.
+get a handle to a global keyset. The global keyset is tied to a KDB handle, initialized on kdbOpen() and
+deleted on kdbClose().
+
+The resolver plugin is an exception and also gets a handle to the global keyset. This way it
+can store and compare timestamps of config files and cache files.
+
+Plugins are responsible for cleaning up their part of the global keyset.
 
 ## Notes
 

@@ -108,8 +108,8 @@ Plugin * elektraPluginExport (const char * pluginName, ...);
 KeySet * elektraPluginGetConfig (Plugin * handle);
 void elektraPluginSetData (Plugin * plugin, void * handle);
 void * elektraPluginGetData (Plugin * plugin);
-void elektraPluginSetGlobal (Plugin * plugin, KeySet * ks);
-KeySet * elektraPluginGetGlobal (Plugin * plugin);
+
+KeySet * elektraPluginGetGlobalKeySet (Plugin * plugin);
 
 #define PLUGINVERSION "1"
 
