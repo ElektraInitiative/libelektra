@@ -76,6 +76,8 @@ static void testPorts (void)
 	testPortAny ("22d", -1);
 	testPortAny ("myInvalidServiceName", -1);
 
-	// These tests aren't portable I guess
-	testListenPortAny ("62493", 1);
+	// Tests for ListenPort are not portable, even system ports in a range from 1-1000 can some short time be reachable
+	// https://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers
+	// Use such tests only locally if you are certain that some ports are actually in use
+//	testListenPortAny ("22", 1);
 }
