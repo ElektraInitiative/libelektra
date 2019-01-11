@@ -1265,7 +1265,6 @@ severity:warning
 ingroup:plugin
 module:reference
 macro:REFERENCE_REDUNDANT
-<<<<<<< HEAD
 
 number:202
 description:The constructed reference graph contains cycles.
