@@ -81,13 +81,7 @@ Take a look at the [README](/src/libs/highlevel/README.md) for more infos.
 
 The following section lists news about the [modules](https://www.libelektra.org/plugins/readme) we updated in this release.
 
-### <<Plugin1>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-
+### network
 
 The `network` plugin also supports port declarations to check if a portnumber is valid
 or if the port is available to use. *(Michael Zronek)*
