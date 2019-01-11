@@ -693,7 +693,12 @@ function (generate_readme p) # rerun cmake when README.md is changed  also allow
 			"keyNew(\"system/elektra/modules/${p}/infos/needs\",\nKEY_VALUE, \"\\1\", KEY_END),"
 			contents
 			"${contents}")
-	if (p STREQUAL ${KDB_DEFAULT_STORAGE} OR p STREQUAL KDB_DEFAULT_RESOLVER)
+	if (p
+	    STREQUAL
+	    ${KDB_DEFAULT_STORAGE}
+	    OR p
+	       STREQUAL
+	       KDB_DEFAULT_RESOLVER)
 		string (REGEX
 			REPLACE "\"- +infos/status *= *([-a-zA-Z0-9 ]*)\\\\n\""
 				"keyNew(\"system/elektra/modules/${p}/infos/status\",\nKEY_VALUE, \"\\1 default\", KEY_END),"

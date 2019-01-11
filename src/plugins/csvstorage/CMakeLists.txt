@@ -1,5 +1,7 @@
 include (LibAddMacros)
 
+set_source_files_properties (csvstorage.c PROPERTIES COMPILE_FLAGS "-Wno-unused-result")
+
 add_plugin (csvstorage
 	    SOURCES csvstorage.h
 		    csvstorage.c

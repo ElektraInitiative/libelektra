@@ -7,7 +7,8 @@ RUN apk update \
         git \
         file \
         curl \
-        yaml-cpp-dev
+        yaml-cpp-dev \
+        bison
 
 # Google Test
 ENV GTEST_ROOT=/opt/gtest
@@ -18,6 +19,13 @@ RUN mkdir -p ${GTEST_ROOT} \
       -L https://github.com/google/googletest/archive/${GTEST_VER}.tar.gz \
     && tar -zxvf gtest.tar.gz --strip-components=1 -C ${GTEST_ROOT} \
     && rm gtest.tar.gz
+
+# YAEP
+RUN cd /tmp \
+    && git clone --depth 1 https://github.com/sanssecours/yaep.git \
+    && cd yaep \
+    && env CXXFLAGS='-fPIC' ./configure \
+    && make -C src install
 
 # Create User:Group
 # The id is important as jenkins docker agents use the same id that is running

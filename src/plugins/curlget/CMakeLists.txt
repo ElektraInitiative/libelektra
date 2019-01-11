@@ -13,6 +13,7 @@ if (DEPENDENCY_PHASE)
 	if (OPENSSL_FOUND AND CURL_FOUND)
 		set (CURLGET_INCLUDE_DIRS ${CURL_INCLUDE_DIR} ${OPENSSL_INCLUDE_DIRS})
 		set (CURLGET_LIBRARY_DIRS ${CURL_LIBRARIES} ${OPENSSL_LIBRARIES})
+		set_source_files_properties (curlget.c PROPERTIES COMPILE_FLAGS "-Wno-unused-result")
 	endif ()
 endif ()
 
