@@ -18,7 +18,6 @@ RUN apt-get -y install \
   libpcre++-dev \
   libglib2.0-dev \
   libxerces-c-dev \
-  libyaml-cpp-dev \
   swig \
   valgrind \
   libmarkdown2-dev \

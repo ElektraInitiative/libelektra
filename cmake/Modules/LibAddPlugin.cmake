@@ -107,27 +107,28 @@ function (add_plugintest testname)
 				     "${CMAKE_CURRENT_SOURCE_DIR}/testmod_${testname}.c")
 		endif (ARG_CPP)
 
-		if (BUILD_SHARED)
-			set (PLUGIN_TARGET_OBJS "")
-			if (ARG_LINK_PLUGIN)
-				if (NOT ARG_LINK_PLUGIN STREQUAL "<no>")
-					set (PLUGIN_TARGET_OBJS "$<TARGET_OBJECTS:elektra-${ARG_LINK_PLUGIN}-objects>")
-				endif ()
-			else ()
-				set (PLUGIN_TARGET_OBJS "$<TARGET_OBJECTS:elektra-${testname}-objects>") # assume that testcase+plugin to be
-													 # tested have same name:
+		set (PLUGIN_TARGET_OBJS "")
+		if (ARG_LINK_PLUGIN)
+			if (NOT ARG_LINK_PLUGIN STREQUAL "<no>")
+				set (PLUGIN_TARGET_OBJS "$<TARGET_OBJECTS:elektra-${ARG_LINK_PLUGIN}-objects>")
 			endif ()
-			list (APPEND TEST_SOURCES
-				     "${PLUGIN_TARGET_OBJS}")
+		else ()
+			set (PLUGIN_TARGET_OBJS "$<TARGET_OBJECTS:elektra-${testname}-objects>") # assume that testcase+plugin to be tested
+												 # have same name:
 		endif ()
+		list (APPEND TEST_SOURCES
+			     "${PLUGIN_TARGET_OBJS}")
+
 		set (testexename testmod_${testname})
 		add_executable (${testexename} ${TEST_SOURCES})
-		add_dependencies (${testexename} kdberrors_generated)
+		add_dependencies (${testexename} kdberrors_generated elektra_error_codes_generated)
 
-		if (ARG_LINK_PLUGIN)
-			add_dependencies (${testexename} elektra-${ARG_LINK_PLUGIN})
-		else ()
-			add_dependencies (${testexename} elektra-${testname})
+		if (BUILD_SHARED)
+			if (ARG_LINK_PLUGIN)
+				add_dependencies (${testexename} elektra-${ARG_LINK_PLUGIN})
+			else ()
+				add_dependencies (${testexename} elektra-${testname})
+			endif ()
 		endif ()
 
 		# ~~~
@@ -554,7 +555,7 @@ function (add_plugin PLUGIN_SHORT_NAME)
 	endif (ARG_CPP)
 
 	add_library (${PLUGIN_OBJS} OBJECT ${ARG_SOURCES})
-	add_dependencies (${PLUGIN_OBJS} kdberrors_generated)
+	add_dependencies (${PLUGIN_OBJS} kdberrors_generated elektra_error_codes_generated)
 	if (ARG_DEPENDS)
 		add_dependencies (${PLUGIN_OBJS} ${ARG_DEPENDS})
 	endif ()
@@ -602,7 +603,7 @@ function (add_plugin PLUGIN_SHORT_NAME)
 
 	if (BUILD_SHARED)
 		add_library (${PLUGIN_NAME} MODULE ${ARG_SOURCES} ${ARG_OBJECT_SOURCES})
-		add_dependencies (${PLUGIN_NAME} kdberrors_generated)
+		add_dependencies (${PLUGIN_NAME} kdberrors_generated elektra_error_codes_generated)
 		if (ARG_DEPENDS)
 			add_dependencies (${PLUGIN_NAME} ${ARG_DEPENDS})
 		endif ()

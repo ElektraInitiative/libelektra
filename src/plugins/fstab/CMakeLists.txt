@@ -1,5 +1,5 @@
 if (DEPENDENCY_PHASE)
-	try_compile (HAS_MNTENT "${CMAKE_BINARY_DIR}" "${PROJECT_SOURCE_DIR}/src/plugins/fstab/testmntent.c")
+	safe_check_symbol_exists (setmntent "mntent.h" HAS_MNTENT)
 
 	if (NOT HAS_MNTENT)
 		remove_plugin (fstab "function mntent is missing")

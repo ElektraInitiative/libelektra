@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "KDB\-MOUNT" "1" "August 2018" "" ""
+.TH "KDB\-MOUNT" "1" "October 2018" "" ""
 .
 .SH "NAME"
 \fBkdb\-mount\fR \- Mount a file to the key database
@@ -65,6 +65,9 @@ For cascading mount points (starting with \fB/\fR) a mount point for the namespa
 .
 .IP "\(bu" 4
 \fB\-i\fR, \fB\-\-interactive\fR: Instead of passing all mounting information by parameters ask the user interactively\.
+.
+.IP "\(bu" 4
+\fB\-s\fR, \fB\-\-strategy\fR: (experimental, use with care) By default mounting is rejected if the mountpoint already exists\. With the strategy \fIunchanged\fR you can change the behavior to be successful if \fIexactly\fR the same config would be written (see #1306 why this does not always work correctly)\.
 .
 .IP "\(bu" 4
 \fB\-R\fR, \fB\-\-resolver <resolver>\fR Specify the resolver plugin to use if no resolver is given, the default resolver is used\. See also \fIbelow in KDB\fR\.

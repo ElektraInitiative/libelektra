@@ -12,6 +12,10 @@ if (NOT RUBY_FOUND)
 elseif (SWIG_VERSION MATCHES "^([12]\\.)|(3\\.0\\.[01234567])$")
 	exclude_binding (swig_ruby "found SWIG version (${SWIG_VERSION}) is not suitable. SWIG version >= 3.0.8 required")
 else ()
+	if (NOT BUILD_SHARED)
+		exclude_binding (swig_ruby "it can only be built if `BUILD_SHARED` is enabled")
+		return ()
+	endif (NOT BUILD_SHARED)
 
 	add_binding (swig_ruby)
 
@@ -32,8 +36,8 @@ else ()
 	execute_process (COMMAND ${RUBY_EXECUTABLE} -r rbconfig -e "print RbConfig::CONFIG['sitedir']"
 			 OUTPUT_VARIABLE RUBY_SITE_DIR)
 
-	include_directories (${RUBY_VENDOR_ARCH_DIR})
-	include_directories (${RUBY_INCLUDE_DIRS})
+	include_directories (SYSTEM ${RUBY_VENDOR_ARCH_DIR})
+	include_directories (SYSTEM ${RUBY_INCLUDE_DIRS})
 
 	# ~~~
 	# message (STATUS "Ruby executable: ${RUBY_EXECUTABLE}")

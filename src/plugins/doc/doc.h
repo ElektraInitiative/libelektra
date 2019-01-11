@@ -114,7 +114,8 @@
 /**
  * @brief Sets the error in the keys metadata.
  *
- * Include kdberrors.h to make it work:
+ * Include kdberrors.h to make it work.
+ * Only a single error can be written to the key.
  *
  * @snippet doc.c plugin errors include
  *
@@ -129,7 +130,8 @@
 /**
  * @brief Sets the error in the keys metadata.
  *
- * Include kdberrors.h to make it work:
+ * Include kdberrors.h to make it work.
+ * Only a single error can be written to the key.
  *
  * @snippet doc.c plugin errors include
  *

@@ -5,7 +5,8 @@ set -o pipefail
 
 __FILE="$(basename "$0")"
 
-USAGE=$(cat <<EOF
+USAGE=$(
+	cat << EOF
 Usage: ${__FILE} [-h] [-b NAME] [-t DIR] TAG
 Downloads the Elektra commit specified by TAG.
 Then builds and installs Elektra.
@@ -21,30 +22,30 @@ EOF
 
 while getopts "hb:s:t:" opt; do
 	case $opt in
-		h)
-			echo "${USAGE}"
-			exit
-			;;
-		b)
-			NAME="${OPTARG}"
-			;;
-		s)
-			SOURCE="${OPTARG}"
-			;;
-		t)
-			DIR="${OPTARG}"
-			;;
-		:)
-			printf "%s: missing argument for -%s\n" "${__FILE}" "${OPTARG}" >&2
-			echo "${USAGE}"
-			exit 1
-			;;
-		\?)
-			printf "%s: illegal option: -%s\n" "${__FILE}" "${OPTARG}" >&2
-			echo "${USAGE}"
-			exit 1
-			;;
-		esac
+	h)
+		echo "${USAGE}"
+		exit
+		;;
+	b)
+		NAME="${OPTARG}"
+		;;
+	s)
+		SOURCE="${OPTARG}"
+		;;
+	t)
+		DIR="${OPTARG}"
+		;;
+	:)
+		printf "%s: missing argument for -%s\n" "${__FILE}" "${OPTARG}" >&2
+		echo "${USAGE}"
+		exit 1
+		;;
+	\?)
+		printf "%s: illegal option: -%s\n" "${__FILE}" "${OPTARG}" >&2
+		echo "${USAGE}"
+		exit 1
+		;;
+	esac
 done
 shift $((OPTIND - 1))
 if [ -z "${1}" ]; then
@@ -56,7 +57,6 @@ fi
 TAG="${1}"
 SOURCE="${SOURCE:-"https://codeload.github.com/ElektraInitiative/libelektra/tar.gz/${TAG}"}"
 DIR="${DIR:-"libelektra-${TAG}"}"
-
 
 # download Elektra
 if [ ! -d "${DIR}" ]; then

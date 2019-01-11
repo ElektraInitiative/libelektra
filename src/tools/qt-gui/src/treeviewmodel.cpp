@@ -658,7 +658,7 @@ void TreeViewModel::synchronize ()
 	catch (MergingKDBException const & exc)
 	{
 		QStringList conflicts = getConflicts (exc.getConflicts ());
-		emit showMessage (tr ("Error"), tr ("Synchronizing failed, conflicts occured."), conflicts.join ("\n"));
+		emit showMessage (tr ("Error"), tr ("Synchronizing failed, conflicts occurred."), conflicts.join ("\n"));
 	}
 	catch (KDBException const & e)
 	{

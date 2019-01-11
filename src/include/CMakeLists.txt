@@ -36,6 +36,10 @@ set (CMAKE_EXTRA_INCLUDE_FILES "sys/time.h")
 check_type_size ("((struct timeval*)0)->tv_usec" SIZEOF_TV_USEC)
 set (CMAKE_EXTRA_INCLUDE_FILES)
 
+set (CMAKE_EXTRA_INCLUDE_FILES "sys/stat.h")
+check_type_size ("((struct stat*)0)->st_size" SIZEOF_STAT_ST_SIZE)
+set (CMAKE_EXTRA_INCLUDE_FILES)
+
 set (BUILTIN_EXEC_FOLDER "${CMAKE_INSTALL_PREFIX}/${TARGET_TOOL_EXEC_FOLDER}")
 set (BUILTIN_DATA_FOLDER "${CMAKE_INSTALL_PREFIX}/${TARGET_TEST_DATA_FOLDER}")
 set (BUILTIN_PLUGIN_FOLDER "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER}")
@@ -90,6 +94,12 @@ install (FILES "${CMAKE_CURRENT_BINARY_DIR}/kdbconfig.h"
 	       kdbio.h
 	       kdbnotification.h
 	       "${CMAKE_CURRENT_BINARY_DIR}/kdbversion.h"
+	       elektra.h
+	       elektra/error.h
+	       "${CMAKE_CURRENT_BINARY_DIR}/elektra/errorcodes.h"
+	       "${CMAKE_CURRENT_BINARY_DIR}/elektra/errors.h"
+	       elektra/conversion.h
+	       elektra/types.h
 	 DESTINATION include/${TARGET_INCLUDE_FOLDER})
 
 add_custom_target (elektra_config_headers

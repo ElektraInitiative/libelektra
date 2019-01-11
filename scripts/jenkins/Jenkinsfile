@@ -56,7 +56,8 @@ CMAKE_FLAGS_BASE = [
   'CMAKE_INSTALL_PREFIX': '${WORKSPACE}/system',
   'INSTALL_SYSTEM_FILES': 'OFF',
   'BUILD_DOCUMENTATION': 'OFF',
-  'CMAKE_RULE_MESSAGES': 'OFF'
+  'CMAKE_RULE_MESSAGES': 'OFF',
+  'COMMON_FLAGS': '-Werror'
 ]
 
 // TODO Remove -DEPRECATED after #1954 is resolved
@@ -94,7 +95,6 @@ CMAKE_FLAGS_ASAN = ['ENABLE_ASAN': 'ON']
 CMAKE_FLAGS_DEBUG = ['ENABLE_DEBUG': 'ON']
 CMAKE_FLAGS_LOGGER = ['ENABLE_LOGGER': 'ON']
 CMAKE_FLAGS_OPTIMIZATIONS_OFF = ['ENABLE_OPTIMIZATIONS': 'OFF']
-CMAKE_FLAGS_WERROR = ['COMMON_FLAGS': "-Werror"]
 
 // CMAKE_FLAGS_BUILD_SHARED = ['BUILD_SHARED': 'ON']  is ON per default
 CMAKE_FLAGS_BUILD_FULL = ['BUILD_FULL': 'ON']
@@ -161,6 +161,7 @@ def main() {
     parallel generateArtifactStages()
   }
 
+  /*
   maybeStage("Deploy Homepage", isMaster()) {
     deployHomepage()
   }
@@ -168,6 +169,7 @@ def main() {
   maybeStage("Deploy Web UI", isMaster()) {
     deployWebUI()
   }
+  */
 }
 
 try {
@@ -438,7 +440,6 @@ def generateMainBuildStages() {
     CMAKE_FLAGS_BUILD_ALL +
       CMAKE_FLAGS_BUILD_FULL +
       CMAKE_FLAGS_BUILD_STATIC +
-      CMAKE_FLAGS_WERROR +
       CMAKE_FLAGS_COVERAGE
     ,
     [TEST.ALL, TEST.MEM, TEST.NOKDB, TEST.INSTALL]
@@ -488,7 +489,9 @@ def generateFullBuildStages() {
   tasks << buildAndTest(
     "debian-oldstable-full",
     DOCKER_IMAGES.jessie,
-    CMAKE_FLAGS_BUILD_ALL,
+    CMAKE_FLAGS_BUILD_ALL +
+      ['COMMON_FLAGS': ''] // The build system can not compile Elektra on Debian Jessie, if we specify the compiler switch `-Werror`.
+    ,
     [TEST.ALL, TEST.MEM, TEST.INSTALL]
   )
 
@@ -500,16 +503,17 @@ def generateFullBuildStages() {
     [TEST.ALL, TEST.MEM, TEST.INSTALL]
   )
 
-  // Build Elektra with clang. We use unstable for easy access to clang-6.0
-  // Detects problems when using an alternative compiler (clang)
   tasks << buildAndTest(
     "debian-stable-full-i386",
     DOCKER_IMAGES.stretch_i386,
     CMAKE_FLAGS_I386 + [
       'PLUGINS': 'NODEP'
-    ],
+    ] + CMAKE_FLAGS_BUILD_ALL,
     [TEST.ALL]
   )
+
+  // Build Elektra with clang. We use unstable for easy access to clang-6.0
+  // Detects problems when using an alternative compiler (clang)
   tasks << buildAndTest(
     "debian-unstable-full-clang",
     DOCKER_IMAGES.sid,
@@ -525,14 +529,12 @@ def generateFullBuildStages() {
   // Build Elektra on alpine
   // TODO: Add more deps to test them with musl
   // TODO: add date when their issues are resolved
-  // TODO: reenable kdb testing once it is POSIX conformant
   tasks << buildAndTest(
     "alpine",
     DOCKER_IMAGES.alpine,
-    CMAKE_FLAGS_BUILD_ALL + [
-      'BUILD_STATIC': 'ON',
+    CMAKE_FLAGS_BUILD_ALL +
+    CMAKE_FLAGS_BUILD_STATIC + [
       'PLUGINS': 'ALL;-date',
-      'ENABLE_KDB_TESTING': 'OFF'
     ],
     [TEST.ALL]
   )
@@ -831,6 +833,7 @@ def buildAndTest(testName, image, extraCmakeFlags = [:],
 
   def testCoverage = cmakeFlags.intersect(CMAKE_FLAGS_COVERAGE)
                                 .equals(CMAKE_FLAGS_COVERAGE)
+  def updateCoveralls = testName == 'debian-stable-full'
   def testMem = tests.contains(TEST.MEM)
   def testNokdb = tests.contains(TEST.NOKDB)
   def testAll = tests.contains(TEST.ALL)
@@ -901,6 +904,18 @@ kill `pidof dbus-daemon`
           if(testCoverage) {
             publishCoverage("${buildDir}/coverage")
           }
+          if(updateCoveralls) {
+            withCredentials([string(credentialsId: 'coveralls-repo-token', variable: 'REPO_TOKEN')]) {
+              withEnv(["TRAVIS_JOB_ID=$BUILD_NUMBER"]) {
+                sh("""\
+coveralls -b '${buildDir}' \
+          -t $REPO_TOKEN \
+          -e benchmarks -e doc -e examples -e install -e system -e tests \
+          -E '.*${buildDir}/(CMakeFiles|googletest-src|include|src).*\\.(c|cc|cpp|h|hh|hpp)'
+""")
+              }
+            }
+          }
           if(testMem || testNokdb || testAll) {
             xunitUpload("${buildDir}/Testing/**/*.xml")
           }
@@ -916,8 +931,10 @@ kill `pidof dbus-daemon`
 def generateArtifactStages() {
   def tasks = [:]
   tasks << buildPackageDebianStretch()
+  /*
   tasks << buildHomepage()
   tasks << buildWebUI()
+  */
   return tasks
 }
 

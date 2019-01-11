@@ -2,7 +2,7 @@
 #
 # @author René Schwaiger <sanssecours@me.com>
 # @brief Reformats CMake source code
-# @date 7.05.2018
+# @date 07.05.2018
 # @tags reformat
 
 SCRIPTS_DIR=$(dirname "$0")
@@ -29,17 +29,18 @@ if [ -z "$(which sponge)" ]; then
 	exit 1
 fi
 
-for file in $(find . \( -name 'CMakeLists.txt' -or -name '*.cmake' \) -and \
-	\( \
-	-path './benchmarks/*' \
-	-or -path './cmake/*' \
-	-or -path './doc/*' \
-	-or -path './examples/*' \
-	-or -path './scripts/*' \
-	-or -path './src/*' \
-	-or -path './tests/*' \
-	-or -path './CMakeLists.txt' \
-	\)
+for file in $(
+	find . \( -name 'CMakeLists.txt' -or -name '*.cmake' \) -and \
+		\( \
+		-path './benchmarks/*' \
+		-or -path './cmake/*' \
+		-or -path './doc/*' \
+		-or -path './examples/*' \
+		-or -path './scripts/*' \
+		-or -path './src/*' \
+		-or -path './tests/*' \
+		-or -path './CMakeLists.txt' \
+		\)
 ); do
 	$CMAKE_FORMAT "$file" | unexpand | sponge "$file"
 done

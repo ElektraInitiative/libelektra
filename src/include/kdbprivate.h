@@ -9,6 +9,8 @@
 #ifndef KDBPRIVATE_H
 #define KDBPRIVATE_H
 
+#include <elektra.h>
+#include <elektra/error.h>
 #include <kdb.h>
 #include <kdbconfig.h>
 #include <kdbextension.h>
@@ -463,7 +465,6 @@ struct _Split
 	splitflag_t * syncbits; /*!< Bits for various options, see #splitflag_t for documentation */
 };
 
-
 // clang-format on
 
 /***************************************
@@ -600,6 +601,54 @@ void elektraGlobalError (KDB * handle, KeySet * ks, Key * parentKey, int positio
 #ifdef __cplusplus
 }
 }
+
+#define KDB ckdb::KDB
+#define Key ckdb::Key
+#define KeySet ckdb::KeySet
+extern "C" {
+#endif
+
+struct _Elektra
+{
+	KDB * kdb;
+	Key * parentKey;
+	KeySet * config;
+	Key * lookupKey;
+	ElektraErrorHandler fatalErrorHandler;
+};
+
+struct _ElektraError
+{
+	ElektraErrorCode code;
+	char * description;
+	ElektraErrorSeverity severity;
+	struct _ElektraKDBError * lowLevelError;
+};
+
+struct _ElektraKDBError
+{
+	int code;
+	const char * description;
+	ElektraErrorSeverity severity;
+	ElektraKDBErrorGroup group;
+	ElektraKDBErrorModule module;
+	const char * reason;
+	int warningCount;
+	struct _ElektraKDBError ** warnings;
+	Key * errorKey;
+};
+
+/* high-level API */
+void elektraSaveKey (Elektra * elektra, Key * key, ElektraError ** error);
+void elektraSetLookupKey (Elektra * elektra, const char * name);
+void elektraSetArrayLookupKey (Elektra * elektra, const char * name, size_t index);
+ElektraError * elektraErrorCreate (ElektraErrorCode code, const char * description, ElektraErrorSeverity severity);
+
+#ifdef __cplusplus
+}
+#undef Key
+#undef KeySet
+#undef KDB
 #endif
 
 #endif /* KDBPRIVATE_H */

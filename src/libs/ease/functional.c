@@ -58,7 +58,7 @@ int elektraKsFilter (KeySet * result, KeySet * input, int (*filter) (const Key *
 		else if (rc > 0)
 		{
 			++ret;
-			ksAppendKey (result, keyDup (current));
+			ksAppendKey (result, current);
 		}
 	}
 	ksSetCursor (input, cursor);

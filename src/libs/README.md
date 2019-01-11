@@ -19,6 +19,7 @@ loader functionality. The files are linked to **[libelektra](elektra/)**.
 
 **[libease](ease/)** contains data-structure operations on top of libcore which do not depend on internals.
 Applications and plugins can choose to not link against it if they want to stay minimal.
+Its main goal is to make programming with Elektra easier if some extra kB are not an issue.
 
 ### Libplugin
 
@@ -101,3 +102,18 @@ Usage examples:
 - [Basic notifications using polling](https://www.libelektra.org/examples/notificationpolling)
 - [Using asynchronous I/O bindings](https://www.libelektra.org/examples/notificationasync)
 - [Reload KDB when Elektra's configuration has changed](https://www.libelektra.org/examples/notificationreload)
+
+### Globbing
+
+    libelektra-globbing.so
+
+**[globbing](globbing/)** provides globbing functionality for Elektra.
+
+The supported syntax is a superset of the syntax used by `glob(7)`. The following extensions are supported:
+
+- `#`, when used as `/#/` (or `/#"` at the end of the pattern), matches a valid array item
+- `_` is the exact opposite; it matches anything but a valid array item
+- if the pattern ends with `/__`, matching key names may contain arbitrary suffixes
+
+For more info take a look a the documentation of `elektraKeyGlob()` and `elektraKsGlob()`.
+

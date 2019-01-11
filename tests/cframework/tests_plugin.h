@@ -19,9 +19,9 @@
 	succeed_if (output_warnings (errorKey), "warnings in kdbOpen for plugin " NAME);                                                   \
 	succeed_if (output_error (errorKey), "error in kdbOpen for plugin " NAME);                                                         \
 	keyDel (errorKey);                                                                                                                 \
-	exit_if_fail (plugin != 0, "could not open " NAME " plugin");
+	exit_if_fail (plugin != 0, "could not open " NAME " plugin")
 
 #define PLUGIN_CLOSE()                                                                                                                     \
 	elektraPluginClose (plugin, 0);                                                                                                    \
 	elektraModulesClose (modules, 0);                                                                                                  \
-	ksDel (modules);
+	ksDel (modules)

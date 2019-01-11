@@ -33,7 +33,7 @@ void copySingleKey (Cmdline const & cl, Key const & rk, KeySet & tmpConf, KeySet
 	else if (tmpConf.lookup (rk))
 	{
 		throw CommandAbortException (
-			std::string ("Copy will have no effect, because " + rk.getName () + " already exists").c_str (), 11);
+			std::string ("Copy will not be done, because " + rk.getName () + " already exists, use -f to force copy"), 11);
 	}
 	newConf.append (rk);
 }

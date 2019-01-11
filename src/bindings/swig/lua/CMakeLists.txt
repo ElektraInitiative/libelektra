@@ -6,6 +6,11 @@ find_package (Lua 5.1 QUIET)
 if (NOT LUA_FOUND)
 	exclude_binding (swig_lua "Lua libs >= 5.1 not found")
 else ()
+	if (NOT BUILD_SHARED)
+		exclude_binding (swig_lua "it can only be built if `BUILD_SHARED` is enabled")
+		return ()
+	endif (NOT BUILD_SHARED)
+
 	add_binding (swig_lua)
 
 	add_headers (HDR_FILES)

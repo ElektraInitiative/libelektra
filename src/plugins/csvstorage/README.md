@@ -6,14 +6,14 @@
 - infos/recommends =
 - infos/placements = getstorage setstorage
 - infos/status = maintained unittest nodep libc configurable limited
-- infos/description = parses csv files
+- infos/description = parses CSV files
 
 ## Introduction
 
-This plugin allows you to read and write CSV files within Elektra.
+This plugin allows you to read and write CSV files using Elektra.
 It aims to be compatible with RFC 4180.
-Rows and columns are written in Elektra arrays (`#0`, `#1`,..).
-Using configuration you can give columns a name.
+Rows and columns are written using Elektra's arrays (`#0`, `#1`,..).
+By configuring the plugin you can give columns a name.
 
 ## Configuration
 
@@ -22,9 +22,10 @@ Tells the plugin what delimiter is used in the file.
 The default delimiter is `,` and will be used if `delimiter` is not set.
 
 `header`
-Tells the plugin to use the first line as a header if it's set to "colname". The columns will get the corresponding names.
-Skip the first line if it's set to "skip" or treat the first line as a record if it's set to "record".
-If `header` is not set, or set to "record", the columns get named #0,#1,... (array key naming)
+Tells the plugin to use the first line as a header if it is set to `colname`.
+The columns will get the corresponding names.
+Skip the first line if it is set to `skip` or treat the first line as a record if it is set to `record`.
+If `header` is not set, or set to `record`, the columns get named #0,#1,... (array key naming)
 
 `columns`
 If this key is set the plugin will yield an error for every file that doesn't have exactly the amount of columns as specified in `columns`.
@@ -34,10 +35,17 @@ Sets the column names. Only usable in combination with the `columns` key. The nu
 Conflicts with usage of `header`.
 
 `columns/index`
-specify which column should be used to index records instead of the record number.
+Specifies which column should be used to index records instead of the record number.
 
-`/export/<column name>`
-only export column `column name`. Configuration can be give multiple times for different columns to export.
+`export=,export/<column name>=`
+Export column `column name`:
+
+- The key `export` must be present, additionally to `export/<column name>`
+- Also multiple column names can be given for different columns to export.
+  - Then `delimiter` will be used as delimiter (`,` as default).
+  - The order depends on the alphabetic order of the column names.
+    Use `awk -F',' 'BEGIN{OFS=","} {print $2, $1, $3}'` or similar to reorder.
+  - Unknown column names are ignored.
 
 ## Examples
 

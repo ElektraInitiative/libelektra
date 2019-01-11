@@ -183,7 +183,7 @@ void test_ks (void)
 	char name[11]; // "/test" + "10000" + "\0"
 	for (size_t i = 0; i < opmphmPredictorActionLimit; ++i)
 	{
-		snprintf (name, 11, "/test%lu", i);
+		snprintf (name, 11, "/test%zu", i);
 		succeed_if (ksAppendKey (ks, keyNew (name, KEY_END)) > 0, "ksAppendKey failed");
 	}
 
@@ -193,7 +193,7 @@ void test_ks (void)
 	exit_if_fail (!ks->opmphmPredictor, "predictor here");
 
 	// append to be over opmphmPredictorActionLimit
-	snprintf (name, 11, "/test%lu", opmphmPredictorActionLimit);
+	snprintf (name, 11, "/test%zu", opmphmPredictorActionLimit);
 	succeed_if (ksAppendKey (ks, keyNew (name, KEY_END)) > 0, "ksAppendKey failed");
 
 	// predictor over limit

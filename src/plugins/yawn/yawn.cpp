@@ -40,7 +40,6 @@ CppKeySet getContract ()
 			  keyNew ("system/elektra/modules/yawn", KEY_VALUE, "yawn plugin waits for your orders", KEY_END),
 			  keyNew ("system/elektra/modules/yawn/exports", KEY_END),
 			  keyNew ("system/elektra/modules/yawn/exports/get", KEY_FUNC, elektraYawnGet, KEY_END),
-			  keyNew ("system/elektra/modules/yawn/exports/set", KEY_FUNC, elektraYawnSet, KEY_END),
 #include ELEKTRA_README (yawn)
 			  keyNew ("system/elektra/modules/yawn/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
 			  KS_END };
@@ -89,15 +88,9 @@ int elektraYawnGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	return status < 0 ? ELEKTRA_PLUGIN_STATUS_ERROR : status;
 }
 
-/** @see elektraDocSet */
-int elektraYawnSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
-{
-	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
-}
-
 Plugin * ELEKTRA_PLUGIN_EXPORT (yawn)
 {
-	return elektraPluginExport ("yawn", ELEKTRA_PLUGIN_GET, &elektraYawnGet, ELEKTRA_PLUGIN_SET, &elektraYawnSet, ELEKTRA_PLUGIN_END);
+	return elektraPluginExport ("yawn", ELEKTRA_PLUGIN_GET, &elektraYawnGet, ELEKTRA_PLUGIN_END);
 }
 
 } // end extern "C"

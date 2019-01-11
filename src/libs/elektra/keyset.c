@@ -1113,7 +1113,7 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 			switch (ns)
 			{
 			case KEY_NS_SPEC:
-				strncpy (newname + 2, "spec", 4);
+				strncpy (newname + 2, "spec", 5);
 				strcpy (newname + 6, name);
 				key->key = newname + 2;
 				key->keySize = length - 2;
@@ -1121,7 +1121,7 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 				elektraFinalizeName (key);
 				break;
 			case KEY_NS_PROC:
-				strncpy (newname + 2, "proc", 4);
+				strncpy (newname + 2, "proc", 5);
 				strcpy (newname + 6, name);
 				key->key = newname + 2;
 				key->keySize = length - 2;
@@ -1129,7 +1129,7 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 				elektraFinalizeName (key);
 				break;
 			case KEY_NS_DIR:
-				strncpy (newname + 3, "dir", 3);
+				strncpy (newname + 3, "dir", 4);
 				strcpy (newname + 6, name);
 				key->key = newname + 3;
 				key->keySize = length - 3;
@@ -1137,7 +1137,7 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 				elektraFinalizeName (key);
 				break;
 			case KEY_NS_USER:
-				strncpy (newname + 2, "user", 4);
+				strncpy (newname + 2, "user", 5);
 				strcpy (newname + 6, name);
 				key->key = newname + 2;
 				key->keySize = length - 2;
@@ -1145,7 +1145,7 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 				elektraFinalizeName (key);
 				break;
 			case KEY_NS_SYSTEM:
-				strncpy (newname, "system", 6);
+				strncpy (newname, "system", 7);
 				strcpy (newname + 6, name);
 				key->key = newname;
 				key->keySize = length;
@@ -1191,7 +1191,7 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 		++it;
 	}
 
-	// correct cursor if cursor is in cutted keyset
+	// correct cursor if cursor is in cut keyset
 	if (ks->current >= found && ks->current < it)
 	{
 		if (found == 0)
@@ -1205,7 +1205,7 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 		}
 	}
 
-	// correct the cursor for the keys after the cutted keyset
+	// correct the cursor for the keys after the cut keyset
 	if (ks->current >= it)
 	{
 		if (it >= ks->size)
@@ -1825,7 +1825,7 @@ static Key * elektraLookupByCascading (KeySet * ks, Key * key, option_t options)
 
 	if (!(options & KDB_O_NOSPEC))
 	{
-		strncpy (newname + 2, "spec", 4);
+		strncpy (newname + 2, "spec", 5);
 		strcpy (newname + 6, name);
 		key->key = newname + 2;
 		key->keySize = length - 2;
@@ -1856,7 +1856,7 @@ static Key * elektraLookupByCascading (KeySet * ks, Key * key, option_t options)
 	}
 
 	// default cascading:
-	strncpy (newname + 2, "proc", 4);
+	strncpy (newname + 2, "proc", 5);
 	strcpy (newname + 6, name);
 	key->key = newname + 2;
 	key->keySize = length - 2;
@@ -1865,7 +1865,7 @@ static Key * elektraLookupByCascading (KeySet * ks, Key * key, option_t options)
 
 	if (!found)
 	{
-		strncpy (newname + 3, "dir", 3);
+		strncpy (newname + 3, "dir", 4);
 		strcpy (newname + 6, name);
 		key->key = newname + 3;
 		key->keySize = length - 3;
@@ -1875,7 +1875,7 @@ static Key * elektraLookupByCascading (KeySet * ks, Key * key, option_t options)
 
 	if (!found)
 	{
-		strncpy (newname + 2, "user", 4);
+		strncpy (newname + 2, "user", 5);
 		strcpy (newname + 6, name);
 		key->key = newname + 2;
 		key->keySize = length - 2;
@@ -1885,7 +1885,7 @@ static Key * elektraLookupByCascading (KeySet * ks, Key * key, option_t options)
 
 	if (!found)
 	{
-		strncpy (newname, "system", 6);
+		strncpy (newname, "system", 7);
 		strcpy (newname + 6, name);
 		key->key = newname;
 		key->keySize = length;

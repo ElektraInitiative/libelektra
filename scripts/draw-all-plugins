@@ -16,28 +16,24 @@ echo "strict digraph G {" > $OUTPUT
 echo "	splines = true;" >> $OUTPUT
 echo
 #echo "	plugin [shape=Mdiamond];" >> $OUTPUT
-for i in `ls $SOURCE/src/plugins`
-do
-	if [ -d "$SOURCE/src/plugins/$i" ]
-	then
+for i in $(ls $SOURCE/src/plugins); do
+	if [ -d "$SOURCE/src/plugins/$i" ]; then
 		r="$SOURCE/src/plugins/$i/README.md"
-		p=`grep "^- infos/provides" "$r" | cut -f 2 -d =`
-		if [ "$p" ]
-		then
-			p=`echo "$p" | tr '/' ' '`
-			for x in `echo $p`
-			do
+		p=$(grep "^- infos/provides" "$r" | cut -f 2 -d =)
+		if [ "$p" ]; then
+			p=$(echo "$p" | tr '/' ' ')
+			for x in $(echo $p); do
 				echo "	$x [shape=Mdiamond];" >> $OUTPUT
 				echo "	$i -> $x;" >> $OUTPUT #  [label=\"provides\"];"
 				#echo "	$x -> plugin;" >> $OUTPUT  # [label=\"is a\"];"
 			done
 		else
-			echo "	$i [shape=Mdiamond];" >> $OUTPUT  # [label=\"is a\"];"
+			echo "	$i [shape=Mdiamond];" >> $OUTPUT # [label=\"is a\"];"
 			#echo "	$i -> plugin;" >> $OUTPUT  # [label=\"is a\"];"
 		fi
 	fi
 done
-echo "}"  >> $OUTPUT
+echo "}" >> $OUTPUT
 
 echo >> $OUTPUT
 
