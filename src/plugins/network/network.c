@@ -83,7 +83,7 @@ int elektraPortInfo (Key * toCheck, Key * parentKey)
 
 	if (!listenMeta) return 0; /* No check to do */
 
-	char * hostname = "localhost";
+	char const * hostname = "localhost";
 
 	int sockfd;
 	struct sockaddr_in serv_addr;
@@ -105,7 +105,7 @@ int elektraPortInfo (Key * toCheck, Key * parentKey)
 		}
 		else
 		{
-			ELEKTRA_SET_ERRORF (205, parentKey, "There was an error when trying to connect to host %s . errno: %s", hostname,
+			ELEKTRA_SET_ERRORF (205, parentKey, "There was an error trying to connect to host %s: %s", hostname,
 					    strerror (errno));
 			return -1;
 		}

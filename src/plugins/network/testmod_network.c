@@ -58,11 +58,6 @@ static inline void testPortAny (char const * const port, int ret)
 	testPort (port, ret, "", "check/port");
 }
 
-static inline void testListenPortAny (char const * const port, int ret)
-{
-	testPort (port, ret, "", "check/port/listen");
-}
-
 static void testPorts (void)
 {
 	testPortAny ("0", 1);
@@ -78,6 +73,4 @@ static void testPorts (void)
 
 	// Tests for ListenPort are not portable, even system ports in a range from 1-1000 can some short time be reachable
 	// https://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers
-	// Use such tests only locally if you are certain that some ports are actually in use
-	// testListenPortAny ("22", 1);
 }
