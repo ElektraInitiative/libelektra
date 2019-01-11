@@ -1,5 +1,8 @@
 # Goals
 
+The vision of Elektra is to make it trivial to access and specify configuration by APIs.
+This helps in achieving the following goals:
+
 - Improve robustness of configuration systems by
   - avoiding reimplementation of parsers for the same configuration settings.
   - rejecting invalid configuration.

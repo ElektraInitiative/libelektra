@@ -4,7 +4,10 @@ echo
 echo ELEKTRA MOUNT TESTS
 echo
 
-is_plugin_available sync || { echo "Test requires sync plugin, aborting" >&2; exit 0; }
+is_plugin_available sync || {
+	echo "Test requires sync plugin, aborting" >&2
+	exit 0
+}
 check_version
 
 echo "Test basic mounting"
@@ -15,20 +18,17 @@ ROOT_MOUNTPOINTN=\\/test\\/script\\/mount
 ROOT_MOUNTPOINT2=/test/script/remount
 ROOT_MOUNTPOINT2N=\\/test\\/script\\/remount
 
-if is_plugin_available dump
-then
-	"$KDB" mount $ROOT_FILE $ROOT_MOUNTPOINT dump 1>/dev/null
+if is_plugin_available dump; then
+	"$KDB" mount $ROOT_FILE $ROOT_MOUNTPOINT dump 1> /dev/null
 	succeed_if "could not mount root: $ROOT_FILE at $ROOT_MOUNTPOINT"
 
 	"$KDB" umount $ROOT_MOUNTPOINT
 	succeed_if "could not unmount previously mounted mountpoint"
 fi
 
-if is_plugin_available tracer
-then
-	if is_plugin_available sync
-	then
-		"$KDB" mount $ROOT_FILE $ROOT_MOUNTPOINT tracer sync 1>/dev/null 2>/dev/null
+if is_plugin_available tracer; then
+	if is_plugin_available sync; then
+		"$KDB" mount $ROOT_FILE $ROOT_MOUNTPOINT tracer sync 1> /dev/null 2> /dev/null
 		[ $? != 0 ]
 		succeed_if "could mount the backend, even though tracer+sync conflict"
 
@@ -40,26 +40,24 @@ fi
 
 echo "Test mounting plugin stack"
 
-if is_plugin_available hosts
-then
-	if is_plugin_available glob
-	then
-		"$KDB" mount $ROOT_FILE $ROOT_MOUNTPOINT glob hosts 1>/dev/null
+if is_plugin_available hosts; then
+	if is_plugin_available glob; then
+		"$KDB" mount $ROOT_FILE $ROOT_MOUNTPOINT glob hosts 1> /dev/null
 		succeed_if "could not mount glob and hosts plugin together"
 
-		"$KDB" mount $ROOT_FILE $ROOT_MOUNTPOINT glob hosts 1>/dev/null 2>/dev/null
+		"$KDB" mount $ROOT_FILE $ROOT_MOUNTPOINT glob hosts 1> /dev/null 2> /dev/null
 		[ $? != 0 ]
 		succeed_if "could remount the same backend"
 
-		"$KDB" mount $ROOT_FILE dir$ROOT_MOUNTPOINT glob hosts 1>/dev/null 2>/dev/null
+		"$KDB" mount $ROOT_FILE dir$ROOT_MOUNTPOINT glob hosts 1> /dev/null 2> /dev/null
 		[ $? != 0 ]
 		succeed_if "could remount the dir backend, even though cascading already mounted"
 
-		"$KDB" mount $ROOT_FILE user$ROOT_MOUNTPOINT glob hosts 1>/dev/null 2>/dev/null
+		"$KDB" mount $ROOT_FILE user$ROOT_MOUNTPOINT glob hosts 1> /dev/null 2> /dev/null
 		[ $? != 0 ]
 		succeed_if "could remount the user backend, even though cascading already mounted"
 
-		"$KDB" mount $ROOT_FILE system$ROOT_MOUNTPOINT glob hosts 1>/dev/null 2>/dev/null
+		"$KDB" mount $ROOT_FILE system$ROOT_MOUNTPOINT glob hosts 1> /dev/null 2> /dev/null
 		[ $? != 0 ]
 		succeed_if "could remount the system backend, even though cascading already mounted"
 
@@ -68,7 +66,7 @@ then
 
 		echo "Test simple mount configuration"
 
-		"$KDB" mount -c "test1=testvalue1" $ROOT_FILE $ROOT_MOUNTPOINT glob "test1=testvalue1" hosts 1>/dev/null
+		"$KDB" mount -c "test1=testvalue1" $ROOT_FILE $ROOT_MOUNTPOINT glob "test1=testvalue1" hosts 1> /dev/null
 		succeed_if "could not mount glob and hosts plugin together"
 
 		#"$KDB" ls "system/elektra/mountpoints/$ROOT_MOUNTPOINTN"
@@ -83,7 +81,7 @@ then
 
 		echo "Test multiple mount configurations"
 
-		"$KDB" mount -c "test1=testvalue1,test2=test value2" $ROOT_FILE $ROOT_MOUNTPOINT glob "test1=testvalue1" hosts "test2=test value2" 1>/dev/null
+		"$KDB" mount -c "test1=testvalue1,test2=test value2" $ROOT_FILE $ROOT_MOUNTPOINT glob "test1=testvalue1" hosts "test2=test value2" 1> /dev/null
 		succeed_if "could not mount glob and hosts plugin together"
 
 		# TODO: reenable

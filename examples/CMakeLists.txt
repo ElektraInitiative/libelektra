@@ -8,7 +8,7 @@ macro (do_example source)
 	include_directories ("${CMAKE_CURRENT_SOURCE_DIR}")
 	set (SOURCES ${HDR_FILES} ${source}.c)
 	add_executable (${source} ${SOURCES})
-	add_dependencies (${source} kdberrors_generated)
+	add_dependencies (${source} kdberrors_generated elektra_error_codes_generated)
 
 	target_link_elektra (${source} elektra-kdb)
 
@@ -50,7 +50,7 @@ if (FOUND_NAME GREATER -1)
 	set (SOURCES ${SRC_FILES} ${HDR_FILES})
 
 	add_executable (${EXAMPLE} ${SOURCES})
-	add_dependencies (${EXAMPLE} kdberrors_generated)
+	add_dependencies (${EXAMPLE} kdberrors_generated elektra_error_codes_generated)
 
 	target_link_elektra (${EXAMPLE} elektra-kdb elektra-notification)
 
@@ -69,7 +69,7 @@ if (FOUND_NAME GREATER -1)
 		endif ()
 
 		add_executable (${EXAMPLE} ${SOURCES})
-		add_dependencies (${EXAMPLE} kdberrors_generated)
+		add_dependencies (${EXAMPLE} kdberrors_generated elektra_error_codes_generated)
 
 		target_link_elektra (${EXAMPLE} elektra-kdb elektra-notification elektra-io elektra-io-uv)
 		if (BUILD_FULL OR BUILD_STATIC)
@@ -93,12 +93,23 @@ if (FOUND_NAME GREATER -1)
 		set (SRC_FILES notificationReload.c)
 		set (SOURCES ${SRC_FILES} ${HDR_FILES})
 		if (BUILD_FULL OR BUILD_STATIC)
+			# ~~~
+			# Work around an error that occurs if only `BUILD_FULL`, but not `BUILD_SHARED` is enabled:
+			#
+			# > src/include/kdbio/glib.h:11:10: fatal error: glib.h: No such file or directory
+			#
+			# . See also: https://travis-ci.org/sanssecours/elektra/jobs/445784708.
+			# ~~~
+			find_package (PkgConfig QUIET)
+			pkg_check_modules (GLIB QUIET glib-2.0)
+			include_directories (${GLIB_INCLUDE_DIRS})
+
 			list (APPEND SOURCES
 				     $<TARGET_OBJECTS:OBJ_elektra-io-glib>) # add sources for elektra-io-uv for static and full builds
 		endif ()
 
 		add_executable (${EXAMPLE} ${SOURCES})
-		add_dependencies (${EXAMPLE} kdberrors_generated)
+		add_dependencies (${EXAMPLE} kdberrors_generated elektra_error_codes_generated)
 
 		target_link_elektra (${EXAMPLE} elektra-kdb elektra-notification elektra-io elektra-io-glib)
 		if (BUILD_FULL OR BUILD_STATIC)

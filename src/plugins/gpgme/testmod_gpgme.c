@@ -20,6 +20,8 @@
 
 #include "gpgme.h"
 
+#include "../crypto/gpgagent_teardown.h"
+
 // GPG private key for importing and testing
 #include "../crypto/test_key.h"
 
@@ -79,15 +81,6 @@ static KeySet * newTestdataKeySet (void)
 	keySetMeta (kBin, ELEKTRA_GPGME_META_ENCRYPT, "1");
 
 	return ksNew (4, kUnchanged, kNull, kString, kBin, KS_END);
-}
-
-static void test_teardown (void)
-{
-	int status = system ("gpg-connect-agent --quiet KILLAGENT /bye");
-	if (status != 0)
-	{
-		fprintf (stderr, "Terminating gpg-agent returned with status “%d”", status);
-	}
 }
 
 static void test_import_key (void)

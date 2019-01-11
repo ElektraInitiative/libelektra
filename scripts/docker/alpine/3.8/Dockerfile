@@ -12,7 +12,7 @@ RUN apk update \
 
 # Google Test
 ENV GTEST_ROOT=/opt/gtest
-ARG GTEST_VER=4e4df226fc197c0dda6e37f5c8c3845ca1e73a49
+ARG GTEST_VER=release-1.8.1
 RUN mkdir -p ${GTEST_ROOT} \
     && cd /tmp \
     && curl -o gtest.tar.gz \
@@ -21,11 +21,19 @@ RUN mkdir -p ${GTEST_ROOT} \
     && rm gtest.tar.gz
 
 # YAEP
+ARG YAEP_VERSION=550de4cc5600d5f6109c7ebcfbacec51bf80d8d3
 RUN cd /tmp \
-    && git clone --depth 1 https://github.com/sanssecours/yaep.git \
+    && mkdir yaep \
+    && curl -o yaep.tar.gz \
+       -L https://github.com/vnmakarov/yaep/archive/${YAEP_VERSION}.tar.gz \
+    && tar -zxvf yaep.tar.gz --strip-components=1 -C yaep \
     && cd yaep \
-    && env CXXFLAGS='-fPIC' ./configure \
-    && make -C src install
+    && mkdir build \
+    && cd build \
+    && env CFLAGS='-fPIC' CXXFLAGS='-fPIC' cmake -DCMAKE_BUILD_TYPE=Release .. \
+    && make install \
+    && cd ../.. \
+    && rm -r yaep yaep.tar.gz
 
 # Create User:Group
 # The id is important as jenkins docker agents use the same id that is running

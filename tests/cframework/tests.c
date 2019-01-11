@@ -39,7 +39,7 @@ int nbError;
 int nbTest;
 
 char file[KDB_MAX_PATH_LENGTH];
-char srcdir[KDB_MAX_PATH_LENGTH];
+char srcdir[KDB_MAX_PATH_LENGTH + 1];
 
 char * tmpfilename;
 char * tempHome;
@@ -55,11 +55,11 @@ int init (int argc, char ** argv)
 
 	if (argc > 1)
 	{
-		strncpy (srcdir, argv[1], sizeof (srcdir));
+		strncpy (srcdir, argv[1], sizeof (srcdir) - 1);
 	}
 	else
 	{
-		strncpy (srcdir, BUILTIN_DATA_FOLDER, sizeof (srcdir));
+		strncpy (srcdir, BUILTIN_DATA_FOLDER, sizeof (srcdir) - 1);
 	}
 
 	tmpvar = getenv ("TMPDIR");

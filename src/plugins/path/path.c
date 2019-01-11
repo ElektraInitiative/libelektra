@@ -114,7 +114,7 @@ static int validatePermission (Key * key, Key * parentKey)
 		// Check if user exists
 		if (p == NULL)
 		{
-			ELEKTRA_SET_ERRORF (201, parentKey,
+			ELEKTRA_SET_ERRORF (206, parentKey,
 					    "Could not find user \"%s\" for key \"%s\". "
 					    "Does the user exist?\"",
 					    name, keyName (key));
@@ -126,7 +126,7 @@ static int validatePermission (Key * key, Key * parentKey)
 		int err = seteuid ((int) p->pw_uid);
 		if (err < 0)
 		{
-			ELEKTRA_SET_ERRORF (202, parentKey,
+			ELEKTRA_SET_ERRORF (207, parentKey,
 					    "Could not set euid of user \"%s\" for key \"%s\"."
 					    " Are you running kdb as root?\"",
 					    name, keyName (key));
@@ -140,7 +140,7 @@ static int validatePermission (Key * key, Key * parentKey)
 		name = p->pw_name;
 		if (uid != 0)
 		{
-			ELEKTRA_SET_ERRORF (202, parentKey,
+			ELEKTRA_SET_ERRORF (207, parentKey,
 					    "To check permissions for %s I need to be the root user."
 					    " Are you running kdb as root?\"",
 					    keyName (key));
@@ -170,7 +170,7 @@ static int validatePermission (Key * key, Key * parentKey)
 		int gidErr = setegid ((int) gr->gr_gid);
 		if (gidErr < 0)
 		{
-			ELEKTRA_SET_ERRORF (202, parentKey,
+			ELEKTRA_SET_ERRORF (207, parentKey,
 					    "Could not set egid of user \"%s\" for key \"%s\"."
 					    " Are you running kdb as root?\"",
 					    name, keyName (key));
@@ -212,7 +212,7 @@ static int validatePermission (Key * key, Key * parentKey)
 
 	if (isError)
 	{
-		ELEKTRA_SET_ERRORF (203, parentKey, "User %s does not have [%s] permission on %s", name, lastCharDel (errorMessage),
+		ELEKTRA_SET_ERRORF (208, parentKey, "User %s does not have [%s] permission on %s", name, lastCharDel (errorMessage),
 				    validPath);
 		return -1;
 	}

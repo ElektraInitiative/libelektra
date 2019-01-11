@@ -1,11 +1,9 @@
 #!/bin/sh
 
 git diff origin/master -- doc/news/_preparation_next_release.md | egrep "^\+.+\*\(.+\)\*"
-if [ $? != "0" ]
-then
-	linesChanged=`git diff --numstat origin/master -- doc/news/_preparation_next_release.md | cut -f1`
-	if [ "$linesChanged" -ge "5" ]
-	then
+if [ $? != "0" ]; then
+	linesChanged=$(git diff --numstat origin/master -- doc/news/_preparation_next_release.md | cut -f1)
+	if [ "$linesChanged" -ge "5" ]; then
 		echo "We assume that you know what you are doing."
 		exit 0
 	fi

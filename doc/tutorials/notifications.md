@@ -487,10 +487,10 @@ For example, this happens when applications synchronize themselves at startup by
 incrementing a counter in the key database.
 When a certain limit of application instances is reached the applications
 proceed with different behavior.
-If this behavior affects other applications phase change has occured.
+If this behavior affects other applications phase change has occurred.
 
 ### Guideline 5: Apply changes immediately
-> Call `kdbSet()` to save updated configuration immediately after a change occured.
+> Call `kdbSet()` to save updated configuration immediately after a change occurred.
 > This reduces conflicting changes in the key database.
 
 When a configuration setting is updated within an application this guideline

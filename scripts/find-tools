@@ -1,24 +1,31 @@
 #!/usr/bin/env python
 #
 # @author Sebastian Bachmann, Kurt Micheli <kurt.micheli@libelektra.org>
+# @tags org
 # @brief This script is used to search for scripts
 # @date 10.05.2016
 
 metatags = ["date", "brief", "author", "tags"]
 
 # If you create own Tags, please document them here!
+# (then they are listed with --alltags even if the script is not installed)
+
 tags = {	'configure': "This script is used for the build configuration",
 		'convert': "This script is used convert things",
 		'generator': "This script is a generator",
 		'creator': "This script creates things",
 		'validation': "This script is used to validate stuff",
+		'specification': "This script works with specifications",
 		'env': "This script does some env stuff",
+		'org': "This script organizes other scripts",
+		'build': "This script builds Elektra",
+		'release': "Scripts related to the release process",
 		'mount': "This script mounts things",
 		'reformat': "This script reformats things",
 		'benchmark': "This script runs benchmarks",
 		'debian': "Special script for debian system"}
 
-# No changes below this line necessary!
+# No changes below this line necessary for creating tags!
 
 from itertools import islice
 import os
@@ -106,7 +113,7 @@ def main():
 	scripts = get_scripts ()
 
 	if args.alltags:
-		stags = set ()
+		stags = set(tags)
 		for s, d in scripts.items ():
 			if "tags" in d["tags"]:
 				for tag in d["tags"]["tags"].split(","):

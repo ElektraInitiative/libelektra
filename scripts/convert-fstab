@@ -21,7 +21,6 @@
 ##
 ########################################################################
 
-
 [ -z "$ROOT" ] && ROOT="system/filesystems"
 
 num=0
@@ -29,24 +28,23 @@ num=0
 echo "<keyset parent=\"$ROOT\">"
 
 cat /etc/fstab | while read dev mpoint type options dumpfreq passno; do
-	
+
 	expr match "$dev" '#.*' > /dev/null && continue
 	test $dev || continue
 
-	case "$mpoint" in 
-		"none")
-			num=$(( $num + 1 ))
-			fsname="$type$num"
-			;;
-		'/')
-			fsname="roofs"
-			;;
-		*)
-			fsname=`echo $mpoint | sed -e 's^/^^g'`
-			;;
+	case "$mpoint" in
+	"none")
+		num=$((num + 1))
+		fsname="$type$num"
+		;;
+	'/')
+		fsname="roofs"
+		;;
+	*)
+		fsname=$(echo $mpoint | sed -e 's^/^^g')
+		;;
 	esac
 
-	
 	echo "  <key basename=\"$fsname\">"
 	echo "    <key basename=\"device\" value=\"$dev\"><comment>Device or Label</comment></key>"
 	echo "    <key basename=\"mpoint\" value=\"$mpoint\"><comment>Mount Point</comment></key>"

@@ -22,7 +22,7 @@ while getopts "p" option; do
 		;;
 	esac
 done
-shift $((OPTIND-1))
+shift $((OPTIND - 1))
 
 if [ $# -ne 1 ]; then
 	echo "Usage: $0 [-p] <new-pluginname>"
@@ -36,8 +36,7 @@ fi
 PLUGIN=$1
 
 if echo $PLUGIN | egrep -q '^[a-z]+$'; then
-	if [ -d $PLUGIN ]
-	then
+	if [ -d $PLUGIN ]; then
 		echo "Plugin $PLUGIN already exists"
 		exit 1
 	else
@@ -48,8 +47,8 @@ else
 	exit 1
 fi
 
-First=`echo $PLUGIN | awk '{print toupper(substr($0, 1, 1)) substr($0, 2)}'`
-ALL=`echo $PLUGIN | awk '{print toupper($0)}'`
+First=$(echo $PLUGIN | awk '{print toupper(substr($0, 1, 1)) substr($0, 2)}')
+ALL=$(echo $PLUGIN | awk '{print toupper($0)}')
 
 move_files_c_template() {
 	cp -r template $PLUGIN
@@ -71,11 +70,10 @@ move_files_cpp_template() {
 	mv testmod_cpptemplate.cpp testmod_$PLUGIN.cpp
 }
 
-do_replacements()
-{
+do_replacements() {
 	# We have to use slightly different command line switches for the GNU and
 	# BSD version of `sed`. Only GNU `sed` supports the switch `--version`.
-	sed --version &>/dev/null && args=(-i) || args=(-i '')
+	sed --version &> /dev/null && args=(-i) || args=(-i '')
 
 	sed -E "${args[@]}" "s/(CPP)?TEMPLATE/$ALL/g" $*
 	sed -E "${args[@]}" "s/(Cpp)?Template/$First/g" $*

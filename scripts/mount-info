@@ -23,7 +23,7 @@ fi
 $KDB mount -c assume/unchanged=1 --resolver noresolver none $MOUNTPOINT/constants constants
 
 if [ -z "$1" ]; then
-	FOLDER="`kdb get $MOUNTPOINT/constants/cmake/CMAKE_INSTALL_PREFIX`/`kdb get $MOUNTPOINT/constants/cmake/TARGET_DOCUMENTATION_TEXT_FOLDER`"
+	FOLDER="$(kdb get $MOUNTPOINT/constants/cmake/CMAKE_INSTALL_PREFIX)/$(kdb get $MOUNTPOINT/constants/cmake/TARGET_DOCUMENTATION_TEXT_FOLDER)"
 else
 	FOLDER="$1"
 fi
@@ -35,4 +35,3 @@ $KDB mount "$FOLDER/CONTRACT.ini" "$MOUNTPOINT/contract/#0" ini
 
 $KDB mount --resolver noresolver none "$MOUNTPOINT/uname" uname
 $KDB mount --resolver noresolver none "$MOUNTPOINT/desktop" desktop
-

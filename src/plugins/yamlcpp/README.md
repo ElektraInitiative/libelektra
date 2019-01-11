@@ -272,11 +272,6 @@ echo 'bin: !!binary aGk=' > `kdb file /tests/binary`
 kdb get /tests/binary/bin
 #> \x68\x69
 
-# We can use `bash` to convert the hexadecimal value returned by `kdb get`
-# to its ASCII representation.
-bash -c 'printf `kdb get /tests/binary/bin`'
-#> hi
-
 # Add a string value to the database
 kdb set /tests/binary/text mate
 # Base 64 does not modify textual values

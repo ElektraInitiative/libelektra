@@ -33,17 +33,10 @@ RUN apt-get update && apt-get -y install \
         libpcre++-dev \
         libglib2.0-dev \
         libxerces-c-dev \
-        libyaml-cpp-dev \
         swig3.0 \
         libuv1-dev \
         libev-dev \
         libzmq3-dev \
-        ghc \
-        ghc-dynamic \
-        cabal-install \
-        alex \
-        happy \
-        c2hs \
         checkinstall \
         openjdk-8-jdk \
         maven \
@@ -60,12 +53,11 @@ RUN apt-get update && apt-get -y install \
         moreutils \
     && rm -rf /var/lib/apt/lists/*
 
-RUN cabal update && cabal install hspec QuickCheck
 RUN pip install cmake-format==0.4.3 pyyaml
 
 # Google Test
 ENV GTEST_ROOT=/opt/gtest
-ARG GTEST_VER=4e4df226fc197c0dda6e37f5c8c3845ca1e73a49
+ARG GTEST_VER=release-1.8.1
 RUN mkdir -p ${GTEST_ROOT} \
     && cd /tmp \
     && curl -o gtest.tar.gz \
@@ -86,6 +78,7 @@ RUN ldconfig
 ARG JENKINS_GROUPID
 RUN groupadd \
     -g ${JENKINS_GROUPID} \
+    -f \
     jenkins
 
 ARG JENKINS_USERID
@@ -97,15 +90,3 @@ RUN useradd \
     jenkins
 
 USER ${JENKINS_USERID}
-
-# Handle Haskell dependencies
-ENV HASKELL_SHARED_SANDBOX /home/jenkins/elektra-cabal-sandbox
-RUN mkdir -p $HASKELL_SHARED_SANDBOX \
-    && cd $HASKELL_SHARED_SANDBOX \
-    && cabal update \
-    && cabal sandbox init \
-    && cabal install 'base >=4.9 && <4.12' 'containers >=0.5 && <0.6' \
-        'directory >=1.2 && <1.4' 'process >=1.4 && <1.7' 'binary >=0.8 && <0.9' \
-        'haskell-src-exts-any' 'pretty -any' 'hint >=0.7.0 && <0.8.0' 'temporary -any' \
-        'exceptions -any' 'text -any' 'simple-logger -any' 'megaparsec -any' \
-        'hspec -any' 'QuickCheck-any' --avoid-reinstalls

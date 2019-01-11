@@ -341,7 +341,7 @@ module:path
 
 number:57
 description:could not stat file
-severity:error
+severity:warning
 ingroup:plugin
 module:path
 
@@ -1260,18 +1260,46 @@ module:gpgme
 macro:GPGME_INVALID_RECIPIENT
 
 number:201
+description:The given key contains a redundant reference.
+severity:warning
+ingroup:plugin
+module:reference
+macro:REFERENCE_REDUNDANT
+
+number:202
+description:The constructed reference graph contains cycles.
+severity:error
+ingroup:plugin
+module:reference
+macro:REFERENCE_CYCLIC_GRAPH
+
+number:203
+description:The given key contains reference that does not match the given restriction.
+severity:error
+ingroup:plugin
+module:reference
+macro:REFERENCE_RESTRICTION
+
+number:204
+description:The given key contains a non existent reference.
+severity:error
+ingroup:plugin
+module:reference
+macro:REFERENCE_NOT_FOUND
+
+number:206
 description:The user does not exist.
 severity:error
 ingroup:plugin
 module:path
 
-number:202
+number:207
 description:Could not change to user.
 severity:error
 ingroup:plugin
 module:path
 
-number:203
+number:208
 description:Detected incorrect permissions for file/directory
 severity:error
 ingroup:plugin

@@ -7,7 +7,7 @@ add_toolheaders (HDR_FILES)
 include (LibAddTest)
 
 function (add_kdb_test suffix)
-	set (multiValueArgs REQUIRED_PLUGINS)
+	set (multiValueArgs "REQUIRED_PLUGINS;LINK_ELEKTRA")
 	cmake_parse_arguments (ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
 	foreach (plugin ${ARG_REQUIRED_PLUGINS})
@@ -20,8 +20,7 @@ function (add_kdb_test suffix)
 	endforeach (plugin ${ARG_REQUIRED_PLUGINS})
 
 	set (name testkdb_${suffix})
-	add_gtest (${name} KDBTESTS LINK_TOOLS)
-	target_link_elektra (${name} elektra-kdb)
+	add_gtest (${name} KDBTESTS LINK_TOOLS LINK_ELEKTRA ${ARG_LINK_ELEKTRA})
 endfunction (add_kdb_test suffix)
 
 add_kdb_test (allplugins)
@@ -29,3 +28,6 @@ add_kdb_test (conflict REQUIRED_PLUGINS error)
 add_kdb_test (error REQUIRED_PLUGINS error list spec)
 add_kdb_test (nested REQUIRED_PLUGINS error)
 add_kdb_test (simple REQUIRED_PLUGINS error)
+
+set_source_files_properties (testkdb_highlevel PROPERTIES COMPILE_FLAGS -Wno-sign-promo)
+add_kdb_test (highlevel LINK_ELEKTRA elektra-highlevel REQUIRED_PLUGINS error)

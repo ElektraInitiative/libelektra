@@ -1,36 +1,46 @@
 #!/usr/bin/env bash
+#
+# @tags mount
 
-help()
-{
-    echo "Usage: $(basename $0) <file> <elektra-path> <plugins>"
-    echo "file:  	    	the file to mount in Elektra"
-    echo "elektra-path:         the path inside Elektra"
-    echo "plugins: 		the list of plugins for mounting"
-    echo "The file is mounted if and only if it has not been mounted yet"
-    echo "If the file is mounted successfully or already mounted the script "
-    echo "will terminate successfully. If an error occurs, the script will "
-    echo "will terminate with a nonzero exit status"
+help() {
+	echo "Usage: $(basename $0) <file> <elektra-path> <plugins>"
+	echo "file:  	    	the file to mount in Elektra"
+	echo "elektra-path:         the path inside Elektra"
+	echo "plugins: 		the list of plugins for mounting"
+	echo "The file is mounted if and only if it has not been mounted yet"
+	echo "If the file is mounted successfully or already mounted the script "
+	echo "will terminate successfully. If an error occurs, the script will "
+	echo "will terminate with a nonzero exit status"
 }
 
 if [ "$#" -lt "2" ]; then
-    echo "at least 2 arguments must be given"
-    help
-    exit 1
+	echo "at least 2 arguments must be given"
+	help
+	exit 1
 fi
 
-grepcmd=$(command -v grep) || { >&2 echo "No grep command found"; exit 1; }
-awkcmd=$(command -v awk) || { >&2 echo "No awk command found"; exit 1; }
-kdbcmd=$(command -v kdb) || { >&2 echo "No kdb command found"; exit 1; }
+grepcmd=$(command -v grep) || {
+	echo >&2 "No grep command found"
+	exit 1
+}
+awkcmd=$(command -v awk) || {
+	echo >&2 "No awk command found"
+	exit 1
+}
+kdbcmd=$(command -v kdb) || {
+	echo >&2 "No kdb command found"
+	exit 1
+}
 
-if ($kdbcmd mount | $grepcmd $1 | $grepcmd $2) > /dev/null ; then
-   # the file is already mounted
-   exit 0
+if ($kdbcmd mount | $grepcmd $1 | $grepcmd $2) > /dev/null; then
+	# the file is already mounted
+	exit 0
 else
-   # mount the file
-   file=$1
-   path=$2
-   shift
-   shift
-   $kdbcmd mount $file $path $@
-   exit $?
+	# mount the file
+	file=$1
+	path=$2
+	shift
+	shift
+	$kdbcmd mount $file $path $@
+	exit $?
 fi

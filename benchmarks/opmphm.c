@@ -39,7 +39,7 @@ int32_t elektraRandBenchmarkInitSeed;
 // benchmarks helpers
 static int32_t * getRandomSeed (int32_t * seed);
 static FILE * openOutFileWithRPartitePostfix (const char * name, uint8_t r);
-static const char * elektraGetString (void * data);
+static const char * getString (void * data);
 static size_t getPower (size_t p, size_t q);
 static int cmpInteger (const void * a, const void * b);
 // generate KeySets
@@ -314,7 +314,7 @@ static void benchmarkMapping (char * name)
 					size_t threadI = 0;
 					// OPMPHM
 					OpmphmInit init;
-					init.getName = elektraGetString;
+					init.getName = getString;
 					init.data = (void **) (ks->array);
 // OPMPHM
 #ifdef USE_OPENMP
@@ -600,7 +600,7 @@ static void benchmarkMappingOpt (char * name)
 				size_t threadI = 0;
 				// OPMPHM
 				OpmphmInit init;
-				init.getName = elektraGetString;
+				init.getName = getString;
 				init.data = (void **) (ks->array);
 // OPMPHM
 #ifdef USE_OPENMP
@@ -863,7 +863,7 @@ static void benchmarkMappingAllSeeds (char * name)
 			size_t threadI = 0;
 			// OPMPHM
 			OpmphmInit init;
-			init.getName = elektraGetString;
+			init.getName = getString;
 			init.data = (void **) (ks->array);
 			// OPMPHM
 
@@ -2264,7 +2264,7 @@ static FILE * openOutFileWithRPartitePostfix (const char * name, uint8_t r)
 	return out;
 }
 
-static const char * elektraGetString (void * data)
+static const char * getString (void * data)
 {
 	return keyName ((Key *) data);
 }

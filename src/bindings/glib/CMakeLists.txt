@@ -14,6 +14,11 @@ if (ENABLE_ASAN)
 	return ()
 endif (ENABLE_ASAN)
 
+if (NOT BUILD_SHARED)
+	exclude_binding (glib "it can only be built if `BUILD_SHARED` is enabled")
+	return ()
+endif (NOT BUILD_SHARED)
+
 # Add binding
 add_binding (glib)
 
@@ -30,7 +35,7 @@ add_headers (ELEKTRA_HEADERS)
 set (SOURCES ${GELEKTRA_SRC_FILES} ${GELEKTRA_HDR_FILES} ${ELEKTRA_HEADERS})
 
 add_library (${GELEKTRA_LIBRARY} SHARED ${SOURCES})
-add_dependencies (${GELEKTRA_LIBRARY} kdberrors_generated)
+add_dependencies (${GELEKTRA_LIBRARY} kdberrors_generated elektra_error_codes_generated)
 
 target_include_directories (${GELEKTRA_LIBRARY} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_include_directories (${GELEKTRA_LIBRARY} SYSTEM PUBLIC ${GOBJECT_INCLUDE_DIRS})

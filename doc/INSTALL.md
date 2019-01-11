@@ -20,11 +20,6 @@ For the following Linux distributions and package managers 0.8 packages are avai
  - [LinuxBrew](https://github.com/Linuxbrew/homebrew-core/blob/master/Formula/elektra.rb)
  - [Alpine Linux](https://pkgs.alpinelinux.org/package/edge/testing/x86_64/elektra)
 
-Available, but not up-to-date:
-
- - [Mageia](http://svnweb.mageia.org/packages/updates/1/elektra/)
- - [Fedora](https://admin.fedoraproject.org/pkgdb/package/elektra/)
-
 For [OpenSUSE, CentOS, Fedora, RHEL and SLE](https://build.opensuse.org/package/show/home:bekun:devel/elektra)
 Kai-Uwe Behrmann kindly provides packages [for download](http://software.opensuse.org/download.html?project=home%3Abekun%3Adevel&package=libelektra4).
 
@@ -42,6 +37,7 @@ For Stretch:
 
 Which can also be done using:
 
+        sudo apt-get install apt-transport-https
         echo "deb     [trusted=yes] https://debian-stretch-repo.libelektra.org/ stretch main" | sudo tee /etc/apt/sources.list.d/elektra.list
 
 Or alternatively, you can use (if you do not mind many dependences just to add one line to a config file):
@@ -49,7 +45,7 @@ Or alternatively, you can use (if you do not mind many dependences just to add o
         sudo apt-get install software-properties-common apt-transport-https
         sudo add-apt-repository "deb     [trusted=yes] https://debian-stretch-repo.libelektra.org/ stretch main"
 
-For Jessie:
+For Jessie (not updated anymore, contains 0.8.24 packages which were created shortly before 0.8.25 release)
 
         deb     [trusted=yes] https://debian-stable.libelektra.org/elektra-stable/ jessie main
         deb-src [trusted=yes] https://debian-stable.libelektra.org/elektra-stable/ jessie main

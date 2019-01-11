@@ -39,7 +39,7 @@ unsigned int elektraIoTestSuiteUtilGetCurrentTime (struct timespec * ts)
  * Get difference between measured times
  * @param  start start measurement
  * @param  stop  end measurement
- * @return       difference in miliseconds
+ * @return       difference in milliseconds
  */
 long elektraIoTestSuiteUtilGetTimeDifference (struct timespec start, struct timespec stop)
 {

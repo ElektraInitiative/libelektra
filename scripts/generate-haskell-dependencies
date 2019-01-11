@@ -18,7 +18,7 @@
 # build directory as the first command line parameter for this script.
 #
 # @date 17.05.2018
-# @tags dependencies
+# @tags build
 
 SCRIPTS_DIR=$(dirname "$0")
 . "${SCRIPTS_DIR}/include-common"

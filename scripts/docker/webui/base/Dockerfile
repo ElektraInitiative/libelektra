@@ -11,7 +11,7 @@ RUN apt-get install -y nodejs
 
 # Google Test
 ENV GTEST_ROOT=/opt/gtest
-ARG GTEST_VER=4e4df226fc197c0dda6e37f5c8c3845ca1e73a49
+ARG GTEST_VER=release-1.8.1
 RUN mkdir -p ${GTEST_ROOT} \
     && cd /tmp \
     && curl -o gtest.tar.gz \

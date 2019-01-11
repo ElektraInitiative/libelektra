@@ -37,43 +37,25 @@ Mate Tags start with an `@`, here is a list of all Meta Tags:
 |-----------|----------------------------------------------------------------------|
 | \@author  | Names and Emails (in <>) of the Authors as comma separated list      |
 | \@brief   | A Short Description (One Line!)                                      |
-| \@tags    | Comma Separated List of Tags, there is a list of common tags below   |
+| \@tags    | Comma Separated List of Tags                                         |
 | \@date    | Date when the script was created, use DD.MM.YYYY as format           |
 
 Do not mind the '\' at the beginning it is a doxygen escaping.
 
 Beware, that these metatags should be applied at the beginning of the file (in the first 10 rows)!
 
-## Tags
-
-List of Common Tags:
-
-| \@tags     | Description                                     |
-|-----------|-------------------------------------------------|
-| configure | This script is used for the build configuration |
-| convert   | This script is used convert things              |
-| generator | This script is a generator                      |
-| creator   | This script creates things                      |
-| env       | This script does some env stuff                 |
-| mount     | This script mounts things                       |
-| reformat  | This script reformats things                    |
-| debian    | Special script for debian system                |
-
-
-If you choose to add a tag to the `@tags` then do not forget to add it in the tags map of the `find-tools` script
-and in the table here.
 
 ## Example
 
 \verbatim
 
         <Start of File>
-        #!/usr/bin/bash
+        #!/bin/sh
         #
         # @author Kurt Micheli <kurt.micheli@libelektra.org>
-        # @brief This is a example
-        # @date 01.06.2016
-        # @tags configure, creator, arch
+        # @brief This is a example of a build script
+        # @date 31.10.2018
+        # @tags configure, build
 
 \endverbatim
 

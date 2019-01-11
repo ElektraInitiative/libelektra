@@ -18,7 +18,7 @@ Afterwards pull your desired image as you would do from any public registry:
 
 > **Note:**
 > We use *hub-public* instead of *hub.libelektra.org* which is in use by our
-> build server to bypass authentification.
+> build server to bypass authentication.
 > Only GET requests are allowed on *hub-public*.
 
 
@@ -33,7 +33,7 @@ docker build -t buildelektra-stretch-full \
     scripts/docker/debian/stretch/
 ```
 
-You can adapt the targetted Dockerfile via `-f`.
+You can adapt the targeted Dockerfile via `-f`.
 You should also adjust the tag used via `-t` if you are building a different
 image.
 

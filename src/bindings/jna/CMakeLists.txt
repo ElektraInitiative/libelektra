@@ -12,10 +12,20 @@ if (Java_JAVAC_EXECUTABLE)
 	# as 9.x.x > 1.8 and 1.8.x > 1.8 and 1.9.x > 1.8
 	# ~~~
 	if ((${Java_VERSION} VERSION_GREATER "1.8.0") OR (${Java_VERSION} VERSION_EQUAL "1.8.0"))
+		if (NOT BUILD_SHARED)
+			# See also: https://travis-ci.org/sanssecours/elektra/jobs/445840045
+			exclude_binding (jna "it can only be built if `BUILD_SHARED` is enabled")
+			return ()
+		endif (NOT BUILD_SHARED)
+
 		if (MAVEN_EXECUTABLE) # set by find_program
 			add_binding (jna)
 
 			file (MAKE_DIRECTORY libelektra4j)
+
+			if (NOT APPLE)
+				set (USE_SYSTEM_CLASS_LOADER "<useSystemClassLoader>false</useSystemClassLoader>")
+			endif (NOT APPLE)
 
 			# first fill the elektra version in the pom file @ONLY to avoid replacing pom.xml placeholders which also use the
 			# format ${}
@@ -70,6 +80,7 @@ if (Java_JAVAC_EXECUTABLE)
 
 				set_property (TEST testjna_maven
 					      PROPERTY LABELS
+						       kdbtests
 						       bindings
 						       memleak)
 			endif (NOT ENABLE_ASAN)
