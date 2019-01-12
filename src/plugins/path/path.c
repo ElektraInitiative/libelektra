@@ -61,7 +61,7 @@ static int validateKey (Key * key, Key * parentKey)
 	const Key * meta = keyGetMeta (key, "check/path");
 	if (stat (keyString (key), &buf) == -1)
 	{
-		char * errmsg = elektraMalloc (ERRORMSG_LENGTH + 1 + +keyGetNameSize (key) + keyGetValueSize (key) +
+		char * errmsg = elektraMalloc (ERRORMSG_LENGTH + 1 + keyGetNameSize (key) + keyGetValueSize (key) +
 					       sizeof ("name:  value:  message: "));
 		strerror_r (errno, errmsg, ERRORMSG_LENGTH);
 		strcat (errmsg, " from key: ");
