@@ -220,7 +220,7 @@ static int validatePermission (Key * key, Key * parentKey)
 
 	if (isError)
 	{
-		ELEKTRA_SET_ERRORF (207, parentKey, "User %s does not have [%cd s] permission on %s", name, lastCharDel (errorMessage),
+		ELEKTRA_SET_ERRORF (207, parentKey, "User %s does not have [%s] permission on %s", name, lastCharDel (errorMessage),
 				    validPath);
 		return -1;
 	}
