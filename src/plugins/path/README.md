@@ -48,33 +48,42 @@ check will be done if it is a directory or device file.
 
 ## Example
 ```sh
-sudo kdb mount some_file.ecf /tests/path some_file dump
+whoami
+> tomcat
 
-# Assume user tomcat has read and write permissions on /var/log/application-file.log
-kdb set /tests/path/value /var/log/application-file.log
+sudo kdb mount test.dump /test path dump
+sudo kdb setmeta /test/path check/path ""
+sudo kdb setmeta /test/path check/permission/user "tomcat"
+sudo kdb setmeta /test/path check/permission/types "rw"
 
-#This checks if the file actually exists
-sudo kdb setmeta /tests/path/value check/path
+# Generate a file with restrictive permissions
+touch /tmp/testfile.txt
+sudo chmod 700 /tmp/testfile.txt
+sudo chown root:root /tmp/testfile.txt
 
-#This checks if the user has read and write permissions for the application-file.log file
-sudo kdb setmeta /tests/path/value check/permission/user "tomcat"
-sudo kdb setmeta /tests/path/value check/permission/types "rw"
+# The following command has to be done as root
+sudo kdb set /test/path "/tmp/testfile.txt"
+> Using name system/test/path
+> Sorry, the error (#207) occurred ;(
+> Description: Detected incorrect permissions for file/directory
+> Reason: User tomcat does not have [read,write] permission on /tmp/testfile.txt
+> Ingroup: plugin
+> Module: path
+> At: ....../path.c:224
+> Mountpoint: system/test
+> Configfile: /etc/kdb/test.dump.5838:1547304979.131617.tmp
+> Create a new key system/test/path with string "/tmp/testfile.txt"
 
-#Generate a file which is only accessable for root
-touch /var/log/application-file-restricted.log
-sudo chmod 700 /var/log/application-file-restricted.log
-sudo chown root:root /var/log/application-file-restricted.log
+# Fix permissions
+sudo chmod 777 /tmp/testfile.txt
 
-#This should trigger the error
-kdb set /tests/path/value /var/log/application-file-restricted.log
-# ERROR:194
-# Reason:
-#    Expected: User tomcat has [read/write] permission for the given file /var/log/application-file-restricted.log.
-#    Actual: User tomcat has [] permission for var/log/application-file-restricted.log.
+sudo kdb set /test/path "/tmp/testfile.txt"
+> Using name system/test/path
+> Set string to "/tmp/testfile.txt"
 
-# cleanup
-kdb rm -r /tests/path
-sudo kdb umount /tests/path
+#cleanup
+sudo kdb umount /test
+rm /tmp/testfile.txt
 ```
 
 ## Future work
