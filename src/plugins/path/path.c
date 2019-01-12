@@ -212,8 +212,8 @@ static int validatePermission (Key * key, Key * parentKey)
 	if (euidResult != 0 || egidResult != 0)
 	{
 		ELEKTRA_SET_ERROR (206, parentKey,
-				    "There was a problem in the user switching process."
-				    "Please report the issue at https://issues.libelektra.org");
+				   "There was a problem in the user switching process."
+				   "Please report the issue at https://issues.libelektra.org");
 		return -1;
 	}
 
