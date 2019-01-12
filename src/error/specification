@@ -341,7 +341,7 @@ module:path
 
 number:57
 description:could not stat file
-severity:warning
+severity:error
 ingroup:plugin
 module:path
 
