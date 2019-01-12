@@ -212,15 +212,16 @@ static int validatePermission (Key * key, Key * parentKey)
 
 	if (euidResult != 0 || egidResult != 0)
 	{
-		ELEKTRA_SET_ERRORF (206, parentKey, "There was a problem in the user switching process."
-				      "Please report the issue at https://issues.libelektra.org", name,
-				    keyName (key));
+		ELEKTRA_SET_ERRORF (206, parentKey,
+				    "There was a problem in the user switching process."
+				    "Please report the issue at https://issues.libelektra.org",
+				    name, keyName (key));
 		return -1;
 	}
 
 	if (isError)
 	{
-		ELEKTRA_SET_ERRORF (207, parentKey, "User %s does not have [%s] permission on %s", name, lastCharDel (errorMessage),
+		ELEKTRA_SET_ERRORF (207, parentKey, "User %s does not have [%cd s] permission on %s", name, lastCharDel (errorMessage),
 				    validPath);
 		return -1;
 	}
