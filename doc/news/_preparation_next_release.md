@@ -33,9 +33,23 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.8.
 ## Highlights
 
 - The new High-Level-API has been added. *(Klemens Böswirth)*
+- The new High-Level-API has been added. *(Klemens Böswirth)*
 - <<HIGHLIGHT2>>
 - <<HIGHLIGHT3>>
 
+### High-Level API
+The new high-level API provides an easier way to get started with Elektra.
+
+To get started (including proper error handling) you now only need a few self-explanatory lines of code:
+```c
+ElektraError * error;
+Elektra * elektra = elektraOpen ("/sw/org/myapp/#0/current", NULL, &error);
+if (elektra == NULL)
+{
+	printf ("An error occured: %s", elektraErrorDescription (error));
+	elektraErrorReset (error);
+	return -1;
+}
 
 ### High-Level API
 The new high-level API provides an easier way to get started with Elektra.
@@ -100,6 +114,15 @@ Enhanced the plugin to also check for concrete file or directory permissions suc
 - <<TODO>>
 
 
+  now works correctly. *(René Schwaiger)*
+
+### path
+
+Enhanced the plugin to also check for concrete file or directory permissions such as `rwx`. *(Michael Zronek)*
+
+### YAwn
+
+This new plugin parses a subset of YAML using the Earley Parser library [YAEP](https://github.com/vnmakarov/yaep). *(René Schwaiger)*
 
 ### <<Plugin3>>
 

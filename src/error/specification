@@ -341,7 +341,7 @@ module:path
 
 number:57
 description:could not stat file
-severity:error
+severity:warning
 ingroup:plugin
 module:path
 
@@ -1287,19 +1287,19 @@ ingroup:plugin
 module:reference
 macro:REFERENCE_NOT_FOUND
 
-number:201
+number:206
 description:The user does not exist.
 severity:error
 ingroup:plugin
 module:path
 
-number:202
+number:207
 description:Could not change to user.
 severity:error
 ingroup:plugin
 module:path
 
-number:203
+number:208
 description:Detected incorrect permissions for file/directory
 severity:error
 ingroup:plugin
