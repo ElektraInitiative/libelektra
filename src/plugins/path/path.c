@@ -207,8 +207,16 @@ static int validatePermission (Key * key, Key * parentKey)
 	}
 
 	// Change back to initial effective IDs
-	(void) seteuid (currentUID);
-	(void) setegid (currentGID);
+	int euidResult = seteuid (currentUID);
+	int egidResult = setegid (currentGID);
+
+	if (euidResult != 0 || egidResult != 0)
+	{
+		ELEKTRA_SET_ERRORF (206, parentKey, "There was a problem in the user switching process."
+				      "Please report the issue at https://issues.libelektra.org", name,
+				    keyName (key));
+		return -1;
+	}
 
 	if (isError)
 	{
