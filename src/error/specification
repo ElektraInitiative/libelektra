@@ -1287,19 +1287,19 @@ ingroup:plugin
 module:reference
 macro:REFERENCE_NOT_FOUND
 
-number:206
+number:205
 description:The user does not exist.
 severity:error
 ingroup:plugin
 module:path
 
-number:207
+number:206
 description:Could not change to user.
 severity:error
 ingroup:plugin
 module:path
 
-number:208
+number:207
 description:Detected incorrect permissions for file/directory
 severity:error
 ingroup:plugin
