@@ -14,19 +14,26 @@
 
 #endif
 
-// Used to delete last colon in the error message
-char * lastCharDel (char * name)
+/**
+ * Used to delete last colon in the error message
+ * @param name The string of which the last character should be removed
+ * @return The string with the last char removed
+ */
+static char * lastCharDel (char * name)
 {
-	int i = 0;
-	while (name[i] != '\0')
-	{
-		i++;
-	}
-	name[i - 1] = '\0';
+	size_t length = elektraStrLen (name);
+	name[length - 2] = '\0';
 	return name;
 }
 
-bool isUserInGroup (unsigned int val, gid_t * groups, unsigned int size)
+/**
+ * This method tries to find a matching group from a group struct containing more than one group
+ * @param val The group name which is searched
+ * @param groups The struct containing all groups
+ * @param size The size of the groups struct because it is a linked list
+ * @return true if the group is in the struct
+ */
+static bool isUserInGroup (unsigned int val, gid_t * groups, unsigned int size)
 {
 	unsigned int i;
 	for (i = 0; i < size; i++)
@@ -93,7 +100,13 @@ static int validateKey (Key * key, Key * parentKey)
 	return 1;
 }
 
-// I assume the path exists and only validate permission
+/**
+ * This method validates the file permission for a certain user
+ * The method assumes that the path exists and only validates permission
+ * @param key The key containting all metadata
+ * @param parentKey The parentKey which is used for error writing
+ * @return 0 if success or -1 for failure
+ */
 static int validatePermission (Key * key, Key * parentKey)
 {
 	uid_t currentUID = geteuid ();
@@ -117,7 +130,7 @@ static int validatePermission (Key * key, Key * parentKey)
 		// Check if user exists
 		if (p == NULL)
 		{
-			ELEKTRA_SET_ERRORF (205, parentKey,
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_USER_NOT_FOUND, parentKey,
 					    "Could not find user \"%s\" for key \"%s\". "
 					    "Does the user exist?\"",
 					    name, keyName (key));
@@ -129,7 +142,7 @@ static int validatePermission (Key * key, Key * parentKey)
 		int err = seteuid ((int) p->pw_uid);
 		if (err < 0)
 		{
-			ELEKTRA_SET_ERRORF (206, parentKey,
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CHANGE_USER_ERROR, parentKey,
 					    "Could not set euid of user \"%s\" for key \"%s\"."
 					    " Are you running kdb as root?\"",
 					    name, keyName (key));
@@ -143,7 +156,7 @@ static int validatePermission (Key * key, Key * parentKey)
 		name = p->pw_name;
 		if (uid != 0)
 		{
-			ELEKTRA_SET_ERRORF (206, parentKey,
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CHANGE_USER_ERROR, parentKey,
 					    "To check permissions for %s I need to be the root user."
 					    " Are you running kdb as root?\"",
 					    keyName (key));
@@ -173,7 +186,7 @@ static int validatePermission (Key * key, Key * parentKey)
 		int gidErr = setegid ((int) gr->gr_gid);
 		if (gidErr < 0)
 		{
-			ELEKTRA_SET_ERRORF (206, parentKey,
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CHANGE_USER_ERROR, parentKey,
 					    "Could not set egid of user \"%s\" for key \"%s\"."
 					    " Are you running kdb as root?\"",
 					    name, keyName (key));
@@ -214,7 +227,7 @@ static int validatePermission (Key * key, Key * parentKey)
 
 	if (euidResult != 0 || egidResult != 0)
 	{
-		ELEKTRA_SET_ERROR (206, parentKey,
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CHANGE_USER_ERROR, parentKey,
 				   "There was a problem in the user switching process."
 				   "Please report the issue at https://issues.libelektra.org");
 		return -1;
@@ -222,8 +235,8 @@ static int validatePermission (Key * key, Key * parentKey)
 
 	if (isError)
 	{
-		ELEKTRA_SET_ERRORF (207, parentKey, "User %s does not have [%s] permission on %s", name, lastCharDel (errorMessage),
-				    validPath);
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INVALID_PERMISSION, parentKey, "User %s does not have [%s] permission on %s", name,
+				    lastCharDel (errorMessage), validPath);
 		return -1;
 	}
 
@@ -259,7 +272,7 @@ int elektraPathSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 		const Key * pathMeta = keyGetMeta (cur, "check/path");
 		if (!pathMeta) continue;
 		rc = validateKey (cur, parentKey);
-		if (!rc || rc < 0) return -1;
+		if (rc <= 0) return -1;
 
 		const Key * accessMeta = keyGetMeta (cur, "check/permission/types");
 		if (!accessMeta) continue;

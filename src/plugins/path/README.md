@@ -47,6 +47,7 @@ valid absolute file system path. If a metavalue is present, an additional
 check will be done if it is a directory or device file.
 
 ## Example
+
 ```sh
 whoami
 > tomcat
@@ -82,8 +83,9 @@ sudo kdb set /test/path "/tmp/testfile.txt"
 > Set string to "/tmp/testfile.txt"
 
 #cleanup
+sudo kdb rm -r /test
 sudo kdb umount /test
-rm /tmp/testfile.txt
+sudo rm /tmp/testfile.txt
 ```
 
 ## Future work
