@@ -7,7 +7,7 @@
 - infos/placements = getstorage
 - infos/status = maintained unittest preview experimental unfinished nodoc concept discouraged
 - infos/metadata =
-- infos/description = This storage plugin use a Early parser to read YAML files
+- infos/description = This storage plugin uses an Earley parser to read YAML files
 
 # YAwn
 
