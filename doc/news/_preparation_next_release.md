@@ -214,7 +214,8 @@ you up to date with the multi-language support provided by Elektra.
 
 ### CMake
 
-- <<TODO>>
+- The CMake find module [`FindAugeas.cmake`](https://master.libelektra.org/cmake/Modules/FindAugeas.cmake) does not print an error message
+  anymore, if it is unable to locate Augeas in the `pkg-config` search path.
 - <<TODO>>
 - <<TODO>>
 
