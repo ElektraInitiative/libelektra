@@ -15,10 +15,15 @@
 #include <kdberrors.h>
 #include <kdbhelper.h>
 
+#include "convert.hpp"
+
 using std::exception;
+using std::runtime_error;
 
 using CppKey = kdb::Key;
 using CppKeySet = kdb::KeySet;
+
+using yaypeg::addToKeySet;
 
 namespace
 {
@@ -53,11 +58,28 @@ int elektraYaypegGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * p
 	if (parent.getName () == "system/elektra/modules/yaypeg")
 	{
 		keys.append (getContract ());
+		parent.release ();
+		keys.release ();
+		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+	}
+
+	auto status = ELEKTRA_PLUGIN_STATUS_ERROR;
+	try
+	{
+		status = addToKeySet (keys, parent, parent.getString ());
+	}
+	catch (runtime_error const & runtimeError)
+	{
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_PARSE, *parent, runtimeError.what ());
+	}
+	catch (exception const & error)
+	{
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_UNCAUGHT_EXCEPTION, *parent, error.what ());
 	}
 
 	parent.release ();
 	keys.release ();
-	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+	return status < 0 ? ELEKTRA_PLUGIN_STATUS_ERROR : status;
 }
 
 /** @see elektraDocSet */
