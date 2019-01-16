@@ -1,13 +1,13 @@
 - infos = Information about the yaypeg plugin is in keys below
-- infos/author = Author Name <elektra@libelektra.org>
+- infos/author = René Schwaiger <sanssecours@me.com>
 - infos/licence = BSD
-- infos/needs =
-- infos/provides =
+- infos/needs = directoryvalue yamlsmith
+- infos/provides = storage/yaml
 - infos/recommends =
-- infos/placements = prerollback rollback postrollback getresolver pregetstorage getstorage postgetstorage setresolver presetstorage setstorage precommit commit postcommit
-- infos/status = recommended productive maintained reviewed conformant compatible coverage specific unittest shelltest tested nodep libc configurable final preview memleak experimental difficult unfinished old nodoc concept orphan obsolete discouraged -1000000
+- infos/placements = getstorage
+- infos/status = maintained preview experimental unfinished nodoc concept discouraged
 - infos/metadata =
-- infos/description = one-line description of yaypeg
+- infos/description = This storage plugin uses a PEG based parser to read YAML files
 
 ## Introduction
 
