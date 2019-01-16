@@ -32,6 +32,7 @@
 #include <tao/pegtl/contrib/parse_tree.hpp>
 
 #include <kdb.hpp>
+#include <kdblogger.h>
 
 #include "state.hpp"
 

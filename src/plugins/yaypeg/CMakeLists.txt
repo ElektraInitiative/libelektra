@@ -16,5 +16,7 @@ add_plugin (yaypeg
 		    listener.cpp
 		    walk.hpp
 		    walk.cpp
+		    convert.hpp
+		    convert.cpp
 		    yaypeg.hpp
 		    yaypeg.cpp)
