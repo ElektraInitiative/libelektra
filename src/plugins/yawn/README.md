@@ -13,7 +13,7 @@
 
 ## Introduction
 
-This plugin uses [YAEP](https://github.com/vnmakarov/yaep) to  parse [YAML](http://yaml.org) data.
+This plugin uses [YAEP](https://github.com/vnmakarov/yaep) to parse [YAML](http://yaml.org) data.
 
 ## Dependencies
 
