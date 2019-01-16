@@ -6,6 +6,4 @@ add_plugin (yaypeg
 	    CPP_TEST
 	    TEST_README
 	    SOURCES yaypeg.hpp
-		    yaypeg.cpp
-		    yaypeg_delegate.hpp
-		    yaypeg_delegate.cpp)
+		    yaypeg.cpp)
