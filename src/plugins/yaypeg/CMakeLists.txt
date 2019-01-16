@@ -10,9 +10,10 @@ add_plugin (yaypeg
 	    ADD_TEST
 	    CPP_TEST
 	    TEST_README
-	    SOURCES state.hpp
-		    state.cpp
+	    SOURCES state.cpp
 		    listener.hpp
 		    listener.cpp
+		    walk.hpp
+		    walk.cpp
 		    yaypeg.hpp
 		    yaypeg.cpp)
