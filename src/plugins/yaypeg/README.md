@@ -22,13 +22,18 @@ used by the plugin because of the issue referenced [here](https://github.com/tao
 ## Examples
 
 ```sh
-# Backup-and-Restore: user/tests/yaypeg
+# Mount plugin
+sudo kdb mount config.yaml user/tests/yaypeg yaypeg
 
 kdb set user/tests/yaypeg/key value
 #> Create a new key user/tests/yaypeg/key with string "value"
 
 kdb get /tests/yaypeg/key
 #> value
+
+# Undo modifications
+kdb rm -r user/tests/yaypeg
+sudo kdb umount user/tests/yaypeg
 ```
 
 ## Limitations
