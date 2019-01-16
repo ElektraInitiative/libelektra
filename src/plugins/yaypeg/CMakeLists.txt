@@ -10,5 +10,7 @@ add_plugin (yaypeg
 	    ADD_TEST
 	    CPP_TEST
 	    TEST_README
-	    SOURCES yaypeg.hpp
+	    SOURCES state.hpp
+		    state.cpp
+		    yaypeg.hpp
 		    yaypeg.cpp)
