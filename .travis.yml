@@ -320,6 +320,7 @@ before_install:
       brew install libev
       brew install lua
       brew install openssl
+      brew install pegtl
       brew install python@2; brew link --overwrite python@2
       brew install python || brew upgrade python
       brew install qt
