@@ -11,6 +11,7 @@ add_plugin (yaypeg
 	    CPP_TEST
 	    TEST_README
 	    SOURCES state.cpp
+		    parser.hpp
 		    listener.hpp
 		    listener.cpp
 		    walk.hpp
