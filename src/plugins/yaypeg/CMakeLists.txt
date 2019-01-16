@@ -12,5 +12,7 @@ add_plugin (yaypeg
 	    TEST_README
 	    SOURCES state.hpp
 		    state.cpp
+		    listener.hpp
+		    listener.cpp
 		    yaypeg.hpp
 		    yaypeg.cpp)
