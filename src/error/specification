@@ -1286,3 +1286,9 @@ severity:error
 ingroup:plugin
 module:reference
 macro:REFERENCE_NOT_FOUND
+
+number:205
+description:Connection Error occured
+severity:error
+ingroup:plugin
+module:network
