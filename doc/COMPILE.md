@@ -442,14 +442,20 @@ It is not recommended to use these options.
 
 Build documentation with doxygen (API) and ronn (man pages).
 
+
 #### Developer Options
 
-As developer you should enable `ENABLE_DEBUG` and `ENABLE_LOGGER`.
-By default no logging will take place, see [CODING](/doc/CODING.md)
-for information about logging.
+As developer you should enable `ENABLE_DEBUG` and `ENABLE_LOGGER`:
+- `ENABLE_DEBUG`:
+  - enables assertions
+  - adds RTLD_NODELETE so that debugger finds symbols even after dlclose
+- `ENABLE_LOGGER`:
+  enables logging
+  By default no logging will take place,
+  see [CODING](/doc/CODING.md) for how to get log messages.
 
-Then continue reading [testing](/doc/TESTING.md) for options about
-testing.
+Continue reading [testing](/doc/TESTING.md) for more information about testing.
+
 
 #### `CMAKE_INSTALL_PREFIX`
 
