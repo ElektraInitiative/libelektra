@@ -9,32 +9,15 @@
 - infos/metadata =
 - infos/description = This storage plugin uses a PEG based parser to read YAML files
 
-## Introduction
+# YAy PEG
 
-Copy this yaypeg if you want to start a new
-plugin written in C++.
-
-## Usage
-
-You can use `scripts/copy-yaypeg`
-to automatically rename everything to your
-plugin name:
-
-	cd src/plugins
-	../../scripts/copy-yaypeg yourplugin
-
-Then update the README.md of your newly created plugin:
-
-- enter your full name+email in `infos/author`
-- make sure `status`, `placements`, and other clauses conform to
-  descriptions in `doc/CONTRACT.ini`
-- update the one-line description above
-- and rewrite the rest of this `README.md` to give a great
-  explanation of what your plugin does
+The YAy PEG plugin use a parser based on [PEGTL](https://github.com/taocpp/PEGTL) to convert YAML data to Elektra’s `KeySet` type.
 
 ## Dependencies
 
-None.
+This plugin requires [PEGTL](https://github.com/taocpp/PEGTL/blob/2.7.x/doc/Installing-and-Using.md) `2.7.1`. Previous versions of the
+library might work too. However, neither the current development version of PEGTL (`3.0`), nor the latest version of PEGTL `2.7.x` can be
+used by the plugin because of the issue referenced [here](https://github.com/taocpp/PEGTL/issues/143).
 
 ## Examples
 
@@ -50,4 +33,4 @@ kdb get /tests/yaypeg/key
 
 ## Limitations
 
-None.
+This plugin currently does nothing useful at all.
