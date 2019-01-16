@@ -29,7 +29,6 @@ Then update the README.md of your newly created plugin:
 - make sure `status`, `placements`, and other clauses conform to
   descriptions in `doc/CONTRACT.ini`
 - update the one-line description above
-- add your plugin in `src/plugins/README.md`
 - and rewrite the rest of this `README.md` to give a great
   explanation of what your plugin does
 
