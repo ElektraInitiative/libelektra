@@ -79,4 +79,4 @@ sudo kdb umount user/tests/yaypeg
 
 ## Limitations
 
-This plugin currently does nothing useful at all.
+The plugin has the same limitations as [YAMBi ](../yambi/).
