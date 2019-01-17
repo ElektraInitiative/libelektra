@@ -103,7 +103,7 @@ static int validateKey (Key * key, Key * parentKey)
 /**
  * This method validates the file permission for a certain user
  * The method assumes that the path exists and only validates permission
- * @param key The key containting all metadata
+ * @param key The key containing all metadata
  * @param parentKey The parentKey which is used for error writing
  * @return 1 if success or -1 for failure
  */
