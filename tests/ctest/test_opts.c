@@ -96,7 +96,7 @@ static void clearValues (KeySet * ks)
 
 static void test_simple (void)
 {
-	KeySet * ks = ksNew (50, keyWithOpt (SPEC_BASE_KEY "/apple", 'a', "apple", "APPLE"), KS_END);
+	KeySet * ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple", 'a', "apple", "APPLE"), KS_END);
 
 	RUN_TEST (ks, ARGS ("-a", "short"), NO_ENVP);
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "short"), "short option failed");
@@ -125,7 +125,7 @@ static void test_flag (void)
 {
 	Key * k = keyWithOpt (SPEC_BASE_KEY "/apple", 'a', "apple", NULL);
 	keySetMeta (k, "opt/arg", "none");
-	KeySet * ks = ksNew (50, k, KS_END);
+	KeySet * ks = ksNew (1, k, KS_END);
 
 	RUN_TEST (ks, ARGS ("-a"), NO_ENVP);
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "1"), "short flag failed");
@@ -162,7 +162,7 @@ static void test_flag_value (void)
 	Key * k = keyWithOpt (SPEC_BASE_KEY "/apple", 'a', "apple", NULL);
 	keySetMeta (k, "opt/arg", "none");
 	keySetMeta (k, "opt/flagvalue", "set");
-	KeySet * ks = ksNew (50, k, KS_END);
+	KeySet * ks = ksNew (1, k, KS_END);
 
 	RUN_TEST (ks, ARGS ("-a"), NO_ENVP);
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "set"), "short flag with value failed");
@@ -198,7 +198,7 @@ static void test_optional (void)
 {
 	Key * k = keyWithOpt (SPEC_BASE_KEY "/apple", 'a', "apple", NULL);
 	keySetMeta (k, "opt/arg", "optional");
-	KeySet * ks = ksNew (50, k, KS_END);
+	KeySet * ks = ksNew (1, k, KS_END);
 
 	RUN_TEST (ks, ARGS ("-a"), NO_ENVP);
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "1"), "short flag failed");
@@ -234,7 +234,7 @@ static void test_optional_value (void)
 	Key * k = keyWithOpt (SPEC_BASE_KEY "/apple", 'a', "apple", NULL);
 	keySetMeta (k, "opt/arg", "optional");
 	keySetMeta (k, "opt/flagvalue", "set");
-	KeySet * ks = ksNew (50, k, KS_END);
+	KeySet * ks = ksNew (1, k, KS_END);
 
 	RUN_TEST (ks, ARGS ("-a"), NO_ENVP);
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "set"), "short flag with value failed");
@@ -286,7 +286,7 @@ static void test_multiple (void)
 	keySetMeta (k, "env", "#1");
 	keySetMeta (k, "env/#0", "APPLE");
 	keySetMeta (k, "env/#1", "BANANA");
-	KeySet * ks = ksNew (50, k, KS_END);
+	KeySet * ks = ksNew (1, k, KS_END);
 
 	RUN_TEST (ks, ARGS ("-a", "short"), NO_ENVP);
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "short"), "short option failed");
@@ -346,6 +346,32 @@ static void test_illegal_use (void)
 	// TODO
 }
 
+static void test_help (void)
+{
+	KeySet * ks = ksNew (0, KS_END);
+
+	Key * errorKey = keyNew ("spec/tests/opts", KEY_END);
+
+	succeed_if (elektraGetOpts (ks, ARGS ("-h"), NO_ENVP, errorKey) == 1, "help not generated");
+	succeed_if (elektraGetOpts (ks, ARGS ("-h", "short"), NO_ENVP, errorKey) == 1, "help not generated");
+	succeed_if (elektraGetOpts (ks, ARGS ("--help"), NO_ENVP, errorKey) == 1, "help not generated");
+	succeed_if (elektraGetOpts (ks, ARGS ("--help", "long"), NO_ENVP, errorKey) == 1, "help not generated");
+
+	keyDel (errorKey);
+
+	RUN_TEST_ERROR (ks, errorKey, ARGS ("-hshort"), NO_ENVP);
+	succeed_if (checkError (errorKey, xstr (ELEKTRA_ERROR_OPTS_UNKNOWN_OPTION), "Unknown short option: -s"),
+		    "short help with value (with arg, combined) should have failed");
+	clearValues (ks);
+
+	RUN_TEST_ERROR (ks, errorKey, ARGS ("--help=long"), NO_ENVP);
+	succeed_if (checkError (errorKey, xstr (ELEKTRA_ERROR_OPTS_ILLEGAL_USE), "This option cannot have an argument: --help"),
+		    "long help with value (with arg, combined) should have failed");
+	clearValues (ks);
+
+	ksDel (ks);
+}
+
 int main (int argc, char ** argv)
 {
 	printf (" OPTS   TESTS\n");
@@ -364,6 +390,7 @@ int main (int argc, char ** argv)
 	test_multiple_repeated ();
 	test_illegal_spec ();
 	test_illegal_use ();
+	test_help ();
 
 	print_result ("test_opts");
 

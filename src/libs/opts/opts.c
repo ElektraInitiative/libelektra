@@ -40,6 +40,8 @@ static Key * splitEnvValue (const Key * envKey);
 
 static KeySet * ksMetaGetSingleOrArray (Key * key, const char * metaName);
 
+static char * generateHelpMessage (KeySet * optionsSpec, const char * progname);
+
 /**
  * This functions parses a specification of program options, together with a list of arguments
  * and environment variables to extract the option values.
@@ -47,6 +49,13 @@ static KeySet * ksMetaGetSingleOrArray (Key * key, const char * metaName);
  * The options have to be defined in the metadata of keys in the spec namespace. If an option value
  * is found for any of the given keys, a new key with the same path but inside the proc namespace
  * will be inserted into @p ks. This enables a cascading lookup to find these values.
+ *
+ * If argv contains "-h" or "--help" @p ks will not be changed, instead the value of @p errorKey
+ * will be set to a help message describing available options and 1 will be returned. The program
+ * name used in this message is taken from `argv[0]`. If it contains a '/' only the part after the
+ * last '/' will be used.
+ *
+ * Because "-h" and "--help" are reserved for the help message, neither can be used for anything else.
  *
  * To define a command line option set the `opt` meta-key to the short option. Only the first
  * character of the given value will be used ('\0' is not allowed). You can also set `opt/long`,
@@ -102,14 +111,16 @@ static KeySet * ksMetaGetSingleOrArray (Key * key, const char * metaName);
  * 		strings of the format 'KEY=VALUE'.
  * @param errorKey A key to store an error in, if one occurs.
  *
- * @retval 0 on success
- * @retval -1 on error, the error will be added to @p errorKey
+ * @retval 0	on success
+ * @retval -1	on error, the error will be added to @p errorKey
+ * @retval 1	if help option was found
  */
 int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** envp, Key * errorKey)
 {
-	// TODO: check for duplicate use of option
 	KeySet * keysWithOpts = ksNew (0, KS_END);
-	KeySet * optionsSpec = ksNew (0, KS_END);
+	KeySet * optionsSpec = ksNew (
+		2, keyNew ("/short/h", KEY_META, "hasarg", "none", KEY_META, "kind", "single", KEY_META, "flagvalue", "1", KEY_END),
+		keyNew ("/long/help", KEY_META, "hasarg", "none", KEY_META, "kind", "single", KEY_META, "flagvalue", "1", KEY_END), KS_END);
 
 	cursor_t initial = ksGetCursor (ks);
 
@@ -262,6 +273,30 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 		ksDel (keysWithOpts);
 		return -1;
 	}
+
+	Key * helpKey = ksLookupByName (options, "/short/h", 0);
+	if (helpKey == NULL)
+	{
+		helpKey = ksLookupByName (options, "/long/help", 0);
+	}
+
+	if (helpKey != NULL)
+	{
+		const char * progname = argv[0];
+		char * lastSlash = strrchr (progname, '/');
+		if (lastSlash != NULL)
+		{
+			progname = lastSlash + 1;
+		}
+
+		char * help = generateHelpMessage (optionsSpec, progname);
+		keySetString (errorKey, help);
+		elektraFree (help);
+		ksDel (options);
+		ksDel (keysWithOpts);
+		return 1;
+	}
+
 
 	KeySet * envValues = parseEnvp (envp);
 
@@ -684,4 +719,18 @@ KeySet * ksMetaGetSingleOrArray (Key * key, const char * metaName)
 	}
 
 	return elektraMetaArrayToKS (key, metaName);
+}
+
+/**
+ * Generate help message from optionsSpec.
+ *
+ * @return a newly allocated string, must be freed with elektraFree()
+ */
+char * generateHelpMessage (KeySet * optionsSpec, const char * progname)
+{
+	cursor_t cursor = ksGetCursor (optionsSpec);
+
+	ksSetCursor (optionsSpec, cursor);
+	// TODO
+	return elektraFormat ("Usage: %s TODO\n", progname);
 }
