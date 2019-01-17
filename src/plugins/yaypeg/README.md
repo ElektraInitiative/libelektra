@@ -5,7 +5,7 @@
 - infos/provides = storage/yaml
 - infos/recommends =
 - infos/placements = getstorage
-- infos/status = maintained preview experimental unfinished nodoc concept discouraged
+- infos/status = maintained unittest preview experimental unfinished nodoc concept discouraged
 - infos/metadata =
 - infos/description = This storage plugin uses a PEG based parser to read YAML files
 
