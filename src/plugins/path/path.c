@@ -105,7 +105,7 @@ static int validateKey (Key * key, Key * parentKey)
  * The method assumes that the path exists and only validates permission
  * @param key The key containting all metadata
  * @param parentKey The parentKey which is used for error writing
- * @return 0 if success or -1 for failure
+ * @return 1 if success or -1 for failure
  */
 static int validatePermission (Key * key, Key * parentKey)
 {
@@ -130,7 +130,7 @@ static int validatePermission (Key * key, Key * parentKey)
 		// Check if user exists
 		if (p == NULL)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_USER_NOT_FOUND, parentKey,
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_USER_PERMISSION_ERROR, parentKey,
 					    "Could not find user \"%s\" for key \"%s\". "
 					    "Does the user exist?\"",
 					    name, keyName (key));
@@ -142,7 +142,7 @@ static int validatePermission (Key * key, Key * parentKey)
 		int err = seteuid ((int) p->pw_uid);
 		if (err < 0)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CHANGE_USER_ERROR, parentKey,
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_USER_PERMISSION_ERROR, parentKey,
 					    "Could not set euid of user \"%s\" for key \"%s\"."
 					    " Are you running kdb as root?\"",
 					    name, keyName (key));
@@ -156,7 +156,7 @@ static int validatePermission (Key * key, Key * parentKey)
 		name = p->pw_name;
 		if (uid != 0)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CHANGE_USER_ERROR, parentKey,
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_USER_PERMISSION_ERROR, parentKey,
 					    "To check permissions for %s I need to be the root user."
 					    " Are you running kdb as root?\"",
 					    keyName (key));
@@ -186,7 +186,7 @@ static int validatePermission (Key * key, Key * parentKey)
 		int gidErr = setegid ((int) gr->gr_gid);
 		if (gidErr < 0)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CHANGE_USER_ERROR, parentKey,
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_USER_PERMISSION_ERROR, parentKey,
 					    "Could not set egid of user \"%s\" for key \"%s\"."
 					    " Are you running kdb as root?\"",
 					    name, keyName (key));
@@ -227,7 +227,7 @@ static int validatePermission (Key * key, Key * parentKey)
 
 	if (euidResult != 0 || egidResult != 0)
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CHANGE_USER_ERROR, parentKey,
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_USER_PERMISSION_ERROR, parentKey,
 				   "There was a problem in the user switching process."
 				   "Please report the issue at https://issues.libelektra.org");
 		return -1;

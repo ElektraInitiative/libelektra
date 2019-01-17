@@ -1316,7 +1316,7 @@ description:Could not change to user. You might want to try as root (use sudo !!
 severity:error
 ingroup:plugin
 module:path
-macro:CHANGE_USER_ERROR
+macro:USER_PERMISSION_ERROR
 
 number:210
 description:Detected incorrect permissions for file/directory
