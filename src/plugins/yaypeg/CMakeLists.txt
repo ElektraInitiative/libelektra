@@ -9,6 +9,7 @@ add_plugin (yaypeg
 	    CPP
 	    ADD_TEST
 	    CPP_TEST
+	    INSTALL_TEST_DATA
 	    TEST_README
 	    TEST_REQUIRED_PLUGINS directoryvalue
 				  sync
