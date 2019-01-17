@@ -80,13 +80,13 @@ KDBType elektraGetType (Elektra * elektra, const char * keyname)
 }
 
 /**
- * Get the raw value of a key.
+ * Get the raw string value of a key.
  *
  * @param elektra The Elektra instance to use.
  * @param name    The (relative) name of the key.
  * @return the raw value of the specified key or NULL, if the key was not found
  */
-const char * elektraGetValue (Elektra * elektra, const char * name)
+const char * elektraGetRawString (Elektra * elektra, const char * name)
 {
 	elektraSetLookupKey (elektra, name);
 	Key * const resultKey = ksLookup (elektra->config, elektra->lookupKey, 0);
@@ -94,7 +94,7 @@ const char * elektraGetValue (Elektra * elektra, const char * name)
 }
 
 /**
- * Set the raw value of a key.
+ * Set the raw string value of a key.
  *
  * @param elektra The Elektra instance to use.
  * @param name    The (relative) name of the key.
@@ -102,7 +102,7 @@ const char * elektraGetValue (Elektra * elektra, const char * name)
  * @param type    The type to set in the metadata of the key.
  * @param error   Pointer to an ElektraError. Will be set in case saving fails.
  */
-void elektraSetValue (Elektra * elektra, const char * name, const char * value, KDBType type, ElektraError ** error)
+void elektraSetRawString (Elektra * elektra, const char * name, const char * value, KDBType type, ElektraError ** error)
 {
 	CHECK_ERROR (elektra, error);
 	elektraSetLookupKey (elektra, name);
@@ -328,7 +328,7 @@ int elektraGetEnumInt (Elektra * elektra, const char * keyname)
 		*error = elektraErrorConversionToString (KDB_TYPE);                                                                        \
 		return;                                                                                                                    \
 	}                                                                                                                                  \
-	elektraSetValue (elektra, keyname, string, KDB_TYPE, error);                                                                       \
+	elektraSetRawString (elektra, keyname, string, KDB_TYPE, error);                                                                   \
 	elektraFree (string);
 
 /**
@@ -343,7 +343,7 @@ int elektraGetEnumInt (Elektra * elektra, const char * keyname)
 void elektraSetString (Elektra * elektra, const char * keyname, const char * value, ElektraError ** error)
 {
 	CHECK_ERROR (elektra, error);
-	elektraSetValue (elektra, keyname, value, KDB_TYPE_STRING, error);
+	elektraSetRawString (elektra, keyname, value, KDB_TYPE_STRING, error);
 }
 
 /**

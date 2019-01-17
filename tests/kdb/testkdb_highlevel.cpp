@@ -849,23 +849,23 @@ TEST_F (Highlevel, Raw)
 	elektraSetLongArrayElement (elektra, "longarray", 2, 17, &error);
 	elektraSetLongArrayElement (elektra, "longarray", 3, 18, &error);
 
-	elektraSetValue (elektra, "rawshortkey", "2", "short", &error);
-	elektraSetValue (elektra, "rawdoublekey", "2.25", "double", &error);
-	elektraSetValue (elektra, "rawkey", "aaa", "araw", &error);
-	elektraSetArrayElementValue (elektra, "rawlongarray", 0, "15", "long", &error);
-	elektraSetArrayElementValue (elektra, "rawlongarray", 1, "16", "long", &error);
-	elektraSetArrayElementValue (elektra, "rawarray", 4, "aadd", "ttt", &error);
+	elektraSetRawString (elektra, "rawshortkey", "2", "short", &error);
+	elektraSetRawString (elektra, "rawdoublekey", "2.25", "double", &error);
+	elektraSetRawString (elektra, "rawkey", "aaa", "araw", &error);
+	elektraSetRawStringArrayElement (elektra, "rawlongarray", 0, "15", "long", &error);
+	elektraSetRawStringArrayElement (elektra, "rawlongarray", 1, "16", "long", &error);
+	elektraSetRawStringArrayElement (elektra, "rawarray", 4, "aadd", "ttt", &error);
 
 	ASSERT_EQ (error, nullptr) << "elektraSet* failed: " << &error << std::endl;
 
-	EXPECT_STREQ (elektraGetValue (elektra, "longkey"), "2") << "Wrong key value.";
-	EXPECT_STREQ (std::string (elektraGetValue (elektra, "floatkey")).substr (0, 4).c_str (), "2.25") << "Wrong key value.";
-	EXPECT_STREQ (elektraGetValue (elektra, "stringkey"), "abc") << "Wrong key value.";
+	EXPECT_STREQ (elektraGetRawString (elektra, "longkey"), "2") << "Wrong key value.";
+	EXPECT_STREQ (std::string (elektraGetRawString (elektra, "floatkey")).substr (0, 4).c_str (), "2.25") << "Wrong key value.";
+	EXPECT_STREQ (elektraGetRawString (elektra, "stringkey"), "abc") << "Wrong key value.";
 
-	EXPECT_STREQ (elektraGetArrayElementValue (elektra, "longarray", 0), "15") << "Wrong key value.";
-	EXPECT_STREQ (elektraGetArrayElementValue (elektra, "longarray", 1), "16") << "Wrong key value.";
-	EXPECT_STREQ (elektraGetArrayElementValue (elektra, "longarray", 2), "17") << "Wrong key value.";
-	EXPECT_STREQ (elektraGetArrayElementValue (elektra, "longarray", 3), "18") << "Wrong key value.";
+	EXPECT_STREQ (elektraGetRawStringArrayElement (elektra, "longarray", 0), "15") << "Wrong key value.";
+	EXPECT_STREQ (elektraGetRawStringArrayElement (elektra, "longarray", 1), "16") << "Wrong key value.";
+	EXPECT_STREQ (elektraGetRawStringArrayElement (elektra, "longarray", 2), "17") << "Wrong key value.";
+	EXPECT_STREQ (elektraGetRawStringArrayElement (elektra, "longarray", 3), "18") << "Wrong key value.";
 
 	EXPECT_EQ (elektraGetShort (elektra, "rawshortkey"), 2) << "Wrong key value.";
 
@@ -874,11 +874,11 @@ TEST_F (Highlevel, Raw)
 	EXPECT_EQ (elektraGetLongArrayElement (elektra, "rawlongarray", 0), 15) << "Wrong key value.";
 	EXPECT_EQ (elektraGetLongArrayElement (elektra, "rawlongarray", 1), 16) << "Wrong key value.";
 
-	EXPECT_STREQ (elektraGetValue (elektra, "rawkey"), "aaa") << "Wrong key value.";
+	EXPECT_STREQ (elektraGetRawString (elektra, "rawkey"), "aaa") << "Wrong key value.";
 	EXPECT_STREQ (elektraGetType (elektra, "rawkey"), "araw") << "Wrong key value.";
 
 	EXPECT_STREQ (elektraGetArrayElementType (elektra, "rawarray", 4), "ttt") << "Wrong key value.";
-	EXPECT_STREQ (elektraGetArrayElementValue (elektra, "rawarray", 4), "aadd") << "Wrong key value.";
+	EXPECT_STREQ (elektraGetRawStringArrayElement (elektra, "rawarray", 4), "aadd") << "Wrong key value.";
 }
 
 TEST_F (Highlevel, EnforceMetadata)

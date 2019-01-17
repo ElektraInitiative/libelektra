@@ -121,7 +121,7 @@ typedef struct _Elektra Elektra;
 			*error = elektraErrorConversionToString (KDB_TYPE);                                                                \
 			return;                                                                                                            \
 		}                                                                                                                          \
-		elektraSetValue (elektra, tag->keyName, string, KDB_TYPE, error);                                                          \
+		elektraSetRawString (elektra, tag->keyName, string, KDB_TYPE, error);                                                      \
 		elektraFree (string);                                                                                                      \
 	}                                                                                                                                  \
                                                                                                                                            \
@@ -133,7 +133,7 @@ typedef struct _Elektra Elektra;
 			*error = elektraErrorConversionToString (KDB_TYPE);                                                                \
 			return;                                                                                                            \
 		}                                                                                                                          \
-		elektraSetArrayElementValue (elektra, tag->keyName, index, string, KDB_TYPE, error);                                       \
+		elektraSetRawStringArrayElement (elektra, tag->keyName, index, string, KDB_TYPE, error);                                   \
 		elektraFree (string);                                                                                                      \
 	}                                                                                                                                  \
                                                                                                                                            \
@@ -253,7 +253,7 @@ void elektraFatalError (Elektra * elektra, ElektraError * fatalError);
  *
  **************************************/
 
-const char * elektraGetValue (Elektra * elektra, const char * name);
+const char * elektraGetRawString (Elektra * elektra, const char * name);
 const char * elektraGetString (Elektra * elektra, const char * keyname);
 kdb_boolean_t elektraGetBoolean (Elektra * elektra, const char * keyname);
 kdb_char_t elektraGetChar (Elektra * elektra, const char * keyname);
@@ -290,7 +290,7 @@ int elektraGetEnumInt (Elektra * elektra, const char * keyName);
  *
  **************************************/
 
-void elektraSetValue (Elektra * elektra, const char * name, const char * value, KDBType type, ElektraError ** error);
+void elektraSetRawString (Elektra * elektra, const char * name, const char * value, KDBType type, ElektraError ** error);
 void elektraSetString (Elektra * elektra, const char * keyName, const char * value, ElektraError ** error);
 void elektraSetBoolean (Elektra * elektra, const char * keyname, kdb_boolean_t value, ElektraError ** error);
 void elektraSetChar (Elektra * elektra, const char * keyname, kdb_char_t value, ElektraError ** error);
@@ -332,7 +332,7 @@ size_t elektraArraySize (Elektra * elektra, const char * keyName);
  *
  **************************************/
 
-const char * elektraGetArrayElementValue (Elektra * elektra, const char * name, size_t index);
+const char * elektraGetRawStringArrayElement (Elektra * elektra, const char * name, size_t index);
 const char * elektraGetStringArrayElement (Elektra * elektra, const char * keyname, size_t index);
 kdb_boolean_t elektraGetBooleanArrayElement (Elektra * elektra, const char * keyname, size_t index);
 kdb_char_t elektraGetCharArrayElement (Elektra * elektra, const char * keyname, size_t index);
@@ -370,8 +370,8 @@ int elektraGetEnumIntArrayElement (Elektra * elektra, const char * keyName, size
  *
  **************************************/
 
-void elektraSetArrayElementValue (Elektra * elektra, const char * name, size_t index, const char * value, KDBType type,
-				  ElektraError ** error);
+void elektraSetRawStringArrayElement (Elektra * elektra, const char * name, size_t index, const char * value, KDBType type,
+				      ElektraError ** error);
 void elektraSetStringArrayElement (Elektra * elektra, const char * keyname, size_t index, const char * value, ElektraError ** error);
 void elektraSetBooleanArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_boolean_t value, ElektraError ** error);
 void elektraSetCharArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_char_t value, ElektraError ** error);

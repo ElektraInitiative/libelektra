@@ -17,7 +17,7 @@ use it in your source file, just include the main header with `#include <elektra
 
 The API contains one header that is not automatically included from `elektra.h`. You can use it with `#include <elektra/conversion.h>`.
 The header provides the functions Elektra uses to convert your configuration values to and from strings. In most cases, you won't need
-to use these functions directly, but the might still be useful sometimes (e.g. in combination with `elektraGetType` and `elektraGetValue`).
+to use these functions directly, but the might still be useful sometimes (e.g. in combination with `elektraGetType` and `elektraGetRawString`).
 
 ## Quickstart
 The quickest way to get started is to adapt the following piece of code to your needs:
@@ -278,20 +278,20 @@ void elektraSetEnumIntArrayElement (Elektra * elektra, char * name, size_t index
 ```
 
 ### Raw Values
-You can use `const char * elektraGetValue (Elektra * elektra, const char * name)` to read the raw (string) value of a key. No type checking
+You can use `const char * elektraGetRawString (Elektra * elektra, const char * name)` to read the raw (string) value of a key. No type checking
 or type conversion will be attempted. Additionally this function is guaranteed to not call the fatal error handler. It will simply return
 `NULL`, if the key was not found.
 
 If you want to set a raw value (e.g. if you want to extend the API with your own custom types), use
-`void elektraSetValue (Elektra * elektra, const char * name, const char * value, KDBType type, ElektraError ** error)`. Obviously you have
+`void elektraSetRawString (Elektra * elektra, const char * name, const char * value, KDBType type, ElektraError ** error)`. Obviously you have
 to provide a type for the value you set, so that the API can perform type checking, when reading the value next time.
 
 Similar functions are provided for array elements:
 
 ```c
-const char * elektraGetArrayElementValue (Elektra * elektra, const char * name, size_t index)
+const char * elektraGetRawStringArrayElement (Elektra * elektra, const char * name, size_t index)
 
-void elektraSetArrayElementValue (Elektra * elektra, const char * name, size_t index, const char * value, KDBType type, ElektraError ** error)
+void elektraSetRawStringArrayElement (Elektra * elektra, const char * name, size_t index, const char * value, KDBType type, ElektraError ** error)
 ```
 
 #### Type Information
