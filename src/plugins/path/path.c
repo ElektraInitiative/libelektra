@@ -105,7 +105,8 @@ static int validateKey (Key * key, Key * parentKey)
  * The method assumes that the path exists and only validates permission
  * @param key The key containing all metadata
  * @param parentKey The parentKey which is used for error writing
- * @return 1 if success or -1 for failure
+ * @retval 1 if success
+ * @retval -1 for failure
  */
 static int validatePermission (Key * key, Key * parentKey)
 {
@@ -113,7 +114,7 @@ static int validatePermission (Key * key, Key * parentKey)
 	gid_t currentGID = getegid ();
 
 	const Key * userMeta = keyGetMeta (key, "check/permission/user");
-	const Key * userTypes = keyGetMeta (key, "check/permission/types");
+	const Key * userTypes = keyGetMeta (key, "check/permission/mode");
 
 	// ***** central variables *******
 	const char * validPath = keyString (key);
@@ -121,10 +122,28 @@ static int validatePermission (Key * key, Key * parentKey)
 	const char * modes = keyString (userTypes);
 	// ****************************
 
+	int modeMask = 0;
+	if (strchr (modes, 'r') == NULL)
+	{
+		modeMask |= R_OK;
+	}
+	if (strchr (modes, 'w') == NULL)
+	{
+		modeMask |= W_OK;
+	}
+	if (strchr (modes, 'x') == NULL)
+	{
+		modeMask |= X_OK;
+	}
+
+	int isRead = (strchr (modes, 'r') == NULL) ? 0 : 1;
+	int isWrite = (strchr (modes, 'w') == NULL) ? 0 : 1;
+	int isExecute = (strchr (modes, 'x') == NULL) ? 0 : 1;
+
 	struct passwd * p;
 
 	// Changing to specified user. Can only be done when executing user is root user
-	if (userMeta)
+	if (userMeta && name[0] != '\0')
 	{
 		p = getpwnam (name);
 		// Check if user exists
@@ -148,6 +167,18 @@ static int validatePermission (Key * key, Key * parentKey)
 					    name, keyName (key));
 			return -1;
 		}
+	}
+	else if (userMeta)
+	{
+		struct passwd * currUser = getpwuid (getuid ());
+		int result = access (validPath, modeMask);
+		if (result != 0)
+		{
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INVALID_PERMISSION, parentKey,
+					    "User %s does not have required permission (%s) on %s", currUser->pw_name, modes, validPath);
+			return -1;
+		}
+		return 1;
 	}
 	else
 	{
@@ -195,10 +226,6 @@ static int validatePermission (Key * key, Key * parentKey)
 	elektraFree (groups);
 
 	// Actual checks are done
-	int isRead = (strchr (modes, 'r') == NULL) ? 0 : 1;
-	int isWrite = (strchr (modes, 'w') == NULL) ? 0 : 1;
-	int isExecute = (strchr (modes, 'x') == NULL) ? 0 : 1;
-
 	char errorMessage[30];
 	errorMessage[0] = '\0'; // strcat() searches for this, otherwise it will print garbage chars at start
 	int isError = 0;
@@ -274,7 +301,7 @@ int elektraPathSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 		rc = validateKey (cur, parentKey);
 		if (rc <= 0) return -1;
 
-		const Key * accessMeta = keyGetMeta (cur, "check/permission/types");
+		const Key * accessMeta = keyGetMeta (cur, "check/permission/mode");
 		if (!accessMeta) continue;
 		rc = validatePermission (cur, parentKey);
 		if (!rc) return -1;
