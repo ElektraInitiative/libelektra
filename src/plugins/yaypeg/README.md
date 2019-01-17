@@ -21,15 +21,28 @@ used by the plugin because of the issue referenced [here](https://github.com/tao
 
 ## Examples
 
+### Mappings
+
 ```sh
 # Mount plugin
 sudo kdb mount config.yaml user/tests/yaypeg yaypeg
 
-kdb set user/tests/yaypeg/key value
-#> Create a new key user/tests/yaypeg/key with string "value"
+# Add some values
+kdb set user/tests/yaypeg/movements/deadly 'Dull'
+kdb set user/tests/yaypeg/movements/deep 'Red'
 
-kdb get /tests/yaypeg/key
-#> value
+# Manually add a key
+printf 'Rosalía: El Mal Querer' >> `kdb file user/tests/yaypeg`
+
+# List keys
+kdb ls user/tests/yaypeg
+#> user/tests/yaypeg/Rosalía
+#> user/tests/yaypeg/movements/deadly
+#> user/tests/yaypeg/movements/deep
+
+# Retrieve a value
+kdb get user/tests/yaypeg/Rosalía
+#> El Mal Querer
 
 # Undo modifications
 kdb rm -r user/tests/yaypeg
