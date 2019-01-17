@@ -10,6 +10,9 @@ add_plugin (yaypeg
 	    ADD_TEST
 	    CPP_TEST
 	    TEST_README
+	    TEST_REQUIRED_PLUGINS directoryvalue
+				  sync
+				  yamlsmith
 	    SOURCES state.cpp
 		    parser.hpp
 		    listener.hpp
