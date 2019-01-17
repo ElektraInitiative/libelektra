@@ -10,6 +10,8 @@
 
 #include <iostream>
 
+#include <kdblogger.h>
+
 #include "listener.hpp"
 #include "walk.hpp"
 
@@ -172,12 +174,7 @@ namespace yaypeg
  */
 void walk (Listener & listener, node const & node)
 {
-	using std::cerr;
-	using std::endl;
-
-	cerr << "\n— Tree ————\n" << endl;
-
-	cerr << toString (node) << "\n" << endl;
+	ELEKTRA_LOG_DEBUG ("Parse tree: %s", toString (node).c_str ());
 
 	// If the document contains only one a single value we call `exitValue`
 	// for that function. We need to handle that special case to not add
