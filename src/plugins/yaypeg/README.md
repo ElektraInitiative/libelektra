@@ -32,7 +32,7 @@ kdb set user/tests/yaypeg/movements/deadly 'Dull'
 kdb set user/tests/yaypeg/movements/deep 'Red'
 
 # Manually add a key
-printf 'Rosalía: El Mal Querer' >> `kdb file user/tests/yaypeg`
+printf 'Rosalía: El#Mal#Querer' >> `kdb file user/tests/yaypeg`
 
 # List keys
 kdb ls user/tests/yaypeg
@@ -42,7 +42,7 @@ kdb ls user/tests/yaypeg
 
 # Retrieve a value
 kdb get user/tests/yaypeg/Rosalía
-#> El Mal Querer
+#> El#Mal#Querer
 
 # Undo modifications
 kdb rm -r user/tests/yaypeg

@@ -752,11 +752,32 @@ struct ns_plain_safe_out : ns_char
 struct ns_plain_safe_in : seq<not_at<c_flow_indicator>, ns_char>
 {
 };
-// [130] (Incomplete)
-struct ns_plain_char : sor<seq<not_at<one<':', '#'>>, ns_plain_safe>, seq<one<':'>, at<ns_plain_safe>>>
+// [130]
+struct ns_char_preceding
+{
+	using analyze_t = tao::TAO_PEGTL_NAMESPACE::analysis::generic<tao::TAO_PEGTL_NAMESPACE::analysis::rule_type::ANY>;
+
+	template <tao::TAO_PEGTL_NAMESPACE::apply_mode, tao::TAO_PEGTL_NAMESPACE::rewind_mode, template <typename...> class,
+		  template <typename...> class, typename Input>
+	static bool match (Input & input, State &)
+	{
+		if (input.current () == input.begin ())
+		{
+			return true;
+		}
+		auto last = input.current () - 1;
+
+		if (*last == '\n' || *last == 0xFEFF || *last == ' ' || *last == '\t')
+		{
+			return false;
+		}
+		return *last == 0x85 || (*last > ' ' && *last <= 0x7E) || (*last >= 0xA0 && *last <= 0xD7FF) ||
+		       (*last >= 0xE000 && *last <= 0xFFFD) || (*last >= 0x10000 && *last <= 0x10FFFF);
+	}
+};
+struct ns_plain_char : sor<seq<not_at<one<':', '#'>>, ns_plain_safe>, seq<ns_char_preceding, one<'#'>>, seq<one<':'>, at<ns_plain_safe>>>
 {
 };
-
 // [131]
 struct ns_plain_multi_line;
 struct ns_plain_one_line;
