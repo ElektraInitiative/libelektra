@@ -42,6 +42,8 @@ bool ends_with (std::string const & text, std::string const & ending)
 	return ending.size () > text.size () ? false : std::equal (ending.rbegin (), ending.rend (), text.rbegin ());
 }
 
+#ifdef HAVE_LOGGER
+
 /**
  * @brief This function returns the string representation of a tree node.
  *
@@ -71,6 +73,8 @@ string toString (node const & node, string const indent = "")
 	}
 	return representation;
 }
+
+#endif
 
 /**
  * @brief This function will be called before the walker enters a tree node.
