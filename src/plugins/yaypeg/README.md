@@ -49,6 +49,34 @@ kdb rm -r user/tests/yaypeg
 sudo kdb umount user/tests/yaypeg
 ```
 
+### Arrays
+
+```sh
+# Mount plugin
+sudo kdb mount config.yaml user/tests/yaypeg yaypeg
+
+# Manually add some values
+printf 'ponies:\n'               >  `kdb file user/tests/yaypeg`
+printf ' - Flutter Shy # Yay!\n' >> `kdb file user/tests/yaypeg`
+printf ' - Pinkie Pie\n'         >> `kdb file user/tests/yaypeg`
+printf ' - Maud Pie'             >> `kdb file user/tests/yaypeg`
+
+# List array keys
+kdb ls user/tests/yaypeg
+#> user/tests/yaypeg/ponies
+#> user/tests/yaypeg/ponies/#0
+#> user/tests/yaypeg/ponies/#1
+#> user/tests/yaypeg/ponies/#2
+
+# Retrieve last array entry
+kdb get user/tests/yaypeg/ponies/$(kdb getmeta user/tests/yaypeg/ponies array)
+#> Maud Pie
+
+# Undo modifications
+kdb rm -r user/tests/yaypeg
+sudo kdb umount user/tests/yaypeg
+```
+
 ## Limitations
 
 This plugin currently does nothing useful at all.
