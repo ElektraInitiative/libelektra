@@ -78,6 +78,7 @@ RUN apt-get update \
         virtualenv \
         bison \
         uuid-dev \
+        ninja-build \
     && rm -rf /var/lib/apt/lists/*
 
 RUN cabal update && cabal install hspec QuickCheck
@@ -116,9 +117,9 @@ RUN cd /tmp \
     && cd antlr4/runtime/Cpp \
     && mkdir build \
     && cd build \
-    && cmake -DANTLR_JAR_LOCATION=/usr/local/lib/antlr.jar -DCMAKE_BUILD_TYPE=Release .. \
-    && make \
-    && make install \
+    && cmake -GNinja -DANTLR_JAR_LOCATION=/usr/local/lib/antlr.jar -DCMAKE_BUILD_TYPE=Release .. \
+    && ninja \
+    && ninja install \
     && cd /tmp \
     && rm -r antlr4
 
@@ -148,9 +149,9 @@ RUN cd /tmp \
     && cd yaml-cpp \
     && mkdir build \
     && cd build \
-    && cmake -DYAML_CPP_BUILD_TESTS=OFF -DBUILD_SHARED_LIBS=ON .. \
-    && make \
-    && make install \
+    && cmake -GNinja -DYAML_CPP_BUILD_TESTS=OFF -DBUILD_SHARED_LIBS=ON .. \
+    && ninja \
+    && ninja install \
     && cd ../.. \
     && rm -r yaml-cpp
 
