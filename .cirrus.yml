@@ -5,6 +5,7 @@ task:
 
   install_script:
     - pkg install -y cmake
+    - pkg install -y git
 
   script:
     - mkdir build
