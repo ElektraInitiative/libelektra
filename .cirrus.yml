@@ -15,4 +15,4 @@ task:
     - ninja
 
   tests_script:
-    - ninja -C build test
+    - cd build && ctest --output-on-failure -E pluginprocess
