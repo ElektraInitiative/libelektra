@@ -131,6 +131,59 @@ static void test_simple (void)
 	ksDel (ks);
 }
 
+static void test_short_only (void)
+{
+	KeySet * ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple", 'a', NULL, NULL), KS_END);
+
+	RUN_TEST (ks, NO_ARGS, NO_ENVP);
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", NULL), "no option failed");
+	clearValues (ks);
+
+	RUN_TEST (ks, ARGS ("-a", "short"), NO_ENVP);
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "short"), "short option failed");
+	clearValues (ks);
+
+	RUN_TEST (ks, ARGS ("-ashort"), NO_ENVP);
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "short"), "short option (combined) failed");
+	clearValues (ks);
+
+	ksDel (ks);
+}
+
+static void test_long_only (void)
+{
+	KeySet * ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple", 0, "apple", NULL), KS_END);
+
+	RUN_TEST (ks, NO_ARGS, NO_ENVP);
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", NULL), "no option failed");
+	clearValues (ks);
+
+	RUN_TEST (ks, ARGS ("--apple", "long"), NO_ENVP);
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "long"), "long option failed");
+	clearValues (ks);
+
+	RUN_TEST (ks, ARGS ("--apple=long"), NO_ENVP);
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "long"), "long option (combined) failed");
+	clearValues (ks);
+
+	ksDel (ks);
+}
+
+static void test_env_only (void)
+{
+	KeySet * ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple", 0, NULL, "APPLE"), KS_END);
+
+	RUN_TEST (ks, NO_ARGS, NO_ENVP);
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", NULL), "no option failed");
+	clearValues (ks);
+
+	RUN_TEST (ks, NO_ARGS, ENVP ("APPLE=env"));
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "env"), "env-var failed");
+	clearValues (ks);
+
+	ksDel (ks);
+}
+
 static void test_flag (void)
 {
 	Key * k = keyWithOpt (SPEC_BASE_KEY "/apple", 'a', "apple", NULL);
@@ -402,13 +455,67 @@ static void test_illegal_spec (void)
 	// illegal flagvalue
 	// ---
 
-	// TODO
+	Key * k = keyNew (SPEC_BASE_KEY "/apple", KEY_END);
+	keySetMeta (k, "opt", "a");
+	keySetMeta (k, "opt/flagvalue", "set");
+	KeySet * ks = ksNew (1, k, KS_END);
+
+	Key * errorKey;
+	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
+	succeed_if (checkError (errorKey, xstr (ELEKTRA_ERROR_OPTS_ILLEGAL_SPEC),
+				"The flagvalue metadata can only be used, if the opt/arg metadata is set to 'none' or 'optional'. "
+				"(key: " SPEC_BASE_KEY "/apple)"),
+		    "flagvalue should be illegal");
+	clearValues (ks);
+
+	ksDel (ks);
 
 	// ---
-	// duplicate option
+	// duplicate option (short)
 	// ---
 
-	// TODO
+	ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple", 'a', NULL, NULL), keyWithOpt (SPEC_BASE_KEY "/banana", 'a', NULL, NULL), KS_END);
+
+	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
+	succeed_if (checkError (errorKey, xstr (ELEKTRA_ERROR_OPTS_ILLEGAL_SPEC),
+				"The option '-a' has already been specified for the key '" SPEC_BASE_KEY
+				"/apple'. Additional key: " SPEC_BASE_KEY "/banana"),
+		    "duplicate short option should be illegal");
+	clearValues (ks);
+
+	ksDel (ks);
+
+	// ---
+	// duplicate option (long)
+	// ---
+
+	ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple", 0, "apple", NULL), keyWithOpt (SPEC_BASE_KEY "/banana", 0, "apple", NULL),
+		    KS_END);
+
+	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
+	succeed_if (checkError (errorKey, xstr (ELEKTRA_ERROR_OPTS_ILLEGAL_SPEC),
+				"The option '--apple' has already been specified for the key '" SPEC_BASE_KEY
+				"/apple'. Additional key: " SPEC_BASE_KEY "/banana"),
+		    "duplicate long option should be illegal");
+	clearValues (ks);
+
+	ksDel (ks);
+
+	// ---
+	// args remaining not array
+	// ---
+
+	k = keyNew (SPEC_BASE_KEY "/apple", KEY_END);
+	keySetMeta (k, "args", "remaining");
+	ks = ksNew (1, k, KS_END);
+
+	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
+	succeed_if (checkError (errorKey, xstr (ELEKTRA_ERROR_OPTS_ILLEGAL_SPEC),
+				"'args=remaining' can only be set on array keys (basename = '#'). Offending key: " SPEC_BASE_KEY "/apple"),
+		    "non-array remaining args should be illegal");
+	clearValues (ks);
+
+	ksDel (ks);
 }
 
 static void test_illegal_use (void)
@@ -417,25 +524,60 @@ static void test_illegal_use (void)
 	// illegal repeat
 	// ---
 
-	// TODO
+	KeySet * ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple", 'a', "apple", NULL), KS_END);
+
+	Key * errorKey;
+	RUN_TEST_ERROR (ks, errorKey, ARGS ("-ashort0", "-ashort1"), NO_ENVP);
+	succeed_if (checkError (errorKey, xstr (ELEKTRA_ERROR_OPTS_ILLEGAL_USE), "This option cannot be repeated: -a"),
+		    "repeat should be illegal (short)");
+	clearValues (ks);
+
+	RUN_TEST_ERROR (ks, errorKey, ARGS ("--apple", "long0", "--apple", "long1"), NO_ENVP);
+	succeed_if (checkError (errorKey, xstr (ELEKTRA_ERROR_OPTS_ILLEGAL_USE), "This option cannot be repeated: --apple"),
+		    "repeat should be illegal (long)");
+	clearValues (ks);
+
+	ksDel (ks);
 
 	// ---
 	// missing argument
 	// ---
 
-	// TODO
+	ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple", 'a', "apple", NULL), KS_END);
 
+	RUN_TEST_ERROR (ks, errorKey, ARGS ("-a"), NO_ENVP);
+	succeed_if (checkError (errorKey, xstr (ELEKTRA_ERROR_OPTS_ILLEGAL_USE), "Missing argument for short option: -a"),
+		    "missing argument (short) failed");
+	clearValues (ks);
+
+	RUN_TEST_ERROR (ks, errorKey, ARGS ("--apple"), NO_ENVP);
+	succeed_if (checkError (errorKey, xstr (ELEKTRA_ERROR_OPTS_ILLEGAL_USE), "Missing argument for long option: --apple"),
+		    "missing argument (long) failed");
+	clearValues (ks);
+
+	ksDel (ks);
 	// ---
 	// argument not allowed
 	// ---
 
-	// TODO
+	Key * k = keyNew (SPEC_BASE_KEY "/apple", KEY_END);
+	keySetMeta (k, "opt", "a");
+	keySetMeta (k, "opt/long", "apple");
+	keySetMeta (k, "opt/arg", "none");
+	ks = ksNew (1, k, KS_END);
+
+	RUN_TEST_ERROR (ks, errorKey, ARGS ("--apple=short"), NO_ENVP);
+	succeed_if (checkError (errorKey, xstr (ELEKTRA_ERROR_OPTS_ILLEGAL_USE), "This option cannot have an argument: --apple"),
+		    "argument should not be allowed");
+	clearValues (ks);
+
+	ksDel (ks);
 
 	// ---
 	// multiple repeated
 	// ---
 
-	Key * k = keyNew (SPEC_BASE_KEY "/apple/#", KEY_END);
+	k = keyNew (SPEC_BASE_KEY "/apple/#", KEY_END);
 	keySetMeta (k, "opt", "#1");
 	keySetMeta (k, "opt/#0", "a");
 	keySetMeta (k, "opt/#0/long", "apple");
@@ -444,9 +586,8 @@ static void test_illegal_use (void)
 	keySetMeta (k, "env", "#1");
 	keySetMeta (k, "env/#0", "APPLE");
 	keySetMeta (k, "env/#1", "BANANA");
-	KeySet * ks = ksNew (1, k, KS_END);
+	ks = ksNew (1, k, KS_END);
 
-	Key * errorKey;
 	RUN_TEST_ERROR (ks, errorKey, ARGS ("-a", "short0", "-ashort1", "-a", "short2", "-b", "short3", "-bshort4"), NO_ENVP);
 	succeed_if (checkError (errorKey, xstr (ELEKTRA_ERROR_OPTS_ILLEGAL_USE),
 				"The option '-b' cannot be used, because another option has already been used for the key "
@@ -469,12 +610,6 @@ static void test_illegal_use (void)
 			    "'" SPEC_BASE_KEY "/apple/#'."),
 		"multiple repeated env-vars should have failed");
 	clearValues (ks);
-
-	// ---
-	// args remaining not array
-	// ---
-
-	// TODO
 
 	ksDel (ks);
 }
@@ -562,6 +697,9 @@ int main (int argc, char ** argv)
 	init (argc, argv);
 
 	test_simple ();
+	test_short_only ();
+	test_long_only ();
+	test_env_only ();
 	test_flag ();
 	test_flag_value ();
 	test_optional ();

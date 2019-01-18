@@ -198,10 +198,11 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 					{
 						ELEKTRA_SET_ERRORF (
 							ELEKTRA_ERROR_OPTS_ILLEGAL_SPEC, errorKey,
-							"The option '-%c' has already been specified for the key '%s'. Offending key: %s",
+							"The option '-%c' has already been specified for the key '%s'. Additional key: %s",
 							shortOpt[0], keyGetMetaString (existing, "key"), keyName (cur));
 						keyDel (optSpec);
 						keyDel (existing);
+						ksDel (opts);
 						ksDel (optionsSpec);
 						ksDel (keysWithOpts);
 						return -1;
@@ -233,10 +234,11 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 					{
 						ELEKTRA_SET_ERRORF (
 							ELEKTRA_ERROR_OPTS_ILLEGAL_SPEC, errorKey,
-							"The option '--%s' has already been specified for the key '%s'. Offending key: %s",
+							"The option '--%s' has already been specified for the key '%s'. Additional key: %s",
 							longOpt, keyGetMetaString (existing, "key"), keyName (cur));
 						keyDel (optSpec);
 						keyDel (existing);
+						ksDel (opts);
 						ksDel (optionsSpec);
 						ksDel (keysWithOpts);
 						return -1;
@@ -304,11 +306,10 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 	}
 
 	KeySet * options = parseArgs (optionsSpec, argc, argv, errorKey);
-	ksDel (optionsSpec);
 
 	if (options == NULL)
 	{
-		ksDel (options);
+		ksDel (optionsSpec);
 		ksDel (keysWithOpts);
 		return -1;
 	}
@@ -332,10 +333,11 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 		keySetString (errorKey, help);
 		elektraFree (help);
 		ksDel (options);
+		ksDel (optionsSpec);
 		ksDel (keysWithOpts);
 		return 1;
 	}
-
+	ksDel (optionsSpec);
 
 	KeySet * envValues = parseEnvp (envp);
 
@@ -424,6 +426,7 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 							    "The environment variable '%s' cannot be used, because another variable has "
 							    "already been used for the key '%s'.",
 							    keyBaseName (envKey), keyName (cur));
+					keyDel (envValueKey);
 					ksDel (envMetas);
 					ksDel (envValues);
 					ksDel (options);
@@ -568,6 +571,7 @@ int addProcKey (KeySet * ks, const Key * key, Key * valueKey)
 
 		keySetString (procKey, keyBaseName (insertKey));
 		keyDel (insertKey);
+		ksDel (values);
 	}
 	else
 	{
