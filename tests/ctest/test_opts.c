@@ -38,11 +38,17 @@
 #define RUN_TEST_ERROR(ks, errorKey, args, envp)                                                                                           \
 	{                                                                                                                                  \
 		errorKey = keyNew (SPEC_BASE_KEY, KEY_END);                                                                                \
-		if (elektraGetOpts (ks, args, envp, errorKey) == 0)                                                                        \
+		if (elektraGetOpts (ks, args, envp, errorKey) >= 0)                                                                        \
 		{                                                                                                                          \
 			yield_error ("should have failed");                                                                                \
 		}                                                                                                                          \
 	}
+
+#ifdef _WIN32
+#define ENV_SEP ";"
+#else
+#define ENV_SEP ":"
+#endif
 
 static inline Key * keyWithOpt (const char * name, const char shortOpt, const char * longOpt, const char * envVar)
 {
@@ -55,11 +61,11 @@ static bool checkValue (KeySet * ks, const char * name, const char * expected)
 	Key * key = ksLookupByName (ks, name, 0);
 	if (key == NULL)
 	{
-		return false;
+		return expected == NULL;
 	}
 
 	const char * actual = keyString (key);
-	return actual != NULL && strcmp (actual, expected) == 0;
+	return expected == NULL ? strlen (actual) == 0 : strcmp (actual, expected) == 0;
 }
 
 static bool checkError (Key * errorKey, const char * expectedNumber, const char * expectedReason)
@@ -97,6 +103,10 @@ static void clearValues (KeySet * ks)
 static void test_simple (void)
 {
 	KeySet * ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple", 'a', "apple", "APPLE"), KS_END);
+
+	RUN_TEST (ks, NO_ARGS, NO_ENVP);
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", NULL), "no option failed");
+	clearValues (ks);
 
 	RUN_TEST (ks, ARGS ("-a", "short"), NO_ENVP);
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "short"), "short option failed");
@@ -267,12 +277,45 @@ static void test_optional_value (void)
 
 static void test_precedence (void)
 {
-	// TODO
+	KeySet * ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple", 'a', "apple", "APPLE"), KS_END);
+
+	RUN_TEST (ks, ARGS ("--apple=long", "-ashort"), ENVP ("APPLE=env"));
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "short"), "short option didn't take precedence");
+	clearValues (ks);
+
+	RUN_TEST (ks, ARGS ("--apple=long"), ENVP ("APPLE=env"));
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "long"), "long option didn't take precedence");
+	clearValues (ks);
+
+	ksDel (ks);
 }
 
 static void test_repeated (void)
 {
-	// TODO
+	KeySet * ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple/#", 'a', "apple", "APPLE"), KS_END);
+
+	RUN_TEST (ks, ARGS ("-a", "short0", "-ashort1", "-a", "short2"), NO_ENVP);
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "#2"), "short repeated failed (wrong count)");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple/#0", "short0"), "short repeated failed (#0)");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple/#1", "short1"), "short repeated failed (#1)");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple/#2", "short2"), "short repeated failed (#2)");
+	clearValues (ks);
+
+	RUN_TEST (ks, ARGS ("--apple", "long0", "--apple=long1", "--apple", "long2"), NO_ENVP);
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "#2"), "long repeated failed (wrong count)");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple/#0", "long0"), "long repeated failed (#0)");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple/#1", "long1"), "long repeated failed (#1)");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple/#2", "long2"), "long repeated failed (#2)");
+	clearValues (ks);
+
+	RUN_TEST (ks, NO_ARGS, ENVP ("APPLE=env0" ENV_SEP "env1" ENV_SEP "env2"));
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "#2"), "env-var repeated failed (wrong count)");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple/#0", "env0"), "env-var repeated failed (#0)");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple/#1", "env1"), "env-var repeated failed (#1)");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple/#2", "env2"), "env-var repeated failed (#2)");
+	clearValues (ks);
+
+	ksDel (ks);
 }
 
 static void test_multiple (void)
@@ -331,19 +374,109 @@ static void test_multiple (void)
 	ksDel (ks);
 }
 
-static void test_multiple_repeated (void)
+static void test_precedence_repeated (void)
 {
-	// TODO
+	KeySet * ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple/#", 'a', "apple", "APPLE"), KS_END);
+
+	RUN_TEST (ks, ARGS ("--apple=long1", "-a", "short0", "-a", "short1", "--apple", "long0", "--apple", "long2", "-ashort2"),
+		  ENVP ("APPLE=env0" ENV_SEP "env1" ENV_SEP "env2"));
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "#2"), "short repeated failed (wrong count), should take precedence");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple/#0", "short0"), "short repeated failed (#0), should take precedence");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple/#1", "short1"), "short repeated failed (#1), should take precedence");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple/#2", "short2"), "short repeated failed (#2), should take precedence");
+	clearValues (ks);
+
+	RUN_TEST (ks, ARGS ("--apple", "long0", "--apple=long1", "--apple", "long2"), ENVP ("APPLE=env0" ENV_SEP "env1" ENV_SEP "env2"));
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "#2"), "long repeated failed (wrong count), should take precedence");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple/#0", "long0"), "long repeated failed (#0), should take precedence");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple/#1", "long1"), "long repeated failed (#1), should take precedence");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple/#2", "long2"), "long repeated failed (#2), should take precedence");
+	clearValues (ks);
+
+	ksDel (ks);
 }
 
 static void test_illegal_spec (void)
 {
+	// ---
+	// illegal flagvalue
+	// ---
+
+	// TODO
+
+	// ---
+	// duplicate option
+	// ---
+
 	// TODO
 }
 
 static void test_illegal_use (void)
 {
+	// ---
+	// illegal repeat
+	// ---
+
 	// TODO
+
+	// ---
+	// missing argument
+	// ---
+
+	// TODO
+
+	// ---
+	// argument not allowed
+	// ---
+
+	// TODO
+
+	// ---
+	// multiple repeated
+	// ---
+
+	Key * k = keyNew (SPEC_BASE_KEY "/apple/#", KEY_END);
+	keySetMeta (k, "opt", "#1");
+	keySetMeta (k, "opt/#0", "a");
+	keySetMeta (k, "opt/#0/long", "apple");
+	keySetMeta (k, "opt/#1", "b");
+	keySetMeta (k, "opt/#1/long", "banana");
+	keySetMeta (k, "env", "#1");
+	keySetMeta (k, "env/#0", "APPLE");
+	keySetMeta (k, "env/#1", "BANANA");
+	KeySet * ks = ksNew (1, k, KS_END);
+
+	Key * errorKey;
+	RUN_TEST_ERROR (ks, errorKey, ARGS ("-a", "short0", "-ashort1", "-a", "short2", "-b", "short3", "-bshort4"), NO_ENVP);
+	succeed_if (checkError (errorKey, xstr (ELEKTRA_ERROR_OPTS_ILLEGAL_USE),
+				"The option '-b' cannot be used, because another option has already been used for the key "
+				"'" SPEC_BASE_KEY "/apple/#'."),
+		    "multiple repeated short options should have failed");
+	clearValues (ks);
+
+	RUN_TEST_ERROR (ks, errorKey, ARGS ("--apple", "long0", "--apple=long1", "--apple", "long2", "--banana=long3", "--banana", "long4"),
+			NO_ENVP);
+	succeed_if (checkError (errorKey, xstr (ELEKTRA_ERROR_OPTS_ILLEGAL_USE),
+				"The option '--banana' cannot be used, because another option has already been used for the key "
+				"'" SPEC_BASE_KEY "/apple/#'."),
+		    "multiple repeated long options should have failed");
+	clearValues (ks);
+
+	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, ENVP ("APPLE=env0" ENV_SEP "env1" ENV_SEP "env2", "BANANA=env3" ENV_SEP "env4"));
+	succeed_if (
+		checkError (errorKey, xstr (ELEKTRA_ERROR_OPTS_ILLEGAL_USE),
+			    "The environment variable 'BANANA' cannot be used, because another variable has already been used for the key "
+			    "'" SPEC_BASE_KEY "/apple/#'."),
+		"multiple repeated env-vars should have failed");
+	clearValues (ks);
+
+	// ---
+	// args remaining not array
+	// ---
+
+	// TODO
+
+	ksDel (ks);
 }
 
 static void test_help (void)
@@ -372,6 +505,55 @@ static void test_help (void)
 	ksDel (ks);
 }
 
+static void test_stop (void)
+{
+	KeySet * ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple", 'a', "apple", "APPLE"),
+			     keyNew (SPEC_BASE_KEY "/rest/#", KEY_META, "args", "remaining", KEY_END), KS_END);
+
+	RUN_TEST (ks, ARGS ("--", "-a", "short"), NO_ENVP);
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", NULL), "should have stopped");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest", "#1"), "rest has wrong count");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest/#0", "-a"), "rest has wrong value (#0)");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest/#1", "short"), "rest has wrong value (#1)");
+	clearValues (ks);
+
+	RUN_TEST (ks, ARGS ("-ashort", "--", "-a", "short2"), NO_ENVP);
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "short"), "should have stopped after short option");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest", "#1"), "rest has wrong count");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest/#0", "-a"), "rest has wrong value (#0)");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest/#1", "short2"), "rest has wrong value (#1)");
+	clearValues (ks);
+
+	RUN_TEST (ks, ARGS ("--apple", "long", "--", "-a", "short2"), NO_ENVP);
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "long"), "hould have stopped after long option");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest", "#1"), "rest has wrong count");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest/#0", "-a"), "rest has wrong value (#0)");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest/#1", "short2"), "rest has wrong value (#1)");
+	clearValues (ks);
+
+	RUN_TEST (ks, ARGS ("--"), ENVP ("APPLE=env"));
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "env"), "env-var failed (stopped options)");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest", "#"), "rest has wrong count");
+	clearValues (ks);
+
+
+	Key * errorKey = keyNew ("spec/tests/opts", KEY_META, "posixly", "1", KEY_END);
+	if (elektraGetOpts (ks, ARGS ("-ashort", "other", "-a", "short2"), NO_ENVP, errorKey) != 0)
+	{
+		yield_error ("error found");
+		output_error (errorKey);
+	}
+	keyDel (errorKey);
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "short"), "should have stopped after short option");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest", "#2"), "rest has wrong count");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest/#0", "other"), "rest has wrong value (#0)");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest/#1", "-a"), "rest has wrong value (#1)");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest/#2", "short2"), "rest has wrong value (#2)");
+	clearValues (ks);
+
+	ksDel (ks);
+}
+
 int main (int argc, char ** argv)
 {
 	printf (" OPTS   TESTS\n");
@@ -387,10 +569,11 @@ int main (int argc, char ** argv)
 	test_precedence ();
 	test_repeated ();
 	test_multiple ();
-	test_multiple_repeated ();
+	test_precedence_repeated ();
 	test_illegal_spec ();
 	test_illegal_use ();
 	test_help ();
+	test_stop ();
 
 	print_result ("test_opts");
 
