@@ -17,18 +17,6 @@ int createModeBits (const char * modes);
 #endif
 
 /**
- * Used to delete last colon in the error message
- * @param name The string of which the last character should be removed
- * @return The string with the last char removed
- */
-static char * lastCharDel (char * name)
-{
-	size_t length = elektraStrLen (name);
-	name[length - 2] = '\0';
-	return name;
-}
-
-/**
  * This method tries to find a matching group from a group struct containing more than one group
  * @param val The group name which is searched
  * @param groups The struct containing all groups

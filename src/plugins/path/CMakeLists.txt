@@ -36,10 +36,10 @@ if (DEPENDENCY_PHASE)
 		remove_plugin (${plugin} "could not find getgrouplist.")
 	elseif (NOT TEST_GETGRGID)
 		remove_plugin (${plugin} "could not find getgrgid.")
-
 	endif ()
 endif ()
 
 add_plugin (path
 	    SOURCES path.h
-	    path.c)
+		    path.c)
+
