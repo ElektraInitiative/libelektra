@@ -14,11 +14,11 @@
 
 static int createModeBits (const char * modes);
 
-static int handleNoUserCase (const Key * parentKey, const char * validPath, const char * modes, int modeMask);
+static int handleNoUserCase (Key * parentKey, const char * validPath, const char * modes, int modeMask);
 
-static int switchUser (const Key * key, const Key * parentKey, const char * name, const struct passwd * p);
+static int switchUser (Key * key, Key * parentKey, const char * name, const struct passwd * p);
 
-static int switchGroup (const Key * key, const Key * parentKey, const char * name, const struct group * gr);
+static int switchGroup (Key * key, Key * parentKey, const char * name, const struct group * gr);
 
 #endif
 
@@ -214,7 +214,7 @@ static int validatePermission (Key * key, Key * parentKey)
 	return 1;
 }
 
-static int switchGroup (const Key * key, const Key * parentKey, const char * name, const struct group * gr)
+static int switchGroup (Key * key, Key * parentKey, const char * name, const struct group * gr)
 {
 	int gidErr = setegid ((int) gr->gr_gid);
 	if (gidErr < 0)
@@ -223,11 +223,12 @@ static int switchGroup (const Key * key, const Key * parentKey, const char * nam
 				    "Could not set egid of user \"%s\" for key \"%s\"."
 				    " Are you running kdb as root?\"",
 				    name, keyName (key));
-		//			return -1;
+					return -1;
 	}
+	return 0;
 }
 
-static int switchUser (const Key * key, const Key * parentKey, const char * name, const struct passwd * p)
+static int switchUser (Key * key, Key * parentKey, const char * name, const struct passwd * p)
 { // Check if I can change the UID as root
 	int err = seteuid ((int) p->pw_uid);
 	if (err < 0)
@@ -241,7 +242,7 @@ static int switchUser (const Key * key, const Key * parentKey, const char * name
 	return 0;
 }
 
-static int handleNoUserCase (const Key * parentKey, const char * validPath, const char * modes, int modeMask)
+static int handleNoUserCase (Key * parentKey, const char * validPath, const char * modes, int modeMask)
 {
 	struct passwd * p = getpwuid (getuid ());
 	int result = access (validPath, modeMask);
