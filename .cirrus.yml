@@ -15,4 +15,6 @@ task:
     - ninja
 
   tests_script:
-    - cd build && ctest --output-on-failure -E pluginprocess
+    - >
+      cd build && ctest --output-on-failure
+      -E 'pluginprocess|testmod_network|testshell_markdown_(conditionals|csvstorage|dini|directoryvalue|enum|ini|line|mathcheck|mini|kdb_complete|kdb_ls|kdb_find|tutorial_cascading|tutorial_validation|readme_msr)'
