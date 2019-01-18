@@ -502,6 +502,22 @@ static void test_illegal_spec (void)
 	ksDel (ks);
 
 	// ---
+	// duplicate env-var
+	// ---
+
+	ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple", 0, NULL, "APPLE"), keyWithOpt (SPEC_BASE_KEY "/banana", 0, NULL, "APPLE"),
+		    KS_END);
+
+	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
+	succeed_if (checkError (errorKey, xstr (ELEKTRA_ERROR_OPTS_ILLEGAL_SPEC),
+				"The environment variable 'APPLE' has already been specified for the key '" SPEC_BASE_KEY
+				"/apple'. Additional key: " SPEC_BASE_KEY "/banana"),
+		    "duplicate env-var should be illegal");
+	clearValues (ks);
+
+	ksDel (ks);
+
+	// ---
 	// args remaining not array
 	// ---
 
@@ -556,6 +572,7 @@ static void test_illegal_use (void)
 	clearValues (ks);
 
 	ksDel (ks);
+
 	// ---
 	// argument not allowed
 	// ---
@@ -689,6 +706,44 @@ static void test_stop (void)
 	ksDel (ks);
 }
 
+static void test_mixed_config (void)
+{
+	Key * k = keyNew (SPEC_BASE_KEY "/apple", KEY_END);
+	keySetMeta (k, "opt", "#1");
+	keySetMeta (k, "opt/#0", "a");
+	keySetMeta (k, "opt/#0/long", "apple");
+	keySetMeta (k, "opt/#0/arg", "none");
+	keySetMeta (k, "opt/#1", "b");
+	keySetMeta (k, "opt/#1/long", "banana");
+	KeySet * ks = ksNew (1, k, KS_END);
+
+	RUN_TEST (ks, ARGS ("-a", "short"), NO_ENVP);
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "1"), "mixed config failed");
+	clearValues (ks);
+
+	RUN_TEST (ks, ARGS ("--apple", "long"), NO_ENVP);
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "1"), "mixed config failed");
+	clearValues (ks);
+
+	RUN_TEST (ks, ARGS ("-b", "short"), NO_ENVP);
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "short"), "mixed config failed");
+	clearValues (ks);
+
+	RUN_TEST (ks, ARGS ("-bshort"), NO_ENVP);
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "short"), "mixed config failed");
+	clearValues (ks);
+
+	RUN_TEST (ks, ARGS ("--banana", "long"), NO_ENVP);
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "long"), "mixed config failed");
+	clearValues (ks);
+
+	RUN_TEST (ks, ARGS ("--banana=long"), NO_ENVP);
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "long"), "mixed config failed");
+	clearValues (ks);
+
+	ksDel (ks);
+}
+
 int main (int argc, char ** argv)
 {
 	printf (" OPTS   TESTS\n");
@@ -712,6 +767,7 @@ int main (int argc, char ** argv)
 	test_illegal_use ();
 	test_help ();
 	test_stop ();
+	test_mixed_config ();
 
 	print_result ("test_opts");
 

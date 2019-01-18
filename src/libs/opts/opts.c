@@ -90,8 +90,9 @@ static char * generateHelpMessage (KeySet * optionsSpec, const char * progname);
  * In addition to command line options this function also supports environment variables. These are
  * specified with `env` (or `env/#XXX` if multiple are used).
  *
- * While you can specify multiple options for a single key, only one of them can be used at the same time.
- * Using two or more options that are all linked to the same key, will result in an error.
+ * While you can specify multiple options (or environment variables) for a single key, only one of them
+ * can be used at the same time. Using two or more options (or variables) that are all linked to the
+ * same key, will result in an error.
  *
  * If the key for which the options are defined, has the basename '#', an option can be repeated.
  * All occurrences will be collected into an array. Environment variables obviously cannot be repeated,
@@ -105,16 +106,13 @@ static char * generateHelpMessage (KeySet * optionsSpec, const char * progname);
  * 	<li> If neither a long nor short option is found, environment variables are considered. </li>
  * </ul>
  *
- * Lastly, all remaining elements of @p argv will be collect into an array. You can access this array
+ * Lastly, all remaining elements of @p argv will be collected into an array. You can access this array
  * by specifying `args = remaining` on a key with basename '#'. The array will be copied into this key. As is
  * the case with getopt(3) processing of options will stop if '--' is encountered in @p argv.
  *
- * NOTE: While environment variable can be used on multiple keys, options (short and long) can only be
- * used for a single key. This is because options could be configured with different behaviour (arg,
- * flagvalue, repeatability) on separate keys. There is not good way to handle this, so it is prohibited.
- * Environment variables meanwhile always behave the same way. The only difference is whether or not they
- * are split into multiple strings. This does not result in any conflicts, so it is possible to use on
- * variable for multiple keys (although there really isn't any reason to do so).
+ * NOTE: Both options and environment variables can only be specified on a single key. This is because
+ * otherwise e.g. the help message ('opt/help', 'env/help') may be ambiguous. If you need to have the
+ * value of one option/environment variable in multiple keys, you may use fallbacks.
  *
  * NOTE: Per default option processing DOES NOT stop, when a non-option string is encountered in @p argv.
  * If you want processing to stop, set the metadata `posixly = 1` on @p errorKey.
@@ -133,6 +131,7 @@ static char * generateHelpMessage (KeySet * optionsSpec, const char * progname);
 int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** envp, Key * errorKey)
 {
 	KeySet * keysWithOpts = ksNew (0, KS_END);
+	KeySet * usedEnvVars = ksNew (0, KS_END);
 	KeySet * optionsSpec = ksNew (
 		2, keyNew ("/short/h", KEY_META, "hasarg", "none", KEY_META, "kind", "single", KEY_META, "flagvalue", "1", KEY_END),
 		keyNew ("/long/help", KEY_META, "hasarg", "none", KEY_META, "kind", "single", KEY_META, "flagvalue", "1", KEY_END), KS_END);
@@ -148,36 +147,13 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 			continue;
 		}
 
-		const char * hasArg = keyGetMetaString (cur, "opt/arg");
-		if (hasArg == NULL)
-		{
-			hasArg = "required";
-		}
-
 		const char * kind = "single";
 		if (strcmp (keyBaseName (cur), "#") == 0)
 		{
 			kind = "array";
 		}
 
-		const char * flagValue = keyGetMetaString (cur, "opt/flagvalue");
-		if (flagValue == NULL)
-		{
-			flagValue = "1";
-		}
-		else if (strcmp (hasArg, "none") != 0 && strcmp (hasArg, "optional") != 0)
-		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_OPTS_ILLEGAL_SPEC, errorKey,
-					    "The flagvalue metadata can only be used, if the opt/arg metadata is set to 'none' or "
-					    "'optional'. (key: %s)",
-					    keyName (cur));
-			ksDel (optionsSpec);
-			ksDel (keysWithOpts);
-			return -1;
-		}
-
 		Key * key = NULL;
-
 		KeySet * opts = ksMetaGetSingleOrArray (cur, "opt");
 		if (opts != NULL)
 		{
@@ -186,6 +162,38 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 			Key * k;
 			while ((k = ksNext (opts)) != NULL)
 			{
+				char metaBuffer[ELEKTRA_MAX_ARRAY_SIZE + 14];		       // 14 = opt//flagvalue
+				strncpy (metaBuffer, keyName (k), ELEKTRA_MAX_ARRAY_SIZE + 3); // 3 = opt/ - null byte from ELEKTRA_MAX_SIZE
+				strncat (metaBuffer, "/arg", 10);			       // 10 = remaining space in metaBuffer
+
+				const char * hasArg = keyGetMetaString (cur, metaBuffer);
+				if (hasArg == NULL)
+				{
+					hasArg = "required";
+				}
+
+				strncpy (metaBuffer, keyName (k), ELEKTRA_MAX_ARRAY_SIZE + 3); // 3 = opt/ - null byte from ELEKTRA_MAX_SIZE
+				strncat (metaBuffer, "/flagvalue", 10);			       // 10 = remaining space in metaBuffer
+
+				const char * flagValue = keyGetMetaString (cur, metaBuffer);
+				if (flagValue == NULL)
+				{
+					flagValue = "1";
+				}
+				else if (strcmp (hasArg, "none") != 0 && strcmp (hasArg, "optional") != 0)
+				{
+					ELEKTRA_SET_ERRORF (
+						ELEKTRA_ERROR_OPTS_ILLEGAL_SPEC, errorKey,
+						"The flagvalue metadata can only be used, if the opt/arg metadata is set to 'none' or "
+						"'optional'. (key: %s)",
+						keyName (cur));
+					ksDel (opts);
+					ksDel (optionsSpec);
+					ksDel (keysWithOpts);
+					ksDel (usedEnvVars);
+					return -1;
+				}
+
 				const char * shortOpt = keyString (k);
 				if (shortOpt != NULL && shortOpt[0] != '\0')
 				{
@@ -205,6 +213,7 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 						ksDel (opts);
 						ksDel (optionsSpec);
 						ksDel (keysWithOpts);
+						ksDel (usedEnvVars);
 						return -1;
 					}
 
@@ -241,6 +250,7 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 						ksDel (opts);
 						ksDel (optionsSpec);
 						ksDel (keysWithOpts);
+						ksDel (usedEnvVars);
 						return -1;
 					}
 
@@ -267,13 +277,32 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 				const char * envVar = keyString (k);
 				if (envVar != NULL)
 				{
+					Key * envVarKey = keyNew ("/", KEY_META, "key", keyName (cur), KEY_END);
+					keyAddBaseName (envVarKey, envVar);
+
+					Key * existing = ksLookupByName (usedEnvVars, keyName (envVarKey), 0);
+					if (existing != NULL)
+					{
+						ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_OPTS_ILLEGAL_SPEC, errorKey,
+								    "The environment variable '%s' has already been specified for the key "
+								    "'%s'. Additional key: %s",
+								    envVar, keyGetMetaString (existing, "key"), keyName (cur));
+						keyDel (envVarKey);
+						keyDel (existing);
+						ksDel (envVars);
+						ksDel (optionsSpec);
+						ksDel (keysWithOpts);
+						ksDel (usedEnvVars);
+						return -1;
+					}
+
+					ksAppendKey (usedEnvVars, envVarKey);
+
 					if (key == NULL)
 					{
 						key = keyNew (keyName (cur), KEY_END);
 					}
-					char * envVarName = elektraFormat ("/%s", envVar);
-					elektraMetaArrayAdd (key, "env", envVarName);
-					elektraFree (envVarName);
+					elektraMetaArrayAdd (key, "env", keyName (envVarKey));
 				}
 			}
 			ksDel (envVars);
@@ -289,6 +318,7 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 						    keyName (cur));
 				ksDel (optionsSpec);
 				ksDel (keysWithOpts);
+				ksDel (usedEnvVars);
 				return -1;
 			}
 
@@ -304,6 +334,7 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 			ksAppendKey (keysWithOpts, key);
 		}
 	}
+	ksDel (usedEnvVars);
 
 	KeySet * options = parseArgs (optionsSpec, argc, argv, errorKey);
 

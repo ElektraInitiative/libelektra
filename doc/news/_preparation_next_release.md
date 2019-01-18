@@ -154,8 +154,7 @@ compiled against an older 0.8 version of Elektra will continue to work
 
   , please update your code to check for a valid array element name like this:
 
-  ```c
-  if (elektraArrayValidateBaseNameString(baseName) >= 1) …;
+  ```c  if (elektraArrayValidateBaseNameString(baseName) >= 1) …;
   ```
 
   . *(René Schwaiger)*
@@ -163,11 +162,13 @@ compiled against an older 0.8 version of Elektra will continue to work
 - <<TODO>>
 
 
-### <<Library2>>
+### Libopts
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- This is a new lib containing only the function `elektraGetOpts`. This function can be used to parse command line arguments and
+  environment variables and add their values to keys in the proc namespace.
+
+  You can use `opt`, `opt/long` and `env` to specify a short, a long option and an environment variable. For more information take
+  a look at the documentation of `elektraGetOpts`. *(Klemens Böswirth)*
 
 
 ### <<Library3>>
