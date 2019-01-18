@@ -12,6 +12,8 @@
 
 #include "kdbconfig.h"
 
+int createModeBits (const char * modes);
+
 #endif
 
 /**
@@ -122,24 +124,7 @@ static int validatePermission (Key * key, Key * parentKey)
 	const char * modes = keyString (userTypes);
 	// ****************************
 
-	int modeMask = 0;
-	if (strchr (modes, 'r') == NULL)
-	{
-		modeMask |= R_OK;
-	}
-	if (strchr (modes, 'w') == NULL)
-	{
-		modeMask |= W_OK;
-	}
-	if (strchr (modes, 'x') == NULL)
-	{
-		modeMask |= X_OK;
-	}
-
-	int isRead = (strchr (modes, 'r') == NULL) ? 0 : 1;
-	int isWrite = (strchr (modes, 'w') == NULL) ? 0 : 1;
-	int isExecute = (strchr (modes, 'x') == NULL) ? 0 : 1;
-
+	int modeMask = createModeBits (modes);
 	struct passwd * p;
 
 	// Changing to specified user. Can only be done when executing user is root user
@@ -170,12 +155,12 @@ static int validatePermission (Key * key, Key * parentKey)
 	}
 	else if (userMeta)
 	{
-		struct passwd * currUser = getpwuid (getuid ());
+		p = getpwuid (getuid ());
 		int result = access (validPath, modeMask);
 		if (result != 0)
 		{
 			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INVALID_PERMISSION, parentKey,
-					    "User %s does not have required permission (%s) on %s", currUser->pw_name, modes, validPath);
+					    "User %s does not have required permission (%s) on %s", p->pw_name, modes, validPath);
 			return -1;
 		}
 		return 1;
@@ -225,28 +210,8 @@ static int validatePermission (Key * key, Key * parentKey)
 	}
 	elektraFree (groups);
 
-	// Actual checks are done
-	char errorMessage[30];
-	errorMessage[0] = '\0'; // strcat() searches for this, otherwise it will print garbage chars at start
-	int isError = 0;
-
-	if (isRead && euidaccess (validPath, R_OK) != 0)
-	{
-		isError = 1;
-		strcat (errorMessage, "read,");
-	}
-
-	if (isWrite && euidaccess (validPath, W_OK) != 0)
-	{
-		isError = 1;
-		strcat (errorMessage, "write,");
-	}
-
-	if (isExecute && euidaccess (validPath, X_OK) != 0)
-	{
-		isError = 1;
-		strcat (errorMessage, "execute,");
-	}
+	// Actual check is done
+	int canAccess = euidaccess (validPath, modeMask);
 
 	// Change back to initial effective IDs
 	int euidResult = seteuid (currentUID);
@@ -260,14 +225,32 @@ static int validatePermission (Key * key, Key * parentKey)
 		return -1;
 	}
 
-	if (isError)
+	if (canAccess != 0)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INVALID_PERMISSION, parentKey, "User %s does not have [%s] permission on %s", name,
-				    lastCharDel (errorMessage), validPath);
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INVALID_PERMISSION, parentKey, "User %s does not have required permission (%s) on %s",
+				    name, modes, validPath);
 		return -1;
 	}
 
 	return 1;
+}
+
+int createModeBits (const char * modes)
+{
+	int modeMask = 0;
+	if (strchr (modes, 'r') == NULL)
+	{
+		modeMask |= R_OK;
+	}
+	if (strchr (modes, 'w') == NULL)
+	{
+		modeMask |= W_OK;
+	}
+	if (strchr (modes, 'x') == NULL)
+	{
+		modeMask |= X_OK;
+	}
+	return modeMask;
 }
 
 int elektraPathGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
