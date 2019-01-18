@@ -3,4 +3,7 @@ freebsd_instance:
 
 task:
   install_script: echo 'Hi'
-  script: echo 'Bye'
+  script:
+    - mkdir build
+    - cd build
+    - cmake ..
