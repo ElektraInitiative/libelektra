@@ -120,14 +120,14 @@ user/array/#3         = Third Value
 To mount the plugin use the command:
 
 ```sh
-# Mount plugin to cascading namespace `/tests/directoryvalue`
-sudo kdb mount config.file /tests/directoryvalue directoryvalue
+# Mount plugin at `user/tests/directoryvalue`
+sudo kdb mount config.file user/tests/directoryvalue directoryvalue
 ```
 
 . To unmount the plugin use the command
 
 ```sh
-sudo kdb umount /tests/directoryvalue
+sudo kdb umount user/tests/directoryvalue
 ```
 
 .
@@ -135,45 +135,45 @@ sudo kdb umount /tests/directoryvalue
 ## Example
 
 ```sh
-# Mount plugin to cascading namespace `/tests/directoryvalue`
-sudo kdb mount config.file /tests/directoryvalue directoryvalue
+# Mount plugin
+sudo kdb mount config.file user/tests/directoryvalue directoryvalue
 
 # Add a directory value
-kdb set /tests/directoryvalue/harold 'Father of SpongeBob SquarePants'
+kdb set user/tests/directoryvalue/harold 'Father of SpongeBob SquarePants'
 # Add a leaf value
-kdb set /tests/directoryvalue/harold/spongebob 'I am ready!'
+kdb set user/tests/directoryvalue/harold/spongebob 'I am ready!'
 
 # Add an array
-kdb set /tests/directoryvalue/patrick Star
-kdb set /tests/directoryvalue/patrick/#0 'Being grown-up is boring. Besides, I don’t get Jazz.'
+kdb set user/tests/directoryvalue/patrick Star
+kdb set user/tests/directoryvalue/patrick/#0 'Being grown-up is boring. Besides, I don’t get Jazz.'
 
 # Since the plugin converts values back in the get direction
 # a user of the database will not notice any changes.
 
-kdb ls /tests/directoryvalue
+kdb ls user/tests/directoryvalue
 #> user/tests/directoryvalue/harold
 #> user/tests/directoryvalue/harold/spongebob
 #> user/tests/directoryvalue/patrick
 #> user/tests/directoryvalue/patrick/#0
 
-kdb get /tests/directoryvalue/harold
+kdb get user/tests/directoryvalue/harold
 #> Father of SpongeBob SquarePants
-kdb get /tests/directoryvalue/harold/spongebob
+kdb get user/tests/directoryvalue/harold/spongebob
 #> I am ready!
 
-kdb get /tests/directoryvalue/patrick
+kdb get user/tests/directoryvalue/patrick
 #> Star
-kdb get /tests/directoryvalue/patrick/#0
+kdb get user/tests/directoryvalue/patrick/#0
 #> Being grown-up is boring. Besides, I don’t get Jazz.
 
 # Retrieve index of last element in array.
 # This also works if the storage plugin does not store this index.
-kdb getmeta /tests/directoryvalue/patrick array
+kdb getmeta user/tests/directoryvalue/patrick array
 #> #0
 
 # Undo changes to the key database
-kdb rm -r /tests/directoryvalue
-sudo kdb umount /tests/directoryvalue
+kdb rm -r user/tests/directoryvalue
+sudo kdb umount user/tests/directoryvalue
 ```
 
 # Limitations
