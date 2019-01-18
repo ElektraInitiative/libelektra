@@ -11,4 +11,4 @@ task:
   script:
     - mkdir build
     - cd build
-    - cmake ..
+    - cmake -GNinja ..
