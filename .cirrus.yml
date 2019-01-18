@@ -9,9 +9,9 @@ task:
     - pkg install -y ninja
 
   script:
-    - mkdir build
-    - cd build
-    - cmake -GNinja ..
+    - SYSTEM_DIR="$PWD/kdbsystem"
+    - mkdir build && cd build
+    - cmake -GNinja -DKDB_DB_SYSTEM="$SYSTEM_DIR" ..
     - ninja
 
   tests_script:
