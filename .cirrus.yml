@@ -13,3 +13,6 @@ task:
     - cd build
     - cmake -GNinja ..
     - ninja
+
+  tests_script:
+    - ninja -C build test
