@@ -168,10 +168,7 @@ static int validatePermission (Key * key, Key * parentKey)
 		}
 	}
 
-	// The following code changes the egid if a group from a user matches the filegroup
-	// TODO: Whats a good default value for ngroups
-	// If the relevant group is ngroups+1 then it wont get recognized
-	int ngroups = 30;
+	int ngroups = 512;
 	gid_t * groups;
 	groups = (gid_t *) elektraMalloc (ngroups * sizeof (gid_t));
 	getgrouplist (name, (int) p->pw_gid, groups, &ngroups);

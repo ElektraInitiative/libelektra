@@ -62,7 +62,8 @@ touch /tmp/testfile.txt
 sudo chmod 700 /tmp/testfile.txt
 sudo chown root:root /tmp/testfile.txt
 
-# The following command has to be done as root
+# The following command has to be done as root if you want to
+# check permissions for another user
 sudo kdb set /test/path "/tmp/testfile.txt"
 > Using name system/test/path
 > Sorry, the error (#207) occurred ;(
