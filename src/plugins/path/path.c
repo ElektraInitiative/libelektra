@@ -223,7 +223,7 @@ static int switchGroup (Key * key, Key * parentKey, const char * name, const str
 				    "Could not set egid of user \"%s\" for key \"%s\"."
 				    " Are you running kdb as root?\"",
 				    name, keyName (key));
-					return -1;
+		return -1;
 	}
 	return 0;
 }
