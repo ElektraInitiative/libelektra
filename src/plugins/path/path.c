@@ -12,7 +12,13 @@
 
 #include "kdbconfig.h"
 
-int createModeBits (const char * modes);
+static int createModeBits (const char * modes);
+
+static int handleNoUserCase (const Key * parentKey, const char * validPath, const char * modes, int modeMask);
+
+static int switchUser (const Key * key, const Key * parentKey, const char * name, const struct passwd * p);
+
+static int switchGroup (const Key * key, const Key * parentKey, const char * name, const struct group * gr);
 
 #endif
 
@@ -68,7 +74,7 @@ static int validateKey (Key * key, Key * parentKey)
 		strcat (errmsg, keyName (key));
 		strcat (errmsg, " with path: ");
 		strcat (errmsg, keyValue (key));
-		ELEKTRA_SET_ERROR (57, parentKey, errmsg);
+		ELEKTRA_ADD_WARNING (57, parentKey, errmsg);
 		elektraFree (errmsg);
 		errno = errnosave;
 		return -1;
@@ -92,7 +98,6 @@ static int validateKey (Key * key, Key * parentKey)
 
 /**
  * This method validates the file permission for a certain user
- * The method assumes that the path exists and only validates permission
  * @param key The key containing all metadata
  * @param parentKey The parentKey which is used for error writing
  * @retval 1 if success
@@ -100,8 +105,8 @@ static int validateKey (Key * key, Key * parentKey)
  */
 static int validatePermission (Key * key, Key * parentKey)
 {
+
 	uid_t currentUID = geteuid ();
-	gid_t currentGID = getegid ();
 
 	const Key * userMeta = keyGetMeta (key, "check/permission/user");
 	const Key * userTypes = keyGetMeta (key, "check/permission/mode");
@@ -129,30 +134,20 @@ static int validatePermission (Key * key, Key * parentKey)
 			return -1;
 		}
 		name = p->pw_name;
-
-		// Check if I can change the UID as root
-		int err = seteuid ((int) p->pw_uid);
-		if (err < 0)
-		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_USER_PERMISSION_ERROR, parentKey,
-					    "Could not set euid of user \"%s\" for key \"%s\"."
-					    " Are you running kdb as root?\"",
-					    name, keyName (key));
-			return -1;
-		}
-	}
-	else if (userMeta)
-	{
-		p = getpwuid (getuid ());
-		int result = access (validPath, modeMask);
+		int result = switchUser (key, parentKey, name, p);
 		if (result != 0)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INVALID_PERMISSION, parentKey,
-					    "User %s does not have required permission (%s) on %s", p->pw_name, modes, validPath);
-			return -1;
+			return result;
 		}
-		return 1;
 	}
+
+	// If user metadata is available but empty
+	else if (userMeta)
+	{
+		return handleNoUserCase (parentKey, validPath, modes, modeMask);
+	}
+
+	// If user metadata is not given ... can only check if root can access the file
 	else
 	{
 		uid_t uid = geteuid ();
@@ -167,7 +162,6 @@ static int validatePermission (Key * key, Key * parentKey)
 			return -1;
 		}
 	}
-
 	int ngroups = 512;
 	gid_t * groups;
 	groups = (gid_t *) elektraMalloc (ngroups * sizeof (gid_t));
@@ -180,17 +174,17 @@ static int validatePermission (Key * key, Key * parentKey)
 
 	bool isUserInGroupBool = isUserInGroup ((int) gr->gr_gid, groups, (unsigned int) ngroups);
 
+	// Save group so we can switch back to the original later again
+	gid_t currentGID = getegid ();
+
 	// Check if fileGroup is in userGroup. If yes change egid to that group
 	if (isUserInGroupBool)
 	{
-		ELEKTRA_LOG_DEBUG ("User “%s” has group of file %s", name, validPath);
-		int gidErr = setegid ((int) gr->gr_gid);
-		if (gidErr < 0)
+		ELEKTRA_LOG_DEBUG ("User “%s” has group of file “%s“", name, validPath);
+		int result = switchGroup (key, parentKey, name, gr);
+		if (result != 0)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_USER_PERMISSION_ERROR, parentKey,
-					    "Could not set egid of user \"%s\" for key \"%s\"."
-					    " Are you running kdb as root?\"",
-					    name, keyName (key));
+			return result;
 		}
 	}
 	elektraFree (groups);
@@ -220,7 +214,47 @@ static int validatePermission (Key * key, Key * parentKey)
 	return 1;
 }
 
-int createModeBits (const char * modes)
+static int switchGroup (const Key * key, const Key * parentKey, const char * name, const struct group * gr)
+{
+	int gidErr = setegid ((int) gr->gr_gid);
+	if (gidErr < 0)
+	{
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_USER_PERMISSION_ERROR, parentKey,
+				    "Could not set egid of user \"%s\" for key \"%s\"."
+				    " Are you running kdb as root?\"",
+				    name, keyName (key));
+		//			return -1;
+	}
+}
+
+static int switchUser (const Key * key, const Key * parentKey, const char * name, const struct passwd * p)
+{ // Check if I can change the UID as root
+	int err = seteuid ((int) p->pw_uid);
+	if (err < 0)
+	{
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_USER_PERMISSION_ERROR, parentKey,
+				    "Could not set euid of user \"%s\" for key \"%s\"."
+				    " Are you running kdb as root?\"",
+				    name, keyName (key));
+		return -1;
+	}
+	return 0;
+}
+
+static int handleNoUserCase (const Key * parentKey, const char * validPath, const char * modes, int modeMask)
+{
+	struct passwd * p = getpwuid (getuid ());
+	int result = access (validPath, modeMask);
+	if (result != 0)
+	{
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INVALID_PERMISSION, parentKey, "User %s does not have required permission (%s) on %s",
+				    p->pw_name, modes, validPath);
+		return -1;
+	}
+	return 1;
+}
+
+static int createModeBits (const char * modes)
 {
 	int modeMask = 0;
 	if (strchr (modes, 'r') == NULL)

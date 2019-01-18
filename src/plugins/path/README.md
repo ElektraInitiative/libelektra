@@ -29,7 +29,11 @@ a `/`, because remote file systems and some special names are valid, too.
 If `check/permission/mode = [permission]` is also present it will check for the correct permissions
 of the file/directory. Optionally, you can also add `check/permission/user = [user]"` which then checks the permissions
 for the given user. When calling `kdb set` on the actual key, you have to run as `root` user
-or the file permissions cannot be checked (you will receive an error message).
+or the file permissions cannot be checked (you will receive an error message). It is also possible to leave the
+`check/permission/user` empty (just provide an empty string) which then takes the executing user as target to check.
+So for example `sudo kdb set ...` will check if `root` can access the target file/directory whereas `kdb set ...`
+will take the current executing process/user. If `check/permission/user` is not given at all, the plugin
+will check accessibility for the `root` user only (which again requires `sudo`)
 
  `check/permission/mode = rw` and `check/permission/user = tomcat` for example will check if the user
 `tomcat` has read and write access to the path which was set for the key. Please note that the file has to exist already
