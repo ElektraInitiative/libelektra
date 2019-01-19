@@ -243,12 +243,12 @@ Now we apply this _Specfile_ to the key database to all keys below `tests/tutori
 kdb spec-mount /tests/tutorial
 ```
 This command automatically mounts `/tests/tutorial` to the backend `tutorial.dump`.
-Furthermore it adds all plugins necessary for all metadata within the specification. 
-So in this example the validation plugin will be loaded automatically for us. 
+Furthermore it adds all plugins necessary for all metadata within the specification.
+So in this example the validation plugin will be loaded automatically for us.
 `spec-mount` basically does a normal mount except that it automatically selects plugins. As a result there is no
 `spec-umount`  command since the normal `umount` is sufficient.
 
-Please be aware that if you require many plugins for the same mount point, 
+Please be aware that if you require many plugins for the same mount point,
 you can run into [this](https://github.com/ElektraInitiative/libelektra/issues/2133) error.
 
 ```sh
