@@ -621,10 +621,12 @@ KeySet * parseEnvp (const char ** envp)
 	{
 		const char * eq = strchr (*cur, '=');
 		Key * key = keyNew ("/", KEY_VALUE, eq + 1, KEY_END);
-		char * name = strndup (*cur, eq - *cur); // elektraStrNDup does not terminate string
+		size_t len = eq - *cur;
+		char * name = elektraStrNDup (*cur, len);
+		name[len] = '\0';
 		keyAddBaseName (key, name);
 		ksAppendKey (ks, key);
-		free (name);
+		elektraFree (name);
 
 		cur++;
 	}
