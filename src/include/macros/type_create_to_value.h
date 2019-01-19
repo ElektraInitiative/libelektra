@@ -25,7 +25,7 @@
  *                                    PRE_CHECK_CONVERSION evaluates to false.
  * @param  DISABLE_UNDEF_PARAMETERS   define to disable undefining of parameters after the macro. Use if parameters
  *                                    are used within another supermacro.
- * @param  CODE_ONLY           optional, defaults to 0. Set to 1 to only generate to function body. This is useful, if you want to create a
+ * @param  CODE_ONLY           optional, defaults to 0. Set to 1 to only generate the function body. This is useful, if you want to create a
  *                             function with a custom signature for example.
  * @param  KEY_PARAM_NAME      must be set, #if CODE_ONLY, will be set to 'key' otherwise. The name of the variable/parameter containing
  *                             the Key, whose value will be converted

@@ -8,24 +8,49 @@ not to be directly used in applications. The high-level API should be extremely 
 should be hard to use it in a wrong way. This tutorial gives an introduction for developers who want to elektrify their application
 using the high-level API.
 
-The API supports the following types, which are taken from the CORBA specification:
-
-* **String**: a string of characters, represented by `KDB_TYPE_STRING` in metadata
-* **Boolean**: a boolean value `true` or `false`, represented by `KDB_TYPE_BOOLEAN` in metadata, in the KDB the raw value `"1"` is
-               regarded, as true, any other value is considered false
-* **Char**: a single character, represented by `KDB_TYPE_CHAR` in metadata
-* **Octet**: a single byte, represented by `KDB_TYPE_OCTET` in metadata
-* **(Unsigned) Short**: a 16-bit (unsigned) integer, represented by `KDB_TYPE_SHORT` (`KDB_TYPE_UNSIGNED_SHORT`) in metadata
-* **(Unsigned) Long**: a 32-bit (unsigned) integer, represented by `KDB_TYPE_LONG` (`KDB_TYPE_UNSIGNED_LONG`) in metadata
-* **(Unsigned) Long Long**: a 64-bit (unsigned) integer, represented by `KDB_TYPE_LONG_LONG` (`KDB_TYPE_UNSIGNED_LONG_LONG`) in metadata
-* **Float**: whatever your compiler treats as `float`, probably IEEE-754 single-precision, represented by `KDB_TYPE_FLOAT` in metadata
-* **Double**: whatever your compiler treats as `double`, probably IEEE-754 double-precision, represented by `KDB_TYPE_DOUBLE` in metadata
-* **Long Double**: whatever your compiler treats as `long double`, not always available, represented by `KDB_TYPE_LONG_DOUBLE` in metadata
+The API supports all CORBA Basic Data Types, except for `wchar`, as well as the `string` type (see also [Data Types](#data-types)).
 
 ## Setup
 
-First you have to add `elektra-highlevel` to the linked libraries of your application. To be able to use it in your source file,
-just include the main header with `#include <elektra.h>` at the top of your file.
+First you have to add `elektra-highlevel`, `elektra-kdb` and `elektra-ease` to the linked libraries of your application. To be able to
+use it in your source file, just include the main header with `#include <elektra.h>` at the top of your file.
+
+The API contains one header that is not automatically included from `elektra.h`. You can use it with `#include <elektra/conversion.h>`.
+The header provides the functions Elektra uses to convert your configuration values to and from strings. In most cases, you won't need
+to use these functions directly, but the might still be useful sometimes (e.g. in combination with `elektraGetType` and `elektraGetRawString`).
+
+## Quickstart
+The quickest way to get started is to adapt the following piece of code to your needs:
+
+```c
+ElektraError * error = NULL;
+Elektra * elektra = elektraOpen ("/sw/org/myapp/#0/current", NULL, &error);
+if (elektra == NULL)
+{
+	printf ("An error occured: %s", elektraErrorDescription (error));
+	elektraErrorReset (error);
+	return -1;
+}
+
+int myint = elektraGetLong (elektra, "myint");
+
+if (myint < 10)
+{
+	elektraSetBoolean (elektra, "smallint", true, &error);
+	if (error != NULL)
+	{
+		printf ("An error occured: %s", elektraErrorDescription (error));
+		elektraErrorReset (error);
+	}
+}
+
+elektraClose (elektra);
+```
+
+The getter and setter functions follow the simple naming scheme `elektra`(`Get`/`Set`)[Type]. Additionally for each one there is an array
+element variant with the suffix `ArrayElement`. For more information see [below](#reading-and-writing-values).
+
+You also can find more complex examples [here](#TODO).
 
 ## Core Concepts
 
@@ -66,24 +91,6 @@ elektraClose (elektra);
 
 *NOTE:* Elektra is only thread-safe when you use one handle per thread or protect your handle. If you have multiple threads accessing
 key-values, create a separate handle for each thread to avoid concurrency issues.
-
-#### Configuration
-Currently there is only one way to configure an `Elektra` instance:
-
-```c
-void elektraFatalErrorHandler (Elektra * elektra, ElektraErrorHandler fatalErrorHandler)
-```
-This allows you to set the callback called by Elektra, when a fatal error occurs. Technically a fatal error could occur any time, but
-the most common use case for this callback is inside of functions that do not take a separate `ElektraError` argument. For example,
-this function will be called, when any of the getter-functions is called on a non-existent key which is not part of any specification,
-and therefore has no specified default value.
-
-The default callback simply logs the error with `ELEKTRA_LOG_DEBUG` and then calls `exit()` with the error code of the error. It is highly
-recommended you either use `atexit()` in you application or set a custom callback, to make sure you won't leak memory.
-
-The callback should interrupt the thread of execution in some way (e.g. by calling `exit()` or throwing an exception in C++). It should
-not return to the calling function. If it does, the behaviour is generally undefined, getter-functions will, however, most likely return 0,
-because that is the only option other than calling `exit()`, which is exactly what the callback should prevent.
 
 ### Struct `ElektraError`
 The library is designed to shield developers from the many errors one can encounter when using KDB directly. However it is not possible
@@ -130,14 +137,49 @@ Errors which do not originate inside the high-level API itself are wrapped into 
 `ELEKTRA_ERROR_CODE_LOW_LEVEL`. The high-level Error API provides methods (`elektraKDBError*`) to access the properties of the low-level
 error. You can also access the key to which the error was originally attached, as well as any possible low-level warnings.
 
+### Configuration
+Currently there is only one way to configure an `Elektra` instance:
+
+```c
+void elektraFatalErrorHandler (Elektra * elektra, ElektraErrorHandler fatalErrorHandler)
+```
+This allows you to set the callback called by Elektra, when a fatal error occurs. Technically a fatal error could occur at any time, but
+the most common use case for this callback is inside of functions that do not take a separate `ElektraError` argument. For example,
+this function will be called, when any of the getter-functions is called on a non-existent key which is not part of any specification,
+and therefore has no specified default value.
+
+The handler will also be called whenever you pass `NULL` where a function expects an `ElektraError **`. In this case the error code will be
+`ELEKTRA_ERROR_CODE_NULL_ERROR`.
+
+The default callback simply logs the error with `ELEKTRA_LOG_DEBUG` and then calls `exit()` with the error code of the error. It is highly
+recommended you either use `atexit()` in you application or set a custom callback, to make sure you won't leak memory.
+
+The callback must interrupt the thread of execution in some way (e.g. by calling `exit()` or throwing an exception in C++). It must
+not return to the calling function. If it does return, the behaviour is undefined.
+
+## Data Types
+The API supports the following types, which are taken from the CORBA specification:
+
+* **String**: a string of characters, represented by `KDB_TYPE_STRING` in metadata
+* **Boolean**: a boolean value `true` or `false`, represented by `KDB_TYPE_BOOLEAN` in metadata, in the KDB the raw value `"1"` is
+               regarded, as true, any other value is considered false
+* **Char**: a single character, represented by `KDB_TYPE_CHAR` in metadata
+* **Octet**: a single byte, represented by `KDB_TYPE_OCTET` in metadata
+* **(Unsigned) Short**: a 16-bit (unsigned) integer, represented by `KDB_TYPE_SHORT` (`KDB_TYPE_UNSIGNED_SHORT`) in metadata
+* **(Unsigned) Long**: a 32-bit (unsigned) integer, represented by `KDB_TYPE_LONG` (`KDB_TYPE_UNSIGNED_LONG`) in metadata
+* **(Unsigned) Long Long**: a 64-bit (unsigned) integer, represented by `KDB_TYPE_LONG_LONG` (`KDB_TYPE_UNSIGNED_LONG_LONG`) in metadata
+* **Float**: whatever your compiler treats as `float`, probably IEEE-754 single-precision, represented by `KDB_TYPE_FLOAT` in metadata
+* **Double**: whatever your compiler treats as `double`, probably IEEE-754 double-precision, represented by `KDB_TYPE_DOUBLE` in metadata
+* **Long Double**: whatever your compiler treats as `long double`, not always available, represented by `KDB_TYPE_LONG_DOUBLE` in metadata
+
+
 ## Reading and writing values
 
 ### Key names
-When using `KDB` and `KeySet` directly you would have to specify the whole key name to access a value. In the high-level API you do not
-have to do this every time you access a value. Instead, you pass a parent key to `elektraOpen` and use getters and setters which get
-passed in only the part below that key in the KDB. For example, if you call `elektraOpen` with `"/sw/org/myapp/#0/current"`, you can
-access your applications configuration value for the key `"/sw/org/myapp/#0/current/message"` with the provided getters and setters by
-passing them only `"message"` as the name for the configuration value.
+When calling `elektraOpen` you pass the parent key for your application. Afterwards getters and setters get passed in only the part below
+that key in the KDB. For example, if you call `elektraOpen` with `"/sw/org/myapp/#0/current"`, you can access your applications
+configuration value for the key `"/sw/org/myapp/#0/current/message"` with the provided getters and setters by passing them only 
+`"message"` as the name for the configuration value.
 
 ### Read values from the KDB
 A typical application will want to read some configuration values at start. This should be made as easy as possible for the developer.
@@ -151,9 +193,7 @@ data. Reading values from KDB can be done with elektra-getter functions that fol
 For example, you can get the value for the key named "message" like this:
 
 ```c
-Elektra * elektra = elektraOpen ("/sw/org/myapp/#0/current", NULL, NULL);
 const char * message = elektraGetString (elektra, "message");
-elektraClose (elektra);
 ```
 
 Sometimes you'll want to access arrays as well. You can access single elements of an array using the provided array-getters following
@@ -164,17 +204,13 @@ again a simple naming scheme:
 For example, you can get the third value for the array "message" like this:
 
 ```c
-Elektra * elektra = elektraOpen ("/sw/org/myapp/#0/current", NULL, NULL);
 const char * message = elektraGetStringArrayElement (elektra, "message", 3);
-elektraClose (elektra);
 ```
 
 To get the size of the array you would like to access you can use the function `elektraArraySize`:
 
 ```c
-Elektra * elektra = elektraOpen ("/sw/org/myapp/#0/current", NULL, NULL);
 size_t arraySize = elektraArraySize (elektra, "message");
-elektraClose (elektra);
 ```
 
 For some background information on arrays in Elektra see the [Application Integration](/doc/tutorials/application-integration.md) document.
@@ -193,17 +229,13 @@ Sometimes, after having read a value from the KDB, you will want to write back a
 an analogous naming scheme as well. For example, to write back a modified "message", you can call `elektraSetString`:
 
 ```c
-Elektra * elektra = elektraOpen ("/sw/org/myapp/#0/current", NULL, NULL);
 elektraSetString (elektra, "message", "This is the new message", NULL);
-elektraClose (elektra);
 ```
 
 The counterpart for array-getters again follows the same naming scheme:
 
 ```c
-Elektra * elektra = elektraOpen ("/sw/org/myapp/#0/current", NULL, NULL);
 elektraSetStringArrayElement (elektra, "message", "This is the third new message", NULL);
-elektraClose (elektra);
 ```
 
 Because even the best specification and perfect usage as intended can not fully prevent an error from occurring, when saving the
@@ -220,7 +252,8 @@ convenience macro `elektraGetEnum(elektra, keyname, enumType)`, which calls `ele
 ```c
 typedef enum { A, B, C } MyEnum;
 
-Elektra * elektra = elektraOpen ("/sw/org/myapp/#0/current", NULL, NULL);
+ElektraError * error = NULL;
+Elektra * elektra = elektraOpen ("/sw/org/myapp/#0/current", NULL, &error);
 
 // Read raw int value
 int value = elektraGetEnumInt (elektra, "message");
@@ -245,20 +278,20 @@ void elektraSetEnumIntArrayElement (Elektra * elektra, char * name, size_t index
 ```
 
 ### Raw Values
-You can use `const char * elektraGetValue (Elektra * elektra, const char * name)` to read the raw (string) value of a key. No type checking
+You can use `const char * elektraGetRawString (Elektra * elektra, const char * name)` to read the raw (string) value of a key. No type checking
 or type conversion will be attempted. Additionally this function is guaranteed to not call the fatal error handler. It will simply return
 `NULL`, if the key was not found.
 
 If you want to set a raw value (e.g. if you want to extend the API with your own custom types), use
-`void elektraSetValue (Elektra * elektra, const char * name, const char * value, KDBType type, ElektraError ** error)`. Obviously you have
+`void elektraSetRawString (Elektra * elektra, const char * name, const char * value, KDBType type, ElektraError ** error)`. Obviously you have
 to provide a type for the value you set, so that the API can perform type checking, when reading the value next time.
 
 Similar functions are provided for array elements:
 
 ```c
-const char * elektraGetArrayElementValue (Elektra * elektra, const char * name, size_t index)
+const char * elektraGetRawStringArrayElement (Elektra * elektra, const char * name, size_t index)
 
-void elektraSetArrayElementValue (Elektra * elektra, const char * name, size_t index, const char * value, KDBType type, ElektraError ** error)
+void elektraSetRawStringArrayElement (Elektra * elektra, const char * name, size_t index, const char * value, KDBType type, ElektraError ** error)
 ```
 
 #### Type Information

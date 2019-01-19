@@ -56,3 +56,11 @@ type1:KDBType
 arg1:targetType
 type2:const char *
 arg2:sourceValue
+
+number:6
+severity:error
+name:NULL_ERROR
+description:The value passed to the ElektraError ** argument of %1$s was NULL.
+args:1
+type1:const char *
+arg1:function

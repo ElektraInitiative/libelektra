@@ -51,7 +51,7 @@ if (elektra == NULL)
 	return -1;
 }
 
-// use API
+int myint = elektraGetLong (elektra, "myint");
 
 elektraClose (elektra);
 ```
@@ -63,12 +63,14 @@ const char * mystring = elektraGetString (elektra, "mystring");
 No need to specify the base path `/sw/org/myapp/#0/current` anymore, as the high-level API keeps track of that for you.
 The API supports the CORBA types already used by some plugins. The high-level API should also be used in combination
 with a specification (`spec-mount`). When used this way, the API is designed to be error and crash free while reading values.
-Writing values, can of course still produces errors.
+Writing values, can of course still produce errors.
 
 Another advantage of the new API is, that it will be much easier to write bindings for other languages now, because only a few simply
 types and functions have to be mapped to provide the full functionality.
 
 Take a look at the [README](/src/libs/highlevel/README.md) for more infos.
+
+. *(Klemens Böswirth)*
 
 
 ### <<HIGHLIGHT2>>

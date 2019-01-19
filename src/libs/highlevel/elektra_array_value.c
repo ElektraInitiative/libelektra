@@ -18,6 +18,13 @@
 extern "C" {
 #endif
 
+#define CHECK_ERROR(elektra, error)                                                                                                        \
+	if (error == NULL)                                                                                                                 \
+	{                                                                                                                                  \
+		elektraFatalError (elektra, elektraErrorNullError (__func__));                                                             \
+		return;                                                                                                                    \
+	}
+
 /**
  * \addtogroup highlevel High-level API
  * @{
@@ -92,14 +99,14 @@ KDBType elektraGetArrayElementType (Elektra * elektra, const char * keyname, siz
 }
 
 /**
- * Get the raw value of an array element key.
+ * Get the raw string value of an array element key.
  *
  * @param elektra The Elektra instance to use.
  * @param name    The (relative) name of the array.
  * @param index   The index of the array element.
  * @return the raw value of the specified key, or NULL if the key was not found
  */
-const char * elektraGetArrayElementValue (Elektra * elektra, const char * name, size_t index)
+const char * elektraGetRawStringArrayElement (Elektra * elektra, const char * name, size_t index)
 {
 	elektraSetArrayLookupKey (elektra, name, index);
 	Key * const resultKey = ksLookup (elektra->config, elektra->lookupKey, 0);
@@ -107,7 +114,7 @@ const char * elektraGetArrayElementValue (Elektra * elektra, const char * name, 
 }
 
 /**
- * Set the raw value of an array element key.
+ * Set the raw string value of an array element key.
  *
  * @param elektra The Elektra instance to use.
  * @param name    The (relative) name of the array.
@@ -116,9 +123,10 @@ const char * elektraGetArrayElementValue (Elektra * elektra, const char * name, 
  * @param type    The type to set in the metadata of the (array element) key.
  * @param error   Pointer to an ElektraError. Will be set in case saving fails.
  */
-void elektraSetArrayElementValue (Elektra * elektra, const char * name, size_t index, const char * value, KDBType type,
-				  ElektraError ** error)
+void elektraSetRawStringArrayElement (Elektra * elektra, const char * name, size_t index, const char * value, KDBType type,
+				      ElektraError ** error)
 {
+	CHECK_ERROR (elektra, error);
 	elektraSetArrayLookupKey (elektra, name, index);
 	Key * const key = keyDup (elektra->lookupKey);
 	keySetMeta (key, "type", type);
@@ -350,13 +358,14 @@ int elektraGetEnumIntArrayElement (Elektra * elektra, const char * keyname, size
 }
 
 #define ELEKTRA_SET_ARRAY_ELEMENT_VALUE(VALUE_TO_STRING, KDB_TYPE, elektra, keyname, index, value, error)                                  \
+	CHECK_ERROR (elektra, error);                                                                                                      \
 	char * string = VALUE_TO_STRING (value);                                                                                           \
 	if (string == 0)                                                                                                                   \
 	{                                                                                                                                  \
 		*error = elektraErrorConversionToString (KDB_TYPE);                                                                        \
 		return;                                                                                                                    \
 	}                                                                                                                                  \
-	elektraSetArrayElementValue (elektra, keyname, index, string, KDB_TYPE, error);                                                    \
+	elektraSetRawStringArrayElement (elektra, keyname, index, string, KDB_TYPE, error);                                                \
 	elektraFree (string);
 
 /**
@@ -371,7 +380,8 @@ int elektraGetEnumIntArrayElement (Elektra * elektra, const char * keyname, size
  */
 void elektraSetStringArrayElement (Elektra * elektra, const char * keyname, size_t index, const char * value, ElektraError ** error)
 {
-	elektraSetArrayElementValue (elektra, keyname, index, value, KDB_TYPE_STRING, error);
+	CHECK_ERROR (elektra, error);
+	elektraSetRawStringArrayElement (elektra, keyname, index, value, KDB_TYPE_STRING, error);
 }
 
 /**
