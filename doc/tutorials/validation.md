@@ -114,10 +114,10 @@ globally (will be added by default and also with any `kdb global-mount` call).
 Before we start, let us make a backup of the current data in the spec and user namespace:
 
 ```sh
-kdb set system/tests/spec $(mktemp)
-kdb set system/tests/user $(mktemp)
-kdb export spec dump > $(kdb get system/tests/spec)
-kdb export user dump > $(kdb get system/tests/user)
+kdb set system/tests/specbackup $(mktemp)
+kdb set system/tests/userbackup $(mktemp)
+kdb export spec dump > $(kdb get system/tests/specbackup)
+kdb export user dump > $(kdb get system/tests/userbackup)
 ```
 
 We write metadata to the namespace `spec` and the plugin `spec` applies it to every cascading key:
@@ -125,15 +125,17 @@ We write metadata to the namespace `spec` and the plugin `spec` applies it to ev
 ```sh
 kdb setmeta spec/tests/spec/test hello world
 kdb set /tests/spec/test value
-#> Using name user/tests/spec/test
-#> Create a new key user/tests/spec/test with string "value"
+# STDOUT-REGEX: Using name (user|system)/tests/spec/test⏎Create a new key (user|system)/tests/spec/test with string "value"
 kdb lsmeta spec/tests/spec/test | grep -v '^internal/ini'
 #> hello
 kdb lsmeta /tests/spec/test | grep -v '^internal/ini'
 #> hello
 kdb getmeta /tests/spec/test hello
 #> world
-kdb getmeta user/tests/spec/test hello
+
+# The default namespace for a non-root user is `user`, while
+# for root users a cascading key usually refers to the `system` namespace.
+kdb getmeta user/tests/spec/test hello || kdb getmeta system/tests/spec/test hello
 #> world
 ```
 
@@ -142,15 +144,14 @@ But it also supports globbing (`_` for any key, `?` for any char, `[]` for chara
 ```sh
 kdb setmeta "spec/tests/spec/_" new metaval
 kdb set /tests/spec/test value
-#> Using name user/tests/spec/test
-#> Set string to "value"
+# STDOUT-REGEX: Using name (user|system)/tests/spec/test⏎Set string to "value"
 kdb lsmeta /tests/spec/test | grep -v '^internal/ini'
 #> hello
 #> new
 
 # Remove keys and metadata from the commands above
 kdb rm -r spec/tests/spec
-kdb rm -r user/tests/spec
+kdb rm -r user/tests/spec || kdb rm -r system/tests/spec
 ```
 
 So let us combine this functionality with validation plugins.
@@ -165,8 +166,7 @@ kdb setmeta spec/tests/spec/test check/validation/message "Not a number"
 If we now set a new key with
 ```sh
 kdb set /tests/spec/test "not a number"
-#> Using name user/tests/spec/test
-#> Create a new key user/tests/spec/test with string "not a number"
+# STDOUT-REGEX: Using name [a-z]+/tests/spec/test⏎Create a new key [a-z]+/tests/spec/test with string "not a number"
 ```
 this key has adopted all metadata from the spec namespace:
 ```sh
@@ -203,7 +203,7 @@ _schema_ of our configuration and therefore should be stored in the spec namespa
 ```sh
 # Undo modifications
 kdb rm -r spec/tests/spec/test
-kdb rm -r user/tests/spec/test
+kdb rm -r user/tests/spec || kdb rm -r system/tests/spec
 ```
 
 ### Specfiles
@@ -253,7 +253,7 @@ you can run into [this](https://github.com/ElektraInitiative/libelektra/issues/2
 
 ```sh
 kdb set /tests/tutorial/links/url "invalid url"
-#> Using name user/tests/tutorial/links/url
+# STDOUT-REGEX: Using name (user|system)/tests/tutorial/links/url
 # STDERR: .*key value failed to validate.*not a valid URL.*
 # ERROR:  42
 # RET:    5
@@ -290,7 +290,7 @@ kdb setmeta /tests/tutorial/spec/should_not_be_here trigger/error 10
 #> Using keyname spec/tests/tutorial/spec/should_not_be_here
 kdb spec-mount /tests/tutorial
 kdb set /tests/tutorial/spec/should_not_be_here abc
-#> Using name user/tests/tutorial/spec/should_not_be_here
+# STDOUT-REGEX: Using name (user|system)/tests/tutorial/spec/should_not_be_here
 # RET:    5
 # STDERR: .*error.*10.*occurred.*
 kdb get /tests/tutorial/spec/should_not_be_here
@@ -310,12 +310,12 @@ kdb umount spec/tests/tutorial
 kdb umount /tests/tutorial
 kdb rm -rf spec
 kdb rm -rf user
-kdb import spec dump < $(kdb get system/tests/spec)
-kdb import user dump < $(kdb get system/tests/user)
-rm $(kdb get system/tests/spec)
-rm $(kdb get system/tests/user)
-kdb rm system/tests/spec
-kdb rm system/tests/user
+kdb import spec dump < $(kdb get system/tests/specbackup)
+kdb import user dump < $(kdb get system/tests/userbackup)
+rm $(kdb get system/tests/specbackup)
+rm $(kdb get system/tests/userbackup)
+kdb rm system/tests/specbackup
+kdb rm system/tests/userbackup
 ```
 
 ## Customized Schemas
