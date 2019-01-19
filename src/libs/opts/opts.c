@@ -622,7 +622,7 @@ KeySet * parseEnvp (const char ** envp)
 		const char * eq = strchr (*cur, '=');
 		Key * key = keyNew ("/", KEY_VALUE, eq + 1, KEY_END);
 		size_t len = eq - *cur;
-		char * name = elektraStrNDup (*cur, len);
+		char * name = elektraStrNDup (*cur, len + 1);
 		name[len] = '\0';
 		keyAddBaseName (key, name);
 		ksAppendKey (ks, key);
