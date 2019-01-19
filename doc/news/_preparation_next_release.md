@@ -100,6 +100,16 @@ or if the port is available to use. *(Michael Zronek)*
 - <<TODO>>
 - <<TODO>>
 
+### Misc
+
+- We fixed some compiler warnings for the plugins
+
+  - [`camel`](https://www.libelektra.org/plugins/camel),
+  - [`line`](https://www.libelektra.org/plugins/line),
+  - [`mini`](https://www.libelektra.org/plugins/mini) and
+  - [`resolver`](https://www.libelektra.org/plugins/resolver)
+
+  reported on FreeBSD. *(René Schwaiger)*
 
 ## Libraries
 
