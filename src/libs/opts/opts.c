@@ -162,9 +162,9 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 			Key * k;
 			while ((k = ksNext (opts)) != NULL)
 			{
-				char metaBuffer[ELEKTRA_MAX_ARRAY_SIZE + 14];		       // 14 = opt//flagvalue
+				char metaBuffer[ELEKTRA_MAX_ARRAY_SIZE + 15]; // 14 = opt//flagvalue (1 extra to circumvent warning)
 				strncpy (metaBuffer, keyName (k), ELEKTRA_MAX_ARRAY_SIZE + 3); // 3 = opt/ - null byte from ELEKTRA_MAX_SIZE
-				strncat (metaBuffer, "/arg", 10);			       // 10 = remaining space in metaBuffer
+				strncat (metaBuffer, "/arg", 11);			       // 11 = remaining space in metaBuffer
 
 				const char * hasArg = keyGetMetaString (cur, metaBuffer);
 				if (hasArg == NULL)
@@ -173,7 +173,7 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 				}
 
 				strncpy (metaBuffer, keyName (k), ELEKTRA_MAX_ARRAY_SIZE + 3); // 3 = opt/ - null byte from ELEKTRA_MAX_SIZE
-				strncat (metaBuffer, "/flagvalue", 10);			       // 10 = remaining space in metaBuffer
+				strncat (metaBuffer, "/flagvalue", 11);			       // 11 = remaining space in metaBuffer
 
 				const char * flagValue = keyGetMetaString (cur, metaBuffer);
 				if (flagValue == NULL)
