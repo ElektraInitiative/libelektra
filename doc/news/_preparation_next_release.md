@@ -227,6 +227,10 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Infrastructure
 
+### Cirrus
+
+- We now use [Cirrus CI](https://cirrus-ci.com) to build Elektra on [FreeBSD](https://www.freebsd.org). *(René Schwaiger)*
+
 ### Jenkins
 
 - <<TODO>>
