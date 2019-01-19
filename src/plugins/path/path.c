@@ -12,6 +12,8 @@
 
 #include "kdbconfig.h"
 
+#endif
+
 static int createModeBits (const char * modes);
 
 static int handleNoUserCase (Key * parentKey, const char * validPath, const char * modes, int modeMask);
@@ -19,8 +21,6 @@ static int handleNoUserCase (Key * parentKey, const char * validPath, const char
 static int switchUser (Key * key, Key * parentKey, const char * name, const struct passwd * p);
 
 static int switchGroup (Key * key, Key * parentKey, const char * name, const struct group * gr);
-
-#endif
 
 /**
  * This method tries to find a matching group from a group struct containing more than one group
@@ -162,17 +162,33 @@ static int validatePermission (Key * key, Key * parentKey)
 			return -1;
 		}
 	}
-	int ngroups = 512;
-	gid_t * groups;
-	groups = (gid_t *) elektraMalloc (ngroups * sizeof (gid_t));
-	getgrouplist (name, (int) p->pw_gid, groups, &ngroups);
+
+
+	gid_t * groups = (gid_t *) elektraMalloc (1 * sizeof (gid_t));
+	int numberOfGroups = 1;
+
+	// The following loop is used to get all groups for a user.
+	// 4294967296 is max number of possible groups in Linux Kernel >= 2.6.3
+	// 32 for Linux Kernel < 2.6.3
+	for (int i = 16; i <= 4294967296; i = i * 2)
+	{
+		int size = i;
+		groups = (gid_t *) elektraMalloc (i * sizeof (gid_t));
+		numberOfGroups = getgrouplist (p->pw_name, (int) p->pw_gid, groups, &size);
+		if (numberOfGroups > 0)
+		{
+			break;
+		}
+		elektraFree (groups);
+	}
 
 	// Get groupID of file being checked
 	struct stat sb;
 	stat (validPath, &sb);
 	struct group * gr = getgrgid (sb.st_gid);
 
-	bool isUserInGroupBool = isUserInGroup ((int) gr->gr_gid, groups, (unsigned int) ngroups);
+	bool isUserInGroupBool = isUserInGroup ((int) gr->gr_gid, groups, (unsigned int) numberOfGroups);
+	elektraFree (groups);
 
 	// Save group so we can switch back to the original later again
 	gid_t currentGID = getegid ();
@@ -187,7 +203,6 @@ static int validatePermission (Key * key, Key * parentKey)
 			return result;
 		}
 	}
-	elektraFree (groups);
 
 	// Actual check is done
 	int canAccess = euidaccess (validPath, modeMask);
