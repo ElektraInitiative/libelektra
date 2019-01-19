@@ -64,8 +64,7 @@ CMAKE_FLAGS_BASE = [
 CMAKE_FLAGS_BUILD_ALL = [
   'BINDINGS': 'ALL;-DEPRECATED',
   'PLUGINS': 'ALL;-DEPRECATED',
-  'TOOLS': 'ALL',
-  'ENABLE_DEBUG': 'ON' // TODO: remove ENABLE_DEBUG
+  'TOOLS': 'ALL'
 ]
 
 CMAKE_FLAGS_COVERAGE = ['ENABLE_COVERAGE': 'ON']
@@ -440,6 +439,7 @@ def generateMainBuildStages() {
     "debian-stable-full",
     DOCKER_IMAGES.stretch,
     CMAKE_FLAGS_BUILD_ALL +
+      CMAKE_FLAGS_DEBUG +
       CMAKE_FLAGS_BUILD_FULL +
       CMAKE_FLAGS_BUILD_STATIC +
       CMAKE_FLAGS_COVERAGE
@@ -492,6 +492,7 @@ def generateFullBuildStages() {
     "debian-oldstable-full",
     DOCKER_IMAGES.jessie,
     CMAKE_FLAGS_BUILD_ALL +
+      CMAKE_FLAGS_DEBUG +
       ['COMMON_FLAGS': ''] // The build system can not compile Elektra on Debian Jessie, if we specify the compiler switch `-Werror`.
     ,
     [TEST.ALL, TEST.MEM, TEST.INSTALL]
@@ -501,7 +502,8 @@ def generateFullBuildStages() {
   tasks << buildAndTest(
     "debian-unstable-full",
     DOCKER_IMAGES.sid,
-    CMAKE_FLAGS_BUILD_ALL,
+    CMAKE_FLAGS_BUILD_ALL+
+      CMAKE_FLAGS_DEBUG,
     [TEST.ALL, TEST.MEM, TEST.INSTALL]
   )
 
@@ -520,6 +522,7 @@ def generateFullBuildStages() {
     "debian-unstable-full-clang",
     DOCKER_IMAGES.sid,
     CMAKE_FLAGS_BUILD_ALL +
+      CMAKE_FLAGS_DEBUG +
       CMAKE_FLAGS_CLANG
     ,
     [TEST.ALL, TEST.MEM, TEST.INSTALL]
@@ -571,6 +574,7 @@ def generateFullBuildStages() {
     "debian-stable-full-ini",
     DOCKER_IMAGES.stretch,
     CMAKE_FLAGS_BUILD_ALL +
+      CMAKE_FLAGS_DEBUG +
       CMAKE_FLAGS_INI +
       CMAKE_FLAGS_COVERAGE
     ,
@@ -582,6 +586,7 @@ def generateFullBuildStages() {
     "debian-stable-full-mmap",
     DOCKER_IMAGES.stretch,
     CMAKE_FLAGS_BUILD_ALL +
+      CMAKE_FLAGS_DEBUG +
       CMAKE_FLAGS_MMAP +
       CMAKE_FLAGS_COVERAGE
     ,
@@ -592,6 +597,7 @@ def generateFullBuildStages() {
     "debian-stable-full-mmap-asan",
     DOCKER_IMAGES.stretch,
     CMAKE_FLAGS_BUILD_ALL +
+      CMAKE_FLAGS_DEBUG +
       CMAKE_FLAGS_MMAP
   )
 
