@@ -17,4 +17,4 @@ task:
   tests_script:
     - >
       cd build && ctest --output-on-failure
-      -E 'pluginprocess|testmod_network|testshell_markdown_(kdb_complete|kdb_ls|kdb_find|tutorial_cascading|tutorial_validation|readme_msr)'
+      -E 'pluginprocess|testmod_network|testshell_markdown_(kdb_ls|kdb_find|tutorial_cascading|tutorial_validation|readme_msr)'
