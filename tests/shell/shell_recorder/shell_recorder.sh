@@ -59,7 +59,7 @@ execute() {
 	# = EXEC =
 	# ========
 
-	sh -c -f "$command" 2> stderr 1> stdout
+	sh -c "$command" 2> stderr 1> stdout
 
 	RETVAL="$?"
 

@@ -1,0 +1,20 @@
+freebsd_instance:
+  image: freebsd-11-2-release-amd64
+
+task:
+
+  install_script:
+    - pkg install -y cmake
+    - pkg install -y git
+    - pkg install -y ninja
+
+  script:
+    - SYSTEM_DIR="$PWD/kdbsystem"
+    - mkdir build && cd build
+    - cmake -GNinja -DKDB_DB_SYSTEM="$SYSTEM_DIR" ..
+    - ninja
+
+  tests_script:
+    - >
+      cd build && ctest --output-on-failure
+      -E 'pluginprocess|testmod_network|testshell_markdown_(conditionals|dini|enum|ini|line|mathcheck|kdb_complete|kdb_ls|kdb_find|tutorial_cascading|tutorial_validation|readme_msr)'
