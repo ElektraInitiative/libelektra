@@ -12,10 +12,11 @@ task:
   script:
     - mkdir build && cd build
     # The tests for the process plugin stall on FreeBSD
-    - cmake -GNinja -DPLUGINS='ALL;-process' -DTARGET_PLUGIN_FOLDER="" -DCMAKE_SKIP_INSTALL_RPATH=ON ..
+    # The test for the network plugin fails on FreeBSD: https://issues.libelektra.org/2322
+    - cmake -GNinja -DPLUGINS='ALL;-process;-network' -DTARGET_PLUGIN_FOLDER="" -DCMAKE_SKIP_INSTALL_RPATH=ON ..
     - ninja
     - output="$(ninja install 2>&1)" || printf '%s' "$output"
 
   tests_script:
-    - cd build && ctest --output-on-failure -E 'pluginprocess|testmod_network'
+    - cd build && ctest --output-on-failure -E 'pluginprocess'
     - kdb run_all
