@@ -18,6 +18,8 @@ if [ -z "$ENV" ]; then
 fi
 
 printf '%s\n' "$ENV" | while IFS='' read -r env; do
+	# The script does **not** handle environment variables that contain newlines properly!
+	printf '%s' "$env" | grep -Eq '.+=.*' || continue
 	NAME="$(echo "$env" | cut -d '=' -f1 2> /dev/null)"
 	if [ "$NAME" = "KDB" ] || [ "$NAME" = "PATH" ]; then
 		continue
