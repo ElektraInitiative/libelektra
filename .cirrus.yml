@@ -14,6 +14,7 @@ task:
     # The tests for the process plugin stall on FreeBSD
     - cmake -GNinja -DPLUGINS='ALL;-process' ..
     - ninja
+    - output="$(ninja install 2>&1)" || printf '%s' "$output"
 
   tests_script:
     - cd build && ctest --output-on-failure -E 'pluginprocess|testshell_markdown_mozprefs|testmod_network'
