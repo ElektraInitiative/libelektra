@@ -18,3 +18,4 @@ task:
 
   tests_script:
     - cd build && ctest --output-on-failure -E 'pluginprocess|testmod_network'
+    - kdb run_all
