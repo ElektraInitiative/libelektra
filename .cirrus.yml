@@ -11,7 +11,7 @@ task:
 
   script:
     - mkdir build && cd build
-    - cmake -GNinja ..
+    - cmake -GNinja -DPLUGINS='ALL' ..
     - ninja
 
   tests_script:
