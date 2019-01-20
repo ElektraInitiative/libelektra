@@ -163,23 +163,25 @@ static int validatePermission (Key * key, Key * parentKey)
 		}
 	}
 
-
-	gid_t * groups = (gid_t *) elektraMalloc (1 * sizeof (gid_t));
-	int numberOfGroups = 1;
-
-	// The following loop is used to get all groups for a user.
-	// 4294967296 is max number of possible groups in Linux Kernel >= 2.6.3, we can only pass an integer to the method though
-	// 32 for Linux Kernel < 2.6.3
-	for (unsigned int i = 16; i <= UINT_MAX; i = i * 2)
+	int ngroups = 0;
+	gid_t * tmpGroups = (gid_t *) malloc (0 * sizeof (gid_t));
+	getgrouplist (p->pw_name, (int) p->pw_gid, tmpGroups, &ngroups);
+	free (tmpGroups);
+	// call to getgrouplist fails because at least one group (p->pw_gid) is returned
+	// therefore ngroups now contains the actual number of groups for the user
+	gid_t * groups = (gid_t *) malloc (ngroups * sizeof (gid_t));
+	if (getgrouplist (p->pw_name, (int) p->pw_gid, groups, &ngroups) < 0)
 	{
-		int size = i;
-		groups = (gid_t *) elektraMalloc (i * sizeof (gid_t));
-		numberOfGroups = getgrouplist (p->pw_name, (int) p->pw_gid, groups, &size);
-		if (numberOfGroups > 0)
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_USER_PERMISSION_ERROR, parentKey,
+				   "There was a problem in the getting all groups for the user."
+				   "Please report the issue at https://issues.libelektra.org");
+		if (seteuid (currentUID) < 0)
 		{
-			break;
+			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_USER_PERMISSION_ERROR, parentKey,
+					   "There was a problem in the user switching process."
+					   "Please report the issue at https://issues.libelektra.org");
 		}
-		elektraFree (groups);
+		return -1;
 	}
 
 	// Get groupID of file being checked
@@ -187,7 +189,7 @@ static int validatePermission (Key * key, Key * parentKey)
 	stat (validPath, &sb);
 	struct group * gr = getgrgid (sb.st_gid);
 
-	bool isUserInGroupBool = isUserInGroup ((int) gr->gr_gid, groups, (unsigned int) numberOfGroups);
+	bool isUserInGroupBool = isUserInGroup ((int) gr->gr_gid, groups, (unsigned int) ngroups);
 	elektraFree (groups);
 
 	// Save group so we can switch back to the original later again
