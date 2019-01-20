@@ -53,45 +53,35 @@ check will be done if it is a directory or device file.
 ## Example
 
 ```sh
-whoami
-> tomcat
-
 sudo kdb mount test.dump /test path dump
 sudo kdb setmeta /test/path check/path ""
-sudo kdb setmeta /test/path check/permission/user "tomcat"
+#> Using keyname spec/test/path
+sudo kdb setmeta /test/path check/permission/user ""
+#> Using keyname spec/test/path
 sudo kdb setmeta /test/path check/permission/mode "rw"
+#> Using keyname spec/test/path
 
-# Generate a file with restrictive permissions
-touch /tmp/testfile.txt
-sudo chmod 700 /tmp/testfile.txt
-sudo chown root:root /tmp/testfile.txt
+# Standard users should not be able to read/write the root folder
+kdb set /test/path "/root"
+# ERROR:207
+# Using name system/test/path
+# Sorry, the error (#207) occurred ;(
+# Description: Detected incorrect permissions for file/directory
+# Reason: User <user> does not have [read,write] permission on /root
+# Ingroup: plugin
+# Module: path
+# At: ....../path.c:224
+# Mountpoint: system/test
 
-# The following command has to be done as root if you want to
-# check permissions for another user
-sudo kdb set /test/path "/tmp/testfile.txt"
-> Using name system/test/path
-> Sorry, the error (#207) occurred ;(
-> Description: Detected incorrect permissions for file/directory
-> Reason: User tomcat does not have [read,write] permission on /tmp/testfile.txt
-> Ingroup: plugin
-> Module: path
-> At: ....../path.c:224
-> Mountpoint: system/test
-> Configfile: /etc/kdb/test.dump.5838:1547304979.131617.tmp
-> Create a new key system/test/path with string "/tmp/testfile.txt"
-
-# Fix permissions
-sudo chmod 777 /tmp/testfile.txt
-
-sudo kdb set /test/path "/tmp/testfile.txt"
-> Using name system/test/path
-> Set string to "/tmp/testfile.txt"
+# Set something which the current user can access for sure
+kdb set /test/path "$HOME"
+#> Using name user/test/path
+# STDOUT-REGEX: Set string to "/*"
 
 #cleanup
 sudo kdb rm -r /test
 sudo kdb umount /test
-sudo rm /tmp/testfile.txt
 ```
 
 ## Future work
-Add a check which ensures that the given path is a file/directory/symbolic link/hard link/ etc.
+Add a check which ensures that the given path is a file/directory/symbolic link/hard link/etc.
