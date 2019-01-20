@@ -88,13 +88,10 @@ The following section lists news about the [modules](https://www.libelektra.org/
 The `network` plugin also supports port declarations to check if a portnumber is valid
 or if the port is available to use. *(Michael Zronek)*
 
-### <<Plugin2>>
+### YAy PEG
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-
+The new plugin [YAy PEG](https://www.libelektra.org/plugins/yaypeg) parses a subset of YAML using a parser based on
+[PEGTL](https://github.com/taocpp/PEGTL). *(René Schwaiger)*
 
 ### <<Plugin3>>
 
@@ -228,8 +225,10 @@ you up to date with the multi-language support provided by Elektra.
 
 ### CMake
 
-- <<TODO>>
-- <<TODO>>
+- The CMake find module [`FindAugeas.cmake`](https://master.libelektra.org/cmake/Modules/FindAugeas.cmake) does not print an error message
+  anymore, if it is unable to locate Augeas in the `pkg-config` search path.
+- The CMake find module [`FindLua.cmake`](https://master.libelektra.org/cmake/Modules/FindLua.cmake) does not print an error message
+  anymore, if it is unable to locate a Lua executable.
 - <<TODO>>
 
 ### Docker

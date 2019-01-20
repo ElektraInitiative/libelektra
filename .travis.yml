@@ -320,6 +320,7 @@ before_install:
       brew install libev
       brew install lua
       brew install openssl
+      brew install pegtl
       brew install python@2; brew link --overwrite python@2
       brew install python || brew upgrade python
       brew install qt
@@ -383,9 +384,10 @@ before_install:
       sudo apt-get install libzmq3-dev
       sudo apt-get install libxerces-c-dev
       sudo apt-get install moreutils # contains `sponge` required by `reformat-cmake`
-      sudo pip install cmake-format==0.4.3 pyyaml
+      sudo pip install cmake-format==0.4.5 pyyaml
+      git clone --branch 2.7.1 --depth 1 https://github.com/taocpp/PEGTL.git && sudo cp -R PEGTL/include/tao /usr/local/include
       mkdir -p "$HOME/bin" && cd "$HOME/bin" && \
-        curl -L "https://github.com/mvdan/sh/releases/download/v2.5.1/shfmt_v2.5.1_linux_amd64" -o shfmt && \
+        curl -L "https://github.com/mvdan/sh/releases/download/v2.6.2/shfmt_v2.6.2_linux_amd64" -o shfmt && \
         chmod u+x shfmt && export PATH=$PATH:"$HOME/bin"
     fi
 

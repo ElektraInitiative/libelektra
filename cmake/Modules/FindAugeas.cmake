@@ -24,7 +24,10 @@ else (LIBAUGEAS_INCLUDE_DIR)
 
 	find_path (LIBAUGEAS_INCLUDE_DIR augeas.h ${_LIBAUGEAS_PC_INCLUDE_DIRS} /usr/include /usr/local/include)
 
-	pkg_get_variable (_LIBAUGEAS_PREFIX augeas prefix)
+	if (_LIBAUGEAS_PC_FOUND)
+		pkg_get_variable (_LIBAUGEAS_PREFIX augeas prefix)
+	endif (_LIBAUGEAS_PC_FOUND)
+
 	if (NOT _LIBAUGEAS_PREFIX)
 		set (_LIBAUGEAS_PREFIX "/usr")
 	endif ()
