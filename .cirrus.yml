@@ -17,4 +17,4 @@ task:
     - output="$(ninja install 2>&1)" || printf '%s' "$output"
 
   tests_script:
-    - cd build && ctest --output-on-failure -E 'pluginprocess|testshell_markdown_mozprefs|testmod_network'
+    - cd build && ctest --output-on-failure -E 'pluginprocess|testmod_network'
