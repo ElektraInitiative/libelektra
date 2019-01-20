@@ -326,10 +326,8 @@ struct _KDB
 	Plugin * notificationPlugin; /*!< reference to global plugin for notifications.*/
 	ElektraNotificationCallbackContext * notificationCallbackContext; /*!< reference to context for notification callbacks.*/
 
-	KeySet * global; /*!< This keyset can be used by global plugins to pass data through
-			the KDB and communicate with other global plugins during a KDB call.
-			It is initialized at beginning of kdbGet()/kdbSet() and is
-			ksClear()-ed before the functions return.*/
+	KeySet * global; /*!< This keyset can be used by global plugins and the resolver
+			to pass data through the KDB and communicate with other global plugins.*/
 };
 
 
@@ -419,10 +417,10 @@ struct _Plugin
 	void * data; /*!< This handle can be used for a plugin to store
 	 any data its want to. */
 
-	KeySet * global; /*!< This keyset can be used by global plugins to pass data through
-			the KDB and communicate with other global plugins during a KDB call.
-			It is initialized at beginning of kdbGet()/kdbSet() and is
-			ksClear()-ed before the functions return.*/
+	KeySet * global; /*!< This keyset can be used by global plugins and the resolver
+			to pass data through the KDB and communicate with other global plugins.
+			Plugins shall clean up their parts of the global keyset, which
+			they do not need any more.*/
 };
 
 
