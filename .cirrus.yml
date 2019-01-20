@@ -12,7 +12,7 @@ task:
   script:
     - mkdir build && cd build
     # The tests for the process plugin stall on FreeBSD
-    - cmake -GNinja -DPLUGINS='ALL;-process' ..
+    - cmake -GNinja -DPLUGINS='ALL;-process' -DTARGET_PLUGIN_FOLDER="" -DCMAKE_SKIP_INSTALL_RPATH=ON ..
     - ninja
     - output="$(ninja install 2>&1)" || printf '%s' "$output"
 
