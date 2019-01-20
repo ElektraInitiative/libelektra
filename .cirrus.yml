@@ -14,4 +14,4 @@ task:
     - ninja
 
   tests_script:
-    - cd build && ctest --output-on-failure -E 'pluginprocess|testmod_network|tutorial_cascading'
+    - cd build && ctest --output-on-failure -E 'pluginprocess|testmod_network'
