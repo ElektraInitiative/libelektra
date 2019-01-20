@@ -11,7 +11,8 @@ task:
 
   script:
     - mkdir build && cd build
-    - cmake -GNinja -DPLUGINS='ALL' ..
+    # The tests for the process plugin stall on FreeBSD
+    - cmake -GNinja -DPLUGINS='ALL;-process' ..
     - ninja
 
   tests_script:
