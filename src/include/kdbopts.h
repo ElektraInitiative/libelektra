@@ -13,5 +13,6 @@
 #include <kdb.h>
 
 int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** envp, Key * errorKey);
+char * elektraGetOptsHelpMessage (Key * errorKey, const char * usage, const char * prefix);
 
 #endif // ELEKTRA_KDBOPTS_H

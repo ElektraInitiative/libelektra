@@ -54,6 +54,13 @@
 #define ENV_SEP ":"
 #endif
 
+#define checkHelpMessage(errorKey, expected)                                                                                               \
+	{                                                                                                                                  \
+		char * actual = elektraGetOptsHelpMessage (errorKey, NULL, NULL);                                                          \
+		succeed_if_same_string (actual, expected);                                                                                 \
+		elektraFree (actual);                                                                                                      \
+	}
+
 static inline Key * keyWithOpt (const char * name, const char shortOpt, const char * longOpt, const char * envVar)
 {
 	return keyNew (name, KEY_META, "opt", (const char[]){ shortOpt, '\0' }, KEY_META, "opt/long", longOpt, KEY_META, "env", envVar,
@@ -536,6 +543,23 @@ static void test_illegal_spec (void)
 	clearValues (ks);
 
 	ksDel (ks);
+
+	// ---
+	// '-' option
+	// ---
+
+	k = keyNew (SPEC_BASE_KEY "/apple", KEY_END);
+	keySetMeta (k, "opt", "-");
+	ks = ksNew (1, k, KS_END);
+
+	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
+	succeed_if (checkError (errorKey, xstr (ELEKTRA_ERROR_OPTS_ILLEGAL_SPEC),
+				"'-' cannot be used as a short option. It would collide with the "
+				"special string '--'. Offending key: " SPEC_BASE_KEY "/apple"),
+		    "'-' option should be illegal");
+	clearValues (ks);
+
+	ksDel (ks);
 }
 
 static void test_illegal_use (void)
@@ -637,14 +661,22 @@ static void test_illegal_use (void)
 
 static void test_help (void)
 {
+	// ---
+	// no options
+	// ---
+
 	KeySet * ks = ksNew (0, KS_END);
 
-	Key * errorKey = keyNew ("spec/tests/opts", KEY_END);
+	Key * errorKey = keyNew (SPEC_BASE_KEY, KEY_END);
 
 	succeed_if (elektraGetOpts (ks, ARGS ("-h"), NO_ENVP, errorKey) == 1, "help not generated");
+	checkHelpMessage (errorKey, "Usage: prog\n");
 	succeed_if (elektraGetOpts (ks, ARGS ("-h", "short"), NO_ENVP, errorKey) == 1, "help not generated");
+	checkHelpMessage (errorKey, "Usage: prog\n");
 	succeed_if (elektraGetOpts (ks, ARGS ("--help"), NO_ENVP, errorKey) == 1, "help not generated");
+	checkHelpMessage (errorKey, "Usage: prog\n");
 	succeed_if (elektraGetOpts (ks, ARGS ("--help", "long"), NO_ENVP, errorKey) == 1, "help not generated");
+	checkHelpMessage (errorKey, "Usage: prog\n");
 
 	keyDel (errorKey);
 
@@ -657,6 +689,49 @@ static void test_help (void)
 	succeed_if (checkError (errorKey, xstr (ELEKTRA_ERROR_OPTS_ILLEGAL_USE), "This option cannot have an argument: --help"),
 		    "long help with value (with arg, combined) should have failed");
 	clearValues (ks);
+
+	ksDel (ks);
+
+	// ---
+	// with options
+	// ---
+
+	const char * expectedHelp =
+		"Usage: prog [OPTION]... [ARG]...\n"
+		"OPTIONS\n"
+		"  -a, -b, -C, --apple, --banana=BANANA, --cherry=[ARG]\n"
+		"                                Apple/Banana/Cherry description\n"
+		"  -p                          A pear is not an apple, nor a banana, nor a cherry.\n";
+
+	Key * k = keyNew (SPEC_BASE_KEY "/apple", KEY_END);
+	keySetMeta (k, "opt", "#2");
+	keySetMeta (k, "opt/#0", "a");
+	keySetMeta (k, "opt/#0/long", "apple");
+	keySetMeta (k, "opt/#0/arg", "none");
+	keySetMeta (k, "opt/#1", "b");
+	keySetMeta (k, "opt/#1/long", "banana");
+	keySetMeta (k, "opt/#1/arg/help", "BANANA");
+	keySetMeta (k, "opt/#2", "C");
+	keySetMeta (k, "opt/#2/long", "cherry");
+	keySetMeta (k, "opt/#2/arg", "optional");
+	keySetMeta (k, "description", "Apple/Banana/Cherry description");
+	ks = ksNew (4, k,
+		    keyNew (SPEC_BASE_KEY "/pear", KEY_META, "opt", "p", KEY_META, "description",
+			    "A pear is not an apple, nor a banana, nor a cherry.", KEY_END),
+		    keyNew (SPEC_BASE_KEY "/args/#", KEY_META, "args", "remaining", KEY_END),
+		    keyNew (SPEC_BASE_KEY "/none", KEY_META, "opt", "n", KEY_META, "opt/nohelp", "1", KEY_END), KS_END);
+	errorKey = keyNew (SPEC_BASE_KEY, KEY_END);
+
+	succeed_if (elektraGetOpts (ks, ARGS ("-h"), NO_ENVP, errorKey) == 1, "help not generated");
+	checkHelpMessage (errorKey, expectedHelp);
+	succeed_if (elektraGetOpts (ks, ARGS ("-h", "short"), NO_ENVP, errorKey) == 1, "help not generated");
+	checkHelpMessage (errorKey, expectedHelp);
+	succeed_if (elektraGetOpts (ks, ARGS ("--help"), NO_ENVP, errorKey) == 1, "help not generated");
+	checkHelpMessage (errorKey, expectedHelp);
+	succeed_if (elektraGetOpts (ks, ARGS ("--help", "long"), NO_ENVP, errorKey) == 1, "help not generated");
+	checkHelpMessage (errorKey, expectedHelp);
+
+	keyDel (errorKey);
 
 	ksDel (ks);
 }

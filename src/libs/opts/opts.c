@@ -40,7 +40,8 @@ static Key * splitEnvValue (const Key * envKey);
 
 static KeySet * ksMetaGetSingleOrArray (Key * key, const char * metaName);
 
-static char * generateHelpMessage (KeySet * optionsSpec, const char * progname);
+static char * generateUsageLine (const char * progname, bool hasOpts, bool hasArgs);
+static char * generateOptionsList (KeySet * keysWithOpts);
 
 /**
  * This functions parses a specification of program options, together with a list of arguments
@@ -54,9 +55,15 @@ static char * generateHelpMessage (KeySet * optionsSpec, const char * progname);
  * will be set to a help message describing available options and 1 will be returned. The program
  * name used in this message is taken from `argv[0]`. If it contains a '/' only the part after the
  * last '/' will be used. The help message will contain description for each option. This description
- * is taken from `opt/help`, or if `opt/help` is not specified from `description`. If neither `opt/help`
- * nor `description` are given, or `opt/nohelp` is set to "1", the option will not appear in the help
- * message. The same applies to `env`s.
+ * is taken from `opt/help`, or if `opt/help` is not specified from `description`. The `opt/help` metadata
+ * is specified PER KEY not per option, even if the key has multiple options. This is because all the
+ * options for one key have to be equivalent and therefore only require one description.
+ *
+ * If `opt/nohelp` is set to "1", the option will not appear in the help message. The same applies to
+ * `env`s and `env/nohelp`.
+ *
+ * If `opt/arg/help` is set, its value will be used as the argument name for long options. Otherwise
+ * "ARG" will be used. This value can be set for each option individually.
  *
  * The help message can also be customised in two more ways:
  * 1. By setting the `help/usage` metadata on @p errorKey, you can use a custom usage line for the help
@@ -133,8 +140,13 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 	KeySet * keysWithOpts = ksNew (0, KS_END);
 	KeySet * usedEnvVars = ksNew (0, KS_END);
 	KeySet * optionsSpec = ksNew (
-		2, keyNew ("/short/h", KEY_META, "hasarg", "none", KEY_META, "kind", "single", KEY_META, "flagvalue", "1", KEY_END),
+		2,
+		keyNew ("/short/h", KEY_META, "hasarg", "none", KEY_META, "kind", "single", KEY_META, "flagvalue", "1", KEY_META, "longopt",
+			"/long/help", KEY_END),
 		keyNew ("/long/help", KEY_META, "hasarg", "none", KEY_META, "kind", "single", KEY_META, "flagvalue", "1", KEY_END), KS_END);
+
+	bool hasOpts = false;
+	bool hasArgs = false;
 
 	cursor_t initial = ksGetCursor (ks);
 
@@ -148,21 +160,31 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 		}
 
 		const char * kind = "single";
-		if (strcmp (keyBaseName (cur), "#") == 0)
+		if (elektraStrCmp (keyBaseName (cur), "#") == 0)
 		{
 			kind = "array";
 		}
 
+		const char * optHelp = keyGetMetaString (cur, "opt/help");
+		const char * description = keyGetMetaString (cur, "description");
+
+		const char * help = optHelp != NULL ? optHelp : (description != NULL ? description : "");
+
 		Key * key = NULL;
+
 		KeySet * opts = ksMetaGetSingleOrArray (cur, "opt");
 		if (opts != NULL)
 		{
 			ksRewind (opts);
-			ksNext (opts); // skip count TODO: bug?
+			ksNext (opts); // skip count
 			Key * k;
+
+			char * shortOptLine = elektraFormat ("");
+			char * longOptLine = elektraFormat ("");
 			while ((k = ksNext (opts)) != NULL)
 			{
-				char metaBuffer[ELEKTRA_MAX_ARRAY_SIZE + 15]; // 14 = opt//flagvalue (1 extra to circumvent warning)
+				// two slashes in string because array index is inserted in-between
+				char metaBuffer[ELEKTRA_MAX_ARRAY_SIZE + sizeof ("opt//flagvalue") + 1];
 				strncpy (metaBuffer, keyName (k), ELEKTRA_MAX_ARRAY_SIZE + 3); // 3 = opt/ - null byte from ELEKTRA_MAX_SIZE
 				strncat (metaBuffer, "/arg", 11);			       // 11 = remaining space in metaBuffer
 
@@ -173,6 +195,11 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 				}
 
 				strncpy (metaBuffer, keyName (k), ELEKTRA_MAX_ARRAY_SIZE + 3); // 3 = opt/ - null byte from ELEKTRA_MAX_SIZE
+				strncat (metaBuffer, "/arg/help", 11);			       // 11 = remaining space in metaBuffer
+
+				const char * argNameMeta = keyGetMetaString (cur, metaBuffer);
+
+				strncpy (metaBuffer, keyName (k), ELEKTRA_MAX_ARRAY_SIZE + 3); // 3 = opt/ - null byte from ELEKTRA_MAX_SIZE
 				strncat (metaBuffer, "/flagvalue", 11);			       // 11 = remaining space in metaBuffer
 
 				const char * flagValue = keyGetMetaString (cur, metaBuffer);
@@ -180,7 +207,7 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 				{
 					flagValue = "1";
 				}
-				else if (strcmp (hasArg, "none") != 0 && strcmp (hasArg, "optional") != 0)
+				else if (elektraStrCmp (hasArg, "none") != 0 && elektraStrCmp (hasArg, "optional") != 0)
 				{
 					ELEKTRA_SET_ERRORF (
 						ELEKTRA_ERROR_OPTS_ILLEGAL_SPEC, errorKey,
@@ -191,39 +218,76 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 					ksDel (optionsSpec);
 					ksDel (keysWithOpts);
 					ksDel (usedEnvVars);
+					elektraFree (shortOptLine);
+					elektraFree (longOptLine);
 					return -1;
+				}
+
+				strncpy (metaBuffer, keyName (k), ELEKTRA_MAX_ARRAY_SIZE + 3); // 3 = opt/ - null byte from ELEKTRA_MAX_SIZE
+				strncat (metaBuffer, "/nohelp", 11);			       // 11 = remaining space in metaBuffer
+
+				bool nohelp = false;
+				const char * nohelpStr = keyGetMetaString (cur, metaBuffer);
+				if (nohelpStr != NULL && elektraStrCmp (nohelpStr, "1") == 0)
+				{
+					nohelp = true;
 				}
 
 				const char * shortOpt = keyString (k);
 				if (shortOpt != NULL && shortOpt[0] != '\0')
 				{
-					Key * optSpec = keyNew ("/short", KEY_META, "key", keyName (cur), KEY_META, "hasarg", hasArg,
-								KEY_META, "kind", kind, KEY_META, "flagvalue", flagValue, KEY_END);
-					keyAddBaseName (optSpec, (char[]){ shortOpt[0], '\0' });
+					if (shortOpt[0] == '-')
+					{
+						ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_OPTS_ILLEGAL_SPEC, errorKey,
+								    "'-' cannot be used as a short option. It would collide with the "
+								    "special string '--'. Offending key: %s",
+								    keyName (cur));
+						ksDel (opts);
+						ksDel (optionsSpec);
+						ksDel (keysWithOpts);
+						ksDel (usedEnvVars);
+						elektraFree (shortOptLine);
+						elektraFree (longOptLine);
+						return -1;
+					}
 
-					Key * existing = ksLookupByName (optionsSpec, keyName (optSpec), 0);
+					Key * shortOptSpec = keyNew ("/short", KEY_META, "key", keyName (cur), KEY_META, "hasarg", hasArg,
+								     KEY_META, "kind", kind, KEY_META, "flagvalue", flagValue, KEY_END);
+					keyAddBaseName (shortOptSpec, (char[]){ shortOpt[0], '\0' });
+
+					Key * existing = ksLookupByName (optionsSpec, keyName (shortOptSpec), 0);
 					if (existing != NULL)
 					{
 						ELEKTRA_SET_ERRORF (
 							ELEKTRA_ERROR_OPTS_ILLEGAL_SPEC, errorKey,
 							"The option '-%c' has already been specified for the key '%s'. Additional key: %s",
 							shortOpt[0], keyGetMetaString (existing, "key"), keyName (cur));
-						keyDel (optSpec);
+						keyDel (shortOptSpec);
 						keyDel (existing);
 						ksDel (opts);
 						ksDel (optionsSpec);
 						ksDel (keysWithOpts);
 						ksDel (usedEnvVars);
+						elektraFree (shortOptLine);
+						elektraFree (longOptLine);
 						return -1;
 					}
 
-					ksAppendKey (optionsSpec, optSpec);
+					ksAppendKey (optionsSpec, shortOptSpec);
 
 					if (key == NULL)
 					{
 						key = keyNew (keyName (cur), KEY_END);
 					}
-					elektraMetaArrayAdd (key, "opt", keyName (optSpec));
+					elektraMetaArrayAdd (key, "opt", keyName (shortOptSpec));
+
+					if (!nohelp)
+					{
+						char * newShortOptLine = elektraFormat ("%s-%c, ", shortOptLine, shortOpt[0]);
+						elektraFree (shortOptLine);
+						shortOptLine = newShortOptLine;
+						hasOpts = true;
+					}
 				}
 
 				Key * k1 = keyDup (k);
@@ -234,35 +298,102 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 
 				if (longOpt != NULL)
 				{
-					Key * optSpec = keyNew ("/long", KEY_META, "key", keyName (cur), KEY_META, "hasarg", hasArg,
-								KEY_META, "kind", kind, KEY_META, "flagvalue", flagValue, KEY_END);
-					keyAddBaseName (optSpec, longOpt);
+					Key * longOptSpec = keyNew ("/long", KEY_META, "key", keyName (cur), KEY_META, "hasarg", hasArg,
+								    KEY_META, "kind", kind, KEY_META, "flagvalue", flagValue, KEY_END);
+					keyAddBaseName (longOptSpec, longOpt);
 
-					Key * existing = ksLookupByName (optionsSpec, keyName (optSpec), 0);
+					Key * existing = ksLookupByName (optionsSpec, keyName (longOptSpec), 0);
 					if (existing != NULL)
 					{
 						ELEKTRA_SET_ERRORF (
 							ELEKTRA_ERROR_OPTS_ILLEGAL_SPEC, errorKey,
 							"The option '--%s' has already been specified for the key '%s'. Additional key: %s",
 							longOpt, keyGetMetaString (existing, "key"), keyName (cur));
-						keyDel (optSpec);
+						keyDel (longOptSpec);
 						keyDel (existing);
 						ksDel (opts);
 						ksDel (optionsSpec);
 						ksDel (keysWithOpts);
 						ksDel (usedEnvVars);
+						elektraFree (shortOptLine);
+						elektraFree (longOptLine);
 						return -1;
 					}
 
-					ksAppendKey (optionsSpec, optSpec);
+					ksAppendKey (optionsSpec, longOptSpec);
 
 					if (key == NULL)
 					{
 						key = keyNew (keyName (cur), KEY_END);
 					}
-					elektraMetaArrayAdd (key, "opt", keyName (optSpec));
+					elektraMetaArrayAdd (key, "opt", keyName (longOptSpec));
+
+					if (!nohelp)
+					{
+						char * argString = "";
+						if (elektraStrCmp (hasArg, "required") == 0)
+						{
+							argString = argNameMeta == NULL ? "=ARG" : elektraFormat ("=%s", argNameMeta);
+						}
+						else if (elektraStrCmp (hasArg, "optional") == 0)
+						{
+							argString = argNameMeta == NULL ? "=[ARG]" : elektraFormat ("=[%s]", argNameMeta);
+						}
+
+
+						char * newLongOptLine = elektraFormat ("%s--%s%s, ", longOptLine, longOpt, argString);
+						elektraFree (longOptLine);
+						if (argNameMeta != NULL)
+						{
+							elektraFree (argString);
+						}
+						longOptLine = newLongOptLine;
+						hasOpts = true;
+					}
 				}
 			}
+
+			if (key != NULL)
+			{
+				if (strlen (shortOptLine) > 2)
+				{
+					shortOptLine[strlen (shortOptLine) - 2] = '\0'; // trim ", " of end
+				}
+
+				if (strlen (longOptLine) > 2)
+				{
+					longOptLine[strlen (longOptLine) - 2] = '\0'; // trim ", " of end
+				}
+
+				char * optsLinePart =
+					elektraFormat ("%s%s%s", shortOptLine, strlen (longOptLine) > 0 ? ", " : "", longOptLine);
+				elektraFree (shortOptLine);
+				elektraFree (longOptLine);
+
+				size_t length = strlen (optsLinePart);
+				if (length > 0)
+				{
+					char * optsLine;
+					if (length < 30)
+					{
+						optsLine = elektraFormat ("  %-28s%s", optsLinePart, help);
+					}
+					else
+					{
+						optsLine = elektraFormat ("  %s\n  %30s%s", optsLinePart, "", help);
+					}
+
+					keySetMeta (key, "opt/help", optsLine);
+					elektraFree (optsLine);
+				}
+				elektraFree (optsLinePart);
+			}
+			else
+			{
+				elektraFree (shortOptLine);
+				elektraFree (longOptLine);
+			}
+
 			ksDel (opts);
 		}
 
@@ -270,7 +401,7 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 		if (envVars != NULL)
 		{
 			ksRewind (envVars);
-			ksNext (envVars); // skip count TODO: bug?
+			ksNext (envVars); // skip count
 			Key * k;
 			while ((k = ksNext (envVars)) != NULL)
 			{
@@ -305,13 +436,14 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 					elektraMetaArrayAdd (key, "env", keyName (envVarKey));
 				}
 			}
+
 			ksDel (envVars);
 		}
 
 		const char * argsMeta = keyGetMetaString (cur, "args");
-		if (argsMeta != NULL && strcmp (argsMeta, "remaining") == 0)
+		if (argsMeta != NULL && elektraStrCmp (argsMeta, "remaining") == 0)
 		{
-			if (strcmp (kind, "array") != 0)
+			if (elektraStrCmp (kind, "array") != 0)
 			{
 				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_OPTS_ILLEGAL_SPEC, errorKey,
 						    "'args=remaining' can only be set on array keys (basename = '#'). Offending key: %s",
@@ -327,6 +459,7 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 				key = keyNew (keyName (cur), KEY_END);
 			}
 			keySetMeta (key, "args", "remaining");
+			hasArgs = true;
 		}
 
 		if (key != NULL)
@@ -360,9 +493,12 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 			progname = lastSlash + 1;
 		}
 
-		char * help = generateHelpMessage (optionsSpec, progname);
-		keySetString (errorKey, help);
-		elektraFree (help);
+		char * usage = generateUsageLine (progname, hasOpts, hasArgs);
+		char * optionsText = generateOptionsList (keysWithOpts);
+		keySetMeta (errorKey, "internal/libopts/help/usage", usage);
+		keySetMeta (errorKey, "internal/libopts/help/options", optionsText);
+		elektraFree (usage);
+		elektraFree (optionsText);
 		ksDel (options);
 		ksDel (optionsSpec);
 		ksDel (keysWithOpts);
@@ -385,7 +521,7 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 		if (optMetas != NULL)
 		{
 			ksRewind (optMetas);
-			ksNext (optMetas); // skip count TODO: bug?
+			ksNext (optMetas); // skip count
 			Key * optMeta;
 			bool shortFound = false;
 			while ((optMeta = ksNext (optMetas)) != NULL)
@@ -444,7 +580,7 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 		if (envMetas != NULL)
 		{
 			ksRewind (envMetas);
-			ksNext (envMetas); // skip count TODO: bug?
+			ksNext (envMetas); // skip count
 			Key * envMeta;
 			while ((envMeta = ksNext (envMetas)) != NULL)
 			{
@@ -471,7 +607,7 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 		ksDel (envMetas);
 
 		const char * argsMeta = keyGetMetaString (cur, "args");
-		if (argsMeta != NULL && strcmp (argsMeta, "remaining") == 0)
+		if (argsMeta != NULL && elektraStrCmp (argsMeta, "remaining") == 0)
 		{
 			Key * procKey = keyNew ("proc", KEY_END);
 			keyAddName (procKey, strchr (keyName (cur), '/'));
@@ -505,6 +641,41 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 
 	return 0;
 }
+
+/**
+ * Extracts the help message from the @p errorKey used in elektraGetOpts().
+ *
+ * @param errorKey The same Key as passed to elektraGetOpts() as errorKey.
+ * @param usage	   If this is not NULL, it will be used instead of the default usage line.
+ * @param prefix   If this is not NULL, it will be inserted between the usage line and the options list.
+ *
+ * @return The full help message extracted from @p errorKey, or NULL if no help message was found.
+ * The returned string has to be freed with elektraFree().
+ */
+char * elektraGetOptsHelpMessage (Key * errorKey, const char * usage, const char * prefix)
+{
+	if (usage == NULL)
+	{
+		usage = keyGetMetaString (errorKey, "internal/libopts/help/usage");
+	}
+
+	if (usage == NULL)
+	{
+		return NULL;
+	}
+
+	const char * options = keyGetMetaString (errorKey, "internal/libopts/help/options");
+	if (options == NULL)
+	{
+		options = "";
+	}
+
+	return elektraFormat ("%s%s%s", usage, prefix == NULL ? "" : prefix, options);
+}
+
+// -------------
+// static functions
+// -------------
 
 Key * splitEnvValue (const Key * envKey)
 {
@@ -562,7 +733,7 @@ int addProcKey (KeySet * ks, const Key * key, Key * valueKey)
 	Key * procKey = keyNew ("proc", KEY_END);
 	keyAddName (procKey, strchr (keyName (key), '/'));
 
-	bool isArrayKey = strcmp (keyBaseName (procKey), "#") == 0;
+	bool isArrayKey = elektraStrCmp (keyBaseName (procKey), "#") == 0;
 	if (isArrayKey)
 	{
 		keySetBaseName (procKey, NULL); // remove # (for lookup)
@@ -590,7 +761,7 @@ int addProcKey (KeySet * ks, const Key * key, Key * valueKey)
 
 		ksRewind (values);
 		Key * cur;
-		ksNext (values); // skip count TODO: bug?
+		ksNext (values); // skip count
 		while ((cur = ksNext (values)) != NULL)
 		{
 			elektraArrayIncName (insertKey);
@@ -638,7 +809,7 @@ KeySet * parseArgs (KeySet * optionsSpec, int argc, const char ** argv, Key * er
 {
 	const char * posixlyStr = keyGetMetaString (errorKey, "posixly");
 	bool posixly = false;
-	if (posixlyStr != NULL && strcmp (posixlyStr, "1") == 0)
+	if (posixlyStr != NULL && elektraStrCmp (posixlyStr, "1") == 0)
 	{
 		posixly = true;
 	}
@@ -695,7 +866,7 @@ KeySet * parseArgs (KeySet * optionsSpec, int argc, const char ** argv, Key * er
 				const char * kind = keyGetMetaString (optSpec, "kind");
 				const char * flagValue = keyGetMetaString (optSpec, "flagvalue");
 
-				bool repeated = strcmp (kind, "array") == 0;
+				bool repeated = elektraStrCmp (kind, "array") == 0;
 
 				Key * option = ksLookupByName (options, keyName (longOpt), 0);
 				if (option == NULL)
@@ -722,7 +893,7 @@ KeySet * parseArgs (KeySet * optionsSpec, int argc, const char ** argv, Key * er
 				}
 				keyDel (optSpec);
 
-				if (strcmp (hasArg, "required") == 0)
+				if (elektraStrCmp (hasArg, "required") == 0)
 				{
 					// extract argument
 					if (argStart > 0)
@@ -746,7 +917,7 @@ KeySet * parseArgs (KeySet * optionsSpec, int argc, const char ** argv, Key * er
 						setOption (option, argv[++i], repeated);
 					}
 				}
-				else if (strcmp (hasArg, "optional") == 0)
+				else if (elektraStrCmp (hasArg, "optional") == 0)
 				{
 					if (argStart > 0)
 					{
@@ -802,7 +973,7 @@ KeySet * parseArgs (KeySet * optionsSpec, int argc, const char ** argv, Key * er
 				const char * kind = keyGetMetaString (optSpec, "kind");
 				const char * flagValue = keyGetMetaString (optSpec, "flagvalue");
 
-				bool repeated = strcmp (kind, "array") == 0;
+				bool repeated = elektraStrCmp (kind, "array") == 0;
 
 				Key * option = ksLookupByName (options, keyName (shortOpt), 0);
 				if (option == NULL)
@@ -823,7 +994,7 @@ KeySet * parseArgs (KeySet * optionsSpec, int argc, const char ** argv, Key * er
 				keyDel (optSpec);
 
 				bool last = false;
-				if (strcmp (hasArg, "required") == 0)
+				if (elektraStrCmp (hasArg, "required") == 0)
 				{
 					if (*(c + 1) == '\0')
 					{
@@ -917,7 +1088,7 @@ KeySet * ksMetaGetSingleOrArray (Key * key, const char * metaName)
 	const char * value = keyString (k);
 	if (value[0] != '#')
 	{
-		// add dummy key to mimic elektraMetaArrayToKS TODO: bug?
+		// add dummy key to mimic elektraMetaArrayToKS
 		return ksNew (2, keyNew ("/#", KEY_END), k, KS_END);
 	}
 
@@ -929,7 +1100,7 @@ KeySet * ksMetaGetSingleOrArray (Key * key, const char * metaName)
 
 	if (test == NULL)
 	{
-		// add dummy key to mimic elektraMetaArrayToKS TODO: bug?
+		// add dummy key to mimic elektraMetaArrayToKS
 		return ksNew (2, keyNew ("/#", KEY_END), k, KS_END);
 	}
 
@@ -941,11 +1112,39 @@ KeySet * ksMetaGetSingleOrArray (Key * key, const char * metaName)
  *
  * @return a newly allocated string, must be freed with elektraFree()
  */
-char * generateHelpMessage (KeySet * optionsSpec, const char * progname)
+char * generateUsageLine (const char * progname, bool hasOpts, bool hasArgs)
 {
-	cursor_t cursor = ksGetCursor (optionsSpec);
+	return elektraFormat ("Usage: %s%s%s\n", progname, hasOpts ? " [OPTION]..." : "", hasArgs ? " [ARG]..." : "");
+}
 
-	ksSetCursor (optionsSpec, cursor);
-	// TODO
-	return elektraFormat ("Usage: %s TODO\n", progname);
+char * generateOptionsList (KeySet * keysWithOpts)
+{
+	if (ksGetSize (keysWithOpts) == 0)
+	{
+		return elektraStrDup ("");
+	}
+
+	cursor_t cursor = ksGetCursor (keysWithOpts);
+
+	char * optionsList = elektraFormat ("OPTIONS");
+
+	Key * cur = NULL;
+	ksRewind (keysWithOpts);
+	while ((cur = ksNext (keysWithOpts)) != NULL)
+	{
+		const char * optLine = keyGetMetaString (cur, "opt/help");
+		if (optLine != NULL)
+		{
+			char * newOptionsList = elektraFormat ("%s\n%s", optionsList, optLine);
+			elektraFree (optionsList);
+			optionsList = newOptionsList;
+		}
+	}
+
+	char * newOptionsList = elektraFormat ("%s\n", optionsList);
+	elektraFree (optionsList);
+	optionsList = newOptionsList;
+
+	ksSetCursor (keysWithOpts, cursor);
+	return optionsList;
 }
