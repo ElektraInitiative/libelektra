@@ -168,9 +168,9 @@ static int validatePermission (Key * key, Key * parentKey)
 	int numberOfGroups = 1;
 
 	// The following loop is used to get all groups for a user.
-	// 4294967296 is max number of possible groups in Linux Kernel >= 2.6.3
+	// 4294967296 is max number of possible groups in Linux Kernel >= 2.6.3, we can only pass an integer to the method though
 	// 32 for Linux Kernel < 2.6.3
-	for (int i = 16; i <= 4294967296; i = i * 2)
+	for (unsigned int i = 16; i <= UINT_MAX; i = i * 2)
 	{
 		int size = i;
 		groups = (gid_t *) elektraMalloc (i * sizeof (gid_t));
