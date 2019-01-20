@@ -7,6 +7,7 @@ task:
     - pkg install -y cmake
     - pkg install -y git
     - pkg install -y ninja
+    - pkg install -y yajl
 
   script:
     - mkdir build && cd build
