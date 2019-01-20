@@ -1,0 +1,8 @@
+#!/bin/sh
+
+if [ $# -ne 1 ]; then
+	echo 'No build config. This script is supposed to run by using `@CMAKE_MAKE_PROGRAM_BASENAME@ run_memcheck`'
+	exit 1
+fi
+
+ctest -j@PROCESSOR_COUNT@ --force-new-ctest-process -T memcheck --output-on-failure --build-config $1 -LE memleak

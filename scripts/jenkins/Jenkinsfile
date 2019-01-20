@@ -100,7 +100,6 @@ CMAKE_FLAGS_OPTIMIZATIONS_OFF = ['ENABLE_OPTIMIZATIONS': 'OFF']
 CMAKE_FLAGS_BUILD_FULL = ['BUILD_FULL': 'ON']
 CMAKE_FLAGS_BUILD_STATIC = ['BUILD_STATIC': 'ON']
 
-
 // Define TEST enum used in buildAndTest helper
 enum TEST {
   MEM,        // Test for memoryleaks via valgrind
@@ -630,18 +629,13 @@ def generateFullBuildStages() {
   // 'RelWithDebInfo' is build in the debian-stable-full build
   for(buildType in ['Debug', 'Release']) {
     def testName = "debian-stable-multiconf[buildType=${buildType}]"
-    // TODO: add memory tests to release builds when #2320 is fixed
-    def tests = [TEST.ALL]
-    if (buildType == 'Debug') {
-        tests = [TEST.ALL, TEST.MEM]
-    }
     tasks << buildAndTest(
       testName,
       DOCKER_IMAGES.stretch,
       CMAKE_FLAGS_BUILD_ALL + [
         'CMAKE_BUILD_TYPE': buildType
       ],
-      tests
+      [TEST.ALL] // TODO: add memcheck when #2320 is fixed
     )
   }
 

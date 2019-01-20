@@ -1,0 +1,10 @@
+#!/bin/sh
+
+if [ $# -ne 1 ]; then
+	echo 'No build config. This script is supposed to run by using `@CMAKE_MAKE_PROGRAM_BASENAME@ run_nokdbtests`'
+	exit 1
+fi
+
+# run all tests not writing to disc
+
+ctest -j@PROCESSOR_COUNT@ -LE kdbtests --force-new-ctest-process --output-on-failure --build-config $1
