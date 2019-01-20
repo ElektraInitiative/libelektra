@@ -855,8 +855,6 @@ def buildAndTest(testName, image, extraCmakeFlags = [:],
 
         if(tests) {
           artifacts.add("\"${buildDir}\"/Testing/*/*.xml")
-          // TODO: remove this later
-          artifacts.add("\"${buildDir}\"/Testing/*/*.log")
         }
 
         try {
