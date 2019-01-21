@@ -221,6 +221,7 @@ you up to date with the multi-language support provided by Elektra.
 - The [Shell Recorder][] now also works correctly on FreeBSD. *(René Schwaiger)*
 - Fix memcheck target to detect memory problems again and enabled parallel testing to speed it up. *(Mihael Pranjić)*
 - Fix memleak in pluginprocess tests. *(Mihael Pranjić)*
+- The test [`check-env-dep`](https://master.libelektra.org/scripts/check-env-dep) does not require Bash anymore. *(René Schwaiger)*
 
 [Shell Recorder]: https://master.libelektra.org/tests/shell/shell_recorder
 [Markdown Shell Recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
