@@ -248,7 +248,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Jenkins
 
-- <<TODO>>
+- We added a badge displaying the current build status to the main [ReadMe](https://master.libelektra.org/README.md). *(René Schwaiger)*
 - <<TODO>>
 - <<TODO>>
 
