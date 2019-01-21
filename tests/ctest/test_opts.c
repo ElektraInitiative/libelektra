@@ -560,6 +560,40 @@ static void test_illegal_spec (void)
 	clearValues (ks);
 
 	ksDel (ks);
+
+	// ---
+	// 'h' option
+	// ---
+
+	k = keyNew (SPEC_BASE_KEY "/apple", KEY_END);
+	keySetMeta (k, "opt", "h");
+	ks = ksNew (1, k, KS_END);
+
+	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
+	succeed_if (checkError (errorKey, xstr (ELEKTRA_ERROR_OPTS_ILLEGAL_SPEC),
+				"'h' cannot be used as a short option. It would collide with the "
+				"help option '-h'. Offending key: " SPEC_BASE_KEY "/apple"),
+		    "'h' option should be illegal");
+	clearValues (ks);
+
+	ksDel (ks);
+
+	// ---
+	// 'help' option
+	// ---
+
+	k = keyNew (SPEC_BASE_KEY "/apple", KEY_END);
+	keySetMeta (k, "opt/long", "help");
+	ks = ksNew (1, k, KS_END);
+
+	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
+	succeed_if (checkError (errorKey, xstr (ELEKTRA_ERROR_OPTS_ILLEGAL_SPEC),
+				"'help' cannot be used as a long option. It would collide with the "
+				"help option '--help'. Offending key: " SPEC_BASE_KEY "/apple"),
+		    "'help' option should be illegal");
+	clearValues (ks);
+
+	ksDel (ks);
 }
 
 static void test_illegal_use (void)
