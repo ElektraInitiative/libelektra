@@ -8,8 +8,8 @@ part of the highlighted changes. Please make
 sure to add some short tutorial, asciinema,
 or how-to-use for highlighted items.
 
-Please add your name to every contribution
-syntax: ", thanks to <myname>".
+Please add your name at the end of every contribution.
+**Syntax:** *(your name)*
 
 
 <<`scripts/generate-news-entry`>>
