@@ -653,8 +653,9 @@ bool processLongOptSpec (struct Specification * spec, struct OptionData * option
 	const char * argName = optionData->argName;
 	bool hidden = optionData->hidden;
 
-	const char * longMeta = elektraFormat ("%s/long", optionData->metaKey);
+	char * longMeta = elektraFormat ("%s/long", optionData->metaKey);
 	const char * longOpt = keyGetMetaString (key, longMeta);
+	elektraFree (longMeta);
 
 	if (longOpt == NULL)
 	{
