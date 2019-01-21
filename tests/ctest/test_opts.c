@@ -738,7 +738,7 @@ static void test_help (void)
 		"  -p                          A pear is not an apple, nor a banana, nor a cherry.\n";
 
 	Key * k = keyNew (SPEC_BASE_KEY "/apple", KEY_END);
-	keySetMeta (k, "opt", "#2");
+	keySetMeta (k, "opt", "#3");
 	keySetMeta (k, "opt/#0", "a");
 	keySetMeta (k, "opt/#0/long", "apple");
 	keySetMeta (k, "opt/#0/arg", "none");
@@ -748,12 +748,14 @@ static void test_help (void)
 	keySetMeta (k, "opt/#2", "C");
 	keySetMeta (k, "opt/#2/long", "cherry");
 	keySetMeta (k, "opt/#2/arg", "optional");
+	keySetMeta (k, "opt/#3", "d");
+	keySetMeta (k, "opt/#3/hidden", "1");
 	keySetMeta (k, "description", "Apple/Banana/Cherry description");
 	ks = ksNew (4, k,
 		    keyNew (SPEC_BASE_KEY "/pear", KEY_META, "opt", "p", KEY_META, "description",
 			    "A pear is not an apple, nor a banana, nor a cherry.", KEY_END),
 		    keyNew (SPEC_BASE_KEY "/args/#", KEY_META, "args", "remaining", KEY_END),
-		    keyNew (SPEC_BASE_KEY "/none", KEY_META, "opt", "n", KEY_META, "opt/nohelp", "1", KEY_END), KS_END);
+		    keyNew (SPEC_BASE_KEY "/none", KEY_META, "opt", "n", KEY_META, "opt/hidden", "1", KEY_END), KS_END);
 	errorKey = keyNew (SPEC_BASE_KEY, KEY_END);
 
 	succeed_if (elektraGetOpts (ks, ARGS ("-h"), NO_ENVP, errorKey) == 1, "help not generated");

@@ -94,8 +94,8 @@ static bool parseShortOptions (KeySet * optionsSpec, KeySet * options, int argc,
  * is specified PER KEY not per option, even if the key has multiple options. This is because all the
  * options for one key have to be equivalent and therefore only require one description.
  *
- * If `opt/nohelp` is set to "1", the option will not appear in the help message. The same applies to
- * `env`s and `env/nohelp`.
+ * If `opt/hidden` is set to "1", the option will not appear in the help message. The same applies to
+ * `env`s and `env/hidden`.
  *
  * If `opt/arg/help` is set, its value will be used as the argument name for long options. Otherwise
  * "ARG" will be used. This value can be set for each option individually.
@@ -152,8 +152,7 @@ static bool parseShortOptions (KeySet * optionsSpec, KeySet * options, int argc,
  * by specifying `args = remaining` on a key with basename '#'. The array will be copied into this key. As is
  * the case with getopt(3) processing of options will stop if '--' is encountered in @p argv.
  *
- * NOTE: Both options and environment variables can only be specified on a single key. This is because
- * otherwise e.g. the help message ('opt/help', 'env/help') may be ambiguous. If you need to have the
+ * NOTE: Both options and environment variables can only be specified on a single key. If you need to have the
  * value of one option/environment variable in multiple keys, you may use fallbacks.
  *
  * NOTE: Per default option processing DOES NOT stop, when a non-option string is encountered in @p argv.
@@ -529,13 +528,13 @@ bool readOptionData (struct OptionData * optionData, Key * key, const char * met
 	}
 
 	strncpy (metaBuffer, metaKey, ELEKTRA_MAX_ARRAY_SIZE + 3); // 3 = opt/ - null byte from ELEKTRA_MAX_SIZE
-	strncat (metaBuffer, "/nohelp", 11);			   // 11 = remaining space in metaBuffer
+	strncat (metaBuffer, "/hidden", 11);			   // 11 = remaining space in metaBuffer
 
-	bool nohelp = false;
-	const char * nohelpStr = keyGetMetaString (key, metaBuffer);
-	if (nohelpStr != NULL && elektraStrCmp (nohelpStr, "1") == 0)
+	bool hidden = false;
+	const char * hiddenStr = keyGetMetaString (key, metaBuffer);
+	if (hiddenStr != NULL && elektraStrCmp (hiddenStr, "1") == 0)
 	{
-		nohelp = true;
+		hidden = true;
 	}
 
 	const char * kind = "single";
@@ -549,7 +548,7 @@ bool readOptionData (struct OptionData * optionData, Key * key, const char * met
 	optionData->hasArg = hasArg;
 	optionData->flagValue = flagValue;
 	optionData->argName = argNameMeta;
-	optionData->hidden = nohelp;
+	optionData->hidden = hidden;
 	optionData->kind = kind;
 
 	return true;
@@ -570,7 +569,7 @@ bool processShortOptSpec (struct Specification * spec, struct OptionData * optio
 	const char * hasArg = optionData->hasArg;
 	const char * kind = optionData->kind;
 	const char * flagValue = optionData->flagValue;
-	bool nohelp = optionData->hidden;
+	bool hidden = optionData->hidden;
 
 	const char * shortOptStr = keyGetMetaString (optionData->specKey, optionData->metaKey);
 	if (shortOptStr == NULL || shortOptStr[0] == '\0')
@@ -621,7 +620,7 @@ bool processShortOptSpec (struct Specification * spec, struct OptionData * optio
 	}
 	elektraMetaArrayAdd (*keyWithOpt, "opt", keyName (shortOptSpec));
 
-	if (!nohelp)
+	if (!hidden)
 	{
 		char * newShortOptLine = elektraFormat ("%s-%c, ", *shortOptLine, shortOpt);
 		elektraFree (*shortOptLine);
