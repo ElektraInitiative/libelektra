@@ -65,12 +65,12 @@ Meaning: IF `this/key` NOT EQUAL TO `'value'` THEN `then/key` MUST EQUAL `some/o
 Another full example:
 
 ```sh
-#Backup-and-Restore:/tests/conditionals
+#Backup-and-Restore:user/tests/conditionals
 
-sudo kdb mount conditionals.dump /tests/conditionals conditionals dump
+sudo kdb mount conditionals.dump user/tests/conditionals conditionals dump
 
-kdb set /tests/conditionals/fkey 3.0
-kdb set /tests/conditionals/hkey hello
+kdb set user/tests/conditionals/fkey 3.0
+kdb set user/tests/conditionals/hkey hello
 
 # will succeed
 kdb setmeta user/tests/conditionals/key check/condition "(../hkey == 'hello') ? (../fkey == '3.0')"
@@ -92,8 +92,8 @@ kdb get user/tests/conditionals/hkey
 #> World
 
 # cleanup
-kdb rm -r /tests/conditionals
-sudo kdb umount /tests/conditionals
+kdb rm -r user/tests/conditionals
+sudo kdb umount user/tests/conditionals
 ```
 
 Global plugin example:

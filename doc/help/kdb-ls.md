@@ -37,18 +37,18 @@ This command will list the name of all keys below a given path.
 ## EXAMPLES
 
 ```sh
-# Backup-and-Restore: /tests/examples
+# Backup-and-Restore: user/tests/examples
 
 # We use `dump` as storage format here, since storage plugins such as INI
-# automatically add keys between levels (e.g. `/tests/examples/kdb-ls/test/foo`).
-sudo kdb mount ls.ecf /tests/examples dump
+# automatically add keys between levels (e.g. `user/tests/examples/kdb-ls/test/foo`).
+sudo kdb mount ls.ecf user/tests/examples dump
 
 # Create the keys we use for the examples
-kdb set /tests/examples/kdb-ls/test val1
-kdb set /tests/examples/kdb-ls/test/foo/bar val2
-kdb set /tests/examples/kdb-ls/test/fizz/buzz fizzbuzz
-kdb set /tests/examples/kdb-ls/tost val3
-kdb set /tests/examples/kdb-ls/tost/level lvl
+kdb set user/tests/examples/kdb-ls/test val1
+kdb set user/tests/examples/kdb-ls/test/foo/bar val2
+kdb set user/tests/examples/kdb-ls/test/fizz/buzz fizzbuzz
+kdb set user/tests/examples/kdb-ls/tost val3
+kdb set user/tests/examples/kdb-ls/tost/level lvl
 
 # list all keys below /tests/examples/kdb-ls
 kdb ls /tests/examples/kdb-ls
@@ -91,8 +91,8 @@ kdb ls /tests/examples/kdb-ls/ -v
 #> user/tests/examples/kdb-ls/tost
 #> user/tests/examples/kdb-ls/tost/level
 
-kdb rm -r /tests/examples
-sudo kdb umount /tests/examples
+kdb rm -r user/tests/examples
+sudo kdb umount user/tests/examples
 ```
 
 ## SEE ALSO

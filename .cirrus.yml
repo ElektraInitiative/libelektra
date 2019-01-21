@@ -7,14 +7,16 @@ task:
     - pkg install -y cmake
     - pkg install -y git
     - pkg install -y ninja
+    - pkg install -y yajl
 
   script:
-    - SYSTEM_DIR="$PWD/kdbsystem"
     - mkdir build && cd build
-    - cmake -GNinja -DKDB_DB_SYSTEM="$SYSTEM_DIR" ..
+    # - The tests for the process plugin and library stall on FreeBSD: https://issues.libelektra.org/2323
+    # - The test for the network plugin fails on FreeBSD: https://issues.libelektra.org/2322
+    - cmake -GNinja -DPLUGINS='ALL;-process;-network' -DTARGET_PLUGIN_FOLDER="" -DCMAKE_SKIP_INSTALL_RPATH=ON ..
     - ninja
+    - output="$(ninja install 2>&1)" || printf '%s' "$output"
 
   tests_script:
-    - >
-      cd build && ctest --output-on-failure
-      -E 'pluginprocess|testmod_network|testshell_markdown_(conditionals|dini|enum|ini|line|mathcheck|kdb_complete|kdb_ls|kdb_find|tutorial_cascading|tutorial_validation|readme_msr)'
+    - cd build && ctest --output-on-failure -E 'pluginprocess'
+    - kdb run_all

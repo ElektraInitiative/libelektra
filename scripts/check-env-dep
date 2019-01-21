@@ -1,7 +1,4 @@
-#!/usr/bin/env bash
-
-OLD_IFS="$IFS"
-IFS="$(printf '\n+')"
+#!/usr/bin/env sh
 
 generate_random_string() {
 	cat /dev/urandom | LC_ALL=C tr -dc 'a-z' | fold -w 6 | head -n 1
@@ -10,9 +7,9 @@ generate_random_string() {
 if [ -z "$KDB" ]; then
 	KDB=kdb
 fi
-KDB=$(which $KDB)
+KDB="$(which "$KDB")"
 
-ORIG_PATHS="$($KDB mount-list-all-files)"
+ORIG_PATHS="$("$KDB" mount-list-all-files)"
 ENV="$(env 2> /dev/null)"
 
 if [ -z "$ENV" ]; then
@@ -20,7 +17,9 @@ if [ -z "$ENV" ]; then
 	exit 1
 fi
 
-for env in $ENV; do
+printf '%s\n' "$ENV" | while IFS='' read -r env; do
+	# The script does **not** handle environment variables that contain newlines properly!
+	printf '%s' "$env" | grep -Eq '.+=.*' || continue
 	NAME="$(echo "$env" | cut -d '=' -f1 2> /dev/null)"
 	if [ "$NAME" = "KDB" ] || [ "$NAME" = "PATH" ]; then
 		continue
@@ -28,8 +27,13 @@ for env in $ENV; do
 	ORIG_VALUE="$(echo "$env" | cut -d '=' -f2- 2> /dev/null)"
 	NEW_VALUE=$(generate_random_string)
 	export "$NAME"="$NEW_VALUE" > /dev/null 2>&1
-	NEW_PATHS="$($KDB mount-list-all-files 2> /dev/null)"
-	DIFF="$(comm -3 <(echo "$ORIG_PATHS" | sort 2> /dev/null) <(echo "$NEW_PATHS" | sort 2> /dev/null))"
+	NEW_PATHS="$("$KDB" mount-list-all-files 2> /dev/null)"
+	ORIG_PATHS_FILE="$(mktemp)"
+	NEW_PATHS_FILE="$(mktemp)"
+	echo "$ORIG_PATHS" | sort 2> /dev/null > "$ORIG_PATHS_FILE"
+	echo "$NEW_PATHS" | sort 2> /dev/null > "$NEW_PATHS_FILE"
+	DIFF="$(comm -3 "$ORIG_PATHS_FILE" "$NEW_PATHS_FILE")"
+	rm "$ORIG_PATHS_FILE" "$NEW_PATHS_FILE"
 	if [ ! -z "$DIFF" ]; then
 		echo "$NAME influences $DIFF"
 	fi

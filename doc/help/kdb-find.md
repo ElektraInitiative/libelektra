@@ -29,19 +29,19 @@ This command will list the name of all keys that contain `regex`.
 ## EXAMPLES
 
 ```sh
-# Backup-and-Restore: /tests/find
+# Backup-and-Restore: user/tests/find
 
 # We use the `dump` plugin, since some storage plugins, e.g. INI,
-# create intermediate keys, such as `/tests/find/tests/foo`
+# create intermediate keys, such as `user/tests/find/tests/foo`
 # for the following test.
-sudo kdb mount find.ecf /tests/find dump
+sudo kdb mount find.ecf user/tests/find dump
 
 # Create the keys we use for the examples
-kdb set /tests/find/tests val1
-kdb set /tests/find/tests/foo/bar val2
-kdb set /tests/find/tests/fizz/buzz fizzbuzz
-kdb set /tests/find/tostfizz val3
-kdb set /tests/find/tust/level lvl
+kdb set user/tests/find/tests val1
+kdb set user/tests/find/tests/foo/bar val2
+kdb set user/tests/find/tests/fizz/buzz fizzbuzz
+kdb set user/tests/find/tostfizz val3
+kdb set user/tests/find/tust/level lvl
 
 # list all keys containing /tests/find/t[eo]
 kdb find '/tests/find/t[eo]'
@@ -56,7 +56,7 @@ kdb find 'fizz'
 #> user/tests/find/tostfizz
 
 kdb rm -r /tests/find
-sudo kdb umount /tests/find
+sudo kdb umount user/tests/find
 ```
 
 ## SEE ALSO
