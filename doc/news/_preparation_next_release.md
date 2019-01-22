@@ -8,8 +8,8 @@ part of the highlighted changes. Please make
 sure to add some short tutorial, asciinema,
 or how-to-use for highlighted items.
 
-Please add your name to every contribution
-syntax: ", thanks to <myname>".
+Please add your name at the end of every contribution.
+**Syntax:** *(your name)*
 
 
 <<`scripts/generate-news-entry`>>
@@ -85,7 +85,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 ### network
 
-The `network` plugin also supports port declarations to check if a portnumber is valid
+The `network` plugin also supports port declarations to check if a port number is valid
 or if the port is available to use. *(Michael Zronek)*
 
 ### YAy PEG
@@ -231,9 +231,9 @@ you up to date with the multi-language support provided by Elektra.
 ### CMake
 
 - The CMake find module [`FindAugeas.cmake`](https://master.libelektra.org/cmake/Modules/FindAugeas.cmake) does not print an error message
-  anymore, if it is unable to locate Augeas in the `pkg-config` search path.
+  anymore, if it is unable to locate Augeas in the `pkg-config` search path. *(René Schwaiger)*
 - The CMake find module [`FindLua.cmake`](https://master.libelektra.org/cmake/Modules/FindLua.cmake) does not print an error message
-  anymore, if it is unable to locate a Lua executable.
+  anymore, if it is unable to locate a Lua executable. *(René Schwaiger)*
 - <<TODO>>
 
 ### Docker
