@@ -42,6 +42,43 @@ Every key tagged with the metakey `check/ipaddr` will be checked
 using `getaddrinfo()`.  If additionally the values `ipv4` or `ipv6`
 are supplied, the address family will be specified.
 
+### Example
+
+```sh
+# Mount Network plugin to `user/tests/network`
+sudo kdb mount config.file user/tests/network network
+
+# Set valid IPv4 address
+kdb set user/tests/network/host 127.0.0.1
+# Check for valid IPv4 address
+kdb setmeta user/tests/network/host check/ipaddr ipv4
+
+# Try to set invalid IPv4 address
+kdb set user/tests/network/host 133.133.133.1337
+# RET: 5
+# STDERR: .*Description: value of key is not a valid IP Address.*
+kdb get user/tests/network/host
+#> 127.0.0.1
+
+# Set valid IPv4 address
+kdb set user/tests/network/host 1.2.3.4
+#> Set string to "1.2.3.4"
+kdb get user/tests/network/host
+#> 1.2.3.4
+
+# Check for any valid network address
+kdb setmeta user/tests/network/host check/ipaddr ''
+# If identifier `localhost` is not a valid network address it is not part of /etc/hosts
+kdb set user/tests/network/host localhost || ! grep -q localhost /etc/hosts
+
+kdb get user/tests/network/host
+# STDOUT-REGEX: localhost|1.2.3.4
+
+# Undo modifications to the key database
+kdb rm -r user/tests/network
+sudo kdb umount user/tests/network
+```
+
 If `check/port` is specified on a given key, the plugin will validate if the port is a
 correct number between 1 and 65535.
 

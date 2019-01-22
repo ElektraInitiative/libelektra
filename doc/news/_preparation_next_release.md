@@ -85,8 +85,9 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 ### network
 
-The `network` plugin also supports port declarations to check if a port number is valid
-or if the port is available to use. *(Michael Zronek)*
+- The `network` plugin also supports port declarations to check if a port number is valid
+  or if the port is available to use. *(Michael Zronek)*
+- We added a [Markdown Shell Recorder][] test to the [ReadMe of the plugin](https://www.libelektra.org/plugins/network). *(René Schwaiger)*
 
 ### YAy PEG
 
