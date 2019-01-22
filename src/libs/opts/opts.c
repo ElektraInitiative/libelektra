@@ -86,77 +86,14 @@ static bool parseShortOptions (KeySet * optionsSpec, KeySet * options, int argc,
  * is found for any of the given keys, a new key with the same path but inside the proc namespace
  * will be inserted into @p ks. This enables a cascading lookup to find these values.
  *
- * If @p argv contains "-h" or "--help" @p ks will not be changed, instead the value of @p errorKey
- * will be set to a help message describing available options and 1 will be returned. The program
- * name used in this message is taken from `argv[0]`. If it contains a '/' only the part after the
- * last '/' will be used. The help message will contain description for each option. This description
- * is taken from `opt/help`, or if `opt/help` is not specified from `description`. The `opt/help` metadata
- * is specified PER KEY not per option, even if the key has multiple options. This is because all the
- * options for one key have to be equivalent and therefore only require one description.
- *
- * If `opt/hidden` is set to "1", the option will not appear in the help message. The same applies to
- * `env`s and `env/hidden`.
- *
- * If `opt/arg/help` is set, its value will be used as the argument name for long options. Otherwise
- * "ARG" will be used. This value can be set for each option individually.
- *
- * The help message can also be customised in two more ways:
- * 1. By setting the `help/usage` metadata on @p errorKey, you can use a custom usage line for the help
- *    message.
- * 2. By setting the `help/prefix` metadata on @p errorKey, you can insert text between the usage line
- *    and the description of options.
- * There is no `help/suffix` metadata, because you can easily append text to the help message yourself.
- *
- * Because "-h" and "--help" are reserved for the help message, neither can be used for anything else.
- *
- * To define a command line option set the `opt` meta-key to the short option. Only the first
- * character of the given value will be used ('\0' is not allowed). You can also set `opt/long`,
- * to use a long option. Each option can have a short version, a long version or both.
- * Per default an option is expected to have an argument. To change this behaviour set `opt/arg` to
- * either 'none' or 'optional' (the default is 'required'). The behaviour of short options, long
- * options, required and optional arguments is similar to getopt_long(3).
- *
- * A short option cannot be set to 'optional', as the only way to give an 'optional' argument is via
- * the "--opt=value" syntax of long options. If a long option with an 'optional' argument does not
- * have an argument, its value will be set as if `opt/arg` were 'none'. One difference to getopt_long(3)
- * is that options with 'optional' arguments can also have short versions. In this case the short version
- * is treated as if `opt/arg` were set to 'none', i.e. it cannot have an argument.
- *
- * If `opt/arg` is set to 'none' the the corresponding key will have the value "1", if the option is
- * provided. This value can be changed by setting `opt/flagvalue` to something else.
- *
- * A key can also be associated with multiple options. To achieve this, simply follow the instructions
- * above, but replace `opt` with `opt/#XXX` (XXX being the index of the option) in all keynames. Each
- * option can have a different setting for none/required/optional arguments and flagvalue too.
- *
- * In addition to command line options this function also supports environment variables. These are
- * specified with `env` (or `env/#XXX` if multiple are used).
- *
- * While you can specify multiple options (or environment variables) for a single key, only one of them
- * can be used at the same time. Using two or more options (or variables) that are all linked to the
- * same key, will result in an error.
- *
- * If the key for which the options are defined, has the basename '#', an option can be repeated.
- * All occurrences will be collected into an array. Environment variables obviously cannot be repeated,
- * instead a behaviour similar that used for PATH is adopted. On Windows the variable will be split at
- * each ';' character. On all other systems ':' is used as a separator.
- *
- * In case multiple versions (short, long, env-var) of an option are found, the order of precedence is:
- * <ul>
- * 	<li> Short options always win. </li>
- * 	<li> Long options are used if no short option is present. </li>
- * 	<li> If neither a long nor short option is found, environment variables are considered. </li>
- * </ul>
- *
- * Lastly, all remaining elements of @p argv will be collected into an array. You can access this array
- * by specifying `args = remaining` on a key with basename '#'. The array will be copied into this key. As is
- * the case with getopt(3) processing of options will stop if '--' is encountered in @p argv.
- *
- * NOTE: Both options and environment variables can only be specified on a single key. If you need to have the
- * value of one option/environment variable in multiple keys, you may use fallbacks.
+ * Take look at https://www.libelektra.org/tutorials/command-line-options for information on how exactly
+ * the specification works.
  *
  * NOTE: Per default option processing DOES NOT stop, when a non-option string is encountered in @p argv.
  * If you want processing to stop, set the metadata `posixly = 1` on @p errorKey.
+ *
+ * The basic usage of this function is as follows:
+ * @snippet optsSnippets.c basic use
  *
  * @param ks	The KeySet containing the specification for the options.
  * @param argc	The number of strings in argv.
@@ -165,9 +102,10 @@ static bool parseShortOptions (KeySet * optionsSpec, KeySet * options, int argc,
  * 		strings of the format 'KEY=VALUE'.
  * @param errorKey A key to store an error in, if one occurs.
  *
- * @retval 0	on success
+ * @retval 0	on success, this is the only case in which @p ks will be modified
  * @retval -1	on error, the error will be added to @p errorKey
- * @retval 1	if help option was found
+ * @retval 1	if a help option (-h, --help) was found, use elektraGetOptsHelpMessage() access the
+ * 		generated help message
  */
 int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** envp, Key * errorKey)
 {
@@ -176,6 +114,7 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 	struct Specification spec;
 	if (!processSpec (&spec, ks, errorKey))
 	{
+		ksSetCursor (ks, initial);
 		return -1;
 	}
 
@@ -185,6 +124,7 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 	{
 		ksDel (spec.options);
 		ksDel (spec.keys);
+		ksSetCursor (ks, initial);
 		return -1;
 	}
 
@@ -215,6 +155,7 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 		ksDel (options);
 		ksDel (spec.options);
 		ksDel (spec.keys);
+		ksSetCursor (ks, initial);
 		return 1;
 	}
 	ksDel (spec.options);
@@ -236,6 +177,7 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 			ksDel (options);
 			ksDel (spec.keys);
 			ksDel (args);
+			ksSetCursor (ks, initial);
 			return -1;
 		}
 		else if (result > 0)
@@ -250,6 +192,7 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 			ksDel (options);
 			ksDel (spec.keys);
 			ksDel (args);
+			ksSetCursor (ks, initial);
 			return -1;
 		}
 		else if (result > 0)
@@ -266,10 +209,47 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 	ksDel (args);
 
 	ksSetCursor (ks, initial);
-
 	return 0;
 }
 
+/**
+ * Extracts the help message from the @p errorKey used in elektraGetOpts().
+ *
+ * @param errorKey The same Key as passed to elektraGetOpts() as errorKey.
+ * @param usage	   If this is not NULL, it will be used instead of the default usage line.
+ * @param prefix   If this is not NULL, it will be inserted between the usage line and the options list.
+ *
+ * @return The full help message extracted from @p errorKey, or NULL if no help message was found.
+ * The returned string has to be freed with elektraFree().
+ */
+char * elektraGetOptsHelpMessage (Key * errorKey, const char * usage, const char * prefix)
+{
+	if (usage == NULL)
+	{
+		usage = keyGetMetaString (errorKey, "internal/libopts/help/usage");
+	}
+
+	if (usage == NULL)
+	{
+		return NULL;
+	}
+
+	const char * options = keyGetMetaString (errorKey, "internal/libopts/help/options");
+	if (options == NULL)
+	{
+		options = "";
+	}
+
+	return elektraFormat ("%s%s%s", usage, prefix == NULL ? "" : prefix, options);
+}
+
+// -------------
+// static functions
+// -------------
+
+/**
+ * Process the specification set in the keys of @p ks, into @p spec.
+ */
 bool processSpec (struct Specification * spec, KeySet * ks, Key * errorKey)
 {
 	KeySet * usedEnvVars = ksNew (0, KS_END);
@@ -341,41 +321,6 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * errorKey)
 
 	return true;
 }
-
-/**
- * Extracts the help message from the @p errorKey used in elektraGetOpts().
- *
- * @param errorKey The same Key as passed to elektraGetOpts() as errorKey.
- * @param usage	   If this is not NULL, it will be used instead of the default usage line.
- * @param prefix   If this is not NULL, it will be inserted between the usage line and the options list.
- *
- * @return The full help message extracted from @p errorKey, or NULL if no help message was found.
- * The returned string has to be freed with elektraFree().
- */
-char * elektraGetOptsHelpMessage (Key * errorKey, const char * usage, const char * prefix)
-{
-	if (usage == NULL)
-	{
-		usage = keyGetMetaString (errorKey, "internal/libopts/help/usage");
-	}
-
-	if (usage == NULL)
-	{
-		return NULL;
-	}
-
-	const char * options = keyGetMetaString (errorKey, "internal/libopts/help/options");
-	if (options == NULL)
-	{
-		options = "";
-	}
-
-	return elektraFormat ("%s%s%s", usage, prefix == NULL ? "" : prefix, options);
-}
-
-// -------------
-// static functions
-// -------------
 
 /**
  * Process the option specification for @p specKey.
@@ -569,6 +514,7 @@ bool processShortOptSpec (struct Specification * spec, struct OptionData * optio
 	const char * hasArg = optionData->hasArg;
 	const char * kind = optionData->kind;
 	const char * flagValue = optionData->flagValue;
+	const char * argName = optionData->argName;
 	bool hidden = optionData->hidden;
 
 	const char * shortOptStr = keyGetMetaString (optionData->specKey, optionData->metaKey);
@@ -622,8 +568,18 @@ bool processShortOptSpec (struct Specification * spec, struct OptionData * optio
 
 	if (!hidden)
 	{
-		char * newShortOptLine = elektraFormat ("%s-%c, ", *shortOptLine, shortOpt);
+		char * argString = "";
+		if (elektraStrCmp (hasArg, "required") == 0)
+		{
+			argString = argName == NULL ? " ARG" : elektraFormat (" %s", argName);
+		}
+
+		char * newShortOptLine = elektraFormat ("%s-%c%s, ", *shortOptLine, shortOpt, argString);
 		elektraFree (*shortOptLine);
+		if (argName != NULL)
+		{
+			elektraFree (argString);
+		}
 		*shortOptLine = newShortOptLine;
 	}
 

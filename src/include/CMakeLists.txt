@@ -85,6 +85,7 @@ install (FILES "${CMAKE_CURRENT_BINARY_DIR}/kdbconfig.h"
 	       "${CMAKE_CURRENT_BINARY_DIR}/kdb.h"
 	       kdbmodule.h
 	       kdbos.h
+	       kdbopts.h
 	       kdbplugin.h
 	       kdbpluginprocess.h
 	       kdbprivate.h

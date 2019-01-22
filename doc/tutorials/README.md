@@ -29,6 +29,7 @@ provides.
 - [Code Generation](/src/tools/gen/README.md)
 - [Notifications](notifications.md)
 - [High Level API](/src/libs/highlevel/README.md)
+- [Command Line Options](command-line-options.md)
 
 ## System Administrators
 

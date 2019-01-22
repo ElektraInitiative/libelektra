@@ -733,9 +733,9 @@ static void test_help (void)
 	const char * expectedHelp =
 		"Usage: prog [OPTION]... [ARG]...\n"
 		"OPTIONS\n"
-		"  -a, -b, -C, --apple, --banana=BANANA, --cherry=[ARG]\n"
+		"  -a, -b BANANA, -C, --apple, --banana=BANANA, --cherry=[ARG]\n"
 		"                                Apple/Banana/Cherry description\n"
-		"  -p                          A pear is not an apple, nor a banana, nor a cherry.\n";
+		"  -p ARG                      A pear is not an apple, nor a banana, nor a cherry.\n";
 
 	Key * k = keyNew (SPEC_BASE_KEY "/apple", KEY_END);
 	keySetMeta (k, "opt", "#3");
