@@ -6,7 +6,7 @@
 - infos/recommends =
 - infos/placements = pregetstorage getstorage postgetstorage presetstorage setstorage
 - infos/status = maintained unittest shelltest configurable experimental unfinished
-- infos/metadata = 
+- infos/metadata =
 - infos/description = executes other plugins inside an own process
 
 ## Introduction
@@ -14,13 +14,13 @@
 The process plugin uses the `pluginprocess` library in order to execute other plugins
 inside an own process.
 This is useful for runtimes or libraries that cannot be reinitialized in the same process
-after they have been used. 
+after they have been used.
 It is also useful for plugins which cause memory leaks to be isolated in an own process.
 
 ## Usage
 
-Mount this plugin and specify the plugin configuration parameter `plugin` to a plugin that exists on 
-the system. The proxied plugin will then be executed in a separate process and this plugin handles 
+Mount this plugin and specify the plugin configuration parameter `plugin` to a plugin that exists on
+the system. The proxied plugin will then be executed in a separate process and this plugin handles
 the communication between the processes.
 
 ## Dependencies
@@ -50,4 +50,4 @@ sudo kdb umount /tests/process
 - Currently only plugins that act on one of the above-mentioned `placements` can be proxied
 successfully. Other metainformation like `needs` or `provides` or `recommends` will not be
 available when proxying using this plugin.
-- This plugin cannot act as a proxy for itself to prevent loops. 
+- This plugin cannot act as a proxy for itself to prevent loops.
