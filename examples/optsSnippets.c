@@ -6,6 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
+#include <kdbhelper.h>
 #include <kdbopts.h>
 
 #include <stdio.h>
@@ -41,4 +42,5 @@ int basicUse (int argc, const char ** argv)
 		return EXIT_SUCCESS;
 	}
 	//! [basic use]
+	return EXIT_SUCCESS;
 }
