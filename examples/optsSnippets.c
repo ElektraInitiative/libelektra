@@ -16,14 +16,17 @@ extern char ** environ;
 
 static int basicUse (int argc, const char ** argv)
 {
-	Key * parentKey = keyNew ("");
+	Key * parentKey = keyNew ("/sw/org/example/#0/current", KEY_END);
 	//! [basic use]
 	KDB * kdb = kdbOpen (parentKey);
 	KeySet * ks = ksNew (0, KS_END);
 
 	kdbGet (kdb, ks, parentKey);
 
-	int result = elektraGetOpts (ks, argc, argv, (const char **) environ, parentKey);
+	// cut out our part of the kdb
+	KeySet * spec = ksCut (ks, parentKey);
+
+	int result = elektraGetOpts (spec, argc, argv, (const char **) environ, parentKey);
 	if (result == -1)
 	{
 		fprintf (stderr, "ERROR: %s\n", keyString (keyGetMeta (parentKey, "error/reason")));
@@ -41,7 +44,15 @@ static int basicUse (int argc, const char ** argv)
 		ksDel (ks);
 		return EXIT_SUCCESS;
 	}
+
+	// merge the results back into the kdb
+	ksAppend (ks, spec);
+	ksDel (spec);
+
 	//! [basic use]
+	ksDel (ks);
+	kdbClose (kdb, parentKey);
+	keyDel (parentKey);
 	return EXIT_SUCCESS;
 }
 

@@ -95,6 +95,10 @@ static bool parseShortOptions (KeySet * optionsSpec, KeySet * options, int argc,
  * The basic usage of this function is as follows:
  * @snippet optsSnippets.c basic use
  *
+ * If you got @p ks from kdbGet(), make sure to use ksCut() to remove any spec keys from other applications,
+ * like in the snippet above. Otherwise you may get an unexpected error, because another application uses the
+ * same option.
+ *
  * @param ks	The KeySet containing the specification for the options.
  * @param argc	The number of strings in argv.
  * @param argv	The arguments to be processed.
