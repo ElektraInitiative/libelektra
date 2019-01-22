@@ -47,5 +47,5 @@ static int basicUse (int argc, const char ** argv)
 
 int main (int argc, const char ** argv)
 {
-	return basicUse(argc, argv);
+	return basicUse (argc, argv);
 }
