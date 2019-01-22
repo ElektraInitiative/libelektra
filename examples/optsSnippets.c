@@ -14,7 +14,7 @@
 
 extern char ** environ;
 
-int basicUse (int argc, const char ** argv)
+static int basicUse (int argc, const char ** argv)
 {
 	Key * parentKey = keyNew ("");
 	//! [basic use]
@@ -43,4 +43,9 @@ int basicUse (int argc, const char ** argv)
 	}
 	//! [basic use]
 	return EXIT_SUCCESS;
+}
+
+int main (int argc, const char ** argv)
+{
+	return basicUse(argc, argv);
 }
