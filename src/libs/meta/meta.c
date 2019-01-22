@@ -951,7 +951,7 @@ elektraMetaArrayToKS(
 	"dep");
  * @endcode
  *
- * returns a `KeySet` containing the keys `"dep/#0"` with value `"/b"` and
+ * returns a `KeySet` containing the keys `dep` with value `#1`, `"dep/#0"` with value `"/b"` and
  * `"dep/#1"` with value `"/c"`.
  *
  * If no meta key array is found, null is returned.
