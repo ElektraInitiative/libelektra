@@ -30,19 +30,18 @@ The `pluginprocess` library, which is only available on POSIX environments curre
 ## Examples
 
 ```sh
-# Mount the dump plugin a separate process via the process plugin to the cascading namespace `/examples/process`
-sudo kdb mount config.file /tests/process process plugin=dump
+# Mount the dump plugin a separate process via the process plugin to `user/examples/process`
+sudo kdb mount config.file user/tests/process process plugin=dump
 
-kdb set /tests/process/key value
-#> Using name user/tests/process/key
+kdb set user/tests/process/key value
 #> Create a new key user/tests/process/key with string "value"
 
-kdb get /tests/process/key
+kdb get user/tests/process/key
 #> value
 
 # Undo modifications
-kdb rm -r /tests/process
-sudo kdb umount /tests/process
+kdb rm -r user/tests/process
+sudo kdb umount user/tests/process
 ```
 
 ## Limitations
