@@ -249,7 +249,7 @@ elektraSetStringArrayElement (elektra, "message", "This is the third new message
 
 Because even the best specification and perfect usage as intended can not fully prevent an error from occurring, when saving the
 configuration, all setter-functions take an additional `ElektraError` argument, which will be set if an error occurs. Currently setters
-should not call the fatal error handler, however, there are no guarantees that this will remain as such. For example a valid reason for
+should not call the fatal error handler, however, there are no guarantees that this will remain so. For example a valid reason for
 a setter to call the fatal error handler instead of returning an error, would be problems with memory allocation (from which an application
 is unlikely to recover).
 
