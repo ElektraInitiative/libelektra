@@ -37,6 +37,7 @@ For Stretch:
 
 Which can also be done using:
 
+        sudo apt-get install apt-transport-https
         echo "deb     [trusted=yes] https://debian-stretch-repo.libelektra.org/ stretch main" | sudo tee /etc/apt/sources.list.d/elektra.list
 
 Or alternatively, you can use (if you do not mind many dependences just to add one line to a config file):

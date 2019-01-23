@@ -8,8 +8,8 @@ part of the highlighted changes. Please make
 sure to add some short tutorial, asciinema,
 or how-to-use for highlighted items.
 
-Please add your name to every contribution
-syntax: ", thanks to <myname>".
+Please add your name at the end of every contribution.
+**Syntax:** *(your name)*
 
 
 <<`scripts/generate-news-entry`>>
@@ -32,12 +32,45 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.8.
 
 ## Highlights
 
-- <<HIGHLIGHT1>>
+- The new High-Level-API has been added. *(Klemens Böswirth)*
 - <<HIGHLIGHT2>>
 - <<HIGHLIGHT3>>
 
 
-### <<HIGHLIGHT1>>
+### High-Level API
+The new high-level API provides an easier way to get started with Elektra.
+
+To get started (including proper error handling) you now only need a few self-explanatory lines of code:
+```c
+ElektraError * error;
+Elektra * elektra = elektraOpen ("/sw/org/myapp/#0/current", NULL, &error);
+if (elektra == NULL)
+{
+	printf ("An error occured: %s", elektraErrorDescription (error));
+	elektraErrorReset (error);
+	return -1;
+}
+
+int myint = elektraGetLong (elektra, "myint");
+
+elektraClose (elektra);
+```
+
+Once you have an instance of `Elektra` you simply call one of the typed `elektraGet*` functions to read a value:
+```c
+const char * mystring = elektraGetString (elektra, "mystring");
+```
+No need to specify the base path `/sw/org/myapp/#0/current` anymore, as the high-level API keeps track of that for you.
+The API supports the CORBA types already used by some plugins. The high-level API should also be used in combination
+with a specification (`spec-mount`). When used this way, the API is designed to be error and crash free while reading values.
+Writing values, can of course still produce errors.
+
+Another advantage of the new API is, that it will be much easier to write bindings for other languages now, because only a few simply
+types and functions have to be mapped to provide the full functionality.
+
+Take a look at the [README](/src/libs/highlevel/README.md) for more infos.
+
+. *(Klemens Böswirth)*
 
 
 ### <<HIGHLIGHT2>>
@@ -50,21 +83,15 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.8.
 
 The following section lists news about the [modules](https://www.libelektra.org/plugins/readme) we updated in this release.
 
-### <<Plugin1>>
+### network
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+The `network` plugin also supports port declarations to check if a port number is valid
+or if the port is available to use. *(Michael Zronek)*
 
+### YAy PEG
 
-
-### <<Plugin2>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-
+The new plugin [YAy PEG](https://www.libelektra.org/plugins/yaypeg) parses a subset of YAML using a parser based on
+[PEGTL](https://github.com/taocpp/PEGTL). *(René Schwaiger)*
 
 ### <<Plugin3>>
 
@@ -72,6 +99,16 @@ The following section lists news about the [modules](https://www.libelektra.org/
 - <<TODO>>
 - <<TODO>>
 
+### Misc
+
+- We fixed some compiler warnings for the plugins
+
+  - [`camel`](https://www.libelektra.org/plugins/camel),
+  - [`line`](https://www.libelektra.org/plugins/line),
+  - [`mini`](https://www.libelektra.org/plugins/mini) and
+  - [`resolver`](https://www.libelektra.org/plugins/resolver)
+
+  reported on FreeBSD. *(René Schwaiger)*
 
 ## Libraries
 
@@ -90,7 +127,7 @@ compiled against an older 0.8 version of Elektra will continue to work
 
 ### Core
 
-- <<TODO>>
+- Global plugins now get a handle to a global keyset, which makes communication between global plugins easier. *(Mihael Pranjić)*
 - <<TODO>>
 - <<TODO>>
 
@@ -170,23 +207,34 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Documentation
 
-- <<TODO>>
-- <<TODO>>
+- We fixed various spelling mistakes. *(René Schwaiger)*
+- The documentation for `elektraMetaArrayToKS` was fixed. It now reflects the fact
+  that the parent key is returned as well.  *(Klemens Böswirth)*
 - <<TODO>>
 
 ## Tests
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- The tests for the IO bindings and notification plugins now use increased timeout values to make sure the test suite fails less often on
+  machines with high load. *(René Schwaiger)*
+- We update most of the [Markdown Shell Recorder][] tests so they use an explicit namespace (like `system` or `user`). This has the
+  advantage that the output of these tests [does not change depending on the user that executes them](https://issues.libelektra.org/1773).
+  Before the update these tests used [cascading keys](https://www.libelektra.org/tutorials/namespaces). *(René Schwaiger)*
+- The [Shell Recorder][] now also works correctly on FreeBSD. *(René Schwaiger)*
+- Fix memcheck target to detect memory problems again and enabled parallel testing to speed it up. *(Mihael Pranjić)*
+- Fix memleak in pluginprocess tests. *(Mihael Pranjić)*
+- The test [`check-env-dep`](https://master.libelektra.org/scripts/check-env-dep) does not require Bash anymore. *(René Schwaiger)*
 
+[Shell Recorder]: https://master.libelektra.org/tests/shell/shell_recorder
+[Markdown Shell Recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
 
 ## Build
 
 ### CMake
 
-- <<TODO>>
-- <<TODO>>
+- The CMake find module [`FindAugeas.cmake`](https://master.libelektra.org/cmake/Modules/FindAugeas.cmake) does not print an error message
+  anymore, if it is unable to locate Augeas in the `pkg-config` search path. *(René Schwaiger)*
+- The CMake find module [`FindLua.cmake`](https://master.libelektra.org/cmake/Modules/FindLua.cmake) does not print an error message
+  anymore, if it is unable to locate a Lua executable. *(René Schwaiger)*
 - <<TODO>>
 
 ### Docker
@@ -198,9 +246,13 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Infrastructure
 
+### Cirrus
+
+- We now use [Cirrus CI](https://cirrus-ci.com) to build Elektra on [FreeBSD](https://www.freebsd.org). *(René Schwaiger)*
+
 ### Jenkins
 
-- <<TODO>>
+- We added a badge displaying the current build status to the main [ReadMe](https://master.libelektra.org/README.md). *(René Schwaiger)*
 - <<TODO>>
 - <<TODO>>
 

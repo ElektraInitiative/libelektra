@@ -96,6 +96,6 @@ def main():
 			)
 		#text = template.generatedModuleCode()+template.generatedClassCode()
 
-	do_output(args, text);
+	do_output(args, text)
 
 main()

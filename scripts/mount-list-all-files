@@ -12,7 +12,7 @@ FILES=
 OLD_IFS="$IFS"
 IFS="$(printf '\n+')"
 for mp in $MOUNTPOINTS; do
-	FILES="$FILES$($KDB file \"$mp\")\n"
+	FILES="$FILES$($KDB file "$mp")\n"
 done
 FILES="${FILES%??}"
 FILES=$(echo "$FILES" | sort | uniq)

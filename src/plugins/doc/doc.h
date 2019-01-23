@@ -102,6 +102,20 @@
  * Note that you also need to return -1 in the case of error.
  * See individual description of entry points to implement below.
  *
+ * @par Global KeySet Handle
+ *
+ * Global plugins and the resolver will get a handle to a global keyset.
+ * This allows them to exchange information with other global plugins.
+ *
+ * Obtain a handle to the global keyset and work with it:
+ *
+ * @snippet doc.c get global keyset
+ *
+ * Clean up keys which you do not need any more,
+ * to keep the global keyset compact:
+ *
+ * @snippet doc.c get global keyset cleanup
+ *
  * @par Further help
  * Do not hesitate to open an issue if anything
  * is unclear.

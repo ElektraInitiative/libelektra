@@ -16,6 +16,8 @@
 #include <kdberrors.h>
 #include <kdblogger.h>
 #include <kdbutility.h>
+// The definition `_WITH_GETLINE` is required for FreeBSD
+#define _WITH_GETLINE
 #include <stdio.h>
 
 /* -- Functions ------------------------------------------------------------------------------------------------------------------------- */

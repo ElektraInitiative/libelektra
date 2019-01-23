@@ -13,7 +13,7 @@ macro (do_benchmark source)
 	include_directories ("${CMAKE_CURRENT_SOURCE_DIR}")
 	set (SOURCES ${HDR_FILES} ${ADDITIONAL_SOURCES} benchmarks.c benchmarks.h ${source}.c)
 	add_executable (benchmark_${source} ${SOURCES})
-	add_dependencies (benchmark_${source} kdberrors_generated)
+	add_dependencies (benchmark_${source} kdberrors_generated elektra_error_codes_generated)
 
 	target_link_elektra (benchmark_${source} elektra-kdb elektra-meta)
 

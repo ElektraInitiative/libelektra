@@ -13,6 +13,8 @@
 
 #include <assert.h>
 #include <stdbool.h>
+// The definition `_WITH_GETLINE` is required for FreeBSD
+#define _WITH_GETLINE
 #include <stdio.h>
 #include <stdlib.h>
 

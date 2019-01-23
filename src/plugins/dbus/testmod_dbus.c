@@ -24,7 +24,7 @@ typedef struct
 } TestContext;
 
 #define TEST_TIMEOUT 1
-#define TEST_DISPATCH_TIMEOUT 100
+#define TEST_DISPATCH_TIMEOUT 200
 
 /** D-Bus bus type used by tests  */
 DBusBusType testBusType;

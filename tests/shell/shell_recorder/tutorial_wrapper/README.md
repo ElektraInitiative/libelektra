@@ -9,29 +9,27 @@ Snippets are shell commands inside a syntax block with additional checks (such a
 Let us look at a simple example first:
 
 ```sh
-kdb set /tests/markdown/napalm death
-#> Using name user/tests/markdown/napalm
+kdb set user/tests/markdown/napalm death
 #> Create a new key user/tests/markdown/napalm with string "death"
 
-kdb rm /tests/markdown/napalm
+kdb rm user/tests/markdown/napalm
 
 kdb rm /tests/markdown/babymetal
 # RET: 1
 # STDERR: Did not find the key
 ```
 
-. The test above invokes three commands. The first command sets the [cascading key](/doc/tutorials/cascading.md)
-`/tests/markdown/napalm` to the value `death`. The special comment `#> ` below the command specifies the expected output to the standard
+. The test above invokes three commands. The first command stores the value `death` in the key with the name
+`user/tests/markdown/napalm`. The special comment `#> ` below the command specifies the expected output to the standard
 output. This means the Markdown Shell Recorder expects the command
 
 ```
-kdb set /tests/markdown/napalm death
+kdb set user/tests/markdown/napalm death
 ```
 
 to print the text
 
 ```
-Using name user/tests/markdown/napalm
 Create a new key user/tests/markdown/napalm with string "death"
 ```
 

@@ -15,12 +15,22 @@
  *                          conversion. Use ELEKTRA_TYPE_CHECK_CONVERSION to check if a conversion using
  *                          strto*()-functions was successful and ELEKTRA_TYPE_CHECK_CONVERSION_RANGE (RANGE)
  *                          to check additionally for a specified range.
+ * @param  CHECK_FAIL_BLOCK optional, defaults to logging a warning in the key. The code to be executed (before returning 0), if
+ *                          CHECK_CONVERSION evaluates to false.
  * @param  PRE_CHECK_CONVERSION_BLOCK optional, defaults to empty. Allows to add additional code for pre-conversion checks
  *                                    (e.g. ELEKTRA_TYPE_NEGATIVE_PRE_CHECK_BLOCK)
  * @param  PRE_CHECK_CONVERSION       optional, defaults to true. A boolean expression to check the contents of `string` before conversion
  *                                    (e.g. ELEKTRA_TYPE_NEGATIVE_PRE_CHECK).
+ * @param  PRE_CHECK_FAIL_BLOCK       optional, defaults to logging a warning in the key. The code to be executed (before returning 0), if
+ *                                    PRE_CHECK_CONVERSION evaluates to false.
  * @param  DISABLE_UNDEF_PARAMETERS   define to disable undefining of parameters after the macro. Use if parameters
  *                                    are used within another supermacro.
+ * @param  CODE_ONLY           optional, defaults to 0. Set to 1 to only generate the function body. This is useful, if you want to create a
+ *                             function with a custom signature for example.
+ * @param  KEY_PARAM_NAME      must be set, #if CODE_ONLY, will be set to 'key' otherwise. The name of the variable/parameter containing
+ *                             the Key, whose value will be converted
+ * @param  VARIABLE_PARAM_NAME must be set, #if CODE_ONLY, will be set to 'variable' otherwise. The name of the variable/parameter
+ *                             containing the pointer to where the result should be written
  */
 #ifndef TYPE
 #error "You have to #define TYPE, TYPE_NAME, TO_VALUE and NAME_MACRO before including the type_create_to_value supermacro"
@@ -47,6 +57,26 @@
 #ifndef PRE_CHECK_BLOCK
 #define PRE_CHECK_BLOCK
 #endif
+#ifndef PRE_CHECK_FAIL_BLOCK
+#define PRE_CHECK_FAIL_BLOCK ELEKTRA_LOG_WARNING ("pre-check for type conversion failed! string=%s", keyString (key));
+#endif
+#ifndef CHECK_FAIL_BLOCK
+#define CHECK_FAIL_BLOCK ELEKTRA_LOG_WARNING ("type conversion failed! string=%s, stopped=%c errno=%d", keyString (key), *end, errno);
+#endif
+#ifndef CODE_ONLY
+#define CODE_ONLY 0
+#endif
+
+#if CODE_ONLY
+#if (!defined(KEY_PARAM_NAME) || !defined(VARIABLE_PARAM_NAME))
+#error "When CODE_ONLY is defined, you have to #define KEY_PARAM_NAME and VARIABLE_PARAM_NAME"
+#endif
+#else
+#undef KEY_PARAM_NAME
+#undef VARIABLE_PARAM_NAME
+#define KEY_PARAM_NAME key
+#define VARIABLE_PARAM_NAME variable
+#endif
 
 // These macros get defined at first inclusion
 #ifndef ELEKTRA_TYPE_CONVERSION_MACROS
@@ -62,14 +92,16 @@
 #define ELEKTRA_TYPE_NEGATIVE_PRE_CHECK (test[0] != '-')
 #endif
 
+#if !(CODE_ONLY)
 #include <errno.h> // errno
 
-#define TYPE_CONVERSION_SIGNATURE(TYPE, TYPE_NAME, NAME_MACRO) int NAME_MACRO (TYPE_NAME) (Key * key, TYPE * variable)
+#define TYPE_CONVERSION_SIGNATURE(TYPE, TYPE_NAME, NAME_MACRO)                                                                             \
+	int NAME_MACRO (TYPE_NAME) (const Key * KEY_PARAM_NAME, TYPE * VARIABLE_PARAM_NAME)
 
 /**
  * Convert string to TYPE.
  *
- * The variable is only changed if no conversion error occured
+ * The variable is only changed if no conversion error occurred
  *
  * Example:
  * int variable = 1234;
@@ -87,13 +119,14 @@
  */
 TYPE_CONVERSION_SIGNATURE (TYPE, TYPE_NAME, NAME_MACRO)
 {
+#endif
 	char * end ELEKTRA_UNUSED;
-	const char * string = keyValue (key);
+	const char * string = keyValue (KEY_PARAM_NAME);
 	errno = 0;
 	PRE_CHECK_BLOCK
 	if (!PRE_CHECK_CONVERSION)
 	{
-		ELEKTRA_LOG_WARNING ("pre-check for type conversion failed! string=%s", keyString (key));
+		PRE_CHECK_FAIL_BLOCK
 		return 0;
 	}
 	// convert string to target type
@@ -101,17 +134,19 @@ TYPE_CONVERSION_SIGNATURE (TYPE, TYPE_NAME, NAME_MACRO)
 	if (CHECK_CONVERSION)
 	{
 		// only update if conversion was successful
-		*(variable) = value;
+		*(VARIABLE_PARAM_NAME) = (TYPE) value;
 		return 1;
 	}
 	else
 	{
-		ELEKTRA_LOG_WARNING ("type conversion failed! string=%s, stopped=%c errno=%d", keyString (key), *end, errno);
+		CHECK_FAIL_BLOCK
 		return 0;
 	}
+#if !(CODE_ONLY)
 }
 
 #undef TYPE_CONVERSION_SIGNATURE
+#endif
 
 #ifndef DISABLE_UNDEF_PARAMETERS
 #undef TYPE
@@ -122,5 +157,10 @@ TYPE_CONVERSION_SIGNATURE (TYPE, TYPE_NAME, NAME_MACRO)
 #undef CHECK_CONVERSION
 #undef PRE_CHECK_BLOCK
 #undef PRE_CHECK_CONVERSION
+#undef PRE_CHECK_FAIL_BLOCK
+#undef CHECK_FAIL_BLOCK
+#undef CODE_ONLY
+#undef KEY_PARAM_NAME
+#undef VARIABLE_PARAM_NAME
 #endif
 #undef DISABLE_UNDEF_PARAMETERS

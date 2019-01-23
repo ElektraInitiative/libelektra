@@ -58,18 +58,18 @@ First line should determine the headers:
 The example below shows how you can use this plugin to read and write CSV files.
 
 ```sh
-# Mount plugin to cascading namespace `/tests/csv`
+# Mount plugin to `user/tests/csv`
 # We use the column names from the first line of the
 # config file as key names
-sudo kdb mount config.csv /tests/csv csvstorage  "header=colname,columns/names/#0=col0Name,columns/names/#1=col1Name"
+sudo kdb mount config.csv user/tests/csv csvstorage  "header=colname,columns/names/#0=col0Name,columns/names/#1=col1Name"
 
 # Add some data
-printf 'band,album\n'                           >> `kdb file /tests/csv`
-printf 'Converge,All We Love We Leave Behind\n' >> `kdb file /tests/csv`
-printf 'mewithoutYou,Pale Horses\n'             >> `kdb file /tests/csv`
-printf 'Kate Tempest,Everybody Down\n'          >> `kdb file /tests/csv`
+printf 'band,album\n'                           >> `kdb file user/tests/csv`
+printf 'Converge,All We Love We Leave Behind\n' >> `kdb file user/tests/csv`
+printf 'mewithoutYou,Pale Horses\n'             >> `kdb file user/tests/csv`
+printf 'Kate Tempest,Everybody Down\n'          >> `kdb file user/tests/csv`
 
-kdb ls /tests/csv
+kdb ls user/tests/csv
 #> user/tests/csv/#0
 #> user/tests/csv/#0/album
 #> user/tests/csv/#0/band
@@ -84,21 +84,21 @@ kdb ls /tests/csv
 #> user/tests/csv/#3/band
 
 # The first array element contains the column names
-kdb get /tests/csv/#0/band
+kdb get user/tests/csv/#0/band
 #> band
-kdb get /tests/csv/#0/album
+kdb get user/tests/csv/#0/album
 #> album
 
 # Retrieve data from the last entry
-kdb get /tests/csv/#3/album
+kdb get user/tests/csv/#3/album
 #> Everybody Down
-kdb get /tests/csv/#3/band
+kdb get user/tests/csv/#3/band
 #> Kate Tempest
 
 # Change an existing item
-kdb set /tests/csv/#1/album 'You Fail Me'
+kdb set user/tests/csv/#1/album 'You Fail Me'
 # Retrieve the new item
-kdb get /tests/csv/#1/album
+kdb get user/tests/csv/#1/album
 #> You Fail Me
 
 # The plugin stores the index of the last column
@@ -113,15 +113,15 @@ kdb get user/tests/csv/#3
 #> #1
 
 # The configuration file reflects the changes
-kdb file /tests/csv | xargs cat
+kdb file user/tests/csv | xargs cat
 #> album,band
 #> You Fail Me,Converge
 #> Pale Horses,mewithoutYou
 #> Everybody Down,Kate Tempest
 
 # Undo changes to the key database
-kdb rm -r /tests/csv
-sudo kdb umount /tests/csv
+kdb rm -r user/tests/csv
+sudo kdb umount user/tests/csv
 ```
 
 # Directory Values
@@ -130,15 +130,15 @@ By default the `csvstorage` plugin saves the name of the last column in each par
 so using the [Directory Value](../directoryvalue/) plugin.
 
 ```sh
-# Mount plugin together with `directoryvalue` to cascading namespace `/tests/csv`
-kdb mount config.csv /tests/csv csvstorage directoryvalue
+# Mount plugin together with `directoryvalue` to `user/tests/csv`
+kdb mount config.csv user/tests/csv csvstorage directoryvalue
 
 # Add some data
-printf 'Schindler’s List,1993,8.9\n'       >> `kdb file /tests/csv`
-printf 'Léon: The Professional,1994,8.5\n' >> `kdb file /tests/csv`
+printf 'Schindler’s List,1993,8.9\n'       >> `kdb file user/tests/csv`
+printf 'Léon: The Professional,1994,8.5\n' >> `kdb file user/tests/csv`
 
 # Retrieve data
-kdb ls /tests/csv
+kdb ls user/tests/csv
 #> user/tests/csv/#0
 #> user/tests/csv/#0/#0
 #> user/tests/csv/#0/#1
@@ -170,8 +170,8 @@ kdb get user/tests/csv/#1
 #> It’s a Me.
 
 # Undo changes to the key database
-kdb rm -r /tests/csv
-sudo kdb umount /tests/csv
+kdb rm -r user/tests/csv
+sudo kdb umount user/tests/csv
 ```
 
 # Column as index

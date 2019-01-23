@@ -137,12 +137,11 @@ kdb get /tests/tutorial/cascading/#0/current/test
 #> hello override
 ```
 
-As we used a cascading key for our override link (`/tests/overrides/test`) we can use this to allow users to provide their own `tests/overrides/test` keys. If a user sets the `/tests/overrides/test` key, the **user** namespace will be used and therefore the new target for our `/tests/tutorial/cascading/#0/current/test` key will be `user/tests/overrides/test` instead `system/tests/overrides/test`.
+As we used a cascading key for our override link (`/tests/overrides/test`) we can use this to allow users to provide their own `tests/overrides/test` keys. If a user sets the `/tests/overrides/test` key, the **user** namespace will be used (for a non-root user) and therefore the new target for our `/tests/tutorial/cascading/#0/current/test` key will be `user/tests/overrides/test` instead of `system/tests/overrides/test`.
 
 ```sh
 kdb set /tests/overrides/test "hello user"
-#> Using name user/tests/overrides/test
-#> Create a new key user/tests/overrides/test with string "hello user"
+# STDOUT-REGEX: .+(Create a new key.+|Set string to) "hello user"
 kdb get /tests/tutorial/cascading/#0/current/test
 #> hello user
 ```
@@ -162,8 +161,6 @@ kdb rm -r system/tests/overrides
 kdb import system/tests/overrides dump < $(kdb get user/tests/overrides)
 rm $(kdb get user/tests/overrides)
 kdb rm user/tests/overrides
-
-kdb rm /tests/overrides/test
 
 kdb rm -r spec/tests/tutorial/
 

@@ -41,16 +41,16 @@ will all result in `lockPref("a.lock.key", "lock");`
 
 ## Example
 ```sh
-# Backup-and-Restore:/tests/mozprefs
+# Backup-and-Restore:user/tests/mozprefs
 
-sudo kdb mount prefs.js /tests/mozprefs mozprefs
+sudo kdb mount prefs.js user/tests/mozprefs mozprefs
 
 kdb setmeta user/tests/mozprefs/lock/a/lock/key type boolean
-kdb set /tests/mozprefs/lock/a/lock/key true
+kdb set user/tests/mozprefs/lock/a/lock/key true
 kdb setmeta user/tests/mozprefs/pref/a/default/key type string
-kdb set /tests/mozprefs/pref/a/default/key "i'm a default key"
+kdb set user/tests/mozprefs/pref/a/default/key "i'm a default key"
 kdb setmeta user/tests/mozprefs/user/a/user/key type integer
-kdb set /tests/mozprefs/user/a/user/key 123
+kdb set user/tests/mozprefs/user/a/user/key 123
 
 kdb export user/tests/mozprefs ini
 #> [lock/a/lock]
@@ -69,6 +69,6 @@ cat `kdb file user/tests/mozprefs`
 #> user_pref("a.user.key", 123);
 
 # cleanup
-kdb rm -r /tests/mozprefs
-sudo kdb umount /tests/mozprefs
+kdb rm -r user/tests/mozprefs
+sudo kdb umount user/tests/mozprefs
 ```

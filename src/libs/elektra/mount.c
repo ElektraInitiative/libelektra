@@ -375,6 +375,9 @@ int mountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey)
 				else
 					kdb->globalPlugins[i][MAXONCE] = plugin;
 
+				// set handle to global keyset
+				plugin->global = kdb->global;
+
 				// load plugins in explicit placements
 				const char * placementName = keyName (cur);
 				Key * placementKey = ksLookupByName (global, placementName, 0);

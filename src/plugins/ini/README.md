@@ -187,7 +187,7 @@ kdb setmeta user/tests/ini/brand description "The Devil And God Are Raging Insid
 kdb setmeta user/tests/ini/brand rationale "Because I Love It"
 
 # The plugin stores metadata as comments inside the INI file
-kdb file /tests/ini | xargs cat
+kdb file user/tests/ini | xargs cat
 #> #@META description = The Devil And God Are Raging Inside Me
 #> #@META rationale = Because I Love It
 #> brand = new

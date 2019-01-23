@@ -94,6 +94,12 @@ install (FILES "${CMAKE_CURRENT_BINARY_DIR}/kdbconfig.h"
 	       kdbio.h
 	       kdbnotification.h
 	       "${CMAKE_CURRENT_BINARY_DIR}/kdbversion.h"
+	       elektra.h
+	       elektra/error.h
+	       "${CMAKE_CURRENT_BINARY_DIR}/elektra/errorcodes.h"
+	       "${CMAKE_CURRENT_BINARY_DIR}/elektra/errors.h"
+	       elektra/conversion.h
+	       elektra/types.h
 	 DESTINATION include/${TARGET_INCLUDE_FOLDER})
 
 add_custom_target (elektra_config_headers

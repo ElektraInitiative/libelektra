@@ -28,6 +28,7 @@ provides.
 - [Ruby Bindings](/src/bindings/swig/ruby/README.md)
 - [Code Generation](/src/tools/gen/README.md)
 - [Notifications](notifications.md)
+- [High Level API](/src/libs/highlevel/README.md)
 
 ## System Administrators
 

@@ -24,6 +24,9 @@ add_subdirectory (invoke)
 
 add_subdirectory (notification)
 
+add_subdirectory (highlevel)
+
+# The subdirectory for LibElektra must be the last entry!
 add_subdirectory (elektra)
 
 generate_manpage (elektra-libs FILENAME ${CMAKE_CURRENT_SOURCE_DIR}/README.md SECTION 7)

@@ -73,7 +73,7 @@ Thus please use following techniques (in order of preference):
 
    `#include <kdblogger.h>`
 
-   `ELEKTRA_LOG ("formatted text to be printed according log filters", ...)`
+   `ELEKTRA_LOG ("formatted text to be printed according to log filters", ...)`
 
    Read [HERE](/doc/dev/logging.md) for how to enable the logger.
 

@@ -109,6 +109,7 @@ KeySet * elektraPluginGetConfig (Plugin * handle);
 void elektraPluginSetData (Plugin * plugin, void * handle);
 void * elektraPluginGetData (Plugin * plugin);
 
+KeySet * elektraPluginGetGlobalKeySet (Plugin * plugin);
 
 #define PLUGINVERSION "1"
 

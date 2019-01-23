@@ -383,4 +383,44 @@
    ...
    fun:main
 }
+{
+   gpg-agent npth_create _dl_allocate_tls
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   fun:allocate_dtv
+   fun:_dl_allocate_tls
+   fun:allocate_stack
+   fun:pthread_create@@GLIBC_2.2.5
+   fun:npth_create
+   obj:/usr/bin/gpg-agent
+   obj:/usr/bin/gpg-agent
+   fun:(below main)
+}
+{
+   PluginProcess child dies keyDup
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:elektraMalloc
+   fun:elektraKeyMalloc
+   fun:keyDup
+   fun:elektraPluginProcessStart
+   fun:elektraDummyOpenAndDie
+   fun:test_childDies
+   fun:main
+}
+{
+   PluginProcess child dies ksNew
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:elektraMalloc
+   fun:ksVNew
+   fun:ksNew
+   fun:elektraPluginProcessStart
+   fun:elektraDummyOpenAndDie
+   fun:test_childDies
+   fun:main
+}
 

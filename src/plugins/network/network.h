@@ -12,7 +12,9 @@
 #include <kdberrors.h>
 #include <kdbplugin.h>
 
+#include <arpa/inet.h>
 #include <netdb.h>
+#include <netinet/in.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -22,7 +24,10 @@
 
 int elektraNetworkAddrInfo (Key * toCheck);
 
+int elektraPortInfo (Key * toCheck, Key * parentKey);
+
 int elektraNetworkGet (Plugin * handle, KeySet * ks, Key * parentKey);
+
 int elektraNetworkSet (Plugin * handle, KeySet * ks, Key * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (network);

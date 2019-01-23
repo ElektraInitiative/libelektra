@@ -9,6 +9,8 @@
 #ifndef KDBPRIVATE_H
 #define KDBPRIVATE_H
 
+#include <elektra.h>
+#include <elektra/error.h>
 #include <kdb.h>
 #include <kdbconfig.h>
 #include <kdbextension.h>
@@ -323,6 +325,9 @@ struct _KDB
 
 	Plugin * notificationPlugin; /*!< reference to global plugin for notifications.*/
 	ElektraNotificationCallbackContext * notificationCallbackContext; /*!< reference to context for notification callbacks.*/
+
+	KeySet * global; /*!< This keyset can be used by global plugins and the resolver
+			to pass data through the KDB and communicate with other global plugins.*/
 };
 
 
@@ -411,6 +416,11 @@ struct _Plugin
 
 	void * data; /*!< This handle can be used for a plugin to store
 	 any data its want to. */
+
+	KeySet * global; /*!< This keyset can be used by global plugins and the resolver
+			to pass data through the KDB and communicate with other global plugins.
+			Plugins shall clean up their parts of the global keyset, which
+			they do not need any more.*/
 };
 
 
@@ -462,7 +472,6 @@ struct _Split
 				or "user", "system", "spec" for the split root/cascading backends */
 	splitflag_t * syncbits; /*!< Bits for various options, see #splitflag_t for documentation */
 };
-
 
 // clang-format on
 
@@ -586,9 +595,9 @@ int keyNameIsSystem (const char * keyname);
 int keyNameIsUser (const char * keyname);
 
 /* global plugin calls */
-void elektraGlobalGet (KDB * handle, KeySet * ks, Key * parentKey, int position, int subPosition);
-void elektraGlobalSet (KDB * handle, KeySet * ks, Key * parentKey, int position, int subPosition);
-void elektraGlobalError (KDB * handle, KeySet * ks, Key * parentKey, int position, int subPosition);
+int elektraGlobalGet (KDB * handle, KeySet * ks, Key * parentKey, int position, int subPosition);
+int elektraGlobalSet (KDB * handle, KeySet * ks, Key * parentKey, int position, int subPosition);
+int elektraGlobalError (KDB * handle, KeySet * ks, Key * parentKey, int position, int subPosition);
 
 /** Test a bit. @see set_bit(), clear_bit() */
 #define test_bit(var, bit) ((var) & (bit))
@@ -600,6 +609,54 @@ void elektraGlobalError (KDB * handle, KeySet * ks, Key * parentKey, int positio
 #ifdef __cplusplus
 }
 }
+
+#define KDB ckdb::KDB
+#define Key ckdb::Key
+#define KeySet ckdb::KeySet
+extern "C" {
+#endif
+
+struct _Elektra
+{
+	KDB * kdb;
+	Key * parentKey;
+	KeySet * config;
+	Key * lookupKey;
+	ElektraErrorHandler fatalErrorHandler;
+};
+
+struct _ElektraError
+{
+	ElektraErrorCode code;
+	char * description;
+	ElektraErrorSeverity severity;
+	struct _ElektraKDBError * lowLevelError;
+};
+
+struct _ElektraKDBError
+{
+	int code;
+	const char * description;
+	ElektraErrorSeverity severity;
+	ElektraKDBErrorGroup group;
+	ElektraKDBErrorModule module;
+	const char * reason;
+	int warningCount;
+	struct _ElektraKDBError ** warnings;
+	Key * errorKey;
+};
+
+/* high-level API */
+void elektraSaveKey (Elektra * elektra, Key * key, ElektraError ** error);
+void elektraSetLookupKey (Elektra * elektra, const char * name);
+void elektraSetArrayLookupKey (Elektra * elektra, const char * name, size_t index);
+ElektraError * elektraErrorCreate (ElektraErrorCode code, const char * description, ElektraErrorSeverity severity);
+
+#ifdef __cplusplus
+}
+#undef Key
+#undef KeySet
+#undef KDB
 #endif
 
 #endif /* KDBPRIVATE_H */

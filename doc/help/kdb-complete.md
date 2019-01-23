@@ -46,15 +46,15 @@ originates from.
 ## EXAMPLES
 
 ```sh
-# Backup-and-Restore: /tests/complete/examples
+# Backup-and-Restore: user/tests/complete/examples
 
 # Create the keys we use for the examples
-kdb set /tests/complete/examples/kdb-complete/level1 foo
-kdb set /tests/complete/examples/kdb-complete/lvl1/lvl2 bar
-kdb set /tests/complete/examples/kdb-complete/lvl1/lvl2/lvl3/lvl4/lvl5 fizz
-kdb set /tests/complete/examples/kdb-complete/buzz fizzBuzz
-kdb set /tests/complete/examples/kdb-complete/#array_1 asdf
-kdb set /tests/complete/examples/kdb-complete/% nothing
+kdb set user/tests/complete/examples/kdb-complete/level1 foo
+kdb set user/tests/complete/examples/kdb-complete/lvl1/lvl2 bar
+kdb set user/tests/complete/examples/kdb-complete/lvl1/lvl2/lvl3/lvl4/lvl5 fizz
+kdb set user/tests/complete/examples/kdb-complete/buzz fizzBuzz
+kdb set user/tests/complete/examples/kdb-complete/#array_1 asdf
+kdb set user/tests/complete/examples/kdb-complete/% nothing
 
 # list suggestions for namespaces starting with us, only the current level
 kdb complete us --max-depth=1

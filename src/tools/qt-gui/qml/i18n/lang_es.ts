@@ -1048,7 +1048,7 @@ Tenga en cuenta que no se puede deshacer una vez creaado el backend. Si desea el
     </message>
     <message>
         <location filename="../../src/treeviewmodel.cpp" line="657"/>
-        <source>Synchronizing failed, conflicts occured.</source>
+        <source>Synchronizing failed, conflicts occurred.</source>
         <translation>La sincronizaci&oacute;n ha fallado, ocurrieron conflictos.</translation>
     </message>
     <message>

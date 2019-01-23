@@ -76,14 +76,10 @@ cat `kdb file /tests/line`
 #> here
 
 kdb ls /tests/line
-#> user/tests/line
-#> user/tests/line/#0
-#> user/tests/line/#1
-#> user/tests/line/#2
+# STDOUT-REGEX: line.+line/#0.+line/#1.+line/#2
 
 kdb set /tests/line/#1 huhu
-#> Using name user/tests/line/#1
-#> Set string to "huhu"
+# STDOUT-REGEX: .+Set string to "huhu"
 
 kdb export /tests/line line
 #> something

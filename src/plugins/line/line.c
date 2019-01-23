@@ -18,6 +18,8 @@
 
 #include <errno.h>
 #include <stddef.h>
+// The definition `_WITH_GETLINE` is required for FreeBSD
+#define _WITH_GETLINE
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
