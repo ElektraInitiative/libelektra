@@ -27,7 +27,7 @@ ElektraError * error = NULL;
 Elektra * elektra = elektraOpen ("/sw/org/myapp/#0/current", NULL, &error);
 if (elektra == NULL)
 {
-	printf ("An error occured: %s", elektraErrorDescription (error));
+	printf ("An error occurred: %s", elektraErrorDescription (error));
 	elektraErrorReset (error);
 	return -1;
 }
@@ -39,7 +39,7 @@ if (myint < 10)
 	elektraSetBoolean (elektra, "smallint", true, &error);
 	if (error != NULL)
 	{
-		printf ("An error occured: %s", elektraErrorDescription (error));
+		printf ("An error occurred: %s", elektraErrorDescription (error));
 		elektraErrorReset (error);
 	}
 }

@@ -1,4 +1,8 @@
-s/Electra/Elektra/g
+# =================
+# = General Terms =
+# =================
+
+s/\<occured\>/occurred/g
 
 # ==============================
 # = British → American English =
@@ -19,6 +23,7 @@ s/synchronised/synchronized/g
 # = Brands =
 # ==========
 
+s/Electra/Elektra/g
 s/\<[CcFf]engine/CFEngine/g
 
 # Only fix spelling of GitHub outside of URLs:
