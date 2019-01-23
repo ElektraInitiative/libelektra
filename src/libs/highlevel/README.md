@@ -146,7 +146,7 @@ error. You can also access the key to which the error was originally attached, a
 Currently there is only one way to configure an `Elektra` instance:
 
 ```c
-void elektraFatalErrorHandler (Elektra * elektra, ElektraErrorHandler fatalErrorHandler)
+void elektraFatalErrorHandler (Elektra * elektra, ElektraErrorHandler fatalErrorHandler);
 ```
 This allows you to set the callback called by Elektra, when a fatal error occurs. Technically a fatal error could occur at any time, but
 the most common use case for this callback is inside of functions that do not take a separate `ElektraError` argument. For example,
@@ -279,11 +279,11 @@ macro is not provided, because you can simply pass the enum value as an `int` ar
 Similar functions and macros are provided for array elements:
 
 ```c
-int elektraGetEnumIntArrayElement (Elektra * elektra, char * keyName, size_t index)
+int elektraGetEnumIntArrayElement (Elektra * elektra, char * keyName, size_t index);
 
-elektraGetEnumArrayElement(elektra, keyname, index, enumType)
+elektraGetEnumArrayElement(elektra, keyname, index, enumType);
 
-void elektraSetEnumIntArrayElement (Elektra * elektra, char * name, size_t index, int value, ElektraError ** error)
+void elektraSetEnumIntArrayElement (Elektra * elektra, char * name, size_t index, int value, ElektraError ** error);
 ```
 
 ### Raw Values
@@ -299,9 +299,9 @@ to provide a type for the value you set, so that the API can perform type checki
 Similar functions are provided for array elements:
 
 ```c
-const char * elektraGetRawStringArrayElement (Elektra * elektra, const char * name, size_t index)
+const char * elektraGetRawStringArrayElement (Elektra * elektra, const char * name, size_t index);
 
-void elektraSetRawStringArrayElement (Elektra * elektra, const char * name, size_t index, const char * value, KDBType type, ElektraError ** error)
+void elektraSetRawStringArrayElement (Elektra * elektra, const char * name, size_t index, const char * value, KDBType type, ElektraError ** error);
 ```
 
 #### Type Information
