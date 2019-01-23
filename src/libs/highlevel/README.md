@@ -20,6 +20,7 @@ The header provides the functions Elektra uses to convert your configuration val
 to use these functions directly, but the might still be useful sometimes (e.g. in combination with `elektraGetType` and `elektraGetRawString`).
 
 ## Quickstart
+
 The quickest way to get started is to adapt the following piece of code to your needs:
 
 ```c
@@ -55,6 +56,7 @@ You also can find more complex examples [here](#TODO).
 ## Core Concepts
 
 ### Struct `Elektra`
+
 `Elektra` is the handle you use to access the underlying KDB (hierarchical key database) that stores the configuration key-value pairs.
 All key-value read and write operations expect this handle to be passed as in as a parameter. To create the handle, you simply write:
 
@@ -93,6 +95,7 @@ elektraClose (elektra);
 key-values, create a separate handle for each thread to avoid concurrency issues.
 
 ### Struct `ElektraError`
+
 The library is designed to shield developers from the many errors one can encounter when using KDB directly. However it is not possible
 to hide all those issues. As with every library, things can go wrong and there needs to be a way to react to errors once they have occurred
 at runtime. Therefore the high-level API introduces a struct called `ElektraError`, which encapsulates all information necessary for the
@@ -133,11 +136,13 @@ if (error != NULL)
 ```
 
 #### Low-level Errors
+
 Errors which do not originate inside the high-level API itself are wrapped into a `ElektraError` struct with error code
 `ELEKTRA_ERROR_CODE_LOW_LEVEL`. The high-level Error API provides methods (`elektraKDBError*`) to access the properties of the low-level
 error. You can also access the key to which the error was originally attached, as well as any possible low-level warnings.
 
 ### Configuration
+
 Currently there is only one way to configure an `Elektra` instance:
 
 ```c
@@ -177,12 +182,14 @@ The API supports the following types, which are taken from the CORBA specificati
 ## Reading and writing values
 
 ### Key names
+
 When calling `elektraOpen` you pass the parent key for your application. Afterwards getters and setters get passed in only the part below
 that key in the KDB. For example, if you call `elektraOpen` with `"/sw/org/myapp/#0/current"`, you can access your applications
 configuration value for the key `"/sw/org/myapp/#0/current/message"` with the provided getters and setters by passing them only
 `"message"` as the name for the configuration value.
 
 ### Read values from the KDB
+
 A typical application will want to read some configuration values at start. This should be made as easy as possible for the developer.
 Reading configuration data in most cases is not part of the business logic of the application and therefore should not "pollute" the
 applications source code with cumbersome setup and file-parsing code. This is exactly where Elektra comes in handy, because you can leave
@@ -246,6 +253,7 @@ a setter to call the fatal error handler instead of returning an error, would be
 is unlikely to recover).
 
 ### Enum Values
+
 Reading enum values is a special case, because the compiler is not able to infer the enum type from the key alone. Therefore you can
 either use the function `int elektraGetEnumInt (Elektra * elektra, char * keyName)`, and deal with the raw integer yourself, or use the
 convenience macro `elektraGetEnum(elektra, keyname, enumType)`, which calls `elektraGetEnumInt` and then casts to `enumType`.
@@ -279,6 +287,7 @@ void elektraSetEnumIntArrayElement (Elektra * elektra, char * name, size_t index
 ```
 
 ### Raw Values
+
 You can use `const char * elektraGetRawString (Elektra * elektra, const char * name)` to read the raw (string) value of a key. No type checking
 or type conversion will be attempted. Additionally this function is guaranteed to not call the fatal error handler. It will simply return
 `NULL`, if the key was not found.
@@ -296,11 +305,13 @@ void elektraSetRawStringArrayElement (Elektra * elektra, const char * name, size
 ```
 
 #### Type Information
+
 The type information is stored in the `"type"` metakey. `KDBType elektraGetType (Elektra * elektra, const char * keyname)` (or
 `KDBType elektraGetArrayElementType (Elektra * elektra, const char * name, size_t index)` for array elements) lets you access this
 information. A setter is not provided, because changing the type of a key without changing its value rarely, if ever, makes sense.
 
 ### Binary Values
+
 The high-level API does not support binary key values at this time.
 
 ## Example
