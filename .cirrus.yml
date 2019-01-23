@@ -11,7 +11,7 @@ task:
 
   script:
     - mkdir build && cd build
-    - cmake -GNinja -DPLUGINS='ALL' -DTARGET_PLUGIN_FOLDER="" -DCMAKE_SKIP_INSTALL_RPATH=ON ..
+    - cmake -GNinja -DPLUGINS='ALL' -DBINDINGS='ALL' -DTARGET_PLUGIN_FOLDER="" -DCMAKE_SKIP_INSTALL_RPATH=ON ..
     - ninja
     - output="$(ninja install 2>&1)" || printf '%s' "$output"
 
