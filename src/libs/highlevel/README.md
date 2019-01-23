@@ -191,7 +191,7 @@ configuration value for the key `"/sw/org/myapp/#0/current/message"` with the pr
 
 ### Read Values from the KDB
 
-A typical application will want to read some configuration values at start. This should be made as easy as possible for the developer.
+A typical application wants to read some configuration values at start. This should be made as easy as possible for the developer.
 Reading configuration data in most cases is not part of the business logic of the application and therefore should not "pollute" the
 applications source code with cumbersome setup and file-parsing code. This is exactly where Elektra comes in handy, because you can leave
 all the configuration file handling and parsing to the underlying layers of Elektra and just use the high-level API to access the desired
