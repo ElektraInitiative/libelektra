@@ -115,7 +115,7 @@ Notice, that you should always check if an error occurred by comparing it to `NU
 
 If an error happened, it is often useful to show an error message to the user. A description of what went wrong is provided in the
 `ElektraError` struct and can be accessed using `elektraErrorDescription (error)`. A complete list of the provided accessors for
-error-details can be found in [elektra_error.h](/src/include/elektra_error.c).
+error-details can be found in [elektra_error.c](/src/libs/highlevel/elektra_error.c).
 
 To avoid leakage of memory, you have to call `elektraErrorReset (&error)` (ideally as soon as you are finished resolving the error):
 
