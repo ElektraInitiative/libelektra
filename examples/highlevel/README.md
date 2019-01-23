@@ -11,6 +11,7 @@ was provided.
 
 ```sh
 sudo kdb mount spec.ini spec/sw/example/highlevel/#0/current ni
+kdb import spec/sw/example/highlevel/#0/current ni < spec.ini
 sudo kdb spec-mount '/sw/example/highlevel/#0/current'
 ```
 
