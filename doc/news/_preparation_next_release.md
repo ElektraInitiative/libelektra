@@ -208,7 +208,8 @@ you up to date with the multi-language support provided by Elektra.
 ## Documentation
 
 - We fixed various spelling mistakes. *(René Schwaiger)*
-- <<TODO>>
+- The documentation for `elektraMetaArrayToKS` was fixed. It now reflects the fact
+  that the parent key is returned as well.  *(Klemens Böswirth)*
 - <<TODO>>
 
 ## Tests
