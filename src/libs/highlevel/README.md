@@ -178,7 +178,7 @@ The API supports the following types, which are taken from the CORBA specificati
 ### Key names
 When calling `elektraOpen` you pass the parent key for your application. Afterwards getters and setters get passed in only the part below
 that key in the KDB. For example, if you call `elektraOpen` with `"/sw/org/myapp/#0/current"`, you can access your applications
-configuration value for the key `"/sw/org/myapp/#0/current/message"` with the provided getters and setters by passing them only 
+configuration value for the key `"/sw/org/myapp/#0/current/message"` with the provided getters and setters by passing them only
 `"message"` as the name for the configuration value.
 
 ### Read values from the KDB
