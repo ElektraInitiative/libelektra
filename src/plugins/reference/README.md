@@ -40,7 +40,7 @@ The resolution of the references into key names goes as follows:
 * If the reference value starts with `@/`, it will be relative to the parent-key used in the
   call to `kdbGet`.
 * All other values are treated as absolute and interpreted as a keyname directly.
-* `.` and `..` will be treated the same way as in UNIX paths. However, the plugin will emit
+* `.` and `..` will be treated the same way as in Unix paths. However, the plugin will emit
   warnings, if `.` is used anywhere other than before the first slash. Equally using `..`
   after a path segment other than `..` itself, will result in a warning. This is because these
   use cases are redundant and might be (or result in) mistakes. Here are a few examples of what

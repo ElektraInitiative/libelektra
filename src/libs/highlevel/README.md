@@ -2,7 +2,7 @@
 
 ## Introduction
 
-The goal of the high-hevel API is to increase the usability of libelektra for developers who want to integrate Elektra into their
+The goal of the high-level API is to increase the usability of libelektra for developers who want to integrate Elektra into their
 applications. Applications usually do not want to use low-level APIs. `KDB` and `KeySet` are useful for plugins and to implement APIs, but
 not to be directly used in applications. The high-level API should be extremely easy to get started with and at the same time it
 should be hard to use it in a wrong way. This tutorial gives an introduction for developers who want to elektrify their application
@@ -155,7 +155,7 @@ The default callback simply logs the error with `ELEKTRA_LOG_DEBUG` and then cal
 recommended you either use `atexit()` in you application or set a custom callback, to make sure you won't leak memory.
 
 The callback must interrupt the thread of execution in some way (e.g. by calling `exit()` or throwing an exception in C++). It must
-not return to the calling function. If it does return, the behaviour is undefined.
+not return to the calling function. If it does return, the behavior is undefined.
 
 ## <a name="DataTypes"></a> Data Types
 
@@ -296,7 +296,7 @@ void elektraSetRawStringArrayElement (Elektra * elektra, const char * name, size
 ```
 
 #### Type Information
-The type information is stored in the `"type"` meta-key. `KDBType elektraGetType (Elektra * elektra, const char * keyname)` (or
+The type information is stored in the `"type"` metakey. `KDBType elektraGetType (Elektra * elektra, const char * keyname)` (or
 `KDBType elektraGetArrayElementType (Elektra * elektra, const char * name, size_t index)` for array elements) lets you access this
 information. A setter is not provided, because changing the type of a key without changing its value rarely, if ever, makes sense.
 
