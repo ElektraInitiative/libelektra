@@ -148,6 +148,7 @@ Currently there is only one way to configure an `Elektra` instance:
 ```c
 void elektraFatalErrorHandler (Elektra * elektra, ElektraErrorHandler fatalErrorHandler);
 ```
+
 This allows you to set the callback called by Elektra, when a fatal error occurs. Technically a fatal error could occur at any time, but
 the most common use case for this callback is inside of functions that do not take a separate `ElektraError` argument. For example,
 this function will be called, when any of the getter-functions is called on a non-existent key which is not part of any specification,
