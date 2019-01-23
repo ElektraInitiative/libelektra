@@ -8,7 +8,7 @@ not to be directly used in applications. The high-level API should be extremely 
 should be hard to use it in a wrong way. This tutorial gives an introduction for developers who want to elektrify their application
 using the high-level API.
 
-The API supports all CORBA Basic Data Types, except for `wchar`, as well as the `string` type (see also [Data Types](#DataTypes)).
+The API supports all CORBA Basic Data Types, except for `wchar`, as well as the `string` type (see also [Data Types](#data-types)).
 
 ## Setup
 
@@ -163,7 +163,7 @@ recommended you either use `atexit()` in you application or set a custom callbac
 The callback must interrupt the thread of execution in some way (e.g. by calling `exit()` or throwing an exception in C++). It must
 not return to the calling function. If it does return, the behavior is undefined.
 
-## <a name="DataTypes"></a> Data Types
+## <a name="data-types"></a> Data Types
 
 The API supports the following types, which are taken from the CORBA specification:
 

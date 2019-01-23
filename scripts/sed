@@ -53,7 +53,7 @@ s/\<plug-in(s)?\>/plugin\1/g
 # key-value pair
 s:\<key/value:key-value:g
 
-s/\<data-?type/data type/g
+s/[^#"]\<data-?type/data type/g
 
 s/([^\./`-])[Jj]son/\1JSON/
 
