@@ -163,7 +163,8 @@ recommended you either use `atexit()` in you application or set a custom callbac
 The callback must interrupt the thread of execution in some way (e.g. by calling `exit()` or throwing an exception in C++). It must
 not return to the calling function. If it does return, the behavior is undefined.
 
-## <a name="data-types"></a> Data Types
+<a name="data-types"></a>
+## Data Types
 
 The API supports the following types, which are taken from the CORBA specification:
 
@@ -180,7 +181,8 @@ The API supports the following types, which are taken from the CORBA specificati
 * **Long Double**: whatever your compiler treats as `long double`, not always available, represented by `KDB_TYPE_LONG_DOUBLE` in metadata
 
 
-## <a name="reading-and-writing-values"></a> Reading and Writing Values
+<a name="reading-and-writing-values"></a>
+## Reading and Writing Values
 
 ### Key Names
 
@@ -189,7 +191,8 @@ that key in the KDB. For example, if you call `elektraOpen` with `"/sw/org/myapp
 configuration value for the key `"/sw/org/myapp/#0/current/message"` with the provided getters and setters by passing them only
 `"message"` as the name for the configuration value.
 
-### <a name="read-values-from-the-kdb"></a> Read Values from the KDB
+<a name="read-values-from-the-kdb"></a>
+### Read Values from the KDB
 
 A typical application wants to read some configuration values at start. This should be made as easy as possible for the developer.
 Reading configuration data in most cases is not part of the business logic of the application and therefore should not "pollute" the
