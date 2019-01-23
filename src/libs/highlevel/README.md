@@ -210,7 +210,7 @@ again a simple naming scheme:
 
 `elektraGet` + the type of the value you want to read + `ArrayElement`.
 
-For example, you can get the third value for the array "message" like this:
+For example, you can get the value at index 3 for the array "message" like this:
 
 ```c
 const char * message = elektraGetStringArrayElement (elektra, "message", 3);
