@@ -180,16 +180,16 @@ The API supports the following types, which are taken from the CORBA specificati
 * **Long Double**: whatever your compiler treats as `long double`, not always available, represented by `KDB_TYPE_LONG_DOUBLE` in metadata
 
 
-## <a name="reading-and-writing-values"></a> Reading and writing values
+## <a name="reading-and-writing-values"></a> Reading and Writing Values
 
-### Key names
+### Key Names
 
 When calling `elektraOpen` you pass the parent key for your application. Afterwards getters and setters get passed in only the part below
 that key in the KDB. For example, if you call `elektraOpen` with `"/sw/org/myapp/#0/current"`, you can access your applications
 configuration value for the key `"/sw/org/myapp/#0/current/message"` with the provided getters and setters by passing them only
 `"message"` as the name for the configuration value.
 
-### Read values from the KDB
+### Read Values from the KDB
 
 A typical application will want to read some configuration values at start. This should be made as easy as possible for the developer.
 Reading configuration data in most cases is not part of the business logic of the application and therefore should not "pollute" the
@@ -231,7 +231,7 @@ or exceptions further down in your application.
 
 You can find the complete list of the available functions for all supported value types in [elektra.h](/src/include/elektra.h)
 
-### Writing values to the KDB
+### Writing Values to the KDB
 
 Sometimes, after having read a value from the KDB, you will want to write back a modified value. As described in
 [Read values from the KDB](#read-values-from-the-kdb) we follow a naming scheme for getters. The high-level API provides setters follow
