@@ -325,6 +325,9 @@ struct _KDB
 
 	Plugin * notificationPlugin; /*!< reference to global plugin for notifications.*/
 	ElektraNotificationCallbackContext * notificationCallbackContext; /*!< reference to context for notification callbacks.*/
+
+	KeySet * global; /*!< This keyset can be used by global plugins and the resolver
+			to pass data through the KDB and communicate with other global plugins.*/
 };
 
 
@@ -413,6 +416,11 @@ struct _Plugin
 
 	void * data; /*!< This handle can be used for a plugin to store
 	 any data its want to. */
+
+	KeySet * global; /*!< This keyset can be used by global plugins and the resolver
+			to pass data through the KDB and communicate with other global plugins.
+			Plugins shall clean up their parts of the global keyset, which
+			they do not need any more.*/
 };
 
 
@@ -587,9 +595,9 @@ int keyNameIsSystem (const char * keyname);
 int keyNameIsUser (const char * keyname);
 
 /* global plugin calls */
-void elektraGlobalGet (KDB * handle, KeySet * ks, Key * parentKey, int position, int subPosition);
-void elektraGlobalSet (KDB * handle, KeySet * ks, Key * parentKey, int position, int subPosition);
-void elektraGlobalError (KDB * handle, KeySet * ks, Key * parentKey, int position, int subPosition);
+int elektraGlobalGet (KDB * handle, KeySet * ks, Key * parentKey, int position, int subPosition);
+int elektraGlobalSet (KDB * handle, KeySet * ks, Key * parentKey, int position, int subPosition);
+int elektraGlobalError (KDB * handle, KeySet * ks, Key * parentKey, int position, int subPosition);
 
 /** Test a bit. @see set_bit(), clear_bit() */
 #define test_bit(var, bit) ((var) & (bit))
