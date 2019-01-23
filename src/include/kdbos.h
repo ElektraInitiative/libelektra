@@ -159,8 +159,16 @@
 /* If MSVC use SSIZE_T type */
 #ifdef _MSC_VER
 #undef ssize_t
+#include <BaseTsd.h>
 typedef SSIZE_T ssize_t;
+#define SSIZE_MAX MAXSSIZE_T
+
+#define strcasecmp _stricmp
+#define strncasecmp _strnicmp
+
+typedef int mode_t;
 #endif
+
 // # define usleep(x) Sleep(x)
 // # define ssize_t int
 // # define snprintf _snprintf

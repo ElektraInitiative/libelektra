@@ -13,6 +13,8 @@
 
 #include <string>
 
+#include <cctype>
+
 #include <keyset.hpp>
 
 #include <toolexcept.hpp>

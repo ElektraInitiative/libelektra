@@ -152,7 +152,10 @@ ELEKTRA_NOTIFICATION_TYPE_DECLARATION (kdb_long_long_t, KdbLongLong)
 ELEKTRA_NOTIFICATION_TYPE_DECLARATION (kdb_unsigned_long_long_t, KdbUnsignedLongLong)
 ELEKTRA_NOTIFICATION_TYPE_DECLARATION (kdb_float_t, KdbFloat)
 ELEKTRA_NOTIFICATION_TYPE_DECLARATION (kdb_double_t, KdbDouble)
+
+#if defined(HAVE_SIZEOF_LONG_DOUBLE) && ((SIZEOF_LONG_DOUBLE == 16) || (SIZEOF_LONG_DOUBLE == 12))
 ELEKTRA_NOTIFICATION_TYPE_DECLARATION (kdb_long_double_t, KdbLongDouble)
+#endif
 /** @} */
 
 

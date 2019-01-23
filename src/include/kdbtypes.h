@@ -26,6 +26,7 @@
 
 #ifdef __cplusplus
 // for C++11 or later
+#include <cstdint>
 
 namespace kdb
 {

@@ -21,12 +21,13 @@
 #include <errno.h> /* errno in getcwd() */
 #include <stdlib.h>
 #include <sys/stat.h> /* mkdir() */
-#include <unistd.h>   /* getcwd() */
 
 #if defined(_WIN32)
 #include <io.h>
 #include <shlobj.h>
 #include <windows.h>
+#else
+#include <unistd.h>
 #endif
 
 /**
@@ -142,9 +143,10 @@ static void elektraResolveSpec (resolverHandle * p, Key * errorKey)
 		strcat (p->filename, p->path);
 		return;
 	}
-	size_t filenameSize = sizeof (KDB_DB_SPEC) + strlen (system) + strlen (p->path) + sizeof ("/") + 1;
+	size_t filenameSize = sizeof (KDB_DB_SPEC) + strlen (system) + sizeof ("/") + strlen (p->path) + sizeof ("/") + 1;
 	p->filename = elektraMalloc (filenameSize);
 	strcpy (p->filename, system);
+	strcat (p->filename, "/");
 	strcat (p->filename, KDB_DB_SPEC);
 	strcat (p->filename, "/");
 	strcat (p->filename, p->path);
@@ -242,9 +244,10 @@ static void elektraResolveSystem (resolverHandle * p, Key * errorKey)
 		strcat (p->filename, p->path);
 		return;
 	}
-	size_t filenameSize = sizeof (KDB_DB_SYSTEM) + strlen (system) + strlen (p->path) + sizeof ("/") + 1;
+	size_t filenameSize = sizeof (KDB_DB_SYSTEM) + strlen (system) + sizeof ("/") + strlen (p->path) + sizeof ("/") + 1;
 	p->filename = elektraMalloc (filenameSize);
 	strcpy (p->filename, system);
+	strcat (p->filename, "/");
 	strcat (p->filename, KDB_DB_SYSTEM);
 	strcat (p->filename, "/");
 	strcat (p->filename, p->path);

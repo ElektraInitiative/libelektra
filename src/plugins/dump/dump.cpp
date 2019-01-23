@@ -16,10 +16,14 @@ using namespace ckdb;
 #include <string>
 #include <vector>
 
-#include <unistd.h>
-
 #include <kdberrors.h>
 #include <kdblogger.h>
+
+#ifdef _WIN32
+#include <corecrt_io.h>
+#else
+#include <unistd.h>
+#endif
 
 namespace dump
 {

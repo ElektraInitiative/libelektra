@@ -12,11 +12,13 @@
 #include <numeric>
 #include <sstream>
 #include <string>
-#include <sys/time.h>
 #include <vector>
+#include <chrono>
 
 #ifdef __GNUC__
 #define TIMER_NOINLINE __attribute__ ((noinline))
+#elif _MSC_VER
+#define TIMER_NOINLINE __declspec (noinline)
 #endif
 
 class Timer
@@ -33,19 +35,13 @@ public:
 	// functions
 	TIMER_NOINLINE void start ()
 	{
-		gettimeofday (&begin, nullptr);
-		// clock_gettime(CLOCK_MONOTONIC, &begin);
+		begin = std::chrono::system_clock::now();
 	}
 	TIMER_NOINLINE void stop ()
 	{
-		gettimeofday (&end, nullptr);
-		// clock_gettime(CLOCK_MONOTONIC, &end);
+		end = std::chrono::system_clock::now();
 
-		// force calculation in long long:
-		// could use timersub here
-		timer_t result = end.tv_sec - begin.tv_sec;
-		result *= usec_factor;
-		result += end.tv_usec - begin.tv_usec;
+		const std::chrono::duration<double> result = end - begin;
 		results.push_back (result);
 	}
 	std::string getMedian () const;
@@ -53,14 +49,12 @@ public:
 	~Timer (); // print csv table at end
 
 	// data
-	struct timeval begin;
-	struct timeval end;
-	typedef long long timer_t;
-	typedef std::vector<timer_t> results_t;
+	std::chrono::system_clock::time_point begin;
+	std::chrono::system_clock::time_point end;
+	typedef std::vector<std::chrono::duration<double>> results_t;
 	results_t results;
 	std::string name;
 	option_t option;
-	static const timer_t usec_factor = 1000000LL;
 };
 
 inline Timer::Timer (std::string name_, option_t option_) : begin (), end (), results (), name (std::move (name_)), option (option_)
@@ -76,11 +70,8 @@ inline Timer::~Timer ()
 		{
 			// clang-format off
 			std::cerr << name << ","
-				 << result / Timer::usec_factor
-				 << "."
-				 << std::setw(6)
-				 << std::setfill('0')
-				 << result % Timer::usec_factor
+				 << std::setprecision(6)
+				 << result.count()
 				 << std::endl;
 			// clang-format on
 		}
@@ -97,9 +88,9 @@ std::string Timer::getMedian () const
 {
 	Timer::results_t md = results;
 	nth_element (md.begin (), md.begin () + md.size () / 2, md.end ());
-	Timer::timer_t r = *(md.begin () + md.size () / 2);
+	auto r = *(md.begin () + md.size () / 2);
 	std::ostringstream os;
-	os << r / Timer::usec_factor << "." << std::setw (6) << std::setfill ('0') << r % Timer::usec_factor;
+	os << std::setprecision (6) << r.count() ;
 	return os.str ();
 }
 
@@ -107,47 +98,32 @@ std::string Timer::getMedian () const
 inline std::ostream & operator<< (std::ostream & os, Timer const & t)
 {
 	// clang-format off
-	Timer::timer_t r = t.results.back();
+	auto r = t.results.back();
 	os.width(30);
 	os.fill(' ');
 	os << t.name << "\t";
-	os  << r / Timer::usec_factor
-		<< "."
-		<< std::setw(6)
-		<< std::setfill('0')
-		<< r % Timer::usec_factor
+	os  << std::setprecision(6)
+		<< r.count()
 		<< " sec";
-	r = std::accumulate(t.results.begin(), t.results.end(), 0LL);
+	r = std::accumulate(t.results.begin(), t.results.end(), std::chrono::duration<double>(0));
 	os  << "\t Sum: "
-		<< r / Timer::usec_factor
-		<< "."
-		<< std::setw(6)
-		<< std::setfill('0')
-		<< r % Timer::usec_factor
+		<< std::setprecision(6)
+		<< r.count()
 		<< " sec";
 	r = r / t.results.size();
 	os  << "\tAvg: "
-		<< r / Timer::usec_factor
-		<< "."
-		<< std::setw(6)
-		<< std::setfill('0')
-		<< r % Timer::usec_factor
+		<< std::setprecision(6)
+		<< r.count()
 		<< " sec";
 	r = *std::min_element(t.results.begin(), t.results.end());
 	os  << "\tMin: "
-		<< r / Timer::usec_factor
-		<< "."
-		<< std::setw(6)
-		<< std::setfill('0')
-		<< r % Timer::usec_factor
+		<< std::setprecision(6)
+		<< r.count()
 		<< " sec";
 	r = *std::max_element(t.results.begin(), t.results.end());
 	os  << "\tMax: "
-		<< r / Timer::usec_factor
-		<< "."
-		<< std::setw(6)
-		<< std::setfill('0')
-		<< r % Timer::usec_factor
+		<< std::setprecision(6)
+		<< r.count()
 		<< " sec";
 	os  << "\tMedian: "
 		<< t.getMedian()

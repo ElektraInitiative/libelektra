@@ -1,4 +1,11 @@
+include (SafeCheckSymbolExists)
 include (LibAddMacros)
+
+safe_check_symbol_exists (gettimeofday "sys/time.h" HAVE_GETTIMEOFDAY)
+if (NOT HAVE_GETTIMEOFDAY)
+	message ("Excluding benchmarks because gettimeofday() wasn't found")
+	return ()
+endif ()
 
 add_headers (HDR_FILES)
 
