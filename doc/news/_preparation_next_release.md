@@ -38,9 +38,11 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.8.
 
 
 ### High-Level API
+
 The new high-level API provides an easier way to get started with Elektra.
 
 To get started (including proper error handling) you now only need a few self-explanatory lines of code:
+
 ```c
 ElektraError * error;
 Elektra * elektra = elektraOpen ("/sw/org/myapp/#0/current", NULL, &error);
@@ -57,9 +59,11 @@ elektraClose (elektra);
 ```
 
 Once you have an instance of `Elektra` you simply call one of the typed `elektraGet*` functions to read a value:
+
 ```c
 const char * mystring = elektraGetString (elektra, "mystring");
 ```
+
 No need to specify the base path `/sw/org/myapp/#0/current` anymore, as the high-level API keeps track of that for you.
 The API supports the CORBA types already used by some plugins. The high-level API should also be used in combination
 with a specification (`spec-mount`). When used this way, the API is designed to be error and crash free while reading values.
