@@ -189,7 +189,7 @@ that key in the KDB. For example, if you call `elektraOpen` with `"/sw/org/myapp
 configuration value for the key `"/sw/org/myapp/#0/current/message"` with the provided getters and setters by passing them only
 `"message"` as the name for the configuration value.
 
-### Read Values from the KDB
+### <a name="read-values-from-the-kdb"></a> Read Values from the KDB
 
 A typical application wants to read some configuration values at start. This should be made as easy as possible for the developer.
 Reading configuration data in most cases is not part of the business logic of the application and therefore should not "pollute" the
