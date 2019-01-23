@@ -16,5 +16,5 @@ sudo kdb spec-mount '/sw/example/highlevel/#0/current'
 ```
 
 ## Execution
-The example just prints its configuration if the `/sw/example/highlevel/#0/current` is set to `1` (boolean true). Otherwise it
+The example just prints its configuration if `/sw/example/highlevel/#0/current/print` is set to `1` (boolean true). Otherwise it
 will just read the configuration an print a success message.
