@@ -17,7 +17,7 @@ use it in your source file, just include the main header with `#include <elektra
 
 The API contains one header that is not automatically included from `elektra.h`. You can use it with `#include <elektra/conversion.h>`.
 The header provides the functions Elektra uses to convert your configuration values to and from strings. In most cases, you won't need
-to use these functions directly, but the might still be useful sometimes (e.g. in combination with `elektraGetType` and `elektraGetRawString`).
+to use these functions directly, but they might still be useful sometimes (e.g. in combination with `elektraGetType` and `elektraGetRawString`).
 
 ## Quickstart
 
