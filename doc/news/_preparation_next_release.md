@@ -236,8 +236,8 @@ you up to date with the multi-language support provided by Elektra.
 
 ### CMake
 
-- The CMake find module [`FindAugeas.cmake`](https://master.libelektra.org/cmake/Modules/FindAugeas.cmake) does not print an error message
-  anymore, if it is unable to locate Augeas in the `pkg-config` search path. *(René Schwaiger)*
+- The CMake find module [`FindAugeas.cmake`](https://master.libelektra.org/cmake/Modules/FindAugeas.cmake) does not print an error
+  message anymore, if it is unable to locate Augeas in the `pkg-config` search path. *(René Schwaiger)*
 - The CMake find module [`FindLua.cmake`](https://master.libelektra.org/cmake/Modules/FindLua.cmake) does not print an error message
   anymore, if it is unable to locate a Lua executable. *(René Schwaiger)*
 - <<TODO>>
