@@ -20,6 +20,9 @@ initiatives during summer:
 
 We think that GSoC is a perfect opportunity to bridge Elektra and other free
 software projects. So the ideal GSoC project is to elektrify some free software.
+(“Elektrify” means that other software is patched to use Elektra instead of their
+ own configuration system and includes the task of writing a specification on what
+ the configuration of the application looks like.)
 
 Elektra may be used for applications (frameworks) like KDE, GNOME,
 and LXCE or for any applications that need to read configuration files,
