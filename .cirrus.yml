@@ -11,12 +11,12 @@ task:
 
   script:
     - mkdir build && cd build
-    # - The tests for the process plugin and library stall on FreeBSD: https://issues.libelektra.org/2323
-    # - The test for the network plugin fails on FreeBSD: https://issues.libelektra.org/2322
-    - cmake -GNinja -DPLUGINS='ALL;-process;-network' -DTARGET_PLUGIN_FOLDER="" -DCMAKE_SKIP_INSTALL_RPATH=ON ..
+    - cmake -GNinja -DPLUGINS='ALL' -DBINDINGS='ALL' -DTARGET_PLUGIN_FOLDER="" -DCMAKE_SKIP_INSTALL_RPATH=ON ..
     - ninja
     - output="$(ninja install 2>&1)" || printf '%s' "$output"
 
   tests_script:
-    - cd build && ctest --output-on-failure -E 'pluginprocess'
+    # Work around stalled process plugin and library problems on FreeBSD: https://issues.libelektra.org/2323
+    - sudo mount -t fdescfs fdesc /dev/fd
+    - cd build && ninja run_all
     - kdb run_all

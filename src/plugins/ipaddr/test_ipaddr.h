@@ -96,10 +96,8 @@ static void testIPAll (void)
 		//      - https://www.helpsystems.com/intermapper/ipv6-test-address-validation
 		testIPv6 (":0db8:85a3:0000:0000:8a2e:0370:7334", -1); // Invalid
 		testIPv6 ("::", 1);				      // Valid
-		testIPAny ("localhost", 1);
 		testIPAny ("should_not_exist", -1);
 		testIPAny ("www.google.com", 1);
-		testIPAny ("localhost", 1);
 		testIPAny ("should_not_exist", -1);
 		testIPAny ("www.google.com", 1);
 		testIPv6 ("", -1);				   // empty string

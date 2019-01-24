@@ -109,7 +109,7 @@ int elektraPortInfo (Key * toCheck, Key * parentKey)
 					    strerror (errno));
 			return -1;
 		}
-		// TODO: Maybe consider errno == TRY_AGAIN seperately and try to reconnect
+		// TODO: Maybe consider errno == TRY_AGAIN separately and try to reconnect
 	}
 
 
