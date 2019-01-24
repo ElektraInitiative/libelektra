@@ -1,8 +1,14 @@
 task:
-  freebsd_instance:
-      matrix:
+  matrix:
+
+    - freebsd_instance:
         image: freebsd-11-2-release-amd64
+
+    - freebsd_instance:
         image: freebsd-12-0-release-amd64
+      env:
+        # We use `PLUGINS_KDB` instead of `PLUGINS`, since `pkg` interprets the environment variable `PLUGINS`.
+        PLUGINS_KDB: 'ALL;-iconv' # Building the test for the iconv plugin fails: https://cirrus-ci.com/task/4923537438539776
 
   install_script:
     - pkg install -y cmake
@@ -12,7 +18,7 @@ task:
 
   script:
     - mkdir build && cd build
-    - cmake -GNinja -DPLUGINS='ALL' -DBINDINGS='ALL' -DTARGET_PLUGIN_FOLDER="" -DCMAKE_SKIP_INSTALL_RPATH=ON ..
+    - cmake -GNinja -DPLUGINS="${PLUGINS_KDB:-ALL}" -DBINDINGS='ALL' -DTARGET_PLUGIN_FOLDER="" -DCMAKE_SKIP_INSTALL_RPATH=ON ..
     - ninja
     - output="$(ninja install 2>&1)" || printf '%s' "$output"
 
