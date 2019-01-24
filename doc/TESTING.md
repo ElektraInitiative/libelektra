@@ -99,6 +99,24 @@ For `make run_all` following development tools enable even more tests:
   requires POSIX utilities (`awk`, `grep`, …).
 
 
+## Adding Tests
+
+For plugins, adding `ADD_TEST` to `add_plugin` will execute the tests in `testmod_${pluginname}.c`.
+This is done by default for newly generated plugins.
+
+Add `CPP_TEST` if the test is written in C++.
+Then `testmod_${pluginname}.cpp` will be used.
+These tests use the [gtest](https://github.com/google/googletest) test framework.
+
+If the tests should not always be executed, the CMake function
+`add_plugintest` can be used instead.
+See cmake/Modules/LibAddPlugin.cmake for more information.
+
+By using `TEST_README` in `add_plugin` (also enabled by default),
+[Markdown Shell Recorder](https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper)
+are expected to be in the README.md of the plugin.
+
+
 
 ## Conventions
 
