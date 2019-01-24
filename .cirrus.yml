@@ -10,7 +10,7 @@ task:
         image: freebsd-12-0-release-amd64
       env:
         # We use `PLUGINS_KDB` instead of `PLUGINS`, since `pkg` interprets the environment variable `PLUGINS`.
-        PLUGINS_KDB: 'ALL;-iconv' # Building the test for the iconv plugin fails: https://cirrus-ci.com/task/4923537438539776
+        PLUGINS_KDB: 'ALL;-iconv;-filecheck' # Linking the iconv library fails: https://cirrus-ci.com/task/4923537438539776
 
   install_script:
     - pkg install -y cmake
