@@ -104,8 +104,10 @@
  *
  * @par Global KeySet Handle
  *
- * Global plugins and the resolver will get a handle to a global keyset.
- * This allows them to exchange information with other global plugins.
+ * Plugins in a backend will get a handle to a global keyset.
+ * This allows them to exchange information with other plugins.
+ * The global keyset is tied to a KDB handle, initialized on kdbOpen()
+ * and deleted on kdbClose().
  *
  * Obtain a handle to the global keyset and work with it:
  *
