@@ -14,6 +14,7 @@ add_plugin (yaypeg
 	    TEST_REQUIRED_PLUGINS directoryvalue
 				  sync
 				  yamlsmith
+	    INCLUDE_SYSTEM_DIRECTORIES ${PEGTL_INCLUDE_DIRS}
 	    SOURCES state.cpp
 		    parser.hpp
 		    listener.hpp
