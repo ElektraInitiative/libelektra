@@ -3,6 +3,11 @@ find_package (Java QUIET)
 
 if (Java_JAVAC_EXECUTABLE)
 
+	if (NOT Java_VERSION)
+		exclude_binding (jna "unable to determine version of javac (java compiler)")
+		return ()
+	endif (NOT Java_VERSION)
+
 	# ~~~
 	# the version schemes are different on the jdks
 	# on osx/oracle jdk its called java 9.0.1
