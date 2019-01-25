@@ -51,7 +51,7 @@ int main (int argc, char ** argv)
 		printf ("mystring: %s\nmyint: %d\nmydouble: %f\nsizeof(myfloatarray): %ld", mystring, myint, mydouble, size);
 		for (int i = 0; i < size; ++i)
 		{
-			printf ("\nmyfloatarray[%d]: %f", myfloatarray[i]);
+			printf ("\nmyfloatarray[%d]: %f", i, myfloatarray[i]);
 		}
 		printf ("\n");
 	}

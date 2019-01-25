@@ -1288,7 +1288,7 @@ module:reference
 macro:REFERENCE_NOT_FOUND
 
 number:205
-description:Connection Error occured
+description:Connection Error occurred
 severity:error
 ingroup:plugin
 module:network
