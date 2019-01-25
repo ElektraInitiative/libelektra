@@ -195,8 +195,8 @@ Backend * backendOpen (KeySet * elektraConfig, KeySet * modules, KeySet * global
 			}
 			else if (!strcmp (keyBaseName (cur), "errorplugins"))
 			{
-				if (elektraProcessPlugins (backend->errorplugins, modules, referencePlugins, cut, systemConfig, global, errorKey) ==
-				    -1)
+				if (elektraProcessPlugins (backend->errorplugins, modules, referencePlugins, cut, systemConfig, global,
+							   errorKey) == -1)
 				{
 					if (!failure) ELEKTRA_ADD_WARNING (15, errorKey, "elektraProcessPlugins for error failed");
 					failure = 1;
@@ -204,8 +204,8 @@ Backend * backendOpen (KeySet * elektraConfig, KeySet * modules, KeySet * global
 			}
 			else if (!strcmp (keyBaseName (cur), "getplugins"))
 			{
-				if (elektraProcessPlugins (backend->getplugins, modules, referencePlugins, cut, systemConfig, global, errorKey) ==
-				    -1)
+				if (elektraProcessPlugins (backend->getplugins, modules, referencePlugins, cut, systemConfig, global,
+							   errorKey) == -1)
 				{
 					if (!failure) ELEKTRA_ADD_WARNING (13, errorKey, "elektraProcessPlugins for get failed");
 					failure = 1;
@@ -218,8 +218,8 @@ Backend * backendOpen (KeySet * elektraConfig, KeySet * modules, KeySet * global
 			}
 			else if (!strcmp (keyBaseName (cur), "setplugins"))
 			{
-				if (elektraProcessPlugins (backend->setplugins, modules, referencePlugins, cut, systemConfig, global, errorKey) ==
-				    -1)
+				if (elektraProcessPlugins (backend->setplugins, modules, referencePlugins, cut, systemConfig, global,
+							   errorKey) == -1)
 				{
 					if (!failure) ELEKTRA_ADD_WARNING (15, errorKey, "elektraProcessPlugins for set failed");
 					failure = 1;
