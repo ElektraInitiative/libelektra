@@ -249,7 +249,12 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Cirrus
 
-- We now use [Cirrus CI](https://cirrus-ci.com) to build Elektra on [FreeBSD](https://www.freebsd.org). *(René Schwaiger)*
+- We now use [Cirrus CI](https://cirrus-ci.com) to [build and test Elektra](http://cirrus-ci.com/github/ElektraInitiative/libelektra) on
+
+  - [FreeBSD 11.2](https://www.freebsd.org/releases/11.2R/announce.html) and
+  - [FreeBSD 12.0](https://www.freebsd.org/releases/12.0R/announce.html)
+
+  . *(René Schwaiger)*
 
 ### Jenkins
 

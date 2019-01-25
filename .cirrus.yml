@@ -1,17 +1,29 @@
-freebsd_instance:
-  image: freebsd-11-2-release-amd64
-
 task:
+  matrix:
+
+    - name: 😈 FreeBSD 11
+      freebsd_instance:
+        image: freebsd-11-2-release-amd64
+
+    - name: 😈 FreeBSD 12
+      freebsd_instance:
+        image: freebsd-12-0-release-amd64
+      env:
+        PLUGINS: 'ALL;-iconv;-filecheck' # Linking the iconv library fails: https://cirrus-ci.com/task/4923537438539776
 
   install_script:
-    - pkg install -y cmake
-    - pkg install -y git
-    - pkg install -y ninja
-    - pkg install -y yajl
+    - PLUGINS_KDB="$PLUGINS"; unset PLUGINS # `pkg` tries to load modules from the environment variable `PLUGINS`
+    - >
+      pkg install -y
+      cmake
+      git
+      ninja
+      yajl
+    - export PLUGINS="$PLUGINS_KDB"; unset PLUGINS_KDB
 
   script:
     - mkdir build && cd build
-    - cmake -GNinja -DPLUGINS='ALL' -DBINDINGS='ALL' -DTARGET_PLUGIN_FOLDER="" -DCMAKE_SKIP_INSTALL_RPATH=ON ..
+    - cmake -GNinja -DPLUGINS="${PLUGINS:-ALL}" -DBINDINGS='ALL' -DTARGET_PLUGIN_FOLDER="" -DCMAKE_SKIP_INSTALL_RPATH=ON ..
     - ninja
     - output="$(ninja install 2>&1)" || printf '%s' "$output"
 
