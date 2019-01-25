@@ -64,7 +64,7 @@ int mountOpen (KDB * kdb, KeySet * config, KeySet * modules, Key * errorKey)
 		if (keyRel (root, cur) == 1)
 		{
 			KeySet * cut = ksCut (config, cur);
-			Backend * backend = backendOpen (cut, modules, errorKey);
+			Backend * backend = backendOpen (cut, modules, kdb->global, errorKey);
 
 			if (!backend)
 			{

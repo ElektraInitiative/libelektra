@@ -155,6 +155,7 @@ system/elektra/mountpoints/<name>
  *        It is used to build up this backend.
  * @param modules used to load new modules or get references
  *        to existing one
+ * @param global the global keyset of the KDB instance
  * @param errorKey the key where an error and warnings are added
  *
  * @return a pointer to a freshly allocated backend
@@ -163,7 +164,7 @@ system/elektra/mountpoints/<name>
  * @retval 0 if out of memory
  * @ingroup backend
  */
-Backend * backendOpen (KeySet * elektraConfig, KeySet * modules, Key * errorKey)
+Backend * backendOpen (KeySet * elektraConfig, KeySet * modules, KeySet * global, Key * errorKey)
 {
 	Key * cur;
 	KeySet * referencePlugins = 0;
@@ -194,7 +195,7 @@ Backend * backendOpen (KeySet * elektraConfig, KeySet * modules, Key * errorKey)
 			}
 			else if (!strcmp (keyBaseName (cur), "errorplugins"))
 			{
-				if (elektraProcessPlugins (backend->errorplugins, modules, referencePlugins, cut, systemConfig, errorKey) ==
+				if (elektraProcessPlugins (backend->errorplugins, modules, referencePlugins, cut, systemConfig, global, errorKey) ==
 				    -1)
 				{
 					if (!failure) ELEKTRA_ADD_WARNING (15, errorKey, "elektraProcessPlugins for error failed");
@@ -203,7 +204,7 @@ Backend * backendOpen (KeySet * elektraConfig, KeySet * modules, Key * errorKey)
 			}
 			else if (!strcmp (keyBaseName (cur), "getplugins"))
 			{
-				if (elektraProcessPlugins (backend->getplugins, modules, referencePlugins, cut, systemConfig, errorKey) ==
+				if (elektraProcessPlugins (backend->getplugins, modules, referencePlugins, cut, systemConfig, global, errorKey) ==
 				    -1)
 				{
 					if (!failure) ELEKTRA_ADD_WARNING (13, errorKey, "elektraProcessPlugins for get failed");
@@ -217,7 +218,7 @@ Backend * backendOpen (KeySet * elektraConfig, KeySet * modules, Key * errorKey)
 			}
 			else if (!strcmp (keyBaseName (cur), "setplugins"))
 			{
-				if (elektraProcessPlugins (backend->setplugins, modules, referencePlugins, cut, systemConfig, errorKey) ==
+				if (elektraProcessPlugins (backend->setplugins, modules, referencePlugins, cut, systemConfig, global, errorKey) ==
 				    -1)
 				{
 					if (!failure) ELEKTRA_ADD_WARNING (15, errorKey, "elektraProcessPlugins for set failed");

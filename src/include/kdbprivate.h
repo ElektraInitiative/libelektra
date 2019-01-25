@@ -504,7 +504,7 @@ int splitUpdateSize (Split * split);
 
 
 /*Backend handling*/
-Backend * backendOpen (KeySet * elektra_config, KeySet * modules, Key * errorKey);
+Backend * backendOpen (KeySet * elektra_config, KeySet * modules, KeySet * global, Key * errorKey);
 Backend * backendOpenDefault (KeySet * modules, const char * file, Key * errorKey);
 Backend * backendOpenModules (KeySet * modules, Key * errorKey);
 Backend * backendOpenVersion (Key * errorKey);
@@ -517,7 +517,7 @@ Plugin * elektraPluginOpen (const char * backendname, KeySet * modules, KeySet *
 int elektraPluginClose (Plugin * handle, Key * errorKey);
 int elektraProcessPlugin (Key * cur, int * pluginNumber, char ** pluginName, char ** referenceName, Key * errorKey);
 int elektraProcessPlugins (Plugin ** plugins, KeySet * modules, KeySet * referencePlugins, KeySet * config, KeySet * systemConfig,
-			   Key * errorKey);
+			   KeySet * global, Key * errorKey);
 size_t elektraPluginGetFunction (Plugin * plugin, const char * name);
 
 Plugin * elektraPluginMissing (void);
