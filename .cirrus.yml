@@ -42,8 +42,9 @@ mac_task:
     - brew install cmake ninja
 
   script:
+    - SYSTEM_DIR="$PWD/kdbsystem"
     - mkdir build && cd build
-    - cmake -GNinja -DPLUGINS="${PLUGINS:-ALL}" -DBINDINGS='ALL' ..
+    - cmake -GNinja -DPLUGINS="${PLUGINS:-ALL}" -DBINDINGS='ALL' -DKDB_DB_SYSTEM="$SYSTEM_DIR" ..
     - ninja
     - output="$(ninja install 2>&1)" || printf '%s' "$output"
 
