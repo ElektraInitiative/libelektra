@@ -159,10 +159,12 @@ compiled against an older 0.8 version of Elektra will continue to work
 
   , please update your code to check for a valid array element name like this:
 
-  ```c  if (elektraArrayValidateBaseNameString(baseName) >= 1) …;
+  ```c
+  if (elektraArrayValidateBaseNameString(baseName) >= 1) …;
   ```
 
   . *(René Schwaiger)*
+
 - <<TODO>>
 - <<TODO>>
 
