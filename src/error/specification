@@ -1292,3 +1292,21 @@ description:Connection Error occurred
 severity:error
 ingroup:plugin
 module:network
+
+number:206
+description:An unknown option was found (see reason).
+severity:error
+ingroup:opts
+macro:OPTS_UNKNOWN_OPTION
+
+number:207
+description:An option was used in an unsupported way (see reason).
+severity:error
+ingroup:opts
+macro:OPTS_ILLEGAL_USE
+
+number:208
+description:The opts specification contains mistakes (see reason).
+severity:error
+ingroup:opts
+macro:OPTS_ILLEGAL_SPEC

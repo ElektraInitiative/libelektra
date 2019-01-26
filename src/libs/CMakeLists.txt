@@ -26,6 +26,8 @@ add_subdirectory (notification)
 
 add_subdirectory (highlevel)
 
+add_subdirectory (opts)
+
 # The subdirectory for LibElektra must be the last entry!
 add_subdirectory (elektra)
 
