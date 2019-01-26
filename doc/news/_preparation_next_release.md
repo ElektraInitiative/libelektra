@@ -132,7 +132,7 @@ compiled against an older 0.8 version of Elektra will continue to work
 
 ### Core
 
-- All plugins in a backend now get a handle to a global keyset, for communication between plugins. *(Mihael Pranjić)*
+- Global plugins and plugins in a backend now get a handle to a global keyset, for communication between plugins. *(Mihael Pranjić)*
 - <<TODO>>
 - <<TODO>>
 

@@ -104,7 +104,7 @@
  *
  * @par Global KeySet Handle
  *
- * Plugins in a backend will get a handle to a global keyset.
+ * Global plugins and plugins in a backend will get a handle to a global keyset.
  * This allows them to exchange information with other plugins.
  * The global keyset is tied to a KDB handle, initialized on kdbOpen()
  * and deleted on kdbClose().
