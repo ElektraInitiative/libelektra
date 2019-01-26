@@ -4,13 +4,13 @@ echo
 echo ELEKTRA GETENV tests
 echo
 
-kdb elektrify-getenv getenv KDB
+"$KDB" elektrify-getenv getenv KDB
 succeed_if "could not getenv"
 
-kdb elektrify-getenv getenv PATH
+"$KDB" elektrify-getenv getenv PATH
 succeed_if "could not getenv"
 
-kdb elektrify-getenv getenv CHECK_VERSION
+"$KDB" elektrify-getenv getenv CHECK_VERSION
 succeed_if "could not getenv"
 
 end_script
