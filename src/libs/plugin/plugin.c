@@ -144,9 +144,10 @@ void * elektraPluginGetData (Plugin * plugin)
 /**
  * @brief Get a pointer to the global keyset.
  *
- * Initialized for global plugins and plugins within a backend.
+ * Initialized for all plugins by the KDB, except for manually
+ * created plugins with `elektraPluginOpen()`.
  * The global keyset is tied to a KDB handle, initialized on
- * kdbOpen() and deleted on kdbClose().
+ * `kdbOpen()` and deleted on `kdbClose()`.
  *
  * Plugins using this keyset are responsible for cleaning up
  * their parts of the keyset which they do not need any more.

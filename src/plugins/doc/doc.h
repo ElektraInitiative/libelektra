@@ -104,10 +104,11 @@
  *
  * @par Global KeySet Handle
  *
- * Global plugins and plugins in a backend will get a handle to a global keyset.
- * This allows them to exchange information with other plugins.
- * The global keyset is tied to a KDB handle, initialized on kdbOpen()
- * and deleted on kdbClose().
+ * This keyset allows plugins to exchange information with other plugins.
+ *
+ * The keyset is initialized for all plugins by the KDB, except for manually
+ * created plugins with `elektraPluginOpen()`. The global keyset is
+ * tied to a KDB handle, initialized on `kdbOpen()` and deleted on `kdbClose()`.
  *
  * Obtain a handle to the global keyset and work with it:
  *

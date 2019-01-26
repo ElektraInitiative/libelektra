@@ -326,8 +326,9 @@ struct _KDB
 	Plugin * notificationPlugin; /*!< reference to global plugin for notifications.*/
 	ElektraNotificationCallbackContext * notificationCallbackContext; /*!< reference to context for notification callbacks.*/
 
-	KeySet * global; /*!< This keyset can be used by global plugins and plugins in a backend
-			to pass data through the KDB and communicate with other plugins.*/
+	KeySet * global; /*!< This keyset can be used by plugins to pass data through
+			the KDB and communicate with other plugins. Plugins shall clean
+			up their parts of the global keyset, which they do not need any more.*/
 };
 
 
@@ -417,10 +418,9 @@ struct _Plugin
 	void * data; /*!< This handle can be used for a plugin to store
 	 any data its want to. */
 
-	KeySet * global; /*!< This keyset can be used by global plugins and plugins in a backend
-			to pass data through the KDB and communicate with other plugins.
-			Plugins shall clean up their parts of the global keyset, which
-			they do not need any more.*/
+	KeySet * global; /*!< This keyset can be used by plugins to pass data through
+			the KDB and communicate with other plugins. Plugins shall clean
+			up their parts of the global keyset, which they do not need any more.*/
 };
 
 

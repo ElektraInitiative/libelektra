@@ -132,7 +132,8 @@ compiled against an older 0.8 version of Elektra will continue to work
 
 ### Core
 
-- Global plugins and plugins in a backend now get a handle to a global keyset, for communication between plugins. *(Mihael Pranjić)*
+- All plugins in the KDB now get a handle to a global keyset via `elektraPluginGetGlobalKeySet()`, for communication between plugins.
+  See [Global KeySet Handle](/doc/decisions/global_keyset.md) for details. *(Mihael Pranjić)*
 - <<TODO>>
 - <<TODO>>
 
