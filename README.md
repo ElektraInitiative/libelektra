@@ -17,11 +17,13 @@ and tools concerning their configuration tasks. Elektra abstracts from
 cross-platform-related issues and enables applications to be aware of other
 applications' configurations, leveraging easy application integration.
 
+
 ## Often used links
 
 - [build server](https://build.libelektra.org/)
 - [website](https://www.libelektra.org)
 - [API docu](https://doc.libelektra.org/api/latest/html/)
+
 
 ## Overview
 
@@ -79,6 +81,7 @@ or directly to one of the [authors](doc/AUTHORS.md).
 
 If you want to use Elektra for your application, [read the application integration tutorial](doc/tutorials/application-integration.md).
 
+
 ### Installation
 
 The preferred way to install Elektra is by using packages provided for
@@ -98,6 +101,7 @@ For information about elektrified environment variables, see
 [/src/libgetenv/README.md](/src/libs/getenv/README.md).
 
 For people preferring graphical user interfaces, we provide [qt-gui](/src/tools/qt-gui/).
+
 
 ### Documentation
 
@@ -122,7 +126,6 @@ You can read the documentation for the kdb tool, either
 
 > Note: All these ways to read the documentation provide the same content,
 > all generated from the GitHub repository.
-
 
 
 ## Goals
