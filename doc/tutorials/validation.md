@@ -358,7 +358,8 @@ Because in `schema.txt` we have the line `mountpoint file.txt` we can also mount
 schema using `spec-mount`.
 
 Now we have enforced that the 3 configuration options `notation tool-support* applied-to`
-need to be present (and no other). For example we can import:
+need to be present (and no other). For example, we can import (note simpleini is not
+available on every platform):
 
 ```
 kdb import -s validate -c "format=% : %" /tutorial/schema simpleini << HERE \
