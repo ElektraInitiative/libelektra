@@ -224,7 +224,10 @@ int main (int argc, char ** argv)
 			  << getErrorColor (ANSI_COLOR::RESET) << " is " << getErrorColor (ANSI_COLOR::RED) << "not known"
 			  << getErrorColor (ANSI_COLOR::RESET) << std::endl;
 		displayHelp (argv[0], f);
-		std::cerr << "\n\nDid you maybe mistyped the command \"" << f.getNearestLevenshtein (command) << "\"?" << std::endl;
+		if (command.length () < 20)
+		{
+			std::cerr << "\n\nDid you maybe mistyped the command \"" << f.getNearestLevenshtein (command) << "\"?" << std::endl;
+		}
 		return 4;
 	}
 	catch (kdb::KDBException const & ce)
