@@ -30,9 +30,11 @@ bsd_task:
     - kdb run_all
 
 mac_task:
-  name: 🍎 macOS
-  osx_instance:
-    image: mojave-xcode-10.1
+  matrix:
+
+    - name: 🍎 macOS
+      osx_instance:
+        image: mojave-xcode-10.1
 
   install_script:
     - >
