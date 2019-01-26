@@ -8,6 +8,16 @@ if (NOT GLIB_FOUND)
 elseif (ENABLE_ASAN)
 	exclude_binding (io_glib "io bindings are not compatible with ENABLE_ASAN")
 else ()
+	# Work around a bug, where `GLIB_LIBRARIES` also requires linking to the library `intl` (part of GNU gettext)
+	if (APPLE)
+		foreach (library ${GLIB_LIBRARIES})
+			if (NOT ${library} STREQUAL intl)
+				list (APPEND GLIB_LIBRARIES_CLEANED
+					     ${library})
+			endif (NOT ${library} STREQUAL intl)
+		endforeach (library ${GLIB_LIBRARIES})
+		set (GLIB_LIBRARIES ${GLIB_LIBRARIES_CLEANED})
+	endif (APPLE)
 
 	# Build library
 	add_binding (io_glib)

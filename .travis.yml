@@ -214,7 +214,6 @@ matrix:
       env:
         - BUILD_FULL=ON
         - BUILD_SHARED=OFF
-        - BINDINGS='ALL;-io_glib' # IO GLIB does not work on macOS: https://issues.libelektra.org/2328
       script: *testFull
 
     - os: osx
@@ -223,15 +222,12 @@ matrix:
       osx_image: xcode9.2
       compiler: gcc
       env:
-        - BINDINGS='ALL;-io_glib' # IO GLIB does not work on macOS: https://issues.libelektra.org/2328
         # Unfortunately the tests for the Xerces plugin fail: https://travis-ci.org/ElektraInitiative/libelektra/jobs/483331657#L3740
         - PLUGINS='ALL;-xerces'
 
     - os: osx
       name: 🍏 Clang
       compiler: clang
-      env:
-        - BINDINGS='ALL;-io_glib' # IO GLIB does not work on macOS: https://issues.libelektra.org/2328
       script: &testInstallNoSourceCheck
         - ninja
         - output="$(ninja install 2>&1)" || printf '%s' "$output"
@@ -286,7 +282,6 @@ matrix:
         - KDB_DEFAULT_STORAGE=mmapstorage
         - KDB_DB_FILE=default.mmap
         - KDB_DB_INIT=elektra.mmap
-        - BINDINGS='ALL;-io_glib' # IO GLIB does not work on macOS: https://issues.libelektra.org/2328
       script: *testInstallNoSourceCheck
 
 before_install:
