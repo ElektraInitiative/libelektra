@@ -61,6 +61,12 @@ usr/include/elektra/plugins.hpp
 usr/include/elektra/pluginspec.hpp
 usr/include/elektra/specreader.hpp
 usr/include/elektra/toolexcept.hpp
+usr/include/elektra/kdbopts.h
+usr/include/elektra/elektra.h
+usr/include/elektra/errors.h
+usr/include/elektra/types.h
+usr/include/elektra/errorcodes.h
+usr/include/elektra/conversion.h
 usr/lib/*/cmake/Elektra/ElektraConfig.cmake
 usr/lib/*/cmake/Elektra/ElektraConfigVersion.cmake
 usr/lib/*/cmake/Elektra/ElektraTargetsLibelektra-*.cmake
