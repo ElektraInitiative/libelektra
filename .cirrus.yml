@@ -39,7 +39,7 @@ mac_task:
     image: mojave-xcode-10.1
 
   install_script:
-    - brew install cmake ninja
+    - brew install augeas cmake ninja
 
   script:
     - SYSTEM_DIR="$PWD/kdbsystem"
