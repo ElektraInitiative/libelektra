@@ -73,7 +73,7 @@ kdb merge system/hosts/ours system/hosts/theirs system/hosts/base system/hosts/r
 ## Examples Using Strategies
 
 Here are examples of the same KeySets being merged using different strategies.
-The KeySets are mounted using the `simpleini` file, the left side of '=' is the name of
+The KeySets are mounted using a property format, the left side of '=' is the name of
 the Key, the right side is its string value.
 
 We start with the base KeySet, `system/base`:
