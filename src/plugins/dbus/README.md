@@ -216,3 +216,13 @@ Example output from `dbus-monitor`:
 signal time=1520805003.227723 sender=:1.8 -> destination=(null destination) serial=15 path=/org/libelektra/configuration; interface=org.libelektra; member=Commit
    string "system/tests/foo"
 ```
+
+## Problems
+
+Key names that are not valid utf-8 cause a warning within the D-Bus library:
+
+```
+This is normally a bug in some application using the D-Bus library.
+Couldn't add message argumentprocess 6139: arguments to dbus_message_iter_append_basic() were incorrect, assertion "_dbus_check_is_valid_utf8 (*string_p)" failed in file ../../dbus/dbus-message.c line 2676.
+```
+
