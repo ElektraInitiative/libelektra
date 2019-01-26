@@ -275,6 +275,9 @@ you up to date with the multi-language support provided by Elektra.
 - The plugin name is now provided as compiler definition ELEKTRA_PLUGIN_NAME via CMake. See [#1042](#1042) .*(Peter Nirschl)*
 - We added a [CMake find module for GLib](https://master.libelektra.org/cmake/Modules/FindGLib.cmake). The module makes sure you can
   compile and link [IO GLib](https://www.libelektra.org/bindings/io_glib) on macOS. *(René Schwaiger)*
+- The CMake find module [`FindLibOpenSSL.cmake`](https://master.libelektra.org/cmake/Modules/FindLibOpenSSL.cmake) does not require
+  `pkg-config` anymore. The updated code also fixes some linker problems on macOS (and probably other operating systems too), where the
+  build system is not able to link to OpenSSL using only the name of the OpenSSL libraries. *(René Schwaiger)*
 - We now use the [official CMake find module for `iconv`](https://github.com/Kitware/CMake/blob/master/Modules/FindIconv.cmake). This
   update fixes linker problems with the [`iconv`](http://libelektra.org/plugins/iconv) and
   [`filecheck`](http://libelektra.org/plugins/filecheck) plugin on FreeBSD 12. *(René Schwaiger)*
