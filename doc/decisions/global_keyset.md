@@ -15,12 +15,18 @@ complex data.
 ## Decision
 
 To make the communication between plugins easier, plugins will additionally
-get a handle to a global keyset. The global keyset is tied to a KDB handle, initialized on kdbOpen() and deleted on kdbClose().
+get a handle to a global keyset. The global keyset is tied to a KDB handle,
+initialized on kdbOpen() and deleted on kdbClose().
+
+The global keyset handle is initialized and accessible for global plugins
+and plugins within a backend. It is not available to plugins opened outside
+the context of the KDB, since the global keyset is managed by the KDB instance.
 
 ## Rationale
 
-The need for a global keyset arose when developing a global cache plugin. A global cache plugin needs to store internal and binary information for the KDB, which is simply not possible with
-metadata.
+The need for a global keyset arose when developing a global cache plugin.
+A global cache plugin needs to store internal and binary information for the KDB,
+which is simply not possible with metadata.
 
 ## Implications
 
