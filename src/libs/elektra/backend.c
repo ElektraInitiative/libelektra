@@ -253,10 +253,11 @@ Backend * backendOpen (KeySet * elektraConfig, KeySet * modules, KeySet * global
  * and KDB_STORAGE.
  *
  * @param modules the modules to work with
+ * @param global the global keyset of the KDB instance
  * @param errorKey the key to issue warnings and errors to
  * @return the fresh allocated default backend or 0 if it failed
  */
-Backend * backendOpenDefault (KeySet * modules, const char * file, Key * errorKey)
+Backend * backendOpenDefault (KeySet * modules, KeySet * global, const char * file, Key * errorKey)
 {
 	Backend * backend = elektraBackendAllocate ();
 
@@ -271,6 +272,7 @@ Backend * backendOpenDefault (KeySet * modules, const char * file, Key * errorKe
 		/* error already set in elektraPluginOpen */
 		return 0;
 	}
+	resolver->global = global;
 
 #ifdef ENABLE_TRACER
 	KeySet * tracerConfig = ksNew (5,
@@ -284,6 +286,7 @@ Backend * backendOpenDefault (KeySet * modules, const char * file, Key * errorKe
 		backend->setplugins[RESOLVER_PLUGIN + 1] = tracer;
 		backend->errorplugins[RESOLVER_PLUGIN + 1] = tracer;
 		tracer->refcounter = 3;
+		tracer->global = global;
 	}
 #endif
 
@@ -303,6 +306,7 @@ Backend * backendOpenDefault (KeySet * modules, const char * file, Key * errorKe
 		/* error already set in elektraPluginOpen */
 		return 0;
 	}
+	storage->global = global;
 
 	backend->getplugins[STORAGE_PLUGIN] = storage;
 	backend->setplugins[STORAGE_PLUGIN] = storage;
@@ -321,7 +325,7 @@ Backend * backendOpenDefault (KeySet * modules, const char * file, Key * errorKe
  * @param modules the modules to work with
  * @param errorKey the key to issue warnings and errors to
  */
-Backend * backendOpenModules (KeySet * modules, Key * errorKey)
+Backend * backendOpenModules (KeySet * modules, KeySet * global, Key * errorKey)
 {
 	Backend * backend = elektraBackendAllocate ();
 
@@ -339,6 +343,7 @@ Backend * backendOpenModules (KeySet * modules, Key * errorKey)
 		elektraFree (backend);
 		return 0;
 	}
+	plugin->global = global;
 
 
 	Key * mp = keyNew ("system/elektra/modules", KEY_VALUE, "modules", KEY_END);

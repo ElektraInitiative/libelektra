@@ -505,8 +505,8 @@ int splitUpdateSize (Split * split);
 
 /*Backend handling*/
 Backend * backendOpen (KeySet * elektra_config, KeySet * modules, KeySet * global, Key * errorKey);
-Backend * backendOpenDefault (KeySet * modules, const char * file, Key * errorKey);
-Backend * backendOpenModules (KeySet * modules, Key * errorKey);
+Backend * backendOpenDefault (KeySet * modules, KeySet * global, const char * file, Key * errorKey);
+Backend * backendOpenModules (KeySet * modules, KeySet * global, Key * errorKey);
 Backend * backendOpenVersion (Key * errorKey);
 int backendClose (Backend * backend, Key * errorKey);
 
