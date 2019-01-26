@@ -20,10 +20,12 @@ duplications exactly of the parts as requested.
 - no cache (current situation)
 - flat cache with COW
 - deep duplicated cache
+- Use global plugin to implement internal cache.
+- Use global mmap plugin and make kdbGet() to always retrieve everything.
 
 ## Decision
 
-Use global plugin to implement internal cache.
+Not yet decided.
 
 ## Rationale
 
