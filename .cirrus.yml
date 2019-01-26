@@ -39,6 +39,7 @@ mac_task:
       brew install
       augeas
       cmake
+      gpgme
       ninja
       pkg-config
 
