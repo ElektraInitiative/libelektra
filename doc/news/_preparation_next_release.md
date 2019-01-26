@@ -260,6 +260,7 @@ you up to date with the multi-language support provided by Elektra.
   - [FreeBSD 12.0](https://www.freebsd.org/releases/12.0R/announce.html)
 
   . *(René Schwaiger)*
+- The new build job `🍎 macOS` tests Elektra on macOS. *(René Schwaiger)*
 
 ### Jenkins
 

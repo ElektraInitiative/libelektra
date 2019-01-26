@@ -1,4 +1,4 @@
-task:
+bsd_task:
   matrix:
 
     - name: 😈 FreeBSD 11
@@ -30,5 +30,24 @@ task:
   tests_script:
     # Work around stalled process plugin and library problems on FreeBSD: https://issues.libelektra.org/2323
     - sudo mount -t fdescfs fdesc /dev/fd
+    - cd build && ninja run_all
+    - kdb run_all
+
+mac_task:
+  name: 🍎 macOS
+  osx_instance:
+    image: mojave-xcode-10.1
+
+  install_script:
+    - brew install cmake ninja
+
+  script:
+    - SYSTEM_DIR="$PWD/kdbsystem"
+    - mkdir build && cd build
+    - cmake -GNinja -DPLUGINS="${PLUGINS:-ALL}" -DBINDINGS='ALL' -DKDB_DB_SYSTEM="$SYSTEM_DIR" ..
+    - ninja
+    - output="$(ninja install 2>&1)" || printf '%s' "$output"
+
+  tests_script:
     - cd build && ninja run_all
     - kdb run_all
