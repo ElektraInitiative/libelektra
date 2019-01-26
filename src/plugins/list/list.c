@@ -290,8 +290,8 @@ int elektraListClose (Plugin * handle, Key * errorKey)
 	return 1; /* success */
 }
 
-static int runPlugins (KeySet * pluginKS, KeySet * modules, KeySet * plugins, KeySet * configOrig, KeySet * returned, Key * parentKey,
-		       OP op, Key * (*traversalFunction) (KeySet *), ElektraDeferredCallList * deferredCalls)
+static int runPlugins (KeySet * pluginKS, KeySet * modules, KeySet * plugins, KeySet * configOrig, KeySet * returned, KeySet * global,
+		       Key * parentKey, OP op, Key * (*traversalFunction) (KeySet *), ElektraDeferredCallList * deferredCalls)
 {
 	Key * current;
 
@@ -356,6 +356,7 @@ static int runPlugins (KeySet * pluginKS, KeySet * modules, KeySet * plugins, Ke
 					ksDel (configOrig);
 					return -1;
 				}
+				slave->global = global;
 				Key * slaveKey = keyNew (name, KEY_BINARY, KEY_SIZE, sizeof (Plugin *), KEY_VALUE, &slave, KEY_END);
 				keySetName (slaveKey, "/");
 				keyAddBaseName (slaveKey, name);
@@ -404,8 +405,8 @@ int elektraListGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	GetPlacements currentPlacement = placements->getCurrent;
 	KeySet * pluginKS = ksDup ((placements)->getKS[currentPlacement]);
 	ksRewind (pluginKS);
-	int ret = runPlugins (pluginKS, placements->modules, placements->plugins, ksDup (config), returned, parentKey, GET, ksNext,
-			      placements->deferredCalls);
+	int ret = runPlugins (pluginKS, placements->modules, placements->plugins, ksDup (config), returned,
+			      elektraPluginGetGlobalKeySet (handle), parentKey, GET, ksNext, placements->deferredCalls);
 	placements->getCurrent = ((++currentPlacement) % getEnd);
 	while (currentPlacement < getEnd && !placements->getPlacements[currentPlacement])
 	{
@@ -423,8 +424,8 @@ int elektraListSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	KeySet * pluginKS = ksDup ((placements)->setKS[currentPlacement]);
 	ksRewind (pluginKS);
 	int ret = 0;
-	ret = runPlugins (pluginKS, placements->modules, placements->plugins, ksDup (config), returned, parentKey, SET, ksPop,
-			  placements->deferredCalls);
+	ret = runPlugins (pluginKS, placements->modules, placements->plugins, ksDup (config), returned,
+			  elektraPluginGetGlobalKeySet (handle), parentKey, SET, ksPop, placements->deferredCalls);
 	placements->setCurrent = ((++currentPlacement) % setEnd);
 	while (currentPlacement < setEnd && !placements->setPlacements[currentPlacement])
 	{
@@ -443,8 +444,8 @@ int elektraListError (Plugin * handle, KeySet * returned, Key * parentKey)
 	ErrPlacements currentPlacement = placements->errCurrent;
 	KeySet * pluginKS = ksDup ((placements)->errKS[currentPlacement]);
 	ksRewind (pluginKS);
-	int ret = runPlugins (pluginKS, placements->modules, placements->plugins, ksDup (config), returned, parentKey, ERR, ksPop,
-			      placements->deferredCalls);
+	int ret = runPlugins (pluginKS, placements->modules, placements->plugins, ksDup (config), returned,
+			      elektraPluginGetGlobalKeySet (handle), parentKey, ERR, ksPop, placements->deferredCalls);
 	placements->errCurrent = ((++currentPlacement) % errEnd);
 	while (currentPlacement < errEnd && !placements->errPlacements[currentPlacement])
 	{
