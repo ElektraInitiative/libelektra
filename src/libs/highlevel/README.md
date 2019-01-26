@@ -15,10 +15,6 @@ The API supports all CORBA Basic Data Types, except for `wchar`, as well as the 
 First you have to add `elektra-highlevel`, `elektra-kdb` and `elektra-ease` to the linked libraries of your application. To be able to
 use it in your source file, just include the main header with `#include <elektra.h>` at the top of your file.
 
-The API contains one header that is not automatically included from `elektra.h`. You can use it with `#include <elektra/conversion.h>`.
-The header provides the functions Elektra uses to convert your configuration values to and from strings. In most cases, you won't need
-to use these functions directly, but they might still be useful sometimes (e.g. in combination with `elektraGetType` and `elektraGetRawString`).
-
 ## Quickstart
 
 The quickest way to get started is to adapt the following piece of code to your needs:
@@ -51,7 +47,7 @@ elektraClose (elektra);
 The getter and setter functions follow the simple naming scheme `elektra`(`Get`/`Set`)[Type]. Additionally for each one there is an array
 element variant with the suffix `ArrayElement`. For more information see [below](#reading-and-writing-values).
 
-You also can find a more complex example [here](../../../examples/highlevel/ReadMe.md).
+You also can find a more complex example [here](../../../examples/highlevel/README.md).
 
 ## Core Concepts
 
@@ -179,6 +175,10 @@ The API supports the following types, which are taken from the CORBA specificati
 * **Float**: whatever your compiler treats as `float`, probably IEEE-754 single-precision, represented by `KDB_TYPE_FLOAT` in metadata
 * **Double**: whatever your compiler treats as `double`, probably IEEE-754 double-precision, represented by `KDB_TYPE_DOUBLE` in metadata
 * **Long Double**: whatever your compiler treats as `long double`, not always available, represented by `KDB_TYPE_LONG_DOUBLE` in metadata
+
+The API contains one header that is not automatically included from `elektra.h`. You can use it with `#include <elektra/conversion.h>`.
+The header provides the functions Elektra uses to convert your configuration values to and from strings. In most cases, you won't need
+to use these functions directly, but they might still be useful sometimes (e.g. in combination with `elektraGetType` and `elektraGetRawString`).
 
 
 <a name="reading-and-writing-values"></a>
