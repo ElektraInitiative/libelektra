@@ -39,7 +39,7 @@ endif ()
 set (CRYPTO_COMMON_FILES helper.h helper.c gpg.h gpg.c crypto.h crypto.c)
 
 #
-# Compile Variant: OpenSSL
+# Compile Variant: libgcrypt
 #
 add_plugin (crypto_gcrypt
 	    SOURCES gcrypt_operations.h
@@ -52,7 +52,7 @@ add_plugin (crypto_gcrypt
 				ELEKTRA_CRYPTO_API_GCRYPT)
 
 #
-# Compile Variant: libgcrypt
+# Compile Variant: OpenSSL
 #
 add_plugin (crypto_openssl
 	    SOURCES openssl_operations.h
