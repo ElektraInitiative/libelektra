@@ -467,7 +467,7 @@ int mountModules (KDB * kdb, KeySet * modules, Key * errorKey)
  */
 int mountVersion (KDB * kdb, Key * errorKey)
 {
-	Backend * backend = backendOpenVersion (errorKey);
+	Backend * backend = backendOpenVersion (kdb->global, errorKey);
 	mountBackend (kdb, backend, errorKey);
 
 	return 0;

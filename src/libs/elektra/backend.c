@@ -104,9 +104,11 @@ int elektraBackendSetMountpoint (Backend * backend, KeySet * elektraConfig, Key 
  * Opens the internal backend that indicates that a backend
  * is missing at that place.
  *
+ * @param global the global keyset of the KDB instance
+ *
  * @return the fresh allocated backend or 0 if no memory
  */
-static Backend * backendOpenMissing (Key * mp)
+static Backend * backendOpenMissing (KeySet * global, Key * mp)
 {
 	Backend * backend = elektraBackendAllocate ();
 
@@ -117,6 +119,7 @@ static Backend * backendOpenMissing (Key * mp)
 		elektraFree (backend);
 		return 0;
 	}
+	plugin->global = global;
 
 	backend->getplugins[0] = plugin;
 	backend->setplugins[0] = plugin;
@@ -236,7 +239,7 @@ Backend * backendOpen (KeySet * elektraConfig, KeySet * modules, KeySet * global
 
 	if (failure)
 	{
-		Backend * tmpBackend = backendOpenMissing (backend->mountpoint);
+		Backend * tmpBackend = backendOpenMissing (global, backend->mountpoint);
 		backendClose (backend, errorKey);
 		backend = tmpBackend;
 	}
@@ -323,6 +326,7 @@ Backend * backendOpenDefault (KeySet * modules, KeySet * global, const char * fi
  * which is currently point to.
  *
  * @param modules the modules to work with
+ * @param global the global keyset of the KDB instance
  * @param errorKey the key to issue warnings and errors to
  */
 Backend * backendOpenModules (KeySet * modules, KeySet * global, Key * errorKey)
@@ -367,10 +371,11 @@ Backend * backendOpenModules (KeySet * modules, KeySet * global, Key * errorKey)
 /**
  * Opens the internal version backend.
  *
+ * @param global the global keyset of the KDB instance
  * @param errorKey the key to issue warnings and errors to
  * @return the fresh allocated default backend or 0 if it failed
  */
-Backend * backendOpenVersion (Key * errorKey ELEKTRA_UNUSED)
+Backend * backendOpenVersion (KeySet * global, Key * errorKey ELEKTRA_UNUSED)
 {
 	Backend * backend = elektraBackendAllocate ();
 
@@ -381,6 +386,7 @@ Backend * backendOpenVersion (Key * errorKey ELEKTRA_UNUSED)
 		elektraFree (backend);
 		return 0;
 	}
+	plugin->global = global;
 
 	Key * mp = keyNew ("system/elektra/version", KEY_VALUE, "version", KEY_END);
 

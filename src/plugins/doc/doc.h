@@ -106,7 +106,7 @@
  *
  * This keyset allows plugins to exchange information with other plugins.
  *
- * The keyset is initialized for all plugins by the KDB, except for manually
+ * The keyset is initialized by the KDB for all plugins, except for manually
  * created plugins with `elektraPluginOpen()`. The global keyset is
  * tied to a KDB handle, initialized on `kdbOpen()` and deleted on `kdbClose()`.
  *

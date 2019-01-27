@@ -193,7 +193,6 @@ int elektraProcessPlugins (Plugin ** plugins, KeySet * modules, KeySet * referen
 					ksDel (config);
 					return -1;
 				}
-
 				plugins[pluginNumber]->global = global;
 
 				/* case 2, we label it for later use */
