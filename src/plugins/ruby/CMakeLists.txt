@@ -69,7 +69,9 @@ if (ADDTESTING_PHASE)
 	# bindings are required for tests
 	check_binding_was_added ("swig_ruby" BINDING_WAS_ADDED)
 	if (BUILD_TESTING AND BINDING_WAS_ADDED)
-		add_plugintest (ruby MEMLEAK)
+		add_plugintest (ruby
+				MEMLEAK
+				ENVIRONMENT "RUBYLIB=${CMAKE_BINARY_DIR}/src/bindings/swig/ruby:${CMAKE_SOURCE_DIR}/src/bindings/swig/ruby")
 
 		if (INSTALL_TESTING)
 			install (DIRECTORY ruby DESTINATION ${TARGET_TEST_DATA_FOLDER})
