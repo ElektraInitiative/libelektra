@@ -255,7 +255,7 @@ TEST_F (Highlevel, ArrayGetters)
 		makeArray (KDB_TYPE_SHORT, "shortarraykey", { "1", "-1" }),
 		makeArray (KDB_TYPE_UNSIGNED_SHORT, "unsignedshortarraykey", { "1", "2" }),
 		makeArray (KDB_TYPE_LONG, "longarraykey", { "1", "-1" }),
-		makeArray (KDB_TYPE_UNSIGNED_LONG, "unsignedLongarraykey", { "1", "2" }),
+		makeArray (KDB_TYPE_UNSIGNED_LONG, "unsignedlongarraykey", { "1", "2" }),
 		makeArray (KDB_TYPE_LONG_LONG, "longlongarraykey", { "1", "-1" }),
 		makeArray (KDB_TYPE_UNSIGNED_LONG_LONG, "unsignedlonglongarraykey", { "1", "2" }),
 		makeArray (KDB_TYPE_FLOAT, "floatarraykey", { "1.1", "-2.1" }),
@@ -294,6 +294,14 @@ TEST_F (Highlevel, ArrayGetters)
 	EXPECT_EQ (elektraArraySize (elektra, "unsignedshortarraykey"), 2) << "Wrong array size";
 	EXPECT_EQ (elektraGetUnsignedShortArrayElement (elektra, "unsignedshortarraykey", 0), 1) << "Wrong key value.";
 	EXPECT_EQ (elektraGetUnsignedShortArrayElement (elektra, "unsignedshortarraykey", 1), 2) << "Wrong key value.";
+
+	EXPECT_EQ (elektraArraySize (elektra, "longarraykey"), 2) << "Wrong array size";
+	EXPECT_EQ (elektraGetLongArrayElement (elektra, "longarraykey", 0), 1) << "Wrong key value.";
+	EXPECT_EQ (elektraGetLongArrayElement (elektra, "longarraykey", 1), -1) << "Wrong key value.";
+
+	EXPECT_EQ (elektraArraySize (elektra, "unsignedlongarraykey"), 2) << "Wrong array size";
+	EXPECT_EQ (elektraGetUnsignedLongArrayElement (elektra, "unsignedlongarraykey", 0), 1) << "Wrong key value.";
+	EXPECT_EQ (elektraGetUnsignedLongArrayElement (elektra, "unsignedlongarraykey", 1), 2) << "Wrong key value.";
 
 	EXPECT_EQ (elektraArraySize (elektra, "longlongarraykey"), 2) << "Wrong array size";
 	EXPECT_EQ (elektraGetLongLongArrayElement (elektra, "longlongarraykey", 0), 1) << "Wrong key value.";
