@@ -59,8 +59,9 @@ static void test_simple (void)
 	KeySet * modules = ksNew (0, KS_END);
 	elektraModulesInit (modules, 0);
 
+	KeySet * global = ksNew (0, KS_END);
 	Key * errorKey = 0;
-	Backend * backend = backendOpen (set_simple (), modules, errorKey);
+	Backend * backend = backendOpen (set_simple (), modules, global, errorKey);
 	succeed_if (backend->errorplugins[0] == 0, "there should be no plugin");
 	succeed_if (backend->errorplugins[2] == 0, "there should be no plugin");
 	succeed_if (backend->errorplugins[3] == 0, "there should be no plugin");
@@ -113,6 +114,7 @@ static void test_simple (void)
 	backendClose (backend, errorKey);
 	elektraModulesClose (modules, 0);
 	ksDel (modules);
+	ksDel (global);
 }
 
 static void test_default (void)
@@ -137,7 +139,8 @@ static void test_default (void)
 
 	elektraPluginClose (plugin, 0);
 
-	Backend * backend = backendOpenDefault (modules, KDB_DB_FILE, 0);
+	KeySet * global = ksNew (0, KS_END);
+	Backend * backend = backendOpenDefault (modules, global, KDB_DB_FILE, 0);
 
 	Key * mp;
 	succeed_if ((mp = backend->mountpoint) != 0, "no mountpoint found");
@@ -147,6 +150,7 @@ static void test_default (void)
 	backendClose (backend, 0);
 	elektraModulesClose (modules, 0);
 	ksDel (modules);
+	ksDel (global);
 }
 
 
@@ -199,7 +203,8 @@ static void test_backref (void)
 	KeySet * modules = ksNew (0, KS_END);
 	elektraModulesInit (modules, 0);
 
-	Backend * backend = backendOpen (set_backref (), modules, 0);
+	KeySet * global = ksNew (0, KS_END);
+	Backend * backend = backendOpen (set_backref (), modules, global, 0);
 	succeed_if (backend != 0, "there should be a backend");
 	succeed_if (backend->getplugins[0] == 0, "there should be no plugin");
 	exit_if_fail (backend->getplugins[1] != 0, "there should be a plugin");
@@ -242,6 +247,7 @@ static void test_backref (void)
 	backendClose (backend, 0);
 	elektraModulesClose (modules, 0);
 	ksDel (modules);
+	ksDel (global);
 }
 
 int main (int argc, char ** argv)

@@ -159,7 +159,7 @@ void elektraRemoveMetaData (Key * key, const char * searchfor)
  */
 int elektraOpenBootstrap (KDB * handle, KeySet * keys, Key * errorKey)
 {
-	handle->defaultBackend = backendOpenDefault (handle->modules, KDB_DB_INIT, errorKey);
+	handle->defaultBackend = backendOpenDefault (handle->modules, handle->global, KDB_DB_INIT, errorKey);
 	if (!handle->defaultBackend) return -1;
 
 	handle->split = splitNew ();
@@ -180,7 +180,7 @@ int elektraOpenBootstrap (KDB * handle, KeySet * keys, Key * errorKey)
 		splitDel (handle->split);
 
 		// then create new setup:
-		handle->defaultBackend = backendOpenDefault (handle->modules, KDB_DB_FILE, errorKey);
+		handle->defaultBackend = backendOpenDefault (handle->modules, handle->global, KDB_DB_FILE, errorKey);
 		if (!handle->defaultBackend)
 		{
 			elektraRemoveMetaData (errorKey, "error"); // fix errors from kdbGet()

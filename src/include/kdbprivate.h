@@ -326,8 +326,9 @@ struct _KDB
 	Plugin * notificationPlugin; /*!< reference to global plugin for notifications.*/
 	ElektraNotificationCallbackContext * notificationCallbackContext; /*!< reference to context for notification callbacks.*/
 
-	KeySet * global; /*!< This keyset can be used by global plugins and the resolver
-			to pass data through the KDB and communicate with other global plugins.*/
+	KeySet * global; /*!< This keyset can be used by plugins to pass data through
+			the KDB and communicate with other plugins. Plugins shall clean
+			up their parts of the global keyset, which they do not need any more.*/
 };
 
 
@@ -417,10 +418,9 @@ struct _Plugin
 	void * data; /*!< This handle can be used for a plugin to store
 	 any data its want to. */
 
-	KeySet * global; /*!< This keyset can be used by global plugins and the resolver
-			to pass data through the KDB and communicate with other global plugins.
-			Plugins shall clean up their parts of the global keyset, which
-			they do not need any more.*/
+	KeySet * global; /*!< This keyset can be used by plugins to pass data through
+			the KDB and communicate with other plugins. Plugins shall clean
+			up their parts of the global keyset, which they do not need any more.*/
 };
 
 
@@ -504,10 +504,10 @@ int splitUpdateSize (Split * split);
 
 
 /*Backend handling*/
-Backend * backendOpen (KeySet * elektra_config, KeySet * modules, Key * errorKey);
-Backend * backendOpenDefault (KeySet * modules, const char * file, Key * errorKey);
-Backend * backendOpenModules (KeySet * modules, Key * errorKey);
-Backend * backendOpenVersion (Key * errorKey);
+Backend * backendOpen (KeySet * elektra_config, KeySet * modules, KeySet * global, Key * errorKey);
+Backend * backendOpenDefault (KeySet * modules, KeySet * global, const char * file, Key * errorKey);
+Backend * backendOpenModules (KeySet * modules, KeySet * global, Key * errorKey);
+Backend * backendOpenVersion (KeySet * global, Key * errorKey);
 int backendClose (Backend * backend, Key * errorKey);
 
 int backendUpdateSize (Backend * backend, Key * parent, int size);
@@ -517,7 +517,7 @@ Plugin * elektraPluginOpen (const char * backendname, KeySet * modules, KeySet *
 int elektraPluginClose (Plugin * handle, Key * errorKey);
 int elektraProcessPlugin (Key * cur, int * pluginNumber, char ** pluginName, char ** referenceName, Key * errorKey);
 int elektraProcessPlugins (Plugin ** plugins, KeySet * modules, KeySet * referencePlugins, KeySet * config, KeySet * systemConfig,
-			   Key * errorKey);
+			   KeySet * global, Key * errorKey);
 size_t elektraPluginGetFunction (Plugin * plugin, const char * name);
 
 Plugin * elektraPluginMissing (void);

@@ -64,7 +64,7 @@ int mountOpen (KDB * kdb, KeySet * config, KeySet * modules, Key * errorKey)
 		if (keyRel (root, cur) == 1)
 		{
 			KeySet * cut = ksCut (config, cur);
-			Backend * backend = backendOpen (cut, modules, errorKey);
+			Backend * backend = backendOpen (cut, modules, kdb->global, errorKey);
 
 			if (!backend)
 			{
@@ -112,7 +112,7 @@ int mountOpen (KDB * kdb, KeySet * config, KeySet * modules, Key * errorKey)
 int mountDefault (KDB * kdb, KeySet * modules, int inFallback, Key * errorKey)
 {
 	// open the defaultBackend the first time
-	kdb->defaultBackend = backendOpenDefault (modules, KDB_DB_FILE, errorKey);
+	kdb->defaultBackend = backendOpenDefault (modules, kdb->global, KDB_DB_FILE, errorKey);
 	kdb->initBackend = 0;
 
 	if (!kdb->defaultBackend)
@@ -124,7 +124,7 @@ int mountDefault (KDB * kdb, KeySet * modules, int inFallback, Key * errorKey)
 	if (!inFallback)
 	{
 		/* Reopen the init Backend for fresh user experience (update issue) */
-		kdb->initBackend = backendOpenDefault (modules, KDB_DB_INIT, errorKey);
+		kdb->initBackend = backendOpenDefault (modules, kdb->global, KDB_DB_INIT, errorKey);
 
 		if (!kdb->initBackend)
 		{
@@ -441,7 +441,7 @@ int mountModules (KDB * kdb, KeySet * modules, Key * errorKey)
 
 	while ((cur = ksNext (modules)) != 0)
 	{
-		Backend * backend = backendOpenModules (modules, errorKey);
+		Backend * backend = backendOpenModules (modules, kdb->global, errorKey);
 		ksAppendKey (alreadyMounted, backend->mountpoint);
 		if (ksGetSize (alreadyMounted) == oldSize)
 		{
@@ -467,7 +467,7 @@ int mountModules (KDB * kdb, KeySet * modules, Key * errorKey)
  */
 int mountVersion (KDB * kdb, Key * errorKey)
 {
-	Backend * backend = backendOpenVersion (errorKey);
+	Backend * backend = backendOpenVersion (kdb->global, errorKey);
 	mountBackend (kdb, backend, errorKey);
 
 	return 0;

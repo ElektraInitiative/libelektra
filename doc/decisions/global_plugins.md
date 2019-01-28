@@ -205,22 +205,6 @@ states.
 
 ## Related decisions
 
-### Global KeySet handle
-
-Some global plugins need to communicate more data than is possible to do with metadata.
-This can limit the functionality of global plugins. One example is a global cache plugin,
-which needs to store internal information for the KDB. Some of the information is binary
-and can not be stored in metadata.
-
-To make the communication between global plugins easier, global plugins will additionally
-get a handle to a global keyset. The global keyset is tied to a KDB handle, initialized on kdbOpen() and
-deleted on kdbClose().
-
-The resolver plugin is an exception and also gets a handle to the global keyset. This way it
-can store and compare timestamps of config files and cache files.
-
-Plugins are responsible for cleaning up their part of the global keyset.
-
 ## Notes
 
 ### Open Points
