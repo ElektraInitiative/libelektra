@@ -45,6 +45,7 @@ function (add_scripttest testname)
 				     check_bashisms
 				     check_posix
 				     check_external
+				     check_external_highlevel
 				     check_formatting
 				     check_gen
 				     check_oclint
