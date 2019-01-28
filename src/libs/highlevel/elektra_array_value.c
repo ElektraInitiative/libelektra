@@ -9,7 +9,6 @@
 #include "elektra/conversion.h"
 #include "elektra/errors.h"
 #include "elektra/errorsprivate.h"
-#include "kdbease.h"
 #include "kdbhelper.h"
 #include "kdbprivate.h"
 #include <string.h>
@@ -26,6 +25,26 @@ extern "C" {
 	}
 
 /**
+ * Sets the size of an array
+ *
+ * @param elektra The Elektra instance to use.
+ * @param name    The (relative) name of the array.
+ * @param size    The new size of the array.
+ */
+static void elektraArraySetSize (Elektra * elektra, const char * name, size_t size, ElektraError ** error)
+{
+	elektraSetLookupKey (elektra, name);
+	Key * arrayParent = keyDup (elektra->lookupKey);
+
+	char sizeString[ELEKTRA_MAX_ARRAY_SIZE];
+	elektraWriteArrayNumber (sizeString, size - 1);
+	keySetMeta (arrayParent, "array", sizeString);
+	keySetString (arrayParent, "");
+
+	elektraSaveKey (elektra, arrayParent, error);
+}
+
+/**
  * \addtogroup highlevel High-level API
  * @{
  */
@@ -35,14 +54,31 @@ extern "C" {
  *
  * @param elektra The Elektra instance to use.
  * @param name    The (relative) name of the array.
- * @return the size of the array
+ * @return the size of the array, 0 is returned if the array is empty or doesn't exist
  */
 size_t elektraArraySize (Elektra * elektra, const char * name)
 {
 	elektraSetLookupKey (elektra, name);
-	KeySet * arrayKeys = elektraArrayGet (elektra->lookupKey, elektra->config);
-	size_t size = (size_t) ksGetSize (arrayKeys);
-	ksDel (arrayKeys);
+	Key * const arrayParent = ksLookup (elektra->config, elektra->lookupKey, 0);
+	if (arrayParent == NULL)
+	{
+		return 0;
+	}
+
+	const Key * const metaKey = keyGetMeta (arrayParent, "array");
+	if (metaKey == NULL)
+	{
+		return 0;
+	}
+
+	const char * sizeString = keyString (metaKey);
+	int digitStart = elektraArrayValidateBaseNameString (sizeString);
+	if (digitStart <= 0)
+	{
+		return 0;
+	}
+
+	size_t size = strtoull (&sizeString[digitStart], NULL, 10) + 1;
 
 	return size;
 }
@@ -92,7 +128,7 @@ Key * elektraFindArrayElementKey (Elektra * elektra, const char * name, size_t i
  */
 KDBType elektraGetArrayElementType (Elektra * elektra, const char * keyname, size_t index)
 {
-	elektraSetLookupKey (elektra, keyname);
+	elektraSetArrayLookupKey (elektra, keyname, index);
 	const Key * key = elektraFindArrayElementKey (elektra, keyname, index, NULL);
 	const Key * metaKey = keyGetMeta (key, "type");
 	return metaKey == NULL ? NULL : keyString (metaKey);
@@ -127,8 +163,22 @@ void elektraSetRawStringArrayElement (Elektra * elektra, const char * name, size
 				      ElektraError ** error)
 {
 	CHECK_ERROR (elektra, error);
+
+	if (elektraArraySize (elektra, name) < index)
+	{
+		elektraArraySetSize (elektra, name, index + 1, error);
+		if (*error != NULL)
+		{
+			return;
+		}
+	}
+
 	elektraSetArrayLookupKey (elektra, name, index);
-	Key * const key = keyDup (elektra->lookupKey);
+	Key * key = ksLookup (elektra->config, elektra->lookupKey, 0);
+	if (key == NULL)
+	{
+		key = keyDup (elektra->lookupKey);
+	}
 	keySetMeta (key, "type", type);
 	keySetString (key, value);
 
