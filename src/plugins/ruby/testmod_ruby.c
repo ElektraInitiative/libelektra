@@ -277,6 +277,13 @@ int main (int argc, char ** argv)
 
 	init (argc, argv);
 
+	// some debugging
+	char * ld_library_path = getenv ("LD_LIBRARY_PATH");
+	char * rubylib = getenv ("RUBYLIB");
+
+	printf ("env LD_LIBRARY_PATH: %s\n", ld_library_path);
+	printf ("env RUBYLIB: %s\n", rubylib);
+
 	// Plugin open
 	//
 	test_plugin_open_without_script ();
