@@ -115,6 +115,16 @@ if (FOUND_NAME GREATER -1)
 
 		target_link_elektra (${EXAMPLE} elektra-kdb elektra-notification elektra-io elektra-io-glib)
 		if (BUILD_FULL OR BUILD_STATIC)
+			# Work around a bug, where `GLIB_LIBRARIES` also requires linking to the library `intl` (part of GNU gettext)
+			if (APPLE)
+				foreach (library ${GLIB_LIBRARIES})
+					if (NOT ${library} STREQUAL intl)
+						list (APPEND GLIB_LIBRARIES_CLEANED
+							     ${library})
+					endif (NOT ${library} STREQUAL intl)
+				endforeach (library ${GLIB_LIBRARIES})
+				set (GLIB_LIBRARIES ${GLIB_LIBRARIES_CLEANED})
+			endif (APPLE)
 			target_link_libraries (${EXAMPLE} ${GLIB_LIBRARIES})
 		endif ()
 
