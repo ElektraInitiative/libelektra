@@ -304,7 +304,7 @@ static void initMagicKey (const uintptr_t magicNumber)
  *
  * @param magicNumber to detect arbitrary byte-swaps
  */
-static void initMagicMmapMetaData (const uintptr_t magicNumber)
+static void initMagicMmapMetaData (void)
 {
 	magicMmapMetaData.numKeySets = SIZE_MAX;
 	magicMmapMetaData.ksAlloc = 0;
@@ -675,7 +675,7 @@ static void printMmapAddr (MmapAddr * mmapAddr)
 	ELEKTRA_LOG_DEBUG ("metaKsArrayPtr: \t %p", (void *) mmapAddr->metaKsArrayPtr);
 	ELEKTRA_LOG_DEBUG ("keyPtr: \t\t %p", (void *) mmapAddr->keyPtr);
 	ELEKTRA_LOG_DEBUG ("dataPtr: \t\t %p", (void *) mmapAddr->dataPtr);
-	ELEKTRA_LOG_DEBUG ("mmapAddrInt: \t\t %llu", mmapAddr->mmapAddrInt);
+	ELEKTRA_LOG_DEBUG ("mmapAddrInt: \t\t %lu", mmapAddr->mmapAddrInt);
 }
 
 static void printMmapMetaData (MmapMetaData * mmapMetaData)
@@ -866,7 +866,7 @@ int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * handle ELEKTRA_UNUSED, Key * errorK
 	const uintptr_t magicNumber = generateMagicNumber ();
 	if (magicKeySet.array == 0) initMagicKeySet (magicNumber);
 	if (magicKey.data.v == 0) initMagicKey (magicNumber);
-	if (magicMmapMetaData.numKeys == 0) initMagicMmapMetaData (magicNumber);
+	if (magicMmapMetaData.numKeys == 0) initMagicMmapMetaData ();
 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }

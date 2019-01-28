@@ -160,4 +160,3 @@ KeySet * elektraPluginGetGlobalKeySet (Plugin * plugin)
 {
 	return plugin->global;
 }
-
