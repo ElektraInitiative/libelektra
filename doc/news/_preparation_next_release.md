@@ -74,7 +74,7 @@ types and functions have to be mapped to provide the full functionality.
 
 Take a look at the [README](/src/libs/highlevel/README.md) for more infos.
 
-. *(Klemens Böswirth)*
+For examples on how build an application using this API take a look at our [example](/examples/highlevel). *(Klemens Böswirth)*
 
 
 ### <<HIGHLIGHT2>>
@@ -139,7 +139,8 @@ compiled against an older 0.8 version of Elektra will continue to work
 
 - All plugins in the KDB now get a handle to a global keyset via `elektraPluginGetGlobalKeySet()`, for communication between plugins.
   See [Global KeySet Handle](/doc/decisions/global_keyset.md) for details. *(Mihael Pranjić)*
-- <<TODO>>
+- `elektraWriteArrayNumber` now uses `kdb_long_long_t` for array indices to be compatible with the high level API.
+  Similarly the value of `ELEKTRA_MAX_ARRAY_SIZE` was changed to match this. *(Klemens Böswirth)*
 - <<TODO>>
 
 ### Libease

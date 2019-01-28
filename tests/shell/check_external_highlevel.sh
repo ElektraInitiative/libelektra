@@ -4,15 +4,15 @@ echo
 echo ELEKTRA CHECK EXTERNAL HIGHLEVEL
 echo
 
-#if pkg-config elektra; then
-#	echo "Installed Elektra will be used"
-#	echo "We are assuming it is configured similarly"
-#	echo "The test will fail if installed version does not use"
-#	echo "same KDB."
-#else
-#	echo "Elektra or pkg-config not installed, will exit"
-#	exit
-#fi
+if pkg-config elektra; then
+	echo "Installed Elektra will be used"
+	echo "We are assuming it is configured similarly"
+	echo "The test will fail if installed version does not use"
+	echo "same KDB."
+else
+	echo "Elektra or pkg-config not installed, will exit"
+	exit 1
+fi
 
 check_version
 
@@ -95,7 +95,7 @@ cd "$EXTERNAL_FOLDER"
 mkdir build
 cd build
 
-cmake ..
+cmake ../cmake
 succeed_if "could not run cmake"
 
 make
@@ -107,15 +107,15 @@ do_tests
 cd ..
 rm -r build
 
-#echo "Testing build with pkgconfig"
-#
-#cd "$EXTERNAL_FOLDER/pkgconfig"
-#make
-#succeed_if "could not build pkgconfig project"
-#
-#do_tests
-#do_tests
-#
-#rm application
+echo "Testing build with pkgconfig"
+
+cd "$EXTERNAL_FOLDER/pkgconfig"
+make
+succeed_if "could not build pkgconfig project"
+
+do_tests
+do_tests
+
+rm application
 
 end_script gen
