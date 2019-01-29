@@ -23,6 +23,8 @@ nbSkip=0
 # the script itself
 scriptName=`basename "$0"`
 
+export PKG_CONFIG_PATH="@CMAKE_INSTALL_PREFIX@/lib@LIB_SUFFIX@/@TARGET_PKGCONFIG_FOLDER@":$PKG_CONFIG_PATH
+
 MOUNTPOINT="/tests/script"
 
 NAMESPACES="user system"

@@ -11,7 +11,7 @@ if pkg-config elektra; then
 	echo "same KDB."
 else
 	echo "Elektra or pkg-config not installed, will exit"
-	exit
+	exit 1
 fi
 
 check_version

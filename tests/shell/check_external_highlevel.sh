@@ -4,7 +4,7 @@ echo
 echo ELEKTRA CHECK EXTERNAL HIGHLEVEL
 echo
 
-if pkg-config elektra; then
+if pkg-config elektra-highlevel; then
 	echo "Installed Elektra will be used"
 	echo "We are assuming it is configured similarly"
 	echo "The test will fail if installed version does not use"
@@ -82,7 +82,6 @@ do_tests() {
 	succeed_if "application did not print myfloatarray[3]"
 	./application | grep "myfloatarray\\[4\\]: $MYFLOAT4"
 	succeed_if "application did not print myfloatarray[4]"
-
 
 	"$KDB" umount "$SPECKEY"
 	"$KDB" rm -r "$UKEY"

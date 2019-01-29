@@ -78,7 +78,7 @@ kdb_long_long_t elektraArraySize (Elektra * elektra, const char * name)
 		return 0;
 	}
 
-	kdb_long_long_t size = strtoull (&sizeString[digitStart], NULL, 10) + 1;
+	kdb_long_long_t size = strtoll (&sizeString[digitStart], NULL, 10) + 1;
 
 	return size;
 }
