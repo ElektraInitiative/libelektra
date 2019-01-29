@@ -62,8 +62,8 @@ if command -v pkg-config; then
 		echo "The test will fail if installed version does not use"
 		echo "same KDB."
 	else
-		echo "Error: Elektra not installed, will exit"
-		exit 1
+		echo "Elektra not installed, will exit"
+		exit 0
 	fi
 else
 	echo "pkg-config not installed, will skip"
