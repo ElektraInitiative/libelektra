@@ -87,6 +87,11 @@ Take a look at the [README](/src/libs/highlevel/README.md) for more infos.
 
 The following section lists news about the [modules](https://www.libelektra.org/plugins/readme) we updated in this release.
 
+### Augeas
+
+- We changed the default [Augeas](http://augeas.net) directory prefix on macOS to the default [Homebrew](https://brew.sh) Augeas
+  installation directory: `/usr/local/opt/augeas`. *(René Schwaiger)*
+
 ### network
 
 - The `network` plugin also supports port declarations to check if a port number is valid
