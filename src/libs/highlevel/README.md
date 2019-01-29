@@ -222,7 +222,7 @@ const char * message = elektraGetStringArrayElement (elektra, "message", 3);
 To get the size of the array you would like to access you can use the function `elektraArraySize`:
 
 ```c
-kdb_unsigned_long_long_t arraySize = elektraArraySize (elektra, "message");
+kdb_long_long_t arraySize = elektraArraySize (elektra, "message");
 ```
 
 For some background information on arrays in Elektra see the [Array](/doc/tutorials/arrays.md) tutorial, as well as our
@@ -286,11 +286,11 @@ macro is not provided, because you can simply pass the enum value as an `int` ar
 Similar functions and macros are provided for array elements:
 
 ```c
-int elektraGetEnumIntArrayElement (Elektra * elektra, char * keyName, kdb_unsigned_long_long_t index);
+int elektraGetEnumIntArrayElement (Elektra * elektra, char * keyName, kdb_long_long_t index);
 
 elektraGetEnumArrayElement(elektra, keyname, index, enumType);
 
-void elektraSetEnumIntArrayElement (Elektra * elektra, char * name, kdb_unsigned_long_long_t index, int value, ElektraError ** error);
+void elektraSetEnumIntArrayElement (Elektra * elektra, char * name, kdb_long_long_t index, int value, ElektraError ** error);
 ```
 
 ### Raw Values
@@ -306,15 +306,15 @@ to provide a type for the value you set, so that the API can perform type checki
 Similar functions are provided for array elements:
 
 ```c
-const char * elektraGetRawStringArrayElement (Elektra * elektra, const char * name, kdb_unsigned_long_long_t index);
+const char * elektraGetRawStringArrayElement (Elektra * elektra, const char * name, kdb_long_long_t index);
 
-void elektraSetRawStringArrayElement (Elektra * elektra, const char * name, kdb_unsigned_long_long_t index, const char * value, KDBType type, ElektraError ** error);
+void elektraSetRawStringArrayElement (Elektra * elektra, const char * name, kdb_long_long_t index, const char * value, KDBType type, ElektraError ** error);
 ```
 
 #### Type Information
 
 The type information is stored in the `"type"` metakey. `KDBType elektraGetType (Elektra * elektra, const char * keyname)` (or
-`KDBType elektraGetArrayElementType (Elektra * elektra, const char * name, kdb_unsigned_long_long_t index)` for array elements) lets you access this
+`KDBType elektraGetArrayElementType (Elektra * elektra, const char * name, kdb_long_long_t index)` for array elements) lets you access this
 information. A setter is not provided, because changing the type of a key without changing its value rarely, if ever, makes sense.
 
 ### Binary Values

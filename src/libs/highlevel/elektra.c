@@ -195,7 +195,7 @@ void elektraSetLookupKey (Elektra * elektra, const char * name)
 	keyAddName (elektra->lookupKey, name);
 }
 
-void elektraSetArrayLookupKey (Elektra * elektra, const char * name, kdb_unsigned_long_long_t index)
+void elektraSetArrayLookupKey (Elektra * elektra, const char * name, kdb_long_long_t index)
 {
 	elektraSetLookupKey (elektra, name);
 	char arrayPart[ELEKTRA_MAX_ARRAY_SIZE];

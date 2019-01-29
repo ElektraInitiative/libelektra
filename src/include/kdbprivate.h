@@ -649,7 +649,7 @@ struct _ElektraKDBError
 /* high-level API */
 void elektraSaveKey (Elektra * elektra, Key * key, ElektraError ** error);
 void elektraSetLookupKey (Elektra * elektra, const char * name);
-void elektraSetArrayLookupKey (Elektra * elektra, const char * name, size_t index);
+void elektraSetArrayLookupKey (Elektra * elektra, const char * name, kdb_long_long_t index);
 ElektraError * elektraErrorCreate (ElektraErrorCode code, const char * description, ElektraErrorSeverity severity);
 
 #ifdef __cplusplus
