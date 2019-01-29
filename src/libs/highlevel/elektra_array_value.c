@@ -31,7 +31,7 @@ extern "C" {
  * @param name    The (relative) name of the array.
  * @param size    The new size of the array.
  */
-static void elektraArraySetSize (Elektra * elektra, const char * name, size_t size, ElektraError ** error)
+static void elektraArraySetSize (Elektra * elektra, const char * name, kdb_long_long_t size, ElektraError ** error)
 {
 	elektraSetLookupKey (elektra, name);
 	Key * arrayParent = keyDup (elektra->lookupKey);
@@ -56,7 +56,7 @@ static void elektraArraySetSize (Elektra * elektra, const char * name, size_t si
  * @param name    The (relative) name of the array.
  * @return the size of the array, 0 is returned if the array is empty or doesn't exist
  */
-size_t elektraArraySize (Elektra * elektra, const char * name)
+kdb_long_long_t elektraArraySize (Elektra * elektra, const char * name)
 {
 	elektraSetLookupKey (elektra, name);
 	Key * const arrayParent = ksLookup (elektra->config, elektra->lookupKey, 0);
@@ -78,7 +78,7 @@ size_t elektraArraySize (Elektra * elektra, const char * name)
 		return 0;
 	}
 
-	size_t size = strtoull (&sizeString[digitStart], NULL, 10) + 1;
+	kdb_long_long_t size = strtoull (&sizeString[digitStart], NULL, 10) + 1;
 
 	return size;
 }
@@ -95,7 +95,7 @@ size_t elektraArraySize (Elektra * elektra, const char * name)
  * @param type    The expected type metadata value.
  * @return the Key referenced by @p name or NULL, if a fatal error occurs and the fatal error handler returns to this function
  */
-Key * elektraFindArrayElementKey (Elektra * elektra, const char * name, size_t index, KDBType type)
+Key * elektraFindArrayElementKey (Elektra * elektra, const char * name, kdb_long_long_t index, KDBType type)
 {
 	elektraSetArrayLookupKey (elektra, name, index);
 	Key * const resultKey = ksLookup (elektra->config, elektra->lookupKey, 0);
@@ -126,7 +126,7 @@ Key * elektraFindArrayElementKey (Elektra * elektra, const char * name, size_t i
  * @param index   The index of the array element whose type information shall be read.
  * @return the KDBType of the key
  */
-KDBType elektraGetArrayElementType (Elektra * elektra, const char * keyname, size_t index)
+KDBType elektraGetArrayElementType (Elektra * elektra, const char * keyname, kdb_long_long_t index)
 {
 	elektraSetArrayLookupKey (elektra, keyname, index);
 	const Key * key = elektraFindArrayElementKey (elektra, keyname, index, NULL);
@@ -142,7 +142,7 @@ KDBType elektraGetArrayElementType (Elektra * elektra, const char * keyname, siz
  * @param index   The index of the array element.
  * @return the raw value of the specified key, or NULL if the key was not found
  */
-const char * elektraGetRawStringArrayElement (Elektra * elektra, const char * name, size_t index)
+const char * elektraGetRawStringArrayElement (Elektra * elektra, const char * name, kdb_long_long_t index)
 {
 	elektraSetArrayLookupKey (elektra, name, index);
 	Key * const resultKey = ksLookup (elektra->config, elektra->lookupKey, 0);
@@ -159,7 +159,7 @@ const char * elektraGetRawStringArrayElement (Elektra * elektra, const char * na
  * @param type    The type to set in the metadata of the (array element) key.
  * @param error   Pointer to an ElektraError. Will be set in case saving fails.
  */
-void elektraSetRawStringArrayElement (Elektra * elektra, const char * name, size_t index, const char * value, KDBType type,
+void elektraSetRawStringArrayElement (Elektra * elektra, const char * name, kdb_long_long_t index, const char * value, KDBType type,
 				      ElektraError ** error)
 {
 	CHECK_ERROR (elektra, error);
@@ -201,7 +201,7 @@ void elektraSetRawStringArrayElement (Elektra * elektra, const char * name, size
  * @param index   The index of the array element to look up.
  * @return the string stored at the given array element
  */
-const char * elektraGetStringArrayElement (Elektra * elektra, const char * keyname, size_t index)
+const char * elektraGetStringArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index)
 {
 	const char * result;
 	ELEKTRA_GET_ARRAY_ELEMENT_VALUE (elektraKeyToString, KDB_TYPE_STRING, elektra, keyname, index, result);
@@ -216,7 +216,7 @@ const char * elektraGetStringArrayElement (Elektra * elektra, const char * keyna
  * @param index   The index of the array element to look up.
  * @return the boolean stored at the given array element
  */
-kdb_boolean_t elektraGetBooleanArrayElement (Elektra * elektra, const char * keyname, size_t index)
+kdb_boolean_t elektraGetBooleanArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index)
 {
 	kdb_boolean_t result;
 	ELEKTRA_GET_ARRAY_ELEMENT_VALUE (elektraKeyToBoolean, KDB_TYPE_BOOLEAN, elektra, keyname, index, result);
@@ -231,7 +231,7 @@ kdb_boolean_t elektraGetBooleanArrayElement (Elektra * elektra, const char * key
  * @param index   The index of the array element to look up.
  * @return the char stored at the given array element
  */
-kdb_char_t elektraGetCharArrayElement (Elektra * elektra, const char * keyname, size_t index)
+kdb_char_t elektraGetCharArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index)
 {
 	kdb_char_t result;
 	ELEKTRA_GET_ARRAY_ELEMENT_VALUE (elektraKeyToChar, KDB_TYPE_CHAR, elektra, keyname, index, result);
@@ -246,7 +246,7 @@ kdb_char_t elektraGetCharArrayElement (Elektra * elektra, const char * keyname, 
  * @param index   The index of the array element to look up.
  * @return the octet stored at the given array element
  */
-kdb_octet_t elektraGetOctetArrayElement (Elektra * elektra, const char * keyname, size_t index)
+kdb_octet_t elektraGetOctetArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index)
 {
 	kdb_octet_t result;
 	ELEKTRA_GET_ARRAY_ELEMENT_VALUE (elektraKeyToOctet, KDB_TYPE_OCTET, elektra, keyname, index, result);
@@ -261,7 +261,7 @@ kdb_octet_t elektraGetOctetArrayElement (Elektra * elektra, const char * keyname
  * @param index   The index of the array element to look up.
  * @return the short stored at the given array element
  */
-kdb_short_t elektraGetShortArrayElement (Elektra * elektra, const char * keyname, size_t index)
+kdb_short_t elektraGetShortArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index)
 {
 	kdb_short_t result;
 	ELEKTRA_GET_ARRAY_ELEMENT_VALUE (elektraKeyToShort, KDB_TYPE_SHORT, elektra, keyname, index, result);
@@ -276,7 +276,7 @@ kdb_short_t elektraGetShortArrayElement (Elektra * elektra, const char * keyname
  * @param index   The index of the array element to look up.
  * @return the unsigned short stored at the given array element
  */
-kdb_unsigned_short_t elektraGetUnsignedShortArrayElement (Elektra * elektra, const char * keyname, size_t index)
+kdb_unsigned_short_t elektraGetUnsignedShortArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index)
 {
 	kdb_unsigned_short_t result;
 	ELEKTRA_GET_ARRAY_ELEMENT_VALUE (elektraKeyToUnsignedShort, KDB_TYPE_UNSIGNED_SHORT, elektra, keyname, index, result);
@@ -291,7 +291,7 @@ kdb_unsigned_short_t elektraGetUnsignedShortArrayElement (Elektra * elektra, con
  * @param index   The index of the array element to look up.
  * @return the long stored at the given array element
  */
-kdb_long_t elektraGetLongArrayElement (Elektra * elektra, const char * keyname, size_t index)
+kdb_long_t elektraGetLongArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index)
 {
 	kdb_long_t result;
 	ELEKTRA_GET_ARRAY_ELEMENT_VALUE (elektraKeyToLong, KDB_TYPE_LONG, elektra, keyname, index, result);
@@ -306,7 +306,7 @@ kdb_long_t elektraGetLongArrayElement (Elektra * elektra, const char * keyname, 
  * @param index   The index of the array element to look up.
  * @return the unsigned long stored at the given array element
  */
-kdb_unsigned_long_t elektraGetUnsignedLongArrayElement (Elektra * elektra, const char * keyname, size_t index)
+kdb_unsigned_long_t elektraGetUnsignedLongArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index)
 {
 	kdb_unsigned_long_t result;
 	ELEKTRA_GET_ARRAY_ELEMENT_VALUE (elektraKeyToUnsignedLong, KDB_TYPE_UNSIGNED_LONG, elektra, keyname, index, result);
@@ -321,7 +321,7 @@ kdb_unsigned_long_t elektraGetUnsignedLongArrayElement (Elektra * elektra, const
  * @param index   The index of the array element to look up.
  * @return the long long stored at the given array element
  */
-kdb_long_long_t elektraGetLongLongArrayElement (Elektra * elektra, const char * keyname, size_t index)
+kdb_long_long_t elektraGetLongLongArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index)
 {
 	kdb_long_long_t result;
 	ELEKTRA_GET_ARRAY_ELEMENT_VALUE (elektraKeyToLongLong, KDB_TYPE_LONG_LONG, elektra, keyname, index, result);
@@ -336,7 +336,7 @@ kdb_long_long_t elektraGetLongLongArrayElement (Elektra * elektra, const char * 
  * @param index   The index of the array element to look up.
  * @return the unsigned long long stored at the given array element
  */
-kdb_unsigned_long_long_t elektraGetUnsignedLongLongArrayElement (Elektra * elektra, const char * keyname, size_t index)
+kdb_unsigned_long_long_t elektraGetUnsignedLongLongArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index)
 {
 	kdb_unsigned_long_long_t result;
 	ELEKTRA_GET_ARRAY_ELEMENT_VALUE (elektraKeyToUnsignedLongLong, KDB_TYPE_UNSIGNED_LONG_LONG, elektra, keyname, index, result);
@@ -351,7 +351,7 @@ kdb_unsigned_long_long_t elektraGetUnsignedLongLongArrayElement (Elektra * elekt
  * @param index   The index of the array element to look up.
  * @return the float stored at the given array element
  */
-kdb_float_t elektraGetFloatArrayElement (Elektra * elektra, const char * keyname, size_t index)
+kdb_float_t elektraGetFloatArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index)
 {
 	kdb_float_t result;
 	ELEKTRA_GET_ARRAY_ELEMENT_VALUE (elektraKeyToFloat, KDB_TYPE_FLOAT, elektra, keyname, index, result);
@@ -366,7 +366,7 @@ kdb_float_t elektraGetFloatArrayElement (Elektra * elektra, const char * keyname
  * @param index   The index of the array element to look up.
  * @return the double stored at the given array element
  */
-kdb_double_t elektraGetDoubleArrayElement (Elektra * elektra, const char * keyname, size_t index)
+kdb_double_t elektraGetDoubleArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index)
 {
 	kdb_double_t result;
 	ELEKTRA_GET_ARRAY_ELEMENT_VALUE (elektraKeyToDouble, KDB_TYPE_DOUBLE, elektra, keyname, index, result);
@@ -383,7 +383,7 @@ kdb_double_t elektraGetDoubleArrayElement (Elektra * elektra, const char * keyna
  * @param index   The index of the array element to look up.
  * @return the long double stored at the given array element
  */
-kdb_long_double_t elektraGetLongDoubleArrayElement (Elektra * elektra, const char * keyname, size_t index)
+kdb_long_double_t elektraGetLongDoubleArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index)
 {
 	kdb_long_double_t result;
 	ELEKTRA_GET_ARRAY_ELEMENT_VALUE (elektraKeyToLongDouble, KDB_TYPE_LONG_DOUBLE, elektra, keyname, index, result);
@@ -400,7 +400,7 @@ kdb_long_double_t elektraGetLongDoubleArrayElement (Elektra * elektra, const cha
  * @param index   The index of the array element to look up.
  * @return the int value of the enum stored at the given array element
  */
-int elektraGetEnumIntArrayElement (Elektra * elektra, const char * keyname, size_t index)
+int elektraGetEnumIntArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index)
 {
 	int result;
 	ELEKTRA_GET_ARRAY_ELEMENT_VALUE (elektraKeyToLong, KDB_TYPE_ENUM, elektra, keyname, index, result);
@@ -428,7 +428,8 @@ int elektraGetEnumIntArrayElement (Elektra * elektra, const char * keyname, size
  * @param error   Pass a reference to an ElektraError pointer.
  *                Will only be set in case of an error.
  */
-void elektraSetStringArrayElement (Elektra * elektra, const char * keyname, size_t index, const char * value, ElektraError ** error)
+void elektraSetStringArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index, const char * value,
+				   ElektraError ** error)
 {
 	CHECK_ERROR (elektra, error);
 	elektraSetRawStringArrayElement (elektra, keyname, index, value, KDB_TYPE_STRING, error);
@@ -444,7 +445,8 @@ void elektraSetStringArrayElement (Elektra * elektra, const char * keyname, size
  * @param error   Pass a reference to an ElektraError pointer.
  *                Will only be set in case of an error.
  */
-void elektraSetBooleanArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_boolean_t value, ElektraError ** error)
+void elektraSetBooleanArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index, kdb_boolean_t value,
+				    ElektraError ** error)
 {
 	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (elektraBooleanToString, KDB_TYPE_BOOLEAN, elektra, keyname, index, value, error);
 }
@@ -459,7 +461,7 @@ void elektraSetBooleanArrayElement (Elektra * elektra, const char * keyname, siz
  * @param error   Pass a reference to an ElektraError pointer.
  *                Will only be set in case of an error.
  */
-void elektraSetCharArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_char_t value, ElektraError ** error)
+void elektraSetCharArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index, kdb_char_t value, ElektraError ** error)
 {
 	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (elektraCharToString, KDB_TYPE_CHAR, elektra, keyname, index, value, error);
 }
@@ -474,7 +476,7 @@ void elektraSetCharArrayElement (Elektra * elektra, const char * keyname, size_t
  * @param error   Pass a reference to an ElektraError pointer.
  *                Will only be set in case of an error.
  */
-void elektraSetOctetArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_octet_t value, ElektraError ** error)
+void elektraSetOctetArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index, kdb_octet_t value, ElektraError ** error)
 {
 	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (elektraOctetToString, KDB_TYPE_OCTET, elektra, keyname, index, value, error);
 }
@@ -489,7 +491,7 @@ void elektraSetOctetArrayElement (Elektra * elektra, const char * keyname, size_
  * @param error   Pass a reference to an ElektraError pointer.
  *                Will only be set in case of an error.
  */
-void elektraSetShortArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_short_t value, ElektraError ** error)
+void elektraSetShortArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index, kdb_short_t value, ElektraError ** error)
 {
 	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (elektraShortToString, KDB_TYPE_SHORT, elektra, keyname, index, value, error);
 }
@@ -504,7 +506,7 @@ void elektraSetShortArrayElement (Elektra * elektra, const char * keyname, size_
  * @param error   Pass a reference to an ElektraError pointer.
  *                Will only be set in case of an error.
  */
-void elektraSetUnsignedShortArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_unsigned_short_t value,
+void elektraSetUnsignedShortArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index, kdb_unsigned_short_t value,
 					  ElektraError ** error)
 {
 	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (elektraUnsignedShortToString, KDB_TYPE_UNSIGNED_SHORT, elektra, keyname, index, value, error);
@@ -520,7 +522,7 @@ void elektraSetUnsignedShortArrayElement (Elektra * elektra, const char * keynam
  * @param error   Pass a reference to an ElektraError pointer.
  *                Will only be set in case of an error.
  */
-void elektraSetLongArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_long_t value, ElektraError ** error)
+void elektraSetLongArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index, kdb_long_t value, ElektraError ** error)
 {
 	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (elektraLongToString, KDB_TYPE_LONG, elektra, keyname, index, value, error);
 }
@@ -535,7 +537,7 @@ void elektraSetLongArrayElement (Elektra * elektra, const char * keyname, size_t
  * @param error   Pass a reference to an ElektraError pointer.
  *                Will only be set in case of an error.
  */
-void elektraSetUnsignedLongArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_unsigned_long_t value,
+void elektraSetUnsignedLongArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index, kdb_unsigned_long_t value,
 					 ElektraError ** error)
 {
 	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (elektraUnsignedLongToString, KDB_TYPE_UNSIGNED_LONG, elektra, keyname, index, value, error);
@@ -551,7 +553,8 @@ void elektraSetUnsignedLongArrayElement (Elektra * elektra, const char * keyname
  * @param error   Pass a reference to an ElektraError pointer.
  *                Will only be set in case of an error.
  */
-void elektraSetLongLongArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_long_long_t value, ElektraError ** error)
+void elektraSetLongLongArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index, kdb_long_long_t value,
+				     ElektraError ** error)
 {
 	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (elektraLongLongToString, KDB_TYPE_LONG_LONG, elektra, keyname, index, value, error);
 }
@@ -566,7 +569,7 @@ void elektraSetLongLongArrayElement (Elektra * elektra, const char * keyname, si
  * @param error   Pass a reference to an ElektraError pointer.
  *                Will only be set in case of an error.
  */
-void elektraSetUnsignedLongLongArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_unsigned_long_long_t value,
+void elektraSetUnsignedLongLongArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index, kdb_unsigned_long_long_t value,
 					     ElektraError ** error)
 {
 	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (elektraUnsignedLongLongToString, KDB_TYPE_UNSIGNED_LONG_LONG, elektra, keyname, index, value,
@@ -583,7 +586,7 @@ void elektraSetUnsignedLongLongArrayElement (Elektra * elektra, const char * key
  * @param error   Pass a reference to an ElektraError pointer.
  *                Will only be set in case of an error.
  */
-void elektraSetFloatArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_float_t value, ElektraError ** error)
+void elektraSetFloatArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index, kdb_float_t value, ElektraError ** error)
 {
 	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (elektraFloatToString, KDB_TYPE_FLOAT, elektra, keyname, index, value, error);
 }
@@ -598,7 +601,8 @@ void elektraSetFloatArrayElement (Elektra * elektra, const char * keyname, size_
  * @param error   Pass a reference to an ElektraError pointer.
  *                Will only be set in case of an error.
  */
-void elektraSetDoubleArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_double_t value, ElektraError ** error)
+void elektraSetDoubleArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index, kdb_double_t value,
+				   ElektraError ** error)
 {
 	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (elektraDoubleToString, KDB_TYPE_DOUBLE, elektra, keyname, index, value, error);
 }
@@ -615,7 +619,7 @@ void elektraSetDoubleArrayElement (Elektra * elektra, const char * keyname, size
  * @param error   Pass a reference to an ElektraError pointer.
  *                Will only be set in case of an error.
  */
-void elektraSetLongDoubleArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_long_double_t value,
+void elektraSetLongDoubleArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index, kdb_long_double_t value,
 				       ElektraError ** error)
 {
 	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (elektraLongDoubleToString, KDB_TYPE_LONG_DOUBLE, elektra, keyname, index, value, error);
@@ -634,7 +638,7 @@ void elektraSetLongDoubleArrayElement (Elektra * elektra, const char * keyname, 
  * @param error   Pass a reference to an ElektraError pointer.
  *                Will only be set in case of an error.
  */
-void elektraSetEnumIntArrayElement (Elektra * elektra, const char * keyName, size_t index, int value, ElektraError ** error)
+void elektraSetEnumIntArrayElement (Elektra * elektra, const char * keyName, kdb_long_long_t index, int value, ElektraError ** error)
 {
 	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (elektraLongToString, KDB_TYPE_ENUM, elektra, keyName, index, value, error);
 }
