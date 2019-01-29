@@ -275,9 +275,9 @@ you up to date with the multi-language support provided by Elektra.
 - The plugin name is now provided as compiler definition ELEKTRA_PLUGIN_NAME via CMake. See [#1042](#1042) .*(Peter Nirschl)*
 - We added a [CMake find module for GLib](https://master.libelektra.org/cmake/Modules/FindGLib.cmake). The module makes sure you can
   compile and link [IO GLib](https://www.libelektra.org/bindings/io_glib) on macOS. *(René Schwaiger)*
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- We now use the [official CMake find module for `iconv`](https://github.com/Kitware/CMake/blob/master/Modules/FindIconv.cmake). This
+  update fixes linker problems with the [`iconv`](http://libelektra.org/plugins/iconv) and
+  [`filecheck`](http://libelektra.org/plugins/filecheck) plugin on FreeBSD 12. *(René Schwaiger)*
 
 ### Docker
 
