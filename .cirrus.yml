@@ -8,8 +8,6 @@ bsd_task:
     - name: 😈 FreeBSD 12
       freebsd_instance:
         image: freebsd-12-0-release-amd64
-      env:
-        PLUGINS: 'ALL;-iconv;-filecheck' # Linking the iconv library fails: https://cirrus-ci.com/task/4923537438539776
 
   install_script:
     - PLUGINS_KDB="$PLUGINS"; unset PLUGINS # `pkg` tries to load modules from the environment variable `PLUGINS`
@@ -23,7 +21,7 @@ bsd_task:
 
   script:
     - mkdir build && cd build
-    - cmake -GNinja -DPLUGINS="${PLUGINS:-ALL}" -DBINDINGS='ALL' -DTARGET_PLUGIN_FOLDER="" -DCMAKE_SKIP_INSTALL_RPATH=ON ..
+    - cmake -GNinja -DPLUGINS=ALL -DBINDINGS='ALL' -DTARGET_PLUGIN_FOLDER="" -DCMAKE_SKIP_INSTALL_RPATH=ON ..
     - ninja
     - output="$(ninja install 2>&1)" || printf '%s' "$output"
 
