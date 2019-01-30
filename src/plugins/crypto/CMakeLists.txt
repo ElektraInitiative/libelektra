@@ -58,7 +58,7 @@ add_plugin (crypto_openssl
 	    SOURCES openssl_operations.h
 		    openssl_operations.c
 		    ${CRYPTO_COMMON_FILES}
-	    INCLUDE_DIRECTORIES ${OPENSSL_INCLUDE_DIRS}
+	    INCLUDE_DIRECTORIES ${OPENSSL_INCLUDE_DIR}
 	    LINK_LIBRARIES ${OPENSSL_LIBRARIES}
 	    LINK_ELEKTRA elektra-invoke
 	    COMPILE_DEFINITIONS ELEKTRA_VARIANT=openssl
