@@ -27,7 +27,6 @@ do_tests() {
 
 	"$KDB" umount "$SPECKEY"
 	"$KDB" rm -r "$UKEY"
-	"$KDB" rm -r "$UKEY"
 	"$KDB" rm -r "$SPECKEY"
 
 	"$KDB" mount "$EXTERNAL_FOLDER/spec.ini" "$SPECKEY" ni
@@ -82,6 +81,7 @@ do_tests() {
 	succeed_if "application did not print myfloatarray[4]"
 
 	"$KDB" umount "$SPECKEY"
+	"$KDB" umount "$<KEY"
 	"$KDB" rm -r "$UKEY"
 	"$KDB" rm -r "$SPECKEY"
 }
