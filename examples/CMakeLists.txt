@@ -102,9 +102,9 @@ if (FOUND_NAME GREATER -1)
 			#
 			# . See also: https://travis-ci.org/sanssecours/elektra/jobs/445784708.
 			# ~~~
-			find_package (PkgConfig QUIET)
-			pkg_check_modules (GLIB QUIET glib-2.0)
-			include_directories (${GLIB_INCLUDE_DIRS})
+			find_package (GLib QUIET)
+
+			include_directories (${GLib_INCLUDE_DIRS})
 
 			list (APPEND SOURCES
 				     $<TARGET_OBJECTS:OBJ_elektra-io-glib>) # add sources for elektra-io-uv for static and full builds
@@ -115,17 +115,7 @@ if (FOUND_NAME GREATER -1)
 
 		target_link_elektra (${EXAMPLE} elektra-kdb elektra-notification elektra-io elektra-io-glib)
 		if (BUILD_FULL OR BUILD_STATIC)
-			# Work around a bug, where `GLIB_LIBRARIES` also requires linking to the library `intl` (part of GNU gettext)
-			if (APPLE)
-				foreach (library ${GLIB_LIBRARIES})
-					if (NOT ${library} STREQUAL intl)
-						list (APPEND GLIB_LIBRARIES_CLEANED
-							     ${library})
-					endif (NOT ${library} STREQUAL intl)
-				endforeach (library ${GLIB_LIBRARIES})
-				set (GLIB_LIBRARIES ${GLIB_LIBRARIES_CLEANED})
-			endif (APPLE)
-			target_link_libraries (${EXAMPLE} ${GLIB_LIBRARIES})
+			target_link_libraries (${EXAMPLE} ${GLib_LIBRARY})
 		endif ()
 
 	endif ()

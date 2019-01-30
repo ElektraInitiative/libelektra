@@ -1,23 +1,12 @@
 include (LibAddMacros)
 
-find_package (PkgConfig QUIET)
-pkg_check_modules (GLIB QUIET glib-2.0)
+find_package (GLib QUIET)
 
-if (NOT GLIB_FOUND)
+if (NOT GLib_FOUND)
 	exclude_binding (io_glib "glib-2.0 not found")
 elseif (ENABLE_ASAN)
 	exclude_binding (io_glib "io bindings are not compatible with ENABLE_ASAN")
 else ()
-	# Work around a bug, where `GLIB_LIBRARIES` also requires linking to the library `intl` (part of GNU gettext)
-	if (APPLE)
-		foreach (library ${GLIB_LIBRARIES})
-			if (NOT ${library} STREQUAL intl)
-				list (APPEND GLIB_LIBRARIES_CLEANED
-					     ${library})
-			endif (NOT ${library} STREQUAL intl)
-		endforeach (library ${GLIB_LIBRARIES})
-		set (GLIB_LIBRARIES ${GLIB_LIBRARIES_CLEANED})
-	endif (APPLE)
 
 	# Build library
 	add_binding (io_glib)
@@ -33,15 +22,15 @@ else ()
 
 	# create object library so that executables can use $<TARGET_OBJECTS:OBJ_${IO_VARIANT_LIBRARY}>
 	add_library (OBJ_${IO_VARIANT_LIBRARY} OBJECT ${SOURCES})
-	target_include_directories (OBJ_${IO_VARIANT_LIBRARY} SYSTEM PUBLIC ${GLIB_INCLUDE_DIRS})
+	target_include_directories (OBJ_${IO_VARIANT_LIBRARY} SYSTEM PUBLIC ${GLib_INCLUDE_DIRS})
 
-	add_lib (io-${BINDING_VARIANT} SOURCES ${SOURCES} LINK_ELEKTRA elektra-io LINK_LIBRARIES ${GLIB_LIBRARIES})
+	add_lib (io-${BINDING_VARIANT} SOURCES ${SOURCES} LINK_ELEKTRA elektra-io LINK_LIBRARIES ${GLib_LIBRARY})
 
 	if (BUILD_FULL OR BUILD_STATIC)
-		add_includes ("elektra-full" ${GLIB_INCLUDE_DIRS})
+		add_includes ("elektra-full" ${GLib_INCLUDE_DIRS})
 	endif ()
 	if (BUILD_SHARED)
-		target_include_directories (${IO_VARIANT_LIBRARY} SYSTEM PUBLIC ${GLIB_INCLUDE_DIRS})
+		target_include_directories (${IO_VARIANT_LIBRARY} SYSTEM PUBLIC ${GLib_INCLUDE_DIRS})
 	endif ()
 
 	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/${IO_VARIANT_LIBRARY}.pc.in"
@@ -73,11 +62,11 @@ else ()
 	target_include_directories (${testexename} PUBLIC "${CMAKE_SOURCE_DIR}/tests/cframework")
 	target_include_directories (${testexename}
 				    PUBLIC SYSTEM
-					   ${GLIB_INCLUDE_DIRS})
+					   ${GLib_INCLUDE_DIRS})
 
 	target_link_elektra (${testexename} elektra-kdb elektra-plugin elektra-io ${IO_VARIANT_LIBRARY} m)
 	if (BUILD_FULL OR BUILD_STATIC)
-		target_link_libraries (${testexename} ${GLIB_LIBRARIES})
+		target_link_libraries (${testexename} ${GLib_LIBRARY})
 	endif ()
 
 	add_test (NAME ${testexename}
