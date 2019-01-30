@@ -30,7 +30,7 @@ else (LIBAUGEAS_INCLUDE_DIR)
 
 	if (NOT _LIBAUGEAS_PREFIX)
 		if (APPLE)
-			set (_LIBAUGEAS_PREFIX "/usr/local/opt/augeas")
+			set (_LIBAUGEAS_PREFIX "/usr/local")
 		else (APPLE)
 			set (_LIBAUGEAS_PREFIX "/usr")
 		endif (APPLE)

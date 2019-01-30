@@ -89,8 +89,8 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 ### Augeas
 
-- We changed the default [Augeas](http://augeas.net) directory prefix on macOS to the default [Homebrew](https://brew.sh) Augeas
-  installation directory: `/usr/local/opt/augeas`. *(René Schwaiger)*
+- We changed the default [Augeas](http://augeas.net) directory prefix for the lenses directory on macOS to the one used by
+  [Homebrew](https://brew.sh): `/usr/local`. *(René Schwaiger)*
 
 ### network
 
