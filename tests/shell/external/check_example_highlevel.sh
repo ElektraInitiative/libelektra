@@ -34,7 +34,6 @@ do_tests() {
 	"$KDB" spec-mount "$KEY"
 
 	./application
-	[ "$(./application)" == "successfully read configuration" ]
 	succeed_if "application could not read default config (spec)"
 
 	MYSTRING="Hello World"
@@ -57,7 +56,6 @@ do_tests() {
 	"$KDB" setmeta "$UKEY/myfloatarray" array "#4"
 
 	./application
-	[ "$(./application)" == "successfully read configuration" ]
 	succeed_if "application could not read changed config"
 
 	"$KDB" set "$UKEY/print" "1"
