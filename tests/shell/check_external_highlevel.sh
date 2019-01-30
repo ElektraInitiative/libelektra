@@ -4,11 +4,23 @@ echo
 echo ELEKTRA CHECK EXTERNAL HIGHLEVEL
 echo
 
+if command -v pkg-config; then
+	if ! pkg-config elektra; then
+		echo "Elektra not installed, will skip"
+		exit 0
+	fi
+else
+	echo "pkg-config not installed, will skip"
+	exit 0
+fi
+
 check_version
 
 EXTERNAL_FOLDER="@CMAKE_SOURCE_DIR@/examples/highlevel"
 
 set -x
+
+KDB="$(pkg-config --variable=exec_prefix elektra)/kdb"
 
 do_tests() {
 	KEY=/sw/example/highlevel/#0/current
@@ -95,21 +107,6 @@ do_tests
 
 cd ..
 rm -r build
-
-if command -v pkg-config; then
-	if pkg-config elektra; then
-		echo "Installed Elektra will be used"
-		echo "We are assuming it is configured similarly"
-		echo "The test will fail if installed version does not use"
-		echo "same KDB."
-	else
-		echo "Elektra not installed, will exit"
-		exit 0
-	fi
-else
-	echo "pkg-config not installed, will skip"
-	exit 0
-fi
 
 echo "Testing build with pkgconfig"
 

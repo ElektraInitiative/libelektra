@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <elektra/elektra.h>
+#include <elektra.h>
 
 #include <stdio.h>
 #include <stdlib.h>
