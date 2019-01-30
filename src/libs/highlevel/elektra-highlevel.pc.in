@@ -10,5 +10,5 @@ Name: libelektra-highlevel
 Description: Elektra Highlevel API
 Requires:
 Version: @KDB_VERSION@
-Libs: -L${libdir} -lelektra -lelektra-kdb -lelektra-ease -lelektra-highlevel
+Libs: -L${libdir} @LIBRARIES@
 Cflags: -I${includedir}

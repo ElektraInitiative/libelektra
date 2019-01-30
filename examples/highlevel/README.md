@@ -4,7 +4,7 @@ This folder contains an example on how to use the high-level API.
 
 The example is provided for CMake and pkg-config build systems, but you can use any build system you like, as long as you setup
 your include directories and linked libraries correctly. The high-level API uses the same include directory as the rest of elektra,
-and you need to link against at least `elektra`, `elektra-highlevel`, `elektra-kdb` and `elektra-ease`.
+and you need to link against at least `elektra`, `elektra-highlevel`, `elektra-kdb` and `elektra-ease` (or `elektra-full`).
 
 ## Setup
 
@@ -27,3 +27,11 @@ kdb set /sw/example/highlevel/#0/current/print 1
 ```
 
 . Otherwise it will just read the configuration an print a success message.
+
+## Limitations
+
+The pkg-config example will only work for the `BUILD_SHARED` and `BUILD_FULL` variants of Elektra.
+To make pkg-config work with `BUILD_STATIC` you need to change the Makefile. You can use a C compiler for compilation, but you need to
+use a C++ Compiler for linking and also need to link with `-ldbus-1`, `-lz` `-lm` and `-pthread`.
+
+The CMake example should always work, because CMake should detect the correct way of linking Elektra.
