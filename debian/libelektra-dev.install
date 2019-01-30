@@ -63,10 +63,11 @@ usr/include/elektra/specreader.hpp
 usr/include/elektra/toolexcept.hpp
 usr/include/elektra/kdbopts.h
 usr/include/elektra/elektra.h
-usr/include/elektra/errors.h
-usr/include/elektra/types.h
-usr/include/elektra/errorcodes.h
-usr/include/elektra/conversion.h
+usr/include/elektra/elektra/error.h
+usr/include/elektra/elektra/errors.h
+usr/include/elektra/elektra/errorcodes.h
+usr/include/elektra/elektra/types.h
+usr/include/elektra/elektra/conversion.h
 usr/lib/*/cmake/Elektra/ElektraConfig.cmake
 usr/lib/*/cmake/Elektra/ElektraConfigVersion.cmake
 usr/lib/*/cmake/Elektra/ElektraTargetsLibelektra-*.cmake
@@ -75,3 +76,4 @@ usr/lib/*/libelektra.so
 usr/lib/*/pkgconfig/elektra.pc
 usr/lib/*/pkgconfig/elektra-notification.pc
 usr/lib/*/pkgconfig/elektra-io.pc
+usr/lib/*/pkgconfig/elektra-highlevel.pc
