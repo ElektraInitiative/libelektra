@@ -17,6 +17,8 @@ function (add_externaltest testname)
 			message (SEND_ERROR "no kdb tool found, please enable BUILD_FULL, BUILD_STATIC or BUILD_SHARED")
 		endif (BUILD_FULL)
 		set (INCLUDE_COMMON "${INCLUDE_COMMON_FILE}KDB=\"${KDB_COMMAND}\"")
+		set (testscriptname "${CMAKE_CURRENT_BINARY_DIR}/${testname}")
+		configure_file ("${filename}" "${testscriptname}" @ONLY)
 		# don't acutally add as test, only run via `kdb run_all`
 		install (FILES "${CMAKE_CURRENT_BINARY_DIR}/${testname}"
 			 DESTINATION ${TARGET_TOOL_EXEC_FOLDER}
