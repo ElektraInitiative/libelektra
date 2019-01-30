@@ -6,11 +6,14 @@
  * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
+#include "elektra.h"
 #include "elektra/conversion.h"
 #include "elektra/errors.h"
 #include "elektra/errorsprivate.h"
 #include "kdbhelper.h"
 #include "kdbprivate.h"
+
+#include <stdlib.h>
 #include <string.h>
 
 #ifdef __cplusplus
