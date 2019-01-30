@@ -26,6 +26,7 @@ do_tests() {
 	SPECKEY="spec$KEY"
 
 	"$KDB" umount "$SPECKEY"
+	"$KDB" umount "$KEY"
 	"$KDB" rm -r "$UKEY"
 	"$KDB" rm -r "$SPECKEY"
 
@@ -81,7 +82,7 @@ do_tests() {
 	succeed_if "application did not print myfloatarray[4]"
 
 	"$KDB" umount "$SPECKEY"
-	"$KDB" umount "$<KEY"
+	"$KDB" umount "$KEY"
 	"$KDB" rm -r "$UKEY"
 	"$KDB" rm -r "$SPECKEY"
 }
