@@ -20,8 +20,6 @@ EXTERNAL_FOLDER="@CMAKE_SOURCE_DIR@/examples/external"
 
 set -x
 
-KDB="$(pkg-config --variable=exec_prefix elektra)/kdb"
-
 do_tests() {
 	SKEY=system/test/myapp/key
 	UKEY=user/test/myapp/key
