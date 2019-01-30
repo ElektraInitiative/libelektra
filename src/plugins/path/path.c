@@ -22,6 +22,8 @@ static int switchUser (Key * key, Key * parentKey, const char * name, const stru
 
 static int switchGroup (Key * key, Key * parentKey, const char * name, const struct group * gr);
 
+int getAllGroups (Key * parentKey, uid_t currentUID, const struct passwd * p, int ngroups, gid_t ** groups);
+
 /**
  * This method tries to find a matching group from a group struct containing more than one group
  * @param val The group name which is searched
@@ -162,26 +164,12 @@ static int validatePermission (Key * key, Key * parentKey)
 			return -1;
 		}
 	}
-
 	int ngroups = 0;
-	gid_t * tmpGroups = (gid_t *) malloc (0 * sizeof (gid_t));
-	getgrouplist (p->pw_name, (int) p->pw_gid, tmpGroups, &ngroups);
-	free (tmpGroups);
-	// call to getgrouplist fails because at least one group (p->pw_gid) is returned
-	// therefore ngroups now contains the actual number of groups for the user
-	gid_t * groups = (gid_t *) malloc (ngroups * sizeof (gid_t));
-	if (getgrouplist (p->pw_name, (int) p->pw_gid, groups, &ngroups) < 0)
+	gid_t * groups;
+	int allGroupsReturnCode = getAllGroups (parentKey, currentUID, p, ngroups, &groups);
+	if (allGroupsReturnCode < 0)
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_USER_PERMISSION_ERROR, parentKey,
-				   "There was a problem in the getting all groups for the user."
-				   "Please report the issue at https://issues.libelektra.org");
-		if (seteuid (currentUID) < 0)
-		{
-			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_USER_PERMISSION_ERROR, parentKey,
-					   "There was a problem in the user switching process."
-					   "Please report the issue at https://issues.libelektra.org");
-		}
-		return -1;
+		return allGroupsReturnCode;
 	}
 
 	// Get groupID of file being checked
@@ -229,6 +217,30 @@ static int validatePermission (Key * key, Key * parentKey)
 	}
 
 	return 1;
+}
+
+int getAllGroups (Key * parentKey, uid_t currentUID, const struct passwd * p, int ngroups, gid_t ** groups)
+{
+	gid_t * tmpGroups = (gid_t *) elektraMalloc (0 * sizeof (gid_t));
+	getgrouplist (p->pw_name, (int) p->pw_gid, tmpGroups, &ngroups);
+	elektraFree (tmpGroups);
+	(*groups) = (gid_t *) elektraMalloc (ngroups * sizeof (gid_t));
+	// call to getgrouplist fails because at least one group (p->pw_gid) is returned
+	// therefore ngroups now contains the actual number of groups for the user
+	if (getgrouplist (p->pw_name, (int) p->pw_gid, (*groups), &ngroups) < 0)
+	{
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_USER_PERMISSION_ERROR, parentKey,
+				   "There was a problem in the getting all groups for the user."
+				   "Please report the issue at https://issues.libelektra.org");
+		if (seteuid (currentUID) < 0)
+		{
+			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_USER_PERMISSION_ERROR, parentKey,
+					   "There was a problem in the user switching process."
+					   "Please report the issue at https://issues.libelektra.org");
+		}
+		return -1;
+	}
+	return 0;
 }
 
 static int switchGroup (Key * key, Key * parentKey, const char * name, const struct group * gr)
