@@ -108,8 +108,8 @@ static int validatePermission (Key * key, Key * parentKey)
 
 	uid_t currentUID = geteuid ();
 
-	const Key * userMeta = keyGetMeta (key, "check/permission/user");
-	const Key * userTypes = keyGetMeta (key, "check/permission/mode");
+	const Key * userMeta = keyGetMeta (key, "check/path/user");
+	const Key * userTypes = keyGetMeta (key, "check/path/mode");
 
 	// ***** central variables *******
 	const char * validPath = keyString (key);
@@ -321,7 +321,7 @@ int elektraPathSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 		rc = validateKey (cur, parentKey);
 		if (rc <= 0) return -1;
 
-		const Key * accessMeta = keyGetMeta (cur, "check/permission/mode");
+		const Key * accessMeta = keyGetMeta (cur, "check/path/mode");
 		if (!accessMeta) continue;
 		rc = validatePermission (cur, parentKey);
 		if (!rc) return -1;
