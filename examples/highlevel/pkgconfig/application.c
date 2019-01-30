@@ -37,7 +37,8 @@ int main (int argc, char ** argv)
 	const size_t size = elektraArraySize (elektra, "myfloatarray");
 	float * myfloatarray = calloc (size, sizeof (float));
 
-	for (int i = 0; i < size; ++i)
+	int i;
+	for (i = 0; i < size; ++i)
 	{
 		myfloatarray[i] = elektraGetFloatArrayElement (elektra, "myfloatarray", i);
 	}
@@ -49,7 +50,7 @@ int main (int argc, char ** argv)
 	if (print)
 	{
 		printf ("mystring: %s\nmyint: %d\nmydouble: %f\nsizeof(myfloatarray): %ld", mystring, myint, mydouble, size);
-		for (int i = 0; i < size; ++i)
+		for (i = 0; i < size; ++i)
 		{
 			printf ("\nmyfloatarray[%d]: %f", i, myfloatarray[i]);
 		}
