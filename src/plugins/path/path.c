@@ -16,13 +16,13 @@
 
 static int createModeBits (const char * modes);
 
-static int handleNoUserCase (Key * parentKey, const char * validPath, const char * modes, int modeMask);
+static int handleNoUserCase (Key * parentKey, const char * validPath, const char * modes);
 
-static int switchUser (Key * key, Key * parentKey, const char * name, const struct passwd * p);
+static int switchUser (Key * key, Key * parentKey, const struct passwd * p);
 
 static int switchGroup (Key * key, Key * parentKey, const char * name, const struct group * gr);
 
-int getAllGroups (Key * parentKey, uid_t currentUID, const struct passwd * p, int ngroups, gid_t ** groups);
+static int getAllGroups (Key * parentKey, uid_t currentUID, const struct passwd * p, int ngroups, gid_t ** groups);
 
 /**
  * This method tries to find a matching group from a group struct containing more than one group
@@ -136,7 +136,7 @@ static int validatePermission (Key * key, Key * parentKey)
 			return -1;
 		}
 		name = p->pw_name;
-		int result = switchUser (key, parentKey, name, p);
+		int result = switchUser (key, parentKey, p);
 		if (result != 0)
 		{
 			return result;
@@ -146,7 +146,7 @@ static int validatePermission (Key * key, Key * parentKey)
 	// If user metadata is available but empty
 	else if (userMeta)
 	{
-		return handleNoUserCase (parentKey, validPath, modes, modeMask);
+		return handleNoUserCase (parentKey, validPath, modes);
 	}
 
 	// If user metadata is not given ... can only check if root can access the file
@@ -167,7 +167,7 @@ static int validatePermission (Key * key, Key * parentKey)
 	int ngroups = 0;
 	gid_t * groups;
 	int allGroupsReturnCode = getAllGroups (parentKey, currentUID, p, ngroups, &groups);
-	if (allGroupsReturnCode < 0)
+	if (allGroupsReturnCode != 0)
 	{
 		return allGroupsReturnCode;
 	}
@@ -219,7 +219,16 @@ static int validatePermission (Key * key, Key * parentKey)
 	return 1;
 }
 
-int getAllGroups (Key * parentKey, uid_t currentUID, const struct passwd * p, int ngroups, gid_t ** groups)
+/**
+ * This method saves all groups into the groups parameter and also saves the number of groups into ngroups
+ * @param parentKey The parentKey to which error messages are logged
+ * @param currentUID The current userID which is used to switch back to in case of an error
+ * @param p passwd struct which has all relevant user information
+ * @param ngroups the number of groups of a user. Should be initialized with 0
+ * @param groups the actual groups which are returned
+ * @retval 0 if success
+ */
+static int getAllGroups (Key * parentKey, uid_t currentUID, const struct passwd * p, int ngroups, gid_t ** groups)
 {
 	gid_t * tmpGroups = (gid_t *) elektraMalloc (0 * sizeof (gid_t));
 	getgrouplist (p->pw_name, (int) p->pw_gid, tmpGroups, &ngroups);
@@ -243,6 +252,14 @@ int getAllGroups (Key * parentKey, uid_t currentUID, const struct passwd * p, in
 	return 0;
 }
 
+/**
+ * Switches the effective groupID of a user
+ * @param key Used for senseful logging of where the error occurred
+ * @param parentKey The parentKey to which error messages are logged
+ * @param name Used for senseful logging of where the error occurred. Represents the actual username
+ * @param gr The group to which it is switched
+ * @retval 0 if success
+ */
 static int switchGroup (Key * key, Key * parentKey, const char * name, const struct group * gr)
 {
 	int gidErr = setegid ((int) gr->gr_gid);
@@ -257,22 +274,40 @@ static int switchGroup (Key * key, Key * parentKey, const char * name, const str
 	return 0;
 }
 
-static int switchUser (Key * key, Key * parentKey, const char * name, const struct passwd * p)
-{ // Check if I can change the UID as root
+/**
+ * Switches the effective userID of a user. This method only works if the executing user has root privileged.
+ * @param key Used for senseful logging of where the error occurred
+ * @param parentKey The parentKey to which error messages are logged
+ * @param p passwd struct which has all relevant user information
+ * @retval 0 if success
+ * @retval -1 if failure happens
+ */
+static int switchUser (Key * key, Key * parentKey, const struct passwd * p)
+{
+	// Check if I can change the UID as root
 	int err = seteuid ((int) p->pw_uid);
 	if (err < 0)
 	{
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_USER_PERMISSION_ERROR, parentKey,
 				    "Could not set euid of user \"%s\" for key \"%s\"."
 				    " Are you running kdb as root?\"",
-				    name, keyName (key));
+				    p->pw_name, keyName (key));
 		return -1;
 	}
 	return 0;
 }
 
-static int handleNoUserCase (Key * parentKey, const char * validPath, const char * modes, int modeMask)
+/**
+ * This method checks for the current executing user if he can access the file/directory given with the respective modes.
+ * @param parentKey The parentKey to which error messages are logged
+ * @param validPath Used for senseful logging of where the error occurred
+ * @param modes The modes which should be checked for the current user
+ * @retval 0 if success
+ * @retval -1 if failure happens
+ */
+static int handleNoUserCase (Key * parentKey, const char * validPath, const char * modes)
 {
+	int modeMask = createModeBits (modes);
 	struct passwd * p = getpwuid (getuid ());
 	int result = access (validPath, modeMask);
 	if (result != 0)
@@ -284,6 +319,11 @@ static int handleNoUserCase (Key * parentKey, const char * validPath, const char
 	return 1;
 }
 
+/**
+ * Takes modes given by the user (e.g. rwx) and converts it to the bitmask required for access and euidaccess
+ * @param modes The modes given by the user in the metakey
+ * @return The modes as bits required for access and euidaccess
+ */
 static int createModeBits (const char * modes)
 {
 	int modeMask = 0;
