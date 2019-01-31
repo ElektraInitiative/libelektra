@@ -14,11 +14,16 @@ else
 	exit 0
 fi
 
+if ! kdb list | grep -xq ni; then
+	echo "ni plugin not found, will skip"
+	exit 0
+fi
+
 check_version
 
 EXTERNAL_FOLDER="@CMAKE_SOURCE_DIR@/examples/highlevel"
 
-set -x
+set -xgit s
 
 do_tests() {
 	KEY=/sw/example/highlevel/#0/current
