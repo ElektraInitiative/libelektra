@@ -34,4 +34,7 @@ The pkg-config example will only work for the `BUILD_SHARED` and `BUILD_FULL` va
 To make pkg-config work with `BUILD_STATIC` you need to change the Makefile. You can use a C compiler for compilation, but you need to
 use a C++ Compiler for linking and also need to link with `-ldbus-1`, `-lz` `-lm` and `-pthread`.
 
+Note also that in a real-world build you should be careful with using `-Wl,-rpath`. In most cases you should only use it for development
+purposes and not in a release build. Therefore you should not use the Makefile provided in the pkg-config example for release builds.
+
 The CMake example should always work, because CMake should detect the correct way of linking Elektra.
