@@ -23,7 +23,7 @@ check_version
 
 EXTERNAL_FOLDER="@CMAKE_SOURCE_DIR@/examples/highlevel"
 
-set -xgit s
+set -x
 
 do_tests() {
 	KEY=/sw/example/highlevel/#0/current
