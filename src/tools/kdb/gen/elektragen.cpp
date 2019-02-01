@@ -7,10 +7,222 @@
  */
 
 #include "elektragen.hpp"
+#include <kdbtypes.h>
 
-kainjow::mustache::data ElektraGenTemplate::getTemplateData ()
+const char * ElektraGenTemplate::Params::OutputName = "outputName";
+
+static const std::unordered_set<std::string> allowedTypes = { "enum",
+							      "string",
+							      "boolean",
+							      "char",
+							      "octet",
+							      "short",
+							      "unsigned_short",
+							      "long",
+							      "unsigned_long",
+							      "long_long",
+							      "unsigned_long_long",
+							      "float",
+							      "double",
+							      "long_double" };
+
+static std::string createIncludeGuard (const std::string & fileName)
+{
+	std::string result;
+	result.resize (fileName.length ());
+	std::transform (fileName.begin (), fileName.end (), result.begin (), ::toupper);
+	std::replace_if (result.begin (), result.end (), std::not1 (std::ptr_fun (isalnum)), '_');
+	return result;
+}
+
+static inline bool hasType (const kdb::Key & key)
+{
+	return key.hasMeta ("type");
+}
+
+static inline std::string getType (const kdb::Key & key)
+{
+	return key.getMeta<std::string> ("type");
+}
+
+static inline bool hasDefault (const kdb::Key & key)
+{
+	return key.hasMeta ("default");
+}
+
+static inline std::string getDefault (const kdb::Key & key)
+{
+	return key.getMeta<std::string> ("default");
+}
+
+static std::string getTagName (const kdb::Key & key)
+{
+	auto name = key.getName ();
+	if (name[0] == '/')
+	{
+		name.erase (0, 1);
+	}
+	else if (name.rfind ("system/", 0) == 0)
+	{
+		name.erase (0, sizeof ("system/") - 1);
+	}
+	else if (name.rfind ("user/", 0) == 0)
+	{
+		name.erase (0, sizeof ("system/") - 1);
+	}
+	else
+	{
+		throw std::runtime_error ("invalid key name"); // TODO
+	}
+
+
+	if (name[name.length () - 1] == '#')
+	{
+		name.erase (name.length () - 1);
+	}
+
+	if (name[name.length () - 1] == '/')
+	{
+		name.erase (name.length () - 1);
+	}
+
+	std::replace (name.begin (), name.end (), '/', '_');
+	name.erase (std::remove (name.begin (), name.end (), '#'), name.end ());
+
+	return name;
+}
+
+static std::string snakeCaseToCamelCase (const std::string & s)
+{
+	std::string result;
+	result.resize (s.size ());
+	auto upcase = true;
+	std::transform (s.begin (), s.end (), result.begin (), [&upcase](char c) {
+		int x = upcase ? toupper (c) : c;
+		upcase = c == '_';
+		return x;
+	});
+	result.erase (std::remove (result.begin (), result.end (), '_'), result.end ());
+	return result;
+}
+
+static std::string snakeCaseToMacroCase (const std::string & s)
+{
+	std::string result;
+	result.resize (s.size ());
+	std::transform (s.begin (), s.end (), result.begin (), ::toupper);
+	return result;
+}
+
+static std::string camelCaseToMacroCase (const std::string & s)
+{
+	std::stringstream ss;
+	std::for_each (s.begin (), s.end (), [&ss](char c) {
+		if (ss.tellp () != std::stringstream::beg && isupper (c))
+		{
+			ss << '_';
+		}
+		ss << static_cast<char> (toupper (c));
+	});
+	return ss.str ();
+}
+
+static kainjow::mustache::list getEnumValues (const std::string & prefix, const kdb::Key & key)
 {
 	using namespace kainjow::mustache;
 
-	return data{ "name", "Max Mustermann" };
+	if (!key.hasMeta ("check/enum"))
+	{
+		return {};
+	}
+
+	list values;
+
+	const auto end = key.getMeta<std::string> ("check/enum");
+	kdb::long_long_t i = 0;
+	auto cur = "#" + std::to_string (i);
+	while (cur <= end)
+	{
+		if (key.hasMeta ("check/enum/" + cur))
+		{
+			auto name = prefix + "_";
+			name += camelCaseToMacroCase (key.getMeta<std::string> ("check/enum/" + cur));
+			const auto valueMeta = "check/enum/" + cur + "/value";
+			const auto value = key.hasMeta (valueMeta) ? key.getMeta<std::string> (valueMeta) : std::to_string (i);
+			values.emplace_back (object{ { "name", name }, { "value", value } });
+		}
+		++i;
+		cur = "#" + std::to_string (i);
+	}
+
+	return values;
+}
+
+static inline std::string getEnumType (const kdb::Key & key)
+{
+	return key.hasMeta ("gen/enum/type") ? key.getMeta<std::string> ("gen/enum/type") : snakeCaseToCamelCase (getTagName (key));
+}
+
+static inline bool shouldGenerateTypeDef (const kdb::Key & key)
+{
+	return !key.hasMeta ("gen/enum/create") || key.getMeta<std::string> ("gen/enum/create") == "1";
+}
+
+kainjow::mustache::data ElektraGenTemplate::getTemplateData (const kdb::KeySet & ks)
+{
+	using namespace kainjow::mustache;
+
+	auto headerFile = getParameter (Params::OutputName) + ".h";
+	auto includeGuard = createIncludeGuard (headerFile);
+
+	auto data = object{ { "header_file", headerFile }, { "include_guard", includeGuard } };
+
+	auto enums = list{};
+	auto keys = list{};
+
+	for (const kdb::Key & key : ks)
+	{
+		if (!hasType (key))
+		{
+			continue;
+		}
+
+		auto type = getType (key);
+
+		if (allowedTypes.find (type) == allowedTypes.end ())
+		{
+			throw std::runtime_error ("illegal type"); // TODO
+		}
+
+		auto tagName = snakeCaseToMacroCase (getTagName (key));
+		object keyObject = { { "name", key.getName () }, { "tag_name", tagName }, { "type_name", snakeCaseToCamelCase (type) } };
+
+		if (hasDefault (key))
+		{
+			keyObject["default?"] = object{ { "value", getDefault (key) } };
+		}
+
+		if (type == "enum")
+		{
+			auto typeName = "Enum" + getEnumType (key);
+			auto values = getEnumValues (camelCaseToMacroCase ("Elektra" + typeName), key);
+			auto generateTypeDef = shouldGenerateTypeDef (key);
+
+			keyObject["type_name"] = typeName;
+
+			enums.emplace_back (object{ { "tag_name", tagName },
+						    { "type_name", typeName },
+						    { "native_type", "Elektra" + typeName },
+						    { "generate_typedef", generateTypeDef },
+						    { "values", values } });
+		}
+
+		keys.emplace_back (keyObject);
+	}
+
+	data["keys_count"] = std::to_string (keys.size ());
+	data["keys"] = keys;
+	data["enums"] = enums;
+
+	return data;
 }

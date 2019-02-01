@@ -55,22 +55,15 @@ std::string escapeForLiteral (std::istream & input)
 	return result.str ();
 }
 
-std::string convertToName (std::string str)
+inline std::string convertToName (const std::string & str)
 {
 	std::string result (str);
-
-	for (auto it = str.begin (); it != str.end (); ++it)
+	auto pos = result.find (".mustache");
+	if (pos == result.length () - sizeof (".mustache") + 1)
 	{
-		if (isalnum (*it))
-		{
-			result[it - str.begin ()] = *it;
-		}
-		else
-		{
-			result[it - str.begin ()] = '_';
-		}
+		result.erase (pos);
 	}
-
+	std::replace_if (result.begin (), result.end (), std::not1 (std::ptr_fun (isalnum)), '_');
 	return result;
 }
 
@@ -82,15 +75,16 @@ void process (std::ostream & out, std::vector<std::string> files)
 	{
 		std::ifstream in (file);
 
-		out << "static const char * const _kdbgentemplate_" << convertToName (file) << "= \"" << escapeForLiteral (in) << "\";"
-		    << std::endl;
+		const auto name = convertToName (file);
+		out << "static const char * const _kdbgentemplate_" << name << "= \"" << escapeForLiteral (in) << "\";" << std::endl;
 	}
 
 	out << std::endl;
 	out << "static const std::unordered_map<std::string, std::string> kdbgenTemplates = {" << std::endl;
 	for (const auto & file : files)
 	{
-		out << "\t{ \"" << convertToName (file) << "\", _kdbgentemplate_" << convertToName (file) << " }," << std::endl;
+		const auto name = convertToName (file);
+		out << "\t{ \"" << name << "\", _kdbgentemplate_" << name << " }," << std::endl;
 	}
 	out << "};" << std::endl << std::endl;
 }

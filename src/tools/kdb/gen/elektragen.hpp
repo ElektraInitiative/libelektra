@@ -13,21 +13,18 @@
 
 class ElektraGenTemplate : public GenTemplate
 {
-public:
-	ElektraGenTemplate (std::ostream & output) : GenTemplate (output){};
-
-	std::string getName () override
+	struct Params
 	{
-		return "elektra";
+		static const char * OutputName;
+	};
+
+public:
+	ElektraGenTemplate () : GenTemplate ("elektra", "elektra", { ".c", ".h" }, { Params::OutputName })
+	{
 	}
 
 protected:
-	std::string getTemplateName () override
-	{
-		return "elektra.mustache";
-	}
-
-	kainjow::mustache::data getTemplateData () override;
+	kainjow::mustache::data getTemplateData (const kdb::KeySet & ks) override;
 };
 
 #endif // ELEKTRA_ELEKTRAGEN_HPP

@@ -7,33 +7,54 @@
  */
 
 #include "template.hpp"
-#include "elektragen.hpp"
+
+#include <algorithm>
 #include <fstream>
 
 #include "gen/templates.hpp"
-#include "htmlgen.hpp"
 
-#include <algorithm>
+#include "elektragen.hpp"
 
-GenTemplate::GenTemplate (std::ostream & output) : _output (output)
-{
-}
-
-void GenTemplate::render ()
+void GenTemplate::render (std::ostream & output, const std::string & part, const kdb::KeySet & ks)
 {
 	using namespace kainjow::mustache;
 
-	auto name = getTemplateName ();
+	if (std::find (_parts.begin (), _parts.end (), part) == _parts.end ())
+	{
+		return;
+	}
+
+	auto name = _templateBaseName + part;
 	std::replace_if (name.begin (), name.end (), std::not1 (std::ptr_fun (isalnum)), '_');
 
 	auto tmpl = mustache (kdbgenTemplates.at (name));
-	tmpl.render (getTemplateData (), [&](const std::string & str) { _output << str; });
+	tmpl.render (getTemplateData (ks), [&](const std::string & str) { output << str; });
+}
+
+void GenTemplate::setParameter (const std::string & name, const std::string & value)
+{
+	auto param = _parameters.find (name);
+	if (param != _parameters.end ())
+	{
+		param->second = value;
+	}
+}
+
+std::string GenTemplate::getName ()
+{
+	return _name;
+}
+
+std::string GenTemplate::getParameter (const std::string & name)
+{
+	auto param = _parameters.find (name);
+	return param != _parameters.end () ? param->second : "";
 }
 
 template <class genClass>
-void GenTemplateList::addTemplate (std::ostream & output)
+void GenTemplateList::addTemplate ()
 {
-	std::unique_ptr<GenTemplate> tmpl (new genClass (output));
+	std::unique_ptr<GenTemplate> tmpl (new genClass ());
 	_templates[tmpl->getName ()] = std::move (tmpl);
 }
 
@@ -42,8 +63,7 @@ GenTemplate * GenTemplateList::getTemplate (const std::string & name)
 	return _templates[name].get ();
 }
 
-GenTemplateList::GenTemplateList (std::ostream & output) : _templates ()
+GenTemplateList::GenTemplateList () : _templates ()
 {
-	addTemplate<ElektraGenTemplate> (output);
-	addTemplate<HtmlGenTemplate> (output);
+	addTemplate<ElektraGenTemplate> ();
 }

@@ -1,0 +1,58 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ */
+
+// clang-format off
+{{=/*% %*/=}}
+// clang-format on
+
+#include <elektra.h>
+
+#ifndef /*%& include_guard %*/
+#define /*%& include_guard %*/
+
+/**
+ * Enum Types
+ */
+
+/*%# enums %*/
+typedef enum
+{
+	/*%# values %*/
+	/*%& name %*/ = /*%& value %*/,
+	/*%/ values %*/
+} /*%& native_type %*/;
+/*%/ enums %*/
+
+/**
+ * Enum Tags
+ */
+
+/*%# enums %*/
+ELEKTRA_TAG_DECLARATIONS (/*%& native_type %*/, /*%& type_name %*/)
+/*%/ enums %*/
+
+
+/**
+ * Default KeySet
+ */
+
+#define ELEKTRA_DEFAULTS                                                                                                                   \
+	(ksNew (/*%& keys_count %*/, /*%# keys %*/ /*%# default? %*/                                                                       \
+		keyNew ("/*% name %*/", KEY_VALUE, "/*% value %*/", KEY_META, "type", "/*%& type %*/", KEY_END),                           \
+		/*%/ default? %*/ /*%/ keys %*/                                                                                            \
+		KS_END))
+
+/**
+ * Elektra Tag Values
+ */
+
+/*%# keys %*/
+ELEKTRA_TAG_VALUE (/*% tag_name %*/, "/*%& name %*/", /*% type_name %*/)
+/*%/ keys %*/;
+
+#endif // /*%& include_guard %*/
