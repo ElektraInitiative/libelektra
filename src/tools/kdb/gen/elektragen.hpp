@@ -19,12 +19,12 @@ class ElektraGenTemplate : public GenTemplate
 	};
 
 public:
-	ElektraGenTemplate () : GenTemplate ("elektra", "elektra", { ".c", ".h" }, { Params::OutputName })
+	ElektraGenTemplate () : GenTemplate ("elektra", { ".c", ".h" }, { { Params::OutputName, true } })
 	{
 	}
 
 protected:
-	kainjow::mustache::data getTemplateData (const kdb::KeySet & ks) override;
+	kainjow::mustache::data getTemplateData (const kdb::KeySet & ks) const override;
 };
 
 #endif // ELEKTRA_ELEKTRAGEN_HPP

@@ -168,7 +168,7 @@ static inline bool shouldGenerateTypeDef (const kdb::Key & key)
 	return !key.hasMeta ("gen/enum/create") || key.getMeta<std::string> ("gen/enum/create") == "1";
 }
 
-kainjow::mustache::data ElektraGenTemplate::getTemplateData (const kdb::KeySet & ks)
+kainjow::mustache::data ElektraGenTemplate::getTemplateData (const kdb::KeySet & ks) const
 {
 	using namespace kainjow::mustache;
 
