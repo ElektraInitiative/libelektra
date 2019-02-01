@@ -16,24 +16,24 @@ include (LibAddTest)
 #
 # ~~~
 function (set_additional_compile_definitions shortname)
-    # provide the plugin name as string to the compiler/preprocessor
+	# provide the plugin name as string to the compiler/preprocessor
 
-    if (NOT "${ARG_COMPILE_DEFINITIONS}" MATCHES "ELEKTRA_PLUGIN_NAME")
-        set(ADDITIONAL_COMPILE_DEFINITIONS_PART1 "ELEKTRA_PLUGIN_NAME=\"${shortname}\"")
-    endif ()
+	if (NOT "${ARG_COMPILE_DEFINITIONS}" MATCHES "ELEKTRA_PLUGIN_NAME")
+		set (ADDITIONAL_COMPILE_DEFINITIONS_PART1 "ELEKTRA_PLUGIN_NAME=\"${shortname}\"")
+	endif ()
 
-    # provide the plugin name as macro that can be used for building function names, etc.
-    if (NOT "${ARG_COMPILE_DEFINITIONS}" MATCHES "ELEKTRA_PLUGIN_NAME_C")
-        if (ADDITIONAL_COMPILE_DEFINITIONS_PART1)
-            set(ADDITIONAL_COMPILE_DEFINITIONS_PART2 ";ELEKTRA_PLUGIN_NAME_C=${shortname}")
-        else ()
-            set(ADDITIONAL_COMPILE_DEFINITIONS_PART2 "ELEKTRA_PLUGIN_NAME_C=${shortname}")
-        endif ()
-    endif ()
+	# provide the plugin name as macro that can be used for building function names, etc.
+	if (NOT "${ARG_COMPILE_DEFINITIONS}" MATCHES "ELEKTRA_PLUGIN_NAME_C")
+		if (ADDITIONAL_COMPILE_DEFINITIONS_PART1)
+			set (ADDITIONAL_COMPILE_DEFINITIONS_PART2 ";ELEKTRA_PLUGIN_NAME_C=${shortname}")
+		else ()
+			set (ADDITIONAL_COMPILE_DEFINITIONS_PART2 "ELEKTRA_PLUGIN_NAME_C=${shortname}")
+		endif ()
+	endif ()
 
-    set(ADDITIONAL_COMPILE_DEFINITIONS "${ADDITIONAL_COMPILE_DEFINITIONS_PART1}${ADDITIONAL_COMPILE_DEFINITIONS_PART2}" PARENT_SCOPE)
-    unset (ADDITIONAL_COMPILE_DEFINITIONS_PART1)
-    unset (ADDITIONAL_COMPILE_DEFINITIONS_PART2)
+	set (ADDITIONAL_COMPILE_DEFINITIONS "${ADDITIONAL_COMPILE_DEFINITIONS_PART1}${ADDITIONAL_COMPILE_DEFINITIONS_PART2}" PARENT_SCOPE)
+	unset (ADDITIONAL_COMPILE_DEFINITIONS_PART1)
+	unset (ADDITIONAL_COMPILE_DEFINITIONS_PART2)
 endfunction (set_additional_compile_definitions)
 
 # ~~~
@@ -187,15 +187,16 @@ function (add_plugintest testname)
 		set_additional_compile_definitions (${testname})
 
 		target_link_libraries (${testexename} ${ARG_LINK_LIBRARIES} ${ARG_TEST_LINK_LIBRARIES})
-		set_target_properties (${testexename}
-				       PROPERTIES COMPILE_DEFINITIONS
-						  "HAVE_KDBCONFIG_H;ELEKTRA_PLUGIN_TEST;${ARG_COMPILE_DEFINITIONS};${ADDITIONAL_COMPILE_DEFINITIONS}")
+		set_target_properties (
+			${testexename}
+			PROPERTIES COMPILE_DEFINITIONS
+				   "HAVE_KDBCONFIG_H;ELEKTRA_PLUGIN_TEST;${ARG_COMPILE_DEFINITIONS};${ADDITIONAL_COMPILE_DEFINITIONS}")
 		set_property (TARGET ${testexename}
 			      APPEND
 			      PROPERTY INCLUDE_DIRECTORIES
 				       ${ARG_INCLUDE_DIRECTORIES})
 
-        unset (ADDITIONAL_COMPILE_DEFINITIONS)
+		unset (ADDITIONAL_COMPILE_DEFINITIONS)
 
 		foreach (DIR ${ARG_INCLUDE_SYSTEM_DIRECTORIES})
 
@@ -704,6 +705,6 @@ function (add_plugin PLUGIN_SHORT_NAME)
 				       "${ARG_LINK_LIBRARIES}")
 	endif (NOT ARG_ONLY_SHARED)
 
-    # cleanup
+	# cleanup
 	unset (ADDITIONAL_COMPILE_DEFINITIONS)
 endfunction (add_plugin)

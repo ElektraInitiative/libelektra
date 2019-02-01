@@ -6,5 +6,4 @@ add_plugin (fcrypt
 		    fcrypt.h
 		    fcrypt.c
 	    INCLUDE_DIRECTORIES ${CMAKE_SOURCE_DIR}/src/plugins/crypto/
-	    ADD_TEST
-)
+	    ADD_TEST)
