@@ -278,6 +278,9 @@ you up to date with the multi-language support provided by Elektra.
 - The CMake find module [`FindLibOpenSSL.cmake`](https://master.libelektra.org/cmake/Modules/FindLibOpenSSL.cmake) does not require
   `pkg-config` anymore. The updated code also fixes some linker problems on macOS (and probably other operating systems too), where the
   build system is not able to link to OpenSSL using only the name of the OpenSSL libraries. *(René Schwaiger)*
+- We simplified the CMake find module [`FindLibgcrypt.cmake`](https://master.libelektra.org/cmake/Modules/FindLibgcrypt.cmake).The update
+  fixes problems on macOS, where the build system excluded the plugin `crypto_gcrypt`, although
+  [Libgcrypt](https://gnupg.org/software/libgcrypt) was installed on the system. *(René Schwaiger)*
 - We now use the [official CMake find module for `iconv`](https://github.com/Kitware/CMake/blob/master/Modules/FindIconv.cmake). This
   update fixes linker problems with the [`iconv`](http://libelektra.org/plugins/iconv) and
   [`filecheck`](http://libelektra.org/plugins/filecheck) plugin on FreeBSD 12. *(René Schwaiger)*

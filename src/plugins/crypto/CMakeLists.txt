@@ -11,7 +11,7 @@ if (DEPENDENCY_PHASE)
 
 	# Plugin variant: crypto_gcrypt
 	set (plugin crypto_gcrypt)
-	find_package (LibGcrypt QUIET)
+	find_package (Libgcrypt QUIET)
 	if (NOT LIBGCRYPT_FOUND)
 		remove_plugin (${plugin} "libgcrypt development files not found")
 	endif ()
@@ -45,8 +45,8 @@ add_plugin (crypto_gcrypt
 	    SOURCES gcrypt_operations.h
 		    gcrypt_operations.c
 		    ${CRYPTO_COMMON_FILES}
-	    INCLUDE_DIRECTORIES ${LIBGCRYPT_INCLUDE_DIRS}
-	    LINK_LIBRARIES ${LIBGCRYPT_LIBRARIES}
+	    INCLUDE_DIRECTORIES ${Libgcrypt_INCLUDE_DIRS}
+	    LINK_LIBRARIES ${Libgcrypt_LIBRARIES}
 	    LINK_ELEKTRA elektra-invoke
 	    COMPILE_DEFINITIONS ELEKTRA_VARIANT=gcrypt
 				ELEKTRA_CRYPTO_API_GCRYPT)
