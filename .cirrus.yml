@@ -41,6 +41,7 @@ mac_task:
       cmake
       gpgme
       ninja
+      openssl
       pkg-config
 
   script:
