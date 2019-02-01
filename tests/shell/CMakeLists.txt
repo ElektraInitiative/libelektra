@@ -41,14 +41,7 @@ function (add_scripttest testname)
 		if (TARGET)
 			if (INSTALL_TESTING)
 
-				set (excluded_tests
-				     check_bashisms
-				     check_posix
-				     check_external
-				     check_formatting
-				     check_gen
-				     check_oclint
-				     check_plugins)
+				set (excluded_tests check_bashisms check_posix check_formatting check_gen check_oclint check_plugins)
 
 				list (FIND excluded_tests
 					   "${testname_we}"
@@ -141,3 +134,5 @@ foreach (file ${SCRIPT_TESTS})
 	get_filename_component (name ${file} NAME)
 	add_scripttest (${name})
 endforeach (file ${SCRIPT_TESTS})
+
+add_subdirectory (external)

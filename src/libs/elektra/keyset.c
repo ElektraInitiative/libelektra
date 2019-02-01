@@ -1632,7 +1632,7 @@ int elektraWriteArrayNumber (char * newName, kdb_long_long_t newIndex)
 		newName[index++] = '_'; // index n-1 of decimals
 		i /= 10;
 	}
-	if (snprintf (&newName[index], ELEKTRA_MAX_ARRAY_SIZE, ELEKTRA_LONG_LONG_F, newIndex) < 0)
+	if (snprintf (&newName[index], ELEKTRA_MAX_ARRAY_SIZE - index, ELEKTRA_UNSIGNED_LONG_LONG_F, newIndex) < 0)
 	{
 		return -1;
 	}

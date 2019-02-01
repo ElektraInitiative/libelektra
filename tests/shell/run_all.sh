@@ -30,7 +30,7 @@ while getopts "v" option; do
 done
 shift "$((OPTIND - 1))"
 
-for t in test* check*; do
+for t in test* check* external_check*; do
 	echo "Running $t"
 
 	OUTPUT="$("$KDB" $t 2>&1)"

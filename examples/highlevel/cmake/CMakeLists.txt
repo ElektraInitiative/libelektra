@@ -12,10 +12,15 @@ find_package (Elektra REQUIRED)
 if (ELEKTRA_FOUND)
 	message (STATUS "Elektra ${ELEKTRA_VERSION} found")
 
-	include_directories (${ELEKTRA_INCLUDE_DIR})
+	include_directories (${Elektra_INCLUDE_DIRS})
 
 	add_executable (application application.c)
-	target_link_libraries (application ${ELEKTRA_LIBRARIES} elektra-highlevel elektra-kdb elektra-ease)
+	target_link_libraries (application ${Elektra_LIBRARIES})
+
+	if (Elektra_SHARED)
+		# link additional libraries
+		target_link_libraries (application elektra-highlevel elektra-kdb elektra-ease)
+	endif (Elektra_SHARED)
 else (ELEKTRA_FOUND)
 	message (FATAL_ERROR "Elektra not found")
 endif (ELEKTRA_FOUND)

@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <elektra/elektra.h>
+#include <elektra.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -37,7 +37,8 @@ int main (int argc, char ** argv)
 	const size_t size = elektraArraySize (elektra, "myfloatarray");
 	float * myfloatarray = calloc (size, sizeof (float));
 
-	for (int i = 0; i < size; ++i)
+	int i;
+	for (i = 0; i < size; ++i)
 	{
 		myfloatarray[i] = elektraGetFloatArrayElement (elektra, "myfloatarray", i);
 	}
@@ -49,7 +50,7 @@ int main (int argc, char ** argv)
 	if (print)
 	{
 		printf ("mystring: %s\nmyint: %d\nmydouble: %f\nsizeof(myfloatarray): %ld", mystring, myint, mydouble, size);
-		for (int i = 0; i < size; ++i)
+		for (i = 0; i < size; ++i)
 		{
 			printf ("\nmyfloatarray[%d]: %f", i, myfloatarray[i]);
 		}
@@ -57,6 +58,13 @@ int main (int argc, char ** argv)
 	}
 
 	free (myfloatarray);
+
+	elektraSetBoolean (elektra, "lastsuccessful", true, &error);
+	if (error != NULL)
+	{
+		fprintf (stderr, "An error occured: %s", elektraErrorDescription (error));
+		elektraErrorReset (&error);
+	}
 
 	elektraClose (elektra);
 

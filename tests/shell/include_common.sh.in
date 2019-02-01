@@ -23,12 +23,15 @@ nbSkip=0
 # the script itself
 scriptName=`basename "$0"`
 
+export PKG_CONFIG_PATH="@CMAKE_INSTALL_PREFIX@/lib@LIB_SUFFIX@/@TARGET_PKGCONFIG_FOLDER@":$PKG_CONFIG_PATH
+
 MOUNTPOINT="/tests/script"
 
 NAMESPACES="user system"
 
 USER_ROOT="user/tests/script"
 SYSTEM_ROOT="system/tests/script"
+SPEC_ROOT="spec/tests/script"
 
 ROOTS="$USER_ROOT $SYSTEM_ROOT"
 
@@ -44,6 +47,8 @@ USER="`id -un`"
 GROUP="`id -gn`"
 
 SYSTEM_FOLDER=@KDB_DB_SYSTEM@
+SPEC_FOLDER=@BUILTIN_SPEC_FOLDER@
+SPEC_FOLDER_REAL=@BUILTIN_SPEC_REAL_FOLDER@
 if [ -n "$HOME" ]
 then
 	USER_FOLDER=$HOME/@KDB_DB_USER@

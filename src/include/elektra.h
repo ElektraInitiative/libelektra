@@ -40,7 +40,7 @@
 #define ELEKTRA_GET_BY_TAG_PARAMS(typeName) (Elektra * elektra, const ELEKTRA_TAG (typeName) * tag)
 #define ELEKTRA_GET_BY_TAG_SIGNATURE(cType, typeName) cType ELEKTRA_GET_BY_TAG (typeName) ELEKTRA_GET_BY_TAG_PARAMS (typeName)
 
-#define ELEKTRA_GET_ARRAY_ELEMENT_BY_TAG_PARAMS(typeName) (Elektra * elektra, const ELEKTRA_TAG (typeName) * tag, size_t index)
+#define ELEKTRA_GET_ARRAY_ELEMENT_BY_TAG_PARAMS(typeName) (Elektra * elektra, const ELEKTRA_TAG (typeName) * tag, kdb_long_long_t index)
 #define ELEKTRA_GET_ARRAY_ELEMENT_BY_TAG_SIGNATURE(cType, typeName)                                                                        \
 	cType ELEKTRA_GET_ARRAY_ELEMENT_BY_TAG (typeName) ELEKTRA_GET_ARRAY_ELEMENT_BY_TAG_PARAMS (typeName)
 
@@ -50,7 +50,7 @@
 #define ELEKTRA_SET_BY_TAG_SIGNATURE(cType, typeName) void ELEKTRA_SET_BY_TAG (typeName) ELEKTRA_SET_BY_TAG_PARAMS (cType, typeName)
 
 #define ELEKTRA_SET_ARRAY_ELEMENT_BY_TAG_PARAMS(cType, typeName)                                                                           \
-	(Elektra * elektra, const ELEKTRA_TAG (typeName) * tag, size_t index, cType value, ElektraError * *error)
+	(Elektra * elektra, const ELEKTRA_TAG (typeName) * tag, kdb_long_long_t index, cType value, ElektraError * *error)
 #define ELEKTRA_SET_ARRAY_ELEMENT_BY_TAG_SIGNATURE(cType, typeName)                                                                        \
 	void ELEKTRA_SET_ARRAY_ELEMENT_BY_TAG (typeName) ELEKTRA_SET_ARRAY_ELEMENT_BY_TAG_PARAMS (cType, typeName)
 
@@ -241,7 +241,7 @@ void elektraFatalErrorHandler (Elektra * elektra, ElektraErrorHandler fatalError
  **************************************/
 
 Key * elektraFindKey (Elektra * elektra, const char * name, KDBType type);
-Key * elektraFindArrayElementKey (Elektra * elektra, const char * name, size_t index, KDBType type);
+Key * elektraFindArrayElementKey (Elektra * elektra, const char * name, kdb_long_long_t index, KDBType type);
 void elektraFatalError (Elektra * elektra, ElektraError * fatalError);
 
 // endregion Helpers for code generation
@@ -321,7 +321,7 @@ void elektraSetEnumInt (Elektra * elektra, const char * name, int value, Elektra
  *
  **************************************/
 
-size_t elektraArraySize (Elektra * elektra, const char * keyName);
+kdb_long_long_t elektraArraySize (Elektra * elektra, const char * keyName);
 
 // endregion Array-Helpers
 
@@ -332,27 +332,27 @@ size_t elektraArraySize (Elektra * elektra, const char * keyName);
  *
  **************************************/
 
-const char * elektraGetRawStringArrayElement (Elektra * elektra, const char * name, size_t index);
-const char * elektraGetStringArrayElement (Elektra * elektra, const char * keyname, size_t index);
-kdb_boolean_t elektraGetBooleanArrayElement (Elektra * elektra, const char * keyname, size_t index);
-kdb_char_t elektraGetCharArrayElement (Elektra * elektra, const char * keyname, size_t index);
-kdb_octet_t elektraGetOctetArrayElement (Elektra * elektra, const char * keyname, size_t index);
-kdb_short_t elektraGetShortArrayElement (Elektra * elektra, const char * keyname, size_t index);
-kdb_unsigned_short_t elektraGetUnsignedShortArrayElement (Elektra * elektra, const char * keyname, size_t index);
-kdb_long_t elektraGetLongArrayElement (Elektra * elektra, const char * keyname, size_t index);
-kdb_unsigned_long_t elektraGetUnsignedLongArrayElement (Elektra * elektra, const char * keyname, size_t index);
-kdb_long_long_t elektraGetLongLongArrayElement (Elektra * elektra, const char * keyname, size_t index);
-kdb_unsigned_long_long_t elektraGetUnsignedLongLongArrayElement (Elektra * elektra, const char * keyname, size_t index);
-kdb_float_t elektraGetFloatArrayElement (Elektra * elektra, const char * keyname, size_t index);
-kdb_double_t elektraGetDoubleArrayElement (Elektra * elektra, const char * keyname, size_t index);
+const char * elektraGetRawStringArrayElement (Elektra * elektra, const char * name, kdb_long_long_t index);
+const char * elektraGetStringArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index);
+kdb_boolean_t elektraGetBooleanArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index);
+kdb_char_t elektraGetCharArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index);
+kdb_octet_t elektraGetOctetArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index);
+kdb_short_t elektraGetShortArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index);
+kdb_unsigned_short_t elektraGetUnsignedShortArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index);
+kdb_long_t elektraGetLongArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index);
+kdb_unsigned_long_t elektraGetUnsignedLongArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index);
+kdb_long_long_t elektraGetLongLongArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index);
+kdb_unsigned_long_long_t elektraGetUnsignedLongLongArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index);
+kdb_float_t elektraGetFloatArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index);
+kdb_double_t elektraGetDoubleArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index);
 
 #ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
 
-kdb_long_double_t elektraGetLongDoubleArrayElement (Elektra * elektra, const char * keyname, size_t index);
+kdb_long_double_t elektraGetLongDoubleArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index);
 
 #endif
 
-int elektraGetEnumIntArrayElement (Elektra * elektra, const char * keyName, size_t index);
+int elektraGetEnumIntArrayElement (Elektra * elektra, const char * keyName, kdb_long_long_t index);
 
 #ifdef __cplusplus
 #define elektraGetEnumArrayElement(elektra, keyname, index, enumType)                                                                      \
@@ -370,32 +370,36 @@ int elektraGetEnumIntArrayElement (Elektra * elektra, const char * keyName, size
  *
  **************************************/
 
-void elektraSetRawStringArrayElement (Elektra * elektra, const char * name, size_t index, const char * value, KDBType type,
+void elektraSetRawStringArrayElement (Elektra * elektra, const char * name, kdb_long_long_t index, const char * value, KDBType type,
 				      ElektraError ** error);
-void elektraSetStringArrayElement (Elektra * elektra, const char * keyname, size_t index, const char * value, ElektraError ** error);
-void elektraSetBooleanArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_boolean_t value, ElektraError ** error);
-void elektraSetCharArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_char_t value, ElektraError ** error);
-void elektraSetOctetArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_octet_t value, ElektraError ** error);
-void elektraSetShortArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_short_t value, ElektraError ** error);
-void elektraSetUnsignedShortArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_unsigned_short_t value,
+void elektraSetStringArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index, const char * value,
+				   ElektraError ** error);
+void elektraSetBooleanArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index, kdb_boolean_t value,
+				    ElektraError ** error);
+void elektraSetCharArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index, kdb_char_t value, ElektraError ** error);
+void elektraSetOctetArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index, kdb_octet_t value, ElektraError ** error);
+void elektraSetShortArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index, kdb_short_t value, ElektraError ** error);
+void elektraSetUnsignedShortArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index, kdb_unsigned_short_t value,
 					  ElektraError ** error);
-void elektraSetLongArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_long_t value, ElektraError ** error);
-void elektraSetUnsignedLongArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_unsigned_long_t value,
+void elektraSetLongArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index, kdb_long_t value, ElektraError ** error);
+void elektraSetUnsignedLongArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index, kdb_unsigned_long_t value,
 					 ElektraError ** error);
-void elektraSetLongLongArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_long_long_t value, ElektraError ** error);
-void elektraSetUnsignedLongLongArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_unsigned_long_long_t value,
+void elektraSetLongLongArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index, kdb_long_long_t value,
+				     ElektraError ** error);
+void elektraSetUnsignedLongLongArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index, kdb_unsigned_long_long_t value,
 					     ElektraError ** error);
-void elektraSetFloatArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_float_t value, ElektraError ** error);
-void elektraSetDoubleArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_double_t value, ElektraError ** error);
+void elektraSetFloatArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index, kdb_float_t value, ElektraError ** error);
+void elektraSetDoubleArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index, kdb_double_t value,
+				   ElektraError ** error);
 
 #ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
 
-void elektraSetLongDoubleArrayElement (Elektra * elektra, const char * keyname, size_t index, kdb_long_double_t value,
+void elektraSetLongDoubleArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index, kdb_long_double_t value,
 				       ElektraError ** error);
 
 #endif
 
-void elektraSetEnumIntArrayElement (Elektra * elektra, const char * name, size_t index, int value, ElektraError ** error);
+void elektraSetEnumIntArrayElement (Elektra * elektra, const char * name, kdb_long_long_t index, int value, ElektraError ** error);
 
 // endregion Array-Setters
 
@@ -407,7 +411,7 @@ void elektraSetEnumIntArrayElement (Elektra * elektra, const char * name, size_t
  **************************************/
 
 KDBType elektraGetType (Elektra * elektra, const char * keyname);
-KDBType elektraGetArrayElementType (Elektra * elektra, const char * name, size_t index);
+KDBType elektraGetArrayElementType (Elektra * elektra, const char * name, kdb_long_long_t index);
 
 // endregion
 
