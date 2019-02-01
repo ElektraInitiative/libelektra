@@ -74,7 +74,7 @@ if (ADDTESTING_PHASE)
 				ENVIRONMENT "RUBYLIB=${CMAKE_BINARY_DIR}/src/bindings/swig/ruby:${CMAKE_SOURCE_DIR}/src/bindings/swig/ruby")
 
 		if (INSTALL_TESTING)
-			install (DIRECTORY ruby DESTINATION ${TARGET_TEST_DATA_FOLDER})
+			install (DIRECTORY ruby/ruby_test_scripts DESTINATION ${TARGET_TEST_DATA_FOLDER})
 		endif ()
 	else ()
 		message (WARNING "swig_ruby bindings are required for testing, test deactivated")
