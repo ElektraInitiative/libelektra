@@ -185,7 +185,6 @@ function (add_plugintest testname)
 		endif (ARG_CPP)
 
 		set_additional_compile_definitions (${testname})
-		message (STATUS "DEBUG ${PLUGIN_NAME} (${PLUGIN_SHORT_NAME}) [${testname}] = ${ADDITIONAL_COMPILE_DEFINITIONS}")
 
 		target_link_libraries (${testexename} ${ARG_LINK_LIBRARIES} ${ARG_TEST_LINK_LIBRARIES})
 		set_target_properties (${testexename}
