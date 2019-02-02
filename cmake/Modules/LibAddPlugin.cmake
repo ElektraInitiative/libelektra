@@ -5,7 +5,7 @@ include (LibAddTest)
 # Provides additional compiler definitions:
 #
 # - ELEKTRA_PLUGIN_NAME containing the short plugin name as string
-# - ELEKTRA_PLUGIN_NAME_C contai the short plugin name which can be used in function names
+# - ELEKTRA_PLUGIN_NAME_C containing the short plugin name which can be used in function names
 #
 # shortname:
 #   pass the PLUGIN_SHORT_NAME as this argument
@@ -17,7 +17,6 @@ include (LibAddTest)
 # ~~~
 function (set_additional_compile_definitions shortname)
 	# provide the plugin name as string to the compiler/preprocessor
-
 	if (NOT "${ARG_COMPILE_DEFINITIONS}" MATCHES "ELEKTRA_PLUGIN_NAME")
 		set (ADDITIONAL_COMPILE_DEFINITIONS_PART1 "ELEKTRA_PLUGIN_NAME=\"${shortname}\"")
 	endif ()
