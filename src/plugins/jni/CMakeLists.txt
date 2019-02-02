@@ -4,11 +4,10 @@ include (SafeCheckSymbolExists)
 
 if (DEPENDENCY_PHASE)
 	if (APPLE)
-		execute_process (COMMAND "/usr/libexec/java_home" OUTPUT_VARIABLE JAVA_HOME)
-		if (JAVA_HOME)
-			string (STRIP ${JAVA_HOME}
-				      JAVA_HOME)
-		endif (JAVA_HOME)
+		execute_process (COMMAND "/usr/libexec/java_home --failfast"
+				 ERROR_QUIET
+				 OUTPUT_VARIABLE JAVA_HOME
+				 OUTPUT_STRIP_TRAILING_WHITESPACE)
 	endif ()
 
 	find_package (JNI QUIET)
