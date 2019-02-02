@@ -18,12 +18,14 @@ include (LibAddTest)
 function (set_additional_compile_definitions shortname)
 	# provide the plugin name as string to the compiler/preprocessor
 	if (NOT "${ARG_COMPILE_DEFINITIONS}" MATCHES "ELEKTRA_PLUGIN_NAME")
-		list (APPEND ADDITIONAL_COMPILE_DEFINITIONS_PARTS "ELEKTRA_PLUGIN_NAME=\"${shortname}\"")
+		list (APPEND ADDITIONAL_COMPILE_DEFINITIONS_PARTS
+			     "ELEKTRA_PLUGIN_NAME=\"${shortname}\"")
 	endif ()
 
 	# provide the plugin name as macro that can be used for building function names, etc.
 	if (NOT "${ARG_COMPILE_DEFINITIONS}" MATCHES "ELEKTRA_PLUGIN_NAME_C")
-		list (APPEND ADDITIONAL_COMPILE_DEFINITIONS_PARTS "ELEKTRA_PLUGIN_NAME_C=${shortname}")
+		list (APPEND ADDITIONAL_COMPILE_DEFINITIONS_PARTS
+			     "ELEKTRA_PLUGIN_NAME_C=${shortname}")
 	endif ()
 
 	set (ADDITIONAL_COMPILE_DEFINITIONS "${ADDITIONAL_COMPILE_DEFINITIONS_PARTS}" PARENT_SCOPE)
