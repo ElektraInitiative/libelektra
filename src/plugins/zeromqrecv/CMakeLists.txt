@@ -2,7 +2,9 @@ include (LibAddBinding)
 
 if (DEPENDENCY_PHASE)
 	find_package (PkgConfig QUIET)
-	pkg_check_modules (ZMQ QUIET libzmq)
+	if (PKG_CONFIG_FOUND)
+		pkg_check_modules (ZMQ QUIET libzmq)
+	endif (PKG_CONFIG_FOUND)
 
 	if (NOT ZMQ_FOUND)
 		remove_plugin (zeromqrecv "package libzmq (libzmq3-dev) not found")
@@ -23,7 +25,9 @@ if (ADDTESTING_PHASE)
 	if (BUILD_TESTING AND IS_INCLUDED)
 		if (BUILD_FULL OR BUILD_STATIC)
 			find_package (PkgConfig QUIET)
-			pkg_check_modules (LIBUV QUIET libuv>=1) # libuv is present; otherwise io_uv bindings would not be added
+			if (PKG_CONFIG_FOUND)
+				pkg_check_modules (LIBUV QUIET libuv>=1) # libuv is present; otherwise io_uv bindings would not be added
+			endif (PKG_CONFIG_FOUND)
 			set (STATIC_LIBRARIES ${LIBUV_LIBRARIES})
 		endif ()
 

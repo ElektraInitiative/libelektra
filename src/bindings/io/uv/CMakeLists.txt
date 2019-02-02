@@ -1,7 +1,9 @@
 include (LibAddMacros)
 
 find_package (PkgConfig QUIET)
-pkg_check_modules (LIBUV QUIET libuv)
+if (PKG_CONFIG_FOUND)
+	pkg_check_modules (LIBUV QUIET libuv)
+endif (PKG_CONFIG_FOUND)
 
 if (${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
 	exclude_binding (io_uv "cannot be built on Windows")
