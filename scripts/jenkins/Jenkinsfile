@@ -742,6 +742,8 @@ def buildDoc() {
         ]
 
         // TODO don't write to latest on PR's
+        // TODO: Publish documentation again after https://issues.libelektra.org/2351#issuecomment-459817601 is fixed
+        /*
         sshPublisher(
           publishers: [
             sshPublisherDesc(
@@ -771,6 +773,7 @@ def buildDoc() {
           ],
           verbose: true
         )
+        */
         deleteDir()
       }
     }
