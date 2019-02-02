@@ -302,7 +302,7 @@ static int switchUser (Key * key, Key * parentKey, const struct passwd * p)
  * @param parentKey The parentKey to which error messages are logged
  * @param validPath Used for senseful logging of where the error occurred
  * @param modes The modes which should be checked for the current user
- * @retval 0 if success
+ * @retval 1 if success
  * @retval -1 if failure happens
  */
 static int handleNoUserCase (Key * parentKey, const char * validPath, const char * modes)
@@ -327,15 +327,15 @@ static int handleNoUserCase (Key * parentKey, const char * validPath, const char
 static int createModeBits (const char * modes)
 {
 	int modeMask = 0;
-	if (strchr (modes, 'r') == NULL)
+	if (strchr (modes, 'r') != NULL)
 	{
 		modeMask |= R_OK;
 	}
-	if (strchr (modes, 'w') == NULL)
+	if (strchr (modes, 'w') != NULL)
 	{
 		modeMask |= W_OK;
 	}
-	if (strchr (modes, 'x') == NULL)
+	if (strchr (modes, 'x') != NULL)
 	{
 		modeMask |= X_OK;
 	}

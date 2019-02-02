@@ -50,8 +50,9 @@ If the metakey `check/path` is present, it is checked if the value is a
 valid absolute file system path. If a metavalue is present, an additional
 check will be done if it is a directory or device file.
 
-## Example
+## Examples
 
+An example on which the user should have no permission at all for the root directory.
 ```sh
 sudo kdb mount test.dump /test path dump
 sudo kdb setmeta /test/path check/path ""
@@ -67,6 +68,33 @@ kdb set /test/path "/root"
 
 # Set something which the current user can access for sure
 kdb set /test/path "$HOME"
+#> Using name user/test/path
+# STDOUT-REGEX: Set string to "/*"
+
+#cleanup
+sudo kdb rm -r /test
+sudo kdb umount /test
+```
+
+An example where part of the permissions are missing for a tmp file
+```sh
+sudo kdb mount test.dump /test path dump
+sudo kdb setmeta /test/path check/path ""
+#> Using keyname spec/test/path
+sudo kdb setmeta /test/path check/path/user ""
+#> Using keyname spec/test/path
+sudo kdb setmeta /test/path check/path/mode "rwx"
+#> Using keyname spec/test/path
+
+# Standard users should not be able to read/write the root folder
+TMPFILE=$(mktemp)
+chmod +rw $TMPFILE
+kdb set /test/path "$TMPFILE"
+# ERROR:210
+
+# Set something which the current user can access for sure
+chmod +x $TMPFILE
+kdb set /test/path "$TMPFILE"
 #> Using name user/test/path
 # STDOUT-REGEX: Set string to "/*"
 

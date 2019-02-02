@@ -41,4 +41,5 @@ endif ()
 
 add_plugin (path
 	    SOURCES path.h
-		    path.c)
+		    path.c
+	    TEST_README)
