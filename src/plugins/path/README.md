@@ -69,7 +69,7 @@ kdb set /test/path "/root"
 # Set something which the current user can access for sure
 kdb set /test/path "$HOME"
 #> Using name user/test/path
-# STDOUT-REGEX: Set string to "/*"
+# STDOUT-REGEX: .*Set string to "/.*".*
 
 #cleanup
 sudo kdb rm -r /test
@@ -88,7 +88,7 @@ sudo kdb setmeta /test/path check/path/mode "rwx"
 
 # Standard users should not be able to read/write the root folder
 TMPFILE=$(mktemp)
-chmod +rw $TMPFILE
+chmod +rw "$TMPFILE"
 kdb set /test/path "$TMPFILE"
 # ERROR:210
 
@@ -96,7 +96,7 @@ kdb set /test/path "$TMPFILE"
 chmod +x $TMPFILE
 kdb set /test/path "$TMPFILE"
 #> Using name user/test/path
-# STDOUT-REGEX: Set string to "/*"
+# STDOUT-REGEX: .*Set string to "/.*".*
 
 #cleanup
 sudo kdb rm -r /test
