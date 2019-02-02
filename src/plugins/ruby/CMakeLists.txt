@@ -65,25 +65,18 @@ add_plugin (ruby
 	    COMPILE_DEFINITIONS SWIG_TYPE_TABLE=kdb
 				SWIG_RUNTIME=\"runtime.h\")
 
-# ~~~
-# if (ADDTESTING_PHASE)
-#    	# bindings are required for tests
-#    	check_binding_was_added ("swig_python" BINDING_WAS_ADDED)
-#    	if (NOT BUILD_SHARED AND BUILD_TESTING AND BINDING_WAS_ADDED)
-#    		# test environment clears env so setting PYTHONPATH is no option
-#    		# we workaround this by changing the current directory to our bindings
-#    		# output directory + our test adds the current directory to pythons sys.path
-#    		add_plugintest (python
-#    			MEMLEAK
-#    			WORKING_DIRECTORY
-#    				${CMAKE_CURRENT_BINARY_DIR}/../../bindings/swig/python/
-#    		)
-#
-#    		if (INSTALL_TESTING)
-#    			install (DIRECTORY python DESTINATION ${TARGET_TEST_DATA_FOLDER})
-#    		endif ()
-#    	else ()
-#    		message (WARNING "swig_python bindings are required for testing, test deactivated")
-#    	endif ()
-# endif ()
-# ~~~
+if (ADDTESTING_PHASE)
+	# bindings are required for tests
+	check_binding_was_added ("swig_ruby" BINDING_WAS_ADDED)
+	if (BUILD_TESTING AND BINDING_WAS_ADDED)
+		add_plugintest (ruby
+				MEMLEAK
+				ENVIRONMENT "RUBYLIB=${CMAKE_BINARY_DIR}/src/bindings/swig/ruby:${CMAKE_SOURCE_DIR}/src/bindings/swig/ruby")
+
+		if (INSTALL_TESTING)
+			install (DIRECTORY ruby/ruby_test_scripts DESTINATION ${TARGET_TEST_DATA_FOLDER})
+		endif ()
+	else ()
+		message (WARNING "swig_ruby bindings are required for testing, test deactivated")
+	endif ()
+endif ()

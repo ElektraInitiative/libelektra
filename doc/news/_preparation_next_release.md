@@ -103,6 +103,10 @@ The following section lists news about the [modules](https://www.libelektra.org/
 The new plugin [YAy PEG](https://www.libelektra.org/plugins/yaypeg) parses a subset of YAML using a parser based on
 [PEGTL](https://github.com/taocpp/PEGTL). *(René Schwaiger)*
 
+### Ruby
+
+- Aded some basic unit tests *(Bernhard Denner)*
+
 ### <<Plugin3>>
 
 - <<TODO>>
