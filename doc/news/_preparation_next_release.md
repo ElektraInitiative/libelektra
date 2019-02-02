@@ -256,8 +256,8 @@ you up to date with the multi-language support provided by Elektra.
   anymore, if it is unable to locate a Lua executable. *(René Schwaiger)*
 - We added code that makes sure you can compile [IO GLIB](https://www.libelektra.org/bindings/io_glib) on macOS, even if `pkg-config`
   erroneously reports that GLIB requires linking to the library `intl` (part of [GNU gettext](https://www.gnu.org/software/gettext)).
-  (René Schwaiger)
-- The plugin name is provided as compiler definition via CMake. See #1042 .*(Peter Nirschl)*
+  *(René Schwaiger)*
+- The plugin name is provided as compiler definition via CMake. See [#1042](#1042) .*(Peter Nirschl)*
 - <<TODO>>
 
 ### Docker
