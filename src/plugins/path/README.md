@@ -87,7 +87,7 @@ sudo kdb setmeta /test/path check/path/mode "rwx"
 #> Using keyname spec/test/path
 
 # Standard users should not be able to read/write the root folder
-TMPFILE=$(mktemp)
+export TMPFILE=$(mktemp)
 chmod +rw "$TMPFILE"
 kdb set /test/path "$TMPFILE"
 # ERROR:210
