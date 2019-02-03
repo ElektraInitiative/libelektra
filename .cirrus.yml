@@ -52,6 +52,7 @@ mac_task:
       gpgme
       libgcrypt
       libgit2
+      lua
       ninja
       openssl
       pkg-config
