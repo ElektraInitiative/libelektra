@@ -106,8 +106,9 @@ The following section lists news about the [modules](https://www.libelektra.org/
 ### path
 
 Enhanced the plugin to also check for concrete file or directory permissions such as `rwx`.
-It is now possible to check for a user if he has all necessary rights for a certain
-file or directory. Simply add `check/path/user <user>` and `check/path/mode <modes>` as metadata
+You can specify for example that a user can write to a certain directory or file which prevents applications of runtime failures
+once they try to access the given path (such as a log directory or file).
+Simply add `check/path/user <user>` and `check/path/mode <modes>` as metadata
 and be assured that you can safely set a path value to the key. A more detailed explanation can be found
 [here](/src/plugins/path/README.md) *(Michael Zronek)*
 
