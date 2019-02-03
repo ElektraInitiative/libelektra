@@ -49,6 +49,9 @@ mac_task:
       ninja
       openssl
       pkg-config
+    - | # Install Python
+      brew install python@2; brew link --overwrite python@2
+      brew install python || brew upgrade python
     - | # Install Ruby
       brew install ruby@2.5
       export PATH="/usr/local/opt/ruby@2.5/bin:$PATH"
