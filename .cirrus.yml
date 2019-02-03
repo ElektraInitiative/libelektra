@@ -73,6 +73,8 @@ mac_task:
       yaep
       yajl
       yaml-cpp
+    - > # Try to install `checkbashisms` (The file server that hosts the package is unfortunately quite unreliable.)
+      brew install checkbashisms || >&2 printf 'Warning: Unable to install `checkbashims`\n'
     - > # Start D-Bus session bus
       brew services start dbus
     - | # Install Python
