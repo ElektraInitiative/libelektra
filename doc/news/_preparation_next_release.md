@@ -284,6 +284,8 @@ you up to date with the multi-language support provided by Elektra.
 - We now use the [official CMake find module for `iconv`](https://github.com/Kitware/CMake/blob/master/Modules/FindIconv.cmake). This
   update fixes linker problems with the [`iconv`](http://libelektra.org/plugins/iconv) and
   [`filecheck`](http://libelektra.org/plugins/filecheck) plugin on FreeBSD 12. *(René Schwaiger)*
+- The CMake find module for [Botan](https://master.libelektra.org/cmake/Modules/FindLibgcrypt.cmake) does not require `pkg-config` anymore.
+  *(René Schwaiger)*
 
 ### Docker
 

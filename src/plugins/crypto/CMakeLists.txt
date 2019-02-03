@@ -19,7 +19,7 @@ if (DEPENDENCY_PHASE)
 	# Plugin variant: crypto_botan
 	set (plugin crypto_botan)
 	find_package (LibBotan)
-	if (NOT BOTAN_FOUND)
+	if (NOT Botan_FOUND)
 		remove_plugin (${plugin} "botan development files not found")
 	endif ()
 	if (ENABLE_ASAN
@@ -71,8 +71,8 @@ add_plugin (crypto_botan
 	    SOURCES botan_operations.h
 		    botan_operations.cpp
 		    ${CRYPTO_COMMON_FILES}
-	    INCLUDE_DIRECTORIES ${BOTAN_INCLUDE_DIRS}
-	    LINK_LIBRARIES ${BOTAN_LIBRARIES}
+	    INCLUDE_DIRECTORIES ${Botan_INCLUDE_DIRS}
+	    LINK_LIBRARIES ${Botan_LIBRARIES}
 	    LINK_ELEKTRA elektra-invoke
 	    COMPILE_DEFINITIONS ELEKTRA_VARIANT=botan
 				ELEKTRA_CRYPTO_API_BOTAN)
