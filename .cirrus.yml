@@ -50,6 +50,7 @@ mac_task:
       boost
       botan
       cmake
+      dbus
       discount
       doxygen
       gpgme
@@ -69,6 +70,8 @@ mac_task:
       yaep
       yajl
       yaml-cpp
+    - > # Start D-Bus session bus
+      brew services start dbus
     - | # Install Python
       brew install python@2; brew link --overwrite python@2
       brew install python || brew upgrade python
