@@ -53,6 +53,7 @@ mac_task:
       dbus
       discount
       doxygen
+      glib
       gpgme
       graphviz
       libev
