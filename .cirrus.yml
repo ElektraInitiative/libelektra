@@ -60,6 +60,7 @@ mac_task:
       libgit2
       llvm
       lua
+      maven
       moreutils
       ninja
       openssl
