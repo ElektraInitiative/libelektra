@@ -62,6 +62,7 @@ mac_task:
       pegtl
       pkg-config
       qt
+      shfmt
       swig
       xerces-c
       yaep
