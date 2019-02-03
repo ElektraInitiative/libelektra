@@ -53,6 +53,7 @@ mac_task:
       discount
       doxygen
       gpgme
+      graphviz
       libgcrypt
       libgit2
       lua
