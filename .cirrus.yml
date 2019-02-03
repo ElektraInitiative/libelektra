@@ -86,7 +86,13 @@ mac_task:
       export PATH="$HOME/.gem/ruby/$(ruby -e 'puts RUBY_VERSION' | sed 's/\.[0-9]$/.0/')/bin:$PATH"
     - SYSTEM_DIR="$PWD/kdbsystem"
     - mkdir build && cd build
-    - cmake -GNinja -DPLUGINS=ALL -DBINDINGS=ALL -DKDB_DB_SYSTEM="$SYSTEM_DIR" ..
+    - >
+      cmake
+      -GNinja
+      -DPLUGINS=ALL
+      -DBINDINGS=ALL
+      -DTOOLS=ALL
+      -DKDB_DB_SYSTEM="$SYSTEM_DIR" ..
     - ninja
     - output="$(ninja install 2>&1)" || printf '%s' "$output"
 
