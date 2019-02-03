@@ -37,9 +37,10 @@ mac_task:
         image: mojave-xcode-10.1
 
   install_script:
-    - >
+    - > # Install Homebrew formulas
       brew install
       augeas
+      botan
       cmake
       gpgme
       libgcrypt
