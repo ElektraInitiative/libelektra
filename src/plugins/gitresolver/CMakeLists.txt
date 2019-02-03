@@ -28,5 +28,5 @@ add_plugin (gitresolver
 	    SOURCES gitresolver.h
 		    gitresolver.c
 	    LINK_ELEKTRA elektra-invoke
-	    INCLUDE_DIRECTORIES ${GITRESOLVER_INCLUDE_DIRS}
+	    INCLUDE_SYSTEM_DIRECTORIES ${GITRESOLVER_INCLUDE_DIRS}
 	    LINK_LIBRARIES ${GITRESOLVER_LIBRARY_DIRS})
