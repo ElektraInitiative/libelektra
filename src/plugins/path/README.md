@@ -54,52 +54,48 @@ check will be done if it is a directory or device file.
 
 An example on which the user should have no permission at all for the root directory.
 ```sh
-sudo kdb mount test.dump /test path dump
-sudo kdb setmeta /test/path check/path ""
-#> Using keyname spec/test/path
-sudo kdb setmeta /test/path check/path/user ""
-#> Using keyname spec/test/path
-sudo kdb setmeta /test/path check/path/mode "rw"
-#> Using keyname spec/test/path
+sudo kdb mount test.dump user/tests path dump
+sudo kdb set user/tests/path "$HOME"
+sudo kdb setmeta user/tests/path check/path ""
+sudo kdb setmeta user/tests/path check/path/user ""
+sudo kdb setmeta user/tests/path check/path/mode "rw"
 
 # Standard users should not be able to read/write the root folder
-kdb set /test/path "/root"
+kdb set user/tests/path "/root"
 # ERROR:210
 
 # Set something which the current user can access for sure
-kdb set /test/path "$HOME"
-# STDOUT-REGEX: Using name .*/test/path.*Set string to "/.*".*
+kdb set user/tests/path "$HOME"
+# STDOUT-REGEX: .*Set string to "/.*".*
 
 #cleanup
-sudo kdb rm -r /test
-sudo kdb umount /test
+sudo kdb rm -r user/tests
+sudo kdb umount user/tests
 ```
 
 An example where part of the permissions are missing for a tmp file
 ```sh
-sudo kdb mount test.dump /test path dump
-sudo kdb setmeta /test/path check/path ""
-#> Using keyname spec/test/path
-sudo kdb setmeta /test/path check/path/user ""
-#> Using keyname spec/test/path
-sudo kdb setmeta /test/path check/path/mode "rwx"
-#> Using keyname spec/test/path
+sudo kdb mount test.dump user/tests path dump
+sudo kdb set user/tests/path "$HOME"
+sudo kdb setmeta user/tests/path check/path ""
+sudo kdb setmeta user/tests/path check/path/user ""
+sudo kdb setmeta user/tests/path check/path/mode "rwx"
 
 # Standard users should not be able to read/write the root folder
-echo '' > /tmp/3b12l5n2l4l73.txt
-chmod +rw "/tmp/3b12l5n2l4l73.txt"
-kdb set /test/path "/tmp/3b12l5n2l4l73.txt"
+kdb set user/tests/path/tempfile $(mktemp)
+chmod +rw `kdb get user/tests/path/tempfile`
+kdb set user/tests/path `kdb get user/tests/path/tempfile`
 # ERROR:210
 
 # Set something which the current user can access for sure
-chmod +x /tmp/3b12l5n2l4l73.txt
-kdb set /test/path "/tmp/3b12l5n2l4l73.txt"
-# STDOUT-REGEX: Using name .*/test/path.*Set string to "/.*".*
+chmod +x `kdb get user/tests/path/tempfile`
+kdb set user/tests/path `kdb get user/tests/path/tempfile`
+# STDOUT-REGEX: Set string to "/.*".*
 
 #cleanup
-sudo kdb rm -r /test
-sudo kdb umount /test
-sudo rm -rf /tmp/3b12l5n2l4l73.txt
+sudo rm -rf `kdb get user/tests/path/tempfile`
+sudo kdb rm -r user/tests
+sudo kdb umount user/tests
 ```
 
 ## Future work
