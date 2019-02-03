@@ -55,6 +55,7 @@ mac_task:
       ninja
       openssl
       pkg-config
+      qt
       swig
       xerces-c
       yaml-cpp
