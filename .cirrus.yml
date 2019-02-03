@@ -37,6 +37,8 @@ mac_task:
         image: mojave-xcode-10.1
 
   install_script:
+    - > # Add external Homebrew taps
+      brew tap sanssecours/yaep
     - > # Install Homebrew casks
       brew cask install java oclint
     - > # Install Homebrew formulas
@@ -61,6 +63,7 @@ mac_task:
       qt
       swig
       xerces-c
+      yaep
       yajl
       yaml-cpp
     - | # Install Python
