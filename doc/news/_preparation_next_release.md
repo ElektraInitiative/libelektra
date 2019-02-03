@@ -286,6 +286,8 @@ you up to date with the multi-language support provided by Elektra.
   [`filecheck`](http://libelektra.org/plugins/filecheck) plugin on FreeBSD 12. *(René Schwaiger)*
 - The CMake find module for [Botan](https://master.libelektra.org/cmake/Modules/FindLibgcrypt.cmake) does not require `pkg-config` anymore.
   *(René Schwaiger)*
+- The CMake find module for [libgit2](https://master.libelektra.org/cmake/Modules/FindLibGit2.cmake) now also exports the version number of
+  libgit2. *(René Schwaiger)*
 
 ### Docker
 
