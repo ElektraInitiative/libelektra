@@ -41,6 +41,8 @@ mac_task:
       brew cask install java oclint
     - > # Install Homebrew formulas
       brew install
+      antlr
+      antlr4-cpp-runtime
       augeas
       botan
       cmake
