@@ -98,6 +98,11 @@ The following section lists news about the [modules](https://www.libelektra.org/
   or if the port is available to use. *(Michael Zronek)*
 - We added a [Markdown Shell Recorder][] test to the [ReadMe of the plugin](https://www.libelektra.org/plugins/network). *(René Schwaiger)*
 
+### YAMBi
+
+- The build system does not print a warning about a deprecated directive any more, if you build the plugin with Bison `3.3` or later.
+  *(René Schwaiger)*
+
 ### YAy PEG
 
 The new plugin [YAy PEG](https://www.libelektra.org/plugins/yaypeg) parses a subset of YAML using a parser based on
