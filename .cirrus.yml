@@ -55,6 +55,7 @@ mac_task:
       doxygen
       gpgme
       graphviz
+      libev
       libgcrypt
       libgit2
       llvm
