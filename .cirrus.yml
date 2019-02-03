@@ -87,9 +87,6 @@ mac_task:
     - SYSTEM_DIR="$PWD/kdbsystem"
     - mkdir build && cd build
     - cmake -GNinja -DPLUGINS=ALL -DBINDINGS=ALL -DKDB_DB_SYSTEM="$SYSTEM_DIR" ..
-      -DRUBY_EXECUTABLE=/usr/local/opt/ruby@2.5/bin/ruby
-      -DRUBY_INCLUDE_DIR=/usr/local/opt/ruby@2.5/include/ruby-2.5.0
-      -DRUBY_LIBRARY=/usr/local/opt/ruby@2.5/lib/libruby.dylib
     - ninja
     - output="$(ninja install 2>&1)" || printf '%s' "$output"
 
