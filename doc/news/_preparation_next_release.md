@@ -89,14 +89,19 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 ### Augeas
 
-- We changed the default [Augeas](http://augeas.net) directory prefix on macOS to the default [Homebrew](https://brew.sh) Augeas
-  installation directory: `/usr/local/opt/augeas`. *(René Schwaiger)*
+- We changed the default [Augeas](http://augeas.net) directory prefix for the lenses directory on macOS to the one used by
+  [Homebrew](https://brew.sh): `/usr/local`. *(René Schwaiger)*
 
 ### network
 
 - The `network` plugin also supports port declarations to check if a port number is valid
   or if the port is available to use. *(Michael Zronek)*
 - We added a [Markdown Shell Recorder][] test to the [ReadMe of the plugin](https://www.libelektra.org/plugins/network). *(René Schwaiger)*
+
+### YAMBi
+
+- The build system does not print a warning about a deprecated directive any more, if you build the plugin with Bison `3.3` or later.
+  *(René Schwaiger)*
 
 ### YAy PEG
 
@@ -257,7 +262,11 @@ you up to date with the multi-language support provided by Elektra.
 - We added code that makes sure you can compile [IO GLIB](https://www.libelektra.org/bindings/io_glib) on macOS, even if `pkg-config`
   erroneously reports that GLIB requires linking to the library `intl` (part of [GNU gettext](https://www.gnu.org/software/gettext)).
   *(René Schwaiger)*
-- The plugin name is provided as compiler definition via CMake. See [#1042](#1042) .*(Peter Nirschl)*
+- The plugin name is now provided as compiler definition ELEKTRA_PLUGIN_NAME via CMake. See [#1042](#1042) .*(Peter Nirschl)*
+- We added a [CMake find module for GLib](https://master.libelektra.org/cmake/Modules/FindGLib.cmake). The module makes sure you can
+  compile and link [IO GLib](https://www.libelektra.org/bindings/io_glib) on macOS. *(René Schwaiger)*
+- <<TODO>>
+- <<TODO>>
 - <<TODO>>
 
 ### Docker

@@ -8,7 +8,7 @@
 
 %skeleton "lalr1.cc"
 %defines
-%define parser_class_name { Parser }
+%define @PARSER_NAME_DIRECTIVE@ { Parser }
 %define api.token.constructor
 %define api.value.type variant
 %define parse.assert

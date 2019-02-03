@@ -39,7 +39,15 @@ function (check_dependencies)
 		return ()
 	endif (BISON_VERSION VERSION_LESS 3)
 
-	bison_target (YAMBI ${CMAKE_CURRENT_SOURCE_DIR}/parser.ypp ${CMAKE_CURRENT_BINARY_DIR}/parser.cpp)
+	if (BISON_VERSION VERSION_LESS 3.3)
+		set (PARSER_NAME_DIRECTIVE "parser_class_name")
+	else (BISON_VERSION VERSION_LESS 3.3)
+		set (PARSER_NAME_DIRECTIVE "api.parser.class")
+	endif (BISON_VERSION VERSION_LESS 3.3)
+
+	configure_file (${CMAKE_CURRENT_SOURCE_DIR}/parser.ypp ${CMAKE_CURRENT_BINARY_DIR}/parser.ypp @ONLY)
+
+	bison_target (YAMBI ${CMAKE_CURRENT_BINARY_DIR}/parser.ypp ${CMAKE_CURRENT_BINARY_DIR}/parser.cpp)
 
 	if (NOT BISON_YAMBI_DEFINED)
 		set (FAILURE_MESSAGE "generating the parser code failed" PARENT_SCOPE)
