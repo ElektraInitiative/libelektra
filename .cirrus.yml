@@ -45,6 +45,7 @@ mac_task:
       antlr4-cpp-runtime
       augeas
       bison
+      boost
       botan
       cmake
       discount
