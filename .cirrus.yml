@@ -54,6 +54,7 @@ mac_task:
       openssl
       pkg-config
       swig
+      xerces-c
       yaml-cpp
     - | # Install Python
       brew install python@2; brew link --overwrite python@2
