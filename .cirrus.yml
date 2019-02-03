@@ -47,6 +47,7 @@ mac_task:
       bison
       botan
       cmake
+      discount
       doxygen
       gpgme
       libgcrypt
