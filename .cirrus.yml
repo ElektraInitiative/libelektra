@@ -44,6 +44,7 @@ mac_task:
       antlr
       antlr4-cpp-runtime
       augeas
+      bison
       botan
       cmake
       doxygen
