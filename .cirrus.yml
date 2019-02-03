@@ -45,6 +45,7 @@ mac_task:
       doxygen
       gpgme
       libgcrypt
+      libgit2
       ninja
       openssl
       pkg-config
