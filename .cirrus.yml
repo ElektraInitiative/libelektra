@@ -49,6 +49,7 @@ mac_task:
       ninja
       openssl
       pkg-config
+      swig
     - | # Install Python
       brew install python@2; brew link --overwrite python@2
       brew install python || brew upgrade python
