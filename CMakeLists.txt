@@ -67,6 +67,13 @@ set (SO_VERSION_GETENV 0)
 # needs version above
 include (cmake/ElektraPackaging.cmake)
 
+# process KDB_DB_SPEC so it is available everywhere
+if (IS_ABSOLUTE "${KDB_DB_SPEC}")
+	set (BUILTIN_SPEC_FOLDER "${KDB_DB_SPEC}")
+else ()
+	set (BUILTIN_SPEC_FOLDER "${CMAKE_INSTALL_PREFIX}/${KDB_DB_SPEC}")
+endif ()
+
 # now add all directories
 add_subdirectory (cmake)
 
