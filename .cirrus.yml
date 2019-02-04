@@ -45,6 +45,13 @@ mac_task:
         ENABLE_ASAN: ON
         TOOLS: kdb
 
+    - name: 🍎 FULL
+      osx_instance:
+        image: mojave-xcode-10.1
+      env:
+        BUILD_FULL: ON
+        BUILD_SHARED: OFF
+
   install_script:
     - > # Add external Homebrew taps
       brew tap sanssecours/yaep
@@ -135,9 +142,12 @@ mac_task:
     - output="$(ninja install 2>&1)" || printf '%s' "$output"
 
   tests_script:
-    |
-    if [[ "$ENABLE_ASAN" == 'ON' ]]; then
-      ninja -C build run_nocheckshell
-    else
-      ninja -C build run_all && kdb run_all
-    fi
+    - cd build
+    - |
+      if [[ "$ENABLE_ASAN" == 'ON' ]]; then
+        ninja run_nocheckshell
+      elif [[ "$BUILD_FULL" == 'ON' ]]; then
+        ninja run_all && kdb-full run_all
+      else
+        ninja run_all && kdb run_all
+      fi

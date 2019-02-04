@@ -178,19 +178,11 @@ matrix:
         - BUILD_SHARED=OFF
         - CC_COMPILER=gcc-8
         - CXX_COMPILER=g++-8
-      script: &testFull
+      script:
         - ninja
         - output="$(ninja install 2>&1)" || printf '%s' "$output"
         - ninja run_all
         - kdb-full run_all
-
-    - os: osx
-      name: 🍏 FULL
-      compiler: clang
-      env:
-        - BUILD_FULL=ON
-        - BUILD_SHARED=OFF
-      script: *testFull
 
     - os: osx
       name: 🍏 GCC

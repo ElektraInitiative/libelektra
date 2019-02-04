@@ -312,6 +312,7 @@ you up to date with the multi-language support provided by Elektra.
 - The new build job `🍎 Clang` tests Elektra on macOS. *(René Schwaiger)*
 - We added the build job `🍎 Clang ASAN`, which uses Clang with enabled [AddressSanitizer](https://en.wikipedia.org/wiki/AddressSanitizer)
   to test Elektra on macOS. *(René Schwaiger)*
+- The new build job `🍎 FULL` compiles and test Elektra using the CMake options `BUILD_SHARED=OFF` an `BUILD_FULL=ON`. *(René Schwaiger)*
 
 ### Jenkins
 
@@ -324,6 +325,7 @@ you up to date with the multi-language support provided by Elektra.
 - We now test Elektra on [Ubuntu Xenial Xerus](https://docs.travis-ci.com/user/reference/xenial). *(René Schwaiger)*
 - We removed the build jobs `🍏 Clang` and `🍏 Check Shell` in favor of the Cirrus build job `🍎 Clang`. *(René Schwaiger)*
 - We removed the build jobs `🍏 Clang ASAN` in favor of the Cirrus build job `🍎 Clang ASAN`. *(René Schwaiger)*
+- We removed the build jobs `🍏 FULL` in favor of the Cirrus build job `🍎 FULL`. *(René Schwaiger)*
 - <<TODO>>
 
 
