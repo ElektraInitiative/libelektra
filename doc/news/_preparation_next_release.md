@@ -290,6 +290,7 @@ you up to date with the multi-language support provided by Elektra.
   libgit2. *(René Schwaiger)*
 - We added a CMake find module for [libuv](https://libuv.org) and fixed a problem on macOS, where the build system was
   [unable to locate the header file of libuv](https://cirrus-ci.com/task/4852008365326336 ). *(René Schwaiger)*
+- We added a CMake find module for [ZeroMQ](http://zeromq.org) to fix build problems on macOS. *(René Schwaiger)*
 
 ### Docker
 
