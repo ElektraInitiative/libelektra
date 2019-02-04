@@ -23,6 +23,8 @@ else ()
 
 	# create object library so that executables can use $<TARGET_OBJECTS:OBJ_${IO_UV_LIBRARY}>
 	add_library (OBJ_${IO_UV_LIBRARY} OBJECT ${SOURCES})
+	target_include_directories (OBJ_${IO_UV_LIBRARY} SYSTEM PUBLIC ${libuv_INCLUDE_DIRS})
+
 	if (libuv_VERSION VERSION_LESS "1.0")
 		target_compile_definitions (OBJ_${IO_UV_LIBRARY} PRIVATE "HAVE_LIBUV0")
 	else ()
@@ -74,7 +76,9 @@ else ()
 	add_executable (${TESTEXENAME} ${TEST_SOURCES})
 	add_dependencies (${TESTEXENAME} kdberrors_generated elektra_error_codes_generated)
 
-	target_include_directories (${TESTEXENAME} PUBLIC "${CMAKE_SOURCE_DIR}/tests/cframework")
+	target_include_directories (${TESTEXENAME}
+				    PUBLIC "${CMAKE_SOURCE_DIR}/tests/cframework"
+					   "${libuv_INCLUDE_DIRS}")
 
 	target_link_elektra (${TESTEXENAME} elektra-kdb elektra-plugin elektra-io ${IO_UV_LIBRARY} m)
 	if (BUILD_FULL OR BUILD_STATIC)
