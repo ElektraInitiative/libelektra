@@ -2,6 +2,37 @@ include (LibAddMacros)
 include (LibAddTest)
 
 # ~~~
+# Provides additional compiler definitions:
+#
+# - ELEKTRA_PLUGIN_NAME containing the short plugin name as string
+# - ELEKTRA_PLUGIN_NAME_C containing the short plugin name which can be used in function names
+#
+# shortname:
+#   pass the PLUGIN_SHORT_NAME as this argument
+#
+# ADDITIONAL_COMPILE_DEFINITIONS:
+#   will contain the additional compiler definitions mentioned above.
+#   will be set to the parent scope, i.e. the caller of the function
+#
+# ~~~
+function (set_additional_compile_definitions shortname)
+	# provide the plugin name as string to the compiler/preprocessor
+	if (NOT "${ARG_COMPILE_DEFINITIONS}" MATCHES "ELEKTRA_PLUGIN_NAME")
+		list (APPEND ADDITIONAL_COMPILE_DEFINITIONS_PARTS
+			     "ELEKTRA_PLUGIN_NAME=\"${shortname}\"")
+	endif ()
+
+	# provide the plugin name as macro that can be used for building function names, etc.
+	if (NOT "${ARG_COMPILE_DEFINITIONS}" MATCHES "ELEKTRA_PLUGIN_NAME_C")
+		list (APPEND ADDITIONAL_COMPILE_DEFINITIONS_PARTS
+			     "ELEKTRA_PLUGIN_NAME_C=${shortname}")
+	endif ()
+
+	set (ADDITIONAL_COMPILE_DEFINITIONS "${ADDITIONAL_COMPILE_DEFINITIONS_PARTS}" PARENT_SCOPE)
+	unset (ADDITIONAL_COMPILE_DEFINITIONS_PARTS)
+endfunction (set_additional_compile_definitions)
+
+# ~~~
 # Add a test for a plugin
 #
 # Will include the common tests.h file + its source file
@@ -149,14 +180,19 @@ function (add_plugintest testname)
 			target_link_libraries (${testexename} gtest_main)
 		endif (ARG_CPP)
 
+		set_additional_compile_definitions (${testname})
+
 		target_link_libraries (${testexename} ${ARG_LINK_LIBRARIES} ${ARG_TEST_LINK_LIBRARIES})
-		set_target_properties (${testexename}
-				       PROPERTIES COMPILE_DEFINITIONS
-						  "HAVE_KDBCONFIG_H;ELEKTRA_PLUGIN_TEST;${ARG_COMPILE_DEFINITIONS}")
+		set_target_properties (
+			${testexename}
+			PROPERTIES COMPILE_DEFINITIONS
+				   "HAVE_KDBCONFIG_H;ELEKTRA_PLUGIN_TEST;${ARG_COMPILE_DEFINITIONS};${ADDITIONAL_COMPILE_DEFINITIONS}")
 		set_property (TARGET ${testexename}
 			      APPEND
 			      PROPERTY INCLUDE_DIRECTORIES
 				       ${ARG_INCLUDE_DIRECTORIES})
+
+		unset (ADDITIONAL_COMPILE_DEFINITIONS)
 
 		foreach (DIR ${ARG_INCLUDE_SYSTEM_DIRECTORIES})
 
@@ -561,11 +597,13 @@ function (add_plugin PLUGIN_SHORT_NAME)
 	endif ()
 
 	generate_readme (${PLUGIN_SHORT_NAME})
+	set_additional_compile_definitions (${PLUGIN_SHORT_NAME})
 
 	set_property (TARGET ${PLUGIN_OBJS}
 		      APPEND
 		      PROPERTY COMPILE_DEFINITIONS
 			       ${ARG_COMPILE_DEFINITIONS}
+			       ${ADDITIONAL_COMPILE_DEFINITIONS}
 			       "ELEKTRA_STATIC"
 			       "HAVE_KDBCONFIG_H"
 			       "PLUGIN_SHORT_NAME=${PLUGIN_SHORT_NAME}"
@@ -618,6 +656,7 @@ function (add_plugin PLUGIN_SHORT_NAME)
 			      APPEND
 			      PROPERTY COMPILE_DEFINITIONS
 				       ${ARG_COMPILE_DEFINITIONS}
+				       ${ADDITIONAL_COMPILE_DEFINITIONS}
 				       "HAVE_KDBCONFIG_H"
 				       "PLUGIN_SHORT_NAME=${PLUGIN_SHORT_NAME}"
 				       "README=readme_${PLUGIN_SHORT_NAME}.c")
@@ -661,4 +700,7 @@ function (add_plugin PLUGIN_SHORT_NAME)
 			      PROPERTY "elektra-full_LIBRARIES"
 				       "${ARG_LINK_LIBRARIES}")
 	endif (NOT ARG_ONLY_SHARED)
+
+	# cleanup
+	unset (ADDITIONAL_COMPILE_DEFINITIONS)
 endfunction (add_plugin)
