@@ -288,6 +288,8 @@ you up to date with the multi-language support provided by Elektra.
   *(René Schwaiger)*
 - The CMake find module for [libgit2](https://master.libelektra.org/cmake/Modules/FindLibGit2.cmake) now also exports the version number of
   libgit2. *(René Schwaiger)*
+- We added a CMake find module for [libuv](https://libuv.org) and fixed a problem on macOS, where the build system was
+  [unable to locate the header file of libuv](https://cirrus-ci.com/task/4852008365326336 ). *(René Schwaiger)*
 
 ### Docker
 
