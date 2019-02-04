@@ -32,19 +32,23 @@ matrix:
 
     # ASAN: Enable AddressSanitizer
 
-    - os: osx
-      name: 🍏 Clang ASAN
-      compiler: clang
+    - os: linux
+      name: 🐧 GCC ASAN
+      compiler: gcc
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-8
       env:
         - ENABLE_ASAN=ON
-        - ASAN_OPTIONS=detect_leaks=1
-        # We only translate the `kdb` tool to save a little bit of build time.
-        # Unfortunately this build job would hit the [timeout][] for public repositories
-        # quite often otherwise.
-        # [timeout]: https://docs.travis-ci.com/user/customizing-the-build/#build-timeouts
+        - CC_COMPILER=gcc-8
+        - CXX_COMPILER=g++-8
+        # Build less stuff so the build does not hit the timeout limit that often
         - TOOLS=kdb
         - BINDINGS=cpp
-        - &minimalPluginList "PLUGINS='\
+        - "PLUGINS='\
           ALL;\
           -augeas;\
           -base64;\
@@ -133,28 +137,9 @@ matrix:
           -zeromqrecv;\
           -zeromqsend;\
           '"
-      script: &testNoSourceCheck
+      script:
         - ninja
         - ninja run_nocheckshell
-
-    - os: linux
-      name: 🐧 GCC ASAN
-      compiler: gcc
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-          packages:
-            - g++-8
-      env:
-        - ENABLE_ASAN=ON
-        - CC_COMPILER=gcc-8
-        - CXX_COMPILER=g++-8
-        # Build less stuff so the build does not hit the timeout limit that often
-        - TOOLS=kdb
-        - BINDINGS=cpp
-        - *minimalPluginList
-      script: *testNoSourceCheck
 
     - os: linux
       # The DBus library on Ubuntu Xenial Xerus seems to leak memory
