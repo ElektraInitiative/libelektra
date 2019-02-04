@@ -24,7 +24,7 @@ public:
 
 	std::string getSynopsis () override
 	{
-		return "<templateName> <outputName> [parameters...]";
+		return "<templateName> <parentKey> <outputName> [parameters...]";
 	}
 
 	std::string getShortHelpText () override

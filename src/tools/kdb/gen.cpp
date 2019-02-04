@@ -21,26 +21,41 @@ int GenCommand::execute (Cmdline const & cl)
 {
 	auto & templates = GenTemplateList::getInstance ();
 
-	if (cl.arguments.size () < 2)
+	if (cl.arguments.size () < 3)
 	{
-		throw invalid_argument ("need at least 2 arguments");
+		throw invalid_argument ("need at least 3 arguments");
 	}
 
 	auto templateName = cl.arguments[0];
-	auto outputName = cl.arguments[1];
+	auto parentKey = cl.arguments[1];
+	auto outputName = cl.arguments[2];
 
-	std::unordered_map<std::string, std::string> parameters = {};
+	std::unordered_map<std::string, std::string> parameters;
+	if (cl.arguments.size () > 3)
+	{
+		std::transform (cl.arguments.begin () + 3, cl.arguments.end (), std::inserter (parameters, parameters.end ()),
+				[](const std::string & param) {
+					auto search = param.find ('=');
+					if (search == std::string::npos)
+					{
+						throw invalid_argument ("parameters have to be of format name=value");
+					}
 
-	const auto tmpl = templates.getTemplate (templateName, outputName, parameters);
+					return std::make_pair (std::string (param.begin (), param.begin () + search),
+							       std::string (param.begin () + search + 1, param.end ()));
+				});
+	}
 
+	const auto tmpl = templates.getTemplate (templateName, parameters);
+
+	KDB kdb;
 	KeySet ks;
-	ks.append (Key ("/test", KEY_META, "type", "long", KEY_END));
-	ks.append (Key ("/test", KEY_META, "type", "enum", KEY_META, "check/enum", "#3", KEY_META, "check/enum/#2", "two", KEY_END));
+	kdb.get (ks, parentKey);
 
 	for (const auto & part : tmpl->getParts ())
 	{
 		auto output = std::ofstream (outputName + part);
-		tmpl->render (output, part, ks);
+		tmpl->render (output, outputName, part, ks, parentKey);
 	}
 
 	return 0;

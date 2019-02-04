@@ -15,11 +15,11 @@
 #ifndef /*%& include_guard %*/
 #define /*%& include_guard %*/
 
-/**
- * Enum Types
- */
-
 /*%# enums %*/
+/*%={{ }}=%*/
+/**
+ * Enum type for enum of key '{{{ name }}}'.
+ */ // {{=/*% %*/=}}
 typedef enum
 {
 	/*%# values %*/
@@ -28,31 +28,19 @@ typedef enum
 } /*%& native_type %*/;
 /*%/ enums %*/
 
-/**
- * Enum Tags
- */
-
 /*%# enums %*/
+// tag declarations for enum of key '/*%& name %*/'
 ELEKTRA_TAG_DECLARATIONS (/*%& native_type %*/, /*%& type_name %*/)
 /*%/ enums %*/
 
-
-/**
- * Default KeySet
- */
-
-#define ELEKTRA_DEFAULTS                                                                                                                   \
-	(ksNew (/*%& keys_count %*/, /*%# keys %*/ /*%# default? %*/                                                                       \
-		keyNew ("/*% name %*/", KEY_VALUE, "/*% value %*/", KEY_META, "type", "/*%& type %*/", KEY_END),                           \
-		/*%/ default? %*/ /*%/ keys %*/                                                                                            \
-		KS_END))
-
-/**
- * Elektra Tag Values
- */
-
 /*%# keys %*/
+/*%={{ }}=%*/
+/**
+ * Tag value for key '{{{ name }}}'.
+ */ // {{=/*% %*/=}}
 ELEKTRA_TAG_VALUE (/*% tag_name %*/, "/*%& name %*/", /*% type_name %*/)
 /*%/ keys %*/;
+
+Elektra * /*%& init_function_name %*/ (ElektraError ** error);
 
 #endif // /*%& include_guard %*/

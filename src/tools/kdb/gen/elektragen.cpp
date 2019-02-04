@@ -9,22 +9,25 @@
 #include "elektragen.hpp"
 #include <kdbtypes.h>
 
-const char * ElektraGenTemplate::Params::OutputName = "outputName";
+const char * ElektraGenTemplate::Params::InitFunctionName = "initFn";
 
-static const std::unordered_set<std::string> allowedTypes = { "enum",
-							      "string",
-							      "boolean",
-							      "char",
-							      "octet",
-							      "short",
-							      "unsigned_short",
-							      "long",
-							      "unsigned_long",
-							      "long_long",
-							      "unsigned_long_long",
-							      "float",
-							      "double",
-							      "long_double" };
+static inline const std::unordered_set<std::string> getAllowedTypes ()
+{
+	return { "enum",
+		 "string",
+		 "boolean",
+		 "char",
+		 "octet",
+		 "short",
+		 "unsigned_short",
+		 "long",
+		 "unsigned_long",
+		 "long_long",
+		 "unsigned_long_long",
+		 "float",
+		 "double",
+		 "long_double" };
+}
 
 static std::string createIncludeGuard (const std::string & fileName)
 {
@@ -43,16 +46,6 @@ static inline bool hasType (const kdb::Key & key)
 static inline std::string getType (const kdb::Key & key)
 {
 	return key.getMeta<std::string> ("type");
-}
-
-static inline bool hasDefault (const kdb::Key & key)
-{
-	return key.hasMeta ("default");
-}
-
-static inline std::string getDefault (const kdb::Key & key)
-{
-	return key.getMeta<std::string> ("default");
 }
 
 static std::string getTagName (const kdb::Key & key)
@@ -168,14 +161,21 @@ static inline bool shouldGenerateTypeDef (const kdb::Key & key)
 	return !key.hasMeta ("gen/enum/create") || key.getMeta<std::string> ("gen/enum/create") == "1";
 }
 
-kainjow::mustache::data ElektraGenTemplate::getTemplateData (const kdb::KeySet & ks) const
+kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string & outputName, const kdb::KeySet & ks,
+							     const std::string & parentKey) const
 {
+	// TODO: duplicate gen/enum/type
+
 	using namespace kainjow::mustache;
 
-	auto headerFile = getParameter (Params::OutputName) + ".h";
+	auto headerFile = outputName + ".h";
 	auto includeGuard = createIncludeGuard (headerFile);
+	auto initFunctionName = getParameter (Params::InitFunctionName, "loadConfiguration");
 
-	auto data = object{ { "header_file", headerFile }, { "include_guard", includeGuard } };
+	auto data = object{ { "header_file", headerFile },
+			    { "include_guard", includeGuard },
+			    { "parent_key", parentKey },
+			    { "init_function_name", initFunctionName } };
 
 	auto enums = list{};
 	auto keys = list{};
@@ -189,6 +189,7 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const kdb::KeySet &
 
 		auto type = getType (key);
 
+		const auto & allowedTypes = getAllowedTypes ();
 		if (allowedTypes.find (type) == allowedTypes.end ())
 		{
 			throw std::runtime_error ("illegal type"); // TODO
@@ -196,11 +197,6 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const kdb::KeySet &
 
 		auto tagName = snakeCaseToMacroCase (getTagName (key));
 		object keyObject = { { "name", key.getName () }, { "tag_name", tagName }, { "type_name", snakeCaseToCamelCase (type) } };
-
-		if (hasDefault (key))
-		{
-			keyObject["default?"] = object{ { "value", getDefault (key) } };
-		}
 
 		if (type == "enum")
 		{
@@ -210,7 +206,8 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const kdb::KeySet &
 
 			keyObject["type_name"] = typeName;
 
-			enums.emplace_back (object{ { "tag_name", tagName },
+			enums.emplace_back (object{ { "name", key.getName () },
+						    { "tag_name", tagName },
 						    { "type_name", typeName },
 						    { "native_type", "Elektra" + typeName },
 						    { "generate_typedef", generateTypeDef },

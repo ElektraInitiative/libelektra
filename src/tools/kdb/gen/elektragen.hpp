@@ -15,16 +15,17 @@ class ElektraGenTemplate : public GenTemplate
 {
 	struct Params
 	{
-		static const char * OutputName;
+		static const char * InitFunctionName;
 	};
 
 public:
-	ElektraGenTemplate () : GenTemplate ("elektra", { ".c", ".h" }, { { Params::OutputName, true } })
+	ElektraGenTemplate () : GenTemplate ("elektra", { ".c", ".h" }, { { Params::InitFunctionName, false } })
 	{
 	}
 
 protected:
-	kainjow::mustache::data getTemplateData (const kdb::KeySet & ks) const override;
+	kainjow::mustache::data getTemplateData (const std::string & outputName, const kdb::KeySet & ks,
+						 const std::string & parentKey) const override;
 };
 
 #endif // ELEKTRA_ELEKTRAGEN_HPP
