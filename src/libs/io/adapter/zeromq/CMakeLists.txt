@@ -1,15 +1,14 @@
 include (LibAddMacros)
 
-find_package (PkgConfig QUIET)
-pkg_check_modules (ZMQ QUIET libzmq)
+find_package (ZeroMQ QUIET)
 
-if (ZMQ_FOUND)
+if (ZeroMQ_FOUND)
 
 	try_compile (CAN_LINK_ZMQ
 		     "${CMAKE_BINARY_DIR}"
 		     "${CMAKE_CURRENT_SOURCE_DIR}/try_compile_zeromq.c"
-		     CMAKE_FLAGS -DINCLUDE_DIRECTORIES:STRING=${ZMQ_INCLUDE_DIRS}
-				 -DLINK_LIBRARIES:PATH=${ZMQ_LIBRARIES})
+		     CMAKE_FLAGS -DINCLUDE_DIRECTORIES:STRING=${ZeroMQ_INCLUDE_DIRS}
+				 -DLINK_LIBRARIES:PATH=${ZeroMQ_LIBRARIES})
 
 	if (NOT CAN_LINK_ZMQ)
 		message (
@@ -25,7 +24,7 @@ if (ZMQ_FOUND)
 		set (SOURCES ${ADAPTER_SRC_FILES})
 
 		add_library (${ADAPTER_OBJECT} OBJECT ${SOURCES})
-		target_include_directories (${ADAPTER_OBJECT} SYSTEM PUBLIC ${ZMQ_INCLUDE_DIRS})
+		target_include_directories (${ADAPTER_OBJECT} SYSTEM PUBLIC ${ZeroMQ_INCLUDE_DIRS})
 
 		# NOTE CMAKE_POSITION_INDEPENDENT_CODE does not seem to work (e.g. CMake 3.9.2 on Travis)
 		target_compile_options (${ADAPTER_OBJECT} PRIVATE "-fPIC")

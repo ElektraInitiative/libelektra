@@ -1,9 +1,8 @@
 include (LibAddMacros)
 
-find_package (PkgConfig QUIET)
-pkg_check_modules (ZMQ QUIET libzmq)
+find_package (ZeroMQ QUIET)
 
-if (NOT ZMQ_FOUND)
+if (NOT ZeroMQ_FOUND)
 	remove_tool (${tool} "libzmq not found")
 else () # find installation path
 	set (install_directory ${TARGET_TOOL_DATA_FOLDER}/${tool})
@@ -18,9 +17,9 @@ else () # find installation path
 
 	add_executable (${HUB} ${SOURCES})
 	add_dependencies (${HUB} kdberrors_generated elektra_error_codes_generated)
-	target_link_libraries (${HUB} ${ZMQ_LIBRARIES})
+	target_link_libraries (${HUB} ${ZeroMQ_LIBRARIES})
 	target_link_elektra (${HUB} elektra-kdb)
-	target_include_directories (${HUB} SYSTEM PUBLIC ${ZMQ_INCLUDE_DIRS})
+	target_include_directories (${HUB} SYSTEM PUBLIC ${ZeroMQ_INCLUDE_DIRS})
 
 	# configure and copy files
 	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/run.sh" "${CMAKE_CURRENT_BINARY_DIR}/run-${tool}")

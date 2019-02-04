@@ -1,10 +1,9 @@
 include (LibAddBinding)
 
 if (DEPENDENCY_PHASE)
-	find_package (PkgConfig QUIET)
-	pkg_check_modules (ZMQ QUIET libzmq)
+	find_package (ZeroMQ QUIET)
 
-	if (NOT ZMQ_FOUND)
+	if (NOT ZeroMQ_FOUND)
 		remove_plugin (zeromqrecv "package libzmq (libzmq3-dev) not found")
 	endif ()
 endif ()
@@ -14,9 +13,9 @@ add_plugin (zeromqrecv
 		    zeromqrecv.c
 		    subscribe.c
 	    OBJECT_SOURCES $<TARGET_OBJECTS:io-adapter-zeromq>
-	    INCLUDE_DIRECTORIES ${ZMQ_INCLUDE_DIR}
+	    INCLUDE_DIRECTORIES ${ZeroMQ_INCLUDE_DIR}
 	    LINK_ELEKTRA elektra-io
-	    LINK_LIBRARIES ${ZMQ_LIBRARIES})
+	    LINK_LIBRARIES ${ZeroMQ_LIBRARIES})
 
 if (ADDTESTING_PHASE)
 	check_binding_was_added ("io_uv" IS_INCLUDED)
