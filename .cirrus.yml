@@ -59,6 +59,7 @@ mac_task:
       libev
       libgcrypt
       libgit2
+      libuv
       llvm
       lua
       maven
