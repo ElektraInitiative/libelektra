@@ -5,7 +5,7 @@ set_source_files_properties (${PROJECT_BINARY_DIR}/src/error/elektra_errors.c PR
 add_lib (highlevel SOURCES ${SOURCES} ${PROJECT_BINARY_DIR}/src/error/elektra_errors.c LINK_ELEKTRA elektra-kdb elektra-ease)
 
 if (BUILD_SHARED)
-	set (LIBRARIES "-lelektra -lelektra-kdb -lelektra-ease -lelektra-highlevel")
+	set (LIBRARIES "-lelektra-highlevel -lelektra-kdb -lelektra-ease -lelektra-core")
 elseif (BUILD_FULL)
 	set (LIBRARIES "-lelektra-full")
 else (BUILD_STATIC)

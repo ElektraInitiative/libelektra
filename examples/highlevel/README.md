@@ -4,7 +4,18 @@ This folder contains an example on how to use the high-level API.
 
 The example is provided for CMake and pkg-config build systems, but you can use any build system you like, as long as you setup
 your include directories and linked libraries correctly. The high-level API uses the same include directory as the rest of elektra,
-and you need to link against at least `elektra-highlevel`, `elektra-kdb` and `elektra-ease` (or, alternatively, `elektra-full`).
+and you need to link against at least `elektra-core`, `elektra-highlevel`, `elektra-kdb` and `elektra-ease`.
+
+You should therefore use one of the following lines of linker flags:
+```
+-lelektra-highlevel -lelektra-kdb -lelektra-ease -lelektra-core
+
+# or if Elektra was compiled with BUILD_FULL
+-lelektra-full
+
+# or if Elektra was compiled with BUILD_STATIC (see Limitations below)
+-lelektra-static
+```
 
 ## Setup
 
