@@ -75,10 +75,10 @@ if (FOUND_NAME GREATER -1)
 
 		target_link_elektra (${EXAMPLE} elektra-kdb elektra-notification elektra-io elektra-io-uv)
 		if (BUILD_FULL OR BUILD_STATIC)
-			target_link_libraries (${EXAMPLE} ${LIBUV_LDFLAGS})
+			target_link_libraries (${EXAMPLE} ${PC_libuv_LDFLAGS})
 		endif ()
 
-		if (LIBUV_VERSION VERSION_LESS "1.0")
+		if (libuv_VERSION VERSION_LESS "1.0")
 			target_compile_definitions (${EXAMPLE} PRIVATE "HAVE_LIBUV0")
 		else ()
 			target_compile_definitions (${EXAMPLE} PRIVATE "HAVE_LIBUV1")

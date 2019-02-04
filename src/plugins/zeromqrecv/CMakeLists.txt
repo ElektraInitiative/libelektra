@@ -22,13 +22,13 @@ if (ADDTESTING_PHASE)
 	check_binding_was_added ("io_uv" IS_INCLUDED)
 	if (BUILD_TESTING AND IS_INCLUDED)
 		if (BUILD_FULL OR BUILD_STATIC)
-			find_package (PkgConfig QUIET)
-			pkg_check_modules (LIBUV QUIET libuv>=1) # libuv is present; otherwise io_uv bindings would not be added
-			set (STATIC_LIBRARIES ${LIBUV_LIBRARIES})
+			find_package (libuv 1 QUIET) # libuv is present; otherwise io_uv bindings would not be added
+
+			set (STATIC_LIBRARIES ${libuv_LIBRARIES})
 		endif ()
 
 		add_plugintest (zeromqrecv TEST_LINK_LIBRARIES ${STATIC_LIBRARIES} TEST_LINK_ELEKTRA elektra-io-uv)
-		if (LIBUV_VERSION VERSION_LESS "1.0")
+		if (libuv_VERSION VERSION_LESS "1.0")
 			target_compile_definitions (testmod_zeromqrecv PRIVATE "HAVE_LIBUV0")
 		else ()
 			target_compile_definitions (testmod_zeromqrecv PRIVATE "HAVE_LIBUV1")
