@@ -32,7 +32,7 @@ bsd_task:
 mac_task:
   matrix:
 
-    - name: 🍎 macOS
+    - name: 🍎 Clang
       osx_instance:
         image: mojave-xcode-10.1
 

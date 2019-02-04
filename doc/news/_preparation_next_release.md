@@ -309,7 +309,7 @@ you up to date with the multi-language support provided by Elektra.
   - [FreeBSD 12.0](https://www.freebsd.org/releases/12.0R/announce.html)
 
   . *(René Schwaiger)*
-- The new build job `🍎 macOS` tests Elektra on macOS. *(René Schwaiger)*
+- The new build job `🍎 Clang` tests Elektra on macOS. *(René Schwaiger)*
 
 ### Jenkins
 
@@ -320,7 +320,7 @@ you up to date with the multi-language support provided by Elektra.
 ### Travis
 
 - We now test Elektra on [Ubuntu Xenial Xerus](https://docs.travis-ci.com/user/reference/xenial). *(René Schwaiger)*
-- We removed the build jobs `🍏 Clang` and `🍏 Check Shell` in favor of the Cirrus build job `🍎 macOS`. *(René Schwaiger)*
+- We removed the build jobs `🍏 Clang` and `🍏 Check Shell` in favor of the Cirrus build job `🍎 Clang`. *(René Schwaiger)*
 - <<TODO>>
 
 
