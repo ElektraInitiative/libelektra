@@ -75,6 +75,7 @@ mac_task:
       yaep
       yajl
       yaml-cpp
+      zeromq
     - > # Try to install `checkbashisms` (The file server that hosts the package is unfortunately quite unreliable.)
       brew install checkbashisms || >&2 printf 'Warning: Unable to install `checkbashims`\n'
     - > # Start D-Bus session bus
