@@ -78,6 +78,7 @@ if (FOUND_NAME GREATER -1)
 			target_link_libraries (${EXAMPLE} ${PC_libuv_LDFLAGS})
 		endif ()
 
+		find_package (libuv QUIET) # Make sure `libuv_VERSION` is defined correctly
 		if (libuv_VERSION VERSION_LESS "1.0")
 			target_compile_definitions (${EXAMPLE} PRIVATE "HAVE_LIBUV0")
 		else ()
