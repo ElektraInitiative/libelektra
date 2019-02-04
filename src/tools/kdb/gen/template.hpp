@@ -46,18 +46,25 @@ protected:
 	/**
 	 * Construct the mustache template data from the given snapshot of the KDB.
 	 *
-	 * @param ks A KeySet resulting from a call to KDB#get.
+	 * @param outputName the basename of all output files. The output files are expected to use the same names
+	 *                   as the template files, except that `templateBaseName` is replaced by @p outputName.
+	 * @param ks         A KeySet containing the data for this template.
+	 * @param parentKey  The parent key below which the data for this template resides.
+	 *
 	 * @return The mustache data needed to render this template.
 	 */
-	virtual kainjow::mustache::data getTemplateData (const kdb::KeySet & ks) const = 0;
+	virtual kainjow::mustache::data getTemplateData (const std::string & outputName, const kdb::KeySet & ks,
+							 const std::string & parentKey) const = 0;
 
 	/**
 	 * Get the value of a parameter.
 	 *
-	 * @param name The parameter name
-	 * @return the value of the parameter or "", if it wasn't set or is unknown
+	 * @param name         The parameter name
+	 * @param defaultValue The default value
+	 *
+	 * @return the value of the parameter or @p defaultValue, if it wasn't set or is unknown
 	 */
-	std::string getParameter (const std::string & name) const;
+	std::string getParameter (const std::string & name, const std::string & defaultValue = "") const;
 
 public:
 	/**
@@ -90,12 +97,16 @@ public:
 	/**
 	 * Render a part of this template using the given snapshot of the KDB into the given stream.
 	 *
-	 * @param output The stream to which the render result shall be written.
-	 * @param part   The name of the part to be rendered.
-	 *               No output will be generated, if this isn't an element of getParts().
-	 * @param ks     A KeySet resulting from a call to KDB#get.
+	 * @param output     The stream to which the render result shall be written.
+	 * @param outputName the basename of all output files. The output files are expected to use the same names
+	 *                   as the template files, except that `templateBaseName` is replaced by @p outputName.
+	 * @param part       The name of the part to be rendered.
+	 *                   No output will be generated, if this isn't an element of getParts().
+	 * @param ks         A KeySet containing the data for this template. Probably resulting from a call to KDB#get.
+	 * @param parentKey  The parent key below which the data for this template resides.
 	 */
-	void render (std::ostream & output, const std::string & part, const kdb::KeySet & ks) const;
+	void render (std::ostream & output, const std::string & outputName, const std::string & part, const kdb::KeySet & ks,
+		     const std::string & parentKey) const;
 
 	virtual ~GenTemplate () = default;
 
@@ -125,14 +136,12 @@ public:
 	 * Find a template with a given name.
 	 *
 	 * @param name       the unique name of the template
-	 * @param outputName the basename of all output files. The output files are expected to use the same names
-	 *                   as the template files, except that `templateBaseName` is replaced by @p outputName.
 	 * @param parameters the map of parameters passed to the template
+	 *
 	 * @return a pointer to the template with the given name initialized with the given parameters
 	 * or GenTemplate::empty, if the template wasn't found
 	 */
-	const GenTemplate * getTemplate (const std::string & name, const std::string & outputName,
-					 const std::unordered_map<std::string, std::string> & parameters) const;
+	const GenTemplate * getTemplate (const std::string & name, const std::unordered_map<std::string, std::string> & parameters) const;
 
 private:
 	GenTemplateList ();
@@ -164,7 +173,8 @@ public:
 		return true;
 	}
 
-	kainjow::mustache::data getTemplateData (const kdb::KeySet & ks ELEKTRA_UNUSED) const override
+	kainjow::mustache::data getTemplateData (const std::string & outputName ELEKTRA_UNUSED, const kdb::KeySet & ks ELEKTRA_UNUSED,
+						 const std::string & parentKey ELEKTRA_UNUSED) const override
 	{
 		return {};
 	}
