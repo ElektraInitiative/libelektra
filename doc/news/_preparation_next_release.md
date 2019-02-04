@@ -138,6 +138,8 @@ The new plugin [YAy PEG](https://www.libelektra.org/plugins/yaypeg) parses a sub
   - [`resolver`](https://www.libelektra.org/plugins/resolver)
 
   reported on FreeBSD. *(René Schwaiger)*
+- The [`resolver` plugin](/src/plugins/resolver) and its tests now better support `KDB_DB_SYSTEM` and `KDB_DB_SPEC` paths 
+  using `~` to refer to a home directory. *(Klemens Böswirth)*
 
 ## Libraries
 

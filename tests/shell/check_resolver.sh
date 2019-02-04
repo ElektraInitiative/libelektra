@@ -167,7 +167,7 @@ cd "$OD"
 
 # resolve ~ in paths
 SYSTEM_DIR=$(echo @KDB_DB_SYSTEM@)
-SPEC_DIR=$(echo @KDB_DB_SPEC@)
+SPEC_DIR=$(echo @BUILTIN_SPEC_FOLDER@)
 
 check_resolver system b x "$SYSTEM_DIR/x"
 check_resolver system b x/a "$SYSTEM_DIR/x/a"
