@@ -62,7 +62,7 @@ static KeySet * ksMetaGetSingleOrArray (Key * key, const char * metaName);
 static char * generateUsageLine (const char * progname, bool hasOpts, bool hasArgs);
 static char * generateOptionsList (KeySet * keysWithOpts);
 
-static bool processSpec (struct Specification * spec, KeySet * ks, Key * errorKey);
+static bool processSpec (struct Specification * spec, KeySet * ks, Key * parentKey);
 static bool processOptions (struct Specification * spec, Key * specKey, Key ** keyWithOpt, Key * errorKey);
 static bool readOptionData (struct OptionData * optionData, Key * key, const char * metaKey, Key * errorKey);
 static bool processShortOptSpec (struct Specification * spec, struct OptionData * optionData, Key ** keyWithOpt, char ** shortOptLine,
@@ -90,39 +90,39 @@ static bool parseShortOptions (KeySet * optionsSpec, KeySet * options, int argc,
  * the specification works.
  *
  * NOTE: Per default option processing DOES NOT stop, when a non-option string is encountered in @p argv.
- * If you want processing to stop, set the metadata `posixly = 1` on @p errorKey.
+ * If you want processing to stop, set the metadata `posixly = 1` on @p parentKey.
  *
  * The basic usage of this function is as follows:
  * @snippet optsSnippets.c basic use
  *
- * If you got @p ks from kdbGet(), make sure to use ksCut() to remove any spec keys from other applications,
- * like in the snippet above. Otherwise you may get an unexpected error, because another application uses the
- * same option.
  *
- * @param ks	The KeySet containing the specification for the options.
- * @param argc	The number of strings in argv.
- * @param argv	The arguments to be processed.
- * @param envp	A list of environment variables. This needs to be a null-terminated list of
- * 		strings of the format 'KEY=VALUE'.
- * @param errorKey A key to store an error in, if one occurs.
+ * @param ks	    The KeySet containing the specification for the options.
+ * @param argc	    The number of strings in argv.
+ * @param argv	    The arguments to be processed.
+ * @param envp	    A list of environment variables. This needs to be a null-terminated list of
+ * 		    strings of the format 'KEY=VALUE'.
+ * @param parentKey The parent key below which the function while search for option specifications.
+ *                  Also used for error reporting. The key will be translated into the spec namespace
+ *                  automatically, i.e. 'user/test/parent' will be translated into 'spec/test/parent',
+ *                  before checking against spec keys.
  *
  * @retval 0	on success, this is the only case in which @p ks will be modified
  * @retval -1	on error, the error will be added to @p errorKey
  * @retval 1	if a help option (-h, --help) was found, use elektraGetOptsHelpMessage() access the
  * 		generated help message
  */
-int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** envp, Key * errorKey)
+int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** envp, Key * parentKey)
 {
 	cursor_t initial = ksGetCursor (ks);
 
 	struct Specification spec;
-	if (!processSpec (&spec, ks, errorKey))
+	if (!processSpec (&spec, ks, parentKey))
 	{
 		ksSetCursor (ks, initial);
 		return -1;
 	}
 
-	KeySet * options = parseArgs (spec.options, argc, argv, errorKey);
+	KeySet * options = parseArgs (spec.options, argc, argv, parentKey);
 
 	if (options == NULL)
 	{
@@ -151,8 +151,8 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 		char * usage = generateUsageLine (progname, spec.hasOpts, spec.hasArgs);
 		char * optionsText = generateOptionsList (spec.keys);
 
-		keySetMeta (errorKey, "internal/libopts/help/usage", usage);
-		keySetMeta (errorKey, "internal/libopts/help/options", optionsText);
+		keySetMeta (parentKey, "internal/libopts/help/usage", usage);
+		keySetMeta (parentKey, "internal/libopts/help/options", optionsText);
 
 		elektraFree (usage);
 		elektraFree (optionsText);
@@ -174,7 +174,7 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 	ksRewind (spec.keys);
 	while ((keyWithOpt = ksNext (spec.keys)) != NULL)
 	{
-		int result = writeOptionValues (ks, keyWithOpt, options, errorKey);
+		int result = writeOptionValues (ks, keyWithOpt, options, parentKey);
 		if (result < 0)
 		{
 			ksDel (envValues);
@@ -189,7 +189,7 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 			continue;
 		}
 
-		result = writeEnvVarValues (ks, keyWithOpt, envValues, errorKey);
+		result = writeEnvVarValues (ks, keyWithOpt, envValues, parentKey);
 		if (result < 0)
 		{
 			ksDel (envValues);
@@ -254,7 +254,7 @@ char * elektraGetOptsHelpMessage (Key * errorKey, const char * usage, const char
 /**
  * Process the specification set in the keys of @p ks, into @p spec.
  */
-bool processSpec (struct Specification * spec, KeySet * ks, Key * errorKey)
+bool processSpec (struct Specification * spec, KeySet * ks, Key * parentKey)
 {
 	KeySet * usedEnvVars = ksNew (0, KS_END);
 	spec->options = ksNew (
@@ -267,27 +267,41 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * errorKey)
 	spec->hasOpts = false;
 	spec->hasArgs = false;
 
+	Key * specParent = keyDup (parentKey);
+	if (keyGetNamespace (parentKey) != KEY_NS_SPEC)
+	{
+		keySetName (specParent, "spec");
+
+		const char * parent = strchr (keyName (parentKey), '/');
+		if (parent != NULL)
+		{
+			keyAddName (specParent, parent + 1);
+		}
+	}
+
 	ksRewind (ks);
 	Key * cur;
 	while ((cur = ksNext (ks)) != NULL)
 	{
-		if (keyGetNamespace (cur) != KEY_NS_SPEC)
+		if (keyGetNamespace (cur) != KEY_NS_SPEC || !keyIsBelowOrSame (specParent, cur))
 		{
 			continue;
 		}
 
 		Key * keyWithOpt = NULL;
 
-		if (!processOptions (spec, cur, &keyWithOpt, errorKey))
+		if (!processOptions (spec, cur, &keyWithOpt, parentKey))
 		{
+			keyDel (specParent);
 			ksDel (spec->options);
 			ksDel (spec->keys);
 			ksDel (usedEnvVars);
 			return false;
 		}
 
-		if (!processEnvVars (usedEnvVars, cur, &keyWithOpt, errorKey))
+		if (!processEnvVars (usedEnvVars, cur, &keyWithOpt, parentKey))
 		{
+			keyDel (specParent);
 			ksDel (spec->options);
 			ksDel (spec->keys);
 			ksDel (usedEnvVars);
@@ -299,9 +313,10 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * errorKey)
 		{
 			if (elektraStrCmp (keyBaseName (cur), "#") != 0)
 			{
-				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_OPTS_ILLEGAL_SPEC, errorKey,
+				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_OPTS_ILLEGAL_SPEC, parentKey,
 						    "'args=remaining' can only be set on array keys (basename = '#'). Offending key: %s",
 						    keyName (cur));
+				keyDel (specParent);
 				ksDel (spec->options);
 				ksDel (spec->keys);
 				ksDel (usedEnvVars);
@@ -321,6 +336,7 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * errorKey)
 			ksAppendKey (spec->keys, keyWithOpt);
 		}
 	}
+	keyDel (specParent);
 	ksDel (usedEnvVars);
 
 	return true;
