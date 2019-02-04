@@ -26,7 +26,7 @@ bsd_task:
   tests_script:
     # Work around stalled process plugin and library problems on FreeBSD: https://issues.libelektra.org/2323
     - sudo mount -t fdescfs fdesc /dev/fd
-    - cd build && ninja run_all
+    - ninja -C build run_all
     - kdb run_all
 
 mac_task:
@@ -111,5 +111,5 @@ mac_task:
     - output="$(ninja install 2>&1)" || printf '%s' "$output"
 
   tests_script:
-    - cd build && ninja run_all
+    - ninja -C build run_all
     - kdb run_all
