@@ -431,4 +431,6 @@ mark_as_advanced (FORCE # The following settings might be relevant to a few user
 		  Qt5Widgets_DIR
 		  Qt5_DIR
 		  Qt5DBus_DIR
+		  GPGME_EXECUTABLE
+		  YAEP_LIBRARY_CPP
 		  Qt5Svg_DIR)
