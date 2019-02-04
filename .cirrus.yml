@@ -36,6 +36,15 @@ mac_task:
       osx_instance:
         image: mojave-xcode-10.1
 
+    - name: 🍎 Clang ASAN
+      osx_instance:
+        image: mojave-xcode-10.1
+      env:
+        ASAN_OPTIONS: 'detect_leaks=1'
+        BINDINGS: cpp
+        ENABLE_ASAN: ON
+        TOOLS: kdb
+
   install_script:
     - > # Add external Homebrew taps
       brew tap sanssecours/yaep
@@ -99,17 +108,36 @@ mac_task:
       export CC=/usr/local/opt/llvm/bin/clang CXX=/usr/local/opt/llvm/bin/clang++
     - SYSTEM_DIR="$PWD/kdbsystem"
     - mkdir build && cd build
-    - >
-      cmake
-      -GNinja
-      -DPLUGINS=ALL
-      -DBINDINGS=ALL
-      -DTOOLS=ALL
-      -DCOMMON_FLAGS=-Werror
-      -DKDB_DB_SYSTEM="$SYSTEM_DIR" ..
+    - |
+      CMAKE_OPTIONS=(
+        -DBINDINGS="${BINDINGS:-ALL}"
+        -DBUILD_FULL="${BUILD_FULL:-OFF}"
+        -DBUILD_SHARED="${BUILD_SHARED:-ON}"
+        -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+        -DCOMMON_FLAGS="${COMMON_FLAGS:--Werror}"
+        -DENABLE_ASAN="${ENABLE_ASAN:-OFF}"
+        -DENABLE_DEBUG=ON
+        -DINSTALL_SYSTEM_FILES=OFF
+        -DKDB_DB_FILE="${KDB_DB_FILE:-default.ecf}"
+        -DKDB_DB_INIT="${KDB_DB_INIT:-elektra.ecf}"
+        -DKDB_DB_SYSTEM="$SYSTEM_DIR"
+        -DKDB_DEFAULT_STORAGE="${KDB_DEFAULT_STORAGE:-dump}"
+        -DPLUGINS="${PLUGINS:-ALL}"
+        -DTOOLS="${TOOLS:-ALL}"
+        -GNinja
+        ..
+      )
+    - |
+      printf '—— CMake Config ——\n'
+      for option in "${CMAKE_OPTIONS[@]}"; do printf '%s\n' "$option"; done
+    - cmake ${CMAKE_OPTIONS[@]}
     - ninja
     - output="$(ninja install 2>&1)" || printf '%s' "$output"
 
   tests_script:
-    - ninja -C build run_all
-    - kdb run_all
+    |
+    if [[ "$ENABLE_ASAN" == 'ON' ]]; then
+      ninja -C build run_nocheckshell
+    else
+      ninja -C build run_all && kdb run_all
+    fi
