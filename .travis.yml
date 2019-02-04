@@ -232,21 +232,6 @@ matrix:
         - CC_COMPILER=clang-7
         - CXX_COMPILER=clang++-7
 
-    # MMAP: Enable mmapstorage as default
-
-    - os: osx
-      name: 🍏 MMap
-      compiler: clang
-      env:
-        - KDB_DEFAULT_STORAGE=mmapstorage
-        - KDB_DB_FILE=default.mmap
-        - KDB_DB_INIT=elektra.mmap
-      script:
-        - ninja
-        - output="$(ninja install 2>&1)" || printf '%s' "$output"
-        - ninja run_nocheckshell
-        - kdb run_all
-
 before_install:
   - |
     if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then

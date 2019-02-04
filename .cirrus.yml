@@ -52,6 +52,14 @@ mac_task:
         BUILD_FULL: ON
         BUILD_SHARED: OFF
 
+    - name: 🍎 MMap
+      osx_instance:
+        image: mojave-xcode-10.1
+      env:
+        KDB_DEFAULT_STORAGE: mmapstorage
+        KDB_DB_FILE: default.mmap
+        KDB_DB_INIT: elektra.mmap
+
   install_script:
     - > # Add external Homebrew taps
       brew tap sanssecours/yaep
