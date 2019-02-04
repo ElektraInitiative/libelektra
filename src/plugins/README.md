@@ -268,3 +268,4 @@ binding during run-time.
 - [profile](profile/) links profile keys
 - [simplespeclang](simplespeclang/) simple configuration specification language
 - [gopts](gopts/) global plugin to automatically call `elektraGetOpts`
+- [cache](cache/) caches keysets from previous `kdbGet()` calls
