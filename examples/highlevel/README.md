@@ -4,7 +4,7 @@ This folder contains an example on how to use the high-level API.
 
 The example is provided for CMake and pkg-config build systems, but you can use any build system you like, as long as you setup
 your include directories and linked libraries correctly. The high-level API uses the same include directory as the rest of elektra,
-and you need to link against at least `elektra`, `elektra-highlevel`, `elektra-kdb` and `elektra-ease` (or `elektra-full`).
+and you need to link against at least `elektra-highlevel`, `elektra-kdb` and `elektra-ease` (or, alternatively, `elektra-full`).
 
 ## Setup
 
@@ -12,8 +12,8 @@ Before executing the example you need to run the following snippet. Otherwise th
 was provided.
 
 ```sh
-sudo kdb mount spec.ini spec/sw/example/highlevel/#0/current ni
-kdb import spec/sw/example/highlevel/#0/current ni < spec.ini
+sudo kdb mount spec.ini 'spec/sw/example/highlevel/#0/current' ni
+sudo kdb import spec/sw/example/highlevel/#0/current ni < spec.ini
 sudo kdb spec-mount '/sw/example/highlevel/#0/current'
 ```
 
@@ -32,7 +32,7 @@ kdb set /sw/example/highlevel/#0/current/print 1
 
 The pkg-config example will only work for the `BUILD_SHARED` and `BUILD_FULL` variants of Elektra.
 To make pkg-config work with `BUILD_STATIC` you need to change the Makefile. You can use a C compiler for compilation, but you need to
-use a C++ Compiler for linking and also need to link with `-ldbus-1`, `-lz` `-lm` and `-pthread`.
+use a C++ Compiler for linking and also need to link with `-ldbus-1` (depending on PLUGINS), `-lz`, `-lm` and `-pthread`.
 
 Note also that in a real-world build you should be careful with using `-Wl,-rpath`. In most cases you should only use it for development
 purposes and not in a release build. Therefore you should not use the Makefile provided in the pkg-config example for release builds.
