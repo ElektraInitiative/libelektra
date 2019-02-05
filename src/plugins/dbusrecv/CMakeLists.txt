@@ -52,7 +52,10 @@ if (ADDTESTING_PHASE)
 			set (STATIC_LIBRARIES ${libuv_LIBRARIES}) # libuv is present; otherwise io_uv bindings would not be added
 		endif ()
 
-		add_plugintest (dbusrecv TEST_LINK_LIBRARIES ${STATIC_LIBRARIES} TEST_LINK_ELEKTRA elektra-io-uv)
+		add_plugintest (dbusrecv
+				TEST_LINK_LIBRARIES ${STATIC_LIBRARIES}
+				TEST_LINK_ELEKTRA elektra-io-uv
+				INCLUDE_SYSTEM_DIRECTORIES ${libuv_INCLUDE_DIRS})
 
 		# add sources manually because add_plugintest does not support generator expressions for additional source files
 		if (BUILD_FULL OR BUILD_STATIC)
