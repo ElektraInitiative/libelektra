@@ -26,7 +26,10 @@ if (ADDTESTING_PHASE)
 			set (STATIC_LIBRARIES ${libuv_LIBRARIES})
 		endif ()
 
-		add_plugintest (zeromqrecv TEST_LINK_LIBRARIES ${STATIC_LIBRARIES} TEST_LINK_ELEKTRA elektra-io-uv)
+		add_plugintest (zeromqrecv
+				TEST_LINK_LIBRARIES ${STATIC_LIBRARIES}
+				TEST_LINK_ELEKTRA elektra-io-uv
+				INCLUDE_SYSTEM_DIRECTORIES ${libuv_INCLUDE_DIRS})
 		if (libuv_VERSION VERSION_LESS "1.0")
 			target_compile_definitions (testmod_zeromqrecv PRIVATE "HAVE_LIBUV0")
 		else ()
