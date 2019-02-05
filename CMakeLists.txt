@@ -67,6 +67,11 @@ set (SO_VERSION_GETENV 0)
 # needs version above
 include (cmake/ElektraPackaging.cmake)
 
+# ensure KDB_DB_SYSTEM is an absolute path
+if (NOT IS_ABSOLUTE "${KDB_DB_SYSTEM}")
+	message (FATAL_ERROR "KDB_DB_SPEC has to be an absolute path")
+endif ()
+
 # process KDB_DB_SPEC so it is available everywhere
 if (IS_ABSOLUTE "${KDB_DB_SPEC}")
 	set (BUILTIN_SPEC_FOLDER "${KDB_DB_SPEC}")
