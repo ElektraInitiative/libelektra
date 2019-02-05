@@ -2,7 +2,7 @@ include (LibAddMacros)
 if (DEPENDENCY_PHASE)
 	find_package (Iconv QUIET)
 
-	if (NOT ICONV_FOUND)
+	if (NOT Iconv_FOUND)
 		remove_plugin (filecheck "Cannot find iconv library")
 	endif ()
 endif ()
@@ -10,7 +10,7 @@ endif ()
 add_plugin (filecheck
 	    SOURCES filecheck.h
 		    filecheck.c
-	    INCLUDE_DIRECTORIES ${ICONV_INCLUDE_DIR}
-	    LINK_LIBRARIES ${ICONV_LIBRARIES}
+	    INCLUDE_DIRECTORIES ${Iconv_INCLUDE_DIRS}
+	    LINK_LIBRARIES ${Iconv_LIBRARIES}
 	    ADD_TEST
 	    INSTALL_TEST_DATA)
