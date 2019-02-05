@@ -96,16 +96,10 @@ if (FOUND_NAME GREATER -1)
 		set (SRC_FILES notificationReload.c)
 		set (SOURCES ${SRC_FILES} ${HDR_FILES})
 		if (BUILD_FULL OR BUILD_STATIC)
-			# ~~~
-			# Work around an error that occurs if only `BUILD_FULL`, but not `BUILD_SHARED` is enabled:
-			#
-			# > src/include/kdbio/glib.h:11:10: fatal error: glib.h: No such file or directory
-			#
-			# . See also: https://travis-ci.org/sanssecours/elektra/jobs/445784708.
-			# ~~~
+			# Work around missing header errors that occurs if only `BUILD_FULL`, but not `BUILD_SHARED` is enabled.
 			find_package (GLib QUIET)
-
-			include_directories (${GLib_INCLUDE_DIRS})
+			find_package (libuv QUIET)
+			include_directories (${GLib_INCLUDE_DIRS} ${libuv_INCLUDE_DIRS})
 
 			list (APPEND SOURCES
 				     $<TARGET_OBJECTS:OBJ_elektra-io-glib>) # add sources for elektra-io-uv for static and full builds
