@@ -147,7 +147,7 @@ fi # end of XDG tests
 
 export ALLUSERSPROFILE="/C"
 check_resolver spec w /app/config_file /C/app/config_file
-check_resolver spec w app/config_file /C@KDB_DB_SPEC@/app/config_file
+check_resolver spec w app/config_file /C@BUILTIN_SPEC_FOLDER@/app/config_file
 check_resolver system w /app/config_file /C/app/config_file
 check_resolver system w app/config_file /C@KDB_DB_SYSTEM@/app/config_file
 unset ALLUSERSPROFILE
