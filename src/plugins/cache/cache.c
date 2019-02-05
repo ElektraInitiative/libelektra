@@ -9,11 +9,11 @@
 
 #include "cache.h"
 
+#include <kdbconfig.h>
 #include <kdbhelper.h>
 #include <kdblogger.h>
-#include <kdbprivate.h>
-#include <kdbconfig.h>
 #include <kdbmodule.h>
+#include <kdbprivate.h>
 
 #define KDB_CACHE_STORAGE "mmapstorage"
 
@@ -22,36 +22,41 @@ typedef struct _cacheHandle CacheHandle;
 struct _cacheHandle
 {
 	KeySet * modules;
+	Key * cacheParent;
 	Plugin * resolver;
 	Plugin * cacheStorage;
 };
 
-int elektraCacheOpen (Plugin * handle, Key * errorKey)
+int elektraCacheOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 {
 	// plugin initialization logic
 	// this function is optional
+	ELEKTRA_LOG_DEBUG ("cache open");
 	CacheHandle * ch = elektraMalloc (sizeof (CacheHandle));
 
 	ch->modules = ksNew (0, KS_END);
 	elektraModulesInit (ch->modules, 0);
+	ch->cacheParent = keyNew ("user/elektracache", KEY_CASCADING_NAME, KEY_VALUE, "other.mmap", KEY_END);
 
-	KeySet * resolverConfig = ksNew (0, KS_END);
-	ch->resolver = elektraPluginOpen (KDB_RESOLVER, ch->modules, resolverConfig, errorKey);
+	KeySet * resolverConfig = ksNew (5, keyNew ("user/path", KEY_VALUE, "/.cache/cache.mmap", KEY_END), KS_END);
+	ch->resolver = elektraPluginOpen (KDB_RESOLVER, ch->modules, resolverConfig, ch->cacheParent);
 	if (!ch->resolver)
 	{
 		elektraModulesClose (ch->modules, 0);
 		ksDel (ch->modules);
+		keyDel (ch->cacheParent);
 		elektraFree (ch);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
 	KeySet * mmapstorageConfig = ksNew (0, KS_END);
-	ch->cacheStorage = elektraPluginOpen (KDB_CACHE_STORAGE, ch->modules, mmapstorageConfig, errorKey);
+	ch->cacheStorage = elektraPluginOpen (KDB_CACHE_STORAGE, ch->modules, mmapstorageConfig, ch->cacheParent);
 	if (!ch->cacheStorage)
 	{
 		elektraPluginClose (ch->resolver, 0);
 		elektraModulesClose (ch->modules, 0);
 		ksDel (ch->modules);
+		keyDel (ch->cacheParent);
 		elektraFree (ch);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
@@ -72,6 +77,7 @@ int elektraCacheClose (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 
 		elektraModulesClose (ch->modules, 0);
 		ksDel (ch->modules);
+		keyDel (ch->cacheParent);
 
 		elektraFree (ch);
 		elektraPluginSetData (handle, 0);
@@ -101,6 +107,11 @@ int elektraCacheGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 	// get all keys
+
+	CacheHandle * ch = elektraPluginGetData (handle);
+	ch->resolver->kdbGet (ch->resolver, returned, ch->cacheParent);
+	ELEKTRA_LOG_DEBUG ("cacheParent name: %s", keyName (ch->cacheParent));
+	ELEKTRA_LOG_DEBUG ("cacheParent value: %s", keyString (ch->cacheParent));
 
 	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 }
