@@ -377,12 +377,15 @@ int mountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey)
 				// load plugins in implicit max once placement
 				Plugin * plugin = elektraMountGlobalsLoadPlugin (referencePlugins, cur, global, modules, errorKey);
 				if (!plugin)
+				{
 					retval = -1; // error loading plugin
+				}
 				else
+				{
 					kdb->globalPlugins[i][MAXONCE] = plugin;
-
-				// set handle to global keyset
-				plugin->global = kdb->global;
+					// set handle to global keyset
+					plugin->global = kdb->global;
+				}
 
 				// load plugins in explicit placements
 				const char * placementName = keyName (cur);
