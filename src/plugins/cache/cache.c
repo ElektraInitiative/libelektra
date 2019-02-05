@@ -10,20 +10,72 @@
 #include "cache.h"
 
 #include <kdbhelper.h>
+#include <kdblogger.h>
+#include <kdbprivate.h>
+#include <kdbconfig.h>
+#include <kdbmodule.h>
 
+#define KDB_CACHE_STORAGE "mmapstorage"
 
-int elektraCacheOpen (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
+typedef struct _cacheHandle CacheHandle;
+
+struct _cacheHandle
+{
+	KeySet * modules;
+	Plugin * resolver;
+	Plugin * cacheStorage;
+};
+
+int elektraCacheOpen (Plugin * handle, Key * errorKey)
 {
 	// plugin initialization logic
 	// this function is optional
+	CacheHandle * ch = elektraMalloc (sizeof (CacheHandle));
 
+	ch->modules = ksNew (0, KS_END);
+	elektraModulesInit (ch->modules, 0);
+
+	KeySet * resolverConfig = ksNew (0, KS_END);
+	ch->resolver = elektraPluginOpen (KDB_RESOLVER, ch->modules, resolverConfig, errorKey);
+	if (!ch->resolver)
+	{
+		elektraModulesClose (ch->modules, 0);
+		ksDel (ch->modules);
+		elektraFree (ch);
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+
+	KeySet * mmapstorageConfig = ksNew (0, KS_END);
+	ch->cacheStorage = elektraPluginOpen (KDB_CACHE_STORAGE, ch->modules, mmapstorageConfig, errorKey);
+	if (!ch->cacheStorage)
+	{
+		elektraPluginClose (ch->resolver, 0);
+		elektraModulesClose (ch->modules, 0);
+		ksDel (ch->modules);
+		elektraFree (ch);
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+
+	elektraPluginSetData (handle, ch);
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
-int elektraCacheClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
+int elektraCacheClose (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 {
 	// free all plugin resources and shut it down
 	// this function is optional
+	CacheHandle * ch = elektraPluginGetData (handle);
+	if (ch)
+	{
+		elektraPluginClose (ch->resolver, 0);
+		elektraPluginClose (ch->cacheStorage, 0);
+
+		elektraModulesClose (ch->modules, 0);
+		ksDel (ch->modules);
+
+		elektraFree (ch);
+		elektraPluginSetData (handle, 0);
+	}
 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
