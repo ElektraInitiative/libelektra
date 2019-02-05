@@ -552,8 +552,8 @@ static int elektraGetCheckUpdateNeeded (Split * split, Key * parentKey, KeySet *
 		case ELEKTRA_PLUGIN_STATUS_CACHE_HIT:
 			// Keys in cache are up-to-date
 			++cacheHits;
-			// fallthrough: set sync flag, needed in case of cache miss
-			ELEKTRA_FALLTHROUGH;
+			// set sync flag, needed in case of cache miss
+			// FALLTHROUGH
 		case 1:
 			// Seems like we need to sync that
 			set_bit (split->syncbits[i], SPLIT_FLAG_SYNC);
