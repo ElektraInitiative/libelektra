@@ -9,9 +9,9 @@ A list of all Dockerfiles used by the build server can be found in the
 > Any commands in this file are expected to be run from the root
 > of the repository.
 
-## Downloading prebuild images
+## Downloading prebuilt images
 
-You can download prebuild images for local testing from our build environment.
+You can download prebuilt images for local testing from our build environment.
 List available images via `docker run --rm anoxis/registry-cli -r https://hub-public.libelektra.org`.
 Afterwards pull your desired image as you would do from any public registry:
 `docker pull hub-public.libelektra.org/build-elektra-alpine:201809-791f9f388cbdff0db544e02277c882ad6e8220fe280cda67e6ea6358767a065e`.
