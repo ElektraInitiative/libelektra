@@ -44,10 +44,10 @@ if (myint < 10)
 elektraClose (elektra);
 ```
 
-The getter and setter functions follow the simple naming scheme `elektra`(`Get`/`Set`)[Type]. Additionally for each one there is an array
-element variant with the suffix `ArrayElement`. For more information see [below](#reading-and-writing-values).
+The getter and setter functions follow the simple naming scheme `elektra`(`Get`/`Set`)[Type]. Additionally for each one there is a
+variant to access array elements with the suffix `ArrayElement`. For more information see [below](#reading-and-writing-values).
 
-You also can find a more complex example [here](../../../examples/highlevel/README.md).
+You can find a complete example at the end of this document and [here](../../../examples/highlevel/README.md).
 
 ## Core Concepts
 
@@ -61,11 +61,11 @@ ElektraError * error = NULL;
 Elektra * elektra = elektraOpen ("/sw/org/myapp/#0/current", NULL, &error);
 ```
 
-Please replace `"/sw/org/myapp/#0/current"` with an appropriate value for your application (see [Namespaces](/doc/tutorials/namespaces.md)
-for more information). You can use the parameter `defaults` to pass a KDB `KeySet` containing `Key`s with default values to the `Elektra`
+Please replace `"/sw/org/myapp/#0/current"` with an appropriate value for your application (see [here](/doc/tutorials/application-integration.md)
+for more information). You can use the parameter `defaults` to pass a `KeySet` containing `Key`s with default values to the `Elektra`
 instance.
 
-The passed in `ElektraError` can be used to check for initialization errors. You can detect initialization errors by comparing the result of
+The `ElektraError` can be used to check for initialization errors. You can detect initialization errors by comparing the result of
 `elektraOpen` to NULL:
 
 ```c
@@ -76,7 +76,7 @@ if (elektra == NULL)
 }
 ```
 
-If an error occurred, you MUST call `elektraErrorReset` before using the same error pointer in any other function calls (e.g. elektraSet*
+If an error occurred, you must call `elektraErrorReset` before using the same error pointer in any other function calls (e.g. elektraSet*
 calls). It is also safe to call `elektraErrorReset`, if no error occurred.
 
 
@@ -97,7 +97,7 @@ to hide all those issues. As with every library, things can go wrong and there n
 at runtime. Therefore the high-level API introduces a struct called `ElektraError`, which encapsulates all information necessary for the
 developer to handle runtime-errors appropriately in the application.
 
-Functions that can produce errors, during correct use of the API, accept an `ElektraError` pointer as parameter, for example:
+Functions that can produce errors, despite correct use of the API, accept an `ElektraError` pointer as parameter, for example:
 
 ```c
 Elektra * elektraOpen (const char * application, KeySet * defaults, ElektraError ** error);
@@ -156,8 +156,8 @@ The handler will also be called whenever you pass `NULL` where a function expect
 The default callback simply logs the error with `ELEKTRA_LOG_DEBUG` and then calls `exit()` with the error code of the error. It is highly
 recommended you either use `atexit()` in you application or set a custom callback, to make sure you won't leak memory.
 
-The callback must interrupt the thread of execution in some way (e.g. by calling `exit()` or throwing an exception in C++). It must
-not return to the calling function. If it does return, the behavior is undefined.
+The callback must interrupt the thread of execution in some way (e.g. by calling `exit()` or throwing an exception in C++). It
+*must not* return to the calling function.
 
 <a name="data-types"></a>
 ## Data Types
@@ -296,8 +296,8 @@ void elektraSetEnumIntArrayElement (Elektra * elektra, char * name, kdb_long_lon
 ### Raw Values
 
 You can use `const char * elektraGetRawString (Elektra * elektra, const char * name)` to read the raw (string) value of a key. No type checking
-or type conversion will be attempted. Additionally this function is guaranteed to not call the fatal error handler. It will simply return
-`NULL`, if the key was not found.
+or type conversion will be attempted. Additionally this function does not call the fatal error handler. It will simply return `NULL`, if the
+key was not found.
 
 If you want to set a raw value (e.g. if you want to extend the API with your own custom types), use
 `void elektraSetRawString (Elektra * elektra, const char * name, const char * value, KDBType type, ElektraError ** error)`. Obviously you have
