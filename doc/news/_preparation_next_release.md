@@ -74,7 +74,7 @@ types and functions have to be mapped to provide the full functionality.
 
 Take a look at the [README](/src/libs/highlevel/README.md) for more infos.
 
-For examples on how build an application using this API take a look at our new [example](/examples/highlevel). *(Klemens Böswirth)*
+For examples on how build an application using this API take a look at our [example](/examples/highlevel). *(Klemens Böswirth)*
 
 
 ### <<HIGHLIGHT2>>

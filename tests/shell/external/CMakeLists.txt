@@ -30,7 +30,7 @@ function (add_externaltest testname)
 			 GROUP_EXECUTE
 			 WORLD_READ
 			 WORLD_EXECUTE
-			 RENAME "external_${testname_we}")
+			 RENAME "check_external_${testname_we}")
 	endif (ENABLE_KDB_TESTING AND INSTALL_TESTING)
 endfunction (add_externaltest)
 
