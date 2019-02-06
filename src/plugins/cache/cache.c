@@ -26,6 +26,7 @@ struct _cacheHandle
 {
 	KeySet * modules;
 	Key * cacheParent;
+	Key * cachePath;
 	Plugin * resolver;
 	Plugin * cacheStorage;
 };
@@ -40,17 +41,20 @@ int elektraCacheOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 	ch->modules = ksNew (0, KS_END);
 	elektraModulesInit (ch->modules, 0);
 	ch->cacheParent = keyNew ("user/elektracache", KEY_CASCADING_NAME, KEY_VALUE, "other.mmap", KEY_END);
+	ch->cachePath = keyNew (0, KEY_END);
 
-	KeySet * resolverConfig = ksNew (5, keyNew ("user/path", KEY_VALUE, "/.cache/cache.mmap", KEY_END), KS_END);
+	KeySet * resolverConfig = ksNew (5, keyNew ("user/path", KEY_VALUE, "/.cache/elektracache/tmp", KEY_END), KS_END);
 	ch->resolver = elektraPluginOpen (KDB_RESOLVER, ch->modules, resolverConfig, ch->cacheParent);
 	if (!ch->resolver)
 	{
 		elektraModulesClose (ch->modules, 0);
 		ksDel (ch->modules);
 		keyDel (ch->cacheParent);
+		keyDel (ch->cachePath);
 		elektraFree (ch);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
+	ch->resolver->global = elektraPluginGetGlobalKeySet (handle);
 
 	KeySet * mmapstorageConfig = ksNew (0, KS_END);
 	ch->cacheStorage = elektraPluginOpen (KDB_CACHE_STORAGE, ch->modules, mmapstorageConfig, ch->cacheParent);
@@ -60,9 +64,11 @@ int elektraCacheOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 		elektraModulesClose (ch->modules, 0);
 		ksDel (ch->modules);
 		keyDel (ch->cacheParent);
+		keyDel (ch->cachePath);
 		elektraFree (ch);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
+	ch->cacheStorage->global = elektraPluginGetGlobalKeySet (handle);
 
 	elektraPluginSetData (handle, ch);
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
@@ -81,6 +87,7 @@ int elektraCacheClose (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 		elektraModulesClose (ch->modules, 0);
 		ksDel (ch->modules);
 		keyDel (ch->cacheParent);
+		keyDel (ch->cachePath);
 
 		elektraFree (ch);
 		elektraPluginSetData (handle, 0);
@@ -113,8 +120,11 @@ int elektraCacheGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 
 	CacheHandle * ch = elektraPluginGetData (handle);
 	ch->resolver->kdbGet (ch->resolver, returned, ch->cacheParent);
-	ELEKTRA_LOG_DEBUG ("cacheParent name: %s", keyName (ch->cacheParent));
-	ELEKTRA_LOG_DEBUG ("cacheParent value: %s", keyString (ch->cacheParent));
+	keySetName (ch->cachePath, keyString (ch->cacheParent));
+	keySetBaseName (ch->cachePath, "some/deeper/dir/cache.mmap");
+
+	ELEKTRA_LOG_DEBUG ("cachePath name: %s", keyName (ch->cachePath));
+	ELEKTRA_LOG_DEBUG ("cachePath value: %s", keyString (ch->cachePath));
 
 	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 }
