@@ -73,10 +73,8 @@ if (NOT IS_ABSOLUTE "${KDB_DB_SYSTEM}")
 endif ()
 
 # process KDB_DB_SPEC so it is available everywhere
-if (IS_ABSOLUTE "${KDB_DB_SPEC}")
-	set (BUILTIN_SPEC_FOLDER "${KDB_DB_SPEC}")
-else ()
-	set (BUILTIN_SPEC_FOLDER "${CMAKE_INSTALL_PREFIX}/${KDB_DB_SPEC}")
+if (NOT IS_ABSOLUTE "${KDB_DB_SPEC}")
+	set (KDB_DB_SPEC "${CMAKE_INSTALL_PREFIX}/${KDB_DB_SPEC}")
 endif ()
 
 # now add all directories

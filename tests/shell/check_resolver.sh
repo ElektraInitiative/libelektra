@@ -147,7 +147,7 @@ fi # end of XDG tests
 
 export ALLUSERSPROFILE="/C"
 check_resolver spec w /app/config_file /C/app/config_file
-check_resolver spec w app/config_file /C@BUILTIN_SPEC_FOLDER@/app/config_file
+check_resolver spec w app/config_file /C@KDB_DB_SPEC@/app/config_file
 check_resolver system w /app/config_file /C/app/config_file
 check_resolver system w app/config_file /C@KDB_DB_SYSTEM@/app/config_file
 unset ALLUSERSPROFILE
@@ -167,7 +167,7 @@ cd "$OD"
 
 # resolve ~ in paths
 SYSTEM_DIR=$(echo @KDB_DB_SYSTEM@)
-SPEC_DIR=$(echo @BUILTIN_SPEC_FOLDER@)
+SPEC_DIR=$(echo @KDB_DB_SPEC@)
 
 check_resolver system b x "$SYSTEM_DIR/x"
 check_resolver system b x/a "$SYSTEM_DIR/x/a"
