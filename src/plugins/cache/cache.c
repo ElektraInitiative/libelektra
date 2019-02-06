@@ -9,7 +9,10 @@
 
 #include "cache.h"
 
-#include <kdbconfig.h>
+#ifdef HAVE_KDBCONFIG_H
+#include "kdbconfig.h"
+#endif
+
 #include <kdbhelper.h>
 #include <kdblogger.h>
 #include <kdbmodule.h>
