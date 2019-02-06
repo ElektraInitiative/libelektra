@@ -109,7 +109,7 @@ set (TOOLS
 set (KDB_DB_SYSTEM
      "/etc/kdb"
      CACHE STRING
-	   "The path to the system key database.")
+	   "The path to the system key database. Relative paths are append to CMAKE_INSTALL_PREFIX.")
 
 set (KDB_DB_HOME
      "/home"
