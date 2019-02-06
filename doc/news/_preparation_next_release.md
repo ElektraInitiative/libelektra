@@ -272,12 +272,26 @@ you up to date with the multi-language support provided by Elektra.
 - We added code that makes sure you can compile [IO GLIB](https://www.libelektra.org/bindings/io_glib) on macOS, even if `pkg-config`
   erroneously reports that GLIB requires linking to the library `intl` (part of [GNU gettext](https://www.gnu.org/software/gettext)).
   *(René Schwaiger)*
-- The plugin name is now provided as compiler definition ELEKTRA_PLUGIN_NAME via CMake. See [#1042](#1042) .*(Peter Nirschl)*
+- The plugin name is now provided as compiler definition `ELEKTRA_PLUGIN_NAME` via CMake.
+  See [#1042](https://issues.libelektra.org/1042). *(Peter Nirschl)*
 - We added a [CMake find module for GLib](https://master.libelektra.org/cmake/Modules/FindGLib.cmake). The module makes sure you can
   compile and link [IO GLib](https://www.libelektra.org/bindings/io_glib) on macOS. *(René Schwaiger)*
+- The CMake find module [`FindLibOpenSSL.cmake`](https://master.libelektra.org/cmake/Modules/FindLibOpenSSL.cmake) does not require
+  `pkg-config` anymore. The updated code also fixes some linker problems on macOS (and probably other operating systems too), where the
+  build system is not able to link to OpenSSL using only the name of the OpenSSL libraries. *(René Schwaiger)*
+- We simplified the CMake find module [`FindLibgcrypt.cmake`](https://master.libelektra.org/cmake/Modules/FindLibgcrypt.cmake).The update
+  fixes problems on macOS, where the build system excluded the plugin `crypto_gcrypt`, although
+  [Libgcrypt](https://gnupg.org/software/libgcrypt) was installed on the system. *(René Schwaiger)*
 - We now use the [official CMake find module for `iconv`](https://github.com/Kitware/CMake/blob/master/Modules/FindIconv.cmake). This
   update fixes linker problems with the [`iconv`](http://libelektra.org/plugins/iconv) and
   [`filecheck`](http://libelektra.org/plugins/filecheck) plugin on FreeBSD 12. *(René Schwaiger)*
+- The [CMake find module for Botan](https://master.libelektra.org/cmake/Modules/FindLibgcrypt.cmake) does not require `pkg-config` anymore.
+  *(René Schwaiger)*
+- The [CMake find module for libgit2](https://master.libelektra.org/cmake/Modules/FindLibGit2.cmake) now also exports the version number of
+  libgit2. *(René Schwaiger)*
+- We added a CMake find module for [libuv](https://libuv.org) and fixed a problem on macOS, where the build system was
+  [unable to locate the header file of libuv](https://cirrus-ci.com/task/4852008365326336 ). *(René Schwaiger)*
+- We added a CMake find module for [ZeroMQ](http://zeromq.org) to fix build problems on macOS. *(René Schwaiger)*
 
 ### Docker
 
@@ -296,7 +310,12 @@ you up to date with the multi-language support provided by Elektra.
   - [FreeBSD 12.0](https://www.freebsd.org/releases/12.0R/announce.html)
 
   . *(René Schwaiger)*
-- The new build job `🍎 macOS` tests Elektra on macOS. *(René Schwaiger)*
+- The new build job `🍎 Clang` tests Elektra on macOS. *(René Schwaiger)*
+- We added the build job `🍎 Clang ASAN`, which uses Clang with enabled [AddressSanitizer](https://en.wikipedia.org/wiki/AddressSanitizer)
+  to test Elektra on macOS. *(René Schwaiger)*
+- The new build job `🍎 FULL` compiles and test Elektra using the CMake options `BUILD_SHARED=OFF` an `BUILD_FULL=ON`. *(René Schwaiger)*
+- We added `🍎 MMap`, which tests Elektra using [`mmapstorage`](https://www.libelektra.org/plugins/mmapstorage) as default storage module.
+  *(René Schwaiger)*
 
 ### Jenkins
 
@@ -307,7 +326,10 @@ you up to date with the multi-language support provided by Elektra.
 ### Travis
 
 - We now test Elektra on [Ubuntu Xenial Xerus](https://docs.travis-ci.com/user/reference/xenial). *(René Schwaiger)*
-- <<TODO>>
+- We removed the build jobs `🍏 Clang` and `🍏 Check Shell` in favor of the Cirrus build job `🍎 Clang`. *(René Schwaiger)*
+- We removed the build jobs `🍏 Clang ASAN` in favor of the Cirrus build job `🍎 Clang ASAN`. *(René Schwaiger)*
+- We removed the build jobs `🍏 FULL` in favor of the Cirrus build job `🍎 FULL`. *(René Schwaiger)*
+- We removed the build jobs `🍏 MMap` in favor of the Cirrus build job `🍎 MMap`. *(René Schwaiger)*
 - <<TODO>>
 
 

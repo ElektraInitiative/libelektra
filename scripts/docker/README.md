@@ -9,9 +9,9 @@ A list of all Dockerfiles used by the build server can be found in the
 > Any commands in this file are expected to be run from the root
 > of the repository.
 
-## Downloading prebuild images
+## Downloading prebuilt images
 
-You can download prebuild images for local testing from our build environment.
+You can download prebuilt images for local testing from our build environment.
 List available images via `docker run --rm anoxis/registry-cli -r https://hub-public.libelektra.org`.
 Afterwards pull your desired image as you would do from any public registry:
 `docker pull hub-public.libelektra.org/build-elektra-alpine:201809-791f9f388cbdff0db544e02277c882ad6e8220fe280cda67e6ea6358767a065e`.
@@ -23,7 +23,8 @@ Afterwards pull your desired image as you would do from any public registry:
 
 
 ## Building Images locally
-You can build images locally via the following command:
+
+You can build images locally via the following command, if you use `bash`, `sh` or `zsh`:
 
 ```sh
 docker build -t buildelektra-stretch-full \
@@ -32,6 +33,18 @@ docker build -t buildelektra-stretch-full \
     -f scripts/docker/debian/stretch/Dockerfile \
     scripts/docker/debian/stretch/
 ```
+
+or:
+
+```fish
+docker build -t buildelektra-stretch-full \
+    --build-arg JENKINS_USERID=(id -u) \
+    --build-arg JENKINS_GROUPID=(id -g) \
+    -f scripts/docker/debian/stretch/Dockerfile \
+    scripts/docker/debian/stretch/
+```
+
+, if you use [`fish`](https://www.fishshell.com).
 
 You can adapt the targeted Dockerfile via `-f`.
 You should also adjust the tag used via `-t` if you are building a different
@@ -49,7 +62,7 @@ Afterwards you can start the container via the following command:
 
 ```sh
 docker run -it --rm \
-    -v `pwd`:/home/jenkins/workspace \
+    -v "$PWD:/home/jenkins/workspace" \
     -w /home/jenkins/workspace \
     buildelektra-stretch-full
 ```

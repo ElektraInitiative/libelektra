@@ -26,30 +26,136 @@ bsd_task:
   tests_script:
     # Work around stalled process plugin and library problems on FreeBSD: https://issues.libelektra.org/2323
     - sudo mount -t fdescfs fdesc /dev/fd
-    - cd build && ninja run_all
+    - ninja -C build run_all
     - kdb run_all
 
 mac_task:
-  name: 🍎 macOS
-  osx_instance:
-    image: mojave-xcode-10.1
+  matrix:
+
+    - name: 🍎 Clang
+      osx_instance:
+        image: mojave-xcode-10.1
+
+    - name: 🍎 Clang ASAN
+      osx_instance:
+        image: mojave-xcode-10.1
+      env:
+        ASAN_OPTIONS: 'detect_leaks=1'
+        BINDINGS: cpp
+        ENABLE_ASAN: ON
+        TOOLS: kdb
+
+    - name: 🍎 FULL
+      osx_instance:
+        image: mojave-xcode-10.1
+      env:
+        BUILD_FULL: ON
+        BUILD_SHARED: OFF
+
+    - name: 🍎 MMap
+      osx_instance:
+        image: mojave-xcode-10.1
+      env:
+        KDB_DEFAULT_STORAGE: mmapstorage
+        KDB_DB_FILE: default.mmap
+        KDB_DB_INIT: elektra.mmap
 
   install_script:
-    - >
+    - > # Add external Homebrew taps
+      brew tap sanssecours/yaep
+    - > # Install Homebrew casks
+      brew cask install java oclint
+    - > # Install Homebrew formulas
       brew install
+      antlr
+      antlr4-cpp-runtime
       augeas
+      bison
+      boost
+      botan
       cmake
+      dbus
+      discount
+      doxygen
+      glib
       gpgme
+      graphviz
+      libev
+      libgcrypt
+      libgit2
+      libuv
+      llvm
+      lua
+      maven
+      moreutils
       ninja
+      openssl
+      pegtl
       pkg-config
+      qt
+      shfmt
+      swig
+      xerces-c
+      yaep
+      yajl
+      yaml-cpp
+      zeromq
+    - > # Try to install `checkbashisms` (The file server that hosts the package is unfortunately quite unreliable.)
+      brew install checkbashisms || >&2 printf 'Warning: Unable to install `checkbashims`\n'
+    - > # Start D-Bus session bus
+      brew services start dbus
+    - | # Install Python
+      brew install python@2; brew link --overwrite python@2
+      brew install python || brew upgrade python
+    - | # Install Python packages
+      pip install cmake-format pyyaml
+    - | # Install Ruby
+      brew install ruby@2.5
+      export PATH="/usr/local/opt/ruby@2.5/bin:$PATH"
+    - | # Install Ruby gems
+      gem install ronn test-unit --user-install --no-document
 
   script:
+    - |
+      export PATH="/usr/local/opt/ruby@2.5/bin:$PATH"
+      export PATH="$HOME/.gem/ruby/$(ruby -e 'puts RUBY_VERSION' | sed 's/\.[0-9]$/.0/')/bin:$PATH"
+    - > # Use latest version of LLVM to translate Elektra
+      export CC=/usr/local/opt/llvm/bin/clang CXX=/usr/local/opt/llvm/bin/clang++
     - SYSTEM_DIR="$PWD/kdbsystem"
     - mkdir build && cd build
-    - cmake -GNinja -DPLUGINS=ALL -DBINDINGS=ALL -DKDB_DB_SYSTEM="$SYSTEM_DIR" ..
+    - |
+      CMAKE_OPTIONS=(
+        -DBINDINGS="${BINDINGS:-ALL}"
+        -DBUILD_FULL="${BUILD_FULL:-OFF}"
+        -DBUILD_SHARED="${BUILD_SHARED:-ON}"
+        -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+        -DCOMMON_FLAGS="${COMMON_FLAGS:--Werror}"
+        -DENABLE_ASAN="${ENABLE_ASAN:-OFF}"
+        -DENABLE_DEBUG=ON
+        -DINSTALL_SYSTEM_FILES=OFF
+        -DKDB_DB_FILE="${KDB_DB_FILE:-default.ecf}"
+        -DKDB_DB_INIT="${KDB_DB_INIT:-elektra.ecf}"
+        -DKDB_DB_SYSTEM="$SYSTEM_DIR"
+        -DKDB_DEFAULT_STORAGE="${KDB_DEFAULT_STORAGE:-dump}"
+        -DPLUGINS="${PLUGINS:-ALL}"
+        -DTOOLS="${TOOLS:-ALL}"
+        -GNinja
+        ..
+      )
+    - |
+      printf '—— CMake Config ——\n'
+      for option in "${CMAKE_OPTIONS[@]}"; do printf '%s\n' "$option"; done
+    - cmake ${CMAKE_OPTIONS[@]}
     - ninja
     - output="$(ninja install 2>&1)" || printf '%s' "$output"
 
   tests_script:
-    - cd build && ninja run_all
-    - kdb run_all
+    - cd build
+    - |
+      if [[ "$ENABLE_ASAN" == 'ON' ]]; then
+        ninja run_nocheckshell
+      elif [[ "$BUILD_FULL" == 'ON' ]]; then
+        ninja run_all && kdb-full run_all
+      else
+        ninja run_all && kdb run_all
+      fi
