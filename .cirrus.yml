@@ -35,12 +35,18 @@ mac_task:
     image: mojave-xcode-10.1
 
   install_script:
-    - brew install augeas cmake ninja
+    - >
+      brew install
+      augeas
+      cmake
+      gpgme
+      ninja
+      pkg-config
 
   script:
     - SYSTEM_DIR="$PWD/kdbsystem"
     - mkdir build && cd build
-    - cmake -GNinja -DPLUGINS="${PLUGINS:-ALL}" -DBINDINGS='ALL' -DKDB_DB_SYSTEM="$SYSTEM_DIR" ..
+    - cmake -GNinja -DPLUGINS=ALL -DBINDINGS=ALL -DKDB_DB_SYSTEM="$SYSTEM_DIR" ..
     - ninja
     - output="$(ninja install 2>&1)" || printf '%s' "$output"
 

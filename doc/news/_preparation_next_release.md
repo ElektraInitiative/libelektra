@@ -120,7 +120,7 @@ The new plugin [YAy PEG](https://www.libelektra.org/plugins/yaypeg) parses a sub
 
 ### Ruby
 
-- Aded some basic unit tests *(Bernhard Denner)*
+- Added some basic unit tests *(Bernhard Denner)*
 
 ### <<Plugin3>>
 
