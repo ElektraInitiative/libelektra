@@ -231,6 +231,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Tools
 
+- `kdb spec-mount` correctly includes type plugin to validate `type`. *(Markus Raab)*
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
