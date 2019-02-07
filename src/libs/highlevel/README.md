@@ -29,8 +29,8 @@ if (elektra == NULL)
 	return -1;
 }
 
-int myint = elektraGetLong (elektra, "myint");
-printf ("got long %d\n", myint);
+kdb_long_t myint = elektraGetLong (elektra, "myint");
+printf ("got long " ELEKTRA_LONG_F "\n", myint);
 
 elektraSetBoolean (elektra, "mybool", true, &error);
 if (error != NULL)
@@ -41,6 +41,15 @@ if (error != NULL)
 
 elektraClose (elektra);
 ```
+
+To run the application, the configuration should be specified:
+
+```
+kdb setmeta /sw/org/myapp/#0/current/myint type long
+kdb setmeta /sw/org/myapp/#0/current/myint default 5
+```
+
+TODO: Running application does not work?
 
 The getter and setter functions follow the simple naming scheme `elektra`(`Get`/`Set`)[Type]. Additionally for each one there is a
 variant to access array elements with the suffix `ArrayElement`. For more information see [below](#reading-and-writing-values).
@@ -135,7 +144,7 @@ Errors which do not originate inside the high-level API itself are wrapped into 
 `ELEKTRA_ERROR_CODE_LOW_LEVEL`. The high-level Error API provides methods (`elektraKDBError*`) to access the properties of the low-level
 error. You can also access the key to which the error was originally attached, as well as any possible low-level warnings.
 
-TODO
+TODO: explanation of low-level code or removal of this feature for this release?
 
 ### Configuration
 
@@ -153,11 +162,11 @@ and therefore has no specified default value.
 The handler will also be called whenever you pass `NULL` where a function expects an `ElektraError **`. In this case the error code will be
 `ELEKTRA_ERROR_CODE_NULL_ERROR`.
 
-TODO
-
 The default callback simply logs the error with `ELEKTRA_LOG_DEBUG` and then calls `exit()` with the error code of the error.
 
-The callback must interrupt the thread of execution in some way (e.g. by calling `exit()` or throwing an exception in C++). It
+TODO: why DEBUG? It should be ERROR? And we should enable logging by default, otherwise users will not see the message?
+
+If you provide your own callback, it must interrupt the thread of execution in some way (e.g. by calling `exit()` or throwing an exception in C++). It
 *must not* return to the calling function.
 
 <a name="data-types"></a>
@@ -167,7 +176,7 @@ The API supports the following types, which are taken from the CORBA specificati
 
 * **String**: a string of characters, represented by `KDB_TYPE_STRING` in metadata
 
-TODO: what does that mean?
+TODO: please add better explanation, as started in PR #2377
 
 * **Boolean**: a boolean value `true` or `false`, represented by `KDB_TYPE_BOOLEAN` in metadata, in the KDB the raw value `"1"` is
                regarded, as true, any other value is considered false
@@ -317,9 +326,9 @@ void elektraSetRawStringArrayElement (Elektra * elektra, const char * name, kdb_
 
 The type information is stored in the `"type"` metakey. `KDBType elektraGetType (Elektra * elektra, const char * keyname)` (or
 `KDBType elektraGetArrayElementType (Elektra * elektra, const char * name, kdb_long_long_t index)` for array elements) lets you access this
-information. A setter is not provided, because changing the type of a key without changing its value rarely, if ever, makes sense.
+information. A setter is not provided, because Elektra assumes keys to always have the same type (as specified).
 
-TODO
+TODO: is this needed? Remove feature for the release?
 
 ### Binary Values
 
