@@ -74,7 +74,7 @@ int parseYAML (ifstream & file, CppKeySet & keys, CppKey & parent)
 	ParseTreeWalker walker{};
 	KeyListener listener{ parent };
 
-	ErrorListener errorListener{};
+	ErrorListener errorListener{ parent.getString () };
 	parser.removeErrorListeners ();
 	parser.addErrorListener (&errorListener);
 

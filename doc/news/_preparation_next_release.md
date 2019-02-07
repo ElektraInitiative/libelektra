@@ -103,6 +103,10 @@ The following section lists news about the [modules](https://www.libelektra.org/
 - The build system does not print a warning about a deprecated directive any more, if you build the plugin with Bison `3.3` or later.
   *(René Schwaiger)*
 
+### YanLR
+
+- The plugin now specifies the line and column number of syntax errors in error messages. *(René Schwaiger)*
+
 ### path
 
 Enhanced the plugin to also check for concrete file or directory permissions such as `rwx`.
