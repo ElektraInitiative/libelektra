@@ -535,9 +535,7 @@ static int elektraGetCheckUpdateNeeded (Split * split, Key * parentKey, KeySet *
 			ksRewind (split->keysets[i]);
 			keySetName (parentKey, keyName (split->parents[i]));
 			keySetString (parentKey, "");
-			resolver->global = global;
 			ret = resolver->kdbGet (resolver, split->keysets[i], parentKey);
-			resolver->global = 0;
 			// store resolved filename
 			keySetString (split->parents[i], keyString (parentKey));
 			// no keys in that backend
@@ -1310,9 +1308,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		cacheFile = keyNew (cacheFileName, KEY_VALUE, cacheFileName, KEY_END);
 		if (handle->globalPlugins[PREGETCACHE][MAXONCE])
 		{
-			handle->globalPlugins[PREGETCACHE][MAXONCE]->global = global;
 			elektraGlobalGet (handle, cache, cacheFile, PREGETCACHE, MAXONCE);
-			handle->globalPlugins[PREGETCACHE][MAXONCE]->global = 0;
 
 			if (kdbCacheCheckParent (handle, global, cachedParent) != 0)
 			{
@@ -1474,10 +1470,8 @@ cachefail:
 	{
 		if (handle->globalPlugins[POSTGETCACHE][MAXONCE])
 		{
-			handle->globalPlugins[POSTGETCACHE][MAXONCE]->global = global;
 			kdbStoreSplitState (handle, split, global, cachedParent);
 			elektraGlobalSet (handle, ks, cacheFile, POSTGETCACHE, MAXONCE);
-			handle->globalPlugins[POSTGETCACHE][MAXONCE]->global = 0;
 			ELEKTRA_LOG_DEBUG (">>>>>>>>>>>>>> PRINT GLOBAL KEYSET");
 			output_keyset (global);
 			ELEKTRA_LOG_DEBUG (">>>>>>>>>>>>>> END GLOBAL KEYSET");
