@@ -29,20 +29,27 @@ if (elektra == NULL)
 	return -1;
 }
 
-int myint = elektraGetLong (elektra, "myint");
+kdb_long_t myint = elektraGetLong (elektra, "myint");
+printf ("got long " ELEKTRA_LONG_F "\n", myint);
 
-if (myint < 10)
+elektraSetBoolean (elektra, "mybool", true, &error);
+if (error != NULL)
 {
-	elektraSetBoolean (elektra, "smallint", true, &error);
-	if (error != NULL)
-	{
-		printf ("An error occurred: %s", elektraErrorDescription (error));
-		elektraErrorReset (&error);
-	}
+	printf ("An error occurred: %s", elektraErrorDescription (error));
+	elektraErrorReset (&error);
 }
 
 elektraClose (elektra);
 ```
+
+To run the application, the configuration should be specified:
+
+```
+kdb setmeta /sw/org/myapp/#0/current/myint type long
+kdb setmeta /sw/org/myapp/#0/current/myint default 5
+```
+
+TODO: Running application does not work?
 
 The getter and setter functions follow the simple naming scheme `elektra`(`Get`/`Set`)[Type]. Additionally for each one there is a
 variant to access array elements with the suffix `ArrayElement`. For more information see [below](#reading-and-writing-values).
@@ -137,6 +144,8 @@ Errors which do not originate inside the high-level API itself are wrapped into 
 `ELEKTRA_ERROR_CODE_LOW_LEVEL`. The high-level Error API provides methods (`elektraKDBError*`) to access the properties of the low-level
 error. You can also access the key to which the error was originally attached, as well as any possible low-level warnings.
 
+TODO: explanation of low-level code or removal of this feature for this release?
+
 ### Configuration
 
 Currently there is only one way to configure an `Elektra` instance:
@@ -153,10 +162,11 @@ and therefore has no specified default value.
 The handler will also be called whenever you pass `NULL` where a function expects an `ElektraError **`. In this case the error code will be
 `ELEKTRA_ERROR_CODE_NULL_ERROR`.
 
-The default callback simply logs the error with `ELEKTRA_LOG_DEBUG` and then calls `exit()` with the error code of the error. It is highly
-recommended you either use `atexit()` in you application or set a custom callback, to make sure you won't leak memory.
+The default callback simply logs the error with `ELEKTRA_LOG_DEBUG` and then calls `exit()` with the error code of the error.
 
-The callback must interrupt the thread of execution in some way (e.g. by calling `exit()` or throwing an exception in C++). It
+TODO: why DEBUG? It should be ERROR? And we should enable logging by default, otherwise users will not see the message?
+
+If you provide your own callback, it must interrupt the thread of execution in some way (e.g. by calling `exit()` or throwing an exception in C++). It
 *must not* return to the calling function.
 
 <a name="data-types"></a>
@@ -165,6 +175,9 @@ The callback must interrupt the thread of execution in some way (e.g. by calling
 The API supports the following types, which are taken from the CORBA specification:
 
 * **String**: a string of characters, represented by `KDB_TYPE_STRING` in metadata
+
+TODO: please add better explanation, as started in PR #2377
+
 * **Boolean**: a boolean value `true` or `false`, represented by `KDB_TYPE_BOOLEAN` in metadata, in the KDB the raw value `"1"` is
                regarded, as true, any other value is considered false
 * **Char**: a single character, represented by `KDB_TYPE_CHAR` in metadata
@@ -253,11 +266,8 @@ The counterpart for array-getters again follows the same naming scheme:
 elektraSetStringArrayElement (elektra, "message", "This is the third new message", NULL);
 ```
 
-Because even the best specification and perfect usage as intended can not fully prevent an error from occurring, when saving the
-configuration, all setter-functions take an additional `ElektraError` argument, which will be set if an error occurs. Currently setters
-should not call the fatal error handler, however, there are no guarantees that this will remain so. For example a valid reason for
-a setter to call the fatal error handler instead of returning an error, would be problems with memory allocation (from which an application
-is unlikely to recover).
+Because even the best specification and perfect usage as intended can not prevent any error from occurring, when saving the
+configuration, all setter-functions take an additional `ElektraError` argument, which will be set if an error occurs.
 
 ### Enum Values
 
@@ -271,11 +281,12 @@ typedef enum { A, B, C } MyEnum;
 ElektraError * error = NULL;
 Elektra * elektra = elektraOpen ("/sw/org/myapp/#0/current", NULL, &error);
 
-// Read raw int value
-int value = elektraGetEnumInt (elektra, "message");
+// Read enum
 MyEnum enumValue = elektraGetEnum(elektra, "message", MyEnum);
 
-// enumValue == (MyEnum) value
+// Alternative: Read raw int value and then cast
+int value = elektraGetEnumInt (elektra, "message");
+enumValue == (MyEnum) value
 
 elektraClose (elektra);
 ```
@@ -315,7 +326,9 @@ void elektraSetRawStringArrayElement (Elektra * elektra, const char * name, kdb_
 
 The type information is stored in the `"type"` metakey. `KDBType elektraGetType (Elektra * elektra, const char * keyname)` (or
 `KDBType elektraGetArrayElementType (Elektra * elektra, const char * name, kdb_long_long_t index)` for array elements) lets you access this
-information. A setter is not provided, because changing the type of a key without changing its value rarely, if ever, makes sense.
+information. A setter is not provided, because Elektra assumes keys to always have the same type (as specified).
+
+TODO: is this needed? Remove feature for the release?
 
 ### Binary Values
 
