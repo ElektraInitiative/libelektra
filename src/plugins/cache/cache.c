@@ -25,11 +25,47 @@ typedef struct _cacheHandle CacheHandle;
 struct _cacheHandle
 {
 	KeySet * modules;
-	Key * cacheParent;
 	Key * cachePath;
 	Plugin * resolver;
 	Plugin * cacheStorage;
 };
+
+static int resolveCacheDirectory (Plugin * handle, CacheHandle * ch)
+{
+	KeySet * resolverConfig = ksNew (5, keyNew ("user/path", KEY_VALUE, "/.cache/elektra", KEY_END), KS_END);
+	ch->resolver = elektraPluginOpen (KDB_RESOLVER, ch->modules, resolverConfig, ch->cachePath);
+	if (!ch->resolver)
+	{
+		elektraModulesClose (ch->modules, 0);
+		ksDel (ch->modules);
+		keyDel (ch->cachePath);
+		elektraFree (ch);
+		return -1;
+	}
+	ch->resolver->global = elektraPluginGetGlobalKeySet (handle);
+	// resolve cache directory in user home
+	ch->resolver->kdbGet (ch->resolver, 0, ch->cachePath);
+
+	return 0;
+}
+
+static int loadCacheStoragePlugin (Plugin * handle, CacheHandle * ch)
+{
+	KeySet * mmapstorageConfig = ksNew (0, KS_END);
+	ch->cacheStorage = elektraPluginOpen (KDB_CACHE_STORAGE, ch->modules, mmapstorageConfig, ch->cachePath);
+	if (!ch->cacheStorage)
+	{
+		elektraPluginClose (ch->resolver, 0);
+		elektraModulesClose (ch->modules, 0);
+		ksDel (ch->modules);
+		keyDel (ch->cachePath);
+		elektraFree (ch);
+		return -1;
+	}
+	ch->cacheStorage->global = elektraPluginGetGlobalKeySet (handle);
+
+	return 0;
+}
 
 int elektraCacheOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 {
@@ -40,35 +76,10 @@ int elektraCacheOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 
 	ch->modules = ksNew (0, KS_END);
 	elektraModulesInit (ch->modules, 0);
-	ch->cacheParent = keyNew ("user/elektracache", KEY_CASCADING_NAME, KEY_VALUE, "other.mmap", KEY_END);
-	ch->cachePath = keyNew (0, KEY_END);
+	ch->cachePath = keyNew ("user/elektracache", KEY_END);
 
-	KeySet * resolverConfig = ksNew (5, keyNew ("user/path", KEY_VALUE, "/.cache/elektracache/tmp", KEY_END), KS_END);
-	ch->resolver = elektraPluginOpen (KDB_RESOLVER, ch->modules, resolverConfig, ch->cacheParent);
-	if (!ch->resolver)
-	{
-		elektraModulesClose (ch->modules, 0);
-		ksDel (ch->modules);
-		keyDel (ch->cacheParent);
-		keyDel (ch->cachePath);
-		elektraFree (ch);
-		return ELEKTRA_PLUGIN_STATUS_ERROR;
-	}
-	ch->resolver->global = elektraPluginGetGlobalKeySet (handle);
-
-	KeySet * mmapstorageConfig = ksNew (0, KS_END);
-	ch->cacheStorage = elektraPluginOpen (KDB_CACHE_STORAGE, ch->modules, mmapstorageConfig, ch->cacheParent);
-	if (!ch->cacheStorage)
-	{
-		elektraPluginClose (ch->resolver, 0);
-		elektraModulesClose (ch->modules, 0);
-		ksDel (ch->modules);
-		keyDel (ch->cacheParent);
-		keyDel (ch->cachePath);
-		elektraFree (ch);
-		return ELEKTRA_PLUGIN_STATUS_ERROR;
-	}
-	ch->cacheStorage->global = elektraPluginGetGlobalKeySet (handle);
+	if (resolveCacheDirectory (handle, ch) == -1) return ELEKTRA_PLUGIN_STATUS_ERROR;
+	if (loadCacheStoragePlugin (handle, ch) == -1) return ELEKTRA_PLUGIN_STATUS_ERROR;
 
 	elektraPluginSetData (handle, ch);
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
@@ -86,7 +97,6 @@ int elektraCacheClose (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 
 		elektraModulesClose (ch->modules, 0);
 		ksDel (ch->modules);
-		keyDel (ch->cacheParent);
 		keyDel (ch->cachePath);
 
 		elektraFree (ch);
@@ -119,9 +129,6 @@ int elektraCacheGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	// get all keys
 
 	CacheHandle * ch = elektraPluginGetData (handle);
-	ch->resolver->kdbGet (ch->resolver, returned, ch->cacheParent);
-	keySetName (ch->cachePath, keyString (ch->cacheParent));
-	keySetBaseName (ch->cachePath, "some/deeper/dir/cache.mmap");
 
 	ELEKTRA_LOG_DEBUG ("cachePath name: %s", keyName (ch->cachePath));
 	ELEKTRA_LOG_DEBUG ("cachePath value: %s", keyString (ch->cachePath));
