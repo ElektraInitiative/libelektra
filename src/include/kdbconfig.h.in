@@ -21,9 +21,8 @@
 #define KDB_DB_USER              "@KDB_DB_USER@"
 
 /** Prefix to search specification configuration (spec/). */
-#define KDB_DB_SPEC              "@BUILTIN_SPEC_FOLDER@"
+#define KDB_DB_SPEC              "@KDB_DB_SPEC@"
 
-#define KDB_DB_SPEC_REAL              "@BUILTIN_SPEC_REAL_FOLDER@"
 /** The folder to add for directory namespace */
 #define KDB_DB_DIR               "@KDB_DB_DIR@"
 

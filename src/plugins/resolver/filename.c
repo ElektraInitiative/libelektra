@@ -533,29 +533,27 @@ static int elektraResolveSpec (ElektraResolved * handle, ElektraResolveTempfile 
 			return -1;
 		}
 	}
+	else if (KDB_DB_SPEC[0] == '~')
+	{
+		char * oldPath = handle->relPath;
+		char * path = elektraMalloc (filenameSize);
+		strcpy (path, KDB_DB_SPEC);
+		strcat (path, "/");
+		strcat (path, handle->relPath);
+		handle->relPath = path;
+		elektraResolveSystemPasswd (handle, warningsKey);
+		elektraFree (path);
+		handle->relPath = oldPath;
+	}
 	else
 	{
-		if (KDB_DB_SPEC_REAL[0] == '~')
-		{
-			char * oldPath = handle->relPath;
-			char * path = elektraMalloc (filenameSize);
-			strcpy (path, KDB_DB_SPEC_REAL);
-			strcat (path, "/");
-			strcat (path, handle->relPath);
-			handle->relPath = path;
-			elektraResolveSystemPasswd (handle, warningsKey);
-			elektraFree (path);
-			handle->relPath = oldPath;
-		}
-		else
-		{
-			char * path = elektraMalloc (filenameSize);
-			strcpy (path, KDB_DB_SPEC);
-			strcat (path, "/");
-			strcat (path, handle->relPath);
-			handle->fullPath = path;
-		}
+		char * path = elektraMalloc (filenameSize);
+		strcpy (path, KDB_DB_SPEC);
+		strcat (path, "/");
+		strcat (path, handle->relPath);
+		handle->fullPath = path;
 	}
+
 	elektraResolveFinishByFilename (handle, tmpDir);
 	return 1;
 }

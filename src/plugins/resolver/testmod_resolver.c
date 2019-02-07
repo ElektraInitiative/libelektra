@@ -54,7 +54,17 @@ void test_resolve (void)
 	resolverHandles * h = elektraPluginGetData (plugin);
 	exit_if_fail (h != 0, "no plugin handle");
 	succeed_if_same_string (h->system.path, "elektra.ecf");
-	succeed_if_same_string (h->system.filename, KDB_DB_SYSTEM "/elektra.ecf");
+	if (KDB_DB_SYSTEM[0] == '~')
+	{
+		// only check filename and issue warning
+		const char * lastSlash = strrchr (h->system.filename, '/');
+		warn_if_fail (0, "using home based KDB_DB_SYSTEM falls back to less strict testing");
+		succeed_if (lastSlash != NULL && strcmp (lastSlash, "/elektra.ecf") == 0, "wrong filename with home based KDB_DB_SYSTEM");
+	}
+	else
+	{
+		succeed_if_same_string (h->system.filename, KDB_DB_SYSTEM "/elektra.ecf");
+	}
 	succeed_if_same_string (h->user.path, "elektra.ecf");
 	succeed_if_same_string (h->user.filename, path);
 	plugin->kdbClose (plugin, parentKey);
@@ -64,7 +74,17 @@ void test_resolve (void)
 	h = elektraPluginGetData (plugin);
 	exit_if_fail (h != 0, "no plugin handle");
 	succeed_if_same_string (h->system.path, "elektra.ecf");
-	succeed_if_same_string (h->system.filename, KDB_DB_SYSTEM "/elektra.ecf");
+	if (KDB_DB_SYSTEM[0] == '~')
+	{
+		// only check filename and issue warning
+		const char * lastSlash = strrchr (h->system.filename, '/');
+		warn_if_fail (0, "using home based KDB_DB_SYSTEM falls back to less strict testing");
+		succeed_if (lastSlash != NULL && strcmp (lastSlash, "/elektra.ecf") == 0, "wrong filename with home based KDB_DB_SYSTEM");
+	}
+	else
+	{
+		succeed_if_same_string (h->system.filename, KDB_DB_SYSTEM "/elektra.ecf");
+	}
 	succeed_if (h->user.filename == NULL, "user was initialized, but is not needed");
 	plugin->kdbClose (plugin, parentKey);
 
@@ -104,7 +124,17 @@ void test_name (void)
 
 	Key * parentKey = keyNew ("system", KEY_END);
 	plugin->kdbGet (plugin, 0, parentKey);
-	succeed_if_same_string (keyString (parentKey), KDB_DB_SYSTEM "/elektra.ecf");
+	if (KDB_DB_SYSTEM[0] == '~')
+	{
+		// only check filename and issue warning
+		const char * lastSlash = strrchr (keyString (parentKey), '/');
+		warn_if_fail (0, "using home based KDB_DB_SYSTEM falls back to less strict testing");
+		succeed_if (lastSlash != NULL && strcmp (lastSlash, "/elektra.ecf") == 0, "wrong filename with home based KDB_DB_SYSTEM");
+	}
+	else
+	{
+		succeed_if_same_string (keyString (parentKey), KDB_DB_SYSTEM "/elektra.ecf");
+	}
 
 	keyDel (parentKey);
 	elektraPluginClose (plugin, 0);
@@ -141,7 +171,19 @@ void test_lockname (void)
 
 	Key * parentKey = keyNew ("system", KEY_END);
 	plugin->kdbGet (plugin, 0, parentKey);
-	succeed_if (h && !strcmp (h->system.dirname, KDB_DB_SYSTEM), "resulting filename not correct");
+	if (h && KDB_DB_SYSTEM[0] == '~')
+	{
+		// issue warning and then only check if dirname ends with the user-independent part of KDB_DB_SYSTEM
+		const char * firstSlash = strchr (KDB_DB_SYSTEM, '/');
+		warn_if_fail (0, "using home based KDB_DB_SYSTEM falls back to less strict testing");
+		succeed_if (firstSlash == NULL ||
+				    strcmp (h->system.dirname + strlen (h->system.dirname) - strlen (firstSlash), firstSlash) == 0,
+			    "resulting filename not correct with home based KDB_DB_SYSTEM");
+	}
+	else
+	{
+		succeed_if (h && !strcmp (h->system.dirname, KDB_DB_SYSTEM), "resulting filename not correct");
+	}
 
 	keyDel (parentKey);
 	elektraPluginClose (plugin, 0);
@@ -178,8 +220,20 @@ void test_tempname (void)
 
 	Key * parentKey = keyNew ("system", KEY_END);
 	plugin->kdbGet (plugin, 0, parentKey);
-	succeed_if (h && !strncmp (h->system.tempfile, KDB_DB_SYSTEM "/elektra.ecf", sizeof (KDB_DB_SYSTEM)),
-		    "resulting filename not correct");
+	if (h && KDB_DB_SYSTEM[0] == '~')
+	{
+		// only check filename and issue warning
+		const char * lastSlash = strrchr (h->system.tempfile, '/');
+		warn_if_fail (0, "using home based KDB_DB_SYSTEM falls back to less strict testing");
+		succeed_if (lastSlash != NULL && !strncmp (lastSlash, "/elektra.ecf", sizeof ("/elektra.ecf") - 1),
+			    "resulting filename not correct with home based KDB_DB_SYSTEM");
+	}
+	else
+	{
+		succeed_if (h && !strncmp (h->system.tempfile, KDB_DB_SYSTEM "/elektra.ecf", sizeof (KDB_DB_SYSTEM "/elektra.ecf") - 1),
+			    "resulting filename not correct");
+	}
+
 
 	keyDel (parentKey);
 	elektraPluginClose (plugin, 0);

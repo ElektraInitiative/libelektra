@@ -67,6 +67,16 @@ set (SO_VERSION_GETENV 0)
 # needs version above
 include (cmake/ElektraPackaging.cmake)
 
+# ensure KDB_DB_SYSTEM is an absolute path
+if (NOT IS_ABSOLUTE "${KDB_DB_SYSTEM}")
+	set (KDB_DB_SYSTEM "${CMAKE_INSTALL_PREFIX}/${KDB_DB_SYSTEM}")
+endif ()
+
+# process KDB_DB_SPEC so it is available everywhere
+if (NOT IS_ABSOLUTE "${KDB_DB_SPEC}")
+	set (KDB_DB_SPEC "${CMAKE_INSTALL_PREFIX}/${KDB_DB_SPEC}")
+endif ()
+
 # now add all directories
 add_subdirectory (cmake)
 

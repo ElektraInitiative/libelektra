@@ -84,14 +84,20 @@ function (add_plugintest testname)
 				       "${MULTI_VALUE_KEYWORDS}" # multi value keywords
 				       ${ARGN})
 
+		if (ARG_LINK_PLUGIN)
+			set (testplugin "${ARG_LINK_PLUGIN}")
+		else (ARG_LINK_PLUGIN)
+			set (testplugin "${testname}")
+		endif (ARG_LINK_PLUGIN)
+
 		list (FIND ADDED_PLUGINS
-			   "${testname}"
+			   "${testplugin}"
 			   FOUND_NAME)
 		if (FOUND_NAME EQUAL -1)
 			if (NOT ARG_LINK_PLUGIN)
 				message (
 					FATAL_ERROR
-						"Trying to add plugintest ${testname} but no such plugin was added (try to use LINK_PLUGIN)"
+						"Trying to add plugintest ${testplugin} but no such plugin was added (try to use LINK_PLUGIN)"
 					)
 			endif ()
 
@@ -99,7 +105,7 @@ function (add_plugintest testname)
 			return ()
 		endif ()
 
-		set (PLUGIN_NAME elektra-${testname})
+		set (PLUGIN_NAME elektra-${testplugin})
 		restore_variable (${PLUGIN_NAME} ARG_LINK_LIBRARIES)
 		restore_variable (${PLUGIN_NAME} ARG_COMPILE_DEFINITIONS)
 		restore_variable (${PLUGIN_NAME} ARG_INCLUDE_DIRECTORIES)
