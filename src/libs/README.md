@@ -1,17 +1,58 @@
 elektra-libs(7) -- libs overview
 ================================
 
-## DESCRIPTION
+## Highlevel APIs
+
+### Highlevel
+
+    libelektra-highlevel.so
+
+Contains the **[highlevel API](highlevel)**.
+See [also examples](/examples/highlevel).
+
+
+### Notification
+
+    libelektra-notification.so
+
+**[notification](notification/)** provides the [notification API](https://doc.libelektra.org/api/current/html/group__kdbnotification.html).
+Usage examples:
+
+- [Basic notifications using polling](https://www.libelektra.org/examples/notificationpolling)
+- [Using asynchronous I/O bindings](https://www.libelektra.org/examples/notificationasync)
+- [Reload KDB when Elektra's configuration has changed](https://www.libelektra.org/examples/notificationreload)
+
+
+
+
+## Base Elektra Libraries
 
 Since version **[0.8.15](/doc/decisions/library_split.md)** **[libelektra](elektra/)**
 is split into following libraries:
 
 ![Overview of Libraries](/doc/images/overview_libs.png)
 
-### Loader
+
+### Libkdb
+
+    libelektra-kdb.so
+
+Accesses the configuration files by orchestrating the plugins.
+The implementation lives in [elektra](elektra).
 
 **[loader](loader/)** contains source files that implement the plugin
-loader functionality. The files are linked to **[libelektra](elektra/)**.
+loader functionality as used by `libelektra-kdb`.
+
+### Libcore
+
+    libelektra-core.so
+    <kdbhelper.h>
+    <kdb.h> (key* and ks*)
+
+Contains the fundamental data-structures every participant of Elektra needs
+to link against. It should be the only part that access the internal
+data structures.
+The implementation lives in [elektra](elektra).
 
 ### Libease
 
@@ -25,7 +66,30 @@ Its main goal is to make programming with Elektra easier if some extra kB are no
 
     libelektra-plugin.so
 
-**[libplugin](plugin/)** contains `elektraPlugin*` symbols and plugins should link against it.
+**[libplugin](plugin/)** contains `elektraPlugin*` symbols to be used by plugins.
+
+### Libproposal
+
+    libelektra-proposal.so
+
+**[libproposal](proposal/)** contains functions that are proposed for libcore. Depends on internas of libcore and as
+such must always fit to the exact same version.
+
+### Libmeta
+
+    libelektra-meta.so
+
+**[libmeta](meta/meta.c)** contains metadata operations as described in **[METADATA.ini](/doc/METADATA.ini)**.
+Currently mainly contains legacy code and some generic meta data operations.
+
+### Libelektra
+
+Is a legacy library that provides the same functionality as `libelektra-kdb` and `libelektra-core`.
+The sources can be found in  **[libelektra](elektra/)**.
+
+
+
+## Other Libraries
 
 ### Libpluginprocess
 
@@ -41,30 +105,6 @@ This is useful for plugins which cause memory leaks to be isolated in an own pro
 this is useful for runtimes or libraries that cannot be reinitialized in the same process after they
 have been used.
 
-### Libproposal
-
-    libelektra-proposal.so
-
-**[libproposal](proposal/)** contains functions that are proposed for libcore. Depends on internas of libcore and as
-such must always fit to the exact same version.
-
-### Libmeta
-
-    libelektra-meta.so
-
-**[libmeta](meta/meta.c)** contains metadata operations as described in **[METADATA.ini](/doc/METADATA.ini)**.
-Will be code-generated in the future, so methods should be mechanical reflections
-of the contents in **[METADATA.ini](/doc/METADATA.ini)**.
-
-### Libcore
-
-    libelektra-core.so
-    <kdbhelper.h>
-    <kdb.h> (key* and ks*)
-
-Contains the fundamental data-structures every participant of Elektra needs
-to link against. It should be the only part that access the internal
-data structures.
 
 ### Libtools
 
@@ -92,16 +132,6 @@ data structures.
 [common API](https://doc.libelektra.org/api/current/html/group__kdbio.html) for
 using asynchronous I/O bindings.
 
-### Notification
-
-    libelektra-notification.so
-
-**[notification](notification/)** provides the [notification API](https://doc.libelektra.org/api/current/html/group__kdbnotification.html).
-Usage examples:
-
-- [Basic notifications using polling](https://www.libelektra.org/examples/notificationpolling)
-- [Using asynchronous I/O bindings](https://www.libelektra.org/examples/notificationasync)
-- [Reload KDB when Elektra's configuration has changed](https://www.libelektra.org/examples/notificationreload)
 
 ### Globbing
 
