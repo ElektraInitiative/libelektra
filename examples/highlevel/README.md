@@ -38,7 +38,7 @@ The example just prints its configuration if `/sw/example/highlevel/#0/current/p
 kdb set /sw/example/highlevel/#0/current/print 1
 ```
 
-. Otherwise it will just read the configuration an print a success message.
+. Otherwise it will just read the configuration and print a success message.
 
 ## Limitations
 
