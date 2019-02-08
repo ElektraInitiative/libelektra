@@ -189,8 +189,7 @@ You can clone the latest version of Elektra by running:
 
          git clone https://github.com/ElektraInitiative/libelektra.git
 
-Releases can be downloaded from [http](https://www.libelektra.org/ftp/elektra/releases/) and
-`ftp://ftp.libelektra.org/elektra/releases/`
+Releases can be downloaded from [here](https://www.libelektra.org/ftp/elektra/releases/).
 
 
 ## Build Server
