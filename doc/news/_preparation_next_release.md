@@ -138,7 +138,7 @@ The new plugin [YAy PEG](https://www.libelektra.org/plugins/yaypeg) parses a sub
   - [`resolver`](https://www.libelektra.org/plugins/resolver)
 
   reported on FreeBSD. *(René Schwaiger)*
-- The [`resolver` plugin](/src/plugins/resolver) and its tests now better support `KDB_DB_SYSTEM` and `KDB_DB_SPEC` paths 
+- The [`resolver` plugin](/src/plugins/resolver) and its tests now better support `KDB_DB_SYSTEM` and `KDB_DB_SPEC` paths
   using `~` to refer to a home directory. *(Klemens Böswirth)*
 - If `KDB_DB_SYSTEM` is set to a relative path, it is now treated as relative to `CMAKE_INSTALL_PREFIX`. This ensures that
   `KDB_DB_SYSTEM` actually points to the same location no matter the current working directory. *(Klemens Böswirth)*
