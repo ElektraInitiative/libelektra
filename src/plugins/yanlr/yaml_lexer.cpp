@@ -523,7 +523,7 @@ void YAMLLexer::scanComment ()
 	ELEKTRA_LOG_DEBUG ("Scan comment");
 	size_t start = input->index ();
 
-	while (input->LA (1) != '\n')
+	while (input->LA (1) != '\n' && input->LA (1) != Token::EOF)
 	{
 		forward ();
 	}
