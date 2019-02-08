@@ -29,7 +29,19 @@ if (NOT OPENSSL_FOUND)
 		endif (NOT FAILURE)
 	endif (APPLE AND NOT DEFINED OPENSSL_ROOT_DIR)
 
-	find_package (OpenSSL QUIET)
+	# ~~~
+	# Disable warnings about unset CMake policy in `FindOpenSSL.cmake`.
+	# TODO: Remove the calls to `cmake_policy` after the CMake developers update `FindOpenSSL.cmake`.
+	# ~~~
+	if (CMAKE_VERSION VERSION_LESS 3.1)
+		# Policy CMP0054 is not known to CMake 3.0
+		find_package (OpenSSL QUIET)
+	else (CMAKE_VERSION VERSION_LESS 3.1)
+		cmake_policy (PUSH)
+		cmake_policy (SET CMP0054 NEW)
+		find_package (OpenSSL QUIET)
+		cmake_policy (POP)
+	endif (CMAKE_VERSION VERSION_LESS 3.1)
 endif ()
 
 if (OPENSSL_FOUND)
