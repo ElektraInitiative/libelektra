@@ -112,6 +112,9 @@ Simply add `check/path/user <user>` and `check/path/mode <modes>` as metadata
 and be assured that you can safely set a path value to the key. A more detailed explanation can be found
 [here](/src/plugins/path/README.md) *(Michael Zronek)*
 
+### YAwn
+
+- The plugin now handles comments at the end of a file properly. *(René Schwaiger)*
 
 ### YAy PEG
 
