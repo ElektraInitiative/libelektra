@@ -319,7 +319,7 @@ you up to date with the multi-language support provided by Elektra.
   - [FreeBSD 11.2](https://www.freebsd.org/releases/11.2R/announce.html) and
   - [FreeBSD 12.0](https://www.freebsd.org/releases/12.0R/announce.html)
 
-  . *(René Schwaiger)*
+  . Both of these build jobs use `-Werror` to make sure we do not introduce any code that produces compiler warnings. *(René Schwaiger)*
 - The new build job `🍎 Clang` tests Elektra on macOS. *(René Schwaiger)*
 - We added the build job `🍎 Clang ASAN`, which uses Clang with enabled [AddressSanitizer](https://en.wikipedia.org/wiki/AddressSanitizer)
   to test Elektra on macOS. *(René Schwaiger)*
