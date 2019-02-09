@@ -14,7 +14,7 @@ will be preferred over any stored values in a cascading lookup.
 To use `elektraGetOpts` you need to link against `elektra-opts`, `elektra-meta` and `elektra-ease`.
 
 ## Options
-To define a command-line option either set the `opt` meta-key to the short option you want to use, or set `opt/long` to
+To define a command-line option either set the `opt` metakey to the short option you want to use, or set `opt/long` to
 the long option you want to use. For short options, only the first character of the given value will be used ('\0' is ignored).
 Short and long options can be used simultaneously.
 
@@ -41,16 +41,16 @@ To change whether an option expects an argument set `opt/arg` to either `"none"`
 
 ## Environment Variables
 Elektra also supports parsing environment variables in a similar manner. For these there are however, less configuration
-options. You can simply specify one or more environment variables for a key using the `env` meta-key (or `env/#` meta-array
+options. You can simply specify one or more environment variables for a key using the `env` metakey (or `env/#` meta-array
 for multiple).
 
 ## Arrays
-Both options and environment variables expose special behaviour, if used in combination with arrays.
+Both options and environment variables expose special behavior, if used in combination with arrays.
 
 If an option is specified on a key with basename `#`, the option can be used repeatedly. All occurrences will be collected
 into the array.
 
-Environment variables obviously cannot be repeated, instead a behaviour similar that used for PATH is adopted. On Windows
+Environment variables obviously cannot be repeated, instead a behavior similar that used for PATH is adopted. On Windows
 the variable will be split at each ';' character. On all other systems ':' is used as a separator.
 
 ## Arguments (Parameters)
@@ -68,7 +68,7 @@ If the value contains a slash (`/`) it will be considered a path and only the pa
 
 The options list will contain exactly one entry for each key that has at least one option. Each entry has to parts. First
 all the options for the key are listed and then (possibly on the next line, if there are a lot of options), the description
-for the key is listed. The description is taken from the `opt/help` or alternatively the `description` meta-key.
+for the key is listed. The description is taken from the `opt/help` or alternatively the `description` metakey.
 
 **Note:** `opt/help` is specified *only once per key*. That means even if the key uses `opt/#0`, `opt/#1`, etc. (unlike most
 other metadata) the description will always be taken from `opt/help` directly, because there can only be one description. In
@@ -178,5 +178,5 @@ The following keys will be created by `elektraGetOpts` (assuming the specificati
 * `proc/sw/org/erm/#0/current/interactive = "always"`
 * `proc/sw/org/erm/#0/current/recursive = "1"`
 
-You can find a full working example [here](https://www.libelektra.org/examples/cascading). However, it uses a hard-coded
+You can find a full working example [here](https://www.libelektra.org/examples/cascading). However, it uses a hard coded
 specification which is a bit harder to read.

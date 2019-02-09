@@ -15,6 +15,16 @@
 // -- Class --------------------------------------------------------------------
 
 /**
+ * @brief This constructor creates a new error listener using the given arguments.
+ *
+ * @param errorSource This text stores an identifier, usually the filename, that identifies the source of an error.
+ */
+ErrorListener::ErrorListener (string const & errorSource)
+{
+	source = errorSource;
+}
+
+/**
  * @brief This method will be called if the parsing process fails.
  *
  * @param recognizer This parameter stores the current recognizer used to
@@ -30,10 +40,12 @@
  *              failure.
  */
 void ErrorListener::syntaxError (Recognizer * recognizer __attribute__ ((unused)), Token * offendingSymbol __attribute__ ((unused)),
-				 size_t line __attribute__ ((unused)), size_t charPositionInLine __attribute__ ((unused)),
-				 const std::string & message, std::exception_ptr error __attribute__ ((unused)))
+				 size_t line, size_t charPositionInLine, const std::string & message,
+				 std::exception_ptr error __attribute__ ((unused)))
 {
-	errorMessage = message;
+	using std::to_string;
+
+	errorMessage = source + ":" + to_string (line) + ":" + to_string (charPositionInLine) + ": " + message;
 }
 
 /**

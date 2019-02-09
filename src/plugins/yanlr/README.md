@@ -100,6 +100,35 @@ kdb rm -r user/tests/yanlr
 sudo kdb umount user/tests/yanlr
 ```
 
+### Error Messages
+
+```sh
+# Mount plugin
+sudo kdb mount config.yaml user/tests/yanlr yanlr
+
+# Manually add syntactically incorrect data
+printf -- 'key: - element 1\n'                   >  `kdb file user/tests/yanlr`
+printf -- '- element 2 # Incorrect Indentation!' >> `kdb file user/tests/yanlr`
+
+# The plugin reports the location of the error
+kdb ls user/tests/yanlr
+# RET: 5
+# STDERR-REGEX: Reason: .*/config.yaml:2:18: extraneous input 'BLOCK END' expecting {STREAM_END, COMMENT}
+
+# Fix syntax error
+printf -- 'key: - element 1\n'        >  `kdb file user/tests/yanlr`
+printf -- '     - element 2 # Fixed!' >> `kdb file user/tests/yanlr`
+
+kdb ls user/tests/yanlr
+#> user/tests/yanlr/key
+#> user/tests/yanlr/key/#0
+#> user/tests/yanlr/key/#1
+
+# Undo modifications
+kdb rm -r user/tests/yanlr
+sudo kdb umount user/tests/yanlr
+```
+
 ## Limitations
 
 - The plugin does **not support**

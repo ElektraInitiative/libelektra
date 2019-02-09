@@ -27,7 +27,17 @@ class ErrorListener : public BaseErrorListener
 	/** This variable stores the last error message emitted via the function `syntaxError`. */
 	string errorMessage;
 
+	/** This attribute stores the source, for which the error listener reports an error. */
+	string source;
+
 public:
+	/**
+	 * @brief This constructor creates a new error listener using the given arguments.
+	 *
+	 * @param errorSource This text stores an identifier, usually the filename, that identifies the source of an error.
+	 */
+	ErrorListener (string const & errorSource);
+
 	/**
 	 * @brief This method will be called if the parsing process fails.
 	 *
