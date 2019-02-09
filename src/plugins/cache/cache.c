@@ -13,10 +13,14 @@
 #include "kdbconfig.h"
 #endif
 
+#include <kdbassert.h>
 #include <kdbhelper.h>
 #include <kdblogger.h>
 #include <kdbmodule.h>
 #include <kdbprivate.h>
+
+#include <fcntl.h> // access()
+#include <unistd.h> // access()
 
 #define KDB_CACHE_STORAGE "mmapstorage"
 
@@ -65,6 +69,120 @@ static int loadCacheStoragePlugin (Plugin * handle, CacheHandle * ch)
 	ch->cacheStorage->global = elektraPluginGetGlobalKeySet (handle);
 
 	return 0;
+}
+
+#include <sys/stat.h>
+#include <sys/types.h>
+static int elektraMkdirParents (const char * pathname)
+{
+	if (mkdir (pathname, KDB_FILE_MODE | KDB_DIR_MODE) == -1)
+	{
+		if (errno != ENOENT)
+		{
+			// hopeless, give it up
+			return -1;
+		}
+
+		// last part of filename component (basename)
+		char * p = strrchr (pathname, '/');
+
+		/* nothing found */
+		if (p == NULL)
+		{
+			// set any errno, corrected in
+			// elektraAddErrnoText
+			errno = E2BIG;
+			return -1;
+		}
+
+		/* absolute path */
+		if (p == pathname)
+		{
+			// set any errno, corrected in
+			// elektraAddErrnoText
+			errno = EINVAL;
+			return -1;
+		}
+
+		/* Cut path at last /. */
+		*p = 0;
+
+		/* Now call ourselves recursively */
+		if (elektraMkdirParents (pathname) == -1)
+		{
+			// do not yield an error, was already done
+			// before
+			*p = '/';
+			return -1;
+		}
+
+		/* Restore path. */
+		*p = '/';
+
+		if (mkdir (pathname, KDB_FILE_MODE | KDB_DIR_MODE) == -1)
+		{
+			return -1;
+		}
+	}
+
+	return 0;
+}
+
+static char * elektraStrConcat (const char * a, const char * b)
+{
+	size_t len = strlen (a) + strlen (b) + 1;
+	char * ret = elektraMalloc (len);
+	ret = strcpy (ret, a);
+	ret = strcat (ret, b);
+	return ret;
+}
+
+static char * kdbCacheFileName (CacheHandle * ch, Key * parentKey)
+{
+	char * cacheFileName = 0;
+	const char * directory = keyString (ch->cachePath);
+	const char * name = keyName (parentKey);
+	const char * value = keyString (parentKey);
+	ELEKTRA_LOG_DEBUG ("mountpoint name: %s", name);
+	if (strlen (name) != 0)
+	{
+		cacheFileName = elektraStrConcat (directory, "/backend/");
+		char * tmp = cacheFileName;
+		cacheFileName = elektraStrConcat (cacheFileName, name);
+		elektraFree (tmp);
+	}
+	else if (strcmp (value, "default") == 0)
+	{
+		cacheFileName = elektraStrConcat (directory, "/default/");
+	}
+	else
+	{
+		ELEKTRA_LOG_DEBUG ("mountpoint empty, invalid cache file name");
+	}
+	// cacheFileName = elektraStrConcat ("/tmp/elektracache/", keyName (parentKey));
+	ELEKTRA_LOG_DEBUG ("cache dir: %s", cacheFileName);
+
+	if (cacheFileName)
+	{
+
+//		if ( != 0)
+//		{
+//			ELEKTRA_LOG_DEBUG ("error creating directory: %s", cacheFileName);
+//			return 0;
+//		}
+
+		if (access (cacheFileName, O_RDWR) != 0)
+		{
+			elektraMkdirParents (cacheFileName);
+		}
+
+		char * tmp = cacheFileName;
+		cacheFileName = elektraStrConcat (cacheFileName, "/cache.mmap");
+		elektraFree (tmp);
+		ELEKTRA_LOG_DEBUG ("cache file: %s", cacheFileName);
+	}
+
+	return cacheFileName;
 }
 
 int elektraCacheOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
@@ -129,19 +247,63 @@ int elektraCacheGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	// get all keys
 
 	CacheHandle * ch = elektraPluginGetData (handle);
+	if (ch->cacheStorage->global == 0)
+	{
+		ch->cacheStorage->global = elektraPluginGetGlobalKeySet (handle);
+	}
 
-	ELEKTRA_LOG_DEBUG ("cachePath name: %s", keyName (ch->cachePath));
-	ELEKTRA_LOG_DEBUG ("cachePath value: %s", keyString (ch->cachePath));
+	// construct cache file name from parentKey (which stores the mountpoint from mountGetMountpoint)
+	Key * cacheFile = keyDup (parentKey);
+	char * cacheFileName = kdbCacheFileName (ch, cacheFile);
+	ELEKTRA_ASSERT (cacheFileName != 0, "Could not construct cache file name.");
+	ELEKTRA_LOG_DEBUG ("cacheFileName: %s", cacheFileName);
 
-	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+	// load cache from storage
+	keySetString (cacheFile, cacheFileName);
+	elektraFree (cacheFileName);
+	if (ch->cacheStorage->kdbGet (ch->cacheStorage, returned, cacheFile) == ELEKTRA_PLUGIN_STATUS_SUCCESS)
+	{
+		keyDel (cacheFile);
+		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+	}
+
+	keyDel (cacheFile); // TODO: maybe propagate errors?
+	return ELEKTRA_PLUGIN_STATUS_ERROR;
 }
 
-int elektraCacheSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraCacheSet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
 	// set all keys
 	// this function is optional
+	CacheHandle * ch = elektraPluginGetData (handle);
+	if (ch->cacheStorage->global == 0)
+	{
+		ch->cacheStorage->global = elektraPluginGetGlobalKeySet (handle);
+	}
 
-	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+	if (elektraPluginGetGlobalKeySet (handle) == 0)
+	{
+		ELEKTRA_ASSERT (0 != 0, "WHY AM I NOT GLOBAL KS");
+	}
+
+	// construct cache file name from parentKey (which stores the mountpoint from mountGetMountpoint)
+	Key * cacheFile = keyDup (parentKey);
+	char * cacheFileName = kdbCacheFileName (ch, cacheFile);
+	ELEKTRA_ASSERT (cacheFileName != 0, "Could not construct cache file name.");
+	ELEKTRA_LOG_DEBUG ("cacheFileName: %s", cacheFileName);
+
+	// load cache from storage
+	keySetString (cacheFile, cacheFileName);
+	elektraFree (cacheFileName);
+	if (ch->cacheStorage->kdbSet (ch->cacheStorage, returned, cacheFile) == ELEKTRA_PLUGIN_STATUS_SUCCESS)
+	{
+		keyDel (cacheFile);
+		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+	}
+
+	keyDel (cacheFile); // TODO: maybe propagate errors?
+	ELEKTRA_ASSERT (0 != 0, "ELEKTRA_PLUGIN_STATUS_ERROR");
+	return ELEKTRA_PLUGIN_STATUS_ERROR;
 }
 
 int elektraCacheError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)

@@ -519,7 +519,7 @@ int kdbClose (KDB * handle, Key * errorKey)
  * @retval 0 no update needed
  * @retval number of plugins which need update
  */
-static int elektraGetCheckUpdateNeeded (Split * split, Key * parentKey, KeySet * global)
+static int elektraGetCheckUpdateNeeded (Split * split, Key * parentKey)
 {
 	int updateNeededOccurred = 0;
 	size_t cacheHits = 0;
@@ -1087,95 +1087,6 @@ static int kdbLoadSplitState (Split * split, KeySet * global)
 	return 0;
 }
 
-#include <sys/stat.h>
-#include <sys/types.h>
-static int elektraMkdirParents (const char * pathname)
-{
-	if (mkdir (pathname, KDB_FILE_MODE | KDB_DIR_MODE) == -1)
-	{
-		if (errno != ENOENT)
-		{
-			// hopeless, give it up
-			return -1;
-		}
-
-		// last part of filename component (basename)
-		char * p = strrchr (pathname, '/');
-
-		/* nothing found */
-		if (p == NULL)
-		{
-			// set any errno, corrected in
-			// elektraAddErrnoText
-			errno = E2BIG;
-			return -1;
-		}
-
-		/* absolute path */
-		if (p == pathname)
-		{
-			// set any errno, corrected in
-			// elektraAddErrnoText
-			errno = EINVAL;
-			return -1;
-		}
-
-		/* Cut path at last /. */
-		*p = 0;
-
-		/* Now call ourselves recursively */
-		if (elektraMkdirParents (pathname) == -1)
-		{
-			// do not yield an error, was already done
-			// before
-			*p = '/';
-			return -1;
-		}
-
-		/* Restore path. */
-		*p = '/';
-
-		if (mkdir (pathname, KDB_FILE_MODE | KDB_DIR_MODE) == -1)
-		{
-			return -1;
-		}
-	}
-
-	return 0;
-}
-
-static char * kdbCacheFileName (KDB * handle, Key * parentKey)
-{
-	char * cacheFileName = 0;
-	const char * name = keyName (mountGetMountpoint (handle, parentKey));
-	const char * value = keyString (mountGetMountpoint (handle, parentKey));
-	ELEKTRA_LOG_DEBUG ("mountpoint name: %s", name);
-	if (strlen (name) != 0)
-	{
-		cacheFileName = elektraStrConcat ("/tmp/elektracache/backend/", name);
-	}
-	else if (strcmp (value, "default") == 0)
-	{
-		// cacheFileName = elektraStrConcat ("/tmp/elektracache/default/", keyName (parentKey));
-		cacheFileName = elektraStrConcat ("/tmp/elektracache/default/", "");
-	}
-	else
-	{
-		ELEKTRA_LOG_DEBUG ("mountpoint empty, invalid cache file name");
-	}
-	// cacheFileName = elektraStrConcat ("/tmp/elektracache/", keyName (parentKey));
-	ELEKTRA_LOG_DEBUG ("cache dir: %s", cacheFileName);
-
-	if (cacheFileName)
-	{
-		elektraMkdirParents (cacheFileName);
-		cacheFileName = elektraStrConcat (cacheFileName, "/cache.mmap");
-		ELEKTRA_LOG_DEBUG ("cache file: %s", cacheFileName);
-	}
-
-	return cacheFileName;
-}
-
 /**
  * @brief Retrieve keys in an atomic and universal way.
  *
@@ -1275,7 +1186,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 
 	int errnosave = errno;
 	Key * initialParent = keyDup (parentKey);
-	Key * cachedParent = keyDup (parentKey);
+	//Key * cachedParent = keyDup (parentKey);
 
 	ELEKTRA_LOG ("now in new kdbGet (%s)", keyName (parentKey));
 
@@ -1300,45 +1211,66 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	}
 
 	KeySet * cache = ksNew (0, KS_END);
-	KeySet * global = ksNew (0, KS_END);
-	Key * cacheFile = 0;
-	char * cacheFileName;
-	if ((cacheFileName = kdbCacheFileName (handle, parentKey)) != 0)
-	{
-		cacheFile = keyNew (cacheFileName, KEY_VALUE, cacheFileName, KEY_END);
-		if (handle->globalPlugins[PREGETCACHE][MAXONCE])
-		{
-			elektraGlobalGet (handle, cache, cacheFile, PREGETCACHE, MAXONCE);
+	// KeySet * global = ksNew (0, KS_END);
+	// Key * cacheFile = 0;
+	// char * cacheFileName;
 
-			if (kdbCacheCheckParent (handle, global, cachedParent) != 0)
-			{
-				// parentKey in cache does not match, needs rebuild
-				ELEKTRA_LOG_DEBUG ("CACHE WRONG PARENTKEY");
-				ksClear (global);
-				goto cachefail;
-			}
-			if (kdbCheckSplitState (split, global) == -1)
-			{
-				ELEKTRA_LOG_DEBUG ("FAIL, have to discard cache because split state / SIZE FAIL");
-				ksClear (global);
-				goto cachefail;
-			}
+	Key * cacheParent = keyDup (mountGetMountpoint (handle, parentKey));
+
+	if (handle->globalPlugins[PREGETCACHE][MAXONCE])
+	{
+		if (elektraGlobalGet (handle, cache, cacheParent, PREGETCACHE, MAXONCE) != ELEKTRA_PLUGIN_STATUS_SUCCESS)
+		{
+			ELEKTRA_LOG_DEBUG ("CACHE MISS: could not fetch cache");
+			goto cachefail;
 		}
 
-		// TODO: remove this debug no-cache stuff
-		// 		ksClear (global);
-		// 		goto cachefail;
-		// TODO: remove this debug no-cache stuff
+		if (kdbCacheCheckParent (handle, handle->global, cacheParent) != 0)
+		{
+			// parentKey in cache does not match, needs rebuild
+			ELEKTRA_LOG_DEBUG ("CACHE WRONG PARENTKEY");
+			ksClear (handle->global); // TODO: only cut out our part of global keyset
+			goto cachefail;
+		}
+		if (kdbCheckSplitState (split, handle->global) == -1)
+		{
+			ELEKTRA_LOG_DEBUG ("FAIL, have to discard cache because split state / SIZE FAIL");
+			ksClear (handle->global); // TODO: only cut out our part of global keyset
+			goto cachefail;
+		}
 	}
+
+//	if ((cacheFileName = kdbCacheFileName (handle, parentKey)) != 0)
+//	{
+//		//cacheFile = keyNew (cacheFileName, KEY_VALUE, cacheFileName, KEY_END);
+//		if (handle->globalPlugins[PREGETCACHE][MAXONCE])
+//		{
+//			elektraGlobalGet (handle, cache, cacheParent, PREGETCACHE, MAXONCE);
+//
+//			if (kdbCacheCheckParent (handle, global, cachedParent) != 0)
+//			{
+//				// parentKey in cache does not match, needs rebuild
+//				ELEKTRA_LOG_DEBUG ("CACHE WRONG PARENTKEY");
+//				ksClear (global);
+//				goto cachefail;
+//			}
+//			if (kdbCheckSplitState (split, global) == -1)
+//			{
+//				ELEKTRA_LOG_DEBUG ("FAIL, have to discard cache because split state / SIZE FAIL");
+//				ksClear (global);
+//				goto cachefail;
+//			}
+//		}
+//	}
 
 cachefail:
 	// Check if a update is needed at all
-	switch (elektraGetCheckUpdateNeeded (split, parentKey, global))
+	switch (elektraGetCheckUpdateNeeded (split, parentKey))
 	{
 	case -2: // We have a cache hit
 		ELEKTRA_LOG_DEBUG ("CACHE HIT 123");
 
-		kdbLoadSplitState (split, global);
+		kdbLoadSplitState (split, handle->global);
 
 		ksRewind (cache);
 		if (ks->size == 0)
@@ -1466,17 +1398,26 @@ cachefail:
 		splitMergeBackends (split, ks);
 	}
 
-	if (cacheFileName != 0)
+	if (handle->globalPlugins[POSTGETCACHE][MAXONCE])
 	{
-		if (handle->globalPlugins[POSTGETCACHE][MAXONCE])
-		{
-			kdbStoreSplitState (handle, split, global, cachedParent);
-			elektraGlobalSet (handle, ks, cacheFile, POSTGETCACHE, MAXONCE);
-			ELEKTRA_LOG_DEBUG (">>>>>>>>>>>>>> PRINT GLOBAL KEYSET");
-			output_keyset (global);
-			ELEKTRA_LOG_DEBUG (">>>>>>>>>>>>>> END GLOBAL KEYSET");
-		}
+		kdbStoreSplitState (handle, split, handle->global, cacheParent);
+		elektraGlobalSet (handle, ks, cacheParent, POSTGETCACHE, MAXONCE);
+		ELEKTRA_LOG_DEBUG (">>>>>>>>>>>>>> PRINT GLOBAL KEYSET");
+		output_keyset (handle->global);
+		ELEKTRA_LOG_DEBUG (">>>>>>>>>>>>>> END GLOBAL KEYSET");
 	}
+
+//	if (cacheFileName != 0)
+//	{
+//		if (handle->globalPlugins[POSTGETCACHE][MAXONCE])
+//		{
+//			kdbStoreSplitState (handle, split, global, cachedParent);
+//			elektraGlobalSet (handle, ks, cacheFile, POSTGETCACHE, MAXONCE);
+//			ELEKTRA_LOG_DEBUG (">>>>>>>>>>>>>> PRINT GLOBAL KEYSET");
+//			output_keyset (global);
+//			ELEKTRA_LOG_DEBUG (">>>>>>>>>>>>>> END GLOBAL KEYSET");
+//		}
+//	}
 	splitMergeDefault (split, ks);
 
 	keySetName (parentKey, keyName (initialParent));
@@ -1893,13 +1834,13 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 	keyDel (initialParent);
 	splitDel (split);
 
-
-	char * cacheFileName;
-	if ((cacheFileName = kdbCacheFileName (handle, parentKey)) != 0)
-	{
-		Key * cacheFile = keyNew (cacheFileName, KEY_VALUE, cacheFileName, KEY_END);
-		unlink (keyName (cacheFile));
-	}
+	// TODO: call cache plugin to unlink file
+//	Key * cacheParent = keyDup (mountGetMountpoint (handle, parentKey));
+//	if ((cacheFileName = kdbCacheFileName (handle, parentKey)) != 0)
+//	{
+//		Key * cacheFile = keyNew (cacheFileName, KEY_VALUE, cacheFileName, KEY_END);
+//		unlink (keyName (cacheFile));
+//	}
 
 	keyDel (oldError);
 	errno = errnosave;
