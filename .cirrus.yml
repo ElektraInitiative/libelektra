@@ -19,7 +19,16 @@ bsd_task:
 
   script:
     - mkdir build && cd build
-    - cmake -GNinja -DPLUGINS=ALL -DBINDINGS=ALL -DTARGET_PLUGIN_FOLDER='' -DCMAKE_SKIP_INSTALL_RPATH=ON ..
+    - > # We use `-std=c11`, since the header `math.h` on FreeBSD requires C11 features
+      cmake
+      -DBINDINGS=ALL
+      -DCMAKE_SKIP_INSTALL_RPATH=ON
+      -DCOMMON_FLAGS=-Werror
+      -DC_STD=-std=c11
+      -DPLUGINS=ALL
+      -DTARGET_PLUGIN_FOLDER=''
+      -GNinja
+      ..
     - ninja
     - output="$(ninja install 2>&1)" || printf '%s' "$output"
 
