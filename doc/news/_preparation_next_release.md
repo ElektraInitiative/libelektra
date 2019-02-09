@@ -120,8 +120,8 @@ and be assured that you can safely set a path value to the key. A more detailed 
 
 ### YAy PEG
 
-The new plugin [YAy PEG](https://www.libelektra.org/plugins/yaypeg) parses a subset of YAML using a parser based on
-[PEGTL](https://github.com/taocpp/PEGTL). *(René Schwaiger)*
+- The new plugin [YAy PEG](https://www.libelektra.org/plugins/yaypeg) parses a subset of YAML using a parser based on
+  [PEGTL](https://github.com/taocpp/PEGTL). *(René Schwaiger)*
 
 ### Ruby
 

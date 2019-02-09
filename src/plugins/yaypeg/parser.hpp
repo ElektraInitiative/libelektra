@@ -162,7 +162,7 @@ struct push_indent
 	static bool match (Input & input, State & state)
 	{
 		long long indent = 0;
-		while (input.peek_char (indent) == ' ')
+		while (!input.empty () && input.peek_char (indent) == ' ')
 		{
 			++indent;
 		}
@@ -559,7 +559,7 @@ struct s_indent
 	{
 		auto indent = state.indentation.back ();
 		decltype (indent) spaces = 0;
-		while (input.peek_char (spaces) == ' ' && spaces < indent)
+		while (!input.empty () && input.peek_char (spaces) == ' ' && spaces < indent)
 		{
 			spaces++;
 		}
