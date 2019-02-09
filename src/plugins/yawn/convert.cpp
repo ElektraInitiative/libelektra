@@ -23,10 +23,6 @@
 #include "listener.hpp"
 #include "walk.hpp"
 
-#ifdef ENABLE_ASAN
-#include <sanitizer/lsan_interface.h>
-#endif
-
 using std::cerr;
 using std::cout;
 using std::endl;
