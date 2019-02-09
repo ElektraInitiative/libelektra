@@ -157,7 +157,7 @@ int handleErrors (int const ambiguousOutput, ErrorListener const & errorListener
 
 	if (errorListener.getNumberOfErrors () > 0)
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_PARSE, error.getKey (), errorListener.getErrorMessage ().c_str ());
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_PARSE, error.getKey (), (filename + ":" + errorListener.getErrorMessage ()).c_str ());
 		return -1;
 	}
 	return 0;

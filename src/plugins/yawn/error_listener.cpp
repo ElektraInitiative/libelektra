@@ -47,8 +47,9 @@ void ErrorListener::syntaxError (int errorTokenNumber, void * errorTokenData, in
 				 void * recoveredTokenData __attribute__ ((unused)))
 {
 	errors++;
-	message = "Syntax error on token number " + to_string (errorTokenNumber) + ": “" +
-		  to_string (**static_cast<unique_ptr<Token> *> (errorTokenData)) + "”\n";
+	auto token = **static_cast<unique_ptr<Token> *> (errorTokenData);
+	message = to_string (token.getStart ().line) + ":" + to_string (token.getStart ().column) + ": Syntax error on token number " +
+		  to_string (errorTokenNumber) + ": “" + to_string (token) + "”\n";
 	if (ignoredToken > 0)
 	{
 		message += "Ignoring " + to_string (recoveredToken - ignoredToken) + " tokens starting with token number " +
