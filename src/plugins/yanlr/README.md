@@ -113,7 +113,7 @@ printf -- '- element 2 # Incorrect Indentation!' >> `kdb file user/tests/yanlr`
 # The plugin reports the location of the error
 kdb ls user/tests/yanlr
 # RET: 5
-# STDERR: .*/config.yaml:2:37: extraneous input 'BLOCK END' expecting {STREAM_END, COMMENT}.*
+# STDERR: .*/config.yaml:2:37: extraneous input 'MAP END' expecting {STREAM_END, COMMENT}.*
 
 # Fix syntax error
 printf -- 'key: - element 1\n'        >  `kdb file user/tests/yanlr`

@@ -13,7 +13,7 @@ scalar : PLAIN_SCALAR
        | DOUBLE_QUOTED_SCALAR
        ;
 
-map : MAPPING_START pairs BLOCK_END ;
+map : MAPPING_START pairs MAP_END ;
 pairs : pair+ ;
 pair : KEY key
        VALUE
@@ -22,7 +22,7 @@ pair : KEY key
      ;
 key : scalar ;
 
-sequence : SEQUENCE_START elements BLOCK_END ;
+sequence : SEQUENCE_START elements SEQUENCE_END ;
 elements : element+ ;
 element : ELEMENT child ;
 

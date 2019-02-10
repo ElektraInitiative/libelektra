@@ -308,7 +308,7 @@ public:
 	/** This token type indicates the start of a mapping. */
 	static const size_t MAPPING_START = 6;
 	/** This token type indicates the end of a block collection. */
-	static const size_t BLOCK_END = 7;
+	static const size_t MAP_END = 7;
 	/** This token type indicates a list element. */
 	static const size_t ELEMENT = 8;
 	/** This token type indicates the start of a sequence. */
@@ -319,6 +319,7 @@ public:
 	static const size_t COMMENT = 11;
 	/** This token type specifies that the token stores a single quoted scalar. */
 	static const size_t SINGLE_QUOTED_SCALAR = 12;
+	static const size_t SEQUENCE_END = 13;
 
 	/**
 	 * @brief This constructor creates a new YAML lexer for the given input.

@@ -376,7 +376,8 @@ void YAMLLexer::addBlockEnd (size_t const lineIndex)
 	{
 		ELEKTRA_LOG_DEBUG ("Add block end");
 		size_t index = input->index ();
-		tokens.push_back (commonToken (BLOCK_END, index, index, "BLOCK END"));
+		tokens.push_back (levels.top ().type == Level::Type::MAP ? commonToken (MAP_END, index, index, "MAP END") :
+									   commonToken (SEQUENCE_END, index, index, "SEQUENCE END"));
 		levels.pop ();
 	}
 }
