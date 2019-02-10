@@ -202,10 +202,10 @@ unique_ptr<CommonToken> YAMLLexer::commonToken (size_t type, size_t start, size_
  */
 bool YAMLLexer::addIndentation (size_t const lineIndex)
 {
-	if (lineIndex > indents.top ())
+	if (lineIndex > levels.top ().indent)
 	{
 		ELEKTRA_LOG_DEBUG ("Add indentation %zu", lineIndex);
-		indents.push (lineIndex);
+		levels.push (Level{ lineIndex });
 		return true;
 	}
 	return false;
@@ -372,12 +372,12 @@ void YAMLLexer::addSimpleKeyCandidate ()
  */
 void YAMLLexer::addBlockEnd (size_t const lineIndex)
 {
-	while (lineIndex < indents.top ())
+	while (lineIndex < levels.top ().indent)
 	{
 		ELEKTRA_LOG_DEBUG ("Add block end");
 		size_t index = input->index ();
 		tokens.push_back (commonToken (BLOCK_END, index, index, "BLOCK END"));
-		indents.pop ();
+		levels.pop ();
 	}
 }
 

@@ -95,7 +95,7 @@ class YAMLLexer : public TokenSource
 	 * This stack stores the indentation (in number of characters) for each
 	 * block collection.
 	 */
-	stack<size_t> indents{ deque<size_t>{ 0 } };
+	stack<Level> levels{ deque<Level>{ Level{ 0 } } };
 
 	/**
 	 * This boolean specifies if the lexer has already scanned the whole input or
