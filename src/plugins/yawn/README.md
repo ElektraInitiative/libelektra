@@ -69,6 +69,35 @@ kdb rm -r user/tests/yawn
 sudo kdb umount user/tests/yawn
 ```
 
+### Error Messages
+
+```sh
+# Mount plugin
+sudo kdb mount config.yaml user/tests/yawn yawn
+
+# Manually add some data
+printf -- ' - Brutus\n' >  `kdb file user/tests/yawn`
+# Add element with incorrect indentation
+printf -- '- Burst'     >> `kdb file user/tests/yawn`
+
+# Try to retrieve data
+kdb ls user/tests/yawn
+# RET: 5
+# STDERR-REGEX: Reason: .*/config.yaml:2:1: Syntax error on token number 5: “<Token, SEQUENCE_START, SEQUENCE START, 2:1–2:1>”
+
+# Fix syntax error
+printf -- ' - Brutus\n' >  `kdb file user/tests/yawn`
+printf -- ' - Burst'    >> `kdb file user/tests/yawn`
+kdb ls user/tests/yawn
+#> user/tests/yawn
+#> user/tests/yawn/#0
+#> user/tests/yawn/#1
+
+# Undo modifications
+kdb rm -r user/tests/yawn
+sudo kdb umount user/tests/yawn
+```
+
 ## Limitations
 
 The plugin has the same limitations as [YAMBi ](../yambi/).
