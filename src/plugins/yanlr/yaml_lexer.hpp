@@ -320,7 +320,7 @@ public:
 	static const size_t DOUBLE_QUOTED_SCALAR = 6;
 	/** This token type indicates the start of a mapping. */
 	static const size_t MAP_START = 7;
-	/** This token type indicates the end of a block collection. */
+	/** This token type indicates the end of a mapping. */
 	static const size_t MAP_END = 8;
 	/** This token type indicates the start of a mapping key. */
 	static const size_t KEY = 9;
@@ -328,6 +328,7 @@ public:
 	static const size_t VALUE = 10;
 	/** This token type indicates the start of a sequence. */
 	static const size_t SEQUENCE_START = 11;
+	/** This token type indicates the end of a sequence. */
 	static const size_t SEQUENCE_END = 12;
 	/** This token type indicates a list element. */
 	static const size_t ELEMENT = 13;
