@@ -30,11 +30,6 @@ if (DEPENDENCY_PHASE)
 		remove_plugin (yanlr "ASAN enabled GCC builds of the plugin report memory leaks")
 	endif (${DISABLE_PLUGIN_ASAN})
 
-	# Disable warnings caused by ANTLR’s source code
-	if (CMAKE_COMPILER_IS_GNUCXX)
-		set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-attributes -Wno-overloaded-virtual -Wno-shadow")
-	endif (CMAKE_COMPILER_IS_GNUCXX)
-
 	set (GRAMMAR_NAME YAML)
 	set (GRAMMAR_FILE ${CMAKE_CURRENT_SOURCE_DIR}/${GRAMMAR_NAME}.g4)
 	set (GENERATED_SOURCE_FILES_NAMES BaseListener Listener)
@@ -79,7 +74,7 @@ add_plugin (yanlr
 	    CPP
 	    ${TEST_ARGUMENTS}
 	    SOURCES ${SOURCE_FILES}
-	    INCLUDE_DIRECTORIES ${ANTLR4CPP_INCLUDE_DIRS}
+	    INCLUDE_SYSTEM_DIRECTORIES ${ANTLR4CPP_INCLUDE_DIRS}
 	    LINK_LIBRARIES ${ANTLR4CPP_LIBRARIES}
 	    LINK_ELEKTRA elektra-ease
 	    INSTALL_TEST_DATA
