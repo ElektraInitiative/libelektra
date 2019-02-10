@@ -44,8 +44,10 @@ void ErrorListener::syntaxError (Recognizer * recognizer __attribute__ ((unused)
 				 std::exception_ptr error __attribute__ ((unused)))
 {
 	using std::to_string;
-
-	errorMessage = source + ":" + to_string (line) + ":" + to_string (charPositionInLine) + ": " + message;
+	if (errorMessage.empty ())
+	{
+		errorMessage = source + ":" + to_string (line) + ":" + to_string (charPositionInLine) + ": " + message;
+	}
 }
 
 /**
