@@ -335,9 +335,9 @@ public:
 	/**
 	 * @brief This constructor creates a new YAML lexer for the given input.
 	 *
-	 * @param input This character stream stores the data this lexer scans.
+	 * @param stream This character stream stores the data this lexer scans.
 	 */
-	YAMLLexer (CharStream * input);
+	YAMLLexer (CharStream * stream);
 
 	/**
 	 * @brief This method retrieves the current (not already emitted) token

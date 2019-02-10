@@ -32,12 +32,12 @@ using antlr4::ParseCancellationException;
 /**
  * @brief This constructor creates a new YAML lexer for the given input.
  *
- * @param input This character stream stores the data this lexer scans.
+ * @param stream This character stream stores the data this lexer scans.
  */
-YAMLLexer::YAMLLexer (CharStream * input)
+YAMLLexer::YAMLLexer (CharStream * stream)
 {
-	this->input = input;
-	this->source = make_pair (this, input);
+	this->input = stream;
+	this->source = make_pair (this, stream);
 	scanStart ();
 }
 
