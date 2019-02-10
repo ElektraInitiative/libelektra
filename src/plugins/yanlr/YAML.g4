@@ -13,7 +13,7 @@ scalar : PLAIN_SCALAR
        | DOUBLE_QUOTED_SCALAR
        ;
 
-map : MAPPING_START pairs MAP_END ;
+map : MAP_START pairs MAP_END ;
 pairs : pair+ ;
 pair : KEY key
        VALUE

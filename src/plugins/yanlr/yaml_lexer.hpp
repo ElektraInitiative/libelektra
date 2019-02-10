@@ -306,7 +306,7 @@ public:
 	/** This token type indicates the start of a mapping value. */
 	static const size_t VALUE = 5;
 	/** This token type indicates the start of a mapping. */
-	static const size_t MAPPING_START = 6;
+	static const size_t MAP_START = 6;
 	/** This token type indicates the end of a block collection. */
 	static const size_t MAP_END = 7;
 	/** This token type indicates a list element. */

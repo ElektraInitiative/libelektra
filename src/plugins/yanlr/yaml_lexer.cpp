@@ -548,7 +548,7 @@ void YAMLLexer::scanValue ()
 	tokens.insert (tokens.begin () + simpleKey.second - tokensEmitted, move (simpleKey.first));
 	if (addIndentation (start, Level::Type::MAP))
 	{
-		tokens.push_front (commonToken (MAPPING_START, start, column, "MAPPING START"));
+		tokens.push_front (commonToken (MAP_START, start, column, "MAP START"));
 	}
 }
 
