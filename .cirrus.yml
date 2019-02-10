@@ -18,7 +18,7 @@ bsd_task:
       yajl
 
   script:
-    - mkdir build && cd build
+    - &create_and_chage_to_build_dir mkdir build && cd build
     - > # We use `-std=c11`, since the header `math.h` on FreeBSD requires C11 features
       cmake
       -DBINDINGS=ALL
@@ -29,14 +29,21 @@ bsd_task:
       -DTARGET_PLUGIN_FOLDER=''
       -GNinja
       ..
-    - ninja
-    - output="$(ninja install 2>&1)" || printf '%s' "$output"
+    - &build ninja
+    - &install output="$(ninja install 2>&1)" || printf '%s' "$output"
 
   tests_script:
     # Work around stalled process plugin and library problems on FreeBSD: https://issues.libelektra.org/2323
     - sudo mount -t fdescfs fdesc /dev/fd
-    - ninja -C build run_all
-    - kdb run_all
+    - &run_tests | # Run tests
+      cd build
+      if [[ "$ENABLE_ASAN" == 'ON' ]]; then
+        ninja run_nocheckshell
+      elif [[ "$BUILD_FULL" == 'ON' ]]; then
+        ninja run_all && kdb-full run_all
+      else
+        ninja run_all && kdb run_all
+      fi
 
 mac_task:
   matrix:
@@ -133,7 +140,7 @@ mac_task:
       export CC=/usr/local/opt/llvm/bin/clang CXX=/usr/local/opt/llvm/bin/clang++
     - SYSTEM_DIR="$PWD/kdbsystem"
     - INSTALL_DIR="$PWD/install"
-    - mkdir build && cd build
+    - *create_and_chage_to_build_dir
     - |
       CMAKE_OPTIONS=(
         -DBINDINGS="${BINDINGS:-ALL}"
@@ -158,20 +165,12 @@ mac_task:
       printf '—— CMake Config ——\n'
       for option in "${CMAKE_OPTIONS[@]}"; do printf '%s\n' "$option"; done
     - cmake ${CMAKE_OPTIONS[@]}
-    - ninja
-    - output="$(ninja install 2>&1)" || printf '%s' "$output"
+    - *build
+    - *install
 
   tests_script:
     - export PATH=$PATH:"$PWD/install/bin"
-    - cd build
-    - | # Run tests
-      if [[ "$ENABLE_ASAN" == 'ON' ]]; then
-        ninja run_nocheckshell
-      elif [[ "$BUILD_FULL" == 'ON' ]]; then
-        ninja run_all && kdb-full run_all
-      else
-        ninja run_all && kdb run_all
-      fi
+    - *run_tests
     - | # Uninstall Elektra
       output="$(ninja uninstall 2>&1)" || printf '%s' "$output"
     - | # Make sure uninstalling removes all files
