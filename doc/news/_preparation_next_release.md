@@ -333,6 +333,9 @@ you up to date with the multi-language support provided by Elektra.
 - The new build job `🍎 FULL` compiles and test Elektra using the CMake options `BUILD_SHARED=OFF` an `BUILD_FULL=ON`. *(René Schwaiger)*
 - We added `🍎 MMap`, which tests Elektra using [`mmapstorage`](https://www.libelektra.org/plugins/mmapstorage) as default storage module.
   *(René Schwaiger)*
+- We install and uninstall Elektra in all of the macOS build jobs to make sure that
+  [`ElektraUninstall.cmake`](https://master.libelektra.org/cmake/ElektraUninstall.cmake) removes all of the installed files.
+  *(René Schwaiger)*
 
 ### Jenkins
 
