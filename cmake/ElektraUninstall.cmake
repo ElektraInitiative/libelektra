@@ -27,7 +27,10 @@ if (PYTHON2INTERP_FOUND)
 	execute_process (COMMAND ${PYTHON2_EXECUTABLE} -c "${PYTHON_GET_MODULES_DIR_COMMAND}"
 			 OUTPUT_VARIABLE PYTHON2_SITE_PACKAGES
 			 OUTPUT_STRIP_TRAILING_WHITESPACE)
-	string (APPEND files "\n${PYTHON2_SITE_PACKAGES}/elektra_gen-${KDB_VERSION}-py2.7.egg-info")
+	string (APPEND
+		files
+		"\n${PYTHON2_SITE_PACKAGES}/elektra_gen-${KDB_VERSION}-py2.7.egg-info"
+		"\n${PYTHON2_SITE_PACKAGES}/__pycache__/kdb.cpython-27.pyc")
 endif (PYTHON2INTERP_FOUND)
 
 find_package (PythonInterp 3 QUIET)
@@ -39,7 +42,8 @@ if (PYTHONINTERP_FOUND)
 			 OUTPUT_STRIP_TRAILING_WHITESPACE)
 	string (APPEND
 		files
-		"\n${PYTHON_SITE_PACKAGES}/elektra_gen-${KDB_VERSION}-py${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}.egg-info")
+		"\n${PYTHON_SITE_PACKAGES}/elektra_gen-${KDB_VERSION}-py${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}.egg-info"
+		"\n${PYTHON_SITE_PACKAGES}/__pycache__/kdb.cpython-${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}.pyc")
 endif (PYTHONINTERP_FOUND)
 
 # =========
