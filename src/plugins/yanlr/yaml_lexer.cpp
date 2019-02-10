@@ -197,6 +197,9 @@ unique_ptr<CommonToken> YAMLLexer::commonToken (size_t type, size_t start, size_
  * @param lineIndex This parameter specifies the indentation value that this
  *                  function compares to the current indentation.
  *
+ * @param type This value specifies the block collection type that
+ *             `lineIndex` might start.
+ *
  * @retval true If the function added an indentation value
  *         false Otherwise
  */

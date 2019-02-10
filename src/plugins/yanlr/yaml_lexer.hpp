@@ -43,18 +43,26 @@ using antlr4::TokenSource;
 
 class YAMLLexer : public TokenSource
 {
+	/** This class stores information about indentation that starts a new block node. */
 	class Level
 	{
 	public:
+		/** This enumeration specifies the type of a block node. */
 		enum class Type
 		{
-			MAP,
-			SEQUENCE,
-			OTHER
+			MAP,      ///< The current indentation starts a block map
+			SEQUENCE, ///< The current indentation starts a block sequence
+			OTHER     ///< The current indentation starts a block scalar
 		};
 		size_t indent = 0;
 		Type type = Level::Type::OTHER;
 
+		/**
+		 * @brief This constructor creates a level object from the given arguments.
+		 *
+		 * @param indentation This number specifies the number of spaces used to start this level object.
+		 * @param levelType This argument specifies the type of node `indentation` created.
+		 */
 		Level (size_t indentation, Level::Type levelType = Level::Type::OTHER) : indent{ indentation }, type{ levelType }
 		{
 		}
@@ -92,8 +100,8 @@ class YAMLLexer : public TokenSource
 	size_t tokensEmitted = 0;
 
 	/**
-	 * This stack stores the indentation (in number of characters) for each
-	 * block collection.
+	 * This stack stores the indentation (in number of characters) and block
+	 * type for each block node.
 	 */
 	stack<Level> levels{ deque<Level>{ Level{ 0 } } };
 
@@ -143,11 +151,14 @@ class YAMLLexer : public TokenSource
 	unique_ptr<CommonToken> commonToken (size_t type, size_t start, size_t stop);
 
 	/**
-	 * @brief This function adds an indentation value if the given value is
-	 * smaller than the current indentation.
+	 * @brief This function adds an indentation value if the given value is smaller
+	 *        than the current indentation.
 	 *
 	 * @param lineIndex This parameter specifies the indentation value that this
 	 *                  function compares to the current indentation.
+	 *
+	 * @param type This value specifies the block collection type that
+	 *             `lineIndex` might start.
 	 *
 	 * @retval true If the function added an indentation value
 	 *         false Otherwise
