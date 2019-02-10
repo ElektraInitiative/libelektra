@@ -286,6 +286,11 @@ you up to date with the multi-language support provided by Elektra.
 
 - The plugin name is now provided as compiler definition `ELEKTRA_PLUGIN_NAME` via CMake.
   See [#1042](https://issues.libelektra.org/1042). *(Peter Nirschl)*
+- We now specify
+  - version number,
+  - project description, and
+  - homepage URL
+  in the CMake [`project`](https://cmake.org/cmake/help/latest/command/project.html) command. *(René Schwaiger)*
 
 #### Find Modules
 
