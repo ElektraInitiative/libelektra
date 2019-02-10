@@ -310,27 +310,27 @@ public:
 	static const size_t STREAM_START = 1;
 	/** This token type ends the YAML stream. */
 	static const size_t STREAM_END = 2;
-	/** This token type specifies that the token stores a plain scalar. */
-	static const size_t PLAIN_SCALAR = 3;
-	/** This token type indicates the start of a mapping key. */
-	static const size_t KEY = 4;
-	/** This token type indicates the start of a mapping value. */
-	static const size_t VALUE = 5;
-	/** This token type indicates the start of a mapping. */
-	static const size_t MAP_START = 6;
-	/** This token type indicates the end of a block collection. */
-	static const size_t MAP_END = 7;
-	/** This token type indicates a list element. */
-	static const size_t ELEMENT = 8;
-	/** This token type indicates the start of a sequence. */
-	static const size_t SEQUENCE_START = 9;
-	/** This token type specifies that the token stores a double quoted scalar. */
-	static const size_t DOUBLE_QUOTED_SCALAR = 10;
 	/** This token type specifies that the token stores a (line) comment. */
-	static const size_t COMMENT = 11;
+	static const size_t COMMENT = 3;
+	/** This token type specifies that the token stores a plain scalar. */
+	static const size_t PLAIN_SCALAR = 4;
 	/** This token type specifies that the token stores a single quoted scalar. */
-	static const size_t SINGLE_QUOTED_SCALAR = 12;
-	static const size_t SEQUENCE_END = 13;
+	static const size_t SINGLE_QUOTED_SCALAR = 5;
+	/** This token type specifies that the token stores a double quoted scalar. */
+	static const size_t DOUBLE_QUOTED_SCALAR = 6;
+	/** This token type indicates the start of a mapping. */
+	static const size_t MAP_START = 7;
+	/** This token type indicates the end of a block collection. */
+	static const size_t MAP_END = 8;
+	/** This token type indicates the start of a mapping key. */
+	static const size_t KEY = 9;
+	/** This token type indicates the start of a mapping value. */
+	static const size_t VALUE = 10;
+	/** This token type indicates the start of a sequence. */
+	static const size_t SEQUENCE_START = 11;
+	static const size_t SEQUENCE_END = 12;
+	/** This token type indicates a list element. */
+	static const size_t ELEMENT = 13;
 
 	/**
 	 * @brief This constructor creates a new YAML lexer for the given input.
