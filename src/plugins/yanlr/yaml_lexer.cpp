@@ -200,12 +200,12 @@ unique_ptr<CommonToken> YAMLLexer::commonToken (size_t type, size_t start, size_
  * @retval true If the function added an indentation value
  *         false Otherwise
  */
-bool YAMLLexer::addIndentation (size_t const lineIndex)
+bool YAMLLexer::addIndentation (size_t const lineIndex, Level::Type type)
 {
 	if (lineIndex > levels.top ().indent)
 	{
 		ELEKTRA_LOG_DEBUG ("Add indentation %zu", lineIndex);
-		levels.push (Level{ lineIndex });
+		levels.push (Level{ lineIndex, type });
 		return true;
 	}
 	return false;
@@ -545,7 +545,7 @@ void YAMLLexer::scanValue ()
 	}
 	size_t start = simpleKey.first->getCharPositionInLine ();
 	tokens.insert (tokens.begin () + simpleKey.second - tokensEmitted, move (simpleKey.first));
-	if (addIndentation (start))
+	if (addIndentation (start, Level::Type::MAP))
 	{
 		tokens.push_front (commonToken (MAPPING_START, start, column, "MAPPING START"));
 	}
@@ -558,7 +558,7 @@ void YAMLLexer::scanValue ()
 void YAMLLexer::scanElement ()
 {
 	ELEKTRA_LOG_DEBUG ("Scan element");
-	if (addIndentation (column))
+	if (addIndentation (column, Level::Type::SEQUENCE))
 	{
 		tokens.push_back (commonToken (SEQUENCE_START, input->index (), column, "SEQUENCE START"));
 	}

@@ -152,7 +152,7 @@ class YAMLLexer : public TokenSource
 	 * @retval true If the function added an indentation value
 	 *         false Otherwise
 	 */
-	bool addIndentation (size_t const column);
+	bool addIndentation (size_t const column, Level::Type type);
 
 	/**
 	 * @brief This function checks if the lexer needs to scan additional tokens.
