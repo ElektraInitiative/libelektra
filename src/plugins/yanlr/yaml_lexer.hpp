@@ -43,6 +43,23 @@ using antlr4::TokenSource;
 
 class YAMLLexer : public TokenSource
 {
+	class Level
+	{
+	public:
+		enum class Type
+		{
+			MAP,
+			SEQUENCE,
+			OTHER
+		};
+		size_t indent = 0;
+		Type type = Level::Type::OTHER;
+
+		Level (size_t indentation, Level::Type levelType = Level::Type::OTHER) : indent{ indentation }, type{ levelType }
+		{
+		}
+	};
+
 	/** This variable stores the input that this lexer scans. */
 	CharStream * input;
 
