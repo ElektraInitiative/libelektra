@@ -85,6 +85,36 @@ kdb rm -r user/tests/yambi
 sudo kdb umount user/tests/yambi
 ```
 
+### Error Messages
+
+```sh
+# Mount plugin
+sudo kdb mount config.yaml user/tests/yambi yambi
+
+# Manually add data containing a syntax error
+printf -- 'Thumper: - Eating greens is a special treat.\n'      >  `kdb file user/tests/yambi`
+printf -- '         - It makes long ears and great big feet.\n' >> `kdb file user/tests/yambi`
+printf -- '- But it sure is awful stuff to eat.'                >> `kdb file user/tests/yambi`
+
+# Try to retrieve data
+kdb get user/tests/yambi/Thumper/#2
+# RET: 5
+# STDERR: .*config.yaml:3:1: syntax error, unexpected ELEMENT, expecting KEY or MAP_END.*
+
+# Fix syntax error
+printf -- 'Thumper: - Eating greens is a special treat.\n'      >  `kdb file user/tests/yambi`
+printf -- '         - It makes long ears and great big feet.\n' >> `kdb file user/tests/yambi`
+printf -- '         - But it sure is awful stuff to eat.'       >> `kdb file user/tests/yambi`
+
+# Retrieve data
+kdb get user/tests/yambi/Thumper/#2
+#> But it sure is awful stuff to eat.
+
+# Undo modifications
+kdb rm -r user/tests/yambi
+sudo kdb umount user/tests/yambi
+```
+
 ## Limitations
 
 The plugin supports the same limited YAML syntax as [Yan LR](../yanlr/).
