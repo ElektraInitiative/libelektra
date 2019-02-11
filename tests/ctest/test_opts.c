@@ -79,6 +79,24 @@ static bool checkValue (KeySet * ks, const char * name, const char * expected)
 	return expected == NULL ? strlen (actual) == 0 : strcmp (actual, expected) == 0;
 }
 
+static bool checkMeta (KeySet * ks, const char * name, const char * meta, const char * expected)
+{
+	Key * key = ksLookupByName (ks, name, 0);
+	if (key == NULL)
+	{
+		return expected == NULL;
+	}
+
+	const Key * metaKey = keyGetMeta (key, meta);
+	if (metaKey == NULL)
+	{
+		return expected == NULL;
+	}
+
+	const char * actual = keyString (metaKey);
+	return expected == NULL ? strlen (actual) == 0 : strcmp (actual, expected) == 0;
+}
+
 static bool checkError (Key * errorKey, const char * expectedNumber, const char * expectedReason)
 {
 	const Key * metaError = keyGetMeta (errorKey, "error");
@@ -106,6 +124,7 @@ static void clearValues (KeySet * ks)
 	while ((cur = ksNext (ks)) != NULL)
 	{
 		keySetString (cur, NULL);
+		keySetMeta (cur, "array", NULL);
 	}
 
 	ksSetCursor (ks, cursor);
@@ -359,21 +378,21 @@ static void test_repeated (void)
 	KeySet * ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple/#", 'a', "apple", "APPLE"), KS_END);
 
 	RUN_TEST (ks, ARGS ("-a", "short0", "-ashort1", "-a", "short2"), NO_ENVP);
-	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "#2"), "short repeated failed (wrong count)");
+	succeed_if (checkMeta (ks, PROC_BASE_KEY "/apple", "array", "#2"), "short repeated failed (wrong count)");
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple/#0", "short0"), "short repeated failed (#0)");
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple/#1", "short1"), "short repeated failed (#1)");
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple/#2", "short2"), "short repeated failed (#2)");
 	clearValues (ks);
 
 	RUN_TEST (ks, ARGS ("--apple", "long0", "--apple=long1", "--apple", "long2"), NO_ENVP);
-	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "#2"), "long repeated failed (wrong count)");
+	succeed_if (checkMeta (ks, PROC_BASE_KEY "/apple", "array", "#2"), "long repeated failed (wrong count)");
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple/#0", "long0"), "long repeated failed (#0)");
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple/#1", "long1"), "long repeated failed (#1)");
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple/#2", "long2"), "long repeated failed (#2)");
 	clearValues (ks);
 
 	RUN_TEST (ks, NO_ARGS, ENVP ("APPLE=env0" ENV_SEP "env1" ENV_SEP "env2"));
-	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "#2"), "env-var repeated failed (wrong count)");
+	succeed_if (checkMeta (ks, PROC_BASE_KEY "/apple", "array", "#2"), "env-var repeated failed (wrong count)");
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple/#0", "env0"), "env-var repeated failed (#0)");
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple/#1", "env1"), "env-var repeated failed (#1)");
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple/#2", "env2"), "env-var repeated failed (#2)");
@@ -444,14 +463,14 @@ static void test_precedence_repeated (void)
 
 	RUN_TEST (ks, ARGS ("--apple=long1", "-a", "short0", "-a", "short1", "--apple", "long0", "--apple", "long2", "-ashort2"),
 		  ENVP ("APPLE=env0" ENV_SEP "env1" ENV_SEP "env2"));
-	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "#2"), "short repeated failed (wrong count), should take precedence");
+	succeed_if (checkMeta (ks, PROC_BASE_KEY "/apple", "array", "#2"), "short repeated failed (wrong count), should take precedence");
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple/#0", "short0"), "short repeated failed (#0), should take precedence");
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple/#1", "short1"), "short repeated failed (#1), should take precedence");
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple/#2", "short2"), "short repeated failed (#2), should take precedence");
 	clearValues (ks);
 
 	RUN_TEST (ks, ARGS ("--apple", "long0", "--apple=long1", "--apple", "long2"), ENVP ("APPLE=env0" ENV_SEP "env1" ENV_SEP "env2"));
-	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "#2"), "long repeated failed (wrong count), should take precedence");
+	succeed_if (checkMeta (ks, PROC_BASE_KEY "/apple", "array", "#2"), "long repeated failed (wrong count), should take precedence");
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple/#0", "long0"), "long repeated failed (#0), should take precedence");
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple/#1", "long1"), "long repeated failed (#1), should take precedence");
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple/#2", "long2"), "long repeated failed (#2), should take precedence");

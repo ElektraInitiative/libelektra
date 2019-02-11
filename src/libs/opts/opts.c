@@ -957,7 +957,6 @@ Key * splitEnvValue (const Key * envKey)
 }
 
 /**
- * @param replace if set to true pre-existing values will be replaced
  * @retval 0 if a proc key was added to ks
  * @retval -1 on pre-existing value, except if key is an array key, or replace == true then 0
  * @retval 1 on NULL pointers and failed insertion
@@ -980,10 +979,14 @@ int addProcKey (KeySet * ks, const Key * key, Key * valueKey)
 
 
 	Key * existing = ksLookupByName (ks, keyName (procKey), 0);
-	if (existing != NULL && strlen (keyString (existing)) > 0)
+	if (existing != NULL)
 	{
-		keyDel (procKey);
-		return -1;
+		const char * value = isArrayKey ? keyGetMetaString (existing, "array") : keyString (existing);
+		if (value != NULL && strlen (value) > 0)
+		{
+			keyDel (procKey);
+			return -1;
+		}
 	}
 
 	if (isArrayKey)
@@ -1010,7 +1013,7 @@ int addProcKey (KeySet * ks, const Key * key, Key * valueKey)
 			ksAppendKey (ks, k);
 		}
 
-		keySetString (procKey, keyBaseName (insertKey));
+		keySetMeta (procKey, "array", keyBaseName (insertKey));
 		keyDel (insertKey);
 		ksDel (values);
 	}
