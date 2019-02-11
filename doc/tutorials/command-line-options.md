@@ -178,5 +178,5 @@ The following keys will be created by `elektraGetOpts` (assuming the specificati
 * `proc/sw/org/erm/#0/current/interactive = "always"`
 * `proc/sw/org/erm/#0/current/recursive = "1"`
 
-You can find a full working example [here](https://www.libelektra.org/examples/cascading). However, it uses a hard coded
+You can find a full working example [here](/examples/opts.c). However, it uses a hard coded
 specification which is a bit harder to read.
