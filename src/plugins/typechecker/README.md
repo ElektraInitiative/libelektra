@@ -181,7 +181,7 @@ obviously cannot be linked together.
 ```sh
 kdb setmeta spec/tests/typechecker/key2 fallback/#1 spec/tests/typechecker/key1
 # RET: 5
-# STDERR-REGEX: .*Could not not deduce:*
+# STDERR: .*Could not deduce:.*
 
 sudo kdb umount spec/tests/typechecker
 ```
