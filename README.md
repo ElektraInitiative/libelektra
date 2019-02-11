@@ -92,15 +92,11 @@ your distribution, see [INSTALL](/doc/INSTALL.md) for available packages and alt
 
 ### Usage
 
-Now that we have Elektra installed, we can start using the [kdb command](/doc/help/kdb.md):
+Now that we have Elektra installed, we can start:
 
-[![asciicast](https://asciinema.org/a/cantr04assr4jkv8v34uz9b8r.png)](https://asciinema.org/a/cantr04assr4jkv8v34uz9b8r)
-
-For import/export/mount formats see [Plugins](src/plugins/).
-For information about elektrified environment variables, see
-[/src/libgetenv/README.md](/src/libs/getenv/README.md).
-
-For people preferring graphical user interfaces, we provide [qt-gui](/src/tools/qt-gui/).
+- using the [kdb command](/doc/help/kdb.md),
+- using [qt-gui](/src/tools/qt-gui/) for people preferring graphical user interfaces, and
+- using [web-ui](/src/tools/web/) for people preferring web user interfaces.
 
 
 ### Documentation
