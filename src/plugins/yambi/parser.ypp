@@ -47,12 +47,12 @@ class Lexer;
 %token <std::string> SINGLE_QUOTED_SCALAR
 %token <std::string> DOUBLE_QUOTED_SCALAR
 %token <std::string> MAP_START
+%token <std::string> MAP_END
 %token <std::string> KEY
 %token <std::string> VALUE
 %token <std::string> SEQUENCE_START
-%token <std::string> ELEMENT
-%token <std::string> MAP_END
 %token <std::string> SEQUENCE_END
+%token <std::string> ELEMENT
 
 %type <std::string> scalar
 

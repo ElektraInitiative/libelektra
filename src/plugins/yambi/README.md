@@ -99,7 +99,7 @@ printf -- '- But it sure is awful stuff to eat.'                >> `kdb file use
 # Try to retrieve data
 kdb get user/tests/yambi/Thumper/#2
 # RET: 5
-# STDERR: .*config.yaml:3:1: syntax error, unexpected ELEMENT, expecting KEY or MAP_END.*
+# STDERR: .*config.yaml:3:1: syntax error, unexpected ELEMENT, expecting MAP_END or KEY.*
 
 # Fix syntax error
 printf -- 'Thumper: - Eating greens is a special treat.\n'      >  `kdb file user/tests/yambi`
