@@ -5,12 +5,13 @@ PLAIN_SCALAR = 3
 KEY = 4
 VALUE = 5
 MAPPING_START = 6
-BLOCK_END = 7
+MAP_END = 7
 ELEMENT = 8
 SEQUENCE_START = 9
 DOUBLE_QUOTED_SCALAR = 10
 COMMENT = 11
-SINGLE_QUOTED_SCALAR = 12;
+SINGLE_QUOTED_SCALAR = 12
+SEQUENCE_END = 13;
 
 yaml : STREAM_START child_comments_empty STREAM_END # 1 ;
 child_comments_empty : child # 0
@@ -35,14 +36,14 @@ scalar : PLAIN_SCALAR         # 0
        | DOUBLE_QUOTED_SCALAR # 0
        ;
 
-map : MAPPING_START pairs BLOCK_END # 1 ;
+map : MAPPING_START pairs MAP_END # 1 ;
 pairs : pair       # 0
       | pairs pair # pairs (0 1)
       ;
 pair : KEY key VALUE child_comments_empty # pair (1 3) ;
 key : scalar # key (0) ;
 
-sequence : SEQUENCE_START elements BLOCK_END # sequence(1) ;
+sequence : SEQUENCE_START elements SEQUENCE_END # sequence(1) ;
 elements : element # 0
          | elements element # elements(0 1) ;
 element : ELEMENT child # element(1) ;

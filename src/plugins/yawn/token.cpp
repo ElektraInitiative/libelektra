@@ -46,8 +46,8 @@ string typeToString (int const type)
 		return "VALUE";
 	case Token::MAPPING_START:
 		return "MAPPING_START";
-	case Token::BLOCK_END:
-		return "BLOCK_END";
+	case Token::MAP_END:
+		return "MAP_END";
 	case Token::ELEMENT:
 		return "ELEMENT";
 	case Token::SEQUENCE_START:
@@ -58,6 +58,8 @@ string typeToString (int const type)
 		return "COMMENT";
 	case Token::SINGLE_QUOTED_SCALAR:
 		return "SINGLE_QUOTED_SCALAR";
+	case Token::SEQUENCE_END:
+		return "SEQUENCE_END";
 	default:
 		break;
 	}
