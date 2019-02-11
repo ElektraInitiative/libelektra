@@ -74,16 +74,16 @@ sudo kdb umount /tests/yamlcpp
 YAML CPP provides basic support for Elektra’s array data type.
 
 ```sh
-# Mount yamlcpp plugin to cascading namespace `/tests/yamlcpp`
-sudo kdb mount config.yaml /tests/yamlcpp yamlcpp
+# Mount yamlcpp plugin to `user/tests/yamlcpp`
+sudo kdb mount config.yaml user/tests/yamlcpp yamlcpp
 
 # Manually add an array to the database
-echo 'sunny:'       >  `kdb file /tests/yamlcpp`
-echo '  - Charlie'  >> `kdb file /tests/yamlcpp`
-echo '  - Dee'      >> `kdb file /tests/yamlcpp`
+echo 'sunny:'       >  `kdb file user/tests/yamlcpp`
+echo '  - Charlie'  >> `kdb file user/tests/yamlcpp`
+echo '  - Dee'      >> `kdb file user/tests/yamlcpp`
 
 # List the array entries
-kdb ls /tests/yamlcpp
+kdb ls user/tests/yamlcpp
 #> user/tests/yamlcpp/sunny
 #> user/tests/yamlcpp/sunny/#0
 #> user/tests/yamlcpp/sunny/#1
@@ -93,7 +93,7 @@ kdb get user/tests/yamlcpp/sunny/#1
 #> Dee
 
 # You can retrieve the last index of an array by reading the metakey `array`
-kdb getmeta /tests/yamlcpp/sunny array
+kdb getmeta user/tests/yamlcpp/sunny array
 # 1
 
 # Extend the array
@@ -126,23 +126,23 @@ kdb export user/tests/yamlcpp/movies yamlcpp
 #> - A Silent Voice
 
 # Undo modifications to the key database
-kdb rm -r /tests/yamlcpp
-sudo kdb umount /tests/yamlcpp
+kdb rm -r user/tests/yamlcpp
+sudo kdb umount user/tests/yamlcpp
 ```
 
 The plugin also supports nested arrays.
 
 ```sh
-# Mount yamlcpp plugin to cascading namespace `/tests/yamlcpp`
-sudo kdb mount config.yaml /tests/yamlcpp yamlcpp
+# Mount yamlcpp plugin to `user/tests/yamlcpp`
+sudo kdb mount config.yaml user/tests/yamlcpp yamlcpp
 
 # Add some key value pairs
-kdb set /tests/yamlcpp/key value
-kdb set /tests/yamlcpp/array/#0 scalar
-kdb set /tests/yamlcpp/array/#1/key value
-kdb set /tests/yamlcpp/array/#1/🔑 🙈
+kdb set user/tests/yamlcpp/key value
+kdb set user/tests/yamlcpp/array/#0 scalar
+kdb set user/tests/yamlcpp/array/#1/key value
+kdb set user/tests/yamlcpp/array/#1/🔑 🙈
 
-kdb ls /tests/yamlcpp
+kdb ls user/tests/yamlcpp
 #> user/tests/yamlcpp/array
 #> user/tests/yamlcpp/array/#0
 #> user/tests/yamlcpp/array/#1/key
@@ -150,18 +150,18 @@ kdb ls /tests/yamlcpp
 #> user/tests/yamlcpp/key
 
 # Retrieve part of an array value
-kdb get /tests/yamlcpp/array/#1/key
+kdb get user/tests/yamlcpp/array/#1/key
 #> value
 
 # Since an array saves a list of values, an array parent
 # - which represent the array - does not store a value!
-echo "/tests/yamlcpp/array: “`kdb get /tests/yamlcpp/array`”"
-#> /tests/yamlcpp/array: “”
+echo "user/tests/yamlcpp/array: “`kdb get user/tests/yamlcpp/array`”"
+#> user/tests/yamlcpp/array: “”
 
 # Remove part of an array value
-kdb rm /tests/yamlcpp/array/#1/key
+kdb rm user/tests/yamlcpp/array/#1/key
 
-kdb ls /tests/yamlcpp
+kdb ls user/tests/yamlcpp
 #> user/tests/yamlcpp/array
 #> user/tests/yamlcpp/array/#0
 #> user/tests/yamlcpp/array/#1/🔑
@@ -173,15 +173,15 @@ kdb ls /tests/yamlcpp
 # we remove `key` before we retrieve the data. This way
 # we make sure that the output below will always look
 # the same.
-kdb rm /tests/yamlcpp/key
-kdb file /tests/yamlcpp | xargs cat
+kdb rm user/tests/yamlcpp/key
+kdb file user/tests/yamlcpp | xargs cat
 #> array:
 #>   - scalar
 #>   - 🔑: 🙈
 
 # Undo modifications to the key database
-kdb rm -r /tests/yamlcpp
-sudo kdb umount /tests/yamlcpp
+kdb rm -r user/tests/yamlcpp
+sudo kdb umount user/tests/yamlcpp
 ```
 
 ## Metadata
@@ -210,7 +210,7 @@ key with metadata:
 . The example below shows how we can read and write metadata using the `yamlcpp` plugin via `kdb`.
 
 ```sh
-# Mount yamlcpp plugin to cascading namespace `/tests/yamlcpp`
+# Mount yamlcpp plugin to `user/tests/yamlcpp`
 sudo kdb mount config.yaml user/tests/yamlcpp yamlcpp
 
 # Manually add a key including metadata to the database
@@ -240,21 +240,21 @@ sudo kdb umount user/tests/yamlcpp
 We can also invoke additional plugins that use metadata like `type`.
 
 ```sh
-sudo kdb mount config.yaml /tests/yamlcpp yamlcpp type
-kdb set /tests/yamlcpp/typetest/number 21
-kdb setmeta /tests/yamlcpp/typetest/number check/type short
+sudo kdb mount config.yaml user/tests/yamlcpp yamlcpp type
+kdb set user/tests/yamlcpp/typetest/number 21
+kdb setmeta user/tests/yamlcpp/typetest/number check/type short
 
-kdb set /tests/yamlcpp/typetest/number "One"
+kdb set user/tests/yamlcpp/typetest/number "One"
 # RET: 5
 # STDERR: .*The type short failed to match for .*/number with string: One.*
 # ERROR: 52
 
-kdb get /tests/yamlcpp/typetest/number
+kdb get user/tests/yamlcpp/typetest/number
 #> 21
 
 # Undo modifications to the key database
-kdb rm -r /tests/yamlcpp
-sudo kdb umount /tests/yamlcpp
+kdb rm -r user/tests/yamlcpp
+sudo kdb umount user/tests/yamlcpp
 ```
 
 ## Binary Data
@@ -262,20 +262,20 @@ sudo kdb umount /tests/yamlcpp
 YAML CPP also supports [base64](https://tools.ietf.org/html/rfc4648) encoded data via the [Base64](../base64) plugin.
 
 ```sh
-# Mount YAML CPP plugin at cascading namespace `/tests/binary`
-sudo kdb mount test.yaml /tests/binary yamlcpp
+# Mount YAML CPP plugin at `user/tests/binary`
+sudo kdb mount test.yaml user/tests/binary yamlcpp
 # Manually add binary data
-echo 'bin: !!binary aGk=' > `kdb file /tests/binary`
+echo 'bin: !!binary aGk=' > `kdb file user/tests/binary`
 
 # Base 64 decodes the data `aGk=` to `hi` and stores the value in binary form.
 # The command `kdb get` prints the data as hexadecimal byte values.
-kdb get /tests/binary/bin
+kdb get user/tests/binary/bin
 #> \x68\x69
 
 # Add a string value to the database
-kdb set /tests/binary/text mate
+kdb set user/tests/binary/text mate
 # Base 64 does not modify textual values
-kdb get /tests/binary/text
+kdb get user/tests/binary/text
 #> mate
 
 # The Base 64 plugin re-encodes binary data before YAML CPP stores the key set. Hence the
@@ -284,8 +284,8 @@ grep -q 'bin: !.* aGk=' `kdb file user/tests/binary`
 # RET: 0
 
 # Undo modifications to the database
-kdb rm -r /tests/binary
-sudo kdb umount /tests/binary
+kdb rm -r user/tests/binary
+sudo kdb umount user/tests/binary
 ```
 
 ## Null & Empty
@@ -293,7 +293,7 @@ sudo kdb umount /tests/binary
 Sometimes you only want to save a key without a value (null key) or a key with an empty value. The commands below show that YAML CPP supports this scenario properly.
 
 ```sh
-# Mount YAML CPP plugin at cascading namespace `user/tests/yamlcpp`
+# Mount YAML CPP plugin at `user/tests/yamlcpp`
 sudo kdb mount test.yaml user/tests/yamlcpp yamlcpp
 
 # Check if the plugin saves null keys correctly
