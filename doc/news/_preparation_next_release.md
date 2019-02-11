@@ -120,7 +120,7 @@ and be assured that you can safely set a path value to the key. A more detailed 
 
 ### YAwn
 
-- The plugin now handles comments at the end of a file properly. *(René Schwaiger)*
+- The [plugin](https://www.libelektra.org/plugins/yawn) now handles comments at the end of a file properly. *(René Schwaiger)*
 - We improved the syntax error messages of the plugin. *(René Schwaiger)*
 - We fixed a memory leak that occurred, if a YAML file contained syntax errors. *(René Schwaiger)*
 
