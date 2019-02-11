@@ -282,6 +282,18 @@ you up to date with the multi-language support provided by Elektra.
 
 ### CMake
 
+#### Misc
+
+- The plugin name is now provided as compiler definition `ELEKTRA_PLUGIN_NAME` via CMake.
+  See [#1042](https://issues.libelektra.org/1042). *(Peter Nirschl)*
+- We now specify
+  - version number,
+  - project description, and
+  - homepage URL
+  in the CMake [`project`](https://cmake.org/cmake/help/latest/command/project.html) command. *(René Schwaiger)*
+
+#### Find Modules
+
 - The CMake find module [`FindAugeas.cmake`](https://master.libelektra.org/cmake/Modules/FindAugeas.cmake) does not print an error
   message anymore, if it is unable to locate Augeas in the `pkg-config` search path. *(René Schwaiger)*
 - The CMake find module [`FindLua.cmake`](https://master.libelektra.org/cmake/Modules/FindLua.cmake) does not print an error message
@@ -289,8 +301,6 @@ you up to date with the multi-language support provided by Elektra.
 - We added code that makes sure you can compile [IO GLIB](https://www.libelektra.org/bindings/io_glib) on macOS, even if `pkg-config`
   erroneously reports that GLIB requires linking to the library `intl` (part of [GNU gettext](https://www.gnu.org/software/gettext)).
   *(René Schwaiger)*
-- The plugin name is now provided as compiler definition `ELEKTRA_PLUGIN_NAME` via CMake.
-  See [#1042](https://issues.libelektra.org/1042). *(Peter Nirschl)*
 - We added a [CMake find module for GLib](https://master.libelektra.org/cmake/Modules/FindGLib.cmake). The module makes sure you can
   compile and link [IO GLib](https://www.libelektra.org/bindings/io_glib) on macOS. *(René Schwaiger)*
 - The CMake find module [`FindLibOpenSSL.cmake`](https://master.libelektra.org/cmake/Modules/FindLibOpenSSL.cmake) does not require
