@@ -7,9 +7,11 @@
  */
 
 #include "elektragen.hpp"
+#include <command.hpp>
 #include <kdbtypes.h>
 
 const char * ElektraGenTemplate::Params::InitFunctionName = "initFn";
+const char * ElektraGenTemplate::Params::TagPrefix = "tagPrefix";
 
 static inline const std::unordered_set<std::string> getAllowedTypes ()
 {
@@ -48,26 +50,10 @@ static inline std::string getType (const kdb::Key & key)
 	return key.getMeta<std::string> ("type");
 }
 
-static std::string getTagName (const kdb::Key & key)
+static std::string getTagName (const kdb::Key & key, const std::string & parentKey, const std::string & prefix)
 {
 	auto name = key.getName ();
-	if (name[0] == '/')
-	{
-		name.erase (0, 1);
-	}
-	else if (name.rfind ("system/", 0) == 0)
-	{
-		name.erase (0, sizeof ("system/") - 1);
-	}
-	else if (name.rfind ("user/", 0) == 0)
-	{
-		name.erase (0, sizeof ("system/") - 1);
-	}
-	else
-	{
-		throw std::runtime_error ("invalid key name"); // TODO
-	}
-
+	name.erase (0, parentKey.length () + 1);
 
 	if (name[name.length () - 1] == '#')
 	{
@@ -82,7 +68,7 @@ static std::string getTagName (const kdb::Key & key)
 	std::replace (name.begin (), name.end (), '/', '_');
 	name.erase (std::remove (name.begin (), name.end (), '#'), name.end ());
 
-	return name;
+	return prefix + name;
 }
 
 static std::string snakeCaseToCamelCase (const std::string & s)
@@ -151,9 +137,9 @@ static kainjow::mustache::list getEnumValues (const std::string & prefix, const 
 	return values;
 }
 
-static inline std::string getEnumType (const kdb::Key & key)
+static inline std::string getEnumType (const kdb::Key & key, const std::string & tagName)
 {
-	return key.hasMeta ("gen/enum/type") ? key.getMeta<std::string> ("gen/enum/type") : snakeCaseToCamelCase (getTagName (key));
+	return key.hasMeta ("gen/enum/type") ? key.getMeta<std::string> ("gen/enum/type") : snakeCaseToCamelCase (tagName);
 }
 
 static inline bool shouldGenerateTypeDef (const kdb::Key & key)
@@ -164,7 +150,12 @@ static inline bool shouldGenerateTypeDef (const kdb::Key & key)
 kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string & outputName, const kdb::KeySet & ks,
 							     const std::string & parentKey) const
 {
-	// TODO: duplicate gen/enum/type
+	// TODO: duplicate gen/enum/type, enforce default
+
+	if (parentKey[0] != '/')
+	{
+		throw CommandAbortException ("parentKey has to be cascading");
+	}
 
 	using namespace kainjow::mustache;
 
@@ -180,9 +171,11 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 	auto enums = list{};
 	auto keys = list{};
 
+	auto specParent = kdb::Key ("spec" + parentKey, KEY_END);
+
 	for (const kdb::Key & key : ks)
 	{
-		if (!hasType (key))
+		if (!key.isSpec () || !key.isBelow (specParent) || !hasType (key))
 		{
 			continue;
 		}
@@ -195,19 +188,24 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 			throw std::runtime_error ("illegal type"); // TODO
 		}
 
-		auto tagName = snakeCaseToMacroCase (getTagName (key));
-		object keyObject = { { "name", key.getName () }, { "tag_name", tagName }, { "type_name", snakeCaseToCamelCase (type) } };
+		auto name = key.getName ();
+		name.erase (0, sizeof ("spec") - 1);
+
+		auto tagName = getTagName (key, specParent.getName (), getParameter (Params::TagPrefix));
+		object keyObject = { { "name", name },
+				     { "tag_name", snakeCaseToMacroCase (tagName) },
+				     { "type_name", snakeCaseToCamelCase (type) } };
 
 		if (type == "enum")
 		{
-			auto typeName = "Enum" + getEnumType (key);
+			auto typeName = "Enum" + getEnumType (key, tagName);
 			auto values = getEnumValues (camelCaseToMacroCase ("Elektra" + typeName), key);
 			auto generateTypeDef = shouldGenerateTypeDef (key);
 
 			keyObject["type_name"] = typeName;
 
-			enums.emplace_back (object{ { "name", key.getName () },
-						    { "tag_name", tagName },
+			enums.emplace_back (object{ { "name", name },
+						    { "tag_name", snakeCaseToMacroCase (tagName) },
 						    { "type_name", typeName },
 						    { "native_type", "Elektra" + typeName },
 						    { "generate_typedef", generateTypeDef },
