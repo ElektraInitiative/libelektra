@@ -47,9 +47,9 @@ static KeySet * createSpec (void)
 			"corresponding line argument",
 			KEY_META, "opt/arg", "none", KEY_META, "opt/long", "one-file-system", KEY_END),
 		keyNew (SPEC_BASE_KEY "/verbose", KEY_META, "description", "explain what is being done", KEY_META, "opt", "v", KEY_META,
-			"opt/arg", "none", KEY_META, "opt/long", "verbose", KEY_END),
+			"opt/arg", "none", KEY_META, "opt/long", "verbose", KEY_META, "env", "VERBOSE", KEY_END),
 		keyNew (SPEC_BASE_KEY "/files/#", KEY_META, "description", "the files that shall be deleted", KEY_META, "args", "remaining",
-			KEY_END),
+			KEY_META, "env", "FILES", KEY_END),
 		KS_END);
 }
 

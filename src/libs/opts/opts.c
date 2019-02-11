@@ -833,7 +833,21 @@ int writeEnvVarValues (KeySet * ks, Key * keyWithOpt, KeySet * envValues, Key * 
 	while ((envMeta = ksNext (envMetas)) != NULL)
 	{
 		Key * envKey = ksLookupByName (envValues, keyString (envMeta), 0);
-		Key * envValueKey = splitEnvValue (envKey);
+
+		bool isArray = strcmp (keyBaseName (keyWithOpt), "#") == 0;
+		Key * envValueKey;
+		if (envKey == NULL)
+		{
+			envValueKey = NULL;
+		}
+		else if (isArray)
+		{
+			envValueKey = splitEnvValue (envKey);
+		}
+		else
+		{
+			envValueKey = keyNew (keyName (envKey), KEY_VALUE, keyString (envKey), KEY_END);
+		}
 
 		int res = addProcKey (ks, keyWithOpt, envValueKey);
 		if (res < 0)
@@ -898,11 +912,6 @@ void writeArgsValues (KeySet * ks, Key * keyWithOpt, KeySet * args)
  */
 Key * splitEnvValue (const Key * envKey)
 {
-	if (envKey == NULL)
-	{
-		return NULL;
-	}
-
 	Key * valueKey = keyNew (keyName (envKey), KEY_END);
 
 	char * envValue = elektraStrDup (keyString (envKey));
@@ -911,12 +920,10 @@ Key * splitEnvValue (const Key * envKey)
 	char * c = strchr (curEnvValue, SEP_ENV_VALUE);
 	if (c == NULL)
 	{
-		keySetString (valueKey, curEnvValue);
+		elektraMetaArrayAdd (valueKey, "values", curEnvValue);
 	}
 	else
 	{
-		keySetString (valueKey, NULL);
-
 		char * lastEnvValue = curEnvValue;
 		while (c != NULL)
 		{

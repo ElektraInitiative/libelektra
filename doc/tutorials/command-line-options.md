@@ -154,6 +154,7 @@ description = remove empty directories
 opt = v
 opt/long = verbose
 opt/arg = none
+env = VERBOSE
 description = explain what is being done
 
 [showversion]
@@ -163,20 +164,24 @@ description = output version information and exit
 
 [files/#]
 args = remaining
+env = FILES
 description = the files that shall be deleted
  ```
 
 If this specification is used in a program called `erm` (for Elektra rm), which is called like this:
 
 ```
-erm -fi --recursive
+FILES="one.txt:other.log" VERBOSE=1 erm -fi --recursive
 ```
 
-The following keys will be created by `elektraGetOpts` (assuming the specification is mounted at `spec/sw/org/erm/#0/current`:
+The following keys will be created by `elektraGetOpts` (assuming the specification is mounted at `spec/sw/org/erm/#0/current`):
 
 * `proc/sw/org/erm/#0/current/force = "1"`
 * `proc/sw/org/erm/#0/current/interactive = "always"`
 * `proc/sw/org/erm/#0/current/recursive = "1"`
+* `proc/sw/org/erm/#0/current/verbose = "1"`
+* `proc/sw/org/erm/#0/current/files/#0 = "one.txt"`
+* `proc/sw/org/erm/#0/current/files/#1 = "other.log"`
 
 You can find a full working example [here](/examples/opts.c). However, it uses a hard coded
 specification which is a bit harder to read.
