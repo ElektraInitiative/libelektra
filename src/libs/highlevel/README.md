@@ -49,8 +49,6 @@ kdb setmeta /sw/org/myapp/#0/current/myint type long
 kdb setmeta /sw/org/myapp/#0/current/myint default 5
 ```
 
-TODO: Running application does not work?
-
 The getter and setter functions follow the simple naming scheme `elektra`(`Get`/`Set`)[Type]. Additionally for each one there is a
 variant to access array elements with the suffix `ArrayElement`. For more information see [below](#reading-and-writing-values).
 
@@ -172,26 +170,26 @@ _must not_ return to the calling function.
 
 ## Data Types
 
-The API supports the following types, which are taken from the CORBA specification:
+The API determines the data type of a given key, by reading its `type` metadata. The API supports the following types, 
+which are taken from the CORBA specification:
 
-- **String**: a string of characters, represented by `KDB_TYPE_STRING` in metadata
-
-TODO: please add better explanation, as started in PR #2377
-
-- **Boolean**: a boolean value `true` or `false`, represented by `KDB_TYPE_BOOLEAN` in metadata, in the KDB the raw value `"1"` is
-  regarded, as true, any other value is considered false
-- **Char**: a single character, represented by `KDB_TYPE_CHAR` in metadata
-- **Octet**: a single byte, represented by `KDB_TYPE_OCTET` in metadata
-- **(Unsigned) Short**: a 16-bit (unsigned) integer, represented by `KDB_TYPE_SHORT` (`KDB_TYPE_UNSIGNED_SHORT`) in metadata
-- **(Unsigned) Long**: a 32-bit (unsigned) integer, represented by `KDB_TYPE_LONG` (`KDB_TYPE_UNSIGNED_LONG`) in metadata
-- **(Unsigned) Long Long**: a 64-bit (unsigned) integer, represented by `KDB_TYPE_LONG_LONG` (`KDB_TYPE_UNSIGNED_LONG_LONG`) in metadata
-- **Float**: whatever your compiler treats as `float`, probably IEEE-754 single-precision, represented by `KDB_TYPE_FLOAT` in metadata
-- **Double**: whatever your compiler treats as `double`, probably IEEE-754 double-precision, represented by `KDB_TYPE_DOUBLE` in metadata
-- **Long Double**: whatever your compiler treats as `long double`, not always available, represented by `KDB_TYPE_LONG_DOUBLE` in metadata
+* **String**: a string of characters, represented by `string` in metadata
+* **Boolean**: a boolean value `true` or `false`, represented by `boolean` in metadata, in the KDB the raw value `"1"` is
+               regarded, as true, any other value is considered false
+* **Char**: a single character, represented by `char` in metadata
+* **Octet**: a single byte, represented by `octet` in metadata
+* **(Unsigned) Short**: a 16-bit (unsigned) integer, represented by `short` (`unsigned_short`) in metadata
+* **(Unsigned) Long**: a 32-bit (unsigned) integer, represented by `long` (`unsigned_long`) in metadata
+* **(Unsigned) Long Long**: a 64-bit (unsigned) integer, represented by `long_long` (`unsigned_long_long`) in metadata
+* **Float**: whatever your compiler treats as `float`, probably IEEE-754 single-precision, represented by `float` in metadata
+* **Double**: whatever your compiler treats as `double`, probably IEEE-754 double-precision, represented by `double` in metadata
+* **Long Double**: whatever your compiler treats as `long double`, not always available, represented by `long_double` in metadata
 
 The API contains one header that is not automatically included from `elektra.h`. You can use it with `#include <elektra/conversion.h>`.
 The header provides the functions Elektra uses to convert your configuration values to and from strings. In most cases, you won't need
-to use these functions directly, but they might still be useful sometimes (e.g. in combination with `elektraGetType` and `elektraGetRawString`).
+to use these functions directly, but they might still be useful sometimes (e.g. in combination with `elektraGetType` and
+`elektraGetRawString`). We also provide a `KDB_TPYE_*` constant for each of the types listed above. Again, most users won't use these
+but, if you ever do need to use the raw type metadata using constants enables code completion and protects against typos.
 
 <a name="reading-and-writing-values"></a>
 
@@ -311,9 +309,9 @@ You can use `const char * elektraGetRawString (Elektra * elektra, const char * n
 or type conversion will be attempted. Additionally this function does not call the fatal error handler. It will simply return `NULL`, if the
 key was not found.
 
-If you want to set a raw value (e.g. if you want to extend the API with your own custom types), use
-`void elektraSetRawString (Elektra * elektra, const char * name, const char * value, KDBType type, ElektraError ** error)`. Obviously you have
-to provide a type for the value you set, so that the API can perform type checking, when reading the value next time.
+If you want to set a raw value, use 
+`void elektraSetRawString (Elektra * elektra, const char * name, const char * value, KDBType type, ElektraError ** error)`.
+Obviously you have to provide a type for the value you set, so that the API can perform type checking, when reading the value next time.
 
 Similar functions are provided for array elements:
 
@@ -329,7 +327,33 @@ The type information is stored in the `"type"` metakey. `KDBType elektraGetType 
 `KDBType elektraGetArrayElementType (Elektra * elektra, const char * name, kdb_long_long_t index)` for array elements) lets you access this
 information. A setter is not provided, because Elektra assumes keys to always have the same type (as specified).
 
-TODO: is this needed? Remove feature for the release?
+#### Use cases for raw values
+
+`elektraGetType`, `elektraGetRawString` and `elektraSetRawString` can be used together to create custom data types. If your application for
+example uses arbitrary-precision integers, you could something similar to these functions:
+
+```c
+bignum * elektraGetBigNum (Elektra * elektra, const char * keyname)
+{
+  KDBType type = elektraGetType (elektra, keyname);
+  if (strcmp (type, "bignum") != 0)
+  {
+    return NULL;
+  }
+  
+  const char * rawValue = elektraGetRawString (elektra, keyname);
+  return rawValue == NULL ? NULL : stringToBigNum (rawValue);
+}
+
+void elektraSetBigNum (Elektra * elektra, const char * keyname, bignum * value, ElektraError ** error)
+{
+  const char * rawValue = bigNumToString (value);
+  elektraSetRawString (elektra, keyname, rawValue, "bignum", error);
+}
+```
+
+The `type` plugin used to validate the key values when `kdb set` is used, however, doesn't support custom types, so you will need to disable
+it or provide your own version that can deal with your custom types.
 
 ### Binary Values
 
