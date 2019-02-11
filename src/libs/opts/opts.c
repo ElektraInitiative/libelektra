@@ -73,7 +73,7 @@ static bool processEnvVars (KeySet * usedEnvVars, Key * specKey, Key ** keyWithO
 
 static int writeOptionValues (KeySet * ks, Key * keyWithOpt, KeySet * options, Key * errorKey);
 static int writeEnvVarValues (KeySet * ks, Key * keyWithOpt, KeySet * envValues, Key * errorKey);
-static void writeArgsValues (KeySet * ks, Key * keyWithOpt, KeySet * args);
+static int writeArgsValues (KeySet * ks, Key * keyWithOpt, KeySet * args);
 
 static bool parseLongOption (KeySet * optionsSpec, KeySet * options, int argc, const char ** argv, int * index, Key * errorKey);
 static bool parseShortOptions (KeySet * optionsSpec, KeySet * options, int argc, const char ** argv, int * index, Key * errorKey);
@@ -189,7 +189,7 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 			continue;
 		}
 
-		result = writeEnvVarValues (ks, keyWithOpt, envValues, parentKey);
+		result = writeArgsValues (ks, keyWithOpt, args);
 		if (result < 0)
 		{
 			ksDel (envValues);
@@ -204,7 +204,16 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 			continue;
 		}
 
-		writeArgsValues (ks, keyWithOpt, args);
+		result = writeEnvVarValues (ks, keyWithOpt, envValues, parentKey);
+		if (result < 0)
+		{
+			ksDel (envValues);
+			ksDel (options);
+			ksDel (spec.keys);
+			ksDel (args);
+			ksSetCursor (ks, initial);
+			return -1;
+		}
 	}
 
 	ksDel (envValues);
@@ -874,13 +883,16 @@ int writeEnvVarValues (KeySet * ks, Key * keyWithOpt, KeySet * envValues, Key * 
 /**
  * Add keys to the proc namespace in @p ks for everything that is specified
  * by the 'args' metadata on @p keyWithOpt. The args are taken from @p args.
+ * @retval -1 in case of error
+ * @retval 0 if no key was added
+ * @retval 1 if keys were added to @p ks
  */
-void writeArgsValues (KeySet * ks, Key * keyWithOpt, KeySet * args)
+int writeArgsValues (KeySet * ks, Key * keyWithOpt, KeySet * args)
 {
 	const char * argsMeta = keyGetMetaString (keyWithOpt, "args");
 	if (argsMeta == NULL || elektraStrCmp (argsMeta, "remaining") != 0)
 	{
-		return;
+		return 0;
 	}
 
 	Key * procKey = keyNew ("proc", KEY_END);
@@ -903,6 +915,7 @@ void writeArgsValues (KeySet * ks, Key * keyWithOpt, KeySet * args)
 	keySetString (procKey, keyBaseName (insertKey));
 	ksAppendKey (ks, procKey);
 	keyDel (insertKey);
+	return 1;
 }
 
 /**

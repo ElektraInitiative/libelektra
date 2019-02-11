@@ -183,5 +183,10 @@ The following keys will be created by `elektraGetOpts` (assuming the specificati
 * `proc/sw/org/erm/#0/current/files/#0 = "one.txt"`
 * `proc/sw/org/erm/#0/current/files/#1 = "other.log"`
 
+Calling `FILES="abcd.txt" erm 123.txt 456.txt` meanwhile will result in:
+
+* `proc/sw/org/erm/#0/current/files/#0 = "123.txt"`
+* `proc/sw/org/erm/#0/current/files/#1 = "456.txt"`
+
 You can find a full working example [here](/examples/opts.c). However, it uses a hard coded
 specification which is a bit harder to read.
