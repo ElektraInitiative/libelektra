@@ -405,7 +405,7 @@ void Lexer::scanValue ()
 	if (addIndentation (start.column, Level::Type::MAP))
 	{
 		location.begin = start;
-		tokens.insert (tokens.begin () + offset, Symbol (token::TOKEN_MAPPING_START, location, "MAPPING START"));
+		tokens.insert (tokens.begin () + offset, Symbol (token::TOKEN_MAP_START, location, "MAPPING START"));
 	}
 }
 
