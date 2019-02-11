@@ -46,8 +46,8 @@ string typeToString (int const type)
 		return "SINGLE_QUOTED_SCALAR";
 	case Token::DOUBLE_QUOTED_SCALAR:
 		return "DOUBLE_QUOTED_SCALAR";
-	case Token::MAPPING_START:
-		return "MAPPING_START";
+	case Token::MAP_START:
+		return "MAP_START";
 	case Token::MAP_END:
 		return "MAP_END";
 	case Token::KEY:

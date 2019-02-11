@@ -5,7 +5,7 @@ COMMENT = 3
 PLAIN_SCALAR = 4
 SINGLE_QUOTED_SCALAR = 5
 DOUBLE_QUOTED_SCALAR = 6
-MAPPING_START = 7
+MAP_START = 7
 MAP_END = 8
 KEY = 9
 VALUE = 10
@@ -36,7 +36,7 @@ scalar : PLAIN_SCALAR         # 0
        | DOUBLE_QUOTED_SCALAR # 0
        ;
 
-map : MAPPING_START pairs MAP_END # 1 ;
+map : MAP_START pairs MAP_END # 1 ;
 pairs : pair       # 0
       | pairs pair # pairs (0 1)
       ;
