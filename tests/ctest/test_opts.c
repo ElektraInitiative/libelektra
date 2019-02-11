@@ -532,22 +532,6 @@ static void test_illegal_spec (void)
 	ksDel (ks);
 
 	// ---
-	// duplicate env-var
-	// ---
-
-	ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple", 0, NULL, "APPLE"), keyWithOpt (SPEC_BASE_KEY "/banana", 0, NULL, "APPLE"),
-		    KS_END);
-
-	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
-	succeed_if (checkError (errorKey, xstr (ELEKTRA_ERROR_OPTS_ILLEGAL_SPEC),
-				"The environment variable 'APPLE' has already been specified for the key '" SPEC_BASE_KEY
-				"/apple'. Additional key: " SPEC_BASE_KEY "/banana"),
-		    "duplicate env-var should be illegal");
-	clearValues (ks);
-
-	ksDel (ks);
-
-	// ---
 	// args remaining not array
 	// ---
 

@@ -713,7 +713,7 @@ bool processLongOptSpec (struct Specification * spec, struct OptionData * option
  * @retval true on success
  * @retval false on error
  */
-bool processEnvVars (KeySet * usedEnvVars, Key * specKey, Key ** keyWithOpt, Key * errorKey)
+bool processEnvVars (KeySet * usedEnvVars, Key * specKey, Key ** keyWithOpt, Key * errorKey ELEKTRA_UNUSED)
 {
 	KeySet * envVars = ksMetaGetSingleOrArray (specKey, "env");
 	if (envVars == NULL)
@@ -734,19 +734,6 @@ bool processEnvVars (KeySet * usedEnvVars, Key * specKey, Key ** keyWithOpt, Key
 
 		Key * envVarKey = keyNew ("/", KEY_META, "key", keyName (specKey), KEY_END);
 		keyAddBaseName (envVarKey, envVar);
-
-		Key * existing = ksLookupByName (usedEnvVars, keyName (envVarKey), 0);
-		if (existing != NULL)
-		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_OPTS_ILLEGAL_SPEC, errorKey,
-					    "The environment variable '%s' has already been specified for the key "
-					    "'%s'. Additional key: %s",
-					    envVar, keyGetMetaString (existing, "key"), keyName (specKey));
-			keyDel (envVarKey);
-			keyDel (existing);
-			ksDel (envVars);
-			return false;
-		}
 
 		ksAppendKey (usedEnvVars, envVarKey);
 
