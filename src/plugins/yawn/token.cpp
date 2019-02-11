@@ -38,28 +38,28 @@ string typeToString (int const type)
 		return "STREAM_START";
 	case Token::STREAM_END:
 		return "STREAM_END";
+	case Token::COMMENT:
+		return "COMMENT";
 	case Token::PLAIN_SCALAR:
 		return "PLAIN_SCALAR";
-	case Token::KEY:
-		return "KEY";
-	case Token::VALUE:
-		return "VALUE";
+	case Token::SINGLE_QUOTED_SCALAR:
+		return "SINGLE_QUOTED_SCALAR";
+	case Token::DOUBLE_QUOTED_SCALAR:
+		return "DOUBLE_QUOTED_SCALAR";
 	case Token::MAPPING_START:
 		return "MAPPING_START";
 	case Token::MAP_END:
 		return "MAP_END";
-	case Token::ELEMENT:
-		return "ELEMENT";
+	case Token::KEY:
+		return "KEY";
+	case Token::VALUE:
+		return "VALUE";
 	case Token::SEQUENCE_START:
 		return "SEQUENCE_START";
-	case Token::DOUBLE_QUOTED_SCALAR:
-		return "DOUBLE_QUOTED_SCALAR";
-	case Token::COMMENT:
-		return "COMMENT";
-	case Token::SINGLE_QUOTED_SCALAR:
-		return "SINGLE_QUOTED_SCALAR";
 	case Token::SEQUENCE_END:
 		return "SEQUENCE_END";
+	case Token::ELEMENT:
+		return "ELEMENT";
 	default:
 		break;
 	}
