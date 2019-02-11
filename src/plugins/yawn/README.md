@@ -83,7 +83,7 @@ printf -- '- Burst'     >> `kdb file user/tests/yawn`
 # Try to retrieve data
 kdb ls user/tests/yawn
 # RET: 5
-# STDERR-REGEX: Reason: .*/config.yaml:2:1: Syntax error on token number 5: “<Token, SEQUENCE_START, SEQUENCE START, 2:1–2:1>”
+# STDERR: .*/config.yaml:2:1: Syntax error on token number 5: “<Token, SEQUENCE_START, SEQUENCE START, 2:1–2:1>”.*
 
 # Fix syntax error
 printf -- ' - Brutus\n' >  `kdb file user/tests/yawn`
