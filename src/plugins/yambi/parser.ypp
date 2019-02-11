@@ -51,7 +51,8 @@ class Lexer;
 %token <std::string> VALUE
 %token <std::string> SEQUENCE_START
 %token <std::string> ELEMENT
-%token <std::string> BLOCK_END
+%token <std::string> MAP_END
+%token <std::string> SEQUENCE_END
 
 %type <std::string> scalar
 
@@ -83,7 +84,7 @@ scalar : PLAIN_SCALAR { $$ = $1; }
        | DOUBLE_QUOTED_SCALAR { $$ = $1; }
        ;
 
-map : MAPPING_START pairs BLOCK_END ;
+map : MAPPING_START pairs MAP_END ;
 pairs : pair
       | pairs pair
       ;
@@ -91,7 +92,7 @@ pair : KEY key VALUE child_comments_empty { driver.exitPair($4); };
 key : scalar { driver.exitKey($1); } ;
 
 sequence : { driver.enterSequence(); }
-           SEQUENCE_START elements BLOCK_END
+           SEQUENCE_START elements SEQUENCE_END
            { driver.exitSequence(); }
            ;
 elements : element
