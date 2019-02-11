@@ -192,7 +192,7 @@ void elektraSetRawStringArrayElement (Elektra * elektra, const char * name, kdb_
 	const Key * key = elektraFindArrayElementKey (elektra, keyname, index, KDB_TYPE);                                                  \
 	if (key == NULL || !KEY_TO_VALUE (key, &result))                                                                                   \
 	{                                                                                                                                  \
-		elektraFatalError (elektra, elektraErrorConversionFromString (KDB_TYPE, keyString (key)));                                 \
+		elektraFatalError (elektra, elektraErrorConversionFromString (KDB_TYPE, keyname, keyString (key)));                        \
 		return 0;                                                                                                                  \
 	}
 
@@ -415,7 +415,7 @@ int elektraGetEnumIntArrayElement (Elektra * elektra, const char * keyname, kdb_
 	char * string = VALUE_TO_STRING (value);                                                                                           \
 	if (string == 0)                                                                                                                   \
 	{                                                                                                                                  \
-		*error = elektraErrorConversionToString (KDB_TYPE);                                                                        \
+		*error = elektraErrorConversionToString (KDB_TYPE, keyname);                                                               \
 		return;                                                                                                                    \
 	}                                                                                                                                  \
 	elektraSetRawStringArrayElement (elektra, keyname, index, string, KDB_TYPE, error);                                                \

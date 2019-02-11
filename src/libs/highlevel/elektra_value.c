@@ -116,7 +116,7 @@ void elektraSetRawString (Elektra * elektra, const char * name, const char * val
 	const Key * key = elektraFindKey (elektra, keyname, KDB_TYPE);                                                                     \
 	if (key == NULL || !KEY_TO_VALUE (key, &result))                                                                                   \
 	{                                                                                                                                  \
-		elektraFatalError (elektra, elektraErrorConversionFromString (KDB_TYPE, keyString (key)));                                 \
+		elektraFatalError (elektra, elektraErrorConversionFromString (KDB_TYPE, keyname, keyString (key)));                        \
 		result = 0;                                                                                                                \
 	}
 
@@ -325,7 +325,7 @@ int elektraGetEnumInt (Elektra * elektra, const char * keyname)
 	char * string = VALUE_TO_STRING (value);                                                                                           \
 	if (string == 0)                                                                                                                   \
 	{                                                                                                                                  \
-		*error = elektraErrorConversionToString (KDB_TYPE);                                                                        \
+		*error = elektraErrorConversionToString (KDB_TYPE, keyname);                                                               \
 		return;                                                                                                                    \
 	}                                                                                                                                  \
 	elektraSetRawString (elektra, keyname, string, KDB_TYPE, error);                                                                   \
