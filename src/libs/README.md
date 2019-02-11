@@ -80,7 +80,7 @@ such must always fit to the exact same version.
     libelektra-meta.so
 
 **[libmeta](meta/meta.c)** contains metadata operations as described in **[METADATA.ini](/doc/METADATA.ini)**.
-Currently mainly contains legacy code and some generic meta data operations.
+Currently mainly contains legacy code and some generic metadata operations.
 
 ### Libelektra
 
