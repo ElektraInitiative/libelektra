@@ -16,10 +16,12 @@ class ElektraGenTemplate : public GenTemplate
 	struct Params
 	{
 		static const char * InitFunctionName;
+		static const char * TagPrefix;
 	};
 
 public:
-	ElektraGenTemplate () : GenTemplate ("elektra", { ".c", ".h" }, { { Params::InitFunctionName, false } })
+	ElektraGenTemplate ()
+	: GenTemplate ("elektra", { ".c", ".h" }, { { Params::InitFunctionName, false }, { Params::TagPrefix, false } })
 	{
 	}
 

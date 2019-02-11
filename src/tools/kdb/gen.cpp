@@ -19,8 +19,6 @@ using namespace std;
 
 int GenCommand::execute (Cmdline const & cl)
 {
-	auto & templates = GenTemplateList::getInstance ();
-
 	if (cl.arguments.size () < 3)
 	{
 		throw invalid_argument ("need at least 3 arguments");
@@ -46,6 +44,7 @@ int GenCommand::execute (Cmdline const & cl)
 				});
 	}
 
+	const auto & templates = GenTemplateList::getInstance ();
 	const auto tmpl = templates.getTemplate (templateName, parameters);
 
 	KDB kdb;

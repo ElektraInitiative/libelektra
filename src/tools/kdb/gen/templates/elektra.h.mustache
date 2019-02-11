@@ -8,7 +8,6 @@
 
 // clang-format off
 {{=/*% %*/=}}
-// clang-format on
 
 #include <elektra.h>
 
@@ -19,7 +18,7 @@
 /*%={{ }}=%*/
 /**
  * Enum type for enum of key '{{{ name }}}'.
- */ // {{=/*% %*/=}}
+ */{{=/*% %*/=}}
 typedef enum
 {
 	/*%# values %*/
@@ -37,7 +36,7 @@ ELEKTRA_TAG_DECLARATIONS (/*%& native_type %*/, /*%& type_name %*/)
 /*%={{ }}=%*/
 /**
  * Tag value for key '{{{ name }}}'.
- */ // {{=/*% %*/=}}
+ */{{=/*% %*/=}}
 ELEKTRA_TAG_VALUE (/*% tag_name %*/, "/*%& name %*/", /*% type_name %*/)
 /*%/ keys %*/;
 
