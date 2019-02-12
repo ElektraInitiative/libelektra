@@ -29,6 +29,9 @@ using antlr::YAML;
 
 using antlr4::ANTLRInputStream;
 using antlr4::CommonTokenStream;
+using antlr4::DiagnosticErrorListener;
+using ParserATNSimulator = antlr4::atn::ParserATNSimulator;
+using PredictionMode = antlr4::atn::PredictionMode;
 using ParseTree = antlr4::tree::ParseTree;
 using ParseTreeWalker = antlr4::tree::ParseTreeWalker;
 
@@ -77,6 +80,11 @@ int parseYAML (ifstream & file, CppKeySet & keys, CppKey & parent)
 	ErrorListener errorListener{ parent.getString () };
 	parser.removeErrorListeners ();
 	parser.addErrorListener (&errorListener);
+#if DEBUG
+	DiagnosticErrorListener diagErrorListener;
+	parser.addErrorListener (&diagErrorListener);
+	parser.getInterpreter<ParserATNSimulator> ()->setPredictionMode (PredictionMode::LL_EXACT_AMBIG_DETECTION);
+#endif
 
 	ParseTree * tree = parser.yaml ();
 	if (parser.getNumberOfSyntaxErrors () > 0)
