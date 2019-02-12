@@ -9,11 +9,14 @@
 
 #include "ctypes.h"
 
+#include <stdlib.h>
 #include <string.h>
 
 #include <kdbhelper.h>
 
 #include <elektra/conversion.h>
+#include <kdberrors.h>
+#include <kdbmeta.h>
 
 #define CHECK_TYPE(key, var, toValue)                                                                                                      \
 	{                                                                                                                                  \
@@ -129,5 +132,70 @@ bool elektraCTypeCheckUnsignedLongLong (const Key * key)
 	kdb_unsigned_long_long_t value;
 	CHECK_TYPE (key, value, elektraKeyToUnsignedLongLong)
 	CHECK_TYPE_REVERSIBLE (key, value, elektraUnsignedLongLongToString);
+	return true;
+}
+
+bool elektraCTypeCheckEnum (const Key * key)
+{
+	const Key * multiEnum = keyGetMeta (key, "check/enum/multi");
+	KeySet * meta = elektraMetaArrayToKS (key, "check/enum");
+
+	KeySet * validValues = ksNew ((size_t) ksGetSize (meta), KS_END);
+	Key * cur;
+	ksNext (meta); // skip array size
+	while ((cur = ksNext (meta)) != NULL)
+	{
+		const char * value = keyString (cur);
+		if (strlen (value) == 0)
+		{
+			continue;
+		}
+
+		ksAppendKey (validValues, keyNew (value, KEY_META_NAME, KEY_END));
+	}
+	ksDel (meta);
+
+	char delim = 0;
+	if (multiEnum != NULL)
+	{
+		const char * delimString = keyString (multiEnum);
+
+		if (strlen (delimString) != 1)
+		{
+			return false;
+		}
+		delim = delimString[0];
+	}
+
+	char * values = elektraStrDup (keyString (key));
+	char * value = values;
+	char * next;
+
+	if (multiEnum != NULL)
+	{
+		while ((next = strchr (value, delim)) != NULL)
+		{
+			*next = '\0';
+			if (ksLookupByName (validValues, value, 0) == NULL)
+			{
+				ksDel (validValues);
+				elektraFree (values);
+				return false;
+			}
+			value = next + 1;
+		}
+	}
+
+	if (ksLookupByName (validValues, value, 0) == NULL)
+	{
+		ksDel (validValues);
+		elektraFree (values);
+		return false;
+	}
+
+
+	ksDel (validValues);
+	elektraFree (values);
+
 	return true;
 }

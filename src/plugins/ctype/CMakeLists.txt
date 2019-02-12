@@ -5,4 +5,5 @@ add_plugin (ctype
 		    ctypes.h
 		    ctypes.c
 	    LINK_ELEKTRA elektra-highlevel
+			 elektra-meta
 	    TEST_README)

@@ -36,6 +36,7 @@ static const Type elektraTypesList[] = { { "any", &elektraCTypeCheckAny },
 					 { "long_double", &elektraCTypeCheckLongDouble },
 #endif
 					 { "boolean", &elektraCTypeCheckBoolean },
+					 { "enum", &elektraCTypeCheckEnum },
 					 { NULL, NULL } };
 
 static const Type * findType (const char * name)

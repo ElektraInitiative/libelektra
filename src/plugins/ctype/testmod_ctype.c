@@ -188,14 +188,17 @@ void test_char (void)
 	succeed_if (!checkType (k), "two chars should not check successfully as char");
 
 	char x[2] = { 0, 0 };
-	char msg[] = "X should check successfully as char";
+	char msg[] = "\\xXX should check successfully as char";
+	const char hex[] = "0123456789abcdef";
 	for (int i = 1; i < 255; ++i)
 	{
 		x[0] = (char) i;
 		keySetString (k, x);
-		msg[0] = (char) i;
+		msg[2] = hex[i / 16];
+		msg[3] = hex[i % 16];
 		succeed_if (checkType (k), msg);
 	}
+
 
 	keyDel (k);
 }
@@ -214,16 +217,109 @@ void test_octet (void)
 	succeed_if (!checkType (k), "two chars should not check successfully as octet");
 
 	char x[2] = { 0, 0 };
-	char msg[] = "X should check successfully as octet";
+	char msg[] = "\\xXX should check successfully as octet";
+	const char hex[] = "0123456789abcdef";
 	for (int i = 1; i < 255; ++i)
 	{
 		x[0] = (char) i;
 		keySetString (k, x);
-		msg[0] = (char) i;
+		msg[2] = hex[i / 16];
+		msg[3] = hex[i % 16];
 		succeed_if (checkType (k), msg);
 	}
 
 	keyDel (k);
+}
+
+static void test_enum (void)
+{
+	Key * parentKey = keyNew ("user/tests/enum", KEY_VALUE, "", KEY_END);
+	Key * k1 = keyNew ("user/tests/enum/valid1", KEY_VALUE, "LOW", KEY_META, "check/type", "enum", KEY_META, "check/enum", "#1",
+			   KEY_META, "check/enum/#0", "LOW", KEY_META, "check/enum/#1", "MIDDLE", KEY_END);
+	Key * k2 = keyNew ("user/tests/enum/valid2", KEY_VALUE, "LOW MIDDLE", KEY_META, "check/enum/multi", " ", KEY_META, "check/type",
+			   "enum", KEY_META, "check/enum", "#2", KEY_META, "check/enum/#0", "LOW", KEY_META, "check/enum/#1", "MIDDLE",
+			   KEY_META, "check/enum/#2", "HIGH", KEY_END);
+	Key * k3 = keyNew ("user/tests/enum/invalid1", KEY_VALUE, "HIGH", KEY_META, "check/type", "enum", KEY_META, "check/enum", "#1",
+			   KEY_META, "check/enum/#0", "LOW", KEY_META, "check/enum/#1", "MIDDLE", KEY_END);
+	Key * k4 = keyNew ("user/tests/enum/invalid2", KEY_VALUE, "LOW FAIL", KEY_META, "check/enum/multi", " ", KEY_META, "check/type",
+			   "enum", KEY_META, "check/enum", "#2", KEY_META, "check/enum/#0", "LOW", KEY_META, "check/enum/#1", "MIDDLE",
+			   KEY_META, "check/enum/#2", "HIGH", KEY_END);
+
+	KeySet * conf = ksNew (0, KS_END);
+	KeySet * ks;
+	PLUGIN_OPEN ("ctype");
+
+	ks = ksNew (20, KS_END);
+	ksAppendKey (ks, k1);
+	ksRewind (ks);
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (1), "kdbSet failed");
+	ksDel (ks);
+
+	ks = ksNew (20, KS_END);
+	ksAppendKey (ks, k2);
+	ksRewind (ks);
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (1), "kdbSet failed");
+	ksDel (ks);
+
+	ks = ksNew (20, KS_END);
+	ksAppendKey (ks, k3);
+	ksRewind (ks);
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (-1), "kdbSet should have failed");
+	ksDel (ks);
+
+	ks = ksNew (20, KS_END);
+	ksAppendKey (ks, k4);
+	ksRewind (ks);
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (-1), "kdbSet should have failed");
+	ksDel (ks);
+
+	keyDel (parentKey);
+	PLUGIN_CLOSE ();
+}
+
+static void test_enumMulti (void)
+{
+	Key * parentKey = keyNew ("user/tests/enum", KEY_VALUE, "", KEY_END);
+	Key * k1 = keyNew ("user/tests/enum/valid1", KEY_VALUE, "LOW", KEY_META, "check/enum/multi", "_", KEY_META, "check/type", "enum",
+			   KEY_META, "check/enum", "#1", KEY_META, "check/enum/#0", "LOW", KEY_META, "check/enum/#1", "MIDDLE", KEY_END);
+	Key * k2 = keyNew ("user/tests/enum/valid2", KEY_VALUE, "LOW_MIDDLE", KEY_META, "check/enum/multi", "_", KEY_META, "check/type",
+			   "enum", KEY_META, "check/enum", "#1", KEY_META, "check/enum/#0", "LOW", KEY_META, "check/enum/#1", "MIDDLE",
+			   KEY_END);
+	Key * k3 = keyNew ("user/tests/enum/invalid1", KEY_VALUE, "HIGH", KEY_META, "check/enum/multi", "_", KEY_META, "check/type", "enum",
+			   KEY_META, "check/enum", "#1", KEY_META, "check/enum/#0", "LOW", KEY_META, "check/enum/#1", "MIDDLE", KEY_END);
+	Key * k4 = keyNew ("user/tests/enum/invalid2", KEY_VALUE, "MIDDLE_FAIL", KEY_META, "check/enum/multi", "_", KEY_META, "check/type",
+			   "enum", KEY_META, "check/enum", "#1", KEY_META, "check/enum/#0", "LOW", KEY_META, "check/enum/#1", "MIDDLE",
+			   KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	KeySet * ks;
+	PLUGIN_OPEN ("ctype");
+
+	ks = ksNew (20, KS_END);
+	ksAppendKey (ks, k1);
+	ksRewind (ks);
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (1), "kdbSet failed");
+	ksDel (ks);
+
+	ks = ksNew (20, KS_END);
+	ksAppendKey (ks, k2);
+	ksRewind (ks);
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (1), "kdbSet failed");
+	ksDel (ks);
+
+	ks = ksNew (20, KS_END);
+	ksAppendKey (ks, k3);
+	ksRewind (ks);
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (-1), "kdbSet should have failed");
+	ksDel (ks);
+
+	ks = ksNew (20, KS_END);
+	ksAppendKey (ks, k4);
+	ksRewind (ks);
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (-1), "kdbSet should have failed");
+	ksDel (ks);
+
+	keyDel (parentKey);
+	PLUGIN_CLOSE ();
 }
 
 int main (int argc, char ** argv)
@@ -242,7 +338,10 @@ int main (int argc, char ** argv)
 	test_char ();
 	test_octet ();
 
-	print_result ("testmod_date");
+	test_enum ();
+	test_enumMulti ();
+
+	print_result ("testmod_ctype");
 
 	return nbError;
 }

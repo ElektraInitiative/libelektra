@@ -36,4 +36,6 @@ bool elektraCTypeCheckUnsignedShort (const Key * key);
 bool elektraCTypeCheckUnsignedLong (const Key * key);
 bool elektraCTypeCheckUnsignedLongLong (const Key * key);
 
+bool elektraCTypeCheckEnum (const Key * key);
+
 #endif

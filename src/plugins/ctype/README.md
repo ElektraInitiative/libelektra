@@ -5,7 +5,7 @@
 - infos/needs =
 - infos/placements = presetstorage
 - infos/status = maintained nodep libc unfinished
-- infos/metadata = check/type type check/type/min check/type/max
+- infos/metadata = check/type type check/enum check/enum/# check/enum/multi
 - infos/description = type checker using COBRA data types
 
 ## Introduction
@@ -59,7 +59,7 @@ sudo kdb umount user/tests/type
 
 `wchar` is missing.
 
-Enum and records are part of other plugins.
+Records are part of other plugins.
 
 The `CORBA` type system also has its limits. The types `string` and
 `enum`  can be unsatisfactory. While string is too general
