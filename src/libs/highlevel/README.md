@@ -352,8 +352,8 @@ void elektraSetBigNum (Elektra * elektra, const char * keyname, bignum * value, 
 }
 ```
 
-The `type` plugin used to validate the key values when `kdb set` is used, however, doesn't support custom types, so you will need to disable
-it or provide your own version that can deal with your custom types.
+To get the `type` plugin to validate your custom types you should make sure the `check/type` metadata is set to `string` (or `any`) on all
+keys that use custom types. This works, because the `type` plugin prefers the value of `check/type` over that of `type`.
 
 ### Binary Values
 
