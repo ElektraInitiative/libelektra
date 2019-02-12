@@ -31,32 +31,32 @@ be of any non-zero length, `wchar` must have exactly length 1.
 
 ```sh
 #Mount the plugin
-sudo kdb mount typetest.dump user/tests/type dump type
+sudo kdb mount typetest.dump user/tests/ctype dump ctype
 
 #Store a character value
-kdb set user/tests/type/key a
+kdb set user/tests/ctype/key a
 
 #Only allow character values
-kdb setmeta user/tests/type/key check/type char
-kdb get user/tests/type/key
+kdb setmeta user/tests/ctype/key check/type char
+kdb get user/tests/ctype/key
 #> a
 
 #If we store another character everything works fine
-kdb set user/tests/type/key b
-kdb get user/tests/type/key
+kdb set user/tests/ctype/key b
+kdb get user/tests/ctype/key
 #> b
 
 #If we try to store a string Elektra will not change the value
-kdb set user/tests/type/key 'Not a char'
+kdb set user/tests/ctype/key 'Not a char'
 #STDERR :.*Description : could not type check value of key.*
 #ERROR : 52
 #RET : 5
-kdb get user/tests/type/key
+kdb get user/tests/ctype/key
 #> b
 
 #Undo modifications to the database
-kdb rm user/tests/type/key
-sudo kdb umount user/tests/type
+kdb rm user/tests/ctype/key
+sudo kdb umount user/tests/ctype
 ```
 
 
