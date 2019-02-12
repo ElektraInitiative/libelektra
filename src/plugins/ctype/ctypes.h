@@ -18,7 +18,9 @@
 bool elektraCTypeCheckAny (const Key * key);
 bool elektraCTypeCheckEmpty (const Key * key);
 bool elektraCTypeCheckChar (const Key * key);
+bool elektraCTypeCheckWChar (const Key * key);
 bool elektraCTypeCheckString (const Key * key);
+bool elektraCTypeCheckWString (const Key * key);
 
 bool elektraCTypeCheckBoolean (const Key * key);
 

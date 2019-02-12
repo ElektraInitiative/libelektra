@@ -203,6 +203,47 @@ void test_char (void)
 	keyDel (k);
 }
 
+void test_wchar (void)
+{
+	Key * k = keyNew ("user/anything", KEY_VALUE, "a", KEY_META, "check/type", "wchar", KEY_END);
+	keySetString (k, "");
+	succeed_if (!checkType (k), "empty string should not check successfully as wchar");
+
+	wchar_t y[2] = L"ab";
+	char s[3 * MB_CUR_MAX];
+	wcstombs (s, y, 3 * sizeof (wchar_t));
+	keySetString (k, s);
+	succeed_if (!checkType (k), "two wchars should not check successfully as wchar");
+
+	size_t max = WCHAR_MAX;
+	if (max > 0xFFFF)
+	{
+		max = 0xFFFF;
+	}
+
+	size_t c = 0;
+	for (size_t i = 1; i < max; ++i)
+	{
+		size_t ret = wcstombs (s, (wchar_t[]){ (wchar_t) i, 0 }, 3 * MB_CUR_MAX);
+		if (ret > 0)
+		{
+			c++;
+			keySetString (k, s);
+			nbTest++;
+			if (!checkType (k))
+			{
+				yield_error ("the following should check successfully as wchar:");
+				printf ("0x%lx\n", i);
+			}
+		}
+		wctomb (NULL, 0);
+	}
+
+
+	keyDel (k);
+}
+
+
 void test_octet (void)
 {
 	Key * k = keyNew ("user/anything", KEY_VALUE, "a", KEY_META, "check/type", "octet", KEY_END);
@@ -230,6 +271,54 @@ void test_octet (void)
 
 	keyDel (k);
 }
+
+void test_string (void)
+{
+	Key * k = keyNew ("user/anything", KEY_VALUE, "a", KEY_META, "check/type", "string", KEY_END);
+	keySetString (k, "");
+	succeed_if (!checkType (k), "empty string should not check successfully as string");
+
+	keySetString (k, "ab");
+	succeed_if (checkType (k), "\"ab\" should check successfully as string");
+
+	keySetString (k, "monkey circus");
+	succeed_if (checkType (k), "\"monkey circus\" should check successfully as string");
+
+	keySetString (k, "日本");
+	succeed_if (checkType (k), "\"日本\" should check successfully as string");
+
+	keySetString (k, "😂 😄 😃 😀 😊 😉 😍 😘 😚 😗 😙 😜 😝 😛 😳");
+	succeed_if (checkType (k), "emoji sequence should check successfully as string");
+
+	keyDel (k);
+}
+
+void test_wstring (void)
+{
+	Key * k = keyNew ("user/anything", KEY_VALUE, "a", KEY_META, "check/type", "wstring", KEY_END);
+	keySetString (k, "");
+	succeed_if (!checkType (k), "empty string should not check successfully as wstring");
+
+	char s[255 * MB_CUR_MAX];
+	wcstombs (s, L"ab", sizeof (s));
+	keySetString (k, s);
+	succeed_if (checkType (k), "two wchars should check successfully as wstring");
+
+	wcstombs (s, L"monkey circus", sizeof (s));
+	keySetString (k, s);
+	succeed_if (checkType (k), "L\"monkey circus\" should check successfully as wstring");
+
+	wcstombs (s, L"日本", sizeof (s));
+	keySetString (k, s);
+	succeed_if (checkType (k), "\"日本\" should check successfully as wstring");
+
+	wcstombs (s, L"😂 😄 😃 😀 😊 😉 😍 😘 😚 😗 😙 😜 😝 😛 😳", sizeof (s));
+	keySetString (k, s);
+	succeed_if (checkType (k), "emoji sequence should check successfully as wstring");
+
+	keyDel (k);
+}
+
 
 static void test_enum (void)
 {
@@ -336,7 +425,10 @@ int main (int argc, char ** argv)
 	test_bool ();
 	test_none ();
 	test_char ();
+	test_wchar ();
 	test_octet ();
+	test_string ();
+	test_wstring ();
 
 	test_enum ();
 	test_enumMulti ();

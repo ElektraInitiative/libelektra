@@ -52,9 +52,26 @@ bool elektraCTypeCheckChar (const Key * key)
 	return strlen (keyString (key)) == 1;
 }
 
+
+bool elektraCTypeCheckWChar (const Key * key)
+{
+	wchar_t out[2];
+	return mbstowcs (out, keyString (key), 2) == 1;
+}
+
 bool elektraCTypeCheckString (const Key * key)
 {
 	return strlen (keyString (key)) != 0;
+}
+
+bool elektraCTypeCheckWString (const Key * key)
+{
+	const char * value = keyString (key);
+	size_t max = strlen (value) + 1;
+	wchar_t * wvalue = elektraCalloc (sizeof (wchar_t) * max);
+	size_t result = mbstowcs (wvalue, value, max);
+	elektraFree (wvalue);
+	return result > 0 && result < max;
 }
 
 bool elektraCTypeCheckBoolean (const Key * key)
