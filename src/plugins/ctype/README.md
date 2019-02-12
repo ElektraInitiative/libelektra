@@ -1,5 +1,5 @@
 - infos = Information about type plugin is in keys below
-- infos/author = Markus Raab <elektra@libelektra.org>
+- infos/author = Klemens Böswirth <k.boeswirth+git@gmail.com>
 - infos/licence = BSD
 - infos/provides = check
 - infos/needs =
