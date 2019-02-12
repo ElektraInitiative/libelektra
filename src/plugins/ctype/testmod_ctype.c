@@ -209,9 +209,8 @@ void test_wchar (void)
 	keySetString (k, "");
 	succeed_if (!checkType (k), "empty string should not check successfully as wchar");
 
-	wchar_t y[2] = L"ab";
-	char s[3 * MB_CUR_MAX];
-	wcstombs (s, y, 3 * sizeof (wchar_t));
+	char * s = elektraCalloc (3 * MB_CUR_MAX + 1);
+	wcstombs (s, L"ab", 3 * MB_CUR_MAX);
 	keySetString (k, s);
 	succeed_if (!checkType (k), "two wchars should not check successfully as wchar");
 
@@ -236,9 +235,10 @@ void test_wchar (void)
 				printf ("0x%lx\n", i);
 			}
 		}
-		wctomb (NULL, 0);
+		int x ELEKTRA_UNUSED = wctomb (NULL, 0);
 	}
 
+	elektraFree (s);
 
 	keyDel (k);
 }
