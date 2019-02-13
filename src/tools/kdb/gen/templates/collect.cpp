@@ -102,7 +102,7 @@ int main (int argc, char const * argv[])
 
 	if (std::string (argv[1]) != "--")
 	{
-		auto file = std::ofstream (argv[1]);
+		std::ofstream file (argv[1]);
 		if (!file.good ())
 		{
 			std::cerr << "Error: could not create outfile. Make sure the directory exists!" << std::endl;

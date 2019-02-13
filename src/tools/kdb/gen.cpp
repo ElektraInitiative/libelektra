@@ -53,7 +53,7 @@ int GenCommand::execute (Cmdline const & cl)
 
 	for (const auto & part : tmpl->getParts ())
 	{
-		auto output = std::ofstream (outputName + part);
+		std::ofstream output (outputName + part);
 		tmpl->render (output, outputName, part, ks, parentKey);
 	}
 
