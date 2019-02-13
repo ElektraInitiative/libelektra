@@ -8,7 +8,7 @@ go to a specific commit of Elektra. Then you can
 run a benchmark. Afterwards you commit all information
 you have collected.
 
-This has the advantage that it is reproduceable.
+This has the advantage that it is reproducible.
 Everyone can go anytime back to the benchmark commits
 and run the same benchmarks again.
 
