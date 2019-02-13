@@ -102,9 +102,29 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 ### YanLR
 
-- The plugin now specifies the line and column number of syntax errors in error messages. *(René Schwaiger)*
-- We now use the first (instead of the last) error message reported by ANTLR for syntax errors. This update improves the error message
-  reported by the plugin. *(René Schwaiger)*
+- We improved the error reporting capabilities of the plugin. It now stores all of the error message reported by ANTLR and also specifies
+  the line and column number of syntax errors. We also visualize these error messages in a similar way as modern compilers like Clang or
+  GCC. For example, for the following erroneous input:
+
+  ```yaml
+  key: - element 1
+  - element 2 # Incorrect Indentation!
+  ```
+
+  the plugin currently prints an error message that looks like this:
+
+  ```
+  config.yaml:2:1: mismatched input '- ' expecting MAP_END
+                   - element 2 # Incorrect Indentation!
+                   ^^
+  config.yaml:2:37: extraneous input 'MAP END' expecting STREAM_END
+                    - element 2 # Incorrect Indentation!
+                                                        ^
+  ```
+
+  . The inspiration for this feature was taken from the book
+  [“The Definitive ANTLR 4 Reference”](https://pragprog.com/book/tpantlr2/the-definitive-antlr-4-reference) by Terence Parr.
+  *(René Schwaiger)*
 - Yan LR’s lexer now handles comment at the end of a YAML document correctly. *(René Schwaiger)*
 
 ### path
