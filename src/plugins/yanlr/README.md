@@ -115,6 +115,26 @@ kdb ls user/tests/yanlr
 # RET: 5
 # STDERR: .*/config.yaml:2:1: mismatched input '- ' expecting MAP_END.*
 
+# Let us look at the error message more closely.
+# Since the location of `config.yaml` depends on the current user and OS,
+# we store the text before `config.yaml` as `user/tests/error/prefix`.
+kdb set user/tests/error "$(2>&1 kdb ls user/tests/yanlr)"
+kdb set user/tests/error/prefix "$(kdb get user/tests/error | grep 'config.yaml' | head -1 | sed -E 's/(.*)config.yaml.*/\1/')"
+kdb get user/tests/error/prefix
+# We also store the length of the prefix, so we can remove it from every
+# line of the error message.
+kdb set user/tests/error/prefix/length "$(kdb get user/tests/error/prefix | wc -c | sed 's/[ ]*//g')"
+
+# Since we only want to look at the “reason” of the error, we
+# remove the other part of the error message with `head` and `tail`.
+kdb get user/tests/error | tail -n11 | head -n6 | cut -c"$(kdb get user/tests/error/prefix/length | tr -d '\n')"-
+#> config.yaml:2:1: mismatched input '- ' expecting MAP_END
+#>                  - element 2 # Incorrect Indentation!
+#>                  ^^
+#> config.yaml:2:37: extraneous input 'MAP END' expecting STREAM_END
+#>                   - element 2 # Incorrect Indentation!
+#>                                                       ^
+
 # Fix syntax error
 printf -- 'key: - element 1\n'        >  `kdb file user/tests/yanlr`
 printf -- '     - element 2 # Fixed!' >> `kdb file user/tests/yanlr`
@@ -125,6 +145,7 @@ kdb ls user/tests/yanlr
 #> user/tests/yanlr/key/#1
 
 # Undo modifications
+kdb rm -r user/tests/error
 kdb rm -r user/tests/yanlr
 sudo kdb umount user/tests/yanlr
 ```
