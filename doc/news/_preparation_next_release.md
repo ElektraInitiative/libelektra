@@ -22,10 +22,6 @@ Elektra serves as a universal and secure framework to access
 configuration settings in a global, hierarchical key database.
 For more information, visit [https://libelektra.org](https://libelektra.org).
 
-For a small demo see here:
-
-[![asciicast](https://asciinema.org/a/cantr04assr4jkv8v34uz9b8r.png)](https://asciinema.org/a/cantr04assr4jkv8v34uz9b8r)
-
 You can also read the news [on our website](https://www.libelektra.org/news/0.8.<<VERSION>>-release)
 
 
