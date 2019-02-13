@@ -210,8 +210,7 @@ provide a proper encoding!**
 
 Files should start with:
 
-\verbatim
-
+```c
 	/**
 	 * @file
 	 *
@@ -219,8 +218,7 @@ Files should start with:
 	 *
 	 * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
 	 */
-
-\endverbatim
+```
 
 Note:
 
