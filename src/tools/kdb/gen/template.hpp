@@ -180,7 +180,7 @@ public:
 	}
 
 private:
-	EmptyGenTemplate () : GenTemplate ("", {}, {})
+	EmptyGenTemplate () : GenTemplate ("", std::vector<std::string> (), std::unordered_map<std::string, bool> ())
 	{
 	}
 
