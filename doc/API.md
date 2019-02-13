@@ -168,13 +168,13 @@ please keep in mind the following rules:
 They are reserved for more generic purposes.
 - The keys for your application, called say *myapp*, should be created under
 `/sw/org/myapp/#0/current`
-	+ sw is for software
-	+ org is the organization. For uniqueness a full reverse url encoded with '/' instead of '.' is useful.
-	+ `#0` is the major version of the configuration
-	+ current is the default configuration profile.
-	+ That means you just need to kdbGet() `/sw/org/myapp/#0/profile`
-	and then ksLookupByName() in `/sw/org/myapp/#0/profile/key` where
-	profile is from command-line arguments and defaults to current.
+  - sw is for software
+  - org is the organization. For uniqueness a full reverse url encoded with '/' instead of '.' is useful.
+  - `#0` is the major version of the configuration
+  - current is the default configuration profile.
+  - That means you just need to kdbGet() `/sw/org/myapp/#0/profile`
+  and then ksLookupByName() in `/sw/org/myapp/#0/profile/key` where
+  profile is from command-line arguments and defaults to current.
 
 Read more about [key names](/doc/help/elektra-key-names.md)
 
