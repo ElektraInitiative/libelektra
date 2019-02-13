@@ -16,7 +16,6 @@
 
 #include <elektra/conversion.h>
 #include <kdberrors.h>
-#include <kdbmeta.h>
 
 #define CHECK_TYPE(key, var, toValue)                                                                                                      \
 	{                                                                                                                                  \
@@ -155,22 +154,34 @@ bool elektraCTypeCheckUnsignedLongLong (const Key * key)
 bool elektraCTypeCheckEnum (const Key * key)
 {
 	const Key * multiEnum = keyGetMeta (key, "check/enum/multi");
-	KeySet * meta = elektraMetaArrayToKS (key, "check/enum");
 
-	KeySet * validValues = ksNew ((size_t) ksGetSize (meta), KS_END);
-	Key * cur;
-	ksNext (meta); // skip array size
-	while ((cur = ksNext (meta)) != NULL)
+	const Key * maxKey = keyGetMeta (key, "check/enum");
+	const char * max = maxKey == NULL ? NULL : keyString (maxKey);
+
+	if (max == NULL)
 	{
-		const char * value = keyString (cur);
-		if (strlen (value) == 0)
+		return false;
+	}
+
+	KeySet * validValues = ksNew (0, KS_END);
+	char elem[sizeof ("check/enum/") + ELEKTRA_MAX_ARRAY_SIZE];
+	strcpy (elem, "check/enum/");
+	char * indexStart = elem + sizeof ("check/enum/") - 1;
+
+	kdb_long_long_t index = 0;
+	elektraWriteArrayNumber (indexStart, index);
+	while (strcmp (indexStart, max) <= 0)
+	{
+		const Key * enumKey = keyGetMeta (key, elem);
+		const char * name = enumKey != NULL ? keyString (enumKey) : "";
+		if (strlen (name) > 0)
 		{
-			continue;
+			ksAppendKey (validValues, keyNew (name, KEY_META_NAME, KEY_END));
 		}
 
-		ksAppendKey (validValues, keyNew (value, KEY_META_NAME, KEY_END));
+		++index;
+		elektraWriteArrayNumber (indexStart, index);
 	}
-	ksDel (meta);
 
 	char delim = 0;
 	if (multiEnum != NULL)

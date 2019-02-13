@@ -328,11 +328,8 @@ static void test_enum (void)
 	Key * k2 = keyNew ("user/tests/enum/valid2", KEY_VALUE, "LOW MIDDLE", KEY_META, "check/enum/multi", " ", KEY_META, "check/type",
 			   "enum", KEY_META, "check/enum", "#2", KEY_META, "check/enum/#0", "LOW", KEY_META, "check/enum/#1", "MIDDLE",
 			   KEY_META, "check/enum/#2", "HIGH", KEY_END);
-	Key * k3 = keyNew ("user/tests/enum/invalid1", KEY_VALUE, "HIGH", KEY_META, "check/type", "enum", KEY_META, "check/enum", "#1",
-			   KEY_META, "check/enum/#0", "LOW", KEY_META, "check/enum/#1", "MIDDLE", KEY_END);
-	Key * k4 = keyNew ("user/tests/enum/invalid2", KEY_VALUE, "LOW FAIL", KEY_META, "check/enum/multi", " ", KEY_META, "check/type",
-			   "enum", KEY_META, "check/enum", "#2", KEY_META, "check/enum/#0", "LOW", KEY_META, "check/enum/#1", "MIDDLE",
-			   KEY_META, "check/enum/#2", "HIGH", KEY_END);
+	Key * k3 = keyNew ("user/tests/enum/valid3", KEY_VALUE, "HIGH", KEY_META, "check/type", "enum", KEY_META, "check/enum", "#2",
+			   KEY_META, "check/enum/#0", "LOW", KEY_META, "check/enum/#2", "HIGH", KEY_END);
 
 	KeySet * conf = ksNew (0, KS_END);
 	KeySet * ks;
@@ -353,13 +350,7 @@ static void test_enum (void)
 	ks = ksNew (20, KS_END);
 	ksAppendKey (ks, k3);
 	ksRewind (ks);
-	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (-1), "kdbSet should have failed");
-	ksDel (ks);
-
-	ks = ksNew (20, KS_END);
-	ksAppendKey (ks, k4);
-	ksRewind (ks);
-	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (-1), "kdbSet should have failed");
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (1), "kdbSet failed");
 	ksDel (ks);
 
 	keyDel (parentKey);
