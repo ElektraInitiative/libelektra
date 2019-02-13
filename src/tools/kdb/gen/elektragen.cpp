@@ -1,3 +1,5 @@
+#include <utility>
+
 /**
  * @file
  *
@@ -126,8 +128,8 @@ static kainjow::mustache::list getEnumValues (const std::string & prefix, const 
 		{
 			auto name = prefix + "_";
 			name += camelCaseToMacroCase (key.getMeta<std::string> ("check/enum/" + cur));
-			const auto valueMeta = "check/enum/" + cur + "/value";
-			const auto value = key.hasMeta (valueMeta) ? key.getMeta<std::string> (valueMeta) : std::to_string (i);
+			const auto value = std::to_string (i);
+			// TODO: custom values
 			values.emplace_back (object{ { "name", name }, { "value", value } });
 		}
 		++i;
@@ -137,9 +139,10 @@ static kainjow::mustache::list getEnumValues (const std::string & prefix, const 
 	return values;
 }
 
-static inline std::string getEnumType (const kdb::Key & key, const std::string & tagName)
+static inline std::string getEnumType (const kdb::Key & key, const std::string & tagName, bool & genType)
 {
-	return key.hasMeta ("gen/enum/type") ? key.getMeta<std::string> ("gen/enum/type") : snakeCaseToCamelCase (tagName);
+	genType = key.hasMeta ("gen/enum/type");
+	return genType ? key.getMeta<std::string> ("gen/enum/type") : snakeCaseToCamelCase (tagName);
 }
 
 static inline bool shouldGenerateTypeDef (const kdb::Key & key)
@@ -150,8 +153,6 @@ static inline bool shouldGenerateTypeDef (const kdb::Key & key)
 kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string & outputName, const kdb::KeySet & ks,
 							     const std::string & parentKey) const
 {
-	// TODO: duplicate gen/enum/type, enforce default
-
 	if (parentKey[0] != '/')
 	{
 		throw CommandAbortException ("parentKey has to be cascading");
@@ -173,6 +174,8 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 
 	auto specParent = kdb::Key ("spec" + parentKey, KEY_END);
 
+	std::unordered_map<std::string, std::pair<std::string, std::string>> enumTypes;
+
 	for (const kdb::Key & key : ks)
 	{
 		if (!key.isSpec () || !key.isBelow (specParent) || !hasType (key))
@@ -180,16 +183,23 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 			continue;
 		}
 
+		auto name = key.getName ();
+		name.erase (0, sizeof ("spec") - 1);
+
+		if (!key.getMeta<const kdb::Key> ("default"))
+		{
+			throw CommandAbortException ("The key '" + name + "' doesn't have a default value!");
+		}
+
 		auto type = getType (key);
 
 		const auto & allowedTypes = getAllowedTypes ();
 		if (allowedTypes.find (type) == allowedTypes.end ())
 		{
-			throw std::runtime_error ("illegal type"); // TODO
+			auto msg = "The key '" + name;
+			msg += "' has an unsupported type ('" + type + "')!";
+			throw CommandAbortException (msg);
 		}
-
-		auto name = key.getName ();
-		name.erase (0, sizeof ("spec") - 1);
 
 		auto tagName = getTagName (key, specParent.getName (), getParameter (Params::TagPrefix));
 		object keyObject = { { "name", name },
@@ -198,17 +208,50 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 
 		if (type == "enum")
 		{
-			auto typeName = "Enum" + getEnumType (key, tagName);
-			auto values = getEnumValues (camelCaseToMacroCase ("Elektra" + typeName), key);
+			bool genType;
+			auto enumType = getEnumType (key, tagName, genType);
+			auto typeName = "Enum" + enumType;
+
+			auto nativeType = genType ? enumType : "Elektra" + typeName;
+			auto values = getEnumValues (camelCaseToMacroCase (nativeType), key);
+
 			auto generateTypeDef = shouldGenerateTypeDef (key);
+			if (genType && generateTypeDef)
+			{
+				std::stringstream ss;
+				std::for_each (values.begin (), values.end (), [&](const kainjow::mustache::data & d) {
+					ss << d.get ("name")->string_value () << "=" << d.get ("value")->string_value () << "\n";
+				});
+				auto valuesString = "";
+
+				auto other = enumTypes.find (typeName);
+				if (other != enumTypes.end ())
+				{
+					auto otherValuesString = other->second.second;
+					if (otherValuesString != valuesString)
+					{
+						auto otherKey = other->second.first;
+						auto msg = "The key '" + name;
+						msg += "' uses the same 'gen/enum/type' as the key '" + otherKey +
+						       "', but their 'check/enum' values are different!";
+						throw CommandAbortException (msg);
+					}
+
+					// generate typedef only once
+					generateTypeDef = false;
+				}
+
+				enumTypes[typeName] = std::make_pair (name, valuesString);
+			}
 
 			keyObject["type_name"] = typeName;
+
 
 			enums.emplace_back (object{ { "name", name },
 						    { "tag_name", snakeCaseToMacroCase (tagName) },
 						    { "type_name", typeName },
-						    { "native_type", "Elektra" + typeName },
-						    { "generate_typedef", generateTypeDef },
+						    { "native_type", nativeType },
+						    { "generate_typedef?", generateTypeDef },
 						    { "values", values } });
 		}
 
