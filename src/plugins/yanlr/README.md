@@ -171,3 +171,7 @@ sudo kdb umount user/tests/yanlr
 ### Comments
 
 The [lexer](yaml_lexer.cpp) does currently tokenize comments. Consequently the [plugin grammar](YAML.g4) of the plugin does also match comments. However, the [listener](listener.cpp) does currently **ignore comments**.
+
+### Error Messages
+
+Visualized error messages (containing `^` markers) might not point to the correct error location, if the input contains tabs or unicode characters with a length other than `1`.
