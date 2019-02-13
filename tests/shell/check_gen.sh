@@ -40,11 +40,47 @@ for test_folder in @CMAKE_SOURCE_DIR@/tests/shell/gen/*/; do
 
 		old_dir=$(pwd)
 		cd "$output_folder"
-		$KDB gen "$template" "$parent_key" "$test_name.actual" ${test_params}
+		$KDB gen "$template" "$parent_key" "$test_name.actual" ${test_params} > "$output_folder$test_name.stdout" 2> "$output_folder$test_name.stderr"
 		gen=$?
-		[ "$gen" == "0" ]
-		succeed_if "kdb gen failed"
+		if [ "$gen" != "0" ] && [ ! -e "$test_folder$test_name.stderr" ]; then
+			[ "1" == "0" ]
+			succeed_if "kdb gen failed: "
+			cat "$output_folder$test_name.stderr"
+		fi
 		cd "$old_dir"
+
+		if [ -e "$test_folder$test_name.stdout" ]; then
+			diff -u "$test_folder$test_name.stdout" "$output_folder$test_name.stdout" | sed -e "1d" -e "2d" > "$output_folder$test_name.stdout.diff"
+
+			if [ -s "$output_folder$test_name.stdout.diff" ]; then
+				[ "1" == "0" ]
+				succeed_if "stdout of $test_name didn't match the expected output. Here is the diff:"
+				cat "$output_folder$test_name.stdout.diff"
+				echo
+				echo "The diff is also stored at $output_folder$test_name.stdout.diff"
+				echo
+			else
+				rm "$output_folder$test_name.stdout.diff"
+			fi
+		fi
+		rm "$output_folder$test_name.stdout"
+
+		if [ -e "$test_folder$test_name.stderr" ]; then
+			sed -e "s#$KDB#kdb#" -e '1{/The command kdb gen terminated unsuccessfully with the info:/d}' -i "$output_folder$test_name.stderr"
+			diff -u "$test_folder$test_name.stderr" "$output_folder$test_name.stderr" | sed -e "1d" -e "2d" > "$output_folder$test_name.stderr.diff"
+
+			if [ -s "$output_folder$test_name.stderr.diff" ]; then
+				[ "1" == "0" ]
+				succeed_if "stderr of $test_name didn't match the expected output. Here is the diff:"
+				cat "$output_folder$test_name.stderr.diff"
+				echo
+				echo "The diff is also stored at $output_folder$test_name.stderr.diff"
+				echo
+			else
+				rm "$output_folder$test_name.stderr.diff"
+			fi
+		fi
+		rm "$output_folder$test_name.stderr"
 
 		data_list=$($KDB ls "spec$parent_key")
 		if [ -n "$data_list" ]; then
@@ -87,8 +123,7 @@ for test_folder in @CMAKE_SOURCE_DIR@/tests/shell/gen/*/; do
 			[ -e "$actual_part" ] || continue
 
 			[ "1" == "0" ]
-			succeed_if "additional part ${actual_part#"$output_folder"}"
-			rm "$actual_part"
+			succeed_if "additional part ${actual_part}"
 		done
 	done
 	echo
