@@ -1,5 +1,7 @@
 @INCLUDE_COMMON@
 
+set -x
+
 echo
 echo ELEKTRA CHECK GEN
 echo
@@ -67,7 +69,7 @@ for test_folder in @CMAKE_SOURCE_DIR@/tests/shell/gen/*/; do
 		rm "$output_folder$test_name.stdout"
 
 		if [ -e "$test_folder$test_name.stderr" ]; then
-			sed -e "s#$KDB#kdb#" -e '1{/The command kdb gen terminated unsuccessfully with the info:/d;}' -i "$output_folder$test_name.stderr"
+			sed -e "s#$KDB#kdb#" -e '1!b' -e '/^The command kdb gen terminated unsuccessfully with the info:$/d' -i "$output_folder$test_name.stderr"
 			diff -u "$test_folder$test_name.stderr" "$output_folder$test_name.stderr" | sed -e "1d" -e "2d" > "$output_folder$test_name.stderr.diff"
 
 			if [ -s "$output_folder$test_name.stderr.diff" ]; then
@@ -104,7 +106,7 @@ for test_folder in @CMAKE_SOURCE_DIR@/tests/shell/gen/*/; do
 			[ -f "$actual_part" ]
 			succeed_if "missing part $test_name.actual$part"
 
-			diff -u "$expected_part" "$actual_part" | sed -e "1c\--- $test_name.expected$part" -e "2c\+++ $test_name.actual$part" > "$diff_part"
+			diff -u "$expected_part" "$actual_part" | sed -e "1s/.*/--- $test_name.expected$part/" -e "2s/.*/+++ $test_name.actual$part/" > "$diff_part"
 
 			if [ -s "$diff_part" ]; then
 				[ "1" == "0" ]
