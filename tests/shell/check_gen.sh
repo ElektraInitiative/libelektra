@@ -69,7 +69,8 @@ for test_folder in @CMAKE_SOURCE_DIR@/tests/shell/gen/*/; do
 		rm "$output_folder$test_name.stdout"
 
 		if [ -e "$test_folder$test_name.stderr" ]; then
-			sed -e "s#$KDB#kdb#" -e '1!b' -e '/^The command kdb gen terminated unsuccessfully with the info:$/d' -i "$output_folder$test_name.stderr"
+			sed -e "s#$KDB#kdb#" -e '1!b' -e '/^The command kdb gen terminated unsuccessfully with the info:$/d' "$output_folder$test_name.stderr" > "$output_folder$test_name.stderr2"
+			mv "$output_folder$test_name.stderr2" "$output_folder$test_name.stderr"
 			diff -u "$test_folder$test_name.stderr" "$output_folder$test_name.stderr" | sed -e "1d" -e "2d" > "$output_folder$test_name.stderr.diff"
 
 			if [ -s "$output_folder$test_name.stderr.diff" ]; then
