@@ -14,7 +14,7 @@ and run the same benchmarks again.
 
 For running benchmarks you can use on Unix:
 
-   make benchmark_<filename>_callgrind
+    make benchmark_<filename>_callgrind
 
 which will run the callgrind tool of Valgrind on it.
 
