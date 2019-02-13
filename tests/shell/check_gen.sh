@@ -16,6 +16,7 @@ else
 fi
 
 output_folder=@CMAKE_CURRENT_BINARY_DIR@/gen/
+mkdir -p "$output_folder"
 
 $KDB mount "${output_folder}spec-data.ini" "$SPEC_ROOT/gen" ni
 
@@ -43,7 +44,7 @@ for test_folder in @CMAKE_SOURCE_DIR@/tests/shell/gen/*/; do
 		$KDB gen "$template" "$parent_key" "$test_name.actual" ${test_params} > "$output_folder$test_name.stdout" 2> "$output_folder$test_name.stderr"
 		gen=$?
 		if [ "$gen" != "0" ] && [ ! -e "$test_folder$test_name.stderr" ]; then
-			[ "1" == "0" ]
+			test "1" == "0"
 			succeed_if "kdb gen failed: "
 			cat "$output_folder$test_name.stderr"
 		fi
@@ -70,7 +71,7 @@ for test_folder in @CMAKE_SOURCE_DIR@/tests/shell/gen/*/; do
 			diff -u "$test_folder$test_name.stderr" "$output_folder$test_name.stderr" | sed -e "1d" -e "2d" > "$output_folder$test_name.stderr.diff"
 
 			if [ -s "$output_folder$test_name.stderr.diff" ]; then
-				[ "1" == "0" ]
+				test "1" == "0"
 				succeed_if "stderr of $test_name didn't match the expected output. Here is the diff:"
 				cat "$output_folder$test_name.stderr.diff"
 				echo
