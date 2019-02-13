@@ -128,8 +128,7 @@ of keys works.
    The metadata of a key contains this information:
 
    - `override/#`: use these keys *in favor* of the key itself (note that
-   - `#` is the syntax for arrays, e.g. `#0` for the first element,
-   -`#10` for the 11th and so on)
+     `#` is the syntax for arrays, e.g. `#0` for the first element, `#10` for the 11th and so on)
    - `namespace/#`: instead of using all namespaces in the predefined order,
    	one can specify which namespaces should be searched in which order
    - `fallback/#`: when no key was found in any of the (specified) namespaces
