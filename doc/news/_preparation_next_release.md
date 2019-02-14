@@ -102,7 +102,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 - The build system does not print a warning about a deprecated directive any more, if you build the plugin with Bison `3.3` or later.
   *(René Schwaiger)*
-- The plugin now handles comments at the end of input properly. *(René Schwaiger)*
+- [YAMBi](https://www.libelektra.org/plugins/yambi) now handles comments at the end of input properly. *(René Schwaiger)*
 
 ### YanLR
 
