@@ -40,26 +40,28 @@ public:
 	static const int STREAM_START = 1;
 	/** This token type ends the YAML stream. */
 	static const int STREAM_END = 2;
-	/** This token type specifies that the token stores a plain scalar. */
-	static const int PLAIN_SCALAR = 3;
-	/** This token type indicates the start of a mapping key. */
-	static const int KEY = 4;
-	/** This token type indicates the start of a mapping value. */
-	static const int VALUE = 5;
-	/** This token type indicates the start of a mapping. */
-	static const int MAPPING_START = 6;
-	/** This token type indicates the end of a block collection. */
-	static const int BLOCK_END = 7;
-	/** This token type indicates a list element. */
-	static const int ELEMENT = 8;
-	/** This token type indicates the start of a sequence. */
-	static const int SEQUENCE_START = 9;
-	/** This token type specifies that the token stores a double quoted scalar. */
-	static const int DOUBLE_QUOTED_SCALAR = 10;
 	/** This token type specifies that the token stores a (line) comment. */
-	static const int COMMENT = 11;
+	static const int COMMENT = 3;
+	/** This token type specifies that the token stores a plain scalar. */
+	static const int PLAIN_SCALAR = 4;
 	/** This token type specifies that the token stores a single quoted scalar. */
-	static const int SINGLE_QUOTED_SCALAR = 12;
+	static const int SINGLE_QUOTED_SCALAR = 5;
+	/** This token type specifies that the token stores a double quoted scalar. */
+	static const int DOUBLE_QUOTED_SCALAR = 6;
+	/** This token type indicates the start of a mapping. */
+	static const int MAP_START = 7;
+	/** This token type indicates the end of a mapping. */
+	static const int MAP_END = 8;
+	/** This token type indicates the start of a mapping key. */
+	static const int KEY = 9;
+	/** This token type indicates the start of a mapping value. */
+	static const int VALUE = 10;
+	/** This token type indicates the start of a sequence. */
+	static const int SEQUENCE_START = 11;
+	/** This token type indicates the end of a sequence. */
+	static const int SEQUENCE_END = 12;
+	/** This token type indicates a list element. */
+	static const int ELEMENT = 13;
 
 	/**
 	 * @brief This function returns a string representation of a token.
