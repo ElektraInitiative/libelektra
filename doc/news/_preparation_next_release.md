@@ -107,6 +107,8 @@ The following section lists news about the [modules](https://www.libelektra.org/
 ### YanLR
 
 - The plugin now specifies the line and column number of syntax errors in error messages. *(René Schwaiger)*
+- We now use the first (instead of the last) error message reported by ANTLR for syntax errors. This update improves the error message
+  reported by the plugin. *(René Schwaiger)*
 - Yan LR’s lexer now handles comment at the end of a YAML document correctly. *(René Schwaiger)*
 
 ### path

@@ -30,17 +30,16 @@ if (DEPENDENCY_PHASE)
 		remove_plugin (yanlr "ASAN enabled GCC builds of the plugin report memory leaks")
 	endif (${DISABLE_PLUGIN_ASAN})
 
-	# Disable warnings caused by ANTLR’s source code
-	if (CMAKE_COMPILER_IS_GNUCXX)
-		set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-attributes -Wno-overloaded-virtual -Wno-shadow")
-	endif (CMAKE_COMPILER_IS_GNUCXX)
-
 	set (GRAMMAR_NAME YAML)
 	set (GRAMMAR_FILE ${CMAKE_CURRENT_SOURCE_DIR}/${GRAMMAR_NAME}.g4)
+	set (TOKEN_FILE ${CMAKE_CURRENT_SOURCE_DIR}/${GRAMMAR_NAME}.tokens)
 	set (GENERATED_SOURCE_FILES_NAMES BaseListener Listener)
 	foreach (file ${GENERATED_SOURCE_FILES_NAMES} "")
 		set (filepath ${CMAKE_CURRENT_BINARY_DIR}/${GRAMMAR_NAME}${file}.cpp)
 		set_source_files_properties (${filepath} PROPERTIES GENERATED TRUE)
+		if (CMAKE_COMPILER_IS_GNUCXX)
+			set_source_files_properties (${filepath} PROPERTIES COMPILE_FLAGS "-Wno-shadow")
+		endif (CMAKE_COMPILER_IS_GNUCXX)
 		list (APPEND GENERATED_SOURCE_FILES
 			     ${filepath})
 	endforeach (file ${GENERATED_SOURCE_FILES_NAMES})
@@ -59,6 +58,7 @@ if (DEPENDENCY_PHASE)
 	add_custom_command (OUTPUT ${GENERATED_SOURCE_FILES}
 			    COMMAND ${ANTLR_EXECUTABLE} -Werror -Dlanguage=Cpp -o ${CMAKE_CURRENT_BINARY_DIR} -package antlr ${GRAMMAR_FILE}
 			    DEPENDS ${GRAMMAR_FILE}
+				    ${TOKEN_FILE}
 			    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 endif (DEPENDENCY_PHASE)
 
@@ -79,7 +79,7 @@ add_plugin (yanlr
 	    CPP
 	    ${TEST_ARGUMENTS}
 	    SOURCES ${SOURCE_FILES}
-	    INCLUDE_DIRECTORIES ${ANTLR4CPP_INCLUDE_DIRS}
+	    INCLUDE_SYSTEM_DIRECTORIES ${ANTLR4CPP_INCLUDE_DIRS}
 	    LINK_LIBRARIES ${ANTLR4CPP_LIBRARIES}
 	    LINK_ELEKTRA elektra-ease
 	    INSTALL_TEST_DATA

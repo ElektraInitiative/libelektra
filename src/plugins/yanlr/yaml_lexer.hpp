@@ -43,6 +43,31 @@ using antlr4::TokenSource;
 
 class YAMLLexer : public TokenSource
 {
+	/** This class stores information about indentation that starts a new block node. */
+	class Level
+	{
+	public:
+		/** This enumeration specifies the type of a block node. */
+		enum class Type
+		{
+			MAP,      ///< The current indentation starts a block map
+			SEQUENCE, ///< The current indentation starts a block sequence
+			OTHER     ///< The current indentation starts a block scalar
+		};
+		size_t indent = 0;
+		Type type = Level::Type::OTHER;
+
+		/**
+		 * @brief This constructor creates a level object from the given arguments.
+		 *
+		 * @param indentation This number specifies the number of spaces used to start this level object.
+		 * @param levelType This argument specifies the type of node `indentation` created.
+		 */
+		Level (size_t indentation, Level::Type levelType = Level::Type::OTHER) : indent{ indentation }, type{ levelType }
+		{
+		}
+	};
+
 	/** This variable stores the input that this lexer scans. */
 	CharStream * input;
 
@@ -75,10 +100,10 @@ class YAMLLexer : public TokenSource
 	size_t tokensEmitted = 0;
 
 	/**
-	 * This stack stores the indentation (in number of characters) for each
-	 * block collection.
+	 * This stack stores the indentation (in number of characters) and block
+	 * type for each block node.
 	 */
-	stack<size_t> indents{ deque<size_t>{ 0 } };
+	stack<Level> levels{ deque<Level>{ Level{ 0 } } };
 
 	/**
 	 * This boolean specifies if the lexer has already scanned the whole input or
@@ -126,16 +151,19 @@ class YAMLLexer : public TokenSource
 	unique_ptr<CommonToken> commonToken (size_t type, size_t start, size_t stop);
 
 	/**
-	 * @brief This function adds an indentation value if the given value is
-	 * smaller than the current indentation.
+	 * @brief This function adds an indentation value if the given value is smaller
+	 *        than the current indentation.
 	 *
 	 * @param lineIndex This parameter specifies the indentation value that this
 	 *                  function compares to the current indentation.
 	 *
+	 * @param type This value specifies the block collection type that
+	 *             `lineIndex` might start.
+	 *
 	 * @retval true If the function added an indentation value
 	 *         false Otherwise
 	 */
-	bool addIndentation (size_t const column);
+	bool addIndentation (size_t const column, Level::Type type);
 
 	/**
 	 * @brief This function checks if the lexer needs to scan additional tokens.
@@ -282,33 +310,35 @@ public:
 	static const size_t STREAM_START = 1;
 	/** This token type ends the YAML stream. */
 	static const size_t STREAM_END = 2;
-	/** This token type specifies that the token stores a plain scalar. */
-	static const size_t PLAIN_SCALAR = 3;
-	/** This token type indicates the start of a mapping key. */
-	static const size_t KEY = 4;
-	/** This token type indicates the start of a mapping value. */
-	static const size_t VALUE = 5;
-	/** This token type indicates the start of a mapping. */
-	static const size_t MAPPING_START = 6;
-	/** This token type indicates the end of a block collection. */
-	static const size_t BLOCK_END = 7;
-	/** This token type indicates a list element. */
-	static const size_t ELEMENT = 8;
-	/** This token type indicates the start of a sequence. */
-	static const size_t SEQUENCE_START = 9;
-	/** This token type specifies that the token stores a double quoted scalar. */
-	static const size_t DOUBLE_QUOTED_SCALAR = 10;
 	/** This token type specifies that the token stores a (line) comment. */
-	static const size_t COMMENT = 11;
+	static const size_t COMMENT = 3;
+	/** This token type specifies that the token stores a plain scalar. */
+	static const size_t PLAIN_SCALAR = 4;
 	/** This token type specifies that the token stores a single quoted scalar. */
-	static const size_t SINGLE_QUOTED_SCALAR = 12;
+	static const size_t SINGLE_QUOTED_SCALAR = 5;
+	/** This token type specifies that the token stores a double quoted scalar. */
+	static const size_t DOUBLE_QUOTED_SCALAR = 6;
+	/** This token type indicates the start of a mapping. */
+	static const size_t MAP_START = 7;
+	/** This token type indicates the end of a mapping. */
+	static const size_t MAP_END = 8;
+	/** This token type indicates the start of a mapping key. */
+	static const size_t KEY = 9;
+	/** This token type indicates the start of a mapping value. */
+	static const size_t VALUE = 10;
+	/** This token type indicates the start of a sequence. */
+	static const size_t SEQUENCE_START = 11;
+	/** This token type indicates the end of a sequence. */
+	static const size_t SEQUENCE_END = 12;
+	/** This token type indicates a list element. */
+	static const size_t ELEMENT = 13;
 
 	/**
 	 * @brief This constructor creates a new YAML lexer for the given input.
 	 *
-	 * @param input This character stream stores the data this lexer scans.
+	 * @param stream This character stream stores the data this lexer scans.
 	 */
-	YAMLLexer (CharStream * input);
+	YAMLLexer (CharStream * stream);
 
 	/**
 	 * @brief This method retrieves the current (not already emitted) token

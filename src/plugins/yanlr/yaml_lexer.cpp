@@ -32,12 +32,12 @@ using antlr4::ParseCancellationException;
 /**
  * @brief This constructor creates a new YAML lexer for the given input.
  *
- * @param input This character stream stores the data this lexer scans.
+ * @param stream This character stream stores the data this lexer scans.
  */
-YAMLLexer::YAMLLexer (CharStream * input)
+YAMLLexer::YAMLLexer (CharStream * stream)
 {
-	this->input = input;
-	this->source = make_pair (this, input);
+	this->input = stream;
+	this->source = make_pair (this, stream);
 	scanStart ();
 }
 
@@ -197,15 +197,18 @@ unique_ptr<CommonToken> YAMLLexer::commonToken (size_t type, size_t start, size_
  * @param lineIndex This parameter specifies the indentation value that this
  *                  function compares to the current indentation.
  *
+ * @param type This value specifies the block collection type that
+ *             `lineIndex` might start.
+ *
  * @retval true If the function added an indentation value
  *         false Otherwise
  */
-bool YAMLLexer::addIndentation (size_t const lineIndex)
+bool YAMLLexer::addIndentation (size_t const lineIndex, Level::Type type)
 {
-	if (lineIndex > indents.top ())
+	if (lineIndex > levels.top ().indent)
 	{
 		ELEKTRA_LOG_DEBUG ("Add indentation %zu", lineIndex);
-		indents.push (lineIndex);
+		levels.push (Level{ lineIndex, type });
 		return true;
 	}
 	return false;
@@ -372,12 +375,13 @@ void YAMLLexer::addSimpleKeyCandidate ()
  */
 void YAMLLexer::addBlockEnd (size_t const lineIndex)
 {
-	while (lineIndex < indents.top ())
+	while (lineIndex < levels.top ().indent)
 	{
 		ELEKTRA_LOG_DEBUG ("Add block end");
 		size_t index = input->index ();
-		tokens.push_back (commonToken (BLOCK_END, index, index, "BLOCK END"));
-		indents.pop ();
+		tokens.push_back (levels.top ().type == Level::Type::MAP ? commonToken (MAP_END, index, index, "MAP END") :
+									   commonToken (SEQUENCE_END, index, index, "SEQUENCE END"));
+		levels.pop ();
 	}
 }
 
@@ -545,9 +549,9 @@ void YAMLLexer::scanValue ()
 	}
 	size_t start = simpleKey.first->getCharPositionInLine ();
 	tokens.insert (tokens.begin () + simpleKey.second - tokensEmitted, move (simpleKey.first));
-	if (addIndentation (start))
+	if (addIndentation (start, Level::Type::MAP))
 	{
-		tokens.push_front (commonToken (MAPPING_START, start, column, "MAPPING START"));
+		tokens.push_front (commonToken (MAP_START, start, column, "MAP START"));
 	}
 }
 
@@ -558,7 +562,7 @@ void YAMLLexer::scanValue ()
 void YAMLLexer::scanElement ()
 {
 	ELEKTRA_LOG_DEBUG ("Scan element");
-	if (addIndentation (column))
+	if (addIndentation (column, Level::Type::SEQUENCE))
 	{
 		tokens.push_back (commonToken (SEQUENCE_START, input->index (), column, "SEQUENCE START"));
 	}
