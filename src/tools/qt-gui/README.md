@@ -14,12 +14,12 @@ In order to compile and use the new `qt-gui` there are a few dependencies which 
 - qt5.3 or greater
 - libdrm-dev
 - libdiscount (libmarkdown2-dev)
-- the following qt5 modules: `declarative` `quickcontrols`
-
-Additionally, you may need `qtdeclarative5-dev` which is available in `wheezy-backports`.
+- the following qt5 modules: `quickcontrols` `declarative` (`qtdeclarative5-dev`)
+- Alternatively, you may need `sudo apt-get install qml-module-qt-labs-folderlistmodel`
+  and `sudo apt-get install qml-module-qt-labs-settings`
 
 Optional dependencies are (are automatically deactivated if dependencies are not found):
-- `Qt5Svg` for SVG icon themes
+- `Qt5Svg` for SVG icon themes (`sudo apt-get install libqt5svg5-dev`)
 - `Qt5DBus` so that `qt-gui` will be notified on changes.
 
 
