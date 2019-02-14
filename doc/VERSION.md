@@ -24,7 +24,7 @@ and is described in [src/plugins/doc/doc.c](/src/plugins/doc/doc.c).
 ## Compatibility
 
 This section describes under which circumstances API
-and ABI incompatiblities may occur. As developer from
+and ABI incompatibilities may occur. As developer from
 Elektra your mission is to avoid that.
 The tool icheck against the interfaces mentioned
 above may help you too.
@@ -33,7 +33,7 @@ In `0.8.*` the API and ABI must be always forward-compatible,
 but not backwards-compatible.
 That means that a program written and compiled against 0.8.0
 compiles and links against 0.8.1. But because it is
-not necessarily backendwards-compatible a program written
+not necessarily backwards-compatible a program written
 for 0.8.1 may not link or compile against elektra 0.8.0
 (but it may do when you use the compatible subset, maybe
 with #ifdefs).
@@ -67,7 +67,7 @@ This section describes how to increment the `KDB_VERSION`.
 It consists of a triplet integer `current:revision:age`.
 
 `revision` is something which will always incremented when there
-is a new bugfix release.
+is a new bug fix release.
 
 `current` and `age` will be incremented by one when you release
 a compatible but changed API. The revision is set back to zero then.
