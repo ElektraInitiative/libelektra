@@ -38,7 +38,7 @@ This helps in achieving the following goals:
 
 ## Quality Goals
 
-1.) Simplicity
+### 1. Simplicity
 
 An overly complex system cannot be managed nor understood.
 Extensibility brings some complex issues,
@@ -59,7 +59,7 @@ Special care for simplicity is taken for the users:
   according to their needs
 - Key-value uniformity that allows introspection
 
-2.) Robustness
+### 2. Robustness
 
 Configuration systems today suffer badly from:
 
@@ -76,7 +76,7 @@ are necessary only within Elektra and not in the applications using
 Elektra! This makes your code not only portable towards more systems,
 but also enables global improvements in the configuration systems.
 
-3.) Extensibility
+### 3. Extensibility
 
 There are so many variants of
 
@@ -91,7 +91,7 @@ so that this extensible system works reproducible and predictable.
 Only key-value pairs are the common factor and a way to get and set
 them, everything else is an extension.
 
-4.) Performance
+### 4. Performance
 
 Accessing configuration has impact on bootup and startup-time.
 Elektra needs to be similar fast then current solutions.
