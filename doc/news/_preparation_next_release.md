@@ -294,6 +294,8 @@ you up to date with the multi-language support provided by Elektra.
 - The test [`check-env-dep`](https://master.libelektra.org/scripts/check-env-dep) does not require Bash anymore. *(René Schwaiger)*
 - We fixed an incorrect directive in the [Markdown Shell Recorder][] test of the
   [Type Checker](https://www.libelektra.org/plugins/typechecker) plugin. *(René Schwaiger)*
+- We added a test that invokes the script [`fix-spelling`](http://master.libelektra.org/scripts/fix-spelling) to check the documentation
+  for common spelling mistakes. *(René Schwaiger)*
 
 [Shell Recorder]: https://master.libelektra.org/tests/shell/shell_recorder
 [Markdown Shell Recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
