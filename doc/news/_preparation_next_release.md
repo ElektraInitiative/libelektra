@@ -342,7 +342,8 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Docker
 
-- <<TODO>>
+- We added [`shfmt`](https://github.com/mvdan/sh) to the
+  [Dockerfile for Debian sid](https://master.libelektra.org/scripts/docker/debian/sid/Dockerfile). *(René Schwaiger)*
 - <<TODO>>
 - <<TODO>>
 
@@ -370,7 +371,7 @@ you up to date with the multi-language support provided by Elektra.
 ### Jenkins
 
 - We added a badge displaying the current build status to the main [ReadMe](https://master.libelektra.org/README.md). *(René Schwaiger)*
-- <<TODO>>
+-  The build job `formatting-check` now also checks the formatting of Shell scripts. *(René Schwaiger)*
 - <<TODO>>
 
 ### Travis
