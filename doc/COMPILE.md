@@ -141,9 +141,9 @@ https://build.libelektra.org/
 |      clang        | 6.0                         |x86_64-pc-linux-gnu|
 |      clang        | 8.1.0                       |      macOS        |
 |      icc          | 14.0.2 20140120             |x86_64-pc-linux-gnu|
-|      gcc/g++      |                             | openbsd 4.9.4 (*) |
+|      gcc/g++      |                             | openbsd 4.9.4 (¹) |
 
-> (*) OpenBSD ships an old version of GCC per default, which can not compile Elektra.
+> (¹) OpenBSD ships an old version of GCC per default, which can not compile Elektra.
 > A manual installation of egcc/eg++ is required. Note that not every OpenBSD
 > mirror provides the eg++ package. Elektra builds are confirmed with
 > egcc/eg++ 4.9.4 in OpenBSD 6.3.
@@ -531,12 +531,12 @@ Currently the installed system files are as following:
 
 |   Module        |         Description             |      Install Path                      |
 |-----------------|---------------------------------|----------------------------------------|
-| bash-completion | bash tab auto completion file   | `completionsdir` from pkg-config (*)   |
+| bash-completion | bash tab auto completion file   | `completionsdir` from pkg-config (¹)   |
 | zsh-completion  | zsh tab auto completion file    | /usr/share/zsh/vendor-completions      |
 | GIR             | introspection file for bindings | `INTROSPECTION_GIRDIR` from pkg-config |
 | GSettings       | GSettings backend module        | `GIO_MODULE_DIR` from pkg-config       |
 
-> (*) Or `/usr/share/bash-completion/completions` as fallback.
+> (¹) Or `/usr/share/bash-completion/completions` as fallback.
 
 #### `ENABLE_OPTIMIZATIONS`
 
