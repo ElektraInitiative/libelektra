@@ -69,10 +69,10 @@ Best implementation candidate was:
 4. If the bool key `disable` (for a plugin or a variant) is true the plugin or a variant of the
    plugin will not be available.
 5. Empty `config` and `infos` mean:
- - `config`: The "default variant" (without any parameter) should be also available
-   (has useful functionality)
- - `infos`: It is not possible to determine the changes of the contract,
-   the user need to instantiate the plugin and enquiry the contract.
+   - `config`: The "default variant" (without any parameter) should be also available
+     (has useful functionality)
+   - `infos`: It is not possible to determine the changes of the contract,
+     the user need to instantiate the plugin and enquiry the contract.
 
 ### Example
 
@@ -138,11 +138,11 @@ system/elektra/plugins/simpleini/variants/spacesep/config/format = "% %"
 ## Implications
 
 - `genconf` needs to be implemented for the plugins:
- - augeas
- - jni
- - lua
- - python
- - python2
+  - augeas
+  - jni
+  - lua
+  - python
+  - python2
 - `PluginDatabase` needs an extension to list all plugin variants
 - `kdb list` should be able to list all variants, e.g. like:
   `augeas lens=Access.lns`
