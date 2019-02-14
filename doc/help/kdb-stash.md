@@ -1,5 +1,4 @@
-kdb-stash -- Stash away KDB to be restored later
-================================================
+# kdb-stash -- Stash away KDB to be restored later
 
 ## SYNOPSES
 
@@ -51,5 +50,6 @@ kdb mount
 ```
 
 ## SEE ALSO
+
 - [kdb-restore(7)](kdb-restore.md)
 - [kdb-backup(7)](kdb-backup.md)

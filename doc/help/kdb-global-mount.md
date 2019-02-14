@@ -1,5 +1,4 @@
-kdb-global-mount(1) - Globally mount plugins
-============================================
+# kdb-global-mount(1) - Globally mount plugins
 
 ## SYNOPSIS
 
@@ -10,17 +9,14 @@ kdb-global-mount(1) - Globally mount plugins
 
 `kdb gmount` is an alias and can be used in the same way as `kdb global-mount`.
 
-
 ## DESCRIPTION
 
 This command allows a user to globally mount some plugins that will be part of every interaction with the global keydatabase.
-
 
 ## IMPORTANT
 
 This command writes into the `/etc` directory and as such it requires root permissions.
 Use `kdb file system/elektra/globalplugins` to find out where exactly it will write to.
-
 
 ## OPTIONS
 
@@ -35,15 +31,12 @@ Use `kdb file system/elektra/globalplugins` to find out where exactly it will wr
 - `-W`, `--with-recommends`:
   Also add recommended plugins and warn if they are not available.
 
-
-
 ## KDB
 
 - `/sw/elektra/kdb/#0/current/plugins/global`:
   It contains a space-separated list of plugins
   which are added automatically (by default `spec`).
   The plugin-configuration syntax is as described above in the [synopsis](#SYNOPSIS).
-
 
 ## EXAMPLES
 
@@ -52,7 +45,6 @@ Trace every interaction with the key database (very noisy!):<br>
 
 For every change of KDB, write to syslog and notify by dbus:<br>
 `kdb global-mount syslog dbus`
-
 
 ## SEE ALSO
 

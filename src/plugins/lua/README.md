@@ -38,7 +38,7 @@ Lua scripts can implement the following functions
 - elektraError(returned, parentKey)
 - elektraClose(errorKey)
 
-where *config* & *returned* are KeySets and *errorKey* & *parentKey* are Keys.
+where _config_ & _returned_ are KeySets and _errorKey_ & _parentKey_ are Keys.
 For the return codes of the functions, the same rules as for normal plugins apply.
 
 If a function is not available, it simply is not called. A script does not have to
@@ -88,4 +88,3 @@ and the API might change in the future.
 
 Be also aware that a Lua script will never be as performant as a native C/C++ plugin.
 Spinning up the interpreter takes additional time and resources.
-

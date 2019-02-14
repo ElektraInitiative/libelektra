@@ -16,6 +16,7 @@ None.
 ## Considered Alternatives
 
 - pythonpaste
+
   - Pros:
     - easy to work with
   - Cons:
@@ -23,6 +24,7 @@ None.
     - extra dependency not in any distro
 
 - robotframework
+
   - Cons:
     - additional (fat) dependency
     - integration with cmake?
@@ -35,7 +37,6 @@ None.
     - quite long for simple things (e.g. check /bin/true needs 4 lines)
     - new syntax for Elektra (TCL)
     - additional dependency
-
 
 ## Decision
 

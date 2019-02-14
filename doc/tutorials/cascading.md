@@ -4,11 +4,11 @@ This tutorial assumes that you are already familiar with [namespaces](/doc/tutor
 
 When Elektra looks up a _cascading key_ (i.e. key names without a namespace and a leading slash `/`, the namespaces are searched in the following order:
 
- * [spec](https://github.com/ElektraInitiative/libelektra/blob/master/doc/help/elektra-namespaces.md#spec) (contains metadata, e.g. to modify elektra lookup behavior)
- * [proc](https://github.com/ElektraInitiative/libelektra/blob/master/doc/help/elektra-namespaces.md#proc) (process-related information)
- * [dir](https://github.com/ElektraInitiative/libelektra/blob/master/doc/help/elektra-namespaces.md#dir) (directory-related information, e.g. `.git` or `.htaccess`)
- * [user](https://github.com/ElektraInitiative/libelektra/blob/master/doc/help/elektra-namespaces.md#user) (user configuration)
- * [system](https://github.com/ElektraInitiative/libelektra/blob/master/doc/help/elektra-namespaces.md#system) (system configuration)
+- [spec](https://github.com/ElektraInitiative/libelektra/blob/master/doc/help/elektra-namespaces.md#spec) (contains metadata, e.g. to modify elektra lookup behavior)
+- [proc](https://github.com/ElektraInitiative/libelektra/blob/master/doc/help/elektra-namespaces.md#proc) (process-related information)
+- [dir](https://github.com/ElektraInitiative/libelektra/blob/master/doc/help/elektra-namespaces.md#dir) (directory-related information, e.g. `.git` or `.htaccess`)
+- [user](https://github.com/ElektraInitiative/libelektra/blob/master/doc/help/elektra-namespaces.md#user) (user configuration)
+- [system](https://github.com/ElektraInitiative/libelektra/blob/master/doc/help/elektra-namespaces.md#system) (system configuration)
 
 If a key, for example, exists in both **user** and **system** namespace, the key in the **user** namespace takes precedence over the one in the **system** namespace. If there is no such key in the **user** namespace the key in the **system** namespace acts as a fallback.
 
@@ -91,7 +91,6 @@ The **proc** namespace is not accessible by the command line tool **kdb**, as it
 
 The **spec** namespace is used to store metadata about keys and therefore Elektra handles the **spec** namespace differently to other namespaces. The following part of the tutorial is dedicated to the impact of the **spec** namespace on cascading lookups.
 
-
 ## Override Links
 
 The `spec` namespace is special as it can completely change how the cascading
@@ -105,10 +104,10 @@ config from current folder (`dir` namespace) can be overwritten.
 
 The cascading lookup will consider the following **metadata keys** of `spec-key`:
 
- 1. `override/#n` redirect to one of the specified keys
- 2. `namespaces/#n` specifies which namespaces will be considered and in which order
- 4. `fallback/#n` if no key was found these keys will act as a fallback
- 5. `default` defines a default value for the key if none of the keys was found
+1.  `override/#n` redirect to one of the specified keys
+2.  `namespaces/#n` specifies which namespaces will be considered and in which order
+3.  `fallback/#n` if no key was found these keys will act as a fallback
+4.  `default` defines a default value for the key if none of the keys was found
 
 **Note:** `override/#n`, `namespaces/#n` and `fallback/#n` are Elektra **array keys**. This means, such keys can exist several times, each with a different number for `n`, e.g. `override/#0`, `override/#1`... This way, we can define multiple values for a specific key with a defined order.
 
@@ -148,7 +147,6 @@ kdb get /tests/tutorial/cascading/#0/current/test
 
 Furthermore, you can specify a custom order for the namespaces, set fallback
 keys and more. For more information, read the [`elektra-spec` help page](/doc/help/elektra-spec.md).
-
 
 ## Cleanup
 

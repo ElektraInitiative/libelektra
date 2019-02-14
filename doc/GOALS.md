@@ -105,4 +105,3 @@ Only pay for what you need.
 - Support semantics that do not fit into the KeySet (key-value pairs) with an `kdbGet()`/`kdbSet()` interface.
 - Support for non-configuration issues, e.g., storing key-value data unrelated to configuration settings.
 - Elektra is not a distributed CM, use Puppet, CFEngine on top or a distributed file system below Elektra.
-

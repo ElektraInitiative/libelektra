@@ -35,8 +35,8 @@ Example:
 To run the OPMPHM build time benchmark you need 2008 seeds.
 First generate the seeds:
 
-	scripts/generate-seeds 2008 mySeedFile
+    scripts/generate-seeds 2008 mySeedFile
 
 Then pass it to the benchmark:
 
-	cat mySeedFile | benchmark_opmphm opmphmbuildtime
+    cat mySeedFile | benchmark_opmphm opmphmbuildtime

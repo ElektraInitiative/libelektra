@@ -1,16 +1,21 @@
 # Trying out Elektra with Vagrant
+
 This Vagrantfile provisions a machine based on ubuntu/artful32 with all tools to build Elektra.
 
 If [Vagrant](https://www.vagrantup.com/) is installed on your machine change to the directory containing the file you are currently reading and build a box for vagrant with
+
 ```sh
 $ vagrant up
 ```
+
 This will take some time.
 
 When the machine is running, access it with
+
 ```sh
 $ vagrant ssh
 ```
+
 In this SSH session you can interact with the machine.
 
 By default Vagrant synchronizes the folder on the host machine containing the vagrantfile with the folder `/vagrant` in the VM.
@@ -44,4 +49,3 @@ $ make run_memcheck
 When you are done leave the VM with `CTRL-D` or `exit`.
 
 You can either shut the VM down with `vagrant halt` or delete it with `vagrant destroy`.
-

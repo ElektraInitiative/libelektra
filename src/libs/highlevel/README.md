@@ -83,9 +83,8 @@ if (elektra == NULL)
 }
 ```
 
-If an error occurred, you must call `elektraErrorReset` before using the same error pointer in any other function calls (e.g. elektraSet*
+If an error occurred, you must call `elektraErrorReset` before using the same error pointer in any other function calls (e.g. `elektraSet*`
 calls). It is also safe to call `elektraErrorReset`, if no error occurred.
-
 
 In order to give Elektra the chance to clean up all its allocated resources, you have to close your instance, when you are done using it,
 by calling:
@@ -94,7 +93,7 @@ by calling:
 elektraClose (elektra);
 ```
 
-*NOTE:* Elektra is only thread-safe when you use one handle per thread or protect your handle. If you have multiple threads accessing
+_NOTE:_ Elektra is only thread-safe when you use one handle per thread or protect your handle. If you have multiple threads accessing
 key-values, create a separate handle for each thread to avoid concurrency issues.
 
 ### Struct `ElektraError`
@@ -167,34 +166,35 @@ The default callback simply logs the error with `ELEKTRA_LOG_DEBUG` and then cal
 TODO: why DEBUG? It should be ERROR? And we should enable logging by default, otherwise users will not see the message?
 
 If you provide your own callback, it must interrupt the thread of execution in some way (e.g. by calling `exit()` or throwing an exception in C++). It
-*must not* return to the calling function.
+_must not_ return to the calling function.
 
 <a name="data-types"></a>
+
 ## Data Types
 
 The API supports the following types, which are taken from the CORBA specification:
 
-* **String**: a string of characters, represented by `KDB_TYPE_STRING` in metadata
+- **String**: a string of characters, represented by `KDB_TYPE_STRING` in metadata
 
 TODO: please add better explanation, as started in PR #2377
 
-* **Boolean**: a boolean value `true` or `false`, represented by `KDB_TYPE_BOOLEAN` in metadata, in the KDB the raw value `"1"` is
-               regarded, as true, any other value is considered false
-* **Char**: a single character, represented by `KDB_TYPE_CHAR` in metadata
-* **Octet**: a single byte, represented by `KDB_TYPE_OCTET` in metadata
-* **(Unsigned) Short**: a 16-bit (unsigned) integer, represented by `KDB_TYPE_SHORT` (`KDB_TYPE_UNSIGNED_SHORT`) in metadata
-* **(Unsigned) Long**: a 32-bit (unsigned) integer, represented by `KDB_TYPE_LONG` (`KDB_TYPE_UNSIGNED_LONG`) in metadata
-* **(Unsigned) Long Long**: a 64-bit (unsigned) integer, represented by `KDB_TYPE_LONG_LONG` (`KDB_TYPE_UNSIGNED_LONG_LONG`) in metadata
-* **Float**: whatever your compiler treats as `float`, probably IEEE-754 single-precision, represented by `KDB_TYPE_FLOAT` in metadata
-* **Double**: whatever your compiler treats as `double`, probably IEEE-754 double-precision, represented by `KDB_TYPE_DOUBLE` in metadata
-* **Long Double**: whatever your compiler treats as `long double`, not always available, represented by `KDB_TYPE_LONG_DOUBLE` in metadata
+- **Boolean**: a boolean value `true` or `false`, represented by `KDB_TYPE_BOOLEAN` in metadata, in the KDB the raw value `"1"` is
+  regarded, as true, any other value is considered false
+- **Char**: a single character, represented by `KDB_TYPE_CHAR` in metadata
+- **Octet**: a single byte, represented by `KDB_TYPE_OCTET` in metadata
+- **(Unsigned) Short**: a 16-bit (unsigned) integer, represented by `KDB_TYPE_SHORT` (`KDB_TYPE_UNSIGNED_SHORT`) in metadata
+- **(Unsigned) Long**: a 32-bit (unsigned) integer, represented by `KDB_TYPE_LONG` (`KDB_TYPE_UNSIGNED_LONG`) in metadata
+- **(Unsigned) Long Long**: a 64-bit (unsigned) integer, represented by `KDB_TYPE_LONG_LONG` (`KDB_TYPE_UNSIGNED_LONG_LONG`) in metadata
+- **Float**: whatever your compiler treats as `float`, probably IEEE-754 single-precision, represented by `KDB_TYPE_FLOAT` in metadata
+- **Double**: whatever your compiler treats as `double`, probably IEEE-754 double-precision, represented by `KDB_TYPE_DOUBLE` in metadata
+- **Long Double**: whatever your compiler treats as `long double`, not always available, represented by `KDB_TYPE_LONG_DOUBLE` in metadata
 
 The API contains one header that is not automatically included from `elektra.h`. You can use it with `#include <elektra/conversion.h>`.
 The header provides the functions Elektra uses to convert your configuration values to and from strings. In most cases, you won't need
 to use these functions directly, but they might still be useful sometimes (e.g. in combination with `elektraGetType` and `elektraGetRawString`).
 
-
 <a name="reading-and-writing-values"></a>
+
 ## Reading and Writing Values
 
 ### Key Names
@@ -205,6 +205,7 @@ configuration value for the key `"/sw/org/myapp/#0/current/message"` with the pr
 `"message"` as the name for the configuration value.
 
 <a name="read-values-from-the-kdb"></a>
+
 ### Read Values from the KDB
 
 A typical application wants to read some configuration values at start. This should be made as easy as possible for the developer.

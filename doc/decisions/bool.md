@@ -41,8 +41,8 @@ The type checker plugin should allow
 
 The convenience plugin should transform (it might be combined with a plugin that transforms everything lower-case):
 
-- "false", "off", "no"  to "0"
-- "true",  "on",  "yes" to "1"
+- "false", "off", "no" to "0"
+- "true", "on", "yes" to "1"
 
 ## Rationale
 

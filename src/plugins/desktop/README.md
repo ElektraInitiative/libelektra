@@ -28,7 +28,7 @@ Then you can get desktop information via:
 
     kdb get system/info/desktop
 
-You either get a *lower-case* string (supported desktops see below)
+You either get a _lower-case_ string (supported desktops see below)
 or no key if no desktop was detected.
 
 ## Supported Desktops
@@ -45,4 +45,3 @@ Currently the detection relies on environment variables,
 which will not work in setuid or otherwise secured binaries.
 Please open a bug report if the detection does not work for you:
 https://issues.libelektra.org
-

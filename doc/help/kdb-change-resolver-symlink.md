@@ -1,5 +1,4 @@
-kdb-change-resolver-symlink -- Changes the default resolver symlink
-===================================================================
+# kdb-change-resolver-symlink -- Changes the default resolver symlink
 
 ## SYNOPSIS
 

@@ -53,6 +53,7 @@ The JSON configuration explained on the website can be translated into Elektra k
 For the values `true` and `false`, the strings `"true"` and `"false"` can be used.
 
 The following example configuration in CppCMS style
+
 ```
 {
     "service": {
@@ -65,7 +66,9 @@ The following example configuration in CppCMS style
     }
 }
 ```
+
 can be realized within Elektra like
+
 ```
 kdb set @config_root@@config_default_profile@/cppcms/service/api "http"
 kdb set @config_root@@config_default_profile@/cppcms/service/port 8080
@@ -88,31 +91,33 @@ In detail, the options (without the base key `@config_root@`) are:
 
 To configure the rest-backend as service, it is possible to use `systemd` on most systems.
 
-1) Create a new service file with the following command
-(and make sure the paths of `ExecStart` match your installation of Elektra):
-```
-cat > /etc/systemd/system/@tool@.service << EOF
-[Unit]
-Description=Start the REST backend for sharing of configuration snippets
-Requires=network.target
-After=network.target
+1. Create a new service file with the following command
+   (and make sure the paths of `ExecStart` match your installation of Elektra):
 
-[Service]
-Type=simple
-Restart=always
-ExecStart=kdb run-@tool@
-ExecStop=kdb stop-@tool@
+   ```
+   cat > /etc/systemd/system/@tool@.service << EOF
+   [Unit]
+   Description=Start the REST backend for sharing of configuration snippets
+   Requires=network.target
+   After=network.target
 
-[Install]
-WantedBy=multi-user.target
-EOF
-```
-2) Reload the configuration of `systemctl` with `systemctl daemon-reload`.
-3) Enable the rest-backend service with `systemctl enable @tool@.service`, a symbolic link should be created.
-4) Make sure the service is enabled with `systemctl is-enabled @tool@.service`.
-5) Restart the rest-backend service with `systemctl restart @tool@.service`.
-If everything went fine, the service should be reachable and `systemctl status @tool@.service`
-should print information about the running service (PID, etc).
+   [Service]
+   Type=simple
+   Restart=always
+   ExecStart=kdb run-@tool@
+   ExecStop=kdb stop-@tool@
+
+   [Install]
+   WantedBy=multi-user.target
+   EOF
+   ```
+
+2. Reload the configuration of `systemctl` with `systemctl daemon-reload`.
+3. Enable the rest-backend service with `systemctl enable @tool@.service`, a symbolic link should be created.
+4. Make sure the service is enabled with `systemctl is-enabled @tool@.service`.
+5. Restart the rest-backend service with `systemctl restart @tool@.service`.
+   If everything went fine, the service should be reachable and `systemctl status @tool@.service`
+   should print information about the running service (PID, etc).
 
 ## Compiling and Installation
 

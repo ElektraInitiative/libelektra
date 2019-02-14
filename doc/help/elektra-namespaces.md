@@ -1,5 +1,4 @@
-elektra-namespaces(7) -- namespaces
-===================================
+# elektra-namespaces(7) -- namespaces
 
 ## INTRODUCTION
 
@@ -22,22 +21,19 @@ A namespace has following properties:
   are from the users home directory, **even if** an absolute configuration
   file name was used.
 - `ksLookup()` uses multiple namespaces in a specific default order unless
-    specified otherwise (cascading lookup)
-
+  specified otherwise (cascading lookup)
 
 Following parts of Elektra source code are affected by namespaces:
 
 - the key name validation in `keySetName()`
 - `keyGetNamespace()` which enumerates all namespaces
 - `_Backend` and `split.c` for correct distribution to plugins (note that
-    not all namespaces actually are distributed to configuration files)
+  not all namespaces actually are distributed to configuration files)
 - `mount.c` for cascading and root backends
 - and of course many unit tests
 
 In the rest of this document all currently available namespaces in the default order
 are described.
-
-
 
 ## spec
 
@@ -63,7 +59,6 @@ The spec configuration files are below `CMAKE_INSTALL_PREFIX/KDB_DB_SPEC`.
 spec is not part of cascading mounts, because the specifications often
 are written in different syntax than the configuration files.
 
-
 ## proc
 
 Derived from the process (e.g. by parsing `/proc/self` or by arguments passed
@@ -76,7 +71,6 @@ from the main method):
 Keys in the namespace proc can not be stored by their nature. Thus they are
 ignored by `kdbGet` and `kdbSet`. They might
 be different for every invocation of an application.
-
 
 ## dir
 
@@ -92,7 +86,6 @@ directories for different parts of your application.
 How to change the directory may be different dependent on the resolver,
 e.g. by using chdir or by setting the environment variable `PWD`.
 
-
 ## user
 
 On multi-user operating systems obviously every user wants her/his own
@@ -107,7 +100,6 @@ configuration for different parts of your application.
 How to change the user may be different dependent on the resolver,
 e.g. by `seteuid()` or by environment variables like `HOME`, `USER`
 
-
 ## system
 
 The system configuration is the same for every chroot.
@@ -116,12 +108,11 @@ The configuration is typically located below `KDB_DB_SYSTEM`.
 Other absolute paths, e.g. below `/opt` or `/usr/local/etc` are possible
 too.
 
-
 ## cascading
 
 Keys that are not in a namespace (i.e. start with an `/`) are called cascading
 keys. Cascading keys do not stem from a configuration source, but are
-used by applications to lookup a key in different namespaces.  So,
+used by applications to lookup a key in different namespaces. So,
 multiple keys can contribute to each cascading key name.
 
 Cascading is the same as a name resolution and provides a

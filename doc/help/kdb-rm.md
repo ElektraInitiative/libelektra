@@ -1,5 +1,4 @@
-kdb-rm(1) -- Remove key(s) from the key database
-================================================
+# kdb-rm(1) -- Remove key(s) from the key database
 
 ## SYNOPSIS
 

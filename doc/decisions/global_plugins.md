@@ -67,7 +67,6 @@ With different semantics each:
 - `max once` (without any subposition) will be called maximum once per `kdbGet()/kdbSet()`
   outside the loop. It must be called after `init`, and before `deinit`.
 
-
 ### Return values
 
 If a global plugin returns:
@@ -77,7 +76,6 @@ If a global plugin returns:
   (except `deinit` and `rollback` plugins are executed)
 - `1`: `kdbGet()/kdbSet()` will continue as if no hook was
   executed
-
 
 ### Detection within plugins
 
@@ -89,7 +87,6 @@ Exception: `foreach` plugins only get filenames, so to know in which foreach
 loop you are, you need to add additional `once` placements to correctly track your
 state.
 
-
 ### Contract
 
 Next to positioning information
@@ -98,8 +95,6 @@ do not need to work on individual config files, when following contract
 is present:
 
     infos/status global
-
-
 
 ### Application-Specific global plugins
 
@@ -111,9 +106,6 @@ Use cases:
 
 - internal notification within program
 - if applications depend on a global plugin to be present, e.g. #689
-
-
-
 
 ## Rationale
 
@@ -129,12 +121,10 @@ Transformation keys which are read and transformed to be usable by the applicati
              /lua=..
 
 (actually two plugins are involved: one that fetches transformation keys, the other
- that executes the transformation code)
-
+that executes the transformation code)
 
 - preget: fetch all foreign keys (kdbGet)
 - postget: run transformation for all foreign keys
-
 
 ### Global lock
 
@@ -143,14 +133,12 @@ recursive cases.
 
 Now called `semlock`-plugin.
 
-
 ### Shell plugins
 
 Run shell code at end of all plugins, e.g. especially doing
 
     git add
     git commit
-
 
 ### Inference plugins
 
@@ -188,9 +176,6 @@ the next `kdbGet()` with the same parameters using the global hook:
 
         getresolver/after/once
 
-
-
-
 ## Implications
 
 ### Default global plugins
@@ -218,6 +203,5 @@ states.
 - In kdbGet and kdbSet hooks execute one of these plugins
 - by default
   - the plugins are all the same `list` plugins, and their subplugins are executed, when `system/elektra/globalplugins/_` states they should be executed
-  - a `lock` plugin that executes at begin and end of kdbGet and kdbSet, respective, i.e.  postrollback preget postget preset postcommit
+  - a `lock` plugin that executes at begin and end of kdbGet and kdbSet, respective, i.e. postrollback preget postget preset postcommit
   - the `lock` plugin contains the code currently found in resolver
-

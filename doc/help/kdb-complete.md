@@ -1,5 +1,4 @@
-kdb-complete(1) -- Show suggestions how to complete a given path
-================================
+# kdb-complete(1) -- Show suggestions how to complete a given path
 
 ## SYNOPSIS
 

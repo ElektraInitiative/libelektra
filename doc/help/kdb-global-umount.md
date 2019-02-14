@@ -1,5 +1,4 @@
-kdb-global-umount(1) - Unmount a global plugin from the key database
-====================================================
+# kdb-global-umount(1) - Unmount a global plugin from the key database
 
 ## SYNOPSIS
 

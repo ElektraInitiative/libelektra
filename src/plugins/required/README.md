@@ -25,7 +25,7 @@ correct plugin to do so.
 
 ## Usage
 
-The plugin is *not* mounted by default.
+The plugin is _not_ mounted by default.
 So you must explicitly add it with `infos/needs`
 either in specifications or contracts.
 
@@ -43,4 +43,3 @@ to the `spec-mount` command:
     % kdb spec-mount /test
     % kdb set /test/allowed something    # is specified, works!
     % kdb set /test/rejected  something  # fails because rejected not required
-

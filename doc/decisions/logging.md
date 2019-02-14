@@ -75,7 +75,6 @@ So we would have:
         ELEKTRA_LOG            INFO    informational message
         ELEKTRA_LOG_DEBUG      debug-level message
 
-
 ### Modules
 
 To add a new module, one simply adds his/her module to `elektramodules.h` via

@@ -17,4 +17,3 @@ If inconsistent line endings or line endings that don't match `valid` are detect
 `valid`
 The key tells the plugin to reject all line endings other than specified in this key. Valid options: CRLF, LFCR, CR, LF
 If the key doesn't exist only inconsistent line endings are rejected.
-

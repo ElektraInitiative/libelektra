@@ -28,7 +28,6 @@ needed for bootstrapping plugins.
 
 ## Decision
 
-
 ## Rationale
 
 ## Implications

@@ -22,7 +22,6 @@ with the respective `kdbGet`.
 - split loops in `kdbGet` not only according placements
   but also according namespace (get spec first)
 
-
 ## Decision
 
 ## Rationale

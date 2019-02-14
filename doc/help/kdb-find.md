@@ -1,5 +1,4 @@
-kdb-find(1) -- Find keys in the key database
-================================
+# kdb-find(1) -- Find keys in the key database
 
 ## SYNOPSIS
 
@@ -62,5 +61,5 @@ sudo kdb umount user/tests/find
 ## SEE ALSO
 
 - If the user would also like to see the values of the keys below `path` then you should
-consider the [kdb-export(1)](kdb-export.md) command.
+  consider the [kdb-export(1)](kdb-export.md) command.
 - [elektra-key-names(7)](elektra-key-names.md) for an explanation of key names.

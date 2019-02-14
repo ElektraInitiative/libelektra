@@ -9,5 +9,3 @@ In particular it will cover:
 The tutorial will extensively refer to the `ini` files that are
 present in [this folder](/examples/spec/), so make sure they
 are accessible for you.
-
-

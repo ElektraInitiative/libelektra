@@ -40,7 +40,6 @@ the plugin will return with an error.
 The value of the metadata needs to contain the number of the requested
 error or warning.
 
-
 So an error and warnings can be injected directly with the kdb tool.
 E.g. the warning number 3:
 
@@ -76,4 +75,3 @@ Will yield error #63:
 
 because the opening of the plugin failed (resulting to a missing
 backend).
-

@@ -8,10 +8,10 @@ information.
 
 The same information can be retrieved at run-time using
 
-	system/elektra/version/constants/KDB_VERSION
-	system/elektra/version/constants/KDB_VERSION_MAJOR
-	system/elektra/version/constants/KDB_VERSION_MICRO
-	system/elektra/version/constants/KDB_VERSION_MINOR
+    system/elektra/version/constants/KDB_VERSION
+    system/elektra/version/constants/KDB_VERSION_MAJOR
+    system/elektra/version/constants/KDB_VERSION_MICRO
+    system/elektra/version/constants/KDB_VERSION_MINOR
 
 This is the API to programs using Elektra. Its interface
 is defined in [src/include/kdb.h](/src/include/kdb.h.in).
@@ -43,9 +43,9 @@ When you add a new function you break ABI and API backward-
 compatibility, but not forward, so you are allowed to do so.
 
 In the signature you are only allowed to add const to
-any parameter. You are *not* allowed to use subtypes to
+any parameter. You are _not_ allowed to use subtypes to
 the objects, in C means you are not allowed to call any
-functions of an object which appear new. C does *not*
+functions of an object which appear new. C does _not_
 type check that, it's your responsibility.
 
 What C also does not check are the pre and postconditions.

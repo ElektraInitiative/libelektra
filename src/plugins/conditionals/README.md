@@ -19,7 +19,7 @@ Stored in the metakey `check/condition` to validate data is:
 
 `(IF-condition) ? (THEN-condition) : (ELSE-condition)` where the ELSE-condition is optional
 
-Condition:  `Key` *Operation* `('String' | '1234.56' | Key | '')`
+Condition: `Key` _Operation_ `('String' | '1234.56' | Key | '')`
 
 Operations: `!=, ==, <, <=, =>, >, :=`, where:
 
@@ -54,13 +54,11 @@ Keynames are all either relative to to-be-tested key (starting with `./` or `../
 It's also possible to test multiple conditions using `check/condition/{any,all,none}` as a meta array. Where `any` means that at least one statement has to evaluate to true, `all` that all statements have to evaluate to true, and `none` that no statement is allowed to evaluate to false (default).
 For multiple assign statements use `assign/condition` as a meta array. The first `assign/condition/#` statement that evaluates to true will be assigned and the rest ignored.
 
-
 ## Example
 
     (this/key  != 'value') ? (then/key == some/other/key) : (or/key <= '125')
 
 Meaning: IF `this/key` NOT EQUAL TO `'value'` THEN `then/key` MUST EQUAL `some/other/key` ELSE `or/key` MUST BE LESS THAN `125`
-
 
 Another full example:
 

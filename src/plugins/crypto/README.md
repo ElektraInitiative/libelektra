@@ -30,13 +30,11 @@ At the moment the following crypto APIs are supported:
 
 ## Dependencies
 
-
 #ifdef ELEKTRA_CRYPTO_API_GCRYPT
 
 - `libgcrypt20-dev` or `libgcrypt-devel`
 
 #endif
-
 
 #ifdef ELEKTRA_CRYPTO_API_OPENSSL
 
@@ -44,13 +42,11 @@ At the moment the following crypto APIs are supported:
 
 #endif
 
-
 #ifdef ELEKTRA_CRYPTO_API_BOTAN
 
 - `libbotan1.10-dev` or `botan-devel`
 
 #endif
-
 
 ### GnuPG (GPG)
 
@@ -160,7 +156,6 @@ This means that the following keys are available:
 So the full mount command could look like this:
 
     kdb mount test.ecf user/t crypto_gcrypt "crypto/key=847378ABCF0A552B48082A80C52E8E92F785163F"
-
 
 ### Cryptographic Operations
 
