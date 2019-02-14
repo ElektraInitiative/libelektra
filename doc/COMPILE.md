@@ -576,16 +576,16 @@ cmake .. -G 'CodeBlocks - Unix Makefiles'
 make package
 ```
 
-Note  1:
+**Note  1:**
     You can use other editor if you like just type cmake at the
     console to get a list of option you can pass to cmake as long as well
     as a list of what code editor project cmake can create.
 
-Note 2:
+**Note 2:**
     For Unix if you have nCurses install you can run `ccmake` to set important option after
     running cmake like to enable debug symbol.
 
-Note 3:
+**Note 3:**
     for Gentoo is recommend to emerge sys-apps/lsb-release to name the package
     right even thou not required.
 
