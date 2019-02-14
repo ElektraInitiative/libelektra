@@ -3,7 +3,7 @@
 Do not describe the purpose here but:
 
 - [ ] Short descriptions should be in the release notes (added as entry in
-      doc/news/_preparation_next_release.md which contains `*(my name)*`)
+      `doc/news/_preparation_next_release.md` which contains `*(my name)*`)
       **Please always add something to the the release notes.**
 - [ ] Longer descriptions should be in documentation or in design decisions.
 - [ ] Describe details of how you changed the code in commit messages
