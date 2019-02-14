@@ -405,11 +405,6 @@ Run:
 
 The HTML files can be found in the build directory in the folder `coverage`.
 
-See also the build server job:
-
-* [gcc-asan](https://build.libelektra.org/job/elektra-incremental/)
-
-
 ## See also
 
 - [COMPILE](COMPILE.md).
