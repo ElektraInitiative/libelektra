@@ -21,7 +21,7 @@ mount points) also needs to be stored somewhere.
 The so called **init backend** is responsible for fetching configuration
 from `system/elektra`, where the mount points are stored.
 Again `KDB_STORAGE` and `KDB_RESOLVER` is used, but now
-they write into the configuration file `KDB_DB_INIT` (elektra.ecf by default).
+they write into the configuration file `KDB_DB_INIT` (`elektra.ecf` by default).
 
 Thus for full and static build variants an exchange at run-time is not possible.
 Using shared libraries, however, `KDB_STORAGE` and `KDB_RESOLVER` are actually
@@ -52,11 +52,11 @@ system keys always stay separated.
 
 ## TRACEABILITY
 
-- elektraOpenBootstrap() implements above algorithm
-- backendOpenDefault() opens the default backend
-- /src/include/kdbconfig.h.in contains above KDB_* variables
-- src/plugins/CMakeLists.txt creates the symbolic links
-- cmake/Modules/LibAddMacros.cmake create_lib_symlink function
+- `elektraOpenBootstrap()` implements above algorithm
+- `backendOpenDefault()` opens the default backend
+- `/src/include/kdbconfig.h.in` contains above `KDB_*` variables
+- `src/plugins/CMakeLists.txt` creates the symbolic links
+- `cmake/Modules/LibAddMacros.cmake` `create_lib_symlink` function
 
 
 ## SEE ALSO
