@@ -22,7 +22,7 @@ RUN apt-get update && apt-get -y install \
         liblua5.3-dev \
         tclcl-dev \
         libaugeas-dev \
-        libbotan1.10-dev \
+        libbotan-2-dev \
         libyajl-dev \
         git \
         libgit2-dev \
