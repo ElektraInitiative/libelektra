@@ -29,7 +29,7 @@ Elektra your mission is to avoid that.
 The tool icheck against the interfaces mentioned
 above may help you too.
 
-In 0.8.* the API and ABI must be always forward-compatible,
+In `0.8.*` the API and ABI must be always forward-compatible,
 but not backwards-compatible.
 That means that a program written and compiled against 0.8.0
 compiles and links against 0.8.1. But because it is
