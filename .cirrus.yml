@@ -16,6 +16,7 @@ bsd_task:
       git
       ninja
       yajl
+      yaml-cpp
 
   script:
     - &create_and_chage_to_build_dir mkdir build && cd build
