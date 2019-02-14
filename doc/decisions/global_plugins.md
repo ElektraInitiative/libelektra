@@ -217,7 +217,7 @@ states.
 - during `kdbOpen`, `system/elektra/globalplugins/` is read and plugins are constructed and placed into `globalPlugins`.
 - In kdbGet and kdbSet hooks execute one of these plugins
 - by default
- - the plugins are all the same `list` plugins, and their subplugins are executed, when `system/elektra/globalplugins/_` states they should be executed
- - a `lock` plugin that executes at begin and end of kdbGet and kdbSet, respective, i.e.  postrollback preget postget preset postcommit
- - the `lock` plugin contains the code currently found in resolver
+  - the plugins are all the same `list` plugins, and their subplugins are executed, when `system/elektra/globalplugins/_` states they should be executed
+  - a `lock` plugin that executes at begin and end of kdbGet and kdbSet, respective, i.e.  postrollback preget postget preset postcommit
+  - the `lock` plugin contains the code currently found in resolver
 

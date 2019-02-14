@@ -3,7 +3,7 @@
 ## Problem
 
 - Plugin names and plugin folders not always exactly
-  match (resolver_*, crypto_*)
+  match (`resolver_*`, `crypto_*`)
 - plugin should be able to register new variants
 - there should be only one place to define a new plugin
 - Multiple categories should be possible per plugin,
@@ -55,17 +55,17 @@ Following cmake variables are used for the phases:
 
 
 
-1.) Collection phase (`COLLECTION_PHASE` is `ON`),
+1. Collection phase (`COLLECTION_PHASE` is `ON`),
   add_plugin internally builds up:
   - `ADDED_PLUGINS`
   - `REMOVED_PLUGINS`
   - `ADDED_DIRECTORIES`
-2.) assemble dependency phase (`DEPENDENCY_PHASE` is `ON`, only considering `ADDED_DIRECTORIES`),
+2. assemble dependency phase (`DEPENDENCY_PHASE` is `ON`, only considering `ADDED_DIRECTORIES`),
   with:
   - find_libraries, actually search for libraries on the system
     (only relevant libraries of plugins that are considered for inclusion)
   - add_plugin, with *actually adding* the plugins
-3.) assemble all unit tests (`ADDTESTING_PHASE` is `ON`), either
+3. assemble all unit tests (`ADDTESTING_PHASE` is `ON`), either
   - with `ADD_TEST` in `add_plugin`, or
   - with `add_plugintest` (for unittests that have dependencies to bindings)
 
