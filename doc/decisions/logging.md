@@ -45,12 +45,16 @@ and unusable. Thus there is an urge for this decision.
 
 Provide a Macro
 
-    ELEKTRA_LOG (int module, const char *msg, ...);
+```c
+ELEKTRA_LOG (int module, const char *msg, ...);
+```
 
 that calls
 
-    elektraLog ([as above], const char * function, const char * file,
-	    const int line, ...)
+```c
+elektraLog ([as above], const char * function, const char * file,
+            const int line, ...);
+```
 
 and adds current function, file and line to `elektraLog`'s arguments.
 
@@ -77,7 +81,9 @@ So we would have:
 To add a new module, one simply adds his/her module to `elektramodules.h` via
 `#define`:
 
-    #define ELEKTRA_MODULE_<NAME> <SEQNUMBER>
+```c
+#define ELEKTRA_MODULE_<NAME> <SEQNUMBER>
+```
 
 The module name `<NAME>` shall be consistent with module names used in
 `module:` of `src/error/specification`.
