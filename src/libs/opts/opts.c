@@ -73,7 +73,7 @@ static bool processEnvVars (KeySet * usedEnvVars, Key * specKey, Key ** keyWithO
 
 static int writeOptionValues (KeySet * ks, Key * keyWithOpt, KeySet * options, Key * errorKey);
 static int writeEnvVarValues (KeySet * ks, Key * keyWithOpt, KeySet * envValues, Key * errorKey);
-static void writeArgsValues (KeySet * ks, Key * keyWithOpt, KeySet * args);
+static int writeArgsValues (KeySet * ks, Key * keyWithOpt, KeySet * args);
 
 static bool parseLongOption (KeySet * optionsSpec, KeySet * options, int argc, const char ** argv, int * index, Key * errorKey);
 static bool parseShortOptions (KeySet * optionsSpec, KeySet * options, int argc, const char ** argv, int * index, Key * errorKey);
@@ -189,7 +189,7 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 			continue;
 		}
 
-		result = writeEnvVarValues (ks, keyWithOpt, envValues, parentKey);
+		result = writeArgsValues (ks, keyWithOpt, args);
 		if (result < 0)
 		{
 			ksDel (envValues);
@@ -204,7 +204,16 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 			continue;
 		}
 
-		writeArgsValues (ks, keyWithOpt, args);
+		result = writeEnvVarValues (ks, keyWithOpt, envValues, parentKey);
+		if (result < 0)
+		{
+			ksDel (envValues);
+			ksDel (options);
+			ksDel (spec.keys);
+			ksDel (args);
+			ksSetCursor (ks, initial);
+			return -1;
+		}
 	}
 
 	ksDel (envValues);
@@ -704,7 +713,7 @@ bool processLongOptSpec (struct Specification * spec, struct OptionData * option
  * @retval true on success
  * @retval false on error
  */
-bool processEnvVars (KeySet * usedEnvVars, Key * specKey, Key ** keyWithOpt, Key * errorKey)
+bool processEnvVars (KeySet * usedEnvVars, Key * specKey, Key ** keyWithOpt, Key * errorKey ELEKTRA_UNUSED)
 {
 	KeySet * envVars = ksMetaGetSingleOrArray (specKey, "env");
 	if (envVars == NULL)
@@ -725,19 +734,6 @@ bool processEnvVars (KeySet * usedEnvVars, Key * specKey, Key ** keyWithOpt, Key
 
 		Key * envVarKey = keyNew ("/", KEY_META, "key", keyName (specKey), KEY_END);
 		keyAddBaseName (envVarKey, envVar);
-
-		Key * existing = ksLookupByName (usedEnvVars, keyName (envVarKey), 0);
-		if (existing != NULL)
-		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_OPTS_ILLEGAL_SPEC, errorKey,
-					    "The environment variable '%s' has already been specified for the key "
-					    "'%s'. Additional key: %s",
-					    envVar, keyGetMetaString (existing, "key"), keyName (specKey));
-			keyDel (envVarKey);
-			keyDel (existing);
-			ksDel (envVars);
-			return false;
-		}
 
 		ksAppendKey (usedEnvVars, envVarKey);
 
@@ -833,7 +829,21 @@ int writeEnvVarValues (KeySet * ks, Key * keyWithOpt, KeySet * envValues, Key * 
 	while ((envMeta = ksNext (envMetas)) != NULL)
 	{
 		Key * envKey = ksLookupByName (envValues, keyString (envMeta), 0);
-		Key * envValueKey = splitEnvValue (envKey);
+
+		bool isArray = strcmp (keyBaseName (keyWithOpt), "#") == 0;
+		Key * envValueKey;
+		if (envKey == NULL)
+		{
+			envValueKey = NULL;
+		}
+		else if (isArray)
+		{
+			envValueKey = splitEnvValue (envKey);
+		}
+		else
+		{
+			envValueKey = keyNew (keyName (envKey), KEY_VALUE, keyString (envKey), KEY_END);
+		}
 
 		int res = addProcKey (ks, keyWithOpt, envValueKey);
 		if (res < 0)
@@ -860,13 +870,16 @@ int writeEnvVarValues (KeySet * ks, Key * keyWithOpt, KeySet * envValues, Key * 
 /**
  * Add keys to the proc namespace in @p ks for everything that is specified
  * by the 'args' metadata on @p keyWithOpt. The args are taken from @p args.
+ * @retval -1 in case of error
+ * @retval 0 if no key was added
+ * @retval 1 if keys were added to @p ks
  */
-void writeArgsValues (KeySet * ks, Key * keyWithOpt, KeySet * args)
+int writeArgsValues (KeySet * ks, Key * keyWithOpt, KeySet * args)
 {
 	const char * argsMeta = keyGetMetaString (keyWithOpt, "args");
 	if (argsMeta == NULL || elektraStrCmp (argsMeta, "remaining") != 0)
 	{
-		return;
+		return 0;
 	}
 
 	Key * procKey = keyNew ("proc", KEY_END);
@@ -889,6 +902,7 @@ void writeArgsValues (KeySet * ks, Key * keyWithOpt, KeySet * args)
 	keySetString (procKey, keyBaseName (insertKey));
 	ksAppendKey (ks, procKey);
 	keyDel (insertKey);
+	return 1;
 }
 
 /**
@@ -898,11 +912,6 @@ void writeArgsValues (KeySet * ks, Key * keyWithOpt, KeySet * args)
  */
 Key * splitEnvValue (const Key * envKey)
 {
-	if (envKey == NULL)
-	{
-		return NULL;
-	}
-
 	Key * valueKey = keyNew (keyName (envKey), KEY_END);
 
 	char * envValue = elektraStrDup (keyString (envKey));
@@ -911,12 +920,10 @@ Key * splitEnvValue (const Key * envKey)
 	char * c = strchr (curEnvValue, SEP_ENV_VALUE);
 	if (c == NULL)
 	{
-		keySetString (valueKey, curEnvValue);
+		elektraMetaArrayAdd (valueKey, "values", curEnvValue);
 	}
 	else
 	{
-		keySetString (valueKey, NULL);
-
 		char * lastEnvValue = curEnvValue;
 		while (c != NULL)
 		{
@@ -937,7 +944,6 @@ Key * splitEnvValue (const Key * envKey)
 }
 
 /**
- * @param replace if set to true pre-existing values will be replaced
  * @retval 0 if a proc key was added to ks
  * @retval -1 on pre-existing value, except if key is an array key, or replace == true then 0
  * @retval 1 on NULL pointers and failed insertion
@@ -960,10 +966,14 @@ int addProcKey (KeySet * ks, const Key * key, Key * valueKey)
 
 
 	Key * existing = ksLookupByName (ks, keyName (procKey), 0);
-	if (existing != NULL && strlen (keyString (existing)) > 0)
+	if (existing != NULL)
 	{
-		keyDel (procKey);
-		return -1;
+		const char * value = isArrayKey ? keyGetMetaString (existing, "array") : keyString (existing);
+		if (value != NULL && strlen (value) > 0)
+		{
+			keyDel (procKey);
+			return -1;
+		}
 	}
 
 	if (isArrayKey)
@@ -990,7 +1000,7 @@ int addProcKey (KeySet * ks, const Key * key, Key * valueKey)
 			ksAppendKey (ks, k);
 		}
 
-		keySetString (procKey, keyBaseName (insertKey));
+		keySetMeta (procKey, "array", keyBaseName (insertKey));
 		keyDel (insertKey);
 		ksDel (values);
 	}

@@ -218,7 +218,7 @@ compiled against an older 0.8 version of Elektra will continue to work
   environment variables and add their values to keys in the proc namespace.
 
   You can use `opt`, `opt/long` and `env` to specify a short, a long option and an environment variable. For more information take
-  a look at [the tutorial](/doc/tutorials/command-line-options.md) and the code documentation. *(Klemens Böswirth)*
+  a look at [the tutorial](/doc/tutorials/command-line-options.md) and the code documentation of `elektraGetOpts`. *(Klemens Böswirth)*
 
 
 ### <<Library3>>
