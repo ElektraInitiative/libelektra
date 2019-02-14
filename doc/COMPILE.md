@@ -505,7 +505,7 @@ This value specifies the root directory of a local copy of the [Google Test][] f
 It can be provided as CMake or environment variable.
 If both options are provided the value passed via CMake takes precedence.
 
-[Google Test]: https://github.com/google/googletest
+[google test]: https://github.com/google/googletest
 
 It is recommended that you browse through all of the options using `ccmake`.
 Afterwards press `c` again (maybe multiple times until all variables are
