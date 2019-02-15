@@ -144,7 +144,7 @@ Signature:
  - `fullPath`: contains the full path of the resolved file.
  - `tmpFile`: contains the full path of the created temporary file.
 
-`ElektraResolveTempfile` dictates if and where a temporarey file should be created. Possible values:
+`ElektraResolveTempfile` dictates if and where a temporary file should be created. Possible values:
  - `ELEKTRA_RESOLVER_TEMPFILE_NONE`: don't create a temporary file.
  - `ELEKTRA_RESOLVER_TEMPFILE_SAMEDIR`: create a temporary file in the same directory as the resolved file.
  - `ELEKTRA_RESOLVER_TEMPFILE_TMPDIR`: create a temporary file in `/tmp`.
