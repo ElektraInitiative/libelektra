@@ -19,8 +19,8 @@ binding for your Java plugin may use something different, e.g. JNA.
 The requirements for the Java bindings are:
 
 - needs to have the classes `elektra/Key` and `elektra/KeySet` with
- - a constructor that takes a C-Pointer as long (J)
- - a method "release" that gives up ownership (set internal pointer to NULL)
+  - a constructor that takes a C-Pointer as long (J)
+  - a method "release" that gives up ownership (set internal pointer to NULL)
 
 The Java plugin itself needs to have the following methods:
 
