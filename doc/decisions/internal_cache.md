@@ -41,10 +41,14 @@ internal caches lead to duplication of memory consumption
 in some cases caches cannot be avoided?
  -> filesys, databases?
 
-cache discussion:
-+ not more keys than needed
-+ kdbGet avoids IO even if done somewhere else
-+ KDB handles could be more locally
+### Cache Discussion
+
+**Pros:**
+- not more keys than needed
+- kdbGet avoids IO even if done somewhere else
+- KDB handles could be more locally
+
+**Cons:**
 - not possible to access cache with current architecture, KDB high level API
 - implementation overhead
 - where should the caches be
