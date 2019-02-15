@@ -16,12 +16,12 @@
    * reading user and (system) default values
    * writing user values and trees of user values
    * reset (delete) a key
-   * synchronitation (no conflict handling yet)
-   * subscribing and unsubscribing for changes (needs elektras [dbus plugin](https://github.com/ElektraInitiative/libelektra/tree/master/src/plugins/dbus) mounted on subscribed path)
+   * synchronization (no conflict handling yet)
+   * subscribing and unsubscribing for changes (needs Elektra’s [dbus plugin](https://github.com/ElektraInitiative/libelektra/tree/master/src/plugins/dbus) mounted on subscribed path)
    * get writability of key (As far as definable as writable from Elektra)
 
 ## What is not
- * synchronitation conflict handling
+ * synchronization conflict handling
  * code cleanup
  * proper error handling
  * optimizations
@@ -59,7 +59,7 @@ cmake -GSETTINGS_MODULE_PRIORITY=200 ..
 make
 ```
 
- * GSETTINGS_MODULE_PRIORITY set this value above the value of othe GSettingsBackend modules so it gets selected as default
+ * GSETTINGS_MODULE_PRIORITY set this value above the value of other GSettingsBackend modules so it gets selected as default
   * the dconf GSettingsBackend is known to have a value of `100`
 
 # Installation
