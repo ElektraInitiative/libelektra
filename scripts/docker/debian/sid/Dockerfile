@@ -22,7 +22,7 @@ RUN apt-get update && apt-get -y install \
         liblua5.3-dev \
         tclcl-dev \
         libaugeas-dev \
-        libbotan1.10-dev \
+        libbotan-2-dev \
         libyajl-dev \
         git \
         libgit2-dev \
@@ -90,3 +90,12 @@ RUN useradd \
     jenkins
 
 USER ${JENKINS_USERID}
+
+# shfmt
+ENV SHFMT_PATH=/home/jenkins/bin
+ENV SHFMT_VERSION=v2.6.3
+ENV PATH="${SHFMT_PATH}:${PATH}"
+RUN mkdir -p "${SHFMT_PATH}" \
+    && cd "${SHFMT_PATH}" \
+    && curl -L "https://github.com/mvdan/sh/releases/download/${SHFMT_VERSION}/shfmt_${SHFMT_VERSION}_linux_amd64" -o shfmt \
+    && chmod a+x shfmt
