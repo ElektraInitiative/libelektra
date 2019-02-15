@@ -104,8 +104,8 @@ to be updated for the Docker containers used in the build server as well.
 - no binary keys
 - functions which return a string value with a maximum size argument don't 
   include the size argument anymore, but instead allocate memory as required
-  	- keyGetName behaves like keyName
-  	- keyGetFullName doesn't has a size argument either
-  	- keyGetBaseName behaves like keyBaseName
-  	- keyUnescapedName returns a String, the null separators are written with \0
+  - keyGetName behaves like keyName
+  - keyGetFullName doesn't has a size argument either
+  - keyGetBaseName behaves like keyBaseName
+  - keyUnescapedName returns a String, the null separators are written with \0
 - BUILD_STATIC is currently not compatible with the haskell bindings
