@@ -172,7 +172,7 @@ mac_task:
   tests_script:
     # Remove files produced by `ronn`, since `testscr_check_formatting` only checks the formatting, if the stating area is clean
     - git checkout .
-    - export PATH=$PATH:"$PWD/install/bin"
+    - export PATH=$PATH:"$PWD/install/bin:/usr/local/opt/llvm/bin"
     - *run_tests
     - | # Uninstall Elektra
       output="$(ninja uninstall 2>&1)" || printf '%s' "$output"
