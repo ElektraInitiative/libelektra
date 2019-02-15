@@ -13,12 +13,12 @@
 ## What is working:
  * passing gsettings unit tests
  * all interface functionality but one
-  * reading user and (system) default values
-  * writing user values and trees of user values
-  * reset (delete) a key
-  * synchronitation (no conflict handling yet)
-  * subscribing and unsubscribing for changes (needs elektras [dbus plugin](https://github.com/ElektraInitiative/libelektra/tree/master/src/plugins/dbus) mounted on subscribed path)
-  * get writability of key (As far as definable as writable from Elektra)
+   * reading user and (system) default values
+   * writing user values and trees of user values
+   * reset (delete) a key
+   * synchronitation (no conflict handling yet)
+   * subscribing and unsubscribing for changes (needs elektras [dbus plugin](https://github.com/ElektraInitiative/libelektra/tree/master/src/plugins/dbus) mounted on subscribed path)
+   * get writability of key (As far as definable as writable from Elektra)
 
 ## What is not
  * synchronitation conflict handling
