@@ -41,9 +41,11 @@ bsd_task:
       if [[ "$ENABLE_ASAN" == 'ON' ]]; then
         ninja run_nocheckshell
       elif [[ "$BUILD_FULL" == 'ON' ]]; then
-        ninja run_all && kdb-full run_all
+        # While the command `|| false` is in theory unnecessary, somehow the whole `if`-statement always reports success,
+        # if we do not add the alternative `false`.
+        ninja run_all && kdb-full run_all || false
       else
-        ninja run_all && kdb run_all
+        ninja run_all && kdb run_all || false
       fi
 
 mac_task:
