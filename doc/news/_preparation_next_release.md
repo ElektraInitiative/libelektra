@@ -258,7 +258,9 @@ you up to date with the multi-language support provided by Elektra.
 
 - The script [`reformat-source`](https://master.libelektra.org/scripts/reformat-source) now also handles filenames containing spaces
   correctly. _(René Schwaiger)_
-- <<TODO>>
+- The script [`reformat-markdown`](https://master.libelektra.org/scripts/reformat-markdown) formats
+  [Markdown](https://daringfireball.net/projects/markdown) files in the repository with [`prettier`](https://prettier.io).
+  _(René Schwaiger)_
 - <<TODO>>
 
 ## Documentation
@@ -283,6 +285,7 @@ you up to date with the multi-language support provided by Elektra.
   [Type Checker](https://www.libelektra.org/plugins/typechecker) plugin. _(René Schwaiger)_
 - We added a test that invokes the script [`fix-spelling`](http://master.libelektra.org/scripts/fix-spelling) to check the documentation
   for common spelling mistakes. _(René Schwaiger)_
+- We added a test that checks the formatting of Markdown files with [`prettier`](https://prettier.io). _(René Schwaiger)_
 
 [shell recorder]: https://master.libelektra.org/tests/shell/shell_recorder
 [markdown shell recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
