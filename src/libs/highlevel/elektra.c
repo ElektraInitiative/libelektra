@@ -57,8 +57,6 @@ ELEKTRA_TAG_DEFINITIONS (kdb_long_double_t, LongDouble, KDB_TYPE_LONG_DOUBLE, el
 
 #endif // ELEKTRA_HAVE_KDB_LONG_DOUBLE
 
-ELEKTRA_TAG_DEFINITIONS (int, Enum, KDB_TYPE_ENUM, elektraLongToString, elektraKeyToLong)
-
 /**
  * Initializes a new Elektra instance.
  *

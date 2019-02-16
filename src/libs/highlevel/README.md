@@ -216,6 +216,10 @@ to use these functions directly, but they might still be useful sometimes (e.g. 
 `elektraGetRawString`). We also provide a `KDB_TPYE_*` constant for each of the types listed above. Again, most users won't use these
 but, if you ever do need to use the raw type metadata using constants enables code completion and protects against typos.
 
+There is also the type `enum` with constant `KDB_TYPE_ENUM`. It is currently neither used nor supported by this API. However, we reserve it
+for a future expansion of this API.
+
+
 <a name="reading-and-writing-values"></a>
 
 ## Reading and Writing Values
@@ -292,41 +296,6 @@ elektraSetStringArrayElement (elektra, "message", "This is the third new message
 
 Because even the best specification and perfect usage as intended can not prevent any error from occurring, when saving the
 configuration, all setter-functions take an additional `ElektraError` argument, which will be set if an error occurs.
-
-### Enum Values
-
-Reading enum values is a special case, because the compiler is not able to infer the enum type from the key alone. Therefore you can
-either use the function `int elektraGetEnumInt (Elektra * elektra, char * keyName)`, and deal with the raw integer yourself, or use the
-convenience macro `elektraGetEnum(elektra, keyname, enumType)`, which calls `elektraGetEnumInt` and then casts to `enumType`.
-
-```c
-typedef enum { A, B, C } MyEnum;
-
-ElektraError * error = NULL;
-Elektra * elektra = elektraOpen ("/sw/org/myapp/#0/current", NULL, &error);
-
-// Read enum
-MyEnum enumValue = elektraGetEnum(elektra, "message", MyEnum);
-
-// Alternative: Read raw int value and then cast
-int value = elektraGetEnumInt (elektra, "message");
-enumValue == (MyEnum) value
-
-elektraClose (elektra);
-```
-
-To write an enum value use `void elektraSetEnumInt (Elektra * elektra, char * name, int value, ElektraError ** error)`. A convenience
-macro is not provided, because you can simply pass the enum value as an `int` argument.
-
-Similar functions and macros are provided for array elements:
-
-```c
-int elektraGetEnumIntArrayElement (Elektra * elektra, char * keyName, kdb_long_long_t index);
-
-elektraGetEnumArrayElement(elektra, keyname, index, enumType);
-
-void elektraSetEnumIntArrayElement (Elektra * elektra, char * name, kdb_long_long_t index, int value, ElektraError ** error);
-```
 
 ### Raw Values
 

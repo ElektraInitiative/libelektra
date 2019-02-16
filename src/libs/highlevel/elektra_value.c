@@ -306,20 +306,6 @@ kdb_long_double_t elektraGetLongDouble (Elektra * elektra, const char * keyname)
 
 #endif // ELEKTRA_HAVE_KDB_LONG_DOUBLE
 
-/**
- * Gets the int value of a stored enum value.
- *
- * @param elektra The elektra instance to use.
- * @param keyname The (relative) name of the key to look up.
- * @return the int value of the enum stored at the given key
- */
-int elektraGetEnumInt (Elektra * elektra, const char * keyname)
-{
-	int result;
-	ELEKTRA_GET_VALUE (elektraKeyToLong, KDB_TYPE_ENUM, elektra, keyname, result);
-	return result;
-}
-
 #define ELEKTRA_SET_VALUE(VALUE_TO_STRING, KDB_TYPE, elektra, keyname, value, error)                                                       \
 	CHECK_ERROR (elektra, error);                                                                                                      \
 	char * string = VALUE_TO_STRING (value);                                                                                           \
@@ -517,21 +503,6 @@ void elektraSetLongDouble (Elektra * elektra, const char * keyname, kdb_long_dou
 }
 
 #endif // ELEKTRA_HAVE_KDB_LONG_DOUBLE
-
-/**
- * Sets an enum value. The corresponding int value will be
- * stored with the type metadata set to "enum".
- *
- * @param elektra The elektra instance to use.
- * @param keyname The (relative) name to write to.
- * @param value   The new value.
- * @param error   Pass a reference to an ElektraError pointer.
- *                Will only be set in case of an error.
- */
-void elektraSetEnumInt (Elektra * elektra, const char * keyName, int value, ElektraError ** error)
-{
-	ELEKTRA_SET_VALUE (elektraLongToString, KDB_TYPE_ENUM, elektra, keyName, value, error);
-}
 
 /**
  * @}

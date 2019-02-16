@@ -206,8 +206,6 @@ ELEKTRA_TAG_DECLARATIONS (kdb_long_double_t, LongDouble)
 
 #endif // ELEKTRA_HAVE_KDB_LONG_DOUBLE
 
-ELEKTRA_TAG_DECLARATIONS (int, Enum)
-
 // endregion Tags for built-in types
 
 // region Basics
@@ -273,14 +271,6 @@ kdb_long_double_t elektraGetLongDouble (Elektra * elektra, const char * keyname)
 
 #endif
 
-int elektraGetEnumInt (Elektra * elektra, const char * keyName);
-
-#ifdef __cplusplus
-#define elektraGetEnum(elektra, keyname, enumType) static_cast<enumType> (elektraGetEnumInt (elektra, keyname))
-#else
-#define elektraGetEnum(elektra, keyname, enumType) (enumType) elektraGetEnumInt (elektra, keyname)
-#endif
-
 // endregion Getters
 
 // region Setters
@@ -309,8 +299,6 @@ void elektraSetDouble (Elektra * elektra, const char * keyname, kdb_double_t val
 void elektraSetLongDouble (Elektra * elektra, const char * keyname, kdb_long_double_t value, ElektraError ** error);
 
 #endif
-
-void elektraSetEnumInt (Elektra * elektra, const char * name, int value, ElektraError ** error);
 
 // endregion Setters
 
@@ -352,15 +340,6 @@ kdb_long_double_t elektraGetLongDoubleArrayElement (Elektra * elektra, const cha
 
 #endif
 
-int elektraGetEnumIntArrayElement (Elektra * elektra, const char * keyName, kdb_long_long_t index);
-
-#ifdef __cplusplus
-#define elektraGetEnumArrayElement(elektra, keyname, index, enumType)                                                                      \
-	static_cast<enumType> (elektraGetEnumIntArrayElement (elektra, keyname, index))
-#else
-#define elektraGetEnumArrayElement(elektra, keyname, index, enumType) (enumType) elektraGetEnumIntArrayElement (elektra, keyname, index)
-#endif
-
 // endregion Array-Getters
 
 // region Array-Setters
@@ -398,8 +377,6 @@ void elektraSetLongDoubleArrayElement (Elektra * elektra, const char * keyname, 
 				       ElektraError ** error);
 
 #endif
-
-void elektraSetEnumIntArrayElement (Elektra * elektra, const char * name, kdb_long_long_t index, int value, ElektraError ** error);
 
 // endregion Array-Setters
 
