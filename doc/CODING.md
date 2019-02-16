@@ -184,7 +184,7 @@ Most notably use:
 
 - File Ending is `.md` or integrated within Doxygen comments
 - Only use `#` characters at the left side of headers/titles
-- Use tabs or fences for code/examples
+- Use fences for code/examples
 - Prefer fences which indicate the used language for better syntax highlighting
 - Fences with sh are for the [shell recorder syntax](/tests/shell/shell_recorder/tutorial_wrapper)
 - `README.md` and tutorials should be written exclusively with shell recorder syntax
