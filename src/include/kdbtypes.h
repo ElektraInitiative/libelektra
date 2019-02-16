@@ -115,10 +115,7 @@ typedef unsigned long long kdb_unsigned_long_long_t;
 typedef float kdb_float_t;
 typedef double kdb_double_t;
 
-#if defined(HAVE_SIZEOF_LONG_DOUBLE) && (SIZEOF_LONG_DOUBLE == 16)
-#define ELEKTRA_HAVE_KDB_LONG_DOUBLE
-typedef long double kdb_long_double_t;
-#elif defined(HAVE_SIZEOF_LONG_DOUBLE) && (SIZEOF_LONG_DOUBLE == 12)
+#if defined(HAVE_SIZEOF_LONG_DOUBLE) && (SIZEOF_LONG_DOUBLE >= 10)
 #define ELEKTRA_HAVE_KDB_LONG_DOUBLE
 // the long double data type represents an IEEE double-extended
 // floating-point number, which has an exponent of at least 15 bits in
@@ -141,5 +138,48 @@ typedef long double kdb_long_double_t;
 #else
 #define ELEKTRA_STAT_ST_SIZE_F "%llu"
 #endif
+
+// check floating point types
+#ifdef __cplusplus
+#include <limits>
+
+static_assert (std::numeric_limits<float>::is_iec559, "float has to be IEEE-754 compliant");
+static_assert (std::numeric_limits<float>::radix == 2 && std::numeric_limits<float>::digits == 24 &&
+		       std::numeric_limits<float>::max_exponent >= 128 && std::numeric_limits<float>::min_exponent <= -125 &&
+		       sizeof (float) == 4,
+	       "float has to be IEEE-754 single precision");
+static_assert (std::numeric_limits<double>::is_iec559, "double has to be IEEE-754 compliant");
+static_assert (std::numeric_limits<double>::radix == 2 && std::numeric_limits<double>::digits == 53 &&
+		       std::numeric_limits<double>::max_exponent >= 1024 && std::numeric_limits<double>::min_exponent <= -1021 &&
+		       sizeof (double) == 8,
+	       "double has to be IEEE-754 double precision");
+static_assert (std::numeric_limits<long double>::is_iec559, "long double has to be IEEE-754 compliant");
+static_assert (std::numeric_limits<long double>::radix == 2 && std::numeric_limits<long double>::digits >= 64 &&
+		       std::numeric_limits<long double>::max_exponent >= 1 << 14 &&
+		       std::numeric_limits<long double>::min_exponent <= -(1 << 14) + 3 && sizeof (long double) >= 10,
+	       "long double has to be at least 80 bits (1 bit sign, 15 bits exponent, 64 bits mantissa)");
+#else
+#include <float.h>
+#include <math.h>
+
+#ifndef __STDC_IEC_559__
+#warning "__STDC_IEC_559__ not defined floating point types might not conform to IEE-754"
+#endif
+
+#if FLT_RADIX != 2 || FLT_MANT_DIG != 24 || FLT_MAX_EXP < 128 || FLT_MIN_EXP > -125 || SIZEOF_FLOAT != 4
+#error "float must be 32 bit floating point type with 1 bit sign, 8 bits exponent and 23 bits mantissa"
+#endif
+#if FLT_RADIX != 2 || DBL_MANT_DIG != 53 || DBL_MAX_EXP < 1024 || DBL_MIN_EXP > -1021 || SIZEOF_DOUBLE != 8
+#error "double must be 64 bit floating point type with 1 bit sign, 11 bits exponent and 52 bits mantissa"
+#endif
+
+#ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
+
+#if FLT_RADIX != 2 || LDBL_MANT_DIG < 64 || LDBL_MAX_EXP < (1 << 14) || LDBL_MIN_EXP > -(1 << 14) + 3
+#error "long double must be at least 80 bit floating point type with 1 bit sign, at least 15 bits exponent and at least 64 bits mantissa"
+#endif
+
+#endif // ELEKTRA_HAVE_KDB_LONG_DOUBLE
+#endif // __cplusplus
 
 #endif

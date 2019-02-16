@@ -219,6 +219,18 @@ but, if you ever do need to use the raw type metadata using constants enables co
 There is also the type `enum` with constant `KDB_TYPE_ENUM`. It is currently neither used nor supported by this API. However, we reserve it
 for a future expansion of this API.
 
+##### Note about floating point types
+
+We enforce a few minimum properties for floating point types. They are taken from the IEE-754 specification and are:
+
+* For `float`: 32 bits, binary, 24 mantissa digits and exponent range of at least -125 to 128
+* For `double`: 64 bits, binary, 53 mantissa digits and exponent range of at least -1021 to 1024
+* For `long double`: at least 80 bits, binary, at least 64 mantissa digits and exponent range of at least -2^14 + 3 to 2^14
+
+Additionally you will receive a warning if you are using a C compiler that doesn't define `__STDC_IEC_559__`. For C++ compilers we use a
+`static_assert` that will fail if `std::numeric_limits<T>::is_iec559` is `false` when `T` is any of `float`, `double` or `long double`.
+
+While these checks won't ensure actual IEEE-754 arithmetic, they will at least ensure all values can be represented correctly.
 
 <a name="reading-and-writing-values"></a>
 

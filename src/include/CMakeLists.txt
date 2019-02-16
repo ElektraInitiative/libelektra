@@ -31,6 +31,8 @@ check_type_size (size_t SIZEOF_SIZE_T)
 check_type_size ("long long" SIZEOF_LONG_LONG)
 check_type_size ("long double" SIZEOF_LONG_DOUBLE)
 check_type_size (mode_t SIZEOF_MODE_T)
+check_type_size (float SIZEOF_FLOAT)
+check_type_size (double SIZEOF_DOUBLE)
 
 set (CMAKE_EXTRA_INCLUDE_FILES "sys/time.h")
 check_type_size ("((struct timeval*)0)->tv_usec" SIZEOF_TV_USEC)

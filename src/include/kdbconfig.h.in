@@ -85,6 +85,8 @@
 #define SIZEOF_MODE_T            @SIZEOF_MODE_T@
 #define SIZEOF_TV_USEC           @SIZEOF_TV_USEC@
 #define SIZEOF_STAT_ST_SIZE      @SIZEOF_STAT_ST_SIZE@
+#define SIZEOF_FLOAT             @SIZEOF_FLOAT@
+#define SIZEOF_DOUBLE            @SIZEOF_DOUBLE@
 
 #cmakedefine HAVE_SIZEOF_LONG_LONG
 #ifdef HAVE_SIZEOF_LONG_LONG
