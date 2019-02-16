@@ -313,6 +313,7 @@ you up to date with the multi-language support provided by Elektra.
   - project description, and
   - homepage URL
   in the CMake [`project`](https://cmake.org/cmake/help/latest/command/project.html) command. *(René Schwaiger)*
+- We fixed the detection of Python for the [Python 2 binding](https://www.libelektra.org/bindings/swig_python2) on macOS. *(René Schwaiger)*
 
 #### Find Modules
 
