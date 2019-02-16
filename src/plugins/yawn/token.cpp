@@ -29,7 +29,7 @@ namespace
  */
 string typeToString (int const type)
 #ifdef __llvm__
-	__attribute__ ((annotate ("oclint:suppress[high cyclomatic complexity]")))
+	__attribute__ ((annotate ("oclint:suppress[high ncss method]"), annotate ("oclint:suppress[high cyclomatic complexity]")))
 #endif
 {
 	switch (type)

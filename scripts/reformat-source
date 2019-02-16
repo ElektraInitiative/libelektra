@@ -32,6 +32,5 @@ cd "$SOURCE" || {
 	exit 1
 }
 
-for FILE in $(find . -name '*.[ch]' -or -name '*.[ch]pp' -or -name '*.[ch].in' | grep -E -v '^./src/tools/gen'); do
-	"$CLANG_FORMAT" -style=file -i "$FILE"
-done
+find . \( \( -name '*.[ch]' -or -name '*.[ch]pp' -or -name '*.[ch].in' \) -and -not -regex '^./src/tools/gen.*' \) \
+	-exec "$CLANG_FORMAT" -style=file -i {} +

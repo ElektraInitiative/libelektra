@@ -269,7 +269,8 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Scripts
 
-- <<TODO>>
+- The script [`reformat-source`](https://master.libelektra.org/scripts/reformat-source) now also handles filenames containing spaces
+  correctly. *(René Schwaiger)*
 - <<TODO>>
 - <<TODO>>
 
