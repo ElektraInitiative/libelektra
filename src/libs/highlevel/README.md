@@ -45,8 +45,8 @@ elektraClose (elektra);
 To run the application, the configuration should be specified:
 
 ```
-kdb setmeta /sw/org/myapp/#0/current/myint type long
-kdb setmeta /sw/org/myapp/#0/current/myint default 5
+sudo kdb setmeta /sw/org/myapp/#0/current/myint type long
+sudo kdb setmeta /sw/org/myapp/#0/current/myint default 5
 ```
 
 The getter and setter functions follow the simple naming scheme `elektra`(`Get`/`Set`)[Type]. Additionally for each one there is a
@@ -141,7 +141,31 @@ Errors which do not originate inside the high-level API itself are wrapped into 
 `ELEKTRA_ERROR_CODE_LOW_LEVEL`. The high-level Error API provides methods (`elektraKDBError*`) to access the properties of the low-level
 error. You can also access the key to which the error was originally attached, as well as any possible low-level warnings.
 
-TODO: explanation of low-level code or removal of this feature for this release?
+To get the original low-level error code, description, severity, group, module and reason you can use these functions:
+```c
+int elektraKDBErrorCode (const ElektraError * error);
+const char * elektraKDBErrorDescription (const ElektraError * error);
+ElektraErrorSeverity elektraKDBErrorSeverity (const ElektraError * error);
+ElektraKDBErrorGroup elektraKDBErrorGroup (const ElektraError * error);
+ElektraKDBErrorModule elektraKDBErrorModule (const ElektraError * error);
+const char * elektraKDBErrorReason (const ElektraError * error);
+```
+
+To iterate over all the warnings use the following to functions:
+
+```c
+int elektraKDBErrorWarningCount (const ElektraError * error);
+ElektraError * elektraKDBErrorGetWarning (const ElektraError * error, int index);
+```
+
+`elektraKDBErrorGetWarning` will return a newly allocated `ElektraError` struct with error code `ELEKTRA_ERROR_CODE_LOW_LEVEL` and severity 
+`ELEKTRA_ERROR_SEVERITY_WARNING`. You will need to free the allocated struct when you are done. To access the information of the low-level
+warning you use the `elektraKDBError*` functions described above.
+
+The key to which the low-level error and the associated warnings where attached originally can be accessed via:
+```c
+Key * elektraKDBErrorKey (const ElektraError * error);
+```
 
 ### Configuration
 
@@ -156,15 +180,16 @@ the most common use case for this callback is inside of functions that do not ta
 this function will be called, when any of the getter-functions is called on a non-existent key which is not part of any specification,
 and therefore has no specified default value.
 
+If you provide your own callback, it must interrupt the thread of execution in some way (e.g. by calling `exit()` or throwing an exception
+in C++). It *must not* return to the calling function.
+
 The handler will also be called whenever you pass `NULL` where a function expects an `ElektraError **`. In this case the error code will be
 `ELEKTRA_ERROR_CODE_NULL_ERROR`.
 
-The default callback simply logs the error with `ELEKTRA_LOG_DEBUG` and then calls `exit()` with the error code of the error.
-
-TODO: why DEBUG? It should be ERROR? And we should enable logging by default, otherwise users will not see the message?
-
-If you provide your own callback, it must interrupt the thread of execution in some way (e.g. by calling `exit()` or throwing an exception in C++). It
-_must not_ return to the calling function.
+The default callback simply logs the error with `ELEKTRA_LOG_DEBUG` and then calls `exit()` with the error code of the error. It is expected
+that you implement your own callback, so that you get proper error message logged in your applications preferred format. Using the default
+callback is only viable for very simple applications, because you won't get any indication as to which key caused the error (unless you
+compiled Elektra with debug logging enabled).
 
 <a name="data-types"></a>
 
