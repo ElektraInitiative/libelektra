@@ -1324,3 +1324,10 @@ severity:error
 ingroup:plugin
 module:path
 macro:INVALID_PERMISSION
+
+number:211
+description:error while writing file
+severity:error
+ingroup:plugin
+module:storage
+macro:WRITE_FAILED

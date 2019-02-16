@@ -121,6 +121,7 @@ productive use:
 - [yawn](yawn/) reads YAML data using [YAEP](https://github.com/vnmakarov/yaep)
 - [yaypeg](yaypeg/) reads YAML data using a PEG parser combinators based on [PEGTL](https://github.com/taocpp/PEGTL)
 - [mmapstorage](mmapstorage/) uses binary, not portable memory mapped file for a high performance storage
+- [quickdump](quickdump/) uses binary portable format based on [dump](dump/), but more efficient
 
 [yaml]: http://www.yaml.org
 
