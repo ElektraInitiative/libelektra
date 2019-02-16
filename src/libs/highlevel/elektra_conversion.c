@@ -70,9 +70,10 @@ int elektraKeyToBoolean (const Key * key ELEKTRA_UNUSED, kdb_boolean_t * variabl
 #define TYPE_NAME Boolean
 #define TYPE kdb_boolean_t
 #define KDB_TYPE KDB_TYPE_BOOLEAN
+#define PRE_CHECK_CONVERSION ((string[0] == '0' || string[0] == '1') && string[1] == '\0')
 #define PRE_CHECK_FAIL_BLOCK
 #define CHECK_FAIL_BLOCK
-#define TO_VALUE (strcmp (string, "1") == 0)
+#define TO_VALUE (string[0] == '1')
 #define NAME_MACRO(TYPE_NAME) CAT (elektraKeyTo, TYPE_NAME)
 #define CODE_ONLY 1
 #define KEY_PARAM_NAME key
@@ -439,6 +440,7 @@ int elektraKeyToLongDouble (const Key * key ELEKTRA_UNUSED, kdb_long_double_t * 
 
 #undef KDB_TYPE
 }
+
 #endif // ELEKTRA_HAVE_KDB_LONG_DOUBLE
 
 /**

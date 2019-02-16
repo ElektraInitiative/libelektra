@@ -200,7 +200,7 @@ which are taken from the CORBA specification:
 
 * **String**: a string of characters, represented by `string` in metadata
 * **Boolean**: a boolean value `true` or `false`, represented by `boolean` in metadata, in the KDB the raw value `"1"` is
-               regarded, as true, any other value is considered false
+               regarded as true, `"0"` regarded as false and any other value is an error
 * **Char**: a single character, represented by `char` in metadata
 * **Octet**: a single byte, represented by `octet` in metadata
 * **(Unsigned) Short**: a 16-bit (unsigned) integer, represented by `short` (`unsigned_short`) in metadata

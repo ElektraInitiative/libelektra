@@ -276,8 +276,8 @@ TEST_F (Highlevel, ArrayGetters)
 	EXPECT_STREQ (elektraGetStringArrayElement (elektra, "stringarraykey", 1), "String 2") << "Wrong key value.";
 
 	EXPECT_EQ (elektraArraySize (elektra, "booleanarraykey"), 2) << "Wrong array size";
-	EXPECT_EQ (elektraGetBooleanArrayElement (elektra, "booleanarraykey", 0), 0) << "Wrong key value.";
-	EXPECT_TRUE (elektraGetBooleanArrayElement (elektra, "booleanarraykey", 1)) << "Wrong key value.";
+	EXPECT_EQ (elektraGetBooleanArrayElement (elektra, "booleanarraykey", 0), false) << "Wrong key value.";
+	EXPECT_EQ (elektraGetBooleanArrayElement (elektra, "booleanarraykey", 1), true) << "Wrong key value.";
 
 	EXPECT_EQ (elektraArraySize (elektra, "chararraykey"), 2) << "Wrong array size";
 	EXPECT_EQ (elektraGetCharArrayElement (elektra, "chararraykey", 0), 'c') << "Wrong key value.";
@@ -762,7 +762,7 @@ TEST_F (Highlevel, Generic)
 
 	// Check values.
 	EXPECT_STREQ (elektraGet (elektra, ELEKTRA_TAG_NAME (TEST_STRING)), "A string") << "Wrong key value.";
-	EXPECT_TRUE (elektraGet (elektra, ELEKTRA_TAG_NAME (TEST_BOOLEAN))) << "Wrong key value.";
+	EXPECT_EQ (elektraGet (elektra, ELEKTRA_TAG_NAME (TEST_BOOLEAN)), true) << "Wrong key value.";
 	EXPECT_EQ (elektraGet (elektra, ELEKTRA_TAG_NAME (TEST_CHAR)), 'c') << "Wrong key value.";
 	EXPECT_EQ (elektraGet (elektra, ELEKTRA_TAG_NAME (TEST_OCTET)), 1) << "Wrong key value.";
 	EXPECT_EQ (elektraGet (elektra, ELEKTRA_TAG_NAME (TEST_SHORT)), 1) << "Wrong key value.";
