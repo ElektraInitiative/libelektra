@@ -190,6 +190,9 @@ Most notably use:
 - `README.md` and tutorials should be written exclusively with shell recorder syntax
   so that we know that the code in the tutorial produces output as expected
 
+Please use [`prettier`](https://prettier.io) to format documentation according to the guidelines given above. If you want, you can also
+format all Markdown files in the repository using the script [`reformat-markdown`](/scripts/reformat-markdown).
+
 ### Doxygen Guidelines
 
 `doxygen` is used to document the API and to build the html and pdf output.
