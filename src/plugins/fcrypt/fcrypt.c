@@ -217,7 +217,7 @@ static size_t getRecipientCount (KeySet * config, const char * keyName)
 static int fcryptGpgCallAndCleanup (Key * parentKey, KeySet * pluginConfig, char ** argv, int argc, int tmpFileFd, char * tmpFile)
 {
 	int parentKeyFd = -1;
-	int result = CRYPTO_PLUGIN_FUNCTION (gpgCall) (pluginConfig, parentKey, NULL, argv, argc);
+	int result = ELEKTRA_PLUGIN_FUNCTION (gpgCall) (pluginConfig, parentKey, NULL, argv, argc);
 
 	if (result == 1)
 	{
@@ -464,7 +464,7 @@ static int fcryptDecrypt (KeySet * pluginConfig, Key * parentKey, fcryptState * 
 
 	// NOTE the decryption process works like this:
 	// gpg2 --batch --yes -o tmpfile -d configFile
-	int result = CRYPTO_PLUGIN_FUNCTION (gpgCall) (pluginConfig, parentKey, NULL, argv, argc);
+	int result = ELEKTRA_PLUGIN_FUNCTION (gpgCall) (pluginConfig, parentKey, NULL, argv, argc);
 	if (result == 1)
 	{
 		state->originalFilePath = elektraStrDup (keyString (parentKey));
@@ -495,7 +495,7 @@ static int fcryptDecrypt (KeySet * pluginConfig, Key * parentKey, fcryptState * 
  * @retval 1 on success
  * @retval -1 on failure
  */
-int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, open) (Plugin * handle, KeySet * ks ELEKTRA_UNUSED, Key * parentKey)
+int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * handle, KeySet * ks ELEKTRA_UNUSED, Key * parentKey)
 {
 	fcryptState * s = elektraMalloc (sizeof (fcryptState));
 	if (!s)
@@ -518,7 +518,7 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, open) (Plugin * handle, KeySet
  * @retval 1 on success
  * @retval -1 on failure
  */
-int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, close) (Plugin * handle, KeySet * ks ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int ELEKTRA_PLUGIN_FUNCTION (close) (Plugin * handle, KeySet * ks ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
 	fcryptState * s = (fcryptState *) elektraPluginGetData (handle);
 	if (s)
@@ -546,7 +546,7 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, close) (Plugin * handle, KeySe
  * @retval 1 on success
  * @retval -1 on failure
  */
-int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, get) (Plugin * handle, KeySet * ks ELEKTRA_UNUSED, Key * parentKey)
+int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * ks ELEKTRA_UNUSED, Key * parentKey)
 {
 	// Publish module configuration to Elektra (establish the contract)
 	if (!strcmp (keyName (parentKey), "system/elektra/modules/" ELEKTRA_PLUGIN_NAME))
@@ -612,7 +612,7 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, get) (Plugin * handle, KeySet 
  * @retval 1 on success
  * @retval -1 on failure
  */
-int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, set) (Plugin * handle, KeySet * ks ELEKTRA_UNUSED, Key * parentKey)
+int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle, KeySet * ks ELEKTRA_UNUSED, Key * parentKey)
 {
 	KeySet * pluginConfig = elektraPluginGetConfig (handle);
 	int encryptionResult = fcryptEncrypt (pluginConfig, parentKey);
@@ -650,21 +650,21 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, set) (Plugin * handle, KeySet 
  * @retval 1 the master password has been appended to the configuration
  * @retval -1 an error occurred. Check errorKey
  */
-int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, checkconf) (Key * errorKey, KeySet * conf)
+int ELEKTRA_PLUGIN_FUNCTION (checkconf) (Key * errorKey, KeySet * conf)
 {
 	const size_t recipientCount = getRecipientCount (conf, ELEKTRA_RECIPIENT_KEY);
 	const size_t signatureCount = getRecipientCount (conf, ELEKTRA_SIGNATURE_KEY);
 
 	if (recipientCount == 0 && signatureCount == 0)
 	{
-		char * errorDescription = CRYPTO_PLUGIN_FUNCTION (getMissingGpgKeyErrorText) (conf);
+		char * errorDescription = ELEKTRA_PLUGIN_FUNCTION (getMissingGpgKeyErrorText) (conf);
 		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_NO_GPG_RECIPIENTS, errorKey, errorDescription);
 		elektraFree (errorDescription);
 		return -1;
 	}
-	if (CRYPTO_PLUGIN_FUNCTION (gpgVerifyGpgKeysInConfig) (conf, errorKey) != 1)
+	if (ELEKTRA_PLUGIN_FUNCTION (gpgVerifyGpgKeysInConfig) (conf, errorKey) != 1)
 	{
-		// error has been set by CRYPTO_PLUGIN_FUNCTION (gpgVerifyGpgKeysInConfig)
+		// error has been set by ELEKTRA_PLUGIN_FUNCTION (gpgVerifyGpgKeysInConfig)
 		return -1;
 	}
 	return 0;
@@ -674,9 +674,9 @@ Plugin * ELEKTRA_PLUGIN_EXPORT (fcrypt)
 {
 	// clang-format off
 	return elektraPluginExport(ELEKTRA_PLUGIN_NAME,
-			ELEKTRA_PLUGIN_OPEN,  &ELEKTRA_PLUGIN_FUNCTION(ELEKTRA_PLUGIN_NAME, open),
-			ELEKTRA_PLUGIN_CLOSE, &ELEKTRA_PLUGIN_FUNCTION(ELEKTRA_PLUGIN_NAME, close),
-			ELEKTRA_PLUGIN_GET,   &ELEKTRA_PLUGIN_FUNCTION(ELEKTRA_PLUGIN_NAME, get),
-			ELEKTRA_PLUGIN_SET,   &ELEKTRA_PLUGIN_FUNCTION(ELEKTRA_PLUGIN_NAME, set),
+			ELEKTRA_PLUGIN_OPEN,  &ELEKTRA_PLUGIN_FUNCTION(open),
+			ELEKTRA_PLUGIN_CLOSE, &ELEKTRA_PLUGIN_FUNCTION(close),
+			ELEKTRA_PLUGIN_GET,   &ELEKTRA_PLUGIN_FUNCTION(get),
+			ELEKTRA_PLUGIN_SET,   &ELEKTRA_PLUGIN_FUNCTION(set),
 			ELEKTRA_PLUGIN_END);
 }

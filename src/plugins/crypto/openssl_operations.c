@@ -62,7 +62,7 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * masterK
 		return -1;
 	}
 	pthread_mutex_unlock (&mutex_ssl);
-	const int encodingResult = CRYPTO_PLUGIN_FUNCTION (base64Encode) (errorKey, salt, sizeof (salt), &saltHexString);
+	const int encodingResult = ELEKTRA_PLUGIN_FUNCTION (base64Encode) (errorKey, salt, sizeof (salt), &saltHexString);
 	if (encodingResult < 0)
 	{
 		// error in libinvoke - errorKey has been set by base64Encode
@@ -77,7 +77,7 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * masterK
 	elektraFree (saltHexString);
 
 	// read iteration count
-	const kdb_unsigned_long_t iterations = CRYPTO_PLUGIN_FUNCTION (getIterationCount) (errorKey, config);
+	const kdb_unsigned_long_t iterations = ELEKTRA_PLUGIN_FUNCTION (getIterationCount) (errorKey, config);
 
 	// generate/derive the cryptographic key and the IV
 	pthread_mutex_lock (&mutex_ssl);
@@ -117,13 +117,13 @@ static int getKeyIvForDecryption (KeySet * config, Key * errorKey, Key * masterK
 	ELEKTRA_ASSERT (masterKey != NULL, "Parameter `masterKey` must not be NULL");
 
 	// get the salt
-	if (CRYPTO_PLUGIN_FUNCTION (getSaltFromPayload) (errorKey, k, &saltBuffer, &saltBufferLen) != 1)
+	if (ELEKTRA_PLUGIN_FUNCTION (getSaltFromPayload) (errorKey, k, &saltBuffer, &saltBufferLen) != 1)
 	{
-		return -1; // error set by CRYPTO_PLUGIN_FUNCTION(getSaltFromPayload)()
+		return -1; // error set by ELEKTRA_PLUGIN_FUNCTION(getSaltFromPayload)()
 	}
 
 	// get the iteration count
-	const kdb_unsigned_long_t iterations = CRYPTO_PLUGIN_FUNCTION (getIterationCount) (errorKey, config);
+	const kdb_unsigned_long_t iterations = ELEKTRA_PLUGIN_FUNCTION (getIterationCount) (errorKey, config);
 
 	// derive the cryptographic key and the IV
 	pthread_mutex_lock (&mutex_ssl);
@@ -271,9 +271,9 @@ int elektraCryptoOpenSSLEncrypt (elektraCryptoHandle * handle, Key * k, Key * er
 	kdb_unsigned_long_t saltLen = 0;
 	kdb_octet_t * salt = NULL;
 
-	if (CRYPTO_PLUGIN_FUNCTION (getSaltFromMetakey) (errorKey, k, &salt, &saltLen) != 1)
+	if (ELEKTRA_PLUGIN_FUNCTION (getSaltFromMetakey) (errorKey, k, &salt, &saltLen) != 1)
 	{
-		return -1; // error set by CRYPTO_PLUGIN_FUNCTION(getSaltFromMetakey)()
+		return -1; // error set by ELEKTRA_PLUGIN_FUNCTION(getSaltFromMetakey)()
 	}
 
 	// remove salt as metakey because it will be encoded into the crypto payload
@@ -401,9 +401,9 @@ int elektraCryptoOpenSSLDecrypt (elektraCryptoHandle * handle, Key * k, Key * er
 
 	// parse salt length from crypto payload
 	kdb_unsigned_long_t saltLen = 0;
-	if (CRYPTO_PLUGIN_FUNCTION (getSaltFromPayload) (errorKey, k, NULL, &saltLen) != 1)
+	if (ELEKTRA_PLUGIN_FUNCTION (getSaltFromPayload) (errorKey, k, NULL, &saltLen) != 1)
 	{
-		return -1; // error set by CRYPTO_PLUGIN_FUNCTION(getSaltFromPayload)()
+		return -1; // error set by ELEKTRA_PLUGIN_FUNCTION(getSaltFromPayload)()
 	}
 	saltLen += sizeof (kdb_unsigned_long_t);
 
@@ -526,7 +526,7 @@ char * elektraCryptoOpenSSLCreateRandomString (Key * errorKey, const kdb_unsigne
 		return NULL;
 	}
 	pthread_mutex_unlock (&mutex_ssl);
-	if (CRYPTO_PLUGIN_FUNCTION (base64Encode) (errorKey, buffer, length, &encoded) < 0)
+	if (ELEKTRA_PLUGIN_FUNCTION (base64Encode) (errorKey, buffer, length, &encoded) < 0)
 	{
 		// error in libinvoke - errorKey has been set by base64Encode
 		return NULL;
