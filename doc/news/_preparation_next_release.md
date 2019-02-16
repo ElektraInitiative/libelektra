@@ -309,6 +309,7 @@ you up to date with the multi-language support provided by Elektra.
 
 - The plugin name is now provided as compiler definition `ELEKTRA_PLUGIN_NAME` via CMake.
   See [#1042](https://issues.libelektra.org/1042). *(Peter Nirschl)*
+- `ELEKTRA_PLUGIN_FUNCTION` does not require the module name parameter any more, instead it uses the `ELEKTRA_PLUGIN_NAME` compiler definition. See [#1042](#1042) .*(Peter Nirschl)*
 - We now specify
   - version number,
   - project description, and
@@ -325,8 +326,6 @@ you up to date with the multi-language support provided by Elektra.
 - We added code that makes sure you can compile [IO GLIB](https://www.libelektra.org/bindings/io_glib) on macOS, even if `pkg-config`
   erroneously reports that GLIB requires linking to the library `intl` (part of [GNU gettext](https://www.gnu.org/software/gettext)).
   *(René Schwaiger)*
-- The plugin name is now provided as compiler definition `ELEKTRA_PLUGIN_NAME` via CMake. See [#1042](#1042) .*(Peter Nirschl)*
-- `ELEKTRA_PLUGIN_FUNCTION` does not require the module name parameter any more, instead it uses the `ELEKTRA_PLUGIN_NAME` compiler definition. See [#1042](#1042) .*(Peter Nirschl)*
 - We added a [CMake find module for GLib](https://master.libelektra.org/cmake/Modules/FindGLib.cmake). The module makes sure you can
   compile and link [IO GLib](https://www.libelektra.org/bindings/io_glib) on macOS. *(René Schwaiger)*
 - The CMake find module [`FindLibOpenSSL.cmake`](https://master.libelektra.org/cmake/Modules/FindLibOpenSSL.cmake) does not require
