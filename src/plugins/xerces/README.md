@@ -28,10 +28,12 @@ To mount an XML file we use:
 The strength and usage of this plugin is that it supports arbitrary XML files and
 does not require a specific format. Given the following example of an XML file:
 
-    <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
-    <xerces>foo
-      <bar meta="da_ta">bar</bar>
-    </xerces>
+```xml
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<xerces>foo
+  <bar meta="da_ta">bar</bar>
+</xerces>
+```
 
 Please note that if the key name does not correspond to the root element of the xml
 file, the original name gets stored in a metakey called `xerces/rootname`. The content
