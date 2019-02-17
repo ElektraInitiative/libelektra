@@ -16,15 +16,9 @@
 #include <string.h>
 
 #ifdef ELEKTRA_STATIC
-#ifdef ELEKTRA_VARIANT
-#define ELEKTRA_PLUGIN_EXPORT ELEKTRA_PLUGIN_EXPORT2 (ELEKTRA_PLUGIN_NAME_C, ELEKTRA_VARIANT)
-#define ELEKTRA_PLUGIN_EXPORT2(module, variant) ELEKTRA_PLUGIN_EXPORT3 (module, variant)
-#define ELEKTRA_PLUGIN_EXPORT3(module, variant) libelektra_##module##_##variant##_LTX_elektraPluginSymbol (void)
-#else
 #define ELEKTRA_PLUGIN_EXPORT ELEKTRA_PLUGIN_EXPORT2 (ELEKTRA_PLUGIN_NAME_C)
 #define ELEKTRA_PLUGIN_EXPORT2(module) ELEKTRA_PLUGIN_EXPORT3 (module)
 #define ELEKTRA_PLUGIN_EXPORT3(module) libelektra_##module##_LTX_elektraPluginSymbol (void)
-#endif
 #else
 #define ELEKTRA_PLUGIN_EXPORT elektraPluginSymbol (void)
 #endif
