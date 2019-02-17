@@ -17,14 +17,7 @@
 #include <stdio.h>
 #include <unistd.h>
 
-#include "test.quickdump.h"
-
-static void create_test_file (const char * filename, const unsigned char * content, size_t size)
-{
-	FILE * f = fopen (filename, "wb");
-	fwrite (content, sizeof (unsigned char), size, f);
-	fclose (f);
-}
+#include "quickdump/test.quickdump.h"
 
 static int compare_binary_files (const char * filename1, const char * filename2)
 {
@@ -58,40 +51,46 @@ static void test_basics (void)
 	char cwd[PATH_MAX];
 	printf ("test basics %s\n", getcwd (cwd, PATH_MAX));
 
-	create_test_file ("test.quickdump", test_quickdump, test_quickdump_len);
-
 	KeySet * ks = ksNew (0, KS_END);
+	char * infile = elektraStrDup (srcdir_file ("quickdump/test.quickdump"));
+	char * outfile = elektraStrDup (srcdir_file ("quickdump/test.quickdump.out"));
+
 	{
-		Key * getKey = keyNew ("dir/tests/bench", KEY_VALUE, "test.quickdump", KEY_END);
+		Key * getKey = keyNew ("dir/tests/bench", KEY_VALUE, infile, KEY_END);
 
 		KeySet * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("quickdump");
 
+		KeySet * expected = test_quickdump_expected ();
+
 		succeed_if (plugin->kdbGet (plugin, ks, getKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
+		compare_keyset (expected, ks);
+
+		ksDel (expected);
 
 		keyDel (getKey);
 		PLUGIN_CLOSE ();
 	}
 
 	{
-		Key * setKey = keyNew ("dir/tests/bench", KEY_VALUE, "test.quickdump.2", KEY_END);
+		Key * setKey = keyNew ("dir/tests/bench", KEY_VALUE, outfile, KEY_END);
 
 		KeySet * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("quickdump");
 
 		succeed_if (plugin->kdbSet (plugin, ks, setKey) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "call to kdbSet was not successful");
 
+		succeed_if (compare_binary_files (infile, outfile) == 0, "files differ");
+		remove (outfile);
+
 		keyDel (setKey);
 		PLUGIN_CLOSE ();
 	}
+
+	elektraFree (infile);
+	elektraFree (outfile);
 	ksDel (ks);
-
-	succeed_if (compare_binary_files ("test.quickdump", "test.quickdump.2") == 0, "files differ");
-
-	remove ("test.quickdump");
-	remove ("test.quickdump.2");
 }
-
 
 int main (int argc, char ** argv)
 {

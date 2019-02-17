@@ -5,6 +5,8 @@ add_plugin (quickdump
 		    quickdump.c
 		    portable/pendian.h
 		    portable/pendian_detect.h
-		    test.quickdump.h
-	    ADD_TEST
 	    TEST_README)
+
+if (ADDTESTING_PHASE)
+	add_plugintest (quickdump INSTALL_TEST_DATA INCLUDE_DIRECTORIES ${CMAKE_CURRENT_BINARY_DIR})
+endif ()
