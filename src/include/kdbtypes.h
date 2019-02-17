@@ -162,10 +162,6 @@ static_assert (std::numeric_limits<long double>::radix == 2 && std::numeric_limi
 #include <float.h>
 #include <math.h>
 
-#ifndef __STDC_IEC_559__
-#warning "__STDC_IEC_559__ not defined floating point types might not conform to IEE-754"
-#endif
-
 #if FLT_RADIX != 2 || FLT_MANT_DIG != 24 || FLT_MAX_EXP < 128 || FLT_MIN_EXP > -125 || SIZEOF_FLOAT != 4
 #error "float must be 32 bit floating point type with 1 bit sign, 8 bits exponent and 23 bits mantissa"
 #endif
