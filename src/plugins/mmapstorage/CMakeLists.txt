@@ -16,9 +16,7 @@ add_plugin (mmapstorage_crc
 	    LINK_LIBRARIES ${ZLIB_LIBRARIES}
 	    LINK_ELEKTRA elektra-core
 	    ADD_TEST
-	    COMPILE_DEFINITIONS ELEKTRA_PLUGIN_NAME=\"mmapstorage_crc\"
-				ELEKTRA_PLUGIN_NAME_C=mmapstorage
-				ELEKTRA_VARIANT=crc
+	    COMPILE_DEFINITIONS ELEKTRA_VARIANT=crc
 				ELEKTRA_MMAP_CHECKSUM)
 
 # Plugin variant: mmapstorage
@@ -26,6 +24,4 @@ add_plugin (mmapstorage
 	    SOURCES ${MMAPSTORAGE_SOURCES}
 	    LINK_ELEKTRA elektra-core
 	    ADD_TEST
-	    TEST_README
-	    COMPILE_DEFINITIONS ELEKTRA_PLUGIN_NAME=\"mmapstorage\"
-				ELEKTRA_PLUGIN_NAME_C=mmapstorage)
+	    TEST_README)
