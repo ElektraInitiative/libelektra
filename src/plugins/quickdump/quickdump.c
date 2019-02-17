@@ -166,6 +166,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 			if (valueSize == 0)
 			{
 				k = keyNew (name, KEY_BINARY, KEY_SIZE, valueSize, KEY_END);
+				elektraFree (name);
 			}
 			else
 			{
