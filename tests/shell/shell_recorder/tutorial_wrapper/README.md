@@ -104,7 +104,7 @@ kdb rm user/tests/tempfile
 
 All check start with a comment sign (`#`).
 
-- `#> text`: The **text** after `#>` is matched 1:1 against the command output. Multiple `#>` will be concatenated automatically using `⏎` (the Shell Recorder equivalent of `\n`).
+- `#> text`: The **text** after `#>` and the single space character afterwards is matched 1:1 against the command output. Multiple `#>` will be concatenated automatically using `⏎` (the Shell Recorder equivalent of `\n`). If you want to check for empty output you can also just use `#>` (without the single space character afterwards).
 
 - `# RET: regex` This directive compares the return code (exit status) of the command to the value after `# RET:` . If not specified, the exit value is compared to `0`. The Shell Recorder uses **regular expressions** to compare the exit code, so an expression like `1|5` is also valid.
 
