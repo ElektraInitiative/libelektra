@@ -12,7 +12,7 @@
 #define RUBY_PLUGIN_NAME ruby
 #define RUBY_PLUGIN_NAME_STR "ruby"
 
-#define RUBY_PLUGIN_FUNCTION(func) ELEKTRA_PLUGIN_FUNCTION (Ruby, func)
+#define RUBY_PLUGIN_FUNCTION(func) ELEKTRA_PLUGIN_FUNCTION (func)
 
 extern "C" {
 #include <kdbplugin.h>
