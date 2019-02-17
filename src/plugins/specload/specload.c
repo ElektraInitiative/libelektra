@@ -178,6 +178,8 @@ int elektraSpecloadSet (Plugin * handle, KeySet * returned, Key * parentKey)
 		if (changeAllowed < 0)
 		{
 			ksSetCursor (returned, cursor);
+			ksDel (overrides);
+			ksDel (oldData);
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 
@@ -193,13 +195,18 @@ int elektraSpecloadSet (Plugin * handle, KeySet * returned, Key * parentKey)
 		if (!isChangeAllowed (old, NULL))
 		{
 			ksSetCursor (returned, cursor);
+			ksDel (overrides);
+			ksDel (oldData);
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 	}
+	ksDel (oldData);
 
 	ksSetCursor (returned, cursor);
 
-	return elektraInvoke2Args (specload->quickDump, "set", overrides, parentKey);
+	int result = elektraInvoke2Args (specload->quickDump, "set", overrides, parentKey);
+	ksDel (overrides);
+	return result;
 }
 
 int elektraSpecloadCheckConfig (Key * errorKey, KeySet * conf)
@@ -363,6 +370,7 @@ bool loadSpec (KeySet * returned, const char * app, char * argv[], Key * parentK
 	{
 		copyError (parentKey, quickDumpParent);
 	}
+	keyDel (quickDumpParent);
 
 	if (dup2 (stdin_copy, STDIN_FILENO) == -1)
 	{
