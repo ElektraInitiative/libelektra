@@ -20,8 +20,4 @@ add_plugin (mmapstorage_crc
 				ELEKTRA_MMAP_CHECKSUM)
 
 # Plugin variant: mmapstorage
-add_plugin (mmapstorage
-	    SOURCES ${MMAPSTORAGE_SOURCES}
-	    LINK_ELEKTRA elektra-core
-	    ADD_TEST
-	    TEST_README)
+add_plugin (mmapstorage SOURCES ${MMAPSTORAGE_SOURCES} LINK_ELEKTRA elektra-core ADD_TEST TEST_README)
