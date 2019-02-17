@@ -193,6 +193,14 @@ Most notably use:
 Please use [`prettier`](https://prettier.io) to format documentation according to the guidelines given above. If you want, you can also
 format all Markdown files in the repository using the script [`reformat-markdown`](/scripts/reformat-markdown).
 
+Under certain **exceptional** circumstances you might want to prevent `prettier` from formatting certain parts of a Markdown file. To do
+that you can
+
+- enclose the Markdown code in `<!-- prettier-ignore-start -->` and `<!-- prettier-ignore-end -->` tags, or
+- use `<!-- prettier-ignore -->` to disable formatting till the end of a file
+
+.
+
 ### Doxygen Guidelines
 
 `doxygen` is used to document the API and to build the html and pdf output.
