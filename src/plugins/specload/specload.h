@@ -10,12 +10,21 @@
 #ifndef ELEKTRA_PLUGIN_SPECLOAD_H
 #define ELEKTRA_PLUGIN_SPECLOAD_H
 
+#include <kdbinvoke.h>
 #include <kdbplugin.h>
 
+typedef struct
+{
+	char * app;
+	char ** argv;
+	KeySet * quickDumpConfig;
+	ElektraInvokeHandle * quickDump;
+} Specload;
 
 int elektraSpecloadOpen (Plugin * handle, Key * errorKey);
 int elektraSpecloadClose (Plugin * handle, Key * errorKey);
 int elektraSpecloadGet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraSpecloadSet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraSpecloadCheckConfig (Key * errorKey, KeySet * conf);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (specload);

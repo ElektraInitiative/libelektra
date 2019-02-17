@@ -1331,3 +1331,10 @@ severity:error
 ingroup:plugin
 module:storage
 macro:WRITE_FAILED
+
+number:212
+description:an error occurred in the specload plugin (see reason)
+severity:error
+ingroup:plugin
+module:specload
+macro:SPECLOAD

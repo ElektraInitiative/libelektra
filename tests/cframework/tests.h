@@ -94,7 +94,7 @@ int init (int argc, char ** argv);
 		Key * nmmk1 = pk1;                                                                                                         \
 		Key * nmmk2 = pk2;                                                                                                         \
 		nbTest++;                                                                                                                  \
-		if (strcmp (keyName (nmmk1), keyName (nmmk2)))                                                                             \
+		if (strcmp (keyName (nmmk1), keyName (nmmk2)) != 0)                                                                        \
 		{                                                                                                                          \
 			char errorMsg[BUFFER_LENGTH];                                                                                      \
                                                                                                                                            \
@@ -113,7 +113,7 @@ int init (int argc, char ** argv);
 		Key * smmk1 = pk1;                                                                                                         \
 		Key * smmk2 = pk2;                                                                                                         \
 		nbTest++;                                                                                                                  \
-		if (strcmp (keyString (smmk1), keyString (smmk2)))                                                                         \
+		if (strcmp (keyString (smmk1), keyString (smmk2)) != 0)                                                                    \
 		{                                                                                                                          \
 			char errorMsg[BUFFER_LENGTH];                                                                                      \
                                                                                                                                            \
