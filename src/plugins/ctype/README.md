@@ -80,9 +80,8 @@ kdb get user/tests/ctype/key
 
 #If we try to store a string Elektra will not change the value
 kdb set user/tests/ctype/key 'Not a char'
-#STDERR :.*Description : could not type check value of key.*
-#ERROR : 52
-#RET : 5
+# RET:5
+# ERROR:52
 kdb get user/tests/ctype/key
 #> b
 
@@ -103,14 +102,15 @@ kdb setmeta user/tests/ctype/value check/enum '#2'
 kdb setmeta user/tests/ctype/value 'check/enum/#0' 'low'
 kdb setmeta user/tests/ctype/value 'check/enum/#1' 'middle'
 kdb setmeta user/tests/ctype/value 'check/enum/#2' 'high'
+kdb setmeta user/tests/ctype/value check/type enum
 
 # should succeed
 kdb set user/tests/ctype/value low
 
-# should fail with error 121
+# should fail with error 52
 kdb set user/tests/ctype/value no
 # RET:5
-# ERROR:121
+# ERROR:52
 ```
 Or with multi-enums:
 ```sh
@@ -122,14 +122,15 @@ kdb setmeta user/tests/ctype/multivalue check/enum/#2 large
 kdb setmeta user/tests/ctype/multivalue check/enum/#3 huge
 kdb setmeta user/tests/ctype/multivalue check/enum/multi _
 kdb setmeta user/tests/ctype/multivalue check/enum "#3"
+kdb setmeta user/tests/ctype/multivalue check/type enum
 
 # should succeed
 kdb set user/tests/ctype/multivalue small_middle
 
-# should fail with error 121
+# should fail with error 52
 kdb set user/tests/ctype/multivalue all_small
 # RET:5
-# ERROR:121
+# ERROR:52
 
 # cleanup
 kdb rm -r user/tests/ctype
