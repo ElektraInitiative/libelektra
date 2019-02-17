@@ -43,6 +43,16 @@ using char_t = unsigned char;	  // default: 0
 using boolean_t = bool;  // default: false
 using octet_t = uint8_t; // default: 0
 } // namespace kdb
+
+typedef kdb::octet_t kdb_octet_t;
+typedef kdb::boolean_t kdb_boolean_t;
+typedef kdb::short_t kdb_short_t;
+typedef kdb::long_t kdb_long_t;
+typedef kdb::long_long_t kdb_long_long_t;
+typedef kdb::unsigned_short_t kdb_unsigned_short_t;
+typedef kdb::unsigned_long_t kdb_unsigned_long_t;
+typedef kdb::unsigned_long_long_t kdb_unsigned_long_long_t;
+
 #endif // for c++
 
 
@@ -72,7 +82,7 @@ typedef uint64_t kdb_unsigned_long_long_t;
 #define ELEKTRA_UNSIGNED_LONG_LONG_F "%" PRIu64
 #define ELEKTRA_UNSIGNED_LONG_LONG_S strtoull
 
-#else // for C89
+#elif !defined(__cplusplus) // for C89
 typedef unsigned char kdb_boolean_t;
 typedef unsigned char kdb_octet_t;
 typedef signed short kdb_short_t;
@@ -108,6 +118,8 @@ typedef long long kdb_long_long_t;
 #define ELEKTRA_UNSIGNED_LONG_LONG_F "%llu"
 #define ELEKTRA_UNSIGNED_LONG_LONG_S strtoull
 typedef unsigned long long kdb_unsigned_long_long_t;
+#else
+#error "Can't map kdb_long_long_t (8 bytes, 64 bits) to a native type."
 #endif
 
 #endif // for C89
