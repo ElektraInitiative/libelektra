@@ -309,8 +309,8 @@ you up to date with the multi-language support provided by Elektra.
 
 - The plugin name is now provided as compiler definition `ELEKTRA_PLUGIN_NAME` via CMake.
   See [#1042](https://issues.libelektra.org/1042). *(Peter Nirschl)*
-- `ELEKTRA_PLUGIN_FUNCTION`, `ELEKTRA_README`, and `ELEKTRA_PLUGIN_EXPORT` do not require the module name as parameter any more, instead the `ELEKTRA_PLUGIN_NAME` compiler definition is being used. See See [#1042](https://issues.libelektra.org/1042). *(Peter Nirschl)
-*
+- `ELEKTRA_PLUGIN_FUNCTION` does not require the module name as parameter any more, instead the `ELEKTRA_PLUGIN_NAME` compiler definition is being used. See See [#1042](https://issues.libelektra.org/1042). *(Peter Nirschl)*
+- `ELEKTRA_README`, and `ELEKTRA_PLUGIN_EXPORT` do not require the module name as parameter any more, instead the `ELEKTRA_PLUGIN_NAME` compiler definition is being used. See See [#1042](https://issues.libelektra.org/1042). *(Peter Nirschl)*
 - We now specify
   - version number,
   - project description, and
