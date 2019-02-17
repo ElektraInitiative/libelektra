@@ -138,7 +138,7 @@ int elektraCTypeSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (type)
+Plugin * ELEKTRA_PLUGIN_EXPORT (ctype)
 {
 	// clang-format off
 	return elektraPluginExport("ctype",
