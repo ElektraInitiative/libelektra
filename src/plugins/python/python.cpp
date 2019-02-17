@@ -385,7 +385,7 @@ int PYTHON_PLUGIN_FUNCTION (Get) (ckdb::Plugin * handle, ckdb::KeySet * returned
 				     keyNew (_MODULE_CONFIG_PATH "/exports/error", KEY_FUNC, PYTHON_PLUGIN_FUNCTION (Error), KEY_END),
 				     keyNew (_MODULE_CONFIG_PATH "/exports/open", KEY_FUNC, PYTHON_PLUGIN_FUNCTION (Open), KEY_END),
 				     keyNew (_MODULE_CONFIG_PATH "/exports/close", KEY_FUNC, PYTHON_PLUGIN_FUNCTION (Close), KEY_END),
-#include ELEKTRA_README (PYTHON_PLUGIN_NAME)
+#include ELEKTRA_README
 				     keyNew (_MODULE_CONFIG_PATH "/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END));
 		ksDel (n);
 	}
