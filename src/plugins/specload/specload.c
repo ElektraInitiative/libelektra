@@ -310,18 +310,35 @@ bool loadSpec (KeySet * returned, const char * app, char * argv[], Key * parentK
 	pid_t pid;
 	int fd[2];
 
-	pipe (fd);
+	if (pipe (fd) != 0)
+	{
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_SPECLOAD, parentKey, "Could not execute app: %s", strerror (errno));
+		return NULL;
+	}
 
 	pid = fork ();
+
+	if (pid == -1)
+	{
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_SPECLOAD, parentKey, "Could not execute app: %s", strerror (errno));
+		return NULL;
+	}
 
 	if (pid == 0)
 	{
 		// child
-		dup2 (fd[1], STDOUT_FILENO);
+		if (dup2 (fd[1], STDOUT_FILENO) == -1)
+		{
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_SPECLOAD, parentKey, "Could not execute app: %s", strerror (errno));
+			return NULL;
+		}
+
 		close (fd[0]);
 		close (fd[1]);
+
 		execv (app, argv);
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_SPECLOAD, parentKey, "Could not execute app.");
+
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_SPECLOAD, parentKey, "Could not execute app: %s", strerror (errno));
 		return NULL;
 	}
 
@@ -330,7 +347,12 @@ bool loadSpec (KeySet * returned, const char * app, char * argv[], Key * parentK
 
 	int stdin_copy = dup (STDIN_FILENO);
 
-	dup2 (fd[0], STDIN_FILENO);
+	if (dup2 (fd[0], STDIN_FILENO) == -1)
+	{
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_SPECLOAD, parentKey, "Could not execute app: %s", strerror (errno));
+		return NULL;
+	}
+
 	close (fd[0]);
 
 	Key * quickDumpParent = keyNew ("", KEY_VALUE, STDIN_FILENAME, KEY_END);
@@ -342,7 +364,11 @@ bool loadSpec (KeySet * returned, const char * app, char * argv[], Key * parentK
 		copyError (parentKey, quickDumpParent);
 	}
 
-	dup2 (stdin_copy, STDIN_FILENO);
+	if (dup2 (stdin_copy, STDIN_FILENO) == -1)
+	{
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_SPECLOAD, parentKey, "Could not execute app: %s", strerror (errno));
+		return NULL;
+	}
 	close (stdin_copy);
 
 	return result;
