@@ -19,7 +19,7 @@ int elektraHaskellSet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraHaskellError (Plugin * handle, KeySet * ks, Key * parentKey);
 
 // clang-format off
-Plugin * ELEKTRA_PLUGIN_EXPORT (@PLUGIN_NAME@);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 // clang-format on
 
 #endif

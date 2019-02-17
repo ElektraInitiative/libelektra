@@ -313,7 +313,7 @@ int elektraFilecheckGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKT
 			keyNew ("system/elektra/modules/filecheck/exports/close", KEY_FUNC, elektraFilecheckClose, KEY_END),
 			keyNew ("system/elektra/modules/filecheck/exports/get", KEY_FUNC, elektraFilecheckGet, KEY_END),
 			keyNew ("system/elektra/modules/filecheck/exports/set", KEY_FUNC, elektraFilecheckSet, KEY_END),
-#include ELEKTRA_README (filecheck)
+#include ELEKTRA_README
 			keyNew ("system/elektra/modules/filecheck/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
@@ -338,7 +338,7 @@ int elektraFilecheckSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKT
 	return 1; // success
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (filecheck)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport ("filecheck",

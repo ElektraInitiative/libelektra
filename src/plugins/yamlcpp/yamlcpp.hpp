@@ -17,7 +17,7 @@ extern "C" {
 int elektraYamlcppGet (ckdb::Plugin * handle, ckdb::KeySet * ks, ckdb::Key * parentKey);
 int elektraYamlcppSet (ckdb::Plugin * handle, ckdb::KeySet * ks, ckdb::Key * parentKey);
 
-ckdb::Plugin * ELEKTRA_PLUGIN_EXPORT (yamlcpp);
+ckdb::Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 } // end extern "C"
 

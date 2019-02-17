@@ -15,6 +15,6 @@
 
 int elektraDpkgGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraDpkgSet (Plugin * handle, KeySet * ks, Key * parentKey);
-Plugin * ELEKTRA_PLUGIN_EXPORT (dpkg);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 #endif

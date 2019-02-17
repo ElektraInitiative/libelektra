@@ -20,6 +20,6 @@ int elektraCSet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraCError (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraCCheckConfig (Key * errorKey, KeySet * conf);
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (c);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 #endif

@@ -550,7 +550,7 @@ int elektraInternalnotificationGet (Plugin * handle, KeySet * returned, Key * pa
 			keyNew ("system/elektra/modules/internalnotification/exports/setConversionErrorCallback", KEY_FUNC,
 				elektraInternalnotificationSetConversionErrorCallback, KEY_END),
 
-#include ELEKTRA_README (internalnotification)
+#include ELEKTRA_README
 
 			keyNew ("system/elektra/modules/internalnotification/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
@@ -657,7 +657,7 @@ int elektraInternalnotificationClose (Plugin * handle, Key * parentKey ELEKTRA_U
 	return 1;
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (internalnotification)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport ("internalnotification",

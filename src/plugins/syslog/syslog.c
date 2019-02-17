@@ -91,7 +91,7 @@ int elektraSyslogError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key *
 	return 1;
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (syslog)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport("syslog",

@@ -1019,7 +1019,7 @@ error:
 	return ELEKTRA_PLUGIN_STATUS_ERROR;
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (mmapstorage)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport (ELEKTRA_PLUGIN_NAME,

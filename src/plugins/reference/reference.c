@@ -25,7 +25,7 @@ int elektraReferenceGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 			keyNew ("system/elektra/modules/reference/exports", KEY_END),
 			keyNew ("system/elektra/modules/reference/exports/get", KEY_FUNC, elektraReferenceGet, KEY_END),
 			keyNew ("system/elektra/modules/reference/exports/set", KEY_FUNC, elektraReferenceSet, KEY_END),
-#include ELEKTRA_README (reference)
+#include ELEKTRA_README
 			keyNew ("system/elektra/modules/reference/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
@@ -510,7 +510,7 @@ int elektraReferenceSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 	return status;
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (reference)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport ("reference",

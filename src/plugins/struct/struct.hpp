@@ -22,7 +22,7 @@ int elektraStructGet (ckdb::Plugin * handle, ckdb::KeySet * ks, ckdb::Key * pare
 int elektraStructSet (ckdb::Plugin * handle, ckdb::KeySet * ks, ckdb::Key * parentKey);
 int elektraStructError (ckdb::Plugin * handle, ckdb::KeySet * ks, ckdb::Key * parentKey);
 
-ckdb::Plugin * ELEKTRA_PLUGIN_EXPORT (struct);
+ckdb::Plugin * ELEKTRA_PLUGIN_EXPORT;
 }
 
 #endif

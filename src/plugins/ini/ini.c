@@ -1625,7 +1625,7 @@ int elektraIniSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	return ret; /* success */
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (ini)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
     return elektraPluginExport ("ini",

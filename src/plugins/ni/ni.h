@@ -20,6 +20,6 @@ int elektraNiGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraNiSet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraNiError (Plugin * handle, KeySet * ks, Key * parentKey);
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (ni);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 #endif

@@ -23,6 +23,6 @@ int elektraValidationError (Plugin * handle, KeySet * ks, Key * parentKey);
 
 Key * ksLookupRE (KeySet * ks, const regex_t * regexp);
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (validation);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 #endif

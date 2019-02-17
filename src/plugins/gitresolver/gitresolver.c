@@ -627,7 +627,7 @@ int elektraGitresolverGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 			keyNew ("system/elektra/modules/gitresolver/exports/error", KEY_FUNC, elektraGitresolverError, KEY_END),
 			keyNew ("system/elektra/modules/gitresolver/exports/checkfile", KEY_FUNC, elektraGitresolverCheckFile, KEY_END),
 
-#include ELEKTRA_README (gitresolver)
+#include ELEKTRA_README
 			keyNew ("system/elektra/modules/gitresolver/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
@@ -969,7 +969,7 @@ int elektraGitresolverError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned E
 	return 1; // success
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (gitresolver)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
     return elektraPluginExport ("gitresolver",

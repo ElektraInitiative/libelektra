@@ -512,7 +512,7 @@ int elektraCsvstorageGet (Plugin * handle, KeySet * returned, Key * parentKey)
 			keyNew ("system/elektra/modules/csvstorage/exports", KEY_END),
 			keyNew ("system/elektra/modules/csvstorage/exports/get", KEY_FUNC, elektraCsvstorageGet, KEY_END),
 			keyNew ("system/elektra/modules/csvstorage/exports/set", KEY_FUNC, elektraCsvstorageSet, KEY_END),
-#include ELEKTRA_README (csvstorage)
+#include ELEKTRA_README
 			keyNew ("system/elektra/modules/csvstorage/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
@@ -762,7 +762,7 @@ int elektraCsvstorageSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	return rc;
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (csvstorage)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport("csvstorage",

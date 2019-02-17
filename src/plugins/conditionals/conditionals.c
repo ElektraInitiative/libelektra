@@ -896,7 +896,7 @@ int elektraConditionalsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned EL
 			keyNew ("system/elektra/modules/conditionals/exports", KEY_END),
 			keyNew ("system/elektra/modules/conditionals/exports/get", KEY_FUNC, elektraConditionalsGet, KEY_END),
 			keyNew ("system/elektra/modules/conditionals/exports/set", KEY_FUNC, elektraConditionalsSet, KEY_END),
-#include ELEKTRA_README (conditionals)
+#include ELEKTRA_README
 			keyNew ("system/elektra/modules/conditionals/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
@@ -1068,7 +1068,7 @@ int elektraConditionalsSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned EL
 	return ret;
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (conditionals)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
     return elektraPluginExport ("conditionals",

@@ -20,6 +20,6 @@ int elektraHexnumberGet (Plugin * handle, KeySet * ks, Key * errorKey);
 int elektraHexnumberSet (Plugin * handle, KeySet * ks, Key * errorKey);
 int elektraHexnumberClose (Plugin * handle, Key * parentKey);
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (hexnumber);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 #endif // ELEKTRA_HEXNUMBER_H

@@ -42,7 +42,7 @@ int elektraDbusGet (Plugin * handle, KeySet * returned, Key * parentKey)
 			       keyNew ("system/elektra/modules/dbus/exports/get", KEY_FUNC, elektraDbusGet, KEY_END),
 			       keyNew ("system/elektra/modules/dbus/exports/set", KEY_FUNC, elektraDbusSet, KEY_END),
 			       keyNew ("system/elektra/modules/dbus/exports/close", KEY_FUNC, elektraDbusClose, KEY_END),
-#include ELEKTRA_README (dbus)
+#include ELEKTRA_README
 			       keyNew ("system/elektra/modules/dbus/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
@@ -192,7 +192,7 @@ int elektraDbusClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 	return 1; /* success */
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (dbus)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport("dbus",

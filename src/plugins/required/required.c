@@ -21,7 +21,7 @@ int elektraRequiredGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTR
 			       keyNew ("system/elektra/modules/required/exports", KEY_END),
 			       keyNew ("system/elektra/modules/required/exports/get", KEY_FUNC, elektraRequiredGet, KEY_END),
 			       keyNew ("system/elektra/modules/required/exports/set", KEY_FUNC, elektraRequiredSet, KEY_END),
-#include ELEKTRA_README (required)
+#include ELEKTRA_README
 			       keyNew ("system/elektra/modules/required/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
@@ -61,7 +61,7 @@ int elektraRequiredSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTR
 	return 1; // success
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (required)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport ("required",

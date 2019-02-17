@@ -15,6 +15,6 @@
 int elektraCamelGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraCamelSet (Plugin * handle, KeySet * ks, Key * parentKey);
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (camel);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 #endif

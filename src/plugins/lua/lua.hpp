@@ -17,7 +17,7 @@ int elektraLuaGet (ckdb::Plugin * handle, ckdb::KeySet * ks, ckdb::Key * parentK
 int elektraLuaSet (ckdb::Plugin * handle, ckdb::KeySet * ks, ckdb::Key * parentKey);
 int elektraLuaError (ckdb::Plugin * handle, ckdb::KeySet * ks, ckdb::Key * parentKey);
 
-ckdb::Plugin * ELEKTRA_PLUGIN_EXPORT (lua);
+ckdb::Plugin * ELEKTRA_PLUGIN_EXPORT;
 }
 
 #endif

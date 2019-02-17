@@ -288,7 +288,7 @@ int elektraDumpSet (ckdb::Plugin *, ckdb::KeySet * returned, ckdb::Key * parentK
 	return dump::serialise (ofs, parentKey, returned);
 }
 
-ckdb::Plugin * ELEKTRA_PLUGIN_EXPORT (dump)
+ckdb::Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport("dump",

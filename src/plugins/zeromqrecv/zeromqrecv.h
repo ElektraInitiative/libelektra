@@ -53,6 +53,6 @@ int elektraZeroMqRecvOpen (Plugin * handle, Key * errorKey);
 int elektraZeroMqRecvClose (Plugin * handle, Key * errorKey);
 int elektraZeroMqRecvGet (Plugin * handle, KeySet * ks, Key * parentKey);
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (zeromqrecv);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 #endif
