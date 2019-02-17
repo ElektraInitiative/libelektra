@@ -580,7 +580,7 @@ char * elektraUnsignedLongLongToString (kdb_unsigned_long_long_t value)
  */
 char * elektraFloatToString (kdb_float_t value)
 {
-	return elektraFormat ("%f", value);
+	return elektraFormat ("%.9g", value);
 }
 
 /**
@@ -594,7 +594,7 @@ char * elektraFloatToString (kdb_float_t value)
  */
 char * elektraDoubleToString (kdb_double_t value)
 {
-	return elektraFormat ("%f", value);
+	return elektraFormat ("%.17g", value);
 }
 
 #ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
@@ -610,7 +610,7 @@ char * elektraDoubleToString (kdb_double_t value)
  */
 char * elektraLongDoubleToString (kdb_long_double_t value)
 {
-	return elektraFormat ("%Lf", value);
+	return elektraFormat ("%.21Lg", value);
 }
 
 #endif // ELEKTRA_HAVE_KDB_LONG_DOUBLE
