@@ -18,3 +18,11 @@ The purpose of this file is solely to better comment on in a Pull Request and ga
 3. Many errors are very similar or could be summarized and are differentiated via the reason field 
 (#54 + #55, #31 - #33, #93 + #7 + #17, #74 + #75, #77 + #10 + #61, etc.)
 4. Some errors are marked as unused (#22 + #48 + #58 + #66 + #67 + #68)
+
+## Some considerations
+
+### Error/Warning/Fatal etc. splitting
+
+I would suggest to remove this concept from the specification and let the developer use a respective method to indicate if it is a warning/error/etc.
+The macros ELEKTRA_SET_ERROR, ELEKTRA_ADD_WARNING ... should be enough to make developers cautious of wrong method usage.
+What I have seen is that the return code is the only matter if it is an error or not.
