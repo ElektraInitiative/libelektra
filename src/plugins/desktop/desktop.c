@@ -30,7 +30,7 @@ int elektraDesktopGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 			       keyNew ("system/elektra/modules/desktop/exports", KEY_END),
 			       keyNew ("system/elektra/modules/desktop/exports/get", KEY_FUNC, elektraDesktopGet, KEY_END),
 			       keyNew ("system/elektra/modules/desktop/exports/set", KEY_FUNC, elektraDesktopSet, KEY_END),
-#include ELEKTRA_README (desktop)
+#include ELEKTRA_README
 			       keyNew ("system/elektra/modules/desktop/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);

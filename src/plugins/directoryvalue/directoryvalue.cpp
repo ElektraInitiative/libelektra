@@ -37,7 +37,7 @@ CppKeySet getContract ()
 			  keyNew ("system/elektra/modules/directoryvalue/exports/close", KEY_FUNC, elektraDirectoryValueClose, KEY_END),
 			  keyNew ("system/elektra/modules/directoryvalue/exports/get", KEY_FUNC, elektraDirectoryValueGet, KEY_END),
 			  keyNew ("system/elektra/modules/directoryvalue/exports/set", KEY_FUNC, elektraDirectoryValueSet, KEY_END),
-#include ELEKTRA_README (directoryvalue)
+#include ELEKTRA_README
 			  keyNew ("system/elektra/modules/directoryvalue/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
 			  KS_END };
 }

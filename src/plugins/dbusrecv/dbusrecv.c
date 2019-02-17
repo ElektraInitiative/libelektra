@@ -187,7 +187,7 @@ int elektraDbusRecvGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key *
 				KEY_END),
 			keyNew ("system/elektra/modules/dbusrecv/exports/closeNotification", KEY_FUNC, elektraDbusRecvCloseNotification,
 				KEY_END),
-#include ELEKTRA_README (dbusrecv)
+#include ELEKTRA_README
 			keyNew ("system/elektra/modules/dbusrecv/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);

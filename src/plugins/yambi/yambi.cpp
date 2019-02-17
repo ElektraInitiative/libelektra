@@ -40,7 +40,7 @@ CppKeySet getContract ()
 			  keyNew ("system/elektra/modules/yambi/exports", KEY_END),
 			  keyNew ("system/elektra/modules/yambi/exports/get", KEY_FUNC, elektraYambiGet, KEY_END),
 			  keyNew ("system/elektra/modules/yambi/exports/set", KEY_FUNC, elektraYambiSet, KEY_END),
-#include ELEKTRA_README (yambi)
+#include ELEKTRA_README
 			  keyNew ("system/elektra/modules/yambi/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
 			  KS_END };
 }

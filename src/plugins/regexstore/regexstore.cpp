@@ -164,7 +164,7 @@ int elektraRegexstoreGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key
 			keyNew ("system/elektra/modules/regexstore/exports/close", KEY_FUNC, elektraRegexstoreClose, KEY_END),
 			keyNew ("system/elektra/modules/regexstore/exports/get", KEY_FUNC, elektraRegexstoreGet, KEY_END),
 			keyNew ("system/elektra/modules/regexstore/exports/set", KEY_FUNC, elektraRegexstoreSet, KEY_END),
-#include ELEKTRA_README (regexstore)
+#include ELEKTRA_README
 			keyNew ("system/elektra/modules/regexstore/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);

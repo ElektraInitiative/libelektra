@@ -32,7 +32,7 @@ int elektraSyncGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 			       keyNew ("system/elektra/modules/sync/exports", KEY_END),
 			       keyNew ("system/elektra/modules/sync/exports/get", KEY_FUNC, elektraSyncGet, KEY_END),
 			       keyNew ("system/elektra/modules/sync/exports/set", KEY_FUNC, elektraSyncSet, KEY_END),
-#include ELEKTRA_README (sync)
+#include ELEKTRA_README
 			       keyNew ("system/elektra/modules/sync/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);

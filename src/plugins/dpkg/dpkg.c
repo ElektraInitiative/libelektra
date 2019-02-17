@@ -101,7 +101,7 @@ int elektraDpkgGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 			       keyNew ("system/elektra/modules/dpkg/exports", KEY_END),
 			       keyNew ("system/elektra/modules/dpkg/exports/get", KEY_FUNC, elektraDpkgGet, KEY_END),
 			       keyNew ("system/elektra/modules/dpkg/exports/set", KEY_FUNC, elektraDpkgSet, KEY_END),
-#include ELEKTRA_README (dpkg)
+#include ELEKTRA_README
 			       keyNew ("system/elektra/modules/dpkg/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);

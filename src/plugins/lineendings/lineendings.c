@@ -120,7 +120,7 @@ int elektraLineendingsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 			keyNew ("system/elektra/modules/lineendings/exports", KEY_END),
 			keyNew ("system/elektra/modules/lineendings/exports/get", KEY_FUNC, elektraLineendingsGet, KEY_END),
 			keyNew ("system/elektra/modules/lineendings/exports/set", KEY_FUNC, elektraLineendingsSet, KEY_END),
-#include ELEKTRA_README (lineendings)
+#include ELEKTRA_README
 			keyNew ("system/elektra/modules/lineendings/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);

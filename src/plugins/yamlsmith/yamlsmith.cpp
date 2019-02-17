@@ -47,7 +47,7 @@ CppKeySet contractYamlsmith ()
 			  keyNew ("system/elektra/modules/yamlsmith/exports", KEY_END),
 			  keyNew ("system/elektra/modules/yamlsmith/exports/get", KEY_FUNC, elektraYamlsmithGet, KEY_END),
 			  keyNew ("system/elektra/modules/yamlsmith/exports/set", KEY_FUNC, elektraYamlsmithSet, KEY_END),
-#include ELEKTRA_README (yamlsmith)
+#include ELEKTRA_README
 			  keyNew ("system/elektra/modules/yamlsmith/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 }
 

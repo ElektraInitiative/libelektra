@@ -72,7 +72,7 @@ int elektraCounterGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 			       keyNew ("system/elektra/modules/counter/exports/get", KEY_FUNC, elektraCounterGet, KEY_END),
 			       keyNew ("system/elektra/modules/counter/exports/set", KEY_FUNC, elektraCounterSet, KEY_END),
 			       keyNew ("system/elektra/modules/counter/exports/error", KEY_FUNC, elektraCounterError, KEY_END),
-#include ELEKTRA_README (counter)
+#include ELEKTRA_README
 			       keyNew ("system/elektra/modules/counter/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);

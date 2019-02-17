@@ -181,7 +181,7 @@ int elektraSimplespeclangGet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED,
 			keyNew ("system/elektra/modules/simplespeclang/exports/set", KEY_FUNC, elektraSimplespeclangSet, KEY_END),
 			keyNew ("system/elektra/modules/simplespeclang/exports/checkconf", KEY_FUNC, elektraSimplespeclangCheckConfig,
 				KEY_END),
-#include ELEKTRA_README (simplespeclang)
+#include ELEKTRA_README
 			keyNew ("system/elektra/modules/simplespeclang/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);

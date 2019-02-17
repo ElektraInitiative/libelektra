@@ -61,7 +61,7 @@ int elektraMathcheckGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKT
 			keyNew ("system/elektra/modules/mathcheck/exports", KEY_END),
 			keyNew ("system/elektra/modules/mathcheck/exports/get", KEY_FUNC, elektraMathcheckGet, KEY_END),
 			keyNew ("system/elektra/modules/mathcheck/exports/set", KEY_FUNC, elektraMathcheckSet, KEY_END),
-#include ELEKTRA_README (mathcheck)
+#include ELEKTRA_README
 			keyNew ("system/elektra/modules/mathcheck/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
 			keyNew ("system/elektra/modules/mathcheck/export/constants", KEY_END),
 			keyNew ("system/elektra/modules/mathcheck/export/constants/EPSILON", KEY_VALUE, ELEKTRA_STRINGIFY (EPSILON),

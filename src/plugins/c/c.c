@@ -118,7 +118,7 @@ int elektraCGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSE
 					   keyNew ("system/elektra/modules/c/exports/get", KEY_FUNC, elektraCGet, KEY_END),
 					   keyNew ("system/elektra/modules/c/exports/set", KEY_FUNC, elektraCSet, KEY_END),
 					   keyNew ("system/elektra/modules/c/exports/checkconf", KEY_FUNC, elektraCCheckConfig, KEY_END),
-#include ELEKTRA_README (c)
+#include ELEKTRA_README
 					   keyNew ("system/elektra/modules/c/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);

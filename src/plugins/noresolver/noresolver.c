@@ -37,7 +37,7 @@ static KeySet * elektraNoresolverModules (void)
 		keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/set", KEY_FUNC, elektraNoresolverSet, KEY_END),
 		keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/error", KEY_FUNC, elektraNoresolverError, KEY_END),
 		keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/checkfile", KEY_FUNC, elektraNoresolverCheckFile, KEY_END),
-#include ELEKTRA_README (noresolver)
+#include ELEKTRA_README
 		keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 }
 

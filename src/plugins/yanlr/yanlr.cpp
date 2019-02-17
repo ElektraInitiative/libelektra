@@ -52,7 +52,7 @@ CppKeySet getContract ()
 			  keyNew ("system/elektra/modules/yanlr", KEY_VALUE, "yanlr plugin waits for your orders", KEY_END),
 			  keyNew ("system/elektra/modules/yanlr/exports", KEY_END),
 			  keyNew ("system/elektra/modules/yanlr/exports/get", KEY_FUNC, elektraYanlrGet, KEY_END),
-#include ELEKTRA_README (yanlr)
+#include ELEKTRA_README
 			  keyNew ("system/elektra/modules/yanlr/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
 			  KS_END };
 }

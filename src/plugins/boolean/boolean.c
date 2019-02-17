@@ -275,7 +275,7 @@ int elektraBooleanGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 			       keyNew ("system/elektra/modules/boolean/exports/close", KEY_FUNC, elektraBooleanClose, KEY_END),
 			       keyNew ("system/elektra/modules/boolean/exports/get", KEY_FUNC, elektraBooleanGet, KEY_END),
 			       keyNew ("system/elektra/modules/boolean/exports/set", KEY_FUNC, elektraBooleanSet, KEY_END),
-#include ELEKTRA_README (boolean)
+#include ELEKTRA_README
 			       keyNew ("system/elektra/modules/boolean/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);

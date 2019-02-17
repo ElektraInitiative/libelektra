@@ -19,7 +19,7 @@ ksNew (30,
 	       KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION(get), KEY_END),
        keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/set",
 	       KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION(set), KEY_END),
-#include ELEKTRA_README (mmapstorage)
+#include ELEKTRA_README
        keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/infos/version",
 	       KEY_VALUE, PLUGINVERSION, KEY_END),
        KS_END);

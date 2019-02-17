@@ -204,7 +204,7 @@ int elektraLuaGet (ckdb::Plugin * handle, ckdb::KeySet * returned, ckdb::Key * p
 				     keyNew (_MODULE_CONFIG_PATH "/exports/error", KEY_FUNC, elektraLuaError, KEY_END),
 				     keyNew (_MODULE_CONFIG_PATH "/exports/open", KEY_FUNC, elektraLuaOpen, KEY_END),
 				     keyNew (_MODULE_CONFIG_PATH "/exports/close", KEY_FUNC, elektraLuaClose, KEY_END),
-#include ELEKTRA_README (lua)
+#include ELEKTRA_README
 				     keyNew (_MODULE_CONFIG_PATH "/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END));
 		ksDel (n);
 	}

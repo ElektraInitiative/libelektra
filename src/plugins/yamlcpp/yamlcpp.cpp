@@ -34,7 +34,7 @@ static KeySet * contractYamlCpp (void)
 		      keyNew ("system/elektra/modules/yamlcpp/exports", KEY_END),
 		      keyNew ("system/elektra/modules/yamlcpp/exports/get", KEY_FUNC, elektraYamlcppGet, KEY_END),
 		      keyNew ("system/elektra/modules/yamlcpp/exports/set", KEY_FUNC, elektraYamlcppSet, KEY_END),
-#include ELEKTRA_README (yamlcpp)
+#include ELEKTRA_README
 		      keyNew ("system/elektra/modules/yamlcpp/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
 		      keyNew ("system/elektra/modules/yamlcpp/config/needs/binary/meta", KEY_VALUE, "true", KEY_END), KS_END);
 }

@@ -40,7 +40,7 @@ CppKeySet getContract ()
 			  keyNew ("system/elektra/modules/yaypeg/exports", KEY_END),
 			  keyNew ("system/elektra/modules/yaypeg/exports/get", KEY_FUNC, elektraYaypegGet, KEY_END),
 			  keyNew ("system/elektra/modules/yaypeg/exports/set", KEY_FUNC, elektraYaypegSet, KEY_END),
-#include ELEKTRA_README (yaypeg)
+#include ELEKTRA_README
 			  keyNew ("system/elektra/modules/yaypeg/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
 			  KS_END };
 }

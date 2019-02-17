@@ -691,7 +691,7 @@ static KeySet * contractCamel (void)
 		      keyNew ("system/elektra/modules/camel/exports", KEY_END),
 		      keyNew ("system/elektra/modules/camel/exports/get", KEY_FUNC, elektraCamelGet, KEY_END),
 		      keyNew ("system/elektra/modules/camel/exports/set", KEY_FUNC, elektraCamelSet, KEY_END),
-#include ELEKTRA_README (camel)
+#include ELEKTRA_README
 		      keyNew ("system/elektra/modules/camel/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 }
 

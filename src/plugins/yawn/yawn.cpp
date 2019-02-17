@@ -40,7 +40,7 @@ CppKeySet getContract ()
 			  keyNew ("system/elektra/modules/yawn", KEY_VALUE, "yawn plugin waits for your orders", KEY_END),
 			  keyNew ("system/elektra/modules/yawn/exports", KEY_END),
 			  keyNew ("system/elektra/modules/yawn/exports/get", KEY_FUNC, elektraYawnGet, KEY_END),
-#include ELEKTRA_README (yawn)
+#include ELEKTRA_README
 			  keyNew ("system/elektra/modules/yawn/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
 			  KS_END };
 }
