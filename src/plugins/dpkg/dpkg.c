@@ -122,7 +122,7 @@ int elektraDpkgSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 	return 1; // success
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (dpkg)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	return elektraPluginExport ("dpkg", ELEKTRA_PLUGIN_GET, &elektraDpkgGet, ELEKTRA_PLUGIN_SET, &elektraDpkgSet, ELEKTRA_PLUGIN_END);
 }

@@ -353,7 +353,7 @@ int elektraPasswdSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_
 	return rc; // success
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (passwd)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport ("passwd",

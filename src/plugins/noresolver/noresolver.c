@@ -87,7 +87,7 @@ int elektraNoresolverError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned EL
 	return 1; /* success */
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (noresolver)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport("noresolver",

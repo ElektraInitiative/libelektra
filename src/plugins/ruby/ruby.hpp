@@ -24,7 +24,7 @@ int RUBY_PLUGIN_FUNCTION (Set) (ckdb::Plugin * handle, ckdb::KeySet * ks, ckdb::
 int RUBY_PLUGIN_FUNCTION (Error) (ckdb::Plugin * handle, ckdb::KeySet * ks, ckdb::Key * parentKey);
 int RUBY_PLUGIN_FUNCTION (CheckConf) (ckdb::Key * errorKey, ckdb::KeySet * conf);
 
-ckdb::Plugin * ELEKTRA_PLUGIN_EXPORT (RUBY_PLUGIN_NAME);
+ckdb::Plugin * ELEKTRA_PLUGIN_EXPORT;
 }
 
 #endif

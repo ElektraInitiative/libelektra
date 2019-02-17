@@ -355,7 +355,7 @@ int elektraJniError (Plugin * handle, KeySet * returned, Key * parentKey)
 	return call2Arg (data, returned, parentKey, "error");
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (jni)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport("jni",

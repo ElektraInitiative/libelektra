@@ -98,7 +98,7 @@ int elektraCounterError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKT
 	return 1; /* success */
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (counter)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport("counter",

@@ -427,7 +427,7 @@ int elektraHexnumberClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 /**
  * Exports the plugin to be used by Elektra.
  */
-Plugin * ELEKTRA_PLUGIN_EXPORT (hexnumber)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport (ELEKTRA_HEXNUMBER_PLUGIN_NAME,

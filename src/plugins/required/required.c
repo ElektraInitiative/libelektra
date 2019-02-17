@@ -61,7 +61,7 @@ int elektraRequiredSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTR
 	return 1; // success
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (required)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport ("required",

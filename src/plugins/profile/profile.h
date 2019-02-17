@@ -19,6 +19,6 @@ int elektraProfileGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraProfileSet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraProfileError (Plugin * handle, KeySet * ks, Key * parentKey);
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (profile);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 #endif

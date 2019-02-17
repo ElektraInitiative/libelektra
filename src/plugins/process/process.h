@@ -19,7 +19,7 @@ int elektraProcessSet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraProcessError (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraProcessCheckConfig (Key * errorKey, KeySet * conf);
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (process);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 
 #endif

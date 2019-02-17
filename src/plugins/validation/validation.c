@@ -182,7 +182,7 @@ int elektraValidationSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key
 	return 1; /* success */
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (validation)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport("validation",

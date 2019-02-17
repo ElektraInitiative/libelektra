@@ -228,7 +228,7 @@ int elektraLuaError (ckdb::Plugin * handle, ckdb::KeySet * returned, ckdb::Key *
 	return 0;
 }
 
-ckdb::Plugin * ELEKTRA_PLUGIN_EXPORT (lua)
+ckdb::Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport("lua",

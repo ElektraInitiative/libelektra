@@ -976,7 +976,7 @@ int elektraSpecClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 	return 0;
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (spec)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport ("spec",

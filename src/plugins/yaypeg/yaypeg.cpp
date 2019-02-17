@@ -88,7 +88,7 @@ int elektraYaypegSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_
 	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (yaypeg)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	return elektraPluginExport ("yaypeg", ELEKTRA_PLUGIN_GET, &elektraYaypegGet, ELEKTRA_PLUGIN_SET, &elektraYaypegSet,
 				    ELEKTRA_PLUGIN_END);

@@ -123,7 +123,7 @@ int elektraYamlcppSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 	return status;
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (yamlcpp)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	return elektraPluginExport ("yamlcpp", ELEKTRA_PLUGIN_GET, &elektraYamlcppGet, ELEKTRA_PLUGIN_SET, &elektraYamlcppSet,
 				    ELEKTRA_PLUGIN_END);

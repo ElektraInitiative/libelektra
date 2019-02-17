@@ -290,7 +290,7 @@ int PLUGIN_FUNCTION (set) (Plugin * handle, KeySet * keySet, Key * parentKey)
 	return status;
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (base64)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	return elektraPluginExport (ELEKTRA_PLUGIN_NAME, ELEKTRA_PLUGIN_GET, &PLUGIN_FUNCTION (get), ELEKTRA_PLUGIN_SET,
 				    &PLUGIN_FUNCTION (set), ELEKTRA_PLUGIN_END);

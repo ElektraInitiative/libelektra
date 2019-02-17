@@ -511,7 +511,7 @@ int elektraListEditPlugin (Plugin * handle, KeySet * pluginConfig)
 	return rc;
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (list)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport("list",

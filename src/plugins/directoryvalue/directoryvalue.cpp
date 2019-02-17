@@ -126,7 +126,7 @@ int elektraDirectoryValueSet (Plugin * handle, KeySet * returned, Key * parentKe
 	return status;
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (directoryvalue)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport ("directoryvalue",

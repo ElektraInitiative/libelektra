@@ -763,7 +763,7 @@ int elektraCamelSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (camel)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	return elektraPluginExport ("camel", ELEKTRA_PLUGIN_GET, &elektraCamelGet, ELEKTRA_PLUGIN_SET, &elektraCamelSet,
 				    ELEKTRA_PLUGIN_END);

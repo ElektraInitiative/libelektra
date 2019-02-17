@@ -192,7 +192,7 @@ int elektraNetworkSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 	return 1; /* success */
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (network)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport ("network",

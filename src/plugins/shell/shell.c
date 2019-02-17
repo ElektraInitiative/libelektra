@@ -142,7 +142,7 @@ int elektraShellError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 	return 1; // success
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (shell)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	return elektraPluginExport ("shell", ELEKTRA_PLUGIN_GET, &elektraShellGet, ELEKTRA_PLUGIN_SET, &elektraShellSet,
 				    ELEKTRA_PLUGIN_ERROR, &elektraShellError, ELEKTRA_PLUGIN_END);

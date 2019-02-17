@@ -896,7 +896,7 @@ int elektraMultifileCheckConfig (Key * errorKey ELEKTRA_UNUSED, KeySet * conf EL
 	return 0;
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (multifile)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
     return elektraPluginExport ("multifile",

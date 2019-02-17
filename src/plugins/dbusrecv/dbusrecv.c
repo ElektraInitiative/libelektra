@@ -227,7 +227,7 @@ int elektraDbusRecvClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 	return 1; /* success */
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (dbusrecv)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport("dbusrecv",

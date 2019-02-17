@@ -657,7 +657,7 @@ int elektraInternalnotificationClose (Plugin * handle, Key * parentKey ELEKTRA_U
 	return 1;
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (internalnotification)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport ("internalnotification",

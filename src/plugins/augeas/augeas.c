@@ -621,7 +621,7 @@ int elektraAugeasSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	return 1;
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (augeas)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport ("augeas",

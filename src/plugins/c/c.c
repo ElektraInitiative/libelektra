@@ -158,7 +158,7 @@ int elektraCCheckConfig (Key * errorKey ELEKTRA_UNUSED, KeySet * conf ELEKTRA_UN
 	return 0;
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (c)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport ("c",

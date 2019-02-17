@@ -1142,7 +1142,7 @@ int ELEKTRA_PLUGIN_FUNCTION (error) (Plugin * handle, KeySet * r ELEKTRA_UNUSED,
 }
 
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (resolver)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
     return elektraPluginExport(ELEKTRA_PLUGIN_NAME,

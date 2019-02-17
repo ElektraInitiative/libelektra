@@ -507,7 +507,7 @@ int elektraRangeSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_U
 	return 1; // success
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (range)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
     return elektraPluginExport ("range",

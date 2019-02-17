@@ -969,7 +969,7 @@ int elektraGitresolverError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned E
 	return 1; // success
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (gitresolver)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
     return elektraPluginExport ("gitresolver",

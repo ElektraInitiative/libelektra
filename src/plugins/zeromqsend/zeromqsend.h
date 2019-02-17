@@ -56,6 +56,6 @@ int elektraZeroMqSendClose (Plugin * handle, Key * errorKey);
 int elektraZeroMqSendGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraZeroMqSendSet (Plugin * handle, KeySet * ks, Key * parentKey);
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (zeromqsend);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 #endif

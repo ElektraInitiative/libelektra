@@ -405,7 +405,7 @@ int elektraBlockresolverError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned
 	return 1; // success
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (blockresolver)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
     return elektraPluginExport ("blockresolver",

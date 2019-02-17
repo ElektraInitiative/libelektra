@@ -511,7 +511,7 @@ int elektraDateSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 	return rc; // success
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (date)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport ("date",

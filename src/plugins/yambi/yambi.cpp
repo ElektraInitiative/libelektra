@@ -88,7 +88,7 @@ int elektraYambiSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_U
 	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (yambi)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	return elektraPluginExport ("yambi", ELEKTRA_PLUGIN_GET, &elektraYambiGet, ELEKTRA_PLUGIN_SET, &elektraYambiSet,
 				    ELEKTRA_PLUGIN_END);

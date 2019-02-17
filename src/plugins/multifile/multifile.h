@@ -20,6 +20,6 @@ int elektraMultifileSet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraMultifileError (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraMultifileCheckConfig (Key * errorKey, KeySet * conf);
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (multifile);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 #endif

@@ -510,7 +510,7 @@ int elektraReferenceSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 	return status;
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (reference)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport ("reference",

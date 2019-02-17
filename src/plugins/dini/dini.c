@@ -97,7 +97,7 @@ int elektraDiniSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 	return ret;
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (dini)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport ("dini",

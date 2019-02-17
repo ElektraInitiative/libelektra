@@ -66,7 +66,7 @@ int elektraSyncSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 	return 1; /* success */
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (sync)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport("sync",

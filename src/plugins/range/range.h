@@ -16,6 +16,6 @@
 int elektraRangeGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraRangeSet (Plugin * handle, KeySet * ks, Key * parentKey);
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (range);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 #endif

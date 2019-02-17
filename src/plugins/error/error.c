@@ -102,7 +102,7 @@ int elektraErrorSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	return 0;
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (error)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport("error",

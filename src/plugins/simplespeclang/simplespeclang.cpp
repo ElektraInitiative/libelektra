@@ -217,7 +217,7 @@ int elektraSimplespeclangCheckConfig (Key * errorKey ELEKTRA_UNUSED, KeySet * co
 	return 0;
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (simplespeclang)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport ("simplespeclang",

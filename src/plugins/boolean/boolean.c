@@ -352,7 +352,7 @@ int elektraBooleanSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 	return retVal; // success
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (boolean)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
     return elektraPluginExport ("boolean",

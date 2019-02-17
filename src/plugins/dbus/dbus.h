@@ -44,6 +44,6 @@ int elektraDbusClose (Plugin * handle, Key * errorKey);
 int elektraDbusGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraDbusSet (Plugin * handle, KeySet * ks, Key * parentKey);
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (dbus);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 #endif

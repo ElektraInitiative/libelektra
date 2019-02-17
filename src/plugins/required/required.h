@@ -16,6 +16,6 @@
 int elektraRequiredGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraRequiredSet (Plugin * handle, KeySet * ks, Key * parentKey);
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (required);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 #endif

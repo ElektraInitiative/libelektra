@@ -20,7 +20,7 @@ extern "C" {
 int elektraYaypegGet (Plugin * handle, KeySet * returned, Key * parentKey);
 int elektraYaypegSet (Plugin * handle, KeySet * returned, Key * parentKey);
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (yaypeg);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 } // end extern "C"
 
 #endif

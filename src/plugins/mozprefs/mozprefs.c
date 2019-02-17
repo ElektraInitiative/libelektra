@@ -253,7 +253,7 @@ int elektraMozprefsSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key *
 	return 1; // success
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (mozprefs)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport ("mozprefs",

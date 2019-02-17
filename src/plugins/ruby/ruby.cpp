@@ -709,7 +709,7 @@ int RUBY_PLUGIN_FUNCTION (Error) (ckdb::Plugin * handle, ckdb::KeySet * returned
 }
 
 
-ckdb::Plugin * ELEKTRA_PLUGIN_EXPORT (RUBY_PLUGIN_NAME)
+ckdb::Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport(RUBY_PLUGIN_NAME_STR,

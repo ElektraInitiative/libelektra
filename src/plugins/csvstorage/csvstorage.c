@@ -762,7 +762,7 @@ int elektraCsvstorageSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	return rc;
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (csvstorage)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport("csvstorage",

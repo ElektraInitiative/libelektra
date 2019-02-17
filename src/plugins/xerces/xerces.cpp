@@ -128,7 +128,7 @@ int elektraXercesSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * p
 	return ret;
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (xerces)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport("xerces",

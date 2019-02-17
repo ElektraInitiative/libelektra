@@ -115,7 +115,7 @@ int elektraCppTemplateCheckConfig (Key * errorKey ELEKTRA_UNUSED, KeySet * conf 
 	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (cpptemplate)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport ("cpptemplate",

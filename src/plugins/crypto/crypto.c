@@ -539,7 +539,7 @@ int ELEKTRA_PLUGIN_FUNCTION (checkconf) (Key * errorKey, KeySet * conf)
 	}
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (crypto)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport(ELEKTRA_PLUGIN_NAME,

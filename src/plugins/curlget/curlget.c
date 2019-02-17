@@ -1006,7 +1006,7 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 	return retval; // success
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (curlget)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
     return elektraPluginExport ("curlget",

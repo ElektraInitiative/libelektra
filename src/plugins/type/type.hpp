@@ -23,7 +23,7 @@ int elektraTypeSet (ckdb::Plugin * handle, ckdb::KeySet * ks, ckdb::Key * parent
 int elektraTypeError (ckdb::Plugin * handle, ckdb::KeySet * ks, ckdb::Key * parentKey);
 int elektraTypeValidateKey (ckdb::Key * key, ckdb::Key * errorKey);
 
-ckdb::Plugin * ELEKTRA_PLUGIN_EXPORT (type);
+ckdb::Plugin * ELEKTRA_PLUGIN_EXPORT;
 }
 
 #endif

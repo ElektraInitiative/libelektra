@@ -80,7 +80,7 @@ int elektraDesktopSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 	return 0;
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (desktop)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport ("desktop",

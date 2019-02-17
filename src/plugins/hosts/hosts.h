@@ -29,4 +29,4 @@
 
 int elektraHostsGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraHostsSet (Plugin * handle, KeySet * ks, Key * parentKey);
-Plugin * ELEKTRA_PLUGIN_EXPORT (hosts);
+Plugin * ELEKTRA_PLUGIN_EXPORT;

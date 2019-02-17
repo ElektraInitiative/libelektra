@@ -30,6 +30,6 @@ int elektraNetworkGet (Plugin * handle, KeySet * ks, Key * parentKey);
 
 int elektraNetworkSet (Plugin * handle, KeySet * ks, Key * parentKey);
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (network);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 #endif

@@ -88,7 +88,7 @@ int elektraYawnGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	return status < 0 ? ELEKTRA_PLUGIN_STATUS_ERROR : status;
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (yawn)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	return elektraPluginExport ("yawn", ELEKTRA_PLUGIN_GET, &elektraYawnGet, ELEKTRA_PLUGIN_END);
 }

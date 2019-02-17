@@ -214,7 +214,7 @@ int elektraSemlockSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key * 
 	return 1; // success
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (semlock)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport ("semlock",

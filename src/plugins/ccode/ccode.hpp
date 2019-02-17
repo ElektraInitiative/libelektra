@@ -21,7 +21,7 @@ int elektraCcodeClose (Plugin * handle, Key * key);
 int elektraCcodeGet (Plugin * handle, KeySet * keySet, Key * parentKey);
 int elektraCcodeSet (Plugin * handle, KeySet * keySet, Key * parentKey);
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (ccode);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 } // end extern "C"
 
 #endif
