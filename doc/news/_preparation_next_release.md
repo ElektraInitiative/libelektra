@@ -134,6 +134,10 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 - We fixed an incorrect format specifier in a call to the `syslog` function. _(René Schwaiger)_
 
+### CType
+
+- A rewrite of the `type` plugin in C. Also provides enum and boolean functionality. _(Klemens Böswirth)_
+
 ## Libraries
 
 The text below summarizes updates to the [C (and C++)-based libraries](https://www.libelektra.org/libraries/readme) of Elektra.

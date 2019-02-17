@@ -227,6 +227,7 @@ copied by the `spec` plugin just before):
 - [path](path/) by checking files on file system
 - [type](type/) using run-time type checking (CORBA types/)
 - [enum](enum/) compares the keyvalue against a list of valid values
+- [ctype](ctype/) type checking (CORBA types) and enum functionality, written in C
 - [mathcheck](mathcheck/) by mathematical expressions using key values as operands
 - [conditionals](conditionals/) by using if-then-else like statements
 - [required](required/) rejects non-required keys
