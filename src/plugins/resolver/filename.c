@@ -34,7 +34,7 @@
  * @retval 0 on success (Absolute path)
  * @retval -1 on a non-valid file
  */
-int ELEKTRA_PLUGIN_FUNCTION (resolver, checkFile) (const char * filename)
+int ELEKTRA_PLUGIN_FUNCTION (checkFile) (const char * filename)
 {
 	if (!filename) return -1;
 	if (filename[0] == '0') return -1;
@@ -609,7 +609,7 @@ static int elektraResolveDir (ElektraResolved * handle, ElektraResolveTempfile t
 	return 1;
 }
 
-void ELEKTRA_PLUGIN_FUNCTION (resolver, freeHandle) (ElektraResolved * handle)
+void ELEKTRA_PLUGIN_FUNCTION (freeHandle) (ElektraResolved * handle)
 {
 	if (!handle) return;
 	if (handle->relPath != NULL) elektraFree (handle->relPath);
@@ -620,8 +620,8 @@ void ELEKTRA_PLUGIN_FUNCTION (resolver, freeHandle) (ElektraResolved * handle)
 	handle = NULL;
 }
 
-ElektraResolved * ELEKTRA_PLUGIN_FUNCTION (resolver, filename) (elektraNamespace namespace, const char * path,
-								ElektraResolveTempfile tmpDir, Key * warningsKey)
+ElektraResolved * ELEKTRA_PLUGIN_FUNCTION (filename) (elektraNamespace namespace, const char * path, ElektraResolveTempfile tmpDir,
+						      Key * warningsKey)
 {
 
 	ElektraResolved * handle = elektraCalloc (sizeof (ElektraResolved));
@@ -666,7 +666,7 @@ ElektraResolved * ELEKTRA_PLUGIN_FUNCTION (resolver, filename) (elektraNamespace
 	}
 	if (rc == -1)
 	{
-		ELEKTRA_PLUGIN_FUNCTION (resolver, freeHandle) (handle);
+		ELEKTRA_PLUGIN_FUNCTION (freeHandle) (handle);
 		return NULL;
 	}
 	return handle;

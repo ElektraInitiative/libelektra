@@ -22,9 +22,9 @@ struct _dynArray
 typedef struct _dynArray DynArray;
 
 // DynArray functions
-DynArray * ELEKTRA_PLUGIN_FUNCTION (mmapstorage, dynArrayNew) (void);
-void ELEKTRA_PLUGIN_FUNCTION (mmapstorage, dynArrayDelete) (DynArray * dynArray);
-int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, dynArrayFindOrInsert) (Key * key, DynArray * dynArray);
-ssize_t ELEKTRA_PLUGIN_FUNCTION (mmapstorage, dynArrayFind) (Key * key, DynArray * dynArray);
+DynArray * ELEKTRA_PLUGIN_FUNCTION (dynArrayNew) (void);
+void ELEKTRA_PLUGIN_FUNCTION (dynArrayDelete) (DynArray * dynArray);
+int ELEKTRA_PLUGIN_FUNCTION (dynArrayFindOrInsert) (Key * key, DynArray * dynArray);
+ssize_t ELEKTRA_PLUGIN_FUNCTION (dynArrayFind) (Key * key, DynArray * dynArray);
 
 #endif

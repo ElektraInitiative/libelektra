@@ -58,7 +58,7 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * masterK
 		// generate the salt
 		AutoSeeded_RNG rng;
 		rng.randomize (salt, sizeof (salt));
-		const int encodingResult = CRYPTO_PLUGIN_FUNCTION (base64Encode) (errorKey, salt, sizeof (salt), &saltHexString);
+		const int encodingResult = ELEKTRA_PLUGIN_FUNCTION (base64Encode) (errorKey, salt, sizeof (salt), &saltHexString);
 		if (encodingResult < 0)
 		{
 			// error in libinvoke - errorKey has been set by base64Encode
@@ -73,7 +73,7 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * masterK
 		elektraFree (saltHexString);
 
 		// read iteration count
-		const kdb_unsigned_long_t iterations = CRYPTO_PLUGIN_FUNCTION (getIterationCount) (errorKey, config);
+		const kdb_unsigned_long_t iterations = ELEKTRA_PLUGIN_FUNCTION (getIterationCount) (errorKey, config);
 
 		// generate/derive the cryptographic key and the IV
 		PKCS5_PBKDF2 pbkdf (new HMAC (new SHA_256));
@@ -116,13 +116,13 @@ static int getKeyIvForDecryption (KeySet * config, Key * errorKey, Key * masterK
 	ELEKTRA_ASSERT (masterKey != NULL, "Parameter `masterKey` must not be NULL");
 
 	// get the salt
-	if (CRYPTO_PLUGIN_FUNCTION (getSaltFromPayload) (errorKey, k, &saltBuffer, &saltBufferLen) != 1)
+	if (ELEKTRA_PLUGIN_FUNCTION (getSaltFromPayload) (errorKey, k, &saltBuffer, &saltBufferLen) != 1)
 	{
-		return -1; // error set by CRYPTO_PLUGIN_FUNCTION(getSaltFromPayload)()
+		return -1; // error set by ELEKTRA_PLUGIN_FUNCTION(getSaltFromPayload)()
 	}
 
 	// get the iteration count
-	const kdb_unsigned_long_t iterations = CRYPTO_PLUGIN_FUNCTION (getIterationCount) (errorKey, config);
+	const kdb_unsigned_long_t iterations = ELEKTRA_PLUGIN_FUNCTION (getIterationCount) (errorKey, config);
 
 	try
 	{
@@ -174,9 +174,9 @@ int elektraCryptoBotanEncrypt (KeySet * pluginConfig, Key * k, Key * errorKey, K
 	kdb_unsigned_long_t saltLen = 0;
 	kdb_octet_t * salt = NULL;
 
-	if (CRYPTO_PLUGIN_FUNCTION (getSaltFromMetakey) (errorKey, k, &salt, &saltLen) != 1)
+	if (ELEKTRA_PLUGIN_FUNCTION (getSaltFromMetakey) (errorKey, k, &salt, &saltLen) != 1)
 	{
-		return -1; // error set by CRYPTO_PLUGIN_FUNCTION(getSaltFromMetakey)()
+		return -1; // error set by ELEKTRA_PLUGIN_FUNCTION(getSaltFromMetakey)()
 	}
 
 	// remove salt as metakey because it will be encoded into the crypto payload
@@ -259,9 +259,9 @@ int elektraCryptoBotanDecrypt (KeySet * pluginConfig, Key * k, Key * errorKey, K
 
 	// parse salt length from crypto payload
 	kdb_unsigned_long_t saltLen = 0;
-	if (CRYPTO_PLUGIN_FUNCTION (getSaltFromPayload) (errorKey, k, NULL, &saltLen) != 1)
+	if (ELEKTRA_PLUGIN_FUNCTION (getSaltFromPayload) (errorKey, k, NULL, &saltLen) != 1)
 	{
-		return -1; // error set by CRYPTO_PLUGIN_FUNCTION(getSaltFromPayload)()
+		return -1; // error set by ELEKTRA_PLUGIN_FUNCTION(getSaltFromPayload)()
 	}
 	saltLen += sizeof (kdb_unsigned_long_t);
 
@@ -331,7 +331,7 @@ char * elektraCryptoBotanCreateRandomString (Key * errorKey, const kdb_unsigned_
 		auto buffer = unique_ptr<kdb_octet_t[]>{ new kdb_octet_t[length] };
 		AutoSeeded_RNG rng;
 		rng.randomize (&buffer[0], length);
-		if (CRYPTO_PLUGIN_FUNCTION (base64Encode) (errorKey, &buffer[0], length, &hexString) < 0)
+		if (ELEKTRA_PLUGIN_FUNCTION (base64Encode) (errorKey, &buffer[0], length, &hexString) < 0)
 		{
 			// error in libinvoke - errorKey has been set by base64Encode
 			return 0;
