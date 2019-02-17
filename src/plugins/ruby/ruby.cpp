@@ -620,7 +620,7 @@ int RUBY_PLUGIN_FUNCTION (Get) (ckdb::Plugin * handle, ckdb::KeySet * returned, 
 				     keyNew (_MODULE_CONFIG_PATH "/exports/open", KEY_FUNC, RUBY_PLUGIN_FUNCTION (Open), KEY_END),
 				     keyNew (_MODULE_CONFIG_PATH "/exports/close", KEY_FUNC, RUBY_PLUGIN_FUNCTION (Close), KEY_END),
 				     keyNew (_MODULE_CONFIG_PATH "/exports/checkconf", KEY_FUNC, RUBY_PLUGIN_FUNCTION (CheckConf), KEY_END),
-#include ELEKTRA_README (RUBY_PLUGIN_NAME)
+#include ELEKTRA_README
 				     keyNew (_MODULE_CONFIG_PATH "/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END));
 		ksDel (n);
 		return 0;
