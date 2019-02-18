@@ -342,6 +342,10 @@ you up to date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 
+### Misc
+
+- We removed the non-functional `configure` script from the top-level directory. _(René Schwaiger)_
+
 ## Infrastructure
 
 ### Cirrus
