@@ -42,6 +42,7 @@ RUN apt-get update && apt-get -y install \
         llvm \
         maven \
         moreutils \
+        ninja-build \
         npm \
         openjdk-8-jdk \
         pkg-config \
