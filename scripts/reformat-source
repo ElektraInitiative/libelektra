@@ -33,4 +33,4 @@ cd "$SOURCE" || {
 }
 
 source_files=$(git ls-files '*.c' '*.h' '*.cpp' '*.hpp' '*.c.in' '*.h.in' | grep -v '^src/tools/gen.*')
-printf "%s\n" "$source_files" | sed -nE 's/.*/"\0"/p' | xargs "$CLANG_FORMAT" -style=file -i
+printf "%s\n" "$source_files" | sed -nE 's/(.*)/'"'"'\1'"'"'/p' | xargs "$CLANG_FORMAT" -style=file -i

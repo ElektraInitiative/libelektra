@@ -16,5 +16,5 @@ if ! which shfmt > /dev/null; then
 fi
 
 shell_files=$(shfmt -f 'scripts' 'tests/shell')
-non_ignored=$(printf "%s\n" "$shell_files" | sed -nE 's/.*/"\0"/p' | xargs git check-ignore -vn | sed -ne 's/^::[ \t]*\(.*\)$/\1/p')
-printf "%s\n" "$non_ignored" | sed -nE 's/.*/"\0"/p' | xargs shfmt -s -sr -w
+non_ignored=$(printf "%s\n" "$shell_files" | sed -nE 's/(.*)/'"'"'\1'"'"'/p' | xargs git check-ignore -vn | sed -ne 's/^::[ \t]*\(.*\)$/\1/p')
+printf "%s\n" "$non_ignored" | sed -nE 's/(.*)/'"'"'\1'"'"'/p' | xargs shfmt -s -sr -w

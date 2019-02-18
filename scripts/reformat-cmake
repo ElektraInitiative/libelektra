@@ -30,7 +30,7 @@ if [ -z "$(which sponge)" ]; then
 fi
 
 files=$(git ls-files '*.cmake' '*/CMakeLists.txt' | grep '.*CMakeLists.txt')
-printf "%s\n" "$files" | sed -nE 's/.*/"\0"/p' | xargs "$CMAKE_FORMAT" -i
+printf "%s\n" "$files" | sed -nE 's/(.*)/'"'"'\1'"'"'/p' | xargs "$CMAKE_FORMAT" -i
 for file in $files; do
 	unexpand "$file" | sponge "$file"
 done
