@@ -25,6 +25,7 @@
 #include "kdbconfig.h"
 
 #ifdef __cplusplus
+#include <cinttypes>
 // for C++11 or later
 
 namespace kdb
@@ -53,14 +54,14 @@ typedef kdb::unsigned_short_t kdb_unsigned_short_t;
 typedef kdb::unsigned_long_t kdb_unsigned_long_t;
 typedef kdb::unsigned_long_long_t kdb_unsigned_long_long_t;
 
-#endif // for c++
+#define ELEKTRA_LONG_F "%" PRIi32
+#define ELEKTRA_UNSIGNED_LONG_F "%" PRIu32
+#define ELEKTRA_LONG_LONG_F "%" PRIi64
+#define ELEKTRA_LONG_LONG_S strtoll
+#define ELEKTRA_UNSIGNED_LONG_LONG_F "%" PRIu64
+#define ELEKTRA_UNSIGNED_LONG_LONG_S strtoull
 
-
-// for C (and C++)
-
-typedef unsigned char kdb_char_t;
-
-#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
+#elif defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
 // for C99+
 #include <inttypes.h>
 #include <stdbool.h>
@@ -89,43 +90,63 @@ typedef signed short kdb_short_t;
 typedef unsigned short kdb_unsigned_short_t;
 
 #if SIZEOF_LONG == 4
-#define ELEKTRA_LONG_F "%ld"
+// kdb_long = long
 typedef long kdb_long_t;
-#define ELEKTRA_UNSIGNED_LONG_F "%lu"
 typedef unsigned long kdb_unsigned_long_t;
-#elif SIZEOF_INT == 4
-#define ELEKTRA_LONG_F "%d"
-typedef int kdb_long_t;
-#define ELEKTRA_UNSIGNED_LONG_F "%u"
-typedef unsigned int kdb_unsigned_long_t;
-#else
-#error "Can't map kdb_long_t (4 bytes, 32 bits) to a native type."
-#endif
 
-// typedef wchar_t                   kdb_wchar_t; // wchar_t not supported!
+#define ELEKTRA_LONG_F "%ld"
+#define ELEKTRA_UNSIGNED_LONG_F "%lu"
+
+#elif SIZEOF_INT == 4
+// kdb_long = int
+typedef int kdb_long_t;
+typedef unsigned int kdb_unsigned_long_t;
+
+#define ELEKTRA_LONG_F "%d"
+#define ELEKTRA_UNSIGNED_LONG_F "%u"
+
+#else
+// no kdb_long
+#error "Can't map kdb_long_t (4 bytes, 32 bits) to a native type."
+
+#endif // kdb_long tests
+
 
 #if SIZEOF_LONG == 8
+// kdb_long_long = long
+typedef long kdb_long_long_t;
+typedef unsigned long kdb_unsigned_long_long_t;
+
 #define ELEKTRA_LONG_LONG_F "%ld"
 #define ELEKTRA_LONG_LONG_S strtol
-typedef long kdb_long_long_t;
 #define ELEKTRA_UNSIGNED_LONG_LONG_F "%lu"
 #define ELEKTRA_UNSIGNED_LONG_LONG_S strtoul
-typedef unsigned long kdb_unsigned_long_long_t;
+
 #elif defined(HAVE_SIZEOF_LONG_LONG) && (SIZEOF_LONG_LONG == 8)
+// kdb_long_long = long long
+typedef long long kdb_long_long_t;
+typedef unsigned long long kdb_unsigned_long_long_t;
+
 #define ELEKTRA_LONG_LONG_F "%lld"
 #define ELEKTRA_LONG_LONG_S strtoll
-typedef long long kdb_long_long_t;
 #define ELEKTRA_UNSIGNED_LONG_LONG_F "%llu"
 #define ELEKTRA_UNSIGNED_LONG_LONG_S strtoull
-typedef unsigned long long kdb_unsigned_long_long_t;
+
 #else
+// no kdb_long_long
 #error "Can't map kdb_long_long_t (8 bytes, 64 bits) to a native type."
-#endif
 
-#endif // for C89
+#endif // kdb_long_long tests
 
+#endif // for C++11 or later/C99+/C89
+
+// for C (and C++)
+
+typedef unsigned char kdb_char_t;
 typedef float kdb_float_t;
 typedef double kdb_double_t;
+
+// typedef wchar_t kdb_wchar_t; // wchar_t not supported!
 
 #if defined(HAVE_SIZEOF_LONG_DOUBLE) && (SIZEOF_LONG_DOUBLE >= 10)
 #define ELEKTRA_HAVE_KDB_LONG_DOUBLE

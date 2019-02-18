@@ -269,7 +269,7 @@ int elektraKeyToUnsignedLong (const Key * key ELEKTRA_UNUSED, kdb_unsigned_long_
 #define CHECK_CONVERSION ELEKTRA_TYPE_CHECK_CONVERSION_RANGE (value <= UINT32_MAX)
 #define CHECK_FAIL_BLOCK
 #define VALUE_TYPE unsigned long long
-#define TO_VALUE (strtoull (string, &end, 10))
+#define TO_VALUE (ELEKTRA_UNSIGNED_LONG_LONG_S (string, &end, 10))
 #define NAME_MACRO(TYPE_NAME) CAT (elektraKeyTo, TYPE_NAME)
 #define CODE_ONLY 1
 #define KEY_PARAM_NAME key
@@ -335,7 +335,7 @@ int elektraKeyToUnsignedLongLong (const Key * key ELEKTRA_UNUSED, kdb_unsigned_l
 #define CHECK_CONVERSION ELEKTRA_TYPE_CHECK_CONVERSION_RANGE (value <= UINT64_MAX)
 #define CHECK_FAIL_BLOCK
 #define VALUE_TYPE unsigned long long
-#define TO_VALUE (strtoull (string, &end, 10))
+#define TO_VALUE (ELEKTRA_UNSIGNED_LONG_LONG_S (string, &end, 10))
 #define NAME_MACRO(TYPE_NAME) CAT (elektraKeyTo, TYPE_NAME)
 #define CODE_ONLY 1
 #define KEY_PARAM_NAME key
