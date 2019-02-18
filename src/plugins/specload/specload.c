@@ -83,14 +83,17 @@ int elektraSpecloadClose (Plugin * handle, Key * errorKey)
 {
 	Specload * specload = elektraPluginGetData (handle);
 
-	elektraInvokeClose (specload->quickDump, errorKey);
+	if (specload != NULL)
+	{
+		elektraInvokeClose (specload->quickDump, errorKey);
 
-	ksDel (specload->quickDumpConfig);
-	elektraFree (specload->app);
-	freeArgv (specload->argv);
+		ksDel (specload->quickDumpConfig);
+		elektraFree (specload->app);
+		freeArgv (specload->argv);
 
-	elektraFree (specload);
-	elektraPluginSetData (handle, NULL);
+		elektraFree (specload);
+		elektraPluginSetData (handle, NULL);
+	}
 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
