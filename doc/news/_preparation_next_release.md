@@ -89,6 +89,19 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
   . _(René Schwaiger)_
 
+### Quickdump
+
+- [quickdump](https://www.libelektra.org/plugins/quickdump) is a new storage plugin. It implements a more concise form of the
+  [dump](https://www.libelektra.org/plugins/dump) format, which is also quicker too read. *(Klemens Böswirth)*
+
+### Specload
+
+- The [specload](https://www.libelektra.org/plugins/specload) pluign is a special storage plugin. Instead of using a storage file
+  it calls an external application to request its specification. For the transfer it relies on the 
+  [quickdump](https://www.libelektra.org/plugins/quickdump) plugin. *(Klemens Böswirth)*
+- Currently changing the specification is not allowed. However, in future the plugin will allow overriding a specification as long
+  as it is done safely.
+
 ## Libraries
 
 The text below summarizes updates to the [C (and C++)-based libraries](https://www.libelektra.org/libraries/readme) of Elektra.

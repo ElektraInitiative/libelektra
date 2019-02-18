@@ -122,6 +122,7 @@ productive use:
 - [yaypeg](yaypeg/) reads YAML data using a PEG parser combinators based on [PEGTL](https://github.com/taocpp/PEGTL)
 - [mmapstorage](mmapstorage/) uses binary, not portable memory mapped file for a high performance storage
 - [quickdump](quickdump/) uses binary portable format based on [dump](dump/), but more efficient
+- [specload](specload/) calls an external application to request its specification, depends on [quickdump](quickdump/)
 
 [yaml]: http://www.yaml.org
 
