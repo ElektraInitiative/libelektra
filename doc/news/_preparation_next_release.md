@@ -68,7 +68,6 @@ Take a look at the [README](/src/libs/highlevel/README.md) for more infos.
 
 For examples on how to build an application using this API take a look at our [example](/examples/highlevel). _(Klemens Böswirth)_
 
-
 ### <<HIGHLIGHT2>>
 
 ### <<HIGHLIGHT2>>

@@ -156,6 +156,7 @@ Errors which do not originate inside the high-level API itself are wrapped into 
 error. You can also access the key to which the error was originally attached, as well as any possible low-level warnings.
 
 To get the original low-level error code, description, severity, group, module and reason you can use these functions:
+
 ```c
 int elektraKDBErrorCode (const ElektraError * error);
 const char * elektraKDBErrorDescription (const ElektraError * error);
@@ -172,11 +173,12 @@ int elektraKDBErrorWarningCount (const ElektraError * error);
 ElektraError * elektraKDBErrorGetWarning (const ElektraError * error, int index);
 ```
 
-`elektraKDBErrorGetWarning` will return a newly allocated `ElektraError` struct with error code `ELEKTRA_ERROR_CODE_LOW_LEVEL` and severity 
+`elektraKDBErrorGetWarning` will return a newly allocated `ElektraError` struct with error code `ELEKTRA_ERROR_CODE_LOW_LEVEL` and severity
 `ELEKTRA_ERROR_SEVERITY_WARNING`. You will need to free the allocated struct when you are done. To access the information of the low-level
 warning you use the `elektraKDBError*` functions described above.
 
 The key to which the low-level error and the associated warnings where attached originally can be accessed via:
+
 ```c
 Key * elektraKDBErrorKey (const ElektraError * error);
 ```
@@ -195,7 +197,7 @@ this function will be called, when any of the getter-functions is called on a no
 and therefore has no specified default value.
 
 If you provide your own callback, it must interrupt the thread of execution in some way (e.g. by calling `exit()` or throwing an exception
-in C++). It *must not* return to the calling function.
+in C++). It _must not_ return to the calling function.
 
 The handler will also be called whenever you pass `NULL` where a function expects an `ElektraError **`. In this case the error code will be
 `ELEKTRA_ERROR_CODE_NULL_ERROR`.
@@ -209,20 +211,20 @@ compiled Elektra with debug logging enabled).
 
 ## Data Types
 
-The API determines the data type of a given key, by reading its `type` metadata. The API supports the following types, 
+The API determines the data type of a given key, by reading its `type` metadata. The API supports the following types,
 which are taken from the CORBA specification:
 
-* **String**: a string of characters, represented by `string` in metadata
-* **Boolean**: a boolean value `true` or `false`, represented by `boolean` in metadata, in the KDB the raw value `"1"` is
-               regarded as true, `"0"` regarded as false and any other value is an error
-* **Char**: a single character, represented by `char` in metadata
-* **Octet**: a single byte, represented by `octet` in metadata
-* **(Unsigned) Short**: a 16-bit (unsigned) integer, represented by `short` (`unsigned_short`) in metadata
-* **(Unsigned) Long**: a 32-bit (unsigned) integer, represented by `long` (`unsigned_long`) in metadata
-* **(Unsigned) Long Long**: a 64-bit (unsigned) integer, represented by `long_long` (`unsigned_long_long`) in metadata
-* **Float**: whatever your compiler treats as `float`, probably IEEE-754 single-precision, represented by `float` in metadata
-* **Double**: whatever your compiler treats as `double`, probably IEEE-754 double-precision, represented by `double` in metadata
-* **Long Double**: whatever your compiler treats as `long double`, not always available, represented by `long_double` in metadata
+- **String**: a string of characters, represented by `string` in metadata
+- **Boolean**: a boolean value `true` or `false`, represented by `boolean` in metadata, in the KDB the raw value `"1"` is
+  regarded as true, `"0"` regarded as false and any other value is an error
+- **Char**: a single character, represented by `char` in metadata
+- **Octet**: a single byte, represented by `octet` in metadata
+- **(Unsigned) Short**: a 16-bit (unsigned) integer, represented by `short` (`unsigned_short`) in metadata
+- **(Unsigned) Long**: a 32-bit (unsigned) integer, represented by `long` (`unsigned_long`) in metadata
+- **(Unsigned) Long Long**: a 64-bit (unsigned) integer, represented by `long_long` (`unsigned_long_long`) in metadata
+- **Float**: whatever your compiler treats as `float`, probably IEEE-754 single-precision, represented by `float` in metadata
+- **Double**: whatever your compiler treats as `double`, probably IEEE-754 double-precision, represented by `double` in metadata
+- **Long Double**: whatever your compiler treats as `long double`, not always available, represented by `long_double` in metadata
 
 The API contains one header that is not automatically included from `elektra.h`. You can use it with `#include <elektra/conversion.h>`.
 The header provides the functions Elektra uses to convert your configuration values to and from strings. In most cases, you won't need
@@ -237,9 +239,9 @@ for a future expansion of this API.
 
 We enforce a few minimum properties for floating point types. They are taken from the IEE-754 specification and are:
 
-* For `float`: 32 bits, binary, 24 mantissa digits and exponent range of at least -125 to 128
-* For `double`: 64 bits, binary, 53 mantissa digits and exponent range of at least -1021 to 1024
-* For `long double`: at least 80 bits, binary, at least 64 mantissa digits and exponent range of at least -2^14 + 3 to 2^14
+- For `float`: 32 bits, binary, 24 mantissa digits and exponent range of at least -125 to 128
+- For `double`: 64 bits, binary, 53 mantissa digits and exponent range of at least -1021 to 1024
+- For `long double`: at least 80 bits, binary, at least 64 mantissa digits and exponent range of at least -2^14 + 3 to 2^14
 
 Additionally for C++ compilers we use a `static_assert` that will fail if `std::numeric_limits<T>::is_iec559` is `false` when `T` is any of
 `float`, `double` or `long double`.
@@ -329,7 +331,7 @@ You can use `const char * elektraGetRawString (Elektra * elektra, const char * n
 or type conversion will be attempted. Additionally this function does not call the fatal error handler. It will simply return `NULL`, if the
 key was not found.
 
-If you want to set a raw value, use 
+If you want to set a raw value, use
 `void elektraSetRawString (Elektra * elektra, const char * name, const char * value, KDBType type, ElektraError ** error)`.
 Obviously you have to provide a type for the value you set, so that the API can perform type checking, when reading the value next time.
 
@@ -360,7 +362,7 @@ bignum * elektraGetBigNum (Elektra * elektra, const char * keyname)
   {
     return NULL;
   }
-  
+
   const char * rawValue = elektraGetRawString (elektra, keyname);
   return rawValue == NULL ? NULL : stringToBigNum (rawValue);
 }
