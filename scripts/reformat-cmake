@@ -29,8 +29,7 @@ if [ -z "$(which sponge)" ]; then
 	exit 1
 fi
 
-directories="benchmarks cmake doc examples scripts src tests"
-files=$(git ls-files $directories CMakeLists.txt | grep '.*CMakeLists.txt')
+files=$(git ls-files '*.cmake' '*/CMakeLists.txt' | grep '.*CMakeLists.txt')
 printf "%s\n" "$files" | sed -nE 's/.*/"\0"/p' | xargs "$CMAKE_FORMAT" -i
 for file in $files; do
 	unexpand "$file" | sponge "$file"
