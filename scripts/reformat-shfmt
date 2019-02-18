@@ -15,6 +15,6 @@ if ! which shfmt > /dev/null; then
 	exit 1
 fi
 
-for file in $(shfmt -f scripts tests/shell); do
-	shfmt -s -sr -w "$file"
-done
+shell_files=$(shfmt -f 'scripts' 'tests/shell')
+non_ignored=$(printf "%s\n" "$shell_files" | sed -nE 's/.*/"\0"/p' | xargs git check-ignore -vn | sed -ne 's/^::[ \t]*\(.*\)$/\1/p')
+printf "%s\n" "$non_ignored" | sed -nE 's/.*/"\0"/p' | xargs shfmt -s -sr -w

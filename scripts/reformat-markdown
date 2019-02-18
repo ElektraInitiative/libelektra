@@ -20,4 +20,5 @@ if [ -z "${PRETTIER}" ]; then
 	exit 1
 fi
 
-find . -name '*.md' -exec "${PRETTIER}" --write -- {} +
+markdown_files=$(git ls-files '*.md')
+printf "%s\n" "$markdown_files" | sed -nE 's/.*/"\0"/p' | xargs "${PRETTIER}" --write --
