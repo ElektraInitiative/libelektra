@@ -6,54 +6,50 @@ The configuration view of elektra-web is similar to the tree view of the
 [qt-gui](https://git.libelektra.org/tree/master/src/tools/qt-gui), but with
 dynamic fields rendered via key metadata.
 
-
 ## Dependencies
 
 Elektra-web requires:
 
- * [Elektra](https://libelektra.org/) with the [`yajl` plugin](https://master.libelektra.org/src/plugins/yajl/) installed
- * A recent [node.js](https://nodejs.org/en/) installation (at least 6.x)
-
+- [Elektra](https://libelektra.org/) with the [`yajl` plugin](https://master.libelektra.org/src/plugins/yajl/) installed
+- A recent [node.js](https://nodejs.org/en/) installation (at least 6.x)
 
 ## Building with elektra-web tool
 
 To build Elektra with the elektra-web tool:
 
- * Install Node.js and dependencies for `yajl` plugin (see links above)
- * Configure libelektra build with the elektra-web tool, e.g. `cmake .. -DTOOLS="kdb;web"`
- * Build libelektra: `make`
- * Install libelektra: `sudo make install`
-
+- Install Node.js and dependencies for `yajl` plugin (see links above)
+- Configure libelektra build with the elektra-web tool, e.g. `cmake .. -DTOOLS="kdb;web"`
+- Build libelektra: `make`
+- Install libelektra: `sudo make install`
 
 ## Getting started
 
- * Start an elektrad instance: `kdb run-elektrad`
- * Start the client: `kdb run-web`
- * You can now access the client on: [http://localhost:33334](http://localhost:33334)
-
+- Start an elektrad instance: `kdb run-elektrad`
+- Start the client: `kdb run-web`
+- You can now access the client on: [http://localhost:33334](http://localhost:33334)
 
 ## Getting started (docker)
 
- * Create and run a new docker container: `docker run -d -it -p 33333:33333 -p 33334:33334 elektra/web`
- * You can now access the client on: [http://localhost:33334](http://localhost:33334)
-
+- Create and run a new docker container: `docker run -d -it -p 33333:33333 -p 33334:33334 elektra/web`
+- You can now access the client on: [http://localhost:33334](http://localhost:33334)
 
 ## Running from source
 
- * Install dependencies (see above)
- * Clone libelektra repo and `cd libelektra/src/tools/web`
- * Install and start an elektrad instance:
-   * `cd elektrad`
-   * `npm install`
-   * `npm start` (replaces `kdb run-elektrad`)
+- Install dependencies (see above)
+- Clone libelektra repo and `cd libelektra/src/tools/web`
+- Install and start an elektrad instance:
 
- * Install and start the client (connects to the elektrad instance):
-   * `cd client`
-   * `npm install`
-   * `npm start` (replaces `kdb run-web`)
+  - `cd elektrad`
+  - `npm install`
+  - `npm start` (replaces `kdb run-elektrad`)
 
- * You can now access the client on: [http://localhost:33334](http://localhost:33334)
+- Install and start the client (connects to the elektrad instance):
 
+  - `cd client`
+  - `npm install`
+  - `npm start` (replaces `kdb run-web`)
+
+- You can now access the client on: [http://localhost:33334](http://localhost:33334)
 
 ## Use-cases
 
@@ -99,17 +95,15 @@ KDB="/usr/local/custom/bin/kdb" kdb run-elektrad
 KDB="/usr/local/custom/bin/kdb" kdb run-web
 ```
 
-
 ## Overview
 
 Elektra web consists of multiple components:
 
- * (multiple) servers running an elektra daemon ([`elektrad`](elektrad/))
- * a single server to communicate with the elektra daemons and serve the client ([`webd`](webd/))
- * a web browser that accesses the client (Web UI) on the [`webd`](webd/) server ([`client`](client/))
+- (multiple) servers running an elektra daemon ([`elektrad`](elektrad/))
+- a single server to communicate with the elektra daemons and serve the client ([`webd`](webd/))
+- a web browser that accesses the client (Web UI) on the [`webd`](webd/) server ([`client`](client/))
 
 ![https://cdn.rawgit.com/ElektraInitiative/libelektra/master/src/tools/web/doc/network_structure.png](https://cdn.rawgit.com/ElektraInitiative/libelektra/master/src/tools/web/doc/network_structure.png)
-
 
 ## API
 
@@ -117,9 +111,8 @@ Elektra web consists of multiple components:
 
 [API blueprints](https://apiblueprint.org/) are available for both APIs:
 
- * [elektrad](https://master.libelektra.org/doc/api_blueprints/elektrad.apib), documentation: https://elektrad.docs.apiary.io/
- * [webd](https://master.libelektra.org/doc/api_blueprints/webd.apib), documentation: https://elektrawebd.docs.apiary.io/
-
+- [elektrad](https://master.libelektra.org/doc/api_blueprints/elektrad.apib), documentation: https://elektrad.docs.apiary.io/
+- [webd](https://master.libelektra.org/doc/api_blueprints/webd.apib), documentation: https://elektrawebd.docs.apiary.io/
 
 ## Auth
 
@@ -129,21 +122,25 @@ this is to use a reverse proxy (e.g. [nginx reverse proxy](https://www.nginx.com
 Once you set up a reverse proxy on your web server, you can use it to
 authenticate users, e.g. by [username/password auth](https://www.digitalocean.com/community/tutorials/how-to-set-up-password-authentication-with-nginx-on-ubuntu-14-04)
 
-
 ## Code structure
 
 - `elektrad/` - contains the daemon to interact with a single elektra instance
 - `webd/` - contains a daemon to serve the client and interact with multiple elektra instances
 
 - `client/` - contains the elektra-web client (Web UI)
+
   - `src/actions/` - Redux actions to access the KDB or display notifications in the UI
   - `src/components/` - React components
+
     - `pages/` - pages in the app
+
       - `Home.jsx` - the main page (overview of all instances)
       - `Configuration.jsx` - configuration page (single instance)
 
     - `TreeItem/` - contains all UI components related to a single item in the tree view
+
       - `dialogs/` - these dialogs are opened when certain actions are pressed (icons next to the tree items)
+
         - `AddDialog.jsx` - dialog to create a new (sub-)key
         - `DuplicateDialog.jsx` - dialog to duplicate a key
         - `EditDialog.jsx` - dialog to edit a key value
@@ -159,7 +156,6 @@ authenticate users, e.g. by [username/password auth](https://www.digitalocean.co
   - `src/containers/` - contains components that are connected to Redux
   - `src/css/` - contains CSS styles
   - `src/reducers/` - contains Redux reducers (used to process actions)
-
 
 ## Development Guides
 

@@ -7,6 +7,7 @@ your include directories and linked libraries correctly. The high-level API uses
 and you need to link against at least `elektra-core`, `elektra-highlevel`, `elektra-kdb` and `elektra-ease`.
 
 You should therefore use one of the following lines of linker flags:
+
 ```
 -lelektra-highlevel -lelektra-kdb -lelektra-ease -lelektra-core
 

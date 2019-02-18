@@ -1,5 +1,4 @@
-kdb-backup -- Make a backup of current KDB
-==========================================
+# kdb-backup -- Make a backup of current KDB
 
 ## SYNOPSES
 
@@ -20,5 +19,6 @@ kdb backup
 ```
 
 ## SEE ALSO
+
 - [kdb-stash(7)](kdb-stash.md)
 - [kdb-restore(7)](kdb-restore.md)

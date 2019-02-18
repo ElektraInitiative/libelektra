@@ -1,10 +1,9 @@
-kdb-introduction(1) -- introduction to kdb
-==========================================
+# kdb-introduction(1) -- introduction to kdb
 
 **kdb** provides access to the global key database of Elektra via
-command-line.  In this manual we give an overview of the tool suite
+command-line. In this manual we give an overview of the tool suite
 `kdb`. It is part of Elektra’s tools. The tool suite `kdb` consists
-of individual commands.  Most commands are independent and some commands
+of individual commands. Most commands are independent and some commands
 are sharing an executable. Some commands are written as external scripts.
 
 The included commands can be listed via:<br>
@@ -22,7 +21,6 @@ We store a key permanently with a value given by:<br>
 
 We list all available keys arranged below a key by:<br>
 `kdb ls user/key`
-
 
 ## SEE ALSO
 

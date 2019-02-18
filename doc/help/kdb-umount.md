@@ -1,5 +1,4 @@
-kdb-umount(1) - Unmount a file from the key database
-====================================================
+# kdb-umount(1) - Unmount a file from the key database
 
 ## SYNOPSIS
 

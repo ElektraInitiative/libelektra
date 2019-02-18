@@ -20,15 +20,15 @@ Use the `elektraIoUvNew` function to get a new I/O binding instance.
 Make sure to build your application with `elektra-io-uv`, `elektra-io` and `uv` or
 simply use `pkg-config --cflags --libs elektra-io-uv`.
 
-### ElektraIoInterface * elektraIoUvNew (uv_loop_t * loop)
+### ElektraIoInterface _ elektraIoUvNew (uv_loop_t _ loop)
 
 Create and initialize a new I/O binding.
 
-*Parameters*
+_Parameters_
 
 - loop: Loop to use for I/O operations
 
-*Returns*
+_Returns_
 
 Populated I/O interface
 

@@ -2,7 +2,6 @@
 
 This page is the first point for anyone interested in contributing to Elektra!
 
-
 ## GSoC 2019
 
 This page is also the central point for students interested in contributing to Elektra during
@@ -21,8 +20,8 @@ initiatives during summer:
 We think that GSoC is a perfect opportunity to bridge Elektra and other free
 software projects. So the ideal GSoC project is to elektrify some free software.
 (“Elektrify” means that other software is patched to use Elektra instead of their
- own configuration system and includes the task of writing a specification on what
- the configuration of the application looks like.)
+own configuration system and includes the task of writing a specification on what
+the configuration of the application looks like.)
 
 Elektra may be used for applications (frameworks) like KDE, GNOME,
 and LXCE or for any applications that need to read configuration files,
@@ -38,10 +37,6 @@ We especially encourage to select projects, which are not by themselves part of 
 - Good writing skills in English
 - Profound programming skills with focus on good code quality, documentation and unit tests.
 - Ideally experience with an application (framework) or even author of a FLOSS application
-
-
-
-
 
 ## How can I get started?
 
@@ -67,7 +62,6 @@ more interest to you:
 - The qt-gui could be improved.
 - Your own ideas?
 
-
 ## What are the requirements to participate?
 
 Anyone can join!
@@ -80,4 +74,3 @@ First you should familiarize with the Elektra Initiative:
 - Say hello in the issue you are interested in participating, or create a new issue.
 - Create a PR which solves the task as good as you can.
 - We will give you further feedback how you can improve.
-

@@ -18,6 +18,7 @@ fi
 
 scripts/reformat-source || echo 'Warning: clang-format not available, skipping reformat-source' &
 scripts/reformat-cmake || echo 'Warning: Unable to reformat CMake code.' &
+scripts/reformat-markdown || echo 'Warning: Unable to reformat Markdown code.' &
 scripts/reformat-shfmt || echo 'Warning: Unable to reformat Shell code.' &
 wait
 

@@ -17,10 +17,9 @@ Afterwards pull your desired image as you would do from any public registry:
 `docker pull hub-public.libelektra.org/build-elektra-alpine:201809-791f9f388cbdff0db544e02277c882ad6e8220fe280cda67e6ea6358767a065e`.
 
 > **Note:**
-> We use *hub-public* instead of *hub.libelektra.org* which is in use by our
+> We use _hub-public_ instead of _hub.libelektra.org_ which is in use by our
 > build server to bypass authentication.
-> Only GET requests are allowed on *hub-public*.
-
+> Only GET requests are allowed on _hub-public_.
 
 ## Building Images locally
 
@@ -79,7 +78,6 @@ There is also some information on how the
 the Docker images as well as the actual instructions executed by the
 build server in our
 [Jenkinsfiles](https://master.libelektra.org/scripts/jenkins).
-
 
 ## Differences to the build server
 

@@ -59,7 +59,6 @@ This file would result in the following keyset which is being displayed as
 
 ### Creating Files
 
-
 ```sh
 # Backup-and-Restore:/tests/line
 
@@ -88,7 +87,6 @@ kdb export /tests/line line
 
 sudo kdb umount /tests/line
 ```
-
 
 ### Other Tests
 

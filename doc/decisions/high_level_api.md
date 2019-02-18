@@ -28,9 +28,9 @@ implement APIs but not to be directly used in applications.
 ## Considered Alternatives
 
 - storing errors in the handle:
- - Maintenance problem if error handling is added later
+  - Maintenance problem if error handling is added later
 - only provide `KDB`, applications need to implement their own APIs:
- - reduces consistency of how the API is used
+  - reduces consistency of how the API is used
 - only provide generated API
 - assume type as `string` if not given
 - force `default` to be part of parameters

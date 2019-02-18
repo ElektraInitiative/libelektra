@@ -1,0 +1,23 @@
+#!/bin/sh
+#
+# @author René Schwaiger <sanssecours@me.com>
+# @brief Reformat Markdown files
+# @date 13.02.20189
+# @tags reformat
+
+SCRIPTS_DIR=$(dirname "$0")
+. "${SCRIPTS_DIR}/include-common"
+
+cd "$SOURCE" || {
+	printf 'Unable to change into source directory'
+	exit 1
+}
+
+PRETTIER="$(which prettier)"
+
+if [ -z "${PRETTIER}" ]; then
+	printf 2>&1 'Please install `prettier`\n'
+	exit 1
+fi
+
+find . -name '*.md' -exec "${PRETTIER}" --write -- {} +

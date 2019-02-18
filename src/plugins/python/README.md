@@ -50,7 +50,7 @@ The class itself can implement the following functions
 - error(self, returned, parentKey)
 - close(self, errorKey)
 
-where *config* & *returned* are KeySets and *errorKey* & *parentKey* are Keys.
+where _config_ & _returned_ are KeySets and _errorKey_ & _parentKey_ are Keys.
 For the return codes of the functions, the same rules as for normal plugins apply.
 
 If a function is not available, it simply is not called. A script does not have to
@@ -93,4 +93,3 @@ Further examples can be found in the [python](python/) directory.
 
 Be aware that a Python script will never be as performant as a native C/C++ plugin.
 Spinning up the interpreter takes additional time and resources.
-

@@ -25,7 +25,6 @@ preferences (next to the namespace preferences):
 2. Usage of key in the profile set with `profile`
 3. Usage of key in the `%` fallback profile
 
-
 ## Example
 
 Suppose we have the configuration file `profile.ini` in `~/.config`:
@@ -45,7 +44,7 @@ Suppose we have the configuration file `profile.ini` in `~/.config`:
     key2 = failed?
     key3 = test3
 
-Then we simply mount it *without* the profile plugin:
+Then we simply mount it _without_ the profile plugin:
 
     % kdb mount profile.ini /sw/org/myapp/#0 ini
 
@@ -82,4 +81,3 @@ To switch profile we simply have to set one key:
     kdb set user/sw/org/myapp/#0/profile newprofile
 
 Usually, this will be done via commandline by setting `proc/sw/org/myapp/#0/profile`.
-

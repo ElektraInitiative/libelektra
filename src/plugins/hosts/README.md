@@ -35,7 +35,7 @@ Comments are stored according to the comment metadata specification
 
 The ordering of the hosts is stored in metakeys of type `order`.
 The value is an ascending number. Ordering of aliases is
-*not* preserved.
+_not_ preserved.
 
 ## Examples
 
@@ -59,7 +59,6 @@ Try to change the host "localhost", should fail because it is not an
 IPv4 address:
 
     $ sudo kdb set system/hosts/ipv4/localhost ::1
-
 
 ```sh
 # Backup-and-Restore:/tests/hosts

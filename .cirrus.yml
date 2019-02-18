@@ -111,6 +111,7 @@ mac_task:
       openssl
       pegtl
       pkg-config
+      prettier
       qt
       shfmt
       swig

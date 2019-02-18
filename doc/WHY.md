@@ -3,8 +3,8 @@
 The three main points relevant for most people are:
 
 1. Even though Elektra provides a global key database,
-   that allows *read- and write access* of every single
-   parameter *for any application* in an integrated fashion,
+   that allows _read- and write access_ of every single
+   parameter _for any application_ in an integrated fashion,
    configuration files stay human read- and writable.
 2. Flexible adoption on how the configuration is accessed
    via plugins: you can run arbitrary code in multiple
@@ -18,7 +18,6 @@ The three main points relevant for most people are:
    - [validate configuration files](/doc/tutorials/validation.md)
    - [generate code based on specifications](/src/tools/gen)
    - [and much more](/src/plugins/README.md)
-
 
 ## Why not other solutions?
 
@@ -44,17 +43,15 @@ that such a change cannot be done overnight, thus we integrate as many
 configuration file formats as possible. This way, people can continue
 using files in `/etc`, regardless of whether or not Elektra is used.
 
-
 To give one example, in OpenLDAP 2.4.39 the value of `listener-threads`
 will be reduced to the next number that is a power of 2. To correctly
-manipulate the setting we need not only know the *syntax* of how to write
+manipulate the setting we need not only know the _syntax_ of how to write
 listener-threads correctly in the configuration file, but also the
 knowledge how the value is transformed internally. Elektra solves all
 three issues, and then users can easily **externally** manipulate
 `listener-threads`, without caring about the concrete **syntax** of the
 file and getting feedback of the **semantics** (you might get validation
 errors and you can receive the value exactly as the application will get it).
-
 
 ## Who should use Elektra?
 
@@ -87,10 +84,10 @@ Features that rarely can be found elsewhere (at least in this combination):
 ## Further Reasons
 
 - Links and automatic calculation of values:
-   unlike with other solutions you do not need to duplicate
-   configuration values for different applications but
-   you can comfortably link between them which makes
-   many inconsistencies impossible.
+  unlike with other solutions you do not need to duplicate
+  configuration values for different applications but
+  you can comfortably link between them which makes
+  many inconsistencies impossible.
 - Allows us to easily create GUIs and web-UIs for the whole configuration
   on the system.
 - Allows you to import/export all parts of the configuration.
@@ -117,13 +114,10 @@ Features that rarely can be found elsewhere (at least in this combination):
   - If you have a question, open an issue.
   - Regular releases.
 
-
 ## Further Readings
-
 
 - Continue reading [big picture](BIGPICTURE.md)
 - Look into [the glossary](/doc/help/elektra-glossary.md).
 - For more about tools go on reading [here](/doc/help/kdb.md).
 - Another viewpoint [why to use Elektra is described here](/doc/help/elektra-introduction.md)
 - [Compile](COMPILE.md) and [Install](INSTALL.md) Elektra
-

@@ -51,6 +51,7 @@ RUN apt-get update && apt-get -y install \
         icheck \
         valgrind \
         moreutils \
+        npm \
     && rm -rf /var/lib/apt/lists/*
 
 RUN pip install cmake-format==0.4.5 pyyaml
@@ -71,6 +72,9 @@ RUN echo '\
 /usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64/\n\
 /usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64/server/\n' > /etc/ld.so.conf.d/jdk.conf
 RUN ldconfig
+
+# Prettier
+RUN npm install --global prettier@1.16.4
 
 # Create User:Group
 # The id is important as jenkins docker agents use the same id that is running

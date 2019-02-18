@@ -37,8 +37,8 @@ For example:
 Then the value `middle_small` would validate.
 But `middle_small_small` would fail because every entry might only occur once.
 
-
 ## Example
+
 ```sh
 # Backup-and-Restore:/tests/enum
 
@@ -56,7 +56,9 @@ kdb set /tests/enum/value no
 # RET:5
 # ERROR:121
 ```
+
 Or with multi-enums:
+
 ```sh
 # valid initial value + setup array with valid enums
 kdb set /tests/enum/multivalue middle_small

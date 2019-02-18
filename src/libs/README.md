@@ -1,5 +1,4 @@
-elektra-libs(7) -- libs overview
-================================
+# elektra-libs(7) -- libs overview
 
 ## Highlevel APIs
 
@@ -9,7 +8,6 @@ elektra-libs(7) -- libs overview
 
 Contains the **[highlevel API](highlevel)**.
 See [also examples](/examples/highlevel).
-
 
 ### Notification
 
@@ -22,16 +20,12 @@ Usage examples:
 - [Using asynchronous I/O bindings](https://www.libelektra.org/examples/notificationasync)
 - [Reload KDB when Elektra's configuration has changed](https://www.libelektra.org/examples/notificationreload)
 
-
-
-
 ## Base Elektra Libraries
 
 Since version **[0.8.15](/doc/decisions/library_split.md)** **[libelektra](elektra/)**
 is split into following libraries:
 
 ![Overview of Libraries](/doc/images/overview_libs.png)
-
 
 ### Libkdb
 
@@ -85,9 +79,7 @@ Currently mainly contains legacy code and some generic metadata operations.
 ### Libelektra
 
 Is a legacy library that provides the same functionality as `libelektra-kdb` and `libelektra-core`.
-The sources can be found in  **[libelektra](elektra/)**.
-
-
+The sources can be found in **[libelektra](elektra/)**.
 
 ## Other Libraries
 
@@ -104,7 +96,6 @@ orchestrate the processes.
 This is useful for plugins which cause memory leaks to be isolated in an own process. Furthermore
 this is useful for runtimes or libraries that cannot be reinitialized in the same process after they
 have been used.
-
 
 ### Libtools
 
@@ -132,7 +123,6 @@ have been used.
 [common API](https://doc.libelektra.org/api/current/html/group__kdbio.html) for
 using asynchronous I/O bindings.
 
-
 ### Globbing
 
     libelektra-globbing.so
@@ -146,4 +136,3 @@ The supported syntax is a superset of the syntax used by `glob(7)`. The followin
 - if the pattern ends with `/__`, matching key names may contain arbitrary suffixes
 
 For more info take a look a the documentation of `elektraKeyGlob()` and `elektraKsGlob()`.
-

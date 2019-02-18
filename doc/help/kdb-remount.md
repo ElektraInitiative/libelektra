@@ -1,5 +1,4 @@
-kdb-remount(1) - Use an existing backend to mount a new file
-============================================================
+# kdb-remount(1) - Use an existing backend to mount a new file
 
 ## SYNOPSIS
 
@@ -33,4 +32,3 @@ This command allows a user to use an existing backend (such as one from a previo
 
 To mount a new file using an existing backend that is mounted to `system/example`:<br>
 `kdb remount /etc/configuration2.ini system/example2 system/example`<br>
-

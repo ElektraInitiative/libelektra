@@ -29,7 +29,7 @@ Then when you observe the change of a value, e.g.
 
 you can see, done by storage:
 
-    open("/home/markus/.kdb/file.dump.16874:1409592592.95084.tmp", 
+    open("/home/markus/.kdb/file.dump.16874:1409592592.95084.tmp",
             O_WRONLY|O_CREAT|O_TRUNC, 0666) = 4
     write(4, "kdbOpen 1\n", 10)             = 10
     write(4, "ksNew 1\n", 8)                = 8
@@ -41,7 +41,7 @@ you can see, done by storage:
 
 then done by sync:
 
-    open("/home/markus/.kdb/file.dump.16874:1409592592.95084.tmp", 
+    open("/home/markus/.kdb/file.dump.16874:1409592592.95084.tmp",
             O_RDWR) = 4
     fsync(4)                                = 0
     close(4)                                = 0
@@ -58,4 +58,3 @@ and finally commit + sync of directory by resolver:
     open("/home/markus/.kdb",
             O_RDONLY|O_NONBLOCK|O_DIRECTORY|O_CLOEXEC) = 3
     fsync(3)                                = 0
-

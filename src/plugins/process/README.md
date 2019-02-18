@@ -47,6 +47,6 @@ sudo kdb umount user/tests/process
 ## Limitations
 
 - Currently only plugins that act on one of the above-mentioned `placements` can be proxied
-successfully. Other metainformation like `needs` or `provides` or `recommends` will not be
-available when proxying using this plugin.
+  successfully. Other metainformation like `needs` or `provides` or `recommends` will not be
+  available when proxying using this plugin.
 - This plugin cannot act as a proxy for itself to prevent loops.

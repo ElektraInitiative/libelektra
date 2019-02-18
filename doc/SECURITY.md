@@ -5,14 +5,12 @@ cases there is nearly no point of danger in using Elektra.
 But some a very security related, especially when you use
 a daemon or some kind of distributed configuration.
 
-
 ## Access Permissions
 
 We only use access permissions from the kernel, we do
 not add an additional layer (or daemon). So configuration
 file access is as secure as with direct access to
 configuration files.
-
 
 ## Namespaces
 
@@ -24,7 +22,6 @@ file system:
 - `user`-namespace: from users home directory
 - `system` or `spec`-namespace: no restrictions
 
-
 ## Environment Variables
 
 Environment variables are usually avoided, but instead
@@ -35,14 +32,12 @@ For some plugins, however, Environment variables are
 used for better integration in systems. This might
 be a security risk.
 
-
 ## Compiler Options
 
 Can be changed using standard CMake ways.
 Some hints:
 
 http://wiki.debian.org/Hardening
-
 
 ## Memory Leaks
 

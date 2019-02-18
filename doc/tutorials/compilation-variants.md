@@ -45,7 +45,7 @@ myplugin_varianta;myplugin_variantb
 
 In the CMakeLists.txt of your plugin, you have two options.
 Option (A): When you can easily enlist every variant you
-simply list all plugins one after the other (*outside of* `if (DEPENDENCY_PHASE)`):
+simply list all plugins one after the other (_outside of_ `if (DEPENDENCY_PHASE)`):
 
 ```cmake
 add_plugin(myplugin_varianta
@@ -103,7 +103,6 @@ that, you can use:
   should be called.
 - Including a readme for every variant (with `#ifdef` for different text)
   using the macro `#include ELEKTRA_README(myplugin)`
-
 
 As a summary, you can have many plugins build out of the same source.
 Using `pluginname_variantnames` many plugins will be compiled, each

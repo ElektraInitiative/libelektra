@@ -50,4 +50,3 @@ The plugin also exports the function `ksLookupRE()` that does a lookup in
 a KeySet using a regular expression. It starts from the current cursor
 of the KeySet and stops when the first value matches. Finally, this key
 is returned.
-

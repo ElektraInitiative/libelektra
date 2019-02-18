@@ -13,17 +13,17 @@ The shell plugin executes shell commandos after set, get or error.
 
 The configuration keys
 
-* `execute/set`
-* `execute/get`
-* `execute/error`
+- `execute/set`
+- `execute/get`
+- `execute/error`
 
 are used to store the shell commands.
 
 The configuration keys
 
-* `execute/set/return`
-* `execute/get/return`
-* `execute/error/return`
+- `execute/set/return`
+- `execute/get/return`
+- `execute/error/return`
 
 can be compared against the return values of the shell commandos.
 

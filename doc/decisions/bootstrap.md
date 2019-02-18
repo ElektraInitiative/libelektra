@@ -38,13 +38,11 @@ Algorithm:
 3. if it fails (== 0 or == -1), try default.ecf as fallback
 4. if the fallback works (i.e. keys are present in system/elektra), mount the default backend to system/elektra (fallback mode)
 
-
 ## Rationale
 
 - Solves both problems
 - Is fully compatible with any existing setup
 - People can decide if and how to migrate
-
 
 ## Implications
 

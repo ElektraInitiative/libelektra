@@ -1,5 +1,4 @@
-kdb-mountpoint-info -- Print information about the default storage and resolver or a mount point
-================================================================================================
+# kdb-mountpoint-info -- Print information about the default storage and resolver or a mount point
 
 ## SYNOPSIS
 

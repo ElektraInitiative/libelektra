@@ -1,5 +1,4 @@
-kdb-rmmeta(1) -- Remove metakey of a key from the key database
-==============================================================
+# kdb-rmmeta(1) -- Remove metakey of a key from the key database
 
 ## SYNOPSIS
 

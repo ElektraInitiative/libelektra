@@ -24,6 +24,7 @@ The `blockresolver` can be used to only resolve a tagged block inside a configur
 where `identifier` specifies the tag `blockresolver` will search for in the configuration file.
 
 A block consists of 2 parts:
+
 - beginning: the identifier suffixed with `start`
 - end: the identifier suffixed with `stop`
 
@@ -32,6 +33,7 @@ A block consists of 2 parts:
 Currently the identifier must be unique.
 
 ## Example
+
 ```sh
 # Backup-and-Restore:system/tests/blockresolver
 

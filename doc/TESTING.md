@@ -6,7 +6,6 @@ Libraries need pervasive testing for continuous improvement. Any
 problem found and behavior described must be written down as test
 so that it is assured that no new regressions will be added.
 
-
 ## Running Tests
 
 Running all tests in the build directory:
@@ -54,17 +53,22 @@ You have some options to avoid running them as root:
    In doubt make sure that you have a backup of the affected directories.
 
    First load the required information and verify the paths:
+
    ```
    kdb mount-info
    echo `kdb sget system/info/elektra/constants/cmake/CMAKE_INSTALL_PREFIX .`/`kdb sget system/info/elektra/constants/cmake/KDB_DB_SPEC .`
    echo `kdb sget system/info/elektra/constants/cmake/KDB_DB_SYSTEM .`
    ```
+
    Then change the permissions:
+
    ```
    chown -R `whoami` `kdb sget system/info/elektra/constants/cmake/CMAKE_INSTALL_PREFIX .`/`kdb sget system/info/elektra/constants/cmake/KDB_DB_SPEC .`
    chown -R `whoami` `kdb sget system/info/elektra/constants/cmake/KDB_DB_SYSTEM .`
    ```
+
    After that all test cases should run successfully as described above.
+
 3. Compile Elektra so that system paths are not actual system paths, e.g. to write everything into
    the home directory (`~`) use cmake options:
    `-DKDB_DB_SYSTEM="~/.config/kdb/system" -DKDB_DB_SPEC="~/.config/kdb/spec"`
@@ -72,12 +76,11 @@ You have some options to avoid running them as root:
 4. Use the XDG resolver (see `scripts/configure-xdg`) and set
    the environment variable `XDG_CONFIG_DIRS`, currently lacks `spec` namespaces, see #734.
 
-
 ## Recommended Environment
 
 The tests are designed to disable themselves if some necessary tools are
 missing or other environmental constraints are not met. To really run
-*all* tests (also those that are mostly designed for internal development)
+_all_ tests (also those that are mostly designed for internal development)
 you need to fulfil:
 
 - Elektra must be installed (for gen + external test cases).
@@ -98,7 +101,6 @@ For `make run_all` following development tools enable even more tests:
 - The [Markdown Shell Recorder](https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper)
   requires POSIX utilities (`awk`, `grep`, …).
 
-
 ## Adding Tests
 
 For plugins, adding `ADD_TEST` to `add_plugin` will execute the tests in `testmod_${pluginname}.c`.
@@ -116,34 +118,32 @@ By using `TEST_README` in `add_plugin` (also enabled by default),
 [Markdown Shell Recorder](https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper)
 are expected to be in the README.md of the plugin.
 
-
-
 ## Conventions
 
 - All names of the test must start with test (needed by test driver for installed tests).
 - No tests should run if ENABLE_TESTING is OFF.
 - All tests that access system/spec namespaces (e.g. mount something):
- - should be tagged with `kdbtests`:
+- should be tagged with `kdbtests`:
 
-        set_property(TEST testname PROPERTY LABELS kdbtests)
+       set_property(TEST testname PROPERTY LABELS kdbtests)
 
- - should not run, if `ENABLE_KDB_TESTING` is OFF.
- - should only write below
-   - `/tests/<testname>` (e.g. `/tests/ruby`) and
-   - `system/elektra` (e.g. for mounts or globalplugins).
- - Before executing tests, no keys must be present below `/tests`.
-   The test cases need to clean up everything they wrote.
-   (Including temporary files)
+- should not run, if `ENABLE_KDB_TESTING` is OFF.
+- should only write below
+  - `/tests/<testname>` (e.g. `/tests/ruby`) and
+  - `system/elektra` (e.g. for mounts or globalplugins).
+- Before executing tests, no keys must be present below `/tests`.
+  The test cases need to clean up everything they wrote.
+  (Including temporary files)
 - If your test has memory leaks, e.g. because the library used leaks and
   they cannot be fixed, give them the label `memleak` with the following
   command:
 
         set_property(TEST testname PROPERTY LABELS memleak)
+
 - If your test modifies resources needed by other tests you also need to set
-    `RUN_SERIAL`:
+  `RUN_SERIAL`:
 
         set_property(TEST testname PROPERTY RUN_SERIAL TRUE)
-
 
 ## Strategy
 
@@ -189,11 +189,11 @@ They are located [here](/tests/ctest).
 
 According to `src/libs/elektra/libelektra-symbols.map`, all functions starting with:
 
-* libelektra
-* elektra
-* kdb
-* key
-* ks
+- libelektra
+- elektra
+- kdb
+- key
+- ks
 
 get exported. Functions not starting with this prefix are internal only and therefore
 not visible in the test cases. Test internal functionality by including the corresponding C file.
@@ -237,7 +237,7 @@ See [here](/tests/shell/shell_recorder/tutorial_wrapper/README.md).
 ### Fuzz Testing
 
 We assume that your current working directory is a newly created
-build directory.  First compile Elektra with afl
+build directory. First compile Elektra with afl
 (~e is source-dir of Elektra):
 
     ~e/scripts/configure-debian -DCMAKE_C_COMPILER=/usr/src/afl/afl-2.52b/afl-gcc -DCMAKE_CXX_COMPILER=/usr/src/afl/afl-2.52b/afl-g++ ~e
@@ -261,20 +261,20 @@ To enable sanitize checks use `ENABLE_ASAN` via cmake.
 
 Then, to use ASAN, run `run_asan` in the build directory, which simply does:
 
-	ASAN_OPTIONS=symbolize=1 ASAN_SYMBOLIZER_PATH=$(shell which llvm-symbolizer) make run_all
+    ASAN_OPTIONS=symbolize=1 ASAN_SYMBOLIZER_PATH=$(shell which llvm-symbolizer) make run_all
 
 It could also happen that you need to preload ASAN library, e.g.:
 
-	LD_PRELOAD=/usr/lib/clang/3.8.0/lib/linux/libclang_rt.asan-x86_64.so run_asan
+    LD_PRELOAD=/usr/lib/clang/3.8.0/lib/linux/libclang_rt.asan-x86_64.so run_asan
 
 or on Debian:
 
-	LD_PRELOAD=/usr/lib/llvm-3.8/lib/clang/3.8.1/lib/linux/libclang_rt.asan-x86_64.so run_asan
+    LD_PRELOAD=/usr/lib/llvm-3.8/lib/clang/3.8.1/lib/linux/libclang_rt.asan-x86_64.so run_asan
 
 See also build server jobs:
 
-* [clang-asan](https://build.libelektra.org/job/elektra-clang-asan/)
-* [gcc-asan](https://build.libelektra.org/job/elektra-gcc-asan/)
+- [clang-asan](https://build.libelektra.org/job/elektra-clang-asan/)
+- [gcc-asan](https://build.libelektra.org/job/elektra-gcc-asan/)
 
 #### macOS
 
@@ -397,22 +397,16 @@ For using the unit test generator randoop with the jna bindings, see `scripts/ra
 
 Run:
 
-	make coverage-start
-	# now run all tests! E.g.:
-	make run_all
-	make coverage-stop
-	make coverage-genhtml
+    make coverage-start
+    # now run all tests! E.g.:
+    make run_all
+    make coverage-stop
+    make coverage-genhtml
 
 The HTML files can be found in the build directory in the folder `coverage`.
-
-See also the build server job:
-
-* [gcc-asan](https://build.libelektra.org/job/elektra-incremental/)
-
 
 ## See also
 
 - [COMPILE](COMPILE.md).
 - [INSTALL](INSTALL.md).
 - [BUILDSERVER](BUILDSERVER.md).
-

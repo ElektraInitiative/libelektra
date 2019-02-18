@@ -2,7 +2,7 @@
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
 - infos/provides = storage/xml
-- infos/needs = 
+- infos/needs =
 - infos/placements = getstorage setstorage
 - infos/status = maintained unittest final memleak unfinished old nodoc
 - infos/description = Storage using libelektratools xml format.

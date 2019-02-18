@@ -7,7 +7,7 @@
 - infos/status = maintained nodep libc nodoc
 - infos/metadata = check/path check/path/mode check/path/user
 - infos/description = Checks if keys enriched with appropriate metadata contain valid paths as values as well
-as correct permissions
+  as correct permissions
 
 ## Introduction
 
@@ -35,14 +35,15 @@ So for example `sudo kdb set ...` will check if `root` can access the target fil
 will take the current executing process/user. If `check/path/user` is not given at all, the plugin
 will check accessibility for the `root` user only (which again requires `sudo`)
 
- `check/path/mode = rw` and `check/path/user = tomcat` for example will check if the user
+`check/path/mode = rw` and `check/path/user = tomcat` for example will check if the user
 `tomcat` has read and write access to the path which was set for the key. Please note that the file has to exist already
 and it is not checked if the user has the right to create a file in the directory.
 
- Permissions available:
- - `r`: **R**ead
- - `w`: **W**rite
- - `x`: e**X**ecute
+Permissions available:
+
+- `r`: **R**ead
+- `w`: **W**rite
+- `x`: e**X**ecute
 
 ## Usage
 
@@ -53,6 +54,7 @@ check will be done if it is a directory or device file.
 ## Examples
 
 An example on which the user should have no permission at all for the root directory.
+
 ```sh
 sudo kdb mount test.dump user/tests path dump
 sudo kdb set user/tests/path "$HOME"
@@ -74,6 +76,7 @@ sudo kdb umount user/tests
 ```
 
 An example where part of the permissions are missing for a tmp file
+
 ```sh
 sudo kdb mount test.dump user/tests path dump
 sudo kdb set user/tests/path "$HOME"
@@ -99,4 +102,5 @@ sudo kdb umount user/tests
 ```
 
 ## Future work
+
 Add a check which ensures that the given path is a file/directory/symbolic link/hard link/etc.

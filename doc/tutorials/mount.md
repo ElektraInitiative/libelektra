@@ -78,7 +78,7 @@ sudo kdb rm system/hosts/ipv4/mylocalhost
 sudo kdb umount system/hosts
 ```
 
-> ###### Why do you Need Superuser Privileges to Mount Files? ######
+> ###### Why do you Need Superuser Privileges to Mount Files?
 >
 > Elektra manages its mount points in configuration below **system/elektra/mountpoints**.
 > The file that holds this configuration is, in the same way as `/etc/hosts` before, only writable by administrators:
@@ -104,21 +104,21 @@ Also here you only see the unresolved paths.
 
 If you supplied an absolute path (e.g. `/example.ini`) it gets resolved to this:
 
-| namespace        | resolved path         |
-| ---------------- |---------------------- |
-| `spec`           | `/example.ini`        |
-| `dir`            | `${PWD}/example.ini`  |
-| `user`           | `${HOME}/example.ini` |
-| `system`         | `/example.ini`        |
+| namespace | resolved path         |
+| --------- | --------------------- |
+| `spec`    | `/example.ini`        |
+| `dir`     | `${PWD}/example.ini`  |
+| `user`    | `${HOME}/example.ini` |
+| `system`  | `/example.ini`        |
 
 If you supplied a relative path (e.g. `example.ini`) it gets resolved to this:
 
-| namespace        | resolved path                                  |
-| ---------------- |----------------------------------------------- |
-| `spec`           | `/usr/share/elektra/specification/example.ini` |
-| `dir`            | `${PWD}/.dir/example.ini`                      |
-| `user`           | `${HOME}/.config/example.ini`                  |
-| `system`         | `/etc/kdb/example.ini`                         |
+| namespace | resolved path                                  |
+| --------- | ---------------------------------------------- |
+| `spec`    | `/usr/share/elektra/specification/example.ini` |
+| `dir`     | `${PWD}/.dir/example.ini`                      |
+| `user`    | `${HOME}/.config/example.ini`                  |
+| `system`  | `/etc/kdb/example.ini`                         |
 
 If this differs on your system, the resolver has a different configuration.
 Type `kdb info resolver` for more information about the resolvers.

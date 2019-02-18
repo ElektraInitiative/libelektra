@@ -39,7 +39,7 @@ it to implement this plugin.
 ## Usage
 
 Every key tagged with the metakey `check/ipaddr` will be checked
-using `getaddrinfo()`.  If additionally the values `ipv4` or `ipv6`
+using `getaddrinfo()`. If additionally the values `ipv4` or `ipv6`
 are supplied, the address family will be specified.
 
 ### Example

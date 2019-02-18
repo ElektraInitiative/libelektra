@@ -1,5 +1,4 @@
-kdb-set(1) -- Set the value of a key
-====================================
+# kdb-set(1) -- Set the value of a key
 
 ## SYNOPSIS
 
@@ -53,7 +52,6 @@ To set a key to a negative value, `--` has to be used to stop option processing.
   By default the namespace is user, except `kdb` is used as root, then `system`
   is the default.
 
-
 ## EXAMPLES
 
 To set a Key to the value `Hello World!`:<br>
@@ -73,7 +71,6 @@ To create bookmarks:<br>
 
 Followed by:<br>
 `kdb set user/sw/elektra/kdb/#0/current/bookmarks/kdb user/sw/elektra/kdb/#0/current`
-
 
 ## SEE ALSO
 

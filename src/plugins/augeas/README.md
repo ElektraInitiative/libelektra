@@ -41,7 +41,7 @@ following command:
 The value of the plugin configuration option "lens" should be the
 module name of the lens (Hosts in the example) with a '.lns' suffix.
 Depending on your distribution and kind of installation, lenses can
-be found at `/usr/share/augeas/lenses/dist`, 
+be found at `/usr/share/augeas/lenses/dist`,
 `/usr/local/share/augeas/lenses/dist`, or something similar.
 The lens module name is equal to the filename without extension in pascal notation.
 For example, the lens `/usr/share/augeas/lenses/dist/hosts.aug` contains the module Hosts.
@@ -63,6 +63,7 @@ For that reason, the lens configuration option was supplied together with the mo
 ## Restrictions
 
 ### Inner node values
+
 Currently no Augeas lens supports values for inner nodes.
 Unfortunately no validation plugin exists yet that would prevent such modifications early:
 
@@ -77,6 +78,7 @@ Unfortunately no validation plugin exists yet that would prevent such modificati
 The operation simply fails with an undescriptive error.
 
 ### Leaky abstraction of order
+
 Most Augeas lenses require subtrees to be in a specific order. For example the hosts lens requires the ipaddr node
 of an entry to precede the canonical node. Unfortunately the Augeas storage plugin has no knowledge about this required
 order. Therefore the correct order must be ensured via order metakeys. Otherwise saving the KeySet may fail. As an example
@@ -121,4 +123,4 @@ Whereas the following script succeeds due to the correct order
 
 ## Planned Improvements
 
-* a validation plugin preventing inner node values
+- a validation plugin preventing inner node values
