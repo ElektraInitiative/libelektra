@@ -5,6 +5,7 @@ ENV LANGUAGE C.UTF-8
 ENV LC_ALL C.UTF-8
 
 RUN apt-get update && apt-get -y install \
+        antlr4 \
         automake \
         autotools-dev \
         build-essential \
@@ -19,6 +20,7 @@ RUN apt-get update && apt-get -y install \
         gobject-introspection \
         icheck \
         lcov \
+        libantlr4-runtime-dev \
         libaugeas-dev \
         libboost-all-dev \
         libbotan-2-dev \
