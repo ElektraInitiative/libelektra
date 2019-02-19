@@ -16,7 +16,7 @@ A common and successful type system happens to be CORBA. The system is well suit
 mappings it provides to other programming languages.
 
 The type checker plugin supports these types:
-`short`, `unsigned_short`, `long`, `unsigned_long`, `long_long`, `unsigned_long_long`, `float`, `double`, `char`, `wchar`, `boolean`, 
+`short`, `unsigned_short`, `long`, `unsigned_long`, `long_long`, `unsigned_long_long`, `float`, `double`, `char`, `wchar`, `boolean`,
 `any`, `enum`, `string`, `wstring` and `octet`.
 
 - Checking `any` will always be successful, regardless of the content.
@@ -25,7 +25,7 @@ The type checker plugin supports these types:
 - `octet` and `char` are equivalent to each other.
 - `enum` will do enum checking as described below.
 - To use `wchar` and `wstring` the function `mbstowcs(3)` must be able convert the key value into a wide character string. `wstring`s can
-be of any non-zero length, `wchar` must have exactly length 1.
+  be of any non-zero length, `wchar` must have exactly length 1.
 
 ## Enums
 
@@ -50,7 +50,6 @@ For example:
     check/enum/multi = _
 
 Then the value `middle_small` would validate. `middle_small_small` would be allowed as well, because multi-values are treated like bitfields.
-
 
 ### Enum Conversion
 
@@ -91,6 +90,7 @@ sudo kdb umount user/tests/ctype
 ```
 
 For enums:
+
 ```sh
 # Backup-and-Restore:/tests/enum
 
@@ -112,7 +112,9 @@ kdb set user/tests/ctype/value no
 # RET:5
 # ERROR:52
 ```
+
 Or with multi-enums:
+
 ```sh
 # valid initial value + setup array with valid enums
 kdb set user/tests/ctype/multivalue middle_small
@@ -142,7 +144,7 @@ sudo kdb umount user/tests/ctype
 Records are part of other plugins.
 
 The `CORBA` type system also has its limits. The types `string` and
-`enum`  can be unsatisfactory. While string is too general
+`enum` can be unsatisfactory. While string is too general
 and makes no limit on how the sequence of characters is structured,
 the enumeration is too finite. For example, it is not possible to say
 that a string is not allowed to have a specific symbol in it.

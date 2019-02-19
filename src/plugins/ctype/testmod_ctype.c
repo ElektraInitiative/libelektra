@@ -24,12 +24,7 @@ void test_validate (void)
 	Key * parentKey = keyNew ("system/elektra/modules/ctype", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 
-	KeySet * modules = ksNew (0, KS_END);
-	elektraModulesInit (modules, 0);
-	Key * errorKey = keyNew ("", KEY_END);
-	Plugin * plugin = elektraPluginOpen ("ctype", modules, conf, errorKey);
-	keyDel (errorKey);
-	exit_if_fail (plugin != 0, "could not open ctype plugin");
+	PLUGIN_OPEN ("ctype");
 
 	KeySet * ks = ksNew (0, KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
@@ -59,9 +54,7 @@ void test_validate (void)
 	ksDel (ks);
 	keyDel (parentKey);
 
-	elektraPluginClose (plugin, 0);
-	elektraModulesClose (modules, 0);
-	ksDel (modules);
+	PLUGIN_CLOSE ();
 }
 
 void test_short (void)
