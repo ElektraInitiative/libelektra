@@ -23,6 +23,7 @@ fi
 printf "Checking %s\n" "$ACTUAL_PLUGINS"
 
 for PLUGIN in $ACTUAL_PLUGINS; do
+	ARGS=""
 	case "$PLUGIN" in
 	'jni')
 		# References:
@@ -47,6 +48,9 @@ for PLUGIN in $ACTUAL_PLUGINS; do
 		# exclude due to issue 1781
 		continue
 		;;
+	"specload")
+		ARGS="-c app=$(dirname "$KDB")/elektra-specload-testapp"
+		;;
 	esac
 
 	ASAN='@ENABLE_ASAN@'
@@ -62,7 +66,7 @@ for PLUGIN in $ACTUAL_PLUGINS; do
 	fi
 
 	> $FILE
-	"$KDB" check "$PLUGIN" 1> "$FILE" 2> "$FILE"
+	"$KDB" check $ARGS "$PLUGIN" 1> "$FILE" 2> "$FILE"
 	succeed_if "check of plugin $PLUGIN failed"
 
 	test ! -s $FILE
