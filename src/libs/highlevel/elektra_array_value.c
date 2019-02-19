@@ -192,7 +192,7 @@ void elektraSetRawStringArrayElement (Elektra * elektra, const char * name, kdb_
 	const Key * key = elektraFindArrayElementKey (elektra, keyname, index, KDB_TYPE);                                                  \
 	if (key == NULL || !KEY_TO_VALUE (key, &result))                                                                                   \
 	{                                                                                                                                  \
-		elektraFatalError (elektra, elektraErrorConversionFromString (KDB_TYPE, keyString (key)));                                 \
+		elektraFatalError (elektra, elektraErrorConversionFromString (KDB_TYPE, keyname, keyString (key)));                        \
 		return 0;                                                                                                                  \
 	}
 
@@ -395,27 +395,12 @@ kdb_long_double_t elektraGetLongDoubleArrayElement (Elektra * elektra, const cha
 
 #endif // ELEKTRA_HAVE_KDB_LONG_DOUBLE
 
-/**
- * Gets the int value of a stored enum array element.
- *
- * @param elektra The elektra instance to use.
- * @param keyname The (relative) name of the array to look up.
- * @param index   The index of the array element to look up.
- * @return the int value of the enum stored at the given array element
- */
-int elektraGetEnumIntArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index)
-{
-	int result;
-	ELEKTRA_GET_ARRAY_ELEMENT_VALUE (elektraKeyToLong, KDB_TYPE_ENUM, elektra, keyname, index, result);
-	return result;
-}
-
 #define ELEKTRA_SET_ARRAY_ELEMENT_VALUE(VALUE_TO_STRING, KDB_TYPE, elektra, keyname, index, value, error)                                  \
 	CHECK_ERROR (elektra, error);                                                                                                      \
 	char * string = VALUE_TO_STRING (value);                                                                                           \
 	if (string == 0)                                                                                                                   \
 	{                                                                                                                                  \
-		*error = elektraErrorConversionToString (KDB_TYPE);                                                                        \
+		*error = elektraErrorConversionToString (KDB_TYPE, keyname);                                                               \
 		return;                                                                                                                    \
 	}                                                                                                                                  \
 	elektraSetRawStringArrayElement (elektra, keyname, index, string, KDB_TYPE, error);                                                \
@@ -629,22 +614,6 @@ void elektraSetLongDoubleArrayElement (Elektra * elektra, const char * keyname, 
 }
 
 #endif // ELEKTRA_HAVE_KDB_LONG_DOUBLE
-
-/**
- * Sets an enum value array element. The corresponding int value will be
- * stored with the type metadata set to "enum".
- *
- * @param elektra The elektra instance to use.
- * @param keyname The (relative) name of the array to write to.
- * @param index   The index of the array element to write to.
- * @param value   The new value.
- * @param error   Pass a reference to an ElektraError pointer.
- *                Will only be set in case of an error.
- */
-void elektraSetEnumIntArrayElement (Elektra * elektra, const char * keyName, kdb_long_long_t index, int value, ElektraError ** error)
-{
-	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (elektraLongToString, KDB_TYPE_ENUM, elektra, keyName, index, value, error);
-}
 
 /**
  * @}

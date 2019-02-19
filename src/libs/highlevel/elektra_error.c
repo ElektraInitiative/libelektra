@@ -178,7 +178,6 @@ int elektraKDBErrorWarningCount (const ElektraError * error)
  * - error code is #ELEKTRA_ERROR_CODE_LOW_LEVEL
  * - description is ""
  * - severity is #ELEKTRA_ERROR_SEVERITY_WARNING
- * - elektraErrorHasKDBError() returns true
  * - the attached low-level error represents the warning in question
  *
  * NOTE: you have to free the memory allocated by this function using elektraFree()
