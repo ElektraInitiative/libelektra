@@ -1,20 +1,39 @@
-if (DEPENDENCY_PHASE)
+# This functions checks if the dependencies for the Yan LR plugin are available.
+#
+# If they are, the function sets the variable `FOUND_DEPENDENCIES` to `TRUE`. The function then also sets:
+#
+# - `ANTLR_EXECUTABLE` to the name of the ANTLR executable,
+# - `ANTLR4CPP_LIBRARIES` to the paths of the libraries provided by ANTLR’s C++ runtime, and
+# - `ANTLR4CPP_INCLUDE_DIRS` to the paths of the included directories of ANTLR’s C++ runtime
+#
+# . If the function was unsuccessful it sets `FOUND_DEPENDENCIES` to `FALSE` and stores the reason for the failure in the variable
+# `FAILURE_MESSAGE`.
+function (check_dependencies)
+
+	set (FOUND_DEPENDENCIES FALSE PARENT_SCOPE)
+	unset (ANTLR_EXECUTABLE)
+	unset (FAILURE_MESSAGE)
+
 	execute_process (COMMAND antlr4 RESULT_VARIABLE ANTLR4_NOT_AVAILABLE OUTPUT_QUIET)
 	execute_process (COMMAND antlr RESULT_VARIABLE ANTLR_NOT_AVAILABLE OUTPUT_QUIET)
 	if (ANTLR4_NOT_AVAILABLE AND ANTLR_NOT_AVAILABLE)
-		remove_plugin (yanlr "ANTLR 4 executable (antlr4, antlr) not found")
+		set (FAILURE_MESSAGE "ANTLR 4 executable (antlr4, antlr) not found" PARENT_SCOPE)
+		return ()
 	else (ANTLR4_NOT_AVAILABLE AND ANTLR_NOT_AVAILABLE)
 		if (ANTLR4_NOT_AVAILABLE)
-			set (ANTLR_EXECUTABLE antlr)
+			set (ANTLR_EXECUTABLE antlr PARENT_SCOPE)
 		else (ANTLR4_NOT_AVAILABLE)
-			set (ANTLR_EXECUTABLE antlr4)
+			set (ANTLR_EXECUTABLE antlr4 PARENT_SCOPE)
 		endif (ANTLR4_NOT_AVAILABLE)
 	endif (ANTLR4_NOT_AVAILABLE AND ANTLR_NOT_AVAILABLE)
 
 	find_package (ANTLR4CPP QUIET)
 	if (NOT ANTLR4CPP_FOUND)
-		remove_plugin (yanlr "ANTLR 4 CPP runtime (antlr4-cpp-runtime) not found")
+		set (FAILURE_MESSAGE "ANTLR 4 CPP runtime (antlr4-cpp-runtime) not found" PARENT_SCOPE)
+		return ()
 	endif (NOT ANTLR4CPP_FOUND)
+	set (ANTLR4CPP_LIBRARIES ${ANTLR4CPP_LIBRARIES} PARENT_SCOPE)
+	set (ANTLR4CPP_INCLUDE_DIRS ${ANTLR4CPP_INCLUDE_DIRS} PARENT_SCOPE)
 
 	set (DISABLE_PLUGIN_ASAN
 	     ${ENABLE_ASAN}
@@ -27,8 +46,18 @@ if (DEPENDENCY_PHASE)
 	     VERSION_LESS
 	     7)
 	if (${DISABLE_PLUGIN_ASAN})
-		remove_plugin (yanlr "ASAN enabled GCC builds of the plugin report memory leaks")
+		set (FAILURE_MESSAGE "ASAN enabled GCC builds of the plugin report memory leaks" PARENT_SCOPE)
+		return ()
 	endif (${DISABLE_PLUGIN_ASAN})
+
+	set (FOUND_DEPENDENCIES TRUE PARENT_SCOPE)
+endfunction (check_dependencies)
+
+if (DEPENDENCY_PHASE)
+	check_dependencies ()
+	if (NOT FOUND_DEPENDENCIES)
+		remove_plugin (yanlr ${FAILURE_MESSAGE})
+	endif (NOT FOUND_DEPENDENCIES)
 
 	set (GRAMMAR_NAME YAML)
 	set (GRAMMAR_FILE ${CMAKE_CURRENT_SOURCE_DIR}/${GRAMMAR_NAME}.g4)
