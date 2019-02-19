@@ -14,6 +14,11 @@ string (REGEX
 		"\"end of map\""
 		PARSER_SOURCE
 		"${PARSER_SOURCE}")
+string (REGEX
+	REPLACE "\"STREAM_END\""
+		"\"end of document\""
+		PARSER_SOURCE
+		"${PARSER_SOURCE}")
 
 file (WRITE ${PARSER_MODIFIED_SOURCE_FILE}
 	    "${PARSER_SOURCE}")

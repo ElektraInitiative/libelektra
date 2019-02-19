@@ -143,7 +143,7 @@ kdb get user/tests/error | tail -n11 | head -n6 | cut -c"$(kdb get user/tests/er
 #> config.yaml:2:1: mismatched input '- ' expecting end of map
 #>                  - element 2 # Incorrect Indentation!
 #>                  ^^
-#> config.yaml:2:37: extraneous input 'MAP END' expecting STREAM_END
+#> config.yaml:2:37: extraneous input 'MAP END' expecting end of document
 #>                   - element 2 # Incorrect Indentation!
 #>                                                       ^
 
