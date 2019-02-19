@@ -51,8 +51,9 @@ To inhibit the default `--elektra-spec` argument and call an application without
 
 Once the mounting is done you can inspect you specification like you would with any other mounted configuration. If you call `kdb set`
 (or `kdb setmeta` or anything else that calls `kdbSet()`), however, `specload` will verify that the modifications you made are compatible
-with the original specification. Currently this verification is very restrictive and doesn't allow a lot of changes that would be save.
-See also [Limitations](#limitations).
+with the original specification. Currently this verification is very restrictive and doesn't allow a lot of changes that would be safe.
+This is because the necessary verification becomes very complex very quickly. For example adding `opt/arg` is only safe, if `opt` was also
+added by the user, because the application might rely on the default `opt/arg=none`. See also [Limitations](#limitations).
 
 ## Dependencies
 
@@ -66,7 +67,7 @@ TODO
 ## Limitations
 
 - Currently the plugin is only supported in SHARED builds.
-- The only modifications allowed for now are:
-  - add/edit/remove `description`, `opt/help`
-  - add/edit `default`, `namespace/#`, `fallback/#`, `override/#`
+- For now only modifying metadata in one of these ways is allowed:
+  - add/edit/remove `description` or `opt/help`
+  - add/edit `default`
   - add `type`

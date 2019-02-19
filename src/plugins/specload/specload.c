@@ -15,6 +15,7 @@
 #include <kdbease.h>
 #include <kdbinvoke.h>
 #include <kdbmodule.h>
+#include <kdbproposal.h>
 #include <stdio.h>
 #include <unistd.h>
 
@@ -25,9 +26,25 @@
 #define STDIN_FILENAME ("/dev/stdin")
 #endif
 
+struct change
+{
+	const char * meta;
+	bool add;
+	bool edit;
+	bool remove;
+};
+
+// TODO: allow more changes
+static struct change allowedChanges[] = { { "description", true, true, true },
+					  { "opt/help", true, true, true },
+					  { "default", true, true, false },
+					  { "type", true, false, false },
+					  { NULL, false, false, false } };
+
 static bool getAppAndArgs (KeySet * conf, char ** appPtr, char *** argvPtr, Key * errorKey);
 static bool loadSpec (KeySet * returned, const char * app, char * argv[], Key * parentKey, ElektraInvokeHandle * quickDump);
 static int isChangeAllowed (Key * oldKey, Key * newKey);
+static KeySet * calculateMetaDiff (Key * oldKey, Key * newKey);
 
 static inline void freeArgv (char ** argv)
 {
@@ -159,6 +176,15 @@ int elektraSpecloadSet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 	Specload * specload = elektraPluginGetData (handle);
 
+	KeySet * spec = ksNew (0, KS_END);
+	if (!loadSpec (spec, specload->app, specload->argv, parentKey, specload->quickDump))
+	{
+		ksDel (spec);
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_SPECLOAD, parentKey,
+				   "Couldn't load the base specification. Make sure the app is available and the arguments are correct.");
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+
 	KeySet * oldData = ksNew (ksGetSize (returned), KS_END);
 	if (elektraInvoke2Args (specload->quickDump, "get", oldData, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
 	{
@@ -170,11 +196,16 @@ int elektraSpecloadSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	KeySet * overrides = ksNew (0, KS_END);
 
 	cursor_t cursor = ksGetCursor (returned);
+	ksRewind (returned);
 	Key * new;
 	Key * old;
 	while ((new = ksNext (returned)) != NULL)
 	{
 		old = ksLookup (oldData, new, KDB_O_POP);
+		if (old == NULL)
+		{
+			old = ksLookup (spec, new, 0);
+		}
 
 		int changeAllowed = isChangeAllowed (old, new);
 
@@ -183,19 +214,21 @@ int elektraSpecloadSet (Plugin * handle, KeySet * returned, Key * parentKey)
 			ksSetCursor (returned, cursor);
 			ksDel (overrides);
 			ksDel (oldData);
+			ksDel (spec);
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 
-		if (changeAllowed == 1)
+		if (changeAllowed > 0)
 		{
 			ksAppendKey (overrides, new);
 		}
 	}
+	ksDel (spec);
 
 	// check if remaining old keys can be removed
 	while ((old = ksNext (oldData)) != NULL)
 	{
-		if (!isChangeAllowed (old, NULL))
+		if (isChangeAllowed (old, NULL) > 0)
 		{
 			ksSetCursor (returned, cursor);
 			ksDel (overrides);
@@ -388,21 +421,185 @@ bool loadSpec (KeySet * returned, const char * app, char * argv[], Key * parentK
 /**
  * @retval 0  no change detected
  * @retval 1  change allowed
- * @retval -1 change not allowed
+ * @retval -1 change forbidden
+ * @retval -2 error, e.g. different keynames
  */
 int isChangeAllowed (Key * oldKey, Key * newKey)
 {
 	if (oldKey == newKey)
 	{
-		return 1;
+		// same key (pointer)
+		return 0;
 	}
 
-	if (oldKey == NULL || newKey == NULL)
+	keyswitch_t changes = keyCompare (oldKey, newKey);
+	if (changes == 0)
 	{
-		// TODO: add and remove disabled
+		// equal keys
+		return 0;
+	}
+
+	if (changes != KEY_NULL && changes != KEY_META)
+	{
+		// only metadata changes allowed
 		return -1;
 	}
 
-	// TODO: changes disabled
-	return keyCompare (oldKey, newKey) == 0 ? 1 : 0;
+	if ((changes & KEY_NAME) != 0)
+	{
+		// different key names
+		return -2;
+	}
+
+	if (oldKey == NULL)
+	{
+		if (keyIsBinary (newKey) ? keyValue (newKey) != NULL : strlen (keyString (newKey)) > 0)
+		{
+			// adding values not allowed
+			return -1;
+		}
+
+		oldKey = keyNew (keyName (newKey), KEY_END);
+	}
+	else
+	{
+		oldKey = keyDup (oldKey);
+	}
+
+	if (newKey == NULL)
+	{
+		if (keyIsBinary (oldKey) ? keyValue (oldKey) != NULL : strlen (keyString (oldKey)) > 0)
+		{
+			// removing values not allowed
+			return -1;
+		}
+
+		newKey = keyNew (keyName (oldKey), KEY_END);
+	}
+	else
+	{
+		newKey = keyDup (newKey);
+	}
+
+	KeySet * metaDiff = calculateMetaDiff (oldKey, newKey);
+
+	keyDel (oldKey);
+	keyDel (newKey);
+
+	for (int i = 0; allowedChanges[i].meta != NULL; ++i)
+	{
+		struct change cur = allowedChanges[i];
+		Key * diff = ksLookupByName (metaDiff, cur.meta, KDB_O_POP);
+
+		if (diff == NULL)
+		{
+			continue;
+		}
+
+		if (strcmp (keyString (diff), "add") == 0 && !cur.add)
+		{
+			keyDel (diff);
+			ksDel (metaDiff);
+			// add not allowed
+			return -1;
+		}
+
+		if (strcmp (keyString (diff), "edit") == 0 && !cur.edit)
+		{
+			keyDel (diff);
+			ksDel (metaDiff);
+			// edit not allowed
+			return -1;
+		}
+
+		if (strcmp (keyString (diff), "remove") == 0 && !cur.remove)
+		{
+			keyDel (diff);
+			ksDel (metaDiff);
+			// remove not allowed
+			return -1;
+		}
+
+		keyDel (diff);
+	}
+
+	size_t size = ksGetSize (metaDiff);
+
+	ksDel (metaDiff);
+
+	return size == 0 ? 1 : -1;
+}
+
+/**
+ * Calculate a diff for the metadata of two keys.
+ *
+ * For each meta key that is different between @p oldKey and @p newKey,
+ * a key will be created in the resulting KeySet. The name of this key
+ * is the name of the metakey. The value of the key is determined as follows:
+ * <ul>
+ *   <li>If @p oldKey has a meta key not present in @p newKey: value = "remove"</li>
+ *   <li>If @p newKey has a meta key not present in @p oldKey: value = "add"</li>
+ *   <li>If metakey is present in both @p oldKey and @p newKey, but its value changed: value = "edit"</li>
+ * </ul>
+ * Additionally the old and new values are stored in the metakeys `old` and `new` respectively.
+ *
+ * @param oldKey the old key
+ * @param newKey the new key
+ * @return a KeySet (has to be `ksDel`ed) containing the diff
+ */
+KeySet * calculateMetaDiff (Key * oldKey, Key * newKey)
+{
+	KeySet * result = ksNew (0, KS_END);
+
+	keyRewindMeta (oldKey);
+	keyRewindMeta (newKey);
+
+	const Key * oldMeta = keyNextMeta (oldKey);
+	const Key * newMeta = keyNextMeta (newKey);
+
+	while (oldMeta != NULL && newMeta != NULL)
+	{
+		const char * oldName = keyName (oldMeta);
+		const char * newName = keyName (newMeta);
+
+		int cmp = elektraStrCmp (oldName, newName);
+		if (cmp < 0)
+		{
+			// oldKey has to "catch up"
+			ksAppendKey (result,
+				     keyNew (oldName, KEY_META_NAME, KEY_VALUE, "remove", KEY_META, "old", keyString (oldMeta), KEY_END));
+			oldMeta = keyNextMeta (oldKey);
+		}
+		else if (cmp > 0)
+		{
+			// newKey has to "catch up"
+			ksAppendKey (result,
+				     keyNew (newName, KEY_META_NAME, KEY_VALUE, "add", KEY_META, "new", keyString (newMeta), KEY_END));
+			newMeta = keyNextMeta (newKey);
+		}
+		else
+		{
+			// same name
+			ksAppendKey (result, keyNew (oldName, KEY_META_NAME, KEY_VALUE, "edit", KEY_META, "old", keyString (oldMeta),
+						     KEY_META, "new", keyString (newMeta), KEY_END));
+			oldMeta = keyNextMeta (oldKey);
+			newMeta = keyNextMeta (newKey);
+		}
+	}
+
+	// remaining metadata in oldKey was removed
+	while ((oldMeta = keyNextMeta (oldKey)) != NULL)
+	{
+		ksAppendKey (result,
+			     keyNew (keyName (oldMeta), KEY_META_NAME, KEY_VALUE, "remove", KEY_META, "old", keyString (oldMeta), KEY_END));
+	}
+
+	// remaining metadata in newKey was added
+	while ((newMeta = keyNextMeta (newKey)) != NULL)
+	{
+		ksAppendKey (result,
+			     keyNew (keyName (newMeta), KEY_META_NAME, KEY_VALUE, "add", KEY_META, "new", keyString (newMeta), KEY_END));
+	}
+
+	return result;
 }
