@@ -2,7 +2,7 @@
 - infos/author = Klemens Böswirth <k.boeswirth+git@gmail.com>
 - infos/licence = BSD
 - infos/needs =
-- infos/provides = storage
+- infos/provides = storage/quickdump
 - infos/recommends =
 - infos/placements = getstorage setstorage
 - infos/status = tested nodep libc compatible preview
