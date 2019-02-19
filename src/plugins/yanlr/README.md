@@ -125,7 +125,7 @@ printf -- '- element 2 # Incorrect Indentation!' >> `kdb file user/tests/yanlr`
 # The plugin reports the location of the error
 kdb ls user/tests/yanlr
 # RET: 5
-# STDERR: .*/config.yaml:2:1: mismatched input '- ' expecting MAP_END.*
+# STDERR: .*/config.yaml:2:1: mismatched input '- ' expecting end of map.*
 
 # Let us look at the error message more closely.
 # Since the location of `config.yaml` depends on the current user and OS,
@@ -140,7 +140,7 @@ kdb set user/tests/error/prefix/length "$(kdb get user/tests/error/prefix | wc -
 # Since we only want to look at the “reason” of the error, we
 # remove the other part of the error message with `head` and `tail`.
 kdb get user/tests/error | tail -n11 | head -n6 | cut -c"$(kdb get user/tests/error/prefix/length | tr -d '\n')"-
-#> config.yaml:2:1: mismatched input '- ' expecting MAP_END
+#> config.yaml:2:1: mismatched input '- ' expecting end of map
 #>                  - element 2 # Incorrect Indentation!
 #>                  ^^
 #> config.yaml:2:37: extraneous input 'MAP END' expecting STREAM_END
