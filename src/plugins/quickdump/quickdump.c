@@ -207,6 +207,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 		{
 			if (c == EOF)
 			{
+				keyDel (k);
 				fclose (file);
 				return ELEKTRA_PLUGIN_STATUS_ERROR;
 			}
@@ -216,6 +217,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 			char * metaName = readString (file, parentKey);
 			if (metaName == NULL)
 			{
+				keyDel (k);
 				fclose (file);
 				return ELEKTRA_PLUGIN_STATUS_ERROR;
 			}
@@ -223,6 +225,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 			char * metaValue = readString (file, parentKey);
 			if (metaValue == NULL)
 			{
+				keyDel (k);
 				elektraFree (metaName);
 				fclose (file);
 				return ELEKTRA_PLUGIN_STATUS_ERROR;
