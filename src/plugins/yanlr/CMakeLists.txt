@@ -99,6 +99,7 @@ function (generate_code ANTLR_EXECUTABLE)
 					 -P
 					 ${CMAKE_CURRENT_SOURCE_DIR}/RenameSymbols.cmake
 			    DEPENDS parser_generated
+				    RenameSymbols.cmake
 			    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
 	set (GENERATED_SOURCE_FILES ${GENERATED_SOURCE_FILES_EXPORT} ${PARSER_MODIFIED_SOURCE_FILE} PARENT_SCOPE)
