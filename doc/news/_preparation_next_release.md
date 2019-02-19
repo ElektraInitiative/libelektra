@@ -261,7 +261,10 @@ you up to date with the multi-language support provided by Elektra.
 - The script [`reformat-markdown`](https://master.libelektra.org/scripts/reformat-markdown) formats
   [Markdown](https://daringfireball.net/projects/markdown) files in the repository with [`prettier`](https://prettier.io).
   _(René Schwaiger)_
-- <<TODO>>
+- The scripts [`reformat-source`](https://master.libelektra.org/scripts/reformat-source),
+  [`reformat-cmake`](https://master.libelektra.org/scripts/reformat-cmake), [`reformat-shfmt`](https://master.libelektra.org/scripts/reformat-shfmt)
+  and [`reformat-markdown`](https://master.libelektra.org/scripts/reformat-markdown) don't format files that are ignored by git anymore.
+  _(Klemens Böswirth)_
 
 ## Documentation
 

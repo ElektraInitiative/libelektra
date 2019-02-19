@@ -32,5 +32,5 @@ cd "$SOURCE" || {
 	exit 1
 }
 
-find . \( \( -name '*.[ch]' -or -name '*.[ch]pp' -or -name '*.[ch].in' \) -and -not -regex '^./src/tools/gen.*' \) \
-	-exec "$CLANG_FORMAT" -style=file -i {} +
+source_files=$(git ls-files '*.c' '*.h' '*.cpp' '*.hpp' '*.c.in' '*.h.in' | grep -v '^src/tools/gen.*')
+printf "%s\n" "$source_files" | sed -nE 's/(.*)/'"'"'\1'"'"'/p' | xargs "$CLANG_FORMAT" -style=file -i
