@@ -345,8 +345,16 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Docker
 
-- We added [`shfmt`](https://github.com/mvdan/sh) to the
-  [Dockerfile for Debian sid](https://master.libelektra.org/scripts/docker/debian/sid/Dockerfile). _(René Schwaiger)_
+- We added
+
+  - [ANTLR](https://packages.debian.org/sid/antlr4),
+  - [ANTLR’s C++ runtime](https://packages.debian.org/sid/libantlr4-runtime-dev),
+  - [Ninja](https://packages.debian.org/sid/ninja-build), and
+  - [`shfmt`](https://github.com/mvdan/sh),
+    to the [Dockerfile for Debian sid](https://master.libelektra.org/scripts/docker/debian/sid/Dockerfile)
+
+  . _(René Schwaiger)_
+
 - <<TODO>>
 - <<TODO>>
 
