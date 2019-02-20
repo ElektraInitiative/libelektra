@@ -107,10 +107,10 @@ The following section lists news about the [modules](https://www.libelektra.org/
   the plugin currently prints an error message that looks like this:
 
   ```
-  config.yaml:2:1: mismatched input '- ' expecting MAP_END
+  config.yaml:2:1: mismatched input '- ' expecting end of map
                    - element 2 # Incorrect Indentation!
                    ^^
-  config.yaml:2:37: extraneous input 'MAP END' expecting STREAM_END
+  config.yaml:2:37: extraneous input 'end of map' expecting end of document
                     - element 2 # Incorrect Indentation!
                                                         ^
   ```
