@@ -113,7 +113,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 			keyNew ("system/elektra/modules/quickdump/exports", KEY_END),
 			keyNew ("system/elektra/modules/quickdump/exports/get", KEY_FUNC, elektraQuickdumpGet, KEY_END),
 			keyNew ("system/elektra/modules/quickdump/exports/set", KEY_FUNC, elektraQuickdumpSet, KEY_END),
-#include ELEKTRA_README (quickdump)
+#include ELEKTRA_README
 			keyNew ("system/elektra/modules/quickdump/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);

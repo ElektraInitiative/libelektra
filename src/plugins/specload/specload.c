@@ -127,7 +127,7 @@ int elektraSpecloadGet (Plugin * handle, KeySet * returned, Key * parentKey)
 			       keyNew ("system/elektra/modules/specload/exports/get", KEY_FUNC, elektraSpecloadGet, KEY_END),
 			       keyNew ("system/elektra/modules/specload/exports/set", KEY_FUNC, elektraSpecloadSet, KEY_END),
 			       keyNew ("system/elektra/modules/specload/exports/checkconf", KEY_FUNC, elektraSpecloadCheckConfig, KEY_END),
-#include ELEKTRA_README (specload)
+#include ELEKTRA_README
 			       keyNew ("system/elektra/modules/specload/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
