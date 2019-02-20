@@ -241,7 +241,7 @@ Pay attention that you have to use **hub-public.libelektra.org** as this subdoma
 does not require authentication for GET operations used by the Docker client.
 As an example:
 
-```
+```sh
 docker pull hub-public.libelektra.org/build-elektra-alpine:201809-791f9f388cbdff0db544e02277c882ad6e8220fe280cda67e6ea6358767a065e
 ```
 
