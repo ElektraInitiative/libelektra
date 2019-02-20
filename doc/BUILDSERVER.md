@@ -47,7 +47,7 @@ Currently Elektra uses two different files.
 
 #### Jenkinsfile.daily
 
-- Jenkinsfile.daily is for daily maintanence tasks, like cleaning up build servers.
+- Jenkinsfile.daily is for daily maintenance tasks, like cleaning up build servers.
 - [Buildjob: libelektra-daily](https://build.libelektra.org/jenkins/job/libelektra-daily/)
 - [Jenkinsfile.daily](https://master.libelektra.org/scripts/jenkins/Jenkinsfile.daily)
 
@@ -81,7 +81,7 @@ documented at the function head.
 Most common use cases, for example adding a new build with certain cmake flags,
 are easy to add because of them.
 For example, the configuration that is responsible for the `debian-stable-full`
-stage is generated completly by a single helper function called `buildAndTest`:
+stage is generated completely by a single helper function called `buildAndTest`:
 
 ```groovy
 tasks << buildAndTest(
@@ -146,7 +146,7 @@ uploaded to https://doc.libelektra.org/coverage/.
 
 Artifacts from `ctest` are also preserved automatically when using
 buildAndTest.
-The function also takes care of providing a stagename based path so multiple tests
+The function also takes care of providing a stage name based path so multiple tests
 can not overwrite files that share the same name.
 
 Tests are executed in order dictated by the Jenkinsfile.
@@ -201,7 +201,7 @@ If you want to provide environments via Docker you need to install that as well.
 
 A `jenkins` user with 47000:47000 ids should be created as this is what is
 expected in Docker images.
-Additionally a public key authentification should be set up so the jenkins
+Additionally a public key authentication should be set up so the jenkins
 master can establish an ssh connection with the node.
 If the node should be able to interact with Docker the jenkins user should be
 added to the `docker` group.
@@ -238,7 +238,7 @@ This is described above in _Understanding Jenkins output_.
 
 Afterwards you can download it from our registry via `docker pull`.
 Pay attention that you have to use **hub-public.libelektra.org** as this subdomain
-does not require authentification for GET operations used by the Docker client.
+does not require authentication for GET operations used by the Docker client.
 As an example:
 
 ```
