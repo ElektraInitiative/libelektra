@@ -90,6 +90,9 @@ function (generate_code ANTLR_EXECUTABLE)
 	add_custom_target (parser_generated DEPENDS ${PARSER_SOURCE_FILE})
 
 	set_source_files_properties (${PARSER_MODIFIED_SOURCE_FILE} PROPERTIES GENERATED TRUE)
+	if (CMAKE_COMPILER_IS_GNUCXX)
+		set_source_files_properties (${PARSER_MODIFIED_SOURCE_FILE} PROPERTIES COMPILE_FLAGS "-Wno-shadow")
+	endif (CMAKE_COMPILER_IS_GNUCXX)
 	add_custom_command (OUTPUT ${PARSER_MODIFIED_SOURCE_FILE}
 			    COMMAND ${CMAKE_COMMAND}
 				    ARGS -D
