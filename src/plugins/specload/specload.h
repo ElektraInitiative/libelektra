@@ -27,6 +27,6 @@ int elektraSpecloadGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraSpecloadSet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraSpecloadCheckConfig (Key * errorKey, KeySet * conf);
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (specload);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 #endif

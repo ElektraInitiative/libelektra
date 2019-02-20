@@ -337,7 +337,7 @@ bool getAppAndArgs (KeySet * conf, char ** appPtr, char *** argvPtr, Key * error
 	return true;
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (specload)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport ("specload",
