@@ -169,6 +169,11 @@ Ref<TokenFactory<CommonToken>> YAMLLexer::getTokenFactory ()
  * @return A token with the specified parameters
  */
 unique_ptr<CommonToken> YAMLLexer::commonToken (size_t type, size_t start, size_t stop, string text = "")
+#if defined(__clang__)
+	// Ignore warning about call on pointer of wrong object type (`CommonTokenFactory` instead of `TokenFactory<CommonToken>`)
+	// This should not be a problem, since `CommonTokenFactory` inherits from `TokenFactory<CommonToken>`.
+	__attribute__ ((no_sanitize ("undefined")))
+#endif
 {
 	return factory->create (source, type, text, Token::DEFAULT_CHANNEL, start, stop, line, column);
 }
