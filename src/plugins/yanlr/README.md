@@ -184,6 +184,20 @@ sudo kdb umount user/tests/yanlr
 
 The [lexer](yaml_lexer.cpp) does currently tokenize comments. Consequently the [plugin grammar](YAML.g4) of the plugin does also match comments. However, the [listener](listener.cpp) does currently **ignore comments**.
 
+### Indentation
+
+The lexer does not check for incorrect indentation. Consequently the following YAML data:
+
+<!-- prettier-ignore-start -->
+
+```yaml
+	value
+```
+
+<!-- prettier-ignore-end -->
+
+will produce a plain scalar containing a tab character followed by the text `value`. The correct behavior would be to report an error, since YAML does not allow tab characters in indentation.
+
 ### Error Messages
 
 Visualized error messages (containing `^` markers) might not point to the correct error location, if the input contains tabs or unicode characters with a length other than `1`.
