@@ -16,6 +16,6 @@
 int elektraQuickdumpGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraQuickdumpSet (Plugin * handle, KeySet * ks, Key * parentKey);
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (quickdump);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 #endif

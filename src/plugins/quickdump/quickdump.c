@@ -484,7 +484,7 @@ int elektraQuickdumpSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (quickdump)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport ("quickdump",
