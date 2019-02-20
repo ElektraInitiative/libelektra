@@ -12,7 +12,7 @@
 ## Introduction
 
 `quickdump` is a storage plugin based on the `dump` format. It is a lot quicker than the old `dump` plugin, because it does not use commands
-and stores string lengths as binary data. Through these changes all string comparisons and integer-string conversions can be eliminated, 
+and stores string lengths as binary data. Through these changes all string comparisons and integer-string conversions can be eliminated,
 which made up for a lot of the time spent by the `dump` plugin.
 
 The format is also useful for IPC and streaming, because of this it is used by the `specload` plugin.
