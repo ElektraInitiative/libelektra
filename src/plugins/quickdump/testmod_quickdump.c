@@ -48,8 +48,7 @@ static int compare_binary_files (const char * filename1, const char * filename2)
 
 static void test_basics (void)
 {
-	char cwd[PATH_MAX];
-	printf ("test basics %s\n", getcwd (cwd, PATH_MAX));
+	printf ("test basics");
 
 	KeySet * ks = ksNew (0, KS_END);
 	char * infile = elektraStrDup (srcdir_file ("quickdump/test.quickdump"));
@@ -65,6 +64,10 @@ static void test_basics (void)
 
 		succeed_if (plugin->kdbGet (plugin, ks, getKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
 		compare_keyset (expected, ks);
+
+		Key * k1 = ksLookupByName (ks, "dir/tests/bench/__112", 0);
+		Key * k8 = ksLookupByName (ks, "dir/tests/bench/__911", 0);
+		succeed_if (keyString (keyGetMeta (k1, "meta/_35")) == keyString (keyGetMeta (k8, "meta/_35")), "copy meta failed");
 
 		ksDel (expected);
 

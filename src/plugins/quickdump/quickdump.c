@@ -18,6 +18,23 @@
 
 static const kdb_unsigned_long_long_t MAGIC_NUMBER = 0x454b444200000001UL; // EKDB (in ASCII) + Version (1)
 
+struct metaLink
+{
+	const void * meta;
+	size_t keyNameSize;
+	const char * keyName;
+};
+
+struct list
+{
+	size_t alloc;
+	size_t size;
+	struct metaLink ** array;
+};
+
+static ssize_t findMetaLink (struct list * list, const Key * meta);
+static void insertMetaLink (struct list * list, size_t index, const Key * meta, Key * key);
+
 // keep #ifdef in sync with kdb export
 #ifdef _WIN32
 #define STDOUT_FILENAME ("CON")
@@ -87,7 +104,6 @@ static inline char * readString (FILE * file, Key * errorKey)
 	return string;
 }
 
-
 int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/quickdump"))
@@ -155,6 +171,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 		{
 		case 'b':
 		{
+			// binary key value
 			kdb_unsigned_long_long_t valueSize;
 			if (!readUInt64 (file, &valueSize, parentKey))
 			{
@@ -185,6 +202,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 		}
 		case 's':
 		{
+			// string key value
 			char * value = readString (file, parentKey);
 			if (value == NULL)
 			{
@@ -212,28 +230,85 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 				return ELEKTRA_PLUGIN_STATUS_ERROR;
 			}
 
-			ungetc (c, file);
-
-			char * metaName = readString (file, parentKey);
-			if (metaName == NULL)
+			switch (c)
 			{
-				keyDel (k);
-				fclose (file);
-				return ELEKTRA_PLUGIN_STATUS_ERROR;
-			}
-
-			char * metaValue = readString (file, parentKey);
-			if (metaValue == NULL)
+			case 'm':
 			{
-				keyDel (k);
+				// meta key
+				char * metaName = readString (file, parentKey);
+				if (metaName == NULL)
+				{
+					keyDel (k);
+					fclose (file);
+					return ELEKTRA_PLUGIN_STATUS_ERROR;
+				}
+
+				char * metaValue = readString (file, parentKey);
+				if (metaValue == NULL)
+				{
+					keyDel (k);
+					elektraFree (metaName);
+					fclose (file);
+					return ELEKTRA_PLUGIN_STATUS_ERROR;
+				}
+
+				keySetMeta (k, metaName, metaValue);
 				elektraFree (metaName);
+				elektraFree (metaValue);
+				break;
+			}
+			case 'c':
+			{
+				// copy meta
+				char * keyName = readString (file, parentKey);
+				if (keyName == NULL)
+				{
+					keyDel (k);
+					fclose (file);
+					return ELEKTRA_PLUGIN_STATUS_ERROR;
+				}
+
+				char * metaName = readString (file, parentKey);
+				if (metaName == NULL)
+				{
+					keyDel (k);
+					elektraFree (keyName);
+					fclose (file);
+					return ELEKTRA_PLUGIN_STATUS_ERROR;
+				}
+
+				const Key * sourceKey = ksLookupByName (returned, keyName, 0);
+				if (sourceKey == NULL)
+				{
+					ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_WRITE_FAILED, parentKey,
+							    "Could not copy meta data from key '%s': Key not found", keyName);
+					keyDel (k);
+					elektraFree (keyName);
+					elektraFree (metaName);
+					fclose (file);
+					return ELEKTRA_PLUGIN_STATUS_ERROR;
+				}
+
+				if (keyCopyMeta (k, sourceKey, metaName) != 1)
+				{
+					ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_WRITE_FAILED, parentKey,
+							    "Could not copy meta data from key '%s': Error during copy", keyName);
+					keyDel (k);
+					elektraFree (keyName);
+					elektraFree (metaName);
+					fclose (file);
+					return ELEKTRA_PLUGIN_STATUS_ERROR;
+				}
+
+				elektraFree (keyName);
+				elektraFree (metaName);
+				break;
+			}
+			default:
+				keyDel (k);
 				fclose (file);
 				return ELEKTRA_PLUGIN_STATUS_ERROR;
 			}
-
-			keySetMeta (k, metaName, metaValue);
-			elektraFree (metaName);
-			elektraFree (metaValue);
 		}
 
 		ksAppendKey (returned, k);
@@ -274,6 +349,11 @@ int elektraQuickdumpSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 		fclose (file);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
+
+	struct list metaKeys;
+	metaKeys.alloc = 16;
+	metaKeys.size = 0;
+	metaKeys.array = elektraMalloc (metaKeys.alloc * sizeof (struct metaLink *));
 
 	Key * cur;
 	while ((cur = ksNext (returned)) != NULL)
@@ -335,18 +415,52 @@ int elektraQuickdumpSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 		const Key * meta;
 		while ((meta = keyNextMeta (cur)) != NULL)
 		{
-			kdb_unsigned_long_long_t metaNameSize = keyGetNameSize (meta) - 1;
-			if (!writeData (file, keyName (meta), metaNameSize, parentKey))
+			ssize_t result = findMetaLink (&metaKeys, meta);
+			if (result < 0)
 			{
-				fclose (file);
-				return ELEKTRA_PLUGIN_STATUS_ERROR;
-			}
+				if (fputc ('m', file) == EOF)
+				{
+					fclose (file);
+					return ELEKTRA_PLUGIN_STATUS_ERROR;
+				}
 
-			kdb_unsigned_long_long_t metaValueSize = keyGetValueSize (meta) - 1;
-			if (!writeData (file, keyString (meta), metaValueSize, parentKey))
+				kdb_unsigned_long_long_t metaNameSize = keyGetNameSize (meta) - 1;
+				if (!writeData (file, keyName (meta), metaNameSize, parentKey))
+				{
+					fclose (file);
+					return ELEKTRA_PLUGIN_STATUS_ERROR;
+				}
+
+				kdb_unsigned_long_long_t metaValueSize = keyGetValueSize (meta) - 1;
+				if (!writeData (file, keyString (meta), metaValueSize, parentKey))
+				{
+					fclose (file);
+					return ELEKTRA_PLUGIN_STATUS_ERROR;
+				}
+
+				insertMetaLink (&metaKeys, -result - 1, meta, cur);
+			}
+			else
 			{
-				fclose (file);
-				return ELEKTRA_PLUGIN_STATUS_ERROR;
+				if (fputc ('c', file) == EOF)
+				{
+					fclose (file);
+					return ELEKTRA_PLUGIN_STATUS_ERROR;
+				}
+
+				kdb_unsigned_long_long_t keyNameSize = metaKeys.array[result]->keyNameSize - 1;
+				if (!writeData (file, metaKeys.array[result]->keyName, keyNameSize, parentKey))
+				{
+					fclose (file);
+					return ELEKTRA_PLUGIN_STATUS_ERROR;
+				}
+
+				kdb_unsigned_long_long_t metaNameSize = keyGetNameSize (meta) - 1;
+				if (!writeData (file, keyName (meta), metaNameSize, parentKey))
+				{
+					fclose (file);
+					return ELEKTRA_PLUGIN_STATUS_ERROR;
+				}
 			}
 		}
 
@@ -356,6 +470,12 @@ int elektraQuickdumpSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 	}
+
+	for (size_t i = 0; i < metaKeys.size; ++i)
+	{
+		elektraFree (metaKeys.array[i]);
+	}
+	elektraFree (metaKeys.array);
 
 	fclose (file);
 
@@ -371,4 +491,69 @@ Plugin * ELEKTRA_PLUGIN_EXPORT (quickdump)
 		ELEKTRA_PLUGIN_GET,	&elektraQuickdumpGet,
 		ELEKTRA_PLUGIN_SET,	&elektraQuickdumpSet,
 		ELEKTRA_PLUGIN_END);
+	// clang-format on
+}
+
+ssize_t findMetaLink (struct list * list, const Key * meta)
+{
+	const void * search = meta;
+
+	if (list->size == 0)
+	{
+		return -1;
+	}
+
+	if (search > list->array[list->size - 1]->meta)
+	{
+		return -list->size - 1;
+	}
+
+	ssize_t left = 0;
+	ssize_t right = list->size;
+	--right;
+
+	ssize_t insertpos = 0;
+
+	while (left <= right)
+	{
+		size_t middle = left + ((right - left) / 2);
+
+		if (list->array[middle]->meta < search)
+		{
+			insertpos = left = middle + 1;
+		}
+		else if (list->array[middle]->meta == search)
+		{
+			return middle;
+		}
+		else
+		{
+			insertpos = middle;
+			right = middle - 1;
+		}
+	}
+
+	return -insertpos - 1;
+}
+
+void insertMetaLink (struct list * list, size_t index, const Key * meta, Key * key)
+{
+	if (index >= list->alloc)
+	{
+		list->alloc *= 2;
+		elektraRealloc ((void **) &list->array, sizeof (struct metaLink *) * list->alloc);
+	}
+
+	struct metaLink * link = elektraMalloc (sizeof (struct metaLink));
+	link->meta = meta;
+	link->keyNameSize = keyGetNameSize (key);
+	link->keyName = keyName (key);
+
+	if (index < list->size)
+	{
+		memmove (&list->array[index + 1], &list->array[index], (list->size - index) * sizeof (struct metaLink *));
+	}
+
+	list->array[index] = link;
+	++list->size;
 }
