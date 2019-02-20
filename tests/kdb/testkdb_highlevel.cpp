@@ -12,6 +12,7 @@
 
 #include <gtest/gtest-elektra.h>
 #include <kdbhelper.h>
+#include <kdbprivate.h>
 
 #define EXPECT_KEYVALUE(Key, Value) EXPECT_PRED2 (keyHasValue, Key, Value)
 #define EXPECT_KEYMETA(Key, Meta, Value) EXPECT_PRED3 (keyHasMetaValue, Key, Meta, Value)

@@ -616,6 +616,19 @@ int elektraGlobalError (KDB * handle, KeySet * ks, Key * parentKey, int position
 extern "C" {
 #endif
 
+typedef enum
+{
+	/**
+	 * Use only, if the error will be raised with elektraFatalError().
+	 */
+	ELEKTRA_ERROR_SEVERITY_FATAL = 0,
+	ELEKTRA_ERROR_SEVERITY_ERROR,
+	ELEKTRA_ERROR_SEVERITY_WARNING
+} ElektraErrorSeverity;
+
+typedef const char * ElektraKDBErrorGroup;
+typedef const char * ElektraKDBErrorModule;
+
 struct _Elektra
 {
 	KDB * kdb;
@@ -651,6 +664,19 @@ void elektraSaveKey (Elektra * elektra, Key * key, ElektraError ** error);
 void elektraSetLookupKey (Elektra * elektra, const char * name);
 void elektraSetArrayLookupKey (Elektra * elektra, const char * name, kdb_long_long_t index);
 ElektraError * elektraErrorCreate (ElektraErrorCode code, const char * description, ElektraErrorSeverity severity);
+
+// error handling unstable/private for now
+ElektraErrorSeverity elektraErrorSeverity (const ElektraError * error);
+
+int elektraKDBErrorCode (const ElektraError * error);
+const char * elektraKDBErrorDescription (const ElektraError * error);
+ElektraErrorSeverity elektraKDBErrorSeverity (const ElektraError * error);
+ElektraKDBErrorGroup elektraKDBErrorGroup (const ElektraError * error);
+ElektraKDBErrorModule elektraKDBErrorModule (const ElektraError * error);
+const char * elektraKDBErrorReason (const ElektraError * error);
+int elektraKDBErrorWarningCount (const ElektraError * error);
+ElektraError * elektraKDBErrorGetWarning (const ElektraError * error, int index);
+Key * elektraKDBErrorKey (const ElektraError * error);
 
 #ifdef __cplusplus
 }

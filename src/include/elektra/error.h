@@ -20,34 +20,10 @@ extern "C" {
 
 typedef struct _ElektraError ElektraError;
 
-typedef enum
-{
-	/**
-	 * Use only, if the error will be raised with elektraFatalError().
-	 */
-	ELEKTRA_ERROR_SEVERITY_FATAL = 0,
-	ELEKTRA_ERROR_SEVERITY_ERROR,
-	ELEKTRA_ERROR_SEVERITY_WARNING
-} ElektraErrorSeverity;
-
-typedef const char * ElektraKDBErrorGroup;
-typedef const char * ElektraKDBErrorModule;
-
 typedef void (*ElektraErrorHandler) (ElektraError * error);
 
 ElektraErrorCode elektraErrorCode (const ElektraError * error);
 const char * elektraErrorDescription (const ElektraError * error);
-ElektraErrorSeverity elektraErrorSeverity (const ElektraError * error);
-
-int elektraKDBErrorCode (const ElektraError * error);
-const char * elektraKDBErrorDescription (const ElektraError * error);
-ElektraErrorSeverity elektraKDBErrorSeverity (const ElektraError * error);
-ElektraKDBErrorGroup elektraKDBErrorGroup (const ElektraError * error);
-ElektraKDBErrorModule elektraKDBErrorModule (const ElektraError * error);
-const char * elektraKDBErrorReason (const ElektraError * error);
-int elektraKDBErrorWarningCount (const ElektraError * error);
-ElektraError * elektraKDBErrorGetWarning (const ElektraError * error, int index);
-Key * elektraKDBErrorKey (const ElektraError * error);
 
 void elektraErrorReset (ElektraError ** error);
 

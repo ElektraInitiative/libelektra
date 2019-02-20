@@ -128,8 +128,9 @@ initializing a new variable with `ElektraError * error = NULL` or by reusing an 
 Notice, that you should always check if an error occurred by comparing it to `NULL` after the function call.
 
 If an error happened, it is often useful to show an error message to the user. A description of what went wrong is provided in the
-`ElektraError` struct and can be accessed using `elektraErrorDescription (error)`. A complete list of the provided accessors for
-error-details can be found in [elektra_error.c](/src/libs/highlevel/elektra_error.c).
+`ElektraError` struct and can be accessed using `elektraErrorDescription (error)`. Additionally the error code can be accessed through
+`elektraErrorCode (error)`.
+NOTE: The error API is still a work in progress, so more functions will likely be added in the future.
 
 To avoid leakage of memory, you have to call `elektraErrorReset (&error)` (ideally as soon as you are finished resolving the error):
 
@@ -147,40 +148,6 @@ if (error != NULL)
 
   elektraErrorReset (&error);
 }
-```
-
-#### Low-level Errors
-
-Errors which do not originate inside the high-level API itself are wrapped into a `ElektraError` struct with error code
-`ELEKTRA_ERROR_CODE_LOW_LEVEL`. The high-level Error API provides methods (`elektraKDBError*`) to access the properties of the low-level
-error. You can also access the key to which the error was originally attached, as well as any possible low-level warnings.
-
-To get the original low-level error code, description, severity, group, module and reason you can use these functions:
-
-```c
-int elektraKDBErrorCode (const ElektraError * error);
-const char * elektraKDBErrorDescription (const ElektraError * error);
-ElektraErrorSeverity elektraKDBErrorSeverity (const ElektraError * error);
-ElektraKDBErrorGroup elektraKDBErrorGroup (const ElektraError * error);
-ElektraKDBErrorModule elektraKDBErrorModule (const ElektraError * error);
-const char * elektraKDBErrorReason (const ElektraError * error);
-```
-
-To iterate over all the warnings use the following to functions:
-
-```c
-int elektraKDBErrorWarningCount (const ElektraError * error);
-ElektraError * elektraKDBErrorGetWarning (const ElektraError * error, int index);
-```
-
-`elektraKDBErrorGetWarning` will return a newly allocated `ElektraError` struct with error code `ELEKTRA_ERROR_CODE_LOW_LEVEL` and severity
-`ELEKTRA_ERROR_SEVERITY_WARNING`. You will need to free the allocated struct when you are done. To access the information of the low-level
-warning you use the `elektraKDBError*` functions described above.
-
-The key to which the low-level error and the associated warnings where attached originally can be accessed via:
-
-```c
-Key * elektraKDBErrorKey (const ElektraError * error);
 ```
 
 ### Configuration
