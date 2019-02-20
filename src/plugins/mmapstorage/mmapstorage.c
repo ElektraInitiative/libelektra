@@ -476,7 +476,7 @@ static void calculateMmapDataSize (MmapHeader * mmapHeader, MmapMetaData * mmapM
 				ksRewind (globalKey->meta);
 				while ((curMeta = ksNext (globalKey->meta)) != 0)
 				{
-					if (ELEKTRA_PLUGIN_FUNCTION (mmapstorage, dynArrayFindOrInsert) (curMeta, dynArray) == 0)
+					if (ELEKTRA_PLUGIN_FUNCTION (dynArrayFindOrInsert) (curMeta, dynArray) == 0)
 					{
 						// key was just inserted
 						dataBlocksSize += (curMeta->keySize + curMeta->keyUSize + curMeta->dataSize);

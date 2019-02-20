@@ -237,7 +237,7 @@ int elektraCacheGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 			       keyNew ("system/elektra/modules/cache/exports/set", KEY_FUNC, elektraCacheSet, KEY_END),
 			       keyNew ("system/elektra/modules/cache/exports/error", KEY_FUNC, elektraCacheError, KEY_END),
 			       keyNew ("system/elektra/modules/cache/exports/checkconf", KEY_FUNC, elektraCacheCheckConfig, KEY_END),
-#include ELEKTRA_README (cache)
+#include ELEKTRA_README
 			       keyNew ("system/elektra/modules/cache/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
@@ -283,7 +283,8 @@ int elektraCacheSet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 	if (elektraPluginGetGlobalKeySet (handle) == 0)
 	{
-		ELEKTRA_ASSERT (0 != 0, "WHY AM I NOT GLOBAL KS");
+		// ELEKTRA_ASSERT (0 != 0, "WHY AM I NOT GLOBAL KS");
+		return ELEKTRA_PLUGIN_STATUS_NO_UPDATE; // TODO: do we fail silently here?
 	}
 
 	// construct cache file name from parentKey (which stores the mountpoint from mountGetMountpoint)
@@ -302,7 +303,7 @@ int elektraCacheSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	}
 
 	keyDel (cacheFile); // TODO: maybe propagate errors?
-	ELEKTRA_ASSERT (0 != 0, "ELEKTRA_PLUGIN_STATUS_ERROR");
+	// ELEKTRA_ASSERT (0 != 0, "ELEKTRA_PLUGIN_STATUS_ERROR");
 	return ELEKTRA_PLUGIN_STATUS_ERROR;
 }
 
@@ -310,6 +311,34 @@ int elektraCacheError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 {
 	// handle errors (commit failed)
 	// this function is optional
+
+	ELEKTRA_LOG_DEBUG ("CACHE FLUSH");
+
+	CacheHandle * ch = elektraPluginGetData (handle);
+	if (ch->cacheStorage->global == 0)
+	{
+		ch->cacheStorage->global = elektraPluginGetGlobalKeySet (handle);
+	}
+
+	if (elektraPluginGetGlobalKeySet (handle) == 0)
+	{
+		// ELEKTRA_ASSERT (0 != 0, "WHY AM I NOT GLOBAL KS");
+		return ELEKTRA_PLUGIN_STATUS_NO_UPDATE; // TODO: do we fail silently here?
+	}
+
+	// construct cache file name from parentKey (which stores the mountpoint from mountGetMountpoint)
+	Key * cacheFile = keyDup (parentKey);
+	char * cacheFileName = kdbCacheFileName (ch, cacheFile);
+	ELEKTRA_ASSERT (cacheFileName != 0, "Could not construct cache file name.");
+	ELEKTRA_LOG_DEBUG ("cacheFileName: %s", cacheFileName);
+
+	// load cache from storage
+	keySetString (cacheFile, cacheFileName);
+	elektraFree (cacheFileName);
+
+	unlink (keyString (cacheFile));
+
+	keyDel (cacheFile);
 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
@@ -322,7 +351,7 @@ int elektraCacheCheckConfig (Key * errorKey ELEKTRA_UNUSED, KeySet * conf ELEKTR
 	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (cache)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport ("cache",

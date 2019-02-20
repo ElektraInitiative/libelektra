@@ -1222,6 +1222,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		if (elektraGlobalGet (handle, cache, cacheParent, PREGETCACHE, MAXONCE) != ELEKTRA_PLUGIN_STATUS_SUCCESS)
 		{
 			ELEKTRA_LOG_DEBUG ("CACHE MISS: could not fetch cache");
+			ksClear (handle->global); // TODO: only cut out our part of global keyset
 			goto cachefail;
 		}
 
@@ -1841,6 +1842,14 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 //		Key * cacheFile = keyNew (cacheFileName, KEY_VALUE, cacheFileName, KEY_END);
 //		unlink (keyName (cacheFile));
 //	}
+	// KeySet * cache = ksNew (0, KS_END);
+	Key * cacheParent = keyDup (mountGetMountpoint (handle, parentKey));
+	if (elektraGlobalError (handle, 0, cacheParent, PREGETCACHE, MAXONCE) != ELEKTRA_PLUGIN_STATUS_SUCCESS)
+	{
+		ELEKTRA_LOG_DEBUG ("CACHE: failed to flush cache");
+		ksClear (handle->global); // TODO: only cut out our part of global keyset
+		//goto cachefail;
+	}
 
 	keyDel (oldError);
 	errno = errnosave;

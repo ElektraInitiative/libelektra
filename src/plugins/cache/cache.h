@@ -20,6 +20,6 @@ int elektraCacheSet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraCacheError (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraCacheCheckConfig (Key * errorKey, KeySet * conf);
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (cache);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 #endif
