@@ -170,7 +170,7 @@ Additionally we recompile the homepage and deploy it on the a7 node.
 
 This section describes how to replicate the current Jenkins configuration.
 
-### Jenkins libelektra configuration
+### Jenkins libelektra Configuration
 
 The `libelektra` build job is a multibranch pipeline job.
 It is easiest to add via the BlueOcean interface.
@@ -193,7 +193,7 @@ verified or added to build Elektra correctly:
 - For Build Configuration you want to specify `by Jenkinsfile` and add the
   script path: `scripts/jenkins/Jenkinsfile`.
 
-### Adding a Jenkins node
+### Adding a Jenkins Node
 
 A node needs to have a JRE (Java Runtime Environment) installed.
 Further it should run an SSH (Secure SHell) server.
@@ -212,7 +212,7 @@ As for labels `gitmirror` should be if you want to cache repositories on this
 node.
 If Docker is available the `docker` label should be set.
 
-## Understanding Jenkins output
+## Understanding Jenkins Output
 
 Our jenkins build uses parallel steps inside a single build job to do most of
 the work.
@@ -231,7 +231,7 @@ used to run the stage.
 You also want to look for whatever failed (which should be in a step also marked
 red to indicate failure).
 
-## Reproducing buildserver errors locally
+## Reproducing Build Server Errors Locally
 
 First you have to determine which image is used.
 This is described above in _Understanding Jenkins output_.
@@ -258,7 +258,7 @@ Now you can build the image as described in
 You can find more information on how to use our images in
 [scripts/docker/README.md](https://master.libelektra.org/scripts/docker/README.md#testing-elektra-via-docker-images).
 
-## Modify test environments
+## Modify Test Environments
 
 You can also modify the test environments (update a dependency, install a new
 dependency, ...) by editing the Dockerfiles checked into SCM.
@@ -322,7 +322,7 @@ or if just the pull request should be checked:
 
     .*build\W+allow.*
 
-## Issues with the build environment
+## Issues with the Build Environment
 
 If you have issues that are related to the build system you can open a normal
 issue and tag it with `build` and `question`.
