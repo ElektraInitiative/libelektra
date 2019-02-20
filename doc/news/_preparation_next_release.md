@@ -119,7 +119,12 @@ The following section lists news about the [modules](https://www.libelektra.org/
   [“The Definitive ANTLR 4 Reference”](https://pragprog.com/book/tpantlr2/the-definitive-antlr-4-reference) by Terence Parr.
   _(René Schwaiger)_
 
-- Yan LR’s lexer now handles comment at the end of a YAML document correctly. _(René Schwaiger)_
+- Yan LR’s lexer now
+
+  - handles comment at the end of a YAML document correctly,
+  - stores a more human readable description in tokens (e.g. `end of map` instead of `MAP END`)
+
+  . _(René Schwaiger)_
 
 ### path
 
