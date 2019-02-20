@@ -67,7 +67,7 @@ static void test_basics (void)
 
 		Key * k1 = ksLookupByName (ks, "dir/tests/bench/__112", 0);
 		Key * k8 = ksLookupByName (ks, "dir/tests/bench/__911", 0);
-		succeed_if (keyString (keyGetMeta (k1, "meta/_35")) == keyString (keyGetMeta (k8, "meta/_35")), "copy meta failed");
+		succeed_if (keyGetMeta (k1, "meta/_35") == keyGetMeta (k8, "meta/_35"), "copy meta failed");
 
 		ksDel (expected);
 

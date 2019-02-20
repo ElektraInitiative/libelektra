@@ -76,6 +76,7 @@ Read and write everything a KeySet might contain:
 - [dini](dini/) uses by default the ini plugin but has legacy support for dump
 - [ini](ini/) supports a range of INI file formats.
 - [dump](dump/) makes a dump of a KeySet in an Elektra-specific format
+- [quickdump](quickdump/) uses binary portable format based on [dump](dump/), but more efficient
 
 Read (and write) standard config files:
 
@@ -121,7 +122,6 @@ productive use:
 - [yawn](yawn/) reads YAML data using [YAEP](https://github.com/vnmakarov/yaep)
 - [yaypeg](yaypeg/) reads YAML data using a PEG parser combinators based on [PEGTL](https://github.com/taocpp/PEGTL)
 - [mmapstorage](mmapstorage/) uses binary, not portable memory mapped file for a high performance storage
-- [quickdump](quickdump/) uses binary portable format based on [dump](dump/), but more efficient
 - [specload](specload/) calls an external application to request its specification, depends on [quickdump](quickdump/)
 
 [yaml]: http://www.yaml.org
