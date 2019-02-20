@@ -8,7 +8,7 @@ s/\<occured\>/occurred/g
 # = British → American English =
 # ==============================
 
-s/behaviour/behavior/g
+s/([Bb])ehaviour/\1ehavior/g
 s/f(l?)avour/f\1avor/g
 s/generalises/generalizes/g
 s/organisation/organization/g

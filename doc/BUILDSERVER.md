@@ -178,7 +178,7 @@ It is easiest to add via the BlueOcean interface.
 Most of the default settings should be ok, however some settings need to be
 verified or added to build Elektra correctly:
 
-- In Branch Sources under Behaviours `Filter by name` should be
+- In Branch Sources under Behaviors `Filter by name` should be
   added to exclude the `debian` branch from being build.
   The reason for this is that the `debian` branch is not providing a
   Jenkinsfile.
