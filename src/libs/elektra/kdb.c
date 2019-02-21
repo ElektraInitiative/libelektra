@@ -841,7 +841,9 @@ static void kdbStoreSplitState (KDB * handle, Split * split, KeySet * global, Ke
 			name = elektraStrConcat ("/persistent/kdb/splitState/default/", backendName);
 		}
 		// Append parent name for uniqueness (spec, dir, user, system, ...)
+		char * tmp = name;
 		name = elektraStrConcat (name, keyName (split->parents[i]));
+		elektraFree (tmp);
 
 		ELEKTRA_LOG_DEBUG (">>>> STORING split->handle[%ld] with name: %s :::: parentName: %s, parentValue: %s", i, name,
 				   keyName (split->parents[i]), keyString (split->parents[i]));
@@ -886,6 +888,8 @@ static void kdbStoreSplitState (KDB * handle, Split * split, KeySet * global, Ke
 		ELEKTRA_LOG_DEBUG (">>>> STORING key: %s, string: %s, strlen: %ld, valSize: %ld", keyName (key), keyString (key),
 				   strlen (keyString (key)), keyGetValueSize (key));
 		keyDel (key);
+
+		elektraFree (name);
 	}
 }
 
@@ -912,10 +916,11 @@ static int kdbCheckSplitState (Split * split, KeySet * global)
 {
 	ELEKTRA_LOG_WARNING ("SIZE STORAGE CHCK");
 	Key * key = 0;
+	char * name = 0;
 
 	for (size_t i = 0; i < split->size; ++i)
 	{
-		char * name = 0;
+		
 		const char * backendName = 0;
 		if (strlen (keyName (split->handles[i]->mountpoint)) != 0)
 		{
@@ -928,7 +933,9 @@ static int kdbCheckSplitState (Split * split, KeySet * global)
 			name = elektraStrConcat ("/persistent/kdb/splitState/default/", backendName);
 		}
 		// Append parent name for uniqueness (spec, dir, user, system, ...)
+		char * tmp = name;
 		name = elektraStrConcat (name, keyName (split->parents[i]));
+		elektraFree (tmp);
 		key = keyNew (name, KEY_END);
 
 		keyAddBaseName (key, "specsize");
@@ -965,6 +972,9 @@ static int kdbCheckSplitState (Split * split, KeySet * global)
 		{
 			goto error;
 		}
+
+		elektraFree (name);
+		name = 0;
 	}
 
 	keyDel (key);
@@ -975,6 +985,7 @@ error:
 	ELEKTRA_LOG_DEBUG (">>>> MISSING key: %s, string: %s, strlen: %ld, valSize: %ld", keyName (key), keyString (key),
 			   strlen (keyString (key)), keyGetValueSize (key));
 	keyDel (key);
+	if (name) elektraFree (name);
 	return -1;
 }
 
@@ -982,10 +993,10 @@ static int kdbLoadSplitState (Split * split, KeySet * global)
 {
 	ELEKTRA_LOG_WARNING ("SIZE STORAGE LOAD");
 	Key * key = 0;
+	char * name = 0;
 
 	for (size_t i = 0; i < split->size; ++i)
 	{
-		char * name = 0;
 		const char * backendName = 0;
 		if (strlen (keyName (split->handles[i]->mountpoint)) != 0)
 		{
@@ -998,7 +1009,9 @@ static int kdbLoadSplitState (Split * split, KeySet * global)
 			name = elektraStrConcat ("/persistent/kdb/splitState/default/", backendName);
 		}
 		// Append parent name for uniqueness (spec, dir, user, system, ...)
+		char * tmp = name;
 		name = elektraStrConcat (name, keyName (split->parents[i]));
+		elektraFree (tmp);
 		key = keyNew (name, KEY_END);
 
 		keyAddBaseName (key, "specsize");
@@ -1073,6 +1086,10 @@ static int kdbLoadSplitState (Split * split, KeySet * global)
 		{
 			goto error;
 		}
+		
+		elektraFree (name);
+		name = 0;
+		
 	}
 
 	keyDel (key);
@@ -1083,6 +1100,7 @@ error:
 	ELEKTRA_LOG_DEBUG (">>>> MISSING key: %s, string: %s, strlen: %ld, valSize: %ld", keyName (key), keyString (key),
 			   strlen (keyString (key)), keyGetValueSize (key));
 	keyDel (key);
+	if (name) elektraFree (name);
 	return -1;
 }
 
@@ -1190,6 +1208,9 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 
 	Split * split = splitNew ();
 
+	KeySet * cache = ksNew (0, KS_END);
+	Key * cacheParent = keyDup (mountGetMountpoint (handle, parentKey));
+
 	if (!handle || !ks)
 	{
 		clearError (parentKey);
@@ -1207,9 +1228,6 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		ELEKTRA_SET_ERROR (38, parentKey, "error in splitBuildup");
 		goto error;
 	}
-
-	KeySet * cache = ksNew (0, KS_END);
-	Key * cacheParent = keyDup (mountGetMountpoint (handle, parentKey));
 
 	if (handle->globalPlugins[PREGETCACHE][MAXONCE])
 	{
@@ -1261,6 +1279,7 @@ cachefail:
 			ksAppend (ks, cache);
 			ksDel (cache);
 		}
+		keyDel (cacheParent);
 
 		ELEKTRA_LOG_DEBUG (">>>>>>>>>>>>>> SPLIT LOAD CACHE");
 		logSplitDebug (handle);
@@ -1283,6 +1302,8 @@ cachefail:
 		elektraGlobalGet (handle, ks, parentKey, PROCGETSTORAGE, DEINIT);
 
 		ksDel (cache);
+		keyDel (cacheParent);
+
 		ELEKTRA_LOG_DEBUG (">>>>>>>>>>>>>> SPLIT NO UPDATE");
 		logSplitDebug (handle);
 
@@ -1395,6 +1416,7 @@ cachefail:
 	{
 		ksClear (handle->global); // TODO: only cut out our part of global keyset
 	}
+	keyDel (cacheParent);
 
 	splitMergeDefault (split, ks);
 
@@ -1418,6 +1440,7 @@ cachefail:
 	return 1;
 
 error:
+	keyDel (cacheParent);
 	keySetName (parentKey, keyName (initialParent));
 	elektraGlobalError (handle, ks, parentKey, POSTGETSTORAGE, INIT);
 	elektraGlobalError (handle, ks, parentKey, POSTGETSTORAGE, MAXONCE);
@@ -1819,6 +1842,7 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 		ELEKTRA_LOG_DEBUG ("CACHE: failed to flush cache");
 	}
 	ksClear (handle->global); // TODO: only cut out our part of global keyset
+	keyDel (cacheParent);
 
 	keyDel (oldError);
 	errno = errnosave;
