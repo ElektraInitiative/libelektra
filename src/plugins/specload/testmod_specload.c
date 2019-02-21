@@ -70,7 +70,7 @@ static void test_basics (void)
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
 	compare_keyset (defaultSpec, ks);
 
-	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "call to kdbSet was not successful");
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
 	compare_keyset (defaultSpec, ks);
 
 	ksDel (defaultSpec);
@@ -107,7 +107,7 @@ static void test_add (void)
 	ks = ksNew (0, KS_END);
 	ksAppendKey (ks, keyNew ("spec/tests/specload/newkey", KEY_META, "default", "0", KEY_END));
 	orig = ksDup (ks);
-	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "adding default should work");
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "adding default should work");
 	compare_keyset (orig, ks);
 	ksDel (ks);
 	ksDel (orig);
@@ -117,7 +117,7 @@ static void test_add (void)
 	ks = ksNew (0, KS_END);
 	ksAppendKey (ks, keyNew ("spec/tests/specload/newkey", KEY_META, "type", "string", KEY_END));
 	orig = ksDup (ks);
-	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "adding type should work");
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "adding type should work");
 	compare_keyset (orig, ks);
 	ksDel (ks);
 	ksDel (orig);
@@ -127,7 +127,7 @@ static void test_add (void)
 	ks = ksNew (0, KS_END);
 	ksAppendKey (ks, keyNew ("spec/tests/specload/newkey", KEY_META, "description", "Lorem ipsum", KEY_END));
 	orig = ksDup (ks);
-	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "adding description should work");
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "adding description should work");
 	compare_keyset (orig, ks);
 	ksDel (ks);
 	ksDel (orig);
@@ -137,7 +137,7 @@ static void test_add (void)
 	ks = ksNew (0, KS_END);
 	ksAppendKey (ks, keyNew ("spec/tests/specload/newkey", KEY_META, "opt/help", "Lorem ipsum opt", KEY_END));
 	orig = ksDup (ks);
-	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "adding opt/help should work");
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "adding opt/help should work");
 	compare_keyset (orig, ks);
 	ksDel (ks);
 	ksDel (orig);
@@ -176,7 +176,7 @@ static void test_edit (void)
 	ksAppendKey (ks, keyNew ("spec/tests/specload/key", KEY_VALUE, "0", KEY_META, "default", "1", KEY_META, "description",
 				 "Lorem ipsum", KEY_META, "opt/help", "Lorem ipsum opt", KEY_END));
 	orig = ksDup (ks);
-	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "changing default should work");
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "changing default should work");
 	compare_keyset (orig, ks);
 	ksDel (ks);
 	ksDel (orig);
@@ -187,7 +187,7 @@ static void test_edit (void)
 	ksAppendKey (ks, keyNew ("spec/tests/specload/key", KEY_VALUE, "0", KEY_META, "default", "0", KEY_META, "description",
 				 "Lorem ipsum edit", KEY_META, "opt/help", "Lorem ipsum opt", KEY_END));
 	orig = ksDup (ks);
-	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "changing description should work");
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "changing description should work");
 	compare_keyset (orig, ks);
 	ksDel (ks);
 	ksDel (orig);
@@ -198,7 +198,7 @@ static void test_edit (void)
 	ksAppendKey (ks, keyNew ("spec/tests/specload/key", KEY_VALUE, "0", KEY_META, "default", "0", KEY_META, "description",
 				 "Lorem ipsum", KEY_META, "opt/help", "Lorem ipsum opt edit", KEY_END));
 	orig = ksDup (ks);
-	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "changing opt/help should work");
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "changing opt/help should work");
 	compare_keyset (orig, ks);
 	ksDel (ks);
 	ksDel (orig);
@@ -236,7 +236,7 @@ static void test_remove (void)
 	ks = ksNew (0, KS_END);
 	ksAppendKey (ks, keyNew ("spec/tests/specload/key", KEY_VALUE, "0", KEY_META, "opt/help", "Lorem ipsum opt", KEY_END));
 	orig = ksDup (ks);
-	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "removing description should work");
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "removing description should work");
 	compare_keyset (orig, ks);
 	ksDel (ks);
 	ksDel (orig);
@@ -246,7 +246,7 @@ static void test_remove (void)
 	ks = ksNew (0, KS_END);
 	ksAppendKey (ks, keyNew ("spec/tests/specload/key", KEY_VALUE, "0", KEY_META, "description", "Lorem ipsum", KEY_END));
 	orig = ksDup (ks);
-	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "removing opt/help should work");
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "removing opt/help should work");
 	compare_keyset (orig, ks);
 	ksDel (ks);
 	ksDel (orig);

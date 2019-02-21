@@ -81,7 +81,7 @@ static void test_basics (void)
 		KeySet * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("quickdump");
 
-		succeed_if (plugin->kdbSet (plugin, ks, setKey) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "call to kdbSet was not successful");
+		succeed_if (plugin->kdbSet (plugin, ks, setKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
 
 		succeed_if (compare_binary_files (infile, outfile) == 0, "files differ");
 		remove (outfile);

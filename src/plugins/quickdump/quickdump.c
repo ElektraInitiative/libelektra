@@ -481,7 +481,7 @@ int elektraQuickdumpSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 
 	ksSetCursor (returned, cursor);
 
-	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
 Plugin * ELEKTRA_PLUGIN_EXPORT
