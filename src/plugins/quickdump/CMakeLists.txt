@@ -3,8 +3,6 @@ include (LibAddMacros)
 add_plugin (quickdump
 	    SOURCES quickdump.h
 		    quickdump.c
-		    portable/pendian.h
-		    portable/pendian_detect.h
 	    TEST_README)
 
 if (ADDTESTING_PHASE)

@@ -9,12 +9,11 @@
 
 #include "quickdump.h"
 
+#include <kdbendian.h>
 #include <kdbhelper.h>
 
 #include <kdberrors.h>
 #include <stdio.h>
-
-#include "portable/pendian.h"
 
 static const kdb_unsigned_long_long_t MAGIC_NUMBER = 0x454b444200000001UL; // EKDB (in ASCII) + Version (1)
 
