@@ -911,6 +911,7 @@ static int kdbCacheCheckParent (KDB * handle, KeySet * global, Key * parentKey)
 static int kdbCheckSplitState (Split * split, KeySet * global)
 {
 	ELEKTRA_LOG_WARNING ("SIZE STORAGE CHCK");
+	Key * key = 0;
 
 	for (size_t i = 0; i < split->size; ++i)
 	{
@@ -928,54 +929,59 @@ static int kdbCheckSplitState (Split * split, KeySet * global)
 		}
 		// Append parent name for uniqueness (spec, dir, user, system, ...)
 		name = elektraStrConcat (name, keyName (split->parents[i]));
-		Key * key = keyNew (name, KEY_END);
+		key = keyNew (name, KEY_END);
 
 		keyAddBaseName (key, "specsize");
 		Key * found = ksLookup (global, key, KDB_O_NONE);
 		if (!(found && keyGetValueSize (found) == sizeof (ssize_t)))
 		{
-			ELEKTRA_LOG_WARNING ("SIZE STORAGE KEY NOT FOUND");
-			return -1;
+			goto error;
 		}
 
 		keySetBaseName (key, "dirsize");
 		found = ksLookup (global, key, KDB_O_NONE);
 		if (!(found && keyGetValueSize (found) == sizeof (ssize_t)))
 		{
-			ELEKTRA_LOG_WARNING ("SIZE STORAGE KEY NOT FOUND");
-			return -1;
+			goto error;
 		}
 
 		keySetBaseName (key, "usersize");
 		found = ksLookup (global, key, KDB_O_NONE);
 		if (!(found && keyGetValueSize (found) == sizeof (ssize_t)))
 		{
-			ELEKTRA_LOG_WARNING ("SIZE STORAGE KEY NOT FOUND");
-			return -1;
+			goto error;
 		}
 
 		keySetBaseName (key, "systemsize");
 		found = ksLookup (global, key, KDB_O_NONE);
 		if (!(found && keyGetValueSize (found) == sizeof (ssize_t)))
 		{
-			ELEKTRA_LOG_WARNING ("SIZE STORAGE KEY NOT FOUND");
-			return -1;
+			goto error;
 		}
 
 		keySetBaseName (key, "syncbits");
 		found = ksLookup (global, key, KDB_O_NONE);
 		if (!(found && keyGetValueSize (found) == sizeof (splitflag_t)))
 		{
-			ELEKTRA_LOG_WARNING ("SIZE STORAGE KEY NOT FOUND");
-			return -1;
+			goto error;
 		}
 	}
+
+	keyDel (key);
 	return 0;
+
+error:
+	ELEKTRA_LOG_WARNING ("SIZE STORAGE KEY NOT FOUND");
+	ELEKTRA_LOG_DEBUG (">>>> MISSING key: %s, string: %s, strlen: %ld, valSize: %ld", keyName (key), keyString (key),
+			   strlen (keyString (key)), keyGetValueSize (key));
+	keyDel (key);
+	return -1;
 }
 
 static int kdbLoadSplitState (Split * split, KeySet * global)
 {
 	ELEKTRA_LOG_WARNING ("SIZE STORAGE LOAD");
+	Key * key = 0;
 
 	for (size_t i = 0; i < split->size; ++i)
 	{
@@ -993,7 +999,7 @@ static int kdbLoadSplitState (Split * split, KeySet * global)
 		}
 		// Append parent name for uniqueness (spec, dir, user, system, ...)
 		name = elektraStrConcat (name, keyName (split->parents[i]));
-		Key * key = keyNew (name, KEY_END);
+		key = keyNew (name, KEY_END);
 
 		keyAddBaseName (key, "specsize");
 		Key * found = ksLookup (global, key, KDB_O_NONE);
@@ -1007,10 +1013,7 @@ static int kdbLoadSplitState (Split * split, KeySet * global)
 			}
 			else
 			{
-				ELEKTRA_LOG_WARNING ("SIZE STORAGE KEY NOT FOUND");
-				ELEKTRA_LOG_DEBUG (">>>> MISSING key: %s, string: %s, strlen: %ld, valSize: %ld", keyName (key),
-						   keyString (key), strlen (keyString (key)), keyGetValueSize (key));
-				return -1;
+				goto error;
 			}
 		}
 
@@ -1025,10 +1028,7 @@ static int kdbLoadSplitState (Split * split, KeySet * global)
 			}
 			else
 			{
-				ELEKTRA_LOG_WARNING ("SIZE STORAGE KEY NOT FOUND");
-				ELEKTRA_LOG_DEBUG (">>>> MISSING key: %s, string: %s, strlen: %ld, valSize: %ld", keyName (key),
-						   keyString (key), strlen (keyString (key)), keyGetValueSize (key));
-				return -1;
+				goto error;
 			}
 		}
 
@@ -1043,10 +1043,7 @@ static int kdbLoadSplitState (Split * split, KeySet * global)
 			}
 			else
 			{
-				ELEKTRA_LOG_WARNING ("SIZE STORAGE KEY NOT FOUND");
-				ELEKTRA_LOG_DEBUG (">>>> MISSING key: %s, string: %s, strlen: %ld, valSize: %ld", keyName (key),
-						   keyString (key), strlen (keyString (key)), keyGetValueSize (key));
-				return -1;
+				goto error;
 			}
 		}
 
@@ -1061,10 +1058,7 @@ static int kdbLoadSplitState (Split * split, KeySet * global)
 			}
 			else
 			{
-				ELEKTRA_LOG_WARNING ("SIZE STORAGE KEY NOT FOUND");
-				ELEKTRA_LOG_DEBUG (">>>> MISSING key: %s, string: %s, strlen: %ld, valSize: %ld", keyName (key),
-						   keyString (key), strlen (keyString (key)), keyGetValueSize (key));
-				return -1;
+				goto error;
 			}
 		}
 
@@ -1077,14 +1071,19 @@ static int kdbLoadSplitState (Split * split, KeySet * global)
 		}
 		else
 		{
-			ELEKTRA_LOG_WARNING ("SIZE STORAGE KEY NOT FOUND");
-			ELEKTRA_LOG_DEBUG (">>>> MISSING key: %s, string: %s, strlen: %ld, valSize: %ld", keyName (key), keyString (key),
-					   strlen (keyString (key)), keyGetValueSize (key));
-			return -1;
+			goto error;
 		}
 	}
 
+	keyDel (key);
 	return 0;
+
+error:
+	ELEKTRA_LOG_WARNING ("SIZE STORAGE KEY NOT FOUND");
+	ELEKTRA_LOG_DEBUG (">>>> MISSING key: %s, string: %s, strlen: %ld, valSize: %ld", keyName (key), keyString (key),
+			   strlen (keyString (key)), keyGetValueSize (key));
+	keyDel (key);
+	return -1;
 }
 
 /**
@@ -1254,11 +1253,13 @@ cachefail:
 			ks->size = cache->size;
 			ks->alloc = cache->alloc;
 			set_bit (ks->flags, KS_FLAG_MMAP_ARRAY);
+			elektraFree (cache);
 		}
 		else
 		{
 			ELEKTRA_LOG_DEBUG ("appending cached keyset (ks was not empty)");
 			ksAppend (ks, cache);
+			ksDel (cache);
 		}
 
 		ELEKTRA_LOG_DEBUG (">>>>>>>>>>>>>> SPLIT LOAD CACHE");
@@ -1281,6 +1282,7 @@ cachefail:
 		elektraGlobalGet (handle, ks, parentKey, PROCGETSTORAGE, MAXONCE);
 		elektraGlobalGet (handle, ks, parentKey, PROCGETSTORAGE, DEINIT);
 
+		ksDel (cache);
 		ELEKTRA_LOG_DEBUG (">>>>>>>>>>>>>> SPLIT NO UPDATE");
 		logSplitDebug (handle);
 
@@ -1295,9 +1297,12 @@ cachefail:
 		keyDel (oldError);
 		return 0;
 	case -1:
+		ksDel (cache);
 		goto error;
 		// otherwise fall trough
 	}
+
+	ksDel (cache);
 
 	// Appoint keys (some in the bypass)
 	if (splitAppoint (split, handle, ks) == -1)
