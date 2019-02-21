@@ -158,7 +158,7 @@
 #endif
 
 /* OpenCL compatibility - define __ENDIAN_LITTLE__ on little endian systems */
-#if _BYTE_ORDER == _LITTLE_ENDIAN
+#if BYTE_ORDER == LITTLE_ENDIAN
 #if !defined(__ENDIAN_LITTLE__)
 #define __ENDIAN_LITTLE__ 1
 #endif
@@ -202,7 +202,7 @@
 
 /* Host swap macros */
 #ifndef __HOSTSWAP_DEFINED
-#if __BYTE_ORDER == __LITTLE_ENDIAN
+#if BYTE_ORDER == LITTLE_ENDIAN
 #define htobe16(x) bswap16 ((x))
 #define htole16(x) ((uint16_t) (x))
 #define be16toh(x) bswap16 ((x))
@@ -217,7 +217,7 @@
 #define htole64(x) ((uint64_t) (x))
 #define be64toh(x) bswap64 ((x))
 #define le64toh(x) ((uint64_t) (x))
-#elif __BYTE_ORDER == __BIG_ENDIAN
+#elif BYTE_ORDER == BIG_ENDIAN
 #define htobe16(x) ((uint16_t) (x))
 #define htole16(x) bswap16 ((x))
 #define be16toh(x) ((uint16_t) (x))
@@ -234,5 +234,12 @@
 #define le32toh(x) bswap32 ((x))
 #endif
 #endif
+
+#undef __ENDIAN_DEFINED
+#undef __BSWAP_DEFINED
+#undef __HOSTSWAP_DEFINED
+#undef _LITTLE_ENDIAN
+#undef _BIG_ENDIAN
+#undef _BYTE_ORDER
 
 #endif // ELEKTRA_KDBENDIAN_H
