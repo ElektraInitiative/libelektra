@@ -142,8 +142,8 @@
 #endif
 
 /* Unknown */
-#if !__ENDIAN_DEFINED
-#error Could not determine CPU byte order
+#ifndef __ENDIAN_DEFINED
+#error "Could not determine CPU byte order"
 #endif
 
 /* POSIX - http://austingroupbugs.net/view.php?id=162 */
@@ -165,7 +165,7 @@
 #endif
 
 /* Byte swap macros */
-#if !__BSWAP_DEFINED
+#ifndef __BSWAP_DEFINED
 
 #ifndef bswap16
 /* handle missing __builtin_bswap16 https://gcc.gnu.org/bugzilla/show_bug.cgi?id=52624 */
