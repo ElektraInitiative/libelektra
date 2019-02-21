@@ -25,7 +25,7 @@ static void test_basics (void)
 	KeySet * ks = ksNew (0, KS_END);
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR,
-		"call to kdbGet was successful, but file should not exist yet");
+		    "call to kdbGet was successful, but file should not exist yet");
 
 	// no global keyset, so not caching anything
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "call to kdbSet was not successful");

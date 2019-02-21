@@ -1186,7 +1186,6 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 
 	int errnosave = errno;
 	Key * initialParent = keyDup (parentKey);
-	//Key * cachedParent = keyDup (parentKey);
 
 	ELEKTRA_LOG ("now in new kdbGet (%s)", keyName (parentKey));
 
@@ -1211,10 +1210,6 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	}
 
 	KeySet * cache = ksNew (0, KS_END);
-	// KeySet * global = ksNew (0, KS_END);
-	// Key * cacheFile = 0;
-	// char * cacheFileName;
-
 	Key * cacheParent = keyDup (mountGetMountpoint (handle, parentKey));
 
 	if (handle->globalPlugins[PREGETCACHE][MAXONCE])
@@ -1240,29 +1235,6 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 			goto cachefail;
 		}
 	}
-
-//	if ((cacheFileName = kdbCacheFileName (handle, parentKey)) != 0)
-//	{
-//		//cacheFile = keyNew (cacheFileName, KEY_VALUE, cacheFileName, KEY_END);
-//		if (handle->globalPlugins[PREGETCACHE][MAXONCE])
-//		{
-//			elektraGlobalGet (handle, cache, cacheParent, PREGETCACHE, MAXONCE);
-//
-//			if (kdbCacheCheckParent (handle, global, cachedParent) != 0)
-//			{
-//				// parentKey in cache does not match, needs rebuild
-//				ELEKTRA_LOG_DEBUG ("CACHE WRONG PARENTKEY");
-//				ksClear (global);
-//				goto cachefail;
-//			}
-//			if (kdbCheckSplitState (split, global) == -1)
-//			{
-//				ELEKTRA_LOG_DEBUG ("FAIL, have to discard cache because split state / SIZE FAIL");
-//				ksClear (global);
-//				goto cachefail;
-//			}
-//		}
-//	}
 
 cachefail:
 	// Check if a update is needed at all
@@ -1402,23 +1374,23 @@ cachefail:
 	if (handle->globalPlugins[POSTGETCACHE][MAXONCE])
 	{
 		kdbStoreSplitState (handle, split, handle->global, cacheParent);
-		elektraGlobalSet (handle, ks, cacheParent, POSTGETCACHE, MAXONCE);
+		if (elektraGlobalSet (handle, ks, cacheParent, POSTGETCACHE, MAXONCE) != ELEKTRA_PLUGIN_STATUS_SUCCESS)
+		{
+			ELEKTRA_LOG_DEBUG ("CACHE ERROR: could store cache");
+			// we must remove the stored split state from the global keyset
+			// if there was an error, otherwise we get erroneous cache hits
+			ksClear (handle->global); // TODO: only cut out our part of global keyset
+		}
+
 		ELEKTRA_LOG_DEBUG (">>>>>>>>>>>>>> PRINT GLOBAL KEYSET");
 		output_keyset (handle->global);
 		ELEKTRA_LOG_DEBUG (">>>>>>>>>>>>>> END GLOBAL KEYSET");
 	}
+	else
+	{
+		ksClear (handle->global); // TODO: only cut out our part of global keyset
+	}
 
-//	if (cacheFileName != 0)
-//	{
-//		if (handle->globalPlugins[POSTGETCACHE][MAXONCE])
-//		{
-//			kdbStoreSplitState (handle, split, global, cachedParent);
-//			elektraGlobalSet (handle, ks, cacheFile, POSTGETCACHE, MAXONCE);
-//			ELEKTRA_LOG_DEBUG (">>>>>>>>>>>>>> PRINT GLOBAL KEYSET");
-//			output_keyset (global);
-//			ELEKTRA_LOG_DEBUG (">>>>>>>>>>>>>> END GLOBAL KEYSET");
-//		}
-//	}
 	splitMergeDefault (split, ks);
 
 	keySetName (parentKey, keyName (initialParent));
@@ -1835,21 +1807,13 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 	keyDel (initialParent);
 	splitDel (split);
 
-	// TODO: call cache plugin to unlink file
-//	Key * cacheParent = keyDup (mountGetMountpoint (handle, parentKey));
-//	if ((cacheFileName = kdbCacheFileName (handle, parentKey)) != 0)
-//	{
-//		Key * cacheFile = keyNew (cacheFileName, KEY_VALUE, cacheFileName, KEY_END);
-//		unlink (keyName (cacheFile));
-//	}
-	// KeySet * cache = ksNew (0, KS_END);
+	// call cache plugin to unlink file
 	Key * cacheParent = keyDup (mountGetMountpoint (handle, parentKey));
 	if (elektraGlobalError (handle, 0, cacheParent, PREGETCACHE, MAXONCE) != ELEKTRA_PLUGIN_STATUS_SUCCESS)
 	{
 		ELEKTRA_LOG_DEBUG ("CACHE: failed to flush cache");
-		ksClear (handle->global); // TODO: only cut out our part of global keyset
-		//goto cachefail;
 	}
+	ksClear (handle->global); // TODO: only cut out our part of global keyset
 
 	keyDel (oldError);
 	errno = errnosave;

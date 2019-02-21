@@ -19,7 +19,7 @@
 #include <kdbmodule.h>
 #include <kdbprivate.h>
 
-#include <fcntl.h> // access()
+#include <fcntl.h>  // access()
 #include <unistd.h> // access()
 
 #define KDB_CACHE_STORAGE "mmapstorage"
@@ -158,6 +158,7 @@ static char * kdbCacheFileName (CacheHandle * ch, Key * parentKey)
 	else
 	{
 		ELEKTRA_LOG_DEBUG ("mountpoint empty, invalid cache file name");
+		ELEKTRA_ASSERT (0 != 0, "mountpoint empty, invalid cache file name");
 	}
 	// cacheFileName = elektraStrConcat ("/tmp/elektracache/", keyName (parentKey));
 	ELEKTRA_LOG_DEBUG ("cache dir: %s", cacheFileName);
@@ -165,11 +166,11 @@ static char * kdbCacheFileName (CacheHandle * ch, Key * parentKey)
 	if (cacheFileName)
 	{
 
-//		if ( != 0)
-//		{
-//			ELEKTRA_LOG_DEBUG ("error creating directory: %s", cacheFileName);
-//			return 0;
-//		}
+		//		if ( != 0)
+		//		{
+		//			ELEKTRA_LOG_DEBUG ("error creating directory: %s", cacheFileName);
+		//			return 0;
+		//		}
 
 		if (access (cacheFileName, O_RDWR) != 0)
 		{
