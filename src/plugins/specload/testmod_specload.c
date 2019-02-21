@@ -80,6 +80,38 @@ static void test_basics (void)
 	PLUGIN_CLOSE ();
 }
 
+static void test_newfile (void)
+{
+	printf ("test newfile\n");
+
+	exit_if_fail (access (srcdir_file ("specload/new.quickdump"), F_OK) == -1, "srcdir_file specload/new.quickdump shouldn't exist");
+
+	Key * parentKey = keyNew ("spec/tests/specload", KEY_VALUE, srcdir_file ("specload/new.quickdump"), KEY_END);
+	KeySet * conf = ksNew (2, keyNew ("/app", KEY_VALUE, testapp_path, KEY_END), KS_END);
+
+	succeed_if (elektraSpecloadCheckConfig (parentKey, conf) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE,
+		    "call to checkConfig was not successful");
+
+	PLUGIN_OPEN ("specload");
+
+	KeySet * ks = ksNew (0, KS_END);
+	KeySet * defaultSpec = DEFAULT_SPEC;
+
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
+	compare_keyset (defaultSpec, ks);
+
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
+	compare_keyset (defaultSpec, ks);
+
+	ksDel (defaultSpec);
+
+	keyDel (parentKey);
+	ksDel (ks);
+	PLUGIN_CLOSE ();
+
+	remove (srcdir_file ("specload/new.quickdump"));
+}
+
 static void test_add (void)
 {
 	printf ("test add\n");
@@ -268,6 +300,7 @@ int main (int argc, char ** argv)
 	test_add ();
 	test_edit ();
 	test_remove ();
+	test_newfile ();
 
 	print_result ("testmod_specload");
 

@@ -153,11 +153,14 @@ int elektraSpecloadGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
-	if (elektraInvoke2Args (specload->quickDump, "get", spec, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
+	if (access (keyString (parentKey), F_OK) != -1)
 	{
-		ksDel (spec);
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_SPECLOAD, parentKey, "Couldn't load the overlay specification.");
-		return ELEKTRA_PLUGIN_STATUS_ERROR;
+		if (elektraInvoke2Args (specload->quickDump, "get", spec, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
+		{
+			ksDel (spec);
+			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_SPECLOAD, parentKey, "Couldn't load the overlay specification.");
+			return ELEKTRA_PLUGIN_STATUS_ERROR;
+		}
 	}
 
 	ksAppend (returned, spec);
@@ -186,11 +189,14 @@ int elektraSpecloadSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	}
 
 	KeySet * oldData = ksNew (ksGetSize (returned), KS_END);
-	if (elektraInvoke2Args (specload->quickDump, "get", oldData, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
+	if (access (keyString (parentKey), F_OK) != -1)
 	{
-		ksDel (oldData);
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_SPECLOAD, parentKey, "Couldn't load the overlay specification.");
-		return ELEKTRA_PLUGIN_STATUS_ERROR;
+		if (elektraInvoke2Args (specload->quickDump, "get", oldData, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
+		{
+			ksDel (oldData);
+			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_SPECLOAD, parentKey, "Couldn't load the overlay specification.");
+			return ELEKTRA_PLUGIN_STATUS_ERROR;
+		}
 	}
 
 	KeySet * overrides = ksNew (0, KS_END);
