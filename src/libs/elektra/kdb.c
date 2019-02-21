@@ -975,9 +975,9 @@ static int kdbCheckSplitState (Split * split, KeySet * global)
 
 		elektraFree (name);
 		name = 0;
+		keyDel (key);
 	}
 
-	keyDel (key);
 	return 0;
 
 error:
@@ -1089,6 +1089,7 @@ static int kdbLoadSplitState (Split * split, KeySet * global)
 		
 		elektraFree (name);
 		name = 0;
+		keyDel (key);
 		
 	}
 
