@@ -1093,7 +1093,6 @@ static int kdbLoadSplitState (Split * split, KeySet * global)
 		
 	}
 
-	keyDel (key);
 	return 0;
 
 error:
