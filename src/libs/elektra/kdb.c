@@ -1208,8 +1208,8 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 
 	Split * split = splitNew ();
 
-	KeySet * cache = ksNew (0, KS_END);
-	Key * cacheParent = keyDup (mountGetMountpoint (handle, parentKey));
+	KeySet * cache = 0;
+	Key * cacheParent = 0;
 
 	if (!handle || !ks)
 	{
@@ -1229,6 +1229,8 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		goto error;
 	}
 
+	cache = ksNew (0, KS_END);
+	cacheParent = keyDup (mountGetMountpoint (handle, parentKey));
 	if (handle->globalPlugins[PREGETCACHE][MAXONCE])
 	{
 		if (elektraGlobalGet (handle, cache, cacheParent, PREGETCACHE, MAXONCE) != ELEKTRA_PLUGIN_STATUS_SUCCESS)
@@ -1272,14 +1274,17 @@ cachefail:
 			ks->alloc = cache->alloc;
 			set_bit (ks->flags, KS_FLAG_MMAP_ARRAY);
 			elektraFree (cache);
+			cache = 0;
 		}
 		else
 		{
 			ELEKTRA_LOG_DEBUG ("appending cached keyset (ks was not empty)");
 			ksAppend (ks, cache);
 			ksDel (cache);
+			cache = 0;
 		}
 		keyDel (cacheParent);
+		cacheParent = 0;
 
 		ELEKTRA_LOG_DEBUG (">>>>>>>>>>>>>> SPLIT LOAD CACHE");
 		logSplitDebug (handle);
@@ -1302,7 +1307,9 @@ cachefail:
 		elektraGlobalGet (handle, ks, parentKey, PROCGETSTORAGE, DEINIT);
 
 		ksDel (cache);
+		cache = 0;
 		keyDel (cacheParent);
+		cacheParent = 0;
 
 		ELEKTRA_LOG_DEBUG (">>>>>>>>>>>>>> SPLIT NO UPDATE");
 		logSplitDebug (handle);
@@ -1318,12 +1325,12 @@ cachefail:
 		keyDel (oldError);
 		return 0;
 	case -1:
-		ksDel (cache);
 		goto error;
 		// otherwise fall trough
 	}
 
 	ksDel (cache);
+	cache = 0;
 
 	// Appoint keys (some in the bypass)
 	if (splitAppoint (split, handle, ks) == -1)
@@ -1417,6 +1424,7 @@ cachefail:
 		ksClear (handle->global); // TODO: only cut out our part of global keyset
 	}
 	keyDel (cacheParent);
+	cacheParent = 0;
 
 	splitMergeDefault (split, ks);
 
@@ -1440,7 +1448,9 @@ cachefail:
 	return 1;
 
 error:
-	keyDel (cacheParent);
+	ELEKTRA_LOG_DEBUG ("now in error state");
+	if (cacheParent) keyDel (cacheParent);
+	if (cache) ksDel (cache);
 	keySetName (parentKey, keyName (initialParent));
 	elektraGlobalError (handle, ks, parentKey, POSTGETSTORAGE, INIT);
 	elektraGlobalError (handle, ks, parentKey, POSTGETSTORAGE, MAXONCE);
