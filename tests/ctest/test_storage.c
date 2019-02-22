@@ -712,18 +712,18 @@ static void test_keyValue (const size_t storagePlugin, const char * tmpFile)
 
 	Key * key = keyNew (name, KEY_END);
 	keySetBinary (key, value, valueSize);
-	ksAppendKey (ks, key);
+	ksAppendKey (ks, keyDup (key));
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
 
 	Key * found = ksLookupByName (ks, name, 0);
 	succeed_if (found, "did not find key");
-
-	succeed_if (elektraStrNCmp (value, keyValue (found), valueSize) == 0, "Key binary value is wrong");
+	compare_key (key, found);
 
 	elektraFree (value);
 	keyDel (parentKey);
 	ksDel (ks);
+	keyDel (key);
 	closeStoragePlugin (storagePlugin);
 }
 

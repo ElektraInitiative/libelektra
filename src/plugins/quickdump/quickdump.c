@@ -186,7 +186,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 			}
 			else
 			{
-				char * value = elektraMalloc (valueSize);
+				void * value = elektraMalloc (valueSize);
 				if (fread (value, sizeof (char), valueSize, file) < valueSize)
 				{
 					elektraFree (name);
