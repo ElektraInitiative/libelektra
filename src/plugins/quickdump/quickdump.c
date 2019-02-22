@@ -193,7 +193,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 					fclose (file);
 					return ELEKTRA_PLUGIN_STATUS_ERROR;
 				}
-				k = keyNew (name, KEY_BINARY, KEY_SIZE, valueSize, KEY_VALUE, value, KEY_END);
+				k = keyNew (name, KEY_BINARY, KEY_SIZE, (size_t) valueSize, KEY_VALUE, value, KEY_END);
 				elektraFree (name);
 				elektraFree (value);
 			}
