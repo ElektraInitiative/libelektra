@@ -128,18 +128,24 @@ if (DEPENDENCY_PHASE)
 	endif (NOT FOUND_DEPENDENCIES)
 endif (DEPENDENCY_PHASE)
 
-# ~~~
-# The generated code seems to contain a
-# [double free](https://build.libelektra.org/jenkins/blue/organizations/jenkins/libelektra/detail/PR-2271/155/pipeline) that causes the
-# unit test to crash with a segfault on systems that use `glibc`.
-# ~~~
-set (DISABLE_UNIT_TEST "${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU" AND ${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 7)
+# The generated parser code seems to contain a double free that causes the unit test to crash with a segfault on **some** systems that use
+# `glibc`. If AddressSanitizer is enabled everything seems to work fine.
+set (TEST_ARGUMENTS ADD_TEST CPP_TEST)
+if ("${CMAKE_SYSTEM_NAME}"
+    STREQUAL
+    Linux
+    AND NOT
+	${ENABLE_ASAN})
 
-if (${DISABLE_UNIT_TEST})
-	set (TEST_ARGUMENTS "")
-else (${DISABLE_UNIT_TEST})
-	set (TEST_ARGUMENTS ADD_TEST CPP_TEST)
-endif (${DISABLE_UNIT_TEST})
+	# We only disable the test, if we detect a GNU C Library based system.
+	execute_process (COMMAND ldd --version
+			 RESULT_VARIABLE ANTLR4_NOT_AVAILABLE
+			 OUTPUT_VARIABLE LDD_OUTPUT)
+	if ("${LDD_OUTPUT}" MATCHES "GLIBC|GNU libc")
+		set (TEST_ARGUMENTS "")
+	endif ("${LDD_OUTPUT}" MATCHES "GLIBC|GNU libc")
+
+endif ("${CMAKE_SYSTEM_NAME}" STREQUAL Linux AND NOT ${ENABLE_ASAN})
 
 add_plugin (yanlr
 	    CPP
