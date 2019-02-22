@@ -920,7 +920,7 @@ static int kdbCheckSplitState (Split * split, KeySet * global)
 
 	for (size_t i = 0; i < split->size; ++i)
 	{
-		
+
 		const char * backendName = 0;
 		if (strlen (keyName (split->handles[i]->mountpoint)) != 0)
 		{
@@ -1086,11 +1086,10 @@ static int kdbLoadSplitState (Split * split, KeySet * global)
 		{
 			goto error;
 		}
-		
+
 		elektraFree (name);
 		name = 0;
 		keyDel (key);
-		
 	}
 
 	return 0;
