@@ -314,6 +314,7 @@ you up to date with the multi-language support provided by Elektra.
   - homepage URL
     in the CMake [`project`](https://cmake.org/cmake/help/latest/command/project.html) command. _(René Schwaiger)_
 - We fixed the detection of Python for the [Python 2 binding](https://www.libelektra.org/bindings/swig_python2) on macOS. _(René Schwaiger)_
+- You can now use the Ruby binding and plugin without any manual configuration, if you installed Ruby (version `2.5` or later) via [Homebrew](http://brew.sh). _(René Schwaiger)_
 
 #### Find Modules
 
