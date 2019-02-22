@@ -70,16 +70,18 @@ function (generate_code ANTLR_EXECUTABLE)
 	set (PARSER_MODIFIED_SOURCE_FILE ${CMAKE_CURRENT_BINARY_DIR}/${GRAMMAR_NAME}ImprovedSymbolNames.cpp)
 
 	foreach (file ${GENERATED_SOURCE_FILES_NAMES} "")
-		set (filepath ${CMAKE_CURRENT_BINARY_DIR}/${GRAMMAR_NAME}${file}.cpp)
-		set_source_files_properties (${filepath} PROPERTIES GENERATED TRUE)
-		if (CMAKE_COMPILER_IS_GNUCXX)
-			set_source_files_properties (${filepath} PROPERTIES COMPILE_FLAGS "-Wno-shadow")
-		endif (CMAKE_COMPILER_IS_GNUCXX)
-		if (NOT ${filepath} STREQUAL ${PARSER_SOURCE_FILE})
-			list (APPEND GENERATED_SOURCE_FILES_EXPORT)
-		endif (NOT ${filepath} STREQUAL ${PARSER_SOURCE_FILE})
-		list (APPEND GENERATED_SOURCE_FILES
-			     ${filepath})
+		foreach (extension "cpp" "h")
+			set (filepath ${CMAKE_CURRENT_BINARY_DIR}/${GRAMMAR_NAME}${file}.${extension})
+			set_source_files_properties (${filepath} PROPERTIES GENERATED TRUE)
+			if (CMAKE_COMPILER_IS_GNUCXX)
+				set_source_files_properties (${filepath} PROPERTIES COMPILE_FLAGS "-Wno-shadow")
+			endif (CMAKE_COMPILER_IS_GNUCXX)
+			if (NOT ${filepath} STREQUAL ${PARSER_SOURCE_FILE})
+				list (APPEND GENERATED_SOURCE_FILES_EXPORT)
+			endif (NOT ${filepath} STREQUAL ${PARSER_SOURCE_FILE})
+			list (APPEND GENERATED_SOURCE_FILES
+				     ${filepath})
+		endforeach (extension "cpp" "h")
 	endforeach (file ${GENERATED_SOURCE_FILES_NAMES})
 
 	add_custom_command (OUTPUT ${GENERATED_SOURCE_FILES}
