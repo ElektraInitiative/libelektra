@@ -13,11 +13,11 @@
 
 ## Introduction
 
-This plugin uses Bison to generate a parser for the [YAML](http://yaml.org) serialization format.
+This plugin uses [Bison](https://www.gnu.org/software/bison) to generate a parser for the [YAML](http://yaml.org) serialization format.
 
 ## Dependencies
 
-The plugin requires [Bison](https://www.gnu.org/software/bison/) (3.0 or later).
+The plugin requires [Bison](https://repology.org/metapackage/bison/versions) (version 3.0 or later).
 
 ## Examples
 
