@@ -107,10 +107,10 @@ The following section lists news about the [modules](https://www.libelektra.org/
   the plugin currently prints an error message that looks like this:
 
   ```
-  config.yaml:2:1: mismatched input '- ' expecting MAP_END
+  config.yaml:2:1: mismatched input '- ' expecting end of map
                    - element 2 # Incorrect Indentation!
                    ^^
-  config.yaml:2:37: extraneous input 'MAP END' expecting STREAM_END
+  config.yaml:2:37: extraneous input 'end of map' expecting end of document
                     - element 2 # Incorrect Indentation!
                                                         ^
   ```
@@ -119,7 +119,12 @@ The following section lists news about the [modules](https://www.libelektra.org/
   [“The Definitive ANTLR 4 Reference”](https://pragprog.com/book/tpantlr2/the-definitive-antlr-4-reference) by Terence Parr.
   _(René Schwaiger)_
 
-- Yan LR’s lexer now handles comment at the end of a YAML document correctly. _(René Schwaiger)_
+- Yan LR’s lexer now
+
+  - handles comment at the end of a YAML document correctly,
+  - stores a more human readable description in tokens (e.g. `end of map` instead of `MAP END`)
+
+  . _(René Schwaiger)_
 
 ### path
 
@@ -340,8 +345,16 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Docker
 
-- We added [`shfmt`](https://github.com/mvdan/sh) to the
-  [Dockerfile for Debian sid](https://master.libelektra.org/scripts/docker/debian/sid/Dockerfile). _(René Schwaiger)_
+- We added
+
+  - [ANTLR](https://packages.debian.org/sid/antlr4),
+  - [ANTLR’s C++ runtime](https://packages.debian.org/sid/libantlr4-runtime-dev),
+  - [Ninja](https://packages.debian.org/sid/ninja-build), and
+  - [`shfmt`](https://github.com/mvdan/sh),
+    to the [Dockerfile for Debian sid](https://master.libelektra.org/scripts/docker/debian/sid/Dockerfile)
+
+  . _(René Schwaiger)_
+
 - <<TODO>>
 - <<TODO>>
 

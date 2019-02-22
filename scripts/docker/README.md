@@ -79,6 +79,16 @@ the Docker images as well as the actual instructions executed by the
 build server in our
 [Jenkinsfiles](https://master.libelektra.org/scripts/jenkins).
 
+### ASAN
+
+If you enable the leak sanitizer using the option `ENABLE_ASAN` the build [might fail](https://github.com/google/sanitizers/issues/764) printing the following error message:
+
+> LeakSanitizer has encountered a fatal error.
+> …
+> HINT: LeakSanitizer does not work under ptrace
+
+. To fix that problem please add the option `--cap-add SYS_PTRACE` to the `docker run` command.
+
 ## Differences to the build server
 
 The build server does not create a bash shell inside the containers.
