@@ -37,10 +37,10 @@ From now on I will take the following error message as example:
 9. Configfile: ...../<file>.25676:1549919217.284067.tmp
 ```
 
+The lines are numbered and will be referred in the following sections.
+
 Generally I would suggest that this error message is way too much information for a user. We can agree on the fact 
 that #4 is by far the most relevant line.
-
-The lines are numbered and will be referred in the following sections.
 
 ### Line 9: Configfile
 
@@ -66,8 +66,8 @@ Reasons against it:
 * I highly doubt that most common users will require this information (unnecessary)
 
 Suggestions:
-//TODO: Validate this
-Remove it completely. If users want to know the location they should use `kdb file` on the concrete setting.
+Remove it for standard error messages. Maybe a `kdb set -v` could include such information for developers, users.
+Alternatively there could be a command for users to see the mountpoint, eg. `kdb get-mountpoint <key>`
 
 ### Line 7: At
 
@@ -142,7 +142,7 @@ if it is on a NFS and it is offline, *temporary* would be correct. If the file h
 appropriate since the admin has to fix it. If the file is currently in use and semlocked by the system, *conflict* would be appropriate.
 * core kdb error/plugin error:
 Not much value for the user
-* differentiation to core features of elektra: specification/ Notification/ KDB Core/ Bindings/ ...
+* differentiation to core features of elektra: Specification/ Notification/ KDB Core/ Bindings/ ...
 An error is again difficult to put into one bucket since some errors might be affected by multiple features (could not stat file for example
 which is used by multiple features).
 This approach would lead to the same problem as we have now (many errors, difficult to maintain)
@@ -234,7 +234,17 @@ No consolidation, splitting, etc. of categories needed in future versions
 No need for splitting the `specification` file because it is too large
 
 Drawbacks:
-* Possible small information loss by removing the description and `At`:
-`At` could be kept for devs by extending the `kdb set` command with an option `-v`.
+* Possible small information loss by removing the description, `At` and `mountpoint`:
+`At` could be kept for devs by extending the `kdb set` command with an option `-v`, `--debug`, etc.
+The same applies for the `mountpoint`.
 Description comes with too many drawbacks to be kept
 * Possible misleading the user with the `Solution` line
+
+The benefits do outweigh the drawbacks. I would suggest an overloaded method like the following:
+```
+// If a solution can be applied
+elektraError(Key parentKey, const * char message, const * char solution)
+
+// If it is not advisable to have a solution
+elektraError(Key parentKey, const * char message)
+```
