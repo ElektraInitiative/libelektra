@@ -8,6 +8,7 @@ The purpose of this file is solely to better comment on in a Pull Request and ga
 2. Many duplicate or redundant errors
 3. Description/ Reason are very similar
 4. Potential file splitting (1327 LOC)
+5. Verbose error message
 
 ## Some facts
 
@@ -33,36 +34,36 @@ From now on I will take the following error message as example:
 6. Module: enum
 7. At: ....../src/plugins/enum/enum.c:218
 8. Mountpoint: <parentKey>
-9. Configfile: ...../<ile>.25676:1549919217.284067.tmp
+9. Configfile: ...../<file>.25676:1549919217.284067.tmp
 ```
 
-Generally I would suggest that this error message is way too much information for a user. We can agree on that #4 is by far
-the most relevant line.
+Generally I would suggest that this error message is way too much information for a user. We can agree on the fact 
+that #4 is by far the most relevant line.
 
 The lines are numbered and will be referred in the following sections.
 
 ### Line 9: Configfile
 
 Reasons to keep it:
-* If users want to see where the concrete file is located (basically if it is the file itself or some overwritten file)
+* If users want to see where the concrete file is located 
 
 Reasons against it:
 * Very verbose line
-* I highly doubt that most common users will require this information (unneccesary)
+* I highly doubt that most common users will require this information (unnecessary)
 
 Suggestions:
-Remove it completely. If users want to know the location they should use `kdb file` on the concrete setting.
+Remove it completely. If users want to know the location they still can use `kdb file` on the concrete setting.
 
 ### Line 8: Mountpoint
 
 Reasons to keep it:
 * If users want to see the parent key of their configuration
-* If I remember correctly: all error information is saved to this key, so users could investigate further errorinformation which is saved
-to this key (in the metadata)
+* If I remember correctly: all error information is saved to this key, so users could investigate further error
+information which is saved to this key (in the metadata)
 
 Reasons against it:
 * Another extra line in the error message.
-* I highly doubt that most common users will require this information (unneccesary)
+* I highly doubt that most common users will require this information (unnecessary)
 
 Suggestions:
 //TODO: Validate this
@@ -75,10 +76,10 @@ Reasons to keep it:
 
 Reasons against it:
 * Another extra line in the error message.
-* I highly doubt that most common users will require this information (unneccesary)
+* I highly doubt that most common users will require this information (unnecessary)
 
 Suggestions:
-Remove it for standard error messages. Maybe a `kdb set --verbose` could include such information for developers, users.
+Remove it for standard error messages. Maybe a `kdb set -v` could include such information for developers, users.
 Alternatively, another possibility would be to have a command which reveals the last error message with more detail: 
 `kdb last-message`.
 
@@ -92,8 +93,7 @@ Reasons against it:
 * Another extra line in the error message.
 
 Suggestions:
-The need for plugin distinguishment in the error message should not be that high in my opinion. Maybe it would make sense to include it in line #1:
-"The command kdb set failed while accessing the key database *(plugin: <plugin>)* with the info:"
+The need for plugin distinguishment in the error message should not be that high in my opinion. Maybe it would make sense to include it in line #1.
 
 ### Line 5: Ingroup
 
@@ -101,7 +101,7 @@ Reasons to keep it:
 * Another higher layer of distinguishment for the error location
 
 Reasons against it:
-* Extra line & unneccessary
+* Extra line & unnecessary
 
 Suggestion:
 Having both ingroup and module is too much information. Also again in most cases users should get the relevant information out of the reason line.
@@ -110,9 +110,9 @@ As of now there are 6 different "ingroup"s. I would suggest to remove it.
 ### Line 4: Reason
 
 The most relevant line out of all, no question to keep it or not.
-Still I would remove the prefix "Reason: " because of the reduced error message length in the new format. It makes it clear
+Still I would remove the prefix `Reason: ` because of the reduced error message length in the new format. It makes it clear
 that this line is the reason. Probably we could substitute it with the plugin which called the error: 
-"<plugin>: Could not set ......"
+`<plugin>: Could not set ...`
 
 ### Line 3: Description
 
@@ -132,21 +132,22 @@ Suggestion:
 This line is by far the most discussable one. I thought about categorizations such as
 * Permission/ Resource/ Parse/ External(C++, Ruby, Java)/.../ Miscellaneous:
 Most errors are resource errors (could not stat, no connection, could not close/open/find etc.) This again would not give users
-a particularly useful error indication since he/she has to lookup in the reason anyway. Even subdividing the Resource block
+a particularly useful error indication since he/she has to lookup in the reason anyway. Even subdividing the `Resource` category
 would lead to the same problem. No matter how I look at it, the user
-will have to read the concrete reason in most cases which makes the Description line not that valuable.
+will have to read the concrete reason in most cases which makes the Description line not that valuable any longer.
 * temporary/permanent/conflict/validation:
 This seems to be a better approach because it includes a possible solution for the user. How to categorize certain errors though
-seems impossible because there can be multiple reasons which can be categorized in more than one. Take "could not open file" as an example:
-if it is on an NFS and it is offline, "temporary" would be correct. If the file has too restrictive permissions, "permanent" would be more
-appropriate since the admin has to fix it. If the file is currently in use and semlocked by the system, "conflict"  would be appropriate.
+seems impossible because there can be multiple reasons where to categorize an error. Take `Could not open file` as an example:
+if it is on a NFS and it is offline, *temporary* would be correct. If the file has too restrictive permissions, *permanent* would be more
+appropriate since the admin has to fix it. If the file is currently in use and semlocked by the system, *conflict* would be appropriate.
 * core kdb error/plugin error:
 Not much value for the user
 * differentiation to core features of elektra: specification/ Notification/ KDB Core/ Bindings/ ...
-This is again difficult to put into one bucket since some errors might be affected by multiple features (could not stat file for example).
-Would lead to the same problem what is now most likely (many errors, difficult to maintain)
+An error is again difficult to put into one bucket since some errors might be affected by multiple features (could not stat file for example
+which is used by multiple features).
+This approach would lead to the same problem as we have now (many errors, difficult to maintain)
 
-Personally I do not see how the benefit of a categorization outweights the drawbacks because in by far the most cases users will have to look
+Personally I do not see how the benefit of a categorization outweighs the drawbacks because in by far the most cases users will have to look
 into the reason in more detail anyway. It should be enough for users to deal with the error just by the reason.
 
 As a result I would suggest to remove the description line.
@@ -156,7 +157,7 @@ As a result I would suggest to remove the description line.
 Reasons to keep it:
 * Probably could be used to categorize errors such it is done in the http protocol
 * Good to use for shellrecorder scripts to test for errors
-* Possibility for automation (eg. if a certain errornumber occured you could automatically trigger certain actions)
+* Possibility for automation (eg. if a certain error number occurred you could automatically trigger certain actions)
 
 Reasons against it:
 * Extra line
@@ -164,7 +165,7 @@ Reasons against it:
 Suggestion:
 Giving an error a number like it is done in C programs as return code seems to be outdated for elektra, especially when
 the reason is given anyway. Personally I never read the error number because it has not much value.
-The "reasons to keep" will also be very limited when the number of errors are significantly reduced.
+The *reasons to keep* will also be very limited when the number of errors are significantly reduced.
 I would also suggest to remove it.
 
 ### Line 1: General sentence
@@ -175,7 +176,7 @@ I would change it like this:
 "Module <plugin> issued a <error/warning/fatal> while accessing the key database with the info:"
 where plugin should have a different color (blue?) and warning/error/fatal (yellow, red, dark red) too depending on the severity.
 
-With this line 5/6 can still be present but in a much more efficient and succint way.
+With this line 5/6 can still be present but in a much more efficient and succinct way.
 
 ### Error/Warning/Fatal etc. splitting in the specification file
 
@@ -193,11 +194,11 @@ Some errors can also guide users to fix the error by suggesting a possible solut
 Developers though have to be very careful when suggesting solutions because it can easily mislead users. For many cases though, 
 this can help users a lot.
 I would suggest an optional extra line (which is only printed if the developer adds a metafield `solution` to the parentkey):
-"Possible Solution: ......"
+`Possible Solution: ...`
 
 # Conclusion
 
-With the new concept we would not require a `specification` file at all which helps developers immensly but also keeps the
+With the new concept we would not require a `specification` file at all which helps developers immensely but also keeps the
 most relevant information for the users. An error like this:
 
 ```
@@ -209,7 +210,7 @@ most relevant information for the users. An error like this:
 6. Module: enum
 7. At: ....../src/plugins/enum/enum.c:218
 8. Mountpoint: <parentKey>
-9. Configfile: ...../<ile>.25676:1549919217.284067.tmp
+9. Configfile: ...../<file>.25676:1549919217.284067.tmp
 ```
 
 would be changed to this:
