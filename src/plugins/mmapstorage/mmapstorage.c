@@ -534,6 +534,7 @@ static void writeMetaKeys (MmapAddr * mmapAddr, DynArray * dynArray)
 			memcpy (mmapAddr->dataPtr, curMeta->key, keyNameSize);
 			mmapMetaKey->key = mmapAddr->dataPtr - mmapAddr->mmapAddrInt;
 			mmapAddr->dataPtr += keyNameSize;
+			mmapMetaKey->flags |= KEY_FLAG_MMAP_KEY;
 		}
 
 		// move Key value
@@ -542,10 +543,11 @@ static void writeMetaKeys (MmapAddr * mmapAddr, DynArray * dynArray)
 			memcpy (mmapAddr->dataPtr, curMeta->data.v, curMeta->dataSize);
 			mmapMetaKey->data.v = mmapAddr->dataPtr - mmapAddr->mmapAddrInt;
 			mmapAddr->dataPtr += curMeta->dataSize;
+			mmapMetaKey->flags |= KEY_FLAG_MMAP_DATA;
 		}
 
 		// move Key itself
-		mmapMetaKey->flags |= KEY_FLAG_MMAP_STRUCT | KEY_FLAG_MMAP_KEY | KEY_FLAG_MMAP_DATA;
+		mmapMetaKey->flags |= KEY_FLAG_MMAP_STRUCT;
 		mmapMetaKey->meta = 0;
 		mmapMetaKey->ksReference = 0;
 
@@ -636,6 +638,7 @@ static void writeKeys (KeySet * keySet, MmapAddr * mmapAddr, DynArray * dynArray
 			memcpy (mmapAddr->dataPtr, cur->key, keyNameSize);
 			mmapKey->key = mmapAddr->dataPtr - mmapAddr->mmapAddrInt;
 			mmapAddr->dataPtr += keyNameSize;
+			mmapKey->flags |= KEY_FLAG_MMAP_KEY;
 		}
 
 		// move Key value
@@ -644,6 +647,7 @@ static void writeKeys (KeySet * keySet, MmapAddr * mmapAddr, DynArray * dynArray
 			memcpy (mmapAddr->dataPtr, cur->data.v, cur->dataSize);
 			mmapKey->data.v = mmapAddr->dataPtr - mmapAddr->mmapAddrInt;
 			mmapAddr->dataPtr += cur->dataSize;
+			mmapKey->flags |= KEY_FLAG_MMAP_DATA;
 		}
 		else
 		{
@@ -655,7 +659,7 @@ static void writeKeys (KeySet * keySet, MmapAddr * mmapAddr, DynArray * dynArray
 		mmapKey->meta = writeMetaKeySet (cur, mmapAddr, dynArray);
 
 		// move Key itself
-		mmapKey->flags |= KEY_FLAG_MMAP_STRUCT | KEY_FLAG_MMAP_KEY | KEY_FLAG_MMAP_DATA;
+		mmapKey->flags |= KEY_FLAG_MMAP_STRUCT;
 		mmapKey->ksReference = 1;
 
 		// write the relative Key pointer into the KeySet array
