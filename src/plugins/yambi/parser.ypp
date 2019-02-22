@@ -40,19 +40,19 @@ class Lexer;
 %token
   END  0  "end of file"
 ;
-%token <std::string> STREAM_START
-%token <std::string> STREAM_END
-%token <std::string> COMMENT
-%token <std::string> PLAIN_SCALAR
-%token <std::string> SINGLE_QUOTED_SCALAR
-%token <std::string> DOUBLE_QUOTED_SCALAR
-%token <std::string> MAP_START
-%token <std::string> MAP_END
-%token <std::string> KEY
-%token <std::string> VALUE
-%token <std::string> SEQUENCE_START
-%token <std::string> SEQUENCE_END
-%token <std::string> ELEMENT
+%token <std::string> STREAM_START         "start of document"
+%token <std::string> STREAM_END           "end of document"
+%token <std::string> COMMENT              "comment"
+%token <std::string> PLAIN_SCALAR         "plain scalar"
+%token <std::string> SINGLE_QUOTED_SCALAR "single quoted scalar"
+%token <std::string> DOUBLE_QUOTED_SCALAR "double quoted scalar"
+%token <std::string> MAP_START            "start of map"
+%token <std::string> MAP_END              "end of map"
+%token <std::string> KEY                  "key"
+%token <std::string> VALUE                "value"
+%token <std::string> SEQUENCE_START       "start of sequence"
+%token <std::string> SEQUENCE_END         "end of sequence"
+%token <std::string> ELEMENT              "element"
 
 %type <std::string> scalar
 
