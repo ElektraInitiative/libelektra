@@ -22,11 +22,12 @@ function (check_dependencies)
 		return ()
 	endif (NOT HAVE_CODECVT)
 
-	if (APPLE)
-		# Add path to Homebrew version of Bison
+	# Add path to Homebrew version of Bison, if it exists.
+	set (USE_HOMEBREW_BISON ${APPLE} AND EXISTS /usr/local/opt/bison)
+	if (USE_HOMEBREW_BISON)
 		list (APPEND CMAKE_PREFIX_PATH
 			     "/usr/local/opt/bison")
-	endif (APPLE)
+	endif (USE_HOMEBREW_BISON)
 	find_package (BISON 3 QUIET)
 
 	if (NOT BISON_FOUND)
