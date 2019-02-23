@@ -175,7 +175,7 @@ int init (int argc, char ** argv);
                                                                                                                                            \
 			yield_error (errorMsg);                                                                                            \
 		}                                                                                                                          \
-		else                                                                                                                       \
+		else if (bmmk1size != 0)                                                                                                   \
 		{                                                                                                                          \
 			void * bmmk1buf = elektraMalloc (bmmk1size);                                                                       \
 			void * bmmk2buf = elektraMalloc (bmmk2size);                                                                       \
