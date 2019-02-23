@@ -23,7 +23,7 @@ typedef Parser::token token;
 // -- Macros -------------------------------------------------------------------
 
 #define ELEKTRA_SWITCH_TOKEN(TOK)                                                                                                          \
-	case token::TOKEN_##TOK:                                                                                                           \
+	case token::TOK:                                                                                                                   \
 		return Parser::make_##TOK (text, placement)
 
 // -- Class --------------------------------------------------------------------

@@ -13,7 +13,6 @@
 %defines
 %define @PARSER_NAME_DIRECTIVE@ { Parser }
 %define api.token.constructor
-%define api.token.prefix {TOKEN_}
 %define api.value.type variant
 %define parse.assert
 %define parse.error verbose
