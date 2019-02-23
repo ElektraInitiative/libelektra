@@ -13,6 +13,8 @@
 #include <fstream>
 #include <stdexcept>
 
+#include <kdbconfig.h>
+
 #include "driver.hpp"
 
 using std::ifstream;
@@ -27,7 +29,11 @@ using yy::Parser;
 
 // -- Macros -------------------------------------------------------------------
 
+#if DEBUG
+#define DEBUG_LEVEL 1
+#else
 #define DEBUG_LEVEL 0
+#endif
 
 // -- Functions ----------------------------------------------------------------
 
