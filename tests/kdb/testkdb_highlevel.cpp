@@ -12,7 +12,6 @@
 
 #include <gtest/gtest-elektra.h>
 #include <kdbhelper.h>
-#include <kdbprivate.h>
 
 #define EXPECT_KEYVALUE(Key, Value) EXPECT_PRED2 (keyHasValue, Key, Value)
 #define EXPECT_KEYMETA(Key, Meta, Value) EXPECT_PRED3 (keyHasMetaValue, Key, Meta, Value)
@@ -27,6 +26,7 @@ static inline bool keyHasMetaValue (const kdb::Key & key, const std::string & me
 	return key && key.getMeta<std::string> (metaName) == value;
 }
 
+/* TODO: re-add once we have a stable public error API
 constexpr const char * severityString (ElektraErrorSeverity severity)
 {
 	return severity == ELEKTRA_ERROR_SEVERITY_ERROR ? "ERROR" : (severity == ELEKTRA_ERROR_SEVERITY_WARNING ? "WARNING" : "FATAL");
@@ -82,6 +82,7 @@ static std::ostream & operator<< (std::ostream & os, ElektraError ** error)
 	}
 	return os;
 }
+ */
 
 class Highlevel : public ::testing::Test
 {
@@ -122,8 +123,8 @@ protected:
 	static void fatalErrorHandler (ElektraError * error)
 	{
 		std::stringstream msg;
-		msg << "fatal error " << elektraErrorCode (error) << " in test "
-		    << ::testing::UnitTest::GetInstance ()->current_test_info ()->name () << ": " << &error << std::endl;
+		msg << "fatal error in test " << ::testing::UnitTest::GetInstance ()->current_test_info ()->name () << ": "
+		    << elektraErrorDescription (error) << std::endl;
 
 		throw std::runtime_error (msg.str ());
 	}
@@ -1007,27 +1008,8 @@ TEST_F (Highlevel, EnforceMetadata)
 
 	EXPECT_NE (elektraFindKey (elektra, "testkey", "long"), nullptr);
 
-	try
-	{
-		elektraFindKey (elektra, "testkey", "string");
-		ADD_FAILURE () << "expected std::runtime_error to be thrown";
-	}
-	catch (const std::runtime_error & err)
-	{
-		std::stringstream msg;
-		msg << "fatal error " << ELEKTRA_ERROR_CODE_WRONG_TYPE;
-
-		std::string errMsg = err.what ();
-
-		auto expected = msg.str ();
-		auto actual = errMsg.substr (0, expected.length ());
-
-		EXPECT_EQ (expected, actual);
-	}
-	catch (...)
-	{
-		ADD_FAILURE () << "expected std::runtime_error to be thrown";
-	}
+	EXPECT_THROW (elektraFindKey (elektra, "testkey", "string"), std::runtime_error);
+	// TODO: check error code once error API is public and stable
 
 	EXPECT_NE (elektraFindKey (elektra, "testkey", nullptr), nullptr);
 }

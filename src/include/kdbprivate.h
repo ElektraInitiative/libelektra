@@ -666,6 +666,7 @@ void elektraSetArrayLookupKey (Elektra * elektra, const char * name, kdb_long_lo
 ElektraError * elektraErrorCreate (ElektraErrorCode code, const char * description, ElektraErrorSeverity severity);
 
 // error handling unstable/private for now
+ElektraErrorCode elektraErrorCode (const ElektraError * error);
 ElektraErrorSeverity elektraErrorSeverity (const ElektraError * error);
 
 int elektraKDBErrorCode (const ElektraError * error);

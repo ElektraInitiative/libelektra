@@ -22,7 +22,6 @@ typedef struct _ElektraError ElektraError;
 
 typedef void (*ElektraErrorHandler) (ElektraError * error);
 
-ElektraErrorCode elektraErrorCode (const ElektraError * error);
 const char * elektraErrorDescription (const ElektraError * error);
 
 void elektraErrorReset (ElektraError ** error);
