@@ -82,18 +82,18 @@ comments: COMMENT
         | comments COMMENT
         ;
 
-value : scalar { driver.exitValue($1); } ;
-scalar : PLAIN_SCALAR { $$ = $1; }
-       | SINGLE_QUOTED_SCALAR { $$ = $1; }
-       | DOUBLE_QUOTED_SCALAR { $$ = $1; }
+value : scalar { driver.exitValue($scalar); } ;
+scalar : PLAIN_SCALAR { $$ = $PLAIN_SCALAR; }
+       | SINGLE_QUOTED_SCALAR { $$ = $SINGLE_QUOTED_SCALAR; }
+       | DOUBLE_QUOTED_SCALAR { $$ = $DOUBLE_QUOTED_SCALAR; }
        ;
 
 map : MAP_START pairs MAP_END ;
 pairs : pair
       | pairs pair
       ;
-pair : KEY key VALUE child_comments_empty { driver.exitPair($4); };
-key : scalar { driver.exitKey($1); } ;
+pair : KEY key VALUE child_comments_empty { driver.exitPair($child_comments_empty); };
+key : scalar { driver.exitKey($scalar); } ;
 
 sequence : { driver.enterSequence(); }
            SEQUENCE_START elements SEQUENCE_END
