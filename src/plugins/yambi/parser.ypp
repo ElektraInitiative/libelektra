@@ -6,40 +6,43 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
+/* -- Declarations ---------------------------------------------------------------------------------------------------------------------- */
+
 %skeleton "lalr1.cc"
+
 %defines
 %define @PARSER_NAME_DIRECTIVE@ { Parser }
 %define api.token.constructor
+%define api.token.prefix {TOKEN_}
 %define api.value.type variant
 %define parse.assert
-%code requires
-{
+%define parse.error verbose
+%define parse.trace
+
+// The parsing context.
+%parse-param { Lexer& lexer }
+%parse-param { Driver& driver }
+
+%locations
+%initial-action {
+  // Initialize the initial location.
+  @$.begin.filename = @$.end.filename = &driver.filename;
+};
+
+%code requires {
 #include <string>
 class Driver;
 class Lexer;
 }
-// The parsing context.
-%parse-param { Lexer& lexer }
-%parse-param { Driver& driver }
-%locations
-%initial-action
-{
-  // Initialize the initial location.
-  @$.begin.filename = @$.end.filename = &driver.filename;
-};
-%define parse.trace
-%define parse.error verbose
-%code
-{
+
+%code {
 # include "driver.hpp"
 
 #undef yylex
 #define yylex lexer.nextToken
 }
-%define api.token.prefix {TOKEN_}
-%token
-  END  0  "end of file"
-;
+
+%token END           0                    "end of file"
 %token <std::string> STREAM_START         "start of document"
 %token <std::string> STREAM_END           "end of document"
 %token <std::string> COMMENT              "comment"
@@ -60,6 +63,8 @@ class Lexer;
 %type <bool> child_comments_empty
 
 %%
+
+/* -- Grammar --------------------------------------------------------------------------------------------------------------------------- */
 
 yaml : STREAM_START child_comments_empty STREAM_END ;
 child_comments_empty : child    { $$ = true; }
@@ -100,6 +105,8 @@ elements : element
 element : { driver.enterElement(); } ELEMENT child { driver.exitElement(); };
 
 %%
+
+/* -- Epilogue -------------------------------------------------------------------------------------------------------------------------- */
 
 void yy::Parser::error (const location_type& location,
                         const std::string& message)
