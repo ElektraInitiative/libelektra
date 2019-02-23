@@ -101,7 +101,7 @@ This `open` method supports also a block:
 Kdb.open do |db|
 	...
 end
-# db.close is called implecitly
+# db.close is called implicitly
 ```
 
 Note: after the block was executed, `db.close` is called implicitly, Thus you
