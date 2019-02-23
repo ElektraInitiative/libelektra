@@ -126,6 +126,8 @@ protected:
 		msg << "fatal error in test " << ::testing::UnitTest::GetInstance ()->current_test_info ()->name () << ": "
 		    << elektraErrorDescription (error) << std::endl;
 
+		elektraErrorReset (&error);
+
 		throw std::runtime_error (msg.str ());
 	}
 
