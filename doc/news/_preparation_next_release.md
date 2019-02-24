@@ -294,6 +294,8 @@ you up to date with the multi-language support provided by Elektra.
 - We added a test that invokes the script [`fix-spelling`](http://master.libelektra.org/scripts/fix-spelling) to check the documentation
   for common spelling mistakes. _(René Schwaiger)_
 - We added a test that checks the formatting of Markdown files with [`prettier`](https://prettier.io). _(René Schwaiger)_
+- The test [`testscr_check_formatting`](https://master.libelektra.org/tests/shell/check_formatting.sh) now prints instructions that show
+  you how to fix formatting problems. _(René Schwaiger)_
 
 [shell recorder]: https://master.libelektra.org/tests/shell/shell_recorder
 [markdown shell recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
