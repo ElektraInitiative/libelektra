@@ -16,10 +16,20 @@ if ! git diff --quiet; then
 	exit 0
 fi
 
-scripts/reformat-source || echo 'Warning: clang-format not available, skipping reformat-source' &
-scripts/reformat-cmake || echo 'Warning: Unable to reformat CMake code.' &
-scripts/reformat-markdown || echo 'Warning: Unable to reformat Markdown code.' &
-scripts/reformat-shfmt || echo 'Warning: Unable to reformat Shell code.' &
+reformat() {
+	reformat_command=$1
+	reformat_command_output="$(scripts/$reformat_command 2>&1)" || {
+		printf >&2 -- '————————————————————————————————————————————————————————————\n'
+		printf >&2 -- 'Warning — Reformatting command `%s` failed\n' "$reformat_command"
+		printf >&2 -- '\n%s\n' "$reformat_command_output"
+		printf >&2 -- '————————————————————————————————————————————————————————————\n\n'
+	}
+}
+
+reformat reformat-source &
+reformat reformat-cmake &
+reformat reformat-markdown &
+reformat reformat-shfmt &
 wait
 
 git diff --exit-code
