@@ -20,7 +20,7 @@
 #include "lexer.hpp"
 #include "parser.hpp"
 
-typedef yy::Parser::location_type location_type;
+typedef yambi::Parser::location_type location_type;
 
 // -- Class --------------------------------------------------------------------
 

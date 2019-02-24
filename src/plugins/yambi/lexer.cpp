@@ -22,7 +22,7 @@ using std::runtime_error;
 using std::string;
 using std::unique_ptr;
 
-using yy::Parser;
+using yambi::Parser;
 using location_type = Parser::location_type;
 using token = Parser::token;
 

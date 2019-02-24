@@ -25,7 +25,7 @@ using std::to_string;
 using kdb::Key;
 using kdb::KeySet;
 
-using yy::Parser;
+using yambi::Parser;
 
 // -- Macros -------------------------------------------------------------------
 

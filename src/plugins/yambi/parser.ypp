@@ -13,6 +13,7 @@
 %skeleton "lalr1.cc"                        /* Generate an LALR(1) parser */
 
 %define @PARSER_NAME_DIRECTIVE@ { Parser }  /* Call the generator parser class `Parser` */
+%define api.prefix {yambi}                  /* Use namespace `yambi` for parser code */
 %define api.token.constructor               /* Store type, value and location data in symbol objects */
 %define api.value.type variant              /* Allow grammar actions to return different types of return values */
 %define parse.assert                        /* Add runtime assertions to make sure symbols are constructed and destructed properly */
@@ -124,8 +125,8 @@ element : { driver.enterElement(); } ELEMENT child { driver.exitElement(); };
  * @param location This value specifies the location of the erroneous input.
  * @param message This value stores the error message emitted by the Bison parser.
  */
-void yy::Parser::error (const location_type& location,
-                        const std::string& message)
+void yambi::Parser::error (const location_type& location,
+                           const std::string& message)
 {
   driver.error (location, message);
 }
