@@ -32,9 +32,8 @@ reformat reformat-markdown &
 reformat reformat-shfmt &
 wait
 
-git diff --quiet || {
-	error_message="$(
-		cat << 'EOF'
+error_message="$(
+	cat << 'EOF'
 The reformatting check detected code that **does not** fit the guidelines given in `doc/CODING.md`.
 If you see this message on one of the build servers, you can either install one or multiple of the following tools:
 
@@ -62,9 +61,12 @@ to fix the formatting problems. For that please
 
 .
 EOF
-	)"
-	false # The reformatting check failed!
-	succeed_if "$error_message"
+)"
+
+git diff --quiet
+succeed_if "$error_message"
+
+git diff --quiet || {
 	printf '\n\n————————————————————————————————————————————————————————————\n\n'
 	git diff -p
 	printf '\n\n————————————————————————————————————————————————————————————\n\n'
