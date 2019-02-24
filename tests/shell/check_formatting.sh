@@ -58,11 +58,9 @@ to fix the formatting problems. For that please
 
 . After that use the following command to apply the changes:
 
-    cut -c"$(echo '123: ' | wc -c | sed -E 's/[ ]*//g')"- format.patch | patch -p1
+    cut -c"$(head -n1 format.patch | sed -E 's/(^[0-9]+:).*/\1_/' | wc -c | sed -E 's/[ ]*//g')"- format.patch | patch -p1
 
-. Please note that you have to change the text `123: ` to the prefix of this error message, if the prefix of the
-error message is **not** 3 digits long. For example, for the prefix `158: ` you do not need to change anything,
-while for `42: ` or `1337: ` you have to replace the text `123: ` with `42: ` or `1337: ` respectively.
+.
 EOF
 	)"
 	false # The reformatting check failed!
