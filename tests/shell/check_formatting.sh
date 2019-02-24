@@ -5,14 +5,14 @@ echo ELEKTRA CHECK FORMATTING
 echo
 
 command -v git > /dev/null 2>&1 || {
-	echo "git command needed for this test, aborting" >&2
+	printf >&2 'This test requires the `git` command, aborting test!\n\n'
 	exit 0
 }
 
 cd "@CMAKE_SOURCE_DIR@"
 
-if ! git diff --exit-code; then
-	echo "Seems like source is already modified, aborting test" >&2
+if ! git diff --quiet; then
+	printf >&2 'Source is already modified, aborting test!\n\n'
 	exit 0
 fi
 
