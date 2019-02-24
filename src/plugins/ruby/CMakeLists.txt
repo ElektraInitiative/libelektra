@@ -3,6 +3,15 @@ include (LibAddBinding)
 if (DEPENDENCY_PHASE)
 	if (APPLE)
 		set (CMAKE_FIND_FRAMEWORK "LAST")
+
+		# Prefer Ruby versions installed via Homebrew
+		set (RUBY_DIRECTORIES "/usr/local/opt/ruby@2.5" "/usr/local/opt/ruby")
+		foreach (directory ${RUBY_DIRECTORIES})
+			if (EXISTS ${directory})
+				list (APPEND CMAKE_PREFIX_PATH
+					     ${directory})
+			endif (EXISTS ${directory})
+		endforeach (directory ${RUBY_DIRECTORIES})
 	endif ()
 	find_package (Ruby QUIET)
 	find_swig ()
