@@ -9,10 +9,14 @@
 // clang-format off
 {{=/*% %*/=}}
 
-#include <elektra.h>
-
 #ifndef /*%& include_guard %*/
 #define /*%& include_guard %*/
+
+#include <elektra.h>
+
+/*%# more_headers %*/
+#include "/*%& . %*/"
+/*%/ more_headers %*/
 
 /*%# enums %*/
 /*%# generate_typedef? %*/
@@ -23,6 +27,12 @@ typedef enum
 	/*%/ values %*/
 } /*%& native_type %*/;
 /*%/ generate_typedef? %*/
+/*%/ enums %*/
+
+// enum conversion functions
+/*%# enums %*/
+int /*%& from_key %*/ (const Key * key, /*%& native_type %*/ * variable);
+char * /*%& to_string %*/ (/*%& native_type %*/ value);
 /*%/ enums %*/
 
 /*%# enums %*/

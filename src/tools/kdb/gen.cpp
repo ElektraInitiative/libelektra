@@ -17,6 +17,8 @@
 using namespace kdb;
 using namespace std;
 
+// TODO: once kdb uses elektraGetOpts, provide option to load spec from file instead of parentKey
+
 int GenCommand::execute (Cmdline const & cl)
 {
 	if (cl.arguments.size () < 3)

@@ -17,11 +17,17 @@ class ElektraGenTemplate : public GenTemplate
 	{
 		static const char * InitFunctionName;
 		static const char * TagPrefix;
+		static const char * OptimizeFromString;
+		static const char * AdditionalHeaders;
 	};
 
 public:
 	ElektraGenTemplate ()
-	: GenTemplate ("elektra", { ".c", ".h" }, { { Params::InitFunctionName, false }, { Params::TagPrefix, false } })
+	: GenTemplate ("elektra", { ".c", ".h" },
+		       { { Params::InitFunctionName, false },
+			 { Params::TagPrefix, false },
+			 { Params::OptimizeFromString, false },
+			 { Params::AdditionalHeaders, false } })
 	{
 	}
 
