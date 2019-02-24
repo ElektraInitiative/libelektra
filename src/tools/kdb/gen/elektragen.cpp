@@ -12,9 +12,13 @@
 
 #include <command.hpp>
 #include <kdbtypes.h>
+#include <modules.hpp>
 
+#include <fstream>
 #include <memory>
 #include <set>
+#include <streambuf>
+#include <string>
 
 const char * ElektraGenTemplate::Params::InitFunctionName = "initFn";
 const char * ElektraGenTemplate::Params::TagPrefix = "tagPrefix";
@@ -182,6 +186,24 @@ static inline bool shouldGenerateTypeDef (const kdb::Key & key)
 	return !key.hasMeta ("gen/enum/create") || key.getMeta<std::string> ("gen/enum/create") == "1";
 }
 
+static std::string keySetToCCode (kdb::KeySet set)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+
+	Modules modules;
+	PluginPtr plugin = modules.load ("c", KeySet ());
+
+	char file[PATH_MAX] = "/tmp/elektra.elektragen.XXXXXX";
+	mkstemp (file);
+
+	Key errorKey ("", KEY_VALUE, file, KEY_END);
+	plugin->set (set, errorKey);
+
+	std::ifstream is (file);
+	return std::string ((std::istreambuf_iterator<char> (is)), std::istreambuf_iterator<char> ());
+}
+
 kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string & outputName, const kdb::KeySet & ks,
 							     const std::string & parentKey) const
 {
@@ -192,6 +214,7 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 	}
 
 	using namespace kainjow::mustache;
+
 
 	auto headerFile = outputName + ".h";
 	auto includeGuard = createIncludeGuard (headerFile);
@@ -213,12 +236,15 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 
 	std::unordered_map<std::string, std::pair<std::string, std::string>> enumTypes;
 
+	kdb::KeySet spec;
+
 	for (const kdb::Key & key : ks)
 	{
 		if (!key.isSpec () || !key.isBelow (specParent) || !hasType (key))
 		{
 			continue;
 		}
+		spec.append (key);
 
 		auto name = key.getName ();
 		name.erase (0, sizeof ("spec") - 1);
@@ -303,6 +329,7 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 	data["keys_count"] = std::to_string (keys.size ());
 	data["keys"] = keys;
 	data["enums"] = enums;
+	data["defaults"] = keySetToCCode (spec);
 
 	return data;
 }

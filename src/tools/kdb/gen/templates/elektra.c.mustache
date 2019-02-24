@@ -32,7 +32,8 @@ ELEKTRA_TAG_DEFINITIONS (/*%& native_type %*/, /*%& type_name %*/, KDB_TYPE_ENUM
  */{{=/*% %*/=}}
 Elektra * /*%& init_function_name %*/ (ElektraError ** error)
 {
-	return elektraOpen ("/*% parent_key %*/", NULL, error);
+	KeySet * defaults = /*%& defaults %*/;
+	return elektraOpen ("/*% parent_key %*/", defaults, error);
 }
 
 // -------------------------
