@@ -8,23 +8,27 @@
 
 /* -- Declarations ---------------------------------------------------------------------------------------------------------------------- */
 
-%skeleton "lalr1.cc"
 
-%defines
-%define @PARSER_NAME_DIRECTIVE@ { Parser }
-%define api.token.constructor
-%define api.value.type variant
-%define parse.assert
-%define parse.error verbose
-%define parse.trace
+%skeleton "lalr1.cc"                        /* Generate an LALR(1) parser */
 
-// The parsing context.
-%parse-param { Lexer& lexer }
-%parse-param { Driver& driver }
+%define @PARSER_NAME_DIRECTIVE@ { Parser }  /* Call the generator parser class `Parser` */
+%define api.token.constructor               /* Store type, value and location data in symbol objects */
+%define api.value.type variant              /* Allow grammar actions to return different types of return values */
+%define parse.assert                        /* Add runtime assertions to make sure symbols are constructed and destructed properly */
+%define parse.error verbose                 /* Use verbose error messages that report error location and expected symbol */
+%define parse.trace                         /* Add code for debugging facilities */
 
-%locations
+%parse-param { Lexer& lexer }               /* Store reference to lexer in parser object */
+%parse-param { Driver& driver }             /* Store reference to driver in parser object */
+
+%locations                                  /* Generate code for location processings */
+
+/* ======== */
+/* = Code = */
+/* ======== */
+
 %initial-action {
-  // Initialize the initial location.
+  // Set filename used by location class
   @$.begin.filename = @$.end.filename = &driver.filename;
 };
 
@@ -41,6 +45,10 @@ class Lexer;
 #define yylex lexer.nextToken
 }
 
+/* ========== */
+/* = Tokens = */
+/* ========== */
+
 %token END           0                    "end of file"
 %token <std::string> STREAM_START         "start of document"
 %token <std::string> STREAM_END           "end of document"
@@ -56,10 +64,12 @@ class Lexer;
 %token <std::string> SEQUENCE_END         "end of sequence"
 %token <std::string> ELEMENT              "element"
 
-%type <std::string> scalar
+/* ================= */
+/* = Non-Terminals = */
+/* ================= */
 
-// This boolean specifies if the rule matched a child or not
-%type <bool> child_comments_empty
+%type <std::string> scalar        /* The parser stores scalar values as a string */
+%type <bool> child_comments_empty /* This boolean specifies if the rule matched a child or not */
 
 %%
 
@@ -107,6 +117,12 @@ element : { driver.enterElement(); } ELEMENT child { driver.exitElement(); };
 
 /* -- Epilogue -------------------------------------------------------------------------------------------------------------------------- */
 
+/**
+ * @brief Bison calls this method in case of an error.
+ *
+ * @param location This value specifies the location of the erroneous input.
+ * @param message This value stores the error message emitted by the Bison parser.
+ */
 void yy::Parser::error (const location_type& location,
                         const std::string& message)
 {
