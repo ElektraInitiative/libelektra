@@ -8,6 +8,7 @@
 
 /* -- Declarations ---------------------------------------------------------------------------------------------------------------------- */
 
+%require "3.0"                              /* Require Bison 3 or later */
 
 %skeleton "lalr1.cc"                        /* Generate an LALR(1) parser */
 
