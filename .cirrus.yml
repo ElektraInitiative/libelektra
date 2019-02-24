@@ -50,7 +50,6 @@ bsd_task:
       fi
 
 mac_task:
-  timeout_in: 90m
   matrix:
 
     - name: 🍎 Clang
