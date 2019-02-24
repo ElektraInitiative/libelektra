@@ -90,7 +90,7 @@ contains() {
 succeed_if() {
 	if [ $? != "0" ]; then
 		nbError=$((nbError + 1))
-		echo error: $*
+		echo "error: $*"
 	fi
 	nbTest=$((nbTest + 1))
 }
