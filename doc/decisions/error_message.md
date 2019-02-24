@@ -5,8 +5,9 @@
 1. Too many errors in the [specification](src\error\specification) (210 errors/warnings)
 2. Many duplicate or redundant errors
 3. Description/ Reason are very similar
-4. Potential file splitting (1327 LOC)
+4. Specification file modularity (1327 LOC)
 5. Verbose error message
+6. strerror sometimes is not part of the reason, sometimes (not) in quotes, sometimes \n is at the end
 
 Furthermore:
 
@@ -52,7 +53,8 @@ Reasons against it:
 * I highly doubt that most common users will require this information (unnecessary)
 
 Suggestions:
-Remove it completely. If users want to know the location they still can use `kdb file` on the concrete setting.
+Remove it for standard error messages. Maybe a `kdb set -v` could include such information for developers, users. 
+If users want to know the location they furthermore can use `kdb file` on the concrete setting.
 
 ### Line 8: Mountpoint
 
@@ -156,11 +158,12 @@ As a result I would suggest to remove the description line.
 
 Reasons to keep it:
 * Probably could be used to categorize errors such it is done in the http protocol
-* Good to use for shellrecorder scripts to test for errors
+* Good to use for shellrecorder scripts/unit tests to test for errors
 * Possibility for automation (eg. if a certain error number occurred you could automatically trigger certain actions)
 
 Reasons against it:
 * Extra line
+* String comparison is needed to check for which error it is (unit tests, shellrecorder). Maybe that is not really a problem.
 
 Suggestion:
 Giving an error a number like it is done in C programs as return code seems to be outdated for elektra, especially when
@@ -220,13 +223,25 @@ most relevant information for the users. An error like this:
 
 would be changed to this:
 ```
-1. Plugin enum issued a error while accessing the key database with the info:
+1. Sorry, plugin enum issued a error while accessing the key database with the info:
 2. Validation of key "<key>" with string "<value>" failed.
 ```
 
 with optionally a third line indicating a solution. Eg. for a permission related error there would be a third line:
 ```
 3. Possible Solution: Retry the command as sudo (sudo !!)
+```
+
+Additionally the `kdb set` command gets another command line option (`-v`, `--verbose`) which prints out more detailed information.
+The `configfile`, `mountpoint` and `At` will be printed out in addition if the parameter is present:
+
+```
+kdb set -v /some/wrong/enum wrrong
+1. Sorry, plugin enum issued a error while accessing the key database with the info:
+2. Validation of key "<key>" with string "<value>" failed.
+3. At: ...../enum.c:332
+4. Mountpoint: /some/wrong
+5. Configfile: ...../<file>.25676:1549919217.284067.tmp
 ```
 
 ## Rationale
@@ -249,10 +264,10 @@ The same applies for the `mountpoint`.
 Description comes with too many drawbacks to be kept
 * Possible misleading the user with the `Solution` line
 
-The benefits do outweigh the drawbacks. I would suggest an overloaded method like the following:
+The benefits do outweigh the drawbacks. I would suggest an extra method like the following:
 ```
 // If a solution can be applied
-elektraError(Key parentKey, const * char message, const * char solution)
+elektraErrorWithSolution(Key parentKey, const * char message, const * char solution)
 
 // If it is not advisable to have a solution
 elektraError(Key parentKey, const * char message)
