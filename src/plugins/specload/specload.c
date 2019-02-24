@@ -17,6 +17,7 @@
 #include <kdbmodule.h>
 #include <kdbproposal.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 
 // keep #ifdef in sync with kdb export
@@ -379,8 +380,7 @@ bool loadSpec (KeySet * returned, const char * app, char * argv[], Key * parentK
 		// child
 		if (dup2 (fd[1], STDOUT_FILENO) == -1)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_SPECLOAD, parentKey, "Could not execute app: %s", strerror (errno));
-			return NULL;
+			exit (EXIT_FAILURE);
 		}
 
 		close (fd[0]);
@@ -388,8 +388,7 @@ bool loadSpec (KeySet * returned, const char * app, char * argv[], Key * parentK
 
 		execv (app, argv);
 
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_SPECLOAD, parentKey, "Could not execute app: %s", strerror (errno));
-		return NULL;
+		exit (EXIT_FAILURE);
 	}
 
 	// parent
