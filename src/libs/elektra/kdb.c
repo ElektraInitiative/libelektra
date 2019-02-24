@@ -1016,7 +1016,7 @@ static int kdbLoadSplitState (Split * split, KeySet * global)
 
 		keyAddBaseName (key, "specsize");
 		Key * found = ksLookup (global, key, KDB_O_NONE);
-		if (split->handles[i]->specsize == 0)
+// 		if (split->handles[i]->specsize == 0)
 		{
 
 			if (found && keyGetValueSize (found) == sizeof (ssize_t))
@@ -1030,7 +1030,7 @@ static int kdbLoadSplitState (Split * split, KeySet * global)
 			}
 		}
 
-		if (split->handles[i]->dirsize == 0)
+// 		if (split->handles[i]->dirsize == 0)
 		{
 			keySetBaseName (key, "dirsize");
 			found = ksLookup (global, key, KDB_O_NONE);
@@ -1045,7 +1045,7 @@ static int kdbLoadSplitState (Split * split, KeySet * global)
 			}
 		}
 
-		if (split->handles[i]->usersize == 0)
+// 		if (split->handles[i]->usersize == 0)
 		{
 			keySetBaseName (key, "usersize");
 			found = ksLookup (global, key, KDB_O_NONE);
@@ -1060,7 +1060,7 @@ static int kdbLoadSplitState (Split * split, KeySet * global)
 			}
 		}
 
-		if (split->handles[i]->systemsize == 0)
+// 		if (split->handles[i]->systemsize == 0)
 		{
 			keySetBaseName (key, "systemsize");
 			found = ksLookup (global, key, KDB_O_NONE);
@@ -1239,19 +1239,19 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 			goto cachefail;
 		}
 
-		if (kdbCacheCheckParent (handle, handle->global, cacheParent) != 0)
-		{
-			// parentKey in cache does not match, needs rebuild
-			ELEKTRA_LOG_DEBUG ("CACHE WRONG PARENTKEY");
-			ksClear (handle->global); // TODO: only cut out our part of global keyset
-			goto cachefail;
-		}
-		if (kdbCheckSplitState (split, handle->global) == -1)
-		{
-			ELEKTRA_LOG_DEBUG ("FAIL, have to discard cache because split state / SIZE FAIL");
-			ksClear (handle->global); // TODO: only cut out our part of global keyset
-			goto cachefail;
-		}
+// 		if (kdbCacheCheckParent (handle, handle->global, cacheParent) != 0)
+// 		{
+// 			// parentKey in cache does not match, needs rebuild
+// 			ELEKTRA_LOG_DEBUG ("CACHE WRONG PARENTKEY");
+// 			ksClear (handle->global); // TODO: only cut out our part of global keyset
+// 			goto cachefail;
+// 		}
+// 		if (kdbCheckSplitState (split, handle->global) == -1)
+// 		{
+// 			ELEKTRA_LOG_DEBUG ("FAIL, have to discard cache because split state / SIZE FAIL");
+// 			ksClear (handle->global); // TODO: only cut out our part of global keyset
+// 			goto cachefail;
+// 		}
 	}
 
 cachefail:
@@ -1261,7 +1261,7 @@ cachefail:
 	case -2: // We have a cache hit
 		ELEKTRA_LOG_DEBUG ("CACHE HIT 123");
 
-		kdbLoadSplitState (split, handle->global);
+		kdbLoadSplitState (split, handle->global); // TODO: check retval, handle errors
 
 		ksRewind (cache);
 		if (ks->size == 0)
@@ -1271,7 +1271,7 @@ cachefail:
 			ks->array = cache->array;
 			ks->size = cache->size;
 			ks->alloc = cache->alloc;
-			set_bit (ks->flags, KS_FLAG_MMAP_ARRAY);
+			set_bit (ks->flags, KS_FLAG_MMAP_ARRAY); // TODO: don't pull in mmap as requirement?
 			elektraFree (cache);
 			cache = 0;
 		}
