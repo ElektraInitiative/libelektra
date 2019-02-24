@@ -11,9 +11,13 @@
 
 #include "/*%& header_file %*/"
 
+/*%# more_headers %*/
+#include "/*%& . %*/"
+/*%/ more_headers %*/
+
 /*%# enums %*/
 // tag definitions for enum of key '/*%& name %*/'
-ELEKTRA_TAG_DEFINITIONS (/*%& native_type %*/, /*%& type_name %*/, KDB_TYPE_ENUM, elektraLongToString, elektraKeyToLong)
+ELEKTRA_TAG_DEFINITIONS (/*%& native_type %*/, /*%& type_name %*/, KDB_TYPE_ENUM, /*%& to_string %*/, /*%& from_key %*/)
 /*%/ enums %*/
 
 /*%={{ }}=%*/
@@ -30,3 +34,45 @@ Elektra * /*%& init_function_name %*/ (ElektraError ** error)
 {
 	return elektraOpen ("/*% parent_key %*/", NULL, error);
 }
+
+// -------------------------
+// Enum conversion functions
+// -------------------------
+
+/*%# enums %*/
+int /*%& from_key %*/ (const Key * key, /*%& native_type %*/ * variable)
+{
+	const char * string;
+	if(!elektraKeyToString (key, &string) || strlen(string) == 0)
+	{
+		elektraFatalError (elektra, elektraErrorConversionFromString (KDB_TYPE_ENUM, keyName(key), keyString (key)));
+		return 0;
+	}
+
+	/*%# switch_from_string? %*/
+	/*%& from_string_code %*/
+	/*%/ switch_from_string? %*/
+	/*%^ switch_from_string? %*/
+	/*%# values %*/
+	if (strcmp (string, "/*% string_value %*/") == 0)
+	{
+		return /*%& name %*/;
+	}
+	/*%/ values %*/
+	/*%/ switch_from_string? %*/
+
+	elektraFatalError (elektra, elektraErrorConversionFromString (KDB_TYPE_ENUM, keyName(key), keyString (key)));
+	return 0;
+}
+
+char * /*%& to_string %*/ (/*%& native_type %*/ value)
+{
+	switch (value)
+	{
+		/*%# values %*/
+		case /*%& name %*/:
+			return "/*% string_value %*/";
+		/*%/ values %*/
+	}
+}
+/*%/ enums %*/
