@@ -1,8 +1,6 @@
-# Error Message Concept
+# Error Message
 
-The purpose of this file is solely to better comment on in a Pull Request and gather feedback.
-
-## Findings/ Motivation
+## Problem
 
 1. Too many errors in the [specification](src\error\specification) (210 errors/warnings)
 2. Many duplicate or redundant errors
@@ -10,7 +8,7 @@ The purpose of this file is solely to better comment on in a Pull Request and ga
 4. Potential file splitting (1327 LOC)
 5. Verbose error message
 
-## Some facts
+Furthermore:
 
 1. Some errors have the same text but are duplicated because one is `warning` and the other one is `error`/`fatal` 
 (#153 + #154, #128 + #129, #120 + #41, #44 + 45 , #66 + #67, etc.)
@@ -21,7 +19,9 @@ The purpose of this file is solely to better comment on in a Pull Request and ga
 4. Some errors are marked as unused (#22 + #48 + #58 + #66 + #67 + #68)
 5. In many cases the `Description` is not very relevant at all (#199, #196, #187, etc.)
 
-## Evaluation
+## Constraints
+
+## Assumptions
 
 From now on I will take the following error message as example:
 
@@ -196,7 +196,12 @@ this can help users a lot.
 I would suggest an optional extra line (which is only printed if the developer adds a metafield `solution` to the parentkey):
 `Possible Solution: ...`
 
-# Conclusion
+## Considered Alternatives
+
+The alternatives are written in the respective subsections in the *Assumptions* area. There are simply too many possible
+subsolutions (eg. which message to keep, wording, etc.) to write them all.
+
+## Decision
 
 With the new concept we would not require a `specification` file at all which helps developers immensely but also keeps the
 most relevant information for the users. An error like this:
@@ -224,6 +229,10 @@ with optionally a third line indicating a solution. Eg. for a permission related
 3. Possible Solution: Retry the command as sudo (sudo !!)
 ```
 
+## Rationale
+
+## Implications
+
 Benefits:
 * Much more relevant information in the error message
 * Ease of development:
@@ -248,3 +257,7 @@ elektraError(Key parentKey, const * char message, const * char solution)
 // If it is not advisable to have a solution
 elektraError(Key parentKey, const * char message)
 ```
+
+## Related decisions
+
+## Notes
