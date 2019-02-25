@@ -101,7 +101,6 @@ Driver::Driver (Key const & parent)
 int Driver::parse (const string & filepath)
 {
 	filename = filepath;
-	numberOfErrors = 0;
 
 	ifstream input{ filename };
 	if (!input.good ()) return -3;
@@ -112,8 +111,14 @@ int Driver::parse (const string & filepath)
 #if DEBUG
 	parser.set_debug_level (1);
 #endif
+	numberOfErrors = 0;
+	auto status = parser.parse ();
+	if (status == 0 && numberOfErrors > 0)
+	{
+		status = 1;
+	}
 
-	return -parser.parse ();
+	return -status;
 }
 
 /**
@@ -148,16 +153,6 @@ void Driver::error (const location_type & location, const string & message)
 string Driver::getErrorMessage ()
 {
 	return errorMessage;
-}
-
-/**
- * @brief This function returns the numbers of syntax errors caught by the parser.
- *
- * @return The number of errors reported by the YAML parser
- */
-size_t Driver::getNumberOfErrors ()
-{
-	return numberOfErrors;
 }
 
 // ===========

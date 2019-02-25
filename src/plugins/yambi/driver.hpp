@@ -106,13 +106,6 @@ public:
 	 */
 	std::string getErrorMessage ();
 
-	/**
-	 * @brief This function returns the numbers of syntax errors caught by the parser.
-	 *
-	 * @return The number of errors reported by the YAML parser
-	 */
-	size_t getNumberOfErrors ();
-
 	// ===========
 	// = Actions =
 	// ===========

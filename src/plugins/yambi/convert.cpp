@@ -42,7 +42,7 @@ int addToKeySet (CppKeySet & keySet, CppKey & parent, string const & filename)
 
 	int status = driver.parse (filename);
 
-	if (status < 0 || driver.getNumberOfErrors () > 0)
+	if (status < 0)
 	{
 		if (status == -3)
 		{
@@ -52,9 +52,8 @@ int addToKeySet (CppKeySet & keySet, CppKey & parent, string const & filename)
 		{
 			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_PARSE, parent.getKey (), "Parsing failed due to memory exhaustion");
 		}
-		else if (status == -1 || driver.getNumberOfErrors () > 0)
+		else if (status == -1)
 		{
-			status = -1;
 			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_PARSE, parent.getKey (), driver.getErrorMessage ().c_str ());
 		}
 
