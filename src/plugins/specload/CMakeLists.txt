@@ -18,6 +18,6 @@ if (BUILD_SHARED AND ADDTESTING_PHASE)
 	set (TESTAPP_PATH "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/elektra-specload-testapp")
 	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/config.c.in" "${CMAKE_CURRENT_BINARY_DIR}/config.c" @ONLY)
 
-	add_plugintest (specload INSTALL_TEST_DATA INCLUDE_DIRECTORIES ${CMAKE_CURRENT_BINARY_DIR} TIMEOUT 10)
+	add_plugintest (specload INSTALL_TEST_DATA INCLUDE_DIRECTORIES ${CMAKE_CURRENT_BINARY_DIR} TIMEOUT 30)
 	add_dependencies (testmod_specload elektra-specload-testapp)
 endif ()
