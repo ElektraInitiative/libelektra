@@ -137,20 +137,6 @@ class YAMLLexer : public TokenSource
 	unique_ptr<CommonToken> commonToken (size_t type, size_t start, size_t stop, string text);
 
 	/**
-	 * @brief This function creates a new token with the specified parameters.
-	 *
-	 * @param type This parameter specifies the type of the token this function
-	 *             should create.
-	 * @param start This number specifies the start index of the returned token
-	 *              inside the character stream `input`.
-	 * @param stop This number specifies the stop index of the returned token
-	 *             inside the character stream `input`.
-	 *
-	 * @return A token with the specified parameters
-	 */
-	unique_ptr<CommonToken> commonToken (size_t type, size_t start, size_t stop);
-
-	/**
 	 * @brief This function adds an indentation value if the given value is smaller
 	 *        than the current indentation.
 	 *

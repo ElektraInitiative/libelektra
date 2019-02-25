@@ -21,6 +21,18 @@ This plugin uses ANTLR to generate a parser for the [YAML](http://yaml.org) seri
 
 .
 
+## Dependencies
+
+The plugin requires
+
+- [ANTLR](https://www.antlr.org) `4.7.1` or later ([`antlr4`](https://repology.org/metapackage/antlr4)), and
+- [ANTLR 4’s C++ runtime](https://github.com/antlr/antlr4/tree/master/runtime/Cpp)
+  ([`antlr4-cpp-runtime`](https://repology.org/metapackage/antlr4-cpp-runtime) or [`libantlr4-runtime-dev`](https://packages.debian.org/search?searchon=names&keywords=libantlr4-runtime-dev))
+
+. If packages for those libraries are not available for your system, you can install them manually. For more information about that please
+take a look [at ANTLR’s homepage](https://www.antlr.org) and at the
+[ReadMe of the ANTLR C++ runtime](https://github.com/antlr/antlr4/tree/master/runtime/Cpp).
+
 ## Examples
 
 ### Mappings
@@ -113,7 +125,7 @@ printf -- '- element 2 # Incorrect Indentation!' >> `kdb file user/tests/yanlr`
 # The plugin reports the location of the error
 kdb ls user/tests/yanlr
 # RET: 5
-# STDERR: .*/config.yaml:2:1: mismatched input '- ' expecting MAP_END.*
+# STDERR: .*/config.yaml:2:1: mismatched input '- ' expecting end of map.*
 
 # Let us look at the error message more closely.
 # Since the location of `config.yaml` depends on the current user and OS,
@@ -128,10 +140,10 @@ kdb set user/tests/error/prefix/length "$(kdb get user/tests/error/prefix | wc -
 # Since we only want to look at the “reason” of the error, we
 # remove the other part of the error message with `head` and `tail`.
 kdb get user/tests/error | tail -n11 | head -n6 | cut -c"$(kdb get user/tests/error/prefix/length | tr -d '\n')"-
-#> config.yaml:2:1: mismatched input '- ' expecting MAP_END
+#> config.yaml:2:1: mismatched input '- ' expecting end of map
 #>                  - element 2 # Incorrect Indentation!
 #>                  ^^
-#> config.yaml:2:37: extraneous input 'MAP END' expecting STREAM_END
+#> config.yaml:2:37: extraneous input 'end of map' expecting end of document
 #>                   - element 2 # Incorrect Indentation!
 #>                                                       ^
 
@@ -171,6 +183,20 @@ sudo kdb umount user/tests/yanlr
 ### Comments
 
 The [lexer](yaml_lexer.cpp) does currently tokenize comments. Consequently the [plugin grammar](YAML.g4) of the plugin does also match comments. However, the [listener](listener.cpp) does currently **ignore comments**.
+
+### Indentation
+
+The lexer does not check for incorrect indentation. Consequently the following YAML data:
+
+<!-- prettier-ignore-start -->
+
+```yaml
+	value
+```
+
+<!-- prettier-ignore-end -->
+
+will produce a plain scalar containing a tab character followed by the text `value`. The correct behavior would be to report an error, since YAML does not allow tab characters in indentation.
 
 ### Error Messages
 

@@ -107,10 +107,10 @@ The following section lists news about the [modules](https://www.libelektra.org/
   the plugin currently prints an error message that looks like this:
 
   ```
-  config.yaml:2:1: mismatched input '- ' expecting MAP_END
+  config.yaml:2:1: mismatched input '- ' expecting end of map
                    - element 2 # Incorrect Indentation!
                    ^^
-  config.yaml:2:37: extraneous input 'MAP END' expecting STREAM_END
+  config.yaml:2:37: extraneous input 'end of map' expecting end of document
                     - element 2 # Incorrect Indentation!
                                                         ^
   ```
@@ -119,7 +119,12 @@ The following section lists news about the [modules](https://www.libelektra.org/
   [“The Definitive ANTLR 4 Reference”](https://pragprog.com/book/tpantlr2/the-definitive-antlr-4-reference) by Terence Parr.
   _(René Schwaiger)_
 
-- Yan LR’s lexer now handles comment at the end of a YAML document correctly. _(René Schwaiger)_
+- Yan LR’s lexer now
+
+  - handles comment at the end of a YAML document correctly,
+  - stores a more human readable description in tokens (e.g. `end of map` instead of `MAP END`)
+
+  . _(René Schwaiger)_
 
 ### path
 
@@ -290,6 +295,8 @@ you up to date with the multi-language support provided by Elektra.
 - We added a test that invokes the script [`fix-spelling`](http://master.libelektra.org/scripts/fix-spelling) to check the documentation
   for common spelling mistakes. _(René Schwaiger)_
 - We added a test that checks the formatting of Markdown files with [`prettier`](https://prettier.io). _(René Schwaiger)_
+- The test [`testscr_check_formatting`](https://master.libelektra.org/tests/shell/check_formatting.sh) now prints instructions that show
+  you how to fix formatting problems. _(René Schwaiger)_
 
 [shell recorder]: https://master.libelektra.org/tests/shell/shell_recorder
 [markdown shell recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
@@ -310,6 +317,7 @@ you up to date with the multi-language support provided by Elektra.
   - homepage URL
     in the CMake [`project`](https://cmake.org/cmake/help/latest/command/project.html) command. _(René Schwaiger)_
 - We fixed the detection of Python for the [Python 2 binding](https://www.libelektra.org/bindings/swig_python2) on macOS. _(René Schwaiger)_
+- You can now use the Ruby binding and plugin without any manual configuration, if you installed Ruby (version `2.5` or later) via [Homebrew](http://brew.sh). _(René Schwaiger)_
 
 #### Find Modules
 
@@ -341,8 +349,16 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Docker
 
-- We added [`shfmt`](https://github.com/mvdan/sh) to the
-  [Dockerfile for Debian sid](https://master.libelektra.org/scripts/docker/debian/sid/Dockerfile). _(René Schwaiger)_
+- We added
+
+  - [ANTLR](https://packages.debian.org/sid/antlr4),
+  - [ANTLR’s C++ runtime](https://packages.debian.org/sid/libantlr4-runtime-dev),
+  - [Ninja](https://packages.debian.org/sid/ninja-build), and
+  - [`shfmt`](https://github.com/mvdan/sh),
+    to the [Dockerfile for Debian sid](https://master.libelektra.org/scripts/docker/debian/sid/Dockerfile)
+
+  . _(René Schwaiger)_
+
 - <<TODO>>
 - <<TODO>>
 
