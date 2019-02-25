@@ -1232,6 +1232,9 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	cacheParent = keyDup (mountGetMountpoint (handle, parentKey));
 	if (handle->globalPlugins[PREGETCACHE][MAXONCE])
 	{
+		// prune old cache info
+		ksClear (handle->global); // TODO: only cut out our part of global keyset
+
 		if (elektraGlobalGet (handle, cache, cacheParent, PREGETCACHE, MAXONCE) != ELEKTRA_PLUGIN_STATUS_SUCCESS)
 		{
 			ELEKTRA_LOG_DEBUG ("CACHE MISS: could not fetch cache");
@@ -1239,19 +1242,19 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 			goto cachefail;
 		}
 
-// 		if (kdbCacheCheckParent (handle, handle->global, cacheParent) != 0)
-// 		{
-// 			// parentKey in cache does not match, needs rebuild
-// 			ELEKTRA_LOG_DEBUG ("CACHE WRONG PARENTKEY");
-// 			ksClear (handle->global); // TODO: only cut out our part of global keyset
-// 			goto cachefail;
-// 		}
-// 		if (kdbCheckSplitState (split, handle->global) == -1)
-// 		{
-// 			ELEKTRA_LOG_DEBUG ("FAIL, have to discard cache because split state / SIZE FAIL");
-// 			ksClear (handle->global); // TODO: only cut out our part of global keyset
-// 			goto cachefail;
-// 		}
+		if (kdbCacheCheckParent (handle, handle->global, cacheParent) != 0)
+		{
+			// parentKey in cache does not match, needs rebuild
+			ELEKTRA_LOG_DEBUG ("CACHE WRONG PARENTKEY");
+			ksClear (handle->global); // TODO: only cut out our part of global keyset
+			goto cachefail;
+		}
+		if (kdbCheckSplitState (split, handle->global) == -1)
+		{
+			ELEKTRA_LOG_DEBUG ("FAIL, have to discard cache because split state / SIZE FAIL");
+			ksClear (handle->global); // TODO: only cut out our part of global keyset
+			goto cachefail;
+		}
 	}
 
 cachefail:
@@ -1845,13 +1848,16 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 	splitDel (split);
 
 	// call cache plugin to unlink file
-	Key * cacheParent = keyDup (mountGetMountpoint (handle, parentKey));
-	if (elektraGlobalError (handle, 0, cacheParent, PREGETCACHE, MAXONCE) != ELEKTRA_PLUGIN_STATUS_SUCCESS)
-	{
-		ELEKTRA_LOG_DEBUG ("CACHE: failed to flush cache");
-	}
+// 	Key * cacheParent = keyDup (mountGetMountpoint (handle, parentKey));
+// 	if (elektraGlobalError (handle, 0, cacheParent, PREGETCACHE, MAXONCE) != ELEKTRA_PLUGIN_STATUS_SUCCESS)
+// 	{
+// 		ELEKTRA_LOG_DEBUG ("CACHE: failed to flush cache");
+// 	}
+// 	ksClear (handle->global); // TODO: only cut out our part of global keyset
+// 	keyDel (cacheParent);
+
+	// reset old cache data: split state, timestamps, ...
 	ksClear (handle->global); // TODO: only cut out our part of global keyset
-	keyDel (cacheParent);
 
 	keyDel (oldError);
 	errno = errnosave;
