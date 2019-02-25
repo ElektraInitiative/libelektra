@@ -504,7 +504,7 @@ ssize_t findMetaLink (struct list * list, const Key * meta)
 
 	if (search > list->array[list->size - 1]->meta)
 	{
-		return -list->size - 1;
+		return -(ssize_t) list->size - 1;
 	}
 
 	ssize_t left = 0;
