@@ -30,8 +30,10 @@ To use the debian repository of the latest builds from master put following line
 
 For Stretch:
 
-        deb     [trusted=yes] https://debian-stretch-repo.libelektra.org/ stretch main
-        deb-src [trusted=yes] https://debian-stretch-repo.libelektra.org/ stretch main
+```
+deb     [trusted=yes] https://debian-stretch-repo.libelektra.org/ stretch main
+deb-src [trusted=yes] https://debian-stretch-repo.libelektra.org/ stretch main
+```
 
 Which can also be done using:
 
@@ -49,13 +51,17 @@ sudo add-apt-repository "deb     [trusted=yes] https://debian-stretch-repo.libel
 
 For Jessie (not updated anymore, contains 0.8.24 packages which were created shortly before 0.8.25 release)
 
-        deb     [trusted=yes] https://debian-stable.libelektra.org/elektra-stable/ jessie main
-        deb-src [trusted=yes] https://debian-stable.libelektra.org/elektra-stable/ jessie main
+```
+deb     [trusted=yes] https://debian-stable.libelektra.org/elektra-stable/ jessie main
+deb-src [trusted=yes] https://debian-stable.libelektra.org/elektra-stable/ jessie main
+```
 
 For Wheezy (not updated anymore, contains 0.8.19-8121 packages):
 
-        deb     [trusted=yes] https://build.libelektra.org/debian/ wheezy main
-        deb-src [trusted=yes] https://build.libelektra.org/debian/ wheezy main
+```
+deb     [trusted=yes] https://build.libelektra.org/debian/ wheezy main
+deb-src [trusted=yes] https://build.libelektra.org/debian/ wheezy main
+```
 
 To get all packaged plugins, bindings and tools install:
 
@@ -140,19 +146,25 @@ and send a merge request for your system.
 
 If you encounter the problem that the library can not be found (output like this)
 
-    kdb: error while loading shared libraries:
-         libelektra-core.so.4: cannot open shared object file: No such file or directory
+```
+kdb: error while loading shared libraries:
+     libelektra-core.so.4: cannot open shared object file: No such file or directory
+```
 
 or:
 
-    kdb: error while loading shared libraries:
-         libelektratools.so.2: cannot open shared object file: No such file or directory
+```
+kdb: error while loading shared libraries:
+     libelektratools.so.2: cannot open shared object file: No such file or directory
+```
 
 you need to place a configuration file at `/etc/ld.so.conf.d/` (e.g. `/etc/ld.so.conf.d/elektra.conf`).
 
 Add the path where the library has been installed
 
-    /usr/lib/local/
+```
+/usr/lib/local/
+```
 
 and run `ldconfig` as root.
 
