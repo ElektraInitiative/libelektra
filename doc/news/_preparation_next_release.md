@@ -255,6 +255,7 @@ you up to date with the multi-language support provided by Elektra.
 
 - `kdb spec-mount` correctly includes type plugin to validate `type`. _(Markus Raab)_
 - `kdb setmeta` reports if it removed a metakey. _(Markus Raab)_
+- `system/elektra/version` cannot be edited or removed. _(Dominic Jäger)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>

@@ -16,6 +16,7 @@ cmake-build*/
 
 #ignore ctags + gdb history files
 .ctags
+tags
 .gdb_history
 
 #ignore emacs backup files
