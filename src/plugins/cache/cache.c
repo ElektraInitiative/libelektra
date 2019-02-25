@@ -14,15 +14,19 @@
 #endif
 
 #include <kdbassert.h>
+#include <kdberrors.h>
 #include <kdbhelper.h>
 #include <kdblogger.h>
 #include <kdbmodule.h>
 #include <kdbprivate.h>
 
-#include <fcntl.h>  // access()
-#include <unistd.h> // access()
+#include <fcntl.h>    // access()
+#include <stdio.h>    // rename(), sprintf()
+#include <sys/time.h> // gettimeofday()
+#include <unistd.h>   // access()
 
 #define KDB_CACHE_STORAGE "mmapstorage"
+#define POSTFIX_SIZE 50
 
 typedef struct _cacheHandle CacheHandle;
 
@@ -135,6 +139,23 @@ static char * elektraStrConcat (const char * a, const char * b)
 	ret = strcpy (ret, a);
 	ret = strcat (ret, b);
 	return ret;
+}
+
+static char * elektraGenTempFilename (char * cacheFileName)
+{
+	char * tmpFile = NULL;
+	size_t len = 0;
+	size_t tmpFilenameSize = 0;
+
+	tmpFilenameSize = strlen (cacheFileName) + POSTFIX_SIZE;
+	tmpFile = elektraCalloc (tmpFilenameSize);
+	len = sprintf (tmpFile, "%s", cacheFileName);
+
+	struct timeval tv;
+	memset (&tv, 0, sizeof (struct timeval));
+	gettimeofday (&tv, 0);
+	snprintf (tmpFile + len, POSTFIX_SIZE - 1, ".%d:%ld." ELEKTRA_TIME_USEC_F ".tmp", getpid (), tv.tv_sec, tv.tv_usec);
+	return tmpFile;
 }
 
 static char * kdbCacheFileName (CacheHandle * ch, Key * parentKey)
@@ -294,17 +315,31 @@ int elektraCacheSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	ELEKTRA_ASSERT (cacheFileName != 0, "Could not construct cache file name.");
 	ELEKTRA_LOG_DEBUG ("cacheFileName: %s", cacheFileName);
 
-	// load cache from storage
-	keySetString (cacheFile, cacheFileName);
-	elektraFree (cacheFileName);
+	char * tmpFile = elektraGenTempFilename (cacheFileName);
+	ELEKTRA_ASSERT (tmpFile != 0, "Could not construct temp file name.");
+	ELEKTRA_LOG_DEBUG ("tmpFile: %s", tmpFile);
+
+	// write cache to temp file
+	keySetString (cacheFile, tmpFile);
+	//elektraFree (cacheFileName);
 	if (ch->cacheStorage->kdbSet (ch->cacheStorage, returned, cacheFile) == ELEKTRA_PLUGIN_STATUS_SUCCESS)
 	{
+		if (rename (tmpFile, cacheFileName) == -1)
+		{
+			ELEKTRA_SET_ERROR (31, parentKey, strerror (errno));
+			goto error;
+		}
+
+		elektraFree (cacheFileName);
+		elektraFree (tmpFile);
 		keyDel (cacheFile);
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
-	keyDel (cacheFile); // TODO: maybe propagate errors?
-	// ELEKTRA_ASSERT (0 != 0, "ELEKTRA_PLUGIN_STATUS_ERROR");
+error:
+	elektraFree (cacheFileName);
+	elektraFree (tmpFile);
+	keyDel (cacheFile);
 	return ELEKTRA_PLUGIN_STATUS_ERROR;
 }
 
