@@ -12,6 +12,8 @@
 
 %skeleton "lalr1.cc"                        /* Generate an LALR(1) parser */
 
+%expect 0                                   /* We expect no shift/reduce and no reduce/reduce conflicts */
+
 %define @PARSER_NAME_DIRECTIVE@ { Parser }  /* Call the generator parser class `Parser` */
 %define api.prefix {yambi}                  /* Use namespace `yambi` for parser code */
 %define api.token.constructor               /* Store type, value and location data in symbol objects */
