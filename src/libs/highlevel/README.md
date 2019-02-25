@@ -29,8 +29,8 @@ if (elektra == NULL)
 	return -1;
 }
 
-kdb_long_t myint = elektraGetLong (elektra, "myint");
-printf ("got long " ELEKTRA_LONG_F "\n", myint);
+kdb_long_t mylong = elektraGetLong (elektra, "mylong");
+printf ("got long " ELEKTRA_LONG_F "\n", mylong);
 
 elektraSetBoolean (elektra, "mybool", true, &error);
 if (error != NULL)
@@ -45,8 +45,8 @@ elektraClose (elektra);
 To run the application, the configuration should be specified:
 
 ```
-sudo kdb setmeta /sw/org/myapp/#0/current/myint type long
-sudo kdb setmeta /sw/org/myapp/#0/current/myint default 5
+sudo kdb setmeta /sw/org/myapp/#0/current/mylong type long
+sudo kdb setmeta /sw/org/myapp/#0/current/mylong default 5
 ```
 
 The getter and setter functions follow the simple naming scheme `elektra`(`Get`/`Set`)[Type]. Additionally for each one there is a

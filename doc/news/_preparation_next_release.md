@@ -1,4 +1,4 @@
-# 0.8.<<VERSION>> Release
+# 0.8.26 Release
 
 This release did not happen yet.
 
@@ -13,7 +13,7 @@ Please add your name at the end of every contribution.
 
 <<`scripts/generate-news-entry`>>
 
-We are proud to release Elektra 0.8.<<VERSION>>.
+We are proud to release Elektra 0.8.26 with the new high-level API.
 
 ## What is Elektra?
 
@@ -21,22 +21,17 @@ Elektra serves as a universal and secure framework to access
 configuration settings in a global, hierarchical key database.
 For more information, visit [https://libelektra.org](https://libelektra.org).
 
-You can also read the news [on our website](https://www.libelektra.org/news/0.8.<<VERSION>>-release)
+You can also read the news [on our website](https://www.libelektra.org/news/0.8.26-release)
 
-## Highlights
 
-- The new High-Level-API has been added. _(Klemens Böswirth)_
-- <<HIGHLIGHT2>>
-- <<HIGHLIGHT3>>
+## High-Level API
 
-### High-Level API
+The new high-level API provides an easier way for applications to get started with Elektra.
 
-The new high-level API provides an easier way to get started with Elektra.
-
-To get started (including proper error handling) you now only need a few self-explanatory lines of code:
+To use Elektra in an application (including proper error handling) you now only need a few self-explanatory lines of code:
 
 ```c
-ElektraError * error;
+ElektraError * error = NULL;
 Elektra * elektra = elektraOpen ("/sw/org/myapp/#0/current", NULL, &error);
 if (elektra == NULL)
 {
@@ -45,20 +40,27 @@ if (elektra == NULL)
 	return -1;
 }
 
-int myint = elektraGetLong (elektra, "myint");
+// Once you have an instance of `Elektra` you simply call one of the typed `elektraGet*` functions to read a value:
+
+kdb_long_t mylong = elektraGetLong (elektra, "mylong");
+printf ("got long " ELEKTRA_LONG_F "\n", mylong);
+const char * mystring = elektraGetString (elektra, "mystring");
+printf ("got string %s\n", mystring);
 
 elektraClose (elektra);
 ```
 
-Once you have an instance of `Elektra` you simply call one of the typed `elektraGet*` functions to read a value:
+To run the application, the configuration should be specified, e.g., for mylong:
 
-```c
-const char * mystring = elektraGetString (elektra, "mystring");
+```
+sudo kdb setmeta /sw/org/myapp/#0/current/mylong type long
+sudo kdb setmeta /sw/org/myapp/#0/current/mylong default 5
 ```
 
-No need to specify the base path `/sw/org/myapp/#0/current` anymore, as the high-level API keeps track of that for you.
-The API supports the CORBA types already used by some plugins. The high-level API should also be used in combination
-with a specification (`spec-mount`). When used this way, the API is designed to be error and crash free while reading values.
+In the getters/setters there is no need to specify the base path `/sw/org/myapp/#0/current` anymore, as the high-level API keeps track of that for you.
+The API supports the CORBA types already used the plugins.
+The high-level API should also be used in combination with a specification (`spec-mount`).
+When used this way, the API is designed to be error and crash free while reading values.
 Writing values, can of course still produce errors.
 
 Another advantage of the new API is, that it will be much easier to write bindings for other languages now, because only a few simply
@@ -68,9 +70,6 @@ Take a look at the [README](/src/libs/highlevel/README.md) for more infos.
 
 For an example on how to build an application using this API take a look at [this](/examples/highlevel). _(Klemens Böswirth)_
 
-### <<HIGHLIGHT2>>
-
-### <<HIGHLIGHT2>>
 
 ## Plugins
 
@@ -81,7 +80,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 - We changed the default [Augeas](http://augeas.net) directory prefix for the lenses directory on macOS to the one used by
   [Homebrew](https://brew.sh): `/usr/local`. _(René Schwaiger)_
 
-### network
+### Network
 
 - The `network` plugin also supports port declarations to check if a port number is valid
   or if the port is available to use. _(Michael Zronek)_
@@ -126,7 +125,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
   . _(René Schwaiger)_
 
-### path
+### Path
 
 Enhanced the plugin to also check for concrete file or directory permissions such as `rwx`.
 You can specify for example that a user can write to a certain directory or file which prevents applications of runtime failures
@@ -149,12 +148,6 @@ and be assured that you can safely set a path value to the key. A more detailed 
 ### Ruby
 
 - Added some basic unit tests _(Bernhard Denner)_
-
-### <<Plugin3>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### Misc
 
@@ -182,9 +175,8 @@ As always, the ABI and API of kdb.h is fully compatible, i.e. programs
 compiled against an older 0.8 version of Elektra will continue to work
 (ABI) and you will be able to recompile programs without errors (API).
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- we now support larger array numbers and `elektraArrayValidateBaseNameString`
+  returns the offset to the first digit of the array index
 
 ### Core
 
@@ -192,7 +184,6 @@ compiled against an older 0.8 version of Elektra will continue to work
   See [Global KeySet Handle](/doc/decisions/global_keyset.md) for details. _(Mihael Pranjić)_
 - `elektraWriteArrayNumber` now uses `kdb_long_long_t` for array indices to be compatible with the high level API.
   Similarly the value of `ELEKTRA_MAX_ARRAY_SIZE` was changed to match this. _(Klemens Böswirth)_
-- <<TODO>>
 
 ### Libease
 
@@ -223,9 +214,6 @@ compiled against an older 0.8 version of Elektra will continue to work
 
   . _(René Schwaiger)_
 
-- <<TODO>>
-- <<TODO>>
-
 ### Libopts
 
 - This is a new lib containing only the function `elektraGetOpts`. This function can be used to parse command line arguments and
@@ -234,31 +222,11 @@ compiled against an older 0.8 version of Elektra will continue to work
   You can use `opt`, `opt/long` and `env` to specify a short, a long option and an environment variable. For more information take
   a look at [the tutorial](/doc/tutorials/command-line-options.md) and the code documentation of `elektraGetOpts`. _(Klemens Böswirth)_
 
-### <<Library3>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-## Bindings
-
-Bindings allow you to utilize Elektra using [various programming languages](https://www.libelektra.org/bindings/readme). This section keeps
-you up to date with the multi-language support provided by Elektra.
-
-### <<Binding1>>
-
-### <<Binding2>>
-
-### <<Binding3>>
-
 ## Tools
 
 - `kdb spec-mount` correctly includes type plugin to validate `type`. _(Markus Raab)_
 - `kdb setmeta` reports if it removed a metakey. _(Markus Raab)_
 - `system/elektra/version` cannot be edited or removed. _(Dominic Jäger)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Scripts
 
@@ -277,7 +245,6 @@ you up to date with the multi-language support provided by Elektra.
 - We fixed various spelling mistakes. _(René Schwaiger)_
 - The documentation for `elektraMetaArrayToKS` was fixed. It now reflects the fact
   that the parent key is returned as well. _(Klemens Böswirth)_
-- <<TODO>>
 
 ## Tests
 
@@ -359,9 +326,6 @@ you up to date with the multi-language support provided by Elektra.
 
   . _(René Schwaiger)_
 
-- <<TODO>>
-- <<TODO>>
-
 ### Misc
 
 - We removed the non-functional `configure` script from the top-level directory. _(René Schwaiger)_
@@ -391,7 +355,6 @@ you up to date with the multi-language support provided by Elektra.
 
 - We added a badge displaying the current build status to the main [ReadMe](https://master.libelektra.org/README.md). _(René Schwaiger)_
 - The build job `formatting-check` now also checks the formatting of Shell scripts. _(René Schwaiger)_
-- <<TODO>>
 
 ### Travis
 
@@ -400,48 +363,46 @@ you up to date with the multi-language support provided by Elektra.
 - We removed the build jobs `🍏 Clang ASAN` in favor of the Cirrus build job `🍎 Clang ASAN`. _(René Schwaiger)_
 - We removed the build jobs `🍏 FULL` in favor of the Cirrus build job `🍎 FULL`. _(René Schwaiger)_
 - We removed the build jobs `🍏 MMap` in favor of the Cirrus build job `🍎 MMap`. _(René Schwaiger)_
-- <<TODO>>
 
 ## Website
 
 The website is generated from the repository, so all information about
-plugins, bindings and tools are always up to date. Furthermore, we changed:
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+plugins, bindings and tools are always up to date.
 
 ## Outlook
 
 We are currently working on following topics:
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- infallible high-level API: creating an API that guarantees you to return configuration values
+- error handling
+- YAML as default storage
+- 3-way merge
+- plugin framework
+- efficiency (mmap-cache)
 
 ## Statistics
 
 Following authors made this release possible:
 
-<<`scripts/git-release-stats 0.8.<<VERSION>>`>>
+<<`scripts/git-release-stats 0.8.26`>>
 
 We welcome new contributors!
 
 ## Get It!
 
-You can download the release from [here](https://www.libelektra.org/ftp/elektra/releases/elektra-0.8.<<VERSION>>.tar.gz)
-or [GitHub](https://github.com/ElektraInitiative/ftp/blob/master/releases/elektra-0.8.<<VERSION>>.tar.gz?raw=true)
+You can download the release from [here](https://www.libelektra.org/ftp/elektra/releases/elektra-0.8.26.tar.gz)
+or [GitHub](https://github.com/ElektraInitiative/ftp/blob/master/releases/elektra-0.8.26.tar.gz?raw=true)
 
-The [hashsums are:](https://github.com/ElektraInitiative/ftp/blob/master/releases/elektra-0.8.<<VERSION>>.tar.gz.hashsum?raw=true)
+The [hashsums are:](https://github.com/ElektraInitiative/ftp/blob/master/releases/elektra-0.8.26.tar.gz.hashsum?raw=true)
 
 <<`scripts/generate-hashsums`>>
 
 The release tarball is also available signed by Markus Raab using GnuPG from
-[here](https://www.libelektra.org/ftp/elektra/releases/elektra-0.8.<<VERSION>>.tar.gz.gpg) or on
-[GitHub](https://github.com/ElektraInitiative/ftp/blob/master/releases//elektra-0.8.<<VERSION>>.tar.gz.gpg?raw=true)
+[here](https://www.libelektra.org/ftp/elektra/releases/elektra-0.8.26.tar.gz.gpg) or on
+[GitHub](https://github.com/ElektraInitiative/ftp/blob/master/releases//elektra-0.8.26.tar.gz.gpg?raw=true)
 
-Already built API-Docu can be found [here](https://doc.libelektra.org/api/0.8.<<VERSION>>/html/)
-or on [GitHub](https://github.com/ElektraInitiative/doc/tree/master/api/0.8.<<VERSION>>).
+Already built API-Docu can be found [here](https://doc.libelektra.org/api/0.8.26/html/)
+or on [GitHub](https://github.com/ElektraInitiative/doc/tree/master/api/0.8.26).
 
 ## Stay tuned!
 
@@ -452,7 +413,7 @@ to always get the release notifications.
 If you also want to participate, or for any questions and comments
 please contact us via the issue tracker [on GitHub](http://issues.libelektra.org).
 
-[Permalink to this NEWS entry](https://www.libelektra.org/news/0.8.<<VERSION>>-release)
+[Permalink to this NEWS entry](https://www.libelektra.org/news/0.8.26-release)
 
 For more information, see [https://libelektra.org](https://libelektra.org)
 
