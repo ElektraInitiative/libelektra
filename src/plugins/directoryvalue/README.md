@@ -185,4 +185,4 @@ sudo kdb umount user/tests/directoryvalue
 
   !
 
-- The plugin is [quite slow](https://issues.libelektra/2281).
+- The plugin is [quite slow](https://issues.libelektra.org/2281).

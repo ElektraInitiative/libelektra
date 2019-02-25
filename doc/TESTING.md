@@ -271,11 +271,6 @@ or on Debian:
 
     LD_PRELOAD=/usr/lib/llvm-3.8/lib/clang/3.8.1/lib/linux/libclang_rt.asan-x86_64.so run_asan
 
-See also build server jobs:
-
-- [clang-asan](https://build.libelektra.org/job/elektra-clang-asan/)
-- [gcc-asan](https://build.libelektra.org/job/elektra-gcc-asan/)
-
 #### macOS
 
 If you use macOS you might want to use the `clang` versions provided by Homebrew, since it supports the [LeakSanitizer](https://github.com/google/sanitizers/wiki/AddressSanitizerLeakSanitizer). To use Homebrew’s version of `clang` you need to first install LLVM:
