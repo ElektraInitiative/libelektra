@@ -109,7 +109,7 @@ For `make run_all` following development tools enable even more tests:
 - The [POSIX compatibility test for shell scripts](../tests/shell/check_posix.sh) requires the tool [`shfmt`](https://github.com/mvdan/sh).
 - `git`, `clang-format` (version 6 up to version 7), and [cmake-format](https://github.com/cheshirekow/cmake_format) to check formatting.
 - `pkg-config` must be available (`check_external.sh` and `check_gen.sh`).
-- A build environment including gcc (check_gen.sh).
+- A build environment including gcc (`check_gen.sh`).
 - The [Markdown Shell Recorder](https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper)
   requires POSIX utilities (`awk`, `grep`, …).
 
@@ -207,11 +207,11 @@ They are located [here](/tests/ctest).
 
 According to `src/libs/elektra/libelektra-symbols.map`, all functions starting with:
 
-- libelektra
-- elektra
-- kdb
-- key
-- ks
+- `libelektra`
+- `elektra`
+- `kdb`
+- `key`
+- `ks`
 
 get exported. Functions not starting with this prefix are internal only and therefore
 not visible in the test cases. Test internal functionality by including the corresponding C file.
@@ -247,7 +247,7 @@ See [here](/tests/shell).
 
 ### Shell Recorder
 
-The more elegant way to specify script tests are via the so called shell recorder
+The more elegant way to specify script tests are via the so called Shell Recorder
 using Markdown Syntax.
 
 See [here](/tests/shell/shell_recorder/tutorial_wrapper/README.md).
