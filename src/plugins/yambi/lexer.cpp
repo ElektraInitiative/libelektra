@@ -451,10 +451,10 @@ Parser::symbol_type Lexer::nextToken ()
 	}
 #ifdef HAVE_LOGGER
 	string output;
-	output += "\n\nTokens:\n";
+	ELEKTRA_LOG_DEBUG ("Tokens:");
 	for (auto symbol : tokens)
 	{
-		output += "\t" + symbol.toString () + "\n";
+		ELEKTRA_LOG_DEBUG ("\t%s", symbol.toString ().c_str ());
 	}
 	ELEKTRA_LOG_DEBUG ("%s", output.c_str ());
 #endif
