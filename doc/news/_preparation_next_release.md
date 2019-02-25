@@ -23,7 +23,6 @@ For more information, visit [https://libelektra.org](https://libelektra.org).
 
 You can also read the news [on our website](https://www.libelektra.org/news/0.8.26-release)
 
-
 ## High-Level API
 
 The new high-level API provides an easier way for applications to get started with Elektra.
@@ -69,7 +68,6 @@ types and functions have to be mapped to provide the full functionality.
 Take a look at the [README](/src/libs/highlevel/README.md) for more infos.
 
 For an example on how to build an application using this API take a look at [this](/examples/highlevel). _(Klemens Böswirth)_
-
 
 ## Plugins
 
