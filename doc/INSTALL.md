@@ -35,13 +35,17 @@ For Stretch:
 
 Which can also be done using:
 
-        sudo apt-get install apt-transport-https
-        echo "deb     [trusted=yes] https://debian-stretch-repo.libelektra.org/ stretch main" | sudo tee /etc/apt/sources.list.d/elektra.list
+```sh
+sudo apt-get install apt-transport-https
+echo "deb     [trusted=yes] https://debian-stretch-repo.libelektra.org/ stretch main" | sudo tee /etc/apt/sources.list.d/elektra.list
+```
 
 Or alternatively, you can use (if you do not mind many dependences just to add one line to a config file):
 
-        sudo apt-get install software-properties-common apt-transport-https
-        sudo add-apt-repository "deb     [trusted=yes] https://debian-stretch-repo.libelektra.org/ stretch main"
+```sh
+sudo apt-get install software-properties-common apt-transport-https
+sudo add-apt-repository "deb     [trusted=yes] https://debian-stretch-repo.libelektra.org/ stretch main"
+```
 
 For Jessie (not updated anymore, contains 0.8.24 packages which were created shortly before 0.8.25 release)
 
@@ -55,21 +59,29 @@ For Wheezy (not updated anymore, contains 0.8.19-8121 packages):
 
 To get all packaged plugins, bindings and tools install:
 
-    apt-get install libelektra4-all
+```sh
+apt-get install libelektra4-all
+```
 
 For a small installation with command-line tools available use:
 
-    apt-get install elektra-bin
+```sh
+apt-get install elektra-bin
+```
 
 If you want to rebuild Elektra from Debian unstable or
 our repositories, add a `deb-src` entry to `/etc/apt/sources.list`
 and then run:
 
-    apt-get source -b elektra
+```sh
+apt-get source -b elektra
+```
 
 To build Debian Packages from the source you might want to use:
 
-    dpkg-buildpackage -us -uc -sa
+```sh
+dpkg-buildpackage -us -uc -sa
+```
 
 (You need to be in the Debian branch, see [GIT](GIT.md))
 
@@ -89,18 +101,24 @@ First follow the steps in [COMPILE](COMPILE.md).
 
 To install Elektra use:
 
-    sudo make install
-    sudo ldconfig  # See troubleshooting below
+```sh
+sudo make install
+sudo ldconfig  # See troubleshooting below
+```
 
 To uninstall Elektra use (will not be very clean,
 e.g. it will not remove directories and `*.pyc` files):
 
-    sudo make uninstall
-    sudo ldconfig
+```sh
+sudo make uninstall
+sudo ldconfig
+```
 
 or in the build directory (will not honor DESTDIR!):
 
-    xargs rm < install_manifest.txt
+```sh
+xargs rm < install_manifest.txt
+```
 
 ## CPack
 
@@ -108,7 +126,9 @@ First follow the steps in [COMPILE](COMPILE.md).
 
 Then use:
 
-    cpack
+```sh
+cpack
+```
 
 which should create a package for distributions where a Generator is
 implemented. See [this cmake file](/cmake/ElektraPackaging.cmake) for available Generators
