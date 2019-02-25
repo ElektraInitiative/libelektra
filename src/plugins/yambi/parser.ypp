@@ -103,6 +103,7 @@ scalar : PLAIN_SCALAR { $$ = $PLAIN_SCALAR; }
 map : MAP_START pairs MAP_END ;
 pairs : pair
       | pairs pair
+      | pairs error
       ;
 pair : KEY key VALUE child_comments_empty { driver.exitPair($child_comments_empty); };
 key : scalar { driver.exitKey($scalar); } ;
@@ -112,7 +113,9 @@ sequence : { driver.enterSequence(); }
            { driver.exitSequence(); }
            ;
 elements : element
-         | elements element ;
+         | elements element
+         | elements error
+         ;
 element : { driver.enterElement(); } ELEMENT child { driver.exitElement(); };
 
 %%

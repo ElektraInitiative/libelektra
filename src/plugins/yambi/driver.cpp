@@ -101,6 +101,7 @@ Driver::Driver (Key const & parent)
 int Driver::parse (const string & filepath)
 {
 	filename = filepath;
+	numberOfErrors = 0;
 
 	ifstream input{ filename };
 	if (!input.good ()) return -3;
@@ -135,7 +136,8 @@ KeySet Driver::getKeySet () const
  */
 void Driver::error (const location_type & location, const string & message)
 {
-	errorMessage = filename + ":" + to_string (location.begin.line) + ":" + to_string (location.begin.column) + ": " + message;
+	numberOfErrors++;
+	errorMessage += "\n" + filename + ":" + to_string (location.begin.line) + ":" + to_string (location.begin.column) + ": " + message;
 }
 
 /**
@@ -146,6 +148,16 @@ void Driver::error (const location_type & location, const string & message)
 string Driver::getErrorMessage ()
 {
 	return errorMessage;
+}
+
+/**
+ * @brief This function returns the numbers of syntax errors caught by the parser.
+ *
+ * @return The number of errors reported by the YAML parser
+ */
+size_t Driver::getNumberOfErrors ()
+{
+	return numberOfErrors;
 }
 
 // ===========

@@ -47,9 +47,14 @@ class Driver
 	std::stack<uintmax_t> indices;
 
 	/**
-	 * This variable stores the most recent error message produced by the parser.
+	 * This variable stores all error message produced by the parser.
 	 */
 	std::string errorMessage;
+
+	/**
+	 * This variable stores the number of errors caught by the parser.
+	 */
+	size_t numberOfErrors;
 
 public:
 	/** This variable stores the path of the YAML file the driver is parsing. */
@@ -100,6 +105,13 @@ public:
 	 * @return A string containing an error message describing a syntax error
 	 */
 	std::string getErrorMessage ();
+
+	/**
+	 * @brief This function returns the numbers of syntax errors caught by the parser.
+	 *
+	 * @return The number of errors reported by the YAML parser
+	 */
+	size_t getNumberOfErrors ();
 
 	// ===========
 	// = Actions =
