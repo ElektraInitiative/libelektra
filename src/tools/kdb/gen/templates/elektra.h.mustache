@@ -15,7 +15,7 @@
 #include <elektra.h>
 
 /*%# more_headers %*/
-#include "/*%& . %*/"
+#include "/*% . %*/"
 /*%/ more_headers %*/
 
 /*%# enums %*/
@@ -36,16 +36,31 @@ char * /*%& to_string %*/ (/*%& native_type %*/ value);
 /*%/ enums %*/
 
 /*%# enums %*/
-// tag declarations for enum of key '/*%& name %*/'
 ELEKTRA_TAG_DECLARATIONS (/*%& native_type %*/, /*%& type_name %*/)
 /*%/ enums %*/
+
+/*%# structs %*/
+/*%# generate_typedef? %*/
+typedef struct
+{
+	/*%# fields %*/
+	/*%& native_type %*/ /*%& name %*/;
+	/*%/ fields %*/
+} /*%& native_type %*/;
+/*%/ generate_typedef? %*/
+/*%/ structs %*/
+
+/*%# structs %*/
+void /*%& getter %*/ (Elektra * elektra, const char * keyname, /*%& native_type %*/ * result);
+void /*%& setter %*/ (Elektra * elektra, const char * keyname, const /*%& native_type %*/ * value, ElektraError * error);
+/*%/ structs %*/
 
 /*%# keys %*/
 /*%={{ }}=%*/
 /**
  * Tag value for key '{{{ name }}}'.
  */{{=/*% %*/=}}
-ELEKTRA_TAG_VALUE (/*% tag_name %*/, "/*%& name %*/", /*% type_name %*/)
+ELEKTRA_TAG_VALUE (/*%& tag_name %*/, "/*% name %*/", /*%& type_name %*/)
 /*%/ keys %*/;
 
 Elektra * /*%& init_function_name %*/ (ElektraError ** error);
