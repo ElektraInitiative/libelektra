@@ -26,6 +26,7 @@ static inline bool keyHasMetaValue (const kdb::Key & key, const std::string & me
 	return key && key.getMeta<std::string> (metaName) == value;
 }
 
+/* TODO: re-add once we have a stable public error API
 constexpr const char * severityString (ElektraErrorSeverity severity)
 {
 	return severity == ELEKTRA_ERROR_SEVERITY_ERROR ? "ERROR" : (severity == ELEKTRA_ERROR_SEVERITY_WARNING ? "WARNING" : "FATAL");
@@ -81,6 +82,7 @@ static std::ostream & operator<< (std::ostream & os, ElektraError ** error)
 	}
 	return os;
 }
+ */
 
 class Highlevel : public ::testing::Test
 {
@@ -121,8 +123,10 @@ protected:
 	static void fatalErrorHandler (ElektraError * error)
 	{
 		std::stringstream msg;
-		msg << "fatal error " << elektraErrorCode (error) << " in test "
-		    << ::testing::UnitTest::GetInstance ()->current_test_info ()->name () << ": " << &error << std::endl;
+		msg << "fatal error in test " << ::testing::UnitTest::GetInstance ()->current_test_info ()->name () << ": "
+		    << elektraErrorDescription (error) << std::endl;
+
+		elektraErrorReset (&error);
 
 		throw std::runtime_error (msg.str ());
 	}
@@ -139,7 +143,8 @@ protected:
 		elektraFatalErrorHandler (elektra, &fatalErrorHandler);
 	}
 
-	void setValues (std::initializer_list<kdb::Key> values)
+	template <class T>
+	void setValues (T values)
 	{
 		using namespace kdb;
 		KDB kdb;
@@ -151,6 +156,11 @@ protected:
 			config.append (value);
 		}
 		kdb.set (config, testRoot);
+	}
+
+	void setValues (std::initializer_list<kdb::Key> values)
+	{
+		setValues<std::initializer_list<kdb::Key>> (values);
 	}
 
 	void setArrays (std::initializer_list<std::vector<kdb::Key>> arrays)
@@ -192,6 +202,141 @@ protected:
 
 const std::string Highlevel::configFile = "kdbFileHighlevel.dump";
 const std::string Highlevel::testRoot = "/tests/highlevel/"; // DO NOT use namespace here, namespace would break testing::Mountpoint
+
+TEST_F (Highlevel, CharTestGet)
+{
+	std::vector<kdb::Key> keys;
+	for (int i = 0x01; i <= 0xFF; ++i)
+	{
+		auto c = static_cast<kdb_char_t> (i);
+		char s[] = { static_cast<char> (c), '\0' };
+		auto name = "char/_" + std::to_string (c);
+		keys.push_back (makeKey (KDB_TYPE_CHAR, name.c_str (), s));
+	}
+	setValues (keys);
+
+	createElektra ();
+
+	for (int i = 0x01; i <= 0xFF; ++i)
+	{
+		auto c = static_cast<kdb_char_t> (i);
+		auto name = "char/_" + std::to_string (c);
+		try
+		{
+			EXPECT_EQ (elektraGetChar (elektra, name.c_str ()), c) << "char " + name + " wrong";
+		}
+		catch (std::runtime_error &)
+		{
+			ADD_FAILURE () << "unexpected std::runtime_error thrown for " + name;
+		}
+	}
+}
+
+TEST_F (Highlevel, CharTestSet)
+{
+	std::vector<kdb::Key> keys;
+	for (int i = 0x01; i <= 0xFF; ++i)
+	{
+		auto c = static_cast<kdb_char_t> (i);
+		auto name = "char/_" + std::to_string (c);
+		keys.push_back (makeKey (KDB_TYPE_CHAR, name.c_str (), c == '_' ? "0" : "_"));
+	}
+	setValues (keys);
+
+	createElektra ();
+
+	ElektraError * error = nullptr;
+
+	for (int i = 0x01; i <= 0xFF; ++i)
+	{
+		auto c = static_cast<kdb_char_t> (i);
+		auto name = "char/_" + std::to_string (c);
+		elektraSetChar (elektra, name.c_str (), c, &error);
+		if (error != nullptr)
+		{
+			ADD_FAILURE () << "error for char " + name;
+		}
+	}
+
+	using namespace kdb;
+	KDB kdb;
+	KeySet config;
+
+	kdb.get (config, testRoot);
+	for (int i = 0x01; i <= 0xFF; ++i)
+	{
+		auto c = static_cast<kdb_char_t> (i);
+		auto name = "char/_" + std::to_string (c);
+		char s[] = { static_cast<char> (c), '\0' };
+		EXPECT_KEYVALUE (config.lookup (testRoot + name), s) << "Wrong key value. for char " + name;
+	}
+}
+
+TEST_F (Highlevel, IntegerBordersGet)
+{
+	setValues ({
+		makeKey (KDB_TYPE_OCTET, "octet/below", "-1"),
+		makeKey (KDB_TYPE_OCTET, "octet/min", "0"),
+		makeKey (KDB_TYPE_OCTET, "octet/max", "255"),
+		makeKey (KDB_TYPE_OCTET, "octet/above", "256"),
+		makeKey (KDB_TYPE_SHORT, "short/below", "-32769"),
+		makeKey (KDB_TYPE_SHORT, "short/min", "-32768"),
+		makeKey (KDB_TYPE_SHORT, "short/max", "32767"),
+		makeKey (KDB_TYPE_SHORT, "short/above", "32768"),
+		makeKey (KDB_TYPE_UNSIGNED_SHORT, "unsignedshort/below", "-1"),
+		makeKey (KDB_TYPE_UNSIGNED_SHORT, "unsignedshort/min", "0"),
+		makeKey (KDB_TYPE_UNSIGNED_SHORT, "unsignedshort/max", "65535"),
+		makeKey (KDB_TYPE_UNSIGNED_SHORT, "unsignedshort/above", "65536"),
+		makeKey (KDB_TYPE_LONG, "long/below", "-2147483649"),
+		makeKey (KDB_TYPE_LONG, "long/min", "-2147483648"),
+		makeKey (KDB_TYPE_LONG, "long/max", "2147483647"),
+		makeKey (KDB_TYPE_LONG, "long/above", "2147483648"),
+		makeKey (KDB_TYPE_UNSIGNED_LONG, "unsignedlong/below", "-1"),
+		makeKey (KDB_TYPE_UNSIGNED_LONG, "unsignedlong/min", "0"),
+		makeKey (KDB_TYPE_UNSIGNED_LONG, "unsignedlong/max", "4294967295"),
+		makeKey (KDB_TYPE_UNSIGNED_LONG, "unsignedlong/above", "4294967296"),
+		makeKey (KDB_TYPE_LONG_LONG, "longlong/below", "-9223372036854775809"),
+		makeKey (KDB_TYPE_LONG_LONG, "longlong/min", "-9223372036854775808"),
+		makeKey (KDB_TYPE_LONG_LONG, "longlong/max", "9223372036854775807"),
+		makeKey (KDB_TYPE_LONG_LONG, "longlong/above", "9223372036854775808"),
+		makeKey (KDB_TYPE_UNSIGNED_LONG_LONG, "unsignedlonglong/below", "-1"),
+		makeKey (KDB_TYPE_UNSIGNED_LONG_LONG, "unsignedlonglong/min", "0"),
+		makeKey (KDB_TYPE_UNSIGNED_LONG_LONG, "unsignedlonglong/max", "18446744073709551615"),
+		makeKey (KDB_TYPE_UNSIGNED_LONG_LONG, "unsignedlonglong/above", "18446744073709551616"),
+	});
+
+	createElektra ();
+
+	EXPECT_EQ (elektraGetOctet (elektra, "octet/min"), 0) << "octet/min wrong";
+	EXPECT_EQ (elektraGetOctet (elektra, "octet/max"), 0xff) << "octet/max wrong";
+	EXPECT_EQ (elektraGetShort (elektra, "short/min"), -0x8000) << "short/min wrong";
+	EXPECT_EQ (elektraGetShort (elektra, "short/max"), 0x7fFF) << "short/max wrong";
+	EXPECT_EQ (elektraGetUnsignedShort (elektra, "unsignedshort/min"), 0) << "unsignedshort/min wrong";
+	EXPECT_EQ (elektraGetUnsignedShort (elektra, "unsignedshort/max"), 0xffFF) << "unsignedshort/max wrong";
+	EXPECT_EQ (elektraGetLong (elektra, "long/min"), -0x80000000) << "long/min wrong";
+	EXPECT_EQ (elektraGetLong (elektra, "long/max"), 0x7fFFffFF) << "long/max wrong";
+	EXPECT_EQ (elektraGetUnsignedLong (elektra, "unsignedlong/min"), 0) << "unsignedlong/min wrong";
+	EXPECT_EQ (elektraGetUnsignedLong (elektra, "unsignedlong/max"), 0xffFFffFF) << "unsignedlong/max wrong";
+	EXPECT_EQ (elektraGetLongLong (elektra, "longlong/min"), -0x8000000000000000) << "longlong/min wrong";
+	EXPECT_EQ (elektraGetLongLong (elektra, "longlong/max"), 0x7fFFffFFffFFffFF) << "longlong/max wrong";
+	EXPECT_EQ (elektraGetUnsignedLongLong (elektra, "unsignedlonglong/min"), 0) << "unsignedlonglong/min wrong";
+	EXPECT_EQ (elektraGetUnsignedLongLong (elektra, "unsignedlonglong/max"), 0xffFFffFFffFFffFF) << "unsignedlonglong/max wrong";
+
+	EXPECT_THROW (elektraGetOctet (elektra, "octet/below"), std::runtime_error) << "octet/below accepted";
+	EXPECT_THROW (elektraGetOctet (elektra, "octet/above"), std::runtime_error) << "octet/above accepted";
+	EXPECT_THROW (elektraGetShort (elektra, "short/below"), std::runtime_error) << "short/below wrong";
+	EXPECT_THROW (elektraGetShort (elektra, "short/above"), std::runtime_error) << "short/above wrong";
+	EXPECT_THROW (elektraGetUnsignedShort (elektra, "unsignedshort/below"), std::runtime_error) << "unsignedshort/below wrong";
+	EXPECT_THROW (elektraGetUnsignedShort (elektra, "unsignedshort/above"), std::runtime_error) << "unsignedshort/above wrong";
+	EXPECT_THROW (elektraGetLong (elektra, "long/below"), std::runtime_error) << "long/below wrong";
+	EXPECT_THROW (elektraGetLong (elektra, "long/above"), std::runtime_error) << "long/above wrong";
+	EXPECT_THROW (elektraGetUnsignedLong (elektra, "unsignedlong/below"), std::runtime_error) << "unsignedlong/below wrong";
+	EXPECT_THROW (elektraGetUnsignedLong (elektra, "unsignedlong/above"), std::runtime_error) << "unsignedlong/above wrong";
+	EXPECT_THROW (elektraGetLongLong (elektra, "longlong/below"), std::runtime_error) << "longlong/below wrong";
+	EXPECT_THROW (elektraGetLongLong (elektra, "longlong/above"), std::runtime_error) << "longlong/above wrong";
+	EXPECT_THROW (elektraGetUnsignedLongLong (elektra, "unsignedlonglong/below"), std::runtime_error) << "unsignedlonglong/below wrong";
+	EXPECT_THROW (elektraGetUnsignedLongLong (elektra, "unsignedlonglong/above"), std::runtime_error) << "unsignedlonglong/above wrong";
+}
 
 TEST_F (Highlevel, PrimitveGetters)
 {
@@ -865,27 +1010,8 @@ TEST_F (Highlevel, EnforceMetadata)
 
 	EXPECT_NE (elektraFindKey (elektra, "testkey", "long"), nullptr);
 
-	try
-	{
-		elektraFindKey (elektra, "testkey", "string");
-		ADD_FAILURE () << "expected std::runtime_error to be thrown";
-	}
-	catch (const std::runtime_error & err)
-	{
-		std::stringstream msg;
-		msg << "fatal error " << ELEKTRA_ERROR_CODE_WRONG_TYPE;
-
-		std::string errMsg = err.what ();
-
-		auto expected = msg.str ();
-		auto actual = errMsg.substr (0, expected.length ());
-
-		EXPECT_EQ (expected, actual);
-	}
-	catch (...)
-	{
-		ADD_FAILURE () << "expected std::runtime_error to be thrown";
-	}
+	EXPECT_THROW (elektraFindKey (elektra, "testkey", "string"), std::runtime_error);
+	// TODO: check error code once error API is public and stable
 
 	EXPECT_NE (elektraFindKey (elektra, "testkey", nullptr), nullptr);
 }

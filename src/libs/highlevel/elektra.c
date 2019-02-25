@@ -75,8 +75,6 @@ ELEKTRA_TAG_DEFINITIONS (kdb_long_double_t, LongDouble, KDB_TYPE_LONG_DOUBLE, el
  *
  * @return An Elektra instance initialized with the application.
  *
- * // TODO: examples
- *
  * @see elektraClose
  */
 Elektra * elektraOpen (const char * application, KeySet * defaults, ElektraError ** error)
