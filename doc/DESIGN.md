@@ -267,9 +267,9 @@ with `KEY_TYPE`.
 
 Data structures start with a capital letter for every part of the word:
 
-    KDB ... Key Data Base Handle
-    KeySet ... Key Set
-    Key ... Key
+- `KDB` ... Key Data Base Handle
+- `KeySet` ... Key Set
+- `Key` ... Key
 
 We use singular for all names.
 
