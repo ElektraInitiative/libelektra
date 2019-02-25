@@ -59,9 +59,9 @@ kdb get user/tests/yanlr
 
 # Add new key-value pairs
 # Yan LR actually uses the YAML Smith plugin to write data
-kdb set /tests/yanlr/brand new
-kdb set /tests/yanlr/brand/new eyes
-kdb set /tests/yanlr/dance/gavin 'Dance!'
+kdb set user/tests/yanlr/brand new
+kdb set user/tests/yanlr/brand/new eyes
+kdb set user/tests/yanlr/dance/gavin 'Dance!'
 
 kdb ls /tests/yanlr
 #> user/tests/yanlr
