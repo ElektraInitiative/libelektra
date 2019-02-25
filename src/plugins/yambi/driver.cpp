@@ -27,14 +27,6 @@ using kdb::KeySet;
 
 using yambi::Parser;
 
-// -- Macros -------------------------------------------------------------------
-
-#if DEBUG
-#define DEBUG_LEVEL 1
-#else
-#define DEBUG_LEVEL 0
-#endif
-
 // -- Functions ----------------------------------------------------------------
 
 namespace
@@ -115,7 +107,10 @@ int Driver::parse (const string & filepath)
 
 	Lexer lexer{ input };
 	Parser parser{ lexer, *this };
-	parser.set_debug_level (DEBUG_LEVEL);
+
+#if DEBUG
+	parser.set_debug_level (1);
+#endif
 
 	return -parser.parse ();
 }
