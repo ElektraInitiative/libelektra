@@ -120,7 +120,7 @@ sudo make uninstall
 sudo ldconfig
 ```
 
-or in the build directory (will not honor DESTDIR!):
+or in the build directory (will not honor `DESTDIR`!):
 
 ```sh
 xargs rm < install_manifest.txt
