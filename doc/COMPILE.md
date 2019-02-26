@@ -136,8 +136,9 @@ https://build.libelektra.org/
 | clang    | 5.0                         | x86_64-pc-linux-gnu |
 | clang    | 6.0                         | x86_64-pc-linux-gnu |
 | clang    | 8.1.0                       | macOS               |
-| icc      | 14.0.2 20140120             | x86_64-pc-linux-gnu |
-| gcc/g++  |                             | openbsd 4.9.4 (¹)   |
+| gcc/g++  | 4.9.4 (¹)                   | openbsd 6.3         |
+| clang    | 6.0.0                       | freebsd 11          |
+| clang    | 6.0.1                       | freebsd 12          |
 
 > (¹) OpenBSD ships an old version of GCC per default, which can not compile Elektra.
 > A manual installation of egcc/eg++ is required. Note that not every OpenBSD
