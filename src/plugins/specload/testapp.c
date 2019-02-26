@@ -43,6 +43,8 @@ static int outputKeySet (KeySet * ks)
 	}
 
 	elektraInvokeClose (quickDump, errorKey);
+	keyDel (errorKey);
+	keyDel (quickDumpParent);
 	ksDel (quickDumpConf);
 	ksDel (modules);
 

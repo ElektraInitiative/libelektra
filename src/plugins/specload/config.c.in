@@ -7,4 +7,4 @@
  *
  */
 
-static const char * testapp_path = "@TESTAPP_PATH@";
+#define TESTAPP_PATH "@TESTAPP_PATH@"
