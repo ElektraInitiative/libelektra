@@ -8,7 +8,8 @@ not to be directly used in applications. The high-level API should be extremely 
 should be hard to use it in a wrong way. This tutorial gives an introduction for developers who want to elektrify their application
 using the high-level API.
 
-The API supports all CORBA Basic Data Types, except for `wchar`, as well as the `string` type (see also [Data Types](#data-types)).
+The API supports all CORBA Basic Data Types, except for `wchar`, as well as the `string` type
+(see also [Data Types](../high-level-api#data-types) below).
 
 ## Setup
 
@@ -50,7 +51,7 @@ sudo kdb setmeta /sw/org/myapp/#0/current/mylong default 5
 ```
 
 The getter and setter functions follow the simple naming scheme `elektra`(`Get`/`Set`)[Type]. Additionally for each one there is a
-variant to access array elements with the suffix `ArrayElement`. For more information see [below](#reading-and-writing-values).
+variant to access array elements with the suffix `ArrayElement`. For more information see [below](../high-level-api#reading-and-writing-values).
 
 You can find a complete example at the end of this document and [here](../../../examples/highlevel/README.md).
 
@@ -65,7 +66,7 @@ of your applications configuration.
 This specification should be placed into the `spec` namespace. From there the high-level API and Elektra's plugins will access it. A
 specification for use with the high-level API has to define at least the `default` and the `type` metadata for each key the application
 is going to use. The `default` metakey simple defines which value will be returned, if the user didn't set a value. `type` defines the data
-type of key. For more information on data types [see below](#data-types).
+type of key. For more information on data types [see below](../high-level-api#data-types).
 
 The API also supports passing a `KeySet` to `elektraOpen` that contains the specification. This is, however, not recommended for general use
 and is mainly useful for debugging and testing purposes.

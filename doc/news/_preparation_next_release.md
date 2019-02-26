@@ -193,7 +193,7 @@ We welcome new contributors!
 Read [here](https://www.libelektra.org/devgettingstarted/ideas) about how to get started.
 
 As first step, you could give us feedback about these release notes.
-Contact us via the [issue tracker](https://issues.libelektra.org).
+Contact us via our [issue tracker](https://issues.libelektra.org).
 
 ## Get the Release!
 
@@ -218,7 +218,7 @@ Subscribe to the
 to always get the release notifications.
 
 If you also want to participate, or for any questions and comments
-please contact us via the issue tracker [on GitHub](http://issues.libelektra.org).
+please contact us via our issue tracker [on GitHub](http://issues.libelektra.org).
 
 [Permalink to this NEWS entry](https://www.libelektra.org/news/0.8.<<VERSION>>-release)
 
