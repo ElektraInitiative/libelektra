@@ -117,9 +117,13 @@ kdb set user/tests/error/prefix/length "$(kdb get user/tests/error/prefix | wc -
 
 # Since we only want to look at the “reason” of the error, we
 # remove the other part of the error message with `head` and `tail`.
-kdb get user/tests/error | tail -n7 | head -n3 | cut -c"$(kdb get user/tests/error/prefix/length | tr -d '\n')"-
+kdb get user/tests/error | tail -n11 | head -n6 | cut -c"$(kdb get user/tests/error/prefix/length | tr -d '\n')"-
 #> config.yaml:3:1: syntax error, unexpected element, expecting end of map or key
+#>                  - But it sure is awful stuff to eat.
+#>                  ^^
 #> config.yaml:7:2: syntax error, unexpected start of sequence, expecting end of map or key
+#>                   - It was Bambi.
+#>                   ^
 
 # Fix syntax errors
 printf -- 'Thumper: - Eating greens is a special treat.\n'      >  `kdb file user/tests/yambi`

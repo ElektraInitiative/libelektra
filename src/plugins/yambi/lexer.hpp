@@ -261,6 +261,13 @@ public:
 	 * @return The next token the parser has not emitted yet
 	 */
 	symbol_type nextToken ();
+
+	/**
+	 * @brief This method returns the current input of the lexer
+	 *
+	 * @return A UTF-8 encoded string version of the parser input
+	 */
+	std::string getText ();
 };
 
 #endif // ELEKTRA_PLUGIN_YAMBI_LEXER_HPP

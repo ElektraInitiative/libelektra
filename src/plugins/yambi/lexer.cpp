@@ -470,3 +470,13 @@ Parser::symbol_type Lexer::nextToken ()
 	tokensEmitted++;
 	return symbol.get ();
 }
+
+/**
+ * @brief This method returns the current input of the lexer
+ *
+ * @return A UTF-8 encoded string version of the parser input
+ */
+string Lexer::getText ()
+{
+	return input.toString ();
+}

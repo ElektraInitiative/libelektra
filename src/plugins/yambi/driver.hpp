@@ -96,8 +96,9 @@ public:
 	 * @param location This value specifies the location of the erroneous input.
 	 * @param message This value stores the error message emitted by the Bison
 	 *                parser.
+	 * @param input This value stores the current input of the lexer/parser as text
 	 */
-	void error (const location_type & location, const std::string & message);
+	void error (const location_type & location, const std::string & message, std::string const & input);
 
 	/**
 	 * @brief This function returns the last error message produced by the parser.

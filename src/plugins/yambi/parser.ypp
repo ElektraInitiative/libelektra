@@ -133,5 +133,5 @@ element : { driver.enterElement(); } ELEMENT child { driver.exitElement(); };
 void yambi::Parser::error (const location_type& location,
                            const std::string& message)
 {
-  driver.error (location, message);
+  driver.error (location, message, lexer.getText());
 }
