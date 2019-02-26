@@ -1,17 +1,9 @@
 # 0.8.26 Release
 
-This release did not happen yet.
-
-Please update this file within PRs accordingly.
-For non-trivial changes, you can choose to be
-part of the highlighted changes. Please make
-sure to add some short tutorial (checked by
-shell recorder) or asciinema for highlighted items.
-
-Please add your name at the end of every contribution.
-**Syntax:** _(your name)_
-
-<<`scripts/generate-news-entry`>>
+- guid: 55950e64-fa4e-4eb9-9a3a-2c73d9cd6478
+- author: Markus Raab
+- pubDate: Tue, 26 Feb 2019 15:31:09 +0100
+- shortDesc: high-level API
 
 We are proud to release Elektra 0.8.26 with the new high-level API.
 
@@ -56,8 +48,9 @@ sudo kdb setmeta /sw/org/myapp/#0/current/mylong type long
 sudo kdb setmeta /sw/org/myapp/#0/current/mylong default 5
 ```
 
-In the getters/setters there is no need to specify the base path `/sw/org/myapp/#0/current` anymore, as the high-level API keeps track of that for you.
-The API supports the CORBA types already used the plugins.
+In the getters/setters there is no need to convert types or to specify the base path
+`/sw/org/myapp/#0/current`, as the high-level API does that for you.
+The API supports the CORBA types already used by the [plugins](https://www.libelektra.org/plugins/type).
 The high-level API should also be used in combination with a specification (`spec-mount`).
 When used this way, the API is designed to be error and crash free while reading values.
 Writing values, can of course still produce errors.
@@ -65,13 +58,19 @@ Writing values, can of course still produce errors.
 Another advantage of the new API is, that it will be much easier to write bindings for other languages now, because only a few simply
 types and functions have to be mapped to provide the full functionality.
 
-Take a look at the [README](/src/libs/highlevel/README.md) for more infos.
+Take a look at the [README](/src/libs/highlevel/README.md) for more information.
 
-For an example on how to build an application using this API take a look at [this](/examples/highlevel). _(Klemens Böswirth)_
+Because of the high-level API, we now have the new header files `elektra.h` and a folder `elektra` in Elektra's include directory.
+Furthermore, we install the library `libelektra-highlevel.so` and the pkgconfig file `elektra-highlevel.pc` for easier detection.
+
+For an example on how to build an application using this API take a look at [this](/examples/highlevel).
+
+A big thanks to _Klemens Böswirth_ for making this possible.
+Also big thanks to _Dominik Hofer_, who did all the foundation work for this API.
 
 ## Plugins
 
-The following section lists news about the [modules](https://www.libelektra.org/plugins/readme) we updated in this release.
+The following section lists news about the [plugins](https://www.libelektra.org/plugins/readme) we updated in this release.
 
 ### Augeas
 
@@ -128,7 +127,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 Enhanced the plugin to also check for concrete file or directory permissions such as `rwx`.
 You can specify for example that a user can write to a certain directory or file which prevents applications of runtime failures
 once they try to access the given path (such as a log directory or file).
-Simply add `check/path/user <user>` and `check/path/mode <modes>` as metadata
+Simply add `check/path/user <user>` and `check/path/mode <modes>` as specification (metadata)
 and be assured that you can safely set a path value to the key. A more detailed explanation can be found
 [here](/src/plugins/path/README.md) _(Michael Zronek)_
 
@@ -173,8 +172,12 @@ As always, the ABI and API of kdb.h is fully compatible, i.e. programs
 compiled against an older 0.8 version of Elektra will continue to work
 (ABI) and you will be able to recompile programs without errors (API).
 
-- we now support larger array numbers and `elektraArrayValidateBaseNameString`
-  returns the offset to the first digit of the array index
+We have two minor incompatible changes:
+
+- we now support larger array numbers (i.e. the larger numbers are not an error anymore)
+- `elektraArrayValidateBaseNameString` returns the offset to the first digit of the array index instead of `1`
+
+For details of the changes see below `Core` and `Libease`.
 
 ### Core
 
@@ -214,7 +217,7 @@ compiled against an older 0.8 version of Elektra will continue to work
 
 ### Libopts
 
-- This is a new lib containing only the function `elektraGetOpts`. This function can be used to parse command line arguments and
+- This is a new library containing only the function `elektraGetOpts`. This function can be used to parse command line arguments and
   environment variables and add their values to keys in the proc namespace.
 
   You can use `opt`, `opt/long` and `env` to specify a short, a long option and an environment variable. For more information take
@@ -224,7 +227,7 @@ compiled against an older 0.8 version of Elektra will continue to work
 
 - `kdb spec-mount` correctly includes type plugin to validate `type`. _(Markus Raab)_
 - `kdb setmeta` reports if it removed a metakey. _(Markus Raab)_
-- `system/elektra/version` cannot be edited or removed. _(Dominic Jäger)_
+- `system/elektra/version` now has metadata to indicate that it cannot be edited or removed. _(Dominic Jäger)_
 
 ## Scripts
 
@@ -326,7 +329,8 @@ compiled against an older 0.8 version of Elektra will continue to work
 
 ### Misc
 
-- We removed the non-functional `configure` script from the top-level directory. _(René Schwaiger)_
+- We removed the `configure` script from the top-level directory. _(René Schwaiger)_
+  CMake is now popular enough so that this helper-script is not needed.
 
 ## Infrastructure
 
@@ -371,18 +375,39 @@ plugins, bindings and tools are always up to date.
 
 We are currently working on following topics:
 
-- infallible high-level API: creating an API that guarantees you to return configuration values
-- error handling
-- YAML as default storage
-- 3-way merge
-- plugin framework
-- efficiency (mmap-cache)
+- infallible high-level API: creating an API that guarantees you to return configuration values _(Klemens Böswirth)_
+- error handling _(Michael Zronek)_
+- elektrify LCDproc _(Klemens Böswirth)_ and _(Michael Zronek)_
+- YAML as default storage _(René Schwaiger)_
+- misconfiguration tracker _(Vanessa_Kos)_
+- global mmap cache: This feature will enable Elektra to return configuration without parsing configuration files or executing other plugins as long as the configuration files are not changed. _(Mihael Pranjić)_
+
+and since recently:
+
+- automatic shell completion _(Ulrike Schaefer)_
+- plugin framework improvements _(Vid Leskovar)_
+- 3-way merge _(Dominic Jäger)_
+- reducing entry barriers for newcomers _(Hani Torabi_Makhsos)_
+- bug fixing _(Usama Morad)_ and _(Kurt Micheli)_
 
 ## Statistics
 
+In this release we created 986 commits in which
+802 files were changed, with 21687 insertions(+) and 6912 deletions(-)
+
 Following authors made this release possible:
 
-<<`scripts/git-release-stats 0.8.26`>>
+      1 commit by Aybuke Ozdemir <aybuke.147@gmail.com>
+      2 commits by Gabriel Rauter <rauter.gabriel@gmail.com>
+      6 commits by Bernhard Denner <bernhard.denner@gmail.com>
+      6 commits by Dominic Jäger <dominic.jaeger@gmail.com>
+     25 commits by Peter Nirschl <peter.nirschl@gmail.com>
+     32 commits by Mihael Pranjic <mpranj@limun.org>
+     66 commits by Michael Zronek <michael.zronek@gmail.com>
+    112 commits by Markus Raab <elektra@markus-raab.org>
+    131 commits by Klemens Böswirth <k.boeswirth+git@gmail.com>
+    141 commits by Dominik Hofer <me@dominikhofer.com>
+    464 commits by René Schwaiger <sanssecours@me.com>
 
 ## Join the Initiative!
 
@@ -399,7 +424,12 @@ or [GitHub](https://github.com/ElektraInitiative/ftp/blob/master/releases/elektr
 
 The [hashsums are:](https://github.com/ElektraInitiative/ftp/blob/master/releases/elektra-0.8.26.tar.gz.hashsum?raw=true)
 
-<<`scripts/generate-hashsums`>>
+- name: elektra-0.8.26.tar.gz
+- size: 6395865
+- md5sum: 4ef202b5d421cc497ef05221e5309ebc
+- sha1: 94f654764bcf49d0ebc7e636f444e24ca6cfeb19
+- sha256: 5806cd0b2b1075fe0d5a303649d0bd9365752053e86c684ab7c06e7f369155d3
+- sha512: b8eed395b03c3303fc0ef8ba16613994dff9fc0ab9ef54f40ecc4ff18e5fbcb89c36a20cabf6ded44b177a989fad94e920cd6230efc77770f3f36a17892f0205
 
 The release tarball is also available signed by Markus Raab using GnuPG from
 [here](https://www.libelektra.org/ftp/elektra/releases/elektra-0.8.26.tar.gz.gpg) or on
@@ -407,7 +437,6 @@ The release tarball is also available signed by Markus Raab using GnuPG from
 
 Already built API-Docu can be found [here](https://doc.libelektra.org/api/0.8.26/html/)
 or on [GitHub](https://github.com/ElektraInitiative/doc/tree/master/api/0.8.26).
-
 
 ## Stay tuned!
 
