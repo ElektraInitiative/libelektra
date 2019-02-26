@@ -408,7 +408,6 @@ The release tarball is also available signed by Markus Raab using GnuPG from
 Already built API-Docu can be found [here](https://doc.libelektra.org/api/0.8.26/html/)
 or on [GitHub](https://github.com/ElektraInitiative/doc/tree/master/api/0.8.26).
 
-
 ## Stay tuned!
 
 Subscribe to the
