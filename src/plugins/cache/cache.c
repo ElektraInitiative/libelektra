@@ -278,7 +278,7 @@ int elektraCacheGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	Key * cacheFile = keyDup (parentKey);
 	char * cacheFileName = kdbCacheFileName (ch, cacheFile);
 	ELEKTRA_ASSERT (cacheFileName != 0, "Could not construct cache file name.");
-	ELEKTRA_LOG_DEBUG ("cacheFileName: %s", cacheFileName);
+	ELEKTRA_LOG_DEBUG ("CACHE get cacheFileName: %s, parentKey: %s, %s", cacheFileName, keyName (parentKey), keyString (parentKey));
 
 	// load cache from storage
 	keySetString (cacheFile, cacheFileName);
@@ -313,7 +313,7 @@ int elektraCacheSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	Key * cacheFile = keyDup (parentKey);
 	char * cacheFileName = kdbCacheFileName (ch, cacheFile);
 	ELEKTRA_ASSERT (cacheFileName != 0, "Could not construct cache file name.");
-	ELEKTRA_LOG_DEBUG ("cacheFileName: %s", cacheFileName);
+	ELEKTRA_LOG_DEBUG ("CACHE set cacheFileName: %s, parentKey: %s, %s", cacheFileName, keyName (parentKey), keyString (parentKey));
 
 	char * tmpFile = elektraGenTempFilename (cacheFileName);
 	ELEKTRA_ASSERT (tmpFile != 0, "Could not construct temp file name.");
@@ -366,7 +366,7 @@ int elektraCacheError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 	Key * cacheFile = keyDup (parentKey);
 	char * cacheFileName = kdbCacheFileName (ch, cacheFile);
 	ELEKTRA_ASSERT (cacheFileName != 0, "Could not construct cache file name.");
-	ELEKTRA_LOG_DEBUG ("cacheFileName: %s", cacheFileName);
+	ELEKTRA_LOG_DEBUG ("CACHE error (flush) cacheFileName: %s, parentKey: %s, %s", cacheFileName, keyName (parentKey), keyString (parentKey));
 
 	// load cache from storage
 	keySetString (cacheFile, cacheFileName);
