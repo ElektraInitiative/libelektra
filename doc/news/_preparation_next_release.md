@@ -5,8 +5,8 @@ This release did not happen yet.
 Please update this file within PRs accordingly.
 For non-trivial changes, you can choose to be
 part of the highlighted changes. Please make
-sure to add some short tutorial, asciinema,
-or how-to-use for highlighted items.
+sure to add some short tutorial (checked by
+shell recorder) or asciinema for highlighted items.
 
 Please add your name at the end of every contribution.
 **Syntax:** _(your name)_
@@ -384,9 +384,15 @@ Following authors made this release possible:
 
 <<`scripts/git-release-stats 0.8.26`>>
 
-We welcome new contributors!
+## Join the Initiative!
 
-## Get It!
+We welcome new contributors!
+Read [here](https://www.libelektra.org/devgettingstarted/ideas) about how to get started.
+
+As first step, you could give us feedback about these release notes.
+Contact us via the [issue tracker](https://issues.libelektra.org).
+
+## Get the Release!
 
 You can download the release from [here](https://www.libelektra.org/ftp/elektra/releases/elektra-0.8.26.tar.gz)
 or [GitHub](https://github.com/ElektraInitiative/ftp/blob/master/releases/elektra-0.8.26.tar.gz?raw=true)
@@ -401,6 +407,7 @@ The release tarball is also available signed by Markus Raab using GnuPG from
 
 Already built API-Docu can be found [here](https://doc.libelektra.org/api/0.8.26/html/)
 or on [GitHub](https://github.com/ElektraInitiative/doc/tree/master/api/0.8.26).
+
 
 ## Stay tuned!
 
