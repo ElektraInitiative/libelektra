@@ -8,7 +8,7 @@
 
 %skeleton "lalr1.cc"
 %defines
-%define parser_class_name { Parser }
+%define @PARSER_NAME_DIRECTIVE@ { Parser }
 %define api.token.constructor
 %define api.value.type variant
 %define parse.assert
@@ -46,12 +46,13 @@ class Lexer;
 %token <std::string> PLAIN_SCALAR
 %token <std::string> SINGLE_QUOTED_SCALAR
 %token <std::string> DOUBLE_QUOTED_SCALAR
-%token <std::string> MAPPING_START
+%token <std::string> MAP_START
+%token <std::string> MAP_END
 %token <std::string> KEY
 %token <std::string> VALUE
 %token <std::string> SEQUENCE_START
+%token <std::string> SEQUENCE_END
 %token <std::string> ELEMENT
-%token <std::string> BLOCK_END
 
 %type <std::string> scalar
 
@@ -83,7 +84,7 @@ scalar : PLAIN_SCALAR { $$ = $1; }
        | DOUBLE_QUOTED_SCALAR { $$ = $1; }
        ;
 
-map : MAPPING_START pairs BLOCK_END ;
+map : MAP_START pairs MAP_END ;
 pairs : pair
       | pairs pair
       ;
@@ -91,7 +92,7 @@ pair : KEY key VALUE child_comments_empty { driver.exitPair($4); };
 key : scalar { driver.exitKey($1); } ;
 
 sequence : { driver.enterSequence(); }
-           SEQUENCE_START elements BLOCK_END
+           SEQUENCE_START elements SEQUENCE_END
            { driver.exitSequence(); }
            ;
 elements : element

@@ -26,7 +26,7 @@ int elektraCachefilterGet (Plugin * handle, KeySet * returned, Key * parentKey)
 			keyNew ("system/elektra/modules/cachefilter/exports/get", KEY_FUNC, elektraCachefilterGet, KEY_END),
 			keyNew ("system/elektra/modules/cachefilter/exports/set", KEY_FUNC, elektraCachefilterSet, KEY_END),
 			keyNew ("system/elektra/modules/cachefilter/exports/close", KEY_FUNC, elektraCachefilterClose, KEY_END),
-#include ELEKTRA_README (cachefilter)
+#include ELEKTRA_README
 			keyNew ("system/elektra/modules/cachefilter/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
@@ -102,7 +102,7 @@ int elektraCachefilterClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 	return 1; /* success */
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (cachefilter)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport ("cachefilter",

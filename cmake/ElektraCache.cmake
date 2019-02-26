@@ -109,7 +109,7 @@ set (TOOLS
 set (KDB_DB_SYSTEM
      "/etc/kdb"
      CACHE STRING
-	   "The path to the system key database.")
+	   "The path to the system key database. Relative paths are append to CMAKE_INSTALL_PREFIX.")
 
 set (KDB_DB_HOME
      "/home"
@@ -370,7 +370,7 @@ set (LIB_SUFFIX
      CACHE STRING
 	   "Optional suffix to use on lib folders (e.g. 64 for lib64)")
 
-set (MEMORYCHECK_COMMAND_OPTIONS "--error-exitcode=1")
+set (MEMORYCHECK_COMMAND_OPTIONS "--trace-children=yes --leak-check=full --gen-suppressions=all --error-exitcode=1")
 set (MEMORYCHECK_SUPPRESSIONS_FILE
      "${CMAKE_SOURCE_DIR}/tests/valgrind.suppression"
      CACHE FILEPATH
@@ -431,4 +431,6 @@ mark_as_advanced (FORCE # The following settings might be relevant to a few user
 		  Qt5Widgets_DIR
 		  Qt5_DIR
 		  Qt5DBus_DIR
+		  GPGME_EXECUTABLE
+		  YAEP_LIBRARY_CPP
 		  Qt5Svg_DIR)

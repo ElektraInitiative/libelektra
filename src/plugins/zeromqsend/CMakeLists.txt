@@ -1,8 +1,7 @@
 if (DEPENDENCY_PHASE)
-	find_package (PkgConfig QUIET)
-	pkg_check_modules (ZMQ QUIET libzmq)
+	find_package (ZeroMQ QUIET)
 
-	if (NOT ZMQ_FOUND)
+	if (NOT ZeroMQ_FOUND)
 		remove_plugin (zeromqsend "package libzmq (libzmq3-dev) not found")
 	endif ()
 endif ()
@@ -11,8 +10,8 @@ add_plugin (zeromqsend
 	    SOURCES zeromqsend.h
 		    zeromqsend.c
 		    publish.c
-	    INCLUDE_DIRECTORIES ${ZMQ_INCLUDE_DIR}
-	    LINK_LIBRARIES ${ZMQ_LIBRARIES})
+	    INCLUDE_DIRECTORIES ${ZeroMQ_INCLUDE_DIR}
+	    LINK_LIBRARIES ${ZeroMQ_LIBRARIES})
 
 if (ADDTESTING_PHASE) # the test requires pthread
 	find_package (Threads QUIET)

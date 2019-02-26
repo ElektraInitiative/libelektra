@@ -69,13 +69,13 @@ ingroup:kdb
 
 number:9
 description:Insufficient permissions to open configuration file for writing. You might want to retry as root.
-severity:normal
+severity:error
 ingroup:kdb
 see:75 109 110
 
 number:10
 description:general parse error
-severity:normal
+severity:error
 ingroup:kdb
 macro:PARSE
 
@@ -657,7 +657,7 @@ see:9 75 110
 
 number:110
 description:could not open configuration file for reading.
-severity:normal
+severity:error
 ingroup:plugin
 module:storage
 see:9 75 109
@@ -1286,3 +1286,41 @@ severity:error
 ingroup:plugin
 module:reference
 macro:REFERENCE_NOT_FOUND
+
+number:205
+description:Connection Error occurred
+severity:error
+ingroup:plugin
+module:network
+
+number:206
+description:An unknown option was found (see reason).
+severity:error
+ingroup:opts
+macro:OPTS_UNKNOWN_OPTION
+
+number:207
+description:An option was used in an unsupported way (see reason).
+severity:error
+ingroup:opts
+macro:OPTS_ILLEGAL_USE
+
+number:208
+description:The opts specification contains mistakes (see reason).
+severity:error
+ingroup:opts
+macro:OPTS_ILLEGAL_SPEC
+
+number:209
+description:Could not change to user. You might want to try as root (use sudo !!).
+severity:error
+ingroup:plugin
+module:path
+macro:USER_PERMISSION_ERROR
+
+number:210
+description:Detected incorrect permissions for file/directory
+severity:error
+ingroup:plugin
+module:path
+macro:INVALID_PERMISSION

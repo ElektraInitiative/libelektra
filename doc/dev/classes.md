@@ -14,14 +14,14 @@ programming languages presents no problem.
 
 ## KeySet
 
-The central data structure in Elektra is a `KeySet`.  It aggregates `Key`
+The central data structure in Elektra is a `KeySet`. It aggregates `Key`
 objects in order to describe configuration in an easy but complete way.
 As the name "set" already implies every `Key` in a `KeySet` has a
-unique name.  A user can iterate over the `Key` objects of a `KeySet`.
-`KeySet` sorts the keys by their names.  This yields a deterministic
-order advantage.  So, independent of the appending sequence and, in
+unique name. A user can iterate over the `Key` objects of a `KeySet`.
+`KeySet` sorts the keys by their names. This yields a deterministic
+order advantage. So, independent of the appending sequence and, in
 particular, the number of fetches and updates, `KeySet` guarantees the
-same order of the `Key` objects.  Some configuration storage systems
+same order of the `Key` objects. Some configuration storage systems
 need this property, because they cannot remember a specific order.
 On the other hand, any particular order can easily be introduced
 (See [order](/doc/METADATA.ini)).
@@ -29,15 +29,14 @@ On the other hand, any particular order can easily be introduced
 On the one side backends generate or store a `KeySet` object and, on the
 other side, elektrified applications receive and send a `KeySet` object.
 Both sides, as well as the core in between, have the possibility to
-iterate, update, modify, extend and reduce the key set.  Appending of
-new or existing `Key` objects extends the key set.  Otherwise it can be
-reduced if keys are popped out.  The `Key` object becomes independent from
-the `KeySet` afterwards.  The user can still change such a key or append
-it into another key set.  The affiliation to a key set is not exclusive.
+iterate, update, modify, extend and reduce the key set. Appending of
+new or existing `Key` objects extends the key set. Otherwise it can be
+reduced if keys are popped out. The `Key` object becomes independent from
+the `KeySet` afterwards. The user can still change such a key or append
+it into another key set. The affiliation to a key set is not exclusive.
 
 Every key in a `KeySet` object has a unique name. Appending `Key` objects with
 the same name will override the already existing `Key` object.
-
 
 ## KDB
 

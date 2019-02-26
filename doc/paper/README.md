@@ -20,4 +20,3 @@ Please cite Elektra the following way:
 For more information, see:
 
 http://joss.theoj.org/papers/10.21105/joss.00044
-

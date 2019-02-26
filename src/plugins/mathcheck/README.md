@@ -23,9 +23,10 @@ Keynames are all either relative to to-be-tested key (starting with `./` or `../
 ## Examples
 
 `check/math = "== + ../testval1 + ../testval2 ../testval3"` compares the keyvalue to the sum of testval1-3 and yields an error if the values are not equal.
-`check/math = "<= - @/testval1 * @/testval2 @/testval3"` tests if the keyvalue is less than or equal to testval1 - (testval2 * testval3) and yields an error if not.
+`check/math = "<= - @/testval1 * @/testval2 @/testval3"` tests if the keyvalue is less than or equal to `testval1 - (testval2 * testval3)` and yields an error if not.
 
 Full example:
+
 ```sh
 # Backup-and-Restore:/tests/mathcheck
 
@@ -34,7 +35,7 @@ sudo kdb mount mathcheck.dump /tests/mathcheck mathcheck
 kdb set /tests/mathcheck/a 3.1
 kdb set /tests/mathcheck/b 4.5
 kdb set /tests/mathcheck/k 7.6
-kdb setmeta user/tests/mathcheck/k check/math "== + ../a ../b"
+kdb setmeta /tests/mathcheck/k check/math "== + ../a ../b"
 
 # should fail
 kdb set /tests/mathcheck/k 7.7
@@ -51,9 +52,11 @@ kdb set /tests/mathcheck/k 7.7
 # Mountpoint: /tests/mathcheck
 # Configfile: /home/thomas/.config/mathcheck.dump.25680:1478749409.938013.tmp
 ```
+
 To calculate values on-demand you can use:
+
 ```sh
-kdb setmeta user/tests/mathcheck/k check/math ":= + @/a @/b"
+kdb setmeta /tests/mathcheck/k check/math ":= + @/a @/b"
 kdb set /tests/mathcheck/a 8.0
 kdb set /tests/mathcheck/b 4.5
 
@@ -65,9 +68,11 @@ kdb set /tests/mathcheck/a 5.5
 kdb get /tests/mathcheck/k
 #> 10
 ```
+
 It also works with constants:
+
 ```sh
-kdb setmeta user/tests/mathcheck/k check/math ":= + ../a '5'"
+kdb setmeta /tests/mathcheck/k check/math ":= + ../a '5'"
 kdb set /tests/mathcheck/a 5.5
 
 kdb get /tests/mathcheck/k

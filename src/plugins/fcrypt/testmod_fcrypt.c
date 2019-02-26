@@ -158,7 +158,7 @@ static void test_gpg (void)
 	Key * msg = keyNew (0);
 	keySetBinary (msg, test_key_asc, test_key_asc_len);
 
-	succeed_if (CRYPTO_PLUGIN_FUNCTION (gpgCall) (conf, errorKey, msg, argv, argc) == 1, "failed to install the GPG test key");
+	succeed_if (ELEKTRA_PLUGIN_FUNCTION (gpgCall) (conf, errorKey, msg, argv, argc) == 1, "failed to install the GPG test key");
 
 	keyDel (msg);
 	keyDel (errorKey);

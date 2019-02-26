@@ -20,6 +20,6 @@ int elektraGlobGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraGlobSet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraGlobError (Plugin * handle, KeySet * ks, Key * parentKey);
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (glob);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 #endif

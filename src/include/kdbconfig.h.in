@@ -21,9 +21,8 @@
 #define KDB_DB_USER              "@KDB_DB_USER@"
 
 /** Prefix to search specification configuration (spec/). */
-#define KDB_DB_SPEC              "@BUILTIN_SPEC_FOLDER@"
+#define KDB_DB_SPEC              "@KDB_DB_SPEC@"
 
-#define KDB_DB_SPEC_REAL              "@BUILTIN_SPEC_REAL_FOLDER@"
 /** The folder to add for directory namespace */
 #define KDB_DB_DIR               "@KDB_DB_DIR@"
 
@@ -86,6 +85,8 @@
 #define SIZEOF_MODE_T            @SIZEOF_MODE_T@
 #define SIZEOF_TV_USEC           @SIZEOF_TV_USEC@
 #define SIZEOF_STAT_ST_SIZE      @SIZEOF_STAT_ST_SIZE@
+#define SIZEOF_FLOAT             @SIZEOF_FLOAT@
+#define SIZEOF_DOUBLE            @SIZEOF_DOUBLE@
 
 #cmakedefine HAVE_SIZEOF_LONG_LONG
 #ifdef HAVE_SIZEOF_LONG_LONG

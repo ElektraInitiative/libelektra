@@ -31,6 +31,6 @@ int elektraAugeasGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraAugeasSet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraAugeasError (Plugin * handle, KeySet * ks, Key * parentKey);
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (augeas);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 #endif

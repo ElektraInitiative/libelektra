@@ -14,15 +14,34 @@
 # ~~~
 
 if (NOT OPENSSL_FOUND)
-	include (FindPkgConfig)
+
+	# Use Homebrew version of OpenSSL on macOS, if OpenSSL is installed and `OPENSSL_ROOT_DIR` is not set.
 	if (APPLE
 	    AND NOT
 		DEFINED
-		ENV{PKG_CONFIG_PATH})
-		# Add default pkg-config path of Homebrew’s OpenSSL version
-		set (ENV{PKG_CONFIG_PATH} "/usr/local/opt/openssl/lib/pkgconfig")
-	endif (APPLE AND NOT DEFINED ENV{PKG_CONFIG_PATH})
-	pkg_search_module (OPENSSL QUIET openssl)
+		OPENSSL_ROOT_DIR)
+		execute_process (COMMAND brew list openssl
+				 RESULT_VARIABLE FAILURE
+				 OUTPUT_QUIET
+				 ERROR_QUIET)
+		if (NOT FAILURE)
+			set (OPENSSL_ROOT_DIR /usr/local/opt/openssl)
+		endif (NOT FAILURE)
+	endif (APPLE AND NOT DEFINED OPENSSL_ROOT_DIR)
+
+	# ~~~
+	# Disable warnings about unset CMake policy in `FindOpenSSL.cmake`.
+	# TODO: Remove the calls to `cmake_policy` after the CMake developers update `FindOpenSSL.cmake`.
+	# ~~~
+	if (CMAKE_VERSION VERSION_LESS 3.1)
+		# Policy CMP0054 is not known to CMake 3.0
+		find_package (OpenSSL QUIET)
+	else (CMAKE_VERSION VERSION_LESS 3.1)
+		cmake_policy (PUSH)
+		cmake_policy (SET CMP0054 NEW)
+		find_package (OpenSSL QUIET)
+		cmake_policy (POP)
+	endif (CMAKE_VERSION VERSION_LESS 3.1)
 endif ()
 
 if (OPENSSL_FOUND)
@@ -31,7 +50,7 @@ if (OPENSSL_FOUND)
 	try_compile (HAS_OPENSSL_4SURE
 		     "${CMAKE_BINARY_DIR}"
 		     "${PROJECT_SOURCE_DIR}/src/plugins/crypto/compile_openssl.c"
-		     CMAKE_FLAGS -DINCLUDE_DIRECTORIES:STRING=${OPENSSL_INCLUDE_DIRS}
+		     CMAKE_FLAGS -DINCLUDE_DIRECTORIES:STRING=${OPENSSL_INCLUDE_DIR}
 				 -DLINK_LIBRARIES:PATH=${OPENSSL_LIBRARIES})
 
 	if (NOT HAS_OPENSSL_4SURE)

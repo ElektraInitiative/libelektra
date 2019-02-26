@@ -11,7 +11,7 @@ endif ()
 add_plugin (range
 	    SOURCES range.h
 		    range.c
-	    LINK_LIBRARIES "-lm"
+	    LINK_LIBRARIES m
 	    ADD_TEST
 	    TEST_README)
 

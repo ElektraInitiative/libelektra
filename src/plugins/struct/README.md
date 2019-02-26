@@ -118,8 +118,7 @@ No contract checker, however, would detect the missing configuration.
 
 This approach for defining the structure works recursively. Every
 element can have a value with a new structure check.
- Additionally, multiple template parameters
+Additionally, multiple template parameters
 can support
 even more generic data structures.
 This is, however, not yet implemented.
-

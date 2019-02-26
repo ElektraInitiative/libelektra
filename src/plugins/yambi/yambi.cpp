@@ -40,7 +40,7 @@ CppKeySet getContract ()
 			  keyNew ("system/elektra/modules/yambi/exports", KEY_END),
 			  keyNew ("system/elektra/modules/yambi/exports/get", KEY_FUNC, elektraYambiGet, KEY_END),
 			  keyNew ("system/elektra/modules/yambi/exports/set", KEY_FUNC, elektraYambiSet, KEY_END),
-#include ELEKTRA_README (yambi)
+#include ELEKTRA_README
 			  keyNew ("system/elektra/modules/yambi/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
 			  KS_END };
 }
@@ -88,7 +88,7 @@ int elektraYambiSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_U
 	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (yambi)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	return elektraPluginExport ("yambi", ELEKTRA_PLUGIN_GET, &elektraYambiGet, ELEKTRA_PLUGIN_SET, &elektraYambiSet,
 				    ELEKTRA_PLUGIN_END);

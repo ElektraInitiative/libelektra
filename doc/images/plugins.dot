@@ -159,6 +159,8 @@ strict digraph G {
 	python [shape=Mdiamond];
 	python2 [shape=Mdiamond];
 	range [shape=Mdiamond];
+	reference [shape=Mdiamond];
+	regexdispatcher [shape=Mdiamond];
 	storage [shape=Mdiamond];
 	regexstore -> storage;
 	filter [shape=Mdiamond];
@@ -239,6 +241,10 @@ strict digraph G {
 	yawn -> storage;
 	yaml [shape=Mdiamond];
 	yawn -> yaml;
+	storage [shape=Mdiamond];
+	yaypeg -> storage;
+	yaml [shape=Mdiamond];
+	yaypeg -> yaml;
 	notification [shape=Mdiamond];
 	zeromqrecv -> notification;
 	notification [shape=Mdiamond];

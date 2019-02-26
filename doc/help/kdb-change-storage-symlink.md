@@ -1,5 +1,4 @@
-kdb-change-storage-symlink -- Changes the default storage symlink
-===================================================================
+# kdb-change-storage-symlink -- Changes the default storage symlink
 
 ## SYNOPSIS
 

@@ -32,12 +32,12 @@ using antlr4::ParseCancellationException;
 /**
  * @brief This constructor creates a new YAML lexer for the given input.
  *
- * @param input This character stream stores the data this lexer scans.
+ * @param stream This character stream stores the data this lexer scans.
  */
-YAMLLexer::YAMLLexer (CharStream * input)
+YAMLLexer::YAMLLexer (CharStream * stream)
 {
-	this->input = input;
-	this->source = make_pair (this, input);
+	this->input = stream;
+	this->source = make_pair (this, stream);
 	scanStart ();
 }
 
@@ -79,7 +79,7 @@ unique_ptr<Token> YAMLLexer::nextToken ()
 	// If `fetchTokens` was unable to retrieve a token (error condition), we emit `EOF`.
 	if (tokens.size () <= 0)
 	{
-		tokens.push_back (commonToken (Token::EOF, input->index (), input->index (), "EOF"));
+		tokens.push_back (commonToken (Token::EOF, input->index (), input->index (), "end of file"));
 	}
 	unique_ptr<CommonToken> token = move (tokens.front ());
 	tokens.pop_front ();
@@ -164,28 +164,16 @@ Ref<TokenFactory<CommonToken>> YAMLLexer::getTokenFactory ()
  *              inside the character stream `input`.
  * @param stop This number specifies the stop index of the returned token
  *             inside the character stream `input`.
- *
- * @return A token with the specified parameters
- */
-unique_ptr<CommonToken> YAMLLexer::commonToken (size_t type, size_t start, size_t stop)
-{
-	return factory->create (source, type, "", Token::DEFAULT_CHANNEL, start, stop, line, column);
-}
-
-/**
- * @brief This function creates a new token with the specified parameters.
- *
- * @param type This parameter specifies the type of the token this function
- *             should create.
- * @param start This number specifies the start index of the returned token
- *              inside the character stream `input`.
- * @param stop This number specifies the stop index of the returned token
- *             inside the character stream `input`.
  * @param text This string specifies the text of the returned token.
  *
  * @return A token with the specified parameters
  */
-unique_ptr<CommonToken> YAMLLexer::commonToken (size_t type, size_t start, size_t stop, string text)
+unique_ptr<CommonToken> YAMLLexer::commonToken (size_t type, size_t start, size_t stop, string text = "")
+#if defined(__clang__)
+	// Ignore warning about call on pointer of wrong object type (`CommonTokenFactory` instead of `TokenFactory<CommonToken>`)
+	// This should not be a problem, since `CommonTokenFactory` inherits from `TokenFactory<CommonToken>`.
+	__attribute__ ((no_sanitize ("undefined")))
+#endif
 {
 	return factory->create (source, type, text, Token::DEFAULT_CHANNEL, start, stop, line, column);
 }
@@ -197,15 +185,18 @@ unique_ptr<CommonToken> YAMLLexer::commonToken (size_t type, size_t start, size_
  * @param lineIndex This parameter specifies the indentation value that this
  *                  function compares to the current indentation.
  *
+ * @param type This value specifies the block collection type that
+ *             `lineIndex` might start.
+ *
  * @retval true If the function added an indentation value
  *         false Otherwise
  */
-bool YAMLLexer::addIndentation (size_t const lineIndex)
+bool YAMLLexer::addIndentation (size_t const lineIndex, Level::Type type)
 {
-	if (lineIndex > indents.top ())
+	if (lineIndex > levels.top ().indent)
 	{
 		ELEKTRA_LOG_DEBUG ("Add indentation %zu", lineIndex);
-		indents.push (lineIndex);
+		levels.push (Level{ lineIndex, type });
 		return true;
 	}
 	return false;
@@ -372,12 +363,13 @@ void YAMLLexer::addSimpleKeyCandidate ()
  */
 void YAMLLexer::addBlockEnd (size_t const lineIndex)
 {
-	while (lineIndex < indents.top ())
+	while (lineIndex < levels.top ().indent)
 	{
 		ELEKTRA_LOG_DEBUG ("Add block end");
 		size_t index = input->index ();
-		tokens.push_back (commonToken (BLOCK_END, index, index, "BLOCK END"));
-		indents.pop ();
+		tokens.push_back (levels.top ().type == Level::Type::MAP ? commonToken (MAP_END, index, index, "end of map") :
+									   commonToken (SEQUENCE_END, index, index, "end of sequence"));
+		levels.pop ();
 	}
 }
 
@@ -388,7 +380,7 @@ void YAMLLexer::addBlockEnd (size_t const lineIndex)
 void YAMLLexer::scanStart ()
 {
 	ELEKTRA_LOG_DEBUG ("Scan start");
-	auto start = commonToken (STREAM_START, input->index (), input->index (), "START");
+	auto start = commonToken (STREAM_START, input->index (), input->index (), "start of document");
 	tokens.push_back (move (start));
 }
 
@@ -398,8 +390,8 @@ void YAMLLexer::scanStart ()
 void YAMLLexer::scanEnd ()
 {
 	addBlockEnd (0);
-	tokens.push_back (commonToken (STREAM_END, input->index (), input->index (), "END"));
-	tokens.push_back (commonToken (Token::EOF, input->index (), input->index (), "EOF"));
+	tokens.push_back (commonToken (STREAM_END, input->index (), input->index (), "end of document"));
+	tokens.push_back (commonToken (Token::EOF, input->index (), input->index (), "end of file"));
 	done = true;
 }
 
@@ -523,7 +515,7 @@ void YAMLLexer::scanComment ()
 	ELEKTRA_LOG_DEBUG ("Scan comment");
 	size_t start = input->index ();
 
-	while (input->LA (1) != '\n')
+	while (input->LA (1) != '\n' && input->LA (1) != Token::EOF)
 	{
 		forward ();
 	}
@@ -545,9 +537,9 @@ void YAMLLexer::scanValue ()
 	}
 	size_t start = simpleKey.first->getCharPositionInLine ();
 	tokens.insert (tokens.begin () + simpleKey.second - tokensEmitted, move (simpleKey.first));
-	if (addIndentation (start))
+	if (addIndentation (start, Level::Type::MAP))
 	{
-		tokens.push_front (commonToken (MAPPING_START, start, column, "MAPPING START"));
+		tokens.push_front (commonToken (MAP_START, start, column, "start of map"));
 	}
 }
 
@@ -558,9 +550,9 @@ void YAMLLexer::scanValue ()
 void YAMLLexer::scanElement ()
 {
 	ELEKTRA_LOG_DEBUG ("Scan element");
-	if (addIndentation (column))
+	if (addIndentation (column, Level::Type::SEQUENCE))
 	{
-		tokens.push_back (commonToken (SEQUENCE_START, input->index (), column, "SEQUENCE START"));
+		tokens.push_back (commonToken (SEQUENCE_START, input->index (), column, "start of sequence"));
 	}
 	tokens.push_back (commonToken (ELEMENT, input->index (), input->index () + 1));
 	forward (2);

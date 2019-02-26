@@ -44,11 +44,11 @@ function (add_scripttest testname)
 				set (excluded_tests
 				     check_bashisms
 				     check_posix
-				     check_external
 				     check_formatting
 				     check_gen
 				     check_oclint
-				     check_plugins)
+				     check_plugins
+				     check_spelling)
 
 				list (FIND excluded_tests
 					   "${testname_we}"
@@ -141,3 +141,5 @@ foreach (file ${SCRIPT_TESTS})
 	get_filename_component (name ${file} NAME)
 	add_scripttest (${name})
 endforeach (file ${SCRIPT_TESTS})
+
+add_subdirectory (external)

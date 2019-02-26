@@ -106,6 +106,8 @@ Remove/Refactor/Rename obsolete/not needed methods:
    (system/elektra/mountpoints and system/elektra/globalplugins)
 - remove legacy bootstrapping: always use KDB_FILE_INIT (elektra.ecf)
 - recursive backend=plugin (separate commit method)
+- remove legacy configuration of the `kdb` tool
+  (% profile and /sw/kdb/ in src/tools/kdb/cmdline.cpp line 290-300)
 
 
 == Methods ==

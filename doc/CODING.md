@@ -10,10 +10,10 @@ Make sure to read [DESIGN](/doc/DESIGN.md) together with this document.
 After you downloaded and unpacked Elektra you should see some folders.
 The most important are:
 
- * **src:** This directory contains the source of the libraries, tools and plugins.
- * **doc:** General documentation for the project and the core library.
- * **examples:** Examples on how to use the core library.
- * **tests:** Contains the testing framework for the source (**src**).
+- **src:** This directory contains the source of the libraries, tools and plugins.
+- **doc:** General documentation for the project and the core library.
+- **examples:** Examples on how to use the core library.
+- **tests:** Contains the testing framework for the source (**src**).
 
 ## Source Code
 
@@ -73,7 +73,7 @@ Thus please use following techniques (in order of preference):
 
    `#include <kdblogger.h>`
 
-   `ELEKTRA_LOG ("formatted text to be printed according log filters", ...)`
+   `ELEKTRA_LOG ("formatted text to be printed according to log filters", ...)`
 
    Read [HERE](/doc/dev/logging.md) for how to enable the logger.
 
@@ -84,38 +84,38 @@ Thus please use following techniques (in order of preference):
 
 - Limits
 
-  * Functions should not exceed 100 lines.
-  * Files should not exceed 1000 lines.
-  * A line should not be longer than 140 characters.
+  - Functions should not exceed 100 lines.
+  - Files should not exceed 1000 lines.
+  - A line should not be longer than 140 characters.
 
   Split up when those limits are reached.
   Rationale: Readability with split windows.
 
 - Indentation
 
-  * Use tabs for indentation.
-  * One tab equals 8 spaces.
+  - Use tabs for indentation.
+  - One tab equals 8 spaces.
 
 - Blocks
 
-  * Use blocks even for single line statements.
-  * Curly braces go on a line on their own on the previous indentation level.
-  * Avoid multiple variable declarations at one place.
-  * Declare Variables as late as possible, preferable within blocks.
+  - Use blocks even for single line statements.
+  - Curly braces go on a line on their own on the previous indentation level.
+  - Avoid multiple variable declarations at one place.
+  - Declare Variables as late as possible, preferable within blocks.
 
 - Naming
 
-  * Use camelCase for functions and variables.
-  * Start types with upper-case, everything else with lower-case.
-  * Prefix names with `elektra` for internal usage. External API either starts
+  - Use camelCase for functions and variables.
+  - Start types with upper-case, everything else with lower-case.
+  - Prefix names with `elektra` for internal usage. External API either starts
     with `ks`, `key` or `kdb`.
 
 - Whitespaces
 
-  * Use space before and after equal when assigning a value.
-  * Use space before round parenthesis ( `(` ).
-  * Use space before and after `*` from Pointers.
-  * Use space after `,` of every function argument.
+  - Use space before and after equal when assigning a value.
+  - Use space before round parenthesis ( `(` ).
+  - Use space before and after `*` from Pointers.
+  - Use space after `,` of every function argument.
 
 The [reformat script](/scripts/reformat-source) can ensure most code style rules,
 but it is obviously not capable of ensuring everything (e.g. naming conventions).
@@ -123,24 +123,24 @@ So do not give this responsibility out of hands entirely.
 
 ### C Guidelines
 
- * The compiler shall not emit any warning (or error).
- * Use goto only for error situations.
- * Use `const` as much as possible.
- * Use `static` methods if they should not be externally visible.
- * C-Files have extension `.c`, Header files `.h`.
- * Use internal functions: prefer to use elektraMalloc, elektraFree.
+- The compiler shall not emit any warning (or error).
+- Use goto only for error situations.
+- Use `const` as much as possible.
+- Use `static` methods if they should not be externally visible.
+- C-Files have extension `.c`, Header files `.h`.
+- Use internal functions: prefer to use elektraMalloc, elektraFree.
 
 **Example:** [src/libs/elektra/kdb.c](/src/libs/elektra/kdb.c)
 
 ### C++ Guidelines
 
- * Everything as in C if not noted otherwise.
- * Do not use goto at all, use RAII instead.
- * Do not use raw pointers, use smart pointers instead.
- * C++-Files have extension `.cpp`, Header files `.hpp`.
- * Do not use `static`, but anonymous namespaces.
- * Write everything within namespaces and do not prefix names.
- * Oriented towards [more safe and modern usage](https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md).
+- Everything as in C if not noted otherwise.
+- Do not use goto at all, use RAII instead.
+- Do not use raw pointers, use smart pointers instead.
+- C++-Files have extension `.cpp`, Header files `.hpp`.
+- Do not use `static`, but anonymous namespaces.
+- Write everything within namespaces and do not prefix names.
+- Oriented towards [more safe and modern usage](https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md).
 
 **Example:** [src/bindings/cpp/include/kdb.hpp](/src/bindings/cpp/include/kdb.hpp)
 
@@ -182,14 +182,24 @@ Most notably use:
 
 ### Markdown Guidelines
 
- * File Ending is `.md` or integrated within Doxygen comments
- * Only use `#` characters at the left side of headers/titles
- * Use tabs or fences for code/examples
- * Prefer fences which indicate the used language for better syntax highlighting
- * Fences with sh are for the [shell recorder syntax](/tests/shell/shell_recorder/tutorial_wrapper)
- * `README.md` and tutorials should be written exclusively with shell recorder syntax
-   so that we know that the code in the tutorial produces output as expected
+- File Ending is `.md` or integrated within Doxygen comments
+- Only use `#` characters at the left side of headers/titles
+- Use fences for code/examples
+- Prefer fences which indicate the used language for better syntax highlighting
+- Fences with sh are for the [shell recorder syntax](/tests/shell/shell_recorder/tutorial_wrapper)
+- `README.md` and tutorials should be written exclusively with shell recorder syntax
+  so that we know that the code in the tutorial produces output as expected
 
+Please use [`prettier`](https://prettier.io) to format documentation according to the guidelines given above. If you want, you can also
+format all Markdown files in the repository using the script [`reformat-markdown`](/scripts/reformat-markdown).
+
+Under certain **exceptional** circumstances you might want to prevent `prettier` from formatting certain parts of a Markdown file. To do
+that you can
+
+- enclose the Markdown code in `<!-- prettier-ignore-start -->` and `<!-- prettier-ignore-end -->` tags, or
+- use `<!-- prettier-ignore -->` to disable formatting till the end of a file
+
+.
 
 ### Doxygen Guidelines
 
@@ -202,16 +212,15 @@ Links between Markdown files will be converted with the
 **Markdown pages are used in the pdf, therefore watch which characters you use and
 provide a proper encoding!**
 
- * use `@` to start Doxygen tags
- * Do not duplicate information available in git in Doxygen comments.
- * Use `@copydoc`, `@copybrief` and `@copydetails` intensively (except for file headers).
+- use `@` to start Doxygen tags
+- Do not duplicate information available in git in Doxygen comments.
+- Use `@copydoc`, `@copybrief` and `@copydetails` intensively (except for file headers).
 
 ### File Headers
 
 Files should start with:
 
-\verbatim
-
+```c
 	/**
 	 * @file
 	 *
@@ -219,12 +228,11 @@ Files should start with:
 	 *
 	 * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
 	 */
-
-\endverbatim
+```
 
 Note:
 
-- `@` `file` has *no* parameters.
+- `@` `file` has _no_ parameters.
 - `@` `brief` should contain a short statement about the content of the file and is needed
   so that your file gets listed at https://doc.libelektra.org/api/latest/html/files.html
 

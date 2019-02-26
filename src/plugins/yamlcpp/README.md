@@ -23,7 +23,7 @@ You can mount this plugin via `kdb mount`:
 sudo kdb mount config.yaml /tests/yamlcpp yamlcpp
 ```
 
-. To unmount the plugin use  `kdb umount`:
+. To unmount the plugin use `kdb umount`:
 
 ```sh
 sudo kdb umount /tests/yamlcpp
@@ -74,16 +74,16 @@ sudo kdb umount /tests/yamlcpp
 YAML CPP provides basic support for Elektra’s array data type.
 
 ```sh
-# Mount yamlcpp plugin to cascading namespace `/tests/yamlcpp`
-sudo kdb mount config.yaml /tests/yamlcpp yamlcpp
+# Mount yamlcpp plugin to `user/tests/yamlcpp`
+sudo kdb mount config.yaml user/tests/yamlcpp yamlcpp
 
 # Manually add an array to the database
-echo 'sunny:'       >  `kdb file /tests/yamlcpp`
-echo '  - Charlie'  >> `kdb file /tests/yamlcpp`
-echo '  - Dee'      >> `kdb file /tests/yamlcpp`
+echo 'sunny:'       >  `kdb file user/tests/yamlcpp`
+echo '  - Charlie'  >> `kdb file user/tests/yamlcpp`
+echo '  - Dee'      >> `kdb file user/tests/yamlcpp`
 
 # List the array entries
-kdb ls /tests/yamlcpp
+kdb ls user/tests/yamlcpp
 #> user/tests/yamlcpp/sunny
 #> user/tests/yamlcpp/sunny/#0
 #> user/tests/yamlcpp/sunny/#1
@@ -93,7 +93,7 @@ kdb get user/tests/yamlcpp/sunny/#1
 #> Dee
 
 # You can retrieve the last index of an array by reading the metakey `array`
-kdb getmeta /tests/yamlcpp/sunny array
+kdb getmeta user/tests/yamlcpp/sunny array
 # 1
 
 # Extend the array
@@ -126,23 +126,23 @@ kdb export user/tests/yamlcpp/movies yamlcpp
 #> - A Silent Voice
 
 # Undo modifications to the key database
-kdb rm -r /tests/yamlcpp
-sudo kdb umount /tests/yamlcpp
+kdb rm -r user/tests/yamlcpp
+sudo kdb umount user/tests/yamlcpp
 ```
 
 The plugin also supports nested arrays.
 
 ```sh
-# Mount yamlcpp plugin to cascading namespace `/tests/yamlcpp`
-sudo kdb mount config.yaml /tests/yamlcpp yamlcpp
+# Mount yamlcpp plugin to `user/tests/yamlcpp`
+sudo kdb mount config.yaml user/tests/yamlcpp yamlcpp
 
 # Add some key value pairs
-kdb set /tests/yamlcpp/key value
-kdb set /tests/yamlcpp/array/#0 scalar
-kdb set /tests/yamlcpp/array/#1/key value
-kdb set /tests/yamlcpp/array/#1/🔑 🙈
+kdb set user/tests/yamlcpp/key value
+kdb set user/tests/yamlcpp/array/#0 scalar
+kdb set user/tests/yamlcpp/array/#1/key value
+kdb set user/tests/yamlcpp/array/#1/🔑 🙈
 
-kdb ls /tests/yamlcpp
+kdb ls user/tests/yamlcpp
 #> user/tests/yamlcpp/array
 #> user/tests/yamlcpp/array/#0
 #> user/tests/yamlcpp/array/#1/key
@@ -150,18 +150,18 @@ kdb ls /tests/yamlcpp
 #> user/tests/yamlcpp/key
 
 # Retrieve part of an array value
-kdb get /tests/yamlcpp/array/#1/key
+kdb get user/tests/yamlcpp/array/#1/key
 #> value
 
 # Since an array saves a list of values, an array parent
 # - which represent the array - does not store a value!
-echo "/tests/yamlcpp/array: “`kdb get /tests/yamlcpp/array`”"
-#> /tests/yamlcpp/array: “”
+echo "user/tests/yamlcpp/array: “`kdb get user/tests/yamlcpp/array`”"
+#> user/tests/yamlcpp/array: “”
 
 # Remove part of an array value
-kdb rm /tests/yamlcpp/array/#1/key
+kdb rm user/tests/yamlcpp/array/#1/key
 
-kdb ls /tests/yamlcpp
+kdb ls user/tests/yamlcpp
 #> user/tests/yamlcpp/array
 #> user/tests/yamlcpp/array/#0
 #> user/tests/yamlcpp/array/#1/🔑
@@ -173,15 +173,15 @@ kdb ls /tests/yamlcpp
 # we remove `key` before we retrieve the data. This way
 # we make sure that the output below will always look
 # the same.
-kdb rm /tests/yamlcpp/key
-kdb file /tests/yamlcpp | xargs cat
+kdb rm user/tests/yamlcpp/key
+kdb file user/tests/yamlcpp | xargs cat
 #> array:
 #>   - scalar
 #>   - 🔑: 🙈
 
 # Undo modifications to the key database
-kdb rm -r /tests/yamlcpp
-sudo kdb umount /tests/yamlcpp
+kdb rm -r user/tests/yamlcpp
+sudo kdb umount user/tests/yamlcpp
 ```
 
 ## Metadata
@@ -190,27 +190,26 @@ The plugin supports metadata. The example below shows how a basic `Key` includin
 
 ```yaml
 key without metadata: value
-key with metadata:
-  !elektra/meta
-    - value2
-    - metakey: metavalue
-      empty metakey:
-      another metakey: another metavalue
+key with metadata: !elektra/meta
+  - value2
+  - metakey: metavalue
+    empty metakey:
+    another metakey: another metavalue
 ```
 
 . As we can see above the value containing metadata is marked by the tag handle `!elektra/meta`. The data type contains a list with two elements. The first element of this list specifies the value of the key, while the second element contains a map saving the metadata for the key. The data above represents the following key set in Elektra if we mount the file directly to the namespace `user`:
 
-|            Name           |  Value |     Metaname    |     Metavalue     |
-|:-------------------------:|:------:|:---------------:|:-----------------:|
+|           Name            | Value  |    Metaname     |     Metavalue     |
+| :-----------------------: | :----: | :-------------: | :---------------: |
 | user/key without metadata | value1 |        —        |         —         |
-| user/key with metadata    | value2 |     metakey     |     metavalue     |
+|  user/key with metadata   | value2 |     metakey     |     metavalue     |
 |                           |        |  empty metakey  |         —         |
 |                           |        | another metakey | another metavalue |
 
 . The example below shows how we can read and write metadata using the `yamlcpp` plugin via `kdb`.
 
 ```sh
-# Mount yamlcpp plugin to cascading namespace `/tests/yamlcpp`
+# Mount yamlcpp plugin to `user/tests/yamlcpp`
 sudo kdb mount config.yaml user/tests/yamlcpp yamlcpp
 
 # Manually add a key including metadata to the database
@@ -240,21 +239,21 @@ sudo kdb umount user/tests/yamlcpp
 We can also invoke additional plugins that use metadata like `type`.
 
 ```sh
-sudo kdb mount config.yaml /tests/yamlcpp yamlcpp type
-kdb set /tests/yamlcpp/typetest/number 21
-kdb setmeta /tests/yamlcpp/typetest/number check/type short
+sudo kdb mount config.yaml user/tests/yamlcpp yamlcpp type
+kdb set user/tests/yamlcpp/typetest/number 21
+kdb setmeta user/tests/yamlcpp/typetest/number check/type short
 
-kdb set /tests/yamlcpp/typetest/number "One"
+kdb set user/tests/yamlcpp/typetest/number "One"
 # RET: 5
 # STDERR: .*The type short failed to match for .*/number with string: One.*
 # ERROR: 52
 
-kdb get /tests/yamlcpp/typetest/number
+kdb get user/tests/yamlcpp/typetest/number
 #> 21
 
 # Undo modifications to the key database
-kdb rm -r /tests/yamlcpp
-sudo kdb umount /tests/yamlcpp
+kdb rm -r user/tests/yamlcpp
+sudo kdb umount user/tests/yamlcpp
 ```
 
 ## Binary Data
@@ -262,20 +261,20 @@ sudo kdb umount /tests/yamlcpp
 YAML CPP also supports [base64](https://tools.ietf.org/html/rfc4648) encoded data via the [Base64](../base64) plugin.
 
 ```sh
-# Mount YAML CPP plugin at cascading namespace `/tests/binary`
-sudo kdb mount test.yaml /tests/binary yamlcpp
+# Mount YAML CPP plugin at `user/tests/binary`
+sudo kdb mount test.yaml user/tests/binary yamlcpp
 # Manually add binary data
-echo 'bin: !!binary aGk=' > `kdb file /tests/binary`
+echo 'bin: !!binary aGk=' > `kdb file user/tests/binary`
 
 # Base 64 decodes the data `aGk=` to `hi` and stores the value in binary form.
 # The command `kdb get` prints the data as hexadecimal byte values.
-kdb get /tests/binary/bin
+kdb get user/tests/binary/bin
 #> \x68\x69
 
 # Add a string value to the database
-kdb set /tests/binary/text mate
+kdb set user/tests/binary/text mate
 # Base 64 does not modify textual values
-kdb get /tests/binary/text
+kdb get user/tests/binary/text
 #> mate
 
 # The Base 64 plugin re-encodes binary data before YAML CPP stores the key set. Hence the
@@ -284,8 +283,8 @@ grep -q 'bin: !.* aGk=' `kdb file user/tests/binary`
 # RET: 0
 
 # Undo modifications to the database
-kdb rm -r /tests/binary
-sudo kdb umount /tests/binary
+kdb rm -r user/tests/binary
+sudo kdb umount user/tests/binary
 ```
 
 ## Null & Empty
@@ -293,7 +292,7 @@ sudo kdb umount /tests/binary
 Sometimes you only want to save a key without a value (null key) or a key with an empty value. The commands below show that YAML CPP supports this scenario properly.
 
 ```sh
-# Mount YAML CPP plugin at cascading namespace `user/tests/yamlcpp`
+# Mount YAML CPP plugin at `user/tests/yamlcpp`
 sudo kdb mount test.yaml user/tests/yamlcpp yamlcpp
 
 # Check if the plugin saves null keys correctly
@@ -333,11 +332,11 @@ One of the limitations of this plugin is, that it only supports values inside [l
 
 ```yaml
 root:
-  subtree:    🍂
+  subtree: 🍂
   below root: leaf
 level 1:
   level 2:
-    level 3:  🍁
+    level 3: 🍁
 ```
 
 stores all of the values (`🍂`, `leaf` and `🍁`) in the leaves of the mapping. The drawing below makes this situation a little bit clearer.
@@ -346,24 +345,24 @@ stores all of the values (`🍂`, `leaf` and `🍁`) in the leaves of the mappin
 
 The key set that this plugin creates using the data above looks like this (assuming we mount the plugin to `user/tests/yamlcpp`):
 
-|     Name                                      | Value |
-|-----------------------------------------------|-------|
-| user/tests/yamlcpp/level                      |       |
-| user/tests/yamlcpp/level 1/level 2            |       |
-| user/tests/yamlcpp/level 1/level 2/level 3    | 🍁    |
-| user/tests/yamlcpp/root                       |       |
-| user/tests/yamlcpp/root/below root            | leaf  |
-| user/tests/yamlcpp/root/subtree               | 🍂    |
+| Name                                       | Value |
+| ------------------------------------------ | ----- |
+| user/tests/yamlcpp/level                   |       |
+| user/tests/yamlcpp/level 1/level 2         |       |
+| user/tests/yamlcpp/level 1/level 2/level 3 | 🍁    |
+| user/tests/yamlcpp/root                    |       |
+| user/tests/yamlcpp/root/below root         | leaf  |
+| user/tests/yamlcpp/root/subtree            | 🍂    |
 
 . Now why is this plugin unable to store values outside leaf nodes? For example, why can we not store a value inside `user/tests/yamlcpp/level 1/level 2`? To answer this question we need to look at the YAML representation:
 
 ```yaml
 level 1:
   level 2:
-    level 3:  🍁
+    level 3: 🍁
 ```
 
-. In a naive approach we might just try to add a value e.g.  `🙈` right next to level 2:
+. In a naive approach we might just try to add a value e.g. `🙈` right next to level 2:
 
 ```yaml
 level 1:
@@ -371,13 +370,13 @@ level 1:
     level 3:  🍁
 ```
 
-. This however would be not correct, since then the YAML node `level 2` would contain both a scalar value (`🙈`) and a mapping (`{ level 3:  🍁 }`). We could solve this dilemma using a list:
+. This however would be not correct, since then the YAML node `level 2` would contain both a scalar value (`🙈`) and a mapping (`{ level 3: 🍁 }`). We could solve this dilemma using a list:
 
 ```yaml
 level 1:
   level 2:
     - 🙈
-    - level 3:  🍁
+    - level 3: 🍁
 ```
 
 . However, if we use this approach we are not able to support Elektra’s array type properly.
@@ -402,8 +401,7 @@ directory/file       = Leaf Data
 . Consequently the YAML plugin will store the key set as
 
 ```yaml
-directory:
-  ___dirdata = Directory Data
+directory: ___dirdata = Directory Data
   file       = Leaf Data
 ```
 
@@ -441,11 +439,11 @@ sudo kdb umount user/tests/yamlcpp
 - The plugin currently lacks proper **type support** for scalars.
 - If Elektra uses YAML CPP as **default storage** plugin, multiple tests of the test suite fail. However, if you mount YAML CPP at `/`:
 
-   ```
-   kdb mount default.yaml / yamlcpp
-   ```
+  ```
+  kdb mount default.yaml / yamlcpp
+  ```
 
-   all tests should work correctly. The problem here is that Elektra does not load additional required plugins (`infos/needs`) for a
-   default storage plugin.
+  all tests should work correctly. The problem here is that Elektra does not load additional required plugins (`infos/needs`) for a
+  default storage plugin.
 
 [yaml-cpp]: https://github.com/jbeder/yaml-cpp

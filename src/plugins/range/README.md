@@ -21,26 +21,25 @@ The plugin checks every `Key` in the `KeySet` for the metakey `check/range` whic
 
 Possible values:
 
-* `short`, `long`, `long long`
+- `short`, `long`, `long long`
 
-   for signed integer values
+  for signed integer values
 
-* `unsigned short`, `unsigned long`, `unsigned long long`
+- `unsigned short`, `unsigned long`, `unsigned long long`
 
-   for unsigned integer values
+  for unsigned integer values
 
-* `float`, `double`, `long double`
+- `float`, `double`, `long double`
 
-   for floating point values
+  for floating point values
 
-* `HEX`
+- `HEX`
 
-   for hexadecimal values
+  for hexadecimal values
 
-* `char`
+- `char`
 
-   for characters
-
+  for characters
 
 ## Dependencies
 

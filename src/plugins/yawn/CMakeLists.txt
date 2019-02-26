@@ -57,6 +57,9 @@ function (check_dependencies)
 	file (WRITE ${SOURCE_FILE_GRAMMAR}
 		    ${GRAMMAR})
 
+	# Make sure the build system recreates the header for the grammar, if we modify `yaml.bnf`
+	set_source_files_properties (${SOURCE_FILE_GRAMMAR} PROPERTIES GENERATED TRUE)
+
 	set (SOURCE_FILES
 	     ${SOURCE_FILES_INPUT}
 	     ${SOURCE_FILE_GRAMMAR}

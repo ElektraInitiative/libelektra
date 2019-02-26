@@ -20,7 +20,7 @@ extern "C" {
 
 int elektraYanlrGet (Plugin *, KeySet *, Key *);
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (yanlr);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 } // end extern "C"
 

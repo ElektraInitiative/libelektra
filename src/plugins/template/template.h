@@ -20,6 +20,6 @@ int elektraTemplateSet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraTemplateError (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraTemplateCheckConfig (Key * errorKey, KeySet * conf);
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (template);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 #endif

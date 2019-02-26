@@ -317,8 +317,8 @@ static int mapFilesForNamespaces (resolverHandles * p, Key * errorKey)
 		keySetName (testKey, "spec");
 		if (needsMapping (testKey, errorKey))
 		{
-			if ((resolved = ELEKTRA_PLUGIN_FUNCTION (resolver, filename) (KEY_NS_SPEC, (p->spec).path,
-										      ELEKTRA_RESOLVER_TEMPFILE_SAMEDIR, errorKey)) == NULL)
+			if ((resolved = ELEKTRA_PLUGIN_FUNCTION (filename) (KEY_NS_SPEC, (p->spec).path, ELEKTRA_RESOLVER_TEMPFILE_SAMEDIR,
+									    errorKey)) == NULL)
 			{
 				resolverClose (p);
 				keyDel (testKey);
@@ -330,7 +330,7 @@ static int mapFilesForNamespaces (resolverHandles * p, Key * errorKey)
 				p->spec.tempfile = elektraStrDup (resolved->tmpFile);
 				p->spec.filename = elektraStrDup (resolved->fullPath);
 				p->spec.dirname = elektraStrDup (resolved->dirname);
-				ELEKTRA_PLUGIN_FUNCTION (resolver, freeHandle) (resolved);
+				ELEKTRA_PLUGIN_FUNCTION (freeHandle) (resolved);
 			}
 		}
 		// FALLTHROUGH
@@ -339,8 +339,8 @@ static int mapFilesForNamespaces (resolverHandles * p, Key * errorKey)
 		keySetName (testKey, "dir");
 		if (needsMapping (testKey, errorKey))
 		{
-			if ((resolved = ELEKTRA_PLUGIN_FUNCTION (resolver, filename) (KEY_NS_DIR, (p->dir).path,
-										      ELEKTRA_RESOLVER_TEMPFILE_SAMEDIR, errorKey)) == NULL)
+			if ((resolved = ELEKTRA_PLUGIN_FUNCTION (filename) (KEY_NS_DIR, (p->dir).path, ELEKTRA_RESOLVER_TEMPFILE_SAMEDIR,
+									    errorKey)) == NULL)
 			{
 				resolverClose (p);
 				keyDel (testKey);
@@ -352,7 +352,7 @@ static int mapFilesForNamespaces (resolverHandles * p, Key * errorKey)
 				p->dir.tempfile = elektraStrDup (resolved->tmpFile);
 				p->dir.filename = elektraStrDup (resolved->fullPath);
 				p->dir.dirname = elektraStrDup (resolved->dirname);
-				ELEKTRA_PLUGIN_FUNCTION (resolver, freeHandle) (resolved);
+				ELEKTRA_PLUGIN_FUNCTION (freeHandle) (resolved);
 			}
 		}
 	// FALLTHROUGH
@@ -360,8 +360,8 @@ static int mapFilesForNamespaces (resolverHandles * p, Key * errorKey)
 		keySetName (testKey, "user");
 		if (needsMapping (testKey, errorKey))
 		{
-			if ((resolved = ELEKTRA_PLUGIN_FUNCTION (resolver, filename) (KEY_NS_USER, (p->user).path,
-										      ELEKTRA_RESOLVER_TEMPFILE_SAMEDIR, errorKey)) == NULL)
+			if ((resolved = ELEKTRA_PLUGIN_FUNCTION (filename) (KEY_NS_USER, (p->user).path, ELEKTRA_RESOLVER_TEMPFILE_SAMEDIR,
+									    errorKey)) == NULL)
 			{
 				resolverClose (p);
 				keyDel (testKey);
@@ -373,7 +373,7 @@ static int mapFilesForNamespaces (resolverHandles * p, Key * errorKey)
 				p->user.tempfile = elektraStrDup (resolved->tmpFile);
 				p->user.filename = elektraStrDup (resolved->fullPath);
 				p->user.dirname = elektraStrDup (resolved->dirname);
-				ELEKTRA_PLUGIN_FUNCTION (resolver, freeHandle) (resolved);
+				ELEKTRA_PLUGIN_FUNCTION (freeHandle) (resolved);
 			}
 		}
 	// FALLTHROUGH
@@ -381,8 +381,8 @@ static int mapFilesForNamespaces (resolverHandles * p, Key * errorKey)
 		keySetName (testKey, "system");
 		if (needsMapping (testKey, errorKey))
 		{
-			if ((resolved = ELEKTRA_PLUGIN_FUNCTION (resolver, filename) (KEY_NS_SYSTEM, (p->system).path,
-										      ELEKTRA_RESOLVER_TEMPFILE_SAMEDIR, errorKey)) == NULL)
+			if ((resolved = ELEKTRA_PLUGIN_FUNCTION (filename) (KEY_NS_SYSTEM, (p->system).path,
+									    ELEKTRA_RESOLVER_TEMPFILE_SAMEDIR, errorKey)) == NULL)
 			{
 				resolverClose (p);
 				keyDel (testKey);
@@ -394,7 +394,7 @@ static int mapFilesForNamespaces (resolverHandles * p, Key * errorKey)
 				p->system.tempfile = elektraStrDup (resolved->tmpFile);
 				p->system.filename = elektraStrDup (resolved->fullPath);
 				p->system.dirname = elektraStrDup (resolved->dirname);
-				ELEKTRA_PLUGIN_FUNCTION (resolver, freeHandle) (resolved);
+				ELEKTRA_PLUGIN_FUNCTION (freeHandle) (resolved);
 			}
 		}
 	// FALLTHROUGH
@@ -409,7 +409,7 @@ static int mapFilesForNamespaces (resolverHandles * p, Key * errorKey)
 	return 0;
 }
 
-int ELEKTRA_PLUGIN_FUNCTION (resolver, open) (Plugin * handle, Key * errorKey)
+int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * handle, Key * errorKey)
 {
 	KeySet * resolverConfig = elektraPluginGetConfig (handle);
 	if (ksLookupByName (resolverConfig, "/module", 0)) return 0;
@@ -480,7 +480,7 @@ int ELEKTRA_PLUGIN_FUNCTION (resolver, open) (Plugin * handle, Key * errorKey)
 	return ret;
 }
 
-int ELEKTRA_PLUGIN_FUNCTION (resolver, close) (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
+int ELEKTRA_PLUGIN_FUNCTION (close) (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 {
 	resolverHandles * ps = elektraPluginGetData (handle);
 
@@ -494,7 +494,7 @@ int ELEKTRA_PLUGIN_FUNCTION (resolver, close) (Plugin * handle, Key * errorKey E
 }
 
 
-int ELEKTRA_PLUGIN_FUNCTION (resolver, get) (Plugin * handle, KeySet * returned, Key * parentKey)
+int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * returned, Key * parentKey)
 {
 	Key * root = keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME, KEY_END);
 
@@ -1028,7 +1028,7 @@ static int elektraSetCommit (resolverHandle * pk, Key * parentKey)
 }
 
 
-int ELEKTRA_PLUGIN_FUNCTION (resolver, set) (Plugin * handle, KeySet * ks, Key * parentKey)
+int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle, KeySet * ks, Key * parentKey)
 {
 	resolverHandle * pk = elektraGetResolverHandle (handle, parentKey);
 
@@ -1111,7 +1111,7 @@ static void elektraUnlinkFile (char * filename, Key * parentKey)
 	}
 }
 
-int ELEKTRA_PLUGIN_FUNCTION (resolver, error) (Plugin * handle, KeySet * r ELEKTRA_UNUSED, Key * parentKey)
+int ELEKTRA_PLUGIN_FUNCTION (error) (Plugin * handle, KeySet * r ELEKTRA_UNUSED, Key * parentKey)
 {
 	resolverHandle * pk = elektraGetResolverHandle (handle, parentKey);
 
@@ -1142,15 +1142,15 @@ int ELEKTRA_PLUGIN_FUNCTION (resolver, error) (Plugin * handle, KeySet * r ELEKT
 }
 
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (resolver)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
     return elektraPluginExport(ELEKTRA_PLUGIN_NAME,
-            ELEKTRA_PLUGIN_OPEN,	&ELEKTRA_PLUGIN_FUNCTION(resolver, open),
-            ELEKTRA_PLUGIN_CLOSE,	&ELEKTRA_PLUGIN_FUNCTION(resolver, close),
-            ELEKTRA_PLUGIN_GET,	&ELEKTRA_PLUGIN_FUNCTION(resolver, get),
-            ELEKTRA_PLUGIN_SET,	&ELEKTRA_PLUGIN_FUNCTION(resolver, set),
-            ELEKTRA_PLUGIN_ERROR,	&ELEKTRA_PLUGIN_FUNCTION(resolver, error),
+            ELEKTRA_PLUGIN_OPEN,	&ELEKTRA_PLUGIN_FUNCTION(open),
+            ELEKTRA_PLUGIN_CLOSE,	&ELEKTRA_PLUGIN_FUNCTION(close),
+            ELEKTRA_PLUGIN_GET,	&ELEKTRA_PLUGIN_FUNCTION(get),
+            ELEKTRA_PLUGIN_SET,	&ELEKTRA_PLUGIN_FUNCTION(set),
+            ELEKTRA_PLUGIN_ERROR,	&ELEKTRA_PLUGIN_FUNCTION(error),
             ELEKTRA_PLUGIN_END);
 }
 

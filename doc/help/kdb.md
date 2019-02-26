@@ -1,5 +1,4 @@
-kdb(1) -- key database access tools
-===================================
+# kdb(1) -- key database access tools
 
 Elektra provides a universal and secure framework to store configuration
 parameters in a global, hierarchical key database.
@@ -10,7 +9,6 @@ across applications while it still allows the core to stay minimal without any
 external dependency. Elektra abstracts from cross-platform-related issues
 with a consistent API, and allows applications to be aware of other
 applications' configurations, leveraging easy application integration.
-
 
 ## OVERVIEW
 
@@ -29,7 +27,6 @@ You should start reading [kdb-introduction(1)](kdb-introduction.md).
 Documentation of plugins is available using the
 [kdb-info(1)](kdb-info.md) tool.
 Run `kdb list` for a list of plugins.
-
 
 ## BASIC OPTIONS
 
@@ -94,7 +91,7 @@ Without a `-p` or `--profile` argument following profiles are used
   Is the fallback profile. It will be used if keys cannot be found in the main profile.
 
 For example if you use:<br>
-	`kdb export -p admin system`
+`kdb export -p admin system`
 
 It will read its format configuration from `/sw/elektra/kdb/#0/admin/format`.
 
@@ -106,17 +103,17 @@ Sometimes it is useful to start with default options, for example it is not
 possible to invert the `-q` option.
 In such situations one can simply select a non-existing profile, then `-q`
 works as usual:<br>
-	`kdb mount -p nonexist -q /abc dir/abc`
+`kdb mount -p nonexist -q /abc dir/abc`
 
 If `%` is used as profile name for `-p`, the `kdb` tools disables reading from `KDB`
 for their own configuration settings. Then, they only use command-line arguments.
 
 To explicitly state the default behavior, we use:<br>
-	`-p current`
+`-p current`
 
 To state that we do not want to read any configuration settings for `kdb`
 from KDB, we use:<br>
-	`-p %`
+`-p %`
 
 > Note that KDB will still be used to perform the actions you want to perform
 > with the `kdb` tool.
@@ -143,16 +140,15 @@ The string until the first `/` will be considered as bookmark.
 
 For example, if you set the bookmark kdb:
 
-	kdb set user/sw/elektra/kdb/#0/current/bookmarks
-	kdb set user/sw/elektra/kdb/#0/current/bookmarks/kdb user/sw/elektra/kdb/#0/current
+    kdb set user/sw/elektra/kdb/#0/current/bookmarks
+    kdb set user/sw/elektra/kdb/#0/current/bookmarks/kdb user/sw/elektra/kdb/#0/current
 
 You are able to use:
 
-	kdb ls +kdb/bookmarks
-	kdb get +kdb/format
+    kdb ls +kdb/bookmarks
+    kdb get +kdb/format
 
 ## RETURN VALUES
-
 
 - 0:
   successful.

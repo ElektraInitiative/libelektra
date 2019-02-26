@@ -19,8 +19,8 @@ binding for your Java plugin may use something different, e.g. JNA.
 The requirements for the Java bindings are:
 
 - needs to have the classes `elektra/Key` and `elektra/KeySet` with
- - a constructor that takes a C-Pointer as long (J)
- - a method "release" that gives up ownership (set internal pointer to NULL)
+  - a constructor that takes a C-Pointer as long (J)
+  - a method "release" that gives up ownership (set internal pointer to NULL)
 
 The Java plugin itself needs to have the following methods:
 
@@ -42,8 +42,6 @@ When using non-standard paths, you have to set JAVA_HOME before invoking cmake.
 For example:
 
      JAVA_HOME=/usr/local/jdk-9.0.1
-
-
 
 ### Java prerequisites on Debian 8
 
@@ -72,12 +70,12 @@ However, for the jni plugin version 1.8 of Java is required, so either the openj
 Please install oracle's jdk8 via their provided installer.
 After that, you have to set the JAVA_HOME environment variable to the folder where the jdk is installed, usually like
 
-	export JAVA_HOME="/Library/Java/JavaVirtualMachines/jdk1.8.0_112.jdk/Contents/Home/"
+    export JAVA_HOME="/Library/Java/JavaVirtualMachines/jdk1.8.0_112.jdk/Contents/Home/"
 
 As macOS handles linked libraries differently, there is no ldconfig command.
 Instead you can export an environment variable to tell elektra the location of the java dynamic libraries.
 
-	export DYLD_FALLBACK_LIBRARY_PATH="/Library/Java/JavaVirtualMachines/jdk1.8.0_112.jdk/Contents/Home/jre/lib:/Library/Java/JavaVirtualMachines/jdk1.8.0_112.jdk/Contents/Home/jre/lib/server/"
+    export DYLD_FALLBACK_LIBRARY_PATH="/Library/Java/JavaVirtualMachines/jdk1.8.0_112.jdk/Contents/Home/jre/lib:/Library/Java/JavaVirtualMachines/jdk1.8.0_112.jdk/Contents/Home/jre/lib/server/"
 
 Afterwards, the jni plugin should be included in the build and compile successfully.
 
@@ -89,6 +87,7 @@ As a result, it will be resolved wrong in future builds, even though the environ
 To resolve this, it should be enough to delete the CMakeCache.txt file in the build directory and reconfigure the build.
 
 ### Enabling the plugin
+
 Then enable the plugin using (`ALL;-EXPERIMENTAL` is default):
 
     cmake -DPLUGINS="ALL;-EXPERIMENTAL;jni" /path/to/libelektra
@@ -107,6 +106,7 @@ You missed one of the ldconfig steps.
 ## Plugin Config
 
 You need to pass :
+
 - classname the classname to use as plugin, e.g. `elektra/plugin/Echo`
 - classpath the classpath where to find JNA, the package elektra and
   other classes needed
@@ -154,4 +154,3 @@ Argumentation for discouraged:
 - Only a single java plugin can be loaded
 - When this plugin is enabled, valgrind detects memory problems even if
   the plugin is not mounted.
-

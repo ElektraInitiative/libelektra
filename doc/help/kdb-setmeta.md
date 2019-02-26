@@ -1,5 +1,4 @@
-kdb-setmeta(1) -- Set the value of a metakey
-=============================================
+# kdb-setmeta(1) -- Set the value of a metakey
 
 ## SYNOPSIS
 
@@ -47,7 +46,6 @@ that is the place where you usually want to set metadata.
   By default the namespace is `user`, except `kdb` is used as root, then `system`
   is the default.
 
-
 ## EXAMPLES
 
 To set a metakey called `description` associated with the key `user/example/key` to the value `Hello World!`:<br>
@@ -59,12 +57,12 @@ and a metakey `namespace/#0` associated with it to the value `system`:<br>
 
 To create an override link for a `/test` key:
 
-	kdb set /overrides/test "example override"
-	sudo kdb setmeta spec/test override/#0 /overrides/test
+    kdb set /overrides/test "example override"
+    sudo kdb setmeta spec/test override/#0 /overrides/test
 
 To remove it:
 
-	sudo kdb setmeta spec/test override/#0
+    sudo kdb setmeta spec/test override/#0
 
 ## SEE ALSO
 

@@ -29,6 +29,9 @@ using antlr::YAML;
 
 using antlr4::ANTLRInputStream;
 using antlr4::CommonTokenStream;
+using antlr4::DiagnosticErrorListener;
+using ParserATNSimulator = antlr4::atn::ParserATNSimulator;
+using PredictionMode = antlr4::atn::PredictionMode;
 using ParseTree = antlr4::tree::ParseTree;
 using ParseTreeWalker = antlr4::tree::ParseTreeWalker;
 
@@ -49,7 +52,7 @@ CppKeySet getContract ()
 			  keyNew ("system/elektra/modules/yanlr", KEY_VALUE, "yanlr plugin waits for your orders", KEY_END),
 			  keyNew ("system/elektra/modules/yanlr/exports", KEY_END),
 			  keyNew ("system/elektra/modules/yanlr/exports/get", KEY_FUNC, elektraYanlrGet, KEY_END),
-#include ELEKTRA_README (yanlr)
+#include ELEKTRA_README
 			  keyNew ("system/elektra/modules/yanlr/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
 			  KS_END };
 }
@@ -74,9 +77,14 @@ int parseYAML (ifstream & file, CppKeySet & keys, CppKey & parent)
 	ParseTreeWalker walker{};
 	KeyListener listener{ parent };
 
-	ErrorListener errorListener{};
+	ErrorListener errorListener{ parent.getString () };
 	parser.removeErrorListeners ();
 	parser.addErrorListener (&errorListener);
+#if DEBUG
+	DiagnosticErrorListener diagErrorListener;
+	parser.addErrorListener (&diagErrorListener);
+	parser.getInterpreter<ParserATNSimulator> ()->setPredictionMode (PredictionMode::LL_EXACT_AMBIG_DETECTION);
+#endif
 
 	ParseTree * tree = parser.yaml ();
 	if (parser.getNumberOfSyntaxErrors () > 0)
@@ -129,7 +137,7 @@ int elektraYanlrGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	return status;
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (yanlr)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	return elektraPluginExport ("yanlr", ELEKTRA_PLUGIN_GET, &elektraYanlrGet, ELEKTRA_PLUGIN_END);
 }

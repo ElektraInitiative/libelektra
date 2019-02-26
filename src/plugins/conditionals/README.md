@@ -19,7 +19,7 @@ Stored in the metakey `check/condition` to validate data is:
 
 `(IF-condition) ? (THEN-condition) : (ELSE-condition)` where the ELSE-condition is optional
 
-Condition:  `Key` *Operation* `('String' | '1234.56' | Key | '')`
+Condition: `Key` _Operation_ `('String' | '1234.56' | Key | '')`
 
 Operations: `!=, ==, <, <=, =>, >, :=`, where:
 
@@ -54,23 +54,21 @@ Keynames are all either relative to to-be-tested key (starting with `./` or `../
 It's also possible to test multiple conditions using `check/condition/{any,all,none}` as a meta array. Where `any` means that at least one statement has to evaluate to true, `all` that all statements have to evaluate to true, and `none` that no statement is allowed to evaluate to false (default).
 For multiple assign statements use `assign/condition` as a meta array. The first `assign/condition/#` statement that evaluates to true will be assigned and the rest ignored.
 
-
 ## Example
 
     (this/key  != 'value') ? (then/key == some/other/key) : (or/key <= '125')
 
 Meaning: IF `this/key` NOT EQUAL TO `'value'` THEN `then/key` MUST EQUAL `some/other/key` ELSE `or/key` MUST BE LESS THAN `125`
 
-
 Another full example:
 
 ```sh
-#Backup-and-Restore:/tests/conditionals
+#Backup-and-Restore:user/tests/conditionals
 
-sudo kdb mount conditionals.dump /tests/conditionals conditionals dump
+sudo kdb mount conditionals.dump user/tests/conditionals conditionals dump
 
-kdb set /tests/conditionals/fkey 3.0
-kdb set /tests/conditionals/hkey hello
+kdb set user/tests/conditionals/fkey 3.0
+kdb set user/tests/conditionals/hkey hello
 
 # will succeed
 kdb setmeta user/tests/conditionals/key check/condition "(../hkey == 'hello') ? (../fkey == '3.0')"
@@ -92,8 +90,8 @@ kdb get user/tests/conditionals/hkey
 #> World
 
 # cleanup
-kdb rm -r /tests/conditionals
-sudo kdb umount /tests/conditionals
+kdb rm -r user/tests/conditionals
+sudo kdb umount user/tests/conditionals
 ```
 
 Global plugin example:

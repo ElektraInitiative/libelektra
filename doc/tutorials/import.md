@@ -78,6 +78,6 @@ ksEnd
 Before the import command, `system/backup` does not exists and no keys are contained there.
 After the import command, running the command `kdb ls system/backup` prints:
 
-	system/backup/key1
-	system/backup/key2
-	system/backup/key3
+    system/backup/key1
+    system/backup/key2
+    system/backup/key3

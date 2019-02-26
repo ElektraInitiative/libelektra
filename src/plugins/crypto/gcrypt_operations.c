@@ -50,7 +50,7 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * masterK
 
 	// generate the salt
 	gcry_create_nonce (salt, sizeof (salt));
-	const int encodingResult = CRYPTO_PLUGIN_FUNCTION (base64Encode) (errorKey, salt, sizeof (salt), &saltHexString);
+	const int encodingResult = ELEKTRA_PLUGIN_FUNCTION (base64Encode) (errorKey, salt, sizeof (salt), &saltHexString);
 	if (encodingResult < 0)
 	{
 		// error in libinvoke - errorKey has been set by base64Encode
@@ -65,7 +65,7 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * masterK
 	elektraFree (saltHexString);
 
 	// read iteration count
-	const kdb_unsigned_long_t iterations = CRYPTO_PLUGIN_FUNCTION (getIterationCount) (errorKey, config);
+	const kdb_unsigned_long_t iterations = ELEKTRA_PLUGIN_FUNCTION (getIterationCount) (errorKey, config);
 
 	// generate/derive the cryptographic key and the IV
 	if ((gcry_err = gcry_kdf_derive (keyValue (masterKey), keyGetValueSize (masterKey), GCRY_KDF_PBKDF2, GCRY_MD_SHA512, salt,
@@ -102,13 +102,13 @@ static int getKeyIvForDecryption (KeySet * config, Key * errorKey, Key * masterK
 	ELEKTRA_ASSERT (masterKey != NULL, "Parameter `masterKey` must not be NULL");
 
 	// get the salt
-	if (CRYPTO_PLUGIN_FUNCTION (getSaltFromPayload) (errorKey, k, &saltBuffer, &saltBufferLen) != 1)
+	if (ELEKTRA_PLUGIN_FUNCTION (getSaltFromPayload) (errorKey, k, &saltBuffer, &saltBufferLen) != 1)
 	{
-		return -1; // error set by CRYPTO_PLUGIN_FUNCTION(getSaltFromPayload)()
+		return -1; // error set by ELEKTRA_PLUGIN_FUNCTION(getSaltFromPayload)()
 	}
 
 	// get the iteration count
-	const kdb_unsigned_long_t iterations = CRYPTO_PLUGIN_FUNCTION (getIterationCount) (errorKey, config);
+	const kdb_unsigned_long_t iterations = ELEKTRA_PLUGIN_FUNCTION (getIterationCount) (errorKey, config);
 
 	// derive the cryptographic key and the IV
 	if ((gcry_err = gcry_kdf_derive (keyValue (masterKey), keyGetValueSize (masterKey), GCRY_KDF_PBKDF2, GCRY_MD_SHA512, saltBuffer,
@@ -252,9 +252,9 @@ int elektraCryptoGcryEncrypt (elektraCryptoHandle * handle, Key * k, Key * error
 	kdb_unsigned_long_t saltLen = 0;
 	kdb_octet_t * salt = NULL;
 
-	if (CRYPTO_PLUGIN_FUNCTION (getSaltFromMetakey) (errorKey, k, &salt, &saltLen) != 1)
+	if (ELEKTRA_PLUGIN_FUNCTION (getSaltFromMetakey) (errorKey, k, &salt, &saltLen) != 1)
 	{
-		return -1; // error set by CRYPTO_PLUGIN_FUNCTION(getSaltFromMetakey)()
+		return -1; // error set by ELEKTRA_PLUGIN_FUNCTION(getSaltFromMetakey)()
 	}
 
 	// remove salt as metakey because it will be encoded into the crypto payload
@@ -353,9 +353,9 @@ int elektraCryptoGcryDecrypt (elektraCryptoHandle * handle, Key * k, Key * error
 
 	// parse salt length from crypto payload
 	kdb_unsigned_long_t saltLen = 0;
-	if (CRYPTO_PLUGIN_FUNCTION (getSaltFromPayload) (errorKey, k, NULL, &saltLen) != 1)
+	if (ELEKTRA_PLUGIN_FUNCTION (getSaltFromPayload) (errorKey, k, NULL, &saltLen) != 1)
 	{
-		return -1; // error set by CRYPTO_PLUGIN_FUNCTION(getSaltFromPayload)()
+		return -1; // error set by ELEKTRA_PLUGIN_FUNCTION(getSaltFromPayload)()
 	}
 	saltLen += sizeof (kdb_unsigned_long_t);
 
@@ -441,7 +441,7 @@ char * elektraCryptoGcryCreateRandomString (Key * errorKey, const kdb_unsigned_s
 	char * encoded = NULL;
 	kdb_octet_t buffer[length];
 	gcry_create_nonce (buffer, length);
-	if (CRYPTO_PLUGIN_FUNCTION (base64Encode) (errorKey, buffer, length, &encoded) < 0)
+	if (ELEKTRA_PLUGIN_FUNCTION (base64Encode) (errorKey, buffer, length, &encoded) < 0)
 	{
 		return NULL;
 	}

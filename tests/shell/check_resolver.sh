@@ -147,7 +147,7 @@ fi # end of XDG tests
 
 export ALLUSERSPROFILE="/C"
 check_resolver spec w /app/config_file /C/app/config_file
-check_resolver spec w app/config_file /C@CMAKE_INSTALL_PREFIX@/@KDB_DB_SPEC@/app/config_file
+check_resolver spec w app/config_file /C@KDB_DB_SPEC@/app/config_file
 check_resolver system w /app/config_file /C/app/config_file
 check_resolver system w app/config_file /C@KDB_DB_SYSTEM@/app/config_file
 unset ALLUSERSPROFILE
@@ -165,13 +165,17 @@ check_resolver dir w a $TMPPATH/a     #@KDB_DB_DIR@ not impl
 check_resolver dir w a/b $TMPPATH/a/b #@KDB_DB_DIR@ not impl
 cd "$OD"
 
-check_resolver system b x @KDB_DB_SYSTEM@/x
-check_resolver system b x/a @KDB_DB_SYSTEM@/x/a
+# resolve ~ in paths
+SYSTEM_DIR=$(echo @KDB_DB_SYSTEM@)
+SPEC_DIR=$(echo @KDB_DB_SPEC@)
+
+check_resolver system b x "$SYSTEM_DIR/x"
+check_resolver system b x/a "$SYSTEM_DIR/x/a"
 check_resolver system b /a /a
 check_resolver system b /a/b/c /a/b/c
 
-check_resolver spec b x @CMAKE_INSTALL_PREFIX@/@KDB_DB_SPEC@/x
-check_resolver spec b x/a @CMAKE_INSTALL_PREFIX@/@KDB_DB_SPEC@/x/a
+check_resolver spec b x "$SPEC_DIR/x"
+check_resolver spec b x/a "$SPEC_DIR/x/a"
 check_resolver spec b /x /x
 check_resolver spec b /x/a /x/a
 
@@ -183,10 +187,15 @@ check_resolver user b /a @KDB_DB_HOME@/a
 export HOME=""
 export USER=""
 
-check_resolver system b x @KDB_DB_SYSTEM@/x
-check_resolver system b x/a @KDB_DB_SYSTEM@/x/a
+check_resolver system b x "$SYSTEM_DIR/x"
+check_resolver system b x/a "$SYSTEM_DIR/x/a"
 check_resolver system b /a /a
 check_resolver system b /a/b/c /a/b/c
+
+check_resolver spec b x "$SPEC_DIR/x"
+check_resolver spec b x/a "$SPEC_DIR/x/a"
+check_resolver spec b /x /x
+check_resolver spec b /x/a /x/a
 
 check_resolver user b x @KDB_DB_HOME@/@KDB_DB_USER@/x
 check_resolver user b x/a @KDB_DB_HOME@/@KDB_DB_USER@/x/a

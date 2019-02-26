@@ -103,6 +103,7 @@ set_lua_version_vars ()
 
 function (verify_lua_executable_version)
 	set (LUA_EXECUTABLE_VERSION_MATCHED FALSE PARENT_SCOPE)
+	set (LUA_FIND_QUIETLY ON)
 
 	find_program (LUA_EXECUTABLE
 		      NAMES "lua-${_LUA_VERSION_MAJOR}.${_LUA_VERSION_MINOR}"
@@ -137,7 +138,9 @@ function (verify_lua_executable_version)
 			set (LUA_EXECUTABLE_VERSION_MATCHED TRUE PARENT_SCOPE)
 		endif (NOT VERSION_MATCHES)
 	else ()
-		message (WARNING "Lua executable not found")
+		if (NOT LUA_FIND_QUIETLY)
+			message (WARNING "Lua executable not found")
+		endif (NOT LUA_FIND_QUIETLY)
 	endif (LUA_EXECUTABLE AND (NOT LUABIN_VERSION_STRING STREQUAL ""))
 endfunction (verify_lua_executable_version)
 

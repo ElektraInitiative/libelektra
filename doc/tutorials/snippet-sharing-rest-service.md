@@ -25,16 +25,16 @@ installed manually because no APT packages are available.
 The required dependencies with their own dependencies are:
 
 - CppCMS >= v1.0.0
-    - Zlib library
-    - PCRE library
-    - Python >= v2.4 (but not v3)
-    - ICU library >= v3.6
-    - gcrypt or OpenSSL library
+  - Zlib library
+  - PCRE library
+  - Python >= v2.4 (but not v3)
+  - ICU library >= v3.6
+  - gcrypt or OpenSSL library
 - Boost >= v1.45
 - OpenSSL
 - LibJWT >= v1.5
-    - Jansson
-    - OpenSSL
+  - Jansson
+  - OpenSSL
 
 You'll also need CMake and a modern C/C++ compiler, so in case you don't have them
 installed already, use `apt-get install build-essential cmake` to do so.

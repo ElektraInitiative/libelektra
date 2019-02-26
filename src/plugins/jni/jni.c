@@ -327,7 +327,7 @@ int elektraJniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 			       keyNew ("system/elektra/modules/jni/exports/get", KEY_FUNC, elektraJniGet, KEY_END),
 			       keyNew ("system/elektra/modules/jni/exports/set", KEY_FUNC, elektraJniSet, KEY_END),
 			       keyNew ("system/elektra/modules/jni/exports/error", KEY_FUNC, elektraJniError, KEY_END),
-#include ELEKTRA_README (jni)
+#include ELEKTRA_README
 			       keyNew ("system/elektra/modules/jni/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
@@ -355,7 +355,7 @@ int elektraJniError (Plugin * handle, KeySet * returned, Key * parentKey)
 	return call2Arg (data, returned, parentKey, "error");
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (jni)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport("jni",

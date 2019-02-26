@@ -32,36 +32,33 @@ kdb change-storage-symlink dini
 
 ```sh
 # Create a need for legacy support
-sudo kdb mount config.file /tests/dini dump
+sudo kdb mount config.file user/tests/dini dump
 
-kdb set /tests/dini/key "legacy value"
-#> Using name user/tests/dini/key
+kdb set user/tests/dini/key "legacy value"
 #> Create a new key user/tests/dini/key with string "legacy value"
 
-kdb umount /tests/dini
+kdb umount user/tests/dini
 
+# Mount dini plugin to `user/tests/dini`
+sudo kdb mount config.file user/tests/dini dini
 
-# Mount dini plugin to cascading namespace `/tests/dini`
-sudo kdb mount config.file /tests/dini dini
-
-kdb get /tests/dini/key
+kdb get user/tests/dini/key
 #> legacy value
 
-kdb set /tests/dini/key2 value
-#> Using name user/tests/dini/key2
+kdb set user/tests/dini/key2 value
 #> Create a new key user/tests/dini/key2 with string "value"
 
-kdb get /tests/dini/key
+kdb get user/tests/dini/key
 #> legacy value
 
-kdb get /tests/dini/key2
+kdb get user/tests/dini/key2
 #> value
 
-cat `kdb file /tests/dini`
+cat `kdb file user/tests/dini`
 
 # Undo modifications to the key database
-kdb rm -r /tests/dini
-sudo kdb umount /tests/dini
+kdb rm -r user/tests/dini
+sudo kdb umount user/tests/dini
 ```
 
 ## Limitations

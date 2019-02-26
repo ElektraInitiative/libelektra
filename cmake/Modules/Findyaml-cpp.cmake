@@ -13,7 +13,10 @@
 # ~~~
 
 find_package (PkgConfig QUIET)
-pkg_check_modules (PC_YAML-CPP QUIET yaml-cpp)
+
+if (PKG_CONFIG_FOUND)
+	pkg_check_modules (PC_YAML-CPP QUIET yaml-cpp)
+endif (PKG_CONFIG_FOUND)
 
 find_path (YAML-CPP_INCLUDE_DIR
 	   NAMES yaml-cpp/yaml.h

@@ -20,8 +20,8 @@ You can use `scripts/copy-template`
 to automatically rename everything to your
 plugin name:
 
-	cd src/plugins
-	../../scripts/copy-template yourplugin
+    cd src/plugins
+    ../../scripts/copy-template yourplugin
 
 Then update the README.md of your newly created plugin:
 

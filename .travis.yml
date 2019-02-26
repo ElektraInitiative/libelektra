@@ -1,4 +1,6 @@
 language: cpp
+dist: xenial
+osx_image: xcode10.1
 
 cache:
   directories:
@@ -28,30 +30,25 @@ before_cache:
 matrix:
   include:
 
-    - os: osx
-      name: 🍏 Check Shell
-      osx_image: xcode10.0
-      compiler: clang
-      script:
-        - ninja
-        - ninja run_checkshell
-
     # ASAN: Enable AddressSanitizer
 
-    - os: osx
-      name: 🍏 Clang ASAN
-      osx_image: xcode10.0
-      compiler: clang
+    - os: linux
+      name: 🐧 GCC ASAN
+      compiler: gcc
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-8
       env:
         - ENABLE_ASAN=ON
-        - ASAN_OPTIONS=detect_leaks=1
-        # We only translate the `kdb` tool to save a little bit of build time.
-        # Unfortunately this build job would hit the [timeout][] for public repositories
-        # quite often otherwise.
-        # [timeout]: https://docs.travis-ci.com/user/customizing-the-build/#build-timeouts
+        - CC_COMPILER=gcc-8
+        - CXX_COMPILER=g++-8
+        # Build less stuff so the build does not hit the timeout limit that often
         - TOOLS=kdb
         - BINDINGS=cpp
-        - &minimalPluginList "PLUGINS='\
+        - "PLUGINS='\
           ALL;\
           -augeas;\
           -base64;\
@@ -140,30 +137,14 @@ matrix:
           -zeromqrecv;\
           -zeromqsend;\
           '"
-      script: &testNoSourceCheck
+      script:
         - ninja
         - ninja run_nocheckshell
 
     - os: linux
-      name: 🐧 GCC ASAN
-      compiler: gcc
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-          packages:
-            - g++-8
-      env:
-        - ENABLE_ASAN=ON
-        - CC_COMPILER=gcc-8
-        - CXX_COMPILER=g++-8
-        # Build less stuff so the build does not hit the timeout limit that often
-        - TOOLS=kdb
-        - BINDINGS=cpp
-        - *minimalPluginList
-      script: *testNoSourceCheck
-
-    - os: linux
+      # The DBus library on Ubuntu Xenial Xerus seems to leak memory
+      # See: https://travis-ci.org/sanssecours/elektra/jobs/457428713
+      dist: trusty
       name: 🐧 Clang ASAN
       compiler: clang
       addons:
@@ -197,42 +178,25 @@ matrix:
         - BUILD_SHARED=OFF
         - CC_COMPILER=gcc-8
         - CXX_COMPILER=g++-8
-      script: &testFull
+      script:
         - ninja
         - output="$(ninja install 2>&1)" || printf '%s' "$output"
         - ninja run_all
         - kdb-full run_all
 
     - os: osx
-      name: 🍏 FULL
-      compiler: clang
-      osx_image: xcode10.0
-      env:
-        - BUILD_FULL=ON
-        - BUILD_SHARED=OFF
-      script: *testFull
-
-    - os: osx
       name: 🍏 GCC
       # Translating the `syslog` plugin with GCC on macOS 10.13 does not work, since GCC is unable to compile `sys/syslog.h`.
       osx_image: xcode9.2
       compiler: gcc
-
-    - os: osx
-      name: 🍏 Clang
-      osx_image: xcode10.0
-      compiler: clang
-      script: &testInstallNoSourceCheck
-        - ninja
-        - output="$(ninja install 2>&1)" || printf '%s' "$output"
-        - ninja run_nocheckshell
-        - kdb run_all
+      env:
+        # Unfortunately the tests for the Xerces plugin fail: https://travis-ci.org/ElektraInitiative/libelektra/jobs/483331657#L3740
+        - PLUGINS='ALL;-xerces'
 
     # HASKELL: Only build Haskell binding and plugin
 
     - os: osx
       name: 🍏 Haskell
-      osx_image: xcode10.0
       compiler: clang
       env:
         - HASKELL=ON
@@ -260,26 +224,13 @@ matrix:
       addons:
         apt:
           sources:
-            - llvm-toolchain-trusty-7
-            - ubuntu-toolchain-r-test
+            - llvm-toolchain-xenial-7
           packages:
             - clang-7
             - clang-format-7
       env:
         - CC_COMPILER=clang-7
         - CXX_COMPILER=clang++-7
-
-    # MMAP: Enable mmapstorage as default
-
-    - os: osx
-      name: 🍏 MMap
-      osx_image: xcode10.0
-      compiler: clang
-      env:
-        - KDB_DEFAULT_STORAGE=mmapstorage
-        - KDB_DB_FILE=default.mmap
-        - KDB_DB_INIT=elektra.mmap
-      script: *testInstallNoSourceCheck
 
 before_install:
   - |
@@ -309,6 +260,8 @@ before_install:
         brew install yaml-cpp
         # Unfortunately Xerces 3.2 causes multiple problems if we translate Elektra with GCC on macOS
         brew install xerces-c
+        # OCLint complains about unknown compiler warning options, if we use GCC as compiler.
+        brew cask install oclint
       fi
       brew install bison
       brew install dbus
@@ -320,6 +273,7 @@ before_install:
       brew install libev
       brew install lua
       brew install openssl
+      brew install pegtl
       brew install python@2; brew link --overwrite python@2
       brew install python || brew upgrade python
       brew install qt
@@ -350,11 +304,23 @@ before_install:
       # there is some strange cache bug where it complains that one of our own library's
       # directory doesn't exist though it gets properly unregistered. Apparently ignoring
       # that works anyway.
-      cabal install 'base >=4.9 && <4.12' 'containers >=0.5 && <0.6' \
-        'directory >=1.2 && <1.4' 'process >=1.4 && <1.7' 'binary >=0.8 && <0.9' \
-        'haskell-src-exts-any' 'pretty -any' 'hint >=0.7.0 && <0.8.0' 'temporary -any' \
-        'exceptions -any' 'text -any' 'simple-logger -any' 'megaparsec -any' \
-        'hspec -any' 'QuickCheck-any' --avoid-reinstalls || true
+      cabal install --avoid-reinstalls \
+        'base >=4.9 && <4.12' \
+        'binary >=0.8 && <0.9' \
+        'containers >=0.5 && <0.6' \
+        'directory >=1.2 && <1.4' \
+        'exceptions -any' \
+        'haskell-src-exts-any' \
+        'hint >=0.7.0 && <0.8.0' \
+        'hspec -any' \
+        'megaparsec -any' \
+        'pretty -any' \
+        'process >=1.4 && <1.7' \
+        'QuickCheck-any' \
+        'simple-logger -any' \
+        'temporary -any' \
+        'text -any' \
+        || true
     fi
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
@@ -371,9 +337,10 @@ before_install:
       sudo apt-get install libzmq3-dev
       sudo apt-get install libxerces-c-dev
       sudo apt-get install moreutils # contains `sponge` required by `reformat-cmake`
-      sudo pip install cmake-format==0.4.3 pyyaml
+      sudo pip install cmake-format==0.4.5 pyyaml
+      git clone --branch 2.7.1 --depth 1 https://github.com/taocpp/PEGTL.git && sudo cp -R PEGTL/include/tao /usr/local/include
       mkdir -p "$HOME/bin" && cd "$HOME/bin" && \
-        curl -L "https://github.com/mvdan/sh/releases/download/v2.5.1/shfmt_v2.5.1_linux_amd64" -o shfmt && \
+        curl -L "https://github.com/mvdan/sh/releases/download/v2.6.3/shfmt_v2.6.3_linux_amd64" -o shfmt && \
         chmod u+x shfmt && export PATH=$PATH:"$HOME/bin"
     fi
 

@@ -20,7 +20,7 @@ extern "C" {
 int elektraYambiGet (Plugin * handle, KeySet * returned, Key * parentKey);
 int elektraYambiSet (Plugin * handle, KeySet * returned, Key * parentKey);
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (yambi);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 } // end extern "C"
 
 #endif

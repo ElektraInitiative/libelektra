@@ -64,15 +64,18 @@ void Lexer::forward (size_t const characters = 1)
  * @param lineIndex This parameter specifies the indentation value that this
  *                  function compares to the current indentation.
  *
+ * @param type This value specifies the block collection type that
+ *             `lineIndex` might start.
+ *
  * @retval true If the function added an indentation value
- * @retval false Otherwise
+ *         false Otherwise
  */
-bool Lexer::addIndentation (size_t const lineIndex)
+bool Lexer::addIndentation (size_t const lineIndex, Level::Type type)
 {
-	if (lineIndex > indents.top ())
+	if (lineIndex > levels.top ().indent)
 	{
 		ELEKTRA_LOG_DEBUG ("Add indentation %zu", lineIndex);
-		indents.push (lineIndex);
+		levels.push (Level{ lineIndex, type });
 		return true;
 	}
 	return false;
@@ -227,11 +230,12 @@ void Lexer::addSimpleKeyCandidate ()
  */
 void Lexer::addBlockEnd (size_t const lineIndex)
 {
-	while (lineIndex < indents.top ())
+	while (lineIndex < levels.top ().indent)
 	{
 		ELEKTRA_LOG_DEBUG ("Add block end");
-		tokens.push_back (Symbol (token::TOKEN_BLOCK_END, location, "BLOCK END"));
-		indents.pop ();
+		tokens.push_back (levels.top ().type == Level::Type::MAP ? Symbol (token::TOKEN_MAP_END, location, "MAP END") :
+									   Symbol (token::TOKEN_SEQUENCE_END, location, "SEQUENCE END"));
+		levels.pop ();
 	}
 }
 
@@ -373,7 +377,7 @@ void Lexer::scanComment ()
 {
 	ELEKTRA_LOG_DEBUG ("Scan comment");
 	size_t start = input.index ();
-	while (input.LA (1) != '\n')
+	while (input.LA (1) != '\n' && input.LA (1) != 0)
 	{
 		forward ();
 	}
@@ -398,10 +402,10 @@ void Lexer::scanValue ()
 	tokens.insert (tokens.begin () + offset, *simpleKey.first);
 	auto start = simpleKey.first->getStart ();
 	simpleKey.first = nullptr; // Remove key candidate
-	if (addIndentation (start.column))
+	if (addIndentation (start.column, Level::Type::MAP))
 	{
 		location.begin = start;
-		tokens.insert (tokens.begin () + offset, Symbol (token::TOKEN_MAPPING_START, location, "MAPPING START"));
+		tokens.insert (tokens.begin () + offset, Symbol (token::TOKEN_MAP_START, location, "MAPPING START"));
 	}
 }
 
@@ -412,7 +416,7 @@ void Lexer::scanValue ()
 void Lexer::scanElement ()
 {
 	ELEKTRA_LOG_DEBUG ("Scan element");
-	if (addIndentation (location.end.column))
+	if (addIndentation (location.end.column, Level::Type::SEQUENCE))
 	{
 		tokens.push_back (Symbol (token::TOKEN_SEQUENCE_START, location, "SEQUENCE START"));
 	}

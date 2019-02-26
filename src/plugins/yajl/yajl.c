@@ -9,7 +9,7 @@
 #include "yajl.h"
 
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (yajl)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport("yajl",

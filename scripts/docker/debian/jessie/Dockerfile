@@ -32,7 +32,6 @@ RUN apt-get update && apt-get -y install \
     libpcre++-dev \
     libglib2.0-dev \
     libxerces-c-dev \
-    libyaml-cpp-dev \
     swig3.0 \
     libuv0.10-dev \
     libev-dev \

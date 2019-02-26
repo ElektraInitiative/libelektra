@@ -1,10 +1,9 @@
 include (LibAddBinding)
 
 if (DEPENDENCY_PHASE)
-	find_package (PkgConfig QUIET)
-	pkg_check_modules (ZMQ QUIET libzmq)
+	find_package (ZeroMQ QUIET)
 
-	if (NOT ZMQ_FOUND)
+	if (NOT ZeroMQ_FOUND)
 		remove_plugin (zeromqrecv "package libzmq (libzmq3-dev) not found")
 	endif ()
 endif ()
@@ -14,21 +13,24 @@ add_plugin (zeromqrecv
 		    zeromqrecv.c
 		    subscribe.c
 	    OBJECT_SOURCES $<TARGET_OBJECTS:io-adapter-zeromq>
-	    INCLUDE_DIRECTORIES ${ZMQ_INCLUDE_DIR}
+	    INCLUDE_DIRECTORIES ${ZeroMQ_INCLUDE_DIR}
 	    LINK_ELEKTRA elektra-io
-	    LINK_LIBRARIES ${ZMQ_LIBRARIES})
+	    LINK_LIBRARIES ${ZeroMQ_LIBRARIES})
 
 if (ADDTESTING_PHASE)
 	check_binding_was_added ("io_uv" IS_INCLUDED)
 	if (BUILD_TESTING AND IS_INCLUDED)
 		if (BUILD_FULL OR BUILD_STATIC)
-			find_package (PkgConfig QUIET)
-			pkg_check_modules (LIBUV QUIET libuv>=1) # libuv is present; otherwise io_uv bindings would not be added
-			set (STATIC_LIBRARIES ${LIBUV_LIBRARIES})
+			find_package (libuv 1 QUIET) # libuv is present; otherwise io_uv bindings would not be added
+
+			set (STATIC_LIBRARIES ${libuv_LIBRARIES})
 		endif ()
 
-		add_plugintest (zeromqrecv TEST_LINK_LIBRARIES ${STATIC_LIBRARIES} TEST_LINK_ELEKTRA elektra-io-uv)
-		if (LIBUV_VERSION VERSION_LESS "1.0")
+		add_plugintest (zeromqrecv
+				TEST_LINK_LIBRARIES ${STATIC_LIBRARIES}
+				TEST_LINK_ELEKTRA elektra-io-uv
+				INCLUDE_SYSTEM_DIRECTORIES ${libuv_INCLUDE_DIRS})
+		if (libuv_VERSION VERSION_LESS "1.0")
 			target_compile_definitions (testmod_zeromqrecv PRIVATE "HAVE_LIBUV0")
 		else ()
 			target_compile_definitions (testmod_zeromqrecv PRIVATE "HAVE_LIBUV1")

@@ -24,7 +24,7 @@ int elektraDirectoryValueClose (Plugin * handle, Key * errorKey);
 int elektraDirectoryValueGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraDirectoryValueSet (Plugin * handle, KeySet * ks, Key * parentKey);
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (directoryvalue);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 } // end extern "C"
 
 #endif

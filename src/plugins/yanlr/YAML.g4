@@ -4,7 +4,7 @@ options {
   tokenVocab=YAML;
 }
 
-yaml : STREAM_START child? comment* STREAM_END EOF ;
+yaml : STREAM_START (child | comment*) STREAM_END EOF ;
 child : comment* (value | map | sequence) comment* ;
 
 value : scalar ;
@@ -13,7 +13,7 @@ scalar : PLAIN_SCALAR
        | DOUBLE_QUOTED_SCALAR
        ;
 
-map : MAPPING_START pairs BLOCK_END ;
+map : MAP_START pairs MAP_END ;
 pairs : pair+ ;
 pair : KEY key
        VALUE
@@ -22,7 +22,7 @@ pair : KEY key
      ;
 key : scalar ;
 
-sequence : SEQUENCE_START elements BLOCK_END ;
+sequence : SEQUENCE_START elements SEQUENCE_END ;
 elements : element+ ;
 element : ELEMENT child ;
 

@@ -29,7 +29,7 @@ namespace
  */
 string typeToString (int const type)
 #ifdef __llvm__
-	__attribute__ ((annotate ("oclint:suppress[high cyclomatic complexity]")))
+	__attribute__ ((annotate ("oclint:suppress[high ncss method]"), annotate ("oclint:suppress[high cyclomatic complexity]")))
 #endif
 {
 	switch (type)
@@ -38,26 +38,28 @@ string typeToString (int const type)
 		return "STREAM_START";
 	case Token::STREAM_END:
 		return "STREAM_END";
+	case Token::COMMENT:
+		return "COMMENT";
 	case Token::PLAIN_SCALAR:
 		return "PLAIN_SCALAR";
+	case Token::SINGLE_QUOTED_SCALAR:
+		return "SINGLE_QUOTED_SCALAR";
+	case Token::DOUBLE_QUOTED_SCALAR:
+		return "DOUBLE_QUOTED_SCALAR";
+	case Token::MAP_START:
+		return "MAP_START";
+	case Token::MAP_END:
+		return "MAP_END";
 	case Token::KEY:
 		return "KEY";
 	case Token::VALUE:
 		return "VALUE";
-	case Token::MAPPING_START:
-		return "MAPPING_START";
-	case Token::BLOCK_END:
-		return "BLOCK_END";
-	case Token::ELEMENT:
-		return "ELEMENT";
 	case Token::SEQUENCE_START:
 		return "SEQUENCE_START";
-	case Token::DOUBLE_QUOTED_SCALAR:
-		return "DOUBLE_QUOTED_SCALAR";
-	case Token::COMMENT:
-		return "COMMENT";
-	case Token::SINGLE_QUOTED_SCALAR:
-		return "SINGLE_QUOTED_SCALAR";
+	case Token::SEQUENCE_END:
+		return "SEQUENCE_END";
+	case Token::ELEMENT:
+		return "ELEMENT";
 	default:
 		break;
 	}

@@ -1,5 +1,4 @@
-kdb-lsmeta(1) - Print metakeys associated with a key
-=====================================================
+# kdb-lsmeta(1) - Print metakeys associated with a key
 
 ## SYNOPSIS
 
@@ -26,7 +25,6 @@ If no metakeys are associated with the given key, nothing will be printed.<br>
   Use binary 0 termination.
 - `-v`, `--verbose`:
   Show which key will be used.
-
 
 ## EXAMPLE
 

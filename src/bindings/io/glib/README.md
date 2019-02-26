@@ -20,16 +20,16 @@ Use the `elektraIoGlibNew` function to get a new I/O binding instance.
 Make sure to build your application with `elektra-io-glib`, `elektra-io` and `glib` or
 simply use `pkg-config --cflags --libs elektra-io-glib`.
 
-### ElektraIoInterface * elektraIoGlibNew (GMainContext * context)
+### ElektraIoInterface _ elektraIoGlibNew (GMainContext _ context)
 
 Create and initialize a new I/O binding.
 
-*Parameters*
+_Parameters_
 
 - context: Context to use for I/O operations. May be NULL to indicate the glib's
   default context.
 
-*Returns*
+_Returns_
 
 Populated I/O interface
 

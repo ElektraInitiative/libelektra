@@ -21,7 +21,7 @@ The API is easier to use and decouples applications from this plugin.
 
 ## Exported Functions
 
-This plugin exports various functions starting with "register*" below
+This plugin exports various functions starting with `register*` below
 `system/elektra/modules/internalnotification/exports/`.
 These functions should not be used directly.
 Instead the [notification API](https://doc.libelektra.org/api/current/html/group__kdbnotification.html)

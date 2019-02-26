@@ -19,8 +19,8 @@ implemented by the `elektra-notification` library allows receiving and handling
 notifications.
 An [I/O abstraction layer](https://doc.libelektra.org/api/current/html/group__kdbio.html)
 allows asynchronous notification processing by compatible plugins.
-The abstraction layer consists of an *interface* used by transport plugins and
-different implementations of that interface called *I/O bindings*.
+The abstraction layer consists of an _interface_ used by transport plugins and
+different implementations of that interface called _I/O bindings_.
 An I/O binding implements the actual I/O management functions for a specific
 event loop API.
 Applications typically use one I/O binding but can also use none or multiple
@@ -44,7 +44,7 @@ When a configuration key is changed Elektra can generate change notifications
 that allow applications to process those changes.
 Developers can choose whether and how they want to receive and handle those
 notifications but not whether notifications are sent or which transport is used.
-How notifications are sent is specified in the *notification configuration* by
+How notifications are sent is specified in the _notification configuration_ by
 the system operator.
 
 ## Notification Configuration
@@ -66,7 +66,7 @@ Plugins usable as transport plugin are marked with `notification` on the
 
 Developers do not need to change their programs in order to start sending
 notifications.
-However without the integration of an I/O binding notifications *may* be sent
+However without the integration of an I/O binding notifications _may_ be sent
 synchronously which would block normal program execution.
 For programs without time constraints (e.g. CLI programs) this may not be
 important, but for GUIs or network services this will have negative impact.
@@ -374,7 +374,7 @@ This example also omits globals by passing them as user data using the
 ## Emergent Behavior Guidelines
 
 When applications react to configuration changes made by other applications this
-can lead to *emergent behavior*.
+can lead to _emergent behavior_.
 We speak of emergent behavior when the parts of a system are functioning as
 designed but an unintended, unexpected or unanticipated behavior at system level
 occurs.
@@ -384,31 +384,31 @@ For example, take the following sequence of events:
 1. application `A` changes its configuration
 2. application `B` receives a notification about the change from `A` and updates its configuration
 
- Given these two steps the sequence could be a case of *wanted* emergent behavior:
- Maybe application `B` keeps track of the number of global configuration
- changes.
- Now consider adding the following events to the sequence:
+Given these two steps the sequence could be a case of _wanted_ emergent behavior:
+Maybe application `B` keeps track of the number of global configuration
+changes.
+Now consider adding the following events to the sequence:
 
 3. application `A` receives a notification about the change from `B` and changes its configuration
-4. *continue at step 2*
+4. _continue at step 2_
 
 The additional step causes an infinite cycle of configuration updates
-which introduces *unwanted* behavior.
+which introduces _unwanted_ behavior.
 
 When designing a system it is desirable to use components with predictable and
 well-defined behavior.
-As a system grows larger and gets more *complex* unpredictable behavior
+As a system grows larger and gets more _complex_ unpredictable behavior
 emerges that was neither intended by the system designer nor by the designer of
 the components.
-This system behavior is called *emergent behavior* if it cannot be explained
+This system behavior is called _emergent behavior_ if it cannot be explained
 from its components but only from analysis of the whole system.
 
 Emergent behavior can be beneficial for a system, for example, useful cooperation
 in an ant colony but it also has disadvantages.
-Systems that bear *unwanted* emergent behavior are difficult to manage and
+Systems that bear _unwanted_ emergent behavior are difficult to manage and
 experience failures in the worst case.
 This kind of unwanted emergent behavior is called
-[*emergent misbehavior*](http://www.hpl.hp.com/techreports/2006/HPL-2006-2.html).
+[_emergent misbehavior_](http://www.hpl.hp.com/techreports/2006/HPL-2006-2.html).
 Examples of emergent misbehavior are traffic jams or the
 [Millenium Footbridge](https://researchcourse.pbworks.com/f/structural+engineering.pdf)
 [incident in London](https://www.sciencedaily.com/releases/2005/11/051103080801.htm).
@@ -433,6 +433,7 @@ Building on these findings we will now present guidelines for preventing
 emergent misbehavior when using the notification API and callbacks in particular.
 
 ### Guideline 1: Avoid callbacks
+
 > Most of the guidelines are related to callbacks.
 > With normal use of the notification API emergent behavior should not occur.
 
@@ -445,7 +446,8 @@ changes at regular time intervals and react to changes the coupling is not as
 tight as with callbacks.
 
 ### Guideline 2: Wait before reacting to changes
-> Waiting after receiving a notification decouples an application from changes and reduces the risk for unwanted ***synchronization***.
+
+> Waiting after receiving a notification decouples an application from changes and reduces the risk for unwanted **_synchronization_**.
 
 In applications where applying changes has impact on resource usage (e.g. CPU or
 disk) applying a time delay as suggested by this Guideline is a
@@ -461,8 +463,9 @@ Callbacks set the flag and when the control flow is in the main loop again, the
 pending updates are applied and the flag is cleared.
 
 ### Guideline 3: Avoid updates as reaction to change
+
 > Avoid changing the configuration as reaction to a change.
-> This reduces the risk for unwanted ***oscillation***.
+> This reduces the risk for unwanted **_oscillation_**.
 
 While this guideline does not forbid updating the key database using `kdbSet()`
 in a callback it advises to avoid it.
@@ -475,7 +478,8 @@ This guideline applies especially to callbacks but is also relevant when variabl
 are polled for changes by the application.
 
 ### Guideline 4: Do not use notifications for synchronization
-> Applications should not use notifications for synchronization as this can lead to ***phase change***.
+
+> Applications should not use notifications for synchronization as this can lead to **_phase change_**.
 
 This guideline limits the use of the notification API to notifications about
 configuration changes.
@@ -487,10 +491,11 @@ For example, this happens when applications synchronize themselves at startup by
 incrementing a counter in the key database.
 When a certain limit of application instances is reached the applications
 proceed with different behavior.
-If this behavior affects other applications phase change has occured.
+If this behavior affects other applications phase change has occurred.
 
 ### Guideline 5: Apply changes immediately
-> Call `kdbSet()` to save updated configuration immediately after a change occured.
+
+> Call `kdbSet()` to save updated configuration immediately after a change occurred.
 > This reduces conflicting changes in the key database.
 
 When a configuration setting is updated within an application this guideline
@@ -499,6 +504,7 @@ This ensures that other applications have the same view of the key database and
 operate on current settings.
 
 ### Guideline 6: Be careful on what to call inside callbacks
+
 > Notification callbacks are called from within Elektra.
 > Calling `kdbClose()`, `elektraNotificationClose()` or `elektraSetIoBinding()` in a callback will lead to undefined behavior or an application crash.
 

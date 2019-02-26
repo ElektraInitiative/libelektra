@@ -592,7 +592,7 @@ int elektraCurlgetGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 			       keyNew ("system/elektra/modules/curlget/exports/close", KEY_FUNC, elektraCurlgetClose, KEY_END),
 			       keyNew ("system/elektra/modules/curlget/exports/error", KEY_FUNC, elektraCurlgetError, KEY_END),
 			       keyNew ("system/elektra/modules/curlget/exports/checkfile", KEY_FUNC, elektraCurlgetCheckFile, KEY_END),
-#include ELEKTRA_README (curlget)
+#include ELEKTRA_README
 			       keyNew ("system/elektra/modules/curlget/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
@@ -1006,7 +1006,7 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 	return retval; // success
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (curlget)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
     return elektraPluginExport ("curlget",

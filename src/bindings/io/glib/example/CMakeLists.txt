@@ -17,11 +17,11 @@ endif ()
 set (example exampleio_glib)
 
 add_executable (${example} ${SOURCES})
-add_dependencies (${example} kdberrors_generated)
+add_dependencies (${example} kdberrors_generated elektra_error_codes_generated)
 
-target_include_directories (${example} SYSTEM PUBLIC ${GLIB_INCLUDE_DIRS})
+target_include_directories (${example} SYSTEM PUBLIC ${GLib_INCLUDE_DIRS})
 
 target_link_elektra (${example} elektra-kdb elektra-io elektra-io-glib)
 if (BUILD_FULL OR BUILD_STATIC)
-	target_link_libraries (${example} ${GLIB_LIBRARIES})
+	target_link_libraries (${example} ${GLib_LIBRARY})
 endif ()

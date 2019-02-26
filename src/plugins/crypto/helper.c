@@ -25,7 +25,7 @@
  * @retval 1 on success
  * @retval -1 if libinvoke reported an error (errorKey is being set).
  */
-int CRYPTO_PLUGIN_FUNCTION (base64Encode) (Key * errorKey, const kdb_octet_t * input, const size_t inputLength, char ** output)
+int ELEKTRA_PLUGIN_FUNCTION (base64Encode) (Key * errorKey, const kdb_octet_t * input, const size_t inputLength, char ** output)
 {
 	ElektraInvokeHandle * handle = elektraInvokeOpen ("base64", 0, errorKey);
 	if (!handle)
@@ -59,7 +59,7 @@ int CRYPTO_PLUGIN_FUNCTION (base64Encode) (Key * errorKey, const kdb_octet_t * i
  * @retval -2 if the output buffer allocation failed
  * @retval -3 if libinvoke reported an error (errorKey is being set).
  */
-int CRYPTO_PLUGIN_FUNCTION (base64Decode) (Key * errorKey, const char * input, kdb_octet_t ** output, size_t * outputLength)
+int ELEKTRA_PLUGIN_FUNCTION (base64Decode) (Key * errorKey, const char * input, kdb_octet_t ** output, size_t * outputLength)
 {
 	ElektraInvokeHandle * handle = elektraInvokeOpen ("base64", 0, errorKey);
 	if (!handle)
@@ -90,7 +90,7 @@ int CRYPTO_PLUGIN_FUNCTION (base64Decode) (Key * errorKey, const char * input, k
  * @retval 1 on success
  * @retval -1 on error. errorKey holds a description.
  */
-int CRYPTO_PLUGIN_FUNCTION (getSaltFromMetakey) (Key * errorKey, Key * k, kdb_octet_t ** salt, kdb_unsigned_long_t * saltLen)
+int ELEKTRA_PLUGIN_FUNCTION (getSaltFromMetakey) (Key * errorKey, Key * k, kdb_octet_t ** salt, kdb_unsigned_long_t * saltLen)
 {
 	size_t saltLenInternal = 0;
 	const Key * meta = keyGetMeta (k, ELEKTRA_CRYPTO_META_SALT);
@@ -101,7 +101,7 @@ int CRYPTO_PLUGIN_FUNCTION (getSaltFromMetakey) (Key * errorKey, Key * k, kdb_oc
 		return -1;
 	}
 
-	int result = CRYPTO_PLUGIN_FUNCTION (base64Decode) (errorKey, keyString (meta), salt, &saltLenInternal);
+	int result = ELEKTRA_PLUGIN_FUNCTION (base64Decode) (errorKey, keyString (meta), salt, &saltLenInternal);
 	if (result == -1)
 	{
 		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_INTERNAL_ERROR, errorKey, "Salt was not stored Base64 encoded.");
@@ -131,7 +131,7 @@ int CRYPTO_PLUGIN_FUNCTION (getSaltFromMetakey) (Key * errorKey, Key * k, kdb_oc
  * @retval 1 on success
  * @retval -1 on error. errorKey holds a description.
  */
-int CRYPTO_PLUGIN_FUNCTION (getSaltFromPayload) (Key * errorKey, Key * k, kdb_octet_t ** salt, kdb_unsigned_long_t * saltLen)
+int ELEKTRA_PLUGIN_FUNCTION (getSaltFromPayload) (Key * errorKey, Key * k, kdb_octet_t ** salt, kdb_unsigned_long_t * saltLen)
 {
 	static const size_t headerLen = sizeof (kdb_unsigned_long_t);
 	const ssize_t payloadLen = keyGetValueSize (k) - ELEKTRA_CRYPTO_MAGIC_NUMBER_LEN;
@@ -174,7 +174,7 @@ int CRYPTO_PLUGIN_FUNCTION (getSaltFromPayload) (Key * errorKey, Key * k, kdb_oc
  * @param config holds the plugin configuration.
  * @returns the decrypted master password as (Elektra) Key or NULL in case of error. Must be freed by the caller.
  */
-Key * CRYPTO_PLUGIN_FUNCTION (getMasterPassword) (Key * errorKey, KeySet * config)
+Key * ELEKTRA_PLUGIN_FUNCTION (getMasterPassword) (Key * errorKey, KeySet * config)
 {
 	Key * master = ksLookupByName (config, ELEKTRA_CRYPTO_PARAM_MASTER_PASSWORD, 0);
 	if (!master)
@@ -184,10 +184,10 @@ Key * CRYPTO_PLUGIN_FUNCTION (getMasterPassword) (Key * errorKey, KeySet * confi
 		return NULL;
 	}
 	Key * msg = keyDup (master);
-	if (CRYPTO_PLUGIN_FUNCTION (gpgDecryptMasterPassword) (config, errorKey, msg) != 1)
+	if (ELEKTRA_PLUGIN_FUNCTION (gpgDecryptMasterPassword) (config, errorKey, msg) != 1)
 	{
 		keyDel (msg);
-		return NULL; // error set by CRYPTO_PLUGIN_FUNCTION(gpgDecryptMasterPassword)()
+		return NULL; // error set by ELEKTRA_PLUGIN_FUNCTION(gpgDecryptMasterPassword)()
 	}
 	return msg;
 }
@@ -198,7 +198,7 @@ Key * CRYPTO_PLUGIN_FUNCTION (getMasterPassword) (Key * errorKey, KeySet * confi
  * @param config KeySet holding the plugin configuration
  * @returns the number of iterations for the key derivation function
  */
-kdb_unsigned_long_t CRYPTO_PLUGIN_FUNCTION (getIterationCount) (Key * errorKey, KeySet * config)
+kdb_unsigned_long_t ELEKTRA_PLUGIN_FUNCTION (getIterationCount) (Key * errorKey, KeySet * config)
 {
 	Key * k = ksLookupByName (config, ELEKTRA_CRYPTO_PARAM_ITERATION_COUNT, 0);
 	if (k)

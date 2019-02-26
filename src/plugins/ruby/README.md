@@ -19,7 +19,6 @@ The plugin has the following configuration options:
 
 - `script`: path to the Ruby plugin to use (mandatory)
 
-
 ## Usage
 
 Mount a configuration file using this plugin, which specifying the concrete Ruby Elektra plugin:
@@ -138,4 +137,3 @@ end
   is still needed or not (libelektra might be used by an Ruby application).
 - The plugin does not work correctly with Ruby version managers like `rbenv` or `rvm` and is
   intended to be used with the Ruby ecosystem installed in system context.
-- Automated test cases are missing

@@ -3,11 +3,13 @@
 include (CMakePackageConfigHelpers)
 
 # cmake settings for use by find_package
-if (BUILD_SHARED OR BUILD_STATIC)
+if (BUILD_SHARED)
 	set (Elektra_LIBRARIES "elektra-core elektra-kdb")
-else (BUILD_SHARED OR BUILD_STATIC)
+elseif (BUILD_FULL)
 	set (Elektra_LIBRARIES "elektra-full")
-endif (BUILD_SHARED OR BUILD_STATIC)
+elseif (BUILD_STATIC)
+	set (Elektra_LIBRARIES "elektra-static")
+endif ()
 configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/ElektraConfig.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/ElektraConfig.cmake" @ONLY)
 
 write_basic_package_version_file ("${CMAKE_CURRENT_BINARY_DIR}/ElektraConfigVersion.cmake"
@@ -19,11 +21,13 @@ install (FILES "${CMAKE_CURRENT_BINARY_DIR}/ElektraConfig.cmake"
 	 DESTINATION ${TARGET_CMAKE_FOLDER})
 
 # pkg-config files
-if (BUILD_SHARED OR BUILD_STATIC)
+if (BUILD_SHARED)
 	set (PACKAGE_LIBS "-lelektra-core -lelektra-kdb")
-else (BUILD_SHARED OR BUILD_STATIC)
+elseif (BUILD_FULL)
 	set (PACKAGE_LIBS "-lelektra-full")
-endif (BUILD_SHARED OR BUILD_STATIC)
+elseif (BUILD_STATIC)
+	set (PACKAGE_LIBS "-lelektra-static")
+endif ()
 configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/elektra.pc.in" "${CMAKE_CURRENT_BINARY_DIR}/elektra.pc" @ONLY)
 
 install (FILES "${CMAKE_CURRENT_BINARY_DIR}/elektra.pc" DESTINATION lib${LIB_SUFFIX}/${TARGET_PKGCONFIG_FOLDER})

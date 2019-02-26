@@ -55,7 +55,7 @@ done
 
 if [ $nbError != "0" ]; then
 	echo
-	echo "Following test cases failed: $nbFailed"
+	printf "Following test cases failed: $nbFailed\n"
 	echo
 fi
 

@@ -21,7 +21,7 @@ int elektraSimplespeclangSet (ckdb::Plugin * handle, ckdb::KeySet * ks, ckdb::Ke
 int elektraSimplespeclangError (ckdb::Plugin * handle, ckdb::KeySet * ks, ckdb::Key * parentKey);
 int elektraSimplespeclangCheckConfig (ckdb::Key * errorKey, ckdb::KeySet * conf);
 
-ckdb::Plugin * ELEKTRA_PLUGIN_EXPORT (simplespeclang);
+ckdb::Plugin * ELEKTRA_PLUGIN_EXPORT;
 }
 
 #endif

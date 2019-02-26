@@ -47,13 +47,15 @@ if (ADDTESTING_PHASE)
 	check_binding_was_added ("io_uv" IS_INCLUDED)
 	if (BUILD_TESTING AND IS_INCLUDED)
 		if (BUILD_FULL OR BUILD_STATIC)
-			find_package (PkgConfig QUIET)
-			pkg_check_modules (LIBUV QUIET libuv)
+			find_package (libuv QUIET)
 
-			set (STATIC_LIBRARIES ${LIBUV_LIBRARIES}) # libuv is present; otherwise io_uv bindings would not be added
+			set (STATIC_LIBRARIES ${libuv_LIBRARIES}) # libuv is present; otherwise io_uv bindings would not be added
 		endif ()
 
-		add_plugintest (dbusrecv TEST_LINK_LIBRARIES ${STATIC_LIBRARIES} TEST_LINK_ELEKTRA elektra-io-uv)
+		add_plugintest (dbusrecv
+				TEST_LINK_LIBRARIES ${STATIC_LIBRARIES}
+				TEST_LINK_ELEKTRA elektra-io-uv
+				INCLUDE_SYSTEM_DIRECTORIES ${libuv_INCLUDE_DIRS})
 
 		# add sources manually because add_plugintest does not support generator expressions for additional source files
 		if (BUILD_FULL OR BUILD_STATIC)
@@ -62,7 +64,7 @@ if (ADDTESTING_PHASE)
 			target_sources (testmod_dbusrecv PRIVATE $<TARGET_OBJECTS:OBJ_elektra-io-uv>)
 		endif ()
 
-		if (LIBUV_VERSION VERSION_LESS "1.0")
+		if (libuv_VERSION VERSION_LESS "1.0")
 			target_compile_definitions (testmod_dbusrecv PRIVATE "HAVE_LIBUV0")
 		else ()
 			target_compile_definitions (testmod_dbusrecv PRIVATE "HAVE_LIBUV1")

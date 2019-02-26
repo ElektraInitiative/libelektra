@@ -26,6 +26,6 @@ int elektraReferenceSet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraReferenceError (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraReferenceCheckConfig (Key * errorKey, KeySet * conf);
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (reference);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 #endif

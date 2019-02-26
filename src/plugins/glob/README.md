@@ -13,13 +13,13 @@
 ## Introduction
 
 The glob plugin provides coping metadata given by the plugin's configuration
-to keys identified using *glob expressions*.
+to keys identified using _glob expressions_.
 Globbing resembles regular expressions.
 They do not have the same expressive power, but are easier to use.
 The semantics are more suitable to match path names:
 
 - `*` matches any key name of just one hierarchy. This means it
-complies with any character except slash or null.
+  complies with any character except slash or null.
 - `?` satisfies single characters with the same exclusions.
 - Additionally, there are ranges and character classes. They can also be inverted.
 
@@ -57,6 +57,7 @@ globbing function (currently fnmatch) as a comma separated list. Unknown flag na
 
 If the flag key does not exist, FNM_PATHNAME is used as a default (see fnmatch(3) for more details).
 An empty string disables all flags (i.e. also the default flag).
+
 ## Contracts
 
 Glob statements are very useful together with contracts.

@@ -136,12 +136,16 @@ int init (int argc, char ** argv);
 #if __GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ > 6 || (__GNUC_MINOR__ == 6 && __GNUC_PATCHLEVEL__ > 2))) ||                         \
 	(__GNUC__ == 4 && (__GNUC_MINOR__ > 7 || (__GNUC_MINOR__ == 7 && __GNUC_PATCHLEVEL__ > 1)))
 #define ELEKTRA_PRAGMA(x) _Pragma (ELEKTRA_PRAGMA_STR (x))
+#elif __clang_major__ > 3 || (__clang_major__ == 3 && (__clang_minor__ >= 3))
+// might also be supported in earlier versions of clang, but no documentation was found
+#define ELEKTRA_PRAGMA(x) _Pragma (ELEKTRA_PRAGMA_STR (x))
 #else
 #define ELEKTRA_PRAGMA(x)
 #endif
 #define ELEKTRA_PRAGMA_STR(x) #x
 #define ELEKTRA_DIAG_STORE ELEKTRA_PRAGMA (GCC diagnostic push)
-#define ELEKTRA_DIAG_OFF(x) ELEKTRA_PRAGMA (GCC diagnostic ignored ELEKTRA_PRAGMA_STR (x))
+#define ELEKTRA_DIAG_OFF_STR(x) ELEKTRA_PRAGMA (GCC diagnostic ignored x)
+#define ELEKTRA_DIAG_OFF(x) ELEKTRA_DIAG_OFF_STR (ELEKTRA_PRAGMA_STR (x))
 #define ELEKTRA_DIAG_RESTORE ELEKTRA_PRAGMA (GCC diagnostic pop)
 
 #define succeed_if_same_string(ps1, ps2)                                                                                                   \

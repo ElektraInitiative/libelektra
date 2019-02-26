@@ -30,7 +30,7 @@ public class Key implements Iterable<String> {
 	public static final int KEY_META_NAME = 1 << 21;
 
 	/**
-	 * Indicates a generic key exception occured.
+	 * Indicates a generic key exception occurred.
 	 */
 	public static class KeyException extends java.lang.RuntimeException {
 

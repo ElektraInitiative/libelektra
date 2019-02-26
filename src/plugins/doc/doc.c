@@ -109,7 +109,7 @@ int elektraDocGet (Plugin * plugin ELEKTRA_UNUSED, KeySet * returned, Key * pare
 			       keyNew ("system/elektra/modules/doc/exports/set", KEY_FUNC, elektraDocSet, KEY_END),
 			       keyNew ("system/elektra/modules/doc/exports/error", KEY_FUNC, elektraDocError, KEY_END),
 			       keyNew ("system/elektra/modules/doc/exports/checkconf", KEY_FUNC, elektraDocCheckConf, KEY_END),
-#include ELEKTRA_README (doc)
+#include ELEKTRA_README
 			       keyNew ("system/elektra/modules/doc/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
@@ -147,6 +147,20 @@ int elektraDocGet (Plugin * plugin ELEKTRA_UNUSED, KeySet * returned, Key * pare
 	fclose (fp);
 	//![get storage]
 
+	//![get global keyset]
+	KeySet * globalKS = elektraPluginGetGlobalKeySet (plugin);
+	// now we can read something from the global keyset
+	// or add something for us or others to read
+	Key * important = keyNew ("user/global/myDocKey", KEY_VALUE, "global plugins can see me", KEY_END);
+	ksAppendKey (globalKS, important);
+	//![get global keyset]
+
+	//![get global keyset cleanup]
+	// clean up parts of the global keyset which we do not need
+	Key * cutKey = keyNew ("user/global/myDocKey", KEY_END);
+	KeySet * notNeeded = ksCut (globalKS, cutKey);
+	ksDel (notNeeded);
+	//![get global keyset cleanup]
 
 	//![get filter]
 	Key * k;
@@ -250,7 +264,7 @@ void elektraUsercodeUselessSymbol (void)
 }
 
 //![export]
-Plugin * ELEKTRA_PLUGIN_EXPORT (doc)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport(DOC_PLUGIN_NAME,

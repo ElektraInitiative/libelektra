@@ -7,13 +7,13 @@
 - infos/placements = getstorage
 - infos/status = maintained unittest preview experimental unfinished nodoc concept discouraged
 - infos/metadata =
-- infos/description = This storage plugin use a Early parser to read YAML files
+- infos/description = This storage plugin uses an Earley parser to read YAML files
 
 # YAwn
 
 ## Introduction
 
-This plugin uses [YAEP](https://github.com/vnmakarov/yaep) to  parse [YAML](http://yaml.org) data.
+This plugin uses [YAEP](https://github.com/vnmakarov/yaep) to parse [YAML](http://yaml.org) data.
 
 ## Dependencies
 
@@ -63,6 +63,35 @@ kdb getmeta user/tests/yawn/movies array
 
 kdb get user/tests/yawn/movies/#1
 #> YAwn II: The Awakening
+
+# Undo modifications
+kdb rm -r user/tests/yawn
+sudo kdb umount user/tests/yawn
+```
+
+### Error Messages
+
+```sh
+# Mount plugin
+sudo kdb mount config.yaml user/tests/yawn yawn
+
+# Manually add some data
+printf -- ' - Brutus\n' >  `kdb file user/tests/yawn`
+# Add element with incorrect indentation
+printf -- '- Burst'     >> `kdb file user/tests/yawn`
+
+# Try to retrieve data
+kdb ls user/tests/yawn
+# RET: 5
+# STDERR: .*/config.yaml:2:1: Syntax error on token number 5: “<Token, SEQUENCE_START, SEQUENCE START, 2:1–2:1>”.*
+
+# Fix syntax error
+printf -- ' - Brutus\n' >  `kdb file user/tests/yawn`
+printf -- ' - Burst'    >> `kdb file user/tests/yawn`
+kdb ls user/tests/yawn
+#> user/tests/yawn
+#> user/tests/yawn/#0
+#> user/tests/yawn/#1
 
 # Undo modifications
 kdb rm -r user/tests/yawn

@@ -37,8 +37,8 @@ For example:
 Then the value `middle_small` would validate.
 But `middle_small_small` would fail because every entry might only occur once.
 
-
 ## Example
+
 ```sh
 # Backup-and-Restore:/tests/enum
 
@@ -46,7 +46,7 @@ sudo kdb mount enum.ecf /tests/enum enum dump
 
 # valid initial value + setup valid enum list
 kdb set /tests/enum/value middle
-kdb setmeta user/tests/enum/value check/enum "'low', 'middle', 'high'"
+kdb setmeta /tests/enum/value check/enum "'low', 'middle', 'high'"
 
 # should succeed
 kdb set /tests/enum/value low
@@ -56,16 +56,18 @@ kdb set /tests/enum/value no
 # RET:5
 # ERROR:121
 ```
+
 Or with multi-enums:
+
 ```sh
 # valid initial value + setup array with valid enums
 kdb set /tests/enum/multivalue middle_small
-kdb setmeta user/tests/enum/multivalue check/enum/#0 small
-kdb setmeta user/tests/enum/multivalue check/enum/#1 middle
-kdb setmeta user/tests/enum/multivalue check/enum/#2 large
-kdb setmeta user/tests/enum/multivalue check/enum/#3 huge
-kdb setmeta user/tests/enum/multivalue check/enum/multi _
-kdb setmeta user/tests/enum/multivalue check/enum "#3"
+kdb setmeta /tests/enum/multivalue check/enum/#0 small
+kdb setmeta /tests/enum/multivalue check/enum/#1 middle
+kdb setmeta /tests/enum/multivalue check/enum/#2 large
+kdb setmeta /tests/enum/multivalue check/enum/#3 huge
+kdb setmeta /tests/enum/multivalue check/enum/multi _
+kdb setmeta /tests/enum/multivalue check/enum "#3"
 
 # should succeed
 kdb set /tests/enum/multivalue ___small_middle__

@@ -197,7 +197,7 @@ static int searchPathForBin (Key * errorKey, const char * bin, char ** result)
  * @retval 1 on success.
  * @retval -1 on error. In this case errorkey holds an error description.
  */
-int CRYPTO_PLUGIN_FUNCTION (gpgGetBinary) (char ** gpgBin, KeySet * conf, Key * errorKey)
+int ELEKTRA_PLUGIN_FUNCTION (gpgGetBinary) (char ** gpgBin, KeySet * conf, Key * errorKey)
 {
 	*gpgBin = NULL;
 
@@ -437,7 +437,7 @@ static int isValidGpgKey (KeySet * conf, const char * value)
 	Key * errorKey = keyNew (0);
 	Key * msgKey = keyNew (0);
 
-	int status = CRYPTO_PLUGIN_FUNCTION (gpgCall) (conf, errorKey, msgKey, argv, 7);
+	int status = ELEKTRA_PLUGIN_FUNCTION (gpgCall) (conf, errorKey, msgKey, argv, 7);
 
 	keyDel (msgKey);
 	keyDel (errorKey);
@@ -496,7 +496,7 @@ static int verifyGpgKeysInConf (Key * root, KeySet * conf, Key * errorKey)
  * @retval 1 on success
  * @retval -1 on error. check errorKey for further details.
  */
-int CRYPTO_PLUGIN_FUNCTION (gpgVerifyGpgKeysInConfig) (KeySet * conf, Key * errorKey)
+int ELEKTRA_PLUGIN_FUNCTION (gpgVerifyGpgKeysInConfig) (KeySet * conf, Key * errorKey)
 {
 	Key * rootEncrypting = ksLookupByName (conf, ELEKTRA_RECIPIENT_KEY, 0);
 	if (verifyGpgKeysInConf (rootEncrypting, conf, errorKey) != 1)
@@ -520,7 +520,7 @@ int CRYPTO_PLUGIN_FUNCTION (gpgVerifyGpgKeysInConfig) (KeySet * conf, Key * erro
  * @param conf holds the backend/plugin configuration
  * @returns the error text. This pointer must be freed by the caller!
  */
-char * CRYPTO_PLUGIN_FUNCTION (getMissingGpgKeyErrorText) (KeySet * conf)
+char * ELEKTRA_PLUGIN_FUNCTION (getMissingGpgKeyErrorText) (KeySet * conf)
 {
 	Key * msgKey = keyNew (0);
 	Key * errorKey = keyNew (0);
@@ -530,7 +530,7 @@ char * CRYPTO_PLUGIN_FUNCTION (getMissingGpgKeyErrorText) (KeySet * conf)
 
 	keySetBinary (msgKey, NULL, 0);
 	char * argv[] = { "", "--batch", "--list-secret-keys", "--with-fingerprint", "--with-colons", "--fixed-list-mode", NULL };
-	if (CRYPTO_PLUGIN_FUNCTION (gpgCall) (conf, errorKey, msgKey, argv, 7) == 1)
+	if (ELEKTRA_PLUGIN_FUNCTION (gpgCall) (conf, errorKey, msgKey, argv, 7) == 1)
 	{
 		size_t totalKeyIdChars = 0;
 		size_t keyCount = 0;
@@ -596,7 +596,7 @@ char * CRYPTO_PLUGIN_FUNCTION (getMissingGpgKeyErrorText) (KeySet * conf)
  * @retval 1 on success
  * @retval -1 on failure
  */
-int CRYPTO_PLUGIN_FUNCTION (gpgEncryptMasterPassword) (KeySet * conf, Key * errorKey, Key * msgKey)
+int ELEKTRA_PLUGIN_FUNCTION (gpgEncryptMasterPassword) (KeySet * conf, Key * errorKey, Key * msgKey)
 {
 	// [0]: <path to binary>, [argc-3]: --batch, [argc-2]: -e, [argc-1]: NULL-terminator
 	static const kdb_unsigned_short_t staticArgumentsCount = 4;
@@ -625,7 +625,7 @@ int CRYPTO_PLUGIN_FUNCTION (gpgEncryptMasterPassword) (KeySet * conf, Key * erro
 
 	if (recipientCount == 0)
 	{
-		char * errorDescription = CRYPTO_PLUGIN_FUNCTION (getMissingGpgKeyErrorText) (conf);
+		char * errorDescription = ELEKTRA_PLUGIN_FUNCTION (getMissingGpgKeyErrorText) (conf);
 		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_CONFIG_FAULT, errorKey, errorDescription);
 		elektraFree (errorDescription);
 		return -1;
@@ -675,7 +675,7 @@ int CRYPTO_PLUGIN_FUNCTION (gpgEncryptMasterPassword) (KeySet * conf, Key * erro
 	argv[argc - 2] = "-e";
 
 	// call gpg
-	return CRYPTO_PLUGIN_FUNCTION (gpgCall) (conf, errorKey, msgKey, argv, argc);
+	return ELEKTRA_PLUGIN_FUNCTION (gpgCall) (conf, errorKey, msgKey, argv, argc);
 }
 
 /**
@@ -688,17 +688,17 @@ int CRYPTO_PLUGIN_FUNCTION (gpgEncryptMasterPassword) (KeySet * conf, Key * erro
  * @retval 1 on success
  * @retval -1 on failure
  */
-int CRYPTO_PLUGIN_FUNCTION (gpgDecryptMasterPassword) (KeySet * conf, Key * errorKey, Key * msgKey)
+int ELEKTRA_PLUGIN_FUNCTION (gpgDecryptMasterPassword) (KeySet * conf, Key * errorKey, Key * msgKey)
 {
 	if (inTestMode (conf))
 	{
 		char * argv[] = { "", "--batch", "--trust-model", "always", "-d", NULL };
-		return CRYPTO_PLUGIN_FUNCTION (gpgCall) (conf, errorKey, msgKey, argv, 6);
+		return ELEKTRA_PLUGIN_FUNCTION (gpgCall) (conf, errorKey, msgKey, argv, 6);
 	}
 	else
 	{
 		char * argv[] = { "", "--batch", "-d", NULL };
-		return CRYPTO_PLUGIN_FUNCTION (gpgCall) (conf, errorKey, msgKey, argv, 4);
+		return ELEKTRA_PLUGIN_FUNCTION (gpgCall) (conf, errorKey, msgKey, argv, 4);
 	}
 }
 
@@ -714,7 +714,7 @@ int CRYPTO_PLUGIN_FUNCTION (gpgDecryptMasterPassword) (KeySet * conf, Key * erro
  * @retval 1 on success
  * @retval -1 on failure
  */
-int CRYPTO_PLUGIN_FUNCTION (gpgCall) (KeySet * conf, Key * errorKey, Key * msgKey, char * argv[], size_t argc)
+int ELEKTRA_PLUGIN_FUNCTION (gpgCall) (KeySet * conf, Key * errorKey, Key * msgKey, char * argv[], size_t argc)
 {
 	pid_t pid;
 	int status;
@@ -735,7 +735,7 @@ int CRYPTO_PLUGIN_FUNCTION (gpgCall) (KeySet * conf, Key * errorKey, Key * msgKe
 	}
 
 	// sanitize the argument vector
-	if (CRYPTO_PLUGIN_FUNCTION (gpgGetBinary) (&argv[0], conf, errorKey) != 1)
+	if (ELEKTRA_PLUGIN_FUNCTION (gpgGetBinary) (&argv[0], conf, errorKey) != 1)
 	{
 		return -1;
 	}

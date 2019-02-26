@@ -317,7 +317,7 @@ int elektraHostsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	return ret;
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (hosts)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport("hosts",

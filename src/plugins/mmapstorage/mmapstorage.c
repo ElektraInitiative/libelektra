@@ -437,7 +437,7 @@ static void calculateMmapDataSize (MmapHeader * mmapHeader, MmapMetaData * mmapM
 			ksRewind (cur->meta);
 			while ((curMeta = ksNext (cur->meta)) != 0)
 			{
-				if (ELEKTRA_PLUGIN_FUNCTION (mmapstorage, dynArrayFindOrInsert) (curMeta, dynArray) == 0)
+				if (ELEKTRA_PLUGIN_FUNCTION (dynArrayFindOrInsert) (curMeta, dynArray) == 0)
 				{
 					// key was just inserted
 					dataBlocksSize += (curMeta->keySize + curMeta->keyUSize + curMeta->dataSize);
@@ -543,7 +543,7 @@ static KeySet * writeMetaKeySet (Key * key, MmapAddr * mmapAddr, DynArray * dynA
 	while ((metaKey = keyNextMeta (key)) != 0)
 	{
 		// get address of mapped key and store it in the new array
-		mappedMetaKey = dynArray->mappedKeyArray[ELEKTRA_PLUGIN_FUNCTION (mmapstorage, dynArrayFind) ((Key *) metaKey, dynArray)];
+		mappedMetaKey = dynArray->mappedKeyArray[ELEKTRA_PLUGIN_FUNCTION (dynArrayFind) ((Key *) metaKey, dynArray)];
 		newMeta->array[metaKeyIndex] = (Key *) ((char *) mappedMetaKey - mmapAddr->mmapAddrInt);
 		if (mappedMetaKey->ksReference < SSIZE_MAX)
 		{
@@ -753,7 +753,7 @@ static void updatePointers (MmapMetaData * mmapMetaData, char * dest)
  * @retval ELEKTRA_PLUGIN_STATUS_ERROR on memory error (plugin data (keyset) could not be allocated).
  * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if initialization was successful.
  */
-int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, open) (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
+int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
 {
 	// plugin initialization logic
 
@@ -773,7 +773,7 @@ int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, open) (Plugin * handle ELEKTRA_UNUSED,
  *
  * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS always.
  */
-int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, close) (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
+int ELEKTRA_PLUGIN_FUNCTION (close) (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
 {
 	// free all plugin resources and shut it down
 
@@ -793,7 +793,7 @@ int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, close) (Plugin * handle ELEKTRA_UNUSED
  * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if the file was mapped successfully.
  * @retval ELEKTRA_PLUGIN_STATUS_ERROR if the file could not be mapped successfully.
  */
-int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, get) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, Key * parentKey)
+int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, Key * parentKey)
 {
 	// get all keys
 	int errnosave = errno;
@@ -931,7 +931,7 @@ error:
  * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if the file was written successfully.
  * @retval ELEKTRA_PLUGIN_STATUS_ERROR if any error occurred.
  */
-int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, set) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, Key * parentKey)
+int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, Key * parentKey)
 {
 	// set all keys
 	int errnosave = errno;
@@ -950,7 +950,7 @@ int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, set) (Plugin * handle ELEKTRA_UNUSED, 
 		goto error;
 	}
 
-	dynArray = ELEKTRA_PLUGIN_FUNCTION (mmapstorage, dynArrayNew) ();
+	dynArray = ELEKTRA_PLUGIN_FUNCTION (dynArrayNew) ();
 
 	MmapHeader mmapHeader;
 	MmapMetaData mmapMetaData;
@@ -993,7 +993,7 @@ int ELEKTRA_PLUGIN_FUNCTION (mmapstorage, set) (Plugin * handle ELEKTRA_UNUSED, 
 		goto error;
 	}
 
-	ELEKTRA_PLUGIN_FUNCTION (mmapstorage, dynArrayDelete) (dynArray);
+	ELEKTRA_PLUGIN_FUNCTION (dynArrayDelete) (dynArray);
 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 
@@ -1013,19 +1013,19 @@ error:
 		ELEKTRA_LOG_WARNING ("could not close");
 	}
 
-	ELEKTRA_PLUGIN_FUNCTION (mmapstorage, dynArrayDelete) (dynArray);
+	ELEKTRA_PLUGIN_FUNCTION (dynArrayDelete) (dynArray);
 
 	errno = errnosave;
 	return ELEKTRA_PLUGIN_STATUS_ERROR;
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (mmapstorage)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport (ELEKTRA_PLUGIN_NAME,
-		ELEKTRA_PLUGIN_OPEN,	&ELEKTRA_PLUGIN_FUNCTION(mmapstorage, open),
-		ELEKTRA_PLUGIN_CLOSE,	&ELEKTRA_PLUGIN_FUNCTION(mmapstorage, close),
-		ELEKTRA_PLUGIN_GET,	&ELEKTRA_PLUGIN_FUNCTION(mmapstorage, get),
-		ELEKTRA_PLUGIN_SET,	&ELEKTRA_PLUGIN_FUNCTION(mmapstorage, set),
+		ELEKTRA_PLUGIN_OPEN,	&ELEKTRA_PLUGIN_FUNCTION(open),
+		ELEKTRA_PLUGIN_CLOSE,	&ELEKTRA_PLUGIN_FUNCTION(close),
+		ELEKTRA_PLUGIN_GET,	&ELEKTRA_PLUGIN_FUNCTION(get),
+		ELEKTRA_PLUGIN_SET,	&ELEKTRA_PLUGIN_FUNCTION(set),
 		ELEKTRA_PLUGIN_END);
 }

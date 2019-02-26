@@ -371,7 +371,7 @@ int elektraSimpleiniSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 	return 1; /* success */
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (simpleini)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport("simpleini",

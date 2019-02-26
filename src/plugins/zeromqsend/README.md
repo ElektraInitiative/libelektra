@@ -37,7 +37,7 @@ provides these endpoints.
 
 # Transport Plugin
 
-Mount this plugin globally with default settings to use it as *sending*
+Mount this plugin globally with default settings to use it as _sending_
 transport plugin for Elektra's notification feature:
 
 > kdb global-mount zeromqsend
@@ -47,11 +47,11 @@ transport plugin for Elektra's notification feature:
 This plugin supports the following configuration options when mounting:
 
 - **endpoint**: ZeroMQ XSUB or SUB socket to connect to. The
-[`ipc`](http://api.zeromq.org/4-2:zmq-ipc) and
-[`tcp`](http://api.zeromq.org/4-2:zmq-tcp) ZeroMQ transports are recommended.
-The default value is "tcp://localhost:6000".
-- **connectTimeout**: Timeout for establishing connections in miliseconds. The default value is "1000".
-- **subscribeTimeout**: Timeout for waiting for subscribers in miliseconds. The default value is "200".
+  [`ipc`](http://api.zeromq.org/4-2:zmq-ipc) and
+  [`tcp`](http://api.zeromq.org/4-2:zmq-tcp) ZeroMQ transports are recommended.
+  The default value is "tcp://localhost:6000".
+- **connectTimeout**: Timeout for establishing connections in milliseconds. The default value is "1000".
+- **subscribeTimeout**: Timeout for waiting for subscribers in milliseconds. The default value is "200".
 
 # Notification Format
 

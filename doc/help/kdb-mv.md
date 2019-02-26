@@ -1,5 +1,4 @@
-kdb-mv(1) -- Move keys within the key database
-==============================================
+# kdb-mv(1) -- Move keys within the key database
 
 ## SYNOPSIS
 
@@ -13,13 +12,11 @@ Note that when using the `-r` flag, `source` as well as all of the keys below it
 This command moves key(s) in the Key database.
 You can move keys to other paths within the database.
 
-
 ## LIMITATIONS
 
 Neither `source` nor `dest` can be a cascading key.
 (Start with `/`).
 Make sure to select a namespace.
-
 
 ## RETURN VALUES
 
@@ -31,8 +28,6 @@ This command will return the following values as an exit status:
   standard exit codes, see [kdb(1)](kdb.md)
 - 11:
   No key to move found.
-
-
 
 ## OPTIONS
 
@@ -56,5 +51,3 @@ To move multiple keys:<br>
 
 To move a single key:<br>
 `kdb mv user/example/key1 user/example/key2`
-
-

@@ -61,6 +61,6 @@ int elektraFilecheckClose (Plugin * handle, Key * errorKey);
 int elektraFilecheckGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraFilecheckSet (Plugin * handle, KeySet * ks, Key * parentKey);
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (filecheck);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 #endif

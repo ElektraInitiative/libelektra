@@ -1,10 +1,8 @@
-kdb-cp(1) -- Copy keys within the key database
-==============================================
+# kdb-cp(1) -- Copy keys within the key database
 
 ## SYNOPSIS
 
 `kdb cp <source> <dest>`
-
 
 ## DESCRIPTION
 
@@ -15,13 +13,11 @@ Note that you cannot copy a key below itself.
 Where `source` is the path of the key(s) you want to copy and `dest` is the path where you would like to copy the key(s) to.
 Note that when using the `-r` flag, `source` as well as all of the keys below it will be copied.
 
-
 ## LIMITATIONS
 
 Neither `source` nor `dest` can be a cascading key.
 (Start with `/`).
 Make sure to select a namespace.
-
 
 ## RETURN VALUES
 
@@ -34,9 +30,7 @@ This command will return the following values as an exit status:
 - 11:
   No key to copy found.
 
-
 ## OPTIONS
-
 
 - `-H`, `--help`:
   Show the man page.
@@ -53,8 +47,6 @@ This command will return the following values as an exit status:
 - `-f`, `--force`:
   Force overwriting the keys.
 
-
-
 ## EXAMPLES
 
 To copy multiple keys:<br>
@@ -66,6 +58,3 @@ To copy a single key:<br>
 To copy keys below an existing key:<br>
 `kdb cp -r user/example user/example/key1`<br>
 Note that in this example, all keys in the example directory will be copied below `key1` **except** `key1`.
-
-
-

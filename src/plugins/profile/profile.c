@@ -170,7 +170,7 @@ int elektraProfileGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 			       keyNew ("system/elektra/modules/profile/exports/get", KEY_FUNC, elektraProfileGet, KEY_END),
 			       keyNew ("system/elektra/modules/profile/exports/set", KEY_FUNC, elektraProfileSet, KEY_END),
 			       keyNew ("system/elektra/modules/profile/exports/error", KEY_FUNC, elektraProfileError, KEY_END),
-#include ELEKTRA_README (profile)
+#include ELEKTRA_README
 			       keyNew ("system/elektra/modules/profile/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
@@ -240,7 +240,7 @@ int elektraProfileError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKT
 	return 1; // success
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (profile)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport ("profile",

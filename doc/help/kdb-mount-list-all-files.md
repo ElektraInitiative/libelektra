@@ -1,5 +1,4 @@
-kdb-mount-list-all-files -- List all mounted files
-==================================================
+# kdb-mount-list-all-files -- List all mounted files
 
 ## SYNOPSIS
 

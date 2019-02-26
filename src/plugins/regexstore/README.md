@@ -23,17 +23,20 @@ other keys define which regex are applied on a text file.
 
 The name of these config keys (with .../regexstore/ stripped of)
 will be used to build up the names of the keys:
+
 - #[0-9] will be replaced what the regex matched
 - If no or the wrong placeholder occurs in the name,
   the keys will overwrite themselves, the last wins then.
 
 The value of the config key is as follows:
+
 - the first three letters need to be '#[0-9 '.
-According to this number the value of the key will be set.
+  According to this number the value of the key will be set.
 
 The key also might contain metadata.
+
 - the only characters allowed in metavalues are '#[0-9]'.
-the metadata will be replaced by the regex match then.
+  the metadata will be replaced by the regex match then.
 
 ## Limitations
 
@@ -49,8 +52,8 @@ is added, overlapping regex need to be disallowed.
 
 First mount the regexstore with some at least one config key:
 
-    kdb mount vimrc /vim regexstore "regexstore=root,regexstore/map/#2=#1 map ([^ 
-    ]*) ([^ 
+    kdb mount vimrc /vim regexstore "regexstore=root,regexstore/map/#2=#1 map ([^
+    ]*) ([^
     ]*)"
 
 (the character classes contain a space and a newline)
@@ -74,4 +77,3 @@ then we will get two keys with:
 Suppose we want to match:
 
     (global-set-key (kbd "<escape>")      'keyboard-escape-quit)
-

@@ -78,7 +78,6 @@ Try to move as much as possible from this manual checks to build-server!
 
 Before release is done, following must be checked:
 - Everything blue on https://build.libelektra.org/
-- Not many warnings on https://build.libelektra.org/view/compiler%20warnings/
 
 If version numbers are correct in
 - CMakeLists.txt
@@ -185,8 +184,7 @@ Strace what tools are doing:
 
 Run tests:
 
- kdb run_all -v | tee ~elektra/$VERSION/run_all 2>&1
- KDB=kdb-static kdb-static run_all | tee ~elektra/$VERSION/run_all_static 2>&1
+ KDB=kdb kdb run_all -v | tee ~elektra/$VERSION/run_all 2>&1
  KDB=kdb-full kdb-full run_all | tee ~elektra/$VERSION/run_all_full 2>&1
 
 Install libelektra-test of the previous version and run again:

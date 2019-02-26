@@ -16,6 +16,6 @@
 int PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * ks, Key * parentKey);
 int PLUGIN_FUNCTION (set) (Plugin * handle, KeySet * ks, Key * parentKey);
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (base64);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 #endif

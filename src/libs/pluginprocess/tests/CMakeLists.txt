@@ -16,7 +16,7 @@ if (BUILD_TESTING)
 			     ${HDR_FILES})
 
 		add_executable (${name} ${TEST_SOURCES})
-		add_dependencies (${name} kdberrors_generated)
+		add_dependencies (${name} kdberrors_generated elektra_error_codes_generated)
 
 		target_include_directories (${name} PUBLIC "${CMAKE_SOURCE_DIR}/tests/cframework")
 

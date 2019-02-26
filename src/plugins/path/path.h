@@ -9,6 +9,8 @@
 #ifndef ELEKTRA_PLUGIN_PATH_H
 #define ELEKTRA_PLUGIN_PATH_H
 
+#include <unistd.h>
+
 #include <kdberrors.h>
 #include <kdbplugin.h>
 
@@ -16,15 +18,21 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <unistd.h>
+
+#include <grp.h>
+#include <pwd.h>
 
 int elektraPathOpen (Plugin * handle, Key * errorKey);
+
 int elektraPathClose (Plugin * handle, Key * errorKey);
+
 int elektraPathGet (Plugin * handle, KeySet * ks, Key * parentKey);
+
 int elektraPathSet (Plugin * handle, KeySet * ks, Key * parentKey);
+
 int elektraPathError (Plugin * handle, KeySet * ks, Key * parentKey);
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (path);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 #define ERRORMSG_LENGTH 1000
 

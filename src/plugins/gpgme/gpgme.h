@@ -29,6 +29,6 @@ int elektraGpgmeGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraGpgmeSet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraGpgmeCheckconf (Key * errorKey, KeySet * conf);
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (gpgme);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 #endif

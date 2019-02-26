@@ -16,6 +16,8 @@
 #include <kdberrors.h>
 #include <kdblogger.h>
 #include <kdbutility.h>
+// The definition `_WITH_GETLINE` is required for FreeBSD
+#define _WITH_GETLINE
 #include <stdio.h>
 
 /* -- Functions ------------------------------------------------------------------------------------------------------------------------- */
@@ -35,7 +37,7 @@ static inline KeySet * elektraMiniContract (void)
 		      keyNew ("system/elektra/modules/mini/exports", KEY_END),
 		      keyNew ("system/elektra/modules/mini/exports/get", KEY_FUNC, elektraMiniGet, KEY_END),
 		      keyNew ("system/elektra/modules/mini/exports/set", KEY_FUNC, elektraMiniSet, KEY_END),
-#include ELEKTRA_README (mini)
+#include ELEKTRA_README
 		      keyNew ("system/elektra/modules/mini/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
 		      keyNew ("system/elektra/modules/mini/config/needs/chars/23", KEY_VALUE, "23", KEY_END), // 23 ↔︎ `#`
 		      keyNew ("system/elektra/modules/mini/config/needs/chars/3B", KEY_VALUE, "3B", KEY_END), // 3B ↔︎ `;`
@@ -331,7 +333,7 @@ int elektraMiniSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (mini)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport ("mini",

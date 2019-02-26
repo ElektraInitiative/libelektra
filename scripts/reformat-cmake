@@ -29,17 +29,8 @@ if [ -z "$(which sponge)" ]; then
 	exit 1
 fi
 
-for file in $(find . \( -name 'CMakeLists.txt' -or -name '*.cmake' \) -and \
-	\( \
-	-path './benchmarks/*' \
-	-or -path './cmake/*' \
-	-or -path './doc/*' \
-	-or -path './examples/*' \
-	-or -path './scripts/*' \
-	-or -path './src/*' \
-	-or -path './tests/*' \
-	-or -path './CMakeLists.txt' \
-	\)
-); do
-	$CMAKE_FORMAT "$file" | unexpand | sponge "$file"
+files=$(git ls-files '*.cmake' '*/CMakeLists.txt' 'CMakeLists.txt')
+printf "%s\n" "$files" | sed -nE 's/(.*)/'"'"'\1'"'"'/p' | xargs "$CMAKE_FORMAT" -i
+for file in $files; do
+	unexpand "$file" | sponge "$file"
 done

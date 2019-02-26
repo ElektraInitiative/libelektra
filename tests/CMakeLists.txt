@@ -55,7 +55,7 @@ macro (do_test source)
 	add_headers (SOURCES)
 	add_testheaders (SOURCES)
 	add_executable (${source} ${SOURCES})
-	add_dependencies (${source} kdberrors_generated)
+	add_dependencies (${source} kdberrors_generated elektra_error_codes_generated)
 
 	if (INSTALL_TESTING)
 		install (TARGETS ${source} DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
@@ -95,11 +95,11 @@ add_custom_target (run_nocheckshell
 		   ${USES_TERMINAL})
 
 add_custom_target (run_nokdbtests
-		   COMMAND "${CMAKE_SOURCE_DIR}/scripts/run_nokdbtests" "$<CONFIGURATION>"
+		   COMMAND "${CMAKE_BINARY_DIR}/scripts/run_nokdbtests" "$<CONFIGURATION>"
 		   WORKING_DIRECTORY "${CMAKE_BINARY_DIR}")
 
 add_custom_target (run_memcheck
-		   COMMAND "${CMAKE_SOURCE_DIR}/scripts/run_memcheck" "$<CONFIGURATION>"
+		   COMMAND "${CMAKE_BINARY_DIR}/scripts/run_memcheck" "$<CONFIGURATION>"
 		   WORKING_DIRECTORY "${CMAKE_BINARY_DIR}")
 
 include_directories (data)

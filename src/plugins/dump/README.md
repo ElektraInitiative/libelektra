@@ -86,4 +86,3 @@ Using grep/diff or other Unix tools on the dump file. Make sure that you
 treat it as text file, e.g.:
 
     grep --text 'mount points' example.ecf
-

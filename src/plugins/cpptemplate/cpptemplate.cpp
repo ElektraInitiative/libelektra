@@ -39,7 +39,7 @@ CppKeySet getContract ()
 			  keyNew ("system/elektra/modules/cpptemplate/exports/set", KEY_FUNC, elektraCppTemplateSet, KEY_END),
 			  keyNew ("system/elektra/modules/cpptemplate/exports/error", KEY_FUNC, elektraCppTemplateError, KEY_END),
 			  keyNew ("system/elektra/modules/cpptemplate/exports/checkconf", KEY_FUNC, elektraCppTemplateCheckConfig, KEY_END),
-#include ELEKTRA_README (cpptemplate)
+#include ELEKTRA_README
 			  keyNew ("system/elektra/modules/cpptemplate/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
 			  KS_END };
 }
@@ -115,7 +115,7 @@ int elektraCppTemplateCheckConfig (Key * errorKey ELEKTRA_UNUSED, KeySet * conf 
 	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (cpptemplate)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport ("cpptemplate",

@@ -60,7 +60,7 @@ int MetaSetCommand::execute (Cmdline const & cl)
 
 	if (cl.arguments.size () == 2)
 	{
-		if (cl.verbose) cout << "Deleting metaname " << metaname << endl;
+		if (!cl.quiet) cout << "Only two arguments, thus deleting metaname " << metaname << endl;
 		k.delMeta (metaname);
 	}
 	else

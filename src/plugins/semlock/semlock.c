@@ -136,7 +136,7 @@ int elektraSemlockGet (Plugin * handle, KeySet * returned, Key * parentKey)
 			       keyNew ("system/elektra/modules/semlock/exports/close", KEY_FUNC, elektraSemlockClose, KEY_END),
 			       keyNew ("system/elektra/modules/semlock/exports/get", KEY_FUNC, elektraSemlockGet, KEY_END),
 			       keyNew ("system/elektra/modules/semlock/exports/set", KEY_FUNC, elektraSemlockSet, KEY_END),
-#include ELEKTRA_README (semlock)
+#include ELEKTRA_README
 			       keyNew ("system/elektra/modules/semlock/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
@@ -214,7 +214,7 @@ int elektraSemlockSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key * 
 	return 1; // success
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (semlock)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport ("semlock",

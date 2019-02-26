@@ -18,10 +18,10 @@ characters in the text as a hexadecimal sequence.
 ## Restrictions
 
 - The escape character itself always needs to be encoded, otherwise
-the plugin would try to interpret the following two characters in the
-text as a hexadecimal sequence.
+  the plugin would try to interpret the following two characters in the
+  text as a hexadecimal sequence.
 - The length of the resulting string increases. In the worst case the
-hexcode plugin makes the value three times larger.
+  hexcode plugin makes the value three times larger.
 
 ## Example
 
@@ -45,11 +45,10 @@ by hexcode.
 Then, additionally define all characters you need to be escaped below
 `config/needs/chars` in your contract, e.g:
 
-	config/needs/chars/20 = 61
+    config/needs/chars/20 = 61
 
 to transform a space (dec 20) to the escaped letter a (dec 61).
 
 The escape letter itself can be changed by setting:
 
-	config/needs/escape
-
+    config/needs/escape

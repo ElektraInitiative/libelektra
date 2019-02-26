@@ -35,7 +35,7 @@ type was valid. For example, the type `string empty` equals the type
 types specify. It is now deprecated due to a more general sum type
 facility.
 
-`check/type/min` and  `check/type/max` are deprecated, please use the range
+`check/type/min` and `check/type/max` are deprecated, please use the range
 plugin instead.
 
 ## Example
@@ -70,7 +70,6 @@ kdb rm user/tests/type/key
 sudo kdb umount user/tests/type
 ```
 
-
 ## Limitations
 
 `wchar` is missing.
@@ -78,10 +77,9 @@ sudo kdb umount user/tests/type
 Enum and records are part of other plugins.
 
 The `CORBA` type system also has its limits. The types `string` and
-`enum`  can be unsatisfactory. While string is too general
+`enum` can be unsatisfactory. While string is too general
 and makes no limit on how the sequence of characters is structured,
 the enumeration is too finite. For example, it is not possible to say
 that a string is not allowed to have a specific symbol in it.
 Combine this plugin with other type checker plugins to circumvent
 such limitations.
-

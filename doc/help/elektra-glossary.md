@@ -1,5 +1,4 @@
-elektra-glossary(7) -- glossary of Elektra
-==========================================
+# elektra-glossary(7) -- glossary of Elektra
 
 ## Introduction
 
@@ -42,6 +41,10 @@ elektra-glossary(7) -- glossary of Elektra
   is a community that develops LibElektra, expands SpecElektra,
   improves Elektra's tooling and helps to elektrify applications.
 
+- **Option**, more specifically **Command-line option**:
+  is a special argument passed on the command-line. **Short options**
+  are single characters prefixed with '-'; **Long options** are
+  arbitrarily long and start with '--'.
 
 ## Technical Concepts
 
@@ -69,7 +72,6 @@ elektra-glossary(7) -- glossary of Elektra
 
 - [Metadata](elektra-metadata.md):
   Allows us to describe configuration settings.
-
 
 ## Details
 

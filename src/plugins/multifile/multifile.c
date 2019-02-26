@@ -591,7 +591,7 @@ int elektraMultifileGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 			keyNew ("system/elektra/modules/multifile/exports/checkconf", KEY_FUNC, elektraMultifileCheckConfig, KEY_END),
 			keyNew ("system/elektra/modules/multifile/exports/checkfile", KEY_FUNC, elektraMultifileCheckFile, KEY_END),
 
-#include ELEKTRA_README (multifile)
+#include ELEKTRA_README
 			keyNew ("system/elektra/modules/multifile/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
@@ -896,7 +896,7 @@ int elektraMultifileCheckConfig (Key * errorKey ELEKTRA_UNUSED, KeySet * conf EL
 	return 0;
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (multifile)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
     return elektraPluginExport ("multifile",

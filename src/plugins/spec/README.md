@@ -12,38 +12,38 @@
 The spec plugin is a global plugin that copies metadata from the `spec`-namespace to other namespaces using their key names as globbing expressions.
 Globbing resembles regular expressions. They do not have the same expressive power, but are easier to use. The semantics are more suitable to match path names:
 
-* _ matches any key name of just one hierarchy. This means it complies with any character except slash or null.
-* ? satisfies single characters with the same exclusion.
-* # matches Elektra array elements.
-* Additionally, there are ranges and character classes. They can also be inverted.
+- `_` matches any key name of just one hierarchy. This means it complies with any character except slash or null.
+- `?` satisfies single characters with the same exclusion.
+- `#` matches Elektra array elements.
+- Additionally, there are ranges and character classes. They can also be inverted.
 
 The plugin copies the metadata of the corresponding `spec` key to every matching key in the other namespaces.
 
 The spec plugin also provides basic validation and structural checking.
 Specifically it supports:
 
-* detection of invalid array key names
-* detection of missing keys
-* validation of array ranges
-* validating the number of subkeys
+- detection of invalid array key names
+- detection of missing keys
+- validation of array ranges
+- validating the number of subkeys
 
 ## Configuration
 
 ### Actions
 
-* `ERROR` yields an error when a conflict occurs
-* `WARNING` adds a warning when a conflict occurs
-* `INFO` adds a metakey `logs/spec/info` which can be used by logging plugins
-* `IGNORE` ignores the conflict, this is the default value
+- `ERROR` yields an error when a conflict occurs
+- `WARNING` adds a warning when a conflict occurs
+- `INFO` adds a metakey `logs/spec/info` which can be used by logging plugins
+- `IGNORE` ignores the conflict, this is the default value
 
 ### Conflicts
 
-* Invalid array `member`: an invalid array key has been detected. e.g. `/#abc`
-* Out of `range`: the array has more or less elements than specified by the `array` option.
-* Invalid number of subkeys `count`: a key matching a `_` expression has more or less subkeys than specified by the `required` option.
-* Conflicting metadata `collision`: the metakey that's supposed to be added already exists.
-* Missing keys `missing`: the key structure doesn't contain the required subkeys flagged with the `require` metakey in the `spec` namespace.
-* Invalid keys `invalid`: keys that are subkeys of an invalid array member. e.g. `/#abc/key`
+- Invalid array `member`: an invalid array key has been detected. e.g. `/#abc`
+- Out of `range`: the array has more or less elements than specified by the `array` option.
+- Invalid number of subkeys `count`: a key matching a `_` expression has more or less subkeys than specified by the `required` option.
+- Conflicting metadata `collision`: the metakey that's supposed to be added already exists.
+- Missing keys `missing`: the key structure doesn't contain the required subkeys flagged with the `require` metakey in the `spec` namespace.
+- Invalid keys `invalid`: keys that are subkeys of an invalid array member. e.g. `/#abc/key`
 
 ### Basic Configuration
 
@@ -99,4 +99,3 @@ everything still works after the source is removed):
     kdb lsmeta /freedesktop/openicc/device/camera/#0/EXIF_serial   # seems like there is a check/type
     kdb set "/freedesktop/openicc/device/camera/#0/EXIF_serial" 203     # success, is a long
     kdb set "set "/freedesktop/openicc/device/camera/#0/EXIF_serial" x   # fails, not a long
-

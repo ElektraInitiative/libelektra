@@ -159,7 +159,7 @@ void elektraRemoveMetaData (Key * key, const char * searchfor)
  */
 int elektraOpenBootstrap (KDB * handle, KeySet * keys, Key * errorKey)
 {
-	handle->defaultBackend = backendOpenDefault (handle->modules, KDB_DB_INIT, errorKey);
+	handle->defaultBackend = backendOpenDefault (handle->modules, handle->global, KDB_DB_INIT, errorKey);
 	if (!handle->defaultBackend) return -1;
 
 	handle->split = splitNew ();
@@ -180,7 +180,7 @@ int elektraOpenBootstrap (KDB * handle, KeySet * keys, Key * errorKey)
 		splitDel (handle->split);
 
 		// then create new setup:
-		handle->defaultBackend = backendOpenDefault (handle->modules, KDB_DB_FILE, errorKey);
+		handle->defaultBackend = backendOpenDefault (handle->modules, handle->global, KDB_DB_FILE, errorKey);
 		if (!handle->defaultBackend)
 		{
 			elektraRemoveMetaData (errorKey, "error"); // fix errors from kdbGet()
@@ -263,9 +263,11 @@ KDB * kdbOpen (Key * errorKey)
 	KDB * handle = elektraCalloc (sizeof (struct _KDB));
 	Key * initialParent = keyDup (errorKey);
 
+	handle->global = ksNew (0, KS_END);
 	handle->modules = ksNew (0, KS_END);
 	if (elektraModulesInit (handle->modules, errorKey) == -1)
 	{
+		ksDel (handle->global);
 		ksDel (handle->modules);
 		elektraFree (handle);
 		ELEKTRA_SET_ERROR (94, errorKey, "elektraModulesInit returned with -1");
@@ -282,6 +284,7 @@ KDB * kdbOpen (Key * errorKey)
 	switch (elektraOpenBootstrap (handle, keys, errorKey))
 	{
 	case -1:
+		ksDel (handle->global);
 		ksDel (handle->modules);
 		elektraFree (handle);
 		ELEKTRA_SET_ERROR (40, errorKey, "could not open default backend");
@@ -432,6 +435,8 @@ int kdbClose (KDB * handle, Key * errorKey)
 	{
 		ELEKTRA_ADD_WARNING (47, errorKey, "modules were not open");
 	}
+
+	if (handle->global) ksDel (handle->global);
 
 	elektraFree (handle);
 

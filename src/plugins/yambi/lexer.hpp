@@ -27,6 +27,31 @@ typedef yy::Parser::location_type location_type;
 
 class Lexer
 {
+	/** This class stores information about indentation that starts a new block node. */
+	class Level
+	{
+	public:
+		/** This enumeration specifies the type of a block node. */
+		enum class Type
+		{
+			MAP,      ///< The current indentation starts a block map
+			SEQUENCE, ///< The current indentation starts a block sequence
+			OTHER     ///< The current indentation starts a block scalar
+		};
+		size_t indent = 0;
+		Type type = Level::Type::OTHER;
+
+		/**
+		 * @brief This constructor creates a level object from the given arguments.
+		 *
+		 * @param indentation This number specifies the number of spaces used to start this level object.
+		 * @param levelType This argument specifies the type of node `indentation` created.
+		 */
+		Level (size_t indentation, Level::Type levelType = Level::Type::OTHER) : indent{ indentation }, type{ levelType }
+		{
+		}
+	};
+
 	/** This attribute represents the input the lexer tokenizes. */
 	Input input;
 
@@ -45,10 +70,10 @@ class Lexer
 	size_t tokensEmitted = 0;
 
 	/**
-	 * This stack stores the indentation (in number of characters) for each
-	 * block collection.
+	 * This stack stores the indentation (in number of characters) and block
+	 * type for each block node.
 	 */
-	std::stack<size_t> indents{ std::deque<size_t>{ 0 } };
+	std::stack<Level> levels{ std::deque<Level>{ Level{ 0 } } };
 
 	/**
 	 * This boolean specifies if the lexer has already scanned the whole input or
@@ -76,16 +101,19 @@ class Lexer
 	void forward (size_t const characters);
 
 	/**
-	 * @brief This function adds an indentation value if the given value is
-	 *        smaller than the current indentation.
+	 * @brief This function adds an indentation value if the given value is smaller
+	 *        than the current indentation.
 	 *
 	 * @param lineIndex This parameter specifies the indentation value that this
 	 *                  function compares to the current indentation.
 	 *
+	 * @param type This value specifies the block collection type that
+	 *             `lineIndex` might start.
+	 *
 	 * @retval true If the function added an indentation value
-	 * @retval false Otherwise
+	 *         false Otherwise
 	 */
-	bool addIndentation (size_t const column);
+	bool addIndentation (size_t const column, Level::Type type);
 
 	/**
 	 * @brief This method removes uninteresting characters from the input.

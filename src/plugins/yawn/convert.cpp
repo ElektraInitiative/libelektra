@@ -23,10 +23,6 @@
 #include "listener.hpp"
 #include "walk.hpp"
 
-#ifdef ENABLE_ASAN
-#include <sanitizer/lsan_interface.h>
-#endif
-
 using std::cerr;
 using std::cout;
 using std::endl;
@@ -157,7 +153,7 @@ int handleErrors (int const ambiguousOutput, ErrorListener const & errorListener
 
 	if (errorListener.getNumberOfErrors () > 0)
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_PARSE, error.getKey (), errorListener.getErrorMessage ().c_str ());
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_PARSE, error.getKey (), (filename + ":" + errorListener.getErrorMessage ()).c_str ());
 		return -1;
 	}
 	return 0;
@@ -205,7 +201,11 @@ int addToKeySet (CppKeySet & keySet, CppKey & parent, string const & filename)
 
 	parser.parse (nextToken, syntaxError, nullptr, nullptr, &root, &ambiguousOutput);
 
-	if (handleErrors (ambiguousOutput, errorListener, filename, grammar, parent) < 0) return -1;
+	if (handleErrors (ambiguousOutput, errorListener, filename, grammar, parent) < 0)
+	{
+		yaep::free_tree (root, nullptr, nullptr);
+		return -1;
+	}
 
 	Listener listener{ parent };
 	walk (listener, root);

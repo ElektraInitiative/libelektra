@@ -137,11 +137,12 @@ int elektraProcessPlugin (Key * cur, int * pluginNumber, char ** pluginName, cha
  *        plugins should be put together
  * @param systemConfig the shared (system) config for the plugins.
  *        Every plugin additional get this config.
+ * @param global the global keyset of the KDB instance
  *
  * @retval -1 on failure
  */
 int elektraProcessPlugins (Plugin ** plugins, KeySet * modules, KeySet * referencePlugins, KeySet * config, KeySet * systemConfig,
-			   Key * errorKey)
+			   KeySet * global, Key * errorKey)
 {
 	Key * root;
 	Key * cur;
@@ -192,6 +193,7 @@ int elektraProcessPlugins (Plugin ** plugins, KeySet * modules, KeySet * referen
 					ksDel (config);
 					return -1;
 				}
+				plugins[pluginNumber]->global = global;
 
 				/* case 2, we label it for later use */
 				if (referenceName)
@@ -409,6 +411,12 @@ Plugin * elektraPluginMissing (void)
 static int elektraVersionGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * error ELEKTRA_UNUSED)
 {
 	KeySet * info = elektraVersionKeySet ();
+	keySetMeta (info->array[0], "restrict/write", "1");
+	keySetMeta (info->array[0], "restrict/remove", "1");
+	for (size_t i = 1; i < info->size; i++)
+	{
+		keyCopyAllMeta (info->array[i], info->array[0]);
+	}
 	ksAppend (returned, info);
 	ksDel (info);
 	return 1;

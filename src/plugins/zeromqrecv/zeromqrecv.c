@@ -130,7 +130,7 @@ int elektraZeroMqRecvGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key
 				KEY_END),
 			keyNew ("system/elektra/modules/zeromqrecv/exports/closeNotification", KEY_FUNC, elektraZeroMqRecvCloseNotification,
 				KEY_END),
-#include ELEKTRA_README (zeromqrecv)
+#include ELEKTRA_README
 			keyNew ("system/elektra/modules/zeromqrecv/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
@@ -155,7 +155,7 @@ int elektraZeroMqRecvClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 	return 1; /* success */
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (zeromqrecv)
+Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport("zeromqrecv",

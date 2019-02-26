@@ -5,8 +5,6 @@
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
-#define _POSIX_SOURCE
-#define _POSIX_C_SOURCE 200409L
 
 #include "resolver.h"
 
@@ -36,7 +34,7 @@
  * @retval 0 on success (Absolute path)
  * @retval -1 on a non-valid file
  */
-int ELEKTRA_PLUGIN_FUNCTION (resolver, checkFile) (const char * filename)
+int ELEKTRA_PLUGIN_FUNCTION (checkFile) (const char * filename)
 {
 	if (!filename) return -1;
 	if (filename[0] == '0') return -1;
@@ -535,29 +533,27 @@ static int elektraResolveSpec (ElektraResolved * handle, ElektraResolveTempfile 
 			return -1;
 		}
 	}
+	else if (KDB_DB_SPEC[0] == '~')
+	{
+		char * oldPath = handle->relPath;
+		char * path = elektraMalloc (filenameSize);
+		strcpy (path, KDB_DB_SPEC);
+		strcat (path, "/");
+		strcat (path, handle->relPath);
+		handle->relPath = path;
+		elektraResolveSystemPasswd (handle, warningsKey);
+		elektraFree (path);
+		handle->relPath = oldPath;
+	}
 	else
 	{
-		if (KDB_DB_SPEC_REAL[0] == '~')
-		{
-			char * oldPath = handle->relPath;
-			char * path = elektraMalloc (filenameSize);
-			strcpy (path, KDB_DB_SPEC_REAL);
-			strcat (path, "/");
-			strcat (path, handle->relPath);
-			handle->relPath = path;
-			elektraResolveSystemPasswd (handle, warningsKey);
-			elektraFree (path);
-			handle->relPath = oldPath;
-		}
-		else
-		{
-			char * path = elektraMalloc (filenameSize);
-			strcpy (path, KDB_DB_SPEC);
-			strcat (path, "/");
-			strcat (path, handle->relPath);
-			handle->fullPath = path;
-		}
+		char * path = elektraMalloc (filenameSize);
+		strcpy (path, KDB_DB_SPEC);
+		strcat (path, "/");
+		strcat (path, handle->relPath);
+		handle->fullPath = path;
 	}
+
 	elektraResolveFinishByFilename (handle, tmpDir);
 	return 1;
 }
@@ -613,7 +609,7 @@ static int elektraResolveDir (ElektraResolved * handle, ElektraResolveTempfile t
 	return 1;
 }
 
-void ELEKTRA_PLUGIN_FUNCTION (resolver, freeHandle) (ElektraResolved * handle)
+void ELEKTRA_PLUGIN_FUNCTION (freeHandle) (ElektraResolved * handle)
 {
 	if (!handle) return;
 	if (handle->relPath != NULL) elektraFree (handle->relPath);
@@ -624,8 +620,8 @@ void ELEKTRA_PLUGIN_FUNCTION (resolver, freeHandle) (ElektraResolved * handle)
 	handle = NULL;
 }
 
-ElektraResolved * ELEKTRA_PLUGIN_FUNCTION (resolver, filename) (elektraNamespace namespace, const char * path,
-								ElektraResolveTempfile tmpDir, Key * warningsKey)
+ElektraResolved * ELEKTRA_PLUGIN_FUNCTION (filename) (elektraNamespace namespace, const char * path, ElektraResolveTempfile tmpDir,
+						      Key * warningsKey)
 {
 
 	ElektraResolved * handle = elektraCalloc (sizeof (ElektraResolved));
@@ -670,7 +666,7 @@ ElektraResolved * ELEKTRA_PLUGIN_FUNCTION (resolver, filename) (elektraNamespace
 	}
 	if (rc == -1)
 	{
-		ELEKTRA_PLUGIN_FUNCTION (resolver, freeHandle) (handle);
+		ELEKTRA_PLUGIN_FUNCTION (freeHandle) (handle);
 		return NULL;
 	}
 	return handle;

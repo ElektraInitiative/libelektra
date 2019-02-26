@@ -75,7 +75,7 @@ int elektraStructSet (ckdb::Plugin * handle, ckdb::KeySet * returned, ckdb::Key 
 	return 1; /* success */
 }
 
-ckdb::Plugin * ELEKTRA_PLUGIN_EXPORT (struct)
+ckdb::Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
 	return elektraPluginExport("struct",

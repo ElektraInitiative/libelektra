@@ -16,6 +16,6 @@
 int elektraCsvstorageGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraCsvstorageSet (Plugin * handle, KeySet * ks, Key * parentKey);
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (csvstorage);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 #endif
