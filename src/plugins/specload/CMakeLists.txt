@@ -35,7 +35,9 @@ if (BUILD_SHARED AND ADDTESTING_PHASE)
 		  WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
 	set_tests_properties (test_elektra-specload-testapp
 			      PROPERTIES TIMEOUT
-					 10)
+					 10
+					 ENVIRONMENT
+					 "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
 
 	add_plugintest (specload INSTALL_TEST_DATA INCLUDE_DIRECTORIES ${CMAKE_CURRENT_BINARY_DIR} TIMEOUT 30)
 	add_dependencies (testmod_specload elektra-specload-testapp)

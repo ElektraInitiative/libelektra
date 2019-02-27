@@ -27,7 +27,6 @@ static int outputKeySet (KeySet * ks)
 	Key * errorKey = keyNew (0, KEY_END);
 
 	KeySet * modules = ksNew (0, KS_END);
-	elektraModulesInit (modules, 0);
 
 	KeySet * quickDumpConf = ksNew (0, KS_END);
 	ElektraInvokeHandle * quickDump = elektraInvokeOpen ("quickdump", quickDumpConf, errorKey);
