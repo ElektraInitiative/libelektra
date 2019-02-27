@@ -33,6 +33,9 @@ if (BUILD_SHARED AND ADDTESTING_PHASE)
 	add_test (NAME test_elektra-specload-testapp
 		  COMMAND "${CMAKE_BINARY_DIR}/bin/test_elektra-specload-testapp" "${CMAKE_CURRENT_SOURCE_DIR}"
 		  WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
+	set_tests_properties (test_elektra-specload-testapp
+			      PROPERTIES TIMEOUT
+					 10)
 
 	add_plugintest (specload INSTALL_TEST_DATA INCLUDE_DIRECTORIES ${CMAKE_CURRENT_BINARY_DIR} TIMEOUT 30)
 	add_dependencies (testmod_specload elektra-specload-testapp)

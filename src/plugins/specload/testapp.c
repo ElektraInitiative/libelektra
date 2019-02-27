@@ -34,13 +34,7 @@ static int outputKeySet (KeySet * ks)
 
 	Key * quickDumpParent = keyNew ("", KEY_VALUE, STDOUT_FILENAME, KEY_END);
 
-	if (elektraInvoke2Args (quickDump, "set", ks, quickDumpParent) != ELEKTRA_PLUGIN_STATUS_SUCCESS)
-	{
-		elektraInvokeClose (quickDump, NULL);
-		ksDel (quickDumpConf);
-		ksDel (modules);
-		return EXIT_FAILURE;
-	}
+	int result = elektraInvoke2Args (quickDump, "set", ks, quickDumpParent);
 
 	elektraInvokeClose (quickDump, errorKey);
 	keyDel (errorKey);
@@ -48,7 +42,7 @@ static int outputKeySet (KeySet * ks)
 	ksDel (quickDumpConf);
 	ksDel (modules);
 
-	return EXIT_SUCCESS;
+	return result == ELEKTRA_PLUGIN_STATUS_SUCCESS ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 static int outputDefaultSpec (void)
