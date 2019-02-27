@@ -25,13 +25,15 @@ This plugin uses ANTLR to generate a parser for the [YAML](http://yaml.org) seri
 
 The plugin requires
 
-- [ANTLR](https://www.antlr.org) `4.7.1` or later ([`antlr4`](https://repology.org/metapackage/antlr4)), and
+- [ANTLR](https://www.antlr.org) `4.6` or later ([`antlr4`](https://repology.org/metapackage/antlr4)), and
 - [ANTLR 4’s C++ runtime](https://github.com/antlr/antlr4/tree/master/runtime/Cpp)
   ([`antlr4-cpp-runtime`](https://repology.org/metapackage/antlr4-cpp-runtime) or [`libantlr4-runtime-dev`](https://packages.debian.org/search?searchon=names&keywords=libantlr4-runtime-dev))
 
 . If packages for those libraries are not available for your system, you can install them manually. For more information about that please
 take a look [at ANTLR’s homepage](https://www.antlr.org) and at the
 [ReadMe of the ANTLR C++ runtime](https://github.com/antlr/antlr4/tree/master/runtime/Cpp).
+
+Please note that we only tested the plugin with ANTLR `4.7.1` (and later versions of ANTLR).
 
 ## Examples
 
