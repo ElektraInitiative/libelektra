@@ -81,7 +81,11 @@ BasicWindow {
 				}
 			}
 		}
-
+                Label {
+                    id: metaKeyLabel
+                    Layout.topMargin: defaultMargins
+                    text: "Metakeys:"
+                }
 		BasicRectangle {
 			id: metaArea
 
