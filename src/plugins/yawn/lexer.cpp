@@ -493,13 +493,11 @@ int Lexer::nextToken (void ** attribute)
 		fetchTokens ();
 	}
 #ifdef HAVE_LOGGER
-	string output;
-	output += "\n\nTokens:\n";
+	ELEKTRA_LOG_DEBUG ("Tokens:");
 	for (auto const & token : tokens)
 	{
-		output += "\t" + to_string (*token) + "\n";
+		ELEKTRA_LOG_DEBUG ("\t%s\n", to_string (*token).c_str ());
 	}
-	ELEKTRA_LOG_DEBUG ("%s", output.c_str ());
 #endif
 
 	if (tokens.size () <= 0)
