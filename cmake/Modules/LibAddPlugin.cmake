@@ -607,9 +607,6 @@ function (add_plugin PLUGIN_SHORT_NAME)
 
 	add_library (${PLUGIN_OBJS} OBJECT ${ARG_SOURCES})
 	add_dependencies (${PLUGIN_OBJS} kdberrors_generated elektra_error_codes_generated)
-	if (ARG_DEPENDS)
-		add_dependencies (${PLUGIN_OBJS} ${ARG_DEPENDS})
-	endif ()
 
 	generate_readme (${PLUGIN_SHORT_NAME})
 	set_additional_compile_definitions (${PLUGIN_SHORT_NAME})
