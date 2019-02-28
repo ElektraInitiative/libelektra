@@ -1,10 +1,16 @@
 @INCLUDE_COMMON@
 
-set -x
-
 echo
 echo ELEKTRA CHECK GEN
 echo
+
+while getopts ":q" opt; do
+	case $opt in
+	q)
+		nodiff=1
+		;;
+	esac
+done
 
 echo "Using $KDB"
 
@@ -57,9 +63,12 @@ for test_folder in @CMAKE_SOURCE_DIR@/tests/shell/gen/*/; do
 
 			if [ -s "$output_folder$test_name.stdout.diff" ]; then
 				[ "1" == "0" ]
-				succeed_if "stdout of $test_name didn't match the expected output. Here is the diff:"
-				cat "$output_folder$test_name.stdout.diff"
-				echo
+				succeed_if "stdout of $test_name didn't match the expected output."
+				if [ "$nodiff" == "" ]; then
+					echo "Here is the diff:"
+					cat "$output_folder$test_name.stdout.diff"
+					echo
+				fi
 				echo "The diff is also stored at $output_folder$test_name.stdout.diff"
 				echo
 			else
@@ -75,9 +84,12 @@ for test_folder in @CMAKE_SOURCE_DIR@/tests/shell/gen/*/; do
 
 			if [ -s "$output_folder$test_name.stderr.diff" ]; then
 				test "1" == "0"
-				succeed_if "stderr of $test_name didn't match the expected output. Here is the diff:"
-				cat "$output_folder$test_name.stderr.diff"
-				echo
+				succeed_if "stderr of $test_name didn't match the expected output."
+				if [ "$nodiff" == "" ]; then
+					echo "Here is the diff:"
+					cat "$output_folder$test_name.stderr.diff"
+					echo
+				fi
 				echo "The diff is also stored at $output_folder$test_name.stderr.diff"
 				echo
 			else
@@ -111,9 +123,12 @@ for test_folder in @CMAKE_SOURCE_DIR@/tests/shell/gen/*/; do
 
 			if [ -s "$diff_part" ]; then
 				[ "1" == "0" ]
-				succeed_if "$test_name.actual$part didn't match the expected output $test_name.expected$part. Here is the diff:"
-				cat "$diff_part"
-				echo
+				succeed_if "$test_name.actual$part didn't match the expected output $test_name.expected$part."
+				if [ "$nodiff" == "" ]; then
+					echo "Here is the diff:"
+					cat "$diff_part"
+					echo
+				fi
 				echo "The diff is also stored at $diff_part"
 				echo
 			else
@@ -134,6 +149,6 @@ for test_folder in @CMAKE_SOURCE_DIR@/tests/shell/gen/*/; do
 done
 
 $KDB umount "$SPEC_ROOT/gen"
-rm "${output_folder}spec-data.ini"
+rm -f "${output_folder}spec-data.ini"
 
 end_script

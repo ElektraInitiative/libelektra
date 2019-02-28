@@ -8,6 +8,7 @@
 
 // clang-format off
 {{=/*% %*/=}}
+// clang-format on
 
 #include "/*%& header_file %*/"
 
@@ -19,59 +20,155 @@
 ELEKTRA_TAG_DEFINITIONS (/*%& native_type %*/, /*%& type_name %*/, KDB_TYPE_ENUM, /*%& to_string %*/, /*%& from_key %*/)
 /*%/ enums %*/
 
+/*%# generate_structs? %*/
 /*%# structs %*/
-void elektraGet/*%& type_name %*/ (Elektra * elektra, const char * keyname, /*%& native_type %*/ * result)
+/*%# alloc? %*/
+ELEKTRA_STRUCT_FREE_SIGNATURE (/*%& native_type %*/ *, /*%& type_name %*/)
 {
-	size_t nameLen = strlen(keyname);
-	char * field = elektraCalloc ((nameLen + 1 + /*%& max_field_len %*/ + 1) * sizeof(char));
+	if (*ptr == NULL)
+	{
+		return;
+	}
+
+	/*%# fields %*/
+	/*%# is_struct? %*/
+	/*%# alloc? %*/
+	ELEKTRA_STRUCT_FREE (/*%& type_name %*/) (&(*ptr)->/*%& name %*/);
+	/*%/ alloc? %*/
+	/*%/ is_struct? %*/
+	/*%/ fields %*/
+	elektraFree (&ptr);
+	*ptr = NULL;
+}
+
+ELEKTRA_GET_SIGNATURE (/*%& native_type %*/ *, /*%& type_name %*/)
+{
+	/*%& native_type %*/ *result = elektraCalloc (sizeof (/*%& native_type %*/));
+	size_t nameLen = strlen (keyname);
+	char * field = elektraCalloc ((nameLen + 1 + /*%& max_field_len %*/ +1) * sizeof (char));
 	strcpy (field, keyname);
 	field[nameLen] = '/';
 	++nameLen;
 
 	/*%# fields %*/
-	strncpy(&field[nameLen], "/*% key_name %*/", /*%& max_field_len %*/);
+	strncpy (&field[nameLen], "/*% key_name %*/", /*%& max_field_len %*/);
+	/*%# is_struct? %*/
+	/*%# alloc? %*/
+	// FIXME: unsupported
+	//  result->/*%& name %*/ = ELEKTRA_GET (/*%& type_name %*/) (elektra, field);
+	/*%/ alloc? %*/
+	/*%^ alloc? %*/
+	// FIXME: unsupported
+	//  result->/*%& name %*/ = elektraCalloc (sizeof (/*%& native_type %*/));
+	//  ELEKTRA_GET (/*%& type_name %*/) (elektra, field, result->/*%& name %*/);
+	/*%/ alloc? %*/
+	/*%/ is_struct? %*/
 	/*%^ is_struct? %*/
-	result->/*%& name %*/ = elektraGet/*%& type_name %*/ (elektra, field);
+	result->/*%& name %*/ = ELEKTRA_GET (/*%& type_name %*/) (elektra, field);
 	/*%/ is_struct? %*/
 
 	/*%/ fields %*/
 	elektraFree (field);
+	return result;
 }
 
-void elektraGet/*%& type_name %*/ArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index, /*%& native_type %*/ * result)
+ELEKTRA_GET_ARRAY_ELEMENT_SIGNATURE (/*%& native_type %*/ *, /*%& type_name %*/)
 {
-	size_t nameLen = strlen(keyname);
-	char * field = elektraCalloc ((nameLen + 1 + /*%& max_field_len %*/ + 1 + ELEKTRA_MAX_ARRAY_SIZE) * sizeof(char));
+	/*%& native_type %*/ *result = elektraCalloc (sizeof (/*%& native_type %*/));
+	size_t nameLen = strlen (keyname);
+	char * field = elektraCalloc ((nameLen + 1 + /*%& max_field_len %*/ +1 + ELEKTRA_MAX_ARRAY_SIZE) * sizeof (char));
 	strcpy (field, keyname);
 	field[nameLen] = '/';
 	++nameLen;
 
 	elektraWriteArrayNumber (&field[nameLen], index);
-	nameLen = strlen(field);
+	nameLen = strlen (field);
 	field[nameLen] = '/';
 	++nameLen;
 
 	/*%# fields %*/
-	strncpy(&field[nameLen], "/*% key_name %*/", /*%& max_field_len %*/);
+	strncpy (&field[nameLen], "/*% key_name %*/", /*%& max_field_len %*/);
+	/*%# is_struct? %*/
+	/*%# alloc? %*/
+	// FIXME: unsupported
+	//  result->/*%& name %*/ = ELEKTRA_GET_ARRAY_ELEMENT (/*%& type_name %*/) (elektra, field, index);
+	/*%/ alloc? %*/
+	/*%^ alloc? %*/
+	// FIXME: unsupported
+	//  result->/*%& name %*/ = elektraCalloc (sizeof (/*%& native_type %*/));
+	//  ELEKTRA_GET_ARRAY_ELEMENT (/*%& type_name %*/) (elektra, field, index, result->/*%& name %*/);
+	/*%/ alloc? %*/ /*%/ is_struct? %*/
 	/*%^ is_struct? %*/
-	result->/*%& name %*/ = elektraGet/*%& type_name %*/ArrayElement (elektra, field);
+	result->/*%& name %*/ = ELEKTRA_GET_ARRAY_ELEMENT (/*%& type_name %*/) (elektra, field, index);
+	/*%/ is_struct? %*/
+
+	/*%/ fields %*/
+	elektraFree (field);
+	return result;
+}
+/*%/ alloc? %*/
+/*%^ alloc? %*/
+ELEKTRA_GET_OUT_PTR_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/)
+{
+	size_t nameLen = strlen (keyname);
+	char * field = elektraCalloc ((nameLen + 1 + /*%& max_field_len %*/ +1) * sizeof (char));
+	strcpy (field, keyname);
+	field[nameLen] = '/';
+	++nameLen;
+
+	/*%# fields %*/
+	strncpy (&field[nameLen], "/*% key_name %*/", /*%& max_field_len %*/);
+	/*%# is_struct? %*/
+/*%! should never happend %*/
+#error "struct reference inside non-allocating struct is not supported"
+	/*%/ is_struct? %*/
+	/*%^ is_struct? %*/
+	result->/*%& name %*/ = ELEKTRA_GET (/*%& type_name %*/) (elektra, field);
 	/*%/ is_struct? %*/
 
 	/*%/ fields %*/
 	elektraFree (field);
 }
 
-void elektraSet/*%& type_name %*/ (Elektra * elektra, const char * keyname, const /*%& native_type %*/ * value, ElektraError ** error)
+ELEKTRA_GET_ARRAY_ELEMENT_OUT_PTR_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/)
 {
-	size_t nameLen = strlen(keyname);
-	char * field = elektraCalloc ((nameLen + 1 + /*%& max_field_len %*/ + 1) * sizeof(char));
+	size_t nameLen = strlen (keyname);
+	char * field = elektraCalloc ((nameLen + 1 + /*%& max_field_len %*/ +1 + ELEKTRA_MAX_ARRAY_SIZE) * sizeof (char));
+	strcpy (field, keyname);
+	field[nameLen] = '/';
+	++nameLen;
+
+	elektraWriteArrayNumber (&field[nameLen], index);
+	nameLen = strlen (field);
+	field[nameLen] = '/';
+	++nameLen;
+
+	/*%# fields %*/
+	strncpy (&field[nameLen], "/*% key_name %*/", /*%& max_field_len %*/);
+	/*%# is_struct? %*/
+/*%! should never happend %*/
+#error "struct reference inside non-allocating struct is not supported"
+	/*%/ is_struct? %*/
+	/*%^ is_struct? %*/
+	result->/*%& name %*/ = ELEKTRA_GET_ARRAY_ELEMENT (/*%& type_name %*/) (elektra, field, index);
+	/*%/ is_struct? %*/
+
+	/*%/ fields %*/
+	elektraFree (field);
+}
+/*%/ alloc? %*/
+
+ELEKTRA_SET_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/)
+{
+	size_t nameLen = strlen (keyname);
+	char * field = elektraCalloc ((nameLen + 1 + /*%& max_field_len %*/ +1) * sizeof (char));
 	strcpy (field, keyname);
 	field[nameLen] = '/';
 	++nameLen;
 
 	/*%# fields %*/
-	strncpy(&field[nameLen], "/*% key_name %*/", /*%& max_field_len %*/);
-	elektraSet/*%& type_name %*/ (elektra, field, result->/*%& name %*/, error);
+	strncpy (&field[nameLen], "/*% key_name %*/", /*%& max_field_len %*/);
+	ELEKTRA_SET (/*%& type_name %*/) (elektra, field, result->/*%& name %*/, error);
 	if (error != NULL)
 	{
 		return;
@@ -80,22 +177,22 @@ void elektraSet/*%& type_name %*/ (Elektra * elektra, const char * keyname, cons
 	/*%/ fields %*/
 }
 
-void elektraGet/*%& type_name %*/ArrayElement (Elektra * elektra, const char * keyname, kdb_long_long_t index, const /*%& native_type %*/ * value, ElektraError ** error)
+ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/)
 {
-	size_t nameLen = strlen(keyname);
-	char * field = elektraCalloc ((nameLen + 1 + /*%& max_field_len %*/ + 1 + ELEKTRA_MAX_ARRAY_SIZE) * sizeof(char));
+	size_t nameLen = strlen (keyname);
+	char * field = elektraCalloc ((nameLen + 1 + /*%& max_field_len %*/ +1 + ELEKTRA_MAX_ARRAY_SIZE) * sizeof (char));
 	strcpy (field, keyname);
 	field[nameLen] = '/';
 	++nameLen;
 
 	elektraWriteArrayNumber (&field[nameLen], index);
-	nameLen = strlen(field);
+	nameLen = strlen (field);
 	field[nameLen] = '/';
 	++nameLen;
 
 	/*%# fields %*/
-	strncpy(&field[nameLen], "/*% key_name %*/", /*%& max_field_len %*/);
-	elektraSet/*%& type_name %*/ArrayElement (elektra, field, result->/*%& name %*/, error);
+	strncpy (&field[nameLen], "/*% key_name %*/", /*%& max_field_len %*/);
+	ELEKTRA_SET_ARRAY_ELEMENT (/*%& type_name %*/) (elektra, field, index, result->/*%& name %*/, error);
 	if (error != NULL)
 	{
 		return;
@@ -104,6 +201,7 @@ void elektraGet/*%& type_name %*/ArrayElement (Elektra * elektra, const char * k
 	/*%/ fields %*/
 }
 /*%/ structs %*/
+/*%/ generate_structs? %*/
 
 /*%={{ }}=%*/
 /**
@@ -114,7 +212,7 @@ void elektraGet/*%& type_name %*/ArrayElement (Elektra * elektra, const char * k
  * @return A newly allocated instance of Elektra. Has to bee disposed of with elektraClose().
  *
  * @see elektraOpen
- */{{=/*% %*/=}}
+ */// {{=/*% %*/=}}
 Elektra * /*%& init_function_name %*/ (ElektraError ** error)
 {
 	KeySet * defaults = /*%& defaults %*/;
@@ -126,7 +224,7 @@ Elektra * /*%& init_function_name %*/ (ElektraError ** error)
 // -------------------------
 
 /*%# enums %*/
-int /*%& from_key %*/ (const Key * key, /*%& native_type %*/ * variable)
+ELEKTRA_KEY_TO_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/)
 {
 	const char * string;
 	if (!elektraKeyToString (key, &string) || strlen (string) == 0)
@@ -151,14 +249,14 @@ int /*%& from_key %*/ (const Key * key, /*%& native_type %*/ * variable)
 	return 0;
 }
 
-char * /*%& to_string %*/ (/*%& native_type %*/ value)
+ELEKTRA_TO_STRING (/*%& native_type %*/)
 {
 	switch (value)
 	{
 	/*%# values %*/
 	case /*%& name %*/:
 		return "/*% string_value %*/";
-	/*%/ values %*/
+		/*%/ values %*/
 	}
 }
 /*%/ enums %*/
