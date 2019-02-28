@@ -68,12 +68,12 @@ void ErrorListener::syntaxError (int errorTokenNumber, void * errorTokenData, in
 	if (ignoredTokenData != nullptr)
 	{
 		auto data = **static_cast<unique_ptr<Token> *> (ignoredTokenData);
-		ELEKTRA_LOG_DEBUG ("Ignored token: %s", to_string (data).c_str ());
+		ELEKTRA_LOG_DEBUG ("Ignored token number %d: %s", ignoredToken, to_string (data).c_str ());
 	}
 	if (recoveredTokenData != nullptr)
 	{
 		auto data = **static_cast<unique_ptr<Token> *> (recoveredTokenData);
-		ELEKTRA_LOG_DEBUG ("Recovered token: %s", to_string (data).c_str ());
+		ELEKTRA_LOG_DEBUG ("Recovered on token number %d: %s", recoveredToken, to_string (data).c_str ());
 	}
 #endif
 }
