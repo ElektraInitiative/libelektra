@@ -54,18 +54,14 @@ ErrorListener::ErrorListener (std::string const & errorSource)
  * @param recoveredTokenData This variable stores the data contained in
  *                           `recoveredToken`.
  */
-void ErrorListener::syntaxError (int errorTokenNumber, void * errorTokenData, int ignoredToken, void * ignoredTokenData ELEKTRA_UNUSED,
-				 int recoveredToken, void * recoveredTokenData ELEKTRA_UNUSED)
+void ErrorListener::syntaxError (int errorTokenNumber, void * errorTokenData, int ignoredToken ELEKTRA_UNUSED,
+				 void * ignoredTokenData ELEKTRA_UNUSED, int recoveredToken ELEKTRA_UNUSED,
+				 void * recoveredTokenData ELEKTRA_UNUSED)
 {
 	errors++;
 	auto token = **static_cast<unique_ptr<Token> *> (errorTokenData);
 	message += source + ":" + to_string (token.getStart ().line) + ":" + to_string (token.getStart ().column) +
 		   ": Syntax error on token number " + to_string (errorTokenNumber) + ": “" + to_string (token) + "”\n";
-	if (ignoredToken > 0)
-	{
-		message += "Ignoring " + to_string (recoveredToken - ignoredToken) + " tokens starting with token number " +
-			   to_string (ignoredToken);
-	}
 }
 
 /**
