@@ -31,13 +31,17 @@ class ErrorListener
 	/** This member stores the source of the error (e.g. a path to the parsed file). */
 	std::string source;
 
+	/** This member stores the content of `source` as UTF-8 encoded string. */
+	std::string input;
+
 public:
 	/**
 	 * @brief This constructor creates a new error listener using the given arguments.
 	 *
 	 * @param errorSource This text stores an identifier, usually the filename, that identifies the source of an error.
+	 * @param text This variable stores the content of `errorSource` as UTF-8 encoded string.
 	 */
-	ErrorListener (std::string const & errorSource);
+	ErrorListener (std::string const & errorSource, std::string const & text);
 
 	/**
 	 * @brief This method reacts to syntax errors reported by YAEP’s parsing

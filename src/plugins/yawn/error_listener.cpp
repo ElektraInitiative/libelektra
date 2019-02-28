@@ -32,10 +32,12 @@ namespace yawn
  * @brief This constructor creates a new error listener using the given arguments.
  *
  * @param errorSource This text stores an identifier, usually the filename, that identifies the source of an error.
+ * @param text This variable stores the content of `errorSource` as UTF-8 encoded string.
  */
-ErrorListener::ErrorListener (std::string const & errorSource)
+ErrorListener::ErrorListener (string const & errorSource, string const & text)
 {
 	source = errorSource;
+	input = text;
 }
 
 /**

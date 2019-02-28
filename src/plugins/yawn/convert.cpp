@@ -189,11 +189,11 @@ int addToKeySet (CppKeySet & keySet, CppKey & parent, string const & filename)
 	auto input = openFile (filename, parent);
 	if (!input.good ()) return -1;
 
-	ErrorListener errorListener{ filename };
-	errorListenerAdress = &errorListener;
-
 	Lexer lexer{ input };
 	lexerAddress = &lexer;
+
+	ErrorListener errorListener{ filename, lexer.getText () };
+	errorListenerAdress = &errorListener;
 
 	int ambiguousOutput;
 	struct yaep_tree_node * root = nullptr;
