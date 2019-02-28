@@ -26,6 +26,16 @@ namespace yawn
 {
 
 /**
+ * @brief This constructor creates a new error listener using the given arguments.
+ *
+ * @param errorSource This text stores an identifier, usually the filename, that identifies the source of an error.
+ */
+ErrorListener::ErrorListener (std::string const & errorSource)
+{
+	source = errorSource;
+}
+
+/**
  * @brief This method reacts to syntax errors reported by YAEP’s parsing
  *        engine.
  *

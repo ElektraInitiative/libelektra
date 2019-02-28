@@ -28,7 +28,17 @@ class ErrorListener
 	/** This variable stores the last error message produced by the parser. */
 	std::string message;
 
+	/** This member stores the source of the error (e.g. a path to the parsed file). */
+	std::string source;
+
 public:
+	/**
+	 * @brief This constructor creates a new error listener using the given arguments.
+	 *
+	 * @param errorSource This text stores an identifier, usually the filename, that identifies the source of an error.
+	 */
+	ErrorListener (std::string const & errorSource);
+
 	/**
 	 * @brief This method reacts to syntax errors reported by YAEP’s parsing
 	 *        engine.

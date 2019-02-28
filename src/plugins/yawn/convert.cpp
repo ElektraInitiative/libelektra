@@ -190,7 +190,7 @@ int addToKeySet (CppKeySet & keySet, CppKey & parent, string const & filename)
 	auto input = openFile (filename, parent);
 	if (!input.good ()) return -1;
 
-	ErrorListener errorListener;
+	ErrorListener errorListener{ filename };
 	errorListenerAdress = &errorListener;
 
 	Lexer lexer{ input };
