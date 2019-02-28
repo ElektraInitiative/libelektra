@@ -11,6 +11,8 @@
 #include <memory>
 #include <string>
 
+#include <kdbconfig.h>
+
 #include <yaep.h>
 
 #include "error_listener.hpp"
@@ -52,9 +54,8 @@ ErrorListener::ErrorListener (std::string const & errorSource)
  * @param recoveredTokenData This variable stores the data contained in
  *                           `recoveredToken`.
  */
-void ErrorListener::syntaxError (int errorTokenNumber, void * errorTokenData, int ignoredToken,
-				 void * ignoredTokenData __attribute__ ((unused)), int recoveredToken,
-				 void * recoveredTokenData __attribute__ ((unused)))
+void ErrorListener::syntaxError (int errorTokenNumber, void * errorTokenData, int ignoredToken, void * ignoredTokenData ELEKTRA_UNUSED,
+				 int recoveredToken, void * recoveredTokenData ELEKTRA_UNUSED)
 {
 	errors++;
 	auto token = **static_cast<unique_ptr<Token> *> (errorTokenData);
