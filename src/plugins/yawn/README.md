@@ -85,6 +85,22 @@ kdb ls user/tests/yawn
 # RET: 5
 # STDERR: .*/config.yaml:2:1: Syntax error on input “start of sequence”.*
 
+# Let us look at the error message more closely.
+# Since the location of `config.yaml` depends on the current user and OS,
+# we store the text before `config.yaml` as `user/tests/error/prefix`.
+kdb set user/tests/error "$(2>&1 kdb ls user/tests/yawn)"
+kdb set user/tests/error/prefix "$(kdb get user/tests/error | grep 'config.yaml' | head -1 | sed -E 's/(.*)config.yaml.*/\1/')"
+# We also store the length of the prefix, so we can remove it from every
+# line of the error message.
+kdb set user/tests/error/prefix/length "$(kdb get user/tests/error/prefix | wc -c | sed 's/[ ]*//g')"
+
+# Since we only want to look at the “reason” of the error, we
+# remove the other part of the error message with `head` and `tail`.
+kdb get user/tests/error | tail -n8 | head -n3 | cut -c"$(kdb get user/tests/error/prefix/length)"-
+#> config.yaml:2:1: Syntax error on input “start of sequence”
+#>                  - Burst
+#>                  ^
+
 # Fix syntax error
 printf -- ' - Brutus\n' >  `kdb file user/tests/yawn`
 printf -- ' - Burst'    >> `kdb file user/tests/yawn`
@@ -94,6 +110,7 @@ kdb ls user/tests/yawn
 #> user/tests/yawn/#1
 
 # Undo modifications
+kdb rm -r user/tests/error
 kdb rm -r user/tests/yawn
 sudo kdb umount user/tests/yawn
 ```
