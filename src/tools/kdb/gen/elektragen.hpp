@@ -19,6 +19,7 @@ class ElektraGenTemplate : public GenTemplate
 		static const char * TagPrefix;
 		static const char * OptimizeFromString;
 		static const char * AdditionalHeaders;
+		static const char * ExperimentalStructs;
 	};
 
 public:
@@ -27,7 +28,8 @@ public:
 		       { { Params::InitFunctionName, false },
 			 { Params::TagPrefix, false },
 			 { Params::OptimizeFromString, false },
-			 { Params::AdditionalHeaders, false } })
+			 { Params::AdditionalHeaders, false },
+			 { Params::ExperimentalStructs, false } })
 	{
 	}
 

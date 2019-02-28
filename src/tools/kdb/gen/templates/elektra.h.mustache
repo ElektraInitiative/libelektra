@@ -8,6 +8,7 @@
 
 // clang-format off
 {{=/*% %*/=}}
+// clang-format on
 
 #ifndef /*%& include_guard %*/
 #define /*%& include_guard %*/
@@ -26,6 +27,7 @@ typedef enum
 	/*%& name %*/ = /*%& value %*/,
 	/*%/ values %*/
 } /*%& native_type %*/;
+
 /*%/ generate_typedef? %*/
 /*%/ enums %*/
 
@@ -39,6 +41,9 @@ char * /*%& to_string %*/ (/*%& native_type %*/ value);
 ELEKTRA_TAG_DECLARATIONS (/*%& native_type %*/, /*%& type_name %*/)
 /*%/ enums %*/
 
+/*%# generate_structs? %*/
+#define ELEKTRA_STRUCT_FREE(cType, typeName) elektraFree##typeName
+#define ELEKTRA_STRUCT_FREE_SIGNATURE(cType, typeName) void ELEKTRA_STRUCT_FREE(typeName) (cType * ptr)
 /*%# structs %*/
 /*%# generate_typedef? %*/
 typedef struct
@@ -47,20 +52,77 @@ typedef struct
 	/*%& native_type %*/ /*%& name %*/;
 	/*%/ fields %*/
 } /*%& native_type %*/;
+
 /*%/ generate_typedef? %*/
 /*%/ structs %*/
+/*%/ generate_structs? %*/
 
+/*%# generate_structs? %*/
 /*%# structs %*/
-void /*%& getter %*/ (Elektra * elektra, const char * keyname, /*%& native_type %*/ * result);
-void /*%& setter %*/ (Elektra * elektra, const char * keyname, const /*%& native_type %*/ * value, ElektraError * error);
+/*%# alloc? %*/
+ELEKTRA_GET_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/);
+ELEKTRA_GET_ARRAY_ELEMENT_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/);
+
+static inline ELEKTRA_GET_BY_TAG_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/)
+{
+	return elektraGet/*%& type_name %*/ (elektra, tag->keyName);
+}
+
+static inline ELEKTRA_GET_ARRAY_ELEMENT_BY_TAG_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/)
+{
+	return elektraGet/*%& type_name %*/ArrayElement (elektra, tag->keyName, index);
+}
+/*%/ alloc? %*/
+/*%^ alloc? %*/
+ELEKTRA_GET_OUT_PTR_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/);
+ELEKTRA_GET_OUT_PTR_ARRAY_ELEMENT_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/);
+
+static inline ELEKTRA_GET_OUT_PTR_BY_TAG_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/)
+{
+	elektraGet/*%& type_name %*/ (elektra, tag->keyName, result);
+}
+
+static inline ELEKTRA_GET_OUT_PTR_ARRAY_ELEMENT_BY_TAG_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/)
+{
+	elektraGet/*%& type_name %*/ArrayElement (elektra, tag->keyName, index, result);
+}
+/*%/ alloc? %*/
+
+ELEKTRA_SET_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/);
+ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/);
+
+static inline ELEKTRA_SET_BY_TAG_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/)
+{
+	elektraSet/*%& type_name %*/ (elektra, tag->keyName, error);
+}
+
+static inline ELEKTRA_SET_ARRAY_ELEMENT_BY_TAG_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/)
+{
+	elektraSet/*%& type_name %*/ArrayElement (elektra, tag->keyName, index, error);
+}
+
+/*%# alloc? %*/
+ELEKTRA_VALUE_TAG_STRUCT (/*%& native_type %*/, /*%& type_name %*/)
+/*%/ alloc? %*/
+/*%^ alloc? %*/
+ELEKTRA_STRUCT_TAG_STRUCT (/*%& native_type %*/, /*%& type_name %*/)
+/*%/ alloc? %*/
+
+
 /*%/ structs %*/
+/*%/ generate_structs? %*/
 
 /*%# keys %*/
 /*%={{ }}=%*/
 /**
  * Tag value for key '{{{ name }}}'.
- */{{=/*% %*/=}}
-ELEKTRA_TAG_VALUE (/*%& tag_name %*/, "/*% name %*/", /*%& type_name %*/)
+ */// {{=/*% %*/=}}
+/*%# is_struct? %*/
+ELEKTRA_STRUCT_TAG_VALUE (/*%& tag_name %*/, "/*% name %*/", /*%& type_name %*/)
+/*%/ is_struct? %*/
+/*%^ is_struct? %*/
+ELEKTRA_VALUE_TAG_VALUE (/*%& tag_name %*/, "/*% name %*/", /*%& type_name %*/)
+/*%/ is_struct? %*/
 /*%/ keys %*/;
 
 Elektra * /*%& init_function_name %*/ (ElektraError ** error);
