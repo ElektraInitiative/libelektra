@@ -12,6 +12,7 @@
 #include <string>
 
 #include <kdbconfig.h>
+#include <kdblogger.h>
 
 #include <yaep.h>
 
@@ -60,8 +61,8 @@ void ErrorListener::syntaxError (int errorTokenNumber, void * errorTokenData, in
 {
 	errors++;
 	auto token = **static_cast<unique_ptr<Token> *> (errorTokenData);
-	message += source + ":" + to_string (token.getStart ().line) + ":" + to_string (token.getStart ().column) +
-		   ": Syntax error on token number " + to_string (errorTokenNumber) + ": “" + to_string (token) + "”\n";
+	message += "\n" + source + ":" + to_string (token.getStart ().line) + ":" + to_string (token.getStart ().column) +
+		   ": Syntax error on token number " + to_string (errorTokenNumber) + ": “" + to_string (token) + "”";
 
 #ifdef HAVE_LOGGER
 	if (ignoredTokenData != nullptr)
