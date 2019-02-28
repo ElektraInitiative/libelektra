@@ -112,11 +112,8 @@ macro (add_haskell_plugin target)
 		    LINK_LIBRARIES ${GHC_LIBS}
 		    LINK_ELEKTRA elektra-pluginprocess
 				 "${PLUGIN_ARGS}"
-		    DEPENDS ${target})
-
-	if (DEPENDENCY_PHASE)
-		add_dependencies (elektra-${target} c2hs_haskell)
-	endif ()
+		    DEPENDS ${target}
+			    c2hs_haskell)
 
 	if (DEPENDENCY_PHASE
 	    AND TARGET

@@ -3,11 +3,14 @@ include (LibAddMacros)
 add_plugin (specload
 	    SOURCES specload.h
 		    specload.c
-	    DEPENDS elektra-quickdump
 	    LINK_ELEKTRA elektra-ease
 			 elektra-invoke
 			 elektra-proposal
 	    TEST_README)
+
+if (DEPENDENCY_PHASE AND BUILD_SHARED)
+	add_dependencies (elektra-specload elektra-quickdump)
+endif ()
 
 if (ADDTESTING_PHASE)
 	add_executable (elektra-specload-testapp "${CMAKE_CURRENT_SOURCE_DIR}/testapp.c")
