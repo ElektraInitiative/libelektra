@@ -29,6 +29,40 @@ namespace yawn
 {
 
 /**
+ * @brief This method returns a Clang-like error message for a given error.
+ *
+ * @param location This parameter stores the location of the error.
+ * @param prefix This variable stores as prefix that this function prepends
+ *               to every line of the visualized error message.
+ *
+ * @return A string representation of the error
+ */
+string ErrorListener::visualizeError (Location const & location, string const & prefix)
+{
+	string::size_type start = 0;
+	string::size_type end = 0;
+	for (size_t currentLine = 1; currentLine <= location.begin.line; currentLine++)
+	{
+		size_t offset = (end == 0 ? 0 : 1);
+		start = end + offset;
+		end = input.find ("\n", end + offset);
+	}
+
+	string errorLine = input.substr (start, end - start);
+
+	errorLine = prefix + errorLine + "\n" + prefix + string (location.begin.column - 1, ' ');
+	// We assume that an error does not span more than one line
+	start = location.begin.column;
+	end = location.end.column;
+	for (size_t current = start; current <= end; current++)
+	{
+		errorLine += "^";
+	}
+
+	return errorLine;
+}
+
+/**
  * @brief This constructor creates a new error listener using the given arguments.
  *
  * @param errorSource This text stores an identifier, usually the filename, that identifies the source of an error.
@@ -63,8 +97,15 @@ void ErrorListener::syntaxError (int errorTokenNumber, void * errorTokenData, in
 {
 	errors++;
 	auto token = **static_cast<unique_ptr<Token> *> (errorTokenData);
-	message += "\n" + source + ":" + to_string (token.getStart ().line) + ":" + to_string (token.getStart ().column) +
-		   ": Syntax error on token number " + to_string (errorTokenNumber) + ": “" + to_string (token) + "”";
+
+	auto location = token.getLocation ();
+
+	auto position = source + ":" + to_string (location.begin.line) + ":" + to_string (location.begin.column) + ": ";
+	auto explanation = "Syntax error on token number " + to_string (errorTokenNumber) + ": “" + to_string (token) + "”";
+	auto indent = string (position.length (), ' ');
+
+	message += "\n" + position + explanation + "\n";
+	message += visualizeError (location, indent);
 
 #ifdef HAVE_LOGGER
 	if (ignoredTokenData != nullptr)

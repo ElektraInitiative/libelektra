@@ -107,6 +107,16 @@ Position Token::getStart () const
 }
 
 /**
+ * @brief This method returns the location of the token.
+ *
+ * @return The location data of this token
+ */
+Location Token::getLocation () const
+{
+	return _location;
+}
+
+/**
  * @brief This method returns the content of the token.
  *
  * @return The text stored inside this token

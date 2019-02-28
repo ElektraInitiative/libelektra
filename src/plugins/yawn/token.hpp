@@ -99,6 +99,13 @@ public:
 	Position getStart () const;
 
 	/**
+	 * @brief This method returns the location of the token.
+	 *
+	 * @return The location data of this token
+	 */
+	Location getLocation () const;
+
+	/**
 	 * @brief This method returns the content of the token.
 	 *
 	 * @return The text stored inside this token

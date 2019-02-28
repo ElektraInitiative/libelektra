@@ -13,6 +13,8 @@
 
 #include <yaep.h>
 
+#include "location.hpp"
+
 // -- Class --------------------------------------------------------------------------------------------------------------------------------
 
 namespace yawn
@@ -33,6 +35,17 @@ class ErrorListener
 
 	/** This member stores the content of `source` as UTF-8 encoded string. */
 	std::string input;
+
+	/**
+	 * @brief This method returns a Clang-like error message for a given error.
+	 *
+	 * @param location This parameter stores the location of the error.
+	 * @param prefix This variable stores as prefix that this function prepends
+	 *               to every line of the visualized error message.
+	 *
+	 * @return A string representation of the error
+	 */
+	std::string visualizeError (Location const & location, std::string const & prefix);
 
 public:
 	/**
