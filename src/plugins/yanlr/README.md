@@ -134,7 +134,6 @@ kdb ls user/tests/yanlr
 # we store the text before `config.yaml` as `user/tests/error/prefix`.
 kdb set user/tests/error "$(2>&1 kdb ls user/tests/yanlr)"
 kdb set user/tests/error/prefix "$(kdb get user/tests/error | grep 'config.yaml' | head -1 | sed -E 's/(.*)config.yaml.*/\1/')"
-kdb get user/tests/error/prefix
 # We also store the length of the prefix, so we can remove it from every
 # line of the error message.
 kdb set user/tests/error/prefix/length "$(kdb get user/tests/error/prefix | wc -c | sed 's/[ ]*//g')"
