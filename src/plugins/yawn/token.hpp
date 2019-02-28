@@ -92,13 +92,6 @@ public:
 	int getType () const;
 
 	/**
-	 * @brief This method returns the current start position of the token.
-	 *
-	 * @return The start position of this token
-	 */
-	Position getStart () const;
-
-	/**
 	 * @brief This method returns the location of the token.
 	 *
 	 * @return The location data of this token

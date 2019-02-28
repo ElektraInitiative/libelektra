@@ -97,16 +97,6 @@ int Token::getType () const
 }
 
 /**
- * @brief This method returns the current start position of the token.
- *
- * @return The start position of this token
- */
-Position Token::getStart () const
-{
-	return _location.begin;
-}
-
-/**
  * @brief This method returns the location of the token.
  *
  * @return The location data of this token

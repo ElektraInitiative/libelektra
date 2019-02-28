@@ -432,7 +432,7 @@ void Lexer::scanValue ()
 	}
 	size_t offset = simpleKey.second - emitted.size ();
 	auto key = move (simpleKey.first);
-	auto start = key->getStart ();
+	auto start = key->getLocation ().begin;
 	tokens.insert (tokens.begin () + offset, move (key));
 	simpleKey.first = nullptr; // Remove key candidate
 	if (addIndentation (start.column, Level::Type::MAP))
