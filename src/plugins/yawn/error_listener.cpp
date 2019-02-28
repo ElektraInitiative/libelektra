@@ -91,7 +91,7 @@ ErrorListener::ErrorListener (string const & errorSource, string const & text)
  * @param recoveredTokenData This variable stores the data contained in
  *                           `recoveredToken`.
  */
-void ErrorListener::syntaxError (int errorTokenNumber, void * errorTokenData, int ignoredToken ELEKTRA_UNUSED,
+void ErrorListener::syntaxError (int errorTokenNumber ELEKTRA_UNUSED, void * errorTokenData, int ignoredToken ELEKTRA_UNUSED,
 				 void * ignoredTokenData ELEKTRA_UNUSED, int recoveredToken ELEKTRA_UNUSED,
 				 void * recoveredTokenData ELEKTRA_UNUSED)
 {
@@ -101,7 +101,7 @@ void ErrorListener::syntaxError (int errorTokenNumber, void * errorTokenData, in
 	auto location = token.getLocation ();
 
 	auto position = source + ":" + to_string (location.begin.line) + ":" + to_string (location.begin.column) + ": ";
-	auto explanation = "Syntax error on token number " + to_string (errorTokenNumber) + ": “" + to_string (token) + "”";
+	auto explanation = "Syntax error on input “" + to_string (token) + "”";
 	auto indent = string (position.length (), ' ');
 
 	message += "\n" + position + explanation + "\n";
