@@ -31,8 +31,8 @@
 #define CMAKE_CACHE_FILENAME "CMakeCache.txt"
 #define CMAKE_CACHE_VARNAME "Elektra_SOURCE_DIR"
 #define TEMP_FILENAME "temp"
-#define INVALIDLINK_MESS "%s|%i col 0| warning: invalid link '%s'\n"
-#define HTTPLINK_FORMAT "%s|%i col 0| %s\n"
+#define INVALIDLINK_MESS "%s:%i:0 warning: invalid link '%s'\n"
+#define HTTPLINK_FORMAT "%s:%i:0| %s\n"
 #define HTTPLINK_FILENAME "external-links.txt"
 
 // Link Blacklist: do not convert links with the following starting and ending

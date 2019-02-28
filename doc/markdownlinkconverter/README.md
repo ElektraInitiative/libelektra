@@ -42,7 +42,7 @@ which the link refers to.
 Every link starting with `http`, `https` or `ftp` will be written to a file named `external-links.txt` located in your
 build folder. With the following syntax:
 
-    <file>|<line> col 0 | <url>
+    <file>:<line>:0 <url>
 
 Note: Due to the nature of the Markdown Link Converter the file can only be opened in append mode. So delete it and rerun the
 html build process (`make clean` could be needed) to get a list without duplicates.
