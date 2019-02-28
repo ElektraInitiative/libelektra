@@ -114,11 +114,13 @@ macro (add_haskell_plugin target)
 				 "${PLUGIN_ARGS}"
 		    DEPENDS ${target})
 
+	if (DEPENDENCY_PHASE)
+		add_dependencies (elektra-${target} c2hs_haskell)
+	endif ()
+
 	if (DEPENDENCY_PHASE
 	    AND TARGET
 		elektra-${target})
-		add_dependencies (elektra-${target} c2hs_haskell)
-
 		set_target_properties (elektra-${target}
 				       PROPERTIES INSTALL_RPATH
 						  "${HASKELL_RPATH}"
