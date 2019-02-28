@@ -512,4 +512,14 @@ int Lexer::nextToken (void ** attribute)
 	return emitted.back ()->getType ();
 }
 
+/**
+ * @brief This method returns the current input of the lexer
+ *
+ * @return A UTF-8 encoded string version of the parser input
+ */
+string Lexer::getText ()
+{
+	return input.toString ();
+}
+
 } // namespace yawn
