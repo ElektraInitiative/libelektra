@@ -62,6 +62,19 @@ void ErrorListener::syntaxError (int errorTokenNumber, void * errorTokenData, in
 	auto token = **static_cast<unique_ptr<Token> *> (errorTokenData);
 	message += source + ":" + to_string (token.getStart ().line) + ":" + to_string (token.getStart ().column) +
 		   ": Syntax error on token number " + to_string (errorTokenNumber) + ": “" + to_string (token) + "”\n";
+
+#ifdef HAVE_LOGGER
+	if (ignoredTokenData != nullptr)
+	{
+		auto data = **static_cast<unique_ptr<Token> *> (ignoredTokenData);
+		ELEKTRA_LOG_DEBUG ("Ignored token: %s", to_string (data).c_str ());
+	}
+	if (recoveredTokenData != nullptr)
+	{
+		auto data = **static_cast<unique_ptr<Token> *> (recoveredTokenData);
+		ELEKTRA_LOG_DEBUG ("Recovered token: %s", to_string (data).c_str ());
+	}
+#endif
 }
 
 /**
