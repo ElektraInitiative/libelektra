@@ -82,8 +82,7 @@ int nextToken (void ** attribute)
 void syntaxError (int errorToken, void * errorTokenData, int ignoredToken, void * ignoredTokenData, int recoveredToken,
 		  void * recoveredTokenData)
 {
-	return errorListenerAdress->syntaxError (errorToken, errorTokenData, ignoredToken, ignoredTokenData, recoveredToken,
-						 recoveredTokenData);
+	errorListenerAdress->syntaxError (errorToken, errorTokenData, ignoredToken, ignoredTokenData, recoveredToken, recoveredTokenData);
 }
 
 /**
