@@ -12,6 +12,7 @@ bsd_task:
   install_script:
     - >
       pkg install -y
+      bison
       cmake
       git
       ninja

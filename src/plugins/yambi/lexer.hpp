@@ -20,8 +20,8 @@
 #include "parser.hpp"
 #include "symbol.hpp"
 
-typedef yy::Parser::symbol_type symbol_type;
-typedef yy::Parser::location_type location_type;
+typedef yambi::Parser::symbol_type symbol_type;
+typedef yambi::Parser::location_type location_type;
 
 // -- Class --------------------------------------------------------------------
 
@@ -261,6 +261,13 @@ public:
 	 * @return The next token the parser has not emitted yet
 	 */
 	symbol_type nextToken ();
+
+	/**
+	 * @brief This method returns the current input of the lexer
+	 *
+	 * @return A UTF-8 encoded string version of the parser input
+	 */
+	std::string getText ();
 };
 
 #endif // ELEKTRA_PLUGIN_YAMBI_LEXER_HPP

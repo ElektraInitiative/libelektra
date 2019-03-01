@@ -13,7 +13,7 @@
 
 #include "parser.hpp"
 
-typedef yy::Parser Parser;
+typedef yambi::Parser Parser;
 
 typedef Parser::location_type location_type;
 typedef Parser::symbol_type symbol_type;
@@ -23,7 +23,7 @@ typedef Parser::token token;
 // -- Macros -------------------------------------------------------------------
 
 #define ELEKTRA_SWITCH_TOKEN(TOK)                                                                                                          \
-	case token::TOKEN_##TOK:                                                                                                           \
+	case token::TOK:                                                                                                                   \
 		return Parser::make_##TOK (text, placement)
 
 // -- Class --------------------------------------------------------------------
@@ -88,7 +88,7 @@ public:
 	 *
 	 * @return The start position of this symbol
 	 */
-	yy::position getStart () const
+	yambi::position getStart () const
 	{
 		return placement.begin;
 	}

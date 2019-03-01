@@ -39,11 +39,30 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.8.
 
 The following section lists news about the [modules](https://www.libelektra.org/plugins/readme) we updated in this release.
 
-### <<Plugin1>>
+### YAMBi
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- The plugin is now able detect multiple syntax errors in a file. _(René Schwaiger)_
+- The error message now includes more information about the location of syntax errors. For example, for the incorrect YAML input `config.yaml`:
+
+  ```yaml
+  key 1: - element 1
+   - element 2
+  key 2: scalar
+         - element 3
+  ```
+
+  , the plugin prints an error message that includes the following text:
+
+  ```
+  config.yaml:2:2: syntax error, unexpected start of sequence, expecting end of map or key
+                    - element 2
+                    ^
+  config.yaml:4:8: syntax error, unexpected start of sequence, expecting end of map or key
+                          - element 3
+                          ^
+  ```
+
+  . _(René Schwaiger)_
 
 ### Yan LR
 
