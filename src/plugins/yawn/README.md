@@ -75,15 +75,14 @@ sudo kdb umount user/tests/yawn
 # Mount plugin
 sudo kdb mount config.yaml user/tests/yawn yawn
 
-# Manually add some data
-printf -- ' - Brutus\n' >  `kdb file user/tests/yawn`
-# Add element with incorrect indentation
-printf -- '- Burst'     >> `kdb file user/tests/yawn`
+# Manually add data containing syntax errors
+printf -- 'Brutus: \n'         >  `kdb file user/tests/yawn`
+printf -- '- Burst\n'          >> `kdb file user/tests/yawn` # Incorrect indentation
+printf -- ' Holon : Anamnesis' >> `kdb file user/tests/yawn` # Either incorrect indentation or line above should be removed
 
 # Try to retrieve data
 kdb ls user/tests/yawn
 # RET: 5
-# STDERR: .*/config.yaml:2:1: Syntax error on input “start of sequence”.*
 
 # Let us look at the error message more closely.
 # Since the location of `config.yaml` depends on the current user and OS,
@@ -96,18 +95,22 @@ kdb set user/tests/error/prefix/length "$(kdb get user/tests/error/prefix | wc -
 
 # Since we only want to look at the “reason” of the error, we
 # remove the other part of the error message with `head` and `tail`.
-kdb get user/tests/error | tail -n8 | head -n3 | cut -c"$(kdb get user/tests/error/prefix/length)"-
-#> config.yaml:2:1: Syntax error on input “start of sequence”
+kdb get user/tests/error | tail -n11 | head -n6 | cut -c"$(kdb get user/tests/error/prefix/length)"-
+#> config.yaml:2:1: Syntax error on input “-”
 #>                  - Burst
-#>                  ^
+#>                  ^^
+#> config.yaml:3:19: Syntax error on input “end of map”
+#>                    Holon : Anamnesis
+#>                                     ^
 
-# Fix syntax error
-printf -- ' - Brutus\n' >  `kdb file user/tests/yawn`
-printf -- ' - Burst'    >> `kdb file user/tests/yawn`
+# Fix syntax errors
+printf -- 'Brutus: \n'         >  `kdb file user/tests/yawn`
+printf -- ' - Burst\n'          >> `kdb file user/tests/yawn`
+printf -- 'Holon : Anamnesis' >> `kdb file user/tests/yawn`
 kdb ls user/tests/yawn
-#> user/tests/yawn
-#> user/tests/yawn/#0
-#> user/tests/yawn/#1
+#> user/tests/yawn/Brutus
+#> user/tests/yawn/Brutus/#0
+#> user/tests/yawn/Holon
 
 # Undo modifications
 kdb rm -r user/tests/error
