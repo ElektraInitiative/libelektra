@@ -45,11 +45,10 @@ The following section lists news about the [modules](https://www.libelektra.org/
 - <<TODO>>
 - <<TODO>>
 
-### <<Plugin2>>
+### Yan LR
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- The build system now disables the plugin, if you installed a version of ANTLR 4 that does not support ANTLR’s C++ runtime (like ANTLR
+  `4.5.x` or earlier). _(René Schwaiger)_
 
 ### <<Plugin3>>
 

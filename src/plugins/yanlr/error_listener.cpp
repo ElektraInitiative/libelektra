@@ -33,6 +33,8 @@ namespace
  *                           `line`, where the parsing process failed.
  * @param prefix This variable stores as prefix that this function prepends
  *               to every line of the visualized error message.
+ *
+ * @return A string representation of the error
  */
 string visualizeError (Recognizer * recognizer, Token * offendingSymbol, size_t const line, size_t const charPositionInLine,
 		       string const & prefix)
