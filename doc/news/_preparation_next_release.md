@@ -154,7 +154,18 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Jenkins
 
-- <<TODO>>
+- We disabled the tests:
+
+  - `testmod_crypto_botan`,
+  - `testmod_crypto_openssl`,
+  - `testmod_dbus`,
+  - `testmod_dbusrecv`,
+  - `testmod_fcrypt`,
+  - `testmod_gpgme`, and
+  - `testmod_zeromqsend`
+
+  , since they are [known to fail in high load scenarios](https://issues.libelektra.org/2439). _(René Schwaiger)_
+
 - <<TODO>>
 - <<TODO>>
 
