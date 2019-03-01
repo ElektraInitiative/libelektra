@@ -51,11 +51,25 @@ The following section lists news about the [modules](https://www.libelektra.org/
 - <<TODO>>
 - <<TODO>>
 
-### <<Plugin3>>
+### YAwn
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- The plugin is now able to print error messages for multiple syntax errors. _(René Schwaiger)_
+- We also improved the error messages of YAwn, which now also contain the input that caused a syntax error. For example, for the input
+
+  ```yaml
+  key: value
+    - element
+  ```
+
+  the plugin prints an error message that contains the following text:
+
+  ```
+  config.yaml:2:3: Syntax error on input “start of sequence”
+                     - element
+                     ^
+  ```
+
+  . _(René Schwaiger)_
 
 ## Libraries
 
