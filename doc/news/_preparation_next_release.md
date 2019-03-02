@@ -69,11 +69,25 @@ The following section lists news about the [modules](https://www.libelektra.org/
 - The build system now disables the plugin, if you installed a version of ANTLR 4 that does not support ANTLR’s C++ runtime (like ANTLR
   `4.5.x` or earlier). _(René Schwaiger)_
 
-### <<Plugin3>>
+### YAwn
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- The plugin is now able to print error messages for multiple syntax errors. _(René Schwaiger)_
+- We also improved the error messages of YAwn, which now also contain the input that caused a syntax error. For example, for the input
+
+  ```yaml
+  key: value
+    - element
+  ```
+
+  the plugin prints an error message that contains the following text:
+
+  ```
+  config.yaml:2:3: Syntax error on input “start of sequence”
+                     - element
+                     ^
+  ```
+
+  . _(René Schwaiger)_
 
 ## Libraries
 
