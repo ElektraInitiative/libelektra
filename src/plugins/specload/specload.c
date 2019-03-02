@@ -344,18 +344,6 @@ bool getAppAndArgs (KeySet * conf, char ** appPtr, char *** argvPtr, Key * error
 	return true;
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT
-{
-	// clang-format off
-	return elektraPluginExport ("specload",
-		ELEKTRA_PLUGIN_OPEN,	&elektraSpecloadOpen,
-		ELEKTRA_PLUGIN_CLOSE,	&elektraSpecloadClose,
-		ELEKTRA_PLUGIN_GET,	&elektraSpecloadGet,
-		ELEKTRA_PLUGIN_SET,	&elektraSpecloadSet,
-		ELEKTRA_PLUGIN_END);
-	// clang-format on
-}
-
 bool loadSpec (KeySet * returned, const char * app, char * argv[], Key * parentKey, ElektraInvokeHandle * quickDump)
 {
 	pid_t pid;
@@ -425,6 +413,14 @@ bool loadSpec (KeySet * returned, const char * app, char * argv[], Key * parentK
 }
 
 /**
+ * Checks whether the @p oldKey can be changed into @p newKey safely.
+ *
+ * Both @p oldKey and @p newKey may be NULL, to represent adding and
+ * removing Keys respectively.
+ *
+ * @param oldKey old Key, or NULL for added Key
+ * @param newKey new Key, or NULL for removed Key
+ *
  * @retval 0  no change detected
  * @retval 1  change allowed
  * @retval -1 change forbidden
@@ -608,4 +604,16 @@ KeySet * calculateMetaDiff (Key * oldKey, Key * newKey)
 	}
 
 	return result;
+}
+
+Plugin * ELEKTRA_PLUGIN_EXPORT
+{
+	// clang-format off
+	return elektraPluginExport ("specload",
+				    ELEKTRA_PLUGIN_OPEN,	&elektraSpecloadOpen,
+				    ELEKTRA_PLUGIN_CLOSE,	&elektraSpecloadClose,
+				    ELEKTRA_PLUGIN_GET,	&elektraSpecloadGet,
+				    ELEKTRA_PLUGIN_SET,	&elektraSpecloadSet,
+				    ELEKTRA_PLUGIN_END);
+	// clang-format on
 }

@@ -23,16 +23,20 @@ made by the user are verified by the plugin. The user can never modify the speci
 
 NOTE: currently the modifications a user can make are very limited. See [Limitations](#limitations) below.
 
-## Usage
+## Dependencies
 
-To use `specload` first make sure Elektra was compiled with `BUILD_SHARED` enabled, and the `quickdump` plugin is available as well:
+The plugin relies heavily on the `quickdump` plugin. It is used for storing the overridden values as well as the data transfer between
+`specload` and an application.
 
+To check whether `quickdump` is available you can use:
 ```
-kdb list | grep '^quickdump$'
+kdb list quickdump
 #> quickdump
 ```
 
-The next step is to mount `specload` (note: only the `spec` namespace is supported):
+## Usage
+
+To mount `specload` use (note: only the `spec` namespace is supported):
 
 ```
 # specload will call '/usr/bin/exampleapp --elektra-spec'
@@ -54,11 +58,6 @@ Once the mounting is done you can inspect you specification like you would with 
 with the original specification. Currently this verification is very restrictive and doesn't allow a lot of changes that would be safe.
 This is because the necessary verification becomes very complex very quickly. For example adding `opt/arg` is only safe, if `opt` was also
 added by the user, because the application might rely on the default `opt/arg=none`. See also [Limitations](#limitations).
-
-## Dependencies
-
-The plugin relies heavily on the `quickdump` plugin. It is used for storing the overridden values as well as the data transfer between
-`specload` and an application.
 
 ## Examples
 

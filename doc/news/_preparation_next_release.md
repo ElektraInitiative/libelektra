@@ -99,8 +99,8 @@ The following section lists news about the [modules](https://www.libelektra.org/
 - The [specload](https://www.libelektra.org/plugins/specload) pluign is a special storage plugin. Instead of using a storage file
   it calls an external application to request its specification. For the transfer it relies on the
   [quickdump](https://www.libelektra.org/plugins/quickdump) plugin. _(Klemens Böswirth)_
-- Currently changing the specification is not allowed. However, in future the plugin will allow overriding a specification as long
-  as it is done safely.
+- Currently changing the specification is only allowed in a very limited way. However, in future the plugin should allow overriding a
+  specification in all cases where this can be done safely.
 
 ## Libraries
 
