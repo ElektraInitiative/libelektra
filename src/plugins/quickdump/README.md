@@ -24,7 +24,7 @@ followed by a version number. This 64-bit is always stored as big-endian (i.e. t
 
 After the magic number the file is just a list of Keys. Each Key consists of a name, a value and any number of metakey names and values.
 Each name and value is written as a 64-bit length `n` followed by exactly `n` bytes of data. For strings we do not store a null terminator.
-Therefore the length also does not account for that. When reading a string, you will need to allocate `n+1` bytes and set the last on to `0`.
+Therefore the length also does not account for that. When reading a string, the plugin allocates `n+1` bytes and sets the last one to `0`.
 Note that ALL lengths are stored in little-endian format, because most modern machines are little-endian.
 
 The end of a key is marked by a null byte. This cannot be confused with null bytes embedded in binary key values, because of the length

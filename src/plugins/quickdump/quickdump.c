@@ -483,16 +483,6 @@ int elektraQuickdumpSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT
-{
-	// clang-format off
-	return elektraPluginExport ("quickdump",
-		ELEKTRA_PLUGIN_GET,	&elektraQuickdumpGet,
-		ELEKTRA_PLUGIN_SET,	&elektraQuickdumpSet,
-		ELEKTRA_PLUGIN_END);
-	// clang-format on
-}
-
 ssize_t findMetaLink (struct list * list, const Key * meta)
 {
 	const void * search = meta;
@@ -537,7 +527,7 @@ ssize_t findMetaLink (struct list * list, const Key * meta)
 
 void insertMetaLink (struct list * list, size_t index, const Key * meta, Key * key)
 {
-	if (index >= list->alloc)
+	if (list->size + 1 >= list->alloc)
 	{
 		list->alloc *= 2;
 		elektraRealloc ((void **) &list->array, sizeof (struct metaLink *) * list->alloc);
@@ -555,4 +545,14 @@ void insertMetaLink (struct list * list, size_t index, const Key * meta, Key * k
 
 	list->array[index] = link;
 	++list->size;
+}
+
+Plugin * ELEKTRA_PLUGIN_EXPORT
+{
+	// clang-format off
+	return elektraPluginExport ("quickdump",
+				    ELEKTRA_PLUGIN_GET,	&elektraQuickdumpGet,
+				    ELEKTRA_PLUGIN_SET,	&elektraQuickdumpSet,
+				    ELEKTRA_PLUGIN_END);
+	// clang-format on
 }
