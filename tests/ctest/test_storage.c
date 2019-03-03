@@ -19,9 +19,9 @@
 #define TEST_ROOT_KEY "user/tests/storage"
 
 // below are the plugins suggested for testing, but only compiled plugins are tested
-#define NUM_PLUGINS_SUGGESTED 3
-static const char * pluginsSuggested[] = { "mmapstorage_crc", "mmapstorage",
-					   "dump" }; // remember to adjust NUM_PLUGINS_SUGGESTED if you add/remove a storage plugin
+#define NUM_PLUGINS_SUGGESTED 4
+static const char * pluginsSuggested[] = { "mmapstorage_crc", "mmapstorage", "dump",
+					   "quickdump" }; // remember to adjust NUM_PLUGINS_SUGGESTED if you add/remove a storage plugin
 
 // below is the list of available plugins truly tested.
 static size_t numPlugins = 0;
@@ -712,18 +712,18 @@ static void test_keyValue (const size_t storagePlugin, const char * tmpFile)
 
 	Key * key = keyNew (name, KEY_END);
 	keySetBinary (key, value, valueSize);
-	ksAppendKey (ks, key);
+	ksAppendKey (ks, keyDup (key));
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
 
 	Key * found = ksLookupByName (ks, name, 0);
 	succeed_if (found, "did not find key");
-
-	succeed_if (elektraStrNCmp (value, keyValue (found), valueSize) == 0, "Key binary value is wrong");
+	compare_key (key, found);
 
 	elektraFree (value);
 	keyDel (parentKey);
 	ksDel (ks);
+	keyDel (key);
 	closeStoragePlugin (storagePlugin);
 }
 

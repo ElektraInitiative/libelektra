@@ -1,0 +1,10 @@
+/**
+ * @file
+ *
+ * @brief Tests for specload plugin
+ *
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+ *
+ */
+
+#define TESTAPP_PATH "@TESTAPP_PATH@"
