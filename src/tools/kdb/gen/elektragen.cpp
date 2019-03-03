@@ -241,6 +241,7 @@ kainjow::mustache::object EnumProcessor::process (const kdb::Key & key, const st
 	std::string valuesString;
 	auto values = getValues (camelCaseToMacroCase (nativeType), key, fromStringSwitch, valuesString);
 
+	auto isNew = true;
 	auto generateTypeDef = shouldGenerateTypeDef (key);
 	if (genType && generateTypeDef)
 	{
@@ -257,14 +258,14 @@ kainjow::mustache::object EnumProcessor::process (const kdb::Key & key, const st
 				throw CommandAbortException (msg);
 			}
 
-			// generate typedef only once
-			generateTypeDef = false;
+			isNew = false;
 		}
 
 		enumTypes[typeName] = std::make_pair (name, valuesString);
 	}
 
-	return object{ { "name", name },
+	return object{ { "new", isNew },
+		       { "name", name },
 		       { "tag_name", snakeCaseToMacroCase (tagName) },
 		       { "type_name", typeName },
 		       { "native_type", nativeType },
@@ -305,10 +306,8 @@ kainjow::mustache::list StructProcessor::getFields (const kdb::Key & parentKey, 
 	maxFieldNameLen = 0;
 	for (const kdb::Key & key : keys)
 	{
-		const std::string & keyName = key.getName ();
-
-		auto name = getFieldName (key);
-		maxFieldNameLen = std::max (maxFieldNameLen, name.size ());
+		const std::string & keyBaseName = key.getBaseName ();
+		maxFieldNameLen = std::max (maxFieldNameLen, keyBaseName.size ());
 
 		const std::string & type = ::getType (key);
 
@@ -319,14 +318,14 @@ kainjow::mustache::list StructProcessor::getFields (const kdb::Key & parentKey, 
 
 		if (allowedTypes.find (type) == allowedTypes.end ())
 		{
-			auto msg = "The key '" + keyName;
+			auto msg = "The key '" + key.getName ();
 			msg += "' has an unsupported type ('" + type + "')!";
 			throw CommandAbortException (msg);
 		}
 
 		if (type == "struct")
 		{
-			auto msg = "The key '" + keyName;
+			auto msg = "The key '" + key.getName ();
 			msg += "' has an unsupported type ('" + type + "')! Cannot have structs inside structs, please use struct_ref.";
 			throw CommandAbortException (msg);
 		}
@@ -342,7 +341,7 @@ kainjow::mustache::list StructProcessor::getFields (const kdb::Key & parentKey, 
 
 		if (!allocating && isStruct)
 		{
-			auto msg = "Cannot have struct_refs inside non-allocating structs. The key '" + keyName;
+			auto msg = "Cannot have struct_refs inside non-allocating structs. The key '" + key.getName ();
 			msg += "' is a struct_ref appearing inside '" + parentKey.getName () + ", which is a non-allocating struct.";
 			throw CommandAbortException (msg);
 		}
@@ -356,8 +355,10 @@ kainjow::mustache::list StructProcessor::getFields (const kdb::Key & parentKey, 
 			nativeType = "void *";
 		}
 
+		auto name = getFieldName (key);
+
 		fields.emplace_back (object{ { "name", name },
-					     { "key_name", keyName },
+					     { "key_name", keyBaseName },
 					     { "native_type", nativeType },
 					     { "type_name", typeName },
 					     { "alloc?", allocate },
@@ -390,6 +391,7 @@ kainjow::mustache::object StructProcessor::process (const kdb::Key & key, const 
 	auto allocate = shouldAllocate (key);
 	auto fields = getFields (key, subkeys, allocate, maxFieldNameLen, fieldsString);
 
+	auto isNew = true;
 	auto generateTypeDef = shouldGenerateTypeDef (key);
 	if (genType && generateTypeDef)
 	{
@@ -405,14 +407,14 @@ kainjow::mustache::object StructProcessor::process (const kdb::Key & key, const 
 				throw CommandAbortException (msg);
 			}
 
-			// generate typedef only once
-			generateTypeDef = false;
+			isNew = false;
 		}
 
 		structTypes[typeName] = std::make_pair (name, fieldsString);
 	}
 
-	return object{ { "type_name", typeName },
+	return object{ { "new", isNew },
+		       { "type_name", typeName },
 		       { "native_type", nativeType },
 		       { "generate_typedef?", generateTypeDef },
 		       { "fields", fields },
@@ -526,8 +528,11 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 			continue;
 		}
 
+		auto nativeType = type == "string" ? "const char *" : "kdb_" + type + "_t";
+
 		auto tagName = getTagName (key, specParent.getName (), getParameter (Params::TagPrefix));
-		object keyObject = { { "name", name },
+		object keyObject = { { "name", name.substr (parentKey.size () + 1) },
+				     { "native_type", nativeType },
 				     { "tag_name", snakeCaseToMacroCase (tagName) },
 				     { "type_name", snakeCaseToCamelCase (type) } };
 
@@ -536,7 +541,12 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 			auto enumData = enumProcessor.process (key, tagName);
 
 			keyObject["type_name"] = enumData["type_name"].string_value ();
-			enums.emplace_back (enumData);
+			keyObject["native_type"] = enumData["native_type"].string_value ();
+
+			if (enumData["new"].is_true ())
+			{
+				enums.emplace_back (enumData);
+			}
 		}
 
 		if (experimentalStructs && type == "struct")
@@ -557,9 +567,14 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 			auto structData = structProcessor.process (key, subkeys, tagName);
 
 			keyObject["type_name"] = structData["type_name"].string_value ();
+			keyObject["native_type"] = structData["native_type"].string_value ();
 			keyObject["is_struct?"] = true;
+			keyObject["alloc?"] = structData["alloc?"].is_true ();
 
-			structs.emplace_back (structData);
+			if (structData["new"].is_true ())
+			{
+				structs.emplace_back (structData);
+			}
 		}
 
 		keys.emplace_back (keyObject);
