@@ -82,7 +82,7 @@ The complete results can be viewed in the [benchmarks folder](benchmarks)
 
 ### get and set
 
-The values are mean  ±  standard deviation. `factor` is `dump / quickdump` like above
+The values are mean ± standard deviation. `factor` is `dump / quickdump` like above
 
 <table class="table table-bordered table-hover table-condensed">
 <thead><tr><th>no. of keys</th>
@@ -118,7 +118,7 @@ The values are mean  ±  standard deviation. `factor` is `dump / quickdump` like
 
 ### get only
 
-The values are mean  ±  standard deviation. `factor` is `dump / quickdump` like above
+The values are mean ± standard deviation. `factor` is `dump / quickdump` like above
 
 <table>
 <thead><tr><th title="Field #1">no. of keys</th>

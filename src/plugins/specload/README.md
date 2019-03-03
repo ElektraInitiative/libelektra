@@ -29,6 +29,7 @@ The plugin relies heavily on the `quickdump` plugin. It is used for storing the 
 `specload` and an application.
 
 To check whether `quickdump` is available you can use:
+
 ```
 kdb list quickdump
 #> quickdump
@@ -77,9 +78,10 @@ sudo kdb umount spec/tests/specload
 ## Limitations
 
 - The plugin would technically allow the following modifications right now:
+
   - add/edit/remove `description` or `opt/help`
   - add/edit `default`
   - add `type`
-  
+
   However, because the default `resolver` is not compatible with plugins that produce a KeySet without a file present, you can only use
   `noresolver`. This means that you cannot set any values. (You will get an error about a non-existent file, if you try.)
