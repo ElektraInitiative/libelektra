@@ -179,6 +179,7 @@ int elektraSpecloadGet (Plugin * handle, KeySet * returned, Key * parentKey)
 			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_SPECLOAD, parentKey, "Couldn't create an empty overlay specification.");
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
+		ksDel (ks);
 	}
 
 	ksAppend (returned, spec);
