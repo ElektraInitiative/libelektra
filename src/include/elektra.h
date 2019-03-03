@@ -26,7 +26,7 @@
 	cType ELEKTRA_GET_ARRAY_ELEMENT (typeName) (Elektra * elektra, const char * keyname, kdb_long_long_t index)
 
 #define ELEKTRA_GET_OUT_PTR_SIGNATURE(cType, typeName) void ELEKTRA_GET (typeName) (Elektra * elektra, const char * keyname, cType * result)
-#define ELEKTRA_GET_ARRAY_ELEMENT_OUT_PTR_SIGNATURE(cType, typeName)                                                                       \
+#define ELEKTRA_GET_OUT_PTR_ARRAY_ELEMENT_SIGNATURE(cType, typeName)                                                                       \
 	void ELEKTRA_GET_ARRAY_ELEMENT (typeName) (Elektra * elektra, const char * keyname, kdb_long_long_t index, cType * result)
 
 #define ELEKTRA_SET_SIGNATURE(cType, typeName)                                                                                             \

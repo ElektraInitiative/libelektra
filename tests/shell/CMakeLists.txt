@@ -142,4 +142,5 @@ foreach (file ${SCRIPT_TESTS})
 	add_scripttest (${name})
 endforeach (file ${SCRIPT_TESTS})
 
+add_subdirectory (gen)
 add_subdirectory (external)

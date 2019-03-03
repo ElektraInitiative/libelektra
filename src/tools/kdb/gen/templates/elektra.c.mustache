@@ -253,7 +253,7 @@ ELEKTRA_GET_OUT_PTR_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/)
 	elektraFree (field);
 }
 
-ELEKTRA_GET_ARRAY_ELEMENT_OUT_PTR_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/)
+ELEKTRA_GET_OUT_PTR_ARRAY_ELEMENT_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/)
 {
 	size_t nameLen = strlen (keyname);
 	char * field = elektraCalloc ((nameLen + 1 + /*%& max_field_len %*/ +1 + ELEKTRA_MAX_ARRAY_SIZE) * sizeof (char));
