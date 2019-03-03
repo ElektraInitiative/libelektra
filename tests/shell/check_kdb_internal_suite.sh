@@ -7,10 +7,10 @@ echo
 check_version
 
 #override for specific testing
-PLUGINS="quickdump"
+#PLUGINS="quickdump"
 
 for PLUGIN in $PLUGINS; do
-	if ! is_not_rw_storage; then
+	if is_not_rw_storage; then
 		echo "$PLUGIN not a read-write storage"
 		continue
 	fi
