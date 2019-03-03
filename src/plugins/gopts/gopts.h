@@ -14,6 +14,6 @@
 
 int elektraGOptsGet (Plugin * handle, KeySet * ks, Key * parentKey);
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (gopts);
+Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 #endif

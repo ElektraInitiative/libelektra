@@ -18,13 +18,13 @@ static void test_basics (void)
 {
 	printf ("test basics\n");
 
-	Key * parentKey = keyNew ("user/tests/opts", KEY_END);
+	Key * parentKey = keyNew ("user/tests/gopts", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
-	PLUGIN_OPEN ("opts");
+	PLUGIN_OPEN ("gopts");
 
 	KeySet * ks = ksNew (0, KS_END);
 
-	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "call to kdbGet was not successful");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
 
 	keyDel (parentKey);
 	ksDel (ks);
@@ -34,14 +34,14 @@ static void test_basics (void)
 
 int main (int argc, char ** argv)
 {
-	printf ("OPTS     TESTS\n");
+	printf ("GOPTS     TESTS\n");
 	printf ("==================\n\n");
 
 	init (argc, argv);
 
 	test_basics ();
 
-	print_result ("testmod_opts");
+	print_result ("testmod_gopts");
 
 	return nbError;
 }
