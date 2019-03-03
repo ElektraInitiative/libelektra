@@ -23,13 +23,15 @@ else
 	exit
 fi
 
-output_folder=@CMAKE_CURRENT_BINARY_DIR@/gen/
-mkdir -p "$output_folder"
+base_output_folder=@CMAKE_CURRENT_BINARY_DIR@/gen
 
-$KDB mount "${output_folder}spec-data.ini" "$SPEC_ROOT/gen" ni
+$KDB mount "${base_output_folder}spec-data.ini" "$SPEC_ROOT/gen" ni
 
 for test_folder in @CMAKE_SOURCE_DIR@/tests/shell/gen/*/; do
 	[ -e "$test_folder" ] || continue
+	output_folder="$base_output_folder/$(basename "$test_folder")/"
+	mkdir -p "$output_folder"
+
 	template=$(basename "$test_folder")
 	echo "testing template $template"
 	for test_path in ${test_folder}*.data.ini; do
@@ -59,7 +61,7 @@ for test_folder in @CMAKE_SOURCE_DIR@/tests/shell/gen/*/; do
 		cd "$old_dir"
 
 		if [ -e "$test_folder$test_name.stdout" ]; then
-			diff -u "$test_folder$test_name.stdout" "$output_folder$test_name.stdout" | sed -e "1d" -e "2d" > "$output_folder$test_name.stdout.diff"
+			diff -u "$output_folder$test_name.stdout" "$test_folder$test_name.stdout" | sed -e "1d" -e "2d" > "$output_folder$test_name.stdout.diff"
 
 			if [ -s "$output_folder$test_name.stdout.diff" ]; then
 				[ "1" == "0" ]
@@ -80,7 +82,7 @@ for test_folder in @CMAKE_SOURCE_DIR@/tests/shell/gen/*/; do
 		if [ -e "$test_folder$test_name.stderr" ]; then
 			sed -e "s#$KDB#kdb#" -e '1!b' -e '/^The command kdb gen terminated unsuccessfully with the info:$/d' "$output_folder$test_name.stderr" > "$output_folder$test_name.stderr2"
 			mv "$output_folder$test_name.stderr2" "$output_folder$test_name.stderr"
-			diff -u "$test_folder$test_name.stderr" "$output_folder$test_name.stderr" | sed -e "1d" -e "2d" > "$output_folder$test_name.stderr.diff"
+			diff -u "$output_folder$test_name.stderr" "$test_folder$test_name.stderr" | sed -e "1d" -e "2d" > "$output_folder$test_name.stderr.diff"
 
 			if [ -s "$output_folder$test_name.stderr.diff" ]; then
 				test "1" == "0"
@@ -119,7 +121,7 @@ for test_folder in @CMAKE_SOURCE_DIR@/tests/shell/gen/*/; do
 			[ -f "$actual_part" ]
 			succeed_if "missing part $test_name.actual$part"
 
-			diff -u "$expected_part" "$actual_part" | sed -e "1s/.*/--- $test_name.expected$part/" -e "2s/.*/+++ $test_name.actual$part/" > "$diff_part"
+			diff -u "$actual_part" "$expected_part" | sed -e "1s/.*/--- $test_name.expected$part/" -e "2s/.*/+++ $test_name.actual$part/" > "$diff_part"
 
 			if [ -s "$diff_part" ]; then
 				[ "1" == "0" ]
@@ -134,12 +136,47 @@ for test_folder in @CMAKE_SOURCE_DIR@/tests/shell/gen/*/; do
 			else
 				rm "$diff_part"
 			fi
-
-			rm "$actual_part"
 		done
+
+		if [ -e "$output_folder$test_name.check.sh" ]; then
+			old_dir=$(pwd)
+			cd "$output_folder"
+
+			sh "$output_folder$test_name.check.sh" > "$output_folder$test_name.check.log" 2>&1
+			if [ "$?" != "0" ]; then
+				[ "1" == "0" ]
+				succeed_if "$test_folder$test_name.check.sh didn't complete successfully"
+
+				if [ "$nodiff" == "" ]; then
+					echo "Here is the log:"
+					cat "$output_folder$test_name.check.log"
+					echo
+				fi
+				echo "The log is also stored at $output_folder$test_name.check.log"
+				echo
+			else
+				rm "$output_folder$test_name.check.log"
+			fi
+
+			cd "$old_dir"
+		fi
 
 		for actual_part in ${output_folder}${test_name}.actual*; do
 			[ -e "$actual_part" ] || continue
+
+			part=${actual_part#"$output_folder$test_name.actual"}
+			expected_part="$test_folder$test_name.expected$part"
+			diff_part="$output_folder$test_name$part.diff"
+
+			if [ -e "$diff_part" ]; then
+				rm "$actual_part"
+				continue
+			fi
+
+			if [ -e "$expected_part" ]; then
+				rm "$actual_part"
+				continue
+			fi
 
 			[ "1" == "0" ]
 			succeed_if "additional part ${actual_part}"

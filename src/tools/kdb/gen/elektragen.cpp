@@ -89,7 +89,7 @@ static std::string createIncludeGuard (const std::string & fileName)
 
 static inline bool hasType (const kdb::Key & key)
 {
-	return key.hasMeta ("type");
+	return key.hasMeta ("type") && !key.getMeta<std::string> ("type").empty ();
 }
 
 static inline std::string getType (const kdb::Key & key)

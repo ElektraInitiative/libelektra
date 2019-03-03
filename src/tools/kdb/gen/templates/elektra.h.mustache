@@ -120,7 +120,7 @@ static inline /*%& native_type %*/ * ELEKTRA_GET_ARRAY_ELEMENT (/*%& tag_name %*
  * @param elektra Instance of Elektra. Create with {{{ init_function_name }}}().
  * @param result  The value will be stored in the referenced variable.
  */// {{=/*% %*/=}}
-static inline void ELEKTRA_GET_OUT_PTR (/*%& tag_name %*/) (Elektra * elektra, /*%& native_type %*/ *result)
+static inline void ELEKTRA_GET (/*%& tag_name %*/) (Elektra * elektra, /*%& native_type %*/ *result)
 {
 	ELEKTRA_GET (/*%& type_name %*/) (elektra, "/*% name %*/", result);
 }
@@ -133,8 +133,7 @@ static inline void ELEKTRA_GET_OUT_PTR (/*%& tag_name %*/) (Elektra * elektra, /
  * @param index   The array elements index.
  * @param result  The value will be stored in the referenced variable.
  */// {{=/*% %*/=}}
-static inline void ELEKTRA_GET_OUT_PTR_ARRAY_ELEMENT (/*%& tag_name %*/) (Elektra * elektra, kdb_long_long_t index,
-									  /*%& native_type %*/ *result)
+static inline void ELEKTRA_GET_ARRAY_ELEMENT (/*%& tag_name %*/) (Elektra * elektra, kdb_long_long_t index, /*%& native_type %*/ *result)
 {
 	ELEKTRA_GET_ARRAY_ELEMENT (/*%& type_name %*/) (elektra, "/*% name %*/", index, result);
 }
