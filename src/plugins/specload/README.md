@@ -1,8 +1,8 @@
 - infos = Information about the specload plugin is in keys below
 - infos/author = Klemens Böswirth <k.boeswirth+git@gmail.com>
 - infos/licence = BSD
-- infos/needs = quickdump
-- infos/provides =
+- infos/needs =
+- infos/provides = storage/specload
 - infos/recommends =
 - infos/placements = getstorage setstorage
 - infos/status = nodep libc configurable experimental unfinished
@@ -21,7 +21,7 @@ configuration. Instead `specload` requests the specification with which an appli
 of this base specifications the user can make some modifications, which are the only keys stored in the mounted file. All modifications
 made by the user are verified by the plugin. The user can never modify the specification in a way to would break application compatibility.
 
-NOTE: currently the modifications a user can make are very limited. See [Limitations](#limitations) below.
+NOTE: currently the modifications a user can make are very limited/not possible. See [Limitations](#limitations) below.
 
 ## Dependencies
 
@@ -61,12 +61,25 @@ added by the user, because the application might rely on the default `opt/arg=no
 
 ## Examples
 
-TODO
+This assumes you compiled the file [`testapp.c`](testapp.c) and it is available as the executable `testapp` in the current folder.
+
+```
+# Mount as readonly storage
+sudo kdb mount -R noresolver specload.eqd spec/tests/specload specload "app=$(pwd)/testapp"
+
+kdb get /tests/specload/mykey
+#> 7
+
+sudo kdb umount spec/tests/specload
+
+```
 
 ## Limitations
 
-- Currently the plugin is only supported in SHARED builds.
-- For now only modifying metadata in one of these ways is allowed:
+- The plugin would technically allow the following modifications right now:
   - add/edit/remove `description` or `opt/help`
   - add/edit `default`
   - add `type`
+  
+  However, because the default `resolver` is not compatible with plugins that produce a KeySet without a file present, you can only use
+  `noresolver`. This means that you cannot set any values. (You will get an error about a non-existent file, if you try.)

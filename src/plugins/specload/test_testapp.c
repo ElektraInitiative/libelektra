@@ -95,6 +95,11 @@ static bool check_binary_file (int fd, size_t expectedSize, const unsigned char 
 		++cur;
 	}
 
+	while (fgetc (file) != EOF)
+	{
+		cur++;
+	}
+
 	if (cur == expectedSize)
 	{
 		return true;

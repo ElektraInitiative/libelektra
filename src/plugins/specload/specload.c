@@ -19,6 +19,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <utime.h>
 
 // keep #ifdef in sync with kdb export
 #ifdef _WIN32
@@ -77,6 +78,12 @@ int elektraSpecloadOpen (Plugin * handle, Key * errorKey)
 	Specload * specload = elektraMalloc (sizeof (Specload));
 
 	KeySet * conf = elektraPluginGetConfig (handle);
+	if (ksLookupByName (conf, "system/module", 0) != NULL)
+	{
+		elektraFree (specload);
+		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+	}
+
 	if (!getAppAndArgs (conf, &specload->app, &specload->argv, errorKey))
 	{
 		elektraFree (specload);
@@ -163,6 +170,16 @@ int elektraSpecloadGet (Plugin * handle, KeySet * returned, Key * parentKey)
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 	}
+	else
+	{
+		KeySet * ks = ksNew (0, KS_END);
+		if (elektraInvoke2Args (specload->quickDump, "set", ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
+		{
+			ksDel (ks);
+			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_SPECLOAD, parentKey, "Couldn't create an empty overlay specification.");
+			return ELEKTRA_PLUGIN_STATUS_ERROR;
+		}
+	}
 
 	ksAppend (returned, spec);
 	ksDel (spec);
@@ -199,6 +216,15 @@ int elektraSpecloadSet (Plugin * handle, KeySet * returned, Key * parentKey)
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 	}
+	else
+	{
+		if (elektraInvoke2Args (specload->quickDump, "set", oldData, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
+		{
+			ksDel (oldData);
+			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_SPECLOAD, parentKey, "Couldn't create an empty overlay specification.");
+			return ELEKTRA_PLUGIN_STATUS_ERROR;
+		}
+	}
 
 	KeySet * overrides = ksNew (0, KS_END);
 
@@ -219,6 +245,7 @@ int elektraSpecloadSet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 		if (changeAllowed < 0)
 		{
+			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_SPECLOAD, parentKey, "This kind of change is not allowed.");
 			ksSetCursor (returned, cursor);
 			ksDel (overrides);
 			ksDel (oldData);
