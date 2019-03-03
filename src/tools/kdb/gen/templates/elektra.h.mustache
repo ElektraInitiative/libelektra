@@ -31,19 +31,22 @@ typedef enum
 /*%/ generate_typedef? %*/
 /*%/ enums %*/
 
-// enum conversion functions
 /*%# enums %*/
-int /*%& from_key %*/ (const Key * key, /*%& native_type %*/ * variable);
-char * /*%& to_string %*/ (/*%& native_type %*/ value);
-/*%/ enums %*/
+/*%# generate_typedef? %*/
+ELEKTRA_KEY_TO_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/);
+ELEKTRA_TO_STRING_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/);
+/*%/ generate_typedef? %*/
 
-/*%# enums %*/
-ELEKTRA_TAG_DECLARATIONS (/*%& native_type %*/, /*%& type_name %*/)
+ELEKTRA_GET_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/);
+ELEKTRA_GET_ARRAY_ELEMENT_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/);
+ELEKTRA_SET_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/);
+ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/);
+
 /*%/ enums %*/
 
 /*%# generate_structs? %*/
 #define ELEKTRA_STRUCT_FREE(cType, typeName) elektraFree##typeName
-#define ELEKTRA_STRUCT_FREE_SIGNATURE(cType, typeName) void ELEKTRA_STRUCT_FREE(typeName) (cType * ptr)
+#define ELEKTRA_STRUCT_FREE_SIGNATURE(cType, typeName) void ELEKTRA_STRUCT_FREE (cType, typeName) (cType * ptr)
 /*%# structs %*/
 /*%# generate_typedef? %*/
 typedef struct
@@ -55,76 +58,225 @@ typedef struct
 
 /*%/ generate_typedef? %*/
 /*%/ structs %*/
-/*%/ generate_structs? %*/
 
-/*%# generate_structs? %*/
 /*%# structs %*/
 /*%# alloc? %*/
-ELEKTRA_GET_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/);
-ELEKTRA_GET_ARRAY_ELEMENT_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/);
+ELEKTRA_STRUCT_FREE_SIGNATURE (/*%& native_type %*/ *, /*%& type_name %*/);
 
-static inline ELEKTRA_GET_BY_TAG_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/)
-{
-	return elektraGet/*%& type_name %*/ (elektra, tag->keyName);
-}
-
-static inline ELEKTRA_GET_ARRAY_ELEMENT_BY_TAG_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/)
-{
-	return elektraGet/*%& type_name %*/ArrayElement (elektra, tag->keyName, index);
-}
+ELEKTRA_GET_SIGNATURE (/*%& native_type %*/ *, /*%& type_name %*/);
+ELEKTRA_GET_ARRAY_ELEMENT_SIGNATURE (/*%& native_type %*/ *, /*%& type_name %*/);
 /*%/ alloc? %*/
 /*%^ alloc? %*/
 ELEKTRA_GET_OUT_PTR_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/);
 ELEKTRA_GET_OUT_PTR_ARRAY_ELEMENT_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/);
-
-static inline ELEKTRA_GET_OUT_PTR_BY_TAG_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/)
-{
-	elektraGet/*%& type_name %*/ (elektra, tag->keyName, result);
-}
-
-static inline ELEKTRA_GET_OUT_PTR_ARRAY_ELEMENT_BY_TAG_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/)
-{
-	elektraGet/*%& type_name %*/ArrayElement (elektra, tag->keyName, index, result);
-}
 /*%/ alloc? %*/
-
-ELEKTRA_SET_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/);
-ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/);
-
-static inline ELEKTRA_SET_BY_TAG_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/)
-{
-	elektraSet/*%& type_name %*/ (elektra, tag->keyName, error);
-}
-
-static inline ELEKTRA_SET_ARRAY_ELEMENT_BY_TAG_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/)
-{
-	elektraSet/*%& type_name %*/ArrayElement (elektra, tag->keyName, index, error);
-}
-
-/*%# alloc? %*/
-ELEKTRA_VALUE_TAG_STRUCT (/*%& native_type %*/, /*%& type_name %*/)
-/*%/ alloc? %*/
-/*%^ alloc? %*/
-ELEKTRA_STRUCT_TAG_STRUCT (/*%& native_type %*/, /*%& type_name %*/)
-/*%/ alloc? %*/
-
+ELEKTRA_SET_SIGNATURE (const /*%& native_type %*/ *, /*%& type_name %*/);
+ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (const /*%& native_type %*/ *, /*%& type_name %*/);
 
 /*%/ structs %*/
 /*%/ generate_structs? %*/
 
+// clang-format off
 /*%# keys %*/
+#define ELEKTRA_TAG_/*%& tag_name %*/ /*%& tag_name %*/
+/*%/ keys %*/
+// clang-format on
+
+/*%# keys %*/
+/*%# is_struct? %*/
+/*%# alloc? %*/
 /*%={{ }}=%*/
 /**
- * Tag value for key '{{{ name }}}'.
+ * Get the value of '{{{ name }}}'.
+ *
+ * @param elektra Instance of Elektra. Create with {{{ init_function_name }}}().
+ *
+ * @return the value of '{{{ name }}}'.
  */// {{=/*% %*/=}}
-/*%# is_struct? %*/
-ELEKTRA_STRUCT_TAG_VALUE (/*%& tag_name %*/, "/*% name %*/", /*%& type_name %*/)
+static inline /*%& native_type %*/ * ELEKTRA_GET (/*%& tag_name %*/) (Elektra * elektra)
+{
+	return ELEKTRA_GET (/*%& type_name %*/) (elektra, "/*% name %*/");
+}
+
+/*%={{ }}=%*/
+/**
+ * Get element from array '{{{ name }}}'.
+ *
+ * @param elektra Instance of Elektra. Create with {{{ init_function_name }}}().
+ * @param index   The array elements index.
+ *
+ * @return element @p index from array '{{{ name }}}'.
+ */// {{=/*% %*/=}}
+static inline /*%& native_type %*/ * ELEKTRA_GET_ARRAY_ELEMENT (/*%& tag_name %*/) (Elektra * elektra, kdb_long_long_t index)
+{
+	return ELEKTRA_GET_ARRAY_ELEMENT (/*%& type_name %*/) (elektra, "/*% name %*/", index);
+}
+/*%/ alloc? %*/
+/*%^ alloc? %*/
+/*%={{ }}=%*/
+/**
+ * Get the value of '{{{ name }}}'.
+ *
+ * @param elektra Instance of Elektra. Create with {{{ init_function_name }}}().
+ * @param result  The value will be stored in the referenced variable.
+ */// {{=/*% %*/=}}
+static inline void ELEKTRA_GET_OUT_PTR (/*%& tag_name %*/) (Elektra * elektra, /*%& native_type %*/ *result)
+{
+	ELEKTRA_GET (/*%& type_name %*/) (elektra, "/*% name %*/", result);
+}
+
+/*%={{ }}=%*/
+/**
+ * Get the value of '{{{ name }}}'.
+ *
+ * @param elektra Instance of Elektra. Create with {{{ init_function_name }}}().
+ * @param index   The array elements index.
+ * @param result  The value will be stored in the referenced variable.
+ */// {{=/*% %*/=}}
+static inline void ELEKTRA_GET_OUT_PTR_ARRAY_ELEMENT (/*%& tag_name %*/) (Elektra * elektra, kdb_long_long_t index,
+									  /*%& native_type %*/ *result)
+{
+	ELEKTRA_GET_ARRAY_ELEMENT (/*%& type_name %*/) (elektra, "/*% name %*/", index, result);
+}
+/*%/ alloc? %*/
+
+/*%={{ }}=%*/
+/**
+ * Set the value of '{{{ name }}}'.
+ *
+ * @param elektra Instance of Elektra. Create with {{{ init_function_name }}}().
+ * @param value   The value of '{{{ name }}}'.
+ * @param error   Pass a reference to an ElektraError pointer.
+ *                Will only be set in case of an error.
+ */// {{=/*% %*/=}}
+static inline void ELEKTRA_SET (/*%& tag_name %*/) (Elektra * elektra, const /*%& native_type %*/ * value, ElektraError ** error)
+{
+	ELEKTRA_SET (/*%& type_name %*/) (elektra, "/*% name %*/", value, error);
+}
+
+/*%={{ }}=%*/
+/**
+ * Set element of array '{{{ name }}}'.
+ *
+ * @param elektra Instance of Elektra. Create with {{{ init_function_name }}}().
+ * @param index   The array elements index.
+ * @param value   The value of '{{{ name }}}'.
+ * @param error   Pass a reference to an ElektraError pointer.
+ *                Will only be set in case of an error.
+ */// {{=/*% %*/=}}
+static inline void ELEKTRA_SET_ARRAY_ELEMENT (/*%& tag_name %*/) (Elektra * elektra, kdb_long_long_t index,
+								  const /*%& native_type %*/ * value, ElektraError ** error)
+{
+	ELEKTRA_SET_ARRAY_ELEMENT (/*%& type_name %*/) (elektra, "/*% name %*/", index, value, error);
+}
 /*%/ is_struct? %*/
 /*%^ is_struct? %*/
-ELEKTRA_VALUE_TAG_VALUE (/*%& tag_name %*/, "/*% name %*/", /*%& type_name %*/)
+/*%={{ }}=%*/
+/**
+ * Get the value of '{{{ name }}}'.
+ *
+ * @param elektra Instance of Elektra. Create with {{{ init_function_name }}}().
+ *
+ * @return the value of '{{{ name }}}'.
+ */// {{=/*% %*/=}}
+static inline /*%& native_type %*/ ELEKTRA_GET (/*%& tag_name %*/) (Elektra * elektra)
+{
+	return ELEKTRA_GET (/*%& type_name %*/) (elektra, "/*% name %*/");
+}
+
+/*%={{ }}=%*/
+/**
+ * Get element from array '{{{ name }}}'.
+ *
+ * @param elektra Instance of Elektra. Create with {{{ init_function_name }}}().
+ * @param index   The array elements index.
+ *
+ * @return element @p index from array '{{{ name }}}'.
+ */// {{=/*% %*/=}}
+static inline /*%& native_type %*/ ELEKTRA_GET_ARRAY_ELEMENT (/*%& tag_name %*/) (Elektra * elektra, kdb_long_long_t index)
+{
+	return ELEKTRA_GET_ARRAY_ELEMENT (/*%& type_name %*/) (elektra, "/*% name %*/", index);
+}
+
+/*%={{ }}=%*/
+/**
+ * Set the value of '{{{ name }}}'.
+ *
+ * @param elektra Instance of Elektra. Create with {{{ init_function_name }}}().
+ * @param value   The value of '{{{ name }}}'.
+ * @param error   Pass a reference to an ElektraError pointer.
+ *                Will only be set in case of an error.
+ */// {{=/*% %*/=}}
+static inline void ELEKTRA_SET (/*%& tag_name %*/) (Elektra * elektra, /*%& native_type %*/ value, ElektraError ** error)
+{
+	ELEKTRA_SET (/*%& type_name %*/) (elektra, "/*% name %*/", value, error);
+}
+
+/*%={{ }}=%*/
+/**
+ * Set element of array '{{{ name }}}'.
+ *
+ * @param elektra Instance of Elektra. Create with {{{ init_function_name }}}().
+ * @param index   The array elements index.
+ * @param value   The value of '{{{ name }}}'.
+ * @param error   Pass a reference to an ElektraError pointer.
+ *                Will only be set in case of an error.
+ */// {{=/*% %*/=}}
+static inline void ELEKTRA_SET_ARRAY_ELEMENT (/*%& tag_name %*/) (Elektra * elektra, kdb_long_long_t index, /*%& native_type %*/ value,
+								  ElektraError ** error)
+{
+	ELEKTRA_SET_ARRAY_ELEMENT (/*%& type_name %*/) (elektra, "/*% name %*/", index, value, error);
+}
 /*%/ is_struct? %*/
-/*%/ keys %*/;
+/*%/ keys %*/
 
 Elektra * /*%& init_function_name %*/ (ElektraError ** error);
+
+/**
+ * @param elektra The elektra instance initialized with the parent key.
+ * @param tag The tag to look up.
+ * @return The value stored at the given key and index.
+ */
+#define elektraGet(elektra, tag) ELEKTRA_GET (tag) (elektra)
+
+/**
+ * @param elektra The elektra instance initialized with the parent key.
+ * @param tag The tag to look up.
+ * @param result Points to the struct into which results will be stored.
+ */
+#define elektraGet2(elektra, tag, result) ELEKTRA_GET (tag) (elektra, result)
+
+/**
+ * @param elektra The elektra instance initialized with the parent key.
+ * @param tag The tag to look up.
+ * @param index The array index of the desired element, starting with 0.
+ * @return The value stored at the given key and index.
+ */
+#define elektraGetArrayElement(elektra, tag, index) ELEKTRA_GET_ARRAY_ELEMENT (tag) (elektra, index)
+
+/**
+ * @param elektra The elektra instance initialized with the parent key.
+ * @param tag The tag to look up.
+ * @param index The array index of the desired element, starting with 0.
+ * @param result Points to the struct into which results will be stored.
+ */
+#define elektraGetArrayElement2(elektra, tag, index, result) ELEKTRA_GET_ARRAY_ELEMENT (tag) (elektra, index, result)
+
+/**
+ * @param elektra The elektra instance initialized with the parent key.
+ * @param tag The codegenerated Tag to write to.
+ * @param value The new value.
+ * @param error Pass a reference to an ElektraError pointer.
+ */
+#define elektraSet(elektra, tag, value, error) ELEKTRA_GET (tag) (elektra, value, error)
+
+/**
+ * @param elektra The elektra instance initialized with the parent key.
+ * @param tag The code-generated tag to write to.
+ * @param value The new value.
+ * @param error Pass a reference to an ElektraError pointer.
+ * @param ... Strings to replace dynamic parts (_, #) of keyname.
+ */
+#define elektraSetArrayElement(elektra, tag, index, value, error) ELEKTRA_SET_ARRAY_ELEMENT (tag) (elektra, index, value, error)
 
 #endif // /*%& include_guard %*/
