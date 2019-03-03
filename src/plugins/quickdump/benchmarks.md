@@ -5,58 +5,15 @@
 The following table shows a summary of the results of a `benchmark_storage` run:
 NOTE: `factor` is always `dump / quickdump`
 
-<table>
-<thead><tr><th>operation</th>
-<th>dump (µs)</th>
-<th>quickdump (µs)</th>
-<th>factor</th>
-</tr></thead>
-<tbody>
-<tr>
-<td>write keyset</td>
-<td align="right">81661</td>
-<td align="right">4741</td>
-<td align="right">17.224</td>
-</tr>
-<tr>
-<td>read keyset</td>
-<td align="right">94782</td>
-<td align="right">44673</td>
-<td align="right">2.122</td>
-</tr>
-<tr>
-<td>iterate keyset</td>
-<td align="right">125</td>
-<td align="right">135</td>
-<td align="right">0.926</td>
-</tr>
-<tr>
-<td>delete keyset</td>
-<td align="right">1823</td>
-<td align="right">3518</td>
-<td align="right">0.518</td>
-</tr>
-<tr>
-<td>re-read keyset</td>
-<td align="right">92939</td>
-<td align="right">43749</td>
-<td align="right">2.124</td>
-</tr>
-<tr>
-<td>strcmp key name</td>
-<td align="right">609</td>
-<td align="right">1826</td>
-<td align="right">0.334</td>
-</tr>
-<tr>
-<td>strcmp key value</td>
-<td align="right">684</td>
-<td align="right">761</td>
-<td align="right">0.899</td>
-</tr>
-<tr>
-</tbody>
-</table>
+|operation|dump (µs)|quickdump (µs)|factor|
+|--- |--- |--- |--- |
+|write keyset|81661|4741|17.224|
+|read keyset|94782|44673|2.122|
+|iterate keyset|125|135|0.926|
+|delete keyset|1823|3518|0.518|
+|re-read keyset|92939|43749|2.124|
+|strcmp key name|609|1826|0.334|
+|strcmp key value|684|761|0.899|
 
 ## `benchmark_plugingetset`
 
@@ -84,76 +41,21 @@ The complete results can be viewed in the [benchmarks folder](benchmarks)
 
 The values are mean ± standard deviation. `factor` is `dump / quickdump` like above
 
-<table class="table table-bordered table-hover table-condensed">
-<thead><tr><th>no. of keys</th>
-<th>dump (s)</th>
-<th>quickdump (s)</th>
-<th>factor</th>
-</tr></thead>
-<tbody><tr>
-<td align="right">2</td>
-<td align="right">0.0016 ± 0.0003</td>
-<td align="right">0.0006 ± 0.0001</td>
-<td align="right">2.67</td>
-</tr>
-<tr>
-<td align="right">200</td>
-<td align="right">0.0091 ± 0.0009</td>
-<td align="right">0.0018 ± 0.0000</td>
-<td align="right">5.06</td>
-</tr>
-<tr>
-<td align="right">2000</td>
-<td align="right">0.0770 ± 0.0030</td>
-<td align="right">0.0127 ± 0.0008</td>
-<td align="right">6.06</td>
-</tr>
-<tr>
-<td align="right">200000</td>
-<td align="right">10.7876 ± 4.2564</td>
-<td align="right">1.2640 ± 0.0061</td>
-<td align="right">8.53</td>
-</tr>
-</tbody></table>
+|no. of keys|dump (s)|quickdump (s)|factor|
+|--- |--- |--- |--- |
+|2|0.0016 ± 0.0003|0.0006 ± 0.0001|2.67|
+|200|0.0091 ± 0.0009|0.0018 ± 0.0000|5.06|
+|2000|0.0770 ± 0.0030|0.0127 ± 0.0008|6.06|
+|200000|10.7876 ± 4.2564|1.2640 ± 0.0061|8.53|
 
 ### get only
 
 The values are mean ± standard deviation. `factor` is `dump / quickdump` like above
 
-<table>
-<thead><tr><th title="Field #1">no. of keys</th>
-<th>dump (s)</th>
-<th>quickdump (s)</th>
-<th>factor</th>
-</tr></thead>
-<tbody><tr>
-<td align="right">2</td>
-<td align="right">0.0014 ± 0.0000</td>
-<td align="right">0.0005 ± 0.0000</td>
-<td align="right">2.8</td>
-</tr>
-<tr>
-<td align="right">200</td>
-<td align="right">0.0032 ± 0.0005</td>
-<td align="right">0.0013 ± 0.0002</td>
-<td align="right">2.46</td>
-</tr>
-<tr>
-<td align="right">2000</td>
-<td align="right">0.0179 ± 0.0002</td>
-<td align="right">0.0086 ± 0.0008</td>
-<td align="right">2.08</td>
-</tr>
-<tr>
-<td align="right">200000</td>
-<td align="right">1.6830 ± 0.0222</td>
-<td align="right">0.8515 ± 0.0048</td>
-<td align="right">1.98</td>
-</tr>
-<tr>
-<td align="right">2000000</td>
-<td align="right">17.1814 ± 0.2201</td>
-<td align="right">8.8808 ± 0.0344</td>
-<td align="right">1.93</td>
-</tr>
-</tbody></table>
+|no. of keys|dump (s)|quickdump (s)|factor|
+|--- |--- |--- |--- |
+|2|0.0014 ± 0.0000|0.0005 ± 0.0000|2.8|
+|200|0.0032 ± 0.0005|0.0013 ± 0.0002|2.46|
+|2000|0.0179 ± 0.0002|0.0086 ± 0.0008|2.08|
+|200000|1.6830 ± 0.0222|0.8515 ± 0.0048|1.98|
+|2000000|17.1814 ± 0.2201|8.8808 ± 0.0344|1.93|
