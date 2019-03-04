@@ -564,12 +564,15 @@ struct ns_esc_32_bit : seq<one<'U'>, rep<8, ns_hex_digit>>
 {
 };
 
-// [62]
-struct c_ns_esc_char
-: seq<one<'\\'>,
-      sor<ns_esc_null, ns_esc_bell, ns_esc_backspace, ns_esc_horizontal_tab, ns_esc_line_feed, ns_esc_vertical_tab, ns_esc_form_feed,
-	  ns_esc_carriage_return, ns_esc_escape, ns_esc_space, ns_esc_double_quote, ns_esc_slash, ns_esc_backslash, ns_esc_next_line,
-	  ns_esc_non_breaking_space, ns_esc_line_separator, ns_esc_paragraph_separator, ns_esc_8_bit, ns_esc_16_bit, ns_esc_32_bit>>
+// [62] (Modified)
+struct escaped_choices
+: sor<ns_esc_null, ns_esc_bell, ns_esc_backspace, ns_esc_horizontal_tab, ns_esc_line_feed, ns_esc_vertical_tab, ns_esc_form_feed,
+      ns_esc_carriage_return, ns_esc_escape, ns_esc_space, ns_esc_double_quote, ns_esc_slash, ns_esc_backslash, ns_esc_next_line,
+      ns_esc_non_breaking_space, ns_esc_line_separator, ns_esc_paragraph_separator, ns_esc_8_bit, ns_esc_16_bit, ns_esc_32_bit>
+{
+};
+
+struct c_ns_esc_char : seq<if_must<one<'\\'>, escaped_choices>>
 {
 };
 
@@ -1178,6 +1181,8 @@ struct errors : public tao::TAO_PEGTL_NAMESPACE::normal<Rule>
 /* Define an error message for the only `must` grammar rule: `if_must<l_yaml_stream, eof>` */
 template <>
 char const * const errors<tao::TAO_PEGTL_NAMESPACE::eof>::errorMessage = "Incomplete document, expected “end of file”";
+template <>
+char const * const errors<escaped_choices>::errorMessage = "Unexpected escape character";
 
 // -- Parse Tree Selector ------------------------------------------------------
 
