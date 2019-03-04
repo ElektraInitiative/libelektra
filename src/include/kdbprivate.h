@@ -500,6 +500,7 @@ int splitSync (Split * split);
 void splitPrepare (Split * split);
 int splitUpdateSize (Split * split);
 
+
 /*Backend handling*/
 Backend * backendOpen (KeySet * elektra_config, KeySet * modules, KeySet * global, Key * errorKey);
 Backend * backendOpenDefault (KeySet * modules, KeySet * global, const char * file, Key * errorKey);

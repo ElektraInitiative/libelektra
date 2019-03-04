@@ -806,8 +806,6 @@ static char * elektraStrConcat (const char * a, const char * b)
 static void kdbStoreSplitState (KDB * handle, Split * split, KeySet * global, Key * parentKey, Key * initialParent)
 {
 	Key * mountPoint = mountGetMountpoint (handle, parentKey);
-// 	const char * parentName = keyName (mountPoint);
-// 	const char * parentValue = keyString (mountPoint);
 	Key * lastParentName = keyNew ("/persistent/lastParentName", KEY_VALUE, keyName (mountPoint), KEY_END);
 	Key * lastParentValue = keyNew ("/persistent/lastParentValue", KEY_VALUE, keyString (mountPoint), KEY_END);
 	Key * lastInitalParentName = keyNew ( "/persistent/lastInitialParentName", KEY_VALUE, keyName (initialParent), KEY_END);
@@ -859,17 +857,6 @@ static void kdbStoreSplitState (KDB * handle, Split * split, KeySet * global, Ke
 		ELEKTRA_LOG_DEBUG (">>>> STORING key: %s, string: %s, strlen: %ld, valSize: %ld", keyName (key), keyString (key),
 				   strlen (keyString (key)), keyGetValueSize (key));
 		keyDel (key);
-
-		//if (strlen (keyString (split->parents[i])) != 0)
-		{
-			key = keyNew (name, KEY_END);
-			keyAddBaseName (key, "splitParentValue");
-			keySetString (key, keyString (split->parents[i]));
-			ksAppendKey (global, key);
-			ELEKTRA_LOG_DEBUG (">>>> STORING key: %s, string: %s, strlen: %ld, valSize: %ld", keyName (key), keyString (key),
-					   strlen (keyString (key)), keyGetValueSize (key));
-			keyDel (key);
-		}
 
 		key = keyNew (name, KEY_END);
 		keyAddBaseName (key, "specsize");
@@ -930,19 +917,19 @@ static int kdbCacheCheckParent (KeySet * global, Key * cacheParent, Key * initia
 	Key * lastInitalParentName = ksLookupByName (global, "/persistent/lastInitialParentName", KDB_O_NONE);
 
 	Key * lastInitialParent = keyNew (keyString (lastInitalParentName), KEY_END);
-	Key * curInitialParent = keyNew (keyName (initialParent), KEY_END);
+	// Key * curInitialParent = keyNew (keyName (initialParent), KEY_END);
 	ELEKTRA_LOG_DEBUG ("LAST initial PARENT name: %s", keyName (lastInitialParent));
-	ELEKTRA_LOG_DEBUG ("CURR initial PARENT name: %s", keyName (curInitialParent));
-	if (!keyIsBelowOrSame (lastInitialParent, curInitialParent))
+	ELEKTRA_LOG_DEBUG ("CURR initial PARENT name: %s", keyName (initialParent));
+	if (!keyIsBelowOrSame (lastInitialParent, initialParent))
 	{
 		ELEKTRA_LOG_DEBUG ("CACHE initial PARENT: key is not below or same");
 		keyDel (lastInitialParent);
-		keyDel (curInitialParent);
+		// keyDel (curInitialParent);
 		return -1;
 	}
 
 	keyDel (lastInitialParent);
-	keyDel (curInitialParent);
+	// keyDel (curInitialParent);
 	return 0;
 }
 
@@ -970,22 +957,10 @@ static int kdbCheckSplitState (Split * split, KeySet * global)
 
 		keyAddBaseName (key, "splitParentName");
 		Key * found = ksLookup (global, key, KDB_O_NONE);
-// 		if (!(found && elektraStrCmp (keyString(found), keyName (split->parents[i])) == 0))
-// 		{
-// 			goto error;
-// 		}
-// 		
-// 		//if (strlen (keyString (split->parents[i])) != 0)
-// 		{
-// 			keySetBaseName (key, "splitParentValue");
-// 			found = ksLookup (global, key, KDB_O_NONE);
-// // 			if (!(found && elektraStrCmp (keyString(found), keyString (split->parents[i])) == 0))
-// 			if (!found)
-// 			{
-// 				ELEKTRA_LOG_DEBUG ("MISSING key split parent: %s, %s", keyName (split->parents[i]), keyString (split->parents[i]));
-// 				goto error;
-// 			}
-// 		}
+		if (!(found && elektraStrCmp (keyString(found), keyName (split->parents[i])) == 0))
+		{
+			goto error;
+		}
 
 		keySetBaseName (key, "specsize");
 		found = ksLookup (global, key, KDB_O_NONE);
@@ -1062,22 +1037,10 @@ static int kdbLoadSplitState (Split * split, KeySet * global)
 
 		keyAddBaseName (key, "splitParentName");
 		Key * found = ksLookup (global, key, KDB_O_NONE);
-// 		if (!(found && elektraStrCmp (keyString(found), keyName (split->parents[i])) == 0))
-// 		{
-// 			goto error;
-// 		}
-// 
-// 		//if (strlen (keyString (split->parents[i])) != 0)
-// 		{
-// 			keySetBaseName (key, "splitParentValue");
-// 			found = ksLookup (global, key, KDB_O_NONE);
-// // 			if (!(found && elektraStrCmp (keyString(found), keyString (split->parents[i])) == 0))
-// 			if (!found)
-// 			{
-// 				ELEKTRA_LOG_DEBUG ("MISSING key split parent: %s, %s", keyName (split->parents[i]), keyString (split->parents[i]));
-// 				goto error;
-// 			}
-// 		}
+		if (!(found && elektraStrCmp (keyString(found), keyName (split->parents[i])) == 0))
+		{
+			goto error;
+		}
 
 // 		if (split->handles[i]->specsize == 0)
 		{
@@ -1293,7 +1256,6 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	}
 
 	cache = ksNew (0, KS_END);
-	// cacheParent = keyDup (mountGetMountpoint (handle, initialParent));
 	cacheParent = keyDup (mountGetMountpoint (handle, initialParent));
 	if (ns == KEY_NS_CASCADING) keySetMeta (cacheParent, "cascading", "");
 	if (handle->globalPlugins[PREGETCACHE][MAXONCE])
@@ -1328,12 +1290,9 @@ cachefail:
 	switch (elektraGetCheckUpdateNeeded (split, parentKey))
 	{
 	case -2: // We have a cache hit
-		ELEKTRA_LOG_DEBUG ("CACHE HIT 123");
+		ELEKTRA_LOG_DEBUG ("CACHE HIT");
 		ELEKTRA_LOG_DEBUG ("CACHE parentKey: %s, %s", keyName (cacheParent), keyString (cacheParent));
 		ELEKTRA_LOG_DEBUG ("CACHE initial parent: %s, %s", keyName (initialParent), keyString (initialParent));
-		ELEKTRA_LOG_DEBUG ("############################## CACHE KEYSET ##################################");
-// 		output_keyset (cache);
-		ELEKTRA_LOG_DEBUG ("############################## CACHE KEYSET END ##############################");
 
 		kdbLoadSplitState (split, handle->global); // TODO: check retval, handle errors
 
@@ -1345,7 +1304,7 @@ cachefail:
 			ks->array = cache->array;
 			ks->size = cache->size;
 			ks->alloc = cache->alloc;
-			set_bit (ks->flags, KS_FLAG_MMAP_ARRAY); // TODO: don't pull in mmap as requirement?
+			ks->flags = cache->flags;
 			elektraFree (cache);
 			cache = 0;
 		}
@@ -1440,10 +1399,6 @@ cachefail:
 		clearError (parentKey);
 		if (elektraGetDoUpdateWithGlobalHooks (handle, split, ks, parentKey, initialParent, LAST) == -1)
 		{
-			// 			if ((cacheFile) != 0)
-			// 			{
-			// 				unlink (keyName(cacheFile));
-			// 			}
 			goto error;
 		}
 		else
@@ -1494,9 +1449,6 @@ cachefail:
 		
 		ELEKTRA_LOG_DEBUG ("CACHE parentKey: %s, %s", keyName (cacheParent), keyString (cacheParent));
 		ELEKTRA_LOG_DEBUG ("CACHE initial parent: %s, %s", keyName (initialParent), keyString (initialParent));
-		ELEKTRA_LOG_DEBUG ("########################## CACHE KEYSET WRITTEN ###############################");
-// 		output_keyset (ks);
-		ELEKTRA_LOG_DEBUG ("########################## CACHE KEYSET WRITTEN END ###########################");
 	}
 	else
 	{
@@ -1923,17 +1875,6 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 	keySetName (parentKey, keyName (initialParent));
 	keyDel (initialParent);
 	splitDel (split);
-
-	// call cache plugin to unlink file
-// 	Key * cacheParent = keyDup (mountGetMountpoint (handle, parentKey));
-// 	if (elektraGlobalError (handle, 0, cacheParent, PREGETCACHE, MAXONCE) != ELEKTRA_PLUGIN_STATUS_SUCCESS)
-// 	{
-// 		ELEKTRA_LOG_DEBUG ("CACHE: failed to flush cache");
-// 	}
-// 	keyDel (cacheParent);
-// 	
-// 	// reset old cache data: split state, timestamps, ...
-// 	ksClear (handle->global); // TODO: only cut out our part of global keyset
 
 	keyDel (oldError);
 	errno = errnosave;
