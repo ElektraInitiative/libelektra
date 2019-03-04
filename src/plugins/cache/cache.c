@@ -321,7 +321,7 @@ int elektraCacheSet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 	// write cache to temp file
 	keySetString (cacheFile, tmpFile);
-	//elektraFree (cacheFileName);
+	// elektraFree (cacheFileName);
 	if (ch->cacheStorage->kdbSet (ch->cacheStorage, returned, cacheFile) == ELEKTRA_PLUGIN_STATUS_SUCCESS)
 	{
 		if (rename (tmpFile, cacheFileName) == -1)
@@ -366,7 +366,8 @@ int elektraCacheError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 	Key * cacheFile = keyDup (parentKey);
 	char * cacheFileName = kdbCacheFileName (ch, cacheFile);
 	ELEKTRA_ASSERT (cacheFileName != 0, "Could not construct cache file name.");
-	ELEKTRA_LOG_DEBUG ("CACHE error (flush) cacheFileName: %s, parentKey: %s, %s", cacheFileName, keyName (parentKey), keyString (parentKey));
+	ELEKTRA_LOG_DEBUG ("CACHE error (flush) cacheFileName: %s, parentKey: %s, %s", cacheFileName, keyName (parentKey),
+			   keyString (parentKey));
 
 	// load cache from storage
 	keySetString (cacheFile, cacheFileName);

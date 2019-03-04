@@ -32,15 +32,6 @@ int UmountCommand::execute (Cmdline const & cl)
 	printWarnings (cerr, parentKey);
 
 	std::string name = cl.createKey (0).getName ();
-	
-	cerr << "Mountpoint: " << name << endl;
-	cerr << "parentKey name: " << parentKey.getName() << endl;
-	cerr << "parentKey str: " << parentKey.getString() << endl;
-	conf.rewind ();
-	for (auto const & key : conf)
-	{
-		cerr << "KS key: " << key.getName() << "," << key.getString() << endl;
-	}
 
 	if (cl.verbose) Backends::findBackend (name, conf, true);
 
