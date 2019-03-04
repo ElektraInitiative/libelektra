@@ -102,8 +102,6 @@ Plugin * elektraPluginExport (const char * pluginName, ...);
 KeySet * elektraPluginGetConfig (Plugin * handle);
 void elektraPluginSetData (Plugin * plugin, void * handle);
 void * elektraPluginGetData (Plugin * plugin);
-void elektraPluginSetGlobalKeySet (Plugin * plugin, KeySet * ks);
-KeySet * elektraPluginGetGlobalKeySet (Plugin * plugin);
 
 KeySet * elektraPluginGetGlobalKeySet (Plugin * plugin);
 
