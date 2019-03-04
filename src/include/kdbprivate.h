@@ -503,6 +503,11 @@ int splitSync (Split * split);
 void splitPrepare (Split * split);
 int splitUpdateSize (Split * split);
 
+/* for cache: store/load state to/from global keyset */
+void splitCacheStoreState (KDB * handle, Split * split, KeySet * global, Key * parentKey, Key * initialParent);
+int splitCacheCheckState (Split * split, KeySet * global);
+int splitCacheLoadState (Split * split, KeySet * global);
+
 
 /*Backend handling*/
 Backend * backendOpen (KeySet * elektra_config, KeySet * modules, KeySet * global, Key * errorKey);
