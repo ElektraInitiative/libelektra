@@ -186,20 +186,20 @@ static char * kdbCacheFileName (CacheHandle * ch, Key * parentKey)
 
 	if (cacheFileName)
 	{
-
-		//		if ( != 0)
-		//		{
-		//			ELEKTRA_LOG_DEBUG ("error creating directory: %s", cacheFileName);
-		//			return 0;
-		//		}
-
 		if (access (cacheFileName, O_RDWR) != 0)
 		{
 			elektraMkdirParents (cacheFileName);
 		}
 
 		char * tmp = cacheFileName;
-		cacheFileName = elektraStrConcat (cacheFileName, "/cache.mmap");
+		if (keyGetMeta (parentKey, "cascading"))
+		{
+			cacheFileName = elektraStrConcat (cacheFileName, "/cache_cascading.mmap");
+		}
+		else
+		{
+			cacheFileName = elektraStrConcat (cacheFileName, "/cache.mmap");
+		}
 		elektraFree (tmp);
 		ELEKTRA_LOG_DEBUG ("cache file: %s", cacheFileName);
 	}

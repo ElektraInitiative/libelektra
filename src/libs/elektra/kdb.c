@@ -517,6 +517,7 @@ int kdbClose (KDB * handle, Key * errorKey)
  *
  * @brief Check if an update is needed at all
  *
+ * @retval -2 cache hit
  * @retval -1 an error occurred
  * @retval 0 no update needed
  * @retval number of plugins which need update
@@ -541,6 +542,7 @@ static int elektraGetCheckUpdateNeeded (Split * split, Key * parentKey)
 			// store resolved filename
 			keySetString (split->parents[i], keyString (parentKey));
 			// no keys in that backend
+			ELEKTRA_LOG_DEBUG ("backend: %s,%s ;; ret: %d", keyName (split->parents[i]), keyString (split->parents[i]), ret);
 			ELEKTRA_LOG_DEBUG ("elektraGetCheckUpdateNeeded : backendUpdateSize thingy");
 			// if (ret != ELEKTRA_PLUGIN_STATUS_CACHE_HIT)
 			backendUpdateSize (backend, split->parents[i], 0);
@@ -553,18 +555,21 @@ static int elektraGetCheckUpdateNeeded (Split * split, Key * parentKey)
 			// Keys in cache are up-to-date
 			++cacheHits;
 			// set sync flag, needed in case of cache miss
+			// set_bit (split->syncbits[i], SPLIT_FLAG_SYNC);
+			// break;
 			// FALLTHROUGH
-		case 1:
+		case ELEKTRA_PLUGIN_STATUS_SUCCESS:
 			// Seems like we need to sync that
 			set_bit (split->syncbits[i], SPLIT_FLAG_SYNC);
 			++updateNeededOccurred;
 			break;
-		case 0:
+		case ELEKTRA_PLUGIN_STATUS_NO_UPDATE:
 			// Nothing to do here
+			//++cacheHits;
 			break;
 		default:
 			ELEKTRA_ASSERT (0, "resolver did not return 1 0 -1, but %d", ret);
-		case -1:
+		case ELEKTRA_PLUGIN_STATUS_ERROR:
 			// Ohh, an error occurred, lets stop the
 			// process.
 			return -1;
@@ -915,24 +920,32 @@ static void kdbStoreSplitState (KDB * handle, Split * split, KeySet * global, Ke
 
 static int kdbCacheCheckParent (KDB * handle, KeySet * global, Key * cacheParent, Key * initialParent)
 {
-	Key * mountPoint = mountGetMountpoint (handle, cacheParent);
+	// Key * mountPoint = mountGetMountpoint (handle, cacheParent);
 // 	const char * parentName = ;
 // 	const char * parentValue = ;
 
 	// first check if parentkey matches
 	Key * lastParentName = ksLookupByName (global, "/persistent/lastParentName", KDB_O_NONE);
 	ELEKTRA_LOG_DEBUG ("LAST PARENT name: %s", keyString (lastParentName));
-	ELEKTRA_LOG_DEBUG ("KDBG PARENT name: %s", keyName (mountPoint));
-	if (!lastParentName || strcmp (keyString (lastParentName), keyName (mountPoint))) return -1;
+	ELEKTRA_LOG_DEBUG ("KDBG PARENT name: %s", keyName (cacheParent));
+	if (!lastParentName || strcmp (keyString (lastParentName), keyName (cacheParent))) return -1;
 	Key * lastParentValue = ksLookupByName (global, "/persistent/lastParentValue", KDB_O_NONE);
 	ELEKTRA_LOG_DEBUG ("LAST PARENT value: %s", keyString (lastParentValue));
-	ELEKTRA_LOG_DEBUG ("KDBG PARENT value: %s", keyString (mountPoint));
-	if (!lastParentValue || strcmp (keyString (lastParentValue), keyString (mountPoint))) return -1;
-	
+	ELEKTRA_LOG_DEBUG ("KDBG PARENT value: %s", keyString (cacheParent));
+	if (!lastParentValue || strcmp (keyString (lastParentValue), keyString (cacheParent))) return -1;
+
 	Key * lastInitalParentName = ksLookupByName (global, "/persistent/lastInitialParentName", KDB_O_NONE);
 	ELEKTRA_LOG_DEBUG ("LAST initial PARENT name: %s", keyString (lastInitalParentName));
 	ELEKTRA_LOG_DEBUG ("KDBG initial PARENT name: %s", keyName (initialParent));
-	if (!lastInitalParentName || strcmp (keyString (lastInitalParentName), keyName (initialParent))) return -1;
+
+	// elektraNamespace curNS = keyGetNamespace (initialParent);
+	// elektraNamespace oldNS = keyGetNamespace (lastInitalParentName);
+	if (!(keyRel (lastInitalParentName, initialParent) >= 0))
+	{
+		ELEKTRA_LOG_DEBUG ("KDBG initial PARENT: keyRel not good");
+		// if (!lastInitalParentName || strcmp (keyString (lastInitalParentName), keyName (initialParent))) return -1;
+		return -1;
+	}
 
 	return 0;
 }
@@ -1284,7 +1297,9 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	}
 
 	cache = ksNew (0, KS_END);
+	// cacheParent = keyDup (mountGetMountpoint (handle, initialParent));
 	cacheParent = keyDup (mountGetMountpoint (handle, initialParent));
+	if (ns == KEY_NS_CASCADING) keySetMeta (cacheParent, "cascading", "");
 	if (handle->globalPlugins[PREGETCACHE][MAXONCE])
 	{
 		// prune old cache info
