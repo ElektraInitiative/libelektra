@@ -77,6 +77,32 @@ kdb rm -r user/tests/yaypeg
 sudo kdb umount user/tests/yaypeg
 ```
 
+### Error Messages
+
+```sh
+# Mount plugin
+sudo kdb mount config.yaml user/tests/yaypeg yaypeg
+
+# Manually add syntactically incorrect data
+printf 'Fluttershy:\n'           >  `kdb file user/tests/yaypeg`
+printf 'I’d like to be a tree\n' >> `kdb file user/tests/yaypeg` # Incorrect indentation
+
+kdb ls user/tests/yaypeg
+# RET: 5
+# STDERR: .*config.yaml:2:0\(12\): Incomplete document, expected “end of file”.*
+
+# Fix syntax error
+printf 'Fluttershy:\n'             >  `kdb file user/tests/yaypeg`
+printf '  I’d like to be a tree\n' >> `kdb file user/tests/yaypeg`
+
+kdb get user/tests/yaypeg/Fluttershy
+#> I’d like to be a tree
+
+# Undo modifications
+kdb rm -r user/tests/yaypeg
+sudo kdb umount user/tests/yaypeg
+```
+
 ## Limitations
 
 The plugin has the same limitations as [YAMBi ](../yambi/).
