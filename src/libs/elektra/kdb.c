@@ -95,15 +95,15 @@ void logSplitDebug (KDB * handle)
 	for (size_t i = 0; i < handle->split->size; i++)
 	{
 		ELEKTRA_LOG_DEBUG (">>>> NEW SPLIT: %zu", i);
-		Key * k = handle->split->parents[i];
 		ELEKTRA_LOG_DEBUG (">>>> backend handle specsize:\t%zi", handle->split->handles[i]->specsize);
 		ELEKTRA_LOG_DEBUG (">>>> backend handle dirsize:\t%zi", handle->split->handles[i]->dirsize);
 		ELEKTRA_LOG_DEBUG (">>>> backend handle usersize:\t%zi", handle->split->handles[i]->usersize);
 		ELEKTRA_LOG_DEBUG (">>>> backend handle systemsize:\t%zi", handle->split->handles[i]->systemsize);
 
 		ELEKTRA_LOG_DEBUG (">>>> syncbits: %u", handle->split->syncbits[i]);
-		ELEKTRA_LOG_DEBUG (">>>> parent key: %s, string: %s, strlen: %ld, valSize: %ld", keyName (k), keyString (k),
-				   strlen (keyString (k)), keyGetValueSize (k));
+		ELEKTRA_LOG_DEBUG (">>>> parent key: %s, string: %s, strlen: %ld, valSize: %ld", keyName (handle->split->parents[i]),
+				   keyString (handle->split->parents[i]), strlen (keyString (handle->split->parents[i])),
+				   keyGetValueSize (handle->split->parents[i]));
 		ELEKTRA_LOG_DEBUG (">>>> keyset size: %zi", ksGetSize (handle->split->keysets[i]));
 
 		output_keyset (handle->split->keysets[i]);
