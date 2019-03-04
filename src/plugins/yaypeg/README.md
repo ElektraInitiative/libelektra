@@ -89,7 +89,7 @@ printf 'I’d like to be a tree\n' >> `kdb file user/tests/yaypeg` # Incorrect i
 
 kdb ls user/tests/yaypeg
 # RET: 5
-# STDERR: .*config.yaml:2:0\(12\): Incomplete document, expected “end of file”.*
+# STDERR: .*config.yaml:2:0: Incomplete document, expected “end of file”.*
 
 # Fix syntax error
 printf 'Fluttershy:\n'             >  `kdb file user/tests/yaypeg`

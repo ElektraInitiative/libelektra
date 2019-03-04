@@ -1136,7 +1136,12 @@ struct errors : public tao::TAO_PEGTL_NAMESPACE::normal<Rule>
 	template <typename Input, typename... States>
 	static void raise (const Input & input, States &&...)
 	{
-		throw tao::TAO_PEGTL_NAMESPACE::parse_error (errorMessage, input);
+		tao::TAO_PEGTL_NAMESPACE::position pos = input.position ();
+		std::string location = pos.source + ":" + std::to_string (pos.line) + ":" + std::to_string (pos.byte_in_line) + ": ";
+
+		std::string message = location + errorMessage;
+
+		throw std::runtime_error (message);
 	}
 };
 
