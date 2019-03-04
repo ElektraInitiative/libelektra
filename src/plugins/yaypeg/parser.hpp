@@ -91,6 +91,35 @@ std::uint32_t lastMatchedUtf32 (Input & input)
 	return character;
 }
 
+/**
+ * @brief This function returns a Clang-like error message for a given error.
+ *
+ * @param input This parameter stores the input at the time an error occurred.
+ * @param prefix This variable stores as prefix that this function prepends
+ *               to every line of the visualized error message.
+ *
+ * @return A string representation of the error
+ */
+template <typename Input>
+std::string visualizeError (Input const & input, std::string const & prefix)
+{
+	std::string::size_type start = 0;
+	std::string::size_type end = 0;
+	auto text = std::string{ input.begin (), input.end () };
+	for (size_t currentLine = 1; currentLine <= input.position ().line; currentLine++)
+	{
+		size_t offset = (end == 0 ? 0 : 1);
+		start = end + offset;
+		end = text.find ("\n", end + offset);
+	}
+
+	std::string errorLine = text.substr (start, end - start);
+
+	errorLine = prefix + errorLine + "\n" + prefix + std::string (input.position ().byte_in_line, ' ') + "^";
+
+	return errorLine;
+}
+
 } // namespace
 
 // -- Rules & Actions ----------------------------------------------------------
@@ -1139,7 +1168,8 @@ struct errors : public tao::TAO_PEGTL_NAMESPACE::normal<Rule>
 		tao::TAO_PEGTL_NAMESPACE::position pos = input.position ();
 		std::string location = pos.source + ":" + std::to_string (pos.line) + ":" + std::to_string (pos.byte_in_line) + ": ";
 
-		std::string message = location + errorMessage;
+		std::string message = "\n" + location + errorMessage;
+		message += "\n" + visualizeError (input, std::string (location.length (), ' '));
 
 		throw std::runtime_error (message);
 	}

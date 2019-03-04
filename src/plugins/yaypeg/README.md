@@ -91,6 +91,22 @@ kdb ls user/tests/yaypeg
 # RET: 5
 # STDERR: .*config.yaml:2:0: Incomplete document, expected “end of file”.*
 
+# Let us look at the error message more closely.
+# Since the location of `config.yaml` depends on the current user and OS,
+# we store the text before `config.yaml` as `user/tests/error/prefix`.
+kdb set user/tests/error "$(2>&1 kdb ls user/tests/yaypeg)"
+kdb set user/tests/error/prefix "$(kdb get user/tests/error | grep 'config.yaml' | head -1 | sed -E 's/(.*)config.yaml.*/\1/')"
+# We also store the length of the prefix, so we can remove it from every
+# line of the error message.
+kdb set user/tests/error/prefix/length "$(kdb get user/tests/error/prefix | wc -c | sed 's/[ ]*//g')"
+
+# Since we only want to look at the “reason” of the error, we
+# remove the other part of the error message with `head` and `tail`.
+kdb get user/tests/error | tail -n8 | head -n3 | cut -c"$(kdb get user/tests/error/prefix/length)"-
+#> config.yaml:2:0: Incomplete document, expected “end of file”
+#>                  I’d like to be a tree
+#>                  ^
+
 # Fix syntax error
 printf 'Fluttershy:\n'             >  `kdb file user/tests/yaypeg`
 printf '  I’d like to be a tree\n' >> `kdb file user/tests/yaypeg`
@@ -99,6 +115,7 @@ kdb get user/tests/yaypeg/Fluttershy
 #> I’d like to be a tree
 
 # Undo modifications
+kdb rm -r user/tests/error
 kdb rm -r user/tests/yaypeg
 sudo kdb umount user/tests/yaypeg
 ```
