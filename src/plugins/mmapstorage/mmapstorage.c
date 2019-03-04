@@ -669,7 +669,7 @@ static void writeKeys (KeySet * keySet, MmapAddr * mmapAddr, DynArray * dynArray
 	}
 }
 
-static void printMmapAddr (MmapAddr * mmapAddr)
+static void printMmapAddr (MmapAddr * mmapAddr ELEKTRA_UNUSED)
 {
 	ELEKTRA_LOG_DEBUG ("globalKsPtr: \t\t %p", (void *) mmapAddr->globalKsPtr);
 	ELEKTRA_LOG_DEBUG ("ksPtr: \t\t %p", (void *) mmapAddr->ksPtr);
@@ -682,7 +682,7 @@ static void printMmapAddr (MmapAddr * mmapAddr)
 	ELEKTRA_LOG_DEBUG ("mmapAddrInt: \t\t %lu", mmapAddr->mmapAddrInt);
 }
 
-static void printMmapMetaData (MmapMetaData * mmapMetaData)
+static void printMmapMetaData (MmapMetaData * mmapMetaData ELEKTRA_UNUSED)
 {
 	ELEKTRA_LOG_DEBUG ("numKeySets: \t %lu", mmapMetaData->numKeySets);
 	ELEKTRA_LOG_DEBUG ("ksAlloc: \t %lu", mmapMetaData->ksAlloc);
