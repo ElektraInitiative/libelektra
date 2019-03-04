@@ -227,6 +227,10 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 - Empty GPG key IDs in the plugin configuration are being ignored by the [crypto](https://www.libelektra.org/plugins/crypto) plugin and the [fcrypt](https://www.libelektra.org/plugins/fcrypt) plugin. Adding empty GPG key IDs would lead to an error when `gpg` is being invoked._(Peter Nirschl)_
 
+### Cache
+
+- [cache](https://www.libelektra.org/plugins/cache) is a new global caching plugin. It uses [mmapstorage](https://www.libelektra.org/plugins/mmapstorage) as its storage backend and lazily stores keysets from previous ´kdbGet()´ calls. _(Mihael Pranjić)_
+
 ## Libraries
 
 The text below summarizes updates to the [C (and C++)-based libraries](https://www.libelektra.org/libraries/readme) of Elektra.
