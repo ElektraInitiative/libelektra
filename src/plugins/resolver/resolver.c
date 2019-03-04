@@ -11,6 +11,7 @@
 #include <kdbassert.h>
 #include <kdbhelper.h> // elektraStrDup
 #include <kdbproposal.h>
+#include <kdbprivate.h> // KDB_CACHE_PREFIX
 
 #include "kdbos.h"
 
@@ -537,25 +538,23 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * returned, Key * par
 		pk->isMissing = 0;
 	}
 
-	/* Check if cache update needed */
-	KeySet * global;
-	char * name = 0;
-	const char * prefix = "/persistent/";
-	size_t len = strlen (prefix) + strlen (ELEKTRA_PLUGIN_NAME) + strlen (pk->filename) + 1;
-	name = elektraMalloc (len);
-	name = strcpy (name, prefix);
-	name = strcat (name, ELEKTRA_PLUGIN_NAME);
-	name = strcat (name, pk->filename);
-	ELEKTRA_LOG_DEBUG ("persistent chid key: %s", name);
-
 	/* Check if update needed */
 	if (pk->mtime.tv_sec == ELEKTRA_STAT_SECONDS (buf) && pk->mtime.tv_nsec == ELEKTRA_STAT_NANO_SECONDS (buf))
 	{
 		// no update, so storage has no job
-		if (name) elektraFree (name);
 		errno = errnoSave;
 		return 0;
 	}
+
+	/* Check if cache update needed */
+	KeySet * global;
+	char * name = 0;
+	size_t len = strlen (KDB_CACHE_PREFIX) + strlen (ELEKTRA_PLUGIN_NAME) + strlen (pk->filename) + 1;
+	name = elektraMalloc (len);
+	name = strcpy (name, KDB_CACHE_PREFIX);
+	name = strcat (name, ELEKTRA_PLUGIN_NAME);
+	name = strcat (name, pk->filename);
+	ELEKTRA_LOG_DEBUG ("persistent chid key: %s", name);
 
 	if ((global = elektraPluginGetGlobalKeySet (handle)) != NULL)
 	{

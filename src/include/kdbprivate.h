@@ -59,6 +59,9 @@
  * to which mountpoint. */
 #define KDB_SYSTEM_ELEKTRA "system/elektra"
 
+/** All keys below this are used for cache metadata in the global keyset */
+#define KDB_CACHE_PREFIX "system/elektra/cache"
+
 
 #ifdef __cplusplus
 namespace ckdb

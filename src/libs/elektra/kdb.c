@@ -806,9 +806,9 @@ static char * elektraStrConcat (const char * a, const char * b)
 static void kdbStoreSplitState (KDB * handle, Split * split, KeySet * global, Key * parentKey, Key * initialParent)
 {
 	Key * mountPoint = mountGetMountpoint (handle, parentKey);
-	Key * lastParentName = keyNew ("/persistent/lastParentName", KEY_VALUE, keyName (mountPoint), KEY_END);
-	Key * lastParentValue = keyNew ("/persistent/lastParentValue", KEY_VALUE, keyString (mountPoint), KEY_END);
-	Key * lastInitalParentName = keyNew ( "/persistent/lastInitialParentName", KEY_VALUE, keyName (initialParent), KEY_END);
+	Key * lastParentName = keyNew (KDB_CACHE_PREFIX "/lastParentName", KEY_VALUE, keyName (mountPoint), KEY_END);
+	Key * lastParentValue = keyNew (KDB_CACHE_PREFIX "/lastParentValue", KEY_VALUE, keyString (mountPoint), KEY_END);
+	Key * lastInitalParentName = keyNew (KDB_CACHE_PREFIX "/lastInitialParentName", KEY_VALUE, keyName (initialParent), KEY_END);
 	ksAppendKey (global, lastParentName);
 	ksAppendKey (global, lastParentValue);
 	ksAppendKey (global, lastInitalParentName);
@@ -836,11 +836,11 @@ static void kdbStoreSplitState (KDB * handle, Split * split, KeySet * global, Ke
 		char * name = 0;
 		if (strlen (keyName (split->handles[i]->mountpoint)) != 0)
 		{
-			name = elektraStrConcat ("/persistent/kdb/splitState/mountpoint/", keyName (split->handles[i]->mountpoint));
+			name = elektraStrConcat (KDB_CACHE_PREFIX "/splitState/mountpoint/", keyName (split->handles[i]->mountpoint));
 		}
 		else
 		{
-			name = elektraStrConcat ("/persistent/kdb/splitState/", "default/");
+			name = elektraStrConcat (KDB_CACHE_PREFIX "/splitState/", "default/");
 		}
 		// Append parent name for uniqueness (spec, dir, user, system, ...)
 		char * tmp = name;
@@ -905,31 +905,29 @@ static void kdbStoreSplitState (KDB * handle, Split * split, KeySet * global, Ke
 static int kdbCacheCheckParent (KeySet * global, Key * cacheParent, Key * initialParent)
 {
 	// first check if parentkey matches
-	Key * lastParentName = ksLookupByName (global, "/persistent/lastParentName", KDB_O_NONE);
+	Key * lastParentName = ksLookupByName (global, KDB_CACHE_PREFIX "/lastParentName", KDB_O_NONE);
 	ELEKTRA_LOG_DEBUG ("LAST PARENT name: %s", keyString (lastParentName));
 	ELEKTRA_LOG_DEBUG ("KDBG PARENT name: %s", keyName (cacheParent));
 	if (!lastParentName || strcmp (keyString (lastParentName), keyName (cacheParent))) return -1;
-	Key * lastParentValue = ksLookupByName (global, "/persistent/lastParentValue", KDB_O_NONE);
+
+	Key * lastParentValue = ksLookupByName (global, KDB_CACHE_PREFIX "/lastParentValue", KDB_O_NONE);
 	ELEKTRA_LOG_DEBUG ("LAST PARENT value: %s", keyString (lastParentValue));
 	ELEKTRA_LOG_DEBUG ("KDBG PARENT value: %s", keyString (cacheParent));
 	if (!lastParentValue || strcmp (keyString (lastParentValue), keyString (cacheParent))) return -1;
 
-	Key * lastInitalParentName = ksLookupByName (global, "/persistent/lastInitialParentName", KDB_O_NONE);
-
+	Key * lastInitalParentName = ksLookupByName (global, KDB_CACHE_PREFIX "/lastInitialParentName", KDB_O_NONE);
 	Key * lastInitialParent = keyNew (keyString (lastInitalParentName), KEY_END);
-	// Key * curInitialParent = keyNew (keyName (initialParent), KEY_END);
 	ELEKTRA_LOG_DEBUG ("LAST initial PARENT name: %s", keyName (lastInitialParent));
 	ELEKTRA_LOG_DEBUG ("CURR initial PARENT name: %s", keyName (initialParent));
+
 	if (!keyIsBelowOrSame (lastInitialParent, initialParent))
 	{
 		ELEKTRA_LOG_DEBUG ("CACHE initial PARENT: key is not below or same");
 		keyDel (lastInitialParent);
-		// keyDel (curInitialParent);
 		return -1;
 	}
 
 	keyDel (lastInitialParent);
-	// keyDel (curInitialParent);
 	return 0;
 }
 
@@ -943,11 +941,11 @@ static int kdbCheckSplitState (Split * split, KeySet * global)
 	{
 		if (strlen (keyName (split->handles[i]->mountpoint)) != 0)
 		{
-			name = elektraStrConcat ("/persistent/kdb/splitState/mountpoint/", keyName (split->handles[i]->mountpoint));
+			name = elektraStrConcat (KDB_CACHE_PREFIX "/splitState/mountpoint/", keyName (split->handles[i]->mountpoint));
 		}
 		else
 		{
-			name = elektraStrConcat ("/persistent/kdb/splitState/", "default/");
+			name = elektraStrConcat (KDB_CACHE_PREFIX "/splitState/", "default/");
 		}
 		// Append parent name for uniqueness (spec, dir, user, system, ...)
 		char * tmp = name;
@@ -1023,11 +1021,11 @@ static int kdbLoadSplitState (Split * split, KeySet * global)
 	{
 		if (strlen (keyName (split->handles[i]->mountpoint)) != 0)
 		{
-			name = elektraStrConcat ("/persistent/kdb/splitState/mountpoint/", keyName (split->handles[i]->mountpoint));
+			name = elektraStrConcat (KDB_CACHE_PREFIX "/splitState/mountpoint/", keyName (split->handles[i]->mountpoint));
 		}
 		else
 		{
-			name = elektraStrConcat ("/persistent/kdb/splitState/", "default/");
+			name = elektraStrConcat (KDB_CACHE_PREFIX "/splitState/", "default/");
 		}
 		// Append parent name for uniqueness (spec, dir, user, system, ...)
 		char * tmp = name;
@@ -1042,64 +1040,52 @@ static int kdbLoadSplitState (Split * split, KeySet * global)
 			goto error;
 		}
 
-// 		if (split->handles[i]->specsize == 0)
+		keySetBaseName (key, "specsize");
+		found = ksLookup (global, key, KDB_O_NONE);
+		if (found && keyGetValueSize (found) == sizeof (ssize_t))
 		{
-			keySetBaseName (key, "specsize");
-			found = ksLookup (global, key, KDB_O_NONE);
-			if (found && keyGetValueSize (found) == sizeof (ssize_t))
-			{
-				keyGetBinary (found, &(split->handles[i]->specsize), sizeof (ssize_t));
-				output_key (found);
-			}
-			else
-			{
-				goto error;
-			}
+			keyGetBinary (found, &(split->handles[i]->specsize), sizeof (ssize_t));
+			output_key (found);
+		}
+		else
+		{
+			goto error;
 		}
 
-// 		if (split->handles[i]->dirsize == 0)
+		keySetBaseName (key, "dirsize");
+		found = ksLookup (global, key, KDB_O_NONE);
+		if (found && keyGetValueSize (found) == sizeof (ssize_t))
 		{
-			keySetBaseName (key, "dirsize");
-			found = ksLookup (global, key, KDB_O_NONE);
-			if (found && keyGetValueSize (found) == sizeof (ssize_t))
-			{
-				keyGetBinary (found, &(split->handles[i]->dirsize), sizeof (ssize_t));
-				output_key (found);
-			}
-			else
-			{
-				goto error;
-			}
+			keyGetBinary (found, &(split->handles[i]->dirsize), sizeof (ssize_t));
+			output_key (found);
+		}
+		else
+		{
+			goto error;
 		}
 
-// 		if (split->handles[i]->usersize == 0)
+		keySetBaseName (key, "usersize");
+		found = ksLookup (global, key, KDB_O_NONE);
+		if (found && keyGetValueSize (found) == sizeof (ssize_t))
 		{
-			keySetBaseName (key, "usersize");
-			found = ksLookup (global, key, KDB_O_NONE);
-			if (found && keyGetValueSize (found) == sizeof (ssize_t))
-			{
-				keyGetBinary (found, &(split->handles[i]->usersize), sizeof (ssize_t));
-				output_key (found);
-			}
-			else
-			{
-				goto error;
-			}
+			keyGetBinary (found, &(split->handles[i]->usersize), sizeof (ssize_t));
+			output_key (found);
+		}
+		else
+		{
+			goto error;
 		}
 
-// 		if (split->handles[i]->systemsize == 0)
+		keySetBaseName (key, "systemsize");
+		found = ksLookup (global, key, KDB_O_NONE);
+		if (found && keyGetValueSize (found) == sizeof (ssize_t))
 		{
-			keySetBaseName (key, "systemsize");
-			found = ksLookup (global, key, KDB_O_NONE);
-			if (found && keyGetValueSize (found) == sizeof (ssize_t))
-			{
-				keyGetBinary (found, &(split->handles[i]->systemsize), sizeof (ssize_t));
-				output_key (found);
-			}
-			else
-			{
-				goto error;
-			}
+			keyGetBinary (found, &(split->handles[i]->systemsize), sizeof (ssize_t));
+			output_key (found);
+		}
+		else
+		{
+			goto error;
 		}
 
 		keySetBaseName (key, "syncbits");
@@ -1442,13 +1428,6 @@ cachefail:
 			// if there was an error, otherwise we get erroneous cache hits
 			ksClear (handle->global); // TODO: only cut out our part of global keyset
 		}
-
-		ELEKTRA_LOG_DEBUG (">>>>>>>>>>>>>> PRINT GLOBAL KEYSET");
-		output_keyset (handle->global);
-		ELEKTRA_LOG_DEBUG (">>>>>>>>>>>>>> END GLOBAL KEYSET");
-		
-		ELEKTRA_LOG_DEBUG ("CACHE parentKey: %s, %s", keyName (cacheParent), keyString (cacheParent));
-		ELEKTRA_LOG_DEBUG ("CACHE initial parent: %s, %s", keyName (initialParent), keyString (initialParent));
 	}
 	else
 	{
