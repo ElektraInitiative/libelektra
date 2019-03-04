@@ -57,7 +57,7 @@ sudo kdb mount config.yaml user/tests/yaypeg yaypeg
 
 # Manually add some values
 printf 'ponies:\n'               >  `kdb file user/tests/yaypeg`
-printf ' - Flutter Shy # Yay!\n' >> `kdb file user/tests/yaypeg`
+printf ' - Fluttershy # Yay!\n' >> `kdb file user/tests/yaypeg`
 printf ' - Pinkie Pie\n'         >> `kdb file user/tests/yaypeg`
 printf ' - Maud Pie'             >> `kdb file user/tests/yaypeg`
 
