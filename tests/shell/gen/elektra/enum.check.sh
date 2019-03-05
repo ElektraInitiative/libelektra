@@ -7,6 +7,8 @@ typedef enum {
 
 int elektraKeyToEnumExistingColors (const Key * key, ExistingColors * variable);
 char * elektraEnumExistingColorsToString (ExistingColors value);
+
+#define NO_VALUE 0
 #endif // COLORS_H
 EOF
 

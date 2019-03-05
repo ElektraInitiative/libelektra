@@ -22,15 +22,16 @@
 typedef enum
 {
 	ELEKTRA_ENUM_DISJOINTED_BLACK = 0,
-	ELEKTRA_ENUM_DISJOINTED_WHITE = 2,
+	ELEKTRA_ENUM_DISJOINTED_WHITE = 255,
 } ElektraEnumDisjointed;
 
 
 typedef enum
 {
-	COLORS_RED = 0,
-	COLORS_GREEN = 1,
-	COLORS_BLUE = 2,
+	COLORS_NONE = NO_VALUE,
+	COLORS_RED = 1,
+	COLORS_GREEN = 1 << 1,
+	COLORS_BLUE = 1 << 2,
 } Colors;
 
 typedef enum

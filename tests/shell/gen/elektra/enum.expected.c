@@ -38,10 +38,10 @@ extern "C" {
 Elektra * loadConfiguration (ElektraError ** error)
 {
 	KeySet * defaults = ksNew (5,
-	keyNew ("spec/tests/script/gen/elektra/enum/disjointed", KEY_META, "check/enum", "#3", KEY_META, "check/enum/#0", "black", KEY_META, "check/enum/#2", "white", KEY_META, "default", "black", KEY_META, "type", "enum", KEY_END),
-	keyNew ("spec/tests/script/gen/elektra/enum/existinggentype", KEY_META, "check/enum", "#3", KEY_META, "check/enum/#0", "cyan", KEY_META, "check/enum/#1", "magenta", KEY_META, "check/enum/#2", "yellow", KEY_META, "default", "cyan", KEY_META, "gen/enum/create", "0", KEY_META, "gen/enum/type", "ExistingColors", KEY_META, "type", "enum", KEY_END),
-	keyNew ("spec/tests/script/gen/elektra/enum/gentype", KEY_META, "check/enum", "#3", KEY_META, "check/enum/#0", "red", KEY_META, "check/enum/#1", "green", KEY_META, "check/enum/#2", "blue", KEY_META, "default", "blue", KEY_META, "gen/enum/type", "Colors", KEY_META, "type", "enum", KEY_END),
-	keyNew ("spec/tests/script/gen/elektra/enum/gentype2", KEY_META, "check/enum", "#3", KEY_META, "check/enum/#0", "red", KEY_META, "check/enum/#1", "green", KEY_META, "check/enum/#2", "blue", KEY_META, "default", "red", KEY_META, "gen/enum/type", "Colors", KEY_META, "type", "enum", KEY_END),
+	keyNew ("spec/tests/script/gen/elektra/enum/disjointed", KEY_META, "check/enum", "#__255", KEY_META, "check/enum/#0", "black", KEY_META, "check/enum/#__255", "white", KEY_META, "default", "black", KEY_META, "type", "enum", KEY_END),
+	keyNew ("spec/tests/script/gen/elektra/enum/existinggentype", KEY_META, "check/enum", "#2", KEY_META, "check/enum/#0", "cyan", KEY_META, "check/enum/#1", "magenta", KEY_META, "check/enum/#2", "yellow", KEY_META, "default", "cyan", KEY_META, "gen/enum/create", "0", KEY_META, "gen/enum/type", "ExistingColors", KEY_META, "type", "enum", KEY_END),
+	keyNew ("spec/tests/script/gen/elektra/enum/gentype", KEY_META, "check/enum", "#3", KEY_META, "check/enum/#0", "none", KEY_META, "check/enum/#0/value", "NO_VALUE", KEY_META, "check/enum/#1", "red", KEY_META, "check/enum/#1/value", "1", KEY_META, "check/enum/#2", "green", KEY_META, "check/enum/#2/value", "1 << 1", KEY_META, "check/enum/#3", "blue", KEY_META, "check/enum/#3/value", "1 << 2", KEY_META, "default", "blue", KEY_META, "gen/enum/type", "Colors", KEY_META, "type", "enum", KEY_END),
+	keyNew ("spec/tests/script/gen/elektra/enum/gentype2", KEY_META, "check/enum", "#3", KEY_META, "check/enum/#0", "none", KEY_META, "check/enum/#0/value", "NO_VALUE", KEY_META, "check/enum/#1", "red", KEY_META, "check/enum/#1/value", "1", KEY_META, "check/enum/#2", "green", KEY_META, "check/enum/#2/value", "1 << 1", KEY_META, "check/enum/#3", "blue", KEY_META, "check/enum/#3/value", "1 << 2", KEY_META, "default", "red", KEY_META, "gen/enum/type", "Colors", KEY_META, "type", "enum", KEY_END),
 	keyNew ("spec/tests/script/gen/elektra/enum/myenum", KEY_META, "check/enum", "#5", KEY_META, "check/enum/#0", "red", KEY_META, "check/enum/#1", "green", KEY_META, "check/enum/#2", "blue", KEY_META, "check/enum/#3", "blueish", KEY_META, "check/enum/#4", "brown", KEY_META, "check/enum/#5", "gray", KEY_META, "default", "blue", KEY_META, "type", "enum", KEY_END),
 	KS_END);
 ;
@@ -98,6 +98,8 @@ case 'r':
 return COLORS_RED;
 case 'b':
 return COLORS_BLUE;
+case 'n':
+return COLORS_NONE;
 case 'g':
 return COLORS_GREEN;
 }
@@ -111,6 +113,8 @@ ELEKTRA_TO_STRING_SIGNATURE (Colors, EnumColors)
 {
 	switch (value)
 	{
+	case COLORS_NONE:
+		return "none";
 	case COLORS_RED:
 		return "red";
 	case COLORS_GREEN:
