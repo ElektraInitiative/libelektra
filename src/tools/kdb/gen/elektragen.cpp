@@ -185,7 +185,7 @@ kainjow::mustache::list EnumProcessor::getValues (const std::string & prefix, co
 
 	const auto end = key.getMeta<std::string> ("check/enum");
 	kdb::long_long_t i = 0;
-	auto cur = "#" + std::to_string (i);
+	std::string cur = "#0";
 	while (cur <= end)
 	{
 		if (key.hasMeta ("check/enum/" + cur))
@@ -193,14 +193,18 @@ kainjow::mustache::list EnumProcessor::getValues (const std::string & prefix, co
 			auto name = prefix + "_";
 			const std::string & stringValue = key.getMeta<std::string> ("check/enum/" + cur);
 			name += camelCaseToMacroCase (stringValue);
-			const auto value = std::to_string (i);
-			// TODO: custom values
+			auto value = std::to_string (i);
+			if (key.hasMeta ("check/enum/" + cur + "/value"))
+			{
+				value = key.getMeta<std::string> ("check/enum/" + cur + "/value");
+			}
 			values.emplace_back (object{ { "name", name }, { "value", value }, { "string_value", stringValue } });
 			stringValues.insert ({ stringValue, name });
 			ss << name << "=" << value << "\n";
 		}
 		++i;
-		cur = "#" + std::to_string (i);
+		auto indexString = std::to_string (i);
+		cur = "#" + std::string (indexString.length () - 1, '_') + std::to_string (i);
 	}
 
 	EnumTrie trie (stringValues);
