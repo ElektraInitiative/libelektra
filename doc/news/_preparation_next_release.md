@@ -123,11 +123,10 @@ compiled against an older 0.8 version of Elektra will continue to work
 - <<TODO>>
 - <<TODO>>
 
-### <<Library1>>
+### Ease
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- The functions for reference resolving used in the [reference plugin](https://www.libelektra.org/plugins/reference) have been extracted
+  into libease. This lets other parts of Elektra easily use references and ensures a consistent syntax for them. _(Klemens Böswirth)_
 
 ### <<Library2>>
 
