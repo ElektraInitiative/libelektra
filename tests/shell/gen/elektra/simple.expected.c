@@ -38,8 +38,10 @@ extern "C" {
 Elektra * loadConfiguration (ElektraError ** error)
 {
 	KeySet * defaults = ksNew (5,
-	keyNew ("spec/tests/script/gen/elektra/simple/mydouble", KEY_META, "default", "0.0", KEY_META, "type", "double", KEY_END),
-	keyNew ("spec/tests/script/gen/elektra/simple/myfloatarray/#", KEY_META, "default", "0.0", KEY_META, "type", "float", KEY_END),
+	keyNew ("spec/tests/script/gen/elektra/simple/mydouble", KEY_META, "default", "0.0", KEY_META, "type", "double",
+	KEY_END),
+	keyNew ("spec/tests/script/gen/elektra/simple/myfloatarray/#", KEY_META, "default", "0.0", KEY_META, "type", "float",
+	KEY_END),
 	keyNew ("spec/tests/script/gen/elektra/simple/myint", KEY_META, "default", "0", KEY_META, "type", "long", KEY_END),
 	keyNew ("spec/tests/script/gen/elektra/simple/mystring", KEY_META, "default", "", KEY_META, "type", "string", KEY_END),
 	keyNew ("spec/tests/script/gen/elektra/simple/print", KEY_META, "default", "0", KEY_META, "type", "boolean", KEY_END),

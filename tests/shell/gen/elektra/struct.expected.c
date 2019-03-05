@@ -39,13 +39,19 @@ Elektra * loadConfiguration (ElektraError ** error)
 {
 	KeySet * defaults = ksNew (8,
 	keyNew ("spec/tests/script/gen/elektra/struct/mystruct", KEY_META, "default", "", KEY_META, "type", "struct", KEY_END),
-	keyNew ("spec/tests/script/gen/elektra/struct/mystruct/a", KEY_META, "default", "test", KEY_META, "type", "string", KEY_END),
-	keyNew ("spec/tests/script/gen/elektra/struct/mystruct/b", KEY_META, "default", "8", KEY_META, "type", "long", KEY_END),
+	keyNew ("spec/tests/script/gen/elektra/struct/mystruct/a", KEY_META, "default", "test", KEY_META, "type", "string",
+	KEY_END),
+	keyNew ("spec/tests/script/gen/elektra/struct/mystruct/b", KEY_META, "default", "8", KEY_META, "type", "long",
+	KEY_END),
 	keyNew ("spec/tests/script/gen/elektra/struct/people/#", KEY_META, "default", "", KEY_META, "type", "string", KEY_END),
-	keyNew ("spec/tests/script/gen/elektra/struct/person/_", KEY_META, "default", "", KEY_META, "gen/struct/alloc", "1", KEY_META, "gen/struct/type", "Person", KEY_META, "type", "struct", KEY_END),
-	keyNew ("spec/tests/script/gen/elektra/struct/person/_/age", KEY_META, "default", "30", KEY_META, "type", "short", KEY_END),
-	keyNew ("spec/tests/script/gen/elektra/struct/person/_/height", KEY_META, "default", "1.80", KEY_META, "type", "float", KEY_END),
-	keyNew ("spec/tests/script/gen/elektra/struct/person/_/name", KEY_META, "default", "Max", KEY_META, "gen/struct/field", "fullName", KEY_META, "type", "string", KEY_END),
+	keyNew ("spec/tests/script/gen/elektra/struct/person/_", KEY_META, "default", "", KEY_META, "gen/struct/alloc", "1",
+	KEY_META, "gen/struct/type", "Person", KEY_META, "type", "struct", KEY_END),
+	keyNew ("spec/tests/script/gen/elektra/struct/person/_/age", KEY_META, "default", "30", KEY_META, "type", "short",
+	KEY_END),
+	keyNew ("spec/tests/script/gen/elektra/struct/person/_/height", KEY_META, "default", "1.80", KEY_META, "type",
+	"float", KEY_END),
+	keyNew ("spec/tests/script/gen/elektra/struct/person/_/name", KEY_META, "default", "Max", KEY_META,
+	"gen/struct/field", "fullName", KEY_META, "type", "string", KEY_END),
 	KS_END);
 ;
 	return elektraOpen ("/tests/script/gen/elektra/struct", defaults, error);
