@@ -183,6 +183,7 @@ you up to date with the multi-language support provided by Elektra.
   location data, providing additional features, such as clickable links to the error source. _(René Schwaiger)_
 
 - We added a badge for [LGTM](https://lgtm.com) to the [main ReadMe file](https://master.libelektra.org/README.md). _(René Schwaiger)_
+- Added mores specification examples. _(Michael Zronek)_
 - <<TODO>>
 
 ## Tests
