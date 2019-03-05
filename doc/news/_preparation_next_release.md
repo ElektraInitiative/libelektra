@@ -183,7 +183,7 @@ you up to date with the multi-language support provided by Elektra.
   location data, providing additional features, such as clickable links to the error source. _(René Schwaiger)_
 
 - We added a badge for [LGTM](https://lgtm.com) to the [main ReadMe file](https://master.libelektra.org/README.md). _(René Schwaiger)_
-- Added [LCDproc](http://lcdproc.omnipotent.net/) and [Cassandra](http://cassandra.apache.org/) specification examples. These examples provide a good   guideline for writing specifications for configurations. _(Michael Zronek)_
+- Added [LCDproc](../../examples/spec/lcdproc) and [Cassandra](../../examples/spec/cassandra.ini) specification examples. These examples provide a good   guideline for writing specifications for configurations. _(Michael Zronek)_
 
 - <<TODO>>
 
