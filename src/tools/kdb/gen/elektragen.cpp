@@ -153,6 +153,70 @@ static std::string camelCaseToMacroCase (const std::string & s)
 	return ss.str ();
 }
 
+static void printWrapped (std::ostream & out, std::string line, size_t maxChars)
+{
+	// find indent
+	std::stringstream indent;
+	for (auto cur = line.begin (); cur != line.end () && isspace (*cur); ++cur)
+	{
+		indent << *cur;
+	}
+
+	if (indent.str ().length () == line.length ())
+	{
+		// only whitespace -> skip
+		out << std::endl;
+		return;
+	}
+
+	auto indentSize = 0;
+
+	// wrap at about 'maxChars' chars, keeping indent
+	while (line.length () > maxChars)
+	{
+		// find last space in chunk (outside of quotes)
+		size_t lastSpace = 0;
+		char quote = '\0';
+		for (size_t i = 0; i < maxChars - indentSize; ++i)
+		{
+			if (quote != '\0')
+			{
+				// inside quotes -> look for end
+				if (line[i - 1] != '\\' && line[i] == quote)
+				{
+					quote = '\0';
+				}
+			}
+			else if (isspace (line[i]))
+			{
+				// space outside quotes
+				lastSpace = i;
+			}
+			else if (line[i] == '\'' || line[i] == '"')
+			{
+				// start of quote
+				quote = line[i];
+			}
+		}
+
+		if (lastSpace > 0)
+		{
+			// replace space with newline
+			out << line.substr (0, lastSpace) << std::endl << indent.str ();
+			line.erase (0, lastSpace + 1);
+			indentSize = indent.str ().length ();
+		}
+		else
+		{
+			// force wrap
+			out << line.substr (0, maxChars) << "\\" << std::endl;
+			line.erase (0, maxChars);
+			indentSize = 0;
+		}
+	}
+	out << line << std::endl;
+}
+
 static std::string keySetToCCode (kdb::KeySet set)
 {
 	using namespace kdb;
@@ -166,7 +230,15 @@ static std::string keySetToCCode (kdb::KeySet set)
 	plugin->set (set, errorKey);
 
 	std::ifstream is (file);
-	return std::string ((std::istreambuf_iterator<char> (is)), std::istreambuf_iterator<char> ());
+	std::string line;
+
+	std::stringstream ss;
+	while (std::getline (is, line))
+	{
+		printWrapped (ss, line, 120);
+	}
+
+	return ss.str ();
 }
 
 kainjow::mustache::list EnumProcessor::getValues (const std::string & prefix, const kdb::Key & key, std::string & fromStringSwitch,
