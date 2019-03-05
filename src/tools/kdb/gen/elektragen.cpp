@@ -15,7 +15,9 @@
 #include <modules.hpp>
 
 #include <fstream>
+#include <kdb.h>
 #include <memory>
+#include <regex>
 #include <set>
 #include <streambuf>
 #include <string>
@@ -102,18 +104,16 @@ static std::string getTagName (const kdb::Key & key, const std::string & parentK
 	auto name = key.getName ();
 	name.erase (0, parentKey.length () + 1);
 
-	if (name[name.length () - 1] == '#')
-	{
-		name.erase (name.length () - 1);
-	}
+	name = std::regex_replace (name, std::regex ("/[#_]/"), "/");
+	name = std::regex_replace (name, std::regex ("[#_]/"), "/");
+	name = std::regex_replace (name, std::regex ("/[#_]"), "/");
 
 	if (name[name.length () - 1] == '/')
 	{
 		name.erase (name.length () - 1);
 	}
 
-	std::replace (name.begin (), name.end (), '/', '_');
-	name.erase (std::remove (name.begin (), name.end (), '#'), name.end ());
+	std::replace_if (name.begin (), name.end (), std::not1 (std::ptr_fun (isalnum)), '_');
 
 	return prefix + name;
 }
@@ -161,10 +161,8 @@ static std::string keySetToCCode (kdb::KeySet set)
 	Modules modules;
 	PluginPtr plugin = modules.load ("c", KeySet ());
 
-	char file[PATH_MAX] = "/tmp/elektra.elektragen.XXXXXX";
-	mkstemp (file);
-
-	Key errorKey ("", KEY_VALUE, file, KEY_END);
+	auto file = "/tmp/elektra.elektragen." + std::to_string (std::time (nullptr));
+	Key errorKey ("", KEY_VALUE, file.c_str (), KEY_END);
 	plugin->set (set, errorKey);
 
 	std::ifstream is (file);
@@ -333,8 +331,7 @@ kainjow::mustache::list StructProcessor::getFields (const kdb::Key & parentKey, 
 		auto isStruct = type == "struct_ref";
 		auto allocate = type != "struct_ref" || shouldAllocate (key);
 
-		// TODO: resolve struct_ref and change:
-		//  - allocate (only if gen/struct/alloc not given on ref)
+		// TODO: resolve struct_ref and change
 		//  - typeName
 		//  - native_type
 		//  to the values of the referenced struct
@@ -422,6 +419,86 @@ kainjow::mustache::object StructProcessor::process (const kdb::Key & key, const 
 		       { "alloc?", allocate } };
 }
 
+static std::vector<std::string> getKeyParts (const kdb::Key & key)
+{
+	auto rawName = static_cast<const char *> (ckdb::keyUnescapedName (key.getKey ()));
+	size_t size = ckdb::keyGetUnescapedNameSize (key.getKey ());
+	std::vector<char> name (rawName, rawName + size);
+	auto cur = name.begin ();
+	std::vector<std::string> parts;
+	while (cur != name.end ())
+	{
+		auto next = std::find (cur, name.end (), '\0');
+		parts.emplace_back (cur, next);
+		cur = next + 1;
+	}
+	return parts;
+}
+
+static inline std::string getArgName (const kdb::Key & key, kdb_long_long_t index, const std::string & defaultPrefix)
+{
+	auto indexStr = std::to_string (index);
+	auto metaName = "gen/arg/name/#" + std::string (indexStr.length () - 1, '_') + indexStr;
+	return key.hasMeta (metaName) ? key.getMeta<std::string> (metaName) : defaultPrefix + indexStr;
+}
+
+static inline std::string getArgDescription (const kdb::Key & key, kdb_long_long_t index, const std::string & kind)
+{
+	auto indexStr = std::to_string (index);
+	auto metaName = "gen/arg/description/#" + std::string (indexStr.length () - 1, '_') + indexStr;
+	return key.hasMeta (metaName) ? key.getMeta<std::string> (metaName) :
+					"Replaces occurence no. " + indexStr + " of " + kind + " in the keyname.";
+}
+
+static kainjow::mustache::list getKeyArgs (const kdb::Key & key, std::string & fmtString)
+{
+	using namespace kainjow::mustache;
+	auto parts = getKeyParts (key);
+
+	std::stringstream fmt;
+
+	list args;
+	for (auto part : parts)
+	{
+		if (part == "_")
+		{
+			auto arg = object{ { "native_type", "const char *" },
+					   { "name", getArgName (key, args.size (), "name") },
+					   { "index?", false },
+					   { "description", getArgDescription (key, args.size (), "_") } };
+			args.push_back (arg);
+			fmt << "%s/";
+		}
+		else if (part == "#")
+		{
+			auto arg = object{ { "native_type", "kdb_long_long_t" },
+					   { "name", getArgName (key, args.size (), "index") },
+					   { "index?", true },
+					   { "description", getArgDescription (key, args.size (), "#") } };
+			args.push_back (arg);
+			fmt << "%*.*s%lld/";
+		}
+		else
+		{
+			// escape backslashes first too avoid collision
+			part = std::regex_replace (part, std::regex ("[\\\\/]"), "\\\\$0");
+
+
+			fmt << part << "/";
+		}
+	}
+
+	if (!args.empty ())
+	{
+		args.back ()["last?"] = true;
+	}
+
+	fmtString = fmt.str ();
+	fmtString.pop_back ();
+
+	return args;
+}
+
 kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string & outputName, const kdb::KeySet & ks,
 							     const std::string & parentKey) const
 {
@@ -473,19 +550,8 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 		auto name = key.getName ();
 		name.erase (0, sizeof ("spec") - 1);
 
-		if (name.find ("/_/") != std::string::npos || name.find ("/_") == name.size () - 2 || name.find ("_/") == 0)
-		{
-			// TODO: dynamic tags
-			std::cout << "Warning: Ignoring globbed key '" << name << "'; currently unsupported" << std::endl;
-			continue;
-		}
-
-		if (name.find ("/#/") != std::string::npos || name.find ("/#") == name.size () - 2 || name.find ("#/") == 0)
-		{
-			// TODO: dynamic tags
-			std::cout << "Warning: Ignoring globbed key '" << name << "'; currently unsupported" << std::endl;
-			continue;
-		}
+		std::string fmtString;
+		list args = getKeyArgs (key, fmtString);
 
 		if (!key.getMeta<const kdb::Key> ("default"))
 		{
@@ -523,6 +589,7 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 
 		if (type == "struct_ref")
 		{
+			// TODO: implement
 			std::cout << "Warning: Ignoring struct_ref key '" << name << "' outside of struct; currently unsupported"
 				  << std::endl;
 			continue;
@@ -533,8 +600,14 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 		auto tagName = getTagName (key, specParent.getName (), getParameter (Params::TagPrefix));
 		object keyObject = { { "name", name.substr (parentKey.size () + 1) },
 				     { "native_type", nativeType },
-				     { "tag_name", snakeCaseToMacroCase (tagName) },
+				     { "macro_name", snakeCaseToMacroCase (tagName) },
+				     { "tag_name", snakeCaseToCamelCase (tagName) },
 				     { "type_name", snakeCaseToCamelCase (type) } };
+
+		if (!args.empty ())
+		{
+			keyObject["args?"] = object ({ { "args", args }, { "fmt_string", fmtString } });
+		}
 
 		if (type == "enum")
 		{
@@ -551,6 +624,9 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 
 		if (experimentalStructs && type == "struct")
 		{
+			// TODO: support multiple levels of subkeys
+			//  by replacing / with _ in field names
+			//  (remove __ from /_ or /# at end)
 			kdb::KeySet subkeys;
 			for (auto cur = it + 1; cur != ks.end (); ++cur)
 			{

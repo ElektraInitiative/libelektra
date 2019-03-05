@@ -176,15 +176,23 @@ ELEKTRA_GET_SIGNATURE (/*%& native_type %*/ *, /*%& type_name %*/)
 	/*%# fields %*/
 	strncpy (&field[nameLen], "/*% key_name %*/", /*%& max_field_len %*/);
 	/*%# is_struct? %*/
-	/*%# alloc? %*/
-	// FIXME: unsupported
-	//  result->/*%& name %*/ = ELEKTRA_GET (/*%& type_name %*/) (elektra, field);
-	/*%/ alloc? %*/
-	/*%^ alloc? %*/
-	// FIXME: unsupported
-	//  result->/*%& name %*/ = elektraCalloc (sizeof (/*%& native_type %*/));
-	//  ELEKTRA_GET (/*%& type_name %*/) (elektra, field, result->/*%& name %*/);
-	/*%/ alloc? %*/
+	const char * refname = elektraGetRawString (elektra, field);
+	if (refname != NULL && refname[0] != '\0')
+	{
+		char * refField = elektraCalloc ((nameLen + strlen (refname) + 1) * sizeof (char));
+		strcpy (refField, field);
+		strcpy (&refField[nameLen], refname);
+		/*%# alloc? %*/
+		// FIXME: unsupported
+		//  result->/*%& name %*/ = ELEKTRA_GET (/*%& type_name %*/) (elektra, field);
+		/*%/ alloc? %*/
+		/*%^ alloc? %*/
+		// FIXME: unsupported
+		//  result->/*%& name %*/ = elektraCalloc (sizeof (/*%& native_type %*/));
+		//  ELEKTRA_GET (/*%& type_name %*/) (elektra, field, result->/*%& name %*/);
+		/*%/ alloc? %*/
+		elektraFree (refField);
+	}
 	/*%/ is_struct? %*/
 	/*%^ is_struct? %*/
 	result->/*%& name %*/ = ELEKTRA_GET (/*%& type_name %*/) (elektra, field);
@@ -212,15 +220,24 @@ ELEKTRA_GET_ARRAY_ELEMENT_SIGNATURE (/*%& native_type %*/ *, /*%& type_name %*/)
 	/*%# fields %*/
 	strncpy (&field[nameLen], "/*% key_name %*/", /*%& max_field_len %*/);
 	/*%# is_struct? %*/
-	/*%# alloc? %*/
-	// FIXME: unsupported
-	//  result->/*%& name %*/ = ELEKTRA_GET_ARRAY_ELEMENT (/*%& type_name %*/) (elektra, field, index);
-	/*%/ alloc? %*/
-	/*%^ alloc? %*/
-	// FIXME: unsupported
-	//  result->/*%& name %*/ = elektraCalloc (sizeof (/*%& native_type %*/));
-	//  ELEKTRA_GET_ARRAY_ELEMENT (/*%& type_name %*/) (elektra, field, index, result->/*%& name %*/);
-	/*%/ alloc? %*/ /*%/ is_struct? %*/
+	const char * refname = elektraGetRawString (elektra, field);
+	if (refname != NULL && refname[0] != '\0')
+	{
+		char * refField = elektraCalloc ((nameLen + strlen (refname) + 1) * sizeof (char));
+		strcpy (refField, field);
+		strcpy (&refField[nameLen], refname);
+		/*%# alloc? %*/
+		// FIXME: unsupported
+		//  result->/*%& name %*/ = ELEKTRA_GET_ARRAY_ELEMENT (/*%& type_name %*/) (elektra, field, index);
+		/*%/ alloc? %*/
+		/*%^ alloc? %*/
+		// FIXME: unsupported
+		//  result->/*%& name %*/ = elektraCalloc (sizeof (/*%& native_type %*/));
+		//  ELEKTRA_GET_ARRAY_ELEMENT (/*%& type_name %*/) (elektra, field, index, result->/*%& name %*/);
+		/*%/ alloc? %*/
+		elektraFree (refField);
+	}
+	/*%/ is_struct? %*/
 	/*%^ is_struct? %*/
 	result->/*%& name %*/ = ELEKTRA_GET_ARRAY_ELEMENT (/*%& type_name %*/) (elektra, field, index);
 	/*%/ is_struct? %*/
