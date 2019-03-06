@@ -176,7 +176,7 @@ sudo kdb umount user/test
 
 ## Configuration Value Encryption/Decryption
 
-So far we learned how to encrypt and decrypt entrie configuration files.
+So far we learned how to encrypt and decrypt entry configuration files.
 Sometimes we only want to protect a smaller subset of configuration values in a bigger configuration setting.
 For this reason the `crypto` plugin was developed.
 
