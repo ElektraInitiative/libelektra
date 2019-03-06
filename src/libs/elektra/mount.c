@@ -277,16 +277,23 @@ Key * elektraMountGlobalsFindPlugin (KeySet * referencePlugins, Key * cur)
 	return refKey;
 }
 
-Plugin * elektraMountGlobalsLoadPlugin (KeySet * referencePlugins, Key * cur, KeySet * global, KeySet * modules, Key * errorKey)
+/**
+ * Loads global plugin
+ *
+ * @retval -1 on failure
+ * @retval 0 on empty plugin name (nothing configured at given position)
+ * @retval 1 on success
+ */
+int elektraMountGlobalsLoadPlugin (Plugin ** plugin, KeySet * referencePlugins, Key * cur, KeySet * global, KeySet * modules,
+				   Key * errorKey)
 {
-	Plugin * plugin;
 	Key * refKey = elektraMountGlobalsFindPlugin (referencePlugins, cur);
 
 	if (refKey)
 	{
 		// plugin already loaded, just reference it
-		plugin = *(Plugin **) keyValue (refKey);
-		plugin->refcounter += 1;
+		*plugin = *(Plugin **) keyValue (refKey);
+		(*plugin)->refcounter += 1;
 	}
 	else
 	{
@@ -294,22 +301,24 @@ Plugin * elektraMountGlobalsLoadPlugin (KeySet * referencePlugins, Key * cur, Ke
 		ELEKTRA_NOT_NULL (config);
 		// config holds a newly allocated KeySet
 		const char * pluginName = keyString (cur);
+		if (!pluginName || pluginName[0] == '\0') return 0;
+
 		// loading the new plugin
-		plugin = elektraPluginOpen (pluginName, modules, config, errorKey);
-		if (!plugin)
+		*plugin = elektraPluginOpen (pluginName, modules, config, errorKey);
+		if (!(*plugin))
 		{
 			ELEKTRA_ADD_WARNING (64, errorKey, pluginName);
-			return NULL;
+			return -1;
 		}
 
 		// saving the plugin reference to avoid having to load the plugin multiple times
-		refKey = keyNew ("/", KEY_BINARY, KEY_SIZE, sizeof (Plugin *), KEY_VALUE, &plugin, KEY_END);
+		refKey = keyNew ("/", KEY_BINARY, KEY_SIZE, sizeof (Plugin *), KEY_VALUE, &(*plugin), KEY_END);
 		keyAddBaseName (refKey, keyString (cur));
 		ksAppendKey (referencePlugins, refKey);
 		keyDel (refKey);
 	}
 
-	return plugin;
+	return 1;
 }
 
 KeySet * elektraDefaultGlobalConfig (void)
@@ -390,11 +399,13 @@ int mountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey)
 				printf ("mounting global plugin %s to %s\n", pluginName, placement);
 #endif
 				// load plugins in implicit max once placement
-				Plugin * plugin = elektraMountGlobalsLoadPlugin (referencePlugins, cur, global, modules, errorKey);
-				if (!plugin)
-				{
+				Plugin * plugin = 0;
+				int mountRet = elektraMountGlobalsLoadPlugin (&plugin, referencePlugins, cur, global, modules, errorKey);
+
+				if (mountRet == -1)
 					retval = -1; // error loading plugin
-				}
+				else if (mountRet == 0)
+					continue; // no plugin configured here
 				else
 				{
 					kdb->globalPlugins[i][MAXONCE] = plugin;
@@ -418,12 +429,20 @@ int mountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey)
 
 						if (!elektraStrCaseCmp (subPlacement, GlobalpluginSubPositionsStr[j]))
 						{
-							Plugin * subPlugin = elektraMountGlobalsLoadPlugin (
-								referencePlugins, curSubPosition, subPositions, modules, errorKey);
-							if (!subPlugin)
+							Plugin * subPlugin = 0;
+							int subRet =
+								elektraMountGlobalsLoadPlugin (&subPlugin, referencePlugins, curSubPosition,
+											       subPositions, modules, errorKey);
+							if (subRet == -1)
 								retval = -1; // error loading plugin
+							else if (subRet == 0)
+								continue; // no plugin configured here
 							else
+							{
 								kdb->globalPlugins[i][j] = subPlugin;
+								// set handle to global keyset
+								subPlugin->global = kdb->global;
+							}
 						}
 					}
 				}
