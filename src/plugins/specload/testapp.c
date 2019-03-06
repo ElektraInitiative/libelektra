@@ -26,20 +26,14 @@ static int outputKeySet (KeySet * ks)
 {
 	Key * errorKey = keyNew (0, KEY_END);
 
-	KeySet * modules = ksNew (0, KS_END);
+	KeySet * specloadConf = ksNew (1, keyNew ("system/module", KEY_END), KS_END);
+	ElektraInvokeHandle * specload = elektraInvokeOpen ("specload", specloadConf, errorKey);
 
-	KeySet * quickDumpConf = ksNew (0, KS_END);
-	ElektraInvokeHandle * quickDump = elektraInvokeOpen ("quickdump", quickDumpConf, errorKey);
+	int result = elektraInvoke2Args (specload, "sendspec", ks, NULL);
 
-	Key * quickDumpParent = keyNew ("", KEY_VALUE, STDOUT_FILENAME, KEY_END);
-
-	int result = elektraInvoke2Args (quickDump, "set", ks, quickDumpParent);
-
-	elektraInvokeClose (quickDump, errorKey);
+	elektraInvokeClose (specload, errorKey);
 	keyDel (errorKey);
-	keyDel (quickDumpParent);
-	ksDel (quickDumpConf);
-	ksDel (modules);
+	ksDel (specloadConf);
 
 	return result == ELEKTRA_PLUGIN_STATUS_SUCCESS ? EXIT_SUCCESS : EXIT_FAILURE;
 }
