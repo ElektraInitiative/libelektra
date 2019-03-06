@@ -33,8 +33,10 @@ are available (in the metadata of respective `spec`-keys):
 
 They can be used like this:
 
-    kdb set /overrides/test "example override"
-    sudo kdb setmeta spec/test override/#0 /overrides/test
+```sh
+kdb set /overrides/test "example override"
+sudo kdb setmeta spec/test override/#0 /overrides/test
+```
 
 ## CASCADING
 
