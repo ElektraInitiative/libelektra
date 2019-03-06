@@ -314,7 +314,7 @@ Plugin * elektraMountGlobalsLoadPlugin (KeySet * referencePlugins, Key * cur, Ke
 
 KeySet * elektraDefaultGlobalConfig (void)
 {
-	return ksNew (
+	KeySet * config = ksNew (
 		24, keyNew ("system/elektra/globalplugins", KEY_VALUE, "", KEY_END),
 		keyNew ("system/elektra/globalplugins/postcommit", KEY_VALUE, "list", KEY_END),
 		keyNew ("system/elektra/globalplugins/postcommit/user", KEY_VALUE, "list", KEY_END),
@@ -338,15 +338,25 @@ KeySet * elektraDefaultGlobalConfig (void)
 #endif
 		keyNew ("system/elektra/globalplugins/postgetcleanup", KEY_VALUE, "list", KEY_END),
 		keyNew ("system/elektra/globalplugins/postgetstorage", KEY_VALUE, "list", KEY_END),
-		keyNew ("system/elektra/globalplugins/postgetcache", KEY_VALUE, "cache", KEY_END),
+		keyNew ("system/elektra/globalplugins/postgetcache", KEY_VALUE, "", KEY_END),
 		keyNew ("system/elektra/globalplugins/postrollback", KEY_VALUE, "list", KEY_END),
 		keyNew ("system/elektra/globalplugins/precommit", KEY_VALUE, "list", KEY_END),
 		keyNew ("system/elektra/globalplugins/pregetstorage", KEY_VALUE, "list", KEY_END),
-		keyNew ("system/elektra/globalplugins/pregetcache", KEY_VALUE, "cache", KEY_END),
+		keyNew ("system/elektra/globalplugins/pregetcache", KEY_VALUE, "", KEY_END),
 		keyNew ("system/elektra/globalplugins/prerollback", KEY_VALUE, "list", KEY_END),
 		keyNew ("system/elektra/globalplugins/presetcleanup", KEY_VALUE, "list", KEY_END),
 		keyNew ("system/elektra/globalplugins/presetstorage", KEY_VALUE, "list", KEY_END),
 		keyNew ("system/elektra/globalplugins/procgetstorage", KEY_VALUE, "list", KEY_END), KS_END);
+
+	// TODO: this is a poor way of detecting whether cache is compiled, but simply
+	// matching against cache might fail because of other plugins (e.g. "cachefilter")
+	if (strstr (ELEKTRA_PLUGINS, ";cache;") != NULL)
+	{
+		ksAppendKey (config, keyNew ("system/elektra/globalplugins/postgetcache", KEY_VALUE, "cache", KEY_END));
+		ksAppendKey (config, keyNew ("system/elektra/globalplugins/pregetcache", KEY_VALUE, "cache", KEY_END));
+	}
+
+	return config;
 }
 
 int mountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey)
