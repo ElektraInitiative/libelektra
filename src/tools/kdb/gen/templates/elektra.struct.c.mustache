@@ -1,0 +1,202 @@
+// clang-format off
+{{=/*% %*/=}}
+// clang-format on
+
+// -------------------------
+// Struct accessor functions
+// -------------------------
+
+/*%# structs %*/
+/*%# alloc? %*/
+ELEKTRA_STRUCT_FREE_SIGNATURE (/*%& native_type %*/ *, /*%& type_name %*/)
+{
+	if (*ptr == NULL)
+	{
+		return;
+	}
+
+	/*%# fields %*/
+	/*%# is_struct? %*/
+	/*%# alloc? %*/
+	ELEKTRA_STRUCT_FREE (/*%& type_name %*/) (&(*ptr)->/*%& name %*/);
+	/*%/ alloc? %*/
+	/*%/ is_struct? %*/
+	/*%/ fields %*/
+	elektraFree (&ptr);
+	*ptr = NULL;
+}
+
+ELEKTRA_GET_SIGNATURE (/*%& native_type %*/ *, /*%& type_name %*/)
+{
+	/*%& native_type %*/ *result = elektraCalloc (sizeof (/*%& native_type %*/));
+	size_t nameLen = strlen (keyname);
+	char * field = elektraCalloc ((nameLen + 1 + /*%& max_field_len %*/ +1) * sizeof (char));
+	strcpy (field, keyname);
+	field[nameLen] = '/';
+	++nameLen;
+
+	/*%# fields %*/
+	strncpy (&field[nameLen], "/*% key_name %*/", /*%& max_field_len %*/);
+	/*%# is_struct? %*/
+	const char * refname = elektraGetRawString (elektra, field);
+	if (refname != NULL && refname[0] != '\0')
+	{
+		char * refField = elektraCalloc ((nameLen + strlen (refname) + 1) * sizeof (char));
+		strcpy (refField, field);
+		strcpy (&refField[nameLen], refname);
+		/*%# alloc? %*/
+		result->/*%& name %*/ = ELEKTRA_GET (/*%& type_name %*/) (elektra, field);
+		/*%/ alloc? %*/
+		/*%^ alloc? %*/
+		result->/*%& name %*/ = elektraCalloc (sizeof (/*%& native_type %*/));
+		ELEKTRA_GET (/*%& type_name %*/) (elektra, field, result->/*%& name %*/);
+		/*%/ alloc? %*/
+		elektraFree (refField);
+	}
+	/*%/ is_struct? %*/
+	/*%^ is_struct? %*/
+	result->/*%& name %*/ = ELEKTRA_GET (/*%& type_name %*/) (elektra, field);
+	/*%/ is_struct? %*/
+
+	/*%/ fields %*/
+	elektraFree (field);
+	return result;
+}
+
+ELEKTRA_GET_ARRAY_ELEMENT_SIGNATURE (/*%& native_type %*/ *, /*%& type_name %*/)
+{
+	/*%& native_type %*/ *result = elektraCalloc (sizeof (/*%& native_type %*/));
+	size_t nameLen = strlen (keyname);
+	char * field = elektraCalloc ((nameLen + 1 + /*%& max_field_len %*/ +1 + ELEKTRA_MAX_ARRAY_SIZE) * sizeof (char));
+	strcpy (field, keyname);
+	field[nameLen] = '/';
+	++nameLen;
+
+	elektraWriteArrayNumber (&field[nameLen], index);
+	nameLen = strlen (field);
+	field[nameLen] = '/';
+	++nameLen;
+
+	/*%# fields %*/
+	strncpy (&field[nameLen], "/*% key_name %*/", /*%& max_field_len %*/);
+	/*%# is_struct? %*/
+	const char * refname = elektraGetRawString (elektra, field);
+	if (refname != NULL && refname[0] != '\0')
+	{
+		char * refField = elektraCalloc ((nameLen + strlen (refname) + 1) * sizeof (char));
+		strcpy (refField, field);
+		strcpy (&refField[nameLen], refname);
+		/*%# alloc? %*/
+		result->/*%& name %*/ = ELEKTRA_GET_ARRAY_ELEMENT (/*%& type_name %*/) (elektra, field, index);
+		/*%/ alloc? %*/
+		/*%^ alloc? %*/
+		result->/*%& name %*/ = elektraCalloc (sizeof (/*%& native_type %*/));
+		ELEKTRA_GET_ARRAY_ELEMENT (/*%& type_name %*/) (elektra, field, index, result->/*%& name %*/);
+		/*%/ alloc? %*/
+		elektraFree (refField);
+	}
+	/*%/ is_struct? %*/
+	/*%^ is_struct? %*/
+	result->/*%& name %*/ = ELEKTRA_GET_ARRAY_ELEMENT (/*%& type_name %*/) (elektra, field, index);
+	/*%/ is_struct? %*/
+
+	/*%/ fields %*/
+	elektraFree (field);
+	return result;
+}
+/*%/ alloc? %*/
+/*%^ alloc? %*/
+ELEKTRA_GET_OUT_PTR_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/)
+{
+	size_t nameLen = strlen (keyname);
+	char * field = elektraCalloc ((nameLen + 1 + /*%& max_field_len %*/ +1) * sizeof (char));
+	strcpy (field, keyname);
+	field[nameLen] = '/';
+	++nameLen;
+
+	/*%# fields %*/
+	strncpy (&field[nameLen], "/*% key_name %*/", /*%& max_field_len %*/);
+/*%# is_struct? %*/
+/*%! should never happend %*/
+#error "struct reference inside non-allocating struct is not supported"
+	/*%/ is_struct? %*/
+	/*%^ is_struct? %*/
+	result->/*%& name %*/ = ELEKTRA_GET (/*%& type_name %*/) (elektra, field);
+	/*%/ is_struct? %*/
+
+	/*%/ fields %*/
+	elektraFree (field);
+}
+
+ELEKTRA_GET_OUT_PTR_ARRAY_ELEMENT_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/)
+{
+	size_t nameLen = strlen (keyname);
+	char * field = elektraCalloc ((nameLen + 1 + /*%& max_field_len %*/ +1 + ELEKTRA_MAX_ARRAY_SIZE) * sizeof (char));
+	strcpy (field, keyname);
+	field[nameLen] = '/';
+	++nameLen;
+
+	elektraWriteArrayNumber (&field[nameLen], index);
+	nameLen = strlen (field);
+	field[nameLen] = '/';
+	++nameLen;
+
+	/*%# fields %*/
+	strncpy (&field[nameLen], "/*% key_name %*/", /*%& max_field_len %*/);
+/*%# is_struct? %*/
+/*%! should never happend %*/
+#error "struct reference inside non-allocating struct is not supported"
+	/*%/ is_struct? %*/
+	/*%^ is_struct? %*/
+	result->/*%& name %*/ = ELEKTRA_GET_ARRAY_ELEMENT (/*%& type_name %*/) (elektra, field, index);
+	/*%/ is_struct? %*/
+
+	/*%/ fields %*/
+	elektraFree (field);
+}
+/*%/ alloc? %*/
+
+ELEKTRA_SET_SIGNATURE (const /*%& native_type %*/ *, /*%& type_name %*/)
+{
+	size_t nameLen = strlen (keyname);
+	char * field = elektraCalloc ((nameLen + 1 + /*%& max_field_len %*/ +1) * sizeof (char));
+	strcpy (field, keyname);
+	field[nameLen] = '/';
+	++nameLen;
+
+	/*%# fields %*/
+	strncpy (&field[nameLen], "/*% key_name %*/", /*%& max_field_len %*/);
+	ELEKTRA_SET (/*%& type_name %*/) (elektra, field, value->/*%& name %*/, error);
+	if (error != NULL)
+	{
+		return;
+	}
+
+	/*%/ fields %*/
+}
+
+ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (const /*%& native_type %*/ *, /*%& type_name %*/)
+{
+	size_t nameLen = strlen (keyname);
+	char * field = elektraCalloc ((nameLen + 1 + /*%& max_field_len %*/ +1 + ELEKTRA_MAX_ARRAY_SIZE) * sizeof (char));
+	strcpy (field, keyname);
+	field[nameLen] = '/';
+	++nameLen;
+
+	elektraWriteArrayNumber (&field[nameLen], index);
+	nameLen = strlen (field);
+	field[nameLen] = '/';
+	++nameLen;
+
+	/*%# fields %*/
+	strncpy (&field[nameLen], "/*% key_name %*/", /*%& max_field_len %*/);
+	ELEKTRA_SET_ARRAY_ELEMENT (/*%& type_name %*/) (elektra, field, index, value->/*%& name %*/, error);
+	if (error != NULL)
+	{
+		return;
+	}
+
+	/*%/ fields %*/
+}
+/*%/ structs %*/
+

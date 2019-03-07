@@ -40,7 +40,7 @@ protected:
 	 * @param parameters       The list of parameters this template uses. The keys are the names, while the value
 	 *                         determines whether the parameter is required or not.
 	 */
-	GenTemplate (std::string templateBaseName, std::vector<std::string> parts,
+	GenTemplate (std::string templateBaseName, std::vector<std::string> parts, std::vector<std::string> partials,
 		     const std::unordered_map<std::string, bool> & parameters);
 
 	/**
@@ -113,10 +113,13 @@ public:
 private:
 	std::string _templateBaseName;
 	std::vector<std::string> _parts;
+	std::vector<std::string> _partials;
 	std::unordered_map<std::string, std::string> _parameters;
 	std::unordered_set<std::string> _requiredParameters;
 
 	static std::string escapeFunction (const std::string & str);
+
+	std::unordered_map<std::string, kainjow::mustache::partial> getPartials () const;
 };
 
 /**
@@ -182,7 +185,8 @@ public:
 	}
 
 private:
-	EmptyGenTemplate () : GenTemplate ("", std::vector<std::string> (), std::unordered_map<std::string, bool> ())
+	EmptyGenTemplate ()
+	: GenTemplate ("", std::vector<std::string> (), std::vector<std::string> (), std::unordered_map<std::string, bool> ())
 	{
 	}
 

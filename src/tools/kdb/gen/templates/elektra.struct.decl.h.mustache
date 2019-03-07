@@ -1,0 +1,34 @@
+// clang-format off
+{{=/*% %*/=}}
+// clang-format on
+
+#define ELEKTRA_STRUCT_FREE(cType, typeName) elektraFree##typeName
+#define ELEKTRA_STRUCT_FREE_SIGNATURE(cType, typeName) void ELEKTRA_STRUCT_FREE (cType, typeName) (cType * ptr)
+
+/*%# structs %*/
+/*%# generate_typedef? %*/
+typedef struct
+{
+	/*%# fields %*/
+	/*%& native_type %*/ /*%& name %*/;
+	/*%/ fields %*/
+} /*%& native_type %*/;
+
+/*%/ generate_typedef? %*/
+/*%/ structs %*/
+
+/*%# structs %*/
+/*%# alloc? %*/
+ELEKTRA_STRUCT_FREE_SIGNATURE (/*%& native_type %*/ *, /*%& type_name %*/);
+
+ELEKTRA_GET_SIGNATURE (/*%& native_type %*/ *, /*%& type_name %*/);
+ELEKTRA_GET_ARRAY_ELEMENT_SIGNATURE (/*%& native_type %*/ *, /*%& type_name %*/);
+/*%/ alloc? %*/
+/*%^ alloc? %*/
+ELEKTRA_GET_OUT_PTR_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/);
+ELEKTRA_GET_OUT_PTR_ARRAY_ELEMENT_SIGNATURE (/*%& native_type %*/, /*%& type_name %*/);
+/*%/ alloc? %*/
+ELEKTRA_SET_SIGNATURE (const /*%& native_type %*/ *, /*%& type_name %*/);
+ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (const /*%& native_type %*/ *, /*%& type_name %*/);
+
+/*%/ structs %*/

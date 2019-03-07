@@ -1,0 +1,81 @@
+// clang-format off
+{{=/*% %*/=}}
+// clang-format on
+
+/*%# alloc? %*/
+/*%={{ }}=%*/
+/**
+ * Get the value of '{{{ name }}}'.
+ *
+ * @param elektra Instance of Elektra. Create with {{{ init_function_name }}}().
+ *
+ * @return the value of '{{{ name }}}', free with ELEKTRA_STRUCT_FREE ({{{ native_type }}}, {{{ type_name }}}).
+ */// {{=/*% %*/=}}
+static inline /*%& native_type %*/ * ELEKTRA_GET (/*%& tag_name %*/) (Elektra * elektra /*%# args? %*/,
+								      /*%# args %*/
+								      /*%& native_type %*/ /*%& name %*/ /*%^ last? %*/, /*%/ last? %*/
+								      /*%/ args %*/ /*%/ args? %*/)
+{
+	/*%# args? %*/
+	char * name = elektraFormat ("/*% fmt_string %*/", /*%# args %*/ /*%# index? %*/ elektra_len (/*%& name %*/),
+				     elektra_len (/*%& name %*/), "#___________________", /*%/ index? %*/ /*%& name %*/ /*%^ last? %*/,
+				     /*%/ last? %*/ /*%/ args %*/);
+	/*%& native_type %*/ *result = ELEKTRA_GET (/*%& type_name %*/) (elektra, name);
+	elektraFree (name);
+	return result;
+	/*%/ args? %*/
+	/*%^ args? %*/
+	return ELEKTRA_GET (/*%& type_name %*/) (elektra, "/*% name %*/");
+	/*%/ args? %*/
+}
+/*%/ alloc? %*/
+/*%^ alloc? %*/
+/*%={{ }}=%*/
+/**
+ * Get the value of '{{{ name }}}'.
+ *
+ * @param elektra Instance of Elektra. Create with {{{ init_function_name }}}().
+ * @param result  The value will be stored in the referenced variable.
+ */// {{=/*% %*/=}}
+static inline void ELEKTRA_GET (/*%& tag_name %*/) (Elektra * elektra, /*%& native_type %*/ *result /*%# args? %*/,
+						    /*%# args %*/
+						    /*%& native_type %*/ /*%& name %*/ /*%^ last? %*/, /*%/ last? %*/
+						    /*%/ args %*/ /*%/ args? %*/)
+{
+	/*%# args? %*/
+	char * name = elektraFormat ("/*% fmt_string %*/", /*%# args %*/ /*%# index? %*/ elektra_len (/*%& name %*/),
+				     elektra_len (/*%& name %*/), "#___________________", /*%/ index? %*/ /*%& name %*/ /*%^ last? %*/,
+				     /*%/ last? %*/ /*%/ args %*/);
+	ELEKTRA_GET (/*%& type_name %*/) (elektra, name, result);
+	elektraFree (name);
+	/*%/ args? %*/
+	/*%^ args? %*/
+	ELEKTRA_GET (/*%& type_name %*/) (elektra, "/*% name %*/", result);
+	/*%/ args? %*/
+}
+/*%/ alloc? %*/
+
+/*%={{ }}=%*/
+/**
+ * Set the value of '{{{ name }}}'.
+ *
+ * @param elektra Instance of Elektra. Create with {{{ init_function_name }}}().
+ * @param value   The value of '{{{ name }}}'.
+ * @param error   Pass a reference to an ElektraError pointer.
+ *                Will only be set in case of an error.
+ */// {{=/*% %*/=}}
+static inline void ELEKTRA_SET (/*%& tag_name %*/) (Elektra * elektra, const /*%& native_type %*/ * value, /*%# args? %*/ /*%# args %*/
+						    /*%& native_type %*/ /*%& name %*/,
+						    /*%/ args %*/ /*%/ args? %*/ ElektraError ** error)
+{
+	/*%# args? %*/
+	char * name = elektraFormat ("/*% fmt_string %*/", /*%# args %*/ /*%# index? %*/ elektra_len (/*%& name %*/),
+				     elektra_len (/*%& name %*/), "#___________________", /*%/ index? %*/ /*%& name %*/ /*%^ last? %*/,
+				     /*%/ last? %*/ /*%/ args %*/);
+	ELEKTRA_SET (/*%& type_name %*/) (elektra, name, value, error);
+	elektraFree (name);
+	/*%/ args? %*/
+	/*%^ args? %*/
+	ELEKTRA_SET (/*%& type_name %*/) (elektra, "/*% name %*/", value, error);
+	/*%/ args? %*/
+}
