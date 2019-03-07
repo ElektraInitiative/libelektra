@@ -13,11 +13,12 @@
 #include <kdb.hpp>
 
 #include <fstream>
+#include <kdbplugin.h>
+#include <modules.hpp>
 
 using namespace kdb;
+using namespace kdb::tools;
 using namespace std;
-
-// TODO: once kdb uses elektraGetOpts, provide option to load spec from file instead of parentKey
 
 int GenCommand::execute (Cmdline const & cl)
 {
@@ -49,9 +50,51 @@ int GenCommand::execute (Cmdline const & cl)
 	const auto & templates = GenTemplateList::getInstance ();
 	const auto tmpl = templates.getTemplate (templateName, parameters);
 
-	KDB kdb;
 	KeySet ks;
-	kdb.get (ks, parentKey);
+
+	if (cl.inputFile.empty ())
+	{
+		Key getKey (parentKey);
+
+		KDB kdb;
+		kdb.get (ks, getKey);
+
+		printWarnings (cerr, getKey);
+		printError (cerr, getKey);
+
+		if (getKey.hasMeta ("error"))
+		{
+			throw CommandAbortException ("Error loading from KDB");
+		}
+	}
+	else
+	{
+		auto pos = cl.inputFile.find ('=');
+		if (pos == std::string::npos)
+		{
+			throw invalid_argument ("-F/--input-file argument must be given as <plugin>=<file>");
+		}
+
+		std::string pluginName (cl.inputFile.begin (), cl.inputFile.begin () + pos);
+		std::string file (cl.inputFile.begin () + pos + 1, cl.inputFile.end ());
+
+		Modules modules;
+		PluginPtr plugin = modules.load (pluginName, cl.getPluginsConfig ());
+
+		if (plugin == nullptr)
+		{
+			throw invalid_argument ("plugin '" + pluginName + "' given to -F/--input-file could not be loaded");
+		}
+
+		Key getKey (parentKey, KEY_VALUE, file.c_str (), KEY_END);
+		if (plugin->get (ks, getKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
+		{
+			printWarnings (cerr, getKey);
+			printError (cerr, getKey);
+			throw invalid_argument ("file '" + file + "' given to -F/--input-file could not be loaded with plugin '" +
+						pluginName + "'");
+		}
+	}
 
 	for (const auto & part : tmpl->getParts ())
 	{

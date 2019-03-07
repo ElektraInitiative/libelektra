@@ -16,6 +16,7 @@
 
 #include <fstream>
 #include <kdb.h>
+#include <kdbease.h>
 #include <memory>
 #include <regex>
 #include <set>
@@ -23,10 +24,10 @@
 #include <string>
 
 const char * ElektraGenTemplate::Params::InitFunctionName = "initFn";
-const char * ElektraGenTemplate::Params::TagPrefix = "tagPrefix";
-const char * ElektraGenTemplate::Params::OptimizeFromString = "optimizeFromString";
+const char * ElektraGenTemplate::Params::HelpFunctionName = "helpFn";
+const char * ElektraGenTemplate::Params::SpecloadFunctionName = "specloadFn";
+const char * ElektraGenTemplate::Params::OptimizeEnumFromString = "optimizeFromString";
 const char * ElektraGenTemplate::Params::AdditionalHeaders = "headers";
-const char * ElektraGenTemplate::Params::ExperimentalStructs = "structs";
 
 class EnumTrie
 {
@@ -67,16 +68,23 @@ class StructProcessor
 {
 private:
 	std::unordered_map<std::string, std::pair<std::string, std::string>> structTypes;
+	const kdb::Key & parentKey;
+	const kdb::KeySet & allKeys;
 
-	static kainjow::mustache::list getFields (const kdb::Key & parentKey, const kdb::KeySet & keys, bool allocating,
-						  size_t & maxFieldNameLen, std::string & fieldsString);
+	kainjow::mustache::list getFields (const kdb::Key & structKey, const kdb::KeySet & structKeys, bool allocating,
+					   const std::string & tagName, size_t & maxFieldNameLen, std::string & fieldsString);
 
 	static inline std::string getFieldName (const kdb::Key & key);
 	static inline bool shouldGenerateTypeDef (const kdb::Key & key);
+
+public:
+	StructProcessor (const kdb::Key & parentKey_, const kdb::KeySet & allKeys_) : parentKey (parentKey_), allKeys (allKeys_)
+	{
+	}
+
 	static inline bool shouldAllocate (const kdb::Key & key);
 	static inline std::string getType (const kdb::Key & key, const std::string & tagName, bool & genType);
 
-public:
 	kainjow::mustache::object process (const kdb::Key & key, const kdb::KeySet & subkeys, const std::string & tagName);
 };
 
@@ -99,7 +107,7 @@ static inline std::string getType (const kdb::Key & key)
 	return key.getMeta<std::string> ("type");
 }
 
-static std::string getTagName (const kdb::Key & key, const std::string & parentKey, const std::string & prefix)
+static std::string getTagName (const kdb::Key & key, const std::string & parentKey)
 {
 	auto name = key.getName ();
 	name.erase (0, parentKey.length () + 1);
@@ -115,7 +123,7 @@ static std::string getTagName (const kdb::Key & key, const std::string & parentK
 
 	std::replace_if (name.begin (), name.end (), std::not1 (std::ptr_fun (isalnum)), '_');
 
-	return prefix + name;
+	return name;
 }
 
 static std::string snakeCaseToCamelCase (const std::string & s)
@@ -369,19 +377,74 @@ std::string StructProcessor::getFieldName (const kdb::Key & key)
 	return key.hasMeta ("gen/struct/field") ? key.getMeta<std::string> ("gen/struct/field") : key.getBaseName ();
 }
 
-kainjow::mustache::list StructProcessor::getFields (const kdb::Key & parentKey, const kdb::KeySet & keys, bool allocating,
-						    size_t & maxFieldNameLen, std::string & fieldsString)
+static void processStructRef (const kdb::Key & key, const kdb::Key & parentKey, const kdb::KeySet & allKeys, const std::string & tagName,
+			      std::string & typeName, std::string & nativeType, bool & alloc)
+{
+	if (!key.hasMeta ("check/reference/restrict"))
+	{
+		throw CommandAbortException ("Keys with type struct_ref must also define 'check/reference/restrict'. Key: '" +
+					     key.getName () + "'.");
+	}
+
+	auto restrict = key.getMeta<std::string> ("check/reference/restrict");
+	restrict = ckdb::elektraResolveReference (restrict.c_str (), key.getKey (), parentKey.getKey ());
+
+	auto restrictKey = allKeys.lookup (restrict);
+	if (!restrictKey)
+	{
+		throw CommandAbortException ("'check/reference/restrict' of key '" + key.getName () + "' resolves to an unspecified key.");
+	}
+
+	if (restrictKey.getMeta<std::string> ("type") != "struct")
+	{
+		throw CommandAbortException ("'check/reference/restrict' of key '" + key.getName () + "' resolves to a non-struct key.");
+	}
+
+	bool genType;
+	auto structType = StructProcessor::getType (key, tagName, genType);
+	typeName = "Struct" + structType;
+	nativeType = genType ? structType : "Elektra" + typeName;
+	alloc = StructProcessor::shouldAllocate (key);
+}
+
+static std::vector<std::string> getKeyParts (const kdb::Key & key)
+{
+	auto rawName = static_cast<const char *> (ckdb::keyUnescapedName (key.getKey ()));
+	size_t size = ckdb::keyGetUnescapedNameSize (key.getKey ());
+	std::vector<char> name (rawName, rawName + size);
+	auto cur = name.begin ();
+	std::vector<std::string> parts;
+	while (cur != name.end ())
+	{
+		auto next = std::find (cur, name.end (), '\0');
+		parts.emplace_back (cur, next);
+		cur = next + 1;
+	}
+	return parts;
+}
+
+kainjow::mustache::list StructProcessor::getFields (const kdb::Key & structKey, const kdb::KeySet & structKeys, bool allocating,
+						    const std::string & tagName, size_t & maxFieldNameLen, std::string & fieldsString)
 {
 	using namespace kainjow::mustache;
 
 	list fields;
 	std::stringstream ss;
 
+	size_t baseParts = getKeyParts (structKey).size ();
+
 	maxFieldNameLen = 0;
-	for (const kdb::Key & key : keys)
+	for (const kdb::Key & key : structKeys)
 	{
-		const std::string & keyBaseName = key.getBaseName ();
-		maxFieldNameLen = std::max (maxFieldNameLen, keyBaseName.size ());
+		auto parts = getKeyParts (key);
+		std::string fieldName = parts[0];
+		for (auto it = parts.begin () + baseParts + 1; it != parts.end (); ++it)
+		{
+			fieldName += "_" + *it;
+		}
+		fieldName = snakeCaseToCamelCase (fieldName);
+
+		maxFieldNameLen = std::max (maxFieldNameLen, fieldName.size ());
 
 		const std::string & type = ::getType (key);
 
@@ -405,33 +468,31 @@ kainjow::mustache::list StructProcessor::getFields (const kdb::Key & parentKey, 
 		}
 
 		auto isStruct = type == "struct_ref";
-		auto allocate = type != "struct_ref" || shouldAllocate (key);
-
-		// TODO: resolve struct_ref and change
-		//  - typeName
-		//  - native_type
-		//  to the values of the referenced struct
 
 		if (!allocating && isStruct)
 		{
 			auto msg = "Cannot have struct_refs inside non-allocating structs. The key '" + key.getName ();
-			msg += "' is a struct_ref appearing inside '" + parentKey.getName () + ", which is a non-allocating struct.";
+			msg += "' is a struct_ref appearing inside '" + structKey.getName () + ", which is a non-allocating struct.";
 			throw CommandAbortException (msg);
 		}
 
 		auto typeName = snakeCaseToCamelCase (type);
 		auto nativeType = type == "string" ? "const char *" : "kdb_" + type + "_t";
 
+		bool allocate;
 		if (isStruct)
 		{
-			std::cout << "Warning: struct_ref fields not fully supported; generating void* field" << std::endl;
-			nativeType = "void *";
+			processStructRef (key, parentKey, allKeys, tagName, typeName, nativeType, allocate);
+		}
+		else
+		{
+			allocate = true;
 		}
 
 		auto name = getFieldName (key);
 
 		fields.emplace_back (object{ { "name", name },
-					     { "key_name", keyBaseName },
+					     { "key_name", fieldName },
 					     { "native_type", nativeType },
 					     { "type_name", typeName },
 					     { "alloc?", allocate },
@@ -462,7 +523,7 @@ kainjow::mustache::object StructProcessor::process (const kdb::Key & key, const 
 	size_t maxFieldNameLen;
 
 	auto allocate = shouldAllocate (key);
-	auto fields = getFields (key, subkeys, allocate, maxFieldNameLen, fieldsString);
+	auto fields = getFields (key, subkeys, allocate, tagName, maxFieldNameLen, fieldsString);
 
 	auto isNew = true;
 	auto generateTypeDef = shouldGenerateTypeDef (key);
@@ -493,22 +554,6 @@ kainjow::mustache::object StructProcessor::process (const kdb::Key & key, const 
 		       { "fields", fields },
 		       { "max_field_len", std::to_string (maxFieldNameLen) },
 		       { "alloc?", allocate } };
-}
-
-static std::vector<std::string> getKeyParts (const kdb::Key & key)
-{
-	auto rawName = static_cast<const char *> (ckdb::keyUnescapedName (key.getKey ()));
-	size_t size = ckdb::keyGetUnescapedNameSize (key.getKey ());
-	std::vector<char> name (rawName, rawName + size);
-	auto cur = name.begin ();
-	std::vector<std::string> parts;
-	while (cur != name.end ())
-	{
-		auto next = std::find (cur, name.end (), '\0');
-		parts.emplace_back (cur, next);
-		cur = next + 1;
-	}
-	return parts;
 }
 
 static inline std::string getArgName (const kdb::Key & key, kdb_long_long_t index, const std::string & defaultPrefix)
@@ -578,10 +623,10 @@ static kainjow::mustache::list getKeyArgs (const kdb::Key & key, std::string & f
 kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string & outputName, const kdb::KeySet & ks,
 							     const std::string & parentKey) const
 {
-	// TODO: check illegal names
-	if (parentKey[0] != '/')
+	// TODO: string escape function, partials
+	if (parentKey.substr (0, 5) != "spec/")
 	{
-		throw CommandAbortException ("parentKey has to be cascading");
+		throw CommandAbortException ("parentKey has to be in spec namespace");
 	}
 
 	using namespace kainjow::mustache;
@@ -590,15 +635,17 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 	auto headerFile = outputName + ".h";
 	auto includeGuard = createIncludeGuard (headerFile);
 	auto initFunctionName = getParameter (Params::InitFunctionName, "loadConfiguration");
+	auto helpFunctionName = getParameter (Params::HelpFunctionName, "printHelpMessage");
+	auto specloadFunctionName = getParameter (Params::SpecloadFunctionName, "specloadSend");
 	auto additionalHeaders = split (getParameter (Params::AdditionalHeaders), ',');
-	auto optimizeFromString = getParameter (Params::OptimizeFromString, "on") != "off";
-	auto experimentalStructs = getParameter (Params::ExperimentalStructs, "") == "on";
+	auto optimizeFromString = getParameter (Params::OptimizeEnumFromString, "on") != "off";
 
 	auto data = object{ { "header_file", headerFile },
 			    { "include_guard", includeGuard },
-			    { "parent_key", parentKey },
+			    { "parent_key", parentKey.substr (5) },
 			    { "init_function_name", initFunctionName },
-			    { "generate_structs?", experimentalStructs },
+			    { "help_function_name", helpFunctionName },
+			    { "specload_function_name", specloadFunctionName },
 			    { "switch_from_string?", optimizeFromString },
 			    { "more_headers", list (additionalHeaders.begin (), additionalHeaders.end ()) } };
 
@@ -606,10 +653,10 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 	list structs;
 	list keys;
 
-	auto specParent = kdb::Key ("spec" + parentKey, KEY_END);
+	auto specParent = kdb::Key (parentKey, KEY_END);
 
 	EnumProcessor enumProcessor;
-	StructProcessor structProcessor;
+	StructProcessor structProcessor (specParent, ks);
 
 	kdb::KeySet spec;
 
@@ -623,18 +670,17 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 		}
 		spec.append (key);
 
+		auto type = getType (key);
 		auto name = key.getName ();
 		name.erase (0, sizeof ("spec") - 1);
 
 		std::string fmtString;
 		list args = getKeyArgs (key, fmtString);
 
-		if (!key.getMeta<const kdb::Key> ("default"))
+		if (!key.hasMeta ("default"))
 		{
 			throw CommandAbortException ("The key '" + name + "' doesn't have a default value!");
 		}
-
-		auto type = getType (key);
 
 		std::unordered_set<std::string> allowedTypes = { "enum",
 								 "string",
@@ -649,12 +695,9 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 								 "unsigned_long_long",
 								 "float",
 								 "double",
-								 "long_double" };
-		if (experimentalStructs)
-		{
-			allowedTypes.insert ("struct");
-			allowedTypes.insert ("struct_ref");
-		}
+								 "long_double",
+								 "struct",
+								 "struct_ref" };
 
 		if (allowedTypes.find (type) == allowedTypes.end ())
 		{
@@ -663,22 +706,16 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 			throw CommandAbortException (msg);
 		}
 
-		if (type == "struct_ref")
-		{
-			// TODO: implement
-			std::cout << "Warning: Ignoring struct_ref key '" << name << "' outside of struct; currently unsupported"
-				  << std::endl;
-			continue;
-		}
-
 		auto nativeType = type == "string" ? "const char *" : "kdb_" + type + "_t";
+		auto typeName = snakeCaseToCamelCase (type);
 
-		auto tagName = getTagName (key, specParent.getName (), getParameter (Params::TagPrefix));
+		auto tagName = getTagName (key, specParent.getName ());
+
 		object keyObject = { { "name", name.substr (parentKey.size () + 1) },
 				     { "native_type", nativeType },
 				     { "macro_name", snakeCaseToMacroCase (tagName) },
 				     { "tag_name", snakeCaseToCamelCase (tagName) },
-				     { "type_name", snakeCaseToCamelCase (type) } };
+				     { "type_name", typeName } };
 
 		if (!args.empty ())
 		{
@@ -697,18 +734,37 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 				enums.emplace_back (enumData);
 			}
 		}
-
-		if (experimentalStructs && type == "struct")
+		else if (type == "struct_ref")
 		{
-			// TODO: support multiple levels of subkeys
-			//  by replacing / with _ in field names
-			//  (remove __ from /_ or /# at end)
+			bool allocate;
+			processStructRef (key, specParent, ks, tagName, typeName, nativeType, allocate);
+
+			keyObject["type_name"] = typeName;
+			keyObject["native_type"] = nativeType;
+			keyObject["is_struct_ref?"] = true;
+			keyObject["alloc?"] = allocate;
+		}
+		else if (type == "struct")
+		{
+			auto maxDepth = key.hasMeta ("gen/struct/depth") ? key.getMeta<kdb::short_t> ("gen/struct/depth") : 1;
+			auto baseDepth = getKeyParts (key).size ();
+
 			kdb::KeySet subkeys;
 			for (auto cur = it + 1; cur != ks.end (); ++cur)
 			{
-				if (cur->isDirectBelow (key))
+				if (cur->isBelow (key))
 				{
-					subkeys.append (*cur);
+					auto parts = getKeyParts (*cur);
+					if (parts.size () <= baseDepth + maxDepth)
+					{
+						if (std::any_of (parts.begin () + baseDepth, parts.end (),
+								 [](const std::string & s) { return s == "_" || s == "#"; }))
+						{
+							throw CommandAbortException ("struct cannot contain globbed keys (_, #).");
+						}
+
+						subkeys.append (*cur);
+					}
 				}
 				else
 				{
@@ -732,11 +788,22 @@ kainjow::mustache::data ElektraGenTemplate::getTemplateData (const std::string &
 		keys.emplace_back (keyObject);
 	}
 
+	// TODO: make configurable?
+	auto specloadName = parentKey + "/elektra/specload";
+	if (ks.lookup (specloadName))
+	{
+		throw CommandAbortException ("Couldn't add '" + specloadName + "': Already exists!");
+	}
+
+	spec.append (kdb::Key (specloadName, KEY_META, "type", "boolean", KEY_META, "default", "0", KEY_META, "opt/arg", "none", KEY_META,
+			       "opt", "--elektra-spec", KEY_END));
+
 	data["keys_count"] = std::to_string (keys.size ());
 	data["keys"] = keys;
 	data["enums"] = enums;
 	data["structs"] = structs;
 	data["defaults"] = keySetToCCode (spec);
+	data["specload_name"] = specloadName;
 
 	return data;
 }

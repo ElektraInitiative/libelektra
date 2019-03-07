@@ -19,7 +19,7 @@ public:
 
 	std::string getShortOptions () override
 	{
-		return ""; // TODO
+		return "F";
 	}
 
 	std::string getSynopsis () override
