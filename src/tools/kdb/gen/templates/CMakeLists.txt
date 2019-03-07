@@ -4,7 +4,9 @@ if (INSTALL_BUILD_TOOLS)
 	install (TARGETS elektra-kdb-gen-collect-templates DESTINATION bin)
 endif (INSTALL_BUILD_TOOLS)
 
-file (GLOB TEMPLATE_FILES
+file (GLOB_RECURSE TEMPLATE_FILES
+		   LIST_DIRECTORIES
+		   false
       RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
 	       *.mustache)
 

@@ -148,7 +148,7 @@ std::unordered_map<std::string, kainjow::mustache::partial> GenTemplate::getPart
 	for (const auto & partialFile : _partials)
 	{
 		partials["partial." + partialFile] = [&]() {
-			auto name = _templateBaseName + "_" + partialFile;
+			auto name = _templateBaseName + "/" + partialFile;
 			std::replace_if (name.begin (), name.end (), std::not1 (std::ptr_fun (isalnum)), '_');
 			return kdbgenTemplates.at (name);
 		};
