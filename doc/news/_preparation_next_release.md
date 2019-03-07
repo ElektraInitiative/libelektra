@@ -102,7 +102,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 - Currently changing the specification is only allowed in a very limited way. However, in future the plugin should allow overriding a
   specification in all cases where this can be done safely. NOTE: While the plugin technically allows some modifications, because of a
   problem with the resolver this cannot be used right now (see [limitations](https://www.libelektra.org/plugins/specload)).
-- We also export `elektraSpecloadSendSpec` to abstract over the dependency on `quickdump`. _(Klemens Böswirth)_
+- We also export `elektraSpecloadSendSpec` to abstract over the `quickdump` dependency. _(Klemens Böswirth)_
 
 ## Libraries
 
