@@ -19,10 +19,33 @@
 
 
 
+// clang-format off
+
+// clang-format on
 
 
 
 
+
+
+// clang-format off
+
+// clang-format on
+
+#define ELEKTRA_STRUCT_FREE(cType, typeName) elektraFree##typeName
+#define ELEKTRA_STRUCT_FREE_SIGNATURE(cType, typeName) void ELEKTRA_STRUCT_FREE (cType, typeName) (cType * ptr)
+
+
+
+
+
+// clang-format off
+
+// clang-format on
+
+// clang-format off
+
+// clang-format on
 
 
 // clang-format off
@@ -76,55 +99,64 @@
 #undef elektra_len00
 #undef elektra_len
 
-Elektra * loadConfiguration (ElektraError ** error);
+
+int loadConfiguration (Elektra ** elektra, ElektraError ** error);
+void printHelpMessage (void);
+int specloadSend (void);
+
 
 /**
- * @param elektra The elektra instance initialized with the parent key.
+ * @param elektra The elektra instance initialized with loadConfiguration().
  * @param tag     The tag to look up.
  *
  * @return The value stored at the given key and index.
- */
+ */// 
 #define elektraGet(elektra, tag) ELEKTRA_GET (tag) (elektra)
 
+
 /**
- * @param elektra The elektra instance initialized with the parent key.
+ * @param elektra The elektra instance initialized with loadConfiguration().
  * @param tag     The tag to look up.
  * @param ...     Variable arguments depending on the given tag.
  *
  * @return The value stored at the given key and index.
- */
+ */// 
 #define elektraGetV(elektra, tag, ...) ELEKTRA_GET (tag) (elektra, __VA_ARGS__)
 
+
 /**
- * @param elektra The elektra instance initialized with the parent key.
+ * @param elektra The elektra instance initialized with loadConfiguration().
  * @param tag     The tag to look up.
  * @param result  Points to the struct into which results will be stored.
- */
+ */// 
 #define elektraGet2(elektra, result, tag) ELEKTRA_GET (tag) (elektra, result)
 
+
 /**
- * @param elektra The elektra instance initialized with the parent key.
+ * @param elektra The elektra instance initialized with loadConfiguration().
  * @param result  Points to the struct into which results will be stored.
  * @param tag     The tag to look up.
  * @param ...     Variable arguments depending on the given tag.
- */
+ */// 
 #define elektraGet2V(elektra, result, tag, ...) ELEKTRA_GET (tag) (elektra, result, __VA_ARGS__)
 
+
 /**
- * @param elektra The elektra instance initialized with the parent key.
+ * @param elektra The elektra instance initialized with the loadConfiguration().
  * @param tag     The codegenerated Tag to write to.
  * @param value   The new value.
  * @param error   Pass a reference to an ElektraError pointer.
- */
+ */// 
 #define elektraSet(elektra, tag, value, error) ELEKTRA_GET (tag) (elektra, value, error)
 
+
 /**
- * @param elektra The elektra instance initialized with the parent key.
+ * @param elektra The elektra instance initialized with the loadConfiguration().
  * @param tag     The codegenerated Tag to write to.
  * @param value   The new value.
  * @param error   Pass a reference to an ElektraError pointer.
  * @param ...     Variable arguments depending on the given tag.
- */
+ */// 
 #define elektraSetV(elektra, tag, value, error, ...) ELEKTRA_GET (tag) (elektra, value, __VA_ARGS__, error)
 
 #endif // NOTYPE_ACTUAL_H

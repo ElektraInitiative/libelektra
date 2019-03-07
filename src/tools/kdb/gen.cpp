@@ -54,7 +54,7 @@ int GenCommand::execute (Cmdline const & cl)
 
 	if (cl.inputFile.empty ())
 	{
-		Key getKey (parentKey);
+		Key getKey (parentKey, KEY_END);
 
 		KDB kdb;
 		kdb.get (ks, getKey);
